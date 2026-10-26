@@ -5,6 +5,9 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 errors = []
+workflow_dir = ROOT / '.github/workflows'
+if workflow_dir.exists() and any(p.is_file() for p in workflow_dir.rglob('*')):
+    errors.append('GitHub Actions are disabled for this project; remove workflow files.')
 for source in ROOT.rglob('*.md'):
     for target in re.findall(r'\]\(([^)]+)\)', source.read_text(encoding='utf-8')):
         if '://' in target or target.startswith('#'):

@@ -47,6 +47,14 @@ Geltung: gesamtes Repository. Explizite aktuelle Nutzeraufträge und übergeordn
 - Vor Push aktuellen Remote-Stand prüfen und Änderungen sauber integrieren. Konflikte fachlich lösen, nicht pauschal eine Seite wählen.
 - Commit nur die eigenen geprüften Änderungen. Commit, Push, Deployment und Release sind getrennte Aktionen und getrennt zu berichten.
 
+## Prüfungen ohne GitHub Actions
+
+- GitHub Actions werden nicht verwendet. Keine Workflows unter `.github/workflows` anlegen oder aktivieren.
+- Der bearbeitende Agent führt benötigte Tests, Builds, Lint-/Typprüfungen und relevante Funktionsprüfungen selbst in seiner verfügbaren Arbeitsumgebung aus und behebt Fehler im Auftragsumfang.
+- Nicht auf externe CI warten und keine grünen CI-Checks als Voraussetzung verlangen. Qualitätsanforderungen bleiben vollständig bestehen.
+- Prüfprotokoll vor Commit/Push aktualisieren: Befehl, Ergebnis, geprüfter Stand und Grenzen. Nicht ausführbare Prüfungen als offen melden, niemals als bestanden behandeln.
+- Details: docs/TESTING.md. Deployment und Releases innerhalb des ausdrücklich autorisierten Umfangs ebenfalls selbst vorbereiten und prüfen.
+
 ## Prüfung und Abschluss
 
 - Format-/Parseränderungen: unabhängige Fixtures und semantische Roundtrips.

@@ -40,6 +40,8 @@ Importlimits für Dateigröße, entpackte Größe, NBT-Tiefe, Volumen und Laufze
 Paper-, Fabric- und NeoForge-Anbindungen getrennt planen. Server-Plugin allein aktualisiert keine lokalen Litematica-Overlays. Planübertragung ist getrennt vom Setzen echter Blöcke. Weltänderungen nur ausdrücklich beauftragt, mit Rechteprüfung, Dry-Run, Budget, Sicherung und Konfliktprüfung. Webhooks benötigen Signatur, Ereignis-ID und Wiederholbarkeit.
 
 ## 9. Qualität und Fertigstellung
+GitHub Actions werden nicht genutzt. Lege keine Workflows dafür an. Führe erforderliche Tests, Builds, Typ-/Lintprüfungen und Funktionsprüfungen selbst aus, behebe Fehler im Auftragsumfang und dokumentiere Befehle, Ergebnisse und Grenzen vor dem Push in docs/TESTING.md. Warte nicht auf externe CI. Melde nicht ausführbare Prüfungen ehrlich als offen; die Qualitätsanforderungen bleiben bestehen.
+
 Kleine vollständige Ausbauschritte statt vieler Platzhalter. Passende Prüfungen: unabhängige Format-Fixtures, semantische Roundtrips, konkrete Blockausrichtungen, Materialsonderfälle, Konflikte, Rechte und parallele Bearbeitung. Performance mit Hardware-/Browserszenario messen. Nie Funktionsfähigkeit aus bloßem Vorhandensein von Code behaupten.
 
 Nach Änderungen Status/Roadmap und nötige Entscheidungen aktualisieren. Berichte knapp: Was geändert wurde, welche Prüfungen erfolgten, welche Grenzen bleiben und ob tatsächlich gepusht wurde. Fehlender Zugriff wird klar benannt. Dateien dürfen nicht als im Repository oder GPT-Projekt eingerichtet bezeichnet werden, solange sie dort nicht nachweislich übernommen wurden.

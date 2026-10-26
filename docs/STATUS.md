@@ -9,7 +9,7 @@ Stand: 27.10.2026. Repository-Bestandsaufnahme und Planungsgrundlage.
 | Remote-Prüfung | Authentifiziert geprüft: initial nur README, main ungeschützt |
 | Planung | Gesamtspezifikation, Regeln, Roadmap und Anforderungen ausgearbeitet |
 | Anwendung | In diesem Paket nicht implementiert |
-| Automatisierung | Dokumentationsprüfung lokal bestanden; GitHub-Lauf 40417732876 vor erstem Schritt fehlgeschlagen, Ursache über verfügbaren Zugriff ungeklärt |
+| Automatisierung | GitHub Actions werden auf Nutzeranweisung nicht genutzt; Workflow entfernt. Prüfungen werden eigenständig ausgeführt und in docs/TESTING.md dokumentiert. |
 | Commit / Push | Planungsgrundlage auf main: afb116ebf8ebb4cc381dd0399c824284a12e5b8f |
 | GPT-Projekteinstellungen | Anweisung vorbereitet, nicht automatisch eingetragen |
 

@@ -12,7 +12,7 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 
 | Aufgabe | Verantwortlich | Dateien | Status | Reservierung bis |
 |---|---|---|---|---|
-| Planungspaket | ChatGPT | dieses vorbereitete Paket | Repository geprüft; Integration der Planungsgrundlage | dieser Dokumentationsauftrag |
+| Prüfstrategie ohne Actions | ChatGPT | Regeln, Dokumentation, Prüfer, Workflow | abgeschlossen mit diesem Stand | beendet |
 
 ## Nachrichten
 
@@ -24,3 +24,10 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Integration: dokumentierte Grundlage direkt auf main veröffentlichen; Commit-ID und CI-Ergebnis im Abschluss nennen.
 - Nächste Aufgabe: P0-02 und P0-03, normativer Voxelvertrag und unabhängige Fixtures.
 - Offene technische Entscheidungen: genaue Minecraft-Version/Modpack, Hostingprofil, erster Serveradapter und Projektlizenz.
+
+### MSG-0002 · ChatGPT · 2026-10-27 · Prüfungen selbst ausführen
+
+- Nutzerentscheidung: GitHub Actions können nicht genutzt werden; der Agent übernimmt die Prüfungen selbst.
+- Umsetzung: Workflow entfernt; AGENTS, GPT-Anweisung, README und Beitragsregeln auf eigenständige Ausführung umgestellt. docs/TESTING.md dokumentiert Befehle, Ergebnisse und Grenzen.
+- Qualitätsanforderungen bleiben bestehen. Keine externe CI und keine unbestätigten Prüfergebnisse voraussetzen.
+- Nächste Aufgabe bleibt P0-02/P0-03.

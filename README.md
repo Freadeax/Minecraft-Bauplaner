@@ -16,6 +16,7 @@ Zielrepository: https://github.com/Freadeax/Minecraft-Bauplaner
 - [Anforderungen und Zuordnung](docs/REQUIREMENTS.md)
 - [Zusammenarbeit und Kommunikation](docs/COMMUNICATION.md)
 - [Stand und Übergabe](docs/STATUS.md)
+- [Eigenständig ausgeführte Prüfungen](docs/TESTING.md)
 - [Anweisung für das GPT-Projekt](docs/project/GPT_PROJECT_INSTRUCTIONS.md)
 - [Beitragsregeln](CONTRIBUTING.md)
 - [Sicherheit](SECURITY.md)
@@ -28,6 +29,6 @@ Lokaler Viewer und exportierbare Pläne bilden die erste Ausbaustufe. Teamserver
 
 ## Weiterentwicklung
 
-Als Nächstes Koordinaten-/Voxelvertrag und unabhängige Fixtures umsetzen. Lokale Dokumentationsprüfung: `python3 scripts/check_docs.py`. Die CI prüft Dokumentationslinks und das Längenlimit der GPT-Anweisung. Anwendungstests werden zusammen mit der Anwendung eingeführt.
+Als Nächstes Koordinaten-/Voxelvertrag und unabhängige Fixtures umsetzen. Lokale Dokumentationsprüfung: `python3 scripts/check_docs.py`. GitHub Actions werden nicht genutzt. Der bearbeitende Agent führt die Prüfungen selbst aus und dokumentiert sie vor dem Push in `docs/TESTING.md`. Anwendungstests werden zusammen mit der Anwendung eingeführt.
 
 Eine Projektlizenz ist noch nicht festgelegt. Vor Veröffentlichung fremder Assets, Texturen oder Codebestandteile müssen Nutzungsrechte und Lizenzkompatibilität geprüft werden.

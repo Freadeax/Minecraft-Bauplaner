@@ -12,6 +12,6 @@ Vor Bearbeitung die Kommunikation lesen und betroffene Dateien anmelden. Änderu
 - Relevante Dokumentation, Status und offene Aufgaben aktualisiert.
 - Keine geheimen Daten, privaten Welten oder ungeklärten Fremdassets eingecheckt.
 - Reviewbeschreibung nennt Ergebnis, Prüfung und wesentliche Grenzen.
-- CI grün oder fremde Ausgangsfehler klar dokumentiert; keine Testabschwächung.
+- Erforderliche Prüfungen vom bearbeitenden Agenten selbst ausgeführt und in docs/TESTING.md dokumentiert; keine Testabschwächung. GitHub Actions werden nicht genutzt.
 
-Noch gibt es in diesem Paket keinen Anwendungsstart und keine festgelegten Build-Befehle. Diese werden mit dem tatsächlichen Stack in README und CI ergänzt. Die enthaltene Dokumentationsprüfung ist kein Ersatz für Parser-, Rendering- oder Integrationstests.
+Noch gibt es in diesem Paket keinen Anwendungsstart und keine festgelegten Build-Befehle. Diese werden mit dem tatsächlichen Stack in README und den lokal ausführbaren Prüfbefehlen ergänzt. Die enthaltene Dokumentationsprüfung ist kein Ersatz für Parser-, Rendering- oder Integrationstests.
