@@ -9,13 +9,13 @@ Stand: 27.10.2026. Repository-Bestandsaufnahme und Planungsgrundlage.
 | Remote-Prüfung | Authentifiziert geprüft: initial nur README, main ungeschützt |
 | Planung | Gesamtspezifikation, Regeln, Roadmap und Anforderungen ausgearbeitet |
 | Anwendung | In diesem Paket nicht implementiert |
-| Automatisierung | Dokumentationsprüfung lokal bestanden; GitHub-Ergebnis separat prüfen |
-| Commit / Push | Veröffentlichung dieses Dokumentationsstands auf main ist der abschließende Arbeitsschritt |
+| Automatisierung | Dokumentationsprüfung lokal bestanden; GitHub-Lauf 40417732876 vor erstem Schritt fehlgeschlagen, Ursache über verfügbaren Zugriff ungeklärt |
+| Commit / Push | Planungsgrundlage auf main: afb116ebf8ebb4cc381dd0399c824284a12e5b8f |
 | GPT-Projekteinstellungen | Anweisung vorbereitet, nicht automatisch eingetragen |
 
 ## Nächster Arbeitsschritt
 
-P0-01: Repository gelesen und Ausgangslage geprüft; Grundregeln werden mit diesem Stand integriert. Danach P0-02 und P0-03: normatives Koordinaten-/Voxelschema und unabhängige Fixtures. Anwendungscode ist noch nicht vorhanden.
+P0-01: Repository gelesen und Ausgangslage geprüft; Grundregeln auf main integriert. Danach P0-02 und P0-03: normatives Koordinaten-/Voxelschema und unabhängige Fixtures. Anwendungscode ist noch nicht vorhanden.
 
 ## Vor Integration klären
 
