@@ -13,7 +13,7 @@ Stand: 27.10.2026. Erster implementierter Voxel-Kern auf Planungsgrundlage.
 | Anwendung | Browser-UI, Dateiparser, Persistenz, API und Export noch nicht implementiert |
 | Prüfung | 43 Node-Tests, strenge Typprüfung, Bibliotheksbuild und Dokumentationsprüfung lokal bestanden; Details in TESTING.md |
 | Automatisierung | GitHub Actions werden auf Nutzeranweisung nicht genutzt; Workflow entfernt. Prüfungen werden eigenständig ausgeführt und in docs/TESTING.md dokumentiert. |
-| Integration | Basis auf main: 7dbd12e3fcb2cb71e5bfaa846a6398c9394b3317; Kernpaket für codex/voxel-core vorbereitet, main nicht aktualisiert |
+| Integration | Basis auf main: 7dbd12e3fcb2cb71e5bfaa846a6398c9394b3317; Kernpaket auf codex/voxel-core gepusht: 94e9a6e4f0ad702660389fca423b426647b9ce90; main nicht aktualisiert |
 | GPT-Projekteinstellungen | Anweisung vorbereitet, nicht automatisch eingetragen |
 
 ## Nächster Arbeitsschritt
@@ -26,4 +26,4 @@ Zielprofil für Minecraft und Modpack aus dem tatsächlichen Projektstand ableit
 
 ## Integration dieses Arbeitspakets
 
-Geprüfter lokaler Stand auf Basis von main `7dbd12e3fcb2cb71e5bfaa846a6398c9394b3317`. Direktes main-Update wurde durch die automatische Freigabeprüfung abgelehnt. Geprüfte Änderungen werden zur Reviewintegration vorbereitet; kein Deployment oder Release. Der Integrationsstand wird im Abschluss mit tatsächlichem Link angegeben.
+Geprüfter lokaler Stand auf Basis von main `7dbd12e3fcb2cb71e5bfaa846a6398c9394b3317`. Direktes main-Update wurde durch die automatische Freigabeprüfung abgelehnt. Geprüfte Änderungen liegen auf dem Reviewbranch; [Draft-PR #1](https://github.com/Freadeax/Minecraft-Bauplaner/pull/1) ist geöffnet. Kein Merge, Deployment oder Release.
