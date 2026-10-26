@@ -1,5 +1,6 @@
 """Check local Markdown file links and the GPT project instruction limit."""
 from pathlib import Path
+import os
 import re
 import sys
 
@@ -8,7 +9,11 @@ errors = []
 workflow_dir = ROOT / '.github/workflows'
 if workflow_dir.exists() and any(p.is_file() for p in workflow_dir.rglob('*')):
     errors.append('GitHub Actions are disabled for this project; remove workflow files.')
-for source in ROOT.rglob('*.md'):
+sources = []
+for directory, subdirectories, files in os.walk(ROOT):
+    subdirectories[:] = [name for name in subdirectories if name not in {'.git', 'node_modules', 'dist', '.venv'}]
+    sources.extend(Path(directory) / name for name in files if name.endswith('.md'))
+for source in sources:
     for target in re.findall(r'\]\(([^)]+)\)', source.read_text(encoding='utf-8')):
         if '://' in target or target.startswith('#'):
             continue
