@@ -7,7 +7,7 @@ Stand: 27.10.2026. Erster implementierter Voxel-Kern auf Planungsgrundlage.
 | Nutzerziel | Modularer Minecraft-Bauhelfer für Browser und spätere Team-/Spielanbindung |
 | Repository | Freadeax/Minecraft-Bauplaner als Ziel benannt |
 | Remote-Prüfung | Authentifiziert geprüft: initial nur README, main ungeschützt |
-| Websitehosting | GitHub Pages verbindlich; Browser-Worker/lokale Projekte zuerst. Pages-Konfiguration, Tarif und Deployment noch offen |
+| Websitehosting | GitHub Pages verbindlich; nach jedem Main-Merge/Push unmittelbar passenden geprüften Webbuild veröffentlichen. Aktuell kein Webbuild; Pages-Konfiguration und Deployment über den vorhandenen Connector nicht bestätigt |
 | Planung | Gesamtspezifikation, Regeln, Roadmap und Anforderungen ausgearbeitet |
 | Kern | TypeScript-Typen, Laufzeitvalidierung, unveränderliche Snapshots, Geometrie-/begrenzte Zustandstransformation, X/Y/Z-Auswahl und Blockzustandszählung implementiert |
 | Anwendung | Browser-UI, Dateiparser, Persistenz, API und Export noch nicht implementiert |

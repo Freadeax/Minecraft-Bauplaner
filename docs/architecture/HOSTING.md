@@ -15,6 +15,18 @@ Verbindliche Nutzerentscheidung vom 27.10.2026: Die Website läuft über GitHub 
 
 Konten, Teamrechte, gemeinsame Operationen, dauerhafte geteilte Payloads und Server-Sync benötigen einen separaten, noch auszuwählenden Dienst. Die Pages-Oberfläche bleibt das Frontend; der lokale Kern darf nicht von diesem Dienst abhängen. API- und Worker-Apps sind spätere optionale Betriebsprofile. Zugangsdaten und private Weltdaten gehören nicht in das öffentliche Buildartefakt.
 
+## Verbindlicher Veröffentlichungsablauf nach jedem Main-Update
+
+Nutzeranweisung vom 27.10.2026: Auf jeden erfolgreichen Merge oder Push auf `main` folgt unmittelbar die Veröffentlichung des passenden geprüften statischen Builds auf GitHub Pages. Dafür ist keine erneute Erlaubnis nötig. Das ist eine Pflicht des jeweils aktiven Entwicklungsablaufs, kein eingerichteter Hintergrundmonitor für fremde Pushes. Es werden weiterhin keine eigenen GitHub-Actions-Workflows verwendet.
+
+1. Aktuellen Main-Quellcommit feststellen und erforderliche lokale Prüfungen abschließen.
+2. Statisches Website-Artefakt aus genau diesem Stand bauen; Builddateien, Repository-Unterpfad und Workerpfade prüfen.
+3. Artefakt regulär auf die Pages-Veröffentlichungsquelle übertragen; keine privaten Daten oder Quell-Dokumentation als Website ausgeben.
+4. Veröffentlichung und echte ausgelieferte URL prüfen; Quellcommit und Deploymentstand zuordnen. GitHubs Verarbeitungszeit ist kein sofortiger Live-Nachweis.
+5. Fehler innerhalb des Auftrags beheben. Bleibt ein Blocker, ausdrücklich „main aktuell, Pages nicht aktualisiert“ mit Ursache melden; kein Erfolgsstatus aus einem Push allein ableiten.
+
+Aktuell fehlt noch ein Website-Build. Außerdem bietet der verfügbare GitHub-Connector keine Aktion zum Konfigurieren von Pages; der /pages-Endpunkt ist im Fetch-Werkzeug nicht zugelassen. Tarif, Pages-Quelle und Deploymentbereitschaft bleiben daher ungeprüft. Die Regel ist verankert, es ist noch keine automatische Veröffentlichung eingerichtet.
+
 ## Veröffentlichung und Abnahme
 
 Derzeit ist das Repository privat und es gibt noch keinen Webbuild. GitHub Pages für private Repositories hängt vom Kontotarif ab; dieser ist noch nicht geprüft. Die Sichtbarkeit des Repositorys wird nicht automatisch geändert. Beabsichtigte Projekt-URL: `https://freadeax.github.io/Minecraft-Bauplaner/`, noch nicht eingerichtet oder als erreichbar bestätigt.

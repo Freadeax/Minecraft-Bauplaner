@@ -44,6 +44,7 @@ Geltung: gesamtes Repository. Explizite aktuelle Nutzeraufträge und übergeordn
 - Der vorhandene Repository-Workflow gilt. Im unklaren Fall keine Branch-/Schutzregeln eigenmächtig ändern.
 - Wunschgrundsatz für dieses Projekt: main ist die zentrale Integrationslinie; keine dauerhaften konkurrierenden Entwicklungsstände. Direkter Push nur mit bestehender Autorisierung, bestandenen Prüfungen und sofern Schutzregeln ihn erlauben. Sonst PR verwenden.
 - Explizite Nutzerfreigabe vom 27.10.2026: geprüfte Änderungen in diesem Repository dürfen ohne erneute Rückfrage auf main gemergt bzw. regulär integriert werden. Bestehende Schutzregeln und Prüfpflichten gelten weiter.
+- Nutzerregel vom 27.10.2026: Nach jedem erfolgreichen Merge/Push auf main unverzüglich den passenden lokal geprüften statischen Website-Build über GitHub Pages veröffentlichen, ohne erneute Freigabe. Keine eigenen Actions. Quellcommit, Deploymentstand und echte URL prüfen; Blocker ausdrücklich melden. Ohne Webbuild keine Veröffentlichung vortäuschen.
 - Keine Force-Pushes, kein Reset fremder Arbeit, kein Umschreiben veröffentlichter Historie.
 - Vor Push aktuellen Remote-Stand prüfen und Änderungen sauber integrieren. Konflikte fachlich lösen, nicht pauschal eine Seite wählen.
 - Commit nur die eigenen geprüften Änderungen. Commit, Push, Deployment und Release sind getrennte Aktionen und getrennt zu berichten.
