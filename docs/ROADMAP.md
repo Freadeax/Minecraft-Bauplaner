@@ -1,6 +1,6 @@
 # Roadmap
 
-P0-01 ist mit der Bestandsaufnahme und Integration dieses Dokumentationsstands bearbeitet. Die weiteren Implementierungspakete sind geplant. Das Repository enthielt zuvor nur eine README. Arbeitspakete erhalten bei Bedarf verknüpfte Issues.
+P0-01 ist mit der Bestandsaufnahme und Integration dieses Dokumentationsstands bearbeitet. P0-02 und P0-03 sind als interner Voxelvertrag mit unabhängigen handberechneten Fixtures implementiert und lokal geprüft. P1-02/P1-04 haben erste Kernfunktionen; vollständige Profil-/NBT-Regeln, Konfliktauflösung und Oberfläche fehlen. Weitere Pakete sind geplant. Das Repository enthielt zuvor nur eine README. Arbeitspakete erhalten bei Bedarf verknüpfte Issues.
 
 | ID | Paket | Abhängigkeit | Abnahme |
 |---|---|---|---|
@@ -26,3 +26,13 @@ P0-01 ist mit der Bestandsaufnahme und Integration dieses Dokumentationsstands b
 | P7-01 | Weltimport und große Projekte | P5 | Bereichsimport mit Limits und dokumentiertem Lasttest |
 
 Die erste Fassung schließt P0 bis P3 ein. Backend kann früher eingeführt werden, wenn bestehender Repository-Code es rechtfertigt; daraus folgt keine parallele Neukonstruktion. Keine unbegründeten Fertigstellungstermine festlegen.
+
+## Umsetzungsnachweise · 27.10.2026
+
+- P0-02 abgeschlossen: [Voxelvertrag](architecture/VOXEL_CONTRACT.md), `packages/voxel/src/types.ts` und `validation.ts`.
+- P0-03 abgeschlossen für den internen Vertrag: [synthetische, handberechnete Fixtures](../fixtures/voxel/README.md) und `tests/voxel.test.mjs`. Binäre Referenzdateien gehören zur folgenden Parserabnahme.
+- P1-02 teilweise: geometrische Transformationen und begrenzter expliziter Zustandskatalog; BlockEntity-Transformationen melden ungelöste Semantik. Keine vollständige Minecraft-Kompatibilität.
+- P1-04 teilweise: Zählung eindeutiger Blockzustände plus separate Luft-/Löschzahlen. Projektkonflikte und Bauitem-Zuordnung offen.
+- Nächster vollständiger Schritt: P1-01, Schem-v3-Reader mit strukturellen Limits, Abbruch und unabhängigen Binärfixtures.
+
+P1-03 wird verbindlich als statisches GitHub-Pages-Frontend mit Browser-Web-Workers, Repository-Unterpfad und ohne eigene Actions umgesetzt. Der Pages-Deploy ist noch offen; siehe [Hosting](architecture/HOSTING.md).

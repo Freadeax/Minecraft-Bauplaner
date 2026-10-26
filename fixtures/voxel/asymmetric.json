@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "profileId": "fixture:java-state-contract-v1-unverified",
+  "bounds": { "min": [-2, 0, -1], "maxExclusive": [2, 2, 2] },
+  "pivot": [0, 0, 0],
+  "sourceOrigin": [-12, 64, 30],
+  "palette": [
+    { "id": "minecraft:stone", "properties": {} },
+    { "id": "minecraft:oak_log", "properties": { "axis": "x" } },
+    { "id": "minecraft:oak_stairs", "properties": { "facing": "north", "half": "bottom", "shape": "inner_left", "waterlogged": "true" } },
+    { "id": "example:unknown_machine", "properties": { "orientation": "custom_north" } },
+    { "id": "minecraft:barrel", "properties": { "facing": "west", "open": "false" } },
+    { "id": "minecraft:cave_air", "properties": {} },
+    { "id": "minecraft:oak_fence", "properties": { "north": "true", "east": "false", "south": "false", "west": "true", "waterlogged": "false" } }
+  ],
+  "cells": [
+    { "position": [-2, 0, -1], "kind": "block", "paletteIndex": 0 },
+    { "position": [1, 0, 1], "kind": "block", "paletteIndex": 0 },
+    { "position": [-1, 0, 0], "kind": "block", "paletteIndex": 1 },
+    { "position": [0, 1, -1], "kind": "block", "paletteIndex": 2 },
+    { "position": [1, 1, 0], "kind": "block", "paletteIndex": 3 },
+    { "position": [0, 0, 1], "kind": "block", "paletteIndex": 4 },
+    { "position": [-1, 1, 1], "kind": "air", "paletteIndex": 5 },
+    { "position": [-2, 1, 0], "kind": "erase" },
+    { "position": [1, 0, 0], "kind": "block", "paletteIndex": 6 }
+  ],
+  "blockEntities": [
+    { "position": [0, 0, 1], "data": { "type": "compound", "value": {
+      "id": { "type": "string", "value": "minecraft:barrel" },
+      "x": { "type": "int", "value": 0 },
+      "y": { "type": "int", "value": 0 },
+      "z": { "type": "int", "value": 1 },
+      "LootTableSeed": { "type": "long", "value": "9223372036854775807" },
+      "Items": { "type": "list", "elementType": "compound", "value": [] }
+    } } }
+  ]
+}

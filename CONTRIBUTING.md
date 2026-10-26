@@ -14,4 +14,4 @@ Vor Bearbeitung die Kommunikation lesen und betroffene Dateien anmelden. Änderu
 - Reviewbeschreibung nennt Ergebnis, Prüfung und wesentliche Grenzen.
 - Erforderliche Prüfungen vom bearbeitenden Agenten selbst ausgeführt und in docs/TESTING.md dokumentiert; keine Testabschwächung. GitHub Actions werden nicht genutzt.
 
-Noch gibt es in diesem Paket keinen Anwendungsstart und keine festgelegten Build-Befehle. Diese werden mit dem tatsächlichen Stack in README und den lokal ausführbaren Prüfbefehlen ergänzt. Die enthaltene Dokumentationsprüfung ist kein Ersatz für Parser-, Rendering- oder Integrationstests.
+Der Voxelkern wird mit `npm run check` vollständig lokal geprüft (Installation: `npm ci --ignore-scripts`). Ein Web-Anwendungsstart ist noch nicht vorhanden. Die enthaltene Dokumentationsprüfung ist kein Ersatz für Parser-, Rendering- oder Integrationstests.

@@ -2,7 +2,7 @@
 
 Version 1.0 · 27.10.2026 · Sprache: Deutsch
 
-Status: Ausgearbeitetes Zielbild und technische Spezifikation. Noch keine implementierte oder getestete Anwendung. Die genannten Leistungswerte sind Abnahmeziele, keine Messergebnisse. Arbeitsname: LMNT Build Studio.
+Status: Zielbild und technische Spezifikation. Erster interner Voxelkern implementiert und lokal geprüft; noch keine Browseranwendung. Verbindlicher Hostingzusatz vom 27.10.2026: GitHub Pages, siehe [Hostingvertrag](HOSTING.md). Die genannten Leistungswerte sind Abnahmeziele, keine Messergebnisse. Arbeitsname: LMNT Build Studio.
 
 ## 1. Produkt und durchgängiger Ablauf
 
@@ -202,9 +202,9 @@ Undo erzeugt im Team eine prüfbare Gegenoperation. Ein gesamtes fremdes Projekt
 
 ## 13. Technische Architektur
 
-Empfehlung als Projektentscheidung: TypeScript für gemeinsamen Domänenkern, React für Bedienoberfläche, Three.js für 3D, Node.js mit separaten Parser-/Export-Workern, PostgreSQL für dauerhafte Beziehungen und Objektspeicher für Binärdaten. Redis erst einsetzen, wenn Cache, Jobs oder verteilte Verarbeitung dies rechtfertigen. Go oder Rust sind gezielte spätere Optionen bei gemessenen Engpässen.
+Projektentscheidung: TypeScript für gemeinsamen Domänenkern, React für Bedienoberfläche, Three.js für 3D und Browser-Web-Workers für Import/Export. Die erste Website läuft statisch über GitHub Pages. Node.js-API/Worker, PostgreSQL und dauerhafter Objektspeicher bleiben Optionen für einen späteren getrennten Teamdienst. Redis erst einsetzen, wenn Cache, Jobs oder verteilte Verarbeitung dies rechtfertigen. Go oder Rust sind gezielte spätere Optionen bei gemessenen Engpässen.
 
-Frontend, API und Worker beginnen als modularer Monolith mit gemeinsamen Schemas, nicht als umfangreiche Microservice-Landschaft. API, Worker und WebSocket-Verbindungen benötigen eine Laufzeit; rein statisches Hosting deckt den gesamten Umfang nicht ab.
+Der erste Ausbau bleibt lokal und statisch mit gemeinsamen Schemas. Ein späterer Teamdienst beginnt modular, nicht als umfangreiche Microservice-Landschaft. API und WebSocket-Verbindungen benötigen eine separate Laufzeit außerhalb von Pages. Der Browserkern muss unabhängig davon funktionieren. GitHub Pages ersetzt keinen Teamserver.
 
 Codebereiche: `apps/web`, `apps/api`, `apps/worker`, `packages/domain`, `packages/voxel`, `packages/formats`, `packages/transforms`, `packages/generators`, `packages/contracts`, `integrations`, `fixtures`, `docs`.
 
