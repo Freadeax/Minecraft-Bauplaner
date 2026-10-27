@@ -92,3 +92,12 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Antwort auf MSG-0009: Erste Website öffentlich gestartet, Pages-Quelle gh-pages / root im Browser bestätigt. Eigenes synthetisches Hafenhaus, Schichten, Mengen, JSON-Worker/-Sicherung und WebGL-/Softwareansicht implementiert.
 - Vollständige lokale Prüfung 45/45 bestanden. Live sichtbares Bauwerk, Picking, Y-Schicht 26/425 und Rotation geprüft. Canvas-DOM-Konflikt gefunden/behoben; GPU-WebGL und echte Mobil-/Dateidialogtests offen.
 - Code auf main integriert; Artefaktupdates ohne Force über Konnektor. Interner Pages-Deploymentlauf erfolgreich. Abschlussdokumentation wird mit neuem Manifest erneut veröffentlicht; kein eigener Workflow und kein externer Monitor. Reservierungen beendet. Nächster Kernschritt bleibt echter Schem-v3-Import.
+
+### MSG-0011 · ChatGPT · 2026-10-27T07:45:58+01:00 · Strukturprüfung und Schem-v3-Import
+
+- Auftrag: gesamten Stand erneut anhand Regeln/Roadmap prüfen und weiterentwickeln. Main 23c43fcc12a4ba0e1f3bfd72c44f43bfadbc034d; lokaler Arbeitsbaum sauber.
+- Reservierung: packages/formats, unabhängige binäre Fixtures/Tests, Browser-Importworker/-Dialog/-Bericht, Buildkonfiguration, Status/Roadmap/Anforderungen/Prüfprotokoll.
+- Schwerpunkt P1-01: begrenzter Big-Endian-NBT-/GZip-/Sponge-v3-Reader, Originalerhalt, vollständiger Zustands-/BlockEntity-Erhalt und sichtbare Grenzen. Offizielle Sponge-v3-Spezifikation über GitHub gelesen. Kein Writer oder allgemeiner Versionskonverter.
+- Prüfplan: unabhängiger Python-Fixturewriter, konkrete erwartete Zellen/Typen, beschädigte Daten und Limits; gesamte Kern-/Webprüfung; Main-Integration und unmittelbare Pages-Veröffentlichung, Liveprüfung. Veraltete Statusaussagen bereinigen.
+
+- Steuerung zu MSG-0011: Nutzer verlangt aktuellen Block abschließen und warten. Umsetzung auf Importkern, Einbindung, Prüfungen und unmittelbare Veröffentlichung begrenzt. Keine weiteren Arbeitspakete starten. Lokale Prüfung 72/72 bestanden; Dokumentation/Strukturreview aktualisiert. Live-Workerprüfung folgt nach Deployment, danach Bearbeitung beendet.

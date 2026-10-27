@@ -1,6 +1,6 @@
 # Architekturentscheidungen
 
-Status: angenommene Planungsbasis vom 27.10.2026. Das Repository wurde geprüft; bestehender Anwendungscode ist nicht vorhanden. Entscheidungen können mit dokumentierter Begründung geändert werden.
+Status: angenommene Planungsbasis vom 27.10.2026. Historische Planungsbasis; inzwischen sind Voxel-/Web-/Importkern implementiert. Aktueller Stand in STATUS.md. Entscheidungen können mit dokumentierter Begründung geändert werden.
 
 | ID | Entscheidung | Begründung / Konsequenz |
 |---|---|---|
@@ -32,3 +32,7 @@ Expliziter Nutzerzusatz ersetzt das offene Frontend-Hostingprofil: [statisches G
 ## Webbuild-Konkretisierung · 27.10.2026
 
 React/React DOM 19.3.1, Three.js 0.186.1, Vite 8.3.5 und passende Typen per npm-Registry auf Version/Engine/Lizenz geprüft und exakt fixiert. Primärdokumentation für Vite-Unterpfad und Three.js-OrbitControls geprüft. Lokaler Build statt eigener Actions. Runtime-MIT-Lizenzen werden als THIRD_PARTY_NOTICES.txt mitgeliefert. Synthetische Beispieldaten aus eigenem Generator, keine fremden Minecraft-Texturen. Erstes Rendering bewusst auf farbige Einheitswürfel begrenzt.
+
+## ADR-012 · Begrenzter Schem-Reader mit getrenntem Originalerhalt
+
+27.10.2026: Browser-DecompressionStream statt neuer Laufzeitabhängigkeit; eigener begrenzter Big-Endian-NBT-Reader nach Java-DataInput und Sponge-v3-Schema. Quell-NBT/komprimiertes Original bleiben separat vom Voxel-Snapshot. BlockEntities erhalten vollständigen Wrapper. Nicht darstellbare Gleitkommafälle werden abgewiesen. Unabhängiger Python-struct-Fixturewriter; kein JS-Writer, der den Reader nur selbst bestätigt. JSON-Sicherung ausdrücklich nicht als vollständige Format-/Projektsicherung ausgeben. Details in SCHEM_IMPORT.md.

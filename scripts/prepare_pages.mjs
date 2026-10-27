@@ -1,7 +1,8 @@
-import { readdir, readFile, writeFile } from 'node:fs/promises';
+import { readdir, readFile, writeFile, mkdir } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import path from 'node:path';
+import { gzipSync } from 'node:zlib';
 const root=path.resolve('dist-web');
 await writeFile(path.join(root,'.nojekyll'),'');
 const runtimePackages=['react','react-dom','three'];
@@ -14,6 +15,9 @@ for(const name of runtimePackages){
  notices.push(`${name} ${pkg.version}\n${license}`);
 }
 await writeFile(path.join(root,'THIRD_PARTY_NOTICES.txt'),notices.join('\n\n---\n\n'));
+await mkdir(path.join(root,'examples'),{recursive:true});
+const fixtureHex=(await readFile('fixtures/schem/asymmetric.nbt.hex','utf8')).replace(/\s/g,'');
+await writeFile(path.join(root,'examples/contract-v3.schem'),gzipSync(Buffer.from(fixtureHex,'hex')));
 const files=[];
 async function walk(dir){
   for(const item of (await readdir(dir,{withFileTypes:true})).sort((a,b)=>a.name.localeCompare(b.name))){

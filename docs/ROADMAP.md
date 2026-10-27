@@ -35,11 +35,11 @@ Die erste Fassung schließt P0 bis P3 ein. Backend kann früher eingeführt werd
 - P1-04 teilweise: Zählung eindeutiger Blockzustände plus separate Luft-/Löschzahlen. Projektkonflikte und Bauitem-Zuordnung offen.
 - Nächster vollständiger Schritt: P1-01, Schem-v3-Reader mit strukturellen Limits, Abbruch und unabhängigen Binärfixtures.
 
-P1-03 wird verbindlich als statisches GitHub-Pages-Frontend mit Browser-Web-Workers, Repository-Unterpfad und ohne eigene Actions umgesetzt. Der Pages-Deploy ist noch offen; siehe [Hosting](architecture/HOSTING.md).
+P1-03 wird verbindlich als statisches GitHub-Pages-Frontend mit Browser-Web-Workers, Repository-Unterpfad und ohne eigene Actions umgesetzt. Pages ist veröffentlicht; siehe [Hosting](architecture/HOSTING.md).
 
 ## Detaillierter Ausführungsplan
 
-[IMPLEMENTATION_PLAN](IMPLEMENTATION_PLAN.md) konkretisiert P1 bis P7 und ergänzt HP-01 bis HP-04 für statischen Build, Konnektor-Artefakttransport, Pages-Bootstrap und Wiederherstellung. Diese HP-Pakete sind geplant. [Konnektor-Runbook](operations/GITHUB_CONNECTOR_RUNBOOK.md) definiert die selbstständige Integration/Veröffentlichung ohne eigene Actions. Eine gekennzeichnete nutzbare Kernansicht kann bereits vor dem vollständigen Parser veröffentlicht werden; sie erfüllt nicht die gesamte P1-03-/P3-Abnahme.
+[IMPLEMENTATION_PLAN](IMPLEMENTATION_PLAN.md) konkretisiert P1 bis P7 und ergänzt HP-01 bis HP-04 für statischen Build, Konnektor-Artefakttransport, Pages-Bootstrap und Wiederherstellung. HP-01 bis HP-03 sind für die erste Vorabansicht umgesetzt; Rückkehrprobe/erweiterte Prüfungen bleiben offen. [Konnektor-Runbook](operations/GITHUB_CONNECTOR_RUNBOOK.md) definiert die selbstständige Integration/Veröffentlichung ohne eigene Actions. Eine gekennzeichnete nutzbare Kernansicht kann bereits vor dem vollständigen Parser veröffentlicht werden; sie erfüllt nicht die gesamte P1-03-/P3-Abnahme.
 
 ### Erster Webbuild · 27.10.2026
 
@@ -48,3 +48,7 @@ P1-03a implementiert: React-/Three.js-Kernansicht mit eigenem synthetischem Beis
 ### Live-Abnahme der Vorabansicht
 
 P1-03a: bedienbare synthetische Kernansicht live geprüft (Software-Isometrie, Picking, Layer, Mengen). HP-01/02: statischer Build, Hashmanifest und Artefakttransport implementiert/geprüft. HP-03: Pages-Quelle gh-pages / root im Browser bestätigt und erste Website erreichbar; interner Pages-Deploymentlauf erfolgreich. HP-04: neue Artefaktversion erfolgreich veröffentlicht; Rückkehrprobe noch offen. Echte GPU-/Mobil-/Dateiimportprüfung und die vollständige P1-03-Abnahme bleiben getrennt offen.
+
+## Laufender Schem-Importblock
+
+P1-01a/01b/01c begrenzt implementiert: Big-Endian-NBT/GZip/Sponge v3, unabhängige Python-struct-Binärfixture und Browserworker/-Importbericht. 27 neue Formattests, insgesamt 72 lokale Tests. Original/Quell-NBT bleiben erhalten; nicht dargestellte Zusatzdaten sichtbar. Vollständige P1-01-Abnahme bleibt wegen noch fehlender Referenzwerkzeug-/Spielprüfung teilweise offen. Keine Folgearbeit nach Nutzersteuerung „Block fertig machen und warten“.

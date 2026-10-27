@@ -74,3 +74,12 @@ GitHub Actions werden nicht genutzt. Der jeweils bearbeitende Agent führt alle 
 - Nach letzter Codeänderung: kompletter npm-run-check bestanden (45/45, strict Kern/Web, Builds, Docs). Abschlussnachtrag ändert nur Dokumentation; check:docs und diff --check erneut bestanden.
 - Liveprüfung verwendet Quell-SHA und Dateihashes aus deployment.json. CDN/Browsercache lieferte vorübergehend ältere index.html; neuer versionsbezogener Seiteneinstieg und DOM-Skriptpfad bestätigten anschließend den korrigierten Build index-DkiQs1mp.js.
 - Grenzen: Browser-WebGL deaktiviert, deshalb tatsächlicher GPU-Pfad nicht prüfbar; kein echter iPhone-/Touchtest oder Dateidialog-Importtest. Keine Schem-/Spiel-/Serverprüfung. JS-Bundle weiterhin ca. 807 kB unkomprimiert.
+
+### 27.10.2026 – Begrenzter Schem-v3-Import
+
+- Grundlage main 23c43fcc12a4ba0e1f3bfd72c44f43bfadbc034d, keine fremden Änderungen. Regeln, Architektur, Kommunikation und alle Anforderungsgruppen systematisch geprüft; widersprüchliche alte Statusaussagen bereinigt.
+- Offizielle Sponge-v3- und Java-DataInput-Primärquellen vor Implementierung gelesen. Keine neue Laufzeitabhängigkeit. Unabhängige Binärfixture aus Python struct, 756 feste NBT-Bytes; GZip in Tests/Build unabhängig mit Node zlib.
+- npm run check: 72/72 bestanden (45 bisher + 27 Formatfälle), strict Kern/Web, Kern-/Webbuild und Dokumentationsprüfung. git diff --check bestanden. Testregex einmal an exakte Fehlermeldung „Bauvolumen“ angepasst, keine Validierung gelockert.
+- Neue Fälle: verschachtelte v3-Wurzel, DataVersion/unsigned Short/Offset, lückenhafte IDs und mehrbyte VarInts, manuell erwartete 7 Block-/5 Luftzellen, exakte Koordinaten, vollständige BE-/Quellzusätze, int64-Grenzen, Arrays, NUL/Emoji-MUTF, korrupte GZip-Prüfsumme/Trunkierung, falsche Typen, negative/zu große Längen, doppelte Namen/IDs, unbekannte Palette, Zeit-/Größen-/Tiefenbudgets und bestehender Snapshot bei Fehler unverändert.
+- Browser-Ende-zu-Ende-Prüfung der eingebundenen synthetischen Schem über dieselbe Workerstrecke erfolgt nach Pages-Update. Lokaler Cloud-Browser kann den Container nicht erreichen. Echte Minecraft-/WorldEdit-Datei, GPU und iPhone-Dateidialog weiterhin offen; keine allgemeine Kompatibilität behauptet.
+- Nutzersteuerung: Nach Fertigstellung dieses Blocks ausdrücklich warten; keine neuen Module beginnen.

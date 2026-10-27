@@ -1,6 +1,6 @@
 # Anforderungsregister
 
-Priorität: M = Kern, S = Folgeausbau, L = Langfristig. Status aller Zeilen: geplant. Nach Implementierung Beleg als Datei/Test/Issue ergänzen.
+Priorität: M = Kern, S = Folgeausbau, L = Langfristig. Status: Übersicht der Anforderungen; Implementierungsnachweise und verbleibende Grenzen stehen in REVIEW.md und STATUS.md. Die Tabelle ist keine pauschale Fertigmeldung. Nach Implementierung Beleg als Datei/Test/Issue ergänzen.
 
 | ID | Anforderung | Priorität | Roadmap |
 |---|---|---|---|
@@ -31,3 +31,5 @@ Priorität: M = Kern, S = Folgeausbau, L = Langfristig. Status aller Zeilen: gep
 | R-025 | Sichtbare Grenzen und echte Prüfergebnisse | M | alle |
 
 Neue Anforderungen erhalten stabile IDs, Nutzen, Abnahme und Abhängigkeiten. Widersprüche werden dokumentiert und entschieden, nicht still umgedeutet. Nicht unterstützte Features werden in der Oberfläche nicht als fertig angeboten.
+
+Aktueller Nachweis R-001: packages/formats/src, unabhängige fixtures/schem, tests/schem.test.mjs und Importworker/-Bericht. Begrenzte Sponge-v3-Unterstützung, keine allgemeine Versionsfreigabe. [Importvertrag](architecture/SCHEM_IMPORT.md).

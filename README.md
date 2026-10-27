@@ -4,7 +4,7 @@ Browserbasierter Minecraft-Bauhelfer: Bauwerke betrachten, wiederverwendbare Mod
 
 Zielrepository: https://github.com/Freadeax/Minecraft-Bauplaner
 
-**Stand: 27.10.2026.** Das Repository wurde geprüft: vor dieser Grundlage enthielt es nur die initiale README. Architektur und Arbeitsregeln sind ausgearbeitet. Ein erster TypeScript-Voxelkern mit Validierung, diskreten Transformationen, Schichtauswahl und Blockzählung ist implementiert und lokal geprüft. Eine erste React-/Three.js-Browseransicht ist implementiert: 3D-Orbit/Zoom, Blockauswahl, X/Y/Z-Schichten, Blockmengen und lokaler Import im internen Voxel-JSON-Vertrag. Schem-Import ist noch offen. Das Repository ist öffentlich.
+**Stand: 27.10.2026.** Das Repository wurde geprüft: vor dieser Grundlage enthielt es nur die initiale README. Architektur und Arbeitsregeln sind ausgearbeitet. Ein erster TypeScript-Voxelkern mit Validierung, diskreten Transformationen, Schichtauswahl und Blockzählung ist implementiert und lokal geprüft. Eine erste React-/Three.js-Browseransicht ist implementiert: 3D-Orbit/Zoom, Blockauswahl, X/Y/Z-Schichten, Blockmengen und lokaler Import im internen Voxel-JSON-Vertrag. Ein begrenzter Sponge-Schem-v3-Import ist implementiert; Details und Grenzen im [Importvertrag](docs/architecture/SCHEM_IMPORT.md). Das Repository ist öffentlich.
 
 ## Einstieg
 
@@ -14,6 +14,8 @@ Zielrepository: https://github.com/Freadeax/Minecraft-Bauplaner
 - [Normativer Voxelvertrag v1](docs/architecture/VOXEL_CONTRACT.md)
 - [Architekturentscheidungen](docs/architecture/DECISIONS.md)
 - [Roadmap und Abnahme](docs/ROADMAP.md)
+- [Strukturierte Bestandsprüfung](docs/REVIEW.md)
+- [Schem-Import und Grenzen](docs/architecture/SCHEM_IMPORT.md)
 - [Vollständiger Umsetzungsplan](docs/IMPLEMENTATION_PLAN.md)
 - [Selbstständiger GitHub-/Pages-Ablauf](docs/operations/GITHUB_CONNECTOR_RUNBOOK.md)
 - [Anforderungen und Zuordnung](docs/REQUIREMENTS.md)
@@ -36,7 +38,7 @@ Lokaler Viewer und exportierbare Pläne bilden die erste Ausbaustufe. Teamserver
 
 ## Weiterentwicklung
 
-Als Nächstes P1-01: begrenzten Schem-v3-Reader mit echten unabhängigen Binärfixtures entwickeln und den Transformationskern um geprüfte Block-/NBT-Adapter erweitern. Lokale Dokumentationsprüfung: `python3 scripts/check_docs.py`. GitHub Actions werden nicht genutzt. Der bearbeitende Agent führt die Prüfungen selbst aus und dokumentiert sie vor dem Push in `docs/TESTING.md`. Kernprüfungen sind vorhanden; Browser- und Minecraft-Integrationstests folgen mit den betreffenden Komponenten.
+Begrenzter Schem-v3-Reader und synthetische unabhängige Binärfixtures sind implementiert. Noch offen: Referenzwerkzeug-/Spielabnahme, weitere Zustands-/NBT-Adapter und lokale Projektverwaltung. Lokale Dokumentationsprüfung: `python3 scripts/check_docs.py`. GitHub Actions werden nicht genutzt. Der bearbeitende Agent führt die Prüfungen selbst aus und dokumentiert sie vor dem Push in `docs/TESTING.md`. Kernprüfungen sind vorhanden; Browser- und Minecraft-Integrationstests folgen mit den betreffenden Komponenten.
 
 Eine Projektlizenz ist noch nicht festgelegt. Vor Veröffentlichung fremder Assets, Texturen oder Codebestandteile müssen Nutzungsrechte und Lizenzkompatibilität geprüft werden.
 
@@ -53,6 +55,6 @@ npm run check
 
 Der Kern zählt platzierte Zustände, Luft und Löschzellen getrennt. Unbekannte Transformationen werden gemeldet und erhalten. Die Testprofile sind synthetisch; daraus folgt keine Minecraft-/Modpack-Kompatibilität.
 
-Die erste Browseransicht verwendet einen eigenen synthetischen Hafenhausentwurf. Alle Blöcke erscheinen vereinfacht als Würfel ohne Minecraft-Texturen. JSON-Import: höchstens 2 MB, 20.000 Zellen und 256 Blöcke je Achse; Verarbeitung im Browser-Worker. JSON-Sicherung ist kein Minecraft-Export. Freier Flug, echte Schem-/Litematic-Dateien, Composer und dauerhafte Projektverwaltung folgen.
+Die erste Browseransicht verwendet einen eigenen synthetischen Hafenhausentwurf. Alle Blöcke erscheinen vereinfacht als Würfel ohne Minecraft-Texturen. JSON-Import: höchstens 2 MB, 20.000 Zellen und 256 Blöcke je Achse; Verarbeitung im Browser-Worker. JSON-Sicherung ist kein Minecraft-Export. Sponge Schem v3: bis 2 MB komprimiert, 8 MB entpackt und 20.000 Volumenzellen. Originaldatei/Quell-NBT bleiben separat erhalten. Litematic, freier Flug, Composer und dauerhafte Projektverwaltung folgen.
 
 Ohne WebGL wird automatisch eine gekennzeichnete isometrische Canvas-Ersatzansicht mit Drehen, Zoom und Blockauswahl verwendet. Ein echter GPU-/iPhone-Test bleibt separat erforderlich.
