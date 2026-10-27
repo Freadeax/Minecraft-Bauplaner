@@ -14,8 +14,9 @@ Stand: 27.10.2026. Fundament für Bibliothek, Projekte und Composer (B0); parall
 | Speicherung/Export | Voxel-JSON und unverändertes Schem-Original herunterladbar | kein vollständiges Projektbackup, kein Schem-Writer/Minecraft-Export |
 | Bibliothek | Assets mit Herkunft/Tags/Archiv, unveränderliche inhaltsadressierte Versionen, Suche, Dateiimport als Bauteil | Anschluss-Editor/Bereichsauswahl (B5), dauerhafte Speicherung (B3) |
 | Projekte/Composer | Projektzentrale, Instanzen einfügen/verschieben/drehen/spiegeln/duplizieren, Undo/Redo, Voxelkonflikte mit Override, Konfliktbericht, Revisionen im Kern | Snap (B5); Speicherung nur Sitzung bis B3 |
+| Bauanleitung (B4) | Tab „Bauen“: Schritte je Instanz × Y-Schicht × Phase mit stabiler ID, Prüfkriterium, Voraussetzungen ohne Zyklen, Schwerkraft/Anbringung/Flüssigkeiten zuletzt, manuelle Haken mit Geometriehash ⇒ prüfbedürftig, Schichtdraufsicht, mobile Ansicht ([GUIDE](architecture/GUIDE.md)) | keine Messung im Spiel; Abschnitt = Instanz; Itemmengen über B1 |
 | Team | Architektur geplant | nicht implementiert |
-| Prüfungen | 83 Node-Tests, 4 Playwright-Browserprüfungen, strict Kern/Web, Builds und Dokumentationsprüfung bestanden | synthetische Formatfixtures, echte Referenzwerkzeug-/Spielabnahme offen |
+| Prüfungen | 92 Node-Tests, 6 Playwright-Browserprüfungen, strict Kern/Web, Builds und Dokumentationsprüfung bestanden | synthetische Formatfixtures, echte Referenzwerkzeug-/Spielabnahme offen |
 
 ## Maßgebliche Einzelheiten
 

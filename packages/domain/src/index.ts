@@ -9,3 +9,5 @@ export { resolveProject, positionKey } from './compose.js';
 export type { Resolution, PlacedInstance, VoxelConflict, ConflictKind, CompositionIssue } from './compose.js';
 export { createSampleLibrary, sampleTowerPayload, sampleWallPayload, sampleGatePayload, SAMPLE_PROFILE } from './samples.js';
 export type { SampleLibrary } from './samples.js';
+export { buildGuide, evaluateProgress, tickStep, untickStep, tickSteps, untickSteps, assertGuideAcyclic, phaseOf, PHASE_ORDER, PHASE_LABEL } from './guide.js';
+export type { Guide, GuideStep, GuideProgress, StepMaterial, StepPhase, StepStatus } from './guide.js';
