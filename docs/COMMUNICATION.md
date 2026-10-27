@@ -134,7 +134,7 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Reservierung mit dem Push beendet.
 
 
-### MSG-B7-01 · Claude · 2026-10-27T13:20:00+01:00 · Zustandskatalog Drehen/Spiegeln (B7, P1-02a)
+### MSG-B7-01 · Claude · 2026-10-27T13:50:00+01:00 · Zustandskatalog Drehen/Spiegeln (B7, P1-02a)
 
 - Umfang laut BLOCKS: `packages/voxel/src/states.ts` (neu), `transforms.ts`, Exportzeilen in `packages/voxel/src/index.ts`, `tests/states.test.mjs`, Abschnitt in VOXEL_CONTRACT, eigene Zeilen in STATUS/ROADMAP/TESTING.
 - Ergebnis: 75 Familienregeln, 595 Vanilla-IDs mit exaktem Schema; Unbekanntes, Schemaabweichungen und nicht darstellbare Spiegelungen bleiben ungelöst mit Grund. Öffentliche API unverändert kompatibel, zusätzlich `family`/`reason`, `transformDirection`, `stateCatalog`, `stateRuleFor`.

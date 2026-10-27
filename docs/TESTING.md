@@ -120,8 +120,8 @@ GitHub Actions werden nicht genutzt. Der jeweils bearbeitende Agent führt alle 
 
 ### 27.10.2026 – B7 Zustandskatalog für Drehen/Spiegeln
 
-- Grundlage main 29d03ed (B0, B2, B4) plus B7. Node 22, lokal vorinstalliertes Playwright/Chromium.
-- `npm run check`: strict Kern/Web, Kern- und Vitebuild, 123/123 Node-Tests inklusive 7 neuer in `tests/states.test.mjs`, Dokumentationsprüfung bestanden. `npm run test:e2e`: 7/7 bestanden.
+- Grundlage main 7167d3a (B0, B1, B2, B4) plus B7. Node 22, lokal vorinstalliertes Playwright/Chromium.
+- `npm run check`: strict Kern/Web, Kern- und Vitebuild, 135/135 Node-Tests inklusive 7 neuer in `tests/states.test.mjs`, Dokumentationsprüfung bestanden. `npm run test:e2e`: 9/9 bestanden.
 - Neue Fälle: 38 handberechnete Einzelorientierungen; alle 24.556 Katalogzustände mit vier Vierteldrehungen = Identität, doppelter Spiegelung = Identität und Ergebnis im Schema; Gruppenverträglichkeit aller 64 Transformationspaare je Familie; unabhängige Geometriemodelle (Richtungsvektoren, `rotation` als Winkel, Treppenquadranten, Türscharnier, Doppeltruhe, Schienenenden, Verbindungsarme); ungelöst bei unbekannter ID, Modblock, Schemaabweichung und Spiegelung glasierter Keramik; Meldungstexte in `transformPayload`.
 - Zwei eigene Handerwartungen (Bett und Treppe bei Spiegeln + Drehen) waren falsch berechnet und wurden korrigiert, nicht die Implementierung.
 - Grenzen: Katalog von Hand nach Java 1.21.4, kein Abgleich mit einem Registry-Report und keine Prüfung im Spiel; BlockEntity-NBT weiterhin ungelöst gemeldet.
