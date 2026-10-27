@@ -13,7 +13,7 @@
     "check:docs": "python3 scripts/check_docs.py",
     "check": "npm run typecheck && npm run build && npm test && npm run check:docs",
     "build:core": "tsc",
-    "build:web": "vite build && node scripts/prepare_pages.mjs",
+    "build:web": "node scripts/clean_pages.mjs && vite build && node scripts/prepare_pages.mjs",
     "dev": "vite --host 127.0.0.1",
     "preview": "vite preview --host 127.0.0.1"
   },

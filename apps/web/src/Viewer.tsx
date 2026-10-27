@@ -59,5 +59,5 @@ export function Viewer({payload, cells, onSelect}: {payload: VoxelPayload; cells
     const lost=(e:Event)=>{e.preventDefault();setError('Die Grafikverbindung wurde unterbrochen. Bitte die Seite neu laden.');};renderer.domElement.addEventListener('webglcontextlost',lost);
     return()=>{saved.current={position:camera.position.clone(),target:controls.target.clone()};cancelAnimationFrame(frame);resize.disconnect();controls.dispose();geometry.dispose();materials.forEach(m=>m.dispose());grid.geometry.dispose();(grid.material as THREE.Material).dispose();renderer.dispose();renderer.domElement.remove();};
   },[payload,cells,onSelect]);
-  return <div className="scene" ref={host}>{error&&<div className="render-mode" role="status">{error}</div>}</div>;
+  return <div className="scene"><div className="canvas-host" ref={host}/>{error&&<div className="render-mode" role="status">{error}</div>}</div>;
 }
