@@ -18,7 +18,7 @@ Prüfgrundlage: Repositoryregeln, README, STATUS, ROADMAP, COMMUNICATION, Archit
 | Lager/Spiel R-018/020 | spätere explizite Adapter geplant | keine Spielverbindung oder Weltänderung |
 | Themes R-021 | kompatibilitätsgeprüfte Mappings geplant | keine Themeumsetzung |
 | Export R-022 | Schem-v3-Writer aus eingefrorener Revision, Exportsperre, reproduzierbare Datei mit SHA-256, unabhängiger Python-Leser und Roundtrip (B2) | echte WorldEdit-/Spielabnahme, DataVersion-/Registryprüfung |
-| Lokale Projekte R-023 | lokale Dateiverarbeitung ohne Upload | kein IndexedDB-Projektspeicher/Backupformat |
+| Lokale Projekte R-023 | lokale Dateiverarbeitung ohne Upload; IndexedDB-Projektspeicher mit Revisionskonflikt, Originale als Blobs, Sicherungsformat mit Prüfsummen und konfliktsicherer Wiederherstellung (B3) | keine Synchronisierung zwischen Geräten; Safari-/iPhone-Speicherverhalten ungeprüft |
 | Ehrlicher Status R-025 | Grenzen, Importberichte und echte Prüfungen ausgewiesen | ältere widersprüchliche Statusabsätze bereinigt |
 | Git/Pages | Mainfreigabe, geprüfte lokale Builds, gh-pages/Manifest/Liveprüfung | kein eigener Actions-Workflow; kein Monitor für fremde Pushes |
 

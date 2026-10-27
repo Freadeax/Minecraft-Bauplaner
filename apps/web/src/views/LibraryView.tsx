@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react';
 import { countBlocks } from '../../../../packages/voxel/src/index.js';
 import type { Cell } from '../../../../packages/voxel/src/index.js';
 import { addAssetVersion, createAsset, searchAssets, updateAssetMeta } from '../../../../packages/domain/src/index.js';
-import type { Asset, AssetVersionSource } from '../../../../packages/domain/src/index.js';
+import type { Asset, AssetVersionSource, OriginalFile } from '../../../../packages/domain/src/index.js';
 import { useApp } from '../app/context';
 import { importFile } from '../app/importFile';
 import type { ImportedFile } from '../app/importFile';
@@ -42,6 +42,11 @@ export function LibraryView() {
     originalSha256: Array.from(new Uint8Array(d), b => b.toString(16).padStart(2, '0')).join(''),
     ...(r.report && { dataVersion: r.report.dataVersion }),
   }));
+  // Original bytes are stored unchanged next to the version, in the same transaction (B3).
+  const originalOf = (r: ImportedFile, source: AssetVersionSource): OriginalFile => ({
+    sha256: source.originalSha256!, fileName: r.name, mediaType: r.format === 'json' ? 'application/json' : 'application/octet-stream',
+    size: r.original.byteLength, createdAt: new Date().toISOString(), bytes: new Uint8Array(r.original.slice(0)),
+  });
   const saveNew = async (form: FormData) => {
     if (!imported) return;
     try {
@@ -49,7 +54,7 @@ export function LibraryView() {
         tags: String(form.get('tags') ?? '').split(',').map(t => t.trim()).filter(Boolean),
         provenance: { author: String(form.get('author') ?? ''), source: String(form.get('source') ?? ''), license: String(form.get('license') ?? '') } });
       const r = await addAssetVersion(asset, { payload: imported.payload, label: '1.0', source: await sourceOf(imported) });
-      await repo.saveVersion(r.version); await repo.saveAsset(r.asset); await reloadLibrary();
+      await repo.applyBatch({ versions: [r.version], assets: [r.asset], originals: [originalOf(imported, r.version.source)] }); await reloadLibrary();
       setImported(null); setSelectedId(r.asset.id); setMessage(`„${r.asset.name}“ als Bauteil gespeichert.`);
     } catch (e) { setMessage(`Nicht gespeichert: ${errorText(e)}`); }
   };
@@ -58,7 +63,7 @@ export function LibraryView() {
     try {
       const previous = library.versions.get(asset.versionIds.at(-1) ?? '');
       const r = await addAssetVersion(asset, { payload: imported.payload, label, connectors: previous?.connectors ?? [], source: await sourceOf(imported) });
-      await repo.saveVersion(r.version); await repo.saveAsset(r.asset); await reloadLibrary();
+      await repo.applyBatch({ versions: [r.version], assets: [r.asset], originals: [originalOf(imported, r.version.source)] }); await reloadLibrary();
       setImported(null); setSelectedId(asset.id); setMessage(`Version ${r.version.label} von „${asset.name}“ gespeichert. Bestehende Projekte behalten ihre Version.`);
     } catch (e) { setMessage(`Nicht gespeichert: ${errorText(e)}`); }
   };

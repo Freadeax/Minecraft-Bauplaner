@@ -15,3 +15,5 @@ export { exportRevisionSchem, revisionForExport, resolveRevision, suggestDataVer
 export type { SchemExportSettings, RevisionExport } from './schemExport.js';
 export { computeMaterials, materialsForResolution, itemsForCell, formatStacks, materialsToCsv, MATERIAL_CATALOG_VERSION, SHULKER_SLOTS } from './materials.js';
 export type { MaterialReport, MaterialScope, ItemLine, ItemSource, ItemRule, UnresolvedLine, UnresolvedReason, StateCount, MaterialTotals, Confidence } from './materials.js';
+export { createBackup, readBackup, planRestore, buildRestore, backupFileName, checkSchemaVersion, checkProjectRecord, checkAssetRecord, referencedVersionIds, toBase64, fromBase64, BACKUP_FORMAT, BACKUP_FORMAT_VERSION, MAX_BACKUP_BYTES } from './backup.js';
+export type { OriginalFile, Backup, BackupFile, BackupSource, RestoreTarget, RestorePlan, ProjectPlan, AssetPlan, ProjectChoice, RestoreWrite } from './backup.js';

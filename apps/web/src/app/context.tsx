@@ -39,6 +39,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return () => { alive = false; };
   }, [load]);
   const reloadLibrary = useCallback(async () => { if (repo) await load(repo); }, [repo, load]);
+  // Another tab imported or restored assets: refresh the shared library (B3).
+  useEffect(() => repo?.subscribe(c => { if (c.kind === 'library') void load(repo).catch(() => {}); }), [repo, load]);
   if (error) return <div className="notice warning" role="alert"><strong>Lokaler Speicher nicht verfügbar</strong><p>{error}</p></div>;
   if (!repo) return <div className="loading" role="status">Lokale Daten werden geladen …</div>;
   return <Context.Provider value={{ repo, library, reloadLibrary }}>{children}</Context.Provider>;

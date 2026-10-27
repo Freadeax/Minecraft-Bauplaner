@@ -57,7 +57,7 @@ Live-Smoke für diesen Block bestanden: synthetische GZip-Schem läuft über Bro
 
 ## Fundament B0 und Parallelblöcke · 27.10.2026
 
-P2-01 teilweise: Domänenverträge (Asset, AssetVersion, Instanz, Projekt, Revision), inhaltsadressierte Versionen mit Hashprüfung, Bibliothekssuche und Dateiimport als Bauteil umgesetzt; dauerhafte Speicherung/Backup folgt in B3. P2-02 teilweise: Instanzoperationen mit Undo/Redo, Voxelkonflikte, Duplikate und expliziter Override im Editor; Snap/Anschlüsse folgen in B5. Weitere Pakete laufen als [Parallelblöcke](BLOCKS.md): B1 → P1-04a, B2 → P3-01, B3 → P2-01, B4 → P3-02, B5 → P2-02, B6 → P1-03c, B7 → P1-02a.
+P2-01 teilweise: Domänenverträge (Asset, AssetVersion, Instanz, Projekt, Revision), inhaltsadressierte Versionen mit Hashprüfung, Bibliothekssuche und Dateiimport als Bauteil umgesetzt; dauerhafte Speicherung und Backup (B3) umgesetzt: IndexedDB mit Migration, `baseRevision`-Konflikten, Originalen als Blobs und geprüfter Sicherung/Wiederherstellung ([PERSISTENCE](architecture/PERSISTENCE.md)); Reload erhält den Stand (Browserprüfung). P2-02 teilweise: Instanzoperationen mit Undo/Redo, Voxelkonflikte, Duplikate und expliziter Override im Editor; Snap/Anschlüsse folgen in B5. Weitere Pakete laufen als [Parallelblöcke](BLOCKS.md): B1 → P1-04a, B2 → P3-01, B3 → P2-01, B4 → P3-02, B5 → P2-02, B6 → P1-03c, B7 → P1-02a.
 
 P3-02 (B4) umgesetzt: Bauanleitung aus der aufgelösten Welt mit stabilen Schritt-IDs, Revisionsgrundlage, Koordinatenbereich, Blockzuständen, zyklenfreien Voraussetzungen, Prüfkriterium und manuellem Fortschritt mit Geometriehash; Tab „Bauen“ inkl. Mobilansicht. Details: [GUIDE](architecture/GUIDE.md). Offen: frei definierte Abschnitte, Itemmengen je Schritt (mit B1), Prüfung im Spiel.
 

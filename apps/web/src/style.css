@@ -86,3 +86,11 @@ label.check{display:flex;align-items:center;gap:8px}fieldset{border:1px solid va
 .materials-placed{margin-top:16px}.materials-placed summary{cursor:pointer;color:#cfe0e3}.materials-placed .table-wrap{margin-top:8px;max-height:360px;overflow:auto}
 .materials-notes{margin:16px 0 0;padding-left:18px;color:var(--muted);line-height:1.7}
 @media(max-width:650px){.materials{padding:14px}.materials-head label{min-width:0;flex:1 1 100%}.materials-csv{margin-left:0}.materials-table th:nth-child(5),.materials-table td:nth-child(5){display:none}}
+/* B3 · Speicherung und Sicherung (ProjectsView) */
+.storage-panel,.restore-plan{border:1px solid var(--line);border-radius:10px;background:#11202b;padding:16px 20px;margin:0 0 20px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+.restore-plan{flex-direction:column;align-items:stretch;border-color:#375950}
+.restore-plan ul{margin:0;padding-left:18px;font-size:12px;line-height:1.8}.restore-plan select{margin-left:10px;background:#182b36;color:#d5e1e5;border:1px solid #324751;border-radius:6px;padding:4px 6px;font-size:11px}
+.storage-panel .muted{margin:4px 0 0}
+.file-button{border:1px solid #324751;border-radius:6px;padding:8px 10px;font-size:11px;background:#182b36;color:#d5e1e5;cursor:pointer}.file-button input{position:absolute;width:1px;height:1px;opacity:0}
+.file-button:focus-within{outline:2px solid var(--mint)}
+@media (max-width:700px){.card .stats{flex-wrap:wrap;justify-content:flex-start;column-gap:18px}}
