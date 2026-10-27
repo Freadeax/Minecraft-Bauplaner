@@ -19,7 +19,7 @@ Stand: 27.10.2026. Fundament (B0) und die Blöcke B1–B7 und B9 sind auf main, 
 | Spielbrücke (B8) | Konzept [MOD_BRIDGE](architecture/MOD_BRIDGE.md); Tab „Bauen“ importiert Spielaufnahmen (Schem v3 mit `Kind=scan`), vergleicht jede Zelle mit der Revision und zeigt Spielstatus je Schritt, Abweichungen und Schichtmarkierungen; bestätigte Schritte nur auf Klick abhaken ; Mod-Kern (Java) mit Tests und sprachübergreifender Prüfung, Fabric-Adapter 26.3 als Quelltext ([Mod](../mods/bauplaner-bridge/README.md)) | Fabric-Adapter noch nicht kompiliert/im Spiel geprüft (Netzwerksperre); Aufnahme nicht gespeichert; Vergleich ohne BlockEntity-Inhalte
 | Litematic (P5-01) | Import `.litematic` Format 2–7 mit mehreren Regionen, negativen Größen und Einzelregionswahl in Bibliothek/Betrachter; Export aus Revision als `.litematic` (Format nach DataVersion) ([LITEMATIC](architecture/LITEMATIC.md)) | keine Abnahme mit echter Litematica-Datei im Spiel; Entities/Ticks nur im Original |
 | Team | Architektur geplant | nicht implementiert |
-| Prüfungen | 194 Node-Tests, 24 Playwright-Browserprüfungen (nur Chromium), strict Kern/Web, Builds und Dokumentationsprüfung bestanden | synthetische Formatfixtures, echte Referenzwerkzeug-/Spielabnahme offen |
+| Prüfungen | 230 Node-Tests, 29 Playwright-Browserprüfungen (nur Chromium), strict Kern/Web, Builds und Dokumentationsprüfung bestanden | synthetische Formatfixtures, echte Referenzwerkzeug-/Spielabnahme offen |
 
 ## Maßgebliche Einzelheiten
 
