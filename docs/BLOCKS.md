@@ -31,6 +31,7 @@ Domänenvertrag ([DOMAIN](architecture/DOMAIN.md)): Asset/AssetVersion inhaltsad
 | B5 | Anschlüsse, Snap und Bereichsauswahl | P2-02, R-009/R-011 | `packages/domain/src/connectors.ts`, `tests/connectors.test.mjs`, `views/project/SnapPanel.tsx` (eine Einbindungszeile in `EditorTab.tsx`), `views/library/ConnectorEditor.tsx` und `CropPanel.tsx` (Einbindung in `LibraryView.tsx`) | B0 |
 | B6 | Viewer und Bedienung | P1-03c, R-004/R-005/R-006 | `apps/web/src/Viewer.tsx`, `canvasFallback.ts`, `colors.ts`, neue Viewer-Module; Code-Splitting in `vite.config.mjs` | B0 |
 | B7 | Zustandsadapter für Drehen/Spiegeln | P1-02a, R-010 | `packages/voxel/src/transforms.ts` (+ neue `states.ts`), `tests/states.test.mjs`, Abschnitt in VOXEL_CONTRACT.md | B0 |
+| B8 | Spielbrücke: Fortschritt aus der Welt (Konzept) | P6-01, R-020 | `docs/architecture/MOD_BRIDGE.md`; geplant `packages/domain/src/gameCheck.ts`, `tests/game-check.test.mjs`, `views/project/GameCheckPanel.tsx` (eine Einbindungszeile in `BuildTab.tsx`), `mods/bauplaner-bridge/` | B2, B4 |
 
 ### Abnahme je Block
 
@@ -41,3 +42,4 @@ Domänenvertrag ([DOMAIN](architecture/DOMAIN.md)): Asset/AssetVersion inhaltsad
 - **B5:** Anschlüsse auf Grenzflächen validiert, Transformation von Position/Normale/Up, deterministische Snap-Kandidaten mit Konfliktprüfung und Nutzungsgrenze, Verbindungen gespeichert; Anschluss-Editor und Bereich-als-Bauteil in der Bibliothek.
 - **B6:** freier Flug (WASD, Escape), Draufsicht/Seitenansichten, Auswahl fokussieren, Welt-/Lokalkoordinate im Inspektor, Schichtmodi Bereich/einzeln im Editor, Touch-Bedienung, Leistung (nur sichtbare Flächen, Code-Splitting) mit dokumentierter Messung.
 - **B7:** expliziter Regelkatalog für Vanilla-Familien (Treppen, Stämme/Säulen, `facing`, Türen/Falltüren inkl. Scharnier, Zäune/Scheiben/Mauern, Schienen, Betten, Schilder/Banner/Köpfe `rotation`), unabhängige erwartete Ausrichtungen, vier Drehungen = Identität, doppelte Spiegelung = Identität; Unbekanntes bleibt ungelöst.
+- **B8:** siehe Stufen M1–M4 in [MOD_BRIDGE](architecture/MOD_BRIDGE.md); Mod-Build und Spielabnahme auf dem Rechner des Nutzers.

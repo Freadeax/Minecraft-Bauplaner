@@ -150,3 +150,8 @@ GitHub Actions werden nicht genutzt. Der jeweils bearbeitende Agent führt alle 
 - Vergleichsmessung vorher/nachher siehe [Viewer](architecture/VIEWER.md#messung-27102026-container-headless-chromium-mit-software-webglswiftshader-keine-gpu). Editor- und Flug-Screenshots visuell geprüft.
 - Nach Rebase auf main 8a70370 (B1, B2, B3, B4, B5, B7 integriert): `npm run check` 160/160, `npm run test:e2e` 19/19 bestanden; Konflikte nur in Anhang-/Importzeilen, fachlich beidseitig übernommen.
 - Grenzen: keine echte GPU, kein echtes Mobilgerät; Touch nur emuliert. Keine Blockmodelle.
+
+### 27.10.2026 – B8 Spielbrücke (nur Konzept)
+- Nur Dokumentation: `docs/architecture/MOD_BRIDGE.md`, Zeilen in BLOCKS/ROADMAP/DECISIONS/COMMUNICATION. Kein Code geändert.
+- `npm run check`: Typprüfung, Builds, 160/160 Node-Tests, Dokumentationsprüfung bestanden.
+- Erreichbarkeit geprüft: `maven.fabricmc.net`, `meta.fabricmc.net` und Mojang-Versionsserver aus der Cloud-Umgebung nicht erreichbar; Maven Central und Gradle erreichbar. Mod-Build nur auf dem Rechner des Nutzers.

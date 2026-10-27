@@ -156,3 +156,7 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Block B6 (P1-03c, R-004/005/006) laut [Blockplan](BLOCKS.md). Geänderte Dateien: eigene `apps/web/src/Viewer.tsx`, `canvasFallback.ts`, neue `apps/web/src/viewer/*`, `vite.config.mjs`, neue `packages/domain/src/inspect.ts` (+ Exportzeilen in `index.ts`), `tests/viewer.test.mjs`, `tests/e2e/viewer.e2e.mjs`, `docs/architecture/VIEWER.md`, eigener CSS-Abschnitt.
 - Abgestimmte Eingriffe außerhalb der Liste, minimal: `EditorTab.tsx` (Schichtfilter statt „bis Y“-Regler, Fokusbereich, Blockinspektor; B5 bindet dort weiterhin eine Zeile ein), `ViewerView.tsx` (Fokus, Hinweistexte). `Viewer`-Schnittstelle unverändert kompatibel, neu optional `focus`.
 - Ergebnis: siehe TESTING. Reservierung mit dem Push beendet.
+
+### MSG-B8-01 · Claude · 2026-10-27T13:45:00+01:00 · Spielbrücke Konzept
+- Nutzerfrage: Mod, die das Gebaute ausliest und den Fortschritt auf der Website zeigt. Konzept in [MOD_BRIDGE](architecture/MOD_BRIDGE.md), Block B8 in [BLOCKS](BLOCKS.md), ADR-015 vorgeschlagen.
+- Reserviert für M1: `packages/domain/src/gameCheck.ts`, `tests/game-check.test.mjs`, `views/project/GameCheckPanel.tsx`, eine Einbindungszeile in `BuildTab.tsx`. Warten auf Nutzerentscheidung zu Loader/Version/Spielumgebung für M2.
