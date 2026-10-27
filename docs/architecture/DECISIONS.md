@@ -45,6 +45,6 @@ Neues Paket `packages/domain` ohne Laufzeitabhängigkeit. AssetVersion-ID aus SH
 
 Hash-Routen funktionieren auf Pages ohne Server-Rewrite. Eine einzige `Repository`-Schnittstelle mit `baseRevision`-Pflicht trennt UI und Speicher; IndexedDB folgt in B3 ohne UI-Umbau. Projektbereiche registrieren sich in einer Tab-Registry, damit parallele Blöcke unterschiedliche Dateien besitzen ([BLOCKS](../BLOCKS.md)). Pages-Veröffentlichung über `scripts/publish_pages.sh` (lokaler Build, Commit nur des Artefakts auf gh-pages, kein Force, Schutz gegen Verdrängen eines neueren Stands). Browserprüfung mit lokal vorhandenem Playwright/Chromium, nicht als Projektabhängigkeit fixiert.
 
-## ADR-015 · vorgeschlagen · 27.10.2026 · Spielbrücke
+## ADR-015 · angenommen · 27.10.2026 · Spielbrücke
 
-Mod liest nur und liefert eine Ist-Aufnahme als Sponge Schem v3 mit `Metadata.Bauplaner.Kind = "scan"`; Soll/Ist-Vergleich und Zuordnung zu Bauschritten ausschließlich im TypeScript-Domänenkern. Alternative „Vergleich in der Mod“ verworfen (zweite Schritt-/Zähllogik). Übertragung zuerst per Datei, lokale Loopback-Verbindung optional; Server-API erst mit Teamdienst. Loader/Version offen. Details: [MOD_BRIDGE](MOD_BRIDGE.md).
+Mod liest nur und liefert eine Ist-Aufnahme als Sponge Schem v3 mit `Metadata.Bauplaner.Kind = "scan"`; Soll/Ist-Vergleich und Zuordnung zu Bauschritten ausschließlich im TypeScript-Domänenkern. Alternative „Vergleich in der Mod“ verworfen (zweite Schritt-/Zähllogik). Übertragung zuerst per Datei, lokale Loopback-Verbindung optional; Server-API erst mit Teamdienst. Nutzerentscheidung: Fabric-Client-Mod, Start mit Minecraft 26.3, weitere Versionen über versionsneutralen Kern, kein WorldEdit. Details: [MOD_BRIDGE](MOD_BRIDGE.md).

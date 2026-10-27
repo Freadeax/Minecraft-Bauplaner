@@ -1,6 +1,6 @@
 # Spielbrücke: Baufortschritt aus der Welt (Konzept · P6-01 · R-020)
 
-Stand: 27.10.2026, Konzept, noch nicht implementiert. Nutzerfrage: Kann eine Minecraft-Mod das Gebaute in der Welt auslesen und auf der Website zeigen, wie weit der Bau ist? Antwort: ja, ohne Server und ohne die statische Pages-Seite aufzugeben. Dieses Dokument legt Architektur, Datenformat, Übertragungswege, Stufen und offene Entscheidungen fest. Ergänzt [Bauanleitung](GUIDE.md), [Schem-Export](SCHEM_EXPORT.md), [Speicherung](PERSISTENCE.md) und [Voxelvertrag](VOXEL_CONTRACT.md).
+Stand: 27.10.2026. M1 (Website) implementiert, Mod (M2) in Arbeit. Zielumgebung laut Nutzer: Minecraft 26.3, Fabric Loader 0.19.5, Fabric API 0.164.0+26.3, Java 25, Mehrspieler-Server; weitere Versionen und Launcher sollen folgen, WorldEdit wird nirgends vorausgesetzt. Nutzerfrage: Kann eine Minecraft-Mod das Gebaute in der Welt auslesen und auf der Website zeigen, wie weit der Bau ist? Antwort: ja, ohne Server und ohne die statische Pages-Seite aufzugeben. Dieses Dokument legt Architektur, Datenformat, Übertragungswege, Stufen und offene Entscheidungen fest. Ergänzt [Bauanleitung](GUIDE.md), [Schem-Export](SCHEM_EXPORT.md), [Speicherung](PERSISTENCE.md) und [Voxelvertrag](VOXEL_CONTRACT.md).
 
 ## Leitentscheidung: dünne Mod, Vergleich auf der Website
 
@@ -11,7 +11,7 @@ Begründung:
 - Eine einzige Vergleichs- und Schrittlogik. Die Schritte (`<instanzId>~L<schicht>~<phase>`) entstehen in `buildGuide` aus `resolution.world`; eine zweite Schrittlogik in Java würde den Grundsatz „keine zweite Koordinaten-/Zähllogik“ verletzen und bei jeder Anleitungsänderung auseinanderlaufen.
 - Die Mod bleibt klein und je Minecraft-Version billig zu pflegen: Bereich lesen, Blockzustände als Text, Datei schreiben.
 - Der vorhandene Schem-Reader, der Python-Prüfer und die Node-Tests decken das Format bereits ab. Der Vergleich ist mit synthetischen Ist-Dateien vollständig ohne Minecraft testbar.
-- Ersatzweg ohne Mod: ein mit WorldEdit gespeicherter Bereich (`//copy`, `//schem save`) ist dasselbe Format. Der Webteil ist damit schon vor der Mod nutzbar (mit manueller Ausrichtung, siehe unten).
+- Fremde Schem-Dateien ohne Bauplaner-Metadaten liest die Website ebenfalls, dann mit manueller Ausrichtung. Das ist nur ein technischer Rückfall; WorldEdit oder andere Werkzeuge werden nicht vorausgesetzt.
 
 Die Mod verändert die Welt nie (AGENTS: keine automatische Weltveränderung). Sie setzt keine Blöcke, platziert keine Geisterblöcke als echte Blöcke und sendet nichts an Dritte.
 
@@ -138,11 +138,19 @@ Ablage im Repository: `mods/bauplaner-bridge/` als eigenes Gradle-Projekt, nicht
 
 M1 hängt von keiner der offenen Entscheidungen ab und kann sofort beginnen.
 
-## Offene Entscheidungen (Nutzer)
+## Entscheidungen (Nutzer, 27.10.2026)
 
-1. **Spielumgebung**: Einzelspieler, eigener Server oder fremder Server? Bestimmt Client-Mod gegen Plugin.
-2. **Loader**: Fabric (Empfehlung), NeoForge oder bereits genutztes Modpack.
-3. **Minecraft-Version** exakt (Launcher bzw. F3). Die Mod wird je Version gebaut; Pläne tragen die DataVersion.
+1. **Loader**: Fabric, clientseitig. Das Modpack des Nutzers läuft mit Minecraft 26.3, Fabric Loader 0.19.5, Fabric API 0.164.0+26.3 und Java 25 und wird auf einem Mehrspieler-Server gespielt. Die Mod darf daher nichts auf dem Server voraussetzen.
+2. **Mehrere Versionen und Launcher**: `bridge-core` ohne Minecraft-Abhängigkeit, je Minecraft-Version ein dünner Fabric-Adapter und eine eigene .jar. Jeder Launcher, der Fabric-Mods lädt, funktioniert; die Mod schreibt nur in ihren Unterordner des Spielordners.
+3. **Kein WorldEdit.**
+
+## Umsetzung M1 (Website)
+
+- `packages/formats/src/scan.ts`: `readWorldScan`/`normalizeScan` mit eigenen Limits (`SCAN_LIMITS`: 4 000 000 Zellen, 16 MB komprimiert, 40 MB entpackt, 20 s), dichte Palettenindizes statt Voxelpayload, `bauplaner:unloaded`, Metadatenprüfung (Plan-Dateien ohne `Kind` werden mit Hinweis abgewiesen, `ScanVersion` ≠ 1 ebenfalls). Entpacken über das gemeinsame `gunzipLimited` aus `schem.ts`.
+- `packages/domain/src/gameCheck.ts`: `scanTarget` (Projekt und Revision müssen passen), `checkScan` (Zellvergleich, Zuordnung über `buildGuide`-Positionen), `compareBlock`/`ignoredProperties` (expliziter Katalog oben), `confirmedUnticked`, `tickedButNotBuilt`, `tickConfirmed` (ein rückgängig machbarer `batch`).
+- Plan-Export schreibt zusätzlich `Bauplaner.ProjectMin`, damit Aufnahmen bei jedem Anker ausrichtbar sind.
+- Tab „Bauen“: Bereich „Fortschritt laut Spielaufnahme“ (`GameCheckPanel.tsx`, Lesen im Worker `scan.worker.ts`), Grundlage springt auf die Revision der Aufnahme, Spielstatus je Schritt in der Liste, Abweichungen mit Koordinaten in der Schrittkarte und rot umrandet im Schichtplan, Hinweis auf abgehakte, aber im Spiel fehlende Schritte, Knopf „bestätigte Schritte abhaken“.
+- Grenze M1: Die Aufnahme wird noch nicht gespeichert und muss nach dem Neuladen erneut importiert werden (Speicherung als Original-Blob folgt mit der Mod).
 
 ## Grenzen
 

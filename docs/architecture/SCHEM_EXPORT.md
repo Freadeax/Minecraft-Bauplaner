@@ -22,7 +22,7 @@ Material, Vorschau und Export nutzen dasselbe Weltpayload; es gibt keine zweite 
 | `Blocks.Palette` | `id[key=value,…]` mit sortierten Properties; IDs 0…n−1 in Reihenfolge des ersten Auftretens (Y → Z → X) |
 | `Blocks.Data` | ein VarInt je Zelle, Index `x + z·W + y·W·L` |
 | `Blocks.BlockEntities` | `Pos` (lokal), `Id`, `Data`; aus Schem importierte Einträge behalten zusätzliche Felder, Roh-NBT (`id/x/y/z`) wird in `Id`/`Data` übertragen |
-| `Metadata` | `Name` (Projekt · Revision), optional `Author`, `Date`, `RequiredMods` (Nicht-`minecraft`-Namespaces), `WEOffsetX/Y/Z`, `Bauplaner{ProjectId, RevisionId, RevisionNumber, Profile}` |
+| `Metadata` | `Name` (Projekt · Revision), optional `Author`, `Date`, `RequiredMods` (Nicht-`minecraft`-Namespaces), `WEOffsetX/Y/Z`, `Bauplaner{ProjectId, RevisionId, RevisionNumber, Profile, ProjectMin}` (`ProjectMin` = Projektkoordinate der Boxecke, für die [Spielbrücke](MOD_BRIDGE.md)) |
 
 Biome und freie Entities werden nicht geschrieben; der Bericht sagt das.
 

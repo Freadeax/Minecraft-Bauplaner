@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { selectLayers } from '../../../../../packages/voxel/src/index.js';
 import type { BlockState, Cell } from '../../../../../packages/voxel/src/index.js';
-import { buildGuide, evaluateProgress, PHASE_LABEL, positionKey, resolveProject, tickStep, tickSteps, untickStep, untickSteps } from '../../../../../packages/domain/src/index.js';
-import type { Guide, GuideStep, Resolution, StepStatus } from '../../../../../packages/domain/src/index.js';
+import { buildGuide, checkScan, confirmedUnticked, evaluateProgress, PHASE_LABEL, positionKey, resolveProject, scanTarget, tickConfirmed, tickedButNotBuilt, tickStep, tickSteps, untickStep, untickSteps, VERDICT_LABEL } from '../../../../../packages/domain/src/index.js';
+import type { CellDeviation, GameCheck, Guide, GuideStep, Resolution, StepStatus } from '../../../../../packages/domain/src/index.js';
+import type { Vec3 } from '../../../../../packages/voxel/src/index.js';
 import { useApp } from '../../app/context';
 import { errorText, formatNumber } from '../../app/ui';
 import { mix, stateColor } from '../../colors';
 import { Viewer } from '../../Viewer';
+import { GAME_BADGE, GameCheckPanel, gameStatusText } from './GameCheckPanel';
+import type { LoadedScan } from './GameCheckPanel';
 import { isResolved } from './session';
 import type { ProjectSession } from './session';
 
@@ -29,6 +32,8 @@ export function BuildTab({ session }: { session: ProjectSession }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [show3d, setShow3d] = useState(false);
   const [message, setMessage] = useState('');
+  const [scan, setScan] = useState<LoadedScan | null>(null);
+  const [manualAlign, setManualAlign] = useState<Vec3 | null>(null);
 
   const revision = basis === 'working' ? null : project.revisions.find(r => r.id === basis) ?? null;
   const source = useMemo<{ resolution: Resolution; guide: Guide } | { error: string }>(() => {
@@ -45,6 +50,23 @@ export function BuildTab({ session }: { session: ProjectSession }) {
   const progress = useMemo(() => guide ? evaluateProgress(guide, project.progress) : null, [guide, project.progress]);
   const ready = useMemo(() => new Set(progress?.ready ?? []), [progress]);
   const status = useCallback((id: string): StepStatus => progress?.status.get(id) ?? 'open', [progress]);
+
+  // In-game check (B8): the recording names its revision; the guide of that revision is the basis.
+  const target = useMemo(() => scan ? scanTarget(project, scan) : null, [scan, project]);
+  const targetError = target && 'error' in target ? target.error : '';
+  const scanRevision = target && !('error' in target) ? target.revision : null;
+  const world = 'resolution' in source ? source.resolution.world : null;
+  const alignment: Vec3 | null = target && !('error' in target) ? target.projectMin ?? manualAlign ?? world?.bounds.min ?? null : null;
+  const basisMismatch = !!scanRevision && basis !== scanRevision.id;
+  const game = useMemo<GameCheck | null>(() => {
+    if (!scan || !guide || !world || !alignment || !target || 'error' in target || basisMismatch) return null;
+    return checkScan(guide, world, scan, alignment, target.notes);
+  }, [scan, guide, world, alignment, target, basisMismatch]);
+  const loadScan = (s: LoadedScan) => {
+    setScan(s); setManualAlign(null);
+    const t = scanTarget(project, s);
+    if (!('error' in t) && t.revision) { setBasis(t.revision.id); setSelectedId(null); }
+  };
 
   const visibleSteps = useMemo(() => guide?.steps.filter(s => filter === 'all' || (filter === 'review' ? status(s.id) === 'review' : status(s.id) !== 'done')) ?? [], [guide, filter, status]);
   const step = guide?.byId.get(selectedId ?? '') ?? guide?.steps.find(s => ready.has(s.id)) ?? guide?.steps.find(s => status(s.id) !== 'done') ?? guide?.steps[0] ?? null;
@@ -92,6 +114,11 @@ export function BuildTab({ session }: { session: ProjectSession }) {
     {progress.orphaned.length > 0 && <div className="notice build-wide" role="status">
       {progress.orphaned.length} gespeicherte Haken gehören zu Schritten, die es nicht mehr gibt (Bauteil entfernt oder Schicht leer).
       <button onClick={() => run(untickSteps(progress.orphaned, 'Verwaiste Haken entfernt'))}>Verwaiste Haken entfernen</button></div>}
+    <GameCheckPanel scan={scan} check={game} targetError={targetError || (basisMismatch ? `Die Aufnahme gehört zu Revision ${scanRevision!.number}. Wähle diese Grundlage, um den Abgleich zu sehen.` : '')}
+      revisionNumber={scanRevision?.number ?? null} alignment={alignment} manual={!!scan && !scanRevision && !targetError} onAlignment={setManualAlign}
+      onLoad={loadScan} onClear={() => setScan(null)} onSelect={setSelectedId}
+      confirmable={game ? confirmedUnticked(guide, game, status) : []} contradicted={game ? tickedButNotBuilt(guide, game, status) : []}
+      onTickConfirmed={() => game && run(tickConfirmed(guide, game, status))} />
     {message && <div className="notice warning build-wide" role="alert">{message}<button onClick={() => setMessage('')}>OK</button></div>}
 
     <aside className="build-list" aria-label="Schritte">
@@ -102,17 +129,18 @@ export function BuildTab({ session }: { session: ProjectSession }) {
       {[...byLayer.entries()].map(([y, steps]) => <div key={y} className="build-layer">
         <span className="panel-kicker">SCHICHT Y {y}</span>
         <ol className="step-list">{steps.map(s => {
-          const st = status(s.id);
+          const st = status(s.id), g = game?.steps.get(s.id);
           return <li key={s.id}><button aria-current={s.id === step?.id ? 'step' : undefined} className={`step-item ${st}`} onClick={() => setSelectedId(s.id)}>
             <span className="step-no">{s.order}</span>
             <span><strong>{PHASE_LABEL[s.phase]}</strong><small>{s.sectionName} · {s.blocks ? `${formatNumber(s.blocks)} Blöcke` : `${s.air + s.erase} Zellen`}</small></span>
-            <em className={`badge ${st}`}>{st === 'open' && ready.has(s.id) ? 'bereit' : STATUS_LABEL[st]}</em>
+            <span className="step-badges"><em className={`badge ${st}`}>{st === 'open' && ready.has(s.id) ? 'bereit' : STATUS_LABEL[st]}</em>
+              {g && <em className={`badge game ${GAME_BADGE[g.status]}`}>{gameStatusText(g.status, g.ok, g.total)}</em>}</span>
           </button></li>;
         })}</ol>
       </div>)}
     </aside>
 
-    {step && <StepDetail step={step} guide={guide} status={status} ready={ready.has(step.id)} world={source && 'resolution' in source ? source.resolution : null}
+    {step && <StepDetail step={step} guide={guide} status={status} game={game} ready={ready.has(step.id)} world={source && 'resolution' in source ? source.resolution : null}
       show3d={show3d} setShow3d={setShow3d} onSelect={setSelectedId}
       onTick={() => tick(step)} onUntick={() => run(untickStep(step.id))}
       onNext={() => { const n = nextOpen(step); if (n) setSelectedId(n.id); }}
@@ -122,14 +150,16 @@ export function BuildTab({ session }: { session: ProjectSession }) {
 }
 
 interface DetailProps {
-  step: GuideStep; guide: Guide; status: (id: string) => StepStatus; ready: boolean; world: Resolution | null;
+  step: GuideStep; guide: Guide; status: (id: string) => StepStatus; game: GameCheck | null; ready: boolean; world: Resolution | null;
   show3d: boolean; setShow3d(v: boolean): void; onSelect(id: string): void;
   onTick(): void; onUntick(): void; onNext(): void; onPrev(): void; onTickLayer(): void;
 }
 
-function StepDetail({ step, guide, status, ready, world, show3d, setShow3d, onSelect, onTick, onUntick, onNext, onPrev, onTickLayer }: DetailProps) {
+function StepDetail({ step, guide, status, game, ready, world, show3d, setShow3d, onSelect, onTick, onUntick, onNext, onPrev, onTickLayer }: DetailProps) {
   const st = status(step.id);
   const waiting = step.prerequisites.filter(p => status(p) !== 'done');
+  const g = game?.steps.get(step.id);
+  const deviations = useMemo(() => game ? [...game.deviations.values()].filter(d => d.stepId === step.id) : [], [game, step.id]);
   return <article className="build-step" aria-label={`Schritt ${step.order}`}>
     <header>
       <span className="panel-kicker">SCHRITT {step.order} VON {guide.steps.length}</span>
@@ -137,6 +167,10 @@ function StepDetail({ step, guide, status, ready, world, show3d, setShow3d, onSe
       <p className="build-check">{step.check}</p>
       <em className={`badge ${st}`}>{STATUS_LABEL[st]}{st === 'open' && ready ? ' · bereit' : ''}</em>
     </header>
+    {g && <div className={`game-step ${g.status}`} role="status"><strong>{gameStatusText(g.status, g.ok, g.total)}</strong>
+      {deviations.length > 0 && <ul>{deviations.slice(0, 8).map(d => <li key={d.position.join(',')}>X {d.position[0]} · Y {d.position[1]} · Z {d.position[2]}: {VERDICT_LABEL[d.verdict]}
+        {d.verdict !== 'unknown' && <> – geplant <code>{d.expected}</code>{d.actual && <>, im Spiel <code>{d.actual}</code></>}</>}</li>)}
+        {deviations.length > 8 && <li>… und {deviations.length - 8} weitere (rot umrandet im Schichtplan)</li>}</ul>}</div>}
     {st === 'review' && <p className="notice warning" role="status">Die Geometrie dieses Schritts hat sich seit dem Haken geändert. Im Spiel prüfen, dann erneut bestätigen.</p>}
     {waiting.length > 0 && st !== 'done' && <div className="build-wait"><strong>Vorher erledigen ({waiting.length}):</strong>
       <ul>{waiting.slice(0, 6).map(id => { const p = guide.byId.get(id)!; return <li key={id}><button className="link-button" onClick={() => onSelect(id)}>{p.order}. {stepTitle(p)}</button> – {STATUS_LABEL[status(id)]}</li>; })}
@@ -155,7 +189,7 @@ function StepDetail({ step, guide, status, ready, world, show3d, setShow3d, onSe
     {(step.air > 0 || step.erase > 0) && <p className="muted">{step.air > 0 && `${step.air} Zellen ausdrücklich Luft (freihalten). `}{step.erase > 0 && `${step.erase} Zellen abbauen/löschen.`}</p>}
     {step.notes.length > 0 && <ul className="build-notes">{step.notes.map(n => <li key={n}>{n}</li>)}</ul>}
 
-    {world?.world && <LayerPlan step={step} guide={guide} status={status} resolution={world} />}
+    {world?.world && <LayerPlan step={step} guide={guide} status={status} resolution={world} deviations={game?.deviations ?? null} />}
     <div className="button-row">
       <button onClick={onTickLayer}>Ganze Schicht Y {step.y} abhaken</button>
       <button aria-pressed={show3d} onClick={() => setShow3d(!show3d)}>3D-Ansicht {show3d ? 'ausblenden' : 'zeigen'}</button>
@@ -166,7 +200,7 @@ function StepDetail({ step, guide, status, ready, world, show3d, setShow3d, onSe
 }
 
 /** Top-down plan of the step's layer: current step bright, rest of the layer dimmed, coordinates on both axes. */
-function LayerPlan({ step, guide, status, resolution }: { step: GuideStep; guide: Guide; status: (id: string) => StepStatus; resolution: Resolution }) {
+function LayerPlan({ step, guide, status, resolution, deviations }: { step: GuideStep; guide: Guide; status: (id: string) => StepStatus; resolution: Resolution; deviations: ReadonlyMap<string, CellDeviation> | null }) {
   const world = resolution.world!;
   const { cells, region } = useMemo(() => {
     const own = new Set(step.positions.map(positionKey));
@@ -176,7 +210,7 @@ function LayerPlan({ step, guide, status, resolution }: { step: GuideStep; guide
     if (max[0]! - min[0]! > MAX_GRID || max[1]! - min[1]! > MAX_GRID) {
       min = [step.bounds.min[0] - 2, step.bounds.min[2] - 2]; max = [Math.min(step.bounds.maxExclusive[0] + 2, min[0]! + MAX_GRID), Math.min(step.bounds.maxExclusive[2] + 2, min[1]! + MAX_GRID)];
     }
-    const out: { x: number; z: number; fill: string; label: string; own: boolean }[] = [];
+    const out: { x: number; z: number; fill: string; label: string; own: boolean; dev: string }[] = [];
     for (const c of world.cells) {
       const [x, y, z] = c.position;
       if (y !== step.y || x < min[0]! || x >= max[0]! || z < min[1]! || z >= max[1]!) continue;
@@ -185,10 +219,11 @@ function LayerPlan({ step, guide, status, resolution }: { step: GuideStep; guide
       const base = c.kind === 'block' ? stateColor(state!.id) : c.kind === 'erase' ? '#d35f5f' : '#2a4552';
       const mine = own.has(key);
       const fill = mine ? base : s && status(s.id) === 'done' ? mix(base, DONE, 0.6) : mix(base, DIM, 0.7);
-      out.push({ x, z, fill, own: mine, label: `X ${x} · Y ${y} · Z ${z}: ${c.kind === 'erase' ? 'löschen' : c.kind === 'air' ? 'Luft' : stateText(state!)}${s ? ` (Schritt ${s.order})` : ''}` });
+      const dev = deviations?.get(key);
+      out.push({ x, z, fill, own: mine, dev: dev ? `dev ${dev.verdict}` : '', label: `X ${x} · Y ${y} · Z ${z}: ${c.kind === 'erase' ? 'löschen' : c.kind === 'air' ? 'Luft' : stateText(state!)}${s ? ` (Schritt ${s.order})` : ''}${dev ? ` · im Spiel: ${VERDICT_LABEL[dev.verdict]}${dev.actual ? ` (${dev.actual})` : ''}` : ''}` });
     }
     return { cells: out, region: { min, max } };
-  }, [step, guide, status, world]);
+  }, [step, guide, status, world, deviations]);
   const w = region.max[0]! - region.min[0]!, h = region.max[1]! - region.min[1]!;
   const tickEvery = Math.max(1, Math.ceil(Math.max(w, h) / 12));
   return <figure className="layer-plan">
@@ -197,7 +232,7 @@ function LayerPlan({ step, guide, status, resolution }: { step: GuideStep; guide
       {Array.from({ length: w }, (_, i) => i % tickEvery === 0 && <text key={`x${i}`} x={i + 0.5} y={-0.6} className="axis">{region.min[0]! + i}</text>)}
       {Array.from({ length: h }, (_, i) => i % tickEvery === 0 && <text key={`z${i}`} x={-0.6} y={i + 0.75} className="axis end">{region.min[1]! + i}</text>)}
       <rect x={0} y={0} width={w} height={h} className="plan-bg" />
-      {cells.map(c => <rect key={`${c.x},${c.z}`} x={c.x - region.min[0]!} y={c.z - region.min[1]!} width={0.94} height={0.94} fill={c.fill} className={c.own ? 'own' : undefined}><title>{c.label}</title></rect>)}
+      {cells.map(c => <rect key={`${c.x},${c.z}`} x={c.x - region.min[0]!} y={c.z - region.min[1]!} width={0.94} height={0.94} fill={c.fill} className={[c.own ? 'own' : '', c.dev].filter(Boolean).join(' ') || undefined}><title>{c.label}</title></rect>)}
     </svg>
   </figure>;
 }

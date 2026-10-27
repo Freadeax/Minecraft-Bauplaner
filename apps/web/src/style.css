@@ -113,3 +113,13 @@ label.check{display:flex;align-items:center;gap:8px}fieldset{border:1px solid va
 @media(max-width:650px){.viewer-tools button{font-size:11px;min-height:36px}.viewer-tools button span{display:none}.viewer-hud{top:auto;bottom:10px;left:10px;right:auto;justify-items:start;text-align:left}.flying .viewer-hud .hint{display:none}.layer-control input[type=range]{width:90px}}
 @media(pointer:coarse){.viewer-tools .seg button{min-width:40px;min-height:40px}}
 .block-info button.link{border:0;background:none;padding:0;color:var(--mint);text-decoration:underline;font-size:inherit}
+/* B8 · Abgleich mit dem Spiel (GameCheckPanel, Badges und Markierungen im Tab „Bauen“) */
+.game-check{padding:14px 22px;border-bottom:1px solid var(--line);background:#0f1c25;display:grid;gap:10px}.game-check-head{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center}
+.game-check-head .file-button{position:relative}.game-check-body{display:grid;gap:8px}.game-check-body .muted{margin:0;font-size:10px}.game-check .notice{margin:0}
+.build-bar.game span{background:#7fb6e0}.game-check .game-counts{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;font-size:10px}.game-counts li{border-radius:4px;padding:3px 8px;background:#1d2f39}
+.game-counts .v-missing{background:#2b3640;color:#d5e1e5}.game-counts .v-wrong,.game-counts .v-state,.game-counts .v-remove{background:#4a2125;color:#ffc7c7}.game-counts .v-ok{background:#1b3a32;color:var(--mint)}
+.game-align{display:flex;gap:8px;border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:10px}.game-align label{margin:0;display:grid;gap:2px}.game-align input{width:80px}
+.step-badges{display:grid;gap:3px;justify-items:end}.badge.game.ok{background:#1b3a32;color:var(--mint)}.badge.game.open{background:#1d2f39;color:#a9c4d6}.badge.game.danger{background:#4a2125;color:#ffc7c7}
+.game-step{font-size:11px;border-radius:8px;padding:10px 12px;border:1px solid #2b4250}.game-step.confirmed{border-color:#2f6b58}.game-step.deviating{border-color:#7a3a40}.game-step ul{margin:6px 0 0;padding-left:18px;line-height:1.7}.game-step code{font-size:10px;overflow-wrap:anywhere}
+.layer-plan rect.dev{stroke:#ff6b6b;stroke-width:.12}.layer-plan rect.dev.missing{stroke:#d5e1e5;stroke-dasharray:.2 .12}.layer-plan rect.dev.unknown{stroke:#7a8a93;stroke-dasharray:.08 .1}
+@media(max-width:650px){.game-check{padding:12px 14px}.game-align{flex-wrap:wrap}}

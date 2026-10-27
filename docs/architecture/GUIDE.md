@@ -53,7 +53,7 @@ Jede Voraussetzung liegt in `order` strikt früher; `buildGuide` bricht sonst ab
 - Abhaken ist eine normale, rückgängig machbare Operation `progress.set` mit `StepProgress { status: 'done', geometryHash, at }`. Mehrere Haken (ganze Schicht, Aufräumen) sind ein `batch`.
 - `evaluateProgress` liefert je Schritt `open`, `done` oder `review`: **prüfbedürftig**, wenn der gespeicherte Hash nicht mehr zum aktuellen Schritt passt. Ein Schritt ist **bereit**, wenn alle Voraussetzungen `done` sind; `review` blockiert Nachfolger.
 - Haken ohne passenden Schritt (Instanz entfernt, Schicht leer) erscheinen als **verwaist** und lassen sich gezielt entfernen. Nichts wird still gelöscht.
-- „Abgehakt“ ist eine manuelle Angabe. Eine Prüfung im Spiel gibt es nicht; die Oberfläche sagt das ausdrücklich. Ein späterer Spieladapter (P6-01) könnte einen getrennten Status „im Spiel geprüft“ ergänzen, ohne den manuellen Haken zu überschreiben.
+- „Abgehakt“ ist eine manuelle Angabe. Eine Prüfung im Spiel gibt es nicht; die Oberfläche sagt das ausdrücklich. Die [Spielbrücke](MOD_BRIDGE.md) (B8) ergänzt einen getrennten Status „im Spiel bestätigt/teilweise/abweichend“ aus einer Spielaufnahme, ohne den manuellen Haken zu überschreiben.
 
 ## Oberfläche „Bauen“
 

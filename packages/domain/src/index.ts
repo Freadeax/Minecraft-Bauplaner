@@ -21,3 +21,5 @@ export { FACES, faceOf, anchorCells, capacityOf, validateConnectors, transformCo
 export type { FaceName, ConnectorIssue, PlacedConnector, LinkState, LinkStatus, SnapCandidate, SnapQuery } from './connectors.js';
 export { inspectCell } from './inspect.js';
 export type { CellInspection, CellSource } from './inspect.js';
+export { checkScan, compareBlock, ignoredProperties, scanTarget, confirmedUnticked, tickedButNotBuilt, tickConfirmed, GAME_STATUS_LABEL, VERDICT_LABEL } from './gameCheck.js';
+export type { GameCheck, StepCheck, CellDeviation, CellVerdict, GameStepStatus, ScanTarget, VerdictCounts } from './gameCheck.js';

@@ -16,6 +16,18 @@ export function parseBlockState(text:string):BlockState{
   if(match[2])for(const pair of match[2].split(',')){const parts=pair.split('=');if(parts.length!==2||!parts[0]||!parts[1]||/[\s,\[\]]/.test(pair))fail(`Ungültige Property: ${pair}`);if(Object.hasOwn(properties,parts[0]))fail(`Doppelte Property: ${parts[0]}`);properties[parts[0]]=parts[1];}
   return{id,properties};
 }
+/** GZip decompression with byte and time budgets (shared by Schem import and world scans). */
+export async function gunzipLimited(buffer:ArrayBuffer,limits:Pick<SchemLimits,'maxUncompressedBytes'|'maxDurationMs'>):Promise<Uint8Array>{
+  const reader=new Blob([buffer]).stream().pipeThrough(new DecompressionStream('gzip')).getReader();
+  const chunks:Uint8Array[]=[];let total=0;let timer:ReturnType<typeof setTimeout>|undefined;
+  const timeout=new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(new FormatError('TIMEOUT','Zeitbudget beim Entpacken überschritten.')),limits.maxDurationMs);});
+  try{
+    while(true){const {done,value}=await Promise.race([reader.read(),timeout]);if(done)break;total+=value.byteLength;if(total>limits.maxUncompressedBytes)throw new FormatError('LIMIT','Entpackte Datei überschreitet das Größenlimit.');chunks.push(value);}
+  }catch(e){if(e instanceof FormatError)throw e;throw new FormatError('GZIP','GZip-Datei ist beschädigt oder unvollständig.');}
+  finally{clearTimeout(timer);void reader.cancel().catch(()=>{});}
+  const raw=new Uint8Array(total);let p=0;for(const chunk of chunks){raw.set(chunk,p);p+=chunk.byteLength;}
+  return raw;
+}
 /** Pure schema adapter, independently testable without compression or browser UI. */
 export function normalizeSchem(sourceNbt:{name:string;tag:NbtTag},options:Partial<SchemLimits>={}):Omit<SchemResult,'sourceSha256'> {
   const limits={...SCHEM_LIMITS,...options};
@@ -62,14 +74,7 @@ export async function importSchemV3(buffer:ArrayBuffer,options:Partial<SchemLimi
   const limits={...SCHEM_LIMITS,...options};for(const [key,v] of Object.entries(limits))if(!Number.isSafeInteger(v)||v<1)throw new FormatError('LIMIT',`Ungültiges Limit: ${key}`);
   if(buffer.byteLength>limits.maxCompressedBytes)throw new FormatError('LIMIT','Komprimierte Datei überschreitet das Größenlimit.');
   const input=new Uint8Array(buffer);if(input[0]!==31||input[1]!==139)throw new FormatError('GZIP','Sponge Schem v3 muss GZip-komprimiertes NBT enthalten.');
-  const start=performance.now();const reader=new Blob([buffer]).stream().pipeThrough(new DecompressionStream('gzip')).getReader();
-  const chunks:Uint8Array[]=[];let total=0;let timer:ReturnType<typeof setTimeout>|undefined;
-  const timeout=new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(new FormatError('TIMEOUT','Zeitbudget beim Entpacken überschritten.')),limits.maxDurationMs);});
-  try{
-    while(true){const {done,value}=await Promise.race([reader.read(),timeout]);if(done)break;total+=value.byteLength;if(total>limits.maxUncompressedBytes)throw new FormatError('LIMIT','Entpackte Datei überschreitet das Größenlimit.');chunks.push(value);}
-  }catch(e){if(e instanceof FormatError)throw e;throw new FormatError('GZIP','GZip-Datei ist beschädigt oder unvollständig.');}
-  finally{clearTimeout(timer);void reader.cancel().catch(()=>{});}
-  const raw=new Uint8Array(total);let p=0;for(const chunk of chunks){raw.set(chunk,p);p+=chunk.byteLength;}
+  const start=performance.now();const raw=await gunzipLimited(buffer,limits);
   const remaining=limits.maxDurationMs-(performance.now()-start);if(remaining<1)throw new FormatError('TIMEOUT','Zeitbudget überschritten.');
   const sourceNbt=readNbt(raw,{...NBT_LIMITS,maxBytes:limits.maxUncompressedBytes,maxDepth:limits.maxDepth,maxNodes:limits.maxNodes,maxDurationMs:Math.max(1,Math.floor(remaining))});
   const result=normalizeSchem(sourceNbt,limits);if(performance.now()-start>limits.maxDurationMs)throw new FormatError('TIMEOUT','Zeitbudget überschritten.');

@@ -114,6 +114,8 @@ export async function exportRevisionSchem(project: Project, revisionId: string, 
       RevisionId: { type: 'string', value: revision.id },
       RevisionNumber: { type: 'int', value: revision.number },
       Profile: { type: 'string', value: project.profileId },
+      // Project coordinate of the box minimum: the game bridge needs it to align recordings for any anchor.
+      ProjectMin: { type: 'intArray', value: [...resolution.world.bounds.min] },
     } },
   };
   const date = Date.parse(revision.createdAt);

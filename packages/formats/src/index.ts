@@ -1,8 +1,10 @@
 export { readNbt, FormatError, NBT_LIMITS } from './nbt.js';
 export type { NbtLimits } from './nbt.js';
-export { importSchemV3, normalizeSchem, parseBlockState, SCHEM_LIMITS } from './schem.js';
+export { importSchemV3, normalizeSchem, parseBlockState, gunzipLimited, SCHEM_LIMITS } from './schem.js';
 export type { SchemLimits, SchemResult } from './schem.js';
 export { writeNbt, modifiedUtf8, gzip, NBT_WRITE_LIMITS } from './nbtWrite.js';
 export type { NbtWriteLimits } from './nbtWrite.js';
 export { buildSchemV3, writeSchemV3, formatBlockState, SCHEM_EXPORT_LIMITS } from './schemWrite.js';
 export type { SchemWriteOptions, SchemExport, SchemExportReport, SchemExportLimits, SchemAnchor, UnselectedPolicy } from './schemWrite.js';
+export { readWorldScan, normalizeScan, SCAN_LIMITS, UNLOADED_STATE } from './scan.js';
+export type { WorldScan, ScanMeta, ScanLimits } from './scan.js';

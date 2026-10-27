@@ -160,3 +160,7 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 ### MSG-B8-01 · Claude · 2026-10-27T13:45:00+01:00 · Spielbrücke Konzept
 - Nutzerfrage: Mod, die das Gebaute ausliest und den Fortschritt auf der Website zeigt. Konzept in [MOD_BRIDGE](architecture/MOD_BRIDGE.md), Block B8 in [BLOCKS](BLOCKS.md), ADR-015 vorgeschlagen.
 - Reserviert für M1: `packages/domain/src/gameCheck.ts`, `tests/game-check.test.mjs`, `views/project/GameCheckPanel.tsx`, eine Einbindungszeile in `BuildTab.tsx`. Warten auf Nutzerentscheidung zu Loader/Version/Spielumgebung für M2.
+
+### MSG-B8-02 · Claude · 2026-10-27T18:10:00+01:00 · Spielbrücke M1
+- Nutzerentscheidung: Fabric-Client-Mod, Minecraft 26.3 (Fabric Loader 0.19.5, API 0.164.0+26.3, Java 25), mehrere Versionen/Launcher, kein WorldEdit.
+- M1 umgesetzt. Abgestimmte Eingriffe außerhalb der B8-Dateien: `BuildTab.tsx` (B4, abgeschlossen: Panel, Spielbadges, Abweichungen in Schrittkarte und Schichtplan), `schemExport.ts` (B2: zusätzliches Metadatenfeld `ProjectMin`), `schem.ts` (Entpacken als `gunzipLimited` geteilt, Verhalten unverändert). Weiter mit M2 (Mod).

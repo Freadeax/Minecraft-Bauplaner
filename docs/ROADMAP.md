@@ -66,3 +66,5 @@ B7 · P1-02a umgesetzt: expliziter Zustandskatalog für Drehen/Spiegeln (`packag
 P1-03c (Block B6) umgesetzt: freier Flug, Drauf-/Seitenansichten, Parallelprojektion, Fokus, Welt-/Lokalkoordinate im Editor-Inspektor, Schichtmodi Bereich/Einzeln, Touchsteuerung, Flächenkulling und Code-Splitting mit dokumentierter Messung ([Viewer](architecture/VIEWER.md)). Offen: echte GPU-/Gerätetests, Blockmodelle.
 
 P6-01 (B8) Konzept 27.10.2026: [Spielbrücke](architecture/MOD_BRIDGE.md) – dünne lesende Mod schreibt eine Ist-Aufnahme als Schem v3, Vergleich und Schrittzuordnung auf der Website, Übertragung per Datei, später optional über 127.0.0.1. Loader, Minecraft-Version und Spielumgebung sind Nutzerentscheidungen; nichts implementiert.
+
+P6-01 (B8) M1 umgesetzt: Spielaufnahme importieren, Zellvergleich je Bauschritt, Abweichungen im Schichtplan, bestätigte Schritte ausdrücklich abhaken. Offen: Fabric-Mod (M2, Minecraft 26.3), Speicherung der Aufnahme, lokale Verbindung (M3), Anzeige im Spiel (M4).
