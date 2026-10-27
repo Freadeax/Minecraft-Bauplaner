@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { countBlocks } from '../../../../packages/voxel/src/index.js';
 import type { Cell } from '../../../../packages/voxel/src/index.js';
 import { addAssetVersion, createAsset, searchAssets, updateAssetMeta } from '../../../../packages/domain/src/index.js';
@@ -7,7 +7,10 @@ import { useApp } from '../app/context';
 import { importFile } from '../app/importFile';
 import type { ImportedFile } from '../app/importFile';
 import { errorText, formatNumber } from '../app/ui';
-import { stateColor } from '../colors';
+import { mix, stateColor } from '../colors';
+import { ConnectorEditor } from './library/ConnectorEditor';
+import type { Highlight } from './library/ConnectorEditor';
+import { CropPanel } from './library/CropPanel';
 import { Viewer } from '../Viewer';
 
 const size = (b: { min: readonly number[]; maxExclusive: readonly number[] }) => b.maxExclusive.map((n, i) => n - b.min[i]!).join(' × ');
@@ -29,6 +32,11 @@ export function LibraryView() {
   const selected = library.assets.find(a => a.id === selectedId) ?? null;
   const latest = selected ? library.versions.get(selected.versionIds.at(-1) ?? '') ?? null : null;
   const noSelect = useMemo(() => () => {}, []);
+  // Each panel owns one highlight layer; the crop box wins over connector anchors.
+  const [connectorMarks, setConnectorMarksState] = useState<Highlight>(null);
+  const [cropMarks, setCropMarksState] = useState<Highlight>(null);
+  const setConnectorMarks = useCallback((h: Highlight) => setConnectorMarksState(() => h), []);
+  const setCropMarks = useCallback((h: Highlight) => setCropMarksState(() => h), []);
 
   const open = async (f: File) => {
     abort.current?.abort(); const controller = new AbortController(); abort.current = controller;
@@ -73,7 +81,11 @@ export function LibraryView() {
   };
 
   const preview = imported?.payload ?? latest?.payload ?? null;
-  const colorFor = useMemo(() => (cell: Cell) => cell.kind === 'erase' || !preview ? '#d35f5f' : stateColor(preview.palette[cell.paletteIndex]!.id), [preview]);
+  const colorFor = useMemo(() => (cell: Cell) => {
+    const base = cell.kind === 'erase' || !preview ? '#d35f5f' : stateColor(preview.palette[cell.paletteIndex]!.id);
+    const mark = cropMarks?.(cell) ?? connectorMarks?.(cell) ?? null;
+    return mark === 'hit' ? '#ffd166' : mark === 'dim' ? mix(base, '#16303c', 0.7) : base;
+  }, [preview, cropMarks, connectorMarks]);
   return <div className="page">
     <header className="page-head"><div><span className="eyebrow">BAUTEILBIBLIOTHEK</span><h1 className="page-title">Bauteile</h1>
       <p className="muted">Jede Version ist unveränderlich. Projekte verweisen auf eine feste Version; neue Versionen ändern bestehende Projekte nicht.</p></div>
@@ -119,7 +131,13 @@ export function LibraryView() {
           <span className="panel-kicker">VERSIONEN</span>
           <ul className="version-list">{selected.versionIds.map(id => { const v = library.versions.get(id); return <li key={id}><strong>{v?.label ?? '?'}</strong> <span className="hash">{v?.payloadHash.slice(0, 12) ?? 'fehlt'}</span> {v && <small>{new Date(v.createdAt).toLocaleDateString('de-DE')} · {v.source.format}</small>}</li>; })}</ul>
           <div className="button-row"><button onClick={() => void archive(selected)}>{selected.archived ? 'Aus Archiv holen' : 'Archivieren'}</button></div>
+          <ConnectorEditor key={`c-${latest.id}`} asset={selected} version={latest} onHighlight={setConnectorMarks} onSaved={setMessage} />
+          <CropPanel key={`r-${latest.id}`} payload={latest.payload} name={selected.name} provenance={selected.provenance} getSource={async () => latest.source}
+            onHighlight={setCropMarks} onSaved={(m, id) => { setMessage(m); setSelectedId(id); }} />
         </div> : <p className="muted">Keine Auswahl.</p>}
+        {imported && <CropPanel key={`r-import-${imported.name}`} payload={imported.payload} name={imported.name.replace(/\.(schem|json)$/i, '')}
+          provenance={{ author: '', source: imported.name, license: '' }} getSource={() => sourceOf(imported)}
+          onHighlight={setCropMarks} onSaved={(m, id) => { setMessage(m); setImported(null); setSelectedId(id); }} />}
         {imported && library.assets.length > 0 && <details className="version-from-import"><summary>Stattdessen als neue Version speichern</summary>
           <ul className="asset-picker">{library.assets.filter(a => !a.demo).map(a => <li key={a.id}><button onClick={() => void saveVersion(a, `${a.versionIds.length + 1}.0`)}>→ {a.name} (v{a.versionIds.length + 1}.0)</button></li>)}</ul>
           {library.assets.every(a => a.demo) && <p className="small-note">Beispielbauteile erhalten keine neuen Versionen.</p>}</details>}

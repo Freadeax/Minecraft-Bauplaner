@@ -8,8 +8,8 @@ Prüfgrundlage: Repositoryregeln, README, STATUS, ROADMAP, COMMUNICATION, Archit
 | Weitere Formate R-002/003 | eigene spätere Adapter geplant | Litematic/selektiver Weltimport nicht implementiert |
 | Ansicht R-004/005/006 | Orbit/Zoom, Picking, X/Y/Z-Schichten und Mengen; Softwareansicht ohne WebGL | freier Flug, vollständige Blockmodelle, echte GPU-/Touchprüfung |
 | Aufgaben R-007 | Bauanleitung mit Schichtschritten, Voraussetzungen, manuellem Fortschritt und „prüfbedürftig“ bei Geometrieänderung (B4) | Team-Aufgaben/Zuweisung (P4-02), Prüfung im Spiel (P6-01), frei definierte Bauabschnitte |
-| Bibliothek R-008/024 | Assets mit Herkunft/Lizenzfeld, Tags, Suche, unveränderliche Versionen mit Hashprüfung, Import als Bauteil (B0) | dauerhafte Speicherung (B3), Anschluss-Editor (B5) |
-| Snap/Composer R-009/011/013 | Editor mit Instanzen, Transformationen, Undo/Redo, Voxelkonflikten und Override (B0) | Snap/Anschlüsse (B5) |
+| Bibliothek R-008/024 | Assets mit Herkunft/Lizenzfeld, Tags, Suche, unveränderliche Versionen mit Hashprüfung, Import als Bauteil (B0), Anschluss-Editor und Bereich als Bauteil (B5) | dauerhafte Speicherung (B3) |
+| Snap/Composer R-009/011/013 | Editor mit Instanzen, Transformationen, Undo/Redo, Voxelkonflikten und Override (B0); Anschlussvalidierung, deterministischer Snap, gespeicherte und geprüfte Verbindungen (B5) | Spiegelprofile, Freiräume an Anschlüssen, Ziehen im Viewer |
 | Transformation R-010 | Rastergeometrie und kleiner geprüfter Zustandkatalog | unbekannte Regeln und BlockEntity-NBT bleiben ungelöst |
 | Generatoren/Fundamente R-012/014 | segmentierte Generatoren und Terrainprüfung geplant | keine Generator-/Terrainimplementierung |
 | Updates R-015 | Versionen einfrieren und Diff geplant | kein Update-/Patchsystem |

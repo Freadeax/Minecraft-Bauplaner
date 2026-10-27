@@ -7,6 +7,7 @@ import { useApp } from '../../app/context';
 import { formatNumber } from '../../app/ui';
 import { mix, stateColor } from '../../colors';
 import { Viewer } from '../../Viewer';
+import { SnapPanel } from './SnapPanel';
 import { isResolved } from './session';
 import type { ProjectSession } from './session';
 
@@ -147,6 +148,7 @@ export function EditorTab({ session }: { session: ProjectSession }) {
           </div>
         </div>;
       })()}
+      <SnapPanel session={session} />
     </aside>
     {message && <div className="notice warning editor-message" role="alert">{message}<button onClick={() => setMessage('')}>OK</button></div>}
     <ConflictReport session={session} />

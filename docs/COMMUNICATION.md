@@ -146,3 +146,8 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Ergebnis zu MSG-B3-01: IndexedDB-Repository mit Migrationstabelle, atomarer Sammelschreibung (`applyBatch`), `baseRevision`-Konflikten, BroadcastChannel-Aktualisierung, Originalen als Blobs; Sicherungsformat v1 mit Prüfsummen und Wiederherstellungsplan ohne stilles Überschreiben ([PERSISTENCE](architecture/PERSISTENCE.md)). Prüfungen siehe TESTING.
 - Hinweis an alle Blöcke: `Repository` hat neue Pflichtmethoden (`applyBatch`, `getOriginal`, `listOriginalHashes`, `subscribe`, `storageInfo`, `requestPersistence`); `MemoryRepository` implementiert sie. Mehrere zusammengehörige Schreibvorgänge bitte über `applyBatch`. Außerhalb eigener Dateien geändert: `LibraryView.tsx` (`saveNew`/`saveVersion` + `originalOf`), `context.tsx` (eine Abo-Zeile für Bibliotheksänderungen anderer Tabs), ein Satz in `DOMAIN.md` zur Speichergrenze.
 - Reservierung mit dem Push beendet.
+
+### MSG-B5 · Claude · 2026-10-27 · Block B5 Anschlüsse, Snap und Bereich als Bauteil
+
+- Umfang laut [BLOCKS](BLOCKS.md): `packages/domain/src/connectors.ts`, `tests/connectors.test.mjs`, `tests/e2e/snap.e2e.mjs`, `views/project/SnapPanel.tsx` (Einbindung in `EditorTab.tsx`), `views/library/ConnectorEditor.tsx` und `CropPanel.tsx` (Einbindung in `LibraryView.tsx`), `docs/architecture/CONNECTORS.md`, eigene Zeilen in STATUS/ROADMAP/REQUIREMENTS/REVIEW, eigener CSS-Abschnitt.
+- Ergebnis: siehe TESTING. Rebase auf B1/B3/B7 ohne fachliche Konflikte (nur angehängte Exporte, CSS- und Dokumentzeilen zusammengeführt). Reservierung nach Push und Pages-Prüfung beendet.

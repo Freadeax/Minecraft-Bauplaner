@@ -94,3 +94,9 @@ label.check{display:flex;align-items:center;gap:8px}fieldset{border:1px solid va
 .file-button{border:1px solid #324751;border-radius:6px;padding:8px 10px;font-size:11px;background:#182b36;color:#d5e1e5;cursor:pointer}.file-button input{position:absolute;width:1px;height:1px;opacity:0}
 .file-button:focus-within{outline:2px solid var(--mint)}
 @media (max-width:700px){.card .stats{flex-wrap:wrap;justify-content:flex-start;column-gap:18px}}
+/* B5 · Anschlüsse, Snap und Bereich als Bauteil */
+.snap-panel,.connector-editor{border-top:1px solid var(--line);margin-top:12px;padding-top:12px;display:flex;flex-direction:column;gap:6px}.snap-panel details summary,.crop-panel summary{cursor:pointer;font-size:11px;color:#cfe0e3;margin:6px 0}
+.snap-list,.connector-list,.link-list{list-style:none;margin:4px 0 10px;padding:0;display:grid;gap:5px}.snap-list button{width:100%;text-align:left;display:grid;gap:3px;padding:8px;border:1px solid #2b3f4a;border-radius:7px;background:#152733}.snap-list strong{font-size:11px;font-weight:550;overflow-wrap:anywhere}.snap-list span{font-size:9px;color:var(--muted)}.snap-list button:hover{border-color:var(--mint)}
+.connector-list li,.link-list li{font-size:10px;display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center}.connector-list span,.link-list span{color:var(--muted);overflow-wrap:anywhere}.link-list li.broken span{color:#ffb4a8}.link-list button{margin-left:auto;padding:3px 8px;font-size:10px}
+.snap-panel .badge{background:#1d2f39;color:#a9bcbf}.snap-panel .badge.danger{background:#4a2125;color:#ffc7c7}.badge.ok{background:#1b3a32;color:var(--mint)}.field-error{color:#ffb4a8;font-size:10px;margin:4px 0}
+.coord-row.three{grid-template-columns:repeat(3,minmax(0,1fr))}.coord-row.three label{margin:0}.connector-row{display:grid;gap:2px}.connector-row label{margin:4px 0}.crop-panel{border-top:1px solid var(--line);margin-top:12px;padding-top:6px}.crop-panel form{gap:4px}
