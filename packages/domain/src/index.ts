@@ -13,3 +13,5 @@ export { buildGuide, evaluateProgress, tickStep, untickStep, tickSteps, untickSt
 export type { Guide, GuideStep, GuideProgress, StepMaterial, StepPhase, StepStatus } from './guide.js';
 export { exportRevisionSchem, revisionForExport, resolveRevision, suggestDataVersion, dataVersionFromProfile, exportFileName, KNOWN_DATA_VERSIONS } from './schemExport.js';
 export type { SchemExportSettings, RevisionExport } from './schemExport.js';
+export { computeMaterials, materialsForResolution, itemsForCell, formatStacks, materialsToCsv, MATERIAL_CATALOG_VERSION, SHULKER_SLOTS } from './materials.js';
+export type { MaterialReport, MaterialScope, ItemLine, ItemSource, ItemRule, UnresolvedLine, UnresolvedReason, StateCount, MaterialTotals, Confidence } from './materials.js';

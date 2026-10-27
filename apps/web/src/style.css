@@ -71,3 +71,18 @@ label.check{display:flex;align-items:center;gap:8px}fieldset{border:1px solid va
 .export-revisions li{border:1px solid #2b3f4a;border-radius:7px;background:#152733;padding:10px;display:grid;gap:4px;font-size:11px}.export-revisions li div{display:flex;gap:8px;align-items:center}.export-revisions small{color:var(--muted);font-size:9px;overflow-wrap:anywhere}
 .export-revisions .badge{background:#2f504b;color:var(--mint)}.export-revisions button{justify-self:start;border:1px solid #324751;border-radius:6px;padding:6px 10px;font-size:11px;background:#182b36;color:#d5e1e5}
 @media(max-width:900px){.export-tab{display:flex;flex-direction:column}.export-revisions{border-left:0;border-top:1px solid var(--line)}.export-form{max-width:none}}
+
+/* B1 · Materialbedarf (MaterialsTab) */
+.materials{background:#101e28;border:1px solid var(--line);border-radius:13px;padding:18px 22px 22px;font-size:11px}.materials.report{grid-column:auto}
+.materials-head{display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap}.materials-head label{margin:0;min-width:200px}.materials-head select{border:1px solid #31444f;border-radius:5px;background:#0f1d26;padding:9px 8px;font-size:12px;color:#e0eaee}
+.materials-csv{margin-left:auto;border:1px solid #324751;border-radius:6px;padding:9px 12px;font-size:11px;background:#182b36;color:#d5e1e5}
+.materials-status{display:block;margin:16px 0}.materials-status.ok{border-color:#3f7a62}.materials-status.ok strong{color:var(--mint)}.materials-status.warning strong{color:#ffb38a}.materials-status ul{margin:6px 0 0;padding-left:18px}
+.materials-stats small{font-size:10px;color:var(--muted)}.materials-title{font-size:13px;font-weight:550;margin:18px 0 8px}.materials-title small{font-size:10px;color:var(--muted);font-weight:400;margin-left:6px}
+.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:8px}.materials-table{width:100%;border-collapse:collapse;font-size:11px}
+.materials-table th{text-align:left;font-weight:500;font-size:9px;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line);background:#12202a;position:sticky;top:0}
+.materials-table td{padding:7px 10px;border-bottom:1px solid #1a2a35;vertical-align:top}.materials-table tr:last-child td{border-bottom:0}.materials-table .num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.materials-table code{font-size:11px;color:#e3eef0}.materials-table small{display:block;font-size:9px;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}.materials-table small.note{color:#e3c59a}
+.materials-table tr.assumed code{color:#e3c59a}.badge.warn{background:#4a3a21;color:#ffe0a8}
+.materials-placed{margin-top:16px}.materials-placed summary{cursor:pointer;color:#cfe0e3}.materials-placed .table-wrap{margin-top:8px;max-height:360px;overflow:auto}
+.materials-notes{margin:16px 0 0;padding-left:18px;color:var(--muted);line-height:1.7}
+@media(max-width:650px){.materials{padding:14px}.materials-head label{min-width:0;flex:1 1 100%}.materials-csv{margin-left:0}.materials-table th:nth-child(5),.materials-table td:nth-child(5){display:none}}
