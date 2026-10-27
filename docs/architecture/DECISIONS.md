@@ -28,3 +28,7 @@ Bei Umsetzung eines ADR: konkrete Versionen und Prüfnachweise ergänzen. Änder
 ## ADR-011 · angenommen · 27.10.2026 · GitHub Pages
 
 Expliziter Nutzerzusatz ersetzt das offene Frontend-Hostingprofil: [statisches GitHub-Pages-Ziel](HOSTING.md). Browser-Worker statt vorausgesetzter Node-Import-API für die erste Fassung. Lokaler Build und Branchpublishing mit `.nojekyll`, keine eigenen Actions. GitHubs interner Pages-Deploy bleibt technisch erforderlich. Backendanbieter, Kontotarif und tatsächlicher Deploymentzugriff sind nicht bestätigt; Repository nicht automatisch öffentlich schalten. Alternative eines verpflichtenden Node-Hostings verworfen, da sie dem gewünschten Websitehosting widerspricht. Kein Datenmigrationsbedarf.
+
+## Webbuild-Konkretisierung · 27.10.2026
+
+React/React DOM 19.3.1, Three.js 0.186.1, Vite 8.3.5 und passende Typen per npm-Registry auf Version/Engine/Lizenz geprüft und exakt fixiert. Primärdokumentation für Vite-Unterpfad und Three.js-OrbitControls geprüft. Lokaler Build statt eigener Actions. Runtime-MIT-Lizenzen werden als THIRD_PARTY_NOTICES.txt mitgeliefert. Synthetische Beispieldaten aus eigenem Generator, keine fremden Minecraft-Texturen. Erstes Rendering bewusst auf farbige Einheitswürfel begrenzt.

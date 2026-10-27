@@ -40,3 +40,7 @@ P1-03 wird verbindlich als statisches GitHub-Pages-Frontend mit Browser-Web-Work
 ## Detaillierter Ausführungsplan
 
 [IMPLEMENTATION_PLAN](IMPLEMENTATION_PLAN.md) konkretisiert P1 bis P7 und ergänzt HP-01 bis HP-04 für statischen Build, Konnektor-Artefakttransport, Pages-Bootstrap und Wiederherstellung. Diese HP-Pakete sind geplant. [Konnektor-Runbook](operations/GITHUB_CONNECTOR_RUNBOOK.md) definiert die selbstständige Integration/Veröffentlichung ohne eigene Actions. Eine gekennzeichnete nutzbare Kernansicht kann bereits vor dem vollständigen Parser veröffentlicht werden; sie erfüllt nicht die gesamte P1-03-/P3-Abnahme.
+
+### Erster Webbuild · 27.10.2026
+
+P1-03a implementiert: React-/Three.js-Kernansicht mit eigenem synthetischem Beispiel, Layern, Blockauswahl, geprüften Voxel-JSON-Dateien und Blockmengen. Kein Schem-Import, kein freier Flug. HP-01/HP-02 teilweise umgesetzt: Vite-Unterpfadbuild und SHA-256-Manifest samt Lizenzhinweisen vorhanden, Artefaktübertragung/Pages-Aktivierung und Liveprüfung folgen unmittelbar. Zwei zusätzliche Artefakttests bestehen (insgesamt 45). Vollständige P1-03-/HP-03-/HP-04-Abnahme bleibt bis echter Browser-/Deploymentprüfung offen.

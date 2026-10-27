@@ -4,7 +4,7 @@ Browserbasierter Minecraft-Bauhelfer: Bauwerke betrachten, wiederverwendbare Mod
 
 Zielrepository: https://github.com/Freadeax/Minecraft-Bauplaner
 
-**Stand: 27.10.2026.** Das Repository wurde geprüft: vor dieser Grundlage enthielt es nur die initiale README. Architektur und Arbeitsregeln sind ausgearbeitet. Ein erster TypeScript-Voxelkern mit Validierung, diskreten Transformationen, Schichtauswahl und Blockzählung ist implementiert und lokal geprüft. Eine Browseranwendung und Schem-Import sind noch nicht vorhanden. Das Repository bleibt privat.
+**Stand: 27.10.2026.** Das Repository wurde geprüft: vor dieser Grundlage enthielt es nur die initiale README. Architektur und Arbeitsregeln sind ausgearbeitet. Ein erster TypeScript-Voxelkern mit Validierung, diskreten Transformationen, Schichtauswahl und Blockzählung ist implementiert und lokal geprüft. Eine erste React-/Three.js-Browseransicht ist implementiert: 3D-Orbit/Zoom, Blockauswahl, X/Y/Z-Schichten, Blockmengen und lokaler Import im internen Voxel-JSON-Vertrag. Schem-Import ist noch offen. Das Repository ist öffentlich.
 
 ## Einstieg
 
@@ -26,7 +26,7 @@ Zielrepository: https://github.com/Freadeax/Minecraft-Bauplaner
 
 ## Hosting
 
-Verbindliches Ziel: **GitHub Pages** mit lokal gebautem statischem Frontend und Browser-Web-Workers. Keine eigenen Actions. Teamdienste werden später separat angebunden. Pages ist noch nicht eingerichtet; siehe [Hostingvertrag](docs/architecture/HOSTING.md).
+Verbindliches Ziel: **GitHub Pages** mit lokal gebautem statischem Frontend und Browser-Web-Workers. Keine eigenen Actions. Teamdienste werden später separat angebunden. Statischer Webbuild und Hashmanifest sind vorhanden; die erstmalige Veröffentlichung wird eingerichtet. Siehe [Hostingvertrag](docs/architecture/HOSTING.md).
 
 ## Geplanter Aufbau
 
@@ -42,13 +42,15 @@ Eine Projektlizenz ist noch nicht festgelegt. Vor Veröffentlichung fremder Asse
 
 ## Lokaler Kernstart
 
-Node.js ab 22.18 und npm erforderlich. TypeScript 5.9.3 ist exakt fixiert; keine Laufzeitabhängigkeit.
+Node.js ab 22.18 und npm erforderlich. TypeScript 5.9.3, React/React DOM 19.3.1, Three.js 0.186.1 und Vite 8.3.5 sind exakt im Lockfile fixiert.
 
 ```sh
 npm ci --ignore-scripts
 npm run check
 ```
 
-`check` führt strenge Typprüfung, Bibliotheksbuild, Node-Tests und Dokumentationsprüfung aus. Einzelbefehle: `npm run typecheck`, `npm run build`, `npm test` (nach Build), `npm run check:docs`. Generierte Module und Deklarationen liegen unter `dist/voxel/src/`. Es gibt noch keinen Web-Startbefehl.
+`check` führt strenge Typprüfung, Bibliotheksbuild, Node-Tests und Dokumentationsprüfung aus. Einzelbefehle: `npm run typecheck`, `npm run build`, `npm test` (nach Build), `npm run check:docs`. Generierte Module und Deklarationen liegen unter `dist/voxel/src/`. Webentwicklung: `npm run dev`; Produktionsvorschau: `npm run preview` (jeweils unter `/Minecraft-Bauplaner/`). `npm run build:web` erzeugt `dist-web/` mit `.nojekyll`, Worker, Lizenzhinweisen und `deployment.json`.
 
 Der Kern zählt platzierte Zustände, Luft und Löschzellen getrennt. Unbekannte Transformationen werden gemeldet und erhalten. Die Testprofile sind synthetisch; daraus folgt keine Minecraft-/Modpack-Kompatibilität.
+
+Die erste Browseransicht verwendet einen eigenen synthetischen Hafenhausentwurf. Alle Blöcke erscheinen vereinfacht als Würfel ohne Minecraft-Texturen. JSON-Import: höchstens 2 MB, 20.000 Zellen und 256 Blöcke je Achse; Verarbeitung im Browser-Worker. JSON-Sicherung ist kein Minecraft-Export. Freier Flug, echte Schem-/Litematic-Dateien, Composer und dauerhafte Projektverwaltung folgen.

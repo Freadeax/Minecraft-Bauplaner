@@ -25,11 +25,11 @@ Nutzeranweisung vom 27.10.2026: Auf jeden erfolgreichen Merge oder Push auf `mai
 4. Veröffentlichung und echte ausgelieferte URL prüfen; Quellcommit und Deploymentstand zuordnen. GitHubs Verarbeitungszeit ist kein sofortiger Live-Nachweis.
 5. Fehler innerhalb des Auftrags beheben. Bleibt ein Blocker, ausdrücklich „main aktuell, Pages nicht aktualisiert“ mit Ursache melden; kein Erfolgsstatus aus einem Push allein ableiten.
 
-Aktuell fehlt noch ein Website-Build. Außerdem bietet der verfügbare GitHub-Connector keine Aktion zum Konfigurieren von Pages; der /pages-Endpunkt ist im Fetch-Werkzeug nicht zugelassen. Tarif, Pages-Quelle und Deploymentbereitschaft bleiben daher ungeprüft. Die Regel ist verankert, es ist noch keine automatische Veröffentlichung eingerichtet.
+Aktueller Nachtrag 27.10.2026: Statischer Webbuild vorhanden; Repository öffentlich bestätigt. Der Konnektor hat weiterhin keine Pages-Konfigurationsaktion, aber die authentifizierte Pages-Oberfläche ist jetzt erreichbar. Dort wurde Pages als deaktiviert beobachtet; Bootstrap über diese UI ist autorisiert und wird ausgeführt. Keine zusätzliche Anmeldung oder Tokenübergabe angefordert.
 
 ## Veröffentlichung und Abnahme
 
-Derzeit ist das Repository privat und es gibt noch keinen Webbuild. GitHub Pages für private Repositories hängt vom Kontotarif ab; dieser ist noch nicht geprüft. Die Sichtbarkeit des Repositorys wird nicht automatisch geändert. Beabsichtigte Projekt-URL: `https://freadeax.github.io/Minecraft-Bauplaner/`, noch nicht eingerichtet oder als erreichbar bestätigt.
+Der Nutzer hat das Repository öffentlich geschaltet; dies wurde über get_repo erneut bestätigt. Webbuild unter dist-web vorhanden. Beabsichtigte Projekt-URL: `https://freadeax.github.io/Minecraft-Bauplaner/`, noch nicht eingerichtet oder als erreichbar bestätigt.
 
 Vor Veröffentlichung: funktionsfähiger statischer Build, keine Quell-/Privatdateien im Artefakt, Pfad-/Reload-/Workerprüfung unter dem Repository-Unterpfad, vollständiger lokaler Prüflauf, aktuelle Kommunikation und Remote-Integration. Danach Pages-Einstellung `Deploy from a branch`, `gh-pages`, `/` prüfen und echte ausgelieferte Dateien testen. Lokaler Build, Branchpush und erfolgreiches Pages-Deployment werden separat berichtet.
 
@@ -42,4 +42,4 @@ GitHub Docs, am 27.10.2026 geprüft:
 
 ## Ausführbarer Arbeitsplan
 
-Der [Konnektorablauf](../operations/GITHUB_CONNECTOR_RUNBOOK.md) beschreibt Gitobjekte, expected_sha, Artefakttransport, Manifest, Bootstrap, Liveprüfung und Rückkehr. Der [Gesamtausbauplan](../IMPLEMENTATION_PLAN.md) zerlegt den Weg zum Webbuild und alle Folgephasen in abnehmbare Pakete. Beides ist Planung, kein bereits implementierter Publisher.
+Der [Konnektorablauf](../operations/GITHUB_CONNECTOR_RUNBOOK.md) beschreibt Gitobjekte, expected_sha, Artefakttransport, Manifest, Bootstrap, Liveprüfung und Rückkehr. Der [Gesamtausbauplan](../IMPLEMENTATION_PLAN.md) zerlegt den Weg zum Webbuild und alle Folgephasen in abnehmbare Pakete. Der Webbuild und Manifestgenerator sind inzwischen implementiert; der Transport erfolgt über die vorhandenen Konnektor-Gitobjekte.

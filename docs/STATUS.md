@@ -1,24 +1,24 @@
 # Projektstand
 
-Stand: 27.10.2026. Erster implementierter Voxel-Kern auf Planungsgrundlage.
+Stand: 27.10.2026. Erste bedienbare statische Browser-Kernansicht.
 
 | Bereich | Bestätigter Stand |
 |---|---|
 | Nutzerziel | Modularer Minecraft-Bauhelfer für Browser und spätere Team-/Spielanbindung |
 | Repository | Freadeax/Minecraft-Bauplaner als Ziel benannt |
 | Remote-Prüfung | Authentifiziert geprüft: initial nur README, main ungeschützt |
-| Websitehosting | GitHub Pages verbindlich; nach jedem Main-Merge/Push unmittelbar passenden geprüften Webbuild veröffentlichen. Aktuell kein Webbuild; Pages-Konfiguration und Deployment über den vorhandenen Connector nicht bestätigt |
+| Websitehosting | GitHub Pages verbindlich; nach jedem Main-Merge/Push unmittelbar passenden geprüften Webbuild veröffentlichen. Webbuild mit Manifest vorhanden; Pages im Browser noch deaktiviert beobachtet, Aktivierung über UI wird ausgeführt |
 | Planung | Gesamtspezifikation, Regeln, Roadmap und Anforderungen ausgearbeitet |
 | Kern | TypeScript-Typen, Laufzeitvalidierung, unveränderliche Snapshots, Geometrie-/begrenzte Zustandstransformation, X/Y/Z-Auswahl und Blockzustandszählung implementiert |
-| Anwendung | Browser-UI, Dateiparser, Persistenz, API und Export noch nicht implementiert |
-| Prüfung | 43 Node-Tests, strenge Typprüfung, Bibliotheksbuild und Dokumentationsprüfung lokal bestanden; Details in TESTING.md |
+| Anwendung | React-/Three.js-Vorabansicht: Orbit/Zoom, Blockpicking, X/Y/Z-Schnitte, Gesamtmengen, Voxel-JSON-Import per Worker, JSON-Sicherung. Kein Schem-Parser, freier Flug, Composer oder Minecraft-Export |
+| Prüfung | 45 Node-Tests, strenge Kern-/Webtypprüfung, Kern-/Webbuild und Dokumentationsprüfung lokal bestanden; Details in TESTING.md |
 | Automatisierung | GitHub Actions werden auf Nutzeranweisung nicht genutzt; Workflow entfernt. Prüfungen werden eigenständig ausgeführt und in docs/TESTING.md dokumentiert. |
 | Integration | PR #1 in main gemergt: e791d68dda1b982e4e3e99536ba23ed80a61e749; explizite Main-Freigabe des Nutzers dokumentiert |
 | GPT-Projekteinstellungen | Anweisung vorbereitet, nicht automatisch eingetragen |
 
 ## Nächster Arbeitsschritt
 
-P0-02/P0-03 sind als interner Vertrag und unabhängig handberechnete Testfixtures abgeschlossen. P1-02/P1-04 sind begonnen; die Teilabnahme umfasst keine allgemeine Zustands-/NBT- oder Registrykompatibilität. Als Nächstes P1-01: begrenzter Schem-v3-Reader mit unabhängigen binären Referenzfixtures. Keine Browser-/Spielprüfung erfolgt.
+P0-02/P0-03 sind als interner Vertrag und unabhängig handberechnete Testfixtures abgeschlossen. P1-02/P1-04 sind begonnen; die Teilabnahme umfasst keine allgemeine Zustands-/NBT- oder Registrykompatibilität. Als Nächstes P1-01: begrenzter Schem-v3-Reader mit unabhängigen binären Referenzfixtures. Erste Live-Browserprüfung im Anschluss an Bootstrap vorgesehen; keine Spielprüfung erfolgt.
 
 ## Vor Integration klären
 
@@ -30,4 +30,8 @@ Nach ausdrücklicher Nutzerfreigabe wurde [PR #1](https://github.com/Freadeax/Mi
 
 ## Ausgearbeitete Folgeplanung
 
-Der [Gesamtplan](IMPLEMENTATION_PLAN.md) deckt Parser, Worker, Pages-Frontend, Bibliothek/Composer, Speicherung, Export/Guide, Team, Formate und Spielanbindung mit Abhängigkeiten und Abnahme ab. Das [Konnektor-Runbook](operations/GITHUB_CONNECTOR_RUNBOOK.md) macht den bestätigten Git-Zugriff zum regulären Transportweg, einschließlich binärer Artefakte und erwarteter Ref-SHAs. Noch keine Implementierung von Publisher, Manifestgenerator oder Webbuild; Pages-Bootstrap bleibt eine Werkzeuggrenze, keine fehlende Main-/Deployfreigabe.
+Der [Gesamtplan](IMPLEMENTATION_PLAN.md) deckt Parser, Worker, Pages-Frontend, Bibliothek/Composer, Speicherung, Export/Guide, Team, Formate und Spielanbindung mit Abhängigkeiten und Abnahme ab. Das [Konnektor-Runbook](operations/GITHUB_CONNECTOR_RUNBOOK.md) macht den bestätigten Git-Zugriff zum regulären Transportweg, einschließlich binärer Artefakte und erwarteter Ref-SHAs. Webbuild und Manifestgenerator implementiert. Artefakttransport über Konnektor vorgesehen; Pages-Einstellungen sind jetzt im authentifizierten Browser zugänglich. Kein aktueller Konnektor-Endpunkt für Pages nötig; UI kann Bootstrap übernehmen.
+
+## P1-03a / HP-01–03 · erster Webbuild
+
+Repositoryöffentlichkeit erneut bestätigt. Build-Artefakt enthält nur statische Website, Browserworker, eigenes Icon, Runtime-Lizenzen und Hashmanifest. Lokaler Browserzugriff war wegen getrennter Laufzeit nicht möglich; Browserbedienung wird nach Erstveröffentlichung auf der echten URL geprüft. Pages war im Browser als deaktiviert sichtbar. Erfolgreiches Deployment wird erst nach URL-/Manifestprüfung gemeldet.
