@@ -26,7 +26,7 @@ Zielrepository: https://github.com/Freadeax/Minecraft-Bauplaner
 
 ## Hosting
 
-Verbindliches Ziel: **GitHub Pages** mit lokal gebautem statischem Frontend und Browser-Web-Workers. Keine eigenen Actions. Teamdienste werden später separat angebunden. Statischer Webbuild und Hashmanifest sind vorhanden; die erstmalige Veröffentlichung wird eingerichtet. Siehe [Hostingvertrag](docs/architecture/HOSTING.md).
+Verbindliches Ziel: **GitHub Pages** mit lokal gebautem statischem Frontend und Browser-Web-Workers. Keine eigenen Actions. Teamdienste werden später separat angebunden. Statischer Webbuild und Hashmanifest sind vorhanden; die erste Veröffentlichung ist unter https://freadeax.github.io/Minecraft-Bauplaner/ erreichbar. Siehe [Hostingvertrag](docs/architecture/HOSTING.md).
 
 ## Geplanter Aufbau
 
@@ -54,3 +54,5 @@ npm run check
 Der Kern zählt platzierte Zustände, Luft und Löschzellen getrennt. Unbekannte Transformationen werden gemeldet und erhalten. Die Testprofile sind synthetisch; daraus folgt keine Minecraft-/Modpack-Kompatibilität.
 
 Die erste Browseransicht verwendet einen eigenen synthetischen Hafenhausentwurf. Alle Blöcke erscheinen vereinfacht als Würfel ohne Minecraft-Texturen. JSON-Import: höchstens 2 MB, 20.000 Zellen und 256 Blöcke je Achse; Verarbeitung im Browser-Worker. JSON-Sicherung ist kein Minecraft-Export. Freier Flug, echte Schem-/Litematic-Dateien, Composer und dauerhafte Projektverwaltung folgen.
+
+Ohne WebGL wird automatisch eine gekennzeichnete isometrische Canvas-Ersatzansicht mit Drehen, Zoom und Blockauswahl verwendet. Ein echter GPU-/iPhone-Test bleibt separat erforderlich.

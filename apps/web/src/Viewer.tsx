@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { canvasFallback } from './canvasFallback';
+import { blockColors } from './colors';
 import type { Cell, VoxelPayload } from '../../../packages/voxel/src/index.js';
-export const blockColors = ['#c7d4d5','#b58452','#895e39','#7cc3b4','#8e9ca9'];
+
 export function Viewer({payload, cells, onSelect}: {payload: VoxelPayload; cells: readonly Cell[]; onSelect: (cell: Cell | null)=>void}) {
   const host=useRef<HTMLDivElement>(null);
   const saved=useRef<{position:THREE.Vector3;target:THREE.Vector3}|null>(null);
@@ -11,7 +13,7 @@ export function Viewer({payload, cells, onSelect}: {payload: VoxelPayload; cells
     const el=host.current; if(!el) return;
     let renderer: THREE.WebGLRenderer;
     try { renderer=new THREE.WebGLRenderer({antialias:true,alpha:true}); }
-    catch { setError('Die 3D-Ansicht benötigt WebGL. Schichten und Blockmengen kannst du weiterhin prüfen.'); return; }
+    catch { setError('Isometrische Ersatzansicht · WebGL hier nicht verfügbar'); return canvasFallback(el,payload,cells,onSelect); }
     setError('');
     renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
     renderer.setClearColor(0x000000,0);
@@ -57,5 +59,5 @@ export function Viewer({payload, cells, onSelect}: {payload: VoxelPayload; cells
     const lost=(e:Event)=>{e.preventDefault();setError('Die Grafikverbindung wurde unterbrochen. Bitte die Seite neu laden.');};renderer.domElement.addEventListener('webglcontextlost',lost);
     return()=>{saved.current={position:camera.position.clone(),target:controls.target.clone()};cancelAnimationFrame(frame);resize.disconnect();controls.dispose();geometry.dispose();materials.forEach(m=>m.dispose());grid.geometry.dispose();(grid.material as THREE.Material).dispose();renderer.dispose();renderer.domElement.remove();};
   },[payload,cells,onSelect]);
-  return <div className="scene" ref={host}>{error&&<div className="graphics-error" role="alert">{error}</div>}</div>;
+  return <div className="scene" ref={host}>{error&&<div className="render-mode" role="status">{error}</div>}</div>;
 }

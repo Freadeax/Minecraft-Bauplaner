@@ -7,7 +7,7 @@ Stand: 27.10.2026. Erste bedienbare statische Browser-Kernansicht.
 | Nutzerziel | Modularer Minecraft-Bauhelfer für Browser und spätere Team-/Spielanbindung |
 | Repository | Freadeax/Minecraft-Bauplaner als Ziel benannt |
 | Remote-Prüfung | Authentifiziert geprüft: initial nur README, main ungeschützt |
-| Websitehosting | GitHub Pages verbindlich; nach jedem Main-Merge/Push unmittelbar passenden geprüften Webbuild veröffentlichen. Webbuild mit Manifest vorhanden; Pages im Browser noch deaktiviert beobachtet, Aktivierung über UI wird ausgeführt |
+| Websitehosting | GitHub Pages verbindlich; nach jedem Main-Merge/Push unmittelbar passenden geprüften Webbuild veröffentlichen. Webbuild mit Manifest vorhanden; Pages-Quelle gh-pages / root im Browser bestätigt, erste Website öffentlich erreichbar |
 | Planung | Gesamtspezifikation, Regeln, Roadmap und Anforderungen ausgearbeitet |
 | Kern | TypeScript-Typen, Laufzeitvalidierung, unveränderliche Snapshots, Geometrie-/begrenzte Zustandstransformation, X/Y/Z-Auswahl und Blockzustandszählung implementiert |
 | Anwendung | React-/Three.js-Vorabansicht: Orbit/Zoom, Blockpicking, X/Y/Z-Schnitte, Gesamtmengen, Voxel-JSON-Import per Worker, JSON-Sicherung. Kein Schem-Parser, freier Flug, Composer oder Minecraft-Export |
@@ -34,4 +34,4 @@ Der [Gesamtplan](IMPLEMENTATION_PLAN.md) deckt Parser, Worker, Pages-Frontend, B
 
 ## P1-03a / HP-01–03 · erster Webbuild
 
-Repositoryöffentlichkeit erneut bestätigt. Build-Artefakt enthält nur statische Website, Browserworker, eigenes Icon, Runtime-Lizenzen und Hashmanifest. Lokaler Browserzugriff war wegen getrennter Laufzeit nicht möglich; Browserbedienung wird nach Erstveröffentlichung auf der echten URL geprüft. Pages war im Browser als deaktiviert sichtbar. Erfolgreiches Deployment wird erst nach URL-/Manifestprüfung gemeldet.
+Repositoryöffentlichkeit erneut bestätigt. Build-Artefakt enthält nur statische Website, Browserworker, eigenes Icon, Runtime-Lizenzen und Hashmanifest. Lokaler Browserzugriff war wegen getrennter Laufzeit nicht möglich; Browserbedienung wird nach Erstveröffentlichung auf der echten URL geprüft. Pages war zunächst deaktiviert; nach Anlage von gh-pages zeigt die Oberfläche diese Quelle und einen laufenden Build. Die echte Website lädt inzwischen. Erste Schicht-/Rotationsprüfung bestanden; abschließende Manifest-/Fallbackprüfung folgt nach Software-Isometrie-Nachtrag.
