@@ -1,13 +1,13 @@
 # Projektstand
 
-Stand: 27.10.2026. Erste bedienbare statische Browser-Kernansicht.
+Stand: 27.10.2026. Erste bedienbare Browser-Kernansicht auf GitHub Pages veröffentlicht.
 
 | Bereich | Bestätigter Stand |
 |---|---|
 | Nutzerziel | Modularer Minecraft-Bauhelfer für Browser und spätere Team-/Spielanbindung |
 | Repository | Freadeax/Minecraft-Bauplaner als Ziel benannt |
 | Remote-Prüfung | Authentifiziert geprüft: initial nur README, main ungeschützt |
-| Websitehosting | GitHub Pages verbindlich; nach jedem Main-Merge/Push unmittelbar passenden geprüften Webbuild veröffentlichen. Webbuild mit Manifest vorhanden; Pages-Quelle gh-pages / root im Browser bestätigt, erste Website öffentlich erreichbar |
+| Websitehosting | GitHub Pages verbindlich; nach jedem Main-Merge/Push unmittelbar passenden geprüften Webbuild veröffentlichen. Webbuild mit Manifest vorhanden; Pages-Quelle gh-pages / root im Browser bestätigt, Website öffentlich erreichbar; Live-Canvas, Picking, Schichten und Rotation geprüft |
 | Planung | Gesamtspezifikation, Regeln, Roadmap und Anforderungen ausgearbeitet |
 | Kern | TypeScript-Typen, Laufzeitvalidierung, unveränderliche Snapshots, Geometrie-/begrenzte Zustandstransformation, X/Y/Z-Auswahl und Blockzustandszählung implementiert |
 | Anwendung | React-/Three.js-Vorabansicht: Orbit/Zoom, Blockpicking, X/Y/Z-Schnitte, Gesamtmengen, Voxel-JSON-Import per Worker, JSON-Sicherung. Kein Schem-Parser, freier Flug, Composer oder Minecraft-Export |
@@ -34,4 +34,10 @@ Der [Gesamtplan](IMPLEMENTATION_PLAN.md) deckt Parser, Worker, Pages-Frontend, B
 
 ## P1-03a / HP-01–03 · erster Webbuild
 
-Repositoryöffentlichkeit erneut bestätigt. Build-Artefakt enthält nur statische Website, Browserworker, eigenes Icon, Runtime-Lizenzen und Hashmanifest. Lokaler Browserzugriff war wegen getrennter Laufzeit nicht möglich; Browserbedienung wird nach Erstveröffentlichung auf der echten URL geprüft. Pages war zunächst deaktiviert; nach Anlage von gh-pages zeigt die Oberfläche diese Quelle und einen laufenden Build. Die echte Website lädt inzwischen. Erste Schicht-/Rotationsprüfung bestanden; abschließende Manifest-/Fallbackprüfung folgt nach Software-Isometrie-Nachtrag.
+Repositoryöffentlichkeit erneut bestätigt. Build-Artefakt enthält nur statische Website, Browserworker, eigenes Icon, Runtime-Lizenzen und Hashmanifest. Lokaler Browserzugriff war wegen getrennter Laufzeit nicht möglich; Browserbedienung wird nach Erstveröffentlichung auf der echten URL geprüft. Pages war zunächst deaktiviert; nach Anlage von gh-pages zeigt die Oberfläche diese Quelle und einen laufenden Build. Die echte Website lädt inzwischen. Erste Schicht-/Rotationsprüfung bestanden; Software-Isometrie sichtbar, Picking zeigt konkrete Blockkoordinaten, Schichtfilter korrekt. Der im Live-Manifest ausgewiesene Quellstand wird bei Veröffentlichung abgeglichen.
+
+## Bestätigter Livebetrieb
+
+Website: https://freadeax.github.io/Minecraft-Bauplaner/ · Quelle: gh-pages / root, HTTPS. Implementierter Codequellstand: 6d9d2b63a369804409a8e014e263ae4040cb85be; Pages-Deployment c8573e23bbdfdc5d1c7bb83bac63b448254dbea6 erfolgreich. Nachfolgende Dokumentationscommits ändern den Anwendungscode nicht; der exakte aktuelle Quellstand steht in deployment.json.
+
+Live geprüft: sichtbares Hafenhaus mit 425 Blöcken, Einzelschicht Y=10 mit 26 Blöcken, X-Schnitt, Vierteldrehung, konkrete Blockauswahl X=2/Y=7/Z=4. Ohne WebGL greift die gekennzeichnete Softwareansicht. Hardware-WebGL, echter iPhone-/Touchtest und Dateiimport per Browser-Dateidialog bleiben nicht geprüft. Kein Schem-Import, kein freier Flug, kein Composer oder Minecraft-Export.

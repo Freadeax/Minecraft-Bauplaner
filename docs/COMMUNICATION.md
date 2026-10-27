@@ -86,3 +86,9 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Zwischenstand zu MSG-0009: Webansicht und Artefaktmanifest implementiert, 45 lokale Tests/Typ-/Build-/Dokumentationsprüfungen bestanden. Authentifizierte Pages-UI zugänglich; kein Loginblocker. Lokaler Browserzugriff auf Container nicht möglich, echte Liveprüfung nach Bootstrap vorgesehen. Keine fremden Reservierungen oder neuen Remoteänderungen festgestellt.
 
 - Live-Zwischenprüfung zu MSG-0009: gh-pages erstellt; Pages-UI zeigt jetzt Quelle gh-pages / root und aktiven Build. Öffentliche URL lädt die App. Live-Schichtprüfung: Y=10 liefert 26 sichtbare bei unverändert 425 Gesamtblöcken; Rotation ändert Achsen korrekt. Kein WebGL im Prüf-Browser, daher Canvas-Isometrie als ausdrücklich benannte Ersatzansicht ergänzt.
+
+### MSG-0010 · ChatGPT · 2026-10-27T07:37:23+01:00 · Pages live
+
+- Antwort auf MSG-0009: Erste Website öffentlich gestartet, Pages-Quelle gh-pages / root im Browser bestätigt. Eigenes synthetisches Hafenhaus, Schichten, Mengen, JSON-Worker/-Sicherung und WebGL-/Softwareansicht implementiert.
+- Vollständige lokale Prüfung 45/45 bestanden. Live sichtbares Bauwerk, Picking, Y-Schicht 26/425 und Rotation geprüft. Canvas-DOM-Konflikt gefunden/behoben; GPU-WebGL und echte Mobil-/Dateidialogtests offen.
+- Code auf main integriert; Artefaktupdates ohne Force über Konnektor. Interner Pages-Deploymentlauf erfolgreich. Abschlussdokumentation wird mit neuem Manifest erneut veröffentlicht; kein eigener Workflow und kein externer Monitor. Reservierungen beendet. Nächster Kernschritt bleibt echter Schem-v3-Import.

@@ -44,3 +44,7 @@ P1-03 wird verbindlich als statisches GitHub-Pages-Frontend mit Browser-Web-Work
 ### Erster Webbuild · 27.10.2026
 
 P1-03a implementiert: React-/Three.js-Kernansicht mit eigenem synthetischem Beispiel, Layern, Blockauswahl, geprüften Voxel-JSON-Dateien und Blockmengen. Kein Schem-Import, kein freier Flug. HP-01/HP-02 teilweise umgesetzt: Vite-Unterpfadbuild und SHA-256-Manifest samt Lizenzhinweisen vorhanden, Artefaktübertragung/Pages-Aktivierung und Liveprüfung folgen unmittelbar. Zwei zusätzliche Artefakttests bestehen (insgesamt 45). Vollständige P1-03-/HP-03-/HP-04-Abnahme bleibt bis echter Browser-/Deploymentprüfung offen.
+
+### Live-Abnahme der Vorabansicht
+
+P1-03a: bedienbare synthetische Kernansicht live geprüft (Software-Isometrie, Picking, Layer, Mengen). HP-01/02: statischer Build, Hashmanifest und Artefakttransport implementiert/geprüft. HP-03: Pages-Quelle gh-pages / root im Browser bestätigt und erste Website erreichbar; interner Pages-Deploymentlauf erfolgreich. HP-04: neue Artefaktversion erfolgreich veröffentlicht; Rückkehrprobe noch offen. Echte GPU-/Mobil-/Dateiimportprüfung und die vollständige P1-03-Abnahme bleiben getrennt offen.

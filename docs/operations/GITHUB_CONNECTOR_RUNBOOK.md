@@ -47,7 +47,7 @@ Am 27.10.2026 anhand der verfügbaren Werkzeugschemata und bisheriger erfolgreic
 
 ## C. Geprüftes Websiteartefakt veröffentlichen
 
-Voraussetzung: Ein funktionsfähiger Webbuild und eine konfigurierte Pages-Quelle. Aktuell fehlen beide. Der erste Webbuild soll bereits eine nutzbare Kernansicht liefern; keine unfertige Dokumentationsseite als Bauhelfer deklarieren.
+Voraussetzung: Ein funktionsfähiger Webbuild und eine konfigurierte Pages-Quelle. Nachtrag vom 27.10.2026: Webbuild, Manifest und gh-pages / root sind inzwischen vorhanden; Website live geprüft. Der erste Webbuild soll bereits eine nutzbare Kernansicht liefern; keine unfertige Dokumentationsseite als Bauhelfer deklarieren.
 
 1. Integrierten Quellcommit `C` festhalten. Statischen Build lokal aus genau diesem Quellstand erstellen. Build-Tools benötigen keine GitHub-Shell-Zugangsdaten; der Konnektor übernimmt den Transport.
 2. Build unter `/Minecraft-Bauplaner/` lokal ausliefern. Start, Hashnavigation, Reload, Assets, Workerstart, Dateiauswahl, Layer und Fehleranzeige prüfen. Im Build keine node_modules, Rohwelten, internen Protokolle, Schlüssel oder absoluten lokalen Pfade.
@@ -66,7 +66,7 @@ Unmittelbar bedeutet: keine neue Entwicklungsaufgabe zwischen Integration und De
 
 Zielquelle: GitHub Pages → `Deploy from a branch` → `gh-pages` → `/`. Keine eigene Actions-Datei. Der Artefaktbranch wird erst aus einem geprüften Webbuild erzeugt. `.nojekyll` überspringt Jekyll, nicht GitHubs internen Pages-Deploymentlauf.
 
-Vor Einrichtung Repositorytarif und Sichtbarkeit prüfen. Das Repository ist derzeit privat; es wird nicht automatisch öffentlich geschaltet. Fehlt weiterhin eine Pages-Konfigurationsaktion, ist eine einmalige Einstellung über die GitHub-Oberfläche durch den Nutzer oder einen separat verfügbaren, autorisierten UI-Zugriff nötig. Kein zusätzlicher Token und kein Drittservice werden als vermeintlich notwendiger Standard eingeführt. Nach dieser Einrichtung können spätere Buildübertragungen über den bestehenden Konnektor erfolgen, soweit Branchpublishing im Konto funktioniert.
+Vor Einrichtung Repositorytarif und Sichtbarkeit prüfen. Das Repository wurde inzwischen vom Nutzer öffentlich geschaltet; dies ist über den Konnektor bestätigt. Fehlt weiterhin eine Pages-Konfigurationsaktion, ist eine einmalige Einstellung über die GitHub-Oberfläche durch den Nutzer oder einen separat verfügbaren, autorisierten UI-Zugriff nötig. Kein zusätzlicher Token und kein Drittservice werden als vermeintlich notwendiger Standard eingeführt. Nach dieser Einrichtung können spätere Buildübertragungen über den bestehenden Konnektor erfolgen, soweit Branchpublishing im Konto funktioniert.
 
 Ein fremder Push außerhalb einer aktiven Agentensitzung löst ohne eingerichteten externen Prozess keinen lokalen Agentenbuild aus. Diese Grenze bleibt sichtbar, statt automatische Überwachung zu versprechen.
 
@@ -88,4 +88,4 @@ Kein nachträglicher Main-Commit nur zur Eintragung einer erfolgreichen Deployme
 
 ## Fertigkriterium
 
-Fertig ist der Ablauf erst, wenn Main-Quellcommit, geprüfter Build, aktualisierter Artefaktbranch und bestätigte Liveversion zusammenpassen. Fehlt eines, wird es getrennt offen ausgewiesen. Aktueller Stand: Konnektor-Gittransport nachgewiesen; Webbuild, Manifestgenerator, Artefaktpublisher und Liveprüfung geplant; Pages-Quelle noch nicht konfiguriert/bestätigt.
+Fertig ist der Ablauf erst, wenn Main-Quellcommit, geprüfter Build, aktualisierter Artefaktbranch und bestätigte Liveversion zusammenpassen. Fehlt eines, wird es getrennt offen ausgewiesen. Aktueller Stand: Konnektor-Gittransport, Webbuild, Manifestgenerator und Artefakttransport ausgeführt; Pages-Quelle gh-pages / root im Browser bestätigt. Website mit Software-Isometrie, Picking, Schichten und Rotation live geprüft. Keine Hintergrundautomatik für fremde Pushes, kein eigener Actions-Workflow.
