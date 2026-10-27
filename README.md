@@ -19,6 +19,8 @@ Zielrepository: https://github.com/Freadeax/Minecraft-Bauplaner
 - [Vollständiger Umsetzungsplan](docs/IMPLEMENTATION_PLAN.md)
 - [Selbstständiger GitHub-/Pages-Ablauf](docs/operations/GITHUB_CONNECTOR_RUNBOOK.md)
 - [Anforderungen und Zuordnung](docs/REQUIREMENTS.md)
+- [Domänenvertrag: Bibliothek, Projekte, Konflikte](docs/architecture/DOMAIN.md)
+- [Parallele Arbeitsblöcke](docs/BLOCKS.md)
 - [Zusammenarbeit und Kommunikation](docs/COMMUNICATION.md)
 - [Stand und Übergabe](docs/STATUS.md)
 - [Eigenständig ausgeführte Prüfungen](docs/TESTING.md)
@@ -58,3 +60,7 @@ Der Kern zählt platzierte Zustände, Luft und Löschzellen getrennt. Unbekannte
 Die erste Browseransicht verwendet einen eigenen synthetischen Hafenhausentwurf. Alle Blöcke erscheinen vereinfacht als Würfel ohne Minecraft-Texturen. JSON-Import: höchstens 2 MB, 20.000 Zellen und 256 Blöcke je Achse; Verarbeitung im Browser-Worker. JSON-Sicherung ist kein Minecraft-Export. Sponge Schem v3: bis 2 MB komprimiert, 8 MB entpackt und 20.000 Volumenzellen. Originaldatei/Quell-NBT bleiben separat erhalten. Litematic, freier Flug, Composer und dauerhafte Projektverwaltung folgen.
 
 Ohne WebGL wird automatisch eine gekennzeichnete isometrische Canvas-Ersatzansicht mit Drehen, Zoom und Blockauswahl verwendet. Ein echter GPU-/iPhone-Test bleibt separat erforderlich.
+
+## Stand Fundament B0
+
+Die Website hat jetzt Projektzentrale (`#/`), Bauteilbibliothek (`#/bibliothek`), Projekteditor (`#/projekt/<id>`) und den bisherigen Dateibetrachter (`#/betrachter`). Bauteile tragen Herkunft und unveränderliche Versionen; im Editor werden Instanzen eingefügt, verschoben, gedreht, gespiegelt und dupliziert, mit Undo/Redo und blockgenauer Konfliktprüfung. Projekte werden bis zum Speicherblock B3 nur für die laufende Sitzung gehalten; das zeigt die Oberfläche an. Browserprüfung: `npm run build && npm run test:e2e` (lokales Playwright/Chromium). Veröffentlichung: `scripts/publish_pages.sh`.

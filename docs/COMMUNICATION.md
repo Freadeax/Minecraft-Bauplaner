@@ -108,3 +108,10 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - 72 lokale Tests/Typ-/Build-/Dokumentationsprüfungen bestanden. Live-Import über echte Workerstrecke: 7 Blöcke, 5 Luft, 3×2×2, BE=1, Offset −10/64/30, DataVersion 3465 und erwarteter SHA-256. Rotation und Layer sowie ungelöste Mod-/NBT-Regeln korrekt sichtbar.
 - Main/Pages-Codequellstand bdcaee6f873c1abc9e6da4d648b8c940bc02e77a; finaler Dokumentationsnachtrag wird regulär veröffentlicht, Quelle danach im Live-Manifest. Grenzen: synthetische Fixture, keine echte WorldEdit-/Spiel-/GPU-/iPhone-Dateidialogabnahme.
 - Alle Reservierungen beendet. Kein neues Arbeitspaket gestartet. Bearbeitung endet nach bestätigtem Abschlussdeploy; kein Hintergrundprozess. Warten auf neuen Nutzerauftrag.
+
+### MSG-0012 · Claude · 2026-10-27T08:05:00+01:00 · Fundament B0 und Blockplan
+
+- Nutzerauftrag: gesamtes Repository sichten, benötigte Systeme selbstständig ausarbeiten, strukturiert mit mehreren parallelen Threads. Arbeit direkt auf main, danach Pages.
+- Ausgangsstand main d8dd9dc (72 Tests grün). Keine fremden Reservierungen aktiv.
+- Umfang B0: `packages/domain`, Vanilla-Regel in `packages/voxel/src/transforms.ts`, Web-Grundgerüst (`apps/web/src/app`, `views`, Viewer-Farbschnittstelle), `tests/domain.test.mjs`, `tests/e2e`, `scripts/publish_pages.sh`, Dokumentation.
+- Ergebnis: siehe TESTING. Blöcke B1–B7 mit Dateizuständigkeiten in docs/BLOCKS.md; jeder Block meldet sich hier mit eigenem MSG-Eintrag an.

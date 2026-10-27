@@ -51,6 +51,10 @@ Ausführungsplan: [GitHub-Konnektor und Pages](docs/operations/GITHUB_CONNECTOR_
 - Vor Push aktuellen Remote-Stand prüfen und Änderungen sauber integrieren. Konflikte fachlich lösen, nicht pauschal eine Seite wählen.
 - Commit nur die eigenen geprüften Änderungen. Commit, Push, Deployment und Release sind getrennte Aktionen und getrennt zu berichten.
 
+## Parallele Blöcke
+
+Bei paralleler Arbeit gelten Dateizuständigkeiten und Regeln aus docs/BLOCKS.md. Vor jedem Push `git pull --rebase origin main`, vollständige Prüfung, danach `scripts/publish_pages.sh`.
+
 ## Prüfungen ohne GitHub Actions
 
 - GitHub Actions werden nicht verwendet. Keine Workflows unter `.github/workflows` anlegen oder aktivieren.

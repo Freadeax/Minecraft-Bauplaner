@@ -33,3 +33,5 @@ Priorität: M = Kern, S = Folgeausbau, L = Langfristig. Status: Übersicht der A
 Neue Anforderungen erhalten stabile IDs, Nutzen, Abnahme und Abhängigkeiten. Widersprüche werden dokumentiert und entschieden, nicht still umgedeutet. Nicht unterstützte Features werden in der Oberfläche nicht als fertig angeboten.
 
 Aktueller Nachweis R-001: packages/formats/src, unabhängige fixtures/schem, tests/schem.test.mjs und Importworker/-Bericht. Begrenzte Sponge-v3-Unterstützung, keine allgemeine Versionsfreigabe. [Importvertrag](architecture/SCHEM_IMPORT.md).
+
+Nachweis B0 (27.10.2026): R-008 teilweise (Metadaten, Tags, Suche, Versionen in `packages/domain/src/library.ts`), R-010/R-011/R-013 teilweise (Instanztransformationen, Override, Undo/Redo, Voxelkonflikte in `project.ts`/`compose.ts`, Editor), R-024 teilweise (Herkunft/Nutzungsrechte je Asset, inhaltsadressierte Versionen). Tests: `tests/domain.test.mjs`, `tests/e2e/app.e2e.mjs`. Offene Teile siehe [Blockplan](BLOCKS.md).

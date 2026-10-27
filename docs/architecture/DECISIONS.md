@@ -36,3 +36,11 @@ React/React DOM 19.3.1, Three.js 0.186.1, Vite 8.3.5 und passende Typen per npm-
 ## ADR-012 · Begrenzter Schem-Reader mit getrenntem Originalerhalt
 
 27.10.2026: Browser-DecompressionStream statt neuer Laufzeitabhängigkeit; eigener begrenzter Big-Endian-NBT-Reader nach Java-DataInput und Sponge-v3-Schema. Quell-NBT/komprimiertes Original bleiben separat vom Voxel-Snapshot. BlockEntities erhalten vollständigen Wrapper. Nicht darstellbare Gleitkommafälle werden abgewiesen. Unabhängiger Python-struct-Fixturewriter; kein JS-Writer, der den Reader nur selbst bestätigt. JSON-Sicherung ausdrücklich nicht als vollständige Format-/Projektsicherung ausgeben. Details in SCHEM_IMPORT.md.
+
+## ADR-013 · Domänenkern und Zusammensetzung · 27.10.2026
+
+Neues Paket `packages/domain` ohne Laufzeitabhängigkeit. AssetVersion-ID aus SHA-256 über Inhalt statt Zufalls-ID: Duplikate werden erkannt, Wiederherstellung kann Manipulation prüfen. Operationen mit exakter Gegenoperation statt Snapshot-Undo: kleiner Speicher, später direkt als Teamoperation nutzbar. Konflikte per Zellmap statt paarweisem Vergleich; AABB nur als Bericht. Alternative „letzte Instanz gewinnt“ verworfen (verstößt gegen „nichts still per Reihenfolge“). Vanilla-Zustände ohne Properties gelten als ausrichtungsfrei (Begründung in [DOMAIN](DOMAIN.md)). Kein Datenmigrationsbedarf.
+
+## ADR-014 · Hash-Router, Speicherschnittstelle, parallele Blöcke · 27.10.2026
+
+Hash-Routen funktionieren auf Pages ohne Server-Rewrite. Eine einzige `Repository`-Schnittstelle mit `baseRevision`-Pflicht trennt UI und Speicher; IndexedDB folgt in B3 ohne UI-Umbau. Projektbereiche registrieren sich in einer Tab-Registry, damit parallele Blöcke unterschiedliche Dateien besitzen ([BLOCKS](../BLOCKS.md)). Pages-Veröffentlichung über `scripts/publish_pages.sh` (lokaler Build, Commit nur des Artefakts auf gh-pages, kein Force, Schutz gegen Verdrängen eines neueren Stands). Browserprüfung mit lokal vorhandenem Playwright/Chromium, nicht als Projektabhängigkeit fixiert.

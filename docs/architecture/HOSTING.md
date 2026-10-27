@@ -47,3 +47,7 @@ Der [Konnektorablauf](../operations/GITHUB_CONNECTOR_RUNBOOK.md) beschreibt Gito
 ### Bestätigte Erstveröffentlichung
 
 27.10.2026: Öffentlicher Pages-Betrieb mit Quelle gh-pages / root und HTTPS im Browser bestätigt. Erstes Deployment und nachfolgende Updates wurden über Konnektor-Gitobjekte ausgelöst. GitHubs interner Pages-Lauf erfolgreich; kein eigener Buildworkflow. CDN-/Browsercache kann kurzzeitig alte index.html liefern: Für den Vergleich Quell-SHA aus deployment.json und tatsächliche Skript-URLs prüfen, nicht nur einen grünen Deploymentlauf.
+
+## Veröffentlichungsskript
+
+Seit 27.10.2026 führt `scripts/publish_pages.sh` Schritt 1–5 aus: Abbruch, wenn HEAD nicht `origin/main` oder der Arbeitsbaum unsauber ist; Build mit Quellcommit im Manifest; Artefakttest; Commit ausschließlich von `dist-web` auf den bisherigen gh-pages-Head; Push ohne Force mit Wiederholung; Abbruch, wenn gh-pages bereits einen neueren Main-Stand enthält. Die Liveprüfung über `deployment.json` bleibt ein eigener Schritt.

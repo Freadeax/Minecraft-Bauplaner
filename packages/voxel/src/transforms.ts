@@ -53,7 +53,9 @@ export function transformBlockState(state: BlockState, t: Transform): StateTrans
   if (!t.mirrorX && t.quarterTurns === 0) return { state, resolved: true };
   const p = state.properties;
   const next: Record<string,string> = { ...p };
-  if (['minecraft:stone','minecraft:air','minecraft:cave_air','minecraft:void_air'].includes(state.id) && matches(p, {})) {
+  // Vanilla stores every orientation in block-state properties, so a vanilla
+  // state without properties is orientation-free. Mod namespaces stay unresolved.
+  if (state.id.startsWith('minecraft:') && matches(p, {})) {
     return { state, resolved: true };
   }
   if (state.id === 'minecraft:oak_log' && matches(p, { axis: ['x','y','z'] })) {

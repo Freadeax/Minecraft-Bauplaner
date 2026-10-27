@@ -3,17 +3,20 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { canvasFallback } from './canvasFallback';
 import { blockColors } from './colors';
+const defaultColor=(cell: Cell): string=>cell.kind==='erase'?'#d35f5f':blockColors[cell.paletteIndex%blockColors.length]!;
 import type { Cell, VoxelPayload } from '../../../packages/voxel/src/index.js';
 
-export function Viewer({payload, cells, onSelect}: {payload: VoxelPayload; cells: readonly Cell[]; onSelect: (cell: Cell | null)=>void}) {
+/** colorFor returns "#rrggbb" per cell (selection, conflicts); default colours follow the palette index. */
+export function Viewer({payload, cells, onSelect, colorFor}: {payload: VoxelPayload; cells: readonly Cell[]; onSelect: (cell: Cell | null)=>void; colorFor?: (cell: Cell)=>string}) {
   const host=useRef<HTMLDivElement>(null);
   const saved=useRef<{position:THREE.Vector3;target:THREE.Vector3}|null>(null);
   const [error,setError]=useState('');
   useEffect(()=>{
     const el=host.current; if(!el) return;
+    const color=colorFor??defaultColor;
     let renderer: THREE.WebGLRenderer;
     try { renderer=new THREE.WebGLRenderer({antialias:true,alpha:true}); }
-    catch { setError('Isometrische Ersatzansicht · WebGL hier nicht verfügbar'); return canvasFallback(el,payload,cells,onSelect); }
+    catch { setError('Isometrische Ersatzansicht · WebGL hier nicht verfügbar'); return canvasFallback(el,payload,cells,onSelect,color); }
     setError('');
     renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
     renderer.setClearColor(0x000000,0);
@@ -34,12 +37,12 @@ export function Viewer({payload, cells, onSelect}: {payload: VoxelPayload; cells
     const grid=new THREE.GridHelper(Math.max(30,size*2),Math.min(100,Math.max(30,size*2)),0x47766f,0x29444d);
     grid.position.set(0,b.min[1]-centre.y-0.06,0);scene.add(grid);
     const geometry=new THREE.BoxGeometry(0.97,0.97,0.97);
-    const groups=new Map<number, Cell[]>();
-    for(const cell of cells) if(cell.kind==='block') { const group=groups.get(cell.paletteIndex)??[];group.push(cell);groups.set(cell.paletteIndex,group); }
+    const groups=new Map<string, Cell[]>();
+    for(const cell of cells) if(cell.kind==='block') { const key=color(cell);const group=groups.get(key)??[];group.push(cell);groups.set(key,group); }
     const meshes:THREE.InstancedMesh[]=[];const materials:THREE.MeshStandardMaterial[]=[];
     const map=new Map<THREE.Object3D,Cell[]>();const dummy=new THREE.Object3D();
-    for(const [index,list] of groups) {
-      const material=new THREE.MeshStandardMaterial({color:blockColors[index%blockColors.length]!,roughness:0.85,metalness:0.05});
+    for(const [key,list] of groups) {
+      const material=new THREE.MeshStandardMaterial({color:key,roughness:0.85,metalness:0.05});
       materials.push(material);
       const mesh=new THREE.InstancedMesh(geometry,material,list.length);
       list.forEach((cell,i)=>{ dummy.position.set(cell.position[0]+0.5-centre.x,cell.position[1]+0.5-centre.y,cell.position[2]+0.5-centre.z);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix); });
@@ -58,6 +61,6 @@ export function Viewer({payload, cells, onSelect}: {payload: VoxelPayload; cells
     let frame=0;const animate=()=>{frame=requestAnimationFrame(animate);controls.update();renderer.render(scene,camera);};animate();
     const lost=(e:Event)=>{e.preventDefault();setError('Die Grafikverbindung wurde unterbrochen. Bitte die Seite neu laden.');};renderer.domElement.addEventListener('webglcontextlost',lost);
     return()=>{saved.current={position:camera.position.clone(),target:controls.target.clone()};cancelAnimationFrame(frame);resize.disconnect();controls.dispose();geometry.dispose();materials.forEach(m=>m.dispose());grid.geometry.dispose();(grid.material as THREE.Material).dispose();renderer.dispose();renderer.domElement.remove();};
-  },[payload,cells,onSelect]);
+  },[payload,cells,onSelect,colorFor]);
   return <div className="scene"><div className="canvas-host" ref={host}/>{error&&<div className="render-mode" role="status">{error}</div>}</div>;
 }

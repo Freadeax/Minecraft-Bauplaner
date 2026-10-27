@@ -1,0 +1,11 @@
+export type * from './types.js';
+export { DomainError, DOMAIN_SCHEMA_VERSION } from './types.js';
+export { canonicalJson, sha256Hex, quickHash, newId } from './hash.js';
+export { createAsset, addAssetVersion, verifyAssetVersion, updateAssetMeta, cropPayload, searchAssets, payloadHash, checkConnectorShape, deepFreeze } from './library.js';
+export type { NewAssetInput, NewVersionInput, AssetQuery } from './library.js';
+export { createProject, applyOperation, execute, undo, redo, newInstance, freezeRevision, describeOperation, rotateInPlace, checkTransform, EMPTY_HISTORY } from './project.js';
+export type { Operation, History, HistoryEntry } from './project.js';
+export { resolveProject, positionKey } from './compose.js';
+export type { Resolution, PlacedInstance, VoxelConflict, ConflictKind, CompositionIssue } from './compose.js';
+export { createSampleLibrary, sampleTowerPayload, sampleWallPayload, sampleGatePayload, SAMPLE_PROFILE } from './samples.js';
+export type { SampleLibrary } from './samples.js';

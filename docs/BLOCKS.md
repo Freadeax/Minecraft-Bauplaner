@@ -1,0 +1,43 @@
+# Parallele Arbeitsblöcke
+
+Stand: 27.10.2026. Nutzerauftrag: Systeme strukturiert in mehreren parallelen Threads ausarbeiten, sauber und funktionierend. Das gemeinsame Fundament (Block B0) liegt auf main; die Blöcke B1–B7 bauen darauf auf und sind so geschnitten, dass sie verschiedene Dateien besitzen.
+
+## B0 · Fundament (erledigt)
+
+Domänenvertrag ([DOMAIN](architecture/DOMAIN.md)): Asset/AssetVersion inhaltsadressiert, Projekte, Operationen mit Undo/Redo, Revisionen, Zusammensetzung mit Voxelkonflikten und Override, Beispielbauteile. Weboberfläche: Hash-Router, Projektzentrale, Bibliothek mit Dateiimport als Bauteil, Editor mit Instanzen/Transformationen/Konfliktbericht, Speicherschnittstelle, Projekt-Tab-Registry. Playwright-Prüfung `npm run test:e2e`, Veröffentlichung `scripts/publish_pages.sh`.
+
+## Gemeinsame Regeln für alle Blöcke
+
+1. Vor Beginn: `git pull origin main`, AGENTS.md, diese Datei, DOMAIN.md lesen; Eintrag in COMMUNICATION.md anlegen.
+2. Nur die eigenen Dateien ändern. Gemeinsame Dateien nur wie folgt:
+   - `packages/domain/src/index.ts`: eigene Exportzeilen anhängen.
+   - `apps/web/src/views/project/tabs.ts`: genau einen Registry-Eintrag anhängen.
+   - `apps/web/src/style.css`: eigene Regeln in einem eigenen kommentierten Abschnitt am Ende.
+   - `package.json`: neue Skripte/Abhängigkeiten nur begründet, exakt fixiert, mit Lockfile.
+   - STATUS/ROADMAP/REQUIREMENTS/REVIEW: nur eigene Zeilen; TESTING und COMMUNICATION: eigener Abschnitt am Ende.
+3. Domänenlogik in `packages/*` mit Node-Tests unter `tests/`, UI nur als Adapter. Keine zweite Koordinaten-, Transformations- oder Zähllogik.
+4. Vor jedem Push: `git pull --rebase origin main`, dann `npm run check` und `npm run test:e2e` vollständig grün; Ergebnis in TESTING.md. Konflikte fachlich lösen, nie Force-Push.
+5. Direkt nach dem Push auf main: `scripts/publish_pages.sh` ausführen und `https://freadeax.github.io/Minecraft-Bauplaner/deployment.json` auf den neuen Quellcommit prüfen. Keine GitHub Actions.
+6. Grenzen sichtbar machen: Demo, ungeprüfte Profile, manuelle Haken, fehlende Zuordnungen.
+
+## Blöcke
+
+| ID | Block | Roadmap/Anforderung | Besitzt (neu/hauptverantwortlich) | Hängt ab von |
+|---|---|---|---|---|
+| B1 | Materialbedarf und Bauitems | P1-04a, R-017 | `packages/domain/src/materials.ts`, `tests/materials.test.mjs`, `views/project/MaterialsTab.tsx`, `docs/architecture/MATERIALS.md` | B0 |
+| B2 | Schem-v3-Export | P3-01, R-022 | `packages/formats/src/nbtWrite.ts`, `schemWrite.ts`, unabhängiger Python-Leser `scripts/verify_schem.py`, `tests/schem-export.test.mjs`, `views/project/ExportTab.tsx`, `docs/architecture/SCHEM_EXPORT.md` | B0 |
+| B3 | Dauerhafte Speicherung und Backup | P2-01, R-023/R-024 | `apps/web/src/app/idbRepository.ts`, `openRepository` in `repository.ts`, `packages/domain/src/backup.ts`, `tests/backup.test.mjs`, `tests/e2e/persistence.e2e.mjs`, Backup-UI in `ProjectsView.tsx`, `docs/architecture/PERSISTENCE.md` | B0 |
+| B4 | Bauanleitung und Aufgaben | P3-02, R-007 | `packages/domain/src/guide.ts`, `tests/guide.test.mjs`, `views/project/BuildTab.tsx`, `docs/architecture/GUIDE.md` | B0 (B1 optional für Itemmengen) |
+| B5 | Anschlüsse, Snap und Bereichsauswahl | P2-02, R-009/R-011 | `packages/domain/src/connectors.ts`, `tests/connectors.test.mjs`, `views/project/SnapPanel.tsx` (eine Einbindungszeile in `EditorTab.tsx`), `views/library/ConnectorEditor.tsx` und `CropPanel.tsx` (Einbindung in `LibraryView.tsx`) | B0 |
+| B6 | Viewer und Bedienung | P1-03c, R-004/R-005/R-006 | `apps/web/src/Viewer.tsx`, `canvasFallback.ts`, `colors.ts`, neue Viewer-Module; Code-Splitting in `vite.config.mjs` | B0 |
+| B7 | Zustandsadapter für Drehen/Spiegeln | P1-02a, R-010 | `packages/voxel/src/transforms.ts` (+ neue `states.ts`), `tests/states.test.mjs`, Abschnitt in VOXEL_CONTRACT.md | B0 |
+
+### Abnahme je Block
+
+- **B1:** Platzierte Zustände, Bauitems und Stacks getrennt; Türen/Betten/Doppelpflanzen nur einmal, Doppelstufen zweifach, Kerzen/Seegurken/Schneeschichten nach Anzahl, Wandvarianten auf Item abgebildet, Flüssigkeiten und Modblöcke ungelöst sichtbar, Annahmen gekennzeichnet; Mengen aus `resolution.world`; Tab „Material“ mit Stück/Stacks/Shulkerkisten und Hinweis bei Konflikten.
+- **B2:** NBT-Writer und Schem-v3-Writer aus aufgelöster Welt; Exportsperre bei `exportBlockers`; Luft-/Lösch-/Auswahlpolitik und Offset im Bericht; unabhängiger Python-Leser prüft Abmessungen, Palette, VarInts, BlockEntities; zusätzlich Roundtrip über eigenen Reader; Export friert eine Revision ein und nennt sie.
+- **B3:** IndexedDB mit SchemaVersion/Migration, atomare Transaktionen, `baseRevision`-Konflikt bei zwei Tabs, Speicherfehler sichtbar, Originaldateien als Blobs; Projektbackup mit Hashes, Wiederherstellung prüft Vollständigkeit und überschreibt nichts still.
+- **B4:** Schritte je Bauabschnitt/Instanz und Y-Schicht mit stabiler ID, Koordinatenbereich, Mengen, Voraussetzungen ohne Zyklen; Schwerkraftblöcke, Flüssigkeiten zuletzt; manuell abgehakt getrennt von geprüft; geänderte Geometrie ⇒ prüfbedürftig; mobile Bauansicht.
+- **B5:** Anschlüsse auf Grenzflächen validiert, Transformation von Position/Normale/Up, deterministische Snap-Kandidaten mit Konfliktprüfung und Nutzungsgrenze, Verbindungen gespeichert; Anschluss-Editor und Bereich-als-Bauteil in der Bibliothek.
+- **B6:** freier Flug (WASD, Escape), Draufsicht/Seitenansichten, Auswahl fokussieren, Welt-/Lokalkoordinate im Inspektor, Schichtmodi Bereich/einzeln im Editor, Touch-Bedienung, Leistung (nur sichtbare Flächen, Code-Splitting) mit dokumentierter Messung.
+- **B7:** expliziter Regelkatalog für Vanilla-Familien (Treppen, Stämme/Säulen, `facing`, Türen/Falltüren inkl. Scharnier, Zäune/Scheiben/Mauern, Schienen, Betten, Schilder/Banner/Köpfe `rotation`), unabhängige erwartete Ausrichtungen, vier Drehungen = Identität, doppelte Spiegelung = Identität; Unbekanntes bleibt ungelöst.

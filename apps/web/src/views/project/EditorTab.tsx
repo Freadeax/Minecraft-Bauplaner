@@ -1,0 +1,176 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { countBlocks, selectLayers } from '../../../../../packages/voxel/src/index.js';
+import type { Cell, Transform, Vec3 } from '../../../../../packages/voxel/src/index.js';
+import { newInstance, positionKey, rotateInPlace } from '../../../../../packages/domain/src/index.js';
+import type { Asset, Instance, Resolution } from '../../../../../packages/domain/src/index.js';
+import { useApp } from '../../app/context';
+import { formatNumber } from '../../app/ui';
+import { mix, stateColor } from '../../colors';
+import { Viewer } from '../../Viewer';
+import { isResolved } from './session';
+import type { ProjectSession } from './session';
+
+const CONFLICT = '#ff4d4d', DIM_TARGET = '#16303c';
+
+function latestVersionId(asset: Asset): string | undefined { return asset.versionIds.at(-1); }
+
+/** Composer: place, move, rotate, mirror instances; voxel conflicts and undo/redo. */
+export function EditorTab({ session }: { session: ProjectSession }) {
+  const { library } = useApp();
+  const { project, resolution, selectedInstanceId: selectedId } = session;
+  const [message, setMessage] = useState('');
+  const [topY, setTopY] = useState<number | null>(null);
+  const run = useCallback((op: Parameters<ProjectSession['execute']>[0]) => { setMessage(session.execute(op)); }, [session]);
+  const resolved: Resolution | null = isResolved(resolution) ? resolution : null;
+  const world = resolved?.world ?? null;
+  const selected = project.instances.find(i => i.id === selectedId) ?? null;
+
+  useEffect(() => {
+    const key = (e: KeyboardEvent) => {
+      if ((e.target as HTMLElement | null)?.closest('input,textarea,select')) return;
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) session.redo(); else session.undo(); }
+      else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { e.preventDefault(); session.redo(); }
+    };
+    window.addEventListener('keydown', key);
+    return () => window.removeEventListener('keydown', key);
+  }, [session]);
+
+  const conflictKeys = useMemo(() => new Set(resolved?.conflicts.map(c => positionKey(c.position)) ?? []), [resolved]);
+  const selectedKeys = useMemo(() => {
+    const keys = new Set<string>();
+    if (resolved && selectedId) for (const [key, ids] of resolved.owners) if (ids.includes(selectedId)) keys.add(key);
+    return keys;
+  }, [resolved, selectedId]);
+  const colorFor = useCallback((cell: Cell) => {
+    const key = positionKey(cell.position);
+    if (conflictKeys.has(key)) return CONFLICT;
+    const base = cell.kind === 'erase' ? '#d35f5f' : stateColor(world!.palette[cell.paletteIndex]!.id);
+    return selectedId && !selectedKeys.has(key) ? mix(base, DIM_TARGET, 0.55) : base;
+  }, [conflictKeys, selectedKeys, selectedId, world]);
+  const yMin = world?.bounds.min[1] ?? 0, yMax = (world?.bounds.maxExclusive[1] ?? 1) - 1;
+  const top = topY === null ? yMax : Math.max(yMin, Math.min(yMax, topY));
+  const visible = useMemo(() => world && top < yMax ? selectLayers(world, 'y', yMin, top + 1) : world, [world, top, yMin, yMax]);
+  const onSelect = useCallback((cell: Cell | null) => {
+    session.select(cell && resolved ? resolved.owners.get(positionKey(cell.position))?.[0] ?? null : null);
+  }, [session, resolved]);
+
+  const assets = library.assets.filter(a => !a.archived && latestVersionId(a));
+  const add = (asset: Asset) => {
+    const versionId = latestVersionId(asset)!;
+    const version = library.versions.get(versionId);
+    if (!version) { setMessage(`Version für ${asset.name} fehlt im Speicher.`); return; }
+    // Place beside the existing world so a new instance never overlaps by default.
+    const x = world ? world.bounds.maxExclusive[0] + 1 - version.payload.bounds.min[0] : 0;
+    const instance = newInstance({ assetVersionId: versionId, name: `${asset.name} ${project.instances.filter(i => i.assetVersionId === versionId).length + 1}`,
+      transform: { position: [x, 0, 0], quarterTurns: 0, mirrorX: false } });
+    run({ kind: 'instance.add', instance }); session.select(instance.id);
+  };
+  const transform = (instance: Instance, t: Transform) => run({ kind: 'instance.transform', instanceId: instance.id, transform: t });
+  const move = (instance: Instance, axis: 0 | 1 | 2, delta: number) => {
+    const position = [...instance.transform.position] as [number, number, number]; position[axis] += delta;
+    transform(instance, { ...instance.transform, position });
+  };
+  const setCoordinate = (instance: Instance, axis: 0 | 1 | 2, raw: string) => {
+    const n = Number(raw);
+    if (!Number.isSafeInteger(n)) { setMessage('Koordinaten sind ganze Zahlen.'); return; }
+    const position = [...instance.transform.position] as [number, number, number]; position[axis] = n;
+    transform(instance, { ...instance.transform, position });
+  };
+  const duplicate = (instance: Instance) => {
+    const version = library.versions.get(instance.assetVersionId);
+    const width = version ? version.payload.bounds.maxExclusive[0] - version.payload.bounds.min[0] : 1;
+    const copy = newInstance({ assetVersionId: instance.assetVersionId, name: `${instance.name} Kopie`, override: instance.override,
+      transform: { ...instance.transform, position: [instance.transform.position[0] + width + 1, instance.transform.position[1], instance.transform.position[2]] as Vec3 } });
+    run({ kind: 'instance.add', instance: copy }); session.select(copy.id);
+  };
+  const assetOf = (instance: Instance) => { const v = library.versions.get(instance.assetVersionId); return { version: v, asset: v ? library.assets.find(a => a.id === v.assetId) : undefined }; };
+  const counts = useMemo(() => world ? countBlocks(world) : null, [world]);
+  const conflictsOf = (id: string) => resolved?.conflicts.filter(c => c.instanceIds.includes(id)).length ?? 0;
+
+  return <section className="editor" aria-label="Editor">
+    <aside className="editor-tree">
+      <span className="panel-kicker">INSTANZEN</span>
+      {project.instances.length === 0 && <p className="muted">Noch keine Bauteile. Füge unten eines aus der Bibliothek ein.</p>}
+      <ul className="instance-list">{project.instances.map(i => {
+        const n = conflictsOf(i.id), { asset, version } = assetOf(i);
+        return <li key={i.id}><button aria-pressed={i.id === selectedId} onClick={() => session.select(i.id === selectedId ? null : i.id)}>
+          <strong>{i.name}</strong><span>{asset?.name ?? 'fehlende Version'} · v{version?.label ?? '?'}{i.override ? ' · Vorrang' : ''}</span>
+          {n > 0 && <em className="badge danger">{n} Konflikte</em>}
+        </button></li>;
+      })}</ul>
+      <span className="panel-kicker">BAUTEIL EINFÜGEN</span>
+      <ul className="asset-picker">{assets.map(a => <li key={a.id}><button onClick={() => add(a)} title={a.description}>＋ {a.name}{a.demo && <small> · Beispiel</small>}</button></li>)}</ul>
+      <a className="text-button" href="#/bibliothek">Bibliothek verwalten →</a>
+    </aside>
+    <div className="viewport">
+      <div className="view-toolbar">
+        <span className="view-label"><span /> PROJEKT · {formatNumber(counts?.blocks ?? 0)} BLÖCKE</span>
+        <div>
+          <button onClick={session.undo} disabled={!session.history.undo.length} title={session.history.undo.at(-1)?.label ?? ''}>↶ <span>Rückgängig</span></button>
+          <button onClick={session.redo} disabled={!session.history.redo.length} title={session.history.redo.at(-1)?.label ?? ''}>↷ <span>Wiederholen</span></button>
+        </div>
+      </div>
+      {world && visible ? <Viewer payload={world} cells={visible.cells} onSelect={onSelect} colorFor={colorFor} />
+        : <div className="scene empty-scene"><p>{isResolved(resolution) ? 'Leeres Projekt – füge links ein Bauteil ein.' : resolution.error}</p></div>}
+      <div className="viewport-footer"><span>Ziehen: drehen · Scrollen: zoomen · Klick: Instanz wählen · Strg+Z / Strg+Y</span>
+        {world && <label className="inline-range">bis Y {top}<input type="range" min={yMin} max={yMax} value={top} onChange={e => setTopY(Number(e.target.value))} aria-label="Sichtbar bis Schicht" /></label>}
+      </div>
+    </div>
+    <aside className="inspector" aria-label="Eigenschaften">
+      <span className="panel-kicker">EIGENSCHAFTEN</span>
+      {!selected ? <p className="muted">Wähle eine Instanz in der Liste oder im Bauwerk.</p> : (() => {
+        const { asset, version } = assetOf(selected);
+        return <div className="inspector-body">
+          <label>Name<input key={selected.id} defaultValue={selected.name} onBlur={e => { if (e.target.value.trim() !== selected.name) run({ kind: 'instance.update', instanceId: selected.id, name: e.target.value }); }} /></label>
+          <p className="muted">{asset?.name ?? 'Unbekanntes Bauteil'} · Version {version?.label ?? '–'}{asset?.demo ? ' · Beispiel' : ''}</p>
+          <fieldset><legend>Position (Pivot)</legend>
+            {(['X', 'Y', 'Z'] as const).map((label, axis) => <div className="coord-row" key={label}>
+              <span>{label}</span>
+              <button aria-label={`${label} minus 1`} onClick={() => move(selected, axis as 0 | 1 | 2, -1)}>−</button>
+              <input key={`${selected.id}-${axis}-${selected.transform.position[axis]}`} inputMode="numeric" defaultValue={selected.transform.position[axis]} aria-label={`${label}-Koordinate`}
+                onBlur={e => { if (e.target.value !== String(selected.transform.position[axis])) setCoordinate(selected, axis as 0 | 1 | 2, e.target.value); }}
+                onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }} />
+              <button aria-label={`${label} plus 1`} onClick={() => move(selected, axis as 0 | 1 | 2, 1)}>＋</button>
+            </div>)}
+          </fieldset>
+          <div className="button-row">
+            <button onClick={() => transform(selected, rotateInPlace(selected.transform, 3))}>↺ 90°</button>
+            <button onClick={() => transform(selected, rotateInPlace(selected.transform, 1))}>↻ 90°</button>
+            <button aria-pressed={selected.transform.mirrorX} onClick={() => transform(selected, { ...selected.transform, mirrorX: !selected.transform.mirrorX })}>⇋ Spiegeln</button>
+          </div>
+          <p className="muted">Drehung {selected.transform.quarterTurns * 90}° · {selected.transform.mirrorX ? 'gespiegelt' : 'nicht gespiegelt'}</p>
+          <label className="check"><input type="checkbox" checked={selected.override} onChange={e => run({ kind: 'instance.update', instanceId: selected.id, override: e.target.checked })} />
+            Vorrang bei Überschneidung (expliziter Override)</label>
+          <div className="button-row">
+            <button onClick={() => duplicate(selected)}>⧉ Duplizieren</button>
+            <button className="danger" onClick={() => { run({ kind: 'instance.remove', instanceId: selected.id }); session.select(null); }}>✕ Entfernen</button>
+          </div>
+        </div>;
+      })()}
+    </aside>
+    {message && <div className="notice warning editor-message" role="alert">{message}<button onClick={() => setMessage('')}>OK</button></div>}
+    <ConflictReport session={session} />
+  </section>;
+}
+
+function ConflictReport({ session }: { session: ProjectSession }) {
+  const r = session.resolution;
+  if (!isResolved(r)) return <section className="report danger-report" role="alert"><h3>Projekt kann nicht aufgelöst werden</h3><p>{r.error}</p></section>;
+  const name = (id: string) => session.project.instances.find(i => i.id === id)?.name ?? id;
+  const ok = r.exportBlockers.length === 0;
+  return <section className={`report ${ok ? 'ok-report' : 'danger-report'}`} aria-label="Konfliktbericht">
+    <h3>{ok ? '✓ Geometrisch konfliktfrei' : '⚠ Offene Punkte vor einem baubaren Export'}</h3>
+    <dl className="report-stats">
+      <div><dt>Ungeklärte Konflikte</dt><dd>{r.conflicts.length}</dd></div>
+      <div><dt>Per Vorrang entschieden</dt><dd>{r.overridden.length}</dd></div>
+      <div><dt>Identische Überlappungen (einmal gezählt)</dt><dd>{r.duplicates}</dd></div>
+      <div><dt>Überlappende Begrenzungsboxen</dt><dd>{r.boundsOverlaps.length}</dd></div>
+    </dl>
+    {r.exportBlockers.length > 0 && <ul>{r.exportBlockers.map(b => <li key={b}>{b}</li>)}</ul>}
+    {r.conflicts.length > 0 && <details><summary>Konflikte anzeigen</summary><ul className="conflict-list">{r.conflicts.slice(0, 200).map(c =>
+      <li key={positionKey(c.position)}><button onClick={() => session.select(c.instanceIds[0]!)}>X {c.position[0]} · Y {c.position[1]} · Z {c.position[2]}</button>
+        {' '}{c.kind === 'state' ? 'verschiedene Blöcke' : c.kind === 'air-vs-block' ? 'Luft gegen Block' : c.kind === 'erase-vs-block' ? 'Löschen gegen Block' : 'verschiedene BlockEntity-Daten'}: {c.instanceIds.map(name).join(' ↔ ')}</li>)}
+      {r.conflicts.length > 200 && <li>… und {r.conflicts.length - 200} weitere</li>}</ul></details>}
+    {r.issues.length > 0 && <details><summary>{r.issues.length} Hinweise zu Profil und Transformation</summary><ul>{r.issues.map((i, n) => <li key={n}>{i.message}</li>)}</ul></details>}
+  </section>;
+}

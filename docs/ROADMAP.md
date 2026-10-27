@@ -54,3 +54,7 @@ P1-03a: bedienbare synthetische Kernansicht live geprüft (Software-Isometrie, P
 P1-01a/01b/01c begrenzt implementiert: Big-Endian-NBT/GZip/Sponge v3, unabhängige Python-struct-Binärfixture und Browserworker/-Importbericht. 27 neue Formattests, insgesamt 72 lokale Tests. Original/Quell-NBT bleiben erhalten; nicht dargestellte Zusatzdaten sichtbar. Vollständige P1-01-Abnahme bleibt wegen noch fehlender Referenzwerkzeug-/Spielprüfung teilweise offen. Keine Folgearbeit nach Nutzersteuerung „Block fertig machen und warten“.
 
 Live-Smoke für diesen Block bestanden: synthetische GZip-Schem läuft über Browserworker und ergibt bekannte Koordinaten/Mengen/Quelle. Referenzwerkzeug-/Spielabnahme bleibt offen. Aktive Bearbeitung nach diesem Abschluss auf Nutzeranweisung beendet.
+
+## Fundament B0 und Parallelblöcke · 27.10.2026
+
+P2-01 teilweise: Domänenverträge (Asset, AssetVersion, Instanz, Projekt, Revision), inhaltsadressierte Versionen mit Hashprüfung, Bibliothekssuche und Dateiimport als Bauteil umgesetzt; dauerhafte Speicherung/Backup folgt in B3. P2-02 teilweise: Instanzoperationen mit Undo/Redo, Voxelkonflikte, Duplikate und expliziter Override im Editor; Snap/Anschlüsse folgen in B5. Weitere Pakete laufen als [Parallelblöcke](BLOCKS.md): B1 → P1-04a, B2 → P3-01, B3 → P2-01, B4 → P3-02, B5 → P2-02, B6 → P1-03c, B7 → P1-02a.

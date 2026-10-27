@@ -1,9 +1,8 @@
 import type { Cell, VoxelPayload } from '../../../packages/voxel/src/index.js';
-import { blockColors } from './colors';
 type Point = readonly [number,number];
 type Poly = { points: Point[]; cell: Cell; color: string };
 /** A software isometric view for devices without WebGL; no Minecraft model claim. */
-export function canvasFallback(host: HTMLDivElement, payload: VoxelPayload, cells: readonly Cell[], onSelect: (cell: Cell|null)=>void): ()=>void {
+export function canvasFallback(host: HTMLDivElement, payload: VoxelPayload, cells: readonly Cell[], onSelect: (cell: Cell|null)=>void, colorOf: (cell: Cell)=>string): ()=>void {
   const canvas=document.createElement('canvas');host.appendChild(canvas);
   canvas.setAttribute('role','img');canvas.setAttribute('aria-label','Isometrische Ersatzansicht: ziehen zum Drehen, scrollen zum Zoomen, Block anklicken');
   const ctx=canvas.getContext('2d');if(!ctx){canvas.remove();return()=>{};}
@@ -28,7 +27,7 @@ export function canvasFallback(host: HTMLDivElement, payload: VoxelPayload, cell
     for(const cell of sorted){
       if(cell.kind!=='block')continue;
       const [x,y,z]=cell.position;const r=0.97;
-      const color=blockColors[cell.paletteIndex%blockColors.length]!;
+      const color=colorOf(cell);
       if(sy>=0)face([[x+r,y,z],[x+r,y,z+r],[x+r,y+r,z+r],[x+r,y+r,z]],cell,shade(color,0.74));
       else face([[x,y,z+r],[x,y,z],[x,y+r,z],[x,y+r,z+r]],cell,shade(color,0.74));
       if(cy>=0)face([[x,y,z+r],[x+r,y,z+r],[x+r,y+r,z+r],[x,y+r,z+r]],cell,shade(color,0.88));
