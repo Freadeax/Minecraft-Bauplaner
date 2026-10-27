@@ -14,7 +14,7 @@ Prüfgrundlage: Repositoryregeln, README, STATUS, ROADMAP, COMMUNICATION, Archit
 | Generatoren/Fundamente R-012/014 | segmentierte Generatoren und Terrainprüfung geplant | keine Generator-/Terrainimplementierung |
 | Updates R-015 | Versionen einfrieren und Diff geplant | kein Update-/Patchsystem |
 | Team/API R-016/019 | separate serverseitige Rechte-/Operationsarchitektur geplant | kein Teamdienst, kein Login-/Rechtesystem |
-| Materialien R-017 | platzierte Zustände/Luft/Löschen getrennt; Bauitems mit Mehrblock-, Stufen-, Anzahl- und Wandregeln, Stack-/Shulkerbedarf, Konflikte als vorläufig markiert (B1) | Rohstoffe/Rezepte, Bindung an exakte Spielversion |
+| Materialien R-017 | platzierte Zustände/Luft/Löschen getrennt; Bauitems mit Mehrblock-, Stufen-, Anzahl- und Wandregeln, Stack-/Shulkerbedarf, Konflikte als vorläufig markiert (B1) | Bindung an exakte Spielversion; Rohstoffe/Rezepte (B1-R) mit einem Rezept je Item, Brennstoff/Werkzeuge getrennt |
 | Lager/Spiel R-018/020 | spätere explizite Adapter geplant | keine Spielverbindung oder Weltänderung |
 | Themes R-021 | kompatibilitätsgeprüfte Mappings geplant | keine Themeumsetzung |
 | Export R-022 | Schem-v3-Writer aus eingefrorener Revision, Exportsperre, reproduzierbare Datei mit SHA-256, unabhängiger Python-Leser und Roundtrip (B2) | echte WorldEdit-/Spielabnahme, DataVersion-/Registryprüfung |

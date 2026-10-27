@@ -3,6 +3,7 @@ import { formatStacks, materialsForResolution, materialsToCsv } from '../../../.
 import type { ItemLine, MaterialReport, MaterialScope, UnresolvedReason } from '../../../../../packages/domain/src/index.js';
 import { download, formatNumber } from '../../app/ui';
 import { isResolved } from './session';
+import { RawMaterialsPanel } from './RawMaterialsPanel';
 import type { ProjectSession } from './session';
 
 const reasonLabel: Record<UnresolvedReason, string> = {
@@ -74,6 +75,7 @@ export function MaterialsTab({ session }: { session: ProjectSession }) {
           <tbody>{report.placed.states.map(s => <tr key={s.key}><td><code>{s.state.id}</code>{Object.keys(s.state.properties).length > 0 && <small>{props(s.state.properties)}</small>}</td><td className="num">{formatNumber(s.count)}</td></tr>)}</tbody>
         </table></div>
       </details>
+      <RawMaterialsPanel report={report} fileStem={project.name.replace(/[^\p{L}\p{N}_-]+/gu, '_')} />
     </>}
     <ul className="materials-notes">{report.notes.map(n => <li key={n}>{n}</li>)}</ul>
   </section>;

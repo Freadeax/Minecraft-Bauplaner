@@ -8,7 +8,7 @@ import type { Resolution } from './compose.js';
  *  1. placed block states – exact cell counts from the resolved world payload,
  *  2. build items – what a player has to hold to place those states,
  *  3. storage – stacks, inventory slots and shulker boxes for the items.
- * Raw materials (crafting trees) are deliberately not derived here.
+ * Raw materials (crafting trees) are derived separately in `recipes.ts`.
  *
  * Item rules come from an explicit Vanilla Java catalogue. Nothing is guessed
  * silently: every state without a catalogue rule falls back to "item id =
@@ -161,7 +161,7 @@ const DIRECT = new Set(['stone', 'granite', 'diorite', 'andesite', 'deepslate', 
 
 const UNPACKABLE = /(^|_)shulker_box$/;
 
-function stackSizeOf(itemId: string): 1 | 16 | 64 {
+export function stackSizeOf(itemId: string): 1 | 16 | 64 {
   const id = itemId.replace(/^minecraft:/, '');
   if (/(^|_)bed$/.test(id) || UNPACKABLE.test(id) || id === 'cake' || /_bucket$/.test(id) || id === 'decorated_pot') return 1;
   if (/_sign$/.test(id) || /_banner$/.test(id) || id === 'snowball' || id === 'egg' || id === 'ender_pearl' || id === 'honey_bottle' || id === 'armor_stand') return 16;
@@ -322,7 +322,7 @@ export function computeMaterials(world: VoxelPayload | null, options: MaterialOp
   const conflicts = options.conflicts ?? 0;
   const assumed = itemLines.some(l => l.confidence === 'assumed');
   const notes: string[] = [`Itemregeln aus ${MATERIAL_CATALOG_VERSION} (Vanilla Java), nicht gegen eine exakte Spielversion geprüft.`,
-    'Rohstoffe und Rezepte werden nicht abgeleitet; Werkzeuge (Hacke, Schaufel, Feuerzeug) sind nicht enthalten.'];
+    'Rohstoffe und Rezepte stehen getrennt im Abschnitt „Rohstoffe und Rezepte“; Werkzeuge (Hacke, Schaufel, Feuerzeug) sind nicht enthalten.'];
   if (conflicts) notes.push(`${conflicts} ungeklärte Voxelkonflikte: Mengen folgen der Vorschauwahl und sind vorläufig.`);
   if (waterlogged) notes.push(`${waterlogged} wassergeflutete Blöcke brauchen zusätzlich Wasser (nicht gezählt).`);
   if (containersWithContents) notes.push(`${containersWithContents} Behälter mit gespeichertem Inhalt: Inhalt nicht im Bedarf enthalten.`);

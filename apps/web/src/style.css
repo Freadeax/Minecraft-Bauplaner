@@ -160,3 +160,13 @@ label.check{display:flex;align-items:center;gap:8px}fieldset{border:1px solid va
 .view-toolbar .drag-snap{display:inline-flex;align-items:center;gap:4px;font-size:10px;margin:0 6px}
 .drag-hint{position:absolute;left:50%;bottom:52px;transform:translateX(-50%);z-index:3;background:#0d1922e6;border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:11px;color:var(--mint);max-width:calc(100% - 32px);pointer-events:none}
 .canvas-host[data-dragging]{cursor:grabbing}
+/* B1-R · Rohstoffe und Rezepte (views/project/RawMaterialsPanel) */
+.raw-materials{margin-top:22px;border-top:1px solid var(--line);padding-top:6px}.raw-head{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}.raw-head .materials-title{margin-right:auto}
+.raw-toggle{display:inline-flex;align-items:center;gap:6px;margin:0;font-size:11px;color:#cfe0e3}.raw-toggle input{accent-color:var(--mint);margin:0}.raw-head .materials-csv{margin-left:0}
+.raw-stats{margin-bottom:12px}.raw-stats small{font-size:10px;color:var(--muted)}.raw-status{display:block;margin:12px 0}.raw-status.ok{border-color:#3f7a62}.raw-status.ok strong{color:var(--mint)}.raw-status.warning strong{color:#ffb38a}.raw-status ul{margin:6px 0 0;padding-left:18px}.badge.stock{background:#1d2f39;color:#a9c4d6;margin-right:8px}.raw-table .link-button{font-size:10px}
+.recipe-steps{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:8px;max-height:480px;overflow:auto;counter-reset:step}
+.recipe-steps li{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:4px 12px;align-items:baseline;padding:7px 10px;border-bottom:1px solid #1a2a35;counter-increment:step}.recipe-steps li:last-child{border-bottom:0}
+.recipe-steps li.build-item .step-formula b{color:var(--mint)}.step-station{font-size:10px;color:var(--muted);white-space:nowrap}.step-station::before{content:counter(step) ". ";color:#5f7682}
+.step-formula{overflow-wrap:anywhere;color:#d5e1e5}.step-formula b{font-weight:550}.step-formula small{color:var(--muted)}.step-formula small.note{color:#e3c59a}.recipe-steps .link-button{font-size:10px}
+.raw-surplus{margin:12px 0 0;color:#cfe0e3;line-height:1.7}.raw-surplus strong{font-weight:550}
+@media(max-width:650px){.recipe-steps li{grid-template-columns:minmax(0,1fr) auto}.step-formula{grid-column:1/-1;grid-row:2}.raw-head .materials-title{flex:1 1 100%}}

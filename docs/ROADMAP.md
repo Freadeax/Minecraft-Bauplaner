@@ -32,7 +32,7 @@ Die erste Fassung schließt P0 bis P3 ein. Backend kann früher eingeführt werd
 - P0-02 abgeschlossen: [Voxelvertrag](architecture/VOXEL_CONTRACT.md), `packages/voxel/src/types.ts` und `validation.ts`.
 - P0-03 abgeschlossen für den internen Vertrag: [synthetische, handberechnete Fixtures](../fixtures/voxel/README.md) und `tests/voxel.test.mjs`. Binäre Referenzdateien gehören zur folgenden Parserabnahme.
 - P1-02 teilweise: geometrische Transformationen und begrenzter expliziter Zustandskatalog; BlockEntity-Transformationen melden ungelöste Semantik. Keine vollständige Minecraft-Kompatibilität.
-- P1-04 teilweise: Zählung eindeutiger Blockzustände plus separate Luft-/Löschzahlen. P1-04a (B1) umgesetzt: Bauitems aus `resolution.world` mit Vanilla-Katalog, ungelöste/angenommene Zuordnungen sichtbar, Stacks/Shulkerkisten, Tab „Material“. Rohstoffbedarf offen.
+- P1-04 teilweise: Zählung eindeutiger Blockzustände plus separate Luft-/Löschzahlen. P1-04a (B1) umgesetzt: Bauitems aus `resolution.world` mit Vanilla-Katalog, ungelöste/angenommene Zuordnungen sichtbar, Stacks/Shulkerkisten, Tab „Material“. Rohstoffbedarf (B1-R) umgesetzt: Rezeptkatalog mit geteilter Rundung, Steinsäge/Werkbank, „vorhanden“, Brennstoff getrennt ([MATERIALS](architecture/MATERIALS.md#rohstoffe-und-rezepte-b1-r)).
 - Nächster vollständiger Schritt: P1-01, Schem-v3-Reader mit strukturellen Limits, Abbruch und unabhängigen Binärfixtures.
 
 P1-03 wird verbindlich als statisches GitHub-Pages-Frontend mit Browser-Web-Workers, Repository-Unterpfad und ohne eigene Actions umgesetzt. Pages ist veröffentlicht; siehe [Hosting](architecture/HOSTING.md).

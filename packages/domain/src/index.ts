@@ -27,3 +27,5 @@ export { FACETS, CATALOG_VERSION, BUILD_TIME_MODEL, MATERIAL_GROUP_LABEL, SIZE_C
 export type { FacetKey, BuildingFacets, FacetDefinition, BlockClass, MaterialGroup, Factor, BuildingMetrics, CatalogEntry, CatalogQuery, SortKey, Plot, ProjectContext, Suggestion, Similar } from './catalog.js';
 export { createBuildingLibrary, BUILDING_SPECS, PATH_PROFILE } from './buildings.js';
 export type { BuildingSpec, BuildingLibrary } from './buildings.js';
+export { resolveRecipes, recipesForMaterials, chooseRecipe, recipesFor, rawSource, assertRecipeCatalog, recipesToCsv, RECIPES, RECIPE_TAGS, RECIPE_CATALOG_VERSION } from './recipes.js';
+export type { Recipe, Ingredient, Station, RecipeMethod, RecipeOptions, RecipeReport, RecipeStep, BaseLine, BaseKind, TagChoice, TagDefinition } from './recipes.js';
