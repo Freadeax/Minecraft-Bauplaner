@@ -37,3 +37,5 @@ Der Nutzer hat „aktuellen Block fertig machen und warten“ angeordnet. Der Im
 ## Aktueller Arbeitsstand
 
 B0 (Fundament) ist auf main. Domänenvertrag: [DOMAIN](architecture/DOMAIN.md). Die Blöcke B1–B7 mit Dateizuständigkeiten, Regeln und Abnahmen stehen in [BLOCKS](BLOCKS.md). Veröffentlichung nach jedem Main-Push mit `scripts/publish_pages.sh`.
+
+B9 Gebäudekatalog: Bibliothek mit 16 mitgelieferten Gebäudevorschlägen plus den drei Modulen, Steckbrief mit Angaben und berechneten Kennwerten, Filter, Bauplatz, Sortierung, Vorschläge für ein Projekt und Übernahme ins Projekt. Siehe [CATALOG](architecture/CATALOG.md).

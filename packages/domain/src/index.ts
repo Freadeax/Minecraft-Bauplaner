@@ -7,7 +7,7 @@ export { createProject, applyOperation, execute, undo, redo, newInstance, freeze
 export type { Operation, History, HistoryEntry } from './project.js';
 export { resolveProject, positionKey } from './compose.js';
 export type { Resolution, PlacedInstance, VoxelConflict, ConflictKind, CompositionIssue } from './compose.js';
-export { createSampleLibrary, sampleTowerPayload, sampleWallPayload, sampleGatePayload, SAMPLE_PROFILE } from './samples.js';
+export { createSampleLibrary, sampleTowerPayload, sampleWallPayload, sampleGatePayload, SAMPLE_PROFILE, SAMPLE_FACETS } from './samples.js';
 export type { SampleLibrary } from './samples.js';
 export { buildGuide, evaluateProgress, tickStep, untickStep, tickSteps, untickSteps, assertGuideAcyclic, phaseOf, PHASE_ORDER, PHASE_LABEL } from './guide.js';
 export type { Guide, GuideStep, GuideProgress, StepMaterial, StepPhase, StepStatus } from './guide.js';
@@ -23,3 +23,7 @@ export { inspectCell } from './inspect.js';
 export type { CellInspection, CellSource } from './inspect.js';
 export { checkScan, compareBlock, ignoredProperties, scanTarget, confirmedUnticked, tickedButNotBuilt, tickConfirmed, GAME_STATUS_LABEL, VERDICT_LABEL } from './gameCheck.js';
 export type { GameCheck, StepCheck, CellDeviation, CellVerdict, GameStepStatus, ScanTarget, VerdictCounts } from './gameCheck.js';
+export { FACETS, CATALOG_VERSION, BUILD_TIME_MODEL, MATERIAL_GROUP_LABEL, SIZE_CLASS_LABEL, BLOCK_CLASS_LABEL, blockClassOf, SORT_LABEL, facetLabel, facetTags, facetsOf, plainTags, withFacets, materialGroupOf, sizeClassOf, needsOrientation, analyzeVersion, buildCatalog, queryCatalog, facetCounts, fitsPlot, materialOverlap, projectContext, suggestForProject, similarEntries } from './catalog.js';
+export type { FacetKey, BuildingFacets, FacetDefinition, BlockClass, MaterialGroup, Factor, BuildingMetrics, CatalogEntry, CatalogQuery, SortKey, Plot, ProjectContext, Suggestion, Similar } from './catalog.js';
+export { createBuildingLibrary, BUILDING_SPECS, PATH_PROFILE } from './buildings.js';
+export type { BuildingSpec, BuildingLibrary } from './buildings.js';

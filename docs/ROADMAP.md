@@ -68,3 +68,5 @@ P1-03c (Block B6) umgesetzt: freier Flug, Drauf-/Seitenansichten, Parallelprojek
 P6-01 (B8) Konzept 27.10.2026: [Spielbrücke](architecture/MOD_BRIDGE.md) – dünne lesende Mod schreibt eine Ist-Aufnahme als Schem v3, Vergleich und Schrittzuordnung auf der Website, Übertragung per Datei, später optional über 127.0.0.1. Loader, Minecraft-Version und Spielumgebung sind Nutzerentscheidungen; nichts implementiert.
 
 P6-01 (B8) M1 umgesetzt: Spielaufnahme importieren, Zellvergleich je Bauschritt, Abweichungen im Schichtplan, bestätigte Schritte ausdrücklich abhaken. Offen: Fabric-Mod (M2, Minecraft 26.3), Speicherung der Aufnahme, lokale Verbindung (M3), Anzeige im Spiel (M4).
+
+B9 Gebäudekatalog (27.10.2026) umgesetzt: [CATALOG](architecture/CATALOG.md). Offen: Vergleich zweier Gebäude nebeneinander, Varianten/Generatoren mit Parametern (Größe, Holzart), eigene Kategorien verwalten, Vorschaufarben für Stufen/Scheiben (B6-Farbtabelle).

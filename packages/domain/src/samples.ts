@@ -1,6 +1,8 @@
 import { createPayload } from '../../voxel/src/validation.js';
 import type { BlockState, Cell, VoxelPayload } from '../../voxel/src/types.js';
 import { addAssetVersion, createAsset } from './library.js';
+import { facetTags } from './catalog.js';
+import type { BuildingFacets } from './catalog.js';
 import type { Asset, AssetVersion, Connector } from './types.js';
 
 /**
@@ -65,6 +67,13 @@ export function sampleGatePayload(): VoxelPayload {
   });
 }
 
+/** Declared catalogue facets of the sample modules (B9). Geometry and ids are unchanged. */
+export const SAMPLE_FACETS: Readonly<Record<string, BuildingFacets>> = {
+  sample_tower: { kategorie: ['befestigung'], stil: ['mittelalterlich'], biom: ['ueberall'], funktion: ['verteidigung', 'aussicht'] },
+  sample_wall: { kategorie: ['befestigung'], stil: ['mittelalterlich'], biom: ['ueberall'], funktion: ['verteidigung'] },
+  sample_gate: { kategorie: ['befestigung'], stil: ['mittelalterlich'], biom: ['ueberall'], funktion: ['verteidigung', 'verbindung'] },
+};
+
 export interface SampleLibrary { readonly assets: readonly Asset[]; readonly versions: readonly AssetVersion[] }
 
 export async function createSampleLibrary(): Promise<SampleLibrary> {
@@ -78,7 +87,7 @@ export async function createSampleLibrary(): Promise<SampleLibrary> {
   ];
   const assets: Asset[] = [], versions: AssetVersion[] = [];
   for (const spec of specs) {
-    const asset = createAsset({ id: spec.id, name: spec.name, description: spec.description, tags: spec.tags, provenance, demo: true });
+    const asset = createAsset({ id: spec.id, name: spec.name, description: spec.description, tags: [...spec.tags, ...facetTags(SAMPLE_FACETS[spec.id] ?? {})], provenance, demo: true });
     const r = await addAssetVersion(asset, { payload: spec.payload, label: '1.0', connectors: spec.connectors, source: { format: 'demo' } });
     assets.push(r.asset); versions.push(r.version);
   }

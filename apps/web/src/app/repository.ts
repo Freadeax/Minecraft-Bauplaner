@@ -1,5 +1,5 @@
 import type { Asset, AssetVersion, OriginalFile, Project } from '../../../../packages/domain/src/index.js';
-import { createSampleLibrary } from '../../../../packages/domain/src/index.js';
+import { createBuildingLibrary, createSampleLibrary, updateAssetMeta } from '../../../../packages/domain/src/index.js';
 
 /**
  * Storage boundary of the web app. Every implementation must:
@@ -102,12 +102,22 @@ export class MemoryRepository implements Repository {
   async requestPersistence() { return false; }
 }
 
-/** Adds the synthetic sample modules once; never overwrites user assets. */
+/**
+ * Adds the synthetic sample modules and building suggestions (B9) once; never
+ * overwrites user assets. Shipped demo assets that are already stored only get
+ * their catalogue metadata (description, tags) refreshed; versions, archive
+ * state and ids stay untouched, so projects keep their versions.
+ */
 export async function seedSamples(repo: Repository): Promise<void> {
-  const existing = new Set((await repo.listAssets()).map(a => a.id));
-  const samples = await createSampleLibrary();
-  const assets = samples.assets.filter(a => !existing.has(a.id));
-  if (assets.length) await repo.applyBatch({ assets, versions: samples.versions.filter(v => !existing.has(v.assetId)) });
+  const stored = new Map((await repo.listAssets()).map(a => [a.id, a]));
+  const [samples, buildings] = await Promise.all([createSampleLibrary(), createBuildingLibrary()]);
+  const shipped = [...samples.assets, ...buildings.assets], versions = [...samples.versions, ...buildings.versions];
+  const assets = shipped.filter(a => !stored.has(a.id));
+  const refreshed = shipped.flatMap(a => {
+    const s = stored.get(a.id);
+    return s?.demo && (s.description !== a.description || s.tags.join('|') !== a.tags.join('|')) ? [updateAssetMeta(s, { description: a.description, tags: a.tags })] : [];
+  });
+  if (assets.length || refreshed.length) await repo.applyBatch({ assets: [...assets, ...refreshed], versions: versions.filter(v => assets.some(a => a.id === v.assetId)) });
 }
 
 /**

@@ -63,9 +63,10 @@ test('Bibliothek zeigt Beispielbauteile mit Herkunft, Suche und Tags', async () 
   await p.getByRole('button', { name: /Eckturm/ }).click();
   await p.getByText('Synthetisches Beispiel').waitFor();
   assert.match(await p.locator('.inspector').innerText(), /west, east, north, south/);
-  await p.getByLabel('Bauteile suchen').fill('zinnen');
+  await p.getByLabel('Bauteile suchen').fill('wehrmauer zinnen');
   assert.equal(await p.locator('.library-list .instance-list li').count(), 1);
   await p.getByLabel('Bauteile suchen').fill('');
+  await p.locator('.filter-panel > summary').click(); await p.getByText(/^Tags \(/).click();
   await p.getByRole('button', { name: 'tor', exact: true }).click();
   assert.equal(await p.locator('.library-list .instance-list li').count(), 1);
   assert.deepEqual(errors, []);

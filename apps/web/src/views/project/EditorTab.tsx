@@ -102,6 +102,7 @@ export function EditorTab({ session }: { session: ProjectSession }) {
         </button></li>;
       })}</ul>
       <span className="panel-kicker">BAUTEIL EINFÜGEN</span>
+      <a className="text-button suggest-link" href={`#/bibliothek/fuer/${encodeURIComponent(project.id)}`}>Passende Gebäude vorschlagen →</a>
       <ul className="asset-picker">{assets.map(a => <li key={a.id}><button onClick={() => add(a)} title={a.description}>＋ {a.name}{a.demo && <small> · Beispiel</small>}</button></li>)}</ul>
       <a className="text-button" href="#/bibliothek">Bibliothek verwalten →</a>
     </aside>

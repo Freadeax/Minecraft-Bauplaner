@@ -164,3 +164,11 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 ### MSG-B8-02 · Claude · 2026-10-27T18:10:00+01:00 · Spielbrücke M1
 - Nutzerentscheidung: Fabric-Client-Mod, Minecraft 26.3 (Fabric Loader 0.19.5, API 0.164.0+26.3, Java 25), mehrere Versionen/Launcher, kein WorldEdit.
 - M1 umgesetzt. Abgestimmte Eingriffe außerhalb der B8-Dateien: `BuildTab.tsx` (B4, abgeschlossen: Panel, Spielbadges, Abweichungen in Schrittkarte und Schichtplan), `schemExport.ts` (B2: zusätzliches Metadatenfeld `ProjectMin`), `schem.ts` (Entpacken als `gunzipLimited` geteilt, Verhalten unverändert). Weiter mit M2 (Mod).
+
+### MSG-B9-01 · Claude · 2026-10-27T18:30:00+01:00 · Block B9 Gebäudekatalog abgeschlossen
+
+- Nutzerauftrag: Bibliothek der Gebäudevorschläge tief ausbauen, mit allen passenden Werten; zusätzlich shulkr.com als Vorbild gesichtet (nur Struktur, keine Inhalte übernommen). Nummer B9, weil B8 bereits die Spielbrücke ist.
+- Eigene Dateien: `packages/domain/src/catalog.ts`, `buildings.ts`, `tests/catalog.test.mjs`, `tests/e2e/catalog.e2e.mjs`, `views/library/BuildingSheet.tsx`, `CatalogFilters.tsx`, `FacetFields.tsx`, `docs/architecture/CATALOG.md`.
+- Außerhalb geändert (klein): `LibraryView.tsx` (Katalogliste, Filter, Steckbrief; B5-Anschluss-Editor und Bereich-Panel unverändert eingebunden), `samples.ts` (Facetten-Tags, Geometrie/IDs gleich), `repository.ts` (`seedSamples` legt Gebäude an und frischt Beispiel-Metadaten auf), `router.ts`/`main.tsx` (Route `#/bibliothek/fuer/<id>`), `EditorTab.tsx` (ein Link), Exportzeilen in `index.ts`, CSS-Abschnitt „B9“, `tests/e2e/app.e2e.mjs` (Suchbegriff und Filter aufklappen).
+- Hinweis an B1: `polished_andesite` und weitere `polished_*`-Steine fehlen im Itemkatalog (fallen auf „angenommen“). Hinweis an B6: `oak_slab`, `glass_pane` u. a. haben nur gehashte Vorschaufarben.
+- Reservierung mit dem Push beendet.
