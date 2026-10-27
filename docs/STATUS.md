@@ -26,4 +26,4 @@ Website: https://freadeax.github.io/Minecraft-Bauplaner/ . Der aktuelle ausgelie
 
 ## Abschluss des laufenden Blocks
 
-Der Nutzer hat „aktuellen Block fertig machen und warten“ angeordnet. Dieser Importblock wird vollständig geprüft, auf main integriert und unmittelbar auf Pages veröffentlicht. Anschließend keine weitere aktive Entwicklung oder Überwachung. Nächste geplante Arbeitspakete bleiben ungestartet.
+Der Nutzer hat „aktuellen Block fertig machen und warten“ angeordnet. Der Importblock ist lokal geprüft, auf main integriert und auf Pages veröffentlicht. Live-Workerimport der unabhängigen Schem-Testdatei bestanden: 7 belegte / 5 Luftzellen, DataVersion 3465, Offset −10/64/30, ein BlockEntity und korrekter Originalhash. Rotation und Einzelschicht sowie Warnungen für Mod-/NBT-Regeln live geprüft. Anschließend keine weitere aktive Entwicklung oder Überwachung. Nächste geplante Arbeitspakete bleiben ungestartet.

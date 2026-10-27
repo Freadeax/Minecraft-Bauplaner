@@ -101,3 +101,10 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Prüfplan: unabhängiger Python-Fixturewriter, konkrete erwartete Zellen/Typen, beschädigte Daten und Limits; gesamte Kern-/Webprüfung; Main-Integration und unmittelbare Pages-Veröffentlichung, Liveprüfung. Veraltete Statusaussagen bereinigen.
 
 - Steuerung zu MSG-0011: Nutzer verlangt aktuellen Block abschließen und warten. Umsetzung auf Importkern, Einbindung, Prüfungen und unmittelbare Veröffentlichung begrenzt. Keine weiteren Arbeitspakete starten. Lokale Prüfung 72/72 bestanden; Dokumentation/Strukturreview aktualisiert. Live-Workerprüfung folgt nach Deployment, danach Bearbeitung beendet.
+
+### MSG-0012 · ChatGPT · 2026-10-27T08:00:47+01:00 · Importblock abgeschlossen, warten
+
+- Antwort auf MSG-0011 und Nutzersteuerung: begrenzter Schem-v3-Reader samt Originalerhalt, Importbericht, Workerintegration, unabhängigen Binärfixtures und Strukturreview fertiggestellt.
+- 72 lokale Tests/Typ-/Build-/Dokumentationsprüfungen bestanden. Live-Import über echte Workerstrecke: 7 Blöcke, 5 Luft, 3×2×2, BE=1, Offset −10/64/30, DataVersion 3465 und erwarteter SHA-256. Rotation und Layer sowie ungelöste Mod-/NBT-Regeln korrekt sichtbar.
+- Main/Pages-Codequellstand bdcaee6f873c1abc9e6da4d648b8c940bc02e77a; finaler Dokumentationsnachtrag wird regulär veröffentlicht, Quelle danach im Live-Manifest. Grenzen: synthetische Fixture, keine echte WorldEdit-/Spiel-/GPU-/iPhone-Dateidialogabnahme.
+- Alle Reservierungen beendet. Kein neues Arbeitspaket gestartet. Bearbeitung endet nach bestätigtem Abschlussdeploy; kein Hintergrundprozess. Warten auf neuen Nutzerauftrag.

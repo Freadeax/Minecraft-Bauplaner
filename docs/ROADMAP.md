@@ -52,3 +52,5 @@ P1-03a: bedienbare synthetische Kernansicht live geprüft (Software-Isometrie, P
 ## Laufender Schem-Importblock
 
 P1-01a/01b/01c begrenzt implementiert: Big-Endian-NBT/GZip/Sponge v3, unabhängige Python-struct-Binärfixture und Browserworker/-Importbericht. 27 neue Formattests, insgesamt 72 lokale Tests. Original/Quell-NBT bleiben erhalten; nicht dargestellte Zusatzdaten sichtbar. Vollständige P1-01-Abnahme bleibt wegen noch fehlender Referenzwerkzeug-/Spielprüfung teilweise offen. Keine Folgearbeit nach Nutzersteuerung „Block fertig machen und warten“.
+
+Live-Smoke für diesen Block bestanden: synthetische GZip-Schem läuft über Browserworker und ergibt bekannte Koordinaten/Mengen/Quelle. Referenzwerkzeug-/Spielabnahme bleibt offen. Aktive Bearbeitung nach diesem Abschluss auf Nutzeranweisung beendet.
