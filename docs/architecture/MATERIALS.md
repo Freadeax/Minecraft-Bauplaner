@@ -7,7 +7,7 @@ Stand: 27.10.2026. Umsetzung von P1-04a / R-017. Implementierung in [materials.t
 | Ebene | Inhalt | Quelle |
 |---|---|---|
 | Platzierte Zustände | exakte Zellzahl je Blockzustand (ID + alle Properties), getrennt von Luft- und Löschzellen | `resolution.world` |
-| Bauitems | Items, die zum Platzieren nötig sind, mit Regel, Herkunft und Konfidenz | Vanilla-Java-Katalog `vanilla-java-items-v1` |
+| Bauitems | Items, die zum Platzieren nötig sind, mit Regel, Herkunft und Konfidenz | Vanilla-Java-Katalog `vanilla-java-items-v2` (v2: Stein-/Kupfervarianten, Kessel mit Inhalt, Froschlaich, Chorus-Pflanze) |
 | Lager | volle Stacks + Rest, Inventarplätze, Shulkerkisten à 27 Plätze | Stapelgröße 1/16/64 je Item |
 
 Rohstoffe und Rezepte (z. B. Steinziegel ← Stein) werden nicht abgeleitet; Werkzeuge ebenfalls nicht. Kein unvollständiger Bedarf wird als vollständige Liste dargestellt.
@@ -60,5 +60,5 @@ Tab „Material“: Umfang Gesamtprojekt oder einzelne Instanz, Status vollstän
 
 - Katalog ist Vanilla Java ohne Bindung an eine exakte Version; neue Blöcke landen als Annahme, nicht als falsche Gewissheit.
 - Keine Rohstoff-/Rezeptauflösung, kein Lager-/Besitzabgleich.
-- Paarprüfung von Mehrblockobjekten erfolgt nur innerhalb des gewählten Umfangs.
-- Die Bauanleitung (B4) liefert Blockzustände je Schritt; eine Itemspalte dort kann `itemsForCell`/`computeMaterials` nutzen.
+- Paarprüfung von Mehrblockobjekten erfolgt beim Umfang „Instanz“ nur innerhalb der Instanz; für Teile einer Welt (Bauschritte, Schichten) sucht `materialsForParts` bzw. `computeMaterials(…, { partners: 'world' })` in der ganzen Welt, damit sich die Teile exakt zum Gesamtbedarf addieren.
+- Die Bauanleitung (B4) zeigt die Bauitems je Schritt und eine Packliste je Schicht ([GUIDE](GUIDE.md)).

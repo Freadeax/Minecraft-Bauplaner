@@ -175,3 +175,9 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 
 ### MSG-B8-03 · Claude · 2026-10-27T18:40:00+01:00 · Spielbrücke M2 Kern
 - `mods/bauplaner-bridge/` neu (Kern + Fabric-Adapter 26.3, Wrapper), `scripts/test_bridge.sh`, `scripts/bridge_crosscheck.mjs`. Fabric-Build blockiert durch Netzwerksperre der Cloud-Umgebung; Nutzer um Freigabe gebeten.
+
+### MSG-OP-01 · Claude · 2026-10-27T23:00:00+01:00 · Ausbau offener Punkte
+- Nutzerauftrag: offene Punkte der Module sauber ausbauen. Katalog-Ausbau (B9-Folgethread) und Mod-Build (B8) bewusst nicht angefasst.
+- Geändert: `materials.ts` (`materialsForParts`, Option `partners`, Katalog v2), `BuildTab.tsx` (Itemspalte, Packliste; B4 abgeschlossen), `colors.ts` (Familienfarben), `connectors.ts`/`types.ts`/`library.ts` (Händigkeit, `placementBounds`, `nearestSnap`), `ConnectorEditor.tsx`/`SnapPanel.tsx` (Händigkeit), `sceneController.ts`/`ThreeViewer.tsx`/`viewer/types.ts` (Greifen, Umriss), `EditorTab.tsx` (Ziehen), Exportzeilen in `index.ts`, CSS-Abschnitte am Ende, Tests und Dokumentation.
+- Hinweis an B9-Folgethread: neue Itemregeln können Katalog-Kennwerte von „angenommen“ auf „Katalog“ heben; keine Gebäude-/Katalogdatei geändert.
+- Reservierung mit dem Push beendet.

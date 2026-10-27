@@ -5,15 +5,15 @@ import { newId } from './hash.js';
 import { checkConnectorShape } from './library.js';
 import type { Operation } from './project.js';
 import { DomainError } from './types.js';
-import type { AssetVersion, Connector, ConnectorLink, Instance, Project } from './types.js';
+import type { AssetVersion, Connector, ConnectorLink, Handedness, Instance, Project } from './types.js';
 
 /**
  * Connector geometry, snapping and stored links (P2-02, R-009).
  *
  * A connector is an integer point on a face of the asset bounds plus an outward
  * normal and an up vector. Two connectors mate when, in project coordinates,
- * positions are equal, normals are opposite, ups are equal and type and profile
- * match. All geometry goes through the shared voxel transform; voxel conflicts
+ * positions are equal, normals are opposite, ups are equal, type and profile
+ * match and handedness is complementary (left↔right, or both symmetric). All geometry goes through the shared voxel transform; voxel conflicts
  * are decided by `resolveProject`, never by a second rule set here.
  */
 
@@ -82,12 +82,22 @@ export function anchorCells(c: Connector): Vec3[] {
 
 const directionOnly = (t: Transform): Transform => ({ position: [0, 0, 0], quarterTurns: t.quarterTurns, mirrorX: t.mirrorX });
 
-/** Connector in project coordinates for a placed version. */
+const FLIP: Readonly<Record<Handedness, Handedness>> = { left: 'right', right: 'left' };
+
+/** Connector in project coordinates for a placed version. Mirroring flips the handedness of asymmetric profiles. */
 export function transformConnector(c: Connector, pivot: Vec3, t: Transform): Connector {
   const dir = directionOnly(t);
-  return { ...c, position: transformBoundaryPoint(c.position, pivot, t),
+  const moved: Connector = { ...c, position: transformBoundaryPoint(c.position, pivot, t),
     normal: transformBoundaryPoint(c.normal, [0, 0, 0], dir), up: transformBoundaryPoint(c.up, [0, 0, 0], dir) };
+  return t.mirrorX && c.handedness ? { ...moved, handedness: FLIP[c.handedness] } : moved;
 }
+
+/** Profiles fit when both are symmetric or one is left and the other right. */
+export function handednessFits(a: Connector, b: Connector): boolean {
+  return a.handedness === undefined ? b.handedness === undefined : b.handedness === FLIP[a.handedness];
+}
+/** Type, profile and handedness: everything but the geometry. */
+const semanticMatch = (a: Connector, b: Connector): boolean => a.type === b.type && a.profile === b.profile && handednessFits(a, b);
 
 export interface PlacedConnector {
   readonly instanceId: string;
@@ -102,7 +112,7 @@ export function placedConnectors(instance: Instance, version: AssetVersion): Pla
 
 /** Whether two project-space connectors fit: semantic match and exact geometric mate. */
 export function connectorsMate(a: Connector, b: Connector): boolean {
-  return a.type === b.type && a.profile === b.profile && eq(a.position, b.position) && eq(a.normal, neg(b.normal)) && eq(a.up, b.up);
+  return semanticMatch(a, b) && eq(a.position, b.position) && eq(a.normal, neg(b.normal)) && eq(a.up, b.up);
 }
 
 const linkKey = (instanceId: string, connectorId: string): string => `${instanceId}\u0000${connectorId}`;
@@ -132,13 +142,13 @@ export function checkLinks(project: Project, versions: ReadonlyMap<string, Asset
   };
   const text: Record<LinkState, string> = {
     'ok': 'verbunden', 'missing-instance': 'Instanz fehlt', 'missing-version': 'Bauteilversion fehlt', 'missing-connector': 'Anschluss existiert in dieser Version nicht',
-    'mismatch': 'Typ oder Profil passen nicht', 'misaligned': 'Anschlüsse liegen nicht mehr aufeinander', 'over-capacity': 'Nutzungsgrenze eines Anschlusses überschritten',
+    'mismatch': 'Typ, Profil oder Händigkeit passen nicht', 'misaligned': 'Anschlüsse liegen nicht mehr aufeinander', 'over-capacity': 'Nutzungsgrenze eines Anschlusses überschritten',
   };
   return project.links.map(link => {
     const a = lookup(link.a), b = lookup(link.b);
     let state: LinkState = 'ok';
     if (typeof a === 'string') state = a; else if (typeof b === 'string') state = b;
-    else if (a.world.type !== b.world.type || a.world.profile !== b.world.profile) state = 'mismatch';
+    else if (!semanticMatch(a.world, b.world)) state = 'mismatch';
     else if (!connectorsMate(a.world, b.world)) state = 'misaligned';
     else if ((usage.get(linkKey(a.instanceId, a.connector.id)) ?? 0) > capacityOf(a.connector)
       || (usage.get(linkKey(b.instanceId, b.connector.id)) ?? 0) > capacityOf(b.connector)) state = 'over-capacity';
@@ -176,7 +186,7 @@ export interface SnapQuery {
   readonly override?: boolean;
   /** Only targets on these instances. Default: all other instances. */
   readonly targetInstanceIds?: readonly string[];
-  /** Also offer mirrored placements. Mirroring flips the profile; only valid for symmetric profiles. */
+  /** Also offer mirrored placements. Mirroring flips the handedness of asymmetric profiles, which is checked. */
   readonly allowMirror?: boolean;
   /** Reference point for sorting by distance; default the current transform position. */
   readonly reference?: Vec3;
@@ -185,6 +195,9 @@ export interface SnapQuery {
 }
 
 const boundsOverlap = (a: Bounds, b: Bounds): boolean => [0, 1, 2].every(i => a.min[i]! < b.maxExclusive[i]! && b.min[i]! < a.maxExclusive[i]!);
+
+/** Project-space bounds of a version placed with transform `t` (same rule as the composer). */
+export function placementBounds(version: AssetVersion, t: Transform): Bounds { return transformedBounds(version, t); }
 
 function transformedBounds(version: AssetVersion, t: Transform): Bounds {
   const { min, maxExclusive: max } = version.payload.bounds, pivot = version.payload.pivot;
@@ -233,7 +246,7 @@ export function findSnapCandidates(q: SnapQuery): SnapCandidate[] {
       if (c.type !== target.world.type || c.profile !== target.world.profile) continue;
       for (const o of orientations) {
         const dir = transformConnector(c, [0, 0, 0], o);
-        if (!eq(dir.normal, neg(target.world.normal)) || !eq(dir.up, target.world.up)) continue;
+        if (!handednessFits(dir, target.world) || !eq(dir.normal, neg(target.world.normal)) || !eq(dir.up, target.world.up)) continue;
         const pivot = version.payload.pivot;
         const rel = transformBoundaryPoint(c.position, pivot, o); // pivot mapped to origin
         const position: Vec3 = [target.world.position[0] - rel[0], target.world.position[1] - rel[1], target.world.position[2] - rel[2]];
@@ -269,6 +282,33 @@ export function findSnapCandidates(q: SnapQuery): SnapCandidate[] {
     || a.transform.quarterTurns - b.transform.quarterTurns || Number(a.transform.mirrorX) - Number(b.transform.mirrorX)).slice(0, q.limit ?? 50);
 }
 const cmp = (a: string, b: string): number => a < b ? -1 : a > b ? 1 : 0;
+
+const lexLess = (a: readonly number[], b: readonly number[]): boolean => {
+  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return a[i]! < b[i]!;
+  return false;
+};
+
+/** Default catch radius (Manhattan distance in blocks) for drag-to-snap. */
+export const DRAG_SNAP_RADIUS = 3;
+
+/**
+ * Snap target while dragging: among candidates whose pivot lies within
+ * `radius` (Manhattan) of the dragged pivot, the conflict-free one first, then
+ * the nearest, then the one keeping the current orientation; candidate order
+ * (deterministic) breaks remaining ties. Null when nothing is in reach, so the
+ * drop is a plain move.
+ */
+export function nearestSnap(candidates: readonly SnapCandidate[], dragged: Vec3, current: Transform, radius = DRAG_SNAP_RADIUS): SnapCandidate | null {
+  let best: { c: SnapCandidate; score: readonly number[] } | null = null;
+  for (const c of candidates) {
+    const d = [0, 1, 2].reduce((n, i) => n + Math.abs(c.transform.position[i]! - dragged[i]!), 0);
+    if (d > radius) continue;
+    const turned = c.transform.quarterTurns !== current.quarterTurns || c.transform.mirrorX !== current.mirrorX ? 1 : 0;
+    const score = [c.conflicts > 0 ? 1 : 0, d, turned];
+    if (!best || lexLess(score, best.score)) best = { c, score };
+  }
+  return best?.c ?? null;
+}
 
 /**
  * One undoable operation applying a candidate: for an existing instance it moves
@@ -339,9 +379,10 @@ export function unlinkedMates(project: Project, versions: ReadonlyMap<string, As
  * grid) and the lowest y of the bounds for side faces. `up` is +Y for side faces
  * and north (−Z) for top/bottom faces.
  */
-export function suggestConnector(payload: VoxelPayload, face: FaceName, input: { id: string; type: string; profile: string; maxLinks?: number }): Connector {
+export function suggestConnector(payload: VoxelPayload, face: FaceName, input: { id: string; type: string; profile: string; maxLinks?: number; handedness?: Handedness }): Connector {
   const normal = FACES[face], a = axisOf(normal), { min, maxExclusive: max } = payload.bounds;
   const position = [0, 1, 2].map(i => i === a ? (normal[a] > 0 ? max[i]! : min[i]!) : i === 1 ? min[1] : Math.floor((min[i]! + max[i]!) / 2)) as unknown as Vec3;
   const up: Vec3 = a === 1 ? [0, 0, -1] : [0, 1, 0];
-  return { id: input.id, position, normal, up, type: input.type, profile: input.profile, ...(input.maxLinks !== undefined && { maxLinks: input.maxLinks }) };
+  return { id: input.id, position, normal, up, type: input.type, profile: input.profile, ...(input.maxLinks !== undefined && { maxLinks: input.maxLinks }),
+    ...(input.handedness !== undefined && { handedness: input.handedness }) };
 }

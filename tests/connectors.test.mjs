@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   createSampleLibrary, createProject, execute, undo, newInstance, EMPTY_HISTORY, resolveProject, sampleWallPayload,
+  createAsset, addAssetVersion, handednessFits, nearestSnap, placementBounds,
   validateConnectors, transformConnector, connectorsMate, checkLinks, findSnapCandidates, snapOperation, linkOperation, unlinkedMates, suggestConnector, faceOf,
 } from '../dist/domain/src/index.js';
 
@@ -140,4 +141,53 @@ test('suggested connectors sit at the bottom face centre and validate', () => {
   const top = suggestConnector(p, 'up', { id: 'u', type: 'deck', profile: 'p' });
   assert.deepEqual([top.position, top.up], [[3, 5, 1], [0, 0, -1]]);
   assert.deepEqual(validateConnectors(p, [c]), []);
+});
+
+test('handedness: mirroring flips it, left mates only right, so a 180° turn of an asymmetric wall no longer fits but its mirror does', async () => {
+  const l = conn({ handedness: 'left' }), r = conn({ normal: [-1, 0, 0], handedness: 'right' });
+  assert.ok(connectorsMate(l, r));
+  assert.ok(!connectorsMate(l, { ...r, handedness: 'left' }), 'left does not mate left');
+  assert.ok(!connectorsMate(l, conn({ normal: [-1, 0, 0] })), 'asymmetric does not mate symmetric');
+  assert.ok(handednessFits(conn(), conn()), 'symmetric mates symmetric');
+  assert.equal(transformConnector(l, [0, 0, 0], T([0, 0, 0], 0, true)).handedness, 'right');
+  assert.equal(transformConnector(l, [0, 0, 0], T([0, 0, 0], 2)).handedness, 'left', 'rotation keeps handedness');
+  const twice = transformConnector(transformConnector(l, [0, 0, 0], T([0, 0, 0], 0, true)), [0, 0, 0], T([0, 0, 0], 0, true));
+  assert.equal(twice.handedness, 'left', 'double mirror is identity');
+  assert.throws(() => validateConnectors(sampleWallPayload(), [conn({ handedness: 'up' })]).forEach(i => { if (i.code === 'SHAPE') throw new Error(i.message); }), /handedness/);
+
+  // Wall with a walkway on one side: west joint "right", east joint "left" (same world side seen from outside).
+  const asset = createAsset({ id: 'walkway', name: 'Wehrgang', provenance: { author: 'Test', source: 'synthetisch', license: '' } });
+  const { version: handed } = await addAssetVersion(asset, { payload: sampleWallPayload(), source: { format: 'demo' },
+    connectors: [conn({ id: 'west', position: [0, 0, 1], normal: [-1, 0, 0], handedness: 'right' }), conn({ id: 'east', handedness: 'left' })] });
+  const map = new Map([...versions, [handed.id, handed]]);
+  const a = place(handed, T([0, 0, 0]), 'A');
+  const { project } = build(a);
+  const fits = findSnapCandidates({ project, versions: map, version: handed, allowMirror: true })
+    .filter(c => c.target.connectorId === 'east').map(c => `${c.connectorId}|${c.transform.quarterTurns}|${c.transform.mirrorX}`).sort();
+  assert.deepEqual(fits, ['east|0|true', 'west|0|false'], 'straight continuation or mirrored copy; the 180° turn would put the walkway on the other side');
+  const symmetric = findSnapCandidates({ project: build(place(wall, T([0, 0, 0]))).project, versions, version: wall, allowMirror: true })
+    .filter(c => c.target.connectorId === 'east').length;
+  assert.equal(symmetric, 4, 'symmetric profile: all four fitting orientations stay possible');
+});
+
+test('drag-to-snap: nearest candidate within reach, conflict-free first, orientation kept on ties, nothing out of reach', () => {
+  const t = (position, quarterTurns = 0, mirrorX = false) => ({ position, quarterTurns, mirrorX });
+  const cand = (key, position, extra = {}) => ({ key, transform: t(position, extra.q ?? 0, extra.m ?? false), conflicts: extra.conflicts ?? 0 });
+  const list = [cand('far', [10, 0, 0]), cand('near-conflict', [1, 0, 0], { conflicts: 3 }), cand('two', [2, 0, 0]), cand('two-turned', [2, 0, 0], { q: 1 }), cand('one-turned', [0, 0, 1], { q: 1 })];
+  const current = t([0, 0, 0]);
+  assert.equal(nearestSnap(list, [0, 0, 0], current).key, 'one-turned', 'nearest conflict-free wins even if it turns');
+  assert.equal(nearestSnap(list.filter(c => c.key !== 'one-turned'), [0, 0, 0], current).key, 'two', 'same distance: keeps orientation');
+  assert.equal(nearestSnap([list[1]], [0, 0, 0], current).key, 'near-conflict', 'conflicting snap is still offered when it is the only one');
+  assert.equal(nearestSnap(list, [20, 0, 0], current), null, 'out of reach: plain move');
+  assert.equal(nearestSnap(list, [7, 0, 0], current, 3).key, 'far');
+
+  // Real geometry: wall dragged near the tower's east face snaps flush to it.
+  const tw = place(tower, T([0, 0, 0]), 'Turm'), wa = place(wall, T([9, 0, 1]), 'Mauer');
+  const { project } = build(tw, wa);
+  const candidates = findSnapCandidates({ project, versions, version: wall, instanceId: wa.id, limit: 500 });
+  const pick = nearestSnap(candidates, [5, 0, 1], wa.transform);
+  assert.deepEqual(pick.transform, T([4, 0, 1]), 'west joint of the wall on the tower east joint');
+  assert.equal(pick.conflicts, 0);
+  const b = placementBounds(wall, pick.transform);
+  assert.deepEqual([b.min, b.maxExclusive], [[4, 0, 1], [10, 5, 3]]);
 });

@@ -17,6 +17,20 @@ export interface ViewerState {
   readonly view: ViewName | null;
   readonly speed: number;
 }
+/**
+ * Grab-and-move of a selection on a horizontal plane (editor "Ziehen").
+ * `canGrab` decides per picked cell; `move` gets the integer X/Z offset from
+ * the grab cell whenever it changes; `end` gets the final offset, or null when
+ * cancelled (Escape, second finger, pointer cancel).
+ */
+export interface DragHandler {
+  canGrab(cell: Cell): boolean;
+  move(delta: Vec3): void;
+  end(delta: Vec3 | null): void;
+}
+export type GhostTone = 'free' | 'snap' | 'conflict';
+const GHOST_COLOR: Record<GhostTone, number> = { free: 0xffffff, snap: 0x5ff0b0, conflict: 0xff6b6b };
+
 export interface MeshStats { readonly blocks: number; readonly quads: number; readonly naiveQuads: number; readonly buildMs: number }
 
 export interface ControllerEvents {
@@ -67,6 +81,9 @@ export class SceneController {
   private dragging: { id: number; x: number; y: number; moved: boolean } | null = null;
   private hoverQueued: PointerEvent | null = null;
   private readonly raycaster = new THREE.Raycaster();
+  private dragHandler: DragHandler | null = null;
+  private grab: { id: number; plane: THREE.Plane; start: [number, number]; delta: Vec3 } | null = null;
+  private readonly ghost: THREE.LineSegments;
   private readonly disposers: (() => void)[] = [];
 
   constructor(private readonly host: HTMLElement, private readonly events: ControllerEvents) {
@@ -84,11 +101,18 @@ export class SceneController {
     this.material = gridMaterial();
     this.marker = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.02, 1.02, 1.02)), new THREE.LineBasicMaterial({ color: 0xffffff, depthTest: false, transparent: true, opacity: 0.9 }));
     this.marker.visible = false; this.marker.renderOrder = 2; this.scene.add(this.marker);
+    this.ghost = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 1)), new THREE.LineBasicMaterial({ color: 0xffffff, depthTest: false, transparent: true, opacity: 0.95 }));
+    this.ghost.visible = false; this.ghost.renderOrder = 3; this.scene.add(this.ghost);
     this.controls = this.makeControls();
 
     const on = <K extends keyof HTMLElementEventMap>(target: HTMLElement, type: K, fn: (e: HTMLElementEventMap[K]) => void, options?: AddEventListenerOptions) => {
       target.addEventListener(type, fn as EventListener, options); this.disposers.push(() => target.removeEventListener(type, fn as EventListener, options));
     };
+    // Grabbing runs in the capture phase on the host, before OrbitControls and the canvas handlers see the pointer.
+    on(host, 'pointerdown', e => this.grabStart(e), { capture: true });
+    on(host, 'pointermove', e => this.grabMove(e), { capture: true });
+    on(host, 'pointerup', e => this.grabEnd(e, false), { capture: true });
+    on(host, 'pointercancel', e => this.grabEnd(e, true), { capture: true });
     on(canvas, 'pointerdown', e => this.pointerDown(e));
     on(canvas, 'pointermove', e => this.pointerMove(e));
     on(canvas, 'pointerup', e => this.pointerUp(e));
@@ -201,6 +225,25 @@ export class SceneController {
     this.requestRender();
   }
   setSpeed(speed: number): void { this.update({ speed }); }
+  /** Enables grab-and-move; null restores plain orbit/pick behaviour (and cancels a running grab). */
+  setDragHandler(handler: DragHandler | null): void {
+    if (!handler && this.grab) { const h = this.dragHandler; this.grab = null; h?.end(null); }
+    this.dragHandler = handler;
+  }
+  /** Outline box of a planned placement (drag preview); null hides it. */
+  setGhost(bounds: Bounds | null, tone: GhostTone = 'free'): void {
+    if (!bounds || !this.origin) this.ghost.visible = false;
+    else {
+      const size = bounds.maxExclusive.map((n, i) => n - bounds.min[i]!) as [number, number, number];
+      const min = this.local(bounds.min);
+      this.ghost.scale.set(size[0] + 0.04, size[1] + 0.04, size[2] + 0.04);
+      this.ghost.position.set(min[0] + size[0] / 2, min[1] + size[1] / 2, min[2] + size[2] / 2);
+      (this.ghost.material as THREE.LineBasicMaterial).color.setHex(GHOST_COLOR[tone]);
+      this.ghost.visible = true;
+    }
+    this.host.dataset.ghost = bounds ? `${bounds.min.join(',')}|${tone}` : '';
+    this.requestRender();
+  }
   /** Bounds that F / the focus button frame; null ⇒ the whole structure. */
   setFocusTarget(bounds: Bounds | null): void { this.focusTarget = bounds; }
   focusSelection(): void { this.focus(this.focusTarget ?? this.bounds); }
@@ -211,6 +254,7 @@ export class SceneController {
     this.controls.dispose();
     this.mesh?.geometry.dispose(); this.material.dispose();
     this.marker.geometry.dispose(); (this.marker.material as THREE.Material).dispose();
+    this.ghost.geometry.dispose(); (this.ghost.material as THREE.Material).dispose();
     if (this.grid) { this.grid.geometry.dispose(); (this.grid.material as THREE.Material).dispose(); }
     this.renderer.dispose(); this.renderer.domElement.remove();
   }
@@ -329,6 +373,54 @@ export class SceneController {
     return this.cells[this.quadCells[hit.faceIndex >> 1]!] ?? null;
   }
 
+  private rayAt(e: PointerEvent): void {
+    const rect = this.renderer.domElement.getBoundingClientRect();
+    this.raycaster.setFromCamera(new THREE.Vector2((e.clientX - rect.left) / rect.width * 2 - 1, -(e.clientY - rect.top) / rect.height * 2 + 1), this.camera);
+  }
+
+  /** World X/Z cell on the grab plane under the pointer. */
+  private planeCell(e: PointerEvent, plane: THREE.Plane): [number, number] | null {
+    this.rayAt(e);
+    const hit = this.raycaster.ray.intersectPlane(plane, new THREE.Vector3());
+    if (!hit) return null;
+    const o = this.origin ?? [0, 0, 0];
+    return [Math.floor(hit.x + o[0]), Math.floor(hit.z + o[2])];
+  }
+
+  private grabStart(e: PointerEvent): void {
+    if (this.grab) { // a second finger cancels the move and falls back to pinch/pan
+      const h = this.dragHandler; this.grab = null; h?.end(null); return;
+    }
+    if (!this.dragHandler || this.stateValue.mode === 'flight' || e.button > 0) return;
+    const cell = this.pickAt(e);
+    if (!cell || !this.dragHandler.canGrab(cell)) return;
+    // Plane through the middle of the grabbed cell: dragging follows that layer under the pointer.
+    const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -this.local(cell.position, 0.5)[1]);
+    const start = this.planeCell(e, plane) ?? [cell.position[0], cell.position[2]];
+    e.stopPropagation(); e.preventDefault();
+    this.host.focus({ preventScroll: true }); // Escape cancels
+    this.host.setPointerCapture(e.pointerId);
+    this.grab = { id: e.pointerId, plane, start, delta: [0, 0, 0] };
+    this.host.dataset.dragging = 'true';
+  }
+
+  private grabMove(e: PointerEvent): void {
+    const g = this.grab; if (!g || g.id !== e.pointerId) return;
+    e.stopPropagation();
+    const at = this.planeCell(e, g.plane); if (!at) return;
+    const delta: Vec3 = [at[0] - g.start[0], 0, at[1] - g.start[1]];
+    if (delta[0] === g.delta[0] && delta[2] === g.delta[2]) return;
+    g.delta = delta; this.dragHandler?.move(delta);
+  }
+
+  private grabEnd(e: PointerEvent, cancelled: boolean): void {
+    const g = this.grab; if (!g || g.id !== e.pointerId) return;
+    e.stopPropagation();
+    this.grab = null; delete this.host.dataset.dragging;
+    if (this.host.hasPointerCapture(e.pointerId)) this.host.releasePointerCapture(e.pointerId);
+    this.dragHandler?.end(cancelled ? null : g.delta);
+  }
+
   private pointerDown(e: PointerEvent): void {
     this.host.focus({ preventScroll: true });
     this.pointers.add(e.pointerId);
@@ -374,6 +466,7 @@ export class SceneController {
       e.preventDefault(); this.keys.add(e.code); this.requestRender(); return;
     }
     if (e.code === 'Escape' && flying) { e.preventDefault(); this.setFlight(false); return; }
+    if (e.code === 'Escape' && this.grab) { e.preventDefault(); const h = this.dragHandler; this.grab = null; delete this.host.dataset.dragging; h?.end(null); return; }
     // Buttons are handled by the toolbar; keyboard shortcuts only when the scene itself is focused.
     if ((e.target as HTMLElement | null)?.closest('button')) return;
     const view = VIEWS.find(v => v.key === e.key);

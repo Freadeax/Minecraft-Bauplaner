@@ -46,6 +46,7 @@ export function checkConnectorShape(connectors: readonly Connector[]): void {
     ids.add(c.id);
     assertVec3(c.position, `${path}.position`); assertVec3(c.normal, `${path}.normal`); assertVec3(c.up, `${path}.up`);
     if (c.maxLinks !== undefined && (!Number.isSafeInteger(c.maxLinks) || c.maxLinks < 1)) throw new DomainError('INVALID', `${path}.maxLinks: positive Ganzzahl erwartet`);
+    if (c.handedness !== undefined && c.handedness !== 'left' && c.handedness !== 'right') throw new DomainError('INVALID', `${path}.handedness: left oder right erwartet`);
   });
 }
 

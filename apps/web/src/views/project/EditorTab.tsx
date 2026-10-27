@@ -1,12 +1,13 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { countBlocks } from '../../../../../packages/voxel/src/index.js';
 import type { Cell, Transform, Vec3 } from '../../../../../packages/voxel/src/index.js';
-import { newInstance, positionKey, rotateInPlace } from '../../../../../packages/domain/src/index.js';
-import type { Asset, Instance, Resolution } from '../../../../../packages/domain/src/index.js';
+import { findSnapCandidates, nearestSnap, newInstance, placementBounds, positionKey, rotateInPlace, snapOperation } from '../../../../../packages/domain/src/index.js';
+import type { Asset, Instance, Resolution, SnapCandidate } from '../../../../../packages/domain/src/index.js';
 import { useApp } from '../../app/context';
 import { formatNumber } from '../../app/ui';
 import { mix, stateColor } from '../../colors';
 import { Viewer } from '../../Viewer';
+import type { DragHandler, ViewerProps } from '../../viewer/types';
 import { SnapPanel } from './SnapPanel';
 import { useLayerFilter } from '../../viewer/LayerControl';
 import { BlockInfo } from '../../viewer/BlockInfo';
@@ -27,6 +28,10 @@ export function EditorTab({ session }: { session: ProjectSession }) {
   const resolved: Resolution | null = isResolved(resolution) ? resolution : null;
   const world = resolved?.world ?? null;
   const selected = project.instances.find(i => i.id === selectedId) ?? null;
+  const [dragMode, setDragMode] = useState(false);
+  const [snapOn, setSnapOn] = useState(true);
+  const [ghost, setGhost] = useState<NonNullable<ViewerProps['ghost']> | null>(null);
+  const [dragInfo, setDragInfo] = useState('');
 
   useEffect(() => {
     const key = (e: KeyboardEvent) => {
@@ -56,6 +61,44 @@ export function EditorTab({ session }: { session: ProjectSession }) {
     setPicked(cell?.position ?? null);
     session.select(cell && resolved ? resolved.owners.get(positionKey(cell.position))?.[0] ?? null : null);
   }, [session, resolved]);
+
+  // Drag to move (B5 × B6): the selected instance follows the pointer on the X/Z grid and
+  // snaps to the nearest fitting free connector within reach; the drop is one undoable step.
+  const dragState = useRef<{ candidates: SnapCandidate[]; plan: { transform: Transform; snap: SnapCandidate | null } | null } | null>(null);
+  const drag = useMemo<DragHandler | null>(() => {
+    if (!dragMode || !selected || !resolved) return null;
+    const version = library.versions.get(selected.assetVersionId);
+    if (!version) return null;
+    const own = selectedKeys;
+    const plan = (delta: Vec3) => {
+      const p = selected.transform.position, dragged: Vec3 = [p[0] + delta[0], p[1], p[2] + delta[2]];
+      const snap = snapOn && dragState.current ? nearestSnap(dragState.current.candidates, dragged, selected.transform) : null;
+      return { transform: snap?.transform ?? { ...selected.transform, position: dragged }, snap };
+    };
+    return {
+      canGrab: cell => own.has(positionKey(cell.position)),
+      move: delta => {
+        if (!dragState.current) {
+          let candidates: SnapCandidate[] = [];
+          try { if (snapOn && version.connectors.length) candidates = findSnapCandidates({ project, versions: library.versions, version, instanceId: selected.id, limit: 500 }); } catch { /* no snap targets */ }
+          dragState.current = { candidates, plan: null };
+        }
+        const next = plan(delta);
+        dragState.current.plan = next;
+        setGhost({ bounds: placementBounds(version, next.transform), tone: next.snap ? next.snap.conflicts ? 'conflict' : 'snap' : 'free' });
+        setDragInfo(next.snap ? `Rastet ein: ${next.snap.connectorId} → ${project.instances.find(i => i.id === next.snap!.target.instanceId)?.name ?? '?'} · ${next.snap.target.connectorId}${next.snap.conflicts ? ` · ${next.snap.conflicts} Konflikte` : ''}`
+          : `Verschieben um X ${delta[0]} · Z ${delta[2]}`);
+      },
+      end: delta => {
+        const planned = dragState.current?.plan ?? null;
+        dragState.current = null; setGhost(null); setDragInfo('');
+        if (!delta || !planned) return;
+        if (planned.snap) {
+          try { setMessage(session.execute(snapOperation(project, library.versions, planned.snap, { instanceId: selected.id }))); } catch (e) { setMessage(e instanceof Error ? e.message : String(e)); }
+        } else if (delta[0] || delta[2]) run({ kind: 'instance.transform', instanceId: selected.id, transform: planned.transform });
+      },
+    };
+  }, [dragMode, selected, resolved, selectedKeys, snapOn, project, library.versions, session, run]);
 
   const assets = library.assets.filter(a => !a.archived && latestVersionId(a));
   const add = (asset: Asset) => {
@@ -110,12 +153,15 @@ export function EditorTab({ session }: { session: ProjectSession }) {
       <div className="view-toolbar">
         <span className="view-label"><span /> PROJEKT · {formatNumber(counts?.blocks ?? 0)} BLÖCKE</span>
         <div>
+          <button aria-pressed={dragMode} onClick={() => setDragMode(!dragMode)} title="Gewählte Instanz im 3D-Bild ziehen; rastet an passenden Anschlüssen ein">✥ <span>Ziehen</span></button>
+          {dragMode && <label className="check drag-snap"><input type="checkbox" checked={snapOn} onChange={e => setSnapOn(e.target.checked)} /> Einrasten</label>}
           <button onClick={session.undo} disabled={!session.history.undo.length} title={session.history.undo.at(-1)?.label ?? ''}>↶ <span>Rückgängig</span></button>
           <button onClick={session.redo} disabled={!session.history.redo.length} title={session.history.redo.at(-1)?.label ?? ''}>↷ <span>Wiederholen</span></button>
         </div>
       </div>
-      {world && visible ? <Viewer payload={world} cells={visible.cells} onSelect={onSelect} colorFor={colorFor} focus={focus} />
+      {world && visible ? <Viewer payload={world} cells={visible.cells} onSelect={onSelect} colorFor={colorFor} focus={focus} drag={drag} ghost={ghost} />
         : <div className="scene empty-scene"><p>{isResolved(resolution) ? 'Leeres Projekt – füge links ein Bauteil ein.' : resolution.error}</p></div>}
+      {dragMode && <div className="drag-hint" role="status">{dragInfo || (selected ? `„${selected.name}“ im Bild greifen und ziehen; daneben ziehen dreht die Ansicht. Esc bricht ab.` : 'Erst eine Instanz wählen, dann im Bild ziehen.')}</div>}
       <div className="viewport-footer"><span>Ziehen: drehen · Scrollen: zoomen · Klick: Block und Instanz wählen · F: Fokus · V: Flug · Strg+Z / Strg+Y</span>
         {layerControl}
       </div>

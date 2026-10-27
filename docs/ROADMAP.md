@@ -70,3 +70,5 @@ P6-01 (B8) Konzept 27.10.2026: [Spielbrücke](architecture/MOD_BRIDGE.md) – d�
 P6-01 (B8) M1 umgesetzt: Spielaufnahme importieren, Zellvergleich je Bauschritt, Abweichungen im Schichtplan, bestätigte Schritte ausdrücklich abhaken. Offen: Fabric-Mod (M2, Minecraft 26.3), Speicherung der Aufnahme, lokale Verbindung (M3), Anzeige im Spiel (M4).
 
 B9 Gebäudekatalog (27.10.2026) umgesetzt: [CATALOG](architecture/CATALOG.md). Offen: Vergleich zweier Gebäude nebeneinander, Varianten/Generatoren mit Parametern (Größe, Holzart), eigene Kategorien verwalten, Vorschaufarben für Stufen/Scheiben (B6-Farbtabelle).
+
+Ausbau offener Punkte (27.10.2026): P3-02 Itemmengen je Schritt umgesetzt (Bauitems je Schritt, Packliste je Schicht, Summe = Materialtab). P1-04a Katalog `vanilla-java-items-v2`. P2-02 Händigkeit für unsymmetrische Profile und Andocken per Ziehen im 3D-Bild umgesetzt ([CONNECTORS](architecture/CONNECTORS.md)). P1-03 Vorschaufarben je Materialfamilie. Offen: Freiraum-Reservierung an Anschlüssen, frei definierte Bauabschnitte, Rohstoffe/Rezepte, Safari/iPhone-Speicherprüfung (braucht echtes Gerät).

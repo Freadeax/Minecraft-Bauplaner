@@ -44,7 +44,7 @@ export function SnapPanel({ session }: { session: ProjectSession }) {
   const label = (c: SnapCandidate) => `${c.connectorId} → ${name(c.target.instanceId)} · ${c.target.connectorId}`;
   const detail = (c: SnapCandidate) => `${c.transform.quarterTurns * 90}°${c.transform.mirrorX ? ' gespiegelt' : ''} · Pivot ${c.transform.position.join(' / ')}${c.pairs.length > 1 ? ` · ${c.pairs.length} Anschlüsse` : ''}`;
   const candidateList = (list: SnapCandidate[], onPick: (c: SnapCandidate) => void, aria: string) => list.length === 0
-    ? <p className="muted">Keine passenden freien Anschlüsse (Typ und Profil müssen gleich sein).</p>
+    ? <p className="muted">Keine passenden freien Anschlüsse (Typ und Profil gleich, Händigkeit passend).</p>
     : <ul className="snap-list" aria-label={aria}>{list.map(c => <li key={c.key}>
       <button onClick={() => onPick(c)} title={c.conflicts ? 'Andocken möglich, erzeugt aber Voxelkonflikte' : 'Andocken'}>
         <strong>{label(c)}</strong><span>{detail(c)}</span>
@@ -58,9 +58,9 @@ export function SnapPanel({ session }: { session: ProjectSession }) {
         ? <p className="muted">Dieses Bauteil hat keine Anschlüsse. Lege sie in der Bibliothek an.</p>
         : <ul className="connector-list">{selectedVersion.connectors.map(c => {
           const used = usage.get(`${selected.id}\u0000${c.id}`) ?? 0;
-          return <li key={c.id}><strong>{c.id}</strong> <span>{face(c)} · {c.type}/{c.profile}</span> <em className={used ? 'badge ok' : 'badge'}>{used}/{c.maxLinks ?? 1}</em></li>;
+          return <li key={c.id}><strong>{c.id}</strong> <span>{face(c)} · {c.type}/{c.profile}{c.handedness ? ` · ${c.handedness === 'left' ? 'links' : 'rechts'}` : ''}</span> <em className={used ? 'badge ok' : 'badge'}>{used}/{c.maxLinks ?? 1}</em></li>;
         })}</ul>}
-      <label className="check"><input type="checkbox" checked={mirror} onChange={e => setMirror(e.target.checked)} /> Gespiegelte Lagen zulassen (nur symmetrische Profile)</label>
+      <label className="check"><input type="checkbox" checked={mirror} onChange={e => setMirror(e.target.checked)} /> Gespiegelte Lagen zulassen (Händigkeit wird geprüft)</label>
       {selectedVersion.connectors.length > 0 && <details open><summary>Instanz andocken</summary>
         {candidateList(moveCandidates, c => run(() => snapOperation(project, versions, c, { instanceId: selected.id })), 'Snap-Vorschläge')}</details>}
       {attachable.length > 0 && <details><summary>Bauteil an Anschluss anfügen</summary>

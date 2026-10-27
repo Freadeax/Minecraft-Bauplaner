@@ -104,3 +104,26 @@ test('inspectCell: world → local coordinate through rotation and mirror, confl
   const nothing = inspectCell(r, [0, 50, 0]);
   assert.equal(nothing.cell, undefined); assert.deepEqual(nothing.sources, []);
 });
+
+test('preview colours: shapes inherit their material, dye and wood families, unknown ids stay stable', async () => {
+  const { stateColor } = await import('../apps/web/src/colors.ts');
+  const c = id => stateColor(`minecraft:${id}`);
+  assert.equal(c('oak_slab'), c('oak_planks'));
+  assert.equal(c('oak_door'), c('oak_planks'));
+  assert.equal(c('stone_brick_stairs'), c('stone_bricks'));
+  assert.equal(c('stone_brick_wall'), c('stone_bricks'));
+  assert.equal(c('glass_pane'), c('glass'));
+  assert.equal(c('polished_andesite_slab'), c('polished_andesite'));
+  assert.equal(c('waxed_cut_copper'), c('cut_copper'));
+  assert.equal(c('stripped_spruce_log'), c('spruce_planks'), 'stripped logs show the inner wood');
+  assert.notEqual(c('spruce_log'), c('spruce_planks'), 'bark differs from planks');
+  assert.equal(c('light_blue_wool'), c('light_blue_carpet'));
+  assert.notEqual(c('light_blue_wool'), c('blue_wool'), 'light_blue is not matched as blue');
+  assert.notEqual(c('red_wool'), c('red_terracotta'));
+  assert.equal(c('red_sandstone_stairs'), c('red_sandstone'));
+  assert.notEqual(c('red_sandstone'), c('red_wool'), 'red_sandstone is a material, not a dyed block');
+  assert.equal(c('dark_oak_planks'), '#4f3218', 'dark_oak is not matched as oak');
+  assert.equal(stateColor('mymod:oak_planks'), stateColor('mymod:oak_planks'), 'mod ids hash deterministically');
+  assert.notEqual(stateColor('mymod:oak_planks'), c('oak_planks'), 'mod namespaces do not borrow vanilla colours');
+  for (const id of ['oak_slab', 'glass_pane', 'cyan_bed', 'mystery_thing']) assert.match(c(id), /^#[0-9a-f]{6}$/);
+});

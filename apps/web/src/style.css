@@ -149,3 +149,14 @@ label.check{display:flex;align-items:center;gap:8px}fieldset{border:1px solid va
 .chip-check{display:inline-flex;align-items:center;gap:4px;margin:0;border:1px solid #324751;border-radius:20px;padding:3px 8px;font-size:10px;cursor:pointer}.chip-check:has(input:checked){border-color:var(--mint);color:var(--mint)}.chip-check input{margin:0;accent-color:var(--mint)}
 @media(max-width:1100px){.library.catalog{grid-template-columns:250px minmax(0,1fr)}.library.catalog .inspector{grid-column:1/-1;border-left:0;border-top:1px solid var(--line)}}
 @media(max-width:650px){.library.catalog{display:flex;flex-direction:column}.library.catalog .library-list{border-right:0}.filter-panel:not([open]){margin-bottom:0}.catalog-results{max-height:420px}.catalog-bar label{min-width:0;flex:1 1 45%}.catalog-bar .muted{margin-left:0}}
+
+/* Offene Punkte · Itemspalte und Packliste in der Bauanleitung */
+.build-items .badge{margin-left:6px;font-size:8px}.build-items tr.assumed code{color:#e3c59a}
+.build-unresolved{font-size:11px;margin:4px 0 0}
+.build-pack{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#0d1922}.build-pack summary{cursor:pointer;font-size:11px;color:var(--mint)}
+.build-pack[open] summary{margin-bottom:8px}
+
+/* Offene Punkte · Ziehen im Editor */
+.view-toolbar .drag-snap{display:inline-flex;align-items:center;gap:4px;font-size:10px;margin:0 6px}
+.drag-hint{position:absolute;left:50%;bottom:52px;transform:translateX(-50%);z-index:3;background:#0d1922e6;border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:11px;color:var(--mint);max-width:calc(100% - 32px);pointer-events:none}
+.canvas-host[data-dragging]{cursor:grabbing}

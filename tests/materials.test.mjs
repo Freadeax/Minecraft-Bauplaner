@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createPayload, countBlocks } from '../dist/voxel/src/index.js';
 import {
-  computeMaterials, materialsForResolution, itemsForCell, formatStacks, materialsToCsv, SHULKER_SLOTS,
+  computeMaterials, materialsForResolution, materialsForParts, buildGuide, itemsForCell, formatStacks, materialsToCsv, SHULKER_SLOTS,
   createProject, execute, newInstance, resolveProject, createSampleLibrary, EMPTY_HISTORY,
 } from '../dist/domain/src/index.js';
 
@@ -229,4 +229,52 @@ test('csv export lists items, unresolved states and completeness', () => {
   assert.match(csv[1], /^Item;minecraft:stone;1;64;1;1;Katalog;$/);
   assert.match(csv[2], /^Ungelöst;minecraft:water;1;;;;liquid;/);
   assert.match(csv.at(-1), /^Summe;;1;;;1;unvollständig;1 Shulkerkisten$/);
+});
+
+test('parts (guide steps, layers) look up partner halves in the whole world and add up to the world report', () => {
+  const door = half => ({ half, facing: 'north', hinge: 'left', open: 'false', powered: 'false' });
+  const w = world([
+    [0, 0, 0, 'minecraft:oak_door', door('lower')], [0, 1, 0, 'minecraft:oak_door', door('upper')],
+    [1, 0, 0, 'minecraft:stone'], [1, 1, 0, 'minecraft:stone_slab', { type: 'double', waterlogged: 'false' }],
+    [2, 0, 0, 'minecraft:water', { level: '0' }],
+  ]);
+  const layer = y => w.cells.filter(c => c.position[1] === y).map(c => c.position);
+  const parts = materialsForParts(w, [{ id: 'y0', positions: layer(0) }, { id: 'y1', positions: layer(1), conflicts: 2 }, { id: 'none', positions: [[9, 9, 9]] }]);
+  const y0 = parts.get('y0'), y1 = parts.get('y1');
+  assert.equal(item(y0, 'oak_door').count, 1, 'lower half carries the door');
+  assert.equal(item(y1, 'oak_door'), undefined, 'upper half finds its partner in the other layer and yields nothing');
+  assert.equal(item(y1, 'stone_slab').count, 2);
+  assert.equal(y0.unresolved.length, 1, 'water stays unresolved in its own layer');
+  assert.equal(y1.conflicts, 2);
+  assert.equal(parts.get('none').placed.blocks, 0, 'positions without a cell are ignored');
+  // selection-only lookup (instance scope) would count the lone upper half: the part rule is different on purpose
+  assert.equal(item(computeMaterials(w, { include: c => c.position[1] === 1 }), 'oak_door').count, 1);
+  const whole = computeMaterials(w);
+  assert.equal(y0.totals.items + y1.totals.items, whole.totals.items);
+});
+
+test('guide steps of the sample castle add up to the project item report', async () => {
+  const lib = await createSampleLibrary();
+  const versions = new Map(lib.versions.map(v => [v.id, v]));
+  let p = createProject({ name: 'Burg' }), h = EMPTY_HISTORY;
+  for (const [assetId, x] of [['sample_tower', 0], ['sample_gate', 4], ['sample_tower', 10]]) {
+    const v = lib.versions.find(v => v.assetId === assetId);
+    ({ project: p, history: h } = execute(p, h, { kind: 'instance.add', instance: newInstance({ assetVersionId: v.id, name: assetId, transform: { position: [x, 0, assetId === 'sample_gate' ? 1 : 0], quarterTurns: 0, mirrorX: false } }) }));
+  }
+  const res = resolveProject(p, versions), guide = buildGuide(p, res);
+  const parts = materialsForParts(res.world, guide.steps);
+  const sum = new Map();
+  for (const r of parts.values()) for (const l of r.items) sum.set(l.itemId, (sum.get(l.itemId) ?? 0) + l.count);
+  const whole = materialsForResolution(res);
+  assert.deepEqual(Object.fromEntries([...sum].sort()), Object.fromEntries(whole.items.map(l => [l.itemId, l.count]).sort()));
+});
+
+test('catalogue v2: stone/copper variants are catalogue items, filled cauldrons derived, frogspawn and chorus plant unresolved', () => {
+  for (const id of ['polished_andesite', 'polished_deepslate', 'chiseled_tuff', 'cracked_deepslate_bricks', 'cut_red_sandstone', 'smooth_red_sandstone',
+    'waxed_oxidized_cut_copper', 'exposed_copper', 'copper_grate', 'ochre_froglight', 'crimson_fungus', 'mangrove_roots', 'small_amethyst_bud', 'redstone_lamp'])
+    assert.deepEqual(yields(id), [[id, 1, 'direct', 'catalog']], id);
+  assert.deepEqual(yields('water_cauldron', { level: '3' }), [['cauldron', 1, 'derived', 'assumed']]);
+  assert.equal(yields('frogspawn'), 'no-item');
+  assert.equal(yields('chorus_plant'), 'creative-only');
+  assert.equal(yields('mystery_thing')[0][3], 'assumed', 'unknown ids still fall back to a visible assumption');
 });

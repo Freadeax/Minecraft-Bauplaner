@@ -69,6 +69,53 @@ test('Editor: Anschlüsse verbinden, gelöste Verbindung erkennen, wieder andock
   await p.close();
 });
 
+test('Editor: Instanz im 3D-Bild ziehen, rastet am Anschluss ein, ein Undo-Schritt; Esc bricht ab', async () => {
+  const { p, errors } = await page();
+  await p.goto(BASE);
+  await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await p.waitForURL(/#\/projekt\//);
+  await p.getByRole('button', { name: /Mauer 1/ }).click();
+  await p.getByRole('button', { name: 'X plus 1' }).click();
+  await p.getByLabel('X-Koordinate').and(p.locator('[value="5"]')).waitFor();
+  await p.getByRole('button', { name: 'Ziehen' }).click();
+  await p.getByRole('button', { name: 'Draufsicht (Norden oben)' }).click();
+  await p.getByRole('button', { name: 'Auswahl fokussieren' }).click();
+  const host = p.locator('.editor .canvas-host');
+  await host.locator('canvas').waitFor();
+  const box = await host.boundingBox();
+  const cx = box.x + box.width / 2, cy = box.y + box.height / 2;
+  await p.mouse.move(cx, cy);
+  await p.locator('.viewer-hud b').waitFor();
+
+  // Escape cancels a running grab: nothing changes.
+  await p.mouse.down();
+  await p.mouse.move(cx - 40, cy, { steps: 4 });
+  await p.keyboard.press('Escape');
+  await p.mouse.up();
+  assert.equal(await host.getAttribute('data-ghost'), '');
+  assert.equal(await p.getByLabel('X-Koordinate').inputValue(), '5');
+
+  await p.mouse.move(cx, cy);
+  await p.mouse.down();
+  let tone = '';
+  for (let dx = 8; dx <= 400 && !tone.endsWith('|snap'); dx += 8) {
+    await p.mouse.move(cx - dx, cy);
+    tone = await host.getAttribute('data-ghost') ?? '';
+  }
+  assert.match(tone, /^4,0,1\|snap$/, `Vorschau rastet an Turm West ein: ${tone}`);
+  assert.match(await p.locator('.drag-hint').innerText(), /Rastet ein: west → Turm West · east/);
+  await p.mouse.up();
+  await p.getByLabel('X-Koordinate').and(p.locator('[value="4"]')).waitFor();
+  assert.equal(await host.getAttribute('data-ghost'), '');
+  await p.getByText('✓ Geometrisch konfliktfrei').waitFor();
+  await p.locator('.snap-panel').getByText('VERBINDUNGEN (2)').waitFor();
+  await p.getByRole('button', { name: /Rückgängig/ }).click();
+  await p.getByLabel('X-Koordinate').and(p.locator('[value="5"]')).waitFor();
+  await p.locator('.snap-panel').getByText('VERBINDUNGEN (0)').waitFor();
+  assert.deepEqual(errors, []);
+  await p.close();
+});
+
 test('Bibliothek: Bereich als Bauteil speichern und Anschlüsse als neue Version anlegen', async () => {
   const { p, errors } = await page();
   await p.goto(`${BASE}#/bibliothek`);

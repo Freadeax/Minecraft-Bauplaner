@@ -51,7 +51,14 @@ export interface Connector {
   readonly profile: string;
   /** Maximum simultaneous links; default 1. */
   readonly maxLinks?: number;
+  /**
+   * Handedness of an asymmetric profile, seen from outside along the normal
+   * with `up` pointing up; absent = symmetric. Mirroring flips it; a left
+   * profile mates only with a right one (they face each other).
+   */
+  readonly handedness?: Handedness;
 }
+export type Handedness = 'left' | 'right';
 
 export type AssetSourceFormat = 'schem-v3' | 'voxel-json' | 'demo' | 'crop' | 'composition';
 

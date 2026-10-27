@@ -15,7 +15,7 @@ import type { Resolution } from './compose.js';
  * block id" and is flagged as an assumption; liquids, mod blocks and states
  * without an obtainable item stay unresolved and make the report incomplete.
  */
-export const MATERIAL_CATALOG_VERSION = 'vanilla-java-items-v1';
+export const MATERIAL_CATALOG_VERSION = 'vanilla-java-items-v2';
 export const SHULKER_SLOTS = 27;
 
 export type ItemRule =
@@ -115,15 +115,18 @@ const DERIVED: Readonly<Record<string, readonly [string, string]>> = {
   farmland: ['dirt', 'Ackerboden: Erde mit Hacke bearbeiten'],
   dirt_path: ['dirt', 'Trampelpfad: Erde mit Schaufel bearbeiten'],
   tall_seagrass: ['seagrass', 'Hohes Seegras: Seegras mit Knochenmehl wachsen lassen'],
+  water_cauldron: ['cauldron', 'Kessel mit Wasser: Kessel plus Wassereimer (Wasser nicht gezählt)'],
+  lava_cauldron: ['cauldron', 'Kessel mit Lava: Kessel plus Lavaeimer (Lava nicht gezählt)'],
+  powder_snow_cauldron: ['cauldron', 'Kessel mit Pulverschnee: Kessel plus Pulverschneeeimer (nicht gezählt)'],
 };
 const NO_ITEM: Readonly<Record<string, string>> = {
   fire: 'Feuer wird mit Feuerzeug entzündet, kein Bauitem', soul_fire: 'Seelenfeuer wird entzündet, kein Bauitem',
   nether_portal: 'Netherportal entsteht durch Entzünden des Rahmens', end_portal: 'Endportal entsteht durch Augen im Rahmen', end_gateway: 'Endtransitportal ist nicht platzierbar',
-  frosted_ice: 'Brüchiges Eis entsteht nur durch Eisläufer', moving_piston: 'Bewegter Kolbenblock ist ein Übergangszustand',
+  frosted_ice: 'Brüchiges Eis entsteht nur durch Eisläufer', frogspawn: 'Froschlaich legen nur Frösche, kein Bauitem', moving_piston: 'Bewegter Kolbenblock ist ein Übergangszustand',
   air: 'Luftzustand als Block gespeichert', cave_air: 'Luftzustand als Block gespeichert', void_air: 'Luftzustand als Block gespeichert',
 };
 const CREATIVE_ONLY = new Set(['barrier', 'light', 'structure_block', 'structure_void', 'jigsaw', 'command_block', 'chain_command_block', 'repeating_command_block',
-  'bedrock', 'end_portal_frame', 'reinforced_deepslate', 'budding_amethyst', 'spawner', 'trial_spawner', 'vault', 'petrified_oak_slab', 'test_block', 'test_instance_block']);
+  'bedrock', 'end_portal_frame', 'reinforced_deepslate', 'budding_amethyst', 'spawner', 'trial_spawner', 'vault', 'petrified_oak_slab', 'test_block', 'test_instance_block', 'chorus_plant']);
 const LIQUIDS = new Set(['water', 'lava', 'bubble_column']);
 /** Two-cell plants and similar with property half=lower|upper. */
 const HALF_PAIRS: Readonly<Record<string, string>> = {
@@ -137,6 +140,9 @@ const COUNTED: Readonly<Record<string, readonly [string, number]>> = {
 };
 const COLORS = ['white', 'orange', 'magenta', 'light_blue', 'yellow', 'lime', 'pink', 'gray', 'light_gray', 'cyan', 'purple', 'blue', 'brown', 'green', 'red', 'black'];
 const DIRECT_FAMILY = /(_planks|_log|_wood|_stem|_hyphae|_stairs|_fence|_fence_gate|_wool|_carpet|_concrete|_concrete_powder|_terracotta|_stained_glass|_stained_glass_pane|_bricks|_wall|_ore|_leaves|_sapling|_button|_pressure_plate|_trapdoor|_block|_tiles|_lantern|_bars|_chain|_shulker_box|_banner|_sign|_hanging_sign|_head|_skull|_torch|_bed|_door|_candle|_coral|_coral_fan|_coral_block|_glass|_pillar|_slab|_ice)$/;
+/** Stone, copper and decoration variants whose item id equals the block id (polished_andesite, waxed_cut_copper, …). */
+const DIRECT_PREFIX = /^(polished|chiseled|cracked|cut|smooth|mossy|waxed|exposed|weathered|oxidized)_/;
+const DIRECT_SUFFIX = /(_grate|_bulb|_froglight|_fungus|_roots|_bud|_shelf|_nylium|_mosaic|_copper)$/;
 const DIRECT = new Set(['stone', 'granite', 'diorite', 'andesite', 'deepslate', 'cobbled_deepslate', 'tuff', 'calcite', 'cobblestone', 'mossy_cobblestone', 'dirt', 'coarse_dirt', 'rooted_dirt',
   'grass_block', 'podzol', 'mycelium', 'mud', 'clay', 'sand', 'red_sand', 'gravel', 'sandstone', 'red_sandstone', 'smooth_sandstone', 'chiseled_sandstone', 'cut_sandstone', 'glass', 'glass_pane',
   'terracotta', 'obsidian', 'crying_obsidian', 'netherrack', 'soul_sand', 'soul_soil', 'basalt', 'smooth_basalt', 'blackstone', 'end_stone', 'purpur_block', 'prismarine', 'dark_prismarine', 'sea_lantern',
@@ -147,7 +153,11 @@ const DIRECT = new Set(['stone', 'granite', 'diorite', 'andesite', 'deepslate', 
   'short_grass', 'fern', 'dead_bush', 'dandelion', 'poppy', 'blue_orchid', 'allium', 'azure_bluet', 'red_tulip', 'orange_tulip', 'white_tulip', 'pink_tulip', 'oxeye_daisy', 'cornflower',
   'lily_of_the_valley', 'wither_rose', 'torchflower', 'brown_mushroom', 'red_mushroom', 'moss_carpet', 'flower_pot', 'cake', 'candle', 'sponge', 'wet_sponge', 'quartz_block', 'smooth_quartz', 'smooth_stone',
   'mud_bricks', 'packed_mud', 'cobweb', 'end_rod', 'lightning_rod', 'enchanting_table', 'brewing_stand', 'grindstone', 'stonecutter', 'loom', 'cartography_table', 'fletching_table', 'smithing_table',
-  'decorated_pot', 'big_dripleaf', 'spore_blossom', 'azalea', 'flowering_azalea', 'glow_lichen', 'sculk', 'sculk_vein', 'sculk_sensor', 'sculk_shrieker', 'sculk_catalyst', 'amethyst_cluster']);
+  'decorated_pot', 'big_dripleaf', 'spore_blossom', 'azalea', 'flowering_azalea', 'glow_lichen', 'sculk', 'sculk_vein', 'sculk_sensor', 'sculk_shrieker', 'sculk_catalyst', 'amethyst_cluster',
+  'copper_ore', 'deepslate', 'redstone_lamp', 'daylight_detector', 'lodestone', 'respawn_anchor', 'ancient_debris', 'gilded_blackstone', 'crafter', 'heavy_core', 'calibrated_sculk_sensor',
+  'nether_sprouts', 'nether_wart', 'pointed_dripstone', 'hanging_roots', 'mangrove_propagule', 'creaking_heart', 'pale_hanging_moss', 'open_eyeblossom', 'closed_eyeblossom', 'firefly_bush',
+  'bush', 'cactus_flower', 'short_dry_grass', 'tall_dry_grass', 'chorus_flower', 'dried_ghast', 'copper_chest', 'beehive', 'bee_nest', 'sniffer_egg', 'slime_block', 'honey_block', 'mushroom_stem',
+  'tinted_glass', 'bone_block', 'magma_block', 'dripstone_block', 'moss_block', 'tuff_bricks', 'resin_clump', 'sea_lantern', 'twisting_vines', 'weeping_vines']);
 
 const UNPACKABLE = /(^|_)shulker_box$/;
 
@@ -233,18 +243,33 @@ export function itemsForCell(state: BlockState, position: Vec3, at: Lookup): Cel
   if (RENAMED[id]) return { yields: [one(RENAMED[id]!, 'renamed')] };
   if (DERIVED[id]) return { yields: [one(DERIVED[id]![0], 'derived', 'assumed', 1, DERIVED[id]![1])] };
   if (id === 'cake' && p.bites && p.bites !== '0') return { yields: [one('cake', 'direct', 'catalog', 1, 'angeschnittener Kuchen: ganzer Kuchen nötig')] };
-  if (DIRECT.has(id) || DIRECT_FAMILY.test(id) || COLORS.some(c => id === `${c}_wool`)) return { yields: [one(id, 'direct')] };
+  if (DIRECT.has(id) || DIRECT_FAMILY.test(id) || DIRECT_PREFIX.test(id) || DIRECT_SUFFIX.test(id) || COLORS.some(c => id === `${c}_wool`)) return { yields: [one(id, 'direct')] };
   return { yields: [one(id, 'assumed', 'assumed', 1, 'keine Katalogregel: Item-ID = Block-ID angenommen')] };
+}
+
+export interface MaterialOptions {
+  readonly scope?: MaterialScope;
+  /** Limits the counted cells (e.g. one instance). */
+  readonly include?: (cell: Cell) => boolean;
+  /** Counted cells given directly (takes precedence over `include`). */
+  readonly cells?: readonly Cell[];
+  /**
+   * Where partner halves of multi-block objects are looked up: among the
+   * counted cells (default) or in the whole world. 'world' lets parts of one
+   * world (guide steps, layers) add up exactly to the whole-world report.
+   */
+  readonly partners?: 'selection' | 'world';
+  readonly conflicts?: number;
 }
 
 /**
  * Computes the material report for selected cells of a resolved world payload.
- * `include` limits the cells (e.g. one instance); partner halves are only
- * looked up among included cells.
+ * `include`/`cells` limit the counted cells; partner halves are looked up as
+ * set by `partners`.
  */
-export function computeMaterials(world: VoxelPayload | null, options: { scope?: MaterialScope; include?: (cell: Cell) => boolean; conflicts?: number } = {}): MaterialReport {
+export function computeMaterials(world: VoxelPayload | null, options: MaterialOptions = {}): MaterialReport {
   const scope = options.scope ?? { kind: 'project' };
-  const cells = world ? (options.include ? world.cells.filter(options.include) : world.cells) : [];
+  const cells = world ? options.cells ?? (options.include ? world.cells.filter(options.include) : world.cells) : [];
   const states = new Map<string, { state: BlockState; count: number }>();
   const byPosition = new Map<string, BlockState>();
   let blocks = 0, air = 0, erase = 0, waterlogged = 0;
@@ -258,7 +283,8 @@ export function computeMaterials(world: VoxelPayload | null, options: { scope?: 
     if (s) s.count++; else states.set(key, { state, count: 1 });
     if (state.properties.waterlogged === 'true') waterlogged++;
   }
-  const at: Lookup = (position) => byPosition.get(positionKey(position));
+  const worldLookup = options.partners === 'world' && world ? blockLookup(world) : null;
+  const at: Lookup = worldLookup ?? ((position) => byPosition.get(positionKey(position)));
   const items = new Map<string, { count: number; sources: Map<string, ItemSource & { cells: number; items: number }> }>();
   const unresolved = new Map<string, UnresolvedLine>();
   for (const cell of cells) {
@@ -321,6 +347,35 @@ export function materialsForResolution(resolution: Resolution, scope: MaterialSc
   const include = (cell: Cell): boolean => resolution.owners.get(positionKey(cell.position))?.[0] === scope.instanceId;
   const own = resolution.conflicts.filter(c => c.instanceIds.includes(scope.instanceId)).length;
   return computeMaterials(resolution.world, { scope, include, conflicts: own });
+}
+
+/** Payloads are immutable, so the whole-world lookup is built once per payload. */
+const lookups = new WeakMap<VoxelPayload, Lookup>();
+function blockLookup(world: VoxelPayload): Lookup {
+  let at = lookups.get(world);
+  if (!at) {
+    const all = new Map<string, BlockState>();
+    for (const c of world.cells) if (c.kind === 'block') all.set(positionKey(c.position), world.palette[c.paletteIndex]!);
+    lookups.set(world, at = (position) => all.get(positionKey(position)));
+  }
+  return at;
+}
+
+/**
+ * Build items for parts of one world, e.g. guide steps or layers: each part
+ * lists its cell positions. Partner halves are looked up in the whole world,
+ * so a door spanning two layers yields its item once (with the lower half)
+ * and the parts add up to the whole-world report. Positions without a cell
+ * are ignored.
+ */
+export function materialsForParts(world: VoxelPayload, parts: readonly { readonly id: string; readonly positions: readonly Vec3[]; readonly conflicts?: number }[]): Map<string, MaterialReport> {
+  const cellAt = new Map(world.cells.map(c => [positionKey(c.position), c]));
+  const out = new Map<string, MaterialReport>();
+  for (const part of parts) {
+    const cells = part.positions.map(p => cellAt.get(positionKey(p))).filter((c): c is Cell => c !== undefined);
+    out.set(part.id, computeMaterials(world, { cells, partners: 'world', conflicts: part.conflicts ?? 0 }));
+  }
+  return out;
 }
 
 /** "3 × 64 + 12" style storage text. */

@@ -47,6 +47,7 @@ Messweg: `node --test tests/viewer.test.mjs` und `npm run test:e2e` protokollier
 
 ## Grenzen
 
-- Farbige Würfel, keine Minecraft-Blockmodelle oder Texturen; Treppen, Zäune usw. erscheinen als Vollwürfel.
+- Farbige Würfel, keine Minecraft-Blockmodelle oder Texturen; Treppen, Zäune usw. erscheinen als Vollwürfel. Vorschaufarben (`colors.ts`, eigene Näherungswerte, keine Texturen): exakte IDs, dann Familien – 16 Farbstoffe für Wolle/Teppich/Beton/Keramik/Glas/Betten/Banner/Kerzen/Shulkerkisten (rotes Sandstein bleibt Material), Holzarten mit Brettern/Rinde/Laub (entrindete Stämme in Brettfarbe), Stein-/Metallmaterialien; Formen (Stufe, Treppe, Mauer, Zaun, Scheibe, Tür, Falltür, Schild …) erben die Materialfarbe. Mod-IDs und Unbekanntes erhalten weiter eine stabile Hashfarbe.
 - Kein Greedy-Meshing und keine BVH; bei maximal 20 000 Zellen nicht nötig. Für größere Limits wäre Greedy-Meshing je Farbe der nächste Schritt.
 - Touch im Headless-Chromium mit Geräteemulation (Pixel 7) und CDP-Touchereignissen geprüft; echter iPhone-/Android-Test und echte GPU stehen aus.
+- Greifen und Ziehen einer Auswahl (Editor) und Platzierungsumriss: siehe [CONNECTORS](CONNECTORS.md#andocken-per-ziehen).

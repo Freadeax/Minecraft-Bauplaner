@@ -19,7 +19,7 @@ const PAD: readonly (readonly [code: string, label: string, name: string])[] = [
 ];
 const fmt = (n: number) => n.toLocaleString('de-DE');
 
-export default function ThreeViewer({ payload, cells, onSelect, colorFor, focus = null }: ViewerProps) {
+export default function ThreeViewer({ payload, cells, onSelect, colorFor, focus = null, drag = null, ghost = null }: ViewerProps) {
   const host = useRef<HTMLDivElement>(null), canvasHost = useRef<HTMLDivElement>(null);
   const controller = useRef<SceneController | null>(null);
   const fallback = useRef<FallbackHandle | null>(null), fallbackCamera = useRef(newFallbackCamera());
@@ -63,6 +63,8 @@ export default function ThreeViewer({ payload, cells, onSelect, colorFor, focus 
   }, [payload, cells, colorFor, software]);
 
   useEffect(() => { controller.current?.setFocusTarget(focus); }, [focus]);
+  useEffect(() => { controller.current?.setDragHandler(drag); }, [drag]);
+  useEffect(() => { controller.current?.setGhost(ghost?.bounds ?? null, ghost?.tone); }, [ghost]);
   // A new structure (other payload) clears the block marker.
   useEffect(() => { controller.current?.mark(null); setHover(null); }, [payload]);
 

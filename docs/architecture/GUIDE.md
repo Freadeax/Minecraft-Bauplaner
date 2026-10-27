@@ -63,4 +63,8 @@ Fortschrittsbalken (gesetzte Blöcke laut Haken), Wahl der Grundlage, Hinweise z
 
 - Bauabschnitt = Instanz. Frei definierte Abschnitte oder semantische Gruppen (z. B. „Dach“) brauchen später eine Nutzerbestätigung.
 - Phasen und Stützen sind geometrische Heuristiken; Mehrblockobjekte (Türen, Betten) werden je Zelle geführt, die Itemzählung leistet B1.
-- Keine Mengen in Bauitems/Stacks in diesem Block; keine Messung im Spiel; Schichtplan ab 96 Zellen Breite auf den Schrittbereich zugeschnitten.
+- Keine Messung im Spiel (dafür B8); Schichtplan ab 96 Zellen Breite auf den Schrittbereich zugeschnitten.
+
+## Bauitems je Schritt und Packliste (27.10.2026)
+
+Die Schrittkarte zeigt neben den Blockzuständen die **benötigten Bauitems** mit Stacks, berechnet mit den B1-Regeln über `materialsForParts(world, guide.steps)` (`materials.ts`). Gegenstücke von Mehrblockobjekten werden in der ganzen Welt gesucht: Eine Tür über zwei Schichten zählt genau einmal (beim unteren Teil), deshalb ergeben alle Schritte zusammen exakt den Bedarf im Tab „Material“ (getestet mit der Beispielburg). Annahmen sind als „Annahme“ markiert, Zustände ohne Item (Wasser, Modblöcke) stehen als „Ohne Itemzuordnung“ darunter. Die aufklappbare **Packliste** fasst die noch nicht abgehakten Schritte der aktuellen Schicht zusammen (Items, Stacks, Inventarplätze, Shulkerkisten).

@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { selectLayers } from '../../../../../packages/voxel/src/index.js';
 import type { BlockState, Cell } from '../../../../../packages/voxel/src/index.js';
-import { buildGuide, checkScan, confirmedUnticked, evaluateProgress, PHASE_LABEL, positionKey, resolveProject, scanTarget, tickConfirmed, tickedButNotBuilt, tickStep, tickSteps, untickStep, untickSteps, VERDICT_LABEL } from '../../../../../packages/domain/src/index.js';
-import type { CellDeviation, GameCheck, Guide, GuideStep, Resolution, StepStatus } from '../../../../../packages/domain/src/index.js';
+import { buildGuide, checkScan, confirmedUnticked, evaluateProgress, formatStacks, materialsForParts, PHASE_LABEL, positionKey, resolveProject, scanTarget, tickConfirmed, tickedButNotBuilt, tickStep, tickSteps, untickStep, untickSteps, VERDICT_LABEL } from '../../../../../packages/domain/src/index.js';
+import type { CellDeviation, GameCheck, Guide, GuideStep, MaterialReport, Resolution, StepStatus } from '../../../../../packages/domain/src/index.js';
 import type { Vec3 } from '../../../../../packages/voxel/src/index.js';
 import { useApp } from '../../app/context';
 import { errorText, formatNumber } from '../../app/ui';
@@ -21,6 +21,7 @@ function stateText(state: BlockState): string {
   const props = Object.entries(state.properties).sort(([a], [b]) => a.localeCompare(b)).map(([k, v]) => `${k}=${v}`);
   return props.length ? `${state.id}[${props.join(',')}]` : state.id;
 }
+const shortId = (id: string): string => id.replace(/^minecraft:/, '');
 const stepTitle = (s: GuideStep): string => `${PHASE_LABEL[s.phase]} · ${s.sectionName} · Y ${s.y}`;
 
 /** Build guide: layer steps per section, manual ticks bound to geometry, mobile friendly. */
@@ -62,6 +63,8 @@ export function BuildTab({ session }: { session: ProjectSession }) {
     if (!scan || !guide || !world || !alignment || !target || 'error' in target || basisMismatch) return null;
     return checkScan(guide, world, scan, alignment, target.notes);
   }, [scan, guide, world, alignment, target, basisMismatch]);
+  // Build items per step (B1 rules); partner halves are looked up in the whole world so steps add up to the material tab.
+  const stepItems = useMemo(() => guide && world ? materialsForParts(world, guide.steps) : null, [guide, world]);
   const loadScan = (s: LoadedScan) => {
     setScan(s); setManualAlign(null);
     const t = scanTarget(project, s);
@@ -88,6 +91,8 @@ export function BuildTab({ session }: { session: ProjectSession }) {
   for (const s of visibleSteps) (byLayer.get(s.y) ?? (byLayer.set(s.y, []), byLayer.get(s.y)!)).push(s);
   const layerSteps = step ? guide.steps.filter(s => s.y === step.y && s.phase !== 'liquid') : [];
   const reviewSteps = guide.steps.filter(s => status(s.id) === 'review');
+  const layerOpen = step ? guide.steps.filter(s => s.y === step.y && status(s.id) !== 'done') : [];
+  const layerItems = step && world ? { y: step.y, steps: layerOpen.length, report: materialsForParts(world, [{ id: 'layer', positions: layerOpen.flatMap(s => s.positions) }]).get('layer')! } : null;
 
   return <section className="build" aria-label="Bauanleitung">
     <header className="build-head">
@@ -141,6 +146,7 @@ export function BuildTab({ session }: { session: ProjectSession }) {
     </aside>
 
     {step && <StepDetail step={step} guide={guide} status={status} game={game} ready={ready.has(step.id)} world={source && 'resolution' in source ? source.resolution : null}
+      items={stepItems?.get(step.id) ?? null} layerItems={layerItems}
       show3d={show3d} setShow3d={setShow3d} onSelect={setSelectedId}
       onTick={() => tick(step)} onUntick={() => run(untickStep(step.id))}
       onNext={() => { const n = nextOpen(step); if (n) setSelectedId(n.id); }}
@@ -151,11 +157,12 @@ export function BuildTab({ session }: { session: ProjectSession }) {
 
 interface DetailProps {
   step: GuideStep; guide: Guide; status: (id: string) => StepStatus; game: GameCheck | null; ready: boolean; world: Resolution | null;
+  items: MaterialReport | null; layerItems: { y: number; steps: number; report: MaterialReport } | null;
   show3d: boolean; setShow3d(v: boolean): void; onSelect(id: string): void;
   onTick(): void; onUntick(): void; onNext(): void; onPrev(): void; onTickLayer(): void;
 }
 
-function StepDetail({ step, guide, status, game, ready, world, show3d, setShow3d, onSelect, onTick, onUntick, onNext, onPrev, onTickLayer }: DetailProps) {
+function StepDetail({ step, guide, status, game, ready, world, items, layerItems, show3d, setShow3d, onSelect, onTick, onUntick, onNext, onPrev, onTickLayer }: DetailProps) {
   const st = status(step.id);
   const waiting = step.prerequisites.filter(p => status(p) !== 'done');
   const g = game?.steps.get(step.id);
@@ -186,6 +193,7 @@ function StepDetail({ step, guide, status, game, ready, world, show3d, setShow3d
     {step.materials.length > 0 && <table className="build-materials"><caption>Gesetzte Blockzustände in diesem Schritt</caption>
       <thead><tr><th>Block</th><th>Anzahl</th></tr></thead>
       <tbody>{step.materials.map(m => <tr key={m.key}><td><i style={{ background: stateColor(m.state.id) }} aria-hidden="true" /><code>{stateText(m.state)}</code></td><td>{formatNumber(m.count)}</td></tr>)}</tbody></table>}
+    {items && <StepItems report={items} />}
     {(step.air > 0 || step.erase > 0) && <p className="muted">{step.air > 0 && `${step.air} Zellen ausdrücklich Luft (freihalten). `}{step.erase > 0 && `${step.erase} Zellen abbauen/löschen.`}</p>}
     {step.notes.length > 0 && <ul className="build-notes">{step.notes.map(n => <li key={n}>{n}</li>)}</ul>}
 
@@ -194,9 +202,29 @@ function StepDetail({ step, guide, status, game, ready, world, show3d, setShow3d
       <button onClick={onTickLayer}>Ganze Schicht Y {step.y} abhaken</button>
       <button aria-pressed={show3d} onClick={() => setShow3d(!show3d)}>3D-Ansicht {show3d ? 'ausblenden' : 'zeigen'}</button>
     </div>
+    {layerItems && <details className="build-pack">
+      <summary>Packliste Schicht Y {layerItems.y} · {layerItems.steps ? `${layerItems.steps} offene Schritte, ${formatNumber(layerItems.report.totals.items)} Items in ${formatNumber(layerItems.report.totals.slots)} Plätzen` : 'alles abgehakt'}</summary>
+      {layerItems.steps > 0 ? <StepItems report={layerItems.report} caption={`Noch zu setzen in Schicht Y ${layerItems.y}`} storage /> : <p className="muted">Alle Schritte dieser Schicht sind abgehakt.</p>}
+    </details>}
     {show3d && world?.world && <Step3d step={step} guide={guide} status={status} resolution={world} />}
     <p className="hash" title="Änderungserkennung, kein Integritätsnachweis">Schritt-ID {step.id} · Geometrie {step.geometryHash}</p>
   </article>;
+}
+
+/** Build items of a step or layer (rules and assumptions from the material tab). */
+function StepItems({ report, caption = 'Benötigte Bauitems', storage = false }: { report: MaterialReport; caption?: string; storage?: boolean }) {
+  if (!report.items.length && !report.unresolved.length) return null;
+  return <>
+    <table className="build-materials build-items"><caption>{caption}</caption>
+      <thead><tr><th>Item</th><th>Stacks</th><th>Menge</th></tr></thead>
+      <tbody>{report.items.map(l => <tr key={l.itemId} className={l.confidence === 'assumed' ? 'assumed' : undefined}>
+        <td><i style={{ background: stateColor(l.itemId) }} aria-hidden="true" /><code>{shortId(l.itemId)}</code>
+          {l.confidence === 'assumed' && <em className="badge review" title={[...new Set(l.sources.map(s => s.note).filter(Boolean))].join(' · ')}>Annahme</em>}</td>
+        <td>{formatStacks(l)}</td><td>{formatNumber(l.count)}</td></tr>)}</tbody>
+    </table>
+    {report.unresolved.length > 0 && <p className="muted build-unresolved">Ohne Itemzuordnung: {report.unresolved.map(u => `${shortId(u.state.id)} × ${u.count} (${u.message})`).join(' · ')}</p>}
+    {storage && <p className="muted">{formatNumber(report.totals.slots)} Inventarplätze · {formatNumber(report.totals.shulkerBoxes)} Shulkerkisten{report.totals.unpackableSlots ? ` + ${report.totals.unpackableSlots} lose` : ''}{report.conflicts ? ' · vorläufig wegen Voxelkonflikten' : ''}</p>}
+  </>;
 }
 
 /** Top-down plan of the step's layer: current step bright, rest of the layer dimmed, coordinates on both axes. */

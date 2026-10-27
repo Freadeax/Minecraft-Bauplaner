@@ -57,13 +57,13 @@ export function ConnectorEditor({ asset, version, onHighlight, onSaved }: {
 
   if (asset.demo) return <section className="connector-editor" aria-label="Anschluss-Editor">
     <span className="panel-kicker">ANSCHLÜSSE</span>
-    <ul className="connector-list">{version.connectors.map(c => <li key={c.id}><strong>{c.id}</strong> <span>{FACE_DE[faceOf(c.normal) ?? 'east']} · {c.type}/{c.profile} · {c.position.join(' / ')}</span></li>)}</ul>
+    <ul className="connector-list">{version.connectors.map(c => <li key={c.id}><strong>{c.id}</strong> <span>{FACE_DE[faceOf(c.normal) ?? 'east']} · {c.type}/{c.profile}{c.handedness ? ` · ${c.handedness === 'left' ? 'links' : 'rechts'}` : ''} · {c.position.join(' / ')}</span></li>)}</ul>
     <p className="small-note">Beispielbauteile sind schreibgeschützt. Eigene Bauteile erhalten hier bearbeitbare Anschlüsse.</p>
   </section>;
 
   return <section className="connector-editor" aria-label="Anschluss-Editor">
     <span className="panel-kicker">ANSCHLÜSSE BEARBEITEN</span>
-    <p className="small-note">Punkt auf einer Außenfläche (Zellgrenze), Normale zeigt nach außen. Nur gleicher Typ und gleiches Profil verbinden sich. Gelb markiert: Blöcke am Anschlusspunkt.</p>
+    <p className="small-note">Punkt auf einer Außenfläche (Zellgrenze), Normale zeigt nach außen. Nur gleicher Typ und gleiches Profil verbinden sich. Unsymmetrische Profile (z. B. Wehrgang auf einer Seite) bekommen eine Händigkeit, von außen gesehen: links passt nur an rechts, Spiegeln tauscht sie. Gelb markiert: Blöcke am Anschlusspunkt.</p>
     {draft.map((c, i) => {
       const f = faceOf(c.normal) ?? 'east', u = faceOf(c.up) ?? 'up';
       const own = issues.filter(x => x.connectorId === c.id);
@@ -83,6 +83,10 @@ export function ConnectorEditor({ asset, version, onHighlight, onSaved }: {
         <label>Profil<input value={c.profile} maxLength={60} onChange={e => update(i, { profile: e.target.value })} aria-label={`Anschluss ${i + 1} Profil`} /></label>
         <label>Max. Verbindungen<input inputMode="numeric" value={c.maxLinks ?? 1} aria-label={`Anschluss ${i + 1} Max. Verbindungen`}
           onChange={e => { const n = Number(e.target.value); if (Number.isSafeInteger(n) && n >= 1) { const { maxLinks: _drop, ...rest } = c; setDraft(d => d.map((x, k) => k === i ? (n === 1 ? rest : { ...rest, maxLinks: n }) : x)); } }} /></label>
+        <label>Händigkeit<select value={c.handedness ?? ''} aria-label={`Anschluss ${i + 1} Händigkeit`} onChange={e => {
+          const { handedness: _drop, ...rest } = c, v = e.target.value;
+          setDraft(d => d.map((x, k) => k === i ? (v === 'left' || v === 'right' ? { ...rest, handedness: v } : rest) : x));
+        }}><option value="">symmetrisch</option><option value="left">links</option><option value="right">rechts</option></select></label>
         {own.map((x, k) => <p key={k} className={x.severity === 'error' ? 'field-error' : 'small-note'}>{x.message}</p>)}
         <button type="button" className="danger" onClick={() => setDraft(d => d.filter((_, k) => k !== i))}>Entfernen</button>
       </fieldset>;

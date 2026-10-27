@@ -42,6 +42,15 @@ test('Bauen: abhaken, Geometrie ändern ⇒ prüfbedürftig, erneut bestätigen,
   assert.match(await p.locator('.build-step h2').innerText(), /Grundblöcke · Turm West · Y 0/);
   assert.match(await p.locator('.build-check').innerText(), /Y 0, X 0…3, Z 0…3: genau 16 Blöcke/);
   assert.equal(await p.locator('.layer-plan rect.own').count(), 16);
+  // Item column (B1 rules): 16 full blocks of the tower floor are 16 build items.
+  const items = p.locator('.build-step .build-items').first();
+  const counts = await items.locator('tbody td:last-child').allInnerTexts();
+  assert.ok(counts.length >= 1);
+  assert.equal(counts.reduce((a, c) => a + Number(c.replace(/\D/g, '')), 0), 16);
+  const pack = p.locator('.build-pack summary');
+  assert.match(await pack.innerText(), /Packliste Schicht Y 0 · \d+ offene Schritte, \d+ Items/);
+  await pack.click();
+  await p.locator('.build-pack table caption', { hasText: 'Noch zu setzen in Schicht Y 0' }).waitFor();
   await p.getByRole('button', { name: '✓ Abhaken' }).click();
   await head.filter({ hasText: `1 / ${total} Schritte` }).waitFor();
   assert.doesNotMatch(await p.locator('.build-step h2').innerText(), /Turm West · Y 0/, 'springt zum nächsten Schritt');

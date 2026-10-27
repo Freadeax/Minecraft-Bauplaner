@@ -30,18 +30,22 @@ Zwei Anschlüsse in Projektkoordinaten passen (`connectorsMate`), wenn Typ und P
 - Voxelkonflikte: AABB nur als Vorfilter, entschieden wird mit `resolveProject` über das bewegte Bauteil und die Instanzen mit überlappender Box. Keine zweite Konfliktregel. Konfliktbehaftete Lagen bleiben sichtbar, werden aber nachrangig sortiert.
 - Nutzungsgrenze: Anschlüsse mit `links ≥ maxLinks` sind keine Ziele. Verbindungen der bewegten Instanz zählen nicht, weil sie durch das Verschieben ohnehin neu entstehen.
 - Determinismus: Sortierung nach Konflikten, Vorrangentscheidungen, Manhattan-Abstand zum Bezugspunkt, Anzahl Paare, Projektreihenfolge des Ziels, Anschluss-IDs, Drehung, Spiegelung. Gleiche Eingabe ⇒ gleiche Liste (getestet).
-- Spiegelung kehrt die Händigkeit des Profils um. Sie ist deshalb nur auf ausdrücklichen Wunsch zugelassen und nur für symmetrische Profile korrekt; ein Händigkeitsfeld im Vertrag fehlt noch.
+- Händigkeit: unsymmetrische Profile (z. B. Wehrgang nur auf einer Seite) tragen `handedness: 'left' | 'right'`, von außen entlang der Normale mit Up nach oben gesehen; fehlt das Feld, ist das Profil symmetrisch. `transformConnector` tauscht links/rechts bei Spiegelung, Drehungen lassen sie unverändert. Passen (`handednessFits`) nur links↔rechts oder beide symmetrisch. Folge: Eine um 180° gedrehte unsymmetrische Mauer passt nicht mehr (Wehrgang auf der falschen Seite), die gespiegelte schon (getestet). Gespiegelte Lagen bleiben eine ausdrückliche Option („Gespiegelte Lagen zulassen“), sind jetzt aber für alle Profile korrekt geprüft. Bestehende Versionen ohne Feld behalten ihre ID.
 
 ## Verbindungen
 
 `snapOperation` liefert eine einzige rückgängig machbare `batch`-Operation: Instanz hinzufügen bzw. transformieren, nicht mehr passende Verbindungen der bewegten Instanz entfernen und alle passenden Paare verbinden. Ist der Vorschlag inzwischen veraltet, wird `STALE` gemeldet statt etwas zu speichern. `linkOperation` verbindet zwei bereits aufeinanderliegende Anschlüsse und lehnt alles andere ab. `checkLinks` prüft gespeicherte Verbindungen jederzeit neu (`ok`, fehlende Instanz/Version/Anschluss, Typ-/Profilabweichung, versetzt, Nutzungsgrenze überschritten); ein normales Verschieben löst Verbindungen nicht still, sie werden als „liegen nicht mehr aufeinander“ angezeigt. `unlinkedMates` findet passende, noch unverbundene Paare.
 
+## Andocken per Ziehen
+
+Im Editor schaltet „✥ Ziehen“ das Greifen frei: Wer im 3D-Bild auf einen Block der gewählten Instanz drückt, verschiebt sie auf dem X/Z-Raster der gegriffenen Schicht (Y bleibt). Der Viewer meldet nur ganzzahlige Versätze (`DragHandler` in `viewer/sceneController.ts`, Greifen in der Capture-Phase vor der Orbitsteuerung); daneben ziehen dreht weiterhin die Ansicht. Beim ersten Versatz werden einmal alle Snap-Kandidaten berechnet (`findSnapCandidates`, ohne Spiegelung). `nearestSnap` wählt in Reichweite `DRAG_SNAP_RADIUS` = 3 Blöcke (Manhattan zum gezogenen Pivot) zuerst konfliktfreie, dann nächste, dann Lagen mit gleicher Drehung. Ein Umriss zeigt die geplante Lage (weiß: freie Verschiebung, grün: rastet ein, rot: rastet mit Konflikten ein), der Hinweis nennt das Anschlusspaar. Loslassen führt genau einen rückgängig machbaren Schritt aus (`snapOperation` bzw. `instance.transform`); Esc, ein zweiter Finger oder Abbruch des Zeigers verwerfen den Zug. „Einrasten“ abwählen ergibt freies Verschieben. In der Softwareansicht ohne WebGL gibt es kein Ziehen.
+
 ## Oberfläche
 
 - **Editor → Anschlüsse & Snap:** Anschlüsse der gewählten Instanz mit Belegung, Andock-Vorschläge mit Konfliktzahl, Anfügen eines Bibliotheksbauteils an die gewählte Instanz, Verbindungsliste mit Status und „Lösen“, Verbinden aufeinanderliegender Anschlüsse.
-- **Bibliothek → Anschlüsse bearbeiten:** Fläche, Anker, Up, Typ, Profil, Nutzungsgrenze; Vorschlag „Flächenmitte unten“ (`suggestConnector`); Prüfung live, Ankerzellen gelb markiert. Speichern erzeugt eine neue unveränderliche Version; Projekte behalten ihre Version. Beispielbauteile sind schreibgeschützt.
+- **Bibliothek → Anschlüsse bearbeiten:** Fläche, Anker, Up, Typ, Profil, Nutzungsgrenze, Händigkeit (symmetrisch/links/rechts); Vorschlag „Flächenmitte unten“ (`suggestConnector`); Prüfung live, Ankerzellen gelb markiert. Speichern erzeugt eine neue unveränderliche Version; Projekte behalten ihre Version. Beispielbauteile sind schreibgeschützt.
 - **Bibliothek → Bereich als Bauteil speichern:** einschließliche Integer-Box auf importierter Datei oder Bauteilversion, außerhalb liegende Zellen abgedunkelt, Speichern über `cropPayload` als neues Asset (`source.format = 'crop'`, Ursprungsoffset und Herkunft übernommen, Originalhash der Quelle verweist auf die Ausgangsdatei).
 
 ## Grenzen
 
-Keine Händigkeit/Spiegelprofile, keine Freiraum-Reservierung an Anschlüssen, kein Ziehen im 3D-Viewer (Andocken über Liste), keine Mehrfachauswahl. Fundament/Gelände bleibt ungeprüft.
+Keine Freiraum-Reservierung an Anschlüssen, keine Mehrfachauswahl, Ziehen nur waagerecht (Höhe über den Inspektor) und nur in der WebGL-Ansicht. Fundament/Gelände bleibt ungeprüft.
