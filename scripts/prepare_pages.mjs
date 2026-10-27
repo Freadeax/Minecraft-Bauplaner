@@ -18,6 +18,8 @@ await writeFile(path.join(root,'THIRD_PARTY_NOTICES.txt'),notices.join('\n\n---\
 await mkdir(path.join(root,'examples'),{recursive:true});
 const fixtureHex=(await readFile('fixtures/schem/asymmetric.nbt.hex','utf8')).replace(/\s/g,'');
 await writeFile(path.join(root,'examples/contract-v3.schem'),gzipSync(Buffer.from(fixtureHex,'hex')));
+const litematicHex=(await readFile('fixtures/litematic/multiregion.nbt.hex','utf8')).replace(/\s/g,'');
+await writeFile(path.join(root,'examples/contract-multiregion.litematic'),gzipSync(Buffer.from(litematicHex,'hex')));
 const files=[];
 async function walk(dir){
   for(const item of (await readdir(dir,{withFileTypes:true})).sort((a,b)=>a.name.localeCompare(b.name))){

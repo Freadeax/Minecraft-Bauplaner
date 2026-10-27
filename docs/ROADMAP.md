@@ -18,7 +18,7 @@ P0-01 ist mit der Bestandsaufnahme und Integration dieses Dokumentationsstands b
 | P3-03 | Erste nutzbare Fassung | P3-01/02 | Datei → planen → exportieren → nachbauen durchgängig |
 | P4-01 | API, Konten, Rechte, Payloadspeicher | P3 | Keine fremden Projektzugriffe, Wiederherstellung geprüft |
 | P4-02 | Gemeinsame Operationen und Tasks | P4-01 | Parallele Änderungen und Reconnect ohne stillen Verlust |
-| P5-01 | Litematic-Adapter | P3 | Mehrregionen und Versionsgrenzen geprüft |
+| P5-01 | Litematic-Adapter | P3 | Mehrregionen und Versionsgrenzen geprüft · **umgesetzt 27.10.2026** (Import mit Regionswahl, Export Format 5/6/7, [LITEMATIC](architecture/LITEMATIC.md)); Spielabnahme mit echter Litematica-Datei offen |
 | P5-02 | Themes und parametrische Module | P2/P3 | Reproduzierbare Erzeugung und Zustandsprüfung |
 | P5-03 | Updates, Versionsdiff, lokale Patches | P4 | Folgen vor Update sichtbar; Einfrieren und Rückkehr möglich |
 | P6-01 | Ein festgelegter Spieladapter | P4/P5 | Planlieferung idempotent bestätigt; kein Weltsetzen |

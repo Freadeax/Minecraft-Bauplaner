@@ -5,7 +5,7 @@ Priorität: M = Kern, S = Folgeausbau, L = Langfristig. Status: Übersicht der A
 | ID | Anforderung | Priorität | Roadmap |
 |---|---|---|---|
 | R-001 | Schem-Import mit vollständigen Zuständen | M | P1-01 |
-| R-002 | Litematic einschließlich mehrerer Regionen | S | P5-01 |
+| R-002 | Litematic einschließlich mehrerer Regionen | S | P5-01 (umgesetzt, [LITEMATIC](architecture/LITEMATIC.md)) |
 | R-003 | Selektiver Weltimport | L | P7-01 |
 | R-004 | Browser-3D und freier Flug | M | P1-03 |
 | R-005 | Ganzzahlige Layer und Schnitte | M | P1-03 |

@@ -1,4 +1,6 @@
 import { writeSchemV3 } from '../../formats/src/schemWrite.js';
+import { writeLitematic } from '../../formats/src/litematicWrite.js';
+import type { LitematicExportReport } from '../../formats/src/litematicWrite.js';
 import type { SchemAnchor, SchemExportReport, UnselectedPolicy } from '../../formats/src/schemWrite.js';
 import type { NbtTag } from '../../voxel/src/types.js';
 import { resolveProject } from './compose.js';
@@ -23,7 +25,13 @@ export const KNOWN_DATA_VERSIONS: readonly { readonly version: string; readonly 
   { version: '1.21.4', dataVersion: 4189 },
 ]);
 
+/** Target file format of a revision export. Both describe the same cells and anchor. */
+export type ExportFormat = 'schem' | 'litematic';
+export const EXPORT_FORMAT_LABEL: Readonly<Record<ExportFormat, string>> = { schem: 'Sponge Schematic v3 (.schem)', litematic: 'Litematica (.litematic)' };
+
 export interface SchemExportSettings {
+  /** Default 'schem'. */
+  readonly format?: ExportFormat;
   readonly dataVersion: number;
   readonly anchor: SchemAnchor;
   readonly unselected: UnselectedPolicy;
@@ -31,11 +39,12 @@ export interface SchemExportSettings {
 }
 
 export interface RevisionExport {
+  readonly format: ExportFormat;
   readonly revision: BlueprintRevision;
   readonly fileName: string;
   readonly bytes: Uint8Array;
   readonly sha256: string;
-  readonly report: SchemExportReport;
+  readonly report: SchemExportReport | LitematicExportReport;
   /** Domain notes in addition to the format report (profile, DataVersion sources). */
   readonly notes: readonly string[];
 }
@@ -86,13 +95,13 @@ export function revisionForExport(project: Project, resolution: Resolution, comm
   return { ...r, created: true };
 }
 
-export function exportFileName(project: Project, revision: BlueprintRevision): string {
+export function exportFileName(project: Project, revision: BlueprintRevision, format: ExportFormat = 'schem'): string {
   const slug = project.name.normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/ß/g, 'ss').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'bauplan';
-  return `${slug}-rev${revision.number}.schem`;
+  return `${slug}-rev${revision.number}.${format}`;
 }
 
 /**
- * Writes the Schem file for one frozen revision. The export lock is re-checked
+ * Writes the Schem or Litematic file for one frozen revision. The export lock is re-checked
  * against that revision's own resolution, so an old revision that later lost a
  * version (or never was clean) is refused as well.
  */
@@ -119,9 +128,18 @@ export async function exportRevisionSchem(project: Project, revisionId: string, 
     } },
   };
   const date = Date.parse(revision.createdAt);
+  const format = settings.format ?? 'schem';
+  if (format !== 'schem' && format !== 'litematic') throw new DomainError('EXPORT_FORMAT', `Unbekanntes Exportformat ${String(format)}.`);
+  if (format === 'litematic') {
+    const out = await writeLitematic(resolution.world, {
+      dataVersion: settings.dataVersion, anchor: settings.anchor, unselected: settings.unselected, regionName: project.name,
+      metadata: { name: `${project.name} · Revision ${revision.number}`, ...(settings.author?.trim() && { author: settings.author.trim() }), ...(revision.comment && { description: revision.comment }), ...(Number.isSafeInteger(date) && { date }), extra },
+    });
+    return { format, revision, fileName: exportFileName(project, revision, format), bytes: out.bytes, sha256: out.sha256, report: out.report, notes };
+  }
   const out = await writeSchemV3(resolution.world, {
     dataVersion: settings.dataVersion, anchor: settings.anchor, unselected: settings.unselected,
     metadata: { name: `${project.name} · Revision ${revision.number}`, ...(settings.author?.trim() && { author: settings.author.trim() }), ...(Number.isSafeInteger(date) && { date }), extra },
   });
-  return { revision, fileName: exportFileName(project, revision), bytes: out.bytes, sha256: out.sha256, report: out.report, notes };
+  return { format, revision, fileName: exportFileName(project, revision), bytes: out.bytes, sha256: out.sha256, report: out.report, notes };
 }

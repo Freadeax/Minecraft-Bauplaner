@@ -6,7 +6,7 @@ Stand: 27.10.2026. Implementierung in `packages/formats/src`, Einbindung im Brow
 
 Dateiauswahl → komprimierte Größe prüfen → Kopie an Worker übertragen → GZip-Struktur prüfen und begrenzt entpacken → Big-Endian-NBT lesen → verschachteltes Root.Schematic mit Version 3 prüfen → Palette/VarInts/BlockEntities normalisieren → validierten Voxel-Snapshot samt Importbericht atomar übernehmen.
 
-Die vorherige Ansicht bleibt bei Fehler oder Abbruch erhalten. GZip wird an der Signatur erkannt, nicht an der Endung allein. Nicht komprimiertes NBT, alte Schematic-Versionen und Litematic werden mit Fehler abgewiesen. Keine Daten werden an einen Server hochgeladen.
+Die vorherige Ansicht bleibt bei Fehler oder Abbruch erhalten. GZip wird an der Signatur erkannt, nicht an der Endung allein. Nicht komprimiertes NBT und alte Schematic-Versionen werden mit Fehler abgewiesen; Litematic hat einen eigenen Adapter ([LITEMATIC](LITEMATIC.md)). Keine Daten werden an einen Server hochgeladen.
 
 ## Verlust sichtbar halten
 

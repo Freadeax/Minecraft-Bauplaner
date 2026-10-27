@@ -29,3 +29,5 @@ export { createBuildingLibrary, BUILDING_SPECS, PATH_PROFILE } from './buildings
 export type { BuildingSpec, BuildingLibrary } from './buildings.js';
 export { resolveRecipes, recipesForMaterials, chooseRecipe, recipesFor, rawSource, assertRecipeCatalog, recipesToCsv, RECIPES, RECIPE_TAGS, RECIPE_CATALOG_VERSION } from './recipes.js';
 export type { Recipe, Ingredient, Station, RecipeMethod, RecipeOptions, RecipeReport, RecipeStep, BaseLine, BaseKind, TagChoice, TagDefinition } from './recipes.js';
+export { EXPORT_FORMAT_LABEL } from './schemExport.js';
+export type { ExportFormat } from './schemExport.js';

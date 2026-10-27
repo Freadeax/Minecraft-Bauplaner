@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
-import { exportRevisionSchem, KNOWN_DATA_VERSIONS, revisionForExport, suggestDataVersion, canonicalJson } from '../../../../../packages/domain/src/index.js';
-import type { RevisionExport } from '../../../../../packages/domain/src/index.js';
+import { exportRevisionSchem, EXPORT_FORMAT_LABEL, KNOWN_DATA_VERSIONS, revisionForExport, suggestDataVersion, canonicalJson } from '../../../../../packages/domain/src/index.js';
+import type { ExportFormat, RevisionExport } from '../../../../../packages/domain/src/index.js';
+import { litematicVersionFor } from '../../../../../packages/formats/src/index.js';
 import type { SchemAnchor, UnselectedPolicy } from '../../../../../packages/formats/src/index.js';
 import { useApp } from '../../app/context';
 import { download, errorText, formatNumber } from '../../app/ui';
@@ -10,7 +11,7 @@ import type { ProjectSession } from './session';
 const date = (iso: string): string => new Date(iso).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
 
 /**
- * Tab „Export“ (P3-01): Sponge Schem v3 from a frozen revision. The export lock
+ * Tab „Export“ (P3-01, P5-01): Sponge Schem v3 or Litematic from a frozen revision. The export lock
  * mirrors `resolution.exportBlockers`; the file is written from the revision,
  * and the revision is only stored after the file was produced successfully.
  */
@@ -20,6 +21,7 @@ export function ExportTab({ session }: { session: ProjectSession }) {
   const resolved = isResolved(resolution) ? resolution : null;
   const suggestion = useMemo(() => suggestDataVersion(project, library.versions), [project, library.versions]);
   const [dataVersion, setDataVersion] = useState(suggestion.dataVersion ? String(suggestion.dataVersion) : '');
+  const [format, setFormat] = useState<ExportFormat>('schem');
   const [anchor, setAnchor] = useState<SchemAnchor>('project-origin');
   const [unselected, setUnselected] = useState<UnselectedPolicy>('air');
   const [comment, setComment] = useState('');
@@ -47,7 +49,7 @@ export function ExportTab({ session }: { session: ProjectSession }) {
         const r = revisionForExport(project, resolved, comment);
         target = r.project; id = r.revision.id; created = r.created;
       }
-      const out = await exportRevisionSchem(target, id, library.versions, { dataVersion: dv, anchor, unselected, author });
+      const out = await exportRevisionSchem(target, id, library.versions, { format, dataVersion: dv, anchor, unselected, author });
       // Store the new revision only after the file exists: a failed export leaves no half-done state.
       if (created) { session.replace(target); setComment(''); }
       download(out.fileName, out.bytes as Uint8Array<ArrayBuffer>);
@@ -74,6 +76,12 @@ export function ExportTab({ session }: { session: ProjectSession }) {
 
       <form className="export-form" onSubmit={e => { e.preventDefault(); void run(); }}>
         <span className="panel-kicker">EINSTELLUNGEN</span>
+        <label>Dateiformat
+          <select value={format} onChange={e => setFormat(e.target.value as ExportFormat)} aria-label="Dateiformat">
+            {(Object.keys(EXPORT_FORMAT_LABEL) as ExportFormat[]).map(f => <option key={f} value={f}>{EXPORT_FORMAT_LABEL[f]}</option>)}
+          </select>
+        </label>
+        {format === 'litematic' && <p className="muted">Eine Region mit dem Projektnamen. {dvValid ? `Für DataVersion ${dv} wird Litematic-Format ${litematicVersionFor(dv)} geschrieben, damit auch ältere Litematica-Versionen die Datei öffnen.` : ''} Die Region liegt am gewählten Einfügepunkt.</p>}
         <label>DataVersion (Zielversion)
           <input inputMode="numeric" value={dataVersion} onChange={e => setDataVersion(e.target.value.trim())} aria-invalid={!dvValid} placeholder="z. B. 3955" list="known-data-versions" />
           <datalist id="known-data-versions">{KNOWN_DATA_VERSIONS.map(k => <option key={k.dataVersion} value={k.dataVersion}>{`Minecraft ${k.version}`}</option>)}</datalist>
@@ -87,16 +95,16 @@ export function ExportTab({ session }: { session: ProjectSession }) {
         </label>
         <label>Nicht ausgewählte Zellen der Box
           <select value={unselected} onChange={e => setUnselected(e.target.value as UnselectedPolicy)}>
-            <option value="air">als Luft schreiben (räumt beim Einfügen ohne -a)</option>
+            <option value="air">als Luft schreiben (kann beim Einfügen vorhandene Blöcke räumen)</option>
             <option value="structure_void">als minecraft:structure_void markieren</option>
           </select>
         </label>
-        <p className="muted">Löschzellen werden immer als minecraft:air geschrieben; ausdrückliche Luft behält ihren Luftzustand. Beides räumt nur, wenn beim Einfügen Luft nicht übersprungen wird.</p>
+        <p className="muted">Löschzellen werden immer als minecraft:air geschrieben; ausdrückliche Luft behält ihren Luftzustand. Ob Luft beim Einfügen räumt, entscheidet das Einfügewerkzeug.</p>
         <label>Autor (optional)<input type="text" value={author} maxLength={120} onChange={e => setAuthor(e.target.value)} /></label>
         <label>Kommentar zur Revision<input type="text" value={comment} maxLength={500} onChange={e => setComment(e.target.value)} placeholder="Schem-Export" disabled={!!current} /></label>
         {saveBlocked && <p className="notice warning" role="alert">Der gespeicherte Stand ist nicht aktuell. Erst neu laden, dann exportieren.</p>}
         <div className="button-row">
-          <button className="primary" type="submit" disabled={disabled || blockers.length > 0}>{busy ? 'Exportiert …' : current ? `Revision ${current.number} als .schem exportieren` : 'Revision einfrieren und .schem exportieren'}</button>
+          <button className="primary" type="submit" disabled={disabled || blockers.length > 0}>{busy ? 'Exportiert …' : current ? `Revision ${current.number} als .${format} exportieren` : `Revision einfrieren und .${format} exportieren`}</button>
         </div>
         {!dvValid && <p className="muted">Bitte eine DataVersion als positive Ganzzahl angeben.</p>}
       </form>
@@ -110,7 +118,7 @@ export function ExportTab({ session }: { session: ProjectSession }) {
       <ul>{[...project.revisions].reverse().map(r => <li key={r.id}>
         <div><strong>Revision {r.number}</strong>{r === current && <em className="badge">aktueller Stand</em>}</div>
         <small>{date(r.createdAt)} · {r.instances.length} Instanzen{r.comment ? ` · ${r.comment}` : ''}</small>
-        <button onClick={() => void run(r.id)} disabled={disabled} aria-label={`Revision ${r.number} exportieren`}>⇩ .schem</button>
+        <button onClick={() => void run(r.id)} disabled={disabled} aria-label={`Revision ${r.number} exportieren`}>⇩ .{format}</button>
       </li>)}</ul>
       <p className="muted">Ältere Revisionen werden mit ihren festen Bauteilversionen exportiert und bleiben reproduzierbar. Die Exportsperre wird für jede Revision neu geprüft.</p>
     </aside>
@@ -121,10 +129,10 @@ function ExportReport({ result }: { result: RevisionExport }) {
   const { report } = result;
   return <section className="import-report export-report" aria-label="Exportbericht">
     <div><span className="eyebrow">DATEI ERZEUGT</span><h2>{result.fileName}</h2></div>
-    <p>Sponge Schematic v3 aus <strong>Revision {result.revision.number}</strong> ({date(result.revision.createdAt)}). Die Datei wurde lokal erzeugt und heruntergeladen; nichts wurde hochgeladen.</p>
+    <p>{EXPORT_FORMAT_LABEL[result.format]}{'litematicVersion' in report ? `, Format ${report.litematicVersion}, Region „${report.regionName}“,` : ''} aus <strong>Revision {result.revision.number}</strong> ({date(result.revision.createdAt)}). Die Datei wurde lokal erzeugt und heruntergeladen; nichts wurde hochgeladen.</p>
     <dl>
       <div><dt>Größe B×H×L</dt><dd>{report.dimensions.join(' × ')} = {formatNumber(report.volume)} Zellen</dd></div>
-      <div><dt>Offset · Einfügepunkt</dt><dd>{report.offset.join(' / ')} · {report.anchor === 'project-origin' ? 'Projektursprung' : 'untere Ecke'}</dd></div>
+      <div><dt>{result.format === 'litematic' ? 'Regionsposition' : 'Offset'} · Einfügepunkt</dt><dd>{report.offset.join(' / ')} · {report.anchor === 'project-origin' ? 'Projektursprung' : 'untere Ecke'}</dd></div>
       <div><dt>Weltkoordinate der Ecke 0/0/0</dt><dd>{report.worldMin.join(' / ')}</dd></div>
       <div><dt>DataVersion</dt><dd>{report.dataVersion} · Registry ungeprüft</dd></div>
       <div><dt>Blöcke · Palette</dt><dd>{formatNumber(report.counts.blocks)} · {report.paletteSize} Zustände</dd></div>

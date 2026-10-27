@@ -170,3 +170,8 @@ label.check{display:flex;align-items:center;gap:8px}fieldset{border:1px solid va
 .step-formula{overflow-wrap:anywhere;color:#d5e1e5}.step-formula b{font-weight:550}.step-formula small{color:var(--muted)}.step-formula small.note{color:#e3c59a}.recipe-steps .link-button{font-size:10px}
 .raw-surplus{margin:12px 0 0;color:#cfe0e3;line-height:1.7}.raw-surplus strong{font-weight:550}
 @media(max-width:650px){.recipe-steps li{grid-template-columns:minmax(0,1fr) auto}.step-formula{grid-column:1/-1;grid-row:2}.raw-head .materials-title{flex:1 1 100%}}
+
+/* --- P5-01 Litematic-Regionen (Bibliothek) --- */
+.litematic-regions{display:grid;gap:6px;margin:6px 0}
+.litematic-regions .region-list{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:12px}
+.litematic-regions .region-list li{padding:4px 8px;border-radius:6px;background:rgba(127,127,127,.08);overflow-wrap:anywhere}

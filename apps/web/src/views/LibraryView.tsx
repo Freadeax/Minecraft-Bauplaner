@@ -5,7 +5,7 @@ import { addAssetVersion, applyOperation, buildCatalog, createAsset, facetCounts
   similarEntries, suggestForProject, updateAssetMeta, withFacets, SORT_LABEL } from '../../../../packages/domain/src/index.js';
 import type { Asset, AssetVersionSource, BuildingFacets, BuildingMetrics, CatalogEntry, OriginalFile, Project, SortKey } from '../../../../packages/domain/src/index.js';
 import { useApp } from '../app/context';
-import { importFile } from '../app/importFile';
+import { importFile, IMPORT_ACCEPT, IMPORT_FORMAT_LABEL } from '../app/importFile';
 import type { ImportedFile } from '../app/importFile';
 import { errorText, formatNumber } from '../app/ui';
 import { mix, stateColor } from '../colors';
@@ -17,6 +17,7 @@ import { CatalogFilters, activeFilterCount } from './library/CatalogFilters';
 import type { Filters } from './library/CatalogFilters';
 import { FacetFields, facetsFromForm } from './library/FacetFields';
 import { Viewer } from '../Viewer';
+import { LitematicRegions } from './library/LitematicRegions';
 
 const size = (b: { min: readonly number[]; maxExclusive: readonly number[] }) => b.maxExclusive.map((n, i) => n - b.min[i]!).join(' × ');
 
@@ -83,8 +84,16 @@ export function LibraryView({ projectId: initialProjectId }: { projectId?: strin
     catch (e) { if (!controller.signal.aborted) setMessage(`Import nicht übernommen: ${errorText(e)}`); }
     finally { if (abort.current === controller) setBusy(false); }
   };
+  const pickRegion = async (region: string | undefined) => {
+    if (!imported) return;
+    abort.current?.abort(); const controller = new AbortController(); abort.current = controller;
+    setBusy(true); setMessage('');
+    try { const r = await importFile(new File([imported.original], imported.name), controller.signal, region); if (!controller.signal.aborted) setImported(r); }
+    catch (e) { if (!controller.signal.aborted) setMessage(`Region nicht übernommen: ${errorText(e)}`); }
+    finally { if (abort.current === controller) setBusy(false); }
+  };
   const sourceOf = (r: ImportedFile): Promise<AssetVersionSource> => crypto.subtle.digest('SHA-256', r.original).then(d => ({
-    format: r.format === 'schem' ? 'schem-v3' : 'voxel-json', fileName: r.name,
+    format: r.format === 'schem' ? 'schem-v3' : r.format === 'litematic' ? 'litematic' : 'voxel-json', fileName: r.name,
     originalSha256: Array.from(new Uint8Array(d), b => b.toString(16).padStart(2, '0')).join(''),
     ...(r.report && { dataVersion: r.report.dataVersion }),
   }));
@@ -155,8 +164,8 @@ export function LibraryView({ projectId: initialProjectId }: { projectId?: strin
   return <div className="page">
     <header className="page-head"><div><span className="eyebrow">BIBLIOTHEK</span><h1 className="page-title">Gebäude &amp; Bauteile</h1>
       <p className="muted">{catalog.entries.filter(e => e.asset.demo && !e.asset.archived).length} mitgelieferte Gebäudevorschläge und deine eigenen Bauteile. Kennwerte werden aus dem Bauplan berechnet, Angaben wie Stil oder Biom sind gekennzeichnet. Jede Version ist unveränderlich; Projekte behalten ihre Version.</p></div>
-      <div className="button-row"><button className="primary" disabled={busy} onClick={() => file.current?.click()}>＋ Schem / JSON importieren</button>
-        <input ref={file} className="file-input" type="file" aria-label="Bauteildatei" accept=".schem,.json,application/json,application/octet-stream"
+      <div className="button-row"><button className="primary" disabled={busy} onClick={() => file.current?.click()}>＋ Schem / Litematic / JSON importieren</button>
+        <input ref={file} className="file-input" type="file" aria-label="Bauteildatei" accept={IMPORT_ACCEPT}
           onChange={e => { const f = e.target.files?.[0]; if (f) void open(f); e.target.value = ''; }} />
         {busy && <button onClick={() => { abort.current?.abort(); setBusy(false); setMessage('Import abgebrochen.'); }}>Abbrechen</button>}</div></header>
     {message && <div className="notice" role="status">{message}{link && <a className="notice-link" href={link.href}>{link.label} →</a>}</div>}
@@ -189,9 +198,10 @@ export function LibraryView({ projectId: initialProjectId }: { projectId?: strin
       <aside className="inspector">
         {imported ? <form onSubmit={e => { e.preventDefault(); void saveNew(new FormData(e.currentTarget)); }}>
           <span className="panel-kicker">DATEI GEPRÜFT</span>
-          <p className="muted">{imported.name} · {imported.format === 'schem' ? `Sponge Schem v3, DataVersion ${imported.report?.dataVersion}` : 'Voxel-JSON'} · {size(imported.payload.bounds)} · {formatNumber(countBlocks(imported.payload).blocks)} Blöcke</p>
+          <p className="muted">{imported.name} · {IMPORT_FORMAT_LABEL[imported.format]}{imported.report ? `, DataVersion ${imported.report.dataVersion}` : ''} · {size(imported.payload.bounds)} · {formatNumber(countBlocks(imported.payload).blocks)} Blöcke</p>
+          {imported.report && 'regions' in imported.report && <LitematicRegions report={imported.report} disabled={busy} onChange={r => void pickRegion(r)} />}
           {imported.report?.warnings.map((w, i) => <p className="small-note" key={i}>{w}</p>)}
-          <label>Name<input name="name" required maxLength={120} defaultValue={imported.name.replace(/\.(schem|json)$/i, '')} /></label>
+          <label>Name<input name="name" required maxLength={120} key={imported.report && 'selectedRegion' in imported.report ? imported.report.selectedRegion ?? '' : ''} defaultValue={imported.report && 'selectedRegion' in imported.report && imported.report.selectedRegion ? imported.report.selectedRegion : imported.name.replace(/\.(schem|litematic|json)$/i, '')} /></label>
           <label>Beschreibung<textarea name="description" maxLength={2000} rows={2} /></label>
           <label>Tags (Komma-getrennt)<input name="tags" placeholder="mauer, hafen" /></label>
           <FacetFields />

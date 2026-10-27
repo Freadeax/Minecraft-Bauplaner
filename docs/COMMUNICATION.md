@@ -189,3 +189,9 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Hinweis an den Itemkatalog-Ausbau: neue Bauitems in `materials.ts` bitte auch in `recipes.ts` als Rezept oder Rohstoff eintragen, sonst erscheinen sie als „kein Rezept“. Der Test „sample project and all shipped buildings“ prüft das für alle Beispiele.
 - Nach Rebase auf 29c0d05 (Itemkatalog v2): Rezepte bzw. Rohstoffeinträge für die neuen v2-Items ergänzt; offen als „kein Rezept“ bleiben angeschlagene Ambosse, Kupferkiste, Froschlaich, gefüllte Kessel.
 - Reservierung mit dem Push beendet.
+
+### MSG-P5-01 · Claude · 2026-10-27T23:10:00+01:00 · Litematic-Adapter abgeschlossen
+- Nutzerauftrag „weitere offene Punkte sauber ausbauen“; dieser Thread: P5-01 Litematic. Dateien siehe B10 in [BLOCKS](BLOCKS.md), Vertrag in [LITEMATIC](architecture/LITEMATIC.md).
+- Kleine Eingriffe außerhalb: `schemExport.ts` (Feld `format`, Dateiendung), `AssetSourceFormat` um `'litematic'`, Import-Worker auf `importStructure`, Formatzeilen in Bibliothek/Betrachter, Formatwahl in `ExportTab.tsx`, Beispieldatei in `prepare_pages.mjs`, angehängte Exporte und CSS-Abschnitt.
+- Beobachtung für den Viewer: In der Bibliotheksvorschau liegt das Modell nach einem Dateiimport (auch bei Schem) teils außerhalb des Bildes, bis „Einpassen“ gedrückt wird. Nicht in diesem Block geändert.
+- Reservierung mit dem Push beendet.

@@ -5,7 +5,7 @@ Prüfgrundlage: Repositoryregeln, README, STATUS, ROADMAP, COMMUNICATION, Archit
 | Punkte / Anforderungen | Aktueller Befund | Weiterer Bedarf |
 |---|---|---|
 | Import R-001 | Begrenzter GZip-/NBT-/Sponge-v3-Reader, Zustände und Originaldaten erhalten; unabhängige synthetische Binärtests | echter Referenzwerkzeugexport und Spielabnahme |
-| Weitere Formate R-002/003 | eigene spätere Adapter geplant | Litematic/selektiver Weltimport nicht implementiert |
+| Weitere Formate R-002/003 | Litematic-Import (Mehrregionen, Einzelregion, Format 2–7) und -Export (Format 5/6/7) mit unabhängiger Fixture und Python-Leser ([LITEMATIC](architecture/LITEMATIC.md)) | selektiver Weltimport nicht implementiert; Litematic nicht mit echter Litematica-Datei/im Spiel abgenommen |
 | Ansicht R-004/005/006 | Orbit/Zoom, freier Flug, Ansichten, Fokus, Picking mit Welt-/Lokalkoordinate, Schichtbereiche, Touch, Flächenkulling und Code-Splitting mit Messung; Softwareansicht ohne WebGL | vollständige Blockmodelle, echte GPU-/Gerätetests |
 | Aufgaben R-007 | Bauanleitung mit Schichtschritten, Voraussetzungen, manuellem Fortschritt, „prüfbedürftig“ bei Geometrieänderung (B4), Bauitems je Schritt und Packliste je Schicht | Team-Aufgaben/Zuweisung (P4-02), Prüfung im Spiel (P6-01), frei definierte Bauabschnitte |
 | Bibliothek R-008/024 | Assets mit Herkunft/Lizenzfeld, Tags, Suche, unveränderliche Versionen mit Hashprüfung, Import als Bauteil (B0), Anschluss-Editor und Bereich als Bauteil (B5), IndexedDB-Speicherung (B3), Gebäudekatalog (B9) | Freigabe öffentlicher Assets, Safari-Speicherverhalten |

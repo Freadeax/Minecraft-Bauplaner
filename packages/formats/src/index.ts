@@ -8,3 +8,9 @@ export { buildSchemV3, writeSchemV3, formatBlockState, SCHEM_EXPORT_LIMITS } fro
 export type { SchemWriteOptions, SchemExport, SchemExportReport, SchemExportLimits, SchemAnchor, UnselectedPolicy } from './schemWrite.js';
 export { readWorldScan, normalizeScan, SCAN_LIMITS, UNLOADED_STATE } from './scan.js';
 export type { WorldScan, ScanMeta, ScanLimits } from './scan.js';
+export { importLitematic, normalizeLitematic, readCompressedNbt, litematicBits, unpackAt, LITEMATIC_LIMITS, LITEMATIC_MAX_VERSION, LITEMATIC_MIN_VERSION } from './litematic.js';
+export type { LitematicLimits, LitematicOptions, LitematicRegion, LitematicMetadata, LitematicResult } from './litematic.js';
+export { buildLitematic, writeLitematic, packLongs, litematicVersionFor, LITEMATIC_V6_FIRST_DATA_VERSION, LITEMATIC_V6_LAST_DATA_VERSION } from './litematicWrite.js';
+export type { LitematicWriteOptions, LitematicExportReport, LitematicExport, LitematicWriteVersion } from './litematicWrite.js';
+export { importStructure, detectStructureFormat } from './structure.js';
+export type { StructureImport, StructureFormat } from './structure.js';
