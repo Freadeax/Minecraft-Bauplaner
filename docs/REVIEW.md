@@ -6,7 +6,7 @@ Prüfgrundlage: Repositoryregeln, README, STATUS, ROADMAP, COMMUNICATION, Archit
 |---|---|---|
 | Import R-001 | Begrenzter GZip-/NBT-/Sponge-v3-Reader, Zustände und Originaldaten erhalten; unabhängige synthetische Binärtests | echter Referenzwerkzeugexport und Spielabnahme |
 | Weitere Formate R-002/003 | eigene spätere Adapter geplant | Litematic/selektiver Weltimport nicht implementiert |
-| Ansicht R-004/005/006 | Orbit/Zoom, Picking, X/Y/Z-Schichten und Mengen; Softwareansicht ohne WebGL | freier Flug, vollständige Blockmodelle, echte GPU-/Touchprüfung |
+| Ansicht R-004/005/006 | Orbit/Zoom, freier Flug, Ansichten, Fokus, Picking mit Welt-/Lokalkoordinate, Schichtbereiche, Touch, Flächenkulling und Code-Splitting mit Messung; Softwareansicht ohne WebGL | vollständige Blockmodelle, echte GPU-/Gerätetests |
 | Aufgaben R-007 | Bauanleitung mit Schichtschritten, Voraussetzungen, manuellem Fortschritt und „prüfbedürftig“ bei Geometrieänderung (B4) | Team-Aufgaben/Zuweisung (P4-02), Prüfung im Spiel (P6-01), frei definierte Bauabschnitte |
 | Bibliothek R-008/024 | Assets mit Herkunft/Lizenzfeld, Tags, Suche, unveränderliche Versionen mit Hashprüfung, Import als Bauteil (B0), Anschluss-Editor und Bereich als Bauteil (B5) | dauerhafte Speicherung (B3) |
 | Snap/Composer R-009/011/013 | Editor mit Instanzen, Transformationen, Undo/Redo, Voxelkonflikten und Override (B0); Anschlussvalidierung, deterministischer Snap, gespeicherte und geprüfte Verbindungen (B5) | Spiegelprofile, Freiräume an Anschlüssen, Ziehen im Viewer |

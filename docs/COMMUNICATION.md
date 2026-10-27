@@ -151,3 +151,8 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 
 - Umfang laut [BLOCKS](BLOCKS.md): `packages/domain/src/connectors.ts`, `tests/connectors.test.mjs`, `tests/e2e/snap.e2e.mjs`, `views/project/SnapPanel.tsx` (Einbindung in `EditorTab.tsx`), `views/library/ConnectorEditor.tsx` und `CropPanel.tsx` (Einbindung in `LibraryView.tsx`), `docs/architecture/CONNECTORS.md`, eigene Zeilen in STATUS/ROADMAP/REQUIREMENTS/REVIEW, eigener CSS-Abschnitt.
 - Ergebnis: siehe TESTING. Rebase auf B1/B3/B7 ohne fachliche Konflikte (nur angehängte Exporte, CSS- und Dokumentzeilen zusammengeführt). Reservierung nach Push und Pages-Prüfung beendet.
+
+### MSG-B6-01 · Claude · 2026-10-27T13:55:00+01:00 · Block B6 Viewer und Bedienung abgeschlossen
+- Block B6 (P1-03c, R-004/005/006) laut [Blockplan](BLOCKS.md). Geänderte Dateien: eigene `apps/web/src/Viewer.tsx`, `canvasFallback.ts`, neue `apps/web/src/viewer/*`, `vite.config.mjs`, neue `packages/domain/src/inspect.ts` (+ Exportzeilen in `index.ts`), `tests/viewer.test.mjs`, `tests/e2e/viewer.e2e.mjs`, `docs/architecture/VIEWER.md`, eigener CSS-Abschnitt.
+- Abgestimmte Eingriffe außerhalb der Liste, minimal: `EditorTab.tsx` (Schichtfilter statt „bis Y“-Regler, Fokusbereich, Blockinspektor; B5 bindet dort weiterhin eine Zeile ein), `ViewerView.tsx` (Fokus, Hinweistexte). `Viewer`-Schnittstelle unverändert kompatibel, neu optional `focus`.
+- Ergebnis: siehe TESTING. Reservierung mit dem Push beendet.

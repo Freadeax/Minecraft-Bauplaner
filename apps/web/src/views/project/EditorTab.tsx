@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { countBlocks, selectLayers } from '../../../../../packages/voxel/src/index.js';
+import { countBlocks } from '../../../../../packages/voxel/src/index.js';
 import type { Cell, Transform, Vec3 } from '../../../../../packages/voxel/src/index.js';
 import { newInstance, positionKey, rotateInPlace } from '../../../../../packages/domain/src/index.js';
 import type { Asset, Instance, Resolution } from '../../../../../packages/domain/src/index.js';
@@ -8,6 +8,8 @@ import { formatNumber } from '../../app/ui';
 import { mix, stateColor } from '../../colors';
 import { Viewer } from '../../Viewer';
 import { SnapPanel } from './SnapPanel';
+import { useLayerFilter } from '../../viewer/LayerControl';
+import { BlockInfo } from '../../viewer/BlockInfo';
 import { isResolved } from './session';
 import type { ProjectSession } from './session';
 
@@ -20,7 +22,7 @@ export function EditorTab({ session }: { session: ProjectSession }) {
   const { library } = useApp();
   const { project, resolution, selectedInstanceId: selectedId } = session;
   const [message, setMessage] = useState('');
-  const [topY, setTopY] = useState<number | null>(null);
+  const [picked, setPicked] = useState<Vec3 | null>(null);
   const run = useCallback((op: Parameters<ProjectSession['execute']>[0]) => { setMessage(session.execute(op)); }, [session]);
   const resolved: Resolution | null = isResolved(resolution) ? resolution : null;
   const world = resolved?.world ?? null;
@@ -48,10 +50,10 @@ export function EditorTab({ session }: { session: ProjectSession }) {
     const base = cell.kind === 'erase' ? '#d35f5f' : stateColor(world!.palette[cell.paletteIndex]!.id);
     return selectedId && !selectedKeys.has(key) ? mix(base, DIM_TARGET, 0.55) : base;
   }, [conflictKeys, selectedKeys, selectedId, world]);
-  const yMin = world?.bounds.min[1] ?? 0, yMax = (world?.bounds.maxExclusive[1] ?? 1) - 1;
-  const top = topY === null ? yMax : Math.max(yMin, Math.min(yMax, topY));
-  const visible = useMemo(() => world && top < yMax ? selectLayers(world, 'y', yMin, top + 1) : world, [world, top, yMin, yMax]);
+  const { visible, control: layerControl } = useLayerFilter(world);
+  const focus = useMemo(() => resolved?.placed.find(p => p.instance.id === selectedId)?.payload.bounds ?? null, [resolved, selectedId]);
   const onSelect = useCallback((cell: Cell | null) => {
+    setPicked(cell?.position ?? null);
     session.select(cell && resolved ? resolved.owners.get(positionKey(cell.position))?.[0] ?? null : null);
   }, [session, resolved]);
 
@@ -111,13 +113,14 @@ export function EditorTab({ session }: { session: ProjectSession }) {
           <button onClick={session.redo} disabled={!session.history.redo.length} title={session.history.redo.at(-1)?.label ?? ''}>↷ <span>Wiederholen</span></button>
         </div>
       </div>
-      {world && visible ? <Viewer payload={world} cells={visible.cells} onSelect={onSelect} colorFor={colorFor} />
+      {world && visible ? <Viewer payload={world} cells={visible.cells} onSelect={onSelect} colorFor={colorFor} focus={focus} />
         : <div className="scene empty-scene"><p>{isResolved(resolution) ? 'Leeres Projekt – füge links ein Bauteil ein.' : resolution.error}</p></div>}
-      <div className="viewport-footer"><span>Ziehen: drehen · Scrollen: zoomen · Klick: Instanz wählen · Strg+Z / Strg+Y</span>
-        {world && <label className="inline-range">bis Y {top}<input type="range" min={yMin} max={yMax} value={top} onChange={e => setTopY(Number(e.target.value))} aria-label="Sichtbar bis Schicht" /></label>}
+      <div className="viewport-footer"><span>Ziehen: drehen · Scrollen: zoomen · Klick: Block und Instanz wählen · F: Fokus · V: Flug · Strg+Z / Strg+Y</span>
+        {layerControl}
       </div>
     </div>
     <aside className="inspector" aria-label="Eigenschaften">
+      {resolved && picked && <BlockInfo resolution={resolved} position={picked} onSelectInstance={id => session.select(id)} />}
       <span className="panel-kicker">EIGENSCHAFTEN</span>
       {!selected ? <p className="muted">Wähle eine Instanz in der Liste oder im Bauwerk.</p> : (() => {
         const { asset, version } = assetOf(selected);

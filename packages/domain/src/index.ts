@@ -19,3 +19,5 @@ export { createBackup, readBackup, planRestore, buildRestore, backupFileName, ch
 export type { OriginalFile, Backup, BackupFile, BackupSource, RestoreTarget, RestorePlan, ProjectPlan, AssetPlan, ProjectChoice, RestoreWrite } from './backup.js';
 export { FACES, faceOf, anchorCells, capacityOf, validateConnectors, transformConnector, placedConnectors, connectorsMate, linkUsage, checkLinks, findSnapCandidates, snapOperation, linkOperation, unlinkedMates, suggestConnector } from './connectors.js';
 export type { FaceName, ConnectorIssue, PlacedConnector, LinkState, LinkStatus, SnapCandidate, SnapQuery } from './connectors.js';
+export { inspectCell } from './inspect.js';
+export type { CellInspection, CellSource } from './inspect.js';

@@ -62,3 +62,5 @@ P2-01 teilweise: Domänenverträge (Asset, AssetVersion, Instanz, Projekt, Revis
 P3-02 (B4) umgesetzt: Bauanleitung aus der aufgelösten Welt mit stabilen Schritt-IDs, Revisionsgrundlage, Koordinatenbereich, Blockzuständen, zyklenfreien Voraussetzungen, Prüfkriterium und manuellem Fortschritt mit Geometriehash; Tab „Bauen“ inkl. Mobilansicht. Details: [GUIDE](architecture/GUIDE.md). Offen: frei definierte Abschnitte, Itemmengen je Schritt (mit B1), Prüfung im Spiel.
 
 B7 · P1-02a umgesetzt: expliziter Zustandskatalog für Drehen/Spiegeln (`packages/voxel/src/states.ts`, [Voxelvertrag](architecture/VOXEL_CONTRACT.md)). Offen für P1-02: Abgleich mit einem echten Registry-Report je Profil und semantische BlockEntity-Adapter.
+
+P1-03c (Block B6) umgesetzt: freier Flug, Drauf-/Seitenansichten, Parallelprojektion, Fokus, Welt-/Lokalkoordinate im Editor-Inspektor, Schichtmodi Bereich/Einzeln, Touchsteuerung, Flächenkulling und Code-Splitting mit dokumentierter Messung ([Viewer](architecture/VIEWER.md)). Offen: echte GPU-/Gerätetests, Blockmodelle.
