@@ -1,6 +1,7 @@
 import type { ComponentType } from 'react';
 import { EditorTab } from './EditorTab';
 import { BuildTab } from './BuildTab';
+import { ExportTab } from './ExportTab';
 import type { ProjectSession } from './session';
 
 /**
@@ -17,4 +18,5 @@ export interface ProjectTab {
 export const projectTabs: readonly ProjectTab[] = [
   { id: 'editor', label: 'Editor', component: EditorTab },
   { id: 'bauen', label: 'Bauen', component: BuildTab },
+  { id: 'export', label: 'Export', component: ExportTab },
 ];

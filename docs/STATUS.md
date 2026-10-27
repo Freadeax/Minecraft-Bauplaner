@@ -11,7 +11,7 @@ Stand: 27.10.2026. Fundament für Bibliothek, Projekte und Composer (B0); parall
 | Datenerhalt | komprimiertes Original, Quell-NBT, Offset, DataVersion, Metadata/Entities/Biome getrennt erhalten | keine Registry-/Modpackfreigabe aus DataVersion ableiten |
 | Ansicht | Orbit/Zoom, Picking, X/Y/Z-Schnitte, Software-Isometrie ohne WebGL | kein freier Flug, keine exakten Blockmodelle; GPU-/Mobiltest offen |
 | Mengen | Blockzustände/Luft/Löschzellen getrennt | kein Bauitem-/Rohstoff-/Lagerbedarf |
-| Speicherung/Export | Voxel-JSON und unverändertes Schem-Original herunterladbar | kein vollständiges Projektbackup, kein Schem-Writer/Minecraft-Export |
+| Speicherung/Export | Voxel-JSON und unverändertes Schem-Original herunterladbar; Tab „Export“ schreibt Sponge Schem v3 aus eingefrorener Revision mit Exportsperre, Luft-/Lösch-/Lückenpolitik, Offset und Bericht (B2) | kein vollständiges Projektbackup (B3); keine echte WorldEdit-/Spielabnahme, DataVersion ungeprüft |
 | Bibliothek | Assets mit Herkunft/Tags/Archiv, unveränderliche inhaltsadressierte Versionen, Suche, Dateiimport als Bauteil | Anschluss-Editor/Bereichsauswahl (B5), dauerhafte Speicherung (B3) |
 | Projekte/Composer | Projektzentrale, Instanzen einfügen/verschieben/drehen/spiegeln/duplizieren, Undo/Redo, Voxelkonflikte mit Override, Konfliktbericht, Revisionen im Kern | Snap (B5); Speicherung nur Sitzung bis B3 |
 | Bauanleitung (B4) | Tab „Bauen“: Schritte je Instanz × Y-Schicht × Phase mit stabiler ID, Prüfkriterium, Voraussetzungen ohne Zyklen, Schwerkraft/Anbringung/Flüssigkeiten zuletzt, manuelle Haken mit Geometriehash ⇒ prüfbedürftig, Schichtdraufsicht, mobile Ansicht ([GUIDE](architecture/GUIDE.md)) | keine Messung im Spiel; Abschnitt = Instanz; Itemmengen über B1 |
@@ -22,6 +22,7 @@ Stand: 27.10.2026. Fundament für Bibliothek, Projekte und Composer (B0); parall
 
 - [Strukturierte Prüfung aller Anforderungen](REVIEW.md)
 - [Schem-Importvertrag, Limits und Datenerhalt](architecture/SCHEM_IMPORT.md)
+- [Schem-v3-Export, Politik und Prüfung](architecture/SCHEM_EXPORT.md)
 - [Prüfprotokoll](TESTING.md)
 - [Roadmap](ROADMAP.md)
 

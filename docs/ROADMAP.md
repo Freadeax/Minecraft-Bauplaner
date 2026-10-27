@@ -13,7 +13,7 @@ P0-01 ist mit der Bestandsaufnahme und Integration dieses Dokumentationsstands b
 | P1-04 | Materialanalyse | P1-01/02 | Bekannte Mengen, ungelöste Item-Zuordnungen sichtbar |
 | P2-01 | Asset-Versionen und lokale Projekte | P1 | Reload erhält reproduzierbaren Stand |
 | P2-02 | Composer, Snap, Kollision, Undo | P2-01 | Verbindungs- und Voxelregeln bestehen Tests |
-| P3-01 | Schem-v3-Writer | P2 | Referenzprüfung und semantischer Roundtrip bestehen |
+| P3-01 | Schem-v3-Writer | P2 | Referenzprüfung und semantischer Roundtrip bestehen (B2 umgesetzt; Spielabnahme offen) |
 | P3-02 | Bauabschnitte, Anleitung, Aufgaben | P2 | Schritte referenzieren konkrete Geometrie/Revision |
 | P3-03 | Erste nutzbare Fassung | P3-01/02 | Datei → planen → exportieren → nachbauen durchgängig |
 | P4-01 | API, Konten, Rechte, Payloadspeicher | P3 | Keine fremden Projektzugriffe, Wiederherstellung geprüft |

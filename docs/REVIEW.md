@@ -17,7 +17,7 @@ Prüfgrundlage: Repositoryregeln, README, STATUS, ROADMAP, COMMUNICATION, Archit
 | Materialien R-017 | platzierte Zustände/Luft/Löschen korrekt getrennt | Item-, Mehrblock-, Rohstoff- und Stackzuordnungen offen |
 | Lager/Spiel R-018/020 | spätere explizite Adapter geplant | keine Spielverbindung oder Weltänderung |
 | Themes R-021 | kompatibilitätsgeprüfte Mappings geplant | keine Themeumsetzung |
-| Export R-022 | JSON-Snapshot und unveränderte Schem-Originaldatei sicherbar | kein Schem-Writer oder Minecraft-Export |
+| Export R-022 | Schem-v3-Writer aus eingefrorener Revision, Exportsperre, reproduzierbare Datei mit SHA-256, unabhängiger Python-Leser und Roundtrip (B2) | echte WorldEdit-/Spielabnahme, DataVersion-/Registryprüfung |
 | Lokale Projekte R-023 | lokale Dateiverarbeitung ohne Upload | kein IndexedDB-Projektspeicher/Backupformat |
 | Ehrlicher Status R-025 | Grenzen, Importberichte und echte Prüfungen ausgewiesen | ältere widersprüchliche Statusabsätze bereinigt |
 | Git/Pages | Mainfreigabe, geprüfte lokale Builds, gh-pages/Manifest/Liveprüfung | kein eigener Actions-Workflow; kein Monitor für fremde Pushes |

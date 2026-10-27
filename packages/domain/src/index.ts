@@ -11,3 +11,5 @@ export { createSampleLibrary, sampleTowerPayload, sampleWallPayload, sampleGateP
 export type { SampleLibrary } from './samples.js';
 export { buildGuide, evaluateProgress, tickStep, untickStep, tickSteps, untickSteps, assertGuideAcyclic, phaseOf, PHASE_ORDER, PHASE_LABEL } from './guide.js';
 export type { Guide, GuideStep, GuideProgress, StepMaterial, StepPhase, StepStatus } from './guide.js';
+export { exportRevisionSchem, revisionForExport, resolveRevision, suggestDataVersion, dataVersionFromProfile, exportFileName, KNOWN_DATA_VERSIONS } from './schemExport.js';
+export type { SchemExportSettings, RevisionExport } from './schemExport.js';
