@@ -27,3 +27,7 @@ Zielprofil für Minecraft und Modpack aus dem tatsächlichen Projektstand ableit
 ## Integration dieses Arbeitspakets
 
 Nach ausdrücklicher Nutzerfreigabe wurde [PR #1](https://github.com/Freadeax/Minecraft-Bauplaner/pull/1) am 27.10.2026 in main gemergt: `e791d68dda1b982e4e3e99536ba23ed80a61e749`. Der Merge-Tree entspricht exakt dem geprüften PR-Head. Die frühere Freigabeblockade ist damit aufgelöst. Kein Deployment oder Release.
+
+## Ausgearbeitete Folgeplanung
+
+Der [Gesamtplan](IMPLEMENTATION_PLAN.md) deckt Parser, Worker, Pages-Frontend, Bibliothek/Composer, Speicherung, Export/Guide, Team, Formate und Spielanbindung mit Abhängigkeiten und Abnahme ab. Das [Konnektor-Runbook](operations/GITHUB_CONNECTOR_RUNBOOK.md) macht den bestätigten Git-Zugriff zum regulären Transportweg, einschließlich binärer Artefakte und erwarteter Ref-SHAs. Noch keine Implementierung von Publisher, Manifestgenerator oder Webbuild; Pages-Bootstrap bleibt eine Werkzeuggrenze, keine fehlende Main-/Deployfreigabe.

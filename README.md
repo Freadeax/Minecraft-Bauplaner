@@ -14,6 +14,8 @@ Zielrepository: https://github.com/Freadeax/Minecraft-Bauplaner
 - [Normativer Voxelvertrag v1](docs/architecture/VOXEL_CONTRACT.md)
 - [Architekturentscheidungen](docs/architecture/DECISIONS.md)
 - [Roadmap und Abnahme](docs/ROADMAP.md)
+- [Vollständiger Umsetzungsplan](docs/IMPLEMENTATION_PLAN.md)
+- [Selbstständiger GitHub-/Pages-Ablauf](docs/operations/GITHUB_CONNECTOR_RUNBOOK.md)
 - [Anforderungen und Zuordnung](docs/REQUIREMENTS.md)
 - [Zusammenarbeit und Kommunikation](docs/COMMUNICATION.md)
 - [Stand und Übergabe](docs/STATUS.md)

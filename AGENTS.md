@@ -41,6 +41,8 @@ Geltung: gesamtes Repository. Explizite aktuelle Nutzeraufträge und übergeordn
 
 ## Git und Veröffentlichung
 
+Ausführungsplan: [GitHub-Konnektor und Pages](docs/operations/GITHUB_CONNECTOR_RUNBOOK.md). Unterstützte Operationen selbst ausführen; Capabilitygrenzen nicht als fehlende Nutzerfreigabe darstellen.
+
 - Der vorhandene Repository-Workflow gilt. Im unklaren Fall keine Branch-/Schutzregeln eigenmächtig ändern.
 - Wunschgrundsatz für dieses Projekt: main ist die zentrale Integrationslinie; keine dauerhaften konkurrierenden Entwicklungsstände. Direkter Push nur mit bestehender Autorisierung, bestandenen Prüfungen und sofern Schutzregeln ihn erlauben. Sonst PR verwenden.
 - Explizite Nutzerfreigabe vom 27.10.2026: geprüfte Änderungen in diesem Repository dürfen ohne erneute Rückfrage auf main gemergt bzw. regulär integriert werden. Bestehende Schutzregeln und Prüfpflichten gelten weiter.

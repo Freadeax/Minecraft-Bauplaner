@@ -39,3 +39,7 @@ GitHub Docs, am 27.10.2026 geprüft:
 
 - [Publishing source](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site): Branchpublishing und interner Deployment-Workflow.
 - [Creating a Pages site](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site): statische Dateien, `.nojekyll`, Tarif-/Sichtbarkeitsgrenzen.
+
+## Ausführbarer Arbeitsplan
+
+Der [Konnektorablauf](../operations/GITHUB_CONNECTOR_RUNBOOK.md) beschreibt Gitobjekte, expected_sha, Artefakttransport, Manifest, Bootstrap, Liveprüfung und Rückkehr. Der [Gesamtausbauplan](../IMPLEMENTATION_PLAN.md) zerlegt den Weg zum Webbuild und alle Folgephasen in abnehmbare Pakete. Beides ist Planung, kein bereits implementierter Publisher.

@@ -36,3 +36,7 @@ Die erste Fassung schließt P0 bis P3 ein. Backend kann früher eingeführt werd
 - Nächster vollständiger Schritt: P1-01, Schem-v3-Reader mit strukturellen Limits, Abbruch und unabhängigen Binärfixtures.
 
 P1-03 wird verbindlich als statisches GitHub-Pages-Frontend mit Browser-Web-Workers, Repository-Unterpfad und ohne eigene Actions umgesetzt. Der Pages-Deploy ist noch offen; siehe [Hosting](architecture/HOSTING.md).
+
+## Detaillierter Ausführungsplan
+
+[IMPLEMENTATION_PLAN](IMPLEMENTATION_PLAN.md) konkretisiert P1 bis P7 und ergänzt HP-01 bis HP-04 für statischen Build, Konnektor-Artefakttransport, Pages-Bootstrap und Wiederherstellung. Diese HP-Pakete sind geplant. [Konnektor-Runbook](operations/GITHUB_CONNECTOR_RUNBOOK.md) definiert die selbstständige Integration/Veröffentlichung ohne eigene Actions. Eine gekennzeichnete nutzbare Kernansicht kann bereits vor dem vollständigen Parser veröffentlicht werden; sie erfüllt nicht die gesamte P1-03-/P3-Abnahme.
