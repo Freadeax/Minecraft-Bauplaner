@@ -1,0 +1,24 @@
+plugins {
+    id 'java-library'
+}
+
+group = 'io.github.freadeax.bauplaner'
+version = rootProject.file('VERSION').text.trim()
+
+repositories { mavenCentral() }
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.14.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.14.4'
+}
+
+java {
+    // Java 21 bytecode: runs on every Java ≥ 21, also on the Java 25 that Minecraft 26.x needs.
+    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+}
+tasks.withType(JavaCompile).configureEach { options.release = 21; options.encoding = 'UTF-8' }
+
+test {
+    useJUnitPlatform()
+    testLogging { events 'passed', 'failed'; exceptionFormat 'full' }
+}

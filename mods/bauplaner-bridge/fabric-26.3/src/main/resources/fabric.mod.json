@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "id": "bauplaner_bridge",
+  "version": "${version}",
+  "name": "Bauplaner-Brücke",
+  "description": "Liest den Planbereich aus der Welt (nur lesend) und schreibt eine Aufnahme für den Minecraft-Bauplaner. Verändert die Welt nie.",
+  "authors": ["Freadeax"],
+  "contact": { "homepage": "https://freadeax.github.io/Minecraft-Bauplaner/", "sources": "https://github.com/Freadeax/Minecraft-Bauplaner" },
+  "license": "All-Rights-Reserved",
+  "environment": "client",
+  "entrypoints": { "client": ["io.github.freadeax.bauplaner.bridge.fabric.BridgeClient"] },
+  "depends": {
+    "fabricloader": ">=${loader}",
+    "minecraft": "~${minecraft}",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

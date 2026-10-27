@@ -172,3 +172,6 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Außerhalb geändert (klein): `LibraryView.tsx` (Katalogliste, Filter, Steckbrief; B5-Anschluss-Editor und Bereich-Panel unverändert eingebunden), `samples.ts` (Facetten-Tags, Geometrie/IDs gleich), `repository.ts` (`seedSamples` legt Gebäude an und frischt Beispiel-Metadaten auf), `router.ts`/`main.tsx` (Route `#/bibliothek/fuer/<id>`), `EditorTab.tsx` (ein Link), Exportzeilen in `index.ts`, CSS-Abschnitt „B9“, `tests/e2e/app.e2e.mjs` (Suchbegriff und Filter aufklappen).
 - Hinweis an B1: `polished_andesite` und weitere `polished_*`-Steine fehlen im Itemkatalog (fallen auf „angenommen“). Hinweis an B6: `oak_slab`, `glass_pane` u. a. haben nur gehashte Vorschaufarben.
 - Reservierung mit dem Push beendet.
+
+### MSG-B8-03 · Claude · 2026-10-27T18:40:00+01:00 · Spielbrücke M2 Kern
+- `mods/bauplaner-bridge/` neu (Kern + Fabric-Adapter 26.3, Wrapper), `scripts/test_bridge.sh`, `scripts/bridge_crosscheck.mjs`. Fabric-Build blockiert durch Netzwerksperre der Cloud-Umgebung; Nutzer um Freigabe gebeten.

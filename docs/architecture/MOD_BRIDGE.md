@@ -152,6 +152,15 @@ M1 hängt von keiner der offenen Entscheidungen ab und kann sofort beginnen.
 - Tab „Bauen“: Bereich „Fortschritt laut Spielaufnahme“ (`GameCheckPanel.tsx`, Lesen im Worker `scan.worker.ts`), Grundlage springt auf die Revision der Aufnahme, Spielstatus je Schritt in der Liste, Abweichungen mit Koordinaten in der Schrittkarte und rot umrandet im Schichtplan, Hinweis auf abgehakte, aber im Spiel fehlende Schritte, Knopf „bestätigte Schritte abhaken“.
 - Grenze M1: Die Aufnahme wird noch nicht gespeichert und muss nach dem Neuladen erneut importiert werden (Speicherung als Original-Blob folgt mit der Mod).
 
+## Umsetzung M2 (Mod) · Stand 27.10.2026
+
+[`mods/bauplaner-bridge`](../../mods/bauplaner-bridge/README.md), Gradle 9.8.2 mit Wrapper.
+
+- `core/` (Java 21, ohne Minecraft): `Nbt` (Big-Endian, Modified UTF-8), `Plan` (liest Plan-Dateien, weist Aufnahmen und Pläne ohne `ProjectMin` ab, Grenze 4 000 000 Zellen), `ScanJob` (liest über `BlockSource` in Scheiben, Sponge-Reihenfolge, `bauplaner:unloaded`, prüft das Zustandsformat, schreibt `bauplaner-scan` v1), `AnchorStore` (Plan und Anker je Server/Welt in `bauplaner/state.properties`).
+- `fabric-26.3/`: Client-Befehle `/bauplaner plan|anker|scan|status|abbrechen|plaene`, 12 000 Zellen je Tick, Fortschritt über der Hotbar, atomares Schreiben nach `bauplaner/scans/`, Abbruch bei Welt- oder Dimensionswechsel. Versionsabhängiges nur in `McCompat.java`. **Nicht kompiliert und nicht im Spiel geprüft** (Fabric-Maven und Mojang-Server aus der Cloud-Umgebung gesperrt).
+- Prüfung: `scripts/test_bridge.sh` führt die JUnit-Tests aus und prüft sprachübergreifend: Website exportiert einen Plan, der Java-Kern nimmt eine daraus gebaute Welt mit einem falschen Block auf, der unabhängige Python-Leser und der Website-Vergleich finden genau diese Zelle.
+- Noch offen in M2: Umriss der Planbox im Spiel, Speicherung der Aufnahme auf der Website.
+
 ## Grenzen
 
 - Nur Blockzustände; BlockEntity-Inhalte (Kisteninhalt, Schildtext) werden in v1 nicht verglichen, nur der Block selbst. Freie Entities (Rahmen, Rüstungsständer) und Biome werden nicht geprüft.

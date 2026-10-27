@@ -1,0 +1,15 @@
+// Bauplaner-Brücke: versionsneutraler Kern plus je Minecraft-Version ein dünner Loader-Adapter.
+// Adapter-Projekte werden nur eingebunden, wenn ihr Ordner existiert und -PwithFabric gesetzt ist,
+// damit der Kern auch ohne Zugriff auf Fabric-/Mojang-Server gebaut und getestet werden kann.
+pluginManagement {
+    repositories {
+        maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+rootProject.name = 'bauplaner-bridge'
+include 'core'
+if (providers.gradleProperty('withFabric').isPresent()) {
+    include 'fabric-26.3'
+}
