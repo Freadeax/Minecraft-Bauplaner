@@ -6,7 +6,7 @@ Stand: 27.10.2026. Fundament für Bibliothek, Projekte und Composer (B0); parall
 |---|---|---|
 | Repository | öffentlich, main als Integrationslinie, reguläre Mainfreigabe | keine Force-Pushes |
 | Website | statischer React-/Three.js-Build auf Pages, Quelle gh-pages / root, Hashmanifest | keine eigenen Actions; kein Hintergrundmonitor |
-| Datenkern | validierte unveränderliche Voxel, diskrete Geometrie, begrenzte Zustandsregeln | vollständige Registry-/NBT-Transformation offen |
+| Datenkern | validierte unveränderliche Voxel, diskrete Geometrie, expliziter Vanilla-Zustandskatalog (75 Familienregeln, 595 IDs, Java 1.21.4 manuell) | Registry-Report-Abgleich, BlockEntity-NBT-Transformation, Modprofile offen |
 | Import | GZip, Big-Endian-NBT und Sponge v3 im Worker, vollständige Blockzustände und BlockEntities | konservative Limits; keine alten Schematic-/Litematic-/Weltformate |
 | Datenerhalt | komprimiertes Original, Quell-NBT, Offset, DataVersion, Metadata/Entities/Biome getrennt erhalten | keine Registry-/Modpackfreigabe aus DataVersion ableiten |
 | Ansicht | Orbit/Zoom, Picking, X/Y/Z-Schnitte, Software-Isometrie ohne WebGL | kein freier Flug, keine exakten Blockmodelle; GPU-/Mobiltest offen |

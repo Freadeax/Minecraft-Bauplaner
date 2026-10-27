@@ -132,3 +132,10 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Geänderte Dateien: eigene `packages/domain/src/materials.ts`, `tests/materials.test.mjs`, `tests/e2e/materials.e2e.mjs`, `apps/web/src/views/project/MaterialsTab.tsx`, `docs/architecture/MATERIALS.md`; gemeinsame Dateien nur angehängt: zwei Exportzeilen in `packages/domain/src/index.ts`, ein Registry-Eintrag in `tabs.ts`, CSS-Abschnitt „B1 · Materialbedarf“, eigene Zeilen in STATUS/ROADMAP/REVIEW, Abschnitt in TESTING.
 - Antwort auf MSG-B4-01: `itemsForCell` und `computeMaterials` sind exportiert; eine Itemspalte in der Bauanleitung kann sie auf `step.materials` anwenden (Änderung in B4-Dateien, nicht hier vorgenommen).
 - Reservierung mit dem Push beendet.
+
+
+### MSG-B7-01 · Claude · 2026-10-27T13:20:00+01:00 · Zustandskatalog Drehen/Spiegeln (B7, P1-02a)
+
+- Umfang laut BLOCKS: `packages/voxel/src/states.ts` (neu), `transforms.ts`, Exportzeilen in `packages/voxel/src/index.ts`, `tests/states.test.mjs`, Abschnitt in VOXEL_CONTRACT, eigene Zeilen in STATUS/ROADMAP/TESTING.
+- Ergebnis: 75 Familienregeln, 595 Vanilla-IDs mit exaktem Schema; Unbekanntes, Schemaabweichungen und nicht darstellbare Spiegelungen bleiben ungelöst mit Grund. Öffentliche API unverändert kompatibel, zusätzlich `family`/`reason`, `transformDirection`, `stateCatalog`, `stateRuleFor`.
+- Prüfung siehe TESTING. Reservierung nach Push und Pages-Veröffentlichung beendet.

@@ -42,7 +42,29 @@ Standardlimits: 1.000.000 ausgewählte Zellen, 65.536 Paletteinträge, 16.777.21
 
 ## Transformationsgrenzen
 
-Die Geometrie unterstützt ganzzahlige Translation, 0–3 Y-Vierteldrehungen und lokale X-Spiegelung. Der explizite vorläufige Zustandskatalog umfasst nur Stone, die drei Luftarten, Oak Log, Oak Stairs, Oak Fence und Barrel mit exakt erwarteten Propertymengen und Werten. Treppenspiegelung vertauscht Links/Rechts, Verbindungsrichtungen werden permutiert. Dies sind synthetisch geprüfte Regeln ohne allgemeine Versionsfreigabe.
+Die Geometrie unterstützt ganzzahlige Translation, 0–3 Y-Vierteldrehungen und lokale X-Spiegelung. Blockzustände werden über den expliziten Zustandskatalog transformiert (siehe nächster Abschnitt).
+
+### Zustandskatalog (B7, P1-02a)
+
+`packages/voxel/src/states.ts` enthält die einzige Orientierungsregel des Kerns (`transformVector`, von Geometrie und Zuständen gemeinsam genutzt) und den Regelkatalog. Profilkennung `STATE_CATALOG_PROFILE = java-vanilla-1.21.4-manual`: Block-IDs und Propertymengen sind von Hand nach Java 1.21.4 zusammengestellt und **nicht** gegen einen Registry-Report geprüft. Jede Regel nennt Familie, exakte IDs, exaktes Schema (Propertynamen und erlaubte Werte) und eine Abbildung. Ein Zustand gilt nur als gelöst, wenn die ID gelistet ist und die Properties exakt dem Schema entsprechen; ein Raten anhand von Propertynamen findet nicht statt. Eine ID darf nur in einer Regel stehen (beim Laden geprüft). Aktuell 75 Regeln mit 595 IDs (24.556 vollständige Zustände).
+
+| Familie | Abbildung |
+|---|---|
+| Stämme, Holz, Stängel, Säulen, Basalt, Kette, Netherportal (`axis`) | ungerade Vierteldrehung tauscht x/z; y bleibt; Spiegeln ändert nichts |
+| `facing` horizontal oder 6 Richtungen (Fass, Werfer, Beobachter, Kolben, Trichter, Öfen, Truhen, Leitern, Fackeln, Betten, Wandschilder/-banner/-köpfe, Knöpfe/Hebel u. a.) | Richtungsvektor wird gespiegelt und gedreht; up/down bleibt |
+| Treppen (`shape`) | facing transformiert; Spiegeln vertauscht links/rechts **immer**. Abweichung von Vanilla `StairBlock.mirror()` (nach Quelltextkenntnis, nicht im Spiel geprüft), das bei Blickrichtung parallel zur Spiegelebene die Form unverändert lässt; geometrisch korrekt ist der Tausch (Quadrantenmodell im Test) |
+| Türen (`hinge`), Truhen (`type`) | facing transformiert; Spiegeln vertauscht Scharnier bzw. linke/rechte Doppeltruhenhälfte |
+| Zäune, Scheiben, Gitter, Mauern, Ranken, Flechten, Pilzblöcke, Redstone, Stolperdraht, Feuer | Richtungs-Properties werden permutiert (Wert wandert zur transformierten Seite) |
+| Schienen | Endpunkte bzw. ansteigende Seite transformiert; Kurven nur bei normaler Schiene |
+| Stehende Schilder, Hängeschilder, Banner, Köpfe (`rotation` 0–15) | 0 = Süd, im Uhrzeigersinn: Drehung +4, X-Spiegelung r → (16 − r) mod 16 |
+| Crafter, Verbundblock (`orientation`) | Vorder- und Oberseite getrennt transformiert |
+| Glasierte Keramik | Drehen gelöst; Spiegeln ist mit dem chiralen Muster nicht darstellbar ⇒ ungelöst (`unrepresentable`) |
+| ausrichtungsfreie Familien mit Properties (Stufen, Laub, Flüssigkeiten, Schnee, Feldfrüchte, Kerzen, Laternen, Druckplatten, Tropfstein u. a.) | unverändert, gelöst |
+| `minecraft:` ohne Properties | ausrichtungsfrei, gelöst |
+
+`transformBlockState` liefert zusätzlich `family` und bei ungelöstem Ergebnis `reason`: `unknown-block` (nicht im Katalog, Mod-Namespace), `schema-mismatch` (bekannte ID, unerwartete Property oder ungültiger Wert) oder `unrepresentable`. Der Originalzustand bleibt dann unverändert; `transformPayload` erzeugt eine passende `UNRESOLVED_BLOCK_STATE`-Meldung. Bewusst nicht im Katalog: Sonnenblume (Ausrichtung nicht im Zustand), Chiseled Bookshelf (Slotreihenfolge), Strukturblöcke, Notenblock, Modblöcke sowie alle Blöcke nach 1.21.4.
+
+Nachweis `tests/states.test.mjs`: handberechnete Einzelfälle je Familie; für jeden Katalogzustand vier Vierteldrehungen = Identität, doppelte Spiegelung = Identität, Ergebnis im Schema; Gruppenverträglichkeit (zwei Transformationen nacheinander = zusammengesetzte Transformation) für alle Paare der acht Elemente; unabhängige Geometriemodelle für Richtungen, `rotation` als Winkelvektor, Treppenquadranten, Türscharnier, Doppeltruhenpartner, Schienenenden und Verbindungsarme.
 
 Unbekannte Regeln erzeugen `UNRESOLVED_BLOCK_STATE`; der Originalzustand bleibt für die Vorschau erhalten. Bei jeder nicht identischen Transformation von BlockEntities wird nur ihre Zuordnungsposition verschoben und `UNRESOLVED_BLOCK_ENTITY` gemeldet; das NBT bleibt original. So wird keine falsche Ausrichtung oder versteckte NBT-Koordinate als korrekt ausgegeben.
 
