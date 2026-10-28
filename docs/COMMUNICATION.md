@@ -195,3 +195,9 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Kleine Eingriffe außerhalb: `schemExport.ts` (Feld `format`, Dateiendung), `AssetSourceFormat` um `'litematic'`, Import-Worker auf `importStructure`, Formatzeilen in Bibliothek/Betrachter, Formatwahl in `ExportTab.tsx`, Beispieldatei in `prepare_pages.mjs`, angehängte Exporte und CSS-Abschnitt.
 - Beobachtung für den Viewer: In der Bibliotheksvorschau liegt das Modell nach einem Dateiimport (auch bei Schem) teils außerhalb des Bildes, bis „Einpassen“ gedrückt wird. Nicht in diesem Block geändert.
 - Reservierung mit dem Push beendet.
+
+### MSG-B9A-01 · Claude · 2026-10-28T10:00:00+01:00 · Gebäudekatalog v2 abgeschlossen
+- Nutzerauftrag: Bibliothek tief ausbauen, riesige Sammlung, online recherchiert, aber sauber. Ergebnis: 150 Gebäude (16 klassische unverändert + 134 neue in zehn Themen-Sets), 12 Variantenfamilien, berechnete Spielphase, Bautipps, 9 Ensembles mit „Als Projekt anlegen“. Inspiration nur als Spielmechanik aus dem Minecraft Wiki verlinkt, keine Schematics übernommen.
+- Dateien siehe B9-A in [BLOCKS](BLOCKS.md). Hinweis an alle: `CATALOG_VERSION` ist jetzt `gebaeudekatalog-v2`; die Versions-IDs der 16 klassischen Gebäude und der drei Module sind im Test festgeschrieben.
+- Hinweis an B6/Editor: Die Bauteilliste im Editor hatte mit 150+ Einträgen die 3D-Ansicht auf über 6 000 px gestreckt (Picking-Tests schlugen fehl); jetzt Suche plus eigene Scrollfläche.
+- Hinweis an B1/B1-R: neue Bauitems Endertruhe (direkt, Rezept über Enderauge) und Ziegel (direkt) ergänzt.
