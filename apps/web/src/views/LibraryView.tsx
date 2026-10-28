@@ -3,7 +3,7 @@ import { countBlocks } from '../../../../packages/voxel/src/index.js';
 import type { Cell } from '../../../../packages/voxel/src/index.js';
 import { addAssetVersion, applyOperation, buildCatalog, buildingInfo, createAsset, createEnsembleProject, createProject, ensemblesWith, facetCounts, FACETS, familyMembers,
   latestVersions, newInstance, projectContext, queryCatalog, resolveProject, similarEntries, suggestForProject, updateAssetMeta, withFacets,
-  ENSEMBLES, SORT_LABEL, STAGES, variantGroup } from '../../../../packages/domain/src/index.js';
+  ENSEMBLES, GENERATORS, SORT_LABEL, STAGES, variantGroup } from '../../../../packages/domain/src/index.js';
 import type { Asset, AssetVersionSource, BuildingFacets, CatalogEntry, Ensemble, OriginalFile, Project, SortKey } from '../../../../packages/domain/src/index.js';
 import { href, navigate } from '../app/router';
 import type { LibraryPage } from '../app/router';
@@ -20,6 +20,7 @@ import { CatalogFilters, activeFilterCount, filterChips } from './library/Catalo
 import type { Filters } from './library/CatalogFilters';
 import { ComparePage } from './library/ComparePage';
 import { EnsemblesPage } from './library/EnsemblesPage';
+import { GeneratorsPage } from './library/GeneratorsPage';
 import { FacetFields, facetsFromForm } from './library/FacetFields';
 import { useCardView, useCompare, useFavorites, MAX_COMPARE } from './library/prefs';
 import { SHOTS } from '../thumbnail/views';
@@ -281,6 +282,7 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
     <a href={libHref('browse')} aria-current={page === 'browse' || page === 'building' ? 'page' : undefined}>Gebäude <small>{total}</small></a>
     <a href={libHref('ensembles')} aria-current={page === 'ensembles' ? 'page' : undefined}>Ensembles <small>{ENSEMBLES.length}</small></a>
     <a href={compare.ids.length ? libHref('compare', compare.ids.join(',')) : libHref('compare', '-')} aria-current={page === 'compare' ? 'page' : undefined}>Vergleich <small>{compare.ids.length}</small></a>
+    <a href={libHref('generators')} aria-current={page === 'generators' ? 'page' : undefined}>Generatoren <small>{GENERATORS.length}</small></a>
   </nav>;
   const notices = <>
     {message && <div className="notice" role="status">{message}{link && <a className="notice-link" href={link.href}>{link.label} →</a>}</div>}
@@ -315,6 +317,8 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
   }
   if (page === 'ensembles') return <div className="page">{header}{tabs}{notices}
     <EnsemblesPage id={id} byAsset={byAsset} names={assetNames} versions={library.versions} libHref={libHref} onCreate={e => void createFromEnsemble(e)} /></div>;
+  if (page === 'generators') return <div className="page">{header}{tabs}{notices}
+    <GeneratorsPage id={id} projects={projects} libHref={libHref} onSaved={(m, savedId) => { say(m); showBuilding(savedId); }} /></div>;
   if (page === 'compare') {
     const ids = (id ?? '').split(',').filter(x => x && x !== '-');
     const entries = ids.map(x => catalog.entries.find(e => e.asset.id === x)).filter((e): e is CatalogEntry => !!e);

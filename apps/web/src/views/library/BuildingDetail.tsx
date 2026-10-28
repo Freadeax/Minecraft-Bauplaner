@@ -8,6 +8,7 @@ import { SchemView, SCHEM_TABS } from '../../schem/SchemView';
 import type { SchemTab } from '../../schem/SchemView';
 import { Thumb } from '../../thumbnail/Thumb';
 import { VersionsSection } from './VersionsSection';
+import { GeneratedInfo } from './GeneratorsPage';
 import { ConnectorEditor } from './ConnectorEditor';
 import type { Highlight } from './ConnectorEditor';
 import { CropPanel } from './CropPanel';
@@ -94,6 +95,7 @@ export function BuildingDetail({ entry, asset, latest, versions, info, group, va
           <div><dt>Schlafplätze</dt><dd>{m.beds}</dd><small>{m.lightSources} Lichtquellen</small></div>
         </dl>
         <MaterialBar entry={entry} />
+        <GeneratedInfo version={latest} />
         {group.length > 1 && <div className="variant-row" role="group" aria-label="Varianten">
           <span className="filter-label">{info?.family?.label ?? asset.name}: {group.length} Varianten · <a href={libHref('building', asset.id, 'versionen')}
             onClick={e => { e.preventDefault(); document.getElementById('sec-versionen')?.scrollIntoView({ behavior: 'smooth' }); }}>vergleichen</a></span>

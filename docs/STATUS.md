@@ -45,3 +45,6 @@ B11 Oberfläche (28.10.2026): Bibliothek als Katalog mit isometrischen Vorschaub
 
 B14 Baustelle (28.10.2026): Tab „Baustelle“ mit Fortschrittsübersicht, eigenen Bauabschnitten, Lagerbestand und Sammel-/Farmplan je Abschnitt, Freiraum an Anschlüssen; „vorhanden“ im Material-Tab wird gespeichert. Details [SITE](architecture/SITE.md).
 S1 Stabilität (28.10.2026): Kamera-Fehler nach Dateiimport behoben (3D-Fläche wuchs mit dem Importbericht), Absturzschutz und Fehlerprotokoll, Systemcheck mit Auslieferungs- und Datencheck, Leistung großer Modelle (605 568 Blöcke: Zusammensetzen 17 s → 4–5 s). Details [STABILITY](architecture/STABILITY.md).
+
+
+B13 Parametrische Generatoren (28.10.2026): Bibliotheksreiter „Generatoren“ mit Haus, Turm, Mauer, Brücke, Dach nach Maß, Stil und Details; Anlagen Burganlage und Häuserzeile als Projekt; Parameter in der Version gespeichert und nachrechenbar. Details [GENERATORS](architecture/GENERATORS.md).

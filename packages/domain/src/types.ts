@@ -61,7 +61,7 @@ export interface Connector {
 }
 export type Handedness = 'left' | 'right';
 
-export type AssetSourceFormat = 'schem-v3' | 'litematic' | 'voxel-json' | 'demo' | 'crop' | 'composition' | 'variant';
+export type AssetSourceFormat = 'schem-v3' | 'litematic' | 'voxel-json' | 'demo' | 'crop' | 'composition' | 'variant' | 'generator';
 
 export interface AssetVersionSource {
   readonly format: AssetSourceFormat;
@@ -69,6 +69,14 @@ export interface AssetVersionSource {
   /** SHA-256 of the original file bytes when a file was imported. */
   readonly originalSha256?: string;
   readonly dataVersion?: number;
+  /** Parametric generator (B13): id, algorithm version and the normalised parameters that rebuild this geometry. */
+  readonly generator?: GeneratorSource;
+}
+
+export interface GeneratorSource {
+  readonly id: string;
+  readonly version: number;
+  readonly params: Readonly<Record<string, number | string | boolean>>;
 }
 
 export interface AssetVersion {

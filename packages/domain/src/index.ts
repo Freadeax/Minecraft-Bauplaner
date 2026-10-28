@@ -39,3 +39,6 @@ export { SITE_SCHEMA_VERSION, DEFAULT_RESERVATION_DEPTH, MAX_RESERVATION_DEPTH, 
 export type { SitePlan, SiteSection, SectionMember, ReservationSetting, SectionPreset, SectionIssue, GatherRule, GatherLine, BuildItemLine, SectionPlan, SiteOverview, ReservationState, Reservation } from './site.js';
 export { checkIntegrity, INTEGRITY_SEVERITY_LABEL } from './integrity.js';
 export type { IntegrityReport, IntegrityFinding, IntegritySeverity, IntegrityCode, IntegritySource } from './integrity.js';
+export { GENERATORS, GENERATOR_TAG, GENERATOR_TAG_PREFIX, GENERATOR_PROVENANCE, generatorById, runGenerator, presetValues, createGeneratedAsset, addGeneratedVersion, generatorSourceOf, checkReproducible,
+  createCompoundProject, COMPOUNDS, compoundById, normalizeParams, defaultsOf, describeParams, rollParams, visible, STYLES, styleOf } from './generators/index.js';
+export type { Generator, GeneratedBuilding, Preset, GeneratorRun, ReproCheck, ReproStatus, Compound, CompoundPart, CompoundBuild, ParamDef, ParamValue, ParamValues, ParamIssue, IntParam, ChoiceParam, BoolParam, Style } from './generators/index.js';

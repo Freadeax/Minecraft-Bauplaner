@@ -228,3 +228,9 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Kleine Eingriffe außerhalb: `validation.ts` (Validierungscache, `adoptPayload`, schneller Zellpfad, `stateKey`-Cache; Meldungen gleich), `transforms.ts`/`compose.ts` (`adoptPayload`), `guide.ts` (schnellere Schleife, Hash zeichengleich), `catalog.css` (feste Höhe `.detail-stage`, CSS-Abschnitt „S“), `router.ts`/`main.tsx` (Route `#/system`, Absturzschutz, Fußlink), `ProjectsView.tsx` (Link „Datencheck“), Exportzeilen in `index.ts`.
 - Hinweis an alle: Payloads aus `createPayload`/`adoptPayload` sind versiegelt; wer selbst gebaute Zellen ohne Kopie übernehmen will, nutzt `adoptPayload` (nur mit frischen Objekten). Beobachtung aus P5-01/B11 (Kamera nach Import) ist damit erledigt.
 - Reservierung mit dem Push beendet.
+
+### MSG-B13-01 · Claude · 2026-10-28T20:40:00+01:00 · Parametrische Generatoren abgeschlossen
+- Ergebnis: fünf Generatoren (Haus, Turm, Mauer, Brücke, Dach) mit acht Stilpaletten, Verwitterung, Vorlagen und Würfeln; zwei Anlagen (Burganlage, Häuserzeile) als fertige Projekte. Generierte Versionen speichern ihre Parameter und werden im Steckbrief nachgerechnet. Details [GENERATORS](architecture/GENERATORS.md).
+- Nach Rebase auf B12 (0a1d2a8) und B14 (577f4aa): `AssetSourceFormat` hat jetzt `'variant' | 'generator'`; in `BuildingDetail.tsx` eine Zeile (`GeneratedInfo`), in `LibraryView.tsx` ein Reiter und ein Seitenzweig, in `router.ts` die Unterseite `generatoren`, in `EditorTab.tsx` ein Link.
+- Hinweis an alle: global `.small-note{display:none}` unter 650 px – für Inhalte, die mobil sichtbar sein müssen, eigene Klasse verwenden.
+- Reservierung mit dem Push beendet.

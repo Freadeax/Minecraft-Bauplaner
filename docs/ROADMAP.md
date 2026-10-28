@@ -69,7 +69,7 @@ P6-01 (B8) Konzept 27.10.2026: [Spielbrücke](architecture/MOD_BRIDGE.md) – d�
 
 P6-01 (B8) M1 umgesetzt: Spielaufnahme importieren, Zellvergleich je Bauschritt, Abweichungen im Schichtplan, bestätigte Schritte ausdrücklich abhaken. Offen: Fabric-Mod (M2, Minecraft 26.3), Speicherung der Aufnahme, lokale Verbindung (M3), Anzeige im Spiel (M4).
 
-B9 Gebäudekatalog (27.10.2026) umgesetzt: [CATALOG](architecture/CATALOG.md). Katalog v2 (28.10.2026): 150 Gebäude in zehn Themen-Sets, Variantenfamilien (u. a. Starterhaus in 8 Holzarten), Spielphase, Bautipps, 9 Ensembles. Offen: Vergleich zweier Gebäude nebeneinander, frei parametrisierbare Generatoren (Größe), eigene Ensembles speichern, eigene Kategorien verwalten, Spielabnahme der Redstone-Module.
+B9 Gebäudekatalog (27.10.2026) umgesetzt: [CATALOG](architecture/CATALOG.md). Katalog v2 (28.10.2026): 150 Gebäude in zehn Themen-Sets, Variantenfamilien (u. a. Starterhaus in 8 Holzarten), Spielphase, Bautipps, 9 Ensembles. Offen: Vergleich zweier Gebäude nebeneinander, eigene Ensembles speichern, eigene Kategorien verwalten, Spielabnahme der Redstone-Module.
 
 Ausbau offener Punkte (27.10.2026): P3-02 Itemmengen je Schritt umgesetzt (Bauitems je Schritt, Packliste je Schicht, Summe = Materialtab). P1-04a Katalog `vanilla-java-items-v2`. P2-02 Händigkeit für unsymmetrische Profile und Andocken per Ziehen im 3D-Bild umgesetzt ([CONNECTORS](architecture/CONNECTORS.md)). P1-03 Vorschaufarben je Materialfamilie. Offen: Freiraum-Reservierung an Anschlüssen, frei definierte Bauabschnitte, Rohstoffe/Rezepte, Safari/iPhone-Speicherprüfung (braucht echtes Gerät).
 
@@ -90,3 +90,5 @@ Umgesetzt: frei definierte Bauabschnitte (P3-02), Freiraum-Reservierung an Ansch
 ## Stabilität S1 · 28.10.2026
 
 Umgesetzt: Absturzschutz, Fehlerprotokoll, Systemcheck, Datencheck, Leistung großer Modelle, Importvorschau im Bild ([STABILITY](architecture/STABILITY.md)). Nächste sinnvolle Schritte: Safari/iPhone-Prüfung auf echtem Gerät; Rechenarbeit großer Projekte (Zusammensetzen, Bauanleitung) in einen Worker verlagern, damit die Oberfläche während einiger Sekunden Rechenzeit bedienbar bleibt; `owners` der Auflösung auf numerische Zellindizes umstellen (größter verbliebener Kostenblock, betrifft Editor/Anleitung/Material); Erinnerung an eine Sicherung nach längerer Zeit ohne Sicherung.
+
+B13 Parametrische Generatoren (28.10.2026) umgesetzt: [GENERATORS](architecture/GENERATORS.md) – deckt P5-02/R-012 für Haus, Turm, Mauer, Brücke, Dach und die Anlagen Burg/Häuserzeile ab. Offen: Eckformen der Dachtreppen, weitere Generatoren (Treppenhaus, Kirche, Hafen), eigene Vorlagen speichern, Spielabnahme.

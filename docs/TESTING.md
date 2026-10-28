@@ -237,3 +237,10 @@ GitHub Actions werden nicht genutzt. Der jeweils bearbeitende Agent führt alle 
 - `npm run test:e2e`: 40/40 (35 nach B12/B14 + 5 in `tests/e2e/stability.e2e.mjs`): Importvorschau bei 1400 px und 400 px (3D-Fläche nicht höher als das Fenster, Bildmitte sichtbar; vorher 2 022 px hoch); Systemcheck ohne Befund; per IndexedDB beschädigte Version und verwaiste Instanz ⇒ „✕ 2 Fehler“ mit Empfehlung; Fehlerprotokoll mit Bericht über die Zwischenablage. Screenshots von Importvorschau (Desktop/schmal) und Systemcheck visuell geprüft.
 - Nach Rebase auf B12 gefunden und behoben: die feste Höhe der 3D-Fläche galt zuerst für jede `.detail-stage` und ließ die Fläche in der B12-Schem-Ansicht (Flex-Spalte) auf 0 px Breite schrumpfen; jetzt nur für direkte Kinder von `.detail-hero`.
 - Grenzen: Absturzschutz nicht mit echtem Zeichenfehler im Browser ausgelöst; nur Chromium; Zeitbudgets fangen nur grobe Rückschritte.
+
+### 28.10.2026 – B13 Parametrische Generatoren
+- Grundlage main 5467886 (mit B12, B14, S1) plus B13. Node 22, lokales Playwright/Chromium.
+- `npm run check`: Typprüfung Kern/Web, Builds, 281/281 Node-Tests (268 + 13 in `tests/generators.test.mjs`), Dokumentationsprüfung bestanden. `npm run test:e2e`: 42/42 (40 + 2 in `tests/e2e/generators.e2e.mjs`; ein erster mobiler Lauf zählte die Karten vor dem Rendern, jetzt mit Warten). Inhalte in [GENERATORS](architecture/GENERATORS.md#prüfung).
+- Gefunden und behoben: Brückenvorschau zu hoch (Plot-Höhe vorgegeben), doppelte Klammern im Namen, Kartenlayout der Übersicht, Nachrechnungs-Hinweis mobil unsichtbar (globale `.small-note`-Regel).
+- Sichtprüfung per Screenshot (1400 px): alle Generatoren, 9 Vorlagen, Burganlage, Festung, Altstadt, Kirschblütendorf.
+- Grenzen: nur Chromium; keine Spielabnahme der Bauwerke.

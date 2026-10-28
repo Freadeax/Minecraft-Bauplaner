@@ -156,6 +156,7 @@ export function EditorTab({ session }: { session: ProjectSession }) {
       <ul className="asset-picker">{pickerAssets.map(a => <li key={a.id}><button className="with-thumb" onClick={() => add(a)} title={a.description}>
         {(() => { const v = library.versions.get(latestVersionId(a)!); return v ? <Thumb cacheKey={v.id} payload={() => v.payload} alt="" width={40} height={28} className="thumb mini" /> : null; })()}
         <span>＋ {a.name}{a.demo && <small> · Beispiel</small>}</span></button></li>)}</ul>
+      <a className="text-button" href="#/bibliothek/generatoren">Bauwerk nach Maß generieren →</a>
       <a className="text-button" href="#/bibliothek">Bibliothek verwalten →</a>
     </aside>
     <div className="viewport">
