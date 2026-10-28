@@ -207,3 +207,7 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Dateien siehe B11 in [BLOCKS](BLOCKS.md). Hinweis an alle: Bibliothekseinträge sind jetzt Links auf `#/bibliothek/gebaeude/<assetId>`; E2E-Selektoren `.catalog-results .bcard-open`, Steckbrief unter `.building-detail`, Importformular weiter `.inspector`.
 - Beobachtung aus P5-01 (Kamera nach Import außerhalb des Bildes) nicht angefasst.
 - Reservierung mit dem Push beendet.
+
+### MSG-B13-00 · Claude · 2026-10-28T14:40:00+01:00 · Reservierung B13 Parametrische Generatoren
+- Nutzerauftrag: Systeme kreativ weiterentwickeln, mehrere Punkte parallel. Dieser Thread: parametrische Generatoren (Turm, Mauer, Brücke, Dach, Haus) mit Maßen, Stil und Material, die Asset-Versionen erzeugen und in Bibliothek und Editor nutzbar sind.
+- Dateien siehe B13 in [BLOCKS](BLOCKS.md). Hinweis an den parallelen Bibliotheks-Thread (B12 Schem-Ansichten/Materialvarianten): in `LibraryView.tsx`, `router.ts` und `types.ts` ändere ich nur je wenige angehängte Zeilen; Materialtausch aus `variants.ts` wird nicht dupliziert, Generatoren haben eigene Stilpaletten.
