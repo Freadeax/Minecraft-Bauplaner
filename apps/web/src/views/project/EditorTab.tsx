@@ -101,6 +101,10 @@ export function EditorTab({ session }: { session: ProjectSession }) {
   }, [dragMode, selected, resolved, selectedKeys, snapOn, project, library.versions, session, run]);
 
   const assets = library.assets.filter(a => !a.archived && latestVersionId(a));
+  // The shipped catalogue has well over a hundred buildings: the picker filters by name and tag and scrolls on its own.
+  const [pickerQuery, setPickerQuery] = useState('');
+  const needle = pickerQuery.trim().toLowerCase();
+  const pickerAssets = needle ? assets.filter(a => a.name.toLowerCase().includes(needle) || a.tags.some(t => t.toLowerCase().includes(needle))) : assets;
   const add = (asset: Asset) => {
     const versionId = latestVersionId(asset)!;
     const version = library.versions.get(versionId);
@@ -146,7 +150,9 @@ export function EditorTab({ session }: { session: ProjectSession }) {
       })}</ul>
       <span className="panel-kicker">BAUTEIL EINFÜGEN</span>
       <a className="text-button suggest-link" href={`#/bibliothek/fuer/${encodeURIComponent(project.id)}`}>Passende Gebäude vorschlagen →</a>
-      <ul className="asset-picker">{assets.map(a => <li key={a.id}><button onClick={() => add(a)} title={a.description}>＋ {a.name}{a.demo && <small> · Beispiel</small>}</button></li>)}</ul>
+      <input type="search" className="picker-search" value={pickerQuery} onChange={e => setPickerQuery(e.target.value)} placeholder={`${assets.length} Bauteile durchsuchen …`} aria-label="Bauteil zum Einfügen suchen" />
+      {needle && pickerAssets.length === 0 && <p className="muted">Kein Bauteil passt zu „{pickerQuery.trim()}“.</p>}
+      <ul className="asset-picker">{pickerAssets.map(a => <li key={a.id}><button onClick={() => add(a)} title={a.description}>＋ {a.name}{a.demo && <small> · Beispiel</small>}</button></li>)}</ul>
       <a className="text-button" href="#/bibliothek">Bibliothek verwalten →</a>
     </aside>
     <div className="viewport">

@@ -17,7 +17,7 @@ import type { Asset, AssetVersion, Connector, Project } from './types.js';
  *    payload with the shared voxel/material/guide/state rules. Heuristics
  *    (difficulty, build time) state their formula and are labelled as such.
  */
-export const CATALOG_VERSION = 'gebaeudekatalog-v1';
+export const CATALOG_VERSION = 'gebaeudekatalog-v2';
 
 // ------------------------------------------------------------------ facets
 
@@ -36,17 +36,22 @@ export const FACETS: readonly FacetDefinition[] = [
   { key: 'kategorie', label: 'Kategorie', single: true, values: {
     wohnhaus: 'Wohnhaus', landwirtschaft: 'Landwirtschaft', handwerk: 'Handwerk', handel: 'Handel', sakral: 'Sakralbau',
     befestigung: 'Befestigung', infrastruktur: 'Infrastruktur', wahrzeichen: 'Wahrzeichen', dekoration: 'Dekoration',
-    statue: 'Statue', farm: 'Farm (automatisch)', redstone: 'Redstone-Technik', landschaft: 'Landschaft & Bäume', basis: 'Basis' } },
+    statue: 'Statue', farm: 'Farm (automatisch)', redstone: 'Redstone-Technik', landschaft: 'Landschaft & Bäume', basis: 'Basis',
+    magie: 'Magie & Verzauberung', fahrzeug: 'Schiffe & Fahrzeuge', garten: 'Garten & Park' } },
   { key: 'stil', label: 'Stil', single: false, values: {
     mittelalterlich: 'Mittelalterlich', rustikal: 'Rustikal', modern: 'Modern', wuestenstil: 'Wüstenstil', nordisch: 'Nordisch',
-    klassisch: 'Klassisch', kuestenstil: 'Küstenstil' } },
+    klassisch: 'Klassisch', kuestenstil: 'Küstenstil', fernoestlich: 'Fernöstlich', fantasy: 'Fantasy', antik: 'Antik',
+    industriell: 'Industriell', tropisch: 'Tropisch', nether: 'Nether-Stil', end: 'End-Stil', technisch: 'Technisch (Redstone)' } },
   { key: 'biom', label: 'Biom', single: false, values: {
     ueberall: 'Überall passend', ebene: 'Ebene', wald: 'Wald', taiga: 'Taiga', gebirge: 'Gebirge', wueste: 'Wüste',
-    savanne: 'Savanne', dschungel: 'Dschungel', schnee: 'Schnee', kueste: 'Küste', sumpf: 'Sumpf' } },
+    savanne: 'Savanne', dschungel: 'Dschungel', schnee: 'Schnee', kueste: 'Küste', sumpf: 'Sumpf', ozean: 'Ozean',
+    kirschhain: 'Kirschhain', pilzinsel: 'Pilzinsel', badlands: 'Tafelberge', hoehle: 'Höhle & Untergrund', nether: 'Nether', end: 'End' } },
   { key: 'funktion', label: 'Funktion', single: false, values: {
     wohnen: 'Wohnen', lagern: 'Lagern', handwerk: 'Handwerk', landwirtschaft: 'Anbau', tierhaltung: 'Tierhaltung', handel: 'Handel',
     verteidigung: 'Verteidigung', aussicht: 'Aussicht', orientierung: 'Orientierung', versammlung: 'Versammlung',
-    wasserquelle: 'Wasserquelle', verbindung: 'Verbindung', deko: 'Dekoration' } },
+    wasserquelle: 'Wasserquelle', verbindung: 'Verbindung', deko: 'Dekoration', ressourcen: 'Ressourcen (Farm)', transport: 'Transport',
+    verzaubern: 'Verzaubern', schmelzen: 'Schmelzen', sortieren: 'Sortieren', beleuchtung: 'Beleuchtung', reisen: 'Reisen & Portale',
+    unterhaltung: 'Unterhaltung', handelsplatz: 'Dorfbewohner-Handel' } },
 ];
 const FACET_KEYS = FACETS.map(f => f.key);
 const facetDef = (key: FacetKey): FacetDefinition => FACETS.find(f => f.key === key)!;
@@ -69,12 +74,67 @@ export function facetsOf(asset: Pick<Asset, 'tags'>): Record<FacetKey, string[]>
   }
   return out;
 }
-export function plainTags(asset: Pick<Asset, 'tags'>): string[] {
-  return asset.tags.filter(t => { const i = t.indexOf(':'); return i <= 0 || !FACET_KEYS.includes(t.slice(0, i) as FacetKey); });
+/** Variant family tag "familie:<id>": buildings that differ only in material or detail. */
+export const FAMILY_PREFIX = 'familie:';
+export function familyOf(asset: Pick<Asset, 'tags'>): string | undefined {
+  return asset.tags.find(t => t.startsWith(FAMILY_PREFIX))?.slice(FAMILY_PREFIX.length);
 }
-/** Replaces the facet tags of a tag list and keeps plain tags. */
+export function plainTags(asset: Pick<Asset, 'tags'>): string[] {
+  return asset.tags.filter(t => { const i = t.indexOf(':'); return i <= 0 || !(FACET_KEYS.includes(t.slice(0, i) as FacetKey) || t.startsWith(FAMILY_PREFIX)); });
+}
+/** Replaces the facet tags of a tag list and keeps plain tags and the family tag. */
 export function withFacets(tags: readonly string[], facets: BuildingFacets): string[] {
-  return [...new Set([...plainTags({ tags }), ...facetTags(facets)])].sort();
+  return [...new Set([...plainTags({ tags }), ...tags.filter(t => t.startsWith(FAMILY_PREFIX)), ...facetTags(facets)])].sort();
+}
+
+// ------------------------------------------------------------------ play stage
+
+/**
+ * Spielphase: from which point of a survival game the materials are realistic.
+ * Computed from block ids with explicit rules (latest matching stage wins);
+ * a statement about material access, not about building skill.
+ */
+export type Stage = 'start' | 'frueh' | 'mitte' | 'spaet';
+export const STAGES: readonly Stage[] = ['start', 'frueh', 'mitte', 'spaet'];
+export const STAGE_LABEL: Readonly<Record<Stage, string>> = { start: 'Erster Tag', frueh: 'Frühes Spiel', mitte: 'Mittleres Spiel', spaet: 'Spätes Spiel' };
+export const STAGE_HINT: Readonly<Record<Stage, string>> = {
+  start: 'Holz, Erde, Stein, Sand – mit Holz- und Steinwerkzeug erreichbar.',
+  frueh: 'Ofen, Eisen, Glas, Ziegel, Wolle, Laternen – nach den ersten Höhlen und Schafen.',
+  mitte: 'Diamantwerkzeug, Obsidian, Nether-Blöcke, Redstone-Technik, Beton, Kupfer, Ozeanblöcke.',
+  spaet: 'Endblöcke, Leuchtfeuer, Netherit, Edelblöcke in Mengen.',
+};
+export const STAGE_RULES: readonly { readonly stage: Stage; readonly label: string; readonly pattern: RegExp }[] = [
+  { stage: 'spaet', label: 'End-Blöcke', pattern: /^(purpur_.*|end_stone.*|end_rod|chorus_.*|shulker_box|.*_shulker_box|dragon_.*)$/ },
+  { stage: 'spaet', label: 'Leuchtfeuer, Netherit, Edelsteinblöcke', pattern: /^(beacon|netherite_block|diamond_block|emerald_block|conduit|ancient_debris)$/ },
+  { stage: 'mitte', label: 'Obsidian & Verzaubern', pattern: /^(obsidian|crying_obsidian|enchanting_table|ender_chest)$/ },
+  { stage: 'mitte', label: 'Nether-Blöcke', pattern: /^(nether_.*|red_nether_.*|.*blackstone.*|basalt|polished_basalt|soul_.*|glowstone|quartz.*|smooth_quartz.*|chiseled_quartz.*|crimson_.*|warped_.*|shroomlight|magma_block|netherrack)$/ },
+  { stage: 'mitte', label: 'Redstone-Technik', pattern: /^(observer|repeater|comparator|piston|sticky_piston|redstone_lamp|redstone_block|dispenser|dropper|daylight_detector|powered_rail|detector_rail|activator_rail)$/ },
+  { stage: 'mitte', label: 'Ozean, Beton, Kupfer, Tiefenschiefer', pattern: /^(prismarine.*|dark_prismarine.*|sea_lantern|.*_concrete|.*copper.*|lightning_rod|.*deepslate.*|tuff.*|polished_tuff.*|amethyst_block|calcite)$/ },
+  { stage: 'mitte', label: 'Gold, Bienen, Ton in Mengen', pattern: /^(gold_block|beehive|honey_block|.*glazed_terracotta)$/ },
+  { stage: 'frueh', label: 'Eisen, Ofen, Glas', pattern: /^(iron_.*|anvil|hopper|rail|chain|lantern|cauldron|water_cauldron|blast_furnace|smithing_table|.*glass.*|.*_bed|furnace|smoker|lectern|bookshelf|stonecutter|grindstone)$/ },
+  { stage: 'frueh', label: 'Gebrannte & gefärbte Blöcke', pattern: /^(bricks?.*|brick_.*|.*_wool|.*_carpet|.*terracotta|smooth_stone.*|stone_brick.*|stone_bricks|.*stone_bricks|chiseled_stone_bricks|cracked_stone_bricks|.*_banner|.*_candle|candle|mud_bricks|mud_brick.*|packed_mud|redstone_torch|redstone_wire|lever|.*_button|.*pressure_plate)$/ },
+];
+const RANK: Readonly<Record<Stage, number>> = { start: 0, frueh: 1, mitte: 2, spaet: 3 };
+export const stageIndex = (s: Stage): number => RANK[s];
+/** Stage of a single block id (namespace optional). */
+export function stageOf(id: string): Stage {
+  const name = id.includes(':') ? id.slice(id.indexOf(':') + 1) : id;
+  let best: Stage = 'start';
+  for (const r of STAGE_RULES) if (RANK[r.stage] > RANK[best] && r.pattern.test(name)) best = r.stage;
+  return best;
+}
+/** Stage of a building and the rule labels that decided it. */
+export function progressionOf(blockCounts: Readonly<Record<string, number>>): { readonly stage: Stage; readonly reasons: readonly string[] } {
+  let stage: Stage = 'start';
+  for (const id of Object.keys(blockCounts)) { const s = stageOf(id); if (RANK[s] > RANK[stage]) stage = s; }
+  const reasons = new Set<string>();
+  for (const id of Object.keys(blockCounts).sort()) {
+    if (stageOf(id) !== stage) continue;
+    const name = id.slice(id.indexOf(':') + 1);
+    const rule = STAGE_RULES.find(r => r.stage === stage && r.pattern.test(name));
+    if (rule) reasons.add(`${rule.label} (${name})`);
+  }
+  return { stage, reasons: [...reasons].slice(0, 6) };
 }
 
 // ------------------------------------------------------------------ analysis
@@ -167,6 +227,8 @@ export interface BuildingMetrics {
   readonly modNamespaces: readonly string[];
   readonly difficulty: { readonly level: 1 | 2 | 3 | 4 | 5; readonly label: string; readonly factors: readonly Factor[] };
   readonly buildTime: { readonly minutes: number; readonly assumptions: string };
+  /** Spielphase derived from block ids (see STAGE_RULES). */
+  readonly progression: { readonly stage: Stage; readonly reasons: readonly string[] };
 }
 
 const DIFFICULTY_LABEL = ['', 'Sehr leicht', 'Leicht', 'Mittel', 'Anspruchsvoll', 'Experte'] as const;
@@ -278,6 +340,7 @@ export function analyzeVersion(version: Pick<AssetVersion, 'id' | 'payload' | 'c
     connectors: version.connectors.map(c => ({ id: c.id, type: c.type, profile: c.profile })),
     blockEntities: payload.blockEntities.length, modNamespaces: mods,
     difficulty: difficultyOf({ blocks, distinctStates: counted.states.length, oriented, height: h, ...phases }),
+    progression: progressionOf(blockCounts),
     buildTime: { minutes: Math.max(1, Math.round(seconds / 60)),
       assumptions: `Schätzung: ${m.secondsPerBlock} s je Block, +${m.secondsPerOriented} s je ausgerichtetem Block, ${m.secondsPerAir} s je freizuräumender Luftzelle, ${m.secondsPerLayer} s je Schicht; Überlebensmodus, Material griffbereit, ohne Geländearbeit und Materialbeschaffung.` },
   };
@@ -291,6 +354,8 @@ export interface CatalogEntry {
   readonly facets: Readonly<Record<FacetKey, readonly string[]>>;
   readonly tags: readonly string[];
   readonly metrics: BuildingMetrics;
+  /** Variant family id from the "familie:" tag. */
+  readonly family?: string;
 }
 
 /**
@@ -304,15 +369,16 @@ export function buildCatalog(assets: readonly Asset[], versions: ReadonlyMap<str
     if (!version) { missing.push(asset); continue; }
     let metrics = cache?.get(version.id);
     if (!metrics) { metrics = analyzeVersion(version); cache?.set(version.id, metrics); }
-    entries.push({ asset, version, facets: facetsOf(asset), tags: plainTags(asset), metrics });
+    const family = familyOf(asset);
+    entries.push({ asset, version, facets: facetsOf(asset), tags: plainTags(asset), metrics, ...(family && { family }) });
   }
   return { entries, missing };
 }
 
-export type SortKey = 'name' | 'blocks' | 'footprint' | 'height' | 'difficulty' | 'buildTime' | 'items' | 'newest' | 'match';
+export type SortKey = 'name' | 'blocks' | 'footprint' | 'height' | 'difficulty' | 'buildTime' | 'items' | 'stage' | 'newest' | 'match';
 export const SORT_LABEL: Readonly<Record<SortKey, string>> = {
   match: 'Passend zum Projekt', name: 'Name', blocks: 'Blockanzahl', footprint: 'Grundfläche', height: 'Höhe',
-  difficulty: 'Schwierigkeit', buildTime: 'Bauzeit (Schätzung)', items: 'Bauitems', newest: 'Zuletzt geändert',
+  difficulty: 'Schwierigkeit', buildTime: 'Bauzeit (Schätzung)', items: 'Bauitems', stage: 'Spielphase', newest: 'Zuletzt geändert',
 };
 
 export interface Plot { readonly width: number; readonly depth: number; readonly height?: number; readonly allowRotation: boolean }
@@ -336,6 +402,10 @@ export interface CatalogQuery {
   readonly withConnectors?: boolean;
   readonly connectorType?: string;
   readonly withBeds?: boolean;
+  /** Only buildings reachable up to this play stage. */
+  readonly stageMax?: Stage;
+  /** Show one entry per variant family (the first after sorting). */
+  readonly collapseFamilies?: boolean;
   readonly includeArchived?: boolean;
   readonly sort?: SortKey;
   readonly descending?: boolean;
@@ -349,7 +419,7 @@ export function fitsPlot(metrics: Pick<BuildingMetrics, 'size'>, plot: Plot): bo
 
 function searchText(e: CatalogEntry): string {
   const facetWords = FACET_KEYS.flatMap(k => e.facets[k].flatMap(v => [v, facetLabel(k, v)]));
-  return [e.asset.name, e.asset.description, ...e.tags, ...facetWords, e.asset.provenance.author, e.asset.provenance.source,
+  return [e.asset.name, e.asset.description, ...e.tags, ...facetWords, e.family ?? '', STAGE_LABEL[e.metrics.progression.stage], e.asset.provenance.author, e.asset.provenance.source,
     ...e.metrics.topBlocks.map(b => nameOf(b.id).replace(/_/g, ' ')), ...e.metrics.workstations.map(w => w.profession)].join(' ').toLowerCase();
 }
 
@@ -379,6 +449,7 @@ function matches(e: CatalogEntry, q: CatalogQuery, except?: FacetKey): boolean {
   if (q.withConnectors && !m.connectors.length) return false;
   if (q.connectorType && !m.connectors.some(c => c.type === q.connectorType)) return false;
   if (q.withBeds && !m.beds) return false;
+  if (q.stageMax && RANK[m.progression.stage] > RANK[q.stageMax]) return false;
   const words = (q.text ?? '').toLowerCase().split(/\s+/).filter(Boolean);
   if (words.length) { const text = searchText(e); if (!words.every(w => text.includes(w))) return false; }
   return true;
@@ -387,6 +458,7 @@ function matches(e: CatalogEntry, q: CatalogQuery, except?: FacetKey): boolean {
 const SORT_VALUE: Readonly<Record<Exclude<SortKey, 'name' | 'match' | 'newest'>, (e: CatalogEntry) => number>> = {
   blocks: e => e.metrics.blocks, footprint: e => e.metrics.footprint, height: e => e.metrics.size[1],
   difficulty: e => e.metrics.difficulty.level, buildTime: e => e.metrics.buildTime.minutes, items: e => e.metrics.items.total,
+  stage: e => RANK[e.metrics.progression.stage],
 };
 
 /**
@@ -404,7 +476,17 @@ export function queryCatalog(entries: readonly CatalogEntry[], q: CatalogQuery, 
     const f = SORT_VALUE[sort];
     return dir * (f(a) - f(b)) || byName(a, b);
   };
-  return entries.filter(e => matches(e, q)).sort(cmp);
+  const sorted = entries.filter(e => matches(e, q)).sort(cmp);
+  if (!q.collapseFamilies) return sorted;
+  const seen = new Set<string>();
+  return sorted.filter(e => !e.family || (seen.has(e.family) ? false : (seen.add(e.family), true)));
+}
+
+/** Members of each variant family among the given entries (for "+N Varianten"). */
+export function familyMembers(entries: readonly CatalogEntry[]): Map<string, CatalogEntry[]> {
+  const out = new Map<string, CatalogEntry[]>();
+  for (const e of entries) if (e.family) out.set(e.family, [...(out.get(e.family) ?? []), e]);
+  return out;
 }
 
 /** Number of entries per facet value under all other active filters. */

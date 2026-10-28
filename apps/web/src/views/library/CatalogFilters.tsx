@@ -1,14 +1,14 @@
-import { BLOCK_CLASS_LABEL, FACETS, SIZE_CLASS_LABEL } from '../../../../../packages/domain/src/index.js';
-import type { BlockClass, BuildingMetrics, CatalogQuery, FacetKey } from '../../../../../packages/domain/src/index.js';
+import { BLOCK_CLASS_LABEL, FACETS, SIZE_CLASS_LABEL, STAGES, STAGE_HINT, STAGE_LABEL } from '../../../../../packages/domain/src/index.js';
+import type { BlockClass, BuildingMetrics, CatalogQuery, FacetKey, Stage } from '../../../../../packages/domain/src/index.js';
 
-export type Filters = Omit<CatalogQuery, 'text' | 'sort' | 'descending'>;
+export type Filters = Omit<CatalogQuery, 'text' | 'sort' | 'descending' | 'collapseFamilies'>;
 
 const DIFFICULTY = ['Sehr leicht', 'Leicht', 'Mittel', 'Anspruchsvoll', 'Experte'];
 
 /** Number of active filter groups, shown on the collapsed panel. */
 export function activeFilterCount(f: Filters): number {
   return FACETS.filter(d => f.facets?.[d.key]?.length).length + (f.tags?.length ? 1 : 0) + (f.sizeClasses?.length ? 1 : 0) + (f.blockClasses?.length ? 1 : 0)
-    + (f.difficultyMax !== undefined ? 1 : 0) + (f.maxBuildMinutes !== undefined ? 1 : 0) + (f.plot ? 1 : 0)
+    + (f.difficultyMax !== undefined ? 1 : 0) + (f.stageMax ? 1 : 0) + (f.maxBuildMinutes !== undefined ? 1 : 0) + (f.plot ? 1 : 0)
     + (f.origin && f.origin !== 'alle' ? 1 : 0) + [f.onlyComplete, f.vanillaOnly, f.withConnectors, f.withBeds, f.includeArchived].filter(Boolean).length;
 }
 
@@ -59,6 +59,9 @@ export function CatalogFilters({ filters, onChange, counts, tags }: {
     <label>Schwierigkeit höchstens
       <select value={filters.difficultyMax ?? ''} onChange={e => set({ difficultyMax: e.target.value ? Number(e.target.value) : undefined })}>
         <option value="">beliebig</option>{DIFFICULTY.map((d, i) => <option key={d} value={i + 1}>{i + 1} · {d}</option>)}</select></label>
+    <label title={filters.stageMax ? STAGE_HINT[filters.stageMax] : 'Ab wann die Materialien im Überlebensmodus realistisch sind (berechnet)'}>Spielphase bis
+      <select value={filters.stageMax ?? ''} aria-label="Spielphase bis" onChange={e => set({ stageMax: (e.target.value || undefined) as Stage | undefined })}>
+        <option value="">beliebig</option>{STAGES.map(st => <option key={st} value={st}>{STAGE_LABEL[st]}</option>)}</select></label>
     <label>Bauzeit höchstens (Minuten, Schätzung)<input inputMode="numeric" value={filters.maxBuildMinutes ?? ''} placeholder="beliebig"
       onChange={e => set({ maxBuildMinutes: num(e.target.value) })} /></label>
     <fieldset className="plot-fields"><legend>Bauplatz</legend>

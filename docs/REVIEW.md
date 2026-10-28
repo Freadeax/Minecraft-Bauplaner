@@ -1,6 +1,6 @@
 # Strukturierte Bestandsprüfung · 27.10.2026
 
-Prüfgrundlage: Repositoryregeln, README, STATUS, ROADMAP, COMMUNICATION, Architekturentscheidungen, vorhandener Code und lokale Prüfbefehle. Keine pauschale Vollabnahme aller geplanten Systeme. Zuletzt aktualisiert beim Ausbau offener Punkte (27.10.2026).
+Prüfgrundlage: Repositoryregeln, README, STATUS, ROADMAP, COMMUNICATION, Architekturentscheidungen, vorhandener Code und lokale Prüfbefehle. Keine pauschale Vollabnahme aller geplanten Systeme. Zuletzt aktualisiert beim Gebäudekatalog v2 (28.10.2026).
 
 | Punkte / Anforderungen | Aktueller Befund | Weiterer Bedarf |
 |---|---|---|
@@ -8,7 +8,7 @@ Prüfgrundlage: Repositoryregeln, README, STATUS, ROADMAP, COMMUNICATION, Archit
 | Weitere Formate R-002/003 | Litematic-Import (Mehrregionen, Einzelregion, Format 2–7) und -Export (Format 5/6/7) mit unabhängiger Fixture und Python-Leser ([LITEMATIC](architecture/LITEMATIC.md)) | selektiver Weltimport nicht implementiert; Litematic nicht mit echter Litematica-Datei/im Spiel abgenommen |
 | Ansicht R-004/005/006 | Orbit/Zoom, freier Flug, Ansichten, Fokus, Picking mit Welt-/Lokalkoordinate, Schichtbereiche, Touch, Flächenkulling und Code-Splitting mit Messung; Softwareansicht ohne WebGL | vollständige Blockmodelle, echte GPU-/Gerätetests |
 | Aufgaben R-007 | Bauanleitung mit Schichtschritten, Voraussetzungen, manuellem Fortschritt, „prüfbedürftig“ bei Geometrieänderung (B4), Bauitems je Schritt und Packliste je Schicht | Team-Aufgaben/Zuweisung (P4-02), Prüfung im Spiel (P6-01), frei definierte Bauabschnitte |
-| Bibliothek R-008/024 | Assets mit Herkunft/Lizenzfeld, Tags, Suche, unveränderliche Versionen mit Hashprüfung, Import als Bauteil (B0), Anschluss-Editor und Bereich als Bauteil (B5), IndexedDB-Speicherung (B3), Gebäudekatalog (B9) | Freigabe öffentlicher Assets, Safari-Speicherverhalten |
+| Bibliothek R-008/024 | Assets mit Herkunft/Lizenzfeld, Tags, Suche, unveränderliche Versionen mit Hashprüfung, Import als Bauteil (B0), Anschluss-Editor und Bereich als Bauteil (B5), IndexedDB-Speicherung (B3), Gebäudekatalog (B9) mit 150 Gebäuden, Variantenfamilien, Spielphase und Ensembles (v2) | Freigabe öffentlicher Assets, Safari-Speicherverhalten |
 | Snap/Composer R-009/011/013 | Editor mit Instanzen, Transformationen, Undo/Redo, Voxelkonflikten und Override (B0); Anschlussvalidierung, deterministischer Snap, gespeicherte und geprüfte Verbindungen (B5); Händigkeit unsymmetrischer Profile und Andocken per Ziehen im 3D-Bild | Freiräume an Anschlüssen, Mehrfachauswahl |
 | Transformation R-010 | Rastergeometrie und kleiner geprüfter Zustandkatalog | unbekannte Regeln und BlockEntity-NBT bleiben ungelöst |
 | Generatoren/Fundamente R-012/014 | segmentierte Generatoren und Terrainprüfung geplant | keine Generator-/Terrainimplementierung |
