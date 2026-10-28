@@ -2,6 +2,8 @@
 
 Stand 28.10.2026. Ziel: Bauplaner und Bibliothek so bedienbar und ansehnlich wie gängige Schematic-Sammlungen (z. B. shulkr.com, Planet Minecraft, Litematica-Sammlungen). Von dort übernommen ist nur das **Muster** – Kartenraster mit Vorschaubild, Kategorieleiste, Filterspalte mit aktiven Filterchips, Detailseite mit großem Bild, Kennzahlen und ähnlichen Einträgen. Keine fremden Inhalte, Bilder oder Schematics.
 
+Seit B12: Schem-Ansicht, Bauversionen, teilbare Suche und Stöbern – siehe [SCHEM_VIEWS](SCHEM_VIEWS.md).
+
 ## Seiten und Routen
 
 | Route | Inhalt |

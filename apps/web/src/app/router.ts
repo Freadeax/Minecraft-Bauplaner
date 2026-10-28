@@ -5,7 +5,8 @@ import { useEffect, useState } from 'react';
  *   #/                     Projektzentrale
  *   #/bibliothek           Bibliothek (Gebäudevorschläge und Bauteile)
  *   #/bibliothek/fuer/<id> Bibliothek mit Vorschlägen für ein Projekt
- *   #/bibliothek/gebaeude/<assetId>      Detailseite eines Gebäudes
+ *   #/bibliothek/gebaeude/<assetId>[/<ansicht>]  Detailseite eines Gebäudes (Ansicht: bilder, ebenen, versionen)
+ *   #/bibliothek?q=…&kategorie=…         Übersicht mit Suche und Filtern (teilbar)
  *   #/bibliothek/ensembles[/<id>]        Ensembles (Übersicht / Detail)
  *   #/bibliothek/vergleich/<id>,<id>,…   Gebäude nebeneinander vergleichen
  *   #/projekt/<id>         Editor
@@ -14,7 +15,7 @@ import { useEffect, useState } from 'react';
  */
 export type Route =
   | { readonly view: 'projects' }
-  | { readonly view: 'library'; readonly projectId?: string; readonly page?: LibraryPage; readonly id?: string }
+  | { readonly view: 'library'; readonly projectId?: string; readonly page?: LibraryPage; readonly id?: string; readonly sub?: string; readonly search?: string }
   | { readonly view: 'viewer' }
   | { readonly view: 'project'; readonly projectId: string; readonly tab: string }
   | { readonly view: 'not-found'; readonly path: string };
@@ -24,17 +25,20 @@ const LIBRARY_PAGES: Readonly<Record<string, LibraryPage>> = { gebaeude: 'buildi
 const LIBRARY_SEGMENT: Readonly<Record<LibraryPage, string>> = { browse: '', building: 'gebaeude', ensembles: 'ensembles', compare: 'vergleich' };
 
 export function parseRoute(hash: string): Route {
-  const path = decodeURIComponent(hash.replace(/^#/, '')).replace(/\/+$/, '') || '/';
+  const raw = hash.replace(/^#/, ''), q = raw.indexOf('?');
+  const search = q >= 0 ? raw.slice(q + 1) : '';
+  const path = decodeURIComponent(q >= 0 ? raw.slice(0, q) : raw).replace(/\/+$/, '') || '/';
   const parts = path.split('/').filter(Boolean);
   if (parts.length === 0) return { view: 'projects' };
-  if (parts[0] === 'bibliothek' && parts.length === 1) return { view: 'library' };
-  if (parts[0] === 'bibliothek' && parts[1] === 'fuer' && parts[2] && parts.length === 3) return { view: 'library', projectId: parts[2] };
+  if (parts[0] === 'bibliothek' && parts.length === 1) return { view: 'library', ...(search && { search }) };
+  if (parts[0] === 'bibliothek' && parts[1] === 'fuer' && parts[2] && parts.length === 3) return { view: 'library', projectId: parts[2], ...(search && { search }) };
   if (parts[0] === 'bibliothek') {
     const rest = parts[1] === 'fuer' && parts[2] ? parts.slice(3) : parts.slice(1);
     const projectId = parts[1] === 'fuer' ? parts[2] : undefined;
     const page = LIBRARY_PAGES[rest[0] ?? ''];
     const needsId = page === 'building' || page === 'compare';
-    if (page && rest.length <= 2 && (!needsId || rest[1])) return { view: 'library', page, ...(projectId && { projectId }), ...(rest[1] && { id: rest[1] }) };
+    if (page && (rest.length <= 2 || (page === 'building' && rest.length === 3)) && (!needsId || rest[1]))
+      return { view: 'library', page, ...(projectId && { projectId }), ...(rest[1] && { id: rest[1] }), ...(rest[2] && { sub: rest[2] }) };
   }
   if (parts[0] === 'betrachter' && parts.length === 1) return { view: 'viewer' };
   if (parts[0] === 'projekt' && parts[1] && parts.length <= 3) return { view: 'project', projectId: parts[1], tab: parts[2] ?? 'editor' };
@@ -47,7 +51,8 @@ export function href(route: Route): string {
     case 'library': {
       const base = route.projectId ? `#/bibliothek/fuer/${encodeURIComponent(route.projectId)}` : '#/bibliothek';
       const page = route.page && route.page !== 'browse' ? `/${LIBRARY_SEGMENT[route.page]}` : '';
-      return `${base}${page}${route.id && page ? `/${encodeURIComponent(route.id)}` : ''}`;
+      const id = route.id && page ? `/${encodeURIComponent(route.id)}${route.sub && route.page === 'building' ? `/${encodeURIComponent(route.sub)}` : ''}` : '';
+      return `${base}${page}${id}${route.search && !page ? `?${route.search}` : ''}`;
     }
     case 'viewer': return '#/betrachter';
     case 'project': return `#/projekt/${encodeURIComponent(route.projectId)}${route.tab === 'editor' ? '' : `/${route.tab}`}`;

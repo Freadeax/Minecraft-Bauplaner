@@ -9,9 +9,11 @@ import { INFRA_SPECS } from './infrastruktur.js';
 import { LANDSCHAFT_SPECS } from './landschaft.js';
 import { DEKO_SPECS } from './deko.js';
 import { WELTEN_SPECS } from './welten.js';
+import { SPIELHILFEN_SPECS } from './spielhilfen.js';
+import { withMaterialFamilies } from './varianten.js';
 
-/** All themed building sets of the extended catalogue, in display order. */
-export const ALL_SET_SPECS: readonly BuildingSpec[] = [
+/** All themed building sets of the extended catalogue, in display order, with the generated material families (B12). */
+export const ALL_SET_SPECS: readonly BuildingSpec[] = withMaterialFamilies([
   ...WOHNEN_SPECS,
   ...DORF_SPECS,
   ...FARM_SPECS,
@@ -22,4 +24,5 @@ export const ALL_SET_SPECS: readonly BuildingSpec[] = [
   ...LANDSCHAFT_SPECS,
   ...DEKO_SPECS,
   ...WELTEN_SPECS,
-];
+  ...SPIELHILFEN_SPECS,
+]);

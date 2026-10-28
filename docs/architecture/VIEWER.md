@@ -45,6 +45,10 @@ Fokus: Im Betrachter der gewählte Block, im Editor die Begrenzung der gewählte
 
 Messweg: `node --test tests/viewer.test.mjs` und `npm run test:e2e` protokollieren die Werte (`# 27³ …`). Der Vorher/Nachher-Framevergleich lief einmalig mit einem Playwright-Skript (20 Ziehschritte, je ein `requestAnimationFrame`) gegen beide Builds; Software-Rendering ist um Größenordnungen langsamer als eine GPU, die Werte sind nur relativ aussagekräftig.
 
+## Einpassen
+
+Die Kamera passt sich neu ein, wenn eine Struktur zum ersten Mal oder ohne Überlappung mit der vorigen erscheint, und solange der Nutzer die Kamera nicht selbst bewegt hat (`autoFrame`), auch bei geänderter Größe und Fenstergröße. Standbilder und Bauplan je Ebene: [SCHEM_VIEWS](SCHEM_VIEWS.md).
+
 ## Grenzen
 
 - Farbige Würfel, keine Minecraft-Blockmodelle oder Texturen; Treppen, Zäune usw. erscheinen als Vollwürfel. Vorschaufarben (`colors.ts`, eigene Näherungswerte, keine Texturen): exakte IDs, dann Familien – 16 Farbstoffe für Wolle/Teppich/Beton/Keramik/Glas/Betten/Banner/Kerzen/Shulkerkisten (rotes Sandstein bleibt Material), Holzarten mit Brettern/Rinde/Laub (entrindete Stämme in Brettfarbe), Stein-/Metallmaterialien; Formen (Stufe, Treppe, Mauer, Zaun, Scheibe, Tür, Falltür, Schild …) erben die Materialfarbe. Mod-IDs und Unbekanntes erhalten weiter eine stabile Hashfarbe.

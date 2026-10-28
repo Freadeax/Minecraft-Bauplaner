@@ -35,7 +35,8 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     p.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
     await p.goto(`${BASE}#/bibliothek`);
     await results(p).first().waitFor();
-    // Cards carry a rendered preview image.
+    // Cards carry a rendered preview image (rendered lazily once near the viewport; on phones the browse rows come first).
+    await results(p).first().scrollIntoViewIfNeeded();
     await p.locator('.catalog-results .bcard img[src^="data:image/png"]').first().waitFor();
     // Variant families are collapsed by default; unchecking shows every building.
     await openFilters(p);

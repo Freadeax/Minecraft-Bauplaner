@@ -79,12 +79,39 @@ export const FAMILY_PREFIX = 'familie:';
 export function familyOf(asset: Pick<Asset, 'tags'>): string | undefined {
   return asset.tags.find(t => t.startsWith(FAMILY_PREFIX))?.slice(FAMILY_PREFIX.length);
 }
-export function plainTags(asset: Pick<Asset, 'tags'>): string[] {
-  return asset.tags.filter(t => { const i = t.indexOf(':'); return i <= 0 || !(FACET_KEYS.includes(t.slice(0, i) as FacetKey) || t.startsWith(FAMILY_PREFIX)); });
+/** Derived variant tag "basis:<assetId>": the asset was made from that building (Materialvariante, B12). */
+export const BASIS_PREFIX = 'basis:';
+export function basisOf(asset: Pick<Asset, 'tags'>): string | undefined {
+  return asset.tags.find(t => t.startsWith(BASIS_PREFIX))?.slice(BASIS_PREFIX.length);
 }
-/** Replaces the facet tags of a tag list and keeps plain tags and the family tag. */
+const structural = (t: string) => t.startsWith(FAMILY_PREFIX) || t.startsWith(BASIS_PREFIX);
+export function plainTags(asset: Pick<Asset, 'tags'>): string[] {
+  return asset.tags.filter(t => { const i = t.indexOf(':'); return i <= 0 || !(FACET_KEYS.includes(t.slice(0, i) as FacetKey) || structural(t)); });
+}
+/** Replaces the facet tags of a tag list and keeps plain tags, the family and the basis tag. */
 export function withFacets(tags: readonly string[], facets: BuildingFacets): string[] {
-  return [...new Set([...plainTags({ tags }), ...tags.filter(t => t.startsWith(FAMILY_PREFIX)), ...facetTags(facets)])].sort();
+  return [...new Set([...plainTags({ tags }), ...tags.filter(structural), ...facetTags(facets)])].sort();
+}
+/**
+ * All entries that are variants of one another: the variant family plus
+ * material variants derived from any member (basis tag) and their base.
+ * The entry itself is included; order follows the given entries.
+ */
+export function variantGroup<E extends { readonly asset: Pick<Asset, 'id' | 'tags'>; readonly family?: string }>(entry: E, entries: readonly E[]): E[] {
+  const ids = new Set([entry.asset.id]);
+  const families = new Set(entry.family ? [entry.family] : []);
+  for (let changed = true; changed;) {
+    changed = false;
+    for (const e of entries) {
+      if (ids.has(e.asset.id)) continue;
+      const basis = basisOf(e.asset);
+      const self = entries.find(x => ids.has(x.asset.id) && basisOf(x.asset) === e.asset.id);
+      if ((e.family && families.has(e.family)) || (basis && ids.has(basis)) || self) {
+        ids.add(e.asset.id); if (e.family) families.add(e.family); changed = true;
+      }
+    }
+  }
+  return entries.filter(e => ids.has(e.asset.id));
 }
 
 // ------------------------------------------------------------------ play stage

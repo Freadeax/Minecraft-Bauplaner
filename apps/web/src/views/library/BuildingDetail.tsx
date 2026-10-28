@@ -1,11 +1,13 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Cell } from '../../../../../packages/voxel/src/index.js';
 import { facetLabel, SIZE_CLASS_LABEL, STAGE_HINT, STAGE_LABEL } from '../../../../../packages/domain/src/index.js';
 import type { Asset, AssetVersion, BuildingFacets, BuildingInfo, CatalogEntry, Ensemble, Project, Similar, Suggestion } from '../../../../../packages/domain/src/index.js';
 import { formatNumber } from '../../app/ui';
 import { mix, stateColor } from '../../colors';
-import { Viewer } from '../../Viewer';
+import { SchemView, SCHEM_TABS } from '../../schem/SchemView';
+import type { SchemTab } from '../../schem/SchemView';
 import { Thumb } from '../../thumbnail/Thumb';
+import { VersionsSection } from './VersionsSection';
 import { ConnectorEditor } from './ConnectorEditor';
 import type { Highlight } from './ConnectorEditor';
 import { CropPanel } from './CropPanel';
@@ -18,14 +20,17 @@ import { EquipmentSection, FactsSection, MatchSection, MaterialBar, MaterialsSec
  * cards, similar buildings as a card row and the management tools (versions,
  * connectors, area as new part) at the end.
  */
-export function BuildingDetail({ entry, asset, latest, versions, byAsset, info, ensembles, similar, suggestion, project, projects, adding,
+export function BuildingDetail({ entry, asset, latest, versions, info, group, variantName, sub, ensembles, similar, suggestion, project, projects, adding,
   favorite, comparing, libHref, onFavorite, onCompare, onAdd, onNewProject, onSaveFacets, onArchive, onMessage, onSelectSaved }: {
   entry: CatalogEntry;
+  /** Variant group (family and derived material variants) including this entry. */
+  group: readonly CatalogEntry[];
+  variantName(e: CatalogEntry): string;
+  /** Sub route: schem tab (bilder, ebenen) or "versionen". */
+  sub: string | undefined;
   asset: Asset;
   latest: AssetVersion;
   versions: ReadonlyMap<string, AssetVersion>;
-  /** Latest version per asset, for the variant previews. */
-  byAsset: ReadonlyMap<string, AssetVersion>;
   info: BuildingInfo | undefined;
   ensembles: readonly Ensemble[];
   similar: readonly Similar[];
@@ -35,7 +40,7 @@ export function BuildingDetail({ entry, asset, latest, versions, byAsset, info, 
   adding: boolean;
   favorite: boolean;
   comparing: boolean;
-  libHref(page: 'browse' | 'building' | 'ensembles', id?: string): string;
+  libHref(page: 'browse' | 'building' | 'ensembles', id?: string, sub?: string): string;
   onFavorite(): void;
   onCompare(): void;
   onAdd(projectId: string): void;
@@ -52,8 +57,11 @@ export function BuildingDetail({ entry, asset, latest, versions, byAsset, info, 
   const [cropMarks, setCropMarksState] = useState<Highlight>(null);
   const setConnectorMarks = useCallback((h: Highlight) => setConnectorMarksState(() => h), []);
   const setCropMarks = useCallback((h: Highlight) => setCropMarksState(() => h), []);
-  const noSelect = useMemo(() => () => {}, []);
   const payload = latest.payload;
+  const [tab, setTabState] = useState<SchemTab>(() => SCHEM_TABS.some(([t]) => t === sub) ? sub as SchemTab : '3d');
+  // Tab changes rewrite the address without navigation, so the page does not jump to the top.
+  const setTab = (t: SchemTab) => { setTabState(t); history.replaceState(history.state, '', libHref('building', asset.id, t === '3d' ? undefined : t)); };
+  useEffect(() => { if (sub === 'versionen') document.getElementById('sec-versionen')?.scrollIntoView(); }, [sub]);
   const colorFor = useMemo(() => (cell: Cell) => {
     const base = cell.kind === 'erase' ? '#d35f5f' : stateColor(payload.palette[cell.paletteIndex]!.id);
     const mark = cropMarks?.(cell) ?? connectorMarks?.(cell) ?? null;
@@ -66,9 +74,7 @@ export function BuildingDetail({ entry, asset, latest, versions, byAsset, info, 
     <nav className="crumbs" aria-label="Pfad"><a href={libHref('browse')}>Bibliothek</a><span aria-hidden="true">›</span>
       {category && <><span>{facetLabel('kategorie', category)}</span><span aria-hidden="true">›</span></>}<span aria-current="page">{asset.name}</span></nav>
     <section className="detail-hero">
-      <div className="viewport detail-stage">
-        <Viewer key={latest.id} payload={payload} cells={payload.cells} onSelect={noSelect} colorFor={colorFor} />
-      </div>
+      <SchemView payload={payload} cacheKey={latest.id} name={asset.name} tab={tab} onTab={setTab} colorFor={colorFor} />
       <div className="detail-summary building-sheet">
         <span className="panel-kicker">{kicker ? kicker.toUpperCase() : 'GEBÄUDE'}</span>
         <h1 className="detail-title">{asset.name}</h1>
@@ -88,13 +94,12 @@ export function BuildingDetail({ entry, asset, latest, versions, byAsset, info, 
           <div><dt>Schlafplätze</dt><dd>{m.beds}</dd><small>{m.lightSources} Lichtquellen</small></div>
         </dl>
         <MaterialBar entry={entry} />
-        {info && info.variants.length > 1 && <div className="variant-row" role="group" aria-label="Varianten">
-          <span className="filter-label">{info.family?.label}: Varianten</span>
-          <div className="variant-thumbs">{info.variants.map(v => {
-            const id = byAsset.get(v.assetId);
-            return <a key={v.assetId} href={libHref('building', v.assetId)} aria-current={v.assetId === asset.id ? 'true' : undefined}>
-              {id && <Thumb cacheKey={id.id} payload={() => id.payload} alt="" width={96} height={66} className="thumb mini" />}<span>{v.variant}</span></a>;
-          })}</div></div>}
+        {group.length > 1 && <div className="variant-row" role="group" aria-label="Varianten">
+          <span className="filter-label">{info?.family?.label ?? asset.name}: {group.length} Varianten · <a href={libHref('building', asset.id, 'versionen')}
+            onClick={e => { e.preventDefault(); document.getElementById('sec-versionen')?.scrollIntoView({ behavior: 'smooth' }); }}>vergleichen</a></span>
+          <div className="variant-thumbs">{group.map(v =>
+            <a key={v.asset.id} href={libHref('building', v.asset.id)} aria-current={v.asset.id === asset.id ? 'true' : undefined}>
+              <Thumb cacheKey={v.version.id} payload={() => v.version.payload} alt="" width={96} height={66} className="thumb mini" /><span>{variantName(v)}</span></a>)}</div></div>}
         <div className="detail-actions">
           {projects.length > 0 ? <div className="add-row">
             <select aria-label="Zielprojekt" value={targetId} onChange={e => setTarget(e.target.value)}>
@@ -115,6 +120,7 @@ export function BuildingDetail({ entry, asset, latest, versions, byAsset, info, 
       <a href="#" onClick={e => { e.preventDefault(); document.getElementById('sec-ueberblick')?.scrollIntoView({ behavior: 'smooth' }); }}>Überblick</a>
       <a href="#" onClick={e => { e.preventDefault(); document.getElementById('sec-material')?.scrollIntoView({ behavior: 'smooth' }); }}>Material</a>
       <a href="#" onClick={e => { e.preventDefault(); document.getElementById('sec-technik')?.scrollIntoView({ behavior: 'smooth' }); }}>Technik</a>
+      <a href="#" onClick={e => { e.preventDefault(); document.getElementById('sec-versionen')?.scrollIntoView({ behavior: 'smooth' }); }}>Versionen</a>
       {similar.length > 0 && <a href="#" onClick={e => { e.preventDefault(); document.getElementById('sec-aehnlich')?.scrollIntoView({ behavior: 'smooth' }); }}>Ähnliche</a>}
       <a href="#" onClick={e => { e.preventDefault(); document.getElementById('sec-verwalten')?.scrollIntoView({ behavior: 'smooth' }); }}>Verwalten</a>
     </nav>
@@ -132,6 +138,8 @@ export function BuildingDetail({ entry, asset, latest, versions, byAsset, info, 
       <div id="sec-material" className="detail-col"><MaterialsSection entry={entry} /><EquipmentSection entry={entry} /></div>
       <div id="sec-technik" className="detail-col"><TechSection entry={entry} /></div>
     </div>
+
+    <VersionsSection key={latest.id} entry={entry} group={group} versions={versions} variantName={variantName} libHref={(p, id) => libHref(p, id)} onSaved={onSelectSaved} onMessage={onMessage} />
 
     {similar.length > 0 && <section id="sec-aehnlich" className="sheet-section similar-row" aria-label="Ähnliche Gebäude">
       <h3>Ähnliche Gebäude</h3>

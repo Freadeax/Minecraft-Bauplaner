@@ -52,6 +52,9 @@ const LOOK_KEYS: Record<string, readonly [yaw: number, pitch: number]> = { Arrow
  * element. Geometry can be replaced without losing the camera, so selection
  * colours or edits never recreate the WebGL context. Rendering is on demand.
  */
+const overlaps = (a: Bounds, b: Bounds) => [0, 1, 2].every(i => a.min[i]! < b.maxExclusive[i]! && b.min[i]! < a.maxExclusive[i]!);
+const sameBounds = (a: Bounds, b: Bounds) => [0, 1, 2].every(i => a.min[i] === b.min[i] && a.maxExclusive[i] === b.maxExclusive[i]);
+
 export class SceneController {
   readonly renderer: THREE.WebGLRenderer;
   private readonly scene = new THREE.Scene();
@@ -70,6 +73,12 @@ export class SceneController {
   private bounds: Bounds = { min: [0, 0, 0], maxExclusive: [1, 1, 1] };
   private aspect = 1;
   private frame = 0;
+  /**
+   * True until the user moves the camera: while set, a size change of the view
+   * (layout settling after a file import, tab switch) or a new structure with
+   * other bounds frames the whole structure again instead of leaving it off-screen.
+   */
+  private autoFrame = true;
   private last = 0;
   private stateValue: ViewerState = { mode: 'orbit', projection: 'perspective', view: 'iso', speed: 8 };
   private readonly keys = new Set<string>();
@@ -109,7 +118,7 @@ export class SceneController {
       target.addEventListener(type, fn as EventListener, options); this.disposers.push(() => target.removeEventListener(type, fn as EventListener, options));
     };
     // Grabbing runs in the capture phase on the host, before OrbitControls and the canvas handlers see the pointer.
-    on(host, 'pointerdown', e => this.grabStart(e), { capture: true });
+    on(host, 'pointerdown', e => { this.autoFrame = false; this.grabStart(e); }, { capture: true });
     on(host, 'pointermove', e => this.grabMove(e), { capture: true });
     on(host, 'pointerup', e => this.grabEnd(e, false), { capture: true });
     on(host, 'pointercancel', e => this.grabEnd(e, true), { capture: true });
@@ -134,8 +143,10 @@ export class SceneController {
   /** Replaces the visible blocks. `payloadBounds` sizes the grid and the default framing. */
   setCells(cells: readonly Cell[], payloadBounds: Bounds, colorOf: (cell: Cell) => Rgb): MeshStats {
     const started = performance.now();
-    const firstFrame = this.origin === null;
-    if (!this.origin) { const c = boundsCentre(payloadBounds); this.origin = [Math.floor(c[0]), Math.floor(c[1]), Math.floor(c[2])]; }
+    // A structure that does not overlap the previous one (another file in the same view) is framed anew.
+    const elsewhere = this.origin !== null && !overlaps(this.bounds, payloadBounds);
+    const reframe = this.origin === null || elsewhere || (this.autoFrame && !sameBounds(this.bounds, payloadBounds));
+    if (!this.origin || elsewhere) { const c = boundsCentre(payloadBounds); this.origin = [Math.floor(c[0]), Math.floor(c[1]), Math.floor(c[2])]; }
     this.bounds = payloadBounds;
     const faces = buildFaces(cells, colorOf, this.origin);
     const geometry = new THREE.BufferGeometry();
@@ -148,7 +159,7 @@ export class SceneController {
     this.mesh = new THREE.Mesh(geometry, this.material); this.scene.add(this.mesh);
     this.quadCells = faces.quadCells; this.cells = cells;
     this.updateGrid();
-    if (firstFrame) this.setView('iso');
+    if (reframe) this.setView(this.stateValue.view ?? 'iso', true);
     this.requestRender();
     return { blocks: faces.blocks, quads: faces.quads, naiveQuads: faces.naiveQuads, buildMs: performance.now() - started };
   }
@@ -160,7 +171,8 @@ export class SceneController {
     this.requestRender();
   }
 
-  setView(name: ViewName): void {
+  setView(name: ViewName, automatic = false): void {
+    if (!automatic) this.autoFrame = false;
     const preset = VIEWS.find(v => v.id === name)!;
     if (this.stateValue.mode === 'flight') this.leaveFlight();
     this.frameTo(this.bounds, preset.direction);
@@ -329,6 +341,7 @@ export class SceneController {
     this.aspect = width / height;
     this.perspective.aspect = this.aspect; this.perspective.updateProjectionMatrix();
     this.ortho.left = -ORTHO_HALF * this.aspect; this.ortho.right = ORTHO_HALF * this.aspect; this.ortho.updateProjectionMatrix();
+    if (this.autoFrame && this.mesh && this.stateValue.mode === 'orbit') this.setView(this.stateValue.view ?? 'iso', true);
     this.requestRender();
   }
 
@@ -452,6 +465,7 @@ export class SceneController {
   }
 
   private wheel(e: WheelEvent): void {
+    this.autoFrame = false;
     if (this.stateValue.mode !== 'flight') return; // orbit zoom is handled by OrbitControls
     e.preventDefault();
     const i = SPEED_STEPS.findIndex(s => s >= this.stateValue.speed);
@@ -460,6 +474,7 @@ export class SceneController {
   }
 
   private keyDown(e: KeyboardEvent): void {
+    this.autoFrame = false;
     if ((e.target as HTMLElement | null)?.closest('input,textarea,select') || e.ctrlKey || e.metaKey || e.altKey) return;
     const flying = this.stateValue.mode === 'flight';
     if (flying && (FLIGHT_KEYS[e.code] || LOOK_KEYS[e.code])) {

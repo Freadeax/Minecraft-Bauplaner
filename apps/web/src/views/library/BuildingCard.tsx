@@ -2,6 +2,7 @@ import { facetLabel, STAGE_LABEL } from '../../../../../packages/domain/src/inde
 import type { CatalogEntry } from '../../../../../packages/domain/src/index.js';
 import { formatNumber } from '../../app/ui';
 import { Thumb } from '../../thumbnail/Thumb';
+import type { ShotView } from '../../thumbnail/views';
 
 export const stars = (level: number): string => '★'.repeat(level) + '☆'.repeat(5 - level);
 
@@ -10,8 +11,10 @@ export const stars = (level: number): string => '★'.repeat(level) + '☆'.repe
  * computed key figures. The whole card opens the detail page; Merken and
  * Vergleichen are separate buttons so they never trigger navigation.
  */
-export function BuildingCard({ entry, href, score, variants, favorite, comparing, onFavorite, onCompare }: {
+export function BuildingCard({ entry, href, score, variants, favorite, comparing, onFavorite, onCompare, view }: {
   entry: CatalogEntry;
+  /** Blickrichtung of the preview image; default south-east. */
+  view?: ShotView | undefined;
   href: string;
   score?: number | undefined;
   variants?: number | undefined;
@@ -25,7 +28,7 @@ export function BuildingCard({ entry, href, score, variants, favorite, comparing
   return <article className={`bcard${asset.archived ? ' archived' : ''}`}>
     <a className="bcard-open" href={href} aria-label={`${asset.name} öffnen`}>
       <div className="bcard-media">
-        <Thumb cacheKey={entry.version.id} payload={() => entry.version.payload} alt={`Vorschau ${asset.name}`} />
+        <Thumb cacheKey={entry.version.id} payload={() => entry.version.payload} alt={`Vorschau ${asset.name}`} {...(view && { view })} />
         <span className={`stage stage-${m.progression.stage} bcard-stage`}>{STAGE_LABEL[m.progression.stage]}</span>
         {score !== undefined && <em className="score" title="Passung zum Projekt (0–100)">{score}</em>}
         {variants !== undefined && variants > 1 && <em className="variants" title="Weitere Varianten auf der Detailseite">+{variants - 1} Varianten</em>}

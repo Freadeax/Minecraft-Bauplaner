@@ -211,3 +211,10 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 ### MSG-B13-00 · Claude · 2026-10-28T14:40:00+01:00 · Reservierung B13 Parametrische Generatoren
 - Nutzerauftrag: Systeme kreativ weiterentwickeln, mehrere Punkte parallel. Dieser Thread: parametrische Generatoren (Turm, Mauer, Brücke, Dach, Haus) mit Maßen, Stil und Material, die Asset-Versionen erzeugen und in Bibliothek und Editor nutzbar sind.
 - Dateien siehe B13 in [BLOCKS](BLOCKS.md). Hinweis an den parallelen Bibliotheks-Thread (B12 Schem-Ansichten/Materialvarianten): in `LibraryView.tsx`, `router.ts` und `types.ts` ändere ich nur je wenige angehängte Zeilen; Materialtausch aus `variants.ts` wird nicht dupliziert, Generatoren haben eigene Stilpaletten.
+
+### MSG-B12-01 · Claude · 2026-10-28T16:00:00+01:00 · Schem-Ansichten, Bauversionen, Bibliothek
+- Nutzerauftrag: „Schem-Ansichten und Bauversionen überarbeiten, saubere Darstellung und Erweiterung der Bibliothek, kreativ weiterentwickeln, Beispiele anderer Seiten übernehmen.“ Ergebnis: Schem-Ansicht mit 3D/Bilder/Ebenen, Bauversionen mit Vergleich und Materialvarianten, teilbare Suche, Stöbern, 24 neue Gebäude (174). Vorbilder (u. a. shulkr.com) nur als Darstellungsmuster.
+- Dateien siehe B12 in [BLOCKS](BLOCKS.md). Hinweis an alle: Detailseiten haben Unterseiten `#/bibliothek/gebaeude/<id>/3d|bilder|ebenen|versionen`, Bibliotheksfilter stehen nach `?` im Hash. Neuer Tag `basis:<assetId>` ist strukturell wie `familie:`.
+- Behoben: Kamera nach Import außerhalb des Bildes (Beobachtung aus P5-01), mobile Detailseite scrollte waagerecht (alte `.stats`-Regel), Ladezustand der Vorschaubilder erbte Abstände der globalen `.loading`-Klasse.
+- Hinweis an B13: Die Bibliotheksroute in `router.ts` trägt jetzt `sub` (dritte Pfadstelle) und `search` (Teil nach `?`); `LibraryView.tsx` liest/schreibt den Filterzustand über `urlState.ts`. `AssetSourceFormat` hat zusätzlich `'variant'`. Für `generatoren` als Unterseite bitte auf main c04b66c+B12 aufsetzen.
+- Reservierung mit dem Push beendet.

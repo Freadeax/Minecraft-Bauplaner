@@ -3,7 +3,7 @@ import { countBlocks } from '../../../../packages/voxel/src/index.js';
 import type { Cell } from '../../../../packages/voxel/src/index.js';
 import { addAssetVersion, applyOperation, buildCatalog, buildingInfo, createAsset, createEnsembleProject, createProject, ensemblesWith, facetCounts, FACETS, familyMembers,
   latestVersions, newInstance, projectContext, queryCatalog, resolveProject, similarEntries, suggestForProject, updateAssetMeta, withFacets,
-  ENSEMBLES, SORT_LABEL } from '../../../../packages/domain/src/index.js';
+  ENSEMBLES, SORT_LABEL, STAGES, variantGroup } from '../../../../packages/domain/src/index.js';
 import type { Asset, AssetVersionSource, BuildingFacets, CatalogEntry, Ensemble, OriginalFile, Project, SortKey } from '../../../../packages/domain/src/index.js';
 import { href, navigate } from '../app/router';
 import type { LibraryPage } from '../app/router';
@@ -21,15 +21,23 @@ import type { Filters } from './library/CatalogFilters';
 import { ComparePage } from './library/ComparePage';
 import { EnsemblesPage } from './library/EnsemblesPage';
 import { FacetFields, facetsFromForm } from './library/FacetFields';
-import { useCompare, useFavorites, MAX_COMPARE } from './library/prefs';
+import { useCardView, useCompare, useFavorites, MAX_COMPARE } from './library/prefs';
+import { SHOTS } from '../thumbnail/views';
+import type { ShotView } from '../thumbnail/views';
 import { Viewer } from '../Viewer';
 import { Thumb } from '../thumbnail/Thumb';
 import { LitematicRegions } from './library/LitematicRegions';
+import { decodeLibraryState, encodeLibraryState } from './library/urlState';
 
 const size = (b: { min: readonly number[]; maxExclusive: readonly number[] }) => b.maxExclusive.map((n, i) => n - b.min[i]!).join(' × ');
 const SORTS = Object.keys(SORT_LABEL) as SortKey[];
 const PAGE_SIZE = 48;
 const KATEGORIE = FACETS.find(f => f.key === 'kategorie')!;
+const FACET_KEYS = FACETS.map(f => f.key);
+const CARD_VIEWS: readonly ShotView[] = ['so', 'sw', 'nw', 'no', 'oben', 'sued'];
+/** Facets offered as "Stöbern" rows on the clean overview (category has its own strip). */
+const BROWSE_FACETS = FACETS.filter(f => f.key === 'stil' || f.key === 'biom');
+const readUrl = (search: string | undefined) => decodeLibraryState(search ?? '', FACET_KEYS, { sorts: SORTS, stages: STAGES });
 
 /**
  * Bibliothek: building catalogue (B9) on top of the B0 asset library, laid out
@@ -38,12 +46,16 @@ const KATEGORIE = FACETS.find(f => f.key === 'kategorie')!;
  * Sub-pages are hash routes, so the browser's back button returns to the grid
  * with search, filters and scroll position intact (the view stays mounted).
  */
-export function LibraryView({ projectId: initialProjectId, page = 'browse', id }: { projectId?: string | undefined; page?: LibraryPage | undefined; id?: string | undefined } = {}) {
+export function LibraryView({ projectId: initialProjectId, page = 'browse', id, sub, search }: {
+  projectId?: string | undefined; page?: LibraryPage | undefined; id?: string | undefined; sub?: string | undefined; search?: string | undefined;
+} = {}) {
   const { repo, library, reloadLibrary } = useApp();
-  const [query, setQuery] = useState('');
-  const [filters, setFilters] = useState<Filters>({});
-  const [sort, setSort] = useState<SortKey>(initialProjectId ? 'match' : 'name');
-  const [descending, setDescending] = useState(false);
+  // Search, filters and view come from the URL once (shared link) and are written back while browsing.
+  const [initial] = useState(() => readUrl(search));
+  const [query, setQuery] = useState(initial.query);
+  const [filters, setFilters] = useState<Filters>(initial.filters as Filters);
+  const [sort, setSort] = useState<SortKey>((initial.sort as SortKey | undefined) ?? (initialProjectId ? 'match' : 'name'));
+  const [descending, setDescending] = useState(initial.descending);
   const [projects, setProjects] = useState<readonly Project[]>([]);
   const [projectId, setProjectId] = useState(initialProjectId ?? '');
   const [adding, setAdding] = useState(false);
@@ -51,12 +63,13 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id }
   const [imported, setImported] = useState<ImportedFile | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
-  const [collapse, setCollapse] = useState(true);
-  const [layout, setLayout] = useState<'raster' | 'liste'>('raster');
-  const [onlyFavorites, setOnlyFavorites] = useState(false);
+  const [collapse, setCollapse] = useState(initial.collapse);
+  const [layout, setLayout] = useState<'raster' | 'liste'>(initial.layout);
+  const [onlyFavorites, setOnlyFavorites] = useState(initial.onlyFavorites);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [limit, setLimit] = useState(PAGE_SIZE);
   const favorites = useFavorites();
+  const [cardView, setCardView] = useCardView(CARD_VIEWS, 'so');
   const compare = useCompare();
   const abort = useRef<AbortController | null>(null);
   const file = useRef<HTMLInputElement>(null);
@@ -96,16 +109,34 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id }
   const total = catalog.entries.filter(e => !e.asset.archived).length;
   const activeKategorie = filters.facets?.kategorie ?? [];
   // A representative (largest) building per category for the category tiles.
-  const categoryCovers = useMemo(() => {
-    const best = new Map<string, CatalogEntry>();
-    for (const e of catalog.entries) for (const k of e.facets.kategorie) {
-      const cur = best.get(k);
-      if (!e.asset.archived && (!cur || e.metrics.blocks > cur.metrics.blocks)) best.set(k, e);
+  // Per facet value: the largest buildings (cover candidates) and the count.
+  const covers = useMemo(() => {
+    const out = new Map<string, Map<string, { top: CatalogEntry[]; count: number }>>();
+    for (const f of FACETS) out.set(f.key, new Map());
+    for (const e of catalog.entries) {
+      if (e.asset.archived) continue;
+      for (const f of FACETS) for (const v of e.facets[f.key]) {
+        const m = out.get(f.key)!, cur = m.get(v) ?? { top: [], count: 0 };
+        cur.count++; cur.top = [...cur.top, e].sort((a, b) => b.metrics.blocks - a.metrics.blocks).slice(0, 6);
+        m.set(v, cur);
+      }
     }
-    return best;
+    return out;
   }, [catalog]);
+  /** One cover per value of a facet, avoiding the same building twice in a row of tiles. */
+  const coverRow = useCallback((key: string) => {
+    const used = new Set<string>(), out = new Map<string, { entry: CatalogEntry; count: number }>();
+    for (const [v, c] of covers.get(key) ?? []) {
+      const entry = c.top.find(e => !used.has(e.family ?? e.asset.id)) ?? c.top[0]!;
+      used.add(entry.family ?? entry.asset.id); out.set(v, { entry, count: c.count });
+    }
+    return out;
+  }, [covers]);
+  const categoryCovers = useMemo(() => new Map([...coverRow('kategorie')].map(([k, v]) => [k, v.entry])), [coverRow]);
 
-  const libHref = useCallback((p: LibraryPage, target?: string) => href({ view: 'library', ...(projectId && { projectId }), page: p, ...(target && { id: target }) }), [projectId]);
+  const libHref = useCallback((p: LibraryPage, target?: string, subPage?: string) =>
+    href({ view: 'library', ...(projectId && { projectId }), page: p, ...(target && { id: target }), ...(subPage && { sub: subPage }) }), [projectId]);
+  const variantName = useCallback((e: CatalogEntry) => buildingInfo(e.asset.id)?.family?.variant ?? e.asset.name, []);
   // Remember the grid position when leaving it, restore it on return.
   const prevPage = useRef(page);
   useLayoutEffect(() => {
@@ -119,6 +150,23 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id }
     return () => window.removeEventListener('scroll', save);
   }, [page]);
   useEffect(() => { setLimit(PAGE_SIZE); }, [query, filters, sort, descending, collapse, onlyFavorites]);
+  // A followed link with another query (e.g. a category tile on the project page) replaces the state.
+  const lastSearch = useRef(search ?? '');
+  useEffect(() => {
+    if (page !== 'browse' || search === undefined || search === lastSearch.current) return;
+    lastSearch.current = search;
+    const s = readUrl(search);
+    setQuery(s.query); setFilters(s.filters as Filters); if (s.sort) setSort(s.sort as SortKey); setDescending(s.descending);
+    setCollapse(s.collapse); setLayout(s.layout); setOnlyFavorites(s.onlyFavorites);
+  }, [search, page]);
+  // Write the overview state into the address without a navigation (no history entry, no scroll jump).
+  const urlSearch = encodeLibraryState({ query, filters, ...(sort !== (projectId ? 'match' : 'name') && { sort }), descending, collapse, layout, onlyFavorites }, FACET_KEYS);
+  useEffect(() => {
+    if (page !== 'browse') return;
+    lastSearch.current = urlSearch;
+    const next = href({ view: 'library', ...(projectId && { projectId }), ...(urlSearch && { search: urlSearch }) });
+    if (window.location.hash !== next) history.replaceState(history.state, '', next);
+  }, [page, urlSearch, projectId]);
 
   const say = (text: string, next: { href: string; label: string } | null = null) => { setMessage(text); setLink(next); };
   const open = async (f: File) => {
@@ -254,8 +302,8 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id }
     const entry = catalog.entries.find(e => e.asset.id === id) ?? null;
     const asset = entry?.asset ?? null, latest = entry?.version ?? null;
     return <div className="page">{tabs}{notices}
-      {entry && asset && latest ? <BuildingDetail key={asset.id} entry={entry} asset={asset} latest={latest} versions={library.versions} byAsset={byAsset}
-        info={buildingInfo(asset.id)} ensembles={ensemblesWith(asset.id)} similar={similarEntries(entry, catalog.entries, 6)}
+      {entry && asset && latest ? <BuildingDetail key={asset.id} entry={entry} asset={asset} latest={latest} versions={library.versions}
+        info={buildingInfo(asset.id)} group={variantGroup(entry, catalog.entries)} variantName={variantName} sub={sub} ensembles={ensemblesWith(asset.id)} similar={similarEntries(entry, catalog.entries, 6)}
         suggestion={suggestions?.get(asset.id)} project={project} projects={projects} adding={adding}
         favorite={favorites.has(asset.id)} comparing={compare.has(asset.id)} libHref={libHref}
         onFavorite={() => favorites.toggle(asset.id)} onCompare={() => toggleCompare(asset.id)}
@@ -290,6 +338,17 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id }
           <span className="cat-label">{label}</span><small>{n}</small></button>;
       })}
     </section>
+    {!query && activeFilterCount(filters) === 0 && !onlyFavorites && <section className="browse-rows" aria-label="Stöbern">
+      {BROWSE_FACETS.map(f => { const row = coverRow(f.key); return <div key={f.key} className="browse-row">
+        <h2>Nach {f.label} stöbern</h2>
+        <ul className="browse-tiles" aria-label={`Nach ${f.label}`}>{Object.entries(f.values).map(([value, label]) => {
+          const c = row.get(value);
+          if (!c) return null;
+          return <li key={value}><button type="button" onClick={() => setFilters({ facets: { [f.key]: [value] } })}>
+            <Thumb cacheKey={c.entry.version.id} payload={() => c.entry.version.payload} alt="" width={168} height={96} className="thumb" view={cardView} />
+            <strong>{label}</strong><small>{c.count} Gebäude</small></button></li>;
+        })}</ul></div>; })}
+    </section>}
     <section className="catalog-bar" aria-label="Suche und Sortierung">
       <div className="search-box"><input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Suchen: Name, Stil, Material, Beruf …" aria-label="Bauteile suchen" /></div>
       <label>Passend zu Projekt<select value={projectId} aria-label="Projekt für Vorschläge" onChange={e => { setProjectId(e.target.value); if (e.target.value) setSort('match'); }}>
@@ -300,6 +359,8 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id }
       <div className="seg" role="group" aria-label="Darstellung">
         <button type="button" aria-pressed={layout === 'raster'} onClick={() => setLayout('raster')}>Raster</button>
         <button type="button" aria-pressed={layout === 'liste'} onClick={() => setLayout('liste')}>Liste</button></div>
+      <label className="view-dir">Blickrichtung<select value={cardView} aria-label="Blickrichtung der Vorschaubilder" onChange={e => setCardView(e.target.value as ShotView)}>
+        {CARD_VIEWS.map(v => <option key={v} value={v}>{SHOTS.find(x => x.id === v)!.title}</option>)}</select></label>
       <button type="button" className="surprise" onClick={surprise} title="Zufälliges Gebäude aus den aktuellen Treffern">🎲 Überrasch mich</button>
     </section>
     <section className="catalog-layout">
@@ -323,7 +384,7 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id }
         <ul className={`catalog-results ${layout}`}>{shown.map(e => <li key={e.asset.id}>
           <BuildingCard entry={e} href={libHref('building', e.asset.id)} score={scores?.get(e.asset.id)}
             variants={collapse && e.family ? families.get(e.family)?.length : undefined}
-            favorite={favorites.has(e.asset.id)} comparing={compare.has(e.asset.id)}
+            favorite={favorites.has(e.asset.id)} comparing={compare.has(e.asset.id)} view={cardView}
             onFavorite={() => favorites.toggle(e.asset.id)} onCompare={() => toggleCompare(e.asset.id)} /></li>)}
           {results.length === 0 && <li className="empty-results"><p>Keine Treffer.</p><button className="text-button" onClick={() => { setFilters({}); setQuery(''); setOnlyFavorites(false); }}>Suche und Filter zurücksetzen</button></li>}</ul>
         {results.length > shown.length && <div className="more-row"><button type="button" onClick={() => setLimit(limit + PAGE_SIZE)}>Weitere {Math.min(PAGE_SIZE, results.length - shown.length)} laden</button>

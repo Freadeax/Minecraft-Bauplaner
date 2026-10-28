@@ -31,3 +31,21 @@ function useIdList(key: string, max: number) {
 export const MAX_COMPARE = 4;
 export const useFavorites = () => useIdList('bauplaner.merkliste', 500);
 export const useCompare = () => useIdList('bauplaner.vergleich', MAX_COMPARE);
+
+/** Blickrichtung der Kartenbilder (B12): one of the still image views, per browser. */
+const VIEW_KEY = 'bauplaner.blickrichtung';
+export function useCardView<T extends string>(allowed: readonly T[], fallback: T): [T, (v: T) => void] {
+  const pick = (): T => { try { const v = localStorage.getItem(VIEW_KEY); return allowed.includes(v as T) ? v as T : fallback; } catch { return fallback; } };
+  const [view, setView] = useState<T>(pick);
+  useEffect(() => {
+    const sync = (e: Event) => { if (e instanceof CustomEvent && e.detail === VIEW_KEY) setView(pick()); };
+    window.addEventListener('bauplaner:prefs', sync);
+    return () => window.removeEventListener('bauplaner:prefs', sync);
+  }, []);
+  const update = useCallback((v: T) => {
+    setView(v);
+    try { localStorage.setItem(VIEW_KEY, v); } catch { /* session only */ }
+    window.dispatchEvent(new CustomEvent('bauplaner:prefs', { detail: VIEW_KEY }));
+  }, []);
+  return [view, update];
+}

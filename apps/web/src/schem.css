@@ -1,0 +1,181 @@
+/*
+ * B12 · Schem-Ansichten und Bauversionen: Reiter 3D/Bilder/Ebenen auf der
+ * Detailseite, Bildergalerie, Bauplan je Ebene (mit Druckansicht),
+ * Variantenkarten, Vergleich zweier Stände und Materialvarianten,
+ * Stöbern-Kacheln der Bibliothek. Lädt nach catalog.css.
+ */
+:root {
+  --diff-added: #4fd18b;
+  --diff-removed: #ff6b6b;
+  --diff-material: #ffb347;
+  --diff-state: #6fb3ff;
+}
+
+/* ---------- Schem-Ansicht mit Reitern ---------- */
+.schem-view { display: flex; flex-direction: column; min-width: 0; border-right: 1px solid var(--line); background: #0f1d27; }
+.schem-view .detail-stage { border-right: 0; }
+.schem-tabs { display: flex; gap: 2px; padding: 8px 10px 0; border-bottom: 1px solid var(--line); background: var(--panel); }
+.schem-tabs button { border: 1px solid transparent; border-bottom: 0; background: transparent; color: #a9bcc4; padding: 9px 16px; border-radius: 9px 9px 0 0; font-size: 13px; font-weight: 550; }
+.schem-tabs button:hover { color: var(--text); }
+.schem-tabs button[aria-selected=true] { background: #0f1d27; border-color: var(--line); color: var(--mint); margin-bottom: -1px; }
+.schem-panel { flex: 1; display: flex; flex-direction: column; min-height: 560px; }
+.schem-panel > .layer-control { padding: 10px 14px; border-top: 1px solid var(--line); font-size: 12px; }
+.schem-panel > .layer-control .seg button { font-size: 12px; padding: 6px 10px; }
+
+/* ---------- Bildergalerie ---------- */
+.shot-gallery { display: grid; gap: 10px; padding: 14px; align-content: start; }
+.shot-main { margin: 0; display: grid; gap: 6px; }
+.shot-main figcaption { font-size: 12px; color: var(--muted); text-align: center; }
+.thumb.shot-big { aspect-ratio: 760 / 500; border-radius: 12px; background: radial-gradient(ellipse at 50% 45%, #294653 0%, #162f3d 60%, #10222e 100%); }
+.thumb.shot-big img { width: 100%; height: 100%; object-fit: contain; }
+.shot-strip { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; align-items: flex-start; }
+.shot-strip button { flex: 0 0 auto; display: grid; align-content: start; gap: 3px; padding: 4px; border: 1px solid var(--line-2); border-radius: 9px; background: var(--panel-2); font-size: 11.5px; color: #b9ccd2; }
+.shot-strip button[aria-pressed=true] { border-color: var(--mint); color: var(--mint); }
+.shot-strip .thumb.mini, .shot-strip .thumb.mini img { width: 104px; height: 72px; }
+.shot-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; font-size: 13px; }
+.shot-tools > button { border: 1px solid #31444f; background: var(--panel-2); border-radius: 8px; padding: 8px 12px; font-size: 13px; margin-left: auto; }
+.layer-slider { display: flex; align-items: center; gap: 8px; font-size: 13px; white-space: nowrap; }
+.layer-slider input[type=range] { width: 160px; }
+
+/* ---------- Bauplan je Ebene ---------- */
+.layer-sheet { display: grid; gap: 10px; padding: 14px; align-content: start; }
+.layer-sheet-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.layer-sheet-bar .seg button { padding: 7px 12px; font-size: 13px; }
+.layer-pos { font-size: 13px; color: #b9ccd2; }
+.layer-pos b { color: var(--text); }
+.layer-print { margin-left: auto; border: 1px solid #31444f; background: var(--panel-2); border-radius: 8px; padding: 8px 12px; font-size: 13px; }
+.layer-one { display: grid; grid-template-columns: minmax(0, 1fr) 210px; gap: 12px; align-items: start; }
+.layer-canvas { position: relative; display: grid; gap: 6px; justify-items: center; padding: 10px; border: 1px solid var(--line-2); border-radius: 12px; background: #0a151d; min-width: 0; }
+.layer-canvas canvas { display: block; max-width: 100%; height: auto; image-rendering: pixelated; border-radius: 4px; cursor: crosshair; }
+.layer-canvas .compass { position: absolute; top: 8px; left: 10px; font-size: 11px; color: var(--gold); letter-spacing: 1px; }
+.layer-hover { margin: 0; font-size: 12px; color: #a9bcc4; text-align: center; min-height: 18px; }
+.layer-hover b { color: var(--text); font-weight: 600; }
+.layer-hover small { color: var(--muted); }
+.layer-legend { border: 1px solid var(--line-2); border-radius: 12px; padding: 10px 12px; background: var(--panel); max-height: 520px; overflow: auto; }
+.layer-legend h4 { margin: 0 0 6px; font-size: 12px; color: var(--muted); font-weight: 600; letter-spacing: .4px; }
+.layer-legend ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.layer-legend li { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 12px; }
+.layer-legend li i { width: 14px; height: 14px; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .35); }
+.layer-legend li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.layer-all ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.layer-all li { display: grid; gap: 4px; justify-items: center; font-size: 12px; color: #b9ccd2; }
+.layer-thumb { padding: 6px; border: 1px solid var(--line-2); border-radius: 10px; background: #0a151d; width: 100%; display: grid; place-items: center; }
+.layer-thumb:hover { border-color: var(--mint); }
+.layer-thumb canvas { max-width: 100%; height: auto; image-rendering: pixelated; }
+.layer-print-head { display: none; }
+
+@media print {
+  body.printing-layers * { visibility: hidden; }
+  body.printing-layers .layer-all, body.printing-layers .layer-all * { visibility: visible; }
+  body.printing-layers .layer-all { position: absolute; inset: 0; padding: 8mm; background: #fff; color: #000; }
+  body.printing-layers .layer-print-head { display: block; font-size: 12pt; margin: 0 0 6mm; }
+  body.printing-layers .layer-all ol { grid-template-columns: repeat(3, 1fr); gap: 6mm; }
+  body.printing-layers .layer-all li { color: #000; break-inside: avoid; }
+  body.printing-layers .layer-thumb { border-color: #999; background: #fff; }
+}
+
+/* ---------- Bauversionen und Varianten ---------- */
+.versions-section { margin-top: 16px; display: grid; gap: 12px; }
+.variant-cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+.variant-cards a { display: grid; gap: 4px; padding: 6px 6px 10px; border: 1px solid var(--line-2); border-radius: 12px; background: var(--panel-2); color: #c0d0d6; }
+.variant-cards a:hover { border-color: #3d5d5b; }
+.variant-cards a[aria-current=true] { border-color: var(--mint); }
+.variant-cards a[aria-current=true] strong { color: var(--mint); }
+.variant-cards .thumb { height: 116px; border-radius: 8px; }
+.variant-cards strong { font-size: 13px; padding: 0 4px; }
+.variant-cards span { font-size: 11.5px; color: var(--muted); padding: 0 4px; }
+.diff-pick { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 10px; align-items: end; }
+.diff-pick label { display: grid; gap: 4px; font-size: 12px; color: var(--muted); }
+.diff-pick .icon-button { height: 38px; width: 38px; }
+.diff-view { display: grid; gap: 10px; }
+.diff-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.diff-stats div { border: 1px solid var(--line-2); border-radius: 10px; padding: 8px 10px; background: var(--panel-2); min-width: 0; }
+.diff-stats dt { font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.diff-stats dt i { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; }
+.diff-stats dd { margin: 2px 0 0; font-size: 18px; font-weight: 600; }
+.diff-bar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: 13px; }
+.diff-bar .seg button { padding: 7px 12px; font-size: 13px; }
+.diff-stage { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #0f1d27; }
+.diff-stage .detail-stage { min-height: 460px; border-right: 0; }
+.diff-shots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 8px; }
+.diff-shots figure { margin: 0; display: grid; gap: 4px; }
+.diff-shots figcaption { font-size: 12px; color: var(--muted); text-align: center; }
+.diff-shots .thumb.shot-big { aspect-ratio: 420 / 300; }
+#sec-versionen, #sec-ueberblick, #sec-material, #sec-technik, #sec-aehnlich, #sec-verwalten { scroll-margin-top: 70px; }
+.diff-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.diff-table caption { text-align: left; font-size: 12px; color: var(--muted); padding-bottom: 6px; }
+.diff-table th, .diff-table td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: right; }
+.diff-table th[scope=row], .diff-table th:first-child { text-align: left; font-weight: 500; }
+.diff-table th i { display: inline-block; width: 11px; height: 11px; border-radius: 3px; margin-right: 8px; vertical-align: -1px; }
+.diff-table td.up { color: var(--diff-added); }
+.diff-table td.down { color: var(--diff-removed); }
+.variant-maker { border: 1px solid var(--line-2); border-radius: 12px; background: var(--panel); padding: 0 14px; }
+.variant-maker > summary { cursor: pointer; padding: 12px 0; font-size: 14px; font-weight: 600; color: var(--mint); }
+.variant-maker[open] { padding-bottom: 14px; }
+.swap-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 6px 0 10px; }
+.swap-table th, .swap-table td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: left; }
+.swap-table th small { display: block; color: var(--muted); font-weight: 400; font-size: 11px; }
+.swap-table select { min-width: 180px; }
+.swap-preview { display: grid; grid-template-columns: 260px 260px minmax(0, 1fr); gap: 12px; align-items: start; }
+.swap-preview figure { margin: 0; display: grid; gap: 4px; }
+.swap-preview figcaption { font-size: 12px; color: var(--muted); text-align: center; }
+.swap-preview .thumb { border-radius: 10px; background: var(--panel-2); }
+.swap-preview label { display: grid; gap: 4px; font-size: 12px; color: var(--muted); margin: 8px 0; }
+.warn-note { font-size: 12px; color: #f2c58a; background: #332c22; border: 1px solid #886b44; border-radius: 8px; padding: 8px 10px; }
+
+/* ---------- Stöbern-Kacheln der Bibliothek ---------- */
+.browse-rows { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin: 4px 0 18px; }
+.browse-row { min-width: 0; }
+.browse-row h2 { font-size: 15px; margin: 0 0 8px; font-weight: 600; color: #c8d6db; }
+.browse-tiles { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; list-style: none; margin: 0; padding-left: 0; }
+.browse-tiles li { flex: 0 0 168px; }
+.browse-tiles button { width: 100%; display: grid; gap: 4px; padding: 6px 6px 8px; text-align: left; border: 1px solid var(--line-2); border-radius: 12px; background: var(--panel-2); color: #c0d0d6; transition: border-color .15s, transform .15s; }
+.browse-tiles button:hover { border-color: #3d5d5b; transform: translateY(-1px); }
+.browse-tiles button[aria-pressed=true] { border-color: var(--mint); }
+.browse-tiles .thumb { height: 96px; border-radius: 8px; }
+.browse-tiles strong { font-size: 13px; padding: 0 2px; }
+.browse-tiles small { font-size: 11.5px; color: var(--muted); padding: 0 2px; }
+.view-dir select { width: auto; }
+@media (prefers-reduced-motion: reduce) { .browse-tiles button { transition: none; } }
+
+@media (max-width: 1100px) {
+  .layer-one { grid-template-columns: 1fr; }
+  .layer-legend { max-height: 260px; }
+  .swap-preview { grid-template-columns: 1fr 1fr; }
+  .swap-preview > div { grid-column: 1 / -1; }
+}
+@media (max-width: 900px) {
+  .schem-view { border-right: 0; border-bottom: 1px solid var(--line); }
+  .schem-panel { min-height: 380px; }
+}
+@media (max-width: 650px) {
+  .diff-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .diff-shots { grid-template-columns: 1fr; }
+  .diff-pick { grid-template-columns: 1fr; }
+  .diff-pick .icon-button { justify-self: center; transform: rotate(90deg); }
+  .swap-preview { grid-template-columns: 1fr; }
+  .swap-table select { min-width: 0; }
+  .layer-slider input[type=range] { width: 110px; }
+  .layer-print { margin-left: 0; }
+  .shot-tools > button { margin-left: 0; }
+  .browse-tiles li { flex-basis: 128px; }
+  .browse-tiles .thumb { height: 72px; }
+}
+
+/* The global ".loading" page placeholder (style.css) must not add margins to loading preview images. */
+.thumb.loading { margin: 0; padding: 0; max-width: none; }
+
+/* ---------- Betrachter: Bilder und Bauplan unter der 3D-Ansicht ---------- */
+.viewer-plans { padding: 36px 0 0; }
+.viewer-plans-body { border: 1px solid var(--line); border-radius: 13px; overflow: hidden; background: #101e28; }
+.viewer-plans-body .schem-view { border-right: 0; }
+.viewer-plans-body .schem-panel { min-height: 0; }
+
+/* Detail page on phones: long values wrap instead of widening the page. */
+.detail-grid > *, .detail-col > * { min-width: 0; }
+.detail-col .stats dd { white-space: normal; text-align: right; overflow-wrap: anywhere; }
+/* style.css turns every .stats into a horizontal strip on phones (meant for the viewer's project panel). */
+@media (max-width: 650px) {
+  .building-detail .stats { display: block; }
+  .building-detail .stats div { display: flex; justify-content: space-between; gap: 10px; margin: 9px 0; }
+}

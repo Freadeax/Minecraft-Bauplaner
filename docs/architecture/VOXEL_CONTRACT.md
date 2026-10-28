@@ -46,7 +46,7 @@ Die Geometrie unterstützt ganzzahlige Translation, 0–3 Y-Vierteldrehungen und
 
 ### Zustandskatalog (B7, P1-02a)
 
-`packages/voxel/src/states.ts` enthält die einzige Orientierungsregel des Kerns (`transformVector`, von Geometrie und Zuständen gemeinsam genutzt) und den Regelkatalog. Profilkennung `STATE_CATALOG_PROFILE = java-vanilla-1.21.4-manual`: Block-IDs und Propertymengen sind von Hand nach Java 1.21.4 zusammengestellt und **nicht** gegen einen Registry-Report geprüft. Jede Regel nennt Familie, exakte IDs, exaktes Schema (Propertynamen und erlaubte Werte) und eine Abbildung. Ein Zustand gilt nur als gelöst, wenn die ID gelistet ist und die Properties exakt dem Schema entsprechen; ein Raten anhand von Propertynamen findet nicht statt. Eine ID darf nur in einer Regel stehen (beim Laden geprüft). Aktuell 75 Regeln mit 595 IDs (24.556 vollständige Zustände).
+`packages/voxel/src/states.ts` enthält die einzige Orientierungsregel des Kerns (`transformVector`, von Geometrie und Zuständen gemeinsam genutzt) und den Regelkatalog. Profilkennung `STATE_CATALOG_PROFILE = java-vanilla-1.21.4-manual`: Block-IDs und Propertymengen sind von Hand nach Java 1.21.4 zusammengestellt und **nicht** gegen einen Registry-Report geprüft. Jede Regel nennt Familie, exakte IDs, exaktes Schema (Propertynamen und erlaubte Werte) und eine Abbildung. Ein Zustand gilt nur als gelöst, wenn die ID gelistet ist und die Properties exakt dem Schema entsprechen; ein Raten anhand von Propertynamen findet nicht statt. Eine ID darf nur in einer Regel stehen (beim Laden geprüft). Aktuell 77 Regeln mit 598 IDs (24.584 vollständige Zustände).
 
 | Familie | Abbildung |
 |---|---|

@@ -42,7 +42,7 @@ Kennwerte sind reine Funktionen der inhaltsadressierten Version; die Oberfläche
 
 ## Mitgelieferte Gebäude
 
-150 eigene synthetische Entwürfe aus Code plus die drei B0-Module (153 Einträge). Keine importierten Welten, keine fremden Schematics, keine Texturen.
+150 eigene synthetische Entwürfe aus Code plus die drei B0-Module (153 Einträge); seit B12 weitere 24 (Spielhilfen und Materialvarianten, siehe [SCHEM_VIEWS](SCHEM_VIEWS.md#bibliothek)), zusammen 174 plus 3 Module. Keine importierten Welten, keine fremden Schematics, keine Texturen.
 
 - **Klassisch (16, unverändert):** Fachwerkhaus, Blockhütte, Wüstenhaus, Leuchtturm, Dorfbrunnen, Schmiede, Scheune, Marktstand, Kapelle, Gewächshaus, Moderne Villa, Iglu, Steinbrücke, Hafensteg, Holz-Wachturm, Baumhaus. Ihre Versions-IDs sind im Test festgeschrieben, bestehende Projekte bleiben gültig.
 - **Themen-Sets (134)** unter `packages/domain/src/build/sets/`, jedes eine Datei:

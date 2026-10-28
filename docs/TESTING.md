@@ -212,3 +212,11 @@ GitHub Actions werden nicht genutzt. Der jeweils bearbeitende Agent führt alle 
 - Gefunden und behoben: Kategoriekacheln wuchsen vor dem Laden des Bildes auf 241 px (feste Höhe); alte Listenregel `max-height: 720px` schnitt das Kartenraster ab; mobile Navigation blendete „Bibliothek“ aus.
 - Sichtprüfung per Screenshot: Übersicht, Detailseite, Ensembles, Projektzentrale (1400 px) und Übersicht/Detail (390 px).
 - Grenzen: nur Chromium; Vorschaubilder sind Näherungsfarben ohne Texturen; Touch nur über Playwright-Viewport, nicht auf echtem Gerät.
+
+### 28.10.2026 – B12 Schem-Ansichten, Bauversionen, Bibliothek
+- Grundlage main c04b66c plus B12. Node 22, lokales Playwright/Chromium.
+- `npm run check`: Typprüfung Kern/Web, Builds, 247/247 Node-Tests (234 + 8 in `tests/variants.test.mjs` + 5 in `tests/schem-views.test.mjs`), Dokumentationsprüfung bestanden. B7-Drehtest um Braustand, Zielblock und Netherwarze erweitert.
+- `npm run test:e2e`: 33/33 (29 + 4 in `tests/e2e/schem.e2e.mjs`, siehe [SCHEM_VIEWS](architecture/SCHEM_VIEWS.md#prüfung)); `catalog.e2e` scrollt auf schmalen Bildschirmen die erste Karte ins Bild, bevor es auf das (nachgeladene) Bild wartet.
+- Gefunden und behoben: Kamera nach Import teils außerhalb des Bildes; mobile Detailseite 20 px breiter als der Bildschirm (alte `.stats`-Regel); Bildstreifen-Knöpfe 219 px hoch (globale `.loading`-Abstände).
+- Sichtprüfung per Screenshot: Bilder, Ebenen, Versionen (1400 px) und Bilder/Ebenen (390 px).
+- Grenzen: nur Chromium; keine Prüfung auf echtem Gerät; Hauptbundle rund 725 kB über der Warnschwelle.

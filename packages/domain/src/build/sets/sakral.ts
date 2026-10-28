@@ -100,7 +100,7 @@ function zaubererturm() {
   p.disc(5, 5, 17, 5, 'deepslate_tiles'); p.set(8, 17, 5, 'ladder', { facing: 'west', waterlogged: 'false' });
   for (let i = 0; i <= 5; i++) p.disc(5, 5, 18 + i, 4.5 - i * 0.85, 'purple_concrete', {}, true);
   p.set(5, 24, 5, 'amethyst_block'); p.set(5, 25, 5, 'end_rod', facing('up'));
-  p.set(4, 7, 4, 'brewing_stand'); p.set(6, 7, 6, 'cauldron'); p.set(5, 12, 7, 'lectern', lectern('north'));
+  p.set(4, 7, 4, 'brewing_stand', { has_bottle_0: 'false', has_bottle_1: 'false', has_bottle_2: 'false' }); p.set(6, 7, 6, 'cauldron'); p.set(5, 12, 7, 'lectern', lectern('north'));
   for (const y of [5, 10, 15]) p.set(5, y, 5, 'lantern', lantern(true));
   return p.payload();
 }

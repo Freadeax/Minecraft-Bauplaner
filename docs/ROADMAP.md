@@ -76,3 +76,9 @@ Ausbau offener Punkte (27.10.2026): P3-02 Itemmengen je Schritt umgesetzt (Bauit
 ## Oberfläche B11 · 28.10.2026
 
 Umgesetzt: Katalogoberfläche nach dem Muster gängiger Schematic-Sammlungen ([UI](architecture/UI.md)). Nächste sinnvolle Schritte: eigene Ensembles speichern, Filterzustand in der URL (teilbare Suchen), Vorschaubilder dauerhaft in IndexedDB zwischenspeichern, Blickrichtung des Vorschaubilds wählbar, Sammlungen/Ordner für eigene Bauteile.
+
+## Nächste Ideen nach B12 · 28.10.2026
+
+- Materialsätze für Kupfer, Glas, Terrakotta und Beton; Tausch auch einzelner Blöcke.
+- Diff mit Verschiebungserkennung und BlockEntity-Inhalten (Grundlage für P5-03).
+- Texturnähere Standbilder (Treppen-/Zaunformen) und Aufteilung des Hauptbundles.
