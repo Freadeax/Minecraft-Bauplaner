@@ -50,6 +50,8 @@ const MATERIALS: Readonly<Record<string, string>> = {
   melon: '#6f9118', pumpkin: '#c37419', carved_pumpkin: '#b66617', jack_o_lantern: '#d38a26', bookshelf: '#755f3c', crafting_table: '#7d5a36', furnace: '#6e6e6e',
   blast_furnace: '#5f5f60', smoker: '#55493a', chest: '#a2732e', trapped_chest: '#a2732e', iron_bar: '#8a8b88', lantern: '#695c4c', torch: '#ffd36b', wall_torch: '#ffd36b',
   ladder: '#a1814b', glass_pane: '#bfe3ea', bone: '#d1cdb4', magma: '#8e3f1f', slime: '#6fc05b', honey: '#f8b82a', resin: '#d96b1c', resin_brick: '#ce5e1a',
+  rail: '#8a7c66', powered_rail: '#b49a3c', detector_rail: '#7d6a5a', activator_rail: '#8c5a4a', hopper: '#4b4b4e', redstone_wire: '#c41a0b',
+  repeater: '#b3aca6', comparator: '#b3aca6', redstone_lamp: '#8f5f36', observer: '#5e5e5e', piston: '#a28b62', sticky_piston: '#8fa060', lever: '#7a6a55',
   red_mushroom: '#b62121', brown_mushroom: '#946f50', mushroom_stem: '#cbc4b9', shroomlight: '#f19646', cactus: '#5a8a2c', sugar_cane: '#94c065',
   lily_pad: '#2a7a2a', beehive: '#b88a45', composter: '#7a5a30', barrel: '#86643a', target: '#e4d3c0', note_block: '#6a4b35', beacon: '#7fe3e0',
   dripstone: '#866b5c', basalt: '#4c4c52', smooth_basalt: '#48484d', polished_basalt: '#58585c', soul_sand: '#513e32', soul_soil: '#4b3a2f',
