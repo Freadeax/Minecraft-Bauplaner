@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { formatStacks, recipesForMaterials, recipesToCsv } from '../../../../../packages/domain/src/index.js';
 import type { BaseKind, MaterialReport, RecipeStep, Station } from '../../../../../packages/domain/src/index.js';
 import { download, formatNumber } from '../../app/ui';
@@ -7,20 +7,27 @@ const stationLabel: Record<Station, string> = { crafting: 'Werkbank', stonecutte
 const kindLabel: Record<BaseKind, string> = { raw: 'Rohstoff', stock: 'vorhanden', unknown: 'kein Rezept' };
 const short = (id: string): string => id.replace(/^minecraft:/, '');
 
+export interface RawMaterialsSettings {
+  /** Items marked "vorhanden" (stored in the project's site plan, B14). */
+  readonly stock: readonly string[];
+  readonly cutter: boolean;
+  onToggle(itemId: string): void;
+  onReset(): void;
+  onCutter(cutter: boolean): void;
+}
+
 /** Raw materials and crafting steps for the build items of a material report (domain `recipes.ts`). */
-export function RawMaterialsPanel({ report, fileStem }: { report: MaterialReport; fileStem: string }) {
-  const [cutter, setCutter] = useState(true);
-  const [stock, setStock] = useState<readonly string[]>([]);
+export function RawMaterialsPanel({ report, fileStem, settings }: { report: MaterialReport; fileStem: string; settings: RawMaterialsSettings }) {
+  const { stock, cutter, onToggle: toggle } = settings;
   const recipes = useMemo(() => recipesForMaterials(report, { method: cutter ? 'stonecutter' : 'crafting', stock }), [report, cutter, stock]);
-  const toggle = (id: string): void => setStock(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
   if (!report.items.length) return null;
   const ops = (Object.keys(stationLabel) as Station[]).filter(s => recipes.stations[s] > 0);
 
   return <section className="raw-materials" aria-label="Rohstoffe und Rezepte">
     <div className="raw-head">
       <h3 className="materials-title">Rohstoffe und Rezepte <small>aus {formatNumber(report.totals.items)} Bauitems</small></h3>
-      <label className="raw-toggle"><input type="checkbox" checked={cutter} onChange={e => setCutter(e.target.checked)} /> Steinsäge bevorzugen</label>
-      {stock.length > 0 && <button className="materials-csv" onClick={() => setStock([])}>Vorhanden zurücksetzen ({stock.length})</button>}
+      <label className="raw-toggle"><input type="checkbox" checked={cutter} onChange={e => settings.onCutter(e.target.checked)} /> Steinsäge bevorzugen</label>
+      {stock.length > 0 && <button className="materials-csv" onClick={settings.onReset}>Vorhanden zurücksetzen ({stock.length})</button>}
       <button className="materials-csv" onClick={() => download(`${fileStem}-rohstoffe.csv`, '﻿' + recipesToCsv(recipes), 'text/csv;charset=utf-8')}>⤓ Rohstoff-CSV</button>
     </div>
     <div className={`notice raw-status ${recipes.complete ? 'ok' : 'warning'}`} role="status">

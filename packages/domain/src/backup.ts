@@ -3,6 +3,7 @@ import { DOMAIN_SCHEMA_VERSION, DomainError } from './types.js';
 import { canonicalJson, newId, sha256Hex } from './hash.js';
 import { checkTransform } from './project.js';
 import { deepFreeze, verifyAssetVersion } from './library.js';
+import { checkSite } from './site.js';
 
 /**
  * Persistence and backup contract (P2-01, R-023/R-024). Pure and storage
@@ -172,6 +173,7 @@ export function checkProjectRecord(raw: unknown): Project {
       throw new DomainError('BACKUP', `${where}: Verbindung verweist auf fehlende Instanz`);
   }
   if (!isObj(raw.progress)) throw new DomainError('BACKUP', `${where}: Fortschritt fehlt`);
+  if (raw.site !== undefined) checkSite(raw.site);
   for (const r of arr(raw.revisions, `${where}: Revisionen`)) {
     if (!isObj(r) || !Number.isInteger(r.number)) throw new DomainError('BACKUP', `${where}: ungültige Revision`);
     checkInstances(r.instances, `${where}, Revision ${String(r.number)}`); arr(r.links, `${where}: Revisionsverbindungen`);

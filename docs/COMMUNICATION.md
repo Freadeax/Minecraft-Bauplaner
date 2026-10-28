@@ -217,4 +217,8 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Dateien siehe B12 in [BLOCKS](BLOCKS.md). Hinweis an alle: Detailseiten haben Unterseiten `#/bibliothek/gebaeude/<id>/3d|bilder|ebenen|versionen`, Bibliotheksfilter stehen nach `?` im Hash. Neuer Tag `basis:<assetId>` ist strukturell wie `familie:`.
 - Behoben: Kamera nach Import außerhalb des Bildes (Beobachtung aus P5-01), mobile Detailseite scrollte waagerecht (alte `.stats`-Regel), Ladezustand der Vorschaubilder erbte Abstände der globalen `.loading`-Klasse.
 - Hinweis an B13: Die Bibliotheksroute in `router.ts` trägt jetzt `sub` (dritte Pfadstelle) und `search` (Teil nach `?`); `LibraryView.tsx` liest/schreibt den Filterzustand über `urlState.ts`. `AssetSourceFormat` hat zusätzlich `'variant'`. Für `generatoren` als Unterseite bitte auf main c04b66c+B12 aufsetzen.
+
+### MSG-B14-01 · Claude · 2026-10-28T16:00:00+01:00 · Baustelle: Abschnitte, Lager, Sammelplan, Freiraum
+- Nutzerauftrag: Systeme kreativ weiterentwickeln, fehlende Punkte ergänzen. Ergebnis: neuer Tab „Baustelle“ mit Fortschrittsübersicht, eigenen Bauabschnitten (Schichtbereiche, Reihenfolgeprüfung, Vorschläge), Lagerbestand und Sammel-/Farmplan je Abschnitt, Freiraum-Reservierung an Anschlüssen; „vorhanden“ im Material-Tab dauerhaft.
+- Dateien siehe B14 in [BLOCKS](BLOCKS.md). Hinweis an alle: `Project` hat das optionale Feld `site` und die Operation `site.set`; wer Projekte kopiert oder zusammenführt, übernimmt `site` unverändert. Hinweis an B4: `BuildTab.tsx` hat einen Abschnittsfilter (nur sichtbar mit Abschnitten).
 - Reservierung mit dem Push beendet.

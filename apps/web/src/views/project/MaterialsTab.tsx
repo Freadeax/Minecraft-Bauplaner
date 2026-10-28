@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react';
-import { formatStacks, materialsForResolution, materialsToCsv } from '../../../../../packages/domain/src/index.js';
+import { formatStacks, materialsForResolution, materialsToCsv, siteOf, siteOperation, toggleResolvedStock } from '../../../../../packages/domain/src/index.js';
 import type { ItemLine, MaterialReport, MaterialScope, UnresolvedReason } from '../../../../../packages/domain/src/index.js';
 import { download, formatNumber } from '../../app/ui';
 import { isResolved } from './session';
 import { RawMaterialsPanel } from './RawMaterialsPanel';
+import type { RawMaterialsSettings } from './RawMaterialsPanel';
 import type { ProjectSession } from './session';
 
 const reasonLabel: Record<UnresolvedReason, string> = {
@@ -28,6 +29,14 @@ export function MaterialsTab({ session }: { session: ProjectSession }) {
     return materialsForResolution(resolution, scope);
   }, [resolution, scopeInstance?.id, scopeLabel]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // "vorhanden" marks and the recipe route are stored in the project's site plan (B14), so they survive reloads and backups.
+  const site = siteOf(project);
+  const rawSettings: RawMaterialsSettings = {
+    stock: site.resolvedStock, cutter: site.recipeMethod === 'stonecutter',
+    onToggle: id => session.execute(siteOperation(toggleResolvedStock(site, id), `${id.replace(/^minecraft:/, '')}: vorhanden umgeschaltet`)),
+    onReset: () => session.execute(siteOperation({ ...site, resolvedStock: [] }, 'Markierungen „vorhanden“ zurückgesetzt')),
+    onCutter: cutter => session.execute(siteOperation({ ...site, recipeMethod: cutter ? 'stonecutter' : 'crafting' }, cutter ? 'Steinsäge bevorzugen' : 'Werkbank bevorzugen')),
+  };
   if (!isResolved(resolution)) return <section className="materials report danger-report" role="alert"><h3>Material kann nicht berechnet werden</h3><p>{resolution.error}</p></section>;
   if (!report) return null;
   const q = filter.trim().toLowerCase();
@@ -75,7 +84,8 @@ export function MaterialsTab({ session }: { session: ProjectSession }) {
           <tbody>{report.placed.states.map(s => <tr key={s.key}><td><code>{s.state.id}</code>{Object.keys(s.state.properties).length > 0 && <small>{props(s.state.properties)}</small>}</td><td className="num">{formatNumber(s.count)}</td></tr>)}</tbody>
         </table></div>
       </details>
-      <RawMaterialsPanel report={report} fileStem={project.name.replace(/[^\p{L}\p{N}_-]+/gu, '_')} />
+      <RawMaterialsPanel report={report} fileStem={project.name.replace(/[^\p{L}\p{N}_-]+/gu, '_')} settings={rawSettings} />
+      <p className="muted">Lagerbestand und Sammelplan je Bauabschnitt: Tab <a href={`#/projekt/${project.id}/baustelle`}>Baustelle</a>.</p>
     </>}
     <ul className="materials-notes">{report.notes.map(n => <li key={n}>{n}</li>)}</ul>
   </section>;

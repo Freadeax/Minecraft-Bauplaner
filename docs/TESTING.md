@@ -220,3 +220,10 @@ GitHub Actions werden nicht genutzt. Der jeweils bearbeitende Agent führt alle 
 - Gefunden und behoben: Kamera nach Import teils außerhalb des Bildes; mobile Detailseite 20 px breiter als der Bildschirm (alte `.stats`-Regel); Bildstreifen-Knöpfe 219 px hoch (globale `.loading`-Abstände).
 - Sichtprüfung per Screenshot: Bilder, Ebenen, Versionen (1400 px) und Bilder/Ebenen (390 px).
 - Grenzen: nur Chromium; keine Prüfung auf echtem Gerät; Hauptbundle rund 725 kB über der Warnschwelle.
+
+### 28.10.2026 – B14 Baustelle
+- Grundlage main 0a1d2a8 (mit B12, B13-Reservierung) plus B14. Node 22, lokales Playwright/Chromium.
+- `npm run check`: Typprüfung Kern/Web, Builds, 254/254 Node-Tests, Dokumentationsprüfung bestanden. `npm run test:e2e`: 35/35. Neu `tests/site.test.mjs` (7 Fälle) und `tests/e2e/site.e2e.mjs` (2 Fälle, 1400 px und 390 px), Inhalte in [SITE](architecture/SITE.md#prüfung). `recipes.e2e` weiter grün mit dauerhaft gespeichertem „vorhanden“.
+- Gefunden und behoben: Die Beispiel-Burgmauer zeigte zunächst 8 „verbaute“ Freiräume, weil passende Nachbarn ohne gespeicherte Verbindung als Fremdblöcke galten; jetzt Zustand „angedockt“ mit Knopf „Angedockte verbinden“. Lagerfelder wurden von einer globalen Eingaberegel gestreckt (eigene Breite).
+- Sichtprüfung per Screenshot (1400 px).
+- Grenzen: nur Chromium; Sammelzeiten sind Richtwerte.

@@ -1,6 +1,6 @@
 # Projektstand
 
-Stand: 28.10.2026. Fundament (B0) und die Blöcke B1–B7, B9 (mit Katalog v2), B10, B11 (Oberfläche) und B12 (Schem-Ansichten, Bauversionen) sind auf main, B8 (Spielbrücke) läuft; Plan in [Blockplan](BLOCKS.md). Danach Ausbau offener Punkte (Itemspalte, Katalog v2, Farben, Händigkeit, Ziehen).
+Stand: 28.10.2026. Fundament (B0) und die Blöcke B1–B7, B9 (mit Katalog v2), B10, B11 (Oberfläche), B12 (Schem-Ansichten, Bauversionen) und B14 (Baustelle) sind auf main, B8 (Spielbrücke) läuft; Plan in [Blockplan](BLOCKS.md). Danach Ausbau offener Punkte (Itemspalte, Katalog v2, Farben, Händigkeit, Ziehen).
 
 | Bereich | Implementiert / bestätigt | Offene Grenzen |
 |---|---|---|
@@ -41,3 +41,5 @@ B9 Gebäudekatalog (v2 seit 28.10.2026): Bibliothek mit 150 mitgelieferten Gebä
 Ausbau offener Punkte (27.10.2026): Itemspalte und Packliste in der Bauanleitung, Itemkatalog v2, Vorschaufarben je Familie, Händigkeit an Anschlüssen, Andocken per Ziehen. Offen bleiben u. a. Safari/iPhone-Prüfung der Speicherung (in der Cloud nur Chromium), Freiräume an Anschlüssen, frei definierte Bauabschnitte, Rohstoffe/Rezepte.
 
 B11 Oberfläche (28.10.2026): Bibliothek als Katalog mit isometrischen Vorschaubildern, Kategorieleiste, Filterspalte mit Chips, Detailseite je Gebäude, Ensembles als Bildkarten, Vergleich bis vier Gebäude, Merkliste, „Überrasch mich“; Projektzentrale mit Projektbildern und Vorlagen. Details [UI](architecture/UI.md).
+
+B14 Baustelle (28.10.2026): Tab „Baustelle“ mit Fortschrittsübersicht, eigenen Bauabschnitten, Lagerbestand und Sammel-/Farmplan je Abschnitt, Freiraum an Anschlüssen; „vorhanden“ im Material-Tab wird gespeichert. Details [SITE](architecture/SITE.md).

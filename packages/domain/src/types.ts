@@ -1,4 +1,5 @@
 import type { Transform, Vec3, VoxelPayload } from '../../voxel/src/types.js';
+import type { SitePlan } from './site.js';
 
 /**
  * Shared domain contract (P2-01). All records are JSON-safe and versioned so
@@ -134,6 +135,8 @@ export interface Project {
   readonly progress: Readonly<Record<string, StepProgress>>;
   /** Frozen revisions, oldest first. */
   readonly revisions: readonly BlueprintRevision[];
+  /** Construction site plan (sections, stock, reservations; site.ts). Absent in older projects = empty plan. */
+  readonly site?: SitePlan;
 }
 
 export class DomainError extends Error {

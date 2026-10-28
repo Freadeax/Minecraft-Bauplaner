@@ -82,3 +82,7 @@ Umgesetzt: Katalogoberfläche nach dem Muster gängiger Schematic-Sammlungen ([U
 - Materialsätze für Kupfer, Glas, Terrakotta und Beton; Tausch auch einzelner Blöcke.
 - Diff mit Verschiebungserkennung und BlockEntity-Inhalten (Grundlage für P5-03).
 - Texturnähere Standbilder (Treppen-/Zaunformen) und Aufteilung des Hauptbundles.
+
+## Baustelle B14 · 28.10.2026
+
+Umgesetzt: frei definierte Bauabschnitte (P3-02), Freiraum-Reservierung an Anschlüssen (P2-02), dauerhaftes „vorhanden“ und Sammel-/Farmplan je Abschnitt (R-017), Fortschrittsübersicht. Details [SITE](architecture/SITE.md). Nächste Ideen: Freiraum als Hülle im Editor-3D-Bild, Lager aus einer Truhen-Aufnahme der Spielbrücke (B8) übernehmen, Abschnitte als eigene Revision einfrieren, Sammelplan mit mehreren Spielern aufteilen.

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { selectLayers } from '../../../../../packages/voxel/src/index.js';
 import type { BlockState, Cell } from '../../../../../packages/voxel/src/index.js';
-import { buildGuide, checkScan, confirmedUnticked, evaluateProgress, formatStacks, materialsForParts, PHASE_LABEL, positionKey, resolveProject, scanTarget, tickConfirmed, tickedButNotBuilt, tickStep, tickSteps, untickStep, untickSteps, VERDICT_LABEL } from '../../../../../packages/domain/src/index.js';
+import { buildGuide, checkScan, confirmedUnticked, evaluateProgress, formatStacks, materialsForParts, PHASE_LABEL, positionKey, resolveProject, scanTarget, sectionOfStep, siteOf, tickConfirmed, tickedButNotBuilt, tickStep, tickSteps, untickStep, untickSteps, VERDICT_LABEL } from '../../../../../packages/domain/src/index.js';
 import type { CellDeviation, GameCheck, Guide, GuideStep, MaterialReport, Resolution, StepStatus } from '../../../../../packages/domain/src/index.js';
 import type { Vec3 } from '../../../../../packages/voxel/src/index.js';
 import { useApp } from '../../app/context';
@@ -71,7 +71,11 @@ export function BuildTab({ session }: { session: ProjectSession }) {
     if (!('error' in t) && t.revision) { setBasis(t.revision.id); setSelectedId(null); }
   };
 
-  const visibleSteps = useMemo(() => guide?.steps.filter(s => filter === 'all' || (filter === 'review' ? status(s.id) === 'review' : status(s.id) !== 'done')) ?? [], [guide, filter, status]);
+  // Build sections of the site plan (B14): optional filter of the step list.
+  const site = siteOf(project);
+  const [sectionId, setSectionId] = useState('');
+  const inSection = useCallback((s: GuideStep) => !sectionId || (sectionId === '~' ? sectionOfStep(site, s) === null : sectionOfStep(site, s) === sectionId), [site, sectionId]);
+  const visibleSteps = useMemo(() => guide?.steps.filter(s => inSection(s) && (filter === 'all' || (filter === 'review' ? status(s.id) === 'review' : status(s.id) !== 'done'))) ?? [], [guide, filter, status, inSection]);
   const step = guide?.byId.get(selectedId ?? '') ?? guide?.steps.find(s => ready.has(s.id)) ?? guide?.steps.find(s => status(s.id) !== 'done') ?? guide?.steps[0] ?? null;
   useEffect(() => { if (step && step.id !== selectedId) setSelectedId(step.id); }, [step, selectedId]);
 
@@ -130,6 +134,12 @@ export function BuildTab({ session }: { session: ProjectSession }) {
       <div className="chips" role="group" aria-label="Filter">
         {(['all', 'todo', 'review'] as const).map(f => <button key={f} aria-pressed={filter === f} onClick={() => setFilter(f)}>{f === 'all' ? 'Alle' : f === 'todo' ? 'Nicht erledigt' : 'Prüfbedürftig'}</button>)}
       </div>
+      {site.sections.length > 0 && <label className="build-section-filter">Bauabschnitt
+        <select value={sectionId} onChange={e => setSectionId(e.target.value)} aria-label="Bauabschnitt filtern">
+          <option value="">Alle Abschnitte</option>
+          {site.sections.map((s, i) => <option key={s.id} value={s.id}>{i + 1}. {s.name}</option>)}
+          <option value="~">Ohne Abschnitt</option>
+        </select></label>}
       {visibleSteps.length === 0 && <p className="muted">Keine Schritte in diesem Filter.</p>}
       {[...byLayer.entries()].map(([y, steps]) => <div key={y} className="build-layer">
         <span className="panel-kicker">SCHICHT Y {y}</span>
