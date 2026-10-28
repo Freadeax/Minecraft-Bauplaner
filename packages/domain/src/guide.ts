@@ -90,7 +90,7 @@ export function phaseOf(state: BlockState): Exclude<StepPhase, 'clear'> {
 
 interface Draft {
   instanceId: string; sectionName: string; instanceIndex: number; phase: StepPhase; y: number; layer: number;
-  positions: Vec3[]; states: Map<string, { state: BlockState; count: number }>; hashCells: unknown[];
+  positions: Vec3[]; states: Map<string, { state: BlockState; count: number }>; hashCells: string[];
   blocks: number; air: number; erase: number; blockEntities: number; conflicts: number; mods: Set<string>; waterlogged: number;
 }
 
@@ -112,22 +112,32 @@ export function buildGuide(project: Pick<Project, 'instances'>, resolution: Reso
   const baseY = new Map(resolution.placed.map(p => [p.instance.id, p.payload.bounds.min[1]]));
   const conflictKeys = new Set(resolution.conflicts.map(c => positionKey(c.position)));
   const entities = new Map(world.blockEntities.map(e => [positionKey(e.position), e]));
-  const drafts = new Map<string, Draft>(), cellStep = new Map<string, string>();
+  const drafts = new Map<string, Draft>(), cellStep = new Map<number, string>();
+  // Numeric cell index inside the world bounds (−1 outside): far cheaper than string keys for large worlds.
+  const { min: wMin, maxExclusive: wMax } = world.bounds;
+  const sx = wMax[0] - wMin[0], sy = wMax[1] - wMin[1];
+  const cellIndex = (x: number, y: number, z: number): number =>
+    x < wMin[0] || y < wMin[1] || z < wMin[2] || x >= wMax[0] || y >= wMax[1] || z >= wMax[2] ? -1 : (x - wMin[0]) + sx * ((y - wMin[1]) + sy * (z - wMin[2]));
+  const phaseByPalette = world.palette.map(phaseOf);
+  let last: Draft | undefined, lastId = '';
 
   for (const cell of world.cells) {
     const key = positionKey(cell.position), owner = resolution.owners.get(key)?.[0];
     if (owner === undefined || !instanceIndex.has(owner)) throw new DomainError('GUIDE', `Zelle ${key} hat keine Instanz`);
     const state = cell.kind === 'erase' ? null : world.palette[cell.paletteIndex]!;
-    const phase: StepPhase = cell.kind === 'block' ? phaseOf(state!) : 'clear';
-    const y = cell.position[1], layer = y - (baseY.get(owner) ?? y), id = draftKey(owner, layer, phase);
-    let d = drafts.get(id);
+    const phase: StepPhase = cell.kind === 'block' ? phaseByPalette[cell.paletteIndex]! : 'clear';
+    const y = cell.position[1], layer = y - (baseY.get(owner) ?? y);
+    // Cells come sorted by Y, so consecutive cells usually belong to the same step.
+    const id = last && last.instanceId === owner && last.layer === layer && last.phase === phase ? lastId : draftKey(owner, layer, phase);
+    let d = id === lastId ? last : drafts.get(id);
     if (!d) {
       const inst = project.instances[instanceIndex.get(owner)!]!;
       d = { instanceId: owner, sectionName: inst.name, instanceIndex: instanceIndex.get(owner)!, phase, y, layer, positions: [], states: new Map(), hashCells: [],
         blocks: 0, air: 0, erase: 0, blockEntities: 0, conflicts: 0, mods: new Set(), waterlogged: 0 };
       drafts.set(id, d);
     }
-    d.positions.push(cell.position); cellStep.set(key, id);
+    last = d; lastId = id;
+    d.positions.push(cell.position); cellStep.set(cellIndex(cell.position[0], cell.position[1], cell.position[2]), id);
     if (conflictKeys.has(key)) d.conflicts++;
     const entity = entities.get(key);
     if (cell.kind === 'erase') d.erase++;
@@ -140,7 +150,9 @@ export function buildGuide(project: Pick<Project, 'instances'>, resolution: Reso
       if (state!.properties.waterlogged === 'true') d.waterlogged++;
       if (entity) d.blockEntities++;
     }
-    d.hashCells.push([...cell.position, cell.kind, state ? stateKey(state) : null, entity ? entity.data : null]);
+    // Same text as canonicalJson([x, y, z, kind, stateKey | null, entityData | null]), built directly: this runs per world cell.
+    const [x, y0, z] = cell.position;
+    d.hashCells.push(`[${x},${y0},${z},${JSON.stringify(cell.kind)},${state ? JSON.stringify(stateKey(state)) : 'null'},${entity ? canonicalJson(entity.data) : 'null'}]`);
   }
 
   const sorted = [...drafts.entries()].sort(([, a], [, b]) => {
@@ -164,10 +176,10 @@ export function buildGuide(project: Pick<Project, 'instances'>, resolution: Reso
     if (lowerLayers.length) for (const s of layers!.get(Math.max(...lowerLayers))!) pre.add(s);
     for (const p of PHASE_ORDER.slice(0, rank(d.phase))) { const same = draftKey(d.instanceId, d.layer, p); if (drafts.has(same) && p !== 'liquid') pre.add(same); }
     for (const [x, y, z] of d.positions) {
-      const below = cellStep.get(positionKey([x, y - 1, z]));
+      const below = cellStep.get(cellIndex(x, y - 1, z));
       if (d.phase !== 'clear' && solidAt(below)) pre.add(below!);
       if (d.phase === 'attached' || d.phase === 'liquid') for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
-        const n = cellStep.get(positionKey([x + dx, y, z + dz]));
+        const n = cellStep.get(cellIndex(x + dx, y, z + dz));
         if (n && ['structure', 'gravity'].includes(drafts.get(n)!.phase)) pre.add(n);
       }
     }
@@ -200,7 +212,7 @@ export function buildGuide(project: Pick<Project, 'instances'>, resolution: Reso
     steps.push({
       id, order: order.get(id)!, instanceId: d.instanceId, sectionName: d.sectionName, phase: d.phase, y: d.y, layer: d.layer,
       bounds: { min, maxExclusive: max }, positions, materials, blocks: d.blocks, air: d.air, erase: d.erase, blockEntities: d.blockEntities,
-      conflicts: d.conflicts, prerequisites, geometryHash: quickHash(canonicalJson([d.phase, d.hashCells])), check, notes,
+      conflicts: d.conflicts, prerequisites, geometryHash: quickHash(`[${JSON.stringify(d.phase)},[${d.hashCells.join(',')}]]`), check, notes,
     });
   }
   const totals = steps.reduce((t, s) => ({ blocks: t.blocks + s.blocks, air: t.air + s.air, erase: t.erase + s.erase }), { blocks: 0, air: 0, erase: 0 });

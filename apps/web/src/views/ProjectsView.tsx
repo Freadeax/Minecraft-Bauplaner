@@ -168,6 +168,7 @@ export function ProjectsView() {
         <button onClick={() => void backup('all')} disabled={busy || !projects}>Alles sichern</button>
         <label className="file-button">Sicherung wiederherstellen …<input ref={restoreInput} type="file" accept=".json,application/json" disabled={busy}
           onChange={e => { const f = e.target.files?.[0]; if (f) void openBackup(f); }} /></label>
+        <a href="#/system">Datencheck</a>
       </div>
     </section>
   </div>;

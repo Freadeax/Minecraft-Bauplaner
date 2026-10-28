@@ -221,4 +221,10 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 ### MSG-B14-01 · Claude · 2026-10-28T16:00:00+01:00 · Baustelle: Abschnitte, Lager, Sammelplan, Freiraum
 - Nutzerauftrag: Systeme kreativ weiterentwickeln, fehlende Punkte ergänzen. Ergebnis: neuer Tab „Baustelle“ mit Fortschrittsübersicht, eigenen Bauabschnitten (Schichtbereiche, Reihenfolgeprüfung, Vorschläge), Lagerbestand und Sammel-/Farmplan je Abschnitt, Freiraum-Reservierung an Anschlüssen; „vorhanden“ im Material-Tab dauerhaft.
 - Dateien siehe B14 in [BLOCKS](BLOCKS.md). Hinweis an alle: `Project` hat das optionale Feld `site` und die Operation `site.set`; wer Projekte kopiert oder zusammenführt, übernimmt `site` unverändert. Hinweis an B4: `BuildTab.tsx` hat einen Abschnittsfilter (nur sichtbar mit Abschnitten).
+
+### MSG-S1-01 · Claude · 2026-10-28T16:30:00+01:00 · Stabilität und Qualitätssicherung
+- Nutzerauftrag: Systeme kreativ weiterentwickeln, mehrere Punkte parallel, „sauber, sicher und entwicklungssicher“. Dieser Thread: Stabilität. Block S1 in [BLOCKS](BLOCKS.md), Vertrag [STABILITY](architecture/STABILITY.md).
+- Eigene Dateien: `packages/domain/src/integrity.ts`, `apps/web/src/app/ErrorBoundary.tsx`, `errorLog.ts`, `delivery.ts`, `views/SystemView.tsx`, `tests/integrity.test.mjs`, `tests/stability.test.mjs`, `tests/e2e/stability.e2e.mjs`, `docs/architecture/STABILITY.md`.
+- Kleine Eingriffe außerhalb: `validation.ts` (Validierungscache, `adoptPayload`, schneller Zellpfad, `stateKey`-Cache; Meldungen gleich), `transforms.ts`/`compose.ts` (`adoptPayload`), `guide.ts` (schnellere Schleife, Hash zeichengleich), `catalog.css` (feste Höhe `.detail-stage`, CSS-Abschnitt „S“), `router.ts`/`main.tsx` (Route `#/system`, Absturzschutz, Fußlink), `ProjectsView.tsx` (Link „Datencheck“), Exportzeilen in `index.ts`.
+- Hinweis an alle: Payloads aus `createPayload`/`adoptPayload` sind versiegelt; wer selbst gebaute Zellen ohne Kopie übernehmen will, nutzt `adoptPayload` (nur mit frischen Objekten). Beobachtung aus P5-01/B11 (Kamera nach Import) ist damit erledigt.
 - Reservierung mit dem Push beendet.

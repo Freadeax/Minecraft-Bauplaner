@@ -1,4 +1,4 @@
-import { createPayload, stateKey } from '../../voxel/src/validation.js';
+import { adoptPayload, stateKey } from '../../voxel/src/validation.js';
 import { transformPayload } from '../../voxel/src/transforms.js';
 import type { BlockEntity, BlockState, Bounds, Cell, Limits, Vec3, VoxelPayload } from '../../voxel/src/types.js';
 import { canonicalJson } from './hash.js';
@@ -142,7 +142,8 @@ export function resolveProject(project: Project, versions: ReadonlyMap<string, A
       if (slot.entity && slot.cell.kind === 'block') blockEntities.push({ position: slot.cell.position, data: slot.entity.data });
     }
     try {
-      world = createPayload({ schemaVersion: 1, profileId: project.profileId, bounds: { min, maxExclusive: max }, pivot: [0, 0, 0], sourceOrigin: [0, 0, 0], palette, cells, blockEntities }, limits);
+      // Cells are built above; states and entity data come from frozen version payloads.
+      world = adoptPayload({ schemaVersion: 1, profileId: project.profileId, bounds: { min, maxExclusive: max }, pivot: [0, 0, 0], sourceOrigin: [0, 0, 0], palette, cells, blockEntities }, limits);
     } catch (e) {
       throw new DomainError('LIMIT', `Zusammengesetztes Projekt überschreitet die Grenzen: ${e instanceof Error ? e.message : String(e)}`);
     }

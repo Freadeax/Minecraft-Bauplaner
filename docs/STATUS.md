@@ -1,6 +1,6 @@
 # Projektstand
 
-Stand: 28.10.2026. Fundament (B0) und die Blöcke B1–B7, B9 (mit Katalog v2), B10, B11 (Oberfläche), B12 (Schem-Ansichten, Bauversionen) und B14 (Baustelle) sind auf main, B8 (Spielbrücke) läuft; Plan in [Blockplan](BLOCKS.md). Danach Ausbau offener Punkte (Itemspalte, Katalog v2, Farben, Händigkeit, Ziehen).
+Stand: 28.10.2026. Fundament (B0) und die Blöcke B1–B7, B9 (mit Katalog v2), B10, B11 (Oberfläche), B12 (Schem-Ansichten, Bauversionen), B14 (Baustelle) und S1 (Stabilität) sind auf main, B8 (Spielbrücke) läuft; Plan in [Blockplan](BLOCKS.md). Danach Ausbau offener Punkte (Itemspalte, Katalog v2, Farben, Händigkeit, Ziehen).
 
 | Bereich | Implementiert / bestätigt | Offene Grenzen |
 |---|---|---|
@@ -19,7 +19,8 @@ Stand: 28.10.2026. Fundament (B0) und die Blöcke B1–B7, B9 (mit Katalog v2), 
 | Spielbrücke (B8) | Konzept [MOD_BRIDGE](architecture/MOD_BRIDGE.md); Tab „Bauen“ importiert Spielaufnahmen (Schem v3 mit `Kind=scan`), vergleicht jede Zelle mit der Revision und zeigt Spielstatus je Schritt, Abweichungen und Schichtmarkierungen; bestätigte Schritte nur auf Klick abhaken ; Mod-Kern (Java) mit Tests und sprachübergreifender Prüfung, Fabric-Adapter 26.3 als Quelltext ([Mod](../mods/bauplaner-bridge/README.md)) | Fabric-Adapter noch nicht kompiliert/im Spiel geprüft (Netzwerksperre); Aufnahme nicht gespeichert; Vergleich ohne BlockEntity-Inhalte
 | Litematic (P5-01) | Import `.litematic` Format 2–7 mit mehreren Regionen, negativen Größen und Einzelregionswahl in Bibliothek/Betrachter; Export aus Revision als `.litematic` (Format nach DataVersion) ([LITEMATIC](architecture/LITEMATIC.md)) | keine Abnahme mit echter Litematica-Datei im Spiel; Entities/Ticks nur im Original |
 | Team | Architektur geplant | nicht implementiert |
-| Prüfungen | 247 Node-Tests, 33 Playwright-Browserprüfungen (nur Chromium), strict Kern/Web, Builds und Dokumentationsprüfung bestanden | synthetische Formatfixtures, echte Referenzwerkzeug-/Spielabnahme offen |
+| Stabilität (S1) | Absturzschutz je Seite mit Fehlerbericht, Fehlerprotokoll der Sitzung, Systemcheck `#/system` (Auslieferung gegen Hashmanifest, Browserfähigkeiten, Speicher), Datencheck aller gespeicherten Datensätze ohne Reparatur, Großmodelle 2–4× schneller, Importvorschau im Bild ([STABILITY](architecture/STABILITY.md)) | Absturzschutz nicht mit echtem Zeichenfehler im Browser ausgelöst; nur Chromium |
+| Prüfungen | 268 Node-Tests, 40 Playwright-Browserprüfungen (nur Chromium), strict Kern/Web, Builds und Dokumentationsprüfung bestanden | synthetische Formatfixtures, echte Referenzwerkzeug-/Spielabnahme offen |
 
 ## Maßgebliche Einzelheiten
 
@@ -43,3 +44,4 @@ Ausbau offener Punkte (27.10.2026): Itemspalte und Packliste in der Bauanleitung
 B11 Oberfläche (28.10.2026): Bibliothek als Katalog mit isometrischen Vorschaubildern, Kategorieleiste, Filterspalte mit Chips, Detailseite je Gebäude, Ensembles als Bildkarten, Vergleich bis vier Gebäude, Merkliste, „Überrasch mich“; Projektzentrale mit Projektbildern und Vorlagen. Details [UI](architecture/UI.md).
 
 B14 Baustelle (28.10.2026): Tab „Baustelle“ mit Fortschrittsübersicht, eigenen Bauabschnitten, Lagerbestand und Sammel-/Farmplan je Abschnitt, Freiraum an Anschlüssen; „vorhanden“ im Material-Tab wird gespeichert. Details [SITE](architecture/SITE.md).
+S1 Stabilität (28.10.2026): Kamera-Fehler nach Dateiimport behoben (3D-Fläche wuchs mit dem Importbericht), Absturzschutz und Fehlerprotokoll, Systemcheck mit Auslieferungs- und Datencheck, Leistung großer Modelle (605 568 Blöcke: Zusammensetzen 17 s → 4–5 s). Details [STABILITY](architecture/STABILITY.md).

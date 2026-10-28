@@ -12,11 +12,13 @@ import { useEffect, useState } from 'react';
  *   #/projekt/<id>         Editor
  *   #/projekt/<id>/<tab>   Projektunterseite (z. B. bauen)
  *   #/betrachter           Dateibetrachter
+ *   #/system               Systemcheck (Auslieferung, Speicher, Datencheck, Fehlerprotokoll)
  */
 export type Route =
   | { readonly view: 'projects' }
   | { readonly view: 'library'; readonly projectId?: string; readonly page?: LibraryPage; readonly id?: string; readonly sub?: string; readonly search?: string }
   | { readonly view: 'viewer' }
+  | { readonly view: 'system' }
   | { readonly view: 'project'; readonly projectId: string; readonly tab: string }
   | { readonly view: 'not-found'; readonly path: string };
 
@@ -41,6 +43,7 @@ export function parseRoute(hash: string): Route {
       return { view: 'library', page, ...(projectId && { projectId }), ...(rest[1] && { id: rest[1] }), ...(rest[2] && { sub: rest[2] }) };
   }
   if (parts[0] === 'betrachter' && parts.length === 1) return { view: 'viewer' };
+  if (parts[0] === 'system' && parts.length === 1) return { view: 'system' };
   if (parts[0] === 'projekt' && parts[1] && parts.length <= 3) return { view: 'project', projectId: parts[1], tab: parts[2] ?? 'editor' };
   return { view: 'not-found', path };
 }
@@ -55,6 +58,7 @@ export function href(route: Route): string {
       return `${base}${page}${id}${route.search && !page ? `?${route.search}` : ''}`;
     }
     case 'viewer': return '#/betrachter';
+    case 'system': return '#/system';
     case 'project': return `#/projekt/${encodeURIComponent(route.projectId)}${route.tab === 'editor' ? '' : `/${route.tab}`}`;
     case 'not-found': return '#/';
   }

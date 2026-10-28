@@ -37,3 +37,5 @@ export { MATERIAL_SETS, MATERIAL_KIND_LABEL, materialSet, materialOf, detectMate
 export type { MaterialSet, MaterialKind, MaterialUse, MaterialSwap, SwapResult } from './variants.js';
 export { SITE_SCHEMA_VERSION, DEFAULT_RESERVATION_DEPTH, MAX_RESERVATION_DEPTH, emptySite, siteOf, checkSite, siteOperation, addSection, updateSection, removeSection, moveSection, setStock, toggleResolvedStock, reservationKey, setReservation, pruneSite, sectionOfStep, SECTION_PRESET_LABEL, suggestSections, checkSections, gatherRuleFor, GATHER_BUILDING_IDS, planSite, RESERVATION_STATE_LABEL, profileSize, reservationCells, reservationsFor } from './site.js';
 export type { SitePlan, SiteSection, SectionMember, ReservationSetting, SectionPreset, SectionIssue, GatherRule, GatherLine, BuildItemLine, SectionPlan, SiteOverview, ReservationState, Reservation } from './site.js';
+export { checkIntegrity, INTEGRITY_SEVERITY_LABEL } from './integrity.js';
+export type { IntegrityReport, IntegrityFinding, IntegritySeverity, IntegrityCode, IntegritySource } from './integrity.js';

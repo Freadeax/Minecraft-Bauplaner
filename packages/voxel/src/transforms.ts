@@ -1,6 +1,6 @@
 import type { StateTransformResult } from './states.js';
 import type { Bounds, Transform, Vec3, VoxelPayload } from './types.js';
-import { assertVec3, createPayload, validatePayload } from './validation.js';
+import { adoptPayload, assertVec3, createPayload, isSealedPayload, validatePayload } from './validation.js';
 import { checkTransform, transformBlockState, transformVector as vector } from './states.js';
 
 function point(v: Vec3, pivot: Vec3, t: Transform): Vec3 {
@@ -56,7 +56,9 @@ export function transformPayload(payload: VoxelPayload, t: Transform): PayloadTr
     if (!identity) issues.push({ code: 'UNRESOLVED_BLOCK_ENTITY', path: `blockEntities[${i}]`, message: 'Position der Zuordnung transformiert, NBT unverändert erhalten; semantischer Adapter fehlt.' });
     return { ...e, position: transformCellPosition(e.position,payload.pivot,t) };
   });
-  const output = createPayload({ ...payload, bounds: bounds(payload.bounds,payload.pivot,t), pivot: t.position, palette,
+  // Fresh cells and entity wrappers. Palette states and NBT data are shared with the input, so the copy is only
+  // skipped when the input is a sealed (deeply frozen) payload; e.g. records read from IndexedDB are copied.
+  const output = (isSealedPayload(payload) ? adoptPayload : createPayload)({ ...payload, bounds: bounds(payload.bounds,payload.pivot,t), pivot: t.position, palette,
     cells: payload.cells.map(c=>({ ...c, position: transformCellPosition(c.position,payload.pivot,t) })), blockEntities,
   });
   return { payload: output, issues: Object.freeze(issues), semanticsResolved: issues.length === 0 };

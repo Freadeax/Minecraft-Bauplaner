@@ -86,3 +86,7 @@ Umgesetzt: Katalogoberfläche nach dem Muster gängiger Schematic-Sammlungen ([U
 ## Baustelle B14 · 28.10.2026
 
 Umgesetzt: frei definierte Bauabschnitte (P3-02), Freiraum-Reservierung an Anschlüssen (P2-02), dauerhaftes „vorhanden“ und Sammel-/Farmplan je Abschnitt (R-017), Fortschrittsübersicht. Details [SITE](architecture/SITE.md). Nächste Ideen: Freiraum als Hülle im Editor-3D-Bild, Lager aus einer Truhen-Aufnahme der Spielbrücke (B8) übernehmen, Abschnitte als eigene Revision einfrieren, Sammelplan mit mehreren Spielern aufteilen.
+
+## Stabilität S1 · 28.10.2026
+
+Umgesetzt: Absturzschutz, Fehlerprotokoll, Systemcheck, Datencheck, Leistung großer Modelle, Importvorschau im Bild ([STABILITY](architecture/STABILITY.md)). Nächste sinnvolle Schritte: Safari/iPhone-Prüfung auf echtem Gerät; Rechenarbeit großer Projekte (Zusammensetzen, Bauanleitung) in einen Worker verlagern, damit die Oberfläche während einiger Sekunden Rechenzeit bedienbar bleibt; `owners` der Auflösung auf numerische Zellindizes umstellen (größter verbliebener Kostenblock, betrifft Editor/Anleitung/Material); Erinnerung an eine Sicherung nach längerer Zeit ohne Sicherung.

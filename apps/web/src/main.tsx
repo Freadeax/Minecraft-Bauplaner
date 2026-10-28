@@ -1,5 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { AppProvider } from './app/context';
+import { ErrorBoundary } from './app/ErrorBoundary';
+import { installErrorCapture } from './app/errorLog';
 import { useRoute } from './app/router';
 import type { Route } from './app/router';
 import { Cube, REPO_URL } from './app/ui';
@@ -7,6 +9,7 @@ import { ProjectsView } from './views/ProjectsView';
 import { LibraryView } from './views/LibraryView';
 import { ProjectView } from './views/project/ProjectView';
 import { ViewerView } from './views/ViewerView';
+import { SystemView } from './views/SystemView';
 import './style.css';
 import './catalog.css';
 import './schem.css';
@@ -16,6 +19,7 @@ function Page({ route }: { route: Route }) {
     case 'projects': return <ProjectsView />;
     case 'library': return <LibraryView projectId={route.projectId} page={route.page} id={route.id} sub={route.sub} search={route.search} />;
     case 'viewer': return <main><ViewerView /></main>;
+    case 'system': return <SystemView />;
     case 'project': return <ProjectView key={route.projectId} projectId={route.projectId} tab={route.tab} />;
     case 'not-found': return <div className="page"><div className="notice warning" role="alert">Seite „{route.path}“ gibt es nicht. <a href="#/">Zur Projektzentrale</a></div></div>;
   }
@@ -33,9 +37,10 @@ function App() {
         <a href="#/betrachter" aria-current={area === 'viewer' ? 'page' : undefined}>Betrachter</a>
         <a href={REPO_URL} target="_blank" rel="noreferrer">GitHub ↗</a>
       </nav><span className="version"><span /> Vorabversion 0.2</span></header>
-    <div id="inhalt" tabIndex={-1} className="content"><AppProvider><Page route={route} /></AppProvider></div>
-    <footer><span>LMNT BUILD STUDIO <span className="footer-dot">·</span> Mit Plan gebaut.</span><span>Unabhängiges Projekt · kein offizielles Minecraft-Produkt</span></footer>
+    <div id="inhalt" tabIndex={-1} className="content"><AppProvider><ErrorBoundary resetKey={window.location.hash}><Page route={route} /></ErrorBoundary></AppProvider></div>
+    <footer><span>LMNT BUILD STUDIO <span className="footer-dot">·</span> Mit Plan gebaut.</span><span><a href="#/system">Systemcheck</a> <span className="footer-dot">·</span> Unabhängiges Projekt · kein offizielles Minecraft-Produkt</span></footer>
   </>;
 }
 
+installErrorCapture();
 createRoot(document.getElementById('root')!).render(<App />);

@@ -227,3 +227,13 @@ GitHub Actions werden nicht genutzt. Der jeweils bearbeitende Agent führt alle 
 - Gefunden und behoben: Die Beispiel-Burgmauer zeigte zunächst 8 „verbaute“ Freiräume, weil passende Nachbarn ohne gespeicherte Verbindung als Fremdblöcke galten; jetzt Zustand „angedockt“ mit Knopf „Angedockte verbinden“. Lagerfelder wurden von einer globalen Eingaberegel gestreckt (eigene Breite).
 - Sichtprüfung per Screenshot (1400 px).
 - Grenzen: nur Chromium; Sammelzeiten sind Richtwerte.
+
+### 28.10.2026 – S1 Stabilität und Qualitätssicherung
+- Grundlage main 577f4aa (nach Rebase auf B12 und B14) plus S1. Node 22, lokales Playwright/Chromium.
+- Ausgangslage vor Änderungen: `npm run check` 234/234, `npm run test:e2e` 29/29.
+- `npm run check`: Typprüfung Kern/Web, Builds, 268/268 Node-Tests (254 nach B12/B14 + 7 in `tests/integrity.test.mjs` + 7 in `tests/stability.test.mjs`), Dokumentationsprüfung bestanden.
+- Neue Node-Fälle: Datencheck je Befundart (beschädigte Payload, fehlende Version auch nur in eingefrorener Revision, Bauteil-/Versionsbuchhaltung, fehlende/beschädigte/unbenutzte/unlesbare Originale, kaputte Projektdatensätze ohne Abbruch, keine Mutation; Prüfsumme der Originale unabhängig über Node-crypto); Auslieferungsprüfung (gleich/verändert/fehlt, fremdes Manifest abgelehnt); Route `#/system`; Großmodell 605 568 Blöcke mit Zeitbudgets für Version, Auflösung, Material, Anleitung, Flächen, Datencheck, Sicherung; Geometriehash zeichengleich zur Referenzdefinition (zusätzlich vor/nach Umbau für 348 Schritte aus Modulen und Gebäuden identisch); Validierungscache nur bei mindestens so strengen Limits; schneller Validierungspfad mit denselben Meldungen.
+- Messung Großmodell vorher → nachher: `resolveProject` 17,1 s → 4,3 s, `buildGuide` 6,0 s → 4,2 s, `computeMaterials` 2,9 s → 2,0 s (Container, schwankend).
+- `npm run test:e2e`: 40/40 (35 nach B12/B14 + 5 in `tests/e2e/stability.e2e.mjs`): Importvorschau bei 1400 px und 400 px (3D-Fläche nicht höher als das Fenster, Bildmitte sichtbar; vorher 2 022 px hoch); Systemcheck ohne Befund; per IndexedDB beschädigte Version und verwaiste Instanz ⇒ „✕ 2 Fehler“ mit Empfehlung; Fehlerprotokoll mit Bericht über die Zwischenablage. Screenshots von Importvorschau (Desktop/schmal) und Systemcheck visuell geprüft.
+- Nach Rebase auf B12 gefunden und behoben: die feste Höhe der 3D-Fläche galt zuerst für jede `.detail-stage` und ließ die Fläche in der B12-Schem-Ansicht (Flex-Spalte) auf 0 px Breite schrumpfen; jetzt nur für direkte Kinder von `.detail-hero`.
+- Grenzen: Absturzschutz nicht mit echtem Zeichenfehler im Browser ausgelöst; nur Chromium; Zeitbudgets fangen nur grobe Rückschritte.
