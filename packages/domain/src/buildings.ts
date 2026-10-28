@@ -4,8 +4,14 @@ import type { BlockState, Cell, Vec3, VoxelPayload } from '../../voxel/src/types
 import { addAssetVersion, createAsset } from './library.js';
 import { SAMPLE_PROFILE } from './samples.js';
 import { facetTags } from './catalog.js';
-import type { BuildingFacets } from './catalog.js';
-import type { Asset, AssetVersion, Connector } from './types.js';
+import { FAMILY_PREFIX } from './catalog.js';
+import type { Asset, AssetVersion } from './types.js';
+import { PATH_PROFILE, WIKI, joint } from './build/spec.js';
+import type { BuildingSpec, Inspiration } from './build/spec.js';
+import { ALL_SET_SPECS } from './build/sets/index.js';
+
+export { PATH_PROFILE };
+export type { BuildingSpec, Inspiration };
 
 /**
  * Gebäudevorschläge (B9): original synthetic buildings generated from code.
@@ -427,21 +433,8 @@ function baumhaus(): VoxelPayload {
 
 // ------------------------------------------------------------ catalogue
 
-export interface BuildingSpec {
-  readonly id: string;
-  readonly name: string;
-  readonly description: string;
-  readonly facets: BuildingFacets;
-  readonly tags: readonly string[];
-  readonly payload: () => VoxelPayload;
-  readonly connectors?: readonly Connector[];
-}
-
-const joint = (id: string, position: Vec3, normal: Vec3, type: string, profile: string): Connector => ({ id, position, normal, up: [0, 1, 0], type, profile });
-/** Shared path connector of bridge and jetty: a 4-wide deck end. */
-export const PATH_PROFILE = 'weg_4';
-
-export const BUILDING_SPECS: readonly BuildingSpec[] = [
+/** The 16 original B9 designs; unchanged so their content addresses stay stable. */
+const CLASSIC_SPECS: readonly BuildingSpec[] = [
   { id: 'bld_fachwerkhaus', name: 'Fachwerkhaus', payload: fachwerkhaus, tags: ['dorf', 'zweistöckig'],
     description: 'Zweistöckiges Wohnhaus mit Eichenfachwerk, Satteldach, Dachboden mit Schlafplatz und Leiter.',
     facets: { kategorie: ['wohnhaus'], stil: ['mittelalterlich'], biom: ['ebene', 'wald'], funktion: ['wohnen', 'lagern'] } },
@@ -456,7 +449,8 @@ export const BUILDING_SPECS: readonly BuildingSpec[] = [
     facets: { kategorie: ['wahrzeichen'], stil: ['kuestenstil'], biom: ['kueste'], funktion: ['orientierung', 'aussicht'] } },
   { id: 'bld_dorfbrunnen', name: 'Dorfbrunnen', payload: dorfbrunnen, tags: ['dorfplatz', 'wasser'],
     description: 'Überdachter Brunnen mit Wasserbecken und Hängelaterne als Mittelpunkt eines Dorfplatzes.',
-    facets: { kategorie: ['dekoration'], stil: ['mittelalterlich'], biom: ['ueberall'], funktion: ['wasserquelle', 'versammlung'] } },
+    facets: { kategorie: ['dekoration'], stil: ['mittelalterlich'], biom: ['ueberall'], funktion: ['wasserquelle', 'versammlung'] },
+    gaps: ['minecraft:water'], tips: ['Wasser als Quelle setzen: zwei Eimer in gegenüberliegende Ecken füllen das Becken unendlich.'], inspiration: [WIKI('Village', 'Dorf')] },
   { id: 'bld_schmiede', name: 'Schmiede', payload: schmiede, tags: ['werkstatt', 'esse'],
     description: 'Offene Werkstatt mit Ofen, Schmelzofen, Amboss, Schmiedetisch und Schleifstein unter Pultdach.',
     facets: { kategorie: ['handwerk'], stil: ['mittelalterlich'], biom: ['ebene', 'wald', 'taiga'], funktion: ['handwerk', 'lagern'] } },
@@ -471,7 +465,8 @@ export const BUILDING_SPECS: readonly BuildingSpec[] = [
     facets: { kategorie: ['sakral'], stil: ['mittelalterlich', 'klassisch'], biom: ['ebene', 'wald'], funktion: ['versammlung'] } },
   { id: 'bld_gewaechshaus', name: 'Gewächshaus', payload: gewaechshaus, tags: ['feld', 'glas'],
     description: 'Glasgewächshaus mit bewässerten Beeten für Weizen, Karotten und Kartoffeln.',
-    facets: { kategorie: ['landwirtschaft'], stil: ['modern'], biom: ['ueberall'], funktion: ['landwirtschaft'] } },
+    facets: { kategorie: ['landwirtschaft'], stil: ['modern'], biom: ['ueberall'], funktion: ['landwirtschaft'] },
+    gaps: ['minecraft:water'], assumed: ['minecraft:dirt'], tips: ['Wasser bewässert Ackerboden bis 4 Blöcke weit; Glasdach hält Monster fern und lässt Licht durch.'] },
   { id: 'bld_villa', name: 'Moderne Villa', payload: villa, tags: ['flachdach', 'terrasse', 'zweistöckig'],
     description: 'Zweistöckige Villa aus weißem Beton mit Glasfront, Dachterrasse und Schlafzimmer im Obergeschoss.',
     facets: { kategorie: ['wohnhaus'], stil: ['modern'], biom: ['ebene', 'kueste'], funktion: ['wohnen', 'aussicht'] } },
@@ -494,6 +489,31 @@ export const BUILDING_SPECS: readonly BuildingSpec[] = [
     facets: { kategorie: ['wohnhaus'], stil: ['rustikal'], biom: ['dschungel', 'wald'], funktion: ['wohnen', 'aussicht'] } },
 ];
 
+export const BUILDING_SPECS: readonly BuildingSpec[] = [...CLASSIC_SPECS, ...ALL_SET_SPECS];
+
+/** Plain tags, facet tags and the family tag of a spec. */
+export function specTags(spec: BuildingSpec): string[] {
+  return [...spec.tags, ...facetTags(spec.facets), ...(spec.family ? [`${FAMILY_PREFIX}${spec.family.id}`] : [])];
+}
+const FAMILY_LABEL = new Map(BUILDING_SPECS.filter(s => s.family).map(s => [s.family!.id, s.family!.label]));
+export function familyLabel(id: string): string { return FAMILY_LABEL.get(id) ?? id; }
+
+export interface BuildingInfo {
+  readonly family?: { readonly id: string; readonly label: string; readonly variant: string };
+  readonly tips: readonly string[];
+  readonly inspiration: readonly Inspiration[];
+  /** Asset ids of the other members of the variant family, in catalogue order. */
+  readonly variants: readonly { readonly assetId: string; readonly variant: string }[];
+}
+const BY_ID = new Map(BUILDING_SPECS.map(s => [s.id, s]));
+/** Static design information of a shipped building (undefined for own assets). */
+export function buildingInfo(assetId: string): BuildingInfo | undefined {
+  const spec = BY_ID.get(assetId);
+  if (!spec) return undefined;
+  const variants = spec.family ? BUILDING_SPECS.filter(s => s.family?.id === spec.family!.id).map(s => ({ assetId: s.id, variant: s.family!.variant })) : [];
+  return { ...(spec.family && { family: spec.family }), tips: spec.tips ?? [], inspiration: spec.inspiration ?? [], variants };
+}
+
 export interface BuildingLibrary { readonly assets: readonly Asset[]; readonly versions: readonly AssetVersion[] }
 
 const PROVENANCE = { author: 'Minecraft-Bauplaner', source: 'eigener synthetischer Entwurf (Gebäudegenerator)', license: 'frei für dieses Projekt' };
@@ -502,7 +522,7 @@ const PROVENANCE = { author: 'Minecraft-Bauplaner', source: 'eigener synthetisch
 export async function createBuildingLibrary(): Promise<BuildingLibrary> {
   const assets: Asset[] = [], versions: AssetVersion[] = [];
   for (const spec of BUILDING_SPECS) {
-    const asset = createAsset({ id: spec.id, name: spec.name, description: spec.description, tags: [...spec.tags, ...facetTags(spec.facets)], provenance: PROVENANCE, demo: true });
+    const asset = createAsset({ id: spec.id, name: spec.name, description: spec.description, tags: specTags(spec), provenance: PROVENANCE, demo: true });
     const r = await addAssetVersion(asset, { payload: spec.payload(), label: '1.0', connectors: spec.connectors ?? [], source: { format: 'demo' } });
     assets.push(r.asset); versions.push(r.version);
   }
