@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { countBlocks } from '../../../../packages/voxel/src/index.js';
 import type { Cell } from '../../../../packages/voxel/src/index.js';
-import { addAssetVersion, applyOperation, buildCatalog, createAsset, facetCounts, facetLabel, newInstance, projectContext, queryCatalog, resolveProject,
-  similarEntries, suggestForProject, updateAssetMeta, withFacets, SORT_LABEL } from '../../../../packages/domain/src/index.js';
-import type { Asset, AssetVersionSource, BuildingFacets, BuildingMetrics, CatalogEntry, OriginalFile, Project, SortKey } from '../../../../packages/domain/src/index.js';
+import { addAssetVersion, applyOperation, buildCatalog, buildingInfo, createAsset, createEnsembleProject, ensemblesWith, facetCounts, facetLabel, familyMembers,
+  latestVersions, missingMembers, newInstance, projectContext, queryCatalog, resolveProject, similarEntries, suggestForProject, updateAssetMeta, withFacets,
+  ENSEMBLES, SORT_LABEL, STAGE_LABEL } from '../../../../packages/domain/src/index.js';
+import type { Asset, AssetVersionSource, BuildingFacets, BuildingMetrics, CatalogEntry, Ensemble, OriginalFile, Project, SortKey } from '../../../../packages/domain/src/index.js';
+import { navigate } from '../app/router';
 import { useApp } from '../app/context';
 import { importFile, IMPORT_ACCEPT, IMPORT_FORMAT_LABEL } from '../app/importFile';
 import type { ImportedFile } from '../app/importFile';
@@ -43,6 +45,9 @@ export function LibraryView({ projectId: initialProjectId }: { projectId?: strin
   const [imported, setImported] = useState<ImportedFile | null>(null);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
+  const [mode, setMode] = useState<'gebaeude' | 'ensembles'>('gebaeude');
+  const [collapse, setCollapse] = useState(true);
+  const [ensembleId, setEnsembleId] = useState<string>(ENSEMBLES[0]!.id);
   const abort = useRef<AbortController | null>(null);
   const file = useRef<HTMLInputElement>(null);
   // Metrics are pure functions of immutable, content-addressed versions: cache by version id.
@@ -64,12 +69,29 @@ export function LibraryView({ projectId: initialProjectId }: { projectId?: strin
   const scores = useMemo(() => suggestions ? new Map([...suggestions].map(([id, s]) => [id, s.score])) : undefined, [suggestions]);
   const effectiveSort: SortKey = sort === 'match' && !scores ? 'name' : sort;
   const catalogQuery = { ...filters, text: query, sort: effectiveSort, descending };
-  const results = queryCatalog(catalog.entries, catalogQuery, scores);
+  const results = queryCatalog(catalog.entries, { ...catalogQuery, collapseFamilies: collapse }, scores);
+  const families = useMemo(() => familyMembers(catalog.entries), [catalog]);
   const counts = facetCounts(catalog.entries, catalogQuery);
   const selected = library.assets.find(a => a.id === selectedId) ?? null;
   const selectedEntry: CatalogEntry | null = catalog.entries.find(e => e.asset.id === selectedId) ?? null;
   const similar = useMemo(() => selectedEntry ? similarEntries(selectedEntry, catalog.entries) : [], [selectedEntry, catalog]);
   const latest = selected ? library.versions.get(selected.versionIds.at(-1) ?? '') ?? null : null;
+  // Ensembles: shipped buildings as a ready layout; the preview is the resolved world of the would-be project.
+  const byAsset = useMemo(() => latestVersions(library.assets, library.versions), [library]);
+  const assetNames = useMemo(() => new Map(library.assets.map(a => [a.id, a.name])), [library]);
+  const ensemble: Ensemble = ENSEMBLES.find(e => e.id === ensembleId) ?? ENSEMBLES[0]!;
+  const ensembleMissing = missingMembers(ensemble, byAsset);
+  const ensembleWorld = useMemo(() => {
+    if (mode !== 'ensembles' || ensembleMissing.length) return null;
+    try { return resolveProject(createEnsembleProject(ensemble, byAsset, assetNames), library.versions); } catch { return null; }
+  }, [mode, ensemble, byAsset, assetNames, library, ensembleMissing.length]);
+  const createFromEnsemble = async () => {
+    try {
+      const created = createEnsembleProject(ensemble, byAsset, assetNames);
+      await repo.saveProject(created, 0);
+      navigate({ view: 'project', projectId: created.id, tab: 'editor' });
+    } catch (e) { say(`Projekt nicht angelegt: ${errorText(e)}`); }
+  };
   const noSelect = useMemo(() => () => {}, []);
   // Each panel owns one highlight layer; the crop box wins over connector anchors.
   const [connectorMarks, setConnectorMarksState] = useState<Highlight>(null);
@@ -170,6 +192,33 @@ export function LibraryView({ projectId: initialProjectId }: { projectId?: strin
         {busy && <button onClick={() => { abort.current?.abort(); setBusy(false); setMessage('Import abgebrochen.'); }}>Abbrechen</button>}</div></header>
     {message && <div className="notice" role="status">{message}{link && <a className="notice-link" href={link.href}>{link.label} →</a>}</div>}
     {catalog.missing.length > 0 && <div className="notice warning" role="alert">Version fehlt im Speicher für: {catalog.missing.map(a => a.name).join(', ')}. Diese Einträge werden nicht angezeigt.</div>}
+    <div className="mode-switch" role="group" aria-label="Ansicht">
+      <button type="button" aria-pressed={mode === 'gebaeude'} onClick={() => setMode('gebaeude')}>Gebäude</button>
+      <button type="button" aria-pressed={mode === 'ensembles'} onClick={() => setMode('ensembles')}>Ensembles <small>{ENSEMBLES.length}</small></button>
+    </div>
+    {mode === 'ensembles' ? <section className="library catalog ensembles" aria-label="Ensembles">
+      <aside className="library-list"><ul className="instance-list catalog-results">{ENSEMBLES.map(e => <li key={e.id}>
+        <button aria-pressed={e.id === ensemble.id} onClick={() => setEnsembleId(e.id)}><strong>{e.name}</strong>
+          <span>{e.members.length} Gebäude · {e.tags.join(' · ')}</span></button></li>)}</ul></aside>
+      <div className="viewport library-preview">
+        {ensembleWorld?.world ? <Viewer key={ensemble.id} payload={ensembleWorld.world} cells={ensembleWorld.world.cells} onSelect={noSelect}
+          colorFor={cell => cell.kind === 'erase' ? '#d35f5f' : stateColor(ensembleWorld.world!.palette[cell.paletteIndex]!.id)} />
+          : <div className="scene empty-scene"><p>{ensembleMissing.length ? `Bauteile fehlen in der Bibliothek: ${ensembleMissing.join(', ')}` : 'Vorschau nicht verfügbar.'}</p></div>}
+      </div>
+      <aside className="inspector"><div className="inspector-body ensemble-sheet">
+        <span className="panel-kicker">ENSEMBLE</span><h2>{ensemble.name}</h2>
+        <p className="muted">{ensemble.description}</p>
+        {ensembleWorld && <dl className="stats">
+          <div><dt>Fläche</dt><dd>{ensembleWorld.world ? size(ensembleWorld.world.bounds) : '–'}</dd></div>
+          <div><dt>Blöcke</dt><dd>{ensembleWorld.world ? formatNumber(countBlocks(ensembleWorld.world).blocks) : '–'}</dd></div>
+          <div><dt>Überschneidungen</dt><dd>{ensembleWorld.conflicts.length ? <span className="warn-text">{ensembleWorld.conflicts.length}</span> : <span className="ok-text">keine</span>}</dd></div></dl>}
+        <span className="panel-kicker">GEBÄUDE</span>
+        <ul className="similar-list">{ensemble.members.map((mb, i) => <li key={`${mb.assetId}-${i}`}><button onClick={() => { setMode('gebaeude'); setSelectedId(mb.assetId); }}>
+          <strong>{assetNames.get(mb.assetId) ?? mb.assetId}</strong><span>x {mb.at[0]} · z {mb.at[1]}{mb.turns ? ` · ${mb.turns * 90}° gedreht` : ''}</span></button></li>)}</ul>
+        <button className="primary" disabled={ensembleMissing.length > 0} onClick={() => void createFromEnsemble()}>Als Projekt anlegen</button>
+        <p className="small-note">Legt ein neues Projekt mit je einer Instanz pro Gebäude an. Materialliste, Bauanleitung und Export funktionieren dort wie gewohnt.</p>
+      </div></aside>
+    </section> : <>
     <section className="catalog-bar" aria-label="Suche und Sortierung">
       <input type="search" value={query} onChange={e => setQuery(e.target.value)} placeholder="Suchen: Name, Stil, Material, Beruf …" aria-label="Bauteile suchen" />
       <label>Passend zu Projekt<select value={projectId} aria-label="Projekt für Vorschläge" onChange={e => { setProjectId(e.target.value); if (e.target.value) setSort('match'); }}>
@@ -177,6 +226,7 @@ export function LibraryView({ projectId: initialProjectId }: { projectId?: strin
       <label>Sortieren<select value={effectiveSort} aria-label="Sortierung" onChange={e => setSort(e.target.value as SortKey)}>
         {SORTS.map(k => <option key={k} value={k} disabled={k === 'match' && !scores}>{SORT_LABEL[k]}</option>)}</select></label>
       {effectiveSort !== 'match' && <button type="button" aria-label={descending ? 'Absteigend sortiert' : 'Aufsteigend sortiert'} onClick={() => setDescending(!descending)}>{descending ? '↓ absteigend' : '↑ aufsteigend'}</button>}
+      <label className="check"><input type="checkbox" checked={collapse} onChange={e => setCollapse(e.target.checked)} /> Varianten zusammenfassen</label>
       <span className="muted" role="status">{results.length} von {catalog.entries.filter(e => !e.asset.archived).length} Einträgen</span>
     </section>
     <section className="library catalog">
@@ -185,9 +235,10 @@ export function LibraryView({ projectId: initialProjectId }: { projectId?: strin
           <CatalogFilters filters={filters} onChange={setFilters} counts={counts} tags={tags} /></details>
         <ul className="instance-list catalog-results">{results.map(e => { const m = e.metrics, s = scores?.get(e.asset.id); return <li key={e.asset.id}>
           <button aria-pressed={e.asset.id === selectedId} onClick={() => { setSelectedId(e.asset.id); setImported(null); }}>
-            <strong>{e.asset.name}{s !== undefined && <em className="score" title="Passung zum Projekt (0–100)">{s}</em>}</strong>
+            <strong>{e.asset.name}{s !== undefined && <em className="score" title="Passung zum Projekt (0–100)">{s}</em>}
+              {collapse && e.family && (families.get(e.family)?.length ?? 0) > 1 && <em className="variants" title="Weitere Varianten im Steckbrief">+{families.get(e.family)!.length - 1} Varianten</em>}</strong>
             <span>{[...e.facets.kategorie.map(k => facetLabel('kategorie', k)), ...e.facets.stil.map(v => facetLabel('stil', v))].join(' · ') || 'ohne Angaben'}{e.asset.demo ? ' · Beispiel' : ''}{e.asset.archived ? ' · archiviert' : ''}</span>
-            <span>{m.size.join('×')} · {formatNumber(m.blocks)} Blöcke · <span className="stars" aria-label={`Schwierigkeit ${m.difficulty.level} von 5`}>{stars(m.difficulty.level)}</span> · ≈ {m.buildTime.minutes} min</span>
+            <span>{m.size.join('×')} · {formatNumber(m.blocks)} Blöcke · <span className="stars" aria-label={`Schwierigkeit ${m.difficulty.level} von 5`}>{stars(m.difficulty.level)}</span> · ≈ {m.buildTime.minutes} min · {STAGE_LABEL[m.progression.stage]}</span>
           </button></li>; })}
           {results.length === 0 && <li className="muted">Keine Treffer. Filter lockern oder <button className="text-button" onClick={() => { setFilters({}); setQuery(''); }}>alles zurücksetzen</button>.</li>}</ul>
       </aside>
@@ -212,6 +263,7 @@ export function LibraryView({ projectId: initialProjectId }: { projectId?: strin
           <button className="text-button" type="button" onClick={() => setImported(null)}>Verwerfen</button>
         </form> : selected && latest ? <div className="inspector-body">
           {selectedEntry && <BuildingSheet entry={selectedEntry} similar={similar} onSelect={id => setSelectedId(id)}
+            info={buildingInfo(selected.id)} ensembles={ensemblesWith(selected.id)} onEnsemble={id => { setEnsembleId(id); setMode('ensembles'); }}
             suggestion={suggestions?.get(selected.id)} projectName={project?.name} adding={adding}
             onAdd={project ? () => void addToProject(selectedEntry) : undefined}
             onSaveFacets={selected.demo ? undefined : (facets, plain) => void saveFacets(selected, facets, plain)} />}
@@ -240,6 +292,6 @@ export function LibraryView({ projectId: initialProjectId }: { projectId?: strin
           <ul className="asset-picker">{library.assets.filter(a => !a.demo).map(a => <li key={a.id}><button onClick={() => void saveVersion(a, `${a.versionIds.length + 1}.0`)}>→ {a.name} (v{a.versionIds.length + 1}.0)</button></li>)}</ul>
           {library.assets.every(a => a.demo) && <p className="small-note">Beispielbauteile erhalten keine neuen Versionen.</p>}</details>}
       </aside>
-    </section>
+    </section></>}
   </div>;
 }

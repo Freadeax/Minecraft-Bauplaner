@@ -21,7 +21,7 @@ label.check{display:flex;align-items:center;gap:8px}fieldset{border:1px solid va
 .editor,.library{display:grid;grid-template-columns:230px minmax(0,1fr) 260px;background:#101e28;border:1px solid var(--line);border-radius:13px;overflow:hidden}
 .editor-tree,.library-list,.inspector{padding:18px;display:flex;flex-direction:column;gap:6px;min-width:0}.editor-tree,.library-list{background:#12202a;border-right:1px solid var(--line)}.inspector{border-left:1px solid var(--line)}
 .instance-list,.asset-picker,.version-list,.conflict-list{list-style:none;margin:6px 0 14px;padding:0;display:grid;gap:6px}.instance-list button{width:100%;text-align:left;display:grid;gap:3px;padding:10px;border:1px solid #2b3f4a;border-radius:7px;background:#152733}.instance-list strong{font-size:12px;font-weight:550;overflow-wrap:anywhere}.instance-list span{font-size:9px;color:var(--muted)}
-.asset-picker button{width:100%;text-align:left;font-size:11px;padding:8px 10px;border:1px dashed #3a5560;border-radius:6px;background:transparent}.asset-picker button:hover{border-color:var(--mint);color:var(--mint)}
+.asset-picker button{width:100%;text-align:left;font-size:11px;padding:8px 10px;border:1px dashed #3a5560;border-radius:6px;background:transparent}.asset-picker button:hover{border-color:var(--mint);color:var(--mint)}.editor-tree .asset-picker{max-height:320px;overflow-y:auto;padding-right:2px}.picker-search{width:100%;margin:6px 0 0}
 .badge{font-style:normal;font-size:9px;border-radius:4px;padding:2px 6px;justify-self:start}.badge.danger{background:#4a2125;color:#ffc7c7}
 .coord-row{display:grid;grid-template-columns:16px 30px 1fr 30px;gap:6px;align-items:center;margin:5px 0;font-size:11px}.coord-row input{text-align:center;padding:6px}.coord-row button{padding:6px 0}
 .empty-scene{display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;color:var(--muted);font-size:12px}.inline-range{display:flex;align-items:center;gap:8px;margin:0;font-size:9px}.inline-range input{width:140px}
@@ -148,6 +148,11 @@ label.check{display:flex;align-items:center;gap:8px}fieldset{border:1px solid va
 .facet-fields{display:grid;gap:4px}.facet-choice{display:flex;flex-wrap:wrap;gap:4px;margin:4px 0}.facet-choice>span{width:100%;font-size:10px;color:#b0c0c7}
 .chip-check{display:inline-flex;align-items:center;gap:4px;margin:0;border:1px solid #324751;border-radius:20px;padding:3px 8px;font-size:10px;cursor:pointer}.chip-check:has(input:checked){border-color:var(--mint);color:var(--mint)}.chip-check input{margin:0;accent-color:var(--mint)}
 @media(max-width:1100px){.library.catalog{grid-template-columns:250px minmax(0,1fr)}.library.catalog .inspector{grid-column:1/-1;border-left:0;border-top:1px solid var(--line)}}
+.mode-switch{display:inline-flex;gap:0;margin:0 0 12px;border:1px solid #324751;border-radius:8px;overflow:hidden}.mode-switch button{border:0;border-radius:0;padding:8px 14px;background:#182b36;color:#d5e1e5;font-size:12px}.mode-switch button[aria-pressed=true]{background:#2f6f5e;color:#fff}.mode-switch small{opacity:.7}
+.catalog-results em.variants{font-style:normal;font-size:10px;border:1px solid #3b5562;border-radius:10px;padding:0 6px;color:#9fc3cf;white-space:nowrap}
+.variant-row{margin:8px 0}.variant-row .chips{margin-top:4px}.stage-line{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;margin:6px 0 10px}.stage-line small{color:#8aa3ad}
+.stage{font-size:11px;border-radius:10px;padding:1px 8px;background:#26404c;color:#d5e1e5}.stage-start{background:#2f6f5e}.stage-frueh{background:#5f6f2f}.stage-mitte{background:#7a5a24}.stage-spaet{background:#6a3a6f}
+.tip-list{margin:4px 0 8px;padding-left:18px}.tip-list li{margin:3px 0}.ensemble-sheet .primary{margin-top:10px}
 @media(max-width:650px){.library.catalog{display:flex;flex-direction:column}.library.catalog .library-list{border-right:0}.filter-panel:not([open]){margin-bottom:0}.catalog-results{max-height:420px}.catalog-bar label{min-width:0;flex:1 1 45%}.catalog-bar .muted{margin-left:0}}
 
 /* Offene Punkte · Itemspalte und Packliste in der Bauanleitung */

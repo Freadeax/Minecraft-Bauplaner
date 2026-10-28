@@ -275,6 +275,7 @@ craft('tnt', 1, { gunpowder: 5, sand: 4 }); craft('redstone_lamp', 1, { redstone
 craft('tinted_glass', 2, { glass: 1, amethyst_shard: 4 }); craft('honey_block', 1, { honey_bottle: 4 }); craft('beehive', 1, { '#planks': 6, honeycomb: 3 });
 craft('lodestone', 1, { chiseled_stone_bricks: 8, iron_ingot: 1 }); craft('respawn_anchor', 1, { crying_obsidian: 6, glowstone: 3 });
 craft('crafter', 1, { iron_ingot: 5, crafting_table: 1, redstone: 2, dropper: 1 }); craft('calibrated_sculk_sensor', 1, { amethyst_shard: 3, sculk_sensor: 1 }); craft('shulker_box', 1, { shulker_shell: 2, chest: 1 });
+craft('blaze_powder', 2, { blaze_rod: 1 }); craft('ender_eye', 1, { ender_pearl: 1, blaze_powder: 1 }); craft('ender_chest', 1, { obsidian: 8, ender_eye: 1 });
 craft('cake', 1, { milk_bucket: 3, sugar: 2, egg: 1, wheat: 3 }); craft('sugar', 1, { sugar_cane: 1 });
 
 // Copper: oxidation stages and waxing of every craftable copper block.
@@ -305,7 +306,7 @@ raw('Pflanzen sammeln/anbauen', ['sugar_cane', 'cactus', 'kelp', 'vine', 'wheat'
   'cactus_flower', 'short_dry_grass', 'tall_dry_grass', 'chorus_flower', 'open_eyeblossom', 'closed_eyeblossom', 'pale_hanging_moss', 'resin_clump']);
 raw('Mit Schere sammeln', ['short_grass', 'tall_grass', 'fern', 'large_fern', 'seagrass', 'cobweb', 'white_wool']);
 raw('Mob-Drop/Tiere', ['string', 'leather', 'bone', 'ink_sac', 'glow_ink_sac', 'slime_ball', 'gunpowder', 'feather', 'blaze_rod', 'shulker_shell', 'prismarine_shard', 'prismarine_crystals',
-  'snowball', 'egg', 'honeycomb', 'honey_bottle', 'turtle_egg', 'sniffer_egg', 'milk_bucket', 'wet_sponge']);
+  'ender_pearl', 'snowball', 'egg', 'honeycomb', 'honey_bottle', 'turtle_egg', 'sniffer_egg', 'milk_bucket', 'wet_sponge']);
 raw('Mob-Drop/Tiere', ['ochre_froglight', 'verdant_froglight', 'pearlescent_froglight']);
 raw('Fund/Handel', ['dried_ghast', 'bell', 'heavy_core', 'dragon_head', 'conduit', 'beacon', 'trial_key', 'ominous_trial_key']);
 const RAW_PATTERNS: readonly (readonly [RegExp, string])[] = [

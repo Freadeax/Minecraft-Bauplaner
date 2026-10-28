@@ -23,7 +23,7 @@ after(async () => { await browser?.close(); server?.kill(); });
 const results = p => p.locator('.catalog-results li button');
 
 for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844 }]) {
-  test(`Gebäudekatalog: Filter, Bauplatz, Steckbrief, Vorschläge und Übernahme (${viewport.width}px)`, async () => {
+  test(`Gebäudekatalog: Filter, Varianten, Spielphase, Ensembles, Steckbrief und Übernahme (${viewport.width}px)`, async () => {
     const p = await browser.newPage({ viewport });
     p.setDefaultTimeout(10_000);
     const errors = [];
@@ -31,13 +31,25 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     p.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
     await p.goto(`${BASE}#/bibliothek`);
     await results(p).first().waitFor();
-    assert.equal(await results(p).count(), 19, '16 Gebäude + 3 Module');
+    // Variant families are collapsed by default; unchecking shows every building.
+    const collapsedCount = await results(p).count();
+    await p.getByLabel('Varianten zusammenfassen').uncheck();
+    const allCount = await results(p).count();
+    assert.ok(allCount >= 150, `großer Katalog: ${allCount}`);
+    assert.ok(collapsedCount < allCount && collapsedCount >= 100, `zusammengefasst: ${collapsedCount}`);
+    await p.getByLabel('Varianten zusammenfassen').check();
     await p.locator('.filter-panel > summary').click();
 
     await p.getByRole('group', { name: 'Filter Kategorie' }).getByRole('button', { name: /Wohnhaus/ }).click();
-    assert.equal(await results(p).count(), 6);
     await p.getByRole('group', { name: 'Filter Stil' }).getByRole('button', { name: /Nordisch/ }).click();
-    assert.deepEqual((await results(p).locator('strong').allInnerTexts()).map(t => t.trim()), ['Blockhütte', 'Iglu']);
+    const nordic = (await results(p).locator('strong').allInnerTexts()).map(t => t.trim());
+    for (const n of ['Blockhütte', 'Iglu']) assert.ok(nordic.some(t => t.startsWith(n)), n);
+    await p.getByRole('button', { name: 'Alle Filter zurücksetzen' }).click();
+
+    // Play stage filter: nothing from the late game remains.
+    await p.getByLabel('Spielphase bis').selectOption('frueh');
+    const early = await results(p).allInnerTexts();
+    assert.ok(early.length > 10 && !early.some(t => t.includes('Mittleres Spiel') || t.includes('Spätes Spiel')));
     await p.getByRole('button', { name: 'Alle Filter zurücksetzen' }).click();
 
     await p.getByLabel('Bauplatz Breite').fill('12'); await p.getByLabel('Bauplatz Tiefe').fill('4');
@@ -47,15 +59,38 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     assert.ok(!(await results(p).allInnerTexts()).some(t => t.includes('Hafensteg')));
     await p.getByRole('button', { name: 'Alle Filter zurücksetzen' }).click();
 
-    await p.getByLabel('Bauteile suchen').fill('bibliothekar');
+    // Variants: one collapsed entry, chips in the sheet switch between woods.
+    await p.getByLabel('Bauteile suchen').fill('starterhaus');
     assert.equal(await results(p).count(), 1);
+    assert.match(await results(p).first().innerText(), /\+7 Varianten/);
     await results(p).first().click();
+    const variants = p.getByRole('group', { name: 'Varianten' });
+    await variants.getByRole('button', { name: 'Kirsche' }).click();
+    await p.locator('.building-sheet').getByText('Starterhaus (Kirsche)', { exact: true }).waitFor();
+    assert.equal(await variants.getByRole('button', { name: 'Kirsche' }).getAttribute('aria-pressed'), 'true');
+    assert.ok((await p.locator('.building-sheet').innerText()).includes('Bautipps'));
+    await variants.getByRole('button', { name: 'Eiche', exact: true }).click();
+    await p.getByRole('region', { name: 'Teil von Ensembles' }).getByRole('button', { name: 'Starter-Basis' }).waitFor();
+
+    await p.getByLabel('Bauteile suchen').fill('kapelle');
+    await results(p).filter({ has: p.locator('strong', { hasText: /^Kapelle$/ }) }).click();
     const sheet = p.locator('.building-sheet');
     await sheet.getByText('Kapelle', { exact: true }).waitFor();
     const text = await sheet.innerText();
     for (const s of ['Angaben', 'Kennwerte', 'Abmessungen (B × H × T)', '7 × 12 × 13', 'Bibliothekar', 'Schätzung', 'drehbar', 'Materialliste']) assert.ok(text.includes(s), s);
     assert.match(text, /Ähnliche Gebäude/);
     await p.getByLabel('Bauteile suchen').fill('');
+
+    // Ensembles: preview without conflicts, then a new project with one instance per building.
+    await p.getByRole('group', { name: 'Ansicht' }).getByRole('button', { name: /Ensembles/ }).click();
+    await p.getByRole('region', { name: 'Ensembles' }).getByRole('button', { name: /^Burg/ }).click();
+    const ens = p.locator('.ensemble-sheet');
+    await ens.getByRole('heading', { name: 'Burg' }).waitFor();
+    await ens.getByText('keine', { exact: true }).waitFor();
+    await ens.getByRole('button', { name: 'Als Projekt anlegen' }).click();
+    await p.waitForURL(/#\/projekt\//);
+    await p.getByText('✓ Geometrisch konfliktfrei').waitFor();
+    assert.equal(await p.locator('.instance-list li').count(), 7);
 
     // Sample project, then suggestions for it and adding a building.
     await p.goto(BASE);

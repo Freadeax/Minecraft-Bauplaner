@@ -50,6 +50,10 @@ test('Projektzentrale → Beispielprojekt → Editor: konfliktfrei, Konflikt erz
   assert.match(await p.locator('.report').innerText(), /Per Vorrang entschieden\s*\n?\s*[1-9]/);
   await p.getByRole('button', { name: '✕ Entfernen' }).click();
   assert.equal(await p.locator('.instance-list li').count(), 4);
+  // The picker holds the whole catalogue; the search narrows it to the tower.
+  assert.ok(await p.locator('.asset-picker li').count() > 150);
+  await p.getByLabel('Bauteil zum Einfügen suchen').fill('eckturm');
+  assert.equal(await p.locator('.asset-picker li').count(), 1);
   await p.locator('.asset-picker button', { hasText: 'Eckturm' }).click();
   assert.equal(await p.locator('.instance-list li').count(), 5);
   await p.getByText('gespeichert', { exact: false }).first().waitFor();
@@ -68,7 +72,9 @@ test('Bibliothek zeigt Beispielbauteile mit Herkunft, Suche und Tags', async () 
   await p.getByLabel('Bauteile suchen').fill('');
   await p.locator('.filter-panel > summary').click(); await p.getByText(/^Tags \(/).click();
   await p.getByRole('button', { name: 'tor', exact: true }).click();
-  assert.equal(await p.locator('.library-list .instance-list li').count(), 1);
+  // The tag also marks the gates of the large catalogue (palisade, village and castle gate); every hit carries it.
+  const gates = (await p.locator('.library-list .instance-list li strong').allInnerTexts()).map(t => t.trim());
+  assert.ok(gates.includes('Tor') && gates.length >= 2 && gates.length < 20, gates.join(', '));
   assert.deepEqual(errors, []);
   await p.close();
 });

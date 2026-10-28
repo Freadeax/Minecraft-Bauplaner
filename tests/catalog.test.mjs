@@ -5,6 +5,7 @@ import {
   createBuildingLibrary, createSampleLibrary, BUILDING_SPECS, PATH_PROFILE, analyzeVersion, buildCatalog, queryCatalog, facetCounts, facetTags, facetsOf,
   plainTags, withFacets, fitsPlot, materialOverlap, projectContext, suggestForProject, similarEntries, needsOrientation, materialGroupOf, computeMaterials,
   validateConnectors, createProject, applyOperation, newInstance, resolveProject, buildGuide, assertGuideAcyclic, createAsset, addAssetVersion,
+  FAMILY_PREFIX, familyMembers, buildingInfo, familyLabel, stageOf, stageIndex, STAGES, STAGE_LABEL, ENSEMBLES, latestVersions, missingMembers, createEnsembleProject, ensemblesWith,
 } from '../dist/domain/src/index.js';
 
 const buildings = await createBuildingLibrary();
@@ -14,10 +15,19 @@ const versions = new Map([...samples.versions, ...buildings.versions].map(v => [
 const { entries, missing } = buildCatalog(assets, versions);
 const entry = id => entries.find(e => e.asset.id === id);
 const names = list => list.map(e => e.asset.name);
+// The 16 original B9 designs plus the 3 samples: exact-name assertions run on this fixed subset,
+// so the growing themed sets do not change them.
+const CLASSIC = new Set(['bld_fachwerkhaus', 'bld_blockhuette', 'bld_wuestenhaus', 'bld_leuchtturm', 'bld_dorfbrunnen', 'bld_schmiede', 'bld_scheune', 'bld_marktstand',
+  'bld_kapelle', 'bld_gewaechshaus', 'bld_villa', 'bld_iglu', 'bld_steinbruecke', 'bld_hafensteg', 'bld_wachturm', 'bld_baumhaus']);
+const classic = entries.filter(e => CLASSIC.has(e.asset.id) || !e.asset.id.startsWith('bld_'));
+const specOf = new Map(BUILDING_SPECS.map(s => [s.id, s]));
 const T0 = { position: [0, 0, 0], quarterTurns: 0, mirrorX: false };
 
 test('shipped buildings: deterministic, demo-labelled, with provenance and one version each', async () => {
-  assert.equal(BUILDING_SPECS.length, 16);
+  assert.ok(BUILDING_SPECS.length >= 150, `${BUILDING_SPECS.length} Gebäude`);
+  assert.equal(classic.length, 19);
+  assert.equal(new Set(BUILDING_SPECS.map(s => s.id)).size, BUILDING_SPECS.length, 'ids unique');
+  assert.equal(new Set(BUILDING_SPECS.map(s => s.name)).size, BUILDING_SPECS.length, 'names unique');
   assert.equal(missing.length, 0);
   const again = await createBuildingLibrary();
   assert.deepEqual(again.versions.map(v => v.id), buildings.versions.map(v => v.id), 'same code ⇒ same content addresses');
@@ -51,15 +61,17 @@ test('every building state is in the B7 catalogue: four turns and double mirror 
   }
 });
 
-test('materials of buildings: only the deliberate gaps stay visible (water, farmland)', () => {
+test('materials of buildings: only the gaps and assumptions declared in the spec stay visible', () => {
   for (const v of buildings.versions) {
-    const r = computeMaterials(v.payload);
-    const unresolved = [...new Set(r.unresolved.map(u => u.state.id))], assumed = r.items.filter(i => i.confidence === 'assumed').map(i => i.itemId);
-    const expectWater = ['bld_dorfbrunnen', 'bld_gewaechshaus'].includes(v.assetId);
-    assert.deepEqual(unresolved, expectWater ? ['minecraft:water'] : [], `${v.assetId} ungelöst`);
-    assert.deepEqual(assumed, v.assetId === 'bld_gewaechshaus' ? ['minecraft:dirt'] : [], `${v.assetId} Annahmen`);
-    assert.equal(analyzeVersion(v).items.complete, !expectWater, v.assetId);
+    const r = computeMaterials(v.payload), spec = specOf.get(v.assetId);
+    const unresolved = [...new Set(r.unresolved.map(u => u.state.id))].sort(), assumed = r.items.filter(i => i.confidence === 'assumed').map(i => i.itemId).sort();
+    assert.deepEqual(unresolved, [...(spec.gaps ?? [])].sort(), `${v.assetId} ungelöst`);
+    assert.deepEqual(assumed, [...(spec.assumed ?? [])].sort(), `${v.assetId} Annahmen`);
+    assert.ok(unresolved.every(id => ['minecraft:water', 'minecraft:lava'].includes(id)), `${v.assetId}: nur Flüssigkeiten ungelöst`);
+    assert.equal(analyzeVersion(v).items.complete, !unresolved.length && !assumed.length, v.assetId);
   }
+  assert.deepEqual(specOf.get('bld_dorfbrunnen').gaps, ['minecraft:water']);
+  assert.deepEqual(specOf.get('bld_gewaechshaus').assumed, ['minecraft:dirt']);
 });
 
 test('building connectors are valid boundary anchors and share the path profile', () => {
@@ -126,13 +138,14 @@ test('facet tags round-trip and keep plain tags', () => {
 });
 
 test('queryCatalog: facets OR within a group and AND across groups; "überall" fits every biome', () => {
-  const houses = queryCatalog(entries, { facets: { kategorie: ['wohnhaus'] } });
+  const houses = queryCatalog(classic, { facets: { kategorie: ['wohnhaus'] } });
   assert.deepEqual(names(houses), ['Baumhaus', 'Blockhütte', 'Fachwerkhaus', 'Iglu', 'Moderne Villa', 'Wüstenhaus']);
-  assert.deepEqual(names(queryCatalog(entries, { facets: { kategorie: ['wohnhaus'], stil: ['modern', 'nordisch'] } })), ['Blockhütte', 'Iglu', 'Moderne Villa']);
-  const snow = names(queryCatalog(entries, { facets: { biom: ['schnee'] } }));
+  assert.deepEqual(names(queryCatalog(classic, { facets: { kategorie: ['wohnhaus'], stil: ['modern', 'nordisch'] } })), ['Blockhütte', 'Iglu', 'Moderne Villa']);
+  const snow = names(queryCatalog(classic, { facets: { biom: ['schnee'] } }));
   assert.ok(snow.includes('Iglu') && snow.includes('Dorfbrunnen') && snow.includes('Eckturm') && !snow.includes('Wüstenhaus'));
   assert.equal(queryCatalog(entries, { origin: 'eigene' }).length, 0);
-  assert.equal(queryCatalog(entries, { origin: 'beispiele' }).length, 19);
+  assert.equal(queryCatalog(entries, { origin: 'beispiele' }).length, entries.length);
+  assert.equal(queryCatalog(classic, { origin: 'beispiele' }).length, 19);
 });
 
 test('queryCatalog: building site with and without rotation, height, difficulty, flags', () => {
@@ -146,25 +159,27 @@ test('queryCatalog: building site with and without rotation, height, difficulty,
   assert.ok(names(small).includes('Iglu') && !names(small).includes('Leuchtturm'));
   for (const e of queryCatalog(entries, { difficultyMax: 2 })) assert.ok(e.metrics.difficulty.level <= 2);
   assert.ok(queryCatalog(entries, { withBeds: true }).every(e => e.metrics.beds > 0));
-  assert.deepEqual(names(queryCatalog(entries, { withConnectors: true, connectorType: 'path_joint' })), ['Hafensteg', 'Steinbrücke']);
+  assert.deepEqual(names(queryCatalog(classic, { withConnectors: true, connectorType: 'path_joint' })), ['Hafensteg', 'Steinbrücke']);
+  assert.ok(names(queryCatalog(entries, { withConnectors: true, connectorType: 'path_joint' })).includes('Holzbrücke'));
   assert.ok(queryCatalog(entries, { onlyComplete: true }).every(e => e.metrics.items.complete));
   assert.ok(!names(queryCatalog(entries, { onlyComplete: true })).includes('Dorfbrunnen'));
 });
 
 test('queryCatalog: text finds names, facet labels, block ids and professions; sorting is deterministic', () => {
-  assert.deepEqual(names(queryCatalog(entries, { text: 'bibliothekar' })), ['Kapelle']);
+  assert.deepEqual(names(queryCatalog(classic, { text: 'bibliothekar' })), ['Kapelle']);
+  assert.ok(names(queryCatalog(entries, { text: 'bibliothekar' })).includes('Werkstatt: Bibliothek'));
   assert.ok(names(queryCatalog(entries, { text: 'sandstone' })).includes('Wüstenhaus'));
   assert.ok(names(queryCatalog(entries, { text: 'küstenstil' })).includes('Leuchtturm'));
   const byBlocks = queryCatalog(entries, { sort: 'blocks' });
   for (let i = 1; i < byBlocks.length; i++) assert.ok(byBlocks[i - 1].metrics.blocks <= byBlocks[i].metrics.blocks);
   assert.deepEqual(queryCatalog(entries, { sort: 'blocks', descending: true }).map(e => e.asset.id), [...queryCatalog(entries, { sort: 'blocks', descending: true })].map(e => e.asset.id));
-  assert.equal(queryCatalog(entries, { sort: 'height', descending: true })[0].asset.id, 'bld_leuchtturm');
+  assert.equal(queryCatalog(classic, { sort: 'height', descending: true })[0].asset.id, 'bld_leuchtturm');
   const archived = entries.map(e => e.asset.id === 'bld_iglu' ? { ...e, asset: { ...e.asset, archived: true } } : e);
   assert.ok(!names(queryCatalog(archived, {})).includes('Iglu')); assert.ok(names(queryCatalog(archived, { includeArchived: true })).includes('Iglu'));
 });
 
 test('facetCounts ignore the own facet but respect all other filters', () => {
-  const c = facetCounts(entries, { facets: { kategorie: ['wohnhaus'], stil: ['modern'] } });
+  const c = facetCounts(classic, { facets: { kategorie: ['wohnhaus'], stil: ['modern'] } });
   assert.equal(c.kategorie.wohnhaus, 1, 'only Villa is a modern Wohnhaus');
   assert.equal(c.kategorie.landwirtschaft, 1, 'Gewächshaus is modern Landwirtschaft');
   assert.equal(c.stil.modern, 1); assert.equal(c.stil.nordisch, 2, 'Blockhütte and Iglu among Wohnhäuser');
@@ -263,4 +278,84 @@ test('block-count scope classes and vanilla filter', async () => {
 test('sort "match" always lists the best match first, whatever the direction flag', () => {
   const scores = new Map([['bld_iglu', 90], ['bld_villa', 10]]);
   for (const descending of [false, true, undefined]) assert.equal(queryCatalog(entries, { sort: 'match', ...(descending !== undefined && { descending }) }, scores)[0].asset.id, 'bld_iglu');
+});
+
+// ------------------------------------------------------------------ catalogue extension (families, play stage, ensembles)
+
+/** Version ids of the samples and the 16 original buildings before the extension: content addresses must not move. */
+const STABLE_IDS = {
+  "sample_tower": "av_10868f41c30db28a998b712b3ff28906",
+  "sample_wall": "av_2364aa8e50e630d75286475dcaa02bfd",
+  "sample_gate": "av_232e4073dde45df918ee8dd851c7b950",
+  "bld_fachwerkhaus": "av_fd29e080b20522ebeb8a4604b1c4404f",
+  "bld_blockhuette": "av_6d57766cf83ad16ac7cf6eba289cf6db",
+  "bld_wuestenhaus": "av_4334b47f14b9a245ab98f31e63f372b9",
+  "bld_leuchtturm": "av_7381dc8ac7a87bbb8f676b108c365c62",
+  "bld_dorfbrunnen": "av_1c1f494915b946bab90a0b1f8d95246d",
+  "bld_schmiede": "av_76190f1b0adca7269f03fb0bf5c723b5",
+  "bld_scheune": "av_d3861f67fd6c645dbe85032c02a0a5eb",
+  "bld_marktstand": "av_293f2ab7e7a9bf483a67f9604a40f77d",
+  "bld_kapelle": "av_3a477ee1819c80fef039d35857eeb9e5",
+  "bld_gewaechshaus": "av_932d26fba4c83a254b03853641b53f78",
+  "bld_villa": "av_b7c1fe8edd3b13a277eb1995f2b010e5",
+  "bld_iglu": "av_4018067748565430daa8029bf0418229",
+  "bld_steinbruecke": "av_593e75b5a07da133e6a451f42195052e",
+  "bld_hafensteg": "av_39fe4d3fc8b939fda6439479da1e0d93",
+  "bld_wachturm": "av_9fa54ab1f4633842ac2fc3de73398700",
+  "bld_baumhaus": "av_4b1086b4da1164c57c7b3feb4c3bacda"
+};
+
+
+test('extension keeps the content addresses of the samples and the 16 original buildings', () => {
+  const all = new Map([...samples.versions, ...buildings.versions].map(v => [v.assetId, v.id]));
+  for (const [assetId, id] of Object.entries(STABLE_IDS)) assert.equal(all.get(assetId), id, assetId);
+});
+
+test('variant families: tags, info, collapsed query and member lists', () => {
+  const starter = entries.filter(e => e.family === 'starterhaus');
+  assert.equal(starter.length, 8);
+  for (const e of starter) {
+    assert.ok(e.asset.tags.includes(`${FAMILY_PREFIX}starterhaus`));
+    assert.ok(!e.tags.includes(`${FAMILY_PREFIX}starterhaus`), 'family tag is not a plain tag');
+  }
+  const collapsed = queryCatalog(entries, { collapseFamilies: true });
+  assert.equal(collapsed.filter(e => e.family === 'starterhaus').length, 1);
+  assert.equal(collapsed.length, entries.length - [...familyMembers(entries).values()].reduce((n, list) => n + list.length - 1, 0));
+  const info = buildingInfo('bld_starterhaus_spruce');
+  assert.equal(info.family.label, 'Starterhaus');
+  assert.equal(info.variants.length, 8);
+  assert.ok(info.tips.length > 0);
+  assert.equal(buildingInfo('own_asset'), undefined);
+  for (const s of BUILDING_SPECS) for (const l of s.inspiration ?? []) assert.match(l.url, /^https:\/\/minecraft\.wiki\/w\//, s.id);
+});
+
+test('play stage: explicit rules, latest stage wins, filter and sort', () => {
+  assert.equal(stageOf('minecraft:oak_planks'), 'start');
+  assert.equal(stageOf('minecraft:obsidian'), 'mitte');
+  assert.equal(stageOf('minecraft:purpur_block'), 'spaet');
+  assert.equal(entry('bld_leuchtfeuer').metrics.progression.stage, 'spaet');
+  for (const e of queryCatalog(entries, { stageMax: 'frueh' })) assert.ok(stageIndex(e.metrics.progression.stage) <= 1, e.asset.id);
+  const byStage = queryCatalog(entries, { sort: 'stage' });
+  for (let i = 1; i < byStage.length; i++) assert.ok(stageIndex(byStage[i - 1].metrics.progression.stage) <= stageIndex(byStage[i].metrics.progression.stage));
+  assert.deepEqual(STAGES, ['start', 'frueh', 'mitte', 'spaet']);
+  assert.ok(STAGE_LABEL.spaet);
+});
+
+test('ensembles: every member exists, projects resolve without conflicts, min corner lands at "at"', () => {
+  const byAsset = latestVersions(assets, versions);
+  assert.ok(ENSEMBLES.length >= 9);
+  assert.equal(new Set(ENSEMBLES.map(e => e.id)).size, ENSEMBLES.length);
+  for (const e of ENSEMBLES) {
+    assert.deepEqual(missingMembers(e, byAsset), [], e.id);
+    const p = createEnsembleProject(e, byAsset);
+    assert.equal(p.instances.length, e.members.length);
+    const r = resolveProject(p, versions);
+    assert.equal(r.conflicts.length, 0, `${e.id}: keine Überschneidungen`);
+    e.members.forEach((mb, i) => {
+      const min = r.placed.find(pl => pl.instance.id === p.instances[i].id).payload.bounds.min;
+      assert.deepEqual([min[0], min[2]], [...mb.at], `${e.id} ${mb.assetId}`);
+    });
+  }
+  assert.throws(() => createEnsembleProject({ ...ENSEMBLES[0], members: [{ assetId: 'bld_fehlt', at: [0, 0] }] }, byAsset), /fehlen/);
+  assert.ok(ensemblesWith('bld_torhaus').some(e => e.id === 'ens_burg'));
 });

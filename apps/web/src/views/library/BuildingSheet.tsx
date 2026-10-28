@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { BLOCK_CLASS_LABEL, FACETS, MATERIAL_GROUP_LABEL, SIZE_CLASS_LABEL, facetLabel } from '../../../../../packages/domain/src/index.js';
-import type { BuildingFacets, CatalogEntry, MaterialGroup, Similar, Suggestion } from '../../../../../packages/domain/src/index.js';
+import { BLOCK_CLASS_LABEL, FACETS, MATERIAL_GROUP_LABEL, SIZE_CLASS_LABEL, STAGE_HINT, STAGE_LABEL, facetLabel } from '../../../../../packages/domain/src/index.js';
+import type { BuildingFacets, BuildingInfo, CatalogEntry, Ensemble, MaterialGroup, Similar, Suggestion } from '../../../../../packages/domain/src/index.js';
 import { formatNumber } from '../../app/ui';
 import { stateColor } from '../../colors';
 import { FacetFields, facetsFromForm } from './FacetFields';
@@ -22,8 +22,11 @@ function Row({ label, children, hint }: { label: string; children: React.ReactNo
  * separate, labelled sections. Heuristics carry their formula as tooltip and
  * in a details block.
  */
-export function BuildingSheet({ entry, suggestion, projectName, similar, onSelect, onAdd, onSaveFacets, adding }: {
+export function BuildingSheet({ entry, suggestion, projectName, similar, onSelect, onAdd, onSaveFacets, adding, info, ensembles = [], onEnsemble }: {
   entry: CatalogEntry;
+  info?: BuildingInfo | undefined;
+  ensembles?: readonly Ensemble[];
+  onEnsemble?: ((ensembleId: string) => void) | undefined;
   suggestion?: Suggestion | undefined;
   projectName?: string | undefined;
   similar: readonly Similar[];
@@ -43,6 +46,11 @@ export function BuildingSheet({ entry, suggestion, projectName, similar, onSelec
       <span className="tag" title="berechnet">{stars(m.difficulty.level)} {m.difficulty.label}</span>
     </div>
     {asset.description && <p className="muted">{asset.description}</p>}
+    {info && info.variants.length > 1 && <div className="variant-row" role="group" aria-label="Varianten">
+      <span className="filter-label">{info.family?.label}: Varianten</span>
+      <div className="chips">{info.variants.map(v => <button key={v.assetId} type="button" aria-pressed={v.assetId === asset.id} onClick={() => onSelect(v.assetId)}>{v.variant}</button>)}</div></div>}
+    <p className="stage-line" title={STAGE_HINT[m.progression.stage]}><span className={`stage stage-${m.progression.stage}`}>{STAGE_LABEL[m.progression.stage]}</span>
+      <small>{m.progression.reasons.length ? `wegen ${m.progression.reasons.join(', ')}` : STAGE_HINT.start}</small></p>
 
     {suggestion && projectName !== undefined && <section className="sheet-section match" aria-label="Passung zum Projekt">
       <h3>Passung zu „{projectName}“ <b>{suggestion.score}</b><small>/100</small></h3>
@@ -128,6 +136,17 @@ export function BuildingSheet({ entry, suggestion, projectName, similar, onSelec
       </dl>
       {m.transform.unresolvedStates.length > 0 && <p className="small-note">Ungelöste Zustände bei Transformation: {m.transform.unresolvedStates.map(short).join(', ')}</p>}
     </section>
+
+    {info && (info.tips.length > 0 || info.inspiration.length > 0) && <section className="sheet-section" aria-label="Bautipps">
+      <h3>Bautipps <span className="badge source">Angabe</span></h3>
+      {info.tips.length > 0 && <ul className="tip-list">{info.tips.map(t => <li key={t}>{t}</li>)}</ul>}
+      {info.inspiration.length > 0 && <p className="small-note">Idee und Spielmechanik: {info.inspiration.map((l, i) => <span key={l.url}>{i > 0 && ' · '}<a href={l.url} target="_blank" rel="noreferrer noopener">{l.label}</a></span>)}. Eigener Entwurf, keine übernommene Schematic.</p>}
+    </section>}
+
+    {ensembles.length > 0 && <section className="sheet-section" aria-label="Teil von Ensembles">
+      <h3>Teil von Ensembles</h3>
+      <div className="chips">{ensembles.map(e => <button key={e.id} type="button" onClick={() => onEnsemble?.(e.id)}>{e.name}</button>)}</div>
+    </section>}
 
     {similar.length > 0 && <section className="sheet-section" aria-label="Ähnliche Gebäude">
       <h3>Ähnliche Gebäude</h3>
