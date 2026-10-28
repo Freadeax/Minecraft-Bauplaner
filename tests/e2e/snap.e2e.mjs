@@ -119,7 +119,7 @@ test('Editor: Instanz im 3D-Bild ziehen, rastet am Anschluss ein, ein Undo-Schri
 test('Bibliothek: Bereich als Bauteil speichern und Anschlüsse als neue Version anlegen', async () => {
   const { p, errors } = await page();
   await p.goto(`${BASE}#/bibliothek`);
-  await p.getByRole('button', { name: /Eckturm/ }).click();
+  await p.getByRole('link', { name: /^Eckturm/ }).first().click();
   assert.match(await p.locator('.connector-editor').innerText(), /schreibgeschützt/);
   await p.getByText('Bereich als Bauteil speichern').click();
   const yTo = p.getByLabel('Y bis');
@@ -128,7 +128,8 @@ test('Bibliothek: Bereich als Bauteil speichern und Anschlüsse als neue Version
   await p.getByLabel('Bezeichnung').fill('Turmsockel');
   await p.getByRole('button', { name: 'Ausschnitt speichern' }).click();
   await p.getByText('Bereich als neues Bauteil „Turmsockel“ gespeichert.', { exact: false }).waitFor();
-  const inspector = p.locator('.inspector');
+  await p.getByRole('heading', { name: 'Turmsockel' }).waitFor();
+  const inspector = p.locator('.building-detail');
   assert.match(await inspector.innerText(), /Turmsockel/);
   assert.match(await inspector.innerText(), /crop/);
   assert.match(await inspector.innerText(), /frei für dieses Projekt/, 'provenance inherited');

@@ -204,3 +204,11 @@ GitHub Actions werden nicht genutzt. Der jeweils bearbeitende Agent führt alle 
 - Gefunden und behoben: Die Editor-Bauteilliste streckte die 3D-Ansicht auf 6 511 px, Klicks in die Bildmitte trafen nichts (snap/viewer-E2E rot). Jetzt Suchfeld und Scrollfläche, 3D-Ansicht 721 px hoch.
 - Vorschaubilder aller Sets mit eigenem Renderer gesichtet (Fenster, Dächer, Windmühlenflügel, Schiffsrumpf nachgebessert).
 - Grenzen: Redstone-Module (Sortierer, Taktgeber, Schmelzmodul, Wasseraufzug) nach Java-Regeln gebaut, aber nicht im Spiel geprüft; nur Chromium.
+
+### 28.10.2026 – B11 Oberfläche Bibliothek und Projektzentrale
+- Grundlage main dce4394 plus B11. Node 22, lokales Playwright/Chromium.
+- `npm run check`: Typprüfung Kern/Web, Builds, 234/234 Node-Tests, Dokumentationsprüfung bestanden.
+- `npm run test:e2e`: 29/29. `catalog.e2e` neu geschrieben (1400 px und 390 px, siehe [UI](architecture/UI.md#prüfung)), dreimal hintereinander grün; `app`, `snap`, `persistence` auf Kartenlinks und Detailseite umgestellt, Prüfinhalte unverändert.
+- Gefunden und behoben: Kategoriekacheln wuchsen vor dem Laden des Bildes auf 241 px (feste Höhe); alte Listenregel `max-height: 720px` schnitt das Kartenraster ab; mobile Navigation blendete „Bibliothek“ aus.
+- Sichtprüfung per Screenshot: Übersicht, Detailseite, Ensembles, Projektzentrale (1400 px) und Übersicht/Detail (390 px).
+- Grenzen: nur Chromium; Vorschaubilder sind Näherungsfarben ohne Texturen; Touch nur über Playwright-Viewport, nicht auf echtem Gerät.

@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { applyOperation, backupFileName, buildRestore, createBackup, createProject, MAX_BACKUP_BYTES, newInstance, planRestore, readBackup } from '../../../../packages/domain/src/index.js';
-import type { Instance, Project, ProjectChoice, RestorePlan } from '../../../../packages/domain/src/index.js';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { applyOperation, backupFileName, buildRestore, createBackup, createEnsembleProject, createProject, latestVersions, MAX_BACKUP_BYTES, missingMembers, newInstance, planRestore, readBackup, resolveProject, ENSEMBLES } from '../../../../packages/domain/src/index.js';
+import type { Ensemble, Instance, Project, ProjectChoice, RestorePlan } from '../../../../packages/domain/src/index.js';
 import { useApp } from '../app/context';
 import type { StorageInfo } from '../app/repository';
 import { href, navigate } from '../app/router';
-import { Cube, download, errorText } from '../app/ui';
+import { download, errorText } from '../app/ui';
+import { Thumb } from '../thumbnail/Thumb';
 
 const mb = (n: number) => `${(n / 1_000_000).toLocaleString('de-DE', { maximumFractionDigits: 1 })} MB`;
 const planLabel = { new: 'neu', same: 'identisch vorhanden', differs: 'weicht lokal ab' } as const;
@@ -90,12 +91,73 @@ export function ProjectsView() {
     try { await repo.deleteProject(project.id); await load(); } catch (e) { setMessage(errorText(e)); }
   };
 
+  const byAsset = useMemo(() => latestVersions(library.assets, library.versions), [library]);
+  const names = useMemo(() => new Map(library.assets.map(a => [a.id, a.name])), [library]);
+  // Six large shipped buildings from different families as a teaser.
+  const featured = useMemo(() => {
+    const seen = new Set<string>();
+    return library.assets.filter(a => a.demo && !a.archived && byAsset.has(a.id))
+      .sort((a, b) => byAsset.get(b.id)!.payload.cells.length - byAsset.get(a.id)!.payload.cells.length)
+      .filter(a => { const fam = a.tags.find(t => t.startsWith('kategorie:')) ?? a.id; if (seen.has(fam)) return false; seen.add(fam); return true; }).slice(0, 6);
+  }, [library, byAsset]);
+  const worldOf = (p: Project) => { try { return resolveProject(p, library.versions).world; } catch { return null; } };
+  const ensembleWorld = (e: Ensemble) => { if (missingMembers(e, byAsset).length) return null; try { return resolveProject(createEnsembleProject(e, byAsset, names), library.versions).world; } catch { return null; } };
+  const createFromEnsemble = (e: Ensemble) => { try { void create(createEnsembleProject(e, byAsset, names)); } catch (err) { setMessage(errorText(err)); } };
+
   return <div className="page">
-    <section className="intro"><div><span className="eyebrow">PROJEKTZENTRALE</span><h1>Große Ideen.<br /><em>Block für Block.</em></h1>
-      <p>Setze gespeicherte Bauteile zu Projekten zusammen, prüfe Überschneidungen Block für Block und plane den Nachbau. Alles läuft lokal in deinem Browser.</p></div>
-      <div className="intro-aside"><div className="local-badge"><span className="pulse" /> {repo.kind === 'memory' ? 'Nur für diese Sitzung gespeichert' : 'Lokal in diesem Browser gespeichert'}</div>
-        <p>Keine Anmeldung. Kein Welt-Upload.<br />{repo.kind === 'memory' ? 'Nach dem Neuladen sind Projekte weg – bitte Sicherungen herunterladen.' : 'Browserdaten sind keine Cloudsicherung – lade regelmäßig Sicherungen herunter.'}</p></div></section>
+    <section className="home-hero"><div><span className="eyebrow">PROJEKTZENTRALE</span><h1>Große Ideen.<br /><em>Block für Block.</em></h1>
+      <p>Such dir Gebäude aus der Bibliothek, setze sie zu Projekten zusammen, prüfe Überschneidungen Block für Block und bau mit Materialliste und Schritt-für-Schritt-Anleitung nach. Alles läuft lokal in deinem Browser.</p>
+      <div className="hero-actions"><a className="primary button-link" href="#/bibliothek">Bibliothek entdecken</a>
+        <a className="secondary button-link" href="#neues-projekt" onClick={e => { e.preventDefault(); document.getElementById('projekt-name')?.focus(); }}>＋ Neues Projekt</a></div>
+      <div className="local-badge hero-badge"><span className="pulse" /> {repo.kind === 'memory' ? 'Nur für diese Sitzung gespeichert – bitte Sicherungen herunterladen.' : 'Lokal in diesem Browser gespeichert · keine Anmeldung · kein Welt-Upload'}</div></div>
+      <div className="hero-mosaic" aria-label="Beispiele aus der Bibliothek">{featured.map(a => { const v = byAsset.get(a.id)!; return <a key={a.id} href={`#/bibliothek/gebaeude/${encodeURIComponent(a.id)}`} title={a.name}>
+        <Thumb cacheKey={v.id} payload={() => v.payload} alt={a.name} width={200} height={200} /></a>; })}</div></section>
     {repo.notice && <div className="notice warning" role="alert"><strong>Nur Sitzungsspeicher</strong><p>{repo.notice}</p></div>}
+    {restore && <section className="restore-plan" aria-label="Wiederherstellung prüfen">
+      <span className="panel-kicker">WIEDERHERSTELLUNG PRÜFEN</span>
+      <p className="muted">„{restore.fileName}“ vom {new Date(restore.plan.backup.createdAt).toLocaleString('de-DE')} – Prüfsummen, Versionen und Originale verifiziert. Noch wurde nichts geschrieben.</p>
+      <ul>{restore.plan.projects.map(p => <li key={p.project.id}><strong>{p.project.name}</strong> · {planLabel[p.status]}
+        {p.status === 'differs' && <select aria-label={`Vorgehen für ${p.project.name}`} value={restore.choices[p.project.id] ?? 'copy'}
+          onChange={e => setRestore({ ...restore, choices: { ...restore.choices, [p.project.id]: e.target.value as ProjectChoice } })}>
+          <option value="copy">als Kopie anlegen (lokal bleibt)</option><option value="skip">überspringen</option><option value="replace">lokale Fassung ersetzen</option></select>}</li>)}</ul>
+      <ul className="muted">{buildRestore(restore.plan, restore.choices).summary.map((line, i) => <li key={i}>{line}</li>)}</ul>
+      <div className="button-row"><button className="primary" onClick={() => void applyRestore()} disabled={busy}>Wiederherstellen</button><button onClick={() => setRestore(null)}>Abbrechen</button></div>
+    </section>}
+    {message && <div className="notice" role="status">{message}</div>}
+    <section className="home-section" aria-label="Projekte">
+      <header><h2>Deine Projekte{projects?.length ? ` (${projects.length})` : ''}</h2></header>
+      <div className="card-grid">
+      <form id="neues-projekt" className="card new-card" onSubmit={e => { e.preventDefault(); createEmpty(); }}>
+        <span className="panel-kicker">NEUES PROJEKT</span>
+        <label>Name<input id="projekt-name" value={name} maxLength={120} onChange={e => setName(e.target.value)} placeholder="z. B. Hafenviertel" /></label>
+        <button className="primary" type="submit">＋ Leeres Projekt anlegen</button>
+        <button className="secondary" type="button" onClick={createSample}>Beispielprojekt „Burgmauer“</button>
+        <a className="text-button" href="#/betrachter">Nur eine Datei ansehen →</a>
+      </form>
+      {projects === null ? <p className="muted">Projekte werden geladen …</p> : projects.map(p => <article className="card project-card" key={p.id}>
+        <a className="project-thumb" href={href({ view: 'project', projectId: p.id, tab: 'editor' })} tabIndex={-1} aria-hidden="true">
+          {p.instances.length ? <Thumb cacheKey={`${p.id}@${p.revision}`} payload={() => worldOf(p)} alt="" width={360} height={202} /> : <span className="empty-project">noch leer</span>}</a>
+        <div className="project-body">
+        <h2><a href={href({ view: 'project', projectId: p.id, tab: 'editor' })}>{p.name}</a></h2>
+        {p.description && <p className="muted">{p.description}</p>}
+        <div className="chips"><span>{p.instances.length} Bauteile</span><span>{p.revisions.length} Revisionen</span><span title={new Date(p.updatedAt).toLocaleString('de-DE')}>geändert {new Date(p.updatedAt).toLocaleDateString('de-DE')}</span></div>
+        <dl className="stats sr-only"><div><dt>Instanzen</dt><dd>{p.instances.length}</dd></div><div><dt>Freigegebene Revisionen</dt><dd>{p.revisions.length}</dd></div>
+          <div><dt>Speicherrevision</dt><dd>{p.revision}</dd></div><div><dt>Profil</dt><dd>{p.profileId}</dd></div></dl>
+        <div className="button-row"><a className="primary" href={href({ view: 'project', projectId: p.id, tab: 'editor' })}>Öffnen</a>
+          <a className="secondary button-link" href={href({ view: 'project', projectId: p.id, tab: 'bauen' })}>Bauen</a>
+          <button onClick={() => void backup('project', p)} disabled={busy}>Sichern</button><button className="danger" onClick={() => void remove(p)}>Löschen</button></div>
+        </div>
+      </article>)}
+      </div>
+    </section>
+    <section className="home-section" aria-label="Vorlagen">
+      <header><h2>Mit einer Vorlage starten</h2><a href="#/bibliothek/ensembles">Alle Ensembles →</a></header>
+      <ul className="card-grid-auto">{ENSEMBLES.slice(0, 4).map(e => <li key={e.id}><article className="ecard">
+        <Thumb cacheKey={`ens:${e.id}:${e.members.map(mb => byAsset.get(mb.assetId)?.id ?? '-').join(',')}`} payload={() => ensembleWorld(e)} alt={`Vorschau ${e.name}`} width={360} height={220} />
+        <div className="bcard-body"><strong>{e.name}</strong><span className="bcard-kicker">{e.members.length} Gebäude</span><span className="ecard-text">{e.description}</span>
+          <div className="button-row"><button className="primary" disabled={missingMembers(e, byAsset).length > 0} onClick={() => void createFromEnsemble(e)}>Als Projekt anlegen</button>
+            <a className="text-button" href={`#/bibliothek/ensembles/${e.id}`}>Ansehen →</a></div></div></article></li>)}</ul>
+    </section>
     <section className="storage-panel" aria-label="Speicher und Sicherung">
       <div><span className="panel-kicker">SPEICHER & SICHERUNG</span>
         <p className="muted">{repo.kind === 'indexeddb' ? 'IndexedDB in diesem Browser' : 'Sitzungsspeicher'}
@@ -108,33 +170,5 @@ export function ProjectsView() {
           onChange={e => { const f = e.target.files?.[0]; if (f) void openBackup(f); }} /></label>
       </div>
     </section>
-    {restore && <section className="restore-plan" aria-label="Wiederherstellung prüfen">
-      <span className="panel-kicker">WIEDERHERSTELLUNG PRÜFEN</span>
-      <p className="muted">„{restore.fileName}“ vom {new Date(restore.plan.backup.createdAt).toLocaleString('de-DE')} – Prüfsummen, Versionen und Originale verifiziert. Noch wurde nichts geschrieben.</p>
-      <ul>{restore.plan.projects.map(p => <li key={p.project.id}><strong>{p.project.name}</strong> · {planLabel[p.status]}
-        {p.status === 'differs' && <select aria-label={`Vorgehen für ${p.project.name}`} value={restore.choices[p.project.id] ?? 'copy'}
-          onChange={e => setRestore({ ...restore, choices: { ...restore.choices, [p.project.id]: e.target.value as ProjectChoice } })}>
-          <option value="copy">als Kopie anlegen (lokal bleibt)</option><option value="skip">überspringen</option><option value="replace">lokale Fassung ersetzen</option></select>}</li>)}</ul>
-      <ul className="muted">{buildRestore(restore.plan, restore.choices).summary.map((line, i) => <li key={i}>{line}</li>)}</ul>
-      <div className="button-row"><button className="primary" onClick={() => void applyRestore()} disabled={busy}>Wiederherstellen</button><button onClick={() => setRestore(null)}>Abbrechen</button></div>
-    </section>}
-    <section className="card-grid" aria-label="Projekte">
-      <form className="card new-card" onSubmit={e => { e.preventDefault(); createEmpty(); }}>
-        <span className="panel-kicker">NEUES PROJEKT</span>
-        <label>Name<input value={name} maxLength={120} onChange={e => setName(e.target.value)} placeholder="z. B. Hafenviertel" /></label>
-        <button className="primary" type="submit">＋ Leeres Projekt anlegen</button>
-        <button className="secondary" type="button" onClick={createSample}>Beispielprojekt „Burgmauer“</button>
-        <a className="text-button" href="#/betrachter">Nur eine Datei ansehen →</a>
-      </form>
-      {projects === null ? <p className="muted">Projekte werden geladen …</p> : projects.map(p => <article className="card" key={p.id}>
-        <div className="project-icon"><Cube /></div>
-        <h2><a href={href({ view: 'project', projectId: p.id, tab: 'editor' })}>{p.name}</a></h2>
-        {p.description && <p className="muted">{p.description}</p>}
-        <dl className="stats"><div><dt>Instanzen</dt><dd>{p.instances.length}</dd></div><div><dt>Freigegebene Revisionen</dt><dd>{p.revisions.length}</dd></div>
-          <div><dt>Speicherrevision</dt><dd>{p.revision}</dd></div><div><dt>Profil</dt><dd>{p.profileId}</dd></div><div><dt>Zuletzt geändert</dt><dd>{new Date(p.updatedAt).toLocaleString('de-DE')}</dd></div></dl>
-        <div className="button-row"><a className="primary" href={href({ view: 'project', projectId: p.id, tab: 'editor' })}>Öffnen</a><button onClick={() => void backup('project', p)} disabled={busy}>Sichern</button><button className="danger" onClick={() => void remove(p)}>Löschen</button></div>
-      </article>)}
-    </section>
-    {message && <div className="notice" role="status">{message}</div>}
   </div>;
 }

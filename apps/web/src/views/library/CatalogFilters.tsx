@@ -12,6 +12,29 @@ export function activeFilterCount(f: Filters): number {
     + (f.origin && f.origin !== 'alle' ? 1 : 0) + [f.onlyComplete, f.vanillaOnly, f.withConnectors, f.withBeds, f.includeArchived].filter(Boolean).length;
 }
 
+/** One removable chip per active filter value, for the row above the results. */
+export function filterChips(f: Filters): { key: string; label: string; next: Filters }[] {
+  const out: { key: string; label: string; next: Filters }[] = [];
+  const without = (patch: Partial<Record<keyof Filters, unknown>>): Filters => {
+    const next: Record<string, unknown> = { ...f, ...patch };
+    for (const k of Object.keys(next)) if (next[k] === undefined) delete next[k];
+    return next as Filters;
+  };
+  for (const d of FACETS) for (const v of f.facets?.[d.key] ?? [])
+    out.push({ key: `${d.key}:${v}`, label: `${d.label}: ${d.values[v] ?? v}`, next: without({ facets: { ...f.facets, [d.key]: f.facets![d.key]!.filter(x => x !== v) } }) });
+  for (const t of f.tags ?? []) out.push({ key: `tag:${t}`, label: `#${t}`, next: without({ tags: f.tags!.filter(x => x !== t) }) });
+  for (const c of f.sizeClasses ?? []) out.push({ key: `size:${c}`, label: `Größe ${SIZE_CLASS_LABEL[c].split(' (')[0]}`, next: without({ sizeClasses: f.sizeClasses!.filter(x => x !== c) }) });
+  for (const c of f.blockClasses ?? []) out.push({ key: `blocks:${c}`, label: `Umfang ${c.toUpperCase()}`, next: without({ blockClasses: f.blockClasses!.filter(x => x !== c) }) });
+  if (f.difficultyMax !== undefined) out.push({ key: 'difficulty', label: `Schwierigkeit ≤ ${f.difficultyMax}`, next: without({ difficultyMax: undefined }) });
+  if (f.stageMax) out.push({ key: 'stage', label: `bis ${STAGE_LABEL[f.stageMax]}`, next: without({ stageMax: undefined }) });
+  if (f.maxBuildMinutes !== undefined) out.push({ key: 'time', label: `≤ ${f.maxBuildMinutes} min`, next: without({ maxBuildMinutes: undefined }) });
+  if (f.plot) out.push({ key: 'plot', label: `Bauplatz ${f.plot.width < 9999 ? f.plot.width : '∞'}×${f.plot.depth < 9999 ? f.plot.depth : '∞'}${f.plot.height ? `×${f.plot.height}` : ''}`, next: without({ plot: undefined }) });
+  if (f.origin && f.origin !== 'alle') out.push({ key: 'origin', label: f.origin === 'eigene' ? 'Eigene Bauteile' : 'Mitgelieferte', next: without({ origin: undefined }) });
+  const flags: [keyof Filters, string][] = [['onlyComplete', 'Vollständige Materialliste'], ['vanillaOnly', 'Nur Vanilla'], ['withConnectors', 'Mit Anschlüssen'], ['withBeds', 'Mit Schlafplatz'], ['includeArchived', 'Mit Archiv']];
+  for (const [k, label] of flags) if (f[k]) out.push({ key: k, label, next: without({ [k]: undefined }) });
+  return out;
+}
+
 function toggle<T>(list: readonly T[] | undefined, value: T): T[] {
   const set = new Set(list ?? []);
   if (set.has(value)) set.delete(value); else set.add(value);
@@ -19,8 +42,10 @@ function toggle<T>(list: readonly T[] | undefined, value: T): T[] {
 }
 
 /** Filter panel of the building catalogue. Facet chips show how many entries each value would leave. */
-export function CatalogFilters({ filters, onChange, counts, tags }: {
+export function CatalogFilters({ filters, onChange, counts, tags, hideFacets = [] }: {
   filters: Filters;
+  /** Facets shown elsewhere (the category strip), not repeated in the panel. */
+  hideFacets?: readonly FacetKey[];
   onChange(f: Filters): void;
   counts: Record<FacetKey, Record<string, number>>;
   tags: readonly string[];
@@ -41,7 +66,7 @@ export function CatalogFilters({ filters, onChange, counts, tags }: {
     set({ plot: width || depth || height ? { width: width || 9999, depth: depth || 9999, allowRotation, ...(height !== undefined && { height }) } : undefined });
   };
   return <div className="catalog-filters">
-    {FACETS.map(f => {
+    {FACETS.filter(f => !hideFacets.includes(f.key)).map(f => {
       const values = Object.keys({ ...f.values, ...counts[f.key] });
       return <div key={f.key} className="filter-group" role="group" aria-label={`Filter ${f.label}`}><span className="filter-label">{f.label}</span>
         <div className="chips">{values.map(v => {
@@ -81,6 +106,5 @@ export function CatalogFilters({ filters, onChange, counts, tags }: {
     <label className="check"><input type="checkbox" checked={filters.includeArchived ?? false} onChange={e => set({ includeArchived: e.target.checked })} /> Archivierte zeigen</label>
     {tags.length > 0 && <details className="filter-group" open={(filters.tags?.length ?? 0) > 0}><summary className="filter-label">Tags ({tags.length})</summary>
       <div className="chips" role="group" aria-label="Tags">{tags.map(t => <button key={t} type="button" aria-pressed={filters.tags?.includes(t) ?? false} onClick={() => set({ tags: toggle(filters.tags, t) })}>{t}</button>)}</div></details>}
-    {activeFilterCount(filters) > 0 && <button type="button" className="text-button" onClick={() => onChange({})}>Alle Filter zurücksetzen</button>}
   </div>;
 }

@@ -55,3 +55,7 @@ Besitzt: `packages/formats/src/litematic.ts`, `litematicWrite.ts`, `structure.ts
 ### B9-A · Gebäudekatalog v2 (Ausbau)
 
 Besitzt: `packages/domain/src/build/` (`plot.ts`, `spec.ts`, `sets/*.ts`), `packages/domain/src/ensembles.ts`, Erweiterungen in `catalog.ts`/`buildings.ts`, `tests/catalog.test.mjs`, `tests/e2e/catalog.e2e.mjs`, Katalogansichten unter `views/library/`. Kleine Eingriffe: `materials.ts` (`bricks`, `ender_chest` direkt), `recipes.ts` (Endertruhe, Enderauge, Lohenstaub, Enderperle), `colors.ts` (Redstone-, Pilz-, Farmblöcke), `EditorTab.tsx` (Suche in der Bauteilliste), `tests/e2e/app.e2e.mjs`. Abnahme: 150 Gebäude in 10 Sets + 16 klassische mit festen Versions-IDs, 12 Variantenfamilien, Spielphase, 9 Ensembles ohne Konflikte, keine stillen Material-/Rezeptlücken. Status: erledigt. Details [CATALOG](architecture/CATALOG.md).
+
+### B11 · Oberfläche Bibliothek und Projektzentrale
+
+Besitzt: `apps/web/src/thumbnail/` (`iso.ts`, `Thumb.tsx`), `apps/web/src/catalog.css`, `views/library/BuildingCard.tsx`, `BuildingDetail.tsx`, `EnsemblesPage.tsx`, `ComparePage.tsx`, `prefs.ts`, `docs/architecture/UI.md`. Umgebaut: `LibraryView.tsx` (Übersicht/Unterseiten/Import), `BuildingSheet.tsx` (in Abschnitte zerlegt), `ProjectsView.tsx` (Einstieg, Projektkarten mit Bild, Vorlagen). Kleine Eingriffe: `router.ts` (Bibliotheksunterseiten), `main.tsx`, `CatalogFilters.tsx` (`filterChips`, `hideFacets`), Bildchen in der Editor-Bauteilliste (`EditorTab.tsx`), angepasste Selektoren in `app`/`snap`/`persistence`-E2E. Details [UI](architecture/UI.md).

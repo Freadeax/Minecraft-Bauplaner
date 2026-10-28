@@ -72,3 +72,7 @@ P6-01 (B8) M1 umgesetzt: Spielaufnahme importieren, Zellvergleich je Bauschritt,
 B9 Gebäudekatalog (27.10.2026) umgesetzt: [CATALOG](architecture/CATALOG.md). Katalog v2 (28.10.2026): 150 Gebäude in zehn Themen-Sets, Variantenfamilien (u. a. Starterhaus in 8 Holzarten), Spielphase, Bautipps, 9 Ensembles. Offen: Vergleich zweier Gebäude nebeneinander, frei parametrisierbare Generatoren (Größe), eigene Ensembles speichern, eigene Kategorien verwalten, Spielabnahme der Redstone-Module.
 
 Ausbau offener Punkte (27.10.2026): P3-02 Itemmengen je Schritt umgesetzt (Bauitems je Schritt, Packliste je Schicht, Summe = Materialtab). P1-04a Katalog `vanilla-java-items-v2`. P2-02 Händigkeit für unsymmetrische Profile und Andocken per Ziehen im 3D-Bild umgesetzt ([CONNECTORS](architecture/CONNECTORS.md)). P1-03 Vorschaufarben je Materialfamilie. Offen: Freiraum-Reservierung an Anschlüssen, frei definierte Bauabschnitte, Rohstoffe/Rezepte, Safari/iPhone-Speicherprüfung (braucht echtes Gerät).
+
+## Oberfläche B11 · 28.10.2026
+
+Umgesetzt: Katalogoberfläche nach dem Muster gängiger Schematic-Sammlungen ([UI](architecture/UI.md)). Nächste sinnvolle Schritte: eigene Ensembles speichern, Filterzustand in der URL (teilbare Suchen), Vorschaubilder dauerhaft in IndexedDB zwischenspeichern, Blickrichtung des Vorschaubilds wählbar, Sammlungen/Ordner für eigene Bauteile.

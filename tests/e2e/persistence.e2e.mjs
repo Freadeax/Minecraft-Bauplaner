@@ -107,7 +107,7 @@ test('Originaldatei, Sicherung und Wiederherstellung in leerem Browser', async (
   await p.getByRole('button', { name: 'Als neues Bauteil speichern' }).click();
   await p.getByText('„Vertragsbauteil“ als Bauteil gespeichert.').waitFor();
   await p.reload();
-  await p.getByRole('button', { name: /Vertragsbauteil/ }).waitFor();
+  await p.getByRole('heading', { name: 'Vertragsbauteil' }).waitFor();
   await p.goto(BASE);
   await createSample(p);
   await p.goto(BASE);
@@ -135,7 +135,8 @@ test('Originaldatei, Sicherung und Wiederherstellung in leerem Browser', async (
   await r.p.getByRole('link', { name: sampleName }).click();
   await r.p.getByText('✓ Geometrisch konfliktfrei').waitFor();
   await r.p.goto(`${BASE}#/bibliothek`);
-  await r.p.getByRole('button', { name: /Vertragsbauteil/ }).waitFor();
+  await r.p.getByLabel('Bauteile suchen').fill('vertrag');
+  await r.p.getByRole('link', { name: /Vertragsbauteil/ }).waitFor();
 
   // Second restore: identical project is skipped, nothing duplicated.
   await r.p.goto(BASE);

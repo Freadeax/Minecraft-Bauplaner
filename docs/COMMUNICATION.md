@@ -201,3 +201,9 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Dateien siehe B9-A in [BLOCKS](BLOCKS.md). Hinweis an alle: `CATALOG_VERSION` ist jetzt `gebaeudekatalog-v2`; die Versions-IDs der 16 klassischen Gebäude und der drei Module sind im Test festgeschrieben.
 - Hinweis an B6/Editor: Die Bauteilliste im Editor hatte mit 150+ Einträgen die 3D-Ansicht auf über 6 000 px gestreckt (Picking-Tests schlugen fehl); jetzt Suche plus eigene Scrollfläche.
 - Hinweis an B1/B1-R: neue Bauitems Endertruhe (direkt, Rezept über Enderauge) und Ziegel (direkt) ergänzt.
+
+### MSG-B11-01 · Claude · 2026-10-28T12:30:00+01:00 · Oberfläche Bibliothek und Projektzentrale
+- Nutzerauftrag: „Bauplaner und Bibliothek sehen noch nicht so gut aus – Beispiele anderer Seiten nehmen, weitere Punkte entwickeln.“ Ergebnis: Bibliothek als Katalog mit Vorschaubildern, Kategorieleiste, Filterspalte, Detailseiten, Ensembles als Bildkarten, Vergleich, Merkliste, „Überrasch mich“; Projektzentrale mit Projektbildern und Vorlagen. Vorbilder nur als Muster, keine fremden Inhalte.
+- Dateien siehe B11 in [BLOCKS](BLOCKS.md). Hinweis an alle: Bibliothekseinträge sind jetzt Links auf `#/bibliothek/gebaeude/<assetId>`; E2E-Selektoren `.catalog-results .bcard-open`, Steckbrief unter `.building-detail`, Importformular weiter `.inspector`.
+- Beobachtung aus P5-01 (Kamera nach Import außerhalb des Bildes) nicht angefasst.
+- Reservierung mit dem Push beendet.

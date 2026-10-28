@@ -8,11 +8,12 @@ import { LibraryView } from './views/LibraryView';
 import { ProjectView } from './views/project/ProjectView';
 import { ViewerView } from './views/ViewerView';
 import './style.css';
+import './catalog.css';
 
 function Page({ route }: { route: Route }) {
   switch (route.view) {
     case 'projects': return <ProjectsView />;
-    case 'library': return <LibraryView key={route.projectId ?? ''} projectId={route.projectId} />;
+    case 'library': return <LibraryView projectId={route.projectId} page={route.page} id={route.id} />;
     case 'viewer': return <main><ViewerView /></main>;
     case 'project': return <ProjectView key={route.projectId} projectId={route.projectId} tab={route.tab} />;
     case 'not-found': return <div className="page"><div className="notice warning" role="alert">Seite „{route.path}“ gibt es nicht. <a href="#/">Zur Projektzentrale</a></div></div>;

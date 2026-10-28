@@ -9,6 +9,7 @@ import { mix, stateColor } from '../../colors';
 import { Viewer } from '../../Viewer';
 import type { DragHandler, ViewerProps } from '../../viewer/types';
 import { SnapPanel } from './SnapPanel';
+import { Thumb } from '../../thumbnail/Thumb';
 import { useLayerFilter } from '../../viewer/LayerControl';
 import { BlockInfo } from '../../viewer/BlockInfo';
 import { isResolved } from './session';
@@ -152,7 +153,9 @@ export function EditorTab({ session }: { session: ProjectSession }) {
       <a className="text-button suggest-link" href={`#/bibliothek/fuer/${encodeURIComponent(project.id)}`}>Passende Gebäude vorschlagen →</a>
       <input type="search" className="picker-search" value={pickerQuery} onChange={e => setPickerQuery(e.target.value)} placeholder={`${assets.length} Bauteile durchsuchen …`} aria-label="Bauteil zum Einfügen suchen" />
       {needle && pickerAssets.length === 0 && <p className="muted">Kein Bauteil passt zu „{pickerQuery.trim()}“.</p>}
-      <ul className="asset-picker">{pickerAssets.map(a => <li key={a.id}><button onClick={() => add(a)} title={a.description}>＋ {a.name}{a.demo && <small> · Beispiel</small>}</button></li>)}</ul>
+      <ul className="asset-picker">{pickerAssets.map(a => <li key={a.id}><button className="with-thumb" onClick={() => add(a)} title={a.description}>
+        {(() => { const v = library.versions.get(latestVersionId(a)!); return v ? <Thumb cacheKey={v.id} payload={() => v.payload} alt="" width={40} height={28} className="thumb mini" /> : null; })()}
+        <span>＋ {a.name}{a.demo && <small> · Beispiel</small>}</span></button></li>)}</ul>
       <a className="text-button" href="#/bibliothek">Bibliothek verwalten →</a>
     </aside>
     <div className="viewport">

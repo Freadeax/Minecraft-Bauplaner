@@ -64,16 +64,18 @@ test('Projektzentrale → Beispielprojekt → Editor: konfliktfrei, Konflikt erz
 test('Bibliothek zeigt Beispielbauteile mit Herkunft, Suche und Tags', async () => {
   const { p, errors } = await page();
   await p.goto(`${BASE}#/bibliothek`);
-  await p.getByRole('button', { name: /Eckturm/ }).click();
+  await p.getByRole('link', { name: /^Eckturm/ }).first().click();
   await p.getByText('Synthetisches Beispiel').waitFor();
-  assert.match(await p.locator('.inspector').innerText(), /west, east, north, south/);
+  assert.match(await p.locator('.building-detail').innerText(), /west, east, north, south/);
+  // Back to the grid: search and filters work on the cards.
+  await p.goBack();
   await p.getByLabel('Bauteile suchen').fill('wehrmauer zinnen');
-  assert.equal(await p.locator('.library-list .instance-list li').count(), 1);
+  assert.equal(await p.locator('.catalog-results .bcard').count(), 1);
   await p.getByLabel('Bauteile suchen').fill('');
-  await p.locator('.filter-panel > summary').click(); await p.getByText(/^Tags \(/).click();
+  await p.getByText(/^Tags \(/).click();
   await p.getByRole('button', { name: 'tor', exact: true }).click();
   // The tag also marks the gates of the large catalogue (palisade, village and castle gate); every hit carries it.
-  const gates = (await p.locator('.library-list .instance-list li strong').allInnerTexts()).map(t => t.trim());
+  const gates = (await p.locator('.catalog-results .bcard strong').allInnerTexts()).map(t => t.trim());
   assert.ok(gates.includes('Tor') && gates.length >= 2 && gates.length < 20, gates.join(', '));
   assert.deepEqual(errors, []);
   await p.close();
@@ -91,7 +93,8 @@ test('Schem-Testdatei im Betrachter und als Bauteil importierbar', async () => {
   await p.getByLabel('Name').fill('Vertragsbauteil');
   await p.getByRole('button', { name: 'Als neues Bauteil speichern' }).click();
   await p.getByText('„Vertragsbauteil“ als Bauteil gespeichert.').waitFor();
-  assert.match(await p.locator('.inspector').innerText(), /schem-v3/);
+  await p.getByRole('heading', { name: 'Vertragsbauteil' }).waitFor();
+  assert.match(await p.locator('.building-detail').innerText(), /schem-v3/);
   assert.deepEqual(errors, []);
   await p.close();
 });
