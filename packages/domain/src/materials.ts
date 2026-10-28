@@ -157,7 +157,7 @@ const DIRECT = new Set(['stone', 'granite', 'diorite', 'andesite', 'deepslate', 
   'copper_ore', 'deepslate', 'redstone_lamp', 'daylight_detector', 'lodestone', 'respawn_anchor', 'ancient_debris', 'gilded_blackstone', 'crafter', 'heavy_core', 'calibrated_sculk_sensor',
   'nether_sprouts', 'nether_wart', 'pointed_dripstone', 'hanging_roots', 'mangrove_propagule', 'creaking_heart', 'pale_hanging_moss', 'open_eyeblossom', 'closed_eyeblossom', 'firefly_bush',
   'bush', 'cactus_flower', 'short_dry_grass', 'tall_dry_grass', 'chorus_flower', 'dried_ghast', 'copper_chest', 'beehive', 'bee_nest', 'sniffer_egg', 'slime_block', 'honey_block', 'mushroom_stem',
-  'tinted_glass', 'bricks', 'bone_block', 'magma_block', 'dripstone_block', 'moss_block', 'tuff_bricks', 'resin_clump', 'sea_lantern', 'twisting_vines', 'weeping_vines']);
+  'tinted_glass', 'bricks', 'ender_chest', 'bone_block', 'magma_block', 'dripstone_block', 'moss_block', 'tuff_bricks', 'resin_clump', 'sea_lantern', 'twisting_vines', 'weeping_vines']);
 
 const UNPACKABLE = /(^|_)shulker_box$/;
 

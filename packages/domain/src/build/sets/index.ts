@@ -8,6 +8,7 @@ import { SAKRAL_SPECS } from './sakral.js';
 import { INFRA_SPECS } from './infrastruktur.js';
 import { LANDSCHAFT_SPECS } from './landschaft.js';
 import { DEKO_SPECS } from './deko.js';
+import { WELTEN_SPECS } from './welten.js';
 
 /** All themed building sets of the extended catalogue, in display order. */
 export const ALL_SET_SPECS: readonly BuildingSpec[] = [
@@ -20,4 +21,5 @@ export const ALL_SET_SPECS: readonly BuildingSpec[] = [
   ...INFRA_SPECS,
   ...LANDSCHAFT_SPECS,
   ...DEKO_SPECS,
+  ...WELTEN_SPECS,
 ];

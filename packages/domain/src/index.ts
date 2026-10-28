@@ -31,3 +31,5 @@ export { resolveRecipes, recipesForMaterials, chooseRecipe, recipesFor, rawSourc
 export type { Recipe, Ingredient, Station, RecipeMethod, RecipeOptions, RecipeReport, RecipeStep, BaseLine, BaseKind, TagChoice, TagDefinition } from './recipes.js';
 export { EXPORT_FORMAT_LABEL } from './schemExport.js';
 export type { ExportFormat } from './schemExport.js';
+export { ENSEMBLES, memberTransform, latestVersions, missingMembers, createEnsembleProject, ensemblesWith } from './ensembles.js';
+export type { Ensemble, EnsembleMember } from './ensembles.js';
