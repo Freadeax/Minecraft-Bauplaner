@@ -45,30 +45,22 @@ Am 27.10.2026 anhand der verfügbaren Werkzeugschemata und bisheriger erfolgreic
 6. Falls Schutzregeln einen PR verlangen, temporären Branch/PR verwenden; geprüfte Head-SHA beim Merge angeben. Keine Checks oder Schutzregeln abschalten. Main ist die Integrationslinie.
 7. Main erneut lesen und tatsächliche Commit-/Tree-SHA feststellen. Erst dies gilt als bestätigte Integration. Direkt danach Ablauf C ausführen.
 
-## C. Geprüftes Websiteartefakt veröffentlichen
+## C. Geprüftes Websiteartefakt auf main veröffentlichen
 
-Voraussetzung: Ein funktionsfähiger Webbuild und eine konfigurierte Pages-Quelle. Nachtrag vom 27.10.2026: Webbuild, Manifest und gh-pages / root sind inzwischen vorhanden; Website live geprüft. Der erste Webbuild soll bereits eine nutzbare Kernansicht liefern; keine unfertige Dokumentationsseite als Bauhelfer deklarieren.
+Aktive Quelle: **main / Repositorywurzel**. Einstieg `scripts/publish_pages.sh`, Implementierung `scripts/publish_main_pages.sh`, sichere Zusammenführung `scripts/prepare_main_pages.mjs`. Keine eigene Actions-Datei.
 
-1. Integrierten Quellcommit `C` festhalten. Statischen Build lokal aus genau diesem Quellstand erstellen. Build-Tools benötigen keine GitHub-Shell-Zugangsdaten; der Konnektor übernimmt den Transport.
-2. Build unter `/Minecraft-Bauplaner/` lokal ausliefern. Start, Hashnavigation, Reload, Assets, Workerstart, Dateiauswahl, Layer und Fehleranzeige prüfen. Im Build keine node_modules, Rohwelten, internen Protokolle, Schlüssel oder absoluten lokalen Pfade.
-3. `deployment.json` erzeugen: Schema, Quellcommit, Quell-Tree, Buildzeit in UTC, Tool-/Buildversionen, Dateiliste mit Bytegrößen und SHA-256. Kein eigenes Hashfeld für das Manifest selbst; keine eigene künftige Deployment-Commit-SHA in den Inhalt schreiben. So entsteht keine Selbstreferenz.
-4. Alle Artefaktdateien inklusive `index.html`, `.nojekyll` und Manifest als Blobs übertragen. Buildverzeichnis ist eine ausdrückliche Allowlist. Keine Symlinks, Pfadtraversierung oder ungeklärten Fremdassets veröffentlichen.
-5. Veröffentlichungstree ohne Source-Basistree aus genau dem Artefakt erzeugen. Das entfernt alte Artefaktdateien aus dem neuen Snapshot, ohne main-Dateien zu löschen. Alte Deployments bleiben in der Branchhistorie wiederherstellbar.
-6. Für vorhandenen `gh-pages`-Branch aktuellen Head `P` lesen, Deploymentcommit mit Elterncommit `P` erstellen. Beim ersten Bootstrap kann der neue Artefaktcommit den Sourcecommit `C` als Eltern erhalten; erst dann den neuen Branch anlegen. Kein leerer Source-Tree muss dafür veröffentlicht werden.
-7. Vor Aktualisierung prüfen, ob main noch `C` ist. Bei neuerem Main-Stand den alten Build nicht als neuesten Stand ausliefern; neuen Stand übernehmen, erneut bauen und prüfen. Gleichzeitige Deployments über erwartete `P`-SHA abfangen.
-8. `gh-pages` ohne Force fortschreiben; bei Erstveröffentlichung Branch mit dem fertigen Deploymentcommit erstellen. Scheitert ein Upload vorher, bleibt der bisherige Veröffentlichungshead erhalten. Unreferenzierte Blobs/Commits sind keine Veröffentlichung.
-9. GitHub-interne Pages-Verarbeitung abwarten und echte URL prüfen. Kurze begrenzte Wiederholungen mit Fortschrittsmeldung statt endloser Pollschleife. Bei nicht verfügbarem Livezugriff Status ausdrücklich ungeprüft lassen.
-10. Live-Manifest muss `C` und erwartete Dateihashes ausweisen; zusätzlich Start und wenigstens ein mit JS geladenes Asset/Worker prüfen. HTTP 200 oder das Existieren eines Branches allein genügen nicht.
+1. Integrierten Quellcommit C und aktuellen Main-Tree festhalten; vollständigen Check aus C ausführen. Offene Browserprüfungen dokumentieren.
+2. Build mit `LMNT_SOURCE_SHA=C` erzeugen. Manifest und Artefakt-Allowlist prüfen; keine Symlinks oder fremden Dateien übernehmen.
+3. Mit dem Prepare-Skript den vollständigen Source-Tree erhalten, geprüfte Artefakte ergänzen und ausschließlich bekannte unveränderte alte Artefakte entfernen.
+4. Über Shell oder Konnektor einen Artefakt-Kindcommit D mit Elterncommit C erzeugen. Vor Refupdate main und Kommunikation erneut prüfen. Bei konkurrierendem Update neu integrieren und bauen.
+5. main regulär mit erwarteter SHA C aktualisieren; kein Force. Der Manifestwert sourceCommit nennt C, nicht den noch unbekannten eigenen Commit D.
+6. Live-Manifest und geladene Dateien samt Hash prüfen. Solange alte Dateien ausgeliefert werden, Veröffentlichung als ausstehend melden.
 
-Unmittelbar bedeutet: keine neue Entwicklungsaufgabe zwischen Integration und Deploymentversuch beginnen. GitHubs eigene Verarbeitungszeit ist davon getrennt. Main, Artefaktbranch und Livewebsite erhalten jeweils ihren tatsächlichen Status.
+Keine neue Entwicklungsaufgabe zwischen Integration und Veröffentlichung beginnen. Nur Branchlöschung erfordert derzeit eine zusätzliche Verwaltungsfunktion. gh-pages ist für die aktive Veröffentlichung nicht erforderlich.
 
-## D. Einmaliger Pages-Bootstrap
+## D. Hostingkonfiguration
 
-Zielquelle: GitHub Pages → `Deploy from a branch` → `gh-pages` → `/`. Keine eigene Actions-Datei. Der Artefaktbranch wird erst aus einem geprüften Webbuild erzeugt. `.nojekyll` überspringt Jekyll, nicht GitHubs internen Pages-Deploymentlauf.
-
-Vor Einrichtung Repositorytarif und Sichtbarkeit prüfen. Das Repository wurde inzwischen vom Nutzer öffentlich geschaltet; dies ist über den Konnektor bestätigt. Fehlt weiterhin eine Pages-Konfigurationsaktion, ist eine einmalige Einstellung über die GitHub-Oberfläche durch den Nutzer oder einen separat verfügbaren, autorisierten UI-Zugriff nötig. Kein zusätzlicher Token und kein Drittservice werden als vermeintlich notwendiger Standard eingeführt. Nach dieser Einrichtung können spätere Buildübertragungen über den bestehenden Konnektor erfolgen, soweit Branchpublishing im Konto funktioniert.
-
-Ein fremder Push außerhalb einer aktiven Agentensitzung löst ohne eingerichteten externen Prozess keinen lokalen Agentenbuild aus. Diese Grenze bleibt sichtbar, statt automatische Überwachung zu versprechen.
+Main/root ist anhand interner Pages-Buildlogs bestätigt; Details im maßgeblichen Hostingstand unten. Keine erneute Quellenumstellung nötig. Der Konnektor bietet keine Pages-Konfigurationsaktion. Ein fremder Push außerhalb eines aktiven Auftrags löst keinen lokalen Agentenbuild aus.
 
 ## E. Fehler, Wiederholung und Rückkehr
 
@@ -88,7 +80,7 @@ Kein nachträglicher Main-Commit nur zur Eintragung einer erfolgreichen Deployme
 
 ## Fertigkriterium
 
-Fertig ist der Ablauf erst, wenn Main-Quellcommit, geprüfter Build, aktualisierter Artefaktbranch und bestätigte Liveversion zusammenpassen. Fehlt eines, wird es getrennt offen ausgewiesen. Aktueller Stand: Konnektor-Gittransport, Webbuild, Manifestgenerator und Artefakttransport ausgeführt; Pages-Quelle gh-pages / root im Browser bestätigt. Website mit Software-Isometrie, Picking, Schichten und Rotation live geprüft. Keine Hintergrundautomatik für fremde Pushes, kein eigener Actions-Workflow.
+Geprüfter Quellcommit C, Artefakt-Kindcommit D auf main und tatsächliche Liveversion müssen zusammenpassen. Manifest, Dateihashes und Liveprüfung sind der Nachweis. Fehlende Teile getrennt offen melden.
 
 ## Maßgeblicher Hostingstand · 31.10.2026
 

@@ -103,3 +103,10 @@ Lokale Korrektur für Merkliste, Vergleich und Blickrichtung bei nicht verfügba
 - S3: vollständige Assetvalidierung und referenzbasierte Prüfung fehlender Originale bei Restore umgesetzt.
 - B15-L: generischer, geprüfter Livekarten-Templateadapter und eigener Markerexport als Grundlage; Kartenoberfläche und Providerkonfiguration offen.
 - Main-only-Branches: verlustfreie Bereinigung geprüft, Hostingmigration vor Entfernen von gh-pages erforderlich.
+
+## Maßgebliche Fortsetzung · 31.10.2026
+
+- Pages-main/root ist aktiv; Quellenmigration ist erledigt. Alte integrierte Branches bei verfügbarer Löschfunktion entfernen.
+- B15-L: Rückimport eigener Markerdateien mit Schema-/Feldprüfung ergänzt. UI-Dateiadapter, gespeicherte Kartenziele und Weltkartenoberfläche folgen getrennt.
+- S2/B8P/S3 sind integriert. Fehlendes Chromium bleibt eine offen dokumentierte Prüfgrenze und hält gemäß Nutzerpräzisierung allein die Veröffentlichung nicht auf.
+- Nächste Strukturarbeit: Revisionsschutz für konkurrierende Assetänderungen; danach große Zusammensetzungen in Worker verlagern. B15-Dateireservierung beachten.

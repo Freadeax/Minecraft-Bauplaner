@@ -272,3 +272,8 @@ Expliziter Nutzerauftrag vom 31.10.2026 verlangt Push und anschließende Pages-V
 
 ### Hostingkorrektur
 Interner Buildjob 124539104569 (Run 41201874786) bestätigt main/root. 404-Live-Manifest mit fehlendem Root-Artefakt vereinbar; frühere Doku gh-pages war nicht aktuell. Publisherwechsel delegiert an bereits siebenfach geprüften Main-Root-Merge. Buildausgabe und Livesource werden nach Artefaktintegration getrennt geprüft.
+
+## Strukturpflege und Marker-Rückweg · 31.10.2026
+- `npm run check`: bestanden, 312 Node-Tests; strenge Kern-/Webtypprüfung, beide Builds und Dokumentationslinks gültig.
+- Marker-Roundtrip über JSON, unabhängige Kopien, ungültige Schema-/Format-/Koordinatensystemwerte, fehlende/zusätzliche Felder, Duplikate und Arraygrenzen geprüft.
+- `git diff --check`: bestanden. Keine neuen Abhängigkeiten oder UI-Änderungen. Browserprüfung weiterhin mangels Chromium offen; keine Spiel-/Providerabnahme behauptet.

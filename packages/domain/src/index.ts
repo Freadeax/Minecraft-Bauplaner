@@ -42,5 +42,5 @@ export type { IntegrityReport, IntegrityFinding, IntegritySeverity, IntegrityCod
 export { GENERATORS, GENERATOR_TAG, GENERATOR_TAG_PREFIX, GENERATOR_PROVENANCE, generatorById, runGenerator, presetValues, createGeneratedAsset, addGeneratedVersion, generatorSourceOf, checkReproducible,
   createCompoundProject, COMPOUNDS, compoundById, normalizeParams, defaultsOf, describeParams, rollParams, visible, STYLES, styleOf } from './generators/index.js';
 export type { Generator, GeneratedBuilding, Preset, GeneratorRun, ReproCheck, ReproStatus, Compound, CompoundPart, CompoundBuild, ParamDef, ParamValue, ParamValues, ParamIssue, IntParam, ChoiceParam, BoolParam, Style } from './generators/index.js';
-export { buildLiveMapUrl, checkLiveMapTarget, checkLiveMapPosition, createLiveMapMarkerFile } from './livemap.js';
+export { buildLiveMapUrl, checkLiveMapTarget, checkLiveMapPosition, createLiveMapMarkerFile, readLiveMapMarkerFile } from './livemap.js';
 export type { LiveMapTarget, LiveMapPosition, LiveMapMarker, LiveMapMarkerFile } from './livemap.js';

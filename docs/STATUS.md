@@ -5,7 +5,7 @@ Stand: 28.10.2026. Fundament (B0) und die Blöcke B1–B7, B9 (mit Katalog v2), 
 | Bereich | Implementiert / bestätigt | Offene Grenzen |
 |---|---|---|
 | Repository | öffentlich, main als Integrationslinie, reguläre Mainfreigabe | keine Force-Pushes |
-| Website | statischer React-/Three.js-Build auf Pages, Quelle gh-pages / root, Hashmanifest | keine eigenen Actions; kein Hintergrundmonitor |
+| Website | statischer React-/Three.js-Build auf Pages, Quelle main / Repositorywurzel, Hashmanifest | keine eigenen Actions; kein Hintergrundmonitor |
 | Datenkern | validierte unveränderliche Voxel, diskrete Geometrie, expliziter Vanilla-Zustandskatalog (77 Familienregeln, 598 IDs, Java 1.21.4 manuell) | Registry-Report-Abgleich, BlockEntity-NBT-Transformation, Modprofile offen |
 | Import | GZip, Big-Endian-NBT und Sponge v3 im Worker, vollständige Blockzustände und BlockEntities | konservative Limits; keine alten Schematic-/Litematic-/Weltformate |
 | Datenerhalt | komprimiertes Original, Quell-NBT, Offset, DataVersion, Metadata/Entities/Biome getrennt erhalten | keine Registry-/Modpackfreigabe aus DataVersion ableiten |
@@ -20,7 +20,7 @@ Stand: 28.10.2026. Fundament (B0) und die Blöcke B1–B7, B9 (mit Katalog v2), 
 | Litematic (P5-01) | Import `.litematic` Format 2–7 mit mehreren Regionen, negativen Größen und Einzelregionswahl in Bibliothek/Betrachter; Export aus Revision als `.litematic` (Format nach DataVersion) ([LITEMATIC](architecture/LITEMATIC.md)) | keine Abnahme mit echter Litematica-Datei im Spiel; Entities/Ticks nur im Original |
 | Team | Architektur geplant | nicht implementiert |
 | Stabilität (S1) | Absturzschutz je Seite mit Fehlerbericht, Fehlerprotokoll der Sitzung, Systemcheck `#/system` (Auslieferung gegen Hashmanifest, Browserfähigkeiten, Speicher), Datencheck aller gespeicherten Datensätze ohne Reparatur, Großmodelle 2–4× schneller, Importvorschau im Bild ([STABILITY](architecture/STABILITY.md)) | Absturzschutz nicht mit echtem Zeichenfehler im Browser ausgelöst; nur Chromium |
-| Prüfungen | 268 Node-Tests, 40 Playwright-Browserprüfungen (nur Chromium), strict Kern/Web, Builds und Dokumentationsprüfung bestanden | synthetische Formatfixtures, echte Referenzwerkzeug-/Spielabnahme offen |
+| Prüfungen | 310 Node-Tests im letzten integrierten Stand; strict Kern/Web, Builds und Dokumentationsprüfung bestanden | aktuelle Browserausführung mangels Chromium offen; frühere Browserläufe historisch, echte Referenzwerkzeug-/Spielabnahme offen |
 
 ## Maßgebliche Einzelheiten
 
@@ -60,3 +60,7 @@ Branchbereinigung: sieben alte Arbeitsbranches inhaltlich vollständig in main e
 Main-only-Publisher und sichere Artefaktzusammenführung sind implementiert (sieben Tests). Aktivierung und Entfernung der sieben alten Arbeitsbranches bleiben offen: Konnektor ohne Lösch-/Pages-Konfigaktion, Browseranmeldung nicht abgeschlossen. Alle geprüften Quellinhalte sind auf main enthalten; die ursprüngliche gesquashte WIP-Historie wird bei der Integration zusätzlich als Merge-Elternschaft erhalten.
 
 Korrektur Hosting (31.10.2026): aktuelle interne Buildlogs bestätigen bereits main / root; keine Einstellungsmutation erforderlich. Aktiver Publisher auf Main-Artefaktcommit umgestellt. Root-Build wird unmittelbar ergänzt und live geprüft. Browseranmeldung betrifft nur noch die nicht verfügbare Branchlöschung.
+
+## Strukturpflege · 31.10.2026
+
+README beschreibt die implementierten Module statt des initialen Fundaments. Pages arbeitet bereits auf main/root; ältere Abschnitte zur bevorstehenden Quellenmigration sind historisch überholt. Nur Branchlöschung bleibt mangels Konnektorfunktion offen. Der Livekartenkern kann sein eigenes Markerformat nun strikt wieder einlesen (keine Kartenoberfläche, keine Provideranbindung).

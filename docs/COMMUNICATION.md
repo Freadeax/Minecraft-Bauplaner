@@ -301,3 +301,11 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 ### MSG-HOSTING-01 · Codex · 2026-10-31 · Tatsächliche Pages-Quelle ermittelt
 - Entgegen älterer Doku baut Pages bereits main/root: interne Buildlogs Run 41201874786, Job 124539104569 nennen `ref: main` und `source: .`. Fehlender Rootbuild verursacht fehlendes Live-Manifest.
 - Publisher-Einstieg aktiviert Main-only-Verfahren; keine Pages-Einstellungen geändert. Unmittelbar danach Root-Artefakte aus dem geprüften Quellstand veröffentlichen und live prüfen. Branchlöschung bleibt ohne Verwaltungsfunktion offen.
+
+### MSG-STRUCTURE-00 · Codex · 2026-10-31 · Strukturen und Marker-Rückweg
+- Umfang: README, STATUS, ROADMAP, Hosting-Runbook sowie livemap.ts/index.ts und Markerregressionen. Keine Weltkartenoberfläche aus der B15-Reservierung übernehmen.
+- Ziel: aktuelle Modul-/Hostingübersicht und validierter Rückweg für das eigene Markerformat (unbekannte Schemata/Felder nicht still verlieren). Prüfung: Gesamtcheck, semantischer Roundtrip und gezielte Fehlerfälle. Danach regulär main und Pages.
+
+### MSG-STRUCTURE-01 · Codex · 2026-10-31 · Übergabe
+- Marker-Rückimport mit strikter Version-/Feldprüfung und Kopierverhalten implementiert; README-Modulübersicht und aktiver Main/root-Publishingablauf bereinigt.
+- Gesamtcheck: 312 Node-Tests, Typprüfung, Builds, Dokumentationsprüfung bestanden. Browserinfrastruktur unverändert offen. Main-Integration und unmittelbar zugehöriger Artefaktcommit folgen; B15-Oberfläche bleibt unberührt.

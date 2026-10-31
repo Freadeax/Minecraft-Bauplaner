@@ -98,3 +98,25 @@ export function createLiveMapMarkerFile(markers: readonly LiveMapMarker[]): Live
   });
   return { schemaVersion: 1, format: 'bauplaner-world-markers', coordinateSystem: 'minecraft-blocks', markers: copies };
 }
+
+/** Read only our versioned interchange; reject extra fields rather than silently losing them. */
+export function readLiveMapMarkerFile(input: unknown): LiveMapMarkerFile {
+  function record(value: unknown, keys: readonly string[], label: string): Record<string, unknown> {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return fail(`${label}: Objekt erforderlich`);
+    const result = value as Record<string, unknown>;
+    if (Object.keys(result).some(key => !keys.includes(key)) || keys.some(key => !Object.hasOwn(result, key)))
+      return fail(`${label}: fehlende oder unbekannte Felder`);
+    return result;
+  }
+  const file = record(input, ['schemaVersion', 'format', 'coordinateSystem', 'markers'], 'Markerdatei');
+  if (file.schemaVersion !== 1 || file.format !== 'bauplaner-world-markers' || file.coordinateSystem !== 'minecraft-blocks')
+    return fail('Nicht unterstütztes Markerformat, Schema oder Koordinatensystem');
+  if (!Array.isArray(file.markers) || file.markers.length > 10_000) return fail('Höchstens 10000 Kartenmarker erlaubt');
+  const markers = Array.from(file.markers, value => {
+    const marker = record(value, ['id', 'label', 'position'], 'Kartenmarker');
+    const position = record(marker.position, ['x', 'y', 'z', 'world', 'dimension'], 'Kartenposition');
+    // The shared writer validates every scalar and duplicate identity and makes a fresh snapshot.
+    return { id: marker.id, label: marker.label, position } as unknown as LiveMapMarker;
+  });
+  return createLiveMapMarkerFile(markers);
+}

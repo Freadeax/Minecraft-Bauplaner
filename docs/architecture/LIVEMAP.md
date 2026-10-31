@@ -22,6 +22,8 @@ https://maps.example.test/map/{world}?x={x}&y={y}&z={z}#dimension={dimension}
 
 Das ist ein eigenes Bauplaner-Austauschformat, **kein direkt importierbares natives Markerformat** einer Livekartenimplementierung und kein geografisches GeoJSON. Eine konkrete Exportanbindung benötigt einen separat nachgewiesenen Providervertrag.
 
+`readLiveMapMarkerFile(input)` liest das geparste eigene JSON-Format wieder ein. Schema, Format, Koordinatensystem, vollständige Felder, Markergrenze, eindeutige IDs und Positionen werden geprüft. Unbekannte Felder werden abgewiesen, damit Zusatzdaten nicht still verschwinden. Das Ergebnis ist eine unabhängige Kopie. Dateigrößenlimits und JSON-Parsing gehören in den späteren UI-Dateiadapter; diese Funktion verarbeitet bereits geparste Werte.
+
 ## Prüfung und Grenzen
 
 Die Tests prüfen negative/sichere Koordinaten, Pfad-/Query-/Fragmentkodierung, Protokoll-/Zugangsdaten-/Origin-Prüfung, fehlerhafte Platzhalter, Unicode, Markerduplikate und Kopierverhalten. Keine Netzaufrufe, kein Livekartensmoke und keine Spielabnahme. Noch keine UI-Einbindung oder gespeicherte Zielkonfiguration; diese folgen im Weltkartenblock B15.

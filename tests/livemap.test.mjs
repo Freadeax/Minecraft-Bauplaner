@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildLiveMapUrl, checkLiveMapTarget, createLiveMapMarkerFile } from '../dist/domain/src/livemap.js';
+import { buildLiveMapUrl, checkLiveMapTarget, createLiveMapMarkerFile, readLiveMapMarkerFile } from '../dist/domain/src/livemap.js';
 
 const pos = { x: -42, y: 64, z: 128, world: 'Meine Welt', dimension: 'minecraft:overworld' };
 const target = template => ({ name: 'Eigene Livekarte', urlTemplate: template });
@@ -53,4 +53,28 @@ test('marker export is explicit Bauplaner JSON, snapshots input and detects dupl
   assert.throws(() => createLiveMapMarkerFile([input[0], input[0]]), /Doppelte/);
   assert.throws(() => createLiveMapMarkerFile([{ id: 'p', label: '', position: pos }]), /Markername/);
   assert.deepEqual(createLiveMapMarkerFile([]).markers, []);
+});
+
+
+test('marker reader roundtrips serialized markers and isolates the resulting snapshot', () => {
+  const file = createLiveMapMarkerFile([{ id: 'port', label: 'Hafen', position: pos }]);
+  const input = JSON.parse(JSON.stringify(file));
+  const read = readLiveMapMarkerFile(input);
+  assert.deepEqual(read, file);
+  input.markers[0].position.x = 999;
+  assert.equal(read.markers[0].position.x, -42);
+  assert.deepEqual(readLiveMapMarkerFile(createLiveMapMarkerFile([])).markers, []);
+});
+
+test('marker reader rejects unknown schemas and extra or missing fields at every level', () => {
+  const fresh = () => createLiveMapMarkerFile([{ id: 'port', label: 'Hafen', position: pos }]);
+  for (const mutate of [
+    f => { f.schemaVersion = 2; }, f => { f.format = 'geojson'; },
+    f => { f.coordinateSystem = 'degrees'; }, f => { f.extra = true; },
+    f => { f.markers[0].extra = true; }, f => { f.markers[0].position.extra = true; },
+    f => { delete f.markers[0].position.y; }, f => { f.markers[0].position.x = '42'; },
+    f => { f.markers.push(f.markers[0]); }, f => { f.markers = new Array(10001); },
+    f => { f.markers = [null]; }, f => { f.markers = new Array(1); },
+  ]) { const file = fresh(); mutate(file); assert.throws(() => readLiveMapMarkerFile(file), { name: 'DomainError' }); }
+  for (const value of [null, [], 3, 'text', {}]) assert.throws(() => readLiveMapMarkerFile(value), { name: 'DomainError' });
 });
