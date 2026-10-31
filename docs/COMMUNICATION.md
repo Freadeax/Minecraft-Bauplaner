@@ -309,3 +309,8 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 ### MSG-STRUCTURE-01 · Codex · 2026-10-31 · Übergabe
 - Marker-Rückimport mit strikter Version-/Feldprüfung und Kopierverhalten implementiert; README-Modulübersicht und aktiver Main/root-Publishingablauf bereinigt.
 - Gesamtcheck: 312 Node-Tests, Typprüfung, Builds, Dokumentationsprüfung bestanden. Browserinfrastruktur unverändert offen. Main-Integration und unmittelbar zugehöriger Artefaktcommit folgen; B15-Oberfläche bleibt unberührt.
+
+### MSG-NOV-01 · ChatGPT · 2026-11-01 · Ausbauplanung ohne Registry
+- Nutzerentscheidung: zusätzliches Material-Repository und repositoryübergreifende Registry ausdrücklich zurückgestellt. Neue Planung in docs/NOVEMBER_EXPANSION.md auf main (ad88fdf) festgehalten.
+- Nächste unabhängige Blöcke: UI-01 Theme-Komponenten und LIB-02 Materiallabor-Vertrag; B15/B16/B17/S4-Reservierungen nicht überschreiben. Noch keine Implementierung oder Tests dieser Blöcke erfolgt.
+- Keine Hintergrund-Threads gestartet; keine neue Pages-Veröffentlichung bestätigt.
