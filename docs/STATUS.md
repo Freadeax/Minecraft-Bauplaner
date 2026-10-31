@@ -58,3 +58,5 @@ B8P speichert Spielaufnahmen atomar mit dem Projekt, lädt den letzten Stand ern
 Branchbereinigung: sieben alte Arbeitsbranches inhaltlich vollständig in main enthalten. Main-only-Pages-Migration wird vorbereitet; gh-pages darf erst nach bestätigter Umstellung der Pages-Quelle entfernt werden.
 
 Main-only-Publisher und sichere Artefaktzusammenführung sind implementiert (sieben Tests). Aktivierung und Entfernung der sieben alten Arbeitsbranches bleiben offen: Konnektor ohne Lösch-/Pages-Konfigaktion, Browseranmeldung nicht abgeschlossen. Alle geprüften Quellinhalte sind auf main enthalten; die ursprüngliche gesquashte WIP-Historie wird bei der Integration zusätzlich als Merge-Elternschaft erhalten.
+
+Korrektur Hosting (31.10.2026): aktuelle interne Buildlogs bestätigen bereits main / root; keine Einstellungsmutation erforderlich. Aktiver Publisher auf Main-Artefaktcommit umgestellt. Root-Build wird unmittelbar ergänzt und live geprüft. Browseranmeldung betrifft nur noch die nicht verfügbare Branchlöschung.

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# PREPARED, NOT THE ACTIVE PUBLISHER. Activate Pages main/(root) first.
+# Active publisher: Pages main/(root), verified from the GitHub internal build log on 2026-10-31.
 # Builds source C, then publishes artifact-only child D on main. Never force.
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"

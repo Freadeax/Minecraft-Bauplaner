@@ -66,3 +66,9 @@ Der verfügbare GitHub-Konnektor kann Gitobjekte/Refs lesen und schreiben, biete
 ## Prüfungen
 
 `node --test tests/main-pages.test.mjs`: Allowlist, Source-Erhalt, Entfernen alter Chunks, Kollisionen, Pfadmanipulation, Manifest-/Hashfehler und echte Git-Tree-Zusammenführung ohne Quellcommitänderung. `bash -n scripts/publish_main_pages.sh`; Dokumentationsprüfung. Kein tatsächlicher Main-Push, Quellenwechsel oder Löschversuch durch diesen Thread.
+
+## Maßgeblicher Hostingstand · 31.10.2026
+
+Die tatsächlichen GitHub-internen Pages-Buildlogs (Run 41201874786, Buildjob 124539104569) bestätigen Checkout `ref: main` und `source: .`. Damit ist Pages bereits auf main / Repositorywurzel gestellt; ältere Angaben zu gh-pages sind historisch überholt. Der bisher fehlende Root-Webbuild erklärt die 404-Antwort für deployment.json.
+
+Aktiver Einstieg ist nun `scripts/publish_pages.sh`, der an `publish_main_pages.sh` delegiert. Geprüften Quellcommit bauen, Artefakte manifestgeprüft in den vollständigen Main-Tree übernehmen, als normalen Artefakt-Kindcommit auf main veröffentlichen und live prüfen. Das Manifest nennt den Quell-Elterncommit (keine selbstreferenzielle Commit-SHA). gh-pages wird nicht mehr benötigt, darf nach bestätigter Liveauslieferung gelöscht werden. Alte Arbeitsbranches bleiben bis zu einer verfügbaren Löschfunktion bestehen; alle Inhalte und auch die zuvor gesquashte WIP-Historie sind in main enthalten.

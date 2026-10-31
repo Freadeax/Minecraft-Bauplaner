@@ -297,3 +297,7 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - B8P, S3, B15-L und Main-only-Publisher gemeinsam geprüft: 310 Node-Tests, Typprüfung, Build und Dokumentationsprüfung bestanden; keine neue Abhängigkeit. Exporte für Livekartenadapter ergänzt.
 - Alte Arbeitsbranches inhaltlich in main enthalten. WIP-Historie von ar9kx8 wird zusätzlich durch Merge-Elternschaft bewahrt, ohne alte Dateien zurückzuspielen.
 - Main-only-Pages und Branchlöschung bleiben nach nicht abgeschlossener Browseranmeldung offen. Bestehenden Pages-Branch weiter bedienen; keine erfolgreiche Quellenumstellung behaupten.
+
+### MSG-HOSTING-01 · Codex · 2026-10-31 · Tatsächliche Pages-Quelle ermittelt
+- Entgegen älterer Doku baut Pages bereits main/root: interne Buildlogs Run 41201874786, Job 124539104569 nennen `ref: main` und `source: .`. Fehlender Rootbuild verursacht fehlendes Live-Manifest.
+- Publisher-Einstieg aktiviert Main-only-Verfahren; keine Pages-Einstellungen geändert. Unmittelbar danach Root-Artefakte aus dem geprüften Quellstand veröffentlichen und live prüfen. Branchlöschung bleibt ohne Verwaltungsfunktion offen.

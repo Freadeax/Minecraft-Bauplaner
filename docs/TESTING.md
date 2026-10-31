@@ -269,3 +269,6 @@ Expliziter Nutzerauftrag vom 31.10.2026 verlangt Push und anschließende Pages-V
 
 ### Abschlussprüfung einschließlich Branchmigration
 `npm run check`: 310/310 Node-Tests bestanden, Typprüfungen, Builds und Dokumentationsprüfung bestanden. Sieben zusätzliche Tests prüfen Main-Root-Artefaktmerge, Quellenkollisionen, Manifestmanipulation und tatsächlichen Git-Tree-Erhalt. Branchlöschung und Pages-Quellenwechsel nicht ausgeführt (fehlende Verwaltungsfähigkeit bzw. nicht abgeschlossene Browseranmeldung).
+
+### Hostingkorrektur
+Interner Buildjob 124539104569 (Run 41201874786) bestätigt main/root. 404-Live-Manifest mit fehlendem Root-Artefakt vereinbar; frühere Doku gh-pages war nicht aktuell. Publisherwechsel delegiert an bereits siebenfach geprüften Main-Root-Merge. Buildausgabe und Livesource werden nach Artefaktintegration getrennt geprüft.

@@ -81,3 +81,9 @@ Fertige Änderungen immer regulär auf main pushen und unmittelbar als aktuelle 
 ## Branchvorgabe des Nutzers · 31.10.2026
 
 Dauerhaft soll nur main bestehen. Temporäre Arbeitsbranches vor Abschluss vollständig in main integrieren und danach entfernen; veröffentlichte Historie nicht umschreiben. Alle funktionsfähigen Entwicklungsstände werden auf main und anschließend auf Pages veröffentlicht. Vor Branchlöschung unintegrierte Inhalte und Historie prüfen. Der bisherige technische gh-pages-Branch darf erst nach erfolgreicher Pages-Quellenmigration entfernt werden, damit die laufende Website erhalten bleibt. Main-only-Publishing wird separat vorbereitet und erst mit bestätigter Quellenumstellung aktiviert.
+
+## Maßgeblicher Hostingstand · 31.10.2026
+
+Die tatsächlichen GitHub-internen Pages-Buildlogs (Run 41201874786, Buildjob 124539104569) bestätigen Checkout `ref: main` und `source: .`. Damit ist Pages bereits auf main / Repositorywurzel gestellt; ältere Angaben zu gh-pages sind historisch überholt. Der bisher fehlende Root-Webbuild erklärt die 404-Antwort für deployment.json.
+
+Aktiver Einstieg ist nun `scripts/publish_pages.sh`, der an `publish_main_pages.sh` delegiert. Geprüften Quellcommit bauen, Artefakte manifestgeprüft in den vollständigen Main-Tree übernehmen, als normalen Artefakt-Kindcommit auf main veröffentlichen und live prüfen. Das Manifest nennt den Quell-Elterncommit (keine selbstreferenzielle Commit-SHA). gh-pages wird nicht mehr benötigt, darf nach bestätigter Liveauslieferung gelöscht werden. Alte Arbeitsbranches bleiben bis zu einer verfügbaren Löschfunktion bestehen; alle Inhalte und auch die zuvor gesquashte WIP-Historie sind in main enthalten.
