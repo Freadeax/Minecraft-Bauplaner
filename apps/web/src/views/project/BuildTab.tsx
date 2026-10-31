@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { selectLayers } from '../../../../../packages/voxel/src/index.js';
 import type { BlockState, Cell } from '../../../../../packages/voxel/src/index.js';
 import { buildGuide, checkScan, confirmedUnticked, evaluateProgress, formatStacks, materialsForParts, PHASE_LABEL, positionKey, resolveProject, scanTarget, sectionOfStep, siteOf, tickConfirmed, tickedButNotBuilt, tickStep, tickSteps, untickStep, untickSteps, VERDICT_LABEL } from '../../../../../packages/domain/src/index.js';
@@ -28,6 +28,7 @@ const stepTitle = (s: GuideStep): string => `${PHASE_LABEL[s.phase]} · ${s.sect
 export function BuildTab({ session }: { session: ProjectSession }) {
   const { library } = useApp();
   const { project } = session;
+  const latestSession = useRef(session); latestSession.current = session;
   const [basis, setBasis] = useState<string>('working');
   const [filter, setFilter] = useState<Filter>('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -123,7 +124,11 @@ export function BuildTab({ session }: { session: ProjectSession }) {
     {progress.orphaned.length > 0 && <div className="notice build-wide" role="status">
       {progress.orphaned.length} gespeicherte Haken gehören zu Schritten, die es nicht mehr gibt (Bauteil entfernt oder Schicht leer).
       <button onClick={() => run(untickSteps(progress.orphaned, 'Verwaiste Haken entfernt'))}>Verwaiste Haken entfernen</button></div>}
-    <GameCheckPanel scan={scan} check={game} targetError={targetError || (basisMismatch ? `Die Aufnahme gehört zu Revision ${scanRevision!.number}. Wähle diese Grundlage, um den Abgleich zu sehen.` : '')}
+    <GameCheckPanel project={project} canSave={session.saveState === 'saved'} onStored={async base => {
+      const current = latestSession.current;
+      if (current.project === base && current.saveState === 'saved') await current.reload();
+      else setMessage('Die Aufnahme wurde gespeichert. Zwischenzeitliche lokale Änderungen bleiben sichtbar; lade den gespeicherten Stand neu, bevor du weiter speicherst.');
+    }} scan={scan} check={game} targetError={targetError || (basisMismatch ? `Die Aufnahme gehört zu Revision ${scanRevision!.number}. Wähle diese Grundlage, um den Abgleich zu sehen.` : '')}
       revisionNumber={scanRevision?.number ?? null} alignment={alignment} manual={!!scan && !scanRevision && !targetError} onAlignment={setManualAlign}
       onLoad={loadScan} onClear={() => setScan(null)} onSelect={setSelectedId}
       confirmable={game ? confirmedUnticked(guide, game, status) : []} contradicted={game ? tickedButNotBuilt(guide, game, status) : []}

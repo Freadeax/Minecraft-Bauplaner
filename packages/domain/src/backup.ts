@@ -1,3 +1,4 @@
+import { assertAssetRecordFields, validateOriginalManifest } from './recordValidation.js';
 import type { Asset, AssetVersion, Instance, Project } from './types.js';
 import { DOMAIN_SCHEMA_VERSION, DomainError } from './types.js';
 import { canonicalJson, newId, sha256Hex } from './hash.js';
@@ -121,7 +122,7 @@ export async function createBackup(source: BackupSource, scope: 'project' | 'all
     versions.push(v);
   }
   const originals: BackupOriginal[] = [], missing: string[] = [];
-  for (const sha of new Set(versions.flatMap(v => v.source.originalSha256 ? [v.source.originalSha256] : []))) {
+  for (const sha of new Set([...versions.flatMap(v => v.source.originalSha256 ? [v.source.originalSha256] : []), ...projects.flatMap(p => (p.scanHistory ?? []).map(s => s.sha256))])) {
     const o = await source.getOriginal(sha);
     if (!o) { missing.push(sha); continue; }
     if (await sha256Hex(o.bytes) !== sha) throw new DomainError('BACKUP', `Gespeicherte Originaldatei ${o.fileName} ist beschädigt`);
@@ -174,6 +175,23 @@ export function checkProjectRecord(raw: unknown): Project {
   }
   if (!isObj(raw.progress)) throw new DomainError('BACKUP', `${where}: Fortschritt fehlt`);
   if (raw.site !== undefined) checkSite(raw.site);
+  if (raw.scanHistory !== undefined) {
+    const hashes = new Set<string>();
+    const revisionIds = new Set(arr(raw.revisions, `${where}: Revisionen`).map(r => isObj(r) ? r.id : undefined));
+    for (const s of arr(raw.scanHistory, `${where}: Spielaufnahmen`)) {
+      if (!isObj(s) || typeof s.sha256 !== 'string' || !/^[a-f0-9]{64}$/.test(s.sha256) || hashes.has(s.sha256))
+        throw new DomainError('BACKUP', `${where}: ungültiger oder doppelter Aufnahmehash`);
+      hashes.add(s.sha256);
+      const fileName = str(s.fileName, `${where}: Aufnahmedateiname`);
+      if (!fileName.trim() || fileName.length > 255 || /[\x00-\x1f]/.test(fileName)) throw new DomainError('BACKUP', `${where}: ungültiger Aufnahmedateiname`);
+      const at = str(s.importedAt, `${where}: Aufnahmeimportzeit`);
+      if (!Number.isFinite(Date.parse(at))) throw new DomainError('BACKUP', `${where}: ungültige Aufnahmeimportzeit`);
+      if (s.revisionId !== null && (typeof s.revisionId !== 'string' || !revisionIds.has(s.revisionId)))
+        throw new DomainError('BACKUP', `${where}: Aufnahme verweist auf unbekannte Revision`);
+      if (!Array.isArray(s.alignment) || s.alignment.length !== 3 || !s.alignment.every(n => Number.isSafeInteger(n)))
+        throw new DomainError('BACKUP', `${where}: ungültige Aufnahmeausrichtung`);
+    }
+  }
   for (const r of arr(raw.revisions, `${where}: Revisionen`)) {
     if (!isObj(r) || !Number.isInteger(r.number)) throw new DomainError('BACKUP', `${where}: ungültige Revision`);
     checkInstances(r.instances, `${where}, Revision ${String(r.number)}`); arr(r.links, `${where}: Revisionsverbindungen`);
@@ -184,9 +202,7 @@ export function checkProjectRecord(raw: unknown): Project {
 export function checkAssetRecord(raw: unknown): Asset {
   if (!isObj(raw)) throw new DomainError('BACKUP', 'Bauteil ist kein Objekt');
   checkSchemaVersion('Bauteil', raw);
-  str(raw.id, 'Bauteil-ID'); str(raw.name, 'Bauteilname');
-  if (!isObj(raw.provenance)) throw new DomainError('BACKUP', `Bauteil „${raw.name as string}“: Herkunft fehlt`);
-  if (arr(raw.versionIds, 'Versionsliste').some(v => typeof v !== 'string')) throw new DomainError('BACKUP', 'Versionsliste enthält ungültige IDs');
+  assertAssetRecordFields(raw);
   return raw as unknown as Asset;
 }
 
@@ -231,7 +247,7 @@ export async function readBackup(text: string): Promise<Backup> {
     if (await sha256Hex(bytes) !== o.sha256 || bytes.length !== o.size) throw new DomainError('BACKUP', `Originaldatei ${String(o.fileName)} ist beschädigt (SHA-256 abweichend)`);
     originals.push({ sha256: o.sha256, fileName: str(o.fileName, 'Dateiname'), mediaType: str(o.mediaType, 'Medientyp'), size: o.size, createdAt: str(o.createdAt, 'Zeit'), bytes });
   }
-  const missingOriginals = arr(raw.missingOriginals ?? [], 'Fehlende Originale').map(s => str(s, 'Originalhash'));
+  const missingOriginals = validateOriginalManifest([...versions.values()].flatMap(v => v.source.originalSha256 ? [v.source.originalSha256] : []).concat(projects.flatMap(p => (p.scanHistory ?? []).map(s => s.sha256))), originals, raw.missingOriginals ?? []);
   // Byte arrays cannot be frozen; records around them are.
   return Object.freeze({ createdAt: str(raw.createdAt, 'Sicherungszeit'), scope: raw.scope === 'project' ? 'project' as const : 'all' as const,
     projects: deepFreeze(projects), assets: deepFreeze(assets), versions: deepFreeze([...versions.values()]),

@@ -84,6 +84,10 @@ export async function checkIntegrity(source: IntegritySource, now: () => Date = 
     for (const id of referencedVersionIds(p)) if (!versions.has(id)) {
       add({ severity: 'error', code: 'MISSING_VERSION', subject, message: `Verwendet Version ${id}, die nicht gespeichert ist; betroffene Instanzen können nicht dargestellt werden.` });
     }
+    for (const scan of p.scanHistory ?? []) {
+      usedOriginals.add(scan.sha256);
+      if (!originals.has(scan.sha256)) add({ severity: 'warning', code: 'ORIGINAL_MISSING', subject, message: `Spielaufnahme ${scan.fileName} (${scan.sha256.slice(0, 12)}…) fehlt; bitte das Original erneut importieren.` });
+    }
     p.revisions.forEach((r, i) => {
       if (i > 0 && r.number <= p.revisions[i - 1]!.number) add({ severity: 'warning', code: 'REVISION_ORDER', subject, message: `Revision ${r.number} steht nach Revision ${p.revisions[i - 1]!.number}.` });
     });
@@ -91,7 +95,7 @@ export async function checkIntegrity(source: IntegritySource, now: () => Date = 
 
   for (const sha of source.originalHashes) {
     const subject = { kind: 'original' as const, id: sha };
-    if (!usedOriginals.has(sha)) add({ severity: 'info', code: 'ORIGINAL_UNUSED', subject, message: 'Originaldatei wird von keiner Version verwendet (belegt nur Speicher).' });
+    if (!usedOriginals.has(sha)) add({ severity: 'info', code: 'ORIGINAL_UNUSED', subject, message: 'Originaldatei wird von keiner Version oder Spielaufnahme verwendet (belegt nur Speicher).' });
     if (!source.getOriginal) continue;
     try {
       const file = await source.getOriginal(sha);

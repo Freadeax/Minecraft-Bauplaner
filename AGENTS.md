@@ -77,3 +77,7 @@ Bei paralleler Arbeit gelten Dateizuständigkeiten und Regeln aus docs/BLOCKS.md
 ## Nutzerpräzisierung · 31.10.2026
 
 Fertige Änderungen immer regulär auf main pushen und unmittelbar als aktuelle GitHub Page veröffentlichen. Nicht ausführbare Browserprüfungen wegen fehlender Testinfrastruktur ausdrücklich dokumentieren; sie allein halten die Veröffentlichung nach dieser Nutzerpräzisierung nicht auf. Ausführbare Prüfungen bleiben erforderlich; bekannte Produktfehler sind zu beheben. Kein Force-Push, keine eigenen Actions.
+
+## Branchvorgabe des Nutzers · 31.10.2026
+
+Dauerhaft soll nur main bestehen. Temporäre Arbeitsbranches vor Abschluss vollständig in main integrieren und danach entfernen; veröffentlichte Historie nicht umschreiben. Alle funktionsfähigen Entwicklungsstände werden auf main und anschließend auf Pages veröffentlicht. Vor Branchlöschung unintegrierte Inhalte und Historie prüfen. Der bisherige technische gh-pages-Branch darf erst nach erfolgreicher Pages-Quellenmigration entfernt werden, damit die laufende Website erhalten bleibt. Main-only-Publishing wird separat vorbereitet und erst mit bestätigter Quellenumstellung aktiviert.

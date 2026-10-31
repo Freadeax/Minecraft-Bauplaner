@@ -127,6 +127,16 @@ export interface BlueprintRevision {
   readonly links: readonly ConnectorLink[];
 }
 
+/** A persisted recording references unchanged source bytes; comparisons are always recomputed. */
+export interface ProjectScanReference {
+  readonly sha256: string;
+  readonly fileName: string;
+  readonly importedAt: string;
+  /** null for a foreign recording with manually chosen alignment. */
+  readonly revisionId: string | null;
+  readonly alignment: Vec3;
+}
+
 export interface Project {
   readonly schemaVersion: 1;
   readonly id: string;
@@ -145,6 +155,8 @@ export interface Project {
   readonly revisions: readonly BlueprintRevision[];
   /** Construction site plan (sections, stock, reservations; site.ts). Absent in older projects = empty plan. */
   readonly site?: SitePlan;
+  /** Recording history, oldest first. Original bytes live in the repository original store. */
+  readonly scanHistory?: readonly ProjectScanReference[];
 }
 
 export class DomainError extends Error {

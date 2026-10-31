@@ -96,3 +96,10 @@ B13 Parametrische Generatoren (28.10.2026) umgesetzt: [GENERATORS](architecture/
 ## S2 · Bibliothekseinstellungen · 31.10.2026
 
 Lokale Korrektur für Merkliste, Vergleich und Blickrichtung bei nicht verfügbarem localStorage vorbereitet; vier Regressionstests. Vor Integration bleibt die vollständige Browserprüfung erforderlich (Chromium fehlt in der aktuellen Umgebung). B15 bleibt reserviert und unberührt.
+
+## Parallelfortsetzung · 31.10.2026
+
+- B8P: Speicherung der Aufnahme inklusive Original/Verlauf/Ausrichtung umgesetzt, Backup und Datencheck integriert.
+- S3: vollständige Assetvalidierung und referenzbasierte Prüfung fehlender Originale bei Restore umgesetzt.
+- B15-L: generischer, geprüfter Livekarten-Templateadapter und eigener Markerexport als Grundlage; Kartenoberfläche und Providerkonfiguration offen.
+- Main-only-Branches: verlustfreie Bereinigung geprüft, Hostingmigration vor Entfernen von gh-pages erforderlich.

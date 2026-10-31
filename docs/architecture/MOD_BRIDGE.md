@@ -168,3 +168,15 @@ M1 hängt von keiner der offenen Entscheidungen ab und kann sofort beginnen.
 - „Im Spiel bestätigt“ heißt: Zustand zum Aufnahmezeitpunkt in den gelesenen Chunks. Spätere Änderungen in der Welt sieht die Website erst mit der nächsten Aufnahme.
 - Keine Drehung zwischen Plan und Welt in v1.
 - Nichts davon ist implementiert oder im Spiel geprüft.
+
+## B8P · Dauerhafte Aufnahmen und Verlauf · 31.10.2026
+
+Im Tab „Bauen“ speichert „Aufnahme im Projekt speichern“ die unveränderte Aufnahmedatei zusammen mit einer Projektreferenz atomar über das vorhandene Repository (`applyBatch`, `baseRevision`). `Project.scanHistory` enthält SHA-256, ursprünglichen Dateinamen, Importzeit, Revisionsbezug und Ausrichtung; die Originalbytes bleiben im vorhandenen Originalspeicher. Es gibt keine zweite Datenbank oder neue Vergleichslogik.
+
+Die letzte gespeicherte Aufnahme wird beim Öffnen des Projektbereichs automatisch wieder geladen. Der Verlauf lässt ältere Dateien auswählen; die Originaldatei kann bytegleich heruntergeladen werden. Vor erneutem Lesen werden Größe und SHA-256 geprüft, danach liest der bestehende begrenzte Worker das Original und der vorhandene Domänenkern berechnet den Vergleich erneut. Fremde Aufnahmen behalten ihre manuell gesetzte Ausrichtung. Ausblenden löscht keine Aufnahme. Manuelle Fortschrittshaken bleiben unverändert.
+
+Speichern benötigt einen vollständig gespeicherten Projektstand. Ein konkurrierender Tab führt zur Revisionsablehnung ohne Teilübernahme. Nach erfolgreichem Schreiben wird das Projekt neu geladen und die Rückgängig-Historie zurückgesetzt; die Oberfläche erklärt dies vor dem Klick. Falls inzwischen eine lokale Änderung begonnen hat, wird diese nicht durch automatisches Neuladen ersetzt; der Nutzer erhält den Hinweis, den gespeicherten Stand zu laden.
+
+Projekt-/Gesamtsicherungen sammeln auch die Scan-Originalreferenzen. Wiederherstellung prüft den Verlauf strukturell; fehlende Originale werden ausdrücklich aufgeführt. Der Datencheck erkennt verwendete und fehlende Scan-Originale. Alte Projekte ohne `scanHistory` bleiben gültig. Im Sitzungsspeicher gilt keine Dauerhaftigkeitszusage; die Oberfläche weist darauf hin.
+
+Grenzen: kein automatisches Löschen alter Originale, kein geräteübergreifender Abgleich, keine Live-Spielverbindung. Wird ein Projekt bei der Sicherungswiederherstellung unter neuer ID kopiert, behalten unveränderte Bridge-Aufnahmen ihre ursprüngliche Projekt-ID und werden deshalb ausdrücklich als fremdes Projekt abgewiesen; Originaldownload/Reimport bleibt möglich. Kein Umschreiben von Originalmetadaten. Browser-/Safari-/Spielabnahme separat offen.

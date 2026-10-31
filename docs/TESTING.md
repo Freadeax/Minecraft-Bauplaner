@@ -256,3 +256,16 @@ GitHub Actions werden nicht genutzt. Der jeweils bearbeitende Agent führt alle 
 
 ### S2 · Veröffentlichung nach Nutzerpräzisierung
 Expliziter Nutzerauftrag vom 31.10.2026 verlangt Push und anschließende Pages-Veröffentlichung trotz dokumentierter fehlender Browser-Testinfrastruktur. Code seit erfolgreicher Typprüfung und vier Regressionen unverändert. Veröffentlichungsskript baut aus dem gepushten Commit und prüft die Pages-Artefakte erneut; Liveprüfung erfolgt separat.
+
+## B8P · 31.10.2026 · Spielaufnahmen und Verlauf
+
+- Neue Regressionen `tests/scan-persistence.test.mjs`: atomare Referenz-/Originalübergabe, doppelte Importdatei, manuelle Ausrichtung, baseRevision-Konflikt, falscher SHA/Projekt-/Revisionsbezug, ungültige Koordinaten, beschädigte/fehlende Originale, Backup-Roundtrip, fehlende Dateien und Datencheck. Original-SHA wird unabhängig mit Node crypto berechnet.
+- `npm run build:core && node --test tests/scan-persistence.test.mjs tests/backup.test.mjs tests/game-check.test.mjs`: 27/27 bestanden (acht neue Persistenztests). Strenge Kern-/Web-Typprüfung bestanden.
+- Zusätzlich `tests/e2e/scan-persistence.e2e.mjs` erstellt: UI-Speichern, Reload mit Ausrichtung, Verlaufsauswahl und bytegleicher Originaldownload. Nicht als bestanden gewertet: vorhandenes Playwright-Chromium fehlt in dieser Umgebung (siehe S2).
+- Echte Spiel-/Safari-/iPhone-Abnahme nicht durchgeführt. Keine Commits/Pushes durch den Teilthread; Integration und Gesamtprüfung übernimmt der Hauptthread.
+
+## Parallelblöcke · 31.10.2026 · Gesamtintegration
+`npm run check`: 303/303 Node-Tests, Kern-/Web-Typprüfung, vollständiger Build und Dokumentationsprüfung bestanden. B8P, S3 und B15-L gemeinsam geprüft. Zusätzliche Scan-Persistenz-E2E-Datei vorhanden, nicht als bestanden gezählt (Chromium fehlt). Livekartenadapter zusätzlich separat auf Origin-Invarianz geprüft; keine externe Providerverbindung oder Spielabnahme behauptet.
+
+### Abschlussprüfung einschließlich Branchmigration
+`npm run check`: 310/310 Node-Tests bestanden, Typprüfungen, Builds und Dokumentationsprüfung bestanden. Sieben zusätzliche Tests prüfen Main-Root-Artefaktmerge, Quellenkollisionen, Manifestmanipulation und tatsächlichen Git-Tree-Erhalt. Branchlöschung und Pages-Quellenwechsel nicht ausgeführt (fehlende Verwaltungsfähigkeit bzw. nicht abgeschlossene Browseranmeldung).

@@ -253,3 +253,47 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 ### MSG-S2-02 · Codex · 2026-10-31 · Nutzerpräzisierung zur Veröffentlichung
 - Expliziter Nutzerauftrag: „Immer pushen und die neue Main als aktuelle Page veröffentlichen“. AGENTS ergänzt: fehlende Browser-Testinfrastruktur dokumentieren, aber deshalb allein die Veröffentlichung nicht zurückhalten.
 - S2 wird regulär integriert und direkt über das vorhandene Pages-Skript veröffentlicht. Vorhandene erfolgreiche Kern-/Typ-/Buildprüfungen gelten für den unveränderten Code; keine Browserabnahme behauptet.
+
+### MSG-B8P-00 · Codex Thread scan_persistence · 2026-10-31 · Spielaufnahmen dauerhaft speichern: Prüfung
+- Untersuchung von GameCheckPanel, Repository/OriginalFile, ProjectSession und Backup: Originale besitzen keinen Projektindex; Sicherungen sammeln derzeit nur AssetVersion-Originalreferenzen. Ein losgelöster Browserindex wäre unvollständig.
+- Für vollständige Umsetzung erforderlich: optionale validierte Project.scanHistory, Referenzen im Backup, atomarer Original-/Projektschreibvorgang über vorhandenes applyBatch; kleine zusätzliche Einbindung in BuildTab. Keine zweite Datenbank oder Vergleichslogik.
+- Dateiumfang zur Abstimmung an den Hauptthread gemeldet; vor Freigabe keine vorhandenen Domänen-/Speicherdateien geändert. Keine Commits oder Pushes aus diesem Thread.
+
+### MSG-B15L-00 · Codex Thread worldmap_review · 2026-10-31 · Livekartenadapter reserviert
+- Hauptthread-Auftrag: isolierter generischer URL-Templateadapter und eigenes Marker-JSON als Grundlage für B15; keine geratenen Parameter bestimmter Livekartenanbieter, keine Netzaufrufe oder Serveranbindung.
+- Eigene Dateien: `packages/domain/src/livemap.ts`, `tests/livemap.test.mjs`, `docs/architecture/LIVEMAP.md`; keine gemeinsamen Export-/Projektdateien. Platzhalter `{x}`, `{y}`, `{z}`, `{world}`, `{dimension}` nur hinter festem HTTP(S)-Origin; Koordinaten als sichere Ganzzahlen, Namen komponentenkodiert.
+- Keine Commits oder Pushes durch diesen Thread. Prüfung: TypeScript-Kernbuild, gezielte Node-Regressionen, Dokumentationsprüfung.
+
+### MSG-S3-00 · Codex Thread quality_audit · 2026-10-31 · Sicherungsvalidierung
+- Reproduziert: unvollständige Assetfelder passieren readBackup und können die Bibliothek abstürzen lassen; missingOriginals lässt sich ohne Hashänderung leeren.
+- Reserviert: neuer Helper `packages/domain/src/recordValidation.ts`, eigene Tests `tests/record-validation.test.mjs`. Integration in `backup.ts` abgestimmt mit Thread scan_persistence, der diese Datei besitzt.
+- Kein Schemawechsel; vorhandene vollständige Datensätze bleiben erhalten. Fehlende Originale werden aus tatsächlich enthaltenen Bytes und Versions-/Scanreferenzen abgeleitet. Kein Commit/Push aus diesem Thread.
+
+### MSG-B15L-01 · Codex Thread worldmap_review · 2026-10-31 · Adapter vorbereitet
+- Drei eigene Dateien fertig: generischer reiner URL-Templateadapter, explizit eigenes Bauplaner-Marker-JSON und Vertrag. Kein nativer Providervertrag oder Netz-/Serverzugriff behauptet; noch keine UI-Einbindung und kein gemeinsamer Export geändert.
+- `node --test tests/livemap.test.mjs`: 5/5 bestanden; `python3 scripts/check_docs.py` und `git diff --check`: bestanden. `npm run build:core` enthält keine livemap-Fehler, wird zur Prüfzeit aber durch parallele TypeScript-Fehler in `recordValidation.ts` blockiert; an Hauptthread gemeldet. Die ausgegebenen JS-Module erlaubten den tatsächlichen gezielten Testlauf.
+- Keine Commits/Pushes durch diesen Thread. Übergabe an Hauptthread für Gesamtprüfung, Integration und Pages.
+
+### MSG-S3-01 · Codex Thread quality_audit · 2026-10-31 · Sicherungsvalidierung umgesetzt
+- Neuer Helper `recordValidation.ts`: vollständige Assetfelder einschließlich Tags, Herkunft, Flags, Zeitpunkten und eindeutiger Versionsliste geprüft, ohne Datensätze umzuschreiben; alle mitgelieferten Assets bleiben gültig.
+- Fehlende Originale werden aus Versions-/Scanreferenzen und tatsächlich enthaltenen Originalen berechnet. Entfernte oder veraltete Warnlisten können Verluste nicht mehr verbergen; doppelte Originaleinträge und ungültige SHA-256 werden abgewiesen. Integration in backup.ts durch scan_persistence abgestimmt und erfolgt.
+- `npm run build:core` und `node --test tests/record-validation.test.mjs tests/backup.test.mjs tests/integrity.test.mjs`: 22/22 bestanden (fünf neue Regressionen). `git diff --check` bestanden.
+- Separat offener Auditbefund: konkurrierende Asset-Schreibvorgänge benötigen Revisionsschutz/atomaren Merge; dieser Block ändert den Repositoryvertrag nicht. Kein Commit/Push aus diesem Thread.
+
+### MSG-B8P-01 · Codex Thread scan_persistence · 2026-10-31 · Speicherung und Verlauf implementiert
+- Nach Scope-Abstimmung mit Hauptthread: `Project.scanHistory` (types.ts), Strukturprüfung/Originalreferenzen (backup.ts), vorhandene Originale im Datencheck (integrity.ts), `app/scanPersistence.ts`, GameCheckPanel und minimale Einbindung in BuildTab. Keine neue Datenbank/Abhängigkeit/Spielvergleichslogik.
+- Atomare Original-/Projektübernahme mit baseRevision, automatische Wiederherstellung der letzten Aufnahme, Verlaufsauswahl, SHA-Prüfung und Originaldownload; manuelle Ausrichtung wird gespeichert. Fehlender/quota-begrenzter Speicher und Undo-Reset bleiben sichtbar.
+- Zusammenarbeit mit quality_audit: S3-Helper `recordValidation.ts` in backup.ts integriert; vereinigte Versions- und Scanreferenzen an Manifestprüfung übergeben.
+- Prüfungen siehe TESTING: 27/27 zugehörige Node-Tests bestanden, darunter acht neue; UI-Regression geschrieben, Browserausführung wegen fehlendem Chromium offen. Kein Commit/Push durch diesen Thread; Übergabe an Hauptthread zur Gesamtprüfung/Veröffentlichung.
+
+### MSG-MAINONLY-01 · Codex Thread branch_cleanup · 2026-10-31 · Main-only vorbereitet
+- Branchprüfung: sechs Arbeitsbranches sind direkte Main-Vorfahren; der siebte (`ar9kx8`) besitzt exakt denselben vollständigen Tree wie der integrierte Squash `dce4394`. Alle SHAs und Mergebelege in `docs/operations/MAIN_ONLY_BRANCHES.md`. Kein offener PR beim Abruf. `gh-pages` erst nach Quellenwechsel entfernen.
+- Eigene neue Dateien: `scripts/publish_main_pages.sh`, `scripts/prepare_main_pages.mjs`, `tests/main-pages.test.mjs`, `docs/operations/MAIN_ONLY_BRANCHES.md`. Vorhandener Publisher nicht verändert. Kein Commit/Push, keine Branchlöschung und keine Pages-Konfiguration durch diesen Thread.
+- Neuer Publisher erhält den vollständigen Main-Tree, prüft eine feste Artefakt-Allowlist samt SHA-256/Größe und ergänzt nur Builddateien. Alte Chunks werden nur entfernt, wenn sie bytegenau dem bisherigen Manifest entsprechen. Quellkollisionen, Symlinks, fremde Manifeste und konkurrierende Main-Updates brechen ab; kein Force/Reset. Artefaktcommit D referenziert den geprüften Quellcommit C.
+- Prüfung: `node --test tests/main-pages.test.mjs` 7/7 bestanden, darunter echte Git-Tree-Integration mit Source-Erhalt und Chunklöschung; `bash -n scripts/publish_main_pages.sh`, Dokumentationsprüfung und `git diff --check` bestanden. Keine tatsächliche Publishingprobe, weil keine Shell-Schreibanmeldung; Main-only bleibt bis authentifiziertem GitHub-Pages-Quellenwechsel ausdrücklich vorbereitet.
+- Dateien eingefroren und an Hauptthread übergeben; Standardpublisher bleibt vorerst `scripts/publish_pages.sh`.
+
+### MSG-INTEGRATION-01 · Codex · 2026-10-31 · Parallelblöcke zusammengeführt
+- B8P, S3, B15-L und Main-only-Publisher gemeinsam geprüft: 310 Node-Tests, Typprüfung, Build und Dokumentationsprüfung bestanden; keine neue Abhängigkeit. Exporte für Livekartenadapter ergänzt.
+- Alte Arbeitsbranches inhaltlich in main enthalten. WIP-Historie von ar9kx8 wird zusätzlich durch Merge-Elternschaft bewahrt, ohne alte Dateien zurückzuspielen.
+- Main-only-Pages und Branchlöschung bleiben nach nicht abgeschlossener Browseranmeldung offen. Bestehenden Pages-Branch weiter bedienen; keine erfolgreiche Quellenumstellung behaupten.
