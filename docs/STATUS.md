@@ -48,3 +48,5 @@ S1 Stabilität (28.10.2026): Kamera-Fehler nach Dateiimport behoben (3D-Fläche 
 
 
 B13 Parametrische Generatoren (28.10.2026): Bibliotheksreiter „Generatoren“ mit Haus, Turm, Mauer, Brücke, Dach nach Maß, Stil und Details; Anlagen Burganlage und Häuserzeile als Projekt; Parameter in der Version gespeichert und nachrechenbar. Details [GENERATORS](architecture/GENERATORS.md).
+
+S2 Bibliothekseinstellungen (31.10.2026, lokal vorbereitet): Merkliste/Vergleich/Blickrichtung verlieren bei gesperrtem oder vollem localStorage keine Änderungen mehr während der laufenden Seite. Tab-Synchronisierung berücksichtigt Löschen/Leeren; Listen werden bereinigt. 285 Node-Tests, Typprüfung, Build und Dokumentationsprüfung bestanden. Vollständige Browserprüfung blockiert durch fehlendes Playwright-Chromium; Vorschau zusätzlich durch Vite-Hostfreigabe blockiert. Main-/Pages-Veröffentlichung nach ausdrücklicher Nutzerpräzisierung vom 31.10.2026 beauftragt; Browsergrenzen bleiben ausgewiesen.

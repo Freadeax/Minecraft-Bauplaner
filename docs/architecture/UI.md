@@ -31,3 +31,7 @@ Zusätzliches Stylesheet `apps/web/src/catalog.css` nach `style.css`: Farbtokens
 ## Prüfung
 
 `tests/e2e/catalog.e2e.mjs` (1400 px und 390 px): Vorschaubild als PNG-Daten vorhanden, Seiten zu 48, Kategorieleiste, Filterchips, Merkliste, Vergleich hinzufügen/entfernen, Varianten über Bildlinks, Detailseite mit Steckbrief, Ensembles, „Neues Projekt damit starten“, Vorschläge und Übernahme ins Projekt. Übrige Browserprüfungen auf die Detailseite umgestellt.
+
+## Stabilisierung S2 · 31.10.2026
+
+Merkliste, Vergleich und Blickrichtung behalten fehlgeschlagene Schreibvorgänge in einem gemeinsamen Speicher der laufenden Seite. Damit bleiben sie bei Navigation und zwischen mehreren Komponenten erhalten, auch wenn localStorage gesperrt oder voll ist. Ohne erfolgreichen Browser-Schreibvorgang endet diese Garantie beim Neuladen. Echte Storage-Ereignisse anderer Tabs (auch Löschen und Leeren) ersetzen den lokalen Fallback. Listen werden beim Lesen bereinigt und begrenzt; schnelle Änderungen lesen den aktuellen gemeinsamen Stand. Regressionen: `tests/preferences.test.mjs`.

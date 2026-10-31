@@ -73,3 +73,7 @@ Bei paralleler Arbeit gelten Dateizuständigkeiten und Regeln aus docs/BLOCKS.md
 - Erforderliche Checks aus Projektkonfiguration ausführen. Unveränderte fremde Fehler gesondert melden; keine Tests zum Erreichen eines grünen Ergebnisses abschwächen.
 - STATUS, ROADMAP und gegebenenfalls Entscheidungen aktualisieren. Ergebnis, Prüfungen, Grenzen, Commit-/Push-Stand und nächste konkrete Aufgabe nennen.
 - Eine Aufgabe ist erst fertig, wenn Verhalten, passende Prüfungen und Dokumentation übereinstimmen.
+
+## Nutzerpräzisierung · 31.10.2026
+
+Fertige Änderungen immer regulär auf main pushen und unmittelbar als aktuelle GitHub Page veröffentlichen. Nicht ausführbare Browserprüfungen wegen fehlender Testinfrastruktur ausdrücklich dokumentieren; sie allein halten die Veröffentlichung nach dieser Nutzerpräzisierung nicht auf. Ausführbare Prüfungen bleiben erforderlich; bekannte Produktfehler sind zu beheben. Kein Force-Push, keine eigenen Actions.

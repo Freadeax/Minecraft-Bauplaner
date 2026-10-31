@@ -92,3 +92,7 @@ Umgesetzt: frei definierte Bauabschnitte (P3-02), Freiraum-Reservierung an Ansch
 Umgesetzt: Absturzschutz, Fehlerprotokoll, Systemcheck, Datencheck, Leistung großer Modelle, Importvorschau im Bild ([STABILITY](architecture/STABILITY.md)). Nächste sinnvolle Schritte: Safari/iPhone-Prüfung auf echtem Gerät; Rechenarbeit großer Projekte (Zusammensetzen, Bauanleitung) in einen Worker verlagern, damit die Oberfläche während einiger Sekunden Rechenzeit bedienbar bleibt; `owners` der Auflösung auf numerische Zellindizes umstellen (größter verbliebener Kostenblock, betrifft Editor/Anleitung/Material); Erinnerung an eine Sicherung nach längerer Zeit ohne Sicherung.
 
 B13 Parametrische Generatoren (28.10.2026) umgesetzt: [GENERATORS](architecture/GENERATORS.md) – deckt P5-02/R-012 für Haus, Turm, Mauer, Brücke, Dach und die Anlagen Burg/Häuserzeile ab. Offen: Eckformen der Dachtreppen, weitere Generatoren (Treppenhaus, Kirche, Hafen), eigene Vorlagen speichern, Spielabnahme.
+
+## S2 · Bibliothekseinstellungen · 31.10.2026
+
+Lokale Korrektur für Merkliste, Vergleich und Blickrichtung bei nicht verfügbarem localStorage vorbereitet; vier Regressionstests. Vor Integration bleibt die vollständige Browserprüfung erforderlich (Chromium fehlt in der aktuellen Umgebung). B15 bleibt reserviert und unberührt.

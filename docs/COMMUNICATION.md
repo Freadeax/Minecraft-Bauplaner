@@ -239,3 +239,17 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Nutzerauftrag: „Möglichkeit wie auf einer Map rumzufliegen, die bebauten Sachen anschauen; LMNT Live Map ansehen und damit etwas anfangen.“ Dieser Thread: Weltkarte `#/karte` mit Projekten an Weltkoordinaten, Draufsicht und 3D-Freiflug, Baufortschritt eingefärbt, Kollisionen zwischen Projekten, Verknüpfung mit einer externen Live-Karte (BlueMap/Dynmap/squaremap/Pl3xMap: Links an dieselbe Koordinate, Marker-Export).
 - Eigene Dateien: `packages/domain/src/worldmap.ts`, `packages/domain/src/livemap.ts`, `tests/worldmap.test.mjs`, `tests/e2e/worldmap.e2e.mjs`, `apps/web/src/views/map/`, `apps/web/src/map.css`, `docs/architecture/WORLDMAP.md`.
 - Kleine Eingriffe: optionales Feld `world` in `Project` (`types.ts`), Operation `world.set` in `project.ts`, Prüfung in `checkProjectRecord` (`backup.ts`), Exportzeilen in `index.ts`, Route `#/karte` in `router.ts`, ein Seitenzweig und ein Navigationslink in `main.tsx` (bzw. eine Zeile in `nav.ts`, falls die Oberflächen-Überarbeitung vorher landet), optionale Viewer-Eigenschaft `frameRequest` (`viewer/types.ts`, `ThreeViewer.tsx`, eine Wirkung), ein Link „Auf der Weltkarte“ in der Projektkarte.
+
+### MSG-S2-00 · Codex · 2026-10-31 · Bibliothekseinstellungen stabilisieren
+- Befund: fehlgeschlagene localStorage-Schreibvorgänge werden unmittelbar durch das eigene Synchronisationsereignis überschrieben; schneller Wechsel mehrerer Komponenten nutzt veraltete Hook-Werte.
+- Umfang: `apps/web/src/views/library/prefs.ts`, neues `preferenceStore.ts`, `tests/preferences.test.mjs`, UI-/Status-/Roadmap-/Prüfdokumentation. B15-Weltkarte bleibt unberührt.
+- Prüfung: Regressionen für gesperrten/vollen Speicher, erneutes Lesen, mehrere Nutzer des Stores und Tab-Aktualisierung; vollständiger Projektcheck und vorhandene Browserprüfungen soweit ausführbar.
+
+### MSG-S2-01 · Codex · 2026-10-31 · Ergebnis und Übergabe
+- S2 implementiert: gemeinsamer Sitzungsspeicher bei localStorage-Fehlern, Lesen des aktuellen Stands bei Toggle, bereinigte/begrenzte Listen, Synchronisierung von Blickrichtung sowie Löschen/Leeren aus anderen Tabs.
+- Prüfung: 285 Node-Tests, Typprüfung/Build/Dokumentationsprüfung bestanden. Browserprüfung blockiert: Chromium fehlt; verfügbare Vorschau meldet nicht zugelassenen Vite-Host. Details in TESTING.
+- Kein Main-Push und kein Deployment wegen offener Browserprüfpflicht. Änderungen lokal zur Weiterarbeit erhalten; kein Hintergrundprozess, B15 nicht bearbeitet. Nächster Schritt: vollständige E2E-Prüfung in Umgebung mit vorhandenem Chromium, danach reguläre Integration und Pages.
+
+### MSG-S2-02 · Codex · 2026-10-31 · Nutzerpräzisierung zur Veröffentlichung
+- Expliziter Nutzerauftrag: „Immer pushen und die neue Main als aktuelle Page veröffentlichen“. AGENTS ergänzt: fehlende Browser-Testinfrastruktur dokumentieren, aber deshalb allein die Veröffentlichung nicht zurückhalten.
+- S2 wird regulär integriert und direkt über das vorhandene Pages-Skript veröffentlicht. Vorhandene erfolgreiche Kern-/Typ-/Buildprüfungen gelten für den unveränderten Code; keine Browserabnahme behauptet.

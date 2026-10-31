@@ -244,3 +244,15 @@ GitHub Actions werden nicht genutzt. Der jeweils bearbeitende Agent führt alle 
 - Gefunden und behoben: Brückenvorschau zu hoch (Plot-Höhe vorgegeben), doppelte Klammern im Namen, Kartenlayout der Übersicht, Nachrechnungs-Hinweis mobil unsichtbar (globale `.small-note`-Regel).
 - Sichtprüfung per Screenshot (1400 px): alle Generatoren, 9 Vorlagen, Burganlage, Festung, Altstadt, Kirschblütendorf.
 - Grenzen: nur Chromium; keine Spielabnahme der Bauwerke.
+
+## S2 · 31.10.2026 · Bibliothekseinstellungen
+
+- Ausgangspunkt: main `3eddf50`. Änderungen in `prefs.ts`/`preferenceStore.ts`, vier Regressionen in `tests/preferences.test.mjs`.
+- `npm ci --ignore-scripts`: erfolgreich, Lockfile unverändert.
+- `npm run check`: 285/285 Node-Tests bestanden; strenge Kern-/Web-Typprüfung, Kern-/Pages-Build und Dokumentationsprüfung bestanden.
+- `NODE_PATH="$CODEX_PRIMARY_RUNTIME_NODE_MODULES" npm run test:e2e`: nicht ausführbar; jeder Browserstart scheitert vor dem Testverhalten an der fehlenden Datei `chromium_headless_shell-1234/chrome-headless-shell-linux64/chrome-headless-shell`. Keine Browserabnahme behauptet.
+- Zusätzlicher Vorschauversuch über Sites-Preview: Browser erreicht den Server, Vite weist den Vorschauhost `terminal.local` ab. Keine Host-/Sicherheitsregeln geändert.
+- Wegen der vollständigen Browserprüfpflicht aus AGENTS/BLOCKS keine Main-Integration oder Pages-Veröffentlichung. Keine Minecraft-/Safari-/iPhone-Abnahme.
+
+### S2 · Veröffentlichung nach Nutzerpräzisierung
+Expliziter Nutzerauftrag vom 31.10.2026 verlangt Push und anschließende Pages-Veröffentlichung trotz dokumentierter fehlender Browser-Testinfrastruktur. Code seit erfolgreicher Typprüfung und vier Regressionen unverändert. Veröffentlichungsskript baut aus dem gepushten Commit und prüft die Pages-Artefakte erneut; Liveprüfung erfolgt separat.
