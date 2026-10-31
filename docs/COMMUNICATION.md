@@ -314,3 +314,8 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Nutzerentscheidung: zusätzliches Material-Repository und repositoryübergreifende Registry ausdrücklich zurückgestellt. Neue Planung in docs/NOVEMBER_EXPANSION.md auf main (ad88fdf) festgehalten.
 - Nächste unabhängige Blöcke: UI-01 Theme-Komponenten und LIB-02 Materiallabor-Vertrag; B15/B16/B17/S4-Reservierungen nicht überschreiben. Noch keine Implementierung oder Tests dieser Blöcke erfolgt.
 - Keine Hintergrund-Threads gestartet; keine neue Pages-Veröffentlichung bestätigt.
+
+### MSG-UI01-START · ChatGPT · 2026-11-01 · Theme-Kern
+- Reservierung ausschließlich neuer Dateien `apps/web/src/theme/themeTokens.mjs`, `tests/theme-tokens.test.mjs`, `docs/architecture/THEME_TOKENS.md`. Keine bestehenden UI-, Viewer-, B15/B16/B17- oder Domain-Dateien verändern.
+- Kleiner erster Schritt: rein funktionale Theme-Definitionen, Kontrastprüfung und sichere Theme-Auswahl ohne Seiteneffekte. Vollständige UI-Anbindung bleibt Folgeblock.
+- Prüfplan: Node-Test direkt für neue Module; vollständiger npm-check nur bei verfügbarer Repository-Arbeitskopie, andernfalls ausdrücklich offen. Vor Push Kommunikation erneut prüfen.
