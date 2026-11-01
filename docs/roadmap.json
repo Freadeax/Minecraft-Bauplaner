@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T19:17:43.235Z",
+  "updatedAt": "2026-11-01T19:18:40.607Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -5817,6 +5817,53 @@
       "summary": "Nach Rebase auf QA-03: npm run check grün, E2E 84/84.",
       "files": [
         "docs/TESTING.md"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-05",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T19:18:40.607Z",
+      "kind": "progress",
+      "items": [
+        "GAME-05"
+      ],
+      "summary": "Dateizuordnung der GAME-05-Integration (742fe03..10d71cc) nachgetragen: NeoForge-/Forge-Adapter, client-26.3, Spieltest, Download-Seite, Dokumentation.",
+      "files": [
+        "apps/web/src/views/mod/ModView.tsx",
+        "apps/web/src/views/mod/releases.json",
+        "apps/web/src/views/mod/releases.ts",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/MOD_BRIDGE.md",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.1.0.jar",
+        "mods/bauplaner-bridge/README.md",
+        "mods/bauplaner-bridge/client-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/ClientScenario.java",
+        "mods/bauplaner-bridge/client-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/client/BridgeCommands.java",
+        "mods/bauplaner-bridge/client-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/client/ClientHost.java",
+        "mods/bauplaner-bridge/forge-26.3/build.gradle",
+        "mods/bauplaner-bridge/forge-26.3/gradle.properties",
+        "mods/bauplaner-bridge/forge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/ForgeGameTest.java",
+        "mods/bauplaner-bridge/forge-26.3/src/gametest/resources/META-INF/mods.toml",
+        "mods/bauplaner-bridge/forge-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/forge/BridgeForge.java",
+        "mods/bauplaner-bridge/forge-26.3/src/main/templates/META-INF/mods.toml",
+        "mods/bauplaner-bridge/forge-26.3/src/main/templates/pack.mcmeta",
+        "mods/bauplaner-bridge/neoforge-26.3/build.gradle",
+        "mods/bauplaner-bridge/neoforge-26.3/gradle.properties",
+        "mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/NeoForgeGameTest.java",
+        "mods/bauplaner-bridge/neoforge-26.3/src/gametest/resources/META-INF/neoforge.mods.toml",
+        "mods/bauplaner-bridge/neoforge-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/neoforge/BridgeNeoForge.java",
+        "mods/bauplaner-bridge/neoforge-26.3/src/main/templates/META-INF/neoforge.mods.toml",
+        "mods/bauplaner-bridge/settings.gradle",
+        "scripts/release_mod.mjs",
+        "scripts/test_bridge_ingame_forge.sh",
+        "tests/e2e/mod-download.e2e.mjs"
       ],
       "snapshot": [
         {
