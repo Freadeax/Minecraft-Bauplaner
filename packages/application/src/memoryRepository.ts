@@ -1,4 +1,5 @@
-import type { Asset, AssetVersion, OriginalFile, Project } from '../../domain/src/index.js';
+import type { Asset, AssetVersion, Collection, LibraryTemplate, OriginalFile, Project } from '../../domain/src/index.js';
+import { LibraryRecordConflictError, nextLibraryRevision } from '../../domain/src/collections.js';
 import { checkStorageBatch, nextAssetRevision } from './assetConcurrency.js';
 import { RevisionConflictError } from './repository.js';
 import type { Repository, StorageBatch, StorageInfo } from './repository.js';
@@ -10,6 +11,8 @@ export class MemoryRepository implements Repository {
   private assets = new Map<string, Asset>();
   private versions = new Map<string, AssetVersion>();
   private originals = new Map<string, OriginalFile>();
+  private collections = new Map<string, Collection>();
+  private templates = new Map<string, LibraryTemplate>();
   constructor(readonly notice?: string) {}
   async listProjects() { return structuredClone([...this.projects.values()]); }
   async getProject(id: string) { return structuredClone(this.projects.get(id) ?? null); }
@@ -37,7 +40,15 @@ export class MemoryRepository implements Repository {
       const stored = this.projects.get(project.id)?.revision ?? 0;
       if (stored !== baseRevision) throw new RevisionConflictError(stored, baseRevision);
     }
+    const collections = (batch.collections ?? []).map(c => nextLibraryRevision('collection', c, this.collections.get(c.id)));
+    const templates = (batch.templates ?? []).map(t => nextLibraryRevision('template', t, this.templates.get(t.id)));
+    for (const [kind, refs, store] of [['collection', batch.removeCollections, this.collections], ['template', batch.removeTemplates, this.templates]] as const)
+      for (const ref of refs ?? []) { const stored = store.get(ref.id)?.revision ?? 0; if (stored !== ref.revision) throw new LibraryRecordConflictError(kind, ref.id, stored, ref.revision); }
     for (const v of batch.versions ?? []) if (!this.versions.has(v.id)) this.versions.set(v.id, v);
+    for (const c of collections) this.collections.set(c.id, c);
+    for (const t of templates) this.templates.set(t.id, t);
+    for (const ref of batch.removeCollections ?? []) this.collections.delete(ref.id);
+    for (const ref of batch.removeTemplates ?? []) this.templates.delete(ref.id);
     for (const a of assets) this.assets.set(a.id, a);
     for (const o of batch.originals ?? []) this.originals.set(o.sha256, o);
     const saved = (batch.projects ?? []).map(({ project, baseRevision }) => {
@@ -50,5 +61,7 @@ export class MemoryRepository implements Repository {
   subscribe() { return () => {}; }
   async storageInfo(): Promise<StorageInfo> { return {}; }
   async requestPersistence() { return false; }
+  async listCollections() { return structuredClone([...this.collections.values()]); }
+  async listTemplates() { return structuredClone([...this.templates.values()]); }
 }
 

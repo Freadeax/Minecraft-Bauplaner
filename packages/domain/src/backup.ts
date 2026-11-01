@@ -6,6 +6,8 @@ import { checkTransform } from './project.js';
 import { deepFreeze, verifyAssetVersion } from './library.js';
 import { checkSite } from './site.js';
 import { checkWorldPlacement } from './worldmap.js';
+import { checkCollectionRecord, checkTemplateRecord, pinnedVersionIds, sameLibraryRecord, templateVersionIds } from './collections.js';
+import type { Collection, LibraryTemplate } from './collections.js';
 
 /**
  * Persistence and backup contract (P2-01, R-023/R-024). Pure and storage
@@ -26,6 +28,12 @@ export interface OriginalFile {
 
 export const BACKUP_FORMAT = 'minecraft-bauplaner-backup';
 export const BACKUP_FORMAT_VERSION = 1;
+/**
+ * Format 2 (LIB-02/LIB-03) adds own collections and templates. It is written
+ * only when such records are contained, so backups without them stay format 1
+ * and older app versions can still read them. Format 1 files remain valid.
+ */
+export const BACKUP_FORMAT_VERSION_LIBRARY = 2;
 /** Upper bound for a backup file read in the browser. */
 export const MAX_BACKUP_BYTES = 100_000_000;
 
@@ -35,6 +43,9 @@ interface BackupContent {
   readonly assets: readonly Asset[];
   readonly versions: readonly AssetVersion[];
   readonly originals: readonly BackupOriginal[];
+  /** Format 2 only. */
+  readonly collections?: readonly Collection[];
+  readonly templates?: readonly LibraryTemplate[];
 }
 export interface BackupFile extends BackupContent {
   readonly format: typeof BACKUP_FORMAT;
@@ -57,6 +68,8 @@ export interface Backup {
   readonly versions: readonly AssetVersion[];
   readonly originals: readonly OriginalFile[];
   readonly missingOriginals: readonly string[];
+  readonly collections: readonly Collection[];
+  readonly templates: readonly LibraryTemplate[];
 }
 
 /** Rejects records written by a newer app and unknown old schemas. */
@@ -87,7 +100,9 @@ export function fromBase64(text: string): Uint8Array {
   return out;
 }
 
-const contentHash = (c: BackupContent) => sha256Hex(canonicalJson({ projects: c.projects, assets: c.assets, versions: c.versions, originals: c.originals }));
+// Format 1 hashes exactly the four original lists; the library lists join the hash only when present (format 2).
+const contentHash = (c: BackupContent) => sha256Hex(canonicalJson({ projects: c.projects, assets: c.assets, versions: c.versions, originals: c.originals,
+  ...(c.collections !== undefined && { collections: c.collections }), ...(c.templates !== undefined && { templates: c.templates }) }));
 const byId = <T extends { id: string }>(a: T, b: T) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
 
 export interface BackupSource {
@@ -96,6 +111,9 @@ export interface BackupSource {
   readonly versions: ReadonlyMap<string, AssetVersion>;
   /** Looks up stored originals; missing ones are listed, not invented. */
   getOriginal(sha256: string): Promise<OriginalFile | null>;
+  /** Own collections and templates; included in full backups (scope "all"). */
+  readonly collections?: readonly Collection[];
+  readonly templates?: readonly LibraryTemplate[];
 }
 
 /**
@@ -113,6 +131,15 @@ export async function createBackup(source: BackupSource, scope: 'project' | 'all
     if (!v) throw new DomainError('BACKUP', `Projekt „${p.name}“ verweist auf fehlende Version ${id}; Sicherung wäre unvollständig`);
     assetIds.add(v.assetId);
   }
+  // Full backups keep own collections and templates with every version they pin (also of shipped assets).
+  const collections = scope === 'all' ? [...(source.collections ?? [])].sort(byId) : [];
+  const templates = scope === 'all' ? [...(source.templates ?? [])].sort(byId) : [];
+  const pinned = new Set([...pinnedVersionIds(collections), ...templates.flatMap(t => [...templateVersionIds(t)])]);
+  for (const id of pinned) {
+    const v = source.versions.get(id);
+    if (v) assetIds.add(v.assetId);
+    else if (templates.some(t => t.body.kind === 'ensemble' && t.body.members.some(m => m.assetVersionId === id))) throw new DomainError('BACKUP', `Eine Vorlage verweist auf fehlende Version ${id}; Sicherung wäre unvollständig`);
+  }
   const assets = source.assets.filter(a => assetIds.has(a.id));
   if (assets.length !== assetIds.size) throw new DomainError('BACKUP', 'Ein verwendetes Bauteil fehlt in der Bibliothek');
   const versions: AssetVersion[] = [];
@@ -129,9 +156,11 @@ export async function createBackup(source: BackupSource, scope: 'project' | 'all
     if (await sha256Hex(o.bytes) !== sha) throw new DomainError('BACKUP', `Gespeicherte Originaldatei ${o.fileName} ist beschädigt`);
     originals.push({ sha256: sha, fileName: o.fileName, mediaType: o.mediaType, size: o.size, createdAt: o.createdAt, base64: toBase64(o.bytes) });
   }
-  const content: BackupContent = { projects: [...projects].sort(byId), assets: [...assets].sort(byId), versions: versions.sort(byId), originals: originals.sort((a, b) => a.sha256 < b.sha256 ? -1 : 1) };
+  const library = collections.length || templates.length;
+  const content: BackupContent = { projects: [...projects].sort(byId), assets: [...assets].sort(byId), versions: versions.sort(byId), originals: originals.sort((a, b) => a.sha256 < b.sha256 ? -1 : 1),
+    ...(library && { collections, templates }) };
   return {
-    format: BACKUP_FORMAT, formatVersion: BACKUP_FORMAT_VERSION, schemaVersion: DOMAIN_SCHEMA_VERSION, createdAt: new Date().toISOString(), scope,
+    format: BACKUP_FORMAT, formatVersion: library ? BACKUP_FORMAT_VERSION_LIBRARY : BACKUP_FORMAT_VERSION, schemaVersion: DOMAIN_SCHEMA_VERSION, createdAt: new Date().toISOString(), scope,
     ...content, missingOriginals: missing.sort(), contentSha256: await contentHash(content),
   };
 }
@@ -221,17 +250,25 @@ export async function readBackup(text: string): Promise<Backup> {
   let raw: unknown;
   try { raw = JSON.parse(text); } catch { throw new DomainError('BACKUP', 'Keine gültige Sicherungsdatei (kein JSON)'); }
   if (!isObj(raw) || raw.format !== BACKUP_FORMAT) throw new DomainError('BACKUP', 'Keine Minecraft-Bauplaner-Sicherung');
-  if (raw.formatVersion !== BACKUP_FORMAT_VERSION) {
-    throw new DomainError(typeof raw.formatVersion === 'number' && raw.formatVersion > BACKUP_FORMAT_VERSION ? 'SCHEMA_NEWER' : 'BACKUP',
-      `Sicherungsformat ${String(raw.formatVersion)} wird nicht unterstützt (erwartet ${BACKUP_FORMAT_VERSION})`);
+  if (raw.formatVersion !== BACKUP_FORMAT_VERSION && raw.formatVersion !== BACKUP_FORMAT_VERSION_LIBRARY) {
+    throw new DomainError(typeof raw.formatVersion === 'number' && raw.formatVersion > BACKUP_FORMAT_VERSION_LIBRARY ? 'SCHEMA_NEWER' : 'BACKUP',
+      `Sicherungsformat ${String(raw.formatVersion)} wird nicht unterstützt (erwartet ${BACKUP_FORMAT_VERSION} oder ${BACKUP_FORMAT_VERSION_LIBRARY})`);
   }
+  const withLibrary = raw.formatVersion === BACKUP_FORMAT_VERSION_LIBRARY;
+  if (!withLibrary && (raw.collections !== undefined || raw.templates !== undefined)) throw new DomainError('BACKUP', 'Sicherungsformat 1 darf keine Sammlungen oder Vorlagen enthalten');
   checkSchemaVersion('Sicherung', raw);
   const content: BackupContent = {
     projects: arr(raw.projects, 'Projekte') as Project[], assets: arr(raw.assets, 'Bauteile') as Asset[],
     versions: arr(raw.versions, 'Versionen') as AssetVersion[], originals: arr(raw.originals, 'Originaldateien') as BackupOriginal[],
+    ...(withLibrary && { collections: arr(raw.collections, 'Sammlungen') as Collection[], templates: arr(raw.templates, 'Vorlagen') as LibraryTemplate[] }),
   };
   if (await contentHash(content) !== raw.contentSha256) throw new DomainError('BACKUP', 'Prüfsumme der Sicherung stimmt nicht – Datei beschädigt oder verändert');
   const projects = content.projects.map(checkProjectRecord), assets = content.assets.map(checkAssetRecord);
+  const collections = (content.collections ?? []).map(checkCollectionRecord), templates = (content.templates ?? []).map(checkTemplateRecord);
+  for (const [label, list] of [['Sammlung', collections], ['Vorlage', templates]] as const) {
+    const seen = new Set<string>();
+    for (const r of list) { if (seen.has(r.id)) throw new DomainError('BACKUP', `${label} ${r.id} doppelt enthalten`); seen.add(r.id); }
+  }
   const versions = new Map<string, AssetVersion>();
   for (const v of content.versions) {
     if (!isObj(v)) throw new DomainError('BACKUP', 'Version ist kein Objekt');
@@ -243,6 +280,7 @@ export async function readBackup(text: string): Promise<Backup> {
   for (const a of assets) for (const id of a.versionIds) if (!versions.has(id)) throw new DomainError('BACKUP', `Unvollständig: Version ${id} von „${a.name}“ fehlt`);
   for (const v of versions.values()) if (!assetById.get(v.assetId)?.versionIds.includes(v.id)) throw new DomainError('BACKUP', `Unvollständig: Version ${v.id} gehört zu keinem enthaltenen Bauteil`);
   for (const p of projects) for (const id of referencedVersionIds(p)) if (!versions.has(id)) throw new DomainError('BACKUP', `Unvollständig: Projekt „${p.name}“ verweist auf fehlende Version ${id}`);
+  for (const t of templates) for (const id of templateVersionIds(t)) if (!versions.has(id)) throw new DomainError('BACKUP', `Unvollständig: Vorlage „${t.name}“ verweist auf fehlende Version ${id}`);
   const ids = new Set<string>();
   for (const p of projects) { if (ids.has(p.id)) throw new DomainError('BACKUP', `Projekt ${p.id} doppelt enthalten`); ids.add(p.id); }
   const originals: OriginalFile[] = [];
@@ -256,7 +294,8 @@ export async function readBackup(text: string): Promise<Backup> {
   // Byte arrays cannot be frozen; records around them are.
   return Object.freeze({ createdAt: str(raw.createdAt, 'Sicherungszeit'), scope: raw.scope === 'project' ? 'project' as const : 'all' as const,
     projects: deepFreeze(projects), assets: deepFreeze(assets), versions: deepFreeze([...versions.values()]),
-    originals: Object.freeze(originals.map(o => Object.freeze(o))), missingOriginals: deepFreeze(missingOriginals) });
+    originals: Object.freeze(originals.map(o => Object.freeze(o))), missingOriginals: deepFreeze(missingOriginals),
+    collections: deepFreeze(collections), templates: deepFreeze(templates) });
 }
 
 /** What the target store already holds. */
@@ -265,6 +304,8 @@ export interface RestoreTarget {
   readonly assets: readonly Asset[];
   readonly versionIds: ReadonlySet<string>;
   readonly originalHashes: ReadonlySet<string>;
+  readonly collections?: readonly Collection[];
+  readonly templates?: readonly LibraryTemplate[];
 }
 
 export type ProjectChoice = 'copy' | 'replace' | 'skip';
@@ -281,12 +322,16 @@ export interface AssetPlan {
   readonly addedVersionIds: readonly string[];
   readonly local?: Asset;
 }
+/** Own collection or template from a backup: new, identical, or differing from a local record with the same id. */
+export interface LibraryRecordPlan<T> { readonly record: T; readonly status: 'new' | 'same' | 'differs'; readonly local?: T }
 export interface RestorePlan {
   readonly backup: Backup;
   readonly projects: readonly ProjectPlan[];
   readonly assets: readonly AssetPlan[];
   readonly newVersions: readonly AssetVersion[];
   readonly newOriginals: readonly OriginalFile[];
+  readonly collections: readonly LibraryRecordPlan<Collection>[];
+  readonly templates: readonly LibraryRecordPlan<LibraryTemplate>[];
 }
 
 /** Content equality ignoring storage revision and save time. */
@@ -309,7 +354,12 @@ export function planRestore(backup: Backup, target: RestoreTarget): RestorePlan 
     const added = asset.versionIds.filter(id => !local.versionIds.includes(id));
     return { asset, local, addedVersionIds: added, status: added.length === 0 && canonicalJson({ ...local, revision: 0 }) === canonicalJson({ ...asset, revision: 0 }) ? 'same' : 'merge' };
   });
+  const planRecords = <T extends Collection | LibraryTemplate>(list: readonly T[], local: readonly T[] = []): LibraryRecordPlan<T>[] => {
+    const byLocal = new Map(local.map(r => [r.id, r]));
+    return list.map(record => { const l = byLocal.get(record.id); return !l ? { record, status: 'new' } : { record, local: l, status: sameLibraryRecord(l, record) ? 'same' : 'differs' }; });
+  };
   return Object.freeze({ backup, projects: Object.freeze(projects), assets: Object.freeze(assets),
+    collections: Object.freeze(planRecords(backup.collections, target.collections)), templates: Object.freeze(planRecords(backup.templates, target.templates)),
     newVersions: backup.versions.filter(v => !target.versionIds.has(v.id)),
     newOriginals: backup.originals.filter(o => !target.originalHashes.has(o.sha256)) });
 }
@@ -321,6 +371,9 @@ export interface RestoreWrite {
   readonly originals: readonly OriginalFile[];
   /** baseRevision 0 = must not exist yet; otherwise the local revision being replaced. */
   readonly projects: readonly { readonly project: Project; readonly baseRevision: number }[];
+  /** New records (revision 0); a differing local record is never replaced, the backup state is added as a copy. */
+  readonly collections: readonly Collection[];
+  readonly templates: readonly LibraryTemplate[];
   readonly summary: readonly string[];
 }
 
@@ -353,7 +406,25 @@ export function buildRestore(plan: RestorePlan, choices: Readonly<Record<string,
       summary.push(`Bauteil „${a.local!.name}“: lokale Angaben behalten${a.addedVersionIds.length ? `, ${a.addedVersionIds.length} fehlende Version(en) ergänzt` : ''}.`);
     }
   }
+  const collections: Collection[] = [], templates: LibraryTemplate[] = [];
+  const copyName = (n: string) => `${n} (Wiederhergestellt ${stamp})`.slice(0, 120);
+  for (const c of plan.collections) {
+    if (c.status === 'same') continue;
+    if (c.status === 'new') { collections.push({ ...c.record, revision: 0 }); summary.push(`Sammlung „${c.record.name}“ neu.`); continue; }
+    const name = copyName(c.record.name);
+    collections.push({ ...c.record, id: newId('col'), name, revision: 0 });
+    summary.push(`Sammlung „${c.record.name}“ unterscheidet sich lokal – als Kopie „${name}“ angelegt, lokale Fassung unverändert.`);
+  }
+  for (const t of plan.templates) {
+    if (t.status === 'same') continue;
+    if (t.status === 'new') { templates.push({ ...t.record, revision: 0 }); summary.push(`Vorlage „${t.record.name}“ neu.`); continue; }
+    const name = copyName(t.record.name);
+    templates.push({ ...t.record, id: newId('tpl'), name, revision: 0 });
+    summary.push(`Vorlage „${t.record.name}“ unterscheidet sich lokal – als Kopie „${name}“ angelegt, lokale Fassung unverändert.`);
+  }
+  const sameRecords = [...plan.collections, ...plan.templates].filter(r => r.status === 'same').length;
+  if (sameRecords) summary.push(`${sameRecords} Sammlung(en)/Vorlage(n) bereits identisch vorhanden – übersprungen.`);
   if (plan.newOriginals.length) summary.push(`${plan.newOriginals.length} Originaldatei(en) ergänzt.`);
   if (plan.backup.missingOriginals.length) summary.push(`${plan.backup.missingOriginals.length} Originaldatei(en) waren schon bei der Sicherung nicht vorhanden.`);
-  return { assets, versions: plan.newVersions, originals: plan.newOriginals, projects, summary };
+  return { assets, versions: plan.newVersions, originals: plan.newOriginals, projects, collections, templates, summary };
 }

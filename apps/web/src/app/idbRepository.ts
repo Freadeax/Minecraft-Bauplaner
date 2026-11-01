@@ -1,5 +1,5 @@
-import type { Asset, AssetVersion, OriginalFile, Project } from '../../../../packages/domain/src/index.js';
-import { checkAssetRecord, checkProjectRecord, checkSchemaVersion, DOMAIN_SCHEMA_VERSION } from '../../../../packages/domain/src/index.js';
+import type { Asset, AssetVersion, Collection, LibraryTemplate, OriginalFile, Project } from '../../../../packages/domain/src/index.js';
+import { checkAssetRecord, checkCollectionRecord, checkProjectRecord, checkSchemaVersion, checkTemplateRecord, DOMAIN_SCHEMA_VERSION, LibraryRecordConflictError, nextLibraryRevision } from '../../../../packages/domain/src/index.js';
 import { assetRevision, checkStorageBatch, nextAssetRevision } from '../../../../packages/application/src/assetConcurrency.js';
 import { RevisionConflictError } from './repository';
 import type { Repository, StorageBatch, StorageChange, StorageInfo } from './repository';
@@ -15,8 +15,8 @@ import type { Repository, StorageBatch, StorageChange, StorageInfo } from './rep
  */
 export const DB_NAME = 'minecraft-bauplaner';
 /** Bump together with a new entry in MIGRATIONS. */
-export const DB_VERSION = 2;
-const STORES = ['projects', 'assets', 'versions', 'originals', 'meta'] as const;
+export const DB_VERSION = 3;
+const STORES = ['projects', 'assets', 'versions', 'originals', 'meta', 'collections', 'templates'] as const;
 type StoreName = typeof STORES[number];
 
 /** Migration n upgrades a database from version n-1 to n. Never edit a released step. */
@@ -40,6 +40,11 @@ const MIGRATIONS: Record<number, (db: IDBDatabase, tx: IDBTransaction, fail: (er
         cursor.continue();
       } catch (error) { fail(error); }
     };
+  },
+  // LIB-02/LIB-03: own collections and templates; additive, existing stores unchanged.
+  3: db => {
+    db.createObjectStore('collections', { keyPath: 'id' });
+    db.createObjectStore('templates', { keyPath: 'id' });
   },
 };
 
@@ -104,7 +109,7 @@ export class IdbRepository implements Repository {
 
   constructor(private readonly db: IDBDatabase) {
     // A newer tab wants to upgrade: release the database and tell the user.
-    db.onversionchange = () => { db.close(); this.closedReason = 'Eine neuere Version des Bauplaners wurde in einem anderen Tab geöffnet. Bitte diese Seite neu laden.'; this.emit({ kind: 'projects' }); this.emit({ kind: 'library' }); };
+    db.onversionchange = () => { db.close(); this.closedReason = 'Eine neuere Version des Bauplaners wurde in einem anderen Tab geöffnet. Bitte diese Seite neu laden.'; this.emit({ kind: 'projects' }); this.emit({ kind: 'library' }); this.emit({ kind: 'userLibrary' }); };
     this.channel = typeof BroadcastChannel === 'function' ? new BroadcastChannel(DB_NAME) : null;
     if (this.channel) this.channel.onmessage = (e: MessageEvent<StorageChange>) => this.emit(e.data);
   }
@@ -154,6 +159,9 @@ export class IdbRepository implements Repository {
   }
   async saveVersion(version: AssetVersion) { await this.applyBatch({ versions: [version] }); }
 
+  async listCollections(): Promise<Collection[]> { return (await this.all<unknown>('collections')).map(checkCollectionRecord); }
+  async listTemplates(): Promise<LibraryTemplate[]> { return (await this.all<unknown>('templates')).map(checkTemplateRecord); }
+
   async getOriginal(sha256: string): Promise<OriginalFile | null> {
     const raw = await this.run(['originals'], 'readonly', tx => req(tx.objectStore('originals').get(sha256) as IDBRequest<StoredOriginal | undefined>));
     if (!raw) return null;
@@ -173,14 +181,21 @@ export class IdbRepository implements Repository {
     if (batch.assets?.length) stores.add('assets');
     if (batch.versions?.length) stores.add('versions');
     if (batch.originals?.length) stores.add('originals');
+    if (batch.collections?.length || batch.removeCollections?.length) stores.add('collections');
+    if (batch.templates?.length || batch.removeTemplates?.length) stores.add('templates');
     if (!stores.size) return [];
     const saved = await this.run([...stores], 'readwrite', async tx => {
       const versions = tx.objectStore.bind(tx, 'versions'), projects = tx.objectStore.bind(tx, 'projects');
       // All CAS reads and validation precede every write in this same readwrite transaction.
-      const [existingVersions, storedProjects, storedAssets] = await Promise.all([
+      const read = <T>(store: StoreName, ids: readonly string[]) => Promise.all(ids.map(id => req(tx.objectStore(store).get(id) as IDBRequest<T | undefined>)));
+      const [existingVersions, storedProjects, storedAssets, storedCollections, storedTemplates, removedCollections, removedTemplates] = await Promise.all([
         Promise.all((batch.versions ?? []).map(v => req(versions().get(v.id) as IDBRequest<AssetVersion | undefined>))),
         Promise.all((batch.projects ?? []).map(p => req(projects().get(p.project.id) as IDBRequest<Project | undefined>))),
         Promise.all((batch.assets ?? []).map(a => req(tx.objectStore('assets').get(a.id) as IDBRequest<Asset | undefined>))),
+        read<Collection>('collections', (batch.collections ?? []).map(c => c.id)),
+        read<LibraryTemplate>('templates', (batch.templates ?? []).map(t => t.id)),
+        read<Collection>('collections', (batch.removeCollections ?? []).map(c => c.id)),
+        read<LibraryTemplate>('templates', (batch.removeTemplates ?? []).map(t => t.id)),
       ]);
       (batch.versions ?? []).forEach((v, i) => {
         const e = existingVersions[i];
@@ -192,7 +207,15 @@ export class IdbRepository implements Repository {
         if (stored !== baseRevision) throw new RevisionConflictError(stored, baseRevision);
         return { ...project, revision: baseRevision + 1 };
       });
+      const nextCollections = (batch.collections ?? []).map((c, i) => nextLibraryRevision('collection', c, storedCollections[i]));
+      const nextTemplates = (batch.templates ?? []).map((t, i) => nextLibraryRevision('template', t, storedTemplates[i]));
+      (batch.removeCollections ?? []).forEach((ref, i) => { const stored = removedCollections[i]?.revision ?? 0; if (stored !== ref.revision) throw new LibraryRecordConflictError('collection', ref.id, stored, ref.revision); });
+      (batch.removeTemplates ?? []).forEach((ref, i) => { const stored = removedTemplates[i]?.revision ?? 0; if (stored !== ref.revision) throw new LibraryRecordConflictError('template', ref.id, stored, ref.revision); });
       (batch.versions ?? []).forEach((v, i) => { if (!existingVersions[i]) versions().put(v); });
+      for (const c of nextCollections) tx.objectStore('collections').put(c);
+      for (const t of nextTemplates) tx.objectStore('templates').put(t);
+      for (const ref of batch.removeCollections ?? []) tx.objectStore('collections').delete(ref.id);
+      for (const ref of batch.removeTemplates ?? []) tx.objectStore('templates').delete(ref.id);
       for (const a of nextAssets) tx.objectStore('assets').put(a);
       for (const o of batch.originals ?? []) {
         const { bytes, ...meta } = o;
@@ -203,6 +226,7 @@ export class IdbRepository implements Repository {
     });
     if (saved.length) this.announce({ kind: 'projects', projectIds: saved.map(p => p.id) });
     if (batch.assets?.length || batch.versions?.length) this.announce({ kind: 'library' });
+    if (batch.collections?.length || batch.templates?.length || batch.removeCollections?.length || batch.removeTemplates?.length) this.announce({ kind: 'userLibrary' });
     return saved;
   }
 

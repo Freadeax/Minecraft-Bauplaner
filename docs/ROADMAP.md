@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T13:15:45.514Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T13:30:13.842Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -13,9 +13,9 @@ Stand: 2026-11-01T13:15:45.514Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | Status | Pakete |
 |---|---:|
 | ⏳ Offen | 21 |
-| 🚧 In Arbeit | 4 |
+| 🚧 In Arbeit | 2 |
 | ⛔ Blockiert | 1 |
-| 🧩 Implementiert · Abnahme offen | 9 |
+| 🧩 Implementiert · Abnahme offen | 11 |
 | ✅ Im beschriebenen Umfang geprüft | 20 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -23,8 +23,6 @@ Stand: 2026-11-01T13:15:45.514Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 - **PERF-02 · Zellindizes, Chunkdaten und selektive Neuberechnung** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Gemessene Structured-Clone-/Worker-Rückgabekosten reduzieren; selektive Geometrie-/Fortschrittsinvalidierung zuerst mit vollständigen semantischen Regressionen absichern.
 - **MAP-01 · Weltlage und begehbare Projektkarte** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02.
-- **LIB-02 · Eigene Sammlungen, Ordner und Kategorien** — 🚧 In Arbeit, 0/2 Teilschritte. Nächster Schritt: Datenmodell collections.ts, Speicher (IndexedDB v3) und Sicherung erweitern.
-- **LIB-03 · Eigene Ensembles und Generatorvorlagen speichern** — 🚧 In Arbeit, 0/2 Teilschritte. Nächster Schritt: Vorlagen referenzieren feste Versionen bzw. versionierte Generatorparameter.
 - **EDIT-01 · Mehrfachauswahl und sichtbare Freiraumhüllen** — 🚧 In Arbeit, 0/2 Teilschritte. Nächster Schritt: Auswahlvertrag und atomare Gruppenoperationen definieren.
 - **EDIT-02 · Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** — 🚧 In Arbeit, 0/5 Teilschritte. Nächster Schritt: Entwurfsvertrag und Werkzeuge umsetzen, Blockregister von VIEW-02 übernehmen.
 
@@ -118,8 +116,8 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🚧 In Arbeit | 0/2 | STORE-02, VIEW-01 | ausstehend | ausstehend |
 | [EDIT-02](#edit-02) | Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen | 🚧 In Arbeit | 0/5 | VIEW-01, STORE-02 | ausstehend | ausstehend |
 | [UPDATE-01](#update-01) | Kontrollierte Versionsupdates mit lokalen Overrides | ⏳ Offen | 0/2 | DIFF-01, STORE-02 | ausstehend | ausstehend |
-| [LIB-02](#lib-02) | Eigene Sammlungen, Ordner und Kategorien | 🚧 In Arbeit | 0/2 | STORE-02, LIB-01 | ausstehend | ausstehend |
-| [LIB-03](#lib-03) | Eigene Ensembles und Generatorvorlagen speichern | 🚧 In Arbeit | 0/2 | LIB-02, GEN-01 | ausstehend | ausstehend |
+| [LIB-02](#lib-02) | Eigene Sammlungen, Ordner und Kategorien | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-02, LIB-01 | ausstehend | ausstehend |
+| [LIB-03](#lib-03) | Eigene Ensembles und Generatorvorlagen speichern | 🧩 Implementiert · Abnahme offen | 2/2 | LIB-02, GEN-01 | ausstehend | ausstehend |
 | [WORLD-02](#world-02) | Weitere kuratierte Bauwelten | ✅ Im beschriebenen Umfang geprüft | 2/2 | LIB-01, UI-01 | `c3e6478` | `c3e6478` |
 | [BUILD-05](#build-05) | Bauwelt-Anlagen mit Konfliktvorschau | ⏳ Offen | 0/2 | LIB-03, CORE-03 | ausstehend | ausstehend |
 | [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | ⏳ Offen | 0/2 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
@@ -852,18 +850,18 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LIB-02
 
-**Eigene Sammlungen, Ordner und Kategorien** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread Sammlungen und Vorlagen) · Aktualisiert: 2026-11-01T12:55:58.546Z
+**Eigene Sammlungen, Ordner und Kategorien** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread Sammlungen und Vorlagen) · Aktualisiert: 2026-11-01T13:30:13.842Z
 
-- [ ] LIB-02-S01: B17-Dateizuständigkeit prüfen; Datenmodell und Sicherung erweitern.
-- [ ] LIB-02-S02: Sammlungen/Kategorien mit Migration und leerem Zustand nutzbar machen.
+- [x] LIB-02-S01: B17-Dateizuständigkeit prüfen; Datenmodell und Sicherung erweitern.
+- [x] LIB-02-S02: Sammlungen/Kategorien mit Migration und leerem Zustand nutzbar machen.
 
 **Abnahme:** Katalog und eigene Inhalte bleiben dieselbe Bibliothek; referenzierte Versionen erhalten.
 
-**Nächste Aktion:** Datenmodell collections.ts, Speicher (IndexedDB v3) und Sicherung erweitern.
+**Nächste Aktion:** Abnahme auf echten Geräten (QA-02); Rückmeldung zur Bedienung der Sammlungen einholen.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Node- und lokale Chromium-Browsertests; keine Echtgeräte-/Safari-Abnahme.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/collections.test.mjs](../tests/collections.test.mjs) — Domäne, Ordner/Kategorien, Verweisauflösung, Speicher-CAS, Sicherung Format 2 und Wiederherstellung.; [tests/e2e/collections.e2e.mjs](../tests/e2e/collections.e2e.mjs) — Chromium 1400/390 px: Ordner, Unterordner, Gebäude aufnehmen, Version festhalten, Notiz, Katalogfilter, Neuladen, Löschen.; [docs/architecture/COLLECTIONS.md](architecture/COLLECTIONS.md) — Datenmodell, Speicher, Sicherung und Grenzen.
 
 **Dateiumfang:** `packages/domain/`, `apps/web/src/views/library/`. **Abhängigkeiten:** STORE-02, LIB-01. **Alte IDs:** LIB-02, B17.
 
@@ -871,18 +869,18 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LIB-03
 
-**Eigene Ensembles und Generatorvorlagen speichern** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread Sammlungen und Vorlagen) · Aktualisiert: 2026-11-01T12:55:58.546Z
+**Eigene Ensembles und Generatorvorlagen speichern** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread Sammlungen und Vorlagen) · Aktualisiert: 2026-11-01T13:30:13.842Z
 
-- [ ] LIB-03-S01: Vorlagen referenzieren feste Versionen bzw. versionierte Generatorparameter.
-- [ ] LIB-03-S02: Speichern, Bearbeiten, Wiederherstellen und Projektübernahme umsetzen.
+- [x] LIB-03-S01: Vorlagen referenzieren feste Versionen bzw. versionierte Generatorparameter.
+- [x] LIB-03-S02: Speichern, Bearbeiten, Wiederherstellen und Projektübernahme umsetzen.
 
 **Abnahme:** Vorlagenänderung überschreibt keine bereits übernommenen Projekte.
 
-**Nächste Aktion:** Vorlagen referenzieren feste Versionen bzw. versionierte Generatorparameter.
+**Nächste Aktion:** Abnahme auf echten Geräten (QA-02); Vorlagen für Anlagen (Compounds) und BUILD-05 prüfen.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Node- und lokale Chromium-Browsertests; keine Echtgeräte-/Safari-Abnahme.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/collections.test.mjs](../tests/collections.test.mjs) — Feste Versionen, Verlauf/Wiederherstellen, Projektübernahme als Kopie, Generatorvorlagen.; [tests/e2e/collections.e2e.mjs](../tests/e2e/collections.e2e.mjs) — Ensemble als Vorlage, Bearbeiten, Wiederherstellen, Projekt bleibt unverändert, Generatorvorlage, Sicherung/Wiederherstellung in frischem Profil.; [tests/e2e/asset-concurrency.e2e.mjs](../tests/e2e/asset-concurrency.e2e.mjs) — IndexedDB-Migration v2→v3 und Revisionsprüfung über zwei Verbindungen.
 
 **Dateiumfang:** `packages/domain/src/ensembles.ts`, `packages/domain/src/generators/`. **Abhängigkeiten:** LIB-02, GEN-01. **Alte IDs:** —.
 

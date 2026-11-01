@@ -66,7 +66,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
 
     // Preset link from the overview, then a compound as a project.
     await p.goto(`${BASE}#/bibliothek/generatoren/haus~villa`);
-    assert.equal(await p.getByLabel('Vorlage').inputValue(), 'villa');
+    assert.equal(await p.getByLabel('Vorlage', { exact: true }).inputValue(), 'villa');
     await p.locator('.detail-title', { hasText: 'Modern' }).waitFor();
     await p.goto(`${BASE}#/bibliothek/generatoren/burganlage~burg`);
     await p.locator('.stat-tiles', { hasText: '9 Bauteile' }).waitFor();

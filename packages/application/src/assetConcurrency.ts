@@ -1,4 +1,5 @@
 import { checkAssetRecord } from '../../domain/src/backup.js';
+import { checkLibraryBatch } from '../../domain/src/collections.js';
 import type { Asset } from '../../domain/src/types.js';
 import type { StorageBatch } from './repository.js';
 import { AssetRevisionConflictError } from './repository.js';
@@ -43,4 +44,7 @@ export function checkStorageBatch(batch: StorageBatch): void {
   unique((batch.versions ?? []).map(v => v.id), 'Version');
   unique((batch.projects ?? []).map(p => p.project.id), 'Projekt');
   unique((batch.originals ?? []).map(o => o.sha256), 'Original');
+  checkLibraryBatch(batch.collections ?? [], batch.templates ?? []);
+  unique([...(batch.collections ?? []), ...(batch.removeCollections ?? [])].map(c => c.id), 'Sammlung');
+  unique([...(batch.templates ?? []), ...(batch.removeTemplates ?? [])].map(t => t.id), 'Vorlage');
 }

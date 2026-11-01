@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import type { ReactNode } from 'react';
 import { countBlocks } from '../../../../../packages/voxel/src/index.js';
 import { createEnsembleProject, missingMembers, resolveProject, ENSEMBLES } from '../../../../../packages/domain/src/index.js';
 import type { AssetVersion, Ensemble } from '../../../../../packages/domain/src/index.js';
@@ -18,13 +19,17 @@ function ensembleWorld(ensemble: Ensemble, byAsset: ReadonlyMap<string, AssetVer
  * Ensembles: shipped buildings as a ready layout. Overview as cards with a
  * preview of the whole layout, detail with the 3D view and "Als Projekt anlegen".
  */
-export function EnsemblesPage({ id, byAsset, names, versions, libHref, onCreate }: {
+export function EnsemblesPage({ id, byAsset, names, versions, libHref, onCreate, onSaveTemplate, collections }: {
   id: string | undefined;
   byAsset: ReadonlyMap<string, AssetVersion>;
   names: ReadonlyMap<string, string>;
   versions: ReadonlyMap<string, AssetVersion>;
   libHref(page: 'browse' | 'building' | 'ensembles', id?: string): string;
   onCreate(ensemble: Ensemble): void;
+  /** Copies the ensemble into an own template with today's versions pinned (LIB-03). */
+  onSaveTemplate?(ensemble: Ensemble): void;
+  /** "In Sammlung" control (LIB-02). */
+  collections?(ensemble: Ensemble): ReactNode;
 }) {
   const ensemble = id ? ENSEMBLES.find(e => e.id === id) : undefined;
   const world = useMemo(() => ensemble ? ensembleWorld(ensemble, byAsset, names, versions) : null, [ensemble, byAsset, names, versions]);
@@ -54,8 +59,10 @@ export function EnsemblesPage({ id, byAsset, names, versions, libHref, onCreate 
           <div><dt>Fläche</dt><dd>{world.world ? size(world.world.bounds) : '–'}</dd></div>
           <div><dt>Blöcke</dt><dd>{world.world ? formatNumber(countBlocks(world.world).blocks) : '–'}</dd></div>
           <div><dt>Überschneidungen</dt><dd>{world.conflicts.length ? <span className="warn-text">{world.conflicts.length}</span> : <span className="ok-text">keine</span>}</dd></div></dl>}
-        <button className="primary" disabled={missing.length > 0} onClick={() => onCreate(ensemble)}>Als Projekt anlegen</button>
-        <p className="small-note">Legt ein neues Projekt mit je einer Instanz pro Gebäude an. Materialliste, Bauanleitung und Export funktionieren dort wie gewohnt.</p>
+        <div className="button-row"><button className="primary" disabled={missing.length > 0} onClick={() => onCreate(ensemble)}>Als Projekt anlegen</button>
+          {onSaveTemplate && <button type="button" disabled={missing.length > 0} onClick={() => onSaveTemplate(ensemble)}>Als eigene Vorlage speichern</button>}</div>
+        <p className="small-note">Legt ein neues Projekt mit je einer Instanz pro Gebäude an. Materialliste, Bauanleitung und Export funktionieren dort wie gewohnt. Eine eigene Vorlage hält die heutigen Bauteilversionen fest und lässt sich danach bearbeiten.</p>
+        {collections?.(ensemble)}
         <span className="panel-kicker">GEBÄUDE</span>
         <ul className="member-list">{ensemble.members.map((mb, i) => { const v = byAsset.get(mb.assetId); return <li key={`${mb.assetId}-${i}`}><a href={libHref('building', mb.assetId)}>
           {v && <Thumb cacheKey={v.id} payload={() => v.payload} alt="" width={64} height={44} className="thumb mini" />}

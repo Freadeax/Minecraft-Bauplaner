@@ -29,6 +29,8 @@ export interface LibraryUrlState {
   readonly collapse: boolean;
   readonly layout: 'raster' | 'liste';
   readonly onlyFavorites: boolean;
+  /** Own collection (LIB-02) the overview is limited to; existence is checked by the view. */
+  readonly collection?: string;
 }
 
 const FLAGS = [['onlyComplete', 'vollstaendig'], ['vanillaOnly', 'vanilla'], ['withConnectors', 'anschluesse'], ['withBeds', 'bett'], ['includeArchived', 'archiv']] as const;
@@ -57,6 +59,7 @@ export function encodeLibraryState(s: LibraryUrlState, facetKeys: readonly strin
   if (!s.collapse) p.set('varianten', 'alle');
   if (s.layout === 'liste') p.set('ansicht', 'liste');
   if (s.onlyFavorites) p.set('merkliste', '1');
+  if (s.collection) p.set('sammlung', s.collection);
   return p.toString();
 }
 
@@ -75,6 +78,7 @@ export function decodeLibraryState(search: string, facetKeys: readonly string[],
   const origin = p.get('herkunft'); if (origin === 'beispiele' || origin === 'eigene') filters.origin = origin;
   for (const [key, name] of FLAGS) if (p.get(name) === '1') filters[key] = true;
   const sort = p.get('sortierung');
+  const collection = (p.get('sammlung') ?? '').trim();
   return {
     query: p.get('q') ?? '',
     filters: filters as UrlFilters,
@@ -83,5 +87,6 @@ export function decodeLibraryState(search: string, facetKeys: readonly string[],
     collapse: p.get('varianten') !== 'alle',
     layout: p.get('ansicht') === 'liste' ? 'liste' : 'raster',
     onlyFavorites: p.get('merkliste') === '1',
+    ...(collection && collection.length <= 200 && { collection }),
   };
 }

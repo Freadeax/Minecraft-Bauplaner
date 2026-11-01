@@ -1,12 +1,10 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T13:15:45.514Z",
+  "updatedAt": "2026-11-01T13:30:13.842Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
     "MAP-01",
-    "LIB-02",
-    "LIB-03",
     "EDIT-01",
     "EDIT-02"
   ],
@@ -2005,7 +2003,7 @@
       "title": "Eigene Sammlungen, Ordner und Kategorien",
       "phase": "P3",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "implemented",
       "owner": "Claude (Thread Sammlungen und Vorlagen)",
       "dependencies": [
         "STORE-02",
@@ -2023,36 +2021,49 @@
         {
           "id": "LIB-02-S01",
           "title": "B17-Dateizuständigkeit prüfen; Datenmodell und Sicherung erweitern.",
-          "done": false
+          "done": true
         },
         {
           "id": "LIB-02-S02",
           "title": "Sammlungen/Kategorien mit Migration und leerem Zustand nutzbar machen.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Katalog und eigene Inhalte bleiben dieselbe Bibliothek; referenzierte Versionen erhalten."
       ],
-      "next": "Datenmodell collections.ts, Speicher (IndexedDB v3) und Sicherung erweitern.",
+      "next": "Abnahme auf echten Geräten (QA-02); Rückmeldung zur Bedienung der Sammlungen einholen.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/collections.test.mjs",
+          "note": "Domäne, Ordner/Kategorien, Verweisauflösung, Speicher-CAS, Sicherung Format 2 und Wiederherstellung."
+        },
+        {
+          "path": "tests/e2e/collections.e2e.mjs",
+          "note": "Chromium 1400/390 px: Ordner, Unterordner, Gebäude aufnehmen, Version festhalten, Notiz, Katalogfilter, Neuladen, Löschen."
+        },
+        {
+          "path": "docs/architecture/COLLECTIONS.md",
+          "note": "Datenmodell, Speicher, Sicherung und Grenzen."
+        }
+      ],
       "verification": {
-        "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "state": "passed",
+        "note": "Node- und lokale Chromium-Browsertests; keine Echtgeräte-/Safari-Abnahme."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T12:55:58.546Z"
+      "updatedAt": "2026-11-01T13:30:13.842Z"
     },
     {
       "id": "LIB-03",
       "title": "Eigene Ensembles und Generatorvorlagen speichern",
       "phase": "P3",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "implemented",
       "owner": "Claude (Thread Sammlungen und Vorlagen)",
       "dependencies": [
         "LIB-02",
@@ -2067,29 +2078,42 @@
         {
           "id": "LIB-03-S01",
           "title": "Vorlagen referenzieren feste Versionen bzw. versionierte Generatorparameter.",
-          "done": false
+          "done": true
         },
         {
           "id": "LIB-03-S02",
           "title": "Speichern, Bearbeiten, Wiederherstellen und Projektübernahme umsetzen.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Vorlagenänderung überschreibt keine bereits übernommenen Projekte."
       ],
-      "next": "Vorlagen referenzieren feste Versionen bzw. versionierte Generatorparameter.",
+      "next": "Abnahme auf echten Geräten (QA-02); Vorlagen für Anlagen (Compounds) und BUILD-05 prüfen.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/collections.test.mjs",
+          "note": "Feste Versionen, Verlauf/Wiederherstellen, Projektübernahme als Kopie, Generatorvorlagen."
+        },
+        {
+          "path": "tests/e2e/collections.e2e.mjs",
+          "note": "Ensemble als Vorlage, Bearbeiten, Wiederherstellen, Projekt bleibt unverändert, Generatorvorlage, Sicherung/Wiederherstellung in frischem Profil."
+        },
+        {
+          "path": "tests/e2e/asset-concurrency.e2e.mjs",
+          "note": "IndexedDB-Migration v2→v3 und Revisionsprüfung über zwei Verbindungen."
+        }
+      ],
       "verification": {
-        "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "state": "passed",
+        "note": "Node- und lokale Chromium-Browsertests; keine Echtgeräte-/Safari-Abnahme."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T12:55:58.546Z"
+      "updatedAt": "2026-11-01T13:30:13.842Z"
     },
     {
       "id": "WORLD-02",
@@ -4511,6 +4535,62 @@
           "done": 4,
           "total": 4,
           "next": "Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T13:30:13.842Z",
+      "kind": "progress",
+      "items": [
+        "LIB-02",
+        "LIB-03"
+      ],
+      "summary": "Eigene Sammlungen (Ordner, Kategorien, Katalogfilter, festgehaltene Versionen) und Vorlagen (Ensemble-/Generatorvorlagen, Verlauf, Wiederherstellen, Projektübernahme als Kopie); IndexedDB v3, Sicherung Format 2. Node- und Chromium-Tests; keine Echtgeräteabnahme.",
+      "files": [
+        "apps/web/src/app/idbRepository.ts",
+        "apps/web/src/app/router.ts",
+        "apps/web/src/views/LibraryView.tsx",
+        "apps/web/src/views/ProjectsView.tsx",
+        "apps/web/src/views/library/BuildingDetail.tsx",
+        "apps/web/src/views/library/CollectionPicker.tsx",
+        "apps/web/src/views/library/CollectionsPage.tsx",
+        "apps/web/src/views/library/EnsemblesPage.tsx",
+        "apps/web/src/views/library/GeneratorsPage.tsx",
+        "apps/web/src/views/library/TemplatesPage.tsx",
+        "apps/web/src/views/library/collections.css",
+        "apps/web/src/views/library/templateWorld.ts",
+        "apps/web/src/views/library/urlState.ts",
+        "apps/web/src/views/library/userLibrary.ts",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/COLLECTIONS.md",
+        "docs/architecture/PERSISTENCE.md",
+        "packages/application/src/assetConcurrency.ts",
+        "packages/application/src/memoryRepository.ts",
+        "packages/application/src/repository.ts",
+        "packages/domain/src/backup.ts",
+        "packages/domain/src/collections.ts",
+        "packages/domain/src/index.ts",
+        "tests/collections.test.mjs",
+        "tests/e2e/asset-concurrency.e2e.mjs",
+        "tests/e2e/collections.e2e.mjs",
+        "tests/e2e/generators.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "LIB-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme auf echten Geräten (QA-02); Rückmeldung zur Bedienung der Sammlungen einholen."
+        },
+        {
+          "id": "LIB-03",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme auf echten Geräten (QA-02); Vorlagen für Anlagen (Compounds) und BUILD-05 prüfen."
         }
       ]
     }

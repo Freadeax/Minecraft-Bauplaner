@@ -9,7 +9,9 @@ import { useEffect, useState } from 'react';
  *   #/bibliothek?q=…&kategorie=…         Übersicht mit Suche und Filtern (teilbar)
  *   #/bibliothek/ensembles[/<id>]        Ensembles (Übersicht / Detail)
  *   #/bibliothek/vergleich/<id>,<id>,…   Gebäude nebeneinander vergleichen
- *   #/bibliothek/generatoren[/<gen>[~<vorlage>|@<assetId>]]  Parametrische Generatoren (B13)
+ *   #/bibliothek/generatoren[/<gen>[~<vorlage>|@<assetId>|!<templateId>]]  Parametrische Generatoren (B13)
+ *   #/bibliothek/sammlungen[/<id>]       Eigene Sammlungen und Ordner (LIB-02)
+ *   #/bibliothek/vorlagen[/<id>]         Eigene Ensemble- und Generatorvorlagen (LIB-03)
  *   #/projekt/<id>         Editor
  *   #/projekt/<id>/<tab>   Projektunterseite (z. B. bauen)
  *   #/betrachter           Dateibetrachter
@@ -25,9 +27,9 @@ export type Route =
   | { readonly view: 'project'; readonly projectId: string; readonly tab: string }
   | { readonly view: 'not-found'; readonly path: string };
 
-export type LibraryPage = 'browse' | 'building' | 'ensembles' | 'compare' | 'generators' | 'themes';
-const LIBRARY_PAGES: Readonly<Record<string, LibraryPage>> = { gebaeude: 'building', ensembles: 'ensembles', vergleich: 'compare', generatoren: 'generators', bauwelten: 'themes' };
-const LIBRARY_SEGMENT: Readonly<Record<LibraryPage, string>> = { browse: '', building: 'gebaeude', ensembles: 'ensembles', compare: 'vergleich', generators: 'generatoren', themes: 'bauwelten' };
+export type LibraryPage = 'browse' | 'building' | 'ensembles' | 'compare' | 'generators' | 'themes' | 'collections' | 'templates';
+const LIBRARY_PAGES: Readonly<Record<string, LibraryPage>> = { gebaeude: 'building', ensembles: 'ensembles', vergleich: 'compare', generatoren: 'generators', bauwelten: 'themes', sammlungen: 'collections', vorlagen: 'templates' };
+const LIBRARY_SEGMENT: Readonly<Record<LibraryPage, string>> = { browse: '', building: 'gebaeude', ensembles: 'ensembles', compare: 'vergleich', generators: 'generatoren', themes: 'bauwelten', collections: 'sammlungen', templates: 'vorlagen' };
 
 export function parseRoute(hash: string): Route {
   const raw = hash.replace(/^#/, ''), q = raw.indexOf('?');

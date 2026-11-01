@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
 import type { Cell } from '../../../../../packages/voxel/src/index.js';
 import { facetLabel, SIZE_CLASS_LABEL, STAGE_HINT, STAGE_LABEL } from '../../../../../packages/domain/src/index.js';
 import type { Asset, AssetVersion, BuildingFacets, BuildingInfo, CatalogEntry, Ensemble, Project, Similar, Suggestion } from '../../../../../packages/domain/src/index.js';
@@ -23,7 +24,7 @@ import { EquipmentSection, FactsSection, MatchSection, MaterialBar, MaterialsSec
  * connectors, area as new part) at the end.
  */
 export function BuildingDetail({ entry, asset, latest, versions, info, group, variantName, sub, ensembles, similar, suggestion, project, projects, adding,
-  favorite, comparing, libHref, onFavorite, onCompare, onAdd, onNewProject, onSaveFacets, onArchive, onMessage, onSelectSaved }: {
+  favorite, comparing, libHref, onFavorite, onCompare, onAdd, onNewProject, onSaveFacets, onArchive, onMessage, onSelectSaved, collections }: {
   entry: CatalogEntry;
   /** Variant group (family and derived material variants) including this entry. */
   group: readonly CatalogEntry[];
@@ -51,6 +52,8 @@ export function BuildingDetail({ entry, asset, latest, versions, info, group, va
   onArchive(): void;
   onMessage(text: string): void;
   onSelectSaved(assetId: string): void;
+  /** "In Sammlung" control (LIB-02), rendered below the actions. */
+  collections?: ReactNode;
 }) {
   const m = entry.metrics;
   const [target, setTarget] = useState(project?.id ?? projects[0]?.id ?? '');
@@ -113,6 +116,7 @@ export function BuildingDetail({ entry, asset, latest, versions, info, group, va
             <button type="button" aria-pressed={favorite} onClick={onFavorite}>{favorite ? '♥ Gemerkt' : '♡ Merken'}</button>
             <button type="button" aria-pressed={comparing} onClick={onCompare}>{comparing ? '⇄ Im Vergleich' : '⇄ Vergleichen'}</button>
           </div>
+          {collections}
         </div>
         {suggestion && project && <MatchSection suggestion={suggestion} projectName={project.name} />}
       </div>

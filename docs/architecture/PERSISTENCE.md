@@ -17,7 +17,7 @@ Stand: 27.10.2026. Umsetzung zu P2-01, R-023/R-024. Code: `apps/web/src/app/idbR
 
 ## IndexedDB
 
-- Datenbank `minecraft-bauplaner`, Version `DB_VERSION = 1`. Speicher: `projects`, `assets`, `versions` (Schlüssel `id`), `originals` (Schlüssel `sha256`, Bytes als `Blob`), `meta` (Schema-Eintrag).
+- Datenbank `minecraft-bauplaner`, Version `DB_VERSION = 3`. Speicher: `projects`, `assets`, `versions` (Schlüssel `id`), `originals` (Schlüssel `sha256`, Bytes als `Blob`), `meta` (Schema-Eintrag); seit Migration 3 zusätzlich `collections` und `templates` für eigene Sammlungen und Vorlagen ([COLLECTIONS](COLLECTIONS.md)). Migration 2 ergänzt die Assetrevision.
 - **Migration:** `MIGRATIONS[n]` hebt Version n−1 auf n; beim Öffnen laufen alle fehlenden Schritte nacheinander in der Upgrade-Transaktion. Freigegebene Schritte werden nie verändert, nur ergänzt. Jeder gelesene Datensatz prüft zusätzlich `schemaVersion` (`checkSchemaVersion`): neuere Daten ⇒ Fehler „neuere App-Version“, nie stilles Umschreiben.
 - **Neuere Datenbank** (`VersionError`) ⇒ `StorageNewerError`, die App zeigt den Fehler statt auf Sitzungsspeicher auszuweichen (sonst würden neue Arbeiten scheinbar gespeichert, aber getrennt von den echten Daten liegen).
 - **Upgrade in anderem Tab:** `onversionchange` schließt die Verbindung, weitere Schreibversuche melden „Bitte Seite neu laden“. Blockiertes Öffnen wird als verständlicher Fehler gemeldet.
@@ -35,7 +35,7 @@ JSON-Datei `bauplaner-<projekt|alle-projekte>-<datum>.bauplaner.json`:
 
 | Feld | Inhalt |
 |---|---|
-| `format`, `formatVersion`, `schemaVersion` | Kennung, Formatversion 1, Domänenschema 1 |
+| `format`, `formatVersion`, `schemaVersion` | Kennung, Formatversion 1 (bzw. 2, wenn eigene Sammlungen/Vorlagen enthalten sind, siehe [COLLECTIONS](COLLECTIONS.md)), Domänenschema 1 |
 | `scope` | `project` (einzelnes Projekt) oder `all` (alle Projekte und alle eigenen, nicht-Beispiel-Bauteile) |
 | `projects`, `assets`, `versions` | vollständige Datensätze; je verwendetem Bauteil **alle** Versionen, damit Versionslisten vollständig bleiben; auch Versionen, die nur eingefrorene Revisionen nutzen |
 | `originals` | `{sha256, fileName, mediaType, size, createdAt, base64}` je referenzierter Originaldatei |

@@ -816,3 +816,46 @@ Weltkarte #/karte umgesetzt: Weltlage je Projekt (world.set, Sicherung), buildWo
 - `tests/e2e/worldmap.e2e.mjs`
 - `tests/worldmap.test.mjs`
 
+## 2026-11-01T13:30:13.842Z · progress
+
+**Aufgaben:** LIB-02, LIB-03
+
+Eigene Sammlungen (Ordner, Kategorien, Katalogfilter, festgehaltene Versionen) und Vorlagen (Ensemble-/Generatorvorlagen, Verlauf, Wiederherstellen, Projektübernahme als Kopie); IndexedDB v3, Sicherung Format 2. Node- und Chromium-Tests; keine Echtgeräteabnahme.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LIB-02 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme auf echten Geräten (QA-02); Rückmeldung zur Bedienung der Sammlungen einholen. |
+| LIB-03 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme auf echten Geräten (QA-02); Vorlagen für Anlagen (Compounds) und BUILD-05 prüfen. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/idbRepository.ts`
+- `apps/web/src/app/router.ts`
+- `apps/web/src/views/LibraryView.tsx`
+- `apps/web/src/views/ProjectsView.tsx`
+- `apps/web/src/views/library/BuildingDetail.tsx`
+- `apps/web/src/views/library/CollectionPicker.tsx`
+- `apps/web/src/views/library/CollectionsPage.tsx`
+- `apps/web/src/views/library/EnsemblesPage.tsx`
+- `apps/web/src/views/library/GeneratorsPage.tsx`
+- `apps/web/src/views/library/TemplatesPage.tsx`
+- `apps/web/src/views/library/collections.css`
+- `apps/web/src/views/library/templateWorld.ts`
+- `apps/web/src/views/library/urlState.ts`
+- `apps/web/src/views/library/userLibrary.ts`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/COLLECTIONS.md`
+- `docs/architecture/PERSISTENCE.md`
+- `packages/application/src/assetConcurrency.ts`
+- `packages/application/src/memoryRepository.ts`
+- `packages/application/src/repository.ts`
+- `packages/domain/src/backup.ts`
+- `packages/domain/src/collections.ts`
+- `packages/domain/src/index.ts`
+- `tests/collections.test.mjs`
+- `tests/e2e/asset-concurrency.e2e.mjs`
+- `tests/e2e/collections.e2e.mjs`
+- `tests/e2e/generators.e2e.mjs`
+

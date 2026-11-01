@@ -579,3 +579,8 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Hinweis an MAP-02: `liveMapTemplateFromLink` (worldmap.ts) wandelt kopierte BlueMap-/Dynmap-/Pl3xMap-Links in Vorlagen; Vorlagen mit Quellenangabe in `views/map/liveMapConfig.ts`. Gespeicherte Ziele und native Markerdateien bleiben MAP-02.
 - Hinweis an alle: `Project` hat das optionale Feld `world`; wer Projekte kopiert oder zusammenführt, übernimmt es unverändert. Hauptnavigation hat den Eintrag „Weltkarte“ (`main.tsx`).
 - Reservierung mit dem Push beendet.
+
+### MSG-LIB0203-01 · Claude (Thread Sammlungen und Vorlagen) · 2026-11-01 · LIB-02/LIB-03 umgesetzt
+- Antwort auf MSG-LIB0203-00: Eigene Sammlungen (Ordner bis 4 Ebenen, freie Kategorien, Verweise auf Gebäude mit optional festgehaltener Version, Ensembles und Vorlagen, Katalogfilter `?sammlung=`) und eigene Vorlagen (Ensemblevorlagen mit festen Versionen/Transformationen/Verbindungen, Generatorvorlagen mit Generator-ID/-Version/Parametern, Verlauf mit Wiederherstellen, Projektübernahme als unabhängige Kopie). Details: [COLLECTIONS](architecture/COLLECTIONS.md).
+- Gemeinsame Verträge geändert (anhängend): `DB_VERSION` 3 mit Migration 3 (Stores `collections`, `templates`), `Repository.listCollections/listTemplates`, `StorageBatch.collections/templates/removeCollections/removeTemplates`, `StorageChange.kind 'userLibrary'`, Sicherungsformat 2 nur mit eigenen Sammlungen/Vorlagen. Weitere Repository-Implementierungen müssen die zwei Listenmethoden ergänzen.
+- Reservierung aufgehoben. Offen: Echtgeräteabnahme (QA-02).

@@ -1,4 +1,4 @@
-import type { Asset, AssetVersion, OriginalFile, Project } from '../../domain/src/index.js';
+import type { Asset, AssetVersion, Collection, LibraryTemplate, OriginalFile, Project } from '../../domain/src/index.js';
 
 /**
  * Storage boundary of the web app. Every implementation must:
@@ -36,6 +36,10 @@ export interface Repository {
   storageInfo(): Promise<StorageInfo>;
   /** Asks the browser not to evict data under storage pressure. */
   requestPersistence(): Promise<boolean>;
+  /** Own collections and folders (LIB-02). */
+  listCollections(): Promise<Collection[]>;
+  /** Own ensemble and generator templates (LIB-03). */
+  listTemplates(): Promise<LibraryTemplate[]>;
 }
 
 export interface StorageBatch {
@@ -45,8 +49,16 @@ export interface StorageBatch {
   readonly originals?: readonly OriginalFile[];
   /** baseRevision 0 = project must not exist yet. Stored revision becomes baseRevision + 1. */
   readonly projects?: readonly { readonly project: Project; readonly baseRevision: number }[];
+  /** Same CAS contract as assets: incoming revision = expected stored base (0 = new). */
+  readonly collections?: readonly Collection[];
+  readonly templates?: readonly LibraryTemplate[];
+  /** Deletes only when the stored revision equals `revision`; otherwise the whole batch fails. */
+  readonly removeCollections?: readonly LibraryRecordRef[];
+  readonly removeTemplates?: readonly LibraryRecordRef[];
 }
-export interface StorageChange { readonly kind: 'projects' | 'library'; readonly projectIds?: readonly string[] }
+export interface LibraryRecordRef { readonly id: string; readonly revision: number }
+/** `userLibrary`: own collections or templates changed (LIB-02/LIB-03). */
+export interface StorageChange { readonly kind: 'projects' | 'library' | 'userLibrary'; readonly projectIds?: readonly string[] }
 export interface StorageInfo { readonly usage?: number; readonly quota?: number; readonly persisted?: boolean }
 
 export class RevisionConflictError extends Error {

@@ -3,7 +3,7 @@ import { countBlocks } from '../../../../packages/voxel/src/index.js';
 import type { Cell } from '../../../../packages/voxel/src/index.js';
 import { addAssetVersion, applyOperation, buildCatalog, buildingInfo, createAsset, createEnsembleProject, createProject, ensemblesWith, facetCounts, FACETS, familyMembers,
   latestVersions, newInstance, projectContext, queryCatalog, resolveProject, similarEntries, suggestForProject, updateAssetMeta, withFacets,
-  ENSEMBLES, GENERATORS, SORT_LABEL, STAGES, variantGroup } from '../../../../packages/domain/src/index.js';
+  ENSEMBLES, GENERATORS, SORT_LABEL, STAGES, variantGroup, assetIdsIn, templateFromEnsemble, collectionTree, flattenTree } from '../../../../packages/domain/src/index.js';
 import type { Asset, AssetVersionSource, BuildingFacets, CatalogEntry, Ensemble, OriginalFile, Project, SortKey } from '../../../../packages/domain/src/index.js';
 import { href, navigate } from '../app/router';
 import type { LibraryPage } from '../app/router';
@@ -31,6 +31,11 @@ import { Viewer } from '../Viewer';
 import { Thumb } from '../thumbnail/Thumb';
 import { LitematicRegions } from './library/LitematicRegions';
 import { decodeLibraryState, encodeLibraryState } from './library/urlState';
+import { useUserLibrary } from './library/userLibrary';
+import { CollectionsPage } from './library/CollectionsPage';
+import { TemplatesPage } from './library/TemplatesPage';
+import { CollectionPicker } from './library/CollectionPicker';
+import './library/collections.css';
 
 const size = (b: { min: readonly number[]; maxExclusive: readonly number[] }) => b.maxExclusive.map((n, i) => n - b.min[i]!).join(' × ');
 const SORTS = Object.keys(SORT_LABEL) as SortKey[];
@@ -69,6 +74,8 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
   const [collapse, setCollapse] = useState(initial.collapse);
   const [layout, setLayout] = useState<'raster' | 'liste'>(initial.layout);
   const [onlyFavorites, setOnlyFavorites] = useState(initial.onlyFavorites);
+  const [collectionId, setCollectionId] = useState(initial.collection ?? '');
+  const userLib = useUserLibrary(repo);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [limit, setLimit] = useState(PAGE_SIZE);
   const favorites = useFavorites();
@@ -105,7 +112,12 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
   const effectiveSort: SortKey = sort === 'match' && !scores ? 'name' : sort;
   const catalogQuery = { ...filters, text: query, sort: effectiveSort, descending };
   const allResults = queryCatalog(catalog.entries, { ...catalogQuery, collapseFamilies: collapse }, scores);
-  const results = onlyFavorites ? allResults.filter(e => favorites.has(e.asset.id)) : allResults;
+  // Own collection filter (LIB-02): the catalogue stays one library, a collection only narrows it.
+  const activeCollection = collectionId ? userLib.collections.find(c => c.id === collectionId) : undefined;
+  // A collection that is still loading or no longer exists shows no entries (never silently the whole catalogue).
+  const collectionIds = useMemo(() => activeCollection ? assetIdsIn(userLib.collections, activeCollection.id) : collectionId ? new Set<string>() : null, [activeCollection, collectionId, userLib.collections]);
+  const collectionOptions = useMemo(() => flattenTree(collectionTree(userLib.collections)), [userLib.collections]);
+  const results = allResults.filter(e => (!onlyFavorites || favorites.has(e.asset.id)) && (!collectionIds || collectionIds.has(e.asset.id)));
   const families = useMemo(() => familyMembers(catalog.entries), [catalog]);
   const counts = facetCounts(catalog.entries, catalogQuery);
   const categoryCounts = facetCounts(catalog.entries, { ...catalogQuery, facets: { ...filters.facets, kategorie: [] } }).kategorie;
@@ -152,7 +164,7 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
     window.addEventListener('scroll', save, { passive: true });
     return () => window.removeEventListener('scroll', save);
   }, [page]);
-  useEffect(() => { setLimit(PAGE_SIZE); }, [query, filters, sort, descending, collapse, onlyFavorites]);
+  useEffect(() => { setLimit(PAGE_SIZE); }, [query, filters, sort, descending, collapse, onlyFavorites, collectionId]);
   // A followed link with another query (e.g. a category tile on the project page) replaces the state.
   const lastSearch = useRef(search ?? '');
   const incomingSearch = useRef(false);
@@ -162,10 +174,10 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
     incomingSearch.current = true;
     const s = readUrl(search);
     setQuery(s.query); setFilters(s.filters as Filters); setSort((s.sort as SortKey | undefined) ?? (projectId ? 'match' : 'name')); setDescending(s.descending);
-    setCollapse(s.collapse); setLayout(s.layout); setOnlyFavorites(s.onlyFavorites);
+    setCollapse(s.collapse); setLayout(s.layout); setOnlyFavorites(s.onlyFavorites); setCollectionId(s.collection ?? '');
   }, [search, page, projectId]);
   // Write the overview state into the address without a navigation (no history entry, no scroll jump).
-  const urlSearch = encodeLibraryState({ query, filters, ...(sort !== (projectId ? 'match' : 'name') && { sort }), descending, collapse, layout, onlyFavorites }, FACET_KEYS);
+  const urlSearch = encodeLibraryState({ query, filters, ...(sort !== (projectId ? 'match' : 'name') && { sort }), descending, collapse, layout, onlyFavorites, ...(collectionId && { collection: collectionId }) }, FACET_KEYS);
   useEffect(() => {
     if (page !== 'browse') return;
     // An external thematic search first updates React state. Do not write the
@@ -261,6 +273,15 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
       navigate({ view: 'project', projectId: created.id, tab: 'editor' });
     } catch (e) { say(`Projekt nicht angelegt: ${errorText(e)}`); }
   };
+  const saveEnsembleTemplate = async (ensemble: Ensemble) => {
+    try {
+      const t = templateFromEnsemble(ensemble, byAsset, assetNames);
+      const error = await userLib.write({ templates: [t] });
+      if (error) say(`Vorlage nicht gespeichert: ${error}`);
+      else say(`„${t.name}“ als eigene Vorlage gespeichert – mit den heutigen Bauteilversionen festgehalten.`, { href: libHref('templates', t.id), label: 'Zur Vorlage' });
+    } catch (e) { say(`Vorlage nicht gespeichert: ${errorText(e)}`); }
+  };
+  const collectionHref = (cid: string) => libHref('collections', cid);
   const createFromEnsemble = async (ensemble: Ensemble) => {
     try {
       const created = createEnsembleProject(ensemble, byAsset, assetNames);
@@ -291,6 +312,8 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
     <a href={compare.ids.length ? libHref('compare', compare.ids.join(',')) : libHref('compare', '-')} aria-current={page === 'compare' ? 'page' : undefined}>Vergleich <small>{compare.ids.length}</small></a>
     <a href={libHref('generators')} aria-current={page === 'generators' ? 'page' : undefined}>Generatoren <small>{GENERATORS.length}</small></a>
     <a href={libHref('themes')} aria-current={page === 'themes' ? 'page' : undefined}>Bauwelten</a>
+    <a href={libHref('collections')} aria-current={page === 'collections' ? 'page' : undefined}>Sammlungen <small>{userLib.collections.filter(c => !c.archived).length}</small></a>
+    <a href={libHref('templates')} aria-current={page === 'templates' ? 'page' : undefined}>Vorlagen <small>{userLib.templates.filter(t => !t.archived).length}</small></a>
   </nav>;
   const notices = <>
     {message && <div className="notice" role="status">{message}{link && <a className="notice-link" href={link.href}>{link.label} →</a>}</div>}
@@ -319,18 +342,26 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
         onFavorite={() => favorites.toggle(asset.id)} onCompare={() => toggleCompare(asset.id)}
         onAdd={pid => void addToProject(entry, pid)} onNewProject={() => void newProjectWith(entry)}
         onSaveFacets={asset.demo ? undefined : (base, facets, plain) => saveFacets(base, facets, plain)}
-        onArchive={() => void archive(asset)} onMessage={m => say(m)} onSelectSaved={showBuilding} />
+        onArchive={() => void archive(asset)} onMessage={m => say(m)} onSelectSaved={showBuilding}
+        collections={<CollectionPicker lib={userLib} item={{ kind: 'asset', assetId: asset.id }} label={asset.name} collectionHref={collectionHref} onMessage={m => say(m)} />} />
         : <div className="notice warning" role="alert">Gebäude „{id}“ ist nicht in der Bibliothek. <a href={libHref('browse')}>Zur Übersicht</a></div>}
       {tray}</div>;
   }
   if (page === 'ensembles') return <div className="page">{header}{tabs}{notices}
-    <EnsemblesPage id={id} byAsset={byAsset} names={assetNames} versions={library.versions} libHref={libHref} onCreate={e => void createFromEnsemble(e)} /></div>;
+    <EnsemblesPage id={id} byAsset={byAsset} names={assetNames} versions={library.versions} libHref={libHref} onCreate={e => void createFromEnsemble(e)}
+      onSaveTemplate={e => void saveEnsembleTemplate(e)}
+      collections={e => <CollectionPicker lib={userLib} item={{ kind: 'ensemble', ensembleId: e.id }} label={e.name} collectionHref={collectionHref} onMessage={m => say(m)} />} /></div>;
+  if (page === 'collections') return <div className="page">{header}{tabs}{notices}
+    <CollectionsPage id={id} lib={userLib} library={library} byAsset={byAsset} names={assetNames} libHref={libHref} onMessage={m => say(m)}
+      browseHref={cid => href({ view: 'library', ...(projectId && { projectId }), search: encodeLibraryState({ query: '', filters: {}, descending: false, collapse: true, layout: 'raster', onlyFavorites: false, collection: cid }, FACET_KEYS) })} /></div>;
+  if (page === 'templates') return <div className="page">{header}{tabs}{notices}
+    <TemplatesPage id={id} lib={userLib} projects={projects} libHref={libHref} onMessage={m => say(m)} /></div>;
   if (page === 'themes') return <div className="page">{header}{tabs}{notices}
     <BuildThemesPage entries={catalog.entries}
       browseHref={search => href({ view: 'library', ...(projectId && { projectId }), search })}
       buildingHref={id => libHref('building', id)} /></div>;
   if (page === 'generators') return <div className="page">{header}{tabs}{notices}
-    <GeneratorsPage id={id} projects={projects} libHref={libHref} onSaved={(m, savedId) => { say(m); showBuilding(savedId); }} /></div>;
+    <GeneratorsPage id={id} projects={projects} libHref={libHref} onSaved={(m, savedId) => { say(m); showBuilding(savedId); }} userLib={userLib} onMessage={m => say(m)} /></div>;
   if (page === 'compare') {
     const ids = (id ?? '').split(',').filter(x => x && x !== '-');
     const entries = ids.map(x => catalog.entries.find(e => e.asset.id === x)).filter((e): e is CatalogEntry => !!e);
@@ -386,12 +417,18 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
         <div className="filter-body">
           <label className="check"><input type="checkbox" checked={collapse} onChange={e => setCollapse(e.target.checked)} /> Varianten zusammenfassen</label>
           <label className="check"><input type="checkbox" checked={onlyFavorites} onChange={e => setOnlyFavorites(e.target.checked)} /> Nur Merkliste ({favorites.ids.length})</label>
+          {(collectionOptions.length > 0 || collectionId) && <label className="collection-filter">Sammlung<select value={collectionId} aria-label="Nur Sammlung zeigen" onChange={e => setCollectionId(e.target.value)}>
+            <option value="">– alle Einträge –</option>
+            {collectionId && !activeCollection && <option value={collectionId}>(Sammlung nicht gefunden)</option>}
+            {collectionOptions.map(n => <option key={n.collection.id} value={n.collection.id}>{'\u00a0\u00a0'.repeat(n.depth)}{n.collection.name}</option>)}</select></label>}
           <CatalogFilters filters={filters} onChange={setFilters} counts={counts} tags={tags} hideFacets={['kategorie']} />
         </div>
       </aside>
       <div className="catalog-main">
         <div className="result-head">
           <span className="result-count" role="status"><b>{results.length}</b> von {total} Einträgen</span>
+          {activeCollection && <ul className="active-chips" aria-label="Sammlungsfilter"><li><button type="button" onClick={() => setCollectionId('')} aria-label={`Sammlungsfilter ${activeCollection.name} entfernen`}>📁 {activeCollection.name} <span aria-hidden="true">×</span></button></li>
+            <li><a className="text-button" href={collectionHref(activeCollection.id)}>Sammlung öffnen</a></li></ul>}
           {chips.length > 0 && <ul className="active-chips" aria-label="Aktive Filter">{chips.map(c => <li key={c.key}>
             <button type="button" onClick={() => setFilters(c.next)} aria-label={`Filter ${c.label} entfernen`}>{c.label} <span aria-hidden="true">×</span></button></li>)}
             <li><button type="button" className="text-button" onClick={() => setFilters({})}>Alle Filter zurücksetzen</button></li></ul>}
@@ -402,7 +439,7 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
             variants={collapse && e.family ? families.get(e.family)?.length : undefined}
             favorite={favorites.has(e.asset.id)} comparing={compare.has(e.asset.id)} view={cardView}
             onFavorite={() => favorites.toggle(e.asset.id)} onCompare={() => toggleCompare(e.asset.id)} /></li>)}
-          {results.length === 0 && <li className="empty-results"><p>Keine Treffer.</p><button className="text-button" onClick={() => { setFilters({}); setQuery(''); setOnlyFavorites(false); }}>Suche und Filter zurücksetzen</button></li>}</ul>
+          {results.length === 0 && <li className="empty-results"><p>{collectionId && !userLib.loaded ? 'Sammlung wird geladen …' : collectionId && !activeCollection ? 'Diese Sammlung gibt es nicht (mehr).' : activeCollection && !collectionIds?.size ? `Die Sammlung „${activeCollection.name}“ enthält noch keine Gebäude.` : 'Keine Treffer.'}</p><button className="text-button" onClick={() => { setFilters({}); setQuery(''); setOnlyFavorites(false); setCollectionId(''); }}>Suche und Filter zurücksetzen</button></li>}</ul>
         {results.length > shown.length && <div className="more-row"><button type="button" onClick={() => setLimit(limit + PAGE_SIZE)}>Weitere {Math.min(PAGE_SIZE, results.length - shown.length)} laden</button>
           <span className="muted">{shown.length} von {results.length} angezeigt</span></div>}
       </div>

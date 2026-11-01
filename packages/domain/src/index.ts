@@ -14,8 +14,8 @@ export type { Guide, GuideStep, GuideProgress, StepMaterial, StepPhase, StepStat
 export { revisionForExport, resolveRevision, suggestDataVersion, dataVersionFromProfile } from './revisionExport.js';
 export { computeMaterials, materialsForResolution, materialsForParts, itemsForCell, formatStacks, materialsToCsv, MATERIAL_CATALOG_VERSION, SHULKER_SLOTS } from './materials.js';
 export type { MaterialReport, MaterialScope, ItemLine, ItemSource, ItemRule, UnresolvedLine, UnresolvedReason, StateCount, MaterialTotals, Confidence, MaterialOptions } from './materials.js';
-export { createBackup, readBackup, planRestore, buildRestore, backupFileName, checkSchemaVersion, checkProjectRecord, checkAssetRecord, referencedVersionIds, toBase64, fromBase64, BACKUP_FORMAT, BACKUP_FORMAT_VERSION, MAX_BACKUP_BYTES } from './backup.js';
-export type { OriginalFile, Backup, BackupFile, BackupSource, RestoreTarget, RestorePlan, ProjectPlan, AssetPlan, ProjectChoice, RestoreWrite } from './backup.js';
+export { createBackup, readBackup, planRestore, buildRestore, backupFileName, checkSchemaVersion, checkProjectRecord, checkAssetRecord, referencedVersionIds, toBase64, fromBase64, BACKUP_FORMAT, BACKUP_FORMAT_VERSION, BACKUP_FORMAT_VERSION_LIBRARY, MAX_BACKUP_BYTES } from './backup.js';
+export type { OriginalFile, Backup, BackupFile, BackupSource, RestoreTarget, RestorePlan, ProjectPlan, AssetPlan, ProjectChoice, RestoreWrite, LibraryRecordPlan } from './backup.js';
 export { FACES, faceOf, anchorCells, capacityOf, validateConnectors, transformConnector, placedConnectors, connectorsMate, handednessFits, linkUsage, checkLinks, findSnapCandidates, snapOperation, linkOperation, unlinkedMates, suggestConnector, placementBounds, nearestSnap, DRAG_SNAP_RADIUS } from './connectors.js';
 export type { FaceName, ConnectorIssue, PlacedConnector, LinkState, LinkStatus, SnapCandidate, SnapQuery } from './connectors.js';
 export { inspectCell } from './inspect.js';
@@ -44,3 +44,8 @@ export type { LiveMapTarget, LiveMapPosition, LiveMapMarker, LiveMapMarkerFile }
 export { WORLD_SCHEMA_VERSION, WORLD_XZ_LIMIT, WORLD_Y_MIN, WORLD_Y_MAX, DEFAULT_WORLD_Y, PLACEMENT_GAP, MAP_MAX_CELLS, DIMENSIONS, dimensionLabel, checkWorldPlacement, createPlacement, worldOf, worldOperation,
   toWorld, translateBounds, chunkOf, regionOf, suggestPlacement, MAP_SKIP_LABEL, buildWorldMap, footprintNeighbours, topViews, placementsJson, mapMarkers, liveMapPositionOf, liveMapTemplateFromLink, TERRAIN_NOTE } from './worldmap.js';
 export type { Dimension, WorldPlacement, CellProgress, MapSkip, MapEntry, MapCollision, WorldMapView, WorldMapOptions, TopView, LiveMapLinkKind, LiveMapLinkTemplate } from './worldmap.js';
+export { LIBRARY_RECORD_SCHEMA, MAX_COLLECTION_DEPTH, MAX_COLLECTION_ITEMS, MAX_TEMPLATE_MEMBERS, MAX_TEMPLATE_HISTORY, createCollection, updateCollection, itemKey, hasItem, addToCollection, removeFromCollection, moveCollectionItem, setItemNote, pinItemVersion,
+  ancestorsOf, moveProblem, moveCollection, collectionDeletion, collectionTree, flattenTree, groupByCategory, collectionCategories, resolveCollection, collectionsWith, assetIdsIn, pinnedVersionIds,
+  createTemplate, editTemplate, restoreTemplateSnapshot, archiveTemplate, duplicateTemplate, templateVersionIds, missingTemplateVersions, templateBodyFromProject, templateFromProject, templateFromEnsemble, templateFromGenerator, createTemplateProject, describeTemplate,
+  checkCollectionRecord, checkTemplateRecord, LibraryRecordConflictError, nextLibraryRevision, checkLibraryBatch, sameLibraryRecord } from './collections.js';
+export type { Collection, CollectionItem, CollectionItemKind, CollectionNode, ItemState, ResolvedItem, LibraryLookup, LibraryTemplate, TemplateBody, TemplateKind, TemplateMember, TemplateOrigin, TemplateSnapshot } from './collections.js';

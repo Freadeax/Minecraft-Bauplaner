@@ -1,7 +1,8 @@
 import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { addGeneratedVersion, analyzeVersion, applyOperation, checkReproducible, createGeneratedAsset, defaultsOf, describeParams, generatorById, generatorSourceOf, newInstance, presetValues, resolveProject,
-  rollParams, runGenerator, compoundById, createCompoundProject, COMPOUNDS, GENERATORS } from '../../../../../packages/domain/src/index.js';
-import type { Asset, AssetVersion, CompoundBuild, GeneratorRun, ParamValue, ParamValues, Project, ReproCheck, Resolution } from '../../../../../packages/domain/src/index.js';
+  rollParams, runGenerator, compoundById, createCompoundProject, COMPOUNDS, GENERATORS, editTemplate, templateFromGenerator } from '../../../../../packages/domain/src/index.js';
+import type { Asset, AssetVersion, CompoundBuild, GeneratorRun, LibraryTemplate, ParamValue, ParamValues, Project, ReproCheck, Resolution } from '../../../../../packages/domain/src/index.js';
+import type { UserLibrary } from './userLibrary';
 import { useApp } from '../../app/context';
 import { href, navigate } from '../../app/router';
 import type { LibraryPage } from '../../app/router';
@@ -12,10 +13,11 @@ import { stars } from './BuildingCard';
 import { GeneratorForm } from './GeneratorForm';
 import { AssetRevisionNotice } from './AssetRevisionNotice';
 
-/** Route id: `<generator>`, `<generator>~<preset>` or `<generator>@<assetId>` (edit a generated asset). */
-export function parseGeneratorRoute(id: string | undefined): { generatorId?: string; presetId?: string; assetId?: string } {
+/** Route id: `<generator>`, `<generator>~<preset>`, `<generator>@<assetId>` (edit a generated asset) or `<generator>!<templateId>` (own template, LIB-03). */
+export function parseGeneratorRoute(id: string | undefined): { generatorId?: string; presetId?: string; assetId?: string; templateId?: string } {
   if (!id) return {};
-  const at = id.indexOf('@'), tilde = id.indexOf('~');
+  const at = id.indexOf('@'), tilde = id.indexOf('~'), bang = id.indexOf('!');
+  if (bang > 0 && (at < 0 || bang < at) && (tilde < 0 || bang < tilde)) return { generatorId: id.slice(0, bang), templateId: id.slice(bang + 1) };
   if (at > 0) return { generatorId: id.slice(0, at), assetId: id.slice(at + 1) };
   if (tilde > 0) return { generatorId: id.slice(0, tilde), presetId: id.slice(tilde + 1) };
   return { generatorId: id };
@@ -28,11 +30,14 @@ export function parseGeneratorRoute(id: string | undefined): { generatorId?: str
  * asset being edited), so catalogue, editor, materials and export use it as
  * any other part.
  */
-export function GeneratorsPage({ id, projects, libHref, onSaved }: {
+export function GeneratorsPage({ id, projects, libHref, onSaved, userLib, onMessage }: {
   id: string | undefined;
   projects: readonly Project[];
   libHref(page: LibraryPage, id?: string): string;
   onSaved(message: string, assetId: string): void;
+  /** Own templates (LIB-03): saving and reopening generator settings. */
+  userLib?: UserLibrary;
+  onMessage?(text: string): void;
 }) {
   const route = parseGeneratorRoute(id);
   const generator = route.generatorId ? generatorById(route.generatorId) : undefined;
@@ -47,7 +52,8 @@ export function GeneratorsPage({ id, projects, libHref, onSaved }: {
         <a href={libHref('generators', g.id)} className="gen-card-open" aria-label={`Generator ${g.name} öffnen`}>
           <Thumb cacheKey={`gen:${g.id}:v${g.version}`} payload={() => run.payload} alt={`Vorschau ${g.name}`} width={360} height={220} />
           <div className="bcard-body"><strong>{g.name}</strong><span className="ecard-text">{g.description}</span></div></a>
-        <div className="gen-presets" aria-label={`Vorlagen ${g.name}`}>{g.presets.map(p => <a key={p.id} className="chip-link" href={libHref('generators', `${g.id}~${p.id}`)}>{p.label}</a>)}</div>
+        <div className="gen-presets" aria-label={`Vorlagen ${g.name}`}>{g.presets.map(p => <a key={p.id} className="chip-link" href={libHref('generators', `${g.id}~${p.id}`)}>{p.label}</a>)}
+          {userLib?.templates.filter(t => !t.archived && t.body.kind === 'generator' && t.body.source.id === g.id).map(t => <a key={t.id} className="chip-link own-template" href={libHref('generators', `${g.id}!${t.id}`)} title="Eigene Vorlage">★ {t.name}</a>)}</div>
       </article></li>;
     })}</ul>
     <h2 className="section-title">Anlagen</h2>
@@ -59,12 +65,20 @@ export function GeneratorsPage({ id, projects, libHref, onSaved }: {
       <div className="gen-presets" aria-label={`Vorlagen ${c.name}`}>{c.presets.map(p => <a key={p.id} className="chip-link" href={libHref('generators', `${c.id}~${p.id}`)}>{p.label}</a>)}</div>
     </article></li>)}</ul>
   </section>;
-  return <GeneratorWorkbench key={id} generatorId={generator.id} presetId={route.presetId} assetId={route.assetId} projects={projects} libHref={libHref} onSaved={onSaved} />;
+  const template = route.templateId ? userLib?.templates.find(t => t.id === route.templateId) : undefined;
+  if (route.templateId && userLib && !userLib.loaded) return <p role="status">Vorlage wird geladen …</p>;
+  return <>
+    {route.templateId && !template && <div className="notice warning" role="alert">Eigene Vorlage „{route.templateId}“ gibt es nicht (mehr); der Generator startet mit Standardwerten.</div>}
+    {template && template.body.kind === 'generator' && template.body.source.id !== generator.id && <div className="notice warning" role="alert">Die Vorlage „{template.name}“ gehört zu einem anderen Generator.</div>}
+    <GeneratorWorkbench key={id} generatorId={generator.id} presetId={route.presetId} assetId={route.assetId} projects={projects} libHref={libHref} onSaved={onSaved}
+      template={template?.body.kind === 'generator' && template.body.source.id === generator.id ? template : undefined} userLib={userLib} onMessage={onMessage} />
+  </>;
 }
 
-function GeneratorWorkbench({ generatorId, presetId, assetId, projects, libHref, onSaved }: {
+function GeneratorWorkbench({ generatorId, presetId, assetId, projects, libHref, onSaved, template, userLib, onMessage }: {
   generatorId: string; presetId: string | undefined; assetId: string | undefined;
   projects: readonly Project[]; libHref(page: LibraryPage, id?: string): string; onSaved(message: string, assetId: string): void;
+  template?: LibraryTemplate | undefined; userLib?: UserLibrary | undefined; onMessage?: ((text: string) => void) | undefined;
 }) {
   const { repo, library, reloadLibrary } = useApp();
   const generator = generatorById(generatorId)!;
@@ -75,6 +89,7 @@ function GeneratorWorkbench({ generatorId, presetId, assetId, projects, libHref,
   });
   const [raw, setRaw] = useState<Record<string, ParamValue>>(() => {
     if (editing) return { ...generatorSourceOf(editing.version)!.params };
+    if (template?.body.kind === 'generator') return { ...template.body.source.params };
     if (presetId && generator.presets.some(p => p.id === presetId)) return { ...presetValues(generatorId, presetId) };
     return { ...defaultsOf(generator.params) };
   });
@@ -151,6 +166,7 @@ function GeneratorWorkbench({ generatorId, presetId, assetId, projects, libHref,
           {error && <p className="field-error" role="alert">{error}</p>}
           <p className="small-note">Gespeichert werden Geometrie, Anschlüsse und alle Parameter (Generator v{generator.version}). Herkunft: eigener Entwurf, keine fremden Vorlagen.</p>
         </div>
+        {userLib && run && <TemplateSave run={run} template={template} userLib={userLib} libHref={libHref} onMessage={m => onMessage?.(m)} />}
       </div>
     </div>
     <div className="gen-controls">
@@ -163,6 +179,46 @@ function GeneratorWorkbench({ generatorId, presetId, assetId, projects, libHref,
       <GeneratorForm params={generator.params} values={values} onChange={set} />
     </div>
   </section>;
+}
+
+/**
+ * Eigene Generatorvorlage (LIB-03): saves the current normalised parameters
+ * with the generator's algorithm version, or updates the opened template (the
+ * previous state stays in its history). No geometry is stored in a template.
+ */
+function TemplateSave({ run, template, userLib, libHref, onMessage }: {
+  run: GeneratorRun; template: LibraryTemplate | undefined; userLib: UserLibrary; libHref(page: LibraryPage, id?: string): string; onMessage(text: string): void;
+}) {
+  const [name, setName] = useState('');
+  const [busy, setBusy] = useState(false);
+  const current = template ? userLib.templates.find(t => t.id === template.id) ?? template : undefined;
+  const unchanged = current?.body.kind === 'generator' && JSON.stringify(current.body.source) === JSON.stringify(run.source);
+  const saveNew = async () => {
+    let t: LibraryTemplate;
+    try { t = templateFromGenerator(run.source, { name: name.trim() || run.name }); } catch (e) { onMessage(errorText(e)); return; }
+    setBusy(true);
+    const error = await userLib.write({ templates: [t] });
+    setBusy(false);
+    if (error) onMessage(`Vorlage nicht gespeichert: ${error}`);
+    else { setName(''); onMessage(`Generatorvorlage „${t.name}“ gespeichert (${run.generator.name} v${run.generator.version}, ${Object.keys(run.values).length} Werte).`); navigate({ view: 'library', page: 'generators', id: `${run.generator.id}!${t.id}` }); }
+  };
+  const update = async () => {
+    if (!current) return;
+    let next: LibraryTemplate;
+    try { next = editTemplate(current, { body: { kind: 'generator', source: run.source } }); } catch (e) { onMessage(errorText(e)); return; }
+    setBusy(true);
+    const error = await userLib.write({ templates: [next] });
+    setBusy(false);
+    onMessage(error ? `Vorlage nicht gespeichert: ${error}` : `Vorlage „${current.name}“ aktualisiert (Stand ${next.number}; der vorherige Stand bleibt im Verlauf).`);
+  };
+  return <div className="gen-template" role="group" aria-label="Eigene Vorlage">
+    <span className="panel-kicker">EIGENE VORLAGE</span>
+    {current && <p className="small-note">Geöffnet aus <a href={libHref('templates', current.id)}>„{current.name}“</a> (Stand {current.number}).</p>}
+    {current && <button type="button" disabled={busy || unchanged} onClick={() => void update()} title={unchanged ? 'Werte entsprechen der Vorlage' : undefined}>Vorlage „{current.name}“ aktualisieren</button>}
+    <div className="picker-new"><input value={name} onChange={e => setName(e.target.value)} maxLength={120} placeholder={run.name} aria-label="Name der Generatorvorlage" />
+      <button type="button" disabled={busy} onClick={() => void saveNew()}>Als neue Vorlage speichern</button></div>
+    <p className="small-note">Speichert nur Generator, Version und Werte – kein Bauteil. Später unter „Vorlagen“ oder hier über die Vorlagen-Chips wieder öffnen.</p>
+  </div>;
 }
 
 /**

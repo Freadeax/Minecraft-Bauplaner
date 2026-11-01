@@ -32,10 +32,11 @@ export function ProjectsView() {
   const backup = async (scope: 'project' | 'all', project?: Project) => {
     setBusy(true);
     try {
-      const file = await createBackup({ projects: projects ?? [], assets: library.assets, versions: library.versions, getOriginal: sha => repo.getOriginal(sha) },
+      const [collections, templates] = scope === 'all' ? await Promise.all([repo.listCollections(), repo.listTemplates()]) : [[], []];
+      const file = await createBackup({ projects: projects ?? [], assets: library.assets, versions: library.versions, getOriginal: sha => repo.getOriginal(sha), collections, templates },
         scope, project ? [project.id] : undefined);
       download(backupFileName(file), JSON.stringify(file), 'application/json');
-      setMessage(`Sicherung erstellt: ${file.projects.length} Projekt(e), ${file.assets.length} Bauteil(e), ${file.versions.length} Version(en), ${file.originals.length} Originaldatei(en)${file.missingOriginals.length ? ` – ${file.missingOriginals.length} Original(e) lokal nicht vorhanden` : ''}. Datei liegt in deinen Downloads.`);
+      setMessage(`Sicherung erstellt: ${file.projects.length} Projekt(e), ${file.assets.length} Bauteil(e), ${file.versions.length} Version(en), ${file.originals.length} Originaldatei(en)${file.collections?.length || file.templates?.length ? `, ${file.collections?.length ?? 0} Sammlung(en), ${file.templates?.length ?? 0} Vorlage(n)` : ''}${file.missingOriginals.length ? ` – ${file.missingOriginals.length} Original(e) lokal nicht vorhanden` : ''}. Datei liegt in deinen Downloads.`);
     } catch (e) { setMessage(`Sicherung fehlgeschlagen: ${errorText(e)}`); }
     finally { setBusy(false); }
   };
@@ -44,8 +45,8 @@ export function ProjectsView() {
     try {
       if (file.size > MAX_BACKUP_BYTES) throw new Error('Sicherungsdatei ist zu groß');
       const parsed = await readBackup(await file.text());
-      const [localProjects, assets, versions, originals] = await Promise.all([repo.listProjects(), repo.listAssets(), repo.listVersions(), repo.listOriginalHashes()]);
-      const plan = planRestore(parsed, { projects: localProjects, assets, versionIds: new Set(versions.map(v => v.id)), originalHashes: new Set(originals) });
+      const [localProjects, assets, versions, originals, collections, templates] = await Promise.all([repo.listProjects(), repo.listAssets(), repo.listVersions(), repo.listOriginalHashes(), repo.listCollections(), repo.listTemplates()]);
+      const plan = planRestore(parsed, { projects: localProjects, assets, versionIds: new Set(versions.map(v => v.id)), originalHashes: new Set(originals), collections, templates });
       setRestore({ plan, fileName: file.name, choices: {} });
     } catch (e) { setMessage(`Sicherung nicht lesbar – nichts geändert: ${errorText(e)}`); }
     finally { setBusy(false); if (restoreInput.current) restoreInput.current.value = ''; }

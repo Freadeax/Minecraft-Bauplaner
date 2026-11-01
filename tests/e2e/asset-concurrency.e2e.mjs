@@ -51,7 +51,7 @@ test('v1 upgrade preserves records and originals, closes old client and enforces
     const error=results[1].reason;
     return {DB_VERSION,preservedRevision,closed,migrated:left,winner,versionIds:versions.map(v=>v.id),bytes,orphan:await a.getOriginal('orphan-original'),conflict:{name:error?.name,assetId:error?.assetId,stored:error?.stored,base:error?.base},statuses:results.map(r=>r.status)};
   },asset);
-  assert.equal(result.DB_VERSION,2);assert.equal(result.preservedRevision,7);assert.match(result.closed,/neu laden/);
+  assert.equal(result.DB_VERSION,3);assert.equal(result.preservedRevision,7);assert.match(result.closed,/neu laden/);
   assert.deepEqual(result.migrated,{...asset,revision:1});
   assert.deepEqual(result.statuses,['fulfilled','rejected']);
   assert.deepEqual(result.conflict,{name:'AssetRevisionConflictError',assetId:asset.id,stored:2,base:1});
@@ -78,5 +78,34 @@ test('invalid legacy revision aborts the whole upgrade and leaves v1 data unchan
     const version=old.version;old.close();return {errorName,preserved,all,version};
   },asset);
   assert.equal(result.errorName,'StorageMigrationError');assert.equal(result.version,1);assert.deepEqual(result.preserved,{...asset,revision:-1});assert.deepEqual(result.all.find(a=>a.id==='a_valid'),{...asset,id:'a_valid'},'earlier cursor changes were rolled back too');
+  await context.close();
+});
+
+test('v2 -> v3 upgrade (LIB-02/03) adds collection/template stores, keeps assets and enforces collection CAS across connections',async()=>{
+  const {context,page}=await setup();
+  const result=await page.evaluate(async asset=>{
+    const {openIdbRepository,DB_NAME}=window.adapter;
+    const old=await new Promise((resolve,reject)=>{
+      const request=indexedDB.open(DB_NAME,2);
+      request.onupgradeneeded=()=>{for(const [name,keyPath] of [['projects','id'],['assets','id'],['versions','id'],['originals','sha256'],['meta','key']])request.result.createObjectStore(name,{keyPath});};
+      request.onerror=()=>reject(request.error);request.onsuccess=()=>resolve(request.result);
+    });
+    await new Promise((resolve,reject)=>{const tx=old.transaction(['assets'],'readwrite');tx.objectStore('assets').put({...asset,revision:4});tx.oncomplete=resolve;tx.onabort=()=>reject(tx.error);});
+    old.close();
+    const a=await openIdbRepository(),b=await openIdbRepository();
+    const before=await a.listCollections();
+    const t='2026-11-01T00:00:00.000Z';
+    const col={schemaVersion:1,id:'col_test',revision:0,name:'Sammlung',description:'',category:'',parentId:null,items:[],archived:false,createdAt:t,updatedAt:t};
+    await a.applyBatch({collections:[col]});
+    const [stored]=await b.listCollections();
+    const results=await Promise.allSettled([a.applyBatch({collections:[{...stored,name:'Gewinner'}]}),b.applyBatch({collections:[{...stored,name:'Verlierer'}],assets:[{...asset,revision:4,name:'darf nicht'}]})]);
+    let bad='';try{await a.applyBatch({collections:[{...col,id:'col_bad',items:'kaputt'}]});}catch(e){bad=e.message;}
+    return {before,assetRevision:(await a.listAssets())[0].revision,assetName:(await a.listAssets())[0].name,after:(await a.listCollections()).map(c=>[c.name,c.revision]),statuses:results.map(r=>r.status),error:results[1].reason?.name,bad};
+  },asset);
+  assert.deepEqual(result.before,[]);
+  assert.equal(result.assetRevision,4);assert.equal(result.assetName,'Legacy');
+  assert.deepEqual(result.statuses,['fulfilled','rejected']);assert.equal(result.error,'LibraryRecordConflictError');
+  assert.deepEqual(result.after,[['Gewinner',2]]);
+  assert.match(result.bad,/Eintragsliste/);
   await context.close();
 });

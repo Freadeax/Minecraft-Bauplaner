@@ -9,7 +9,7 @@ Stand: 01.11.2026. Der verbindliche Aufgabenbestand steht in [ROADMAP](ROADMAP.m
 | Daten und Composer | Unveränderliche Voxel/AssetVersionen, Instanzen/Revisionen, Zellkonflikte, Undo/Redo, Snap/Händigkeit/Freiraum | Registryprofil, semantische BlockEntity-Transformationen |
 | Formate | Sponge Schem v3 und Litematic mit Import/Export, Originalerhalt, Limits und unabhängigen Fixtures | echte WorldEdit-/Litematica-/Spielabnahme; kein Vollweltimport |
 | Viewer | Orbit, Flug, Schnitte/Layer, Picking, Touchbedienung und Softwarefallback | exakte Blockformen, echte GPU-/iPhone-Prüfung |
-| Bibliothek | 174 Gebäude, Suche/Filter, Vergleich, Merkliste, Varianten, Ensembles und Generatoren | eigene Sammlungen/Vorlagen; Redstone-Bauwerke nicht im Spiel abgenommen |
+| Bibliothek | 177 Gebäude, Suche/Filter, Vergleich, Merkliste, Varianten, Ensembles, Generatoren sowie eigene Sammlungen (Ordner, Kategorien, Katalogfilter) und Vorlagen (Ensemble-/Generatorvorlagen mit Verlauf, LIB-02/LIB-03) | Echtgeräteabnahme der Sammlungen/Vorlagen; Redstone-Bauwerke nicht im Spiel abgenommen |
 | Bau und Materialien | Bauitems, Rohstoff-/Rezeptauflösung, Packlisten, eigene Abschnitte, Lager-/Sammelplanung und Freiraumprüfung | versionsgebundener Katalog, Kupfer-Farbvarianten und erweiterte NBT-Diffs |
 | Speicherung | IndexedDB, Projekt-Revisionsschutz, Originale, atomare Batches, Backup/Restore und Datencheck | Asset-Revisionsschutz und DB-v2-Migration mit drei echten Chromiumfällen geprüft; Cloud-/Gerätesynchronisierung und Safari/iPhone offen |
 | Novemberoberfläche | fünf visuelle Themen mit Hell/Dunkel/System, Materiallabor, elf Bauwelten, 50 gezielte Glas-/Beton-/Terrakottasätze | aktuelle visuelle Abnahme; keine neuen Gebäude aus bloßem Themenzugang |
