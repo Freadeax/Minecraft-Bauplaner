@@ -277,3 +277,9 @@ Interner Buildjob 124539104569 (Run 41201874786) bestätigt main/root. 404-Live-
 - `npm run check`: bestanden, 312 Node-Tests; strenge Kern-/Webtypprüfung, beide Builds und Dokumentationslinks gültig.
 - Marker-Roundtrip über JSON, unabhängige Kopien, ungültige Schema-/Format-/Koordinatensystemwerte, fehlende/zusätzliche Felder, Duplikate und Arraygrenzen geprüft.
 - `git diff --check`: bestanden. Keine neuen Abhängigkeiten oder UI-Änderungen. Browserprüfung weiterhin mangels Chromium offen; keine Spiel-/Providerabnahme behauptet.
+
+## UI-01 Theme-Tokens · 01.11.2026
+- Neue reine Theme-Funktionen und fünf Node-Regressionstests im Repository ergänzt.
+- Isolierte Vorabprüfung des inhaltsgleichen Theme-Moduls in `/mnt/data/themecheck`: `node --test theme-tokens.test.mjs` — **5 bestanden, 0 fehlgeschlagen** (Node 22.16.0). Die im Repository gespeicherte Fassung wurde noch nicht in einer vollständigen Arbeitskopie geprüft.
+- Vollständiges `npm run check`, Browser-E2E und Pages-Publishing **offen**: Container kann `github.com` nicht per DNS erreichen, vollständiger Checkout und npm-Installation nicht verfügbar.
+- Noch keine React-Einbindung: UI bleibt unverändert. Keine GitHub Actions.
