@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T12:52:36.925Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T12:55:58.546Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,8 +12,8 @@ Stand: 2026-11-01T12:52:36.925Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 25 |
-| 🚧 In Arbeit | 1 |
+| ⏳ Offen | 23 |
+| 🚧 In Arbeit | 3 |
 | ⛔ Blockiert | 1 |
 | 🧩 Implementiert · Abnahme offen | 7 |
 | ✅ Im beschriebenen Umfang geprüft | 20 |
@@ -23,6 +23,8 @@ Stand: 2026-11-01T12:52:36.925Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 - **PERF-02 · Zellindizes, Chunkdaten und selektive Neuberechnung** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Gemessene Structured-Clone-/Worker-Rückgabekosten reduzieren; selektive Geometrie-/Fortschrittsinvalidierung zuerst mit vollständigen semantischen Regressionen absichern.
 - **MAP-01 · Weltlage und begehbare Projektkarte** — 🚧 In Arbeit, 2/4 Teilschritte. Nächster Schritt: Projektursprung/Dimension, Undo und Sicherung ergänzen.
+- **LIB-02 · Eigene Sammlungen, Ordner und Kategorien** — 🚧 In Arbeit, 0/2 Teilschritte. Nächster Schritt: Datenmodell collections.ts, Speicher (IndexedDB v3) und Sicherung erweitern.
+- **LIB-03 · Eigene Ensembles und Generatorvorlagen speichern** — 🚧 In Arbeit, 0/2 Teilschritte. Nächster Schritt: Vorlagen referenzieren feste Versionen bzw. versionierte Generatorparameter.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -113,8 +115,8 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | ⏳ Offen | 0/3 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
 | [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | ⏳ Offen | 0/2 | STORE-02, VIEW-01 | ausstehend | ausstehend |
 | [UPDATE-01](#update-01) | Kontrollierte Versionsupdates mit lokalen Overrides | ⏳ Offen | 0/2 | DIFF-01, STORE-02 | ausstehend | ausstehend |
-| [LIB-02](#lib-02) | Eigene Sammlungen, Ordner und Kategorien | ⏳ Offen | 0/2 | STORE-02, LIB-01 | ausstehend | ausstehend |
-| [LIB-03](#lib-03) | Eigene Ensembles und Generatorvorlagen speichern | ⏳ Offen | 0/2 | LIB-02, GEN-01 | ausstehend | ausstehend |
+| [LIB-02](#lib-02) | Eigene Sammlungen, Ordner und Kategorien | 🚧 In Arbeit | 0/2 | STORE-02, LIB-01 | ausstehend | ausstehend |
+| [LIB-03](#lib-03) | Eigene Ensembles und Generatorvorlagen speichern | 🚧 In Arbeit | 0/2 | LIB-02, GEN-01 | ausstehend | ausstehend |
 | [WORLD-02](#world-02) | Weitere kuratierte Bauwelten | ✅ Im beschriebenen Umfang geprüft | 2/2 | LIB-01, UI-01 | `c3e6478` | `c3e6478` |
 | [BUILD-05](#build-05) | Bauwelt-Anlagen mit Konfliktvorschau | ⏳ Offen | 0/2 | LIB-03, CORE-03 | ausstehend | ausstehend |
 | [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | ⏳ Offen | 0/2 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
@@ -822,14 +824,14 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LIB-02
 
-**Eigene Sammlungen, Ordner und Kategorien** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Eigene Sammlungen, Ordner und Kategorien** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread Sammlungen und Vorlagen) · Aktualisiert: 2026-11-01T12:55:58.546Z
 
 - [ ] LIB-02-S01: B17-Dateizuständigkeit prüfen; Datenmodell und Sicherung erweitern.
 - [ ] LIB-02-S02: Sammlungen/Kategorien mit Migration und leerem Zustand nutzbar machen.
 
 **Abnahme:** Katalog und eigene Inhalte bleiben dieselbe Bibliothek; referenzierte Versionen erhalten.
 
-**Nächste Aktion:** B17-Dateizuständigkeit prüfen; Datenmodell und Sicherung erweitern.
+**Nächste Aktion:** Datenmodell collections.ts, Speicher (IndexedDB v3) und Sicherung erweitern.
 
 **Prüfstand:** Abnahme noch nicht vollständig erbracht.
 
@@ -841,7 +843,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LIB-03
 
-**Eigene Ensembles und Generatorvorlagen speichern** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Eigene Ensembles und Generatorvorlagen speichern** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread Sammlungen und Vorlagen) · Aktualisiert: 2026-11-01T12:55:58.546Z
 
 - [ ] LIB-03-S01: Vorlagen referenzieren feste Versionen bzw. versionierte Generatorparameter.
 - [ ] LIB-03-S02: Speichern, Bearbeiten, Wiederherstellen und Projektübernahme umsetzen.

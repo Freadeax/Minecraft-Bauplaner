@@ -1,10 +1,12 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T12:52:36.925Z",
+  "updatedAt": "2026-11-01T12:55:58.546Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
-    "MAP-01"
+    "MAP-01",
+    "LIB-02",
+    "LIB-03"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -1901,8 +1903,8 @@
       "title": "Eigene Sammlungen, Ordner und Kategorien",
       "phase": "P3",
       "priority": "P1",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "in_progress",
+      "owner": "Claude (Thread Sammlungen und Vorlagen)",
       "dependencies": [
         "STORE-02",
         "LIB-01"
@@ -1930,7 +1932,7 @@
       "acceptance": [
         "Katalog und eigene Inhalte bleiben dieselbe Bibliothek; referenzierte Versionen erhalten."
       ],
-      "next": "B17-Dateizuständigkeit prüfen; Datenmodell und Sicherung erweitern.",
+      "next": "Datenmodell collections.ts, Speicher (IndexedDB v3) und Sicherung erweitern.",
       "blockers": [],
       "evidence": [],
       "verification": {
@@ -1941,15 +1943,15 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-01T12:55:58.546Z"
     },
     {
       "id": "LIB-03",
       "title": "Eigene Ensembles und Generatorvorlagen speichern",
       "phase": "P3",
       "priority": "P1",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "in_progress",
+      "owner": "Claude (Thread Sammlungen und Vorlagen)",
       "dependencies": [
         "LIB-02",
         "GEN-01"
@@ -1985,7 +1987,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-01T12:55:58.546Z"
     },
     {
       "id": "WORLD-02",
@@ -4218,6 +4220,34 @@
           "done": 2,
           "total": 4,
           "next": "Projektursprung/Dimension, Undo und Sicherung ergänzen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T12:55:58.546Z",
+      "kind": "progress",
+      "items": [
+        "LIB-02",
+        "LIB-03"
+      ],
+      "summary": "LIB-02/LIB-03 von Claude übernommen (MSG-LIB0203-00); B17-Altreservierung aufgehoben, kein unintegrierter Altcode.",
+      "files": [
+        "docs/COMMUNICATION.md"
+      ],
+      "snapshot": [
+        {
+          "id": "LIB-02",
+          "status": "in_progress",
+          "done": 0,
+          "total": 2,
+          "next": "Datenmodell collections.ts, Speicher (IndexedDB v3) und Sicherung erweitern."
+        },
+        {
+          "id": "LIB-03",
+          "status": "in_progress",
+          "done": 0,
+          "total": 2,
+          "next": "Vorlagen referenzieren feste Versionen bzw. versionierte Generatorparameter."
         }
       ]
     }

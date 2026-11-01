@@ -677,3 +677,18 @@ MAP-01 von Claude übernommen (MSG-MAP01-00); B15-Reservierung abgeglichen, kein
 
 - `docs/COMMUNICATION.md`
 
+## 2026-11-01T12:55:58.546Z · progress
+
+**Aufgaben:** LIB-02, LIB-03
+
+LIB-02/LIB-03 von Claude übernommen (MSG-LIB0203-00); B17-Altreservierung aufgehoben, kein unintegrierter Altcode.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LIB-02 | 🚧 In Arbeit | 0/2 | Datenmodell collections.ts, Speicher (IndexedDB v3) und Sicherung erweitern. |
+| LIB-03 | 🚧 In Arbeit | 0/2 | Vorlagen referenzieren feste Versionen bzw. versionierte Generatorparameter. |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+
