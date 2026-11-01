@@ -48,3 +48,11 @@ Hash-Routen funktionieren auf Pages ohne Server-Rewrite. Eine einzige `Repositor
 ## ADR-015 · angenommen · 27.10.2026 · Spielbrücke
 
 Mod liest nur und liefert eine Ist-Aufnahme als Sponge Schem v3 mit `Metadata.Bauplaner.Kind = "scan"`; Soll/Ist-Vergleich und Zuordnung zu Bauschritten ausschließlich im TypeScript-Domänenkern. Alternative „Vergleich in der Mod“ verworfen (zweite Schritt-/Zähllogik). Übertragung zuerst per Datei, lokale Loopback-Verbindung optional; Server-API erst mit Teamdienst. Nutzerentscheidung: Fabric-Client-Mod, Start mit Minecraft 26.3, weitere Versionen über versionsneutralen Kern, kein WorldEdit. Details: [MOD_BRIDGE](MOD_BRIDGE.md).
+
+## ADR-016 · Anwendungsschicht und ausführbare Paketgrenzen · 01.11.2026
+
+Exportkoordination und Aufnahmeverwaltung liegen in `packages/application`; Repositoryports ebenfalls. Die Domäne enthält nur reine Revisions-/Profilregeln und importiert keine Formatwriter mehr. Der neutrale Aufnahmevertrag liegt im Voxelpaket. Web-Kompatibilitätsexporte erhalten bestehende Aufrufer und Fehleridentitäten; keine Datenmigration erforderlich. Alternative einer Domain→Application-Rückexportbrücke verworfen, weil sie die Abhängigkeit wieder umkehren würde. Erlaubte Paketmatrix und Regressionen: [MODULES](MODULES.md).
+
+## ADR-017 · Eine Roadmapquelle mit überprüfbarem Fortschritt · 01.11.2026
+
+`docs/roadmap.json` ist die technische Quelle für Aufgaben, Teilschritte, Abhängigkeiten, Nachweise und angehängte Fortschrittsereignisse. ROADMAP.md und ROADMAP_HISTORY.md werden daraus erzeugt und vor jedem Quellupdate validiert. Keine geschätzten Prozentwerte; Implementierung, Prüfstand, Main und Pages getrennt. Lokaler Pre-Push-Hook und Publisher verlangen dateibezogene Fortschrittspflege. Ohne eigene Actions kann dies externe Clients/API-Schreibzugriffe nicht serverseitig erzwingen; AGENTS und Konnektor-Runbook verpflichten zur gleichen Vorprüfung. Alte Dokumente bleiben ausdrücklich historische Quellen. Selbstreferenzielle Deployment-Updates werden durch Manifestnachweis statt Folgecommit vermieden.

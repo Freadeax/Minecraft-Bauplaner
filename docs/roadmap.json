@@ -1,0 +1,2981 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-11-01T05:20:38.605Z",
+  "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
+  "active": [
+    "PLAN-01",
+    "ARCH-01",
+    "DOC-01"
+  ],
+  "policy": {
+    "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
+    "mergeRule": "Jeder Quell-Merge/Push aktualisiert betroffene Aufgaben, Schritte, Nachweise und Historie. Artefakt-Kindcommits werden über deployment.json belegt.",
+    "verificationRule": "Implementiert, geprüft, Main und Pages getrennt; historische Prüfnachweise gelten nur für den genannten Stand.",
+    "phaseRule": "Abhängigkeiten pro Paket sind verbindlich; Bestandsfunktionen bleiben nutzbar. Phasen werden erst bei erfüllten Austrittskriterien abgeschlossen."
+  },
+  "phases": [
+    {
+      "id": "P1",
+      "title": "Bestand konsolidieren und Architektur absichern",
+      "goal": "Aktueller, prüfbarer Stand mit entkoppeltem Fachkern und verbindlicher Fortschrittsführung.",
+      "exit": [
+        "Alle aktiven Aufgaben mit ID, Zuständigkeit und Abnahme erfasst.",
+        "Export und Aufnahmeverwaltung laufen außerhalb der Domäne; Architekturgrenzen automatisch geprüft.",
+        "Projekt- und Assetänderungen verlieren bei konkurrierenden Schreibvorgängen keine Daten.",
+        "Aktuelle Browserabnahme durchgeführt; verbleibende Geräteprüfungen ausdrücklich offen."
+      ]
+    },
+    {
+      "id": "P2",
+      "title": "Minecraft-Datentreue und Berechnungen vervollständigen",
+      "goal": "Ein benanntes Java-Profil liefert konsistente Transformationen, Mengen und Referenzexporte.",
+      "exit": [
+        "Registry-, Item- und Rezeptdaten an dasselbe dokumentierte Profil gebunden.",
+        "Echte Schem-/Litematic-Referenzen geprüft; unbekannte Semantik bleibt gesperrt.",
+        "Diff und Export erhalten relevante BlockEntity-Inhalte.",
+        "Große Berechnungen abbrechbar und mit dokumentiertem Szenario gemessen."
+      ]
+    },
+    {
+      "id": "P3",
+      "title": "Architekturwerkbank und Bauablauf ausbauen",
+      "goal": "Vom Import bis zum Nachbauen großer Projekte nachvollziehbar arbeiten.",
+      "exit": [
+        "Zustandsabhängige Blockformen mit korrektem Picking und Layern.",
+        "Eigene Sammlungen, Ensembles und kontrollierte Versionsupdates nutzbar.",
+        "Weltkarte und Spielbrücke als vollständige, getrennt geprüfte Abläufe.",
+        "Desktop und echtes iPhone für die vorgesehenen Abläufe geprüft."
+      ]
+    },
+    {
+      "id": "P4",
+      "title": "Optionale Zusammenarbeit und Integrationen",
+      "goal": "Geteilte Projekte mit sicheren Rechten, geordneten Änderungen und Wiederherstellung.",
+      "exit": [
+        "API, Rechte und dauerhafter Payloadspeicher mit Wiederherstellung geprüft.",
+        "Parallele Operationen, Reconnect und Team-Undo ohne stillen Verlust.",
+        "Lokaler Gastmodus bleibt nutzbar.",
+        "Live- und weitere Spieladapter getrennt abgenommen; keine impliziten Weltänderungen."
+      ]
+    }
+  ],
+  "items": [
+    {
+      "id": "CORE-01",
+      "title": "Voxelvertrag, unveränderliche Daten und Zellsemantik",
+      "phase": "P1",
+      "priority": "P1",
+      "status": "verified",
+      "owner": "Bestand",
+      "dependencies": [],
+      "scope": [
+        "packages/voxel/"
+      ],
+      "legacyIds": [
+        "P0-02",
+        "P0-03"
+      ],
+      "steps": [
+        {
+          "id": "CORE-01-S01",
+          "title": "Validierung, Koordinaten und explizite Luft/Löschzellen umgesetzt.",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "Unabhängige erwartete Zellen und Grenzen bestehen Tests."
+      ],
+      "next": "Regressionen bei Änderungen weiterführen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/voxel.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        }
+      ],
+      "verification": {
+        "state": "passed",
+        "note": "Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis."
+      },
+      "delivery": {
+        "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
+        "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "CORE-02",
+      "title": "Assets, feste Versionen und Projektoperationen",
+      "phase": "P1",
+      "priority": "P1",
+      "status": "verified",
+      "owner": "Bestand",
+      "dependencies": [
+        "CORE-01"
+      ],
+      "scope": [
+        "packages/domain/src/library.ts",
+        "packages/domain/src/project.ts"
+      ],
+      "legacyIds": [
+        "B0",
+        "P2-01"
+      ],
+      "steps": [
+        {
+          "id": "CORE-02-S01",
+          "title": "Asset/Version/Instanz/Revision getrennt; Undo/Redo und Hashprüfung vorhanden.",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "Projekte referenzieren feste Versionen; Originale werden nicht überschrieben."
+      ],
+      "next": "Regressionen bei Änderungen weiterführen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/domain.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        }
+      ],
+      "verification": {
+        "state": "passed",
+        "note": "Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis."
+      },
+      "delivery": {
+        "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
+        "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "CORE-03",
+      "title": "Composer, Voxelkonflikte und Anschlüsse",
+      "phase": "P1",
+      "priority": "P1",
+      "status": "verified",
+      "owner": "Bestand",
+      "dependencies": [
+        "CORE-02"
+      ],
+      "scope": [
+        "packages/domain/src/compose.ts",
+        "packages/domain/src/connectors.ts"
+      ],
+      "legacyIds": [
+        "B5",
+        "P2-02"
+      ],
+      "steps": [
+        {
+          "id": "CORE-03-S01",
+          "title": "Auflösung, Override, Snap, Händigkeit und Freiraumprüfung vorhanden.",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "AABB ist kein Konfliktentscheid; identische Zellen werden einmal gezählt."
+      ],
+      "next": "Regressionen bei Änderungen weiterführen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/connectors.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        }
+      ],
+      "verification": {
+        "state": "passed",
+        "note": "Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis."
+      },
+      "delivery": {
+        "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
+        "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "STORE-01",
+      "title": "Lokale Speicherung, Migration und Sicherungen",
+      "phase": "P1",
+      "priority": "P1",
+      "status": "verified",
+      "owner": "Bestand",
+      "dependencies": [
+        "CORE-02"
+      ],
+      "scope": [
+        "apps/web/src/app/idbRepository.ts",
+        "packages/domain/src/backup.ts"
+      ],
+      "legacyIds": [
+        "B3"
+      ],
+      "steps": [
+        {
+          "id": "STORE-01-S01",
+          "title": "Atomare Transaktionen, Projekt-revisionen, Originale und geprüfte Backups vorhanden.",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "Fehlgeschlagene Wiederherstellung überschreibt nichts still."
+      ],
+      "next": "Regressionen bei Änderungen weiterführen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/backup.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        },
+        {
+          "path": "tests/e2e/persistence.e2e.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        }
+      ],
+      "verification": {
+        "state": "passed",
+        "note": "Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis."
+      },
+      "delivery": {
+        "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
+        "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "MAT-01",
+      "title": "Bauitems und Rohstoffplanung im bestehenden Katalog",
+      "phase": "P1",
+      "priority": "P1",
+      "status": "verified",
+      "owner": "Bestand",
+      "dependencies": [
+        "CORE-03"
+      ],
+      "scope": [
+        "packages/domain/src/materials.ts",
+        "packages/domain/src/recipes.ts"
+      ],
+      "legacyIds": [
+        "B1",
+        "B1-R"
+      ],
+      "steps": [
+        {
+          "id": "MAT-01-S01",
+          "title": "Mehrblock-/Anzahlregeln, Stacks, Rezepte, Rundung und Reste vorhanden.",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "Mengen stammen aus der aufgelösten Welt; unbekannte Zuordnungen sichtbar."
+      ],
+      "next": "Regressionen bei Änderungen weiterführen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/materials.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        },
+        {
+          "path": "tests/recipes.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        }
+      ],
+      "verification": {
+        "state": "passed",
+        "note": "Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis."
+      },
+      "delivery": {
+        "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
+        "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "BUILD-01",
+      "title": "Bauanleitung, eigene Abschnitte, Lager und Sammelplan",
+      "phase": "P1",
+      "priority": "P1",
+      "status": "verified",
+      "owner": "Bestand",
+      "dependencies": [
+        "MAT-01"
+      ],
+      "scope": [
+        "packages/domain/src/guide.ts",
+        "packages/domain/src/site.ts"
+      ],
+      "legacyIds": [
+        "B4",
+        "B14"
+      ],
+      "steps": [
+        {
+          "id": "BUILD-01-S01",
+          "title": "Schritte, Packlisten, Fortschritt, Abschnitte und Lagerberechnung vorhanden.",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "Manuelle Haken und Spielnachweis getrennt; Voraussetzungen ohne Zyklen."
+      ],
+      "next": "Regressionen bei Änderungen weiterführen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/guide.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        },
+        {
+          "path": "tests/site.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        }
+      ],
+      "verification": {
+        "state": "passed",
+        "note": "Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis."
+      },
+      "delivery": {
+        "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
+        "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "LIB-01",
+      "title": "Bestehender Gebäudekatalog und Bibliotheksabläufe",
+      "phase": "P1",
+      "priority": "P1",
+      "status": "verified",
+      "owner": "Bestand",
+      "dependencies": [
+        "CORE-02"
+      ],
+      "scope": [
+        "packages/domain/src/build/",
+        "apps/web/src/views/library/"
+      ],
+      "legacyIds": [
+        "B9",
+        "B9-A",
+        "B11"
+      ],
+      "steps": [
+        {
+          "id": "LIB-01-S01",
+          "title": "174 Gebäude, Suche, Filter, Vergleich, Merkliste und bestehende Ensembles vorhanden.",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "Stabile Gebäudeversionen, deklarierte Materiallücken und reale Treffer."
+      ],
+      "next": "Regressionen bei Änderungen weiterführen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/catalog.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        }
+      ],
+      "verification": {
+        "state": "passed",
+        "note": "Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis."
+      },
+      "delivery": {
+        "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
+        "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "GEN-01",
+      "title": "Vorhandene parametrische Generatoren",
+      "phase": "P1",
+      "priority": "P1",
+      "status": "verified",
+      "owner": "Bestand",
+      "dependencies": [
+        "CORE-03"
+      ],
+      "scope": [
+        "packages/domain/src/generators/"
+      ],
+      "legacyIds": [
+        "B13"
+      ],
+      "steps": [
+        {
+          "id": "GEN-01-S01",
+          "title": "Haus, Turm, Mauer, Brücke, Dach und vorhandene Anlagen reproduzierbar.",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "Gleiche Parameter erzeugen gleiche Version; Projekte behalten ihre Version."
+      ],
+      "next": "Regressionen bei Änderungen weiterführen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/generators.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        }
+      ],
+      "verification": {
+        "state": "passed",
+        "note": "Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis."
+      },
+      "delivery": {
+        "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
+        "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "OPS-01",
+      "title": "Main/root-Pages mit manifestgeprüften Artefakten",
+      "phase": "P1",
+      "priority": "P1",
+      "status": "verified",
+      "owner": "Bestand",
+      "dependencies": [],
+      "scope": [
+        "scripts/publish_main_pages.sh",
+        "scripts/prepare_main_pages.mjs"
+      ],
+      "legacyIds": [
+        "HP-01",
+        "HP-02",
+        "HP-03"
+      ],
+      "steps": [
+        {
+          "id": "OPS-01-S01",
+          "title": "Statischer Build und quellenerhaltender Artefakt-Kindcommit implementiert.",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "Source-Hash und Dateihashes überprüfbar; keine eigenen Actions oder Force-Pushes."
+      ],
+      "next": "Regressionen bei Änderungen weiterführen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/main-pages.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        }
+      ],
+      "verification": {
+        "state": "passed",
+        "note": "Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis."
+      },
+      "delivery": {
+        "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
+        "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "PLAN-01",
+      "title": "Verbindlicher Aufgabenbestand und Merge-Fortschritt",
+      "phase": "P1",
+      "priority": "P0",
+      "status": "implemented",
+      "owner": "Codex",
+      "dependencies": [],
+      "scope": [
+        "docs/roadmap.json",
+        "scripts/roadmap.mjs",
+        ".githooks/"
+      ],
+      "legacyIds": [
+        "P0-01"
+      ],
+      "steps": [
+        {
+          "id": "PLAN-01-S01",
+          "title": "Gesamte Roadmap in vier Phasen und stabile Aufgaben-IDs aufgenommen.",
+          "done": true
+        },
+        {
+          "id": "PLAN-01-S02",
+          "title": "Schema, Historie, Darstellung und Änderungsprüfung implementieren und testen.",
+          "done": true
+        },
+        {
+          "id": "PLAN-01-S03",
+          "title": "Pflichtablauf in AGENTS und Publisher integrieren; Main-/Pages-Nachweis prüfen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Jede Aufgabe zeigt Teilschritte, Abhängigkeiten, nächste Aktion und Nachweise.",
+        "Quelländerungen benötigen eine Aufgabenaktualisierung; Artefaktcommits sind separat nachweisbar."
+      ],
+      "next": "Geprüften Quellstand integrieren, passenden Pages-Build veröffentlichen und beide SHAs prüfen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/roadmap.test.mjs",
+          "note": "5 Regressionen im Gesamtcheck 353/353 bestanden; Mergepflege dokumentiert."
+        },
+        {
+          "path": "docs/TESTING.md",
+          "note": "Aktuelle Blockabnahme mit Infrastrukturgrenzen."
+        }
+      ],
+      "verification": {
+        "state": "passed",
+        "note": "Roadmapschema, Generierung, Abhängigkeiten und Dateizuordnung mit 5 Regressionen geprüft. Main-/Pages-Nachweis nach Integration."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T05:20:38.605Z"
+    },
+    {
+      "id": "ARCH-01",
+      "title": "Anwendungsschicht und überprüfte Modulgrenzen",
+      "phase": "P1",
+      "priority": "P0",
+      "status": "implemented",
+      "owner": "Codex",
+      "dependencies": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "scope": [
+        "packages/application/",
+        "packages/domain/src/revisionExport.ts",
+        "scripts/check_architecture.mjs"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "ARCH-01-S01",
+          "title": "Exportkoordination, Speicherports und Aufnahmeverwaltung herausgelöst.",
+          "done": true
+        },
+        {
+          "id": "ARCH-01-S02",
+          "title": "Neutraler Aufnahmevertrag und Anwendungsexport an UI angebunden.",
+          "done": true
+        },
+        {
+          "id": "ARCH-01-S03",
+          "title": "Gesamtprüfung und bestehende Format-/Browserregressionen ausführen.",
+          "done": true
+        },
+        {
+          "id": "ARCH-01-S04",
+          "title": "Architekturvertrag dokumentieren und integriert veröffentlichen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Domain importiert keine Formatwriter, Browseradapter oder Frameworks.",
+        "Abhängigkeitsprüfung erfasst auch type-only, reexports und dynamische Imports."
+      ],
+      "next": "Geprüfte Anwendungsschicht nach Main/Pages integrieren; QA-01 bleibt eigenständige offene Browserabnahme.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/application.test.mjs",
+          "note": "Exportanwendungsfall, Writerfehler und atomarer Konfliktfall bestanden."
+        },
+        {
+          "path": "tests/architecture.test.mjs",
+          "note": "3 Architekturregressionen bestanden."
+        },
+        {
+          "path": "docs/TESTING.md",
+          "note": "353/353 Node-Tests; strenge Typ-/Buildprüfungen bestanden; Browser offen."
+        }
+      ],
+      "verification": {
+        "state": "passed",
+        "note": "Kern/Anwendung und bestehende Format-/Aufnahmeregressionen bestehen. Neue UI-Browserprüfung wegen fehlender Laufzeit offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T05:20:38.605Z"
+    },
+    {
+      "id": "DOC-01",
+      "title": "Widerspruchsfreie aktuelle Statusdokumentation",
+      "phase": "P1",
+      "priority": "P0",
+      "status": "verified",
+      "owner": "Codex",
+      "dependencies": [
+        "PLAN-01"
+      ],
+      "scope": [
+        "docs/STATUS.md",
+        "docs/ROADMAP.md",
+        "docs/STATUS_HISTORY.md",
+        "docs/ROADMAP_LEGACY.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "DOC-01-S01",
+          "title": "Widersprüche zu Litematic, Rohstoffen, Bauabschnitten und Hosting identifiziert.",
+          "done": true
+        },
+        {
+          "id": "DOC-01-S02",
+          "title": "Aktuellen Status ersetzen; historische Aussagen ausdrücklich archivieren.",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "Keine implementierte Kernfunktion erscheint gleichzeitig als unbegonnen."
+      ],
+      "next": "Bei jedem folgenden Quellblock Status über dieselben Aufgaben und Nachweise nachführen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "docs/STATUS.md",
+          "note": "Aktuelle Übersicht ersetzt widersprüchliche Aussagen."
+        },
+        {
+          "path": "docs/TESTING.md",
+          "note": "Dokumentationslinks und Roadmapansichten geprüft."
+        }
+      ],
+      "verification": {
+        "state": "passed",
+        "note": "Dokumentationsprüfung und generierte Ansichten im Gesamtcheck bestanden."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T05:20:38.605Z"
+    },
+    {
+      "id": "STORE-02",
+      "title": "Revisionsschutz bei konkurrierenden Assetänderungen",
+      "phase": "P1",
+      "priority": "P0",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "ARCH-01"
+      ],
+      "scope": [
+        "apps/web/src/app/idbRepository.ts",
+        "packages/application/src/repository.ts"
+      ],
+      "legacyIds": [
+        "S4"
+      ],
+      "steps": [
+        {
+          "id": "STORE-02-S01",
+          "title": "Vorhandene S4-Reservierung und Remoteänderungen vor Bearbeitung prüfen.",
+          "done": false
+        },
+        {
+          "id": "STORE-02-S02",
+          "title": "Asset-Revisionsvertrag, UI-Konfliktbehandlung und Migration implementieren.",
+          "done": false
+        },
+        {
+          "id": "STORE-02-S03",
+          "title": "Zwei konkurrierende Metadatenänderungen und atomare Batches prüfen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Kein stilles Überschreiben; bestehende Datensätze kontrolliert migrieren."
+      ],
+      "next": "Vorhandene S4-Reservierung und Remoteänderungen vor Bearbeitung prüfen.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "QA-01",
+      "title": "Aktuelle Browserregression für alle Hauptabläufe",
+      "phase": "P1",
+      "priority": "P0",
+      "status": "blocked",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "ARCH-01"
+      ],
+      "scope": [
+        "tests/e2e/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "QA-01-S01",
+          "title": "Chromium-Laufzeit bereitstellen bzw. Verfügbarkeit prüfen.",
+          "done": false
+        },
+        {
+          "id": "QA-01-S02",
+          "title": "Komplette aktuelle Desktop-/schmale E2E-Suite ausführen und Fehler beheben.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Keine nur syntaktisch geprüften E2E als bestanden zählen."
+      ],
+      "next": "Chromium-Laufzeit bereitstellen bzw. Verfügbarkeit prüfen.",
+      "blockers": [
+        "Chromium fehlt; aktueller Installationsversuch liefert ungültige/leere Archive. Isolierter Browserstart und tatsächlicher E2E-Start belegen die Infrastrukturgrenze."
+      ],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Aktueller E2E-Versuch scheitert vor Produktprüfung an fehlendem chromium_headless_shell-1234; keine Browserabnahme."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T05:20:38.605Z"
+    },
+    {
+      "id": "QA-02",
+      "title": "Echte GPU-, Safari- und iPhone-Abnahme",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "QA-01",
+        "VIEW-02"
+      ],
+      "scope": [
+        "docs/TESTING.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "QA-02-S01",
+          "title": "Geräte-/Browsermatrix und reproduzierbare Aufgaben definieren.",
+          "done": false
+        },
+        {
+          "id": "QA-02-S02",
+          "title": "Dateiimport, IndexedDB, Touch, Themes und Layer auf echten Geräten prüfen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Viewportsimulation wird nicht als echte Geräteprüfung ausgegeben."
+      ],
+      "next": "Geräte-/Browsermatrix und reproduzierbare Aufgaben definieren.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "UI-01",
+      "title": "Neue Themen, Bauwelten und Materiallabor abnehmen",
+      "phase": "P1",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "QA-01"
+      ],
+      "scope": [
+        "apps/web/src/theme/",
+        "apps/web/src/materials/",
+        "apps/web/src/views/library/BuildThemesPage.tsx"
+      ],
+      "legacyIds": [
+        "UI-01",
+        "MAT-02",
+        "WORLD-01"
+      ],
+      "steps": [
+        {
+          "id": "UI-01-S01",
+          "title": "Fünf Themen, Hell/Dunkel/System, acht Bauwelten und Materiallabor eingebunden.",
+          "done": true
+        },
+        {
+          "id": "UI-01-S02",
+          "title": "Node-Regressionsprüfungen für Filter, Kontrast und Mengen dokumentiert.",
+          "done": true
+        },
+        {
+          "id": "UI-01-S03",
+          "title": "Aktuelle visuelle Browserprüfung in hell/dunkel und 1400/390 px.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Filterlinks reproduzieren Treffer; keine unlesbaren Panels oder Mengenänderungen."
+      ],
+      "next": "Aktuelle visuelle Browserprüfung in hell/dunkel und 1400/390 px.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/theme-tokens.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        },
+        {
+          "path": "tests/build-themes.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        },
+        {
+          "path": "tests/material-lab.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
+        "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "STAB-01",
+      "title": "Absturzschutz, Datencheck und Fehlerberichte abnehmen",
+      "phase": "P1",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "QA-01"
+      ],
+      "scope": [
+        "apps/web/src/app/ErrorBoundary.tsx",
+        "packages/domain/src/integrity.ts"
+      ],
+      "legacyIds": [
+        "S1",
+        "S3"
+      ],
+      "steps": [
+        {
+          "id": "STAB-01-S01",
+          "title": "Datencheck, Auslieferungsprüfung und Sitzungserrorlog mit Tests vorhanden.",
+          "done": true
+        },
+        {
+          "id": "STAB-01-S02",
+          "title": "Echten Renderingfehler auslösen und Wiederaufnahme im Browser prüfen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Fehlerhafte Datensätze verursachen keinen stillen Reparatureingriff."
+      ],
+      "next": "Echten Renderingfehler auslösen und Wiederaufnahme im Browser prüfen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/integrity.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        },
+        {
+          "path": "tests/stability.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
+        "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "OPS-02",
+      "title": "Deployment-Rückkehr und Wiederherstellungsprobe",
+      "phase": "P1",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "OPS-01",
+        "PLAN-01"
+      ],
+      "scope": [
+        "scripts/prepare_main_pages.mjs",
+        "docs/operations/"
+      ],
+      "legacyIds": [
+        "HP-04"
+      ],
+      "steps": [
+        {
+          "id": "OPS-02-S01",
+          "title": "Rückkehr auf bekannte Artefakte zunächst isoliert durchspielen.",
+          "done": false
+        },
+        {
+          "id": "OPS-02-S02",
+          "title": "Source-Erhalt und neue Manifestzuordnung prüfen; Wiederanlauf dokumentieren.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Kein Force-Push; kein Live-Rollback ohne Anlass."
+      ],
+      "next": "Rückkehr auf bekannte Artefakte zunächst isoliert durchspielen.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "OPS-03",
+      "title": "Alte vollständig integrierte Branches bereinigen",
+      "phase": "P1",
+      "priority": "P1",
+      "status": "blocked",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "OPS-01"
+      ],
+      "scope": [
+        "docs/COMMUNICATION.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "OPS-03-S01",
+          "title": "Remote-Branches und vollständige Integration erneut nachweisen.",
+          "done": false
+        },
+        {
+          "id": "OPS-03-S02",
+          "title": "Bei verfügbarer Löschfunktion integrierte Branches entfernen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Keine unintegrierte Arbeit und keine benötigte Pages-Quelle löschen."
+      ],
+      "next": "Remote-Branches und vollständige Integration erneut nachweisen.",
+      "blockers": [
+        "GitHub-Konnektor hat im beobachteten Werkzeugsatz keine Branchlöschfunktion."
+      ],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "LICENSE-01",
+      "title": "Projektlizenz und öffentliche Inhalte klären",
+      "phase": "P1",
+      "priority": "P0",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [],
+      "scope": [
+        "README.md",
+        "THIRD_PARTY_NOTICES.txt"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "LICENSE-01-S01",
+          "title": "Eigene und fremde Bestandteile inventarisieren.",
+          "done": false
+        },
+        {
+          "id": "LICENSE-01-S02",
+          "title": "Lizenzentscheidung dokumentieren; Herkunft und Nutzungsrechte für öffentliche Assets prüfen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Keine ungeklärten fremden Texturen oder Bauwerke veröffentlichen."
+      ],
+      "next": "Eigene und fremde Bestandteile inventarisieren.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "PROFILE-01",
+      "title": "Ein verbindliches Java-Versionsprofil",
+      "phase": "P2",
+      "priority": "P0",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "ARCH-01"
+      ],
+      "scope": [
+        "packages/voxel/src/states.ts",
+        "packages/domain/src/materials.ts"
+      ],
+      "legacyIds": [
+        "P1-02a"
+      ],
+      "steps": [
+        {
+          "id": "PROFILE-01-S01",
+          "title": "Registryreport und Zielversion mit Herkunft/Hash dokumentieren.",
+          "done": false
+        },
+        {
+          "id": "PROFILE-01-S02",
+          "title": "Block-/Property-/Item-/Rezeptdaten an das Profil binden.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "DataVersion allein behauptet keine Kompatibilität."
+      ],
+      "next": "Registryreport und Zielversion mit Herkunft/Hash dokumentieren.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "NBT-01",
+      "title": "Semantische BlockEntity-Transformationen",
+      "phase": "P2",
+      "priority": "P0",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "PROFILE-01"
+      ],
+      "scope": [
+        "packages/voxel/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "NBT-01-S01",
+          "title": "Zu unterstützende NBT-Familien und Positions-/Ausrichtungsregeln festlegen.",
+          "done": false
+        },
+        {
+          "id": "NBT-01-S02",
+          "title": "Adapter mit konkreten Richtungen und unbekannten Restdaten prüfen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Ungeklärte Transformation sperrt verlässlichen Export; keine stillen NBT-Verluste."
+      ],
+      "next": "Zu unterstützende NBT-Familien und Positions-/Ausrichtungsregeln festlegen.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "FORMAT-01",
+      "title": "Schem v3 an echten Referenzwerkzeugen abnehmen",
+      "phase": "P2",
+      "priority": "P0",
+      "status": "implemented",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "PROFILE-01",
+        "NBT-01"
+      ],
+      "scope": [
+        "packages/formats/src/schem.ts",
+        "packages/formats/src/schemWrite.ts"
+      ],
+      "legacyIds": [
+        "B2",
+        "P1-01",
+        "P3-01"
+      ],
+      "steps": [
+        {
+          "id": "FORMAT-01-S01",
+          "title": "Import/Export, Worker, Limits, unabhängige Binärfixture und Python-Verifier vorhanden.",
+          "done": true
+        },
+        {
+          "id": "FORMAT-01-S02",
+          "title": "Echte WorldEdit-Dateien importieren, exportieren und im Referenzwerkzeug vergleichen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Zellen, Zustände, Ursprung und BlockEntities semantisch erhalten."
+      ],
+      "next": "Echte WorldEdit-Dateien importieren, exportieren und im Referenzwerkzeug vergleichen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/schem.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        },
+        {
+          "path": "tests/schem-export.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
+        "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "FORMAT-02",
+      "title": "Litematic an echten Referenzdateien abnehmen",
+      "phase": "P2",
+      "priority": "P0",
+      "status": "implemented",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "PROFILE-01",
+        "NBT-01"
+      ],
+      "scope": [
+        "packages/formats/src/litematic.ts",
+        "packages/formats/src/litematicWrite.ts"
+      ],
+      "legacyIds": [
+        "B10",
+        "P5-01"
+      ],
+      "steps": [
+        {
+          "id": "FORMAT-02-S01",
+          "title": "Mehrregionen, negative Größen, Regionswahl und Writer mit unabhängigen Fixtures vorhanden.",
+          "done": true
+        },
+        {
+          "id": "FORMAT-02-S02",
+          "title": "Echte Litematica-Datei und Export im Spiel prüfen.",
+          "done": false
+        },
+        {
+          "id": "FORMAT-02-S03",
+          "title": "Grenzen für Entities/Ticks und ältere Formate im Bericht bestätigen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Format- und DataVersion-Grenzen werden explizit gemeldet."
+      ],
+      "next": "Echte Litematica-Datei und Export im Spiel prüfen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/litematic.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
+        "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "MAT-02",
+      "title": "Versionierte Item-/Rezeptauflösung vervollständigen",
+      "phase": "P2",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "PROFILE-01",
+        "MAT-01"
+      ],
+      "scope": [
+        "packages/domain/src/materials.ts",
+        "packages/domain/src/recipes.ts"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "MAT-02-S01",
+          "title": "Vorhandene Regeln mit Profilreport abgleichen.",
+          "done": false
+        },
+        {
+          "id": "MAT-02-S02",
+          "title": "Mehrblockobjekte, Rezeptalternativen, Rest-/Brennstoffbilanzen profilgenau prüfen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Blockzahl, Bauitems, Rohstoffe und Lagerbestand bleiben getrennt."
+      ],
+      "next": "Vorhandene Regeln mit Profilreport abgleichen.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "MAT-03",
+      "title": "Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen",
+      "phase": "P2",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "PROFILE-01",
+        "QA-01"
+      ],
+      "scope": [
+        "packages/domain/src/variants.ts"
+      ],
+      "legacyIds": [
+        "MAT-03"
+      ],
+      "steps": [
+        {
+          "id": "MAT-03-S01",
+          "title": "50 gezielte Materialsätze und Property-/BlockEntity-Sperren vorhanden.",
+          "done": true
+        },
+        {
+          "id": "MAT-03-S02",
+          "title": "Alte 174 Gebäude-Payloadhashes unverändert nachgewiesen.",
+          "done": true
+        },
+        {
+          "id": "MAT-03-S03",
+          "title": "Varianten im Zielprofil und in der Oberfläche prüfen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Bestehende Versionen bleiben unverändert; Form und Properties kompatibel."
+      ],
+      "next": "Varianten im Zielprofil und in der Oberfläche prüfen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/variants.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
+        "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "MAT-04",
+      "title": "Kupfer mit Oxidation und Wachsstatus",
+      "phase": "P2",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "PROFILE-01",
+        "MAT-03"
+      ],
+      "scope": [
+        "packages/domain/src/variants.ts"
+      ],
+      "legacyIds": [
+        "MAT-04"
+      ],
+      "steps": [
+        {
+          "id": "MAT-04-S01",
+          "title": "Zustandsmatrix und Formfamilien mit Profilbeleg definieren.",
+          "done": false
+        },
+        {
+          "id": "MAT-04-S02",
+          "title": "Tausch mit Properties, Wachs und Oxidation testen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Keine unvollständige Kupferzuordnung als kompatibel anbieten."
+      ],
+      "next": "Zustandsmatrix und Formfamilien mit Profilbeleg definieren.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "DIFF-01",
+      "title": "Verschiebungserkennung und BlockEntity-Diff",
+      "phase": "P2",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "CORE-02",
+        "NBT-01"
+      ],
+      "scope": [
+        "packages/voxel/src/diff.ts",
+        "apps/web/src/schem/DiffView.tsx"
+      ],
+      "legacyIds": [
+        "P5-03"
+      ],
+      "steps": [
+        {
+          "id": "DIFF-01-S01",
+          "title": "Basisvergleich A/B für Geometrie und Materialien vorhanden.",
+          "done": true
+        },
+        {
+          "id": "DIFF-01-S02",
+          "title": "Verschiebung von echten Geometrieänderungen unterscheiden.",
+          "done": false
+        },
+        {
+          "id": "DIFF-01-S03",
+          "title": "NBT-Änderungen und Folgen für Verbindungen/Schritte anzeigen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Diff ist deterministisch und verändert keine Version."
+      ],
+      "next": "Verschiebung von echten Geometrieänderungen unterscheiden.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/variants.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
+        "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "PERF-01",
+      "title": "Große Berechnungen als abbrechbare Worker-Aufträge",
+      "phase": "P2",
+      "priority": "P0",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "ARCH-01"
+      ],
+      "scope": [
+        "apps/web/src/views/project/session.ts",
+        "packages/application/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "PERF-01-S01",
+          "title": "Workerprotokoll mit Job-ID, Revisionsbezug und Abbruch definieren.",
+          "done": false
+        },
+        {
+          "id": "PERF-01-S02",
+          "title": "Auflösung, Anleitung und Materialien auslagern; veraltete Ergebnisse verwerfen.",
+          "done": false
+        },
+        {
+          "id": "PERF-01-S03",
+          "title": "Vorher/Nachher mit Modell, Hardware-/Browserangabe und UI-Reaktionszeit messen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Keine Übernahme eines Ergebnisses für eine veraltete Revision."
+      ],
+      "next": "Workerprotokoll mit Job-ID, Revisionsbezug und Abbruch definieren.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "PERF-02",
+      "title": "Zellindizes, Chunkdaten und selektive Neuberechnung",
+      "phase": "P2",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "PERF-01"
+      ],
+      "scope": [
+        "packages/domain/src/compose.ts",
+        "packages/voxel/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "PERF-02-S01",
+          "title": "Kosten von owners/Strings/Übertragungen messen.",
+          "done": false
+        },
+        {
+          "id": "PERF-02-S02",
+          "title": "Index-/Chunkstrategie nur mit identischem semantischem Ergebnis einführen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Unabhängige Mengen-/Geometrieregressionen; Importlimits bleiben wirksam."
+      ],
+      "next": "Kosten von owners/Strings/Übertragungen messen.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "PERF-03",
+      "title": "Bundle, große Views und Vorschaucache",
+      "phase": "P2",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "ARCH-01",
+        "QA-01"
+      ],
+      "scope": [
+        "apps/web/src/views/LibraryView.tsx",
+        "apps/web/src/views/project/",
+        "vite.config.mjs"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "PERF-03-S01",
+          "title": "Bundleanteile und UI-Verantwortungen messen.",
+          "done": false
+        },
+        {
+          "id": "PERF-03-S02",
+          "title": "Views entlang Anwendungsfällen teilen und lazy laden.",
+          "done": false
+        },
+        {
+          "id": "PERF-03-S03",
+          "title": "Versionierten Vorschaucache mit Quota-/Invalidierungsregeln ergänzen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Gemessene Verbesserung statt bloßer Dateiaufteilung; keine verlorenen Filterzustände."
+      ],
+      "next": "Bundleanteile und UI-Verantwortungen messen.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "VIEW-01",
+      "title": "Vorhandenen Viewer vollständig abnehmen",
+      "phase": "P2",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "QA-01"
+      ],
+      "scope": [
+        "apps/web/src/viewer/"
+      ],
+      "legacyIds": [
+        "B6",
+        "P1-03"
+      ],
+      "steps": [
+        {
+          "id": "VIEW-01-S01",
+          "title": "Orbit, Freiflug, Schnitte, Picking, Touch, Kulling und Softwarefallback vorhanden.",
+          "done": true
+        },
+        {
+          "id": "VIEW-01-S02",
+          "title": "Aktuelle GPU-/Touch-Prüfung mit negativen Koordinaten und allen Schnittachsen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Sichtbarkeit verändert keine Quelldaten oder Gesamtmengen."
+      ],
+      "next": "Aktuelle GPU-/Touch-Prüfung mit negativen Koordinaten und allen Schnittachsen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/viewer.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
+        "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "VIEW-02",
+      "title": "Minecraft-nahe zustandsabhängige Blockformen",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "PROFILE-01",
+        "VIEW-01"
+      ],
+      "scope": [
+        "apps/web/src/viewer/"
+      ],
+      "legacyIds": [
+        "VIEW-03",
+        "B16"
+      ],
+      "steps": [
+        {
+          "id": "VIEW-02-S01",
+          "title": "B16-Dateizuständigkeit vor Beginn prüfen.",
+          "done": false
+        },
+        {
+          "id": "VIEW-02-S02",
+          "title": "Treppen, Stufen, Zäune, Mauern und Glas nach Zuständen darstellen.",
+          "done": false
+        },
+        {
+          "id": "VIEW-02-S03",
+          "title": "Picking, Layer, Fallbacks und Performance unabhängig prüfen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Keine fremden Texturen ohne Rechte; sichtbare Geometrie stimmt mit Zellwahl überein."
+      ],
+      "next": "B16-Dateizuständigkeit vor Beginn prüfen.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "EDIT-01",
+      "title": "Mehrfachauswahl und sichtbare Freiraumhüllen",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "STORE-02",
+        "VIEW-01"
+      ],
+      "scope": [
+        "apps/web/src/views/project/EditorTab.tsx",
+        "packages/domain/src/connectors.ts"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "EDIT-01-S01",
+          "title": "Auswahlvertrag und atomare Gruppenoperationen definieren.",
+          "done": false
+        },
+        {
+          "id": "EDIT-01-S02",
+          "title": "Freiraum-/Konflikthüllen und Undo/Redo ergänzen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Keine zweite Transformationslogik; Gruppenaktionen vollständig oder gar nicht."
+      ],
+      "next": "Auswahlvertrag und atomare Gruppenoperationen definieren.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "UPDATE-01",
+      "title": "Kontrollierte Versionsupdates mit lokalen Overrides",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "DIFF-01",
+        "STORE-02"
+      ],
+      "scope": [
+        "packages/domain/src/project.ts",
+        "packages/application/"
+      ],
+      "legacyIds": [
+        "P5-03"
+      ],
+      "steps": [
+        {
+          "id": "UPDATE-01-S01",
+          "title": "Updateplan mit Geometrie/Material/Anschluss-/Aufgabendiff erstellen.",
+          "done": false
+        },
+        {
+          "id": "UPDATE-01-S02",
+          "title": "Bewusst übernehmen, einfrieren und zurückkehren ermöglichen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Keine automatischen Updates fester Instanzreferenzen; Teamserver ist keine Voraussetzung."
+      ],
+      "next": "Updateplan mit Geometrie/Material/Anschluss-/Aufgabendiff erstellen.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "LIB-02",
+      "title": "Eigene Sammlungen, Ordner und Kategorien",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "STORE-02",
+        "LIB-01"
+      ],
+      "scope": [
+        "packages/domain/",
+        "apps/web/src/views/library/"
+      ],
+      "legacyIds": [
+        "LIB-02",
+        "B17"
+      ],
+      "steps": [
+        {
+          "id": "LIB-02-S01",
+          "title": "B17-Dateizuständigkeit prüfen; Datenmodell und Sicherung erweitern.",
+          "done": false
+        },
+        {
+          "id": "LIB-02-S02",
+          "title": "Sammlungen/Kategorien mit Migration und leerem Zustand nutzbar machen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Katalog und eigene Inhalte bleiben dieselbe Bibliothek; referenzierte Versionen erhalten."
+      ],
+      "next": "B17-Dateizuständigkeit prüfen; Datenmodell und Sicherung erweitern.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "LIB-03",
+      "title": "Eigene Ensembles und Generatorvorlagen speichern",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "LIB-02",
+        "GEN-01"
+      ],
+      "scope": [
+        "packages/domain/src/ensembles.ts",
+        "packages/domain/src/generators/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "LIB-03-S01",
+          "title": "Vorlagen referenzieren feste Versionen bzw. versionierte Generatorparameter.",
+          "done": false
+        },
+        {
+          "id": "LIB-03-S02",
+          "title": "Speichern, Bearbeiten, Wiederherstellen und Projektübernahme umsetzen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Vorlagenänderung überschreibt keine bereits übernommenen Projekte."
+      ],
+      "next": "Vorlagen referenzieren feste Versionen bzw. versionierte Generatorparameter.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "WORLD-02",
+      "title": "Weitere kuratierte Bauwelten",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "LIB-01",
+        "UI-01"
+      ],
+      "scope": [
+        "packages/domain/src/buildThemes.ts"
+      ],
+      "legacyIds": [
+        "WORLD-02"
+      ],
+      "steps": [
+        {
+          "id": "WORLD-02-S01",
+          "title": "Abdeckung für fernöstliche Gärten, Wüstenhandel und End prüfen.",
+          "done": false
+        },
+        {
+          "id": "WORLD-02-S02",
+          "title": "Nur mit tatsächlichen Treffern und reproduzierbaren Links ergänzen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Keine erfundenen Treffer oder Gebäude; eigene Assets werden konsistent berücksichtigt."
+      ],
+      "next": "Abdeckung für fernöstliche Gärten, Wüstenhandel und End prüfen.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "BUILD-05",
+      "title": "Bauwelt-Anlagen mit Konfliktvorschau",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "LIB-03",
+        "CORE-03"
+      ],
+      "scope": [
+        "packages/domain/src/ensembles.ts",
+        "apps/web/src/views/library/"
+      ],
+      "legacyIds": [
+        "BUILD-05"
+      ],
+      "steps": [
+        {
+          "id": "BUILD-05-S01",
+          "title": "Feste AssetVersionen, Abstände und Anschlüsse kuratieren.",
+          "done": false
+        },
+        {
+          "id": "BUILD-05-S02",
+          "title": "Konfliktvorschau und ausdrückliche Projektübernahme anbieten.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Themenklick platziert nichts automatisch; tatsächliche Voxelkonflikte geprüft."
+      ],
+      "next": "Feste AssetVersionen, Abstände und Anschlüsse kuratieren.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "GEN-02",
+      "title": "Weitere Generatoren und Dachdetails",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "GEN-01",
+        "PROFILE-01"
+      ],
+      "scope": [
+        "packages/domain/src/generators/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "GEN-02-S01",
+          "title": "Treppenhaus, Kirche und Hafen als getrennte Generatoren spezifizieren.",
+          "done": false
+        },
+        {
+          "id": "GEN-02-S02",
+          "title": "Dachtreppen-Eckformen und Anschlüsse profilgenau erzeugen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Ganzzahliges Raster, reproduzierbare Parameter, Mengen-/Exportprüfung je Generator."
+      ],
+      "next": "Treppenhaus, Kirche und Hafen als getrennte Generatoren spezifizieren.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "MAP-01",
+      "title": "Weltlage und begehbare Projektkarte",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "B15: bestehende Reservierung (Übernahme abzustimmen)",
+      "dependencies": [
+        "CORE-03",
+        "STORE-02"
+      ],
+      "scope": [
+        "packages/domain/src/worldmap.ts",
+        "apps/web/src/views/map/"
+      ],
+      "legacyIds": [
+        "B15",
+        "B15-L"
+      ],
+      "steps": [
+        {
+          "id": "MAP-01-S01",
+          "title": "B15-Konzept und generischer Livekarten-/Markeradapter vorhanden.",
+          "done": true
+        },
+        {
+          "id": "MAP-01-S02",
+          "title": "B15-Reservierung vor Übernahme abgleichen.",
+          "done": false
+        },
+        {
+          "id": "MAP-01-S03",
+          "title": "Projektursprung/Dimension, Undo und Sicherung ergänzen.",
+          "done": false
+        },
+        {
+          "id": "MAP-01-S04",
+          "title": "Draufsicht, Chunkraster, 3D-Ansicht und projektübergreifende Voxelkonflikte umsetzen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Weltkoordinate = Projektkoordinate + Ursprung; fehlendes Terrain ausdrücklich ungeprüft."
+      ],
+      "next": "B15-Reservierung vor Übernahme abgleichen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/livemap.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
+        "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "MAP-02",
+      "title": "Gespeicherte Kartenziele und konkrete Provideradapter",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "MAP-01"
+      ],
+      "scope": [
+        "packages/domain/src/livemap.ts",
+        "apps/web/src/views/map/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "MAP-02-S01",
+          "title": "URL-/Markerformate anhand Primärquellen pro Provider verifizieren.",
+          "done": false
+        },
+        {
+          "id": "MAP-02-S02",
+          "title": "Gespeicherte Ziele, UI-Dateiadapter und eigene Markerdateien anbinden.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Keine behauptete BlueMap-/Dynmap-/squaremap-/Pl3xMap-Kompatibilität ohne Formatnachweis."
+      ],
+      "next": "URL-/Markerformate anhand Primärquellen pro Provider verifizieren.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "GAME-01",
+      "title": "Spielaufnahmen und Soll/Ist-Vergleich",
+      "phase": "P1",
+      "priority": "P1",
+      "status": "verified",
+      "owner": "Bestand",
+      "dependencies": [
+        "CORE-02",
+        "BUILD-01"
+      ],
+      "scope": [
+        "packages/domain/src/gameCheck.ts",
+        "packages/application/src/scanPersistence.ts"
+      ],
+      "legacyIds": [
+        "B8-M1",
+        "B8P"
+      ],
+      "steps": [
+        {
+          "id": "GAME-01-S01",
+          "title": "Vergleich, Originalspeicherung, Verlauf, Ausrichtung und Backup vorhanden.",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "Nicht geladene Zellen sind unbekannt, manuelle Haken werden nur ausdrücklich geändert."
+      ],
+      "next": "Regressionen bei Änderungen weiterführen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/game-check.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        },
+        {
+          "path": "tests/scan-persistence.test.mjs",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        }
+      ],
+      "verification": {
+        "state": "passed",
+        "note": "Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis."
+      },
+      "delivery": {
+        "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
+        "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "GAME-02",
+      "title": "Fabric-Brücke kompilieren und im Spiel abnehmen",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "blocked",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "FORMAT-01",
+        "GAME-01"
+      ],
+      "scope": [
+        "mods/bauplaner-bridge/"
+      ],
+      "legacyIds": [
+        "B8-M2",
+        "P6-01"
+      ],
+      "steps": [
+        {
+          "id": "GAME-02-S01",
+          "title": "Versionsneutraler Java-Kern mit Tests und Fabric-Quelladapter vorhanden.",
+          "done": true
+        },
+        {
+          "id": "GAME-02-S02",
+          "title": "Loader-/Versionsstand anhand offizieller Quellen prüfen und Build ermöglichen.",
+          "done": false
+        },
+        {
+          "id": "GAME-02-S03",
+          "title": "Plan aufnehmen und Soll/Ist-Vergleich mit echtem Spiel durchführen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Lesende Aufnahme setzt keine Weltblöcke; keine ungeprüfte Kompatibilität."
+      ],
+      "next": "Loader-/Versionsstand anhand offizieller Quellen prüfen und Build ermöglichen.",
+      "blockers": [
+        "Letzte dokumentierte Mod-Buildumgebung konnte Abhängigkeiten nicht beziehen; aktueller Build/Spielnachweis fehlt."
+      ],
+      "evidence": [
+        {
+          "path": "mods/bauplaner-bridge/README.md",
+          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
+        "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "GAME-03",
+      "title": "Optionale lokale Verbindung und Anzeige im Spiel",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "GAME-02"
+      ],
+      "scope": [
+        "mods/bauplaner-bridge/",
+        "packages/application/"
+      ],
+      "legacyIds": [
+        "B8-M3",
+        "B8-M4"
+      ],
+      "steps": [
+        {
+          "id": "GAME-03-S01",
+          "title": "Loopback-Sicherheitsvertrag mit expliziter Kopplung definieren.",
+          "done": false
+        },
+        {
+          "id": "GAME-03-S02",
+          "title": "Planübertragung und Bestätigungen getrennt von Weltänderungen umsetzen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Keine unautorisierte Fernverbindung; Overlay ist kein serverseitiger Blocksetter."
+      ],
+      "next": "Loopback-Sicherheitsvertrag mit expliziter Kopplung definieren.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "WORLD-IMPORT-01",
+      "title": "Bereichsweiser Weltimport und Terrainprüfung",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "PROFILE-01",
+        "PERF-02",
+        "FORMAT-01"
+      ],
+      "scope": [
+        "packages/formats/",
+        "packages/voxel/"
+      ],
+      "legacyIds": [
+        "P7-01"
+      ],
+      "steps": [
+        {
+          "id": "WORLD-IMPORT-01-S01",
+          "title": "Konsistentes Sicherungsformat und Bereichsauswahl festlegen.",
+          "done": false
+        },
+        {
+          "id": "WORLD-IMPORT-01-S02",
+          "title": "Begrenzten Adapter, Terrain-/Fundamentprüfung und Lastszenarien implementieren.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Keine unbeschränkte Vollwelt im Browser; unbekanntes Terrain bleibt ungeprüft."
+      ],
+      "next": "Konsistentes Sicherungsformat und Bereichsauswahl festlegen.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "BACKUP-02",
+      "title": "Sicherungserinnerung und Abschnittsrevisionen",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "STORE-01",
+        "BUILD-01"
+      ],
+      "scope": [
+        "packages/domain/src/site.ts",
+        "apps/web/src/views/project/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "BACKUP-02-S01",
+          "title": "Letzte erfolgreiche Sicherung mit Datenänderungen vergleichen.",
+          "done": false
+        },
+        {
+          "id": "BACKUP-02-S02",
+          "title": "Abschnittsstand reproduzierbar einfrieren und wiederfinden.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Erinnerung behauptet keine Cloudkopie; keine stillen Abschnittsänderungen."
+      ],
+      "next": "Letzte erfolgreiche Sicherung mit Datenänderungen vergleichen.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "TEAM-01",
+      "title": "Backendvertrag, Datenbank und Payloadspeicher",
+      "phase": "P4",
+      "priority": "P0",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "ARCH-01",
+        "FORMAT-01",
+        "STORE-02",
+        "LICENSE-01"
+      ],
+      "scope": [
+        "docs/architecture/",
+        "packages/application/"
+      ],
+      "legacyIds": [
+        "P4-01"
+      ],
+      "steps": [
+        {
+          "id": "TEAM-01-S01",
+          "title": "API, Betriebsmodell und Kostenrahmen dokumentieren.",
+          "done": false
+        },
+        {
+          "id": "TEAM-01-S02",
+          "title": "PostgreSQL-Metadaten und dauerhaften Objektspeicher mit Integrität/Backup aufbauen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Pages bleibt statisches Frontend; kein Geheimnis im Client oder Repo."
+      ],
+      "next": "API, Betriebsmodell und Kostenrahmen dokumentieren.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "AUTH-01",
+      "title": "Konten, Rechte und Übernahme lokaler Projekte",
+      "phase": "P4",
+      "priority": "P0",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "TEAM-01"
+      ],
+      "scope": [
+        "packages/application/",
+        "apps/web/src/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "AUTH-01-S01",
+          "title": "Gast-/Kontovertrag und serverseitige Rechte definieren.",
+          "done": false
+        },
+        {
+          "id": "AUTH-01-S02",
+          "title": "Freigaben, Rollen, Rechtewechsel und kontrollierten lokalen Import prüfen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Keine fremden Projektzugriffe; Gastmodus bleibt lokal nutzbar."
+      ],
+      "next": "Gast-/Kontovertrag und serverseitige Rechte definieren.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "TEAM-02",
+      "title": "Geordnete Operationen, Reconnect und Team-Undo",
+      "phase": "P4",
+      "priority": "P0",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "AUTH-01",
+        "UPDATE-01"
+      ],
+      "scope": [
+        "packages/application/",
+        "packages/domain/src/project.ts"
+      ],
+      "legacyIds": [
+        "P4-02"
+      ],
+      "steps": [
+        {
+          "id": "TEAM-02-S01",
+          "title": "Operation-ID, Revisionsprüfung und Wiederholung serverseitig umsetzen.",
+          "done": false
+        },
+        {
+          "id": "TEAM-02-S02",
+          "title": "Konkurrierende Änderungen, Reconnect und geprüfte Gegenoperationen testen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Kein stiller Verlust und kein Überschreiben fremder Operationen."
+      ],
+      "next": "Operation-ID, Revisionsprüfung und Wiederholung serverseitig umsetzen.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "TEAM-03",
+      "title": "Gemeinsame Aufgaben, Abschnitte und Sammelplanung",
+      "phase": "P4",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "TEAM-02",
+        "BUILD-01"
+      ],
+      "scope": [
+        "packages/domain/src/site.ts",
+        "packages/application/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "TEAM-03-S01",
+          "title": "Zuständigkeiten und Lagerbuchungen versionieren.",
+          "done": false
+        },
+        {
+          "id": "TEAM-03-S02",
+          "title": "Abschnitte und Sammelaufträge mehreren Spielern zuweisen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Planung, manuelle Bestätigung und Spielnachweis bleiben getrennt."
+      ],
+      "next": "Zuständigkeiten und Lagerbuchungen versionieren.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "GAME-04",
+      "title": "Paper-/NeoForge-Adapter und sichere Serveranbindung",
+      "phase": "P4",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "TEAM-02",
+        "GAME-02"
+      ],
+      "scope": [
+        "mods/",
+        "packages/application/"
+      ],
+      "legacyIds": [
+        "P6-01"
+      ],
+      "steps": [
+        {
+          "id": "GAME-04-S01",
+          "title": "Loader getrennt spezifizieren; zuerst einen weiteren Adapter vollständig prüfen.",
+          "done": false
+        },
+        {
+          "id": "GAME-04-S02",
+          "title": "Signierte Webhooks, Ereignis-ID und wiederholbare Verarbeitung ergänzen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Keine impliziten Weltänderungen; Planlieferung und Blocksetzen getrennt."
+      ],
+      "next": "Loader getrennt spezifizieren; zuerst einen weiteren Adapter vollständig prüfen.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "LAGER-01",
+      "title": "Optionale Truhen-/Lagerintegration",
+      "phase": "P4",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "TEAM-03",
+        "GAME-04"
+      ],
+      "scope": [
+        "packages/domain/src/site.ts",
+        "mods/"
+      ],
+      "legacyIds": [
+        "P6-02"
+      ],
+      "steps": [
+        {
+          "id": "LAGER-01-S01",
+          "title": "Inventar-/NBT-Rechte und Herkunft der Aufnahme festlegen.",
+          "done": false
+        },
+        {
+          "id": "LAGER-01-S02",
+          "title": "Bestand mit Zeitpunkt, Konflikten und ausdrücklicher Übernahme anzeigen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Keine doppelte Inventarquelle; Aufnahmezeit und ungeprüfte Werte sichtbar."
+      ],
+      "next": "Inventar-/NBT-Rechte und Herkunft der Aufnahme festlegen.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "OPS-04",
+      "title": "Teamdienst betreiben und Wiederherstellung prüfen",
+      "phase": "P4",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "TEAM-02"
+      ],
+      "scope": [
+        "docs/operations/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "OPS-04-S01",
+          "title": "Monitoring, Datenmigration, Lösch-/Aufbewahrung und Wiederanlauf definieren.",
+          "done": false
+        },
+        {
+          "id": "OPS-04-S02",
+          "title": "Wiederherstellung mit getrenntem Metadaten-/Objektspeicher testen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Kein produktiver Teamstart ohne Rechte- und Restoreprüfung."
+      ],
+      "next": "Monitoring, Datenmigration, Lösch-/Aufbewahrung und Wiederanlauf definieren.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "DEFER-01",
+      "title": "GitHub-Login, externes Materialrepo und Registry",
+      "phase": "P4",
+      "priority": "P1",
+      "status": "deferred",
+      "owner": "nicht zugewiesen",
+      "dependencies": [],
+      "scope": [
+        "docs/NOVEMBER_EXPANSION.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "DEFER-01-S01",
+          "title": "Nur nach neuem ausdrücklichem Nutzerauftrag neu bewerten.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Aktuell kein zusätzliches Repo, keine externe Registry, kein produktives GitHub-OAuth."
+      ],
+      "next": "Nur nach neuem ausdrücklichem Nutzerauftrag neu bewerten.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "DEFER-02",
+      "title": "Optionale Discord-Integration",
+      "phase": "P4",
+      "priority": "P1",
+      "status": "deferred",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "AUTH-01"
+      ],
+      "scope": [
+        "docs/architecture/"
+      ],
+      "legacyIds": [
+        "P6-02"
+      ],
+      "steps": [
+        {
+          "id": "DEFER-02-S01",
+          "title": "Erst bei konkretem Bedarf und ausdrücklichem Auftrag spezifizieren.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Keine automatischen Nachrichten und keine abgeleiteten Rechte ohne Vertrag."
+      ],
+      "next": "Erst bei konkretem Bedarf und ausdrücklichem Auftrag spezifizieren.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T06:15:35+01:00"
+    }
+  ],
+  "events": [
+    {
+      "at": "2026-11-01T06:15:35+01:00",
+      "items": [
+        "CORE-01",
+        "CORE-02",
+        "CORE-03",
+        "STORE-01",
+        "MAT-01",
+        "BUILD-01",
+        "LIB-01",
+        "GEN-01",
+        "OPS-01",
+        "PLAN-01",
+        "ARCH-01",
+        "DOC-01",
+        "STORE-02",
+        "QA-01",
+        "QA-02",
+        "UI-01",
+        "STAB-01",
+        "OPS-02",
+        "OPS-03",
+        "LICENSE-01",
+        "PROFILE-01",
+        "NBT-01",
+        "FORMAT-01",
+        "FORMAT-02",
+        "MAT-02",
+        "MAT-03",
+        "MAT-04",
+        "DIFF-01",
+        "PERF-01",
+        "PERF-02",
+        "PERF-03",
+        "VIEW-01",
+        "VIEW-02",
+        "EDIT-01",
+        "UPDATE-01",
+        "LIB-02",
+        "LIB-03",
+        "WORLD-02",
+        "BUILD-05",
+        "GEN-02",
+        "MAP-01",
+        "MAP-02",
+        "GAME-01",
+        "GAME-02",
+        "GAME-03",
+        "WORLD-IMPORT-01",
+        "BACKUP-02",
+        "TEAM-01",
+        "AUTH-01",
+        "TEAM-02",
+        "TEAM-03",
+        "GAME-04",
+        "LAGER-01",
+        "OPS-04",
+        "DEFER-01",
+        "DEFER-02"
+      ],
+      "kind": "baseline",
+      "summary": "Aktuellen Main-Snapshot 84838f0 und dokumentierten 342-Test-Stand übernommen; offene Browser-/Spiel-/Geräteabnahmen ausdrücklich nicht als erledigt gezählt. Historische Roadmap separat erhalten."
+    },
+    {
+      "at": "2026-11-01T06:15:35+01:00",
+      "items": [
+        "PLAN-01",
+        "ARCH-01",
+        "DOC-01"
+      ],
+      "kind": "started",
+      "summary": "Nutzer beauftragt vollständige Roadmap mit Mergepflege. Anwendungsschicht begonnen; vollständige Prüfung und Main-/Pages-Integration noch ausstehend."
+    },
+    {
+      "at": "2026-11-01T05:19:41.200Z",
+      "kind": "progress",
+      "items": [
+        "PLAN-01",
+        "ARCH-01",
+        "DOC-01"
+      ],
+      "summary": "56 Aufgaben in vier Phasen dokumentiert; Anwendungsschicht, Speicherports und Aufnahmevertrag entkoppelt; 353 Node-Tests und Gesamtcheck bestanden. Browserlauf noch durch fehlendes Chromium blockiert; Installationsversuch läuft. Main/Pages noch ausstehend.",
+      "files": [
+        ".githooks/pre-push",
+        "AGENTS.md",
+        "README.md",
+        "apps/web/src/app/repository.ts",
+        "apps/web/src/app/scanPersistence.ts",
+        "apps/web/src/views/project/ExportTab.tsx",
+        "apps/web/tsconfig.json",
+        "docs/COMMUNICATION.md",
+        "docs/ROADMAP_LEGACY.md",
+        "docs/STATUS.md",
+        "docs/STATUS_HISTORY.md",
+        "docs/architecture/DECISIONS.md",
+        "docs/architecture/MODULES.md",
+        "docs/operations/GITHUB_CONNECTOR_RUNBOOK.md",
+        "package.json",
+        "packages/application/src/index.ts",
+        "packages/application/src/memoryRepository.ts",
+        "packages/application/src/repository.ts",
+        "packages/application/src/revisionExport.ts",
+        "packages/application/src/scanPersistence.ts",
+        "packages/domain/src/gameCheck.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/revisionExport.ts",
+        "packages/domain/src/schemExport.ts",
+        "packages/formats/src/scan.ts",
+        "packages/voxel/src/index.ts",
+        "packages/voxel/src/observation.ts",
+        "scripts/check_architecture.mjs",
+        "scripts/publish_main_pages.sh",
+        "scripts/roadmap.mjs",
+        "tests/application.test.mjs",
+        "tests/architecture.test.mjs",
+        "tests/game-check.test.mjs",
+        "tests/litematic.test.mjs",
+        "tests/roadmap.test.mjs",
+        "tests/scan-persistence.test.mjs",
+        "tests/schem-export.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PLAN-01",
+          "status": "in_progress",
+          "done": 1,
+          "total": 3,
+          "next": "Schema, Historie, Darstellung und Änderungsprüfung implementieren und testen."
+        },
+        {
+          "id": "ARCH-01",
+          "status": "in_progress",
+          "done": 2,
+          "total": 4,
+          "next": "Gesamtprüfung und bestehende Format-/Browserregressionen ausführen."
+        },
+        {
+          "id": "DOC-01",
+          "status": "in_progress",
+          "done": 1,
+          "total": 2,
+          "next": "Aktuellen Status ersetzen; historische Aussagen ausdrücklich archivieren."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T05:20:38.605Z",
+      "kind": "progress",
+      "items": [
+        "PLAN-01",
+        "ARCH-01",
+        "DOC-01",
+        "QA-01"
+      ],
+      "summary": "Roadmap mit 56 Paketen, Teilschritten und verbindlicher Mergepflege implementiert. Anwendungsschicht und Architekturprüfung bestehen im Gesamtcheck mit 353 Node-Tests. Historische Statuswidersprüche bereinigt. Browserinstallation fehlgeschlagen; QA-01 bleibt blockiert. Mainintegration und Liveprüfung stehen als nächste Integrationsschritte aus.",
+      "files": [
+        ".githooks/pre-push",
+        "AGENTS.md",
+        "README.md",
+        "apps/web/src/app/repository.ts",
+        "apps/web/src/app/scanPersistence.ts",
+        "apps/web/src/views/project/ExportTab.tsx",
+        "apps/web/tsconfig.json",
+        "docs/COMMUNICATION.md",
+        "docs/ROADMAP_LEGACY.md",
+        "docs/STATUS.md",
+        "docs/STATUS_HISTORY.md",
+        "docs/TESTING.md",
+        "docs/architecture/DECISIONS.md",
+        "docs/architecture/MODULES.md",
+        "docs/operations/GITHUB_CONNECTOR_RUNBOOK.md",
+        "package.json",
+        "packages/application/src/index.ts",
+        "packages/application/src/memoryRepository.ts",
+        "packages/application/src/repository.ts",
+        "packages/application/src/revisionExport.ts",
+        "packages/application/src/scanPersistence.ts",
+        "packages/domain/src/gameCheck.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/revisionExport.ts",
+        "packages/domain/src/schemExport.ts",
+        "packages/formats/src/scan.ts",
+        "packages/voxel/src/index.ts",
+        "packages/voxel/src/observation.ts",
+        "scripts/check_architecture.mjs",
+        "scripts/publish_main_pages.sh",
+        "scripts/roadmap.mjs",
+        "tests/application.test.mjs",
+        "tests/architecture.test.mjs",
+        "tests/game-check.test.mjs",
+        "tests/litematic.test.mjs",
+        "tests/roadmap.test.mjs",
+        "tests/scan-persistence.test.mjs",
+        "tests/schem-export.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PLAN-01",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Geprüften Quellstand integrieren, passenden Pages-Build veröffentlichen und beide SHAs prüfen."
+        },
+        {
+          "id": "ARCH-01",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Geprüfte Anwendungsschicht nach Main/Pages integrieren; QA-01 bleibt eigenständige offene Browserabnahme."
+        },
+        {
+          "id": "DOC-01",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Bei jedem folgenden Quellblock Status über dieselben Aufgaben und Nachweise nachführen."
+        },
+        {
+          "id": "QA-01",
+          "status": "blocked",
+          "done": 0,
+          "total": 2,
+          "next": "Chromium-Laufzeit bereitstellen bzw. Verfügbarkeit prüfen."
+        }
+      ]
+    }
+  ]
+}

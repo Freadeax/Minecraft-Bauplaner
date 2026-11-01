@@ -7,3 +7,6 @@ export type { StateTransformResult, StateRule, StateUnresolvedReason, Direction 
 export { countBlocks, selectLayers } from './analysis.js';
 export { diffPayloads, diffAsPayload, isOccupied } from './diff.js';
 export type { DiffKind, DiffCell, BlockDelta, PayloadDiff } from './diff.js';
+
+export { UNLOADED_STATE } from './observation.js';
+export type { ScanMeta, WorldScan } from './observation.js';

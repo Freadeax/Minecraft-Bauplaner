@@ -1,11 +1,11 @@
-import type { WorldScan } from '../../formats/src/scan.js';
-import { UNLOADED_STATE } from '../../formats/src/scan.js';
+import type { WorldScan } from '../../voxel/src/observation.js';
+import { UNLOADED_STATE } from '../../voxel/src/observation.js';
 import type { BlockState, Vec3, VoxelPayload } from '../../voxel/src/types.js';
 import { positionKey } from './compose.js';
 import type { Guide, GuideStep, StepStatus } from './guide.js';
 import { tickSteps } from './guide.js';
 import type { Operation } from './project.js';
-import { dataVersionFromProfile } from './schemExport.js';
+import { dataVersionFromProfile } from './revisionExport.js';
 import type { BlueprintRevision, Project } from './types.js';
 
 /**

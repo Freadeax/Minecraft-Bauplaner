@@ -11,8 +11,7 @@ export { createSampleLibrary, sampleTowerPayload, sampleWallPayload, sampleGateP
 export type { SampleLibrary } from './samples.js';
 export { buildGuide, evaluateProgress, tickStep, untickStep, tickSteps, untickSteps, assertGuideAcyclic, phaseOf, PHASE_ORDER, PHASE_LABEL } from './guide.js';
 export type { Guide, GuideStep, GuideProgress, StepMaterial, StepPhase, StepStatus } from './guide.js';
-export { exportRevisionSchem, revisionForExport, resolveRevision, suggestDataVersion, dataVersionFromProfile, exportFileName, KNOWN_DATA_VERSIONS } from './schemExport.js';
-export type { SchemExportSettings, RevisionExport } from './schemExport.js';
+export { revisionForExport, resolveRevision, suggestDataVersion, dataVersionFromProfile } from './revisionExport.js';
 export { computeMaterials, materialsForResolution, materialsForParts, itemsForCell, formatStacks, materialsToCsv, MATERIAL_CATALOG_VERSION, SHULKER_SLOTS } from './materials.js';
 export type { MaterialReport, MaterialScope, ItemLine, ItemSource, ItemRule, UnresolvedLine, UnresolvedReason, StateCount, MaterialTotals, Confidence, MaterialOptions } from './materials.js';
 export { createBackup, readBackup, planRestore, buildRestore, backupFileName, checkSchemaVersion, checkProjectRecord, checkAssetRecord, referencedVersionIds, toBase64, fromBase64, BACKUP_FORMAT, BACKUP_FORMAT_VERSION, MAX_BACKUP_BYTES } from './backup.js';
@@ -29,8 +28,6 @@ export { createBuildingLibrary, BUILDING_SPECS, PATH_PROFILE, specTags, familyLa
 export type { BuildingSpec, BuildingLibrary, BuildingInfo, Inspiration } from './buildings.js';
 export { resolveRecipes, recipesForMaterials, chooseRecipe, recipesFor, rawSource, assertRecipeCatalog, recipesToCsv, RECIPES, RECIPE_TAGS, RECIPE_CATALOG_VERSION } from './recipes.js';
 export type { Recipe, Ingredient, Station, RecipeMethod, RecipeOptions, RecipeReport, RecipeStep, BaseLine, BaseKind, TagChoice, TagDefinition } from './recipes.js';
-export { EXPORT_FORMAT_LABEL } from './schemExport.js';
-export type { ExportFormat } from './schemExport.js';
 export { ENSEMBLES, memberTransform, latestVersions, missingMembers, createEnsembleProject, ensemblesWith } from './ensembles.js';
 export type { Ensemble, EnsembleMember } from './ensembles.js';
 export { MATERIAL_SETS, MATERIAL_KIND_LABEL, materialSet, materialOf, detectMaterials, swapMaterials, swapLabel } from './variants.js';

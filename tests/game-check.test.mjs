@@ -1,3 +1,4 @@
+import { exportRevisionSchem } from '../dist/application/src/index.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { gzipSync } from 'node:zlib';
@@ -5,7 +6,7 @@ import { createHash } from 'node:crypto';
 import { createPayload } from '../dist/voxel/src/index.js';
 import { normalizeScan, readWorldScan, readNbt, writeNbt, UNLOADED_STATE, FormatError } from '../dist/formats/src/index.js';
 import {
-  createAsset, addAssetVersion, createProject, applyOperation, newInstance, resolveProject, buildGuide, evaluateProgress, freezeRevision, exportRevisionSchem,
+  createAsset, addAssetVersion, createProject, applyOperation, newInstance, resolveProject, buildGuide, evaluateProgress, freezeRevision,
   checkScan, compareBlock, ignoredProperties, scanTarget, confirmedUnticked, tickedButNotBuilt, tickConfirmed,
 } from '../dist/domain/src/index.js';
 

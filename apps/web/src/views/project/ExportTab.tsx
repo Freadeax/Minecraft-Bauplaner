@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
-import { exportRevisionSchem, EXPORT_FORMAT_LABEL, KNOWN_DATA_VERSIONS, revisionForExport, suggestDataVersion, canonicalJson } from '../../../../../packages/domain/src/index.js';
-import type { ExportFormat, RevisionExport } from '../../../../../packages/domain/src/index.js';
+import { suggestDataVersion, canonicalJson } from '../../../../../packages/domain/src/index.js';
+import { prepareRevisionExport, EXPORT_FORMAT_LABEL, KNOWN_DATA_VERSIONS } from '../../../../../packages/application/src/index.js';
+import type { ExportFormat, RevisionExport } from '../../../../../packages/application/src/index.js';
 import { litematicVersionFor } from '../../../../../packages/formats/src/index.js';
 import type { SchemAnchor, UnselectedPolicy } from '../../../../../packages/formats/src/index.js';
 import { useApp } from '../../app/context';
@@ -43,15 +44,12 @@ export function ExportTab({ session }: { session: ProjectSession }) {
   async function run(revisionId?: string) {
     setError(''); setBusy(true);
     try {
-      let target = project, id = revisionId, created = false;
-      if (!id) {
-        if (!resolved) throw new Error(blockers.join('; '));
-        const r = revisionForExport(project, resolved, comment);
-        target = r.project; id = r.revision.id; created = r.created;
-      }
-      const out = await exportRevisionSchem(target, id, library.versions, { format, dataVersion: dv, anchor, unselected, author });
-      // Store the new revision only after the file exists: a failed export leaves no half-done state.
-      if (created) { session.replace(target); setComment(''); }
+      const prepared = await prepareRevisionExport(project, library.versions,
+        { format, dataVersion: dv, anchor, unselected, author },
+        { ...(revisionId !== undefined && { revisionId }), comment });
+      const out = prepared.output;
+      // A failed writer leaves no new revision in the session or repository.
+      if (prepared.created) { session.replace(prepared.project); setComment(''); }
       download(out.fileName, out.bytes as Uint8Array<ArrayBuffer>);
       setResult(out);
     } catch (e) { setError(errorText(e)); setResult(null); }

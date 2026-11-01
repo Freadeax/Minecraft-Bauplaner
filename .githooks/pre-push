@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+node scripts/roadmap.mjs check
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [ "$remote_ref" = refs/heads/main ] && [[ ! "$local_sha" =~ ^0+$ ]]; then
+    if [[ "$remote_sha" =~ ^0+$ ]]; then
+      echo 'Main-Erstanlage: Aufgabenbestand manuell prüfen.' >&2
+    else
+      node scripts/roadmap.mjs check-change "$remote_sha" "$local_sha"
+    fi
+  fi
+done

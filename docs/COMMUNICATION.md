@@ -387,3 +387,21 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 ### MSG-NOV-THEMES-01 · Codex · 2026-11-01 · Gesamtintegration und Veröffentlichung
 - Bauwelten und MAT-03 integriert; 342 Node-Tests, strict Typprüfung, Kern-/Webbuild und Dokumentationsprüfung bestanden. Alle 174 bisherigen Gebäude-Payloadhashes bleiben unverändert. Browserstart mangels Chromium blockiert, gezielte Desktop-/Mobilregression dokumentiert.
 - Root besitzt LibraryView/router-Einbindung und Übergang externer Themenfilter ohne Rücküberschreiben durch alten Zustand. Teilthread-Dateien sind stabil, Reservierungen beendet. Kein zusätzliches Repository/Registry/Login. Nächster Schritt: regulärer Quellcommit auf main und unmittelbar passender manifestgeprüfter Artefakt-Kindcommit; Live-SHA und Dateihashes getrennt prüfen.
+
+### MSG-ARCH-01 · Codex · 2026-11-01T06:10:00+01:00 · Konsolidierung und Anwendungsschicht
+- Nutzerauftrag: die gesamte analysierte Roadmap schrittweise umsetzen. Erster vertikaler Block ARCH-01: Exportkoordination nach packages/application, Speicherports nach innen, neutraler Aufnahmevertrag im Voxelpaket und ausführbare Abhängigkeitsprüfung; aktuelle STATUS/ROADMAP konsolidieren, historische Protokolle erhalten.
+- Dateien: packages/application/** (neu), domain/schemExport.ts (aufteilen), domain/index.ts/gameCheck.ts, voxel/observation.ts/index.ts, formats/scan.ts, Web-Speicheradapter und ExportTab, betroffene Tests/tsconfig/package scripts sowie Architektur-/Status-/Prüfdokumentation.
+- Keine B15-Karten-, B16-Viewer-, B17-Katalog- oder S4-Asset-Revisionsimplementierung übernehmen. Vorhandene entfernte Änderungen vor Integration erneut prüfen.
+- Prüfplan: vollständiger npm-check, Architekturgrenzen, bestehende unabhängige Export-/Aufnahmefixtures, neue Anwendungsfalltests und Browser-E2E soweit Laufzeit verfügbar. Danach regulärer Main-Quellcommit und manifestgeprüfter Pages-Artefaktcommit ohne Force/Actions.
+
+
+### MSG-PLAN-01 · Codex · 2026-11-01 · Nutzersteuerung: verbindliche Gesamtroadmap
+- Vollständige Roadmap im Repository mit Fortschrittspflege bei jedem Merge/Push beauftragt. 56 feste Arbeitspakete in vier Phasen, Teilschritte/Abnahmen/Nachweise/Abhängigkeiten sowie separate Main-/Pages-Felder in docs/roadmap.json. ROADMAP und HISTORY daraus generiert; bisherige Dokumente ausdrücklich historisch erhalten.
+- Dateibezogener Fortschrittscheck, lokaler Pre-Push-Hook und Publisherprüfung ohne eigene Actions. Konnektorintegrationen müssen denselben Check explizit ausführen; keine serverseitige Erzwingung behaupten.
+- ARCH-01 bleibt Bestandteil dieses gemeinsamen Blocks. B15/B16/B17/S4-Arbeit weiterhin nicht übernommen; Folgeschritte über stabile Aufgaben-IDs geplant.
+
+### MSG-PLAN-02 · Codex · 2026-11-01 · Prüfbarer Abschlussstand
+- 56 Arbeitspakete, generierte Fortschrittsansicht und append-only Historie samt Dateizuordnung umgesetzt. Lokaler Hook und Publisher prüfen Quellfortschritt; tatsächliche Konnektorprüfung vor Refupdate bleibt Pflicht.
+- Anwendungsschicht eingebunden, Domain→Formatkopplung entfernt, Speicherports/MemoryRepository und Aufnahmeverwaltung verlagert; keine Datenmigration. 353/353 Node-Tests, Typprüfung, Builds und Dokumentationsprüfung bestanden. Zusätzliche Abschlussprüfung nach Dokumentation folgt vor Integration.
+- Browserlauf bleibt durch fehlendes Chromium blockiert; Installationsversuch scheitert an leeren/ungültigen Archiven. Kein Produktfehler aus diesem Startfehler abgeleitet. PLAN/ARCH sind implementiert und kerngeprüft; Main/Pages nach erfolgreichem Refupdate und Liveprüfung separat nachweisen.
+- Nächster fachlicher Block: STORE-02 (S4-Reservierung zuerst prüfen), danach PERF-01. Kein Teamdienst/Login/Materialrepo begonnen; keine laufenden Teilagenten oder Hintergrundüberwachung.

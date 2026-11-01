@@ -11,12 +11,18 @@
     "build": "npm run build:core && npm run build:web",
     "test": "node --test tests/*.test.mjs",
     "check:docs": "python3 scripts/check_docs.py",
-    "check": "npm run typecheck && npm run build && npm test && npm run check:docs",
+    "check": "npm run check:architecture && npm run check:roadmap && npm run typecheck && npm run build && npm test && npm run check:docs",
     "build:core": "tsc",
     "build:web": "node scripts/clean_pages.mjs && vite build && node scripts/prepare_pages.mjs",
     "dev": "vite --host 127.0.0.1",
     "preview": "vite preview --host 127.0.0.1",
-    "test:e2e": "node --test --test-concurrency=1 tests/e2e/*.e2e.mjs"
+    "test:e2e": "node --test --test-concurrency=1 tests/e2e/*.e2e.mjs",
+    "check:architecture": "node scripts/check_architecture.mjs",
+    "check:roadmap": "node scripts/roadmap.mjs check",
+    "check:roadmap-change": "node scripts/roadmap.mjs check-change",
+    "roadmap:render": "node scripts/roadmap.mjs render",
+    "roadmap:record": "node scripts/roadmap.mjs record",
+    "setup:hooks": "git config core.hooksPath .githooks"
   },
   "devDependencies": {
     "@types/react": "19.3.0",

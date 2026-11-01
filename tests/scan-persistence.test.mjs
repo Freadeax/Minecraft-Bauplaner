@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { saveProjectScan, loadProjectScanOriginal } from '../apps/web/src/app/scanPersistence.ts';
+import { saveProjectScan, loadProjectScanOriginal } from '../dist/application/src/scanPersistence.js';
 import { createProject, createBackup, readBackup, checkProjectRecord, checkIntegrity, freezeRevision } from '../dist/domain/src/index.js';
 
 const bytes = Uint8Array.from([31, 139, 8, 0, 255, 1]);

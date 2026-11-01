@@ -9,6 +9,9 @@ git fetch -q origin main
 source=$(git rev-parse HEAD)
 if [ "$source" != "$(git rev-parse origin/main)" ]; then echo 'Abbruch: HEAD ist nicht origin/main; erst regulär integrieren.' >&2; exit 1; fi
 
+# Source commits require a file-linked roadmap update; pure deployment children do not.
+node scripts/roadmap.mjs check-change "$source^" "$source"
+
 # Core tests, strict types, web build and artifact/documentation checks.
 LMNT_SOURCE_SHA=$source npm run check
 index=$(mktemp); rm -f "$index"

@@ -87,3 +87,15 @@ Dauerhaft soll nur main bestehen. Temporäre Arbeitsbranches vor Abschluss volls
 Die tatsächlichen GitHub-internen Pages-Buildlogs (Run 41201874786, Buildjob 124539104569) bestätigen Checkout `ref: main` und `source: .`. Damit ist Pages bereits auf main / Repositorywurzel gestellt; ältere Angaben zu gh-pages sind historisch überholt. Der bisher fehlende Root-Webbuild erklärt die 404-Antwort für deployment.json.
 
 Aktiver Einstieg ist nun `scripts/publish_pages.sh`, der an `publish_main_pages.sh` delegiert. Geprüften Quellcommit bauen, Artefakte manifestgeprüft in den vollständigen Main-Tree übernehmen, als normalen Artefakt-Kindcommit auf main veröffentlichen und live prüfen. Das Manifest nennt den Quell-Elterncommit (keine selbstreferenzielle Commit-SHA). gh-pages wird nicht mehr benötigt, darf nach bestätigter Liveauslieferung gelöscht werden. Alte Arbeitsbranches bleiben bis zu einer verfügbaren Löschfunktion bestehen; alle Inhalte und auch die zuvor gesquashte WIP-Historie sind in main enthalten.
+
+## Verbindliche Roadmapführung · 01.11.2026
+
+Nutzerauftrag: gesamte Roadmap im Repository dokumentieren und bei jedem Main-Merge/Push aktuell halten, sodass Beginn, Teilschritte und erreichter Stand exakt nachverfolgbar bleiben.
+
+- Vor Beginn `docs/roadmap.json`, ROADMAP.md und ROADMAP_HISTORY.md lesen. Aufgabe über stabile ID anmelden, Verantwortlichen/Status/Nächste-Aktion und betroffene Dateien aktualisieren. Keine unbekannte aktive Arbeit übernehmen.
+- Eine einzige Aufgabenquelle: `docs/roadmap.json`. Generierte ROADMAP.md/HISTORY nicht manuell verändern. Alte Ereignisse nicht umschreiben; Korrekturen anhängen.
+- Nach einem vollständigen Arbeitsblock erledigte Teilschritte, tatsächliche Prüfungen, Grenzen und Blocker pflegen. `npm run roadmap:record -- ID-01,ID-02 "Ergebnis und Prüfgrenzen"` zeichnet betroffene Dateien und Aufgabenstände auf und rendert die Ansichten.
+- Vor JEDEM Quell-Merge/Push `npm run check:roadmap-change -- <vorheriger-main> [quellcommit]` sowie den vollständigen Check durchführen; auch bei Konnektorintegration. Jede geänderte Quelldatei muss einem neuen Fortschrittsereignis zugeordnet sein. Hooks lokal mit `npm run setup:hooks` aktivieren; kein Ersatz für die Konnektor-Vorprüfung.
+- Implementiert, getestet, Main-integriert und live getrennt halten. Nach Integration aktuellen Commit und nach Deployment Live-Manifest/Hashes prüfen. Tatsächliche SHAs im Abschluss berichten, beim nächsten sachlichen Quellupdate nachführen.
+- Reine manifestgeprüfte Artefakt-Kindcommits aktualisieren die Roadmap nicht erneut. Keine selbstreferenzielle Commit-/Deployment-Schleife erzeugen. Publisher prüft den Quellfortschritt vor Veröffentlichung.
+- Ohne eigene Actions erzwingt GitHub diese lokalen Regeln nicht bei externen Clients; keine lückenlose serverseitige Automatik behaupten. Pro Aufgabe nächste konkrete Aktion festhalten und den Auftrag nicht als dauernden Hintergrundprozess darstellen.

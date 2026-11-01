@@ -87,3 +87,9 @@ Geprüfter Quellcommit C, Artefakt-Kindcommit D auf main und tatsächliche Livev
 Die tatsächlichen GitHub-internen Pages-Buildlogs (Run 41201874786, Buildjob 124539104569) bestätigen Checkout `ref: main` und `source: .`. Damit ist Pages bereits auf main / Repositorywurzel gestellt; ältere Angaben zu gh-pages sind historisch überholt. Der bisher fehlende Root-Webbuild erklärt die 404-Antwort für deployment.json.
 
 Aktiver Einstieg ist nun `scripts/publish_pages.sh`, der an `publish_main_pages.sh` delegiert. Geprüften Quellcommit bauen, Artefakte manifestgeprüft in den vollständigen Main-Tree übernehmen, als normalen Artefakt-Kindcommit auf main veröffentlichen und live prüfen. Das Manifest nennt den Quell-Elterncommit (keine selbstreferenzielle Commit-SHA). gh-pages wird nicht mehr benötigt, darf nach bestätigter Liveauslieferung gelöscht werden. Alte Arbeitsbranches bleiben bis zu einer verfügbaren Löschfunktion bestehen; alle Inhalte und auch die zuvor gesquashte WIP-Historie sind in main enthalten.
+
+## F. Fortschrittsnachweis bei jeder Main-Integration
+
+Vor A: `docs/roadmap.json` und generierte ROADMAP/HISTORY lesen. Vor B: erledigte Teilschritte, tatsächliche Prüfgrenzen und einen neuen dateibezogenen Verlaufseintrag pflegen; `npm run roadmap:record -- <Aufgaben-IDs> "Ergebnis"`. Anschließend `npm run check` und `npm run check:roadmap-change -- M` ausführen. Nach Erzeugung des Quellcommits C dieselbe Änderung gegen M/C prüfen, bevor main bewegt wird. Der lokale Pre-Push-Hook greift bei API-Refupdates nicht; dieser Check ist dort ausdrücklich Pflicht.
+
+Main-/Live-SHAs werden nach tatsächlicher Integration bzw. Liveprüfung im Abschluss berichtet. Ein neuer Quellcommit kann den eigenen Hash nicht vorab dokumentieren; der nächste sachliche Block führt den Nachweis nach. Der reine manifestgeprüfte Artefakt-Kindcommit D ist von einem erneuten Roadmapupdate ausgenommen. Kein zusätzlicher Quellcommit nur für seine Deployment-SHA.

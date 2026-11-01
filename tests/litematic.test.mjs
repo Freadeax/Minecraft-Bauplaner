@@ -1,3 +1,4 @@
+import { exportRevisionSchem, exportFileName } from '../dist/application/src/index.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, writeFileSync, mkdtempSync } from 'node:fs';
@@ -12,7 +13,7 @@ import {
   packLongs, unpackAt, litematicBits, litematicVersionFor, FormatError,
 } from '../dist/formats/src/index.js';
 import {
-  createProject, execute, newInstance, EMPTY_HISTORY, resolveProject, createSampleLibrary, revisionForExport, exportRevisionSchem, exportFileName,
+  createProject, execute, newInstance, EMPTY_HISTORY, resolveProject, createSampleLibrary, revisionForExport,
 } from '../dist/domain/src/index.js';
 
 const raw = Buffer.from(readFileSync(new URL('../fixtures/litematic/multiregion.nbt.hex', import.meta.url), 'utf8').replace(/\s/g, ''), 'hex');

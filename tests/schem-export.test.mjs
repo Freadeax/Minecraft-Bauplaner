@@ -1,3 +1,4 @@
+import { exportRevisionSchem, exportFileName } from '../dist/application/src/index.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, writeFileSync, mkdtempSync } from 'node:fs';
@@ -10,7 +11,7 @@ import { createPayload } from '../dist/voxel/src/index.js';
 import { readNbt, writeNbt, modifiedUtf8, buildSchemV3, writeSchemV3, importSchemV3, formatBlockState, FormatError } from '../dist/formats/src/index.js';
 import {
   createProject, execute, newInstance, EMPTY_HISTORY, resolveProject, createSampleLibrary, DomainError,
-  revisionForExport, exportRevisionSchem, suggestDataVersion, dataVersionFromProfile, exportFileName,
+  revisionForExport,  suggestDataVersion, dataVersionFromProfile,
 } from '../dist/domain/src/index.js';
 
 const dir = mkdtempSync(join(tmpdir(), 'schem-export-'));

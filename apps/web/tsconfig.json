@@ -26,6 +26,7 @@
     "src",
     "../../packages/voxel/src",
     "../../packages/formats/src",
-    "../../packages/domain/src"
+    "../../packages/domain/src",
+    "../../packages/application/src"
   ]
 }

@@ -1,126 +1,1233 @@
-# Roadmap
+# Verbindliche Roadmap und Fortschritt
 
-P0-01 ist mit der Bestandsaufnahme und Integration dieses Dokumentationsstands bearbeitet. P0-02 und P0-03 sind als interner Voxelvertrag mit unabhängigen handberechneten Fixtures implementiert und lokal geprüft. P1-02/P1-04 haben erste Kernfunktionen; vollständige Profil-/NBT-Regeln, Konfliktauflösung und Oberfläche fehlen. Weitere Pakete sind geplant. Das Repository enthielt zuvor nur eine README. Arbeitspakete erhalten bei Bedarf verknüpfte Issues.
+Stand: 2026-11-01T05:20:38.605Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
-| ID | Paket | Abhängigkeit | Abnahme |
-|---|---|---|---|
-| P0-01 | Repository prüfen und Grundregeln integrieren | Zugriff | Vorhandene Dateien geprüft, Regeln widerspruchsfrei, Status aktuell |
-| P0-02 | Koordinaten- und Voxelschema | P0-01 | Grenzen, Pivot, NBT-Typen, Luftsemantik dokumentiert |
-| P0-03 | Unabhängige Testfixtures | P0-02 | Bekannte Zustände, Richtungen und erwartete Mengen |
-| P1-01 | Schem-v3-Reader | P0-03 | Valide Fixtures korrekt, beschädigte Dateien begrenzt abgewiesen |
-| P1-02 | Voxel-/Transformationskern | P0-03 | Geometrie und Properties korrekt transformiert |
-| P1-03 | Viewer, Orbit, Flug, Layer, Picking | P1-01/02 | Ausgewählte Welt-/Lokalkoordinate und Slice stimmen |
-| P1-04 | Materialanalyse | P1-01/02 | Bekannte Mengen, ungelöste Item-Zuordnungen sichtbar |
-| P2-01 | Asset-Versionen und lokale Projekte | P1 | Reload erhält reproduzierbaren Stand |
-| P2-02 | Composer, Snap, Kollision, Undo | P2-01 | Verbindungs- und Voxelregeln bestehen Tests |
-| P3-01 | Schem-v3-Writer | P2 | Referenzprüfung und semantischer Roundtrip bestehen (B2 umgesetzt; Spielabnahme offen) |
-| P3-02 | Bauabschnitte, Anleitung, Aufgaben | P2 | Schritte referenzieren konkrete Geometrie/Revision |
-| P3-03 | Erste nutzbare Fassung | P3-01/02 | Datei → planen → exportieren → nachbauen durchgängig |
-| P4-01 | API, Konten, Rechte, Payloadspeicher | P3 | Keine fremden Projektzugriffe, Wiederherstellung geprüft |
-| P4-02 | Gemeinsame Operationen und Tasks | P4-01 | Parallele Änderungen und Reconnect ohne stillen Verlust |
-| P5-01 | Litematic-Adapter | P3 | Mehrregionen und Versionsgrenzen geprüft · **umgesetzt 27.10.2026** (Import mit Regionswahl, Export Format 5/6/7, [LITEMATIC](architecture/LITEMATIC.md)); Spielabnahme mit echter Litematica-Datei offen |
-| P5-02 | Themes und parametrische Module | P2/P3 | Reproduzierbare Erzeugung und Zustandsprüfung |
-| P5-03 | Updates, Versionsdiff, lokale Patches | P4 | Folgen vor Update sichtbar; Einfrieren und Rückkehr möglich |
-| P6-01 | Ein festgelegter Spieladapter | P4/P5 | Planlieferung idempotent bestätigt; kein Weltsetzen |
-| P6-02 | Optionale Discord-/Lageranbindung | P4/P6-01 | Zeit/Herkunft der Daten und Berechtigungen sichtbar |
-| P7-01 | Weltimport und große Projekte | P5 | Bereichsimport mit Limits und dokumentiertem Lasttest |
+## So liest du den Stand
 
-Die erste Fassung schließt P0 bis P3 ein. Backend kann früher eingeführt werden, wenn bestehender Repository-Code es rechtfertigt; daraus folgt keine parallele Neukonstruktion. Keine unbegründeten Fertigstellungstermine festlegen.
+- Jede Aufgabe hat eine feste ID, echte Teilschritte, Abhängigkeiten, Nachweise und eine nächste Aktion.
+- **Implementiert ≠ geprüft ≠ auf Main ≠ live.** „Geprüft“ gilt nur für den beschriebenen Umfang und den genannten Nachweis.
+- Teilschritte sind abzählbare Ergebnisse, keine geschätzten Fertigstellungsprozente. Eine Phase ist erst nach ihren Austrittskriterien abgeschlossen.
+- Main-/Pages-Spalten nennen den letzten eingetragenen Nachweis; jüngste Integration ist über Git-Historie und das [Live-Manifest](https://freadeax.github.io/Minecraft-Bauplaner/deployment.json) nachprüfbar. Ein neuer Commit kann den eigenen Hash nicht enthalten.
+- Historische Nachweise ersetzen keinen aktuellen Browser-, Geräte- oder Spieltest.
 
-## Umsetzungsnachweise · 27.10.2026
+| Status | Pakete |
+|---|---:|
+| ⏳ Offen | 30 |
+| 🚧 In Arbeit | 1 |
+| ⛔ Blockiert | 3 |
+| 🧩 Implementiert · Abnahme offen | 9 |
+| ✅ Im beschriebenen Umfang geprüft | 11 |
+| ⏸ Zurückgestellt | 2 |
 
-- P0-02 abgeschlossen: [Voxelvertrag](architecture/VOXEL_CONTRACT.md), `packages/voxel/src/types.ts` und `validation.ts`.
-- P0-03 abgeschlossen für den internen Vertrag: [synthetische, handberechnete Fixtures](../fixtures/voxel/README.md) und `tests/voxel.test.mjs`. Binäre Referenzdateien gehören zur folgenden Parserabnahme.
-- P1-02 teilweise: geometrische Transformationen und begrenzter expliziter Zustandskatalog; BlockEntity-Transformationen melden ungelöste Semantik. Keine vollständige Minecraft-Kompatibilität.
-- P1-04 teilweise: Zählung eindeutiger Blockzustände plus separate Luft-/Löschzahlen. P1-04a (B1) umgesetzt: Bauitems aus `resolution.world` mit Vanilla-Katalog, ungelöste/angenommene Zuordnungen sichtbar, Stacks/Shulkerkisten, Tab „Material“. Rohstoffbedarf (B1-R) umgesetzt: Rezeptkatalog mit geteilter Rundung, Steinsäge/Werkbank, „vorhanden“, Brennstoff getrennt ([MATERIALS](architecture/MATERIALS.md#rohstoffe-und-rezepte-b1-r)).
-- Nächster vollständiger Schritt: P1-01, Schem-v3-Reader mit strukturellen Limits, Abbruch und unabhängigen Binärfixtures.
+## Aktiver Arbeitsblock
 
-P1-03 wird verbindlich als statisches GitHub-Pages-Frontend mit Browser-Web-Workers, Repository-Unterpfad und ohne eigene Actions umgesetzt. Pages ist veröffentlicht; siehe [Hosting](architecture/HOSTING.md).
+- **PLAN-01 · Verbindlicher Aufgabenbestand und Merge-Fortschritt** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Geprüften Quellstand integrieren, passenden Pages-Build veröffentlichen und beide SHAs prüfen.
+- **ARCH-01 · Anwendungsschicht und überprüfte Modulgrenzen** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Geprüfte Anwendungsschicht nach Main/Pages integrieren; QA-01 bleibt eigenständige offene Browserabnahme.
+- **DOC-01 · Widerspruchsfreie aktuelle Statusdokumentation** — ✅ Im beschriebenen Umfang geprüft, 2/2 Teilschritte. Nächster Schritt: Bei jedem folgenden Quellblock Status über dieselben Aufgaben und Nachweise nachführen.
 
-## Detaillierter Ausführungsplan
+## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
-[IMPLEMENTATION_PLAN](IMPLEMENTATION_PLAN.md) konkretisiert P1 bis P7 und ergänzt HP-01 bis HP-04 für statischen Build, Konnektor-Artefakttransport, Pages-Bootstrap und Wiederherstellung. HP-01 bis HP-03 sind für die erste Vorabansicht umgesetzt; Rückkehrprobe/erweiterte Prüfungen bleiben offen. [Konnektor-Runbook](operations/GITHUB_CONNECTOR_RUNBOOK.md) definiert die selbstständige Integration/Veröffentlichung ohne eigene Actions. Eine gekennzeichnete nutzbare Kernansicht kann bereits vor dem vollständigen Parser veröffentlicht werden; sie erfüllt nicht die gesamte P1-03-/P3-Abnahme.
+1. Vor Beginn Aufgabe und Dateiumfang in COMMUNICATION anmelden; Eintrag hier auf „In Arbeit“ setzen.
+2. Teilschritte und Nachweise nach jedem vollständigen Arbeitsblock aktualisieren; Blocker mit Grund und nächster Aktion festhalten.
+3. `npm run roadmap:record -- ID-01,ID-02 "Konkretes Ergebnis und Prüfgrenzen"` hängt Dateien und Aufgabenstände an die Historie an und rendert beide Ansichten. Änderungen an Aufgaben vorher in roadmap.json eintragen.
+4. `npm run check` und ausführbare Browserprüfungen durchführen; Ergebnisse in TESTING festhalten.
+5. `npm run check:roadmap-change -- <vorheriger-main> [quellcommit]` prüft vor Integration Dateizuordnung, neue Ereignisse und unveränderte Historie.
+6. Regulär integrieren; den passenden manifestgeprüften Pages-Artefaktcommit unmittelbar veröffentlichen. Artefaktcommits benötigen keinen neuen Aufgabenstatus.
+7. Integration und Live-Hash prüfen; tatsächliche SHAs im Abschluss berichten und beim nächsten sachlichen Quellupdate nachtragen. Keine künstliche Deployment-Commit-Schleife.
 
-### Erster Webbuild · 27.10.2026
+Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHub diese lokale Regel nicht für fremde Clients oder direkte API-Schreibzugriffe. Auch beim Konnektor gilt deshalb die dokumentierte Vorprüfung.
 
-P1-03a implementiert: React-/Three.js-Kernansicht mit eigenem synthetischem Beispiel, Layern, Blockauswahl, geprüften Voxel-JSON-Dateien und Blockmengen. Kein Schem-Import, kein freier Flug. HP-01/HP-02 teilweise umgesetzt: Vite-Unterpfadbuild und SHA-256-Manifest samt Lizenzhinweisen vorhanden, Artefaktübertragung/Pages-Aktivierung und Liveprüfung folgen unmittelbar. Zwei zusätzliche Artefakttests bestehen (insgesamt 45). Vollständige P1-03-/HP-03-/HP-04-Abnahme bleibt bis echter Browser-/Deploymentprüfung offen.
+## P1: Bestand konsolidieren und Architektur absichern
 
-### Live-Abnahme der Vorabansicht
+**Ziel:** Aktueller, prüfbarer Stand mit entkoppeltem Fachkern und verbindlicher Fortschrittsführung.
 
-P1-03a: bedienbare synthetische Kernansicht live geprüft (Software-Isometrie, Picking, Layer, Mengen). HP-01/02: statischer Build, Hashmanifest und Artefakttransport implementiert/geprüft. HP-03: Pages-Quelle gh-pages / root im Browser bestätigt und erste Website erreichbar; interner Pages-Deploymentlauf erfolgreich. HP-04: neue Artefaktversion erfolgreich veröffentlicht; Rückkehrprobe noch offen. Echte GPU-/Mobil-/Dateiimportprüfung und die vollständige P1-03-Abnahme bleiben getrennt offen.
+**Austrittskriterien:**
 
-## Laufender Schem-Importblock
+- Alle aktiven Aufgaben mit ID, Zuständigkeit und Abnahme erfasst.
+- Export und Aufnahmeverwaltung laufen außerhalb der Domäne; Architekturgrenzen automatisch geprüft.
+- Projekt- und Assetänderungen verlieren bei konkurrierenden Schreibvorgängen keine Daten.
+- Aktuelle Browserabnahme durchgeführt; verbleibende Geräteprüfungen ausdrücklich offen.
 
-P1-01a/01b/01c begrenzt implementiert: Big-Endian-NBT/GZip/Sponge v3, unabhängige Python-struct-Binärfixture und Browserworker/-Importbericht. 27 neue Formattests, insgesamt 72 lokale Tests. Original/Quell-NBT bleiben erhalten; nicht dargestellte Zusatzdaten sichtbar. Vollständige P1-01-Abnahme bleibt wegen noch fehlender Referenzwerkzeug-/Spielprüfung teilweise offen. Keine Folgearbeit nach Nutzersteuerung „Block fertig machen und warten“.
+| ID | Arbeitspaket | Status | Schritte | Abhängigkeiten | Main | Pages-Quelle |
+|---|---|---|---:|---|---|---|
+| [CORE-01](#core-01) | Voxelvertrag, unveränderliche Daten und Zellsemantik | ✅ Im beschriebenen Umfang geprüft | 1/1 | — | `84838f0` | `e232b26` |
+| [CORE-02](#core-02) | Assets, feste Versionen und Projektoperationen | ✅ Im beschriebenen Umfang geprüft | 1/1 | CORE-01 | `84838f0` | `e232b26` |
+| [CORE-03](#core-03) | Composer, Voxelkonflikte und Anschlüsse | ✅ Im beschriebenen Umfang geprüft | 1/1 | CORE-02 | `84838f0` | `e232b26` |
+| [STORE-01](#store-01) | Lokale Speicherung, Migration und Sicherungen | ✅ Im beschriebenen Umfang geprüft | 1/1 | CORE-02 | `84838f0` | `e232b26` |
+| [MAT-01](#mat-01) | Bauitems und Rohstoffplanung im bestehenden Katalog | ✅ Im beschriebenen Umfang geprüft | 1/1 | CORE-03 | `84838f0` | `e232b26` |
+| [BUILD-01](#build-01) | Bauanleitung, eigene Abschnitte, Lager und Sammelplan | ✅ Im beschriebenen Umfang geprüft | 1/1 | MAT-01 | `84838f0` | `e232b26` |
+| [LIB-01](#lib-01) | Bestehender Gebäudekatalog und Bibliotheksabläufe | ✅ Im beschriebenen Umfang geprüft | 1/1 | CORE-02 | `84838f0` | `e232b26` |
+| [GEN-01](#gen-01) | Vorhandene parametrische Generatoren | ✅ Im beschriebenen Umfang geprüft | 1/1 | CORE-03 | `84838f0` | `e232b26` |
+| [OPS-01](#ops-01) | Main/root-Pages mit manifestgeprüften Artefakten | ✅ Im beschriebenen Umfang geprüft | 1/1 | — | `84838f0` | `e232b26` |
+| [PLAN-01](#plan-01) | Verbindlicher Aufgabenbestand und Merge-Fortschritt | 🧩 Implementiert · Abnahme offen | 2/3 | — | ausstehend | ausstehend |
+| [ARCH-01](#arch-01) | Anwendungsschicht und überprüfte Modulgrenzen | 🧩 Implementiert · Abnahme offen | 3/4 | CORE-01, CORE-02 | ausstehend | ausstehend |
+| [DOC-01](#doc-01) | Widerspruchsfreie aktuelle Statusdokumentation | ✅ Im beschriebenen Umfang geprüft | 2/2 | PLAN-01 | ausstehend | ausstehend |
+| [STORE-02](#store-02) | Revisionsschutz bei konkurrierenden Assetänderungen | ⏳ Offen | 0/3 | ARCH-01 | ausstehend | ausstehend |
+| [QA-01](#qa-01) | Aktuelle Browserregression für alle Hauptabläufe | ⛔ Blockiert | 0/2 | ARCH-01 | ausstehend | ausstehend |
+| [UI-01](#ui-01) | Neue Themen, Bauwelten und Materiallabor abnehmen | 🧩 Implementiert · Abnahme offen | 2/3 | QA-01 | `84838f0` | `e232b26` |
+| [STAB-01](#stab-01) | Absturzschutz, Datencheck und Fehlerberichte abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | QA-01 | `84838f0` | `e232b26` |
+| [OPS-02](#ops-02) | Deployment-Rückkehr und Wiederherstellungsprobe | ⏳ Offen | 0/2 | OPS-01, PLAN-01 | ausstehend | ausstehend |
+| [OPS-03](#ops-03) | Alte vollständig integrierte Branches bereinigen | ⛔ Blockiert | 0/2 | OPS-01 | ausstehend | ausstehend |
+| [LICENSE-01](#license-01) | Projektlizenz und öffentliche Inhalte klären | ⏳ Offen | 0/2 | — | ausstehend | ausstehend |
+| [GAME-01](#game-01) | Spielaufnahmen und Soll/Ist-Vergleich | ✅ Im beschriebenen Umfang geprüft | 1/1 | CORE-02, BUILD-01 | `84838f0` | `e232b26` |
 
-Live-Smoke für diesen Block bestanden: synthetische GZip-Schem läuft über Browserworker und ergibt bekannte Koordinaten/Mengen/Quelle. Referenzwerkzeug-/Spielabnahme bleibt offen. Aktive Bearbeitung nach diesem Abschluss auf Nutzeranweisung beendet.
+## P2: Minecraft-Datentreue und Berechnungen vervollständigen
 
-## Fundament B0 und Parallelblöcke · 27.10.2026
+**Ziel:** Ein benanntes Java-Profil liefert konsistente Transformationen, Mengen und Referenzexporte.
 
-P2-01 teilweise: Domänenverträge (Asset, AssetVersion, Instanz, Projekt, Revision), inhaltsadressierte Versionen mit Hashprüfung, Bibliothekssuche und Dateiimport als Bauteil umgesetzt; dauerhafte Speicherung und Backup (B3) umgesetzt: IndexedDB mit Migration, `baseRevision`-Konflikten, Originalen als Blobs und geprüfter Sicherung/Wiederherstellung ([PERSISTENCE](architecture/PERSISTENCE.md)); Reload erhält den Stand (Browserprüfung). P2-02 teilweise: Instanzoperationen mit Undo/Redo, Voxelkonflikte, Duplikate und expliziter Override im Editor; Snap/Anschlüsse in B5 umgesetzt ([CONNECTORS](architecture/CONNECTORS.md)). Weitere Pakete laufen als [Parallelblöcke](BLOCKS.md): B1 → P1-04a, B2 → P3-01, B3 → P2-01, B4 → P3-02, B5 → P2-02, B6 → P1-03c, B7 → P1-02a.
+**Austrittskriterien:**
 
-P3-02 (B4) umgesetzt: Bauanleitung aus der aufgelösten Welt mit stabilen Schritt-IDs, Revisionsgrundlage, Koordinatenbereich, Blockzuständen, zyklenfreien Voraussetzungen, Prüfkriterium und manuellem Fortschritt mit Geometriehash; Tab „Bauen“ inkl. Mobilansicht. Details: [GUIDE](architecture/GUIDE.md). Offen: frei definierte Abschnitte, Itemmengen je Schritt (mit B1), Prüfung im Spiel.
+- Registry-, Item- und Rezeptdaten an dasselbe dokumentierte Profil gebunden.
+- Echte Schem-/Litematic-Referenzen geprüft; unbekannte Semantik bleibt gesperrt.
+- Diff und Export erhalten relevante BlockEntity-Inhalte.
+- Große Berechnungen abbrechbar und mit dokumentiertem Szenario gemessen.
 
-B7 · P1-02a umgesetzt: expliziter Zustandskatalog für Drehen/Spiegeln (`packages/voxel/src/states.ts`, [Voxelvertrag](architecture/VOXEL_CONTRACT.md)). Offen für P1-02: Abgleich mit einem echten Registry-Report je Profil und semantische BlockEntity-Adapter.
+| ID | Arbeitspaket | Status | Schritte | Abhängigkeiten | Main | Pages-Quelle |
+|---|---|---|---:|---|---|---|
+| [PROFILE-01](#profile-01) | Ein verbindliches Java-Versionsprofil | ⏳ Offen | 0/2 | ARCH-01 | ausstehend | ausstehend |
+| [NBT-01](#nbt-01) | Semantische BlockEntity-Transformationen | ⏳ Offen | 0/2 | PROFILE-01 | ausstehend | ausstehend |
+| [FORMAT-01](#format-01) | Schem v3 an echten Referenzwerkzeugen abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | PROFILE-01, NBT-01 | `84838f0` | `e232b26` |
+| [FORMAT-02](#format-02) | Litematic an echten Referenzdateien abnehmen | 🧩 Implementiert · Abnahme offen | 1/3 | PROFILE-01, NBT-01 | `84838f0` | `e232b26` |
+| [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | ⏳ Offen | 0/2 | PROFILE-01, MAT-01 | ausstehend | ausstehend |
+| [MAT-03](#mat-03) | Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen | 🧩 Implementiert · Abnahme offen | 2/3 | PROFILE-01, QA-01 | `84838f0` | `e232b26` |
+| [MAT-04](#mat-04) | Kupfer mit Oxidation und Wachsstatus | ⏳ Offen | 0/2 | PROFILE-01, MAT-03 | ausstehend | ausstehend |
+| [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen | 1/3 | CORE-02, NBT-01 | `84838f0` | `e232b26` |
+| [PERF-01](#perf-01) | Große Berechnungen als abbrechbare Worker-Aufträge | ⏳ Offen | 0/3 | ARCH-01 | ausstehend | ausstehend |
+| [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | ⏳ Offen | 0/2 | PERF-01 | ausstehend | ausstehend |
+| [PERF-03](#perf-03) | Bundle, große Views und Vorschaucache | ⏳ Offen | 0/3 | ARCH-01, QA-01 | ausstehend | ausstehend |
+| [VIEW-01](#view-01) | Vorhandenen Viewer vollständig abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | QA-01 | `84838f0` | `e232b26` |
 
-P1-03c (Block B6) umgesetzt: freier Flug, Drauf-/Seitenansichten, Parallelprojektion, Fokus, Welt-/Lokalkoordinate im Editor-Inspektor, Schichtmodi Bereich/Einzeln, Touchsteuerung, Flächenkulling und Code-Splitting mit dokumentierter Messung ([Viewer](architecture/VIEWER.md)). Offen: echte GPU-/Gerätetests, Blockmodelle.
+## P3: Architekturwerkbank und Bauablauf ausbauen
 
-P6-01 (B8) Konzept 27.10.2026: [Spielbrücke](architecture/MOD_BRIDGE.md) – dünne lesende Mod schreibt eine Ist-Aufnahme als Schem v3, Vergleich und Schrittzuordnung auf der Website, Übertragung per Datei, später optional über 127.0.0.1. Loader, Minecraft-Version und Spielumgebung sind Nutzerentscheidungen; nichts implementiert.
+**Ziel:** Vom Import bis zum Nachbauen großer Projekte nachvollziehbar arbeiten.
 
-P6-01 (B8) M1 umgesetzt: Spielaufnahme importieren, Zellvergleich je Bauschritt, Abweichungen im Schichtplan, bestätigte Schritte ausdrücklich abhaken. Offen: Fabric-Mod (M2, Minecraft 26.3), Speicherung der Aufnahme, lokale Verbindung (M3), Anzeige im Spiel (M4).
+**Austrittskriterien:**
 
-B9 Gebäudekatalog (27.10.2026) umgesetzt: [CATALOG](architecture/CATALOG.md). Katalog v2 (28.10.2026): 150 Gebäude in zehn Themen-Sets, Variantenfamilien (u. a. Starterhaus in 8 Holzarten), Spielphase, Bautipps, 9 Ensembles. Offen: Vergleich zweier Gebäude nebeneinander, eigene Ensembles speichern, eigene Kategorien verwalten, Spielabnahme der Redstone-Module.
+- Zustandsabhängige Blockformen mit korrektem Picking und Layern.
+- Eigene Sammlungen, Ensembles und kontrollierte Versionsupdates nutzbar.
+- Weltkarte und Spielbrücke als vollständige, getrennt geprüfte Abläufe.
+- Desktop und echtes iPhone für die vorgesehenen Abläufe geprüft.
 
-Ausbau offener Punkte (27.10.2026): P3-02 Itemmengen je Schritt umgesetzt (Bauitems je Schritt, Packliste je Schicht, Summe = Materialtab). P1-04a Katalog `vanilla-java-items-v2`. P2-02 Händigkeit für unsymmetrische Profile und Andocken per Ziehen im 3D-Bild umgesetzt ([CONNECTORS](architecture/CONNECTORS.md)). P1-03 Vorschaufarben je Materialfamilie. Offen: Freiraum-Reservierung an Anschlüssen, frei definierte Bauabschnitte, Rohstoffe/Rezepte, Safari/iPhone-Speicherprüfung (braucht echtes Gerät).
+| ID | Arbeitspaket | Status | Schritte | Abhängigkeiten | Main | Pages-Quelle |
+|---|---|---|---:|---|---|---|
+| [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | ⏳ Offen | 0/2 | QA-01, VIEW-02 | ausstehend | ausstehend |
+| [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | ⏳ Offen | 0/3 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
+| [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | ⏳ Offen | 0/2 | STORE-02, VIEW-01 | ausstehend | ausstehend |
+| [UPDATE-01](#update-01) | Kontrollierte Versionsupdates mit lokalen Overrides | ⏳ Offen | 0/2 | DIFF-01, STORE-02 | ausstehend | ausstehend |
+| [LIB-02](#lib-02) | Eigene Sammlungen, Ordner und Kategorien | ⏳ Offen | 0/2 | STORE-02, LIB-01 | ausstehend | ausstehend |
+| [LIB-03](#lib-03) | Eigene Ensembles und Generatorvorlagen speichern | ⏳ Offen | 0/2 | LIB-02, GEN-01 | ausstehend | ausstehend |
+| [WORLD-02](#world-02) | Weitere kuratierte Bauwelten | ⏳ Offen | 0/2 | LIB-01, UI-01 | ausstehend | ausstehend |
+| [BUILD-05](#build-05) | Bauwelt-Anlagen mit Konfliktvorschau | ⏳ Offen | 0/2 | LIB-03, CORE-03 | ausstehend | ausstehend |
+| [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | ⏳ Offen | 0/2 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
+| [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🚧 In Arbeit | 1/4 | CORE-03, STORE-02 | `84838f0` | `e232b26` |
+| [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter | ⏳ Offen | 0/2 | MAP-01 | ausstehend | ausstehend |
+| [GAME-02](#game-02) | Fabric-Brücke kompilieren und im Spiel abnehmen | ⛔ Blockiert | 1/3 | FORMAT-01, GAME-01 | `84838f0` | `e232b26` |
+| [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | ⏳ Offen | 0/2 | GAME-02 | ausstehend | ausstehend |
+| [WORLD-IMPORT-01](#world-import-01) | Bereichsweiser Weltimport und Terrainprüfung | ⏳ Offen | 0/2 | PROFILE-01, PERF-02, FORMAT-01 | ausstehend | ausstehend |
+| [BACKUP-02](#backup-02) | Sicherungserinnerung und Abschnittsrevisionen | ⏳ Offen | 0/2 | STORE-01, BUILD-01 | ausstehend | ausstehend |
 
-## Oberfläche B11 · 28.10.2026
+## P4: Optionale Zusammenarbeit und Integrationen
 
-Umgesetzt: Katalogoberfläche nach dem Muster gängiger Schematic-Sammlungen ([UI](architecture/UI.md)). Nächste sinnvolle Schritte: eigene Ensembles speichern, Filterzustand in der URL (teilbare Suchen), Vorschaubilder dauerhaft in IndexedDB zwischenspeichern, Blickrichtung des Vorschaubilds wählbar, Sammlungen/Ordner für eigene Bauteile.
+**Ziel:** Geteilte Projekte mit sicheren Rechten, geordneten Änderungen und Wiederherstellung.
 
-## Nächste Ideen nach B12 · 28.10.2026
+**Austrittskriterien:**
 
-- Materialsätze für Kupfer, Glas, Terrakotta und Beton; Tausch auch einzelner Blöcke.
-- Diff mit Verschiebungserkennung und BlockEntity-Inhalten (Grundlage für P5-03).
-- Texturnähere Standbilder (Treppen-/Zaunformen) und Aufteilung des Hauptbundles.
+- API, Rechte und dauerhafter Payloadspeicher mit Wiederherstellung geprüft.
+- Parallele Operationen, Reconnect und Team-Undo ohne stillen Verlust.
+- Lokaler Gastmodus bleibt nutzbar.
+- Live- und weitere Spieladapter getrennt abgenommen; keine impliziten Weltänderungen.
 
-## Baustelle B14 · 28.10.2026
+| ID | Arbeitspaket | Status | Schritte | Abhängigkeiten | Main | Pages-Quelle |
+|---|---|---|---:|---|---|---|
+| [TEAM-01](#team-01) | Backendvertrag, Datenbank und Payloadspeicher | ⏳ Offen | 0/2 | ARCH-01, FORMAT-01, STORE-02, LICENSE-01 | ausstehend | ausstehend |
+| [AUTH-01](#auth-01) | Konten, Rechte und Übernahme lokaler Projekte | ⏳ Offen | 0/2 | TEAM-01 | ausstehend | ausstehend |
+| [TEAM-02](#team-02) | Geordnete Operationen, Reconnect und Team-Undo | ⏳ Offen | 0/2 | AUTH-01, UPDATE-01 | ausstehend | ausstehend |
+| [TEAM-03](#team-03) | Gemeinsame Aufgaben, Abschnitte und Sammelplanung | ⏳ Offen | 0/2 | TEAM-02, BUILD-01 | ausstehend | ausstehend |
+| [GAME-04](#game-04) | Paper-/NeoForge-Adapter und sichere Serveranbindung | ⏳ Offen | 0/2 | TEAM-02, GAME-02 | ausstehend | ausstehend |
+| [LAGER-01](#lager-01) | Optionale Truhen-/Lagerintegration | ⏳ Offen | 0/2 | TEAM-03, GAME-04 | ausstehend | ausstehend |
+| [OPS-04](#ops-04) | Teamdienst betreiben und Wiederherstellung prüfen | ⏳ Offen | 0/2 | TEAM-02 | ausstehend | ausstehend |
+| [DEFER-01](#defer-01) | GitHub-Login, externes Materialrepo und Registry | ⏸ Zurückgestellt | 0/1 | — | ausstehend | ausstehend |
+| [DEFER-02](#defer-02) | Optionale Discord-Integration | ⏸ Zurückgestellt | 0/1 | AUTH-01 | ausstehend | ausstehend |
 
-Umgesetzt: frei definierte Bauabschnitte (P3-02), Freiraum-Reservierung an Anschlüssen (P2-02), dauerhaftes „vorhanden“ und Sammel-/Farmplan je Abschnitt (R-017), Fortschrittsübersicht. Details [SITE](architecture/SITE.md). Nächste Ideen: Freiraum als Hülle im Editor-3D-Bild, Lager aus einer Truhen-Aufnahme der Spielbrücke (B8) übernehmen, Abschnitte als eigene Revision einfrieren, Sammelplan mit mehreren Spielern aufteilen.
+## Details aller Arbeitspakete
 
-## Stabilität S1 · 28.10.2026
+### CORE-01
 
-Umgesetzt: Absturzschutz, Fehlerprotokoll, Systemcheck, Datencheck, Leistung großer Modelle, Importvorschau im Bild ([STABILITY](architecture/STABILITY.md)). Nächste sinnvolle Schritte: Safari/iPhone-Prüfung auf echtem Gerät; Rechenarbeit großer Projekte (Zusammensetzen, Bauanleitung) in einen Worker verlagern, damit die Oberfläche während einiger Sekunden Rechenzeit bedienbar bleibt; `owners` der Auflösung auf numerische Zellindizes umstellen (größter verbliebener Kostenblock, betrifft Editor/Anleitung/Material); Erinnerung an eine Sicherung nach längerer Zeit ohne Sicherung.
+**Voxelvertrag, unveränderliche Daten und Zellsemantik** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Aktualisiert: 2026-11-01T06:15:35+01:00
 
-B13 Parametrische Generatoren (28.10.2026) umgesetzt: [GENERATORS](architecture/GENERATORS.md) – deckt P5-02/R-012 für Haus, Turm, Mauer, Brücke, Dach und die Anlagen Burg/Häuserzeile ab. Offen: Eckformen der Dachtreppen, weitere Generatoren (Treppenhaus, Kirche, Hafen), eigene Vorlagen speichern, Spielabnahme.
+- [x] CORE-01-S01: Validierung, Koordinaten und explizite Luft/Löschzellen umgesetzt.
 
-## S2 · Bibliothekseinstellungen · 31.10.2026
+**Abnahme:** Unabhängige erwartete Zellen und Grenzen bestehen Tests.
 
-Lokale Korrektur für Merkliste, Vergleich und Blickrichtung bei nicht verfügbarem localStorage vorbereitet; vier Regressionstests. Vor Integration bleibt die vollständige Browserprüfung erforderlich (Chromium fehlt in der aktuellen Umgebung). B15 bleibt reserviert und unberührt.
+**Nächste Aktion:** Regressionen bei Änderungen weiterführen.
 
-## Parallelfortsetzung · 31.10.2026
+**Prüfstand:** Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis.
 
-- B8P: Speicherung der Aufnahme inklusive Original/Verlauf/Ausrichtung umgesetzt, Backup und Datencheck integriert.
-- S3: vollständige Assetvalidierung und referenzbasierte Prüfung fehlender Originale bei Restore umgesetzt.
-- B15-L: generischer, geprüfter Livekarten-Templateadapter und eigener Markerexport als Grundlage; Kartenoberfläche und Providerkonfiguration offen.
-- Main-only-Branches: verlustfreie Bereinigung geprüft, Hostingmigration vor Entfernen von gh-pages erforderlich.
+**Nachweise:** [tests/voxel.test.mjs](../tests/voxel.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
 
-## Maßgebliche Fortsetzung · 31.10.2026
+**Dateiumfang:** `packages/voxel/`. **Abhängigkeiten:** keine. **Alte IDs:** P0-02, P0-03.
 
-- Pages-main/root ist aktiv; Quellenmigration ist erledigt. Alte integrierte Branches bei verfügbarer Löschfunktion entfernen.
-- B15-L: Rückimport eigener Markerdateien mit Schema-/Feldprüfung ergänzt. UI-Dateiadapter, gespeicherte Kartenziele und Weltkartenoberfläche folgen getrennt.
-- S2/B8P/S3 sind integriert. Fehlendes Chromium bleibt eine offen dokumentierte Prüfgrenze und hält gemäß Nutzerpräzisierung allein die Veröffentlichung nicht auf.
-- Nächste Strukturarbeit: Revisionsschutz für konkurrierende Assetänderungen; danach große Zusammensetzungen in Worker verlagern. B15-Dateireservierung beachten.
+**Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
 
-## Vertikaler Ausbau · 01.11.2026
+### CORE-02
 
-- UI-01: Theme-Tokens in die echte Oberfläche eingebunden, fünf Themen mit Hell/Dunkel/System, Speicherung und Systemwechsel. Details [THEME_TOKENS](architecture/THEME_TOKENS.md). Weitere visuelle Geräteabnahme offen.
-- MAT-02: Materiallabor als Projektansicht der tatsächlichen Bauitems mit Familien, Such-/Zuordnungsfilter, Sortierung, Mengen und Herkunft; kein separates Inventar oder Datenrepository. Details [MATERIAL_LAB](architecture/MATERIAL_LAB.md). Mengen-/Rohstoffregeln bleiben im bestehenden Kern.
-- Navigation: beschädigte URL-Kodierung abgefangen; kodierte IDs und Unicode-Routen geprüft. Keine zusätzlichen Abhängigkeiten.
-- Nächste Schritte: echte Desktop-/iPhone-Sichtprüfung dieser Oberflächen; bestehende B15/B16/B17/S4-Reservierungen weiterhin abstimmen. Keine externe Registry und kein zusätzliches Repository.
+**Assets, feste Versionen und Projektoperationen** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Aktualisiert: 2026-11-01T06:15:35+01:00
 
-## Fortsetzung Bauwelten und Materialfamilien · 01.11.2026
+- [x] CORE-02-S01: Asset/Version/Instanz/Revision getrennt; Undo/Redo und Hashprüfung vorhanden.
 
-- WORLD-01 implementiert: acht Bauwelten mit aktuellen Katalogeinträgen, Aufbauideen, reproduzierbaren Filterlinks und erhaltener Projektzuordnung. Kein separater Gebäudebestand oder automatischer Composer-Eingriff. [BUILD_THEMES](architecture/BUILD_THEMES.md).
-- MAT-03 implementiert: 50 gezielte Glas-/Beton-/Terrakotta-Sätze, getrennte Laborfamilien, kompatible Properties und BlockEntity-Sperre ohne NBT-Adapter. Bisherige Satzsemantik bleibt für vorhandene Varianten bestehen.
-- Folgeblöcke WORLD-02 (weitere thematische Katalogzugänge), BUILD-05 (geprüfte Bauwelt-Anlagen) und MAT-04 (Kupfer mit Profilnachweis) in [NOVEMBER_EXPANSION](NOVEMBER_EXPANSION.md) beschrieben; noch nicht implementiert.
-- Visuelle Desktop-/iPhone-Abnahme weiterhin offen; gezielte Browserregression ergänzt, Chromium-Ausführung hier nicht verfügbar.
+**Abnahme:** Projekte referenzieren feste Versionen; Originale werden nicht überschrieben.
+
+**Nächste Aktion:** Regressionen bei Änderungen weiterführen.
+
+**Prüfstand:** Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis.
+
+**Nachweise:** [tests/domain.test.mjs](../tests/domain.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+
+**Dateiumfang:** `packages/domain/src/library.ts`, `packages/domain/src/project.ts`. **Abhängigkeiten:** CORE-01. **Alte IDs:** B0, P2-01.
+
+**Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
+
+### CORE-03
+
+**Composer, Voxelkonflikte und Anschlüsse** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [x] CORE-03-S01: Auflösung, Override, Snap, Händigkeit und Freiraumprüfung vorhanden.
+
+**Abnahme:** AABB ist kein Konfliktentscheid; identische Zellen werden einmal gezählt.
+
+**Nächste Aktion:** Regressionen bei Änderungen weiterführen.
+
+**Prüfstand:** Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis.
+
+**Nachweise:** [tests/connectors.test.mjs](../tests/connectors.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+
+**Dateiumfang:** `packages/domain/src/compose.ts`, `packages/domain/src/connectors.ts`. **Abhängigkeiten:** CORE-02. **Alte IDs:** B5, P2-02.
+
+**Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
+
+### STORE-01
+
+**Lokale Speicherung, Migration und Sicherungen** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [x] STORE-01-S01: Atomare Transaktionen, Projekt-revisionen, Originale und geprüfte Backups vorhanden.
+
+**Abnahme:** Fehlgeschlagene Wiederherstellung überschreibt nichts still.
+
+**Nächste Aktion:** Regressionen bei Änderungen weiterführen.
+
+**Prüfstand:** Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis.
+
+**Nachweise:** [tests/backup.test.mjs](../tests/backup.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/e2e/persistence.e2e.mjs](../tests/e2e/persistence.e2e.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+
+**Dateiumfang:** `apps/web/src/app/idbRepository.ts`, `packages/domain/src/backup.ts`. **Abhängigkeiten:** CORE-02. **Alte IDs:** B3.
+
+**Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
+
+### MAT-01
+
+**Bauitems und Rohstoffplanung im bestehenden Katalog** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [x] MAT-01-S01: Mehrblock-/Anzahlregeln, Stacks, Rezepte, Rundung und Reste vorhanden.
+
+**Abnahme:** Mengen stammen aus der aufgelösten Welt; unbekannte Zuordnungen sichtbar.
+
+**Nächste Aktion:** Regressionen bei Änderungen weiterführen.
+
+**Prüfstand:** Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis.
+
+**Nachweise:** [tests/materials.test.mjs](../tests/materials.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/recipes.test.mjs](../tests/recipes.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+
+**Dateiumfang:** `packages/domain/src/materials.ts`, `packages/domain/src/recipes.ts`. **Abhängigkeiten:** CORE-03. **Alte IDs:** B1, B1-R.
+
+**Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
+
+### BUILD-01
+
+**Bauanleitung, eigene Abschnitte, Lager und Sammelplan** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [x] BUILD-01-S01: Schritte, Packlisten, Fortschritt, Abschnitte und Lagerberechnung vorhanden.
+
+**Abnahme:** Manuelle Haken und Spielnachweis getrennt; Voraussetzungen ohne Zyklen.
+
+**Nächste Aktion:** Regressionen bei Änderungen weiterführen.
+
+**Prüfstand:** Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis.
+
+**Nachweise:** [tests/guide.test.mjs](../tests/guide.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/site.test.mjs](../tests/site.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+
+**Dateiumfang:** `packages/domain/src/guide.ts`, `packages/domain/src/site.ts`. **Abhängigkeiten:** MAT-01. **Alte IDs:** B4, B14.
+
+**Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
+
+### LIB-01
+
+**Bestehender Gebäudekatalog und Bibliotheksabläufe** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [x] LIB-01-S01: 174 Gebäude, Suche, Filter, Vergleich, Merkliste und bestehende Ensembles vorhanden.
+
+**Abnahme:** Stabile Gebäudeversionen, deklarierte Materiallücken und reale Treffer.
+
+**Nächste Aktion:** Regressionen bei Änderungen weiterführen.
+
+**Prüfstand:** Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis.
+
+**Nachweise:** [tests/catalog.test.mjs](../tests/catalog.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+
+**Dateiumfang:** `packages/domain/src/build/`, `apps/web/src/views/library/`. **Abhängigkeiten:** CORE-02. **Alte IDs:** B9, B9-A, B11.
+
+**Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
+
+### GEN-01
+
+**Vorhandene parametrische Generatoren** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [x] GEN-01-S01: Haus, Turm, Mauer, Brücke, Dach und vorhandene Anlagen reproduzierbar.
+
+**Abnahme:** Gleiche Parameter erzeugen gleiche Version; Projekte behalten ihre Version.
+
+**Nächste Aktion:** Regressionen bei Änderungen weiterführen.
+
+**Prüfstand:** Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis.
+
+**Nachweise:** [tests/generators.test.mjs](../tests/generators.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+
+**Dateiumfang:** `packages/domain/src/generators/`. **Abhängigkeiten:** CORE-03. **Alte IDs:** B13.
+
+**Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
+
+### OPS-01
+
+**Main/root-Pages mit manifestgeprüften Artefakten** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [x] OPS-01-S01: Statischer Build und quellenerhaltender Artefakt-Kindcommit implementiert.
+
+**Abnahme:** Source-Hash und Dateihashes überprüfbar; keine eigenen Actions oder Force-Pushes.
+
+**Nächste Aktion:** Regressionen bei Änderungen weiterführen.
+
+**Prüfstand:** Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis.
+
+**Nachweise:** [tests/main-pages.test.mjs](../tests/main-pages.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+
+**Dateiumfang:** `scripts/publish_main_pages.sh`, `scripts/prepare_main_pages.mjs`. **Abhängigkeiten:** keine. **Alte IDs:** HP-01, HP-02, HP-03.
+
+**Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
+
+### PLAN-01
+
+**Verbindlicher Aufgabenbestand und Merge-Fortschritt** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T05:20:38.605Z
+
+- [x] PLAN-01-S01: Gesamte Roadmap in vier Phasen und stabile Aufgaben-IDs aufgenommen.
+- [x] PLAN-01-S02: Schema, Historie, Darstellung und Änderungsprüfung implementieren und testen.
+- [ ] PLAN-01-S03: Pflichtablauf in AGENTS und Publisher integrieren; Main-/Pages-Nachweis prüfen.
+
+**Abnahme:** Jede Aufgabe zeigt Teilschritte, Abhängigkeiten, nächste Aktion und Nachweise. Quelländerungen benötigen eine Aufgabenaktualisierung; Artefaktcommits sind separat nachweisbar.
+
+**Nächste Aktion:** Geprüften Quellstand integrieren, passenden Pages-Build veröffentlichen und beide SHAs prüfen.
+
+**Prüfstand:** Roadmapschema, Generierung, Abhängigkeiten und Dateizuordnung mit 5 Regressionen geprüft. Main-/Pages-Nachweis nach Integration.
+
+**Nachweise:** [tests/roadmap.test.mjs](../tests/roadmap.test.mjs) — 5 Regressionen im Gesamtcheck 353/353 bestanden; Mergepflege dokumentiert.; [docs/TESTING.md](TESTING.md) — Aktuelle Blockabnahme mit Infrastrukturgrenzen.
+
+**Dateiumfang:** `docs/roadmap.json`, `scripts/roadmap.mjs`, `.githooks/`. **Abhängigkeiten:** keine. **Alte IDs:** P0-01.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### ARCH-01
+
+**Anwendungsschicht und überprüfte Modulgrenzen** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T05:20:38.605Z
+
+- [x] ARCH-01-S01: Exportkoordination, Speicherports und Aufnahmeverwaltung herausgelöst.
+- [x] ARCH-01-S02: Neutraler Aufnahmevertrag und Anwendungsexport an UI angebunden.
+- [x] ARCH-01-S03: Gesamtprüfung und bestehende Format-/Browserregressionen ausführen.
+- [ ] ARCH-01-S04: Architekturvertrag dokumentieren und integriert veröffentlichen.
+
+**Abnahme:** Domain importiert keine Formatwriter, Browseradapter oder Frameworks. Abhängigkeitsprüfung erfasst auch type-only, reexports und dynamische Imports.
+
+**Nächste Aktion:** Geprüfte Anwendungsschicht nach Main/Pages integrieren; QA-01 bleibt eigenständige offene Browserabnahme.
+
+**Prüfstand:** Kern/Anwendung und bestehende Format-/Aufnahmeregressionen bestehen. Neue UI-Browserprüfung wegen fehlender Laufzeit offen.
+
+**Nachweise:** [tests/application.test.mjs](../tests/application.test.mjs) — Exportanwendungsfall, Writerfehler und atomarer Konfliktfall bestanden.; [tests/architecture.test.mjs](../tests/architecture.test.mjs) — 3 Architekturregressionen bestanden.; [docs/TESTING.md](TESTING.md) — 353/353 Node-Tests; strenge Typ-/Buildprüfungen bestanden; Browser offen.
+
+**Dateiumfang:** `packages/application/`, `packages/domain/src/revisionExport.ts`, `scripts/check_architecture.mjs`. **Abhängigkeiten:** CORE-01, CORE-02. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### DOC-01
+
+**Widerspruchsfreie aktuelle Statusdokumentation** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T05:20:38.605Z
+
+- [x] DOC-01-S01: Widersprüche zu Litematic, Rohstoffen, Bauabschnitten und Hosting identifiziert.
+- [x] DOC-01-S02: Aktuellen Status ersetzen; historische Aussagen ausdrücklich archivieren.
+
+**Abnahme:** Keine implementierte Kernfunktion erscheint gleichzeitig als unbegonnen.
+
+**Nächste Aktion:** Bei jedem folgenden Quellblock Status über dieselben Aufgaben und Nachweise nachführen.
+
+**Prüfstand:** Dokumentationsprüfung und generierte Ansichten im Gesamtcheck bestanden.
+
+**Nachweise:** [docs/STATUS.md](STATUS.md) — Aktuelle Übersicht ersetzt widersprüchliche Aussagen.; [docs/TESTING.md](TESTING.md) — Dokumentationslinks und Roadmapansichten geprüft.
+
+**Dateiumfang:** `docs/STATUS.md`, `docs/ROADMAP.md`, `docs/STATUS_HISTORY.md`, `docs/ROADMAP_LEGACY.md`. **Abhängigkeiten:** PLAN-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### STORE-02
+
+**Revisionsschutz bei konkurrierenden Assetänderungen** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] STORE-02-S01: Vorhandene S4-Reservierung und Remoteänderungen vor Bearbeitung prüfen.
+- [ ] STORE-02-S02: Asset-Revisionsvertrag, UI-Konfliktbehandlung und Migration implementieren.
+- [ ] STORE-02-S03: Zwei konkurrierende Metadatenänderungen und atomare Batches prüfen.
+
+**Abnahme:** Kein stilles Überschreiben; bestehende Datensätze kontrolliert migrieren.
+
+**Nächste Aktion:** Vorhandene S4-Reservierung und Remoteänderungen vor Bearbeitung prüfen.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `apps/web/src/app/idbRepository.ts`, `packages/application/src/repository.ts`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** S4.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### QA-01
+
+**Aktuelle Browserregression für alle Hauptabläufe** · ⛔ Blockiert · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T05:20:38.605Z
+
+- [ ] QA-01-S01: Chromium-Laufzeit bereitstellen bzw. Verfügbarkeit prüfen.
+- [ ] QA-01-S02: Komplette aktuelle Desktop-/schmale E2E-Suite ausführen und Fehler beheben.
+
+**Abnahme:** Keine nur syntaktisch geprüften E2E als bestanden zählen.
+
+**Nächste Aktion:** Chromium-Laufzeit bereitstellen bzw. Verfügbarkeit prüfen.
+
+**Blocker:** Chromium fehlt; aktueller Installationsversuch liefert ungültige/leere Archive. Isolierter Browserstart und tatsächlicher E2E-Start belegen die Infrastrukturgrenze.
+
+**Prüfstand:** Aktueller E2E-Versuch scheitert vor Produktprüfung an fehlendem chromium_headless_shell-1234; keine Browserabnahme.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `tests/e2e/`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### QA-02
+
+**Echte GPU-, Safari- und iPhone-Abnahme** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] QA-02-S01: Geräte-/Browsermatrix und reproduzierbare Aufgaben definieren.
+- [ ] QA-02-S02: Dateiimport, IndexedDB, Touch, Themes und Layer auf echten Geräten prüfen.
+
+**Abnahme:** Viewportsimulation wird nicht als echte Geräteprüfung ausgegeben.
+
+**Nächste Aktion:** Geräte-/Browsermatrix und reproduzierbare Aufgaben definieren.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `docs/TESTING.md`. **Abhängigkeiten:** QA-01, VIEW-02. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### UI-01
+
+**Neue Themen, Bauwelten und Materiallabor abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [x] UI-01-S01: Fünf Themen, Hell/Dunkel/System, acht Bauwelten und Materiallabor eingebunden.
+- [x] UI-01-S02: Node-Regressionsprüfungen für Filter, Kontrast und Mengen dokumentiert.
+- [ ] UI-01-S03: Aktuelle visuelle Browserprüfung in hell/dunkel und 1400/390 px.
+
+**Abnahme:** Filterlinks reproduzieren Treffer; keine unlesbaren Panels oder Mengenänderungen.
+
+**Nächste Aktion:** Aktuelle visuelle Browserprüfung in hell/dunkel und 1400/390 px.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** [tests/theme-tokens.test.mjs](../tests/theme-tokens.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/build-themes.test.mjs](../tests/build-themes.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/material-lab.test.mjs](../tests/material-lab.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+
+**Dateiumfang:** `apps/web/src/theme/`, `apps/web/src/materials/`, `apps/web/src/views/library/BuildThemesPage.tsx`. **Abhängigkeiten:** QA-01. **Alte IDs:** UI-01, MAT-02, WORLD-01.
+
+**Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
+
+### STAB-01
+
+**Absturzschutz, Datencheck und Fehlerberichte abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [x] STAB-01-S01: Datencheck, Auslieferungsprüfung und Sitzungserrorlog mit Tests vorhanden.
+- [ ] STAB-01-S02: Echten Renderingfehler auslösen und Wiederaufnahme im Browser prüfen.
+
+**Abnahme:** Fehlerhafte Datensätze verursachen keinen stillen Reparatureingriff.
+
+**Nächste Aktion:** Echten Renderingfehler auslösen und Wiederaufnahme im Browser prüfen.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** [tests/integrity.test.mjs](../tests/integrity.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/stability.test.mjs](../tests/stability.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+
+**Dateiumfang:** `apps/web/src/app/ErrorBoundary.tsx`, `packages/domain/src/integrity.ts`. **Abhängigkeiten:** QA-01. **Alte IDs:** S1, S3.
+
+**Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
+
+### OPS-02
+
+**Deployment-Rückkehr und Wiederherstellungsprobe** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] OPS-02-S01: Rückkehr auf bekannte Artefakte zunächst isoliert durchspielen.
+- [ ] OPS-02-S02: Source-Erhalt und neue Manifestzuordnung prüfen; Wiederanlauf dokumentieren.
+
+**Abnahme:** Kein Force-Push; kein Live-Rollback ohne Anlass.
+
+**Nächste Aktion:** Rückkehr auf bekannte Artefakte zunächst isoliert durchspielen.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `scripts/prepare_main_pages.mjs`, `docs/operations/`. **Abhängigkeiten:** OPS-01, PLAN-01. **Alte IDs:** HP-04.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### OPS-03
+
+**Alte vollständig integrierte Branches bereinigen** · ⛔ Blockiert · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] OPS-03-S01: Remote-Branches und vollständige Integration erneut nachweisen.
+- [ ] OPS-03-S02: Bei verfügbarer Löschfunktion integrierte Branches entfernen.
+
+**Abnahme:** Keine unintegrierte Arbeit und keine benötigte Pages-Quelle löschen.
+
+**Nächste Aktion:** Remote-Branches und vollständige Integration erneut nachweisen.
+
+**Blocker:** GitHub-Konnektor hat im beobachteten Werkzeugsatz keine Branchlöschfunktion.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `docs/COMMUNICATION.md`. **Abhängigkeiten:** OPS-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### LICENSE-01
+
+**Projektlizenz und öffentliche Inhalte klären** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] LICENSE-01-S01: Eigene und fremde Bestandteile inventarisieren.
+- [ ] LICENSE-01-S02: Lizenzentscheidung dokumentieren; Herkunft und Nutzungsrechte für öffentliche Assets prüfen.
+
+**Abnahme:** Keine ungeklärten fremden Texturen oder Bauwerke veröffentlichen.
+
+**Nächste Aktion:** Eigene und fremde Bestandteile inventarisieren.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `README.md`, `THIRD_PARTY_NOTICES.txt`. **Abhängigkeiten:** keine. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### PROFILE-01
+
+**Ein verbindliches Java-Versionsprofil** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] PROFILE-01-S01: Registryreport und Zielversion mit Herkunft/Hash dokumentieren.
+- [ ] PROFILE-01-S02: Block-/Property-/Item-/Rezeptdaten an das Profil binden.
+
+**Abnahme:** DataVersion allein behauptet keine Kompatibilität.
+
+**Nächste Aktion:** Registryreport und Zielversion mit Herkunft/Hash dokumentieren.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `packages/voxel/src/states.ts`, `packages/domain/src/materials.ts`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** P1-02a.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### NBT-01
+
+**Semantische BlockEntity-Transformationen** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] NBT-01-S01: Zu unterstützende NBT-Familien und Positions-/Ausrichtungsregeln festlegen.
+- [ ] NBT-01-S02: Adapter mit konkreten Richtungen und unbekannten Restdaten prüfen.
+
+**Abnahme:** Ungeklärte Transformation sperrt verlässlichen Export; keine stillen NBT-Verluste.
+
+**Nächste Aktion:** Zu unterstützende NBT-Familien und Positions-/Ausrichtungsregeln festlegen.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `packages/voxel/`. **Abhängigkeiten:** PROFILE-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### FORMAT-01
+
+**Schem v3 an echten Referenzwerkzeugen abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [x] FORMAT-01-S01: Import/Export, Worker, Limits, unabhängige Binärfixture und Python-Verifier vorhanden.
+- [ ] FORMAT-01-S02: Echte WorldEdit-Dateien importieren, exportieren und im Referenzwerkzeug vergleichen.
+
+**Abnahme:** Zellen, Zustände, Ursprung und BlockEntities semantisch erhalten.
+
+**Nächste Aktion:** Echte WorldEdit-Dateien importieren, exportieren und im Referenzwerkzeug vergleichen.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** [tests/schem.test.mjs](../tests/schem.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/schem-export.test.mjs](../tests/schem-export.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+
+**Dateiumfang:** `packages/formats/src/schem.ts`, `packages/formats/src/schemWrite.ts`. **Abhängigkeiten:** PROFILE-01, NBT-01. **Alte IDs:** B2, P1-01, P3-01.
+
+**Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
+
+### FORMAT-02
+
+**Litematic an echten Referenzdateien abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [x] FORMAT-02-S01: Mehrregionen, negative Größen, Regionswahl und Writer mit unabhängigen Fixtures vorhanden.
+- [ ] FORMAT-02-S02: Echte Litematica-Datei und Export im Spiel prüfen.
+- [ ] FORMAT-02-S03: Grenzen für Entities/Ticks und ältere Formate im Bericht bestätigen.
+
+**Abnahme:** Format- und DataVersion-Grenzen werden explizit gemeldet.
+
+**Nächste Aktion:** Echte Litematica-Datei und Export im Spiel prüfen.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** [tests/litematic.test.mjs](../tests/litematic.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+
+**Dateiumfang:** `packages/formats/src/litematic.ts`, `packages/formats/src/litematicWrite.ts`. **Abhängigkeiten:** PROFILE-01, NBT-01. **Alte IDs:** B10, P5-01.
+
+**Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
+
+### MAT-02
+
+**Versionierte Item-/Rezeptauflösung vervollständigen** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] MAT-02-S01: Vorhandene Regeln mit Profilreport abgleichen.
+- [ ] MAT-02-S02: Mehrblockobjekte, Rezeptalternativen, Rest-/Brennstoffbilanzen profilgenau prüfen.
+
+**Abnahme:** Blockzahl, Bauitems, Rohstoffe und Lagerbestand bleiben getrennt.
+
+**Nächste Aktion:** Vorhandene Regeln mit Profilreport abgleichen.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `packages/domain/src/materials.ts`, `packages/domain/src/recipes.ts`. **Abhängigkeiten:** PROFILE-01, MAT-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### MAT-03
+
+**Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [x] MAT-03-S01: 50 gezielte Materialsätze und Property-/BlockEntity-Sperren vorhanden.
+- [x] MAT-03-S02: Alte 174 Gebäude-Payloadhashes unverändert nachgewiesen.
+- [ ] MAT-03-S03: Varianten im Zielprofil und in der Oberfläche prüfen.
+
+**Abnahme:** Bestehende Versionen bleiben unverändert; Form und Properties kompatibel.
+
+**Nächste Aktion:** Varianten im Zielprofil und in der Oberfläche prüfen.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** [tests/variants.test.mjs](../tests/variants.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+
+**Dateiumfang:** `packages/domain/src/variants.ts`. **Abhängigkeiten:** PROFILE-01, QA-01. **Alte IDs:** MAT-03.
+
+**Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
+
+### MAT-04
+
+**Kupfer mit Oxidation und Wachsstatus** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] MAT-04-S01: Zustandsmatrix und Formfamilien mit Profilbeleg definieren.
+- [ ] MAT-04-S02: Tausch mit Properties, Wachs und Oxidation testen.
+
+**Abnahme:** Keine unvollständige Kupferzuordnung als kompatibel anbieten.
+
+**Nächste Aktion:** Zustandsmatrix und Formfamilien mit Profilbeleg definieren.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `packages/domain/src/variants.ts`. **Abhängigkeiten:** PROFILE-01, MAT-03. **Alte IDs:** MAT-04.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### DIFF-01
+
+**Verschiebungserkennung und BlockEntity-Diff** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [x] DIFF-01-S01: Basisvergleich A/B für Geometrie und Materialien vorhanden.
+- [ ] DIFF-01-S02: Verschiebung von echten Geometrieänderungen unterscheiden.
+- [ ] DIFF-01-S03: NBT-Änderungen und Folgen für Verbindungen/Schritte anzeigen.
+
+**Abnahme:** Diff ist deterministisch und verändert keine Version.
+
+**Nächste Aktion:** Verschiebung von echten Geometrieänderungen unterscheiden.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** [tests/variants.test.mjs](../tests/variants.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+
+**Dateiumfang:** `packages/voxel/src/diff.ts`, `apps/web/src/schem/DiffView.tsx`. **Abhängigkeiten:** CORE-02, NBT-01. **Alte IDs:** P5-03.
+
+**Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
+
+### PERF-01
+
+**Große Berechnungen als abbrechbare Worker-Aufträge** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] PERF-01-S01: Workerprotokoll mit Job-ID, Revisionsbezug und Abbruch definieren.
+- [ ] PERF-01-S02: Auflösung, Anleitung und Materialien auslagern; veraltete Ergebnisse verwerfen.
+- [ ] PERF-01-S03: Vorher/Nachher mit Modell, Hardware-/Browserangabe und UI-Reaktionszeit messen.
+
+**Abnahme:** Keine Übernahme eines Ergebnisses für eine veraltete Revision.
+
+**Nächste Aktion:** Workerprotokoll mit Job-ID, Revisionsbezug und Abbruch definieren.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `apps/web/src/views/project/session.ts`, `packages/application/`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### PERF-02
+
+**Zellindizes, Chunkdaten und selektive Neuberechnung** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] PERF-02-S01: Kosten von owners/Strings/Übertragungen messen.
+- [ ] PERF-02-S02: Index-/Chunkstrategie nur mit identischem semantischem Ergebnis einführen.
+
+**Abnahme:** Unabhängige Mengen-/Geometrieregressionen; Importlimits bleiben wirksam.
+
+**Nächste Aktion:** Kosten von owners/Strings/Übertragungen messen.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `packages/domain/src/compose.ts`, `packages/voxel/`. **Abhängigkeiten:** PERF-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### PERF-03
+
+**Bundle, große Views und Vorschaucache** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] PERF-03-S01: Bundleanteile und UI-Verantwortungen messen.
+- [ ] PERF-03-S02: Views entlang Anwendungsfällen teilen und lazy laden.
+- [ ] PERF-03-S03: Versionierten Vorschaucache mit Quota-/Invalidierungsregeln ergänzen.
+
+**Abnahme:** Gemessene Verbesserung statt bloßer Dateiaufteilung; keine verlorenen Filterzustände.
+
+**Nächste Aktion:** Bundleanteile und UI-Verantwortungen messen.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `apps/web/src/views/LibraryView.tsx`, `apps/web/src/views/project/`, `vite.config.mjs`. **Abhängigkeiten:** ARCH-01, QA-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### VIEW-01
+
+**Vorhandenen Viewer vollständig abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [x] VIEW-01-S01: Orbit, Freiflug, Schnitte, Picking, Touch, Kulling und Softwarefallback vorhanden.
+- [ ] VIEW-01-S02: Aktuelle GPU-/Touch-Prüfung mit negativen Koordinaten und allen Schnittachsen.
+
+**Abnahme:** Sichtbarkeit verändert keine Quelldaten oder Gesamtmengen.
+
+**Nächste Aktion:** Aktuelle GPU-/Touch-Prüfung mit negativen Koordinaten und allen Schnittachsen.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** [tests/viewer.test.mjs](../tests/viewer.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+
+**Dateiumfang:** `apps/web/src/viewer/`. **Abhängigkeiten:** QA-01. **Alte IDs:** B6, P1-03.
+
+**Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
+
+### VIEW-02
+
+**Minecraft-nahe zustandsabhängige Blockformen** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] VIEW-02-S01: B16-Dateizuständigkeit vor Beginn prüfen.
+- [ ] VIEW-02-S02: Treppen, Stufen, Zäune, Mauern und Glas nach Zuständen darstellen.
+- [ ] VIEW-02-S03: Picking, Layer, Fallbacks und Performance unabhängig prüfen.
+
+**Abnahme:** Keine fremden Texturen ohne Rechte; sichtbare Geometrie stimmt mit Zellwahl überein.
+
+**Nächste Aktion:** B16-Dateizuständigkeit vor Beginn prüfen.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `apps/web/src/viewer/`. **Abhängigkeiten:** PROFILE-01, VIEW-01. **Alte IDs:** VIEW-03, B16.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### EDIT-01
+
+**Mehrfachauswahl und sichtbare Freiraumhüllen** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] EDIT-01-S01: Auswahlvertrag und atomare Gruppenoperationen definieren.
+- [ ] EDIT-01-S02: Freiraum-/Konflikthüllen und Undo/Redo ergänzen.
+
+**Abnahme:** Keine zweite Transformationslogik; Gruppenaktionen vollständig oder gar nicht.
+
+**Nächste Aktion:** Auswahlvertrag und atomare Gruppenoperationen definieren.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `apps/web/src/views/project/EditorTab.tsx`, `packages/domain/src/connectors.ts`. **Abhängigkeiten:** STORE-02, VIEW-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### UPDATE-01
+
+**Kontrollierte Versionsupdates mit lokalen Overrides** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] UPDATE-01-S01: Updateplan mit Geometrie/Material/Anschluss-/Aufgabendiff erstellen.
+- [ ] UPDATE-01-S02: Bewusst übernehmen, einfrieren und zurückkehren ermöglichen.
+
+**Abnahme:** Keine automatischen Updates fester Instanzreferenzen; Teamserver ist keine Voraussetzung.
+
+**Nächste Aktion:** Updateplan mit Geometrie/Material/Anschluss-/Aufgabendiff erstellen.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `packages/domain/src/project.ts`, `packages/application/`. **Abhängigkeiten:** DIFF-01, STORE-02. **Alte IDs:** P5-03.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### LIB-02
+
+**Eigene Sammlungen, Ordner und Kategorien** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] LIB-02-S01: B17-Dateizuständigkeit prüfen; Datenmodell und Sicherung erweitern.
+- [ ] LIB-02-S02: Sammlungen/Kategorien mit Migration und leerem Zustand nutzbar machen.
+
+**Abnahme:** Katalog und eigene Inhalte bleiben dieselbe Bibliothek; referenzierte Versionen erhalten.
+
+**Nächste Aktion:** B17-Dateizuständigkeit prüfen; Datenmodell und Sicherung erweitern.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `packages/domain/`, `apps/web/src/views/library/`. **Abhängigkeiten:** STORE-02, LIB-01. **Alte IDs:** LIB-02, B17.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### LIB-03
+
+**Eigene Ensembles und Generatorvorlagen speichern** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] LIB-03-S01: Vorlagen referenzieren feste Versionen bzw. versionierte Generatorparameter.
+- [ ] LIB-03-S02: Speichern, Bearbeiten, Wiederherstellen und Projektübernahme umsetzen.
+
+**Abnahme:** Vorlagenänderung überschreibt keine bereits übernommenen Projekte.
+
+**Nächste Aktion:** Vorlagen referenzieren feste Versionen bzw. versionierte Generatorparameter.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `packages/domain/src/ensembles.ts`, `packages/domain/src/generators/`. **Abhängigkeiten:** LIB-02, GEN-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### WORLD-02
+
+**Weitere kuratierte Bauwelten** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] WORLD-02-S01: Abdeckung für fernöstliche Gärten, Wüstenhandel und End prüfen.
+- [ ] WORLD-02-S02: Nur mit tatsächlichen Treffern und reproduzierbaren Links ergänzen.
+
+**Abnahme:** Keine erfundenen Treffer oder Gebäude; eigene Assets werden konsistent berücksichtigt.
+
+**Nächste Aktion:** Abdeckung für fernöstliche Gärten, Wüstenhandel und End prüfen.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `packages/domain/src/buildThemes.ts`. **Abhängigkeiten:** LIB-01, UI-01. **Alte IDs:** WORLD-02.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### BUILD-05
+
+**Bauwelt-Anlagen mit Konfliktvorschau** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] BUILD-05-S01: Feste AssetVersionen, Abstände und Anschlüsse kuratieren.
+- [ ] BUILD-05-S02: Konfliktvorschau und ausdrückliche Projektübernahme anbieten.
+
+**Abnahme:** Themenklick platziert nichts automatisch; tatsächliche Voxelkonflikte geprüft.
+
+**Nächste Aktion:** Feste AssetVersionen, Abstände und Anschlüsse kuratieren.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `packages/domain/src/ensembles.ts`, `apps/web/src/views/library/`. **Abhängigkeiten:** LIB-03, CORE-03. **Alte IDs:** BUILD-05.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### GEN-02
+
+**Weitere Generatoren und Dachdetails** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] GEN-02-S01: Treppenhaus, Kirche und Hafen als getrennte Generatoren spezifizieren.
+- [ ] GEN-02-S02: Dachtreppen-Eckformen und Anschlüsse profilgenau erzeugen.
+
+**Abnahme:** Ganzzahliges Raster, reproduzierbare Parameter, Mengen-/Exportprüfung je Generator.
+
+**Nächste Aktion:** Treppenhaus, Kirche und Hafen als getrennte Generatoren spezifizieren.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `packages/domain/src/generators/`. **Abhängigkeiten:** GEN-01, PROFILE-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### MAP-01
+
+**Weltlage und begehbare Projektkarte** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: B15: bestehende Reservierung (Übernahme abzustimmen) · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [x] MAP-01-S01: B15-Konzept und generischer Livekarten-/Markeradapter vorhanden.
+- [ ] MAP-01-S02: B15-Reservierung vor Übernahme abgleichen.
+- [ ] MAP-01-S03: Projektursprung/Dimension, Undo und Sicherung ergänzen.
+- [ ] MAP-01-S04: Draufsicht, Chunkraster, 3D-Ansicht und projektübergreifende Voxelkonflikte umsetzen.
+
+**Abnahme:** Weltkoordinate = Projektkoordinate + Ursprung; fehlendes Terrain ausdrücklich ungeprüft.
+
+**Nächste Aktion:** B15-Reservierung vor Übernahme abgleichen.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** [tests/livemap.test.mjs](../tests/livemap.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+
+**Dateiumfang:** `packages/domain/src/worldmap.ts`, `apps/web/src/views/map/`. **Abhängigkeiten:** CORE-03, STORE-02. **Alte IDs:** B15, B15-L.
+
+**Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
+
+### MAP-02
+
+**Gespeicherte Kartenziele und konkrete Provideradapter** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] MAP-02-S01: URL-/Markerformate anhand Primärquellen pro Provider verifizieren.
+- [ ] MAP-02-S02: Gespeicherte Ziele, UI-Dateiadapter und eigene Markerdateien anbinden.
+
+**Abnahme:** Keine behauptete BlueMap-/Dynmap-/squaremap-/Pl3xMap-Kompatibilität ohne Formatnachweis.
+
+**Nächste Aktion:** URL-/Markerformate anhand Primärquellen pro Provider verifizieren.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `packages/domain/src/livemap.ts`, `apps/web/src/views/map/`. **Abhängigkeiten:** MAP-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### GAME-01
+
+**Spielaufnahmen und Soll/Ist-Vergleich** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [x] GAME-01-S01: Vergleich, Originalspeicherung, Verlauf, Ausrichtung und Backup vorhanden.
+
+**Abnahme:** Nicht geladene Zellen sind unbekannt, manuelle Haken werden nur ausdrücklich geändert.
+
+**Nächste Aktion:** Regressionen bei Änderungen weiterführen.
+
+**Prüfstand:** Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis.
+
+**Nachweise:** [tests/game-check.test.mjs](../tests/game-check.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/scan-persistence.test.mjs](../tests/scan-persistence.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+
+**Dateiumfang:** `packages/domain/src/gameCheck.ts`, `packages/application/src/scanPersistence.ts`. **Abhängigkeiten:** CORE-02, BUILD-01. **Alte IDs:** B8-M1, B8P.
+
+**Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
+
+### GAME-02
+
+**Fabric-Brücke kompilieren und im Spiel abnehmen** · ⛔ Blockiert · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [x] GAME-02-S01: Versionsneutraler Java-Kern mit Tests und Fabric-Quelladapter vorhanden.
+- [ ] GAME-02-S02: Loader-/Versionsstand anhand offizieller Quellen prüfen und Build ermöglichen.
+- [ ] GAME-02-S03: Plan aufnehmen und Soll/Ist-Vergleich mit echtem Spiel durchführen.
+
+**Abnahme:** Lesende Aufnahme setzt keine Weltblöcke; keine ungeprüfte Kompatibilität.
+
+**Nächste Aktion:** Loader-/Versionsstand anhand offizieller Quellen prüfen und Build ermöglichen.
+
+**Blocker:** Letzte dokumentierte Mod-Buildumgebung konnte Abhängigkeiten nicht beziehen; aktueller Build/Spielnachweis fehlt.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** [mods/bauplaner-bridge/README.md](../mods/bauplaner-bridge/README.md) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+
+**Dateiumfang:** `mods/bauplaner-bridge/`. **Abhängigkeiten:** FORMAT-01, GAME-01. **Alte IDs:** B8-M2, P6-01.
+
+**Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
+
+### GAME-03
+
+**Optionale lokale Verbindung und Anzeige im Spiel** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] GAME-03-S01: Loopback-Sicherheitsvertrag mit expliziter Kopplung definieren.
+- [ ] GAME-03-S02: Planübertragung und Bestätigungen getrennt von Weltänderungen umsetzen.
+
+**Abnahme:** Keine unautorisierte Fernverbindung; Overlay ist kein serverseitiger Blocksetter.
+
+**Nächste Aktion:** Loopback-Sicherheitsvertrag mit expliziter Kopplung definieren.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `mods/bauplaner-bridge/`, `packages/application/`. **Abhängigkeiten:** GAME-02. **Alte IDs:** B8-M3, B8-M4.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### WORLD-IMPORT-01
+
+**Bereichsweiser Weltimport und Terrainprüfung** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] WORLD-IMPORT-01-S01: Konsistentes Sicherungsformat und Bereichsauswahl festlegen.
+- [ ] WORLD-IMPORT-01-S02: Begrenzten Adapter, Terrain-/Fundamentprüfung und Lastszenarien implementieren.
+
+**Abnahme:** Keine unbeschränkte Vollwelt im Browser; unbekanntes Terrain bleibt ungeprüft.
+
+**Nächste Aktion:** Konsistentes Sicherungsformat und Bereichsauswahl festlegen.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `packages/formats/`, `packages/voxel/`. **Abhängigkeiten:** PROFILE-01, PERF-02, FORMAT-01. **Alte IDs:** P7-01.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### BACKUP-02
+
+**Sicherungserinnerung und Abschnittsrevisionen** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] BACKUP-02-S01: Letzte erfolgreiche Sicherung mit Datenänderungen vergleichen.
+- [ ] BACKUP-02-S02: Abschnittsstand reproduzierbar einfrieren und wiederfinden.
+
+**Abnahme:** Erinnerung behauptet keine Cloudkopie; keine stillen Abschnittsänderungen.
+
+**Nächste Aktion:** Letzte erfolgreiche Sicherung mit Datenänderungen vergleichen.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `packages/domain/src/site.ts`, `apps/web/src/views/project/`. **Abhängigkeiten:** STORE-01, BUILD-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### TEAM-01
+
+**Backendvertrag, Datenbank und Payloadspeicher** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] TEAM-01-S01: API, Betriebsmodell und Kostenrahmen dokumentieren.
+- [ ] TEAM-01-S02: PostgreSQL-Metadaten und dauerhaften Objektspeicher mit Integrität/Backup aufbauen.
+
+**Abnahme:** Pages bleibt statisches Frontend; kein Geheimnis im Client oder Repo.
+
+**Nächste Aktion:** API, Betriebsmodell und Kostenrahmen dokumentieren.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `docs/architecture/`, `packages/application/`. **Abhängigkeiten:** ARCH-01, FORMAT-01, STORE-02, LICENSE-01. **Alte IDs:** P4-01.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### AUTH-01
+
+**Konten, Rechte und Übernahme lokaler Projekte** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] AUTH-01-S01: Gast-/Kontovertrag und serverseitige Rechte definieren.
+- [ ] AUTH-01-S02: Freigaben, Rollen, Rechtewechsel und kontrollierten lokalen Import prüfen.
+
+**Abnahme:** Keine fremden Projektzugriffe; Gastmodus bleibt lokal nutzbar.
+
+**Nächste Aktion:** Gast-/Kontovertrag und serverseitige Rechte definieren.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `packages/application/`, `apps/web/src/`. **Abhängigkeiten:** TEAM-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### TEAM-02
+
+**Geordnete Operationen, Reconnect und Team-Undo** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] TEAM-02-S01: Operation-ID, Revisionsprüfung und Wiederholung serverseitig umsetzen.
+- [ ] TEAM-02-S02: Konkurrierende Änderungen, Reconnect und geprüfte Gegenoperationen testen.
+
+**Abnahme:** Kein stiller Verlust und kein Überschreiben fremder Operationen.
+
+**Nächste Aktion:** Operation-ID, Revisionsprüfung und Wiederholung serverseitig umsetzen.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `packages/application/`, `packages/domain/src/project.ts`. **Abhängigkeiten:** AUTH-01, UPDATE-01. **Alte IDs:** P4-02.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### TEAM-03
+
+**Gemeinsame Aufgaben, Abschnitte und Sammelplanung** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] TEAM-03-S01: Zuständigkeiten und Lagerbuchungen versionieren.
+- [ ] TEAM-03-S02: Abschnitte und Sammelaufträge mehreren Spielern zuweisen.
+
+**Abnahme:** Planung, manuelle Bestätigung und Spielnachweis bleiben getrennt.
+
+**Nächste Aktion:** Zuständigkeiten und Lagerbuchungen versionieren.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `packages/domain/src/site.ts`, `packages/application/`. **Abhängigkeiten:** TEAM-02, BUILD-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### GAME-04
+
+**Paper-/NeoForge-Adapter und sichere Serveranbindung** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] GAME-04-S01: Loader getrennt spezifizieren; zuerst einen weiteren Adapter vollständig prüfen.
+- [ ] GAME-04-S02: Signierte Webhooks, Ereignis-ID und wiederholbare Verarbeitung ergänzen.
+
+**Abnahme:** Keine impliziten Weltänderungen; Planlieferung und Blocksetzen getrennt.
+
+**Nächste Aktion:** Loader getrennt spezifizieren; zuerst einen weiteren Adapter vollständig prüfen.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `mods/`, `packages/application/`. **Abhängigkeiten:** TEAM-02, GAME-02. **Alte IDs:** P6-01.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### LAGER-01
+
+**Optionale Truhen-/Lagerintegration** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] LAGER-01-S01: Inventar-/NBT-Rechte und Herkunft der Aufnahme festlegen.
+- [ ] LAGER-01-S02: Bestand mit Zeitpunkt, Konflikten und ausdrücklicher Übernahme anzeigen.
+
+**Abnahme:** Keine doppelte Inventarquelle; Aufnahmezeit und ungeprüfte Werte sichtbar.
+
+**Nächste Aktion:** Inventar-/NBT-Rechte und Herkunft der Aufnahme festlegen.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `packages/domain/src/site.ts`, `mods/`. **Abhängigkeiten:** TEAM-03, GAME-04. **Alte IDs:** P6-02.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### OPS-04
+
+**Teamdienst betreiben und Wiederherstellung prüfen** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] OPS-04-S01: Monitoring, Datenmigration, Lösch-/Aufbewahrung und Wiederanlauf definieren.
+- [ ] OPS-04-S02: Wiederherstellung mit getrenntem Metadaten-/Objektspeicher testen.
+
+**Abnahme:** Kein produktiver Teamstart ohne Rechte- und Restoreprüfung.
+
+**Nächste Aktion:** Monitoring, Datenmigration, Lösch-/Aufbewahrung und Wiederanlauf definieren.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `docs/operations/`. **Abhängigkeiten:** TEAM-02. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### DEFER-01
+
+**GitHub-Login, externes Materialrepo und Registry** · ⏸ Zurückgestellt · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] DEFER-01-S01: Nur nach neuem ausdrücklichem Nutzerauftrag neu bewerten.
+
+**Abnahme:** Aktuell kein zusätzliches Repo, keine externe Registry, kein produktives GitHub-OAuth.
+
+**Nächste Aktion:** Nur nach neuem ausdrücklichem Nutzerauftrag neu bewerten.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `docs/NOVEMBER_EXPANSION.md`. **Abhängigkeiten:** keine. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### DEFER-02
+
+**Optionale Discord-Integration** · ⏸ Zurückgestellt · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+
+- [ ] DEFER-02-S01: Erst bei konkretem Bedarf und ausdrücklichem Auftrag spezifizieren.
+
+**Abnahme:** Keine automatischen Nachrichten und keine abgeleiteten Rechte ohne Vertrag.
+
+**Nächste Aktion:** Erst bei konkretem Bedarf und ausdrücklichem Auftrag spezifizieren.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `docs/architecture/`. **Abhängigkeiten:** AUTH-01. **Alte IDs:** P6-02.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+## Weiterführende Dokumente
+
+- [Änderungsverlauf mit Dateien und Aufgabenständen](ROADMAP_HISTORY.md)
+- [Aktueller Systemstatus](STATUS.md)
+- [Tests und Prüfgrenzen](TESTING.md)
+- [Historische Roadmap, nicht mehr steuernd](ROADMAP_LEGACY.md)
+- [Modulvertrag](architecture/MODULES.md)
+- [Entwicklungskoordination](COMMUNICATION.md)

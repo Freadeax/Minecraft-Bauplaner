@@ -3,12 +3,8 @@ import { writeLitematic } from '../../formats/src/litematicWrite.js';
 import type { LitematicExportReport } from '../../formats/src/litematicWrite.js';
 import type { SchemAnchor, SchemExportReport, UnselectedPolicy } from '../../formats/src/schemWrite.js';
 import type { NbtTag } from '../../voxel/src/types.js';
-import { resolveProject } from './compose.js';
-import type { Resolution } from './compose.js';
-import { canonicalJson } from './hash.js';
-import { freezeRevision } from './project.js';
-import { DomainError } from './types.js';
-import type { AssetVersion, BlueprintRevision, Project } from './types.js';
+import { DomainError } from '../../domain/src/types.js';
+import type { AssetVersion, BlueprintRevision, Project } from '../../domain/src/types.js';
 
 /**
  * Schem v3 export of frozen revisions (P3-01). Every export names exactly one
@@ -49,51 +45,8 @@ export interface RevisionExport {
   readonly notes: readonly string[];
 }
 
-/** DataVersion encoded in a profile id such as "java:dataversion-3465:registry-unverified". */
-export function dataVersionFromProfile(profileId: string): number | null {
-  const m = /(?:^|:)dataversion-(\d{1,10})(?::|$)/.exec(profileId);
-  const n = m ? Number(m[1]) : NaN;
-  return Number.isSafeInteger(n) && n > 0 && n <= 2_147_483_647 ? n : null;
-}
-
-/**
- * Suggests a DataVersion: project profile first, else the single DataVersion all
- * imported sources share. Returns null when nothing reliable is known.
- */
-export function suggestDataVersion(project: Project, versions: ReadonlyMap<string, AssetVersion>, instances = project.instances): { dataVersion: number | null; source: string } {
-  const fromProfile = dataVersionFromProfile(project.profileId);
-  if (fromProfile) return { dataVersion: fromProfile, source: `Projektprofil ${project.profileId}` };
-  const found = new Set<number>();
-  for (const i of instances) {
-    const v = versions.get(i.assetVersionId);
-    const d = v?.source.dataVersion ?? (v ? dataVersionFromProfile(v.payload.profileId) : null);
-    if (d) found.add(d);
-  }
-  if (found.size === 1) return { dataVersion: [...found][0]!, source: 'DataVersion der importierten Bauteile' };
-  if (found.size > 1) return { dataVersion: null, source: `Bauteile nennen verschiedene DataVersions (${[...found].sort().join(', ')})` };
-  return { dataVersion: null, source: 'Keine DataVersion bekannt; bitte Zielversion wählen' };
-}
-
-/** Resolves the frozen instances of one revision with the same composer as the editor. */
-export function resolveRevision(project: Project, revision: BlueprintRevision, versions: ReadonlyMap<string, AssetVersion>): Resolution {
-  return resolveProject({ ...project, instances: revision.instances, links: revision.links }, versions);
-}
-
-const sameContent = (project: Project, revision: BlueprintRevision): boolean =>
-  canonicalJson(project.instances) === canonicalJson(revision.instances) && canonicalJson(project.links) === canonicalJson(revision.links);
-
-/**
- * Returns the revision an export of the current state must use: the newest
- * revision when it already equals the current instances and links, otherwise a
- * newly frozen one. Refuses (export lock) while the current state has blockers.
- */
-export function revisionForExport(project: Project, resolution: Resolution, comment: string): { project: Project; revision: BlueprintRevision; created: boolean } {
-  if (resolution.exportBlockers.length) throw new DomainError('EXPORT_BLOCKED', `Export gesperrt: ${resolution.exportBlockers.join('; ')}`);
-  const last = project.revisions.at(-1);
-  if (last && sameContent(project, last)) return { project, revision: last, created: false };
-  const r = freezeRevision(project, comment.trim() || 'Schem-Export');
-  return { ...r, created: true };
-}
+import { dataVersionFromProfile, resolveRevision, revisionForExport } from '../../domain/src/revisionExport.js';
+import { resolveProject } from '../../domain/src/compose.js';
 
 export function exportFileName(project: Project, revision: BlueprintRevision, format: ExportFormat = 'schem'): string {
   const slug = project.name.normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/ß/g, 'ss').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'bauplan';
@@ -142,4 +95,17 @@ export async function exportRevisionSchem(project: Project, revisionId: string, 
     metadata: { name: `${project.name} · Revision ${revision.number}`, ...(settings.author?.trim() && { author: settings.author.trim() }), ...(Number.isSafeInteger(date) && { date }), extra },
   });
   return { format, revision, fileName: exportFileName(project, revision), bytes: out.bytes, sha256: out.sha256, report: out.report, notes };
+}
+
+
+/** Prepare one complete export without storage or UI side effects. Failed writers
+ * never publish a new revision; callers persist the returned project only after success. */
+export async function prepareRevisionExport(project: Project, versions: ReadonlyMap<string, AssetVersion>, settings: SchemExportSettings,
+  options: { readonly revisionId?: string; readonly comment?: string } = {}): Promise<{ readonly project: Project; readonly created: boolean; readonly output: RevisionExport }> {
+  const prepared = options.revisionId === undefined
+    ? revisionForExport(project, resolveProject(project, versions), options.comment ?? '')
+    : { project, revision: project.revisions.find(r => r.id === options.revisionId), created: false };
+  if (!prepared.revision) throw new DomainError('NOT_FOUND', `Revision ${options.revisionId} existiert nicht.`);
+  const output = await exportRevisionSchem(prepared.project, prepared.revision.id, versions, settings);
+  return { project: prepared.project, created: prepared.created, output };
 }

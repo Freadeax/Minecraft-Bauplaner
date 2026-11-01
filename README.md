@@ -13,7 +13,10 @@ Zielrepository: https://github.com/Freadeax/Minecraft-Bauplaner
 - [Technische Gesamtspezifikation](docs/architecture/SPECIFICATION.md)
 - [Normativer Voxelvertrag v1](docs/architecture/VOXEL_CONTRACT.md)
 - [Architekturentscheidungen](docs/architecture/DECISIONS.md)
-- [Roadmap und Abnahme](docs/ROADMAP.md)
+- [Verbindliche Roadmap mit 56 Arbeitspaketen](docs/ROADMAP.md)
+- [Nachvollziehbarer Arbeitsverlauf](docs/ROADMAP_HISTORY.md)
+- [Maschinenlesbarer Aufgabenstand](docs/roadmap.json)
+- [Ausführbarer Modulvertrag](docs/architecture/MODULES.md)
 - [Strukturierte Bestandsprüfung](docs/REVIEW.md)
 - [Schem-Import und Grenzen](docs/architecture/SCHEM_IMPORT.md)
 - [Vollständiger Umsetzungsplan](docs/IMPLEMENTATION_PLAN.md)
@@ -38,6 +41,7 @@ Verbindliches Ziel: **GitHub Pages** mit lokal gebautem statischem Frontend und 
 |---|---|
 | `apps/web` | React-Oberfläche, 3D-/Softwareansicht, Import-/Scan-Worker und lokale Speicherung |
 | `packages/voxel` | gemeinsamer Voxelvertrag, Transformationen und Zustandsregeln |
+| `packages/application` | Exportanwendungsfall, Speicherports, Aufnahmeverwaltung und portabler Sitzungsspeicher |
 | `packages/domain` | Assets/Versionen, Projekte, Zusammensetzen, Materialien, Anleitung, Sicherung und Generatoren |
 | `packages/formats` | getrennte NBT-/Schem-/Litematic-Adapter |
 | `mods/bauplaner-bridge` | lesende Spielbrücke; Fabric-Adapter noch nicht im Spiel abgenommen |
@@ -64,10 +68,14 @@ npm ci --ignore-scripts
 npm run check
 ```
 
-`check` führt strenge Typprüfung, Bibliotheksbuild, Node-Tests und Dokumentationsprüfung aus. Einzelbefehle: `npm run typecheck`, `npm run build`, `npm test` (nach Build), `npm run check:docs`. Generierte Module und Deklarationen liegen unter `dist/voxel/src/`. Webentwicklung: `npm run dev`; Produktionsvorschau: `npm run preview` (jeweils unter `/Minecraft-Bauplaner/`). `npm run build:web` erzeugt `dist-web/` mit `.nojekyll`, Worker, Lizenzhinweisen und `deployment.json`.
+`check` prüft auch Modulgrenzen, Roadmapschema und generierte Fortschrittsansichten und führt strenge Typprüfung, Bibliotheksbuild, Node-Tests und Dokumentationsprüfung aus. Einzelbefehle: `npm run typecheck`, `npm run build`, `npm test` (nach Build), `npm run check:docs`. Generierte Module und Deklarationen liegen unter `dist/voxel/src/`. Webentwicklung: `npm run dev`; Produktionsvorschau: `npm run preview` (jeweils unter `/Minecraft-Bauplaner/`). `npm run build:web` erzeugt `dist-web/` mit `.nojekyll`, Worker, Lizenzhinweisen und `deployment.json`.
 
 Der Kern zählt platzierte Zustände, Luft und Löschzellen getrennt. Unbekannte Transformationen werden gemeldet und erhalten. Die Testprofile sind synthetisch; daraus folgt keine Minecraft-/Modpack-Kompatibilität.
 
 Die Darstellung nutzt eigene synthetische Gebäude und farbige Blockwürfel ohne fremde Minecraft-Texturen. Konservative Importlimits und Formatgrenzen stehen in den verlinkten Formatverträgen. Unbekannte Blockzustände bleiben erhalten; ungeklärte Transformationen sperren einen verlässlichen Export.
 
 Ohne WebGL steht eine gekennzeichnete isometrische Canvas-Ersatzansicht bereit. Browserprüfungen: `npm run build && npm run test:e2e`; dafür muss Playwright-Chromium verfügbar sein. Echte GPU-/iPhone- und Referenzwerkzeugtests bleiben gesondert offen.
+
+## Aufgaben und Fortschritt pflegen
+
+Vor jedem Arbeitsblock Aufgabe in `docs/roadmap.json` und COMMUNICATION anmelden. Teilschritte, Nachweise und nächste Aktion nachführen; `npm run roadmap:record -- ARCH-01 "Konkretes Ergebnis und Prüfgrenzen"` hängt Dateizuordnung und Aufgabenstand an. `npm run check:roadmap-change -- <vorheriger-main>` ist vor jedem Quell-Merge/Push verpflichtend. `npm run setup:hooks` aktiviert den lokalen Pre-Push-Check. Die JSON-Datei erzeugt Roadmap und Historie; keine zweite Statusliste pflegen. Details und Grenzen der lokalen Durchsetzung stehen in der Roadmap.
