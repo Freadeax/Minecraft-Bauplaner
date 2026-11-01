@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T13:02:14.162Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T13:15:45.514Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -13,16 +13,16 @@ Stand: 2026-11-01T13:02:14.162Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | Status | Pakete |
 |---|---:|
 | ⏳ Offen | 21 |
-| 🚧 In Arbeit | 5 |
+| 🚧 In Arbeit | 4 |
 | ⛔ Blockiert | 1 |
-| 🧩 Implementiert · Abnahme offen | 8 |
+| 🧩 Implementiert · Abnahme offen | 9 |
 | ✅ Im beschriebenen Umfang geprüft | 20 |
 | ⏸ Zurückgestellt | 2 |
 
 ## Aktiver Arbeitsblock
 
 - **PERF-02 · Zellindizes, Chunkdaten und selektive Neuberechnung** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Gemessene Structured-Clone-/Worker-Rückgabekosten reduzieren; selektive Geometrie-/Fortschrittsinvalidierung zuerst mit vollständigen semantischen Regressionen absichern.
-- **MAP-01 · Weltlage und begehbare Projektkarte** — 🚧 In Arbeit, 2/4 Teilschritte. Nächster Schritt: Projektursprung/Dimension, Undo und Sicherung ergänzen.
+- **MAP-01 · Weltlage und begehbare Projektkarte** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02.
 - **LIB-02 · Eigene Sammlungen, Ordner und Kategorien** — 🚧 In Arbeit, 0/2 Teilschritte. Nächster Schritt: Datenmodell collections.ts, Speicher (IndexedDB v3) und Sicherung erweitern.
 - **LIB-03 · Eigene Ensembles und Generatorvorlagen speichern** — 🚧 In Arbeit, 0/2 Teilschritte. Nächster Schritt: Vorlagen referenzieren feste Versionen bzw. versionierte Generatorparameter.
 - **EDIT-01 · Mehrfachauswahl und sichtbare Freiraumhüllen** — 🚧 In Arbeit, 0/2 Teilschritte. Nächster Schritt: Auswahlvertrag und atomare Gruppenoperationen definieren.
@@ -123,7 +123,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [WORLD-02](#world-02) | Weitere kuratierte Bauwelten | ✅ Im beschriebenen Umfang geprüft | 2/2 | LIB-01, UI-01 | `c3e6478` | `c3e6478` |
 | [BUILD-05](#build-05) | Bauwelt-Anlagen mit Konfliktvorschau | ⏳ Offen | 0/2 | LIB-03, CORE-03 | ausstehend | ausstehend |
 | [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | ⏳ Offen | 0/2 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
-| [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🚧 In Arbeit | 2/4 | CORE-03, STORE-02 | `84838f0` | `e232b26` |
+| [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen | 4/4 | CORE-03, STORE-02 | `84838f0` | `e232b26` |
 | [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter | ⏳ Offen | 0/2 | MAP-01 | ausstehend | ausstehend |
 | [GAME-02](#game-02) | Fabric-Brücke kompilieren und im Spiel abnehmen | ⛔ Blockiert | 1/3 | FORMAT-01, GAME-01 | `84838f0` | `e232b26` |
 | [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | ⏳ Offen | 0/2 | GAME-02 | ausstehend | ausstehend |
@@ -947,20 +947,20 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAP-01
 
-**Weltlage und begehbare Projektkarte** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread Weltkarte) · Aktualisiert: 2026-11-01T12:52:36.925Z
+**Weltlage und begehbare Projektkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread Weltkarte) · Aktualisiert: 2026-11-01T13:15:45.514Z
 
 - [x] MAP-01-S01: B15-Konzept und generischer Livekarten-/Markeradapter vorhanden.
 - [x] MAP-01-S02: B15-Reservierung vor Übernahme abgleichen.
-- [ ] MAP-01-S03: Projektursprung/Dimension, Undo und Sicherung ergänzen.
-- [ ] MAP-01-S04: Draufsicht, Chunkraster, 3D-Ansicht und projektübergreifende Voxelkonflikte umsetzen.
+- [x] MAP-01-S03: Projektursprung/Dimension, Undo und Sicherung ergänzen.
+- [x] MAP-01-S04: Draufsicht, Chunkraster, 3D-Ansicht und projektübergreifende Voxelkonflikte umsetzen.
 
 **Abnahme:** Weltkoordinate = Projektkoordinate + Ursprung; fehlendes Terrain ausdrücklich ungeprüft.
 
-**Nächste Aktion:** Projektursprung/Dimension, Undo und Sicherung ergänzen.
+**Nächste Aktion:** Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Node- und Browsertests bestanden; Geräte-/Spiel-/Kartenserverabnahme offen.
 
-**Nachweise:** [tests/livemap.test.mjs](../tests/livemap.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+**Nachweise:** [tests/livemap.test.mjs](../tests/livemap.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/worldmap.test.mjs](../tests/worldmap.test.mjs) — Kernvertrag Weltlage/Weltkarte, 8 Tests.; [tests/e2e/worldmap.e2e.mjs](../tests/e2e/worldmap.e2e.mjs) — Browserablauf 1400/390 px.; [docs/architecture/WORLDMAP.md](architecture/WORLDMAP.md) — Vertrag, Quellen der Linkformate und Grenzen.
 
 **Dateiumfang:** `packages/domain/src/worldmap.ts`, `apps/web/src/views/map/`. **Abhängigkeiten:** CORE-03, STORE-02. **Alte IDs:** B15, B15-L.
 

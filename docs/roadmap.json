@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T13:02:14.162Z",
+  "updatedAt": "2026-11-01T13:15:45.514Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -2249,7 +2249,7 @@
       "title": "Weltlage und begehbare Projektkarte",
       "phase": "P3",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "implemented",
       "owner": "Claude (Thread Weltkarte)",
       "dependencies": [
         "CORE-03",
@@ -2277,34 +2277,46 @@
         {
           "id": "MAP-01-S03",
           "title": "Projektursprung/Dimension, Undo und Sicherung ergänzen.",
-          "done": false
+          "done": true
         },
         {
           "id": "MAP-01-S04",
           "title": "Draufsicht, Chunkraster, 3D-Ansicht und projektübergreifende Voxelkonflikte umsetzen.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Weltkoordinate = Projektkoordinate + Ursprung; fehlendes Terrain ausdrücklich ungeprüft."
       ],
-      "next": "Projektursprung/Dimension, Undo und Sicherung ergänzen.",
+      "next": "Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02.",
       "blockers": [],
       "evidence": [
         {
           "path": "tests/livemap.test.mjs",
           "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        },
+        {
+          "path": "tests/worldmap.test.mjs",
+          "note": "Kernvertrag Weltlage/Weltkarte, 8 Tests."
+        },
+        {
+          "path": "tests/e2e/worldmap.e2e.mjs",
+          "note": "Browserablauf 1400/390 px."
+        },
+        {
+          "path": "docs/architecture/WORLDMAP.md",
+          "note": "Vertrag, Quellen der Linkformate und Grenzen."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "note": "Node- und Browsertests bestanden; Geräte-/Spiel-/Kartenserverabnahme offen."
       },
       "delivery": {
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T12:52:36.925Z"
+      "updatedAt": "2026-11-01T13:15:45.514Z"
     },
     {
       "id": "MAP-02",
@@ -4456,6 +4468,49 @@
           "done": 5,
           "total": 6,
           "next": "Mojang-Download im echten Browser und weitere Browser prüfen; Registerdaten an PROFILE-01 binden, sobald es auf main liegt."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T13:15:45.514Z",
+      "kind": "progress",
+      "items": [
+        "MAP-01"
+      ],
+      "summary": "Weltkarte #/karte umgesetzt: Weltlage je Projekt (world.set, Sicherung), buildWorldMap mit Fortschritt je Zelle und voxelgenauen Überschneidungen, Draufsicht mit Chunkraster, 3D-Freiflug/Rundflug, Platzierungsvorschlag, Live-Karten-Verknüpfung über livemap.ts. 8 Node-Tests, Browser 1400/390 px bestanden; Geräte-, Spiel- und Kartenserverabnahme offen.",
+      "files": [
+        "README.md",
+        "apps/web/src/app/router.ts",
+        "apps/web/src/main.tsx",
+        "apps/web/src/map.css",
+        "apps/web/src/viewer/ThreeViewer.tsx",
+        "apps/web/src/viewer/types.ts",
+        "apps/web/src/views/map/LiveMapPanel.tsx",
+        "apps/web/src/views/map/OverviewMap.tsx",
+        "apps/web/src/views/map/PlacementForm.tsx",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "apps/web/src/views/map/liveMapConfig.ts",
+        "apps/web/src/views/map/map.worker.ts",
+        "apps/web/src/views/map/transport.ts",
+        "docs/BLOCKS.md",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/WORLDMAP.md",
+        "packages/domain/src/backup.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/project.ts",
+        "packages/domain/src/types.ts",
+        "packages/domain/src/worldmap.ts",
+        "tests/e2e/worldmap.e2e.mjs",
+        "tests/worldmap.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "MAP-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 4,
+          "next": "Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02."
         }
       ]
     }

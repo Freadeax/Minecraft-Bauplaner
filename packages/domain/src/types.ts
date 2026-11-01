@@ -1,5 +1,6 @@
 import type { Transform, Vec3, VoxelPayload } from '../../voxel/src/types.js';
 import type { SitePlan } from './site.js';
+import type { WorldPlacement } from './worldmap.js';
 
 /**
  * Shared domain contract (P2-01). All records are JSON-safe and versioned so
@@ -157,6 +158,8 @@ export interface Project {
   readonly revisions: readonly BlueprintRevision[];
   /** Construction site plan (sections, stock, reservations; site.ts). Absent in older projects = empty plan. */
   readonly site?: SitePlan;
+  /** Placement in a Minecraft world for the world map (worldmap.ts, MAP-01). Absent = not placed. */
+  readonly world?: WorldPlacement;
   /** Recording history, oldest first. Original bytes live in the repository original store. */
   readonly scanHistory?: readonly ProjectScanReference[];
 }

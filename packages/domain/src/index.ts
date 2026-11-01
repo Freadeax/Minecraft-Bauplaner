@@ -41,3 +41,6 @@ export { GENERATORS, GENERATOR_TAG, GENERATOR_TAG_PREFIX, GENERATOR_PROVENANCE, 
 export type { Generator, GeneratedBuilding, Preset, GeneratorRun, ReproCheck, ReproStatus, Compound, CompoundPart, CompoundBuild, ParamDef, ParamValue, ParamValues, ParamIssue, IntParam, ChoiceParam, BoolParam, Style } from './generators/index.js';
 export { buildLiveMapUrl, checkLiveMapTarget, checkLiveMapPosition, createLiveMapMarkerFile, readLiveMapMarkerFile } from './livemap.js';
 export type { LiveMapTarget, LiveMapPosition, LiveMapMarker, LiveMapMarkerFile } from './livemap.js';
+export { WORLD_SCHEMA_VERSION, WORLD_XZ_LIMIT, WORLD_Y_MIN, WORLD_Y_MAX, DEFAULT_WORLD_Y, PLACEMENT_GAP, MAP_MAX_CELLS, DIMENSIONS, dimensionLabel, checkWorldPlacement, createPlacement, worldOf, worldOperation,
+  toWorld, translateBounds, chunkOf, regionOf, suggestPlacement, MAP_SKIP_LABEL, buildWorldMap, footprintNeighbours, topViews, placementsJson, mapMarkers, liveMapPositionOf, liveMapTemplateFromLink, TERRAIN_NOTE } from './worldmap.js';
+export type { Dimension, WorldPlacement, CellProgress, MapSkip, MapEntry, MapCollision, WorldMapView, WorldMapOptions, TopView, LiveMapLinkKind, LiveMapLinkTemplate } from './worldmap.js';

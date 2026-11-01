@@ -5,6 +5,7 @@ import { canonicalJson, newId, sha256Hex } from './hash.js';
 import { checkTransform } from './project.js';
 import { deepFreeze, verifyAssetVersion } from './library.js';
 import { checkSite } from './site.js';
+import { checkWorldPlacement } from './worldmap.js';
 
 /**
  * Persistence and backup contract (P2-01, R-023/R-024). Pure and storage
@@ -175,6 +176,10 @@ export function checkProjectRecord(raw: unknown): Project {
   }
   if (!isObj(raw.progress)) throw new DomainError('BACKUP', `${where}: Fortschritt fehlt`);
   if (raw.site !== undefined) checkSite(raw.site);
+  if (raw.world !== undefined) {
+    try { checkWorldPlacement(raw.world); }
+    catch (e) { throw new DomainError('BACKUP', `${where}: ${e instanceof Error ? e.message : String(e)}`); }
+  }
   if (raw.scanHistory !== undefined) {
     const hashes = new Set<string>();
     const revisionIds = new Set(arr(raw.revisions, `${where}: Revisionen`).map(r => isObj(r) ? r.id : undefined));

@@ -18,6 +18,7 @@ Zielrepository: https://github.com/Freadeax/Minecraft-Bauplaner
 - [Maschinenlesbarer Aufgabenstand](docs/roadmap.json)
 - [Ausführbarer Modulvertrag](docs/architecture/MODULES.md)
 - [Strukturierte Bestandsprüfung](docs/REVIEW.md)
+- [Weltkarte und Live-Karten-Verknüpfung](docs/architecture/WORLDMAP.md)
 - [Schem-Import und Grenzen](docs/architecture/SCHEM_IMPORT.md)
 - [Vollständiger Umsetzungsplan](docs/IMPLEMENTATION_PLAN.md)
 - [Selbstständiger GitHub-/Pages-Ablauf](docs/operations/GITHUB_CONNECTOR_RUNBOOK.md)

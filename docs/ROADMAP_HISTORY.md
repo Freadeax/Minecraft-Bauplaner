@@ -779,3 +779,40 @@ Blockformen nach Zustand für alle 1288 Blöcke (26.3), Originaltexturen nur aus
 - `tests/states.test.mjs`
 - `tests/viewer.test.mjs`
 
+## 2026-11-01T13:15:45.514Z · progress
+
+**Aufgaben:** MAP-01
+
+Weltkarte #/karte umgesetzt: Weltlage je Projekt (world.set, Sicherung), buildWorldMap mit Fortschritt je Zelle und voxelgenauen Überschneidungen, Draufsicht mit Chunkraster, 3D-Freiflug/Rundflug, Platzierungsvorschlag, Live-Karten-Verknüpfung über livemap.ts. 8 Node-Tests, Browser 1400/390 px bestanden; Geräte-, Spiel- und Kartenserverabnahme offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MAP-01 | 🧩 Implementiert · Abnahme offen | 4/4 | Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02. |
+
+**Geänderte Dateien:**
+
+- `README.md`
+- `apps/web/src/app/router.ts`
+- `apps/web/src/main.tsx`
+- `apps/web/src/map.css`
+- `apps/web/src/viewer/ThreeViewer.tsx`
+- `apps/web/src/viewer/types.ts`
+- `apps/web/src/views/map/LiveMapPanel.tsx`
+- `apps/web/src/views/map/OverviewMap.tsx`
+- `apps/web/src/views/map/PlacementForm.tsx`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/map/liveMapConfig.ts`
+- `apps/web/src/views/map/map.worker.ts`
+- `apps/web/src/views/map/transport.ts`
+- `docs/BLOCKS.md`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/WORLDMAP.md`
+- `packages/domain/src/backup.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/project.ts`
+- `packages/domain/src/types.ts`
+- `packages/domain/src/worldmap.ts`
+- `tests/e2e/worldmap.e2e.mjs`
+- `tests/worldmap.test.mjs`
+

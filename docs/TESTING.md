@@ -390,3 +390,13 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `BAUPLANER_ALL_BLOCKS=<pfad> node --test tests/blocks.test.mjs`: All-Blocks-Litematic 26.3 importiert (29.346 Zellen, 1016 Block-IDs, alle im Register) und vermascht.
 - Manuelle Sichtprüfung in Chromium mit der lokalen 26.3-Client-Jar: Bibliotheksbilder, Detailseite, 3D-Betrachter und Ausschnitte der All-Blocks-Datei; ein Fehler gefunden und behoben (`heavy_core`: Texturvariable ohne `#`).
 - Nicht geprüft: Mojang-Download im Browser selbst (nur CORS/Manifest per curl), Firefox/Safari, echte Geräte.
+
+## MAP-01 Weltkarte · 01.11.2026 · Claude
+
+- Ausgang main `1b58257` (Quelle `edbb520`), nach Rebase auf VIEW-02 (Konflikt in `ThreeViewer.tsx` fachlich gelöst: `markFor` von VIEW-02 plus `frameRequest`).
+- `node --test tests/worldmap.test.mjs`: 8/8 bestanden (Validierung, Rückgängig, Sicherung, Welt = Projekt + Ursprung zellgenau, Dimensionen, Überschneidungen gegen Handzählung, Fortschritt inkl. „prüfen“, Budget, Vorschlag, Draufsicht, Determinismus, Marker, Link-Übernahme BlueMap/Dynmap/Pl3xMap).
+- `npm run check`: bestanden, 399 Node-Tests bestanden, 1 übersprungen (Bestand), Architektur-, Roadmap-, Typ-, Build- und Dokumentationsprüfung.
+- `node --test tests/e2e/worldmap.e2e.mjs`: 2/2 (1400 und 390 px, Headless-Chromium mit Software-WebGL). Visuelle Sichtprüfung der Screenshots im hellen Theme.
+- Umgebungshinweis: Das Repository pinnt Playwright 1.64.1 (erwartet Headless-Shell 1248); im Container liegt 1243. Für die Läufe wurde lokal ein Verweis 1248 → 1243 angelegt, keine Repositoryänderung.
+- Grenzen: kein Gelände, keine Spielprüfung, Live-Karten-Vorlagen nicht gegen einen laufenden Kartenserver geprüft, keine echte GPU-/Touch-Gerätprüfung (QA-02). Leistung: 40 Projekte mit 39.556 Blöcken in 573 ms (Node, ohne Worker-Transport).
+- `npm run test:e2e` gesamt: 60/61 bestanden. Einziger Ausfall `snap.e2e.mjs` „Instanz im 3D-Bild ziehen“ (`data-ghost` nach dem Loslassen kurz `null`) ist zeitabhängig und **auch auf unverändertem main `1b58257` reproduzierbar** (1 von 7 Läufen); mit diesem Stand danach 5/5 isolierte Läufe bestanden. Nicht durch MAP-01 verursacht, Test nicht verändert; als bekannter Wackelkandidat an QA gemeldet.

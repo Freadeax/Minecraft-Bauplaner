@@ -22,4 +22,6 @@ export interface ViewerProps {
   readonly drag?: DragHandler | null;
   /** Outline of a planned placement, e.g. while dragging. */
   readonly ghost?: { readonly bounds: Bounds; readonly tone: GhostTone } | null;
+  /** Frames `bounds` once whenever `seq` changes (e.g. “Hinfliegen” on the world map); works in orbit and flight. */
+  readonly frameRequest?: { readonly bounds: Bounds; readonly seq: number } | null;
 }
