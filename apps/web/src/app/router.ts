@@ -23,9 +23,9 @@ export type Route =
   | { readonly view: 'project'; readonly projectId: string; readonly tab: string }
   | { readonly view: 'not-found'; readonly path: string };
 
-export type LibraryPage = 'browse' | 'building' | 'ensembles' | 'compare' | 'generators';
-const LIBRARY_PAGES: Readonly<Record<string, LibraryPage>> = { gebaeude: 'building', ensembles: 'ensembles', vergleich: 'compare', generatoren: 'generators' };
-const LIBRARY_SEGMENT: Readonly<Record<LibraryPage, string>> = { browse: '', building: 'gebaeude', ensembles: 'ensembles', compare: 'vergleich', generators: 'generatoren' };
+export type LibraryPage = 'browse' | 'building' | 'ensembles' | 'compare' | 'generators' | 'themes';
+const LIBRARY_PAGES: Readonly<Record<string, LibraryPage>> = { gebaeude: 'building', ensembles: 'ensembles', vergleich: 'compare', generatoren: 'generators', bauwelten: 'themes' };
+const LIBRARY_SEGMENT: Readonly<Record<LibraryPage, string>> = { browse: '', building: 'gebaeude', ensembles: 'ensembles', compare: 'vergleich', generators: 'generatoren', themes: 'bauwelten' };
 
 export function parseRoute(hash: string): Route {
   const raw = hash.replace(/^#/, ''), q = raw.indexOf('?');

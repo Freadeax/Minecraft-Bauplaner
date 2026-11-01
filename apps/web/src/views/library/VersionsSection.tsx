@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
-import { addAssetVersion, BASIS_PREFIX, createAsset, detectMaterials, FAMILY_PREFIX, MATERIAL_KIND_LABEL, MATERIAL_SETS, swapLabel, swapMaterials } from '../../../../../packages/domain/src/index.js';
+import { addAssetVersion, BASIS_PREFIX, createAsset, detectMaterials, FAMILY_PREFIX, MATERIAL_KIND_LABEL, swapLabel, swapMaterials } from '../../../../../packages/domain/src/index.js';
 import type { Asset, AssetVersion, CatalogEntry, MaterialSwap } from '../../../../../packages/domain/src/index.js';
+import { materialTargets } from '../../../../../packages/domain/src/variants.js';
 import { useApp } from '../../app/context';
 import { errorText, formatNumber } from '../../app/ui';
 import { DiffView } from '../../schem/DiffView';
@@ -63,12 +64,12 @@ function MaterialVariantPanel({ asset, latest, family, onSaved, onMessage }: {
   asset: Asset; latest: AssetVersion; family: string | undefined; onSaved(assetId: string): void; onMessage(text: string): void;
 }) {
   const { repo, reloadLibrary } = useApp();
-  const used = useMemo(() => detectMaterials(latest.payload), [latest]);
+  const used = useMemo(() => detectMaterials(latest.payload, { scoped: true }), [latest]);
   const [targets, setTargets] = useState<Readonly<Record<string, string>>>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const swaps: MaterialSwap[] = used.map(u => ({ from: u.set.id, to: targets[u.set.id] ?? u.set.id })).filter(s => s.from !== s.to);
-  const swapKey = swaps.map(s => `${s.from}>${s.to}`).join(',');
+  const swaps: MaterialSwap[] = used.map(u => ({ from: u.set.id, to: targets[u.set.id] ?? u.set.id, forms: u.forms })).filter(s => s.from !== s.to);
+  const swapKey = swaps.map(s => `${s.from}>${s.to}:${s.forms?.join('|') ?? '*'}`).join(',');
   const result = useMemo(() => {
     if (!swaps.length) return null;
     try { return { ...swapMaterials(latest.payload, swaps), error: '' }; } catch (e) { return { error: errorText(e) }; }
@@ -90,7 +91,7 @@ function MaterialVariantPanel({ asset, latest, family, onSaved, onMessage }: {
       } else {
         const keep = asset.tags.filter(t => !t.startsWith(BASIS_PREFIX) && !t.startsWith(FAMILY_PREFIX));
         const created = createAsset({ name: shownName.slice(0, 120), tags: [...keep, `${BASIS_PREFIX}${asset.id}`, ...(family ? [`${FAMILY_PREFIX}${family}`] : [])],
-          description: `Materialvariante von „${asset.name}“ (v${latest.label}): ${swaps.map(s => `${MATERIAL_SETS.find(m => m.id === s.from)?.label} → ${MATERIAL_SETS.find(m => m.id === s.to)?.label}`).join(', ')}. Form und Ausrichtung jedes Blocks unverändert.`,
+          description: `Materialvariante von „${asset.name}“ (v${latest.label}): ${swaps.map(s => `${used.find(u => u.set.id === s.from)?.set.label} → ${materialTargets(used.find(u => u.set.id === s.from)!.set).find(m => m.id === s.to)?.label} (Formen: ${s.forms?.join(', ') ?? 'alle'})`).join(', ')}. Form und Ausrichtung jedes Blocks unverändert.`,
           provenance: { ...asset.provenance, source: `abgeleitet von „${asset.name}“ (Materialtausch im Bauplaner)` } });
         const r = await addAssetVersion(created, { payload: result.payload, label: '1.0', connectors: latest.connectors, source });
         await repo.applyBatch({ versions: [r.version], assets: [r.asset] }); await reloadLibrary();
@@ -102,12 +103,12 @@ function MaterialVariantPanel({ asset, latest, family, onSaved, onMessage }: {
 
   return <details className="variant-maker">
     <summary>Materialvariante erzeugen</summary>
-    {used.length === 0 ? <p className="muted">Keine tauschbaren Holz-, Stein- oder Farbsätze in diesem Bauwerk.</p> : <>
-      <p className="small-note">Jeder Satz wird Form für Form getauscht (Brett → Brett, Treppe → Treppe), Ausrichtung und Eigenschaften bleiben gleich. Fehlt eine Form im Zielsatz, bleibt der Block unverändert und wird genannt.</p>
+    {used.length === 0 ? <p className="muted">Keine tauschbaren Holz-, Stein-, Farb-, Glas-, Beton- oder Terrakottasätze in diesem Bauwerk.</p> : <>
+      <p className="small-note">Jeder Satz wird Form für Form getauscht (Brett → Brett, Treppe → Treppe), Ausrichtung und Eigenschaften bleiben gleich. Glas, Beton und Terrakotta lassen sich getrennt umfärben; Zellen mit BlockEntity-Daten benötigen zuerst einen NBT-Adapter. Fehlt eine Form im Zielsatz, bleibt der Block unverändert und wird genannt.</p>
       <table className="swap-table"><thead><tr><th scope="col">Im Bauwerk</th><th scope="col">Blöcke</th><th scope="col">ersetzen durch</th></tr></thead>
         <tbody>{used.map(u => <tr key={u.set.id}><th scope="row">{u.set.label} <small>{MATERIAL_KIND_LABEL[u.set.kind]} · {u.forms.length} Formen</small></th><td>{formatNumber(u.blocks)}</td>
           <td><select aria-label={`${u.set.label} ersetzen durch`} value={targets[u.set.id] ?? u.set.id} onChange={e => setTargets(t => ({ ...t, [u.set.id]: e.target.value }))}>
-            {MATERIAL_SETS.filter(m => m.kind === u.set.kind).map(m => <option key={m.id} value={m.id}>{m.id === u.set.id ? `${m.label} (unverändert)` : m.label}</option>)}</select></td></tr>)}</tbody></table>
+            {materialTargets(u.set).map(m => <option key={m.id} value={m.id}>{m.id === u.set.id ? `${m.label} (unverändert)` : m.label}</option>)}</select></td></tr>)}</tbody></table>
       {result && 'payload' in result && result.payload && <div className="swap-preview">
         <figure><Thumb cacheKey={latest.id} payload={() => latest.payload} alt={`${asset.name} vorher`} width={260} height={180} /><figcaption>vorher</figcaption></figure>
         <figure><Thumb cacheKey={`${latest.id}>${swapKey}`} payload={() => result.payload} alt={`${asset.name} nachher`} width={260} height={180} /><figcaption>nachher · {label}</figcaption></figure>

@@ -45,3 +45,13 @@ test('name sorting is stable and unknown namespaces cannot inherit Vanilla famil
   assert.equal(materialLab({items: []}).count, 0);
   assert.equal(materialLab({items: []}).slots, 0);
 });
+
+test('labor displays scoped glass, concrete and terracotta without changing quantities', () => {
+  const item = report.items[0];
+  const lines=['minecraft:red_stained_glass','minecraft:red_concrete','minecraft:red_terracotta'].map((itemId,i)=>({...item,itemId,count:i+1}));
+  const lab=materialLab({items:lines});
+  assert.deepEqual(lab.entries.map(e=>e.family),['terrakotta','beton','glas']);
+  assert.equal(lab.count,6);
+  assert.equal(materialLab({items:lines},{query:'Glas Rot'}).entries[0].line.itemId,'minecraft:red_stained_glass');
+  assert.equal(materialLab({items:lines},{family:'beton'}).count,2);
+});

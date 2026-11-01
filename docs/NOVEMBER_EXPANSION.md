@@ -1,6 +1,6 @@
 # Ausbauplanung November 2026
 
-Status: Planung, nicht implementiert. Bestehende Dateireservierungen B15, B16, B17 und S4 respektieren.
+Status: teilweise implementiert (01.11.2026); die nachstehenden Ziele sind kein pauschaler Fertigstellungsnachweis. Bestehende Dateireservierungen B15, B16, B17 und S4 respektieren.
 
 ## Aktiver Umfang
 
@@ -25,3 +25,18 @@ Status: Planung, nicht implementiert. Bestehende Dateireservierungen B15, B16, B
 - BUILD-04: Composer-/Generator-Verbesserungen nach S4-Revisionsschutz.
 
 Je Block vor Bearbeitung Kommunikation prüfen und Dateibesitz anmelden; lokal Tests, Typecheck, Build und Dokumentationsprüfung durchführen, in TESTING protokollieren, STATUS/ROADMAP aktualisieren. Geprüfte Änderungen regulär auf main integrieren und Pages main/root mit Hashmanifest aktualisieren. Keine GitHub Actions.
+
+## Fortschreibung der Arbeitsblöcke · 01.11.2026
+
+| Block | Ergebnis / nächster prüfbarer Schritt | Stand |
+|---|---|---|
+| UI-01 | Fünf Oberflächenthemen, Hell/Dunkel/System, Speicherung | Implementiert; visuelle Geräteprüfung offen |
+| MAT-02 | Projektmaterialien nach Familien, Suche, Zuordnung und Herkunft | Implementiert; kein zweites Lager |
+| WORLD-01 | Acht Bauwelten als strukturierte Zugänge zur vorhandenen Bibliothek, berechnete Treffer und teilbare Filterlinks | In dieser Fortsetzung implementiert; keine neuen Gebäude behauptet |
+| MAT-03 | Getrennte Glas-/Beton-/Terrakotta-Farben und kontrollierter Materialtausch | In dieser Fortsetzung; genaue Abnahme in TESTING |
+| WORLD-02 | Fernöstliche Gärten, Wüstenhandel und End-Bauten als weitere Themen; erst nach Prüfung der echten Katalogabdeckung ergänzen | Geplant |
+| BUILD-05 | Bauwelt als eigene Anlage zusammenstellen; konkrete AssetVersion-Referenzen, Abstands-/Konfliktvorschau, explizite Projektübernahme | Geplant; keine automatische Platzierung aus Themenklick |
+| MAT-04 | Kupfer mit Oxidation und Wachsstatus; Profilnachweis sowie vollständige Zustandsregeln vor Tausch | Geplant |
+| UI-02 | Echte Desktop-/iPhone-Abnahme für Themen, Filterwechsel und helle Panels | Offen; Browserlaufzeit in dieser Umgebung fehlt |
+
+Neue Themen bündeln kuratierte Aufbauideen und vorhandene Bauteile. Trefferzahlen entstehen aus demselben Katalogfilter wie die verlinkte Suche; Varianten, Archivzustand und eigene Bauteile werden konsistent behandelt. Die Themenauswahl ist kein Minecraft-Kompatibilitätsnachweis. Weitere Gebäudesätze bleiben eigene vollständige Ausbauschritte mit Geometrie-, Material- und Exportprüfung.

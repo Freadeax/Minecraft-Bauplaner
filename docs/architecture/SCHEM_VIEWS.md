@@ -44,5 +44,16 @@ Behoben (Beobachtung aus P5-01): Der Viewer passt die Kamera neu ein, wenn eine 
 
 - Bilder ohne Texturen und ohne exakte Blockmodelle (Treppen, Zäune als Würfel bzw. Pfeil/Schraffur im Plan).
 - Diff vergleicht nur Blockzustände, keine BlockEntity-Inhalte; Verschiebungen werden nicht erkannt (Ausrichtung immer an der Minimum-Ecke).
-- Materialtausch kennt nur die gelisteten Sätze; Kupfer, Glas und Terrakotta als Sätze fehlen noch.
+- Materialtausch kennt nur die gelisteten Sätze; Kupfer bleibt ohne vollständigen Zustands-/Profilnachweis offen. Glas, Beton und Terrakotta sind seit MAT-03 getrennt auswählbar.
 - Hauptbundle rund 725 kB (Warnschwelle 650 kB), Aufteilung offen.
+
+
+## MAT-03 · Getrennte Glas-, Beton- und Terrakottavarianten · 01.11.2026
+
+50 zusätzliche, gezielt wählbare Sätze ergänzen die bestehenden Varianten: Klarglas und 16 Glasfarben (Vollblock/Scheibe), 16 Betonfarben (Beton/Trockenbeton), Naturterrakotta und 16 Terrakottafarben (normal/glasiert). Eine Scheibe bleibt eine Scheibe, Trockenbeton bleibt Trockenbeton, glasierte Keramik behält `facing`. Naturterrakotta hat keine glasierte Form; diese bleibt beim Wechsel unverändert und wird im Bericht genannt. Es wird weder Glas aus Beton noch feste Keramik aus Trockenbeton erzeugt.
+
+Die Oberfläche nutzt `detectMaterials(payload, { scoped: true })`, `materialTargets` und eine ausdrückliche `forms`-Einschränkung je Tausch. Dadurch betrifft etwa „rote Wolle → blau“ ausschließlich die angezeigten Formen, während rote Glasflächen getrennt gewählt werden. Die kanonischen `MATERIAL_SETS`, `materialOf` und bisherige Aufrufe von `detectMaterials` bleiben unverändert. Bestehende Aufrufe `farbe_red → farbe_blue` ohne Formeinschränkung behalten den früheren vollständigen Farbsatztausch. Neue Sätze liegen additiv in `SCOPED_MATERIAL_SETS`; es gibt keinen Schemawechsel gespeicherter Versionen. Bereits gespeicherte AssetVersion-Payloads bleiben unveränderlich.
+
+Vor Übernahme von Properties prüft der Tausch beide vollständigen Schemas des vorhandenen manuellen Zustandskatalogs. Ungültige oder unbekannte Properties werden abgewiesen; Eigenschaften werden nicht still entfernt. Ändert ein Tausch eine Zelle mit BlockEntity, wird der gesamte Vorgang mit verständlichem NBT-Adapterhinweis abgewiesen. Der unveränderte Originalzustand und seine NBT-Daten bleiben erhalten. No-op und Änderungen anderer Zellen sind weiter möglich. Eine vollständige Registry-/Spielabnahme ersetzt diese interne Prüfung nicht.
+
+Prüfung: handgezählte Trennung von Wolle/Glas/Beton/Keramik, vollständige Pane-Properties, glasierte Orientierung, fehlende Zielform, überlappende Quellen, fremde Properties, BlockEntity-Sperre und quellseitige Unveränderlichkeit. Alle 50 neuen Sätze und ihre gleichartigen Ziele gegen vorhandene Schemas und Bauitemregeln geprüft. Separater Vergleich mit der vorherigen `variants.ts` bestätigt identische SHA-256-Payloads aller 174 mitgelieferten Gebäude. Kupfer und Einzelblock-Overrides sind weitere, getrennte Ausbauschritte.

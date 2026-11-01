@@ -70,3 +70,11 @@ README beschreibt die implementierten Module statt des initialen Fundaments. Pag
 UI-01 ist jetzt in die Hauptnavigation eingebunden: fünf rein visuelle Themen sowie Hell/Dunkel/Geräteeinstellung mit lokaler Speicherung und Rückfall bei Speicherfehlern. Das Materiallabor im Material-Tab zeigt die vorhandenen berechneten Bauitems nach Materialfamilie, Suche, Zuordnung und Bedarf; Herkunft und Blockzustände bleiben einsehbar. Es verwendet denselben Materialbericht wie die Tabelle und führt kein zweites Lager. Beschädigte Seitenlinks führen zur Fehleransicht statt zum Startabsturz; kodierte Projekt-IDs bleiben erhalten.
 
 Kein zusätzliches Repository, keine externe Registry und kein produktiver Login. Weltkarte, exakte Minecraft-Blockmodelle, Teamdienst und Spielabnahme bleiben eigene offene Blöcke. Aktuelle Gesamtprüfung und Veröffentlichungsnachweis stehen in TESTING beziehungsweise deployment.json; die fehlende Chromium-Laufzeit erlaubt weiterhin keine Browserabnahme.
+
+## Bauwelten und getrennte Materialvarianten · 01.11.2026
+
+Bibliothek → „Bauwelten“: acht thematische Einstiege mit echten Katalogvorschauen, berechneten Trefferzahlen, passenden Suchlinks und je drei Aufbauideen. Themen: Hafen & Küste, Burg & Marktstadt, Moderne Stadt, Nordische Bergsiedlung, Magische Bauwelt, Nether-Expedition, Dorf & Landleben, Technik & Industrie. Keine neuen Gebäude oder automatisch erzeugten Projekte; eigene passende Bauteile erscheinen über ihre Angaben mit.
+
+50 zusätzliche gezielte Materialsätze für Glas, Beton und Terrakotta stehen in der Variantenoberfläche bereit. Das Materiallabor zeigt diese Familien getrennt. Alte Satz-IDs und bisherige Varianten bleiben erhalten; Eigenschaften werden vor dem Tausch geprüft, betroffene BlockEntity-Zellen benötigen einen NBT-Adapter. Kupfer mit Oxidation/Wachsstatus bleibt offen. Neue Suchlinks übernehmen die gewünschte Auswahl, ohne alte Filter zurück in die Adresse zu schreiben.
+
+Details: [Bauwelten](architecture/BUILD_THEMES.md), [Materialvarianten](architecture/SCHEM_VIEWS.md), [Materiallabor](architecture/MATERIAL_LAB.md). Prüfungen und Browsergrenzen in TESTING. Nächste Themen und konkrete Folgeabnahmen in NOVEMBER_EXPANSION.

@@ -17,6 +17,8 @@ test('supported routes preserve semantic values through generated links', () => 
     { view: 'library', page: 'compare', id: 'Turm,Haus' },
     { view: 'library', page: 'generators' },
     { view: 'library', page: 'generators', id: 'haus~fachwerk' },
+    { view: 'library', page: 'themes' },
+    { view: 'library', page: 'themes', projectId: 'Hafen / Süd' },
   ];
   for (const route of routes) assert.deepEqual(parseRoute(href(route)), route, href(route));
 });

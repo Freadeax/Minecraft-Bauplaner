@@ -1,8 +1,8 @@
 import type { ItemLine, MaterialReport } from './materials.js';
-import { materialOf } from './variants.js';
+import { scopedMaterialOf } from './variants.js';
 
 /** Display groups reuse the explicit variant catalogue; they never define recipes or swaps. */
-export const LAB_FAMILY_LABEL = { holz: 'Holz', stein: 'Stein', farbe: 'Farbmaterial', sonstige: 'Weitere Materialien' } as const;
+export const LAB_FAMILY_LABEL = { holz: 'Holz', stein: 'Stein', farbe: 'Farbmaterial', glas: 'Glas', beton: 'Beton', terrakotta: 'Terrakotta', sonstige: 'Weitere Materialien' } as const;
 export type LabFamily = keyof typeof LAB_FAMILY_LABEL;
 export interface LabEntry {
   readonly line: ItemLine;
@@ -18,7 +18,7 @@ export interface LabOptions {
 
 export function labEntry(line: ItemLine): LabEntry {
   // materialOf accepts bare ids; an unrelated namespace must never inherit a Vanilla family.
-  const member = line.itemId.startsWith('minecraft:') ? materialOf(line.itemId) : undefined;
+  const member = line.itemId.startsWith('minecraft:') ? scopedMaterialOf(line.itemId) : undefined;
   return { line, family: member?.set.kind ?? 'sonstige', setLabel: member?.set.label ?? null };
 }
 

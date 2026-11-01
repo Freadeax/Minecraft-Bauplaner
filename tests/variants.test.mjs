@@ -148,3 +148,66 @@ test('variant group: family members, derived variants and their basis', async ()
   assert.deepEqual(plainTags(own), ['turm'], 'basis tag is structural');
   assert.ok(withFacets(own.tags, { kategorie: ['befestigung'], stil: [], biom: [], funktion: [] }).includes(`${BASIS_PREFIX}bld_wachturm`));
 });
+
+import { SCOPED_MATERIAL_SETS, materialTargets, scopedMaterialOf } from '../dist/domain/src/variants.js';
+
+test('scoped families are opt-in and legacy colour swaps remain unchanged', () => {
+  const p = payload([st('red_wool'), st('red_stained_glass'), st('red_concrete'), st('red_terracotta')], [at(0,0,0,0),at(1,0,0,1),at(2,0,0,2),at(0,1,0,3)]);
+  assert.deepEqual(detectMaterials(p).map(u => [u.set.id,u.blocks]), [['farbe_red',4]]);
+  assert.deepEqual(detectMaterials(p, {scoped:true}).map(u => [u.set.kind,u.blocks]).sort(), [['beton',1],['farbe',1],['glas',1],['terrakotta',1]]);
+  assert.equal(swapMaterials(p, [{from:'farbe_red',to:'farbe_blue'}]).replaced, 4, 'legacy whole-colour swap retained');
+  const filtered = swapMaterials(p, [{from:'farbe_red',to:'farbe_blue', forms:['wool']}]);
+  assert.equal(filtered.replaced, 1);
+  assert.equal(filtered.payload.palette[filtered.payload.cells[1].paletteIndex].id, 'minecraft:red_stained_glass');
+  const glass = swapMaterials(p,[{from:'glas_red',to:'glas_blue'}]);
+  assert.equal(glass.replaced,1);
+  assert.equal(glass.payload.palette[glass.payload.cells[0].paletteIndex].id, 'minecraft:red_wool');
+  assert.throws(() => swapMaterials(p,[{from:'farbe_red',to:'farbe_blue',forms:['made_up']}]), /Quellform/);
+  assert.throws(() => swapMaterials(p,[{from:'farbe_red',to:'farbe_blue'},{from:'glas_red',to:'glas_blue'}]), /Überlappende/);
+  assert.equal(scopedMaterialOf('minecraft:red_stained_glass').set.kind,'glas');
+  assert.equal(scopedMaterialOf('mod:red_stained_glass'),undefined);
+  assert.ok(materialTargets(scopedMaterialOf('minecraft:red_stained_glass').set).every(s=>s.kind==='glas'));
+});
+
+test('glass panes, concrete powder and glazed terracotta retain exact state and separate physical forms', () => {
+  const pane={east:'true',north:'false',south:'true',west:'false',waterlogged:'true'};
+  const p=payload([st('glass'),st('glass_pane',pane),st('red_glazed_terracotta',{facing:'west'}),st('red_concrete_powder')],[at(0,0,0,0),at(1,0,0,1),at(2,0,0,2),at(0,1,0,3)]);
+  const before=JSON.stringify(p);
+  const r=swapMaterials(p,[{from:'glas_klar',to:'glas_blue'},{from:'terrakotta_red',to:'terrakotta_blue'},{from:'beton_red',to:'beton_blue'}]);
+  assert.equal(r.replaced,4);
+  assert.deepEqual(r.payload.palette[r.payload.cells[1].paletteIndex].properties,pane);
+  assert.deepEqual(r.payload.palette[r.payload.cells[2].paletteIndex],st('blue_glazed_terracotta',{facing:'west'}));
+  assert.equal(r.payload.palette[r.payload.cells[3].paletteIndex].id,'minecraft:blue_concrete_powder');
+  assert.equal(JSON.stringify(p),before);
+  const natural=swapMaterials(p,[{from:'terrakotta_red',to:'terrakotta_natur'}]);
+  assert.equal(natural.replaced,0);
+  assert.equal(natural.unresolved[0].form,'glazed_terracotta');
+  assert.throws(()=>swapMaterials(p,[{from:'glas_klar',to:'beton_blue'}]),/lässt sich nicht/);
+  const bad=payload([st('red_concrete',{facing:'north'})],[at(0,0,0,0)]);
+  assert.throws(()=>swapMaterials(bad,[{from:'beton_red',to:'beton_blue'}]),/Eigenschaften/);
+});
+
+test('material swap never reuses BlockEntity NBT for a changed cell', () => {
+  const base=payload([st('red_shulker_box',{facing:'north'}),st('stone')],[at(0,0,0,0),at(1,0,0,1)]);
+  const p=createPayload({...base,blockEntities:[{position:[0,0,0],data:{type:'compound',value:{id:{type:'string',value:'minecraft:shulker_box'},Items:{type:'list',elementType:'compound',value:[]}}}}]});
+  const before=JSON.stringify(p);
+  assert.throws(()=>swapMaterials(p,[{from:'farbe_red',to:'farbe_blue'}]),/NBT-Adapter/);
+  assert.equal(JSON.stringify(p),before);
+  assert.equal(swapMaterials(p,[{from:'farbe_red',to:'farbe_red'}]).replaced,0);
+  assert.equal(swapMaterials(p,[{from:'stone',to:'cobblestone'}]).replaced,1,'unrelated entity remains untouched');
+});
+
+test('all scoped coloured forms use compatible schemas and produce catalogued build items', () => {
+  assert.equal(SCOPED_MATERIAL_SETS.length,50);
+  for(const set of SCOPED_MATERIAL_SETS) for(const [form,id] of Object.entries(set.forms)) {
+    const schema=stateRuleFor(`minecraft:${id}`)?.schema??{};
+    const properties=Object.fromEntries(Object.entries(schema).map(([key,values])=>[key,values[0]]));
+    const p=payload([st(id,properties)],[at(0,0,0,0)]);
+    for(const target of materialTargets(set)) {
+      const r=swapMaterials(p,[{from:set.id,to:target.id}]);
+      if(!target.forms[form]) { assert.equal(r.unresolved.length,1); continue; }
+      assert.deepEqual(r.payload.palette[r.payload.cells[0].paletteIndex].properties,properties);
+      assert.equal(computeMaterials(r.payload).items[0]?.confidence,'catalog',`${id} → ${target.id}`);
+    }
+  }
+});

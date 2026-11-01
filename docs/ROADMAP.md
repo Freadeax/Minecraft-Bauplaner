@@ -117,3 +117,10 @@ Lokale Korrektur für Merkliste, Vergleich und Blickrichtung bei nicht verfügba
 - MAT-02: Materiallabor als Projektansicht der tatsächlichen Bauitems mit Familien, Such-/Zuordnungsfilter, Sortierung, Mengen und Herkunft; kein separates Inventar oder Datenrepository. Details [MATERIAL_LAB](architecture/MATERIAL_LAB.md). Mengen-/Rohstoffregeln bleiben im bestehenden Kern.
 - Navigation: beschädigte URL-Kodierung abgefangen; kodierte IDs und Unicode-Routen geprüft. Keine zusätzlichen Abhängigkeiten.
 - Nächste Schritte: echte Desktop-/iPhone-Sichtprüfung dieser Oberflächen; bestehende B15/B16/B17/S4-Reservierungen weiterhin abstimmen. Keine externe Registry und kein zusätzliches Repository.
+
+## Fortsetzung Bauwelten und Materialfamilien · 01.11.2026
+
+- WORLD-01 implementiert: acht Bauwelten mit aktuellen Katalogeinträgen, Aufbauideen, reproduzierbaren Filterlinks und erhaltener Projektzuordnung. Kein separater Gebäudebestand oder automatischer Composer-Eingriff. [BUILD_THEMES](architecture/BUILD_THEMES.md).
+- MAT-03 implementiert: 50 gezielte Glas-/Beton-/Terrakotta-Sätze, getrennte Laborfamilien, kompatible Properties und BlockEntity-Sperre ohne NBT-Adapter. Bisherige Satzsemantik bleibt für vorhandene Varianten bestehen.
+- Folgeblöcke WORLD-02 (weitere thematische Katalogzugänge), BUILD-05 (geprüfte Bauwelt-Anlagen) und MAT-04 (Kupfer mit Profilnachweis) in [NOVEMBER_EXPANSION](NOVEMBER_EXPANSION.md) beschrieben; noch nicht implementiert.
+- Visuelle Desktop-/iPhone-Abnahme weiterhin offen; gezielte Browserregression ergänzt, Chromium-Ausführung hier nicht verfügbar.

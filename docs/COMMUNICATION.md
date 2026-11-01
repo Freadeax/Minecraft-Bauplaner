@@ -360,3 +360,30 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 ### MSG-NOV-INTEGRATE-01 · Codex · 2026-11-01 · Abschlussintegration
 - UI-01, MAT-02 und Navigation gemeinsam eingebunden; 334 Node-Tests und strenge Typ-/Build-/Dokumentationsprüfungen bestanden. Browserregressionen vorbereitet, tatsächliche Ausführung scheitert an fehlendem Chromium (TESTING).
 - Dateizuständigkeiten beendet; Hauptthread führt finalen unveränderten Gesamtcheck und Remote-/Kommunikationsprüfung aus. Danach reguläre Main-Integration über Konnektor und unmittelbar passender manifestgeprüfter Artefakt-Kindcommit. Shell-Schreibanmeldung fehlt; Konnektor verwenden, keine neue Nutzerfreigabe nötig.
+
+### MSG-NOV-THEMES-00 · Codex · 2026-11-01 · Bauwelten und Material-Folgeblock
+- Nutzerfortsetzung: andere Themen und notierte Folgepunkte entwickeln, geprüfte Änderungen auf main und Pages. Zwei unabhängige Blöcke: Bauwelten mit echten Katalogtreffern (theme_ui), Materialfamilien/Datenerhalt (material_lab). Hauptthread integriert LibraryView/router, prüft Suchlinks/Browserregression, Gesamtcheck, Dokumentation und Veröffentlichung.
+- Kein zusätzliches Repository, keine Registry, kein Login. Vorhandene B15/B16/B17/S4-Dateien werden nicht übernommen. Keine separaten Commits/Pushes der Teilthreads.
+
+### MSG-MAT03-START · Codex Thread material_lab · 2026-11-01 · Explizite Materialfamilien
+- Reserviert: `variants.ts`, `materialLab.ts`, zugehörige Kernregressionen, minimale Varianten-UI-Texte sowie Verträge SCHEM_VIEWS/MATERIAL_LAB. Neue getrennte Glas-/Beton-/Terrakotta-Farbsätze, bestehende farbe_*-Aufrufe kompatibel halten; keine doppelten kanonischen Blockmitgliedschaften.
+- Sicherheitsziel: keine stillen Änderungen von BlockEntity-tragenden Zellen ohne NBT-Adapter. Eigenschaften/Formen nur kompatibel übernehmen. Kupfer bleibt ohne vollständigen Zustandsnachweis offen. Kein Commit/Push durch diesen Thread.
+
+### MSG-WORLDS-00 · Codex Thread theme_ui · 2026-11-01 · Bauwelten reserviert
+- Neuer Themenzugang zur bestehenden Bibliothek: acht Bauwelten mit tatsächlichen Facettenfiltern, dynamischen Treffern und realen Vorschauen vorhandener Versionen. Kein zweiter Gebäudekatalog, keine erfundenen Kompatibilitäts-/Bestandsangaben.
+- Eigene Dateien: `packages/domain/src/buildThemes.ts`, `views/library/BuildThemesPage.tsx`, `buildThemeLinks.ts`, `buildThemes.css`, `tests/build-themes.test.mjs`, `docs/architecture/BUILD_THEMES.md`. Hauptthread besitzt Router/LibraryView-Einbindung. Kein Commit/Push.
+
+### MSG-WORLDS-01 · Codex Thread theme_ui · 2026-11-01 · Bauwelten übergeben
+- Acht Bauwelten mit realen Katalogvorschauen, dynamischen Trefferzahlen, sichtbaren Facetten und je drei Aufbauideen umgesetzt. Eigene passende Bauteile erscheinen automatisch, archivierte werden ausgeblendet; leere Treffer verständlich dargestellt.
+- Suchlinks über vorhandenen URL-Serializer reproduzieren dieselben nach Namen sortierten Treffer mit allen Varianten (`varianten=alle`). Sprungschaltflächen verändern keine Hashroute. Oberfläche nutzt Themevariablen und responsives Kartenraster.
+- `npm run build:core`, drei neue Node-Regressionen mit realem Gebäudebestand, vollständige Typprüfung, Dokumentationsprüfung und Diffprüfung bestanden. Browserregression durch Hauptthread; keine Browserausführung in diesem Thread. Keine Commits/Pushes; Dateizuständigkeit zur Integration beendet.
+
+### MSG-MAT03-DONE · Codex Thread material_lab · 2026-11-01 · Übergabe
+- 50 neue opt-in Materialsätze (17 Glas einschließlich Klar, 16 Beton einschließlich Trockenbeton, 17 Terrakotta einschließlich Natur/glasiert), getrennte Familien im Labor und passende Zielauswahl in Bauversionen. Angezeigte Quellformen begrenzen moderne UI-Tauschvorgänge; bisherige Materialsets und unbeschränkte `farbe_*`-Aufrufe bleiben kompatibel.
+- Sicherheitskorrektur: vollständige Propertyschemas gegen vorhandenen Zustandskatalog geprüft; fremde/ungültige Properties brechen ab. Geänderte BlockEntity-Zellen sperren den gesamten Vorgang bis zu einem geprüften NBT-Adapter. Original bleibt unverändert; No-op und andere Zellen bleiben nutzbar. Kupfer weiterhin offen.
+- Prüfung: 16 zugehörige Tests bestanden, darunter fünf neue Regressionen und alle 50 Sätze gegen jedes gleichartige Ziel; Kernbuild, strenge Typprüfung, Dokumentations-/Diffprüfung bestanden. Separater Vorher-/Nachher-Lauf mit aus HEAD transpiliertem altem variants-Modul bestätigt identische SHA-256-Hashes aller 174 mitgelieferten Gebäude-Payloads. Kein gespeichertes Versionsschema geändert.
+- Code-Dateien stabil; nur Abschlussdokumentation nach dem vollständigen Hauptthreadcheck ergänzt. Kein Commit/Push durch diesen Thread; Gesamtintegration und Pages beim Hauptthread.
+
+### MSG-NOV-THEMES-01 · Codex · 2026-11-01 · Gesamtintegration und Veröffentlichung
+- Bauwelten und MAT-03 integriert; 342 Node-Tests, strict Typprüfung, Kern-/Webbuild und Dokumentationsprüfung bestanden. Alle 174 bisherigen Gebäude-Payloadhashes bleiben unverändert. Browserstart mangels Chromium blockiert, gezielte Desktop-/Mobilregression dokumentiert.
+- Root besitzt LibraryView/router-Einbindung und Übergang externer Themenfilter ohne Rücküberschreiben durch alten Zustand. Teilthread-Dateien sind stabil, Reservierungen beendet. Kein zusätzliches Repository/Registry/Login. Nächster Schritt: regulärer Quellcommit auf main und unmittelbar passender manifestgeprüfter Artefakt-Kindcommit; Live-SHA und Dateihashes getrennt prüfen.

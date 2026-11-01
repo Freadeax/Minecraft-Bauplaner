@@ -21,6 +21,7 @@ import type { Filters } from './library/CatalogFilters';
 import { ComparePage } from './library/ComparePage';
 import { EnsemblesPage } from './library/EnsemblesPage';
 import { GeneratorsPage } from './library/GeneratorsPage';
+import { BuildThemesPage } from './library/BuildThemesPage';
 import { FacetFields, facetsFromForm } from './library/FacetFields';
 import { useCardView, useCompare, useFavorites, MAX_COMPARE } from './library/prefs';
 import { SHOTS } from '../thumbnail/views';
@@ -153,17 +154,22 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
   useEffect(() => { setLimit(PAGE_SIZE); }, [query, filters, sort, descending, collapse, onlyFavorites]);
   // A followed link with another query (e.g. a category tile on the project page) replaces the state.
   const lastSearch = useRef(search ?? '');
+  const incomingSearch = useRef(false);
   useEffect(() => {
     if (page !== 'browse' || search === undefined || search === lastSearch.current) return;
     lastSearch.current = search;
+    incomingSearch.current = true;
     const s = readUrl(search);
-    setQuery(s.query); setFilters(s.filters as Filters); if (s.sort) setSort(s.sort as SortKey); setDescending(s.descending);
+    setQuery(s.query); setFilters(s.filters as Filters); setSort((s.sort as SortKey | undefined) ?? (projectId ? 'match' : 'name')); setDescending(s.descending);
     setCollapse(s.collapse); setLayout(s.layout); setOnlyFavorites(s.onlyFavorites);
-  }, [search, page]);
+  }, [search, page, projectId]);
   // Write the overview state into the address without a navigation (no history entry, no scroll jump).
   const urlSearch = encodeLibraryState({ query, filters, ...(sort !== (projectId ? 'match' : 'name') && { sort }), descending, collapse, layout, onlyFavorites }, FACET_KEYS);
   useEffect(() => {
     if (page !== 'browse') return;
+    // An external thematic search first updates React state. Do not write the
+    // previous filter state back over that incoming URL in the same effect pass.
+    if (incomingSearch.current) { incomingSearch.current = false; return; }
     lastSearch.current = urlSearch;
     const next = href({ view: 'library', ...(projectId && { projectId }), ...(urlSearch && { search: urlSearch }) });
     if (window.location.hash !== next) history.replaceState(history.state, '', next);
@@ -283,6 +289,7 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
     <a href={libHref('ensembles')} aria-current={page === 'ensembles' ? 'page' : undefined}>Ensembles <small>{ENSEMBLES.length}</small></a>
     <a href={compare.ids.length ? libHref('compare', compare.ids.join(',')) : libHref('compare', '-')} aria-current={page === 'compare' ? 'page' : undefined}>Vergleich <small>{compare.ids.length}</small></a>
     <a href={libHref('generators')} aria-current={page === 'generators' ? 'page' : undefined}>Generatoren <small>{GENERATORS.length}</small></a>
+    <a href={libHref('themes')} aria-current={page === 'themes' ? 'page' : undefined}>Bauwelten</a>
   </nav>;
   const notices = <>
     {message && <div className="notice" role="status">{message}{link && <a className="notice-link" href={link.href}>{link.label} →</a>}</div>}
@@ -317,6 +324,10 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
   }
   if (page === 'ensembles') return <div className="page">{header}{tabs}{notices}
     <EnsemblesPage id={id} byAsset={byAsset} names={assetNames} versions={library.versions} libHref={libHref} onCreate={e => void createFromEnsemble(e)} /></div>;
+  if (page === 'themes') return <div className="page">{header}{tabs}{notices}
+    <BuildThemesPage entries={catalog.entries}
+      browseHref={search => href({ view: 'library', ...(projectId && { projectId }), search })}
+      buildingHref={id => libHref('building', id)} /></div>;
   if (page === 'generators') return <div className="page">{header}{tabs}{notices}
     <GeneratorsPage id={id} projects={projects} libHref={libHref} onSaved={(m, savedId) => { say(m); showBuilding(savedId); }} /></div>;
   if (page === 'compare') {

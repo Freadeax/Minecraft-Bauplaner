@@ -1,4 +1,5 @@
 import { createPayload, stateKey } from '../../voxel/src/validation.js';
+import { stateRuleFor } from '../../voxel/src/states.js';
 import type { BlockState, Cell, VoxelPayload } from '../../voxel/src/types.js';
 
 /**
@@ -9,7 +10,7 @@ import type { BlockState, Cell, VoxelPayload } from '../../voxel/src/types.js';
  * target set does not have (a wall in polished andesite, leaves of crimson)
  * is not invented: the block stays unchanged and is reported as unresolved.
  */
-export type MaterialKind = 'holz' | 'stein' | 'farbe';
+export type MaterialKind = 'holz' | 'stein' | 'farbe' | 'glas' | 'beton' | 'terrakotta';
 export interface MaterialSet {
   readonly id: string;
   readonly label: string;
@@ -17,7 +18,7 @@ export interface MaterialSet {
   /** Form name → block id without namespace. */
   readonly forms: Readonly<Record<string, string>>;
 }
-export const MATERIAL_KIND_LABEL: Readonly<Record<MaterialKind, string>> = { holz: 'Holz', stein: 'Stein', farbe: 'Farbe' };
+export const MATERIAL_KIND_LABEL: Readonly<Record<MaterialKind, string>> = { holz: 'Holz', stein: 'Stein', farbe: 'Farbe', glas: 'Glas', beton: 'Beton', terrakotta: 'Terrakotta' };
 
 const WOOD_FORMS = ['planks', 'stairs', 'slab', 'fence', 'fence_gate', 'door', 'trapdoor', 'button', 'pressure_plate', 'sign', 'wall_sign', 'hanging_sign', 'wall_hanging_sign'] as const;
 function wood(key: string, label: string, opts: { log?: string; wood?: string; leaves?: boolean; sapling?: string | null } = {}): MaterialSet {
@@ -77,24 +78,44 @@ const DYES: readonly (readonly [string, string])[] = [
 const DYE_FORMS = ['wool', 'carpet', 'concrete', 'concrete_powder', 'terracotta', 'glazed_terracotta', 'stained_glass', 'stained_glass_pane', 'bed', 'banner', 'wall_banner', 'candle', 'shulker_box'] as const;
 const COLOURS: readonly MaterialSet[] = DYES.map(([id, label]) => ({ id: `farbe_${id}`, label, kind: 'farbe', forms: Object.fromEntries(DYE_FORMS.map(f => [f, `${id}_${f}`])) }));
 
+/** Scoped families are additive: legacy colour swaps and generated version hashes stay stable. */
+export const SCOPED_MATERIAL_SETS: readonly MaterialSet[] = [
+  { id: 'glas_klar', label: 'Klarglas', kind: 'glas', forms: { stained_glass: 'glass', stained_glass_pane: 'glass_pane' } },
+  ...DYES.map(([id, label]): MaterialSet => ({ id: `glas_${id}`, label: `Glas · ${label}`, kind: 'glas', forms: { stained_glass: `${id}_stained_glass`, stained_glass_pane: `${id}_stained_glass_pane` } })),
+  ...DYES.map(([id, label]): MaterialSet => ({ id: `beton_${id}`, label: `Beton · ${label}`, kind: 'beton', forms: { concrete: `${id}_concrete`, concrete_powder: `${id}_concrete_powder` } })),
+  { id: 'terrakotta_natur', label: 'Terrakotta · Natur', kind: 'terrakotta', forms: { terracotta: 'terracotta' } },
+  ...DYES.map(([id, label]): MaterialSet => ({ id: `terrakotta_${id}`, label: `Terrakotta · ${label}`, kind: 'terrakotta', forms: { terracotta: `${id}_terracotta`, glazed_terracotta: `${id}_glazed_terracotta` } })),
+];
+const SCOPED_BY_ID = new Map(SCOPED_MATERIAL_SETS.map(s => [s.id, s]));
+const SCOPED_MEMBER = new Map<string, { set: MaterialSet; form: string }>();
+for (const set of SCOPED_MATERIAL_SETS) for (const [form, id] of Object.entries(set.forms)) SCOPED_MEMBER.set(id, { set, form });
+
 export const MATERIAL_SETS: readonly MaterialSet[] = [...WOODS, ...STONES, ...COLOURS];
 const SET_BY_ID = new Map(MATERIAL_SETS.map(s => [s.id, s]));
 /** Block id (no namespace) → its set and form. Built once; ids are unique across sets (tested). */
 const MEMBER = new Map<string, { set: MaterialSet; form: string }>();
 for (const set of MATERIAL_SETS) for (const [form, id] of Object.entries(set.forms)) if (!MEMBER.has(id)) MEMBER.set(id, { set, form });
 
-export function materialSet(id: string): MaterialSet | undefined { return SET_BY_ID.get(id); }
+export function materialSet(id: string): MaterialSet | undefined { return SCOPED_BY_ID.get(id) ?? SET_BY_ID.get(id); }
 const bare = (id: string) => id.startsWith('minecraft:') ? id.slice(10) : id;
 /** Material set and form of a block id, if it belongs to one. */
 export function materialOf(blockId: string): { set: MaterialSet; form: string } | undefined { return MEMBER.get(bare(blockId)); }
 
+/** Specific families for UI; does not change legacy materialOf semantics. */
+export function scopedMaterialOf(blockId: string): { set: MaterialSet; form: string } | undefined {
+  return SCOPED_MEMBER.get(bare(blockId)) ?? materialOf(blockId);
+}
+export function materialTargets(from: MaterialSet): readonly MaterialSet[] {
+  return [...MATERIAL_SETS, ...SCOPED_MATERIAL_SETS].filter(set => set.kind === from.kind);
+}
+
 export interface MaterialUse { readonly set: MaterialSet; readonly blocks: number; readonly forms: readonly string[] }
 /** Material sets used by a payload with their block counts, most used first. */
-export function detectMaterials(payload: Pick<VoxelPayload, 'cells' | 'palette'>): MaterialUse[] {
+export function detectMaterials(payload: Pick<VoxelPayload, 'cells' | 'palette'>, options: { readonly scoped?: boolean } = {}): MaterialUse[] {
   const uses = new Map<string, { set: MaterialSet; blocks: number; forms: Set<string> }>();
   for (const c of payload.cells) {
     if (c.kind !== 'block') continue;
-    const m = materialOf(payload.palette[c.paletteIndex]!.id);
+    const m = (options.scoped ? scopedMaterialOf : materialOf)(payload.palette[c.paletteIndex]!.id);
     if (!m) continue;
     const u = uses.get(m.set.id) ?? { set: m.set, blocks: 0, forms: new Set<string>() };
     u.blocks++; u.forms.add(m.form); uses.set(m.set.id, u);
@@ -102,7 +123,7 @@ export function detectMaterials(payload: Pick<VoxelPayload, 'cells' | 'palette'>
   return [...uses.values()].map(u => ({ set: u.set, blocks: u.blocks, forms: [...u.forms].sort() })).sort((a, b) => b.blocks - a.blocks || (a.set.id < b.set.id ? -1 : 1));
 }
 
-export interface MaterialSwap { readonly from: string; readonly to: string }
+export interface MaterialSwap { readonly from: string; readonly to: string; /** Optional restriction for the visible forms; absent retains legacy whole-set behaviour. */ readonly forms?: readonly string[] }
 export interface SwapResult {
   readonly payload: VoxelPayload;
   /** Cells whose block id changed. */
@@ -118,23 +139,43 @@ export interface SwapResult {
  * their positions.
  */
 export function swapMaterials(payload: VoxelPayload, swaps: readonly MaterialSwap[]): SwapResult {
-  const plan = new Map<string, MaterialSet>();
+  const seen = new Set<string>();
+  const sources = new Map<string, { from: MaterialSet; to: MaterialSet; form: string }>();
   for (const s of swaps) {
-    const from = SET_BY_ID.get(s.from), to = SET_BY_ID.get(s.to);
+    const from = materialSet(s.from), to = materialSet(s.to);
     if (!from || !to) throw new Error(`Unbekannter Materialsatz: ${!from ? s.from : s.to}`);
     if (from.kind !== to.kind) throw new Error(`${from.label} (${MATERIAL_KIND_LABEL[from.kind]}) lässt sich nicht gegen ${to.label} (${MATERIAL_KIND_LABEL[to.kind]}) tauschen`);
-    if (plan.has(from.id)) throw new Error(`${from.label} ist doppelt als Quelle angegeben`);
-    if (from.id !== to.id) plan.set(from.id, to);
+    if (seen.has(from.id)) throw new Error(`${from.label} ist doppelt als Quelle angegeben`);
+    seen.add(from.id);
+    if (s.forms?.some(form => !Object.hasOwn(from.forms, form))) throw new Error(`Unbekannte Quellform in ${from.label}`);
+    if (from.id === to.id) continue;
+    for (const [form, id] of Object.entries(from.forms)) {
+      if (s.forms && !s.forms.includes(form)) continue;
+      const key = `minecraft:${id}`;
+      if (sources.has(key)) throw new Error(`Überlappende Materialsätze für ${key}`);
+      sources.set(key, { from, to, form });
+    }
   }
   const missing = new Map<string, { id: string; form: string; target: string; count: number }>();
   const mapped: (BlockState | null)[] = payload.palette.map(state => {
-    const m = materialOf(state.id);
-    const to = m && plan.get(m.set.id);
-    if (!m || !to) return null;
-    const target = to.forms[m.form];
-    if (!target) { missing.set(state.id, { id: state.id, form: m.form, target: to.label, count: 0 }); return null; }
-    return { id: `minecraft:${target}`, properties: state.properties };
+    const m = sources.get(state.id);
+    if (!m) return null;
+    const target = m.to.forms[m.form];
+    if (!target) { missing.set(state.id, { id: state.id, form: m.form, target: m.to.label, count: 0 }); return null; }
+    const targetId = `minecraft:${target}`;
+    if (targetId === state.id) return null;
+    const sourceRule = stateRuleFor(state.id), targetRule = stateRuleFor(targetId);
+    const schemas = [sourceRule?.schema ?? {}, targetRule?.schema ?? {}];
+    const keys = Object.keys(state.properties);
+    for (const schema of schemas) {
+      if (keys.length !== Object.keys(schema).length || keys.some(k => !schema[k]?.includes(state.properties[k]!)))
+        throw new Error(`Eigenschaften von ${state.id} sind für ${targetId} nicht sicher übertragbar`);
+    }
+    return { id: targetId, properties: state.properties };
   });
+  const changedPositions = new Set(payload.cells.filter(c => c.kind === 'block' && mapped[c.paletteIndex]).map(c => c.position.join(',')));
+  if (payload.blockEntities.some(e => changedPositions.has(e.position.join(','))))
+    throw new Error('Materialtausch an BlockEntity-Zellen benötigt einen geprüften NBT-Adapter; Original bleibt unverändert');
   const palette: BlockState[] = [], index = new Map<string, number>();
   const remap = payload.palette.map((state, i) => {
     const next = mapped[i] ?? state, key = stateKey(next);
@@ -155,5 +196,5 @@ export function swapMaterials(payload: VoxelPayload, swaps: readonly MaterialSwa
 
 /** Short German name of a swap list, e.g. "Fichte · Tiefenschieferziegel". */
 export function swapLabel(swaps: readonly MaterialSwap[]): string {
-  return swaps.filter(s => s.from !== s.to).map(s => SET_BY_ID.get(s.to)?.label ?? s.to).join(' · ');
+  return swaps.filter(s => s.from !== s.to).map(s => materialSet(s.to)?.label ?? s.to).join(' · ');
 }
