@@ -1,4 +1,4 @@
-import type { Transform, Vec3, VoxelPayload } from '../../voxel/src/types.js';
+import type { Bounds, Transform, Vec3, VoxelPayload } from '../../voxel/src/types.js';
 import type { SitePlan } from './site.js';
 import type { WorldPlacement } from './worldmap.js';
 
@@ -64,7 +64,7 @@ export interface Connector {
 }
 export type Handedness = 'left' | 'right';
 
-export type AssetSourceFormat = 'schem-v3' | 'litematic' | 'voxel-json' | 'demo' | 'crop' | 'composition' | 'variant' | 'generator' | 'editor';
+export type AssetSourceFormat = 'schem-v3' | 'litematic' | 'voxel-json' | 'demo' | 'crop' | 'composition' | 'variant' | 'generator' | 'editor' | 'world-region';
 
 export interface AssetVersionSource {
   readonly format: AssetSourceFormat;
@@ -76,6 +76,8 @@ export interface AssetVersionSource {
   readonly generator?: GeneratorSource;
   /** Blockeditor (EDIT-02): version the edit started from; absent for a model built from scratch. */
   readonly editedFrom?: string;
+  /** World excerpt (WORLD-IMPORT-01): box read from the region files (world coordinates) and its dimension. */
+  readonly world?: { readonly box: Bounds; readonly dimension: string };
 }
 
 export interface GeneratorSource {

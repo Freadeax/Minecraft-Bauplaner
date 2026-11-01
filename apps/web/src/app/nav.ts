@@ -21,6 +21,7 @@ export const mainNav: readonly NavItem[] = [
   { id: 'library', label: 'Bibliothek', href: '#/bibliothek', icon: 'library', views: ['library'], hint: 'Gebäude, Ensembles, Vergleich, Generatoren' },
   { id: 'viewer', label: 'Betrachter', href: '#/betrachter', icon: 'viewer', views: ['viewer'], hint: 'Einzelne Schem-/Litematic-Datei ansehen' },
   { id: 'map', label: 'Weltkarte', href: '#/karte', icon: 'map', views: ['map'], hint: 'Alle Projekte auf der Weltkarte, Überflug und Live-Karte' },
+  { id: 'world', label: 'Weltimport', href: '#/welt', icon: 'terrain', views: ['world'], hint: 'Bereich aus den Regionsdateien deiner Welt als Bauteil übernehmen' },
 ];
 
 /** Seitentitel im Browser-Tab je Route; Projekte setzen ihren Namen selbst. */

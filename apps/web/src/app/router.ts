@@ -19,6 +19,7 @@ import { useEffect, useState } from 'react';
  *   #/karte[?projekt=<id>&dim=<dimension>]  Weltkarte aller platzierten Projekte (MAP-01)
  *   #/mod[?minecraft=…&loader=…&version=…]  Mod-Download mit Versionsauswahl (GAME-02)
  *   #/werkstatt/neu | #/werkstatt/<versionId>  Blockeditor für ein neues oder vorhandenes Bauteil (EDIT-02)
+ *   #/welt                 Ausschnitt aus Regionsdateien der eigenen Welt übernehmen (WORLD-IMPORT-01)
  *   #/system               Systemcheck (Auslieferung, Speicher, Datencheck, Fehlerprotokoll)
  */
 export type Route =
@@ -29,6 +30,7 @@ export type Route =
   | { readonly view: 'map'; readonly search?: string }
   | { readonly view: 'mod'; readonly search?: string }
   | { readonly view: 'workshop'; readonly versionId: string | null }
+  | { readonly view: 'world' }
   | { readonly view: 'project'; readonly projectId: string; readonly tab: string }
   | { readonly view: 'not-found'; readonly path: string };
 
@@ -65,6 +67,7 @@ export function parseRoute(hash: string): Route {
   if (parts[0] === 'betrachter' && parts.length === 1) return { view: 'viewer' };
   if (parts[0] === 'system' && parts.length === 1) return { view: 'system' };
   if (parts[0] === 'mod' && parts.length === 1) return { view: 'mod', ...(search && { search }) };
+  if (parts[0] === 'welt' && parts.length === 1) return { view: 'world' };
   if (parts[0] === 'karte' && parts.length === 1) return { view: 'map', ...(search && { search }) };
   if (parts[0] === 'werkstatt' && parts[1] && parts.length === 2) return { view: 'workshop', versionId: parts[1] === 'neu' ? null : parts[1] };
   if (parts[0] === 'projekt' && parts[1] && parts.length <= 3) return { view: 'project', projectId: parts[1], tab: parts[2] ?? 'editor' };
@@ -83,6 +86,7 @@ export function href(route: Route): string {
     case 'viewer': return '#/betrachter';
     case 'system': return '#/system';
     case 'mod': return `#/mod${route.search ? `?${route.search}` : ''}`;
+    case 'world': return '#/welt';
     case 'map': return `#/karte${route.search ? `?${route.search}` : ''}`;
     case 'workshop': return `#/werkstatt/${route.versionId ? encodeURIComponent(route.versionId) : 'neu'}`;
     case 'project': return `#/projekt/${encodeURIComponent(route.projectId)}${route.tab === 'editor' ? '' : `/${encodeURIComponent(route.tab)}`}`;

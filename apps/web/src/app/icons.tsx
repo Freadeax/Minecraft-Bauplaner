@@ -7,6 +7,7 @@ const PATHS = {
   projects: 'M3 7.5 12 3l9 4.5-9 4.5zM3 12l9 4.5 9-4.5M3 16.5 12 21l9-4.5',
   library: 'M4 4h5v16H4zM10 4h4v16h-4zM15.5 4.6l3.9-1 3.6 15.5-3.9.9z',
   viewer: 'M12 3l8 4.5v9L12 21l-8-4.5v-9zM4 7.5l8 4.5 8-4.5M12 12v9',
+  terrain: 'M3 19l5-8 3.5 4.5L14 12l7 7zM3 21h18M15.5 6.5a2 2 0 1 0 0 .1',
   map: 'M9 4 3 6.5v13L9 17l6 3 6-2.5v-13L15 7zM9 4v13M15 7v13',
   search: 'M10.5 4a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13zM15.5 15.5 20 20',
   editor: 'M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4',
@@ -31,6 +32,6 @@ export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
 
 /** Symbol je Projektbereich (tabs.ts); unbekannte Bereiche bekommen ein neutrales Blatt. */
 export function tabIcon(id: string): IconName {
-  const known: Record<string, IconName> = { editor: 'editor', bauen: 'build', export: 'export', material: 'material', baustelle: 'site', karte: 'map', bloecke: 'building' };
+  const known: Record<string, IconName> = { editor: 'editor', bauen: 'build', export: 'export', material: 'material', baustelle: 'site', karte: 'map', bloecke: 'building', gelaende: 'terrain' };
   return known[id] ?? 'page';
 }

@@ -8,8 +8,17 @@ export function nbtLimits(options:Partial<NbtLimits>):NbtLimits {
   for(const [key,v] of Object.entries(limits))if(!Number.isSafeInteger(v)||v<1)throw new FormatError('LIMIT',`Ungültiges Limit: ${key}`);
   return limits;
 }
+/** Read options that do not change the result of the tags that are kept. */
+export interface NbtReadOptions {
+  /**
+   * Compound entries with one of these names are skipped at any depth: bounds and
+   * types are still checked, but nothing is allocated and they count only bytes
+   * against the budget. Used for bulky data a reader never needs (e.g. chunk light).
+   */
+  readonly skipKeys?: ReadonlySet<string>;
+}
 /** Big-endian Java NBT. Separate from gzip and Schematic schema validation. */
-export function readNbt(bytes:Uint8Array,options:Partial<NbtLimits>={}):{name:string;tag:NbtTag} {
+export function readNbt(bytes:Uint8Array,options:Partial<NbtLimits>={},read:NbtReadOptions={}):{name:string;tag:NbtTag} {
   const limits=nbtLimits(options);if(bytes.byteLength>limits.maxBytes)throw new FormatError('LIMIT','Entpackte NBT-Datei überschreitet das Größenlimit.');
   const view=new DataView(bytes.buffer,bytes.byteOffset,bytes.byteLength);let pos=0,nodes=0,checks=0;
   const deadline=performance.now()+limits.maxDurationMs;
@@ -33,6 +42,20 @@ export function readNbt(bytes:Uint8Array,options:Partial<NbtLimits>={}):{name:st
     }return result;
   }
   function length(){const n=i32();if(n<0)fail('LENGTH','Negative Array-/Listenlänge.');spend(n);return n;}
+  const skipKeys=read.skipKeys;
+  function skipString(){const n=u16();need(n);pos+=n;}
+  function skip(type:number,depth:number):void {
+    tick();if(depth>limits.maxDepth)fail('LIMIT','NBT-Tiefenlimit überschritten.');
+    switch(type){
+      case 1:need(1);pos+=1;return;case 2:need(2);pos+=2;return;case 3:case 5:need(4);pos+=4;return;case 4:case 6:need(8);pos+=8;return;
+      case 7:{const n=i32();if(n<0)fail('LENGTH','Negative Array-/Listenlänge.');need(n);pos+=n;return;}
+      case 8:skipString();return;
+      case 9:{const element=u8(),n=i32();if(n<0)fail('LENGTH','Negative Array-/Listenlänge.');if(element>12||(element===0&&n!==0))fail('TYPE','Ungültiger NBT-Listentyp.');for(let i=0;i<n;i++)skip(element,depth+1);return;}
+      case 10:while(true){const t=u8();if(t===0)return;if(t>12)fail('TYPE','Unbekannter NBT-Typ.');skipString();skip(t,depth+1);}
+      case 11:case 12:{const n=i32();if(n<0)fail('LENGTH','Negative Array-/Listenlänge.');const w=type===11?4:8;need(n*w);pos+=n*w;return;}
+      default:fail('TYPE','Unbekannter NBT-Typ.');
+    }
+  }
   function tag(type:number,depth:number):NbtTag {
     tick();spend(1);if(depth>limits.maxDepth)fail('LIMIT','NBT-Tiefenlimit überschritten.');
     switch(type){
@@ -44,7 +67,7 @@ export function readNbt(bytes:Uint8Array,options:Partial<NbtLimits>={}):{name:st
       case 7:{const n=length();need(n);const value=Array.from(bytes.subarray(pos,pos+n),v=>v>=128?v-256:v);pos+=n;return{type:'byteArray',value};}
       case 8:return{type:'string',value:string()};
       case 9:{const element=u8(),n=length();if(element>12||(element===0&&n!==0))fail('TYPE','Ungültiger NBT-Listentyp.');const value:NbtTag[]=[];for(let i=0;i<n;i++)value.push(tag(element,depth+1));return{type:'list',elementType:element===0?'end':types[element-1]!,value};}
-      case 10:{const value:Record<string,NbtTag>=Object.create(null);while(true){const t=u8();if(t===0)break;if(t>12)fail('TYPE','Unbekannter NBT-Typ.');const name=string();if(Object.hasOwn(value,name))fail('DUPLICATE',`Doppelter Compound-Schlüssel: ${name}`);value[name]=tag(t,depth+1);}return{type:'compound',value};}
+      case 10:{const value:Record<string,NbtTag>=Object.create(null);while(true){const t=u8();if(t===0)break;if(t>12)fail('TYPE','Unbekannter NBT-Typ.');const name=string();if(Object.hasOwn(value,name))fail('DUPLICATE',`Doppelter Compound-Schlüssel: ${name}`);if(skipKeys?.has(name)){skip(t,depth+1);continue;}value[name]=tag(t,depth+1);}return{type:'compound',value};}
       case 11:{const n=length();need(n*4);const value:number[]=[];for(let i=0;i<n;i++)value.push(i32());return{type:'intArray',value};}
       case 12:{const n=length();need(n*8);const value:string[]=[];for(let i=0;i<n;i++)value.push(long());return{type:'longArray',value};}
       default:return fail('TYPE','Unbekannter NBT-Typ.');

@@ -1,5 +1,5 @@
 export { readNbt, FormatError, NBT_LIMITS } from './nbt.js';
-export type { NbtLimits } from './nbt.js';
+export type { NbtLimits, NbtReadOptions } from './nbt.js';
 export { importSchemV3, normalizeSchem, parseBlockState, gunzipLimited, SCHEM_LIMITS } from './schem.js';
 export type { SchemLimits, SchemResult } from './schem.js';
 export { writeNbt, modifiedUtf8, gzip, NBT_WRITE_LIMITS } from './nbtWrite.js';
@@ -14,3 +14,9 @@ export { buildLitematic, writeLitematic, packLongs, litematicVersionFor, LITEMAT
 export type { LitematicWriteOptions, LitematicExportReport, LitematicExport, LitematicWriteVersion } from './litematicWrite.js';
 export { importStructure, detectStructureFormat } from './structure.js';
 export type { StructureImport, StructureFormat } from './structure.js';
+export { RegionReader, readRegionHeader, splitChunkRecord, decompressChunk, parseChunkNbt, unpackSection, chunkBlockAt, parseRegionFileName, regionFileName, parseExternalChunkName, bytesRegionSource, ANVIL_LIMITS, CHUNK_SKIP_KEYS, ANVIL_MIN_DATA_VERSION, ANVIL_FLAT_ROOT_DATA_VERSION, REGION_HEADER_BYTES, SECTOR_BYTES } from './anvil.js';
+export type { AnvilLimits, RegionName, RegionEntry, ChunkCompression, ChunkRecord, ChunkSection, ChunkLayout, ChunkBlockEntity, ParsedChunk, RegionSource, ExternalChunkLookup, ChunkRead } from './anvil.js';
+export { lz4BlockStreamDecompress, lz4DecodeBlock, xxhash32, LZ4_CHECKSUM_SEED } from './lz4.js';
+export { sampleWorld, sampleToPayload, sampleAt, surfaceMap, collectWorldFiles, checkWorldBox, chunksOfBox, regionKey, createRegionCache, readExcerptChunk, WORLD_SAMPLE_LIMITS, EXCERPT_PAYLOAD_LIMITS, CHUNK_STATE_LABEL, SURFACE_UNKNOWN } from './worldExcerpt.js';
+export type { WorldFiles, WorldSample, WorldSampleLimits, WorldSampleOptions, ChunkState, ChunkSummary, ExcerptOptions, ExcerptReport, SurfaceMap } from './worldExcerpt.js';
+export { defaultProperties, defaultStateCount, DEFAULT_STATES_VERSION, DEFAULT_STATES_DATA_VERSION, DEFAULT_STATES_REPORT_SHA256 } from './defaultStates.js';

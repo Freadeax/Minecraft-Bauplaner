@@ -55,3 +55,5 @@ export type { GroupAction } from './project.js';
 export { ANLAGEN, ANLAGE_SCHEMA_VERSION, SHIPPED_LABEL, MIN_SPACING, MAX_SPACING, MAX_SHIFT, DEFAULT_ROW_WIDTH, PATH_MODULES, anlageById, anlageForTheme, themeOfAnlage, normalizeChoices, planAnlage, draftAnlage, previewAnlage,
   createAnlageProject, anlageIntoProject, besideOffset, swapCandidates, pinnedVersionIdsOf } from './anlagen.js';
 export type { Anlage, AnlageDistrict, AnlageSlot, AnlageSide, AnlagePathKind, AnlageChoices, AnlageLibrary, SlotStatus, SlotState, Footprint, AnlagePlacement, DistrictLayout, AnlagePlan, AnlageDraft, SpacingIssue, AnlagePreview, SwapCandidate } from './anlagen.js';
+export { checkTerrain, terrainBox, REPLACEABLE_IDS, FLUID_IDS, NATURAL_TERRAIN_IDS, TERRAIN_VERDICT_LABEL, FOOT_VERDICT_LABEL, TERRAIN_DEPTH } from './terrain.js';
+export type { TerrainGrid, TerrainCheck, TerrainOptions, TerrainVerdict, FootVerdict } from './terrain.js';
