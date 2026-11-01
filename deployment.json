@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "ef8d9a103edb8cba604d945a375b2d15cab4da16",
-  "builtAt": "2026-11-01T10:24:46.759Z",
-  "node": "v24.22.1",
+  "sourceCommit": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933",
+  "builtAt": "2026-11-01T11:20:59.426Z",
+  "node": "v24.18.0",
   "files": [
     {
       "path": ".nojekyll",
@@ -10,9 +10,9 @@
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
-      "path": "assets/idbRepository-C_tqaYzv.js",
+      "path": "assets/idbRepository-BJysDia-.js",
       "bytes": 6264,
-      "sha256": "f70ad0d7fefc06ce9e68294f1c3475d96115d111ad52af48ed4f0cfe4bf91e65"
+      "sha256": "09a0a810ad0490da32fd48c923ecddd22dbc316782ba3dc11bb2ce6ecaa007bb"
     },
     {
       "path": "assets/import.worker-C3uxG6zS.js",
@@ -20,14 +20,14 @@
       "sha256": "db3e2fb0463c92df6144aa876ddda9cb70d5f5363810c009e01aa382daa303f4"
     },
     {
+      "path": "assets/index-BRPMRFgQ.js",
+      "bytes": 878351,
+      "sha256": "a5a2026ecd20555f48126add5f760a89bc02c5d86a4525f7f1ff0263a0f2ef52"
+    },
+    {
       "path": "assets/index-Dsd55bz1.css",
       "bytes": 97465,
       "sha256": "a8a8c7550c9313ad2206f8477ec524a987d120ed7686f988f7cafd6bc4369cec"
-    },
-    {
-      "path": "assets/index-Dvl0j8QN.js",
-      "bytes": 878316,
-      "sha256": "359cbbefc5ecb4ce3eb1f81fcfcddd88bfa11af2a5d9ca8fb4465cdc3fd33aab"
     },
     {
       "path": "assets/project.worker-CzW_6JlY.js",
@@ -40,29 +40,29 @@
       "sha256": "6328eb62b9807d304526dabe183c7e915d2d7b933a2c37ef25f393de8eb32a50"
     },
     {
-      "path": "assets/ThreeViewer-NggyNpPr.js",
+      "path": "assets/ThreeViewer-CfbsysfY.js",
       "bytes": 582174,
-      "sha256": "956e68844322f7dd54894f26cd6b44c6fe1cef3c62d85b8f7cfa02efd6169405"
+      "sha256": "fb3899e04fe2a0e4d62e40b33889759b0959e37a2ed39ca3e7297b40d4f7b7db"
     },
     {
       "path": "examples/contract-multiregion.litematic",
       "bytes": 705,
-      "sha256": "804b64c8a53766b450dbfdbfd04133fb12caa17063b53148e0a5630e9ff47fa7"
+      "sha256": "e55e80496e3a4992419a47a52d110ea3e8486536365cac708f0be4d1ea03a925"
     },
     {
       "path": "examples/contract-v3.schem",
       "bytes": 480,
-      "sha256": "b73088cefabc64f860a527adc3765bf606cb530b77518d797223c74981bcf466"
+      "sha256": "faea0ebb65c92ca8f65487ebe3fa4a2df3831ebd7866e595073ae09d91e63e77"
     },
     {
       "path": "favicon.svg",
-      "bytes": 262,
-      "sha256": "ba6ab888ec41f3eacb396c7838c8622e5b3a48082b31cd0e997b4007527af70e"
+      "bytes": 263,
+      "sha256": "e5ff508171c7fae763a0d0aa941215357db1d2d77be01383fa0d37cd69a1c3e1"
     },
     {
       "path": "index.html",
-      "bytes": 661,
-      "sha256": "f9cbf8ec7b9729a4a0fab2ee4d698d2a07b4c199540ca9ba4642bf31184ad4b8"
+      "bytes": 663,
+      "sha256": "4827201d0dc00510e1fd7f5abd35a983af1703e946c26eaf6f53c4a057dc7bdd"
     },
     {
       "path": "THIRD_PARTY_NOTICES.txt",
