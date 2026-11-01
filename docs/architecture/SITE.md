@@ -42,3 +42,7 @@ Jede Änderung ist eine Operation `site.set` mit exakter Umkehrung (Rückgängig
 - Sammelzeiten sind Richtwerte ohne Verzauberungen und Laufwege.
 - Lagerbestand von Zwischenprodukten (z. B. Bretter) wird nur genutzt, wenn das Item selbst als Bauitem oder Rohstoff auftaucht; sonst „vorhanden“ im Rezeptbaum markieren.
 - Freiraum wird gegen geplante Blöcke geprüft, nicht gegen das Gelände der Welt.
+
+## Abschnittsstände (BACKUP-02)
+
+Bauabschnitte lassen sich einfrieren; `project.site.snapshots` hält Stände mit Versionen, Platzierungen und Schrittgeometrie fest, jede spätere Abweichung wird angezeigt, Zurücksetzen läuft mit Vorschau als eine rückgängig machbare Operation. Details: [BACKUPS](BACKUPS.md).

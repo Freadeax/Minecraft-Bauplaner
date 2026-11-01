@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
   addSection, linkOperation, unlinkedMates, moveSection, pruneSite, removeSection, RESERVATION_STATE_LABEL,
-  SECTION_PRESET_LABEL, setReservation, setStock, siteOf, siteOperation, suggestSections, updateSection, MAX_RESERVATION_DEPTH,
+  SECTION_PRESET_LABEL, setReservation, setStock, siteOf, siteOperation, suggestSections, updateSection, MAX_RESERVATION_DEPTH, freezeSection,
 } from '../../../../../packages/domain/src/index.js';
-import type { Guide, Reservation, SectionIssue, SectionMember, SectionPlan, SectionPreset, SitePlan, SiteSection } from '../../../../../packages/domain/src/index.js';
+import type { Guide, GuideProgress, SnapshotComparison, Reservation, SectionIssue, SectionMember, SectionPlan, SectionPreset, SitePlan, SiteSection } from '../../../../../packages/domain/src/index.js';
 import { useApp } from '../../app/context';
 import { download, errorText, formatNumber } from '../../app/ui';
 import { isResolved } from './session';
+import { latestBySection, SnapshotBadge, SnapshotsPanel, useSnapshotComparisons } from './SnapshotsPanel';
 import type { ProjectSession } from './session';
 import '../../site.css';
 
@@ -34,6 +35,10 @@ export function SiteTab({ session }: { session: ProjectSession }) {
   const plan = computation?.site.plan ?? null;
   const issues = computation?.site.issues ?? [];
   const reservations = computation?.site.reservations ?? [];
+  const emptyGuide = useMemo<Guide>(() => ({ steps: [], byId: new Map(), warnings: [], totals: { blocks: 0, air: 0, erase: 0 } }), []);
+  const emptyProgress = useMemo<GuideProgress>(() => ({ status: new Map(), done: 0, review: 0, open: 0, blocksDone: 0, ready: [], orphaned: [] }), []);
+  // Hooks run before the early returns below; without a guide nothing is compared.
+  const comparisons = useSnapshotComparisons(site, project, guide ?? emptyGuide, progress ?? emptyProgress);
 
   if (session.computationState !== 'ready') return <section className="site" aria-label="Baustelle"><p role="status">{session.computationState === 'pending' ? 'Baustelle wird neu berechnet.' : session.computationState === 'cancelled' ? 'Baustellenberechnung abgebrochen.' : 'Baustellenberechnung nicht verfügbar.'}</p></section>;
   if (!isResolved(resolution)) return <section className="site" aria-label="Baustelle"><div className="notice warning" role="alert"><strong>Baustelle nicht verfügbar</strong><p>{resolution.error}</p></div></section>;
@@ -64,8 +69,10 @@ export function SiteTab({ session }: { session: ProjectSession }) {
     </header>
     {message && <div className="notice warning" role="alert">{message}<button onClick={() => setMessage('')}>OK</button></div>}
 
-    <Sections site={site} plan={plan.sections} guide={guide} project={project} issues={issues} selected={selected.id} onSelect={setFocus} save={save}
+    <Sections site={site} plan={plan.sections} guide={guide} progress={progress} project={project} issues={issues} selected={selected.id} onSelect={setFocus} save={save}
+      frozen={latestBySection(site, comparisons)}
       onPrune={orphans ? () => save(pruneSite(site, project), 'Entfernte Bauteile aus dem Plan gelöst') : null} />
+    <SnapshotsPanel site={site} project={project} comparisons={comparisons} execute={op => session.execute(op)} />
     <GatherPlan section={selected} site={site} save={save} fileStem={project.name.replace(/[^\p{L}\p{N}_-]+/gu, '_')} />
     <Reservations site={site} reservations={reservations} save={save} onSelectInstance={id => session.select(id)} projectId={project.id}
       onLinkDocked={() => {
@@ -83,12 +90,23 @@ function Bar({ value, label }: { value: number; label: string }) {
 }
 
 interface SectionsProps {
-  site: SitePlan; plan: readonly SectionPlan[]; guide: Guide; project: ProjectSession['project']; issues: readonly SectionIssue[];
+  site: SitePlan; plan: readonly SectionPlan[]; guide: Guide; progress: GuideProgress; project: ProjectSession['project']; issues: readonly SectionIssue[];
   selected: string; onSelect(id: string): void; save(next: SitePlan, label: string): void; onPrune: (() => void) | null;
+  /** Latest frozen state per section, compared with now (BACKUP-02). */
+  frozen: ReadonlyMap<string, SnapshotComparison>;
 }
 
-function Sections({ site, plan, guide, project, issues, selected, onSelect, save, onPrune }: SectionsProps) {
+function Sections({ site, plan, guide, progress, project, issues, selected, onSelect, save, onPrune, frozen }: SectionsProps) {
   const [editing, setEditing] = useState<string | null>(null);
+  const [freezing, setFreezing] = useState<string | null>(null);
+  const [label, setLabel] = useState('');
+  const [freezeError, setFreezeError] = useState('');
+  const freeze = (id: string, name: string) => {
+    try {
+      const { site: next, snapshot } = freezeSection({ site, project, guide, progress, sectionId: id, label });
+      save(next, `„${name}“ als Stand ${snapshot.number} eingefroren`); setFreezing(null); setLabel(''); setFreezeError('');
+    } catch (e) { setFreezeError(errorText(e)); }
+  };
   const [name, setName] = useState('');
   const preset = (p: SectionPreset) => save({ ...site, sections: suggestSections(project, guide, p) }, `Bauabschnitte: ${SECTION_PRESET_LABEL[p]}`);
   return <section className="site-block" aria-label="Bauabschnitte">
@@ -110,7 +128,7 @@ function Sections({ site, plan, guide, project, issues, selected, onSelect, save
         return <li key={s.id || 'rest'} className={`site-section${s.id === selected ? ' selected' : ''}${s.complete ? ' complete' : ''}`}>
           <button className="site-section-main" onClick={() => onSelect(s.id)} aria-pressed={s.id === selected}>
             <span className="site-no">{s.complete ? '✓' : index + 1}</span>
-            <span className="site-section-text"><strong>{s.name}</strong>
+            <span className="site-section-text"><strong>{s.name}<SnapshotBadge comparison={frozen.get(s.id)} /></strong>
               <small>{s.done} / {s.steps.length} Schritte · {formatNumber(s.blocksDone)} / {formatNumber(s.blocks)} Blöcke{s.review ? ` · ${s.review} prüfbedürftig` : ''}</small>
               {s.note && <small className="note">{s.note}</small>}</span>
             <span className="site-section-meta">
@@ -122,9 +140,16 @@ function Sections({ site, plan, guide, project, issues, selected, onSelect, save
             <button onClick={() => save(moveSection(site, def.id, -1), `„${def.name}“ früher`)} disabled={index === 0} aria-label={`${def.name} früher bauen`}>↑</button>
             <button onClick={() => save(moveSection(site, def.id, 1), `„${def.name}“ später`)} disabled={index === site.sections.length - 1} aria-label={`${def.name} später bauen`}>↓</button>
             <button onClick={() => setEditing(editing === def.id ? null : def.id)} aria-expanded={editing === def.id}>Bearbeiten</button>
-            <button onClick={() => save(removeSection(site, def.id), `Abschnitt „${def.name}“ entfernt`)} aria-label={`${def.name} entfernen`}>✕</button>
+            <button onClick={() => { setFreezing(freezing === def.id ? null : def.id); setFreezeError(''); }} aria-expanded={freezing === def.id} aria-label={`${def.name} einfrieren`}>❄ Einfrieren</button>
+            <button onClick={() => { if (!frozen.has(def.id) || window.confirm(`„${def.name}“ hat eingefrorene Stände. Abschnitt entfernen? Die Stände bleiben unter „Abschnittsstände“ erhalten.`)) save(removeSection(site, def.id), `Abschnitt „${def.name}“ entfernt`); }} aria-label={`${def.name} entfernen`}>✕</button>
           </div>}
-          {def && editing === def.id && <SectionEditor section={def} site={site} project={project} guide={guide} save={save} onClose={() => setEditing(null)} />}
+          {def && freezing === def.id && <form className="snap-freeze" onSubmit={e => { e.preventDefault(); freeze(def.id, def.name); }} aria-label={`Stand von ${def.name} einfrieren`}>
+            <input value={label} onChange={e => setLabel(e.target.value)} maxLength={200} placeholder="Bezeichnung, z. B. vor dem Dachumbau" aria-label="Bezeichnung des Stands" />
+            <button type="submit" className="primary">Stand einfrieren</button><button type="button" onClick={() => setFreezing(null)}>Abbrechen</button>
+            <small className="muted">Hält Bauteile, Versionen, Platzierungen, Schichtbereiche und alle {s.steps.length} Bauschritte mit Haken fest. Spätere Änderungen werden als Abweichung angezeigt.</small>
+            {freezeError && <span className="field-error" role="alert">{freezeError}</span>}
+          </form>}
+          {def && editing === def.id && <SectionEditor section={def} site={site} project={project} guide={guide} save={save} onClose={() => setEditing(null)} frozen={frozen.get(def.id)} />}
         </li>;
       })}
     </ol>
@@ -134,7 +159,7 @@ function Sections({ site, plan, guide, project, issues, selected, onSelect, save
 /** Member while editing: empty inputs are undefined. */
 type Draft = { -readonly [K in keyof SectionMember]: SectionMember[K] | undefined } & { instanceId: string };
 
-function SectionEditor({ section, site, project, guide, save, onClose }: { section: SiteSection; site: SitePlan; project: ProjectSession['project']; guide: Guide; save(next: SitePlan, label: string): void; onClose(): void }) {
+function SectionEditor({ section, site, project, guide, save, onClose, frozen }: { section: SiteSection; site: SitePlan; project: ProjectSession['project']; guide: Guide; save(next: SitePlan, label: string): void; onClose(): void; frozen?: SnapshotComparison | undefined }) {
   const [name, setName] = useState(section.name), [note, setNote] = useState(section.note ?? '');
   const [members, setMembers] = useState<Draft[]>([...section.members]);
   useEffect(() => { setName(section.name); setNote(section.note ?? ''); setMembers([...section.members]); }, [section]);
@@ -152,6 +177,7 @@ function SectionEditor({ section, site, project, guide, save, onClose }: { secti
     onClose();
   };
   return <form className="site-editor" onSubmit={e => { e.preventDefault(); apply(); }}>
+    {frozen && <p className="frozen-warning" role="note">❄ Dieser Abschnitt ist als Stand {frozen.snapshot.number} eingefroren. Änderungen an Bauteilen oder Schichten bleiben erlaubt, werden aber als Abweichung vom Stand angezeigt; der Stand selbst ändert sich nicht.</p>}
     <label>Name<input value={name} onChange={e => setName(e.target.value)} maxLength={80} required /></label>
     <label>Notiz<input value={note} onChange={e => setNote(e.target.value)} maxLength={500} placeholder="z. B. erst nach dem Nether-Ausflug" /></label>
     <fieldset><legend>Bauteile und Schichten <small>Schicht 0 = unterste Schicht des Bauteils; leer = ganz</small></legend>

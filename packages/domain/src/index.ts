@@ -57,3 +57,7 @@ export { ANLAGEN, ANLAGE_SCHEMA_VERSION, SHIPPED_LABEL, MIN_SPACING, MAX_SPACING
 export type { Anlage, AnlageDistrict, AnlageSlot, AnlageSide, AnlagePathKind, AnlageChoices, AnlageLibrary, SlotStatus, SlotState, Footprint, AnlagePlacement, DistrictLayout, AnlagePlan, AnlageDraft, SpacingIssue, AnlagePreview, SwapCandidate } from './anlagen.js';
 export { checkTerrain, terrainBox, REPLACEABLE_IDS, FLUID_IDS, NATURAL_TERRAIN_IDS, TERRAIN_VERDICT_LABEL, FOOT_VERDICT_LABEL, TERRAIN_DEPTH } from './terrain.js';
 export type { TerrainGrid, TerrainCheck, TerrainOptions, TerrainVerdict, FootVerdict } from './terrain.js';
+export { MAX_SNAPSHOTS, snapshotFingerprint, checkSnapshots, snapshotsOf, latestSnapshot, freezeSection, deleteSnapshot, compareSnapshot, planSnapshotRestore, snapshotProjectContent } from './sectionSnapshots.js';
+export type { SectionSnapshot, SnapshotStep, FreezeInput, SnapshotChange, SnapshotChangeKind, SnapshotComparison, SnapshotRestorePlan } from './sectionSnapshots.js';
+export { BACKUP_LEDGER_SCHEMA, MAX_BACKUP_RECEIPTS, BACKUP_REMIND_AFTER_DAYS, BACKUP_DISCLAIMER, emptyLedger, checkBackupLedger, recordFingerprint, receiptForBackup, addReceipt, compareWithBackups, receiptForHash } from './backupStatus.js';
+export type { BackupLedger, BackupReceipt, BackupReceiptKind, ReceiptEntry, CoverageState, CoverageLine, BackupStatus, CurrentData } from './backupStatus.js';

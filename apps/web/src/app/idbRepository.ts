@@ -1,4 +1,5 @@
-import type { Asset, AssetVersion, Collection, LibraryTemplate, OriginalFile, Project } from '../../../../packages/domain/src/index.js';
+import type { Asset, AssetVersion, BackupLedger, BackupReceipt, Collection, LibraryTemplate, OriginalFile, Project } from '../../../../packages/domain/src/index.js';
+import { addReceipt, checkBackupLedger, emptyLedger } from '../../../../packages/domain/src/index.js';
 import { checkAssetRecord, checkCollectionRecord, checkProjectRecord, checkSchemaVersion, checkTemplateRecord, DOMAIN_SCHEMA_VERSION, LibraryRecordConflictError, nextLibraryRevision } from '../../../../packages/domain/src/index.js';
 import { assetRevision, checkStorageBatch, nextAssetRevision } from '../../../../packages/application/src/assetConcurrency.js';
 import { RevisionConflictError } from './repository';
@@ -161,6 +162,22 @@ export class IdbRepository implements Repository {
 
   async listCollections(): Promise<Collection[]> { return (await this.all<unknown>('collections')).map(checkCollectionRecord); }
   async listTemplates(): Promise<LibraryTemplate[]> { return (await this.all<unknown>('templates')).map(checkTemplateRecord); }
+
+  // BACKUP-02: receipts live in the existing `meta` store (key 'backupLedger'); no schema migration needed.
+  async getBackupLedger(): Promise<BackupLedger> {
+    const raw = await this.run(['meta'], 'readonly', tx => req(tx.objectStore('meta').get('backupLedger')));
+    return raw === undefined ? emptyLedger() : checkBackupLedger((raw as { ledger: unknown }).ledger);
+  }
+  async recordBackup(receipt: BackupReceipt): Promise<BackupLedger> {
+    const ledger = await this.run(['meta'], 'readwrite', async tx => {
+      const store = tx.objectStore('meta'), raw = await req(store.get('backupLedger'));
+      const next = addReceipt(raw === undefined ? emptyLedger() : checkBackupLedger((raw as { ledger: unknown }).ledger), receipt);
+      store.put({ key: 'backupLedger', ledger: next });
+      return next;
+    });
+    this.announce({ kind: 'backups' });
+    return ledger;
+  }
 
   async getOriginal(sha256: string): Promise<OriginalFile | null> {
     const raw = await this.run(['originals'], 'readonly', tx => req(tx.objectStore('originals').get(sha256) as IDBRequest<StoredOriginal | undefined>));

@@ -6,6 +6,9 @@ import type { StorageInfo } from '../app/repository';
 import { href, navigate } from '../app/router';
 import { download, errorText } from '../app/ui';
 import { Thumb } from '../thumbnail/Thumb';
+import { recordBackupReceipt, useBackupStatus } from '../app/backupStatus';
+import { BackupReminder, BackupStatusPanel } from './BackupPanel';
+import type { BackupFile } from '../../../../packages/domain/src/index.js';
 
 const mb = (n: number) => `${(n / 1_000_000).toLocaleString('de-DE', { maximumFractionDigits: 1 })} MB`;
 const planLabel = { new: 'neu', same: 'identisch vorhanden', differs: 'weicht lokal ab' } as const;
@@ -20,6 +23,7 @@ export function ProjectsView() {
   const [restore, setRestore] = useState<{ plan: RestorePlan; fileName: string; choices: Record<string, ProjectChoice> } | null>(null);
   const [busy, setBusy] = useState(false);
   const restoreInput = useRef<HTMLInputElement>(null);
+  const backupState = useBackupStatus(repo);
   const load = useCallback(async () => {
     try { setProjects((await repo.listProjects()).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))); }
     catch (e) { setMessage(errorText(e)); }
@@ -35,8 +39,10 @@ export function ProjectsView() {
       const [collections, templates] = scope === 'all' ? await Promise.all([repo.listCollections(), repo.listTemplates()]) : [[], []];
       const file = await createBackup({ projects: projects ?? [], assets: library.assets, versions: library.versions, getOriginal: sha => repo.getOriginal(sha), collections, templates },
         scope, project ? [project.id] : undefined);
-      download(backupFileName(file), JSON.stringify(file), 'application/json');
-      setMessage(`Sicherung erstellt: ${file.projects.length} Projekt(e), ${file.assets.length} Bauteil(e), ${file.versions.length} Version(en), ${file.originals.length} Originaldatei(en)${file.collections?.length || file.templates?.length ? `, ${file.collections?.length ?? 0} Sammlung(en), ${file.templates?.length ?? 0} Vorlage(n)` : ''}${file.missingOriginals.length ? ` – ${file.missingOriginals.length} Original(e) lokal nicht vorhanden` : ''}. Datei liegt in deinen Downloads.`);
+      const fileName = backupFileName(file);
+      download(fileName, JSON.stringify(file), 'application/json');
+      const ledgerError = await recordBackupReceipt(repo, file, 'download', fileName);
+      setMessage(`Sicherungsdatei erzeugt und zum Herunterladen übergeben: ${file.projects.length} Projekt(e), ${file.assets.length} Bauteil(e), ${file.versions.length} Version(en), ${file.originals.length} Originaldatei(en)${file.collections?.length || file.templates?.length ? `, ${file.collections?.length ?? 0} Sammlung(en), ${file.templates?.length ?? 0} Vorlage(n)` : ''}${file.missingOriginals.length ? ` – ${file.missingOriginals.length} Original(e) lokal nicht vorhanden` : ''}. Bitte prüfen, ob „${fileName}“ im Download-Ordner liegt, und eine Kopie außerhalb dieses Browsers ablegen.${ledgerError ? ` ${ledgerError}` : ''}`);
     } catch (e) { setMessage(`Sicherung fehlgeschlagen: ${errorText(e)}`); }
     finally { setBusy(false); }
   };
@@ -44,7 +50,10 @@ export function ProjectsView() {
     setBusy(true); setRestore(null); setMessage('');
     try {
       if (file.size > MAX_BACKUP_BYTES) throw new Error('Sicherungsdatei ist zu groß');
-      const parsed = await readBackup(await file.text());
+      const text = await file.text();
+      const parsed = await readBackup(text);
+      // Opening a file for restore verifies its checksum: record it as a verified copy (writes nothing else).
+      await recordBackupReceipt(repo, JSON.parse(text) as BackupFile, 'verified', file.name);
       const [localProjects, assets, versions, originals, collections, templates] = await Promise.all([repo.listProjects(), repo.listAssets(), repo.listVersions(), repo.listOriginalHashes(), repo.listCollections(), repo.listTemplates()]);
       const plan = planRestore(parsed, { projects: localProjects, assets, versionIds: new Set(versions.map(v => v.id)), originalHashes: new Set(originals), collections, templates });
       setRestore({ plan, fileName: file.name, choices: {} });
@@ -125,6 +134,7 @@ export function ProjectsView() {
       <div className="button-row"><button className="primary" onClick={() => void applyRestore()} disabled={busy}>Wiederherstellen</button><button onClick={() => setRestore(null)}>Abbrechen</button></div>
     </section>}
     {message && <div className="notice" role="status">{message}</div>}
+    <BackupReminder status={backupState.status} busy={busy || !projects} onBackupAll={() => void backup('all')} />
     <section className="home-section" aria-label="Projekte">
       <header><h2>Deine Projekte{projects?.length ? ` (${projects.length})` : ''}</h2></header>
       <div className="card-grid">
@@ -171,6 +181,7 @@ export function ProjectsView() {
           onChange={e => { const f = e.target.files?.[0]; if (f) void openBackup(f); }} /></label>
         <a href="#/system">Datencheck</a>
       </div>
+      <BackupStatusPanel state={backupState} busy={busy} onBackupProject={id => { const p = projects?.find(x => x.id === id); if (p) void backup('project', p); }} />
     </section>
   </div>;
 }

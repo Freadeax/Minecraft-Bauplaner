@@ -1254,3 +1254,38 @@ Weltimport #/welt und Projektreiter Gelände: Regionsdateien 1.16–26.3 (zlib/G
 - `tests/e2e/world-import.e2e.mjs`
 - `tests/terrain.test.mjs`
 
+## 2026-11-01T15:25:25.019Z · progress
+
+**Aufgaben:** BACKUP-02
+
+Sicherungsstand (Belege, Vergleich, Erinnerung, Prüfen) und Abschnittsstände (einfrieren, Abweichungen, Zurücksetzen, Kopie) umgesetzt; Node- und Chromium-Tests, keine Echtgeräteabnahme.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| BACKUP-02 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme auf echten Geräten (QA-02), besonders Safari-Downloads; Rückmeldung zur Erinnerungsschwelle (7 Tage) einholen. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/backupStatus.ts`
+- `apps/web/src/app/idbRepository.ts`
+- `apps/web/src/backup.css`
+- `apps/web/src/views/BackupPanel.tsx`
+- `apps/web/src/views/ProjectsView.tsx`
+- `apps/web/src/views/project/ProjectView.tsx`
+- `apps/web/src/views/project/SiteTab.tsx`
+- `apps/web/src/views/project/SnapshotsPanel.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/BACKUPS.md`
+- `docs/architecture/PERSISTENCE.md`
+- `docs/architecture/SITE.md`
+- `packages/application/src/memoryRepository.ts`
+- `packages/application/src/repository.ts`
+- `packages/domain/src/backupStatus.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/sectionMembership.ts`
+- `packages/domain/src/sectionSnapshots.ts`
+- `packages/domain/src/site.ts`
+- `tests/backup-reminder.test.mjs`
+- `tests/e2e/backup-reminder.e2e.mjs`
+

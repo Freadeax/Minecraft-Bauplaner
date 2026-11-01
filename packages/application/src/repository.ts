@@ -1,4 +1,4 @@
-import type { Asset, AssetVersion, Collection, LibraryTemplate, OriginalFile, Project } from '../../domain/src/index.js';
+import type { Asset, AssetVersion, BackupLedger, BackupReceipt, Collection, LibraryTemplate, OriginalFile, Project } from '../../domain/src/index.js';
 
 /**
  * Storage boundary of the web app. Every implementation must:
@@ -40,6 +40,10 @@ export interface Repository {
   listCollections(): Promise<Collection[]>;
   /** Own ensemble and generator templates (LIB-03). */
   listTemplates(): Promise<LibraryTemplate[]>;
+  /** Receipts of backup files this browser produced or read back (BACKUP-02). Empty ledger when none. */
+  getBackupLedger(): Promise<BackupLedger>;
+  /** Appends one receipt atomically (read-modify-write in one transaction) and returns the new ledger. */
+  recordBackup(receipt: BackupReceipt): Promise<BackupLedger>;
 }
 
 export interface StorageBatch {
@@ -57,8 +61,8 @@ export interface StorageBatch {
   readonly removeTemplates?: readonly LibraryRecordRef[];
 }
 export interface LibraryRecordRef { readonly id: string; readonly revision: number }
-/** `userLibrary`: own collections or templates changed (LIB-02/LIB-03). */
-export interface StorageChange { readonly kind: 'projects' | 'library' | 'userLibrary'; readonly projectIds?: readonly string[] }
+/** `userLibrary`: own collections or templates changed (LIB-02/LIB-03). `backups`: a backup receipt was recorded (BACKUP-02). */
+export interface StorageChange { readonly kind: 'projects' | 'library' | 'userLibrary' | 'backups'; readonly projectIds?: readonly string[] }
 export interface StorageInfo { readonly usage?: number; readonly quota?: number; readonly persisted?: boolean }
 
 export class RevisionConflictError extends Error {

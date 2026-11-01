@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T15:00:58.460Z",
+  "updatedAt": "2026-11-01T15:25:25.019Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -2821,44 +2821,61 @@
       "title": "Sicherungserinnerung und Abschnittsrevisionen",
       "phase": "P3",
       "priority": "P1",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "implemented",
+      "owner": "Claude-Thread „Sicherungen erweitern“",
       "dependencies": [
         "STORE-01",
         "BUILD-01"
       ],
       "scope": [
+        "packages/domain/src/backupStatus.ts",
+        "packages/domain/src/sectionSnapshots.ts",
         "packages/domain/src/site.ts",
-        "apps/web/src/views/project/"
+        "apps/web/src/views/BackupPanel.tsx",
+        "apps/web/src/views/project/",
+        "docs/architecture/BACKUPS.md"
       ],
       "legacyIds": [],
       "steps": [
         {
           "id": "BACKUP-02-S01",
           "title": "Letzte erfolgreiche Sicherung mit Datenänderungen vergleichen.",
-          "done": false
+          "done": true
         },
         {
           "id": "BACKUP-02-S02",
           "title": "Abschnittsstand reproduzierbar einfrieren und wiederfinden.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Erinnerung behauptet keine Cloudkopie; keine stillen Abschnittsänderungen."
       ],
-      "next": "Letzte erfolgreiche Sicherung mit Datenänderungen vergleichen.",
+      "next": "Abnahme auf echten Geräten (QA-02), besonders Safari-Downloads; Rückmeldung zur Erinnerungsschwelle (7 Tage) einholen.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/backup-reminder.test.mjs",
+          "note": "Belege aus Dateiinhalt, Revision ignoriert, Hinweis/fällig nach Alter, Projekt- vs. Gesamtsicherung, eigene Bibliothek, Prüfen per Hash, Protokollgrenze; Stände einfrieren, jede Abweichungsart, Zurücksetzen reproduziert Fingerabdruck, Undo, Sperre bei fehlender Version, Kopie als Projekt."
+        },
+        {
+          "path": "tests/e2e/backup-reminder.e2e.mjs",
+          "note": "Chromium 1400/390 px: Erinnerung ohne Cloudbehauptung, Alles sichern, Datei prüfen (gültig/manipuliert), Projektkopf-Chip, Neuladen; Einfrieren, Warnung im Editor, Abweichung, Zurücksetzen mit Vorschau, entfernter Abschnitt wiederfinden, als Projekt öffnen."
+        },
+        {
+          "path": "docs/architecture/BACKUPS.md",
+          "note": "Vertrag, Ehrlichkeitsregeln und Grenzen."
+        }
+      ],
       "verification": {
-        "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "state": "passed",
+        "note": "Node- und lokale Chromium-Browsertests; keine Safari-/Echtgeräteabnahme."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-01T15:25:25.019Z"
     },
     {
       "id": "TEAM-01",
@@ -5422,6 +5439,47 @@
           "done": 2,
           "total": 2,
           "next": "Mit einer Kopie von Philipps eigener 26.3-Welt (Modpack) einen Ausschnitt übernehmen und ein platziertes Projekt prüfen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T15:25:25.019Z",
+      "kind": "progress",
+      "items": [
+        "BACKUP-02"
+      ],
+      "summary": "Sicherungsstand (Belege, Vergleich, Erinnerung, Prüfen) und Abschnittsstände (einfrieren, Abweichungen, Zurücksetzen, Kopie) umgesetzt; Node- und Chromium-Tests, keine Echtgeräteabnahme.",
+      "files": [
+        "apps/web/src/app/backupStatus.ts",
+        "apps/web/src/app/idbRepository.ts",
+        "apps/web/src/backup.css",
+        "apps/web/src/views/BackupPanel.tsx",
+        "apps/web/src/views/ProjectsView.tsx",
+        "apps/web/src/views/project/ProjectView.tsx",
+        "apps/web/src/views/project/SiteTab.tsx",
+        "apps/web/src/views/project/SnapshotsPanel.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/BACKUPS.md",
+        "docs/architecture/PERSISTENCE.md",
+        "docs/architecture/SITE.md",
+        "packages/application/src/memoryRepository.ts",
+        "packages/application/src/repository.ts",
+        "packages/domain/src/backupStatus.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/sectionMembership.ts",
+        "packages/domain/src/sectionSnapshots.ts",
+        "packages/domain/src/site.ts",
+        "tests/backup-reminder.test.mjs",
+        "tests/e2e/backup-reminder.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "BACKUP-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme auf echten Geräten (QA-02), besonders Safari-Downloads; Rückmeldung zur Erinnerungsschwelle (7 Tage) einholen."
         }
       ]
     }

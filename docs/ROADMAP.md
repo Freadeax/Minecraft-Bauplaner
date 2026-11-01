@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T15:00:58.460Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T15:25:25.019Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,10 +12,10 @@ Stand: 2026-11-01T15:00:58.460Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 18 |
+| ⏳ Offen | 17 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 17 |
+| 🧩 Implementiert · Abnahme offen | 18 |
 | ✅ Im beschriebenen Umfang geprüft | 22 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -128,7 +128,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [GAME-02](#game-02) | Fabric-Brücke kompilieren und im Spiel abnehmen | 🧩 Implementiert · Abnahme offen | 4/5 | FORMAT-01, GAME-01 | `84838f0` | `e232b26` |
 | [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | ⏳ Offen | 0/2 | GAME-02 | ausstehend | ausstehend |
 | [WORLD-IMPORT-01](#world-import-01) | Bereichsweiser Weltimport und Terrainprüfung | 🧩 Implementiert · Abnahme offen | 2/2 | PROFILE-01, PERF-02, FORMAT-01 | ausstehend | ausstehend |
-| [BACKUP-02](#backup-02) | Sicherungserinnerung und Abschnittsrevisionen | ⏳ Offen | 0/2 | STORE-01, BUILD-01 | ausstehend | ausstehend |
+| [BACKUP-02](#backup-02) | Sicherungserinnerung und Abschnittsrevisionen | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-01, BUILD-01 | ausstehend | ausstehend |
 | [GAME-05](#game-05) | NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik | 🚧 In Arbeit | 0/4 | GAME-02 | ausstehend | ausstehend |
 | [LIB-04](#lib-04) | Gebäudebibliothek v3: Inhalte in alle Richtungen | 🧩 Implementiert · Abnahme offen | 4/4 | LIB-01 | ausstehend | ausstehend |
 
@@ -1092,20 +1092,20 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### BACKUP-02
 
-**Sicherungserinnerung und Abschnittsrevisionen** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Sicherungserinnerung und Abschnittsrevisionen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Sicherungen erweitern“ · Aktualisiert: 2026-11-01T15:25:25.019Z
 
-- [ ] BACKUP-02-S01: Letzte erfolgreiche Sicherung mit Datenänderungen vergleichen.
-- [ ] BACKUP-02-S02: Abschnittsstand reproduzierbar einfrieren und wiederfinden.
+- [x] BACKUP-02-S01: Letzte erfolgreiche Sicherung mit Datenänderungen vergleichen.
+- [x] BACKUP-02-S02: Abschnittsstand reproduzierbar einfrieren und wiederfinden.
 
 **Abnahme:** Erinnerung behauptet keine Cloudkopie; keine stillen Abschnittsänderungen.
 
-**Nächste Aktion:** Letzte erfolgreiche Sicherung mit Datenänderungen vergleichen.
+**Nächste Aktion:** Abnahme auf echten Geräten (QA-02), besonders Safari-Downloads; Rückmeldung zur Erinnerungsschwelle (7 Tage) einholen.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Node- und lokale Chromium-Browsertests; keine Safari-/Echtgeräteabnahme.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/backup-reminder.test.mjs](../tests/backup-reminder.test.mjs) — Belege aus Dateiinhalt, Revision ignoriert, Hinweis/fällig nach Alter, Projekt- vs. Gesamtsicherung, eigene Bibliothek, Prüfen per Hash, Protokollgrenze; Stände einfrieren, jede Abweichungsart, Zurücksetzen reproduziert Fingerabdruck, Undo, Sperre bei fehlender Version, Kopie als Projekt.; [tests/e2e/backup-reminder.e2e.mjs](../tests/e2e/backup-reminder.e2e.mjs) — Chromium 1400/390 px: Erinnerung ohne Cloudbehauptung, Alles sichern, Datei prüfen (gültig/manipuliert), Projektkopf-Chip, Neuladen; Einfrieren, Warnung im Editor, Abweichung, Zurücksetzen mit Vorschau, entfernter Abschnitt wiederfinden, als Projekt öffnen.; [docs/architecture/BACKUPS.md](architecture/BACKUPS.md) — Vertrag, Ehrlichkeitsregeln und Grenzen.
 
-**Dateiumfang:** `packages/domain/src/site.ts`, `apps/web/src/views/project/`. **Abhängigkeiten:** STORE-01, BUILD-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/backupStatus.ts`, `packages/domain/src/sectionSnapshots.ts`, `packages/domain/src/site.ts`, `apps/web/src/views/BackupPanel.tsx`, `apps/web/src/views/project/`, `docs/architecture/BACKUPS.md`. **Abhängigkeiten:** STORE-01, BUILD-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

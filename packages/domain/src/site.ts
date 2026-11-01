@@ -9,6 +9,9 @@ import type { ItemLine, MaterialReport } from './materials.js';
 import type { Operation } from './project.js';
 import { rawSource, resolveRecipes } from './recipes.js';
 import type { RecipeMethod } from './recipes.js';
+import { memberMatches, sectionOfStep } from './sectionMembership.js';
+import { checkSnapshots } from './sectionSnapshots.js';
+import type { SectionSnapshot } from './sectionSnapshots.js';
 import { DomainError } from './types.js';
 import type { AssetVersion, Connector, Project } from './types.js';
 
@@ -72,6 +75,8 @@ export interface SitePlan {
     /** Key `${instanceId}/${connectorId}`. */
     readonly overrides: Readonly<Record<string, ReservationSetting>>;
   };
+  /** Frozen section states (BACKUP-02, sectionSnapshots.ts); absent = none. Never rewritten, only added or explicitly deleted. */
+  readonly snapshots?: readonly SectionSnapshot[];
 }
 
 export function emptySite(): SitePlan {
@@ -126,6 +131,7 @@ export function checkSite(raw: unknown): SitePlan {
     if (v.width !== undefined) intIn(v.width, 1, 64, `Freiraumbreite ${key}`);
     if (v.height !== undefined) intIn(v.height, 1, 64, `Freiraumhöhe ${key}`);
   }
+  if (raw.snapshots !== undefined) checkSnapshots(raw.snapshots);
   return raw as unknown as SitePlan;
 }
 
@@ -189,13 +195,7 @@ export function pruneSite(site: SitePlan, project: Pick<Project, 'instances'>): 
 // ---------------------------------------------------------------------------
 // Sections and steps
 
-const memberMatches = (m: SectionMember, step: Pick<GuideStep, 'instanceId' | 'layer'>): boolean =>
-  m.instanceId === step.instanceId && step.layer >= (m.fromLayer ?? 0) && step.layer <= (m.toLayer ?? Infinity);
-
-/** Section id a step belongs to (first match in build order), or null. */
-export function sectionOfStep(site: SitePlan, step: Pick<GuideStep, 'instanceId' | 'layer'>): string | null {
-  return site.sections.find(s => s.members.some(m => memberMatches(m, step)))?.id ?? null;
-}
+export { sectionOfStep };
 
 export type SectionPreset = 'instances' | 'storeys';
 export const SECTION_PRESET_LABEL: Readonly<Record<SectionPreset, string>> = {

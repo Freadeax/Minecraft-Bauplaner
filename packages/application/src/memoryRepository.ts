@@ -1,4 +1,5 @@
-import type { Asset, AssetVersion, Collection, LibraryTemplate, OriginalFile, Project } from '../../domain/src/index.js';
+import type { Asset, AssetVersion, BackupLedger, BackupReceipt, Collection, LibraryTemplate, OriginalFile, Project } from '../../domain/src/index.js';
+import { addReceipt, checkBackupLedger, emptyLedger } from '../../domain/src/backupStatus.js';
 import { LibraryRecordConflictError, nextLibraryRevision } from '../../domain/src/collections.js';
 import { checkStorageBatch, nextAssetRevision } from './assetConcurrency.js';
 import { RevisionConflictError } from './repository.js';
@@ -63,5 +64,8 @@ export class MemoryRepository implements Repository {
   async requestPersistence() { return false; }
   async listCollections() { return structuredClone([...this.collections.values()]); }
   async listTemplates() { return structuredClone([...this.templates.values()]); }
+  private ledger: BackupLedger = emptyLedger();
+  async getBackupLedger() { return structuredClone(this.ledger); }
+  async recordBackup(receipt: BackupReceipt) { this.ledger = addReceipt(checkBackupLedger(this.ledger), structuredClone(receipt)); return structuredClone(this.ledger); }
 }
 

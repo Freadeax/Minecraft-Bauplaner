@@ -52,6 +52,10 @@ Vor dem Schreiben wird jede Version mit `verifyAssetVersion` geprüft und jedes 
 4. `buildRestore` erzeugt die Schreibmenge; `applyBatch` schreibt sie atomar. „Ersetzen“ verwendet die lokale Revision als `baseRevision` – hat ein anderer Tab inzwischen gespeichert, scheitert die gesamte Wiederherstellung.
 5. Vorhandene Bauteile behalten lokale Angaben (Name, Tags, Herkunft); nur fehlende Versionen werden angehängt. Identische Datensätze werden nicht erneut geschrieben.
 
+## Sicherungsstand
+
+Belege über erzeugte und geprüfte Sicherungsdateien, Vergleich mit dem aktuellen Datenstand und Erinnerung: [BACKUPS](BACKUPS.md) (BACKUP-02). Abschnittsstände (eingefrorene Bauabschnitte) stehen im Projekt und reisen mit jeder Sicherung.
+
 ## Grenzen
 
 - Nur lokaler Browserspeicher; keine Geräte-/Cloudsynchronisierung. Ohne gewährte Dauerhaftigkeit (`persist()`) darf der Browser bei Platzmangel löschen – die Projektzentrale zeigt den Zustand und bietet die Anfrage an.

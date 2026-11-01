@@ -5,6 +5,10 @@ import { useProjectSession } from './session';
 import { useApp } from '../../app/context';
 import { Icon, tabIcon } from '../../app/icons';
 import { useDocumentTitle } from '../../app/Shell';
+import { useProjectBackupState } from '../../app/backupStatus';
+import type { Project } from '../../../../../packages/domain/src/index.js';
+import type { Repository } from '../../app/repository';
+import '../../backup.css';
 
 const saveLabel = { saved: 'gespeichert', saving: 'speichert …', error: 'Speichern fehlgeschlagen', conflict: 'Konflikt mit anderem Tab' } as const;
 
@@ -26,6 +30,7 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
       <div className="project-title">
         <nav className="crumbs" aria-label="Pfad"><a className="crumb" href="#/">Projekte</a><span aria-hidden="true">›</span><span aria-current="page">{session.project.name}</span></nav>
         <h1 className="page-title">{session.project.name}</h1>
+        <BackupChip repo={repo} project={session.project} />
       </div>
       <span className={`save-state ${session.saveState}`} role="status" title={session.saveError}>
         {saveLabel[session.saveState]}{repo.kind === 'memory' && ' · nur diese Sitzung'}</span>
@@ -45,4 +50,14 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
       <button onClick={() => void session.reload()}>Gespeicherten Stand laden</button></div>}
     {active ? <active.component session={session} /> : <div className="notice" role="alert">Unbekannter Projektbereich „{tab}“.</div>}
   </div>;
+}
+
+const chipText = { never: 'noch nie gesichert', changed: 'seit Sicherung geändert', current: 'gesichert' } as const;
+
+/** Sicherungsstand of this project (BACKUP-02): links to the Projektzentrale, never claims a copy outside the browser. */
+function BackupChip({ repo, project }: { repo: Repository; project: Project }) {
+  const line = useProjectBackupState(repo, project);
+  if (!line) return null;
+  const title = line.receipt ? `Zuletzt in „${line.receipt.fileName}“ (${new Date(line.receipt.at).toLocaleString('de-DE')}). Ob die Datei außerhalb dieses Browsers liegt, kann der Bauplaner nicht prüfen.` : 'In keiner Sicherungsdatei dieses Browsers enthalten.';
+  return <a className={`backup-chip ${line.state}`} href="#/" data-backup-state={line.state} title={title}>{chipText[line.state]}</a>;
 }
