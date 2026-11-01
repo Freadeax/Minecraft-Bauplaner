@@ -11,7 +11,7 @@ import type { Generator } from './types.js';
  * furniture, porch and chimney. The front with the door faces north (z = 0).
  */
 export const HOUSE_GENERATOR: Generator = {
-  id: 'haus', name: 'Haus', version: 1,
+  id: 'haus', name: 'Haus', version: 2,
   description: 'Wohnhaus mit wählbarer Grundfläche, Geschossen, Stil, Dachform, Fensterrhythmus, Einrichtung, Vordach und Schornstein.',
   params: [
     { key: 'breite', label: 'Breite (x)', group: 'Maße', type: 'int', min: 5, max: 25, default: 9, unit: 'Blöcke' },
@@ -110,7 +110,7 @@ export const HOUSE_GENERATOR: Generator = {
     if (furnished && B < 6) notes.push('Bei Breite 5 stehen Truhe und Bett eng beieinander.');
     const roofLabel = ROOF_OPTIONS.find(o => o.value === form)!.label.replace(/ \(.*\)$/, '');
     return {
-      payload: p.payload(), connectors: [],
+      payload: m.payload(), connectors: [],
       name: `Haus ${B} × ${T}, ${F} Geschoss${F === 1 ? '' : 'e'} (${s.short})`,
       description: `Generiertes Wohnhaus ${B} × ${T}, ${F} Geschoss${F === 1 ? '' : 'e'} à ${fh} Blöcke, ${roofLabel}${furnished ? ', eingerichtet' : ''}.`,
       facets: { kategorie: ['wohnhaus'], stil: [...s.stil], biom: [...s.biom], funktion: ['wohnen', ...(furnished ? ['lagern'] : [])] },

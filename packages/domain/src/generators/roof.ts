@@ -26,7 +26,7 @@ export const ridgeFor = (choice: string, width: number, depth: number): 'x' | 'z
  * x/z = −Überstand.
  */
 export const ROOF_GENERATOR: Generator = {
-  id: 'dach', name: 'Dach', version: 1,
+  id: 'dach', name: 'Dach', version: 2,
   description: 'Sattel-, Walm-, Pult- oder Flachdach für ein beliebiges Rechteck, steil oder flach geneigt, mit Überstand, Giebelwänden und Schornstein.',
   params: [
     { key: 'breite', label: 'Breite (x)', group: 'Maße', type: 'int', min: 3, max: 31, default: 9, unit: 'Blöcke', hint: 'Außenmaß des Gebäudes, ohne Überstand.' },
@@ -64,7 +64,7 @@ export const ROOF_GENERATOR: Generator = {
     if (form === 'pult' && Math.max(B, T) > 15 && a.str('neigung') === 'steil') notes.push('Steiles Pultdach über große Breite wird sehr hoch.');
     const formLabel = ROOF_OPTIONS.find(o => o.value === form)!.label.replace(/ \(.*\)$/, '');
     return {
-      payload: p.payload(), connectors: [],
+      payload: m.payload(), connectors: [],
       name: `${formLabel} ${B} × ${T} (${s.short})`,
       description: `Generiertes ${formLabel} für ${B} × ${T}, Überstand ${ov}, Firsthöhe ${top + 1}.`,
       facets: { kategorie: ['wohnhaus'], stil: [...s.stil], biom: [...s.biom], funktion: ['wohnen'] },

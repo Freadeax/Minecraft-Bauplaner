@@ -29,6 +29,8 @@ export interface RoofSpec {
   readonly gable?: { readonly x0: number; readonly x1: number; readonly z0: number; readonly z1: number; readonly block: string } | undefined;
   /** Parapet on flat roofs. */
   readonly parapet?: boolean;
+  /** Shed roofs: rise toward west/north instead of east/south (GEN-02, e.g. the east aisle of a church). */
+  readonly flip?: boolean;
 }
 
 interface Slope { readonly d: number; readonly up: H }
@@ -39,7 +41,7 @@ function slopeAt(r: RoofSpec, x: number, z: number): Slope {
   const across = r.ridge === 'z' ? [[w, 'east'], [e, 'west']] as const : [[n, 'south'], [s, 'north']] as const;
   switch (r.form) {
     case 'sattel': return across[0][0] <= across[1][0] ? { d: across[0][0], up: across[0][1] } : { d: across[1][0], up: across[1][1] };
-    case 'pult': return r.ridge === 'z' ? { d: w, up: 'east' } : { d: n, up: 'south' };
+    case 'pult': return r.ridge === 'z' ? (r.flip ? { d: e, up: 'west' } : { d: w, up: 'east' }) : (r.flip ? { d: s, up: 'north' } : { d: n, up: 'south' });
     case 'walm': {
       const opts: readonly (readonly [number, H])[] = [[w, 'east'], [e, 'west'], [n, 'south'], [s, 'north']];
       let best = opts[0]!;
@@ -95,8 +97,8 @@ function closeGables(p: Plot, r: RoofSpec, maxD: number): void {
   const g = r.gable!;
   // Gable ends across the ridge; a shed roof also closes its high side.
   const lines: [number, number][] = [];
-  if (r.ridge === 'z') { for (let x = g.x0; x <= g.x1; x++) lines.push([x, g.z0], [x, g.z1]); if (r.form === 'pult') for (let z = g.z0; z <= g.z1; z++) lines.push([g.x1, z]); }
-  else { for (let z = g.z0; z <= g.z1; z++) lines.push([g.x0, z], [g.x1, z]); if (r.form === 'pult') for (let x = g.x0; x <= g.x1; x++) lines.push([x, g.z1]); }
+  if (r.ridge === 'z') { for (let x = g.x0; x <= g.x1; x++) lines.push([x, g.z0], [x, g.z1]); if (r.form === 'pult') for (let z = g.z0; z <= g.z1; z++) lines.push([r.flip ? g.x0 : g.x1, z]); }
+  else { for (let z = g.z0; z <= g.z1; z++) lines.push([g.x0, z], [g.x1, z]); if (r.form === 'pult') for (let x = g.x0; x <= g.x1; x++) lines.push([x, r.flip ? g.z0 : g.z1]); }
   {
     for (const [x, z] of lines) {
       const { d } = slopeAt(r, x, z);

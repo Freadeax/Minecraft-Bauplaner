@@ -77,7 +77,7 @@ export const WALL_GENERATOR: Generator = {
     const total = h + crownH, profile = wallProfile(t, total), jz = z0 + Math.floor(t / 2);
     notes.push(`Anschlüsse an beiden Enden: wall_joint, Profil ${profile}${profile === 'wall_2x5' ? ' – passt zu Mauersegment, Turm und Torhaus der Beispiele' : ''}. Türme mit gleichem Profil docken an.`);
     return {
-      payload: p.payload(),
+      payload: m.payload(),
       connectors: [joint('west', [0, 0, jz], [-1, 0, 0], 'wall_joint', profile), joint('east', [L, 0, jz], [1, 0, 0], 'wall_joint', profile)],
       name: `Mauer ${L} × ${total}${a.bool('tor') ? ' mit Tor' : ''} (${s.short})`,
       description: `Generierte Wehrmauer, ${L} Blöcke lang, ${t} stark, ${total} hoch.`,

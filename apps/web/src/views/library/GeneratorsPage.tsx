@@ -57,7 +57,7 @@ export function GeneratorsPage({ id, projects, libHref, onSaved, userLib, onMess
       </article></li>;
     })}</ul>
     <h2 className="section-title">Anlagen</h2>
-    <p className="muted section-lead">Mehrere generierte Bauteile als fertiges Projekt: Türme und Mauern als Burgring, unterschiedliche Häuser als Straßenzug.</p>
+    <p className="muted section-lead">Mehrere generierte Bauteile als fertiges Projekt: Türme, Mauern und Torhaus als Burgring, unterschiedliche Häuser als Straßenzug, Kirche, Brunnen und Mühle als Dorfplatz.</p>
     <ul className="card-grid-auto gen-cards">{COMPOUNDS.map(c => <li key={c.id}><article className="ecard gen-card">
       <a href={libHref('generators', c.id)} className="gen-card-open" aria-label={`Anlage ${c.name} öffnen`}>
         <CompoundThumb id={c.id} version={c.version} />

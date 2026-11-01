@@ -33,8 +33,8 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await p.goto(`${BASE}#/bibliothek`);
     await p.locator('.lib-tabs a', { hasText: 'Generatoren' }).click();
     await p.waitForURL(/#\/bibliothek\/generatoren$/);
-    await p.locator('.gen-card').nth(6).waitFor();
-    assert.equal(await p.locator('.gen-card').count(), 7, '5 Generatoren + 2 Anlagen');
+    await p.locator('.gen-card').nth(13).waitFor();
+    assert.equal(await p.locator('.gen-card').count(), 14, '11 Generatoren + 3 Anlagen');
     assert.equal(await p.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true, 'kein waagrechtes Scrollen');
 
     // Tower: change a parameter, the preview figures follow.
@@ -68,6 +68,15 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await p.goto(`${BASE}#/bibliothek/generatoren/haus~villa`);
     assert.equal(await p.getByLabel('Vorlage', { exact: true }).inputValue(), 'villa');
     await p.locator('.detail-title', { hasText: 'Modern' }).waitFor();
+    // GEN-02: a church preset renders with live figures, the village square becomes a project.
+    await p.goto(`${BASE}#/bibliothek/generatoren/kirche~basilika`);
+    assert.equal(await p.getByLabel('Vorlage', { exact: true }).inputValue(), 'basilika');
+    await p.locator('.detail-title', { hasText: 'Kirche' }).waitFor();
+    await p.getByLabel('Wandhöhe (Zahl)').fill('6');
+    await p.locator('.gen-notes li, .gen-issues li', { hasText: 'Seitenschiffe erst ab Wandhöhe 8' }).first().waitFor();
+    await p.goto(`${BASE}#/bibliothek/generatoren/dorfplatz~dorf`);
+    await p.locator('.stat-tiles', { hasText: '6 Bauteile' }).waitFor();
+    await p.locator('.stat-tiles .ok-text', { hasText: 'keine' }).waitFor();
     await p.goto(`${BASE}#/bibliothek/generatoren/burganlage~burg`);
     await p.locator('.stat-tiles', { hasText: '9 Bauteile' }).waitFor();
     await p.locator('.stat-tiles .ok-text', { hasText: 'keine' }).waitFor();

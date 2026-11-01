@@ -106,6 +106,40 @@ export class Plot {
     }
   }
 
+  /**
+   * Stair corner shapes like the game computes them on placement (GEN-02):
+   * a stair whose back neighbour is a perpendicular stair of the same half
+   * becomes an outer corner, one whose front neighbour is such a stair an
+   * inner corner. Opt-in (the generators call it), so catalogue buildings keep
+   * their versions. Shapes are derived from the final layout in one pass, as
+   * the game's neighbour updates do.
+   */
+  shapeStairs(): void {
+    const step: Readonly<Record<string, readonly [number, number]>> = { north: [0, -1], east: [1, 0], south: [0, 1], west: [-1, 0] };
+    const ccw: Readonly<Record<string, string>> = { north: 'west', west: 'south', south: 'east', east: 'north' };
+    const opposite: Readonly<Record<string, string>> = { north: 'south', south: 'north', east: 'west', west: 'east' };
+    const stairAt = (x: number, y: number, z: number) => { const s = this.get(x, y, z); return s && s.id.endsWith('_stairs') ? s : undefined; };
+    for (const cell of this.cells.values()) {
+      const s = cell.state;
+      if (!s || !s.id.endsWith('_stairs')) continue;
+      const [x, y, z] = cell.position, f = s.properties.facing!, half = s.properties.half;
+      const rel = (d: string) => { const [dx, dz] = step[d]!; return stairAt(x + dx, y, z + dz); };
+      const axisOf = (d: string) => d === 'north' || d === 'south' ? 'z' : 'x';
+      const canTake = (d: string) => { const n = rel(d); return !n || n.properties.facing !== f || n.properties.half !== half; };
+      let shape = 'straight';
+      const behind = rel(f);
+      if (behind && behind.properties.half === half && axisOf(behind.properties.facing!) !== axisOf(f) && canTake(opposite[behind.properties.facing!]!))
+        shape = behind.properties.facing === ccw[f] ? 'outer_left' : 'outer_right';
+      else {
+        const front = rel(opposite[f]!);
+        if (front && front.properties.half === half && axisOf(front.properties.facing!) !== axisOf(f) && canTake(front.properties.facing!))
+          shape = front.properties.facing === ccw[f] ? 'inner_left' : 'inner_right';
+      }
+      // Decisions read only facing and half, never shape, so updating in place is order-independent.
+      if (shape !== s.properties.shape) cell.state = { id: s.id, properties: { ...s.properties, shape } };
+    }
+  }
+
   payload(): VoxelPayload {
     this.connect();
     const palette: BlockState[] = [{ id: 'minecraft:air', properties: {} }], index = new Map<string, number>([[stateKey(palette[0]!), 0]]);

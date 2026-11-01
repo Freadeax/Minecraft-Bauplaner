@@ -76,6 +76,8 @@ export class Mason {
     for (let x = Math.min(x0, x1); x <= Math.max(x0, x1); x++) for (let y = Math.min(y0, y1); y <= Math.max(y0, y1); y++)
       for (let z = Math.min(z0, z1); z <= Math.max(z0, z1); z++) f(x, y, z);
   }
+  /** Payload with game-accurate stair corner shapes (GEN-02). */
+  payload(): VoxelPayload { this.p.shapeStairs(); return this.p.payload(); }
   /** Seeded deterministic chance for optional details. */
   chance(x: number, y: number, z: number, percent: number): boolean {
     const v = (((x + this.seed * 13) * 73856093) ^ ((y + this.seed) * 19349663) ^ ((z + this.seed * 3) * 83492791)) >>> 0;

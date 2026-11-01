@@ -4,7 +4,7 @@ import { transformBlockState, stateRuleFor, validatePayload } from '../dist/voxe
 import {
   GENERATORS, GENERATOR_TAG, runGenerator, presetValues, createGeneratedAsset, addGeneratedVersion, generatorSourceOf, checkReproducible, normalizeParams, defaultsOf,
   rollParams, describeParams, STYLES, computeMaterials, recipesForMaterials, validateConnectors, analyzeVersion, buildCatalog, facetsOf, createProject,
-  applyOperation, newInstance, resolveProject, buildGuide, COMPOUNDS, createCompoundProject, assertGuideAcyclic, findSnapCandidates, createBuildingLibrary, createSampleLibrary, verifyAssetVersion, createBackup, readBackup,
+  applyOperation, newInstance, resolveProject, buildGuide, COMPOUNDS, transformConnector, createCompoundProject, assertGuideAcyclic, findSnapCandidates, createBuildingLibrary, createSampleLibrary, verifyAssetVersion, createBackup, readBackup,
 } from '../dist/domain/src/index.js';
 
 const T0 = { position: [0, 0, 0], quarterTurns: 0, mirrorX: false };
@@ -26,7 +26,7 @@ function cases() {
 const CASES = cases();
 
 test('generator declarations: unique ids, sane parameters, presets within range', () => {
-  assert.deepEqual(GENERATORS.map(g => g.id), ['haus', 'turm', 'mauer', 'bruecke', 'dach']);
+  assert.deepEqual(GENERATORS.map(g => g.id), ['haus', 'turm', 'mauer', 'bruecke', 'dach', 'treppenhaus', 'kirche', 'hafen', 'torhaus', 'windmuehle', 'brunnen']);
   for (const g of GENERATORS) {
     assert.ok(Number.isInteger(g.version) && g.version >= 1);
     assert.equal(new Set(g.params.map(p => p.key)).size, g.params.length, `${g.id}: Parameter eindeutig`);
@@ -90,7 +90,10 @@ test('every generated state is in the B7 catalogue: four turns and double mirror
 test('materials and recipes: no unresolved, assumed or recipe-less items in any style', () => {
   for (const [id, label, values] of CASES) {
     const payload = runGenerator(id, values).payload, m = computeMaterials(payload);
-    assert.deepEqual(m.unresolved.map(u => u.state.id), [], `${id} ${label}: ungelöst`);
+    // Only the well carries water, and only when asked; liquids are reported, never counted silently.
+    const liquids = id === 'brunnen' && values.wasser !== false ? ['minecraft:water'] : [];
+    assert.deepEqual([...new Set(m.unresolved.map(u => u.state.id))].filter(x => !liquids.includes(x)), [], `${id} ${label}: ungelöst`);
+    assert.ok(m.unresolved.every(u => u.reason === 'liquid'), `${id} ${label}: nur Flüssigkeiten offen`);
     assert.deepEqual(m.items.filter(i => i.confidence === 'assumed').map(i => i.itemId), [], `${id} ${label}: angenommen`);
     const r = recipesForMaterials(m);
     assert.deepEqual(r.base.filter(b => b.kind === 'unknown').map(b => b.itemId), [], `${id} ${label}: kein Rezept`);
@@ -212,7 +215,8 @@ test('pinned generator output: same parameters keep their geometry until the gen
   // Update these hashes only together with a raised `version` of the changed generator.
   assert.deepEqual(pinned, PINNED);
 });
-const PINNED = { haus: "4cf30ea478f98733", turm: "23b6fd0caac7e6bc", mauer: "4da92383b6b39497", bruecke: "04e077c30b072b61", dach: "d3de7fa1d13a8330" };
+const PINNED = { haus: "4cf30ea478f98733", turm: "bc5adeedabb35bd4", mauer: "4da92383b6b39497", bruecke: "04e077c30b072b61", dach: "d3de7fa1d13a8330",
+  treppenhaus: "20628bc43149a44b", kirche: "1cd111c7ec836fea", hafen: "99dc5becf72ac0c4", torhaus: "319098e62eb12ba8", windmuehle: "cf31aecc9829e826", brunnen: "c44599292a566006" };
 
 test('compounds: castle and street become conflict-free projects with shared generated assets', async () => {
   for (const c of COMPOUNDS) {
@@ -228,6 +232,9 @@ test('compounds: castle and street become conflict-free projects with shared gen
       assert.equal(new Set(b.project.instances.map(i => i.assetVersionId)).size, b.assets.length, 'gleiche Teile ⇒ ein Asset');
     }
   }
+  const village = await createCompoundProject('dorfplatz', {});
+  assert.deepEqual(village.project.instances.map(i => i.name), ['Kirche', 'Windmühle', 'Brunnen', 'Haus 1', 'Haus 2', 'Haus 3', 'Haus 4']);
+  assert.equal(village.project.instances.find(i => i.name === 'Kirche').transform.quarterTurns, 2, 'Kirchenportal zeigt zum Platz');
   const castle = await createCompoundProject('burganlage', { hofBreite: 16, hofTiefe: 16, tor: true, bergfried: true });
   assert.equal(castle.project.instances.length, 9);
   assert.equal(castle.assets.length, 4, 'Turm, Tormauer, Mauer, Bergfried');
@@ -235,4 +242,114 @@ test('compounds: castle and street become conflict-free projects with shared gen
   assert.equal(street.project.instances.length, 6);
   const again = await createCompoundProject('haeuserzeile', { anzahl: 6, abstand: 0 });
   assert.deepEqual(again.versions.map(v => v.payloadHash), street.versions.map(v => v.payloadHash), 'deterministisch');
+});
+
+// ------------------------------------------------------------ GEN-02: new generators and stair corners
+
+/** Standing cells reachable on foot from `start`: one block up only onto a stair from its low side. */
+function walk(payload, start) {
+  const grid = new Map();
+  for (const c of payload.cells) grid.set(c.position.join(','), c.kind === 'air' ? null : payload.palette[c.paletteIndex]);
+  const g = (x, y, z) => grid.get(`${x},${y},${z}`);
+  const free = s => !s || /_door$|ladder|_carpet$|_pressure_plate$/.test(s.id);
+  const solid = s => s && !free(s) && !/_fence$|_wall$|_fence_gate$|chain|lantern|_pane$|_bars$|water/.test(s.id) && !(s.id.endsWith('_slab') && s.properties.type === 'bottom');
+  const stand = (x, y, z) => solid(g(x, y - 1, z)) && free(g(x, y, z)) && free(g(x, y + 1, z));
+  const opp = { north: 'south', south: 'north', east: 'west', west: 'east' };
+  const seen = new Set([start.join(',')]), queue = [start];
+  while (queue.length) {
+    const [x, y, z] = queue.shift();
+    for (const [dx, dz, dir] of [[1, 0, 'east'], [-1, 0, 'west'], [0, 1, 'south'], [0, -1, 'north']]) for (const dy of [-1, 0, 1]) {
+      const n = [x + dx, y + dy, z + dz], k = n.join(',');
+      if (seen.has(k) || !stand(...n)) continue;
+      if (dy === 1) { const s = g(n[0], y, n[2]); if (!s?.id.endsWith('_stairs') || s.properties.facing === opp[dir]) continue; }
+      if (dy === -1) { const s = g(x, y - 1, z); if (!s?.id.endsWith('_stairs')) continue; }
+      seen.add(k); queue.push(n);
+    }
+  }
+  return seen;
+}
+
+test('stairwell: every storey is reachable on foot, doors sit at the house floor heights', () => {
+  for (const [id, label, values] of CASES.filter(c => c[0] === 'treppenhaus')) {
+    const run = runGenerator(id, values), v = run.values, R = v.geschoss + 1, oz = v.balkone ? 2 : 0, c = Math.floor(v.breite / 2);
+    const reach = walk(run.payload, [c, 1, oz + 1]);
+    for (let k = 0; k < v.geschosse; k++) assert.ok(reach.has(`${c},${k * R + 1},${oz + 1}`), `${label}: Geschoss ${k + 1} (Treppenabsatz) erreichbar`);
+    const doors = run.payload.cells.filter(cell => cell.kind === 'block' && run.payload.palette[cell.paletteIndex].id.endsWith('_door') && run.payload.palette[cell.paletteIndex].properties.half === 'lower');
+    assert.deepEqual(doors.map(d => d.position[1]).sort((a, b) => a - b), Array.from({ length: v.geschosse }, (_, k) => k * R + 1), `${label}: eine Tür je Geschoss`);
+    assert.ok(doors.every(d => d.position[0] === c && d.position[2] === oz), `${label}: Türen übereinander`);
+  }
+  const house = runGenerator('haus', { geschosse: 3, geschoss: 4 }), well = runGenerator('treppenhaus', { geschosse: 3, geschoss: 4 });
+  assert.ok(well.notes.some(n => /Geschosshöhe 4/.test(n)));
+  assert.equal(house.payload.bounds.maxExclusive[1] > 3 * 5, true);
+});
+
+test('stair corners: hip roofs get the outer and inner shapes the game would compute', async () => {
+  const roof = runGenerator('dach', { breite: 7, tiefe: 7, ueberstand: 0, form: 'walm', neigung: 'steil' }).payload;
+  const at = (x, y, z) => { const c = roof.cells.find(c => c.position[0] === x && c.position[1] === y && c.position[2] === z); return c && roof.palette[c.paletteIndex]; };
+  for (const [x, z] of [[0, 0], [6, 0], [0, 6], [6, 6]]) assert.match(at(x, 0, z).properties.shape, /^outer_/, `Ecke ${x},${z}`);
+  assert.equal(at(3, 0, 0).properties.shape, 'straight');
+  // Game rule: a stair facing east whose back neighbour faces south (not its counter-clockwise north) is outer_right.
+  assert.deepEqual([at(0, 0, 0).properties.facing, at(1, 0, 0).properties.facing, at(0, 0, 0).properties.shape], ['east', 'south', 'outer_right']);
+  // Inner corners: a stair whose front neighbour is perpendicular (game rule, checked on the plot directly).
+  const { Plot } = await import('../dist/domain/src/build/plot.js');
+  const p = new Plot([3, 1, 3]);
+  p.set(1, 0, 1, 'oak_stairs', { facing: 'north', half: 'bottom', shape: 'straight', waterlogged: 'false' });
+  p.set(1, 0, 2, 'oak_stairs', { facing: 'east', half: 'bottom', shape: 'straight', waterlogged: 'false' });
+  p.shapeStairs();
+  assert.equal(p.get(1, 0, 1).properties.shape, 'inner_right', 'Front (Süden) zeigt nach Osten ≠ gegen den Uhrzeigersinn (Westen)');
+  assert.equal(p.get(1, 0, 2).properties.shape, 'straight', 'Rücken und Front ohne Treppe: gerade');
+  const tower = runGenerator('turm', { form: 'rund', radius: 5, dach: 'kegel' }).payload;
+  const shapes = new Set(tower.palette.filter(s => s.id.endsWith('_stairs')).map(s => s.properties.shape));
+  assert.ok(shapes.has('outer_left') || shapes.has('outer_right'));
+  // A gable roof stays straight; the stored v1 generator versions are reported as older.
+  const gable = runGenerator('dach', { form: 'sattel' }).payload;
+  assert.deepEqual([...new Set(gable.palette.filter(s => s.id.endsWith('_stairs')).map(s => s.properties.shape))], ['straight']);
+  for (const id of ['haus', 'turm', 'dach']) assert.equal(gen(id).version, 2, `${id}: Version wegen Eckformen erhöht`);
+});
+
+test('church, harbour, gatehouse, windmill and well follow their parameters', () => {
+  const ids = run => run.payload.palette.map(s => s.id);
+  const church = runGenerator('kirche', { turm: 'front', glocke: true, turmhoehe: 14, wandhoehe: 7 });
+  assert.ok(ids(church).includes('minecraft:bell') && ids(church).includes('minecraft:lightning_rod'));
+  assert.ok(church.payload.bounds.maxExclusive[1] >= 7 + 14, 'Turm über der Wand');
+  assert.ok(!ids(runGenerator('kirche', { turm: 'keiner', glocke: true })).includes('minecraft:bell'), 'ohne Turm keine Glocke');
+  assert.ok(runGenerator('kirche', { seitenschiffe: true, wandhoehe: 6 }).notes.some(n => /Seitenschiffe erst ab/.test(n)));
+  const nave = v => runGenerator('kirche', v).payload.bounds.maxExclusive;
+  assert.ok(nave({ seitenschiffe: true, wandhoehe: 10 })[0] === nave({ wandhoehe: 10 })[0] + 6, 'Seitenschiffe je 3 breit');
+  const church2 = runGenerator('kirche', { turm: 'front' }), reach = walk(church2.payload, [church2.payload.bounds.maxExclusive[0] >> 1, 1, 1]);
+  assert.ok([...reach].some(k => Number(k.split(',')[2]) > 10), 'vom Portal durch das Langhaus begehbar');
+
+  const harbor = runGenerator('hafen', { wassertiefe: 4, stege: 2, stegbreite: 3, steglaenge: 10 });
+  const deck = harbor.payload.cells.filter(c => c.position[2] < 10 && harbor.payload.palette[c.paletteIndex].id.endsWith('_planks')).map(c => c.position[1]);
+  assert.deepEqual([...new Set(deck)], [5], 'Stege einen Block über dem Wasserspiegel');
+  assert.deepEqual(harbor.connectors.map(c => [c.type, c.profile]), [['path_joint', 'weg_4']]);
+  assert.ok(runGenerator('hafen', { laenge: 10, stege: 5, stegbreite: 5 }).notes.some(n => /passen/.test(n)), 'zu viele Stege gemeldet');
+
+  const gate = runGenerator('torhaus', { mauerStaerke: 2, mauerHoehe: 7, torhoehe: 4 });
+  assert.deepEqual(gate.connectors.map(c => c.profile), ['wall_2x7', 'wall_2x7']);
+  assert.ok(gate.notes.some(n => /Wehrgang führt durch/.test(n)));
+  assert.ok(runGenerator('torhaus', { mauerStaerke: 2, mauerHoehe: 5, torhoehe: 4 }).notes.some(n => /kein Durchgang/.test(n)));
+  const passage = walk(gate.payload, [5, 1, 0]);
+  assert.ok(passage.has(`5,1,${gate.payload.bounds.maxExclusive[2] - 1}`), 'Durchfahrt offen');
+  assert.ok(!walk(runGenerator('torhaus', { fallgitter: true }).payload, [5, 1, 0]).has('5,1,6'), 'Fallgitter schließt');
+
+  const mill = runGenerator('windmuehle', { hoehe: 8, fluegel: 12 });
+  assert.ok(mill.notes.some(n => /gekürzt/.test(n)));
+  assert.ok(mill.payload.cells.every(c => c.position[1] >= 0));
+  assert.ok(ids(runGenerator('windmuehle', {})).includes('minecraft:white_wool'));
+
+  const dry = runGenerator('brunnen', { wasser: false });
+  assert.ok(!ids(dry).includes('minecraft:water'));
+  assert.equal(computeMaterials(runGenerator('brunnen', {}).payload).unresolved.every(u => u.state.id === 'minecraft:water'), true);
+});
+
+test('gatehouse docks between walls of the castle: joints meet exactly', async () => {
+  const b = await createCompoundProject('burganlage', { hofBreite: 20, torhaus: true });
+  const versions = new Map(b.versions.map(v => [v.id, v]));
+  const placed = name => { const i = b.project.instances.find(x => x.name === name), v = versions.get(i.assetVersionId); return v.connectors.map(c => transformConnector(c, v.payload.pivot, i.transform)); };
+  const gate = placed('Torhaus'), west = placed('Mauer Nord (West)'), east = placed('Mauer Nord (Ost)');
+  assert.deepEqual(gate[0].position, west[1].position, 'Torhaus West = Mauer-Ende');
+  assert.deepEqual(gate[1].position, east[0].position, 'Torhaus Ost = Mauer-Anfang');
+  assert.equal(gate[0].profile, west[1].profile);
+  assert.equal(resolveProject(b.project, versions).conflicts.length, 0);
 });

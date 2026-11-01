@@ -452,3 +452,12 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Playwright-Hinweis wie bei VIEW-02/MAP-01: lokaler Verweis 1248 → 1243, keine Repositoryänderung.
 - Grenzen: kein Picking an 3D-Blockflächen, keine Spielprüfung der gespeicherten Zustände, nur Chromium. Seltene Zustandswerte fehlen im Register, solange PROFILE-01 keinen Serverreport liefert (siehe [BLOCK_EDITOR](architecture/BLOCK_EDITOR.md)).
 - Nach Rebase auf UI-02/LIB-02/03/04/GAME-02: Werkstatt nicht als fünfter Hauptbereich (UI-02-Kopfzeile ist auf vier ausgelegt, `shell.e2e.mjs` prüft das), sondern als Schnellsucheintrag und Knopf „✎ Neues Bauteil bauen“ in der Bibliothek. `npm run test:e2e` 73/74; einziger Ausfall `shell.e2e.mjs` „Schnellsuche (Strg+K)“ wartet auf den Dialog und scheitert **identisch auf unverändertem main `46444f3`** (eigener Build im sauberen Arbeitsbaum); per Hand öffnet Strg+K den Dialog. Nicht durch EDIT verursacht, Test nicht verändert.
+## GEN-02 Neue Generatoren und Treppen-Eckformen · 01.11.2026 · Claude
+
+- Ausgang main `a5fc972`, vor der Prüfung auf main `80631ef` (EDIT-02/EDIT-01, GAME-02-Downloadseite) gebracht; keine Konflikte.
+- `tests/generators.test.mjs`: 17/17 bestanden (alle elf Generatoren über Standard, Vorlagen, acht Stile, 25 gewürfelte Sätze und Bereichsgrenzen; Begehbarkeit Treppenhaus; Eckformen nach Spielregel; Torhaus-Andocken in der Burganlage).
+- Alt/neu-Vergleich über je 75 Parametersätze: Haus 6, Turm 21, Dach 9 abweichend (Eckformen) → Version 2; Mauer und Brücke 0 → Version 1 bleibt.
+- `npm run check`: bestanden, 425 Node-Tests bestanden, 1 übersprungen (Bestand).
+- `npm run test:e2e`: 74/76. `generators.e2e.mjs` 2/2 bestanden (14 Karten, Basilika-Hinweis, Dorfplatz ohne Überschneidungen). `textures.e2e.mjs` schlug einmal fehl und bestand im Einzellauf (zeitabhängig). `shell.e2e.mjs` „Schnellsuche (Strg+K)“ scheitert auch auf unverändertem main `80631ef` (Bestand, nicht GEN-02).
+- Sichtprüfung der neuen Vorschauen in Headless-Chromium (Kathedrale, Treppenauge, Handelshafen, Burgtor, Holländermühle, Schlossbrunnen, Marktflecken, Burg mit Torhaus).
+- Grenzen: nicht im Spiel abgenommen; Wasser im Hafen nicht enthalten, Brunnenwasser nicht als Item gezählt.

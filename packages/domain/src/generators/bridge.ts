@@ -95,7 +95,7 @@ export const BRIDGE_GENERATOR: Generator = {
     if (form !== 'haenge' && wanted > 0 && L < 2 * wanted + 2) notes.push('Kurze Brücke: Rampen nehmen die ganze Länge ein.');
     const label = form === 'bogen' ? 'Bogenbrücke' : form === 'balken' ? 'Balkenbrücke' : 'Hängebrücke';
     return {
-      payload: p.payload(),
+      payload: m.payload(),
       connectors: [joint('west', [0, e[0]!, jz], [-1, 0, 0], 'path_joint', profile), joint('east', [L, e[L - 1]!, jz], [1, 0, 0], 'path_joint', profile)],
       name: `${label} ${L} × ${b} (${s.short})`,
       description: `Generierte ${label}, ${L} Blöcke lang, Weg ${b} breit, Scheitel ${Math.max(...e)} über den Enden.`,

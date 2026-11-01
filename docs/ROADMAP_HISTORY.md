@@ -1096,3 +1096,40 @@ Blockeditor #/werkstatt und Projekt-Reiter „Blöcke“: alle 26.3-Blöcke mit 
 - `tests/e2e/editor.e2e.mjs`
 - `tests/editor.test.mjs`
 
+## 2026-11-01T14:48:06.970Z · progress
+
+**Aufgaben:** GEN-02
+
+GEN-02: Generatoren Treppenhaus, Kirche, Hafen, Torhaus, Windmühle, Brunnen; Anlage Dorfplatz, Burganlage mit Torhaus; Treppen-Eckformen nach Spielregel (Haus/Turm/Dach v2). npm run check grün (425), Generator-E2E grün; shell-Schnellsuche-E2E scheitert bereits auf main. Nicht im Spiel abgenommen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GEN-02 | 🧩 Implementiert · Abnahme offen | 5/5 | Generierte Bauten (v. a. Treppenhaus, Torhaus-Wehrgang, Hafen) im Spiel abnehmen; Treppenhaus-Anbau an Haus als Anlage erwägen. |
+
+**Geänderte Dateien:**
+
+- `README.md`
+- `apps/web/src/views/library/GeneratorsPage.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/GENERATORS.md`
+- `packages/domain/src/build/plot.ts`
+- `packages/domain/src/generators/bridge.ts`
+- `packages/domain/src/generators/church.ts`
+- `packages/domain/src/generators/compound.ts`
+- `packages/domain/src/generators/gatehouse.ts`
+- `packages/domain/src/generators/harbor.ts`
+- `packages/domain/src/generators/house.ts`
+- `packages/domain/src/generators/index.ts`
+- `packages/domain/src/generators/roof.ts`
+- `packages/domain/src/generators/roofs.ts`
+- `packages/domain/src/generators/stairwell.ts`
+- `packages/domain/src/generators/tower.ts`
+- `packages/domain/src/generators/types.ts`
+- `packages/domain/src/generators/wall.ts`
+- `packages/domain/src/generators/well.ts`
+- `packages/domain/src/generators/windmill.ts`
+- `tests/e2e/generators.e2e.mjs`
+- `tests/generators.test.mjs`
+

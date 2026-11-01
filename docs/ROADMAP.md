@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T14:29:20.816Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T14:48:06.970Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -13,9 +13,9 @@ Stand: 2026-11-01T14:29:20.816Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | Status | Pakete |
 |---|---:|
 | ⏳ Offen | 19 |
-| 🚧 In Arbeit | 2 |
+| 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 15 |
+| 🧩 Implementiert · Abnahme offen | 16 |
 | ✅ Im beschriebenen Umfang geprüft | 21 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -25,7 +25,6 @@ Stand: 2026-11-01T14:29:20.816Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 - **MAP-01 · Weltlage und begehbare Projektkarte** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02.
 - **EDIT-01 · Mehrfachauswahl und sichtbare Freiraumhüllen** — 🧩 Implementiert · Abnahme offen, 2/2 Teilschritte. Nächster Schritt: Geräteprüfung (QA-02); Gruppenziehen direkt im 3D-Bild als Folgeschritt.
 - **EDIT-02 · Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Picking an 3D-Blockflächen; Registerlücken mit PROFILE-01-Serverreport schließen; Spielprüfung.
-- **GEN-02 · Weitere Generatoren und Dachdetails** — 🚧 In Arbeit, 0/5 Teilschritte. Nächster Schritt: Generatorspezifikation und Umsetzung Treppenhaus, Kirche, Hafen.
 - **WORLD-IMPORT-01 · Bereichsweiser Weltimport und Terrainprüfung** — 🚧 In Arbeit, 0/2 Teilschritte. Nächster Schritt: Konsistentes Sicherungsformat und Bereichsauswahl festlegen.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
@@ -123,7 +122,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [LIB-03](#lib-03) | Eigene Ensembles und Generatorvorlagen speichern | 🧩 Implementiert · Abnahme offen | 2/2 | LIB-02, GEN-01 | ausstehend | ausstehend |
 | [WORLD-02](#world-02) | Weitere kuratierte Bauwelten | ✅ Im beschriebenen Umfang geprüft | 2/2 | LIB-01, UI-01 | `c3e6478` | `c3e6478` |
 | [BUILD-05](#build-05) | Bauwelt-Anlagen mit Konfliktvorschau | ⏳ Offen | 0/2 | LIB-03, CORE-03 | ausstehend | ausstehend |
-| [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | 🚧 In Arbeit | 0/5 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
+| [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | 🧩 Implementiert · Abnahme offen | 5/5 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
 | [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen | 4/4 | CORE-03, STORE-02 | `84838f0` | `e232b26` |
 | [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter | ⏳ Offen | 0/2 | MAP-01 | ausstehend | ausstehend |
 | [GAME-02](#game-02) | Fabric-Brücke kompilieren und im Spiel abnehmen | 🧩 Implementiert · Abnahme offen | 4/5 | FORMAT-01, GAME-01 | `84838f0` | `e232b26` |
@@ -951,21 +950,21 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GEN-02
 
-**Weitere Generatoren und Dachdetails** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude-Thread „Neue Gebäudegeneratoren ergänzen“ · Aktualisiert: 2026-11-01T14:08:37.152Z
+**Weitere Generatoren und Dachdetails** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Neue Gebäudegeneratoren ergänzen“ · Aktualisiert: 2026-11-01T14:48:06.970Z
 
-- [ ] GEN-02-S01: Treppenhaus, Kirche und Hafen als getrennte Generatoren spezifizieren.
-- [ ] GEN-02-S02: Dachtreppen-Eckformen und Anschlüsse profilgenau erzeugen.
-- [ ] GEN-02-S03: Treppenhaus-, Kirchen- und Hafengenerator mit Stilen, Vorlagen und Anschlüssen umsetzen.
-- [ ] GEN-02-S04: Weitere sinnvolle Generatoren (z. B. Torhaus, Windmühle, Brunnen/Platz) und eine neue Anlage.
-- [ ] GEN-02-S05: Unit-/Browserprüfung, Doku, main und Pages.
+- [x] GEN-02-S01: Treppenhaus, Kirche und Hafen als getrennte Generatoren spezifizieren.
+- [x] GEN-02-S02: Dachtreppen-Eckformen und Anschlüsse profilgenau erzeugen.
+- [x] GEN-02-S03: Treppenhaus-, Kirchen- und Hafengenerator mit Stilen, Vorlagen und Anschlüssen umsetzen.
+- [x] GEN-02-S04: Weitere sinnvolle Generatoren (Torhaus, Windmühle, Brunnen) und neue Anlage Dorfplatz; Burganlage mit Torhaus.
+- [x] GEN-02-S05: Unit-/Browserprüfung, Doku, main und Pages.
 
 **Abnahme:** Ganzzahliges Raster, reproduzierbare Parameter, Mengen-/Exportprüfung je Generator.
 
-**Nächste Aktion:** Generatorspezifikation und Umsetzung Treppenhaus, Kirche, Hafen.
+**Nächste Aktion:** Generierte Bauten (v. a. Treppenhaus, Torhaus-Wehrgang, Hafen) im Spiel abnehmen; Treppenhaus-Anbau an Haus als Anlage erwägen.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Node- und Browserprüfung bestanden; Bauwerke nicht im Spiel abgenommen.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/generators.test.mjs](../tests/generators.test.mjs) — 17 Fälle über alle elf Generatoren: Gültigkeit, B7-Zustände, Material/Rezepte, Anschlüsse, Begehbarkeit Treppenhaus, Eckformen nach Spielregel, Torhaus-Andocken in der Burganlage, festgehaltene Hashes.; [tests/e2e/generators.e2e.mjs](../tests/e2e/generators.e2e.mjs) — Browser 1400/390 px: 14 Karten, Kirchenvorlage mit Hinweis, Dorfplatz ohne Überschneidungen.; [docs/architecture/GENERATORS.md](architecture/GENERATORS.md) — Abschnitt GEN-02 mit Parametern, Eckformen-Regel, Versionserhöhung und Grenzen.
 
 **Dateiumfang:** `packages/domain/src/generators/`, `apps/web/src/views/library/GeneratorsPage.tsx`, `tests/generators.test.mjs`, `tests/e2e/generators.e2e.mjs`, `docs/architecture/GENERATORS.md`. **Abhängigkeiten:** GEN-01, PROFILE-01. **Alte IDs:** —.
 

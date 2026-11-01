@@ -6,8 +6,12 @@ import type { Asset, AssetVersion, Project } from '../types.js';
 import { normalizeParams, rollParams } from './params.js';
 import type { ParamDef, ParamValues } from './params.js';
 import { STYLE_OPTIONS, styleOf } from './styles.js';
+import { Args, defaultsOf } from './params.js';
 import { WEATHER_PARAMS } from './types.js';
-import type { Preset } from './types.js';
+import type { Generator, Preset } from './types.js';
+import { CHURCH_GENERATOR } from './church.js';
+import { WELL_GENERATOR } from './well.js';
+import { WINDMILL_GENERATOR } from './windmill.js';
 
 /**
  * Anlagen (B13): several generated parts arranged as a ready project – a
@@ -39,7 +43,7 @@ const num = (v: ParamValues, k: string) => v[k] as number;
 const str = (v: ParamValues, k: string) => v[k] as string;
 
 export const CASTLE_COMPOUND: Compound = {
-  id: 'burganlage', name: 'Burganlage', version: 1,
+  id: 'burganlage', name: 'Burganlage', version: 2,
   description: 'Vier Ecktürme, verbunden durch Wehrmauern mit Tor, optional mit Bergfried im Hof – als fertiges Projekt aus generierten Bauteilen.',
   params: [
     { key: 'hofBreite', label: 'Mauerlänge x', group: 'Maße', type: 'int', min: 6, max: 48, default: 16, unit: 'Blöcke' },
@@ -52,6 +56,8 @@ export const CASTLE_COMPOUND: Compound = {
     { key: 'stil', label: 'Stil', group: 'Stil & Material', type: 'choice', options: STYLE_OPTIONS, default: 'mittelalter' },
     ...WEATHER_PARAMS,
     { key: 'tor', label: 'Tor in der Nordmauer', group: 'Details', type: 'bool', default: true },
+    { key: 'torhaus', label: 'Torhaus statt Mauertor', group: 'Details', type: 'bool', default: false, when: { key: 'tor', values: [true] },
+      hint: 'Ab Mauerlänge 13: Torbau mit Durchfahrt, Mauern links und rechts docken an.' },
     { key: 'bergfried', label: 'Bergfried im Hof', group: 'Details', type: 'bool', default: true },
   ],
   presets: [
@@ -59,6 +65,7 @@ export const CASTLE_COMPOUND: Compound = {
     { id: 'festung', label: 'Große Festung', values: { hofBreite: 32, hofTiefe: 24, mauerHoehe: 9, staerke: 3, turmRadius: 5, turmDach: 'zinnen', verwitterung: 25 } },
     { id: 'palisade', label: 'Nordischer Hof', values: { hofBreite: 14, hofTiefe: 12, mauerHoehe: 4, staerke: 1, turmForm: 'eckig', turmRadius: 2, stil: 'nordisch', bergfried: false } },
     { id: 'wuestenfort', label: 'Wüstenfort', values: { hofBreite: 20, hofTiefe: 20, mauerHoehe: 7, staerke: 2, turmForm: 'eckig', turmRadius: 3, turmDach: 'zinnen', stil: 'wueste' } },
+    { id: 'torburg', label: 'Burg mit Torhaus', values: { hofBreite: 24, hofTiefe: 20, mauerHoehe: 7, staerke: 2, turmRadius: 3, turmDach: 'zinnen', torhaus: true, verwitterung: 15 } },
     { id: 'netherfeste', label: 'Netherfeste', values: { hofBreite: 18, hofTiefe: 18, mauerHoehe: 8, staerke: 2, turmRadius: 4, turmDach: 'zinnen', stil: 'nether', verwitterung: 20 } },
   ],
   plan(v) {
@@ -75,11 +82,22 @@ export const CASTLE_COMPOUND: Compound = {
       { key: 't-no', label: 'Turm Nordost', generatorId: 'turm', values: tower, at: [far, 0], turns: 0 },
       { key: 't-sw', label: 'Turm Südwest', generatorId: 'turm', values: tower, at: [0, deep], turns: 0 },
       { key: 't-so', label: 'Turm Südost', generatorId: 'turm', values: tower, at: [far, deep], turns: 0 },
-      { key: 'm-n', label: v.tor ? 'Tormauer Nord' : 'Mauer Nord', generatorId: 'mauer', values: wall(Lx, v.tor === true), at: [D, off], turns: 0 },
       { key: 'm-s', label: 'Mauer Süd', generatorId: 'mauer', values: wall(Lx), at: [D, deep + off], turns: 2 },
       { key: 'm-w', label: 'Mauer West', generatorId: 'mauer', values: wall(Lz), at: [off, D], turns: 3 },
       { key: 'm-o', label: 'Mauer Ost', generatorId: 'mauer', values: wall(Lz), at: [far + off, D], turns: 1 },
     ];
+    // North side: a gatehouse between two walls, or one wall with or without gate.
+    const Wg = Math.min(11, Lx - 6 - ((Lx - 6) % 2 === 0 ? 1 : 0));
+    if (v.tor && v.torhaus && Wg >= 7) {
+      const Tg = Math.min(9, D), gh = Math.max(3, Math.min(5, h - 2)), left = Math.floor((Lx - Wg) / 2), right = Lx - Wg - left;
+      const gate = { ...shared, breite: Wg, tiefe: Tg, hoehe: h + 4, torbreite: 3, torhoehe: gh, abschluss: 'zinnen', wachstuben: true, anschluesse: true, mauerStaerke: t, mauerHoehe: h + 1 };
+      parts.push({ key: 'm-n1', label: 'Mauer Nord (West)', generatorId: 'mauer', values: wall(left), at: [D, off], turns: 0 },
+        { key: 'torhaus', label: 'Torhaus', generatorId: 'torhaus', values: gate, at: [D + left, r - (Tg - 1) / 2], turns: 0 },
+        { key: 'm-n2', label: 'Mauer Nord (Ost)', generatorId: 'mauer', values: wall(right), at: [D + left + Wg, off], turns: 0 });
+    } else {
+      if (v.tor && v.torhaus) notes.push('Für ein Torhaus ist die Nordmauer zu kurz (mindestens 13): Tor in der Mauer.');
+      parts.push({ key: 'm-n', label: v.tor ? 'Tormauer Nord' : 'Mauer Nord', generatorId: 'mauer', values: wall(Lx, v.tor === true), at: [D, off], turns: 0 });
+    }
     if (v.bergfried) {
       const kr = Math.max(2, Math.min(4, Math.floor(Math.min(Lx, Lz) / 4))), kd = 2 * kr + 1;
       if (Math.min(Lx, Lz) - kd < 4) notes.push('Hof zu klein für einen Bergfried mit Abstand zu den Mauern.');
@@ -92,7 +110,7 @@ export const CASTLE_COMPOUND: Compound = {
 };
 
 export const STREET_COMPOUND: Compound = {
-  id: 'haeuserzeile', name: 'Häuserzeile', version: 1,
+  id: 'haeuserzeile', name: 'Häuserzeile', version: 2,
   description: 'Eine Straße aus unterschiedlichen Häusern eines Stils: Breite, Tiefe, Geschosse, Dach und Details je Haus aus der Variante gewürfelt, Fronten in einer Flucht.',
   params: [
     { key: 'anzahl', label: 'Häuser', group: 'Maße', type: 'int', min: 2, max: 10, default: 5 },
@@ -136,7 +154,77 @@ const HOUSE_ROLL: readonly ParamDef[] = [
   { key: 'schornstein', label: 'Schornstein', group: '', type: 'bool', default: true },
 ];
 
-export const COMPOUNDS: readonly Compound[] = [CASTLE_COMPOUND, STREET_COMPOUND];
+/** Footprint (x, z) of a generator's output for the given values. */
+function footprint(g: Generator, raw: Readonly<Record<string, unknown>>): readonly [number, number] {
+  const { values } = normalizeParams(g.params, { ...defaultsOf(g.params), ...raw });
+  const size = g.build(new Args(values), values).payload.bounds.maxExclusive;
+  return [size[0], size[2]];
+}
+
+export const VILLAGE_COMPOUND: Compound = {
+  id: 'dorfplatz', name: 'Dorfplatz', version: 1,
+  description: 'Dorfmitte als fertiges Projekt: Kirche an der Nordseite mit Portal zum Platz, Brunnen in der Mitte, Häuserzeile gegenüber und Windmühle am Rand.',
+  params: [
+    { key: 'platzBreite', label: 'Platzbreite (x)', group: 'Maße', type: 'int', min: 12, max: 40, default: 20, unit: 'Blöcke' },
+    { key: 'platzTiefe', label: 'Platztiefe (z)', group: 'Maße', type: 'int', min: 8, max: 30, default: 14, unit: 'Blöcke' },
+    { key: 'haeuser', label: 'Häuser an der Südseite', group: 'Gebäude', type: 'int', min: 0, max: 8, default: 4 },
+    { key: 'maxGeschosse', label: 'Höchstens Geschosse', group: 'Gebäude', type: 'int', min: 1, max: 3, default: 2 },
+    { key: 'kirche', label: 'Kirche', group: 'Gebäude', type: 'choice', default: 'dorfkirche', options: [
+      { value: 'dorfkirche', label: 'Dorfkirche mit Turm' }, { value: 'kapelle', label: 'Kapelle mit Dachreiter' }, { value: 'basilika', label: 'Basilika' }, { value: 'keine', label: 'Keine Kirche' }] },
+    { key: 'brunnen', label: 'Brunnen', group: 'Gebäude', type: 'choice', default: 'springbrunnen', options: [
+      { value: 'springbrunnen', label: 'Springbrunnen' }, { value: 'ziehbrunnen', label: 'Ziehbrunnen' }, { value: 'keiner', label: 'Kein Brunnen' }] },
+    { key: 'muehle', label: 'Windmühle am Rand', group: 'Gebäude', type: 'bool', default: true },
+    { key: 'stil', label: 'Stil', group: 'Stil & Material', type: 'choice', options: STYLE_OPTIONS, default: 'fachwerk' },
+    ...WEATHER_PARAMS,
+  ],
+  presets: [
+    { id: 'dorf', label: 'Kleines Dorf', values: { platzBreite: 18, platzTiefe: 12, haeuser: 3, maxGeschosse: 2, kirche: 'kapelle', brunnen: 'ziehbrunnen', stil: 'fachwerk' } },
+    { id: 'marktflecken', label: 'Marktflecken', values: { platzBreite: 28, platzTiefe: 18, haeuser: 6, maxGeschosse: 3, kirche: 'dorfkirche', brunnen: 'springbrunnen', stil: 'fachwerk' } },
+    { id: 'bergdorf', label: 'Nordisches Bergdorf', values: { platzBreite: 16, platzTiefe: 12, haeuser: 4, maxGeschosse: 1, kirche: 'kapelle', brunnen: 'ziehbrunnen', stil: 'nordisch' } },
+    { id: 'domplatz', label: 'Domplatz', values: { platzBreite: 32, platzTiefe: 22, haeuser: 6, maxGeschosse: 3, kirche: 'basilika', brunnen: 'springbrunnen', muehle: false, stil: 'mittelalter', verwitterung: 15 } },
+    { id: 'oasenplatz', label: 'Oasenplatz', values: { platzBreite: 20, platzTiefe: 14, haeuser: 4, maxGeschosse: 2, kirche: 'keine', brunnen: 'ziehbrunnen', muehle: true, stil: 'wueste' } },
+  ],
+  plan(v) {
+    const parts: CompoundPart[] = [], notes: string[] = [], style = styleOf(str(v, 'stil'));
+    const shared = { stil: style.key, verwitterung: num(v, 'verwitterung'), variante: num(v, 'variante') };
+    const Px = num(v, 'platzBreite'), Pz = num(v, 'platzTiefe');
+    // North row: church (portal to the square) and the mill beside it.
+    const churchPreset = CHURCH_GENERATOR.presets.find(p => p.id === str(v, 'kirche'));
+    const church = churchPreset ? { ...churchPreset.values, ...shared } : null;
+    const [cxs, czs] = church ? footprint(CHURCH_GENERATOR, church) : [0, 0];
+    const mill = v.muehle ? { ...WINDMILL_GENERATOR.presets.find(p => p.id === 'dorfmuehle')!.values, ...shared, stil: style.key === 'modern' ? 'fachwerk' : style.key } : null;
+    const [mxs, mzs] = mill ? footprint(WINDMILL_GENERATOR, mill) : [0, 0];
+    // South row: rolled houses facing the square.
+    const houses: { values: Record<string, unknown>; w: number }[] = [];
+    for (let i = 0; i < num(v, 'haeuser'); i++) {
+      const roll = rollParams(HOUSE_ROLL, num(v, 'variante') * 613 + i * 151);
+      const values = { ...roll, ...shared, variante: num(v, 'variante') + i, geschosse: Math.min(num(v, 'maxGeschosse'), roll.geschosse as number),
+        ueberstand: 1, dach: style.flat ? 'flach' : roll.dach, vordach: false, einrichtung: true };
+      houses.push({ values, w: (roll.breite as number) + 2 });
+    }
+    const gap = 2, rowW = houses.reduce((n, h) => n + h.w, 0) + gap * Math.max(0, houses.length - 1);
+    const width = Math.max(Px, rowW, cxs + (mill ? 2 * (3 + mxs) : 0));
+    const zSquare = Math.max(czs, mzs) + 1, zSouth = zSquare + Pz + 1, mid = Math.floor(width / 2);
+    if (church) parts.push({ key: 'kirche', label: 'Kirche', generatorId: 'kirche', values: church, at: [mid - Math.floor(cxs / 2), Math.max(czs, mzs) - czs], turns: 2 });
+    if (mill) {
+      const mx = church ? mid - Math.floor(cxs / 2) + cxs + 3 : width - mxs;
+      parts.push({ key: 'muehle', label: 'Windmühle', generatorId: 'windmuehle', values: mill, at: [mx, 0], turns: 0 });
+    }
+    const wellKind = str(v, 'brunnen');
+    if (wellKind !== 'keiner') {
+      const radius = Math.max(1, Math.min(4, Math.floor(Math.min(Px, Pz) / 6))), well = { ...shared, form: wellKind, radius, schalen: 2, dach: true, platz: 1, laternen: true };
+      const [wxs, wzs] = footprint(WELL_GENERATOR, well);
+      if (wxs > Px || wzs > Pz) notes.push('Platz zu klein für den Brunnen.');
+      else parts.push({ key: 'brunnen', label: 'Brunnen', generatorId: 'brunnen', values: well, at: [mid - Math.floor(wxs / 2), zSquare + Math.floor((Pz - wzs) / 2)], turns: 0 });
+    }
+    let x = mid - Math.floor(rowW / 2);
+    houses.forEach((h, i) => { parts.push({ key: `haus-${i + 1}`, label: `Haus ${i + 1}`, generatorId: 'haus', values: h.values, at: [x, zSouth], turns: 0 }); x += h.w + gap; });
+    notes.push(`Platz ${Px} × ${Pz}: Kirchenportal und Haustüren zeigen zum Platz; der Platz selbst bleibt frei für Wege und Märkte.`);
+    return { parts, notes };
+  },
+};
+
+export const COMPOUNDS: readonly Compound[] = [CASTLE_COMPOUND, STREET_COMPOUND, VILLAGE_COMPOUND];
 export function compoundById(id: string): Compound | undefined { return COMPOUNDS.find(c => c.id === id); }
 
 export interface CompoundBuild {

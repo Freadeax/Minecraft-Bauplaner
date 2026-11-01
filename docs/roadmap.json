@@ -1,13 +1,12 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T14:29:20.816Z",
+  "updatedAt": "2026-11-01T14:48:06.970Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
     "MAP-01",
     "EDIT-01",
     "EDIT-02",
-    "GEN-02",
     "WORLD-IMPORT-01"
   ],
   "policy": {
@@ -2331,7 +2330,7 @@
       "title": "Weitere Generatoren und Dachdetails",
       "phase": "P3",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "implemented",
       "owner": "Claude-Thread „Neue Gebäudegeneratoren ergänzen“",
       "dependencies": [
         "GEN-01",
@@ -2349,44 +2348,57 @@
         {
           "id": "GEN-02-S01",
           "title": "Treppenhaus, Kirche und Hafen als getrennte Generatoren spezifizieren.",
-          "done": false
+          "done": true
         },
         {
           "id": "GEN-02-S02",
           "title": "Dachtreppen-Eckformen und Anschlüsse profilgenau erzeugen.",
-          "done": false
+          "done": true
         },
         {
           "id": "GEN-02-S03",
           "title": "Treppenhaus-, Kirchen- und Hafengenerator mit Stilen, Vorlagen und Anschlüssen umsetzen.",
-          "done": false
+          "done": true
         },
         {
           "id": "GEN-02-S04",
-          "title": "Weitere sinnvolle Generatoren (z. B. Torhaus, Windmühle, Brunnen/Platz) und eine neue Anlage.",
-          "done": false
+          "title": "Weitere sinnvolle Generatoren (Torhaus, Windmühle, Brunnen) und neue Anlage Dorfplatz; Burganlage mit Torhaus.",
+          "done": true
         },
         {
           "id": "GEN-02-S05",
           "title": "Unit-/Browserprüfung, Doku, main und Pages.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Ganzzahliges Raster, reproduzierbare Parameter, Mengen-/Exportprüfung je Generator."
       ],
-      "next": "Generatorspezifikation und Umsetzung Treppenhaus, Kirche, Hafen.",
+      "next": "Generierte Bauten (v. a. Treppenhaus, Torhaus-Wehrgang, Hafen) im Spiel abnehmen; Treppenhaus-Anbau an Haus als Anlage erwägen.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/generators.test.mjs",
+          "note": "17 Fälle über alle elf Generatoren: Gültigkeit, B7-Zustände, Material/Rezepte, Anschlüsse, Begehbarkeit Treppenhaus, Eckformen nach Spielregel, Torhaus-Andocken in der Burganlage, festgehaltene Hashes."
+        },
+        {
+          "path": "tests/e2e/generators.e2e.mjs",
+          "note": "Browser 1400/390 px: 14 Karten, Kirchenvorlage mit Hinweis, Dorfplatz ohne Überschneidungen."
+        },
+        {
+          "path": "docs/architecture/GENERATORS.md",
+          "note": "Abschnitt GEN-02 mit Parametern, Eckformen-Regel, Versionserhöhung und Grenzen."
+        }
+      ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "note": "Node- und Browserprüfung bestanden; Bauwerke nicht im Spiel abgenommen."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T14:08:37.152Z"
+      "updatedAt": "2026-11-01T14:48:06.970Z"
     },
     {
       "id": "MAP-01",
@@ -5113,6 +5125,49 @@
           "done": 5,
           "total": 5,
           "next": "Picking an 3D-Blockflächen; Registerlücken mit PROFILE-01-Serverreport schließen; Spielprüfung."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T14:48:06.970Z",
+      "kind": "progress",
+      "items": [
+        "GEN-02"
+      ],
+      "summary": "GEN-02: Generatoren Treppenhaus, Kirche, Hafen, Torhaus, Windmühle, Brunnen; Anlage Dorfplatz, Burganlage mit Torhaus; Treppen-Eckformen nach Spielregel (Haus/Turm/Dach v2). npm run check grün (425), Generator-E2E grün; shell-Schnellsuche-E2E scheitert bereits auf main. Nicht im Spiel abgenommen.",
+      "files": [
+        "README.md",
+        "apps/web/src/views/library/GeneratorsPage.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/GENERATORS.md",
+        "packages/domain/src/build/plot.ts",
+        "packages/domain/src/generators/bridge.ts",
+        "packages/domain/src/generators/church.ts",
+        "packages/domain/src/generators/compound.ts",
+        "packages/domain/src/generators/gatehouse.ts",
+        "packages/domain/src/generators/harbor.ts",
+        "packages/domain/src/generators/house.ts",
+        "packages/domain/src/generators/index.ts",
+        "packages/domain/src/generators/roof.ts",
+        "packages/domain/src/generators/roofs.ts",
+        "packages/domain/src/generators/stairwell.ts",
+        "packages/domain/src/generators/tower.ts",
+        "packages/domain/src/generators/types.ts",
+        "packages/domain/src/generators/wall.ts",
+        "packages/domain/src/generators/well.ts",
+        "packages/domain/src/generators/windmill.ts",
+        "tests/e2e/generators.e2e.mjs",
+        "tests/generators.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GEN-02",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Generierte Bauten (v. a. Treppenhaus, Torhaus-Wehrgang, Hafen) im Spiel abnehmen; Treppenhaus-Anbau an Haus als Anlage erwägen."
         }
       ]
     }
