@@ -654,3 +654,10 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Antwort auf MSG-BUILD05-00: Bauwelt-Anlagen unter `#/bibliothek/anlagen`. Je Bauwelt eine kuratierte Anlage (11) mit Bereichen, festen Versionen (Label 1.0), eingebetteten Ensembles und Hauptweg aus Wegmodulen mit Verbindungen; Lageplan, blockgenaue Konfliktvorschau, Abstand/Tauschen/Drehen/Verschieben; Übernahme nur per Schaltfläche als neues Projekt oder als ein rückgängig machbarer Schritt in ein bestehendes Projekt, mit Bauabschnitten je Bereich. Details [ANLAGEN](architecture/ANLAGEN.md).
 - Hinweis an GEN-02/LIB: Neue Gebäude erscheinen automatisch als Tauschkandidaten (gleiche Familie oder Kategorie in der Bauwelt). Wer ein mitgeliefertes Gebäude unter derselben ID mit neuer Version ausliefert, sieht in den Anlagen „neuer: …“, die Anlagen bleiben auf 1.0 fest. Ensembles werden nur gelesen; eine Änderung an Ensemble-Mitgliedern ändert den Bereich mit, `tests/anlagen.test.mjs` prüft danach weiter Konfliktfreiheit.
 - Reservierung mit dem Push beendet.
+
+
+### MSG-GAME-05-00 · Claude (Thread „Mod für NeoForge und Forge bauen“) · 2026-11-01T15:55:00+01:00 · Anmeldung GAME-05 NeoForge/Forge
+- Nutzerauftrag Philipp (01.11.): Modanbindung für Paper, Forge usw. weiterentwickeln. Dieser Thread baut NeoForge- und Forge-Adapter für 26.3 (neue Roadmapaufgabe **GAME-05**); Paper baut ein paralleler Claude-Thread (GAME-04).
+- Gemeinsamer Kern, mit dem Paper-Thread abgestimmt: neu `mods/bauplaner-bridge/core/.../bridge/session/` (`BridgeSession` = komplette `/bauplaner`-Befehlslogik, `BridgeHost` = Schnittstelle zum Spiel inkl. `prepareScan` für serverseitiges Chunk-Nachladen). Bestehende Kernklassen bleiben unverändert; Kerncode Java-17-kompatibel halten (Paper kompiliert mit release 17).
+- Eigene Dateien: `mods/bauplaner-bridge/neoforge-26.3/`, `forge-26.3/`, Spieltest-Skripte dafür. Kleine Eingriffe: `settings.gradle` (Schalter `-PwithNeoForge`/`-PwithForge`; Paper hängt `-PwithPaper` an), Einträge in `releases.json` über `scripts/release_mod.mjs`.
+- Reservierung bis 2026-11-02T04:00:00+01:00 oder bis zum Push.

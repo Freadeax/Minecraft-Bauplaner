@@ -1,13 +1,14 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T14:55:14.685Z",
+  "updatedAt": "2026-11-01T15:00:58.460Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
     "MAP-01",
     "EDIT-01",
     "EDIT-02",
-    "WORLD-IMPORT-01"
+    "WORLD-IMPORT-01",
+    "GAME-05"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -3060,6 +3061,65 @@
       "updatedAt": "2026-11-01T06:15:35+01:00"
     },
     {
+      "id": "GAME-05",
+      "title": "NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Claude (Thread „Mod für NeoForge und Forge bauen“)",
+      "dependencies": [
+        "GAME-02"
+      ],
+      "scope": [
+        "mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/session/",
+        "mods/bauplaner-bridge/core/src/test/java/io/github/freadeax/bauplaner/bridge/BridgeSessionTest.java",
+        "mods/bauplaner-bridge/settings.gradle",
+        "mods/bauplaner-bridge/neoforge-26.3/",
+        "mods/bauplaner-bridge/forge-26.3/",
+        "scripts/test_bridge_ingame_neoforge.sh"
+      ],
+      "legacyIds": [
+        "P6-01"
+      ],
+      "steps": [
+        {
+          "id": "GAME-05-S01",
+          "title": "Gemeinsame Befehlslogik BridgeSession/BridgeHost im Kern, von allen Loadern genutzt, mit Tests.",
+          "done": false
+        },
+        {
+          "id": "GAME-05-S02",
+          "title": "NeoForge-Adapter 26.3 bauen und im echten Client prüfen.",
+          "done": false
+        },
+        {
+          "id": "GAME-05-S03",
+          "title": "Forge-Adapter 26.3 bauen und im echten Client prüfen.",
+          "done": false
+        },
+        {
+          "id": "GAME-05-S04",
+          "title": "Jars auf der Download-Seite #/mod anbieten.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Nur lesend, keine Serverinstallation nötig; dieselbe Aufnahmedatei wie Fabric, vom Website-Vergleich geprüft."
+      ],
+      "next": "BridgeSession im Kern, dann NeoForge-Adapter.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T15:00:58.460Z"
+    },
+    {
       "id": "LAGER-01",
       "title": "Optionale Truhen-/Lagerintegration",
       "phase": "P4",
@@ -5258,6 +5318,30 @@
           "done": 3,
           "total": 3,
           "next": "Gelände-/Hanglagen und Türausrichtung zum Weg als eigene Folgeaufgabe; Echtgeräteabnahme mit QA-02."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T15:00:58.460Z",
+      "kind": "progress",
+      "items": [
+        "GAME-05"
+      ],
+      "summary": "GAME-05 übernommen: gemeinsame Befehlslogik BridgeSession/BridgeHost im Bridge-Kern (mit Paper-Thread abgestimmt, JUnit-Tests), Schalter für NeoForge/Forge in settings.gradle.",
+      "files": [
+        "docs/COMMUNICATION.md",
+        "mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/session/BridgeHost.java",
+        "mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/session/BridgeSession.java",
+        "mods/bauplaner-bridge/core/src/test/java/io/github/freadeax/bauplaner/bridge/BridgeSessionTest.java",
+        "mods/bauplaner-bridge/settings.gradle"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-05",
+          "status": "in_progress",
+          "done": 0,
+          "total": 4,
+          "next": "BridgeSession im Kern, dann NeoForge-Adapter."
         }
       ]
     }

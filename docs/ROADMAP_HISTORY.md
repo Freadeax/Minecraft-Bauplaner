@@ -1189,3 +1189,21 @@ Nachweis nach Rebase auf EDIT-02/GEN-02 aktualisiert.
 - `tests/anlagen.test.mjs`
 - `tests/e2e/anlagen.e2e.mjs`
 
+## 2026-11-01T15:00:58.460Z · progress
+
+**Aufgaben:** GAME-05
+
+GAME-05 übernommen: gemeinsame Befehlslogik BridgeSession/BridgeHost im Bridge-Kern (mit Paper-Thread abgestimmt, JUnit-Tests), Schalter für NeoForge/Forge in settings.gradle.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-05 | 🚧 In Arbeit | 0/4 | BridgeSession im Kern, dann NeoForge-Adapter. |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+- `mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/session/BridgeHost.java`
+- `mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/session/BridgeSession.java`
+- `mods/bauplaner-bridge/core/src/test/java/io/github/freadeax/bauplaner/bridge/BridgeSessionTest.java`
+- `mods/bauplaner-bridge/settings.gradle`
+
