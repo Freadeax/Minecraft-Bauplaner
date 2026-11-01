@@ -32,7 +32,7 @@
       "bytes": 49634,
       "sha256": "4fe3260447bed1d27ceee110e1c670789140465b067a15f9387c05c7a981578f",
       "releasedAt": "2026-11-01",
-      "sourceCommit": "b24362554f468ef35200d1c3dcdef9a001c1a270",
+      "sourceCommit": "c2a9b52cabd4e8da3801d0d9ed4623f81ef7a377",
       "tested": "Auf echten Paper-Servern 1.18.2, 1.20.6, 1.21.4, 1.21.11 und 26.3 automatisch geprüft: Website-Plan mit einem falschen und einem fehlenden Block, Aufnahme per Befehl nach Serverneustart (Chunks vom Plugin nachgeladen), Website-Vergleich findet genau diese zwei Abweichungen; nie erzeugtes Gelände bleibt unerzeugt. Auf Philipps eigenem Server noch nicht abgenommen."
     }
   ]
