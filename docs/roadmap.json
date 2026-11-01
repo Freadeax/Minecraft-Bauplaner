@@ -1,12 +1,14 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T12:55:58.546Z",
+  "updatedAt": "2026-11-01T12:56:16.487Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
     "MAP-01",
     "LIB-02",
-    "LIB-03"
+    "LIB-03",
+    "EDIT-01",
+    "EDIT-02"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -1813,15 +1815,16 @@
       "title": "Mehrfachauswahl und sichtbare Freiraumhüllen",
       "phase": "P3",
       "priority": "P1",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "in_progress",
+      "owner": "Claude-Thread „Vollständigen Block-Builder bauen“",
       "dependencies": [
         "STORE-02",
         "VIEW-01"
       ],
       "scope": [
         "apps/web/src/views/project/EditorTab.tsx",
-        "packages/domain/src/connectors.ts"
+        "packages/domain/src/connectors.ts",
+        "apps/web/src/views/project/selection/"
       ],
       "legacyIds": [],
       "steps": [
@@ -1850,7 +1853,72 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-01T12:56:16.487Z"
+    },
+    {
+      "id": "EDIT-02",
+      "title": "Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Claude-Thread „Vollständigen Block-Builder bauen“",
+      "dependencies": [
+        "VIEW-01",
+        "STORE-02"
+      ],
+      "scope": [
+        "packages/domain/src/editor/",
+        "apps/web/src/editor/",
+        "apps/web/src/views/project/BlocksTab.tsx",
+        "tests/editor.test.mjs",
+        "tests/e2e/editor.e2e.mjs",
+        "docs/architecture/BLOCK_EDITOR.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "EDIT-02-S01",
+          "title": "Entwurfsvertrag mit invertierbaren Zelländerungen, Undo/Redo und Speichern als neue AssetVersion.",
+          "done": false
+        },
+        {
+          "id": "EDIT-02-S02",
+          "title": "Werkzeuge: Setzen, Abbauen, Pipette, Ersetzen, Quader/Hohlkörper/Wände, Kugel, Zylinder, Linie, Fläche füllen, Drehen, Kopieren/Einfügen/Verschieben.",
+          "done": false
+        },
+        {
+          "id": "EDIT-02-S03",
+          "title": "Blockpalette mit allen Blöcken des Profils, Zustandseditor mit erlaubten Werten und Standardwerten.",
+          "done": false
+        },
+        {
+          "id": "EDIT-02-S04",
+          "title": "Einbindung: Bauteile/Bibliotheksgebäude als neue Version, Projekt-Reiter „Blöcke“ mit Zuordnung zu Instanzen.",
+          "done": false
+        },
+        {
+          "id": "EDIT-02-S05",
+          "title": "Unit-, Browser- und Sichtprüfung, Doku.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Gespeicherte Versionen bleiben unverändert; jede Bearbeitung erzeugt eine neue Version, Projekte wechseln nur per invertierbarer Operation.",
+        "Keine zweite Koordinaten- oder Drehlogik; Zustände ohne Regel bleiben sichtbar ungelöst.",
+        "Gleiche Eingaben ergeben die gleiche Version (deterministische Palette)."
+      ],
+      "next": "Entwurfsvertrag und Werkzeuge umsetzen, Blockregister von VIEW-02 übernehmen.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T12:56:16.487Z"
     },
     {
       "id": "UPDATE-01",
@@ -4248,6 +4316,34 @@
           "done": 0,
           "total": 2,
           "next": "Vorlagen referenzieren feste Versionen bzw. versionierte Generatorparameter."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T12:56:16.487Z",
+      "kind": "progress",
+      "items": [
+        "EDIT-01",
+        "EDIT-02"
+      ],
+      "summary": "Anmeldung: EDIT-01 übernommen, neue Aufgabe EDIT-02 Blockeditor angelegt; Dateibesitz und Hinweis an Codex zu PROFILE-01 in MSG-CLAUDE-EDIT-00. Reine Dokumentation.",
+      "files": [
+        "docs/COMMUNICATION.md"
+      ],
+      "snapshot": [
+        {
+          "id": "EDIT-01",
+          "status": "in_progress",
+          "done": 0,
+          "total": 2,
+          "next": "Auswahlvertrag und atomare Gruppenoperationen definieren."
+        },
+        {
+          "id": "EDIT-02",
+          "status": "in_progress",
+          "done": 0,
+          "total": 5,
+          "next": "Entwurfsvertrag und Werkzeuge umsetzen, Blockregister von VIEW-02 übernehmen."
         }
       ]
     }

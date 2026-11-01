@@ -692,3 +692,18 @@ LIB-02/LIB-03 von Claude übernommen (MSG-LIB0203-00); B17-Altreservierung aufge
 
 - `docs/COMMUNICATION.md`
 
+## 2026-11-01T12:56:16.487Z · progress
+
+**Aufgaben:** EDIT-01, EDIT-02
+
+Anmeldung: EDIT-01 übernommen, neue Aufgabe EDIT-02 Blockeditor angelegt; Dateibesitz und Hinweis an Codex zu PROFILE-01 in MSG-CLAUDE-EDIT-00. Reine Dokumentation.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| EDIT-01 | 🚧 In Arbeit | 0/2 | Auswahlvertrag und atomare Gruppenoperationen definieren. |
+| EDIT-02 | 🚧 In Arbeit | 0/5 | Entwurfsvertrag und Werkzeuge umsetzen, Blockregister von VIEW-02 übernehmen. |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+
