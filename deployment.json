@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "0390f2957e0d0c13a1f12e1d573674e1c2acf644",
-  "builtAt": "2026-11-01T12:49:57.802Z",
-  "node": "v22.23.4",
+  "sourceCommit": "aff17f35dab0821bc3d12716fa35799c96d3c760",
+  "builtAt": "2026-11-01T12:57:07.622Z",
+  "node": "v22.22.0",
   "files": [
     {
       "path": ".nojekyll",
