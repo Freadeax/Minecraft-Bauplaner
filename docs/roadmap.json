@@ -1,9 +1,8 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T11:18:47.672Z",
+  "updatedAt": "2026-11-01T12:42:58.241Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
-    "PERF-01",
     "PERF-02"
   ],
   "policy": {
@@ -542,10 +541,10 @@
         "note": "Lokales Setup, aktive Roadmap-Hooks und bestehende Roadmapregressionen geprüft; Chromium verfügbar, 54/54 E2E bestanden. Keine Codex-Cloud-Umgebung erstellt; fehlende Verwaltungsfunktion konkret dokumentiert. Main-/Pages-Nachweis dieses Blocks folgt getrennt im Abschluss."
       },
       "delivery": {
-        "main": "ccf4fa71c033c2f9415528192a04faed36730660",
-        "pagesSource": "ccf4fa71c033c2f9415528192a04faed36730660"
+        "main": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933",
+        "pagesSource": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933"
       },
-      "updatedAt": "2026-11-01T11:18:47.672Z"
+      "updatedAt": "2026-11-01T12:42:58.241Z"
     },
     {
       "id": "ARCH-01",
@@ -653,7 +652,7 @@
       "acceptance": [
         "Keine implementierte Kernfunktion erscheint gleichzeitig als unbegonnen."
       ],
-      "next": "Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen.",
+      "next": "Aktuelle Prüf-/Main-/Live-Nachweise im nächsten sachlichen Quellblock nachführen; keine selbstreferenzielle Deploymentfolge.",
       "blockers": [],
       "evidence": [
         {
@@ -670,10 +669,10 @@
         "note": "Aktuelle Dokumentation mit lokaler Einrichtung, Browsernachweisen und Werkzeuggrenzen abgeglichen; alte historische Einträge erhalten. Generierte Ansichten werden geprüft; aktuelle Main-/Pages-SHAs nach Integration im Abschluss."
       },
       "delivery": {
-        "main": "ccf4fa71c033c2f9415528192a04faed36730660",
-        "pagesSource": "ccf4fa71c033c2f9415528192a04faed36730660"
+        "main": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933",
+        "pagesSource": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933"
       },
-      "updatedAt": "2026-11-01T11:18:47.672Z"
+      "updatedAt": "2026-11-01T12:42:58.241Z"
     },
     {
       "id": "STORE-02",
@@ -745,10 +744,10 @@
         "note": "Node-CAS-/Restoretests und drei echte Chromiumfälle bestanden: v1→v2 samt Originalerhalt/Altverbindung/Zwei-Verbindungs-CAS, fehlerhaftes Upgrade mit Rollback und UI-Zwei-Tab-Entwurfserhalt nach Broadcast. Alle enthalten in der vollständigen 54/54-E2E-Abnahme."
       },
       "delivery": {
-        "main": "8f2278095ff752282bf2b34ee5c288c95deac013",
-        "pagesSource": "8f2278095ff752282bf2b34ee5c288c95deac013"
+        "main": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933",
+        "pagesSource": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933"
       },
-      "updatedAt": "2026-11-01T11:18:47.672Z"
+      "updatedAt": "2026-11-01T12:42:58.241Z"
     },
     {
       "id": "QA-01",
@@ -793,13 +792,13 @@
       ],
       "verification": {
         "state": "passed",
-        "note": "54/54 aktuelle E2E unter Windows/Playwright 1.64.1 bestanden; reale Chromium-Worker und IndexedDB, 1400/390-px-Szenarien sowie Software-WebGL. Zehn erste Ausfälle analysiert: Testannahmen korrigiert und echter Aufnahmecontroller-Unmount behoben. Keine echte iPhone-/Safari-/Hardware-GPU-Abnahme."
+        "note": "Vollständiger unabhängiger lokaler Chromium-Wiederholungslauf 58/58 bestanden, null übersprungen (189,94 s). Erster Lauf 57/58 mit transientem 10-s-Timeout vor Restore; isoliert 3/3 Speicherfälle und anschließend vollständige Suite unverändert bestanden, keine Testabschwächung. Vier zusätzliche Themen-/Bauweltenfälle. Keine echte Safari-/iPhone-/GPU-/Spielabnahme."
       },
       "delivery": {
-        "main": null,
-        "pagesSource": null
+        "main": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933",
+        "pagesSource": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933"
       },
-      "updatedAt": "2026-11-01T11:18:47.672Z"
+      "updatedAt": "2026-11-01T12:42:58.241Z"
     },
     {
       "id": "QA-02",
@@ -849,8 +848,8 @@
       "title": "Neue Themen, Bauwelten und Materiallabor abnehmen",
       "phase": "P1",
       "priority": "P1",
-      "status": "implemented",
-      "owner": "nicht zugewiesen",
+      "status": "verified",
+      "owner": "Codex Teilagent ui_acceptance",
       "dependencies": [
         "QA-01"
       ],
@@ -867,7 +866,7 @@
       "steps": [
         {
           "id": "UI-01-S01",
-          "title": "Fünf Themen, Hell/Dunkel/System, acht Bauwelten und Materiallabor eingebunden.",
+          "title": "Fünf Themen, Hell/Dunkel/System, elf Bauwelten und Materiallabor eingebunden.",
           "done": true
         },
         {
@@ -878,13 +877,13 @@
         {
           "id": "UI-01-S03",
           "title": "Aktuelle visuelle Browserprüfung in hell/dunkel und 1400/390 px.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Filterlinks reproduzieren Treffer; keine unlesbaren Panels oder Mengenänderungen."
       ],
-      "next": "Aktuelle visuelle Browserprüfung in hell/dunkel und 1400/390 px.",
+      "next": "Oberflächenregression bei Themen-/Layoutänderungen weiterführen; echte Geräte separat in QA-02.",
       "blockers": [],
       "evidence": [
         {
@@ -898,17 +897,25 @@
         {
           "path": "tests/material-lab.test.mjs",
           "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        },
+        {
+          "path": "tests/e2e/ui-acceptance.e2e.mjs",
+          "note": "Vier echte Chromiumfälle, Themenmatrix, Mengenerhalt und drei neue kanonische Filterlinks."
+        },
+        {
+          "path": "docs/architecture/UI_ACCEPTANCE.md",
+          "note": "48 visuell geprüfte Aufnahmen; Desktop und Touchsimulation von echten Geräten getrennt."
         }
       ],
       "verification": {
-        "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "state": "passed",
+        "note": "Vier neue reale Chromiumfälle bestanden (25,14 s); fünf Themen × hell/dunkel × 1400/390 px für Labor/Bauwelten, 48 Aufnahmen visuell geprüft. Materialmengen, Herkunftsfilter, reale Vorschauen und reproduzierbare Links/Reloadtreffer unverändert. Kein echter Safari-/iPhone-/GPU-Nachweis."
       },
       "delivery": {
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-01T12:42:58.241Z"
     },
     {
       "id": "STAB-01",
@@ -970,15 +977,17 @@
       "title": "Deployment-Rückkehr und Wiederherstellungsprobe",
       "phase": "P1",
       "priority": "P1",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "verified",
+      "owner": "Codex Teilagent restore_probe",
       "dependencies": [
         "OPS-01",
         "PLAN-01"
       ],
       "scope": [
         "scripts/prepare_main_pages.mjs",
-        "docs/operations/"
+        "docs/operations/",
+        "scripts/probe_pages_restore.mjs",
+        "tests/pages-restore.test.mjs"
       ],
       "legacyIds": [
         "HP-04"
@@ -987,29 +996,38 @@
         {
           "id": "OPS-02-S01",
           "title": "Rückkehr auf bekannte Artefakte zunächst isoliert durchspielen.",
-          "done": false
+          "done": true
         },
         {
           "id": "OPS-02-S02",
           "title": "Source-Erhalt und neue Manifestzuordnung prüfen; Wiederanlauf dokumentieren.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Kein Force-Push; kein Live-Rollback ohne Anlass."
       ],
-      "next": "Rückkehr auf bekannte Artefakte zunächst isoliert durchspielen.",
+      "next": "Bei tatsächlichem Vorfall bekannten Build neu bestätigen und Recovery regulär ohne Force vorbereiten; Livehashes danach gesondert prüfen.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/pages-restore.test.mjs",
+          "note": "Vier Regressionen zu Integrität, Quellkollision, Provenienz und echter isolierter Git-Wiederherstellung."
+        },
+        {
+          "path": "docs/operations/PAGES_RESTORE_PROBE.md",
+          "note": "Probe, ehrliche Recoverymanifestzuordnung und Grenzen ohne Live-Rollback."
+        }
+      ],
       "verification": {
-        "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "state": "passed",
+        "note": "4/4 Recoveryregressionen sowie echte dist-web-Probe bestanden: 13 Artefakte, 333 erhaltene Sourcepfade einschließlich synthetischer neuer Dateien und ausführbarem Modus. Hashes, Elternkette, unverändertes Ursprungsdeployment und entfernten Nachfolgechunk geprüft. Nur Scratchrepository; keine Live-/CDN-Restoreabnahme."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-01T12:42:58.241Z"
     },
     {
       "id": "OPS-03",
@@ -1053,10 +1071,10 @@
         "note": "Authentifizierte GitHub-Refabfrage am 01.11.2026 liefert ausschließlich refs/heads/main. Keine Branchlöschung durch diesen Auftrag; historischer Fähigkeitsblocker überholt."
       },
       "delivery": {
-        "main": "9f1700eb17299a83a55929d59ad5998526b2143f",
-        "pagesSource": null
+        "main": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933",
+        "pagesSource": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933"
       },
-      "updatedAt": "2026-11-01T11:18:47.672Z"
+      "updatedAt": "2026-11-01T12:42:58.241Z"
     },
     {
       "id": "LICENSE-01",
@@ -1505,8 +1523,8 @@
       "title": "Große Berechnungen als abbrechbare Worker-Aufträge",
       "phase": "P2",
       "priority": "P0",
-      "status": "implemented",
-      "owner": "Codex",
+      "status": "verified",
+      "owner": "Codex Teilagent perf_browser",
       "dependencies": [
         "ARCH-01"
       ],
@@ -1516,7 +1534,9 @@
         "apps/web/src/computation/",
         "apps/web/src/app/useProjectComputation.ts",
         "apps/web/src/views/project/",
-        "tests/project-computation.test.mjs"
+        "tests/project-computation.test.mjs",
+        "scripts/benchmark_project_browser.mjs",
+        "docs/architecture/project-browser-benchmark.json"
       ],
       "legacyIds": [],
       "steps": [
@@ -1533,13 +1553,13 @@
         {
           "id": "PERF-01-S03",
           "title": "Vorher/Nachher mit Modell, Hardware-/Browserangabe und UI-Reaktionszeit messen.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Keine Übernahme eines Ergebnisses für eine veraltete Revision."
       ],
-      "next": "Große Projektberechnung im Browser mit Modell, Hardware und UI-Reaktionszeit vor/nachher messen (S03); Funktionsregressionen für Abbruch/Retry/historische Revisionen sind bestanden.",
+      "next": "Messung bei Rechenkernänderungen wiederholen; Übertragungs-/Invalidierungsarbeit in PERF-02, vollständige React-/Gerätelatenz gesondert prüfen.",
       "blockers": [],
       "evidence": [
         {
@@ -1553,17 +1573,25 @@
         {
           "path": "docs/architecture/PROJECT_COMPUTATION.md",
           "note": "Protokoll, Snapshotbindung und abgegrenzte Node-Messung."
+        },
+        {
+          "path": "docs/architecture/PROJECT_BROWSER_BENCHMARK.md",
+          "note": "Reproduzierbarer Browservergleich, Hardware, drei Paare je Viewport und ehrliche Interaktions-/Clonegrenzen."
+        },
+        {
+          "path": "docs/architecture/project-browser-benchmark.json",
+          "note": "Vollständige Messläufe einschließlich Digests und unverändertem Rechenkernstand."
         }
       ],
       "verification": {
         "state": "passed",
-        "note": "Vier echte lokale Chromium-Workerfälle bei 1400/390 px bestanden: Abbruch/Retry, schnelle Revisionen ohne alte Geometrie, sichtbarer Workerfehler und historische Grundlage. Kern-/Node-Workerregressionen bestehen weiterhin. Große Browser-/Hardware-Latenzmessung bleibt offen; vorhandene Nodewerte sind keine Browsergarantie."
+        "note": "64.000 synthetische Zellen, echter isolierter Vite-Produktionsharness, Chromium 156 auf Ryzen 5 3600/32 GiB: je 1400/390 px Warmup plus drei Vergleichspaare. Vollständige Ergebnisdigests und handgezählte Invarianten gleich. DOM-Probe Median 693→30 / 790→35 ms, Gesamtdauer 703→1184 / 800→1420 ms; kein INP-/React-/GPU-/Echtgerätenachweis. Funktionale Workerregressionen weiterhin separat."
       },
       "delivery": {
         "main": "7dffd922f46876c70700afc0429afb969e5478aa",
         "pagesSource": "7dffd922f46876c70700afc0429afb969e5478aa"
       },
-      "updatedAt": "2026-11-01T11:18:47.672Z"
+      "updatedAt": "2026-11-01T12:42:58.241Z"
     },
     {
       "id": "PERF-02",
@@ -1600,7 +1628,7 @@
       "acceptance": [
         "Unabhängige Mengen-/Geometrieregressionen; Importlimits bleiben wirksam."
       ],
-      "next": "Kopier-/Ownerkosten im echten Browser messen und selektive Geometrie-/Fortschritts-Invalidierung vor Cache-/Chunkumbau prüfen.",
+      "next": "Gemessene Structured-Clone-/Worker-Rückgabekosten reduzieren; selektive Geometrie-/Fortschrittsinvalidierung zuerst mit vollständigen semantischen Regressionen absichern.",
       "blockers": [],
       "evidence": [
         {
@@ -1624,7 +1652,7 @@
         "main": "7dffd922f46876c70700afc0429afb969e5478aa",
         "pagesSource": "7dffd922f46876c70700afc0429afb969e5478aa"
       },
-      "updatedAt": "2026-11-01T10:22:39.771Z"
+      "updatedAt": "2026-11-01T12:42:58.241Z"
     },
     {
       "id": "PERF-03",
@@ -1963,8 +1991,8 @@
       "title": "Weitere kuratierte Bauwelten",
       "phase": "P3",
       "priority": "P1",
-      "status": "implemented",
-      "owner": "Cline: Bauwelten-Abdeckung geprüft und ergänzt (MSG-WORLD02-01)",
+      "status": "verified",
+      "owner": "Codex Teilagent ui_acceptance",
       "dependencies": [
         "LIB-01",
         "UI-01"
@@ -1992,7 +2020,7 @@
       "acceptance": [
         "Keine erfundenen Treffer oder Gebäude; eigene Assets werden konsistent berücksichtigt."
       ],
-      "next": "Sichtprüfung der drei neuen Bauwelten bei verfügbarer Browserlaufzeit in QA-01 nachholen; folgender Entwicklungsblock PERF-01.",
+      "next": "Kuratierte Filter-/Treffernachweise bei Katalogänderungen fortführen; keine weitere Karte ohne tatsächliche Assets.",
       "blockers": [],
       "evidence": [
         {
@@ -2002,17 +2030,25 @@
         {
           "path": "docs/architecture/BUILD_THEMES.md",
           "note": "Abdeckungstabelle der tatsächlichen Treffer je neuer Bauwelt."
+        },
+        {
+          "path": "tests/e2e/ui-acceptance.e2e.mjs",
+          "note": "Vier echte Chromiumfälle, Themenmatrix, Mengenerhalt und drei neue kanonische Filterlinks."
+        },
+        {
+          "path": "docs/architecture/UI_ACCEPTANCE.md",
+          "note": "48 visuell geprüfte Aufnahmen; Desktop und Touchsimulation von echten Geräten getrennt."
         }
       ],
       "verification": {
-        "state": "pending",
-        "note": "365/365 Node-Tests, Architektur-, Roadmap-, Typ-, Kern-/Pages-Build- und Dokumentationsprüfung bestanden. Quellcommit c3e6478 auf main, Artefakt bc74958; Live-Manifest mit identischem Quellcommit und zwölf gleichen Dateihashes, index.html und Hauptbundle zusätzlich byteweise nachgehasht. Browser-/Touch-Sichtprüfung offen."
+        "state": "passed",
+        "note": "Alle elf Karten geladen; Fernost (3), Wüstenhandel (6), Endposten (2) mit realen Vorschauen, identischen geordneten Treffern nach URL-Reload und 1400/390-px-Sichtprüfung abgenommen. Vier neue Chromiumfälle bestanden. Keine neuen Gebäude oder Spielkompatibilität behauptet."
       },
       "delivery": {
         "main": "c3e647855dc3b1bc5417a64cc6350b375b9b510d",
         "pagesSource": "c3e647855dc3b1bc5417a64cc6350b375b9b510d"
       },
-      "updatedAt": "2026-11-01T09:42:34.925Z"
+      "updatedAt": "2026-11-01T12:42:58.241Z"
     },
     {
       "id": "BUILD-05",
@@ -2262,10 +2298,10 @@
         "note": "Aufnahmecontroller bleibt beim Neuberechnen und Wechsel auf historische Grundlage erhalten. Tatsächliche Browserregressionen für Soll/Ist-Import, ausdrückliches Abhaken, Originalspeicherung, Ausrichtung, Reload und bytegleichen Download in 54/54-E2E bestanden; keine Mod-/Spielabnahme."
       },
       "delivery": {
-        "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
-        "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
+        "main": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933",
+        "pagesSource": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933"
       },
-      "updatedAt": "2026-11-01T11:18:47.672Z"
+      "updatedAt": "2026-11-01T12:42:58.241Z"
     },
     {
       "id": "GAME-02",
@@ -3753,6 +3789,384 @@
           "done": 2,
           "total": 3,
           "next": "Große Projektberechnung im Browser mit Modell, Hardware und UI-Reaktionszeit vor/nachher messen (S03); Funktionsregressionen für Abbruch/Retry/historische Revisionen sind bestanden."
+        },
+        {
+          "id": "GAME-01",
+          "status": "verified",
+          "done": 1,
+          "total": 1,
+          "next": "Regressionen bei Änderungen weiterführen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T12:19:58.409Z",
+      "kind": "progress",
+      "items": [
+        "PERF-01",
+        "OPS-02",
+        "UI-01",
+        "WORLD-02"
+      ],
+      "summary": "56 Aufgaben gelesen; drei überschneidungsfreie parallele Prüfblöcke angemeldet. Root koordiniert Roadmap, Gesamtcheck und Main/Pages; keine fremde aktive Arbeit übernommen.",
+      "files": [
+        "docs/COMMUNICATION.md"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-01",
+          "status": "in_progress",
+          "done": 2,
+          "total": 3,
+          "next": "Große Browsermessung isoliert durchführen; Messmodell, Hardware, Structured-Clone und UI-Reaktionszeit belegen."
+        },
+        {
+          "id": "OPS-02",
+          "status": "in_progress",
+          "done": 0,
+          "total": 2,
+          "next": "Isolierte Wiederherstellungsprobe ohne Remoteänderung durchführen und Source-/Manifestintegrität prüfen."
+        },
+        {
+          "id": "UI-01",
+          "status": "in_progress",
+          "done": 2,
+          "total": 3,
+          "next": "Visuelle Chromium-Abnahme hell/dunkel bei 1400/390 px durchführen; echte Geräte separat offen halten."
+        },
+        {
+          "id": "WORLD-02",
+          "status": "in_progress",
+          "done": 2,
+          "total": 2,
+          "next": "Vorhandene elf Bauwelten und drei neue Filterlinks im Browser abnehmen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T12:36:29.241Z",
+      "kind": "progress",
+      "items": [
+        "PERF-01",
+        "PERF-02",
+        "OPS-02",
+        "UI-01",
+        "WORLD-02",
+        "PLAN-01",
+        "DOC-01",
+        "QA-01",
+        "OPS-03",
+        "STORE-02",
+        "GAME-01"
+      ],
+      "summary": "Drei parallele Blöcke abgeschlossen: große Browsermessung, isolierte Recoveryprobe und visuelle Themen/Bauweltenabnahme. Zwölf Messläufe, 4 Recovery- und 4 neue Browserfälle bestanden; Grenzen dokumentiert. Vorherige Main-/Live-SHAs nachgeführt. Gesamtprüfung folgt vor Push.",
+      "files": [
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/architecture/PROJECT_BROWSER_BENCHMARK.md",
+        "docs/architecture/UI_ACCEPTANCE.md",
+        "docs/architecture/project-browser-benchmark.json",
+        "docs/operations/PAGES_RESTORE_PROBE.md",
+        "docs/project/CODEX_SETUP.md",
+        "scripts/benchmark_project_browser.mjs",
+        "scripts/probe_pages_restore.mjs",
+        "tests/e2e/ui-acceptance.e2e.mjs",
+        "tests/pages-restore.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-01",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Messung bei Rechenkernänderungen wiederholen; Übertragungs-/Invalidierungsarbeit in PERF-02, vollständige React-/Gerätelatenz gesondert prüfen."
+        },
+        {
+          "id": "PERF-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Gemessene Structured-Clone-/Worker-Rückgabekosten reduzieren; selektive Geometrie-/Fortschrittsinvalidierung zuerst mit vollständigen semantischen Regressionen absichern."
+        },
+        {
+          "id": "OPS-02",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Bei tatsächlichem Vorfall bekannten Build neu bestätigen und Recovery regulär ohne Force vorbereiten; Livehashes danach gesondert prüfen."
+        },
+        {
+          "id": "UI-01",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Oberflächenregression bei Themen-/Layoutänderungen weiterführen; echte Geräte separat in QA-02."
+        },
+        {
+          "id": "WORLD-02",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Kuratierte Filter-/Treffernachweise bei Katalogänderungen fortführen; keine weitere Karte ohne tatsächliche Assets."
+        },
+        {
+          "id": "PLAN-01",
+          "status": "verified",
+          "done": 4,
+          "total": 4,
+          "next": "Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen."
+        },
+        {
+          "id": "DOC-01",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Aktuelle Prüf-/Main-/Live-Nachweise im nächsten sachlichen Quellblock nachführen; keine selbstreferenzielle Deploymentfolge."
+        },
+        {
+          "id": "QA-01",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Suite nach relevanten Änderungen wiederholen; echte Geräte in QA-02 und große Worker-Browserlatenz in PERF-01 prüfen."
+        },
+        {
+          "id": "OPS-03",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Bei künftigem temporärem Branch erneut vollständige Integration prüfen; aktuell keine Bereinigung nötig."
+        },
+        {
+          "id": "STORE-02",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "CAS-/Migrationsregressionen bei Speicheränderungen fortführen; Safari/iPhone gesondert in QA-02."
+        },
+        {
+          "id": "GAME-01",
+          "status": "verified",
+          "done": 1,
+          "total": 1,
+          "next": "Regressionen bei Änderungen weiterführen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T12:40:32.602Z",
+      "kind": "progress",
+      "items": [
+        "PERF-01",
+        "PERF-02",
+        "OPS-02",
+        "UI-01",
+        "WORLD-02",
+        "PLAN-01",
+        "DOC-01",
+        "QA-01",
+        "OPS-03",
+        "STORE-02",
+        "GAME-01"
+      ],
+      "summary": "383 Node-Tests und Gesamtcheck bestanden; neue Prüfdateien und Architekturbelege vollständig zugeordnet. Erster Browservolltest 57/58 mit Timeout vor Restore; isoliert unverändert 3/3 Speicherfälle bestanden, vollständige unabhängige Wiederholung läuft.",
+      "files": [
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/PROJECT_BROWSER_BENCHMARK.md",
+        "docs/architecture/PROJECT_COMPUTATION.md",
+        "docs/architecture/UI_ACCEPTANCE.md",
+        "docs/architecture/project-browser-benchmark.json",
+        "docs/operations/PAGES_RESTORE_PROBE.md",
+        "docs/project/CODEX_SETUP.md",
+        "scripts/benchmark_project_browser.mjs",
+        "scripts/probe_pages_restore.mjs",
+        "tests/e2e/ui-acceptance.e2e.mjs",
+        "tests/pages-restore.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-01",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Messung bei Rechenkernänderungen wiederholen; Übertragungs-/Invalidierungsarbeit in PERF-02, vollständige React-/Gerätelatenz gesondert prüfen."
+        },
+        {
+          "id": "PERF-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Gemessene Structured-Clone-/Worker-Rückgabekosten reduzieren; selektive Geometrie-/Fortschrittsinvalidierung zuerst mit vollständigen semantischen Regressionen absichern."
+        },
+        {
+          "id": "OPS-02",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Bei tatsächlichem Vorfall bekannten Build neu bestätigen und Recovery regulär ohne Force vorbereiten; Livehashes danach gesondert prüfen."
+        },
+        {
+          "id": "UI-01",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Oberflächenregression bei Themen-/Layoutänderungen weiterführen; echte Geräte separat in QA-02."
+        },
+        {
+          "id": "WORLD-02",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Kuratierte Filter-/Treffernachweise bei Katalogänderungen fortführen; keine weitere Karte ohne tatsächliche Assets."
+        },
+        {
+          "id": "PLAN-01",
+          "status": "verified",
+          "done": 4,
+          "total": 4,
+          "next": "Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen."
+        },
+        {
+          "id": "DOC-01",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Aktuelle Prüf-/Main-/Live-Nachweise im nächsten sachlichen Quellblock nachführen; keine selbstreferenzielle Deploymentfolge."
+        },
+        {
+          "id": "QA-01",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Suite nach relevanten Änderungen wiederholen; echte Geräte in QA-02 und große Worker-Browserlatenz in PERF-01 prüfen."
+        },
+        {
+          "id": "OPS-03",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Bei künftigem temporärem Branch erneut vollständige Integration prüfen; aktuell keine Bereinigung nötig."
+        },
+        {
+          "id": "STORE-02",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "CAS-/Migrationsregressionen bei Speicheränderungen fortführen; Safari/iPhone gesondert in QA-02."
+        },
+        {
+          "id": "GAME-01",
+          "status": "verified",
+          "done": 1,
+          "total": 1,
+          "next": "Regressionen bei Änderungen weiterführen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T12:42:58.241Z",
+      "kind": "progress",
+      "items": [
+        "PERF-01",
+        "PERF-02",
+        "OPS-02",
+        "UI-01",
+        "WORLD-02",
+        "PLAN-01",
+        "DOC-01",
+        "QA-01",
+        "OPS-03",
+        "STORE-02",
+        "GAME-01"
+      ],
+      "summary": "Abschluss: 383 Node-Tests, große Browsermessung, Recoveryprobe und 58/58 unabhängige Chromiumregression bestanden. Vier Aufgaben im beschriebenen Umfang abgenommen, Ersttimeout und Geräte-/React-/Spielgrenzen erhalten. Alle Dateien zugeordnet; Main/Pages folgen getrennt.",
+      "files": [
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/PROJECT_BROWSER_BENCHMARK.md",
+        "docs/architecture/PROJECT_COMPUTATION.md",
+        "docs/architecture/UI_ACCEPTANCE.md",
+        "docs/architecture/project-browser-benchmark.json",
+        "docs/operations/PAGES_RESTORE_PROBE.md",
+        "docs/project/CODEX_SETUP.md",
+        "scripts/benchmark_project_browser.mjs",
+        "scripts/probe_pages_restore.mjs",
+        "tests/e2e/ui-acceptance.e2e.mjs",
+        "tests/pages-restore.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-01",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Messung bei Rechenkernänderungen wiederholen; Übertragungs-/Invalidierungsarbeit in PERF-02, vollständige React-/Gerätelatenz gesondert prüfen."
+        },
+        {
+          "id": "PERF-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Gemessene Structured-Clone-/Worker-Rückgabekosten reduzieren; selektive Geometrie-/Fortschrittsinvalidierung zuerst mit vollständigen semantischen Regressionen absichern."
+        },
+        {
+          "id": "OPS-02",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Bei tatsächlichem Vorfall bekannten Build neu bestätigen und Recovery regulär ohne Force vorbereiten; Livehashes danach gesondert prüfen."
+        },
+        {
+          "id": "UI-01",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Oberflächenregression bei Themen-/Layoutänderungen weiterführen; echte Geräte separat in QA-02."
+        },
+        {
+          "id": "WORLD-02",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Kuratierte Filter-/Treffernachweise bei Katalogänderungen fortführen; keine weitere Karte ohne tatsächliche Assets."
+        },
+        {
+          "id": "PLAN-01",
+          "status": "verified",
+          "done": 4,
+          "total": 4,
+          "next": "Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen."
+        },
+        {
+          "id": "DOC-01",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Aktuelle Prüf-/Main-/Live-Nachweise im nächsten sachlichen Quellblock nachführen; keine selbstreferenzielle Deploymentfolge."
+        },
+        {
+          "id": "QA-01",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Suite nach relevanten Änderungen wiederholen; echte Geräte in QA-02 und große Worker-Browserlatenz in PERF-01 prüfen."
+        },
+        {
+          "id": "OPS-03",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Bei künftigem temporärem Branch erneut vollständige Integration prüfen; aktuell keine Bereinigung nötig."
+        },
+        {
+          "id": "STORE-02",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "CAS-/Migrationsregressionen bei Speicheränderungen fortführen; Safari/iPhone gesondert in QA-02."
         },
         {
           "id": "GAME-01",

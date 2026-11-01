@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T11:18:47.672Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T12:42:58.241Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,17 +12,16 @@ Stand: 2026-11-01T11:18:47.672Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 26 |
+| ⏳ Offen | 25 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 1 |
-| 🧩 Implementiert · Abnahme offen | 10 |
-| ✅ Im beschriebenen Umfang geprüft | 16 |
+| 🧩 Implementiert · Abnahme offen | 7 |
+| ✅ Im beschriebenen Umfang geprüft | 20 |
 | ⏸ Zurückgestellt | 2 |
 
 ## Aktiver Arbeitsblock
 
-- **PERF-01 · Große Berechnungen als abbrechbare Worker-Aufträge** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Große Projektberechnung im Browser mit Modell, Hardware und UI-Reaktionszeit vor/nachher messen (S03); Funktionsregressionen für Abbruch/Retry/historische Revisionen sind bestanden.
-- **PERF-02 · Zellindizes, Chunkdaten und selektive Neuberechnung** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Kopier-/Ownerkosten im echten Browser messen und selektive Geometrie-/Fortschritts-Invalidierung vor Cache-/Chunkumbau prüfen.
+- **PERF-02 · Zellindizes, Chunkdaten und selektive Neuberechnung** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Gemessene Structured-Clone-/Worker-Rückgabekosten reduzieren; selektive Geometrie-/Fortschrittsinvalidierung zuerst mit vollständigen semantischen Regressionen absichern.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -58,17 +57,17 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [LIB-01](#lib-01) | Bestehender Gebäudekatalog und Bibliotheksabläufe | ✅ Im beschriebenen Umfang geprüft | 1/1 | CORE-02 | `84838f0` | `e232b26` |
 | [GEN-01](#gen-01) | Vorhandene parametrische Generatoren | ✅ Im beschriebenen Umfang geprüft | 1/1 | CORE-03 | `84838f0` | `e232b26` |
 | [OPS-01](#ops-01) | Main/root-Pages mit manifestgeprüften Artefakten | ✅ Im beschriebenen Umfang geprüft | 1/1 | — | `84838f0` | `e232b26` |
-| [PLAN-01](#plan-01) | Verbindlicher Aufgabenbestand und Merge-Fortschritt | ✅ Im beschriebenen Umfang geprüft | 4/4 | — | `ccf4fa7` | `ccf4fa7` |
+| [PLAN-01](#plan-01) | Verbindlicher Aufgabenbestand und Merge-Fortschritt | ✅ Im beschriebenen Umfang geprüft | 4/4 | — | `b5eb5b9` | `b5eb5b9` |
 | [ARCH-01](#arch-01) | Anwendungsschicht und überprüfte Modulgrenzen | ✅ Im beschriebenen Umfang geprüft | 4/4 | CORE-01, CORE-02 | `ccf4fa7` | `ccf4fa7` |
-| [DOC-01](#doc-01) | Widerspruchsfreie aktuelle Statusdokumentation | ✅ Im beschriebenen Umfang geprüft | 3/3 | PLAN-01 | `ccf4fa7` | `ccf4fa7` |
-| [STORE-02](#store-02) | Revisionsschutz bei konkurrierenden Assetänderungen | ✅ Im beschriebenen Umfang geprüft | 3/3 | ARCH-01 | `8f22780` | `8f22780` |
-| [QA-01](#qa-01) | Aktuelle Browserregression für alle Hauptabläufe | ✅ Im beschriebenen Umfang geprüft | 2/2 | ARCH-01 | ausstehend | ausstehend |
-| [UI-01](#ui-01) | Neue Themen, Bauwelten und Materiallabor abnehmen | 🧩 Implementiert · Abnahme offen | 2/3 | QA-01 | `84838f0` | `e232b26` |
+| [DOC-01](#doc-01) | Widerspruchsfreie aktuelle Statusdokumentation | ✅ Im beschriebenen Umfang geprüft | 3/3 | PLAN-01 | `b5eb5b9` | `b5eb5b9` |
+| [STORE-02](#store-02) | Revisionsschutz bei konkurrierenden Assetänderungen | ✅ Im beschriebenen Umfang geprüft | 3/3 | ARCH-01 | `b5eb5b9` | `b5eb5b9` |
+| [QA-01](#qa-01) | Aktuelle Browserregression für alle Hauptabläufe | ✅ Im beschriebenen Umfang geprüft | 2/2 | ARCH-01 | `b5eb5b9` | `b5eb5b9` |
+| [UI-01](#ui-01) | Neue Themen, Bauwelten und Materiallabor abnehmen | ✅ Im beschriebenen Umfang geprüft | 3/3 | QA-01 | `84838f0` | `e232b26` |
 | [STAB-01](#stab-01) | Absturzschutz, Datencheck und Fehlerberichte abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | QA-01 | `84838f0` | `e232b26` |
-| [OPS-02](#ops-02) | Deployment-Rückkehr und Wiederherstellungsprobe | ⏳ Offen | 0/2 | OPS-01, PLAN-01 | ausstehend | ausstehend |
-| [OPS-03](#ops-03) | Alte vollständig integrierte Branches bereinigen | ✅ Im beschriebenen Umfang geprüft | 2/2 | OPS-01 | `9f1700e` | ausstehend |
+| [OPS-02](#ops-02) | Deployment-Rückkehr und Wiederherstellungsprobe | ✅ Im beschriebenen Umfang geprüft | 2/2 | OPS-01, PLAN-01 | ausstehend | ausstehend |
+| [OPS-03](#ops-03) | Alte vollständig integrierte Branches bereinigen | ✅ Im beschriebenen Umfang geprüft | 2/2 | OPS-01 | `b5eb5b9` | `b5eb5b9` |
 | [LICENSE-01](#license-01) | Projektlizenz und öffentliche Inhalte klären | ⏳ Offen | 0/2 | — | ausstehend | ausstehend |
-| [GAME-01](#game-01) | Spielaufnahmen und Soll/Ist-Vergleich | ✅ Im beschriebenen Umfang geprüft | 1/1 | CORE-02, BUILD-01 | `84838f0` | `e232b26` |
+| [GAME-01](#game-01) | Spielaufnahmen und Soll/Ist-Vergleich | ✅ Im beschriebenen Umfang geprüft | 1/1 | CORE-02, BUILD-01 | `b5eb5b9` | `b5eb5b9` |
 
 ## P2: Minecraft-Datentreue und Berechnungen vervollständigen
 
@@ -91,7 +90,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [MAT-03](#mat-03) | Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen | 🧩 Implementiert · Abnahme offen | 2/3 | PROFILE-01, QA-01 | `84838f0` | `e232b26` |
 | [MAT-04](#mat-04) | Kupfer mit Oxidation und Wachsstatus | ⏳ Offen | 0/2 | PROFILE-01, MAT-03 | ausstehend | ausstehend |
 | [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen | 1/3 | CORE-02, NBT-01 | `84838f0` | `e232b26` |
-| [PERF-01](#perf-01) | Große Berechnungen als abbrechbare Worker-Aufträge | 🧩 Implementiert · Abnahme offen | 2/3 | ARCH-01 | `7dffd92` | `7dffd92` |
+| [PERF-01](#perf-01) | Große Berechnungen als abbrechbare Worker-Aufträge | ✅ Im beschriebenen Umfang geprüft | 3/3 | ARCH-01 | `7dffd92` | `7dffd92` |
 | [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen | 2/3 | PERF-01 | `7dffd92` | `7dffd92` |
 | [PERF-03](#perf-03) | Bundle, große Views und Vorschaucache | ⏳ Offen | 0/3 | ARCH-01, QA-01 | ausstehend | ausstehend |
 | [VIEW-01](#view-01) | Vorhandenen Viewer vollständig abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | QA-01 | `84838f0` | `e232b26` |
@@ -115,7 +114,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [UPDATE-01](#update-01) | Kontrollierte Versionsupdates mit lokalen Overrides | ⏳ Offen | 0/2 | DIFF-01, STORE-02 | ausstehend | ausstehend |
 | [LIB-02](#lib-02) | Eigene Sammlungen, Ordner und Kategorien | ⏳ Offen | 0/2 | STORE-02, LIB-01 | ausstehend | ausstehend |
 | [LIB-03](#lib-03) | Eigene Ensembles und Generatorvorlagen speichern | ⏳ Offen | 0/2 | LIB-02, GEN-01 | ausstehend | ausstehend |
-| [WORLD-02](#world-02) | Weitere kuratierte Bauwelten | 🧩 Implementiert · Abnahme offen | 2/2 | LIB-01, UI-01 | `c3e6478` | `c3e6478` |
+| [WORLD-02](#world-02) | Weitere kuratierte Bauwelten | ✅ Im beschriebenen Umfang geprüft | 2/2 | LIB-01, UI-01 | `c3e6478` | `c3e6478` |
 | [BUILD-05](#build-05) | Bauwelt-Anlagen mit Konfliktvorschau | ⏳ Offen | 0/2 | LIB-03, CORE-03 | ausstehend | ausstehend |
 | [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | ⏳ Offen | 0/2 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
 | [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🚧 In Arbeit | 1/4 | CORE-03, STORE-02 | `84838f0` | `e232b26` |
@@ -314,7 +313,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PLAN-01
 
-**Verbindlicher Aufgabenbestand und Merge-Fortschritt** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T11:18:47.672Z
+**Verbindlicher Aufgabenbestand und Merge-Fortschritt** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T12:42:58.241Z
 
 - [x] PLAN-01-S01: Gesamte Roadmap in vier Phasen und stabile Aufgaben-IDs aufgenommen.
 - [x] PLAN-01-S02: Schema, Historie, Darstellung und Änderungsprüfung implementieren und testen.
@@ -331,7 +330,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Dateiumfang:** `docs/roadmap.json`, `scripts/roadmap.mjs`, `.githooks/`. **Abhängigkeiten:** keine. **Alte IDs:** P0-01.
 
-**Integration:** Main [ccf4fa7](https://github.com/Freadeax/Minecraft-Bauplaner/commit/ccf4fa71c033c2f9415528192a04faed36730660); Pages-Quelle [ccf4fa7](https://github.com/Freadeax/Minecraft-Bauplaner/commit/ccf4fa71c033c2f9415528192a04faed36730660).
+**Integration:** Main [b5eb5b9](https://github.com/Freadeax/Minecraft-Bauplaner/commit/b5eb5b9bc039160e668a7183c0ccfcdcd764a933); Pages-Quelle [b5eb5b9](https://github.com/Freadeax/Minecraft-Bauplaner/commit/b5eb5b9bc039160e668a7183c0ccfcdcd764a933).
 
 ### ARCH-01
 
@@ -356,7 +355,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### DOC-01
 
-**Widerspruchsfreie aktuelle Statusdokumentation** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T11:18:47.672Z
+**Widerspruchsfreie aktuelle Statusdokumentation** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T12:42:58.241Z
 
 - [x] DOC-01-S01: Widersprüche zu Litematic, Rohstoffen, Bauabschnitten und Hosting identifiziert.
 - [x] DOC-01-S02: Aktuellen Status ersetzen; historische Aussagen ausdrücklich archivieren.
@@ -364,7 +363,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Keine implementierte Kernfunktion erscheint gleichzeitig als unbegonnen.
 
-**Nächste Aktion:** Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen.
+**Nächste Aktion:** Aktuelle Prüf-/Main-/Live-Nachweise im nächsten sachlichen Quellblock nachführen; keine selbstreferenzielle Deploymentfolge.
 
 **Prüfstand:** Aktuelle Dokumentation mit lokaler Einrichtung, Browsernachweisen und Werkzeuggrenzen abgeglichen; alte historische Einträge erhalten. Generierte Ansichten werden geprüft; aktuelle Main-/Pages-SHAs nach Integration im Abschluss.
 
@@ -372,11 +371,11 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Dateiumfang:** `docs/STATUS.md`, `docs/ROADMAP.md`, `docs/STATUS_HISTORY.md`, `docs/ROADMAP_LEGACY.md`. **Abhängigkeiten:** PLAN-01. **Alte IDs:** —.
 
-**Integration:** Main [ccf4fa7](https://github.com/Freadeax/Minecraft-Bauplaner/commit/ccf4fa71c033c2f9415528192a04faed36730660); Pages-Quelle [ccf4fa7](https://github.com/Freadeax/Minecraft-Bauplaner/commit/ccf4fa71c033c2f9415528192a04faed36730660).
+**Integration:** Main [b5eb5b9](https://github.com/Freadeax/Minecraft-Bauplaner/commit/b5eb5b9bc039160e668a7183c0ccfcdcd764a933); Pages-Quelle [b5eb5b9](https://github.com/Freadeax/Minecraft-Bauplaner/commit/b5eb5b9bc039160e668a7183c0ccfcdcd764a933).
 
 ### STORE-02
 
-**Revisionsschutz bei konkurrierenden Assetänderungen** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T11:18:47.672Z
+**Revisionsschutz bei konkurrierenden Assetänderungen** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T12:42:58.241Z
 
 - [x] STORE-02-S01: Vorhandene S4-Reservierung und Remoteänderungen vor Bearbeitung prüfen.
 - [x] STORE-02-S02: Asset-Revisionsvertrag, UI-Konfliktbehandlung und Migration implementieren.
@@ -392,11 +391,11 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Dateiumfang:** `apps/web/src/app/idbRepository.ts`, `packages/application/src/repository.ts`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** S4.
 
-**Integration:** Main [8f22780](https://github.com/Freadeax/Minecraft-Bauplaner/commit/8f2278095ff752282bf2b34ee5c288c95deac013); Pages-Quelle [8f22780](https://github.com/Freadeax/Minecraft-Bauplaner/commit/8f2278095ff752282bf2b34ee5c288c95deac013).
+**Integration:** Main [b5eb5b9](https://github.com/Freadeax/Minecraft-Bauplaner/commit/b5eb5b9bc039160e668a7183c0ccfcdcd764a933); Pages-Quelle [b5eb5b9](https://github.com/Freadeax/Minecraft-Bauplaner/commit/b5eb5b9bc039160e668a7183c0ccfcdcd764a933).
 
 ### QA-01
 
-**Aktuelle Browserregression für alle Hauptabläufe** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T11:18:47.672Z
+**Aktuelle Browserregression für alle Hauptabläufe** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T12:42:58.241Z
 
 - [x] QA-01-S01: Chromium-Laufzeit bereitstellen bzw. Verfügbarkeit prüfen.
 - [x] QA-01-S02: Komplette aktuelle Desktop-/schmale E2E-Suite ausführen und Fehler beheben.
@@ -405,13 +404,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nächste Aktion:** Suite nach relevanten Änderungen wiederholen; echte Geräte in QA-02 und große Worker-Browserlatenz in PERF-01 prüfen.
 
-**Prüfstand:** 54/54 aktuelle E2E unter Windows/Playwright 1.64.1 bestanden; reale Chromium-Worker und IndexedDB, 1400/390-px-Szenarien sowie Software-WebGL. Zehn erste Ausfälle analysiert: Testannahmen korrigiert und echter Aufnahmecontroller-Unmount behoben. Keine echte iPhone-/Safari-/Hardware-GPU-Abnahme.
+**Prüfstand:** Vollständiger unabhängiger lokaler Chromium-Wiederholungslauf 58/58 bestanden, null übersprungen (189,94 s). Erster Lauf 57/58 mit transientem 10-s-Timeout vor Restore; isoliert 3/3 Speicherfälle und anschließend vollständige Suite unverändert bestanden, keine Testabschwächung. Vier zusätzliche Themen-/Bauweltenfälle. Keine echte Safari-/iPhone-/GPU-/Spielabnahme.
 
 **Nachweise:** [docs/TESTING.md](TESTING.md) — Abgegrenzter tatsächlicher Desktop-Smoke nach PERF-Deployment, ausdrücklich kein vollständiger Browserregressionsnachweis.; [docs/project/CODEX_SETUP.md](project/CODEX_SETUP.md) — Exakte Entwicklungsabhängigkeit, getrennte Chromiuminstallation und ausgeführtes Windows-Setup.
 
 **Dateiumfang:** `tests/e2e/`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** —.
 
-**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+**Integration:** Main [b5eb5b9](https://github.com/Freadeax/Minecraft-Bauplaner/commit/b5eb5b9bc039160e668a7183c0ccfcdcd764a933); Pages-Quelle [b5eb5b9](https://github.com/Freadeax/Minecraft-Bauplaner/commit/b5eb5b9bc039160e668a7183c0ccfcdcd764a933).
 
 ### QA-02
 
@@ -434,19 +433,19 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### UI-01
 
-**Neue Themen, Bauwelten und Materiallabor abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Neue Themen, Bauwelten und Materiallabor abnehmen** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Codex Teilagent ui_acceptance · Aktualisiert: 2026-11-01T12:42:58.241Z
 
-- [x] UI-01-S01: Fünf Themen, Hell/Dunkel/System, acht Bauwelten und Materiallabor eingebunden.
+- [x] UI-01-S01: Fünf Themen, Hell/Dunkel/System, elf Bauwelten und Materiallabor eingebunden.
 - [x] UI-01-S02: Node-Regressionsprüfungen für Filter, Kontrast und Mengen dokumentiert.
-- [ ] UI-01-S03: Aktuelle visuelle Browserprüfung in hell/dunkel und 1400/390 px.
+- [x] UI-01-S03: Aktuelle visuelle Browserprüfung in hell/dunkel und 1400/390 px.
 
 **Abnahme:** Filterlinks reproduzieren Treffer; keine unlesbaren Panels oder Mengenänderungen.
 
-**Nächste Aktion:** Aktuelle visuelle Browserprüfung in hell/dunkel und 1400/390 px.
+**Nächste Aktion:** Oberflächenregression bei Themen-/Layoutänderungen weiterführen; echte Geräte separat in QA-02.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Vier neue reale Chromiumfälle bestanden (25,14 s); fünf Themen × hell/dunkel × 1400/390 px für Labor/Bauwelten, 48 Aufnahmen visuell geprüft. Materialmengen, Herkunftsfilter, reale Vorschauen und reproduzierbare Links/Reloadtreffer unverändert. Kein echter Safari-/iPhone-/GPU-Nachweis.
 
-**Nachweise:** [tests/theme-tokens.test.mjs](../tests/theme-tokens.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/build-themes.test.mjs](../tests/build-themes.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/material-lab.test.mjs](../tests/material-lab.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+**Nachweise:** [tests/theme-tokens.test.mjs](../tests/theme-tokens.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/build-themes.test.mjs](../tests/build-themes.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/material-lab.test.mjs](../tests/material-lab.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/e2e/ui-acceptance.e2e.mjs](../tests/e2e/ui-acceptance.e2e.mjs) — Vier echte Chromiumfälle, Themenmatrix, Mengenerhalt und drei neue kanonische Filterlinks.; [docs/architecture/UI_ACCEPTANCE.md](architecture/UI_ACCEPTANCE.md) — 48 visuell geprüfte Aufnahmen; Desktop und Touchsimulation von echten Geräten getrennt.
 
 **Dateiumfang:** `apps/web/src/theme/`, `apps/web/src/materials/`, `apps/web/src/views/library/BuildThemesPage.tsx`. **Abhängigkeiten:** QA-01. **Alte IDs:** UI-01, MAT-02, WORLD-01.
 
@@ -473,26 +472,26 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### OPS-02
 
-**Deployment-Rückkehr und Wiederherstellungsprobe** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Deployment-Rückkehr und Wiederherstellungsprobe** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Codex Teilagent restore_probe · Aktualisiert: 2026-11-01T12:42:58.241Z
 
-- [ ] OPS-02-S01: Rückkehr auf bekannte Artefakte zunächst isoliert durchspielen.
-- [ ] OPS-02-S02: Source-Erhalt und neue Manifestzuordnung prüfen; Wiederanlauf dokumentieren.
+- [x] OPS-02-S01: Rückkehr auf bekannte Artefakte zunächst isoliert durchspielen.
+- [x] OPS-02-S02: Source-Erhalt und neue Manifestzuordnung prüfen; Wiederanlauf dokumentieren.
 
 **Abnahme:** Kein Force-Push; kein Live-Rollback ohne Anlass.
 
-**Nächste Aktion:** Rückkehr auf bekannte Artefakte zunächst isoliert durchspielen.
+**Nächste Aktion:** Bei tatsächlichem Vorfall bekannten Build neu bestätigen und Recovery regulär ohne Force vorbereiten; Livehashes danach gesondert prüfen.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** 4/4 Recoveryregressionen sowie echte dist-web-Probe bestanden: 13 Artefakte, 333 erhaltene Sourcepfade einschließlich synthetischer neuer Dateien und ausführbarem Modus. Hashes, Elternkette, unverändertes Ursprungsdeployment und entfernten Nachfolgechunk geprüft. Nur Scratchrepository; keine Live-/CDN-Restoreabnahme.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/pages-restore.test.mjs](../tests/pages-restore.test.mjs) — Vier Regressionen zu Integrität, Quellkollision, Provenienz und echter isolierter Git-Wiederherstellung.; [docs/operations/PAGES_RESTORE_PROBE.md](operations/PAGES_RESTORE_PROBE.md) — Probe, ehrliche Recoverymanifestzuordnung und Grenzen ohne Live-Rollback.
 
-**Dateiumfang:** `scripts/prepare_main_pages.mjs`, `docs/operations/`. **Abhängigkeiten:** OPS-01, PLAN-01. **Alte IDs:** HP-04.
+**Dateiumfang:** `scripts/prepare_main_pages.mjs`, `docs/operations/`, `scripts/probe_pages_restore.mjs`, `tests/pages-restore.test.mjs`. **Abhängigkeiten:** OPS-01, PLAN-01. **Alte IDs:** HP-04.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### OPS-03
 
-**Alte vollständig integrierte Branches bereinigen** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand / Codex-Prüfung · Aktualisiert: 2026-11-01T11:18:47.672Z
+**Alte vollständig integrierte Branches bereinigen** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand / Codex-Prüfung · Aktualisiert: 2026-11-01T12:42:58.241Z
 
 - [x] OPS-03-S01: Remote-Branches und vollständige Integration erneut nachweisen.
 - [x] OPS-03-S02: Bei verfügbarer Löschfunktion integrierte Branches entfernen.
@@ -507,7 +506,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Dateiumfang:** `docs/COMMUNICATION.md`. **Abhängigkeiten:** OPS-01. **Alte IDs:** —.
 
-**Integration:** Main [9f1700e](https://github.com/Freadeax/Minecraft-Bauplaner/commit/9f1700eb17299a83a55929d59ad5998526b2143f); Pages-Quelle ausstehend.
+**Integration:** Main [b5eb5b9](https://github.com/Freadeax/Minecraft-Bauplaner/commit/b5eb5b9bc039160e668a7183c0ccfcdcd764a933); Pages-Quelle [b5eb5b9](https://github.com/Freadeax/Minecraft-Bauplaner/commit/b5eb5b9bc039160e668a7183c0ccfcdcd764a933).
 
 ### LICENSE-01
 
@@ -685,27 +684,27 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-01
 
-**Große Berechnungen als abbrechbare Worker-Aufträge** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T11:18:47.672Z
+**Große Berechnungen als abbrechbare Worker-Aufträge** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex Teilagent perf_browser · Aktualisiert: 2026-11-01T12:42:58.241Z
 
 - [x] PERF-01-S01: Workerprotokoll mit Job-ID, Revisionsbezug und Abbruch definieren.
 - [x] PERF-01-S02: Auflösung, Anleitung und Materialien auslagern; veraltete Ergebnisse verwerfen.
-- [ ] PERF-01-S03: Vorher/Nachher mit Modell, Hardware-/Browserangabe und UI-Reaktionszeit messen.
+- [x] PERF-01-S03: Vorher/Nachher mit Modell, Hardware-/Browserangabe und UI-Reaktionszeit messen.
 
 **Abnahme:** Keine Übernahme eines Ergebnisses für eine veraltete Revision.
 
-**Nächste Aktion:** Große Projektberechnung im Browser mit Modell, Hardware und UI-Reaktionszeit vor/nachher messen (S03); Funktionsregressionen für Abbruch/Retry/historische Revisionen sind bestanden.
+**Nächste Aktion:** Messung bei Rechenkernänderungen wiederholen; Übertragungs-/Invalidierungsarbeit in PERF-02, vollständige React-/Gerätelatenz gesondert prüfen.
 
-**Prüfstand:** Vier echte lokale Chromium-Workerfälle bei 1400/390 px bestanden: Abbruch/Retry, schnelle Revisionen ohne alte Geometrie, sichtbarer Workerfehler und historische Grundlage. Kern-/Node-Workerregressionen bestehen weiterhin. Große Browser-/Hardware-Latenzmessung bleibt offen; vorhandene Nodewerte sind keine Browsergarantie.
+**Prüfstand:** 64.000 synthetische Zellen, echter isolierter Vite-Produktionsharness, Chromium 156 auf Ryzen 5 3600/32 GiB: je 1400/390 px Warmup plus drei Vergleichspaare. Vollständige Ergebnisdigests und handgezählte Invarianten gleich. DOM-Probe Median 693→30 / 790→35 ms, Gesamtdauer 703→1184 / 800→1420 ms; kein INP-/React-/GPU-/Echtgerätenachweis. Funktionale Workerregressionen weiterhin separat.
 
-**Nachweise:** [tests/project-computation.test.mjs](../tests/project-computation.test.mjs) — Acht Kern-/Lifecycle-/Node-Workerfälle; Gesamtcheck in TESTING.; [tests/e2e/project-computation.e2e.mjs](../tests/e2e/project-computation.e2e.mjs) — Alle vier tatsächlichen Chromiumfälle am 01.11.2026 lokal bestanden; Funktionsnachweis ohne große Modelllatenzmessung.; [docs/architecture/PROJECT_COMPUTATION.md](architecture/PROJECT_COMPUTATION.md) — Protokoll, Snapshotbindung und abgegrenzte Node-Messung.
+**Nachweise:** [tests/project-computation.test.mjs](../tests/project-computation.test.mjs) — Acht Kern-/Lifecycle-/Node-Workerfälle; Gesamtcheck in TESTING.; [tests/e2e/project-computation.e2e.mjs](../tests/e2e/project-computation.e2e.mjs) — Alle vier tatsächlichen Chromiumfälle am 01.11.2026 lokal bestanden; Funktionsnachweis ohne große Modelllatenzmessung.; [docs/architecture/PROJECT_COMPUTATION.md](architecture/PROJECT_COMPUTATION.md) — Protokoll, Snapshotbindung und abgegrenzte Node-Messung.; [docs/architecture/PROJECT_BROWSER_BENCHMARK.md](architecture/PROJECT_BROWSER_BENCHMARK.md) — Reproduzierbarer Browservergleich, Hardware, drei Paare je Viewport und ehrliche Interaktions-/Clonegrenzen.; [docs/architecture/project-browser-benchmark.json](architecture/project-browser-benchmark.json) — Vollständige Messläufe einschließlich Digests und unverändertem Rechenkernstand.
 
-**Dateiumfang:** `apps/web/src/views/project/session.ts`, `packages/application/`, `apps/web/src/computation/`, `apps/web/src/app/useProjectComputation.ts`, `apps/web/src/views/project/`, `tests/project-computation.test.mjs`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** —.
+**Dateiumfang:** `apps/web/src/views/project/session.ts`, `packages/application/`, `apps/web/src/computation/`, `apps/web/src/app/useProjectComputation.ts`, `apps/web/src/views/project/`, `tests/project-computation.test.mjs`, `scripts/benchmark_project_browser.mjs`, `docs/architecture/project-browser-benchmark.json`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** —.
 
 **Integration:** Main [7dffd92](https://github.com/Freadeax/Minecraft-Bauplaner/commit/7dffd922f46876c70700afc0429afb969e5478aa); Pages-Quelle [7dffd92](https://github.com/Freadeax/Minecraft-Bauplaner/commit/7dffd922f46876c70700afc0429afb969e5478aa).
 
 ### PERF-02
 
-**Zellindizes, Chunkdaten und selektive Neuberechnung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T10:22:39.771Z
+**Zellindizes, Chunkdaten und selektive Neuberechnung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T12:42:58.241Z
 
 - [x] PERF-02-S01: Kosten von owners/Strings/Übertragungen messen.
 - [x] PERF-02-S02: Index-/Chunkstrategie nur mit identischem semantischem Ergebnis einführen.
@@ -713,7 +712,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Unabhängige Mengen-/Geometrieregressionen; Importlimits bleiben wirksam.
 
-**Nächste Aktion:** Kopier-/Ownerkosten im echten Browser messen und selektive Geometrie-/Fortschritts-Invalidierung vor Cache-/Chunkumbau prüfen.
+**Nächste Aktion:** Gemessene Structured-Clone-/Worker-Rückgabekosten reduzieren; selektive Geometrie-/Fortschrittsinvalidierung zuerst mit vollständigen semantischen Regressionen absichern.
 
 **Prüfstand:** Interner Indexteil mit 15 passenden bestehenden/neuen Regressionen und sechs hashgleichen Vergleichsausgaben geprüft. Kein Browser-, Chunk- oder selektiver Cache-Nachweis. Gemeinsame vollständige Prüfung mit 377 Node-Tests bestanden.
 
@@ -860,18 +859,18 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### WORLD-02
 
-**Weitere kuratierte Bauwelten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Cline: Bauwelten-Abdeckung geprüft und ergänzt (MSG-WORLD02-01) · Aktualisiert: 2026-11-01T09:42:34.925Z
+**Weitere kuratierte Bauwelten** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Codex Teilagent ui_acceptance · Aktualisiert: 2026-11-01T12:42:58.241Z
 
 - [x] WORLD-02-S01: Abdeckung für fernöstliche Gärten, Wüstenhandel und End prüfen.
 - [x] WORLD-02-S02: Nur mit tatsächlichen Treffern und reproduzierbaren Links ergänzen.
 
 **Abnahme:** Keine erfundenen Treffer oder Gebäude; eigene Assets werden konsistent berücksichtigt.
 
-**Nächste Aktion:** Sichtprüfung der drei neuen Bauwelten bei verfügbarer Browserlaufzeit in QA-01 nachholen; folgender Entwicklungsblock PERF-01.
+**Nächste Aktion:** Kuratierte Filter-/Treffernachweise bei Katalogänderungen fortführen; keine weitere Karte ohne tatsächliche Assets.
 
-**Prüfstand:** 365/365 Node-Tests, Architektur-, Roadmap-, Typ-, Kern-/Pages-Build- und Dokumentationsprüfung bestanden. Quellcommit c3e6478 auf main, Artefakt bc74958; Live-Manifest mit identischem Quellcommit und zwölf gleichen Dateihashes, index.html und Hauptbundle zusätzlich byteweise nachgehasht. Browser-/Touch-Sichtprüfung offen.
+**Prüfstand:** Alle elf Karten geladen; Fernost (3), Wüstenhandel (6), Endposten (2) mit realen Vorschauen, identischen geordneten Treffern nach URL-Reload und 1400/390-px-Sichtprüfung abgenommen. Vier neue Chromiumfälle bestanden. Keine neuen Gebäude oder Spielkompatibilität behauptet.
 
-**Nachweise:** [tests/build-themes.test.mjs](../tests/build-themes.test.mjs) — Prüft elf Welten, reale Facetten, Treffer/Vorschauen der drei neuen Welten, reproduzierbare Links und dass keine Welt eine Stilrichtung ohne Bauteile nennt.; [docs/architecture/BUILD_THEMES.md](architecture/BUILD_THEMES.md) — Abdeckungstabelle der tatsächlichen Treffer je neuer Bauwelt.
+**Nachweise:** [tests/build-themes.test.mjs](../tests/build-themes.test.mjs) — Prüft elf Welten, reale Facetten, Treffer/Vorschauen der drei neuen Welten, reproduzierbare Links und dass keine Welt eine Stilrichtung ohne Bauteile nennt.; [docs/architecture/BUILD_THEMES.md](architecture/BUILD_THEMES.md) — Abdeckungstabelle der tatsächlichen Treffer je neuer Bauwelt.; [tests/e2e/ui-acceptance.e2e.mjs](../tests/e2e/ui-acceptance.e2e.mjs) — Vier echte Chromiumfälle, Themenmatrix, Mengenerhalt und drei neue kanonische Filterlinks.; [docs/architecture/UI_ACCEPTANCE.md](architecture/UI_ACCEPTANCE.md) — 48 visuell geprüfte Aufnahmen; Desktop und Touchsimulation von echten Geräten getrennt.
 
 **Dateiumfang:** `packages/domain/src/buildThemes.ts`, `tests/build-themes.test.mjs`, `docs/architecture/BUILD_THEMES.md`. **Abhängigkeiten:** LIB-01, UI-01. **Alte IDs:** WORLD-02.
 
@@ -957,7 +956,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-01
 
-**Spielaufnahmen und Soll/Ist-Vergleich** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Aktualisiert: 2026-11-01T11:18:47.672Z
+**Spielaufnahmen und Soll/Ist-Vergleich** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Aktualisiert: 2026-11-01T12:42:58.241Z
 
 - [x] GAME-01-S01: Vergleich, Originalspeicherung, Verlauf, Ausrichtung und Backup vorhanden.
 
@@ -971,7 +970,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Dateiumfang:** `packages/domain/src/gameCheck.ts`, `packages/application/src/scanPersistence.ts`. **Abhängigkeiten:** CORE-02, BUILD-01. **Alte IDs:** B8-M1, B8P.
 
-**Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
+**Integration:** Main [b5eb5b9](https://github.com/Freadeax/Minecraft-Bauplaner/commit/b5eb5b9bc039160e668a7183c0ccfcdcd764a933); Pages-Quelle [b5eb5b9](https://github.com/Freadeax/Minecraft-Bauplaner/commit/b5eb5b9bc039160e668a7183c0ccfcdcd764a933).
 
 ### GAME-02
 

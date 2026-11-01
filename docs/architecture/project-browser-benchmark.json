@@ -1,0 +1,316 @@
+{
+  "at": "2026-11-01T12:22:44.951Z",
+  "sourceCommit": "6a309073872cda244a66a6b8d91452139cbdce09",
+  "workingTreeDirty": true,
+  "computationSourceFilesDirty": false,
+  "sourceDescription": "sourceCommit identifies the existing calculation/client baseline. The benchmark harness and evidence may be uncommitted; workingTreeDirty describes the entire shared checkout. This compares the same current calculation synchronously and through its production worker client, not two historical Git checkouts.",
+  "browser": "156.0.8078.4",
+  "node": "v24.18.0",
+  "host": {
+    "cpu": "AMD Ryzen 5 3600 6-Core Processor              ",
+    "logicalCpus": 12,
+    "memoryGiB": 32,
+    "platform": "win32",
+    "release": "10.0.26200"
+  },
+  "model": {
+    "synthetic": true,
+    "side": 40,
+    "cells": 64000,
+    "instances": 1,
+    "palette": [
+      "minecraft:stone"
+    ],
+    "origin": [
+      -40,
+      0,
+      -40
+    ],
+    "repetitions": 3,
+    "warmupPerModePerViewport": 1,
+    "measurementOrder": "alternating sync/worker then worker/sync"
+  },
+  "scope": "Isolated production Vite harness, actual shared computeProject and shipped worker client; scheduled DOM event and 5ms heartbeat, no React/viewer/GPU rendering, no CPU throttling.",
+  "viewports": [
+    {
+      "viewport": {
+        "width": 1400,
+        "height": 1000
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36",
+      "hardwareConcurrency": 12,
+      "runs": [
+        {
+          "iteration": 0,
+          "mode": "sync",
+          "elapsedMs": 653.1999999880791,
+          "maxHeartbeatGapMs": 653.5,
+          "heartbeatTicks": 7,
+          "scheduledDomEventDelayMs": 643.4000000357628,
+          "standaloneInputCloneMs": 82.10000002384186,
+          "standaloneResultCloneMs": 282.80000001192093,
+          "digest": "67678597e353d90c5fdca17f218c7b424cfa44b33efe07cd974c2c9111a998e5",
+          "invariants": {
+            "cells": 64000,
+            "items": 64000,
+            "conflicts": 0,
+            "steps": 40,
+            "owners": 64000,
+            "mapPreserved": true
+          }
+        },
+        {
+          "iteration": 0,
+          "mode": "worker",
+          "elapsedMs": 1183.9000000357628,
+          "maxHeartbeatGapMs": 158,
+          "heartbeatTicks": 74,
+          "scheduledDomEventDelayMs": 30,
+          "standaloneInputCloneMs": 86,
+          "standaloneResultCloneMs": 336.30000001192093,
+          "digest": "67678597e353d90c5fdca17f218c7b424cfa44b33efe07cd974c2c9111a998e5",
+          "invariants": {
+            "cells": 64000,
+            "items": 64000,
+            "conflicts": 0,
+            "steps": 40,
+            "owners": 64000,
+            "mapPreserved": true
+          }
+        },
+        {
+          "iteration": 1,
+          "mode": "worker",
+          "elapsedMs": 1259.5999999642372,
+          "maxHeartbeatGapMs": 205.19999998807907,
+          "heartbeatTicks": 76,
+          "scheduledDomEventDelayMs": 34.09999996423721,
+          "standaloneInputCloneMs": 110.89999997615814,
+          "standaloneResultCloneMs": 358.80000001192093,
+          "digest": "67678597e353d90c5fdca17f218c7b424cfa44b33efe07cd974c2c9111a998e5",
+          "invariants": {
+            "cells": 64000,
+            "items": 64000,
+            "conflicts": 0,
+            "steps": 40,
+            "owners": 64000,
+            "mapPreserved": true
+          }
+        },
+        {
+          "iteration": 1,
+          "mode": "sync",
+          "elapsedMs": 752.7000000476837,
+          "maxHeartbeatGapMs": 752.8999999761581,
+          "heartbeatTicks": 9,
+          "scheduledDomEventDelayMs": 742.8000000119209,
+          "standaloneInputCloneMs": 105.30000001192093,
+          "standaloneResultCloneMs": 308.5999999642372,
+          "digest": "67678597e353d90c5fdca17f218c7b424cfa44b33efe07cd974c2c9111a998e5",
+          "invariants": {
+            "cells": 64000,
+            "items": 64000,
+            "conflicts": 0,
+            "steps": 40,
+            "owners": 64000,
+            "mapPreserved": true
+          }
+        },
+        {
+          "iteration": 2,
+          "mode": "sync",
+          "elapsedMs": 703.1000000238419,
+          "maxHeartbeatGapMs": 703.1999999880791,
+          "heartbeatTicks": 9,
+          "scheduledDomEventDelayMs": 693.1999999880791,
+          "standaloneInputCloneMs": 91.10000002384186,
+          "standaloneResultCloneMs": 303.0999999642372,
+          "digest": "67678597e353d90c5fdca17f218c7b424cfa44b33efe07cd974c2c9111a998e5",
+          "invariants": {
+            "cells": 64000,
+            "items": 64000,
+            "conflicts": 0,
+            "steps": 40,
+            "owners": 64000,
+            "mapPreserved": true
+          }
+        },
+        {
+          "iteration": 2,
+          "mode": "worker",
+          "elapsedMs": 1181.5,
+          "maxHeartbeatGapMs": 161.70000004768372,
+          "heartbeatTicks": 75,
+          "scheduledDomEventDelayMs": 27.799999952316284,
+          "standaloneInputCloneMs": 97,
+          "standaloneResultCloneMs": 317.4000000357628,
+          "digest": "67678597e353d90c5fdca17f218c7b424cfa44b33efe07cd974c2c9111a998e5",
+          "invariants": {
+            "cells": 64000,
+            "items": 64000,
+            "conflicts": 0,
+            "steps": 40,
+            "owners": 64000,
+            "mapPreserved": true
+          }
+        }
+      ],
+      "medians": {
+        "sync": {
+          "elapsedMs": 703.1000000238419,
+          "maxHeartbeatGapMs": 703.1999999880791,
+          "scheduledDomEventDelayMs": 693.1999999880791,
+          "standaloneInputCloneMs": 91.10000002384186,
+          "standaloneResultCloneMs": 303.0999999642372
+        },
+        "worker": {
+          "elapsedMs": 1183.9000000357628,
+          "maxHeartbeatGapMs": 161.70000004768372,
+          "scheduledDomEventDelayMs": 30,
+          "standaloneInputCloneMs": 97,
+          "standaloneResultCloneMs": 336.30000001192093
+        }
+      }
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36",
+      "hardwareConcurrency": 12,
+      "runs": [
+        {
+          "iteration": 0,
+          "mode": "sync",
+          "elapsedMs": 799.8999999761581,
+          "maxHeartbeatGapMs": 800.3000000119209,
+          "heartbeatTicks": 10,
+          "scheduledDomEventDelayMs": 790.3000000119209,
+          "standaloneInputCloneMs": 97,
+          "standaloneResultCloneMs": 340,
+          "digest": "8cef479362dcb8dd8731fc2ceab7c62b102f615814fb28844998dd0a82c0c252",
+          "invariants": {
+            "cells": 64000,
+            "items": 64000,
+            "conflicts": 0,
+            "steps": 40,
+            "owners": 64000,
+            "mapPreserved": true
+          }
+        },
+        {
+          "iteration": 0,
+          "mode": "worker",
+          "elapsedMs": 1450.800000011921,
+          "maxHeartbeatGapMs": 197.39999997615814,
+          "heartbeatTicks": 89,
+          "scheduledDomEventDelayMs": 35.09999996423721,
+          "standaloneInputCloneMs": 111,
+          "standaloneResultCloneMs": 514.8999999761581,
+          "digest": "8cef479362dcb8dd8731fc2ceab7c62b102f615814fb28844998dd0a82c0c252",
+          "invariants": {
+            "cells": 64000,
+            "items": 64000,
+            "conflicts": 0,
+            "steps": 40,
+            "owners": 64000,
+            "mapPreserved": true
+          }
+        },
+        {
+          "iteration": 1,
+          "mode": "worker",
+          "elapsedMs": 1420.199999988079,
+          "maxHeartbeatGapMs": 230.60000002384186,
+          "heartbeatTicks": 86,
+          "scheduledDomEventDelayMs": 28.400000035762787,
+          "standaloneInputCloneMs": 203,
+          "standaloneResultCloneMs": 446.4000000357628,
+          "digest": "8cef479362dcb8dd8731fc2ceab7c62b102f615814fb28844998dd0a82c0c252",
+          "invariants": {
+            "cells": 64000,
+            "items": 64000,
+            "conflicts": 0,
+            "steps": 40,
+            "owners": 64000,
+            "mapPreserved": true
+          }
+        },
+        {
+          "iteration": 1,
+          "mode": "sync",
+          "elapsedMs": 843.2999999523163,
+          "maxHeartbeatGapMs": 843.5,
+          "heartbeatTicks": 8,
+          "scheduledDomEventDelayMs": 833.5,
+          "standaloneInputCloneMs": 111,
+          "standaloneResultCloneMs": 360.0999999642372,
+          "digest": "8cef479362dcb8dd8731fc2ceab7c62b102f615814fb28844998dd0a82c0c252",
+          "invariants": {
+            "cells": 64000,
+            "items": 64000,
+            "conflicts": 0,
+            "steps": 40,
+            "owners": 64000,
+            "mapPreserved": true
+          }
+        },
+        {
+          "iteration": 2,
+          "mode": "sync",
+          "elapsedMs": 700.8999999761581,
+          "maxHeartbeatGapMs": 701.2000000476837,
+          "heartbeatTicks": 5,
+          "scheduledDomEventDelayMs": 691.1000000238419,
+          "standaloneInputCloneMs": 110.40000003576279,
+          "standaloneResultCloneMs": 329.39999997615814,
+          "digest": "8cef479362dcb8dd8731fc2ceab7c62b102f615814fb28844998dd0a82c0c252",
+          "invariants": {
+            "cells": 64000,
+            "items": 64000,
+            "conflicts": 0,
+            "steps": 40,
+            "owners": 64000,
+            "mapPreserved": true
+          }
+        },
+        {
+          "iteration": 2,
+          "mode": "worker",
+          "elapsedMs": 1292.6000000238419,
+          "maxHeartbeatGapMs": 197.39999997615814,
+          "heartbeatTicks": 80,
+          "scheduledDomEventDelayMs": 40,
+          "standaloneInputCloneMs": 102.30000001192093,
+          "standaloneResultCloneMs": 381.69999998807907,
+          "digest": "8cef479362dcb8dd8731fc2ceab7c62b102f615814fb28844998dd0a82c0c252",
+          "invariants": {
+            "cells": 64000,
+            "items": 64000,
+            "conflicts": 0,
+            "steps": 40,
+            "owners": 64000,
+            "mapPreserved": true
+          }
+        }
+      ],
+      "medians": {
+        "sync": {
+          "elapsedMs": 799.8999999761581,
+          "maxHeartbeatGapMs": 800.3000000119209,
+          "scheduledDomEventDelayMs": 790.3000000119209,
+          "standaloneInputCloneMs": 110.40000003576279,
+          "standaloneResultCloneMs": 340
+        },
+        "worker": {
+          "elapsedMs": 1420.199999988079,
+          "maxHeartbeatGapMs": 197.39999997615814,
+          "scheduledDomEventDelayMs": 35.09999996423721,
+          "standaloneInputCloneMs": 111,
+          "standaloneResultCloneMs": 446.4000000357628
+        }
+      }
+    }
+  ]
+}
