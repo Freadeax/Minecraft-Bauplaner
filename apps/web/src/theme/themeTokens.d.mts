@@ -1,0 +1,10 @@
+export type ThemeId = 'modern' | 'medieval' | 'industrial' | 'fantasy' | 'nether';
+export type Appearance = 'dark' | 'light' | 'system';
+export const THEME_IDS: readonly ThemeId[];
+export const APPEARANCES: readonly Appearance[];
+export const DEFAULT_THEME: ThemeId;
+export function normalizeTheme(value: unknown): ThemeId;
+export function normalizeAppearance(value: unknown): Appearance;
+export function resolveAppearance(value: unknown, prefersDark?: boolean): 'dark' | 'light';
+export function contrastRatio(a: string, b: string): number;
+export function themeTokens(theme: unknown, appearance?: unknown): Readonly<{id: ThemeId; appearance: 'dark' | 'light'; colors: Readonly<{accent: string; surface: string; canvas: string; text: string}>; spacing: Readonly<{xs: number; sm: number; md: number; lg: number; xl: number}>; radius: Readonly<{sm: number; md: number; lg: number}>}>;

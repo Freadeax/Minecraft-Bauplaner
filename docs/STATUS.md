@@ -64,3 +64,9 @@ Korrektur Hosting (31.10.2026): aktuelle interne Buildlogs bestätigen bereits m
 ## Strukturpflege · 31.10.2026
 
 README beschreibt die implementierten Module statt des initialen Fundaments. Pages arbeitet bereits auf main/root; ältere Abschnitte zur bevorstehenden Quellenmigration sind historisch überholt. Nur Branchlöschung bleibt mangels Konnektorfunktion offen. Der Livekartenkern kann sein eigenes Markerformat nun strikt wieder einlesen (keine Kartenoberfläche, keine Provideranbindung).
+
+## Nutzbarer November-Ausbau · 01.11.2026
+
+UI-01 ist jetzt in die Hauptnavigation eingebunden: fünf rein visuelle Themen sowie Hell/Dunkel/Geräteeinstellung mit lokaler Speicherung und Rückfall bei Speicherfehlern. Das Materiallabor im Material-Tab zeigt die vorhandenen berechneten Bauitems nach Materialfamilie, Suche, Zuordnung und Bedarf; Herkunft und Blockzustände bleiben einsehbar. Es verwendet denselben Materialbericht wie die Tabelle und führt kein zweites Lager. Beschädigte Seitenlinks führen zur Fehleransicht statt zum Startabsturz; kodierte Projekt-IDs bleiben erhalten.
+
+Kein zusätzliches Repository, keine externe Registry und kein produktiver Login. Weltkarte, exakte Minecraft-Blockmodelle, Teamdienst und Spielabnahme bleiben eigene offene Blöcke. Aktuelle Gesamtprüfung und Veröffentlichungsnachweis stehen in TESTING beziehungsweise deployment.json; die fehlende Chromium-Laufzeit erlaubt weiterhin keine Browserabnahme.

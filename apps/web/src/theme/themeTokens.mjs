@@ -5,6 +5,13 @@ const palettes = {
   fantasy: { accent: '#d3a6fa', surface: '#28203b', canvas: '#171426', text: '#faf1ff' },
   nether: { accent: '#ff938a', surface: '#301d25', canvas: '#1c1118', text: '#fff1ed' }
 };
+const lightPalettes = {
+  modern: {accent:'#234c77',surface:'#ffffff',canvas:'#f1f3f6',text:'#172331'},
+  medieval: {accent:'#775018',surface:'#fffaf0',canvas:'#f3ebdc',text:'#332719'},
+  industrial: {accent:'#854209',surface:'#fafafa',canvas:'#e9ecef',text:'#24272b'},
+  fantasy: {accent:'#694096',surface:'#fdf9ff',canvas:'#efe8f6',text:'#30213f'},
+  nether: {accent:'#a0322b',surface:'#fff9f7',canvas:'#f5e7e4',text:'#3c2428'}
+};
 export const THEME_IDS = Object.freeze(Object.keys(palettes));
 export const APPEARANCES = Object.freeze(['dark', 'light', 'system']);
 export const DEFAULT_THEME = 'modern';
@@ -16,6 +23,6 @@ function luminance(hex) { const [r,g,b] = rgb(hex); return .2126*r + .7152*g + .
 export function contrastRatio(a,b) { const x=luminance(a),y=luminance(b); return (Math.max(x,y)+.05)/(Math.min(x,y)+.05); }
 export function themeTokens(theme, appearance='dark') {
   const id=normalizeTheme(theme), mode=resolveAppearance(appearance);
-  const tokens=mode === 'light' ? {accent:'#234c77',surface:'#ffffff',canvas:'#f1f3f6',text:'#172331'} : palettes[id];
+  const tokens=mode === 'light' ? lightPalettes[id] : palettes[id];
   return Object.freeze({id,appearance:mode,colors:Object.freeze({...tokens}),spacing:Object.freeze({xs:4,sm:8,md:16,lg:24,xl:32}),radius:Object.freeze({sm:6,md:10,lg:16})});
 }

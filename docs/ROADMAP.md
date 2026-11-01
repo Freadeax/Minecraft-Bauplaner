@@ -110,3 +110,10 @@ Lokale Korrektur für Merkliste, Vergleich und Blickrichtung bei nicht verfügba
 - B15-L: Rückimport eigener Markerdateien mit Schema-/Feldprüfung ergänzt. UI-Dateiadapter, gespeicherte Kartenziele und Weltkartenoberfläche folgen getrennt.
 - S2/B8P/S3 sind integriert. Fehlendes Chromium bleibt eine offen dokumentierte Prüfgrenze und hält gemäß Nutzerpräzisierung allein die Veröffentlichung nicht auf.
 - Nächste Strukturarbeit: Revisionsschutz für konkurrierende Assetänderungen; danach große Zusammensetzungen in Worker verlagern. B15-Dateireservierung beachten.
+
+## Vertikaler Ausbau · 01.11.2026
+
+- UI-01: Theme-Tokens in die echte Oberfläche eingebunden, fünf Themen mit Hell/Dunkel/System, Speicherung und Systemwechsel. Details [THEME_TOKENS](architecture/THEME_TOKENS.md). Weitere visuelle Geräteabnahme offen.
+- MAT-02: Materiallabor als Projektansicht der tatsächlichen Bauitems mit Familien, Such-/Zuordnungsfilter, Sortierung, Mengen und Herkunft; kein separates Inventar oder Datenrepository. Details [MATERIAL_LAB](architecture/MATERIAL_LAB.md). Mengen-/Rohstoffregeln bleiben im bestehenden Kern.
+- Navigation: beschädigte URL-Kodierung abgefangen; kodierte IDs und Unicode-Routen geprüft. Keine zusätzlichen Abhängigkeiten.
+- Nächste Schritte: echte Desktop-/iPhone-Sichtprüfung dieser Oberflächen; bestehende B15/B16/B17/S4-Reservierungen weiterhin abstimmen. Keine externe Registry und kein zusätzliches Repository.

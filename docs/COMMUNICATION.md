@@ -324,3 +324,39 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Neuer isolierter Arbeitsblock ausschließlich in `apps/web/src/materials/materialCatalog.mjs` und `tests/material-catalog.test.mjs`. Keine B17-Katalog-/Viewer-/Domain-Dateien ändern.
 - Zunächst reine Block-ID- und Mengenaggregation mit strikter Minecraft-ID-Prüfung, ganzzahligen Mengen und deterministischer Sortierung. Kein Rezept-/Rohstoffmapping ohne Profil, keine Registry, kein zusätzliches Repository.
 - Nach Erstellung gezielte Node-Tests; vollständiger Projektcheck bleibt bis zum möglichen Checkout offen.
+
+### MSG-UI01-02 · Codex Thread theme_ui · 2026-11-01 · UI-Anbindung reserviert
+- Umfang: neue Theme-Steuerung, gespeicherte Auswahl, Systemmodus, Theme-CSS und Regressionen in `apps/web/src/theme/` und `tests/theme-*`; Theme-Kern bleibt rein visuell. Hauptthread integriert die Komponente in main.tsx.
+- Keine B15/B16/B17-/Voxel-/Materialdaten ändern. Keine Abhängigkeiten, Commits oder Pushes durch diesen Thread.
+
+### MSG-ROUTE-00 · Codex Thread routing_quality · 2026-11-01 · Robuste Navigation reserviert
+- Umfang: `apps/web/src/app/router.ts` und `tests/router.test.mjs`; fehlerhafte Prozentkodierung darf die Anwendung nicht vor dem Absturzschutz beenden. Kodierte Pfadtrenner bleiben Bestandteil einer ID, statt zusätzliche Routensegmente zu erzeugen.
+- Prüfung: konkrete Routen-/href-Roundtrips, Unicode-IDs, ungültige Kodierung und unbekannte Seiten. Keine Main-/Pages-Aktionen durch diesen Thread.
+
+### MSG-MAT02-START · Codex Thread material_lab · 2026-11-01 · Materiallabor sichtbar ausbauen
+- Zuständigkeit: neue `packages/domain/src/materialLab.ts`, `tests/material-lab.test.mjs`, `apps/web/src/materials/MaterialLab.tsx`, `materialLab.css`, Einbindung in `MaterialsTab.tsx`, Vertrag `docs/architecture/MATERIAL_LAB.md`.
+- Die Laboransicht gruppiert bereits berechnete Bauitems rein zur Orientierung; Mengen und Sonderregeln bleiben im gemeinsamen Materialkern. Such-/Familien-/Statusfilter, Rangfolge und Detailkarte; kein zweites Lager, keine Rezeptannahmen, keine Registry. B15/B16/B17/S4-Dateien bleiben erhalten.
+- Prüfplan: handgezählte Materialberichte mit Doppelstufen/Mehrblockobjekten, Filter und Summen; strict Typprüfung und Dokumentationsprüfung. Integration/Push ausschließlich durch Hauptthread.
+
+### MSG-NOV-INTEGRATE-00 · Codex · 2026-11-01 · Paralleler Nutzerausbau
+- Nutzer beauftragt parallele Weiterentwicklung und Integration auf main mit aktueller Pages-Version. Zuständigkeiten: theme_ui = UI-01 Theme-Oberfläche; material_lab = Materiallabor mit vorhandenen Mengen/Lagerdaten; routing_quality = fehlerfeste Routen. Hauptthread = Einbindung, Gesamtprüfung, Status/Prüfprotokoll und Veröffentlichung.
+- Kein zusätzliches Repository, keine Registry und kein OAuth. B15/B16/B17/S4-Dateireservierungen bleiben erhalten. Vor Integration Kommunikation und Remote erneut prüfen. Keine separaten Pushes aus Unterthreads.
+
+### MSG-ROUTE-01 · Codex Thread routing_quality · 2026-11-01 · Navigation gehärtet
+- Fehlerhafte Prozent-/UTF-8-Kodierung führt zur bestehenden verständlichen Nicht-gefunden-Ansicht, statt die Anwendung vor der ErrorBoundary zu beenden. Segmente werden erst nach der Trennung dekodiert, dadurch bleiben Schrägstriche in kodierten IDs erhalten; Projektreiter werden beim Linkaufbau kodiert. Prototype-Schlüssel werden nicht als Bibliotheksseiten akzeptiert.
+- Prüfung: `node --test tests/router.test.mjs` 4/4 bestanden (15 Routen-Roundtrips, Unicode-/Sonderzeichen, ungültige Kodierung, Segmentgrenzen, Prototype-Namen); `npm run typecheck` und `git diff --check` bestanden.
+- Eigene Dateien fertig, keine Commits oder Pushes. Gesamtprüfung und Veröffentlichung durch Hauptthread; keine Browserprüfung durch diesen Thread.
+
+### MSG-UI01-03 · Codex Thread theme_ui · 2026-11-01 · Übergabe
+- Theme-Auswahl mit fünf hellen/dunklen Paletten, Systemereignissen, robuster Speicherung, Tab-Synchronisierung und semantischer CSS-Anbindung implementiert. Hauptthread bindet ThemeControl und abschließend theme.css in main.tsx ein.
+- Bestehende Editor-/Bau-/Export-/Baustellenpanels und Aktionen auf Tokens abgebildet; dunkle Viewer-/Canvasflächen erhalten getrennte lesbare UI-Farben. Blockfarben und Projektdaten unverändert.
+- Zehn gezielte Node-Tests bestanden; vollständige Kern-/Web-Typprüfung bestanden. Browser-/Touchabnahme an Hauptthread übergeben, keine solche Abnahme behauptet. Kein Commit/Push durch diesen Thread.
+
+### MSG-MAT02-DONE · Codex Thread material_lab · 2026-11-01 · Übergabe Materiallabor
+- Neue Kartenansicht im Materialtab mit vorhandenen Holz-/Stein-/Farbfamilien, deutschen Familien-/Quellblock-Suchbegriffen, Statusfilter Katalog/Annahme, Sortierung, schrittweiser Anzeige und vollständiger Quellzustandsansicht. Bedarf und Sonderregeln stammen unverändert aus dem gemeinsamen Materialbericht; kein zweites Inventar oder Materialmapping.
+- Drei neue Kernregressionen bestehen: handgezählte Doppelstufe/Tür/Modblock, Filter-/Statuskombinationen, Nichtmutation, Mengen-/Slotsummen und sichere Namensräume. `npm run build:core`, gezielte Node-Tests, strict Typprüfung, Dokumentationsprüfung und Diffprüfung bestanden. Ergänzter Desktop-/Mobil-E2E-Fall: Filterleere, Rücksetzen, Familie, Annahmenstatus und unveränderte Mengen/Instanzumfang. Browserausführung laut Hauptthread mangels Chromium offen.
+- CSS nutzt bestehende Themevariablen `--panel`, `--panel-2`, `--line`, `--muted`, `--mint`; Import im Bauteil. Keine zusätzliche Main-/Router-Einbindung nötig. Kein Commit/Push; Dateien zur Gesamtprüfung an Hauptthread übergeben.
+
+### MSG-NOV-INTEGRATE-01 · Codex · 2026-11-01 · Abschlussintegration
+- UI-01, MAT-02 und Navigation gemeinsam eingebunden; 334 Node-Tests und strenge Typ-/Build-/Dokumentationsprüfungen bestanden. Browserregressionen vorbereitet, tatsächliche Ausführung scheitert an fehlendem Chromium (TESTING).
+- Dateizuständigkeiten beendet; Hauptthread führt finalen unveränderten Gesamtcheck und Remote-/Kommunikationsprüfung aus. Danach reguläre Main-Integration über Konnektor und unmittelbar passender manifestgeprüfter Artefakt-Kindcommit. Shell-Schreibanmeldung fehlt; Konnektor verwenden, keine neue Nutzerfreigabe nötig.

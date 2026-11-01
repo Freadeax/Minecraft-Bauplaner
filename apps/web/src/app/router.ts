@@ -30,15 +30,25 @@ const LIBRARY_SEGMENT: Readonly<Record<LibraryPage, string>> = { browse: '', bui
 export function parseRoute(hash: string): Route {
   const raw = hash.replace(/^#/, ''), q = raw.indexOf('?');
   const search = q >= 0 ? raw.slice(q + 1) : '';
-  const path = decodeURIComponent(q >= 0 ? raw.slice(0, q) : raw).replace(/\/+$/, '') || '/';
-  const parts = path.split('/').filter(Boolean);
+  const encodedPath = (q >= 0 ? raw.slice(0, q) : raw).replace(/\/+$/, '') || '/';
+  let path: string;
+  let parts: string[];
+  try {
+    path = decodeURIComponent(encodedPath);
+    // Decode each segment after splitting: an encoded slash belongs to the ID.
+    parts = encodedPath.split('/').filter(Boolean).map(decodeURIComponent);
+  } catch {
+    // The route hook runs outside the page error boundary, including on first load.
+    return { view: 'not-found', path: encodedPath };
+  }
   if (parts.length === 0) return { view: 'projects' };
   if (parts[0] === 'bibliothek' && parts.length === 1) return { view: 'library', ...(search && { search }) };
   if (parts[0] === 'bibliothek' && parts[1] === 'fuer' && parts[2] && parts.length === 3) return { view: 'library', projectId: parts[2], ...(search && { search }) };
   if (parts[0] === 'bibliothek') {
     const rest = parts[1] === 'fuer' && parts[2] ? parts.slice(3) : parts.slice(1);
     const projectId = parts[1] === 'fuer' ? parts[2] : undefined;
-    const page = LIBRARY_PAGES[rest[0] ?? ''];
+    const segment = rest[0] ?? '';
+    const page = Object.hasOwn(LIBRARY_PAGES, segment) ? LIBRARY_PAGES[segment] : undefined;
     const needsId = page === 'building' || page === 'compare';
     if (page && (rest.length <= 2 || (page === 'building' && rest.length === 3)) && (!needsId || rest[1]))
       return { view: 'library', page, ...(projectId && { projectId }), ...(rest[1] && { id: rest[1] }), ...(rest[2] && { sub: rest[2] }) };
@@ -60,7 +70,7 @@ export function href(route: Route): string {
     }
     case 'viewer': return '#/betrachter';
     case 'system': return '#/system';
-    case 'project': return `#/projekt/${encodeURIComponent(route.projectId)}${route.tab === 'editor' ? '' : `/${route.tab}`}`;
+    case 'project': return `#/projekt/${encodeURIComponent(route.projectId)}${route.tab === 'editor' ? '' : `/${encodeURIComponent(route.tab)}`}`;
     case 'not-found': return '#/';
   }
 }

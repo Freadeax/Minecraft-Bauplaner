@@ -10,9 +10,11 @@ import { LibraryView } from './views/LibraryView';
 import { ProjectView } from './views/project/ProjectView';
 import { ViewerView } from './views/ViewerView';
 import { SystemView } from './views/SystemView';
+import { ThemeControl } from './theme/ThemeControl';
 import './style.css';
 import './catalog.css';
 import './schem.css';
+import './theme/theme.css';
 
 function Page({ route }: { route: Route }) {
   switch (route.view) {
@@ -36,7 +38,7 @@ function App() {
         <a href="#/bibliothek" aria-current={area === 'library' ? 'page' : undefined}>Bibliothek</a>
         <a href="#/betrachter" aria-current={area === 'viewer' ? 'page' : undefined}>Betrachter</a>
         <a href={REPO_URL} target="_blank" rel="noreferrer">GitHub ↗</a>
-      </nav><span className="version"><span /> Vorabversion 0.2</span></header>
+      </nav><ThemeControl /><span className="version"><span /> Vorabversion 0.2</span></header>
     <div id="inhalt" tabIndex={-1} className="content"><AppProvider><ErrorBoundary resetKey={window.location.hash}><Page route={route} /></ErrorBoundary></AppProvider></div>
     <footer><span>LMNT BUILD STUDIO <span className="footer-dot">·</span> Mit Plan gebaut.</span><span><a href="#/system">Systemcheck</a> <span className="footer-dot">·</span> Unabhängiges Projekt · kein offizielles Minecraft-Produkt</span></footer>
   </>;

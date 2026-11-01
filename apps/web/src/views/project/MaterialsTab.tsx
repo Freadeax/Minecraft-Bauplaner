@@ -3,6 +3,7 @@ import { formatStacks, materialsForResolution, materialsToCsv, siteOf, siteOpera
 import type { ItemLine, MaterialReport, MaterialScope, UnresolvedReason } from '../../../../../packages/domain/src/index.js';
 import { download, formatNumber } from '../../app/ui';
 import { isResolved } from './session';
+import { MaterialLab } from '../../materials/MaterialLab';
 import { RawMaterialsPanel } from './RawMaterialsPanel';
 import type { RawMaterialsSettings } from './RawMaterialsPanel';
 import type { ProjectSession } from './session';
@@ -63,6 +64,7 @@ export function MaterialsTab({ session }: { session: ProjectSession }) {
       <div><dt>Platzierte Blöcke</dt><dd>{formatNumber(report.placed.blocks)}</dd></div>
     </dl>
     {report.placed.blocks === 0 ? <p className="muted">Keine platzierten Blöcke in diesem Umfang{report.placed.air ? `; ${report.placed.air} Luftzellen.` : '.'}</p> : <>
+      <MaterialLab report={report} />
       <h3 className="materials-title">Bauitems <small>{items.length} von {report.items.length}</small></h3>
       <div className="table-wrap"><table className="materials-table">
         <thead><tr><th>Item</th><th className="num">Menge</th><th className="num">Stacks</th><th className="num">Plätze</th><th>Regel</th></tr></thead>
