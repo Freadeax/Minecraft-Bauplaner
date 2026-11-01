@@ -1337,3 +1337,18 @@ Paper-Plugin (eine .jar für Paper 1.18.2 bis 26.3): Plan, Anker je Plan, Aufnah
 - `tests/e2e/mod-download.e2e.mjs`
 - `tests/mod-releases.test.mjs`
 
+## 2026-11-01T17:45:30.290Z · progress
+
+**Aufgaben:** GAME-04
+
+Paper-Plugin 0.1.0 auf #/mod: eine .jar für Minecraft 1.18.2, 1.20.6, 1.21.4, 1.21.11 und 26.3 (Feld minecraftVersions), Serveranleitung auf der Seite.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-04 | 🚧 In Arbeit | 3/4 | Abnahme auf Philipps eigenem Paper-Server (GAME-04-S04). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `downloads/mod/bauplaner-bridge-paper-0.1.0.jar`
+

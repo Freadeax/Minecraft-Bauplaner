@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T17:45:29.973Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T17:45:30.290Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -129,7 +129,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | ⏳ Offen | 0/2 | GAME-02 | ausstehend | ausstehend |
 | [WORLD-IMPORT-01](#world-import-01) | Bereichsweiser Weltimport und Terrainprüfung | 🧩 Implementiert · Abnahme offen | 2/2 | PROFILE-01, PERF-02, FORMAT-01 | ausstehend | ausstehend |
 | [BACKUP-02](#backup-02) | Sicherungserinnerung und Abschnittsrevisionen | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-01, BUILD-01 | ausstehend | ausstehend |
-| [GAME-04](#game-04) | Paper-Plugin der Bauplaner-Brücke (serverseitig, mehrere Minecraft-Versionen) | 🚧 In Arbeit | 2/4 | GAME-02 | ausstehend | ausstehend |
+| [GAME-04](#game-04) | Paper-Plugin der Bauplaner-Brücke (serverseitig, mehrere Minecraft-Versionen) | 🚧 In Arbeit | 3/4 | GAME-02 | ausstehend | ausstehend |
 | [GAME-05](#game-05) | NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik | 🚧 In Arbeit | 0/4 | GAME-02 | ausstehend | ausstehend |
 | [LIB-04](#lib-04) | Gebäudebibliothek v3: Inhalte in alle Richtungen | 🧩 Implementiert · Abnahme offen | 4/4 | LIB-01 | ausstehend | ausstehend |
 
@@ -1188,16 +1188,16 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-04
 
-**Paper-Plugin der Bauplaner-Brücke (serverseitig, mehrere Minecraft-Versionen)** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread „Bauplaner-Anbindung für Paper bauen“) · Aktualisiert: 2026-11-01T17:45:29.973Z
+**Paper-Plugin der Bauplaner-Brücke (serverseitig, mehrere Minecraft-Versionen)** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread „Bauplaner-Anbindung für Paper bauen“) · Aktualisiert: 2026-11-01T17:45:30.290Z
 
 - [x] GAME-04-S01: Paper-Plugin: Plan laden, Anker je Plan (für alle Spieler), Aufnahme der ganzen Serverwelt mit Nachladen vorhandener Chunks ohne Geländeerzeugung, Rechte, Konsole.
 - [x] GAME-04-S02: Auf echten Paper-Servern 1.18.2, 1.20.6, 1.21.4, 1.21.11 und 26.3 automatisch geprüft (scripts/test_bridge_paper.sh).
-- [ ] GAME-04-S03: Jar auf der Download-Seite #/mod für alle geprüften Versionen anbieten.
+- [x] GAME-04-S03: Jar auf der Download-Seite #/mod für alle geprüften Versionen anbieten.
 - [ ] GAME-04-S04: Abnahme auf Philipps eigenem Paper-Server.
 
 **Abnahme:** Keine Weltänderung und keine Geländeerzeugung; dieselbe Aufnahmedatei wie die Fabric-Mod, vom Website-Vergleich geprüft; eine .jar für alle geprüften Versionen.
 
-**Nächste Aktion:** Jar auf #/mod anbieten, dann Abnahme auf Philipps Paper-Server.
+**Nächste Aktion:** Abnahme auf Philipps eigenem Paper-Server (GAME-04-S04).
 
 **Prüfstand:** Automatischer Servertest in fünf Paper-Versionen bestanden; Abnahme auf Philipps Server offen.
 

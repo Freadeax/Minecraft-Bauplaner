@@ -14,6 +14,26 @@
       "releasedAt": "2026-11-01",
       "sourceCommit": "ac273d91b5153322fee52534850b3e64723e30fa",
       "tested": "Im echten Minecraft-26.3-Client automatisch geprüft (Plan laden, Anker, Aufnahme, Website-Vergleich), auch zusammen mit einem Modpack aus 21 Mods (Sodium, Iris, Distant Horizons, REI, Xaero, Jade, Voice Chat …). Auf einem Mehrspieler-Server noch nicht abgenommen."
+    },
+    {
+      "file": "bauplaner-bridge-paper-0.1.0.jar",
+      "modVersion": "0.1.0",
+      "loader": "paper",
+      "minecraft": "26.3",
+      "loaderMin": "1.18",
+      "minecraftVersions": [
+        "1.18.2",
+        "1.20.6",
+        "1.21.4",
+        "1.21.11",
+        "26.3"
+      ],
+      "java": "17",
+      "bytes": 49634,
+      "sha256": "4fe3260447bed1d27ceee110e1c670789140465b067a15f9387c05c7a981578f",
+      "releasedAt": "2026-11-01",
+      "sourceCommit": "b24362554f468ef35200d1c3dcdef9a001c1a270",
+      "tested": "Auf echten Paper-Servern 1.18.2, 1.20.6, 1.21.4, 1.21.11 und 26.3 automatisch geprüft: Website-Plan mit einem falschen und einem fehlenden Block, Aufnahme per Befehl nach Serverneustart (Chunks vom Plugin nachgeladen), Website-Vergleich findet genau diese zwei Abweichungen; nie erzeugtes Gelände bleibt unerzeugt. Auf Philipps eigenem Server noch nicht abgenommen."
     }
   ]
 }

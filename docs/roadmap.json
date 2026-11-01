@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T17:45:29.973Z",
+  "updatedAt": "2026-11-01T17:45:30.290Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -3099,7 +3099,7 @@
         {
           "id": "GAME-04-S03",
           "title": "Jar auf der Download-Seite #/mod für alle geprüften Versionen anbieten.",
-          "done": false
+          "done": true
         },
         {
           "id": "GAME-04-S04",
@@ -3110,7 +3110,7 @@
       "acceptance": [
         "Keine Weltänderung und keine Geländeerzeugung; dieselbe Aufnahmedatei wie die Fabric-Mod, vom Website-Vergleich geprüft; eine .jar für alle geprüften Versionen."
       ],
-      "next": "Jar auf #/mod anbieten, dann Abnahme auf Philipps Paper-Server.",
+      "next": "Abnahme auf Philipps eigenem Paper-Server (GAME-04-S04).",
       "blockers": [],
       "evidence": [
         {
@@ -3126,7 +3126,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T17:45:29.973Z"
+      "updatedAt": "2026-11-01T17:45:30.290Z"
     },
     {
       "id": "GAME-05",
@@ -5612,6 +5612,27 @@
           "done": 0,
           "total": 1,
           "next": "Nach TEAM-02 spezifizieren."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T17:45:30.290Z",
+      "kind": "progress",
+      "items": [
+        "GAME-04"
+      ],
+      "summary": "Paper-Plugin 0.1.0 auf #/mod: eine .jar für Minecraft 1.18.2, 1.20.6, 1.21.4, 1.21.11 und 26.3 (Feld minecraftVersions), Serveranleitung auf der Seite.",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "downloads/mod/bauplaner-bridge-paper-0.1.0.jar"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-04",
+          "status": "in_progress",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme auf Philipps eigenem Paper-Server (GAME-04-S04)."
         }
       ]
     }
