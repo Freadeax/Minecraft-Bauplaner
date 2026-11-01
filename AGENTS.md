@@ -2,6 +2,10 @@
 
 Geltung: gesamtes Repository. Explizite aktuelle Nutzeraufträge und übergeordnete Systemregeln haben Vorrang. Spezifischere Unterverzeichnisregeln gelten zusätzlich, soweit sie nicht widersprechen.
 
+Codex-Einstieg, reproduzierbares Setup und Werkzeuggrenzen: [CODEX_SETUP](docs/project/CODEX_SETUP.md). `npm run setup:codex` richtet den lokalen Checkout ein; eine veröffentlichte Codex-Cloud-Umgebung ist ein gesonderter nachzuweisender Zustand. Kein extern installiertes Playwright voraussetzen; Browserabhängigkeit und Chromiuminstallation sind im Projekt beschrieben.
+
+Aktuell geprüft am 01.11.2026: GitHub CLI ist authentifiziert, regulärer Git-Transport verfügbar; Remote enthält ausschließlich main. Die älteren Hinweise auf wartende Branchlöschung beschreiben frühere Umgebungen. Pages-API bestätigt main / Repositorywurzel. Keine erneute Quellenmigration oder Branchbereinigung nötig.
+
 ## Vor Arbeitsbeginn
 
 1. README, diese Datei, docs/STATUS.md, docs/ROADMAP.md, docs/COMMUNICATION.md und relevante Architekturentscheidungen lesen.

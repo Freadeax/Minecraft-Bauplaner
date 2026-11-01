@@ -84,6 +84,17 @@ export function BuildTab({ session }: { session: ProjectSession }) {
     if (next) setSelectedId(next.id);
   };
 
+  // Keep the recording controller mounted while either computation is pending.
+  const gamePanel = <GameCheckPanel key="game-check" project={project} canSave={session.saveState === 'saved'} onStored={async base => {
+      const current = latestSession.current;
+      if (current.project === base && current.saveState === 'saved') await current.reload();
+      else setMessage('Die Aufnahme wurde gespeichert. Zwischenzeitliche lokale Änderungen bleiben sichtbar; lade den gespeicherten Stand neu, bevor du weiter speicherst.');
+    }} scan={scan} check={game} targetError={targetError || (basisMismatch ? `Die Aufnahme gehört zu Revision ${scanRevision!.number}. Wähle diese Grundlage, um den Abgleich zu sehen.` : '')}
+      revisionNumber={scanRevision?.number ?? null} alignment={alignment} manual={!!scan && !scanRevision && !targetError} onAlignment={setManualAlign}
+      onLoad={loadScan} onClear={() => setScan(null)} onSelect={setSelectedId}
+      confirmable={game && guide ? confirmedUnticked(guide, game, status) : []} contradicted={game && guide ? tickedButNotBuilt(guide, game, status) : []}
+      onTickConfirmed={() => game && guide && run(tickConfirmed(guide, game, status))} />;
+
   const basisControl = <label className="build-basis">Grundlage
     <select value={basis} onChange={event => { setBasis(event.target.value); setSelectedId(null); }}>
       <option value="working">Aktueller Arbeitsstand</option>
@@ -92,6 +103,7 @@ export function BuildTab({ session }: { session: ProjectSession }) {
   </label>;
   if (!guide || !progress) return <section className="build" aria-label="Bauanleitung">
     {basisControl}
+    {gamePanel}
     <div className={`notice${computationState === 'error' ? ' warning' : ''}`} role={computationState === 'error' ? 'alert' : 'status'}>
       <strong>{computationState === 'pending' ? 'Bauanleitung wird berechnet' : computationState === 'cancelled' ? 'Berechnung abgebrochen' : 'Bauanleitung nicht verfügbar'}</strong>
       {computationError && <p>{computationError}</p>}
@@ -100,7 +112,7 @@ export function BuildTab({ session }: { session: ProjectSession }) {
         : <button onClick={historical.retry}>Revision erneut berechnen</button>)}
     </div>
   </section>;
-  if (!guide.steps.length) return <section className="build" aria-label="Bauanleitung">{basisControl}<div className="notice">Noch nichts zu bauen. Füge im <a href={`#/projekt/${project.id}/editor`}>Editor</a> Bauteile ein.</div></section>;
+  if (!guide.steps.length) return <section className="build" aria-label="Bauanleitung">{basisControl}{gamePanel}<div className="notice">Noch nichts zu bauen. Füge im <a href={`#/projekt/${project.id}/editor`}>Editor</a> Bauteile ein.</div></section>;
 
   const total = guide.steps.length, pct = guide.totals.blocks ? Math.round(progress.blocksDone / guide.totals.blocks * 100) : 0;
   const byLayer = new Map<number, GuideStep[]>();
@@ -130,15 +142,7 @@ export function BuildTab({ session }: { session: ProjectSession }) {
     {progress.orphaned.length > 0 && <div className="notice build-wide" role="status">
       {progress.orphaned.length} gespeicherte Haken gehören zu Schritten, die es nicht mehr gibt (Bauteil entfernt oder Schicht leer).
       <button onClick={() => run(untickSteps(progress.orphaned, 'Verwaiste Haken entfernt'))}>Verwaiste Haken entfernen</button></div>}
-    <GameCheckPanel project={project} canSave={session.saveState === 'saved'} onStored={async base => {
-      const current = latestSession.current;
-      if (current.project === base && current.saveState === 'saved') await current.reload();
-      else setMessage('Die Aufnahme wurde gespeichert. Zwischenzeitliche lokale Änderungen bleiben sichtbar; lade den gespeicherten Stand neu, bevor du weiter speicherst.');
-    }} scan={scan} check={game} targetError={targetError || (basisMismatch ? `Die Aufnahme gehört zu Revision ${scanRevision!.number}. Wähle diese Grundlage, um den Abgleich zu sehen.` : '')}
-      revisionNumber={scanRevision?.number ?? null} alignment={alignment} manual={!!scan && !scanRevision && !targetError} onAlignment={setManualAlign}
-      onLoad={loadScan} onClear={() => setScan(null)} onSelect={setSelectedId}
-      confirmable={game ? confirmedUnticked(guide, game, status) : []} contradicted={game ? tickedButNotBuilt(guide, game, status) : []}
-      onTickConfirmed={() => game && run(tickConfirmed(guide, game, status))} />
+    {gamePanel}
     {message && <div className="notice warning build-wide" role="alert">{message}<button onClick={() => setMessage('')}>OK</button></div>}
 
     <aside className="build-list" aria-label="Schritte">

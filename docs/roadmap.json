@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T10:22:39.771Z",
+  "updatedAt": "2026-11-01T11:18:47.672Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-01",
@@ -510,13 +510,18 @@
           "id": "PLAN-01-S03",
           "title": "Pflichtablauf in AGENTS und Publisher integrieren; Main-/Pages-Nachweis prüfen.",
           "done": true
+        },
+        {
+          "id": "PLAN-01-S04",
+          "title": "Codex-Setup, lokale Hooks, reproduzierbare Browserabhängigkeit und Werkzeuggrenzen einrichten und prüfen.",
+          "done": true
         }
       ],
       "acceptance": [
         "Jede Aufgabe zeigt Teilschritte, Abhängigkeiten, nächste Aktion und Nachweise.",
         "Quelländerungen benötigen eine Aufgabenaktualisierung; Artefaktcommits sind separat nachweisbar."
       ],
-      "next": "Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen.",
+      "next": "Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen.",
       "blockers": [],
       "evidence": [
         {
@@ -526,17 +531,21 @@
         {
           "path": "docs/TESTING.md",
           "note": "Aktuelle Blockabnahme mit Infrastrukturgrenzen."
+        },
+        {
+          "path": "docs/project/CODEX_SETUP.md",
+          "note": "Lokaler Clone, Setupbefehle und getrennte Projekt-/Cloud-/Pageszustände nachgewiesen."
         }
       ],
       "verification": {
         "state": "passed",
-        "note": "Roadmapschema, Generierung, Abhängigkeiten und Dateizuordnung mit 5 Regressionen geprüft. Main-/Pages-Nachweis nach Integration. Vorherige Mainintegration und Pages in dieser Fortsetzung bestätigt: Artefakt 18f70b7, Livesource ccf4fa7 und zwölf Dateihashes identisch."
+        "note": "Lokales Setup, aktive Roadmap-Hooks und bestehende Roadmapregressionen geprüft; Chromium verfügbar, 54/54 E2E bestanden. Keine Codex-Cloud-Umgebung erstellt; fehlende Verwaltungsfunktion konkret dokumentiert. Main-/Pages-Nachweis dieses Blocks folgt getrennt im Abschluss."
       },
       "delivery": {
         "main": "ccf4fa71c033c2f9415528192a04faed36730660",
         "pagesSource": "ccf4fa71c033c2f9415528192a04faed36730660"
       },
-      "updatedAt": "2026-11-01T09:33:55.354Z"
+      "updatedAt": "2026-11-01T11:18:47.672Z"
     },
     {
       "id": "ARCH-01",
@@ -634,12 +643,17 @@
           "id": "DOC-01-S02",
           "title": "Aktuellen Status ersetzen; historische Aussagen ausdrücklich archivieren.",
           "done": true
+        },
+        {
+          "id": "DOC-01-S03",
+          "title": "Veralteten Webstart-, Browser- und Branchstatus durch aktuelle Codex-Einrichtung und tatsächliche Prüfungen ersetzen.",
+          "done": true
         }
       ],
       "acceptance": [
         "Keine implementierte Kernfunktion erscheint gleichzeitig als unbegonnen."
       ],
-      "next": "Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen.",
+      "next": "Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen.",
       "blockers": [],
       "evidence": [
         {
@@ -653,20 +667,20 @@
       ],
       "verification": {
         "state": "passed",
-        "note": "Dokumentationsprüfung und generierte Ansichten im Gesamtcheck bestanden. Vorherige Mainintegration und Pages in dieser Fortsetzung bestätigt: Artefakt 18f70b7, Livesource ccf4fa7 und zwölf Dateihashes identisch."
+        "note": "Aktuelle Dokumentation mit lokaler Einrichtung, Browsernachweisen und Werkzeuggrenzen abgeglichen; alte historische Einträge erhalten. Generierte Ansichten werden geprüft; aktuelle Main-/Pages-SHAs nach Integration im Abschluss."
       },
       "delivery": {
         "main": "ccf4fa71c033c2f9415528192a04faed36730660",
         "pagesSource": "ccf4fa71c033c2f9415528192a04faed36730660"
       },
-      "updatedAt": "2026-11-01T09:33:55.354Z"
+      "updatedAt": "2026-11-01T11:18:47.672Z"
     },
     {
       "id": "STORE-02",
       "title": "Revisionsschutz bei konkurrierenden Assetänderungen",
       "phase": "P1",
       "priority": "P0",
-      "status": "implemented",
+      "status": "verified",
       "owner": "Codex",
       "dependencies": [
         "ARCH-01"
@@ -692,13 +706,13 @@
         {
           "id": "STORE-02-S03",
           "title": "Zwei konkurrierende Metadatenänderungen und atomare Batches prüfen.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Kein stilles Überschreiben; bestehende Datensätze kontrolliert migrieren."
       ],
-      "next": "Echte IndexedDB-v1→v2-Migration und Zwei-Tab-UI-Regressionsfälle bei verfügbarer Chromium-Laufzeit ausführen; danach STORE-02 vollständig abnehmen. Folgender Entwicklungsblock PERF-01.",
+      "next": "CAS-/Migrationsregressionen bei Speicheränderungen fortführen; Safari/iPhone gesondert in QA-02.",
       "blockers": [],
       "evidence": [
         {
@@ -719,25 +733,29 @@
         },
         {
           "path": "tests/e2e/asset-editing.e2e.mjs",
-          "note": "Tatsächliche Ausführung scheitert an fehlendem Chromium; Entwurfs-/Broadcastregression für die Browserabnahme vorbereitet."
+          "note": "Tatsächlich unter Windows/Chromium bestanden: alter Entwurf bleibt nach abgewiesenem Speichern erhalten; ausdrückliches Neuladen übernimmt gespeicherte Tags."
+        },
+        {
+          "path": "tests/e2e/asset-concurrency.e2e.mjs",
+          "note": "Echte erfolgreiche und abgebrochene IndexedDB-Migration mit Originalbytes und atomarem CAS bestanden."
         }
       ],
       "verification": {
         "state": "passed",
-        "note": "364 Node-Tests und vollständiger Kern-/Typ-/Build-/Modul-/Roadmap-/Dokumentationscheck bestanden. Sieben CAS-, drei Restore- und eine konkurrierende Seedregression neu. Echte IndexedDB-Migration und UI-Zwei-Tab-Abnahme weiterhin offen: Chromiumstart nicht ausführbar."
+        "note": "Node-CAS-/Restoretests und drei echte Chromiumfälle bestanden: v1→v2 samt Originalerhalt/Altverbindung/Zwei-Verbindungs-CAS, fehlerhaftes Upgrade mit Rollback und UI-Zwei-Tab-Entwurfserhalt nach Broadcast. Alle enthalten in der vollständigen 54/54-E2E-Abnahme."
       },
       "delivery": {
         "main": "8f2278095ff752282bf2b34ee5c288c95deac013",
         "pagesSource": "8f2278095ff752282bf2b34ee5c288c95deac013"
       },
-      "updatedAt": "2026-11-01T10:15:04.390Z"
+      "updatedAt": "2026-11-01T11:18:47.672Z"
     },
     {
       "id": "QA-01",
       "title": "Aktuelle Browserregression für alle Hauptabläufe",
       "phase": "P1",
       "priority": "P0",
-      "status": "blocked",
+      "status": "verified",
       "owner": "Codex",
       "dependencies": [
         "ARCH-01"
@@ -750,36 +768,38 @@
         {
           "id": "QA-01-S01",
           "title": "Chromium-Laufzeit bereitstellen bzw. Verfügbarkeit prüfen.",
-          "done": false
+          "done": true
         },
         {
           "id": "QA-01-S02",
           "title": "Komplette aktuelle Desktop-/schmale E2E-Suite ausführen und Fehler beheben.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Keine nur syntaktisch geprüften E2E als bestanden zählen."
       ],
-      "next": "Chromium-Laufzeit bereitstellen bzw. Verfügbarkeit prüfen.",
-      "blockers": [
-        "Chromium fehlt; aktueller Installationsversuch liefert ungültige/leere Archive. Isolierter Browserstart und tatsächlicher E2E-Start belegen die Infrastrukturgrenze."
-      ],
+      "next": "Suite nach relevanten Änderungen wiederholen; echte Geräte in QA-02 und große Worker-Browserlatenz in PERF-01 prüfen.",
+      "blockers": [],
       "evidence": [
         {
           "path": "docs/TESTING.md",
           "note": "Abgegrenzter tatsächlicher Desktop-Smoke nach PERF-Deployment, ausdrücklich kein vollständiger Browserregressionsnachweis."
+        },
+        {
+          "path": "docs/project/CODEX_SETUP.md",
+          "note": "Exakte Entwicklungsabhängigkeit, getrennte Chromiuminstallation und ausgeführtes Windows-Setup."
         }
       ],
       "verification": {
-        "state": "pending",
-        "note": "Die vollständige aktuelle lokale Playwright-Suite ist vor Produktstart am fehlenden Chromium-Executable blockiert. Ein begrenzter direkter Desktop-Smoke der veröffentlichten PERF-01-Oberfläche im Cloud-Chrome ist tatsächlich bestanden; automatische Mobil-/Fehler-/Abbruch- und DB-Regressionsfälle bleiben offen."
+        "state": "passed",
+        "note": "54/54 aktuelle E2E unter Windows/Playwright 1.64.1 bestanden; reale Chromium-Worker und IndexedDB, 1400/390-px-Szenarien sowie Software-WebGL. Zehn erste Ausfälle analysiert: Testannahmen korrigiert und echter Aufnahmecontroller-Unmount behoben. Keine echte iPhone-/Safari-/Hardware-GPU-Abnahme."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T10:22:39.771Z"
+      "updatedAt": "2026-11-01T11:18:47.672Z"
     },
     {
       "id": "QA-02",
@@ -996,8 +1016,8 @@
       "title": "Alte vollständig integrierte Branches bereinigen",
       "phase": "P1",
       "priority": "P1",
-      "status": "blocked",
-      "owner": "nicht zugewiesen",
+      "status": "verified",
+      "owner": "Bestand / Codex-Prüfung",
       "dependencies": [
         "OPS-01"
       ],
@@ -1009,31 +1029,34 @@
         {
           "id": "OPS-03-S01",
           "title": "Remote-Branches und vollständige Integration erneut nachweisen.",
-          "done": false
+          "done": true
         },
         {
           "id": "OPS-03-S02",
           "title": "Bei verfügbarer Löschfunktion integrierte Branches entfernen.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Keine unintegrierte Arbeit und keine benötigte Pages-Quelle löschen."
       ],
-      "next": "Remote-Branches und vollständige Integration erneut nachweisen.",
-      "blockers": [
-        "GitHub-Konnektor hat im beobachteten Werkzeugsatz keine Branchlöschfunktion."
+      "next": "Bei künftigem temporärem Branch erneut vollständige Integration prüfen; aktuell keine Bereinigung nötig.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "docs/project/CODEX_SETUP.md",
+          "note": "Tatsächlicher Clone, GitHub-Berechtigungen, Pagesquelle und Werkzeuggrenzen geprüft."
+        }
       ],
-      "evidence": [],
       "verification": {
-        "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "state": "passed",
+        "note": "Authentifizierte GitHub-Refabfrage am 01.11.2026 liefert ausschließlich refs/heads/main. Keine Branchlöschung durch diesen Auftrag; historischer Fähigkeitsblocker überholt."
       },
       "delivery": {
-        "main": null,
+        "main": "9f1700eb17299a83a55929d59ad5998526b2143f",
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-01T11:18:47.672Z"
     },
     {
       "id": "LICENSE-01",
@@ -1516,7 +1539,7 @@
       "acceptance": [
         "Keine Übernahme eines Ergebnisses für eine veraltete Revision."
       ],
-      "next": "Vollständige Browser-/Mobil-Latenz und Abbruch/Retry/historische Revisionen mit verfügbarer Chromium-Laufzeit messen; danach PERF-01 vollständig abnehmen.",
+      "next": "Große Projektberechnung im Browser mit Modell, Hardware und UI-Reaktionszeit vor/nachher messen (S03); Funktionsregressionen für Abbruch/Retry/historische Revisionen sind bestanden.",
       "blockers": [],
       "evidence": [
         {
@@ -1525,7 +1548,7 @@
         },
         {
           "path": "tests/e2e/project-computation.e2e.mjs",
-          "note": "Vier reale Browserfälle vorbereitet, Ausführung am Chromiumstart blockiert."
+          "note": "Alle vier tatsächlichen Chromiumfälle am 01.11.2026 lokal bestanden; Funktionsnachweis ohne große Modelllatenzmessung."
         },
         {
           "path": "docs/architecture/PROJECT_COMPUTATION.md",
@@ -1534,13 +1557,13 @@
       ],
       "verification": {
         "state": "passed",
-        "note": "377 Node-Tests sowie strenge Modul-/Typ-/Build-/Roadmap-/Dokumentationsprüfung bestanden. Echter Nodeworker mit semantisch gleichem Ergebnis und bedienter Ereignisschleife; vier Browserfälle vor Produktstart mangels Chromium blockiert, Browser-/Mobilmessung weiterhin offen. Zusätzlich direkter Cloud-Chrome-Desktop-Smoke nach Veröffentlichung bestanden: 350 Blöcke, zwei Y-Änderungen, Bauplan Y2, konsistente Material-/Baustellenwerte. Vollständige automatische/Hardware-Abnahme bleibt offen."
+        "note": "Vier echte lokale Chromium-Workerfälle bei 1400/390 px bestanden: Abbruch/Retry, schnelle Revisionen ohne alte Geometrie, sichtbarer Workerfehler und historische Grundlage. Kern-/Node-Workerregressionen bestehen weiterhin. Große Browser-/Hardware-Latenzmessung bleibt offen; vorhandene Nodewerte sind keine Browsergarantie."
       },
       "delivery": {
         "main": "7dffd922f46876c70700afc0429afb969e5478aa",
         "pagesSource": "7dffd922f46876c70700afc0429afb969e5478aa"
       },
-      "updatedAt": "2026-11-01T10:22:39.771Z"
+      "updatedAt": "2026-11-01T11:18:47.672Z"
     },
     {
       "id": "PERF-02",
@@ -2224,17 +2247,25 @@
         {
           "path": "tests/scan-persistence.test.mjs",
           "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        },
+        {
+          "path": "tests/e2e/game-check.e2e.mjs",
+          "note": "Reale Aufnahme gegen eingefrorene Revision, Abweichungszelle und ausdrücklich bestätigte Schritte."
+        },
+        {
+          "path": "tests/e2e/scan-persistence.e2e.mjs",
+          "note": "Original und Ausrichtung über Speichern/Neuladen hinweg erhalten; Download bytes-identisch."
         }
       ],
       "verification": {
         "state": "passed",
-        "note": "Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis."
+        "note": "Aufnahmecontroller bleibt beim Neuberechnen und Wechsel auf historische Grundlage erhalten. Tatsächliche Browserregressionen für Soll/Ist-Import, ausdrückliches Abhaken, Originalspeicherung, Ausrichtung, Reload und bytegleichen Download in 54/54-E2E bestanden; keine Mod-/Spielabnahme."
       },
       "delivery": {
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-01T11:18:47.672Z"
     },
     {
       "id": "GAME-02",
@@ -3444,6 +3475,291 @@
           "done": 0,
           "total": 2,
           "next": "Chromium-Laufzeit bereitstellen bzw. Verfügbarkeit prüfen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T11:03:14.381Z",
+      "kind": "progress",
+      "items": [
+        "PLAN-01",
+        "DOC-01"
+      ],
+      "summary": "Codex-Vorbereitung ab main 9f1700e begonnen: vorhandene Regeln und Aufgaben erhalten; Setup, Windows-Prüfbarkeit und Browserlaufzeit werden geprüft.",
+      "files": [
+        ".gitattributes",
+        "docs/COMMUNICATION.md"
+      ],
+      "snapshot": [
+        {
+          "id": "PLAN-01",
+          "status": "in_progress",
+          "done": 3,
+          "total": 3,
+          "next": "Codex-Setup und Windows-/Browserprüfbarkeit vervollständigen, lokal prüfen und getrennt von Main/Pages nachweisen."
+        },
+        {
+          "id": "DOC-01",
+          "status": "in_progress",
+          "done": 2,
+          "total": 2,
+          "next": "Codex-Setup und Windows-/Browserprüfbarkeit vervollständigen, lokal prüfen und getrennt von Main/Pages nachweisen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T11:08:10.310Z",
+      "kind": "progress",
+      "items": [
+        "PLAN-01",
+        "DOC-01",
+        "QA-01",
+        "OPS-03"
+      ],
+      "summary": "Setup eingerichtet, Playwright/Chromium lokal verfügbar, Windows-Pfade und UTF-8 geprüft. Remote enthält nur main; keine Branchlöschung nötig. Vollständige Browserabnahme läuft, erste Testfehler werden getrennt untersucht.",
+      "files": [
+        ".gitattributes",
+        "AGENTS.md",
+        "CONTRIBUTING.md",
+        "README.md",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/operations/GITHUB_CONNECTOR_RUNBOOK.md",
+        "docs/project/CODEX_SETUP.md",
+        "package-lock.json",
+        "package.json",
+        "scripts/bridge_crosscheck.mjs",
+        "scripts/python.mjs",
+        "scripts/setup_codex.mjs",
+        "tests/e2e/export.e2e.mjs",
+        "tests/e2e/litematic.e2e.mjs",
+        "tests/litematic.test.mjs",
+        "tests/main-pages.test.mjs",
+        "tests/python-runner.test.mjs",
+        "tests/schem-export.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PLAN-01",
+          "status": "in_progress",
+          "done": 3,
+          "total": 3,
+          "next": "Codex-Setup und Windows-/Browserprüfbarkeit vervollständigen, lokal prüfen und getrennt von Main/Pages nachweisen."
+        },
+        {
+          "id": "DOC-01",
+          "status": "in_progress",
+          "done": 2,
+          "total": 2,
+          "next": "Codex-Setup und Windows-/Browserprüfbarkeit vervollständigen, lokal prüfen und getrennt von Main/Pages nachweisen."
+        },
+        {
+          "id": "QA-01",
+          "status": "in_progress",
+          "done": 1,
+          "total": 2,
+          "next": "Vollständige lokale Chromium-Suite auswerten; erstmals ausgeführte Selektor-/Wartefehler korrigieren und Produktfehler getrennt untersuchen."
+        },
+        {
+          "id": "OPS-03",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Bei künftigem temporärem Branch erneut vollständige Integration prüfen; aktuell keine Bereinigung nötig."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T11:17:28.576Z",
+      "kind": "progress",
+      "items": [
+        "PLAN-01",
+        "DOC-01",
+        "QA-01",
+        "OPS-03",
+        "STORE-02",
+        "PERF-01",
+        "GAME-01"
+      ],
+      "summary": "Codex-Setup und lokale Hooks eingerichtet; Windows-Prüfbarkeit und exakt fixierte Browserabhängigkeit ergänzt. 54/54 echte E2E bestanden; Aufnahmecontroller-Unmount behoben, Testannahmen korrigiert. STORE-02 und QA-01 abgenommen; große Worker-Latenz und echte Geräte offen. Main/Pages folgen getrennt.",
+      "files": [
+        ".gitattributes",
+        ".github/pull_request_template.md",
+        "AGENTS.md",
+        "CONTRIBUTING.md",
+        "README.md",
+        "apps/web/src/views/project/BuildTab.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/ASSET_CONCURRENCY.md",
+        "docs/architecture/DECISIONS.md",
+        "docs/architecture/PROJECT_COMPUTATION.md",
+        "docs/operations/GITHUB_CONNECTOR_RUNBOOK.md",
+        "docs/project/CODEX_SETUP.md",
+        "package-lock.json",
+        "package.json",
+        "scripts/bridge_crosscheck.mjs",
+        "scripts/python.mjs",
+        "scripts/setup_codex.mjs",
+        "tests/e2e/asset-editing.e2e.mjs",
+        "tests/e2e/build-themes.e2e.mjs",
+        "tests/e2e/export.e2e.mjs",
+        "tests/e2e/game-check.e2e.mjs",
+        "tests/e2e/litematic.e2e.mjs",
+        "tests/e2e/project-computation.e2e.mjs",
+        "tests/e2e/recipes.e2e.mjs",
+        "tests/litematic.test.mjs",
+        "tests/main-pages.test.mjs",
+        "tests/python-runner.test.mjs",
+        "tests/schem-export.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PLAN-01",
+          "status": "verified",
+          "done": 4,
+          "total": 4,
+          "next": "Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen."
+        },
+        {
+          "id": "DOC-01",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen."
+        },
+        {
+          "id": "QA-01",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Suite nach relevanten Änderungen wiederholen; echte Geräte in QA-02 und große Worker-Browserlatenz in PERF-01 prüfen."
+        },
+        {
+          "id": "OPS-03",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Bei künftigem temporärem Branch erneut vollständige Integration prüfen; aktuell keine Bereinigung nötig."
+        },
+        {
+          "id": "STORE-02",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "CAS-/Migrationsregressionen bei Speicheränderungen fortführen; Safari/iPhone gesondert in QA-02."
+        },
+        {
+          "id": "PERF-01",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Große Projektberechnung im Browser mit Modell, Hardware und UI-Reaktionszeit vor/nachher messen (S03); Funktionsregressionen für Abbruch/Retry/historische Revisionen sind bestanden."
+        },
+        {
+          "id": "GAME-01",
+          "status": "verified",
+          "done": 1,
+          "total": 1,
+          "next": "Regressionen bei Änderungen weiterführen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T11:18:47.672Z",
+      "kind": "progress",
+      "items": [
+        "PLAN-01",
+        "DOC-01",
+        "QA-01",
+        "OPS-03",
+        "STORE-02",
+        "PERF-01",
+        "GAME-01"
+      ],
+      "summary": "Abschluss: 379/379 Node-Tests und 54/54 reale Chromium-E2E bestanden. Setup, Hooks, Aufgabenführung und Dokumentation geprüft; tatsächlichen lokalen/Cloud-/Pageszustand getrennt festgehalten. Aufnahmeverlust behoben. Dateibearbeitung beendet; Main-/Live-Nachweis folgt ohne selbstreferenzielle Commit-Schleife.",
+      "files": [
+        ".gitattributes",
+        ".github/pull_request_template.md",
+        "AGENTS.md",
+        "CONTRIBUTING.md",
+        "README.md",
+        "apps/web/src/views/project/BuildTab.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/ASSET_CONCURRENCY.md",
+        "docs/architecture/DECISIONS.md",
+        "docs/architecture/PROJECT_COMPUTATION.md",
+        "docs/operations/GITHUB_CONNECTOR_RUNBOOK.md",
+        "docs/project/CODEX_SETUP.md",
+        "package-lock.json",
+        "package.json",
+        "scripts/bridge_crosscheck.mjs",
+        "scripts/python.mjs",
+        "scripts/setup_codex.mjs",
+        "tests/e2e/asset-editing.e2e.mjs",
+        "tests/e2e/build-themes.e2e.mjs",
+        "tests/e2e/export.e2e.mjs",
+        "tests/e2e/game-check.e2e.mjs",
+        "tests/e2e/litematic.e2e.mjs",
+        "tests/e2e/project-computation.e2e.mjs",
+        "tests/e2e/recipes.e2e.mjs",
+        "tests/litematic.test.mjs",
+        "tests/main-pages.test.mjs",
+        "tests/python-runner.test.mjs",
+        "tests/schem-export.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PLAN-01",
+          "status": "verified",
+          "done": 4,
+          "total": 4,
+          "next": "Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen."
+        },
+        {
+          "id": "DOC-01",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen."
+        },
+        {
+          "id": "QA-01",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Suite nach relevanten Änderungen wiederholen; echte Geräte in QA-02 und große Worker-Browserlatenz in PERF-01 prüfen."
+        },
+        {
+          "id": "OPS-03",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Bei künftigem temporärem Branch erneut vollständige Integration prüfen; aktuell keine Bereinigung nötig."
+        },
+        {
+          "id": "STORE-02",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "CAS-/Migrationsregressionen bei Speicheränderungen fortführen; Safari/iPhone gesondert in QA-02."
+        },
+        {
+          "id": "PERF-01",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Große Projektberechnung im Browser mit Modell, Hardware und UI-Reaktionszeit vor/nachher messen (S03); Funktionsregressionen für Abbruch/Retry/historische Revisionen sind bestanden."
+        },
+        {
+          "id": "GAME-01",
+          "status": "verified",
+          "done": 1,
+          "total": 1,
+          "next": "Regressionen bei Änderungen weiterführen."
         }
       ]
     }

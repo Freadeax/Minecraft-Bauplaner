@@ -28,7 +28,8 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
   test(`worker: cancel, retry and rapid edits retain only newest geometry (${viewport.width}px)`, async () => {
     const context = await browser.newContext({ viewport, hasTouch: viewport.width < 600 });
     const page = await context.newPage();
-    const workers = [], errors = [];
+    const workers = [], starts = [], errors = [];
+    page.on('request', request => { if (/project\.worker-/.test(request.url())) starts.push(request.url()); });
     page.on('worker', worker => { if (/project\.worker-/.test(worker.url())) workers.push(worker.url()); });
     page.on('pageerror', error => errors.push(error.message));
     await context.route('**/project.worker-*.js', async route => {
@@ -55,7 +56,9 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
       await page.getByRole('link', { name: 'Material', exact: true }).click();
       await page.getByRole('region', { name: 'Materialbedarf' }).waitFor();
       await page.locator('.materials-stats').waitFor();
-      assert.ok(workers.length >= 3, `actual project workers observed: ${workers.length}`);
+      // A worker terminated before its script loads has a request but emits no initialized-worker event.
+      assert.ok(starts.length >= 3, `actual worker script starts including cancellation: ${starts.length}`);
+      assert.ok(workers.length >= 2, `initialized workers for retry and final geometry: ${workers.length}`);
       assert.deepEqual(errors, []);
     } finally { await context.close(); }
   });
@@ -103,10 +106,12 @@ test('historical build basis retains frozen geometry after current project is mo
     await page.getByRole('link', { name: 'Bauen', exact: true }).click();
     await page.locator('.step-item', { hasText: 'Turm West' }).first().click();
     assert.match(await page.locator('.build-step h2').innerText(), /Turm West · Y 1/);
-    await page.getByLabel('Grundlage', { exact: true }).selectOption({ label: 'Revision 1 – Worker-Referenz' });
+    await page.locator('.build-basis select').selectOption({ label: 'Revision 1 – Worker-Referenz' });
+    await page.locator('.build-step').waitFor();
     await page.locator('.step-item', { hasText: 'Turm West' }).first().click();
     assert.match(await page.locator('.build-step h2').innerText(), /Turm West · Y 0/);
-    await page.getByLabel('Grundlage', { exact: true }).selectOption('working');
+    await page.locator('.build-basis select').selectOption('working');
+    await page.locator('.build-step').waitFor();
     await page.locator('.step-item', { hasText: 'Turm West' }).first().click();
     assert.match(await page.locator('.build-step h2').innerText(), /Turm West · Y 1/);
   } finally { await context.close(); }

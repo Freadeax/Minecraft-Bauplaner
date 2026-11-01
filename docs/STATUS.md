@@ -11,19 +11,25 @@ Stand: 01.11.2026. Der verbindliche Aufgabenbestand steht in [ROADMAP](ROADMAP.m
 | Viewer | Orbit, Flug, Schnitte/Layer, Picking, Touchbedienung und Softwarefallback | exakte Blockformen, echte GPU-/iPhone-Prüfung |
 | Bibliothek | 174 Gebäude, Suche/Filter, Vergleich, Merkliste, Varianten, Ensembles und Generatoren | eigene Sammlungen/Vorlagen; Redstone-Bauwerke nicht im Spiel abgenommen |
 | Bau und Materialien | Bauitems, Rohstoff-/Rezeptauflösung, Packlisten, eigene Abschnitte, Lager-/Sammelplanung und Freiraumprüfung | versionsgebundener Katalog, Kupfer-Farbvarianten und erweiterte NBT-Diffs |
-| Speicherung | IndexedDB, Projekt-Revisionsschutz, Originale, atomare Batches, Backup/Restore und Datencheck | Asset-Revisionsschutz und DB-v2-Migration implementiert, echte Browserabnahme offen; Cloud-/Gerätesynchronisierung und Safari/iPhone offen |
+| Speicherung | IndexedDB, Projekt-Revisionsschutz, Originale, atomare Batches, Backup/Restore und Datencheck | Asset-Revisionsschutz und DB-v2-Migration mit drei echten Chromiumfällen geprüft; Cloud-/Gerätesynchronisierung und Safari/iPhone offen |
 | Novemberoberfläche | fünf visuelle Themen mit Hell/Dunkel/System, Materiallabor, elf Bauwelten, 50 gezielte Glas-/Beton-/Terrakottasätze | aktuelle visuelle Abnahme; keine neuen Gebäude aus bloßem Themenzugang |
 | Spielbrücke | Aufnahmevergleich, Original/Verlauf/Ausrichtung lokal gespeichert und gesichert; Java-Kern mit Tests | Fabricadapter nicht im Spiel abgenommen; Vergleich ohne BlockEntity-Inhalte |
 | Weltkarte und Team | generischer Livekarten-/Markeradapter | Weltkartenoberfläche, konkrete Provideradapter, Teamdienst/Konten noch nicht vorhanden |
-| Hosting | Pages main / Repositorywurzel, gehashter statischer Build und Artefakt-Kindcommit | alte integrierte Branches ohne verfügbare Löschfunktion; Restoreprobe offen |
+| Hosting | Pages-API bestätigt main / Repositorywurzel, gehashter statischer Build und Artefakt-Kindcommit; Remote enthält nur main | Restoreprobe offen |
 
-## Aktueller Arbeitsblock
+## Letzter Produktblock und nächste Messung
 
-PERF-01 verbindet Projektauflösung, Bauanleitung, Material-/Schrittberichte und Baustellenplanung zu einem abbrechbaren Workerauftrag. Session und Ansichten teilen das Ergebnis; veraltete Antworten werden durch Jobtags und Eingabesnapshot-Identität abgewiesen. UI-Zustände für Rechnen, Abbruch, Fehler und Retry sind implementiert. Historische Revisionen bleiben getrennt. Acht neue Kern-/Lifecycle-Tests und echte Node-Workerübertragung prüfen diesen Umfang; aktuelle Gesamtprüfung steht in TESTING. Direkter veröffentlichter Desktop-Smoke mit Beispielprojekt, zwei schnellen Y-Änderungen und übereinstimmenden Bau-/Material-/Baustellenwerten bestanden. Automatisierte Worker-/DB-Regressionsfälle, Browserlatenz und iPhone bleiben offen. Details: [PROJECT_COMPUTATION](architecture/PROJECT_COMPUTATION.md).
+PERF-01 verbindet Projektauflösung, Bauanleitung, Material-/Schrittberichte und Baustellenplanung zu einem abbrechbaren Workerauftrag. Session und Ansichten teilen das Ergebnis; veraltete Antworten werden durch Jobtags und Eingabesnapshot-Identität abgewiesen. UI-Zustände für Rechnen, Abbruch, Fehler und Retry sind implementiert. Historische Revisionen bleiben getrennt. Acht neue Kern-/Lifecycle-Tests und echte Node-Workerübertragung prüfen diesen Umfang; aktuelle Gesamtprüfung steht in TESTING. Direkter veröffentlichter Desktop-Smoke mit Beispielprojekt, zwei schnellen Y-Änderungen und übereinstimmenden Bau-/Material-/Baustellenwerten bestanden. Automatisierte Worker-/DB-Regressionsfälle sind inzwischen lokal bestanden; große Browserlatenzmessung und echte Geräte bleiben offen. Details: [PROJECT_COMPUTATION](architecture/PROJECT_COMPUTATION.md).
 
 PERF-02 führt intern sichere numerische Zellindizes ein; öffentliche Besitzer-Maps und sämtliche Mengen/Koordinaten bleiben unverändert. Vergleich mit der bisherigen Komposition: 266.784 Zellen, sechs vollständige Resolution-Ausgaben mit identischem Hash; letzte Medianmessung 833,60 → 790,37 ms (5,2 %, Node-Szenario mit Streuung). Übertragungsformate, Chunkcache und selektive Neuberechnung sind weiterhin offen. Details: [COMPOSITION_PERFORMANCE](architecture/COMPOSITION_PERFORMANCE.md).
 
-STORE-02 ist als Quellcommit `8f22780`, Artefaktcommit `e860c84` integriert/veröffentlicht; seine echte DB-/Zwei-Tab-Abnahme bleibt offen. WORLD-02 des anderen Clients wurde bis main `2b8ea8d` übernommen: elf Bauwelten aus tatsächlichem Katalog, keine fremde Arbeit überschrieben. Vorherige Quell-/Pagesnachweise werden in dieser Fortsetzung ohne neue Veröffentlichungsschleife in der Roadmap gepflegt.
+STORE-02 ist als Quellcommit `8f22780`, Artefaktcommit `e860c84` integriert/veröffentlicht; seine echte DB-/Zwei-Tab-Abnahme ist inzwischen unter lokalem Chromium bestanden. WORLD-02 des anderen Clients wurde bis main `2b8ea8d` übernommen: elf Bauwelten aus tatsächlichem Katalog, keine fremde Arbeit überschrieben. Vorherige Quell-/Pagesnachweise werden in dieser Fortsetzung ohne neue Veröffentlichungsschleife in der Roadmap gepflegt.
+
+## Codex-Arbeitsgrundlage · 01.11.2026
+
+Vollständiger lokaler Clone mit GitHub-Remote, npm-Setup, aktiven Roadmap-Hooks und exakt fixiertem Playwright. Windows-Pfade, Python-UTF-8 und LF-Zeilenenden korrigiert. Die vollständige Chromium-Suite besteht mit 54/54 Tests, einschließlich echter IndexedDB-Migration und Zwei-Tab-Konflikten. Ein dabei entdeckter Aufnahmeverlust während Worker-Neuberechnung ist behoben. Keine eigenen Actions.
+
+[CODEX_SETUP](project/CODEX_SETUP.md) beschreibt Einrichtung, Arbeitsablauf und nächste Aufgaben. Dieser Chat arbeitet im lokalen Repository; eine zusätzliche Registrierung in der Projektoberfläche oder veröffentlichte Codex-Cloud-Umgebung konnte mangels Verwaltungswerkzeug nicht eingerichtet oder bestätigt werden. Pages-Quelle main/root und ausschließlich main als Remote-Branch sind per GitHub-Abfrage bestätigt.
 
 ## Prüfen, integrieren und veröffentlichen
 

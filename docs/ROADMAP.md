@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T10:22:39.771Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T11:18:47.672Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -14,14 +14,14 @@ Stand: 2026-11-01T10:22:39.771Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 |---|---:|
 | ⏳ Offen | 26 |
 | 🚧 In Arbeit | 1 |
-| ⛔ Blockiert | 3 |
-| 🧩 Implementiert · Abnahme offen | 11 |
-| ✅ Im beschriebenen Umfang geprüft | 13 |
+| ⛔ Blockiert | 1 |
+| 🧩 Implementiert · Abnahme offen | 10 |
+| ✅ Im beschriebenen Umfang geprüft | 16 |
 | ⏸ Zurückgestellt | 2 |
 
 ## Aktiver Arbeitsblock
 
-- **PERF-01 · Große Berechnungen als abbrechbare Worker-Aufträge** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Vollständige Browser-/Mobil-Latenz und Abbruch/Retry/historische Revisionen mit verfügbarer Chromium-Laufzeit messen; danach PERF-01 vollständig abnehmen.
+- **PERF-01 · Große Berechnungen als abbrechbare Worker-Aufträge** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Große Projektberechnung im Browser mit Modell, Hardware und UI-Reaktionszeit vor/nachher messen (S03); Funktionsregressionen für Abbruch/Retry/historische Revisionen sind bestanden.
 - **PERF-02 · Zellindizes, Chunkdaten und selektive Neuberechnung** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Kopier-/Ownerkosten im echten Browser messen und selektive Geometrie-/Fortschritts-Invalidierung vor Cache-/Chunkumbau prüfen.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
@@ -58,15 +58,15 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [LIB-01](#lib-01) | Bestehender Gebäudekatalog und Bibliotheksabläufe | ✅ Im beschriebenen Umfang geprüft | 1/1 | CORE-02 | `84838f0` | `e232b26` |
 | [GEN-01](#gen-01) | Vorhandene parametrische Generatoren | ✅ Im beschriebenen Umfang geprüft | 1/1 | CORE-03 | `84838f0` | `e232b26` |
 | [OPS-01](#ops-01) | Main/root-Pages mit manifestgeprüften Artefakten | ✅ Im beschriebenen Umfang geprüft | 1/1 | — | `84838f0` | `e232b26` |
-| [PLAN-01](#plan-01) | Verbindlicher Aufgabenbestand und Merge-Fortschritt | ✅ Im beschriebenen Umfang geprüft | 3/3 | — | `ccf4fa7` | `ccf4fa7` |
+| [PLAN-01](#plan-01) | Verbindlicher Aufgabenbestand und Merge-Fortschritt | ✅ Im beschriebenen Umfang geprüft | 4/4 | — | `ccf4fa7` | `ccf4fa7` |
 | [ARCH-01](#arch-01) | Anwendungsschicht und überprüfte Modulgrenzen | ✅ Im beschriebenen Umfang geprüft | 4/4 | CORE-01, CORE-02 | `ccf4fa7` | `ccf4fa7` |
-| [DOC-01](#doc-01) | Widerspruchsfreie aktuelle Statusdokumentation | ✅ Im beschriebenen Umfang geprüft | 2/2 | PLAN-01 | `ccf4fa7` | `ccf4fa7` |
-| [STORE-02](#store-02) | Revisionsschutz bei konkurrierenden Assetänderungen | 🧩 Implementiert · Abnahme offen | 2/3 | ARCH-01 | `8f22780` | `8f22780` |
-| [QA-01](#qa-01) | Aktuelle Browserregression für alle Hauptabläufe | ⛔ Blockiert | 0/2 | ARCH-01 | ausstehend | ausstehend |
+| [DOC-01](#doc-01) | Widerspruchsfreie aktuelle Statusdokumentation | ✅ Im beschriebenen Umfang geprüft | 3/3 | PLAN-01 | `ccf4fa7` | `ccf4fa7` |
+| [STORE-02](#store-02) | Revisionsschutz bei konkurrierenden Assetänderungen | ✅ Im beschriebenen Umfang geprüft | 3/3 | ARCH-01 | `8f22780` | `8f22780` |
+| [QA-01](#qa-01) | Aktuelle Browserregression für alle Hauptabläufe | ✅ Im beschriebenen Umfang geprüft | 2/2 | ARCH-01 | ausstehend | ausstehend |
 | [UI-01](#ui-01) | Neue Themen, Bauwelten und Materiallabor abnehmen | 🧩 Implementiert · Abnahme offen | 2/3 | QA-01 | `84838f0` | `e232b26` |
 | [STAB-01](#stab-01) | Absturzschutz, Datencheck und Fehlerberichte abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | QA-01 | `84838f0` | `e232b26` |
 | [OPS-02](#ops-02) | Deployment-Rückkehr und Wiederherstellungsprobe | ⏳ Offen | 0/2 | OPS-01, PLAN-01 | ausstehend | ausstehend |
-| [OPS-03](#ops-03) | Alte vollständig integrierte Branches bereinigen | ⛔ Blockiert | 0/2 | OPS-01 | ausstehend | ausstehend |
+| [OPS-03](#ops-03) | Alte vollständig integrierte Branches bereinigen | ✅ Im beschriebenen Umfang geprüft | 2/2 | OPS-01 | `9f1700e` | ausstehend |
 | [LICENSE-01](#license-01) | Projektlizenz und öffentliche Inhalte klären | ⏳ Offen | 0/2 | — | ausstehend | ausstehend |
 | [GAME-01](#game-01) | Spielaufnahmen und Soll/Ist-Vergleich | ✅ Im beschriebenen Umfang geprüft | 1/1 | CORE-02, BUILD-01 | `84838f0` | `e232b26` |
 
@@ -314,19 +314,20 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PLAN-01
 
-**Verbindlicher Aufgabenbestand und Merge-Fortschritt** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T09:33:55.354Z
+**Verbindlicher Aufgabenbestand und Merge-Fortschritt** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T11:18:47.672Z
 
 - [x] PLAN-01-S01: Gesamte Roadmap in vier Phasen und stabile Aufgaben-IDs aufgenommen.
 - [x] PLAN-01-S02: Schema, Historie, Darstellung und Änderungsprüfung implementieren und testen.
 - [x] PLAN-01-S03: Pflichtablauf in AGENTS und Publisher integrieren; Main-/Pages-Nachweis prüfen.
+- [x] PLAN-01-S04: Codex-Setup, lokale Hooks, reproduzierbare Browserabhängigkeit und Werkzeuggrenzen einrichten und prüfen.
 
 **Abnahme:** Jede Aufgabe zeigt Teilschritte, Abhängigkeiten, nächste Aktion und Nachweise. Quelländerungen benötigen eine Aufgabenaktualisierung; Artefaktcommits sind separat nachweisbar.
 
-**Nächste Aktion:** Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen.
+**Nächste Aktion:** Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen.
 
-**Prüfstand:** Roadmapschema, Generierung, Abhängigkeiten und Dateizuordnung mit 5 Regressionen geprüft. Main-/Pages-Nachweis nach Integration. Vorherige Mainintegration und Pages in dieser Fortsetzung bestätigt: Artefakt 18f70b7, Livesource ccf4fa7 und zwölf Dateihashes identisch.
+**Prüfstand:** Lokales Setup, aktive Roadmap-Hooks und bestehende Roadmapregressionen geprüft; Chromium verfügbar, 54/54 E2E bestanden. Keine Codex-Cloud-Umgebung erstellt; fehlende Verwaltungsfunktion konkret dokumentiert. Main-/Pages-Nachweis dieses Blocks folgt getrennt im Abschluss.
 
-**Nachweise:** [tests/roadmap.test.mjs](../tests/roadmap.test.mjs) — 5 Regressionen im Gesamtcheck 353/353 bestanden; Mergepflege dokumentiert.; [docs/TESTING.md](TESTING.md) — Aktuelle Blockabnahme mit Infrastrukturgrenzen.
+**Nachweise:** [tests/roadmap.test.mjs](../tests/roadmap.test.mjs) — 5 Regressionen im Gesamtcheck 353/353 bestanden; Mergepflege dokumentiert.; [docs/TESTING.md](TESTING.md) — Aktuelle Blockabnahme mit Infrastrukturgrenzen.; [docs/project/CODEX_SETUP.md](project/CODEX_SETUP.md) — Lokaler Clone, Setupbefehle und getrennte Projekt-/Cloud-/Pageszustände nachgewiesen.
 
 **Dateiumfang:** `docs/roadmap.json`, `scripts/roadmap.mjs`, `.githooks/`. **Abhängigkeiten:** keine. **Alte IDs:** P0-01.
 
@@ -355,16 +356,17 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### DOC-01
 
-**Widerspruchsfreie aktuelle Statusdokumentation** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T09:33:55.354Z
+**Widerspruchsfreie aktuelle Statusdokumentation** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T11:18:47.672Z
 
 - [x] DOC-01-S01: Widersprüche zu Litematic, Rohstoffen, Bauabschnitten und Hosting identifiziert.
 - [x] DOC-01-S02: Aktuellen Status ersetzen; historische Aussagen ausdrücklich archivieren.
+- [x] DOC-01-S03: Veralteten Webstart-, Browser- und Branchstatus durch aktuelle Codex-Einrichtung und tatsächliche Prüfungen ersetzen.
 
 **Abnahme:** Keine implementierte Kernfunktion erscheint gleichzeitig als unbegonnen.
 
-**Nächste Aktion:** Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen.
+**Nächste Aktion:** Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen.
 
-**Prüfstand:** Dokumentationsprüfung und generierte Ansichten im Gesamtcheck bestanden. Vorherige Mainintegration und Pages in dieser Fortsetzung bestätigt: Artefakt 18f70b7, Livesource ccf4fa7 und zwölf Dateihashes identisch.
+**Prüfstand:** Aktuelle Dokumentation mit lokaler Einrichtung, Browsernachweisen und Werkzeuggrenzen abgeglichen; alte historische Einträge erhalten. Generierte Ansichten werden geprüft; aktuelle Main-/Pages-SHAs nach Integration im Abschluss.
 
 **Nachweise:** [docs/STATUS.md](STATUS.md) — Aktuelle Übersicht ersetzt widersprüchliche Aussagen.; [docs/TESTING.md](TESTING.md) — Dokumentationslinks und Roadmapansichten geprüft.
 
@@ -374,19 +376,19 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### STORE-02
 
-**Revisionsschutz bei konkurrierenden Assetänderungen** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T10:15:04.390Z
+**Revisionsschutz bei konkurrierenden Assetänderungen** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T11:18:47.672Z
 
 - [x] STORE-02-S01: Vorhandene S4-Reservierung und Remoteänderungen vor Bearbeitung prüfen.
 - [x] STORE-02-S02: Asset-Revisionsvertrag, UI-Konfliktbehandlung und Migration implementieren.
-- [ ] STORE-02-S03: Zwei konkurrierende Metadatenänderungen und atomare Batches prüfen.
+- [x] STORE-02-S03: Zwei konkurrierende Metadatenänderungen und atomare Batches prüfen.
 
 **Abnahme:** Kein stilles Überschreiben; bestehende Datensätze kontrolliert migrieren.
 
-**Nächste Aktion:** Echte IndexedDB-v1→v2-Migration und Zwei-Tab-UI-Regressionsfälle bei verfügbarer Chromium-Laufzeit ausführen; danach STORE-02 vollständig abnehmen. Folgender Entwicklungsblock PERF-01.
+**Nächste Aktion:** CAS-/Migrationsregressionen bei Speicheränderungen fortführen; Safari/iPhone gesondert in QA-02.
 
-**Prüfstand:** 364 Node-Tests und vollständiger Kern-/Typ-/Build-/Modul-/Roadmap-/Dokumentationscheck bestanden. Sieben CAS-, drei Restore- und eine konkurrierende Seedregression neu. Echte IndexedDB-Migration und UI-Zwei-Tab-Abnahme weiterhin offen: Chromiumstart nicht ausführbar.
+**Prüfstand:** Node-CAS-/Restoretests und drei echte Chromiumfälle bestanden: v1→v2 samt Originalerhalt/Altverbindung/Zwei-Verbindungs-CAS, fehlerhaftes Upgrade mit Rollback und UI-Zwei-Tab-Entwurfserhalt nach Broadcast. Alle enthalten in der vollständigen 54/54-E2E-Abnahme.
 
-**Nachweise:** [tests/asset-concurrency.test.mjs](../tests/asset-concurrency.test.mjs) — CAS, atomare Batches, Aliasschutz, Duplikate und ungültige Datensätze; Kernlauf separat in TESTING.; [tests/asset-restore.test.mjs](../tests/asset-restore.test.mjs) — Alte Sicherung, lokale Revisionsbasis und veralteter Restoreplan.; [tests/asset-seeding.test.mjs](../tests/asset-seeding.test.mjs) — Zwei konkurrierende Katalogeinrichtungen mit begrenztem aktuellen Retry.; [docs/architecture/ASSET_CONCURRENCY.md](architecture/ASSET_CONCURRENCY.md) — Migration, Formularbasis und offene Browserabnahme.; [tests/e2e/asset-editing.e2e.mjs](../tests/e2e/asset-editing.e2e.mjs) — Tatsächliche Ausführung scheitert an fehlendem Chromium; Entwurfs-/Broadcastregression für die Browserabnahme vorbereitet.
+**Nachweise:** [tests/asset-concurrency.test.mjs](../tests/asset-concurrency.test.mjs) — CAS, atomare Batches, Aliasschutz, Duplikate und ungültige Datensätze; Kernlauf separat in TESTING.; [tests/asset-restore.test.mjs](../tests/asset-restore.test.mjs) — Alte Sicherung, lokale Revisionsbasis und veralteter Restoreplan.; [tests/asset-seeding.test.mjs](../tests/asset-seeding.test.mjs) — Zwei konkurrierende Katalogeinrichtungen mit begrenztem aktuellen Retry.; [docs/architecture/ASSET_CONCURRENCY.md](architecture/ASSET_CONCURRENCY.md) — Migration, Formularbasis und offene Browserabnahme.; [tests/e2e/asset-editing.e2e.mjs](../tests/e2e/asset-editing.e2e.mjs) — Tatsächlich unter Windows/Chromium bestanden: alter Entwurf bleibt nach abgewiesenem Speichern erhalten; ausdrückliches Neuladen übernimmt gespeicherte Tags.; [tests/e2e/asset-concurrency.e2e.mjs](../tests/e2e/asset-concurrency.e2e.mjs) — Echte erfolgreiche und abgebrochene IndexedDB-Migration mit Originalbytes und atomarem CAS bestanden.
 
 **Dateiumfang:** `apps/web/src/app/idbRepository.ts`, `packages/application/src/repository.ts`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** S4.
 
@@ -394,20 +396,18 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### QA-01
 
-**Aktuelle Browserregression für alle Hauptabläufe** · ⛔ Blockiert · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T10:22:39.771Z
+**Aktuelle Browserregression für alle Hauptabläufe** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T11:18:47.672Z
 
-- [ ] QA-01-S01: Chromium-Laufzeit bereitstellen bzw. Verfügbarkeit prüfen.
-- [ ] QA-01-S02: Komplette aktuelle Desktop-/schmale E2E-Suite ausführen und Fehler beheben.
+- [x] QA-01-S01: Chromium-Laufzeit bereitstellen bzw. Verfügbarkeit prüfen.
+- [x] QA-01-S02: Komplette aktuelle Desktop-/schmale E2E-Suite ausführen und Fehler beheben.
 
 **Abnahme:** Keine nur syntaktisch geprüften E2E als bestanden zählen.
 
-**Nächste Aktion:** Chromium-Laufzeit bereitstellen bzw. Verfügbarkeit prüfen.
+**Nächste Aktion:** Suite nach relevanten Änderungen wiederholen; echte Geräte in QA-02 und große Worker-Browserlatenz in PERF-01 prüfen.
 
-**Blocker:** Chromium fehlt; aktueller Installationsversuch liefert ungültige/leere Archive. Isolierter Browserstart und tatsächlicher E2E-Start belegen die Infrastrukturgrenze.
+**Prüfstand:** 54/54 aktuelle E2E unter Windows/Playwright 1.64.1 bestanden; reale Chromium-Worker und IndexedDB, 1400/390-px-Szenarien sowie Software-WebGL. Zehn erste Ausfälle analysiert: Testannahmen korrigiert und echter Aufnahmecontroller-Unmount behoben. Keine echte iPhone-/Safari-/Hardware-GPU-Abnahme.
 
-**Prüfstand:** Die vollständige aktuelle lokale Playwright-Suite ist vor Produktstart am fehlenden Chromium-Executable blockiert. Ein begrenzter direkter Desktop-Smoke der veröffentlichten PERF-01-Oberfläche im Cloud-Chrome ist tatsächlich bestanden; automatische Mobil-/Fehler-/Abbruch- und DB-Regressionsfälle bleiben offen.
-
-**Nachweise:** [docs/TESTING.md](TESTING.md) — Abgegrenzter tatsächlicher Desktop-Smoke nach PERF-Deployment, ausdrücklich kein vollständiger Browserregressionsnachweis.
+**Nachweise:** [docs/TESTING.md](TESTING.md) — Abgegrenzter tatsächlicher Desktop-Smoke nach PERF-Deployment, ausdrücklich kein vollständiger Browserregressionsnachweis.; [docs/project/CODEX_SETUP.md](project/CODEX_SETUP.md) — Exakte Entwicklungsabhängigkeit, getrennte Chromiuminstallation und ausgeführtes Windows-Setup.
 
 **Dateiumfang:** `tests/e2e/`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** —.
 
@@ -492,24 +492,22 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### OPS-03
 
-**Alte vollständig integrierte Branches bereinigen** · ⛔ Blockiert · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Alte vollständig integrierte Branches bereinigen** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand / Codex-Prüfung · Aktualisiert: 2026-11-01T11:18:47.672Z
 
-- [ ] OPS-03-S01: Remote-Branches und vollständige Integration erneut nachweisen.
-- [ ] OPS-03-S02: Bei verfügbarer Löschfunktion integrierte Branches entfernen.
+- [x] OPS-03-S01: Remote-Branches und vollständige Integration erneut nachweisen.
+- [x] OPS-03-S02: Bei verfügbarer Löschfunktion integrierte Branches entfernen.
 
 **Abnahme:** Keine unintegrierte Arbeit und keine benötigte Pages-Quelle löschen.
 
-**Nächste Aktion:** Remote-Branches und vollständige Integration erneut nachweisen.
+**Nächste Aktion:** Bei künftigem temporärem Branch erneut vollständige Integration prüfen; aktuell keine Bereinigung nötig.
 
-**Blocker:** GitHub-Konnektor hat im beobachteten Werkzeugsatz keine Branchlöschfunktion.
+**Prüfstand:** Authentifizierte GitHub-Refabfrage am 01.11.2026 liefert ausschließlich refs/heads/main. Keine Branchlöschung durch diesen Auftrag; historischer Fähigkeitsblocker überholt.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
-
-**Nachweise:** noch ausstehend
+**Nachweise:** [docs/project/CODEX_SETUP.md](project/CODEX_SETUP.md) — Tatsächlicher Clone, GitHub-Berechtigungen, Pagesquelle und Werkzeuggrenzen geprüft.
 
 **Dateiumfang:** `docs/COMMUNICATION.md`. **Abhängigkeiten:** OPS-01. **Alte IDs:** —.
 
-**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+**Integration:** Main [9f1700e](https://github.com/Freadeax/Minecraft-Bauplaner/commit/9f1700eb17299a83a55929d59ad5998526b2143f); Pages-Quelle ausstehend.
 
 ### LICENSE-01
 
@@ -687,7 +685,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-01
 
-**Große Berechnungen als abbrechbare Worker-Aufträge** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T10:22:39.771Z
+**Große Berechnungen als abbrechbare Worker-Aufträge** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T11:18:47.672Z
 
 - [x] PERF-01-S01: Workerprotokoll mit Job-ID, Revisionsbezug und Abbruch definieren.
 - [x] PERF-01-S02: Auflösung, Anleitung und Materialien auslagern; veraltete Ergebnisse verwerfen.
@@ -695,11 +693,11 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Keine Übernahme eines Ergebnisses für eine veraltete Revision.
 
-**Nächste Aktion:** Vollständige Browser-/Mobil-Latenz und Abbruch/Retry/historische Revisionen mit verfügbarer Chromium-Laufzeit messen; danach PERF-01 vollständig abnehmen.
+**Nächste Aktion:** Große Projektberechnung im Browser mit Modell, Hardware und UI-Reaktionszeit vor/nachher messen (S03); Funktionsregressionen für Abbruch/Retry/historische Revisionen sind bestanden.
 
-**Prüfstand:** 377 Node-Tests sowie strenge Modul-/Typ-/Build-/Roadmap-/Dokumentationsprüfung bestanden. Echter Nodeworker mit semantisch gleichem Ergebnis und bedienter Ereignisschleife; vier Browserfälle vor Produktstart mangels Chromium blockiert, Browser-/Mobilmessung weiterhin offen. Zusätzlich direkter Cloud-Chrome-Desktop-Smoke nach Veröffentlichung bestanden: 350 Blöcke, zwei Y-Änderungen, Bauplan Y2, konsistente Material-/Baustellenwerte. Vollständige automatische/Hardware-Abnahme bleibt offen.
+**Prüfstand:** Vier echte lokale Chromium-Workerfälle bei 1400/390 px bestanden: Abbruch/Retry, schnelle Revisionen ohne alte Geometrie, sichtbarer Workerfehler und historische Grundlage. Kern-/Node-Workerregressionen bestehen weiterhin. Große Browser-/Hardware-Latenzmessung bleibt offen; vorhandene Nodewerte sind keine Browsergarantie.
 
-**Nachweise:** [tests/project-computation.test.mjs](../tests/project-computation.test.mjs) — Acht Kern-/Lifecycle-/Node-Workerfälle; Gesamtcheck in TESTING.; [tests/e2e/project-computation.e2e.mjs](../tests/e2e/project-computation.e2e.mjs) — Vier reale Browserfälle vorbereitet, Ausführung am Chromiumstart blockiert.; [docs/architecture/PROJECT_COMPUTATION.md](architecture/PROJECT_COMPUTATION.md) — Protokoll, Snapshotbindung und abgegrenzte Node-Messung.
+**Nachweise:** [tests/project-computation.test.mjs](../tests/project-computation.test.mjs) — Acht Kern-/Lifecycle-/Node-Workerfälle; Gesamtcheck in TESTING.; [tests/e2e/project-computation.e2e.mjs](../tests/e2e/project-computation.e2e.mjs) — Alle vier tatsächlichen Chromiumfälle am 01.11.2026 lokal bestanden; Funktionsnachweis ohne große Modelllatenzmessung.; [docs/architecture/PROJECT_COMPUTATION.md](architecture/PROJECT_COMPUTATION.md) — Protokoll, Snapshotbindung und abgegrenzte Node-Messung.
 
 **Dateiumfang:** `apps/web/src/views/project/session.ts`, `packages/application/`, `apps/web/src/computation/`, `apps/web/src/app/useProjectComputation.ts`, `apps/web/src/views/project/`, `tests/project-computation.test.mjs`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** —.
 
@@ -959,7 +957,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-01
 
-**Spielaufnahmen und Soll/Ist-Vergleich** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Spielaufnahmen und Soll/Ist-Vergleich** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Aktualisiert: 2026-11-01T11:18:47.672Z
 
 - [x] GAME-01-S01: Vergleich, Originalspeicherung, Verlauf, Ausrichtung und Backup vorhanden.
 
@@ -967,9 +965,9 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nächste Aktion:** Regressionen bei Änderungen weiterführen.
 
-**Prüfstand:** Vorheriger dokumentierter Gesamtstand: 342 Node-Tests; kein aktueller Browsernachweis.
+**Prüfstand:** Aufnahmecontroller bleibt beim Neuberechnen und Wechsel auf historische Grundlage erhalten. Tatsächliche Browserregressionen für Soll/Ist-Import, ausdrückliches Abhaken, Originalspeicherung, Ausrichtung, Reload und bytegleichen Download in 54/54-E2E bestanden; keine Mod-/Spielabnahme.
 
-**Nachweise:** [tests/game-check.test.mjs](../tests/game-check.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/scan-persistence.test.mjs](../tests/scan-persistence.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+**Nachweise:** [tests/game-check.test.mjs](../tests/game-check.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/scan-persistence.test.mjs](../tests/scan-persistence.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/e2e/game-check.e2e.mjs](../tests/e2e/game-check.e2e.mjs) — Reale Aufnahme gegen eingefrorene Revision, Abweichungszelle und ausdrücklich bestätigte Schritte.; [tests/e2e/scan-persistence.e2e.mjs](../tests/e2e/scan-persistence.e2e.mjs) — Original und Ausrichtung über Speichern/Neuladen hinweg erhalten; Download bytes-identisch.
 
 **Dateiumfang:** `packages/domain/src/gameCheck.ts`, `packages/application/src/scanPersistence.ts`. **Abhängigkeiten:** CORE-02, BUILD-01. **Alte IDs:** B8-M1, B8P.
 

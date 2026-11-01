@@ -77,6 +77,7 @@ test('Bauen: Spielaufnahme importieren, Abweichung finden, bestätigte Schritte 
   await p.locator('.game-check input[type=file]').setInputFiles(rec.file);
   await p.getByText(/Revision 1 · aufgenommen|Revision 1 ·/).first().waitFor();
   assert.equal(await p.locator('.build-basis select').inputValue() !== 'working', true, 'basis switched to the recorded revision');
+  await p.locator('.game-check-head small', { hasText: /[\d.]+ von [\d.]+ Blöcken korrekt/ }).waitFor();
   const summary = await p.locator('.game-check-head small').innerText();
   const [, ok, all] = summary.match(/([\d.]+) von ([\d.]+) Blöcken korrekt/).map(x => x.replace(/\./g, ''));
   assert.equal(Number(ok), Number(all) - 1);

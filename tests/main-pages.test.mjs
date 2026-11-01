@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
@@ -63,7 +64,7 @@ test('CLI creates a merged Git tree with source retained and obsolete chunks rem
     const dist = path.join(directory, 'dist');
     for (const [p, bytes] of next) { await mkdir(path.dirname(path.join(dist, p)), { recursive: true }); await writeFile(path.join(dist, p), bytes); }
     const helper = new URL('../scripts/prepare_main_pages.mjs', import.meta.url);
-    const merged = execFileSync(process.execPath, [helper.pathname, commit, dist, path.join(directory, 'temporary-index')], { cwd: directory, env }).toString().trim();
+    const merged = execFileSync(process.execPath, [fileURLToPath(helper), commit, dist, path.join(directory, 'temporary-index')], { cwd: directory, env }).toString().trim();
     assert.equal(git(['show', `${merged}:README.md`]), 'source kept');
     assert.equal(git(['show', `${merged}:assets/new.js`]), 'new');
     assert.ok(!git(['ls-tree', '-r', '--name-only', merged]).split('\n').includes('assets/old.js'));

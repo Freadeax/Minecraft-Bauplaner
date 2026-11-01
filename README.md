@@ -4,7 +4,7 @@ Browserbasierter Minecraft-Bauhelfer: Bauwerke betrachten, wiederverwendbare Mod
 
 Zielrepository: https://github.com/Freadeax/Minecraft-Bauplaner
 
-**Stand: 01.11.2026.** Implementiert sind Projektzentrale, Bibliothek mit 174 Gebäuden, Composer, Orbit/Freiflug, Schichten, Schem-v3- und Litematic-Import/-Export, lokale Projektspeicherung, Asset-Revisionsschutz gegen konkurrierende Änderungen (Browserabnahme offen), abbrechbare Worker-Projektberechnung, Bauanleitungen, Material-/Rohstoffplanung, Baustellen und parametrische Generatoren. Spielaufnahmen werden mit Originaldatei und Verlauf gespeichert. Neu: fünf Oberflächenthemen mit Hell/Dunkel/System und ein Materiallabor mit Familien, Suche und Herkunft der berechneten Bauitems. Die Bibliothek bietet elf Bauwelten; Glas, Beton und Terrakotta lassen sich als getrennte Materialvarianten wählen. Die Weltkartenoberfläche und Teamdienste bleiben offen. Grenzen und Prüfstand: [STATUS](docs/STATUS.md).
+**Stand: 01.11.2026.** Implementiert sind Projektzentrale, Bibliothek mit 174 Gebäuden, Composer, Orbit/Freiflug, Schichten, Schem-v3- und Litematic-Import/-Export, lokale Projektspeicherung, Asset-Revisionsschutz gegen konkurrierende Änderungen, abbrechbare Worker-Projektberechnung, Bauanleitungen, Material-/Rohstoffplanung, Baustellen und parametrische Generatoren. Spielaufnahmen werden mit Originaldatei und Verlauf gespeichert. Neu: fünf Oberflächenthemen mit Hell/Dunkel/System und ein Materiallabor mit Familien, Suche und Herkunft der berechneten Bauitems. Die Bibliothek bietet elf Bauwelten; Glas, Beton und Terrakotta lassen sich als getrennte Materialvarianten wählen. Die Weltkartenoberfläche und Teamdienste bleiben offen. Grenzen und Prüfstand: [STATUS](docs/STATUS.md).
 
 ## Einstieg
 
@@ -53,13 +53,15 @@ Importadapter erhalten Originaldaten getrennt vom normalisierten Voxelmodell. De
 
 ## Veröffentlichung
 
-GitHub Pages liefert **`main` / Repositorywurzel** aus. `scripts/publish_pages.sh` startet den Main-Publisher: geprüften Quellcommit bauen, Webartefakte samt Manifest als Kindcommit auf main übernehmen, anschließend Liveauslieferung prüfen. Quellcode bleibt erhalten. `gh-pages` wird nicht mehr benötigt; alte integrierte Branches warten nur auf eine verfügbare Löschfunktion. Keine eigenen GitHub Actions und kein Hintergrundprozess, der fremde Pushes selbst baut.
+GitHub Pages liefert **`main` / Repositorywurzel** aus. `scripts/publish_pages.sh` startet den Main-Publisher: geprüften Quellcommit bauen, Webartefakte samt Manifest als Kindcommit auf main übernehmen, anschließend Liveauslieferung prüfen. Quellcode bleibt erhalten. Die Remote-Abfrage vom 01.11.2026 zeigt ausschließlich `main`; keine Branchlöschung durch diesen Setupauftrag. Keine eigenen GitHub Actions und kein Hintergrundprozess, der fremde Pushes selbst baut.
 
 Der Konnektor kann Dateien, Gitobjekte und main aktualisieren. Branchlöschung und Pages-Einstellungen sind in seiner aktuellen Werkzeugoberfläche nicht verfügbar; das ist keine fehlende Freigabe für Entwicklung oder Veröffentlichung.
 
 Eine Projektlizenz ist noch nicht festgelegt. Vor Veröffentlichung fremder Assets, Texturen oder Codebestandteile müssen Nutzungsrechte und Lizenzkompatibilität geprüft werden.
 
 ## Lokaler Kernstart
+
+Codex-Einrichtung und konkrete Anschlussaufgaben: [CODEX_SETUP](docs/project/CODEX_SETUP.md). `npm run setup:codex` richtet Abhängigkeiten, lokale Hooks und Build ein. Die Browserlaufzeit wird separat mit `npm run setup:browser` installiert.
 
 Node.js ab 22.18 und npm erforderlich. TypeScript 5.9.3, React/React DOM 19.3.1, Three.js 0.186.1 und Vite 8.3.5 sind exakt im Lockfile fixiert.
 
@@ -74,7 +76,7 @@ Der Kern zählt platzierte Zustände, Luft und Löschzellen getrennt. Unbekannte
 
 Die Darstellung nutzt eigene synthetische Gebäude und farbige Blockwürfel ohne fremde Minecraft-Texturen. Konservative Importlimits und Formatgrenzen stehen in den verlinkten Formatverträgen. Unbekannte Blockzustände bleiben erhalten; ungeklärte Transformationen sperren einen verlässlichen Export.
 
-Ohne WebGL steht eine gekennzeichnete isometrische Canvas-Ersatzansicht bereit. Browserprüfungen: `npm run build && npm run test:e2e`; dafür muss Playwright-Chromium verfügbar sein. Echte GPU-/iPhone- und Referenzwerkzeugtests bleiben gesondert offen.
+Ohne WebGL steht eine gekennzeichnete isometrische Canvas-Ersatzansicht bereit. Browserprüfungen: `npm run build && npm run test:e2e`; Playwright ist exakt im Lockfile fixiert, Chromium über `npm run setup:browser` installieren. Echte GPU-/iPhone- und Referenzwerkzeugtests bleiben gesondert offen.
 
 ## Aufgaben und Fortschritt pflegen
 

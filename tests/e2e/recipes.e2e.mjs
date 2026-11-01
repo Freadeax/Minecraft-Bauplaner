@@ -48,6 +48,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     assert.ok(await panel.locator('.raw-table .badge.stock').count() === 1);
     assert.ok(await panel.locator('.recipe-steps li').count() < steps);
     await panel.getByRole('button', { name: /Vorhanden zurücksetzen/ }).click();
+    await p.waitForFunction(expected => document.querySelectorAll('.raw-materials .recipe-steps li').length === expected, steps);
     assert.equal(await panel.locator('.recipe-steps li').count(), steps);
 
     // Without stonecutter the crafting table rounds up: never fewer raw materials.

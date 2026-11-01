@@ -1,3 +1,4 @@
+import { python } from '../../scripts/python.mjs';
 // Browser check of the Litematic import and export (P5-01) against the built Pages artifact.
 // The exported file is verified by the independent Python reader.
 import { createRequire } from 'node:module';
@@ -81,7 +82,7 @@ test('Export: Revision als .litematic, unabhängig geprüft', async () => {
   await d.saveAs(file);
   await p.getByText('DATEI ERZEUGT').waitFor();
   assert.match(await p.locator('.export-report').innerText(), /Litematica \(\.litematic\), Format 6/);
-  const r = spawnSync('python3', ['-I', 'scripts/verify_litematic.py', file], { encoding: 'utf8' });
+  const r = spawnSync(python, ['-I', '-X', 'utf8', 'scripts/verify_litematic.py', file], { encoding: 'utf8' });
   const summary = JSON.parse(r.stdout);
   assert.equal(r.status, 0, r.stdout);
   assert.equal(summary.version, 6); assert.equal(summary.dataVersion, 3465); assert.equal(summary.regions.length, 1);

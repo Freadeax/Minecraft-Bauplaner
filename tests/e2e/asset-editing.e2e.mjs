@@ -38,12 +38,12 @@ test('two UI tabs keep the editing base and retain a rejected metadata draft', a
   await b.getByRole('button', { name: 'Angaben speichern', exact: true }).click();
   await b.getByText('Angaben zu „Revisionstest“ gespeichert.').waitFor();
   // Broadcast updates the current asset, but must not bless the older form base.
-  await a.getByText('Dieses Bauteil wurde inzwischen geändert.', { exact: true }).waitFor();
+  await a.getByRole('region', { name: 'Angaben', exact: true }).getByText('Dieses Bauteil wurde inzwischen geändert.', { exact: true }).waitFor();
   await a.getByRole('button', { name: 'Angaben speichern', exact: true }).click();
   await a.getByText(/Angaben nicht gespeichert:.*zwischenzeitlich anderswo gespeichert/).waitFor();
   assert.equal(await tags(a).inputValue(), 'entwurf-tab-a');
   await b.reload(); await b.getByText('gewinner-tab-b', { exact: true }).waitFor();
-  await a.getByRole('button', { name: 'Seite neu laden', exact: true }).click();
+  await a.getByRole('region', { name: 'Angaben', exact: true }).getByRole('button', { name: 'Seite neu laden', exact: true }).click();
   await a.getByText('gewinner-tab-b', { exact: true }).waitFor();
   assert.equal(await tags(a).count(), 0);
   assert.deepEqual(errors, []);

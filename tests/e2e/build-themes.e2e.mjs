@@ -31,7 +31,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await p.goto(`${BASE}#/bibliothek?q=kein_treffer_123`);
     await p.getByLabel('Bauteile suchen').waitFor();
     await p.getByRole('link', { name: 'Bauwelten', exact: true }).click();
-    await p.waitForFunction(() => document.querySelectorAll('.build-theme-card').length === 8);
+    await p.waitForFunction(() => document.querySelectorAll('.build-theme-card').length === 11);
     const card = p.locator('#bauwelt-kueste');
     const browse = card.locator('.build-theme-browse');
     const expected = Number((await browse.innerText()).match(/[\d.]+/)[0].replace(/\./g, ''));

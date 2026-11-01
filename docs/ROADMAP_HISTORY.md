@@ -374,3 +374,152 @@ Direkter veröffentlichter Cloud-Chrome-Desktop-Smoke bestanden: Projektberechnu
 - `docs/STATUS.md`
 - `docs/TESTING.md`
 
+## 2026-11-01T11:03:14.381Z · progress
+
+**Aufgaben:** PLAN-01, DOC-01
+
+Codex-Vorbereitung ab main 9f1700e begonnen: vorhandene Regeln und Aufgaben erhalten; Setup, Windows-Prüfbarkeit und Browserlaufzeit werden geprüft.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PLAN-01 | 🚧 In Arbeit | 3/3 | Codex-Setup und Windows-/Browserprüfbarkeit vervollständigen, lokal prüfen und getrennt von Main/Pages nachweisen. |
+| DOC-01 | 🚧 In Arbeit | 2/2 | Codex-Setup und Windows-/Browserprüfbarkeit vervollständigen, lokal prüfen und getrennt von Main/Pages nachweisen. |
+
+**Geänderte Dateien:**
+
+- `.gitattributes`
+- `docs/COMMUNICATION.md`
+
+## 2026-11-01T11:08:10.310Z · progress
+
+**Aufgaben:** PLAN-01, DOC-01, QA-01, OPS-03
+
+Setup eingerichtet, Playwright/Chromium lokal verfügbar, Windows-Pfade und UTF-8 geprüft. Remote enthält nur main; keine Branchlöschung nötig. Vollständige Browserabnahme läuft, erste Testfehler werden getrennt untersucht.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PLAN-01 | 🚧 In Arbeit | 3/3 | Codex-Setup und Windows-/Browserprüfbarkeit vervollständigen, lokal prüfen und getrennt von Main/Pages nachweisen. |
+| DOC-01 | 🚧 In Arbeit | 2/2 | Codex-Setup und Windows-/Browserprüfbarkeit vervollständigen, lokal prüfen und getrennt von Main/Pages nachweisen. |
+| QA-01 | 🚧 In Arbeit | 1/2 | Vollständige lokale Chromium-Suite auswerten; erstmals ausgeführte Selektor-/Wartefehler korrigieren und Produktfehler getrennt untersuchen. |
+| OPS-03 | ✅ Im beschriebenen Umfang geprüft | 2/2 | Bei künftigem temporärem Branch erneut vollständige Integration prüfen; aktuell keine Bereinigung nötig. |
+
+**Geänderte Dateien:**
+
+- `.gitattributes`
+- `AGENTS.md`
+- `CONTRIBUTING.md`
+- `README.md`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/operations/GITHUB_CONNECTOR_RUNBOOK.md`
+- `docs/project/CODEX_SETUP.md`
+- `package-lock.json`
+- `package.json`
+- `scripts/bridge_crosscheck.mjs`
+- `scripts/python.mjs`
+- `scripts/setup_codex.mjs`
+- `tests/e2e/export.e2e.mjs`
+- `tests/e2e/litematic.e2e.mjs`
+- `tests/litematic.test.mjs`
+- `tests/main-pages.test.mjs`
+- `tests/python-runner.test.mjs`
+- `tests/schem-export.test.mjs`
+
+## 2026-11-01T11:17:28.576Z · progress
+
+**Aufgaben:** PLAN-01, DOC-01, QA-01, OPS-03, STORE-02, PERF-01, GAME-01
+
+Codex-Setup und lokale Hooks eingerichtet; Windows-Prüfbarkeit und exakt fixierte Browserabhängigkeit ergänzt. 54/54 echte E2E bestanden; Aufnahmecontroller-Unmount behoben, Testannahmen korrigiert. STORE-02 und QA-01 abgenommen; große Worker-Latenz und echte Geräte offen. Main/Pages folgen getrennt.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PLAN-01 | ✅ Im beschriebenen Umfang geprüft | 4/4 | Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen. |
+| DOC-01 | ✅ Im beschriebenen Umfang geprüft | 3/3 | Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen. |
+| QA-01 | ✅ Im beschriebenen Umfang geprüft | 2/2 | Suite nach relevanten Änderungen wiederholen; echte Geräte in QA-02 und große Worker-Browserlatenz in PERF-01 prüfen. |
+| OPS-03 | ✅ Im beschriebenen Umfang geprüft | 2/2 | Bei künftigem temporärem Branch erneut vollständige Integration prüfen; aktuell keine Bereinigung nötig. |
+| STORE-02 | ✅ Im beschriebenen Umfang geprüft | 3/3 | CAS-/Migrationsregressionen bei Speicheränderungen fortführen; Safari/iPhone gesondert in QA-02. |
+| PERF-01 | 🧩 Implementiert · Abnahme offen | 2/3 | Große Projektberechnung im Browser mit Modell, Hardware und UI-Reaktionszeit vor/nachher messen (S03); Funktionsregressionen für Abbruch/Retry/historische Revisionen sind bestanden. |
+| GAME-01 | ✅ Im beschriebenen Umfang geprüft | 1/1 | Regressionen bei Änderungen weiterführen. |
+
+**Geänderte Dateien:**
+
+- `.gitattributes`
+- `.github/pull_request_template.md`
+- `AGENTS.md`
+- `CONTRIBUTING.md`
+- `README.md`
+- `apps/web/src/views/project/BuildTab.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/ASSET_CONCURRENCY.md`
+- `docs/architecture/DECISIONS.md`
+- `docs/architecture/PROJECT_COMPUTATION.md`
+- `docs/operations/GITHUB_CONNECTOR_RUNBOOK.md`
+- `docs/project/CODEX_SETUP.md`
+- `package-lock.json`
+- `package.json`
+- `scripts/bridge_crosscheck.mjs`
+- `scripts/python.mjs`
+- `scripts/setup_codex.mjs`
+- `tests/e2e/asset-editing.e2e.mjs`
+- `tests/e2e/build-themes.e2e.mjs`
+- `tests/e2e/export.e2e.mjs`
+- `tests/e2e/game-check.e2e.mjs`
+- `tests/e2e/litematic.e2e.mjs`
+- `tests/e2e/project-computation.e2e.mjs`
+- `tests/e2e/recipes.e2e.mjs`
+- `tests/litematic.test.mjs`
+- `tests/main-pages.test.mjs`
+- `tests/python-runner.test.mjs`
+- `tests/schem-export.test.mjs`
+
+## 2026-11-01T11:18:47.672Z · progress
+
+**Aufgaben:** PLAN-01, DOC-01, QA-01, OPS-03, STORE-02, PERF-01, GAME-01
+
+Abschluss: 379/379 Node-Tests und 54/54 reale Chromium-E2E bestanden. Setup, Hooks, Aufgabenführung und Dokumentation geprüft; tatsächlichen lokalen/Cloud-/Pageszustand getrennt festgehalten. Aufnahmeverlust behoben. Dateibearbeitung beendet; Main-/Live-Nachweis folgt ohne selbstreferenzielle Commit-Schleife.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PLAN-01 | ✅ Im beschriebenen Umfang geprüft | 4/4 | Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen. |
+| DOC-01 | ✅ Im beschriebenen Umfang geprüft | 3/3 | Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen. |
+| QA-01 | ✅ Im beschriebenen Umfang geprüft | 2/2 | Suite nach relevanten Änderungen wiederholen; echte Geräte in QA-02 und große Worker-Browserlatenz in PERF-01 prüfen. |
+| OPS-03 | ✅ Im beschriebenen Umfang geprüft | 2/2 | Bei künftigem temporärem Branch erneut vollständige Integration prüfen; aktuell keine Bereinigung nötig. |
+| STORE-02 | ✅ Im beschriebenen Umfang geprüft | 3/3 | CAS-/Migrationsregressionen bei Speicheränderungen fortführen; Safari/iPhone gesondert in QA-02. |
+| PERF-01 | 🧩 Implementiert · Abnahme offen | 2/3 | Große Projektberechnung im Browser mit Modell, Hardware und UI-Reaktionszeit vor/nachher messen (S03); Funktionsregressionen für Abbruch/Retry/historische Revisionen sind bestanden. |
+| GAME-01 | ✅ Im beschriebenen Umfang geprüft | 1/1 | Regressionen bei Änderungen weiterführen. |
+
+**Geänderte Dateien:**
+
+- `.gitattributes`
+- `.github/pull_request_template.md`
+- `AGENTS.md`
+- `CONTRIBUTING.md`
+- `README.md`
+- `apps/web/src/views/project/BuildTab.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/ASSET_CONCURRENCY.md`
+- `docs/architecture/DECISIONS.md`
+- `docs/architecture/PROJECT_COMPUTATION.md`
+- `docs/operations/GITHUB_CONNECTOR_RUNBOOK.md`
+- `docs/project/CODEX_SETUP.md`
+- `package-lock.json`
+- `package.json`
+- `scripts/bridge_crosscheck.mjs`
+- `scripts/python.mjs`
+- `scripts/setup_codex.mjs`
+- `tests/e2e/asset-editing.e2e.mjs`
+- `tests/e2e/build-themes.e2e.mjs`
+- `tests/e2e/export.e2e.mjs`
+- `tests/e2e/game-check.e2e.mjs`
+- `tests/e2e/litematic.e2e.mjs`
+- `tests/e2e/project-computation.e2e.mjs`
+- `tests/e2e/recipes.e2e.mjs`
+- `tests/litematic.test.mjs`
+- `tests/main-pages.test.mjs`
+- `tests/python-runner.test.mjs`
+- `tests/schem-export.test.mjs`
+

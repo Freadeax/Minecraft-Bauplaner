@@ -10,7 +10,7 @@
     "typecheck": "tsc --noEmit && tsc -p apps/web/tsconfig.json",
     "build": "npm run build:core && npm run build:web",
     "test": "node --test tests/*.test.mjs",
-    "check:docs": "python3 scripts/check_docs.py",
+    "check:docs": "node scripts/python.mjs scripts/check_docs.py",
     "check": "npm run check:architecture && npm run check:roadmap && npm run typecheck && npm run build && npm test && npm run check:docs",
     "build:core": "tsc",
     "build:web": "node scripts/clean_pages.mjs && vite build && node scripts/prepare_pages.mjs",
@@ -22,12 +22,15 @@
     "check:roadmap-change": "node scripts/roadmap.mjs check-change",
     "roadmap:render": "node scripts/roadmap.mjs render",
     "roadmap:record": "node scripts/roadmap.mjs record",
-    "setup:hooks": "git config core.hooksPath .githooks"
+    "setup:hooks": "git config core.hooksPath .githooks",
+    "setup:codex": "node scripts/setup_codex.mjs",
+    "setup:browser": "playwright install chromium"
   },
   "devDependencies": {
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@types/three": "0.186.0",
+    "playwright": "1.64.1",
     "typescript": "5.9.3",
     "vite": "8.3.5"
   },

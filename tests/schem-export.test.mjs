@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url';
+import { python } from '../scripts/python.mjs';
 import { exportRevisionSchem, exportFileName } from '../dist/application/src/index.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -20,9 +22,9 @@ let fileNo = 0;
 function verify(bytes, expect) {
   const file = join(dir, `f${fileNo++}.schem`);
   writeFileSync(file, bytes);
-  const args = [new URL('../scripts/verify_schem.py', import.meta.url).pathname, file];
+  const args = [fileURLToPath(new URL('../scripts/verify_schem.py', import.meta.url)), file];
   if (expect) { const e = `${file}.expect.json`; writeFileSync(e, JSON.stringify(expect)); args.push('--expect', e); }
-  const r = spawnSync('python3', ['-I', ...args], { encoding: 'utf8' });
+  const r = spawnSync(python, ['-I', '-X', 'utf8', ...args], { encoding: 'utf8' });
   assert.equal(r.stderr, '', r.stderr);
   return { status: r.status, summary: JSON.parse(r.stdout) };
 }

@@ -1,3 +1,4 @@
+import { python } from '../../scripts/python.mjs';
 // Browser check of the Schem export tab (B2) against the built Pages artifact.
 // The downloaded file is verified by the independent Python reader.
 import { createRequire } from 'node:module';
@@ -25,7 +26,7 @@ before(async () => {
 after(async () => { await browser?.close(); server?.kill(); });
 
 function verify(file) {
-  const r = spawnSync('python3', ['-I', 'scripts/verify_schem.py', file], { encoding: 'utf8' });
+  const r = spawnSync(python, ['-I', '-X', 'utf8', 'scripts/verify_schem.py', file], { encoding: 'utf8' });
   return { status: r.status, summary: JSON.parse(r.stdout) };
 }
 

@@ -1,3 +1,4 @@
+import { python } from './python.mjs';
 // Cross-language check of the recording format (B8): the website exports a plan, the Java
 // bridge core records a world built from it (one block wrong), the independent Python reader
 // and the website's reader/comparison must agree. Run via scripts/test_bridge.sh.
@@ -31,7 +32,7 @@ const w = victim.position.map((v, i) => v + anchor[i]);
 const run = spawnSync('java', ['-cp', classpath, 'io.github.freadeax.bauplaner.bridge.SimulateScan', planFile, scanFile, ...anchor.map(String), `${w.join(',')}=minecraft:diamond_block`], { encoding: 'utf8' });
 assert.equal(run.status, 0, run.stderr);
 
-const py = spawnSync('python3', ['-I', 'scripts/verify_schem.py', scanFile], { encoding: 'utf8' });
+const py = spawnSync(python, ['-I', '-X', 'utf8', 'scripts/verify_schem.py', scanFile], { encoding: 'utf8' });
 assert.equal(py.status, 0, py.stdout + py.stderr);
 const summary = JSON.parse(py.stdout);
 assert.equal(summary.dataVersion, 4189);

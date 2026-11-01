@@ -1,5 +1,16 @@
 # Entwicklungskoordination
 
+### MSG-CODEX-SETUP-00 · Codex · 2026-11-01T12:02:00+01:00 · Arbeitsgrundlage
+- Auftrag: bestehenden Stand ab main `9f1700e` für die Codex-Weiterentwicklung vervollständigen; keine Produktneuentwicklung oder fremden Änderungen. PLAN-01/DOC-01/QA-01: Setupanleitung, reproduzierbare Browserabhängigkeit, Windows-Prüfbarkeit, lokale Hooks und Aufgabenführung prüfen.
+- Dateien: AGENTS/README/CONTRIBUTING, docs/project/CODEX_SETUP.md, STATUS/TESTING/COMMUNICATION, roadmap.json und generierte Ansichten; package/Lockfile, .gitattributes sowie nötige Setup-/Python- und Testpfadanpassungen. Bestehende Architektur und Historie bleiben erhalten.
+- Prüfplan: npm-Installation, vollständiger Check, Chromiuminstallation und tatsächliche E2E-Ausführung, Roadmapänderungsprüfung; regulärer Main-Push und unmittelbar vorhandener Pages-Publisher mit separatem Live-Hashnachweis.
+- Reservierung für diesen aktiven Auftrag bis 2026-11-01T14:30:00+01:00. Keine aktive fremde Reservierung in diesem Dateiumfang erkennbar; PERF-Arbeit bereits übergeben. Kein Hintergrundmonitor.
+
+### MSG-CODEX-SETUP-01 · Codex · 2026-11-01T12:10:00+01:00 · Tatsächliche Browserbefunde
+- Erste vollständige Chromium-Suite: 44/54 bestanden, zehn Ausfälle. Testfehler: alte Zahl acht statt elf Bauwelten, mehrdeutige Asset-Hinweise, exakter Labelselektor, Workerinitialisierung statt abgebrochener Startanfragen gezählt und sofortige Rezeptzählung während neuer asynchroner Berechnung.
+- GAME-01/PERF-01: echter Aufnahmeverlust durch Unmount von GameCheckPanel während neuer/historischer Workerberechnung. Umfang erweitert um BuildTab und vorhandene Aufnahme-/Workerregressionen: denselben gekennzeichneten Controller über Pending/Ready erhalten, ohne alte Geometrie als aktuellen Stand anzuzeigen. Keine Datenmigration und kein zweiter Fachkern.
+- Setup läuft; 377 Bestands-Kerntests sowie zwei neue Python-Prozessregressionen bestanden. Neue Browserläufe müssen Korrekturen bestätigen; Ergebnisse werden erst nach erfolgreicher Ausführung als geprüft geführt.
+
 Dieses Dokument koordiniert Menschen und Coding-Agenten während aktiver Arbeit. Es startet keine Hintergrundüberwachung.
 
 ## Protokoll
@@ -490,3 +501,8 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 ### MSG-PERF-QA-01 · Codex · 2026-11-01 · Direkter Desktop-Smoke
 - Nach erfolgreichem PERF-Deployment zusätzlich echter öffentlicher Cloud-Chrome-Smoke: Beispielprojekt, Worker pending→ready, zwei schnelle Y-Änderungen, Bauplan Y2, Material- und Baustellenwerte mit 350 Blöcken geprüft. Screenshot des synthetischen Beispiels als Abschlussnachweis vorhanden. Keine sichtbaren Produkt-Alerts; keine allgemeine Fehlerfreiheit behauptet.
 - Quelle 7dffd92 / Artefakt e1d6ba0, Livesource und 13 Dateihashes bestätigt. Die neue fachliche QA-Erkenntnis wird in Roadmap/TESTING nachgetragen; automatisierte Worker-/DB-/Mobilfälle bleiben offen. Kein zusätzlicher Produktcode geändert.
+
+### MSG-CODEX-SETUP-02 · Codex · 2026-11-01T12:18:00+01:00 · Abschlussprüfung und Integration
+- Vollständiges Setup ausgeführt, 379/379 Node- und 54/54 reale Chromium-E2E-Tests bestanden; keine Tests übersprungen. Aufnahmecontrollerfehler behoben, alle zehn Ausfälle des ersten Browserlaufs aufgelöst. STORE-02 und QA-01 im beschriebenen Browserumfang abgenommen.
+- Arbeitsregeln, Beitrags-/PR-Anleitung, Codex-Setup, Status, Testprotokoll und bestehende 56 Aufgaben aktualisiert; Historie angehängt. Lokale Hooks aktiv. Nur main vorhanden, Pagesquelle main/root per API und vorherige 13 Livehashes bestätigt. Keine Cloud-Umgebung erstellt: Verwaltungswerkzeug fehlt; konkreter Oberflächenweg dokumentiert.
+- Dateibearbeitung beendet, Reservierung aufgehoben. Vor Commit/Push erneut Remote/Kommunikation und Roadmapänderung prüfen; regulär main integrieren und sofort Publisher ausführen. Neue Quell-/Artefakt-SHAs und Livehashnachweis im Abschluss, kein künstlicher Nachtragscommit. Keine Hintergrundüberwachung. Nächste Aufgabe: große Worker-Browserlatenz PERF-01-S03 bzw. verbleibender PERF-02-Teil; echte Geräte QA-02 separat.

@@ -2,6 +2,8 @@
 
 Stand: 27.10.2026. Verbindlicher Ausführungsplan für `Freadeax/Minecraft-Bauplaner`, keine Behauptung einer bereits laufenden Deploymentstrecke. Ergänzt [Arbeitsregeln](../../AGENTS.md), [Hosting](../architecture/HOSTING.md) und [Umsetzungsplan](../IMPLEMENTATION_PLAN.md).
 
+Aktuelle Umgebung vom 01.11.2026: vollständiger Clone mit authentifizierter GitHub CLI; reguläres Git bevorzugen. Pages-API bestätigt main/root, Remote-Refabfrage zeigt nur main. Frühere Konnektorgrenzen sind historische Fähigkeitsnachweise, keine heute fehlende Nutzerfreigabe. Es wurden keine Pages-Einstellungen oder Branches verändert. Codex-Projekt-/Cloudverwaltung ist weiterhin kein Werkzeug dieser Sitzung; siehe [CODEX_SETUP](../project/CODEX_SETUP.md).
+
 ## Auftrag und Befugnisse
 
 Der Agent übernimmt Entwicklung, lokale Prüfungen, reguläre Main-Integration und anschließende Pages-Veröffentlichung selbst. Die Nutzerfreigaben gelten dauerhaft für dieses Repository; Routine-Merges, Pushes und die Veröffentlichung geprüfter Websiteartefakte brauchen keine weitere Freigabe. Branchschutz, Rechteprüfung und lokale Qualitätsanforderungen bleiben bestehen. Andere Repositorys, Sichtbarkeitswechsel, kostenpflichtige Dienste und Weltänderungen sind daraus nicht automatisch beauftragt.

@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url';
+import { python } from '../scripts/python.mjs';
 import { exportRevisionSchem, exportFileName } from '../dist/application/src/index.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -26,7 +28,7 @@ let fileNo = 0;
 function verify(bytes) {
   const file = join(dir, `f${fileNo++}.litematic`);
   writeFileSync(file, bytes);
-  const r = spawnSync('python3', ['-I', new URL('../scripts/verify_litematic.py', import.meta.url).pathname, file], { encoding: 'utf8' });
+  const r = spawnSync(python, ['-I', '-X', 'utf8', fileURLToPath(new URL('../scripts/verify_litematic.py', import.meta.url)), file], { encoding: 'utf8' });
   assert.equal(r.stderr, '', r.stderr);
   const summary = JSON.parse(r.stdout);
   assert.equal(r.status, summary.valid ? 0 : 1);
