@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T15:25:25.019Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T17:44:58.271Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -1092,7 +1092,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### BACKUP-02
 
-**Sicherungserinnerung und Abschnittsrevisionen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Sicherungen erweitern“ · Aktualisiert: 2026-11-01T15:25:25.019Z
+**Sicherungserinnerung und Abschnittsrevisionen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Sicherungen erweitern“ · Aktualisiert: 2026-11-01T17:44:58.271Z
 
 - [x] BACKUP-02-S01: Letzte erfolgreiche Sicherung mit Datenänderungen vergleichen.
 - [x] BACKUP-02-S02: Abschnittsstand reproduzierbar einfrieren und wiederfinden.

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T15:25:25.019Z",
+  "updatedAt": "2026-11-01T17:44:58.271Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -2875,7 +2875,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T15:25:25.019Z"
+      "updatedAt": "2026-11-01T17:44:58.271Z"
     },
     {
       "id": "TEAM-01",
@@ -5472,6 +5472,26 @@
         "packages/domain/src/site.ts",
         "tests/backup-reminder.test.mjs",
         "tests/e2e/backup-reminder.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "BACKUP-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme auf echten Geräten (QA-02), besonders Safari-Downloads; Rückmeldung zur Erinnerungsschwelle (7 Tage) einholen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T17:44:58.271Z",
+      "kind": "progress",
+      "items": [
+        "BACKUP-02"
+      ],
+      "summary": "Prüfprotokoll nach Rebase auf d2f7af8 nachgetragen; Integration auf main und Pages-Veröffentlichung.",
+      "files": [
+        "docs/TESTING.md"
       ],
       "snapshot": [
         {

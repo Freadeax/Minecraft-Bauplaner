@@ -1289,3 +1289,17 @@ Sicherungsstand (Belege, Vergleich, Erinnerung, Prüfen) und Abschnittsstände (
 - `tests/backup-reminder.test.mjs`
 - `tests/e2e/backup-reminder.e2e.mjs`
 
+## 2026-11-01T17:44:58.271Z · progress
+
+**Aufgaben:** BACKUP-02
+
+Prüfprotokoll nach Rebase auf d2f7af8 nachgetragen; Integration auf main und Pages-Veröffentlichung.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| BACKUP-02 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme auf echten Geräten (QA-02), besonders Safari-Downloads; Rückmeldung zur Erinnerungsschwelle (7 Tage) einholen. |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+
