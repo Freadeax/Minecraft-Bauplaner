@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T14:08:37.152Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T14:10:49.361Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,8 +12,8 @@ Stand: 2026-11-01T14:08:37.152Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 20 |
-| 🚧 In Arbeit | 3 |
+| ⏳ Offen | 19 |
+| 🚧 In Arbeit | 4 |
 | ⛔ Blockiert | 0 |
 | 🧩 Implementiert · Abnahme offen | 13 |
 | ✅ Im beschriebenen Umfang geprüft | 21 |
@@ -26,6 +26,7 @@ Stand: 2026-11-01T14:08:37.152Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 - **EDIT-01 · Mehrfachauswahl und sichtbare Freiraumhüllen** — 🚧 In Arbeit, 0/2 Teilschritte. Nächster Schritt: Auswahlvertrag und atomare Gruppenoperationen definieren.
 - **EDIT-02 · Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** — 🚧 In Arbeit, 0/5 Teilschritte. Nächster Schritt: Entwurfsvertrag und Werkzeuge umsetzen, Blockregister von VIEW-02 übernehmen.
 - **GEN-02 · Weitere Generatoren und Dachdetails** — 🚧 In Arbeit, 0/5 Teilschritte. Nächster Schritt: Generatorspezifikation und Umsetzung Treppenhaus, Kirche, Hafen.
+- **WORLD-IMPORT-01 · Bereichsweiser Weltimport und Terrainprüfung** — 🚧 In Arbeit, 0/2 Teilschritte. Nächster Schritt: Konsistentes Sicherungsformat und Bereichsauswahl festlegen.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -127,7 +128,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter | ⏳ Offen | 0/2 | MAP-01 | ausstehend | ausstehend |
 | [GAME-02](#game-02) | Fabric-Brücke kompilieren und im Spiel abnehmen | 🧩 Implementiert · Abnahme offen | 3/4 | FORMAT-01, GAME-01 | `84838f0` | `e232b26` |
 | [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | ⏳ Offen | 0/2 | GAME-02 | ausstehend | ausstehend |
-| [WORLD-IMPORT-01](#world-import-01) | Bereichsweiser Weltimport und Terrainprüfung | ⏳ Offen | 0/2 | PROFILE-01, PERF-02, FORMAT-01 | ausstehend | ausstehend |
+| [WORLD-IMPORT-01](#world-import-01) | Bereichsweiser Weltimport und Terrainprüfung | 🚧 In Arbeit | 0/2 | PROFILE-01, PERF-02, FORMAT-01 | ausstehend | ausstehend |
 | [BACKUP-02](#backup-02) | Sicherungserinnerung und Abschnittsrevisionen | ⏳ Offen | 0/2 | STORE-01, BUILD-01 | ausstehend | ausstehend |
 | [LIB-04](#lib-04) | Gebäudebibliothek v3: Inhalte in alle Richtungen | 🧩 Implementiert · Abnahme offen | 4/4 | LIB-01 | ausstehend | ausstehend |
 
@@ -1070,7 +1071,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### WORLD-IMPORT-01
 
-**Bereichsweiser Weltimport und Terrainprüfung** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Bereichsweiser Weltimport und Terrainprüfung** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread Weltausschnitte importieren) · Aktualisiert: 2026-11-01T14:10:49.361Z
 
 - [ ] WORLD-IMPORT-01-S01: Konsistentes Sicherungsformat und Bereichsauswahl festlegen.
 - [ ] WORLD-IMPORT-01-S02: Begrenzten Adapter, Terrain-/Fundamentprüfung und Lastszenarien implementieren.
@@ -1083,7 +1084,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** noch ausstehend
 
-**Dateiumfang:** `packages/formats/`, `packages/voxel/`. **Abhängigkeiten:** PROFILE-01, PERF-02, FORMAT-01. **Alte IDs:** P7-01.
+**Dateiumfang:** `packages/formats/src/anvil.ts`, `packages/formats/src/lz4.ts`, `packages/formats/src/worldExcerpt.ts`, `packages/domain/src/terrain.ts`, `apps/web/src/views/world/`, `apps/web/src/views/project/TerrainTab.tsx`, `tests/anvil.test.mjs`, `docs/architecture/WORLD_IMPORT.md`. **Abhängigkeiten:** PROFILE-01, PERF-02, FORMAT-01. **Alte IDs:** P7-01.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

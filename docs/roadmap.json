@@ -1,13 +1,14 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T14:08:37.152Z",
+  "updatedAt": "2026-11-01T14:10:49.361Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
     "MAP-01",
     "EDIT-01",
     "EDIT-02",
-    "GEN-02"
+    "GEN-02",
+    "WORLD-IMPORT-01"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -2661,16 +2662,22 @@
       "title": "Bereichsweiser Weltimport und Terrainprüfung",
       "phase": "P3",
       "priority": "P1",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "in_progress",
+      "owner": "Claude (Thread Weltausschnitte importieren)",
       "dependencies": [
         "PROFILE-01",
         "PERF-02",
         "FORMAT-01"
       ],
       "scope": [
-        "packages/formats/",
-        "packages/voxel/"
+        "packages/formats/src/anvil.ts",
+        "packages/formats/src/lz4.ts",
+        "packages/formats/src/worldExcerpt.ts",
+        "packages/domain/src/terrain.ts",
+        "apps/web/src/views/world/",
+        "apps/web/src/views/project/TerrainTab.tsx",
+        "tests/anvil.test.mjs",
+        "docs/architecture/WORLD_IMPORT.md"
       ],
       "legacyIds": [
         "P7-01"
@@ -2701,7 +2708,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-01T14:10:49.361Z"
     },
     {
       "id": "BACKUP-02",
@@ -4945,6 +4952,26 @@
           "done": 0,
           "total": 5,
           "next": "Generatorspezifikation und Umsetzung Treppenhaus, Kirche, Hafen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T14:10:49.361Z",
+      "kind": "progress",
+      "items": [
+        "WORLD-IMPORT-01"
+      ],
+      "summary": "WORLD-IMPORT-01 übernommen: Dateiumfang und Abstimmung in COMMUNICATION; noch keine Funktion.",
+      "files": [
+        "docs/COMMUNICATION.md"
+      ],
+      "snapshot": [
+        {
+          "id": "WORLD-IMPORT-01",
+          "status": "in_progress",
+          "done": 0,
+          "total": 2,
+          "next": "Konsistentes Sicherungsformat und Bereichsauswahl festlegen."
         }
       ]
     }

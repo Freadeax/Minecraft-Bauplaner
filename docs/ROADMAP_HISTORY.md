@@ -1004,3 +1004,17 @@ GEN-02 übernommen: Claude-Thread „Neue Gebäudegeneratoren ergänzen“, Teil
 
 - `docs/COMMUNICATION.md`
 
+## 2026-11-01T14:10:49.361Z · progress
+
+**Aufgaben:** WORLD-IMPORT-01
+
+WORLD-IMPORT-01 übernommen: Dateiumfang und Abstimmung in COMMUNICATION; noch keine Funktion.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| WORLD-IMPORT-01 | 🚧 In Arbeit | 0/2 | Konsistentes Sicherungsformat und Bereichsauswahl festlegen. |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+
