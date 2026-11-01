@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T10:15:04.390Z",
+  "updatedAt": "2026-11-01T10:22:39.771Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-01",
@@ -738,7 +738,7 @@
       "phase": "P1",
       "priority": "P0",
       "status": "blocked",
-      "owner": "nicht zugewiesen",
+      "owner": "Codex",
       "dependencies": [
         "ARCH-01"
       ],
@@ -765,16 +765,21 @@
       "blockers": [
         "Chromium fehlt; aktueller Installationsversuch liefert ungültige/leere Archive. Isolierter Browserstart und tatsächlicher E2E-Start belegen die Infrastrukturgrenze."
       ],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "docs/TESTING.md",
+          "note": "Abgegrenzter tatsächlicher Desktop-Smoke nach PERF-Deployment, ausdrücklich kein vollständiger Browserregressionsnachweis."
+        }
+      ],
       "verification": {
         "state": "pending",
-        "note": "Aktueller E2E-Versuch scheitert vor Produktprüfung an fehlendem chromium_headless_shell-1234; keine Browserabnahme."
+        "note": "Die vollständige aktuelle lokale Playwright-Suite ist vor Produktstart am fehlenden Chromium-Executable blockiert. Ein begrenzter direkter Desktop-Smoke der veröffentlichten PERF-01-Oberfläche im Cloud-Chrome ist tatsächlich bestanden; automatische Mobil-/Fehler-/Abbruch- und DB-Regressionsfälle bleiben offen."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T05:20:38.605Z"
+      "updatedAt": "2026-11-01T10:22:39.771Z"
     },
     {
       "id": "QA-02",
@@ -1529,13 +1534,13 @@
       ],
       "verification": {
         "state": "passed",
-        "note": "377 Node-Tests sowie strenge Modul-/Typ-/Build-/Roadmap-/Dokumentationsprüfung bestanden. Echter Nodeworker mit semantisch gleichem Ergebnis und bedienter Ereignisschleife; vier Browserfälle vor Produktstart mangels Chromium blockiert, Browser-/Mobilmessung weiterhin offen."
+        "note": "377 Node-Tests sowie strenge Modul-/Typ-/Build-/Roadmap-/Dokumentationsprüfung bestanden. Echter Nodeworker mit semantisch gleichem Ergebnis und bedienter Ereignisschleife; vier Browserfälle vor Produktstart mangels Chromium blockiert, Browser-/Mobilmessung weiterhin offen. Zusätzlich direkter Cloud-Chrome-Desktop-Smoke nach Veröffentlichung bestanden: 350 Blöcke, zwei Y-Änderungen, Bauplan Y2, konsistente Material-/Baustellenwerte. Vollständige automatische/Hardware-Abnahme bleibt offen."
       },
       "delivery": {
-        "main": null,
-        "pagesSource": null
+        "main": "7dffd922f46876c70700afc0429afb969e5478aa",
+        "pagesSource": "7dffd922f46876c70700afc0429afb969e5478aa"
       },
-      "updatedAt": "2026-11-01T10:15:04.390Z"
+      "updatedAt": "2026-11-01T10:22:39.771Z"
     },
     {
       "id": "PERF-02",
@@ -1593,10 +1598,10 @@
         "note": "Interner Indexteil mit 15 passenden bestehenden/neuen Regressionen und sechs hashgleichen Vergleichsausgaben geprüft. Kein Browser-, Chunk- oder selektiver Cache-Nachweis. Gemeinsame vollständige Prüfung mit 377 Node-Tests bestanden."
       },
       "delivery": {
-        "main": null,
-        "pagesSource": null
+        "main": "7dffd922f46876c70700afc0429afb969e5478aa",
+        "pagesSource": "7dffd922f46876c70700afc0429afb969e5478aa"
       },
-      "updatedAt": "2026-11-01T10:15:04.390Z"
+      "updatedAt": "2026-11-01T10:22:39.771Z"
     },
     {
       "id": "PERF-03",
@@ -3401,6 +3406,44 @@
           "done": 2,
           "total": 3,
           "next": "Echte IndexedDB-v1→v2-Migration und Zwei-Tab-UI-Regressionsfälle bei verfügbarer Chromium-Laufzeit ausführen; danach STORE-02 vollständig abnehmen. Folgender Entwicklungsblock PERF-01."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T10:22:39.771Z",
+      "kind": "progress",
+      "items": [
+        "PERF-01",
+        "PERF-02",
+        "QA-01"
+      ],
+      "summary": "Direkter veröffentlichter Cloud-Chrome-Desktop-Smoke bestanden: Projektberechnung, zwei schnelle Höhenänderungen, Bauplan Y2 und konsistente 350-Block-Material-/Baustellenwerte. Quelle 7dffd92 / Artefakt e1d6ba0 und 13 Livehashes bestätigt. Automatische Worker-/DB-/Mobil- und Latenzabnahme weiterhin offen.",
+      "files": [
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-01",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Vollständige Browser-/Mobil-Latenz und Abbruch/Retry/historische Revisionen mit verfügbarer Chromium-Laufzeit messen; danach PERF-01 vollständig abnehmen."
+        },
+        {
+          "id": "PERF-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Kopier-/Ownerkosten im echten Browser messen und selektive Geometrie-/Fortschritts-Invalidierung vor Cache-/Chunkumbau prüfen."
+        },
+        {
+          "id": "QA-01",
+          "status": "blocked",
+          "done": 0,
+          "total": 2,
+          "next": "Chromium-Laufzeit bereitstellen bzw. Verfügbarkeit prüfen."
         }
       ]
     }

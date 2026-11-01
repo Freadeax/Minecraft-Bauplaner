@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T10:15:04.390Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T10:22:39.771Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -91,8 +91,8 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [MAT-03](#mat-03) | Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen | 🧩 Implementiert · Abnahme offen | 2/3 | PROFILE-01, QA-01 | `84838f0` | `e232b26` |
 | [MAT-04](#mat-04) | Kupfer mit Oxidation und Wachsstatus | ⏳ Offen | 0/2 | PROFILE-01, MAT-03 | ausstehend | ausstehend |
 | [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen | 1/3 | CORE-02, NBT-01 | `84838f0` | `e232b26` |
-| [PERF-01](#perf-01) | Große Berechnungen als abbrechbare Worker-Aufträge | 🧩 Implementiert · Abnahme offen | 2/3 | ARCH-01 | ausstehend | ausstehend |
-| [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen | 2/3 | PERF-01 | ausstehend | ausstehend |
+| [PERF-01](#perf-01) | Große Berechnungen als abbrechbare Worker-Aufträge | 🧩 Implementiert · Abnahme offen | 2/3 | ARCH-01 | `7dffd92` | `7dffd92` |
+| [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen | 2/3 | PERF-01 | `7dffd92` | `7dffd92` |
 | [PERF-03](#perf-03) | Bundle, große Views und Vorschaucache | ⏳ Offen | 0/3 | ARCH-01, QA-01 | ausstehend | ausstehend |
 | [VIEW-01](#view-01) | Vorhandenen Viewer vollständig abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | QA-01 | `84838f0` | `e232b26` |
 
@@ -394,7 +394,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### QA-01
 
-**Aktuelle Browserregression für alle Hauptabläufe** · ⛔ Blockiert · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T05:20:38.605Z
+**Aktuelle Browserregression für alle Hauptabläufe** · ⛔ Blockiert · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T10:22:39.771Z
 
 - [ ] QA-01-S01: Chromium-Laufzeit bereitstellen bzw. Verfügbarkeit prüfen.
 - [ ] QA-01-S02: Komplette aktuelle Desktop-/schmale E2E-Suite ausführen und Fehler beheben.
@@ -405,9 +405,9 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Blocker:** Chromium fehlt; aktueller Installationsversuch liefert ungültige/leere Archive. Isolierter Browserstart und tatsächlicher E2E-Start belegen die Infrastrukturgrenze.
 
-**Prüfstand:** Aktueller E2E-Versuch scheitert vor Produktprüfung an fehlendem chromium_headless_shell-1234; keine Browserabnahme.
+**Prüfstand:** Die vollständige aktuelle lokale Playwright-Suite ist vor Produktstart am fehlenden Chromium-Executable blockiert. Ein begrenzter direkter Desktop-Smoke der veröffentlichten PERF-01-Oberfläche im Cloud-Chrome ist tatsächlich bestanden; automatische Mobil-/Fehler-/Abbruch- und DB-Regressionsfälle bleiben offen.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [docs/TESTING.md](TESTING.md) — Abgegrenzter tatsächlicher Desktop-Smoke nach PERF-Deployment, ausdrücklich kein vollständiger Browserregressionsnachweis.
 
 **Dateiumfang:** `tests/e2e/`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** —.
 
@@ -687,7 +687,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-01
 
-**Große Berechnungen als abbrechbare Worker-Aufträge** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T10:15:04.390Z
+**Große Berechnungen als abbrechbare Worker-Aufträge** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T10:22:39.771Z
 
 - [x] PERF-01-S01: Workerprotokoll mit Job-ID, Revisionsbezug und Abbruch definieren.
 - [x] PERF-01-S02: Auflösung, Anleitung und Materialien auslagern; veraltete Ergebnisse verwerfen.
@@ -697,17 +697,17 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nächste Aktion:** Vollständige Browser-/Mobil-Latenz und Abbruch/Retry/historische Revisionen mit verfügbarer Chromium-Laufzeit messen; danach PERF-01 vollständig abnehmen.
 
-**Prüfstand:** 377 Node-Tests sowie strenge Modul-/Typ-/Build-/Roadmap-/Dokumentationsprüfung bestanden. Echter Nodeworker mit semantisch gleichem Ergebnis und bedienter Ereignisschleife; vier Browserfälle vor Produktstart mangels Chromium blockiert, Browser-/Mobilmessung weiterhin offen.
+**Prüfstand:** 377 Node-Tests sowie strenge Modul-/Typ-/Build-/Roadmap-/Dokumentationsprüfung bestanden. Echter Nodeworker mit semantisch gleichem Ergebnis und bedienter Ereignisschleife; vier Browserfälle vor Produktstart mangels Chromium blockiert, Browser-/Mobilmessung weiterhin offen. Zusätzlich direkter Cloud-Chrome-Desktop-Smoke nach Veröffentlichung bestanden: 350 Blöcke, zwei Y-Änderungen, Bauplan Y2, konsistente Material-/Baustellenwerte. Vollständige automatische/Hardware-Abnahme bleibt offen.
 
 **Nachweise:** [tests/project-computation.test.mjs](../tests/project-computation.test.mjs) — Acht Kern-/Lifecycle-/Node-Workerfälle; Gesamtcheck in TESTING.; [tests/e2e/project-computation.e2e.mjs](../tests/e2e/project-computation.e2e.mjs) — Vier reale Browserfälle vorbereitet, Ausführung am Chromiumstart blockiert.; [docs/architecture/PROJECT_COMPUTATION.md](architecture/PROJECT_COMPUTATION.md) — Protokoll, Snapshotbindung und abgegrenzte Node-Messung.
 
 **Dateiumfang:** `apps/web/src/views/project/session.ts`, `packages/application/`, `apps/web/src/computation/`, `apps/web/src/app/useProjectComputation.ts`, `apps/web/src/views/project/`, `tests/project-computation.test.mjs`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** —.
 
-**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+**Integration:** Main [7dffd92](https://github.com/Freadeax/Minecraft-Bauplaner/commit/7dffd922f46876c70700afc0429afb969e5478aa); Pages-Quelle [7dffd92](https://github.com/Freadeax/Minecraft-Bauplaner/commit/7dffd922f46876c70700afc0429afb969e5478aa).
 
 ### PERF-02
 
-**Zellindizes, Chunkdaten und selektive Neuberechnung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T10:15:04.390Z
+**Zellindizes, Chunkdaten und selektive Neuberechnung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T10:22:39.771Z
 
 - [x] PERF-02-S01: Kosten von owners/Strings/Übertragungen messen.
 - [x] PERF-02-S02: Index-/Chunkstrategie nur mit identischem semantischem Ergebnis einführen.
@@ -723,7 +723,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Dateiumfang:** `packages/domain/src/compose.ts`, `packages/voxel/`. **Abhängigkeiten:** PERF-01. **Alte IDs:** —.
 
-**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+**Integration:** Main [7dffd92](https://github.com/Freadeax/Minecraft-Bauplaner/commit/7dffd922f46876c70700afc0429afb969e5478aa); Pages-Quelle [7dffd92](https://github.com/Freadeax/Minecraft-Bauplaner/commit/7dffd922f46876c70700afc0429afb969e5478aa).
 
 ### PERF-03
 
