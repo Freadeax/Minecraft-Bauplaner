@@ -1,5 +1,6 @@
-// Real-game check of the Fabric bridge (GAME-02). Used by scripts/test_bridge_ingame.sh around the
-// Fabric client game test in mods/bauplaner-bridge/fabric-26.3/src/gametest:
+// Real-game check of the bridge (GAME-02, GAME-04). Used by scripts/test_bridge_ingame.sh around the
+// Fabric client game test in mods/bauplaner-bridge/fabric-26.3/src/gametest and by scripts/test_bridge_paper.sh
+// around a real Paper server:
 //   prepare <dir>  website exports a plan; writes plan.schem plus setblocks.txt (plan cells relative to the
 //                  origin, one block wrong and one missing; only the test harness places blocks)
 //   verify <dir>   reads the scan.schem the mod recorded in the running game and compares it like the
@@ -66,5 +67,5 @@ if (mode === 'prepare') {
   assert.deepEqual(byVerdict.wrong.position, expected.wrong);
   assert.equal(byVerdict.wrong.actual, 'minecraft:diamond_block');
   assert.deepEqual(byVerdict.missing.position, expected.missing);
-  console.log(`Spieltest bestanden: Minecraft ${scan.meta.gameVersion ?? '26.3'}, ${check.totals.cells} Zellen aus dem echten Client gelesen, ${check.totals.ok} korrekt, 1 falscher Block und 1 fehlender Block an den erwarteten Stellen erkannt.`);
+  console.log(`Spieltest bestanden: Minecraft ${scan.meta.gameVersion ?? '26.3'} (${scan.meta.loader ?? '?'}), ${check.totals.cells} Zellen aus ${scan.meta.source === 'server' ? 'der echten Serverwelt' : 'dem echten Client'} gelesen, ${check.totals.ok} korrekt, 1 falscher Block und 1 fehlender Block an den erwarteten Stellen erkannt.`);
 }

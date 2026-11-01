@@ -49,6 +49,20 @@ for (const viewport of [{ width: 1400, height: 900 }, { width: 390, height: 844 
     // Die Auswahl steht als teilbarer Link in der Adresszeile.
     await p.getByLabel('Mod-Version').selectOption(newest.modVersion);
     assert.match(p.url(), new RegExp(`#/mod\\?minecraft=${newest.minecraft.replace('.', '\\.')}&loader=fabric&version=`));
+    // Paper-Plugin: eine .jar für mehrere Minecraft-Versionen, Serveranleitung statt Mod-Anleitung.
+    const paper = releases.find(r => r.loader === 'paper');
+    if (paper) {
+      const older = paper.minecraftVersions.find(v => v !== paper.minecraft);
+      await p.getByLabel('Minecraft-Version').selectOption(older);
+      assert.equal(await p.getByLabel('Mod-Loader').inputValue(), 'paper', 'ältere Version nur als Paper-Plugin');
+      assert.equal(await link.getAttribute('href'), `/Minecraft-Bauplaner/downloads/mod/${paper.file}`);
+      await p.getByRole('heading', { name: 'Auf dem Server installieren und benutzen' }).waitFor();
+      assert.ok(await p.getByText('plugins/BauplanerBridge/plans/').first().isVisible());
+      assert.match(p.url(), new RegExp(`#/mod\\?minecraft=${older.replaceAll('.', '\\.')}&loader=paper&version=`));
+      await p.getByLabel('Minecraft-Version').selectOption(paper.minecraft);
+      await p.getByLabel('Mod-Loader').selectOption('paper');
+      assert.equal(await link.getAttribute('href'), `/Minecraft-Bauplaner/downloads/mod/${paper.file}`);
+    }
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'keine waagerechte Scrollleiste');
     assert.deepEqual(errors, []);
     await context.close();

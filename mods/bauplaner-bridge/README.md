@@ -2,13 +2,14 @@
 
 Liest den Bereich eines Bauplans aus der Welt und schreibt eine **Aufnahme**, die die Website im Tab „Bauen“ importiert. Daraus entsteht der Fortschritt je Bauschritt („im Spiel bestätigt / teilweise / abweichend“). Konzept und Format: [MOD_BRIDGE](../../docs/architecture/MOD_BRIDGE.md).
 
-Die Mod ist **nur lesend**: Sie setzt und entfernt keine Blöcke, sendet nichts ins Internet und braucht nichts auf dem Server. Sie läuft im Einzelspieler und auf Mehrspieler-Servern als reine Client-Mod.
+Die Brücke ist **nur lesend**: Sie setzt und entfernt keine Blöcke und sendet nichts ins Internet. Als Fabric-Mod läuft sie im Einzelspieler und auf Mehrspieler-Servern als reine Client-Mod; als Paper-Plugin (Abschnitt „Paper-Server“) läuft sie auf dem Server und liest die ganze Serverwelt.
 
 ## Stand
 
 | Teil | Stand |
 |---|---|
 | `core/` (reines Java 21, ohne Minecraft) | Plan lesen, Aufnahme in Scheiben, Aufnahme-Datei schreiben, Anker je Welt/Server merken. 6 JUnit-Tests und sprachübergreifende Prüfung mit Website und Python-Leser bestanden (`scripts/test_bridge.sh`) |
+| `paper/` (Paper-Server-Plugin, eine .jar für Minecraft 1.18.2 bis 26.3, Java ≥ 17) | Liest auf dem Server die ganze Planbox, lädt vorhandene Chunks kurz nach, erzeugt nie Gelände. Auf echten Paper-Servern 1.18.2, 1.20.6, 1.21.4, 1.21.11 und 26.3 automatisch geprüft (`scripts/test_bridge_paper.sh`, 01.11.2026). Versionsabhängige Aufrufe in `PaperCompat.java` |
 | `fabric-26.3/` (Minecraft 26.3, Fabric Loader ≥ 0.19.5, Fabric API 0.164.0+26.3, Java 25) | Gebaut und im echten 26.3-Client automatisch durchgespielt, auch zusammen mit allen 21 Mods aus Philipps Modpack (`scripts/test_bridge_ingame.sh`, 01.11.2026). Mehrspieler-Abnahme auf einem echten Server steht aus. Alle versionsabhängigen Aufrufe stehen in `McCompat.java` |
 
 ## Bauen
@@ -19,9 +20,18 @@ Voraussetzung: JDK 25 (für den Fabric-Teil), Internetzugang zu `maven.fabricmc.
 cd mods/bauplaner-bridge
 ./gradlew :core:test                         # Kern, braucht nur Maven Central
 ./gradlew -PwithFabric :fabric-26.3:build    # Mod-.jar unter fabric-26.3/build/libs/
+./gradlew -PwithPaper :paper:build          # Paper-Plugin unter paper/build/libs/, braucht repo.papermc.io
 ```
 
 Unter Windows `gradlew.bat` statt `./gradlew`.
+
+Paper-Servertest (lädt echte Paper-Server, JDK 21 und für 26.x JDK 25):
+
+```
+npm run build:core
+scripts/test_bridge_paper.sh               # alle Versionen aus paper/gradle.properties
+scripts/test_bridge_paper.sh 26.3          # nur eine
+```
 
 ## Spieltest
 
@@ -52,3 +62,12 @@ Weitere Befehle: `/bauplaner status`, `/bauplaner abbrechen`, `/bauplaner plaene
 ## Weitere Minecraft-Versionen
 
 Für eine neue Version den Ordner `fabric-26.3` kopieren (z. B. `fabric-26.4`), in `gradle.properties` die Versionen eintragen, `McCompat.java` anpassen und den Ordner in `settings.gradle` einbinden. Der Kern bleibt unverändert.
+
+## Paper-Server
+
+1. `bauplaner-bridge-paper-<Version>.jar` in den Ordner `plugins` des Servers legen und neu starten (Paper 1.18.2 bis 26.3; Folia nicht).
+2. Auf der Website im Tab „Export“ eine Revision als `.schem` exportieren und nach `plugins/BauplanerBridge/plans/` hochladen.
+3. Im Spiel `/bauplaner plan <datei>`, auf den Block mit Projektkoordinate 0/0/0 schauen, `/bauplaner anker hier` (oder `/bauplaner anker <x> <y> <z> [welt]`, in der Konsole ohne `/`). Der Anker gilt für alle, die diesen Plan laden.
+4. `/bauplaner scan` liest die ganze Planbox, auch wenn niemand in der Nähe ist; `scan geladen` nur geladene Chunks. Die Aufnahme aus `plugins/BauplanerBridge/scans/` herunterladen und im Tab „Bauen“ importieren.
+
+Rechte: `bauplaner.use` (alle), `bauplaner.nachladen` (Chunks nachladen) und `bauplaner.abbrechen.alle` (Operatoren). Einstellungen: `plugins/BauplanerBridge/config.yml` (Zeitbudget je Tick, Nachladen, Chunk-Grenze).

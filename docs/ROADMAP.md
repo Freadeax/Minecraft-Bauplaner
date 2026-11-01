@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T17:44:58.271Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T17:45:29.973Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -13,7 +13,7 @@ Stand: 2026-11-01T17:44:58.271Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | Status | Pakete |
 |---|---:|
 | ⏳ Offen | 17 |
-| 🚧 In Arbeit | 1 |
+| 🚧 In Arbeit | 2 |
 | ⛔ Blockiert | 0 |
 | 🧩 Implementiert · Abnahme offen | 18 |
 | ✅ Im beschriebenen Umfang geprüft | 22 |
@@ -129,6 +129,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | ⏳ Offen | 0/2 | GAME-02 | ausstehend | ausstehend |
 | [WORLD-IMPORT-01](#world-import-01) | Bereichsweiser Weltimport und Terrainprüfung | 🧩 Implementiert · Abnahme offen | 2/2 | PROFILE-01, PERF-02, FORMAT-01 | ausstehend | ausstehend |
 | [BACKUP-02](#backup-02) | Sicherungserinnerung und Abschnittsrevisionen | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-01, BUILD-01 | ausstehend | ausstehend |
+| [GAME-04](#game-04) | Paper-Plugin der Bauplaner-Brücke (serverseitig, mehrere Minecraft-Versionen) | 🚧 In Arbeit | 2/4 | GAME-02 | ausstehend | ausstehend |
 | [GAME-05](#game-05) | NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik | 🚧 In Arbeit | 0/4 | GAME-02 | ausstehend | ausstehend |
 | [LIB-04](#lib-04) | Gebäudebibliothek v3: Inhalte in alle Richtungen | 🧩 Implementiert · Abnahme offen | 4/4 | LIB-01 | ausstehend | ausstehend |
 
@@ -149,7 +150,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [AUTH-01](#auth-01) | Konten, Rechte und Übernahme lokaler Projekte | ⏳ Offen | 0/2 | TEAM-01 | ausstehend | ausstehend |
 | [TEAM-02](#team-02) | Geordnete Operationen, Reconnect und Team-Undo | ⏳ Offen | 0/2 | AUTH-01, UPDATE-01 | ausstehend | ausstehend |
 | [TEAM-03](#team-03) | Gemeinsame Aufgaben, Abschnitte und Sammelplanung | ⏳ Offen | 0/2 | TEAM-02, BUILD-01 | ausstehend | ausstehend |
-| [GAME-04](#game-04) | Paper-/NeoForge-Adapter und sichere Serveranbindung | ⏳ Offen | 0/2 | TEAM-02, GAME-02 | ausstehend | ausstehend |
+| [GAME-06](#game-06) | Sichere Serveranbindung (Webhooks) für Server-Plugins | ⏳ Offen | 0/1 | TEAM-02, GAME-04 | ausstehend | ausstehend |
 | [LAGER-01](#lager-01) | Optionale Truhen-/Lagerintegration | ⏳ Offen | 0/2 | TEAM-03, GAME-04 | ausstehend | ausstehend |
 | [OPS-04](#ops-04) | Teamdienst betreiben und Wiederherstellung prüfen | ⏳ Offen | 0/2 | TEAM-02 | ausstehend | ausstehend |
 | [DEFER-01](#defer-01) | GitHub-Login, externes Materialrepo und Registry | ⏸ Zurückgestellt | 0/1 | — | ausstehend | ausstehend |
@@ -1187,20 +1188,22 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-04
 
-**Paper-/NeoForge-Adapter und sichere Serveranbindung** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Paper-Plugin der Bauplaner-Brücke (serverseitig, mehrere Minecraft-Versionen)** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread „Bauplaner-Anbindung für Paper bauen“) · Aktualisiert: 2026-11-01T17:45:29.973Z
 
-- [ ] GAME-04-S01: Loader getrennt spezifizieren; zuerst einen weiteren Adapter vollständig prüfen.
-- [ ] GAME-04-S02: Signierte Webhooks, Ereignis-ID und wiederholbare Verarbeitung ergänzen.
+- [x] GAME-04-S01: Paper-Plugin: Plan laden, Anker je Plan (für alle Spieler), Aufnahme der ganzen Serverwelt mit Nachladen vorhandener Chunks ohne Geländeerzeugung, Rechte, Konsole.
+- [x] GAME-04-S02: Auf echten Paper-Servern 1.18.2, 1.20.6, 1.21.4, 1.21.11 und 26.3 automatisch geprüft (scripts/test_bridge_paper.sh).
+- [ ] GAME-04-S03: Jar auf der Download-Seite #/mod für alle geprüften Versionen anbieten.
+- [ ] GAME-04-S04: Abnahme auf Philipps eigenem Paper-Server.
 
-**Abnahme:** Keine impliziten Weltänderungen; Planlieferung und Blocksetzen getrennt.
+**Abnahme:** Keine Weltänderung und keine Geländeerzeugung; dieselbe Aufnahmedatei wie die Fabric-Mod, vom Website-Vergleich geprüft; eine .jar für alle geprüften Versionen.
 
-**Nächste Aktion:** Loader getrennt spezifizieren; zuerst einen weiteren Adapter vollständig prüfen.
+**Nächste Aktion:** Jar auf #/mod anbieten, dann Abnahme auf Philipps Paper-Server.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Automatischer Servertest in fünf Paper-Versionen bestanden; Abnahme auf Philipps Server offen.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [scripts/test_bridge_paper.sh](../scripts/test_bridge_paper.sh) — Echter Servertest Paper 1.18.2/1.20.6/1.21.4/1.21.11/26.3 bestanden (01.11.2026), Ergebnisse in docs/TESTING.md
 
-**Dateiumfang:** `mods/`, `packages/application/`. **Abhängigkeiten:** TEAM-02, GAME-02. **Alte IDs:** P6-01.
+**Dateiumfang:** `mods/bauplaner-bridge/paper/`, `mods/bauplaner-bridge/settings.gradle`, `mods/bauplaner-bridge/README.md`, `scripts/test_bridge_paper.sh`, `scripts/bridge_papertest.mjs`, `scripts/bridge_gametest.mjs`, `scripts/release_mod.mjs`, `apps/web/src/views/mod/`, `downloads/mod/`, `tests/mod-releases.test.mjs`, `tests/e2e/mod-download.e2e.mjs`, `docs/architecture/MOD_BRIDGE.md`. **Abhängigkeiten:** GAME-02. **Alte IDs:** P6-01.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -1222,6 +1225,24 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** noch ausstehend
 
 **Dateiumfang:** `mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/session/`, `mods/bauplaner-bridge/core/src/test/java/io/github/freadeax/bauplaner/bridge/BridgeSessionTest.java`, `mods/bauplaner-bridge/settings.gradle`, `mods/bauplaner-bridge/neoforge-26.3/`, `mods/bauplaner-bridge/forge-26.3/`, `scripts/test_bridge_ingame_neoforge.sh`. **Abhängigkeiten:** GAME-02. **Alte IDs:** P6-01.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### GAME-06
+
+**Sichere Serveranbindung (Webhooks) für Server-Plugins** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T17:45:29.973Z
+
+- [ ] GAME-06-S01: Signierte Webhooks, Ereignis-ID und wiederholbare Verarbeitung ergänzen (aus GAME-04-S02 ausgelagert).
+
+**Abnahme:** Keine impliziten Weltänderungen; Planlieferung und Blocksetzen getrennt.
+
+**Nächste Aktion:** Nach TEAM-02 spezifizieren.
+
+**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `mods/`, `packages/application/`. **Abhängigkeiten:** TEAM-02, GAME-04. **Alte IDs:** P6-01.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

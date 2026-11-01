@@ -1,0 +1,31 @@
+// Paper-Plugin der Bauplaner-Brücke (serverseitig). Eine .jar für viele Minecraft-Versionen: kompiliert
+// gegen die älteste unterstützte Paper-API (1.18.2) mit Java-17-Bytecode und nutzt nur Bukkit-/Paper-
+// Schnittstellen, die bis 26.x unverändert bestehen. Versionsabhängige Aufrufe stehen in PaperCompat.
+// Der versionsneutrale Kern wird wie beim Fabric-Adapter als Quelltext eingebunden.
+plugins {
+    id 'java'
+}
+
+base { archivesName = 'bauplaner-bridge-paper' }
+version = rootProject.file('VERSION').text.trim()
+group = 'io.github.freadeax.bauplaner'
+
+repositories {
+    mavenCentral()
+    maven { name = 'PaperMC'; url = 'https://repo.papermc.io/repository/maven-public/' }
+}
+
+dependencies {
+    compileOnly "io.papermc.paper:paper-api:${paper_api_version}"
+}
+
+sourceSets.main.java.srcDir '../core/src/main/java'
+
+java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
+tasks.withType(JavaCompile).configureEach { options.release = 17; options.encoding = 'UTF-8'; options.compilerArgs << '-Xlint:deprecation' }
+
+processResources {
+    def props = [version: project.version, apiVersion: paper_plugin_api_version]
+    inputs.properties props
+    filesMatching('plugin.yml') { expand props }
+}

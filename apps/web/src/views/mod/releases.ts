@@ -6,7 +6,13 @@ export interface ModRelease {
   readonly file: string;
   readonly modVersion: string;
   readonly loader: string;
+  /** Newest Minecraft version of the build (file name, default selection). */
   readonly minecraft: string;
+  /**
+   * Every Minecraft version one jar runs on, for builds that are not tied to one version (Paper plugin,
+   * Bukkit API). Missing for per-version builds such as the Fabric mod.
+   */
+  readonly minecraftVersions?: readonly string[];
   readonly loaderMin: string;
   readonly fabricApi?: string;
   readonly java: string;
@@ -19,7 +25,15 @@ export interface ModRelease {
 
 export const LOADER_LABEL: Readonly<Record<string, string>> = { fabric: 'Fabric', neoforge: 'NeoForge', paper: 'Paper' };
 /** Loaders that are planned but have no build yet (GAME-04); shown as not yet available. */
-export const PLANNED_LOADERS: readonly string[] = ['neoforge', 'paper'];
+export const PLANNED_LOADERS: readonly string[] = ['neoforge'];
+/** Server plugins (installed on the server, not in the game client). */
+export const SERVER_LOADERS: readonly string[] = ['paper'];
+
+/** Minecraft versions a build runs on. */
+export function versionsOf(r: ModRelease): readonly string[] {
+  return r.minecraftVersions?.length ? r.minecraftVersions : [r.minecraft];
+}
+const supports = (r: ModRelease, minecraft: string) => versionsOf(r).includes(minecraft);
 
 /** Numeric comparison of dotted versions ("26.10" > "26.3"), suffixes after "+"/"-" ignored. */
 export function compareVersions(a: string, b: string): number {
@@ -33,17 +47,17 @@ const unique = (values: readonly string[]) => [...new Set(values)];
 
 /** Minecraft versions with at least one build, newest first. */
 export function minecraftVersions(releases: readonly ModRelease[]): string[] {
-  return unique(releases.map(r => r.minecraft)).sort((a, b) => compareVersions(b, a));
+  return unique(releases.flatMap(r => versionsOf(r))).sort((a, b) => compareVersions(b, a));
 }
 
 /** Loaders with a build for this Minecraft version. */
 export function loadersFor(releases: readonly ModRelease[], minecraft: string): string[] {
-  return unique(releases.filter(r => r.minecraft === minecraft).map(r => r.loader)).sort();
+  return unique(releases.filter(r => supports(r, minecraft)).map(r => r.loader)).sort();
 }
 
 /** Builds for this Minecraft version and loader, newest mod version first. */
 export function buildsFor(releases: readonly ModRelease[], minecraft: string, loader: string): ModRelease[] {
-  return releases.filter(r => r.minecraft === minecraft && r.loader === loader).sort((a, b) => compareVersions(b.modVersion, a.modVersion));
+  return releases.filter(r => supports(r, minecraft) && r.loader === loader).sort((a, b) => compareVersions(b.modVersion, a.modVersion));
 }
 
 export interface Selection { readonly minecraft: string; readonly loader: string; readonly modVersion: string }

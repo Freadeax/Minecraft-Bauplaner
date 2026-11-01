@@ -1303,3 +1303,37 @@ Prüfprotokoll nach Rebase auf d2f7af8 nachgetragen; Integration auf main und Pa
 
 - `docs/TESTING.md`
 
+## 2026-11-01T17:45:29.973Z · progress
+
+**Aufgaben:** GAME-04, GAME-06
+
+Paper-Plugin (eine .jar für Paper 1.18.2 bis 26.3): Plan, Anker je Plan, Aufnahme der Serverwelt mit Nachladen vorhandener Chunks ohne Geländeerzeugung, Rechte, Konsole; echter Servertest in fünf Versionen bestanden. Signierte Webhooks als neue Aufgabe GAME-06 ausgelagert.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-04 | 🚧 In Arbeit | 2/4 | Jar auf #/mod anbieten, dann Abnahme auf Philipps Paper-Server. |
+| GAME-06 | ⏳ Offen | 0/1 | Nach TEAM-02 spezifizieren. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/ModView.tsx`
+- `apps/web/src/views/mod/releases.ts`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/MOD_BRIDGE.md`
+- `mods/bauplaner-bridge/README.md`
+- `mods/bauplaner-bridge/paper/build.gradle`
+- `mods/bauplaner-bridge/paper/gradle.properties`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/BridgePlugin.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/PaperCompat.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerScan.java`
+- `mods/bauplaner-bridge/paper/src/main/resources/config.yml`
+- `mods/bauplaner-bridge/paper/src/main/resources/plugin.yml`
+- `mods/bauplaner-bridge/settings.gradle`
+- `scripts/bridge_gametest.mjs`
+- `scripts/bridge_papertest.mjs`
+- `scripts/release_mod.mjs`
+- `scripts/test_bridge_paper.sh`
+- `tests/e2e/mod-download.e2e.mjs`
+- `tests/mod-releases.test.mjs`
+

@@ -1,0 +1,11 @@
+# Bauplaner-Brücke (Paper). Pläne:   plugins/BauplanerBridge/plans/*.schem  (von der Website, Tab „Export“)
+#                            Aufnahmen: plugins/BauplanerBridge/scans/*.schem  (auf der Website im Tab „Bauen“ importieren)
+# Das Plugin setzt und entfernt nie Blöcke und erzeugt nie neues Gelände.
+
+# Höchstens so viele Millisekunden je Server-Tick lesen (50 ms = ein ganzer Tick). Kleiner = weniger Last, längere Aufnahme.
+millisekunden-pro-tick: 8
+# Nicht geladene, aber bereits erzeugte Chunks während der Aufnahme nachladen (Recht bauplaner.nachladen).
+# Noch nie erzeugte Chunks werden nie erzeugt, sondern als „nicht aufgenommen“ geschrieben.
+chunks-nachladen: true
+# Obergrenze der nachzuladenden Chunks je Aufnahme (16×16 Blöcke je Chunk).
+max-chunks: 4096

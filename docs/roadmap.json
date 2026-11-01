@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T17:44:58.271Z",
+  "updatedAt": "2026-11-01T17:45:29.973Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -3060,18 +3060,27 @@
     },
     {
       "id": "GAME-04",
-      "title": "Paper-/NeoForge-Adapter und sichere Serveranbindung",
-      "phase": "P4",
+      "title": "Paper-Plugin der Bauplaner-Brücke (serverseitig, mehrere Minecraft-Versionen)",
+      "phase": "P3",
       "priority": "P1",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "in_progress",
+      "owner": "Claude (Thread „Bauplaner-Anbindung für Paper bauen“)",
       "dependencies": [
-        "TEAM-02",
         "GAME-02"
       ],
       "scope": [
-        "mods/",
-        "packages/application/"
+        "mods/bauplaner-bridge/paper/",
+        "mods/bauplaner-bridge/settings.gradle",
+        "mods/bauplaner-bridge/README.md",
+        "scripts/test_bridge_paper.sh",
+        "scripts/bridge_papertest.mjs",
+        "scripts/bridge_gametest.mjs",
+        "scripts/release_mod.mjs",
+        "apps/web/src/views/mod/",
+        "downloads/mod/",
+        "tests/mod-releases.test.mjs",
+        "tests/e2e/mod-download.e2e.mjs",
+        "docs/architecture/MOD_BRIDGE.md"
       ],
       "legacyIds": [
         "P6-01"
@@ -3079,30 +3088,45 @@
       "steps": [
         {
           "id": "GAME-04-S01",
-          "title": "Loader getrennt spezifizieren; zuerst einen weiteren Adapter vollständig prüfen.",
-          "done": false
+          "title": "Paper-Plugin: Plan laden, Anker je Plan (für alle Spieler), Aufnahme der ganzen Serverwelt mit Nachladen vorhandener Chunks ohne Geländeerzeugung, Rechte, Konsole.",
+          "done": true
         },
         {
           "id": "GAME-04-S02",
-          "title": "Signierte Webhooks, Ereignis-ID und wiederholbare Verarbeitung ergänzen.",
+          "title": "Auf echten Paper-Servern 1.18.2, 1.20.6, 1.21.4, 1.21.11 und 26.3 automatisch geprüft (scripts/test_bridge_paper.sh).",
+          "done": true
+        },
+        {
+          "id": "GAME-04-S03",
+          "title": "Jar auf der Download-Seite #/mod für alle geprüften Versionen anbieten.",
+          "done": false
+        },
+        {
+          "id": "GAME-04-S04",
+          "title": "Abnahme auf Philipps eigenem Paper-Server.",
           "done": false
         }
       ],
       "acceptance": [
-        "Keine impliziten Weltänderungen; Planlieferung und Blocksetzen getrennt."
+        "Keine Weltänderung und keine Geländeerzeugung; dieselbe Aufnahmedatei wie die Fabric-Mod, vom Website-Vergleich geprüft; eine .jar für alle geprüften Versionen."
       ],
-      "next": "Loader getrennt spezifizieren; zuerst einen weiteren Adapter vollständig prüfen.",
+      "next": "Jar auf #/mod anbieten, dann Abnahme auf Philipps Paper-Server.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "scripts/test_bridge_paper.sh",
+          "note": "Echter Servertest Paper 1.18.2/1.20.6/1.21.4/1.21.11/26.3 bestanden (01.11.2026), Ergebnisse in docs/TESTING.md"
+        }
+      ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "note": "Automatischer Servertest in fünf Paper-Versionen bestanden; Abnahme auf Philipps Server offen."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-01T17:45:29.973Z"
     },
     {
       "id": "GAME-05",
@@ -3162,6 +3186,47 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-01T15:00:58.460Z"
+    },
+    {
+      "id": "GAME-06",
+      "title": "Sichere Serveranbindung (Webhooks) für Server-Plugins",
+      "phase": "P4",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "nicht zugewiesen",
+      "dependencies": [
+        "TEAM-02",
+        "GAME-04"
+      ],
+      "scope": [
+        "mods/",
+        "packages/application/"
+      ],
+      "legacyIds": [
+        "P6-01"
+      ],
+      "steps": [
+        {
+          "id": "GAME-06-S01",
+          "title": "Signierte Webhooks, Ereignis-ID und wiederholbare Verarbeitung ergänzen (aus GAME-04-S02 ausgelagert).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Keine impliziten Weltänderungen; Planlieferung und Blocksetzen getrennt."
+      ],
+      "next": "Nach TEAM-02 spezifizieren.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme noch nicht vollständig erbracht."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T17:45:29.973Z"
     },
     {
       "id": "LAGER-01",
@@ -5500,6 +5565,53 @@
           "done": 2,
           "total": 2,
           "next": "Abnahme auf echten Geräten (QA-02), besonders Safari-Downloads; Rückmeldung zur Erinnerungsschwelle (7 Tage) einholen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T17:45:29.973Z",
+      "kind": "progress",
+      "items": [
+        "GAME-04",
+        "GAME-06"
+      ],
+      "summary": "Paper-Plugin (eine .jar für Paper 1.18.2 bis 26.3): Plan, Anker je Plan, Aufnahme der Serverwelt mit Nachladen vorhandener Chunks ohne Geländeerzeugung, Rechte, Konsole; echter Servertest in fünf Versionen bestanden. Signierte Webhooks als neue Aufgabe GAME-06 ausgelagert.",
+      "files": [
+        "apps/web/src/views/mod/ModView.tsx",
+        "apps/web/src/views/mod/releases.ts",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/MOD_BRIDGE.md",
+        "mods/bauplaner-bridge/README.md",
+        "mods/bauplaner-bridge/paper/build.gradle",
+        "mods/bauplaner-bridge/paper/gradle.properties",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/BridgePlugin.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/PaperCompat.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerScan.java",
+        "mods/bauplaner-bridge/paper/src/main/resources/config.yml",
+        "mods/bauplaner-bridge/paper/src/main/resources/plugin.yml",
+        "mods/bauplaner-bridge/settings.gradle",
+        "scripts/bridge_gametest.mjs",
+        "scripts/bridge_papertest.mjs",
+        "scripts/release_mod.mjs",
+        "scripts/test_bridge_paper.sh",
+        "tests/e2e/mod-download.e2e.mjs",
+        "tests/mod-releases.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-04",
+          "status": "in_progress",
+          "done": 2,
+          "total": 4,
+          "next": "Jar auf #/mod anbieten, dann Abnahme auf Philipps Paper-Server."
+        },
+        {
+          "id": "GAME-06",
+          "status": "planned",
+          "done": 0,
+          "total": 1,
+          "next": "Nach TEAM-02 spezifizieren."
         }
       ]
     }
