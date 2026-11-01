@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "683eaf0b0b6ac624a298ef5127bfc3442fda20da",
-  "builtAt": "2026-10-31T14:14:37.942Z",
+  "sourceCommit": "b4146608a45641eb088dbc4ae3f77a90234a773c",
+  "builtAt": "2026-11-01T00:10:08.513Z",
   "node": "v24.22.1",
   "files": [
     {
@@ -10,9 +10,9 @@
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
-      "path": "assets/idbRepository-BHoj9_PF.js",
+      "path": "assets/idbRepository-DppZ8KeV.js",
       "bytes": 5446,
-      "sha256": "f0d3761ebb302d36cd9b93e6ba91f4ea65d9e25cadc00b078d38e6caad5f5a82"
+      "sha256": "777cfa855bb8b5e201fa40f4510bb2f7554bab6d48450c04013e93821a3d1f97"
     },
     {
       "path": "assets/import.worker-C3uxG6zS.js",
@@ -20,14 +20,14 @@
       "sha256": "db3e2fb0463c92df6144aa876ddda9cb70d5f5363810c009e01aa382daa303f4"
     },
     {
-      "path": "assets/index-DCTZt4l2.css",
-      "bytes": 84386,
-      "sha256": "34ac7fc3ac4b0387385ddee52499ca8f0504931e714196597862afd1fe910c81"
+      "path": "assets/index-BtXvVN0V.css",
+      "bytes": 94078,
+      "sha256": "947db128c2b4983546459eb7937c2b9b9e1e5c494e037d36690a534af0e1c5e7"
     },
     {
-      "path": "assets/index-DjLnDQy4.js",
-      "bytes": 860280,
-      "sha256": "913962568386bbd856fb07576acd13b5b742baaaa2dca0f720f359b0371bd78b"
+      "path": "assets/index-DT3IZ_bz.js",
+      "bytes": 869514,
+      "sha256": "086ee93712bf5628011d13b1fb82617f75ea574224b0ff900667979e26e871f0"
     },
     {
       "path": "assets/scan.worker-CbssXpml.js",
@@ -35,9 +35,9 @@
       "sha256": "6328eb62b9807d304526dabe183c7e915d2d7b933a2c37ef25f393de8eb32a50"
     },
     {
-      "path": "assets/ThreeViewer-BTqCxdca.js",
+      "path": "assets/ThreeViewer-B5fLT2VO.js",
       "bytes": 582179,
-      "sha256": "6a5c596b50d67db5b6022f8ea7d715980ae527ca51398655dd92c19146aedce4"
+      "sha256": "d8fe1f8b349c4ca9cc99e7b10d641e2cc544754fce1abe0cefa18c58eba538ac"
     },
     {
       "path": "examples/contract-multiregion.litematic",
@@ -57,7 +57,7 @@
     {
       "path": "index.html",
       "bytes": 661,
-      "sha256": "34103edff957fa6ba348315075a8b7633ccc9052939c78c31774bc07eec9ec33"
+      "sha256": "c3790acc3436a352ca3c963e15fc229da569136566ac6cfaf4a5b154cf375601"
     },
     {
       "path": "THIRD_PARTY_NOTICES.txt",
