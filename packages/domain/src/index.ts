@@ -49,3 +49,6 @@ export { LIBRARY_RECORD_SCHEMA, MAX_COLLECTION_DEPTH, MAX_COLLECTION_ITEMS, MAX_
   createTemplate, editTemplate, restoreTemplateSnapshot, archiveTemplate, duplicateTemplate, templateVersionIds, missingTemplateVersions, templateBodyFromProject, templateFromProject, templateFromEnsemble, templateFromGenerator, createTemplateProject, describeTemplate,
   checkCollectionRecord, checkTemplateRecord, LibraryRecordConflictError, nextLibraryRevision, checkLibraryBatch, sameLibraryRecord } from './collections.js';
 export type { Collection, CollectionItem, CollectionItemKind, CollectionNode, ItemState, ResolvedItem, LibraryLookup, LibraryTemplate, TemplateBody, TemplateKind, TemplateMember, TemplateOrigin, TemplateSnapshot } from './collections.js';
+export * from './editor/index.js';
+export { groupOperation } from './project.js';
+export type { GroupAction } from './project.js';

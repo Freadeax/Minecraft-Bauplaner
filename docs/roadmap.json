@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T14:10:49.361Z",
+  "updatedAt": "2026-11-01T14:29:20.816Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -1922,7 +1922,7 @@
       "title": "Mehrfachauswahl und sichtbare Freiraumhüllen",
       "phase": "P3",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "implemented",
       "owner": "Claude-Thread „Vollständigen Block-Builder bauen“",
       "dependencies": [
         "STORE-02",
@@ -1938,36 +1938,49 @@
         {
           "id": "EDIT-01-S01",
           "title": "Auswahlvertrag und atomare Gruppenoperationen definieren.",
-          "done": false
+          "done": true
         },
         {
           "id": "EDIT-01-S02",
           "title": "Freiraum-/Konflikthüllen und Undo/Redo ergänzen.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Keine zweite Transformationslogik; Gruppenaktionen vollständig oder gar nicht."
       ],
-      "next": "Auswahlvertrag und atomare Gruppenoperationen definieren.",
+      "next": "Geräteprüfung (QA-02); Gruppenziehen direkt im 3D-Bild als Folgeschritt.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/editor.test.mjs",
+          "note": "Unit-Tests Entwurf, Werkzeuge, Speichern, Projektzuordnung, Gruppenoperationen."
+        },
+        {
+          "path": "tests/e2e/editor.e2e.mjs",
+          "note": "Chromium: Werkstatt, Projekt-Reiter, Mehrfachauswahl, 390 px."
+        },
+        {
+          "path": "docs/architecture/BLOCK_EDITOR.md",
+          "note": "Vertrag, Grenzen und Prüfbefehle."
+        }
+      ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "note": "Unit- und Chromium-Prüfung bestanden; Spielprüfung, Firefox/Safari und Geräte offen."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T12:56:16.487Z"
+      "updatedAt": "2026-11-01T14:29:20.816Z"
     },
     {
       "id": "EDIT-02",
       "title": "Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen",
       "phase": "P3",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "implemented",
       "owner": "Claude-Thread „Vollständigen Block-Builder bauen“",
       "dependencies": [
         "VIEW-01",
@@ -1986,27 +1999,27 @@
         {
           "id": "EDIT-02-S01",
           "title": "Entwurfsvertrag mit invertierbaren Zelländerungen, Undo/Redo und Speichern als neue AssetVersion.",
-          "done": false
+          "done": true
         },
         {
           "id": "EDIT-02-S02",
           "title": "Werkzeuge: Setzen, Abbauen, Pipette, Ersetzen, Quader/Hohlkörper/Wände, Kugel, Zylinder, Linie, Fläche füllen, Drehen, Kopieren/Einfügen/Verschieben.",
-          "done": false
+          "done": true
         },
         {
           "id": "EDIT-02-S03",
           "title": "Blockpalette mit allen Blöcken des Profils, Zustandseditor mit erlaubten Werten und Standardwerten.",
-          "done": false
+          "done": true
         },
         {
           "id": "EDIT-02-S04",
           "title": "Einbindung: Bauteile/Bibliotheksgebäude als neue Version, Projekt-Reiter „Blöcke“ mit Zuordnung zu Instanzen.",
-          "done": false
+          "done": true
         },
         {
           "id": "EDIT-02-S05",
           "title": "Unit-, Browser- und Sichtprüfung, Doku.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
@@ -2014,18 +2027,31 @@
         "Keine zweite Koordinaten- oder Drehlogik; Zustände ohne Regel bleiben sichtbar ungelöst.",
         "Gleiche Eingaben ergeben die gleiche Version (deterministische Palette)."
       ],
-      "next": "Entwurfsvertrag und Werkzeuge umsetzen, Blockregister von VIEW-02 übernehmen.",
+      "next": "Picking an 3D-Blockflächen; Registerlücken mit PROFILE-01-Serverreport schließen; Spielprüfung.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/editor.test.mjs",
+          "note": "Unit-Tests Entwurf, Werkzeuge, Speichern, Projektzuordnung, Gruppenoperationen."
+        },
+        {
+          "path": "tests/e2e/editor.e2e.mjs",
+          "note": "Chromium: Werkstatt, Projekt-Reiter, Mehrfachauswahl, 390 px."
+        },
+        {
+          "path": "docs/architecture/BLOCK_EDITOR.md",
+          "note": "Vertrag, Grenzen und Prüfbefehle."
+        }
+      ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "note": "Unit- und Chromium-Prüfung bestanden; Spielprüfung, Firefox/Safari und Geräte offen."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T12:56:16.487Z"
+      "updatedAt": "2026-11-01T14:29:20.816Z"
     },
     {
       "id": "UPDATE-01",
@@ -5029,6 +5055,64 @@
           "done": 4,
           "total": 5,
           "next": "Philipp testet die .jar aus /mnt/project-files/mod/ auf server.lmnt-gaming.net und meldet Ergebnis/Fehler (Anleitung ANLEITUNG_SPIELTEST.md)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T14:29:20.816Z",
+      "kind": "progress",
+      "items": [
+        "EDIT-01",
+        "EDIT-02"
+      ],
+      "summary": "Blockeditor #/werkstatt und Projekt-Reiter „Blöcke“: alle 26.3-Blöcke mit Zuständen, invertierbare Werkzeuge (Stift, Quader/Hohlformen, Kugel, Zylinder, Linie, Füllen, Ersetzen, Drehen, Ablage), Speichern nur als neue Version, Projektzuordnung über exakte Umkehrung der Instanztransformation in einem Rückgängig-Schritt. Mehrfachauswahl mit Hülle, Freiraumzonen und atomaren Gruppenoperationen. 11 Node-Tests, 4 Chromium-Fälle; Spiel-, Geräte- und Nicht-Chromium-Prüfung offen.",
+      "files": [
+        "apps/web/src/app/CommandPalette.tsx",
+        "apps/web/src/app/icons.tsx",
+        "apps/web/src/app/router.ts",
+        "apps/web/src/editor/BlockEditor.tsx",
+        "apps/web/src/editor/BlockPalette.tsx",
+        "apps/web/src/editor/LayerGrid.tsx",
+        "apps/web/src/editor/WorkshopPage.tsx",
+        "apps/web/src/editor/editor.css",
+        "apps/web/src/editor/useDraft.ts",
+        "apps/web/src/main.tsx",
+        "apps/web/src/style.css",
+        "apps/web/src/views/LibraryView.tsx",
+        "apps/web/src/views/library/BuildingDetail.tsx",
+        "apps/web/src/views/project/BlocksTab.tsx",
+        "apps/web/src/views/project/EditorTab.tsx",
+        "apps/web/src/views/project/selection/GroupPanel.tsx",
+        "apps/web/src/views/project/tabs.ts",
+        "docs/BLOCKS.md",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/BLOCK_EDITOR.md",
+        "packages/domain/src/editor/blocks.ts",
+        "packages/domain/src/editor/commit.ts",
+        "packages/domain/src/editor/draft.ts",
+        "packages/domain/src/editor/index.ts",
+        "packages/domain/src/editor/tools.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/project.ts",
+        "packages/domain/src/types.ts",
+        "tests/e2e/editor.e2e.mjs",
+        "tests/editor.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "EDIT-01",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Geräteprüfung (QA-02); Gruppenziehen direkt im 3D-Bild als Folgeschritt."
+        },
+        {
+          "id": "EDIT-02",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Picking an 3D-Blockflächen; Registerlücken mit PROFILE-01-Serverreport schließen; Spielprüfung."
         }
       ]
     }

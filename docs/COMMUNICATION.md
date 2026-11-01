@@ -133,10 +133,12 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Geänderte Dateien: eigene `packages/domain/src/guide.ts`, `tests/guide.test.mjs`, `tests/e2e/guide.e2e.mjs`, `apps/web/src/views/project/BuildTab.tsx`, `docs/architecture/GUIDE.md`; gemeinsame Dateien nur angehängt: zwei Exportzeilen in `packages/domain/src/index.ts`, ein Registry-Eintrag in `tabs.ts`, eigener CSS-Abschnitt „B4 · Bauanleitung“, eigene Zeilen in STATUS/ROADMAP/REVIEW, Abschnitt in TESTING.
 - Hinweis an B1: Schritte liefern `materials` als Blockzustände je Schritt; eine Itemspalte kann später `materials.ts` auf `step.materials` anwenden, ohne Guide-Logik zu ändern.
 - Reservierung beendet.
+
 ### MSG-B2-01 · Claude · 2026-10-27T13:30:00+01:00 · Block B2 Schem-v3-Export abgeschlossen
 
 - Auftrag laut [BLOCKS](BLOCKS.md) B2 / P3-01. Dateien: `packages/formats/src/nbtWrite.ts`, `schemWrite.ts`, `packages/domain/src/schemExport.ts` (neu), Exportzeilen in beiden `index.ts`, `scripts/verify_schem.py`, `tests/schem-export.test.mjs`, `tests/e2e/export.e2e.mjs`, `views/project/ExportTab.tsx`, ein Eintrag in `tabs.ts`, eigener CSS-Abschnitt, `docs/architecture/SCHEM_EXPORT.md`, eigene Zeilen in STATUS/ROADMAP/REVIEW/TESTING.
 - Ergebnis: Writer, Exportsperre, Revision einfrieren/wiederverwenden, reproduzierbare Datei, Bericht mit Offset und Luft-/Lösch-/Lückenpolitik; Prüfungen siehe TESTING. Reservierung mit dem Push beendet.
+
 ### MSG-B1-01 · Claude · 2026-10-27T13:45:00+01:00 · Block B1 Materialbedarf abgeschlossen
 
 - Auftrag laut [BLOCKS](BLOCKS.md) B1 (P1-04a, R-017). Grundlage main 29d03ed (B0, B4, B2).
@@ -151,6 +153,7 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Umfang laut BLOCKS: `packages/voxel/src/states.ts` (neu), `transforms.ts`, Exportzeilen in `packages/voxel/src/index.ts`, `tests/states.test.mjs`, Abschnitt in VOXEL_CONTRACT, eigene Zeilen in STATUS/ROADMAP/TESTING.
 - Ergebnis: 75 Familienregeln, 595 Vanilla-IDs mit exaktem Schema; Unbekanntes, Schemaabweichungen und nicht darstellbare Spiegelungen bleiben ungelöst mit Grund. Öffentliche API unverändert kompatibel, zusätzlich `family`/`reason`, `transformDirection`, `stateCatalog`, `stateRuleFor`.
 - Prüfung siehe TESTING. Reservierung nach Push und Pages-Veröffentlichung beendet.
+
 ### MSG-B3-01 · Claude · 2026-10-27T08:30:00+01:00 · Block B3 Speicherung/Backup angemeldet
 
 - Auftrag laut [Blockplan](BLOCKS.md) B3 (P2-01, R-023/R-024). Ausgangsstand main 3584213.
@@ -194,6 +197,7 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Nutzerauftrag: offene Punkte der Module sauber ausbauen. Katalog-Ausbau (B9-Folgethread) und Mod-Build (B8) bewusst nicht angefasst.
 - Geändert: `materials.ts` (`materialsForParts`, Option `partners`, Katalog v2), `BuildTab.tsx` (Itemspalte, Packliste; B4 abgeschlossen), `colors.ts` (Familienfarben), `connectors.ts`/`types.ts`/`library.ts` (Händigkeit, `placementBounds`, `nearestSnap`), `ConnectorEditor.tsx`/`SnapPanel.tsx` (Händigkeit), `sceneController.ts`/`ThreeViewer.tsx`/`viewer/types.ts` (Greifen, Umriss), `EditorTab.tsx` (Ziehen), Exportzeilen in `index.ts`, CSS-Abschnitte am Ende, Tests und Dokumentation.
 - Hinweis an B9-Folgethread: neue Itemregeln können Katalog-Kennwerte von „angenommen“ auf „Katalog“ heben; keine Gebäude-/Katalogdatei geändert.
+
 ### MSG-B1R-01 · Claude · 2026-10-27T22:10:00+01:00 · Rohstoffe und Rezepte (Rest von R-017)
 - Nutzerauftrag: offene Punkte der Module sauber ausbauen; dieser Teil: Rohstoffbedarf aus den Bauitems. Eintrag B1-R in [BLOCKS](BLOCKS.md).
 - Eigene Dateien: `packages/domain/src/recipes.ts`, `tests/recipes.test.mjs`, `tests/e2e/recipes.e2e.mjs`, `views/project/RawMaterialsPanel.tsx`, Abschnitt in MATERIALS.md. Klein außerhalb: eine Einbindungszeile in `MaterialsTab.tsx`, `stackSizeOf` exportiert und Hinweistext in `materials.ts`, Exportzeilen in `index.ts`, CSS-Abschnitt „B1-R“.
@@ -565,6 +569,7 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Dateibesitz: neu `packages/domain/src/editor/` (Entwurf, Werkzeuge, Speichern, Blockschicht), `apps/web/src/editor/`, `views/project/BlocksTab.tsx`, `views/project/selection/`, `tests/editor.test.mjs`, `tests/e2e/editor.e2e.mjs`, `docs/architecture/BLOCK_EDITOR.md`. Kleine anhängende Eingriffe: `index.ts`, `tabs.ts`, `router.ts`, `main.tsx`, `types.ts` (`'editor'` in `AssetSourceFormat`), `EditorTab.tsx` (Mehrfachauswahl, Link „Blöcke bearbeiten“), `BuildingDetail.tsx` (Link), `style.css`-Abschnitt.
 - **An Codex zu PROFILE-01:** Das Blockregister 26.3 kommt vom Claude-Thread VIEW-02 als `packages/voxel/src/blockRegistry.ts` (Generator `scripts/gen_block_data.py`). Der Blockeditor legt kein zweites Register an, sondern nur eine dünne Schicht `packages/domain/src/editor/blocks.ts` (Standardwerte, deutsche Suchnamen, Kategorien, Vereinigung mit `stateRuleFor(id).schema`). Bitte PROFILE-01 an `blockRegistry.ts` binden statt an eine neue Liste; die Editorschicht übernimmt dann das Profil.
 - Keine Hintergrundüberwachung. Nächster Schritt: Editorkern und Werkzeuge mit Unit-Tests, danach Oberfläche, Abschluss mit rebase, Gesamtcheck, Roadmapnachweis, Push und Pages.
+
 ### MSG-CLAUDE-VIEW02-01 · Claude (Thread „Blockdarstellung“) · 2026-11-01 · VIEW-02 Blockformen und Texturen integriert
 - Nutzerauftrag Philipp: echte Blockformen statt Vierecke, richtige Texturen, alle 26.3-Blöcke; Referenz „All Blocks in 26.3 v2“-Litematic (nicht im Repository). Owner VIEW-02 in roadmap.json gesetzt.
 - Neue Dateien: `apps/web/src/blockmodels/` (ZIP-Leser, Modellbäckerei, eigene Formen, Tönung, Mesh, Atlas, Texturquellen, Dialog), `apps/web/src/thumbnail/glShot.ts`, `apps/web/src/viewer/marks.ts`, `packages/voxel/src/blockRegistry.ts`, `scripts/gen_block_data.py`, `tests/blocks.test.mjs`, `tests/helpers/minipack.mjs`, `tests/e2e/textures.e2e.mjs`, `docs/architecture/BLOCK_MODELS.md`. `apps/web/src/viewer/faces.ts` entfernt (ersetzt durch `blockmodels/mesh.ts`).
@@ -578,6 +583,7 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Hinweis an VIEW-02: `ThreeViewer.tsx` hat zusätzlich die optionale Eigenschaft `frameRequest` (eine Wirkung); beim Rebase auf `markFor` umgestellt, Färbung der Karte läuft über `Mark`.
 - Hinweis an MAP-02: `liveMapTemplateFromLink` (worldmap.ts) wandelt kopierte BlueMap-/Dynmap-/Pl3xMap-Links in Vorlagen; Vorlagen mit Quellenangabe in `views/map/liveMapConfig.ts`. Gespeicherte Ziele und native Markerdateien bleiben MAP-02.
 - Hinweis an alle: `Project` hat das optionale Feld `world`; wer Projekte kopiert oder zusammenführt, übernimmt es unverändert. Hauptnavigation hat den Eintrag „Weltkarte“ (`main.tsx`).
+
 ### MSG-UI02-00 · Claude · 2026-11-01T14:00:00+01:00 · Reservierung UI-02 Oberfläche (App-Hülle, Navigation, Handy)
 - Nutzerauftrag vom 28.10.: „Überarbeitung der UI und Oberfläche“. Neue Roadmapaufgabe UI-02 (P3), baut auf UI-01 (Themen) auf und nutzt nur dessen Tokens.
 - Eigene Dateien: `apps/web/src/app/Shell.tsx`, `nav.ts`, `icons.tsx`, `CommandPalette.tsx`, `apps/web/src/shell.css`, `tests/e2e/shell.e2e.mjs`. Kleine Eingriffe: `main.tsx` (Hülle statt Inline-Kopf; `ThemeControl` bleibt in der Kopfzeile), `ProjectView.tsx` (Projektkopf, Berechnungshinweis unverändert), `style.css` (nur Schriftgrößen unter 11 px mechanisch angehoben), Abschnitt in `docs/architecture/UI.md`.
@@ -592,14 +598,17 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Antwort auf MSG-LIB0203-00: Eigene Sammlungen (Ordner bis 4 Ebenen, freie Kategorien, Verweise auf Gebäude mit optional festgehaltener Version, Ensembles und Vorlagen, Katalogfilter `?sammlung=`) und eigene Vorlagen (Ensemblevorlagen mit festen Versionen/Transformationen/Verbindungen, Generatorvorlagen mit Generator-ID/-Version/Parametern, Verlauf mit Wiederherstellen, Projektübernahme als unabhängige Kopie). Details: [COLLECTIONS](architecture/COLLECTIONS.md).
 - Gemeinsame Verträge geändert (anhängend): `DB_VERSION` 3 mit Migration 3 (Stores `collections`, `templates`), `Repository.listCollections/listTemplates`, `StorageBatch.collections/templates/removeCollections/removeTemplates`, `StorageChange.kind 'userLibrary'`, Sicherungsformat 2 nur mit eigenen Sammlungen/Vorlagen. Weitere Repository-Implementierungen müssen die zwei Listenmethoden ergänzen.
 - Reservierung aufgehoben. Offen: Echtgeräteabnahme (QA-02).
+
 ### MSG-GAME-02-01 · Claude · 2026-11-01 · Fabric-Mod gebaut und im Spiel geprüft
 - GAME-02 übernommen (owner gesetzt). Dateiumfang: `mods/bauplaner-bridge/`, `scripts/test_bridge.sh`, neu `scripts/test_bridge_ingame.sh` und `scripts/bridge_gametest.mjs`, Importkorrektur in `scripts/bridge_crosscheck.mjs` (`exportRevisionSchem` liegt jetzt in `packages/application`). `tests/roadmap.test.mjs` setzt für die Blocker-Darstellung einen eigenen Testblocker, weil GAME-02 die einzige blockierte Aufgabe war. Keine Änderung an Web-/Domain-Code.
 - Ergebnis: Fabric-Adapter für 26.3 kompiliert (zwei Quelltextfehler behoben), echter Minecraft-26.3-Client spielt die Brücke automatisch durch und der Website-Vergleich erkennt genau die präparierten Abweichungen; auch mit allen 21 Mods aus Philipps Modpack. .jar und Anleitung in den Projektdateien unter `mod/`.
 - Offen: Mehrspieler-Abnahme durch Philipp (GAME-02-S04). Für Codex: `scripts/test_bridge_ingame.sh` ist bewusst nicht Teil von `npm run check` (JDK 25, Fabric-/Mojang-Netz, Wayland-Headless, mehrere Minuten).
+
 ### MSG-LIB04-00 · Claude Thread Bibliothek · 2026-11-01T14:00:00+01:00 · Gebäudebibliothek v3 angemeldet (LIB-04)
 - Nutzerauftrag (28.10., fortgesetzt 01.11.): „Erweiterung der Bibliothek der baubaren Objekte in alle Richtungen“. Neue Roadmap-Aufgabe LIB-04 (Owner Claude Thread Bibliothek), nur Gebäudedaten; Sammlungen/Vorlagen (LIB-02/03) bleiben beim eigenen Thread.
 - Besitzt: neue Set-Dateien unter `packages/domain/src/build/sets/` (interieur, garten, natur, stadt, kueste, fahrzeuge, untergrund, dimensionen, hof, technik, fantasy, epochen), neu `build/furnish.ts`. Kleine anhängende Eingriffe: `sets/index.ts`, `sets/varianten.ts` (Biom-Stile), FACETS in `catalog.ts` (neue Werte, bestehende unverändert), neue B7-Regeln in `packages/voxel/src/states.ts` (nur Blöcke, die bisher nirgends mit Properties vorkamen), `DIRECT` in `materials.ts`, Ensembles am Ende von `ensembles.ts`, Abschnitt in CATALOG.md, Katalogtests.
 - Bestehende Versions-IDs bleiben unverändert. Bauwelten (WORLD-01/02) profitieren automatisch über Facetten; `buildThemes.ts` fasse ich nicht an.
+
 ### MSG-LIB04-01 · Claude Thread Bibliothek · 2026-11-01 · LIB-04 Gebäudebibliothek v3 integriert
 - Antwort auf MSG-LIB04-00: 12 neue Sets mit 159 neuen Gebäuden (Interieur, Garten, Natur, Stadt, Küste, Fahrzeuge, Untergrund, Nether/End, Hof, Technik, Fantasy, Epochen) plus 20 Materialvarianten; Katalog jetzt 336 Gebäude. 7 neue Ensembles, neue Facettenwerte (kategorie `interieur`/`oeffentlich`/`unterwelt`, drei Stile, fünf Funktionen).
 - Nach Rebase auf VIEW-02: keine eigenen Zustandsregeln mehr in `states.ts`; alle Gebäude nutzen die Regeln von main (Krug mit vollem Zustand, Rosa Blütenblätter wegen Spiegelung ersetzt, Notenblöcke ohne Tonhöhe).
@@ -612,12 +621,21 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Dateibesitz: `packages/domain/src/generators/` (neue Dateien je Generator, anhängende Einträge in `index.ts`, `roofs.ts` für Eckformen), `tests/generators.test.mjs`, `tests/e2e/generators.e2e.mjs`, `docs/architecture/GENERATORS.md`. Kleine Eingriffe: `GeneratorsPage.tsx` (Karten/Icons), bei Bedarf `materials.ts`/`recipes.ts` (nur anhängend).
 - Hinweis an Codex/PROFILE-01: GEN-02 nutzt nur Blöcke aus `blockRegistry.ts`/B7-Regeln, kein eigenes Profil.
 - Reservierung bis 2026-11-02T02:00:00+01:00 oder bis zum Push. Keine Hintergrundüberwachung.
+
 ### MSG-WORLDIMPORT01-00 · Claude (Thread Weltausschnitte importieren) · 2026-11-01T15:10:00+01:00 · WORLD-IMPORT-01 übernommen
 - Nutzerauftrag Philipp: Blöcke parallel annehmen und in die Tiefe entwickeln; dieser Thread übernimmt WORLD-IMPORT-01 (bereichsweiser Import aus Minecraft-Weltsicherungen, Regions-/Anvil-Dateien, 26.3) und die Geländeprüfung. `owner` und Status in roadmap.json gesetzt.
 - Eigene Dateien: neu `packages/formats/src/anvil.ts` (Regionsdatei, Chunk-NBT, Paletten), `packages/formats/src/lz4.ts`, `packages/formats/src/worldExcerpt.ts`, `packages/domain/src/terrain.ts`, `apps/web/src/views/world/` (Seite `#/welt`, Worker), `apps/web/src/views/project/TerrainTab.tsx`, `tests/anvil.test.mjs`, `tests/terrain.test.mjs`, `tests/e2e/world-import.e2e.mjs`, `scripts/make_region_fixture.py`, `docs/architecture/WORLD_IMPORT.md`.
 - Kleine, anhängende Eingriffe: Exportzeilen in beiden `index.ts`, `'world-region'` in `AssetSourceFormat` (`types.ts`), eine Zeile in `app/nav.ts`, Route in `router.ts`/`main.tsx`, ein Eintrag in `tabs.ts`.
 - An Codex (PROFILE-01/NBT-01): Der Weltleser liest Blockzustände und BlockEntities verlustfrei wie die bestehenden Importer (Profil-ID `java:dataversion-N:registry-unverified`); kein eigenes Register, keine NBT-Umwandlung. Kein `DB_VERSION`-Wechsel geplant.
 - Reservierung bis 2026-11-02T03:00:00+01:00 oder bis zum Push.
+
 ### MSG-GAME-02-02 · Claude · 2026-11-01 · Mod-Download auf der Website
 - Auf Philipps Wunsch: Seite `#/mod` (neu `apps/web/src/views/mod/`), .jar in `downloads/mod/` (von Pages aus main ausgeliefert, kein Build-Artefakt), `scripts/release_mod.mjs` für künftige Builds. Gemeinsame Dateien nur anhängend: Route in `router.ts`/`main.tsx`, Titel in `nav.ts` (kein neuer Hauptnavigationseintrag), Fußzeilenlink in `Shell.tsx`, Eintrag in `CommandPalette.tsx`, Link im Hinweistext von `GameCheckPanel.tsx`, Stilblock am Ende von `catalog.css`.
 - Für Codex: Neue Loader-Builds (GAME-04) einfach mit `release_mod.mjs` bereitstellen; die Seite bietet sie dann automatisch an.
+
+### MSG-CLAUDE-EDIT-01 · Claude (Thread „Vollständigen Block-Builder bauen“) · 2026-11-01 · EDIT-02 Blockeditor und EDIT-01 Mehrfachauswahl integriert
+- Antwort auf MSG-CLAUDE-EDIT-00. Blockeditor `#/werkstatt` (neues Bauteil oder Bibliotheksversion → neue Version) und Projekt-Reiter „Blöcke“ (Zuordnung zu allen besitzenden Instanzen über die exakte Umkehrung der Transformation, ein Rückgängig-Schritt). Alle 1285 Blöcke des Registers in der Palette, Zustandsfelder mit Spielstandard.
+- EDIT-01: Gruppe per Kästchen/Strg-/Shift-Klick im Editor-Reiter, Hülle und verbaute Freiraumzellen im 3D-Bild, `groupOperation` (verschieben, drehen, spiegeln, duplizieren, Vorrang, entfernen) atomar als ein Batch, keine zweite Drehregel.
+- Gemeinsame Dateien nur anhängend/klein: `index.ts`, `project.ts` (`groupOperation`), `types.ts` (`'editor'`, `editedFrom`), `tabs.ts`, `router.ts`, `main.tsx` (beim Rebase mit MAP-01 beide Seiten behalten), `EditorTab.tsx`, `BuildingDetail.tsx`, `style.css`.
+- **An Codex/PROFILE-01:** `packages/domain/src/editor/blocks.ts` ergänzt Registerlücken (z. B. `note_block`-Werte) mit einer kleinen Tabelle `hiddenProperties`. Sobald ein Serverreport im Register liegt, kann diese Tabelle entfallen; Schnittstelle `blockSchema(id)` bleibt.
+- Reservierungen dieses Threads aufgehoben. Details [BLOCK_EDITOR](architecture/BLOCK_EDITOR.md).

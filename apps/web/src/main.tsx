@@ -15,6 +15,7 @@ import { ViewerView } from './views/ViewerView';
 import { SystemView } from './views/SystemView';
 import { WorldMapView } from './views/map/WorldMapView';
 import { ModView } from './views/mod/ModView';
+import { WorkshopPage } from './editor/WorkshopPage';
 import './style.css';
 import './catalog.css';
 import './schem.css';
@@ -30,6 +31,7 @@ function Page({ route }: { route: Route }) {
     case 'system': return <SystemView />;
     case 'map': return <WorldMapView search={route.search} />;
     case 'mod': return <ModView search={route.search} />;
+    case 'workshop': return <WorkshopPage key={route.versionId ?? 'neu'} versionId={route.versionId} />;
     case 'project': return <ProjectView key={route.projectId} projectId={route.projectId} tab={route.tab} />;
     case 'not-found': return <div className="page"><div className="notice warning" role="alert">Seite „{route.path}“ gibt es nicht. <a href="#/">Zur Projektzentrale</a></div></div>;
   }

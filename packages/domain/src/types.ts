@@ -64,7 +64,7 @@ export interface Connector {
 }
 export type Handedness = 'left' | 'right';
 
-export type AssetSourceFormat = 'schem-v3' | 'litematic' | 'voxel-json' | 'demo' | 'crop' | 'composition' | 'variant' | 'generator';
+export type AssetSourceFormat = 'schem-v3' | 'litematic' | 'voxel-json' | 'demo' | 'crop' | 'composition' | 'variant' | 'generator' | 'editor';
 
 export interface AssetVersionSource {
   readonly format: AssetSourceFormat;
@@ -74,6 +74,8 @@ export interface AssetVersionSource {
   readonly dataVersion?: number;
   /** Parametric generator (B13): id, algorithm version and the normalised parameters that rebuild this geometry. */
   readonly generator?: GeneratorSource;
+  /** Blockeditor (EDIT-02): version the edit started from; absent for a model built from scratch. */
+  readonly editedFrom?: string;
 }
 
 export interface GeneratorSource {

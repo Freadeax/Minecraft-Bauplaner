@@ -1051,3 +1051,48 @@ Mod-Download auf der Website: #/mod mit Auswahl von Minecraft-Version, Loader un
 - `tests/mod-releases.test.mjs`
 - `tests/router.test.mjs`
 
+## 2026-11-01T14:29:20.816Z · progress
+
+**Aufgaben:** EDIT-01, EDIT-02
+
+Blockeditor #/werkstatt und Projekt-Reiter „Blöcke“: alle 26.3-Blöcke mit Zuständen, invertierbare Werkzeuge (Stift, Quader/Hohlformen, Kugel, Zylinder, Linie, Füllen, Ersetzen, Drehen, Ablage), Speichern nur als neue Version, Projektzuordnung über exakte Umkehrung der Instanztransformation in einem Rückgängig-Schritt. Mehrfachauswahl mit Hülle, Freiraumzonen und atomaren Gruppenoperationen. 11 Node-Tests, 4 Chromium-Fälle; Spiel-, Geräte- und Nicht-Chromium-Prüfung offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| EDIT-01 | 🧩 Implementiert · Abnahme offen | 2/2 | Geräteprüfung (QA-02); Gruppenziehen direkt im 3D-Bild als Folgeschritt. |
+| EDIT-02 | 🧩 Implementiert · Abnahme offen | 5/5 | Picking an 3D-Blockflächen; Registerlücken mit PROFILE-01-Serverreport schließen; Spielprüfung. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/CommandPalette.tsx`
+- `apps/web/src/app/icons.tsx`
+- `apps/web/src/app/router.ts`
+- `apps/web/src/editor/BlockEditor.tsx`
+- `apps/web/src/editor/BlockPalette.tsx`
+- `apps/web/src/editor/LayerGrid.tsx`
+- `apps/web/src/editor/WorkshopPage.tsx`
+- `apps/web/src/editor/editor.css`
+- `apps/web/src/editor/useDraft.ts`
+- `apps/web/src/main.tsx`
+- `apps/web/src/style.css`
+- `apps/web/src/views/LibraryView.tsx`
+- `apps/web/src/views/library/BuildingDetail.tsx`
+- `apps/web/src/views/project/BlocksTab.tsx`
+- `apps/web/src/views/project/EditorTab.tsx`
+- `apps/web/src/views/project/selection/GroupPanel.tsx`
+- `apps/web/src/views/project/tabs.ts`
+- `docs/BLOCKS.md`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/BLOCK_EDITOR.md`
+- `packages/domain/src/editor/blocks.ts`
+- `packages/domain/src/editor/commit.ts`
+- `packages/domain/src/editor/draft.ts`
+- `packages/domain/src/editor/index.ts`
+- `packages/domain/src/editor/tools.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/project.ts`
+- `packages/domain/src/types.ts`
+- `tests/e2e/editor.e2e.mjs`
+- `tests/editor.test.mjs`
+

@@ -305,6 +305,7 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
     <div className="button-row"><button className="primary" disabled={busy} onClick={() => file.current?.click()}>＋ Schem / Litematic / JSON importieren</button>
       <input ref={file} className="file-input" type="file" aria-label="Bauteildatei" accept={IMPORT_ACCEPT}
         onChange={e => { const f = e.target.files?.[0]; if (f) void open(f); e.target.value = ''; }} />
+      <a className="button" href="#/werkstatt/neu" title="Blockeditor: neues Bauteil Block für Block bauen">✎ Neues Bauteil bauen</a>
       {busy && <button onClick={() => { abort.current?.abort(); setBusy(false); say('Import abgebrochen.'); }}>Abbrechen</button>}</div></header>
   const tabs = <nav className="lib-tabs" aria-label="Ansicht">
     <a href={libHref('browse')} aria-current={page === 'browse' || page === 'building' ? 'page' : undefined}>Gebäude <small>{total}</small></a>

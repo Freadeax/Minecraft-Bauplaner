@@ -1,5 +1,6 @@
 import { assertVec3 } from '../../voxel/src/validation.js';
-import type { Transform } from '../../voxel/src/types.js';
+import type { Transform, Vec3 } from '../../voxel/src/types.js';
+import { transformVector } from '../../voxel/src/states.js';
 import { newId } from './hash.js';
 import { deepFreeze } from './library.js';
 import { checkSite } from './site.js';
@@ -193,4 +194,61 @@ export function freezeRevision(project: Project, comment: string): { project: Pr
 /** Quarter turn around the instance's own placement pivot. */
 export function rotateInPlace(t: Transform, turns: 1 | 3): Transform {
   return { ...t, quarterTurns: ((t.quarterTurns + turns) % 4) as Transform['quarterTurns'] };
+}
+
+// ------------------------------------------------------------------ group operations (EDIT-01)
+
+export type GroupAction =
+  | { readonly kind: 'move'; readonly delta: Vec3 }
+  | { readonly kind: 'rotate'; readonly turns: 1 | 3 }
+  | { readonly kind: 'mirror' }
+  | { readonly kind: 'remove' }
+  | { readonly kind: 'override'; readonly value: boolean }
+  | { readonly kind: 'duplicate'; readonly delta: Vec3; readonly ids?: readonly string[] };
+
+const groupLabel = (a: GroupAction, n: number): string => ({
+  move: `${n} Instanzen verschoben`, rotate: `${n} Instanzen gedreht`, mirror: `${n} Instanzen gespiegelt`, remove: `${n} Instanzen entfernt`,
+  override: `Vorrang für ${n} Instanzen ${a.kind === 'override' && a.value ? 'an' : 'aus'}`, duplicate: `${n} Instanzen dupliziert`,
+})[a.kind];
+
+/**
+ * One atomic batch for a group of instances: all members change or none (a
+ * failing member aborts the whole batch in applyOperation). Rotation and
+ * mirroring act on the group as a whole about the integer `centre` (usually
+ * the floor of the group bounds centre): each member's placement is turned
+ * about the centre and its own rotation composed, using the shared
+ * `transformVector` rule (mirror x, then quarter turns), so the group keeps
+ * its arrangement exactly.
+ */
+export function groupOperation(project: Project, ids: readonly string[], action: GroupAction, centre: Vec3 = [0, 0, 0]): Operation {
+  const members = ids.map(id => project.instances[find(project, id)]!);
+  if (!members.length) throw new DomainError('INVALID', 'Keine Instanzen gewählt');
+  const turn = (p: Vec3, t: Transform): Vec3 => {
+    const r = transformVector([p[0] - centre[0], p[1] - centre[1], p[2] - centre[2]], t);
+    return [r[0] + centre[0], r[1] + centre[1], r[2] + centre[2]];
+  };
+  const ops: Operation[] = members.flatMap((m): Operation[] => {
+    const t = m.transform;
+    switch (action.kind) {
+      case 'move': return [{ kind: 'instance.transform', instanceId: m.id, transform: { ...t, position: [t.position[0] + action.delta[0], t.position[1] + action.delta[1], t.position[2] + action.delta[2]] } }];
+      case 'rotate': {
+        const g: Transform = { position: [0, 0, 0], quarterTurns: action.turns, mirrorX: false };
+        return [{ kind: 'instance.transform', instanceId: m.id, transform: { position: turn(t.position, g), quarterTurns: ((t.quarterTurns + action.turns) % 4) as Transform['quarterTurns'], mirrorX: t.mirrorX } }];
+      }
+      case 'mirror': {
+        // M ∘ rot^q ∘ mirror^m = rot^(−q) ∘ mirror^(m⊕1)
+        const g: Transform = { position: [0, 0, 0], quarterTurns: 0, mirrorX: true };
+        return [{ kind: 'instance.transform', instanceId: m.id, transform: { position: turn(t.position, g), quarterTurns: ((4 - t.quarterTurns) % 4) as Transform['quarterTurns'], mirrorX: !t.mirrorX } }];
+      }
+      case 'remove': return [{ kind: 'instance.remove', instanceId: m.id }];
+      case 'override': return m.override === action.value ? [] : [{ kind: 'instance.update', instanceId: m.id, override: action.value }];
+      case 'duplicate': {
+        const id = action.ids?.[members.indexOf(m)];
+        const copy = { ...newInstance({ assetVersionId: m.assetVersionId, name: `${m.name} Kopie`, override: m.override,
+          transform: { ...t, position: [t.position[0] + action.delta[0], t.position[1] + action.delta[1], t.position[2] + action.delta[2]] } }), ...(id && { id }) };
+        return [{ kind: 'instance.add', instance: copy }];
+      }
+    }
+  });
+  return { kind: 'batch', label: groupLabel(action, members.length), operations: ops };
 }

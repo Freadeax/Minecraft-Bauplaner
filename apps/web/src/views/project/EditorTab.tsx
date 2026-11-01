@@ -8,13 +8,14 @@ import { formatNumber } from '../../app/ui';
 import { Viewer } from '../../Viewer';
 import type { DragHandler, Mark, ViewerProps } from '../../viewer/types';
 import { SnapPanel } from './SnapPanel';
+import { GroupPanel, groupHull, useGroup, useGroupCells, useGroupReservations } from './selection/GroupPanel';
 import { Thumb } from '../../thumbnail/Thumb';
 import { useLayerFilter } from '../../viewer/LayerControl';
 import { BlockInfo } from '../../viewer/BlockInfo';
 import { isResolved } from './session';
 import type { ProjectSession } from './session';
 
-const CONFLICT = '#ff4d4d', DIM_TARGET = '#16303c';
+const CONFLICT = '#ff4d4d', DIM_TARGET = '#16303c', GROUP = '#5be3b5';
 
 function latestVersionId(asset: Asset): string | undefined { return asset.versionIds.at(-1); }
 
@@ -49,11 +50,17 @@ export function EditorTab({ session }: { session: ProjectSession }) {
     if (resolved && selectedId) for (const [key, ids] of resolved.owners) if (ids.includes(selectedId)) keys.add(key);
     return keys;
   }, [resolved, selectedId]);
+  // Mehrfachauswahl (EDIT-01): group members are tinted, blocked free-space cells of their connectors red.
+  const group = useGroup(session);
+  const groupReservations = useGroupReservations(session, resolved, group.ids);
+  const groupCells = useGroupCells(resolved, group.ids, groupReservations);
   const markFor = useCallback((cell: Cell): Mark | null => {
     const key = positionKey(cell.position);
     if (conflictKeys.has(key)) return { color: CONFLICT, amount: 0.75 };
+    if (groupCells.blocked.has(key)) return { color: CONFLICT, amount: 0.5 };
+    if (groupCells.members.has(key)) return { color: GROUP, amount: 0.35 };
     return selectedId && !selectedKeys.has(key) ? { color: DIM_TARGET, amount: 0.55 } : null;
-  }, [conflictKeys, selectedKeys, selectedId]);
+  }, [conflictKeys, selectedKeys, selectedId, groupCells]);
   const { visible, control: layerControl } = useLayerFilter(world);
   const focus = useMemo(() => resolved?.placed.find(p => p.instance.id === selectedId)?.payload.bounds ?? null, [resolved, selectedId]);
   const onSelect = useCallback((cell: Cell | null) => {
@@ -99,6 +106,11 @@ export function EditorTab({ session }: { session: ProjectSession }) {
     };
   }, [dragMode, selected, resolved, selectedKeys, snapOn, project, library.versions, session, run]);
 
+  const groupGhost = useMemo<NonNullable<ViewerProps['ghost']> | null>(() => {
+    const hull = group.ids.length > 1 ? groupHull(resolved, group.ids) : null;
+    return hull ? { bounds: hull, tone: resolved?.conflicts.some(c => c.instanceIds.some(id => group.has(id))) ? 'conflict' : 'free' } : null;
+  }, [group, resolved]);
+
   const assets = library.assets.filter(a => !a.archived && latestVersionId(a));
   // The shipped catalogue has well over a hundred buildings: the picker filters by name and tag and scrolls on its own.
   const [pickerQuery, setPickerQuery] = useState('');
@@ -142,7 +154,9 @@ export function EditorTab({ session }: { session: ProjectSession }) {
       {project.instances.length === 0 && <p className="muted">Noch keine Bauteile. Füge unten eines aus der Bibliothek ein.</p>}
       <ul className="instance-list">{project.instances.map(i => {
         const n = conflictsOf(i.id), { asset, version } = assetOf(i);
-        return <li key={i.id}><button aria-pressed={i.id === selectedId} onClick={() => session.select(i.id === selectedId ? null : i.id)}>
+        return <li key={i.id} className={group.has(i.id) ? 'in-group' : undefined}>
+          <input type="checkbox" className="group-check" checked={group.has(i.id)} onChange={() => group.toggle(i.id)} aria-label={`${i.name} zur Gruppe`} title="Mehrfachauswahl: Kästchen oder Strg-/Shift-Klick bildet eine Gruppe" />
+          <button aria-pressed={i.id === selectedId} onClick={e => { if (e.ctrlKey || e.metaKey || e.shiftKey) group.toggle(i.id); else session.select(i.id === selectedId ? null : i.id); }}>
           <strong>{i.name}</strong><span>{asset?.name ?? 'fehlende Version'} · v{version?.label ?? '?'}{i.override ? ' · Vorrang' : ''}</span>
           {n > 0 && <em className="badge danger">{n} Konflikte</em>}
         </button></li>;
@@ -167,7 +181,7 @@ export function EditorTab({ session }: { session: ProjectSession }) {
           <button onClick={session.redo} disabled={!session.history.redo.length} title={session.history.redo.at(-1)?.label ?? ''}>↷ <span>Wiederholen</span></button>
         </div>
       </div>
-      {world && visible ? <Viewer payload={world} cells={visible.cells} onSelect={onSelect} markFor={markFor} focus={focus} drag={drag} ghost={ghost} />
+      {world && visible ? <Viewer payload={world} cells={visible.cells} onSelect={onSelect} markFor={markFor} focus={focus} drag={drag} ghost={ghost ?? groupGhost} />
         : <div className="scene empty-scene"><p>{isResolved(resolution) ? 'Leeres Projekt – füge links ein Bauteil ein.' : resolution.error}</p></div>}
       {dragMode && <div className="drag-hint" role="status">{dragInfo || (selected ? `„${selected.name}“ im Bild greifen und ziehen; daneben ziehen dreht die Ansicht. Esc bricht ab.` : 'Erst eine Instanz wählen, dann im Bild ziehen.')}</div>}
       <div className="viewport-footer"><span>Ziehen: drehen · Scrollen: zoomen · Klick: Block und Instanz wählen · F: Fokus · V: Flug · Strg+Z / Strg+Y</span>
@@ -176,6 +190,7 @@ export function EditorTab({ session }: { session: ProjectSession }) {
     </div>
     <aside className="inspector" aria-label="Eigenschaften">
       {resolved && picked && <BlockInfo resolution={resolved} position={picked} onSelectInstance={id => session.select(id)} />}
+      <GroupPanel session={session} resolution={resolved} group={group} reservations={groupReservations} />
       <span className="panel-kicker">EIGENSCHAFTEN</span>
       {!selected ? <p className="muted">Wähle eine Instanz in der Liste oder im Bauwerk.</p> : (() => {
         const { asset, version } = assetOf(selected);

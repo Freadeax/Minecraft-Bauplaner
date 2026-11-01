@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T14:10:49.361Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T14:29:20.816Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -13,9 +13,9 @@ Stand: 2026-11-01T14:10:49.361Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | Status | Pakete |
 |---|---:|
 | ⏳ Offen | 19 |
-| 🚧 In Arbeit | 4 |
+| 🚧 In Arbeit | 2 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 13 |
+| 🧩 Implementiert · Abnahme offen | 15 |
 | ✅ Im beschriebenen Umfang geprüft | 21 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -23,8 +23,8 @@ Stand: 2026-11-01T14:10:49.361Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 - **PERF-02 · Zellindizes, Chunkdaten und selektive Neuberechnung** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Gemessene Structured-Clone-/Worker-Rückgabekosten reduzieren; selektive Geometrie-/Fortschrittsinvalidierung zuerst mit vollständigen semantischen Regressionen absichern.
 - **MAP-01 · Weltlage und begehbare Projektkarte** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02.
-- **EDIT-01 · Mehrfachauswahl und sichtbare Freiraumhüllen** — 🚧 In Arbeit, 0/2 Teilschritte. Nächster Schritt: Auswahlvertrag und atomare Gruppenoperationen definieren.
-- **EDIT-02 · Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** — 🚧 In Arbeit, 0/5 Teilschritte. Nächster Schritt: Entwurfsvertrag und Werkzeuge umsetzen, Blockregister von VIEW-02 übernehmen.
+- **EDIT-01 · Mehrfachauswahl und sichtbare Freiraumhüllen** — 🧩 Implementiert · Abnahme offen, 2/2 Teilschritte. Nächster Schritt: Geräteprüfung (QA-02); Gruppenziehen direkt im 3D-Bild als Folgeschritt.
+- **EDIT-02 · Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Picking an 3D-Blockflächen; Registerlücken mit PROFILE-01-Serverreport schließen; Spielprüfung.
 - **GEN-02 · Weitere Generatoren und Dachdetails** — 🚧 In Arbeit, 0/5 Teilschritte. Nächster Schritt: Generatorspezifikation und Umsetzung Treppenhaus, Kirche, Hafen.
 - **WORLD-IMPORT-01 · Bereichsweiser Weltimport und Terrainprüfung** — 🚧 In Arbeit, 0/2 Teilschritte. Nächster Schritt: Konsistentes Sicherungsformat und Bereichsauswahl festlegen.
 
@@ -116,8 +116,8 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | ⏳ Offen | 0/2 | QA-01, VIEW-02 | ausstehend | ausstehend |
 | [UI-02](#ui-02) | App-Hülle, Navigation und Handyoberfläche überarbeiten | ✅ Im beschriebenen Umfang geprüft | 4/4 | UI-01, QA-01 | ausstehend | ausstehend |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen | 5/6 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
-| [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🚧 In Arbeit | 0/2 | STORE-02, VIEW-01 | ausstehend | ausstehend |
-| [EDIT-02](#edit-02) | Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen | 🚧 In Arbeit | 0/5 | VIEW-01, STORE-02 | ausstehend | ausstehend |
+| [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-02, VIEW-01 | ausstehend | ausstehend |
+| [EDIT-02](#edit-02) | Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen | 🧩 Implementiert · Abnahme offen | 5/5 | VIEW-01, STORE-02 | ausstehend | ausstehend |
 | [UPDATE-01](#update-01) | Kontrollierte Versionsupdates mit lokalen Overrides | ⏳ Offen | 0/2 | DIFF-01, STORE-02 | ausstehend | ausstehend |
 | [LIB-02](#lib-02) | Eigene Sammlungen, Ordner und Kategorien | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-02, LIB-01 | ausstehend | ausstehend |
 | [LIB-03](#lib-03) | Eigene Ensembles und Generatorvorlagen speichern | 🧩 Implementiert · Abnahme offen | 2/2 | LIB-02, GEN-01 | ausstehend | ausstehend |
@@ -815,18 +815,18 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### EDIT-01
 
-**Mehrfachauswahl und sichtbare Freiraumhüllen** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude-Thread „Vollständigen Block-Builder bauen“ · Aktualisiert: 2026-11-01T12:56:16.487Z
+**Mehrfachauswahl und sichtbare Freiraumhüllen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Vollständigen Block-Builder bauen“ · Aktualisiert: 2026-11-01T14:29:20.816Z
 
-- [ ] EDIT-01-S01: Auswahlvertrag und atomare Gruppenoperationen definieren.
-- [ ] EDIT-01-S02: Freiraum-/Konflikthüllen und Undo/Redo ergänzen.
+- [x] EDIT-01-S01: Auswahlvertrag und atomare Gruppenoperationen definieren.
+- [x] EDIT-01-S02: Freiraum-/Konflikthüllen und Undo/Redo ergänzen.
 
 **Abnahme:** Keine zweite Transformationslogik; Gruppenaktionen vollständig oder gar nicht.
 
-**Nächste Aktion:** Auswahlvertrag und atomare Gruppenoperationen definieren.
+**Nächste Aktion:** Geräteprüfung (QA-02); Gruppenziehen direkt im 3D-Bild als Folgeschritt.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Unit- und Chromium-Prüfung bestanden; Spielprüfung, Firefox/Safari und Geräte offen.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/editor.test.mjs](../tests/editor.test.mjs) — Unit-Tests Entwurf, Werkzeuge, Speichern, Projektzuordnung, Gruppenoperationen.; [tests/e2e/editor.e2e.mjs](../tests/e2e/editor.e2e.mjs) — Chromium: Werkstatt, Projekt-Reiter, Mehrfachauswahl, 390 px.; [docs/architecture/BLOCK_EDITOR.md](architecture/BLOCK_EDITOR.md) — Vertrag, Grenzen und Prüfbefehle.
 
 **Dateiumfang:** `apps/web/src/views/project/EditorTab.tsx`, `packages/domain/src/connectors.ts`, `apps/web/src/views/project/selection/`. **Abhängigkeiten:** STORE-02, VIEW-01. **Alte IDs:** —.
 
@@ -834,21 +834,21 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### EDIT-02
 
-**Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude-Thread „Vollständigen Block-Builder bauen“ · Aktualisiert: 2026-11-01T12:56:16.487Z
+**Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Vollständigen Block-Builder bauen“ · Aktualisiert: 2026-11-01T14:29:20.816Z
 
-- [ ] EDIT-02-S01: Entwurfsvertrag mit invertierbaren Zelländerungen, Undo/Redo und Speichern als neue AssetVersion.
-- [ ] EDIT-02-S02: Werkzeuge: Setzen, Abbauen, Pipette, Ersetzen, Quader/Hohlkörper/Wände, Kugel, Zylinder, Linie, Fläche füllen, Drehen, Kopieren/Einfügen/Verschieben.
-- [ ] EDIT-02-S03: Blockpalette mit allen Blöcken des Profils, Zustandseditor mit erlaubten Werten und Standardwerten.
-- [ ] EDIT-02-S04: Einbindung: Bauteile/Bibliotheksgebäude als neue Version, Projekt-Reiter „Blöcke“ mit Zuordnung zu Instanzen.
-- [ ] EDIT-02-S05: Unit-, Browser- und Sichtprüfung, Doku.
+- [x] EDIT-02-S01: Entwurfsvertrag mit invertierbaren Zelländerungen, Undo/Redo und Speichern als neue AssetVersion.
+- [x] EDIT-02-S02: Werkzeuge: Setzen, Abbauen, Pipette, Ersetzen, Quader/Hohlkörper/Wände, Kugel, Zylinder, Linie, Fläche füllen, Drehen, Kopieren/Einfügen/Verschieben.
+- [x] EDIT-02-S03: Blockpalette mit allen Blöcken des Profils, Zustandseditor mit erlaubten Werten und Standardwerten.
+- [x] EDIT-02-S04: Einbindung: Bauteile/Bibliotheksgebäude als neue Version, Projekt-Reiter „Blöcke“ mit Zuordnung zu Instanzen.
+- [x] EDIT-02-S05: Unit-, Browser- und Sichtprüfung, Doku.
 
 **Abnahme:** Gespeicherte Versionen bleiben unverändert; jede Bearbeitung erzeugt eine neue Version, Projekte wechseln nur per invertierbarer Operation. Keine zweite Koordinaten- oder Drehlogik; Zustände ohne Regel bleiben sichtbar ungelöst. Gleiche Eingaben ergeben die gleiche Version (deterministische Palette).
 
-**Nächste Aktion:** Entwurfsvertrag und Werkzeuge umsetzen, Blockregister von VIEW-02 übernehmen.
+**Nächste Aktion:** Picking an 3D-Blockflächen; Registerlücken mit PROFILE-01-Serverreport schließen; Spielprüfung.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Unit- und Chromium-Prüfung bestanden; Spielprüfung, Firefox/Safari und Geräte offen.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/editor.test.mjs](../tests/editor.test.mjs) — Unit-Tests Entwurf, Werkzeuge, Speichern, Projektzuordnung, Gruppenoperationen.; [tests/e2e/editor.e2e.mjs](../tests/e2e/editor.e2e.mjs) — Chromium: Werkstatt, Projekt-Reiter, Mehrfachauswahl, 390 px.; [docs/architecture/BLOCK_EDITOR.md](architecture/BLOCK_EDITOR.md) — Vertrag, Grenzen und Prüfbefehle.
 
 **Dateiumfang:** `packages/domain/src/editor/`, `apps/web/src/editor/`, `apps/web/src/views/project/BlocksTab.tsx`, `tests/editor.test.mjs`, `tests/e2e/editor.e2e.mjs`, `docs/architecture/BLOCK_EDITOR.md`. **Abhängigkeiten:** VIEW-01, STORE-02. **Alte IDs:** —.
 

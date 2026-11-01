@@ -115,6 +115,7 @@ export function BuildingDetail({ entry, asset, latest, versions, info, group, va
             <button type="button" className={projects.length ? '' : 'primary'} onClick={onNewProject}>Neues Projekt damit starten</button>
             <button type="button" aria-pressed={favorite} onClick={onFavorite}>{favorite ? '♥ Gemerkt' : '♡ Merken'}</button>
             <button type="button" aria-pressed={comparing} onClick={onCompare}>{comparing ? '⇄ Im Vergleich' : '⇄ Vergleichen'}</button>
+            <a className="button" href={`#/werkstatt/${encodeURIComponent(latest.id)}`} title="Im Blockeditor Blöcke setzen, entfernen, ersetzen und drehen; speichert als neue Version">✎ Blöcke bearbeiten</a>
           </div>
           {collections}
         </div>

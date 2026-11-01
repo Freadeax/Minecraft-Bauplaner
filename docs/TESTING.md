@@ -102,6 +102,7 @@ GitHub Actions werden nicht genutzt. Der jeweils bearbeitende Agent führt alle 
 - Neue Fälle: Phasenregeln (Vanilla-Schwerkraft/Anbringung/Flüssigkeit, Mod bleibt Grundblock); von Hand hergeleitete Säule mit 7 Schritten, exakten IDs, Reihenfolge, Y-Werten und allen Voraussetzungslisten; Burgmauer: jede Weltzelle genau einmal, Summe = Weltzählung, Voraussetzungen stets früher, Zyklenprüfung; Determinismus; Haken → bereit-Liste, Verschieben ⇒ prüfbedürftig bei gleicher ID, unberührte Abschnitte bleiben abgehakt, erneut bestätigen, entfernte Instanz ⇒ verwaist; Drehen ändert nur Hashes des gedrehten Abschnitts; Schicht-Haken als ein Undo-Schritt; ungeklärte Konflikte je Schritt; leeres Projekt; Zyklus/unbekannte ID.
 - Browser: Burgmauer → Bauen (31 Schritte), Schritt 1 Prüfkriterium „16 Blöcke“ und 16 markierte Zellen im Schichtplan, Abhaken springt weiter, Turm im Editor Y+1 ⇒ Hinweis prüfbedürftig, Filter, erneut bestätigen, ganze Schicht abhaken, 3D-Ansicht. Mobil 390×844 mit Touch: Schrittkarte vor Liste, Abhaken-Ziel ≥ 44 px hoch, kein horizontales Scrollen, Tap hakt ab. Desktop- und Mobil-Screenshot visuell geprüft.
 - Grenzen: kein echtes Mobilgerät, keine Prüfung im Spiel, Projekte weiter nur sitzungslokal bis B3.
+
 ### 27.10.2026 – B2 Schem-v3-Export
 
 - Grundlage main ed32566 (inkl. B4) plus B2. Node 22.22.0, Python 3.13, lokales Playwright/Chromium; keine neue Abhängigkeit.
@@ -409,12 +410,14 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Vollständiges `npm run test:e2e`: 60/62; die zwei Generatorfälle scheiterten an `getByLabel('Vorlage')`, das nun auch das neue Feld „Name der Generatorvorlage“ trifft. Selektor auf `exact: true` präzisiert (gleiche Aussage), danach `generators.e2e.mjs` 2/2 bestanden.
 - Umgebung: Linux-Cloudcontainer, Playwright 1.64.1 gegen vorinstalliertes Chromium/Headless-Shell 1243 (Revision 1248 per lokalem Verweis auf 1243 abgebildet, nur Umgebung, nicht im Repo). Keine Safari-/iPhone-/Echtgeräteprüfung.
 - Nach Rebase auf main `f8fb1a8` (MAP-01, VIEW-02, EDIT-Anmeldung): Konflikte in COMMUNICATION, TESTING, `backup.ts`, `index.ts` mit beiden Seiten gelöst; Vorlagenansicht auf die neue Viewer-Schnittstelle (ohne `colorFor`) umgestellt. `npm run check` auf diesem Stand: 409 Node-Tests, 408 bestanden, 1 übersprungen (Bestand), Architektur-, Roadmap-, Typ-, Build- und Dokumentationsprüfung bestanden. Browser auf diesem Stand: collections, asset-concurrency, generators, catalog, persistence 13/13 bestanden.
+
 ## UI-02 · 01.11.2026 · App-Hülle, Navigation und Handyoberfläche · Claude
 
 - `npm run check` vollständig bestanden: Architektur-, Roadmap-, Typprüfung, Build, 391 Node-Tests (1 übersprungen, unverändert), Dokumentationslinks.
 - `npm run test:e2e` 63/63 bestanden (280,7 s), darunter neu `tests/e2e/shell.e2e.mjs` (4 Fälle). Während der Arbeit gefunden und behoben: Vergleichsleiste der Bibliothek lag am Handy unter der neuen unteren Leiste (catalog 390 px), lange Editorlisten streckten die 3D-Fläche über den Bildschirm (snap), Baustellenkacheln/-tabellen verbreiterten die Seite bei 390 px.
 - Nach Rebase auf MAP-01 und LIB-02/03 erneut: `npm run check` 399 Node-Tests (1 übersprungen) bestanden, `check:roadmap-change` gültig; Browserregression 69/70 im Gesamtlauf (309,9 s); einziger Fehlschlag „Systemcheck: Auslieferung …“ liest den Manifeststatus vor Ende des Ladens (Zeitabhängigkeit im Test, keine UI-02-Datei betroffen), isoliert 3 × 5/5 bestanden. Dabei behoben: Kopfzeile mit fünftem Eintrag (Weltkarte) war bei 1400 px zu breit, jetzt stufenweise Verdichtung, eigener Test 1920–761 px.
 - Grenzen: Chromium mit Viewport-/Touchsimulation; keine echte Safari-/iPhone-Prüfung (QA-02). Playwright 1.64.1 benötigte `npm run setup:browser` (Chromium 1248) in dieser Umgebung.
+
 ## GAME-02 · Fabric-Mod gebaut und im echten Spiel geprüft · 01.11.2026 · Claude
 
 - Umgebung: Linux-Cloudcontainer, OpenJDK 25.0.4 (Ubuntu-Paket), Gradle-Wrapper 9.8.2, Fabric Loom 1.19.3; `maven.fabricmc.net`, `meta.fabricmc.net`, `piston-meta`/`piston-data.mojang.com`, `libraries.minecraft.net` und `resources.download.minecraft.net` erreichbar. Mesa llvmpipe 25.2.8 unter `weston --backend=headless` (Xvfb scheitert: kein sRGB-fähiges GLX-Visual).
@@ -424,6 +427,7 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Derselbe Test mit `BAUPLANER_MODPACK_MODS` und allen 21 Mods aus „Fabric 26.3 1.0.1mitRei“ (u. a. Sodium 0.9.3-beta.1, Iris 1.11.7, Distant Horizons 3.3.3, REI 26.3.824, Xaero Minimap/Weltkarte, Jade, Simple Voice Chat, Freecam) als Produktionsstart: bestanden, gleiches Ergebnis, 90 s. Hinweis: Distant Horizons braucht das volle JDK (AWT); einige Mods halten den Prozess nach Testende offen, das Skript beendet ihn nach der Ergebnisübergabe.
 - `tests/roadmap.test.mjs`: Der Darstellungstest verlangte „Blocker:“ aus den Live-Daten; mit dem Ende der Blockade von GAME-02 gab es keinen Blocker mehr. Der Test setzt jetzt einen eigenen Testblocker.
 - Grenzen: kein echter Mehrspieler-Server (der Test läuft im integrierten Server), keine Hardware-GPU, kein Windows-Launcher. Die Abnahme auf server.lmnt-gaming.net übernimmt Philipp (GAME-02-S04).
+
 ## LIB-04 Gebäudebibliothek v3 · 01.11.2026 · Claude
 
 - Ausgang main `f8fb1a8` (nach VIEW-02 und MAP-01), Zusammenführung mit Konflikten in `states.ts` (Regeln von main übernommen) und `COMMUNICATION.md` (beide Seiten).
@@ -439,3 +443,12 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `node --test tests/mod-releases.test.mjs tests/router.test.mjs`: bestanden (jede gelistete .jar in `downloads/mod/` mit gelisteter Größe/SHA-256, numerische Versionssortierung 26.10 > 26.3, Rückfall auf vorhandene Builds, teilbare Auswahl, Route `#/mod` mit und ohne Auswahl).
 - `node --test tests/e2e/mod-download.e2e.mjs` (Chromium, Pages-Build unter `/Minecraft-Bauplaner/`, 1400 und 390 px): 2/2 bestanden. Fußzeilenlink, Titel, Vorauswahl neueste Minecraft-Version/Fabric, NeoForge nicht wählbar, Linkziel, SHA-256 sichtbar, Download-Dateiname, 34 262 Bytes über denselben Link, teilbare Auswahl in der Adresszeile, keine waagerechte Scrollleiste, keine Seitenfehler. Bildschirmfotos beider Breiten angesehen.
 - `tests/e2e/shell.e2e.mjs` Fall „Desktop: … Schnellsuche (Strg+K)“ scheitert in diesem Linux-Container auch auf unverändertem main (Dialog öffnet nicht auf Strg+K); die übrigen 4 Fälle und `game-check.e2e.mjs` bestehen. Nicht durch diese Änderung verursacht, nicht verändert.
+
+## EDIT-01 / EDIT-02 Blockeditor und Mehrfachauswahl · 01.11.2026 · Claude
+
+- `node --test tests/editor.test.mjs`: 11/11 bestanden (Entwurf/Umkehrung, Determinismus, Formen gegen Handzählung, Ersetzen, Füllen, Drehen, Ablage, Speichern als Version, `localCell` für alle 8 Transformationen, Projektzuordnung mit Rückgängig, Gruppenoperationen zellgenau gegen `transformCellPosition`/`transformBlockState`).
+- `node --test tests/e2e/editor.e2e.mjs`: 4/4 in Headless-Chromium (Werkstatt, Projekt-Reiter „Blöcke“, Mehrfachauswahl, 390 px). Sichtprüfung der Screenshots von Werkstatt und Gruppenhülle.
+- `npm run check`: 411 Node-Tests (410 bestanden, 1 übersprungen, Bestand), Architektur, Roadmap, Typen, Build, Doku. `npm run test:e2e` gesamt 65/65. Dabei zwei eigene Fehler gefunden und behoben: sechster Projekt-Reiter ließ die Seite bei 390 px waagrecht scrollen (Reiterleiste bricht jetzt um), ein Hinweistext im Eigenschaftenfeld verlängerte die Editorzeile so, dass der 3D-Ziehtest die Bildmitte verfehlte (Gruppenfeld erscheint nur noch bei aktiver Gruppe).
+- Playwright-Hinweis wie bei VIEW-02/MAP-01: lokaler Verweis 1248 → 1243, keine Repositoryänderung.
+- Grenzen: kein Picking an 3D-Blockflächen, keine Spielprüfung der gespeicherten Zustände, nur Chromium. Seltene Zustandswerte fehlen im Register, solange PROFILE-01 keinen Serverreport liefert (siehe [BLOCK_EDITOR](architecture/BLOCK_EDITOR.md)).
+- Nach Rebase auf UI-02/LIB-02/03/04/GAME-02: Werkstatt nicht als fünfter Hauptbereich (UI-02-Kopfzeile ist auf vier ausgelegt, `shell.e2e.mjs` prüft das), sondern als Schnellsucheintrag und Knopf „✎ Neues Bauteil bauen“ in der Bibliothek. `npm run test:e2e` 73/74; einziger Ausfall `shell.e2e.mjs` „Schnellsuche (Strg+K)“ wartet auf den Dialog und scheitert **identisch auf unverändertem main `46444f3`** (eigener Build im sauberen Arbeitsbaum); per Hand öffnet Strg+K den Dialog. Nicht durch EDIT verursacht, Test nicht verändert.
