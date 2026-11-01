@@ -859,3 +859,28 @@ Eigene Sammlungen (Ordner, Kategorien, Katalogfilter, festgehaltene Versionen) u
 - `tests/e2e/collections.e2e.mjs`
 - `tests/e2e/generators.e2e.mjs`
 
+## 2026-11-01T13:31:11.269Z · progress
+
+**Aufgaben:** UI-02
+
+Rebase auf MAP-01 und LIB-02/03: Weltkarte in der Navigationsliste, Kopfzeile verdichtet sich stufenweise (Test 1920–761 px), klebende Spalten unter der Kopfzeile.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| UI-02 | ✅ Im beschriebenen Umfang geprüft | 4/4 | Echte Geräteprüfung (Safari/iPhone, Touch) in QA-02; weitere Hauptbereiche (z. B. Karte MAP-01) als Eintrag in nav.ts anhängen. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/CommandPalette.tsx`
+- `apps/web/src/app/Shell.tsx`
+- `apps/web/src/app/icons.tsx`
+- `apps/web/src/app/nav.ts`
+- `apps/web/src/main.tsx`
+- `apps/web/src/shell.css`
+- `apps/web/src/style.css`
+- `apps/web/src/views/project/ProjectView.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/UI.md`
+- `tests/e2e/shell.e2e.mjs`
+

@@ -578,6 +578,14 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Hinweis an VIEW-02: `ThreeViewer.tsx` hat zusätzlich die optionale Eigenschaft `frameRequest` (eine Wirkung); beim Rebase auf `markFor` umgestellt, Färbung der Karte läuft über `Mark`.
 - Hinweis an MAP-02: `liveMapTemplateFromLink` (worldmap.ts) wandelt kopierte BlueMap-/Dynmap-/Pl3xMap-Links in Vorlagen; Vorlagen mit Quellenangabe in `views/map/liveMapConfig.ts`. Gespeicherte Ziele und native Markerdateien bleiben MAP-02.
 - Hinweis an alle: `Project` hat das optionale Feld `world`; wer Projekte kopiert oder zusammenführt, übernimmt es unverändert. Hauptnavigation hat den Eintrag „Weltkarte“ (`main.tsx`).
+### MSG-UI02-00 · Claude · 2026-11-01T14:00:00+01:00 · Reservierung UI-02 Oberfläche (App-Hülle, Navigation, Handy)
+- Nutzerauftrag vom 28.10.: „Überarbeitung der UI und Oberfläche“. Neue Roadmapaufgabe UI-02 (P3), baut auf UI-01 (Themen) auf und nutzt nur dessen Tokens.
+- Eigene Dateien: `apps/web/src/app/Shell.tsx`, `nav.ts`, `icons.tsx`, `CommandPalette.tsx`, `apps/web/src/shell.css`, `tests/e2e/shell.e2e.mjs`. Kleine Eingriffe: `main.tsx` (Hülle statt Inline-Kopf; `ThemeControl` bleibt in der Kopfzeile), `ProjectView.tsx` (Projektkopf, Berechnungshinweis unverändert), `style.css` (nur Schriftgrößen unter 11 px mechanisch angehoben), Abschnitt in `docs/architecture/UI.md`.
+- Hinweis an MAP-01: Hauptmenüpunkte stehen künftig als Liste in `apps/web/src/app/nav.ts` (Kopfzeile, Handyleiste und Schnellsuche lesen dieselbe Liste); bitte dort eine Zeile anhängen statt `main.tsx` zu ändern. `views/library/` (B17/LIB-02) fasse ich nicht an.
+
+### MSG-UI02-01 · Claude · 2026-11-01 · UI-02 abgeschlossen
+- Ergebnis: neue App-Hülle (Navigationsliste `app/nav.ts`, Symbole, Schnellsuche Strg+K über Seiten/Projekte/Gebäude/Projektbereiche, Seitentitel), Projektkopf mit Pfad und scrollbarer Bereichsleiste, untere Navigationsleiste am Handy, 3D-Ansicht im Editor bleibt stehen, Schrift nirgends unter 11 px, Kontrastkorrekturen für helle Themen. `ThemeControl` und `TextureChip` (VIEW-02) sitzen weiter in der Kopfzeile, `TextureDialog` wird in `main.tsx` gerendert.
+- Hinweis an MAP-01: neuen Hauptbereich bitte als eine Zeile in `apps/web/src/app/nav.ts` anhängen (Symbol `map` existiert in `app/icons.tsx`); Kopfzeile, Handyleiste und Schnellsuche übernehmen ihn automatisch. Hinweis an alle: am Handy gibt es eine feste untere Leiste (64 px + Safe-Area); eigene fest/klebend unten positionierte Elemente brauchen `bottom: var(--bottom-nav-h)` (siehe `shell.css`).
 - Reservierung mit dem Push beendet.
 
 ### MSG-LIB0203-01 · Claude (Thread Sammlungen und Vorlagen) · 2026-11-01 · LIB-02/LIB-03 umgesetzt

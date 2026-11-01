@@ -1,23 +1,36 @@
+import { useEffect, useRef } from 'react';
 import { href } from '../../app/router';
 import { projectTabs } from './tabs';
 import { useProjectSession } from './session';
 import { useApp } from '../../app/context';
+import { Icon, tabIcon } from '../../app/icons';
+import { useDocumentTitle } from '../../app/Shell';
 
 const saveLabel = { saved: 'gespeichert', saving: 'speichert …', error: 'Speichern fehlgeschlagen', conflict: 'Konflikt mit anderem Tab' } as const;
 
 export function ProjectView({ projectId, tab }: { projectId: string; tab: string }) {
   const { repo } = useApp();
   const { session, loadError } = useProjectSession(projectId);
+  const active = projectTabs.find(t => t.id === tab);
+  const tabBar = useRef<HTMLElement>(null);
+  // Schmale Bildschirme: aktiven Bereich in der waagerecht scrollbaren Leiste sichtbar halten.
+  useEffect(() => {
+    const bar = tabBar.current, link = bar?.querySelector<HTMLElement>('[aria-current=page]');
+    if (bar && link && bar.scrollWidth > bar.clientWidth) bar.scrollLeft = link.offsetLeft - (bar.clientWidth - link.offsetWidth) / 2;
+  }, [tab, session !== null]);
+  useDocumentTitle(session ? `${session.project.name}${active && active.id !== 'editor' ? ` · ${active.label}` : ''}` : 'Projekt');
   if (loadError) return <div className="page"><div className="notice warning" role="alert"><strong>Projekt nicht geladen</strong><p>{loadError}</p><a href="#/">Zur Projektzentrale</a></div></div>;
   if (!session) return <div className="loading" role="status">Projekt wird geladen …</div>;
-  const active = projectTabs.find(t => t.id === tab);
   return <div className="page project-page" data-computation-state={session.computationState}>
     <header className="project-head">
-      <div><a className="crumb" href="#/">Projekte</a><h1 className="page-title">{session.project.name}</h1></div>
-      <nav className="tabs" aria-label="Projektbereiche">{projectTabs.map(t =>
-        <a key={t.id} href={href({ view: 'project', projectId, tab: t.id })} aria-current={t.id === tab ? 'page' : undefined}>{t.label}</a>)}</nav>
+      <div className="project-title">
+        <nav className="crumbs" aria-label="Pfad"><a className="crumb" href="#/">Projekte</a><span aria-hidden="true">›</span><span aria-current="page">{session.project.name}</span></nav>
+        <h1 className="page-title">{session.project.name}</h1>
+      </div>
       <span className={`save-state ${session.saveState}`} role="status" title={session.saveError}>
         {saveLabel[session.saveState]}{repo.kind === 'memory' && ' · nur diese Sitzung'}</span>
+      <nav className="tabs" aria-label="Projektbereiche" ref={tabBar}>{projectTabs.map(t =>
+        <a key={t.id} href={href({ view: 'project', projectId, tab: t.id })} aria-current={t.id === tab ? 'page' : undefined}><Icon name={tabIcon(t.id)} size={16} />{t.label}</a>)}</nav>
     </header>
     {session.computationState !== 'ready' && <section className={`notice ${session.computationState === 'error' ? 'warning' : ''}`}
       aria-label="Projektberechnung" role={session.computationState === 'error' ? 'alert' : 'status'}>

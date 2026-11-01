@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T13:30:13.842Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T13:31:11.269Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -16,7 +16,7 @@ Stand: 2026-11-01T13:30:13.842Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | 🚧 In Arbeit | 2 |
 | ⛔ Blockiert | 1 |
 | 🧩 Implementiert · Abnahme offen | 11 |
-| ✅ Im beschriebenen Umfang geprüft | 20 |
+| ✅ Im beschriebenen Umfang geprüft | 21 |
 | ⏸ Zurückgestellt | 2 |
 
 ## Aktiver Arbeitsblock
@@ -112,6 +112,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | ID | Arbeitspaket | Status | Schritte | Abhängigkeiten | Main | Pages-Quelle |
 |---|---|---|---:|---|---|---|
 | [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | ⏳ Offen | 0/2 | QA-01, VIEW-02 | ausstehend | ausstehend |
+| [UI-02](#ui-02) | App-Hülle, Navigation und Handyoberfläche überarbeiten | ✅ Im beschriebenen Umfang geprüft | 4/4 | UI-01, QA-01 | ausstehend | ausstehend |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen | 5/6 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
 | [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🚧 In Arbeit | 0/2 | STORE-02, VIEW-01 | ausstehend | ausstehend |
 | [EDIT-02](#edit-02) | Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen | 🚧 In Arbeit | 0/5 | VIEW-01, STORE-02 | ausstehend | ausstehend |
@@ -454,6 +455,27 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Dateiumfang:** `apps/web/src/theme/`, `apps/web/src/materials/`, `apps/web/src/views/library/BuildThemesPage.tsx`. **Abhängigkeiten:** QA-01. **Alte IDs:** UI-01, MAT-02, WORLD-01.
 
 **Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
+
+### UI-02
+
+**App-Hülle, Navigation und Handyoberfläche überarbeiten** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Claude Thread „Oberfläche gründlich überarbeiten“ · Aktualisiert: 2026-11-01T13:31:11.269Z
+
+- [x] UI-02-S01: App-Hülle mit Navigationsliste, Schnellsuche (Strg+K), Seitentiteln und unterer Leiste am Handy.
+- [x] UI-02-S02: Projektkopf mit Pfad, Speicherstatus und scrollbarer Bereichsleiste; Editor am Handy mit 3D zuerst.
+- [x] UI-02-S03: Einheitliche Lesegrößen (keine Schrift unter 11 px), Touch-Ziele und Fußzeile; alle Themen hell/dunkel.
+- [x] UI-02-S04: Browserprüfung 1400/390 px für Hülle, Suche und Projektkopf; vollständige E2E-Regression.
+
+**Abnahme:** Navigation, Schnellsuche und Projektbereiche sind auf 1400 und 390 px ohne waagerechtes Scrollen bedienbar; bestehende E2E-Abläufe bleiben grün; keine Funktion entfällt.
+
+**Nächste Aktion:** Echte Geräteprüfung (Safari/iPhone, Touch) in QA-02; weitere Hauptbereiche (z. B. Karte MAP-01) als Eintrag in nav.ts anhängen.
+
+**Prüfstand:** npm run check: 391 Node-Tests bestanden, 1 übersprungen; volle Browserregression 63/63 (Chromium, 1400/390 px, Touchsimulation). Keine echte Safari-/iPhone-/GPU-Prüfung (QA-02).
+
+**Nachweise:** [tests/e2e/shell.e2e.mjs](../tests/e2e/shell.e2e.mjs) — Vier echte Chromiumfälle: Hauptnavigation, Seitentitel, Schnellsuche mit Tastatur, Projektkopf/Bereichssprung (hell), Handy 390 px dunkel/hell ohne Überbreite, aktiver Bereich sichtbar, 3D zuerst.; [docs/architecture/UI.md](architecture/UI.md) — Abschnitt UI-02: Hülle, Navigationsliste, Schnellsuche, Projektkopf, Handyleiste, Lesbarkeit, Selektoren.
+
+**Dateiumfang:** `apps/web/src/app/CommandPalette.tsx`, `apps/web/src/app/Shell.tsx`, `apps/web/src/app/icons.tsx`, `apps/web/src/app/nav.ts`, `apps/web/src/main.tsx`, `apps/web/src/shell.css`, `apps/web/src/style.css`, `apps/web/src/views/project/ProjectView.tsx`, `docs/COMMUNICATION.md`, `docs/TESTING.md`, `docs/architecture/UI.md`, `tests/e2e/shell.e2e.mjs`. **Abhängigkeiten:** UI-01, QA-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### STAB-01
 

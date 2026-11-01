@@ -1,0 +1,36 @@
+/**
+ * Einheitliche Liniensymbole (24er-Raster, currentColor) für Navigation,
+ * Projektbereiche und Schnellsuche. Immer dekorativ: die Beschriftung trägt
+ * der Text daneben, daher aria-hidden.
+ */
+const PATHS = {
+  projects: 'M3 7.5 12 3l9 4.5-9 4.5zM3 12l9 4.5 9-4.5M3 16.5 12 21l9-4.5',
+  library: 'M4 4h5v16H4zM10 4h4v16h-4zM15.5 4.6l3.9-1 3.6 15.5-3.9.9z',
+  viewer: 'M12 3l8 4.5v9L12 21l-8-4.5v-9zM4 7.5l8 4.5 8-4.5M12 12v9',
+  map: 'M9 4 3 6.5v13L9 17l6 3 6-2.5v-13L15 7zM9 4v13M15 7v13',
+  search: 'M10.5 4a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13zM15.5 15.5 20 20',
+  editor: 'M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4',
+  build: 'M4 6h3M4 12h3M4 18h3M10 6h10M10 12h10M10 18h6',
+  export: 'M12 3v12M7 10l5 5 5-5M4 19h16',
+  material: 'M4 7h16v13H4zM4 7l2-3h12l2 3M10 11h4',
+  site: 'M3 20h18M5 20V10l5-3v13M10 20V4l9 5v11M13 12h3M13 16h3',
+  system: 'M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6zM8.5 12l2.5 2.5 4.5-5',
+  github: 'M9 19c-4 1.3-4-2-6-2.5m12 4.5v-3.2c0-.9.1-1.5-.5-2.1 2.6-.3 5.5-1.3 5.5-5.9A4.6 4.6 0 0 0 18.8 6.5 4.3 4.3 0 0 0 18.7 3.3S17.6 3 15 4.7a12.6 12.6 0 0 0-6 0C6.4 3 5.3 3.3 5.3 3.3a4.3 4.3 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.8c0 4.6 2.9 5.6 5.5 5.9-.6.6-.6 1.2-.5 2.1V21',
+  building: 'M4 21V10l8-6 8 6v11zM9.5 21v-6h5v6',
+  arrow: 'M5 12h14M13 6l6 6-6 6',
+  plus: 'M12 5v14M5 12h14',
+  page: 'M6 3h9l4 4v14H6zM14 3v5h5',
+} as const;
+
+export type IconName = keyof typeof PATHS;
+
+export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
+  return <svg className="icon" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7"
+    strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false"><path d={PATHS[name]} /></svg>;
+}
+
+/** Symbol je Projektbereich (tabs.ts); unbekannte Bereiche bekommen ein neutrales Blatt. */
+export function tabIcon(id: string): IconName {
+  const known: Record<string, IconName> = { editor: 'editor', bauen: 'build', export: 'export', material: 'material', baustelle: 'site', karte: 'map' };
+  return known[id] ?? 'page';
+}

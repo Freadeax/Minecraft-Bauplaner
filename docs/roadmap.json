@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T13:30:13.842Z",
+  "updatedAt": "2026-11-01T13:31:11.269Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -919,6 +919,79 @@
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
       "updatedAt": "2026-11-01T12:42:58.241Z"
+    },
+    {
+      "id": "UI-02",
+      "title": "App-Hülle, Navigation und Handyoberfläche überarbeiten",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "verified",
+      "owner": "Claude Thread „Oberfläche gründlich überarbeiten“",
+      "dependencies": [
+        "UI-01",
+        "QA-01"
+      ],
+      "scope": [
+        "apps/web/src/app/CommandPalette.tsx",
+        "apps/web/src/app/Shell.tsx",
+        "apps/web/src/app/icons.tsx",
+        "apps/web/src/app/nav.ts",
+        "apps/web/src/main.tsx",
+        "apps/web/src/shell.css",
+        "apps/web/src/style.css",
+        "apps/web/src/views/project/ProjectView.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/UI.md",
+        "tests/e2e/shell.e2e.mjs"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "UI-02-S01",
+          "title": "App-Hülle mit Navigationsliste, Schnellsuche (Strg+K), Seitentiteln und unterer Leiste am Handy.",
+          "done": true
+        },
+        {
+          "id": "UI-02-S02",
+          "title": "Projektkopf mit Pfad, Speicherstatus und scrollbarer Bereichsleiste; Editor am Handy mit 3D zuerst.",
+          "done": true
+        },
+        {
+          "id": "UI-02-S03",
+          "title": "Einheitliche Lesegrößen (keine Schrift unter 11 px), Touch-Ziele und Fußzeile; alle Themen hell/dunkel.",
+          "done": true
+        },
+        {
+          "id": "UI-02-S04",
+          "title": "Browserprüfung 1400/390 px für Hülle, Suche und Projektkopf; vollständige E2E-Regression.",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "Navigation, Schnellsuche und Projektbereiche sind auf 1400 und 390 px ohne waagerechtes Scrollen bedienbar; bestehende E2E-Abläufe bleiben grün; keine Funktion entfällt."
+      ],
+      "next": "Echte Geräteprüfung (Safari/iPhone, Touch) in QA-02; weitere Hauptbereiche (z. B. Karte MAP-01) als Eintrag in nav.ts anhängen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/e2e/shell.e2e.mjs",
+          "note": "Vier echte Chromiumfälle: Hauptnavigation, Seitentitel, Schnellsuche mit Tastatur, Projektkopf/Bereichssprung (hell), Handy 390 px dunkel/hell ohne Überbreite, aktiver Bereich sichtbar, 3D zuerst."
+        },
+        {
+          "path": "docs/architecture/UI.md",
+          "note": "Abschnitt UI-02: Hülle, Navigationsliste, Schnellsuche, Projektkopf, Handyleiste, Lesbarkeit, Selektoren."
+        }
+      ],
+      "verification": {
+        "state": "passed",
+        "note": "npm run check: 391 Node-Tests bestanden, 1 übersprungen; volle Browserregression 63/63 (Chromium, 1400/390 px, Touchsimulation). Keine echte Safari-/iPhone-/GPU-Prüfung (QA-02)."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T13:31:11.269Z"
     },
     {
       "id": "STAB-01",
@@ -4591,6 +4664,37 @@
           "done": 2,
           "total": 2,
           "next": "Abnahme auf echten Geräten (QA-02); Vorlagen für Anlagen (Compounds) und BUILD-05 prüfen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T13:31:11.269Z",
+      "kind": "progress",
+      "items": [
+        "UI-02"
+      ],
+      "summary": "Rebase auf MAP-01 und LIB-02/03: Weltkarte in der Navigationsliste, Kopfzeile verdichtet sich stufenweise (Test 1920–761 px), klebende Spalten unter der Kopfzeile.",
+      "files": [
+        "apps/web/src/app/CommandPalette.tsx",
+        "apps/web/src/app/Shell.tsx",
+        "apps/web/src/app/icons.tsx",
+        "apps/web/src/app/nav.ts",
+        "apps/web/src/main.tsx",
+        "apps/web/src/shell.css",
+        "apps/web/src/style.css",
+        "apps/web/src/views/project/ProjectView.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/UI.md",
+        "tests/e2e/shell.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "UI-02",
+          "status": "verified",
+          "done": 4,
+          "total": 4,
+          "next": "Echte Geräteprüfung (Safari/iPhone, Touch) in QA-02; weitere Hauptbereiche (z. B. Karte MAP-01) als Eintrag in nav.ts anhängen."
         }
       ]
     }

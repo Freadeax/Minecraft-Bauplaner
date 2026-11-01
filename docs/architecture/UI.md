@@ -35,3 +35,18 @@ Zusätzliches Stylesheet `apps/web/src/catalog.css` nach `style.css`: Farbtokens
 ## Stabilisierung S2 · 31.10.2026
 
 Merkliste, Vergleich und Blickrichtung behalten fehlgeschlagene Schreibvorgänge in einem gemeinsamen Speicher der laufenden Seite. Damit bleiben sie bei Navigation und zwischen mehreren Komponenten erhalten, auch wenn localStorage gesperrt oder voll ist. Ohne erfolgreichen Browser-Schreibvorgang endet diese Garantie beim Neuladen. Echte Storage-Ereignisse anderer Tabs (auch Löschen und Leeren) ersetzen den lokalen Fallback. Listen werden beim Lesen bereinigt und begrenzt; schnelle Änderungen lesen den aktuellen gemeinsamen Stand. Regressionen: `tests/preferences.test.mjs`.
+
+## App-Hülle, Navigation und Handy (UI-02)
+
+Stand 01.11.2026. Ergänzt B11 und die Themen aus UI-01; nutzt ausschließlich deren semantische Tokens (`--text`, `--muted`, `--mint`, `--panel*`, `--line`), daher gelten alle fünf Themen hell und dunkel.
+
+- **Navigationsliste** `apps/web/src/app/nav.ts`: Kopfzeile, untere Handyleiste und Schnellsuche lesen dieselben Einträge. Ein neuer Hauptbereich hängt genau einen Eintrag an (Label, Ziel, Symbol, zugehörige Routen, Kurzbeschreibung).
+- **Hülle** `app/Shell.tsx`: klebende, kompakte Kopfzeile (Marke, Navigation mit Symbolen, Suchfeld, GitHub, Darstellung, Versionshinweis), Fußzeile mit Systemcheck; Titel des Browser-Tabs je Seite (`Seite · LMNT Build Studio`, Projekte mit Name und Bereich). Symbole in `app/icons.tsx` (eigene Linien-SVGs, `currentColor`, immer `aria-hidden`).
+- **Schnellsuche** `app/CommandPalette.tsx`: Strg+K / ⌘K oder Suchfeld. Springt zu Seiten, Bereichen des offenen Projekts, Projekten (zuletzt geändert zuerst) und Bibliotheksgebäuden; Suche ohne Groß-/Kleinschreibung, Akzente und ß. Rein lokal, verändert nichts. Rollen: `dialog` „Schnellsuche“, `combobox`, `listbox`/`option`.
+- **Projektkopf** (`ProjectView.tsx`): Pfad „Projekte › Name“, Speicherstatus als Punktmarke, Bereichsleiste mit Symbolen; am Handy waagerecht scrollbar, der aktive Bereich wird in die Mitte gerückt.
+- **Handy (≤ 760 px)**: Hauptnavigation als feste untere Leiste (Projekte, Bibliothek, Betrachter, Weltkarte, Suchen; Safe-Area beachtet), Kopfzeile nur mit Marke, Suche und Darstellung. Im Editor steht die 3D-Ansicht vor den Listen; Vergleichsleiste der Bibliothek und Abhakleiste beim Bauen sitzen über der unteren Leiste. Baustellenkacheln und -spalten schrumpfen statt die Seite zu verbreitern.
+- **Editor (Desktop)**: Die 3D-Fläche hat eine feste, fenster­hohe Höhe und bleibt beim Scrollen langer Instanz-/Bauteillisten unter der Kopfzeile stehen (`overflow: clip` am Editorraster); vorher streckten lange Listen sie über den Bildschirm hinaus.
+- **Blockdarstellung (VIEW-02)**: Der Texturschalter sitzt als gleich hohes Element in der Kopfzeile; der Dialog bleibt unverändert.
+- **Lesbarkeit**: keine Schrift unter 11 px mehr (ältere 7–10-px-Angaben in `style.css` mechanisch auf 11–12 px angehoben). Graue Literalfarben älterer Abschnitte werden in hellen Themen auf `--muted` umgelenkt; Bedienelemente und dunkle 3D-Bühnen bleiben ausgenommen.
+
+E2E-Selektoren: `navigation` „Hauptnavigation“ (Desktop) bzw. „Hauptnavigation mobil“ (Handy) sind nie gleichzeitig sichtbar; „Projektbereiche“, `.save-state`, `.theme-control` und alle Bereichsnamen sind unverändert. Prüfung: `tests/e2e/shell.e2e.mjs` (1400 px; 390 px dunkel und hell).
