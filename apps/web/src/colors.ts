@@ -56,6 +56,24 @@ const MATERIALS: Readonly<Record<string, string>> = {
   red_mushroom: '#b62121', brown_mushroom: '#946f50', mushroom_stem: '#cbc4b9', shroomlight: '#f19646', cactus: '#5a8a2c', sugar_cane: '#94c065',
   lily_pad: '#2a7a2a', beehive: '#b88a45', composter: '#7a5a30', barrel: '#86643a', target: '#e4d3c0', note_block: '#6a4b35', beacon: '#7fe3e0',
   dripstone: '#866b5c', basalt: '#4c4c52', smooth_basalt: '#48484d', polished_basalt: '#58585c', soul_sand: '#513e32', soul_soil: '#4b3a2f',
+  // Katalog v3 (LIB-04): furniture, work stations, plants and decoration of the new sets.
+  chain: '#3d4250', campfire: '#a0703a', soul_campfire: '#4fa6a8', soul_lantern: '#4a7f86', lectern: '#a07a45', cauldron: '#4a4a4f', water_cauldron: '#3f76e4',
+  lava_cauldron: '#e4682a', candle: '#e9d8a6', flower_pot: '#7c4536', decorated_pot: '#8c4e3a', lightning_rod: '#c47c58', end_rod: '#f2ece0', bell: '#e8c03a',
+  smithing_table: '#3b3a45', cartography_table: '#6f5737', fletching_table: '#c8b27c', loom: '#a68b6a', stonecutter: '#7f7f80', grindstone: '#8d8d8d',
+  brewing_stand: '#7a6a4f', anvil: '#4b4b4f', enchanting_table: '#4a2a3f', ender_chest: '#253233', chiseled_bookshelf: '#7a5f3c', respawn_anchor: '#2c1645',
+  tripwire_hook: '#8a7a68', daylight_detector: '#c9b38c', dispenser: '#6e6e6e', dropper: '#6e6e6e', scaffolding: '#c7a56b', cobweb: '#e6e6e6', cake: '#efe6dc',
+  player_head: '#7a5a3a', skeleton_skull: '#cfcfc7', skeleton_wall_skull: '#cfcfc7', gilded_blackstone: '#4a3a2a',
+  honeycomb: '#e59a1f', dried_kelp: '#3c4a2a', moss_carpet: '#596e2d', glow_lichen: '#6f8a7a', red_sand: '#be6621', muddy_mangrove_roots: '#4b3d33',
+  poppy: '#c02a24', dandelion: '#f2d530', oxeye_daisy: '#e8e8d8', cornflower: '#4b6ad8', allium: '#b07ad8', azure_bluet: '#dfe8f0', blue_orchid: '#2aa6d8',
+  red_tulip: '#c8302a', orange_tulip: '#e47a2a', pink_tulip: '#e8a6c8', white_tulip: '#eeeeee', lily_of_the_valley: '#f2f2f2', rose_bush: '#b8302a',
+  lilac: '#c8a0d0', peony: '#e2b0d8', pink_petals: '#f0a8c8', fern: '#5a8a3a', large_fern: '#5a8a3a', short_grass: '#6d9b45', tall_grass: '#6d9b45',
+  dead_bush: '#8a6a3a', vine: '#3f6a22', seagrass: '#3a7a3a', kelp: '#4a7a2a', kelp_plant: '#4a7a2a', sea_pickle: '#6a8a3a', bamboo: '#6a9a2a',
+  sweet_berry_bush: '#3f5f2a', wheat: '#c8a83a', carrots: '#e08a2a', potatoes: '#c8a85a', beetroots: '#8a2a2a', nether_wart: '#8a1a2a', cocoa: '#8a5a2a',
+  attached_pumpkin_stem: '#7a8a3a', attached_melon_stem: '#7a8a3a', azalea: '#5e7a2e', flowering_azalea: '#7a7a4a', amethyst_cluster: '#a07ad8',
+  iron_ore: '#8f877f', copper_ore: '#7f8a72', coal_ore: '#6a6a6a', chiseled_deepslate: '#3a3a3c', chorus_flower: '#9a7a9a', lodestone: '#8a8c8f',
+  heavy_weighted: '#d8d8d8', nether_sprout: '#14a090', twisting_vine: '#14a090', weeping_vine: '#8a1a1a', soul_torch: '#6fd0d8', wither_skeleton_skull: '#2a2a2a',
+  dragon_head: '#1d1d21', piglin_head: '#d89a7a', chiseled_polished_blackstone: '#353038', cracked_polished_blackstone_brick: '#2e282f',
+  redstone_wall_torch: '#c41a0b', tube_coral: '#3157d8', brain_coral: '#d65fa0', bubble_coral: '#a524a6', fire_coral: '#c8302a', horn_coral: '#d8c840', tube_coral_fan: '#3157d8', brain_coral_fan: '#d65fa0', bubble_coral_fan: '#a524a6', fire_coral_fan: '#c8302a', horn_coral_fan: '#d8c840',
 };
 const SHAPES = ['_fence_gate', '_pressure_plate', '_hanging_sign', '_wall_sign', '_stairs', '_slab', '_wall', '_fence', '_button', '_pane', '_trapdoor', '_door', '_sign'];
 
@@ -118,6 +136,7 @@ function legacyColor(id: string): string {
   const colon = id.indexOf(':');
   if (colon < 0 || id.slice(0, colon) === 'minecraft') {
     const name = id.slice(colon + 1).replace(/^waxed_/, '');
+    if (name.startsWith('potted_')) return MATERIALS.flower_pot!;
     const family = dyeColor(name) ?? woodColor(name) ?? materialColor(name);
     if (family) return family;
   }

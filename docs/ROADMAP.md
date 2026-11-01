@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T13:31:11.269Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T13:36:58.036Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-01T13:31:11.269Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 21 |
 | 🚧 In Arbeit | 2 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 12 |
+| 🧩 Implementiert · Abnahme offen | 13 |
 | ✅ Im beschriebenen Umfang geprüft | 21 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -128,6 +128,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | ⏳ Offen | 0/2 | GAME-02 | ausstehend | ausstehend |
 | [WORLD-IMPORT-01](#world-import-01) | Bereichsweiser Weltimport und Terrainprüfung | ⏳ Offen | 0/2 | PROFILE-01, PERF-02, FORMAT-01 | ausstehend | ausstehend |
 | [BACKUP-02](#backup-02) | Sicherungserinnerung und Abschnittsrevisionen | ⏳ Offen | 0/2 | STORE-01, BUILD-01 | ausstehend | ausstehend |
+| [LIB-04](#lib-04) | Gebäudebibliothek v3: Inhalte in alle Richtungen | 🧩 Implementiert · Abnahme offen | 4/4 | LIB-01 | ausstehend | ausstehend |
 
 ## P4: Optionale Zusammenarbeit und Integrationen
 
@@ -1267,6 +1268,27 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** noch ausstehend
 
 **Dateiumfang:** `docs/architecture/`. **Abhängigkeiten:** AUTH-01. **Alte IDs:** P6-02.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### LIB-04
+
+**Gebäudebibliothek v3: Inhalte in alle Richtungen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude Thread Bibliothek erweitern · Aktualisiert: 2026-11-01T13:36:58.036Z
+
+- [x] LIB-04-S01: Neue Kategorien/Stile/Funktionen, Möbel- und Zustandshelfer (furnish.ts) passend zu den B7-Regeln von main.
+- [x] LIB-04-S02: Neue Themen-Sets: Interieur, Garten, Natur, Stadt, Küste, Fahrzeuge, Untergrund, Nether/End, Hof, Technik, Fantasy, Epochen.
+- [x] LIB-04-S03: Biom-Stile als Materialfamilien und neue Ensembles.
+- [x] LIB-04-S04: Katalogtests, Vorschaubild-Sichtprüfung, Doku, main und Pages.
+
+**Abnahme:** Nur eigene Entwürfe; jede neue Version im B7-Schema drehbar/spiegelbar, keine stillen Material-/Rezeptlücken, bestehende Versions-IDs unverändert.
+
+**Nächste Aktion:** Weitere Ensembles und Tipps nach Spielrückmeldung; Redstone-Bauten im Spiel abnehmen.
+
+**Prüfstand:** Node-Katalogtests und Vorschaubild-Sichtprüfung bestanden; Redstone-Bauten nicht im Spiel abgenommen.
+
+**Nachweise:** [tests/catalog.test.mjs](../tests/catalog.test.mjs) — Alle 336 Gebäude: Schema, vier Drehungen, doppelte Spiegelung, Material-/Rezeptlücken, Ensembles.; [packages/domain/src/build/sets/index.ts](../packages/domain/src/build/sets/index.ts) — 12 neue Sets (159 Gebäude) plus 20 Materialvarianten.; [docs/architecture/CATALOG.md](architecture/CATALOG.md) — Abschnitt Katalog v3 mit Sets, Facetten, Ensembles und Grenzen.
+
+**Dateiumfang:** `packages/domain/src/build/`, `packages/domain/src/catalog.ts`, `packages/domain/src/ensembles.ts`, `docs/architecture/CATALOG.md`, `apps/web/src/colors.ts`. **Abhängigkeiten:** LIB-01. **Alte IDs:** B9-B.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

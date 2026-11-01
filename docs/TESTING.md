@@ -424,3 +424,12 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Derselbe Test mit `BAUPLANER_MODPACK_MODS` und allen 21 Mods aus „Fabric 26.3 1.0.1mitRei“ (u. a. Sodium 0.9.3-beta.1, Iris 1.11.7, Distant Horizons 3.3.3, REI 26.3.824, Xaero Minimap/Weltkarte, Jade, Simple Voice Chat, Freecam) als Produktionsstart: bestanden, gleiches Ergebnis, 90 s. Hinweis: Distant Horizons braucht das volle JDK (AWT); einige Mods halten den Prozess nach Testende offen, das Skript beendet ihn nach der Ergebnisübergabe.
 - `tests/roadmap.test.mjs`: Der Darstellungstest verlangte „Blocker:“ aus den Live-Daten; mit dem Ende der Blockade von GAME-02 gab es keinen Blocker mehr. Der Test setzt jetzt einen eigenen Testblocker.
 - Grenzen: kein echter Mehrspieler-Server (der Test läuft im integrierten Server), keine Hardware-GPU, kein Windows-Launcher. Die Abnahme auf server.lmnt-gaming.net übernimmt Philipp (GAME-02-S04).
+## LIB-04 Gebäudebibliothek v3 · 01.11.2026 · Claude
+
+- Ausgang main `f8fb1a8` (nach VIEW-02 und MAP-01), Zusammenführung mit Konflikten in `states.ts` (Regeln von main übernommen) und `COMMUNICATION.md` (beide Seiten).
+- Eigene Diagnose über alle 336 Gebäude: 0 Befunde (B7-Schema, Drehen/Spiegeln, Materiallücken = deklarierte `gaps`/`assumed`, Rezepte, Anschlüsse).
+- `node --test` Katalog-, Rezept-, Varianten-, Zustands-, Baustellen- und Blocktests: 70/70 bestanden.
+- Vorschaubild-Sichtprüfung je Set über Kontaktabzüge (Headless-Chromium); Innenräume als offene Schnitte.
+- Grenzen: Redstone-Bauten (Technik) nach Java-Regeln gesetzt, nicht im Spiel abgenommen; Notenblock-Tonhöhen nur als Tipp.
+- `npm run check`: bestanden, 399 Node-Tests bestanden, 1 übersprungen (Bestand), Architektur-, Roadmap-, Typ-, Build- und Dokumentationsprüfung.
+- `npm run test:e2e`: alle Dateien bestanden außer `ui-acceptance.e2e.mjs`, das im Container am fehlenden Paket `playwright` scheitert (Bestand, nicht nur `@playwright/test`); mit lokalem Verweis auf das vorinstallierte Playwright 4/4 bestanden, nachdem die festen Bauwelt-Zählungen an den größeren Katalog angepasst wurden (Fernost 5, Wüstenhandel 7, End-Außenposten 6).

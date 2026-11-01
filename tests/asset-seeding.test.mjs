@@ -5,7 +5,7 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import ts from 'typescript';
 import { MemoryRepository, AssetRevisionConflictError } from '../dist/application/src/index.js';
-import { updateAssetMeta } from '../dist/domain/src/index.js';
+import { updateAssetMeta, BUILDING_SPECS } from '../dist/domain/src/index.js';
 
 // Execute the real browser-independent seed function against compiled package ports.
 let code = ts.transpileModule(readFileSync('apps/web/src/app/repository.ts', 'utf8'), { compilerOptions: { target: ts.ScriptTarget.ESNext, module: ts.ModuleKind.ESNext } }).outputText;
@@ -21,7 +21,8 @@ test('two initial tabs seed atomically and retry current metadata without duplic
   const repo = new CountingRepository();
   await Promise.all([seedSamples(repo), seedSamples(repo)]);
   const assets = await repo.listAssets();
-  assert.equal(assets.length, 177);
+  // three B0 modules plus every shipped building
+  assert.equal(assets.length, BUILDING_SPECS.length + 3);
   assert.equal(new Set(assets.map(a => a.id)).size, assets.length);
   assert.ok(conflicts >= 1, 'one stale initialization must retry');
   const first = assets[0];

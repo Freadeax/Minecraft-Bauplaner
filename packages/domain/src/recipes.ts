@@ -295,7 +295,7 @@ const raw = (source: string, ids: readonly string[]): void => { for (const id of
 raw('Abbau', ['cobblestone', 'cobbled_deepslate', 'granite', 'diorite', 'andesite', 'tuff', 'calcite', 'dripstone_block', 'pointed_dripstone', 'dirt', 'sand', 'red_sand', 'gravel',
   'clay_ball', 'netherrack', 'blackstone', 'basalt', 'soul_sand', 'soul_soil', 'end_stone', 'obsidian', 'crying_obsidian', 'magma_block', 'coal', 'raw_iron', 'raw_gold', 'raw_copper',
   'redstone', 'lapis_lazuli', 'diamond', 'emerald', 'quartz', 'amethyst_shard', 'glowstone_dust', 'flint', 'gilded_blackstone', 'ancient_debris', 'rooted_dirt']);
-raw('Abbau mit Behutsamkeit', ['bee_nest', 'creaking_heart', 'grass_block', 'mycelium', 'podzol', 'ice', 'amethyst_cluster', 'sculk', 'sculk_vein', 'sculk_sensor', 'sculk_catalyst', 'sculk_shrieker']);
+raw('Abbau mit Behutsamkeit', ['bee_nest', 'creaking_heart', 'grass_block', 'mycelium', 'podzol', 'crimson_nylium', 'warped_nylium', 'ice', 'amethyst_cluster', 'sculk', 'sculk_vein', 'sculk_sensor', 'sculk_catalyst', 'sculk_shrieker']);
 raw('Holzfällen', [...WOODS.map(w => `${w}_log`), ...STEMS.map(w => `${w}_stem`), 'bamboo']);
 raw('Pflanzen sammeln/anbauen', ['sugar_cane', 'cactus', 'kelp', 'vine', 'wheat', 'pumpkin', 'melon', 'cocoa_beans', 'nether_wart', 'chorus_fruit', 'sweet_berries', 'glow_berries',
   'poppy', 'dandelion', 'blue_orchid', 'allium', 'azure_bluet', 'red_tulip', 'orange_tulip', 'white_tulip', 'pink_tulip', 'oxeye_daisy', 'cornflower', 'lily_of_the_valley', 'torchflower',

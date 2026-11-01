@@ -58,6 +58,57 @@ export const MATERIAL_FAMILIES: readonly FamilyDef[] = [
     { suffix: 'sandstein', label: 'Akazie & Sandstein', swaps: [{ from: 'cobblestone', to: 'sandstone' }, { from: 'spruce', to: 'acacia' }, { from: 'dark_oak', to: 'jungle' }],
       facets: { biom: ['wueste', 'savanne'] } },
   ] },
+  // Katalog v3: Biom-Stile bestehender Gebäude und Holzfamilien der Raummodule.
+  { base: 'bld_taverne', id: 'taverne', label: 'Taverne', original: 'Fichte & Steinziegel', variants: [
+    { suffix: 'savanne', label: 'Savanne', swaps: [{ from: 'spruce', to: 'acacia' }, { from: 'dark_oak', to: 'jungle' }, { from: 'stone_bricks', to: 'sandstone' }, { from: 'cobblestone', to: 'red_sandstone' }],
+      facets: { stil: ['mittelalterlich', 'wuestenstil'], biom: ['savanne', 'wueste'] } },
+    { suffix: 'kirschhain', label: 'Kirschhain', swaps: [{ from: 'spruce', to: 'cherry' }, { from: 'dark_oak', to: 'birch' }, { from: 'stone_bricks', to: 'polished_andesite' }, { from: 'cobblestone', to: 'andesite' }],
+      facets: { stil: ['mittelalterlich', 'fernoestlich'], biom: ['kirschhain'] } },
+    { suffix: 'sumpf', label: 'Sumpf', swaps: [{ from: 'spruce', to: 'mangrove' }, { from: 'dark_oak', to: 'spruce' }, { from: 'stone_bricks', to: 'mud_bricks' }, { from: 'cobblestone', to: 'mossy_cobblestone' }],
+      facets: { stil: ['mittelalterlich', 'rustikal'], biom: ['sumpf'] } },
+  ] },
+  { base: 'bld_rathaus', id: 'rathaus', label: 'Rathaus', original: 'Steinziegel', variants: [
+    { suffix: 'wueste', label: 'Wüste', swaps: [{ from: 'stone_bricks', to: 'sandstone' }, { from: 'deepslate_tiles', to: 'red_sandstone' }, { from: 'polished_andesite', to: 'smooth_sandstone' }, { from: 'spruce', to: 'acacia' }],
+      facets: { stil: ['klassisch', 'wuestenstil'], biom: ['wueste', 'savanne', 'badlands'] } },
+    { suffix: 'tuff', label: 'Tuff', swaps: [{ from: 'stone_bricks', to: 'tuff_bricks' }, { from: 'deepslate_tiles', to: 'deepslate_bricks' }, { from: 'polished_andesite', to: 'polished_tuff' }, { from: 'spruce', to: 'dark_oak' }],
+      facets: { biom: ['gebirge', 'hoehle', 'ueberall'] } },
+  ] },
+  { base: 'bld_kathedrale', id: 'kathedrale', label: 'Kathedrale', original: 'Steinziegel', variants: [
+    { suffix: 'sandstein', label: 'Sandstein', swaps: [{ from: 'stone_bricks', to: 'sandstone' }, { from: 'deepslate_tiles', to: 'red_sandstone' }, { from: 'polished_andesite', to: 'smooth_sandstone' }, { from: 'spruce', to: 'acacia' }],
+      facets: { biom: ['wueste', 'savanne', 'badlands'] } },
+    { suffix: 'schwarzstein', label: 'Schwarzstein', swaps: [{ from: 'stone_bricks', to: 'polished_blackstone_bricks' }, { from: 'deepslate_tiles', to: 'nether_bricks' }, { from: 'polished_andesite', to: 'blackstone' }, { from: 'spruce', to: 'crimson' }],
+      facets: { stil: ['mittelalterlich', 'nether'], biom: ['nether'] } },
+    { suffix: 'endstein', label: 'Endstein', swaps: [{ from: 'stone_bricks', to: 'end_stone_bricks' }, { from: 'deepslate_tiles', to: 'prismarine_bricks' }, { from: 'polished_andesite', to: 'quartz' }, { from: 'spruce', to: 'pale_oak' }],
+      facets: { stil: ['fantasy', 'end'], biom: ['end'] } },
+  ] },
+  { base: 'bld_uhrturm', id: 'uhrturm', label: 'Uhrturm', original: 'Steinziegel & Ziegel', variants: [
+    { suffix: 'lehm', label: 'Lehmziegel', swaps: [{ from: 'stone_bricks', to: 'mud_bricks' }, { from: 'bricks', to: 'red_sandstone' }],
+      facets: { biom: ['wueste', 'savanne', 'sumpf'] } },
+    { suffix: 'tiefenschiefer', label: 'Tiefenschiefer', swaps: [{ from: 'stone_bricks', to: 'deepslate_bricks' }, { from: 'bricks', to: 'polished_deepslate' }],
+      facets: { biom: ['gebirge', 'schnee', 'taiga'] } },
+  ] },
+  { base: 'bld_chalet', id: 'chalet', label: 'Berg-Chalet', original: 'Fichte', variants: [
+    { suffix: 'dunkelwald', label: 'Dunkelwald', swaps: [{ from: 'spruce', to: 'dark_oak' }, { from: 'stone_bricks', to: 'deepslate_bricks' }, { from: 'cobblestone', to: 'cobbled_deepslate' }],
+      facets: { biom: ['wald'] } },
+    { suffix: 'blasseiche', label: 'Blasseiche', swaps: [{ from: 'spruce', to: 'pale_oak' }, { from: 'stone_bricks', to: 'polished_tuff' }, { from: 'cobblestone', to: 'andesite' }],
+      facets: { stil: ['nordisch', 'fantasy'], biom: ['wald', 'schnee'] } },
+  ] },
+  { base: 'bld_langhaus', id: 'langhaus', label: 'Wikinger-Langhaus', original: 'Fichte & Schwarzeiche', variants: [
+    { suffix: 'birke', label: 'Birke', swaps: [{ from: 'spruce', to: 'birch' }, { from: 'dark_oak', to: 'oak' }, { from: 'cobblestone', to: 'andesite' }],
+      facets: { biom: ['wald', 'ebene', 'kueste'] } },
+    { suffix: 'mangrove', label: 'Mangrove', swaps: [{ from: 'spruce', to: 'mangrove' }, { from: 'dark_oak', to: 'spruce' }, { from: 'cobblestone', to: 'mud_bricks' }],
+      facets: { biom: ['sumpf', 'kueste'] } },
+  ] },
+  { base: 'bld_raum_schlafzimmer', id: 'schlafzimmer', label: 'Schlafzimmer', original: 'Eiche', variants: [
+    { suffix: 'fichte', label: 'Fichte', swaps: [{ from: 'oak', to: 'spruce' }], facets: { stil: ['rustikal', 'nordisch'] } },
+    { suffix: 'birke', label: 'Birke', swaps: [{ from: 'oak', to: 'birch' }], facets: { stil: ['klassisch', 'modern'] } },
+    { suffix: 'kirsche', label: 'Kirsche', swaps: [{ from: 'oak', to: 'cherry' }], facets: { stil: ['klassisch', 'fernoestlich'] } },
+    { suffix: 'schwarzeiche', label: 'Schwarzeiche', swaps: [{ from: 'oak', to: 'dark_oak' }], facets: { stil: ['klassisch', 'viktorianisch'] } },
+  ] },
+  { base: 'bld_raum_kaminzimmer', id: 'kaminzimmer', label: 'Kaminzimmer', original: 'Fichte', variants: [
+    { suffix: 'kirsche', label: 'Kirsche', swaps: [{ from: 'spruce', to: 'cherry' }, { from: 'stone_bricks', to: 'polished_andesite' }], facets: { stil: ['klassisch'] } },
+    { suffix: 'schwarzeiche', label: 'Schwarzeiche', swaps: [{ from: 'spruce', to: 'dark_oak' }, { from: 'stone_bricks', to: 'deepslate_bricks' }], facets: { stil: ['viktorianisch', 'rustikal'] } },
+  ] },
 ];
 /** Existing shipped buildings that join a family defined elsewhere. */
 const JOIN: Readonly<Record<string, NonNullable<BuildingSpec['family']>>> = {

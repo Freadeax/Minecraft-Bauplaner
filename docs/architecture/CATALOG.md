@@ -1,6 +1,6 @@
 # Gebäudekatalog: Vorschläge, Kennwerte und Filter (B9)
 
-Stand: 28.10.2026 (Katalog v2). Code: `packages/domain/src/catalog.ts` (Facetten, Kennwerte, Spielphase, Familien, Suche, Vorschläge), `packages/domain/src/buildings.ts` (Register der mitgelieferten Gebäude), `packages/domain/src/build/` (Bauwerkzeug `plot.ts`, `spec.ts` und zehn Themen-Sets unter `sets/`), `packages/domain/src/ensembles.ts`, Oberfläche `views/LibraryView.tsx` mit `views/library/BuildingSheet.tsx`, `CatalogFilters.tsx`, `FacetFields.tsx`. Tests: `tests/catalog.test.mjs`, `tests/e2e/catalog.e2e.mjs`. Ergänzt den [Domänenvertrag](DOMAIN.md).
+Stand: 01.11.2026 (Katalog v3, siehe [Abschnitt LIB-04](#katalog-v3-bibliothek-in-alle-richtungen-lib-04)). Code: `packages/domain/src/catalog.ts` (Facetten, Kennwerte, Spielphase, Familien, Suche, Vorschläge), `packages/domain/src/buildings.ts` (Register der mitgelieferten Gebäude), `packages/domain/src/build/` (Bauwerkzeug `plot.ts`, `spec.ts` und zehn Themen-Sets unter `sets/`), `packages/domain/src/ensembles.ts`, Oberfläche `views/LibraryView.tsx` mit `views/library/BuildingSheet.tsx`, `CatalogFilters.tsx`, `FacetFields.tsx`. Tests: `tests/catalog.test.mjs`, `tests/e2e/catalog.e2e.mjs`. Ergänzt den [Domänenvertrag](DOMAIN.md).
 
 ## Zwei Arten von Werten
 
@@ -73,6 +73,38 @@ Bauwerkzeug: `Plot` (Füllen, Ringe, Räume, Scheiben, Röhren, Dächer, Bäume,
 `ENSEMBLES` (9): Starter-Basis, Marktdorf, Bauernhof, Burg, Kirschblütengarten, Küstendorf, Technikhof, Wüstenaußenposten, Weg mit Brücke. Ein Ensemble referenziert nur Asset-IDs mit `at` (x/z der Minimum-Ecke nach Drehung), optional `y` und `turns`. `memberTransform` rechnet die Drehung über `transformPayload` gegen, damit die Ecke genau bei `at` liegt. „Als Projekt anlegen“ (`createEnsembleProject`) erzeugt ein normales Projekt mit einer Instanz je Mitglied über `instance.add`; Konflikte, Material, Bauanleitung und Export arbeiten unverändert. Fehlt ein Bauteil (z. B. archiviert gelöscht), wird nichts angelegt (`missingMembers`). Getestet: alle 9 lösen ohne Voxelkonflikt auf, jede Ecke liegt bei `at`. In „Weg mit Brücke“ treffen sich die Anschlüsse von Gerade, Kreuzung, Brücke und Wendeplatz. Die Bibliothek hat dafür die Ansicht „Ensembles“ mit Vorschau der aufgelösten Welt; der Steckbrief eines Gebäudes nennt die Ensembles, die es nutzen.
 
 Der Editor hat für die lange Bauteilliste eine Suche (Name und Tags) und eine eigene Scrollfläche.
+
+## Katalog v3: Bibliothek in alle Richtungen (LIB-04)
+
+Stand 01.11.2026. 162 neue Einträge, zusammen **336 Gebäude** plus 3 Module, **30 Variantenfamilien**, **16 Ensembles**. Alle Entwürfe sind eigene Konstruktionen aus Code; Inspiration nur als Spielmechanik-Links auf das Minecraft Wiki. Bestehende Versions-IDs sind unverändert.
+
+| Set (Datei) | Inhalt |
+|---|---|
+| Interieur (`interieur.ts`, 20) | Raummodule als offener Schnitt (Süd-/Ostseite offen, Deckenbalken mit Kettenlampe): Bauernküche, Schlafzimmer, Lesezimmer, Kaminzimmer, Esszimmer, Badezimmer, Thronsaal, Vorratskammer, Alchemielabor, Kartenraum, Handwerkskammer, Weinkeller, Moderne Küche, Arbeitszimmer, Schankraum, Schatzkammer, Kerker, Wintergarten, Gästezimmer, Waffenkammer. Möbelbaukasten `build/furnish.ts` (Stuhl, Sofa, Tisch, Schrank, Teppich, Kettenlampe, Raumschale). |
+| Garten (`garten.ts`, 12) | Pergola, Hochbeete, Rosenbogengang, Heckenlabyrinth, Geräteschuppen, Seerosenteich, Kräuterspirale, Vogeltränke, Steingarten, Spielplatz, Kirschblüten-Bogengang, Formschnitt-Hecken |
+| Natur (`natur.ts`, 12) | Wasserfall, Felsbogen, Vulkan, Eisberg, Oase, Trauerweide, Riesenfichte 2×2, Bambushain, Basaltfeld, Tafelberg-Felsnadeln, Mangrovenbaum, Korallenriff |
+| Hof (`hof.ts`, 13) | Kuh-, Schweine-, Pferde-, Kaninchenstall, Schafweide, Fischteich, Seetang-, Bambusfarm, Süßbeeren, Netherwarzen-Beet, Dorfbewohner-Zuchthaus, Handelsscheune, Imkerei |
+| Technik (`technik.ts`, 7) | Türklingel, Dämmerungslaterne, Item-Aufzug, Trichter-Lagerwand, Ofenstraße, Notenblock-Melodie, Lampenpult (nach Java-Regeln gesetzt, nicht im Spiel abgenommen) |
+| Stadt (`stadt.ts`, 21) | Schule, Feuerwache, Ärztehaus, Stadtbibliothek, Polizeiwache, Stadtplatz, Hochhaus, Wohnblock, Reihenhaus in 4 Farben (Familie), Straßencafé, Bäckerei, Kiosk, Supermarkt, Bushaltestelle, Stadtstraße Gerade/Kreuzung/Einmündung (Familie, `weg_4`), Parkplatz |
+| Fantasy (`fantasy.ts`, 10) | Drachenstatue, Elfen-Baumhaus, Kristallturm, Feenring, Portalruine, Hexenhütte, Schwebende Insel, Märchenschloss-Turm, Magierakademie-Flügel, Riesenschädel-Höhleneingang |
+| Epochen (`epochen.ts`, 10) | Pagode, Teehaus, Glockenturm, Kloster-Kreuzgang, Römisches Theater, Römische Villa, Dschungel-Stufenpyramide, Burgtor mit Zugbrücke, Kaserne, Turmruine |
+| Küste (`kueste.ts`, 9) | Bootshaus, Werft mit Trockendock, Seebrücke mit Pavillon (`weg_4`), Strandbar, Rettungsturm, Fischmarkt, Leuchtboje, Hafenspeicher, Unterwasser-Glastunnel (`weg_4`) |
+| Fahrzeuge (`fahrzeuge.ts`, 8) | Dampflok und Personenwagen (Familie Zug, `gleis_3`), Luftschiff, Drachenboot, Floß, Kutsche, U-Boot, Doppeldecker |
+| Untergrund (`untergrund.ts`, 10) | Mineneingang mit Förderturm, Minengang und Untergrund-Bahnhof (`gleis_3`), Wendeltreppen-Schacht, Zwergenhalle, Höhlenbasis, Amethyst-Grotte, Erzgießerei, Pilzhöhle, Bergbau-Lager |
+| Dimensionen (`dimensionen.ts`, 10) | Nether-Eisbahn und Knotenpunkt (Familie), Piglin-Tauschstation, Bastion-Wachturm, Wirrwald-Gewächshaus, Festungsbrücke, Seelenfeuer-Schrein, End-Stadtturm, Chorus-Garten, End-Inselbrücke |
+| Biom-Stile (`varianten.ts`, 20) | Materialfamilien: Taverne (Savanne, Kirschhain, Sumpf), Rathaus (Wüste, Tuff), Kathedrale (Sandstein, Schwarzstein, Endstein), Uhrturm (Lehm, Tiefenschiefer), Chalet (Dunkelwald, Blasseiche), Langhaus (Birke, Mangrove), Schlafzimmer (4 Hölzer), Kaminzimmer (Kirsche, Schwarzeiche) |
+
+Neue Facettenwerte: Kategorie Interieur & Räume, Öffentliches Gebäude, Bergbau & Untergrund; Stil Zwergisch, Viktorianisch, Futuristisch; Funktion Einrichtung, Kochen & Vorrat, Bildung & Wissen, Bergbau, Erholung & Spiel. Die Bauwelten (WORLD-01/02) erhalten dadurch automatisch mehr Treffer.
+
+Zustände: Alle neuen Blöcke nutzen die B7-Regeln von main (VIEW-02); `build/furnish.ts` hat dazu Zustandshelfer (Glocke, Kakao, Tageslichtsensor, Süßbeeren, Seetang, Bambus, Krug). Rosa Blütenblätter sind nicht spiegelbar und kommen deshalb in keinem Gebäude vor; Notenblöcke stehen ohne Tonhöhe im Plan (Stimmhinweis im Tipp), das gemeißelte Bücherregal ist durch normale Regale ersetzt. Itemregel ergänzt: Stolperdrahthaken direkt; Rohstoff: Karmesin-/Wirrnyzel (Behutsamkeit).
+
+Neue Ensembles: Stadtviertel, Hafenpromenade, Großer Tierhof, Bergwerk, Fernöstlicher Tempelbezirk, Nether-Stützpunkt, Zauberwald – alle ohne Voxelkonflikt (Test).
+
+Vorschaufarben: alle Blöcke der mitgelieferten Gebäude haben eine Näherungsfarbe (`colors.ts`), keine gehashten Farben mehr in den Katalogbildern.
+
+Prüfung: Jeder Entwurf läuft durch dieselben Katalogtests wie v2 (B7-Schema, vier Drehungen und doppelte Spiegelung, deklarierte Lücken/Annahmen, Rezeptbaum ohne unbekannte Items, gültige Anschlüsse, Auflösung und Bauanleitung). Sichtprüfung über Kontaktbögen der isometrischen Vorschaubilder je Set.
+
+Grenzen: Raummodule zeigen keinen echten Deckenabschluss (Schnittdarstellung). Redstone- und Wassermechaniken (Item-Aufzug, Seetangfarm, Türklingel …) sind nach Java-Regeln gesetzt, aber nicht im Spiel abgenommen. Doppeltruhen folgen der Java-Regel „Partner einer linken Hälfte im Uhrzeigersinn der Blickrichtung“, ebenfalls ohne Spielabnahme. Chorus-Pflanzen sind nicht als Bauitem erhältlich, daher nur Chorusblüten.
 
 ## Vorbild und Abgrenzung
 

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T13:31:11.269Z",
+  "updatedAt": "2026-11-01T13:36:58.036Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -3115,6 +3115,77 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "LIB-04",
+      "title": "Gebäudebibliothek v3: Inhalte in alle Richtungen",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude Thread Bibliothek erweitern",
+      "dependencies": [
+        "LIB-01"
+      ],
+      "scope": [
+        "packages/domain/src/build/",
+        "packages/domain/src/catalog.ts",
+        "packages/domain/src/ensembles.ts",
+        "docs/architecture/CATALOG.md",
+        "apps/web/src/colors.ts"
+      ],
+      "legacyIds": [
+        "B9-B"
+      ],
+      "steps": [
+        {
+          "id": "LIB-04-S01",
+          "title": "Neue Kategorien/Stile/Funktionen, Möbel- und Zustandshelfer (furnish.ts) passend zu den B7-Regeln von main.",
+          "done": true
+        },
+        {
+          "id": "LIB-04-S02",
+          "title": "Neue Themen-Sets: Interieur, Garten, Natur, Stadt, Küste, Fahrzeuge, Untergrund, Nether/End, Hof, Technik, Fantasy, Epochen.",
+          "done": true
+        },
+        {
+          "id": "LIB-04-S03",
+          "title": "Biom-Stile als Materialfamilien und neue Ensembles.",
+          "done": true
+        },
+        {
+          "id": "LIB-04-S04",
+          "title": "Katalogtests, Vorschaubild-Sichtprüfung, Doku, main und Pages.",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "Nur eigene Entwürfe; jede neue Version im B7-Schema drehbar/spiegelbar, keine stillen Material-/Rezeptlücken, bestehende Versions-IDs unverändert."
+      ],
+      "next": "Weitere Ensembles und Tipps nach Spielrückmeldung; Redstone-Bauten im Spiel abnehmen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/catalog.test.mjs",
+          "note": "Alle 336 Gebäude: Schema, vier Drehungen, doppelte Spiegelung, Material-/Rezeptlücken, Ensembles."
+        },
+        {
+          "path": "packages/domain/src/build/sets/index.ts",
+          "note": "12 neue Sets (159 Gebäude) plus 20 Materialvarianten."
+        },
+        {
+          "path": "docs/architecture/CATALOG.md",
+          "note": "Abschnitt Katalog v3 mit Sets, Facetten, Ensembles und Grenzen."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Node-Katalogtests und Vorschaubild-Sichtprüfung bestanden; Redstone-Bauten nicht im Spiel abgenommen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T13:36:58.036Z"
     }
   ],
   "events": [
@@ -4743,6 +4814,97 @@
           "done": 3,
           "total": 4,
           "next": "Philipp testet die .jar aus /mnt/project-files/mod/ auf server.lmnt-gaming.net und meldet Ergebnis/Fehler (Anleitung ANLEITUNG_SPIELTEST.md)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T13:26:19.608Z",
+      "kind": "progress",
+      "items": [
+        "LIB-04"
+      ],
+      "summary": "Gebäudebibliothek v3: 12 neue Sets, 159 neue Gebäude (336 gesamt), 20 Materialvarianten, 7 Ensembles, neue Facetten; alle Gebäude im B7-Schema drehbar und spiegelbar. Redstone-Bauten nicht im Spiel abgenommen.",
+      "files": [
+        "README.md",
+        "apps/web/src/colors.ts",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/CATALOG.md",
+        "packages/domain/src/build/furnish.ts",
+        "packages/domain/src/build/sets/dimensionen.ts",
+        "packages/domain/src/build/sets/epochen.ts",
+        "packages/domain/src/build/sets/fahrzeuge.ts",
+        "packages/domain/src/build/sets/fantasy.ts",
+        "packages/domain/src/build/sets/garten.ts",
+        "packages/domain/src/build/sets/hof.ts",
+        "packages/domain/src/build/sets/index.ts",
+        "packages/domain/src/build/sets/interieur.ts",
+        "packages/domain/src/build/sets/kueste.ts",
+        "packages/domain/src/build/sets/natur.ts",
+        "packages/domain/src/build/sets/stadt.ts",
+        "packages/domain/src/build/sets/technik.ts",
+        "packages/domain/src/build/sets/untergrund.ts",
+        "packages/domain/src/build/sets/varianten.ts",
+        "packages/domain/src/catalog.ts",
+        "packages/domain/src/ensembles.ts",
+        "packages/domain/src/materials.ts",
+        "packages/domain/src/recipes.ts",
+        "tests/asset-seeding.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "LIB-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 4,
+          "next": "Weitere Ensembles und Tipps nach Spielrückmeldung; Redstone-Bauten im Spiel abnehmen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T13:36:58.036Z",
+      "kind": "progress",
+      "items": [
+        "LIB-04"
+      ],
+      "summary": "Abschlussprüfung LIB-04: npm run check grün (399 Node-Tests), E2E grün; Bauwelt-Zählungen im UI-Abnahmetest an den Katalog v3 angepasst.",
+      "files": [
+        "README.md",
+        "apps/web/src/colors.ts",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/CATALOG.md",
+        "packages/domain/src/build/furnish.ts",
+        "packages/domain/src/build/sets/dimensionen.ts",
+        "packages/domain/src/build/sets/epochen.ts",
+        "packages/domain/src/build/sets/fahrzeuge.ts",
+        "packages/domain/src/build/sets/fantasy.ts",
+        "packages/domain/src/build/sets/garten.ts",
+        "packages/domain/src/build/sets/hof.ts",
+        "packages/domain/src/build/sets/index.ts",
+        "packages/domain/src/build/sets/interieur.ts",
+        "packages/domain/src/build/sets/kueste.ts",
+        "packages/domain/src/build/sets/natur.ts",
+        "packages/domain/src/build/sets/stadt.ts",
+        "packages/domain/src/build/sets/technik.ts",
+        "packages/domain/src/build/sets/untergrund.ts",
+        "packages/domain/src/build/sets/varianten.ts",
+        "packages/domain/src/catalog.ts",
+        "packages/domain/src/ensembles.ts",
+        "packages/domain/src/materials.ts",
+        "packages/domain/src/recipes.ts",
+        "tests/asset-seeding.test.mjs",
+        "tests/e2e/ui-acceptance.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "LIB-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 4,
+          "next": "Weitere Ensembles und Tipps nach Spielrückmeldung; Redstone-Bauten im Spiel abnehmen."
         }
       ]
     }

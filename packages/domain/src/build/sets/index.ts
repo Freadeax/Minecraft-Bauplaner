@@ -10,6 +10,18 @@ import { LANDSCHAFT_SPECS } from './landschaft.js';
 import { DEKO_SPECS } from './deko.js';
 import { WELTEN_SPECS } from './welten.js';
 import { SPIELHILFEN_SPECS } from './spielhilfen.js';
+import { INTERIEUR_SPECS } from './interieur.js';
+import { GARTEN_SPECS } from './garten.js';
+import { NATUR_SPECS } from './natur.js';
+import { HOF_SPECS } from './hof.js';
+import { TECHNIK_SPECS } from './technik.js';
+import { STADT_SPECS } from './stadt.js';
+import { FANTASY_SPECS } from './fantasy.js';
+import { EPOCHEN_SPECS } from './epochen.js';
+import { KUESTE_SPECS } from './kueste.js';
+import { FAHRZEUGE_SPECS } from './fahrzeuge.js';
+import { UNTERGRUND_SPECS } from './untergrund.js';
+import { DIMENSIONEN_SPECS } from './dimensionen.js';
 import { withMaterialFamilies } from './varianten.js';
 
 /** All themed building sets of the extended catalogue, in display order, with the generated material families (B12). */
@@ -25,4 +37,16 @@ export const ALL_SET_SPECS: readonly BuildingSpec[] = withMaterialFamilies([
   ...DEKO_SPECS,
   ...WELTEN_SPECS,
   ...SPIELHILFEN_SPECS,
+  ...INTERIEUR_SPECS,
+  ...GARTEN_SPECS,
+  ...NATUR_SPECS,
+  ...HOF_SPECS,
+  ...TECHNIK_SPECS,
+  ...STADT_SPECS,
+  ...FANTASY_SPECS,
+  ...EPOCHEN_SPECS,
+  ...KUESTE_SPECS,
+  ...FAHRZEUGE_SPECS,
+  ...UNTERGRUND_SPECS,
+  ...DIMENSIONEN_SPECS,
 ]);

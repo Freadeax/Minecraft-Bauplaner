@@ -37,11 +37,13 @@ export const FACETS: readonly FacetDefinition[] = [
     wohnhaus: 'Wohnhaus', landwirtschaft: 'Landwirtschaft', handwerk: 'Handwerk', handel: 'Handel', sakral: 'Sakralbau',
     befestigung: 'Befestigung', infrastruktur: 'Infrastruktur', wahrzeichen: 'Wahrzeichen', dekoration: 'Dekoration',
     statue: 'Statue', farm: 'Farm (automatisch)', redstone: 'Redstone-Technik', landschaft: 'Landschaft & Bäume', basis: 'Basis',
-    magie: 'Magie & Verzauberung', fahrzeug: 'Schiffe & Fahrzeuge', garten: 'Garten & Park' } },
+    magie: 'Magie & Verzauberung', fahrzeug: 'Schiffe & Fahrzeuge', garten: 'Garten & Park',
+    interieur: 'Interieur & Räume', oeffentlich: 'Öffentliches Gebäude', unterwelt: 'Bergbau & Untergrund' } },
   { key: 'stil', label: 'Stil', single: false, values: {
     mittelalterlich: 'Mittelalterlich', rustikal: 'Rustikal', modern: 'Modern', wuestenstil: 'Wüstenstil', nordisch: 'Nordisch',
     klassisch: 'Klassisch', kuestenstil: 'Küstenstil', fernoestlich: 'Fernöstlich', fantasy: 'Fantasy', antik: 'Antik',
-    industriell: 'Industriell', tropisch: 'Tropisch', nether: 'Nether-Stil', end: 'End-Stil', technisch: 'Technisch (Redstone)' } },
+    industriell: 'Industriell', tropisch: 'Tropisch', nether: 'Nether-Stil', end: 'End-Stil', technisch: 'Technisch (Redstone)',
+    zwergisch: 'Zwergisch', viktorianisch: 'Viktorianisch', futuristisch: 'Futuristisch' } },
   { key: 'biom', label: 'Biom', single: false, values: {
     ueberall: 'Überall passend', ebene: 'Ebene', wald: 'Wald', taiga: 'Taiga', gebirge: 'Gebirge', wueste: 'Wüste',
     savanne: 'Savanne', dschungel: 'Dschungel', schnee: 'Schnee', kueste: 'Küste', sumpf: 'Sumpf', ozean: 'Ozean',
@@ -51,7 +53,8 @@ export const FACETS: readonly FacetDefinition[] = [
     verteidigung: 'Verteidigung', aussicht: 'Aussicht', orientierung: 'Orientierung', versammlung: 'Versammlung',
     wasserquelle: 'Wasserquelle', verbindung: 'Verbindung', deko: 'Dekoration', ressourcen: 'Ressourcen (Farm)', transport: 'Transport',
     verzaubern: 'Verzaubern', schmelzen: 'Schmelzen', sortieren: 'Sortieren', beleuchtung: 'Beleuchtung', reisen: 'Reisen & Portale',
-    unterhaltung: 'Unterhaltung', handelsplatz: 'Dorfbewohner-Handel' } },
+    unterhaltung: 'Unterhaltung', handelsplatz: 'Dorfbewohner-Handel',
+    einrichtung: 'Einrichtung', kochen: 'Kochen & Vorrat', bildung: 'Bildung & Wissen', bergbau: 'Bergbau', erholung: 'Erholung & Spiel' } },
 ];
 const FACET_KEYS = FACETS.map(f => f.key);
 const facetDef = (key: FacetKey): FacetDefinition => FACETS.find(f => f.key === key)!;

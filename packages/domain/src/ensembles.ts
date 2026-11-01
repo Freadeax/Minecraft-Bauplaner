@@ -60,6 +60,28 @@ export const ENSEMBLES: readonly Ensemble[] = [
   { id: 'ens_wegenetz', name: 'Weg mit Brücke', tags: ['wege', 'baukasten', 'anschlüsse'],
     description: 'Vorführung des Wege-Baukastens: Gerade, Kreuzung, Gerade, Holzbrücke und Wendeplatz greifen über ihre Anschlüsse ineinander.',
     members: [m('weg_gerade', 0, 0), m('weg_kreuzung', 8, 0), m('weg_gerade', 14, 0), m('holzbruecke', 22, 0), m('weg_wendeplatz', 36, 0)] },
+  // Katalog v3 (LIB-04)
+  { id: 'ens_stadtviertel', name: 'Stadtviertel', tags: ['stadt', 'modern', 'reihenhaus'],
+    description: 'Reihenhauszeile in vier Farben mit Café und Bäckerei, dahinter Stadtplatz mit Brunnen, Kiosk, Bushaltestelle, Hochhaus und Ärztehaus.',
+    members: [m('stadt_reihenhaus_weiss', 0, 0), m('stadt_reihenhaus_gelb', 6, 0), m('stadt_reihenhaus_hellblau', 12, 0), m('stadt_reihenhaus_rosa', 18, 0), m('stadt_cafe', 26, 0), m('stadt_baeckerei', 39, 0), m('stadt_platz', 0, 17), m('stadt_kiosk', 17, 17), m('stadt_bushaltestelle', 26, 17), m('stadt_hochhaus', 35, 17), m('stadt_aerztehaus', 48, 17)] },
+  { id: 'ens_hafenpromenade', name: 'Hafenpromenade', tags: ['küste', 'hafen', 'strand'],
+    description: 'Promenade am Wasser: Bootshaus, Fischmarkt, Hafenspeicher und Werft, davor Strandbar, Rettungsturm, Seebrücke und Leuchtboje.',
+    members: [m('kueste_bootshaus', 0, 0), m('kueste_fischmarkt', 15, 0), m('kueste_hafenspeicher', 32, 0), m('kueste_werft', 45, 0), m('kueste_strandbar', 0, 19), m('kueste_rettungsturm', 19, 19), m('kueste_seebruecke', 30, 19), m('kueste_leuchtboje', 43, 19)] },
+  { id: 'ens_grosshof', name: 'Großer Tierhof', tags: ['landwirtschaft', 'tiere', 'hof'],
+    description: 'Tierhof mit Kuh-, Pferde- und Schweinestall, Schafweide und Kaninchenstall, dazu Imkerei, Fischteich und Süßbeeren-Plantage.',
+    members: [m('hof_kuhstall', 0, 0), m('hof_pferdestall', 15, 0), m('hof_schweinestall', 30, 0), m('hof_schafweide', 45, 0), m('hof_kaninchenstall', 0, 18), m('hof_imkerei', 12, 18), m('hof_fischteich', 30, 18), m('hof_suessbeeren', 46, 18)] },
+  { id: 'ens_bergwerk', name: 'Bergwerk', tags: ['bergbau', 'untergrund', 'zwerge'],
+    description: 'Bergwerk vom Mineneingang mit Förderturm über Bergbau-Lager und Erzgießerei bis zur Zwergenhalle, verbunden durch Minengänge und einen Untergrund-Bahnhof.',
+    members: [m('untergrund_mineneingang', 0, 0), m('untergrund_lager', 17, 0), m('untergrund_erzgiesserei', 32, 0), m('untergrund_zwergenhalle', 47, 0), m('untergrund_minengang', 0, 19), m('untergrund_minengang', 18, 19), m('untergrund_bahnhof', 36, 19), m('untergrund_treppenschacht', 54, 19)] },
+  { id: 'ens_tempelbezirk', name: 'Fernöstlicher Tempelbezirk', tags: ['fernöstlich', 'tempel', 'garten'],
+    description: 'Fünfstöckige Pagode mit Teehaus, Kirschblüten-Bogengang, Seerosenteich und Steingarten.',
+    members: [m('epoche_pagode', 0, 0), m('epoche_teehaus', 17, 0), m('garten_kirschbogengang', 34, 0), m('garten_seerosenteich', 0, 18), m('garten_steingarten', 17, 18)] },
+  { id: 'ens_netherposten', name: 'Nether-Stützpunkt', tags: ['nether', 'eisbahn', 'außenposten'],
+    description: 'Nether-Knotenpunkt mit zwei Eisbahn-Strecken, Bastion-Wachturm, Piglin-Tauschstation, Seelenfeuer-Schrein und Wirrwald-Gewächshaus.',
+    members: [m('dim_knotenpunkt', 0, 0), m('dim_eisbahn', 17, 0), m('dim_eisbahn', 35, 0), m('dim_bastion_turm', 53, 0), m('dim_piglin_tausch', 0, 18), m('dim_seelenschrein', 11, 18), m('dim_wirrwald_haus', 24, 18)] },
+  { id: 'ens_zauberwald', name: 'Zauberwald', tags: ['fantasy', 'magie', 'wald'],
+    description: 'Magierakademie und Kristallturm, dazu Elfen-Baumhaus, Hexenhütte, Feenring und Portalruine.',
+    members: [m('fantasy_magierakademie', 0, 0), m('fantasy_kristallturm', 24, 0), m('fantasy_elfenbaumhaus', 39, 0), m('fantasy_hexenhuette', 0, 18), m('fantasy_feenring', 15, 18), m('fantasy_portalruine', 30, 18)] },
 ];
 
 /** Transform that puts the rotated member's minimum corner at `at`. */

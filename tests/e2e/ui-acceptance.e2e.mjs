@@ -93,7 +93,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
         });
         await capture(page, `worlds-${viewport.width}-${theme}-${mode}`);
       }
-      for (const [id, count] of [['fernost', 3], ['wuestenhandel', 6], ['endposten', 2]]) {
+      for (const [id, count] of [['fernost', 5], ['wuestenhandel', 7], ['endposten', 6]]) {
         await page.goto(`${BASE}#/bibliothek/bauwelten`);
         const card = page.locator(`#bauwelt-${id}`);
         await card.waitFor();

@@ -911,3 +911,82 @@ Fabric-Adapter 26.3 kompiliert (Klammerfehler, displayClientMessage→sendSystem
 - `scripts/test_bridge_ingame.sh`
 - `tests/roadmap.test.mjs`
 
+## 2026-11-01T13:26:19.608Z · progress
+
+**Aufgaben:** LIB-04
+
+Gebäudebibliothek v3: 12 neue Sets, 159 neue Gebäude (336 gesamt), 20 Materialvarianten, 7 Ensembles, neue Facetten; alle Gebäude im B7-Schema drehbar und spiegelbar. Redstone-Bauten nicht im Spiel abgenommen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LIB-04 | 🧩 Implementiert · Abnahme offen | 4/4 | Weitere Ensembles und Tipps nach Spielrückmeldung; Redstone-Bauten im Spiel abnehmen. |
+
+**Geänderte Dateien:**
+
+- `README.md`
+- `apps/web/src/colors.ts`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/CATALOG.md`
+- `packages/domain/src/build/furnish.ts`
+- `packages/domain/src/build/sets/dimensionen.ts`
+- `packages/domain/src/build/sets/epochen.ts`
+- `packages/domain/src/build/sets/fahrzeuge.ts`
+- `packages/domain/src/build/sets/fantasy.ts`
+- `packages/domain/src/build/sets/garten.ts`
+- `packages/domain/src/build/sets/hof.ts`
+- `packages/domain/src/build/sets/index.ts`
+- `packages/domain/src/build/sets/interieur.ts`
+- `packages/domain/src/build/sets/kueste.ts`
+- `packages/domain/src/build/sets/natur.ts`
+- `packages/domain/src/build/sets/stadt.ts`
+- `packages/domain/src/build/sets/technik.ts`
+- `packages/domain/src/build/sets/untergrund.ts`
+- `packages/domain/src/build/sets/varianten.ts`
+- `packages/domain/src/catalog.ts`
+- `packages/domain/src/ensembles.ts`
+- `packages/domain/src/materials.ts`
+- `packages/domain/src/recipes.ts`
+- `tests/asset-seeding.test.mjs`
+
+## 2026-11-01T13:36:58.036Z · progress
+
+**Aufgaben:** LIB-04
+
+Abschlussprüfung LIB-04: npm run check grün (399 Node-Tests), E2E grün; Bauwelt-Zählungen im UI-Abnahmetest an den Katalog v3 angepasst.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LIB-04 | 🧩 Implementiert · Abnahme offen | 4/4 | Weitere Ensembles und Tipps nach Spielrückmeldung; Redstone-Bauten im Spiel abnehmen. |
+
+**Geänderte Dateien:**
+
+- `README.md`
+- `apps/web/src/colors.ts`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/CATALOG.md`
+- `packages/domain/src/build/furnish.ts`
+- `packages/domain/src/build/sets/dimensionen.ts`
+- `packages/domain/src/build/sets/epochen.ts`
+- `packages/domain/src/build/sets/fahrzeuge.ts`
+- `packages/domain/src/build/sets/fantasy.ts`
+- `packages/domain/src/build/sets/garten.ts`
+- `packages/domain/src/build/sets/hof.ts`
+- `packages/domain/src/build/sets/index.ts`
+- `packages/domain/src/build/sets/interieur.ts`
+- `packages/domain/src/build/sets/kueste.ts`
+- `packages/domain/src/build/sets/natur.ts`
+- `packages/domain/src/build/sets/stadt.ts`
+- `packages/domain/src/build/sets/technik.ts`
+- `packages/domain/src/build/sets/untergrund.ts`
+- `packages/domain/src/build/sets/varianten.ts`
+- `packages/domain/src/catalog.ts`
+- `packages/domain/src/ensembles.ts`
+- `packages/domain/src/materials.ts`
+- `packages/domain/src/recipes.ts`
+- `tests/asset-seeding.test.mjs`
+- `tests/e2e/ui-acceptance.e2e.mjs`
+
