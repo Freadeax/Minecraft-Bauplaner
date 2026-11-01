@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "releases": [
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.1.0.jar",
+      "modVersion": "0.1.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 34262,
+      "sha256": "2d9e4a7634029e80a2a605626028021eb96544646d595895e358e592a54d2a7f",
+      "releasedAt": "2026-11-01",
+      "sourceCommit": "ac273d91b5153322fee52534850b3e64723e30fa",
+      "tested": "Im echten Minecraft-26.3-Client automatisch geprüft (Plan laden, Anker, Aufnahme, Website-Vergleich), auch zusammen mit einem Modpack aus 21 Mods (Sodium, Iris, Distant Horizons, REI, Xaero, Jade, Voice Chat …). Auf einem Mehrspieler-Server noch nicht abgenommen."
+    }
+  ]
+}

@@ -27,6 +27,7 @@ export const mainNav: readonly NavItem[] = [
 export function routeTitle(route: Route): string {
   const area = mainNav.find(n => n.views.includes(route.view));
   if (route.view === 'system') return 'Systemcheck';
+  if (route.view === 'mod') return 'Mod herunterladen';
   if (route.view === 'not-found') return 'Seite nicht gefunden';
   return area?.label ?? 'LMNT Build Studio';
 }

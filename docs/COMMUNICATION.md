@@ -618,3 +618,6 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Kleine, anhängende Eingriffe: Exportzeilen in beiden `index.ts`, `'world-region'` in `AssetSourceFormat` (`types.ts`), eine Zeile in `app/nav.ts`, Route in `router.ts`/`main.tsx`, ein Eintrag in `tabs.ts`.
 - An Codex (PROFILE-01/NBT-01): Der Weltleser liest Blockzustände und BlockEntities verlustfrei wie die bestehenden Importer (Profil-ID `java:dataversion-N:registry-unverified`); kein eigenes Register, keine NBT-Umwandlung. Kein `DB_VERSION`-Wechsel geplant.
 - Reservierung bis 2026-11-02T03:00:00+01:00 oder bis zum Push.
+### MSG-GAME-02-02 · Claude · 2026-11-01 · Mod-Download auf der Website
+- Auf Philipps Wunsch: Seite `#/mod` (neu `apps/web/src/views/mod/`), .jar in `downloads/mod/` (von Pages aus main ausgeliefert, kein Build-Artefakt), `scripts/release_mod.mjs` für künftige Builds. Gemeinsame Dateien nur anhängend: Route in `router.ts`/`main.tsx`, Titel in `nav.ts` (kein neuer Hauptnavigationseintrag), Fußzeilenlink in `Shell.tsx`, Eintrag in `CommandPalette.tsx`, Link im Hinweistext von `GameCheckPanel.tsx`, Stilblock am Ende von `catalog.css`.
+- Für Codex: Neue Loader-Builds (GAME-04) einfach mit `release_mod.mjs` bereitstellen; die Seite bietet sie dann automatisch an.

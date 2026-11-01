@@ -2550,11 +2550,16 @@
         "GAME-01"
       ],
       "scope": [
+        "apps/web/src/views/mod/",
+        "downloads/mod/",
         "mods/bauplaner-bridge/",
+        "scripts/bridge_crosscheck.mjs",
+        "scripts/bridge_gametest.mjs",
+        "scripts/release_mod.mjs",
         "scripts/test_bridge.sh",
         "scripts/test_bridge_ingame.sh",
-        "scripts/bridge_crosscheck.mjs",
-        "scripts/bridge_gametest.mjs"
+        "tests/e2e/mod-download.e2e.mjs",
+        "tests/mod-releases.test.mjs"
       ],
       "legacyIds": [
         "B8-M2",
@@ -2580,6 +2585,11 @@
           "id": "GAME-02-S04",
           "title": "Mehrspieler-Abnahme durch den Nutzer auf server.lmnt-gaming.net mit eigenem Bau.",
           "done": false
+        },
+        {
+          "id": "GAME-02-S05",
+          "title": "Mod-Download auf der Website mit Auswahl von Minecraft-Version, Loader und Mod-Version (#/mod).",
+          "done": true
         }
       ],
       "acceptance": [
@@ -2599,6 +2609,14 @@
         {
           "path": "docs/TESTING.md",
           "note": "Befehle, Ergebnisse und Grenzen des Spieltests (01.11.2026)."
+        },
+        {
+          "path": "tests/e2e/mod-download.e2e.mjs",
+          "note": "Download-Seite in Chromium (1400/390 px): Auswahl, Link unter Pages-Unterpfad, Dateiname, Bytes, teilbare Auswahl."
+        },
+        {
+          "path": "tests/mod-releases.test.mjs",
+          "note": "Jede angebotene .jar liegt mit gelisteter Größe und SHA-256 in downloads/mod; Auswahl-Logik."
         }
       ],
       "verification": {
@@ -2609,7 +2627,7 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T13:33:15.064Z"
+      "updatedAt": "2026-11-01T14:16:52.468Z"
     },
     {
       "id": "GAME-03",
@@ -4972,6 +4990,45 @@
           "done": 0,
           "total": 2,
           "next": "Konsistentes Sicherungsformat und Bereichsauswahl festlegen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T14:16:52.468Z",
+      "kind": "progress",
+      "items": [
+        "GAME-02"
+      ],
+      "summary": "Mod-Download auf der Website: #/mod mit Auswahl von Minecraft-Version, Loader und Mod-Version, .jar 0.1.0 in downloads/mod (Pages aus main), releases.json mit Größe/SHA-256/Quellcommit/Prüfstand, release_mod.mjs für künftige Builds; Node- und Chromium-Tests (Desktop/Handy) bestanden.",
+      "files": [
+        "apps/web/src/app/CommandPalette.tsx",
+        "apps/web/src/app/Shell.tsx",
+        "apps/web/src/app/nav.ts",
+        "apps/web/src/app/router.ts",
+        "apps/web/src/catalog.css",
+        "apps/web/src/main.tsx",
+        "apps/web/src/views/mod/ModView.tsx",
+        "apps/web/src/views/mod/releases.json",
+        "apps/web/src/views/mod/releases.ts",
+        "apps/web/src/views/project/GameCheckPanel.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/MOD_BRIDGE.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.1.0.jar",
+        "mods/bauplaner-bridge/README.md",
+        "scripts/release_mod.mjs",
+        "tests/e2e/mod-download.e2e.mjs",
+        "tests/mod-releases.test.mjs",
+        "tests/router.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-02",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Philipp testet die .jar aus /mnt/project-files/mod/ auf server.lmnt-gaming.net und meldet Ergebnis/Fehler (Anleitung ANLEITUNG_SPIELTEST.md)."
         }
       ]
     }

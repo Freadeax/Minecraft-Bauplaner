@@ -17,6 +17,7 @@ const PAGES: readonly Omit<Entry, 'key' | 'group'>[] = [
   ...mainNav.map(n => ({ label: n.label, hint: n.hint, href: n.href, icon: n.icon })),
   { label: 'Ensembles', hint: 'Fertige Gebäudegruppen als Vorlage', href: '#/bibliothek/ensembles', icon: 'library' },
   { label: 'Generatoren', hint: 'Haus, Turm, Mauer, Brücke, Dach nach Maß', href: '#/bibliothek/generatoren', icon: 'library' },
+  { label: 'Mod herunterladen', hint: 'Bauplaner-Brücke für Minecraft: Version wählen und .jar laden', href: '#/mod', icon: 'export' },
   { label: 'Systemcheck', hint: 'Auslieferung, Speicher, Datencheck, Fehlerprotokoll', href: '#/system', icon: 'system' },
 ];
 

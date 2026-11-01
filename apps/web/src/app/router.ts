@@ -16,6 +16,7 @@ import { useEffect, useState } from 'react';
  *   #/projekt/<id>/<tab>   Projektunterseite (z. B. bauen)
  *   #/betrachter           Dateibetrachter
  *   #/karte[?projekt=<id>&dim=<dimension>]  Weltkarte aller platzierten Projekte (MAP-01)
+ *   #/mod[?minecraft=…&loader=…&version=…]  Mod-Download mit Versionsauswahl (GAME-02)
  *   #/system               Systemcheck (Auslieferung, Speicher, Datencheck, Fehlerprotokoll)
  */
 export type Route =
@@ -24,6 +25,7 @@ export type Route =
   | { readonly view: 'viewer' }
   | { readonly view: 'system' }
   | { readonly view: 'map'; readonly search?: string }
+  | { readonly view: 'mod'; readonly search?: string }
   | { readonly view: 'project'; readonly projectId: string; readonly tab: string }
   | { readonly view: 'not-found'; readonly path: string };
 
@@ -59,6 +61,7 @@ export function parseRoute(hash: string): Route {
   }
   if (parts[0] === 'betrachter' && parts.length === 1) return { view: 'viewer' };
   if (parts[0] === 'system' && parts.length === 1) return { view: 'system' };
+  if (parts[0] === 'mod' && parts.length === 1) return { view: 'mod', ...(search && { search }) };
   if (parts[0] === 'karte' && parts.length === 1) return { view: 'map', ...(search && { search }) };
   if (parts[0] === 'projekt' && parts[1] && parts.length <= 3) return { view: 'project', projectId: parts[1], tab: parts[2] ?? 'editor' };
   return { view: 'not-found', path };
@@ -75,6 +78,7 @@ export function href(route: Route): string {
     }
     case 'viewer': return '#/betrachter';
     case 'system': return '#/system';
+    case 'mod': return `#/mod${route.search ? `?${route.search}` : ''}`;
     case 'map': return `#/karte${route.search ? `?${route.search}` : ''}`;
     case 'project': return `#/projekt/${encodeURIComponent(route.projectId)}${route.tab === 'editor' ? '' : `/${encodeURIComponent(route.tab)}`}`;
     case 'not-found': return '#/';

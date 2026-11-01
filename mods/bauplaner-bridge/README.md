@@ -35,6 +35,8 @@ Der Test startet Minecraft 26.3 (Fabric Client Game Test, Quellsatz `fabric-26.3
 
 ## Installieren
 
+Fertige Dateien gibt es auf der Website unter [Mod herunterladen](https://freadeax.github.io/Minecraft-Bauplaner/#/mod) (Version wählen, .jar laden). Neue Builds stellt `node scripts/release_mod.mjs <adapter> "<was geprüft wurde>"` bereit: Die .jar kommt nach `downloads/mod/`, der Eintrag mit Größe und SHA-256 nach `apps/web/src/views/mod/releases.json`.
+
 Die Datei `bauplaner-bridge-fabric-26.3-<Version>.jar` (nicht die `-sources.jar`) in den `mods`-Ordner der Fabric-Instanz legen. Das funktioniert mit jedem Launcher, der Fabric-Mods lädt (Modrinth App, Prism, CurseForge, offizieller Launcher mit Fabric-Profil). Fabric API muss installiert sein.
 
 ## Benutzen

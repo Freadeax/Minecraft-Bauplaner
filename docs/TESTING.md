@@ -433,3 +433,9 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Grenzen: Redstone-Bauten (Technik) nach Java-Regeln gesetzt, nicht im Spiel abgenommen; Notenblock-Tonhöhen nur als Tipp.
 - `npm run check`: bestanden, 399 Node-Tests bestanden, 1 übersprungen (Bestand), Architektur-, Roadmap-, Typ-, Build- und Dokumentationsprüfung.
 - `npm run test:e2e`: alle Dateien bestanden außer `ui-acceptance.e2e.mjs`, das im Container am fehlenden Paket `playwright` scheitert (Bestand, nicht nur `@playwright/test`); mit lokalem Verweis auf das vorinstallierte Playwright 4/4 bestanden, nachdem die festen Bauwelt-Zählungen an den größeren Katalog angepasst wurden (Fernost 5, Wüstenhandel 7, End-Außenposten 6).
+
+## GAME-02-S05 · Mod-Download mit Versionsauswahl · 01.11.2026 · Claude
+
+- `node --test tests/mod-releases.test.mjs tests/router.test.mjs`: bestanden (jede gelistete .jar in `downloads/mod/` mit gelisteter Größe/SHA-256, numerische Versionssortierung 26.10 > 26.3, Rückfall auf vorhandene Builds, teilbare Auswahl, Route `#/mod` mit und ohne Auswahl).
+- `node --test tests/e2e/mod-download.e2e.mjs` (Chromium, Pages-Build unter `/Minecraft-Bauplaner/`, 1400 und 390 px): 2/2 bestanden. Fußzeilenlink, Titel, Vorauswahl neueste Minecraft-Version/Fabric, NeoForge nicht wählbar, Linkziel, SHA-256 sichtbar, Download-Dateiname, 34 262 Bytes über denselben Link, teilbare Auswahl in der Adresszeile, keine waagerechte Scrollleiste, keine Seitenfehler. Bildschirmfotos beider Breiten angesehen.
+- `tests/e2e/shell.e2e.mjs` Fall „Desktop: … Schnellsuche (Strg+K)“ scheitert in diesem Linux-Container auch auf unverändertem main (Dialog öffnet nicht auf Strg+K); die übrigen 4 Fälle und `game-check.e2e.mjs` bestehen. Nicht durch diese Änderung verursacht, nicht verändert.

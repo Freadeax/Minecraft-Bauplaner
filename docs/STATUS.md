@@ -13,7 +13,7 @@ Stand: 01.11.2026. Der verbindliche Aufgabenbestand steht in [ROADMAP](ROADMAP.m
 | Bau und Materialien | Bauitems, Rohstoff-/Rezeptauflösung, Packlisten, eigene Abschnitte, Lager-/Sammelplanung und Freiraumprüfung | versionsgebundener Katalog, Kupfer-Farbvarianten und erweiterte NBT-Diffs |
 | Speicherung | IndexedDB, Projekt-Revisionsschutz, Originale, atomare Batches, Backup/Restore und Datencheck | Asset-Revisionsschutz und DB-v2-Migration mit drei echten Chromiumfällen geprüft; Cloud-/Gerätesynchronisierung und Safari/iPhone offen |
 | Novemberoberfläche | fünf visuelle Themen mit Hell/Dunkel/System, Materiallabor, elf Bauwelten, 50 gezielte Glas-/Beton-/Terrakottasätze | aktuelle visuelle Abnahme; keine neuen Gebäude aus bloßem Themenzugang |
-| Spielbrücke | Fabric-Mod 0.1.0 für 26.3 (.jar in den Projektdateien), Aufnahmevergleich, Original/Verlauf/Ausrichtung lokal gespeichert und gesichert; Java-Kern mit Tests | Fabricadapter gebaut und im echten 26.3-Client samt Philipps Modpack automatisch geprüft, Mehrspieler-Abnahme offen; Vergleich ohne BlockEntity-Inhalte |
+| Spielbrücke | Fabric-Mod 0.1.0 für 26.3 (Download mit Versionsauswahl unter #/mod), Aufnahmevergleich, Original/Verlauf/Ausrichtung lokal gespeichert und gesichert; Java-Kern mit Tests | Fabricadapter gebaut und im echten 26.3-Client samt Philipps Modpack automatisch geprüft, Mehrspieler-Abnahme offen; Vergleich ohne BlockEntity-Inhalte |
 | Weltkarte und Team | generischer Livekarten-/Markeradapter | Weltkartenoberfläche, konkrete Provideradapter, Teamdienst/Konten noch nicht vorhanden |
 | Hosting | Pages-API bestätigt main / Repositorywurzel, gehashter statischer Build und Artefakt-Kindcommit; Remote enthält nur main | Restoreprobe offen |
 

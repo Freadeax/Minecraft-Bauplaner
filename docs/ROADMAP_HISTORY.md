@@ -1018,3 +1018,36 @@ WORLD-IMPORT-01 übernommen: Dateiumfang und Abstimmung in COMMUNICATION; noch k
 
 - `docs/COMMUNICATION.md`
 
+## 2026-11-01T14:16:52.468Z · progress
+
+**Aufgaben:** GAME-02
+
+Mod-Download auf der Website: #/mod mit Auswahl von Minecraft-Version, Loader und Mod-Version, .jar 0.1.0 in downloads/mod (Pages aus main), releases.json mit Größe/SHA-256/Quellcommit/Prüfstand, release_mod.mjs für künftige Builds; Node- und Chromium-Tests (Desktop/Handy) bestanden.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-02 | 🧩 Implementiert · Abnahme offen | 4/5 | Philipp testet die .jar aus /mnt/project-files/mod/ auf server.lmnt-gaming.net und meldet Ergebnis/Fehler (Anleitung ANLEITUNG_SPIELTEST.md). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/CommandPalette.tsx`
+- `apps/web/src/app/Shell.tsx`
+- `apps/web/src/app/nav.ts`
+- `apps/web/src/app/router.ts`
+- `apps/web/src/catalog.css`
+- `apps/web/src/main.tsx`
+- `apps/web/src/views/mod/ModView.tsx`
+- `apps/web/src/views/mod/releases.json`
+- `apps/web/src/views/mod/releases.ts`
+- `apps/web/src/views/project/GameCheckPanel.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/MOD_BRIDGE.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.1.0.jar`
+- `mods/bauplaner-bridge/README.md`
+- `scripts/release_mod.mjs`
+- `tests/e2e/mod-download.e2e.mjs`
+- `tests/mod-releases.test.mjs`
+- `tests/router.test.mjs`
+

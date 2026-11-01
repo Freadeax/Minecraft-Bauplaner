@@ -129,7 +129,7 @@ export function GameCheckPanel(p: Props) {
         {t ? <>
           <div className="build-bar game" role="progressbar" aria-label="Gesetzte Blöcke laut Spielaufnahme" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}><span style={{ width: `${pct}%` }} /></div>
           <small>{formatNumber(t.blocksOk)} von {formatNumber(t.blocks)} Blöcken korrekt ({pct} %)</small>
-        </> : <small>Noch keine Aufnahme. Die Mod schreibt sie mit <code>/bauplaner scan</code> in den Ordner <code>bauplaner/scans</code> des Spielordners.</small>}
+        </> : <small>Noch keine Aufnahme. Die <a href="#/mod">Bauplaner-Mod</a> schreibt sie mit <code>/bauplaner scan</code> in den Ordner <code>bauplaner/scans</code> des Spielordners.</small>}
       </div>
       <label className="file-button">{busy ? 'Liest …' : p.scan ? 'Neue Aufnahme importieren' : 'Spielaufnahme importieren (.schem)'}
         <input type="file" accept=".schem,application/octet-stream" disabled={busy} onChange={e => { void load(e.target.files?.[0]); e.target.value = ''; }} />
