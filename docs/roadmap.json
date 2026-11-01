@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T19:07:46.818Z",
+  "updatedAt": "2026-11-01T19:17:43.235Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -3286,7 +3286,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T19:07:46.818Z"
+      "updatedAt": "2026-11-01T19:17:43.235Z"
     },
     {
       "id": "GAME-06",
@@ -5797,6 +5797,26 @@
         "apps/web/src/views/mod/releases.json",
         "docs/TESTING.md",
         "downloads/mod/bauplaner-bridge-neoforge-26.3-0.1.0.jar"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-05",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T19:17:43.235Z",
+      "kind": "progress",
+      "items": [
+        "GAME-05"
+      ],
+      "summary": "Nach Rebase auf QA-03: npm run check grün, E2E 84/84.",
+      "files": [
+        "docs/TESTING.md"
       ],
       "snapshot": [
         {

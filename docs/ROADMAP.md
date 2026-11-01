@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T19:07:46.818Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T19:17:43.235Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -1234,7 +1234,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-05
 
-**NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Mod für NeoForge und Forge bauen“) · Aktualisiert: 2026-11-01T19:07:46.818Z
+**NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Mod für NeoForge und Forge bauen“) · Aktualisiert: 2026-11-01T19:17:43.235Z
 
 - [x] GAME-05-S01: Gemeinsame Befehlslogik BridgeSession/BridgeHost im Kern, von allen Loadern genutzt, mit Tests.
 - [x] GAME-05-S02: NeoForge-Adapter 26.3 bauen und im echten Client prüfen.

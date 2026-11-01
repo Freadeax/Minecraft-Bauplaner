@@ -1405,3 +1405,17 @@ NeoForge-Brücke 26.3 gebaut, im echten Client geprüft und auf #/mod angeboten;
 - `docs/TESTING.md`
 - `downloads/mod/bauplaner-bridge-neoforge-26.3-0.1.0.jar`
 
+## 2026-11-01T19:17:43.235Z · progress
+
+**Aufgaben:** GAME-05
+
+Nach Rebase auf QA-03: npm run check grün, E2E 84/84.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-05 | 🧩 Implementiert · Abnahme offen | 3/4 | Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen. |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+
