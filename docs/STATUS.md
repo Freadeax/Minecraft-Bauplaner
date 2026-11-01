@@ -7,7 +7,7 @@ Stand: 01.11.2026. Der verbindliche Aufgabenbestand steht in [ROADMAP](ROADMAP.m
 | Bereich | Vorhanden | Noch nicht vollständig abgenommen |
 |---|---|---|
 | Daten und Composer | Unveränderliche Voxel/AssetVersionen, Instanzen/Revisionen, Zellkonflikte, Undo/Redo, Snap/Händigkeit/Freiraum | Registryprofil, semantische BlockEntity-Transformationen |
-| Formate | Sponge Schem v3 und Litematic mit Import/Export, Originalerhalt, Limits und unabhängigen Fixtures | echte WorldEdit-/Litematica-/Spielabnahme; kein Vollweltimport |
+| Formate | Sponge Schem v3 und Litematic mit Import/Export, Originalerhalt, Limits und unabhängigen Fixtures sowie bereichsweiser Weltimport aus Regionsdateien (1.16–26.3, zlib/GZip/LZ4) mit Geländeprüfung je Projekt ([WORLD_IMPORT](architecture/WORLD_IMPORT.md)) | echte WorldEdit-/Litematica-/Spielabnahme; Weltimport an Philipps eigener Welt; kein Vollweltimport |
 | Viewer | Orbit, Flug, Schnitte/Layer, Picking, Touchbedienung und Softwarefallback | exakte Blockformen, echte GPU-/iPhone-Prüfung |
 | Bibliothek | 336 Gebäude in 22 Themen-Sets, 30 Variantenfamilien, 16 Ensembles, Suche/Filter, Vergleich, Merkliste, Varianten, elf Generatoren (neu GEN-02: Treppenhaus, Kirche, Hafen, Torhaus, Windmühle, Brunnen; Treppen-Eckformen wie im Spiel) und drei Anlagen (neu Dorfplatz, Burganlage mit Torhaus) sowie eigene Sammlungen (Ordner, Kategorien, Katalogfilter) und Vorlagen (Ensemble-/Generatorvorlagen mit Verlauf, LIB-02/LIB-03) | Echtgeräteabnahme der Sammlungen/Vorlagen; Redstone-Bauwerke nicht im Spiel abgenommen |
 | Bau und Materialien | Bauitems, Rohstoff-/Rezeptauflösung, Packlisten, eigene Abschnitte, Lager-/Sammelplanung und Freiraumprüfung | versionsgebundener Katalog, Kupfer-Farbvarianten und erweiterte NBT-Diffs |

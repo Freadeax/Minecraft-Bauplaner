@@ -32,7 +32,7 @@ test('Desktop: Hauptnavigation, Seitentitel und Schnellsuche (Strg+K) mit Tastat
   try {
     await p.goto(BASE);
     const nav = p.getByRole('navigation', { name: 'Hauptnavigation', exact: true });
-    assert.equal(await nav.getByRole('link').count(), 4);
+    assert.equal(await nav.getByRole('link').count(), 5);
     assert.equal(await p.locator('.bottom-nav').isVisible(), false);
     await nav.getByRole('link', { name: 'Bibliothek' }).click();
     await p.waitForURL(/#\/bibliothek$/);

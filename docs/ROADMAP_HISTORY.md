@@ -1207,3 +1207,50 @@ GAME-05 übernommen: gemeinsame Befehlslogik BridgeSession/BridgeHost im Bridge-
 - `mods/bauplaner-bridge/core/src/test/java/io/github/freadeax/bauplaner/bridge/BridgeSessionTest.java`
 - `mods/bauplaner-bridge/settings.gradle`
 
+## 2026-11-01T15:10:37.702Z · progress
+
+**Aufgaben:** WORLD-IMPORT-01
+
+Weltimport #/welt und Projektreiter Gelände: Regionsdateien 1.16–26.3 (zlib/GZip/LZ4/ohne), 26.x-Standardzustände aus offiziellem Bericht, Übernahme als Bauteil, Geländeprüfung. Geprüft mit unabhängiger Fixture, echten 26.3-Serverwelten und Chromium 1400/390 px; Abnahme an Philipps eigener Welt offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| WORLD-IMPORT-01 | 🧩 Implementiert · Abnahme offen | 2/2 | Mit einer Kopie von Philipps eigener 26.3-Welt (Modpack) einen Ausschnitt übernehmen und ein platziertes Projekt prüfen. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/icons.tsx`
+- `apps/web/src/app/nav.ts`
+- `apps/web/src/app/router.ts`
+- `apps/web/src/main.tsx`
+- `apps/web/src/shell.css`
+- `apps/web/src/views/project/TerrainTab.tsx`
+- `apps/web/src/views/project/tabs.ts`
+- `apps/web/src/views/world/RegionPicker.tsx`
+- `apps/web/src/views/world/SurfaceCanvas.tsx`
+- `apps/web/src/views/world/WorldImportView.tsx`
+- `apps/web/src/views/world/protocol.ts`
+- `apps/web/src/views/world/world.css`
+- `apps/web/src/views/world/world.worker.ts`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/WORLD_IMPORT.md`
+- `docs/roadmap.json`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/terrain.ts`
+- `packages/domain/src/types.ts`
+- `packages/formats/src/anvil.ts`
+- `packages/formats/src/defaultStates.ts`
+- `packages/formats/src/index.ts`
+- `packages/formats/src/lz4.ts`
+- `packages/formats/src/nbt.ts`
+- `packages/formats/src/worldExcerpt.ts`
+- `scripts/gen_default_states.mjs`
+- `scripts/make_region_fixture.py`
+- `scripts/test_world_import_real.sh`
+- `tests/anvil.test.mjs`
+- `tests/e2e/shell.e2e.mjs`
+- `tests/e2e/world-import.e2e.mjs`
+- `tests/terrain.test.mjs`
+
