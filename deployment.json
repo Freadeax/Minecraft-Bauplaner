@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "70436252d43b9b52f7779dd21a1dfb4a490b3529",
-  "builtAt": "2026-11-01T12:44:51.506Z",
-  "node": "v24.18.0",
+  "sourceCommit": "0390f2957e0d0c13a1f12e1d573674e1c2acf644",
+  "builtAt": "2026-11-01T12:49:57.802Z",
+  "node": "v22.23.4",
   "files": [
     {
       "path": ".nojekyll",
@@ -47,22 +47,22 @@
     {
       "path": "examples/contract-multiregion.litematic",
       "bytes": 705,
-      "sha256": "e55e80496e3a4992419a47a52d110ea3e8486536365cac708f0be4d1ea03a925"
+      "sha256": "804b64c8a53766b450dbfdbfd04133fb12caa17063b53148e0a5630e9ff47fa7"
     },
     {
       "path": "examples/contract-v3.schem",
       "bytes": 480,
-      "sha256": "faea0ebb65c92ca8f65487ebe3fa4a2df3831ebd7866e595073ae09d91e63e77"
+      "sha256": "b73088cefabc64f860a527adc3765bf606cb530b77518d797223c74981bcf466"
     },
     {
       "path": "favicon.svg",
-      "bytes": 263,
-      "sha256": "e5ff508171c7fae763a0d0aa941215357db1d2d77be01383fa0d37cd69a1c3e1"
+      "bytes": 262,
+      "sha256": "ba6ab888ec41f3eacb396c7838c8622e5b3a48082b31cd0e997b4007527af70e"
     },
     {
       "path": "index.html",
-      "bytes": 663,
-      "sha256": "4827201d0dc00510e1fd7f5abd35a983af1703e946c26eaf6f53c4a057dc7bdd"
+      "bytes": 661,
+      "sha256": "543aa8eaa7e405a116a6357d66fbf0282d17f35db7d2527c02142cbcdbd877ae"
     },
     {
       "path": "THIRD_PARTY_NOTICES.txt",
