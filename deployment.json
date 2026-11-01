@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "ccf4fa71c033c2f9415528192a04faed36730660",
-  "builtAt": "2026-11-01T05:22:47.442Z",
+  "sourceCommit": "8f2278095ff752282bf2b34ee5c288c95deac013",
+  "builtAt": "2026-11-01T09:35:30.087Z",
   "node": "v24.22.1",
   "files": [
     {
@@ -10,9 +10,9 @@
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
-      "path": "assets/idbRepository-B82ZB6Lj.js",
-      "bytes": 5446,
-      "sha256": "e8616bf675bc8b901a68ac26ec87dc95a537a2637ce11413840d55a59912a2cd"
+      "path": "assets/idbRepository-13KAfCST.js",
+      "bytes": 6264,
+      "sha256": "4c12d409bceb2118a11f461748ed5e41e08d772aaad79b97b5ff31cb9019ca9d"
     },
     {
       "path": "assets/import.worker-C3uxG6zS.js",
@@ -20,9 +20,9 @@
       "sha256": "db3e2fb0463c92df6144aa876ddda9cb70d5f5363810c009e01aa382daa303f4"
     },
     {
-      "path": "assets/index-CRhdUIbV.js",
-      "bytes": 879835,
-      "sha256": "6a630e510fbfacfc1544fec5ea182f54a6e0d224a616146c3a8ebf4e5ed87d95"
+      "path": "assets/index-DKL4nbEh.js",
+      "bytes": 882680,
+      "sha256": "606d0e2052670e5049194e7cdb55ddce6bdf2fbd7d8069b3435ace7dbca57854"
     },
     {
       "path": "assets/index-Dsd55bz1.css",
@@ -35,9 +35,9 @@
       "sha256": "6328eb62b9807d304526dabe183c7e915d2d7b933a2c37ef25f393de8eb32a50"
     },
     {
-      "path": "assets/ThreeViewer-DUamNzJD.js",
-      "bytes": 582179,
-      "sha256": "c65e8677d3ad4fad2c088d37452df103571bec39eceee84ac15999527d373416"
+      "path": "assets/ThreeViewer-BpSgWYur.js",
+      "bytes": 582174,
+      "sha256": "806167ff0ddc60c78c921b901e8c04a2478b88655758623ba70efb4b58c6331c"
     },
     {
       "path": "examples/contract-multiregion.litematic",
@@ -57,7 +57,7 @@
     {
       "path": "index.html",
       "bytes": 661,
-      "sha256": "dd9973003c10c2c4f83b9d549177f9f47dbf99e482d9e2b9028ebc1c0ad1d6a8"
+      "sha256": "357aecb2d748aa87b458df8989054a195cb346dd0c780260c728049c18650373"
     },
     {
       "path": "THIRD_PARTY_NOTICES.txt",
