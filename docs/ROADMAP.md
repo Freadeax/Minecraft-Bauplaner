@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T18:52:18.883Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T19:07:46.818Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -13,9 +13,9 @@ Stand: 2026-11-01T18:52:18.883Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | Status | Pakete |
 |---|---:|
 | ⏳ Offen | 17 |
-| 🚧 In Arbeit | 2 |
+| 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 18 |
+| 🧩 Implementiert · Abnahme offen | 19 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -25,7 +25,7 @@ Stand: 2026-11-01T18:52:18.883Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 - **MAP-01 · Weltlage und begehbare Projektkarte** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02.
 - **EDIT-01 · Mehrfachauswahl und sichtbare Freiraumhüllen** — 🧩 Implementiert · Abnahme offen, 2/2 Teilschritte. Nächster Schritt: Geräteprüfung (QA-02); Gruppenziehen direkt im 3D-Bild als Folgeschritt.
 - **EDIT-02 · Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Picking an 3D-Blockflächen; Registerlücken mit PROFILE-01-Serverreport schließen; Spielprüfung.
-- **GAME-05 · NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik** — 🚧 In Arbeit, 0/4 Teilschritte. Nächster Schritt: BridgeSession im Kern, dann NeoForge-Adapter.
+- **GAME-05 · NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -131,7 +131,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [WORLD-IMPORT-01](#world-import-01) | Bereichsweiser Weltimport und Terrainprüfung | 🧩 Implementiert · Abnahme offen | 2/2 | PROFILE-01, PERF-02, FORMAT-01 | ausstehend | ausstehend |
 | [BACKUP-02](#backup-02) | Sicherungserinnerung und Abschnittsrevisionen | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-01, BUILD-01 | ausstehend | ausstehend |
 | [GAME-04](#game-04) | Paper-Plugin der Bauplaner-Brücke (serverseitig, mehrere Minecraft-Versionen) | 🚧 In Arbeit | 3/4 | GAME-02 | ausstehend | ausstehend |
-| [GAME-05](#game-05) | NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik | 🚧 In Arbeit | 0/4 | GAME-02 | ausstehend | ausstehend |
+| [GAME-05](#game-05) | NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik | 🧩 Implementiert · Abnahme offen | 3/4 | GAME-02 | ausstehend | ausstehend |
 | [LIB-04](#lib-04) | Gebäudebibliothek v3: Inhalte in alle Richtungen | 🧩 Implementiert · Abnahme offen | 4/4 | LIB-01 | ausstehend | ausstehend |
 
 ## P4: Optionale Zusammenarbeit und Integrationen
@@ -1234,22 +1234,22 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-05
 
-**NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread „Mod für NeoForge und Forge bauen“) · Aktualisiert: 2026-11-01T15:00:58.460Z
+**NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Mod für NeoForge und Forge bauen“) · Aktualisiert: 2026-11-01T19:07:46.818Z
 
-- [ ] GAME-05-S01: Gemeinsame Befehlslogik BridgeSession/BridgeHost im Kern, von allen Loadern genutzt, mit Tests.
-- [ ] GAME-05-S02: NeoForge-Adapter 26.3 bauen und im echten Client prüfen.
+- [x] GAME-05-S01: Gemeinsame Befehlslogik BridgeSession/BridgeHost im Kern, von allen Loadern genutzt, mit Tests.
+- [x] GAME-05-S02: NeoForge-Adapter 26.3 bauen und im echten Client prüfen.
 - [ ] GAME-05-S03: Forge-Adapter 26.3 bauen und im echten Client prüfen.
-- [ ] GAME-05-S04: Jars auf der Download-Seite #/mod anbieten.
+- [x] GAME-05-S04: NeoForge-Jar auf der Download-Seite #/mod anbieten (Forge erst nach bestandener Spielprüfung).
 
 **Abnahme:** Nur lesend, keine Serverinstallation nötig; dieselbe Aufnahmedatei wie Fabric, vom Website-Vergleich geprüft.
 
-**Nächste Aktion:** BridgeSession im Kern, dann NeoForge-Adapter.
+**Nächste Aktion:** Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen.
 
-**Prüfstand:** Abnahme noch nicht erbracht.
+**Prüfstand:** NeoForge im echten Client bestanden; Forge-Spielprüfung, Start über echten Launcher und Mehrspieler offen.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [scripts/test_bridge_ingame_forge.sh](../scripts/test_bridge_ingame_forge.sh) — NeoForge: echter 26.3-Client, Testwelt, Plan, Anker auf angeschauten Block, Aufnahme; Website-Vergleich findet genau 1 falschen und 1 fehlenden Block (zweimal bestanden 01.11.2026). Forge: lädt, Durchlauf kopflos hängend.; [mods/bauplaner-bridge/core/src/test/java/io/github/freadeax/bauplaner/bridge/BridgeSessionTest.java](../mods/bauplaner-bridge/core/src/test/java/io/github/freadeax/bauplaner/bridge/BridgeSessionTest.java) — Gemeinsame Befehlslogik aller Loader gegen ein nachgebautes Spiel.; [docs/TESTING.md](TESTING.md) — Befehle, Ergebnisse und Grenzen (GAME-05).; [tests/e2e/mod-download.e2e.mjs](../tests/e2e/mod-download.e2e.mjs) — Download-Seite bietet NeoForge mit eigener Datei und Installationsschritt, Forge als geplant.
 
-**Dateiumfang:** `mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/session/`, `mods/bauplaner-bridge/core/src/test/java/io/github/freadeax/bauplaner/bridge/BridgeSessionTest.java`, `mods/bauplaner-bridge/settings.gradle`, `mods/bauplaner-bridge/neoforge-26.3/`, `mods/bauplaner-bridge/forge-26.3/`, `scripts/test_bridge_ingame_neoforge.sh`. **Abhängigkeiten:** GAME-02. **Alte IDs:** P6-01.
+**Dateiumfang:** `mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/session/`, `mods/bauplaner-bridge/core/src/test/java/io/github/freadeax/bauplaner/bridge/BridgeSessionTest.java`, `mods/bauplaner-bridge/client-26.3/`, `mods/bauplaner-bridge/neoforge-26.3/`, `mods/bauplaner-bridge/forge-26.3/`, `mods/bauplaner-bridge/settings.gradle`, `scripts/test_bridge_ingame_forge.sh`, `downloads/mod/`, `apps/web/src/views/mod/`. **Abhängigkeiten:** GAME-02. **Alte IDs:** P6-01.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

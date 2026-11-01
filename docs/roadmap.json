@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T18:52:18.883Z",
+  "updatedAt": "2026-11-01T19:07:46.818Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -3214,7 +3214,7 @@
       "title": "NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik",
       "phase": "P3",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "implemented",
       "owner": "Claude (Thread „Mod für NeoForge und Forge bauen“)",
       "dependencies": [
         "GAME-02"
@@ -3222,10 +3222,13 @@
       "scope": [
         "mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/session/",
         "mods/bauplaner-bridge/core/src/test/java/io/github/freadeax/bauplaner/bridge/BridgeSessionTest.java",
-        "mods/bauplaner-bridge/settings.gradle",
+        "mods/bauplaner-bridge/client-26.3/",
         "mods/bauplaner-bridge/neoforge-26.3/",
         "mods/bauplaner-bridge/forge-26.3/",
-        "scripts/test_bridge_ingame_neoforge.sh"
+        "mods/bauplaner-bridge/settings.gradle",
+        "scripts/test_bridge_ingame_forge.sh",
+        "downloads/mod/",
+        "apps/web/src/views/mod/"
       ],
       "legacyIds": [
         "P6-01"
@@ -3234,12 +3237,12 @@
         {
           "id": "GAME-05-S01",
           "title": "Gemeinsame Befehlslogik BridgeSession/BridgeHost im Kern, von allen Loadern genutzt, mit Tests.",
-          "done": false
+          "done": true
         },
         {
           "id": "GAME-05-S02",
           "title": "NeoForge-Adapter 26.3 bauen und im echten Client prüfen.",
-          "done": false
+          "done": true
         },
         {
           "id": "GAME-05-S03",
@@ -3248,25 +3251,42 @@
         },
         {
           "id": "GAME-05-S04",
-          "title": "Jars auf der Download-Seite #/mod anbieten.",
-          "done": false
+          "title": "NeoForge-Jar auf der Download-Seite #/mod anbieten (Forge erst nach bestandener Spielprüfung).",
+          "done": true
         }
       ],
       "acceptance": [
         "Nur lesend, keine Serverinstallation nötig; dieselbe Aufnahmedatei wie Fabric, vom Website-Vergleich geprüft."
       ],
-      "next": "BridgeSession im Kern, dann NeoForge-Adapter.",
+      "next": "Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "scripts/test_bridge_ingame_forge.sh",
+          "note": "NeoForge: echter 26.3-Client, Testwelt, Plan, Anker auf angeschauten Block, Aufnahme; Website-Vergleich findet genau 1 falschen und 1 fehlenden Block (zweimal bestanden 01.11.2026). Forge: lädt, Durchlauf kopflos hängend."
+        },
+        {
+          "path": "mods/bauplaner-bridge/core/src/test/java/io/github/freadeax/bauplaner/bridge/BridgeSessionTest.java",
+          "note": "Gemeinsame Befehlslogik aller Loader gegen ein nachgebautes Spiel."
+        },
+        {
+          "path": "docs/TESTING.md",
+          "note": "Befehle, Ergebnisse und Grenzen (GAME-05)."
+        },
+        {
+          "path": "tests/e2e/mod-download.e2e.mjs",
+          "note": "Download-Seite bietet NeoForge mit eigener Datei und Installationsschritt, Forge als geplant."
+        }
+      ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht erbracht."
+        "note": "NeoForge im echten Client bestanden; Forge-Spielprüfung, Start über echten Launcher und Mehrspieler offen."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T15:00:58.460Z"
+      "updatedAt": "2026-11-01T19:07:46.818Z"
     },
     {
       "id": "GAME-06",
@@ -5763,6 +5783,28 @@
           "done": 7,
           "total": 7,
           "next": "Bei neuen Ausfällen zuerst nach Lesen vor dem Laden (Manifest, IndexedDB, ResizeObserver, Worker-Neuberechnung) suchen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T19:07:46.818Z",
+      "kind": "progress",
+      "items": [
+        "GAME-05"
+      ],
+      "summary": "NeoForge-Brücke 26.3 gebaut, im echten Client geprüft und auf #/mod angeboten; Forge-Brücke 26.3 gebaut (Spielprüfung offen, kopfloser Client hängt im Ladebildschirm); gemeinsame client-26.3-Schicht und Spieltest. npm run check grün, E2E 82/84 (fremde Ausfälle).",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "docs/TESTING.md",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.1.0.jar"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-05",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen."
         }
       ]
     }

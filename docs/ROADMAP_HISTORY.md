@@ -1389,3 +1389,19 @@ Wacklige E2E-Tests stabilisiert: Strg+K vor dem Datenladen gemerkt, Systemcheck 
 - `tests/e2e/snap.e2e.mjs`
 - `tests/e2e/stability.e2e.mjs`
 
+## 2026-11-01T19:07:46.818Z · progress
+
+**Aufgaben:** GAME-05
+
+NeoForge-Brücke 26.3 gebaut, im echten Client geprüft und auf #/mod angeboten; Forge-Brücke 26.3 gebaut (Spielprüfung offen, kopfloser Client hängt im Ladebildschirm); gemeinsame client-26.3-Schicht und Spieltest. npm run check grün, E2E 82/84 (fremde Ausfälle).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-05 | 🧩 Implementiert · Abnahme offen | 3/4 | Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `docs/TESTING.md`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.1.0.jar`
+

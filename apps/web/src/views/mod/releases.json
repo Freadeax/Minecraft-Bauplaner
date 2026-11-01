@@ -34,6 +34,19 @@
       "releasedAt": "2026-11-01",
       "sourceCommit": "c2a9b52cabd4e8da3801d0d9ed4623f81ef7a377",
       "tested": "Auf echten Paper-Servern 1.18.2, 1.20.6, 1.21.4, 1.21.11 und 26.3 automatisch geprüft: Website-Plan mit einem falschen und einem fehlenden Block, Aufnahme per Befehl nach Serverneustart (Chunks vom Plugin nachgeladen), Website-Vergleich findet genau diese zwei Abweichungen; nie erzeugtes Gelände bleibt unerzeugt. Auf Philipps eigenem Server noch nicht abgenommen."
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.1.0.jar",
+      "modVersion": "0.1.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 37732,
+      "sha256": "d9eaa6212e9eb32962a9812e9f2209812726db66e2581c93c06556858d8f8e98",
+      "releasedAt": "2026-11-01",
+      "sourceCommit": "742fe0382a01b7c21bc1e77fb9bc468a8bf4ddb8",
+      "tested": "Im echten Minecraft-26.3-Client mit NeoForge 26.3.0.100 automatisch geprüft (Testwelt, Plan laden, Anker auf angeschauten Block, Aufnahme, Website-Vergleich erkennt genau den falschen und den fehlenden Block). Über einen echten Launcher und auf einem Mehrspieler-Server noch nicht abgenommen."
     }
   ]
 }
