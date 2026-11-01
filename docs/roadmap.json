@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T09:39:17.366Z",
+  "updatedAt": "2026-11-01T09:42:34.925Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "WORLD-02"
@@ -1928,7 +1928,7 @@
       "acceptance": [
         "Keine erfundenen Treffer oder Gebäude; eigene Assets werden konsistent berücksichtigt."
       ],
-      "next": "Main-Integration und Pages-Artefakt veröffentlichen; Sichtprüfung der drei neuen Bauwelten bleibt Teil von QA-01.",
+      "next": "Sichtprüfung der drei neuen Bauwelten bei verfügbarer Browserlaufzeit in QA-01 nachholen; folgender Entwicklungsblock PERF-01.",
       "blockers": [],
       "evidence": [
         {
@@ -1942,13 +1942,13 @@
       ],
       "verification": {
         "state": "pending",
-        "note": "365/365 Node-Tests, Architektur-, Roadmap-, Typ-, Kern-/Pages-Build- und Dokumentationsprüfung bestanden; keine Browser-/Touch-Sichtprüfung der neuen Karten (Chromium fehlt)."
+        "note": "365/365 Node-Tests, Architektur-, Roadmap-, Typ-, Kern-/Pages-Build- und Dokumentationsprüfung bestanden. Quellcommit c3e6478 auf main, Artefakt bc74958; Live-Manifest mit identischem Quellcommit und zwölf gleichen Dateihashes, index.html und Hauptbundle zusätzlich byteweise nachgehasht. Browser-/Touch-Sichtprüfung offen."
       },
       "delivery": {
-        "main": "8f2278095ff752282bf2b34ee5c288c95deac013",
-        "pagesSource": null
+        "main": "c3e647855dc3b1bc5417a64cc6350b375b9b510d",
+        "pagesSource": "c3e647855dc3b1bc5417a64cc6350b375b9b510d"
       },
-      "updatedAt": "2026-11-01T09:39:17.366Z"
+      "updatedAt": "2026-11-01T09:42:34.925Z"
     },
     {
       "id": "BUILD-05",
@@ -3194,6 +3194,27 @@
           "done": 2,
           "total": 2,
           "next": "Main-Integration und Pages-Artefakt veröffentlichen; Sichtprüfung der drei neuen Bauwelten bleibt Teil von QA-01."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T09:42:34.925Z",
+      "kind": "progress",
+      "items": [
+        "WORLD-02"
+      ],
+      "summary": "Main c3e6478 und Pages-Artefakt bc74958 veroeffentlicht; Live-Manifest, Quell-SHA und zwoelf Dateihashes inklusive Stichproben-Bytes geprueft. Browser-Sichtpruefung bleibt in QA-01 offen.",
+      "files": [
+        "docs/STATUS.md",
+        "docs/TESTING.md"
+      ],
+      "snapshot": [
+        {
+          "id": "WORLD-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Sichtprüfung der drei neuen Bauwelten bei verfügbarer Browserlaufzeit in QA-01 nachholen; folgender Entwicklungsblock PERF-01."
         }
       ]
     }

@@ -21,6 +21,8 @@ Stand: 01.11.2026. Der verbindliche Aufgabenbestand steht in [ROADMAP](ROADMAP.m
 
 STORE-02 implementiert den lokalen Asset-Revisionsschutz in beiden Speichern, DB-v2-Migration, atomare Version-/Asset-/Originalbatches und eine feste Bearbeitungsgrundlage im UI. Fehlerhafte Migration wechselt nicht still in einen leeren Sitzungsspeicher; veraltete Formulare behalten ihren Entwurf und zeigen den Konflikt. Sicherungen bleiben lesbar, Restore trägt die lokale erwartete Revision. Die vollständige Abnahme benötigt noch die echten IndexedDB-/Zwei-Tab-Browserregressionen. Details: [ASSET_CONCURRENCY](architecture/ASSET_CONCURRENCY.md).
 
+WORLD-02 prüft die Bauwelten-Abdeckung und ergänzt drei redaktionelle Welten aus tatsächlichen Bibliothekseinträgen: Fernöstlicher Garten (3 Treffer), Wüstenhandel & Oasenweg (6) und End-Außenposten (2). Die Bibliothek zeigt damit elf Bauwelten; Stilrichtungen ohne Bauteile werden nicht behauptet. Quellcommit `c3e647855dc3b1bc5417a64cc6350b375b9b510d`, Artefaktcommit `bc7495830cbdf7a4cdcdddddf050ef59f637f256`, Live-Manifest und Dateihashes geprüft. Browser-Sichtprüfung der neuen Karten bleibt Teil von QA-01. Details: [Bauwelten](architecture/BUILD_THEMES.md).
+
 PLAN-01, ARCH-01 und DOC-01 wurden zuvor als Quellcommit `ccf4fa71c033c2f9415528192a04faed36730660` integriert, Artefaktcommit `18f70b7` veröffentlicht; Live-Quell-SHA und zwölf Dateihashes in dieser Fortsetzung geprüft. Diese Nachweise werden jetzt in der zentralen Roadmap nachgeführt. Die separate Browseraufgabe QA-01 bleibt offen.
 
 ## Prüfen, integrieren und veröffentlichen

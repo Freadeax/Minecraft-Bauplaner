@@ -244,3 +244,18 @@ Drei Bauwelten aus tatsaechlichen Katalogeintraegen ergaenzt (fernoestlich 3, wu
 - `packages/domain/src/buildThemes.ts`
 - `tests/build-themes.test.mjs`
 
+## 2026-11-01T09:42:34.925Z · progress
+
+**Aufgaben:** WORLD-02
+
+Main c3e6478 und Pages-Artefakt bc74958 veroeffentlicht; Live-Manifest, Quell-SHA und zwoelf Dateihashes inklusive Stichproben-Bytes geprueft. Browser-Sichtpruefung bleibt in QA-01 offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| WORLD-02 | 🧩 Implementiert · Abnahme offen | 2/2 | Sichtprüfung der drei neuen Bauwelten bei verfügbarer Browserlaufzeit in QA-01 nachholen; folgender Entwicklungsblock PERF-01. |
+
+**Geänderte Dateien:**
+
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+
