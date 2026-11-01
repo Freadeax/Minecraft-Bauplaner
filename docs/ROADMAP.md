@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T13:36:58.036Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T14:08:37.152Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,8 +12,8 @@ Stand: 2026-11-01T13:36:58.036Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 21 |
-| 🚧 In Arbeit | 2 |
+| ⏳ Offen | 20 |
+| 🚧 In Arbeit | 3 |
 | ⛔ Blockiert | 0 |
 | 🧩 Implementiert · Abnahme offen | 13 |
 | ✅ Im beschriebenen Umfang geprüft | 21 |
@@ -25,6 +25,7 @@ Stand: 2026-11-01T13:36:58.036Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 - **MAP-01 · Weltlage und begehbare Projektkarte** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02.
 - **EDIT-01 · Mehrfachauswahl und sichtbare Freiraumhüllen** — 🚧 In Arbeit, 0/2 Teilschritte. Nächster Schritt: Auswahlvertrag und atomare Gruppenoperationen definieren.
 - **EDIT-02 · Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** — 🚧 In Arbeit, 0/5 Teilschritte. Nächster Schritt: Entwurfsvertrag und Werkzeuge umsetzen, Blockregister von VIEW-02 übernehmen.
+- **GEN-02 · Weitere Generatoren und Dachdetails** — 🚧 In Arbeit, 0/5 Teilschritte. Nächster Schritt: Generatorspezifikation und Umsetzung Treppenhaus, Kirche, Hafen.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -121,7 +122,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [LIB-03](#lib-03) | Eigene Ensembles und Generatorvorlagen speichern | 🧩 Implementiert · Abnahme offen | 2/2 | LIB-02, GEN-01 | ausstehend | ausstehend |
 | [WORLD-02](#world-02) | Weitere kuratierte Bauwelten | ✅ Im beschriebenen Umfang geprüft | 2/2 | LIB-01, UI-01 | `c3e6478` | `c3e6478` |
 | [BUILD-05](#build-05) | Bauwelt-Anlagen mit Konfliktvorschau | ⏳ Offen | 0/2 | LIB-03, CORE-03 | ausstehend | ausstehend |
-| [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | ⏳ Offen | 0/2 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
+| [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | 🚧 In Arbeit | 0/5 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
 | [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen | 4/4 | CORE-03, STORE-02 | `84838f0` | `e232b26` |
 | [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter | ⏳ Offen | 0/2 | MAP-01 | ausstehend | ausstehend |
 | [GAME-02](#game-02) | Fabric-Brücke kompilieren und im Spiel abnehmen | 🧩 Implementiert · Abnahme offen | 3/4 | FORMAT-01, GAME-01 | `84838f0` | `e232b26` |
@@ -949,20 +950,23 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GEN-02
 
-**Weitere Generatoren und Dachdetails** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Weitere Generatoren und Dachdetails** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude-Thread „Neue Gebäudegeneratoren ergänzen“ · Aktualisiert: 2026-11-01T14:08:37.152Z
 
 - [ ] GEN-02-S01: Treppenhaus, Kirche und Hafen als getrennte Generatoren spezifizieren.
 - [ ] GEN-02-S02: Dachtreppen-Eckformen und Anschlüsse profilgenau erzeugen.
+- [ ] GEN-02-S03: Treppenhaus-, Kirchen- und Hafengenerator mit Stilen, Vorlagen und Anschlüssen umsetzen.
+- [ ] GEN-02-S04: Weitere sinnvolle Generatoren (z. B. Torhaus, Windmühle, Brunnen/Platz) und eine neue Anlage.
+- [ ] GEN-02-S05: Unit-/Browserprüfung, Doku, main und Pages.
 
 **Abnahme:** Ganzzahliges Raster, reproduzierbare Parameter, Mengen-/Exportprüfung je Generator.
 
-**Nächste Aktion:** Treppenhaus, Kirche und Hafen als getrennte Generatoren spezifizieren.
+**Nächste Aktion:** Generatorspezifikation und Umsetzung Treppenhaus, Kirche, Hafen.
 
 **Prüfstand:** Abnahme noch nicht vollständig erbracht.
 
 **Nachweise:** noch ausstehend
 
-**Dateiumfang:** `packages/domain/src/generators/`. **Abhängigkeiten:** GEN-01, PROFILE-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/generators/`, `apps/web/src/views/library/GeneratorsPage.tsx`, `tests/generators.test.mjs`, `tests/e2e/generators.e2e.mjs`, `docs/architecture/GENERATORS.md`. **Abhängigkeiten:** GEN-01, PROFILE-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

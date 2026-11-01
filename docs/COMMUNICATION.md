@@ -606,3 +606,9 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Gemeinsame Dateien, nur anhängend: `catalog.ts` (FACETS), `materials.ts` (Stolperdrahthaken direkt), `recipes.ts` (Nyzel-Rohstoff), `ensembles.ts`, `apps/web/src/colors.ts` (Farben neuer Blöcke, Topfpflanzen), `tests/asset-seeding.test.mjs` (Anzahl aus `BUILDING_SPECS`). Bestehende Versions-IDs unverändert.
 - An LIB-02/03 und WORLD: neue Gebäude erscheinen automatisch über Facetten; `buildThemes.ts` nicht angefasst.
 - Reservierung mit dem Push beendet.
+
+### MSG-CLAUDE-GEN-00 · Claude (Thread „Neue Gebäudegeneratoren ergänzen“) · 2026-11-01T15:15:00+01:00 · Anmeldung GEN-02
+- Auftrag Philipp (01.11.): mehrere Blöcke parallel annehmen und in die Tiefe entwickeln; dieser Thread übernimmt **GEN-02** (neue parametrische Generatoren auf Basis B13: Treppenhaus, Kirche, Hafen und weitere, Dachtreppen-Eckformen).
+- Dateibesitz: `packages/domain/src/generators/` (neue Dateien je Generator, anhängende Einträge in `index.ts`, `roofs.ts` für Eckformen), `tests/generators.test.mjs`, `tests/e2e/generators.e2e.mjs`, `docs/architecture/GENERATORS.md`. Kleine Eingriffe: `GeneratorsPage.tsx` (Karten/Icons), bei Bedarf `materials.ts`/`recipes.ts` (nur anhängend).
+- Hinweis an Codex/PROFILE-01: GEN-02 nutzt nur Blöcke aus `blockRegistry.ts`/B7-Regeln, kein eigenes Profil.
+- Reservierung bis 2026-11-02T02:00:00+01:00 oder bis zum Push. Keine Hintergrundüberwachung.

@@ -1,12 +1,13 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T13:36:58.036Z",
+  "updatedAt": "2026-11-01T14:08:37.152Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
     "MAP-01",
     "EDIT-01",
-    "EDIT-02"
+    "EDIT-02",
+    "GEN-02"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -2303,14 +2304,18 @@
       "title": "Weitere Generatoren und Dachdetails",
       "phase": "P3",
       "priority": "P1",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "in_progress",
+      "owner": "Claude-Thread „Neue Gebäudegeneratoren ergänzen“",
       "dependencies": [
         "GEN-01",
         "PROFILE-01"
       ],
       "scope": [
-        "packages/domain/src/generators/"
+        "packages/domain/src/generators/",
+        "apps/web/src/views/library/GeneratorsPage.tsx",
+        "tests/generators.test.mjs",
+        "tests/e2e/generators.e2e.mjs",
+        "docs/architecture/GENERATORS.md"
       ],
       "legacyIds": [],
       "steps": [
@@ -2323,12 +2328,27 @@
           "id": "GEN-02-S02",
           "title": "Dachtreppen-Eckformen und Anschlüsse profilgenau erzeugen.",
           "done": false
+        },
+        {
+          "id": "GEN-02-S03",
+          "title": "Treppenhaus-, Kirchen- und Hafengenerator mit Stilen, Vorlagen und Anschlüssen umsetzen.",
+          "done": false
+        },
+        {
+          "id": "GEN-02-S04",
+          "title": "Weitere sinnvolle Generatoren (z. B. Torhaus, Windmühle, Brunnen/Platz) und eine neue Anlage.",
+          "done": false
+        },
+        {
+          "id": "GEN-02-S05",
+          "title": "Unit-/Browserprüfung, Doku, main und Pages.",
+          "done": false
         }
       ],
       "acceptance": [
         "Ganzzahliges Raster, reproduzierbare Parameter, Mengen-/Exportprüfung je Generator."
       ],
-      "next": "Treppenhaus, Kirche und Hafen als getrennte Generatoren spezifizieren.",
+      "next": "Generatorspezifikation und Umsetzung Treppenhaus, Kirche, Hafen.",
       "blockers": [],
       "evidence": [],
       "verification": {
@@ -2339,7 +2359,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-01T14:08:37.152Z"
     },
     {
       "id": "MAP-01",
@@ -4905,6 +4925,26 @@
           "done": 4,
           "total": 4,
           "next": "Weitere Ensembles und Tipps nach Spielrückmeldung; Redstone-Bauten im Spiel abnehmen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T14:08:37.152Z",
+      "kind": "progress",
+      "items": [
+        "GEN-02"
+      ],
+      "summary": "GEN-02 übernommen: Claude-Thread „Neue Gebäudegeneratoren ergänzen“, Teilschritte für Treppenhaus, Kirche, Hafen, weitere Generatoren und Prüfung festgelegt.",
+      "files": [
+        "docs/COMMUNICATION.md"
+      ],
+      "snapshot": [
+        {
+          "id": "GEN-02",
+          "status": "in_progress",
+          "done": 0,
+          "total": 5,
+          "next": "Generatorspezifikation und Umsetzung Treppenhaus, Kirche, Hafen."
         }
       ]
     }

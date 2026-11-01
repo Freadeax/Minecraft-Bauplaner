@@ -990,3 +990,17 @@ Abschlussprüfung LIB-04: npm run check grün (399 Node-Tests), E2E grün; Bauwe
 - `tests/asset-seeding.test.mjs`
 - `tests/e2e/ui-acceptance.e2e.mjs`
 
+## 2026-11-01T14:08:37.152Z · progress
+
+**Aufgaben:** GEN-02
+
+GEN-02 übernommen: Claude-Thread „Neue Gebäudegeneratoren ergänzen“, Teilschritte für Treppenhaus, Kirche, Hafen, weitere Generatoren und Prüfung festgelegt.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GEN-02 | 🚧 In Arbeit | 0/5 | Generatorspezifikation und Umsetzung Treppenhaus, Kirche, Hafen. |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+
