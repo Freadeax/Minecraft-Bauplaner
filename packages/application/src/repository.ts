@@ -4,6 +4,8 @@ import type { Asset, AssetVersion, OriginalFile, Project } from '../../domain/sr
  * Storage boundary of the web app. Every implementation must:
  * - save projects only when `baseRevision` equals the stored revision and then
  *   store revision+1 (otherwise throw RevisionConflictError, never overwrite);
+ * - save assets using incoming asset.revision (legacy absent = 0) as CAS base,
+ *   increment once on success; conflicting asset batches write nothing;
  * - treat AssetVersions as immutable (same id ⇒ identical content, no update);
  * - report failures as thrown errors, never as silent success.
  * - store original files unchanged, addressed by SHA-256;
@@ -20,6 +22,7 @@ export interface Repository {
   saveProject(project: Project, baseRevision: number): Promise<Project>;
   deleteProject(id: string): Promise<void>;
   listAssets(): Promise<Asset[]>;
+  /** Incoming revision is the expected stored base; reload after saving to obtain the incremented revision. */
   saveAsset(asset: Asset): Promise<void>;
   listVersions(): Promise<AssetVersion[]>;
   saveVersion(version: AssetVersion): Promise<void>;
@@ -36,6 +39,7 @@ export interface Repository {
 }
 
 export interface StorageBatch {
+  /** Each incoming revision is an expected CAS base; duplicate asset IDs are rejected. */
   readonly assets?: readonly Asset[];
   readonly versions?: readonly AssetVersion[];
   readonly originals?: readonly OriginalFile[];
@@ -52,3 +56,9 @@ export class RevisionConflictError extends Error {
   }
 }
 
+export class AssetRevisionConflictError extends Error {
+  constructor(readonly assetId: string, readonly stored: number, readonly base: number) {
+    super(`Das Bauteil „${assetId}“ wurde zwischenzeitlich anderswo gespeichert (Revision ${stored}, Basis ${base}). Bitte die Bibliothek neu laden und die Änderung erneut ausführen; nichts wurde überschrieben.`);
+    this.name = 'AssetRevisionConflictError';
+  }
+}

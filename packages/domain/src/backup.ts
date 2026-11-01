@@ -302,7 +302,7 @@ export function planRestore(backup: Backup, target: RestoreTarget): RestorePlan 
     const local = localAssets.get(asset.id);
     if (!local) return { asset, status: 'new', addedVersionIds: asset.versionIds };
     const added = asset.versionIds.filter(id => !local.versionIds.includes(id));
-    return { asset, local, addedVersionIds: added, status: added.length === 0 && canonicalJson(local) === canonicalJson(asset) ? 'same' : 'merge' };
+    return { asset, local, addedVersionIds: added, status: added.length === 0 && canonicalJson({ ...local, revision: 0 }) === canonicalJson({ ...asset, revision: 0 }) ? 'same' : 'merge' };
   });
   return Object.freeze({ backup, projects: Object.freeze(projects), assets: Object.freeze(assets),
     newVersions: backup.versions.filter(v => !target.versionIds.has(v.id)),
@@ -342,7 +342,7 @@ export function buildRestore(plan: RestorePlan, choices: Readonly<Record<string,
   }
   const assets: Asset[] = [];
   for (const a of plan.assets) {
-    if (a.status === 'new') { assets.push(a.asset); summary.push(`Bauteil „${a.asset.name}“ neu (${a.asset.versionIds.length} Version(en)).`); }
+    if (a.status === 'new') { assets.push({ ...a.asset, revision: 0 }); summary.push(`Bauteil „${a.asset.name}“ neu (${a.asset.versionIds.length} Version(en)).`); }
     else if (a.status === 'merge') {
       if (a.addedVersionIds.length) assets.push({ ...a.local!, versionIds: [...a.local!.versionIds, ...a.addedVersionIds] });
       summary.push(`Bauteil „${a.local!.name}“: lokale Angaben behalten${a.addedVersionIds.length ? `, ${a.addedVersionIds.length} fehlende Version(en) ergänzt` : ''}.`);

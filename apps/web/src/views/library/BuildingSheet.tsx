@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { BLOCK_CLASS_LABEL, FACETS, MATERIAL_GROUP_LABEL, SIZE_CLASS_LABEL, facetLabel } from '../../../../../packages/domain/src/index.js';
-import type { BuildingFacets, BuildingInfo, CatalogEntry, MaterialGroup, Suggestion } from '../../../../../packages/domain/src/index.js';
+import type { Asset, BuildingFacets, BuildingInfo, CatalogEntry, MaterialGroup, Suggestion } from '../../../../../packages/domain/src/index.js';
 import { formatNumber } from '../../app/ui';
 import { stateColor } from '../../colors';
 import { FacetFields, facetsFromForm } from './FacetFields';
+import { AssetRevisionNotice } from './AssetRevisionNotice';
 
 export const GROUP_COLOR: Readonly<Record<MaterialGroup, string>> = {
   holz: '#b58452', stein: '#a3a6a8', glas: '#bfe3ea', beton: '#e0e0dc', wolle: '#d46a6a', natur: '#6d9b45', licht: '#ffd166',
@@ -21,22 +22,26 @@ function Row({ label, children, hint }: { label: string; children: React.ReactNo
  * computed Kennwerte in separate, labelled cards. Heuristics carry their
  * formula as tooltip and in a details block.
  */
-export function FactsSection({ entry, onSaveFacets }: { entry: CatalogEntry; onSaveFacets?: ((facets: BuildingFacets, tags: string[]) => void) | undefined }) {
+export function FactsSection({ entry, onSaveFacets }: { entry: CatalogEntry; onSaveFacets?: ((base: Asset, facets: BuildingFacets, tags: string[]) => Promise<boolean>) | undefined }) {
   const { asset, facets } = entry;
   const [editing, setEditing] = useState(false);
+  const [base, setBase] = useState(entry);
+  const [saving, setSaving] = useState(false);
   const declared = FACETS.filter(f => facets[f.key].length);
   return <section className="sheet-section" aria-label="Angaben">
     <h3>Angaben <span className="badge source">Angabe</span></h3>
-    {editing && onSaveFacets ? <form onSubmit={e => { e.preventDefault(); const f = new FormData(e.currentTarget);
-      onSaveFacets(facetsFromForm(f), String(f.get('tags') ?? '').split(',').map(t => t.trim()).filter(Boolean)); setEditing(false); }}>
-      <FacetFields initial={facets} />
-      <label>Weitere Tags (Komma-getrennt)<input name="tags" defaultValue={entry.tags.join(', ')} /></label>
-      <div className="button-row"><button className="primary" type="submit">Angaben speichern</button><button type="button" onClick={() => setEditing(false)}>Abbrechen</button></div>
+    {editing && onSaveFacets ? <form onSubmit={e => { e.preventDefault(); if (saving) return; const f = new FormData(e.currentTarget);
+      setSaving(true); void onSaveFacets(base.asset, facetsFromForm(f), String(f.get('tags') ?? '').split(',').map(t => t.trim()).filter(Boolean))
+        .then(saved => { if (saved) setEditing(false); }).finally(() => setSaving(false)); }}>
+      <AssetRevisionNotice base={base.asset} current={asset} />
+      <FacetFields initial={base.facets} />
+      <label>Weitere Tags (Komma-getrennt)<input name="tags" defaultValue={base.tags.join(', ')} /></label>
+      <div className="button-row"><button className="primary" type="submit" disabled={saving}>Angaben speichern</button><button type="button" disabled={saving} onClick={() => setEditing(false)}>Abbrechen</button></div>
     </form> : <>
       <dl className="stats">{declared.map(f => <Row key={f.key} label={f.label}>{facets[f.key].map(v => facetLabel(f.key, v)).join(', ')}</Row>)}
         {entry.tags.length > 0 && <Row label="Tags">{entry.tags.join(', ')}</Row>}</dl>
       {declared.length === 0 && <p className="small-note">Keine Angaben hinterlegt. Kategorie, Stil, Biom und Funktion helfen bei Filtern und Vorschlägen.</p>}
-      {onSaveFacets && <button type="button" onClick={() => setEditing(true)}>Angaben bearbeiten</button>}
+      {onSaveFacets && <button type="button" onClick={() => { setBase(entry); setEditing(true); }}>Angaben bearbeiten</button>}
       {!onSaveFacets && asset.demo && <p className="small-note">Angaben der mitgelieferten Vorschläge sind schreibgeschützt.</p>}
     </>}
   </section>;

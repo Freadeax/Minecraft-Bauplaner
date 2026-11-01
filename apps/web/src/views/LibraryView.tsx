@@ -227,8 +227,8 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
     catch (e) { say(errorText(e)); }
   };
   const saveFacets = async (asset: Asset, facets: BuildingFacets, plain: string[]) => {
-    try { await repo.saveAsset(updateAssetMeta(asset, { tags: withFacets(plain, facets) })); await reloadLibrary(); say(`Angaben zu „${asset.name}“ gespeichert.`); }
-    catch (e) { say(`Angaben nicht gespeichert: ${errorText(e)}`); }
+    try { await repo.saveAsset(updateAssetMeta(asset, { tags: withFacets(plain, facets) })); await reloadLibrary(); say(`Angaben zu „${asset.name}“ gespeichert.`); return true; }
+    catch (e) { say(`Angaben nicht gespeichert: ${errorText(e)}`); return false; }
   };
   /**
    * Adds the latest version as new instance beside the existing world, exactly
@@ -317,7 +317,7 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
         favorite={favorites.has(asset.id)} comparing={compare.has(asset.id)} libHref={libHref}
         onFavorite={() => favorites.toggle(asset.id)} onCompare={() => toggleCompare(asset.id)}
         onAdd={pid => void addToProject(entry, pid)} onNewProject={() => void newProjectWith(entry)}
-        onSaveFacets={asset.demo ? undefined : (facets, plain) => void saveFacets(asset, facets, plain)}
+        onSaveFacets={asset.demo ? undefined : (base, facets, plain) => saveFacets(base, facets, plain)}
         onArchive={() => void archive(asset)} onMessage={m => say(m)} onSelectSaved={showBuilding} />
         : <div className="notice warning" role="alert">Gebäude „{id}“ ist nicht in der Bibliothek. <a href={libHref('browse')}>Zur Übersicht</a></div>}
       {tray}</div>;

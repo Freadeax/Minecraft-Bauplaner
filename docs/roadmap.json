@@ -1,11 +1,9 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T05:20:38.605Z",
+  "updatedAt": "2026-11-01T09:33:55.354Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
-    "PLAN-01",
-    "ARCH-01",
-    "DOC-01"
+    "STORE-02"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -485,7 +483,7 @@
       "title": "Verbindlicher Aufgabenbestand und Merge-Fortschritt",
       "phase": "P1",
       "priority": "P0",
-      "status": "implemented",
+      "status": "verified",
       "owner": "Codex",
       "dependencies": [],
       "scope": [
@@ -510,14 +508,14 @@
         {
           "id": "PLAN-01-S03",
           "title": "Pflichtablauf in AGENTS und Publisher integrieren; Main-/Pages-Nachweis prüfen.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Jede Aufgabe zeigt Teilschritte, Abhängigkeiten, nächste Aktion und Nachweise.",
         "Quelländerungen benötigen eine Aufgabenaktualisierung; Artefaktcommits sind separat nachweisbar."
       ],
-      "next": "Geprüften Quellstand integrieren, passenden Pages-Build veröffentlichen und beide SHAs prüfen.",
+      "next": "Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen.",
       "blockers": [],
       "evidence": [
         {
@@ -531,20 +529,20 @@
       ],
       "verification": {
         "state": "passed",
-        "note": "Roadmapschema, Generierung, Abhängigkeiten und Dateizuordnung mit 5 Regressionen geprüft. Main-/Pages-Nachweis nach Integration."
+        "note": "Roadmapschema, Generierung, Abhängigkeiten und Dateizuordnung mit 5 Regressionen geprüft. Main-/Pages-Nachweis nach Integration. Vorherige Mainintegration und Pages in dieser Fortsetzung bestätigt: Artefakt 18f70b7, Livesource ccf4fa7 und zwölf Dateihashes identisch."
       },
       "delivery": {
-        "main": null,
-        "pagesSource": null
+        "main": "ccf4fa71c033c2f9415528192a04faed36730660",
+        "pagesSource": "ccf4fa71c033c2f9415528192a04faed36730660"
       },
-      "updatedAt": "2026-11-01T05:20:38.605Z"
+      "updatedAt": "2026-11-01T09:33:55.354Z"
     },
     {
       "id": "ARCH-01",
       "title": "Anwendungsschicht und überprüfte Modulgrenzen",
       "phase": "P1",
       "priority": "P0",
-      "status": "implemented",
+      "status": "verified",
       "owner": "Codex",
       "dependencies": [
         "CORE-01",
@@ -575,14 +573,14 @@
         {
           "id": "ARCH-01-S04",
           "title": "Architekturvertrag dokumentieren und integriert veröffentlichen.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Domain importiert keine Formatwriter, Browseradapter oder Frameworks.",
         "Abhängigkeitsprüfung erfasst auch type-only, reexports und dynamische Imports."
       ],
-      "next": "Geprüfte Anwendungsschicht nach Main/Pages integrieren; QA-01 bleibt eigenständige offene Browserabnahme.",
+      "next": "Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen.",
       "blockers": [],
       "evidence": [
         {
@@ -600,13 +598,13 @@
       ],
       "verification": {
         "state": "passed",
-        "note": "Kern/Anwendung und bestehende Format-/Aufnahmeregressionen bestehen. Neue UI-Browserprüfung wegen fehlender Laufzeit offen."
+        "note": "Kern/Anwendung und bestehende Format-/Aufnahmeregressionen bestehen. Neue UI-Browserprüfung wegen fehlender Laufzeit offen. Vorherige Mainintegration und Pages in dieser Fortsetzung bestätigt: Artefakt 18f70b7, Livesource ccf4fa7 und zwölf Dateihashes identisch."
       },
       "delivery": {
-        "main": null,
-        "pagesSource": null
+        "main": "ccf4fa71c033c2f9415528192a04faed36730660",
+        "pagesSource": "ccf4fa71c033c2f9415528192a04faed36730660"
       },
-      "updatedAt": "2026-11-01T05:20:38.605Z"
+      "updatedAt": "2026-11-01T09:33:55.354Z"
     },
     {
       "id": "DOC-01",
@@ -640,7 +638,7 @@
       "acceptance": [
         "Keine implementierte Kernfunktion erscheint gleichzeitig als unbegonnen."
       ],
-      "next": "Bei jedem folgenden Quellblock Status über dieselben Aufgaben und Nachweise nachführen.",
+      "next": "Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen.",
       "blockers": [],
       "evidence": [
         {
@@ -654,21 +652,21 @@
       ],
       "verification": {
         "state": "passed",
-        "note": "Dokumentationsprüfung und generierte Ansichten im Gesamtcheck bestanden."
+        "note": "Dokumentationsprüfung und generierte Ansichten im Gesamtcheck bestanden. Vorherige Mainintegration und Pages in dieser Fortsetzung bestätigt: Artefakt 18f70b7, Livesource ccf4fa7 und zwölf Dateihashes identisch."
       },
       "delivery": {
-        "main": null,
-        "pagesSource": null
+        "main": "ccf4fa71c033c2f9415528192a04faed36730660",
+        "pagesSource": "ccf4fa71c033c2f9415528192a04faed36730660"
       },
-      "updatedAt": "2026-11-01T05:20:38.605Z"
+      "updatedAt": "2026-11-01T09:33:55.354Z"
     },
     {
       "id": "STORE-02",
       "title": "Revisionsschutz bei konkurrierenden Assetänderungen",
       "phase": "P1",
       "priority": "P0",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "implemented",
+      "owner": "Codex",
       "dependencies": [
         "ARCH-01"
       ],
@@ -683,12 +681,12 @@
         {
           "id": "STORE-02-S01",
           "title": "Vorhandene S4-Reservierung und Remoteänderungen vor Bearbeitung prüfen.",
-          "done": false
+          "done": true
         },
         {
           "id": "STORE-02-S02",
           "title": "Asset-Revisionsvertrag, UI-Konfliktbehandlung und Migration implementieren.",
-          "done": false
+          "done": true
         },
         {
           "id": "STORE-02-S03",
@@ -699,18 +697,39 @@
       "acceptance": [
         "Kein stilles Überschreiben; bestehende Datensätze kontrolliert migrieren."
       ],
-      "next": "Vorhandene S4-Reservierung und Remoteänderungen vor Bearbeitung prüfen.",
+      "next": "Echte IndexedDB-v1→v2-Migration und Zwei-Tab-UI-Regressionsfälle bei verfügbarer Chromium-Laufzeit ausführen; danach STORE-02 vollständig abnehmen. Folgender Entwicklungsblock PERF-01.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/asset-concurrency.test.mjs",
+          "note": "CAS, atomare Batches, Aliasschutz, Duplikate und ungültige Datensätze; Kernlauf separat in TESTING."
+        },
+        {
+          "path": "tests/asset-restore.test.mjs",
+          "note": "Alte Sicherung, lokale Revisionsbasis und veralteter Restoreplan."
+        },
+        {
+          "path": "tests/asset-seeding.test.mjs",
+          "note": "Zwei konkurrierende Katalogeinrichtungen mit begrenztem aktuellen Retry."
+        },
+        {
+          "path": "docs/architecture/ASSET_CONCURRENCY.md",
+          "note": "Migration, Formularbasis und offene Browserabnahme."
+        },
+        {
+          "path": "tests/e2e/asset-editing.e2e.mjs",
+          "note": "Tatsächliche Ausführung scheitert an fehlendem Chromium; Entwurfs-/Broadcastregression für die Browserabnahme vorbereitet."
+        }
+      ],
       "verification": {
-        "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "state": "passed",
+        "note": "364 Node-Tests und vollständiger Kern-/Typ-/Build-/Modul-/Roadmap-/Dokumentationscheck bestanden. Sieben CAS-, drei Restore- und eine konkurrierende Seedregression neu. Echte IndexedDB-Migration und UI-Zwei-Tab-Abnahme weiterhin offen: Chromiumstart nicht ausführbar."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-01T09:33:55.354Z"
     },
     {
       "id": "QA-01",
@@ -2974,6 +2993,169 @@
           "done": 0,
           "total": 2,
           "next": "Chromium-Laufzeit bereitstellen bzw. Verfügbarkeit prüfen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T09:26:37.129Z",
+      "kind": "progress",
+      "items": [
+        "STORE-02"
+      ],
+      "summary": "STORE-02 nach Prüfung von S4-Referenzen und sauberem Remote-Stand begonnen; Vertrag, Migration, UI-Konfliktbehandlung und atomare Regressionen reserviert. Noch nicht implementiert oder geprüft.",
+      "files": [
+        "docs/COMMUNICATION.md"
+      ],
+      "snapshot": [
+        {
+          "id": "STORE-02",
+          "status": "in_progress",
+          "done": 1,
+          "total": 3,
+          "next": "Asset-CAS in beiden Speicheradaptern, Migration und bestehende UI-Schreibpfade vollständig integrieren."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T09:32:42.167Z",
+      "kind": "progress",
+      "items": [
+        "STORE-02",
+        "PLAN-01",
+        "ARCH-01",
+        "DOC-01"
+      ],
+      "summary": "STORE-02 implementiert: lokale Asset-CAS, additive DB-v2-Migration, atomare Schreibpfade und feste Formulargrundlage. Gezielt geprüfte Restore-/Seedfälle; Gesamtcheck folgt, echte Browserabnahme offen. Vorherige PLAN-/ARCH-/DOC-Mainintegration und Live-SHA plus zwölf Hashes nachgewiesen.",
+      "files": [
+        "README.md",
+        "apps/web/src/app/idbRepository.ts",
+        "apps/web/src/app/repository.ts",
+        "apps/web/src/views/LibraryView.tsx",
+        "apps/web/src/views/library/AssetRevisionNotice.tsx",
+        "apps/web/src/views/library/BuildingDetail.tsx",
+        "apps/web/src/views/library/BuildingSheet.tsx",
+        "apps/web/src/views/library/ConnectorEditor.tsx",
+        "apps/web/src/views/library/CropPanel.tsx",
+        "apps/web/src/views/library/GeneratorsPage.tsx",
+        "apps/web/src/views/library/VersionsSection.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/architecture/ASSET_CONCURRENCY.md",
+        "docs/architecture/DECISIONS.md",
+        "packages/application/src/assetConcurrency.ts",
+        "packages/application/src/index.ts",
+        "packages/application/src/memoryRepository.ts",
+        "packages/application/src/repository.ts",
+        "packages/domain/src/backup.ts",
+        "packages/domain/src/library.ts",
+        "packages/domain/src/recordValidation.ts",
+        "packages/domain/src/types.ts",
+        "tests/asset-concurrency.test.mjs",
+        "tests/asset-restore.test.mjs",
+        "tests/asset-seeding.test.mjs",
+        "tests/e2e/asset-concurrency.e2e.mjs",
+        "tests/e2e/asset-editing.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "STORE-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Echte IndexedDB-v1→v2-Migration und Zwei-Tab-UI-Regressionsfälle bei verfügbarer Chromium-Laufzeit ausführen; danach STORE-02 vollständig abnehmen. Folgender Entwicklungsblock PERF-01."
+        },
+        {
+          "id": "PLAN-01",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen."
+        },
+        {
+          "id": "ARCH-01",
+          "status": "verified",
+          "done": 4,
+          "total": 4,
+          "next": "Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen."
+        },
+        {
+          "id": "DOC-01",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T09:33:55.354Z",
+      "kind": "progress",
+      "items": [
+        "STORE-02",
+        "PLAN-01",
+        "ARCH-01",
+        "DOC-01"
+      ],
+      "summary": "STORE-02 vollständig implementiert und kerngeprüft: 364 Node-Tests, Typ-/Build-/Modul-/Roadmap-/Dokumentationscheck bestanden. Echte DB-v2-/Zwei-Tab-Browserabnahme mangels Chromium offen, daher Abnahmeschritt nicht abgeschlossen. Vorherige PLAN-/ARCH-/DOC-Main-/Pagesnachweise nachgetragen. Mainintegration dieses Blocks und Liveprüfung folgen.",
+      "files": [
+        "README.md",
+        "apps/web/src/app/idbRepository.ts",
+        "apps/web/src/app/repository.ts",
+        "apps/web/src/views/LibraryView.tsx",
+        "apps/web/src/views/library/AssetRevisionNotice.tsx",
+        "apps/web/src/views/library/BuildingDetail.tsx",
+        "apps/web/src/views/library/BuildingSheet.tsx",
+        "apps/web/src/views/library/ConnectorEditor.tsx",
+        "apps/web/src/views/library/CropPanel.tsx",
+        "apps/web/src/views/library/GeneratorsPage.tsx",
+        "apps/web/src/views/library/VersionsSection.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/ASSET_CONCURRENCY.md",
+        "docs/architecture/DECISIONS.md",
+        "packages/application/src/assetConcurrency.ts",
+        "packages/application/src/index.ts",
+        "packages/application/src/memoryRepository.ts",
+        "packages/application/src/repository.ts",
+        "packages/domain/src/backup.ts",
+        "packages/domain/src/library.ts",
+        "packages/domain/src/recordValidation.ts",
+        "packages/domain/src/types.ts",
+        "tests/asset-concurrency.test.mjs",
+        "tests/asset-restore.test.mjs",
+        "tests/asset-seeding.test.mjs",
+        "tests/e2e/asset-concurrency.e2e.mjs",
+        "tests/e2e/asset-editing.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "STORE-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Echte IndexedDB-v1→v2-Migration und Zwei-Tab-UI-Regressionsfälle bei verfügbarer Chromium-Laufzeit ausführen; danach STORE-02 vollständig abnehmen. Folgender Entwicklungsblock PERF-01."
+        },
+        {
+          "id": "PLAN-01",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen."
+        },
+        {
+          "id": "ARCH-01",
+          "status": "verified",
+          "done": 4,
+          "total": 4,
+          "next": "Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen."
+        },
+        {
+          "id": "DOC-01",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen."
         }
       ]
     }

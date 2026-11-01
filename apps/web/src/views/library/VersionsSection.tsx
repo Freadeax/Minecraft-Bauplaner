@@ -6,6 +6,7 @@ import { useApp } from '../../app/context';
 import { errorText, formatNumber } from '../../app/ui';
 import { DiffView } from '../../schem/DiffView';
 import { Thumb } from '../../thumbnail/Thumb';
+import { AssetRevisionNotice } from './AssetRevisionNotice';
 
 /**
  * Bauversionen (B12): every variant of a building (family members and
@@ -60,10 +61,11 @@ export function VersionsSection({ entry, group, versions, variantName, libHref, 
   </section>;
 }
 
-function MaterialVariantPanel({ asset, latest, family, onSaved, onMessage }: {
+function MaterialVariantPanel({ asset: currentAsset, latest: currentLatest, family, onSaved, onMessage }: {
   asset: Asset; latest: AssetVersion; family: string | undefined; onSaved(assetId: string): void; onMessage(text: string): void;
 }) {
   const { repo, reloadLibrary } = useApp();
+  const [{ asset, latest }, setBase] = useState(() => ({ asset: currentAsset, latest: currentLatest }));
   const used = useMemo(() => detectMaterials(latest.payload, { scoped: true }), [latest]);
   const [targets, setTargets] = useState<Readonly<Record<string, string>>>({});
   const [busy, setBusy] = useState(false);
@@ -86,6 +88,7 @@ function MaterialVariantPanel({ asset, latest, family, onSaved, onMessage }: {
       if (asVersion) {
         const r = await addAssetVersion(asset, { payload: result.payload, label: `${asset.versionIds.length + 1}.0`, connectors: latest.connectors, source });
         await repo.applyBatch({ versions: [r.version], assets: [r.asset] }); await reloadLibrary();
+        setBase({ asset: { ...r.asset, revision: (r.asset.revision ?? 0) + 1 }, latest: r.version });
         onMessage(`Version ${r.version.label} von „${asset.name}“ gespeichert (${label}). Bestehende Projekte behalten ihre Version.`);
         onSaved(asset.id);
       } else {
@@ -103,6 +106,7 @@ function MaterialVariantPanel({ asset, latest, family, onSaved, onMessage }: {
 
   return <details className="variant-maker">
     <summary>Materialvariante erzeugen</summary>
+    <AssetRevisionNotice base={asset} current={currentAsset} />
     {used.length === 0 ? <p className="muted">Keine tauschbaren Holz-, Stein-, Farb-, Glas-, Beton- oder Terrakottasätze in diesem Bauwerk.</p> : <>
       <p className="small-note">Jeder Satz wird Form für Form getauscht (Brett → Brett, Treppe → Treppe), Ausrichtung und Eigenschaften bleiben gleich. Glas, Beton und Terrakotta lassen sich getrennt umfärben; Zellen mit BlockEntity-Daten benötigen zuerst einen NBT-Adapter. Fehlt eine Form im Zielsatz, bleibt der Block unverändert und wird genannt.</p>
       <table className="swap-table"><thead><tr><th scope="col">Im Bauwerk</th><th scope="col">Blöcke</th><th scope="col">ersetzen durch</th></tr></thead>

@@ -56,3 +56,7 @@ Exportkoordination und Aufnahmeverwaltung liegen in `packages/application`; Repo
 ## ADR-017 · Eine Roadmapquelle mit überprüfbarem Fortschritt · 01.11.2026
 
 `docs/roadmap.json` ist die technische Quelle für Aufgaben, Teilschritte, Abhängigkeiten, Nachweise und angehängte Fortschrittsereignisse. ROADMAP.md und ROADMAP_HISTORY.md werden daraus erzeugt und vor jedem Quellupdate validiert. Keine geschätzten Prozentwerte; Implementierung, Prüfstand, Main und Pages getrennt. Lokaler Pre-Push-Hook und Publisher verlangen dateibezogene Fortschrittspflege. Ohne eigene Actions kann dies externe Clients/API-Schreibzugriffe nicht serverseitig erzwingen; AGENTS und Konnektor-Runbook verpflichten zur gleichen Vorprüfung. Alte Dokumente bleiben ausdrücklich historische Quellen. Selbstreferenzielle Deployment-Updates werden durch Manifestnachweis statt Folgecommit vermieden.
+
+## ADR-018 · Lokale Assetrevision und atomarer Konfliktabbruch · 01.11.2026
+
+STORE-02 ergänzt eine additive Speicherrevision am Asset. CAS-Basis ist die beim Beginn eines Entwurfs gelesene Revision; AssetVersion- und Geometriehashes bleiben davon getrennt. Anwendungsschicht prüft Revisions-/Batchregeln, IndexedDB entscheidet und schreibt innerhalb einer Transaktion, MemoryRepository folgt demselben Vertrag. Neue DB-Migration v2, alte Sicherungen ohne Feld weiterhin gültig. Automatisches Zusammenführen konkurrierender Metadaten oder Versionslisten verworfen: fachliche Absicht wäre dabei unbekannt. Details und offene echte Browserabnahme: [ASSET_CONCURRENCY](ASSET_CONCURRENCY.md).

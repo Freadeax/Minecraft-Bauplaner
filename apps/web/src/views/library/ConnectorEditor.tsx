@@ -4,6 +4,7 @@ import type { Asset, AssetVersion, Connector, FaceName } from '../../../../../pa
 import type { Cell, Vec3 } from '../../../../../packages/voxel/src/index.js';
 import { useApp } from '../../app/context';
 import { errorText } from '../../app/ui';
+import { AssetRevisionNotice } from './AssetRevisionNotice';
 
 export type Highlight = ((cell: Cell) => 'hit' | 'dim' | null) | null;
 
@@ -15,10 +16,11 @@ const ups = (f: FaceName): FaceName[] => faces.filter(u => FACES[u].findIndex(n 
  * Anschluss-Editor (Block B5): edits the connectors of an asset's latest version
  * and stores them as a new immutable version. Placed projects keep their version.
  */
-export function ConnectorEditor({ asset, version, onHighlight, onSaved }: {
+export function ConnectorEditor({ asset: currentAsset, version: currentVersion, onHighlight, onSaved }: {
   asset: Asset; version: AssetVersion; onHighlight: (h: Highlight) => void; onSaved: (message: string) => void;
 }) {
   const { repo, reloadLibrary } = useApp();
+  const [{ asset, version }, setBase] = useState(() => ({ asset: currentAsset, version: currentVersion }));
   const [draft, setDraft] = useState<Connector[]>(() => structuredClone([...version.connectors]));
   const [newFace, setNewFace] = useState<FaceName>('east');
   const [busy, setBusy] = useState(false);
@@ -50,7 +52,8 @@ export function ConnectorEditor({ asset, version, onHighlight, onSaved }: {
     try {
       const label = `${asset.versionIds.length + 1}.0`;
       const r = await addAssetVersion(asset, { payload: version.payload, label, connectors: draft, source: version.source });
-      await repo.saveVersion(r.version); await repo.saveAsset(r.asset); await reloadLibrary();
+      await repo.applyBatch({ versions: [r.version], assets: [r.asset] }); await reloadLibrary();
+      setBase({ asset: { ...r.asset, revision: (r.asset.revision ?? 0) + 1 }, version: r.version });
       onSaved(`Anschlüsse als Version ${label} von „${asset.name}“ gespeichert. Bestehende Projekte behalten ihre Version.`);
     } catch (e) { setError(errorText(e)); } finally { setBusy(false); }
   };
@@ -62,6 +65,7 @@ export function ConnectorEditor({ asset, version, onHighlight, onSaved }: {
   </section>;
 
   return <section className="connector-editor" aria-label="Anschluss-Editor">
+    <AssetRevisionNotice base={asset} current={currentAsset} />
     <span className="panel-kicker">ANSCHLÜSSE BEARBEITEN</span>
     <p className="small-note">Punkt auf einer Außenfläche (Zellgrenze), Normale zeigt nach außen. Nur gleicher Typ und gleiches Profil verbinden sich. Unsymmetrische Profile (z. B. Wehrgang auf einer Seite) bekommen eine Händigkeit, von außen gesehen: links passt nur an rechts, Spiegeln tauscht sie. Gelb markiert: Blöcke am Anschlusspunkt.</p>
     {draft.map((c, i) => {

@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T05:20:38.605Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T09:33:55.354Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,18 +12,16 @@ Stand: 2026-11-01T05:20:38.605Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 30 |
+| ⏳ Offen | 29 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 3 |
-| 🧩 Implementiert · Abnahme offen | 9 |
-| ✅ Im beschriebenen Umfang geprüft | 11 |
+| 🧩 Implementiert · Abnahme offen | 8 |
+| ✅ Im beschriebenen Umfang geprüft | 13 |
 | ⏸ Zurückgestellt | 2 |
 
 ## Aktiver Arbeitsblock
 
-- **PLAN-01 · Verbindlicher Aufgabenbestand und Merge-Fortschritt** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Geprüften Quellstand integrieren, passenden Pages-Build veröffentlichen und beide SHAs prüfen.
-- **ARCH-01 · Anwendungsschicht und überprüfte Modulgrenzen** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Geprüfte Anwendungsschicht nach Main/Pages integrieren; QA-01 bleibt eigenständige offene Browserabnahme.
-- **DOC-01 · Widerspruchsfreie aktuelle Statusdokumentation** — ✅ Im beschriebenen Umfang geprüft, 2/2 Teilschritte. Nächster Schritt: Bei jedem folgenden Quellblock Status über dieselben Aufgaben und Nachweise nachführen.
+- **STORE-02 · Revisionsschutz bei konkurrierenden Assetänderungen** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Echte IndexedDB-v1→v2-Migration und Zwei-Tab-UI-Regressionsfälle bei verfügbarer Chromium-Laufzeit ausführen; danach STORE-02 vollständig abnehmen. Folgender Entwicklungsblock PERF-01.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -59,10 +57,10 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [LIB-01](#lib-01) | Bestehender Gebäudekatalog und Bibliotheksabläufe | ✅ Im beschriebenen Umfang geprüft | 1/1 | CORE-02 | `84838f0` | `e232b26` |
 | [GEN-01](#gen-01) | Vorhandene parametrische Generatoren | ✅ Im beschriebenen Umfang geprüft | 1/1 | CORE-03 | `84838f0` | `e232b26` |
 | [OPS-01](#ops-01) | Main/root-Pages mit manifestgeprüften Artefakten | ✅ Im beschriebenen Umfang geprüft | 1/1 | — | `84838f0` | `e232b26` |
-| [PLAN-01](#plan-01) | Verbindlicher Aufgabenbestand und Merge-Fortschritt | 🧩 Implementiert · Abnahme offen | 2/3 | — | ausstehend | ausstehend |
-| [ARCH-01](#arch-01) | Anwendungsschicht und überprüfte Modulgrenzen | 🧩 Implementiert · Abnahme offen | 3/4 | CORE-01, CORE-02 | ausstehend | ausstehend |
-| [DOC-01](#doc-01) | Widerspruchsfreie aktuelle Statusdokumentation | ✅ Im beschriebenen Umfang geprüft | 2/2 | PLAN-01 | ausstehend | ausstehend |
-| [STORE-02](#store-02) | Revisionsschutz bei konkurrierenden Assetänderungen | ⏳ Offen | 0/3 | ARCH-01 | ausstehend | ausstehend |
+| [PLAN-01](#plan-01) | Verbindlicher Aufgabenbestand und Merge-Fortschritt | ✅ Im beschriebenen Umfang geprüft | 3/3 | — | `ccf4fa7` | `ccf4fa7` |
+| [ARCH-01](#arch-01) | Anwendungsschicht und überprüfte Modulgrenzen | ✅ Im beschriebenen Umfang geprüft | 4/4 | CORE-01, CORE-02 | `ccf4fa7` | `ccf4fa7` |
+| [DOC-01](#doc-01) | Widerspruchsfreie aktuelle Statusdokumentation | ✅ Im beschriebenen Umfang geprüft | 2/2 | PLAN-01 | `ccf4fa7` | `ccf4fa7` |
+| [STORE-02](#store-02) | Revisionsschutz bei konkurrierenden Assetänderungen | 🧩 Implementiert · Abnahme offen | 2/3 | ARCH-01 | ausstehend | ausstehend |
 | [QA-01](#qa-01) | Aktuelle Browserregression für alle Hauptabläufe | ⛔ Blockiert | 0/2 | ARCH-01 | ausstehend | ausstehend |
 | [UI-01](#ui-01) | Neue Themen, Bauwelten und Materiallabor abnehmen | 🧩 Implementiert · Abnahme offen | 2/3 | QA-01 | `84838f0` | `e232b26` |
 | [STAB-01](#stab-01) | Absturzschutz, Datencheck und Fehlerberichte abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | QA-01 | `84838f0` | `e232b26` |
@@ -315,79 +313,79 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PLAN-01
 
-**Verbindlicher Aufgabenbestand und Merge-Fortschritt** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T05:20:38.605Z
+**Verbindlicher Aufgabenbestand und Merge-Fortschritt** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T09:33:55.354Z
 
 - [x] PLAN-01-S01: Gesamte Roadmap in vier Phasen und stabile Aufgaben-IDs aufgenommen.
 - [x] PLAN-01-S02: Schema, Historie, Darstellung und Änderungsprüfung implementieren und testen.
-- [ ] PLAN-01-S03: Pflichtablauf in AGENTS und Publisher integrieren; Main-/Pages-Nachweis prüfen.
+- [x] PLAN-01-S03: Pflichtablauf in AGENTS und Publisher integrieren; Main-/Pages-Nachweis prüfen.
 
 **Abnahme:** Jede Aufgabe zeigt Teilschritte, Abhängigkeiten, nächste Aktion und Nachweise. Quelländerungen benötigen eine Aufgabenaktualisierung; Artefaktcommits sind separat nachweisbar.
 
-**Nächste Aktion:** Geprüften Quellstand integrieren, passenden Pages-Build veröffentlichen und beide SHAs prüfen.
+**Nächste Aktion:** Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen.
 
-**Prüfstand:** Roadmapschema, Generierung, Abhängigkeiten und Dateizuordnung mit 5 Regressionen geprüft. Main-/Pages-Nachweis nach Integration.
+**Prüfstand:** Roadmapschema, Generierung, Abhängigkeiten und Dateizuordnung mit 5 Regressionen geprüft. Main-/Pages-Nachweis nach Integration. Vorherige Mainintegration und Pages in dieser Fortsetzung bestätigt: Artefakt 18f70b7, Livesource ccf4fa7 und zwölf Dateihashes identisch.
 
 **Nachweise:** [tests/roadmap.test.mjs](../tests/roadmap.test.mjs) — 5 Regressionen im Gesamtcheck 353/353 bestanden; Mergepflege dokumentiert.; [docs/TESTING.md](TESTING.md) — Aktuelle Blockabnahme mit Infrastrukturgrenzen.
 
 **Dateiumfang:** `docs/roadmap.json`, `scripts/roadmap.mjs`, `.githooks/`. **Abhängigkeiten:** keine. **Alte IDs:** P0-01.
 
-**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+**Integration:** Main [ccf4fa7](https://github.com/Freadeax/Minecraft-Bauplaner/commit/ccf4fa71c033c2f9415528192a04faed36730660); Pages-Quelle [ccf4fa7](https://github.com/Freadeax/Minecraft-Bauplaner/commit/ccf4fa71c033c2f9415528192a04faed36730660).
 
 ### ARCH-01
 
-**Anwendungsschicht und überprüfte Modulgrenzen** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T05:20:38.605Z
+**Anwendungsschicht und überprüfte Modulgrenzen** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T09:33:55.354Z
 
 - [x] ARCH-01-S01: Exportkoordination, Speicherports und Aufnahmeverwaltung herausgelöst.
 - [x] ARCH-01-S02: Neutraler Aufnahmevertrag und Anwendungsexport an UI angebunden.
 - [x] ARCH-01-S03: Gesamtprüfung und bestehende Format-/Browserregressionen ausführen.
-- [ ] ARCH-01-S04: Architekturvertrag dokumentieren und integriert veröffentlichen.
+- [x] ARCH-01-S04: Architekturvertrag dokumentieren und integriert veröffentlichen.
 
 **Abnahme:** Domain importiert keine Formatwriter, Browseradapter oder Frameworks. Abhängigkeitsprüfung erfasst auch type-only, reexports und dynamische Imports.
 
-**Nächste Aktion:** Geprüfte Anwendungsschicht nach Main/Pages integrieren; QA-01 bleibt eigenständige offene Browserabnahme.
+**Nächste Aktion:** Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen.
 
-**Prüfstand:** Kern/Anwendung und bestehende Format-/Aufnahmeregressionen bestehen. Neue UI-Browserprüfung wegen fehlender Laufzeit offen.
+**Prüfstand:** Kern/Anwendung und bestehende Format-/Aufnahmeregressionen bestehen. Neue UI-Browserprüfung wegen fehlender Laufzeit offen. Vorherige Mainintegration und Pages in dieser Fortsetzung bestätigt: Artefakt 18f70b7, Livesource ccf4fa7 und zwölf Dateihashes identisch.
 
 **Nachweise:** [tests/application.test.mjs](../tests/application.test.mjs) — Exportanwendungsfall, Writerfehler und atomarer Konfliktfall bestanden.; [tests/architecture.test.mjs](../tests/architecture.test.mjs) — 3 Architekturregressionen bestanden.; [docs/TESTING.md](TESTING.md) — 353/353 Node-Tests; strenge Typ-/Buildprüfungen bestanden; Browser offen.
 
 **Dateiumfang:** `packages/application/`, `packages/domain/src/revisionExport.ts`, `scripts/check_architecture.mjs`. **Abhängigkeiten:** CORE-01, CORE-02. **Alte IDs:** —.
 
-**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+**Integration:** Main [ccf4fa7](https://github.com/Freadeax/Minecraft-Bauplaner/commit/ccf4fa71c033c2f9415528192a04faed36730660); Pages-Quelle [ccf4fa7](https://github.com/Freadeax/Minecraft-Bauplaner/commit/ccf4fa71c033c2f9415528192a04faed36730660).
 
 ### DOC-01
 
-**Widerspruchsfreie aktuelle Statusdokumentation** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T05:20:38.605Z
+**Widerspruchsfreie aktuelle Statusdokumentation** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T09:33:55.354Z
 
 - [x] DOC-01-S01: Widersprüche zu Litematic, Rohstoffen, Bauabschnitten und Hosting identifiziert.
 - [x] DOC-01-S02: Aktuellen Status ersetzen; historische Aussagen ausdrücklich archivieren.
 
 **Abnahme:** Keine implementierte Kernfunktion erscheint gleichzeitig als unbegonnen.
 
-**Nächste Aktion:** Bei jedem folgenden Quellblock Status über dieselben Aufgaben und Nachweise nachführen.
+**Nächste Aktion:** Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen.
 
-**Prüfstand:** Dokumentationsprüfung und generierte Ansichten im Gesamtcheck bestanden.
+**Prüfstand:** Dokumentationsprüfung und generierte Ansichten im Gesamtcheck bestanden. Vorherige Mainintegration und Pages in dieser Fortsetzung bestätigt: Artefakt 18f70b7, Livesource ccf4fa7 und zwölf Dateihashes identisch.
 
 **Nachweise:** [docs/STATUS.md](STATUS.md) — Aktuelle Übersicht ersetzt widersprüchliche Aussagen.; [docs/TESTING.md](TESTING.md) — Dokumentationslinks und Roadmapansichten geprüft.
 
 **Dateiumfang:** `docs/STATUS.md`, `docs/ROADMAP.md`, `docs/STATUS_HISTORY.md`, `docs/ROADMAP_LEGACY.md`. **Abhängigkeiten:** PLAN-01. **Alte IDs:** —.
 
-**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+**Integration:** Main [ccf4fa7](https://github.com/Freadeax/Minecraft-Bauplaner/commit/ccf4fa71c033c2f9415528192a04faed36730660); Pages-Quelle [ccf4fa7](https://github.com/Freadeax/Minecraft-Bauplaner/commit/ccf4fa71c033c2f9415528192a04faed36730660).
 
 ### STORE-02
 
-**Revisionsschutz bei konkurrierenden Assetänderungen** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Revisionsschutz bei konkurrierenden Assetänderungen** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T09:33:55.354Z
 
-- [ ] STORE-02-S01: Vorhandene S4-Reservierung und Remoteänderungen vor Bearbeitung prüfen.
-- [ ] STORE-02-S02: Asset-Revisionsvertrag, UI-Konfliktbehandlung und Migration implementieren.
+- [x] STORE-02-S01: Vorhandene S4-Reservierung und Remoteänderungen vor Bearbeitung prüfen.
+- [x] STORE-02-S02: Asset-Revisionsvertrag, UI-Konfliktbehandlung und Migration implementieren.
 - [ ] STORE-02-S03: Zwei konkurrierende Metadatenänderungen und atomare Batches prüfen.
 
 **Abnahme:** Kein stilles Überschreiben; bestehende Datensätze kontrolliert migrieren.
 
-**Nächste Aktion:** Vorhandene S4-Reservierung und Remoteänderungen vor Bearbeitung prüfen.
+**Nächste Aktion:** Echte IndexedDB-v1→v2-Migration und Zwei-Tab-UI-Regressionsfälle bei verfügbarer Chromium-Laufzeit ausführen; danach STORE-02 vollständig abnehmen. Folgender Entwicklungsblock PERF-01.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** 364 Node-Tests und vollständiger Kern-/Typ-/Build-/Modul-/Roadmap-/Dokumentationscheck bestanden. Sieben CAS-, drei Restore- und eine konkurrierende Seedregression neu. Echte IndexedDB-Migration und UI-Zwei-Tab-Abnahme weiterhin offen: Chromiumstart nicht ausführbar.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/asset-concurrency.test.mjs](../tests/asset-concurrency.test.mjs) — CAS, atomare Batches, Aliasschutz, Duplikate und ungültige Datensätze; Kernlauf separat in TESTING.; [tests/asset-restore.test.mjs](../tests/asset-restore.test.mjs) — Alte Sicherung, lokale Revisionsbasis und veralteter Restoreplan.; [tests/asset-seeding.test.mjs](../tests/asset-seeding.test.mjs) — Zwei konkurrierende Katalogeinrichtungen mit begrenztem aktuellen Retry.; [docs/architecture/ASSET_CONCURRENCY.md](architecture/ASSET_CONCURRENCY.md) — Migration, Formularbasis und offene Browserabnahme.; [tests/e2e/asset-editing.e2e.mjs](../tests/e2e/asset-editing.e2e.mjs) — Tatsächliche Ausführung scheitert an fehlendem Chromium; Entwurfs-/Broadcastregression für die Browserabnahme vorbereitet.
 
 **Dateiumfang:** `apps/web/src/app/idbRepository.ts`, `packages/application/src/repository.ts`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** S4.
 

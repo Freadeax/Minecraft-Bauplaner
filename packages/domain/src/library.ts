@@ -26,7 +26,7 @@ export function createAsset(input: NewAssetInput): Asset {
   const tags = [...new Set((input.tags ?? []).map(t => text(t, 'Tag', 40).toLowerCase()).filter(Boolean))].sort();
   const at = now();
   return Object.freeze({
-    schemaVersion: 1, id: input.id ?? newId('asset'), name: text(input.name, 'Name', 120, true),
+    schemaVersion: 1, id: input.id ?? newId('asset'), revision: 0, name: text(input.name, 'Name', 120, true),
     description: text(input.description ?? '', 'Beschreibung', 2000), tags: Object.freeze(tags),
     provenance: Object.freeze({
       author: text(input.provenance.author, 'Autor', 120), source: text(input.provenance.source, 'Herkunft', 300),
@@ -92,7 +92,7 @@ export async function verifyAssetVersion(version: AssetVersion): Promise<void> {
 
 export function updateAssetMeta(asset: Asset, patch: Partial<Pick<NewAssetInput, 'name' | 'description' | 'tags' | 'provenance'>> & { archived?: boolean }): Asset {
   const next = createAsset({ ...asset, ...patch, id: asset.id, demo: asset.demo, provenance: patch.provenance ?? asset.provenance });
-  return Object.freeze({ ...next, versionIds: asset.versionIds, createdAt: asset.createdAt, archived: patch.archived ?? asset.archived });
+  return Object.freeze({ ...next, revision: asset.revision ?? 0, versionIds: asset.versionIds, createdAt: asset.createdAt, archived: patch.archived ?? asset.archived });
 }
 
 /**

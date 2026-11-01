@@ -21,6 +21,8 @@ export interface Provenance {
 export interface Asset {
   readonly schemaVersion: 1;
   readonly id: string;
+  /** Optimistic storage revision; absent in legacy backups means unsaved base 0. */
+  readonly revision?: number;
   readonly name: string;
   readonly description: string;
   readonly tags: readonly string[];

@@ -12,6 +12,7 @@ import { Viewer } from '../../Viewer';
 import { Thumb } from '../../thumbnail/Thumb';
 import { stars } from './BuildingCard';
 import { GeneratorForm } from './GeneratorForm';
+import { AssetRevisionNotice } from './AssetRevisionNotice';
 
 /** Route id: `<generator>`, `<generator>~<preset>` or `<generator>@<assetId>` (edit a generated asset). */
 export function parseGeneratorRoute(id: string | undefined): { generatorId?: string; presetId?: string; assetId?: string } {
@@ -69,11 +70,11 @@ function GeneratorWorkbench({ generatorId, presetId, assetId, projects, libHref,
 }) {
   const { repo, library, reloadLibrary } = useApp();
   const generator = generatorById(generatorId)!;
-  const editing: { asset: Asset; version: AssetVersion } | null = useMemo(() => {
+  const [editing] = useState<{ asset: Asset; version: AssetVersion } | null>(() => {
     const asset = assetId ? library.assets.find(a => a.id === assetId) : undefined;
     const version = asset ? library.versions.get(asset.versionIds.at(-1) ?? '') : undefined;
     return asset && version && generatorSourceOf(version)?.id === generatorId ? { asset, version } : null;
-  }, [assetId, library, generatorId]);
+  });
   const [raw, setRaw] = useState<Record<string, ParamValue>>(() => {
     if (editing) return { ...generatorSourceOf(editing.version)!.params };
     if (presetId && generator.presets.some(p => p.id === presetId)) return { ...presetValues(generatorId, presetId) };
@@ -119,6 +120,7 @@ function GeneratorWorkbench({ generatorId, presetId, assetId, projects, libHref,
   };
 
   return <section className="building-detail generator-page" aria-label={`Generator ${generator.name}`}>
+    {editing && library.assets.find(a => a.id === editing.asset.id) && <AssetRevisionNotice base={editing.asset} current={library.assets.find(a => a.id === editing.asset.id)!} />}
     <nav className="crumbs" aria-label="Pfad"><a href={libHref('browse')}>Bibliothek</a><span aria-hidden="true">›</span><a href={libHref('generators')}>Generatoren</a><span aria-hidden="true">›</span>
       <span aria-current="page">{generator.name}{editing ? ` · ${editing.asset.name}` : ''}</span></nav>
     <div className="detail-hero gen-hero">

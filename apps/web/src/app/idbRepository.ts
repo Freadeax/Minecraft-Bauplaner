@@ -1,5 +1,6 @@
 import type { Asset, AssetVersion, OriginalFile, Project } from '../../../../packages/domain/src/index.js';
 import { checkAssetRecord, checkProjectRecord, checkSchemaVersion, DOMAIN_SCHEMA_VERSION } from '../../../../packages/domain/src/index.js';
+import { assetRevision, checkStorageBatch, nextAssetRevision } from '../../../../packages/application/src/assetConcurrency.js';
 import { RevisionConflictError } from './repository';
 import type { Repository, StorageBatch, StorageChange, StorageInfo } from './repository';
 
@@ -14,18 +15,31 @@ import type { Repository, StorageBatch, StorageChange, StorageInfo } from './rep
  */
 export const DB_NAME = 'minecraft-bauplaner';
 /** Bump together with a new entry in MIGRATIONS. */
-export const DB_VERSION = 1;
+export const DB_VERSION = 2;
 const STORES = ['projects', 'assets', 'versions', 'originals', 'meta'] as const;
 type StoreName = typeof STORES[number];
 
 /** Migration n upgrades a database from version n-1 to n. Never edit a released step. */
-const MIGRATIONS: Record<number, (db: IDBDatabase) => void> = {
+const MIGRATIONS: Record<number, (db: IDBDatabase, tx: IDBTransaction, fail: (error: unknown) => void) => void> = {
   1: db => {
     db.createObjectStore('projects', { keyPath: 'id' });
     db.createObjectStore('assets', { keyPath: 'id' });
     db.createObjectStore('versions', { keyPath: 'id' });
     db.createObjectStore('originals', { keyPath: 'sha256' });
     db.createObjectStore('meta', { keyPath: 'key' });
+  },
+  2: (_db, tx, fail) => {
+    const request = tx.objectStore('assets').openCursor();
+    request.onsuccess = () => {
+      const cursor = request.result;
+      if (!cursor) return;
+      try {
+        const asset = checkAssetRecord(cursor.value);
+        assetRevision(asset);
+        if (asset.revision === undefined) cursor.update({ ...asset, revision: 1 });
+        cursor.continue();
+      } catch (error) { fail(error); }
+    };
   },
 };
 
@@ -35,6 +49,13 @@ export class StorageNewerError extends Error {
   constructor() {
     super('Die lokalen Daten wurden von einer neueren Version des Bauplaners gespeichert. Bitte die Seite neu laden, damit die aktuelle Version startet; ältere Versionen ändern diese Daten nicht.');
     this.name = 'StorageNewerError';
+  }
+}
+
+export class StorageMigrationError extends Error {
+  constructor(cause: unknown) {
+    super(`Lokale Bauteildaten konnten nicht sicher aktualisiert werden. Die bisherige Datenbank bleibt unverändert. Bitte Sicherung prüfen: ${cause instanceof Error ? cause.message : String(cause)}`);
+    this.name = 'StorageMigrationError';
   }
 }
 
@@ -53,19 +74,25 @@ export function openIdbRepository(factory: IDBFactory | undefined = globalThis.i
   if (!factory) return Promise.reject(new Error('IndexedDB fehlt in diesem Browser'));
   return new Promise((resolve, reject) => {
     let request: IDBOpenDBRequest;
+    let upgradeFailure: unknown = null;
+    let blocked = false;
     try { request = factory.open(DB_NAME, DB_VERSION); } catch (e) { reject(e); return; }
     request.onupgradeneeded = event => {
-      const db = request.result;
-      for (let v = event.oldVersion + 1; v <= DB_VERSION; v++) MIGRATIONS[v]!(db);
-      request.transaction!.objectStore('meta').put({ key: 'schema', dbVersion: DB_VERSION, domainSchemaVersion: DOMAIN_SCHEMA_VERSION, migratedAt: new Date().toISOString() });
+      const db = request.result, tx = request.transaction!;
+      const fail = (error: unknown) => { upgradeFailure = new StorageMigrationError(error); try { tx.abort(); } catch { /* already aborted */ } };
+      try {
+        for (let v = event.oldVersion + 1; v <= DB_VERSION; v++) MIGRATIONS[v]!(db, tx, fail);
+        tx.objectStore('meta').put({ key: 'schema', dbVersion: DB_VERSION, domainSchemaVersion: DOMAIN_SCHEMA_VERSION, migratedAt: new Date().toISOString() });
+      } catch (error) { fail(error); }
     };
-    request.onblocked = () => reject(new Error('Ein anderer Tab hält eine ältere Datenbankversion offen. Bitte andere Bauplaner-Tabs schließen und neu laden.'));
+    request.onblocked = () => { blocked = true; reject(new Error('Ein anderer Tab hält eine ältere Datenbankversion offen. Bitte andere Bauplaner-Tabs schließen und neu laden.')); };
     request.onerror = () => {
+      if (upgradeFailure) { reject(upgradeFailure); return; }
       const err = request.error;
       if (err?.name === 'VersionError') { const e = new StorageNewerError(); reject(e); return; }
       reject(err ?? new Error('IndexedDB konnte nicht geöffnet werden'));
     };
-    request.onsuccess = () => resolve(new IdbRepository(request.result));
+    request.onsuccess = () => { if (blocked) { request.result.close(); return; } resolve(new IdbRepository(request.result)); };
   });
 }
 
@@ -77,7 +104,7 @@ export class IdbRepository implements Repository {
 
   constructor(private readonly db: IDBDatabase) {
     // A newer tab wants to upgrade: release the database and tell the user.
-    db.onversionchange = () => { db.close(); this.closedReason = 'Eine neuere Version des Bauplaners wurde in einem anderen Tab geöffnet. Bitte diese Seite neu laden.'; this.emit({ kind: 'projects' }); };
+    db.onversionchange = () => { db.close(); this.closedReason = 'Eine neuere Version des Bauplaners wurde in einem anderen Tab geöffnet. Bitte diese Seite neu laden.'; this.emit({ kind: 'projects' }); this.emit({ kind: 'library' }); };
     this.channel = typeof BroadcastChannel === 'function' ? new BroadcastChannel(DB_NAME) : null;
     if (this.channel) this.channel.onmessage = (e: MessageEvent<StorageChange>) => this.emit(e.data);
   }
@@ -137,7 +164,10 @@ export class IdbRepository implements Repository {
     return (await this.run(['originals'], 'readonly', tx => req(tx.objectStore('originals').getAllKeys()))).map(String);
   }
 
-  async applyBatch(batch: StorageBatch): Promise<Project[]> {
+  async applyBatch(input: StorageBatch): Promise<Project[]> {
+    // Snapshot before async reads; callers cannot change the expected revision mid-transaction.
+    const batch = structuredClone(input);
+    checkStorageBatch(batch);
     const stores = new Set<StoreName>();
     if (batch.projects?.length) stores.add('projects');
     if (batch.assets?.length) stores.add('assets');
@@ -146,28 +176,30 @@ export class IdbRepository implements Repository {
     if (!stores.size) return [];
     const saved = await this.run([...stores], 'readwrite', async tx => {
       const versions = tx.objectStore.bind(tx, 'versions'), projects = tx.objectStore.bind(tx, 'projects');
-      // Reads first, all inside this transaction: decisions and writes see the same snapshot.
-      const [existingVersions, storedProjects] = await Promise.all([
+      // All CAS reads and validation precede every write in this same readwrite transaction.
+      const [existingVersions, storedProjects, storedAssets] = await Promise.all([
         Promise.all((batch.versions ?? []).map(v => req(versions().get(v.id) as IDBRequest<AssetVersion | undefined>))),
         Promise.all((batch.projects ?? []).map(p => req(projects().get(p.project.id) as IDBRequest<Project | undefined>))),
+        Promise.all((batch.assets ?? []).map(a => req(tx.objectStore('assets').get(a.id) as IDBRequest<Asset | undefined>))),
       ]);
       (batch.versions ?? []).forEach((v, i) => {
         const e = existingVersions[i];
         if (e && e.payloadHash !== v.payloadHash) throw new Error(`Version ${v.id} existiert mit anderem Inhalt; Versionen sind unveränderlich.`);
-        if (!e) versions().put(v);
       });
-      for (const a of batch.assets ?? []) tx.objectStore('assets').put(a);
+      const nextAssets = (batch.assets ?? []).map((asset, i) => nextAssetRevision(asset, storedAssets[i]));
+      const nextProjects = (batch.projects ?? []).map(({ project, baseRevision }, i) => {
+        const stored = storedProjects[i]?.revision ?? 0;
+        if (stored !== baseRevision) throw new RevisionConflictError(stored, baseRevision);
+        return { ...project, revision: baseRevision + 1 };
+      });
+      (batch.versions ?? []).forEach((v, i) => { if (!existingVersions[i]) versions().put(v); });
+      for (const a of nextAssets) tx.objectStore('assets').put(a);
       for (const o of batch.originals ?? []) {
         const { bytes, ...meta } = o;
         tx.objectStore('originals').put({ ...meta, blob: new Blob([bytes as Uint8Array<ArrayBuffer>], { type: o.mediaType }) } satisfies StoredOriginal);
       }
-      return (batch.projects ?? []).map(({ project, baseRevision }, i) => {
-        const stored = storedProjects[i]?.revision ?? 0;
-        if (stored !== baseRevision) throw new RevisionConflictError(stored, baseRevision);
-        const next: Project = { ...project, revision: baseRevision + 1 };
-        projects().put(next);
-        return next;
-      });
+      for (const project of nextProjects) projects().put(project);
+      return nextProjects;
     });
     if (saved.length) this.announce({ kind: 'projects', projectIds: saved.map(p => p.id) });
     if (batch.assets?.length || batch.versions?.length) this.announce({ kind: 'library' });

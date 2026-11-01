@@ -120,3 +120,106 @@ Roadmap mit 56 Paketen, Teilschritten und verbindlicher Mergepflege implementier
 - `tests/scan-persistence.test.mjs`
 - `tests/schem-export.test.mjs`
 
+## 2026-11-01T09:26:37.129Z · progress
+
+**Aufgaben:** STORE-02
+
+STORE-02 nach Prüfung von S4-Referenzen und sauberem Remote-Stand begonnen; Vertrag, Migration, UI-Konfliktbehandlung und atomare Regressionen reserviert. Noch nicht implementiert oder geprüft.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| STORE-02 | 🚧 In Arbeit | 1/3 | Asset-CAS in beiden Speicheradaptern, Migration und bestehende UI-Schreibpfade vollständig integrieren. |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+
+## 2026-11-01T09:32:42.167Z · progress
+
+**Aufgaben:** STORE-02, PLAN-01, ARCH-01, DOC-01
+
+STORE-02 implementiert: lokale Asset-CAS, additive DB-v2-Migration, atomare Schreibpfade und feste Formulargrundlage. Gezielt geprüfte Restore-/Seedfälle; Gesamtcheck folgt, echte Browserabnahme offen. Vorherige PLAN-/ARCH-/DOC-Mainintegration und Live-SHA plus zwölf Hashes nachgewiesen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| STORE-02 | 🧩 Implementiert · Abnahme offen | 2/3 | Echte IndexedDB-v1→v2-Migration und Zwei-Tab-UI-Regressionsfälle bei verfügbarer Chromium-Laufzeit ausführen; danach STORE-02 vollständig abnehmen. Folgender Entwicklungsblock PERF-01. |
+| PLAN-01 | ✅ Im beschriebenen Umfang geprüft | 3/3 | Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen. |
+| ARCH-01 | ✅ Im beschriebenen Umfang geprüft | 4/4 | Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen. |
+| DOC-01 | ✅ Im beschriebenen Umfang geprüft | 2/2 | Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen. |
+
+**Geänderte Dateien:**
+
+- `README.md`
+- `apps/web/src/app/idbRepository.ts`
+- `apps/web/src/app/repository.ts`
+- `apps/web/src/views/LibraryView.tsx`
+- `apps/web/src/views/library/AssetRevisionNotice.tsx`
+- `apps/web/src/views/library/BuildingDetail.tsx`
+- `apps/web/src/views/library/BuildingSheet.tsx`
+- `apps/web/src/views/library/ConnectorEditor.tsx`
+- `apps/web/src/views/library/CropPanel.tsx`
+- `apps/web/src/views/library/GeneratorsPage.tsx`
+- `apps/web/src/views/library/VersionsSection.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/architecture/ASSET_CONCURRENCY.md`
+- `docs/architecture/DECISIONS.md`
+- `packages/application/src/assetConcurrency.ts`
+- `packages/application/src/index.ts`
+- `packages/application/src/memoryRepository.ts`
+- `packages/application/src/repository.ts`
+- `packages/domain/src/backup.ts`
+- `packages/domain/src/library.ts`
+- `packages/domain/src/recordValidation.ts`
+- `packages/domain/src/types.ts`
+- `tests/asset-concurrency.test.mjs`
+- `tests/asset-restore.test.mjs`
+- `tests/asset-seeding.test.mjs`
+- `tests/e2e/asset-concurrency.e2e.mjs`
+- `tests/e2e/asset-editing.e2e.mjs`
+
+## 2026-11-01T09:33:55.354Z · progress
+
+**Aufgaben:** STORE-02, PLAN-01, ARCH-01, DOC-01
+
+STORE-02 vollständig implementiert und kerngeprüft: 364 Node-Tests, Typ-/Build-/Modul-/Roadmap-/Dokumentationscheck bestanden. Echte DB-v2-/Zwei-Tab-Browserabnahme mangels Chromium offen, daher Abnahmeschritt nicht abgeschlossen. Vorherige PLAN-/ARCH-/DOC-Main-/Pagesnachweise nachgetragen. Mainintegration dieses Blocks und Liveprüfung folgen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| STORE-02 | 🧩 Implementiert · Abnahme offen | 2/3 | Echte IndexedDB-v1→v2-Migration und Zwei-Tab-UI-Regressionsfälle bei verfügbarer Chromium-Laufzeit ausführen; danach STORE-02 vollständig abnehmen. Folgender Entwicklungsblock PERF-01. |
+| PLAN-01 | ✅ Im beschriebenen Umfang geprüft | 3/3 | Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen. |
+| ARCH-01 | ✅ Im beschriebenen Umfang geprüft | 4/4 | Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen. |
+| DOC-01 | ✅ Im beschriebenen Umfang geprüft | 2/2 | Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen. |
+
+**Geänderte Dateien:**
+
+- `README.md`
+- `apps/web/src/app/idbRepository.ts`
+- `apps/web/src/app/repository.ts`
+- `apps/web/src/views/LibraryView.tsx`
+- `apps/web/src/views/library/AssetRevisionNotice.tsx`
+- `apps/web/src/views/library/BuildingDetail.tsx`
+- `apps/web/src/views/library/BuildingSheet.tsx`
+- `apps/web/src/views/library/ConnectorEditor.tsx`
+- `apps/web/src/views/library/CropPanel.tsx`
+- `apps/web/src/views/library/GeneratorsPage.tsx`
+- `apps/web/src/views/library/VersionsSection.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/ASSET_CONCURRENCY.md`
+- `docs/architecture/DECISIONS.md`
+- `packages/application/src/assetConcurrency.ts`
+- `packages/application/src/index.ts`
+- `packages/application/src/memoryRepository.ts`
+- `packages/application/src/repository.ts`
+- `packages/domain/src/backup.ts`
+- `packages/domain/src/library.ts`
+- `packages/domain/src/recordValidation.ts`
+- `packages/domain/src/types.ts`
+- `tests/asset-concurrency.test.mjs`
+- `tests/asset-restore.test.mjs`
+- `tests/asset-seeding.test.mjs`
+- `tests/e2e/asset-concurrency.e2e.mjs`
+- `tests/e2e/asset-editing.e2e.mjs`
+

@@ -51,7 +51,7 @@ export function CropPanel({ payload, name, provenance, getSource, onHighlight, o
         description: `Ausschnitt aus „${name}“, Bereich ${box[0].join('/')} bis ${box[1].join('/')} (einschließlich).`, provenance });
       const source: AssetVersionSource = { ...parent, format: 'crop' };
       const r = await addAssetVersion(asset, { payload: preview.payload, label: '1.0', source });
-      await repo.saveVersion(r.version); await repo.saveAsset(r.asset); await reloadLibrary();
+      await repo.applyBatch({ versions: [r.version], assets: [r.asset] }); await reloadLibrary();
       onSaved(`Bereich als neues Bauteil „${r.asset.name}“ gespeichert. Anschlüsse jetzt im Anschluss-Editor festlegen.`, r.asset.id);
     } catch (e) { setError(errorText(e)); } finally { setBusy(false); }
   };

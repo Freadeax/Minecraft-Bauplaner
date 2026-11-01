@@ -23,6 +23,8 @@ function timestamp(value: unknown, field: string): void {
  * The caller checks the record object and schema version first.
  */
 export function assertAssetRecordFields(raw: Record<string, unknown>): void {
+  if (raw.revision !== undefined && (!Number.isSafeInteger(raw.revision) || (raw.revision as number) < 0))
+    fail('Bauteil: ungültige Speicherrevision');
   text(raw.id, 'Bauteil-ID', undefined, true);
   text(raw.name, 'Bauteilname', 120, true);
   text(raw.description, 'Bauteilbeschreibung', 2000);

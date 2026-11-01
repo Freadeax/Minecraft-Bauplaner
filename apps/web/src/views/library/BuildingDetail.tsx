@@ -46,7 +46,7 @@ export function BuildingDetail({ entry, asset, latest, versions, info, group, va
   onCompare(): void;
   onAdd(projectId: string): void;
   onNewProject(): void;
-  onSaveFacets: ((facets: BuildingFacets, tags: string[]) => void) | undefined;
+  onSaveFacets: ((base: Asset, facets: BuildingFacets, tags: string[]) => Promise<boolean>) | undefined;
   onArchive(): void;
   onMessage(text: string): void;
   onSelectSaved(assetId: string): void;
@@ -164,7 +164,7 @@ export function BuildingDetail({ entry, asset, latest, versions, info, group, va
           <div className="button-row"><button onClick={onArchive}>{asset.archived ? 'Aus Archiv holen' : 'Archivieren'}</button></div>
         </div>
         <div className="sheet-section">
-          <ConnectorEditor key={`c-${latest.id}`} asset={asset} version={latest} onHighlight={setConnectorMarks} onSaved={onMessage} />
+          <ConnectorEditor key={`c-${asset.id}`} asset={asset} version={latest} onHighlight={setConnectorMarks} onSaved={onMessage} />
           <CropPanel key={`r-${latest.id}`} payload={latest.payload} name={asset.name} provenance={asset.provenance} getSource={async () => latest.source}
             onHighlight={setCropMarks} onSaved={(msg, id) => { onMessage(msg); onSelectSaved(id); }} />
         </div>
