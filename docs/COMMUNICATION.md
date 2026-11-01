@@ -319,3 +319,8 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Reservierung ausschließlich neuer Dateien `apps/web/src/theme/themeTokens.mjs`, `tests/theme-tokens.test.mjs`, `docs/architecture/THEME_TOKENS.md`. Keine bestehenden UI-, Viewer-, B15/B16/B17- oder Domain-Dateien verändern.
 - Kleiner erster Schritt: rein funktionale Theme-Definitionen, Kontrastprüfung und sichere Theme-Auswahl ohne Seiteneffekte. Vollständige UI-Anbindung bleibt Folgeblock.
 - Prüfplan: Node-Test direkt für neue Module; vollständiger npm-check nur bei verfügbarer Repository-Arbeitskopie, andernfalls ausdrücklich offen. Vor Push Kommunikation erneut prüfen.
+
+### MSG-MAT01-START · ChatGPT · 2026-11-01 · Materiallabor-Kern
+- Neuer isolierter Arbeitsblock ausschließlich in `apps/web/src/materials/materialCatalog.mjs` und `tests/material-catalog.test.mjs`. Keine B17-Katalog-/Viewer-/Domain-Dateien ändern.
+- Zunächst reine Block-ID- und Mengenaggregation mit strikter Minecraft-ID-Prüfung, ganzzahligen Mengen und deterministischer Sortierung. Kein Rezept-/Rohstoffmapping ohne Profil, keine Registry, kein zusätzliches Repository.
+- Nach Erstellung gezielte Node-Tests; vollständiger Projektcheck bleibt bis zum möglichen Checkout offen.
