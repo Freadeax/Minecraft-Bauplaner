@@ -6,7 +6,7 @@ Elf redaktionelle Bauwelten ordnen vorhandene Bibliotheksinhalte: Hafen & Küste
 
 `BuildThemesPage.tsx` ist die reine Bibliotheksansicht. `buildThemeLinks.ts` nutzt denselben `encodeLibraryState`-Serializer wie die normale Bibliothek; Facetten, Sortierung und `varianten=alle` reproduzieren die gezeigten Treffer. Der aufrufende Bibliotheksadapter erhält einen eventuell ausgewählten Projektkontext. Die Vorschauen öffnen vorhandene Gebäudedetailseiten; Übernahme, Export und Projektanlage bleiben dort ausdrücklich bedienbar. Lokale Sprungschaltflächen bewegen den Ausschnitt, ohne die Hashroute zu verändern.
 
-Die Zuordnung basiert auf den deklarierten Stil-/Kategorieangaben. Insbesondere „Nordische Bergsiedlung“ bedeutet keinen geprüften Geländeanschluss, und technische Entwürfe sind keine Versionsfreigabe für Redstone. Eigene Beschreibungen, keine externen Quellen oder fremden Bauwerke übernommen. Die Bauwelten verändern keine Gebäude-, Material-, Projekt- oder Speicherdaten.
+Die Zuordnung basiert auf den deklarierten Stil-/Kategorieangaben. Insbesondere „Nordische Bergsiedlung“ bedeutet keinen geprüften Geländeanschluss, und technische Entwürfe sind keine Versionsfreigabe für Redstone. Eigene Beschreibungen, keine externen Quellen oder fremden Bauwerke übernommen. Die Bauwelten verändern keine Gebäude-, Material-, Projekt- oder Speicherdaten. Jede Bauwelt verlinkt ihre Anlage ([ANLAGEN](ANLAGEN.md), BUILD-05): kuratierte Bereiche, feste Versionen, Konfliktvorschau und ausdrückliche Übernahme.
 
 ## Abdeckung der drei zuletzt geprüften Stilrichtungen (WORLD-02)
 

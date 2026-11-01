@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { BUILD_THEMES, selectBuildTheme } from '../../../../../packages/domain/src/buildThemes.js';
+import { anlageForTheme } from '../../../../../packages/domain/src/anlagen.js';
 import { FACETS, facetLabel } from '../../../../../packages/domain/src/catalog.js';
 import type { CatalogEntry } from '../../../../../packages/domain/src/catalog.js';
 import { Thumb } from '../../thumbnail/Thumb';
@@ -8,10 +9,12 @@ import { buildThemeSearch } from './buildThemeLinks';
 import './buildThemes.css';
 
 /** Themed browsing of real current library entries; creating projects remains an explicit catalogue action. */
-export function BuildThemesPage({ entries, browseHref, buildingHref }: {
+export function BuildThemesPage({ entries, browseHref, buildingHref, anlageHref }: {
   entries: readonly CatalogEntry[];
   browseHref(search: string): string;
   buildingHref(id: string): string;
+  /** Planner of the Bauwelt's Anlage (BUILD-05); opening it places nothing. */
+  anlageHref?(id: string): string;
 }) {
   const themes = useMemo(() => BUILD_THEMES.map(theme => selectBuildTheme(entries, theme)), [entries]);
   return <section className="build-themes" aria-labelledby="build-themes-title">
@@ -33,6 +36,8 @@ export function BuildThemesPage({ entries, browseHref, buildingHref }: {
       <details className="build-theme-tasks"><summary>Drei Ideen für deinen Aufbau</summary><ol>{theme.tasks.map(task => <li key={task}>{task}</li>)}</ol></details>
       <a className="secondary button-link build-theme-browse" href={browseHref(buildThemeSearch(theme, FACETS.map(facet => facet.key)))}>
         {formatNumber(count)} Treffer im Katalog ansehen <span aria-hidden="true">↗</span></a>
+      {anlageHref && anlageForTheme(theme.id) && <a className="primary button-link build-theme-anlage" href={anlageHref(anlageForTheme(theme.id)!.id)}>
+        Als Anlage planen: {anlageForTheme(theme.id)!.name} <span aria-hidden="true">→</span></a>}
     </article>)}</div>
     <p className="build-themes-note">Keine Spiel- oder Versionsfreigabe: Materialien, Gelände, Exporte und technische Funktionen prüfst du im jeweiligen Projekt. Die Aufbauideen sind Vorschläge und verändern keine gespeicherten Bauteile.</p>
   </section>;

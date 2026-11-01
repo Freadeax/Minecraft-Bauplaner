@@ -1133,3 +1133,59 @@ GEN-02: Generatoren Treppenhaus, Kirche, Hafen, Torhaus, Windmühle, Brunnen; An
 - `tests/e2e/generators.e2e.mjs`
 - `tests/generators.test.mjs`
 
+## 2026-11-01T14:53:42.132Z · progress
+
+**Aufgaben:** BUILD-05
+
+Bauwelt-Anlagen: 11 kuratierte Anlagen mit Bereichen, festen Versionen, Ensembles und Hauptweg; Lageplan, blockgenaue Konfliktvorschau, ausdrückliche Übernahme mit Bauabschnitten. Gelände und Echtgeräte ungeprüft.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| BUILD-05 | ✅ Im beschriebenen Umfang geprüft | 3/3 | Gelände-/Hanglagen und Türausrichtung zum Weg als eigene Folgeaufgabe; Echtgeräteabnahme mit QA-02. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/router.ts`
+- `apps/web/src/views/LibraryView.tsx`
+- `apps/web/src/views/library/AnlagenPage.tsx`
+- `apps/web/src/views/library/BuildThemesPage.tsx`
+- `apps/web/src/views/library/anlagen.css`
+- `apps/web/src/views/library/buildThemes.css`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/ANLAGEN.md`
+- `docs/architecture/BUILD_THEMES.md`
+- `packages/domain/src/anlagen.ts`
+- `packages/domain/src/index.ts`
+- `tests/anlagen.test.mjs`
+- `tests/e2e/anlagen.e2e.mjs`
+
+## 2026-11-01T14:55:14.685Z · progress
+
+**Aufgaben:** BUILD-05
+
+Nachweis nach Rebase auf EDIT-02/GEN-02 aktualisiert.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| BUILD-05 | ✅ Im beschriebenen Umfang geprüft | 3/3 | Gelände-/Hanglagen und Türausrichtung zum Weg als eigene Folgeaufgabe; Echtgeräteabnahme mit QA-02. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/router.ts`
+- `apps/web/src/views/LibraryView.tsx`
+- `apps/web/src/views/library/AnlagenPage.tsx`
+- `apps/web/src/views/library/BuildThemesPage.tsx`
+- `apps/web/src/views/library/anlagen.css`
+- `apps/web/src/views/library/buildThemes.css`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/ANLAGEN.md`
+- `docs/architecture/BUILD_THEMES.md`
+- `packages/domain/src/anlagen.ts`
+- `packages/domain/src/index.ts`
+- `tests/anlagen.test.mjs`
+- `tests/e2e/anlagen.e2e.mjs`
+

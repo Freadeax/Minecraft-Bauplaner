@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T14:48:06.970Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T14:55:14.685Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,11 +12,11 @@ Stand: 2026-11-01T14:48:06.970Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 19 |
+| ⏳ Offen | 18 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
 | 🧩 Implementiert · Abnahme offen | 16 |
-| ✅ Im beschriebenen Umfang geprüft | 21 |
+| ✅ Im beschriebenen Umfang geprüft | 22 |
 | ⏸ Zurückgestellt | 2 |
 
 ## Aktiver Arbeitsblock
@@ -121,7 +121,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [LIB-02](#lib-02) | Eigene Sammlungen, Ordner und Kategorien | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-02, LIB-01 | ausstehend | ausstehend |
 | [LIB-03](#lib-03) | Eigene Ensembles und Generatorvorlagen speichern | 🧩 Implementiert · Abnahme offen | 2/2 | LIB-02, GEN-01 | ausstehend | ausstehend |
 | [WORLD-02](#world-02) | Weitere kuratierte Bauwelten | ✅ Im beschriebenen Umfang geprüft | 2/2 | LIB-01, UI-01 | `c3e6478` | `c3e6478` |
-| [BUILD-05](#build-05) | Bauwelt-Anlagen mit Konfliktvorschau | ⏳ Offen | 0/2 | LIB-03, CORE-03 | ausstehend | ausstehend |
+| [BUILD-05](#build-05) | Bauwelt-Anlagen mit Konfliktvorschau | ✅ Im beschriebenen Umfang geprüft | 3/3 | LIB-03, CORE-03 | ausstehend | ausstehend |
 | [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | 🧩 Implementiert · Abnahme offen | 5/5 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
 | [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen | 4/4 | CORE-03, STORE-02 | `84838f0` | `e232b26` |
 | [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter | ⏳ Offen | 0/2 | MAP-01 | ausstehend | ausstehend |
@@ -931,20 +931,21 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### BUILD-05
 
-**Bauwelt-Anlagen mit Konfliktvorschau** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Bauwelt-Anlagen mit Konfliktvorschau** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Claude Thread Bauwelt-Anlagen · Aktualisiert: 2026-11-01T14:55:14.685Z
 
-- [ ] BUILD-05-S01: Feste AssetVersionen, Abstände und Anschlüsse kuratieren.
-- [ ] BUILD-05-S02: Konfliktvorschau und ausdrückliche Projektübernahme anbieten.
+- [x] BUILD-05-S01: Feste AssetVersionen, Abstände und Anschlüsse kuratieren.
+- [x] BUILD-05-S02: Konfliktvorschau und ausdrückliche Projektübernahme anbieten.
+- [x] BUILD-05-S03: Anlage je Bauwelt mit Bereichen, Hauptweg und Bauabschnitten für die Baustelle übernehmen.
 
 **Abnahme:** Themenklick platziert nichts automatisch; tatsächliche Voxelkonflikte geprüft.
 
-**Nächste Aktion:** Feste AssetVersionen, Abstände und Anschlüsse kuratieren.
+**Nächste Aktion:** Gelände-/Hanglagen und Türausrichtung zum Weg als eigene Folgeaufgabe; Echtgeräteabnahme mit QA-02.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** 12/12 Kerntests und 2/2 Chromiumfälle bestanden; Gelände, Hanglagen und Echtgeräte nicht geprüft.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/anlagen.test.mjs](../tests/anlagen.test.mjs) — 12 Fälle gegen den echten Katalog: 11 Anlagen konflikt- und befundfrei, feste Versionen, Tausch, Blocker, echte Voxelkonflikte mit Bestätigungspflicht, Übernahme mit Bauabschnitten, Einfügen mit Rückgängig.; [tests/e2e/anlagen.e2e.mjs](../tests/e2e/anlagen.e2e.mjs) — Chromium: Bauwelt-Link, Vorschau speichert nichts, Konflikt sperrt Übernahme, Anlegen und Einfügen, 390 px.; [docs/architecture/ANLAGEN.md](architecture/ANLAGEN.md) — Datenmodell, Layout, Konfliktvorschau, Übernahme und Grenzen.
 
-**Dateiumfang:** `packages/domain/src/ensembles.ts`, `apps/web/src/views/library/`. **Abhängigkeiten:** LIB-03, CORE-03. **Alte IDs:** BUILD-05.
+**Dateiumfang:** `packages/domain/src/anlagen.ts`, `packages/domain/src/ensembles.ts`, `apps/web/src/views/library/`, `tests/anlagen.test.mjs`, `tests/e2e/anlagen.e2e.mjs`, `docs/architecture/ANLAGEN.md`. **Abhängigkeiten:** LIB-03, CORE-03. **Alte IDs:** BUILD-05.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

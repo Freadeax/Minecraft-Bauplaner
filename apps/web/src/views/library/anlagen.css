@@ -1,0 +1,33 @@
+/* BUILD-05 · Bauwelt-Anlagen: overview cards, planner panels, site plan. Uses the shared theme tokens only. */
+.anlagen{display:grid;gap:22px;padding-bottom:28px}
+.anlagen-intro{display:grid;grid-template-columns:minmax(0,2fr) minmax(220px,1fr);gap:24px;align-items:end;padding:20px 0}
+.anlagen-intro h2{font-size:clamp(24px,3vw,36px);line-height:1.2;margin:12px 0}.anlagen-intro p{font-size:14px;line-height:1.8;color:var(--muted);max-width:720px;margin:0}
+.anlagen-intro aside{font-size:12px;line-height:1.8;color:var(--muted);border-left:2px solid var(--mint);padding:8px 16px;background:var(--panel)}
+.anlagen-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;list-style:none;padding:0;margin:0}
+.anlage-card{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;background:var(--panel);overflow:hidden;height:100%}.anlage-card:hover{border-color:var(--mint)}
+.anlage-card .thumb{display:block;width:100%;height:auto;aspect-ratio:36/22;object-fit:contain;background:radial-gradient(ellipse at 50% 55%,#294653,#10222e)}.anlage-card img{width:100%;height:100%;object-fit:contain}
+.anlage-card-body{display:grid;gap:6px;padding:14px 16px 16px}.anlage-card-body strong{font-size:16px;font-weight:550}.anlage-card-meta{font-size:11.5px;color:var(--mint)}.anlage-card-text{font-size:12px;line-height:1.7;color:var(--muted)}
+.anlage-planner{display:grid;gap:18px}
+.anlage-columns{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px}
+.anlage-panel{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:18px;min-width:0}.anlage-panel h3{margin:0 0 12px;font-size:17px;font-weight:550}
+.anlage-plan{width:100%;max-height:420px;display:block;background:#0d1b24;border-radius:10px;color:var(--muted)}
+.anlage-controls{display:grid;gap:12px;margin-top:14px}.anlage-range{display:grid;gap:6px;font-size:12px}.anlage-range small{color:var(--muted);font-size:11.5px}
+.anlage-checks{list-style:none;margin:0;padding:0;display:grid;gap:8px}.anlage-checks li{display:grid;gap:3px;border-left:3px solid var(--line);padding:6px 10px;font-size:12px;line-height:1.6}
+.anlage-checks li span{color:var(--muted)}.anlage-checks li.good{border-color:var(--mint)}.anlage-checks li.warn{border-color:var(--gold,#e3c59a)}.anlage-checks li.bad{border-color:#ff5f57}
+.anlage-conflicts{margin-top:10px;font-size:12px}.anlage-conflicts summary{cursor:pointer;color:var(--mint);min-height:32px}.anlage-conflicts ol{margin:6px 0 0;padding-left:20px;color:var(--muted);line-height:1.7}
+.anlage-districts{list-style:none;margin:0;padding:0;display:grid;gap:12px}.anlage-districts>li{border:1px solid var(--line);border-radius:10px;padding:12px}.anlage-districts>li.off{opacity:.6}
+.anlage-districts header{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;font-size:12px}.anlage-districts header .muted{color:var(--muted);font-size:11.5px}
+.anlage-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0}.anlage-purpose{margin:8px 0;font-size:12px;color:var(--muted);line-height:1.7}
+.anlage-shift{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);margin:6px 0}.anlage-shift button{min-width:36px;min-height:32px;border:1px solid var(--line);border-radius:6px;background:transparent}
+.anlage-slots{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:8px}
+.anlage-slots li{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:8px;padding:6px 8px;min-width:0;flex-wrap:wrap}.anlage-slots li.missing{border-color:#ff5f57}
+.anlage-slots .thumb.mini{width:64px;height:44px;flex-shrink:0;border-radius:6px;background:#10222e}
+.anlage-slot-text{display:grid;gap:2px;min-width:0;flex:1;font-size:11.5px}.anlage-slot-text strong{font-size:12px;font-weight:550;overflow-wrap:anywhere}.anlage-slot-text>span{color:var(--muted)}
+.anlage-pin{color:var(--mint)}.anlage-newer{color:var(--gold,#e3c59a)}
+.anlage-slot-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.anlage-slot-actions select{width:auto;max-width:200px;padding:6px;font-size:11.5px}.anlage-slot-actions button{min-height:32px;border:1px solid var(--line);border-radius:6px;background:transparent;font-size:11.5px;padding:4px 8px}
+.anlage-target{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;font-size:12px}.anlage-target>label{display:grid;gap:6px;min-width:220px}.anlage-target input{border:1px solid var(--line);border-radius:5px;background:transparent;padding:9px 8px;font-size:12px;color:inherit}
+.anlage-offset{border:1px solid var(--line);border-radius:8px;padding:8px 12px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}.anlage-offset legend{font-size:11.5px;color:var(--muted)}.anlage-offset small{color:var(--muted)}
+.anlage-xz{display:flex;gap:8px}.anlage-xz label{display:flex;gap:4px;align-items:center}.anlage-xz input{width:90px}
+.anlage-accept{margin-top:12px;border-color:#ff5f57}
+@media(max-width:900px){.anlage-columns,.anlagen-intro{grid-template-columns:1fr}}
+@media(max-width:650px){.anlage-panel{padding:14px}.anlage-slots{grid-template-columns:1fr}.anlage-target>label{min-width:0;width:100%}}

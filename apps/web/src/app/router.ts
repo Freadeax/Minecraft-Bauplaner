@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
  *   #/bibliothek/generatoren[/<gen>[~<vorlage>|@<assetId>|!<templateId>]]  Parametrische Generatoren (B13)
  *   #/bibliothek/sammlungen[/<id>]       Eigene Sammlungen und Ordner (LIB-02)
  *   #/bibliothek/vorlagen[/<id>]         Eigene Ensemble- und Generatorvorlagen (LIB-03)
+ *   #/bibliothek/anlagen[/<id>]          Bauwelt-Anlagen mit Konfliktvorschau (BUILD-05)
  *   #/projekt/<id>         Editor
  *   #/projekt/<id>/<tab>   Projektunterseite (z. B. bauen)
  *   #/betrachter           Dateibetrachter
@@ -31,9 +32,9 @@ export type Route =
   | { readonly view: 'project'; readonly projectId: string; readonly tab: string }
   | { readonly view: 'not-found'; readonly path: string };
 
-export type LibraryPage = 'browse' | 'building' | 'ensembles' | 'compare' | 'generators' | 'themes' | 'collections' | 'templates';
-const LIBRARY_PAGES: Readonly<Record<string, LibraryPage>> = { gebaeude: 'building', ensembles: 'ensembles', vergleich: 'compare', generatoren: 'generators', bauwelten: 'themes', sammlungen: 'collections', vorlagen: 'templates' };
-const LIBRARY_SEGMENT: Readonly<Record<LibraryPage, string>> = { browse: '', building: 'gebaeude', ensembles: 'ensembles', compare: 'vergleich', generators: 'generatoren', themes: 'bauwelten', collections: 'sammlungen', templates: 'vorlagen' };
+export type LibraryPage = 'browse' | 'building' | 'ensembles' | 'compare' | 'generators' | 'themes' | 'collections' | 'templates' | 'facilities';
+const LIBRARY_PAGES: Readonly<Record<string, LibraryPage>> = { gebaeude: 'building', ensembles: 'ensembles', vergleich: 'compare', generatoren: 'generators', bauwelten: 'themes', sammlungen: 'collections', vorlagen: 'templates', anlagen: 'facilities' };
+const LIBRARY_SEGMENT: Readonly<Record<LibraryPage, string>> = { browse: '', building: 'gebaeude', ensembles: 'ensembles', compare: 'vergleich', generators: 'generatoren', themes: 'bauwelten', collections: 'sammlungen', templates: 'vorlagen', facilities: 'anlagen' };
 
 export function parseRoute(hash: string): Route {
   const raw = hash.replace(/^#/, ''), q = raw.indexOf('?');

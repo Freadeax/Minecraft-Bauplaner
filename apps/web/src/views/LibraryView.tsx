@@ -3,7 +3,7 @@ import { countBlocks } from '../../../../packages/voxel/src/index.js';
 import type { Cell } from '../../../../packages/voxel/src/index.js';
 import { addAssetVersion, applyOperation, buildCatalog, buildingInfo, createAsset, createEnsembleProject, createProject, ensemblesWith, facetCounts, FACETS, familyMembers,
   latestVersions, newInstance, projectContext, queryCatalog, resolveProject, similarEntries, suggestForProject, updateAssetMeta, withFacets,
-  ENSEMBLES, GENERATORS, SORT_LABEL, STAGES, variantGroup, assetIdsIn, templateFromEnsemble, collectionTree, flattenTree } from '../../../../packages/domain/src/index.js';
+  ENSEMBLES, ANLAGEN, GENERATORS, SORT_LABEL, STAGES, variantGroup, assetIdsIn, templateFromEnsemble, collectionTree, flattenTree } from '../../../../packages/domain/src/index.js';
 import type { Asset, AssetVersionSource, BuildingFacets, CatalogEntry, Ensemble, OriginalFile, Project, SortKey } from '../../../../packages/domain/src/index.js';
 import { href, navigate } from '../app/router';
 import type { LibraryPage } from '../app/router';
@@ -23,6 +23,7 @@ import { ComparePage } from './library/ComparePage';
 import { EnsemblesPage } from './library/EnsemblesPage';
 import { GeneratorsPage } from './library/GeneratorsPage';
 import { BuildThemesPage } from './library/BuildThemesPage';
+import { AnlagenPage } from './library/AnlagenPage';
 import { FacetFields, facetsFromForm } from './library/FacetFields';
 import { useCardView, useCompare, useFavorites, MAX_COMPARE } from './library/prefs';
 import { SHOTS } from '../thumbnail/views';
@@ -313,6 +314,7 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
     <a href={compare.ids.length ? libHref('compare', compare.ids.join(',')) : libHref('compare', '-')} aria-current={page === 'compare' ? 'page' : undefined}>Vergleich <small>{compare.ids.length}</small></a>
     <a href={libHref('generators')} aria-current={page === 'generators' ? 'page' : undefined}>Generatoren <small>{GENERATORS.length}</small></a>
     <a href={libHref('themes')} aria-current={page === 'themes' ? 'page' : undefined}>Bauwelten</a>
+    <a href={libHref('facilities')} aria-current={page === 'facilities' ? 'page' : undefined}>Anlagen <small>{ANLAGEN.length}</small></a>
     <a href={libHref('collections')} aria-current={page === 'collections' ? 'page' : undefined}>Sammlungen <small>{userLib.collections.filter(c => !c.archived).length}</small></a>
     <a href={libHref('templates')} aria-current={page === 'templates' ? 'page' : undefined}>Vorlagen <small>{userLib.templates.filter(t => !t.archived).length}</small></a>
   </nav>;
@@ -360,7 +362,9 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
   if (page === 'themes') return <div className="page">{header}{tabs}{notices}
     <BuildThemesPage entries={catalog.entries}
       browseHref={search => href({ view: 'library', ...(projectId && { projectId }), search })}
-      buildingHref={id => libHref('building', id)} /></div>;
+      buildingHref={id => libHref('building', id)} anlageHref={id => libHref('facilities', id)} /></div>;
+  if (page === 'facilities') return <div className="page">{header}{tabs}{notices}
+    <AnlagenPage id={id} entries={catalog.entries} projects={projects} libHref={libHref} onMessage={(m, l) => say(m, l ?? null)} /></div>;
   if (page === 'generators') return <div className="page">{header}{tabs}{notices}
     <GeneratorsPage id={id} projects={projects} libHref={libHref} onSaved={(m, savedId) => { say(m); showBuilding(savedId); }} userLib={userLib} onMessage={m => say(m)} /></div>;
   if (page === 'compare') {

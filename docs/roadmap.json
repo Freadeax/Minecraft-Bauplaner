@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T14:48:06.970Z",
+  "updatedAt": "2026-11-01T14:55:14.685Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -2284,15 +2284,19 @@
       "title": "Bauwelt-Anlagen mit Konfliktvorschau",
       "phase": "P3",
       "priority": "P1",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "verified",
+      "owner": "Claude Thread Bauwelt-Anlagen",
       "dependencies": [
         "LIB-03",
         "CORE-03"
       ],
       "scope": [
+        "packages/domain/src/anlagen.ts",
         "packages/domain/src/ensembles.ts",
-        "apps/web/src/views/library/"
+        "apps/web/src/views/library/",
+        "tests/anlagen.test.mjs",
+        "tests/e2e/anlagen.e2e.mjs",
+        "docs/architecture/ANLAGEN.md"
       ],
       "legacyIds": [
         "BUILD-05"
@@ -2301,29 +2305,47 @@
         {
           "id": "BUILD-05-S01",
           "title": "Feste AssetVersionen, Abstände und Anschlüsse kuratieren.",
-          "done": false
+          "done": true
         },
         {
           "id": "BUILD-05-S02",
           "title": "Konfliktvorschau und ausdrückliche Projektübernahme anbieten.",
-          "done": false
+          "done": true
+        },
+        {
+          "id": "BUILD-05-S03",
+          "title": "Anlage je Bauwelt mit Bereichen, Hauptweg und Bauabschnitten für die Baustelle übernehmen.",
+          "done": true
         }
       ],
       "acceptance": [
         "Themenklick platziert nichts automatisch; tatsächliche Voxelkonflikte geprüft."
       ],
-      "next": "Feste AssetVersionen, Abstände und Anschlüsse kuratieren.",
+      "next": "Gelände-/Hanglagen und Türausrichtung zum Weg als eigene Folgeaufgabe; Echtgeräteabnahme mit QA-02.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/anlagen.test.mjs",
+          "note": "12 Fälle gegen den echten Katalog: 11 Anlagen konflikt- und befundfrei, feste Versionen, Tausch, Blocker, echte Voxelkonflikte mit Bestätigungspflicht, Übernahme mit Bauabschnitten, Einfügen mit Rückgängig."
+        },
+        {
+          "path": "tests/e2e/anlagen.e2e.mjs",
+          "note": "Chromium: Bauwelt-Link, Vorschau speichert nichts, Konflikt sperrt Übernahme, Anlegen und Einfügen, 390 px."
+        },
+        {
+          "path": "docs/architecture/ANLAGEN.md",
+          "note": "Datenmodell, Layout, Konfliktvorschau, Übernahme und Grenzen."
+        }
+      ],
       "verification": {
-        "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "state": "passed",
+        "note": "12/12 Kerntests und 2/2 Chromiumfälle bestanden; Gelände, Hanglagen und Echtgeräte nicht geprüft."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-01T14:55:14.685Z"
     },
     {
       "id": "GEN-02",
@@ -5168,6 +5190,74 @@
           "done": 5,
           "total": 5,
           "next": "Generierte Bauten (v. a. Treppenhaus, Torhaus-Wehrgang, Hafen) im Spiel abnehmen; Treppenhaus-Anbau an Haus als Anlage erwägen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T14:53:42.132Z",
+      "kind": "progress",
+      "items": [
+        "BUILD-05"
+      ],
+      "summary": "Bauwelt-Anlagen: 11 kuratierte Anlagen mit Bereichen, festen Versionen, Ensembles und Hauptweg; Lageplan, blockgenaue Konfliktvorschau, ausdrückliche Übernahme mit Bauabschnitten. Gelände und Echtgeräte ungeprüft.",
+      "files": [
+        "apps/web/src/app/router.ts",
+        "apps/web/src/views/LibraryView.tsx",
+        "apps/web/src/views/library/AnlagenPage.tsx",
+        "apps/web/src/views/library/BuildThemesPage.tsx",
+        "apps/web/src/views/library/anlagen.css",
+        "apps/web/src/views/library/buildThemes.css",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/ANLAGEN.md",
+        "docs/architecture/BUILD_THEMES.md",
+        "packages/domain/src/anlagen.ts",
+        "packages/domain/src/index.ts",
+        "tests/anlagen.test.mjs",
+        "tests/e2e/anlagen.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "BUILD-05",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Gelände-/Hanglagen und Türausrichtung zum Weg als eigene Folgeaufgabe; Echtgeräteabnahme mit QA-02."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T14:55:14.685Z",
+      "kind": "progress",
+      "items": [
+        "BUILD-05"
+      ],
+      "summary": "Nachweis nach Rebase auf EDIT-02/GEN-02 aktualisiert.",
+      "files": [
+        "apps/web/src/app/router.ts",
+        "apps/web/src/views/LibraryView.tsx",
+        "apps/web/src/views/library/AnlagenPage.tsx",
+        "apps/web/src/views/library/BuildThemesPage.tsx",
+        "apps/web/src/views/library/anlagen.css",
+        "apps/web/src/views/library/buildThemes.css",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/ANLAGEN.md",
+        "docs/architecture/BUILD_THEMES.md",
+        "packages/domain/src/anlagen.ts",
+        "packages/domain/src/index.ts",
+        "tests/anlagen.test.mjs",
+        "tests/e2e/anlagen.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "BUILD-05",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Gelände-/Hanglagen und Türausrichtung zum Weg als eigene Folgeaufgabe; Echtgeräteabnahme mit QA-02."
         }
       ]
     }

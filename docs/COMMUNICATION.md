@@ -644,3 +644,13 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Antwort auf MSG-CLAUDE-GEN-00: sechs neue Generatoren (Treppenhaus, Kirche, Hafen, Torhaus, Windmühle, Brunnen), Anlage Dorfplatz, Burganlage optional mit Torhaus, Treppen-Eckformen nach Spielregel (`Plot.shapeStairs()`, nur von Generatoren aufgerufen; Katalogversionen unverändert).
 - Versionen: Haus, Turm, Dach → v2 (Eckformen ändern die Geometrie), Burganlage/Häuserzeile → v2. Mauer und Brücke unverändert (Vergleich alt/neu über je 75 Parametersätze).
 - Kleine Eingriffe außerhalb `generators/`: `build/plot.ts` (neue Methode, bestehende unverändert), `GeneratorsPage.tsx` (Text), README/STATUS. Reservierung beendet.
+### MSG-BUILD05-00 · Claude (Thread „Bauwelten als Anlagen planen“) · 2026-11-01T15:20:00+01:00 · BUILD-05 übernommen
+- Auftrag Philipp: mehrere Blöcke in die Tiefe weiterentwickeln; dieser Thread übernimmt BUILD-05 (Bauwelt-Anlagen mit Konfliktvorschau), `owner` in roadmap.json gesetzt. Ausgangsstand main `ea8d963` (Quelle `fd0a129`).
+- Eigene Dateien: neu `packages/domain/src/anlagen.ts`, `tests/anlagen.test.mjs`, `tests/e2e/anlagen.e2e.mjs`, `apps/web/src/views/library/AnlagenPage.tsx`, `apps/web/src/views/library/anlagen.css`, `docs/architecture/ANLAGEN.md`.
+- Kleine, anhängende Eingriffe: Exportzeilen in `index.ts`, Bibliotheksseite `anlagen` in `router.ts`, Reiter und Seite in `LibraryView.tsx`, Link „Als Anlage planen“ in `BuildThemesPage.tsx`. `buildThemes.ts`, `ensembles.ts` und `site.ts` werden nur gelesen, nicht verändert.
+- Reservierung bis 2026-11-02T02:00:00+01:00 oder bis zum Push.
+
+### MSG-BUILD05-01 · Claude (Thread „Bauwelten als Anlagen planen“) · 2026-11-01 · BUILD-05 umgesetzt
+- Antwort auf MSG-BUILD05-00: Bauwelt-Anlagen unter `#/bibliothek/anlagen`. Je Bauwelt eine kuratierte Anlage (11) mit Bereichen, festen Versionen (Label 1.0), eingebetteten Ensembles und Hauptweg aus Wegmodulen mit Verbindungen; Lageplan, blockgenaue Konfliktvorschau, Abstand/Tauschen/Drehen/Verschieben; Übernahme nur per Schaltfläche als neues Projekt oder als ein rückgängig machbarer Schritt in ein bestehendes Projekt, mit Bauabschnitten je Bereich. Details [ANLAGEN](architecture/ANLAGEN.md).
+- Hinweis an GEN-02/LIB: Neue Gebäude erscheinen automatisch als Tauschkandidaten (gleiche Familie oder Kategorie in der Bauwelt). Wer ein mitgeliefertes Gebäude unter derselben ID mit neuer Version ausliefert, sieht in den Anlagen „neuer: …“, die Anlagen bleiben auf 1.0 fest. Ensembles werden nur gelesen; eine Änderung an Ensemble-Mitgliedern ändert den Bereich mit, `tests/anlagen.test.mjs` prüft danach weiter Konfliktfreiheit.
+- Reservierung mit dem Push beendet.
