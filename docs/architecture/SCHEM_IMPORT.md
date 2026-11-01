@@ -22,9 +22,9 @@ Die vorherige Ansicht bleibt bei Fehler oder Abbruch erhalten. GZip wird an der 
 
 Unterstützte Tags: Byte, Short, Int, Long, Float, Double, ByteArray, String, List, Compound, IntArray, LongArray. Longwerte als int64-Dezimalstrings. Listen-/Arraylängen, Typen, doppelte Compoundnamen und Restbytes werden geprüft. Strings werden als Java Modified-UTF-8 gelesen, einschließlich NUL und UTF-16-Surrogatpaaren. Fehlerhafte Sequenzen werden abgewiesen. Nicht-endliche Gleitkommazahlen und negatives Float-/Double-Null sind im aktuellen JSON-Vertrag nicht verlustfrei abbildbar und führen ausdrücklich zum Importfehler; keine stille Normalisierung.
 
-Standardlimits: 2.000.000 komprimierte Bytes, 8.000.000 entpackte Bytes, 20.000 Volumenzellen, 256 je Achse, 20.000 Paletteneinträge, NBT-Tiefe 32 und 200.000 Knoten/Arraybudget. Zeitbudget 5 Sekunden für Entpacken/Lesen/Normalisieren; zusätzlich beendet die Oberfläche einen Worker nach 12 Sekunden. Abbrechen und neue Dateiauswahl entwerten ältere Jobantworten. Limits sind konservative Startwerte, keine Lastmessung.
+Standardlimits: 4.000.000 komprimierte Bytes, 16.000.000 entpackte Bytes, 250.000 Volumenzellen (seit VIEW-02 angehoben), 256 je Achse, 20.000 Paletteneinträge, NBT-Tiefe 32 und 200.000 Knoten/Arraybudget. Zeitbudget 5 Sekunden für Entpacken/Lesen/Normalisieren; zusätzlich beendet die Oberfläche einen Worker nach 12 Sekunden. Abbrechen und neue Dateiauswahl entwerten ältere Jobantworten. Limits sind konservative Startwerte, keine Lastmessung.
 
-Der interne JSON-Import bleibt separat begrenzt (2 MB, 20.000 ausgewählte Zellen, 50.000 NBT-Budget). Datenbank, freie Entities und Biomgeometrie werden durch diesen Reader nicht implementiert.
+Der interne JSON-Import bleibt separat begrenzt (2 MB, 250.000 ausgewählte Zellen, 50.000 NBT-Budget). Datenbank, freie Entities und Biomgeometrie werden durch diesen Reader nicht implementiert.
 
 ## Nachweis und offene Abnahme
 

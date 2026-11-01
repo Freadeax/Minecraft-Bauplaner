@@ -11,7 +11,8 @@ import { useApp } from '../app/context';
 import { importFile, IMPORT_ACCEPT, IMPORT_FORMAT_LABEL } from '../app/importFile';
 import type { ImportedFile } from '../app/importFile';
 import { errorText, formatNumber } from '../app/ui';
-import { mix, stateColor } from '../colors';
+import { DIM_MARK, HIT_MARK } from '../viewer/marks';
+import type { Mark } from '../viewer/types';
 import type { Highlight } from './library/ConnectorEditor';
 import { CropPanel } from './library/CropPanel';
 import { BuildingCard } from './library/BuildingCard';
@@ -426,15 +427,14 @@ function ImportPanel({ imported, busy, library, onRegion, onSave, onVersion, onC
   const setCropMarks = useCallback((h: Highlight) => setCropMarksState(() => h), []);
   const noSelect = useMemo(() => () => {}, []);
   const preview = imported.payload;
-  const colorFor = useMemo(() => (cell: Cell) => {
-    const base = cell.kind === 'erase' ? '#d35f5f' : stateColor(preview.palette[cell.paletteIndex]!.id);
+  const markFor = useMemo(() => (cell: Cell): Mark | null => {
     const mark = cropMarks?.(cell) ?? null;
-    return mark === 'hit' ? '#ffd166' : mark === 'dim' ? mix(base, '#16303c', 0.7) : base;
-  }, [preview, cropMarks]);
+    return mark === 'hit' ? HIT_MARK : mark === 'dim' ? DIM_MARK : null;
+  }, [cropMarks]);
   const own = library.filter(a => !a.demo);
   const regionName = imported.report && 'selectedRegion' in imported.report ? imported.report.selectedRegion : undefined;
   return <section className="detail-hero import-hero" aria-label="Import prüfen">
-    <div className="viewport detail-stage"><Viewer key={`import-${imported.name}-${regionName ?? ''}`} payload={preview} cells={preview.cells} onSelect={noSelect} colorFor={colorFor} /></div>
+    <div className="viewport detail-stage"><Viewer key={`import-${imported.name}-${regionName ?? ''}`} payload={preview} cells={preview.cells} onSelect={noSelect} markFor={markFor} /></div>
     <aside className="inspector detail-summary">
       <form onSubmit={e => { e.preventDefault(); onSave(new FormData(e.currentTarget)); }}>
         <span className="panel-kicker">DATEI GEPRÜFT</span>

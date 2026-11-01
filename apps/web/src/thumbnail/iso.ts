@@ -1,41 +1,42 @@
 import type { Cell, VoxelPayload } from '../../../../packages/voxel/src/index.js';
-import { mix, stateColor } from '../colors';
+import type { Mark } from '../blockmodels/mesh';
+import { faceColors, mix } from '../colors';
 import { shotGeometry } from './views';
 import type { ShotBlock, ShotView } from './views';
 
 /**
- * Still images of a voxel payload for catalogue cards and the image gallery.
- * Plain canvas, no WebGL: dozens of cards must not each hold a 3D context.
- * Colours are the approximate preview colours of the viewer (no Minecraft
- * textures). Projection and face order live in views.ts.
+ * Still images of a voxel payload as plain unit cubes in average colours –
+ * the fallback where WebGL is missing (the normal path is glShot.ts with real
+ * block shapes). Projection and face order live in views.ts.
  */
 export interface ShotOptions {
   /** Default "so" (isometric from the south-east), as the catalogue cards. */
   readonly view?: ShotView;
   /** Only blocks at or below this layer (cutaway). */
   readonly cutY?: number;
-  /** Colour per cell (e.g. diff marks); null hides the cell. Default: block colour. */
-  readonly colorOf?: (cell: Cell, index: number) => string | null;
+  /** Highlight per cell (e.g. diff marks); false hides the cell. */
+  readonly markOf?: (cell: Cell, index: number) => Mark | null | false;
   readonly padding?: number;
 }
 
 const EMPTY = new Set(['minecraft:air', 'minecraft:cave_air', 'minecraft:void_air']);
-export function shotBlocks(payload: Pick<VoxelPayload, 'cells' | 'palette'>, colorOf?: ShotOptions['colorOf']): ShotBlock[] {
+export function shotBlocks(payload: Pick<VoxelPayload, 'cells' | 'palette'>, markOf?: ShotOptions['markOf']): ShotBlock[] {
   const out: ShotBlock[] = [];
   payload.cells.forEach((c, i) => {
     if (c.kind !== 'block') return;
     const id = payload.palette[c.paletteIndex]?.id ?? '';
     if (EMPTY.has(id)) return;
-    const color = colorOf ? colorOf(c, i) : stateColor(id);
-    if (color === null) return;
-    out.push({ x: c.position[0], y: c.position[1], z: c.position[2], color });
+    const mark = markOf ? markOf(c, i) : null;
+    if (mark === false) return;
+    const { top, side } = faceColors(id), paint = (hex: string) => mark ? mix(hex, mark.color, mark.amount) : hex;
+    out.push({ x: c.position[0], y: c.position[1], z: c.position[2], color: paint(side), top: paint(top) });
   });
   return out;
 }
 
 /** Renders a view into a PNG data URL of the given CSS size (device pixel ratio applied); '' when nothing is visible. */
 export function renderShot(payload: Pick<VoxelPayload, 'cells' | 'palette'>, width: number, height: number, options: ShotOptions = {}): string {
-  const { faces, minX, minY, maxX, maxY } = shotGeometry(shotBlocks(payload, options.colorOf), options.view ?? 'so', options.cutY);
+  const { faces, minX, minY, maxX, maxY } = shotGeometry(shotBlocks(payload, options.markOf), options.view ?? 'so', options.cutY);
   const padding = options.padding ?? 0.08;
   const ratio = Math.min(2, globalThis.devicePixelRatio || 1);
   const canvas = document.createElement('canvas');

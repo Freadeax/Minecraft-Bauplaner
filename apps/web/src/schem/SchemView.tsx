@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import type { Cell, VoxelPayload } from '../../../../packages/voxel/src/index.js';
 import { Viewer } from '../Viewer';
+import type { Mark } from '../viewer/types';
 import { useLayerFilter } from '../viewer/LayerControl';
 import { LayerSheet } from './LayerSheet';
 import { ShotGallery } from './ShotGallery';
@@ -13,15 +14,15 @@ import { ShotGallery } from './ShotGallery';
 export type SchemTab = '3d' | 'bilder' | 'ebenen';
 export const SCHEM_TABS: readonly (readonly [SchemTab, string])[] = [['3d', '3D'], ['bilder', 'Bilder'], ['ebenen', 'Ebenen']];
 
-export function SchemView({ payload, cacheKey, name, tab, onTab, colorFor, tabs = SCHEM_TABS }: {
+export function SchemView({ payload, cacheKey, name, tab, onTab, markFor, tabs = SCHEM_TABS }: {
   payload: VoxelPayload;
   /** Immutable key of the payload (version id) for cached images. */
   cacheKey: string;
   name: string;
   tab: SchemTab;
   onTab(tab: SchemTab): void;
-  /** 3D colours (marks of connector editor or crop panel). */
-  colorFor?: (cell: Cell) => string;
+  /** 3D highlights (marks of connector editor or crop panel). */
+  markFor?: (cell: Cell) => Mark | null;
   /** Offered tabs, e.g. without 3D where a page already has its own 3D view. */
   tabs?: readonly (readonly [SchemTab, string])[];
 }) {
@@ -39,7 +40,7 @@ export function SchemView({ payload, cacheKey, name, tab, onTab, colorFor, tabs 
     <div className="schem-panel" role="tabpanel" id={`schem-panel-${tab}`} aria-labelledby={`schem-tab-${tab}`}>
       {tab === '3d' && <>
         <div className="viewport detail-stage">
-          <Viewer key={cacheKey} payload={payload} cells={layers.visible?.cells ?? payload.cells} onSelect={noSelect} {...(colorFor && { colorFor })} />
+          <Viewer key={cacheKey} payload={payload} cells={layers.visible?.cells ?? payload.cells} onSelect={noSelect} {...(markFor && { markFor })} />
         </div>
         {layers.control}
       </>}

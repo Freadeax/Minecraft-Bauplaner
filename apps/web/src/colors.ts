@@ -1,8 +1,9 @@
-export const blockColors = ['#c7d4d5','#b58452','#895e39','#7cc3b4','#8e9ca9'];
+import { blockLook } from './blockmodels/colors26.ts';
 
 /**
- * Approximate preview colours; not Minecraft textures. Exact ids first, then
- * material families: dye colours (wool, concrete, terracotta, glass, beds …),
+ * Preview colours without textures. Vanilla blocks of the 26.3 list use their
+ * generated average colours (top/side/bottom, see blocks/colors26.ts). Other
+ * ids fall back to hand-picked values: exact ids first, then material families: dye colours (wool, concrete, terracotta, glass, beds …),
  * wood types (planks, bark, leaves) and stone/metal materials, each also for
  * their shapes (stairs, slabs, walls, fences, panes, doors …). Unknown ids get a
  * stable hashed colour.
@@ -97,7 +98,21 @@ function materialColor(name: string): string | null {
   return null;
 }
 
+/** Top and side colour of a block (top faces of plans, side faces of façades). */
+export function faceColors(id: string): { readonly top: string; readonly side: string } {
+  const look = id.startsWith('minecraft:') ? blockLook(id.slice(10)) : undefined;
+  if (look) return { top: look.top, side: look.side };
+  const c = legacyColor(id);
+  return { top: c, side: c };
+}
+
+/** One colour per block (lists, legends, software view): the side colour for vanilla blocks. */
 export function stateColor(id: string): string {
+  const look = id.startsWith('minecraft:') ? blockLook(id.slice(10)) : undefined;
+  return look ? look.side : legacyColor(id);
+}
+
+function legacyColor(id: string): string {
   const hit = known[id];
   if (hit) return hit;
   const colon = id.indexOf(':');

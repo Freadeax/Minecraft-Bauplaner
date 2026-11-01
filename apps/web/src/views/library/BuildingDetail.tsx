@@ -3,7 +3,8 @@ import type { Cell } from '../../../../../packages/voxel/src/index.js';
 import { facetLabel, SIZE_CLASS_LABEL, STAGE_HINT, STAGE_LABEL } from '../../../../../packages/domain/src/index.js';
 import type { Asset, AssetVersion, BuildingFacets, BuildingInfo, CatalogEntry, Ensemble, Project, Similar, Suggestion } from '../../../../../packages/domain/src/index.js';
 import { formatNumber } from '../../app/ui';
-import { mix, stateColor } from '../../colors';
+import { DIM_MARK, HIT_MARK } from '../../viewer/marks';
+import type { Mark } from '../../viewer/types';
 import { SchemView, SCHEM_TABS } from '../../schem/SchemView';
 import type { SchemTab } from '../../schem/SchemView';
 import { Thumb } from '../../thumbnail/Thumb';
@@ -63,11 +64,10 @@ export function BuildingDetail({ entry, asset, latest, versions, info, group, va
   // Tab changes rewrite the address without navigation, so the page does not jump to the top.
   const setTab = (t: SchemTab) => { setTabState(t); history.replaceState(history.state, '', libHref('building', asset.id, t === '3d' ? undefined : t)); };
   useEffect(() => { if (sub === 'versionen') document.getElementById('sec-versionen')?.scrollIntoView(); }, [sub]);
-  const colorFor = useMemo(() => (cell: Cell) => {
-    const base = cell.kind === 'erase' ? '#d35f5f' : stateColor(payload.palette[cell.paletteIndex]!.id);
+  const markFor = useMemo(() => (cell: Cell): Mark | null => {
     const mark = cropMarks?.(cell) ?? connectorMarks?.(cell) ?? null;
-    return mark === 'hit' ? '#ffd166' : mark === 'dim' ? mix(base, '#16303c', 0.7) : base;
-  }, [payload, cropMarks, connectorMarks]);
+    return mark === 'hit' ? HIT_MARK : mark === 'dim' ? DIM_MARK : null;
+  }, [cropMarks, connectorMarks]);
   const category = entry.facets.kategorie[0];
   const kicker = [...entry.facets.kategorie.map(k => facetLabel('kategorie', k)), ...entry.facets.stil.map(v => facetLabel('stil', v))].join(' · ');
 
@@ -75,7 +75,7 @@ export function BuildingDetail({ entry, asset, latest, versions, info, group, va
     <nav className="crumbs" aria-label="Pfad"><a href={libHref('browse')}>Bibliothek</a><span aria-hidden="true">›</span>
       {category && <><span>{facetLabel('kategorie', category)}</span><span aria-hidden="true">›</span></>}<span aria-current="page">{asset.name}</span></nav>
     <section className="detail-hero">
-      <SchemView payload={payload} cacheKey={latest.id} name={asset.name} tab={tab} onTab={setTab} colorFor={colorFor} />
+      <SchemView payload={payload} cacheKey={latest.id} name={asset.name} tab={tab} onTab={setTab} markFor={markFor} />
       <div className="detail-summary building-sheet">
         <span className="panel-kicker">{kicker ? kicker.toUpperCase() : 'GEBÄUDE'}</span>
         <h1 className="detail-title">{asset.name}</h1>

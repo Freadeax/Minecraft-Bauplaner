@@ -1,24 +1,41 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { VoxelPayload } from '../../../../packages/voxel/src/index.js';
-import { stateColor } from '../colors';
+import { useRenderKit } from '../blockmodels/assets';
+import type { Mark } from '../blockmodels/mesh';
+import { faceColors, mix, stateColor } from '../colors';
 import { facingArrow, firstBuiltLayer, layerCounts, layerIndex, shapeOf } from './layers';
 import type { LayerIndex } from './layers';
 
 /**
- * Bauplan je Schicht (B12): top view of one Y layer with the layer below as a
- * faint ghost, orientation arrows for stairs, doors and other facing blocks,
+ * Bauplan je Schicht (B12): top view of one Y layer – real block shapes and
+ * textures from the shared still renderer, plain colour squares without
+ * WebGL – with the layer below as a faint ghost, orientation arrows for stairs, doors and other facing blocks,
  * slab marks, hover info and a legend of the layer. "Alle Ebenen" shows every
  * layer as a small plan; "Drucken" prints those plans (print stylesheet).
  * Coordinates are those of the payload, north is up, east is right.
  */
-export type ColorOf = (cellIndex: number) => string | null;
+/** Highlight per cell index (e.g. diff marks); false hides the cell. */
+export type MarkOf = (cellIndex: number) => Mark | null | false;
+type Gl = typeof import('../thumbnail/glShot');
+let gl: Promise<Gl | null> | null = null;
+function glModule(): Promise<Gl | null> {
+  gl ??= (() => {
+    try { const probe = document.createElement('canvas'); if (!probe.getContext('webgl2') && !probe.getContext('webgl')) return Promise.resolve(null); } catch { return Promise.resolve(null); }
+    return import('../thumbnail/glShot').catch(() => null);
+  })();
+  return gl;
+}
 const bare = (id: string) => id.replace(/^minecraft:/, '');
 
 function cellSizeFor(w: number, h: number, maxPx: number, maxCell: number, minCell: number): number {
   return Math.max(minCell, Math.min(maxCell, Math.floor(maxPx / Math.max(w, h))));
 }
 
-function drawLayer(canvas: HTMLCanvasElement, index: LayerIndex, payload: VoxelPayload, y: number, cs: number, colorOf: ColorOf | undefined, detail: boolean, hover: readonly [number, number] | null): void {
+/** Rendered top view of one layer at the plan's size, or null (empty layer, no WebGL). */
+type LayerImage = (y: number) => HTMLCanvasElement | null;
+
+function drawLayer(canvas: HTMLCanvasElement, index: LayerIndex, payload: VoxelPayload, y: number, cs: number, markOf: MarkOf | undefined, detail: boolean,
+  hover: readonly [number, number] | null, image: LayerImage | null): void {
   const w = index.x1 - index.x0 + 1, h = index.z1 - index.z0 + 1;
   const ratio = Math.min(2, globalThis.devicePixelRatio || 1);
   canvas.width = Math.round(w * cs * ratio); canvas.height = Math.round(h * cs * ratio);
@@ -27,20 +44,27 @@ function drawLayer(canvas: HTMLCanvasElement, index: LayerIndex, payload: VoxelP
   if (!ctx) return;
   ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
   ctx.fillStyle = '#0d1a22'; ctx.fillRect(0, 0, w * cs, h * cs);
-  const colour = (i: number, paletteIndex: number) => colorOf ? colorOf(i) : stateColor(payload.palette[paletteIndex]!.id);
+  const colour = (i: number, paletteIndex: number) => {
+    const m = markOf?.(i) ?? null;
+    if (m === false) return null;
+    const base = faceColors(payload.palette[paletteIndex]!.id).top;
+    return m ? mix(base, m.color, m.amount) : base;
+  };
+  const shot = (layer: number) => { const img = image?.(layer); if (img) ctx.drawImage(img, 0, 0, w * cs, h * cs); return !!img; };
   // Ghost of the layer below: where the next blocks stand on.
   if (detail) {
     ctx.globalAlpha = 0.22;
-    for (const c of index.byY.get(y - 1) ?? []) {
+    if (!shot(y - 1)) for (const c of index.byY.get(y - 1) ?? []) {
       const col = colour(c.index, c.paletteIndex); if (!col) continue;
       ctx.fillStyle = col; ctx.fillRect((c.x - index.x0) * cs, (c.z - index.z0) * cs, cs, cs);
     }
     ctx.globalAlpha = 1;
   }
+  const real = shot(y);
   for (const c of index.byY.get(y) ?? []) {
     const col = colour(c.index, c.paletteIndex); if (!col) continue;
     const px = (c.x - index.x0) * cs, pz = (c.z - index.z0) * cs;
-    ctx.fillStyle = col; ctx.fillRect(px, pz, cs, cs);
+    if (!real) { ctx.fillStyle = col; ctx.fillRect(px, pz, cs, cs); }
     if (!detail || cs < 10) continue;
     const state = payload.palette[c.paletteIndex]!;
     const shape = shapeOf(state.id, state.properties);
@@ -82,13 +106,35 @@ function drawLayer(canvas: HTMLCanvasElement, index: LayerIndex, payload: VoxelP
   }
 }
 
-function LayerCanvas({ index, payload, y, cs, colorOf, detail, label, onHover, onPick }: {
-  index: LayerIndex; payload: VoxelPayload; y: number; cs: number; colorOf: ColorOf | undefined; detail: boolean; label: string;
+function LayerCanvas({ index, payload, y, cs, markOf, detail, label, onHover, onPick }: {
+  index: LayerIndex; payload: VoxelPayload; y: number; cs: number; markOf: MarkOf | undefined; detail: boolean; label: string;
   onHover?: (cell: readonly [number, number] | null) => void; onPick?: () => void;
 }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const [hover, setHover] = useState<readonly [number, number] | null>(null);
-  useEffect(() => { if (ref.current) drawLayer(ref.current, index, payload, y, cs, colorOf, detail, hover); }, [index, payload, y, cs, colorOf, detail, hover]);
+  const kit = useRenderKit();
+  // Rendered layers are kept while only the hover mark changes.
+  const images = useRef<{ deps: readonly unknown[]; byY: Map<number, HTMLCanvasElement | null> }>({ deps: [], byY: new Map() });
+  useEffect(() => {
+    let cancelled = false;
+    void glModule().then(module => {
+      if (cancelled || !ref.current) return;
+      const deps = [index, payload, cs, markOf, kit];
+      if (deps.some((d, i) => d !== images.current.deps[i])) images.current = { deps, byY: new Map() };
+      const byY = images.current.byY, w = index.x1 - index.x0 + 1, h = index.z1 - index.z0 + 1;
+      const glMark = markOf && ((_c: unknown, i: number) => markOf(i));
+      const image: LayerImage | null = module && (layer => {
+        if (!byY.has(layer)) {
+          let img: HTMLCanvasElement | null = null;
+          try { img = module.renderGlCanvas(payload, w * cs, h * cs, kit, { view: 'oben', onlyY: layer, padding: 0, area: { x0: index.x0, z0: index.z0, x1: index.x1, z1: index.z1 }, ...(glMark && { markOf: glMark }) }); } catch { img = null; }
+          byY.set(layer, img);
+        }
+        return byY.get(layer)!;
+      });
+      drawLayer(ref.current, index, payload, y, cs, markOf, detail, hover, image);
+    });
+    return () => { cancelled = true; };
+  }, [index, payload, y, cs, markOf, detail, hover, kit]);
   const at = (e: React.PointerEvent<HTMLCanvasElement>): readonly [number, number] | null => {
     const r = e.currentTarget.getBoundingClientRect(), w = index.x1 - index.x0 + 1, h = index.z1 - index.z0 + 1;
     const x = Math.floor((e.clientX - r.left) / r.width * w), z = Math.floor((e.clientY - r.top) / r.height * h);
@@ -100,11 +146,11 @@ function LayerCanvas({ index, payload, y, cs, colorOf, detail, label, onHover, o
     onClick={onPick} />;
 }
 
-export function LayerSheet({ payload, name, colorOf, legendColor }: {
+export function LayerSheet({ payload, name, markOf, legendColor }: {
   payload: VoxelPayload;
   name: string;
-  /** Colour per cell index (e.g. diff marks); default block colours. */
-  colorOf?: ColorOf;
+  /** Highlight per cell index (e.g. diff marks). */
+  markOf?: MarkOf;
   /** Swatch colour of a legend entry; default block colour. */
   legendColor?: (id: string) => string;
 }) {
@@ -153,7 +199,7 @@ export function LayerSheet({ payload, name, colorOf, legendColor }: {
       <div className="layer-canvas" tabIndex={0} aria-label="Bauplan, Pfeiltasten wechseln die Ebene"
         onKeyDown={e => { if (e.key === 'ArrowUp' || e.key === 'PageUp') { e.preventDefault(); step(1); } if (e.key === 'ArrowDown' || e.key === 'PageDown') { e.preventDefault(); step(-1); } }}>
         <span className="compass" aria-hidden="true">N ↑</span>
-        <LayerCanvas index={index} payload={payload} y={layer} cs={cellSizeFor(w, h, 620, 44, 4)} colorOf={colorOf} detail label={`Ebene Y ${layer}: ${blocks} Blöcke`} onHover={setHover} />
+        <LayerCanvas index={index} payload={payload} y={layer} cs={cellSizeFor(w, h, 620, 44, 4)} markOf={markOf} detail label={`Ebene Y ${layer}: ${blocks} Blöcke`} onHover={setHover} />
         <p className="layer-hover" aria-live="polite">{hovered ? <>X {hovered.pos[0]} · Y {layer} · Z {hovered.pos[1]} · {hovered.state ? <b>{bare(hovered.state.id)}</b> : 'leer'}
           {hovered.state && Object.keys(hovered.state.properties).length > 0 && <small> [{Object.entries(hovered.state.properties).map(([k, v]) => `${k}=${v}`).join(', ')}]</small>}</>
           : <>{w} × {h} Felder · Norden oben · blasser Schatten: Ebene darunter ({below} Blöcke) · Pfeil: Blickrichtung</>}</p>
@@ -168,7 +214,7 @@ export function LayerSheet({ payload, name, colorOf, legendColor }: {
         <p className="layer-print-head">{name} · Bauplan · {w} × {index.ys.length} × {h} · Norden oben · {built.length} belegte Ebenen</p>
         <ol>{built.map(v => <li key={v}>
           <button type="button" className="layer-thumb" aria-label={`Ebene Y ${v} öffnen`} onClick={() => { setY(v); setMode('one'); }}>
-            <LayerCanvas index={index} payload={payload} y={v} cs={cellSizeFor(w, h, 180, 12, 2)} colorOf={colorOf} detail={false} label={`Ebene Y ${v}`} />
+            <LayerCanvas index={index} payload={payload} y={v} cs={cellSizeFor(w, h, 180, 12, 2)} markOf={markOf} detail={false} label={`Ebene Y ${v}`} />
           </button>
           <span>Y {v} · {index.byY.get(v)?.length ?? 0}</span></li>)}</ol>
       </div>}

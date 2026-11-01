@@ -23,7 +23,7 @@ export const SHOTS: readonly ShotInfo[] = [
 ];
 export const ISO_SHOTS: readonly ShotView[] = ['so', 'sw', 'nw', 'no'];
 
-export interface ShotBlock { readonly x: number; readonly y: number; readonly z: number; readonly color: string }
+export interface ShotBlock { readonly x: number; readonly y: number; readonly z: number; readonly color: string; /** Top face colour, default `color`. */ readonly top?: string }
 /** A face polygon at unit scale; `shade` 0 = full colour … 1 = black. */
 export interface ShotFace { readonly points: readonly number[]; readonly color: string; readonly shade: number }
 export interface ShotGeometry { readonly faces: ShotFace[]; readonly minX: number; readonly minY: number; readonly maxX: number; readonly maxY: number }
@@ -54,13 +54,13 @@ function collector() {
 function isoShot(blocks: readonly ShotBlock[], view: 'so' | 'sw' | 'nw' | 'no'): ShotGeometry {
   const rot = ROTATE[view];
   const solid = new Set<string>();
-  const list = blocks.map(b => { const [x, z] = rot(b.x, b.z); solid.add(`${x},${b.y},${z}`); return { x, y: b.y, z, color: b.color }; });
+  const list = blocks.map(b => { const [x, z] = rot(b.x, b.z); solid.add(`${x},${b.y},${z}`); return { x, y: b.y, z, color: b.color, top: b.top ?? b.color }; });
   // Painter's order by x+y+z is exact for unit cubes in this projection.
   list.sort((a, b) => (a.x + a.y + a.z) - (b.x + b.y + b.z) || a.y - b.y);
   const project = (x: number, y: number, z: number): [number, number] => [(x - z) * COS30, (x + z) * 0.5 - y];
   const c = collector();
-  for (const { x, y, z, color } of list) {
-    if (!solid.has(`${x},${y + 1},${z}`)) c.add(color, 0, [project(x, y + 1, z), project(x + 1, y + 1, z), project(x + 1, y + 1, z + 1), project(x, y + 1, z + 1)]);
+  for (const { x, y, z, color, top } of list) {
+    if (!solid.has(`${x},${y + 1},${z}`)) c.add(top, 0, [project(x, y + 1, z), project(x + 1, y + 1, z), project(x + 1, y + 1, z + 1), project(x, y + 1, z + 1)]);
     if (!solid.has(`${x + 1},${y},${z}`)) c.add(color, 0.22, [project(x + 1, y, z), project(x + 1, y + 1, z), project(x + 1, y + 1, z + 1), project(x + 1, y, z + 1)]);
     if (!solid.has(`${x},${y},${z + 1}`)) c.add(color, 0.38, [project(x, y, z + 1), project(x + 1, y, z + 1), project(x + 1, y + 1, z + 1), project(x, y + 1, z + 1)]);
   }
@@ -84,7 +84,7 @@ function flatShot(blocks: readonly ShotBlock[], view: 'oben' | 'sued' | 'ost' | 
   let nearMax = -Infinity, nearMin = Infinity;
   for (const b of blocks) {
     const [u, v, near] = map(b), key = `${u},${v}`, prev = best.get(key);
-    if (!prev || near > prev.near) best.set(key, { u, v, near, color: b.color });
+    if (!prev || near > prev.near) best.set(key, { u, v, near, color: view === 'oben' ? b.top ?? b.color : b.color });
   }
   for (const b of best.values()) { nearMax = Math.max(nearMax, b.near); nearMin = Math.min(nearMin, b.near); }
   const span = Math.max(1, nearMax - nearMin);

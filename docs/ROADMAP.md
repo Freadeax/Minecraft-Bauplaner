@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T12:56:16.487Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T13:02:14.162Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,10 +12,10 @@ Stand: 2026-11-01T12:56:16.487Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 22 |
+| ⏳ Offen | 21 |
 | 🚧 In Arbeit | 5 |
 | ⛔ Blockiert | 1 |
-| 🧩 Implementiert · Abnahme offen | 7 |
+| 🧩 Implementiert · Abnahme offen | 8 |
 | ✅ Im beschriebenen Umfang geprüft | 20 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -114,7 +114,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | ID | Arbeitspaket | Status | Schritte | Abhängigkeiten | Main | Pages-Quelle |
 |---|---|---|---:|---|---|---|
 | [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | ⏳ Offen | 0/2 | QA-01, VIEW-02 | ausstehend | ausstehend |
-| [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | ⏳ Offen | 0/3 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
+| [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen | 5/6 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
 | [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🚧 In Arbeit | 0/2 | STORE-02, VIEW-01 | ausstehend | ausstehend |
 | [EDIT-02](#edit-02) | Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen | 🚧 In Arbeit | 0/5 | VIEW-01, STORE-02 | ausstehend | ausstehend |
 | [UPDATE-01](#update-01) | Kontrollierte Versionsupdates mit lokalen Overrides | ⏳ Offen | 0/2 | DIFF-01, STORE-02 | ausstehend | ausstehend |
@@ -769,21 +769,24 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### VIEW-02
 
-**Minecraft-nahe zustandsabhängige Blockformen** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Minecraft-nahe zustandsabhängige Blockformen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude Thread „Blockdarstellung“ (B16) · Aktualisiert: 2026-11-01T13:02:14.162Z
 
-- [ ] VIEW-02-S01: B16-Dateizuständigkeit vor Beginn prüfen.
-- [ ] VIEW-02-S02: Treppen, Stufen, Zäune, Mauern und Glas nach Zuständen darstellen.
-- [ ] VIEW-02-S03: Picking, Layer, Fallbacks und Performance unabhängig prüfen.
+- [x] VIEW-02-S01: B16-Dateizuständigkeit vor Beginn prüfen.
+- [x] VIEW-02-S02: Treppen, Stufen, Zäune, Mauern und Glas nach Zuständen darstellen.
+- [x] VIEW-02-S03: Picking, Layer, Fallbacks und Performance unabhängig prüfen.
+- [x] VIEW-02-S04: Originaltexturen nur im Browser des Nutzers (Mojang-Jar oder eigene Dateien), nichts mitgeliefert.
+- [x] VIEW-02-S05: Blockregister 26.3 (1288 Blöcke) und Zustandsregeln für alle ausrichtbaren Blöcke.
+- [ ] VIEW-02-S06: Mojang-Download im Browser, Firefox/Safari und echte Geräte prüfen; Registryreport über PROFILE-01 übernehmen.
 
 **Abnahme:** Keine fremden Texturen ohne Rechte; sichtbare Geometrie stimmt mit Zellwahl überein.
 
-**Nächste Aktion:** B16-Dateizuständigkeit vor Beginn prüfen.
+**Nächste Aktion:** Mojang-Download im echten Browser und weitere Browser prüfen; Registerdaten an PROFILE-01 binden, sobald es auf main liegt.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Node- und Chromium-Prüfungen bestanden (391 Node, 59 Browser); Mojang-Download im Browser, Firefox/Safari und Geräte offen.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/blocks.test.mjs](../tests/blocks.test.mjs) — ZIP, Modelle, Formen aller 1288 Blöcke, Mesh/Kulling, Zustandsregeln.; [tests/e2e/textures.e2e.mjs](../tests/e2e/textures.e2e.mjs) — Texturdialog mit synthetischer Quelle, Speicherung, Entfernen, keine Mojang-Anfrage ohne Klick.; [docs/architecture/BLOCK_MODELS.md](architecture/BLOCK_MODELS.md) — Lizenzentscheidung, Module, Grenzen.
 
-**Dateiumfang:** `apps/web/src/viewer/`. **Abhängigkeiten:** PROFILE-01, VIEW-01. **Alte IDs:** VIEW-03, B16.
+**Dateiumfang:** `apps/web/src/blockmodels/`, `apps/web/src/viewer/`, `apps/web/src/thumbnail/`, `apps/web/src/schem/`, `packages/voxel/src/blockRegistry.ts`, `packages/voxel/src/states.ts`, `scripts/gen_block_data.py`. **Abhängigkeiten:** PROFILE-01, VIEW-01. **Alte IDs:** VIEW-03, B16.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

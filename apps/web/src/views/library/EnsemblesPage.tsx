@@ -3,7 +3,6 @@ import { countBlocks } from '../../../../../packages/voxel/src/index.js';
 import { createEnsembleProject, missingMembers, resolveProject, ENSEMBLES } from '../../../../../packages/domain/src/index.js';
 import type { AssetVersion, Ensemble } from '../../../../../packages/domain/src/index.js';
 import { formatNumber } from '../../app/ui';
-import { stateColor } from '../../colors';
 import { Viewer } from '../../Viewer';
 import { Thumb } from '../../thumbnail/Thumb';
 
@@ -45,8 +44,7 @@ export function EnsemblesPage({ id, byAsset, names, versions, libHref, onCreate 
     <nav className="crumbs" aria-label="Pfad"><a href={libHref('browse')}>Bibliothek</a><span aria-hidden="true">›</span><a href={libHref('ensembles')}>Ensembles</a><span aria-hidden="true">›</span><span aria-current="page">{ensemble.name}</span></nav>
     <div className="detail-hero">
       <div className="viewport detail-stage">
-        {world?.world ? <Viewer key={ensemble.id} payload={world.world} cells={world.world.cells} onSelect={noSelect}
-          colorFor={cell => cell.kind === 'erase' ? '#d35f5f' : stateColor(world.world!.palette[cell.paletteIndex]!.id)} />
+        {world?.world ? <Viewer key={ensemble.id} payload={world.world} cells={world.world.cells} onSelect={noSelect} />
           : <div className="scene empty-scene"><p>{missing.length ? `Bauteile fehlen in der Bibliothek: ${missing.join(', ')}` : 'Vorschau nicht verfügbar.'}</p></div>}
       </div>
       <div className="detail-summary ensemble-sheet">

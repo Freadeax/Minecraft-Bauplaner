@@ -10,6 +10,7 @@ import { useApp } from '../../app/context';
 import { formatNumber } from '../../app/ui';
 import { mix, stateColor } from '../../colors';
 import { Viewer } from '../../Viewer';
+import type { Mark } from '../../viewer/types';
 import { GAME_BADGE, GameCheckPanel, gameStatusText } from './GameCheckPanel';
 import type { LoadedScan } from './GameCheckPanel';
 import { useProjectComputation } from '../../app/useProjectComputation';
@@ -299,10 +300,10 @@ function Step3d({ step, guide, status, resolution }: { step: GuideStep; guide: G
     for (const s of guide.steps) if (status(s.id) === 'done') for (const p of s.positions) keys.add(positionKey(p));
     return keys;
   }, [guide, status]);
-  const colorFor = useCallback((cell: Cell) => {
-    const key = positionKey(cell.position), base = cell.kind === 'erase' ? '#d35f5f' : stateColor(world.palette[cell.paletteIndex]!.id);
-    return own.has(key) ? base : mix(base, doneKeys.has(key) ? DONE : DIM, 0.6);
-  }, [own, doneKeys, world]);
+  const markFor = useCallback((cell: Cell): Mark | null => {
+    const key = positionKey(cell.position);
+    return own.has(key) ? null : { color: doneKeys.has(key) ? DONE : DIM, amount: 0.6 };
+  }, [own, doneKeys]);
   const noop = useCallback(() => {}, []);
-  return <div className="build-3d"><Viewer payload={world} cells={visible.cells} onSelect={noop} colorFor={colorFor} /></div>;
+  return <div className="build-3d"><Viewer payload={world} cells={visible.cells} onSelect={noop} markFor={markFor} /></div>;
 }

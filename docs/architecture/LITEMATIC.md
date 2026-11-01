@@ -30,7 +30,7 @@ Standard: alle Regionen werden in eine Nutzlast zusammengeführt. Lokales 0/0/0 
 
 Alternativ lässt sich genau eine Region importieren (`region`-Option, in der Bibliothek „Übernehmen: Nur …“). Alle Regionen werden trotzdem gelesen und geprüft, damit der Bericht vollständig ist. Spannen die Regionen mehr als 256 Blöcke je Achse auf, nennt die Fehlermeldung den Einzelimport als Ausweg.
 
-Grenzen wie beim Schem-Import: 2 MB komprimiert, 8 MB entpackt, 20.000 Zellen über alle importierten Regionen, 256 je Achse der Box, 64 Regionen, 20.000 Paletteneinträge, NBT-Tiefe 32, 200.000 Knoten, 5 s.
+Grenzen wie beim Schem-Import: 4 MB komprimiert, 16 MB entpackt, 250.000 Zellen über alle importierten Regionen (seit VIEW-02, siehe [BLOCK_MODELS](BLOCK_MODELS.md); Dateigröße in der Oberfläche weiter 2 MB), 256 je Achse der Box, 64 Regionen, 20.000 Paletteneinträge, NBT-Tiefe 32, 200.000 Knoten, 5 s.
 
 ## Formaterkennung
 

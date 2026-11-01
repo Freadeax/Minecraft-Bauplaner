@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T12:56:16.487Z",
+  "updatedAt": "2026-11-01T13:02:14.162Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -1764,14 +1764,20 @@
       "title": "Minecraft-nahe zustandsabhängige Blockformen",
       "phase": "P3",
       "priority": "P1",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "implemented",
+      "owner": "Claude Thread „Blockdarstellung“ (B16)",
       "dependencies": [
         "PROFILE-01",
         "VIEW-01"
       ],
       "scope": [
-        "apps/web/src/viewer/"
+        "apps/web/src/blockmodels/",
+        "apps/web/src/viewer/",
+        "apps/web/src/thumbnail/",
+        "apps/web/src/schem/",
+        "packages/voxel/src/blockRegistry.ts",
+        "packages/voxel/src/states.ts",
+        "scripts/gen_block_data.py"
       ],
       "legacyIds": [
         "VIEW-03",
@@ -1781,34 +1787,62 @@
         {
           "id": "VIEW-02-S01",
           "title": "B16-Dateizuständigkeit vor Beginn prüfen.",
-          "done": false
+          "done": true
         },
         {
           "id": "VIEW-02-S02",
           "title": "Treppen, Stufen, Zäune, Mauern und Glas nach Zuständen darstellen.",
-          "done": false
+          "done": true
         },
         {
           "id": "VIEW-02-S03",
           "title": "Picking, Layer, Fallbacks und Performance unabhängig prüfen.",
+          "done": true
+        },
+        {
+          "id": "VIEW-02-S04",
+          "title": "Originaltexturen nur im Browser des Nutzers (Mojang-Jar oder eigene Dateien), nichts mitgeliefert.",
+          "done": true
+        },
+        {
+          "id": "VIEW-02-S05",
+          "title": "Blockregister 26.3 (1288 Blöcke) und Zustandsregeln für alle ausrichtbaren Blöcke.",
+          "done": true
+        },
+        {
+          "id": "VIEW-02-S06",
+          "title": "Mojang-Download im Browser, Firefox/Safari und echte Geräte prüfen; Registryreport über PROFILE-01 übernehmen.",
           "done": false
         }
       ],
       "acceptance": [
         "Keine fremden Texturen ohne Rechte; sichtbare Geometrie stimmt mit Zellwahl überein."
       ],
-      "next": "B16-Dateizuständigkeit vor Beginn prüfen.",
+      "next": "Mojang-Download im echten Browser und weitere Browser prüfen; Registerdaten an PROFILE-01 binden, sobald es auf main liegt.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/blocks.test.mjs",
+          "note": "ZIP, Modelle, Formen aller 1288 Blöcke, Mesh/Kulling, Zustandsregeln."
+        },
+        {
+          "path": "tests/e2e/textures.e2e.mjs",
+          "note": "Texturdialog mit synthetischer Quelle, Speicherung, Entfernen, keine Mojang-Anfrage ohne Klick."
+        },
+        {
+          "path": "docs/architecture/BLOCK_MODELS.md",
+          "note": "Lizenzentscheidung, Module, Grenzen."
+        }
+      ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "note": "Node- und Chromium-Prüfungen bestanden (391 Node, 59 Browser); Mojang-Download im Browser, Firefox/Safari und Geräte offen."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-01T13:02:14.162Z"
     },
     {
       "id": "EDIT-01",
@@ -4344,6 +4378,84 @@
           "done": 0,
           "total": 5,
           "next": "Entwurfsvertrag und Werkzeuge umsetzen, Blockregister von VIEW-02 übernehmen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T13:02:14.162Z",
+      "kind": "progress",
+      "items": [
+        "VIEW-02"
+      ],
+      "summary": "Blockformen nach Zustand für alle 1288 Blöcke (26.3), Originaltexturen nur aus Mojang-Jar oder eigenen Dateien im Browser, Blockregister und Zustandsregeln 26.3, Importgrenze 250.000 Zellen. 391 Node- und 59 Chromium-Prüfungen bestanden; Mojang-Download im Browser, Firefox/Safari und Geräte offen.",
+      "files": [
+        "apps/web/src/blockmodels/TexturePanel.tsx",
+        "apps/web/src/blockmodels/assets.ts",
+        "apps/web/src/blockmodels/atlas.ts",
+        "apps/web/src/blockmodels/blocks.css",
+        "apps/web/src/blockmodels/colors26.ts",
+        "apps/web/src/blockmodels/mesh.ts",
+        "apps/web/src/blockmodels/model.ts",
+        "apps/web/src/blockmodels/pack.ts",
+        "apps/web/src/blockmodels/packKit.ts",
+        "apps/web/src/blockmodels/renderers.ts",
+        "apps/web/src/blockmodels/shapes.ts",
+        "apps/web/src/blockmodels/threeMesh.ts",
+        "apps/web/src/blockmodels/tint.ts",
+        "apps/web/src/blockmodels/zip.ts",
+        "apps/web/src/colors.ts",
+        "apps/web/src/import.worker.ts",
+        "apps/web/src/main.tsx",
+        "apps/web/src/schem/DiffView.tsx",
+        "apps/web/src/schem/LayerSheet.tsx",
+        "apps/web/src/schem/SchemView.tsx",
+        "apps/web/src/schem/ShotGallery.tsx",
+        "apps/web/src/thumbnail/Thumb.tsx",
+        "apps/web/src/thumbnail/glShot.ts",
+        "apps/web/src/thumbnail/iso.ts",
+        "apps/web/src/thumbnail/views.ts",
+        "apps/web/src/viewer/ThreeViewer.tsx",
+        "apps/web/src/viewer/faces.ts",
+        "apps/web/src/viewer/marks.ts",
+        "apps/web/src/viewer/sceneController.ts",
+        "apps/web/src/viewer/types.ts",
+        "apps/web/src/views/LibraryView.tsx",
+        "apps/web/src/views/ViewerView.tsx",
+        "apps/web/src/views/library/BuildingDetail.tsx",
+        "apps/web/src/views/library/EnsemblesPage.tsx",
+        "apps/web/src/views/library/GeneratorsPage.tsx",
+        "apps/web/src/views/project/BuildTab.tsx",
+        "apps/web/src/views/project/EditorTab.tsx",
+        "docs/BLOCKS.md",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/BLOCK_MODELS.md",
+        "docs/architecture/DECISIONS.md",
+        "docs/architecture/LITEMATIC.md",
+        "docs/architecture/SCHEM_IMPORT.md",
+        "docs/architecture/VIEWER.md",
+        "packages/domain/src/build/sets/wohnen.ts",
+        "packages/formats/src/litematic.ts",
+        "packages/formats/src/schem.ts",
+        "packages/voxel/src/blockRegistry.ts",
+        "packages/voxel/src/index.ts",
+        "packages/voxel/src/states.ts",
+        "scripts/gen_block_data.py",
+        "tests/blocks.test.mjs",
+        "tests/e2e/textures.e2e.mjs",
+        "tests/helpers/minipack.mjs",
+        "tests/schem.test.mjs",
+        "tests/stability.test.mjs",
+        "tests/states.test.mjs",
+        "tests/viewer.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "VIEW-02",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Mojang-Download im echten Browser und weitere Browser prüfen; Registerdaten an PROFILE-01 binden, sobald es auf main liegt."
         }
       ]
     }

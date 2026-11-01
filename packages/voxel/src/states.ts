@@ -9,7 +9,7 @@ import { assertVec3 } from './validation.js';
  * only resolved when its ID is listed and its properties match the schema exactly;
  * there is no guessing from property names. Everything else stays unresolved.
  */
-export const STATE_CATALOG_PROFILE = 'java-vanilla-1.21.4-manual';
+export const STATE_CATALOG_PROFILE = 'java-vanilla-1.21.4-manual+26.3';
 
 export function checkTransform(t: Transform): void {
   assertVec3(t.position, 'transform.position');
@@ -57,20 +57,24 @@ const ORIENTATIONS = ['down_east','down_north','down_south','down_west','up_east
 
 // ---------------------------------------------------------------- explicit IDs
 const COLORS = ['white','orange','magenta','light_blue','yellow','lime','pink','gray','light_gray','cyan','purple','blue','brown','green','red','black'];
-const TREE_WOODS = ['oak','spruce','birch','jungle','acacia','dark_oak','mangrove','cherry','pale_oak'];
+const TREE_WOODS = ['oak','spruce','birch','jungle','acacia','dark_oak','mangrove','cherry','pale_oak','poplar'];
+/** 26.3: poplar has coloured leaves instead of poplar_leaves. */
+const LEAF_WOODS = TREE_WOODS.filter(w => w !== 'poplar');
 const NETHER_WOODS = ['crimson','warped'];
 const WOODS = [...TREE_WOODS,'bamboo',...NETHER_WOODS];
 const COPPER = ['','exposed_','weathered_','oxidized_'].flatMap(s => [s, `waxed_${s}`]);
+/** 26.3 stone families with stairs, slabs and walls. */
+const MINERALS_26 = ['cinnabar','polished_cinnabar','cinnabar_brick','sulfur','polished_sulfur','sulfur_brick'];
 const STONE_STAIR_SLAB = ['stone','cobblestone','mossy_cobblestone','stone_brick','mossy_stone_brick','granite','polished_granite',
   'diorite','polished_diorite','andesite','polished_andesite','cobbled_deepslate','polished_deepslate','deepslate_brick','deepslate_tile',
   'brick','mud_brick','sandstone','smooth_sandstone','red_sandstone','smooth_red_sandstone','prismarine','prismarine_brick',
   'dark_prismarine','nether_brick','red_nether_brick','quartz','smooth_quartz','purpur','end_stone_brick','blackstone',
   'polished_blackstone','polished_blackstone_brick','tuff','polished_tuff','tuff_brick','resin_brick','bamboo_mosaic',
-  ...COPPER.map(c => `${c}cut_copper`)];
+  ...COPPER.map(c => `${c}cut_copper`), ...MINERALS_26, ...COLORS.flatMap(c => [`${c}_concrete`, `${c}_wool`])];
 const WALL_MATERIALS = ['cobblestone','mossy_cobblestone','brick','prismarine','red_sandstone','mossy_stone_brick','granite','stone_brick',
   'mud_brick','nether_brick','andesite','red_nether_brick','sandstone','end_stone_brick','diorite','blackstone','polished_blackstone',
   'polished_blackstone_brick','cobbled_deepslate','polished_deepslate','deepslate_brick','deepslate_tile','tuff','polished_tuff',
-  'tuff_brick','resin_brick'];
+  'tuff_brick','resin_brick', ...MINERALS_26];
 const ids = (...names: readonly string[]) => names.map(n => `minecraft:${n}`);
 const each = (list: readonly string[], f: (s: string) => string) => list.map(f);
 
@@ -131,7 +135,9 @@ const RULES: readonly StateRule[] = [
     ...NETHER_WOODS.flatMap(w => [`${w}_stem`, `${w}_hyphae`, `stripped_${w}_stem`, `stripped_${w}_hyphae`]),
     'bamboo_block','stripped_bamboo_block','basalt','polished_basalt','quartz_pillar','purpur_pillar','hay_block','bone_block',
     'deepslate','infested_deepslate','muddy_mangrove_roots','ochre_froglight','verdant_froglight','pearlescent_froglight') },
-  { family: 'Kette (axis)', ids: ids('chain'), schema: { axis: ['x','y','z'], waterlogged: BOOL }, apply: axis(['x','y','z']) },
+  { family: 'Knarzherz (axis)', ids: ids('creaking_heart'), schema: { axis: ['x','y','z'], creaking_heart_state: ['uprooted','dormant','awake'], natural: BOOL },
+    apply: axis(['x','y','z']), note: 'Propertymenge nach 1.21.5; in 26.3 nicht an einer Palette geprüft.' },
+  { family: 'Kette (axis)', ids: ids('chain', 'iron_chain', ...each(COPPER, c => `${c}copper_chain`)), schema: { axis: ['x','y','z'], waterlogged: BOOL }, apply: axis(['x','y','z']) },
   { family: 'Netherportal (axis x/z)', ids: ids('nether_portal'), schema: { axis: ['x','z'] }, apply: axis(['x','z']) },
 
   { family: 'Treppen', ids: ids(...each([...WOODS, ...STONE_STAIR_SLAB], m => `${m}_stairs`)),
@@ -144,14 +150,14 @@ const RULES: readonly StateRule[] = [
   { family: 'Zauntore', ids: ids(...each(WOODS, w => `${w}_fence_gate`)),
     schema: { facing: FACING4, in_wall: BOOL, open: BOOL, powered: BOOL }, apply: facing },
   { family: 'Zäune, Scheiben, Gitter', ids: ids(...each(WOODS, w => `${w}_fence`), 'nether_brick_fence', 'glass_pane',
-    ...each(COLORS, c => `${c}_stained_glass_pane`), 'iron_bars'),
+    ...each(COLORS, c => `${c}_stained_glass_pane`), 'iron_bars', ...each(COPPER, c => `${c}copper_bars`)),
     schema: { north: BOOL, east: BOOL, south: BOOL, west: BOOL, waterlogged: BOOL }, apply: permuteSides(HORIZONTAL) },
   { family: 'Mauern', ids: ids(...each(WALL_MATERIALS, m => `${m}_wall`)),
     schema: { north: WALL_SIDE, east: WALL_SIDE, south: WALL_SIDE, west: WALL_SIDE, up: BOOL, waterlogged: BOOL }, apply: permuteSides(HORIZONTAL) },
   { family: 'Schienen', ids: ids('rail'), schema: { shape: RAIL_ALL, waterlogged: BOOL }, apply: rail },
   { family: 'Antriebs-/Sensor-/Aktivierungsschienen', ids: ids('powered_rail','detector_rail','activator_rail'),
     schema: { shape: RAIL_STRAIGHT, powered: BOOL, waterlogged: BOOL }, apply: rail },
-  { family: 'Betten', ids: ids(...each(COLORS, c => `${c}_bed`)), schema: { facing: FACING4, occupied: BOOL, part: ['head','foot'] }, apply: facing },
+  { family: 'Betten', ids: ids(...each(COLORS, c => `${c}_bed`), 'straw_bed'), schema: { facing: FACING4, occupied: BOOL, part: ['head','foot'] }, apply: facing },
 
   { family: 'Schilder stehend (rotation)', ids: ids(...each(WOODS, w => `${w}_sign`)),
     schema: { rotation: range(0,15), waterlogged: BOOL }, apply: mapProps(['rotation'], rotation16) },
@@ -174,7 +180,7 @@ const RULES: readonly StateRule[] = [
   { family: 'facing (6 Richtungen)', ids: ids('end_rod','shulker_box',...each(COLORS, c => `${c}_shulker_box`)), schema: { facing: FACING6 }, apply: facing },
   { family: 'facing (6 Richtungen): Befehlsblöcke', ids: ids('command_block','chain_command_block','repeating_command_block'),
     schema: { conditional: BOOL, facing: FACING6 }, apply: facing },
-  { family: 'facing (6 Richtungen): Blitzableiter', ids: ids('lightning_rod'), schema: { facing: FACING6, powered: BOOL, waterlogged: BOOL }, apply: facing },
+  { family: 'facing (6 Richtungen): Blitzableiter', ids: ids(...each(COPPER, c => `${c}lightning_rod`)), schema: { facing: FACING6, powered: BOOL, waterlogged: BOOL }, apply: facing },
   { family: 'facing (6 Richtungen): Amethyst', ids: ids('amethyst_cluster','large_amethyst_bud','medium_amethyst_bud','small_amethyst_bud'),
     schema: { facing: FACING6, waterlogged: BOOL }, apply: facing },
   { family: 'Trichter', ids: ids('hopper'), schema: { enabled: BOOL, facing: ['down','north','south','west','east'] }, apply: facing },
@@ -182,12 +188,12 @@ const RULES: readonly StateRule[] = [
   { family: 'Verbundblock-Orientierung', ids: ids('jigsaw'), schema: { orientation: ORIENTATIONS }, apply: orientation },
 
   { family: 'facing (horizontal)', ids: ids('carved_pumpkin','jack_o_lantern','loom','stonecutter','anvil','chipped_anvil','damaged_anvil',
-    'wall_torch','soul_wall_torch','attached_pumpkin_stem','attached_melon_stem'), schema: { facing: FACING4 }, apply: facing },
+    'wall_torch','soul_wall_torch','copper_wall_torch','attached_pumpkin_stem','attached_melon_stem'), schema: { facing: FACING4 }, apply: facing },
   { family: 'Glasierte Keramik', ids: ids(...each(COLORS, c => `${c}_glazed_terracotta`)), schema: { facing: FACING4 },
     apply: (p, t) => t.mirrorX ? null : facing(p, t), note: 'Muster ist chiral: Drehen gelöst, Spiegeln nicht darstellbar und daher ungelöst.' },
   { family: 'Öfen', ids: ids('furnace','blast_furnace','smoker'), schema: { facing: FACING4, lit: BOOL }, apply: facing },
   { family: 'Redstone-Wandfackel', ids: ids('redstone_wall_torch'), schema: { facing: FACING4, lit: BOOL }, apply: facing },
-  { family: 'Truhen', ids: ids('chest','trapped_chest'), schema: { facing: FACING4, type: ['single','left','right'], waterlogged: BOOL }, apply: facingThenSwap('type') },
+  { family: 'Truhen', ids: ids('chest','trapped_chest', ...each(COPPER, c => `${c}copper_chest`)), schema: { facing: FACING4, type: ['single','left','right'], waterlogged: BOOL }, apply: facingThenSwap('type') },
   { family: 'Endertruhe, Leiter', ids: ids('ender_chest','ladder'), schema: { facing: FACING4, waterlogged: BOOL }, apply: facing },
   { family: 'Bienenstock', ids: ids('beehive','bee_nest'), schema: { facing: FACING4, honey_level: range(0,5) }, apply: facing },
   { family: 'Lesepult', ids: ids('lectern'), schema: { facing: FACING4, has_book: BOOL, powered: BOOL }, apply: facing },
@@ -200,10 +206,33 @@ const RULES: readonly StateRule[] = [
   { family: 'Stolperdrahthaken', ids: ids('tripwire_hook'), schema: { attached: BOOL, facing: FACING4, powered: BOOL }, apply: facing },
   { family: 'Großes Tropfblatt', ids: ids('big_dripleaf'), schema: { facing: FACING4, tilt: ['none','unstable','partial','full'], waterlogged: BOOL }, apply: facing },
   { family: 'Tropfblatt', ids: ids('big_dripleaf_stem'), schema: { facing: FACING4, waterlogged: BOOL }, apply: facing },
+  { family: 'Regale (26.3)', ids: ids(...each(WOODS, w => `${w}_shelf`)),
+    schema: { facing: FACING4, powered: BOOL, side_chain: ['unconnected','left','center','right'], waterlogged: BOOL }, apply: facingThenSwap('side_chain') },
+  { family: 'Glocke', ids: ids('bell'), schema: { attachment: ['floor','ceiling','single_wall','double_wall'], facing: FACING4, powered: BOOL }, apply: facing },
+  { family: 'Kakao', ids: ids('cocoa'), schema: { age: range(0,2), facing: FACING4 }, apply: facing },
+  { family: 'Endportalrahmen', ids: ids('end_portal_frame'), schema: { eye: BOOL, facing: FACING4 }, apply: facing },
+  { family: 'Kalibrierter Sculk-Sensor', ids: ids('calibrated_sculk_sensor'),
+    schema: { facing: FACING4, power: range(0,15), sculk_sensor_phase: ['inactive','active','cooldown'], waterlogged: BOOL }, apply: facing },
+  { family: 'Kupfergolem-Statuen', ids: ids(...each(COPPER, c => `${c}copper_golem_statue`)),
+    schema: { copper_golem_pose: ['standing','sitting','running','star'], facing: FACING4, waterlogged: BOOL }, apply: facing },
+  { family: 'Verzierter Krug', ids: ids('decorated_pot'), schema: { cracked: BOOL, facing: FACING4, waterlogged: BOOL },
+    apply: facing, note: 'Gespiegelt wird die Blickrichtung; Scherbenmotive (Blockdaten) tauschen ihre Seiten dabei nicht.' },
+  { family: 'Ausgetrockneter Ghast', ids: ids('dried_ghast'), schema: { facing: FACING4, hydration: range(0,3), waterlogged: BOOL }, apply: facing },
+  { family: 'Tresor', ids: ids('vault'), schema: { facing: FACING4, ominous: BOOL, vault_state: ['inactive','active','unlocking','ejecting'] }, apply: facing },
+  { family: 'Regalpilz', ids: ids('shelf_mushroom'), schema: { age: range(0,1), facing: FACING4 }, apply: facing },
+  { family: 'Korallenfächer an der Wand', ids: ids(...['tube','brain','bubble','fire','horn'].flatMap(c => [`${c}_coral_wall_fan`, `dead_${c}_coral_wall_fan`])),
+    schema: { facing: FACING4, waterlogged: BOOL }, apply: facing },
+  { family: 'Gemeißeltes Bücherregal', ids: ids('chiseled_bookshelf'),
+    schema: { facing: FACING4, slot_0_occupied: BOOL, slot_1_occupied: BOOL, slot_2_occupied: BOOL, slot_3_occupied: BOOL, slot_4_occupied: BOOL, slot_5_occupied: BOOL },
+    apply: (p, t) => t.mirrorX ? null : facing(p, t), note: 'Fächer sind von links nach rechts nummeriert: Drehen gelöst, Spiegeln ungelöst.' },
+  { family: 'Blüten- und Laubteppiche', ids: ids('pink_petals','wildflowers'), schema: { facing: FACING4, flower_amount: range(1,4) },
+    apply: (p, t) => t.mirrorX ? null : facing(p, t), note: 'Anordnung der Teile ist chiral: Spiegeln ungelöst.' },
+  { family: 'Laubstreu', ids: ids('leaf_litter'), schema: { facing: FACING4, segment_amount: range(1,4) },
+    apply: (p, t) => t.mirrorX ? null : facing(p, t), note: 'Anordnung der Teile ist chiral: Spiegeln ungelöst.' },
   { family: 'Kleines Tropfblatt', ids: ids('small_dripleaf'), schema: { facing: FACING4, half: ['upper','lower'], waterlogged: BOOL }, apply: facing },
 
   { family: 'Ranken', ids: ids('vine'), schema: { east: BOOL, north: BOOL, south: BOOL, up: BOOL, west: BOOL }, apply: permuteSides(HORIZONTAL) },
-  { family: 'Mehrseitige Beläge', ids: ids('glow_lichen','sculk_vein'),
+  { family: 'Mehrseitige Beläge', ids: ids('glow_lichen','sculk_vein','resin_clump'),
     schema: { down: BOOL, east: BOOL, north: BOOL, south: BOOL, up: BOOL, west: BOOL, waterlogged: BOOL }, apply: permuteSides(HORIZONTAL) },
   { family: 'Pilzblöcke, Chorus', ids: ids('brown_mushroom_block','red_mushroom_block','mushroom_stem','chorus_plant'),
     schema: { down: BOOL, east: BOOL, north: BOOL, south: BOOL, up: BOOL, west: BOOL }, apply: permuteSides(HORIZONTAL) },
@@ -211,12 +240,15 @@ const RULES: readonly StateRule[] = [
     schema: { east: WIRE_SIDE, north: WIRE_SIDE, power: range(0,15), south: WIRE_SIDE, west: WIRE_SIDE }, apply: permuteSides(HORIZONTAL) },
   { family: 'Stolperdraht', ids: ids('tripwire'),
     schema: { attached: BOOL, disarmed: BOOL, east: BOOL, north: BOOL, powered: BOOL, south: BOOL, west: BOOL }, apply: permuteSides(HORIZONTAL) },
+  { family: 'Blasser Moosteppich', ids: ids('pale_moss_carpet'),
+    schema: { bottom: BOOL, east: WALL_SIDE, north: WALL_SIDE, south: WALL_SIDE, west: WALL_SIDE }, apply: permuteSides(HORIZONTAL) },
   { family: 'Feuer', ids: ids('fire'), schema: { age: range(0,15), east: BOOL, north: BOOL, south: BOOL, up: BOOL, west: BOOL }, apply: permuteSides(HORIZONTAL) },
 
   // Properties present, but none of them depends on horizontal orientation.
   { family: 'ausrichtungsfrei: Stufen', ids: ids(...each([...WOODS, ...STONE_STAIR_SLAB, 'smooth_stone','cut_sandstone','cut_red_sandstone','petrified_oak'], m => `${m}_slab`)),
     schema: { type: ['top','bottom','double'], waterlogged: BOOL }, apply: same },
-  { family: 'ausrichtungsfrei: Laub', ids: ids(...each(TREE_WOODS, w => `${w}_leaves`), 'azalea_leaves', 'flowering_azalea_leaves'),
+  { family: 'ausrichtungsfrei: Laub', ids: ids(...each(LEAF_WOODS, w => `${w}_leaves`), 'azalea_leaves', 'flowering_azalea_leaves',
+    'yellow_poplar_leaves', 'orange_poplar_leaves', 'red_poplar_leaves'),
     schema: { distance: range(1,7), persistent: BOOL, waterlogged: BOOL }, apply: same },
   { family: 'ausrichtungsfrei: Flüssigkeiten', ids: ids('water','lava'), schema: { level: range(0,15) }, apply: same },
   { family: 'ausrichtungsfrei: Schnee', ids: ids('snow'), schema: { layers: range(1,8) }, apply: same },
@@ -226,10 +258,10 @@ const RULES: readonly StateRule[] = [
   { family: 'ausrichtungsfrei: Rote Bete, Netherwarze', ids: ids('beetroots','nether_wart'), schema: { age: range(0,3) }, apply: same },
   { family: 'ausrichtungsfrei: Kaktus, Zuckerrohr', ids: ids('cactus','sugar_cane'), schema: { age: range(0,15) }, apply: same },
   { family: 'ausrichtungsfrei: Setzlinge', ids: ids(...each(TREE_WOODS.filter(w => w !== 'mangrove'), w => `${w}_sapling`)), schema: { stage: ['0','1'] }, apply: same },
-  { family: 'ausrichtungsfrei: hohe Pflanzen', ids: ids('tall_grass','large_fern','lilac','rose_bush','peony'), schema: { half: ['upper','lower'] }, apply: same },
+  { family: 'ausrichtungsfrei: hohe Pflanzen', ids: ids('tall_grass','large_fern','lilac','rose_bush','peony','sunflower','pitcher_plant','tall_seagrass'), schema: { half: ['upper','lower'] }, apply: same },
   { family: 'ausrichtungsfrei: Kerzen', ids: ids('candle', ...each(COLORS, c => `${c}_candle`)), schema: { candles: range(1,4), lit: BOOL, waterlogged: BOOL }, apply: same },
   { family: 'ausrichtungsfrei: Seegurken', ids: ids('sea_pickle'), schema: { pickles: range(1,4), waterlogged: BOOL }, apply: same },
-  { family: 'ausrichtungsfrei: Laternen', ids: ids('lantern','soul_lantern'), schema: { hanging: BOOL, waterlogged: BOOL }, apply: same },
+  { family: 'ausrichtungsfrei: Laternen', ids: ids('lantern','soul_lantern', ...each(COPPER, c => `${c}copper_lantern`)), schema: { hanging: BOOL, waterlogged: BOOL }, apply: same },
   { family: 'ausrichtungsfrei: Druckplatten', ids: ids(...each(WOODS, w => `${w}_pressure_plate`), 'stone_pressure_plate', 'polished_blackstone_pressure_plate'),
     schema: { powered: BOOL }, apply: same },
   { family: 'ausrichtungsfrei: Wägeplatten', ids: ids('light_weighted_pressure_plate','heavy_weighted_pressure_plate'), schema: { power: range(0,15) }, apply: same },
@@ -239,8 +271,37 @@ const RULES: readonly StateRule[] = [
   { family: 'ausrichtungsfrei: Zielblock', ids: ids('target'), schema: { power: range(0,15) }, apply: same },
   { family: 'ausrichtungsfrei: Braustand', ids: ids('brewing_stand'), schema: { has_bottle_0: BOOL, has_bottle_1: BOOL, has_bottle_2: BOOL }, apply: same },
   { family: 'ausrichtungsfrei: Gerüst', ids: ids('scaffolding'), schema: { bottom: BOOL, distance: range(0,7), waterlogged: BOOL }, apply: same },
-  { family: 'ausrichtungsfrei: Tropfstein', ids: ids('pointed_dripstone'),
+  { family: 'ausrichtungsfrei: Tropfstein, Schwefelspitze', ids: ids('pointed_dripstone','sulfur_spike'),
     schema: { thickness: ['tip_merge','tip','frustum','middle','base'], vertical_direction: ['up','down'], waterlogged: BOOL }, apply: same },
+  // 26.3 and later additions without horizontal orientation (property names from a 26.3 Litematica palette).
+  { family: 'ausrichtungsfrei: wasserführend', ids: ids('conduit','heavy_core','hanging_roots', ...each(COPPER, c => `${c}copper_grate`),
+    ...['tube','brain','bubble','fire','horn'].flatMap(c => [`${c}_coral`, `dead_${c}_coral`, `${c}_coral_fan`, `dead_${c}_coral_fan`])),
+    schema: { waterlogged: BOOL }, apply: same },
+  { family: 'ausrichtungsfrei: Kupferlampen', ids: ids(...each(COPPER, c => `${c}copper_bulb`)), schema: { lit: BOOL, powered: BOOL }, apply: same },
+  { family: 'ausrichtungsfrei: Komposter', ids: ids('composter'), schema: { level: range(0,8) }, apply: same },
+  { family: 'ausrichtungsfrei: Kuchen', ids: ids('cake'), schema: { bites: range(0,6) }, apply: same },
+  { family: 'ausrichtungsfrei: Kerzenkuchen', ids: ids('candle_cake', ...each(COLORS, c => `${c}_candle_cake`)), schema: { lit: BOOL }, apply: same },
+  { family: 'ausrichtungsfrei: Sculk-Sensor', ids: ids('sculk_sensor'), schema: { power: range(0,15), sculk_sensor_phase: ['inactive','active','cooldown'], waterlogged: BOOL }, apply: same },
+  { family: 'ausrichtungsfrei: Sculk-Kreischer', ids: ids('sculk_shrieker'), schema: { can_summon: BOOL, shrieking: BOOL, waterlogged: BOOL }, apply: same },
+  { family: 'ausrichtungsfrei: Sculk-Katalysator', ids: ids('sculk_catalyst'), schema: { bloom: BOOL }, apply: same },
+  { family: 'ausrichtungsfrei: Höhlenranken', ids: ids('cave_vines'), schema: { age: range(0,25), berries: BOOL }, apply: same },
+  { family: 'ausrichtungsfrei: Höhlenranken (Stiel)', ids: ids('cave_vines_plant'), schema: { berries: BOOL }, apply: same },
+  { family: 'ausrichtungsfrei: wachsende Ranken', ids: ids('kelp','twisting_vines','weeping_vines'), schema: { age: range(0,25) }, apply: same },
+  { family: 'ausrichtungsfrei: Stängel', ids: ids('melon_stem','pumpkin_stem'), schema: { age: range(0,7) }, apply: same },
+  { family: 'ausrichtungsfrei: Beeren, Eis, Verdächtiges', ids: ids('sweet_berry_bush','frosted_ice'), schema: { age: range(0,3) }, apply: same },
+  { family: 'ausrichtungsfrei: verdächtige Blöcke', ids: ids('suspicious_sand','suspicious_gravel'), schema: { dusted: range(0,3) }, apply: same },
+  { family: 'ausrichtungsfrei: Chorusblüte', ids: ids('chorus_flower'), schema: { age: range(0,5) }, apply: same },
+  { family: 'ausrichtungsfrei: Fackellilien-Saat', ids: ids('torchflower_crop'), schema: { age: range(0,1) }, apply: same },
+  { family: 'ausrichtungsfrei: Kannenpflanzen-Saat', ids: ids('pitcher_crop'), schema: { age: range(0,4), half: ['upper','lower'] }, apply: same },
+  { family: 'ausrichtungsfrei: Mangroven-Keimling', ids: ids('mangrove_propagule'), schema: { age: range(0,4), hanging: BOOL, stage: ['0','1'], waterlogged: BOOL }, apply: same },
+  { family: 'ausrichtungsfrei: Bambus', ids: ids('bamboo'), schema: { age: range(0,1), leaves: ['none','small','large'], stage: ['0','1'] }, apply: same },
+  { family: 'ausrichtungsfrei: Eier', ids: ids('turtle_egg'), schema: { eggs: range(1,4), hatch: range(0,2) }, apply: same },
+  { family: 'ausrichtungsfrei: Schnüffler-Ei', ids: ids('sniffer_egg'), schema: { hatch: range(0,2) }, apply: same },
+  { family: 'ausrichtungsfrei: Seelenanker', ids: ids('respawn_anchor'), schema: { charges: range(0,4) }, apply: same },
+  { family: 'ausrichtungsfrei: Plattenspieler', ids: ids('jukebox'), schema: { has_record: BOOL }, apply: same },
+  { family: 'ausrichtungsfrei: Tageslichtsensor', ids: ids('daylight_detector'), schema: { inverted: BOOL, power: range(0,15) }, apply: same },
+  { family: 'ausrichtungsfrei: Blasses Hängemoos', ids: ids('pale_hanging_moss'), schema: { tip: BOOL }, apply: same },
+  { family: 'ausrichtungsfrei: Lichtblock', ids: ids('light'), schema: { level: range(0,15), waterlogged: BOOL }, apply: same },
 ];
 
 const BY_ID: ReadonlyMap<string, StateRule> = (() => {
@@ -275,6 +336,8 @@ export function transformBlockState(state: BlockState, t: Transform): StateTrans
   const p = state.properties;
   const rule = BY_ID.get(state.id);
   if (rule) {
+    // Orientation-free families keep states that leave every property at its default.
+    if (rule.apply === same && Object.keys(p).length === 0) return { state, resolved: true, family: rule.family };
     if (!matches(p, rule.schema)) return { state, resolved: false, family: rule.family, reason: 'schema-mismatch' };
     const next = rule.apply(p, t);
     if (!next) return { state, resolved: false, family: rule.family, reason: 'unrepresentable' };

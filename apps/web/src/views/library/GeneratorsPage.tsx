@@ -1,5 +1,4 @@
 import { useDeferredValue, useEffect, useMemo, useState } from 'react';
-import type { Cell } from '../../../../../packages/voxel/src/index.js';
 import { addGeneratedVersion, analyzeVersion, applyOperation, checkReproducible, createGeneratedAsset, defaultsOf, describeParams, generatorById, generatorSourceOf, newInstance, presetValues, resolveProject,
   rollParams, runGenerator, compoundById, createCompoundProject, COMPOUNDS, GENERATORS } from '../../../../../packages/domain/src/index.js';
 import type { Asset, AssetVersion, CompoundBuild, GeneratorRun, ParamValue, ParamValues, Project, ReproCheck, Resolution } from '../../../../../packages/domain/src/index.js';
@@ -7,7 +6,6 @@ import { useApp } from '../../app/context';
 import { href, navigate } from '../../app/router';
 import type { LibraryPage } from '../../app/router';
 import { errorText, formatNumber } from '../../app/ui';
-import { stateColor } from '../../colors';
 import { Viewer } from '../../Viewer';
 import { Thumb } from '../../thumbnail/Thumb';
 import { stars } from './BuildingCard';
@@ -88,7 +86,6 @@ function GeneratorWorkbench({ generatorId, presetId, assetId, projects, libHref,
   const deferred = useDeferredValue(raw);
   const run: GeneratorRun | null = useMemo(() => { try { return runGenerator(generatorId, deferred); } catch (e) { setError(errorText(e)); return null; } }, [generatorId, deferred]);
   const metrics = useMemo(() => run ? analyzeVersion({ id: 'preview', payload: run.payload, connectors: run.connectors }) : null, [run]);
-  const colorFor = useMemo(() => run ? (cell: Cell) => cell.kind === 'erase' ? '#d35f5f' : stateColor(run.payload.palette[cell.paletteIndex]!.id) : undefined, [run]);
   const noSelect = useMemo(() => () => {}, []);
   const values: ParamValues = run?.values ?? raw;
   const set = (key: string, value: ParamValue) => { setRaw(r => ({ ...r, [key]: value })); setPreset(''); };
@@ -125,7 +122,7 @@ function GeneratorWorkbench({ generatorId, presetId, assetId, projects, libHref,
       <span aria-current="page">{generator.name}{editing ? ` · ${editing.asset.name}` : ''}</span></nav>
     <div className="detail-hero gen-hero">
       <div className="viewport detail-stage">
-        {run && colorFor ? <Viewer key={generatorId} payload={run.payload} cells={run.payload.cells} onSelect={noSelect} colorFor={colorFor} />
+        {run ? <Viewer key={generatorId} payload={run.payload} cells={run.payload.cells} onSelect={noSelect} />
           : <div className="scene empty-scene"><p>Keine Vorschau.</p></div>}
       </div>
       <div className="detail-summary gen-summary">
@@ -223,7 +220,6 @@ function CompoundWorkbench({ compoundId, presetId, libHref }: { compoundId: stri
   const deferred = useDeferredValue(raw);
   const { build, resolution, error: buildError } = useCompound(compoundId, deferred);
   const world = resolution?.world ?? null;
-  const colorFor = useMemo(() => world ? (cell: Cell) => cell.kind === 'erase' ? '#d35f5f' : stateColor(world.palette[cell.paletteIndex]!.id) : undefined, [world]);
   const noSelect = useMemo(() => () => {}, []);
   const values: ParamValues = build?.values ?? raw;
   const set = (key: string, value: ParamValue) => { setRaw(r => ({ ...r, [key]: value })); setPreset(''); };
@@ -242,7 +238,7 @@ function CompoundWorkbench({ compoundId, presetId, libHref }: { compoundId: stri
       <span aria-current="page">{compound.name}</span></nav>
     <div className="detail-hero gen-hero">
       <div className="viewport detail-stage">
-        {world && colorFor ? <Viewer key={compoundId} payload={world} cells={world.cells} onSelect={noSelect} colorFor={colorFor} />
+        {world ? <Viewer key={compoundId} payload={world} cells={world.cells} onSelect={noSelect} />
           : <div className="scene empty-scene"><p>{buildError || 'Vorschau wird berechnet …'}</p></div>}
       </div>
       <div className="detail-summary gen-summary">

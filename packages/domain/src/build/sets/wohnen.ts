@@ -243,7 +243,7 @@ function lehmhaus() {
   for (let z = 1; z <= 7; z++) for (const x of [0, 8]) if (z % 2 === 0) p.set(x, 5, z, 'mud_brick_wall');
   for (let x = 1; x <= 3; x++) for (let z = 5; z <= 7; z++) p.set(x, 5, z, 'acacia_slab', slab());
   p.fill(7, 1, 7, 7, 4, 7, 'ladder', ladder('north'));
-  bed(p, 2, 1, 6, 'orange', 'north'); p.set(6, 1, 1, 'barrel', barrel('up')); p.set(1, 1, 1, 'decorated_pot'); p.set(4, 3, 4, 'lantern', lantern(true));
+  bed(p, 2, 1, 6, 'orange', 'north'); p.set(6, 1, 1, 'barrel', barrel('up')); p.set(1, 1, 1, 'decorated_pot', { cracked: F, facing: 'north', waterlogged: F }); p.set(4, 3, 4, 'lantern', lantern(true));
   p.set(5, 5, 2, 'potted_cactus');
   return p.payload();
 }

@@ -2,6 +2,8 @@ import { createRoot } from 'react-dom/client';
 import { AppProvider } from './app/context';
 import { ErrorBoundary } from './app/ErrorBoundary';
 import { installErrorCapture } from './app/errorLog';
+import { initTextures } from './blockmodels/assets';
+import { TextureChip, TextureDialog } from './blockmodels/TexturePanel';
 import { useRoute } from './app/router';
 import type { Route } from './app/router';
 import { Cube, REPO_URL } from './app/ui';
@@ -15,6 +17,7 @@ import './style.css';
 import './catalog.css';
 import './schem.css';
 import './theme/theme.css';
+import './blockmodels/blocks.css';
 
 function Page({ route }: { route: Route }) {
   switch (route.view) {
@@ -38,11 +41,13 @@ function App() {
         <a href="#/bibliothek" aria-current={area === 'library' ? 'page' : undefined}>Bibliothek</a>
         <a href="#/betrachter" aria-current={area === 'viewer' ? 'page' : undefined}>Betrachter</a>
         <a href={REPO_URL} target="_blank" rel="noreferrer">GitHub ↗</a>
-      </nav><ThemeControl /><span className="version"><span /> Vorabversion 0.2</span></header>
+      </nav><ThemeControl /><TextureChip /><span className="version"><span /> Vorabversion 0.2</span></header>
     <div id="inhalt" tabIndex={-1} className="content"><AppProvider><ErrorBoundary resetKey={window.location.hash}><Page route={route} /></ErrorBoundary></AppProvider></div>
+    <TextureDialog />
     <footer><span>LMNT BUILD STUDIO <span className="footer-dot">·</span> Mit Plan gebaut.</span><span><a href="#/system">Systemcheck</a> <span className="footer-dot">·</span> Unabhängiges Projekt · kein offizielles Minecraft-Produkt</span></footer>
   </>;
 }
 
 installErrorCapture();
+initTextures();
 createRoot(document.getElementById('root')!).render(<App />);

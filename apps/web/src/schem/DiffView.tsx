@@ -2,8 +2,9 @@ import { useMemo, useState } from 'react';
 import { diffAsPayload, diffPayloads } from '../../../../packages/voxel/src/index.js';
 import type { Cell, DiffKind, VoxelPayload } from '../../../../packages/voxel/src/index.js';
 import { formatNumber } from '../app/ui';
-import { mix, stateColor } from '../colors';
+import { stateColor } from '../colors';
 import { Viewer } from '../Viewer';
+import type { Mark } from '../viewer/types';
 import { Thumb } from '../thumbnail/Thumb';
 import { LayerSheet } from './LayerSheet';
 
@@ -12,6 +13,7 @@ import { LayerSheet } from './LayerSheet';
  * of both structures with coloured changes in 3D, as image or per layer, and
  * the block delta by id. Both structures are aligned at their minimum corner.
  */
+const SAME_MARK: Mark = { color: '#16303c', amount: 0.62 };
 export const DIFF_COLOR: Readonly<Record<Exclude<DiffKind, 'same'>, string>> = { added: '#4fd18b', removed: '#ff6b6b', material: '#ffb347', state: '#6fb3ff' };
 export const DIFF_LABEL: Readonly<Record<DiffKind, string>> = { same: 'unverändert', added: 'hinzugefügt', removed: 'entfernt', material: 'anderes Material', state: 'nur Ausrichtung/Zustand' };
 const KINDS: readonly DiffKind[] = ['added', 'removed', 'material', 'state', 'same'];
@@ -26,11 +28,13 @@ export function DiffView({ a, b, labelA, labelB, cacheKey, profileId }: {
   const [hideSame, setHideSame] = useState(false);
   const [allRows, setAllRows] = useState(false);
   const kindAt = useMemo(() => new Map(union.payload.cells.map((c, i) => [c.position.join(','), union.kinds[i]!])), [union]);
-  const colour = (kind: DiffKind, id: string): string | null => kind === 'same' ? (hideSame ? null : mix(stateColor(id), '#16303c', 0.62)) : DIFF_COLOR[kind];
-  const colorOfIndex = (i: number) => { const c = union.payload.cells[i]!; return colour(union.kinds[i]!, c.kind === 'erase' ? '' : union.payload.palette[c.paletteIndex]!.id); };
+  const markOfKind = (kind: DiffKind): Mark | false => kind === 'same' ? (hideSame ? false : SAME_MARK) : { color: DIFF_COLOR[kind], amount: 0.7 };
+  const markOfIndex = (i: number) => markOfKind(union.kinds[i]!);
   const cells3d = useMemo(() => hideSame ? union.payload.cells.filter((_, i) => union.kinds[i] !== 'same') : union.payload.cells, [union, hideSame]);
-  const colorFor = useMemo(() => (cell: Cell) => cell.kind === 'erase' ? '#d35f5f'
-    : colour(kindAt.get(cell.position.join(',')) ?? 'same', union.payload.palette[cell.paletteIndex]!.id) ?? '#000000', [kindAt, union, hideSame]);
+  const markFor = useMemo(() => (cell: Cell): Mark | null => {
+    const kind = kindAt.get(cell.position.join(',')) ?? 'same';
+    return kind === 'same' ? SAME_MARK : { color: DIFF_COLOR[kind], amount: 0.7 };
+  }, [kindAt]);
   const noSelect = useMemo(() => () => {}, []);
   const changed = diff.counts.added + diff.counts.removed + diff.counts.material + diff.counts.state;
   const rows = allRows ? diff.blocks : diff.blocks.slice(0, 10);
@@ -51,10 +55,10 @@ export function DiffView({ a, b, labelA, labelB, cacheKey, profileId }: {
       {mode === 'bild' && <div className="diff-shots">
         <figure><Thumb cacheKey={`${cacheKey}:A`} payload={() => a} eager alt={`Stand ${labelA}`} width={420} height={300} className="thumb shot-big" /><figcaption>Stand {labelA}</figcaption></figure>
         <figure><Thumb cacheKey={`${cacheKey}:B`} payload={() => b} eager alt={`Stand ${labelB}`} width={420} height={300} className="thumb shot-big" /><figcaption>Stand {labelB}</figcaption></figure>
-        <figure><Thumb key={`d-${hideSame}`} cacheKey={`diff:${cacheKey}:${hideSame ? 'h' : 'a'}`} payload={() => union.payload} colorOf={(_c, i) => colorOfIndex(i)} eager alt="Unterschiede farbig" width={420} height={300} className="thumb shot-big" /><figcaption>Unterschiede</figcaption></figure>
+        <figure><Thumb key={`d-${hideSame}`} cacheKey={`diff:${cacheKey}:${hideSame ? 'h' : 'a'}`} payload={() => union.payload} markOf={(_c, i) => markOfIndex(i)} eager alt="Unterschiede farbig" width={420} height={300} className="thumb shot-big" /><figcaption>Unterschiede</figcaption></figure>
       </div>}
-      {mode === '3d' && <div className="viewport detail-stage"><Viewer key={cacheKey} payload={union.payload} cells={cells3d.length ? cells3d : union.payload.cells} onSelect={noSelect} colorFor={colorFor} /></div>}
-      {mode === 'ebenen' && <LayerSheet key={`${cacheKey}:${hideSame}`} payload={union.payload} name={`${labelA} → ${labelB}`} colorOf={colorOfIndex} />}
+      {mode === '3d' && <div className="viewport detail-stage"><Viewer key={cacheKey} payload={union.payload} cells={cells3d.length ? cells3d : union.payload.cells} onSelect={noSelect} markFor={markFor} /></div>}
+      {mode === 'ebenen' && <LayerSheet key={`${cacheKey}:${hideSame}`} payload={union.payload} name={`${labelA} → ${labelB}`} markOf={markOfIndex} />}
     </div>
     {diff.blocks.length > 0 && <table className="diff-table">
       <caption>Blockmengen, die sich ändern</caption>

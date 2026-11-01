@@ -707,3 +707,75 @@ Anmeldung: EDIT-01 übernommen, neue Aufgabe EDIT-02 Blockeditor angelegt; Datei
 
 - `docs/COMMUNICATION.md`
 
+## 2026-11-01T13:02:14.162Z · progress
+
+**Aufgaben:** VIEW-02
+
+Blockformen nach Zustand für alle 1288 Blöcke (26.3), Originaltexturen nur aus Mojang-Jar oder eigenen Dateien im Browser, Blockregister und Zustandsregeln 26.3, Importgrenze 250.000 Zellen. 391 Node- und 59 Chromium-Prüfungen bestanden; Mojang-Download im Browser, Firefox/Safari und Geräte offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| VIEW-02 | 🧩 Implementiert · Abnahme offen | 5/6 | Mojang-Download im echten Browser und weitere Browser prüfen; Registerdaten an PROFILE-01 binden, sobald es auf main liegt. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/blockmodels/TexturePanel.tsx`
+- `apps/web/src/blockmodels/assets.ts`
+- `apps/web/src/blockmodels/atlas.ts`
+- `apps/web/src/blockmodels/blocks.css`
+- `apps/web/src/blockmodels/colors26.ts`
+- `apps/web/src/blockmodels/mesh.ts`
+- `apps/web/src/blockmodels/model.ts`
+- `apps/web/src/blockmodels/pack.ts`
+- `apps/web/src/blockmodels/packKit.ts`
+- `apps/web/src/blockmodels/renderers.ts`
+- `apps/web/src/blockmodels/shapes.ts`
+- `apps/web/src/blockmodels/threeMesh.ts`
+- `apps/web/src/blockmodels/tint.ts`
+- `apps/web/src/blockmodels/zip.ts`
+- `apps/web/src/colors.ts`
+- `apps/web/src/import.worker.ts`
+- `apps/web/src/main.tsx`
+- `apps/web/src/schem/DiffView.tsx`
+- `apps/web/src/schem/LayerSheet.tsx`
+- `apps/web/src/schem/SchemView.tsx`
+- `apps/web/src/schem/ShotGallery.tsx`
+- `apps/web/src/thumbnail/Thumb.tsx`
+- `apps/web/src/thumbnail/glShot.ts`
+- `apps/web/src/thumbnail/iso.ts`
+- `apps/web/src/thumbnail/views.ts`
+- `apps/web/src/viewer/ThreeViewer.tsx`
+- `apps/web/src/viewer/faces.ts`
+- `apps/web/src/viewer/marks.ts`
+- `apps/web/src/viewer/sceneController.ts`
+- `apps/web/src/viewer/types.ts`
+- `apps/web/src/views/LibraryView.tsx`
+- `apps/web/src/views/ViewerView.tsx`
+- `apps/web/src/views/library/BuildingDetail.tsx`
+- `apps/web/src/views/library/EnsemblesPage.tsx`
+- `apps/web/src/views/library/GeneratorsPage.tsx`
+- `apps/web/src/views/project/BuildTab.tsx`
+- `apps/web/src/views/project/EditorTab.tsx`
+- `docs/BLOCKS.md`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/BLOCK_MODELS.md`
+- `docs/architecture/DECISIONS.md`
+- `docs/architecture/LITEMATIC.md`
+- `docs/architecture/SCHEM_IMPORT.md`
+- `docs/architecture/VIEWER.md`
+- `packages/domain/src/build/sets/wohnen.ts`
+- `packages/formats/src/litematic.ts`
+- `packages/formats/src/schem.ts`
+- `packages/voxel/src/blockRegistry.ts`
+- `packages/voxel/src/index.ts`
+- `packages/voxel/src/states.ts`
+- `scripts/gen_block_data.py`
+- `tests/blocks.test.mjs`
+- `tests/e2e/textures.e2e.mjs`
+- `tests/helpers/minipack.mjs`
+- `tests/schem.test.mjs`
+- `tests/stability.test.mjs`
+- `tests/states.test.mjs`
+- `tests/viewer.test.mjs`
+

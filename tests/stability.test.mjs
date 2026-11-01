@@ -8,7 +8,8 @@ import {
   canonicalJson, quickHash, createBuildingLibrary,
   createAsset, addAssetVersion, createProject, applyOperation, newInstance, resolveProject, computeMaterials, buildGuide, checkIntegrity, createBackup, readBackup,
 } from '../dist/domain/src/index.js';
-import { buildFaces } from '../apps/web/src/viewer/faces.ts';
+import { buildBlockMesh } from '../apps/web/src/blockmodels/mesh.ts';
+import { fallbackRenderer } from '../apps/web/src/blockmodels/renderers.ts';
 import { parseManifest, verifyDelivery, shouldVerify } from '../apps/web/src/app/delivery.ts';
 import { parseRoute, href } from '../apps/web/src/app/router.ts';
 
@@ -76,7 +77,8 @@ test('large model: 4 × 128×48×128 halls (~600 000 blocks) stay within time bu
   assert.equal(materials.totals.blocks ?? blocks, blocks);
   const guide = await time('buildGuide', () => buildGuide(p, resolution), 10000);
   assert.ok(guide.steps.length >= 4 * 48);
-  const mesh = await time('buildFaces', () => buildFaces(resolution.world.cells, () => [0.5, 0.5, 0.5], [0, 0, 0]), 15000);
+  const slot = () => ({ rect: [0, 0, 1, 1], layer: 0 });
+  const mesh = await time('buildBlockMesh', () => buildBlockMesh(resolution.world.cells, resolution.world.palette, fallbackRenderer(), slot, [0, 0, 0]), 15000);
   assert.ok(mesh.quads < mesh.naiveQuads / 2, 'hidden faces removed');
   const report = await time('checkIntegrity', () => checkIntegrity({ projects: [{ ...p, revision: 1 }], assets: [a], versions: [version], originalHashes: [] }), 10000);
   assert.equal(report.ok, true);

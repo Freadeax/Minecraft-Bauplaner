@@ -1,5 +1,7 @@
 import type { Bounds, Cell, VoxelPayload } from '../../../../packages/voxel/src/index.js';
+import type { Mark } from '../blockmodels/mesh';
 import type { DragHandler, GhostTone } from './sceneController';
+export type { Mark } from '../blockmodels/mesh';
 export type { DragHandler, GhostTone } from './sceneController';
 
 export interface ViewerProps {
@@ -8,8 +10,12 @@ export interface ViewerProps {
   /** Visible cells (e.g. after a layer filter). */
   readonly cells: readonly Cell[];
   readonly onSelect: (cell: Cell | null) => void;
-  /** "#rrggbb" per cell (selection, conflicts); default colours follow the palette index. */
-  readonly colorFor?: (cell: Cell) => string;
+  /**
+   * Per-cell highlight (selection, conflicts, diff, build progress): the block
+   * keeps its shape and texture and is mixed towards `color` by `amount`.
+   * Must be stable (memoised); a new function rebuilds the mesh.
+   */
+  readonly markFor?: (cell: Cell) => Mark | null;
   /** What “Fokus” (key F) frames, e.g. the selected instance; null ⇒ the whole structure. */
   readonly focus?: Bounds | null;
   /** Grab-and-move of a selection (editor); null/absent ⇒ dragging only orbits. Not available in the software view. */

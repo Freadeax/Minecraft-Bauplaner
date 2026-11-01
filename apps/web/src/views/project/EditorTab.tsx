@@ -5,9 +5,8 @@ import { findSnapCandidates, nearestSnap, newInstance, placementBounds, position
 import type { Asset, Instance, Resolution, SnapCandidate } from '../../../../../packages/domain/src/index.js';
 import { useApp } from '../../app/context';
 import { formatNumber } from '../../app/ui';
-import { mix, stateColor } from '../../colors';
 import { Viewer } from '../../Viewer';
-import type { DragHandler, ViewerProps } from '../../viewer/types';
+import type { DragHandler, Mark, ViewerProps } from '../../viewer/types';
 import { SnapPanel } from './SnapPanel';
 import { Thumb } from '../../thumbnail/Thumb';
 import { useLayerFilter } from '../../viewer/LayerControl';
@@ -50,12 +49,11 @@ export function EditorTab({ session }: { session: ProjectSession }) {
     if (resolved && selectedId) for (const [key, ids] of resolved.owners) if (ids.includes(selectedId)) keys.add(key);
     return keys;
   }, [resolved, selectedId]);
-  const colorFor = useCallback((cell: Cell) => {
+  const markFor = useCallback((cell: Cell): Mark | null => {
     const key = positionKey(cell.position);
-    if (conflictKeys.has(key)) return CONFLICT;
-    const base = cell.kind === 'erase' ? '#d35f5f' : stateColor(world!.palette[cell.paletteIndex]!.id);
-    return selectedId && !selectedKeys.has(key) ? mix(base, DIM_TARGET, 0.55) : base;
-  }, [conflictKeys, selectedKeys, selectedId, world]);
+    if (conflictKeys.has(key)) return { color: CONFLICT, amount: 0.75 };
+    return selectedId && !selectedKeys.has(key) ? { color: DIM_TARGET, amount: 0.55 } : null;
+  }, [conflictKeys, selectedKeys, selectedId]);
   const { visible, control: layerControl } = useLayerFilter(world);
   const focus = useMemo(() => resolved?.placed.find(p => p.instance.id === selectedId)?.payload.bounds ?? null, [resolved, selectedId]);
   const onSelect = useCallback((cell: Cell | null) => {
@@ -169,7 +167,7 @@ export function EditorTab({ session }: { session: ProjectSession }) {
           <button onClick={session.redo} disabled={!session.history.redo.length} title={session.history.redo.at(-1)?.label ?? ''}>↷ <span>Wiederholen</span></button>
         </div>
       </div>
-      {world && visible ? <Viewer payload={world} cells={visible.cells} onSelect={onSelect} colorFor={colorFor} focus={focus} drag={drag} ghost={ghost} />
+      {world && visible ? <Viewer payload={world} cells={visible.cells} onSelect={onSelect} markFor={markFor} focus={focus} drag={drag} ghost={ghost} />
         : <div className="scene empty-scene"><p>{isResolved(resolution) ? 'Leeres Projekt – füge links ein Bauteil ein.' : resolution.error}</p></div>}
       {dragMode && <div className="drag-hint" role="status">{dragInfo || (selected ? `„${selected.name}“ im Bild greifen und ziehen; daneben ziehen dreht die Ansicht. Esc bricht ab.` : 'Erst eine Instanz wählen, dann im Bild ziehen.')}</div>}
       <div className="viewport-footer"><span>Ziehen: drehen · Scrollen: zoomen · Klick: Block und Instanz wählen · F: Fokus · V: Flug · Strg+Z / Strg+Y</span>

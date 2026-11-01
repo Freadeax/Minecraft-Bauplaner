@@ -1,25 +1,25 @@
 import { useEffect, useRef, useState } from 'react';
-import * as THREE from 'three';
 import type { Cell } from '../../../../packages/voxel/src/index.js';
+import { useRenderKit } from '../blockmodels/assets';
+import { openTextureDialog } from '../blockmodels/TexturePanel';
 import { canvasFallback, newFallbackCamera } from '../canvasFallback';
 import type { FallbackHandle } from '../canvasFallback';
-import { blockColors } from '../colors';
+import { mix, stateColor } from '../colors';
 import { VIEWS } from './camera';
 import type { ViewName } from './camera';
 import { SPEED_STEPS } from './flight';
-import type { Rgb } from './faces';
 import { SceneController } from './sceneController';
 import type { MeshStats, ViewerState } from './sceneController';
 import type { ViewerProps } from './types';
 
-const defaultColor = (cell: Cell): string => cell.kind === 'erase' ? '#d35f5f' : blockColors[cell.paletteIndex % blockColors.length]!;
 const PAD: readonly (readonly [code: string, label: string, name: string])[] = [
   ['KeyQ', '⤓', 'Abwärts'], ['KeyW', '▲', 'Vorwärts'], ['Space', '⤒', 'Aufwärts'],
   ['KeyA', '◀', 'Links'], ['KeyS', '▼', 'Rückwärts'], ['KeyD', '▶', 'Rechts'],
 ];
 const fmt = (n: number) => n.toLocaleString('de-DE');
 
-export default function ThreeViewer({ payload, cells, onSelect, colorFor, focus = null, drag = null, ghost = null }: ViewerProps) {
+export default function ThreeViewer({ payload, cells, onSelect, markFor, focus = null, drag = null, ghost = null }: ViewerProps) {
+  const kit = useRenderKit();
   const host = useRef<HTMLDivElement>(null), canvasHost = useRef<HTMLDivElement>(null);
   const controller = useRef<SceneController | null>(null);
   const fallback = useRef<FallbackHandle | null>(null), fallbackCamera = useRef(newFallbackCamera());
@@ -43,24 +43,23 @@ export default function ThreeViewer({ payload, cells, onSelect, colorFor, focus 
   }, []);
 
   useEffect(() => {
-    const color = colorFor ?? defaultColor;
     const c = controller.current;
     if (c) {
-      const cache = new Map<string, Rgb>(), tmp = new THREE.Color();
-      const rgb = (cell: Cell): Rgb => {
-        const hex = color(cell); let v = cache.get(hex);
-        if (!v) { tmp.setStyle(hex); v = [tmp.r, tmp.g, tmp.b]; cache.set(hex, v); }
-        return v;
-      };
       const first = stats === null;
-      setStats(c.setCells(cells, payload.bounds, rgb));
+      setStats(c.setCells(cells, payload.bounds, payload.palette, kit, markFor));
       if (first) c.resetSpeed();
       return;
     }
     if (!software || !canvasHost.current) return;
+    // Software view: flat colours, marks mixed in.
+    const color = (cell: Cell) => {
+      if (cell.kind === 'erase') return '#d35f5f';
+      const base = stateColor(payload.palette[cell.paletteIndex]?.id ?? ''), m = markFor?.(cell);
+      return m ? mix(base, m.color, m.amount) : base;
+    };
     fallback.current = canvasFallback(canvasHost.current, payload, cells, cell => select.current(cell), color, fallbackCamera.current);
     return () => { fallback.current?.dispose(); fallback.current = null; };
-  }, [payload, cells, colorFor, software]);
+  }, [payload, cells, markFor, software, kit]);
 
   useEffect(() => { controller.current?.setFocusTarget(focus); }, [focus]);
   useEffect(() => { controller.current?.setDragHandler(drag); }, [drag]);
@@ -105,6 +104,8 @@ export default function ThreeViewer({ payload, cells, onSelect, colorFor, focus 
       <button className="end" onClick={() => controller.current?.setFlight(false)}>✕ Flug beenden</button>
     </div>}
     {software && <div className="render-mode" role="status">Isometrische Ersatzansicht · WebGL hier nicht verfügbar</div>}
+    {!software && !kit.textured && <button type="button" className="texture-hint" onClick={openTextureDialog}
+      title="Blockformen sind eigene Nachbildungen in Durchschnittsfarben. Originaltexturen aus deiner Minecraft-Version laden.">▦ Originaltexturen laden</button>}
     {lost && <div className="render-mode" role="alert">Die Grafikverbindung wurde unterbrochen. Bitte die Seite neu laden.</div>}
   </div>;
 }

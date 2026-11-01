@@ -19,8 +19,8 @@ export function ShotGallery({ payload, cacheKey, name }: { payload: VoxelPayload
   const [cut, setCut] = useState<number | null>(null);
   const cutY = cut === null ? undefined : Math.max(bottom, Math.min(top, cut));
   const info = SHOTS.find(s => s.id === view)!;
-  const save = () => {
-    const url = shotUrl(cacheKey, payload, 1600, 1100, { view, ...(cutY !== undefined && { cutY }), padding: 0.05 });
+  const save = async () => {
+    const url = await shotUrl(cacheKey, payload, 1600, 1100, { view, ...(cutY !== undefined && { cutY }), padding: 0.05 });
     if (!url) return;
     const a = document.createElement('a');
     a.href = url; a.download = shotFileName(name, view, cutY); document.body.append(a); a.click(); a.remove();
@@ -38,7 +38,7 @@ export function ShotGallery({ payload, cacheKey, name }: { payload: VoxelPayload
     <div className="shot-tools">
       <label className="check"><input type="checkbox" checked={cut !== null} onChange={e => setCut(e.target.checked ? Math.max(bottom, top - 1) : null)} /> Schnitt</label>
       {cut !== null && <label className="layer-slider">bis Y {cutY}<input type="range" min={bottom} max={top} value={cutY} aria-label="Schnitthöhe (Y)" onChange={e => setCut(Number(e.target.value))} /></label>}
-      <button type="button" onClick={save}>⤓ Bild speichern</button>
+      <button type="button" onClick={() => void save()}>⤓ Bild speichern</button>
     </div>
   </div>;
 }

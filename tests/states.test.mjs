@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { transformBlockState, transformPayload, createPayload, stateCatalog, stateRuleFor, STATE_CATALOG_PROFILE } from '../dist/voxel/src/index.js';
+import { transformBlockState, transformPayload, createPayload, stateCatalog, stateRuleFor, STATE_CATALOG_PROFILE, vanillaBlockIds, vanillaBlockProperties } from '../dist/voxel/src/index.js';
 
 // Independent helpers: everything below is derived from plain vector geometry,
 // not from the catalogue implementation.
@@ -30,8 +30,9 @@ test('catalogue covers the required vanilla families with unique minecraft IDs',
     'oak_hanging_sign', 'white_banner', 'black_wall_banner', 'player_head', 'creeper_wall_head', 'chest', 'stone_slab', 'water', 'crafter'])
     assert.ok(stateRuleFor(`minecraft:${id}`), id);
   assert.ok(seen.size > 500, `${seen.size} IDs`);
-  assert.equal(stateRuleFor('minecraft:sunflower'), undefined);
+  assert.equal(stateRuleFor('minecraft:note_block'), undefined);
   assert.match(STATE_CATALOG_PROFILE, /1\.21/);
+  assert.match(STATE_CATALOG_PROFILE, /26\.3/);
 });
 
 test('concrete orientations match hand-derived expectations', () => {
@@ -171,7 +172,7 @@ test('independent geometric models: facing, rotation, stairs, doors, chests, rai
 
 test('unknown, mismatching and unrepresentable states stay unresolved and unchanged', () => {
   const cases = [
-    [mc('sunflower', { half: 'lower' }), 'unknown-block'],
+    [mc('note_block', { instrument: 'harp', note: '0', powered: 'false' }), 'unknown-block'],
     [{ id: 'example:machine', properties: { facing: 'north' } }, 'unknown-block'],
     [{ id: 'example:plain', properties: {} }, 'unknown-block'],
     [mc('oak_stairs', { facing: 'north', half: 'bottom', shape: 'straight' }), 'schema-mismatch'],
@@ -206,4 +207,21 @@ test('payload transform reports catalogue reasons per palette entry', () => {
   assert.match(r.issues[1].message, /passen nicht exakt/);
   assert.equal(r.payload.palette[0].properties.facing, 'east');
   assert.ok(transformPayload(payload, T(2)).issues.length === 1);
+});
+
+test('26.3 block list: every block with an orientation property has a rule', () => {
+  const ORIENTING = /^(facing|axis|rotation|north|east|south|west|shape|orientation|hinge|side_chain|face|attachment)$/;
+  const ids = vanillaBlockIds();
+  assert.ok(ids.length >= 1288, `${ids.length} Blöcke`);
+  // Item and technical states that are not placeable in survival building plans.
+  const skip = new Set(['minecraft:item_frame', 'minecraft:glow_item_frame', 'minecraft:moving_piston']);
+  const missing = ids.filter(id => !skip.has(id) && Object.keys(vanillaBlockProperties(id)).some(k => ORIENTING.test(k)) && !stateRuleFor(id));
+  assert.deepEqual(missing, []);
+  for (const [id, props] of [['poplar_stairs', { facing: 'north', half: 'bottom', shape: 'outer_left', waterlogged: 'false' }],
+    ['oak_shelf', { facing: 'north', powered: 'false', side_chain: 'left', waterlogged: 'false' }], ['iron_chain', { axis: 'x', waterlogged: 'false' }],
+    ['sulfur_brick_wall', { east: 'low', north: 'none', south: 'tall', up: 'true', waterlogged: 'false', west: 'none' }]]) {
+    const r = run(mc(id, props), T(1, true));
+    assert.equal(r.resolved, true, id);
+  }
+  assert.equal(props(mc('oak_shelf', { facing: 'north', powered: 'false', side_chain: 'left', waterlogged: 'false' }), T(0, true)).side_chain, 'right');
 });

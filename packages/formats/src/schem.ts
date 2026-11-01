@@ -2,7 +2,7 @@ import { createPayload, stateKey } from '../../voxel/src/validation.js';
 import type { NbtTag, BlockState, Cell, Vec3, VoxelPayload, BlockEntity } from '../../voxel/src/types.js';
 import { FormatError, readNbt, NBT_LIMITS } from './nbt.js';
 export interface SchemLimits {maxCompressedBytes:number;maxUncompressedBytes:number;maxVolume:number;maxDimension:number;maxPalette:number;maxDepth:number;maxNodes:number;maxDurationMs:number}
-export const SCHEM_LIMITS: Readonly<SchemLimits>=Object.freeze({maxCompressedBytes:2_000_000,maxUncompressedBytes:8_000_000,maxVolume:20_000,maxDimension:256,maxPalette:20_000,maxDepth:32,maxNodes:200_000,maxDurationMs:5_000});
+export const SCHEM_LIMITS: Readonly<SchemLimits>=Object.freeze({maxCompressedBytes:4_000_000,maxUncompressedBytes:16_000_000,maxVolume:250_000,maxDimension:256,maxPalette:20_000,maxDepth:32,maxNodes:200_000,maxDurationMs:5_000});
 export interface SchemResult {payload:VoxelPayload;dataVersion:number;offset:Vec3;sourceSha256:string;sourceNbt:{name:string;tag:NbtTag};warnings:string[]}
 function fail(message:string):never{throw new FormatError('SCHEM',message);}
 function compound(tag:NbtTag|undefined,path:string):Readonly<Record<string,NbtTag>>{if(tag?.type!=='compound')fail(`${path}: NBT-Compound fehlt.`);return tag.value;}

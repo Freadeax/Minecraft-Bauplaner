@@ -30,7 +30,7 @@ export interface LitematicLimits {
 }
 /** Same budget as the Schem import, so both formats behave alike in the viewer. */
 export const LITEMATIC_LIMITS: Readonly<LitematicLimits> = Object.freeze({
-  maxCompressedBytes: 2_000_000, maxUncompressedBytes: 8_000_000, maxVolume: 20_000, maxDimension: 256,
+  maxCompressedBytes: 4_000_000, maxUncompressedBytes: 16_000_000, maxVolume: 250_000, maxDimension: 256,
   maxRegions: 64, maxPalette: 20_000, maxDepth: 32, maxNodes: 200_000, maxDurationMs: 5_000,
 });
 

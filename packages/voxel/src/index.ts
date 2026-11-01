@@ -10,3 +10,4 @@ export type { DiffKind, DiffCell, BlockDelta, PayloadDiff } from './diff.js';
 
 export { UNLOADED_STATE } from './observation.js';
 export type { ScanMeta, WorldScan } from './observation.js';
+export { vanillaBlockIds, vanillaBlockProperties, isVanillaBlock, BLOCK_REGISTRY_VERSION } from './blockRegistry.js';

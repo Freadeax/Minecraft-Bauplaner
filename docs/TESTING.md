@@ -382,3 +382,11 @@ Interner Buildjob 124539104569 (Run 41201874786) bestätigt main/root. 404-Live-
 ## Claude-Codex-Abstimmung · 01.11.2026 · Claude
 
 Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md`, Abschnitt in CODEX_SETUP), kein Produktcode. Ausgangsstand main `ce59efb`. `npm run check` vollständig bestanden: Architektur-, Roadmap-, Typprüfung, Build, alle Node-Tests, Dokumentationslinks. Keine E2E nötig, da keine Oberfläche geändert.
+
+## VIEW-02 · 01.11.2026 · Blockformen und Texturen (Claude)
+
+- `npm run check` auf dem rebasten Stand (Basis main `bcae977`): Architektur, Roadmap, Typen, Build, 391/391 Node-Tests, Doku bestanden. `npm run check:roadmap-change -- bcae977 HEAD` bestanden.
+- `npm run test:e2e` in Chromium: 59/59 bestanden, darunter neu `textures.e2e.mjs`. In dieser Cloud-Umgebung passte das vorinstallierte Chromium (Build 1243) nicht zum gepinnten Playwright 1.64.1 (erwartet 1248); Lauf mit `PLAYWRIGHT_BROWSERS_PATH` auf einen Ordner mit Verweisen auf das vorhandene Chromium, ohne Teständerung.
+- `BAUPLANER_ALL_BLOCKS=<pfad> node --test tests/blocks.test.mjs`: All-Blocks-Litematic 26.3 importiert (29.346 Zellen, 1016 Block-IDs, alle im Register) und vermascht.
+- Manuelle Sichtprüfung in Chromium mit der lokalen 26.3-Client-Jar: Bibliotheksbilder, Detailseite, 3D-Betrachter und Ausschnitte der All-Blocks-Datei; ein Fehler gefunden und behoben (`heavy_core`: Texturvariable ohne `#`).
+- Nicht geprüft: Mojang-Download im Browser selbst (nur CORS/Manifest per curl), Firefox/Safari, echte Geräte.

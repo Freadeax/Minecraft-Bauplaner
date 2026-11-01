@@ -12,7 +12,7 @@ self.onmessage = async (event: MessageEvent<{jobId:number;buffer:ArrayBuffer;nam
       return;
     }
     if(!name.toLowerCase().endsWith('.json'))throw new Error('Erwartet GZip-komprimiertes Sponge Schem v3, Litematic (.litematic) oder Voxel-JSON. Alte Schematic-Versionen werden nicht unterstützt.');
-    const payload=createPayload(JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes)),{maxCells:20_000,maxNbtNodes:50_000,maxNbtDepth:32,maxStringLength:100_000});
+    const payload=createPayload(JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes)),{maxCells:250_000,maxNbtNodes:50_000,maxNbtDepth:32,maxStringLength:100_000});
     if(payload.bounds.maxExclusive.some((n,i)=>n-payload.bounds.min[i]!>256))throw new Error('Die Vorschau unterstützt höchstens 256 Blöcke pro Achse.');
     self.postMessage({jobId,payload,format:'json',counts:countBlocks(payload)});
   }catch(error){self.postMessage({jobId,error:error instanceof Error?error.message:'Datei konnte nicht gelesen werden.',code:error instanceof FormatError?error.code:'IMPORT'});}

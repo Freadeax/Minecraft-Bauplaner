@@ -26,7 +26,7 @@ Fokus: Im Betrachter der gewählte Block, im Editor die Begrenzung der gewählte
 
 ## Darstellung und Leistung
 
-- **Nur sichtbare Flächen:** `buildFaces` erzeugt ein einziges indiziertes Mesh. Eine Fläche entsteht nur, wenn die Nachbarzelle keinen sichtbaren Block enthält; Luft-, Lösch- und ungewählte Zellen verdecken nichts. Schnittflächen eines Schichtfilters bleiben dadurch sichtbar. Picking: Dreieck → Viereck → Zelle (`quadCells`).
+- **Nur sichtbare Flächen:** `buildBlockMesh` ([BLOCK_MODELS](BLOCK_MODELS.md)) erzeugt je eine feste und eine durchscheinende Schicht in Blockform. Eine Fläche entfällt nur, wenn der Nachbar diese Seite vollständig und deckend verdeckt; Luft-, Lösch- und ungewählte Zellen verdecken nichts. Schnittflächen eines Schichtfilters bleiben dadurch sichtbar. Picking: Dreieck → Viereck → Zelle (`quadCells`).
 - **Blockkanten** werden im Fragmentshader aus dem ganzzahligen Raster berechnet (keine Lücken, keine Zusatzgeometrie).
 - **Präzision:** Vertices relativ zu einem ganzzahligen Ursprung (Mitte des ersten Payloads), damit auch große Weltkoordinaten in float32 exakt bleiben.
 - **Ein WebGL-Kontext je Ansicht:** Auswahlfarben und Bearbeitungen tauschen nur die Geometrie; Kamera bleibt erhalten. Gerendert wird nur bei Änderung (Steuerung, Dämpfung, Flug), nicht dauerhaft 60 Hz.
@@ -52,6 +52,6 @@ Die Kamera passt sich neu ein, wenn eine Struktur zum ersten Mal oder ohne Über
 ## Grenzen
 
 - Farbige Würfel, keine Minecraft-Blockmodelle oder Texturen; Treppen, Zäune usw. erscheinen als Vollwürfel. Vorschaufarben (`colors.ts`, eigene Näherungswerte, keine Texturen): exakte IDs, dann Familien – 16 Farbstoffe für Wolle/Teppich/Beton/Keramik/Glas/Betten/Banner/Kerzen/Shulkerkisten (rotes Sandstein bleibt Material), Holzarten mit Brettern/Rinde/Laub (entrindete Stämme in Brettfarbe), Stein-/Metallmaterialien; Formen (Stufe, Treppe, Mauer, Zaun, Scheibe, Tür, Falltür, Schild …) erben die Materialfarbe. Mod-IDs und Unbekanntes erhalten weiter eine stabile Hashfarbe.
-- Kein Greedy-Meshing und keine BVH; bei maximal 20 000 Zellen nicht nötig. Für größere Limits wäre Greedy-Meshing je Farbe der nächste Schritt.
+- Kein Greedy-Meshing und keine BVH. Bei 250.000 Importzellen und großen Projekten (600.000 Blöcke rund 5 s Meshaufbau in Node) wäre Greedy-Meshing gleicher Flächen der nächste Schritt.
 - Touch im Headless-Chromium mit Geräteemulation (Pixel 7) und CDP-Touchereignissen geprüft; echter iPhone-/Android-Test und echte GPU stehen aus.
 - Greifen und Ziehen einer Auswahl (Editor) und Platzierungsumriss: siehe [CONNECTORS](CONNECTORS.md#andocken-per-ziehen).

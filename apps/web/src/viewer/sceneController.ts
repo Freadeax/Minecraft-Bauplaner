@@ -1,8 +1,11 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import type { Bounds, Cell, Vec3 } from '../../../../packages/voxel/src/index.js';
-import { buildFaces } from './faces';
-import type { Rgb } from './faces';
+import type { BlockState, Bounds, Cell, Vec3 } from '../../../../packages/voxel/src/index.js';
+import type { RenderKit } from '../blockmodels/assets';
+import { buildBlockMesh } from '../blockmodels/mesh';
+import type { Mark } from '../blockmodels/mesh';
+import { BlockObject, blockMaterials } from '../blockmodels/threeMesh';
+import type { BlockMaterials } from '../blockmodels/threeMesh';
 import { FOCUS_MIN_RADIUS, VIEWS, boundsCentre, boundsRadius, frameBounds, orthoZoom } from './camera';
 import type { ViewName } from './camera';
 import { SPEED_STEPS, clampPitch, defaultSpeed, flightStep, lookDirection, yawPitch } from './flight';
@@ -62,10 +65,8 @@ export class SceneController {
   private readonly ortho = new THREE.OrthographicCamera(-ORTHO_HALF, ORTHO_HALF, ORTHO_HALF, -ORTHO_HALF, -20000, 20000);
   private camera: THREE.PerspectiveCamera | THREE.OrthographicCamera = this.perspective;
   private controls: OrbitControls;
-  private readonly material: THREE.MeshStandardMaterial;
-  private mesh: THREE.Mesh | null = null;
-  private quadCells: Int32Array = new Int32Array(0);
-  private cells: readonly Cell[] = [];
+  private materials: BlockMaterials | null = null;
+  private mesh: BlockObject | null = null;
   private grid: THREE.GridHelper | null = null;
   private readonly marker: THREE.LineSegments;
   /** Integer world offset subtracted from every vertex (keeps float32 precise for far coordinates). */
@@ -104,10 +105,6 @@ export class SceneController {
     canvas.setAttribute('aria-label', '3D-Bauwerk: Ziehen zum Drehen, Scrollen zum Zoomen, Block anklicken für Koordinaten. Tasten 1–6 Ansichten, F Fokus, V Freiflug.');
     host.appendChild(canvas);
 
-    this.scene.add(new THREE.HemisphereLight(0xdff7ff, 0x665a47, 2.7));
-    const sun = new THREE.DirectionalLight(0xffefdb, 3.4); sun.position.set(-20, 40, 25); this.scene.add(sun);
-    this.scene.add(sun.target);
-    this.material = gridMaterial();
     this.marker = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.02, 1.02, 1.02)), new THREE.LineBasicMaterial({ color: 0xffffff, depthTest: false, transparent: true, opacity: 0.9 }));
     this.marker.visible = false; this.marker.renderOrder = 2; this.scene.add(this.marker);
     this.ghost = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 1)), new THREE.LineBasicMaterial({ color: 0xffffff, depthTest: false, transparent: true, opacity: 0.95 }));
@@ -140,24 +137,22 @@ export class SceneController {
 
   get state(): ViewerState { return this.stateValue; }
 
-  /** Replaces the visible blocks. `payloadBounds` sizes the grid and the default framing. */
-  setCells(cells: readonly Cell[], payloadBounds: Bounds, colorOf: (cell: Cell) => Rgb): MeshStats {
+  /**
+   * Replaces the visible blocks: real block shapes (and textures, if loaded)
+   * from `kit`, optionally tinted per cell by `markOf`. `payloadBounds` sizes
+   * the grid and the default framing.
+   */
+  setCells(cells: readonly Cell[], payloadBounds: Bounds, palette: readonly BlockState[], kit: RenderKit, markOf?: (cell: Cell) => Mark | null): MeshStats {
     const started = performance.now();
     // A structure that does not overlap the previous one (another file in the same view) is framed anew.
     const elsewhere = this.origin !== null && !overlaps(this.bounds, payloadBounds);
     const reframe = this.origin === null || elsewhere || (this.autoFrame && !sameBounds(this.bounds, payloadBounds));
     if (!this.origin || elsewhere) { const c = boundsCentre(payloadBounds); this.origin = [Math.floor(c[0]), Math.floor(c[1]), Math.floor(c[2])]; }
     this.bounds = payloadBounds;
-    const faces = buildFaces(cells, colorOf, this.origin);
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(faces.positions, 3));
-    geometry.setAttribute('normal', new THREE.BufferAttribute(faces.normals, 3));
-    geometry.setAttribute('color', new THREE.BufferAttribute(faces.colors, 3));
-    geometry.setIndex(new THREE.BufferAttribute(faces.indices, 1));
-    geometry.computeBoundingSphere(); geometry.computeBoundingBox();
-    if (this.mesh) { this.scene.remove(this.mesh); this.mesh.geometry.dispose(); }
-    this.mesh = new THREE.Mesh(geometry, this.material); this.scene.add(this.mesh);
-    this.quadCells = faces.quadCells; this.cells = cells;
+    if (this.materials?.key !== kit.key) { this.materials?.dispose(); this.materials = blockMaterials(kit); }
+    const faces = buildBlockMesh(cells, palette, kit.renderer, kit.atlas.lookup, this.origin, markOf);
+    if (this.mesh) { this.scene.remove(this.mesh.group); this.mesh.dispose(); }
+    this.mesh = new BlockObject(faces, cells, this.materials); this.scene.add(this.mesh.group);
     this.updateGrid();
     if (reframe) this.setView(this.stateValue.view ?? 'iso', true);
     this.requestRender();
@@ -264,7 +259,7 @@ export class SceneController {
     cancelAnimationFrame(this.frame);
     this.disposers.forEach(d => d());
     this.controls.dispose();
-    this.mesh?.geometry.dispose(); this.material.dispose();
+    this.mesh?.dispose(); this.materials?.dispose();
     this.marker.geometry.dispose(); (this.marker.material as THREE.Material).dispose();
     this.ghost.geometry.dispose(); (this.ghost.material as THREE.Material).dispose();
     if (this.grid) { this.grid.geometry.dispose(); (this.grid.material as THREE.Material).dispose(); }
@@ -381,9 +376,7 @@ export class SceneController {
     const rect = this.renderer.domElement.getBoundingClientRect();
     const pointer = new THREE.Vector2((e.clientX - rect.left) / rect.width * 2 - 1, -(e.clientY - rect.top) / rect.height * 2 + 1);
     this.raycaster.setFromCamera(pointer, this.camera);
-    const hit = this.raycaster.intersectObject(this.mesh, false)[0];
-    if (!hit || hit.faceIndex == null) return null;
-    return this.cells[this.quadCells[hit.faceIndex >> 1]!] ?? null;
+    return this.mesh.pick(this.raycaster);
   }
 
   private rayAt(e: PointerEvent): void {
@@ -504,18 +497,3 @@ export class SceneController {
 }
 
 /** Vertex-coloured standard material with thin block-edge lines computed from the integer grid. */
-function gridMaterial(): THREE.MeshStandardMaterial {
-  const m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.85, metalness: 0.05 });
-  m.onBeforeCompile = shader => {
-    shader.vertexShader = shader.vertexShader
-      .replace('#include <common>', '#include <common>\nvarying vec3 vCell;\nvarying vec3 vAxis;')
-      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvCell = position;\nvAxis = abs(normal);');
-    shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nvarying vec3 vCell;\nvarying vec3 vAxis;')
-      .replace('#include <color_fragment>', `#include <color_fragment>
-        vec3 edge = min(fract(vCell), 1.0 - fract(vCell)) + vAxis;
-        float line = 1.0 - smoothstep(0.0, 0.035, min(min(edge.x, edge.y), edge.z));
-        diffuseColor.rgb *= 1.0 - 0.32 * line;`);
-  };
-  return m;
-}

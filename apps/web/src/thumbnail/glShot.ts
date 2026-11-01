@@ -1,0 +1,125 @@
+import * as THREE from 'three';
+import type { Cell, VoxelPayload } from '../../../../packages/voxel/src/index.js';
+import type { RenderKit } from '../blockmodels/assets';
+import { buildBlockMesh } from '../blockmodels/mesh';
+import type { Mark } from '../blockmodels/mesh';
+import { BlockObject, blockMaterials } from '../blockmodels/threeMesh';
+import type { BlockMaterials } from '../blockmodels/threeMesh';
+import type { ShotView } from './views';
+
+/**
+ * Still images with real block shapes and textures (B12 + Blockdarstellung):
+ * one shared offscreen WebGL renderer draws the same block mesh as the 3D
+ * viewer with a parallel camera and hands back a PNG. Catalogue cards, the
+ * image gallery and the layer plans all use it; dozens of cards never hold
+ * more than this one context. Loaded lazily together with three.js.
+ */
+export interface GlShotOptions {
+  readonly view?: ShotView;
+  /** Only blocks at or below this layer (cutaway). */
+  readonly cutY?: number;
+  /** Only blocks of exactly this layer (layer plan). */
+  readonly onlyY?: number;
+  /** Per-cell highlight; false hides the cell. */
+  readonly markOf?: (cell: Cell, index: number) => Mark | null | false;
+  readonly padding?: number;
+  /** Exact framing of the top view in world X/Z (layer plans), instead of fitting the blocks. */
+  readonly area?: { readonly x0: number; readonly z0: number; readonly x1: number; readonly z1: number };
+}
+
+let renderer: THREE.WebGLRenderer | null = null;
+let materials: BlockMaterials | null = null;
+
+function context(): THREE.WebGLRenderer {
+  if (!renderer) {
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+    renderer.setClearColor(0x000000, 0);
+    renderer.domElement.addEventListener('webglcontextlost', () => { renderer = null; materials = null; });
+  }
+  return renderer;
+}
+
+const ISO_ELEVATION = Math.PI / 6;
+/** Direction from the target to the camera; isometric views as in views.ts (2:1, from the named corner). */
+function direction(view: ShotView): THREE.Vector3 {
+  const h = Math.cos(ISO_ELEVATION) * Math.SQRT1_2, v = Math.sin(ISO_ELEVATION);
+  switch (view) {
+    case 'so': return new THREE.Vector3(h, v, h);
+    case 'sw': return new THREE.Vector3(-h, v, h);
+    case 'nw': return new THREE.Vector3(-h, v, -h);
+    case 'no': return new THREE.Vector3(h, v, -h);
+    case 'oben': return new THREE.Vector3(0, 1, 0);
+    case 'sued': return new THREE.Vector3(0, 0, 1);
+    case 'nord': return new THREE.Vector3(0, 0, -1);
+    case 'ost': return new THREE.Vector3(1, 0, 0);
+    case 'west': return new THREE.Vector3(-1, 0, 0);
+  }
+}
+
+/** Renders a view into a PNG data URL of the given CSS size; '' when nothing is visible. */
+export function renderGlShot(payload: Pick<VoxelPayload, 'cells' | 'palette'>, width: number, height: number, kit: RenderKit, options: GlShotOptions = {}): string {
+  return renderGlCanvas(payload, width, height, kit, options)?.toDataURL('image/png') ?? '';
+}
+
+/** Renders a view into a new canvas (device pixels); null when nothing is visible. */
+export function renderGlCanvas(payload: Pick<VoxelPayload, 'cells' | 'palette'>, width: number, height: number, kit: RenderKit, options: GlShotOptions): HTMLCanvasElement | null {
+  const view = options.view ?? 'so';
+  const cells: Cell[] = [], marks = new Map<Cell, Mark>();
+  payload.cells.forEach((c, i) => {
+    if (c.kind !== 'block') return;
+    const y = c.position[1];
+    if (options.cutY !== undefined && y > options.cutY) return;
+    if (options.onlyY !== undefined && y !== options.onlyY) return;
+    const m = options.markOf?.(c, i);
+    if (m === false) return;
+    if (m) marks.set(c, m);
+    cells.push(c);
+  });
+  if (!cells.length) return null;
+  const r = context();
+  if (materials?.key !== kit.key) { materials?.dispose(); materials = blockMaterials(kit); }
+  const origin: [number, number, number] = [cells[0]!.position[0], cells[0]!.position[1], cells[0]!.position[2]];
+  const mesh = buildBlockMesh(cells, payload.palette, kit.renderer, kit.atlas.lookup, origin, marks.size ? c => marks.get(c) ?? null : undefined);
+  if (!mesh.quads) return null;
+  const object = new BlockObject(mesh, cells, materials);
+  const scene = new THREE.Scene();
+  scene.add(object.group);
+
+  const dir = direction(view);
+  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, -1e4, 1e4);
+  camera.up.set(0, 1, 0);
+  if (view === 'oben') camera.up.set(0, 0, -1); // north up
+  camera.position.copy(dir); camera.lookAt(0, 0, 0); camera.updateMatrixWorld();
+  const toView = camera.matrixWorldInverse;
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  if (options.area && view === 'oben') {
+    const a = options.area;
+    minX = a.x0 - origin[0]; maxX = a.x1 + 1 - origin[0]; minY = -(a.z1 + 1 - origin[2]); maxY = -(a.z0 - origin[2]);
+  } else {
+    const p = new THREE.Vector3();
+    for (const layer of [mesh.solid, mesh.translucent]) for (let i = 0; i < layer.positions.length; i += 3) {
+      p.set(layer.positions[i]!, layer.positions[i + 1]!, layer.positions[i + 2]!).applyMatrix4(toView);
+      if (p.x < minX) minX = p.x; if (p.x > maxX) maxX = p.x; if (p.y < minY) minY = p.y; if (p.y > maxY) maxY = p.y;
+    }
+    const pad = options.padding ?? 0.08, w = maxX - minX, h = maxY - minY;
+    const scale = Math.max(w / (width * (1 - 2 * pad)), h / (height * (1 - 2 * pad)));
+    const cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+    minX = cx - width * scale / 2; maxX = cx + width * scale / 2; minY = cy - height * scale / 2; maxY = cy + height * scale / 2;
+  }
+  camera.left = minX; camera.right = maxX; camera.bottom = minY; camera.top = maxY;
+  camera.updateProjectionMatrix();
+
+  // Rendering at up to twice the size and scaling down smooths the nearest-sampled textures.
+  const ratio = Math.min(2, globalThis.devicePixelRatio || 1), ss = Math.min(2, 4096 / Math.max(width * ratio, height * ratio));
+  const pw = Math.max(1, Math.round(width * ratio * ss)), ph = Math.max(1, Math.round(height * ratio * ss));
+  r.setPixelRatio(1); r.setSize(pw, ph, false);
+  r.render(scene, camera);
+  object.dispose();
+  const out = document.createElement('canvas');
+  out.width = Math.round(width * ratio); out.height = Math.round(height * ratio);
+  const ctx = out.getContext('2d');
+  if (!ctx) return null;
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(r.domElement, 0, 0, out.width, out.height);
+  return out;
+}

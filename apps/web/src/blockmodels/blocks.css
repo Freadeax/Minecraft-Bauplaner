@@ -1,0 +1,20 @@
+/* Blockdarstellung: texture source chip, dialog and viewer hint. */
+.texture-chip{border:1px solid #304740;border-radius:30px;padding:7px 12px;font-size:10px;color:#b5c9c0;background:transparent;white-space:nowrap}
+.texture-chip.ready{color:var(--mint);border-color:#3f6b5c}.texture-chip.loading{color:#e3c59a}.texture-chip.error{color:#ffb4a8;border-color:#7a3c3c}
+.texture-dialog{max-width:620px;width:calc(100% - 32px);background:#101e28;color:#dfe8eb;border:1px solid #33505e;border-radius:12px;padding:22px 24px;line-height:1.6}
+.texture-dialog::backdrop{background:#050b10cc}
+.texture-dialog h2{margin:0 0 10px}.texture-dialog h3{font-size:13px;font-weight:600;margin:0 0 6px}
+.texture-dialog section{border-top:1px solid var(--line);padding:14px 0 6px}.texture-dialog p{font-size:12px;color:#aabdc4;margin:0 0 10px}
+.texture-dialog code{font-size:11px;background:#0d1b24;padding:1px 4px;border-radius:3px;overflow-wrap:anywhere}
+.texture-state{background:#152733;border:1px solid #2b3f4a;border-radius:8px;padding:10px 12px}.texture-state b{color:#dfe8eb;font-weight:600}
+.texture-state progress{display:block;width:100%;margin-top:8px;accent-color:var(--mint)}
+.texture-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px}.texture-row.end{justify-content:flex-end;border-top:1px solid var(--line);padding-top:12px}
+.texture-row label{font-size:12px;display:flex;align-items:center;gap:8px}.texture-row select{width:auto;min-width:110px}
+.texture-row button{border:1px solid #324751;border-radius:6px;padding:9px 12px;font-size:12px;background:#182b36}
+.texture-row .primary{background:var(--mint);color:#173329;border-color:var(--mint);font-weight:650}
+.file-button{position:relative;border:1px solid #324751;border-radius:6px;padding:9px 12px;background:#182b36;cursor:pointer}
+.file-button input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.texture-close{position:absolute;right:12px;top:10px}.texture-close button{background:transparent;border:0;font-size:16px;color:var(--muted);padding:6px}
+.texture-hint{position:absolute;right:12px;bottom:12px;z-index:2;border:1px solid #39505d;border-radius:5px;background:#152c38d9;color:#c6d5db;font-size:10px;padding:7px 9px}
+.texture-hint:hover{color:var(--mint);border-color:var(--mint)}
+@media(max-width:650px){.texture-chip span{display:none}.texture-dialog{padding:18px 16px}}
