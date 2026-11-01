@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T12:48:14.548Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T12:52:36.925Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -22,6 +22,7 @@ Stand: 2026-11-01T12:48:14.548Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 ## Aktiver Arbeitsblock
 
 - **PERF-02 · Zellindizes, Chunkdaten und selektive Neuberechnung** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Gemessene Structured-Clone-/Worker-Rückgabekosten reduzieren; selektive Geometrie-/Fortschrittsinvalidierung zuerst mit vollständigen semantischen Regressionen absichern.
+- **MAP-01 · Weltlage und begehbare Projektkarte** — 🚧 In Arbeit, 2/4 Teilschritte. Nächster Schritt: Projektursprung/Dimension, Undo und Sicherung ergänzen.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -117,7 +118,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [WORLD-02](#world-02) | Weitere kuratierte Bauwelten | ✅ Im beschriebenen Umfang geprüft | 2/2 | LIB-01, UI-01 | `c3e6478` | `c3e6478` |
 | [BUILD-05](#build-05) | Bauwelt-Anlagen mit Konfliktvorschau | ⏳ Offen | 0/2 | LIB-03, CORE-03 | ausstehend | ausstehend |
 | [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | ⏳ Offen | 0/2 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
-| [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🚧 In Arbeit | 1/4 | CORE-03, STORE-02 | `84838f0` | `e232b26` |
+| [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🚧 In Arbeit | 2/4 | CORE-03, STORE-02 | `84838f0` | `e232b26` |
 | [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter | ⏳ Offen | 0/2 | MAP-01 | ausstehend | ausstehend |
 | [GAME-02](#game-02) | Fabric-Brücke kompilieren und im Spiel abnehmen | ⛔ Blockiert | 1/3 | FORMAT-01, GAME-01 | `84838f0` | `e232b26` |
 | [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | ⏳ Offen | 0/2 | GAME-02 | ausstehend | ausstehend |
@@ -916,16 +917,16 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAP-01
 
-**Weltlage und begehbare Projektkarte** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: B15: bestehende Reservierung (Übernahme abzustimmen) · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Weltlage und begehbare Projektkarte** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread Weltkarte) · Aktualisiert: 2026-11-01T12:52:36.925Z
 
 - [x] MAP-01-S01: B15-Konzept und generischer Livekarten-/Markeradapter vorhanden.
-- [ ] MAP-01-S02: B15-Reservierung vor Übernahme abgleichen.
+- [x] MAP-01-S02: B15-Reservierung vor Übernahme abgleichen.
 - [ ] MAP-01-S03: Projektursprung/Dimension, Undo und Sicherung ergänzen.
 - [ ] MAP-01-S04: Draufsicht, Chunkraster, 3D-Ansicht und projektübergreifende Voxelkonflikte umsetzen.
 
 **Abnahme:** Weltkoordinate = Projektkoordinate + Ursprung; fehlendes Terrain ausdrücklich ungeprüft.
 
-**Nächste Aktion:** B15-Reservierung vor Übernahme abgleichen.
+**Nächste Aktion:** Projektursprung/Dimension, Undo und Sicherung ergänzen.
 
 **Prüfstand:** Abnahme noch nicht vollständig erbracht.
 

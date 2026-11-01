@@ -1,9 +1,10 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T12:48:14.548Z",
+  "updatedAt": "2026-11-01T12:52:36.925Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
-    "PERF-02"
+    "PERF-02",
+    "MAP-01"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -2145,7 +2146,7 @@
       "phase": "P3",
       "priority": "P1",
       "status": "in_progress",
-      "owner": "B15: bestehende Reservierung (Übernahme abzustimmen)",
+      "owner": "Claude (Thread Weltkarte)",
       "dependencies": [
         "CORE-03",
         "STORE-02"
@@ -2167,7 +2168,7 @@
         {
           "id": "MAP-01-S02",
           "title": "B15-Reservierung vor Übernahme abgleichen.",
-          "done": false
+          "done": true
         },
         {
           "id": "MAP-01-S03",
@@ -2183,7 +2184,7 @@
       "acceptance": [
         "Weltkoordinate = Projektkoordinate + Ursprung; fehlendes Terrain ausdrücklich ungeprüft."
       ],
-      "next": "B15-Reservierung vor Übernahme abgleichen.",
+      "next": "Projektursprung/Dimension, Undo und Sicherung ergänzen.",
       "blockers": [],
       "evidence": [
         {
@@ -2199,7 +2200,7 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-01T12:52:36.925Z"
     },
     {
       "id": "MAP-02",
@@ -4197,6 +4198,26 @@
           "done": 4,
           "total": 4,
           "next": "Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T12:52:36.925Z",
+      "kind": "progress",
+      "items": [
+        "MAP-01"
+      ],
+      "summary": "MAP-01 von Claude übernommen (MSG-MAP01-00); B15-Reservierung abgeglichen, kein unintegrierter Altcode.",
+      "files": [
+        "docs/COMMUNICATION.md"
+      ],
+      "snapshot": [
+        {
+          "id": "MAP-01",
+          "status": "in_progress",
+          "done": 2,
+          "total": 4,
+          "next": "Projektursprung/Dimension, Undo und Sicherung ergänzen."
         }
       ]
     }

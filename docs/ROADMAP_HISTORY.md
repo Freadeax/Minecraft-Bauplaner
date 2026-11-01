@@ -663,3 +663,17 @@ Claude-Codex-Abstimmung: Stand ab main ce59efb erhoben, abgebrochene Claude-Rese
 - `docs/project/CODEX_PROMPT.md`
 - `docs/project/CODEX_SETUP.md`
 
+## 2026-11-01T12:52:36.925Z · progress
+
+**Aufgaben:** MAP-01
+
+MAP-01 von Claude übernommen (MSG-MAP01-00); B15-Reservierung abgeglichen, kein unintegrierter Altcode.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MAP-01 | 🚧 In Arbeit | 2/4 | Projektursprung/Dimension, Undo und Sicherung ergänzen. |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+
