@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "8f2278095ff752282bf2b34ee5c288c95deac013",
-  "builtAt": "2026-11-01T09:35:30.087Z",
-  "node": "v24.22.1",
+  "sourceCommit": "c3e647855dc3b1bc5417a64cc6350b375b9b510d",
+  "builtAt": "2026-11-01T09:40:52.381Z",
+  "node": "v24.15.0",
   "files": [
     {
       "path": ".nojekyll",
@@ -10,9 +10,9 @@
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
-      "path": "assets/idbRepository-13KAfCST.js",
+      "path": "assets/idbRepository-NelAi5dG.js",
       "bytes": 6264,
-      "sha256": "4c12d409bceb2118a11f461748ed5e41e08d772aaad79b97b5ff31cb9019ca9d"
+      "sha256": "140d1d003626c23028f441672f1662e4e3ceead73f8e44d95875d6a21d65d612"
     },
     {
       "path": "assets/import.worker-C3uxG6zS.js",
@@ -20,14 +20,14 @@
       "sha256": "db3e2fb0463c92df6144aa876ddda9cb70d5f5363810c009e01aa382daa303f4"
     },
     {
-      "path": "assets/index-DKL4nbEh.js",
-      "bytes": 882680,
-      "sha256": "606d0e2052670e5049194e7cdb55ddce6bdf2fbd7d8069b3435ace7dbca57854"
-    },
-    {
       "path": "assets/index-Dsd55bz1.css",
       "bytes": 97465,
       "sha256": "a8a8c7550c9313ad2206f8477ec524a987d120ed7686f988f7cafd6bc4369cec"
+    },
+    {
+      "path": "assets/index-X4PqQqLK.js",
+      "bytes": 884213,
+      "sha256": "a89b6c4954d4595a0a55a3875057a8739b6060c2f60f73684712614f5c2b3a7b"
     },
     {
       "path": "assets/scan.worker-CbssXpml.js",
@@ -35,9 +35,9 @@
       "sha256": "6328eb62b9807d304526dabe183c7e915d2d7b933a2c37ef25f393de8eb32a50"
     },
     {
-      "path": "assets/ThreeViewer-BpSgWYur.js",
+      "path": "assets/ThreeViewer-Bo1nxw0S.js",
       "bytes": 582174,
-      "sha256": "806167ff0ddc60c78c921b901e8c04a2478b88655758623ba70efb4b58c6331c"
+      "sha256": "b2b7ff8b7b356e0b31ab71c29d8cc0d59f9f9bd53f4ae10ccd79ca8820a7c724"
     },
     {
       "path": "examples/contract-multiregion.litematic",
@@ -57,7 +57,7 @@
     {
       "path": "index.html",
       "bytes": 661,
-      "sha256": "357aecb2d748aa87b458df8989054a195cb346dd0c780260c728049c18650373"
+      "sha256": "4ba09b59fe58916f3a94d231cde83360ee4b594428ccba201f0b1321504b42f2"
     },
     {
       "path": "THIRD_PARTY_NOTICES.txt",
