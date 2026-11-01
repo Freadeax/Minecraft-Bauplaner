@@ -4,7 +4,7 @@ Browserbasierter Minecraft-Bauhelfer: Bauwerke betrachten, wiederverwendbare Mod
 
 Zielrepository: https://github.com/Freadeax/Minecraft-Bauplaner
 
-**Stand: 01.11.2026.** Implementiert sind Projektzentrale, Bibliothek mit 174 Gebäuden, Composer, Orbit/Freiflug, Schichten, Schem-v3- und Litematic-Import/-Export, lokale Projektspeicherung, Asset-Revisionsschutz gegen konkurrierende Änderungen (Browserabnahme offen), Bauanleitungen, Material-/Rohstoffplanung, Baustellen und parametrische Generatoren. Spielaufnahmen werden mit Originaldatei und Verlauf gespeichert. Neu: fünf Oberflächenthemen mit Hell/Dunkel/System und ein Materiallabor mit Familien, Suche und Herkunft der berechneten Bauitems. Die Bibliothek bietet elf Bauwelten; Glas, Beton und Terrakotta lassen sich als getrennte Materialvarianten wählen. Die Weltkartenoberfläche und Teamdienste bleiben offen. Grenzen und Prüfstand: [STATUS](docs/STATUS.md).
+**Stand: 01.11.2026.** Implementiert sind Projektzentrale, Bibliothek mit 174 Gebäuden, Composer, Orbit/Freiflug, Schichten, Schem-v3- und Litematic-Import/-Export, lokale Projektspeicherung, Asset-Revisionsschutz gegen konkurrierende Änderungen (Browserabnahme offen), abbrechbare Worker-Projektberechnung, Bauanleitungen, Material-/Rohstoffplanung, Baustellen und parametrische Generatoren. Spielaufnahmen werden mit Originaldatei und Verlauf gespeichert. Neu: fünf Oberflächenthemen mit Hell/Dunkel/System und ein Materiallabor mit Familien, Suche und Herkunft der berechneten Bauitems. Die Bibliothek bietet elf Bauwelten; Glas, Beton und Terrakotta lassen sich als getrennte Materialvarianten wählen. Die Weltkartenoberfläche und Teamdienste bleiben offen. Grenzen und Prüfstand: [STATUS](docs/STATUS.md).
 
 ## Einstieg
 

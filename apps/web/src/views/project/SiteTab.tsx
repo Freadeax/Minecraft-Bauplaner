@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
-  addSection, buildGuide, linkOperation, unlinkedMates, checkSections, evaluateProgress, moveSection, planSite, pruneSite, removeSection, reservationsFor, RESERVATION_STATE_LABEL,
+  addSection, linkOperation, unlinkedMates, moveSection, pruneSite, removeSection, RESERVATION_STATE_LABEL,
   SECTION_PRESET_LABEL, setReservation, setStock, siteOf, siteOperation, suggestSections, updateSection, MAX_RESERVATION_DEPTH,
 } from '../../../../../packages/domain/src/index.js';
-import type { Guide, Reservation, SectionMember, SectionPlan, SectionPreset, SitePlan, SiteSection } from '../../../../../packages/domain/src/index.js';
+import type { Guide, Reservation, SectionIssue, SectionMember, SectionPlan, SectionPreset, SitePlan, SiteSection } from '../../../../../packages/domain/src/index.js';
 import { useApp } from '../../app/context';
 import { download, errorText, formatNumber } from '../../app/ui';
 import { isResolved } from './session';
@@ -21,7 +21,7 @@ const hoursText = (h: number): string => h < 1 ? `${Math.round(h * 60)} min` : `
  */
 export function SiteTab({ session }: { session: ProjectSession }) {
   const { library } = useApp();
-  const { project, resolution } = session;
+  const { project, resolution, computation } = session;
   const site = siteOf(project);
   const [message, setMessage] = useState('');
   const [focus, setFocus] = useState<string | null>(null);
@@ -29,18 +29,15 @@ export function SiteTab({ session }: { session: ProjectSession }) {
     try { setMessage(session.execute(siteOperation(next, label))); } catch (e) { setMessage(errorText(e)); }
   };
 
-  const guide = useMemo<Guide | null>(() => {
-    if (!isResolved(resolution)) return null;
-    try { return buildGuide(project, resolution); } catch { return null; }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resolution, project.instances]);
-  const progress = useMemo(() => guide ? evaluateProgress(guide, project.progress) : null, [guide, project.progress]);
-  const plan = useMemo(() => guide && progress && isResolved(resolution) ? planSite(site, guide, progress, resolution) : null, [site, guide, progress, resolution]);
-  const issues = useMemo(() => guide ? checkSections(site, project, guide) : [], [site, project, guide]);
-  const reservations = useMemo(() => isResolved(resolution) ? reservationsFor(project, library.versions, site, resolution) : [], [project, library.versions, site, resolution]);
+  const guide = computation?.guide ?? null;
+  const progress = computation?.site.progress ?? null;
+  const plan = computation?.site.plan ?? null;
+  const issues = computation?.site.issues ?? [];
+  const reservations = computation?.site.reservations ?? [];
 
+  if (session.computationState !== 'ready') return <section className="site" aria-label="Baustelle"><p role="status">{session.computationState === 'pending' ? 'Baustelle wird neu berechnet.' : session.computationState === 'cancelled' ? 'Baustellenberechnung abgebrochen.' : 'Baustellenberechnung nicht verfügbar.'}</p></section>;
   if (!isResolved(resolution)) return <section className="site" aria-label="Baustelle"><div className="notice warning" role="alert"><strong>Baustelle nicht verfügbar</strong><p>{resolution.error}</p></div></section>;
-  if (!guide || !progress || !plan) return null;
+  if (!guide || !progress || !plan) return <section className="site" aria-label="Baustelle"><p role="alert">Der Baustellenplan konnte nicht erstellt werden.</p></section>;
   if (!guide.steps.length) return <section className="site" aria-label="Baustelle"><div className="notice">Noch nichts zu planen. Füge im <a href={`#/projekt/${project.id}/editor`}>Editor</a> Bauteile ein.</div></section>;
 
   const t = plan.totals, current = plan.sections.find(s => s.id === plan.currentId) ?? null;
@@ -86,7 +83,7 @@ function Bar({ value, label }: { value: number; label: string }) {
 }
 
 interface SectionsProps {
-  site: SitePlan; plan: readonly SectionPlan[]; guide: Guide; project: ProjectSession['project']; issues: ReturnType<typeof checkSections>;
+  site: SitePlan; plan: readonly SectionPlan[]; guide: Guide; project: ProjectSession['project']; issues: readonly SectionIssue[];
   selected: string; onSelect(id: string): void; save(next: SitePlan, label: string): void; onPrune: (() => void) | null;
 }
 

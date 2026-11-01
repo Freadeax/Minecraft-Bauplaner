@@ -11,7 +11,7 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
   if (loadError) return <div className="page"><div className="notice warning" role="alert"><strong>Projekt nicht geladen</strong><p>{loadError}</p><a href="#/">Zur Projektzentrale</a></div></div>;
   if (!session) return <div className="loading" role="status">Projekt wird geladen …</div>;
   const active = projectTabs.find(t => t.id === tab);
-  return <div className="page project-page">
+  return <div className="page project-page" data-computation-state={session.computationState}>
     <header className="project-head">
       <div><a className="crumb" href="#/">Projekte</a><h1 className="page-title">{session.project.name}</h1></div>
       <nav className="tabs" aria-label="Projektbereiche">{projectTabs.map(t =>
@@ -19,6 +19,13 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
       <span className={`save-state ${session.saveState}`} role="status" title={session.saveError}>
         {saveLabel[session.saveState]}{repo.kind === 'memory' && ' · nur diese Sitzung'}</span>
     </header>
+    {session.computationState !== 'ready' && <section className={`notice ${session.computationState === 'error' ? 'warning' : ''}`}
+      aria-label="Projektberechnung" role={session.computationState === 'error' ? 'alert' : 'status'}>
+      <strong>{session.computationState === 'pending' ? 'Projekt wird berechnet …' : session.computationState === 'cancelled' ? 'Projektberechnung abgebrochen' : 'Projekt konnte nicht berechnet werden'}</strong>
+      {session.computationError && <p>{session.computationError}</p>}
+      {session.computationState === 'pending' ? <button onClick={session.cancelComputation}>Berechnung abbrechen</button>
+        : <button onClick={session.retryComputation}>Neu berechnen</button>}
+    </section>}
     {(session.saveState === 'conflict' || session.saveState === 'error') && <div className="notice warning" role="alert">
       <strong>{session.saveState === 'conflict' ? 'Gespeicherter Stand wurde zwischenzeitlich geändert.' : 'Speichern fehlgeschlagen.'}</strong>
       <p>{session.saveError} Deine letzte Änderung ist nur in diesem Tab sichtbar und nicht gespeichert.</p>

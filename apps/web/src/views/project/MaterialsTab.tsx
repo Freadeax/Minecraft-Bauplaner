@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react';
-import { formatStacks, materialsForResolution, materialsToCsv, siteOf, siteOperation, toggleResolvedStock } from '../../../../../packages/domain/src/index.js';
-import type { ItemLine, MaterialReport, MaterialScope, UnresolvedReason } from '../../../../../packages/domain/src/index.js';
+import { useState } from 'react';
+import { formatStacks, materialsToCsv, siteOf, siteOperation, toggleResolvedStock } from '../../../../../packages/domain/src/index.js';
+import type { ItemLine, MaterialReport, UnresolvedReason } from '../../../../../packages/domain/src/index.js';
 import { download, formatNumber } from '../../app/ui';
 import { isResolved } from './session';
 import { MaterialLab } from '../../materials/MaterialLab';
@@ -20,15 +20,11 @@ const props = (p: Readonly<Record<string, string>>): string => Object.entries(p)
 
 /** Material tab: placed states, build items and storage from `resolution.world` (domain `materials.ts`). */
 export function MaterialsTab({ session }: { session: ProjectSession }) {
-  const { project, resolution } = session;
+  const { project, resolution, computation } = session;
   const [scopeId, setScopeId] = useState('');
   const [filter, setFilter] = useState('');
-  const scopeInstance = project.instances.find(i => i.id === scopeId), scopeLabel = scopeInstance?.name;
-  const report = useMemo(() => {
-    if (!isResolved(resolution)) return null;
-    const scope: MaterialScope = scopeInstance ? { kind: 'instance', instanceId: scopeInstance.id, name: scopeInstance.name } : { kind: 'project' };
-    return materialsForResolution(resolution, scope);
-  }, [resolution, scopeInstance?.id, scopeLabel]); // eslint-disable-line react-hooks/exhaustive-deps
+  const scopeInstance = project.instances.find(instance => instance.id === scopeId);
+  const report = scopeInstance ? computation?.instanceMaterials.get(scopeInstance.id) : computation?.materials;
 
   // "vorhanden" marks and the recipe route are stored in the project's site plan (B14), so they survive reloads and backups.
   const site = siteOf(project);
@@ -38,8 +34,9 @@ export function MaterialsTab({ session }: { session: ProjectSession }) {
     onReset: () => session.execute(siteOperation({ ...site, resolvedStock: [] }, 'Markierungen „vorhanden“ zurückgesetzt')),
     onCutter: cutter => session.execute(siteOperation({ ...site, recipeMethod: cutter ? 'stonecutter' : 'crafting' }, cutter ? 'Steinsäge bevorzugen' : 'Werkbank bevorzugen')),
   };
+  if (session.computationState !== 'ready') return <section className="materials" aria-label="Materialbedarf"><p role="status">{session.computationState === 'pending' ? 'Material wird neu berechnet.' : session.computationState === 'cancelled' ? 'Materialberechnung abgebrochen.' : 'Materialberechnung nicht verfügbar.'}</p></section>;
   if (!isResolved(resolution)) return <section className="materials report danger-report" role="alert"><h3>Material kann nicht berechnet werden</h3><p>{resolution.error}</p></section>;
-  if (!report) return null;
+  if (!report) return <section className="materials" aria-label="Materialbedarf"><p role="alert">Für diesen Umfang liegt noch kein Materialbericht vor.</p></section>;
   const q = filter.trim().toLowerCase();
   const items = q ? report.items.filter(l => l.itemId.includes(q) || l.sources.some(s => s.state.id.includes(q))) : report.items;
   const scopeName = report.scope.kind === 'project' ? 'Gesamtprojekt' : `Instanz „${report.scope.name}“`;

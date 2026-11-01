@@ -60,3 +60,7 @@ Exportkoordination und Aufnahmeverwaltung liegen in `packages/application`; Repo
 ## ADR-018 · Lokale Assetrevision und atomarer Konfliktabbruch · 01.11.2026
 
 STORE-02 ergänzt eine additive Speicherrevision am Asset. CAS-Basis ist die beim Beginn eines Entwurfs gelesene Revision; AssetVersion- und Geometriehashes bleiben davon getrennt. Anwendungsschicht prüft Revisions-/Batchregeln, IndexedDB entscheidet und schreibt innerhalb einer Transaktion, MemoryRepository folgt demselben Vertrag. Neue DB-Migration v2, alte Sicherungen ohne Feld weiterhin gültig. Automatisches Zusammenführen konkurrierender Metadaten oder Versionslisten verworfen: fachliche Absicht wäre dabei unbekannt. Details und offene echte Browserabnahme: [ASSET_CONCURRENCY](ASSET_CONCURRENCY.md).
+
+## ADR-019 · Snapshotgebundene Rechenaufträge mit echtem Abbruch · 01.11.2026
+
+PERF-01 nutzt einen gemeinsamen Anwendungsschicht-Rechenfall und einen kurzlebigen Browser-Modulworker pro aktivem Auftrag. Job-/Projekt-/Revisions-/Basis-Tags und Eingabesnapshot-Identität verhindern verspätete Übernahme. Beenden des Workers unterbricht auch synchrone Fachkernschleifen. Bei Workerfehlern wird kein synchroner Ersatz auf der UI ausgeführt. Bauanleitung, Materialien und Baustelle verwenden ein gemeinsames Ergebnis; historische Revisionen bleiben getrennt. Allgemeiner Workerpool, Transferpuffer und selektiver Cache werden erst nach gesondertem Übertragungs-/Invalidierungsnachweis eingeführt. Node- und offene Browserabnahme sind in [PROJECT_COMPUTATION](PROJECT_COMPUTATION.md) getrennt.

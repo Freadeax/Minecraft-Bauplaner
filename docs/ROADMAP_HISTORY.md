@@ -259,3 +259,100 @@ Main c3e6478 und Pages-Artefakt bc74958 veroeffentlicht; Live-Manifest, Quell-SH
 - `docs/STATUS.md`
 - `docs/TESTING.md`
 
+## 2026-11-01T10:07:13.335Z · progress
+
+**Aufgaben:** PERF-01, PERF-02
+
+Größerer Performanceblock begonnen: asynchrone Projektberechnung, Worker-Lifecycle, Session/Ansichten und gemessene interne Zellindizes. Noch keine Fertigstellung oder Browsermessung behauptet.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-01 | 🚧 In Arbeit | 0/3 | Zusammenhängenden Worker-/Indexblock implementieren und mit semantischen Regressionen sowie abgegrenzter Node-Messung prüfen. |
+| PERF-02 | 🚧 In Arbeit | 0/2 | Zusammenhängenden Worker-/Indexblock implementieren und mit semantischen Regressionen sowie abgegrenzter Node-Messung prüfen. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/project/BuildTab.tsx`
+- `apps/web/src/views/project/MaterialsTab.tsx`
+- `apps/web/src/views/project/SiteTab.tsx`
+- `docs/COMMUNICATION.md`
+- `packages/domain/src/compose.ts`
+- `scripts/benchmark_composition.mjs`
+
+## 2026-11-01T10:13:29.044Z · progress
+
+**Aufgaben:** PERF-01, PERF-02, STORE-02
+
+Worker-Rechenfall, Client-Lifecycle, Snapshotbindung und Bau-/Material-/Baustellenansichten integriert; interner Indexteil mit identischen Resolution-Hashes und Node-Messung geprüft. Browser-/Mobilabnahme und selektiver Cache weiterhin offen; vollständiger Abschlusscheck folgt.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-01 | 🧩 Implementiert · Abnahme offen | 2/3 | Vollständige Browser-/Mobil-Latenz und Abbruch/Retry/historische Revisionen mit verfügbarer Chromium-Laufzeit messen; danach PERF-01 vollständig abnehmen. |
+| PERF-02 | 🧩 Implementiert · Abnahme offen | 2/3 | Kopier-/Ownerkosten im echten Browser messen und selektive Geometrie-/Fortschritts-Invalidierung vor Cache-/Chunkumbau prüfen. |
+| STORE-02 | 🧩 Implementiert · Abnahme offen | 2/3 | Echte IndexedDB-v1→v2-Migration und Zwei-Tab-UI-Regressionsfälle bei verfügbarer Chromium-Laufzeit ausführen; danach STORE-02 vollständig abnehmen. Folgender Entwicklungsblock PERF-01. |
+
+**Geänderte Dateien:**
+
+- `README.md`
+- `apps/web/src/app/useProjectComputation.ts`
+- `apps/web/src/computation/client.ts`
+- `apps/web/src/computation/project.worker.ts`
+- `apps/web/src/computation/protocol.ts`
+- `apps/web/src/views/project/BuildTab.tsx`
+- `apps/web/src/views/project/MaterialsTab.tsx`
+- `apps/web/src/views/project/ProjectView.tsx`
+- `apps/web/src/views/project/SiteTab.tsx`
+- `apps/web/src/views/project/session.ts`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/architecture/COMPOSITION_PERFORMANCE.md`
+- `docs/architecture/DECISIONS.md`
+- `docs/architecture/MODULES.md`
+- `docs/architecture/PROJECT_COMPUTATION.md`
+- `packages/application/src/index.ts`
+- `packages/application/src/projectComputation.ts`
+- `packages/domain/src/compose.ts`
+- `scripts/benchmark_composition.mjs`
+- `tests/composition-index.test.mjs`
+- `tests/e2e/project-computation.e2e.mjs`
+- `tests/project-computation.test.mjs`
+
+## 2026-11-01T10:15:04.390Z · progress
+
+**Aufgaben:** PERF-01, PERF-02, STORE-02
+
+Zusammenhängender Performanceblock implementiert: Workerberechnung, Lifecycle/Abbruch/Retry, Snapshotbindung, Projekt-/Bau-/Material-/Baustellenansichten und interner Zahlenindex. 377 Tests und vollständiger Check bestanden. Browser-/Mobilabnahme und selektiver Cache bleiben explizit offen; Main/Pages folgen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-01 | 🧩 Implementiert · Abnahme offen | 2/3 | Vollständige Browser-/Mobil-Latenz und Abbruch/Retry/historische Revisionen mit verfügbarer Chromium-Laufzeit messen; danach PERF-01 vollständig abnehmen. |
+| PERF-02 | 🧩 Implementiert · Abnahme offen | 2/3 | Kopier-/Ownerkosten im echten Browser messen und selektive Geometrie-/Fortschritts-Invalidierung vor Cache-/Chunkumbau prüfen. |
+| STORE-02 | 🧩 Implementiert · Abnahme offen | 2/3 | Echte IndexedDB-v1→v2-Migration und Zwei-Tab-UI-Regressionsfälle bei verfügbarer Chromium-Laufzeit ausführen; danach STORE-02 vollständig abnehmen. Folgender Entwicklungsblock PERF-01. |
+
+**Geänderte Dateien:**
+
+- `README.md`
+- `apps/web/src/app/useProjectComputation.ts`
+- `apps/web/src/computation/client.ts`
+- `apps/web/src/computation/project.worker.ts`
+- `apps/web/src/computation/protocol.ts`
+- `apps/web/src/views/project/BuildTab.tsx`
+- `apps/web/src/views/project/MaterialsTab.tsx`
+- `apps/web/src/views/project/ProjectView.tsx`
+- `apps/web/src/views/project/SiteTab.tsx`
+- `apps/web/src/views/project/session.ts`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/COMPOSITION_PERFORMANCE.md`
+- `docs/architecture/DECISIONS.md`
+- `docs/architecture/MODULES.md`
+- `docs/architecture/PROJECT_COMPUTATION.md`
+- `packages/application/src/index.ts`
+- `packages/application/src/projectComputation.ts`
+- `packages/domain/src/compose.ts`
+- `scripts/benchmark_composition.mjs`
+- `tests/composition-index.test.mjs`
+- `tests/e2e/project-computation.e2e.mjs`
+- `tests/project-computation.test.mjs`
+

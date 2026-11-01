@@ -1,9 +1,10 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T09:42:34.925Z",
+  "updatedAt": "2026-11-01T10:15:04.390Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
-    "WORLD-02"
+    "PERF-01",
+    "PERF-02"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -726,10 +727,10 @@
         "note": "364 Node-Tests und vollständiger Kern-/Typ-/Build-/Modul-/Roadmap-/Dokumentationscheck bestanden. Sieben CAS-, drei Restore- und eine konkurrierende Seedregression neu. Echte IndexedDB-Migration und UI-Zwei-Tab-Abnahme weiterhin offen: Chromiumstart nicht ausführbar."
       },
       "delivery": {
-        "main": null,
-        "pagesSource": null
+        "main": "8f2278095ff752282bf2b34ee5c288c95deac013",
+        "pagesSource": "8f2278095ff752282bf2b34ee5c288c95deac013"
       },
-      "updatedAt": "2026-11-01T09:33:55.354Z"
+      "updatedAt": "2026-11-01T10:15:04.390Z"
     },
     {
       "id": "QA-01",
@@ -1476,26 +1477,30 @@
       "title": "Große Berechnungen als abbrechbare Worker-Aufträge",
       "phase": "P2",
       "priority": "P0",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "implemented",
+      "owner": "Codex",
       "dependencies": [
         "ARCH-01"
       ],
       "scope": [
         "apps/web/src/views/project/session.ts",
-        "packages/application/"
+        "packages/application/",
+        "apps/web/src/computation/",
+        "apps/web/src/app/useProjectComputation.ts",
+        "apps/web/src/views/project/",
+        "tests/project-computation.test.mjs"
       ],
       "legacyIds": [],
       "steps": [
         {
           "id": "PERF-01-S01",
           "title": "Workerprotokoll mit Job-ID, Revisionsbezug und Abbruch definieren.",
-          "done": false
+          "done": true
         },
         {
           "id": "PERF-01-S02",
           "title": "Auflösung, Anleitung und Materialien auslagern; veraltete Ergebnisse verwerfen.",
-          "done": false
+          "done": true
         },
         {
           "id": "PERF-01-S03",
@@ -1506,26 +1511,39 @@
       "acceptance": [
         "Keine Übernahme eines Ergebnisses für eine veraltete Revision."
       ],
-      "next": "Workerprotokoll mit Job-ID, Revisionsbezug und Abbruch definieren.",
+      "next": "Vollständige Browser-/Mobil-Latenz und Abbruch/Retry/historische Revisionen mit verfügbarer Chromium-Laufzeit messen; danach PERF-01 vollständig abnehmen.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/project-computation.test.mjs",
+          "note": "Acht Kern-/Lifecycle-/Node-Workerfälle; Gesamtcheck in TESTING."
+        },
+        {
+          "path": "tests/e2e/project-computation.e2e.mjs",
+          "note": "Vier reale Browserfälle vorbereitet, Ausführung am Chromiumstart blockiert."
+        },
+        {
+          "path": "docs/architecture/PROJECT_COMPUTATION.md",
+          "note": "Protokoll, Snapshotbindung und abgegrenzte Node-Messung."
+        }
+      ],
       "verification": {
-        "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "state": "passed",
+        "note": "377 Node-Tests sowie strenge Modul-/Typ-/Build-/Roadmap-/Dokumentationsprüfung bestanden. Echter Nodeworker mit semantisch gleichem Ergebnis und bedienter Ereignisschleife; vier Browserfälle vor Produktstart mangels Chromium blockiert, Browser-/Mobilmessung weiterhin offen."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-01T10:15:04.390Z"
     },
     {
       "id": "PERF-02",
       "title": "Zellindizes, Chunkdaten und selektive Neuberechnung",
       "phase": "P2",
       "priority": "P1",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "implemented",
+      "owner": "Codex",
       "dependencies": [
         "PERF-01"
       ],
@@ -1538,29 +1556,47 @@
         {
           "id": "PERF-02-S01",
           "title": "Kosten von owners/Strings/Übertragungen messen.",
-          "done": false
+          "done": true
         },
         {
           "id": "PERF-02-S02",
           "title": "Index-/Chunkstrategie nur mit identischem semantischem Ergebnis einführen.",
+          "done": true
+        },
+        {
+          "id": "PERF-02-S03",
+          "title": "Chunk-/Übertragungsstrategie und selektive Neuberechnung mit vollständiger Invalidierungsprüfung ergänzen.",
           "done": false
         }
       ],
       "acceptance": [
         "Unabhängige Mengen-/Geometrieregressionen; Importlimits bleiben wirksam."
       ],
-      "next": "Kosten von owners/Strings/Übertragungen messen.",
+      "next": "Kopier-/Ownerkosten im echten Browser messen und selektive Geometrie-/Fortschritts-Invalidierung vor Cache-/Chunkumbau prüfen.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/composition-index.test.mjs",
+          "note": "Vier handberechnete Regressionsgruppen: Koordinaten, Konflikte, NBT, Grenzen."
+        },
+        {
+          "path": "scripts/benchmark_composition.mjs",
+          "note": "Vorher-/Nachher-Vergleich mit vollständigem Resolutionhash; Node-Szenario."
+        },
+        {
+          "path": "docs/architecture/COMPOSITION_PERFORMANCE.md",
+          "note": "Abschließender Median 5,2 % niedriger; Streuung und offene Chunk-/Browserabnahme ausdrücklich getrennt."
+        }
+      ],
       "verification": {
-        "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "state": "passed",
+        "note": "Interner Indexteil mit 15 passenden bestehenden/neuen Regressionen und sechs hashgleichen Vergleichsausgaben geprüft. Kein Browser-, Chunk- oder selektiver Cache-Nachweis. Gemeinsame vollständige Prüfung mit 377 Node-Tests bestanden."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-01T10:15:04.390Z"
     },
     {
       "id": "PERF-03",
@@ -3215,6 +3251,156 @@
           "done": 2,
           "total": 2,
           "next": "Sichtprüfung der drei neuen Bauwelten bei verfügbarer Browserlaufzeit in QA-01 nachholen; folgender Entwicklungsblock PERF-01."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T10:07:13.335Z",
+      "kind": "progress",
+      "items": [
+        "PERF-01",
+        "PERF-02"
+      ],
+      "summary": "Größerer Performanceblock begonnen: asynchrone Projektberechnung, Worker-Lifecycle, Session/Ansichten und gemessene interne Zellindizes. Noch keine Fertigstellung oder Browsermessung behauptet.",
+      "files": [
+        "apps/web/src/views/project/BuildTab.tsx",
+        "apps/web/src/views/project/MaterialsTab.tsx",
+        "apps/web/src/views/project/SiteTab.tsx",
+        "docs/COMMUNICATION.md",
+        "packages/domain/src/compose.ts",
+        "scripts/benchmark_composition.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-01",
+          "status": "in_progress",
+          "done": 0,
+          "total": 3,
+          "next": "Zusammenhängenden Worker-/Indexblock implementieren und mit semantischen Regressionen sowie abgegrenzter Node-Messung prüfen."
+        },
+        {
+          "id": "PERF-02",
+          "status": "in_progress",
+          "done": 0,
+          "total": 2,
+          "next": "Zusammenhängenden Worker-/Indexblock implementieren und mit semantischen Regressionen sowie abgegrenzter Node-Messung prüfen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T10:13:29.044Z",
+      "kind": "progress",
+      "items": [
+        "PERF-01",
+        "PERF-02",
+        "STORE-02"
+      ],
+      "summary": "Worker-Rechenfall, Client-Lifecycle, Snapshotbindung und Bau-/Material-/Baustellenansichten integriert; interner Indexteil mit identischen Resolution-Hashes und Node-Messung geprüft. Browser-/Mobilabnahme und selektiver Cache weiterhin offen; vollständiger Abschlusscheck folgt.",
+      "files": [
+        "README.md",
+        "apps/web/src/app/useProjectComputation.ts",
+        "apps/web/src/computation/client.ts",
+        "apps/web/src/computation/project.worker.ts",
+        "apps/web/src/computation/protocol.ts",
+        "apps/web/src/views/project/BuildTab.tsx",
+        "apps/web/src/views/project/MaterialsTab.tsx",
+        "apps/web/src/views/project/ProjectView.tsx",
+        "apps/web/src/views/project/SiteTab.tsx",
+        "apps/web/src/views/project/session.ts",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/architecture/COMPOSITION_PERFORMANCE.md",
+        "docs/architecture/DECISIONS.md",
+        "docs/architecture/MODULES.md",
+        "docs/architecture/PROJECT_COMPUTATION.md",
+        "packages/application/src/index.ts",
+        "packages/application/src/projectComputation.ts",
+        "packages/domain/src/compose.ts",
+        "scripts/benchmark_composition.mjs",
+        "tests/composition-index.test.mjs",
+        "tests/e2e/project-computation.e2e.mjs",
+        "tests/project-computation.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-01",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Vollständige Browser-/Mobil-Latenz und Abbruch/Retry/historische Revisionen mit verfügbarer Chromium-Laufzeit messen; danach PERF-01 vollständig abnehmen."
+        },
+        {
+          "id": "PERF-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Kopier-/Ownerkosten im echten Browser messen und selektive Geometrie-/Fortschritts-Invalidierung vor Cache-/Chunkumbau prüfen."
+        },
+        {
+          "id": "STORE-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Echte IndexedDB-v1→v2-Migration und Zwei-Tab-UI-Regressionsfälle bei verfügbarer Chromium-Laufzeit ausführen; danach STORE-02 vollständig abnehmen. Folgender Entwicklungsblock PERF-01."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T10:15:04.390Z",
+      "kind": "progress",
+      "items": [
+        "PERF-01",
+        "PERF-02",
+        "STORE-02"
+      ],
+      "summary": "Zusammenhängender Performanceblock implementiert: Workerberechnung, Lifecycle/Abbruch/Retry, Snapshotbindung, Projekt-/Bau-/Material-/Baustellenansichten und interner Zahlenindex. 377 Tests und vollständiger Check bestanden. Browser-/Mobilabnahme und selektiver Cache bleiben explizit offen; Main/Pages folgen.",
+      "files": [
+        "README.md",
+        "apps/web/src/app/useProjectComputation.ts",
+        "apps/web/src/computation/client.ts",
+        "apps/web/src/computation/project.worker.ts",
+        "apps/web/src/computation/protocol.ts",
+        "apps/web/src/views/project/BuildTab.tsx",
+        "apps/web/src/views/project/MaterialsTab.tsx",
+        "apps/web/src/views/project/ProjectView.tsx",
+        "apps/web/src/views/project/SiteTab.tsx",
+        "apps/web/src/views/project/session.ts",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/COMPOSITION_PERFORMANCE.md",
+        "docs/architecture/DECISIONS.md",
+        "docs/architecture/MODULES.md",
+        "docs/architecture/PROJECT_COMPUTATION.md",
+        "packages/application/src/index.ts",
+        "packages/application/src/projectComputation.ts",
+        "packages/domain/src/compose.ts",
+        "scripts/benchmark_composition.mjs",
+        "tests/composition-index.test.mjs",
+        "tests/e2e/project-computation.e2e.mjs",
+        "tests/project-computation.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-01",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Vollständige Browser-/Mobil-Latenz und Abbruch/Retry/historische Revisionen mit verfügbarer Chromium-Laufzeit messen; danach PERF-01 vollständig abnehmen."
+        },
+        {
+          "id": "PERF-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Kopier-/Ownerkosten im echten Browser messen und selektive Geometrie-/Fortschritts-Invalidierung vor Cache-/Chunkumbau prüfen."
+        },
+        {
+          "id": "STORE-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Echte IndexedDB-v1→v2-Migration und Zwei-Tab-UI-Regressionsfälle bei verfügbarer Chromium-Laufzeit ausführen; danach STORE-02 vollständig abnehmen. Folgender Entwicklungsblock PERF-01."
         }
       ]
     }

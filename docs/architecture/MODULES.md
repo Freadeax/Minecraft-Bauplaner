@@ -33,3 +33,7 @@ Die bisherigen Web-Einstiege `app/repository.ts` und `app/scanPersistence.ts` ex
 ## Nächste Umbauten mit Abnahme
 
 STORE-02 ergänzt Asset-Revisionsschutz samt Migration und UI-Konfliktbehandlung. PERF-01 führt abbrechbare, revisionsgebundene Rechenaufträge ein. Weitere UI-Anwendungsfälle werden einzeln herausgelöst; keine leeren Services und kein zweites Repository-/Koordinatenmodell. Siehe [Roadmap](../ROADMAP.md).
+
+## Projektberechnung · PERF-01
+
+`application/projectComputation.ts` verbindet reine Auflösung, Anleitung, Materialberichte und Baustellenplanung. Der Browserworker/Client in `apps/web/src/computation` ist ein austauschbarer Transportadapter; Reacts `useProjectComputation` prüft die aktuelle Snapshotbindung. Jobs verändern und speichern keine Projektdaten. Der Fachkern bleibt ohne Browser-/Workerimporte. Abbruch, Deadline, Retry und Cachegrenzen: [PROJECT_COMPUTATION](PROJECT_COMPUTATION.md).

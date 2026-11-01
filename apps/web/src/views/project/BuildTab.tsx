@@ -1,16 +1,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { mergeBuildItems } from '../../../../../packages/application/src/projectComputation.js';
+import type { BuildItemSummary } from '../../../../../packages/application/src/projectComputation.js';
 import { selectLayers } from '../../../../../packages/voxel/src/index.js';
 import type { BlockState, Cell } from '../../../../../packages/voxel/src/index.js';
-import { buildGuide, checkScan, confirmedUnticked, evaluateProgress, formatStacks, materialsForParts, PHASE_LABEL, positionKey, resolveProject, scanTarget, sectionOfStep, siteOf, tickConfirmed, tickedButNotBuilt, tickStep, tickSteps, untickStep, untickSteps, VERDICT_LABEL } from '../../../../../packages/domain/src/index.js';
+import { checkScan, confirmedUnticked, formatStacks, PHASE_LABEL, positionKey, scanTarget, sectionOfStep, siteOf, tickConfirmed, tickedButNotBuilt, tickStep, tickSteps, untickStep, untickSteps, VERDICT_LABEL } from '../../../../../packages/domain/src/index.js';
 import type { CellDeviation, GameCheck, Guide, GuideStep, MaterialReport, Resolution, StepStatus } from '../../../../../packages/domain/src/index.js';
 import type { Vec3 } from '../../../../../packages/voxel/src/index.js';
 import { useApp } from '../../app/context';
-import { errorText, formatNumber } from '../../app/ui';
+import { formatNumber } from '../../app/ui';
 import { mix, stateColor } from '../../colors';
 import { Viewer } from '../../Viewer';
 import { GAME_BADGE, GameCheckPanel, gameStatusText } from './GameCheckPanel';
 import type { LoadedScan } from './GameCheckPanel';
-import { isResolved } from './session';
+import { useProjectComputation } from '../../app/useProjectComputation';
 import type { ProjectSession } from './session';
 
 type Filter = 'all' | 'todo' | 'review';
@@ -38,18 +40,12 @@ export function BuildTab({ session }: { session: ProjectSession }) {
   const [manualAlign, setManualAlign] = useState<Vec3 | null>(null);
 
   const revision = basis === 'working' ? null : project.revisions.find(r => r.id === basis) ?? null;
-  const source = useMemo<{ resolution: Resolution; guide: Guide } | { error: string }>(() => {
-    try {
-      const resolution = revision ? resolveProject({ ...project, instances: revision.instances }, library.versions) : session.resolution;
-      if (!isResolved(resolution)) return { error: resolution.error };
-      return { resolution, guide: buildGuide(revision ?? project, resolution) };
-    } catch (e) { return { error: errorText(e) }; }
-    // Progress changes must not rebuild the guide; geometry comes from instances only.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [revision, session.resolution, project.instances, library.versions]);
-
-  const guide = 'guide' in source ? source.guide : null;
-  const progress = useMemo(() => guide ? evaluateProgress(guide, project.progress) : null, [guide, project.progress]);
+  const historical = useProjectComputation(project, library.versions, { ...(revision && { basis: revision }), enabled: !!revision });
+  const computation = revision ? historical.result : session.computation;
+  const computationState = revision ? historical.status : session.computationState;
+  const computationError = revision ? historical.error : session.computationError;
+  const guide = computation?.guide ?? null;
+  const progress = computation?.site.progress ?? null;
   const ready = useMemo(() => new Set(progress?.ready ?? []), [progress]);
   const status = useCallback((id: string): StepStatus => progress?.status.get(id) ?? 'open', [progress]);
 
@@ -57,7 +53,7 @@ export function BuildTab({ session }: { session: ProjectSession }) {
   const target = useMemo(() => scan ? scanTarget(project, scan) : null, [scan, project]);
   const targetError = target && 'error' in target ? target.error : '';
   const scanRevision = target && !('error' in target) ? target.revision : null;
-  const world = 'resolution' in source ? source.resolution.world : null;
+  const world = computation?.resolution.world ?? null;
   const alignment: Vec3 | null = target && !('error' in target) ? target.projectMin ?? manualAlign ?? world?.bounds.min ?? null : null;
   const basisMismatch = !!scanRevision && basis !== scanRevision.id;
   const game = useMemo<GameCheck | null>(() => {
@@ -65,7 +61,7 @@ export function BuildTab({ session }: { session: ProjectSession }) {
     return checkScan(guide, world, scan, alignment, target.notes);
   }, [scan, guide, world, alignment, target, basisMismatch]);
   // Build items per step (B1 rules); partner halves are looked up in the whole world so steps add up to the material tab.
-  const stepItems = useMemo(() => guide && world ? materialsForParts(world, guide.steps) : null, [guide, world]);
+  const stepItems = computation?.stepMaterials ?? null;
   const loadScan = (s: LoadedScan) => {
     setScan(s); setManualAlign(null);
     const t = scanTarget(project, s);
@@ -88,8 +84,23 @@ export function BuildTab({ session }: { session: ProjectSession }) {
     if (next) setSelectedId(next.id);
   };
 
-  if (!guide || !progress) return <section className="build" aria-label="Bauanleitung"><div className="notice warning" role="alert"><strong>Bauanleitung nicht verfügbar</strong><p>{'error' in source ? source.error : ''}</p></div></section>;
-  if (!guide.steps.length) return <section className="build" aria-label="Bauanleitung"><div className="notice">Noch nichts zu bauen. Füge im <a href={`#/projekt/${project.id}/editor`}>Editor</a> Bauteile ein.</div></section>;
+  const basisControl = <label className="build-basis">Grundlage
+    <select value={basis} onChange={event => { setBasis(event.target.value); setSelectedId(null); }}>
+      <option value="working">Aktueller Arbeitsstand</option>
+      {project.revisions.map(item => <option key={item.id} value={item.id}>Revision {item.number}{item.comment ? ` – ${item.comment}` : ''}</option>)}
+    </select>
+  </label>;
+  if (!guide || !progress) return <section className="build" aria-label="Bauanleitung">
+    {basisControl}
+    <div className={`notice${computationState === 'error' ? ' warning' : ''}`} role={computationState === 'error' ? 'alert' : 'status'}>
+      <strong>{computationState === 'pending' ? 'Bauanleitung wird berechnet' : computationState === 'cancelled' ? 'Berechnung abgebrochen' : 'Bauanleitung nicht verfügbar'}</strong>
+      {computationError && <p>{computationError}</p>}
+      {revision && (computationState === 'pending'
+        ? <button onClick={historical.cancel}>Berechnung der Revision abbrechen</button>
+        : <button onClick={historical.retry}>Revision erneut berechnen</button>)}
+    </div>
+  </section>;
+  if (!guide.steps.length) return <section className="build" aria-label="Bauanleitung">{basisControl}<div className="notice">Noch nichts zu bauen. Füge im <a href={`#/projekt/${project.id}/editor`}>Editor</a> Bauteile ein.</div></section>;
 
   const total = guide.steps.length, pct = guide.totals.blocks ? Math.round(progress.blocksDone / guide.totals.blocks * 100) : 0;
   const byLayer = new Map<number, GuideStep[]>();
@@ -97,7 +108,7 @@ export function BuildTab({ session }: { session: ProjectSession }) {
   const layerSteps = step ? guide.steps.filter(s => s.y === step.y && s.phase !== 'liquid') : [];
   const reviewSteps = guide.steps.filter(s => status(s.id) === 'review');
   const layerOpen = step ? guide.steps.filter(s => s.y === step.y && status(s.id) !== 'done') : [];
-  const layerItems = step && world ? { y: step.y, steps: layerOpen.length, report: materialsForParts(world, [{ id: 'layer', positions: layerOpen.flatMap(s => s.positions) }]).get('layer')! } : null;
+  const layerItems = step && stepItems ? { y: step.y, steps: layerOpen.length, report: mergeBuildItems(layerOpen.flatMap(item => { const report = stepItems.get(item.id); return report ? [report] : []; })) } : null;
 
   return <section className="build" aria-label="Bauanleitung">
     <header className="build-head">
@@ -107,12 +118,7 @@ export function BuildTab({ session }: { session: ProjectSession }) {
         <div className="build-bar" role="progressbar" aria-label="Gesetzte Blöcke laut Haken" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}><span style={{ width: `${pct}%` }} /></div>
         <small>{formatNumber(progress.blocksDone)} von {formatNumber(guide.totals.blocks)} Blöcken ({pct} %){progress.review > 0 && <> · <em className="badge review">{progress.review} prüfbedürftig</em></>}</small>
       </div>
-      <label className="build-basis">Grundlage
-        <select value={basis} onChange={e => { setBasis(e.target.value); setSelectedId(null); }}>
-          <option value="working">Aktueller Arbeitsstand</option>
-          {project.revisions.map(r => <option key={r.id} value={r.id}>Revision {r.number}{r.comment ? ` – ${r.comment}` : ''}</option>)}
-        </select>
-      </label>
+      {basisControl}
       <p className="muted build-honesty">Haken sind manuelle Angaben, keine Messung im Spiel. Ändert sich die Geometrie eines Schritts, wird sein Haken „prüfbedürftig“.</p>
     </header>
 
@@ -160,7 +166,7 @@ export function BuildTab({ session }: { session: ProjectSession }) {
       </div>)}
     </aside>
 
-    {step && <StepDetail step={step} guide={guide} status={status} game={game} ready={ready.has(step.id)} world={source && 'resolution' in source ? source.resolution : null}
+    {step && <StepDetail step={step} guide={guide} status={status} game={game} ready={ready.has(step.id)} world={computation?.resolution ?? null}
       items={stepItems?.get(step.id) ?? null} layerItems={layerItems}
       show3d={show3d} setShow3d={setShow3d} onSelect={setSelectedId}
       onTick={() => tick(step)} onUntick={() => run(untickStep(step.id))}
@@ -172,7 +178,7 @@ export function BuildTab({ session }: { session: ProjectSession }) {
 
 interface DetailProps {
   step: GuideStep; guide: Guide; status: (id: string) => StepStatus; game: GameCheck | null; ready: boolean; world: Resolution | null;
-  items: MaterialReport | null; layerItems: { y: number; steps: number; report: MaterialReport } | null;
+  items: MaterialReport | null; layerItems: { y: number; steps: number; report: BuildItemSummary } | null;
   show3d: boolean; setShow3d(v: boolean): void; onSelect(id: string): void;
   onTick(): void; onUntick(): void; onNext(): void; onPrev(): void; onTickLayer(): void;
 }
@@ -227,7 +233,7 @@ function StepDetail({ step, guide, status, game, ready, world, items, layerItems
 }
 
 /** Build items of a step or layer (rules and assumptions from the material tab). */
-function StepItems({ report, caption = 'Benötigte Bauitems', storage = false }: { report: MaterialReport; caption?: string; storage?: boolean }) {
+function StepItems({ report, caption = 'Benötigte Bauitems', storage = false }: { report: BuildItemSummary; caption?: string; storage?: boolean }) {
   if (!report.items.length && !report.unresolved.length) return null;
   return <>
     <table className="build-materials build-items"><caption>{caption}</caption>

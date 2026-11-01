@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T09:42:34.925Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T10:15:04.390Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,16 +12,17 @@ Stand: 2026-11-01T09:42:34.925Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 28 |
+| ⏳ Offen | 26 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 3 |
-| 🧩 Implementiert · Abnahme offen | 9 |
+| 🧩 Implementiert · Abnahme offen | 11 |
 | ✅ Im beschriebenen Umfang geprüft | 13 |
 | ⏸ Zurückgestellt | 2 |
 
 ## Aktiver Arbeitsblock
 
-- **WORLD-02 · Weitere kuratierte Bauwelten** — 🧩 Implementiert · Abnahme offen, 2/2 Teilschritte. Nächster Schritt: Sichtprüfung der drei neuen Bauwelten bei verfügbarer Browserlaufzeit in QA-01 nachholen; folgender Entwicklungsblock PERF-01.
+- **PERF-01 · Große Berechnungen als abbrechbare Worker-Aufträge** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Vollständige Browser-/Mobil-Latenz und Abbruch/Retry/historische Revisionen mit verfügbarer Chromium-Laufzeit messen; danach PERF-01 vollständig abnehmen.
+- **PERF-02 · Zellindizes, Chunkdaten und selektive Neuberechnung** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Kopier-/Ownerkosten im echten Browser messen und selektive Geometrie-/Fortschritts-Invalidierung vor Cache-/Chunkumbau prüfen.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -60,7 +61,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [PLAN-01](#plan-01) | Verbindlicher Aufgabenbestand und Merge-Fortschritt | ✅ Im beschriebenen Umfang geprüft | 3/3 | — | `ccf4fa7` | `ccf4fa7` |
 | [ARCH-01](#arch-01) | Anwendungsschicht und überprüfte Modulgrenzen | ✅ Im beschriebenen Umfang geprüft | 4/4 | CORE-01, CORE-02 | `ccf4fa7` | `ccf4fa7` |
 | [DOC-01](#doc-01) | Widerspruchsfreie aktuelle Statusdokumentation | ✅ Im beschriebenen Umfang geprüft | 2/2 | PLAN-01 | `ccf4fa7` | `ccf4fa7` |
-| [STORE-02](#store-02) | Revisionsschutz bei konkurrierenden Assetänderungen | 🧩 Implementiert · Abnahme offen | 2/3 | ARCH-01 | ausstehend | ausstehend |
+| [STORE-02](#store-02) | Revisionsschutz bei konkurrierenden Assetänderungen | 🧩 Implementiert · Abnahme offen | 2/3 | ARCH-01 | `8f22780` | `8f22780` |
 | [QA-01](#qa-01) | Aktuelle Browserregression für alle Hauptabläufe | ⛔ Blockiert | 0/2 | ARCH-01 | ausstehend | ausstehend |
 | [UI-01](#ui-01) | Neue Themen, Bauwelten und Materiallabor abnehmen | 🧩 Implementiert · Abnahme offen | 2/3 | QA-01 | `84838f0` | `e232b26` |
 | [STAB-01](#stab-01) | Absturzschutz, Datencheck und Fehlerberichte abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | QA-01 | `84838f0` | `e232b26` |
@@ -90,8 +91,8 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [MAT-03](#mat-03) | Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen | 🧩 Implementiert · Abnahme offen | 2/3 | PROFILE-01, QA-01 | `84838f0` | `e232b26` |
 | [MAT-04](#mat-04) | Kupfer mit Oxidation und Wachsstatus | ⏳ Offen | 0/2 | PROFILE-01, MAT-03 | ausstehend | ausstehend |
 | [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen | 1/3 | CORE-02, NBT-01 | `84838f0` | `e232b26` |
-| [PERF-01](#perf-01) | Große Berechnungen als abbrechbare Worker-Aufträge | ⏳ Offen | 0/3 | ARCH-01 | ausstehend | ausstehend |
-| [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | ⏳ Offen | 0/2 | PERF-01 | ausstehend | ausstehend |
+| [PERF-01](#perf-01) | Große Berechnungen als abbrechbare Worker-Aufträge | 🧩 Implementiert · Abnahme offen | 2/3 | ARCH-01 | ausstehend | ausstehend |
+| [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen | 2/3 | PERF-01 | ausstehend | ausstehend |
 | [PERF-03](#perf-03) | Bundle, große Views und Vorschaucache | ⏳ Offen | 0/3 | ARCH-01, QA-01 | ausstehend | ausstehend |
 | [VIEW-01](#view-01) | Vorhandenen Viewer vollständig abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | QA-01 | `84838f0` | `e232b26` |
 
@@ -373,7 +374,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### STORE-02
 
-**Revisionsschutz bei konkurrierenden Assetänderungen** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T09:33:55.354Z
+**Revisionsschutz bei konkurrierenden Assetänderungen** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T10:15:04.390Z
 
 - [x] STORE-02-S01: Vorhandene S4-Reservierung und Remoteänderungen vor Bearbeitung prüfen.
 - [x] STORE-02-S02: Asset-Revisionsvertrag, UI-Konfliktbehandlung und Migration implementieren.
@@ -389,7 +390,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Dateiumfang:** `apps/web/src/app/idbRepository.ts`, `packages/application/src/repository.ts`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** S4.
 
-**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+**Integration:** Main [8f22780](https://github.com/Freadeax/Minecraft-Bauplaner/commit/8f2278095ff752282bf2b34ee5c288c95deac013); Pages-Quelle [8f22780](https://github.com/Freadeax/Minecraft-Bauplaner/commit/8f2278095ff752282bf2b34ee5c288c95deac013).
 
 ### QA-01
 
@@ -686,38 +687,39 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-01
 
-**Große Berechnungen als abbrechbare Worker-Aufträge** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Große Berechnungen als abbrechbare Worker-Aufträge** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T10:15:04.390Z
 
-- [ ] PERF-01-S01: Workerprotokoll mit Job-ID, Revisionsbezug und Abbruch definieren.
-- [ ] PERF-01-S02: Auflösung, Anleitung und Materialien auslagern; veraltete Ergebnisse verwerfen.
+- [x] PERF-01-S01: Workerprotokoll mit Job-ID, Revisionsbezug und Abbruch definieren.
+- [x] PERF-01-S02: Auflösung, Anleitung und Materialien auslagern; veraltete Ergebnisse verwerfen.
 - [ ] PERF-01-S03: Vorher/Nachher mit Modell, Hardware-/Browserangabe und UI-Reaktionszeit messen.
 
 **Abnahme:** Keine Übernahme eines Ergebnisses für eine veraltete Revision.
 
-**Nächste Aktion:** Workerprotokoll mit Job-ID, Revisionsbezug und Abbruch definieren.
+**Nächste Aktion:** Vollständige Browser-/Mobil-Latenz und Abbruch/Retry/historische Revisionen mit verfügbarer Chromium-Laufzeit messen; danach PERF-01 vollständig abnehmen.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** 377 Node-Tests sowie strenge Modul-/Typ-/Build-/Roadmap-/Dokumentationsprüfung bestanden. Echter Nodeworker mit semantisch gleichem Ergebnis und bedienter Ereignisschleife; vier Browserfälle vor Produktstart mangels Chromium blockiert, Browser-/Mobilmessung weiterhin offen.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/project-computation.test.mjs](../tests/project-computation.test.mjs) — Acht Kern-/Lifecycle-/Node-Workerfälle; Gesamtcheck in TESTING.; [tests/e2e/project-computation.e2e.mjs](../tests/e2e/project-computation.e2e.mjs) — Vier reale Browserfälle vorbereitet, Ausführung am Chromiumstart blockiert.; [docs/architecture/PROJECT_COMPUTATION.md](architecture/PROJECT_COMPUTATION.md) — Protokoll, Snapshotbindung und abgegrenzte Node-Messung.
 
-**Dateiumfang:** `apps/web/src/views/project/session.ts`, `packages/application/`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** —.
+**Dateiumfang:** `apps/web/src/views/project/session.ts`, `packages/application/`, `apps/web/src/computation/`, `apps/web/src/app/useProjectComputation.ts`, `apps/web/src/views/project/`, `tests/project-computation.test.mjs`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### PERF-02
 
-**Zellindizes, Chunkdaten und selektive Neuberechnung** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Zellindizes, Chunkdaten und selektive Neuberechnung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Codex · Aktualisiert: 2026-11-01T10:15:04.390Z
 
-- [ ] PERF-02-S01: Kosten von owners/Strings/Übertragungen messen.
-- [ ] PERF-02-S02: Index-/Chunkstrategie nur mit identischem semantischem Ergebnis einführen.
+- [x] PERF-02-S01: Kosten von owners/Strings/Übertragungen messen.
+- [x] PERF-02-S02: Index-/Chunkstrategie nur mit identischem semantischem Ergebnis einführen.
+- [ ] PERF-02-S03: Chunk-/Übertragungsstrategie und selektive Neuberechnung mit vollständiger Invalidierungsprüfung ergänzen.
 
 **Abnahme:** Unabhängige Mengen-/Geometrieregressionen; Importlimits bleiben wirksam.
 
-**Nächste Aktion:** Kosten von owners/Strings/Übertragungen messen.
+**Nächste Aktion:** Kopier-/Ownerkosten im echten Browser messen und selektive Geometrie-/Fortschritts-Invalidierung vor Cache-/Chunkumbau prüfen.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Interner Indexteil mit 15 passenden bestehenden/neuen Regressionen und sechs hashgleichen Vergleichsausgaben geprüft. Kein Browser-, Chunk- oder selektiver Cache-Nachweis. Gemeinsame vollständige Prüfung mit 377 Node-Tests bestanden.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/composition-index.test.mjs](../tests/composition-index.test.mjs) — Vier handberechnete Regressionsgruppen: Koordinaten, Konflikte, NBT, Grenzen.; [scripts/benchmark_composition.mjs](../scripts/benchmark_composition.mjs) — Vorher-/Nachher-Vergleich mit vollständigem Resolutionhash; Node-Szenario.; [docs/architecture/COMPOSITION_PERFORMANCE.md](architecture/COMPOSITION_PERFORMANCE.md) — Abschließender Median 5,2 % niedriger; Streuung und offene Chunk-/Browserabnahme ausdrücklich getrennt.
 
 **Dateiumfang:** `packages/domain/src/compose.ts`, `packages/voxel/`. **Abhängigkeiten:** PERF-01. **Alte IDs:** —.
 

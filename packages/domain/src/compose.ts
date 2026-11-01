@@ -93,12 +93,24 @@ export function resolveProject(project: Project, versions: ReadonlyMap<string, A
   const boundsOverlaps: [string, string][] = [];
   for (let i = 0; i < placed.length; i++) for (let j = i + 1; j < placed.length; j++)
     if (overlaps(placed[i]!.payload.bounds, placed[j]!.payload.bounds)) boundsOverlaps.push([placed[i]!.instance.id, placed[j]!.instance.id]);
-  const slots = new Map<string, Slot>();
+  const min = [Infinity, Infinity, Infinity], max = [-Infinity, -Infinity, -Infinity];
+  for (const p of placed) for (const i of [0, 1, 2]) {
+    min[i] = Math.min(min[i]!, p.payload.bounds.min[i]!); max[i] = Math.max(max[i]!, p.payload.bounds.maxExclusive[i]!);
+  }
+  const sx = max[0]! - min[0]!, sy = max[1]! - min[1]!, sz = max[2]! - min[2]!;
+  // Bounds are integer validated by transformPayload. A numeric index is unique only
+  // when every intermediate integer fits exactly; sparse far-apart projects can
+  // exceed this range even though each individual payload is valid.
+  const numericIndex = placed.length > 0 && BigInt(sx) * BigInt(sy) * BigInt(sz) <= BigInt(Number.MAX_SAFE_INTEGER);
+  const cellKey: (p: Vec3) => number | string = numericIndex
+    ? p => (p[0] - min[0]!) + sx * ((p[2] - min[2]!) + sz * (p[1] - min[1]!))
+    : positionKey;
+  const slots = new Map<number | string, Slot>();
   let duplicates = 0;
   for (const p of placed) {
-    const entities = new Map(p.payload.blockEntities.map(e => [positionKey(e.position), e]));
+    const entities = new Map(p.payload.blockEntities.map(e => [cellKey(e.position), e]));
     for (const cell of p.payload.cells) {
-      const key = positionKey(cell.position), state = cell.kind === 'erase' ? null : p.payload.palette[cell.paletteIndex]!, entity = entities.get(key);
+      const key = cellKey(cell.position), state = cell.kind === 'erase' ? null : p.payload.palette[cell.paletteIndex]!, entity = entities.get(key);
       const slot = slots.get(key);
       if (!slot) { slots.set(key, { cell, state, entity, owners: [p.instance.id], override: p.instance.override }); continue; }
       slot.owners.push(p.instance.id);
@@ -123,15 +135,11 @@ export function resolveProject(project: Project, versions: ReadonlyMap<string, A
     (slot.conflict.resolvedBy ? overridden : conflicts).push(c);
   }
   const owners = new Map<string, string[]>();
-  for (const [key, slot] of slots) owners.set(key, slot.conflict?.resolvedBy ? [slot.conflict.resolvedBy, ...slot.owners.filter(o => o !== slot.conflict!.resolvedBy)] : slot.owners);
+  for (const slot of slots.values()) owners.set(positionKey(slot.cell.position), slot.conflict?.resolvedBy ? [slot.conflict.resolvedBy, ...slot.owners.filter(o => o !== slot.conflict!.resolvedBy)] : slot.owners);
   let world: VoxelPayload | null = null;
   if (slots.size) {
     const palette: BlockState[] = [], index = new Map<string, number>();
     const cells: Cell[] = [], blockEntities: BlockEntity[] = [];
-    const min = [Infinity, Infinity, Infinity], max = [-Infinity, -Infinity, -Infinity];
-    for (const p of placed) for (const i of [0, 1, 2]) {
-      min[i] = Math.min(min[i]!, p.payload.bounds.min[i]!); max[i] = Math.max(max[i]!, p.payload.bounds.maxExclusive[i]!);
-    }
     const sorted = [...slots.values()].sort((a, b) => a.cell.position[1] - b.cell.position[1] || a.cell.position[2] - b.cell.position[2] || a.cell.position[0] - b.cell.position[0]);
     for (const slot of sorted) {
       if (slot.cell.kind === 'erase') { cells.push({ position: slot.cell.position, kind: 'erase' }); continue; }

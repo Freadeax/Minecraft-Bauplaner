@@ -1,9 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { EMPTY_HISTORY, execute as run, redo as runRedo, resolveProject, undo as runUndo } from '../../../../../packages/domain/src/index.js';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { EMPTY_HISTORY, execute as run, redo as runRedo, undo as runUndo } from '../../../../../packages/domain/src/index.js';
 import type { History, Operation, Project, Resolution } from '../../../../../packages/domain/src/index.js';
+import type { ProjectComputation } from '../../../../../packages/application/src/projectComputation.js';
 import { useApp } from '../../app/context';
 import { RevisionConflictError } from '../../app/repository';
 import { errorText } from '../../app/ui';
+import { useProjectComputation } from '../../app/useProjectComputation';
+import type { ComputationStatus } from '../../app/useProjectComputation';
 
 export type SaveState = 'saved' | 'saving' | 'error' | 'conflict';
 
@@ -13,6 +16,11 @@ export interface ProjectSession {
   readonly history: History;
   /** Resolution of the current project, or the error that prevented it. */
   readonly resolution: Resolution | { readonly error: string };
+  readonly computation: ProjectComputation | null;
+  readonly computationState: ComputationStatus;
+  readonly computationError: string;
+  cancelComputation(): void;
+  retryComputation(): void;
   readonly saveState: SaveState;
   readonly saveError: string;
   readonly selectedInstanceId: string | null;
@@ -64,18 +72,16 @@ export function useProjectSession(projectId: string): { session: ProjectSession 
     });
   }, [repo]);
 
-  // Only instances and profile influence geometry; a new storage revision must not recompute it.
-  const instances = project?.instances, profileId = project?.profileId;
-  const resolution = useMemo<ProjectSession['resolution'] | null>(() => {
-    if (!project) return null;
-    try { return resolveProject(project, library.versions); } catch (e) { return { error: errorText(e) }; }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [instances, profileId, library.versions]);
+  const computation = useProjectComputation(project, library.versions);
+  const resolution: ProjectSession['resolution'] = computation.result?.resolution ?? { error: computation.error ||
+    (computation.status === 'cancelled' ? 'Projektberechnung abgebrochen. Bitte neu berechnen.' : 'Projekt wird berechnet …') };
 
-  if (!project || !resolution) return { session: null, loadError };
+  if (!project) return { session: null, loadError };
   const blocked = saveState === 'conflict';
   const session: ProjectSession = {
     project, history, resolution, saveState, saveError, selectedInstanceId, select, reload,
+    computation: computation.result, computationState: computation.status, computationError: computation.error,
+    cancelComputation: computation.cancel, retryComputation: computation.retry,
     execute(op) {
       if (blocked) return 'Gespeicherter Stand hat sich geändert. Bitte zuerst neu laden.';
       try { const r = run(project, history, op); setProject(r.project); setHistory(r.history); persist(r.project); return ''; }
