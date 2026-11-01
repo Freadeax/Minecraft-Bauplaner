@@ -32,7 +32,7 @@ export function Shell({ route, children }: { route: Route; children: ReactNode }
       <nav className="main-nav" aria-label="Hauptnavigation">
         {mainNav.map(n => <a key={n.id} href={n.href} aria-current={current(n.views)}><Icon name={n.icon} />{n.label}</a>)}
       </nav>
-      <button type="button" className="search-trigger" onClick={openPalette} aria-keyshortcuts="Control+K Meta+K" title="Schnellsuche öffnen">
+      <button type="button" className="search-trigger" onClick={openPalette} aria-keyshortcuts="Control+K Meta+K" aria-label="Schnellsuche öffnen" title="Schnellsuche öffnen">
         <Icon name="search" /><span className="search-label">Suchen …</span><kbd>{isMac ? '⌘' : 'Strg'} K</kbd></button>
       <a className="topbar-icon" href={REPO_URL} target="_blank" rel="noreferrer" title="Quellcode auf GitHub (neuer Tab)"><Icon name="github" /><span className="sr-only">GitHub</span></a>
       <ThemeControl />

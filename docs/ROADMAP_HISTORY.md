@@ -1366,3 +1366,26 @@ Quellcommit der Paper-Jar nach Rebase auf den Commit auf main korrigiert.
 
 - `apps/web/src/views/mod/releases.json`
 
+## 2026-11-01T18:52:18.883Z · progress
+
+**Aufgaben:** QA-03
+
+Wacklige E2E-Tests stabilisiert: Strg+K vor dem Datenladen gemerkt, Systemcheck wartet auf Manifest, Ebenenraster-Geometrie nach Einschwingen, Pinselstrich per Ref, 3D-Editor bleibt während Neuberechnung stehen, Suchknopf mit festem Namen. Gesamtsuite 3× 84/84 in Chromium; keine Testabschwächung.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| QA-03 | ✅ Im beschriebenen Umfang geprüft | 7/7 | Bei neuen Ausfällen zuerst nach Lesen vor dem Laden (Manifest, IndexedDB, ResizeObserver, Worker-Neuberechnung) suchen. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/CommandPalette.tsx`
+- `apps/web/src/app/Shell.tsx`
+- `apps/web/src/editor/BlockEditor.tsx`
+- `apps/web/src/viewer/sceneController.ts`
+- `apps/web/src/views/project/EditorTab.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `tests/e2e/editor.e2e.mjs`
+- `tests/e2e/snap.e2e.mjs`
+- `tests/e2e/stability.e2e.mjs`
+

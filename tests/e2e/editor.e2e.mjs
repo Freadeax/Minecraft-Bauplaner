@@ -26,13 +26,30 @@ function watch(p) {
   p.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
   return errors;
 }
-/** Screen point of a grid cell relative to the canvas centre (cell size read from the canvas). */
+/**
+ * Geometry of the layer canvas, read in one go once it has settled: the grid measures itself with a
+ * ResizeObserver (late panels, scrollbars, „Modell einpassen“) and re-renders a frame later. Reading the
+ * box and the cell size in separate steps while that happens aimed drags at the wrong cells.
+ */
+async function gridGeometry(p) {
+  const canvas = p.locator('.layer-grid canvas');
+  let last = '';
+  for (let i = 0; i < 50; i++) {
+    const g = await canvas.evaluate(c => new Promise(done => requestAnimationFrame(() => requestAnimationFrame(() => {
+      const b = c.getBoundingClientRect();
+      done({ x: b.x, y: b.y, width: b.width, height: b.height, size: Number(c.dataset.cellSize), centre: c.dataset.centre });
+    }))));
+    const key = JSON.stringify(g);
+    if (key === last) return { ...g, centre: g.centre.split(',').map(Number) };
+    last = key;
+  }
+  throw new Error('Ebenenraster kommt nicht zur Ruhe');
+}
+/** Screen point of a grid cell relative to the canvas centre. */
 async function cellPoint(p, dx, dz) {
-  const c = p.locator('.layer-grid canvas'), box = await c.boundingBox();
-  const size = Number(await c.getAttribute('data-cell-size'));
-  const [cx, cz] = (await c.getAttribute('data-centre')).split(',').map(Number);
+  const g = await gridGeometry(p), [cx, cz] = g.centre;
   const x = Math.floor(cx) + dx, z = Math.floor(cz) + dz;
-  return [box.x + box.width / 2 + (x + 0.5 - cx) * size, box.y + box.height / 2 + (z + 0.5 - cz) * size];
+  return [g.x + g.width / 2 + (x + 0.5 - cx) * g.size, g.y + g.height / 2 + (z + 0.5 - cz) * g.size];
 }
 async function dragCells(p, a, b) {
   const [x0, y0] = await cellPoint(p, ...a), [x1, y1] = await cellPoint(p, ...b);
@@ -87,9 +104,8 @@ test('Werkstatt: neues Bauteil mit Quader, Treppenlinie, Rückgängig, Speichern
   // Remove one stair with the eraser and save as version 2.0.
   await p.getByLabel('Ebene Y', { exact: true }).fill('3');
   await p.getByRole('radio', { name: /Abbauen/ }).click();
-  const [x, y] = await cellPoint(p, 0, 0);
   // The grid is centred on the model: the north wall row is 3 cells up.
-  await p.mouse.click(x, y - 3 * Number(await p.locator('.layer-grid canvas').getAttribute('data-cell-size')));
+  await p.mouse.click(...await cellPoint(p, 0, -3));
   await p.waitForFunction(() => document.querySelector('.editor-stats')?.textContent?.includes('78 Zellen'));
   await p.getByRole('button', { name: 'Als Version 2.0 speichern' }).click();
   await p.locator('.notice.success', { hasText: 'Version 2.0 von „Testhof“ gespeichert' }).waitFor();

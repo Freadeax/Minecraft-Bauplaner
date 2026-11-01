@@ -9,7 +9,22 @@ import { projectTabs } from '../views/project/tabs';
 
 /** Öffnet die Schnellsuche von außerhalb (Kopfzeile, untere Leiste). */
 export const PALETTE_EVENT = 'bauplaner:schnellsuche';
-export const openPalette = (): void => { window.dispatchEvent(new Event(PALETTE_EVENT)); };
+/**
+ * Die Schnellsuche hängt erst nach dem Laden der lokalen Daten im Baum
+ * (AppProvider). Ein Strg+K oder Klick davor ging früher verloren; jetzt
+ * merkt sich das Modul die Anfrage, und die Schnellsuche öffnet sich, sobald
+ * sie eingehängt ist.
+ */
+let mounted = false;
+let pending = false;
+export const openPalette = (): void => {
+  if (mounted) window.dispatchEvent(new Event(PALETTE_EVENT));
+  else pending = true;
+};
+const isShortcut = (e: KeyboardEvent): boolean => (e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'k';
+if (typeof window !== 'undefined') {
+  window.addEventListener('keydown', e => { if (isShortcut(e)) { e.preventDefault(); openPalette(); } });
+}
 
 interface Entry { readonly key: string; readonly group: string; readonly label: string; readonly hint: string; readonly href: string; readonly icon: IconName }
 
@@ -49,12 +64,10 @@ export function CommandPalette() {
 
   useEffect(() => {
     const show = () => { returnFocus.current = document.activeElement; setQuery(''); setActive(0); setOpen(true); };
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && !e.altKey && e.key.toLowerCase() === 'k') { e.preventDefault(); show(); }
-    };
     window.addEventListener(PALETTE_EVENT, show);
-    window.addEventListener('keydown', onKey);
-    return () => { window.removeEventListener(PALETTE_EVENT, show); window.removeEventListener('keydown', onKey); };
+    mounted = true;
+    if (pending) { pending = false; show(); }
+    return () => { mounted = false; window.removeEventListener(PALETTE_EVENT, show); };
   }, []);
 
   useEffect(() => {
@@ -108,7 +121,7 @@ export function CommandPalette() {
   return <div className="palette-backdrop" onMouseDown={e => { if (e.target === e.currentTarget) close(); }}>
     <div className="palette" role="dialog" aria-modal="true" aria-label="Schnellsuche" onKeyDown={onKeyDown}>
       <div className="palette-input"><Icon name="search" />
-        <input ref={input} value={query} onChange={e => { setQuery(e.target.value); setActive(0); }} placeholder="Seite, Projekt oder Gebäude suchen …"
+        <input ref={input} autoFocus value={query} onChange={e => { setQuery(e.target.value); setActive(0); }} placeholder="Seite, Projekt oder Gebäude suchen …"
           role="combobox" aria-expanded="true" aria-controls="palette-list" aria-autocomplete="list"
           aria-activedescendant={entries[pick] ? `palette-${pick}` : undefined} aria-label="Schnellsuche" />
         <kbd>Esc</kbd></div>

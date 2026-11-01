@@ -104,6 +104,7 @@ export class SceneController {
     canvas.setAttribute('role', 'img');
     canvas.setAttribute('aria-label', '3D-Bauwerk: Ziehen zum Drehen, Scrollen zum Zoomen, Block anklicken für Koordinaten. Tasten 1–6 Ansichten, F Fokus, V Freiflug.');
     host.appendChild(canvas);
+    host.dataset.ghost = ''; // no preview yet; tests and tools can rely on the attribute being present
 
     this.marker = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.02, 1.02, 1.02)), new THREE.LineBasicMaterial({ color: 0xffffff, depthTest: false, transparent: true, opacity: 0.9 }));
     this.marker.visible = false; this.marker.renderOrder = 2; this.scene.add(this.marker);

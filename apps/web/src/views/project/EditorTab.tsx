@@ -28,6 +28,12 @@ export function EditorTab({ session }: { session: ProjectSession }) {
   const run = useCallback((op: Parameters<ProjectSession['execute']>[0]) => { setMessage(session.execute(op)); }, [session]);
   const resolved: Resolution | null = isResolved(resolution) ? resolution : null;
   const world = resolved?.world ?? null;
+  // Every edit recomputes the project in a worker. Until the new result arrives the 3D view keeps showing the
+  // last world instead of unmounting: no WebGL restart, camera and view preset stay, a running drag ends cleanly.
+  const lastWorld = useRef(world);
+  if (world) lastWorld.current = world;
+  else if (session.computationState !== 'pending') lastWorld.current = null;
+  const shownWorld = world ?? lastWorld.current;
   const selected = project.instances.find(i => i.id === selectedId) ?? null;
   const [dragMode, setDragMode] = useState(false);
   const [snapOn, setSnapOn] = useState(true);
@@ -61,7 +67,7 @@ export function EditorTab({ session }: { session: ProjectSession }) {
     if (groupCells.members.has(key)) return { color: GROUP, amount: 0.35 };
     return selectedId && !selectedKeys.has(key) ? { color: DIM_TARGET, amount: 0.55 } : null;
   }, [conflictKeys, selectedKeys, selectedId, groupCells]);
-  const { visible, control: layerControl } = useLayerFilter(world);
+  const { visible, control: layerControl } = useLayerFilter(shownWorld);
   const focus = useMemo(() => resolved?.placed.find(p => p.instance.id === selectedId)?.payload.bounds ?? null, [resolved, selectedId]);
   const onSelect = useCallback((cell: Cell | null) => {
     setPicked(cell?.position ?? null);
@@ -181,7 +187,7 @@ export function EditorTab({ session }: { session: ProjectSession }) {
           <button onClick={session.redo} disabled={!session.history.redo.length} title={session.history.redo.at(-1)?.label ?? ''}>↷ <span>Wiederholen</span></button>
         </div>
       </div>
-      {world && visible ? <Viewer payload={world} cells={visible.cells} onSelect={onSelect} markFor={markFor} focus={focus} drag={drag} ghost={ghost ?? groupGhost} />
+      {shownWorld && visible ? <Viewer payload={shownWorld} cells={visible.cells} onSelect={onSelect} markFor={markFor} focus={focus} drag={drag} ghost={ghost ?? groupGhost} />
         : <div className="scene empty-scene"><p>{isResolved(resolution) ? 'Leeres Projekt – füge links ein Bauteil ein.' : resolution.error}</p></div>}
       {dragMode && <div className="drag-hint" role="status">{dragInfo || (selected ? `„${selected.name}“ im Bild greifen und ziehen; daneben ziehen dreht die Ansicht. Esc bricht ab.` : 'Erst eine Instanz wählen, dann im Bild ziehen.')}</div>}
       <div className="viewport-footer"><span>Ziehen: drehen · Scrollen: zoomen · Klick: Block und Instanz wählen · F: Fokus · V: Flug · Strg+Z / Strg+Y</span>

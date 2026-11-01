@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T17:47:04.911Z",
+  "updatedAt": "2026-11-01T18:52:18.883Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -846,6 +846,87 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-01T06:15:35+01:00"
+    },
+    {
+      "id": "QA-03",
+      "title": "Wacklige Browsertests stabilisieren (Schnellsuche, Systemcheck, Editor- und Snap-Ziehtests)",
+      "phase": "P1",
+      "priority": "P0",
+      "status": "verified",
+      "owner": "Claude-Thread „Wacklige Browsertests stabilisieren“",
+      "dependencies": [
+        "QA-01"
+      ],
+      "scope": [
+        "tests/e2e/shell.e2e.mjs",
+        "tests/e2e/stability.e2e.mjs",
+        "tests/e2e/editor.e2e.mjs",
+        "tests/e2e/snap.e2e.mjs",
+        "apps/web/src/app/CommandPalette.tsx",
+        "apps/web/src/editor/BlockEditor.tsx",
+        "apps/web/src/views/project/EditorTab.tsx",
+        "apps/web/src/viewer/sceneController.ts",
+        "apps/web/src/app/Shell.tsx"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "QA-03-S01",
+          "title": "Ursachen der gelegentlichen E2E-Ausfälle auf main finden (keine Tests abschalten oder abschwächen).",
+          "done": true
+        },
+        {
+          "id": "QA-03-S02",
+          "title": "Schnellsuche: Strg+K und Suchknopf während des Ladens der lokalen Daten nicht mehr verlieren.",
+          "done": true
+        },
+        {
+          "id": "QA-03-S03",
+          "title": "Systemcheck-Test wartet auf das nachgeladene Build-Manifest statt den Ladehinweis zu lesen.",
+          "done": true
+        },
+        {
+          "id": "QA-03-S04",
+          "title": "Editor-Ziehtest misst das Ebenenraster erst nach dem Einschwingen; Pinselstrich verliert bei schnellen Zügen keine Zellen mehr.",
+          "done": true
+        },
+        {
+          "id": "QA-03-S05",
+          "title": "3D-Ansicht im Projekteditor bleibt während der Neuberechnung stehen statt neu aufgebaut zu werden (Snap-Ziehtest).",
+          "done": true
+        },
+        {
+          "id": "QA-03-S07",
+          "title": "Suchknopf der Kopfzeile behält seinen zugänglichen Namen, wenn die Beschriftung bei schmaleren Fenstern ausgeblendet wird.",
+          "done": true
+        },
+        {
+          "id": "QA-03-S06",
+          "title": "Gesamte E2E-Suite mehrfach hintereinander grün.",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "Kein Test übersprungen, abgeschwächt oder mit längeren Wartezeiten kaschiert; Ursache jeweils in App oder Testsynchronisation behoben.",
+        "Gesamte Suite mindestens dreimal hintereinander grün."
+      ],
+      "next": "Bei neuen Ausfällen zuerst nach Lesen vor dem Laden (Manifest, IndexedDB, ResizeObserver, Worker-Neuberechnung) suchen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "docs/TESTING.md",
+          "note": "Ursachen, Behebung und Wiederholungsläufe."
+        }
+      ],
+      "verification": {
+        "state": "passed",
+        "note": "Gesamte Chromium-E2E-Suite nach Rebase auf fd22da6 dreimal hintereinander 84/84 bestanden, null übersprungen; vorher 75/76 bzw. 83/84. Kein Test abgeschwächt. Nur Chromium im Linux-Container."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-01T18:52:18.883Z"
     },
     {
       "id": "UI-01",
@@ -5653,6 +5734,35 @@
           "done": 3,
           "total": 4,
           "next": "Abnahme auf Philipps eigenem Paper-Server (GAME-04-S04)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T18:52:18.883Z",
+      "kind": "progress",
+      "items": [
+        "QA-03"
+      ],
+      "summary": "Wacklige E2E-Tests stabilisiert: Strg+K vor dem Datenladen gemerkt, Systemcheck wartet auf Manifest, Ebenenraster-Geometrie nach Einschwingen, Pinselstrich per Ref, 3D-Editor bleibt während Neuberechnung stehen, Suchknopf mit festem Namen. Gesamtsuite 3× 84/84 in Chromium; keine Testabschwächung.",
+      "files": [
+        "apps/web/src/app/CommandPalette.tsx",
+        "apps/web/src/app/Shell.tsx",
+        "apps/web/src/editor/BlockEditor.tsx",
+        "apps/web/src/viewer/sceneController.ts",
+        "apps/web/src/views/project/EditorTab.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "tests/e2e/editor.e2e.mjs",
+        "tests/e2e/snap.e2e.mjs",
+        "tests/e2e/stability.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "QA-03",
+          "status": "verified",
+          "done": 7,
+          "total": 7,
+          "next": "Bei neuen Ausfällen zuerst nach Lesen vor dem Laden (Manifest, IndexedDB, ResizeObserver, Worker-Neuberechnung) suchen."
         }
       ]
     }

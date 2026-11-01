@@ -54,7 +54,10 @@ test('Systemcheck: Auslieferung, Browser und Datencheck ohne Befund', async () =
   await p.goto(`${BASE}#/`);
   await p.getByRole('link', { name: 'Datencheck' }).click();
   await p.getByRole('heading', { name: 'Läuft alles sauber?' }).waitFor();
-  assert.match(await p.locator('#sys-build').locator('..').innerText(), /Quellstand/);
+  // Das Build-Manifest kommt per fetch nach; erst auf den Quellstand warten, dann lesen (nicht „Manifest wird geladen …“).
+  const build = p.locator('section[aria-labelledby="sys-build"]');
+  await build.getByText('Quellstand').waitFor();
+  assert.match(await build.locator('.system-facts code').innerText(), /^[0-9a-f]{7}$/);
   await p.getByRole('button', { name: 'Geladene Dateien prüfen' }).click();
   await p.getByText(/Programmdateien stimmen mit dem Build überein/).waitFor();
   assert.match(await p.locator('.system-caps').innerText(), /Dauerhafter Speicher \(IndexedDB\)\naktiv/);

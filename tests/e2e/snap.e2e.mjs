@@ -106,7 +106,8 @@ test('Editor: Instanz im 3D-Bild ziehen, rastet am Anschluss ein, ein Undo-Schri
   assert.match(await p.locator('.drag-hint').innerText(), /Rastet ein: west → Turm West · east/);
   await p.mouse.up();
   await p.getByLabel('X-Koordinate').and(p.locator('[value="4"]')).waitFor();
-  assert.equal(await host.getAttribute('data-ghost'), '');
+  // The preview is cleared by an effect after the drop; wait for it instead of reading once.
+  await p.waitForFunction(() => document.querySelector('.editor .canvas-host')?.getAttribute('data-ghost') === '');
   await p.getByText('✓ Geometrisch konfliktfrei').waitFor();
   await p.locator('.snap-panel').getByText('VERBINDUNGEN (2)').waitFor();
   await p.getByRole('button', { name: /Rückgängig/ }).click();

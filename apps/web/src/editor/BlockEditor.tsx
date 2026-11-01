@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import {
   BOX_SHAPE_LABEL, boxBounds, boxEdit, boxVolume, cellAt, copyBox, countMatches, cylinderEdit, defaultState, floodEdit, lineEdit, materializeDraft, moveBoxEdit, pasteEdit,
@@ -62,6 +62,10 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
   const [picked, setPicked] = useState<Vec3 | null>(null);
   const [message, setMessage] = useState('');
   const [stroke, setStroke] = useState<{ start: Vec3; cells: Map<string, Vec3>; current: Vec3; selecting: boolean } | null>(null);
+  // Pointer moves are continuous events: React may not have rendered the last move when the next move or the
+  // button release arrives. The ref always holds the newest stroke, so no cell of a fast drag gets lost.
+  const strokeRef = useRef<typeof stroke>(null);
+  const setLiveStroke = (next: typeof stroke) => { strokeRef.current = next; setStroke(next); };
   const [show3d, setShow3d] = useState(true);
   const [replaceFrom, setReplaceFrom] = useState('');
   const [replaceScope, setReplaceScope] = useState<'all' | 'selection'>('all');
@@ -116,10 +120,11 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
     const selecting = tool === 'auswahl' || s.shift;
     if (s.phase === 'down') {
       if (!selecting && onCell(s.cell)) return;
-      setStroke({ start: s.cell, current: s.cell, cells: new Map([[s.cell.join(','), s.cell]]), selecting });
+      setLiveStroke({ start: s.cell, current: s.cell, cells: new Map([[s.cell.join(','), s.cell]]), selecting });
       if (selecting) setSelection(boxBounds({ a: s.cell, b: s.cell }));
       return;
     }
+    const stroke = strokeRef.current;
     if (!stroke) return;
     const next = { ...stroke, current: s.cell };
     if (tool === 'stift' || tool === 'abbauen') { next.cells = new Map(stroke.cells); for (const p of lineEdit(stroke.current, s.cell, null).changes) next.cells.set(p.position.join(','), p.position); }
@@ -127,8 +132,8 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
       const keep = selection && stroke.start[1] >= selection.min[1] && stroke.start[1] < selection.maxExclusive[1] ? [selection.min[1], selection.maxExclusive[1] - 1] : [stroke.start[1], stroke.start[1]];
       setSelection(boxBounds({ a: [stroke.start[0], keep[0]!, stroke.start[2]], b: [s.cell[0], keep[1]!, s.cell[2]] }));
     }
-    if (s.phase === 'move') { setStroke(next); return; }
-    setStroke(null);
+    if (s.phase === 'move') { setLiveStroke(next); return; }
+    setLiveStroke(null);
     if (stroke.selecting) return;
     const e = shapeEdit(next);
     if (e) run(e);
@@ -140,7 +145,7 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
       if ((e.target as HTMLElement | null)?.closest('input,textarea,select') || e.ctrlKey || e.metaKey || e.altKey) return;
       if (e.key === 'PageUp' || e.key === ']') { e.preventDefault(); setY(v => v + 1); }
       else if (e.key === 'PageDown' || e.key === '[') { e.preventDefault(); setY(v => v - 1); }
-      else if (e.key === 'Escape') { setSelection(null); setStroke(null); }
+      else if (e.key === 'Escape') { setSelection(null); strokeRef.current = null; setStroke(null); }
       else if (/^[1-9]$/.test(e.key)) { const t = TOOLS[Number(e.key) - 1]; if (t) setTool(t[0]); }
     };
     window.addEventListener('keydown', key);

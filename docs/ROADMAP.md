@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T17:47:04.911Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T18:52:18.883Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -16,7 +16,7 @@ Stand: 2026-11-01T17:47:04.911Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | 🚧 In Arbeit | 2 |
 | ⛔ Blockiert | 0 |
 | 🧩 Implementiert · Abnahme offen | 18 |
-| ✅ Im beschriebenen Umfang geprüft | 22 |
+| ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
 ## Aktiver Arbeitsblock
@@ -66,6 +66,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [DOC-01](#doc-01) | Widerspruchsfreie aktuelle Statusdokumentation | ✅ Im beschriebenen Umfang geprüft | 3/3 | PLAN-01 | `b5eb5b9` | `b5eb5b9` |
 | [STORE-02](#store-02) | Revisionsschutz bei konkurrierenden Assetänderungen | ✅ Im beschriebenen Umfang geprüft | 3/3 | ARCH-01 | `b5eb5b9` | `b5eb5b9` |
 | [QA-01](#qa-01) | Aktuelle Browserregression für alle Hauptabläufe | ✅ Im beschriebenen Umfang geprüft | 2/2 | ARCH-01 | `b5eb5b9` | `b5eb5b9` |
+| [QA-03](#qa-03) | Wacklige Browsertests stabilisieren (Schnellsuche, Systemcheck, Editor- und Snap-Ziehtests) | ✅ Im beschriebenen Umfang geprüft | 7/7 | QA-01 | ausstehend | ausstehend |
 | [UI-01](#ui-01) | Neue Themen, Bauwelten und Materiallabor abnehmen | ✅ Im beschriebenen Umfang geprüft | 3/3 | QA-01 | `84838f0` | `e232b26` |
 | [STAB-01](#stab-01) | Absturzschutz, Datencheck und Fehlerberichte abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | QA-01 | `84838f0` | `e232b26` |
 | [OPS-02](#ops-02) | Deployment-Rückkehr und Wiederherstellungsprobe | ✅ Im beschriebenen Umfang geprüft | 2/2 | OPS-01, PLAN-01 | ausstehend | ausstehend |
@@ -437,6 +438,30 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** noch ausstehend
 
 **Dateiumfang:** `docs/TESTING.md`. **Abhängigkeiten:** QA-01, VIEW-02. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### QA-03
+
+**Wacklige Browsertests stabilisieren (Schnellsuche, Systemcheck, Editor- und Snap-Ziehtests)** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Claude-Thread „Wacklige Browsertests stabilisieren“ · Aktualisiert: 2026-11-01T18:52:18.883Z
+
+- [x] QA-03-S01: Ursachen der gelegentlichen E2E-Ausfälle auf main finden (keine Tests abschalten oder abschwächen).
+- [x] QA-03-S02: Schnellsuche: Strg+K und Suchknopf während des Ladens der lokalen Daten nicht mehr verlieren.
+- [x] QA-03-S03: Systemcheck-Test wartet auf das nachgeladene Build-Manifest statt den Ladehinweis zu lesen.
+- [x] QA-03-S04: Editor-Ziehtest misst das Ebenenraster erst nach dem Einschwingen; Pinselstrich verliert bei schnellen Zügen keine Zellen mehr.
+- [x] QA-03-S05: 3D-Ansicht im Projekteditor bleibt während der Neuberechnung stehen statt neu aufgebaut zu werden (Snap-Ziehtest).
+- [x] QA-03-S07: Suchknopf der Kopfzeile behält seinen zugänglichen Namen, wenn die Beschriftung bei schmaleren Fenstern ausgeblendet wird.
+- [x] QA-03-S06: Gesamte E2E-Suite mehrfach hintereinander grün.
+
+**Abnahme:** Kein Test übersprungen, abgeschwächt oder mit längeren Wartezeiten kaschiert; Ursache jeweils in App oder Testsynchronisation behoben. Gesamte Suite mindestens dreimal hintereinander grün.
+
+**Nächste Aktion:** Bei neuen Ausfällen zuerst nach Lesen vor dem Laden (Manifest, IndexedDB, ResizeObserver, Worker-Neuberechnung) suchen.
+
+**Prüfstand:** Gesamte Chromium-E2E-Suite nach Rebase auf fd22da6 dreimal hintereinander 84/84 bestanden, null übersprungen; vorher 75/76 bzw. 83/84. Kein Test abgeschwächt. Nur Chromium im Linux-Container.
+
+**Nachweise:** [docs/TESTING.md](TESTING.md) — Ursachen, Behebung und Wiederholungsläufe.
+
+**Dateiumfang:** `tests/e2e/shell.e2e.mjs`, `tests/e2e/stability.e2e.mjs`, `tests/e2e/editor.e2e.mjs`, `tests/e2e/snap.e2e.mjs`, `apps/web/src/app/CommandPalette.tsx`, `apps/web/src/editor/BlockEditor.tsx`, `apps/web/src/views/project/EditorTab.tsx`, `apps/web/src/viewer/sceneController.ts`, `apps/web/src/app/Shell.tsx`. **Abhängigkeiten:** QA-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
