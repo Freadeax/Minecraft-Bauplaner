@@ -45,3 +45,7 @@ Nach jedem Arbeitsblock Aufgaben und Prüfprotokoll pflegen, `npm run roadmap:re
 Pages-API am 01.11.2026: `build_type=legacy`, Quelle `main` / `/`, Website `https://freadeax.github.io/Minecraft-Bauplaner/`. Es wurde keine Quellenänderung vorgenommen. GitHubs interner Pages-Build ist von eigenen Actions-Dateien zu unterscheiden.
 
 Nach jedem Main-Quellpush sofort `bash scripts/publish_pages.sh` in Git Bash starten. Der vorhandene Publisher prüft den Quellstand erneut und erzeugt einen manifestgeprüften Artefakt-Kindcommit auf main. Anschließend `deployment.json` und sämtliche dort genannten Dateigrößen/SHA-256 live gegen den lokalen Build prüfen. Ein Push allein bedeutet noch keine erfolgreiche Liveauslieferung. Details: [Runbook](../operations/GITHUB_CONNECTOR_RUNBOOK.md), konkrete Ergebnisse: [TESTING](../TESTING.md). Keine nachträgliche Commit-Schleife nur zum Eintragen der eigenen Deployment-SHA.
+
+## Zusammenarbeit mit Claude
+
+Claude arbeitet parallel in mehreren Threads. Gemeinsame Regeln, Aufteilung der Roadmap-Aufgaben und Abstimmung über `COMMUNICATION.md`: [CODEX_PROMPT](CODEX_PROMPT.md). Offene Abstimmungsnachricht: `MSG-CLAUDE-SYNC-00`.

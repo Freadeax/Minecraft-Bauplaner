@@ -646,3 +646,20 @@ Abschluss: 383 Node-Tests, große Browsermessung, Recoveryprobe und 58/58 unabh�
 - `tests/e2e/ui-acceptance.e2e.mjs`
 - `tests/pages-restore.test.mjs`
 
+## 2026-11-01T12:48:14.548Z · progress
+
+**Aufgaben:** PLAN-01
+
+Claude-Codex-Abstimmung: Stand ab main ce59efb erhoben, abgebrochene Claude-Reservierungen B15/B16/B17 ohne Code aufgehoben, Aufgabenaufteilung und Fragen an Codex in MSG-CLAUDE-SYNC-00, Codex-Prompt docs/project/CODEX_PROMPT.md. Reine Dokumentation, npm run check bestanden.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PLAN-01 | ✅ Im beschriebenen Umfang geprüft | 4/4 | Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen. |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/project/CODEX_PROMPT.md`
+- `docs/project/CODEX_SETUP.md`
+

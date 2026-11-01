@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T12:42:58.241Z",
+  "updatedAt": "2026-11-01T12:48:14.548Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02"
@@ -544,7 +544,7 @@
         "main": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933",
         "pagesSource": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933"
       },
-      "updatedAt": "2026-11-01T12:42:58.241Z"
+      "updatedAt": "2026-11-01T12:48:14.548Z"
     },
     {
       "id": "ARCH-01",
@@ -4174,6 +4174,29 @@
           "done": 1,
           "total": 1,
           "next": "Regressionen bei Änderungen weiterführen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T12:48:14.548Z",
+      "kind": "progress",
+      "items": [
+        "PLAN-01"
+      ],
+      "summary": "Claude-Codex-Abstimmung: Stand ab main ce59efb erhoben, abgebrochene Claude-Reservierungen B15/B16/B17 ohne Code aufgehoben, Aufgabenaufteilung und Fragen an Codex in MSG-CLAUDE-SYNC-00, Codex-Prompt docs/project/CODEX_PROMPT.md. Reine Dokumentation, npm run check bestanden.",
+      "files": [
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/project/CODEX_PROMPT.md",
+        "docs/project/CODEX_SETUP.md"
+      ],
+      "snapshot": [
+        {
+          "id": "PLAN-01",
+          "status": "verified",
+          "done": 4,
+          "total": 4,
+          "next": "Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen."
         }
       ]
     }
