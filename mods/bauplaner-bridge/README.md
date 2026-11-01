@@ -10,6 +10,10 @@ Die Brücke ist **nur lesend**: Sie setzt und entfernt keine Blöcke und sendet 
 |---|---|
 | `core/` (reines Java 21, ohne Minecraft) | Plan lesen, Aufnahme in Scheiben, Aufnahme-Datei schreiben, Anker je Welt/Server merken. 6 JUnit-Tests und sprachübergreifende Prüfung mit Website und Python-Leser bestanden (`scripts/test_bridge.sh`) |
 | `paper/` (Paper-Server-Plugin, eine .jar für Minecraft 1.18.2 bis 26.3, Java ≥ 17) | Liest auf dem Server die ganze Planbox, lädt vorhandene Chunks kurz nach, erzeugt nie Gelände. Auf echten Paper-Servern 1.18.2, 1.20.6, 1.21.4, 1.21.11 und 26.3 automatisch geprüft (`scripts/test_bridge_paper.sh`, 01.11.2026). Versionsabhängige Aufrufe in `PaperCompat.java` |
+| `core/.../session/` | Gemeinsame Befehlslogik `BridgeSession` (plan, anker, scan, status …) und Schnittstelle `BridgeHost` zum Spiel; NeoForge, Forge und das Paper-Plugin nutzen sie, damit alle Loader gleich reagieren. 3 JUnit-Tests mit einem nachgebauten Spiel |
+| `client-26.3/` (nur Vanilla-Klassen, kein eigenes Gradle-Projekt) | `ClientHost` und der `/bauplaner`-Befehlsbaum für den Client, unverändert von NeoForge und Forge eingebunden; dazu der gemeinsame Spieltest `ClientScenario` |
+| `neoforge-26.3/` (Minecraft 26.3, NeoForge ≥ 26.3.0, Java 25) | Gebaut und im echten 26.3-Client automatisch durchgespielt (`scripts/test_bridge_ingame_forge.sh neoforge`, 01.11.2026). Reine Client-Mod, braucht keine weiteren Mods |
+| `forge-26.3/` (Minecraft 26.3, Forge ≥ 66, Java 25) | Gebaut und lädt im echten 26.3-Client; der automatische Durchlauf (`scripts/test_bridge_ingame_forge.sh forge`) bleibt in der kopflosen Cloud-Umgebung im Ladebildschirm stehen, die Spielprüfung ist daher noch offen und die .jar noch nicht auf der Download-Seite. Reine Client-Mod (`clientSideOnly`), braucht keine weiteren Mods |
 | `fabric-26.3/` (Minecraft 26.3, Fabric Loader ≥ 0.19.5, Fabric API 0.164.0+26.3, Java 25) | Gebaut und im echten 26.3-Client automatisch durchgespielt, auch zusammen mit allen 21 Mods aus Philipps Modpack (`scripts/test_bridge_ingame.sh`, 01.11.2026). Mehrspieler-Abnahme auf einem echten Server steht aus. Alle versionsabhängigen Aufrufe stehen in `McCompat.java` |
 
 ## Bauen
@@ -21,7 +25,11 @@ cd mods/bauplaner-bridge
 ./gradlew :core:test                         # Kern, braucht nur Maven Central
 ./gradlew -PwithFabric :fabric-26.3:build    # Mod-.jar unter fabric-26.3/build/libs/
 ./gradlew -PwithPaper :paper:build          # Paper-Plugin unter paper/build/libs/, braucht repo.papermc.io
+./gradlew -PwithNeoForge :neoforge-26.3:build
+./gradlew -PwithForge :forge-26.3:build
 ```
+
+NeoForge und Forge brauchen zusätzlich `maven.neoforged.net` bzw. `maven.minecraftforge.net`; fehlende Java-Versionen (Forge startet seinen Entwicklungsclient über Java 8) lädt Gradle über den foojay-Toolchain-Dienst selbst.
 
 Unter Windows `gradlew.bat` statt `./gradlew`.
 
@@ -41,13 +49,15 @@ scripts/test_bridge_ingame.sh                                   # echter Client,
 BAUPLANER_MODPACK_MODS=<instanz>/mods scripts/test_bridge_ingame.sh   # zusammen mit einem Modpack
 ```
 
-Der Test startet Minecraft 26.3 (Fabric Client Game Test, Quellsatz `fabric-26.3/src/gametest`, nicht Teil der ausgelieferten .jar), baut einen von der Website exportierten Plan mit einem falschen und einem fehlenden Block auf, tippt die `/bauplaner`-Befehle in den Chat und vergleicht die Aufnahme wie die Website. Ohne Bildschirm braucht er `weston` (kopfloser Wayland-Server); Xvfb reicht für Minecraft 26.3 nicht.
+Für NeoForge und Forge: `scripts/test_bridge_ingame_forge.sh neoforge` bzw. `… forge`. Ein Testmod (nicht in der ausgelieferten .jar) legt über den normalen „Welt erstellen“-Bildschirm eine flache Testwelt an, baut den Plan auf, schaut auf den Ursprungsblock und schickt die Befehle wie der Chat; der Vergleich ist derselbe wie beim Fabric-Test.
+
+Der Fabric-Test startet Minecraft 26.3 (Fabric Client Game Test, Quellsatz `fabric-26.3/src/gametest`, nicht Teil der ausgelieferten .jar), baut einen von der Website exportierten Plan mit einem falschen und einem fehlenden Block auf, tippt die `/bauplaner`-Befehle in den Chat und vergleicht die Aufnahme wie die Website. Ohne Bildschirm braucht er `weston` (kopfloser Wayland-Server); Xvfb reicht für Minecraft 26.3 nicht.
 
 ## Installieren
 
 Fertige Dateien gibt es auf der Website unter [Mod herunterladen](https://freadeax.github.io/Minecraft-Bauplaner/#/mod) (Version wählen, .jar laden). Neue Builds stellt `node scripts/release_mod.mjs <adapter> "<was geprüft wurde>"` bereit: Die .jar kommt nach `downloads/mod/`, der Eintrag mit Größe und SHA-256 nach `apps/web/src/views/mod/releases.json`.
 
-Die Datei `bauplaner-bridge-fabric-26.3-<Version>.jar` (nicht die `-sources.jar`) in den `mods`-Ordner der Fabric-Instanz legen. Das funktioniert mit jedem Launcher, der Fabric-Mods lädt (Modrinth App, Prism, CurseForge, offizieller Launcher mit Fabric-Profil). Fabric API muss installiert sein.
+Die passende Datei `bauplaner-bridge-<loader>-26.3-<Version>.jar` (nicht die `-sources.jar`) in den `mods`-Ordner der Instanz legen. Das funktioniert mit jedem Launcher, der Mods dieses Loaders lädt (Modrinth App, Prism, CurseForge, ATLauncher, offizieller Launcher mit Loader-Profil). Für Fabric muss Fabric API installiert sein; NeoForge und Forge brauchen nichts weiter.
 
 ## Benutzen
 
@@ -61,7 +71,7 @@ Weitere Befehle: `/bauplaner status`, `/bauplaner abbrechen`, `/bauplaner plaene
 
 ## Weitere Minecraft-Versionen
 
-Für eine neue Version den Ordner `fabric-26.3` kopieren (z. B. `fabric-26.4`), in `gradle.properties` die Versionen eintragen, `McCompat.java` anpassen und den Ordner in `settings.gradle` einbinden. Der Kern bleibt unverändert.
+NeoForge/Forge: `client-26.3` nach `client-<version>` kopieren und dort `ClientHost` anpassen, dazu `neoforge-<version>`/`forge-<version>` mit neuen Versionen in `gradle.properties`, Schalter in `settings.gradle`. Fabric: den Ordner `fabric-26.3` kopieren (z. B. `fabric-26.4`), in `gradle.properties` die Versionen eintragen, `McCompat.java` anpassen und den Ordner in `settings.gradle` einbinden. Der Kern bleibt unverändert.
 
 ## Paper-Server
 

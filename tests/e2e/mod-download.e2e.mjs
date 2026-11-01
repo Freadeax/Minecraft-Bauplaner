@@ -38,7 +38,15 @@ for (const viewport of [{ width: 1400, height: 900 }, { width: 390, height: 844 
     const newest = releases.toSorted((a, b) => b.minecraft.localeCompare(a.minecraft, 'de', { numeric: true }))[0];
     assert.equal(await p.getByLabel('Minecraft-Version').inputValue(), newest.minecraft);
     assert.equal(await p.getByLabel('Mod-Loader').inputValue(), 'fabric');
-    assert.equal(await p.locator('option[value=neoforge]').evaluate(o => o.disabled), true, 'geplante Loader nicht wählbar');
+    assert.equal(await p.locator('option[value=forge]').evaluate(o => o.disabled), true, 'geplante Loader nicht wählbar');
+    // NeoForge-Mod (GAME-05): eigene .jar und eigener Installationsschritt.
+    const neo = releases.find(r => r.loader === 'neoforge' && r.minecraft === newest.minecraft);
+    if (neo) {
+      await p.getByLabel('Mod-Loader').selectOption('neoforge');
+      assert.equal(await p.getByRole('link', { name: /herunterladen$/ }).getAttribute('href'), `/Minecraft-Bauplaner/downloads/mod/${neo.file}`);
+      assert.ok(await p.getByText(/NeoForge-Instanz/).isVisible());
+      await p.getByLabel('Mod-Loader').selectOption('fabric');
+    }
     const link = p.getByRole('link', { name: /herunterladen$/ });
     assert.equal(await link.getAttribute('href'), `/Minecraft-Bauplaner/downloads/mod/${newest.file}`);
     assert.ok(await p.getByText(newest.sha256).isVisible());

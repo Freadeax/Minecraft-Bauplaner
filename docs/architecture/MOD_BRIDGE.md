@@ -115,14 +115,15 @@ Sicherheit der lokalen Verbindung (M3): Bindung ausschließlich an Loopback; Kop
 |---|---|---|---|
 | **Fabric, clientseitig** (Empfehlung) | Blöcke, die der eigene Client geladen hat | läuft in Einzelspieler und auf jedem Server ohne Serverinstallation; kleine API, neue Minecraft-Versionen schnell verfügbar | nur geladene Chunks (Sichtweite); Server mit Anti-Xray verschleiern verdeckte Blöcke ⇒ dort `unbekannt`/falsche Werte möglich; Mod-Regeln fremder Server beachten |
 | Fabric, Einzelspieler über den integrierten Server | komplette Welt, Chunks werden nachgeladen | keine Sichtweitengrenze | nur Einzelspieler oder eigener Fabric-Server |
-| NeoForge, clientseitig | wie Fabric-Client | sinnvoll, falls Philipp ein NeoForge-Modpack spielt | eigener Build je Loader |
+| NeoForge, clientseitig (umgesetzt, GAME-05) | wie Fabric-Client | für NeoForge-Modpacks; teilt `client-26.3` mit Forge | eigener Build je Loader |
+| Forge, clientseitig (gebaut, Spielprüfung offen, GAME-05) | wie Fabric-Client | für Forge-Modpacks | eigener Build je Loader |
 | Paper-/Spigot-Plugin | komplette Serverwelt | gemeinsamer Server, mehrere Spieler, Aufnahme ohne anwesenden Spieler | kein Einzelspieler; eigener Server nötig |
 
 Aufbau, damit ein späterer zweiter Loader billig bleibt:
 
 - `bridge-core` (reines Java, ohne Minecraft): NBT lesen/schreiben, Plan-Metadaten, Ist-Datei schreiben, Scanplanung (Scheiben, Budget). Mit JUnit ohne Spiel testbar.
 - `bridge-fabric` (dünn): Befehle `/bauplaner plan|anker|scan|status`, Blockzugriff über eine Schnittstelle `BlockSource` (Client-Welt bzw. Server-Welt), Umriss-Rendering.
-- Weitere Adapter (NeoForge, Paper) implementieren nur `BlockSource` und Befehle.
+- Weitere Adapter (NeoForge, Forge, Paper) implementieren nur `BridgeHost` (Ausgabe, Welt-Schlüssel, Dimension, Blickziel, `BlockSource`, optional `prepareScan` für serverseitiges Nachladen) und verdrahten die Befehle mit `BridgeSession`, die die komplette `/bauplaner`-Logik loaderneutral enthält. NeoForge und Forge teilen zusätzlich `client-26.3` (nur Vanilla-Klassen).
 
 Ablage im Repository: `mods/bauplaner-bridge/` als eigenes Gradle-Projekt, nicht Teil von `npm run check`. Fabric-Maven und Mojang-Server sind aus der Cloud-Arbeitsumgebung nicht erreichbar (geprüft 27.10.2026). Der Mod-Build und jede Spielprüfung laufen daher auf Philipps Rechner; `bridge-core` kann hier gebaut und getestet werden.
 

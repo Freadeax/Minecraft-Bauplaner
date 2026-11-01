@@ -1,0 +1,14 @@
+license="MIT"
+
+[[mods]]
+modId="bauplaner_bridge_gametest"
+version="0.0.0"
+displayName="Bauplaner-Brücke Spieltest"
+description='''Nur für den automatischen Spieltest, nicht ausgeliefert.'''
+
+[[dependencies.bauplaner_bridge_gametest]]
+    modId="bauplaner_bridge"
+    type="required"
+    versionRange="[0,)"
+    ordering="AFTER"
+    side="CLIENT"

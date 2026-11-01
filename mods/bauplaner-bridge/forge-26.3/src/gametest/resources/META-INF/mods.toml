@@ -1,0 +1,9 @@
+modLoader="javafml"
+loaderVersion="[66,)"
+license="MIT"
+
+[[mods]]
+modId="bauplaner_bridge_gametest"
+version="0.0.0"
+displayName="Bauplaner-Brücke Spieltest"
+description='''Nur für den automatischen Spieltest, nicht ausgeliefert.'''

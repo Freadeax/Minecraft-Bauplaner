@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import releasesData from './releases.json';
-import { buildsFor, LOADER_LABEL, loadersFor, minecraftVersions, parseSelectionSearch, PLANNED_LOADERS, resolveSelection, selectionSearch, SERVER_LOADERS, versionsOf } from './releases';
+import { buildsFor, INSTALL_HINT, LOADER_LABEL, loadersFor, minecraftVersions, parseSelectionSearch, PLANNED_LOADERS, resolveSelection, selectionSearch, SERVER_LOADERS, versionsOf } from './releases';
 import type { ModRelease, Selection } from './releases';
 import { formatNumber } from '../../app/ui';
 
@@ -78,7 +78,7 @@ export function ModView({ search }: { search?: string | undefined }) {
     </section> : <section className="system-card system-wide" aria-labelledby="mod-install">
       <h2 id="mod-install">Installieren und benutzen</h2>
       <ol className="mod-steps">
-        <li>Die .jar in den Ordner <code>mods</code> deiner Fabric-Instanz legen (Modrinth App, Prism, CurseForge oder offizieller Launcher mit Fabric-Profil). Fabric API muss installiert sein.</li>
+        <li>{INSTALL_HINT[selection?.loader ?? 'fabric'] ?? INSTALL_HINT.fabric}</li>
         <li>Im Projekt unter „Bauen“ eine Revision einfrieren, dann im Tab „Export“ als <code>.schem</code> exportieren (DataVersion für 26.3: 5023) und nach <code>&lt;Instanzordner&gt;/bauplaner/plans/</code> kopieren.</li>
         <li>Im Spiel <code>/bauplaner plan &lt;datei&gt;</code>, dann auf den Block mit Projektkoordinate 0/0/0 schauen und <code>/bauplaner anker hier</code> eingeben.</li>
         <li>In der Nähe des Baus <code>/bauplaner scan</code>. Die Aufnahme aus <code>bauplaner/scans/</code> im Projekt unter „Bauen“ mit „Spielaufnahme importieren“ öffnen.</li>

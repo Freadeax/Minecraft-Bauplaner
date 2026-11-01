@@ -23,9 +23,15 @@ export interface ModRelease {
   readonly tested: string;
 }
 
-export const LOADER_LABEL: Readonly<Record<string, string>> = { fabric: 'Fabric', neoforge: 'NeoForge', paper: 'Paper' };
+export const LOADER_LABEL: Readonly<Record<string, string>> = { fabric: 'Fabric', neoforge: 'NeoForge', forge: 'Forge', paper: 'Paper' };
+/** Where the jar goes, per loader (first install step on the download page). */
+export const INSTALL_HINT: Readonly<Record<string, string>> = {
+  fabric: 'Die .jar in den Ordner mods deiner Fabric-Instanz legen (Modrinth App, Prism, CurseForge oder offizieller Launcher mit Fabric-Profil). Fabric API muss installiert sein.',
+  neoforge: 'Die .jar in den Ordner mods deiner NeoForge-Instanz legen (Modrinth App, Prism, CurseForge, ATLauncher oder offizieller Launcher mit NeoForge-Profil). Weitere Mods sind nicht nötig.',
+  forge: 'Die .jar in den Ordner mods deiner Forge-Instanz legen (CurseForge, Prism, Modrinth App oder offizieller Launcher mit Forge-Profil). Weitere Mods sind nicht nötig.',
+};
 /** Loaders that are planned but have no build yet (GAME-04); shown as not yet available. */
-export const PLANNED_LOADERS: readonly string[] = ['neoforge'];
+export const PLANNED_LOADERS: readonly string[] = ['forge'];
 /** Server plugins (installed on the server, not in the game client). */
 export const SERVER_LOADERS: readonly string[] = ['paper'];
 

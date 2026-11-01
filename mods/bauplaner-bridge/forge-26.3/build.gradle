@@ -1,0 +1,63 @@
+// Forge-Adapter für Minecraft 26.3 (clientseitig). Aufbau nach dem Forge-MDK 26.3-66.1.2 (ForgeGradle 7).
+// Kern (loaderneutral) und client-26.3 (nur Vanilla-Klassen, mit NeoForge geteilt) werden als Quelltext
+// eingebunden; die fertige .jar braucht nur Forge.
+plugins {
+    id 'java'
+    id 'net.minecraftforge.gradle' version "${forgegradle_version}"
+}
+
+base { archivesName = "bauplaner-bridge-forge-${minecraft_version}" }
+version = rootProject.file('VERSION').text.trim()
+group = 'io.github.freadeax.bauplaner'
+
+sourceSets.main.java.srcDir '../core/src/main/java'
+sourceSets.main.java.srcDir '../client-26.3/src/main/java'
+
+// Echter Spieltest: eigener Quellsatz mit Testmod (nicht in der ausgelieferten .jar), gemeinsamer Ablauf
+// ClientScenario aus client-26.3, aktiv nur mit BAUPLANER_GAMETEST_DIR (scripts/test_bridge_ingame_forge.sh forge).
+sourceSets {
+    gametest {
+        java.srcDir '../client-26.3/src/gametest/java'
+        compileClasspath += sourceSets.main.output + sourceSets.main.compileClasspath
+    }
+}
+// Nur für den Spieltest (-PbauplanerGameTest): Testmod auf den Laufzeit-Klassenpfad des Entwicklungsstarts.
+if (providers.gradleProperty('bauplanerGameTest').isPresent()) {
+    dependencies { runtimeOnly files(sourceSets.gametest.output) }
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
+tasks.withType(JavaCompile).configureEach { options.release = 25; options.encoding = 'UTF-8' }
+
+// Forge erwartet beim Entwicklungsstart Klassen und mods.toml im selben Ordner (wie merge-source-sets im MDK).
+sourceSets.each { it.output.resourcesDir = it.java.destinationDirectory }
+
+minecraft {
+    runs {
+        configureEach { workingDir = layout.projectDirectory.dir('run') }
+        // Entwicklungsstart; mit -PbauplanerGameTest zusätzlich der Spieltest-Mod (ForgeGradle kennt nur die
+        // Startarten des Forge-Pakets, daher kein eigener Testlauf).
+        register('client') {
+            // Der Spieltest übergibt seinen Ordner per Umgebungsvariable; ohne sie tut der Testmod nichts.
+            if (System.getenv('BAUPLANER_GAMETEST_DIR')) environment('BAUPLANER_GAMETEST_DIR', System.getenv('BAUPLANER_GAMETEST_DIR'))
+        }
+    }
+}
+
+repositories {
+    minecraft.mavenizer(it)
+    maven fg.forgeMaven
+    maven fg.minecraftLibsMaven
+    mavenCentral()
+}
+
+dependencies {
+    implementation minecraft.dependency("net.minecraftforge:forge:${minecraft_version}-${loader_version}")
+    annotationProcessor 'net.minecraftforge:eventbus-validator:7.0.6'
+}
+
+processResources {
+    var props = [version: project.version, minecraft_version_range: minecraft_version_range, forge_version_range: forge_version_range]
+    inputs.properties props
+    from('src/main/templates') { expand props }
+}

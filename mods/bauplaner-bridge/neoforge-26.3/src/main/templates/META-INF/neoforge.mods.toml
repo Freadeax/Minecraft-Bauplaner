@@ -1,0 +1,26 @@
+license="MIT"
+issueTrackerURL="https://github.com/Freadeax/Minecraft-Bauplaner/issues"
+
+[[mods]]
+modId="bauplaner_bridge"
+version="${version}"
+displayName="Bauplaner-Brücke"
+displayURL="https://freadeax.github.io/Minecraft-Bauplaner/#/mod"
+authors="Freadeax"
+description='''
+Liest den Bereich eines Bauplans aus der Welt und schreibt eine Aufnahme, die der Minecraft-Bauplaner im Tab „Bauen“ vergleicht. Nur lesend, reine Client-Mod: setzt keine Blöcke, sendet nichts ins Internet, braucht nichts auf dem Server.
+'''
+
+[[dependencies.bauplaner_bridge]]
+    modId="neoforge"
+    type="required"
+    versionRange="${neo_version_range}"
+    ordering="NONE"
+    side="CLIENT"
+
+[[dependencies.bauplaner_bridge]]
+    modId="minecraft"
+    type="required"
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="CLIENT"

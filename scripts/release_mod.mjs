@@ -1,9 +1,10 @@
-// Publishes a built bridge adapter for download on the website (GAME-02):
-//   node scripts/release_mod.mjs <adapter, e.g. fabric-26.3 or paper> "<what was tested>"
+// Publishes a built bridge adapter for download on the website (GAME-02, GAME-04, GAME-05):
+//   node scripts/release_mod.mjs <adapter, e.g. fabric-26.3, neoforge-26.3, forge-26.3 or paper> "<what was tested>"
 // Copies the jar from mods/bauplaner-bridge/<adapter>/build/libs/ to downloads/mod/ (served by Pages
 // from main) and adds or replaces its entry in apps/web/src/views/mod/releases.json. Build and test
-// first: ./gradlew -PwithFabric :<adapter>:build and scripts/test_bridge_ingame.sh, or for Paper
-// ./gradlew -PwithPaper :paper:build and scripts/test_bridge_paper.sh. An adapter without a version in
+// first: ./gradlew -PwithFabric|-PwithNeoForge|-PwithForge :<adapter>:build and the real-game test
+// (scripts/test_bridge_ingame.sh for Fabric, scripts/test_bridge_ingame_forge.sh neoforge|forge), or for
+// Paper ./gradlew -PwithPaper :paper:build and scripts/test_bridge_paper.sh. An adapter without a version in
 // its name (paper) is one jar for several Minecraft versions: tested_versions in its gradle.properties.
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
