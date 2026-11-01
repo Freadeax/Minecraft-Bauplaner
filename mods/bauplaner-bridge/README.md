@@ -9,7 +9,7 @@ Die Mod ist **nur lesend**: Sie setzt und entfernt keine Blöcke, sendet nichts 
 | Teil | Stand |
 |---|---|
 | `core/` (reines Java 21, ohne Minecraft) | Plan lesen, Aufnahme in Scheiben, Aufnahme-Datei schreiben, Anker je Welt/Server merken. 6 JUnit-Tests und sprachübergreifende Prüfung mit Website und Python-Leser bestanden (`scripts/test_bridge.sh`) |
-| `fabric-26.3/` (Minecraft 26.3, Fabric Loader ≥ 0.19.5, Fabric API 0.164.0+26.3, Java 25) | Quelltext fertig, **noch nicht kompiliert und nicht im Spiel getestet**, weil die Fabric- und Mojang-Server aus der Cloud-Umgebung gesperrt sind. Alle versionsabhängigen Aufrufe stehen in `McCompat.java` |
+| `fabric-26.3/` (Minecraft 26.3, Fabric Loader ≥ 0.19.5, Fabric API 0.164.0+26.3, Java 25) | Gebaut und im echten 26.3-Client automatisch durchgespielt, auch zusammen mit allen 21 Mods aus Philipps Modpack (`scripts/test_bridge_ingame.sh`, 01.11.2026). Mehrspieler-Abnahme auf einem echten Server steht aus. Alle versionsabhängigen Aufrufe stehen in `McCompat.java` |
 
 ## Bauen
 
@@ -23,13 +23,23 @@ cd mods/bauplaner-bridge
 
 Unter Windows `gradlew.bat` statt `./gradlew`.
 
+## Spieltest
+
+```
+npm run build:core
+scripts/test_bridge_ingame.sh                                   # echter Client, nur die Mod
+BAUPLANER_MODPACK_MODS=<instanz>/mods scripts/test_bridge_ingame.sh   # zusammen mit einem Modpack
+```
+
+Der Test startet Minecraft 26.3 (Fabric Client Game Test, Quellsatz `fabric-26.3/src/gametest`, nicht Teil der ausgelieferten .jar), baut einen von der Website exportierten Plan mit einem falschen und einem fehlenden Block auf, tippt die `/bauplaner`-Befehle in den Chat und vergleicht die Aufnahme wie die Website. Ohne Bildschirm braucht er `weston` (kopfloser Wayland-Server); Xvfb reicht für Minecraft 26.3 nicht.
+
 ## Installieren
 
 Die Datei `bauplaner-bridge-fabric-26.3-<Version>.jar` (nicht die `-sources.jar`) in den `mods`-Ordner der Fabric-Instanz legen. Das funktioniert mit jedem Launcher, der Fabric-Mods lädt (Modrinth App, Prism, CurseForge, offizieller Launcher mit Fabric-Profil). Fabric API muss installiert sein.
 
 ## Benutzen
 
-1. Auf der Website im Tab „Export“ eine Revision als `.schem` exportieren und die Datei nach `<Instanzordner>/bauplaner/plans/` kopieren.
+1. Auf der Website im Tab „Export“ eine Revision als `.schem` exportieren (DataVersion für 26.3: 5023) und die Datei nach `<Instanzordner>/bauplaner/plans/` kopieren.
 2. Im Spiel: `/bauplaner plan <datei>` (Tab ergänzt den Namen).
 3. Auf den Block schauen, der der Projektkoordinate 0/0/0 entsprechen soll, und `/bauplaner anker hier` eingeben, alternativ `/bauplaner anker <x> <y> <z>`. Der Anker wird je Server/Welt gespeichert.
 4. In die Nähe des Baus gehen, damit die Chunks geladen sind, und `/bauplaner scan` ausführen. Der Fortschritt steht über der Hotbar.

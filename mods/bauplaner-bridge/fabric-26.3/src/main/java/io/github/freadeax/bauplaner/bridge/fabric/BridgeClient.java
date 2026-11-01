@@ -5,7 +5,6 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
-import com.mojang.brigadier.context.CommandContext;
 import io.github.freadeax.bauplaner.bridge.AnchorStore;
 import io.github.freadeax.bauplaner.bridge.BridgeException;
 import io.github.freadeax.bauplaner.bridge.Plan;
@@ -42,19 +41,27 @@ public final class BridgeClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        ClientCommandRegistrationCallback.EVENT.register((dispatcher, context) -> dispatcher.register(literal("bauplaner")
-                .executes(c -> help(c.getSource()))
-                .then(literal("plaene").executes(c -> listPlans(c.getSource())))
-                .then(literal("plan").then(argument("datei", StringArgumentType.greedyString())
-                        .suggests((c, b) -> { planFiles().forEach(b::suggest); return b.buildFuture(); })
-                        .executes(c -> loadPlan(c.getSource(), StringArgumentType.getString(c, "datei")))))
-                .then(literal("anker")
-                        .then(literal("hier").executes(c -> setAnchor(c.getSource(), McCompat.targetBlock(c.getSource().getClient()))))
-                        .then(argument("x", IntegerArgumentType.integer()).then(argument("y", IntegerArgumentType.integer()).then(argument("z", IntegerArgumentType.integer())
-                                .executes(c -> setAnchor(c.getSource(), new BlockPos(IntegerArgumentType.getInteger(c, "x"), IntegerArgumentType.getInteger(c, "y"), IntegerArgumentType.getInteger(c, "z")))))))))
-                .then(literal("scan").executes(c -> startScan(c.getSource())))
-                .then(literal("abbrechen").executes(c -> cancel(c.getSource())))
-                .then(literal("status").executes(c -> status(c.getSource())))));
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, context) -> {
+            var planCmd = literal("plan").then(argument("datei", StringArgumentType.greedyString())
+                    .suggests((c, b) -> { planFiles().forEach(b::suggest); return b.buildFuture(); })
+                    .executes(c -> loadPlan(c.getSource(), StringArgumentType.getString(c, "datei"))));
+            var xyz = argument("x", IntegerArgumentType.integer())
+                    .then(argument("y", IntegerArgumentType.integer())
+                            .then(argument("z", IntegerArgumentType.integer())
+                                    .executes(c -> setAnchor(c.getSource(), new BlockPos(IntegerArgumentType.getInteger(c, "x"),
+                                            IntegerArgumentType.getInteger(c, "y"), IntegerArgumentType.getInteger(c, "z"))))));
+            var anchorCmd = literal("anker")
+                    .then(literal("hier").executes(c -> setAnchor(c.getSource(), McCompat.targetBlock(c.getSource().getClient()))))
+                    .then(xyz);
+            dispatcher.register(literal("bauplaner")
+                    .executes(c -> help(c.getSource()))
+                    .then(literal("plaene").executes(c -> listPlans(c.getSource())))
+                    .then(planCmd)
+                    .then(anchorCmd)
+                    .then(literal("scan").executes(c -> startScan(c.getSource())))
+                    .then(literal("abbrechen").executes(c -> cancel(c.getSource())))
+                    .then(literal("status").executes(c -> status(c.getSource()))));
+        });
         ClientTickEvents.END_CLIENT_TICK.register(this::tick);
     }
 
@@ -156,12 +163,12 @@ public final class BridgeClient implements ClientModInitializer {
         if (job == null) return;
         if (mc.level == null || mc.player == null || !McCompat.dimension(mc.level).equals(jobDimension)) {
             job = null;
-            if (mc.player != null) mc.player.displayClientMessage(Component.literal("[Bauplaner] Aufnahme abgebrochen: Welt oder Dimension gewechselt."), false);
+            if (mc.player != null) McCompat.chat(mc, Component.literal("[Bauplaner] Aufnahme abgebrochen: Welt oder Dimension gewechselt."));
             return;
         }
         try {
             boolean done = job.step(CELLS_PER_TICK);
-            mc.player.displayClientMessage(Component.literal("Bauplaner-Aufnahme " + (job.done() * 100 / job.total()) + " %"), true);
+            McCompat.overlay(mc, Component.literal("Bauplaner-Aufnahme " + (job.done() * 100 / job.total()) + " %"));
             if (!done) return;
             Instant now = Instant.now();
             Path out = root.resolve("scans").resolve(ScanJob.fileName(plan, now));
@@ -170,11 +177,11 @@ public final class BridgeClient implements ClientModInitializer {
             Files.write(tmp, job.toFile(now));
             Files.move(tmp, out, java.nio.file.StandardCopyOption.ATOMIC_MOVE);
             String unloaded = job.unloaded() > 0 ? " " + job.unloaded() + " Zellen lagen in nicht geladenen Chunks (gelten als „nicht aufgenommen“)." : "";
-            mc.player.displayClientMessage(Component.literal("[Bauplaner] Aufnahme gespeichert: " + out + "." + unloaded + " Jetzt im Tab „Bauen“ importieren."), false);
+            McCompat.chat(mc, Component.literal("[Bauplaner] Aufnahme gespeichert: " + out + "." + unloaded + " Jetzt im Tab „Bauen“ importieren."));
             job = null;
         } catch (IOException | RuntimeException e) {
             job = null;
-            mc.player.displayClientMessage(Component.literal("[Bauplaner] Aufnahme fehlgeschlagen: " + e.getMessage()), false);
+            McCompat.chat(mc, Component.literal("[Bauplaner] Aufnahme fehlgeschlagen: " + e.getMessage()));
         }
     }
 }

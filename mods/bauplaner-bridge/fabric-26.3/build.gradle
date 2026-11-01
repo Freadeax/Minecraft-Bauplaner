@@ -10,6 +10,19 @@ group = 'io.github.freadeax.bauplaner'
 
 sourceSets.main.java.srcDir '../core/src/main/java'
 
+// Echter Spieltest (Fabric Client Game Test): startet Minecraft 26.3 mit der Mod, baut einen Plan per
+// Testbefehl auf und lässt die Mod ihn wie ein Spieler aufnehmen. Nur über scripts/test_bridge_ingame.sh,
+// der Testcode landet nicht in der ausgelieferten .jar.
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = 'bauplaner_bridge_gametest'
+        enableGameTests = false
+        enableClientGameTests = true
+        eula = true
+    }
+}
+
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     implementation "net.fabricmc:fabric-loader:${loader_version}"
@@ -26,4 +39,20 @@ tasks.withType(JavaCompile).configureEach { it.options.release = 25; it.options.
 java {
     sourceCompatibility = JavaVersion.VERSION_25
     targetCompatibility = JavaVersion.VERSION_25
+}
+
+// Verträglichkeit mit einem echten Modpack: dieselbe Spielprüfung in einem Produktionsstart (ohne
+// Entwicklungsumgebung) mit der ausgelieferten .jar und allen Mods aus -PmodpackMods=<mods-Ordner>.
+tasks.register('gametestJar', Jar) {
+    from sourceSets.gametest.output
+    archiveClassifier = 'gametest'
+}
+if (providers.gradleProperty('modpackMods').isPresent()) {
+    tasks.register('runModpackGameTest', net.fabricmc.loom.task.prod.ClientProductionRunTask) {
+        mods.from(tasks.named('jar'), tasks.named('gametestJar'))
+        mods.from(fileTree(providers.gradleProperty('modpackMods').get()) { include '*.jar' })
+        jvmArgs.add('-Dfabric.client.gametest')
+        useXVFB = false
+        runDir = layout.buildDirectory.dir('run/modpackGameTest')
+    }
 }

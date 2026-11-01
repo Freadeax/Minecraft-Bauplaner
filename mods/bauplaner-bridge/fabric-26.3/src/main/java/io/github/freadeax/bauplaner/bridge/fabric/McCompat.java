@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.commands.arguments.blocks.BlockStateParser;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 
 /**
  * Every Minecraft-version-specific call of the adapter in one place. Porting to another
@@ -42,4 +43,10 @@ final class McCompat {
         if (mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult hit && hit.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK) return hit.getBlockPos();
         return mc.player.blockPosition().below();
     }
+
+    /** Message in the chat, only visible to this player. */
+    static void chat(Minecraft mc, Component text) { if (mc.player != null) mc.player.sendSystemMessage(text); }
+
+    /** Short status line above the hotbar. */
+    static void overlay(Minecraft mc, Component text) { if (mc.player != null) mc.player.sendOverlayMessage(text); }
 }

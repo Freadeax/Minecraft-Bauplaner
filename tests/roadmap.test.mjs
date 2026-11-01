@@ -14,7 +14,9 @@ test('roadmap rejects cycles, unknown dependencies and false verified states', (
   assert.ok(validateRoadmap(c).some(e => /geprüft ohne/.test(e)));
 });
 test('roadmap shows partial steps, blockers and separate integration/publication', () => {
-  const text = renderRoadmap(baseline());
+  // Blocker rendering must not depend on whether the live roadmap currently has a blocked task.
+  const data = baseline(); data.items[0].blockers = ['Testblocker'];
+  const text = renderRoadmap(data);
   for (const expected of ['PLAN-01', 'Nächste Aktion', 'Pages-Quelle', 'Blocker:', 'Implementiert ≠ geprüft']) assert.ok(text.includes(expected));
 });
 const required = ['docs/roadmap.json', 'docs/ROADMAP.md', 'docs/ROADMAP_HISTORY.md'];

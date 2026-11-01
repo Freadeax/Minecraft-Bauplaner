@@ -2522,14 +2522,18 @@
       "title": "Fabric-Brücke kompilieren und im Spiel abnehmen",
       "phase": "P3",
       "priority": "P1",
-      "status": "blocked",
-      "owner": "nicht zugewiesen",
+      "status": "implemented",
+      "owner": "Claude (Thread „Fabric-Mod 26.3 bauen und testen“)",
       "dependencies": [
         "FORMAT-01",
         "GAME-01"
       ],
       "scope": [
-        "mods/bauplaner-bridge/"
+        "mods/bauplaner-bridge/",
+        "scripts/test_bridge.sh",
+        "scripts/test_bridge_ingame.sh",
+        "scripts/bridge_crosscheck.mjs",
+        "scripts/bridge_gametest.mjs"
       ],
       "legacyIds": [
         "B8-M2",
@@ -2544,36 +2548,47 @@
         {
           "id": "GAME-02-S02",
           "title": "Loader-/Versionsstand anhand offizieller Quellen prüfen und Build ermöglichen.",
-          "done": false
+          "done": true
         },
         {
           "id": "GAME-02-S03",
           "title": "Plan aufnehmen und Soll/Ist-Vergleich mit echtem Spiel durchführen.",
+          "done": true
+        },
+        {
+          "id": "GAME-02-S04",
+          "title": "Mehrspieler-Abnahme durch den Nutzer auf server.lmnt-gaming.net mit eigenem Bau.",
           "done": false
         }
       ],
       "acceptance": [
         "Lesende Aufnahme setzt keine Weltblöcke; keine ungeprüfte Kompatibilität."
       ],
-      "next": "Loader-/Versionsstand anhand offizieller Quellen prüfen und Build ermöglichen.",
-      "blockers": [
-        "Letzte dokumentierte Mod-Buildumgebung konnte Abhängigkeiten nicht beziehen; aktueller Build/Spielnachweis fehlt."
-      ],
+      "next": "Philipp testet die .jar aus /mnt/project-files/mod/ auf server.lmnt-gaming.net und meldet Ergebnis/Fehler (Anleitung ANLEITUNG_SPIELTEST.md).",
+      "blockers": [],
       "evidence": [
         {
           "path": "mods/bauplaner-bridge/README.md",
-          "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+          "note": "Bau, Installation, Befehle, Spieltests."
+        },
+        {
+          "path": "scripts/test_bridge_ingame.sh",
+          "note": "Echter Minecraft-26.3-Client (Fabric Client Game Test): Plan per Chat laden, Anker auf angeschauten Block, Aufnahme, Website-Vergleich findet genau 1 falschen und 1 fehlenden Block; zusätzlich als Produktionsstart mit allen 21 Mods aus Philipps Modpack."
+        },
+        {
+          "path": "docs/TESTING.md",
+          "note": "Befehle, Ergebnisse und Grenzen des Spieltests (01.11.2026)."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "note": "Build, Einzelspieler-Spieltest im echten 26.3-Client und Modpack-Verträglichkeit bestanden; Mehrspieler-Abnahme auf echtem Server durch den Nutzer offen."
       },
       "delivery": {
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-01T13:33:15.064Z"
     },
     {
       "id": "GAME-03",
@@ -4695,6 +4710,39 @@
           "done": 4,
           "total": 4,
           "next": "Echte Geräteprüfung (Safari/iPhone, Touch) in QA-02; weitere Hauptbereiche (z. B. Karte MAP-01) als Eintrag in nav.ts anhängen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T13:33:15.064Z",
+      "kind": "progress",
+      "items": [
+        "GAME-02"
+      ],
+      "summary": "Fabric-Adapter 26.3 kompiliert (Klammerfehler, displayClientMessage→sendSystemMessage/sendOverlayMessage), echter 26.3-Client-Spieltest per Fabric Client Game Test (Chatbefehle, anker hier, Aufnahme, Website-Vergleich 146/148 mit genau 1 falschen und 1 fehlenden Block) bestanden, ebenso als Produktionsstart mit allen 21 Mods aus Philipps Modpack; .jar 0.1.0 und Anleitung in Projektdateien. Offen: Mehrspieler-Abnahme auf server.lmnt-gaming.net durch Philipp.",
+      "files": [
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/MOD_BRIDGE.md",
+        "mods/bauplaner-bridge/README.md",
+        "mods/bauplaner-bridge/fabric-26.3/build.gradle",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/resources/fabric.mod.json",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/BridgeClient.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/McCompat.java",
+        "scripts/bridge_crosscheck.mjs",
+        "scripts/bridge_gametest.mjs",
+        "scripts/test_bridge_ingame.sh",
+        "tests/roadmap.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Philipp testet die .jar aus /mnt/project-files/mod/ auf server.lmnt-gaming.net und meldet Ergebnis/Fehler (Anleitung ANLEITUNG_SPIELTEST.md)."
         }
       ]
     }

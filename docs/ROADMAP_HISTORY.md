@@ -884,3 +884,30 @@ Rebase auf MAP-01 und LIB-02/03: Weltkarte in der Navigationsliste, Kopfzeile ve
 - `docs/architecture/UI.md`
 - `tests/e2e/shell.e2e.mjs`
 
+## 2026-11-01T13:33:15.064Z · progress
+
+**Aufgaben:** GAME-02
+
+Fabric-Adapter 26.3 kompiliert (Klammerfehler, displayClientMessage→sendSystemMessage/sendOverlayMessage), echter 26.3-Client-Spieltest per Fabric Client Game Test (Chatbefehle, anker hier, Aufnahme, Website-Vergleich 146/148 mit genau 1 falschen und 1 fehlenden Block) bestanden, ebenso als Produktionsstart mit allen 21 Mods aus Philipps Modpack; .jar 0.1.0 und Anleitung in Projektdateien. Offen: Mehrspieler-Abnahme auf server.lmnt-gaming.net durch Philipp.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-02 | 🧩 Implementiert · Abnahme offen | 3/4 | Philipp testet die .jar aus /mnt/project-files/mod/ auf server.lmnt-gaming.net und meldet Ergebnis/Fehler (Anleitung ANLEITUNG_SPIELTEST.md). |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/MOD_BRIDGE.md`
+- `mods/bauplaner-bridge/README.md`
+- `mods/bauplaner-bridge/fabric-26.3/build.gradle`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/resources/fabric.mod.json`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/BridgeClient.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/McCompat.java`
+- `scripts/bridge_crosscheck.mjs`
+- `scripts/bridge_gametest.mjs`
+- `scripts/test_bridge_ingame.sh`
+- `tests/roadmap.test.mjs`
+

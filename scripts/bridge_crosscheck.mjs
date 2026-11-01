@@ -8,7 +8,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import assert from 'node:assert/strict';
 import { readWorldScan } from '../dist/formats/src/index.js';
-import { applyOperation, buildGuide, checkScan, createProject, createSampleLibrary, exportRevisionSchem, freezeRevision, newInstance, resolveProject, scanTarget } from '../dist/domain/src/index.js';
+import { exportRevisionSchem } from '../dist/application/src/index.js';
+import { applyOperation, buildGuide, checkScan, createProject, createSampleLibrary, freezeRevision, newInstance, resolveProject, scanTarget } from '../dist/domain/src/index.js';
 
 const classpath = process.argv[2];
 const dir = mkdtempSync(join(tmpdir(), 'bridge-'));

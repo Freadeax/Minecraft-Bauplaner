@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "bauplaner_bridge_gametest",
+  "version": "0.0.0",
+  "name": "Bauplaner-Brücke Spieltest",
+  "environment": "client",
+  "entrypoints": { "fabric-client-gametest": ["io.github.freadeax.bauplaner.bridge.gametest.BridgeGameTest"] },
+  "depends": { "bauplaner_bridge": "*", "fabric-client-gametest-api-v1": "*" }
+}

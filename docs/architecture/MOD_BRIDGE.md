@@ -157,7 +157,7 @@ M1 hängt von keiner der offenen Entscheidungen ab und kann sofort beginnen.
 [`mods/bauplaner-bridge`](../../mods/bauplaner-bridge/README.md), Gradle 9.8.2 mit Wrapper.
 
 - `core/` (Java 21, ohne Minecraft): `Nbt` (Big-Endian, Modified UTF-8), `Plan` (liest Plan-Dateien, weist Aufnahmen und Pläne ohne `ProjectMin` ab, Grenze 4 000 000 Zellen), `ScanJob` (liest über `BlockSource` in Scheiben, Sponge-Reihenfolge, `bauplaner:unloaded`, prüft das Zustandsformat, schreibt `bauplaner-scan` v1), `AnchorStore` (Plan und Anker je Server/Welt in `bauplaner/state.properties`).
-- `fabric-26.3/`: Client-Befehle `/bauplaner plan|anker|scan|status|abbrechen|plaene`, 12 000 Zellen je Tick, Fortschritt über der Hotbar, atomares Schreiben nach `bauplaner/scans/`, Abbruch bei Welt- oder Dimensionswechsel. Versionsabhängiges nur in `McCompat.java`. **Nicht kompiliert und nicht im Spiel geprüft** (Fabric-Maven und Mojang-Server aus der Cloud-Umgebung gesperrt).
+- `fabric-26.3/`: Client-Befehle `/bauplaner plan|anker|scan|status|abbrechen|plaene`, 12 000 Zellen je Tick, Fortschritt über der Hotbar, atomares Schreiben nach `bauplaner/scans/`, Abbruch bei Welt- oder Dimensionswechsel. Versionsabhängiges nur in `McCompat.java`. Seit 01.11.2026 kompiliert und im echten Spiel geprüft, siehe GAME-02 unten.
 - Prüfung: `scripts/test_bridge.sh` führt die JUnit-Tests aus und prüft sprachübergreifend: Website exportiert einen Plan, der Java-Kern nimmt eine daraus gebaute Welt mit einem falschen Block auf, der unabhängige Python-Leser und der Website-Vergleich finden genau diese Zelle.
 - Noch offen in M2: Umriss der Planbox im Spiel, Speicherung der Aufnahme auf der Website.
 
@@ -167,7 +167,6 @@ M1 hängt von keiner der offenen Entscheidungen ab und kann sofort beginnen.
 - Mod-Blöcke werden per ID/Properties verglichen; ihre Bedeutung bleibt unbekannt.
 - „Im Spiel bestätigt“ heißt: Zustand zum Aufnahmezeitpunkt in den gelesenen Chunks. Spätere Änderungen in der Welt sieht die Website erst mit der nächsten Aufnahme.
 - Keine Drehung zwischen Plan und Welt in v1.
-- Nichts davon ist implementiert oder im Spiel geprüft.
 
 ## B8P · Dauerhafte Aufnahmen und Verlauf · 31.10.2026
 
@@ -180,3 +179,11 @@ Speichern benötigt einen vollständig gespeicherten Projektstand. Ein konkurrie
 Projekt-/Gesamtsicherungen sammeln auch die Scan-Originalreferenzen. Wiederherstellung prüft den Verlauf strukturell; fehlende Originale werden ausdrücklich aufgeführt. Der Datencheck erkennt verwendete und fehlende Scan-Originale. Alte Projekte ohne `scanHistory` bleiben gültig. Im Sitzungsspeicher gilt keine Dauerhaftigkeitszusage; die Oberfläche weist darauf hin.
 
 Grenzen: kein automatisches Löschen alter Originale, kein geräteübergreifender Abgleich, keine Live-Spielverbindung. Wird ein Projekt bei der Sicherungswiederherstellung unter neuer ID kopiert, behalten unveränderte Bridge-Aufnahmen ihre ursprüngliche Projekt-ID und werden deshalb ausdrücklich als fremdes Projekt abgewiesen; Originaldownload/Reimport bleibt möglich. Kein Umschreiben von Originalmetadaten. Browser-/Safari-/Spielabnahme separat offen.
+
+## GAME-02 · Build und Spieltest · 01.11.2026
+
+- Build: `./gradlew -PwithFabric :fabric-26.3:build` mit JDK 25, Fabric Loom 1.19.3, Minecraft 26.3, Fabric Loader 0.19.5, Fabric API 0.164.0+26.3. Zwei Fehler im ungeprüften Quelltext behoben: eine überzählige Klammer im Befehlsbaum (jetzt in benannte Teilbäume zerlegt) und `displayClientMessage`, das es in 26.3 nicht mehr gibt (`McCompat.chat` → `LocalPlayer.sendSystemMessage`, `McCompat.overlay` → `sendOverlayMessage`).
+- Echter Spieltest (`scripts/test_bridge_ingame.sh`, Fabric Client Game Test im Quellsatz `fabric-26.3/src/gametest`, nicht in der ausgelieferten .jar): Die Website exportiert eine Revision (DataVersion 5023), der Test baut sie in einer Einzelspielerwelt mit einem falschen und einem fehlenden Block auf (nur der Test setzt Blöcke), tippt `/bauplaner plaene|plan|anker hier|status|scan` in den Chat, schaut für `anker hier` auf den Ursprungsblock und übergibt die geschriebene Aufnahme an `checkScan`. Ergebnis: 146 von 148 Zellen korrekt, genau die beiden präparierten Abweichungen erkannt, Anker in `state.properties`.
+- Modpack: `BAUPLANER_MODPACK_MODS=<mods-Ordner>` startet denselben Test als Produktionsstart (Loom `ClientProductionRunTask`) mit der ausgelieferten .jar und allen Mods des Ordners. Mit den 21 Mods aus Philipps „Fabric 26.3 1.0.1mitRei“ bestanden. Einige dieser Mods halten den Prozess nach dem Test offen; das Skript wertet deshalb die übergebenen Ergebnisse aus und beendet den Spielprozess.
+- Kopflos: Minecraft 26.3 verlangt einen sRGB-fähigen GL-Kontext (SDL3), den Xvfb nicht anbietet. Das Skript startet deshalb `weston --backend=headless` (Mesa llvmpipe); Distant Horizons braucht zusätzlich das volle JDK (AWT).
+- Offen: Abnahme auf einem echten Mehrspieler-Server (GAME-02-S04), Umriss der Planbox im Spiel, weitere Minecraft-Versionen.

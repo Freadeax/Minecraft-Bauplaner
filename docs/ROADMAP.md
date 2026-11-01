@@ -14,8 +14,8 @@ Stand: 2026-11-01T13:31:11.269Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 |---|---:|
 | ⏳ Offen | 21 |
 | 🚧 In Arbeit | 2 |
-| ⛔ Blockiert | 1 |
-| 🧩 Implementiert · Abnahme offen | 11 |
+| ⛔ Blockiert | 0 |
+| 🧩 Implementiert · Abnahme offen | 12 |
 | ✅ Im beschriebenen Umfang geprüft | 21 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -124,7 +124,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | ⏳ Offen | 0/2 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
 | [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen | 4/4 | CORE-03, STORE-02 | `84838f0` | `e232b26` |
 | [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter | ⏳ Offen | 0/2 | MAP-01 | ausstehend | ausstehend |
-| [GAME-02](#game-02) | Fabric-Brücke kompilieren und im Spiel abnehmen | ⛔ Blockiert | 1/3 | FORMAT-01, GAME-01 | `84838f0` | `e232b26` |
+| [GAME-02](#game-02) | Fabric-Brücke kompilieren und im Spiel abnehmen | 🧩 Implementiert · Abnahme offen | 3/4 | FORMAT-01, GAME-01 | `84838f0` | `e232b26` |
 | [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | ⏳ Offen | 0/2 | GAME-02 | ausstehend | ausstehend |
 | [WORLD-IMPORT-01](#world-import-01) | Bereichsweiser Weltimport und Terrainprüfung | ⏳ Offen | 0/2 | PROFILE-01, PERF-02, FORMAT-01 | ausstehend | ausstehend |
 | [BACKUP-02](#backup-02) | Sicherungserinnerung und Abschnittsrevisionen | ⏳ Offen | 0/2 | STORE-01, BUILD-01 | ausstehend | ausstehend |
@@ -1025,23 +1025,22 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-02
 
-**Fabric-Brücke kompilieren und im Spiel abnehmen** · ⛔ Blockiert · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Fabric-Brücke kompilieren und im Spiel abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Fabric-Mod 26.3 bauen und testen“) · Aktualisiert: 2026-11-01T13:33:15.064Z
 
 - [x] GAME-02-S01: Versionsneutraler Java-Kern mit Tests und Fabric-Quelladapter vorhanden.
-- [ ] GAME-02-S02: Loader-/Versionsstand anhand offizieller Quellen prüfen und Build ermöglichen.
-- [ ] GAME-02-S03: Plan aufnehmen und Soll/Ist-Vergleich mit echtem Spiel durchführen.
+- [x] GAME-02-S02: Loader-/Versionsstand anhand offizieller Quellen prüfen und Build ermöglichen.
+- [x] GAME-02-S03: Plan aufnehmen und Soll/Ist-Vergleich mit echtem Spiel durchführen.
+- [ ] GAME-02-S04: Mehrspieler-Abnahme durch den Nutzer auf server.lmnt-gaming.net mit eigenem Bau.
 
 **Abnahme:** Lesende Aufnahme setzt keine Weltblöcke; keine ungeprüfte Kompatibilität.
 
-**Nächste Aktion:** Loader-/Versionsstand anhand offizieller Quellen prüfen und Build ermöglichen.
+**Nächste Aktion:** Philipp testet die .jar aus /mnt/project-files/mod/ auf server.lmnt-gaming.net und meldet Ergebnis/Fehler (Anleitung ANLEITUNG_SPIELTEST.md).
 
-**Blocker:** Letzte dokumentierte Mod-Buildumgebung konnte Abhängigkeiten nicht beziehen; aktueller Build/Spielnachweis fehlt.
+**Prüfstand:** Build, Einzelspieler-Spieltest im echten 26.3-Client und Modpack-Verträglichkeit bestanden; Mehrspieler-Abnahme auf echtem Server durch den Nutzer offen.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Nachweise:** [mods/bauplaner-bridge/README.md](../mods/bauplaner-bridge/README.md) — Bau, Installation, Befehle, Spieltests.; [scripts/test_bridge_ingame.sh](../scripts/test_bridge_ingame.sh) — Echter Minecraft-26.3-Client (Fabric Client Game Test): Plan per Chat laden, Anker auf angeschauten Block, Aufnahme, Website-Vergleich findet genau 1 falschen und 1 fehlenden Block; zusätzlich als Produktionsstart mit allen 21 Mods aus Philipps Modpack.; [docs/TESTING.md](TESTING.md) — Befehle, Ergebnisse und Grenzen des Spieltests (01.11.2026).
 
-**Nachweise:** [mods/bauplaner-bridge/README.md](../mods/bauplaner-bridge/README.md) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
-
-**Dateiumfang:** `mods/bauplaner-bridge/`. **Abhängigkeiten:** FORMAT-01, GAME-01. **Alte IDs:** B8-M2, P6-01.
+**Dateiumfang:** `mods/bauplaner-bridge/`, `scripts/test_bridge.sh`, `scripts/test_bridge_ingame.sh`, `scripts/bridge_crosscheck.mjs`, `scripts/bridge_gametest.mjs`. **Abhängigkeiten:** FORMAT-01, GAME-01. **Alte IDs:** B8-M2, P6-01.
 
 **Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
 
