@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-01T09:33:55.354Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-01T09:39:17.366Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,16 +12,16 @@ Stand: 2026-11-01T09:33:55.354Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 29 |
+| ⏳ Offen | 28 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 3 |
-| 🧩 Implementiert · Abnahme offen | 8 |
+| 🧩 Implementiert · Abnahme offen | 9 |
 | ✅ Im beschriebenen Umfang geprüft | 13 |
 | ⏸ Zurückgestellt | 2 |
 
 ## Aktiver Arbeitsblock
 
-- **STORE-02 · Revisionsschutz bei konkurrierenden Assetänderungen** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Echte IndexedDB-v1→v2-Migration und Zwei-Tab-UI-Regressionsfälle bei verfügbarer Chromium-Laufzeit ausführen; danach STORE-02 vollständig abnehmen. Folgender Entwicklungsblock PERF-01.
+- **WORLD-02 · Weitere kuratierte Bauwelten** — 🧩 Implementiert · Abnahme offen, 2/2 Teilschritte. Nächster Schritt: Main-Integration und Pages-Artefakt veröffentlichen; Sichtprüfung der drei neuen Bauwelten bleibt Teil von QA-01.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -114,7 +114,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [UPDATE-01](#update-01) | Kontrollierte Versionsupdates mit lokalen Overrides | ⏳ Offen | 0/2 | DIFF-01, STORE-02 | ausstehend | ausstehend |
 | [LIB-02](#lib-02) | Eigene Sammlungen, Ordner und Kategorien | ⏳ Offen | 0/2 | STORE-02, LIB-01 | ausstehend | ausstehend |
 | [LIB-03](#lib-03) | Eigene Ensembles und Generatorvorlagen speichern | ⏳ Offen | 0/2 | LIB-02, GEN-01 | ausstehend | ausstehend |
-| [WORLD-02](#world-02) | Weitere kuratierte Bauwelten | ⏳ Offen | 0/2 | LIB-01, UI-01 | ausstehend | ausstehend |
+| [WORLD-02](#world-02) | Weitere kuratierte Bauwelten | 🧩 Implementiert · Abnahme offen | 2/2 | LIB-01, UI-01 | `8f22780` | ausstehend |
 | [BUILD-05](#build-05) | Bauwelt-Anlagen mit Konfliktvorschau | ⏳ Offen | 0/2 | LIB-03, CORE-03 | ausstehend | ausstehend |
 | [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | ⏳ Offen | 0/2 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
 | [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🚧 In Arbeit | 1/4 | CORE-03, STORE-02 | `84838f0` | `e232b26` |
@@ -860,22 +860,22 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### WORLD-02
 
-**Weitere kuratierte Bauwelten** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Weitere kuratierte Bauwelten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Cline: Bauwelten-Abdeckung geprüft und ergänzt (MSG-WORLD02-01) · Aktualisiert: 2026-11-01T09:39:17.366Z
 
-- [ ] WORLD-02-S01: Abdeckung für fernöstliche Gärten, Wüstenhandel und End prüfen.
-- [ ] WORLD-02-S02: Nur mit tatsächlichen Treffern und reproduzierbaren Links ergänzen.
+- [x] WORLD-02-S01: Abdeckung für fernöstliche Gärten, Wüstenhandel und End prüfen.
+- [x] WORLD-02-S02: Nur mit tatsächlichen Treffern und reproduzierbaren Links ergänzen.
 
 **Abnahme:** Keine erfundenen Treffer oder Gebäude; eigene Assets werden konsistent berücksichtigt.
 
-**Nächste Aktion:** Abdeckung für fernöstliche Gärten, Wüstenhandel und End prüfen.
+**Nächste Aktion:** Main-Integration und Pages-Artefakt veröffentlichen; Sichtprüfung der drei neuen Bauwelten bleibt Teil von QA-01.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** 365/365 Node-Tests, Architektur-, Roadmap-, Typ-, Kern-/Pages-Build- und Dokumentationsprüfung bestanden; keine Browser-/Touch-Sichtprüfung der neuen Karten (Chromium fehlt).
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/build-themes.test.mjs](../tests/build-themes.test.mjs) — Prüft elf Welten, reale Facetten, Treffer/Vorschauen der drei neuen Welten, reproduzierbare Links und dass keine Welt eine Stilrichtung ohne Bauteile nennt.; [docs/architecture/BUILD_THEMES.md](architecture/BUILD_THEMES.md) — Abdeckungstabelle der tatsächlichen Treffer je neuer Bauwelt.
 
-**Dateiumfang:** `packages/domain/src/buildThemes.ts`. **Abhängigkeiten:** LIB-01, UI-01. **Alte IDs:** WORLD-02.
+**Dateiumfang:** `packages/domain/src/buildThemes.ts`, `tests/build-themes.test.mjs`, `docs/architecture/BUILD_THEMES.md`. **Abhängigkeiten:** LIB-01, UI-01. **Alte IDs:** WORLD-02.
 
-**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+**Integration:** Main [8f22780](https://github.com/Freadeax/Minecraft-Bauplaner/commit/8f2278095ff752282bf2b34ee5c288c95deac013); Pages-Quelle ausstehend.
 
 ### BUILD-05
 

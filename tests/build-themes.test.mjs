@@ -10,9 +10,9 @@ const { entries } = buildCatalog(buildings.assets, new Map(buildings.versions.ma
 const facetKeys = FACETS.map(facet => facet.key);
 const ids = values => values.map(value => value.asset.id);
 
-test('eight editorial themes use real supported facets and each has existing building previews', () => {
-  assert.equal(BUILD_THEMES.length, 8);
-  assert.equal(new Set(BUILD_THEMES.map(theme => theme.id)).size, 8);
+test('eleven editorial themes use real supported facets and each has existing building previews', () => {
+  assert.equal(BUILD_THEMES.length, 11);
+  assert.equal(new Set(BUILD_THEMES.map(theme => theme.id)).size, 11);
   for (const theme of BUILD_THEMES) {
     for (const [key, values] of Object.entries(theme.facets)) {
       const facet = FACETS.find(facet => facet.key === key);
@@ -52,4 +52,27 @@ test('theme results follow library additions and archive state without mutating 
   assert.deepEqual(selectBuildTheme([], theme).previews, []);
   assert.equal(base.count, selectBuildTheme(entries, theme).count, 'original catalogue retained');
   assert.equal(entries.length, buildings.assets.length);
+});
+
+
+test('WORLD-02 coverage: far-eastern gardens, desert trade and the End use only real catalogue entries', () => {
+  // Styles the roadmap asked to check, with the editorial world that now covers them.
+  const required = { fernoestlich: 'fernost', wuestenstil: 'wuestenhandel', end: 'endposten' };
+  for (const [style, themeId] of Object.entries(required)) {
+    const theme = BUILD_THEMES.find(candidate => candidate.id === themeId);
+    assert.ok(theme, themeId);
+    assert.ok(theme.facets.stil.includes(style), `${themeId} names the existing style ${style}`);
+    const matches = queryCatalog(entries, buildThemeQuery(theme));
+    assert.ok(matches.length > 0, `${themeId} has real matches`);
+    assert.equal(matches.length, selectBuildTheme(entries, theme).count);
+    for (const preview of selectBuildTheme(entries, theme).previews)
+      assert.ok(preview.facets.stil.includes(style), `${themeId}/${preview.asset.id} is a real entry of that style`);
+    // The reproducible filter link resolves to exactly the same catalogue ids.
+    const search = buildThemeSearch(theme, facetKeys);
+    const decoded = decodeLibraryState(search, facetKeys, { sorts: Object.keys(SORT_LABEL), stages: STAGES });
+    assert.deepEqual(ids(queryCatalog(entries, { ...decoded.filters, text: decoded.query, sort: decoded.sort, descending: decoded.descending, collapseFamilies: decoded.collapse })), ids(matches), themeId);
+  }
+  // No editorial theme claims a style the shipped catalogue cannot serve.
+  for (const theme of BUILD_THEMES) for (const style of theme.facets.stil ?? [])
+    assert.ok(entries.some(entry => entry.facets.stil?.includes(style)), `${theme.id}: style ${style} has entries`);
 });

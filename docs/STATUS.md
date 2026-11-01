@@ -12,7 +12,7 @@ Stand: 01.11.2026. Der verbindliche Aufgabenbestand steht in [ROADMAP](ROADMAP.m
 | Bibliothek | 174 Gebäude, Suche/Filter, Vergleich, Merkliste, Varianten, Ensembles und Generatoren | eigene Sammlungen/Vorlagen; Redstone-Bauwerke nicht im Spiel abgenommen |
 | Bau und Materialien | Bauitems, Rohstoff-/Rezeptauflösung, Packlisten, eigene Abschnitte, Lager-/Sammelplanung und Freiraumprüfung | versionsgebundener Katalog, Kupfer-Farbvarianten und erweiterte NBT-Diffs |
 | Speicherung | IndexedDB, Projekt-Revisionsschutz, Originale, atomare Batches, Backup/Restore und Datencheck | Asset-Revisionsschutz und DB-v2-Migration implementiert, echte Browserabnahme offen; Cloud-/Gerätesynchronisierung und Safari/iPhone offen |
-| Novemberoberfläche | fünf visuelle Themen mit Hell/Dunkel/System, Materiallabor, acht Bauwelten, 50 gezielte Glas-/Beton-/Terrakottasätze | aktuelle visuelle Abnahme; keine neuen Gebäude aus bloßem Themenzugang |
+| Novemberoberfläche | fünf visuelle Themen mit Hell/Dunkel/System, Materiallabor, elf Bauwelten, 50 gezielte Glas-/Beton-/Terrakottasätze | aktuelle visuelle Abnahme; keine neuen Gebäude aus bloßem Themenzugang |
 | Spielbrücke | Aufnahmevergleich, Original/Verlauf/Ausrichtung lokal gespeichert und gesichert; Java-Kern mit Tests | Fabricadapter nicht im Spiel abgenommen; Vergleich ohne BlockEntity-Inhalte |
 | Weltkarte und Team | generischer Livekarten-/Markeradapter | Weltkartenoberfläche, konkrete Provideradapter, Teamdienst/Konten noch nicht vorhanden |
 | Hosting | Pages main / Repositorywurzel, gehashter statischer Build und Artefakt-Kindcommit | alte integrierte Branches ohne verfügbare Löschfunktion; Restoreprobe offen |

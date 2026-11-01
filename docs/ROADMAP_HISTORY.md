@@ -223,3 +223,24 @@ STORE-02 vollständig implementiert und kerngeprüft: 364 Node-Tests, Typ-/Build
 - `tests/e2e/asset-concurrency.e2e.mjs`
 - `tests/e2e/asset-editing.e2e.mjs`
 
+## 2026-11-01T09:39:17.366Z · progress
+
+**Aufgaben:** WORLD-02
+
+Drei Bauwelten aus tatsaechlichen Katalogeintraegen ergaenzt (fernoestlich 3, wuestenstil 6, end 2); Kernpruefung bestanden, Browser-Sichtpruefung offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| WORLD-02 | 🧩 Implementiert · Abnahme offen | 2/2 | Main-Integration und Pages-Artefakt veröffentlichen; Sichtprüfung der drei neuen Bauwelten bleibt Teil von QA-01. |
+
+**Geänderte Dateien:**
+
+- `README.md`
+- `docs/COMMUNICATION.md`
+- `docs/NOVEMBER_EXPANSION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/BUILD_THEMES.md`
+- `packages/domain/src/buildThemes.ts`
+- `tests/build-themes.test.mjs`
+

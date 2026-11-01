@@ -34,7 +34,7 @@ Je Block vor Bearbeitung Kommunikation prüfen und Dateibesitz anmelden; lokal T
 | MAT-02 | Projektmaterialien nach Familien, Suche, Zuordnung und Herkunft | Implementiert; kein zweites Lager |
 | WORLD-01 | Acht Bauwelten als strukturierte Zugänge zur vorhandenen Bibliothek, berechnete Treffer und teilbare Filterlinks | In dieser Fortsetzung implementiert; keine neuen Gebäude behauptet |
 | MAT-03 | Getrennte Glas-/Beton-/Terrakotta-Farben und kontrollierter Materialtausch | In dieser Fortsetzung; genaue Abnahme in TESTING |
-| WORLD-02 | Fernöstliche Gärten, Wüstenhandel und End-Bauten als weitere Themen; erst nach Prüfung der echten Katalogabdeckung ergänzen | Geplant |
+| WORLD-02 | Fernöstliche Gärten, Wüstenhandel und End-Bauten als weitere Themen; erst nach Prüfung der echten Katalogabdeckung ergänzen | In dieser Fortsetzung implementiert: drei Welten aus tatsächlichen Katalogeinträgen, Kernprüfung bestanden |
 | BUILD-05 | Bauwelt als eigene Anlage zusammenstellen; konkrete AssetVersion-Referenzen, Abstands-/Konfliktvorschau, explizite Projektübernahme | Geplant; keine automatische Platzierung aus Themenklick |
 | MAT-04 | Kupfer mit Oxidation und Wachsstatus; Profilnachweis sowie vollständige Zustandsregeln vor Tausch | Geplant |
 | UI-02 | Echte Desktop-/iPhone-Abnahme für Themen, Filterwechsel und helle Panels | Offen; Browserlaufzeit in dieser Umgebung fehlt |

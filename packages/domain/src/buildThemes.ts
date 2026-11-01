@@ -36,6 +36,18 @@ export const BUILD_THEMES: readonly BuildTheme[] = [
   { id: 'technik', name: 'Technik & Industrie', eyebrow: 'FUNKTIONEN MODULAR VERBINDEN',
     description: 'Technische und industrielle Entwürfe liefern Bausteine für einen Funktionshof. Zugänge und Erweiterungsflächen gehören genauso zur Planung wie die Module selbst.',
     facets: { stil: ['technisch', 'industriell'] }, tasks: ['Wähle zuerst eine konkrete Aufgabe wie Transport oder Schmelzen.', 'Prüfe verfügbare Anschlüsse und halte Wartungszugänge frei.', 'Teste technische Module in deiner Spielversion vor der Serienerweiterung.'] },
+  { id: 'fernost', name: 'Fernöstlicher Garten', eyebrow: 'RUHE, WASSER UND KLARE WEGE',
+    description: 'Schrein, Tor und Zen-Garten bilden einen ruhigen Ort. Die Wegeführung und bewusst freie Flächen tragen die Wirkung; die Geländehöhe prüfst du selbst.',
+    facets: { stil: ['fernoestlich'], kategorie: ['garten', 'sakral', 'dekoration'] },
+    tasks: ['Lege Weg und Wasserlauf fest, bevor du Gebäude stellst.', 'Setze Schrein oder Tor als sichtbaren Orientierungspunkt.', 'Halte eine freie Fläche für Blicke und späteres Wachstum frei.'] },
+  { id: 'wuestenhandel', name: 'Wüstenhandel & Oasenweg', eyebrow: 'WEG, LAGER UND HANDEL',
+    description: 'Wüstenstil-Bauten werden zu Stationen eines Handelswegs: Unterkunft, Lager und sichtbare Wegemarken. Die Wüstenstil-Angabe ist eine Gestaltungsrichtung, keine geprüfte Umgebung.',
+    facets: { stil: ['wuestenstil'], kategorie: ['wohnhaus', 'befestigung', 'wahrzeichen'] },
+    tasks: ['Markiere Anfang und Ende des Wegs mit einem sichtbaren Bauwerk.', 'Ordne Unterkunft und Lager in kurzen Abständen dazwischen an.', 'Prüfe Fundamente und Schattenplätze im eigenen Gelände.'] },
+  { id: 'endposten', name: 'End-Außenposten', eyebrow: 'STÜTZPUNKT AM RAND DER WELT',
+    description: 'Endstein-Bauten und ein Startplatz ergeben einen abgelegenen Stützpunkt. Schutz, Fortbewegung und Rückweg planst du für deine Zielwelt selbst.',
+    facets: { stil: ['end'] },
+    tasks: ['Plane den Ankunftsplatz mit freiem Zugang und Rückweg.', 'Trenne Unterkunft, Lager und Befestigung sichtbar.', 'Prüfe Schutz und Blockfunktionen in deiner Zielwelt vor dem Ausbau.'] },
 ];
 
 export function buildThemeQuery(theme: BuildTheme): CatalogQuery {

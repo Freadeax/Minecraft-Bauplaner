@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T09:33:55.354Z",
+  "updatedAt": "2026-11-01T09:39:17.366Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
-    "STORE-02"
+    "WORLD-02"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -1899,14 +1899,16 @@
       "title": "Weitere kuratierte Bauwelten",
       "phase": "P3",
       "priority": "P1",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "implemented",
+      "owner": "Cline: Bauwelten-Abdeckung geprüft und ergänzt (MSG-WORLD02-01)",
       "dependencies": [
         "LIB-01",
         "UI-01"
       ],
       "scope": [
-        "packages/domain/src/buildThemes.ts"
+        "packages/domain/src/buildThemes.ts",
+        "tests/build-themes.test.mjs",
+        "docs/architecture/BUILD_THEMES.md"
       ],
       "legacyIds": [
         "WORLD-02"
@@ -1915,29 +1917,38 @@
         {
           "id": "WORLD-02-S01",
           "title": "Abdeckung für fernöstliche Gärten, Wüstenhandel und End prüfen.",
-          "done": false
+          "done": true
         },
         {
           "id": "WORLD-02-S02",
           "title": "Nur mit tatsächlichen Treffern und reproduzierbaren Links ergänzen.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Keine erfundenen Treffer oder Gebäude; eigene Assets werden konsistent berücksichtigt."
       ],
-      "next": "Abdeckung für fernöstliche Gärten, Wüstenhandel und End prüfen.",
+      "next": "Main-Integration und Pages-Artefakt veröffentlichen; Sichtprüfung der drei neuen Bauwelten bleibt Teil von QA-01.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/build-themes.test.mjs",
+          "note": "Prüft elf Welten, reale Facetten, Treffer/Vorschauen der drei neuen Welten, reproduzierbare Links und dass keine Welt eine Stilrichtung ohne Bauteile nennt."
+        },
+        {
+          "path": "docs/architecture/BUILD_THEMES.md",
+          "note": "Abdeckungstabelle der tatsächlichen Treffer je neuer Bauwelt."
+        }
+      ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "note": "365/365 Node-Tests, Architektur-, Roadmap-, Typ-, Kern-/Pages-Build- und Dokumentationsprüfung bestanden; keine Browser-/Touch-Sichtprüfung der neuen Karten (Chromium fehlt)."
       },
       "delivery": {
-        "main": null,
+        "main": "8f2278095ff752282bf2b34ee5c288c95deac013",
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-01T09:39:17.366Z"
     },
     {
       "id": "BUILD-05",
@@ -3156,6 +3167,33 @@
           "done": 2,
           "total": 2,
           "next": "Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-01T09:39:17.366Z",
+      "kind": "progress",
+      "items": [
+        "WORLD-02"
+      ],
+      "summary": "Drei Bauwelten aus tatsaechlichen Katalogeintraegen ergaenzt (fernoestlich 3, wuestenstil 6, end 2); Kernpruefung bestanden, Browser-Sichtpruefung offen.",
+      "files": [
+        "README.md",
+        "docs/COMMUNICATION.md",
+        "docs/NOVEMBER_EXPANSION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/BUILD_THEMES.md",
+        "packages/domain/src/buildThemes.ts",
+        "tests/build-themes.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "WORLD-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Main-Integration und Pages-Artefakt veröffentlichen; Sichtprüfung der drei neuen Bauwelten bleibt Teil von QA-01."
         }
       ]
     }
