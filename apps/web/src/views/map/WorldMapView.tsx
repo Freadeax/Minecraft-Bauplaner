@@ -18,7 +18,7 @@ import { PlacementForm } from './PlacementForm';
 import { LiveMapPanel, LiveMapLink } from './LiveMapPanel';
 import { useLiveMapSettings } from './liveMapConfig';
 import { computeMap } from './transport';
-import { loadSurvey } from '../world/surveys';
+import { projectTerrain, projectTerrainDimension } from '../world/designs';
 import '../../map.css';
 
 export type ColorMode = 'block' | 'project' | 'progress';
@@ -65,6 +65,9 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   const [surveys, setSurveys] = useState<ReadonlyMap<string, TerrainSurvey>>(new Map());
   const [surveyErrors, setSurveyErrors] = useState<readonly string[]>([]);
   const [showTerrain, setShowTerrain] = useState(true);
+  // Geplantes Gelände (TERRAIN-02) statt der Aufnahme, wo ein Projekt eine Gestaltung hat.
+  const [planned, setPlanned] = useState(true);
+  const [plannedCount, setPlannedCount] = useState(0);
   const seq = useRef(0);
 
   const load = useCallback(async () => {
@@ -89,16 +92,19 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   // Geländeaufnahmen (TERRAIN-01) of the projects in this dimension, loaded from the original store.
   useEffect(() => {
     if (!projects) return;
-    const withTerrain = projects.filter(p => p.terrain && p.terrain.dimension === dimension && p.world?.dimension === dimension);
+    const source = planned ? 'planned' as const : 'measured' as const;
+    const withTerrain = projects.filter(p => (p.terrain || p.terrainDesign) && projectTerrainDimension(p, source) === dimension && p.world?.dimension === dimension);
     let live = true;
-    void Promise.allSettled(withTerrain.map(p => loadSurvey(repo, p.terrain!))).then(results => {
+    void Promise.allSettled(withTerrain.map(p => projectTerrain(repo, p, source)!)).then(results => {
       if (!live) return;
       const next = new Map<string, TerrainSurvey>(), errors: string[] = [];
       results.forEach((r, i) => { if (r.status === 'fulfilled') next.set(withTerrain[i]!.id, r.value); else errors.push(`${withTerrain[i]!.name}: ${errorText(r.reason)}`); });
       setSurveys(next); setSurveyErrors(errors);
+      setPlannedCount(withTerrain.filter((p, i) => results[i]!.status === 'fulfilled' && p.terrainDesign && (planned || !p.terrain)).length);
     });
     return () => { live = false; };
-  }, [projects, dimension, repo]);
+  }, [projects, dimension, repo, planned]);
+  const hasDesigns = !!projects?.some(p => p.terrainDesign && p.terrain && p.world?.dimension === dimension);
   const terrain = useMemo(() => showTerrain ? [...surveys.values()] : [], [surveys, showTerrain]);
 
   const entry = map?.entries.find(e => e.projectId === selected) ?? null;
@@ -252,10 +258,11 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
         </div>
         <label className="chip-check"><input type="checkbox" checked={showHidden} onChange={e => setShowHidden(e.target.checked)} /> Ausgeblendete zeigen</label>
         {surveys.size > 0 && <label className="chip-check"><input type="checkbox" checked={showTerrain} onChange={e => setShowTerrain(e.target.checked)} /> Gelände ({surveys.size})</label>}
+        {hasDesigns && <label className="chip-check" title="Projekte mit Geländegestaltung (Reiter „Landschaft“) zeigen das geplante statt des aufgenommenen Geländes."><input type="checkbox" checked={planned} onChange={e => setPlanned(e.target.checked)} /> geplantes Gelände</label>}
         <button className="secondary" aria-pressed={tour} disabled={!drawn.length} onClick={() => setTour(t => !t)}>{tour ? '■ Rundflug beenden' : '▶ Rundflug'}</button>
       </div>
     </header>
-    <p className="map-terrain" role="note">{surveys.size ? <>Gelände aus {surveys.size} Geländeaufnahme{surveys.size === 1 ? '' : 'n'} (gestrichelt umrandet); außerhalb bleibt es ungeprüft. Aufnehmen im Projektreiter „Gelände“ oder als Bauplatz im <a href="#/welt">Weltimport</a>.</>
+    <p className="map-terrain" role="note">{surveys.size ? <>Gelände aus {surveys.size} Geländeaufnahme{surveys.size === 1 ? '' : 'n'} (gestrichelt umrandet){plannedCount > 0 && <>, davon {plannedCount} als geplantes Gelände aus dem Reiter „Landschaft“</>}; außerhalb bleibt es ungeprüft. Aufnehmen im Projektreiter „Gelände“ oder als Bauplatz im <a href="#/welt">Weltimport</a>.</>
       : <>{TERRAIN_NOTE} Lage, Höhe und Abstände prüfst du im Spiel oder auf eurer Live-Karte. Echtes Gelände zeigt die Karte, sobald ein Projekt eine Geländeaufnahme hat (Reiter „Gelände“ oder Bauplatz im <a href="#/welt">Weltimport</a>).</>}</p>
     {surveyErrors.length > 0 && <div className="notice warning" role="alert">Geländeaufnahme nicht geladen: {surveyErrors.join(' · ')}</div>}
     {ground && ground.skipped > 0 && <p className="notice" role="status">{ground.skipped} Geländeaufnahme(n) in 3D nicht gezeigt: Anzeigebudget erreicht. Die Draufsicht zeigt sie weiter.</p>}

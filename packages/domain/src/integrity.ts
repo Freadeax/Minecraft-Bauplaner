@@ -122,6 +122,15 @@ export async function checkIntegrity(source: IntegritySource, now: () => Date = 
       usedOriginals.add(p.terrain.sha256);
       if (!originals.has(p.terrain.sha256)) add({ severity: 'warning', code: 'ORIGINAL_MISSING', subject, message: `Geländeaufnahme ${p.terrain.fileName} (${p.terrain.sha256.slice(0, 12)}…) fehlt; Weltkarte und Anlagen zeigen dort kein Gelände. Bitte im Reiter „Gelände“ neu aufnehmen.` });
     }
+    if (p.terrainDesign) {
+      const design = p.terrainDesign;
+      usedOriginals.add(design.sha256);
+      if (!originals.has(design.sha256)) add({ severity: 'warning', code: 'ORIGINAL_MISSING', subject, message: `Geländegestaltung ${design.fileName} (${design.sha256.slice(0, 12)}…) fehlt; das geplante Gelände ist verloren. Bitte aus einer Sicherung wiederherstellen oder im Reiter „Landschaft“ neu gestalten.` });
+      if (design.base.kind === 'survey') {
+        usedOriginals.add(design.base.sha256);
+        if (!originals.has(design.base.sha256)) add({ severity: 'warning', code: 'ORIGINAL_MISSING', subject, message: `Geländeaufnahme unter der Gestaltung (${design.base.sha256.slice(0, 12)}…) fehlt; Abtrag, Aufschüttung und Blöcke lassen sich nicht berechnen.` });
+      }
+    }
     p.revisions.forEach((r, i) => {
       if (i > 0 && r.number <= p.revisions[i - 1]!.number) add({ severity: 'warning', code: 'REVISION_ORDER', subject, message: `Revision ${r.number} steht nach Revision ${p.revisions[i - 1]!.number}.` });
     });

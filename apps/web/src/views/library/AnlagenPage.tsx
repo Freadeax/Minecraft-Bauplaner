@@ -1,7 +1,8 @@
 import { useCallback, useDeferredValue, useMemo, useState } from 'react';
 import { SIDE_LABEL, TERRAIN_MODE_LABEL, EARTHWORK_NOTE, findTerrainSpot, fitAnlageToTerrain } from '../../../../../packages/domain/src/index.js';
 import type { AnlageTerrainFit, TerrainMode, TerrainSurvey } from '../../../../../packages/domain/src/index.js';
-import { useSurvey } from '../world/surveys';
+import { projectTerrainDimension, useProjectTerrain } from '../world/designs';
+import type { TerrainSource } from '../world/designs';
 import { surveyImage } from '../map/terrainLayer';
 import type { Cell } from '../../../../../packages/voxel/src/index.js';
 import { ANLAGEN, MAX_SPACING, MIN_SPACING, anlageById, anlageIntoProject, applyOperation, besideOffset, createAnlageProject, planAnlage, previewAnlage, resolveProject, swapCandidates, themeOfAnlage } from '../../../../../packages/domain/src/index.js';
@@ -28,7 +29,18 @@ function safePreview(plan: AnlagePlan | null, base: Project | undefined, offset:
   try { return { preview: previewAnlage(plan, { ...(base && { base }), offset, versions, ...(heights && { heights }) }), error: '' }; } catch (e) { return { preview: null, error: errorText(e) }; }
 }
 /** Survey usable for a target project: same dimension as its world placement. */
-const terrainOf = (p: Project | undefined) => p?.world && p.terrain && p.terrain.dimension === p.world.dimension ? p.terrain : null;
+/** Key of the terrain a target offers (TERRAIN-01 survey or TERRAIN-02 planned terrain), null without terrain in the project's dimension. */
+const terrainOf = (p: Project | undefined, source: TerrainSource): string | null => {
+  if (!p?.world || projectTerrainDimension(p, source) !== p.world.dimension) return null;
+  return source === 'planned' && p.terrainDesign ? `planned:${p.terrainDesign.sha256}` : p.terrain ? `measured:${p.terrain.sha256}` : p.terrainDesign ? `planned:${p.terrainDesign.sha256}` : null;
+};
+/** Target project from `#/bibliothek/anlagen…?ziel=<id>` (Landschaft → Anlage); kept for the session while an Anlage is chosen from the list. */
+let rememberedTarget: string | null = null;
+const targetFromHash = (): Target => {
+  const id = new URLSearchParams(location.hash.split('?')[1] ?? '').get('ziel');
+  if (id) rememberedTarget = id;
+  return rememberedTarget ? { kind: 'project', projectId: rememberedTarget } : { kind: 'new' };
+};
 const size = (f: { x0: number; z0: number; x1: number; z1: number } | null) => f ? `${f.x1 - f.x0} × ${f.z1 - f.z0}` : '–';
 
 /**
@@ -52,7 +64,9 @@ export function AnlagenPage({ id, entries, projects, libHref, onMessage }: {
 
 function AnlagenOverview({ missingId, lib, libHref }: { missingId: string | undefined; lib: AnlageLibrary; libHref(page: LibraryPage, id?: string): string }) {
   const plans = useMemo(() => ANLAGEN.map(a => ({ anlage: a, ...safePlan(a, lib, {}) })), [lib]);
+  const target = useMemo(targetFromHash, []);
   return <section className="anlagen" aria-label="Anlagen">
+    {target.kind === 'project' && <p className="notice" role="status">Wähle eine Anlage: Sie wird auf das Gelände deines Projekts geplant (Ziel ist vorausgewählt).</p>}
     {missingId && <div className="notice warning" role="alert">Anlage „{missingId}“ gibt es nicht.</div>}
     <div className="anlagen-intro"><div><span className="panel-kicker">BAUWELT ALS ANLAGE</span>
       <h2>Aus einer Bauwelt wird ein geplanter Ort.</h2>
@@ -78,13 +92,14 @@ function AnlagePlanner({ anlage, lib, entries, projects, libHref, onMessage }: {
 }) {
   const { repo } = useApp();
   const [choices, setChoices] = useState<AnlageChoices>({});
-  const [target, setTarget] = useState<Target>({ kind: 'new' });
+  const [target, setTarget] = useState<Target>(targetFromHash);
   const [placement, setPlacement] = useState<'beside' | 'manual'>('beside');
   const [manual, setManual] = useState<[number, number]>([0, 0]);
   const [name, setName] = useState(anlage.name);
   const [accept, setAccept] = useState(false);
   const [busy, setBusy] = useState(false);
   const [useTerrain, setUseTerrain] = useState(true);
+  const [terrainSource, setTerrainSource] = useState<TerrainSource>('planned');
   const [mode, setMode] = useState<TerrainMode>('terrassen');
   const [searching, setSearching] = useState(false);
   const [spotNote, setSpotNote] = useState('');
@@ -96,8 +111,8 @@ function AnlagePlanner({ anlage, lib, entries, projects, libHref, onMessage }: {
   const baseResolution = useMemo(() => { if (!base) return null; try { return resolveProject(base, lib.versions); } catch { return null; } }, [base, lib]);
   const offset = useMemo<[number, number]>(() => !base ? [0, 0] : placement === 'beside' && plan ? besideOffset(plan, baseResolution) : manual, [base, placement, plan, baseResolution, manual]);
   // Gelände (TERRAIN-01): the target's terrain survey fits the plan to the real ground.
-  const terrainRef = terrainOf(base);
-  const { survey, error: surveyError } = useSurvey(repo, terrainRef);
+  const terrainRef = terrainOf(base, terrainSource);
+  const { survey, error: surveyError } = useProjectTerrain(repo, terrainRef ? base : null, terrainSource);
   const fit = useMemo((): { fit: AnlageTerrainFit | null; error: string } => {
     if (!plan || !survey || !useTerrain || !base?.world) return { fit: null, error: '' };
     try { return { fit: fitAnlageToTerrain(plan, { survey, origin: base.world.origin, offset, mode }), error: '' }; } catch (e) { return { fit: null, error: errorText(e) }; }
@@ -148,8 +163,8 @@ function AnlagePlanner({ anlage, lib, entries, projects, libHref, onMessage }: {
       try { storedWorld = resolveProject(stored, lib.versions); } catch { /* unresolved projects: place at the manual/zero offset */ }
       const at = placement === 'beside' ? besideOffset(plan, storedWorld) : manual;
       // Heights from the stored project's terrain (its origin may have changed since the preview).
-      const storedRef = terrainOf(stored);
-      if (useTerrain && terrainRef && storedRef?.sha256 !== terrainRef.sha256) throw new Error('Die Geländeaufnahme des Projekts wurde seit der Vorschau geändert; bitte Vorschau prüfen');
+      const storedRef = terrainOf(stored, terrainSource);
+      if (useTerrain && terrainRef && storedRef !== terrainRef) throw new Error('Das Gelände des Projekts (Aufnahme oder Gestaltung) wurde seit der Vorschau geändert; bitte Vorschau prüfen');
       const heights = useTerrain && storedRef && survey && stored.world ? fitAnlageToTerrain(plan, { survey, origin: stored.world.origin, offset: at, mode }).heights : undefined;
       const fresh = previewAnlage(plan, { base: stored, offset: at, versions: lib.versions, ...(heights && { heights }) });
       if (fresh.conflicts.length && !accept) throw new Error(`${fresh.conflicts.length} Voxelkonflikt(e) nach Neuberechnung; bitte prüfen und bestätigen`);
@@ -230,6 +245,7 @@ function AnlagePlanner({ anlage, lib, entries, projects, libHref, onMessage }: {
     </div>
 
     {terrainRef && <TerrainPanel base={base!} survey={survey} error={surveyError || fit.error} fit={fit.fit} useTerrain={useTerrain} mode={mode} searching={searching} note={spotNote}
+      source={terrainRef.startsWith('planned:') ? 'planned' : 'measured'} canSwitch={!!(base?.terrain && base.terrainDesign)} onSource={v => { setAccept(false); setTerrainSource(v); }}
       onUse={v => { setAccept(false); setUseTerrain(v); }} onMode={m => { setAccept(false); setMode(m); }} onSearch={searchSpot} />}
 
     <section className="anlage-panel" aria-labelledby="anlage-districts-title">
@@ -267,7 +283,7 @@ function AnlagePlanner({ anlage, lib, entries, projects, libHref, onMessage }: {
       <div className="anlage-target">
         <label>Ziel<select value={target.kind === 'new' ? '' : target.projectId} onChange={e => { setAccept(false); setTarget(e.target.value ? { kind: 'project', projectId: e.target.value } : { kind: 'new' }); }}>
           <option value="">Neues Projekt</option>
-          {projects.map(p => <option key={p.id} value={p.id}>In „{p.name}“ einfügen{terrainOf(p) ? ' (mit Gelände)' : ''}</option>)}</select></label>
+          {projects.map(p => <option key={p.id} value={p.id}>In „{p.name}“ einfügen{terrainOf(p, 'planned') ? ' (mit Gelände)' : ''}</option>)}</select></label>
         {target.kind === 'new' ? <label>Projektname<input value={name} maxLength={120} onChange={e => setName(e.target.value)} /></label>
           : <fieldset className="anlage-offset"><legend>Lage im Projekt</legend>
             <label className="chip-check"><input type="radio" name="anlage-offset" checked={placement === 'beside'} onChange={() => { setAccept(false); setPlacement('beside'); }} />neben die bestehenden Bauten</label>
@@ -346,20 +362,23 @@ function SitePlanSvg({ plan, preview, offset, survey, origin, fit }: { plan: Anl
 }
 
 /** Gelände-Panel (TERRAIN-01): mode, totals, units with heights and earthwork, flattest spot. */
-function TerrainPanel({ base, survey, error, fit, useTerrain, mode, searching, note, onUse, onMode, onSearch }: {
+function TerrainPanel({ base, survey, error, fit, useTerrain, mode, searching, note, source, canSwitch, onSource, onUse, onMode, onSearch }: {
   base: Project; survey: TerrainSurvey | null; error: string; fit: AnlageTerrainFit | null; useTerrain: boolean; mode: TerrainMode; searching: boolean; note: string;
+  source: TerrainSource; canSwitch: boolean; onSource(v: TerrainSource): void;
   onUse(v: boolean): void; onMode(m: TerrainMode): void; onSearch(): void;
 }) {
+  const area = source === 'planned' && base.terrainDesign ? base.terrainDesign.area : base.terrain?.area ?? base.terrainDesign!.area;
   const t = fit?.totals;
   const units = fit?.units.filter(u => u.kind !== 'path') ?? [];
   const path = fit?.units.find(u => u.kind === 'path');
   return <section className="anlage-panel anlage-terrain" aria-labelledby="anlage-terrain-title">
     <h3 id="anlage-terrain-title">Gelände</h3>
-    <p className="small-note">Geländeaufnahme von „{base.name}“: {base.terrain!.area.width} × {base.terrain!.area.length} Blöcke ab X {base.terrain!.area.minX}, Z {base.terrain!.area.minZ}. Das Projekt liegt bei X {base.world!.origin[0]} · Y {base.world!.origin[1]} · Z {base.world!.origin[2]}.</p>
+    <p className="small-note">{source === 'planned' ? 'Geplantes Gelände (Landschaft)' : 'Geländeaufnahme'} von „{base.name}“: {area.width} × {area.length} Blöcke ab X {area.minX}, Z {area.minZ}. Das Projekt liegt bei X {base.world!.origin[0]} · Y {base.world!.origin[1]} · Z {base.world!.origin[2]}.</p>
     {error && <p className="notice warning" role="alert">{error}</p>}
     {!survey && !error && <p role="status">Geländeaufnahme wird geladen …</p>}
     <div className="anlage-controls">
       <label className="chip-check"><input type="checkbox" checked={useTerrain} onChange={e => onUse(e.target.checked)} /> Anlage ans Gelände anpassen</label>
+      {canSwitch && <label className="chip-check"><input type="checkbox" checked={source === 'planned'} onChange={e => onSource(e.target.checked ? 'planned' : 'measured')} /> geplantes Gelände</label>}
       {useTerrain && <div className="seg" role="group" aria-label="Höhenanpassung">
         {(Object.keys(TERRAIN_MODE_LABEL) as TerrainMode[]).map(m => <button key={m} type="button" aria-pressed={mode === m} onClick={() => onMode(m)}>{TERRAIN_MODE_LABEL[m]}</button>)}</div>}
       {useTerrain && <button type="button" className="secondary" disabled={!survey || searching} onClick={onSearch}>{searching ? 'Suche läuft …' : 'Flachsten Platz suchen'}</button>}

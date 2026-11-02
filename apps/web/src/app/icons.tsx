@@ -33,6 +33,6 @@ export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
 
 /** Symbol je Projektbereich (tabs.ts); unbekannte Bereiche bekommen ein neutrales Blatt. */
 export function tabIcon(id: string): IconName {
-  const known: Record<string, IconName> = { editor: 'editor', bauen: 'build', export: 'export', material: 'material', baustelle: 'site', karte: 'map', bloecke: 'building', gelaende: 'terrain', updates: 'update' };
+  const known: Record<string, IconName> = { editor: 'editor', bauen: 'build', export: 'export', material: 'material', baustelle: 'site', karte: 'map', bloecke: 'building', gelaende: 'terrain', landschaft: 'terrain', updates: 'update' };
   return known[id] ?? 'page';
 }

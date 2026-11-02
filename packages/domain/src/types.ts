@@ -3,6 +3,7 @@ import type { SitePlan } from './site.js';
 import type { UpdateState } from './updateState.js';
 import type { WorldPlacement } from './worldmap.js';
 import type { ProjectTerrainReference } from './terrainSurvey.js';
+import type { ProjectTerrainDesignReference } from './terrainDesign.js';
 
 /**
  * Shared domain contract (P2-01). All records are JSON-safe and versioned so
@@ -66,7 +67,7 @@ export interface Connector {
 }
 export type Handedness = 'left' | 'right';
 
-export type AssetSourceFormat = 'schem-v3' | 'litematic' | 'voxel-json' | 'demo' | 'crop' | 'composition' | 'variant' | 'generator' | 'editor' | 'world-region';
+export type AssetSourceFormat = 'schem-v3' | 'litematic' | 'voxel-json' | 'demo' | 'crop' | 'composition' | 'variant' | 'generator' | 'editor' | 'world-region' | 'terrain-design';
 
 export interface AssetVersionSource {
   readonly format: AssetSourceFormat;
@@ -174,6 +175,8 @@ export interface Project {
   readonly updates?: UpdateState;
   /** Stored terrain survey (height map) of the building site (terrainSurvey.ts, TERRAIN-01); bytes in the original store. */
   readonly terrain?: ProjectTerrainReference;
+  /** Planned terrain (terrainDesign.ts, TERRAIN-02): shaped heights, painted surface, water and paths; bytes in the original store. */
+  readonly terrainDesign?: ProjectTerrainDesignReference;
 }
 
 export class DomainError extends Error {

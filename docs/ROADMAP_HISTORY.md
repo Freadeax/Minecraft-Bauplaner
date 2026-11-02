@@ -1967,3 +1967,38 @@ Download-Seite #/mod: zuerst Client-Mod (für mein Spiel, vorausgewählt, Modrin
 - `tests/e2e/model3d.e2e.mjs`
 - `tests/model3d.test.mjs`
 
+## 2026-11-02T09:32:44.995Z · progress
+
+**Aufgaben:** TERRAIN-02
+
+Landschaft gestalten: Gelände formen, bemalen, Wasser, Wege, Bauplätze einebnen; geplantes Gelände in Weltkarte und Anlagen, Geländebauteil im Projekt; auf ARCH-02/MODEL-01 rebased
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| TERRAIN-02 | 🧩 Implementiert · Abnahme offen | 4/6 | Abnahme mit eigener Welt (S05); danach Streu-Ebene mit EDIT-04 (S06). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/icons.tsx`
+- `apps/web/src/views/library/AnlagenPage.tsx`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/project/LandscapeTab.tsx`
+- `apps/web/src/views/project/landscape/DesignCanvas.tsx`
+- `apps/web/src/views/project/landscape/landscape.css`
+- `apps/web/src/views/project/tabs.ts`
+- `apps/web/src/views/world/designs.ts`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/LANDSCAPE.md`
+- `docs/architecture/TERRAIN.md`
+- `packages/domain/src/backup.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/integrity.ts`
+- `packages/domain/src/planGraph.ts`
+- `packages/domain/src/project.ts`
+- `packages/domain/src/terrainDesign.ts`
+- `packages/domain/src/types.ts`
+- `tests/e2e/landscape.e2e.mjs`
+- `tests/terrain-design.test.mjs`
+

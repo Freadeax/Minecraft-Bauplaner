@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T09:23:43.965Z",
+  "updatedAt": "2026-11-02T09:32:44.995Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -2975,6 +2975,89 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-02T06:01:12.819Z"
+    },
+    {
+      "id": "TERRAIN-02",
+      "title": "Landschaft gestalten: Gelände formen, bemalen, Wasser und Wege",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread Gelände modellieren und bemalen)",
+      "dependencies": [
+        "TERRAIN-01",
+        "BUILD-05",
+        "MAP-01"
+      ],
+      "scope": [
+        "packages/domain/src/terrainDesign.ts",
+        "apps/web/src/views/world/designs.ts",
+        "apps/web/src/views/project/LandscapeTab.tsx",
+        "apps/web/src/views/project/landscape/",
+        "tests/terrain-design.test.mjs",
+        "tests/e2e/landscape.e2e.mjs",
+        "docs/architecture/LANDSCAPE.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "TERRAIN-02-S01",
+          "title": "Geländegestaltung als Original (BPTDES01) mit terrainDesign.set, Sicherung samt Grund-Aufnahme und Datencheck.",
+          "done": true
+        },
+        {
+          "id": "TERRAIN-02-S02",
+          "title": "Höhenpinsel (Anheben, Absenken, Glätten, Einebnen, Aufrauen, Terrassen, Hänge abflachen), Bemalen mit Biom-Stilen und Filtern, automatisches Bemalen.",
+          "done": true
+        },
+        {
+          "id": "TERRAIN-02-S03",
+          "title": "Wasser füllen/entfernen, Wege mit Steigungsgrenze und Damm, Bauplätze einebnen.",
+          "done": true
+        },
+        {
+          "id": "TERRAIN-02-S04",
+          "title": "Übergabe: geplantes Gelände in Weltkarte und Anlagen, Gelände als Bauteil im Projekt ohne Konflikt mit Bauten.",
+          "done": true
+        },
+        {
+          "id": "TERRAIN-02-S05",
+          "title": "Abnahme in Philipps eigener 26.3-Welt und auf Touch-Geräten.",
+          "done": false
+        },
+        {
+          "id": "TERRAIN-02-S06",
+          "title": "Streu-Ebene: Natur-Bauteile aus der Werkstatt (EDIT-04) nach Oberflächenstil verteilen; Wegstufen als Treppen/Stufen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Unbekannte Spalten werden nie verändert; Werkzeuge sind deterministisch; in der Welt ändert sich nichts ohne Bau; Geländebauteil gerät nicht in Konflikt mit geplanten Bauten; Weltkarte und Anlagen zeigen dasselbe geplante Gelände."
+      ],
+      "next": "Abnahme mit eigener Welt (S05); danach Streu-Ebene mit EDIT-04 (S06).",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/terrain-design.test.mjs",
+          "note": "10 Fälle: Pinsel mit Handwerten, Stile/Filter, Wasser, Wege, Automatik, Einebnen, Blöcke, geplantes Gelände, Datei, Operation, Sicherung, Datencheck."
+        },
+        {
+          "path": "tests/e2e/landscape.e2e.mjs",
+          "note": "Chromium 1400/390 px: formen, bemalen, Wasser, Weg, speichern, Weltkarte, Anlagen, Bauteil im Projekt."
+        },
+        {
+          "path": "docs/architecture/LANDSCAPE.md",
+          "note": "Datenmodell, Werkzeuge, Übergabe, Grenzen."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Kern- und Chromiumtests bestanden; Abnahme mit eigener Welt und echten Geräten offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-02T09:32:44.995Z"
     },
     {
       "id": "BUILD-06",
@@ -7212,6 +7295,47 @@
           "done": 4,
           "total": 6,
           "next": "Dateien in Blender und Slicern prüfen und ein Testdruck; danach Worker und Flächenzusammenfassung (S06)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T09:32:44.995Z",
+      "kind": "progress",
+      "items": [
+        "TERRAIN-02"
+      ],
+      "summary": "Landschaft gestalten: Gelände formen, bemalen, Wasser, Wege, Bauplätze einebnen; geplantes Gelände in Weltkarte und Anlagen, Geländebauteil im Projekt; auf ARCH-02/MODEL-01 rebased",
+      "files": [
+        "apps/web/src/app/icons.tsx",
+        "apps/web/src/views/library/AnlagenPage.tsx",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "apps/web/src/views/project/LandscapeTab.tsx",
+        "apps/web/src/views/project/landscape/DesignCanvas.tsx",
+        "apps/web/src/views/project/landscape/landscape.css",
+        "apps/web/src/views/project/tabs.ts",
+        "apps/web/src/views/world/designs.ts",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/LANDSCAPE.md",
+        "docs/architecture/TERRAIN.md",
+        "packages/domain/src/backup.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/integrity.ts",
+        "packages/domain/src/planGraph.ts",
+        "packages/domain/src/project.ts",
+        "packages/domain/src/terrainDesign.ts",
+        "packages/domain/src/types.ts",
+        "tests/e2e/landscape.e2e.mjs",
+        "tests/terrain-design.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "TERRAIN-02",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Abnahme mit eigener Welt (S05); danach Streu-Ebene mit EDIT-04 (S06)."
         }
       ]
     }

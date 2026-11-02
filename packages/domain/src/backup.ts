@@ -10,9 +10,11 @@ import { checkUpdates } from './updateState.js';
 import { projectVersionIds } from './planGraph.js';
 import { checkTerrainReference } from './terrainSurvey.js';
 import { packVersionForFile, unpackVersionFromFile } from './versionStorage.js';
+import { checkTerrainDesignReference } from './terrainDesign.js';
 
-/** Original files a project refers to: game recordings and the terrain survey (TERRAIN-01). */
-const projectOriginals = (p: Pick<Project, 'scanHistory' | 'terrain'>): string[] => [...(p.scanHistory ?? []).map(s => s.sha256), ...(p.terrain ? [p.terrain.sha256] : [])];
+/** Original files a project refers to: game recordings, the terrain survey (TERRAIN-01), the terrain design and the survey it was made on (TERRAIN-02). */
+const projectOriginals = (p: Pick<Project, 'scanHistory' | 'terrain' | 'terrainDesign'>): string[] => [...new Set([...(p.scanHistory ?? []).map(s => s.sha256), ...(p.terrain ? [p.terrain.sha256] : []),
+  ...(p.terrainDesign ? [p.terrainDesign.sha256, ...(p.terrainDesign.base.kind === 'survey' ? [p.terrainDesign.base.sha256] : [])] : [])])];
 import { checkCollectionRecord, checkTemplateRecord, pinnedVersionIds, sameLibraryRecord, templateVersionIds } from './collections.js';
 import type { Collection, LibraryTemplate } from './collections.js';
 
@@ -251,6 +253,10 @@ export function checkProjectRecord(raw: unknown): Project {
   }
   if (raw.terrain !== undefined) {
     try { checkTerrainReference(raw.terrain); }
+    catch (e) { throw new DomainError('BACKUP', `${where}: ${e instanceof Error ? e.message : String(e)}`); }
+  }
+  if (raw.terrainDesign !== undefined) {
+    try { checkTerrainDesignReference(raw.terrainDesign); }
     catch (e) { throw new DomainError('BACKUP', `${where}: ${e instanceof Error ? e.message : String(e)}`); }
   }
   if (raw.scanHistory !== undefined) {

@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-02T09:23:43.965Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-02T09:32:44.995Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-02T09:23:43.965Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 16 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 28 |
+| 🧩 Implementiert · Abnahme offen | 29 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -132,6 +132,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [WORLD-02](#world-02) | Weitere kuratierte Bauwelten | ✅ Im beschriebenen Umfang geprüft | 2/2 | LIB-01, UI-01 | `c3e6478` | `c3e6478` |
 | [BUILD-05](#build-05) | Bauwelt-Anlagen mit Konfliktvorschau | ✅ Im beschriebenen Umfang geprüft | 3/3 | LIB-03, CORE-03 | ausstehend | ausstehend |
 | [TERRAIN-01](#terrain-01) | Geländeaufnahmen für Weltkarte und Anlagen | 🧩 Implementiert · Abnahme offen | 4/5 | WORLD-IMPORT-01, BUILD-05, MAP-01 | ausstehend | ausstehend |
+| [TERRAIN-02](#terrain-02) | Landschaft gestalten: Gelände formen, bemalen, Wasser und Wege | 🧩 Implementiert · Abnahme offen | 4/6 | TERRAIN-01, BUILD-05, MAP-01 | ausstehend | ausstehend |
 | [BUILD-06](#build-06) | Bauführung im Spiel: Schichtführung, Tagesziele, Packlisten, Druck-/Handyansicht, Spielfortschritt | 🧩 Implementiert · Abnahme offen | 5/5 | BUILD-01, GAME-01, MAP-01 | ausstehend | ausstehend |
 | [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | 🧩 Implementiert · Abnahme offen | 5/5 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
 | [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen | 4/4 | CORE-03, STORE-02 | `84838f0` | `e232b26` |
@@ -1121,6 +1122,29 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/terrain-survey.test.mjs](../tests/terrain-survey.test.mjs) — 9 Fälle: echte Regionsdatei mit Hang/Teich/Baum/Gras gegen Handwerte und dichte Probe, Dateiformat, terrain.set mit Rückgängig/Sicherung/Datencheck, Erdarbeiten, 3D-Zellen, Eingangsregel, Katalogtüren, Terrassen/Ebene, Platzsuche.; [tests/e2e/terrain.e2e.mjs](../tests/e2e/terrain.e2e.mjs) — Chromium 1400/390 px: Bauplatz aus Regionsdatei, Weltkarte mit Gelände, Anlage auf dem Hang, Einfügen, Schätzung, Reiter Gelände.; [docs/architecture/TERRAIN.md](architecture/TERRAIN.md) — Datenmodell, Weltkarte, Anlagen auf Gelände, Türregel, Grenzen.
 
 **Dateiumfang:** `packages/domain/src/terrainSurvey.ts`, `packages/domain/src/anlagenTerrain.ts`, `packages/domain/src/entrance.ts`, `packages/formats/src/worldExcerpt.ts`, `apps/web/src/views/world/surveys.ts`, `apps/web/src/views/project/TerrainSurveyPanel.tsx`, `apps/web/src/views/map/terrainLayer.ts`, `scripts/make_terrain_fixture.py`, `tests/terrain-survey.test.mjs`, `tests/e2e/terrain.e2e.mjs`, `docs/architecture/TERRAIN.md`. **Abhängigkeiten:** WORLD-IMPORT-01, BUILD-05, MAP-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### TERRAIN-02
+
+**Landschaft gestalten: Gelände formen, bemalen, Wasser und Wege** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread Gelände modellieren und bemalen) · Aktualisiert: 2026-11-02T09:32:44.995Z
+
+- [x] TERRAIN-02-S01: Geländegestaltung als Original (BPTDES01) mit terrainDesign.set, Sicherung samt Grund-Aufnahme und Datencheck.
+- [x] TERRAIN-02-S02: Höhenpinsel (Anheben, Absenken, Glätten, Einebnen, Aufrauen, Terrassen, Hänge abflachen), Bemalen mit Biom-Stilen und Filtern, automatisches Bemalen.
+- [x] TERRAIN-02-S03: Wasser füllen/entfernen, Wege mit Steigungsgrenze und Damm, Bauplätze einebnen.
+- [x] TERRAIN-02-S04: Übergabe: geplantes Gelände in Weltkarte und Anlagen, Gelände als Bauteil im Projekt ohne Konflikt mit Bauten.
+- [ ] TERRAIN-02-S05: Abnahme in Philipps eigener 26.3-Welt und auf Touch-Geräten.
+- [ ] TERRAIN-02-S06: Streu-Ebene: Natur-Bauteile aus der Werkstatt (EDIT-04) nach Oberflächenstil verteilen; Wegstufen als Treppen/Stufen.
+
+**Abnahme:** Unbekannte Spalten werden nie verändert; Werkzeuge sind deterministisch; in der Welt ändert sich nichts ohne Bau; Geländebauteil gerät nicht in Konflikt mit geplanten Bauten; Weltkarte und Anlagen zeigen dasselbe geplante Gelände.
+
+**Nächste Aktion:** Abnahme mit eigener Welt (S05); danach Streu-Ebene mit EDIT-04 (S06).
+
+**Prüfstand:** Kern- und Chromiumtests bestanden; Abnahme mit eigener Welt und echten Geräten offen.
+
+**Nachweise:** [tests/terrain-design.test.mjs](../tests/terrain-design.test.mjs) — 10 Fälle: Pinsel mit Handwerten, Stile/Filter, Wasser, Wege, Automatik, Einebnen, Blöcke, geplantes Gelände, Datei, Operation, Sicherung, Datencheck.; [tests/e2e/landscape.e2e.mjs](../tests/e2e/landscape.e2e.mjs) — Chromium 1400/390 px: formen, bemalen, Wasser, Weg, speichern, Weltkarte, Anlagen, Bauteil im Projekt.; [docs/architecture/LANDSCAPE.md](architecture/LANDSCAPE.md) — Datenmodell, Werkzeuge, Übergabe, Grenzen.
+
+**Dateiumfang:** `packages/domain/src/terrainDesign.ts`, `apps/web/src/views/world/designs.ts`, `apps/web/src/views/project/LandscapeTab.tsx`, `apps/web/src/views/project/landscape/`, `tests/terrain-design.test.mjs`, `tests/e2e/landscape.e2e.mjs`, `docs/architecture/LANDSCAPE.md`. **Abhängigkeiten:** TERRAIN-01, BUILD-05, MAP-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

@@ -25,7 +25,7 @@ export type PlanNodeKind = 'project' | 'asset' | 'version' | 'original' | 'colle
 export interface PlanNodeRef { readonly kind: PlanNodeKind; readonly id: string }
 
 export type PlanRole =
-  | 'instance' | 'revision' | 'update-log' | 'pin' | 'section-snapshot' | 'scan' | 'terrain'
+  | 'instance' | 'revision' | 'update-log' | 'pin' | 'section-snapshot' | 'scan' | 'terrain' | 'terrain-design'
   | 'version-list' | 'version-asset' | 'original-file' | 'edited-from' | 'local-to'
   | 'collection-asset' | 'collection-version' | 'collection-template' | 'collection-parent'
   | 'template-member';
@@ -41,7 +41,7 @@ export interface PlanEdge {
 
 export const PLAN_ROLE_LABEL: Readonly<Record<PlanRole, string>> = {
   instance: 'platzierte Instanz', revision: 'eingefrorene Revision', 'update-log': 'Updateverlauf', pin: 'eingefrorene Version',
-  'section-snapshot': 'Abschnittsstand', scan: 'Spielaufnahme', terrain: 'Geländeaufnahme',
+  'section-snapshot': 'Abschnittsstand', scan: 'Spielaufnahme', terrain: 'Geländeaufnahme', 'terrain-design': 'Geländegestaltung',
   'version-list': 'Versionsliste', 'version-asset': 'gehört zu Bauteil', 'original-file': 'Originaldatei', 'edited-from': 'bearbeitet aus', 'local-to': 'lokale Änderung in Projekt',
   'collection-asset': 'Sammlungseintrag', 'collection-version': 'Sammlung mit fester Version', 'collection-template': 'Vorlage in Sammlung', 'collection-parent': 'übergeordneter Ordner',
   'template-member': 'Vorlagenmitglied',
@@ -68,6 +68,12 @@ export function projectEdges(project: Project): PlanEdge[] {
   for (const s of project.site?.snapshots ?? []) for (const i of s.instances) out.push(edge(from, 'version', i.assetVersionId, 'section-snapshot', false, `${s.section.name} · Stand ${s.number}`));
   for (const s of project.scanHistory ?? []) out.push(edge(from, 'original', s.sha256, 'scan', false, s.fileName));
   if (project.terrain) out.push(edge(from, 'original', project.terrain.sha256, 'terrain', false, project.terrain.fileName));
+  // Geländegestaltung (TERRAIN-02) and the survey it was made on.
+  const design = project.terrainDesign;
+  if (design) {
+    out.push(edge(from, 'original', design.sha256, 'terrain-design', false, design.fileName));
+    if (design.base.kind === 'survey' && design.base.sha256 !== project.terrain?.sha256) out.push(edge(from, 'original', design.base.sha256, 'terrain', false, 'Grundlage der Geländegestaltung'));
+  }
   return out;
 }
 

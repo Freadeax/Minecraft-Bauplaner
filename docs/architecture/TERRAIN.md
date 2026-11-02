@@ -58,3 +58,5 @@ In Anlagen mit Hauptweg dreht `planAnlage` jedes Einzelgebäude so, dass der Ein
 - Der Hauptweg bleibt gerade und auf einer Höhe; Weg mit Stufen, Kurven und Abzweigungen ist nicht umgesetzt. Unterbau und Stützmauern werden als Menge genannt, nicht als Blöcke geplant.
 - Die Aufnahme ist ein Stand: Änderungen in der Welt danach kennt sie erst nach „Geländeaufnahme erneuern“.
 - Abnahme mit Philipps eigener 26.3-Welt und auf echten Geräten offen.
+
+Geplantes Gelände (formen, bemalen, Wasser, Wege, Bauplätze einebnen) beschreibt [LANDSCAPE](LANDSCAPE.md) (TERRAIN-02).

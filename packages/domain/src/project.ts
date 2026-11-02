@@ -9,6 +9,8 @@ import { checkWorldPlacement } from './worldmap.js';
 import { checkUpdates } from './updateState.js';
 import type { UpdateState } from './updateState.js';
 import { checkTerrainReference } from './terrainSurvey.js';
+import { checkTerrainDesignReference } from './terrainDesign.js';
+import type { ProjectTerrainDesignReference } from './terrainDesign.js';
 import type { ProjectTerrainReference } from './terrainSurvey.js';
 import type { WorldPlacement } from './worldmap.js';
 import { DomainError } from './types.js';
@@ -50,6 +52,7 @@ export type Operation =
   | { readonly kind: 'world.set'; readonly world: WorldPlacement | null; readonly label?: string }
   | { readonly kind: 'updates.set'; readonly updates: UpdateState | null; readonly label?: string }
   | { readonly kind: 'terrain.set'; readonly terrain: ProjectTerrainReference | null; readonly label?: string }
+  | { readonly kind: 'terrainDesign.set'; readonly design: ProjectTerrainDesignReference | null; readonly label?: string }
   | { readonly kind: 'batch'; readonly label: string; readonly operations: readonly Operation[] };
 
 function find(project: Project, id: string): number {
@@ -137,6 +140,11 @@ function apply(project: Project, op: Operation): { project: Project; inverse: Op
       if (op.terrain) next.terrain = structuredClone(checkTerrainReference(op.terrain)); else delete next.terrain;
       return { project: next, inverse: { kind: 'terrain.set', terrain: previous, ...(op.label !== undefined && { label: op.label }) } };
     }
+    case 'terrainDesign.set': {
+      const previous = project.terrainDesign ?? null, next = { ...project };
+      if (op.design) next.terrainDesign = structuredClone(checkTerrainDesignReference(op.design)); else delete next.terrainDesign;
+      return { project: next, inverse: { kind: 'terrainDesign.set', design: previous, ...(op.label !== undefined && { label: op.label }) } };
+    }
     case 'batch': {
       let current = project; const inverses: Operation[] = [];
       for (const child of op.operations) { const r = apply(current, child); current = r.project; inverses.unshift(r.inverse); }
@@ -165,6 +173,7 @@ export function describeOperation(op: Operation): string {
     case 'world.set': return op.label ?? (op.world ? 'Weltlage geändert' : 'Von der Weltkarte genommen');
     case 'updates.set': return op.label ?? 'Versionsstand geändert';
     case 'terrain.set': return op.label ?? (op.terrain ? 'Geländeaufnahme gespeichert' : 'Geländeaufnahme entfernt');
+    case 'terrainDesign.set': return op.label ?? (op.design ? 'Geländegestaltung gespeichert' : 'Geländegestaltung entfernt');
     case 'batch': return op.label;
   }
 }

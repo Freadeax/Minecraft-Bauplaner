@@ -70,6 +70,11 @@ export type { BuildAnchor, CellLookup, RunKind, StepRun, PackLine, PackSlot, Pac
 export { SURVEY_SCHEMA_VERSION, SURVEY_UNKNOWN, SURVEY_MAX_SIDE, SURVEY_MAX_COLUMNS, SURVEY_MEDIA_TYPE, EARTHWORK_NOTE, checkSurveyArea, checkTerrainReference, createSurvey, encodeSurvey, decodeSurvey,
   surveyStats, surveyFile, columnAt, surveyCovers, estimateEarthwork, columnBases, surveyDisplayCells } from './terrainSurvey.js';
 export type { SurveyArea, TerrainSurvey, ProjectTerrainReference, SurveyColumnsInput, SurveyColumn, ColumnBase, EarthworkEstimate, SurveyDisplay } from './terrainSurvey.js';
+export { DESIGN_SCHEMA_VERSION, DESIGN_MEDIA_TYPE, NO_WATER, SURFACE_STYLES, BRUSH_LABEL, DEFAULT_AUTO_PAINT, DESIGN_MAX_CELLS, DESIGN_NOTE, styleById, fillerFor, columnHash, valueNoise,
+  checkTerrainDesignReference, heightLimits, flatSurvey, designFromSurvey, cloneDesign, encodeDesign, decodeDesign, designFile, designMatchesBase, brushWeight, slopeAt, paintColumn,
+  applyBrush, strokePoints, floodWater, pathLine, layPath, autoPaint, gradeFootprints, resetToBase, compareDesign, designPayload, designedSurvey } from './terrainDesign.js';
+export type { DesignBase, TerrainDesign, ProjectTerrainDesignReference, SurfaceStyle, BrushTool, Falloff, Brush, PaintFilter, FloodResult, PathOptions, PathReport, AutoPaintRules,
+  GradeResult, DesignStats, DesignBlocks } from './terrainDesign.js';
 export { isGroundId, isTreePartId, SURFACE_SKIP_IDS } from './terrain.js';
 export { entranceOf, turnedSide, turnsToFace, facesSide, SIDE_LABEL } from './entrance.js';
 export type { Entrance, Side } from './entrance.js';
