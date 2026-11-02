@@ -57,7 +57,7 @@ Jeder Tick prüft 8 000 Planblöcke reihum (`LiveCheck.sweep`, ca. 160 000/s), n
 ## Ebenen und Materialliste (0.3.0)
 
 - Ebenenmodus: „nur eine Ebene“ beginnt an der untersten Ebene mit offener Arbeit; ein türkiser Rahmen markiert sie. Zeichnen, Fehlerfinder, HUD-Zeile „Ebene …: x / y richtig, n offen“ und Materialliste gelten nur für die gewählten Höhen. Verschieben in y nimmt die Ebene mit.
-- Materialliste: offen = fehlend oder falscher Block (Zustand falsch braucht kein neues Material). Inventar zählt nur die eigenen Slots, keine Shulkerkisten.
+- Materialliste: offen = fehlend oder falscher Block (Zustand falsch braucht kein neues Material). Inventar zählt die eigenen Slots und seit 0.7.0 den Inhalt von Shulkerkisten und Bündeln.
 
 ## Platzierhilfe (0.4.0)
 
