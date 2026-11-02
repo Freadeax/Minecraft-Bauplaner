@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "e71b404818da3b4ebbefde109a08af7617e4d1e5",
-  "builtAt": "2026-11-02T13:54:48.296Z",
+  "sourceCommit": "fb7c73aa64716422f19f6af1a33e52200ae694e6",
+  "builtAt": "2026-11-02T15:52:18.843Z",
   "node": "v22.23.4",
   "files": [
     {
@@ -30,24 +30,24 @@
       "sha256": "8104dbf7cb9de5c84ee3107b625ec7dc205e8c656b28ac9323bf2eede4b996b5"
     },
     {
-      "path": "assets/entityScene-D8vWWMTS.js",
+      "path": "assets/entityScene-Bf0UlwDX.js",
       "bytes": 544111,
-      "sha256": "ed87bfc917a83e6b6e7bd368bfcde3eff456083ac5b40858dcf35cd687672a51"
+      "sha256": "00dc44c7abbfcc8b9e13baf9badc1d32d80a26ea456cc9090e1935b1f98796e6"
     },
     {
-      "path": "assets/glShot-BW0XGw_I.js",
+      "path": "assets/glShot-gdXjlmoi.js",
       "bytes": 3294,
-      "sha256": "7377bdcef0ebf87d2b46fd6f9d71124a7fbd9685c601e1f09393400f753d84b9"
+      "sha256": "729ed35e5f10c8dff24e275c339e028c98a41ac8bdd34b4e6ca5f1add424f28e"
     },
     {
-      "path": "assets/heavy.worker-CMHl5C9z.js",
+      "path": "assets/heavy.worker-DfXYMplG.js",
       "bytes": 1063,
-      "sha256": "b54de49c3e08d9f2d7a52bb9efe15b1e2967afb5ac8d1be06de7b36304f30f54"
+      "sha256": "4cd7614e6b69cb5f581d244bb305082ddcb388b5c5c10a126fdabedb33c0a692"
     },
     {
-      "path": "assets/idbRepository-S_xYCquu.js",
+      "path": "assets/idbRepository-BBO0nIYH.js",
       "bytes": 8977,
-      "sha256": "504bdb65ecc932939d47b71938b2995557f79dfdacb643cbe55c363c9c823838"
+      "sha256": "3a826fc93873905e37bf80c092f087797e92c860167d8b0289d507f43ff0d10f"
     },
     {
       "path": "assets/importJob-DP9nzgxX.js",
@@ -55,14 +55,14 @@
       "sha256": "4d6ca33d237084fb3d0c37da014dc2362d5293e6a25d07a422e56a0728b29975"
     },
     {
-      "path": "assets/index-BUyhl0U9.js",
-      "bytes": 1136220,
-      "sha256": "d3b26ed0ff914f82317390d8dfe64baa6b7ad511ca8b019055a6ec457e8d62b2"
-    },
-    {
       "path": "assets/index-EArD5yds.css",
       "bytes": 184360,
       "sha256": "3eb12100ab35143cffbd707470730dea715792ab8585c38443799aab55859cba"
+    },
+    {
+      "path": "assets/index-nWPjnYje.js",
+      "bytes": 1136220,
+      "sha256": "4c4b76c0dc3ba121db1f60689266f549f5fc962f3e4e33d365176f917a281435"
     },
     {
       "path": "assets/map.worker-w-UgmHTv.js",
@@ -90,9 +90,9 @@
       "sha256": "8351dd56de9e6e8827e666b03e7966068aa2fbbef6e8334cdef0593cf9114358"
     },
     {
-      "path": "assets/packKit-D9EFS2qk.js",
+      "path": "assets/packKit-si-nWvFm.js",
       "bytes": 8054,
-      "sha256": "8ea63deab476a29b6515093398caea124d516fa7a2b604ee25bb0c3f63c5e54f"
+      "sha256": "c95b594a77ddce04617b5b920c26d5bac6723567378893f366e921dc86912f3e"
     },
     {
       "path": "assets/preload-helper-YpCHtD0s.js",
@@ -105,9 +105,9 @@
       "sha256": "014dd1872dc1c17fa78d6313c95747509abb0ab74435f942fefe41af1f110d48"
     },
     {
-      "path": "assets/repository-BVgQ_RUz.js",
-      "bytes": 936673,
-      "sha256": "7ab1503f8fa575cf68ca49d6c4417bd5907e64802d9d513ba34bf0bfa7aa85cc"
+      "path": "assets/repository-D22mqIg4.js",
+      "bytes": 987019,
+      "sha256": "5d5b68a9bf8f5523306381af406c7857e454915cf5b75381bd2e163ef3063a44"
     },
     {
       "path": "assets/scan.worker-BRAkokHN.js",
@@ -120,14 +120,14 @@
       "sha256": "8396800a04c40b589c23c718fe3f221643e375ac39051515fa8a4a20f9d44be1"
     },
     {
-      "path": "assets/snapshot-BD2ng8wo.js",
-      "bytes": 1034,
-      "sha256": "4dc1faf4082ee6411accdef7f302d3b8e49c32afaa15e15dcb5d42ce7ee1d6c8"
-    },
-    {
       "path": "assets/snapshot-BIVv1xSj.js",
       "bytes": 14170,
       "sha256": "709a7a60ca74182be2d10a93039f20ae4a5df8621d6170f628345cb04b9d5c1c"
+    },
+    {
+      "path": "assets/snapshot-D12oaWJj.js",
+      "bytes": 1034,
+      "sha256": "60d34e23ded97da5dece5180b2f90d9baa38cfea2aa48a62eb15ab45e02743ed"
     },
     {
       "path": "assets/src-C9enBmvu.js",
@@ -135,9 +135,9 @@
       "sha256": "5241ddb1f9a33ba642086bda9f1e9c37bf713660d2fa825ea13794843f80bf41"
     },
     {
-      "path": "assets/src-o7-zwUOV.js",
-      "bytes": 586725,
-      "sha256": "4cca0bd0275411c00546a44951382fceb306df4c946a1c31bbee8c5b85c5e313"
+      "path": "assets/src-DPJThoYC.js",
+      "bytes": 637219,
+      "sha256": "c3e95a673d83bb37bbd36005a0cb509b9b1a6f4155af4f3e56619d6533e19eb6"
     },
     {
       "path": "assets/src-qZEgSggw.js",
@@ -145,24 +145,24 @@
       "sha256": "f116668201cfef0b788faeee4b46c7a06b6d0fc27a8aabdbc8ba0ae8d1a72f83"
     },
     {
-      "path": "assets/ThreeViewer-pgLq9uG5.js",
+      "path": "assets/ThreeViewer-BlHPfx1J.js",
       "bytes": 51593,
-      "sha256": "5f3f7ea3dd9985847e1c7a5533a5e4f8c701d78e44ffaf8f4ab0853947973c40"
+      "sha256": "3c2da5b5f4ff1956a8084939e791242913557e385bbd646ffd5180825452c62e"
     },
     {
-      "path": "assets/updateJob-sj617qx7.js",
+      "path": "assets/updateJob-BIwbx2cU.js",
       "bytes": 1104,
-      "sha256": "461f260c03651d8216fff4bc0b38fba92733577abbb6a9d12f8789be4e2692f7"
+      "sha256": "c733729014358da620bf3a74e8708d85339d1322b2fa522fbd766227fba71e47"
     },
     {
-      "path": "assets/versionJob-Cbhv3Oif.js",
+      "path": "assets/versionJob-C_PshqxT.js",
       "bytes": 697,
-      "sha256": "441fff5e4944f53b7c1c7e2a4c633c04926508030bb3f5a25433a63af23e59fd"
+      "sha256": "1ee979d0b8be5de8c6646bcf8ad07e8d75c389ba2866880d35b4e5813e62a8fc"
     },
     {
-      "path": "assets/world.worker-fCcH92wp.js",
-      "bytes": 837442,
-      "sha256": "48992f7dc56957a79eb3dee28b217060a02079ea142a502cdf2532ec9ce5a7f9"
+      "path": "assets/world.worker-C_XeYn5C.js",
+      "bytes": 887987,
+      "sha256": "90e22872b773b9043a11725617dd70cfd0f07cb16b64a4545de1e7d4888f21b7"
     },
     {
       "path": "examples/contract-multiregion.litematic",
@@ -182,7 +182,7 @@
     {
       "path": "index.html",
       "bytes": 1248,
-      "sha256": "ebf15f90964ec524b0088ce51ff05e964e34166737586f59b53caa9b5ed5443e"
+      "sha256": "50bece232b80c29f432e16f1edc586972c6127f8b49c33f4bf40297a3f628555"
     },
     {
       "path": "THIRD_PARTY_NOTICES.txt",
