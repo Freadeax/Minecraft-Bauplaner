@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "2513a941c5161b0db614c20ded0a3a6328837691",
-  "builtAt": "2026-11-02T08:16:38.022Z",
+  "sourceCommit": "ec923493acdfff22f6630d758a29712cffafc2e0",
+  "builtAt": "2026-11-02T08:40:28.383Z",
   "node": "v22.23.4",
   "files": [
     {
@@ -10,44 +10,44 @@
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
-      "path": "assets/glShot-BYWikCNV.js",
+      "path": "assets/glShot-BfFO_b6J.js",
       "bytes": 2516,
-      "sha256": "d773c709207e1899d0173e030b283d76338e2ccaa09f357cd557c7e98c5e8433"
+      "sha256": "c0ae4a87ce8df3f5797f905b4804fbfeeeb805053b3834996e8c1ecc2c7fba51"
     },
     {
-      "path": "assets/idbRepository-BwAg1ohB.js",
+      "path": "assets/idbRepository-BIVeGTZp.js",
       "bytes": 8163,
-      "sha256": "2b7dc5442f80d0483bcb5319e4e3b3473b3d597b346fca1e0f0e7c0e849b4153"
+      "sha256": "b27e3bef247402c57855363e1b62f7533da9f9bddbd67655e5c623bcea934b8d"
     },
     {
-      "path": "assets/import.worker-CWEkjSE2.js",
-      "bytes": 51024,
-      "sha256": "4ae1c3ecfd09f1dda6acd33e64b78146c1a96057a95ecc952aff9058886d158c"
+      "path": "assets/import.worker-N3ZagBnq.js",
+      "bytes": 76324,
+      "sha256": "5b18a0e72700dca13420a71e28ffe575b2c344bf6eb9b97c5e6768a1c9be44f2"
     },
     {
-      "path": "assets/index-B2bnmAuV.js",
-      "bytes": 1750862,
-      "sha256": "46a4c1125a895f8623ecbf55d03c375f3df4864d169f28370f1721d04ce804de"
+      "path": "assets/index-B7qgcOnS.css",
+      "bytes": 163888,
+      "sha256": "78270847476bb31b428f411e81aae4344717ebc2ae51aa7435676cdd231eba69"
     },
     {
-      "path": "assets/index-D3CUUZPR.css",
-      "bytes": 163324,
-      "sha256": "8399c14fe20589319e3fab0b4c4e70a8644bed7dcb5cc70091e39421db667d15"
+      "path": "assets/index-iDdKcRg4.js",
+      "bytes": 1962020,
+      "sha256": "ac9b8d0bd6b9773c0539d6d199f00c605f7a8970ee15f49e2acbd14041052714"
     },
     {
-      "path": "assets/map.worker-CFtyKlVn.js",
-      "bytes": 45313,
-      "sha256": "52ece9a9dcbcd171253a4f73b318874fd4a5548a2df0d935077c06eb6fa058f5"
+      "path": "assets/map.worker-BWCiLIiU.js",
+      "bytes": 243206,
+      "sha256": "d2443ef8fff92037b652e81f4290081e020b84219aa0dfdde37b1a320836b873"
     },
     {
-      "path": "assets/packKit-CAGnGcO6.js",
+      "path": "assets/packKit-CunkmC_o.js",
       "bytes": 8020,
-      "sha256": "1fb9a230b4d6580ac2eaafaa4428d030221bfef396082b3fd540efd73021feba"
+      "sha256": "66ed29aa79cd3c48f710508ff01783f8c72f542fd2475958c5be971485714403"
     },
     {
-      "path": "assets/project.worker-KTvCgdg9.js",
-      "bytes": 88147,
-      "sha256": "07d38f05e8027206d07324878e803ffbd69bc2687267b67098898c29b0f6dce7"
+      "path": "assets/project.worker-CxNK1lpd.js",
+      "bytes": 286536,
+      "sha256": "40ec330b6091839ccb8bde7ba1a7f3486d5a5ab1fc29de5e94915ac15d86fb76"
     },
     {
       "path": "assets/scan.worker-l9XTgRCW.js",
@@ -55,19 +55,19 @@
       "sha256": "78a1839f29aa8b311f8ec3c591d849a3e5faccdc1f375b716e8a08e66f8124b5"
     },
     {
-      "path": "assets/threeMesh-DvtyjGDL.js",
+      "path": "assets/threeMesh-Bcu1AhM8.js",
       "bytes": 553376,
-      "sha256": "07a5a51402673a85fc5d037d105db36ff8dad9d0807cc12a1741d8937874a21f"
+      "sha256": "376e191751651fc62975b5a37bf75e1bf881f9e9210d9d007c61d66178108d95"
     },
     {
-      "path": "assets/ThreeViewer-DN23Eyvm.js",
+      "path": "assets/ThreeViewer-BE0Mio5O.js",
       "bytes": 49614,
-      "sha256": "8517f36669a22ce43c5dfba82507c160daf22ea9453563ff90629a1d55495087"
+      "sha256": "5dd080397197a72464a869776fcaaea7e0e5bb84566dacc88bf3af5141c0386e"
     },
     {
-      "path": "assets/world.worker-D2Rkgdp7.js",
-      "bytes": 627913,
-      "sha256": "63562c2d8180b6849e2ec46e11ea797d897e8a55b5d89c7725f992d2dfbf6026"
+      "path": "assets/world.worker-BjgDpPBy.js",
+      "bytes": 778990,
+      "sha256": "efbf35144690477310575ebd0b8fb959e5648687af6cddd0bf5f20a22789c701"
     },
     {
       "path": "examples/contract-multiregion.litematic",
@@ -87,7 +87,7 @@
     {
       "path": "index.html",
       "bytes": 661,
-      "sha256": "97de096c101f5ad2f477213820a474e65dbe57adfeb26088f6b6f796d66515d0"
+      "sha256": "581acfc351747be74c06948e21b0d4758a3ff2f166a457ad2cdb3f59a1e1936f"
     },
     {
       "path": "THIRD_PARTY_NOTICES.txt",
