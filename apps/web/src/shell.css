@@ -41,12 +41,13 @@ kbd { font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; padding: 
 .topbar .version { font-size: 11px; }
 /* Kopfzeile schrumpft stufenweise statt die Seite zu verbreitern. */
 .topbar > * { flex-shrink: 0; }
-@media (max-width: 1680px) { .topbar .version { display: none; } .search-trigger { min-width: 0; } }
-@media (max-width: 1460px) { .search-label { display: none; } .topbar .main-nav { margin-left: 12px; } }
-@media (max-width: 1280px) { .topbar .texture-chip span { display: none; } }
-@media (max-width: 1340px) { .brand-text small { display: none; } .main-nav a { padding: 8px 9px; gap: 6px; } .topbar { gap: 10px; } }
-@media (max-width: 1100px) { .brand-text strong, .main-nav a .icon { display: none; } .search-trigger kbd { display: none; } }
-@media (max-width: 900px) { .topbar .main-nav { margin-left: 6px; gap: 0; } .main-nav a { padding: 8px 6px; font-size: 13px; } .topbar { gap: 6px; } }
+/* Sechs Hauptbereiche (MAP-03: „Spiel“): Kopfzeile verdichtet sich stufenweise, nie waagerechtes Scrollen. */
+@media (max-width: 1760px) { .topbar .version { display: none; } .search-trigger { min-width: 0; } }
+@media (max-width: 1600px) { .search-label { display: none; } .topbar .main-nav { margin-left: 12px; } }
+@media (max-width: 1399px) { .topbar .texture-chip span { display: none; } }
+@media (max-width: 1480px) { .brand-text small { display: none; } .main-nav a { padding: 8px 9px; gap: 6px; } .topbar { gap: 10px; } }
+@media (max-width: 1260px) { .brand-text strong, .main-nav a .icon { display: none; } .search-trigger kbd { display: none; } }
+@media (max-width: 1000px) { .topbar .main-nav { margin-left: 6px; gap: 0; } .main-nav a { padding: 8px 6px; font-size: 13px; } .topbar { gap: 6px; } }
 
 /* ---------- Inhalt und Seitenköpfe ---------- */
 .content { min-height: calc(100vh - var(--shell-h) - 80px); }

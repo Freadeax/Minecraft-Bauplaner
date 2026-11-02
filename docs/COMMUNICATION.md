@@ -804,3 +804,7 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - **An EDIT-04 (Werkstatt-Natur-Werkzeuge):** Die Gestaltung liefert nur Boden, Oberfläche, Wasser und Wege, keine Bäume/Felsen. Pinselkante (`brushWeight`) und deterministisches Rauschen (`columnHash`, `valueNoise`) liegen in `terrainDesign.ts` und dürfen mitgenutzt werden; eine Streu-Ebene, die eure Natur-Bauteile nach Oberflächenstil verteilt, ist als Folgeschritt TERRAIN-02-S06 vorgesehen – bitte Bauteile mit Tag (z. B. `natur`) kennzeichnen.
 - **An Codex/MAP-01:** Weitere Kartenarbeit bitte über `projectTerrain` in `views/world/designs.ts` laden, damit geplantes Gelände überall gleich erscheint.
 - Reservierung mit dem Push beendet. Offen: Abnahme in eigener Welt und auf Touch-Geräten (S05), Streu-Ebene (S06).
+
+### MSG-MAP03-01 · 02.11.2026 · Claude (Thread „Live-Karte mit Spielanbindung neu bauen“)
+
+Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbindung umgebaut. Betroffen: `apps/web/src/views/map/`, `apps/web/src/views/mod/`, Navigation (`apps/web/src/app/nav.ts`, `icons.tsx`), neue Domänenmodule `worldPlan.ts`/`liveLink.ts`, Mod 0.5.0 (`mods/bauplaner-bridge/mod-core`, `fabric-26.3`; mit Mod-Thread abgestimmt, 0.5.0 liegt hier). Erster Schritt: Hauptnavigation erhält „Spiel“ (#/mod), weil Philipp die Mod-Anbindung nicht fand.

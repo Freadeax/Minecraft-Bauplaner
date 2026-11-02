@@ -2002,3 +2002,23 @@ Landschaft gestalten: Gelände formen, bemalen, Wasser, Wege, Bauplätze einebne
 - `tests/e2e/landscape.e2e.mjs`
 - `tests/terrain-design.test.mjs`
 
+## 2026-11-02T09:49:37.649Z · progress
+
+**Aufgaben:** MAP-03, GAME-03
+
+Menüpunkt „Spiel“ (#/mod) in der Hauptnavigation, Kopfzeile für sechs Bereiche, MAP-03 angemeldet und GAME-03 übernommen
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MAP-03 | 🚧 In Arbeit | 1/6 | Weltplan und Planungswerkzeuge umsetzen (S02/S03), danach Live-Verbindung (S04, zusammen mit GAME-03). |
+| GAME-03 | 🚧 In Arbeit | 0/2 | LiveLink in mod-core (Loopback, Kopplungscode, Ursprungsprüfung) und Fabric 0.5.0. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/CommandPalette.tsx`
+- `apps/web/src/app/icons.tsx`
+- `apps/web/src/app/nav.ts`
+- `apps/web/src/shell.css`
+- `docs/COMMUNICATION.md`
+- `tests/e2e/shell.e2e.mjs`
+

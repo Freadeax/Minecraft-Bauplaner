@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T09:32:44.995Z",
+  "updatedAt": "2026-11-02T09:49:37.649Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -10,7 +10,8 @@
     "GAME-05",
     "EDIT-03",
     "GFX-01",
-    "MODEL-01"
+    "MODEL-01",
+    "MAP-03"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -3284,6 +3285,75 @@
       "updatedAt": "2026-11-01T13:15:45.514Z"
     },
     {
+      "id": "MAP-03",
+      "title": "Live-Karte mit Spielanbindung: Weltplan auf der Karte, Live-Position/Gelände/Fortschritt aus der Mod, Übergabe an die Mod",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Claude (Thread „Live-Karte mit Spielanbindung neu bauen“)",
+      "dependencies": [
+        "MAP-01"
+      ],
+      "scope": [
+        "apps/web/src/views/map/",
+        "apps/web/src/views/mod/",
+        "apps/web/src/app/",
+        "packages/domain/src/",
+        "mods/bauplaner-bridge/",
+        "tests/",
+        "docs/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "MAP-03-S01",
+          "title": "Ist-Stand prüfen und Schwächen dokumentieren; Mod-Seite sichtbar in der Hauptnavigation („Spiel“).",
+          "done": true
+        },
+        {
+          "id": "MAP-03-S02",
+          "title": "Weltplan (Bauplätze, Wege, Punkte/Anker) mit Rückgängig, Speicher und Sicherung.",
+          "done": false
+        },
+        {
+          "id": "MAP-03-S03",
+          "title": "Planungswerkzeuge auf der Draufsicht: Projekte ziehen, Bauplatz/Weg/Punkt zeichnen, Messen.",
+          "done": false
+        },
+        {
+          "id": "MAP-03-S04",
+          "title": "Live-Verbindung zur Mod (127.0.0.1, Kopplung): Spielerposition, Gelände geladener Chunks, Hologramm-Fortschritt auf der Karte.",
+          "done": false
+        },
+        {
+          "id": "MAP-03-S05",
+          "title": "Übergabe: Plan und Lage an die Mod senden, Weltplan-Markierungen im Spiel, Lage aus dem Spiel übernehmen.",
+          "done": false
+        },
+        {
+          "id": "MAP-03-S06",
+          "title": "Abnahme durch Philipp im echten Spiel (Browserfreigabe lokales Netzwerk, LMNT-Server).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Karte zeigt Spielerposition und Gelände live, wenn die Mod gekoppelt ist; ohne Mod bleibt alles nutzbar.",
+        "Keine Weltänderung, nur Loopback mit Kopplungscode, fremde Ursprünge werden abgewiesen."
+      ],
+      "next": "Weltplan und Planungswerkzeuge umsetzen (S02/S03), danach Live-Verbindung (S04, zusammen mit GAME-03).",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "In Arbeit."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-02T09:49:37.649Z"
+    },
+    {
       "id": "MAP-02",
       "title": "Gespeicherte Kartenziele und konkrete Provideradapter",
       "phase": "P3",
@@ -3595,8 +3665,8 @@
       "title": "Optionale lokale Verbindung und Anzeige im Spiel",
       "phase": "P3",
       "priority": "P1",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "in_progress",
+      "owner": "Claude (Thread „Live-Karte mit Spielanbindung neu bauen“)",
       "dependencies": [
         "GAME-02"
       ],
@@ -3623,7 +3693,7 @@
       "acceptance": [
         "Keine unautorisierte Fernverbindung; Overlay ist kein serverseitiger Blocksetter."
       ],
-      "next": "Loopback-Sicherheitsvertrag mit expliziter Kopplung definieren.",
+      "next": "LiveLink in mod-core (Loopback, Kopplungscode, Ursprungsprüfung) und Fabric 0.5.0.",
       "blockers": [],
       "evidence": [],
       "verification": {
@@ -3634,7 +3704,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-02T09:49:37.649Z"
     },
     {
       "id": "WORLD-IMPORT-01",
@@ -7336,6 +7406,39 @@
           "done": 4,
           "total": 6,
           "next": "Abnahme mit eigener Welt (S05); danach Streu-Ebene mit EDIT-04 (S06)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T09:49:37.649Z",
+      "kind": "progress",
+      "items": [
+        "MAP-03",
+        "GAME-03"
+      ],
+      "summary": "Menüpunkt „Spiel“ (#/mod) in der Hauptnavigation, Kopfzeile für sechs Bereiche, MAP-03 angemeldet und GAME-03 übernommen",
+      "files": [
+        "apps/web/src/app/CommandPalette.tsx",
+        "apps/web/src/app/icons.tsx",
+        "apps/web/src/app/nav.ts",
+        "apps/web/src/shell.css",
+        "docs/COMMUNICATION.md",
+        "tests/e2e/shell.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "MAP-03",
+          "status": "in_progress",
+          "done": 1,
+          "total": 6,
+          "next": "Weltplan und Planungswerkzeuge umsetzen (S02/S03), danach Live-Verbindung (S04, zusammen mit GAME-03)."
+        },
+        {
+          "id": "GAME-03",
+          "status": "in_progress",
+          "done": 0,
+          "total": 2,
+          "next": "LiveLink in mod-core (Loopback, Kopplungscode, Ursprungsprüfung) und Fabric 0.5.0."
         }
       ]
     }
