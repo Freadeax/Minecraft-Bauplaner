@@ -120,7 +120,7 @@ for (const [name,edit,pattern] of [
   ['duplicate cell',p=>p.cells.push(p.cells[0]),/doppelte Zell/],
   ['invalid palette index',p=>p.cells[0].paletteIndex=99,/Ganzzahl/],
   ['missing field',p=>delete p.sourceOrigin,/Koordinaten/],
-  ['unknown field',p=>p.entities=[],/unbekanntes Feld/],
+  ['unknown field',p=>p.mobs=[],/unbekanntes Feld/],
   ['duplicate palette',p=>p.palette.push(p.palette[0]),/doppelter Zustand/],
   ['air as block',p=>p.cells[6].kind='block',/widersprechen/],
   ['block as air',p=>p.cells[0].kind='air',/widersprechen/],

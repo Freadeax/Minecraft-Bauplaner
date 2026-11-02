@@ -1,6 +1,7 @@
 import { validatePayload, AIR_IDS } from '../../voxel/src/validation.js';
 import type { BlockEntity, BlockState, NbtTag, Vec3, VoxelPayload } from '../../voxel/src/types.js';
 import { FormatError } from './nbt.js';
+import { entityExportData } from '../../voxel/src/entities.js';
 import { gzip, writeNbt } from './nbtWrite.js';
 import { litematicBits } from './litematic.js';
 import { SCHEM_EXPORT_LIMITS } from './schemWrite.js';
@@ -159,6 +160,9 @@ export function buildLitematic(world: VoxelPayload, options: LitematicWriteOptio
     tiles.push(r.tag); if (r.converted) converted++; droppedFields += r.dropped;
   }
 
+  // Free entities: flat NBT, Pos and TileX/Y/Z relative to the region Position (= world minimum here).
+  const freeEntities: NbtTag[] = (world.entities ?? []).map(e => ({ type: 'compound', value: entityExportData(e, min) }));
+
   const position: Vec3 = options.anchor === 'project-origin' ? [min[0], min[1], min[2]] : [0, 0, 0];
   const version = litematicVersionFor(options.dataVersion), subVersion = 1;
   const requiredMods = [...new Set(world.palette.map(s => s.id.split(':')[0]!).filter(ns => ns !== 'minecraft'))].sort();
@@ -180,7 +184,7 @@ export function buildLitematic(world: VoxelPayload, options: LitematicWriteOptio
     Position: pos(position), Size: pos([W, H, L]),
     BlockStatePalette: compoundList(states.map(paletteEntry)),
     BlockStates: { type: 'longArray', value: packLongs(values, bits) },
-    TileEntities: compoundList(tiles), Entities: compoundList([]), PendingBlockTicks: compoundList([]), PendingFluidTicks: compoundList([]),
+    TileEntities: compoundList(tiles), Entities: compoundList(freeEntities), PendingBlockTicks: compoundList([]), PendingFluidTicks: compoundList([]),
   };
   const root: Record<string, NbtTag> = {
     MinecraftDataVersion: int(options.dataVersion), Version: int(version), SubVersion: int(subVersion),
@@ -190,7 +194,7 @@ export function buildLitematic(world: VoxelPayload, options: LitematicWriteOptio
   const warnings: string[] = [
     `DataVersion ${options.dataVersion} ist gewählt, nicht gegen eine Minecraft-Registry geprüft. Litematic-Format ${version} (${VERSION_NOTE[version]}; neuere Litematica-Versionen lesen es ebenfalls).`,
     'Ob Luftzellen beim Einfügen vorhandene Blöcke räumen, entscheidet die Litematica-Einstellung „Paste Replace Behavior“.',
-    'Biome und freie Entities werden nicht exportiert.',
+    freeEntities.length ? `Biome werden nicht exportiert. ${freeEntities.length} freie Entities (Gemälde, Rahmen, Rüstungsständer …) stehen in der Region.` : 'Biome werden nicht exportiert; das Modell hat keine freien Entities.',
   ];
   if (erasedAsAir) warnings.push(`${erasedAsAir} Löschzellen sind als minecraft:air geschrieben.`);
   if (unselected && options.unselected === 'air') warnings.push(`${unselected} nicht ausgewählte Zellen der Box sind als Luft geschrieben.`);
@@ -205,7 +209,7 @@ export function buildLitematic(world: VoxelPayload, options: LitematicWriteOptio
       format: 'litematic', litematicVersion: version, subVersion, regionName, bitsPerEntry: bits, droppedBlockEntityFields: droppedFields,
       dimensions: [W, H, L], volume, offset: position, anchor: options.anchor, worldMin: [min[0], min[1], min[2]], dataVersion: options.dataVersion,
       paletteSize: states.length, counts: { blocks, explicitAir, erasedAsAir, unselected }, unselectedState: unselectedState.id,
-      blockEntities: tiles.length, convertedBlockEntities: converted, requiredMods, warnings,
+      blockEntities: tiles.length, freeEntities: freeEntities.length, convertedBlockEntities: converted, requiredMods, warnings,
     },
   };
 }

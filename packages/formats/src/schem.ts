@@ -1,6 +1,7 @@
 import { createPayload, stateKey } from '../../voxel/src/validation.js';
 import type { NbtTag, BlockState, Cell, Vec3, VoxelPayload, BlockEntity } from '../../voxel/src/types.js';
 import { FormatError, readNbt, NBT_LIMITS } from './nbt.js';
+import { readFileEntities } from './entityIo.js';
 export interface SchemLimits {maxCompressedBytes:number;maxUncompressedBytes:number;maxVolume:number;maxDimension:number;maxPalette:number;maxDepth:number;maxNodes:number;maxDurationMs:number}
 export const SCHEM_LIMITS: Readonly<SchemLimits>=Object.freeze({maxCompressedBytes:4_000_000,maxUncompressedBytes:16_000_000,maxVolume:250_000,maxDimension:256,maxPalette:20_000,maxDepth:32,maxNodes:200_000,maxDurationMs:5_000});
 export interface SchemResult {payload:VoxelPayload;dataVersion:number;offset:Vec3;sourceSha256:string;sourceNbt:{name:string;tag:NbtTag};warnings:string[]}
@@ -62,12 +63,15 @@ export function normalizeSchem(sourceNbt:{name:string;tag:NbtTag},options:Partia
   }
   const warnings=['Vorschau in lokalen Koordinaten; Offset und vollständige Quelldaten bleiben separat erhalten.','DataVersion ist aus der Datei gelesen; Registry-/Modpack-Kompatibilität ist nicht geprüft.','Farbige Würfel sind eine vereinfachte Vorschau, keine exakten Minecraft-Blockmodelle.'];
   if(s.Biomes){compound(s.Biomes,'Biomes');warnings.push('Biomdaten sind im Original/NBT erhalten, werden aber nicht dargestellt.');}
-  if(s.Entities){const entities=list(s.Entities,'Entities');if(entities.length)warnings.push(`${entities.length} freie Entities sind im Original/NBT erhalten, werden aber nicht dargestellt.`);}
+  // Sponge v3 entity Pos is relative to the schematic's minimum corner (local 0/0/0).
+  const fileEntities=s.Entities?readFileEntities(list(s.Entities,'Entities'),pos=>[pos[0],pos[1],pos[2]],{min:[0,0,0],maxExclusive:[width,height,length]}):{entities:[],dropped:0};
+  if(fileEntities.entities.length)warnings.push(`${fileEntities.entities.length} freie Entities übernommen; Gemälde, Rahmen und Rüstungsständer werden dargestellt, andere als Platzhalter.`);
+  if(fileEntities.dropped)warnings.push(`${fileEntities.dropped} Entities ohne lesbare Position/id oder außerhalb der Box sind nur im Original erhalten.`);
   if(palette.some(p=>!p.id.startsWith('minecraft:')))warnings.push('Modblöcke gefunden: IDs/Properties bleiben erhalten, Registry unbekannt.');
   const knownRoot=['Schematic'];const knownSchem=['Version','DataVersion','Metadata','Width','Height','Length','Offset','Blocks','Biomes','Entities'];const knownBlocks=['Palette','Data','BlockEntities'];
   if(Object.keys(root).some(k=>!knownRoot.includes(k))||Object.keys(s).some(k=>!knownSchem.includes(k))||Object.keys(blocks).some(k=>!knownBlocks.includes(k)))warnings.push('Zusätzliche Formatfelder sind im Original/NBT erhalten, nicht in der Blockvorschau.');
   if(s.Metadata)compound(s.Metadata,'Metadata');
-  const payload=createPayload({schemaVersion:1,profileId:`java:dataversion-${dataVersion}:registry-unverified`,bounds:{min:[0,0,0],maxExclusive:[width,height,length]},pivot:[0,0,0],sourceOrigin:offset,palette,cells,blockEntities},{maxCells:limits.maxVolume,maxVolume:limits.maxVolume,maxPalette:limits.maxPalette,maxNbtDepth:limits.maxDepth,maxNbtNodes:limits.maxNodes});
+  const payload=createPayload({schemaVersion:1,profileId:`java:dataversion-${dataVersion}:registry-unverified`,bounds:{min:[0,0,0],maxExclusive:[width,height,length]},pivot:[0,0,0],sourceOrigin:offset,palette,cells,blockEntities,...(fileEntities.entities.length&&{entities:fileEntities.entities})},{maxCells:limits.maxVolume,maxVolume:limits.maxVolume,maxPalette:limits.maxPalette,maxNbtDepth:limits.maxDepth,maxNbtNodes:limits.maxNodes});
   return {payload,dataVersion,offset,sourceNbt,warnings};
 }
 export async function importSchemV3(buffer:ArrayBuffer,options:Partial<SchemLimits>={}):Promise<SchemResult>{

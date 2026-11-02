@@ -5,6 +5,8 @@ import type { Mark } from '../blockmodels/mesh';
 import { faceColors, mix, stateColor } from '../colors';
 import { facingArrow, firstBuiltLayer, layerCounts, layerIndex, shapeOf } from './layers';
 import type { LayerIndex } from './layers';
+import { blockEntityContent, entityAnchor, entityLabel, hasContent, sortedEntities } from '../../../../packages/voxel/src/index.js';
+import { containerLabel } from '../../../../packages/domain/src/index.js';
 
 /**
  * Bauplan je Schicht (B12): top view of one Y layer – real block shapes and
@@ -164,6 +166,12 @@ export function LayerSheet({ payload, name, markOf, legendColor }: {
   const w = index.x1 - index.x0 + 1, h = index.z1 - index.z0 + 1;
   const counts = useMemo(() => layerCounts(index, layer, payload.palette), [index, layer, payload]);
   const blocks = counts.reduce((s, c) => s + c.count, 0);
+  // Free entities and filled blocks of this layer (ENTITY-01).
+  const furnish = useMemo(() => [
+    ...sortedEntities(payload.entities ?? []).map(e => ({ label: entityLabel(e), at: entityAnchor(e) })).filter(f => f.at[1] === layer),
+    ...payload.blockEntities.filter(e => e.position[1] === layer).map(e => ({ c: blockEntityContent(e.data), at: e.position })).filter(x => hasContent(x.c))
+      .map(x => ({ label: x.c.sign ? `Schild: ${x.c.sign.front.filter(Boolean).join(' / ') || '…'}` : x.c.patterns ? `Banner (${x.c.patterns.length} Muster)` : `${containerLabel(x.c.id)} (${x.c.items.reduce((n, s) => n + s.count, 0)} Items)`, at: x.at })),
+  ], [payload, layer]);
   const below = (index.byY.get(layer - 1)?.length ?? 0);
   const hovered = useMemo(() => {
     if (!hover) return null;
@@ -208,6 +216,7 @@ export function LayerSheet({ payload, name, markOf, legendColor }: {
         <h4>Diese Ebene</h4>
         {counts.length ? <ul>{counts.map(c => <li key={c.id}><i style={{ background: swatch(c.id) }} aria-hidden="true" /><span>{bare(c.id)}</span><b>{c.count}</b></li>)}</ul>
           : <p className="muted">Keine Blöcke in dieser Ebene.</p>}
+        {furnish.length > 0 && <><h4>Ausstattung</h4><ul className="layer-furnish" data-testid="layer-furnish">{furnish.map((f, i) => <li key={i}><span>{f.label}</span><small>X {f.at[0]} · Z {f.at[2]}</small></li>)}</ul></>}
       </aside>
     </div>
       : <div className="layer-all">

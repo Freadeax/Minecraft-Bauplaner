@@ -6,6 +6,7 @@ import type { Mark } from '../blockmodels/mesh';
 import { BlockObject, blockMaterials } from '../blockmodels/threeMesh';
 import type { BlockMaterials } from '../blockmodels/threeMesh';
 import type { ShotView } from './views';
+import { withEntities } from '../blockmodels/entityScene';
 
 /**
  * Still images with real block shapes and textures (B12 + Blockdarstellung):
@@ -59,12 +60,12 @@ function direction(view: ShotView): THREE.Vector3 {
 }
 
 /** Renders a view into a PNG data URL of the given CSS size; '' when nothing is visible. */
-export function renderGlShot(payload: Pick<VoxelPayload, 'cells' | 'palette'>, width: number, height: number, kit: RenderKit, options: GlShotOptions = {}): string {
+export function renderGlShot(payload: Pick<VoxelPayload, 'cells' | 'palette' | 'entities'>, width: number, height: number, kit: RenderKit, options: GlShotOptions = {}): string {
   return renderGlCanvas(payload, width, height, kit, options)?.toDataURL('image/png') ?? '';
 }
 
 /** Renders a view into a new canvas (device pixels); null when nothing is visible. */
-export function renderGlCanvas(payload: Pick<VoxelPayload, 'cells' | 'palette'>, width: number, height: number, kit: RenderKit, options: GlShotOptions): HTMLCanvasElement | null {
+export function renderGlCanvas(payload: Pick<VoxelPayload, 'cells' | 'palette' | 'entities'>, width: number, height: number, kit: RenderKit, options: GlShotOptions): HTMLCanvasElement | null {
   const view = options.view ?? 'so';
   const cells: Cell[] = [], marks = new Map<Cell, Mark>();
   payload.cells.forEach((c, i) => {
@@ -81,9 +82,11 @@ export function renderGlCanvas(payload: Pick<VoxelPayload, 'cells' | 'palette'>,
   const r = context();
   if (materials?.key !== kit.key) { materials?.dispose(); materials = blockMaterials(kit); }
   const origin: [number, number, number] = [cells[0]!.position[0], cells[0]!.position[1], cells[0]!.position[2]];
-  const mesh = buildBlockMesh(cells, payload.palette, kit.renderer, kit.atlas.lookup, origin, marks.size ? c => marks.get(c) ?? null : undefined);
+  // Free entities (paintings, frames, armor stands) with the same layer rules as the cells.
+  const withEnt = withEntities(cells, payload.palette, payload.entities, a => (options.cutY === undefined || a[1] <= options.cutY) && (options.onlyY === undefined || a[1] === options.onlyY));
+  const mesh = buildBlockMesh(withEnt.cells, withEnt.palette, kit.renderer, kit.atlas.lookup, origin, marks.size ? c => marks.get(c) ?? null : undefined);
   if (!mesh.quads) return null;
-  const object = new BlockObject(mesh, cells, materials);
+  const object = new BlockObject(mesh, withEnt.cells, materials);
   const scene = new THREE.Scene();
   scene.add(object.group);
 

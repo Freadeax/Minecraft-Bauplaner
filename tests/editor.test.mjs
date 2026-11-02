@@ -25,7 +25,7 @@ test('draft: overlay, exact inverse, undo/redo and no-op edits', () => {
   ({ draft: d, history: h } = executeEdit(d, h, setCells([[0, 0, 0], [2, 0, 0]], B('oak_planks'), 'Setzen')));
   assert.equal(cellAt(d, [0, 0, 0]).state.id, 'minecraft:oak_planks');
   assert.equal(cellAt(d, [2, 0, 0]).state.id, 'minecraft:oak_planks');
-  assert.deepEqual(summarizeDraft(d), { added: 1, removed: 0, changed: 1 });
+  assert.deepEqual(summarizeDraft(d), { added: 1, removed: 0, changed: 1, entities: 0 });
   const noop = executeEdit(d, h, setCells([[0, 0, 0]], B('oak_planks'), 'Nochmal'));
   assert.equal(noop.changed, 0); assert.equal(noop.history.undo.length, 1, 'no-op is not recorded');
   ({ draft: d, history: h } = executeEdit(d, h, setCells([[1, 0, 0]], null, 'Abbauen')));

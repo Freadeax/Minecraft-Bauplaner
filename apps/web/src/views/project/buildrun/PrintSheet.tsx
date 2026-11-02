@@ -7,6 +7,7 @@ import { formatNumber } from '../../../app/ui';
 import { stateColor } from '../../../colors';
 import type { PrintTarget } from './common';
 import { shortItem } from './PackList';
+import { FurnishList } from '../FurnishList';
 
 const GRID_MAX = 40;
 
@@ -68,6 +69,7 @@ function StepSheet({ step, runs, anchor }: { step: GuideStep; runs: readonly Ste
           fill={r.state ? stateColor(r.state.id) : r.kind === 'erase' ? '#ffffff' : '#eeeeee'} stroke="#000" strokeWidth={0.05} />)}
       </svg>}
     </div>
+    <FurnishList step={step} print />
     {step.notes.length > 0 && <ul className="ps-notes">{step.notes.map(n => <li key={n}>{n}</li>)}</ul>}
   </section>;
 }

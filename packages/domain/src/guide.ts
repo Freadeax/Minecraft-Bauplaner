@@ -2,6 +2,9 @@ import { stateKey } from '../../voxel/src/validation.js';
 import { blockFacts, stateFacts, step as stepDir, supportNeed, survives } from '../../voxel/src/blocklogic/index.js';
 import type { Dir } from '../../voxel/src/blocklogic/index.js';
 import type { BlockState, Bounds, Vec3 } from '../../voxel/src/types.js';
+import { blockEntityContent, entityAnchor, entityItems, entityLabel, hasContent, sortedEntities } from '../../voxel/src/entities.js';
+import type { ItemStack } from '../../voxel/src/entities.js';
+import { containerLabel } from './materials.js';
 import { positionKey } from './compose.js';
 import type { Resolution } from './compose.js';
 import { canonicalJson, quickHash } from './hash.js';
@@ -22,11 +25,27 @@ import type { Project, StepProgress } from './types.js';
  * (lanterns on chains, hanging signs, vines …) are held only from above, so their step
  * follows the layer above them (BLOCK-01).
  */
-export type StepPhase = 'clear' | 'structure' | 'gravity' | 'attached' | 'hanging' | 'liquid';
-export const PHASE_ORDER: readonly StepPhase[] = ['clear', 'structure', 'gravity', 'attached', 'hanging', 'liquid'];
+export type StepPhase = 'clear' | 'structure' | 'gravity' | 'attached' | 'hanging' | 'liquid' | 'furnish';
+export const PHASE_ORDER: readonly StepPhase[] = ['clear', 'structure', 'gravity', 'attached', 'hanging', 'liquid', 'furnish'];
 export const PHASE_LABEL: Readonly<Record<StepPhase, string>> = {
   clear: 'Freiräumen', structure: 'Grundblöcke', gravity: 'Schwerkraftblöcke', attached: 'Angebrachte Blöcke', hanging: 'Hängende Blöcke', liquid: 'Flüssigkeiten',
+  furnish: 'Ausstattung',
 };
+
+/** One thing to put up or fill in the „Ausstattung“ step (ENTITY-01). */
+export interface FurnishItem {
+  /** 'entity': painting, frame, armor stand …; 'content': fill a container, write a sign, dye a banner. */
+  readonly kind: 'entity' | 'content';
+  readonly label: string;
+  /** Anchor cell (entities) or block position (contents), world coordinates. */
+  readonly position: Vec3;
+  /** Item that places the entity; null for contents and mobs. */
+  readonly placement: string | null;
+  /** Items to put in, on or into it. */
+  readonly items: readonly ItemStack[];
+  /** Sign lines or banner patterns as text. */
+  readonly text?: readonly string[];
+}
 
 export interface StepMaterial {
   readonly state: BlockState;
@@ -67,6 +86,8 @@ export interface GuideStep {
   /** Visible check criterion for the builder. */
   readonly check: string;
   readonly notes: readonly string[];
+  /** Only in „Ausstattung“ steps: entities to put up and contents to fill in. Such steps have no block positions. */
+  readonly furnish?: readonly FurnishItem[];
 }
 
 export interface Guide {
@@ -91,7 +112,7 @@ const ATTACHED_SUFFIX = ['_button', '_pressure_plate', '_carpet', '_sign', '_ban
  * attached here; the guide separates them by their actual support. Mod blocks stay
  * in the structure phase with a visible note.
  */
-export function phaseOf(state: BlockState): Exclude<StepPhase, 'clear' | 'hanging'> {
+export function phaseOf(state: BlockState): Exclude<StepPhase, 'clear' | 'hanging' | 'furnish'> {
   const [ns, name = ''] = state.id.includes(':') ? state.id.split(':', 2) as [string, string] : ['minecraft', state.id];
   if (ns !== 'minecraft') return 'structure';
   if (LIQUID.has(name)) return 'liquid';
@@ -272,8 +293,66 @@ export function buildGuide(project: Pick<Project, 'instances'>, resolution: Reso
       conflicts: d.conflicts, prerequisites, geometryHash: quickHash(`[${JSON.stringify(d.phase)},[${d.hashCells.join(',')}]]`), check, notes,
     });
   }
+  steps.push(...furnishSteps(project, resolution, steps, sectionLayers));
   const totals = steps.reduce((t, s) => ({ blocks: t.blocks + s.blocks, air: t.air + s.air, erase: t.erase + s.erase }), { blocks: 0, air: 0, erase: 0 });
   return { steps, byId: new Map(steps.map(s => [s.id, s])), warnings, totals };
+}
+
+/**
+ * „Ausstattung“ per section, after all its blocks: free entities (paintings, frames, armor stands) and block
+ * entities with content (containers, signs, banners). Prerequisites: the section's topmost solid layer and
+ * every step holding a cell next to an entity. No block positions, so scans and layer views ignore it.
+ */
+function furnishSteps(project: Pick<Project, 'instances'>, resolution: Resolution, built: readonly GuideStep[], sectionLayers: ReadonlyMap<string, ReadonlyMap<number, string[]>>): GuideStep[] {
+  const world = resolution.world!;
+  const stepAt = new Map<string, GuideStep>();
+  for (const st of built) for (const p of st.positions) stepAt.set(positionKey(p), st);
+  const out: GuideStep[] = [];
+  let order = built.length;
+  project.instances.forEach(inst => {
+    const placed = resolution.placed.find(p => p.instance.id === inst.id);
+    if (!placed) return;
+    const furnish: FurnishItem[] = [];
+    const pre = new Set<string>();
+    for (const e of sortedEntities(placed.payload.entities ?? [])) {
+      const r = entityItems(e), a = entityAnchor(e);
+      furnish.push({ kind: 'entity', label: entityLabel(e), position: a, placement: r.placement, items: r.contents });
+      for (const [dx, dy, dz] of [[0, 0, 0], [1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]] as const) {
+        const st = stepAt.get(positionKey([a[0] + dx, a[1] + dy, a[2] + dz]));
+        if (st && st.instanceId === inst.id && st.phase !== 'clear') pre.add(st.id);
+      }
+    }
+    for (const be of world.blockEntities) {
+      if (resolution.owners.get(positionKey(be.position))?.[0] !== inst.id) continue;
+      const c = blockEntityContent(be.data);
+      if (!hasContent(c)) continue;
+      const text = [...(c.sign ? [...c.sign.front, ...c.sign.back].filter(l => l.trim()) : []), ...(c.patterns ?? []).map(p => `${p.color} ${p.pattern}`)];
+      const what = c.sign ? 'Schild beschriften' : c.patterns?.length ? 'Banner gestalten' : `${containerLabel(c.id)} füllen`;
+      furnish.push({ kind: 'content', label: `${what}${c.name ? ` „${c.name}“` : ''}`, position: be.position, placement: null, items: c.items, ...(text.length && { text }) });
+      const st = stepAt.get(positionKey(be.position)); if (st) pre.add(st.id);
+    }
+    if (!furnish.length) return;
+    const layers = sectionLayers.get(inst.id);
+    if (layers?.size) for (const id of layers.get(Math.max(...layers.keys()))!) pre.add(id);
+    const id = `${inst.id}~furnish`;
+    const ys = furnish.map(f => f.position[1]);
+    const min: [number, number, number] = [Infinity, Infinity, Infinity], max: [number, number, number] = [-Infinity, -Infinity, -Infinity];
+    for (const f of furnish) for (let i = 0; i < 3; i++) { min[i] = Math.min(min[i]!, f.position[i]!); max[i] = Math.max(max[i]!, f.position[i]! + 1); }
+    const entities = furnish.filter(f => f.kind === 'entity').length, contents = furnish.length - entities;
+    const notes: string[] = [];
+    if (entities) notes.push('Gemälde und Rahmen hängen an der Wand hinter ihrer Zelle; Rüstungsständer stehen auf dem Block darunter. Erst aufstellen, wenn diese Blöcke stehen.');
+    if (furnish.some(f => f.kind === 'entity' && !f.placement)) notes.push('Lebewesen ohne Bauitem: per Spawnei, Zucht oder Befehl.');
+    if (contents) notes.push('Inhalte (Truhen, Schilder, Banner) überträgt keine Bauhilfe automatisch; von Hand einräumen bzw. beschriften.');
+    out.push({
+      id, order: ++order, instanceId: inst.id, sectionName: inst.name, phase: 'furnish', y: Math.min(...ys), layer: Math.min(...ys) - placed.payload.bounds.min[1],
+      bounds: { min, maxExclusive: max }, positions: [], materials: [], blocks: 0, air: 0, erase: 0, blockEntities: contents, conflicts: 0,
+      prerequisites: [...pre].sort((a, b) => built.find(s => s.id === a)!.order - built.find(s => s.id === b)!.order),
+      geometryHash: quickHash(canonicalJson(['furnish', (placed.payload.entities ?? []).map(e => [e.position, e.data]), furnish.map(f => [f.kind, f.position, f.label, f.items, f.text ?? null])])),
+      check: `${entities ? `${entities} Ausstattungsstücke aufgestellt` : ''}${entities && contents ? ', ' : ''}${contents ? `${contents} Inhalte eingeräumt/beschriftet` : ''} – laut Liste.`,
+      notes, furnish,
+    });
+  });
+  return out;
 }
 
 /** open: not ticked · done: ticked, geometry unchanged · review: ticked, geometry changed since. */

@@ -14,6 +14,8 @@ import { useLayerFilter } from '../../viewer/LayerControl';
 import { BlockInfo } from '../../viewer/BlockInfo';
 import { isResolved } from './session';
 import type { ProjectSession } from './session';
+import { EntityCard } from '../../viewer/ContentInfo';
+import type { FreeEntity } from '../../../../../packages/voxel/src/index.js';
 
 const CONFLICT = '#ff4d4d', DIM_TARGET = '#16303c', GROUP = '#5be3b5';
 
@@ -25,6 +27,7 @@ export function EditorTab({ session }: { session: ProjectSession }) {
   const { project, resolution, selectedInstanceId: selectedId } = session;
   const [message, setMessage] = useState('');
   const [picked, setPicked] = useState<Vec3 | null>(null);
+  const [pickedEntity, setPickedEntity] = useState<FreeEntity | null>(null);
   const run = useCallback((op: Parameters<ProjectSession['execute']>[0]) => { setMessage(session.execute(op)); }, [session]);
   const resolved: Resolution | null = isResolved(resolution) ? resolution : null;
   const world = resolved?.world ?? null;
@@ -187,7 +190,7 @@ export function EditorTab({ session }: { session: ProjectSession }) {
           <button onClick={session.redo} disabled={!session.history.redo.length} title={session.history.redo.at(-1)?.label ?? ''}>↷ <span>Wiederholen</span></button>
         </div>
       </div>
-      {shownWorld && visible ? <Viewer payload={shownWorld} cells={visible.cells} onSelect={onSelect} markFor={markFor} focus={focus} drag={drag} ghost={ghost ?? groupGhost} />
+      {shownWorld && visible ? <Viewer payload={shownWorld} cells={visible.cells} onSelect={onSelect} onSelectEntity={setPickedEntity} markFor={markFor} focus={focus} drag={drag} ghost={ghost ?? groupGhost} />
         : <div className="scene empty-scene"><p>{isResolved(resolution) ? 'Leeres Projekt – füge links ein Bauteil ein.' : resolution.error}</p></div>}
       {dragMode && <div className="drag-hint" role="status">{dragInfo || (selected ? `„${selected.name}“ im Bild greifen und ziehen; daneben ziehen dreht die Ansicht. Esc bricht ab.` : 'Erst eine Instanz wählen, dann im Bild ziehen.')}</div>}
       <div className="viewport-footer"><span>Ziehen: drehen · Scrollen: zoomen · Klick: Block und Instanz wählen · F: Fokus · V: Flug · Strg+Z / Strg+Y</span>
@@ -195,6 +198,7 @@ export function EditorTab({ session }: { session: ProjectSession }) {
       </div>
     </div>
     <aside className="inspector" aria-label="Eigenschaften">
+      {pickedEntity && <EntityCard entity={pickedEntity} />}
       {resolved && picked && <BlockInfo resolution={resolved} position={picked} onSelectInstance={id => session.select(id)} />}
       <GroupPanel session={session} resolution={resolved} group={group} reservations={groupReservations} />
       <span className="panel-kicker">EIGENSCHAFTEN</span>

@@ -1,5 +1,6 @@
 import { adoptPayload, stateKey, AIR_IDS } from '../../voxel/src/validation.js';
-import type { BlockEntity, BlockState, Cell, NbtTag, Vec3, VoxelPayload } from '../../voxel/src/types.js';
+import type { BlockEntity, BlockState, Cell, FreeEntity, NbtTag, Vec3, VoxelPayload } from '../../voxel/src/types.js';
+import { readFileEntities } from './entityIo.js';
 import { FormatError, NBT_LIMITS, readNbt } from './nbt.js';
 import { gunzipLimited } from './schem.js';
 
@@ -308,11 +309,19 @@ export function normalizeLitematic(sourceNbt: { name: string; tag: NbtTag }, opt
   if (only === undefined && metadata.totalBlocks !== undefined && metadata.totalBlocks !== counted) warnings.push(`Metadata nennt ${metadata.totalBlocks} Blöcke, gelesen wurden ${counted}; die Datei wurde vermutlich außerhalb von Litematica verändert.`);
   if (metadata.software) warnings.push(`Erstellt mit ${metadata.software}, nicht von Litematica selbst gespeichert.`);
   if (counted <= 1 && parsed.every(p => p.info.volume <= 1)) warnings.push('Die Datei enthält nur einen einzelnen Block; vermutlich ist die Umwandlung an der Quelle fehlgeschlagen.');
-  const entities = used.reduce((n, p) => n + p.info.entities, 0);
-  if (entities) {
-    const kinds = typeCounts(used.flatMap(p => list(compound(regionsTag[p.info.name], 'Region').Entities, 'Entities'))).map(([id, n]) => `${n}× ${id.replace(/^minecraft:/, '')}`).join(', ');
-    warnings.push(`${entities} freie Entities (${kinds}) sind im Original/NBT erhalten, werden aber nicht dargestellt.`);
+  // Free entities: `Pos` is relative to the region's Position (not its minimum corner), see LITEMATIC.md.
+  const entities: FreeEntity[] = [];
+  let droppedEntities = 0;
+  for (const p of used) {
+    const tags = list(compound(regionsTag[p.info.name], 'Region').Entities, 'Entities');
+    const r = readFileEntities(tags, pos => [p.info.position[0] + pos[0] - lo[0], p.info.position[1] + pos[1] - lo[1], p.info.position[2] + pos[2] - lo[2]], { min: [0, 0, 0], maxExclusive: box });
+    entities.push(...r.entities); droppedEntities += r.dropped;
   }
+  if (entities.length) {
+    const kinds = typeCounts(entities.map(e => e.data)).map(([id, n]) => `${n}× ${id.replace(/^minecraft:/, '')}`).join(', ');
+    warnings.push(`${entities.length} freie Entities übernommen (${kinds}); Gemälde, Rahmen und Rüstungsständer werden dargestellt, andere als Platzhalter.`);
+  }
+  if (droppedEntities) warnings.push(`${droppedEntities} Entities ohne lesbare Position/id oder weit außerhalb der Box sind nur im Original erhalten.`);
   const ticks = used.reduce((n, p) => n + p.info.pendingTicks, 0);
   if (ticks) warnings.push(`${ticks} geplante Block-/Flüssigkeitsticks sind im Original erhalten, werden aber nicht übernommen.`);
   if (palette.some(s => !s.id.startsWith('minecraft:'))) warnings.push('Modblöcke gefunden: IDs/Properties bleiben erhalten, Registry unbekannt.');
@@ -320,7 +329,7 @@ export function normalizeLitematic(sourceNbt: { name: string; tag: NbtTag }, opt
   const payload = adoptPayload({
     schemaVersion: 1, profileId: `java:dataversion-${dataVersion}:registry-unverified`,
     bounds: { min: [0, 0, 0], maxExclusive: box }, pivot: [0, 0, 0], sourceOrigin: lo,
-    palette, cells, blockEntities,
+    palette, cells, blockEntities, ...(entities.length && { entities }),
   }, { maxCells: limits.maxCells, maxVolume: limits.maxDimension ** 3, maxPalette: limits.maxPalette, maxNbtDepth: limits.maxDepth, maxNbtNodes: limits.maxNodes });
   return { format: 'litematic', payload, dataVersion, version, subVersion, offset: lo, regions, selectedRegion, metadata, sourceNbt, warnings };
 }

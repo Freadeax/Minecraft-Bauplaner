@@ -1,5 +1,6 @@
 import { validatePayload } from '../../voxel/src/validation.js';
 import type { BlockEntity, BlockState, NbtTag, Vec3, VoxelPayload } from '../../voxel/src/types.js';
+import { entityExportData } from '../../voxel/src/entities.js';
 import { FormatError } from './nbt.js';
 import { gzip, writeNbt } from './nbtWrite.js';
 
@@ -52,6 +53,8 @@ export interface SchemExportReport {
   };
   readonly unselectedState: string;
   readonly blockEntities: number;
+  /** Free entities written (paintings, frames, armor stands …). */
+  readonly freeEntities: number;
   /** Raw tile NBT (id/x/y/z) converted into the Sponge v3 BlockEntity layout. */
   readonly convertedBlockEntities: number;
   readonly requiredMods: readonly string[];
@@ -161,6 +164,13 @@ export function buildSchemV3(world: VoxelPayload, options: SchemWriteOptions, li
     const r = blockEntityEntry(e, local); entities.push(r.tag); if (r.converted) converted++;
   }
 
+  // Free entities: Sponge v3 {Id, Pos, Data}, Pos relative to the minimum corner (ENTITY-01).
+  const freeEntities: NbtTag[] = [];
+  for (const e of world.entities ?? []) {
+    const data = entityExportData(e, min);
+    freeEntities.push({ type: 'compound', value: { Id: data.id!, Pos: data.Pos!, Data: { type: 'compound', value: data } } });
+  }
+
   const offset: Vec3 = options.anchor === 'project-origin' ? [min[0], min[1], min[2]] : [0, 0, 0];
   const requiredMods = [...new Set(world.palette.map(s => s.id.split(':')[0]!).filter(ns => ns !== 'minecraft'))].sort();
   const meta: Record<string, NbtTag> = {};
@@ -186,10 +196,11 @@ export function buildSchemV3(world: VoxelPayload, options: SchemWriteOptions, li
     Width: toShort(W), Height: toShort(H), Length: toShort(L), Offset: vec(offset),
     Blocks: { type: 'compound', value: blocksTag },
   };
+  if (freeEntities.length) schematic.Entities = { type: 'list', elementType: 'compound', value: freeEntities };
 
   const warnings: string[] = [
     `DataVersion ${options.dataVersion} ist gewählt, nicht gegen eine Minecraft-Registry geprüft.`,
-    'Biome und freie Entities werden nicht exportiert.',
+    freeEntities.length ? `Biome werden nicht exportiert. ${freeEntities.length} freie Entities (Gemälde, Rahmen, Rüstungsständer …) stehen in Entities.` : 'Biome werden nicht exportiert; das Modell hat keine freien Entities.',
   ];
   if (erasedAsAir) warnings.push(`${erasedAsAir} Löschzellen sind als minecraft:air geschrieben. Sie räumen nur beim Einfügen ohne „Luft überspringen“ (WorldEdit -a).`);
   if (explicitAir) warnings.push(`${explicitAir} ausdrückliche Luftzellen behalten ihren Luftzustand und räumen ebenfalls nur ohne -a.`);
@@ -203,7 +214,7 @@ export function buildSchemV3(world: VoxelPayload, options: SchemWriteOptions, li
     report: {
       dimensions: [W, H, L], volume, offset, anchor: options.anchor, worldMin: [min[0], min[1], min[2]], dataVersion: options.dataVersion,
       paletteSize: next, counts: { blocks, explicitAir, erasedAsAir, unselected }, unselectedState,
-      blockEntities: entities.length, convertedBlockEntities: converted, requiredMods, warnings,
+      blockEntities: entities.length, freeEntities: freeEntities.length, convertedBlockEntities: converted, requiredMods, warnings,
     },
   };
 }

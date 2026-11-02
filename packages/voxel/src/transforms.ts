@@ -2,6 +2,7 @@ import type { StateTransformResult } from './states.js';
 import type { Bounds, Transform, Vec3, VoxelPayload } from './types.js';
 import { adoptPayload, assertVec3, createPayload, isSealedPayload, validatePayload } from './validation.js';
 import { checkTransform, transformBlockState, transformVector as vector } from './states.js';
+import { entityLabel, transformEntity } from './entities.js';
 
 function point(v: Vec3, pivot: Vec3, t: Transform): Vec3 {
   const r = vector([v[0]-pivot[0], v[1]-pivot[1], v[2]-pivot[2]], t);
@@ -33,7 +34,7 @@ function unresolvedMessage(id: string, r: StateTransformResult): string {
   return `Keine geprüfte Transformationsregel für ${id}; Zustand unverändert erhalten.`;
 }
 export interface TransformIssue {
-  readonly code: 'UNRESOLVED_BLOCK_STATE' | 'UNRESOLVED_BLOCK_ENTITY';
+  readonly code: 'UNRESOLVED_BLOCK_STATE' | 'UNRESOLVED_BLOCK_ENTITY' | 'UNRESOLVED_ENTITY';
   readonly path: string;
   readonly message: string;
 }
@@ -56,10 +57,17 @@ export function transformPayload(payload: VoxelPayload, t: Transform): PayloadTr
     if (!identity) issues.push({ code: 'UNRESOLVED_BLOCK_ENTITY', path: `blockEntities[${i}]`, message: 'Position der Zuordnung transformiert, NBT unverändert erhalten; semantischer Adapter fehlt.' });
     return { ...e, position: transformCellPosition(e.position,payload.pivot,t) };
   });
+  const entities = payload.entities?.map((e,i)=>{
+    if (identity) return e;
+    const r = transformEntity(e,payload.pivot,t);
+    if (!r.resolved) issues.push({ code: 'UNRESOLVED_ENTITY', path: `entities[${i}]`, message: `${entityLabel(e)}: ${r.note ?? 'Transformation nicht geprüft'}` });
+    return r.entity;
+  });
   // Fresh cells and entity wrappers. Palette states and NBT data are shared with the input, so the copy is only
   // skipped when the input is a sealed (deeply frozen) payload; e.g. records read from IndexedDB are copied.
   const output = (isSealedPayload(payload) ? adoptPayload : createPayload)({ ...payload, bounds: bounds(payload.bounds,payload.pivot,t), pivot: t.position, palette,
     cells: payload.cells.map(c=>({ ...c, position: transformCellPosition(c.position,payload.pivot,t) })), blockEntities,
+    ...(entities && { entities }),
   });
   return { payload: output, issues: Object.freeze(issues), semanticsResolved: issues.length === 0 };
 }

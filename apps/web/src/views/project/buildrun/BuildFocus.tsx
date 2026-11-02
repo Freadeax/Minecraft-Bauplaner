@@ -6,6 +6,7 @@ import type { VoxelPayload } from '../../../../../../packages/voxel/src/index.js
 import { formatNumber } from '../../../app/ui';
 import { shortItem } from './PackList';
 import { StepRows, useStepRuns } from './StepRows';
+import { FurnishList } from '../FurnishList';
 
 const ROWS_KEY = 'bauplaner.focusRows';
 type WakeLock = { release(): Promise<void>; addEventListener(type: 'release', cb: () => void): void };
@@ -62,6 +63,7 @@ export function BuildFocus(p: Props) {
       {waiting.length > 0 && st !== 'done' && <p className="build-wait">Vorher: {waiting.slice(0, 3).map(id => { const w = p.guide.byId.get(id)!;
         return <button key={id} className="link-button" onClick={() => p.onSelect(id)}>Schritt {w.order}</button>; }).reduce<ReactNode[]>((a, b, i) => i ? [...a, ', ', b] : [b], [])}{waiting.length > 3 ? ` und ${waiting.length - 3} weitere` : ''}</p>}
       {p.items && p.items.items.length > 0 && <ul className="focus-items" aria-label="Bauitems dieses Schritts">{p.items.items.map(l => <li key={l.itemId}><code>{shortItem(l.itemId)}</code><span>{formatNumber(l.count)}{l.count > l.stackSize ? ` · ${formatStacks(l)}` : ''}</span></li>)}</ul>}
+      <FurnishList step={step} />
       <StepRows runs={runs} anchor={p.anchor} big checked={rows} onToggle={toggle} />
       {runs.length > 0 && <p className="muted">{rows.size} von {runs.length} Reihen als gesetzt markiert (nur Lesehilfe in diesem Tab).</p>}
       {step.notes.length > 0 && <ul className="build-notes">{step.notes.map(n => <li key={n}>{n}</li>)}</ul>}

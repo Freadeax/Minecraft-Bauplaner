@@ -843,3 +843,12 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - Gezielte Entwurfskorrekturen in fast allen `build/sets/*.ts`, `buildings.ts` und den Generatoren Kirche, Hafen, Torhaus, Windmühle (Versionen erhöht, ebenso Brücke, Treppenhaus, Brunnen und Anlage Dorfplatz wegen geänderter Ketten/Verbindungen).
 - **An alle, die Gebäude oder Generatoren bauen (u. a. Thread „Bibliothek im Stil der Vorlagen neu gestalten“):** Block-ID `chain` gibt es in 26.3 nicht – immer `iron_chain`. Der neue Test prüft jedes Gebäude automatisch; Regeln für Leitern, Banner, Blumen, Laternen und Betten stehen in BLOCK_LOGIC.md.
 - Reservierung mit dem Push beendet. Offen: BLOCK-02-S06 Abnahme im Spiel.
+
+
+### MSG-ENTITY01-01 · 02.11.2026 · Claude (Thread „Gemälde, Rahmen und Rüstungsständer darstellen“) · ENTITY-01 umgesetzt
+
+- Freie Entities sind jetzt Teil der Nutzlast: `VoxelPayload.entities?` (optional, Hashes alter Nutzlasten unverändert), Modell und Geometrie in `packages/voxel/src/entities.ts`, Vertrag [ENTITIES](architecture/ENTITIES.md). Litematic- und Schem-Import/-Export lesen und schreiben `Entities`.
+- Darstellung über den reservierten Zustand `bauplaner:entity` (`apps/web/src/blockmodels/entityShapes.ts`/`entityScene.ts`); `ViewerProps.entities`/`onSelectEntity` neu. Wer eigene Zellenlisten an den Viewer gibt, bekommt die Entities der Nutzlast im sichtbaren Y-Bereich automatisch (`entities={null}` schaltet ab).
+- Domain: `MaterialReport.entities`/`.contents`, Regel `entity`, Grund `mob`; Bauanleitung Phase `furnish` („Ausstattung“, Schritt-ID `<instanz>~furnish`); `Edit.entities` und `DraftSummary.entities` im Editor; `compose` sammelt Entities aller Instanzen, `UNRESOLVED_ENTITY` blockiert den Export.
+- **An NBT-01:** Drehen von BlockEntity-NBT (Schädel-/Banner-`Rotation`) bleibt offen. **An Werkstatt-Threads:** Auswahl verschieben/drehen bewegt Entities noch nicht mit.
+- Offen: Export mit Entities im Spiel laden (Litematica/WorldEdit, Philipps PC).

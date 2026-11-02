@@ -6,6 +6,7 @@ import type { BakedBlock, ModelSource } from './model.ts';
 import { fallbackBlock } from './shapes.ts';
 import type { Paint } from './shapes.ts';
 import { tintColor } from './tint.ts';
+import { ENTITY_STATE_ID, entityQuads } from './entityShapes.ts';
 
 /**
  * The two block renderers: own shapes with average colours (always
@@ -22,7 +23,7 @@ export function fallbackRenderer(): BlockRenderer {
     block(state) {
       const k = keyOf(state);
       let b = cache.get(k);
-      if (!b) { b = fallbackBlock(state.id, state.properties); cache.set(k, b); }
+      if (!b) { b = state.id === ENTITY_STATE_ID ? { quads: entityQuads(state.properties), kind: 'fallback' } : fallbackBlock(state.id, state.properties); cache.set(k, b); }
       return b;
     },
     // Average colours already include the plains tint.
@@ -38,6 +39,8 @@ export function packRenderer(source: ModelSource, key: string): BlockRenderer {
   const bakery = new Bakery(source);
   const cache = new Map<string, BakedBlock>();
   const resolve = (state: BlockState): BakedBlock => {
+    // Free entities (paintings, frames, armor stands) keep their own geometry with every texture source.
+    if (state.id === ENTITY_STATE_ID) return { quads: entityQuads(state.properties), kind: 'fallback' };
     const name = state.id.startsWith('minecraft:') ? state.id.slice(10) : null;
     if (name === 'water' || name === 'bubble_column') {
       const b = fallbackBlock(state.id, state.properties, all('minecraft:block/water_still', true));

@@ -1,5 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { entityLabel } from '../../../../packages/voxel/src/index.js';
 import type { Cell } from '../../../../packages/voxel/src/index.js';
+import { cellYRange, withEntities } from '../blockmodels/entityScene';
 import { useRenderKit } from '../blockmodels/assets';
 import { useGraphics } from '../blockmodels/graphics';
 import { openTextureDialog } from '../blockmodels/TexturePanel';
@@ -20,13 +22,27 @@ const PAD: readonly (readonly [code: string, label: string, name: string])[] = [
 ];
 const fmt = (n: number) => n.toLocaleString('de-DE');
 
-export default function ThreeViewer({ payload, cells, onSelect, markFor, focus = null, drag = null, ghost = null, frameRequest = null }: ViewerProps) {
+export default function ThreeViewer({ payload, cells, onSelect, markFor, focus = null, drag = null, ghost = null, frameRequest = null, entities, onSelectEntity }: ViewerProps) {
   const kit = useRenderKit();
   const graphics = useGraphics();
   const host = useRef<HTMLDivElement>(null), canvasHost = useRef<HTMLDivElement>(null);
   const controller = useRef<SceneController | null>(null);
   const fallback = useRef<FallbackHandle | null>(null), fallbackCamera = useRef(newFallbackCamera());
-  const select = useRef(onSelect); select.current = onSelect;
+  // Free entities become extra cells with their own shapes (ENTITY-01); by default they follow the visible layers.
+  const scene = useMemo(() => {
+    const list = entities === undefined ? payload.entities : entities ?? undefined;
+    const range = entities === undefined && list?.length ? cellYRange(cells) : null;
+    return withEntities(cells, payload.palette, list, range ? a => a[1] >= range[0] && a[1] <= range[1] : undefined);
+  }, [cells, payload, entities]);
+  const sceneRef = useRef(scene); sceneRef.current = scene;
+  const markScene = useMemo(() => markFor && scene.count ? (c: Cell) => scene.entityOf(c) ? null : markFor(c) : markFor, [markFor, scene]);
+  const pickEntity = useRef(onSelectEntity); pickEntity.current = onSelectEntity;
+  const select = useRef(onSelect);
+  select.current = (cell: Cell | null) => {
+    const e = cell ? sceneRef.current.entityOf(cell) : undefined;
+    if (e) { onSelect(null); pickEntity.current?.(e); return; }
+    pickEntity.current?.(null); onSelect(cell);
+  };
   const [software, setSoftware] = useState(false);
   const [lost, setLost] = useState(false);
   const [state, setState] = useState<ViewerState>({ mode: 'orbit', projection: 'perspective', view: 'iso', speed: 8 });
@@ -50,7 +66,7 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
     const c = controller.current;
     if (c) {
       const first = stats === null;
-      setStats(c.setCells(cells, payload.bounds, payload.palette, kit, markFor));
+      setStats(c.setCells(scene.cells, payload.bounds, scene.palette, kit, markScene));
       if (first) c.resetSpeed();
       return;
     }
@@ -63,7 +79,7 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
     };
     fallback.current = canvasFallback(canvasHost.current, payload, cells, cell => select.current(cell), color, fallbackCamera.current);
     return () => { fallback.current?.dispose(); fallback.current = null; };
-  }, [payload, cells, markFor, software, kit]);
+  }, [payload, cells, markFor, software, kit, scene, markScene]);
 
   useEffect(() => { controller.current?.setGraphics(graphics); }, [graphics]);
   useEffect(() => { controller.current?.setFocusTarget(focus); }, [focus]);
@@ -80,12 +96,13 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
   };
   const flying = state.mode === 'flight';
   const press = (code: string, down: boolean) => controller.current?.setFlightKey(code, down);
-  const hovered = hover && hover.kind !== 'erase' ? payload.palette[hover.paletteIndex] : null;
+  const hoveredEntity = hover ? scene.entityOf(hover) : undefined;
+  const hovered = hover && hover.kind !== 'erase' && !hoveredEntity ? payload.palette[hover.paletteIndex] : null;
 
   return <div className={`scene${flying ? ' flying' : ''}`} ref={host}>
     <div className="canvas-host" ref={canvasHost} tabIndex={0} aria-label="3D-Ansicht (fokussierbar für Tastatursteuerung)"
       data-mode={software ? 'software' : state.mode} data-projection={state.projection} data-view={state.view ?? ''}
-      data-faces={stats?.quads ?? ''} data-spawn-day={stats?.spawnDay ?? ''} data-spawn-night={stats?.spawnNight ?? ''} data-blocks={stats?.blocks ?? ''} data-build-ms={stats ? stats.buildMs.toFixed(1) : ''} />
+      data-faces={stats?.quads ?? ''} data-spawn-day={stats?.spawnDay ?? ''} data-spawn-night={stats?.spawnNight ?? ''} data-blocks={stats ? stats.blocks - scene.count : ''} data-entities={scene.count} data-build-ms={stats ? stats.buildMs.toFixed(1) : ''} />
     <div className="viewer-tools" role="toolbar" aria-label="Ansicht">
       <div className="seg" role="group" aria-label="Blickrichtung">
         {VIEWS.map(v => <button key={v.id} title={`${v.title} (${v.key})`} aria-label={v.title} aria-pressed={state.view === v.id && !flying} onClick={() => setView(v.id)}>{v.label}</button>)}
@@ -97,8 +114,9 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
       <button title={focus ? 'Auswahl fokussieren (F)' : 'Ganzes Bauwerk einpassen (F)'} aria-label={focus ? 'Auswahl fokussieren' : 'Ganzes Bauwerk einpassen'} onClick={doFocus}>◎ <span>{focus ? 'Auswahl' : 'Einpassen'}</span></button>
     </div>
     <div className="viewer-hud" aria-hidden="true">
-      {hovered && hover ? <span><b>X {hover.position[0]} · Y {hover.position[1]} · Z {hover.position[2]}</b> {hovered.id}</span>
-        : stats && !software ? <span>{fmt(stats.quads)} Flächen · {fmt(stats.blocks)} Blöcke</span> : null}
+      {hoveredEntity && hover ? <span><b>X {hover.position[0]} · Y {hover.position[1]} · Z {hover.position[2]}</b> {entityLabel(hoveredEntity)}</span>
+        : hovered && hover ? <span><b>X {hover.position[0]} · Y {hover.position[1]} · Z {hover.position[2]}</b> {hovered.id}</span>
+        : stats && !software ? <span>{fmt(stats.quads)} Flächen · {fmt(stats.blocks - scene.count)} Blöcke{scene.count ? ` · ${fmt(scene.count)} Entities` : ''}</span> : null}
       {graphics.spawn && stats && stats.spawnDay !== null && !software && <span className="spawn-hud">
         Spawnflächen: <b className="spawn-day">{fmt(stats.spawnDay)}</b> tagsüber · <b className="spawn-night">{fmt(stats.spawnNight ?? 0)}</b> nachts</span>}
       {flying && <span className="hint">WASD bewegen · Leertaste/Shift hoch/runter · Ziehen: umsehen · Mausrad: Tempo {state.speed} B/s · Esc</span>}

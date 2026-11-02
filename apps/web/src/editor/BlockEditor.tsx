@@ -20,6 +20,7 @@ import type { CurveState, SymmetryState } from './CreativePanel';
 import { fromPattern } from './PatternPanel';
 import type { GridBox, Stroke } from './LayerGrid';
 import { useDraft } from './useDraft';
+import { EntityPanel } from './EntityPanel';
 import type { DraftModel } from './useDraft';
 
 export type Tool = 'stift' | 'abbauen' | 'pipette' | 'fuellen' | 'drehen' | 'zustand' | 'auswahl' | 'linie' | 'quader' | 'zylinder' | 'kugel' | 'einfuegen' | 'bogen' | 'pyramide' | 'kegel' | 'kurve';
@@ -75,6 +76,8 @@ export interface BlockEditorProps {
   readonly inspectExtra?: (p: Vec3) => ReactNode;
   /** Initial layer; defaults to the lowest layer of the model. */
   readonly startY?: number;
+  /** Offer the „Ausstattung“ panel (paintings, frames, armor stands); only where saving keeps free entities. */
+  readonly entityTools?: boolean;
 }
 
 /** Complete block editor: layer grid + 3D preview, all blocks, tools, selection operations and undo. */
@@ -87,7 +90,7 @@ function placementSummary(r: ReturnType<typeof checkPlacement>): string {
     : `Spielprüfung bestanden: ${formatNumber(r.blocks)} Blöcke halten und verbinden sich wie geplant${r.dependsOnSurroundings ? ` (${r.dependsOnSurroundings} brauchen Halt aus der Umgebung)` : ''}.`;
 }
 
-export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: BlockEditorProps) {
+export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, entityTools = false }: BlockEditorProps) {
   const model = useDraft(base, profileId);
   const { draft, layers, extent } = model;
   const [tool, setTool] = useState<Tool>('stift');
@@ -341,7 +344,7 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
 
   const pickedValue = picked ? cellAt(draft, picked) : null;
   const yRange = extent ? `${extent.min[1]} … ${extent.max[1]}` : '–';
-  const changes = model.summary.added + model.summary.removed + model.summary.changed;
+  const changes = model.summary.added + model.summary.removed + model.summary.changed + model.summary.entities;
 
   return <div className="block-editor">
     <div className="editor-bar" role="toolbar" aria-label="Bearbeitung">
@@ -351,7 +354,7 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
         title={selBox ? 'Verbindungen in der Auswahl wie im Spiel setzen (Zäune, Mauern, Scheiben, Gitter, Treppenecken, Tore)' : 'Verbindungen im ganzen Modell wie im Spiel setzen (Zäune, Mauern, Scheiben, Gitter, Treppenecken, Tore)'}>⛓ Wie im Spiel verbinden</button>
       <button data-testid="placement-check" onClick={() => { const pl = materializeDraft(draft); setMessage(pl ? placementSummary(checkPlacement(pl)) : 'Das Modell ist leer.'); }} title="Halt, Schwerkraft, Verbindungen und Hälften wie im Spiel prüfen">✓ Spielprüfung</button>
       <span className="editor-stats" aria-live="polite" data-changes={changes}>
-        {formatNumber(model.cellCount)} Zellen · Änderungen: <b>+{model.summary.added}</b> / <b>−{model.summary.removed}</b> / <b>~{model.summary.changed}</b>
+        {formatNumber(model.cellCount)} Zellen · Änderungen: <b>+{model.summary.added}</b> / <b>−{model.summary.removed}</b> / <b>~{model.summary.changed}</b>{model.summary.entities > 0 && <> · Ausstattung geändert</>}
       </span>
       <span className="spacer" />
       {saveBar(model)}
@@ -518,6 +521,7 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
             {inspectExtra?.(picked)}
           </> : <p className="muted">Mit „Prüfen“ oder per Klick in der 3D-Ansicht einen Block wählen.</p>}
         </section>
+        {entityTools && <EntityPanel entities={draft.entities ?? []} picked={picked} run={run} />}
       </aside>
     </div>
     <BlockPalette brush={brush} onBrush={setBrush} used={used} />

@@ -67,7 +67,7 @@ test('independent fixture: two regions, signed sizes, enclosing box and exact ce
   const chest = r.payload.blockEntities[0].data.value;
   assert.equal(chest.id.value, 'minecraft:chest'); assert.equal(chest.CustomName.value, 'Ä\0😀'); assert.deepEqual([chest.x.value, chest.y.value, chest.z.value], [0, 0, 2]);
   assert.equal(r.metadata.name, 'Vertragsfixture'); assert.equal(r.metadata.timeModified, '9223372036854775807'); assert.deepEqual(r.metadata.enclosingSize, [7, 3, 4]);
-  for (const w of ['2 Regionen', 'freie Entities', 'ticks', 'Modblöcke']) assert.ok(r.warnings.some(x => x.includes(w)), w);
+  for (const w of ['2 Regionen', 'Entities ohne lesbare Position', 'ticks', 'Modblöcke']) assert.ok(r.warnings.some(x => x.includes(w)), w);
   assert.ok(r.payload.profileId.includes('3465') && r.payload.profileId.includes('unverified'));
 });
 
@@ -195,7 +195,10 @@ test('real-world shape: uncompressed, far-corner Position, negative Size, TAG_En
   assert.deepEqual(r.payload.blockEntities.map(e => e.position), [[1, 1, 1]]);
   assert.equal(r.payload.cells.length, 24);
   assert.deepEqual(r.metadata, { name: 'Unnamed', author: 'Eigene Testdaten', description: '', timeCreated: '1763717646505', timeModified: '1763717646505', totalBlocks: 18, totalVolume: 24, regionCount: 1, enclosingSize: [3, 2, 4] });
-  assert.ok(r.warnings.some(w => /2 freie Entities \(1× item_frame, 1× painting\)/.test(w)));
+  assert.ok(r.warnings.some(w => /2 freie Entities übernommen \(1× item_frame, 1× painting\)/.test(w)));
+  // Entity Pos is relative to the region Position (2,1,3); the box minimum is (0,0,0) here (ENTITY-01).
+  assert.deepEqual(r.payload.entities.map(e => [e.data.value.id.value, e.position]), [['minecraft:painting', [1.03125, 0.5, 1]], ['minecraft:item_frame', [0.5, 0.5, 2.03125]]]);
+  assert.ok(r.payload.entities.every(e => !('Pos' in e.data.value) && !('TileX' in e.data.value)), 'position fields are derived, not stored');
   assert.ok(!r.warnings.some(w => /Metadata nennt/.test(w)));
   // Same cells after our export and re-import (the writer sorts properties and starts at the minimum corner).
   const out = await writeLitematic(r.payload, { dataVersion: 4556, anchor: 'min-corner', unselected: 'air' });

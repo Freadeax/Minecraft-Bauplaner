@@ -2404,3 +2404,61 @@ Katalog und Generatoren spielgerecht: gemeinsame Bauregel gameReady (Laternen an
 - `tests/catalog.test.mjs`
 - `tests/generators.test.mjs`
 
+## 2026-11-02T12:23:17.039Z · progress
+
+**Aufgaben:** ENTITY-01
+
+Gemälde, Rahmen, Rüstungsständer und Blockinhalte: Import/Export, 3D/Bilder/Ebenen, Materialliste, Bauanleitung, Werkstatt
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| ENTITY-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Export mit Entities im Spiel prüfen; Entities bei Auswahl-Verschieben in der Werkstatt mitnehmen; Truhen-/Schildinhalte bearbeiten. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/blockmodels/entityScene.ts`
+- `apps/web/src/blockmodels/entityShapes.ts`
+- `apps/web/src/blockmodels/renderers.ts`
+- `apps/web/src/editor/BlockEditor.tsx`
+- `apps/web/src/editor/EntityPanel.tsx`
+- `apps/web/src/editor/WorkshopPage.tsx`
+- `apps/web/src/schem/LayerSheet.tsx`
+- `apps/web/src/schem/SchemView.tsx`
+- `apps/web/src/thumbnail/Thumb.tsx`
+- `apps/web/src/thumbnail/glShot.ts`
+- `apps/web/src/viewer/BlockInfo.tsx`
+- `apps/web/src/viewer/ContentInfo.tsx`
+- `apps/web/src/viewer/ThreeViewer.tsx`
+- `apps/web/src/viewer/content.css`
+- `apps/web/src/viewer/types.ts`
+- `apps/web/src/views/project/BuildTab.tsx`
+- `apps/web/src/views/project/EditorTab.tsx`
+- `apps/web/src/views/project/FurnishList.tsx`
+- `apps/web/src/views/project/MaterialsTab.tsx`
+- `apps/web/src/views/project/buildrun/BuildFocus.tsx`
+- `apps/web/src/views/project/buildrun/PrintSheet.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/architecture/ENTITIES.md`
+- `docs/architecture/LITEMATIC.md`
+- `packages/domain/src/compose.ts`
+- `packages/domain/src/editor/draft.ts`
+- `packages/domain/src/guide.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/materials.ts`
+- `packages/formats/src/entityIo.ts`
+- `packages/formats/src/litematic.ts`
+- `packages/formats/src/litematicWrite.ts`
+- `packages/formats/src/schem.ts`
+- `packages/formats/src/schemWrite.ts`
+- `packages/voxel/src/analysis.ts`
+- `packages/voxel/src/entities.ts`
+- `packages/voxel/src/index.ts`
+- `packages/voxel/src/transforms.ts`
+- `packages/voxel/src/types.ts`
+- `packages/voxel/src/validation.ts`
+- `tests/e2e/entities.e2e.mjs`
+- `tests/editor.test.mjs`
+- `tests/entities.test.mjs`
+- `tests/litematic.test.mjs`
+- `tests/voxel.test.mjs`
+

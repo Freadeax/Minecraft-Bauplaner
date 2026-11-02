@@ -67,7 +67,7 @@ export function validatePayload(input: unknown, overrides: Partial<Limits> = {})
   const passed = input !== null && typeof input === 'object' ? validated.get(input) : undefined;
   if (passed && covers(passed, limits)) return;
   const p = object(input, 'payload');
-  keys(p, ['schemaVersion','profileId','bounds','pivot','sourceOrigin','palette','cells','blockEntities'], 'payload');
+  keys(p, ['schemaVersion','profileId','bounds','pivot','sourceOrigin','palette','cells','blockEntities','entities'], 'payload');
   if (p.schemaVersion !== 1) fail('schemaVersion', 'nur Version 1 unterstützt');
   string(p.profileId, limits.maxStringLength, 'profileId');
   if (!p.profileId.trim()) fail('profileId', 'Profilkennung erforderlich');
@@ -188,6 +188,19 @@ export function validatePayload(input: unknown, overrides: Partial<Limits> = {})
     if (selected.get(indexOf(e.position)) !== KIND_CODE.block || entityPositions.has(key)) fail(path, 'BlockEntity braucht genau eine belegte Blockzelle');
     entityPositions.add(key);
     if (object(e.data, path).type !== 'compound') fail(path, 'BlockEntity braucht NBT-Compound');
+    nbt(e.data, 0, `${path}.data`);
+  }
+  if (p.entities !== undefined) for (const [i, value] of array(p.entities, limits.maxCells, 'entities').entries()) {
+    const path = `entities[${i}]`, e = object(value, path); keys(e, ['position','data'], path);
+    if (!Array.isArray(e.position) || e.position.length !== 3) fail(`${path}.position`, 'drei Koordinaten erwartet');
+    e.position.forEach((n: unknown, a: number) => {
+      // Entities may reach a little outside the cell box (paintings on its outer wall, armor stands on its roof).
+      if (typeof n !== 'number' || !Number.isFinite(n) || Object.is(n, -0) || n < min[a as 0]! - 1 || n > max[a as 0]! + 1) fail(`${path}.position[${a}]`, 'endliche Koordinate innerhalb der Auswahlgrenzen (±1) erwartet');
+    });
+    const data = object(e.data, path);
+    if (data.type !== 'compound') fail(path, 'Entity braucht NBT-Compound');
+    const id = object(data.value, `${path}.data`).id;
+    if (id === null || typeof id !== 'object' || (id as { type?: unknown }).type !== 'string') fail(`${path}.data.id`, 'Entity braucht eine id');
     nbt(e.data, 0, `${path}.data`);
   }
 }

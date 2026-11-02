@@ -1,6 +1,6 @@
 import { adoptPayload, stateKey } from '../../voxel/src/validation.js';
 import { transformPayload } from '../../voxel/src/transforms.js';
-import type { BlockEntity, BlockState, Bounds, Cell, Limits, Vec3, VoxelPayload } from '../../voxel/src/types.js';
+import type { BlockEntity, BlockState, Bounds, Cell, FreeEntity, Limits, Vec3, VoxelPayload } from '../../voxel/src/types.js';
 import { canonicalJson } from './hash.js';
 import { DomainError } from './types.js';
 import type { AssetVersion, Instance, Project } from './types.js';
@@ -30,7 +30,7 @@ export interface VoxelConflict {
 
 export interface CompositionIssue {
   readonly instanceId: string;
-  readonly code: 'UNRESOLVED_BLOCK_STATE' | 'UNRESOLVED_BLOCK_ENTITY' | 'MISSING_VERSION' | 'PROFILE_MISMATCH';
+  readonly code: 'UNRESOLVED_BLOCK_STATE' | 'UNRESOLVED_BLOCK_ENTITY' | 'UNRESOLVED_ENTITY' | 'MISSING_VERSION' | 'PROFILE_MISMATCH';
   readonly message: string;
 }
 
@@ -149,9 +149,16 @@ export function resolveProject(project: Project, versions: ReadonlyMap<string, A
       cells.push({ position: slot.cell.position, kind: slot.cell.kind, paletteIndex });
       if (slot.entity && slot.cell.kind === 'block') blockEntities.push({ position: slot.cell.position, data: slot.entity.data });
     }
+    // Free entities of every placed instance (paintings, frames, armor stands); identical copies count once.
+    const entities: FreeEntity[] = [], seenEntities = new Set<string>();
+    for (const p of placed) for (const e of p.payload.entities ?? []) {
+      const key = canonicalJson(e);
+      if (seenEntities.has(key)) { duplicates++; continue; }
+      seenEntities.add(key); entities.push(e);
+    }
     try {
       // Cells are built above; states and entity data come from frozen version payloads.
-      world = adoptPayload({ schemaVersion: 1, profileId: project.profileId, bounds: { min, maxExclusive: max }, pivot: [0, 0, 0], sourceOrigin: [0, 0, 0], palette, cells, blockEntities }, limits);
+      world = adoptPayload({ schemaVersion: 1, profileId: project.profileId, bounds: { min, maxExclusive: max }, pivot: [0, 0, 0], sourceOrigin: [0, 0, 0], palette, cells, blockEntities, ...(entities.length && { entities }) }, limits);
     } catch (e) {
       throw new DomainError('LIMIT', `Zusammengesetztes Projekt überschreitet die Grenzen: ${e instanceof Error ? e.message : String(e)}`);
     }
@@ -160,7 +167,7 @@ export function resolveProject(project: Project, versions: ReadonlyMap<string, A
   if (conflicts.length) exportBlockers.push(`${conflicts.length} ungeklärte Voxelkonflikte`);
   const missing = issues.filter(i => i.code === 'MISSING_VERSION').length;
   if (missing) exportBlockers.push(`${missing} fehlende Bauteilversionen`);
-  const unresolved = issues.filter(i => i.code === 'UNRESOLVED_BLOCK_STATE' || i.code === 'UNRESOLVED_BLOCK_ENTITY').length;
+  const unresolved = issues.filter(i => i.code === 'UNRESOLVED_BLOCK_STATE' || i.code === 'UNRESOLVED_BLOCK_ENTITY' || i.code === 'UNRESOLVED_ENTITY').length;
   if (unresolved) exportBlockers.push(`${unresolved} ungelöste Zustands-/NBT-Transformationen`);
   if (!world) exportBlockers.push('Projekt enthält keine Bauteile');
   return { world, placed, owners, conflicts, overridden, duplicates, boundsOverlaps, issues, exportBlockers };

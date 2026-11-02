@@ -46,7 +46,7 @@ function pump(): void {
 const keyOf = (cacheKey: string, kit: RenderKit, options: ShotOptions, width: number, height: number) =>
   `${cacheKey}:${kit.key}:${STILL_LOOK}:${options.view ?? 'so'}:${options.cutY ?? ''}@${width}x${height}`;
 
-async function render(payload: Pick<VoxelPayload, 'cells' | 'palette'>, width: number, height: number, kit: RenderKit, options: ShotOptions): Promise<string> {
+async function render(payload: Pick<VoxelPayload, 'cells' | 'palette' | 'entities'>, width: number, height: number, kit: RenderKit, options: ShotOptions): Promise<string> {
   const module = await glModule();
   if (module) {
     try { return module.renderGlShot(payload, width, height, kit, options); } catch { /* lost context etc.: plain image */ }
@@ -55,7 +55,7 @@ async function render(payload: Pick<VoxelPayload, 'cells' | 'palette'>, width: n
 }
 
 /** Cached or freshly rendered image (for downloads). */
-export async function shotUrl(cacheKey: string, payload: Pick<VoxelPayload, 'cells' | 'palette'>, width: number, height: number, options: ShotOptions = {}): Promise<string> {
+export async function shotUrl(cacheKey: string, payload: Pick<VoxelPayload, 'cells' | 'palette' | 'entities'>, width: number, height: number, options: ShotOptions = {}): Promise<string> {
   const kit = await readyKit(), key = keyOf(cacheKey, kit, options, width, height);
   let url = cache.get(key);
   if (url === undefined) { url = await render(payload, width, height, kit, options); cache.set(key, url); }
@@ -64,7 +64,7 @@ export async function shotUrl(cacheKey: string, payload: Pick<VoxelPayload, 'cel
 
 export function Thumb({ cacheKey, payload, alt, width = 320, height = 220, className = 'thumb', view, cutY, markOf, eager = false }: {
   cacheKey: string;
-  payload: () => Pick<VoxelPayload, 'cells' | 'palette'> | null;
+  payload: () => Pick<VoxelPayload, 'cells' | 'palette' | 'entities'> | null;
   alt: string;
   width?: number;
   height?: number;

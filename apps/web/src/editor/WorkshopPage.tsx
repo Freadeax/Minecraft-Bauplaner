@@ -51,7 +51,7 @@ function Workshop({ asset, version }: { asset: Asset | null; version: AssetVersi
   };
 
   const saveBar = (model: DraftModel) => {
-    const empty = model.cellCount === 0, dirty = model.draft.overlay.size > 0;
+    const empty = model.cellCount === 0, dirty = model.draft.overlay.size > 0 || model.summary.entities > 0;
     return <div className="save-bar">
       {asset && <button className="primary" disabled={busy || !dirty || empty} onClick={() => void save(model, 'version')} title="Neue Version desselben Bauteils; die alte bleibt erhalten">
         Als Version {asset.versionIds.length + 1}.0 speichern</button>}
@@ -71,6 +71,6 @@ function Workshop({ asset, version }: { asset: Asset | null; version: AssetVersi
     {base && current && <AssetRevisionNotice base={base} current={current} />}
     {result && <div className={`notice ${result.error ? 'warning' : 'success'}`} role={result.error ? 'alert' : 'status'}>
       <p>{result.text}</p>{result.warnings.length > 0 && <ul>{result.warnings.map((w, i) => <li key={i}>{w.message}</li>)}</ul>}</div>}
-    <BlockEditor base={version?.payload ?? null} profileId={version?.payload.profileId ?? SAMPLE_PROFILE} saveBar={saveBar} />
+    <BlockEditor base={version?.payload ?? null} profileId={version?.payload.profileId ?? SAMPLE_PROFILE} saveBar={saveBar} entityTools />
   </div>;
 }

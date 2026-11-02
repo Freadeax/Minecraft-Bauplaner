@@ -1,6 +1,7 @@
 import { stateKey } from '../../voxel/src/validation.js';
 import { isFactBlock, itemOf, stackOfItem } from '../../voxel/src/blocklogic/index.js';
-import type { BlockState, Cell, Vec3, VoxelPayload } from '../../voxel/src/types.js';
+import type { BlockState, Cell, FreeEntity, Vec3, VoxelPayload } from '../../voxel/src/types.js';
+import { blockEntityContent, entityItems, entityKind, entityKindLabel, entityLabel } from '../../voxel/src/entities.js';
 import { positionKey } from './compose.js';
 import type { Resolution } from './compose.js';
 
@@ -28,10 +29,11 @@ export type ItemRule =
   | 'count'           // candles, sea pickles, snow layers, eggs, petals: n items per cell
   | 'composite'       // potted plant, candle cake: several items per cell
   | 'derived'         // obtained by working another block (farmland ← dirt)
+  | 'entity'          // painting, item frame, armor stand … placed as a free entity (ENTITY-01)
   | 'assumed';        // no catalogue rule; item id = block id assumed
 
 export type Confidence = 'catalog' | 'assumed';
-export type UnresolvedReason = 'liquid' | 'mod-namespace' | 'no-item' | 'creative-only' | 'invalid-state';
+export type UnresolvedReason = 'liquid' | 'mod-namespace' | 'no-item' | 'creative-only' | 'invalid-state' | 'mob';
 
 export interface StateCount { readonly state: BlockState; readonly key: string; readonly count: number }
 
@@ -93,10 +95,24 @@ export interface MaterialReport {
   readonly waterlogged: number;
   /** Block entities with stored contents (Items); container contents are not counted. */
   readonly containersWithContents: number;
+  /** Free entities in scope (paintings, frames, armor stands, others). Their placement items are in `items`. */
+  readonly entities: number;
+  /**
+   * Furnishing and contents (ENTITY-01): items shown in frames, worn by armor stands and stored in
+   * containers, pots, lecterns … Listed separately and not part of `items`/`totals`.
+   */
+  readonly contents: readonly ContentLine[];
   /** Unresolved voxel conflicts: counts use the preview choice and are provisional. */
   readonly conflicts: number;
   /** True only without conflicts, unresolved states and assumptions. */
   readonly complete: boolean;
+}
+
+export interface ContentLine {
+  readonly itemId: string;
+  readonly count: number;
+  /** Where the items are (German labels such as „Truhe“, „Rahmen“, „Rüstungsständer“) with counts. */
+  readonly places: readonly { readonly label: string; readonly count: number }[];
 }
 
 export type MaterialScope = { readonly kind: 'project' } | { readonly kind: 'instance'; readonly instanceId: string; readonly name: string };
@@ -269,6 +285,11 @@ export interface MaterialOptions {
    */
   readonly partners?: 'selection' | 'world';
   readonly conflicts?: number;
+  /**
+   * Free entities to count. Default: all of the world when no cell filter is given, none otherwise
+   * (an entity hangs in a free cell that belongs to no instance).
+   */
+  readonly entities?: readonly FreeEntity[];
 }
 
 /**
@@ -313,6 +334,41 @@ export function computeMaterials(world: VoxelPayload | null, options: MaterialOp
       else line.sources.set(sourceKey, { state, key, cells: 1, items: y.items, rule: y.rule, confidence: y.confidence, ...(y.note !== undefined && { note: y.note }) });
     }
   }
+  // Free entities: the item that places them counts as a build item; what they show or wear is furnishing.
+  const scopedEntities = options.entities ?? (options.cells || options.include ? [] : world?.entities ?? []);
+  const contents = new Map<string, { count: number; places: Map<string, number> }>();
+  const addContent = (itemId: string, count: number, label: string) => {
+    let c = contents.get(itemId);
+    if (!c) contents.set(itemId, c = { count: 0, places: new Map() });
+    c.count += count; c.places.set(label, (c.places.get(label) ?? 0) + count);
+  };
+  for (const e of scopedEntities) {
+    const r = entityItems(e), kind = entityKind(e), id = r.placement;
+    const state: BlockState = { id: (e.data.type === 'compound' && e.data.value.id?.type === 'string' ? e.data.value.id.value : 'minecraft:unknown'), properties: {} };
+    const key = `entity:${state.id}`;
+    if (!id) {
+      const u = unresolved.get(key);
+      unresolved.set(key, u ? { ...u, count: u.count + 1 } : { state, key, count: 1, reason: 'mob', message: `${entityLabel(e)}: Lebewesen/Entity ohne Bauitem (Spawnei, Zucht oder Befehl).` });
+    } else {
+      let line = items.get(id);
+      if (!line) items.set(id, line = { count: 0, sources: new Map() });
+      line.count++;
+      const src = line.sources.get(key);
+      if (src) { src.cells++; src.items++; }
+      else line.sources.set(key, { state, key, cells: 1, items: 1, rule: 'entity', confidence: 'catalog', note: `${kind === 'other' ? 'Entity' : entityKindLabel(kind)} (freie Entity)` });
+    }
+    for (const c of r.contents) addContent(c.id, c.count, kind === 'other' ? 'Entity' : entityKindLabel(kind));
+  }
+  if (world) for (const be of world.blockEntities) {
+    if (options.cells || options.include ? !byPosition.has(positionKey(be.position)) : false) continue;
+    const content = blockEntityContent(be.data);
+    if (!content.items.length) continue;
+    const label = containerLabel(content.id);
+    for (const it of content.items) addContent(it.id, it.count, label);
+  }
+  const contentLines: ContentLine[] = [...contents.entries()].map(([itemId, c]) => ({ itemId, count: c.count,
+    places: [...c.places.entries()].map(([label, count]) => ({ label, count })).sort((a, b) => b.count - a.count || a.label.localeCompare(b.label)) }))
+    .sort((a, b) => b.count - a.count || (a.itemId < b.itemId ? -1 : 1));
   const itemLines: ItemLine[] = [...items.entries()].filter(([, l]) => l.count > 0).map(([itemId, l]): ItemLine => {
     const stackSize = stackSizeOf(itemId), sources = [...l.sources.values()].sort((a, b) => b.items - a.items || (a.key < b.key ? -1 : 1));
     return { itemId, count: l.count, stackSize, fullStacks: Math.floor(l.count / stackSize), remainder: l.count % stackSize, slots: Math.ceil(l.count / stackSize),
@@ -334,13 +390,14 @@ export function computeMaterials(world: VoxelPayload | null, options: MaterialOp
     'Rohstoffe und Rezepte stehen getrennt im Abschnitt „Rohstoffe und Rezepte“; Werkzeuge (Hacke, Schaufel, Feuerzeug) sind nicht enthalten.'];
   if (conflicts) notes.push(`${conflicts} ungeklärte Voxelkonflikte: Mengen folgen der Vorschauwahl und sind vorläufig.`);
   if (waterlogged) notes.push(`${waterlogged} wassergeflutete Blöcke brauchen zusätzlich Wasser (nicht gezählt).`);
-  if (containersWithContents) notes.push(`${containersWithContents} Behälter mit gespeichertem Inhalt: Inhalt nicht im Bedarf enthalten.`);
+  if (containersWithContents) notes.push(`${containersWithContents} Behälter mit gespeichertem Inhalt: Inhalt steht unter „Ausstattung und Inhalte“, nicht im Baubedarf.`);
+  if (scopedEntities.length) notes.push(`${scopedEntities.length} freie Entities (Gemälde, Rahmen, Rüstungsständer …): das Item zum Aufstellen zählt zum Bedarf, gezeigte und getragene Gegenstände stehen unter „Ausstattung und Inhalte“.`);
   if (erase) notes.push(`${erase} Löschzellen: vorhandene Blöcke dort abbauen (kein Itembedarf).`);
   if (totals.unpackableSlots) notes.push('Shulkerkisten lassen sich nicht in Shulkerkisten lagern und sind separat ausgewiesen.');
   return {
     catalogVersion: MATERIAL_CATALOG_VERSION, profileId: world?.profileId ?? null, scope,
     placed: { blocks, air, erase, states: [...states.entries()].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([key, v]) => ({ state: v.state, key, count: v.count })) },
-    items: itemLines, unresolved: unresolvedLines, totals, notes, waterlogged, containersWithContents, conflicts,
+    items: itemLines, unresolved: unresolvedLines, totals, notes, waterlogged, containersWithContents, entities: scopedEntities.length, contents: contentLines, conflicts,
     complete: blocks > 0 && conflicts === 0 && unresolvedLines.length === 0 && !assumed,
   };
 }
@@ -355,7 +412,8 @@ export function materialsForResolution(resolution: Resolution, scope: MaterialSc
   if (scope.kind === 'project') return computeMaterials(resolution.world, { scope, conflicts });
   const include = (cell: Cell): boolean => resolution.owners.get(positionKey(cell.position))?.[0] === scope.instanceId;
   const own = resolution.conflicts.filter(c => c.instanceIds.includes(scope.instanceId)).length;
-  return computeMaterials(resolution.world, { scope, include, conflicts: own });
+  const entities = resolution.placed.find(p => p.instance.id === scope.instanceId)?.payload.entities ?? [];
+  return computeMaterials(resolution.world, { scope, include, conflicts: own, entities });
 }
 
 /** Payloads are immutable, so the whole-world lookup is built once per payload. */
@@ -400,6 +458,18 @@ export function materialsToCsv(report: MaterialReport): string {
   for (const l of report.items) rows.push(['Item', l.itemId, l.count, l.stackSize, formatStacks(l), l.slots, l.confidence === 'assumed' ? 'Annahme' : 'Katalog',
     [...new Set(l.sources.map(s => s.note).filter(Boolean))].join(' | ')]);
   for (const u of report.unresolved) rows.push(['Ungelöst', u.state.id, u.count, '', '', '', u.reason, u.message]);
+  for (const c of report.contents ?? []) rows.push(['Inhalt', c.itemId, c.count, '', '', '', 'Ausstattung', c.places.map(p => `${p.count}× ${p.label}`).join(' | ')]);
   rows.push(['Summe', '', report.totals.items, '', '', report.totals.slots, report.complete ? 'vollständig' : 'unvollständig', `${report.totals.shulkerBoxes} Shulkerkisten`]);
   return rows.map(r => r.map(q).join(';')).join('\n') + '\n';
+}
+
+const CONTAINER_LABEL: Readonly<Record<string, string>> = {
+  chest: 'Truhe', trapped_chest: 'Redstone-Truhe', barrel: 'Fass', hopper: 'Trichter', dispenser: 'Werfer', dropper: 'Spender', furnace: 'Ofen',
+  blast_furnace: 'Schmelzofen', smoker: 'Räucherofen', brewing_stand: 'Braustand', shulker_box: 'Shulkerkiste', decorated_pot: 'Verzierter Krug',
+  lectern: 'Lesepult', jukebox: 'Plattenspieler', chiseled_bookshelf: 'Gemeißeltes Bücherregal', campfire: 'Lagerfeuer', crafter: 'Werkbank (Crafter)',
+};
+/** German label of a block entity type for content lists. */
+export function containerLabel(id: string): string {
+  const name = id.replace(/^minecraft:/, '');
+  return CONTAINER_LABEL[name] ?? (name.endsWith('shulker_box') ? 'Shulkerkiste' : name.endsWith('copper_chest') ? 'Kupfertruhe' : name.endsWith('campfire') ? 'Lagerfeuer' : name || 'Behälter');
 }

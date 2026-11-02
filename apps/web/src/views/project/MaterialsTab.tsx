@@ -9,11 +9,11 @@ import type { RawMaterialsSettings } from './RawMaterialsPanel';
 import type { ProjectSession } from './session';
 
 const reasonLabel: Record<UnresolvedReason, string> = {
-  'liquid': 'Flüssigkeit', 'mod-namespace': 'Modblock', 'no-item': 'kein Bauitem', 'creative-only': 'nur Kreativ', 'invalid-state': 'ungültiger Zustand',
+  'liquid': 'Flüssigkeit', 'mod-namespace': 'Modblock', 'no-item': 'kein Bauitem', 'creative-only': 'nur Kreativ', 'invalid-state': 'ungültiger Zustand', 'mob': 'Lebewesen',
 };
 const ruleLabel = {
   direct: 'Block = Item', renamed: 'anderes Item', 'wall-variant': 'Wandvariante', multiblock: 'Mehrblockobjekt', slab: 'Stufe',
-  count: 'Anzahl im Block', composite: 'zusammengesetzt', derived: 'abgeleitet', assumed: 'Annahme',
+  count: 'Anzahl im Block', composite: 'zusammengesetzt', derived: 'abgeleitet', assumed: 'Annahme', entity: 'Entity',
 } as const;
 const short = (id: string): string => id.replace(/^minecraft:/, '');
 const props = (p: Readonly<Record<string, string>>): string => Object.entries(p).map(([k, v]) => `${k}=${v}`).join(', ');
@@ -75,6 +75,14 @@ export function MaterialsTab({ session }: { session: ProjectSession }) {
             <td><code>{u.state.id}</code>{Object.keys(u.state.properties).length > 0 && <small>{props(u.state.properties)}</small>}</td>
             <td className="num">{formatNumber(u.count)}</td><td><em className="badge danger">{reasonLabel[u.reason]}</em> {u.message}</td>
           </tr>)}</tbody>
+        </table></div>
+      </>}
+      {(report.contents?.length ?? 0) > 0 && <>
+        <h3 className="materials-title">Ausstattung und Inhalte <small>in Rahmen, an Rüstungsständern und in Behältern · nicht in den Bauitems</small></h3>
+        <div className="table-wrap"><table className="materials-table" data-testid="material-contents">
+          <thead><tr><th>Item</th><th className="num">Menge</th><th>Wo</th></tr></thead>
+          <tbody>{report.contents.map(c => <tr key={c.itemId}><td><code>{short(c.itemId)}</code></td><td className="num">{formatNumber(c.count)}</td>
+            <td>{c.places.map(p => `${p.count}× ${p.label}`).join(' · ')}</td></tr>)}</tbody>
         </table></div>
       </>}
       <details className="materials-placed"><summary>Platzierte Blockzustände ({report.placed.states.length}) · {formatNumber(report.placed.air)} Luft · {formatNumber(report.placed.erase)} Löschen</summary>

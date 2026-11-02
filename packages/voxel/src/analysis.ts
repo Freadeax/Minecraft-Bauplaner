@@ -1,5 +1,6 @@
 import type { BlockState, Vec3, VoxelPayload } from './types.js';
 import { createPayload, stateKey, validatePayload } from './validation.js';
+import { entityAnchor } from './entities.js';
 
 /** Counts selected placed block states only. No item or raw-material inference. */
 export function countBlocks(payload: VoxelPayload): {
@@ -33,5 +34,6 @@ export function selectLayers(payload: VoxelPayload, axis: 'x' | 'y' | 'z', min: 
   const selected = (position: Vec3): boolean => position[index]! >= min && position[index]! < maxExclusive;
   return createPayload({ ...payload, bounds: { min: lo, maxExclusive: hi },
     cells: payload.cells.filter(c=>selected(c.position)), blockEntities: payload.blockEntities.filter(e=>selected(e.position)),
+    ...(payload.entities && { entities: payload.entities.filter(e=>selected(entityAnchor(e))) }),
   });
 }

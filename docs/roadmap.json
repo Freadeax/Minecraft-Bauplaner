@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T12:25:42.264Z",
+  "updatedAt": "2026-11-02T12:23:17.039Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -12,7 +12,8 @@
     "GFX-01",
     "MODEL-01",
     "MAP-03",
-    "EDIT-04"
+    "EDIT-04",
+    "ENTITY-01"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -4686,6 +4687,98 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-01T13:36:58.036Z"
+    },
+    {
+      "id": "ENTITY-01",
+      "title": "Gemälde, Rahmen, Rüstungsständer und Blockinhalte",
+      "phase": "P2",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Gemälde, Rahmen und Rüstungsständer darstellen“)",
+      "dependencies": [
+        "FORMAT-02"
+      ],
+      "scope": [
+        "packages/voxel/src/entities.ts",
+        "packages/voxel/src/types.ts",
+        "packages/voxel/src/validation.ts",
+        "packages/voxel/src/transforms.ts",
+        "packages/formats/src/entityIo.ts",
+        "packages/formats/src/litematic.ts",
+        "packages/formats/src/litematicWrite.ts",
+        "packages/formats/src/schem.ts",
+        "packages/formats/src/schemWrite.ts",
+        "packages/domain/src/compose.ts",
+        "packages/domain/src/materials.ts",
+        "packages/domain/src/guide.ts",
+        "packages/domain/src/editor/draft.ts",
+        "apps/web/src/blockmodels/entityShapes.ts",
+        "apps/web/src/blockmodels/entityScene.ts",
+        "apps/web/src/viewer/ContentInfo.tsx",
+        "apps/web/src/editor/EntityPanel.tsx",
+        "docs/architecture/ENTITIES.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "ENTITY-01-S01",
+          "title": "Datenmodell freie Entities (optional in der Nutzlast), Geometrie hängender Entities, Drehen/Spiegeln, Validierung.",
+          "done": true
+        },
+        {
+          "id": "ENTITY-01-S02",
+          "title": "Litematic- und Schem-Import/-Export der Entities mit Bericht.",
+          "done": true
+        },
+        {
+          "id": "ENTITY-01-S03",
+          "title": "Anzeige in 3D, Vorschaubildern und Ebenen; Karten für Entities und Blockinhalte (Schilder, Behälter, Banner).",
+          "done": true
+        },
+        {
+          "id": "ENTITY-01-S04",
+          "title": "Materialliste (Ausstattung und Inhalte) und Bauanleitungsschritt „Ausstattung“.",
+          "done": true
+        },
+        {
+          "id": "ENTITY-01-S05",
+          "title": "Werkstatt: Gemälde, Rahmen, Rüstungsständer platzieren und entfernen, rückgängig machbar.",
+          "done": true
+        },
+        {
+          "id": "ENTITY-01-S06",
+          "title": "Export mit Entities im Spiel laden (Litematica/WorldEdit, Philipps PC).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Echte Litematica-Dateien behalten Gemälde/Rahmen/Rüstungsständer an der richtigen Stelle; Roundtrip Litematic und Schem verlustfrei; alte Nutzlasten unverändert; keine Mojang-Texturen."
+      ],
+      "next": "Export mit Entities im Spiel prüfen; Entities bei Auswahl-Verschieben in der Werkstatt mitnehmen; Truhen-/Schildinhalte bearbeiten.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/entities.test.mjs",
+          "note": "Geometrie, Drehung/Spiegelung, Litematic-/Schem-Roundtrip, Inhalte, Materialliste, Bauanleitung, Draft."
+        },
+        {
+          "path": "tests/e2e/entities.e2e.mjs",
+          "note": "Werkstatt: platzieren, Rückgängig, 3D-Zählung, Steckbrief, Ebenenlegende."
+        },
+        {
+          "path": "docs/architecture/ENTITIES.md",
+          "note": "Vertrag und Grenzen."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Unit- und Browsertests grün; Laden im Spiel offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-02T12:23:17.039Z"
     }
   ],
   "events": [
@@ -8158,6 +8251,70 @@
           "done": 6,
           "total": 7,
           "next": "Abnahme im Spiel; PROFILE-01 kann die Berichtsfakten übernehmen. Die Katalogfehler aus der Spielprüfung behebt BLOCK-02."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T12:23:17.039Z",
+      "kind": "progress",
+      "items": [
+        "ENTITY-01"
+      ],
+      "summary": "Gemälde, Rahmen, Rüstungsständer und Blockinhalte: Import/Export, 3D/Bilder/Ebenen, Materialliste, Bauanleitung, Werkstatt",
+      "files": [
+        "apps/web/src/blockmodels/entityScene.ts",
+        "apps/web/src/blockmodels/entityShapes.ts",
+        "apps/web/src/blockmodels/renderers.ts",
+        "apps/web/src/editor/BlockEditor.tsx",
+        "apps/web/src/editor/EntityPanel.tsx",
+        "apps/web/src/editor/WorkshopPage.tsx",
+        "apps/web/src/schem/LayerSheet.tsx",
+        "apps/web/src/schem/SchemView.tsx",
+        "apps/web/src/thumbnail/Thumb.tsx",
+        "apps/web/src/thumbnail/glShot.ts",
+        "apps/web/src/viewer/BlockInfo.tsx",
+        "apps/web/src/viewer/ContentInfo.tsx",
+        "apps/web/src/viewer/ThreeViewer.tsx",
+        "apps/web/src/viewer/content.css",
+        "apps/web/src/viewer/types.ts",
+        "apps/web/src/views/project/BuildTab.tsx",
+        "apps/web/src/views/project/EditorTab.tsx",
+        "apps/web/src/views/project/FurnishList.tsx",
+        "apps/web/src/views/project/MaterialsTab.tsx",
+        "apps/web/src/views/project/buildrun/BuildFocus.tsx",
+        "apps/web/src/views/project/buildrun/PrintSheet.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/architecture/ENTITIES.md",
+        "docs/architecture/LITEMATIC.md",
+        "packages/domain/src/compose.ts",
+        "packages/domain/src/editor/draft.ts",
+        "packages/domain/src/guide.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/materials.ts",
+        "packages/formats/src/entityIo.ts",
+        "packages/formats/src/litematic.ts",
+        "packages/formats/src/litematicWrite.ts",
+        "packages/formats/src/schem.ts",
+        "packages/formats/src/schemWrite.ts",
+        "packages/voxel/src/analysis.ts",
+        "packages/voxel/src/entities.ts",
+        "packages/voxel/src/index.ts",
+        "packages/voxel/src/transforms.ts",
+        "packages/voxel/src/types.ts",
+        "packages/voxel/src/validation.ts",
+        "tests/e2e/entities.e2e.mjs",
+        "tests/editor.test.mjs",
+        "tests/entities.test.mjs",
+        "tests/litematic.test.mjs",
+        "tests/voxel.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "ENTITY-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Export mit Entities im Spiel prüfen; Entities bei Auswahl-Verschieben in der Werkstatt mitnehmen; Truhen-/Schildinhalte bearbeiten."
         }
       ]
     }

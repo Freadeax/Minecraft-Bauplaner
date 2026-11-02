@@ -14,3 +14,4 @@ export { vanillaBlockIds, vanillaBlockProperties, isVanillaBlock, BLOCK_REGISTRY
 export * from './blocklogic/index.js';
 export { packCells, unpackCells, PACKED_CELLS_ENCODING, PackedCellsError } from './packedCells.js';
 export type { PackedCells } from './packedCells.js';
+export * from './entities.js';

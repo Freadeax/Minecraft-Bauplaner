@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-02T12:25:42.264Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-02T12:23:17.039Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-02T12:25:42.264Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 15 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 33 |
+| 🧩 Implementiert · Abnahme offen | 34 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -31,6 +31,7 @@ Stand: 2026-11-02T12:25:42.264Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 - **MODEL-01 · 3D-Export: Bauteile, Projekte und Anlagen als OBJ/MTL, glTF/GLB, STL und 3MF (Ansichtsmodell mit Blockformen/Texturen, wasserdichte Druckhülle mit Maßstab, Füllen, Aushöhlen, Farben)** — 🧩 Implementiert · Abnahme offen, 4/6 Teilschritte. Nächster Schritt: Dateien in Blender und Slicern prüfen und ein Testdruck; danach Worker und Flächenzusammenfassung (S06).
 - **MAP-03 · Live-Karte mit Spielanbindung: Weltplan auf der Karte, Live-Position/Gelände/Fortschritt aus der Mod, Übergabe an die Mod** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server.
 - **EDIT-04 · Kreativwerkzeuge aus dem Planer-Vergleich: Symmetrie, Kurven, Naturwerkzeuge, Oberflächenmaske, Farbpaletten, Bild → Blöcke** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: Spielprüfung gespiegelter Zustände; danach Gelände-Werkzeuge auf Projektgelände (eigener Thread) und Symmetrie/Kurven im Mod.
+- **ENTITY-01 · Gemälde, Rahmen, Rüstungsständer und Blockinhalte** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Export mit Entities im Spiel prüfen; Entities bei Auswahl-Verschieben in der Werkstatt mitnehmen; Truhen-/Schildinhalte bearbeiten.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -105,6 +106,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen | 2/3 | PERF-01 | `7dffd92` | `7dffd92` |
 | [PERF-03](#perf-03) | Bundle, große Views und Vorschaucache | ⏳ Offen | 0/3 | ARCH-01, QA-01 | ausstehend | ausstehend |
 | [VIEW-01](#view-01) | Vorhandenen Viewer vollständig abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | QA-01 | `84838f0` | `e232b26` |
+| [ENTITY-01](#entity-01) | Gemälde, Rahmen, Rüstungsständer und Blockinhalte | 🧩 Implementiert · Abnahme offen | 5/6 | FORMAT-02 | ausstehend | ausstehend |
 
 ## P3: Architekturwerkbank und Bauablauf ausbauen
 
@@ -1659,6 +1661,29 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/catalog.test.mjs](../tests/catalog.test.mjs) — Alle 336 Gebäude: Schema, vier Drehungen, doppelte Spiegelung, Material-/Rezeptlücken, Ensembles.; [packages/domain/src/build/sets/index.ts](../packages/domain/src/build/sets/index.ts) — 12 neue Sets (159 Gebäude) plus 20 Materialvarianten.; [docs/architecture/CATALOG.md](architecture/CATALOG.md) — Abschnitt Katalog v3 mit Sets, Facetten, Ensembles und Grenzen.
 
 **Dateiumfang:** `packages/domain/src/build/`, `packages/domain/src/catalog.ts`, `packages/domain/src/ensembles.ts`, `docs/architecture/CATALOG.md`, `apps/web/src/colors.ts`. **Abhängigkeiten:** LIB-01. **Alte IDs:** B9-B.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### ENTITY-01
+
+**Gemälde, Rahmen, Rüstungsständer und Blockinhalte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemälde, Rahmen und Rüstungsständer darstellen“) · Aktualisiert: 2026-11-02T12:23:17.039Z
+
+- [x] ENTITY-01-S01: Datenmodell freie Entities (optional in der Nutzlast), Geometrie hängender Entities, Drehen/Spiegeln, Validierung.
+- [x] ENTITY-01-S02: Litematic- und Schem-Import/-Export der Entities mit Bericht.
+- [x] ENTITY-01-S03: Anzeige in 3D, Vorschaubildern und Ebenen; Karten für Entities und Blockinhalte (Schilder, Behälter, Banner).
+- [x] ENTITY-01-S04: Materialliste (Ausstattung und Inhalte) und Bauanleitungsschritt „Ausstattung“.
+- [x] ENTITY-01-S05: Werkstatt: Gemälde, Rahmen, Rüstungsständer platzieren und entfernen, rückgängig machbar.
+- [ ] ENTITY-01-S06: Export mit Entities im Spiel laden (Litematica/WorldEdit, Philipps PC).
+
+**Abnahme:** Echte Litematica-Dateien behalten Gemälde/Rahmen/Rüstungsständer an der richtigen Stelle; Roundtrip Litematic und Schem verlustfrei; alte Nutzlasten unverändert; keine Mojang-Texturen.
+
+**Nächste Aktion:** Export mit Entities im Spiel prüfen; Entities bei Auswahl-Verschieben in der Werkstatt mitnehmen; Truhen-/Schildinhalte bearbeiten.
+
+**Prüfstand:** Unit- und Browsertests grün; Laden im Spiel offen.
+
+**Nachweise:** [tests/entities.test.mjs](../tests/entities.test.mjs) — Geometrie, Drehung/Spiegelung, Litematic-/Schem-Roundtrip, Inhalte, Materialliste, Bauanleitung, Draft.; [tests/e2e/entities.e2e.mjs](../tests/e2e/entities.e2e.mjs) — Werkstatt: platzieren, Rückgängig, 3D-Zählung, Steckbrief, Ebenenlegende.; [docs/architecture/ENTITIES.md](architecture/ENTITIES.md) — Vertrag und Grenzen.
+
+**Dateiumfang:** `packages/voxel/src/entities.ts`, `packages/voxel/src/types.ts`, `packages/voxel/src/validation.ts`, `packages/voxel/src/transforms.ts`, `packages/formats/src/entityIo.ts`, `packages/formats/src/litematic.ts`, `packages/formats/src/litematicWrite.ts`, `packages/formats/src/schem.ts`, `packages/formats/src/schemWrite.ts`, `packages/domain/src/compose.ts`, `packages/domain/src/materials.ts`, `packages/domain/src/guide.ts`, `packages/domain/src/editor/draft.ts`, `apps/web/src/blockmodels/entityShapes.ts`, `apps/web/src/blockmodels/entityScene.ts`, `apps/web/src/viewer/ContentInfo.tsx`, `apps/web/src/editor/EntityPanel.tsx`, `docs/architecture/ENTITIES.md`. **Abhängigkeiten:** FORMAT-02. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

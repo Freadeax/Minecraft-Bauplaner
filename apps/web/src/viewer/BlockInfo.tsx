@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { inspectCell } from '../../../../packages/domain/src/index.js';
 import type { Resolution } from '../../../../packages/domain/src/index.js';
 import type { BlockState, Vec3 } from '../../../../packages/voxel/src/index.js';
+import { BlockContent, contentAt } from './ContentInfo';
 
 const xyz = (p: Vec3) => `X ${p[0]} · Y ${p[1]} · Z ${p[2]}`;
 const stateText = (s: BlockState | null) => s ? `${s.id}${Object.keys(s.properties).length ? `[${Object.entries(s.properties).map(([k, v]) => `${k}=${v}`).join(',')}]` : ''}` : 'Löschzelle';
@@ -9,6 +10,7 @@ const stateText = (s: BlockState | null) => s ? `${s.id}${Object.keys(s.properti
 /** Inspector card for a picked block: world coordinate, block state and the local coordinate in each contributing instance. */
 export function BlockInfo({ resolution, position, onSelectInstance }: { resolution: Resolution; position: Vec3; onSelectInstance: (id: string) => void }) {
   const info = useMemo(() => inspectCell(resolution, position), [resolution, position]);
+  const content = useMemo(() => resolution.world ? contentAt(resolution.world, position) : null, [resolution, position]);
   if (!info.cell) return null;
   return <section className="block-info" aria-label="Gewählter Block" aria-live="polite">
     <span className="panel-kicker">GEWÄHLTER BLOCK</span>
@@ -20,6 +22,7 @@ export function BlockInfo({ resolution, position, onSelectInstance }: { resoluti
           {info.sources.length > 1 && <> · {stateText(s.state)}</>}</dd>
       </div>)}
     </dl>
+    {content && <BlockContent content={content} />}
     {info.conflict && <p className="badge danger">Ungeklärter Konflikt – Vorschau zeigt die erste Instanz.</p>}
     {info.overridden && <p className="muted">Per Vorrang entschieden.</p>}
   </section>;

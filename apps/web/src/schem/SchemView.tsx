@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
-import type { Cell, VoxelPayload } from '../../../../packages/voxel/src/index.js';
+import { useState } from 'react';
+import type { Cell, FreeEntity, VoxelPayload } from '../../../../packages/voxel/src/index.js';
+import { BlockContent, EntityCard, FurnishingSummary, contentAt } from '../viewer/ContentInfo';
 import { Viewer } from '../Viewer';
 import type { Mark } from '../viewer/types';
 import { useLayerFilter } from '../viewer/LayerControl';
@@ -29,7 +30,10 @@ export function SchemView({ payload, cacheKey, name, tab, onTab, markFor, tabs =
   tabs?: readonly (readonly [SchemTab, string])[];
 }) {
   const layers = useLayerFilter(payload);
-  const noSelect = useMemo(() => () => {}, []);
+  // Clicking shows what a block or entity holds (sign text, chest items, painting, armor) (ENTITY-01).
+  const [picked, setPicked] = useState<Cell | null>(null);
+  const [entity, setEntity] = useState<FreeEntity | null>(null);
+  const content = picked && picked.kind === 'block' ? contentAt(payload, picked.position) : null;
   return <div className="schem-view">
     <div className="schem-tabs" role="tablist" aria-label="Ansicht">
       {tabs.map(([id, label]) => <button key={id} type="button" role="tab" id={`schem-tab-${id}`} aria-selected={tab === id} aria-controls={`schem-panel-${id}`}
@@ -42,9 +46,12 @@ export function SchemView({ payload, cacheKey, name, tab, onTab, markFor, tabs =
     <div className="schem-panel" role="tabpanel" id={`schem-panel-${tab}`} aria-labelledby={`schem-tab-${tab}`}>
       {tab === '3d' && <>
         <div className="viewport detail-stage">
-          <Viewer key={cacheKey} payload={payload} cells={layers.visible?.cells ?? payload.cells} onSelect={noSelect} {...(markFor && { markFor })} />
+          <Viewer key={cacheKey} payload={payload} cells={layers.visible?.cells ?? payload.cells} onSelect={setPicked} onSelectEntity={setEntity} {...(markFor && { markFor })} />
         </div>
         {layers.control}
+        {entity && <EntityCard entity={entity} />}
+        {content && <BlockContent content={content} />}
+        <FurnishingSummary payload={payload} />
       </>}
       {tab === 'bilder' && <ShotGallery key={cacheKey} payload={payload} cacheKey={cacheKey} name={name} />}
       {tab === 'ebenen' && <LayerSheet key={cacheKey} payload={payload} name={name} />}

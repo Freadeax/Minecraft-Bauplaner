@@ -1,4 +1,4 @@
-import type { Bounds, Cell, VoxelPayload } from '../../../../packages/voxel/src/index.js';
+import type { Bounds, Cell, FreeEntity, VoxelPayload } from '../../../../packages/voxel/src/index.js';
 import type { Mark } from '../blockmodels/mesh';
 import type { DragHandler, GhostTone } from './sceneController';
 export type { Mark } from '../blockmodels/mesh';
@@ -24,4 +24,11 @@ export interface ViewerProps {
   readonly ghost?: { readonly bounds: Bounds; readonly tone: GhostTone } | null;
   /** Frames `bounds` once whenever `seq` changes (e.g. “Hinfliegen” on the world map); works in orbit and flight. */
   readonly frameRequest?: { readonly bounds: Bounds; readonly seq: number } | null;
+  /**
+   * Free entities to draw (paintings, frames, armor stands). Absent ⇒ the payload's entities within the Y range
+   * of the visible cells (follows layer filters); null ⇒ none.
+   */
+  readonly entities?: readonly FreeEntity[] | null;
+  /** Picking an entity selects it here (and clears the block selection). */
+  readonly onSelectEntity?: (entity: FreeEntity | null) => void;
 }

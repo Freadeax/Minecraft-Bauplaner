@@ -18,6 +18,12 @@ export type Cell =
   | { readonly position: Vec3; readonly kind: 'block' | 'air'; readonly paletteIndex: number }
   | { readonly position: Vec3; readonly kind: 'erase' };
 export interface BlockEntity { readonly position: Vec3; readonly data: NbtTag }
+/**
+ * Free entity (painting, item frame, armor stand …) in the payload frame. `position` is the entity's exact
+ * position (Minecraft `Pos`, block units, may be fractional) and is authoritative: position fields inside
+ * `data` (`Pos`, `TileX/Y/Z`, `block_pos`) are left out on import and written anew on export.
+ */
+export interface FreeEntity { readonly position: readonly [number, number, number]; readonly data: NbtTag }
 export interface VoxelPayload {
   readonly schemaVersion: 1;
   /** Explicit application profile identifier, not a compatibility claim. */
@@ -29,6 +35,8 @@ export interface VoxelPayload {
   /** Sparse selected cells. Missing cells are unselected, never implicitly air. */
   readonly cells: readonly Cell[];
   readonly blockEntities: readonly BlockEntity[];
+  /** Optional (absent = none), so payloads and hashes without entities stay unchanged. */
+  readonly entities?: readonly FreeEntity[];
 }
 export interface Transform {
   readonly position: Vec3;

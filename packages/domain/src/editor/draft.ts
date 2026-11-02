@@ -1,5 +1,6 @@
 import { AIR_IDS, createPayload, stateKey } from '../../../voxel/src/validation.js';
-import type { BlockState, Bounds, Cell, NbtTag, Vec3, VoxelPayload } from '../../../voxel/src/types.js';
+import type { BlockState, Bounds, Cell, FreeEntity, NbtTag, Vec3, VoxelPayload } from '../../../voxel/src/types.js';
+import { entityAnchor } from '../../../voxel/src/entities.js';
 import { canonicalJson } from '../hash.js';
 import { DomainError } from '../types.js';
 
@@ -43,8 +44,11 @@ export function sameSlot(a: CellSlot | undefined, b: CellSlot | undefined): bool
 }
 
 export interface CellChange { readonly position: Vec3; readonly value: CellSlot }
-/** One undoable editor step. */
-export interface Edit { readonly label: string; readonly changes: readonly CellChange[] }
+/**
+ * One undoable editor step. `entities` (optional) replaces the whole list of free entities (paintings,
+ * frames, armor stands); the inverse carries the previous list.
+ */
+export interface Edit { readonly label: string; readonly changes: readonly CellChange[]; readonly entities?: readonly FreeEntity[] }
 
 export interface Draft {
   readonly profileId: string;
@@ -54,6 +58,8 @@ export interface Draft {
   readonly baseCells: ReadonlyMap<string, CellValue>;
   /** Edited positions → new value (null = removed from the model). Positions equal to the base are not stored. */
   readonly overlay: ReadonlyMap<string, CellSlot>;
+  /** Free entities of the model (starts with the base's). */
+  readonly entities: readonly FreeEntity[];
 }
 
 export interface DraftHistory {
@@ -81,7 +87,7 @@ export function payloadCells(payload: VoxelPayload): Map<string, CellValue> {
 export function createDraft(base: VoxelPayload | null, profileId?: string): Draft {
   const profile = profileId ?? base?.profileId;
   if (!profile) throw new DomainError('INVALID', 'Für ein leeres Modell ist eine Profilkennung erforderlich');
-  return { profileId: profile, base, baseCells: base ? payloadCells(base) : new Map(), overlay: new Map() };
+  return { profileId: profile, base, baseCells: base ? payloadCells(base) : new Map(), overlay: new Map(), entities: base?.entities ?? [] };
 }
 
 /** Current value of a cell (overlay first, then base). */
@@ -115,9 +121,14 @@ export function applyEdit(draft: Draft, edit: Edit): { draft: Draft; inverse: Ed
     if (!seen.has(k)) { inverse.unshift({ position: p, value: before }); seen.add(k); }
     if (sameSlot(draft.baseCells.get(k) ?? null, change.value)) overlay.delete(k); else overlay.set(k, change.value);
   }
-  const next: Draft = { ...draft, overlay };
+  const before = draft.entities ?? [];
+  const entitiesChanged = edit.entities !== undefined && canonicalJson(edit.entities) !== canonicalJson(before);
+  if (entitiesChanged) for (const e of edit.entities!) {
+    if (!e.position.every(n => Number.isFinite(n))) throw new DomainError('INVALID', 'Entity-Position muss endlich sein');
+  }
+  const next: Draft = { ...draft, overlay, entities: entitiesChanged ? edit.entities! : before };
   if (inverse.length && draftCellCount(next) > MAX_DRAFT_CELLS) throw new DomainError('LIMIT', `Das Modell darf höchstens ${MAX_DRAFT_CELLS.toLocaleString('de-DE')} Zellen haben.`);
-  return { draft: next, inverse: { label: edit.label, changes: inverse }, changed: inverse.length };
+  return { draft: next, inverse: { label: edit.label, changes: inverse, ...(entitiesChanged && { entities: before }) }, changed: inverse.length + (entitiesChanged ? 1 : 0) };
 }
 
 export function executeEdit(draft: Draft, history: DraftHistory, edit: Edit): { draft: Draft; history: DraftHistory; changed: number } {
@@ -146,12 +157,18 @@ export function draftEntries(draft: Draft): Map<string, CellValue> {
   return out;
 }
 
-export interface DraftSummary { readonly added: number; readonly removed: number; readonly changed: number }
+export interface DraftSummary {
+  readonly added: number; readonly removed: number; readonly changed: number;
+  /** Free entities differ from the base (count of the draft's entities then, else 0). */
+  readonly entities: number;
+}
 /** Counts overlay positions by effect against the base. */
 export function summarizeDraft(draft: Draft): DraftSummary {
   let added = 0, removed = 0, changed = 0;
   for (const [k, v] of draft.overlay) { const b = draft.baseCells.has(k); if (!b) added++; else if (!v) removed++; else changed++; }
-  return { added, removed, changed };
+  const now = draft.entities ?? [], before = draft.base?.entities ?? [];
+  const entities = now === before || canonicalJson(now) === canonicalJson(before) ? 0 : Math.max(1, now.length);
+  return { added, removed, changed, entities };
 }
 
 function cellBox(keys: Iterable<string>): Bounds | null {
@@ -193,10 +210,12 @@ export function materializeDraft(draft: Draft): VoxelPayload | null {
       if (v.entity) blockEntities.push({ position: p, data: v.entity });
     }
   }
-  const bounds = union(draft.base?.bounds ?? null, cellBox(entries.keys()))!;
+  const entities = draft.entities ?? [];
+  // The box grows to every cell and to the cell each entity belongs to.
+  const bounds = union(union(draft.base?.bounds ?? null, cellBox(entries.keys())), cellBox(entities.map(e => posKey(entityAnchor(e)))))!;
   return createPayload({
     schemaVersion: 1, profileId: draft.base?.profileId ?? draft.profileId, bounds,
     pivot: draft.base?.pivot ?? bounds.min, sourceOrigin: draft.base?.sourceOrigin ?? [0, 0, 0],
-    palette, cells, blockEntities,
+    palette, cells, blockEntities, ...(entities.length && { entities }),
   });
 }

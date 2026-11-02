@@ -24,6 +24,7 @@ import { PrintSheet } from './buildrun/PrintSheet';
 import { SessionsView } from './buildrun/SessionsView';
 import { StepRows, useStepRuns } from './buildrun/StepRows';
 import '../../buildrun.css';
+import { FurnishList } from './FurnishList';
 
 type Filter = 'all' | 'todo' | 'review';
 const STATUS_LABEL: Readonly<Record<StepStatus, string>> = { open: 'offen', done: 'abgehakt', review: 'prüfbedürftig' };
@@ -270,6 +271,7 @@ function StepDetail({ anchor, lookup, step, guide, status, game, ready, world, i
       <thead><tr><th>Block</th><th>Anzahl</th></tr></thead>
       <tbody>{step.materials.map(m => <tr key={m.key}><td><i style={{ background: stateColor(m.state.id) }} aria-hidden="true" /><code>{stateText(m.state)}</code></td><td>{formatNumber(m.count)}</td></tr>)}</tbody></table>}
     {items && <StepItems report={items} />}
+    <FurnishList step={step} />
     <StepRows runs={runs} anchor={anchor} />
     {(step.air > 0 || step.erase > 0) && <p className="muted">{step.air > 0 && `${step.air} Zellen ausdrücklich Luft (freihalten). `}{step.erase > 0 && `${step.erase} Zellen abbauen/löschen.`}</p>}
     {step.notes.length > 0 && <ul className="build-notes">{step.notes.map(n => <li key={n}>{n}</li>)}</ul>}
