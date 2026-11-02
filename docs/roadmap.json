@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T23:00:01.616Z",
+  "updatedAt": "2026-11-02T23:03:24.346Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -5617,7 +5617,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T23:00:01.616Z"
+      "updatedAt": "2026-11-02T23:03:24.346Z"
     },
     {
       "id": "QA-04",
@@ -10042,6 +10042,26 @@
           "done": 0,
           "total": 4,
           "next": "Umsetzung im Mod-Thread nach der Testphase; Vertrag in LIVE_LINK.md „Protokoll 2 (Entwurf)“."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T23:03:24.346Z",
+      "kind": "progress",
+      "items": [
+        "MAP-06"
+      ],
+      "summary": "STATUS: Weltkarte und Spielanbindung nach MAP-06 nachgeführt",
+      "files": [
+        "docs/STATUS.md"
+      ],
+      "snapshot": [
+        {
+          "id": "MAP-06",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "Abnahme durch Philipp (S08); Mod-Umsetzung GAME-08; denkbar für Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (Zeitstempel je Eintrag)."
         }
       ]
     }

@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-02T23:00:01.616Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-02T23:03:24.346Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -1890,7 +1890,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAP-06
 
-**Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Weltkarte in die Tiefe ausbauen“) · Aktualisiert: 2026-11-02T23:00:01.616Z
+**Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Weltkarte in die Tiefe ausbauen“) · Aktualisiert: 2026-11-02T23:03:24.346Z
 
 - [x] MAP-06-S01: Plan und Vertrag: Stufen festgelegt, Mod-Protokoll 2 (hello.features marks2/players) als Entwurf in LIVE_LINK.md, GAME-08 für den Mod-Thread angelegt.
 - [x] MAP-06-S02: Weltplan-Schema 2: Zonen (Polygon, Art, Fläche), Ebene und Farbe je Eintrag, neue Punktarten; Schema 1 lesbar, Umkehrungen, Sicherung.

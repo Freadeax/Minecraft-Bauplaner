@@ -3121,3 +3121,17 @@ MAP-06 Weltkarte in die Tiefe (Schema 2, Zonen, Ebenen, Messen, Route, Protokoll
 - `tests/worldplan.test.mjs`
 - `tests/worldroute.test.mjs`
 
+## 2026-11-02T23:03:24.346Z · progress
+
+**Aufgaben:** MAP-06
+
+STATUS: Weltkarte und Spielanbindung nach MAP-06 nachgeführt
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MAP-06 | 🧩 Implementiert · Abnahme offen | 7/8 | Abnahme durch Philipp (S08); Mod-Umsetzung GAME-08; denkbar für Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (Zeitstempel je Eintrag). |
+
+**Geänderte Dateien:**
+
+- `docs/STATUS.md`
+
