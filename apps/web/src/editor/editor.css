@@ -62,3 +62,33 @@
 .project-blocks{display:flex;flex-direction:column;gap:10px}
 @media (max-width:1180px){.editor-main{grid-template-columns:190px minmax(0,1fr)}.editor-side{grid-column:1/-1;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}.canvas-split.with-3d{grid-template-columns:1fr}}
 @media (max-width:720px){.editor-main{grid-template-columns:1fr}.tool-grid{grid-template-columns:repeat(3,1fr)}.layer-grid,.editor-3d .scene{height:340px}.editor-bar{position:static}.state-fields{grid-template-columns:1fr}}
+/* EDIT-03: Muster, Schablonen, Ebenenübersicht, Tastenkürzel */
+.tool-grid button{position:relative}
+.tool-grid kbd{position:absolute;right:5px;top:50%;transform:translateY(-50%);font:600 9px ui-monospace,monospace;color:var(--muted,#8aa0a8);border:1px solid var(--line,#26363d);border-radius:3px;padding:0 3px;background:transparent}
+.pattern-panel{display:flex;flex-direction:column;gap:7px;padding:8px;border:1px solid var(--line,#26363d);border-radius:8px;background:var(--panel,#13222a);font-size:12px}
+.pattern-kinds{display:flex;flex-wrap:wrap;gap:4px}
+.pattern-kinds button{font-size:11px;padding:4px 7px}
+.pattern-entries{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.pattern-entries li{display:flex;align-items:center;gap:5px;min-width:0}
+.pattern-entries .entry-name{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pattern-entries input{width:48px;flex:none}
+.block-editor .pattern-entries button{padding:2px 6px;flex:none}
+.swatch.small{width:16px;height:16px;border-radius:3px}
+.swatch.keep,.pattern-sample span.keep{background:repeating-linear-gradient(45deg,transparent 0 3px,rgba(127,127,127,.45) 3px 5px) !important}
+.pattern-sample{display:flex;flex-direction:column;border:1px solid var(--line,#26363d);border-radius:4px;overflow:hidden}
+.pattern-sample>div{display:flex}
+.pattern-sample span{flex:1;height:8px}
+.stencil-list{display:flex;flex-wrap:wrap;gap:4px}
+.block-editor .stencil-list button{font-size:11px;padding:4px 7px}
+.stencil-save{display:flex;gap:5px}
+.stencil-save input{flex:1;min-width:0}
+.layer-strip{display:flex;align-items:flex-end;gap:1px;height:28px;overflow-x:auto;overflow-y:hidden;padding:2px;border:1px solid var(--line,#26363d);border-radius:6px;background:var(--panel,#13222a)}
+.block-editor .layer-strip button{flex:0 0 9px;height:100%;padding:0;border:0;border-radius:2px;background:rgba(127,127,127,.12);display:flex;align-items:flex-end;box-shadow:none}
+.block-editor .layer-strip button span{display:block;width:100%;background:var(--muted,#8aa0a8);border-radius:2px}
+.block-editor .layer-strip button[aria-pressed=true]{background:rgba(91,227,181,.25);box-shadow:none}
+.block-editor .layer-strip button[aria-pressed=true] span{background:var(--mint,#5be3b5)}
+.shortcut-help dl{margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));gap:6px 20px}
+.shortcut-help dl>div{display:grid;grid-template-columns:190px 1fr;gap:10px}
+.shortcut-help dt{font-family:ui-monospace,monospace;font-size:11px;color:var(--mint,#5be3b5)}
+.shortcut-help dd{margin:0}
+@media (max-width:720px){.tool-grid kbd{display:none}.shortcut-help dl>div{grid-template-columns:1fr}}

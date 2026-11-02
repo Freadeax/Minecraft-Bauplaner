@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T05:07:24.985Z",
+  "updatedAt": "2026-11-02T05:30:31.682Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -8,7 +8,8 @@
     "EDIT-01",
     "EDIT-02",
     "GAME-05",
-    "BUILD-06"
+    "BUILD-06",
+    "EDIT-03"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -2133,6 +2134,84 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-01T14:29:20.816Z"
+    },
+    {
+      "id": "EDIT-03",
+      "title": "Werkstatt vertiefen: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Ebenenübersicht und Tastenkürzel",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude-Thread „Werkstatt zum Bauen ausbauen“",
+      "dependencies": [
+        "EDIT-02"
+      ],
+      "scope": [
+        "packages/domain/src/editor/patterns.ts",
+        "packages/domain/src/editor/shapes.ts",
+        "packages/domain/src/editor/stencils.ts",
+        "apps/web/src/editor/",
+        "tests/editor-patterns.test.mjs",
+        "tests/e2e/workshop-tools.e2e.mjs",
+        "docs/architecture/BLOCK_EDITOR.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "EDIT-03-S01",
+          "title": "Muster-Pinsel (Mischung mit Gewichten und Lücken, Verlauf entlang Achse oder radial, Schachbrett, Streifen) deterministisch für Setzen, Formen, Füllen, Auswahlfüllung und Ersetzen; Vorlagen.",
+          "done": true
+        },
+        {
+          "id": "EDIT-03-S02",
+          "title": "Formen Bogen (rund, spitz, flach; Pfosten, Tiefe, Wand mit Öffnung), Pyramide/Walmdach, Kegel, Mauerzug aus der Linie.",
+          "done": true
+        },
+        {
+          "id": "EDIT-03-S03",
+          "title": "Schablonen: eingebaute Details, eigene Schablonen als Bibliotheksbauteile, jedes Bauteil als Vorlage; Einfüge-Vorschau unter dem Zeiger, Drehen/Spiegeln vor dem Setzen.",
+          "done": true
+        },
+        {
+          "id": "EDIT-03-S04",
+          "title": "Bauen in Ebenen: Ebenenübersicht, 3D-Schnitt bis zur aktuellen Ebene, Maßanzeige beim Ziehen; Tastenkürzel mit Übersicht.",
+          "done": true
+        },
+        {
+          "id": "EDIT-03-S05",
+          "title": "Unit-, Browser- und Handyprüfung, Doku.",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "Gleiche Eingaben (inkl. Musterwürfelwert) ergeben dieselben Zellen und dieselbe Version.",
+        "Keine zweite Koordinaten- oder Drehregel; Schablonen drehen über transformClipboard.",
+        "Eigene Schablonen liegen als normale Bauteile in Speicher und Sicherung."
+      ],
+      "next": "Picking an 3D-Blockflächen; Spielprüfung der Schablonen-Zustände (Tür, Treppe, Laterne).",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/editor-patterns.test.mjs",
+          "note": "Muster, Formen mit Handzählung, Schablonen und Drehungen."
+        },
+        {
+          "path": "tests/e2e/workshop-tools.e2e.mjs",
+          "note": "Chromium 1400/390 px: Mauer mit Muster, Bogen, Schablone mit Vorschau und Drehen, Tastenkürzel, Schnitt, eigene Schablone, Ersetzen mit Muster."
+        },
+        {
+          "path": "docs/architecture/BLOCK_EDITOR.md",
+          "note": "Vertrag und Grenzen EDIT-03."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Unit- und Chromium-Prüfung bestanden; Spielprüfung, Firefox/Safari und Geräte offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-02T05:30:31.682Z"
     },
     {
       "id": "UPDATE-01",
@@ -5979,6 +6058,40 @@
           "done": 0,
           "total": 2,
           "next": "Updateplan mit Geometrie/Material/Anschluss-/Aufgabendiff erstellen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T05:30:31.682Z",
+      "kind": "progress",
+      "items": [
+        "EDIT-03"
+      ],
+      "summary": "Werkstatt vertieft: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Ebenenübersicht, 3D-Schnitt, Tastenkürzel. npm run check grün (476/477, 1 übersprungen), E2E 86/86.",
+      "files": [
+        "apps/web/src/editor/BlockEditor.tsx",
+        "apps/web/src/editor/LayerGrid.tsx",
+        "apps/web/src/editor/PatternPanel.tsx",
+        "apps/web/src/editor/StencilPanel.tsx",
+        "apps/web/src/editor/editor.css",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/BLOCK_EDITOR.md",
+        "packages/domain/src/editor/index.ts",
+        "packages/domain/src/editor/patterns.ts",
+        "packages/domain/src/editor/shapes.ts",
+        "packages/domain/src/editor/stencils.ts",
+        "tests/e2e/editor.e2e.mjs",
+        "tests/e2e/workshop-tools.e2e.mjs",
+        "tests/editor-patterns.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "EDIT-03",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Picking an 3D-Blockflächen; Spielprüfung der Schablonen-Zustände (Tür, Treppe, Laterne)."
         }
       ]
     }

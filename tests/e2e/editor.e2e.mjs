@@ -68,7 +68,7 @@ test('Werkstatt: neues Bauteil mit Quader, Treppenlinie, Rückgängig, Speichern
   // 7×7 walls, 3 high: 3 × 24 = 72 cells.
   await p.getByRole('radio', { name: /Quader/ }).click();
   await p.getByLabel('Höhe ab Ebene').fill('3');
-  await p.locator('.editor-tools select').selectOption('walls');
+  await p.getByLabel('Quaderform').selectOption('walls');
   await dragCells(p, [-3, -3], [3, 3]);
   await p.waitForFunction(() => document.querySelector('.editor-stats')?.textContent?.includes('72 Zellen'));
 

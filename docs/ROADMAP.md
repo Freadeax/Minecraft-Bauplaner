@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-02T05:07:24.985Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-02T05:30:31.682Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-02T05:07:24.985Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 16 |
 | 🚧 In Arbeit | 3 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 19 |
+| 🧩 Implementiert · Abnahme offen | 20 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -27,6 +27,7 @@ Stand: 2026-11-02T05:07:24.985Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 - **EDIT-02 · Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Picking an 3D-Blockflächen; Registerlücken mit PROFILE-01-Serverreport schließen; Spielprüfung.
 - **GAME-05 · NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen.
 - **BUILD-06 · Bauführung im Spiel: Schichtführung, Tagesziele, Packlisten, Druck-/Handyansicht, Spielfortschritt** — 🚧 In Arbeit, 0/5 Teilschritte. Nächster Schritt: Domäne buildRun.ts mit Tests, dann Oberfläche im Bauen-Tab.
+- **EDIT-03 · Werkstatt vertiefen: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Ebenenübersicht und Tastenkürzel** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Picking an 3D-Blockflächen; Spielprüfung der Schablonen-Zustände (Tür, Treppe, Laterne).
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -119,6 +120,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen | 5/6 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
 | [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-02, VIEW-01 | ausstehend | ausstehend |
 | [EDIT-02](#edit-02) | Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen | 🧩 Implementiert · Abnahme offen | 5/5 | VIEW-01, STORE-02 | ausstehend | ausstehend |
+| [EDIT-03](#edit-03) | Werkstatt vertiefen: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Ebenenübersicht und Tastenkürzel | 🧩 Implementiert · Abnahme offen | 5/5 | EDIT-02 | ausstehend | ausstehend |
 | [UPDATE-01](#update-01) | Kontrollierte Versionsupdates mit lokalen Overrides | 🚧 In Arbeit | 0/2 | DIFF-01, STORE-02 | ausstehend | ausstehend |
 | [LIB-02](#lib-02) | Eigene Sammlungen, Ordner und Kategorien | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-02, LIB-01 | ausstehend | ausstehend |
 | [LIB-03](#lib-03) | Eigene Ensembles und Generatorvorlagen speichern | 🧩 Implementiert · Abnahme offen | 2/2 | LIB-02, GEN-01 | ausstehend | ausstehend |
@@ -879,6 +881,28 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/editor.test.mjs](../tests/editor.test.mjs) — Unit-Tests Entwurf, Werkzeuge, Speichern, Projektzuordnung, Gruppenoperationen.; [tests/e2e/editor.e2e.mjs](../tests/e2e/editor.e2e.mjs) — Chromium: Werkstatt, Projekt-Reiter, Mehrfachauswahl, 390 px.; [docs/architecture/BLOCK_EDITOR.md](architecture/BLOCK_EDITOR.md) — Vertrag, Grenzen und Prüfbefehle.
 
 **Dateiumfang:** `packages/domain/src/editor/`, `apps/web/src/editor/`, `apps/web/src/views/project/BlocksTab.tsx`, `tests/editor.test.mjs`, `tests/e2e/editor.e2e.mjs`, `docs/architecture/BLOCK_EDITOR.md`. **Abhängigkeiten:** VIEW-01, STORE-02. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### EDIT-03
+
+**Werkstatt vertiefen: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Ebenenübersicht und Tastenkürzel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Werkstatt zum Bauen ausbauen“ · Aktualisiert: 2026-11-02T05:30:31.682Z
+
+- [x] EDIT-03-S01: Muster-Pinsel (Mischung mit Gewichten und Lücken, Verlauf entlang Achse oder radial, Schachbrett, Streifen) deterministisch für Setzen, Formen, Füllen, Auswahlfüllung und Ersetzen; Vorlagen.
+- [x] EDIT-03-S02: Formen Bogen (rund, spitz, flach; Pfosten, Tiefe, Wand mit Öffnung), Pyramide/Walmdach, Kegel, Mauerzug aus der Linie.
+- [x] EDIT-03-S03: Schablonen: eingebaute Details, eigene Schablonen als Bibliotheksbauteile, jedes Bauteil als Vorlage; Einfüge-Vorschau unter dem Zeiger, Drehen/Spiegeln vor dem Setzen.
+- [x] EDIT-03-S04: Bauen in Ebenen: Ebenenübersicht, 3D-Schnitt bis zur aktuellen Ebene, Maßanzeige beim Ziehen; Tastenkürzel mit Übersicht.
+- [x] EDIT-03-S05: Unit-, Browser- und Handyprüfung, Doku.
+
+**Abnahme:** Gleiche Eingaben (inkl. Musterwürfelwert) ergeben dieselben Zellen und dieselbe Version. Keine zweite Koordinaten- oder Drehregel; Schablonen drehen über transformClipboard. Eigene Schablonen liegen als normale Bauteile in Speicher und Sicherung.
+
+**Nächste Aktion:** Picking an 3D-Blockflächen; Spielprüfung der Schablonen-Zustände (Tür, Treppe, Laterne).
+
+**Prüfstand:** Unit- und Chromium-Prüfung bestanden; Spielprüfung, Firefox/Safari und Geräte offen.
+
+**Nachweise:** [tests/editor-patterns.test.mjs](../tests/editor-patterns.test.mjs) — Muster, Formen mit Handzählung, Schablonen und Drehungen.; [tests/e2e/workshop-tools.e2e.mjs](../tests/e2e/workshop-tools.e2e.mjs) — Chromium 1400/390 px: Mauer mit Muster, Bogen, Schablone mit Vorschau und Drehen, Tastenkürzel, Schnitt, eigene Schablone, Ersetzen mit Muster.; [docs/architecture/BLOCK_EDITOR.md](architecture/BLOCK_EDITOR.md) — Vertrag und Grenzen EDIT-03.
+
+**Dateiumfang:** `packages/domain/src/editor/patterns.ts`, `packages/domain/src/editor/shapes.ts`, `packages/domain/src/editor/stencils.ts`, `apps/web/src/editor/`, `tests/editor-patterns.test.mjs`, `tests/e2e/workshop-tools.e2e.mjs`, `docs/architecture/BLOCK_EDITOR.md`. **Abhängigkeiten:** EDIT-02. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

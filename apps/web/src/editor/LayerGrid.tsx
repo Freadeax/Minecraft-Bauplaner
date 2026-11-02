@@ -16,6 +16,10 @@ interface Props {
   /** Shape preview while dragging (positions on any layer; only this layer is drawn strongly). */
   readonly preview: readonly Vec3[];
   readonly previewColor: string;
+  /** Per-position colours of the preview (patterns, paste); falls back to `previewColor`. */
+  readonly previewColors?: readonly string[] | undefined;
+  /** Size of the shape being drawn, shown in the HUD. */
+  readonly previewInfo?: string;
   readonly picked: Vec3 | null;
   readonly onStroke: (s: Stroke) => void;
   readonly onHover: (cell: Vec3 | null) => void;
@@ -34,7 +38,7 @@ function fillFor(v: CellValue): string { return v.kind === 'block' ? topColor(v.
  * or Space+drag pans, wheel scrolls, Ctrl+wheel (or the buttons) zooms.
  * The layer below is drawn faintly as a guide.
  */
-export function LayerGrid({ layers, y, extent, selection, preview, previewColor, picked, onStroke, onHover }: Props) {
+export function LayerGrid({ layers, y, extent, selection, preview, previewColor, previewColors, previewInfo, picked, onStroke, onHover }: Props) {
   const canvas = useRef<HTMLCanvasElement>(null), wrap = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState<[number, number]>([600, 420]);
   const [cell, setCell] = useState(22);
@@ -116,7 +120,15 @@ export function LayerGrid({ layers, y, extent, selection, preview, previewColor,
     // Preview of the shape being drawn.
     if (preview.length) {
       g.fillStyle = previewColor; g.globalAlpha = 0.55;
-      for (const p of preview) if (p[1] === y && visible(p[0], p[2])) { const [sx, sz] = toScreen(p[0], p[2]); g.fillRect(sx + 2, sz + 2, cell - 4, cell - 4); }
+      // Cells of other layers (arches, cones, walls) as small dots, so the whole shape stays visible from above.
+      const drawn = new Set<string>();
+      preview.forEach((p, i) => {
+        if (p[1] === y || !visible(p[0], p[2]) || drawn.has(`${p[0]},${p[2]}`)) return;
+        drawn.add(`${p[0]},${p[2]}`);
+        const [sx, sz] = toScreen(p[0], p[2]); g.fillStyle = previewColors?.[i] ?? previewColor; g.globalAlpha = 0.3; g.fillRect(sx + cell * 0.35, sz + cell * 0.35, cell * 0.3, cell * 0.3);
+      });
+      g.globalAlpha = 0.6;
+      preview.forEach((p, i) => { if (p[1] === y && visible(p[0], p[2])) { const [sx, sz] = toScreen(p[0], p[2]); g.fillStyle = previewColors?.[i] ?? previewColor; g.fillRect(sx + 2, sz + 2, cell - 4, cell - 4); } });
       g.globalAlpha = 1;
     }
     // Selection.
@@ -128,7 +140,7 @@ export function LayerGrid({ layers, y, extent, selection, preview, previewColor,
     }
     if (picked && picked[1] === y) { const [sx, sz] = toScreen(picked[0], picked[2]); g.strokeStyle = '#ffd34d'; g.lineWidth = 2; g.strokeRect(sx + 1, sz + 1, cell - 2, cell - 2); g.lineWidth = 1; }
     if (hover) { const [sx, sz] = toScreen(hover[0], hover[2]); g.strokeStyle = css('--text', '#fff'); g.strokeRect(sx + 0.5, sz + 0.5, cell - 1, cell - 1); }
-  }, [layers, y, extent, selection, preview, previewColor, picked, hover, size, cell, centre, toScreen]);
+  }, [layers, y, extent, selection, preview, previewColor, previewColors, picked, hover, size, cell, centre, toScreen]);
 
   const point = (e: React.PointerEvent | React.WheelEvent): [number, number] => { const r = canvas.current!.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
   const zoom = (factor: number) => setCell(c => Math.max(4, Math.min(48, Math.round(c * factor))));
@@ -171,6 +183,6 @@ export function LayerGrid({ layers, y, extent, selection, preview, previewColor,
       <button onClick={() => zoom(0.8)} aria-label="Verkleinern" title="Verkleinern">−</button>
       <button onClick={fit} aria-label="Modell einpassen" title="Ganzes Modell einpassen">◎</button>
     </div>
-    {hover && <div className="grid-hud" aria-hidden="true">X {hover[0]} · Y {hover[1]} · Z {hover[2]}</div>}
+    {(hover || previewInfo) && <div className="grid-hud" aria-hidden="true">{hover && <>X {hover[0]} · Y {hover[1]} · Z {hover[2]}</>}{previewInfo && <>{hover ? ' · ' : ''}{previewInfo}</>}</div>}
   </div>;
 }

@@ -1488,3 +1488,31 @@ UPDATE-01 übernommen: Anmeldung und Dateiumfang in COMMUNICATION
 
 - `docs/COMMUNICATION.md`
 
+## 2026-11-02T05:30:31.682Z · progress
+
+**Aufgaben:** EDIT-03
+
+Werkstatt vertieft: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Ebenenübersicht, 3D-Schnitt, Tastenkürzel. npm run check grün (476/477, 1 übersprungen), E2E 86/86.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| EDIT-03 | 🧩 Implementiert · Abnahme offen | 5/5 | Picking an 3D-Blockflächen; Spielprüfung der Schablonen-Zustände (Tür, Treppe, Laterne). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/editor/BlockEditor.tsx`
+- `apps/web/src/editor/LayerGrid.tsx`
+- `apps/web/src/editor/PatternPanel.tsx`
+- `apps/web/src/editor/StencilPanel.tsx`
+- `apps/web/src/editor/editor.css`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/BLOCK_EDITOR.md`
+- `packages/domain/src/editor/index.ts`
+- `packages/domain/src/editor/patterns.ts`
+- `packages/domain/src/editor/shapes.ts`
+- `packages/domain/src/editor/stencils.ts`
+- `tests/e2e/editor.e2e.mjs`
+- `tests/e2e/workshop-tools.e2e.mjs`
+- `tests/editor-patterns.test.mjs`
+

@@ -56,6 +56,29 @@ Das einzige Register ist `packages/voxel/src/blockRegistry.ts` (VIEW-02, 1288 Bl
 
 `BlockEditor.tsx` (zwölf Werkzeuge, Tasten 1–9, Strg+Z/Y), `LayerGrid.tsx` (Ebenenansicht mit Schatten der Ebene darunter, Richtungskeilen, Ziehen, Zoom, Einpassen), `BlockPalette.tsx` (Suche, Kategorien, „Im Modell“, Zuletzt benutzt, Zustandsfelder), 3D-Vorschau über den gemeinsamen Viewer (`markFor`), `WorkshopPage.tsx`, `views/project/BlocksTab.tsx`, `views/project/selection/GroupPanel.tsx`. Mobil (390 px) ohne waagrechtes Scrollen; Setzen per Tippen.
 
+## Werkstatt vertieft (EDIT-03)
+
+Stand 02.11.2026. Alles bleibt auf dem Entwurfsvertrag oben: Werkzeuge erzeugen nur Zelländerungen, ein Werkzeugschritt ist ein Rückgängig-Schritt.
+
+**Muster-Pinsel** (`editor/patterns.ts`, Oberfläche `PatternPanel.tsx`). Ein `Pattern` bestimmt je Zelle den Wert: `mix` (gewichtete Mischung, auch Einträge `'keep'` = Block bleibt, `null` = entfernen), `gradient` (Stufen entlang X/Y/Z oder radial über die Ausdehnung des Schritts, `blend` 0–1 mischt die Grenzen), `checker` (3D-Schachbrett mit Feldgröße), `stripes` (Streifen quer zu einer Achse). `paintEdit(edit, pattern)` ersetzt die geschriebenen Werte eines beliebigen Schritts; Entfernen bleibt Entfernen. Zufall ist ein fester 32-Bit-Hash aus Position und `seed` (`cellNoise`), also reproduzierbar: gleiche Eingaben, gleiche Version. „Neu würfeln“ wählt nur einen anderen festen Wert. `replacePatternEdit` ersetzt mit Muster und übernimmt wie `replaceEdit` passende Eigenschaften (Ausrichtung) und Blockentitäten nur bei gleicher ID. Zehn Vorlagen (`PATTERN_PRESETS`, z. B. „Alte Steinmauer“, „Verwittern (30 %)“, Sockel-, Holz- und Sandsteinverlauf, Schachbrettboden). Das Muster wirkt auf Setzen, alle Formen, Fläche füllen, die Füllknöpfe der Auswahl und Ersetzen; nicht auf Pipette, Abbauen, Luft, Leeren und Einfügen.
+
+**Formen** (`editor/shapes.ts`):
+
+| Werkzeug | Funktion |
+| --- | --- |
+| Bogen (`archEdit`) | Rund-, Spitz- (gleichseitig, auf die Höhe skaliert) oder Flachbogen von Fußpunkt zu Fußpunkt entlang der vorherrschenden Achse; Stärke, Tiefe (nach +Z bzw. +X), Pfosten unter dem Kämpfer, wahlweise Wand mit Bogenöffnung. Rein diagonale Stufen im Bogenband werden geschlossen (jede Zelle hat eine Flächennachbarin), damit im Spiel keine Lücken entstehen. |
+| Pyramide (`pyramidEdit`) | Stufenpyramide auf der aufgezogenen Grundfläche, Stufe 1–8, optional Höchsthöhe und hohl; auf Rechtecken entsteht ein Walmdach mit First. |
+| Kegel (`coneEdit`) | Kegeldach für runde Türme, Radius per Ziehen, Höhe, hohl ohne Boden. |
+| Mauerzug (`wallLineEdit`) | Linie (auch schräg) mit Höhe und Stärke. |
+
+**Schablonen** (`editor/stencils.ts`, `StencilPanel.tsx`): sieben eingebaute Details (Fenster, Tür, Säule, Zinnen mit expliziter Luft in den Scharten, Treppenaufgang, Laternenpfosten, kleiner Baum) mit vollständigen Zuständen. „Auswahl speichern“ legt die Auswahl als normales Bauteil mit Schlagwort `schablone` an (gespeichert, versioniert, in Sicherungen); jedes Bibliotheksbauteil lässt sich über die Suche als Vorlage laden (`clipboardFromPayload`, relativ zur Grenzbox). Eine Schablone füllt die Zwischenablage und wählt „Einfügen“: die Vorschau folgt dem Zeiger, R dreht und M spiegelt über `transformClipboard` (B7-Regeln), Klick setzt.
+
+**Bauen in Ebenen**: Ebenenübersicht (ein Balken je Ebene, Länge nach Zellzahl, Klick springt), „3D bis Ebene“ zeigt im 3D-Bild nur die Ebenen bis zur aktuellen (Schnitt), Formvorschau zeigt Zellen anderer Ebenen als Punkte und im Raster die Maße „B × H × T · Zellen“.
+
+**Tastenkürzel** (Übersicht mit „?“ oder „⌨ Tasten“): 1–9 und Buchstaben je Werkzeug (B Setzen, E Abbauen, I Pipette, F Füllen, D Drehen, P Prüfen, A Auswahl, L Linie, Q Quader, Z Zylinder, K Kugel, O Bogen, Y Pyramide, C Kegel, V Einfügen), Strg+C/X/V, Strg+A ganzes Modell, Entf leert die Auswahl, Pfeile verschieben die Auswahl samt Inhalt (Shift+↑/↓ in der Höhe), R/M drehen/spiegeln Zwischenablage oder Auswahl, G Schnitt, Esc. Ist das 3D-Bild fokussiert, gelten dort dessen eigene Tasten; nur Strg-Kürzel erreichen den Editor.
+
+Prüfung: `node --test tests/editor-patterns.test.mjs` (Muster, Formen mit Handzählung, Bogensymmetrie und Verbundenheit, Schablonen mit vier Drehungen = Identität, Rundreise Nutzlast ⇄ Zwischenablage), `node --test tests/e2e/workshop-tools.e2e.mjs` (nach `npm run build`). Offen: Spielprüfung der Schablonenzustände, Firefox/Safari, echte Geräte.
+
 ## Prüfung
 
 - `node --test tests/editor.test.mjs`: Entwurf und Umkehrung, Determinismus, Formen mit Handzählung, Ersetzen, Füllen, Drehen, Ablage, Speichern, `localCell` für alle acht Transformationen, Projektzuordnung mit Rückgängig, Gruppenoperationen.

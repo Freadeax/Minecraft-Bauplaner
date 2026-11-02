@@ -1,37 +1,62 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import {
-  BOX_SHAPE_LABEL, boxBounds, boxEdit, boxVolume, cellAt, copyBox, countMatches, cylinderEdit, defaultState, floodEdit, lineEdit, materializeDraft, moveBoxEdit, pasteEdit,
-  replaceEdit, rotateCellEdit, setCells, sphereEdit, blockSchema, blockLabel, transformClipboard,
+  ARCH_STYLE_LABEL, BOX_SHAPE_LABEL, PATTERN_KIND_LABEL, archEdit, boxBounds, boxEdit, boxVolume, cellAt, coneEdit, copyBox, countMatches, cylinderEdit, defaultState, floodEdit, lineEdit, materializeDraft,
+  moveBoxEdit, paintEdit, pasteEdit, pyramidEdit, replaceEdit, replacePatternEdit, rotateCellEdit, setCells, sphereEdit, blockSchema, blockLabel, transformClipboard, wallLineEdit,
 } from '../../../../packages/domain/src/index.js';
-import type { Box, BoxShape, CellSlot, Clipboard, Edit, ReplaceQuery } from '../../../../packages/domain/src/index.js';
+import type { ArchStyle, Box, BoxShape, CellSlot, Clipboard, Edit, ReplaceQuery } from '../../../../packages/domain/src/index.js';
 import type { BlockState, Cell, Vec3, VoxelPayload } from '../../../../packages/voxel/src/index.js';
 import { formatNumber } from '../app/ui';
 import { Viewer } from '../Viewer';
 import type { Mark } from '../viewer/types';
 import { BlockPalette, StateFields, brushColor, brushLabel, stateText } from './BlockPalette';
 import { LayerGrid } from './LayerGrid';
+import { INITIAL_PATTERN, PatternPanel, patternActive, toPattern } from './PatternPanel';
+import type { PatternState } from './PatternPanel';
+import { StencilPanel } from './StencilPanel';
 import type { GridBox, Stroke } from './LayerGrid';
 import { useDraft } from './useDraft';
 import type { DraftModel } from './useDraft';
 
-export type Tool = 'stift' | 'abbauen' | 'pipette' | 'fuellen' | 'drehen' | 'zustand' | 'auswahl' | 'linie' | 'quader' | 'zylinder' | 'kugel' | 'einfuegen';
-const TOOLS: readonly (readonly [Tool, string, string, string])[] = [
-  ['stift', '✎', 'Setzen', 'Pinsel auf Zellen malen (Ziehen malt mehrere, ein Rückgängig-Schritt je Strich)'],
-  ['abbauen', '⌫', 'Abbauen', 'Zellen aus dem Modell entfernen'],
-  ['pipette', '⊙', 'Pipette', 'Block samt Zustand als Pinsel übernehmen'],
-  ['fuellen', '▧', 'Fläche füllen', 'Zusammenhängende gleiche Fläche dieser Ebene füllen (in Leerflächen nur innerhalb der Auswahl oder des Modells)'],
-  ['drehen', '⟳', 'Drehen', 'Block um 90° im Uhrzeigersinn drehen (Treppen, Türen, Truhen …)'],
-  ['zustand', 'ⓘ', 'Prüfen', 'Block auswählen, Zustand ansehen und ändern'],
-  ['auswahl', '⬚', 'Auswahl', 'Bereich aufziehen (auch Shift+Ziehen mit jedem Werkzeug)'],
-  ['linie', '╱', 'Linie', 'Gerade Linie ziehen'],
-  ['quader', '▣', 'Quader', 'Quader, Hohlkörper, Wände oder Kanten aufziehen'],
-  ['zylinder', '◍', 'Zylinder', 'Vom Mittelpunkt aus aufziehen; Höhe einstellbar'],
-  ['kugel', '●', 'Kugel', 'Vom Mittelpunkt aus aufziehen; voll, hohl oder Kuppel'],
-  ['einfuegen', '⎘', 'Einfügen', 'Zwischenablage an der geklickten Zelle einfügen (untere Ecke)'],
+export type Tool = 'stift' | 'abbauen' | 'pipette' | 'fuellen' | 'drehen' | 'zustand' | 'auswahl' | 'linie' | 'quader' | 'zylinder' | 'kugel' | 'einfuegen' | 'bogen' | 'pyramide' | 'kegel';
+/** Tool, icon, label, hint, letter key (EDIT-03). Digits 1–9 select the first nine tools. */
+const TOOLS: readonly (readonly [Tool, string, string, string, string])[] = [
+  ['stift', '✎', 'Setzen', 'Pinsel auf Zellen malen (Ziehen malt mehrere, ein Rückgängig-Schritt je Strich)', 'B'],
+  ['abbauen', '⌫', 'Abbauen', 'Zellen aus dem Modell entfernen', 'E'],
+  ['pipette', '⊙', 'Pipette', 'Block samt Zustand als Pinsel übernehmen', 'I'],
+  ['fuellen', '▧', 'Fläche füllen', 'Zusammenhängende gleiche Fläche dieser Ebene füllen (in Leerflächen nur innerhalb der Auswahl oder des Modells)', 'F'],
+  ['drehen', '⟳', 'Drehen', 'Block um 90° im Uhrzeigersinn drehen (Treppen, Türen, Truhen …)', 'D'],
+  ['zustand', 'ⓘ', 'Prüfen', 'Block auswählen, Zustand ansehen und ändern', 'P'],
+  ['auswahl', '⬚', 'Auswahl', 'Bereich aufziehen (auch Shift+Ziehen mit jedem Werkzeug)', 'A'],
+  ['linie', '╱', 'Linie', 'Gerade Linie ziehen; mit Höhe/Stärke als Mauerzug (auch schräg)', 'L'],
+  ['quader', '▣', 'Quader', 'Quader, Hohlkörper, Wände oder Kanten aufziehen', 'Q'],
+  ['zylinder', '◍', 'Zylinder', 'Vom Mittelpunkt aus aufziehen; Höhe einstellbar', 'Z'],
+  ['kugel', '●', 'Kugel', 'Vom Mittelpunkt aus aufziehen; voll, hohl oder Kuppel', 'K'],
+  ['bogen', '⌒', 'Bogen', 'Von Fußpunkt zu Fußpunkt ziehen: Rund-, Spitz- oder Flachbogen, auch als Wand mit Öffnung', 'O'],
+  ['pyramide', '▲', 'Pyramide', 'Grundfläche aufziehen: Stufenpyramide, auf Rechtecken ein Walmdach', 'Y'],
+  ['kegel', '⏶', 'Kegel', 'Vom Mittelpunkt aus aufziehen: Kegeldach für runde Türme', 'C'],
+  ['einfuegen', '⎘', 'Einfügen', 'Zwischenablage oder Schablone an der geklickten Zelle einfügen (untere Ecke); R dreht', 'V'],
+];
+const BRUSH_TOOLS: ReadonlySet<Tool> = new Set(['stift', 'fuellen', 'linie', 'quader', 'zylinder', 'kugel', 'bogen', 'pyramide', 'kegel']);
+/** Shortcut list for the help panel (also the documentation of the keys). */
+const SHORTCUTS: readonly (readonly [string, string])[] = [
+  ['1–9 · Buchstabe im Werkzeug', 'Werkzeug wählen (B Setzen, E Abbauen, I Pipette, F Füllen, L Linie, Q Quader, K Kugel, O Bogen …)'],
+  ['Bild↑ / Bild↓ · ] / [', 'Ebene höher / tiefer'],
+  ['Strg+Z · Strg+Y', 'Rückgängig · Wiederholen'],
+  ['Strg+C · Strg+X · Strg+V', 'Auswahl kopieren · ausschneiden · Einfügen-Werkzeug mit der Zwischenablage'],
+  ['Strg+A', 'ganzes Modell auswählen'],
+  ['Entf', 'Auswahl leeren'],
+  ['Pfeiltasten · Shift+↑/↓', 'Auswahl samt Inhalt verschieben (Norden/Süden/Westen/Osten · oben/unten)'],
+  ['R · M', 'Zwischenablage (beim Einfügen) oder Auswahl drehen · spiegeln'],
+  ['G', '3D nur bis zur aktuellen Ebene (Schnitt) an/aus'],
+  ['Esc', 'Auswahl aufheben, Ziehen abbrechen'],
+  ['Shift+Ziehen', 'mit jedem Werkzeug einen Bereich auswählen'],
+  ['Rechtsklick/Leertaste+Ziehen · Strg+Mausrad', 'Ebene verschieben · zoomen'],
+  ['?', 'diese Übersicht'],
 ];
 const PREVIEW_LIMIT = 30_000;
 
+const clampInt = (v: string, min: number, max: number) => Math.max(min, Math.min(max, Math.trunc(Number(v)) || min));
 const toBox = (g: GridBox): Box => ({ a: g.min, b: [g.maxExclusive[0] - 1, g.maxExclusive[1] - 1, g.maxExclusive[2] - 1] });
 const xyz = (p: Vec3) => `X ${p[0]} · Y ${p[1]} · Z ${p[2]}`;
 
@@ -67,6 +92,14 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
   const strokeRef = useRef<typeof stroke>(null);
   const setLiveStroke = (next: typeof stroke) => { strokeRef.current = next; setStroke(next); };
   const [show3d, setShow3d] = useState(true);
+  const [cut3d, setCut3d] = useState(false);
+  const [pattern, setPattern] = useState<PatternState>(INITIAL_PATTERN);
+  const [arch, setArch] = useState<{ style: ArchStyle; rise: number; thickness: number; depth: number; legs: number; wall: boolean }>({ style: 'round', rise: 4, thickness: 1, depth: 1, legs: 2, wall: false });
+  const [line, setLine] = useState({ height: 1, thickness: 1 });
+  const [pyramid, setPyramid] = useState({ step: 1, maxHeight: 0 });
+  const [coneHeight, setConeHeight] = useState(6);
+  const [hover, setHover] = useState<Vec3 | null>(null);
+  const [help, setHelp] = useState(false);
   const [replaceFrom, setReplaceFrom] = useState('');
   const [replaceScope, setReplaceScope] = useState<'all' | 'selection'>('all');
   const [keepProps, setKeepProps] = useState(true);
@@ -74,29 +107,48 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
   const setBrush = (b: CellSlot) => { setBrushRaw(b); if (tool === 'abbauen' || tool === 'pipette' || tool === 'zustand') setTool('stift'); };
   const run = useCallback((edit: Edit, ok = '') => { const err = model.run(edit); setMessage(err === '' ? ok || `${edit.label}: ${formatNumber(edit.changes.length)} Zellen` : err); return err === ''; }, [model]);
   const toolValue = (t: Tool): CellSlot => t === 'abbauen' ? null : brush;
+  const usePattern = patternActive(pattern);
+  const activePattern = useMemo(() => toPattern(pattern, brush), [pattern, brush]);
+  /** Applies the pattern to brush edits (painting, shapes, fills); removals and other tools stay as they are. */
+  const paint = useCallback((e: Edit): Edit => usePattern ? paintEdit(e, activePattern) : e, [usePattern, activePattern]);
 
   // Shape being dragged → edit (preview and final).
-  const shapeEdit = useCallback((s: NonNullable<typeof stroke>): Edit | null => {
+  const shapeEdit = useCallback((s: NonNullable<typeof stroke>, final = true): Edit | null => {
     const v = toolValue(tool), a = s.start, b = s.current;
     const r = Math.round(Math.hypot(b[0] - a[0], b[2] - a[2]));
-    try {
+    const raw = (): Edit | null => {
       switch (tool) {
         case 'stift': case 'abbauen': return setCells(s.cells.values(), v, tool === 'abbauen' ? 'Abbauen' : 'Setzen');
-        case 'linie': return lineEdit(a, b, v);
+        case 'linie': return line.height > 1 || line.thickness > 1 ? wallLineEdit(a, b, line.height, v, { thickness: line.thickness }) : lineEdit(a, b, v);
         case 'quader': return boxEdit({ a, b: [b[0], a[1] + height - 1, b[2]] }, shape, v);
         case 'zylinder': return cylinderEdit(a, r, height, v, { hollow });
         case 'kugel': return sphereEdit(a, r, v, { hollow, ...(dome && { half: 'upper' as const }) });
+        case 'bogen': return archEdit(a, b, v, arch);
+        case 'pyramide': return pyramidEdit(a, b, v, { hollow, step: pyramid.step, maxHeight: pyramid.maxHeight });
+        case 'kegel': return coneEdit(a, r, coneHeight, v, { hollow });
         default: return null;
       }
-    } catch (e) { setMessage(e instanceof Error ? e.message : String(e)); return null; }
-  }, [tool, brush, height, shape, hollow, dome]);
+    };
+    try { const e = raw(); return e && tool !== 'abbauen' ? paint(e) : e; }
+    // While dragging an unfinished shape (e.g. an arch narrower than 3) only the release reports the reason.
+    catch (e) { if (final) setMessage(e instanceof Error ? e.message : String(e)); return null; }
+  }, [tool, brush, height, shape, hollow, dome, arch, line, pyramid, coneHeight, paint]);
 
-  const preview = useMemo(() => {
-    if (!stroke) return [];
-    if (stroke.selecting) return [];
-    const e = shapeEdit(stroke);
-    return e ? e.changes.slice(0, PREVIEW_LIMIT).map(c => c.position) : [];
-  }, [stroke, shapeEdit]);
+  const previewEdit = useMemo((): Edit | null => {
+    if (stroke) return stroke.selecting ? null : shapeEdit(stroke, false);
+    // Paste preview: the clipboard (or stencil) follows the pointer.
+    if (tool === 'einfuegen' && clip && hover) return pasteEdit(clip, hover);
+    return null;
+  }, [stroke, shapeEdit, tool, clip, hover]);
+  const preview = useMemo(() => previewEdit ? previewEdit.changes.slice(0, PREVIEW_LIMIT).map(c => c.position) : [], [previewEdit]);
+  const previewColors = useMemo(() => previewEdit && (usePattern || tool === 'einfuegen') ? previewEdit.changes.slice(0, PREVIEW_LIMIT).map(c => brushColor(c.value)) : undefined, [previewEdit, usePattern, tool]);
+  /** Size of the shape being drawn, for the grid HUD. */
+  const previewInfo = useMemo(() => {
+    if (!previewEdit?.changes.length) return '';
+    const min = [Infinity, Infinity, Infinity], max = [-Infinity, -Infinity, -Infinity];
+    for (const c of previewEdit.changes) for (let i = 0; i < 3; i++) { min[i] = Math.min(min[i]!, c.position[i]!); max[i] = Math.max(max[i]!, c.position[i]!); }
+    return `${max[0]! - min[0]! + 1} × ${max[1]! - min[1]! + 1} × ${max[2]! - min[2]! + 1} · ${formatNumber(previewEdit.changes.length)} Zellen`;
+  }, [previewEdit]);
 
   const extentBox: Box | null = extent ? { a: extent.min, b: extent.max } : null;
   const onCell = (p: Vec3, from3d = false) => {
@@ -106,7 +158,9 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
       case 'zustand': setPicked(p); return true;
       case 'fuellen': {
         const limit = selection ? toBox(selection) : extentBox;
-        try { run(floodEdit(draft, p, brush, { plane: 'y', ...(limit && { limitBox: { a: [limit.a[0], p[1], limit.a[2]], b: [limit.b[0], p[1], limit.b[2]] } }) })); }
+        // With a pattern the fill value is only a marker that differs from the area (the pattern paints every cell).
+        const target = cellAt(draft, p), marker: CellSlot = usePattern ? (target?.kind === 'erase' ? { kind: 'air' } : { kind: 'erase' }) : brush;
+        try { run(paint(floodEdit(draft, p, marker, { plane: 'y', ...(limit && { limitBox: { a: [limit.a[0], p[1], limit.a[2]], b: [limit.b[0], p[1], limit.b[2]] } }) }))); }
         catch (e) { setMessage(e instanceof Error ? e.message : String(e)); }
         return true;
       }
@@ -139,15 +193,11 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
     if (e) run(e);
   };
 
-  // Keyboard: layers and tools.
+  // Keyboard (EDIT-03): layers, tools, clipboard, selection. The latest state is read through a ref so the
+  // listener stays registered once and never acts on a stale draft.
+  const keyRef = useRef<(e: KeyboardEvent) => void>(() => {});
   useEffect(() => {
-    const key = (e: KeyboardEvent) => {
-      if ((e.target as HTMLElement | null)?.closest('input,textarea,select') || e.ctrlKey || e.metaKey || e.altKey) return;
-      if (e.key === 'PageUp' || e.key === ']') { e.preventDefault(); setY(v => v + 1); }
-      else if (e.key === 'PageDown' || e.key === '[') { e.preventDefault(); setY(v => v - 1); }
-      else if (e.key === 'Escape') { setSelection(null); strokeRef.current = null; setStroke(null); }
-      else if (/^[1-9]$/.test(e.key)) { const t = TOOLS[Number(e.key) - 1]; if (t) setTool(t[0]); }
-    };
+    const key = (e: KeyboardEvent) => keyRef.current(e);
     window.addEventListener('keydown', key);
     return () => window.removeEventListener('keydown', key);
   }, []);
@@ -174,6 +224,7 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
     const p = c.position, s = selection;
     return p.every((n, i) => n >= s.min[i]! && n < s.maxExclusive[i]!) ? { color: '#5be3b5', amount: 0.35 } : null;
   }, [selection]);
+  const cells3d = useMemo(() => cut3d && payload ? payload.cells.filter(c => c.position[1] <= y) : null, [cut3d, payload, y]);
   const onSelect3d = useCallback((c: Cell | null) => { if (!c) return; setY(c.position[1]); setPicked(c.position); onCell(c.position, true); },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [tool, draft, brush, clip, selection]);
@@ -201,6 +252,50 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
     }
   };
 
+  const copySelection = (cut: boolean) => {
+    if (!selBox) { setMessage('Keine Auswahl.'); return; }
+    const c = copyBox(draft, selBox); setClip(c);
+    if (cut) run({ ...boxEdit(selBox, 'fill', null), label: 'Ausschneiden' }, `Ausgeschnitten: ${formatNumber(c.cells.length)} Zellen`);
+    else setMessage(`Kopiert: ${formatNumber(c.cells.length)} Zellen`);
+  };
+  const turnClip = (t: { quarterTurns: 0 | 1 | 2 | 3; mirrorX: boolean }) => {
+    if (!clip) return;
+    const r = transformClipboard(clip, t); setClip(r.clip);
+    setMessage(`Zwischenablage ${t.mirrorX ? 'gespiegelt' : 'gedreht'}: ${r.clip.size.join(' × ')}${r.unresolved.length ? ` · ohne Drehregel unverändert: ${r.unresolved.join(', ')}` : ''}`);
+  };
+  const takeClip = (c: Clipboard, label: string) => { setClip(c); setTool('einfuegen'); setMessage(`${label} in der Zwischenablage (${c.size.join(' × ')}): in die Ebene klicken zum Einfügen, R dreht.`); };
+
+  keyRef.current = (e: KeyboardEvent) => {
+    if ((e.target as HTMLElement | null)?.closest('input,textarea,select,[contenteditable]')) return;
+    const k = e.key, ctrl = e.ctrlKey || e.metaKey;
+    // The focused 3D view has its own keys (views, flight); there only Ctrl shortcuts reach the editor.
+    if (e.altKey || (!ctrl && (e.target as HTMLElement | null)?.closest('.editor-3d'))) return;
+    if (ctrl) {
+      const l = k.toLowerCase();
+      if (l === 'c' && selBox) { e.preventDefault(); copySelection(false); }
+      else if (l === 'x' && selBox) { e.preventDefault(); copySelection(true); }
+      else if (l === 'v') { if (clip) { e.preventDefault(); setTool('einfuegen'); setMessage('Einfügen: in die Ebene klicken (R dreht, M spiegelt).'); } }
+      else if (l === 'a' && extent) { e.preventDefault(); setSelection({ min: extent.min, maxExclusive: [extent.max[0] + 1, extent.max[1] + 1, extent.max[2] + 1] }); }
+      return;
+    }
+    if (k === 'PageUp' || k === ']') { e.preventDefault(); setY(v => v + 1); }
+    else if (k === 'PageDown' || k === '[') { e.preventDefault(); setY(v => v - 1); }
+    else if (k === 'Escape') { setSelection(null); strokeRef.current = null; setStroke(null); setHelp(false); }
+    else if (k === '?') { setHelp(h => !h); }
+    else if (/^[1-9]$/.test(k)) { const t = TOOLS[Number(k) - 1]; if (t) setTool(t[0]); }
+    else if ((k === 'Delete' || k === 'Backspace') && selBox) { e.preventDefault(); run({ ...boxEdit(selBox, 'fill', null), label: 'Auswahl leeren' }); }
+    else if (k.startsWith('Arrow') && selBox) {
+      e.preventDefault();
+      const d: Vec3 = k === 'ArrowUp' ? (e.shiftKey ? [0, 1, 0] : [0, 0, -1]) : k === 'ArrowDown' ? (e.shiftKey ? [0, -1, 0] : [0, 0, 1]) : k === 'ArrowLeft' ? [-1, 0, 0] : [1, 0, 0];
+      transformSelection(null, d);
+      if (d[1]) setY(v => v + d[1]);
+    }
+    else if (k === 'r' || k === 'R') { if (tool === 'einfuegen' && clip) turnClip({ quarterTurns: 1, mirrorX: false }); else if (selBox) transformSelection({ quarterTurns: 1, mirrorX: false }); }
+    else if (k === 'm' || k === 'M') { if (tool === 'einfuegen' && clip) turnClip({ quarterTurns: 0, mirrorX: true }); else if (selBox) transformSelection({ quarterTurns: 0, mirrorX: true }); }
+    else if (k === 'g' || k === 'G') setCut3d(c => !c);
+    else if (k.length === 1) { const t = TOOLS.find(x => x[4] === k.toUpperCase()); if (t) setTool(t[0]); }
+  };
+
   const pickedValue = picked ? cellAt(draft, picked) : null;
   const yRange = extent ? `${extent.min[1]} … ${extent.max[1]}` : '–';
   const changes = model.summary.added + model.summary.removed + model.summary.changed;
@@ -219,21 +314,49 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
     <div className="editor-main">
       <aside className="editor-tools" aria-label="Werkzeuge">
         <div className="tool-grid" role="radiogroup" aria-label="Werkzeug">
-          {TOOLS.map(([id, icon, label, hint], i) => <button key={id} role="radio" aria-checked={tool === id} title={`${hint} (${i + 1})`} onClick={() => setTool(id)}>
-            <span aria-hidden="true">{icon}</span> {label}</button>)}
+          {TOOLS.map(([id, icon, label, hint, letter], i) => <button key={id} role="radio" aria-checked={tool === id} title={`${hint} (${i < 9 ? `${i + 1} oder ` : ''}${letter})`} onClick={() => setTool(id)}>
+            <span aria-hidden="true">{icon}</span> {label}<kbd aria-hidden="true">{letter}</kbd></button>)}
         </div>
         <div className="brush-now" title={brush?.kind === 'block' ? stateText(brush.state) : brushLabel(brush)}>
           <span className="swatch" style={{ background: brushColor(tool === 'abbauen' ? null : brush) }} aria-hidden="true" />
-          <span><span className="panel-kicker">PINSEL</span><b>{tool === 'abbauen' ? 'Entfernen' : brushLabel(brush)}</b>
+          <span><span className="panel-kicker">PINSEL</span><b>{tool === 'abbauen' ? 'Entfernen' : usePattern && BRUSH_TOOLS.has(tool) ? `Muster: ${PATTERN_KIND_LABEL[pattern.kind]} (${pattern.entries.length})` : brushLabel(brush)}</b>
             {brush?.kind === 'block' && <small>{stateText(brush.state).replace('minecraft:', '')}</small>}</span>
         </div>
         {brush?.kind === 'block' && tool !== 'abbauen' && <StateFields state={brush.state} label="Pinsel-Zustand" onChange={s => setBrushRaw({ kind: 'block', state: s })} />}
-        {(tool === 'quader') && <label>Form<select value={shape} onChange={e => setShape(e.target.value as BoxShape)}>
+        {(tool === 'quader') && <label>Form<select value={shape} onChange={e => setShape(e.target.value as BoxShape)} aria-label="Quaderform">
           {(Object.keys(BOX_SHAPE_LABEL) as BoxShape[]).map(s => <option key={s} value={s}>{BOX_SHAPE_LABEL[s]}</option>)}</select></label>}
         {(tool === 'quader' || tool === 'zylinder') && <label>Höhe ab Ebene<input type="number" min={1} max={384} value={height} onChange={e => setHeight(Math.max(1, Math.min(384, Number(e.target.value) || 1)))} /></label>}
-        {(tool === 'zylinder' || tool === 'kugel') && <label className="check"><input type="checkbox" checked={hollow} onChange={e => setHollow(e.target.checked)} /> hohl</label>}
+        {tool === 'linie' && <div className="sel-range">
+          <label>Höhe<input type="number" min={1} max={384} value={line.height} onChange={e => setLine(l => ({ ...l, height: clampInt(e.target.value, 1, 384) }))} aria-label="Mauerhöhe" /></label>
+          <label>Stärke<input type="number" min={1} max={16} value={line.thickness} onChange={e => setLine(l => ({ ...l, thickness: clampInt(e.target.value, 1, 16) }))} aria-label="Mauerstärke" /></label>
+        </div>}
+        {tool === 'bogen' && <>
+          <label>Bogenform<select value={arch.style} onChange={e => setArch(a => ({ ...a, style: e.target.value as ArchStyle }))} aria-label="Bogenform">
+            {(Object.keys(ARCH_STYLE_LABEL) as ArchStyle[]).map(k => <option key={k} value={k}>{ARCH_STYLE_LABEL[k]}</option>)}</select></label>
+          <div className="sel-range">
+            <label>Bogenhöhe<input type="number" min={1} max={128} value={arch.rise} onChange={e => setArch(a => ({ ...a, rise: clampInt(e.target.value, 1, 128) }))} aria-label="Bogenhöhe" /></label>
+            <label>Pfosten<input type="number" min={0} max={128} value={arch.legs} onChange={e => setArch(a => ({ ...a, legs: clampInt(e.target.value, 0, 128) }))} aria-label="Pfostenhöhe" /></label>
+            <label>Stärke<input type="number" min={1} max={32} value={arch.thickness} onChange={e => setArch(a => ({ ...a, thickness: clampInt(e.target.value, 1, 32) }))} aria-label="Bogenstärke" /></label>
+            <label>Tiefe<input type="number" min={1} max={64} value={arch.depth} onChange={e => setArch(a => ({ ...a, depth: clampInt(e.target.value, 1, 64) }))} aria-label="Bogentiefe" /></label>
+          </div>
+          <label className="check"><input type="checkbox" checked={arch.wall} onChange={e => setArch(a => ({ ...a, wall: e.target.checked }))} /> als Wand mit Öffnung</label>
+          <p className="muted small">Von Fußpunkt zu Fußpunkt ziehen; Tiefe wächst nach Süden bzw. Osten.</p>
+        </>}
+        {tool === 'pyramide' && <div className="sel-range">
+          <label>Stufe<input type="number" min={1} max={8} value={pyramid.step} onChange={e => setPyramid(p => ({ ...p, step: clampInt(e.target.value, 1, 8) }))} aria-label="Stufenbreite" /></label>
+          <label>max. Höhe<input type="number" min={0} max={384} value={pyramid.maxHeight} onChange={e => setPyramid(p => ({ ...p, maxHeight: clampInt(e.target.value, 0, 384) }))} aria-label="Maximale Höhe (0 = bis zur Spitze)" /></label>
+        </div>}
+        {tool === 'kegel' && <label>Höhe<input type="number" min={1} max={384} value={coneHeight} onChange={e => setConeHeight(clampInt(e.target.value, 1, 384))} aria-label="Kegelhöhe" /></label>}
+        {(tool === 'zylinder' || tool === 'kugel' || tool === 'pyramide' || tool === 'kegel') && <label className="check"><input type="checkbox" checked={hollow} onChange={e => setHollow(e.target.checked)} /> hohl</label>}
         {tool === 'kugel' && <label className="check"><input type="checkbox" checked={dome} onChange={e => setDome(e.target.checked)} /> nur obere Hälfte (Kuppel)</label>}
-        {tool === 'einfuegen' && <p className="muted">{clip ? `Zwischenablage: ${clip.size.join(' × ')} · ${formatNumber(clip.cells.length)} Zellen` : 'Zwischenablage leer.'}</p>}
+        {tool === 'einfuegen' && <>
+          <p className="muted">{clip ? `Zwischenablage: ${clip.size.join(' × ')} · ${formatNumber(clip.cells.length)} Zellen` : 'Zwischenablage leer: Bereich kopieren oder Schablone wählen.'}</p>
+          {clip && <div className="button-grid">
+            <button onClick={() => turnClip({ quarterTurns: 1, mirrorX: false })} title="R">Ablage ⟳ 90°</button>
+            <button onClick={() => turnClip({ quarterTurns: 0, mirrorX: true })} title="M">Ablage spiegeln</button>
+          </div>}
+        </>}
+        {BRUSH_TOOLS.has(tool) && <PatternPanel state={pattern} onChange={setPattern} brush={brush} />}
       </aside>
 
       <section className="editor-canvas" aria-label="Arbeitsfläche">
@@ -245,12 +368,15 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
           <span className="muted">Modell Y {yRange} · {formatNumber(layers.get(y)?.length ?? 0)} Zellen in dieser Ebene</span>
           <span className="spacer" />
           <label className="check"><input type="checkbox" checked={show3d} onChange={e => setShow3d(e.target.checked)} /> 3D-Vorschau</label>
+          {show3d && <label className="check" title="Zeigt im 3D-Bild nur die Ebenen bis zur aktuellen (G)"><input type="checkbox" checked={cut3d} onChange={e => setCut3d(e.target.checked)} /> 3D bis Ebene</label>}
+          <button onClick={() => setHelp(h => !h)} aria-expanded={help} title="Tastenkürzel (?)">⌨ Tasten</button>
         </div>
+        {extent && <LayerStrip layers={layers} min={extent.min[1]} max={extent.max[1]} y={y} onY={setY} />}
         <div className={`canvas-split${show3d ? ' with-3d' : ''}`}>
-          <LayerGrid layers={layers} y={y} extent={extent} selection={selection} preview={preview} previewColor={brushColor(toolValue(tool))} picked={picked}
-            onStroke={onStroke} onHover={() => {}} />
+          <LayerGrid layers={layers} y={y} extent={extent} selection={selection} preview={preview} previewColor={brushColor(toolValue(tool))} previewColors={previewColors}
+            previewInfo={previewInfo} picked={picked} onStroke={onStroke} onHover={setHover} />
           {show3d && <div className="editor-3d">
-            {payload ? <Viewer payload={payload} cells={payload.cells} onSelect={onSelect3d} markFor={markFor}
+            {payload ? <Viewer payload={payload} cells={cells3d ?? payload.cells} onSelect={onSelect3d} markFor={markFor}
               focus={selection ? { min: selection.min, maxExclusive: selection.maxExclusive } : null} />
               : <div className="scene empty-3d"><p className="muted">Noch keine Blöcke. Wähle links einen Block und klicke in die Ebene.</p></div>}
             <p className="muted small">Klick in 3D wählt Ebene und Block; mit „Abbauen“, „Pipette“ oder „Drehen“ wirkt das Werkzeug direkt.</p>
@@ -268,17 +394,16 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
               <label>bis<input type="number" value={selection.maxExclusive[1] - 1} onChange={e => { const v = Math.trunc(Number(e.target.value)); setSelection(s => s && { min: s.min, maxExclusive: [s.maxExclusive[0], Math.max(v, s.min[1]) + 1, s.maxExclusive[2]] }); }} /></label>
             </div>
             <div className="button-grid">
-              {(Object.keys(BOX_SHAPE_LABEL) as BoxShape[]).map(s => <button key={s} onClick={() => selOp(boxEdit(selBox, s, brush))}>{BOX_SHAPE_LABEL[s]}</button>)}
+              {(Object.keys(BOX_SHAPE_LABEL) as BoxShape[]).map(s => <button key={s} onClick={() => selOp(paint(boxEdit(selBox, s, brush)))}>{BOX_SHAPE_LABEL[s]}</button>)}
               <button onClick={() => selOp({ ...boxEdit(selBox, 'fill', null), label: 'Auswahl leeren' })}>Leeren</button>
               <button onClick={() => selOp({ ...boxEdit(selBox, 'fill', { kind: 'air' }), label: 'Mit Luft füllen' })} title="Explizite Luft räumt beim Einfügen im Spiel frei">Luft setzen</button>
             </div>
             <div className="button-grid">
-              <button onClick={() => { const c = copyBox(draft, selBox); setClip(c); setMessage(`Kopiert: ${formatNumber(c.cells.length)} Zellen`); }}>Kopieren</button>
-              <button onClick={() => { const c = copyBox(draft, selBox); setClip(c); run({ ...boxEdit(selBox, 'fill', null), label: 'Ausschneiden' }); }}>Ausschneiden</button>
+              <button onClick={() => copySelection(false)} title="Strg+C">Kopieren</button>
+              <button onClick={() => copySelection(true)} title="Strg+X">Ausschneiden</button>
               <button disabled={!clip} onClick={() => clip && run(pasteEdit(clip, selection.min))}>Einfügen hier</button>
-              <button disabled={!clip} onClick={() => clip && setClip(transformClipboard(clip, { quarterTurns: 1, mirrorX: false }).clip)} title="Zwischenablage drehen">Ablage ⟳</button>
-              <button onClick={() => transformSelection({ quarterTurns: 1, mirrorX: false })}>Drehen 90°</button>
-              <button onClick={() => transformSelection({ quarterTurns: 0, mirrorX: true })}>Spiegeln X</button>
+              <button onClick={() => transformSelection({ quarterTurns: 1, mirrorX: false })} title="R">Drehen 90°</button>
+              <button onClick={() => transformSelection({ quarterTurns: 0, mirrorX: true })} title="M">Spiegeln X</button>
             </div>
             <div className="move-pad" role="group" aria-label="Auswahl verschieben">
               <span className="muted">Verschieben</span>
@@ -293,6 +418,8 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
           </> : <p className="muted">Mit „Auswahl“ oder Shift+Ziehen einen Bereich aufziehen. Höhe danach über „Y von/bis“.</p>}
         </section>
 
+        <StencilPanel profileId={draft.profileId} onClip={takeClip} onMessage={setMessage} selectionClip={() => selBox ? copyBox(draft, selBox) : null} />
+
         <section className="panel-lite" aria-label="Ersetzen">
           <span className="panel-kicker">ERSETZEN</span>
           <label>Suchen<select value={replaceFrom} onChange={e => setReplaceFrom(e.target.value)} aria-label="Zu ersetzender Block">
@@ -301,11 +428,12 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
             <optgroup label="Genau dieser Zustand">{used.slice(0, 200).map(u => <option key={stateText(u.state)} value={stateText(u.state)}>{stateText(u.state).replace('minecraft:', '')} ({formatNumber(u.count)})</option>)}</optgroup>
             <option value="air">explizite Luft</option>
           </select></label>
-          <p className="muted">durch Pinsel: <b>{brushLabel(brush)}</b></p>
+          <p className="muted">durch {usePattern ? <>Muster: <b>{PATTERN_KIND_LABEL[pattern.kind]} ({pattern.entries.length} Einträge)</b></> : <>Pinsel: <b>{brushLabel(brush)}</b></>}</p>
           <label className="check"><input type="checkbox" checked={keepProps} onChange={e => setKeepProps(e.target.checked)} /> Ausrichtung/Zustand übernehmen, wo möglich</label>
           <div className="seg" role="group" aria-label="Bereich"><button aria-pressed={replaceScope === 'all'} onClick={() => setReplaceScope('all')}>Ganzes Modell</button>
             <button aria-pressed={replaceScope === 'selection'} disabled={!selection} onClick={() => setReplaceScope('selection')}>Nur Auswahl</button></div>
-          <button className="primary" disabled={!rq || !replaceCount} onClick={() => rq && run(replaceEdit(draft, rq, blockSchema))}>{formatNumber(replaceCount)} Zellen ersetzen</button>
+          <button className="primary" disabled={!rq || !replaceCount} onClick={() => rq && run(usePattern ? replacePatternEdit(draft, rq, activePattern, blockSchema) : replaceEdit(draft, rq, blockSchema))}>
+            {formatNumber(replaceCount)} Zellen {usePattern ? 'mit Muster ' : ''}ersetzen</button>
         </section>
 
         <section className="panel-lite" aria-label="Gewählter Block">
@@ -334,7 +462,23 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
       </aside>
     </div>
     <BlockPalette brush={brush} onBrush={setBrush} used={used} />
-    <p className="muted small">Tasten: 1–9 Werkzeuge · Bild↑/Bild↓ oder [ ] Ebene · Strg+Z/Strg+Y · Esc Auswahl aufheben · Rechtsklick/Leertaste+Ziehen verschiebt die Ebene · Strg+Mausrad zoomt.
+    {help && <section className="panel-lite shortcut-help" aria-label="Tastenkürzel">
+      <span className="panel-kicker">TASTENKÜRZEL</span>
+      <dl>{SHORTCUTS.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
+      <button className="link" onClick={() => setHelp(false)}>Schließen (Esc)</button>
+    </section>}
+    <p className="muted small">Tasten: ? zeigt alle Kürzel · 1–9 oder Buchstabe wählt das Werkzeug · Bild↑/Bild↓ Ebene · Strg+C/X/V · Pfeile verschieben die Auswahl · R dreht.
       Gespeicherte Versionen bleiben unverändert; Speichern legt eine neue Version an.</p>
+  </div>;
+}
+
+/** Overview of all layers (cells per layer as bars); click jumps to the layer. */
+function LayerStrip({ layers, min, max, y, onY }: { layers: ReadonlyMap<number, readonly unknown[]>; min: number; max: number; y: number; onY: (y: number) => void }) {
+  const ys: number[] = [];
+  for (let v = Math.min(min, y); v <= Math.max(max, y) && ys.length < 512; v++) ys.push(v);
+  const top = Math.max(1, ...ys.map(v => layers.get(v)?.length ?? 0));
+  return <div className="layer-strip" role="group" aria-label="Ebenenübersicht">
+    {ys.map(v => { const n = layers.get(v)?.length ?? 0; return <button key={v} aria-pressed={v === y} onClick={() => onY(v)} title={`Ebene Y ${v}: ${formatNumber(n)} Zellen`} aria-label={`Ebene ${v}`}>
+      <span style={{ height: `${n ? Math.max(12, Math.round(n / top * 100)) : 0}%` }} /></button>; })}
   </div>;
 }
