@@ -2863,3 +2863,34 @@ Katalogspeicher je App-Version (Schlüssel aus packages/ beim Bauen, CatalogCach
 - `tests/library-start.test.mjs`
 - `vite.config.mjs`
 
+## 2026-11-02T19:48:53.099Z · progress
+
+**Aufgaben:** BASE-01, SPLIT-01
+
+Basisplaner (Funktionszonen, Wegenetz, Spielprüfungen, Bauphasen) und Gebäude herauslösen (Säulenanalyse, Erkennung, Aufteilen als Projekt); Einheits- und Browsertests grün, Abnahme in der Testphase offen
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| BASE-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme durch Philipp (S06); danach Küstenlinie aus der Geländeaufnahme und Wegstufen. |
+| SPLIT-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme mit echten Dateien (S05). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/router.ts`
+- `apps/web/src/views/LibraryView.tsx`
+- `apps/web/src/views/library/BasePage.tsx`
+- `apps/web/src/views/library/BuildingDetail.tsx`
+- `apps/web/src/views/library/SplitPanel.tsx`
+- `apps/web/src/views/library/base.css`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/BASE_PLANNER.md`
+- `packages/domain/src/anlagen.ts`
+- `packages/domain/src/base.ts`
+- `packages/domain/src/baseFunctions.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/split.ts`
+- `packages/domain/src/types.ts`
+- `tests/base.test.mjs`
+- `tests/e2e/base.e2e.mjs`
+

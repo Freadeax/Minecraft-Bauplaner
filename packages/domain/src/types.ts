@@ -67,7 +67,7 @@ export interface Connector {
 }
 export type Handedness = 'left' | 'right';
 
-export type AssetSourceFormat = 'schem-v3' | 'litematic' | 'voxel-json' | 'demo' | 'crop' | 'composition' | 'variant' | 'generator' | 'editor' | 'world-region' | 'terrain-design';
+export type AssetSourceFormat = 'schem-v3' | 'litematic' | 'voxel-json' | 'demo' | 'crop' | 'composition' | 'variant' | 'generator' | 'editor' | 'world-region' | 'terrain-design' | 'base-plan';
 
 export interface AssetVersionSource {
   readonly format: AssetSourceFormat;

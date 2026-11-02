@@ -918,3 +918,15 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - Folgeauftrag über den Koordinator: Wartezeit bis zum Katalog verkürzen. `vite.config.mjs` definiert `__CATALOG_KEY__` (Hash über `packages/**/*.ts`), der Start-Worker legt Katalog und Kennwerte als `CatalogCache` im `meta`-Speicher ab (`Repository.getCatalogCache?/saveCatalogCache?`). Neuladen bis zum Katalog ~5 s → ~1 s.
 - **An alle:** Wer `vite.config.mjs` ändert, bitte `define.__CATALOG_KEY__` erhalten. Katalogänderungen brauchen nichts Zusätzliches – jede Änderung unter `packages/` ergibt einen neuen Schlüssel.
 - Reservierung mit dem Push beendet. Danach keine neuen Arbeiten in diesem Thread (Testphase laut Philipp).
+
+
+
+### MSG-BASE01-01 · 02.11.2026 · Claude (Thread „Basisanlagen wie im Bild planen“) · BASE-01 Basisplaner und SPLIT-01 Gebäude herauslösen
+
+- Auftrag Philipp (Bild einer Küstenbasis mit Trader, Lager, Waffenkammer, Schmiede, Enchant Tower, XP-Farm, Küche, Gemeinschaftshalle, Getreidefarm, Tierfarm, Hafen): „geh auch in die tiefe Planung von solchen Dingen … zusätzlich dass man aus großen Objekten einzelne Gebäude herausziehen kann“. Neue Roadmapaufgaben **BASE-01** und **SPLIT-01**, Doku [BASE_PLANNER](architecture/BASE_PLANNER.md).
+- Neue Dateien: `packages/domain/src/baseFunctions.ts` (13 Funktionen, Spielprüfungen, Erkennung), `base.ts` (Layout, Wegenetz, Übernahme), `split.ts` (Säulenanalyse, Herauslösen, Aufteilen), `apps/web/src/views/library/BasePage.tsx`, `base.css`, `SplitPanel.tsx`, `tests/base.test.mjs`, `tests/e2e/base.e2e.mjs` (Port 4297).
+- Kleine Eingriffe: `anlagen.ts` (`AnlagePlacement.area?` – ausgedehnte Teile wie ein Wegenetz werden bei der Abstandsprüfung übersprungen; sonst unverändert), `types.ts` (`AssetSourceFormat` + `'base-plan'`), `router.ts` (Bibliotheksseite `basis`), `LibraryView.tsx` (Reiter „Basisplaner“), `BuildingDetail.tsx` (SplitPanel unter „Verwalten“), `domain/index.ts` (Exporte).
+- **An Weltkarte/Weltbuilder (MAP-04) und Live-Karte:** nichts am Weltplan geändert. Eine aus dem Basisplaner angelegte Basis ist ein normales Projekt mit Bauabschnitten; auf die Karte kommt sie wie jedes Projekt.
+- **An Bibliotheks-Threads:** herausgelöste Teile tragen die Schlagworte `herausgeloest`, `gebaeude`/`flaeche`, `funktion:<id>`; Quelle `crop`. Das Wegenetz des Basisplaners hat Quelle `base-plan`.
+- **An Gelände (TERRAIN-01/02):** der Basisplaner nutzt `fitAnlageToTerrain` unverändert; die Küstenlinie ist eine gewählte Seite, nicht aus der Aufnahme gelesen (offen, BASE-01-S06).
+- Reservierung mit dem Push beendet. Offen: BASE-01-S06 und SPLIT-01-S05 (Abnahme in der Testphase).

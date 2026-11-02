@@ -103,3 +103,10 @@ export type { LiveHello, LivePlayer, LiveWorld, LiveCounts, LivePlacement, LiveH
 export { removeItemsOp, selectionBounds, selectionPivot, itemsInRect, rotateColumn, mirrorColumn, rotateItem, mirrorItem, updateItemsOp, duplicateItems,
   pathVertexAt, movePathVertex, insertPathVertex, removePathVertex, reversePath, splitPath, joinPaths, groundHeight, alignToGround } from './worldPlanEdit.js';
 export type { GroundAt } from './worldPlanEdit.js';
+export { BASE_FUNCTIONS, BASE_PHASES, baseFunctionById, affinity, checkRequirements, detectFunction, blockCounts, entityCounts, enchantingPower, farmlandHydration } from './baseFunctions.js';
+export type { BaseFunction, BaseFunctionId, BasePhase, BaseMember, Requirement, RequirementStatus, RequirementInput, FunctionGuess } from './baseFunctions.js';
+export { BASE_TEMPLATES, baseTemplateById, defaultZones, zoneKeyFor, normalizeBaseChoices, layoutBase, buildBasePlan, previewBase, createBaseProject, baseIntoProject, pathNetworkPayload, mainCandidates, isWaterCell,
+  WATER_SIDE_LABEL, PATH_STYLE_LABEL, PATH_WIDTH, BASE_SPACING, MAX_ZONES, RESERVE_ID } from './base.js';
+export type { BaseTemplate, BaseZoneChoice, BaseChoices, NormalizedBaseChoices, WaterSide, PathStyle, BaseMemberPlan, BaseZonePlan, BaseLayout, BasePlan } from './base.js';
+export { analyzeSplit, extractParts, extractRest, splitProject, blockClass, SPLIT_DEFAULTS, SPLIT_MAX_COLUMNS, NO_GROUND } from './split.js';
+export type { SplitOptions, SplitPart, SplitAnalysis, ExtractOptions, ExtractedPart, GroundMode, SplitProjectPart, BlockClass as SplitBlockClass } from './split.js';

@@ -1,0 +1,23 @@
+/* BASE-01 · Basisplaner: zones by phase, requirement list, drawn site map. Theme tokens only. */
+.base-planner .base-controls{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));align-items:end}
+.base-planner .base-controls label{display:grid;gap:6px;font-size:12px}
+.base-map{max-height:560px;cursor:default}.base-map .base-zone{cursor:pointer}
+.base-phase{margin-bottom:16px}.base-phase h4{margin:6px 0 10px;font-size:14px;font-weight:550}.base-phase h4 small{display:block;color:var(--muted);font-weight:400;font-size:11.5px;margin-top:2px;line-height:1.6}
+.anlage-districts>li.focused{border-color:var(--mint)}
+.base-reqs{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px}
+.base-reqs li{border-left:3px solid var(--line);padding:4px 8px;font-size:11.5px;line-height:1.55;display:grid;gap:1px}
+.base-reqs li span{color:var(--text)}.base-reqs li small{color:var(--muted)}
+.base-reqs li.ok{border-color:var(--mint)}.base-reqs li.warn{border-color:#ff9f43}.base-reqs li.info{border-color:var(--line)}
+.base-hints{margin-top:6px;font-size:11.5px}.base-hints summary{cursor:pointer;color:var(--mint);min-height:28px}.base-hints ul{margin:4px 0 0;padding-left:18px;color:var(--muted);line-height:1.7}
+.base-add{display:grid;gap:6px;font-size:12px;max-width:320px;margin-top:8px}
+.anlage-slot-actions label{display:flex;gap:6px;align-items:center;font-size:11.5px}.anlage-slot-actions input[type=number]{width:64px;padding:6px}
+/* SPLIT-01 · Gebäude herauslösen */
+.split-panel summary{cursor:pointer;min-height:36px;font-weight:550}
+.split-panel .split-options{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:8px 0;font-size:12px}.split-panel .split-options label{display:grid;gap:4px}
+.split-parts{list-style:none;margin:8px 0;padding:0;display:grid;gap:6px;max-height:420px;overflow:auto}
+.split-parts li{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:8px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:6px 8px;font-size:12px}
+.split-parts li.active{border-color:var(--mint)}.split-parts input[type=text]{width:100%;padding:6px;font-size:12px}
+.split-parts .split-meta{grid-column:3;color:var(--muted);font-size:11px;overflow-wrap:anywhere}
+.split-swatch{width:12px;height:12px;border-radius:3px}
+.split-map{width:100%;max-height:260px;display:block;background:var(--panel-2);border-radius:8px}
+@media(max-width:650px){.base-reqs{grid-template-columns:1fr}}

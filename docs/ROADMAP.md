@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-02T19:41:48.238Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-02T19:48:53.099Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-02T19:41:48.238Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 15 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 38 |
+| 🧩 Implementiert · Abnahme offen | 40 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -160,6 +160,8 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [GAME-05](#game-05) | NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik | 🧩 Implementiert · Abnahme offen | 3/4 | GAME-02 | ausstehend | ausstehend |
 | [LIB-04](#lib-04) | Gebäudebibliothek v3: Inhalte in alle Richtungen | 🧩 Implementiert · Abnahme offen | 4/4 | LIB-01 | ausstehend | ausstehend |
 | [LIB-05](#lib-05) | Bibliothek im Stil der Vorlagen: Gestaltungsregeln, Baukasten, neu gezeichnete Gebäude und Generatoren | 🧩 Implementiert · Abnahme offen | 6/7 | LIB-04, BLOCK-02, GEN-02 | ausstehend | ausstehend |
+| [BASE-01](#base-01) | Basisplaner: ganze Survival-Basis aus Funktionszonen (Platz, Lager, Schmiede, Verzauberung, XP-Farm, Küche, Halle, Felder, Tierfarm, Hafen, Händler), Wegenetz mit Laternen, Wasserseite, Spielprüfungen je Zone, Bauphasen | 🧩 Implementiert · Abnahme offen | 5/6 | BUILD-05, TERRAIN-01, BLOCK-02 | ausstehend | ausstehend |
+| [SPLIT-01](#split-01) | Gebäude aus großen Modellen herauslösen: Gebäude, Felder, Gehege und Wegenetz erkennen, einzeln oder zusammen als Bauteile speichern, als Projekt an alter Stelle aufteilen | 🧩 Implementiert · Abnahme offen | 4/5 | LIB-04, WORLD-IMPORT-01, PERF-04 | ausstehend | ausstehend |
 
 ## P4: Optionale Zusammenarbeit und Integrationen
 
@@ -1788,6 +1790,51 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/baustil.test.mjs](../tests/baustil.test.mjs) — Gestaltungsziele als Medianwerte, Baukasten deterministisch, Veredelung verlustfrei.; [docs/architecture/BAUSTIL.md](architecture/BAUSTIL.md) — Quellen, Messwerte vorher/nachher, Regeln, Baukasten.; [packages/domain/src/build/facade.ts](../packages/domain/src/build/facade.ts) — Fassadenbaukasten der Runde 2, getestet in tests/baustil.test.mjs.; [packages/domain/src/build/sets/meister.ts](../packages/domain/src/build/sets/meister.ts) — Sieben neue Meisterstücke mit Einrichtung.
 
 **Dateiumfang:** `packages/domain/src/build/`, `packages/domain/src/buildings.ts`, `packages/domain/src/ensembles.ts`, `packages/domain/src/generators/`, `docs/architecture/BAUSTIL.md`, `docs/architecture/CATALOG.md`, `docs/architecture/GENERATORS.md`, `tests/baustil.test.mjs`, `tests/catalog.test.mjs`, `tests/generators.test.mjs`. **Abhängigkeiten:** LIB-04, BLOCK-02, GEN-02. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### BASE-01
+
+**Basisplaner: ganze Survival-Basis aus Funktionszonen (Platz, Lager, Schmiede, Verzauberung, XP-Farm, Küche, Halle, Felder, Tierfarm, Hafen, Händler), Wegenetz mit Laternen, Wasserseite, Spielprüfungen je Zone, Bauphasen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Basisanlagen wie im Bild planen“) · Aktualisiert: 2026-11-02T19:48:53.099Z
+
+- [x] BASE-01-S01: Funktionskatalog mit Lagewünschen, Affinitäten, Katalogbauteilen, Alternativen, freiem Bauplatz und Bauphasen.
+- [x] BASE-01-S02: Spielprüfungen auf echten Blöcken: Verzauberungsstufe (Vanilla-Regel), Bewässerung, Arbeitsblöcke/Betten, Lagerplatz, Schmiede, Kochstelle, Gehege, Stege im Wasser.
+- [x] BASE-01-S03: Layout: Platz in der Mitte, Zonen nach Affinität und Platznähe, Uferreihe mit Stegen im Wasser, XP-Farm abseits, Türen zum Platz, Drehung auf die Wasserseite.
+- [x] BASE-01-S04: Wegenetz (A*, Stammwege, Laternen) als eigenes Bauteil; AnlagePlan-kompatibel für Konfliktvorschau, Gelände und 3D-Export.
+- [x] BASE-01-S05: Oberfläche #/bibliothek/basis: Lageplan wie eine gezeichnete Karte, Zonen je Phase mit Tausch/Anzahl/Bauplatz, Prüfung, Übernahme mit Bauphasen.
+- [ ] BASE-01-S06: Abnahme durch Philipp in der Testphase; Küstenlinie aus der Geländeaufnahme, Wegstufen als Treppen, Brücken.
+
+**Abnahme:** Alle Vorlagen planen ohne Voxelkonflikt, jede Zone hängt am Wegenetz, Stege liegen im Wasser, Wege nie im Wasser oder durch Gebäude. Jede Zone zeigt ihre Spielanforderungen auf den echten Blöcken; offene Punkte stehen in den Bauabschnitten. Nichts wird ohne Knopfdruck gespeichert; Einfügen ist ein Rückgängig-Schritt.
+
+**Nächste Aktion:** Abnahme durch Philipp (S06); danach Küstenlinie aus der Geländeaufnahme und Wegstufen.
+
+**Prüfstand:** Einheits- und Browsertests grün; Abnahme durch Philipp offen (S06).
+
+**Nachweise:** [tests/base.test.mjs](../tests/base.test.mjs) — Funktionen, Spielprüfungen, alle Vorlagen (Konflikte, Abstand, Wasser, Wege), Zonenwahl, Übernahme mit Phasen, Einfügen mit Rückgängig.; [tests/e2e/base.e2e.mjs](../tests/e2e/base.e2e.mjs) — Chromium: Zonen, Tausch, Bauplatz, Wasserseite, Zusatzzone, Übernahme, Wegenetz-Bauteil, 390 px.; [docs/architecture/BASE_PLANNER.md](architecture/BASE_PLANNER.md) — Funktionen, Layout, Wegenetz, Prüfung, Grenzen.
+
+**Dateiumfang:** `packages/domain/src/baseFunctions.ts`, `packages/domain/src/base.ts`, `packages/domain/src/anlagen.ts`, `apps/web/src/views/library/BasePage.tsx`, `apps/web/src/views/library/base.css`, `apps/web/src/app/router.ts`, `tests/base.test.mjs`, `tests/e2e/base.e2e.mjs`, `docs/architecture/BASE_PLANNER.md`. **Abhängigkeiten:** BUILD-05, TERRAIN-01, BLOCK-02. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### SPLIT-01
+
+**Gebäude aus großen Modellen herauslösen: Gebäude, Felder, Gehege und Wegenetz erkennen, einzeln oder zusammen als Bauteile speichern, als Projekt an alter Stelle aufteilen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Basisanlagen wie im Bild planen“) · Aktualisiert: 2026-11-02T19:48:53.099Z
+
+- [x] SPLIT-01-S01: Säulenanalyse: Bodenhöhe (mit Auffüllen unter Gebäuden), Natur/Flach/Gebaut je Zelle, Kernsäulen, Rand, Flächen nach Kategorie.
+- [x] SPLIT-01-S02: Funktionserkennung je Teil (Zaubertisch, Amboss, Truhen, Ackerboden, Zaun, Wegblöcke) und Benennung.
+- [x] SPLIT-01-S03: Herauslösen ohne/mit Boden, Zusammenlegen, Rest, Projekt mit Instanzen an alter Stelle und Abschnitten.
+- [x] SPLIT-01-S04: Oberfläche im Gebäudeblatt: Optionen, Draufsicht, Liste, Hervorhebung in 3D, drei Speicherwege.
+- [ ] SPLIT-01-S05: Abnahme mit Philipps echten Litematic-Basen in der Testphase; Erkennung unterirdischer Räume und Brückenverbindungen.
+
+**Abnahme:** Eine ganze Basis auf Gras zerfällt in ihre Gebäude, Felder und das Wegenetz; jeder Block des aufgeteilten Projekts steht am alten Platz. Das Quellmodell bleibt unverändert; Herkunft wird übernommen.
+
+**Nächste Aktion:** Abnahme mit echten Dateien (S05).
+
+**Prüfstand:** Einheits- und Browsertests grün; Abnahme mit echten Dateien offen (S05).
+
+**Nachweise:** [tests/base.test.mjs](../tests/base.test.mjs) — Ganze Basis auf Gras: Gebäude, Felder, Wegenetz, Schmiede nahezu vollständig, mit/ohne Boden, Zusammenlegen, Rest, Bilanz; Projekt ohne Konflikte am alten Platz.; [tests/e2e/base.e2e.mjs](../tests/e2e/base.e2e.mjs) — Chromium: Herauslösen im Gebäudeblatt, Teil benennen und speichern.; [docs/architecture/BASE_PLANNER.md](architecture/BASE_PLANNER.md) — Analyse, Klassen, Herauslösen, Grenzen.
+
+**Dateiumfang:** `packages/domain/src/split.ts`, `packages/domain/src/baseFunctions.ts`, `apps/web/src/views/library/SplitPanel.tsx`, `apps/web/src/views/library/BuildingDetail.tsx`, `tests/base.test.mjs`, `tests/e2e/base.e2e.mjs`, `docs/architecture/BASE_PLANNER.md`. **Abhängigkeiten:** LIB-04, WORLD-IMPORT-01, PERF-04. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

@@ -20,6 +20,7 @@ import { DIM_MARK, HIT_MARK } from '../viewer/marks';
 import type { Mark } from '../viewer/types';
 import type { Highlight } from './library/ConnectorEditor';
 import { CropPanel } from './library/CropPanel';
+import { BasePage } from './library/BasePage';
 import { BuildingCard } from './library/BuildingCard';
 import { BuildingDetail } from './library/BuildingDetail';
 import { CatalogFilters, activeFilterCount, filterChips } from './library/CatalogFilters';
@@ -330,6 +331,7 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
     <a href={libHref('generators')} aria-current={page === 'generators' ? 'page' : undefined}>Generatoren <small>{GENERATORS.length}</small></a>
     <a href={libHref('themes')} aria-current={page === 'themes' ? 'page' : undefined}>Bauwelten</a>
     <a href={libHref('facilities')} aria-current={page === 'facilities' ? 'page' : undefined}>Anlagen <small>{ANLAGEN.length}</small></a>
+    <a href={libHref('base')} aria-current={page === 'base' ? 'page' : undefined}>Basisplaner</a>
     <a href={libHref('collections')} aria-current={page === 'collections' ? 'page' : undefined}>Sammlungen <small>{userLib.collections.filter(c => !c.archived).length}</small></a>
     <a href={libHref('templates')} aria-current={page === 'templates' ? 'page' : undefined}>Vorlagen <small>{userLib.templates.filter(t => !t.archived).length}</small></a>
   </nav>;
@@ -380,6 +382,8 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
       buildingHref={id => libHref('building', id)} anlageHref={id => libHref('facilities', id)} /></div>;
   if (page === 'facilities') return <div className="page">{header}{tabs}{notices}
     <AnlagenPage id={id} entries={catalog.entries} projects={projects} libHref={libHref} onMessage={(m, l) => say(m, l ?? null)} /></div>;
+  if (page === 'base') return <div className="page">{header}{tabs}{notices}
+    <BasePage projects={projects} libHref={libHref} onMessage={(m, l) => say(m, l ?? null)} /></div>;
   if (page === 'generators') return <div className="page">{header}{tabs}{notices}
     <GeneratorsPage id={id} projects={projects} libHref={libHref} onSaved={(m, savedId) => { say(m); showBuilding(savedId); }} userLib={userLib} onMessage={m => say(m)} /></div>;
   if (page === 'compare') {

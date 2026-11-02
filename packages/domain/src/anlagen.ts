@@ -298,6 +298,8 @@ export interface AnlagePlacement {
   readonly transform: Transform;
   /** XZ footprint after the transform (max exclusive). */
   readonly footprint: Footprint;
+  /** Spread-out part (a routed path network, BASE-01): its box is no footprint, spacing is not checked against it. */
+  readonly area?: boolean;
 }
 export interface DistrictLayout {
   readonly id: string;
@@ -542,6 +544,7 @@ export function previewAnlage(plan: AnlagePlan, input: { base?: Project; offset?
   for (let i = 0; i < fp.length; i++) for (let j = i + 1; j < fp.length; j++) {
     const a = fp[i]!, b = fp[j]!;
     if (a.p.kind === 'path' && b.p.kind === 'path') continue;
+    if (a.p.area || b.p.area) continue;
     if (a.p.ensembleId && a.p.ensembleId === b.p.ensembleId && a.p.districtId === b.p.districtId) continue;
     const sameDistrict = a.p.districtId !== null && a.p.districtId === b.p.districtId;
     const want = sameDistrict ? gapIn.get(a.p.districtId!)! : min;

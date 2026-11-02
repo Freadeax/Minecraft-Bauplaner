@@ -15,6 +15,7 @@ import { GeneratedInfo } from './GeneratorsPage';
 import { ConnectorEditor } from './ConnectorEditor';
 import type { Highlight } from './ConnectorEditor';
 import { CropPanel } from './CropPanel';
+import { SplitPanel } from './SplitPanel';
 import { stars } from './BuildingCard';
 import { EquipmentSection, FactsSection, MatchSection, MaterialBar, MaterialsSection, MetricsSection, TechSection, TipsSection } from './BuildingSheet';
 
@@ -63,15 +64,17 @@ export function BuildingDetail({ entry, asset, latest, versions, info, group, va
   const [cropMarks, setCropMarksState] = useState<Highlight>(null);
   const setConnectorMarks = useCallback((h: Highlight) => setConnectorMarksState(() => h), []);
   const setCropMarks = useCallback((h: Highlight) => setCropMarksState(() => h), []);
+  const [splitMarks, setSplitMarksState] = useState<Highlight>(null);
+  const setSplitMarks = useCallback((h: Highlight) => setSplitMarksState(() => h), []);
   const payload = latest.payload;
   const [tab, setTabState] = useState<SchemTab>(() => SCHEM_TABS.some(([t]) => t === sub) ? sub as SchemTab : '3d');
   // Tab changes rewrite the address without navigation, so the page does not jump to the top.
   const setTab = (t: SchemTab) => { setTabState(t); history.replaceState(history.state, '', libHref('building', asset.id, t === '3d' ? undefined : t)); };
   useEffect(() => { if (sub === 'versionen') document.getElementById('sec-versionen')?.scrollIntoView(); }, [sub]);
   const markFor = useMemo(() => (cell: Cell): Mark | null => {
-    const mark = cropMarks?.(cell) ?? connectorMarks?.(cell) ?? null;
+    const mark = splitMarks?.(cell) ?? cropMarks?.(cell) ?? connectorMarks?.(cell) ?? null;
     return mark === 'hit' ? HIT_MARK : mark === 'dim' ? DIM_MARK : null;
-  }, [cropMarks, connectorMarks]);
+  }, [splitMarks, cropMarks, connectorMarks]);
   const category = entry.facets.kategorie[0];
   const kicker = [...entry.facets.kategorie.map(k => facetLabel('kategorie', k)), ...entry.facets.stil.map(v => facetLabel('stil', v))].join(' · ');
 
@@ -174,6 +177,8 @@ export function BuildingDetail({ entry, asset, latest, versions, info, group, va
           <ConnectorEditor key={`c-${asset.id}`} asset={asset} version={latest} onHighlight={setConnectorMarks} onSaved={onMessage} />
           <CropPanel key={`r-${latest.id}`} payload={latest.payload} name={asset.name} provenance={asset.provenance} getSource={async () => latest.source}
             onHighlight={setCropMarks} onSaved={(msg, id) => { onMessage(msg); onSelectSaved(id); }} />
+          <SplitPanel key={`s-${latest.id}`} payload={latest.payload} name={asset.name} provenance={asset.provenance} getSource={async () => latest.source}
+            onHighlight={setSplitMarks} onSaved={(msg, id) => { onMessage(msg); if (id) onSelectSaved(id); }} />
         </div>
       </div>
     </section>

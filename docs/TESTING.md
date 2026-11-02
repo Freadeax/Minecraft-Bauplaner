@@ -690,3 +690,9 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `tests/e2e/library-start.e2e.mjs` 2/2: erster Start `built` mit 32-stelligem Schlüssel im meta-Speicher, Neuladen `cache`, Rückfall `direct`.
 - Messung (Chromium headless): Neuladen bis zum Katalog 5,1 s → 1,0 s; mit eigenem 600.000-Block-Bau 3,2 s beim ersten Start danach, dann 1,0 s; Blockierung weiter ≤ 0,6 s gesamt.
 - `npm run check` grün (650 Tests, 649 bestanden, 1 übersprungen), `npm run test:e2e` **118/118**. Nach Rebase auf main 951395f (EDIT-05): `npm run check` grün (664 Tests, 663 bestanden, 1 übersprungen), Browser `library-start`, `background-jobs`, `catalog`, `persistence`, `stability`, `workshop-tools`, `app` 21/21.
+
+
+## BASE-01 Basisplaner · SPLIT-01 Gebäude herauslösen · 02.11.2026 · Claude
+- `tests/base.test.mjs` 10/10: Funktionen und Vorlagen gegen den echten Katalog; Verzauberungsstufe 15/15 am Zaubererturm, Bewässerung 80/80 am Weizenacker und 4/11 bei 11 Blöcken Entfernung; alle drei Vorlagen ohne Voxelkonflikt, jede Zone am Wegenetz, Abstand ≥ Wegbreite + 2 × Abstand, Wege nie durch Gebäude oder Wasser, Stege im Wasser, Land nie im Wasser, XP-Farm im Hinterland am weitesten vom Platz, deterministisch; Zonenwahl; Übernahme mit „Wege & Platz“ und Phasen; Einfügen mit Rückgängig und Veraltungsprüfung; ganze Starterbasis auf Gras zerlegt (Gebäude, 4 Felder, ein Wegenetz, Schmiede 95–110 % ihrer Blöcke, Bilanz Natur + Teile + Rest = alle Blöcke); aufgeteiltes Projekt ohne Konflikte mit jedem Block am alten Platz.
+- `tests/e2e/base.e2e.mjs` 1/1 (Chromium, Port 4297): Basisplaner mit Abwählen, Tausch, freiem Bauplatz, Wasserseite West, Zusatzzone, Übernahme (Abschnitte, Wegenetz-Bauteil), Herauslösen an der Handelsscheune, 390 px.
+- Grenzen: nur Chromium im Container; keine Abnahme mit Philipps eigenen Litematic-Basen; Küstenlinie als Wahl, nicht aus der Geländeaufnahme.
