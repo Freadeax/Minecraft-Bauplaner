@@ -2189,3 +2189,13 @@ Nachbesserung nach Live-Rückmeldung: Ansichtsknöpfe und Kartenbeschriftungen i
 - `apps/web/src/views/map/OverviewMap.tsx`
 - `apps/web/src/views/map/WorldMapView.tsx`
 
+## 2026-11-02T10:57:37.022Z · progress
+
+**Aufgaben:** MAP-03
+
+„Zu mir“ holt die Draufsicht in den sichtbaren Bereich, seit die Spielverbindung über der Karte steht; livelink-, worldmap- und textures-Browsertests grün.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MAP-03 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server. |
+

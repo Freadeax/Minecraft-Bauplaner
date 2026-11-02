@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T10:40:33.215Z",
+  "updatedAt": "2026-11-02T10:57:37.022Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -3464,7 +3464,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T10:40:33.215Z"
+      "updatedAt": "2026-11-02T10:57:37.022Z"
     },
     {
       "id": "MAP-02",
@@ -7759,6 +7759,24 @@
         "apps/web/src/views/map/OverviewMap.tsx",
         "apps/web/src/views/map/WorldMapView.tsx"
       ],
+      "snapshot": [
+        {
+          "id": "MAP-03",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T10:57:37.022Z",
+      "kind": "progress",
+      "items": [
+        "MAP-03"
+      ],
+      "summary": "„Zu mir“ holt die Draufsicht in den sichtbaren Bereich, seit die Spielverbindung über der Karte steht; livelink-, worldmap- und textures-Browsertests grün.",
+      "files": [],
       "snapshot": [
         {
           "id": "MAP-03",
