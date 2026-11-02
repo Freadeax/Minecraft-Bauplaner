@@ -1,5 +1,6 @@
 import { BLOCK_REGISTRY_VERSION, vanillaBlockIds, vanillaBlockProperties } from '../../../voxel/src/blockRegistry.js';
 import { stateRuleFor } from '../../../voxel/src/states.js';
+import { blockFacts } from '../../../voxel/src/blocklogic/index.js';
 import type { BlockState } from '../../../voxel/src/types.js';
 import type { PropertySchema } from './tools.js';
 
@@ -61,6 +62,16 @@ export function blockSchema(id: string): PropertySchema | undefined {
   const key = full(id);
   const cached = SCHEMA_CACHE.get(key);
   if (cached) return cached;
+  // Game facts (BLOCK-01) carry every property and value of 26.3 exactly; the rest is for ids outside them.
+  const facts = blockFacts(key);
+  if (facts) {
+    const exact = Object.fromEntries(Object.keys(facts.properties).sort().map(k => {
+      const v = facts.properties[k]!;
+      return [k, v.length === 2 && v.includes('true') && v.includes('false') ? BOOL : v];
+    }));
+    SCHEMA_CACHE.set(key, Object.freeze(exact));
+    return exact;
+  }
   const rule = stateRuleFor(key)?.schema;
   const reg = vanillaBlockProperties(key);
   if (!rule && !reg) return undefined;
@@ -88,6 +99,12 @@ const DEFAULT_BY_NAME: Readonly<Record<string, readonly string[]>> = {
 export function defaultProperties(id: string): Record<string, string> {
   const schema = blockSchema(id) ?? {};
   const out: Record<string, string> = {};
+  const game = blockFacts(full(id));
+  if (game) {
+    // The game's default state; planned leaves stay persistent so they do not decay.
+    for (const k of Object.keys(schema)) out[k] = k === 'persistent' && bare(id).endsWith('_leaves') ? 'true' : game.defaults[k]!;
+    return out;
+  }
   for (const [k, values] of Object.entries(schema)) {
     const preferred = (DEFAULT_BY_NAME[k] ?? []).find(v => values.includes(v));
     out[k] = preferred ?? (values.includes('false') ? 'false' : values.includes('none') ? 'none' : [...values].sort((a, b) => Number(a) - Number(b) || (a < b ? -1 : 1))[0]!);

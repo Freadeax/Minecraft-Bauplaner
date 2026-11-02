@@ -12,6 +12,7 @@ import { mix, stateColor } from '../../colors';
 import { Viewer } from '../../Viewer';
 import type { Mark } from '../../viewer/types';
 import { GAME_BADGE, GameCheckPanel, gameStatusText } from './GameCheckPanel';
+import { PlacementPanel } from './PlacementPanel';
 import type { LoadedScan } from './GameCheckPanel';
 import { useProjectComputation } from '../../app/useProjectComputation';
 import type { ProjectSession } from './session';
@@ -181,6 +182,7 @@ export function BuildTab({ session }: { session: ProjectSession }) {
     })()}
     <AnchorBar project={project} scanMeta={scan?.meta ?? null} execute={op => session.execute(op)} />
     {gamePanel}
+    {world && <PlacementPanel world={world} guide={guide} onSelect={id => { setSelectedId(id); setView('steps'); }} />}
     {message && <div className="notice warning build-wide" role="alert">{message}<button onClick={() => setMessage('')}>OK</button></div>}
 
     {view === 'days' && plan && world && <SessionsView project={project} guide={guide} progress={progress} plan={plan} reports={stepItems!} game={game} anchor={anchor} world={world}

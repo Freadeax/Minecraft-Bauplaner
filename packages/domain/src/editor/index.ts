@@ -12,5 +12,6 @@ export { PATTERN_KIND_LABEL, GRADIENT_AXIS_LABEL, PATTERN_PRESETS, cellNoise, ed
 export type { Pattern, PatternKind, PatternValue, PatternEntry, PatternAxis, GradientAxis, PatternExtent, PatternPreset } from './patterns.js';
 export { ARCH_STYLE_LABEL, archEdit, pyramidEdit, coneEdit, wallLineEdit } from './shapes.js';
 export type { ArchStyle, ArchOptions } from './shapes.js';
+export { settleEdit } from './settle.js';
 export { STENCIL_TAG, BUILTIN_STENCILS, clipboardFromPayload, draftFromClipboard } from './stencils.js';
 export type { Stencil } from './stencils.js';

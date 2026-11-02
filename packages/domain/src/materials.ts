@@ -1,4 +1,5 @@
 import { stateKey } from '../../voxel/src/validation.js';
+import { isFactBlock, itemOf, stackOfItem } from '../../voxel/src/blocklogic/index.js';
 import type { BlockState, Cell, Vec3, VoxelPayload } from '../../voxel/src/types.js';
 import { positionKey } from './compose.js';
 import type { Resolution } from './compose.js';
@@ -162,6 +163,9 @@ const DIRECT = new Set(['stone', 'granite', 'diorite', 'andesite', 'deepslate', 
 const UNPACKABLE = /(^|_)shulker_box$/;
 
 export function stackSizeOf(itemId: string): 1 | 16 | 64 {
+  // Real stack size of block items from the 26.3 item reports (BLOCK-01); other items by rule.
+  const real = stackOfItem(itemId);
+  if (real === 1 || real === 16 || real === 64) return real;
   const id = itemId.replace(/^minecraft:/, '');
   if (/(^|_)bed$/.test(id) || UNPACKABLE.test(id) || id === 'cake' || /_bucket$/.test(id) || id === 'decorated_pot') return 1;
   if (/_sign$/.test(id) || /_banner$/.test(id) || id === 'snowball' || id === 'egg' || id === 'ender_pearl' || id === 'honey_bottle' || id === 'armor_stand') return 16;
@@ -244,6 +248,11 @@ export function itemsForCell(state: BlockState, position: Vec3, at: Lookup): Cel
   if (DERIVED[id]) return { yields: [one(DERIVED[id]![0], 'derived', 'assumed', 1, DERIVED[id]![1])] };
   if (id === 'cake' && p.bites && p.bites !== '0') return { yields: [one('cake', 'direct', 'catalog', 1, 'angeschnittener Kuchen: ganzer Kuchen nötig')] };
   if (DIRECT.has(id) || DIRECT_FAMILY.test(id) || DIRECT_PREFIX.test(id) || DIRECT_SUFFIX.test(id) || COLORS.some(c => id === `${c}_wool`)) return { yields: [one(id, 'direct')] };
+  // Game facts (BLOCK-01): asItem of the real 26.3 block says which item places it.
+  const item = itemOf(state.id);
+  if (item === state.id) return { yields: [one(id, 'direct')] };
+  if (item) return { yields: [one(item.replace(/^minecraft:/, ''), 'renamed')] };
+  if (isFactBlock(state.id)) return { unresolved: 'no-item', message: 'Im Spiel gibt es kein Item, das diesen Block setzt' };
   return { yields: [one(id, 'assumed', 'assumed', 1, 'keine Katalogregel: Item-ID = Block-ID angenommen')] };
 }
 

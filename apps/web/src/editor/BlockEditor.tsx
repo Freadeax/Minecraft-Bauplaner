@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import {
   ARCH_STYLE_LABEL, BOX_SHAPE_LABEL, PATTERN_KIND_LABEL, archEdit, boxBounds, boxEdit, boxVolume, cellAt, coneEdit, copyBox, countMatches, cylinderEdit, defaultState, floodEdit, lineEdit, materializeDraft,
   moveBoxEdit, paintEdit, pasteEdit, pyramidEdit, replaceEdit, replacePatternEdit, rotateCellEdit, setCells, sphereEdit, blockSchema, blockLabel, transformClipboard, wallLineEdit,
+  checkPlacement, settleEdit,
 } from '../../../../packages/domain/src/index.js';
 import type { ArchStyle, Box, BoxShape, CellSlot, Clipboard, Edit, ReplaceQuery } from '../../../../packages/domain/src/index.js';
 import type { BlockState, Cell, Vec3, VoxelPayload } from '../../../../packages/voxel/src/index.js';
@@ -72,6 +73,15 @@ export interface BlockEditorProps {
 }
 
 /** Complete block editor: layer grid + 3D preview, all blocks, tools, selection operations and undo. */
+/** One line for the editor message: what the game will do with this model. */
+function placementSummary(r: ReturnType<typeof checkPlacement>): string {
+  const parts = [r.counts.unsupported && `${r.counts.unsupported} ohne Halt`, r.counts.falls && `${r.counts.falls} fallen herunter`, r.counts.connection && `${r.counts.connection} Verbindungen anders als im Spiel`,
+    r.counts.half && `${r.counts.half} halbe Türen/Betten/Pflanzen`, r.counts['invalid-state'] && `${r.counts['invalid-state']} ungültige Zustände`].filter(Boolean);
+  const first = r.issues[0];
+  return parts.length ? `Spielprüfung: ${parts.join(', ')}.${first ? ` Zum Beispiel X ${first.position[0]} Y ${first.position[1]} Z ${first.position[2]}: ${first.note}` : ''}${r.dependsOnSurroundings ? ` ${r.dependsOnSurroundings} Blöcke hängen von der Umgebung ab.` : ''}`
+    : `Spielprüfung bestanden: ${formatNumber(r.blocks)} Blöcke halten und verbinden sich wie geplant${r.dependsOnSurroundings ? ` (${r.dependsOnSurroundings} brauchen Halt aus der Umgebung)` : ''}.`;
+}
+
 export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: BlockEditorProps) {
   const model = useDraft(base, profileId);
   const { draft, layers, extent } = model;
@@ -304,6 +314,9 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
     <div className="editor-bar" role="toolbar" aria-label="Bearbeitung">
       <button onClick={model.undo} disabled={!model.history.undo.length} title={model.history.undo.at(-1) ? `Rückgängig: ${model.history.undo.at(-1)!.label} (Strg+Z)` : 'Rückgängig (Strg+Z)'}>↶ Rückgängig</button>
       <button onClick={model.redo} disabled={!model.history.redo.length} title="Wiederholen (Strg+Y)">↷ Wiederholen</button>
+      <button data-testid="settle" onClick={() => { const e = settleEdit(draft, selBox); if (e) run(e, `${e.label}: Zäune, Mauern, Scheiben, Treppen und Tore zeigen jetzt die Form aus dem Spiel.`); else setMessage('Alle Verbindungen entsprechen schon dem Spiel.'); }}
+        title={selBox ? 'Verbindungen in der Auswahl wie im Spiel setzen (Zäune, Mauern, Scheiben, Gitter, Treppenecken, Tore)' : 'Verbindungen im ganzen Modell wie im Spiel setzen (Zäune, Mauern, Scheiben, Gitter, Treppenecken, Tore)'}>⛓ Wie im Spiel verbinden</button>
+      <button data-testid="placement-check" onClick={() => { const pl = materializeDraft(draft); setMessage(pl ? placementSummary(checkPlacement(pl)) : 'Das Modell ist leer.'); }} title="Halt, Schwerkraft, Verbindungen und Hälften wie im Spiel prüfen">✓ Spielprüfung</button>
       <span className="editor-stats" aria-live="polite" data-changes={changes}>
         {formatNumber(model.cellCount)} Zellen · Änderungen: <b>+{model.summary.added}</b> / <b>−{model.summary.removed}</b> / <b>~{model.summary.changed}</b>
       </span>

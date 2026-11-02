@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-02T08:13:54.837Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-02T08:26:29.438Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-02T08:13:54.837Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 16 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 25 |
+| 🧩 Implementiert · Abnahme offen | 26 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -118,6 +118,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | ⏳ Offen | 0/2 | QA-01, VIEW-02 | ausstehend | ausstehend |
 | [UI-02](#ui-02) | App-Hülle, Navigation und Handyoberfläche überarbeiten | ✅ Im beschriebenen Umfang geprüft | 4/4 | UI-01, QA-01 | ausstehend | ausstehend |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen | 5/6 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
+| [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material | 🧩 Implementiert · Abnahme offen | 6/7 | VIEW-02, BUILD-01, MAT-01 | ausstehend | ausstehend |
 | [GFX-01](#gfx-01) | Grafik vertiefen: Minecraft-Licht, Eckschatten, Sonne mit Schatten, Nacht, Spawnprüfung, sortiertes Glas und 32³-Abschnitte für große Modelle | 🧩 Implementiert · Abnahme offen | 5/6 | VIEW-02 | ausstehend | ausstehend |
 | [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-02, VIEW-01 | ausstehend | ausstehend |
 | [EDIT-02](#edit-02) | Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen | 🧩 Implementiert · Abnahme offen | 5/5 | VIEW-01, STORE-02 | ausstehend | ausstehend |
@@ -844,6 +845,30 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/blocks.test.mjs](../tests/blocks.test.mjs) — ZIP, Modelle, Formen aller 1288 Blöcke, Mesh/Kulling, Zustandsregeln.; [tests/e2e/textures.e2e.mjs](../tests/e2e/textures.e2e.mjs) — Texturdialog mit synthetischer Quelle, Speicherung, Entfernen, keine Mojang-Anfrage ohne Klick.; [docs/architecture/BLOCK_MODELS.md](architecture/BLOCK_MODELS.md) — Lizenzentscheidung, Module, Grenzen.
 
 **Dateiumfang:** `apps/web/src/blockmodels/`, `apps/web/src/viewer/`, `apps/web/src/thumbnail/`, `apps/web/src/schem/`, `packages/voxel/src/blockRegistry.ts`, `packages/voxel/src/states.ts`, `scripts/gen_block_data.py`. **Abhängigkeiten:** PROFILE-01, VIEW-01. **Alte IDs:** VIEW-03, B16.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### BLOCK-01
+
+**Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Echte Minecraft-Blocklogik einbauen“) · Aktualisiert: 2026-11-02T08:26:29.438Z
+
+- [x] BLOCK-01-S01: Blockfakten aus dem echten 26.3-Server (Berichte + Prüfprogramm): alle 1286 Blöcke, 35.723 Zustände, Stützflächen, Halt, Items, Stapelgrößen, Tags.
+- [x] BLOCK-01-S02: Verbindungen wie im Spiel (Zäune, Mauern hoch/niedrig/Pfosten, Scheiben/Gitter, Treppenformen, Tore, Schneegras, Pilzblöcke); 3.060 Spielvektoren gleich.
+- [x] BLOCK-01-S03: Halt- und Schwerkraftregeln (canSurvive, FallingBlock, Kaktus, Zuckerrohr, Gerüst, Ranken, Pilze im Dunkeln) und Platzierprüfung.
+- [x] BLOCK-01-S04: Bauschritt-Reihenfolge nach echtem Halt, Phase „Hängende Blöcke“, Halt-Voraussetzungen.
+- [x] BLOCK-01-S05: Material mit echten Items (asItem) und Stapelgrößen; Werkstatt-Palette mit Spiel-Standardzuständen.
+- [x] BLOCK-01-S06: Oberfläche: Spielprüfung in der Bauanleitung, „Wie im Spiel verbinden“ und „Spielprüfung“ in der Werkstatt.
+- [ ] BLOCK-01-S07: Abnahme im echten Spiel: Bau mit Spielprüfung ohne Hinweise nachbauen, Verbindungen vergleichen.
+
+**Abnahme:** Verbindungen und Halt entsprechen dem Spielcode (Prüfvektoren aus dem echten Server); keine Mojang-Dateien im Repository (ADR-020).
+
+**Nächste Aktion:** Abnahme im Spiel; die gefundenen Katalogfehler (u. a. 109 Laternen ohne Halt, Leitern an Scheiben) in der Gebäudebibliothek beheben; PROFILE-01 kann die Berichtsfakten übernehmen.
+
+**Prüfstand:** Node- und Chromium-Prüfungen bestanden; Abnahme im echten Spiel offen.
+
+**Nachweise:** [tests/block-logic.test.mjs](../tests/block-logic.test.mjs) — Fakten, alle 3.060 Spielvektoren, Halt-Sonderfälle, Platzierprüfung, Verbinden, Bauanleitung, Material.; [tests/e2e/block-logic.e2e.mjs](../tests/e2e/block-logic.e2e.mjs) — Spielprüfung in der Bauanleitung (1400/390 px), Zaunreihe in der Werkstatt verbinden und rückgängig.; [docs/architecture/BLOCK_LOGIC.md](architecture/BLOCK_LOGIC.md) — Herkunft der Fakten, Module, Regeln, Grenzen.
+
+**Dateiumfang:** `packages/voxel/src/blockFacts.ts`, `packages/voxel/src/blocklogic/`, `packages/domain/src/placement.ts`, `packages/domain/src/editor/settle.ts`, `packages/domain/src/guide.ts`, `packages/domain/src/materials.ts`, `packages/domain/src/editor/blocks.ts`, `apps/web/src/views/project/PlacementPanel.tsx`, `apps/web/src/editor/BlockEditor.tsx`, `scripts/probe/`, `scripts/gen_block_facts.mjs`, `fixtures/blocks/`. **Abhängigkeiten:** VIEW-02, BUILD-01, MAT-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

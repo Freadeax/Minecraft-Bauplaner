@@ -1803,3 +1803,42 @@ Grafik vertieft: Minecraft-Licht (Leuchtwerte, Himmels-/Blocklicht, weiches Lich
 - `tests/e2e/graphics.e2e.mjs`
 - `tests/graphics.test.mjs`
 
+## 2026-11-02T08:26:29.438Z · progress
+
+**Aufgaben:** BLOCK-01
+
+Echte Blocklogik 26.3: Fakten aus dem Server, Verbindungen, Halt, Bauschritte, Material, Spielprüfung
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| BLOCK-01 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme im Spiel; die gefundenen Katalogfehler (u. a. 109 Laternen ohne Halt, Leitern an Scheiben) in der Gebäudebibliothek beheben; PROFILE-01 kann die Berichtsfakten übernehmen. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/editor/BlockEditor.tsx`
+- `apps/web/src/style.css`
+- `apps/web/src/views/project/BuildTab.tsx`
+- `apps/web/src/views/project/PlacementPanel.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/BLOCK_LOGIC.md`
+- `fixtures/blocks/block-vectors-26.3.json`
+- `packages/domain/src/editor/blocks.ts`
+- `packages/domain/src/editor/index.ts`
+- `packages/domain/src/editor/settle.ts`
+- `packages/domain/src/guide.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/materials.ts`
+- `packages/domain/src/placement.ts`
+- `packages/voxel/src/blockFacts.ts`
+- `packages/voxel/src/blocklogic/connect.ts`
+- `packages/voxel/src/blocklogic/facts.ts`
+- `packages/voxel/src/blocklogic/index.ts`
+- `packages/voxel/src/blocklogic/support.ts`
+- `packages/voxel/src/index.ts`
+- `scripts/gen_block_facts.mjs`
+- `scripts/probe/BlockFactsProbe.java`
+- `tests/block-logic.test.mjs`
+- `tests/e2e/block-logic.e2e.mjs`
+

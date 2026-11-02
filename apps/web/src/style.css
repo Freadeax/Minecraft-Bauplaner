@@ -236,3 +236,9 @@ label.check{display:flex;align-items:center;gap:8px}fieldset{border:1px solid va
 /* EDIT-02: six project tabs fit on narrow screens (wrap instead of page scroll). */
 .tabs{flex-wrap:wrap;max-width:100%}
 @media (max-width:720px){.tabs a{padding:7px 10px}}
+
+/* BLOCK-01 Spielprüfung */
+.placement-check{padding:12px 22px;border-bottom:1px solid var(--line);background:#121d17}.placement-check>summary{cursor:pointer;display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center}
+.placement-body{display:grid;gap:8px;margin-top:10px}.placement-body .muted{margin:0;font-size:12px}.placement-aids,.placement-issues{margin:0;padding-left:18px;font-size:13px;display:grid;gap:4px}
+.placement-issues li small{display:block;color:var(--muted)}.placement-issues code{font-size:12px;word-break:break-all}
+@media(max-width:650px){.placement-check{padding:10px 14px}}

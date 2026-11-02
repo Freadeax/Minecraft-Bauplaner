@@ -9,10 +9,10 @@ export { resolveProject, positionKey } from './compose.js';
 export type { Resolution, PlacedInstance, VoxelConflict, ConflictKind, CompositionIssue } from './compose.js';
 export { createSampleLibrary, sampleTowerPayload, sampleWallPayload, sampleGatePayload, SAMPLE_PROFILE, SAMPLE_FACETS } from './samples.js';
 export type { SampleLibrary } from './samples.js';
-export { buildGuide, evaluateProgress, tickStep, untickStep, tickSteps, untickSteps, assertGuideAcyclic, phaseOf, PHASE_ORDER, PHASE_LABEL } from './guide.js';
+export { buildGuide, evaluateProgress, tickStep, untickStep, tickSteps, untickSteps, assertGuideAcyclic, phaseOf, hangsOnly, PHASE_ORDER, PHASE_LABEL } from './guide.js';
 export type { Guide, GuideStep, GuideProgress, StepMaterial, StepPhase, StepStatus } from './guide.js';
 export { revisionForExport, resolveRevision, suggestDataVersion, dataVersionFromProfile } from './revisionExport.js';
-export { computeMaterials, materialsForResolution, materialsForParts, itemsForCell, formatStacks, materialsToCsv, MATERIAL_CATALOG_VERSION, SHULKER_SLOTS } from './materials.js';
+export { computeMaterials, materialsForResolution, materialsForParts, itemsForCell, stackSizeOf, formatStacks, materialsToCsv, MATERIAL_CATALOG_VERSION, SHULKER_SLOTS } from './materials.js';
 export type { MaterialReport, MaterialScope, ItemLine, ItemSource, ItemRule, UnresolvedLine, UnresolvedReason, StateCount, MaterialTotals, Confidence, MaterialOptions } from './materials.js';
 export { createBackup, readBackup, planRestore, buildRestore, backupFileName, checkSchemaVersion, checkProjectRecord, checkAssetRecord, referencedVersionIds, toBase64, fromBase64, BACKUP_FORMAT, BACKUP_FORMAT_VERSION, BACKUP_FORMAT_VERSION_LIBRARY, MAX_BACKUP_BYTES } from './backup.js';
 export type { OriginalFile, Backup, BackupFile, BackupSource, RestoreTarget, RestorePlan, ProjectPlan, AssetPlan, ProjectChoice, RestoreWrite, LibraryRecordPlan } from './backup.js';
@@ -75,3 +75,5 @@ export { entranceOf, turnedSide, turnsToFace, facesSide, SIDE_LABEL } from './en
 export type { Entrance, Side } from './entrance.js';
 export { fitAnlageToTerrain, findTerrainSpot, placementColumns, TERRAIN_MODE_LABEL, STEP_LIMIT, SLOPE_LIMIT } from './anlagenTerrain.js';
 export type { TerrainMode, AnlageTerrainInput, UnitTerrain, AnlageTerrainFit, TerrainSpot } from './anlagenTerrain.js';
+export { checkPlacement, settlePayload, payloadLookup, needText, changedKeys, PLACEMENT_LABEL } from './placement.js';
+export type { PlacementKind, PlacementIssue, PlacementAid, PlacementReport, PlacementOptions, SettleResult } from './placement.js';

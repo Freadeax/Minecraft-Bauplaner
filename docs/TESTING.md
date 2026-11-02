@@ -566,3 +566,11 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Messung: Großmodell 605.568 Blöcke `buildBlockMesh` ~5,5 s (vorher ~4,3 s, Budget 15 s); synthetisch 1,11 Mio. Blöcke Abschnittsaufbau ~9 s, nach Änderung eines Blocks ~2,4 s (161/162 Abschnitte übernommen).
 - Gesamtprüfung: `npm test` 517 (516 bestanden, 1 übersprungen), `npm run test:e2e` **95/95** (875 s).
 - Grenzen: nur Software-WebGL in Chromium; echte GPUs, Firefox/Safari, Handy-Leistung mit Schatten und Abgleich mit Spielbildern offen.
+
+## BLOCK-01 · Echte Blocklogik 26.3 · 02.11.2026 · Claude
+- Fakten aus dem offiziellen 26.3-Server (SHA-1 `33680f5f…`, DataVersion 5023) per Datengenerator und Prüfprogramm (Java 25), nicht im Repository außer den verdichteten Fakten.
+- `tests/block-logic.test.mjs` 9/9: Fakten gegen Bericht, Stützflächen/Halt/Items/Stapel, alle 3.060 Spielvektoren (Verbindungen und Halt), Wasser/Kaktus/Gerüst, Platzierprüfung, Verbinden idempotent, Werkstatt-Schritt, Bauanleitung mit hängender Laterne, Material.
+- Lokal 42.000 Vektoren (2.000 je Verbindungsfamilie, 16.000 Halt): alle gleich außer 9 Feuer-Fällen (nicht nachgebildet) und 6 Pilz-Fällen (Prüfwelt hell; der Planer nimmt Pilze im Dunkeln als haltend an).
+- Katalogprüfung (339 Versionen, 136.863 Blöcke, 246 ms): 140 Blöcke ohne Halt, 1.239 abweichende Verbindungen, 1 fehlende Hälfte.
+- `tests/e2e/block-logic.e2e.mjs` 3/3: Spielprüfung in der Bauanleitung (1400/390 px, kein Querscrollen), Zaunreihe in der Werkstatt prüfen, verbinden, erneut prüfen, rückgängig.
+- Grenzen: keine Abnahme im echten Spiel; Stützausnahmen über ~2.000 Nachbarzustände gemessen.

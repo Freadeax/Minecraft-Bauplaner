@@ -1,4 +1,6 @@
 import { stateKey } from '../../voxel/src/validation.js';
+import { blockFacts, stateFacts, step as stepDir, supportNeed, survives } from '../../voxel/src/blocklogic/index.js';
+import type { Dir } from '../../voxel/src/blocklogic/index.js';
 import type { BlockState, Bounds, Vec3 } from '../../voxel/src/types.js';
 import { positionKey } from './compose.js';
 import type { Resolution } from './compose.js';
@@ -15,11 +17,15 @@ import type { Project, StepProgress } from './types.js';
  * mismatch makes it "prüfbedürftig". Nothing here is measured in the game.
  */
 
-/** Build order inside a layer; liquids are placed after every solid step. */
-export type StepPhase = 'clear' | 'structure' | 'gravity' | 'attached' | 'liquid';
-export const PHASE_ORDER: readonly StepPhase[] = ['clear', 'structure', 'gravity', 'attached', 'liquid'];
+/**
+ * Build order inside a layer; liquids are placed after every solid step. Hanging blocks
+ * (lanterns on chains, hanging signs, vines …) are held only from above, so their step
+ * follows the layer above them (BLOCK-01).
+ */
+export type StepPhase = 'clear' | 'structure' | 'gravity' | 'attached' | 'hanging' | 'liquid';
+export const PHASE_ORDER: readonly StepPhase[] = ['clear', 'structure', 'gravity', 'attached', 'hanging', 'liquid'];
 export const PHASE_LABEL: Readonly<Record<StepPhase, string>> = {
-  clear: 'Freiräumen', structure: 'Grundblöcke', gravity: 'Schwerkraftblöcke', attached: 'Angebrachte Blöcke', liquid: 'Flüssigkeiten',
+  clear: 'Freiräumen', structure: 'Grundblöcke', gravity: 'Schwerkraftblöcke', attached: 'Angebrachte Blöcke', hanging: 'Hängende Blöcke', liquid: 'Flüssigkeiten',
 };
 
 export interface StepMaterial {
@@ -78,20 +84,41 @@ const ATTACHED = new Set(['torch', 'wall_torch', 'soul_torch', 'soul_wall_torch'
   'flower_pot', 'cocoa', 'snow', 'candle', 'sea_pickle', 'end_rod', 'chain', 'bell']);
 const ATTACHED_SUFFIX = ['_button', '_pressure_plate', '_carpet', '_sign', '_banner', '_sapling', '_trapdoor', '_coral_fan', '_wall_fan', '_head', '_skull', '_candle', '_torch'];
 
-/** Vanilla build phase of a block state. Mod blocks stay in the structure phase with a visible note. */
-export function phaseOf(state: BlockState): Exclude<StepPhase, 'clear'> {
+/**
+ * Vanilla build phase of a block state, from the game facts (BLOCK-01): liquids,
+ * falling blocks (Fallable and holding alone: sand, suspicious sand, anvils …), blocks that need support (canSurvive fails alone:
+ * torches, doors, carpets, plants, rails …) and the rest. Hanging blocks count as
+ * attached here; the guide separates them by their actual support. Mod blocks stay
+ * in the structure phase with a visible note.
+ */
+export function phaseOf(state: BlockState): Exclude<StepPhase, 'clear' | 'hanging'> {
   const [ns, name = ''] = state.id.includes(':') ? state.id.split(':', 2) as [string, string] : ['minecraft', state.id];
   if (ns !== 'minecraft') return 'structure';
   if (LIQUID.has(name)) return 'liquid';
-  if (GRAVITY.has(name) || name.endsWith('_concrete_powder')) return 'gravity';
-  if (ATTACHED.has(name) || ATTACHED_SUFFIX.some(s => name.endsWith(s)) || name === 'moss_carpet') return 'attached';
+  const b = blockFacts(state.id), f = b && stateFacts(state);
+  if (!b || !f) {
+    // Ids outside the 26.3 facts (older names): previous name rules.
+    if (GRAVITY.has(name) || name.endsWith('_concrete_powder')) return 'gravity';
+    if (ATTACHED.has(name) || ATTACHED_SUFFIX.some(s => name.endsWith(s)) || name === 'moss_carpet') return 'attached';
+    return 'structure';
+  }
+  if (b.classes.includes('LiquidBlock')) return 'liquid';
+  if (b.falls && f.survivesAlone) return 'gravity';
+  if (!f.survivesAlone) return 'attached';
   return 'structure';
+}
+/** Held only from above (lantern hanging=true, hanging signs, weeping vines …) by the game facts. */
+export function hangsOnly(state: BlockState): boolean {
+  const need = supportNeed(state);
+  return need.kind === 'hang' || (need.kind === 'face' && need.dirs.length === 1 && need.dirs[0] === 'up');
 }
 
 interface Draft {
   instanceId: string; sectionName: string; instanceIndex: number; phase: StepPhase; y: number; layer: number;
   positions: Vec3[]; states: Map<string, { state: BlockState; count: number }>; hashCells: string[];
   blocks: number; air: number; erase: number; blockEntities: number; conflicts: number; mods: Set<string>; waterlogged: number;
+  /** Cells of attached/hanging/gravity blocks that do not hold in the plan (BLOCK-01). */
+  loose: number; sortY: number;
 }
 
 const rank = (p: StepPhase): number => PHASE_ORDER.indexOf(p);
@@ -118,7 +145,10 @@ export function buildGuide(project: Pick<Project, 'instances'>, resolution: Reso
   const sx = wMax[0] - wMin[0], sy = wMax[1] - wMin[1];
   const cellIndex = (x: number, y: number, z: number): number =>
     x < wMin[0] || y < wMin[1] || z < wMin[2] || x >= wMax[0] || y >= wMax[1] || z >= wMax[2] ? -1 : (x - wMin[0]) + sx * ((y - wMin[1]) + sy * (z - wMin[2]));
-  const phaseByPalette = world.palette.map(phaseOf);
+  const phaseByPalette: StepPhase[] = world.palette.map(st => { const p = phaseOf(st); return p === 'attached' && hangsOnly(st) ? 'hanging' : p; });
+  const stateAt = (p: Vec3): BlockState | undefined => worldState.get(cellIndex(p[0], p[1], p[2]));
+  const worldState = new Map<number, BlockState>();
+  for (const c of world.cells) if (c.kind === 'block') worldState.set(cellIndex(c.position[0], c.position[1], c.position[2]), world.palette[c.paletteIndex]!);
   let last: Draft | undefined, lastId = '';
 
   for (const cell of world.cells) {
@@ -133,7 +163,7 @@ export function buildGuide(project: Pick<Project, 'instances'>, resolution: Reso
     if (!d) {
       const inst = project.instances[instanceIndex.get(owner)!]!;
       d = { instanceId: owner, sectionName: inst.name, instanceIndex: instanceIndex.get(owner)!, phase, y, layer, positions: [], states: new Map(), hashCells: [],
-        blocks: 0, air: 0, erase: 0, blockEntities: 0, conflicts: 0, mods: new Set(), waterlogged: 0 };
+        blocks: 0, air: 0, erase: 0, blockEntities: 0, conflicts: 0, mods: new Set(), waterlogged: 0, loose: 0, sortY: y };
       drafts.set(id, d);
     }
     last = d; lastId = id;
@@ -155,18 +185,33 @@ export function buildGuide(project: Pick<Project, 'instances'>, resolution: Reso
     d.hashCells.push(`[${x},${y0},${z},${JSON.stringify(cell.kind)},${state ? JSON.stringify(stateKey(state)) : 'null'},${entity ? canonicalJson(entity.data) : 'null'}]`);
   }
 
+  // Hanging steps follow the layer that holds them: the top of their hanging chain + 1, and
+  // a hanging layer never comes before the hanging layer above it (top-down).
+  const hangingAt = (x: number, y: number, z: number): boolean => { const id = cellStep.get(cellIndex(x, y, z)); return !!id && drafts.get(id)!.phase === 'hanging'; };
+  const bySection = new Map<string, Draft[]>();
+  for (const d of drafts.values()) if (d.phase === 'hanging') (bySection.get(d.instanceId) ?? bySection.set(d.instanceId, []).get(d.instanceId)!).push(d);
+  for (const list of bySection.values()) {
+    list.sort((a, b) => b.y - a.y);
+    let above = -Infinity;
+    for (const d of list) {
+      let top = d.y;
+      for (const [x, y, z] of d.positions) { let t = y; while (hangingAt(x, t + 1, z)) t++; top = Math.max(top, t); }
+      d.sortY = Math.max(top + 1, above);
+      above = d.sortY;
+    }
+  }
   const sorted = [...drafts.entries()].sort(([, a], [, b]) => {
     const la = a.phase === 'liquid' ? 1 : 0, lb = b.phase === 'liquid' ? 1 : 0;
-    return la - lb || a.y - b.y || rank(a.phase) - rank(b.phase) || a.instanceIndex - b.instanceIndex;
+    return la - lb || a.sortY - b.sortY || rank(a.phase) - rank(b.phase) || b.y - a.y || a.instanceIndex - b.instanceIndex;
   });
   const order = new Map(sorted.map(([id], i) => [id, i + 1]));
   // Per section: ordered list of layers with solid (non-liquid, non-clear) steps.
   const sectionLayers = new Map<string, Map<number, string[]>>();
-  for (const [id, d] of sorted) if (d.phase !== 'liquid' && d.phase !== 'clear') {
+  for (const [id, d] of sorted) if (d.phase !== 'liquid' && d.phase !== 'clear' && d.phase !== 'hanging') {
     const layers = sectionLayers.get(d.instanceId) ?? new Map<number, string[]>(); sectionLayers.set(d.instanceId, layers);
     (layers.get(d.layer) ?? (layers.set(d.layer, []), layers.get(d.layer)!)).push(id);
   }
-  const solidAt = (id: string | undefined): boolean => !!id && !['clear', 'liquid'].includes(drafts.get(id)!.phase);
+  const solidAt = (id: string | undefined): boolean => !!id && !['clear', 'liquid', 'hanging'].includes(drafts.get(id)!.phase);
 
   const steps: GuideStep[] = [];
   for (const [id, d] of sorted) {
@@ -177,7 +222,17 @@ export function buildGuide(project: Pick<Project, 'instances'>, resolution: Reso
     for (const p of PHASE_ORDER.slice(0, rank(d.phase))) { const same = draftKey(d.instanceId, d.layer, p); if (drafts.has(same) && p !== 'liquid') pre.add(same); }
     for (const [x, y, z] of d.positions) {
       const below = cellStep.get(cellIndex(x, y - 1, z));
-      if (d.phase !== 'clear' && solidAt(below)) pre.add(below!);
+      if (d.phase !== 'clear' && d.phase !== 'hanging' && solidAt(below)) pre.add(below!);
+      if (d.phase === 'attached' || d.phase === 'hanging' || d.phase === 'gravity') {
+        // The cells that actually hold this block in the game (BLOCK-01).
+        const st = stateAt([x, y, z]);
+        if (st) {
+          const r = survives(st, [x, y, z], stateAt);
+          if (!r.survives && d.phase !== 'gravity') d.loose++;
+          for (const dir of r.heldBy as Dir[]) { const [hx, hy, hz] = stepDir([x, y, z], dir); const h = cellStep.get(cellIndex(hx, hy, hz)); if (h && h !== id && order.get(h)! < order.get(id)!) pre.add(h); }
+          if (d.phase === 'gravity') { const b = stateAt([x, y - 1, z]); if (!b && cellStep.has(cellIndex(x, y - 1, z))) d.loose++; }
+        }
+      }
       if (d.phase === 'attached' || d.phase === 'liquid') for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
         const n = cellStep.get(cellIndex(x + dx, y, z + dz));
         if (n && ['structure', 'gravity'].includes(drafts.get(n)!.phase)) pre.add(n);
@@ -205,6 +260,8 @@ export function buildGuide(project: Pick<Project, 'instances'>, resolution: Reso
     if (d.conflicts) notes.push(`${d.conflicts} Zellen mit ungeklärtem Voxelkonflikt – nur Vorschauwahl, vor dem Bauen im Editor klären.`);
     if (d.phase === 'gravity') notes.push('Fällt ohne Stütze: erst bauen, wenn die Zelle darunter belegt ist.');
     if (d.phase === 'attached') notes.push('Braucht einen tragenden Nachbarblock: erst nach den Grundblöcken dieser Schicht setzen.');
+    if (d.phase === 'hanging') notes.push('Hängt an dem Block darüber: erst setzen, wenn die Schicht darüber steht; von oben nach unten arbeiten.');
+    if (d.loose) notes.push(d.phase === 'gravity' ? `${d.loose} Blöcke stehen über einer freien Zelle und fallen herunter – darunter zuerst stützen.` : `${d.loose} Blöcke haben im Plan keinen Halt und brechen im Spiel ab (Platzierprüfung).`);
     if (d.phase === 'liquid') notes.push('Flüssigkeiten zuletzt, wenn die Umrandung steht; Quellblöcke einzeln setzen.');
     if (d.waterlogged) notes.push(`${d.waterlogged} Blöcke sind wassergeflutet (waterlogged=true): nach dem Setzen Wasser einfüllen.`);
     if (d.blockEntities) notes.push(`${d.blockEntities} Blöcke mit Inhalt/NBT (z. B. Truhen, Schilder): Inhalt wird beim Bauen von Hand nicht übernommen.`);
