@@ -1916,3 +1916,21 @@ Planmodell: gemeinsamer Verweisgraph (Sicherung, Datencheck, Verwendet in), Bloc
 - `tests/e2e/stability.e2e.mjs`
 - `tests/plan-model.test.mjs`
 
+## 2026-11-02T09:21:57.765Z · progress
+
+**Aufgaben:** GAME-07
+
+Download-Seite #/mod: zuerst Client-Mod (für mein Spiel, vorausgewählt, Modrinth-Anleitung) oder Server-Plugin (Paper) wählen, damit das Plugin nicht im Spielprofil landet
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-07 | 🧩 Implementiert · Abnahme offen | 6/8 | Philipp testet 0.4.0 (Platzierhilfe) auf server.lmnt-gaming.net; danach Stufe 4. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/catalog.css`
+- `apps/web/src/views/mod/ModView.tsx`
+- `apps/web/src/views/mod/releases.ts`
+- `docs/TESTING.md`
+- `tests/e2e/mod-download.e2e.mjs`
+

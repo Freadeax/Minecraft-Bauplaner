@@ -35,6 +35,14 @@ export const PLANNED_LOADERS: readonly string[] = ['forge'];
 /** Server plugins (installed on the server, not in the game client). */
 export const SERVER_LOADERS: readonly string[] = ['paper'];
 
+/** Who installs the jar: the player in a launcher profile (client mod) or the server operator (plugin). */
+export type Target = 'client' | 'server';
+export const targetOf = (loader: string): Target => SERVER_LOADERS.includes(loader) ? 'server' : 'client';
+/** Builds for one target; the page never mixes client mods and server plugins in one list. */
+export function releasesFor(releases: readonly ModRelease[], target: Target): ModRelease[] {
+  return releases.filter(r => targetOf(r.loader) === target);
+}
+
 /** Minecraft versions a build runs on. */
 export function versionsOf(r: ModRelease): readonly string[] {
   return r.minecraftVersions?.length ? r.minecraftVersions : [r.minecraft];

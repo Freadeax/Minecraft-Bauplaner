@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
 import type React from 'react';
 import releasesData from './releases.json';
-import { buildsFor, checkJarBytes, INSTALL_HINT, LOADER_LABEL, loadersFor, minecraftVersions, parseSelectionSearch, PLANNED_LOADERS, resolveSelection, selectionSearch, SERVER_LOADERS, versionsOf } from './releases';
-import type { ModRelease, Selection } from './releases';
+import { buildsFor, checkJarBytes, INSTALL_HINT, LOADER_LABEL, loadersFor, minecraftVersions, parseSelectionSearch, PLANNED_LOADERS, releasesFor, resolveSelection, selectionSearch, targetOf, versionsOf } from './releases';
+import type { ModRelease, Selection, Target } from './releases';
 import { formatNumber } from '../../app/ui';
 
 const releases: readonly ModRelease[] = releasesData.releases;
@@ -34,22 +34,40 @@ async function verifiedDownload(href: string, build: ModRelease): Promise<string
   return [];
 }
 
-/** Download page of the game bridge: pick Minecraft version, loader and mod version, then download the jar. */
+/**
+ * Download page of the game bridge. First choice: for my game (client mod in a launcher profile) or for a
+ * server (plugin), so a player never ends up with the server plugin; then Minecraft version, loader, version.
+ */
 export function ModView({ search }: { search?: string | undefined }) {
-  const [selection, setSelection] = useState<Selection | null>(() => resolveSelection(releases, parseSelectionSearch(search)));
-  /** A new Minecraft version or loader starts again at its newest mod version. */
-  const choose = (wish: Partial<Selection>, newestVersion = false) => {
-    const current: Partial<Selection> = selection ? (newestVersion ? { minecraft: selection.minecraft, loader: selection.loader } : selection) : {};
-    const next = resolveSelection(releases, { ...current, ...wish });
+  const wish = parseSelectionSearch(search);
+  const [target, setTarget] = useState<Target>(() => wish.loader && targetOf(wish.loader) === 'server' && releasesFor(releases, 'server').length ? 'server' : 'client');
+  const pool = useMemo(() => {
+    const own = releasesFor(releases, target);
+    return own.length ? own : [...releases];
+  }, [target]);
+  const [selection, setSelection] = useState<Selection | null>(() => resolveSelection(pool, wish));
+  const remember = (next: Selection | null) => {
     setSelection(next);
     // Shareable link without a hashchange (which would scroll to the top).
     if (next) history.replaceState(null, '', `#/mod?${selectionSearch(next)}`);
   };
-  const versions = useMemo(() => minecraftVersions(releases), []);
-  const loaders = selection ? loadersFor(releases, selection.minecraft) : [];
-  const builds = selection ? buildsFor(releases, selection.minecraft, selection.loader) : [];
+  /** A new Minecraft version or loader starts again at its newest mod version. */
+  const choose = (change: Partial<Selection>, newestVersion = false) => {
+    const current: Partial<Selection> = selection ? (newestVersion ? { minecraft: selection.minecraft, loader: selection.loader } : selection) : {};
+    remember(resolveSelection(pool, { ...current, ...change }));
+  };
+  const switchTarget = (next: Target) => {
+    if (next === target) return;
+    setTarget(next);
+    setCheck({ state: 'idle' });
+    remember(resolveSelection(releasesFor(releases, next), selection ? { minecraft: selection.minecraft } : {}));
+  };
+  const versions = useMemo(() => minecraftVersions(pool), [pool]);
+  const loaders = selection ? loadersFor(pool, selection.minecraft) : [];
+  const builds = selection ? buildsFor(pool, selection.minecraft, selection.loader) : [];
   const build = builds.find(b => b.modVersion === selection?.modVersion);
-  const server = !!selection && SERVER_LOADERS.includes(selection.loader);
+  const server = target === 'server';
+  const hasServer = releasesFor(releases, 'server').length > 0;
   const [check, setCheck] = useState<Check>({ state: 'idle' });
   const download = (event: React.MouseEvent<HTMLAnchorElement>) => {
     if (!build || !window.crypto?.subtle) return; // without WebCrypto the plain link downloads
@@ -63,7 +81,18 @@ export function ModView({ search }: { search?: string | undefined }) {
 
   return <div className="page system-page mod-page">
     <div className="page-head"><div><span className="eyebrow">MOD · BAUPLANER-BRÜCKE</span><h1 className="page-title">Mod herunterladen</h1>
-      <p className="muted">Die Brücke liest den Bereich eines Bauplans aus der Welt und schreibt eine Aufnahme, die du im Projekt unter „Bauen“ importierst. Sie setzt keine Blöcke und sendet nichts ins Internet. Als Fabric-Mod läuft sie in deinem Spiel und braucht nichts auf dem Server; als Paper-Plugin läuft sie auf dem Server und liest dort die ganze Welt.</p></div></div>
+      <p className="muted">Die Bauplaner-Mod zeigt deinen Plan im Spiel als Hologramm, gleicht ihn live mit der Welt ab, hilft beim richtigen Setzen und schreibt Aufnahmen für den Soll/Ist-Vergleich. Sie baut nie selbst und sendet nichts ins Internet.</p></div></div>
+
+    <div className="mod-targets" role="group" aria-label="Wofür brauchst du die Mod?">
+      <button type="button" className="mod-target" aria-pressed={!server} onClick={() => switchTarget('client')}>
+        <b>Für mein Spiel</b><span className="mod-target-tag">Client-Mod · empfohlen</span>
+        <span>In dein Launcher-Profil (Modrinth App, Prism, CurseForge …). Hologramm, Materialliste, Platzierhilfe und Aufnahme. Auf dem Server muss nichts installiert sein.</span>
+      </button>
+      {hasServer && <button type="button" className="mod-target" aria-pressed={server} onClick={() => switchTarget('server')}>
+        <b>Für einen Server</b><span className="mod-target-tag">Server-Plugin · Paper</span>
+        <span>Nur für Serverbetreiber: kommt in den Ordner <code>plugins</code> des Servers, nicht in dein Spielprofil. Liest die ganze Welt für Aufnahmen.</span>
+      </button>}
+    </div>
 
     {!selection ? <div className="notice warning" role="alert">Noch keine Mod-Version bereitgestellt.</div> : <div className="system-grid">
       <section className="system-card" aria-labelledby="mod-choose">
@@ -72,16 +101,16 @@ export function ModView({ search }: { search?: string | undefined }) {
           <select value={selection.minecraft} onChange={e => choose({ minecraft: e.target.value }, true)}>
             {versions.map(v => <option key={v} value={v}>{v}</option>)}
           </select></label>
-        <label>Mod-Loader
+        <label>{server ? 'Server-Software' : 'Mod-Loader'}
           <select value={selection.loader} onChange={e => choose({ loader: e.target.value }, true)}>
             {loaders.map(l => <option key={l} value={l}>{LOADER_LABEL[l] ?? l}</option>)}
-            {PLANNED_LOADERS.filter(l => !loaders.includes(l)).map(l => <option key={l} value={l} disabled>{LOADER_LABEL[l] ?? l} – geplant</option>)}
+            {!server && PLANNED_LOADERS.filter(l => !loaders.includes(l)).map(l => <option key={l} value={l} disabled>{LOADER_LABEL[l] ?? l} – geplant</option>)}
           </select></label>
         <label>Mod-Version
           <select value={selection.modVersion} onChange={e => choose({ modVersion: e.target.value })}>
             {builds.map((b, i) => <option key={b.modVersion} value={b.modVersion}>{b.modVersion}{i === 0 ? ' (neueste)' : ''}</option>)}
           </select></label>
-        <p className="muted">Deine Minecraft-Version steht im Launcher beim Profil und im Spiel links unten im Hauptmenü.</p>
+        <p className="muted">{server ? 'Die Minecraft-Version des Servers steht in der Serverliste und in der Konsole beim Start.' : 'Minecraft-Version und Loader stehen in der Modrinth App oben auf der Profilseite (z. B. „Fabric 26.3“), im Spiel links unten im Hauptmenü.'}</p>
       </section>
 
       {build && <section className="system-card" aria-labelledby="mod-file">
@@ -117,14 +146,17 @@ export function ModView({ search }: { search?: string | undefined }) {
       </ol>
       <p className="muted">Weitere Befehle: <code>/bauplaner status</code>, <code>/bauplaner abbrechen</code>, <code>/bauplaner plaene</code>, <code>/bauplaner scan geladen</code> (nur geladene Chunks). Rechte: <code>bauplaner.use</code> (alle), <code>bauplaner.nachladen</code> und <code>bauplaner.abbrechen.alle</code> (Operatoren). Einstellungen in <code>plugins/BauplanerBridge/config.yml</code>.</p>
     </section> : <section className="system-card system-wide" aria-labelledby="mod-install">
-      <h2 id="mod-install">Installieren und benutzen</h2>
+      <h2 id="mod-install">In dein Profil installieren und benutzen</h2>
       <ol className="mod-steps">
-        <li>{INSTALL_HINT[selection?.loader ?? 'fabric'] ?? INSTALL_HINT.fabric}</li>
-        <li>Im Projekt unter „Bauen“ eine Revision einfrieren, dann im Tab „Export“ als <code>.schem</code> exportieren (DataVersion für 26.3: 5023) und nach <code>&lt;Instanzordner&gt;/bauplaner/plans/</code> kopieren.</li>
-        <li>Im Spiel <code>/bauplaner plan &lt;datei&gt;</code>, dann auf den Block mit Projektkoordinate 0/0/0 schauen und <code>/bauplaner anker hier</code> eingeben.</li>
-        <li>In der Nähe des Baus <code>/bauplaner scan</code>. Die Aufnahme aus <code>bauplaner/scans/</code> im Projekt unter „Bauen“ mit „Spielaufnahme importieren“ öffnen.</li>
+        {selection?.loader === 'fabric' || !selection
+          ? <li><b>Modrinth App:</b> Profil öffnen → oben rechts <b>⋯</b> → „Ordner öffnen“ → Ordner <code>mods</code> öffnen und die .jar hineinlegen (unter Windows <code>%APPDATA%\ModrinthApp\profiles\&lt;Profilname&gt;\mods</code>). Ältere <code>bauplaner-bridge-…jar</code> dort löschen. Prism, CurseForge und andere Launcher haben ebenfalls einen Ordner <code>mods</code> je Profil. Fabric API muss im Profil sein (in Modpacks meist schon dabei).</li>
+          : <li>{INSTALL_HINT[selection.loader] ?? INSTALL_HINT.fabric}</li>}
+        <li>Im Projekt unter „Bauen“ eine Revision einfrieren, im Tab „Export“ als <code>.schem</code> exportieren (DataVersion für 26.3: 5023) und in den Profilordner nach <code>bauplaner/plans/</code> kopieren.</li>
+        <li>Im Spiel auf die Stelle schauen, an der der Plan stehen soll, <b>J</b> drücken und den Plan anklicken. Dann mit Pfeiltasten und Bild↑/↓ schieben, Ende dreht, Einfg spiegelt.</li>
+        <li>Bauen: fehlende Blöcke erscheinen als durchsichtige Geisterblöcke, falsche rot. <b>Num 7</b> Materialliste, <b>Num 6</b> Ebenen, <b>Num 8</b> Planblock in die Hand, <b>.</b> nächster Fehler. Die Platzierhilfe verhindert falsche Blöcke und falsche Ausrichtung und sagt, wie man richtig klickt.</li>
+        <li>Für den Vergleich auf der Website: <code>/bauplaner plan &lt;datei&gt;</code>, <code>/bauplaner anker hier</code>, <code>/bauplaner scan</code> und die Aufnahme aus <code>bauplaner/scans/</code> im Projekt unter „Bauen“ mit „Spielaufnahme importieren“ öffnen.</li>
       </ol>
-      <p className="muted">Weitere Befehle: <code>/bauplaner status</code>, <code>/bauplaner abbrechen</code>, <code>/bauplaner plaene</code>. Nur geladene Chunks werden gelesen.</p>
+      <p className="muted">Läuft nur auf deinem Rechner, auch auf fremden Servern ohne Plugin. Alle Tasten unter Optionen → Steuerung → „Bauplaner“.</p>
     </section>}
   </div>;
 }

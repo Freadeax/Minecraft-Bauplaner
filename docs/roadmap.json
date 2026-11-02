@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T09:08:13.761Z",
+  "updatedAt": "2026-11-02T09:21:57.765Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -3418,7 +3418,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T08:56:28.176Z"
+      "updatedAt": "2026-11-02T09:21:57.765Z"
     },
     {
       "id": "GAME-03",
@@ -7062,6 +7062,30 @@
           "done": 4,
           "total": 5,
           "next": "Abnahme der Migration mit echten Browserdaten (S05); danach kompakte Laufzeitform der Zellen als Folge von PERF-02."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T09:21:57.765Z",
+      "kind": "progress",
+      "items": [
+        "GAME-07"
+      ],
+      "summary": "Download-Seite #/mod: zuerst Client-Mod (für mein Spiel, vorausgewählt, Modrinth-Anleitung) oder Server-Plugin (Paper) wählen, damit das Plugin nicht im Spielprofil landet",
+      "files": [
+        "apps/web/src/catalog.css",
+        "apps/web/src/views/mod/ModView.tsx",
+        "apps/web/src/views/mod/releases.ts",
+        "docs/TESTING.md",
+        "tests/e2e/mod-download.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-07",
+          "status": "implemented",
+          "done": 6,
+          "total": 8,
+          "next": "Philipp testet 0.4.0 (Platzierhilfe) auf server.lmnt-gaming.net; danach Stufe 4."
         }
       ]
     }

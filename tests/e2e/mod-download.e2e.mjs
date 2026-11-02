@@ -42,6 +42,10 @@ for (const viewport of [{ width: 1400, height: 900 }, { width: 390, height: 844 
     assert.equal(await p.getByLabel('Minecraft-Version').inputValue(), newest.minecraft);
     assert.equal(await p.getByLabel('Mod-Loader').inputValue(), 'fabric');
     assert.equal(await p.locator('option[value=forge]').evaluate(o => o.disabled), true, 'geplante Loader nicht wählbar');
+    // Client mod is the default; the server plugin is a separate choice and never in the client loader list.
+    assert.equal(await p.getByRole('button', { name: /Für mein Spiel/ }).getAttribute('aria-pressed'), 'true');
+    assert.equal(await p.locator('option[value=paper]').count(), 0, 'Paper nicht in der Client-Auswahl');
+    assert.ok(await p.getByText(/Ordner öffnen/).first().isVisible(), 'Modrinth-Anleitung');
     // NeoForge-Mod (GAME-05): eigene .jar und eigener Installationsschritt.
     const neo = releases.find(r => r.loader === 'neoforge' && r.minecraft === newest.minecraft);
     if (neo) {
@@ -69,19 +73,25 @@ for (const viewport of [{ width: 1400, height: 900 }, { width: 390, height: 844 
     // Die Auswahl steht als teilbarer Link in der Adresszeile.
     await p.getByLabel('Mod-Version').selectOption(newest.modVersion);
     assert.match(p.url(), new RegExp(`#/mod\\?minecraft=${newest.minecraft.replace('.', '\\.')}&loader=fabric&version=`));
-    // Paper-Plugin: eine .jar für mehrere Minecraft-Versionen, Serveranleitung statt Mod-Anleitung.
+    // Paper-Plugin: own choice, one .jar for several Minecraft versions, server guide instead of mod guide.
     const paper = releases.find(r => r.loader === 'paper');
     if (paper) {
-      const older = paper.minecraftVersions.find(v => v !== paper.minecraft);
-      await p.getByLabel('Minecraft-Version').selectOption(older);
-      assert.equal(await p.getByLabel('Mod-Loader').inputValue(), 'paper', 'ältere Version nur als Paper-Plugin');
+      await p.getByRole('button', { name: /Für einen Server/ }).click();
+      assert.equal(await p.getByLabel('Server-Software').inputValue(), 'paper');
       assert.equal(await link.getAttribute('href'), `/Minecraft-Bauplaner/downloads/mod/${paper.file}`);
       await p.getByRole('heading', { name: 'Auf dem Server installieren und benutzen' }).waitFor();
       assert.ok(await p.getByText('plugins/BauplanerBridge/plans/').first().isVisible());
+      const older = paper.minecraftVersions.find(v => v !== paper.minecraft);
+      await p.getByLabel('Minecraft-Version').selectOption(older);
       assert.match(p.url(), new RegExp(`#/mod\\?minecraft=${older.replaceAll('.', '\\.')}&loader=paper&version=`));
-      await p.getByLabel('Minecraft-Version').selectOption(paper.minecraft);
-      await p.getByLabel('Mod-Loader').selectOption('paper');
-      assert.equal(await link.getAttribute('href'), `/Minecraft-Bauplaner/downloads/mod/${paper.file}`);
+      // A shared server link opens on the server choice.
+      await p.goto(`${BASE}#/`);
+      await p.goto(`${BASE}#/mod?minecraft=${older}&loader=paper&version=${paper.modVersion}`);
+      assert.equal(await p.getByRole('button', { name: /Für einen Server/ }).getAttribute('aria-pressed'), 'true');
+      // Back to the client mod: newest Fabric again.
+      await p.getByRole('button', { name: /Für mein Spiel/ }).click();
+      assert.equal(await p.getByLabel('Mod-Loader').inputValue(), 'fabric');
+      assert.equal(await p.getByLabel('Minecraft-Version').inputValue(), newest.minecraft);
     }
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'keine waagerechte Scrollleiste');
     // A cut-off download (the Modrinth "EOCD not found" case) is refused instead of saved.
