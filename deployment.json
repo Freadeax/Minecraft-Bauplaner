@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "ed5b6a972a395280e9fa521da6e9b126800a6259",
-  "builtAt": "2026-11-02T22:26:26.515Z",
+  "sourceCommit": "371e970b7f7dd8609403dce6b9cca5bd2bb3c351",
+  "builtAt": "2026-11-02T23:04:44.699Z",
   "node": "v22.23.4",
   "files": [
     {
@@ -35,14 +35,14 @@
       "sha256": "8104dbf7cb9de5c84ee3107b625ec7dc205e8c656b28ac9323bf2eede4b996b5"
     },
     {
-      "path": "assets/entityScene-D8_fAk1f.js",
+      "path": "assets/entityScene-CROvvHmZ.js",
       "bytes": 544106,
-      "sha256": "45ddb629c074181fb2594d79b7c0e57ec7d49296ea23b9cac5fe855fad8e66eb"
+      "sha256": "cf04cb4f076f1ea47dd1502e4e475910807fcfe46e3ad48ff376d50d89f55f73"
     },
     {
-      "path": "assets/glShot-BlOT4ioj.js",
+      "path": "assets/glShot-Be_HddK3.js",
       "bytes": 3294,
-      "sha256": "67e264bdf4d4d2b8824ae3d2308f0320c65de84ea080498816dcd15e8c94bccc"
+      "sha256": "326d32ed576eecac88f4f416964019fbb3112ed4944eca8d3b4ba0fea9bde12b"
     },
     {
       "path": "assets/heavy.worker-vgnRMPDH.js",
@@ -50,9 +50,9 @@
       "sha256": "3968724002ac9b8c5691decba11eb5207fc4ff3b97af1dcb3b732e68a0514d8c"
     },
     {
-      "path": "assets/idbRepository-BZgC3h_8.js",
+      "path": "assets/idbRepository-D2YTytJU.js",
       "bytes": 9279,
-      "sha256": "91c1c73b03e0bf7b660cf3d4f7069364580c4ada603af1f199e62b1eba0e7759"
+      "sha256": "3550dbfef2ccf585b5002ed90106889e4c0c1fbfb3cd2e4211b51dcbb0947c10"
     },
     {
       "path": "assets/importJob-vhO0_0je.js",
@@ -60,14 +60,14 @@
       "sha256": "8fa41d738c537e3a16ca66c24b07c344e96c6d0da65e83ed5ff560f13966f252"
     },
     {
-      "path": "assets/index-CmTf97qK.css",
-      "bytes": 193390,
-      "sha256": "49e17efc38e927b97effc4a85ebac93078f438e1113408ea98e2ce66244fb9c2"
+      "path": "assets/index-Cp0RMvbf.css",
+      "bytes": 195096,
+      "sha256": "a48e06d29f036bfcdbcf286eb5c311d27aa17868aac5bf24f2f4a14822e99d3e"
     },
     {
-      "path": "assets/index-EKoc-GTE.js",
-      "bytes": 1228423,
-      "sha256": "ea6567a21357ed8c86f9fe85ae93bba849a8f7a34ee4513e3b547031986f692c"
+      "path": "assets/index-DVnZINyc.js",
+      "bytes": 1250208,
+      "sha256": "994f7df64708f0f007dd2631402488bd2212abe606b227a2588a99d73bc33f0f"
     },
     {
       "path": "assets/libraryJob-jxr_M4Os.js",
@@ -100,9 +100,9 @@
       "sha256": "8351dd56de9e6e8827e666b03e7966068aa2fbbef6e8334cdef0593cf9114358"
     },
     {
-      "path": "assets/packKit-Cl2mdDqv.js",
+      "path": "assets/packKit-CW_vJnfq.js",
       "bytes": 8054,
-      "sha256": "e92a0ad4cd11a1566d38fb03b83a0b7e61b4263b38843c386fea4a073fd131c8"
+      "sha256": "84eb568105380b7279699ebde64154c62298056781c7eee49fb0f126762cf0e3"
     },
     {
       "path": "assets/preload-helper-YpCHtD0s.js",
@@ -115,9 +115,9 @@
       "sha256": "014dd1872dc1c17fa78d6313c95747509abb0ab74435f942fefe41af1f110d48"
     },
     {
-      "path": "assets/repository-DZ10RFoY.js",
-      "bytes": 1087050,
-      "sha256": "b25cda73ad55c0758393240db1d325d9f86610991bb444e15435869fd488c2b3"
+      "path": "assets/repository-Cd6cmN4R.js",
+      "bytes": 1090627,
+      "sha256": "a5b3313180616253d7d1da0ce9501ab586491a395edcbbef1b9b19ca9636c205"
     },
     {
       "path": "assets/scan.worker-BRAkokHN.js",
@@ -135,9 +135,9 @@
       "sha256": "709a7a60ca74182be2d10a93039f20ae4a5df8621d6170f628345cb04b9d5c1c"
     },
     {
-      "path": "assets/snapshot-BjHUXc5Q.js",
+      "path": "assets/snapshot-DEgBGnRf.js",
       "bytes": 1034,
-      "sha256": "8d29008fbf12eb5f6a742125b377c070317039c1be3f00cfdf8961f97087a66b"
+      "sha256": "096b9211f7409d39ca2295719e24bc9da47778419bdf12045bf680884022dd27"
     },
     {
       "path": "assets/src-B7dkg3tQ.js",
@@ -155,9 +155,9 @@
       "sha256": "18e4fbae05dba52ab5ee46f2febdec8cd653bddfba2a230159a9f63bcb6a8377"
     },
     {
-      "path": "assets/ThreeViewer-DDyAepkP.js",
+      "path": "assets/ThreeViewer-DD6e1wpO.js",
       "bytes": 51593,
-      "sha256": "d4493de7a3944a0294fa3e8bd314f1428e9d23f25e93ccab8995e02832b02272"
+      "sha256": "f3c1c6497aedee14c2d3856b750b5edd814d0536ace893aceebed0606a329ec4"
     },
     {
       "path": "assets/updateJob-CKMYUiZL.js",
@@ -192,7 +192,7 @@
     {
       "path": "index.html",
       "bytes": 1248,
-      "sha256": "a70c4c09c06219b3238489cb3ee089e35c7aa58ca2e1fce055a9fa41e22624b0"
+      "sha256": "728f28022ff8d2f842e61bf68e0cb1ce6e0975247fd5fa0fb61770502e24c6ef"
     },
     {
       "path": "THIRD_PARTY_NOTICES.txt",
