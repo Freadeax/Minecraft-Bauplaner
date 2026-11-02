@@ -1516,3 +1516,43 @@ Werkstatt vertieft: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Eb
 - `tests/e2e/workshop-tools.e2e.mjs`
 - `tests/editor-patterns.test.mjs`
 
+## 2026-11-02T05:34:31.591Z · progress
+
+**Aufgaben:** UPDATE-01
+
+UPDATE-01 umgesetzt: Projektreiter Updates mit Folgenplan, Übernahme als ein Rückgängig-Schritt, lokale Patches, Einfrieren/Zurückkehren, Katalogzustellung als neue Version; neueste Version ohne lokale Projektänderungen. check grün, E2E 86/86; keine Echtgeräte.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| UPDATE-01 | 🧩 Implementiert · Abnahme offen | 2/2 | Echtgeräteabnahme (QA-02); Teamreihenfolge der Updateoperationen in TEAM-02. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/icons.tsx`
+- `apps/web/src/app/repository.ts`
+- `apps/web/src/views/ProjectsView.tsx`
+- `apps/web/src/views/project/EditorTab.tsx`
+- `apps/web/src/views/project/ProjectView.tsx`
+- `apps/web/src/views/project/SnapPanel.tsx`
+- `apps/web/src/views/project/UpdatesTab.tsx`
+- `apps/web/src/views/project/tabs.ts`
+- `apps/web/src/views/project/updates.css`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/UPDATES.md`
+- `packages/application/src/catalogSync.ts`
+- `packages/application/src/index.ts`
+- `packages/domain/src/anlagen.ts`
+- `packages/domain/src/backup.ts`
+- `packages/domain/src/catalog.ts`
+- `packages/domain/src/editor/commit.ts`
+- `packages/domain/src/ensembles.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/project.ts`
+- `packages/domain/src/types.ts`
+- `packages/domain/src/updateState.ts`
+- `packages/domain/src/updates.ts`
+- `tests/e2e/updates.e2e.mjs`
+- `tests/updates.test.mjs`
+

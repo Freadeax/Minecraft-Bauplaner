@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-02T05:30:31.682Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-02T05:34:31.591Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -13,9 +13,9 @@ Stand: 2026-11-02T05:30:31.682Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | Status | Pakete |
 |---|---:|
 | ⏳ Offen | 16 |
-| 🚧 In Arbeit | 3 |
+| 🚧 In Arbeit | 2 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 20 |
+| 🧩 Implementiert · Abnahme offen | 21 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -121,7 +121,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-02, VIEW-01 | ausstehend | ausstehend |
 | [EDIT-02](#edit-02) | Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen | 🧩 Implementiert · Abnahme offen | 5/5 | VIEW-01, STORE-02 | ausstehend | ausstehend |
 | [EDIT-03](#edit-03) | Werkstatt vertiefen: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Ebenenübersicht und Tastenkürzel | 🧩 Implementiert · Abnahme offen | 5/5 | EDIT-02 | ausstehend | ausstehend |
-| [UPDATE-01](#update-01) | Kontrollierte Versionsupdates mit lokalen Overrides | 🚧 In Arbeit | 0/2 | DIFF-01, STORE-02 | ausstehend | ausstehend |
+| [UPDATE-01](#update-01) | Kontrollierte Versionsupdates mit lokalen Overrides | 🧩 Implementiert · Abnahme offen | 2/2 | DIFF-01, STORE-02 | ausstehend | ausstehend |
 | [LIB-02](#lib-02) | Eigene Sammlungen, Ordner und Kategorien | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-02, LIB-01 | ausstehend | ausstehend |
 | [LIB-03](#lib-03) | Eigene Ensembles und Generatorvorlagen speichern | 🧩 Implementiert · Abnahme offen | 2/2 | LIB-02, GEN-01 | ausstehend | ausstehend |
 | [WORLD-02](#world-02) | Weitere kuratierte Bauwelten | ✅ Im beschriebenen Umfang geprüft | 2/2 | LIB-01, UI-01 | `c3e6478` | `c3e6478` |
@@ -908,18 +908,18 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### UPDATE-01
 
-**Kontrollierte Versionsupdates mit lokalen Overrides** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread „Updates und neue Versionen anzeigen“) · Aktualisiert: 2026-11-02T05:07:24.985Z
+**Kontrollierte Versionsupdates mit lokalen Overrides** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Updates und neue Versionen anzeigen“) · Aktualisiert: 2026-11-02T05:34:31.591Z
 
-- [ ] UPDATE-01-S01: Updateplan mit Geometrie/Material/Anschluss-/Aufgabendiff erstellen.
-- [ ] UPDATE-01-S02: Bewusst übernehmen, einfrieren und zurückkehren ermöglichen.
+- [x] UPDATE-01-S01: Updateplan mit Geometrie/Material/Anschluss-/Aufgabendiff erstellen.
+- [x] UPDATE-01-S02: Bewusst übernehmen, einfrieren und zurückkehren ermöglichen.
 
 **Abnahme:** Keine automatischen Updates fester Instanzreferenzen; Teamserver ist keine Voraussetzung.
 
-**Nächste Aktion:** Updateplan mit Geometrie/Material/Anschluss-/Aufgabendiff erstellen.
+**Nächste Aktion:** Echtgeräteabnahme (QA-02); Teamreihenfolge der Updateoperationen in TEAM-02.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Node- und lokale Chromium-Browsertests; keine Echtgeräteabnahme.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/updates.test.mjs](../tests/updates.test.mjs) — Updatequellen ohne fremde lokale Änderungen, Patch-Übertragung mit Doppeländerung je Regel, pivotbezogen, Folgenplan (Geometrie/Material/Anschlüsse/Schritte), ein Rückgängig-Schritt, Rückkehr, Einfrieren, Validierung, Katalogzustellung als neue Version ohne Projektumstellung, neueste Version ohne lokale Änderungen.; [tests/e2e/updates.e2e.mjs](../tests/e2e/updates.e2e.mjs) — Chromium 1400/390 px: neue Version in der Werkstatt, Hinweise in Projektzentrale und Projektkopf, Folgen mit Vergleich, Übernehmen, Rückgängig, Zurückkehren, Einfrieren mit Notiz, Neuladen, Mehrfachauswahl.; [docs/architecture/UPDATES.md](architecture/UPDATES.md) — Vertrag, Datenmodell, Katalogzustellung und Grenzen.
 
 **Dateiumfang:** `packages/domain/src/project.ts`, `packages/application/`. **Abhängigkeiten:** DIFF-01, STORE-02. **Alte IDs:** P5-03.
 

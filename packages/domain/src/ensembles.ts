@@ -2,6 +2,7 @@ import { transformPayload } from '../../voxel/src/transforms.js';
 import type { Transform } from '../../voxel/src/types.js';
 import { applyOperation, createProject, newInstance } from './project.js';
 import { SAMPLE_PROFILE } from './samples.js';
+import { latestReleaseId } from './updateState.js';
 import type { Asset, AssetVersion, Project } from './types.js';
 
 /**
@@ -94,7 +95,7 @@ export function memberTransform(member: EnsembleMember, version: Pick<AssetVersi
 /** Latest version per asset id, for ensemble resolution. */
 export function latestVersions(assets: readonly Asset[], versions: ReadonlyMap<string, AssetVersion>): Map<string, AssetVersion> {
   const out = new Map<string, AssetVersion>();
-  for (const a of assets) { const v = versions.get(a.versionIds.at(-1) ?? ''); if (v) out.set(a.id, v); }
+  for (const a of assets) { const v = versions.get(latestReleaseId(a, versions) ?? ''); if (v) out.set(a.id, v); }
   return out;
 }
 

@@ -6,6 +6,8 @@ import { deepFreeze } from './library.js';
 import { checkSite } from './site.js';
 import type { SitePlan } from './site.js';
 import { checkWorldPlacement } from './worldmap.js';
+import { checkUpdates } from './updateState.js';
+import type { UpdateState } from './updateState.js';
 import type { WorldPlacement } from './worldmap.js';
 import { DomainError } from './types.js';
 import type { BlueprintRevision, ConnectorLink, Instance, Project, StepProgress } from './types.js';
@@ -44,6 +46,7 @@ export type Operation =
   | { readonly kind: 'project.rename'; readonly name: string; readonly description?: string }
   | { readonly kind: 'site.set'; readonly site: SitePlan | null; readonly label?: string }
   | { readonly kind: 'world.set'; readonly world: WorldPlacement | null; readonly label?: string }
+  | { readonly kind: 'updates.set'; readonly updates: UpdateState | null; readonly label?: string }
   | { readonly kind: 'batch'; readonly label: string; readonly operations: readonly Operation[] };
 
 function find(project: Project, id: string): number {
@@ -121,6 +124,11 @@ function apply(project: Project, op: Operation): { project: Project; inverse: Op
       if (op.world) next.world = structuredClone(checkWorldPlacement(op.world)); else delete next.world;
       return { project: next, inverse: { kind: 'world.set', world: previous, ...(op.label !== undefined && { label: op.label }) } };
     }
+    case 'updates.set': {
+      const previous = project.updates ?? null, next = { ...project };
+      if (op.updates) next.updates = structuredClone(checkUpdates(op.updates)); else delete next.updates;
+      return { project: next, inverse: { kind: 'updates.set', updates: previous, ...(op.label !== undefined && { label: op.label }) } };
+    }
     case 'batch': {
       let current = project; const inverses: Operation[] = [];
       for (const child of op.operations) { const r = apply(current, child); current = r.project; inverses.unshift(r.inverse); }
@@ -147,6 +155,7 @@ export function describeOperation(op: Operation): string {
     case 'project.rename': return 'Projekt umbenannt';
     case 'site.set': return op.label ?? 'Baustellenplan geändert';
     case 'world.set': return op.label ?? (op.world ? 'Weltlage geändert' : 'Von der Weltkarte genommen');
+    case 'updates.set': return op.label ?? 'Versionsstand geändert';
     case 'batch': return op.label;
   }
 }

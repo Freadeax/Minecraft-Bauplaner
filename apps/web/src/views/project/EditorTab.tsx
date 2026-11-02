@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { countBlocks } from '../../../../../packages/voxel/src/index.js';
 import type { Cell, Transform, Vec3 } from '../../../../../packages/voxel/src/index.js';
-import { findSnapCandidates, nearestSnap, newInstance, placementBounds, positionKey, rotateInPlace, snapOperation } from '../../../../../packages/domain/src/index.js';
+import { findSnapCandidates, latestReleaseId, nearestSnap, newInstance, placementBounds, positionKey, rotateInPlace, snapOperation } from '../../../../../packages/domain/src/index.js';
 import type { Asset, Instance, Resolution, SnapCandidate } from '../../../../../packages/domain/src/index.js';
 import { useApp } from '../../app/context';
 import { formatNumber } from '../../app/ui';
@@ -17,7 +17,7 @@ import type { ProjectSession } from './session';
 
 const CONFLICT = '#ff4d4d', DIM_TARGET = '#16303c', GROUP = '#5be3b5';
 
-function latestVersionId(asset: Asset): string | undefined { return asset.versionIds.at(-1); }
+
 
 /** Composer: place, move, rotate, mirror instances; voxel conflicts and undo/redo. */
 export function EditorTab({ session }: { session: ProjectSession }) {
@@ -117,13 +117,13 @@ export function EditorTab({ session }: { session: ProjectSession }) {
     return hull ? { bounds: hull, tone: resolved?.conflicts.some(c => c.instanceIds.some(id => group.has(id))) ? 'conflict' : 'free' } : null;
   }, [group, resolved]);
 
-  const assets = library.assets.filter(a => !a.archived && latestVersionId(a));
+  const assets = library.assets.filter(a => !a.archived && latestReleaseId(a, library.versions));
   // The shipped catalogue has well over a hundred buildings: the picker filters by name and tag and scrolls on its own.
   const [pickerQuery, setPickerQuery] = useState('');
   const needle = pickerQuery.trim().toLowerCase();
   const pickerAssets = needle ? assets.filter(a => a.name.toLowerCase().includes(needle) || a.tags.some(t => t.toLowerCase().includes(needle))) : assets;
   const add = (asset: Asset) => {
-    const versionId = latestVersionId(asset)!;
+    const versionId = latestReleaseId(asset, library.versions)!;
     const version = library.versions.get(versionId);
     if (!version) { setMessage(`Version für ${asset.name} fehlt im Speicher.`); return; }
     // Place beside the existing world so a new instance never overlaps by default.
@@ -172,7 +172,7 @@ export function EditorTab({ session }: { session: ProjectSession }) {
       <input type="search" className="picker-search" value={pickerQuery} onChange={e => setPickerQuery(e.target.value)} placeholder={`${assets.length} Bauteile durchsuchen …`} aria-label="Bauteil zum Einfügen suchen" />
       {needle && pickerAssets.length === 0 && <p className="muted">Kein Bauteil passt zu „{pickerQuery.trim()}“.</p>}
       <ul className="asset-picker">{pickerAssets.map(a => <li key={a.id}><button className="with-thumb" onClick={() => add(a)} title={a.description}>
-        {(() => { const v = library.versions.get(latestVersionId(a)!); return v ? <Thumb cacheKey={v.id} payload={() => v.payload} alt="" width={40} height={28} className="thumb mini" /> : null; })()}
+        {(() => { const v = library.versions.get(latestReleaseId(a, library.versions)!); return v ? <Thumb cacheKey={v.id} payload={() => v.payload} alt="" width={40} height={28} className="thumb mini" /> : null; })()}
         <span>＋ {a.name}{a.demo && <small> · Beispiel</small>}</span></button></li>)}</ul>
       <a className="text-button" href="#/bibliothek/generatoren">Bauwerk nach Maß generieren →</a>
       <a className="text-button" href="#/bibliothek">Bibliothek verwalten →</a>

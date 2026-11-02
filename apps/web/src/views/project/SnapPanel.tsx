@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { checkLinks, faceOf, findSnapCandidates, linkOperation, linkUsage, newInstance, snapOperation, unlinkedMates } from '../../../../../packages/domain/src/index.js';
+import { checkLinks, faceOf, findSnapCandidates, latestReleaseId, linkOperation, linkUsage, newInstance, snapOperation, unlinkedMates } from '../../../../../packages/domain/src/index.js';
 import type { AssetVersion, Connector, SnapCandidate } from '../../../../../packages/domain/src/index.js';
 import { useApp } from '../../app/context';
 import { errorText } from '../../app/ui';
@@ -29,8 +29,8 @@ export function SnapPanel({ session }: { session: ProjectSession }) {
     try { return findSnapCandidates({ project, versions, version: selectedVersion, instanceId: selected.id, allowMirror: mirror, limit: LIMIT }); }
     catch { return []; }
   }, [project, versions, selected, selectedVersion, mirror]);
-  const attachable = library.assets.filter(a => !a.archived && (versions.get(a.versionIds.at(-1) ?? '')?.connectors.length ?? 0) > 0);
-  const attachVersion: AssetVersion | null = versions.get(library.assets.find(a => a.id === assetId)?.versionIds.at(-1) ?? '') ?? null;
+  const attachable = library.assets.filter(a => !a.archived && (versions.get(latestReleaseId(a, versions) ?? '')?.connectors.length ?? 0) > 0);
+  const attachVersion: AssetVersion | null = versions.get((() => { const a = library.assets.find(x => x.id === assetId); return a ? latestReleaseId(a, versions) ?? '' : ''; })()) ?? null;
   const attachCandidates = useMemo(() => {
     if (!selected || !attachVersion) return [];
     try { return findSnapCandidates({ project, versions, version: attachVersion, targetInstanceIds: [selected.id], allowMirror: mirror, limit: LIMIT,

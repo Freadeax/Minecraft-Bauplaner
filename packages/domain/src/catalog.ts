@@ -4,6 +4,7 @@ import type { BlockState, VoxelPayload } from '../../voxel/src/types.js';
 import { phaseOf } from './guide.js';
 import { computeMaterials } from './materials.js';
 import type { Resolution } from './compose.js';
+import { latestReleaseId } from './updateState.js';
 import type { Asset, AssetVersion, Connector, Project } from './types.js';
 
 /**
@@ -395,7 +396,7 @@ export interface CatalogEntry {
 export function buildCatalog(assets: readonly Asset[], versions: ReadonlyMap<string, AssetVersion>, cache?: Map<string, BuildingMetrics>): { entries: CatalogEntry[]; missing: Asset[] } {
   const entries: CatalogEntry[] = [], missing: Asset[] = [];
   for (const asset of assets) {
-    const version = versions.get(asset.versionIds.at(-1) ?? '');
+    const version = versions.get(latestReleaseId(asset, versions) ?? '');
     if (!version) { missing.push(asset); continue; }
     let metrics = cache?.get(version.id);
     if (!metrics) { metrics = analyzeVersion(version); cache?.set(version.id, metrics); }

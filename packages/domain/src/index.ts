@@ -61,3 +61,7 @@ export { MAX_SNAPSHOTS, snapshotFingerprint, checkSnapshots, snapshotsOf, latest
 export type { SectionSnapshot, SnapshotStep, FreezeInput, SnapshotChange, SnapshotChangeKind, SnapshotComparison, SnapshotRestorePlan } from './sectionSnapshots.js';
 export { BACKUP_LEDGER_SCHEMA, MAX_BACKUP_RECEIPTS, BACKUP_REMIND_AFTER_DAYS, BACKUP_DISCLAIMER, emptyLedger, checkBackupLedger, recordFingerprint, receiptForBackup, addReceipt, compareWithBackups, receiptForHash } from './backupStatus.js';
 export type { BackupLedger, BackupReceipt, BackupReceiptKind, ReceiptEntry, CoverageState, CoverageLine, BackupStatus, CurrentData } from './backupStatus.js';
+export { UPDATES_SCHEMA_VERSION, MAX_UPDATE_LOG, UPDATE_KIND_LABEL, UPDATE_STATUS_LABEL, PATCH_POLICY_LABEL, CONNECTOR_CHANGE_LABEL, emptyUpdates, updatesOf, checkUpdates, updateLogVersionIds, pruneUpdates, updatesOperation,
+  latestReleaseId, isLocalPatch, patchBase, findUpdates, summarizeUpdates, rebasePatch, localLabel, diffVersions, pivotAligned, diffConnectors, prepareUpdate, freezeOperation, unfreezeOperation, returnChoice } from './updates.js';
+export type { FrozenPin, UpdateKind, UpdateRecord, UpdateState, PatchPolicy, UpdateLibrary, InstanceUpdateStatus, InstanceUpdateInfo, UpdateSummary, PatchCell, PatchConflict, RebaseResult,
+  ConnectorChange, ConnectorChangeKind, UpdateChoice, InstanceUpdatePlan, LinkChange, StepChange, MaterialChange, UpdatePlan, PreparedUpdate, PrepareOptions } from './updates.js';

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T05:30:31.682Z",
+  "updatedAt": "2026-11-02T05:34:31.591Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -2218,7 +2218,7 @@
       "title": "Kontrollierte Versionsupdates mit lokalen Overrides",
       "phase": "P3",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "implemented",
       "owner": "Claude (Thread „Updates und neue Versionen anzeigen“)",
       "dependencies": [
         "DIFF-01",
@@ -2235,29 +2235,42 @@
         {
           "id": "UPDATE-01-S01",
           "title": "Updateplan mit Geometrie/Material/Anschluss-/Aufgabendiff erstellen.",
-          "done": false
+          "done": true
         },
         {
           "id": "UPDATE-01-S02",
           "title": "Bewusst übernehmen, einfrieren und zurückkehren ermöglichen.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Keine automatischen Updates fester Instanzreferenzen; Teamserver ist keine Voraussetzung."
       ],
-      "next": "Updateplan mit Geometrie/Material/Anschluss-/Aufgabendiff erstellen.",
+      "next": "Echtgeräteabnahme (QA-02); Teamreihenfolge der Updateoperationen in TEAM-02.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/updates.test.mjs",
+          "note": "Updatequellen ohne fremde lokale Änderungen, Patch-Übertragung mit Doppeländerung je Regel, pivotbezogen, Folgenplan (Geometrie/Material/Anschlüsse/Schritte), ein Rückgängig-Schritt, Rückkehr, Einfrieren, Validierung, Katalogzustellung als neue Version ohne Projektumstellung, neueste Version ohne lokale Änderungen."
+        },
+        {
+          "path": "tests/e2e/updates.e2e.mjs",
+          "note": "Chromium 1400/390 px: neue Version in der Werkstatt, Hinweise in Projektzentrale und Projektkopf, Folgen mit Vergleich, Übernehmen, Rückgängig, Zurückkehren, Einfrieren mit Notiz, Neuladen, Mehrfachauswahl."
+        },
+        {
+          "path": "docs/architecture/UPDATES.md",
+          "note": "Vertrag, Datenmodell, Katalogzustellung und Grenzen."
+        }
+      ],
       "verification": {
-        "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "state": "passed",
+        "note": "Node- und lokale Chromium-Browsertests; keine Echtgeräteabnahme."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T05:07:24.985Z"
+      "updatedAt": "2026-11-02T05:34:31.591Z"
     },
     {
       "id": "LIB-02",
@@ -6092,6 +6105,52 @@
           "done": 5,
           "total": 5,
           "next": "Picking an 3D-Blockflächen; Spielprüfung der Schablonen-Zustände (Tür, Treppe, Laterne)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T05:34:31.591Z",
+      "kind": "progress",
+      "items": [
+        "UPDATE-01"
+      ],
+      "summary": "UPDATE-01 umgesetzt: Projektreiter Updates mit Folgenplan, Übernahme als ein Rückgängig-Schritt, lokale Patches, Einfrieren/Zurückkehren, Katalogzustellung als neue Version; neueste Version ohne lokale Projektänderungen. check grün, E2E 86/86; keine Echtgeräte.",
+      "files": [
+        "apps/web/src/app/icons.tsx",
+        "apps/web/src/app/repository.ts",
+        "apps/web/src/views/ProjectsView.tsx",
+        "apps/web/src/views/project/EditorTab.tsx",
+        "apps/web/src/views/project/ProjectView.tsx",
+        "apps/web/src/views/project/SnapPanel.tsx",
+        "apps/web/src/views/project/UpdatesTab.tsx",
+        "apps/web/src/views/project/tabs.ts",
+        "apps/web/src/views/project/updates.css",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/UPDATES.md",
+        "packages/application/src/catalogSync.ts",
+        "packages/application/src/index.ts",
+        "packages/domain/src/anlagen.ts",
+        "packages/domain/src/backup.ts",
+        "packages/domain/src/catalog.ts",
+        "packages/domain/src/editor/commit.ts",
+        "packages/domain/src/ensembles.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/project.ts",
+        "packages/domain/src/types.ts",
+        "packages/domain/src/updateState.ts",
+        "packages/domain/src/updates.ts",
+        "tests/e2e/updates.e2e.mjs",
+        "tests/updates.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "UPDATE-01",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Echtgeräteabnahme (QA-02); Teamreihenfolge der Updateoperationen in TEAM-02."
         }
       ]
     }

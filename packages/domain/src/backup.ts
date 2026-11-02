@@ -6,6 +6,7 @@ import { checkTransform } from './project.js';
 import { deepFreeze, verifyAssetVersion } from './library.js';
 import { checkSite } from './site.js';
 import { checkWorldPlacement } from './worldmap.js';
+import { checkUpdates, updateLogVersionIds } from './updateState.js';
 import { checkCollectionRecord, checkTemplateRecord, pinnedVersionIds, sameLibraryRecord, templateVersionIds } from './collections.js';
 import type { Collection, LibraryTemplate } from './collections.js';
 
@@ -84,6 +85,8 @@ export function checkSchemaVersion(kind: string, record: { readonly schemaVersio
 export function referencedVersionIds(project: Project): Set<string> {
   const ids = new Set(project.instances.map(i => i.assetVersionId));
   for (const r of project.revisions) for (const i of r.instances) ids.add(i.assetVersionId);
+  // Versions an update can return to stay reproducible after a restore (UPDATE-01).
+  for (const id of updateLogVersionIds(project)) ids.add(id);
   return ids;
 }
 
@@ -207,6 +210,10 @@ export function checkProjectRecord(raw: unknown): Project {
   if (raw.site !== undefined) checkSite(raw.site);
   if (raw.world !== undefined) {
     try { checkWorldPlacement(raw.world); }
+    catch (e) { throw new DomainError('BACKUP', `${where}: ${e instanceof Error ? e.message : String(e)}`); }
+  }
+  if (raw.updates !== undefined) {
+    try { checkUpdates(raw.updates); }
     catch (e) { throw new DomainError('BACKUP', `${where}: ${e instanceof Error ? e.message : String(e)}`); }
   }
   if (raw.scanHistory !== undefined) {

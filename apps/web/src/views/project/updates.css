@@ -1,0 +1,43 @@
+/* Projekt-Reiter „Updates“ (UPDATE-01). Nur Theme-Tokens (--text, --muted, --mint, --panel*, --line). */
+.updates-tab{display:grid;gap:14px}
+.updates-tab{--up-warn:color-mix(in srgb,#e39a2d 26%,var(--panel,#11202b));--up-bad:color-mix(in srgb,#e0524a 24%,var(--panel,#11202b));--up-ok:color-mix(in srgb,var(--mint) 22%,var(--panel,#11202b));--up-info:color-mix(in srgb,#5a8dee 24%,var(--panel,#11202b))}
+.updates-head{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:flex-start;justify-content:space-between}
+.updates-head h2{margin:0 0 4px;font-size:18px}.updates-head p{margin:0;max-width:70ch;font-size:13px}
+.updates-stats{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+.updates-stats div{border:1px solid var(--line);border-radius:8px;padding:6px 12px;background:var(--panel);min-width:96px}
+.updates-stats div.has{background:var(--up-warn)}.updates-stats div.bad{background:var(--up-bad)}
+.updates-stats dt{font-size:11.5px;color:var(--muted)}.updates-stats dd{margin:0;font-size:20px;font-weight:600}
+.updates-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.updates-bar input:not([type=checkbox]){flex:1 1 200px;min-width:0;border:1px solid var(--line);border-radius:6px;padding:7px 10px;background:var(--panel-2);color:var(--text)}
+.updates-bar .seg button[aria-pressed=true]{background:var(--up-ok)}
+.updates-bar label.inline{display:flex;gap:6px;align-items:center;font-size:13px;white-space:nowrap}
+.updates-table{width:100%;border-collapse:collapse;font-size:13px}
+.updates-table th,.updates-table td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.updates-table thead th{font-size:11.5px;color:var(--muted);font-weight:500}
+.updates-table th[scope=row] small,.updates-table td small{display:block;color:var(--muted);font-size:11.5px;font-weight:400;margin-top:2px}
+.updates-table select{max-width:220px}
+.updates-actions{display:flex;flex-wrap:wrap;gap:6px}.updates-actions button{font-size:12px;padding:5px 9px}
+.update-chip{display:inline-block;font-size:11.5px;border-radius:999px;padding:2px 9px;border:1px solid var(--line);white-space:nowrap}
+.update-chip.available{background:var(--up-warn)}.update-chip.frozen{background:var(--up-info)}.update-chip.current{background:var(--up-ok)}.update-chip.missing{background:var(--up-bad)}
+.badge.local{margin-left:6px;background:var(--up-info);color:var(--text)}
+.update-plan{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--panel);display:grid;gap:10px}
+.update-plan h3,.update-plan h4,.updates-log h3{margin:0;font-size:15px}
+.plan-list{margin:0;padding-left:18px;display:grid;gap:4px;font-size:13px}.plan-list .link-button[aria-pressed=true]{font-weight:600;text-decoration:underline}
+.plan-stats{display:flex;flex-wrap:wrap;gap:8px;margin:0}
+.plan-stats div{border:1px solid var(--line);border-radius:8px;padding:6px 10px;background:var(--panel-2)}
+.plan-stats div.bad{background:var(--up-bad)}.plan-stats div.warn{background:var(--up-warn)}
+.plan-stats dt{font-size:11.5px;color:var(--muted)}.plan-stats dd{margin:0;font-weight:600}
+.plan-warnings{margin:0;padding-left:18px;font-size:13px}
+.plan-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.plan-grid details{border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:13px;min-width:0}
+.plan-grid summary{cursor:pointer}.plan-grid ul{margin:6px 0 0;padding-left:18px}
+.updates-log ol{margin:6px 0 0;padding-left:18px;display:grid;gap:6px;font-size:13px}.updates-log small{display:block;color:var(--muted);font-size:11.5px}
+.update-head-chip{display:inline-block;margin:6px 0 0 6px;font-size:11px;border-radius:999px;padding:3px 10px;text-decoration:none;white-space:nowrap;border:1px solid var(--line);background:color-mix(in srgb,#e39a2d 26%,var(--panel,#11202b));color:var(--text)}
+@media (max-width:760px){
+  .updates-table thead{display:none}
+  .updates-table tr{display:grid;grid-template-columns:28px 1fr;gap:2px 8px;border-bottom:1px solid var(--line);padding:8px 0}
+  .updates-table th,.updates-table td{border:0;padding:2px 4px}
+  .updates-table td:first-child{grid-row:span 5}
+  .updates-table select{max-width:100%;width:100%}
+}
+.update-card-chip{font-size:11.5px;border-radius:999px;padding:2px 9px;border:1px solid var(--line);text-decoration:none;color:var(--text);background:color-mix(in srgb,#e39a2d 26%,var(--panel,#11202b))}

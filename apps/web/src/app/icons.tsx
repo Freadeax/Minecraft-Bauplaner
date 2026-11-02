@@ -21,6 +21,7 @@ const PATHS = {
   arrow: 'M5 12h14M13 6l6 6-6 6',
   plus: 'M12 5v14M5 12h14',
   page: 'M6 3h9l4 4v14H6zM14 3v5h5',
+  update: 'M20 11a8 8 0 0 0-14.6-4.5M4 3.5v3.5h3.5M4 13a8 8 0 0 0 14.6 4.5M20 20.5V17h-3.5',
 } as const;
 
 export type IconName = keyof typeof PATHS;
@@ -32,6 +33,6 @@ export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
 
 /** Symbol je Projektbereich (tabs.ts); unbekannte Bereiche bekommen ein neutrales Blatt. */
 export function tabIcon(id: string): IconName {
-  const known: Record<string, IconName> = { editor: 'editor', bauen: 'build', export: 'export', material: 'material', baustelle: 'site', karte: 'map', bloecke: 'building', gelaende: 'terrain' };
+  const known: Record<string, IconName> = { editor: 'editor', bauen: 'build', export: 'export', material: 'material', baustelle: 'site', karte: 'map', bloecke: 'building', gelaende: 'terrain', updates: 'update' };
   return known[id] ?? 'page';
 }

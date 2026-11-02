@@ -162,7 +162,7 @@ export async function commitProjectEdit(project: Project, resolution: Resolution
       ops.push({ kind: 'instance.remove', instanceId: step.instanceId });
       continue;
     }
-    const r = await addAssetVersion(asset, { payload, connectors: version.connectors, source: { format: 'editor', editedFrom: version.id } });
+    const r = await addAssetVersion(asset, { payload, connectors: version.connectors, source: { format: 'editor', editedFrom: version.id, localTo: project.id } });
     outAssets.set(asset.id, r.asset); versions.push(r.version);
     warnings.push(...connectorWarnings(payload, version).map(w => ({ ...w, message: `${step.instanceName}: ${w.message}` })));
     ops.push({ kind: 'instance.update', instanceId: step.instanceId, assetVersionId: r.version.id });

@@ -517,3 +517,9 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `editor.e2e.mjs`: nur der Selektor der Quaderform auf die neue Beschriftung „Quaderform“ umgestellt (das Werkzeugfeld enthält jetzt auch das Musterfeld).
 - `npm run check` grün (477 Tests, 476 bestanden, 1 übersprungen). `npm run test:e2e` **86/86** auf main `7c4e95a` plus EDIT-03.
 - Grenzen: nur Chromium im Linux-Container (Playwright-1248-Verweis auf 1243), keine Spielprüfung der Schablonenzustände, keine echten Geräte.
+## UPDATE-01 · Kontrollierte Versionsupdates · 02.11.2026 · Claude
+
+- `node --test tests/updates.test.mjs`: 10/10 bestanden (Updatequellen ohne fremde lokale Änderungen, Dreiwege-Patch mit beiden Regeln und pivotbezogener Ausrichtung, Folgenplan inkl. gelöster Verbindung und prüfbedürftiger Schritte, ein Rückgängig-Schritt, Rückkehr, Einfrieren, Validierung, Katalogzustellung über `seedSamples` mit MemoryRepository, neueste Version ohne lokale Änderungen in Bibliothek/Katalog).
+- `node --test tests/e2e/updates.e2e.mjs` (Chromium headless, Pages-Build): 2/2 bestanden, 1400 px und 390 px ohne waagerechtes Scrollen.
+- Gesamtlauf nach Rebase auf main `83f95c0` (inkl. EDIT-03): `npm run check` grün (487 Tests, 486 bestanden, 1 übersprungen; Architektur, Roadmap, Typen, Build, Doku). `npm run test:e2e` **88/88** bestanden.
+- Grenzen: nur Chromium im Linux-Container, keine Echtgeräte; Folgenberechnung großer Projekte nicht gemessen.

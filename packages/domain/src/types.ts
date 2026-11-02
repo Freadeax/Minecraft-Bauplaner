@@ -1,5 +1,6 @@
 import type { Bounds, Transform, Vec3, VoxelPayload } from '../../voxel/src/types.js';
 import type { SitePlan } from './site.js';
+import type { UpdateState } from './updateState.js';
 import type { WorldPlacement } from './worldmap.js';
 
 /**
@@ -78,6 +79,8 @@ export interface AssetVersionSource {
   readonly editedFrom?: string;
   /** World excerpt (WORLD-IMPORT-01): box read from the region files (world coordinates) and its dimension. */
   readonly world?: { readonly box: Bounds; readonly dimension: string };
+  /** Local block change made inside a project (EDIT-02/UPDATE-01): id of that project. Such versions are never offered as updates. */
+  readonly localTo?: string;
 }
 
 export interface GeneratorSource {
@@ -166,6 +169,8 @@ export interface Project {
   readonly world?: WorldPlacement;
   /** Recording history, oldest first. Original bytes live in the repository original store. */
   readonly scanHistory?: readonly ProjectScanReference[];
+  /** Version pins and update log (updates.ts, UPDATE-01). Absent = nothing frozen, no switches recorded. */
+  readonly updates?: UpdateState;
 }
 
 export class DomainError extends Error {

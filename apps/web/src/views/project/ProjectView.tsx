@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { href } from '../../app/router';
 import { projectTabs } from './tabs';
 import { useProjectSession } from './session';
@@ -6,9 +6,11 @@ import { useApp } from '../../app/context';
 import { Icon, tabIcon } from '../../app/icons';
 import { useDocumentTitle } from '../../app/Shell';
 import { useProjectBackupState } from '../../app/backupStatus';
+import { findUpdates, summarizeUpdates } from '../../../../../packages/domain/src/index.js';
 import type { Project } from '../../../../../packages/domain/src/index.js';
 import type { Repository } from '../../app/repository';
 import '../../backup.css';
+import './updates.css';
 
 const saveLabel = { saved: 'gespeichert', saving: 'speichert …', error: 'Speichern fehlgeschlagen', conflict: 'Konflikt mit anderem Tab' } as const;
 
@@ -30,7 +32,7 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
       <div className="project-title">
         <nav className="crumbs" aria-label="Pfad"><a className="crumb" href="#/">Projekte</a><span aria-hidden="true">›</span><span aria-current="page">{session.project.name}</span></nav>
         <h1 className="page-title">{session.project.name}</h1>
-        <BackupChip repo={repo} project={session.project} />
+        <BackupChip repo={repo} project={session.project} /><UpdateChip project={session.project} projectId={projectId} />
       </div>
       <span className={`save-state ${session.saveState}`} role="status" title={session.saveError}>
         {saveLabel[session.saveState]}{repo.kind === 'memory' && ' · nur diese Sitzung'}</span>
@@ -60,4 +62,13 @@ function BackupChip({ repo, project }: { repo: Repository; project: Project }) {
   if (!line) return null;
   const title = line.receipt ? `Zuletzt in „${line.receipt.fileName}“ (${new Date(line.receipt.at).toLocaleString('de-DE')}). Ob die Datei außerhalb dieses Browsers liegt, kann der Bauplaner nicht prüfen.` : 'In keiner Sicherungsdatei dieses Browsers enthalten.';
   return <a className={`backup-chip ${line.state}`} href="#/" data-backup-state={line.state} title={title}>{chipText[line.state]}</a>;
+}
+
+/** Neue Versionen (UPDATE-01): shown only when an update is available; links to the Updates tab. */
+function UpdateChip({ project, projectId }: { project: Project; projectId: string }) {
+  const { library } = useApp();
+  const summary = useMemo(() => summarizeUpdates(findUpdates(project, library)), [project, library]);
+  if (!summary.available) return null;
+  return <a className="update-head-chip" href={href({ view: 'project', projectId, tab: 'updates' })} data-updates={summary.available}
+    title="Neue Bauteilversionen in der Bibliothek. Nichts wird automatisch umgestellt.">{summary.available === 1 ? '1 Update verfügbar' : `${summary.available} Updates verfügbar`}</a>;
 }

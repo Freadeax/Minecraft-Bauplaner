@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { applyOperation, backupFileName, buildRestore, createBackup, createEnsembleProject, createProject, latestVersions, MAX_BACKUP_BYTES, missingMembers, newInstance, planRestore, readBackup, resolveProject, ENSEMBLES } from '../../../../packages/domain/src/index.js';
+import { applyOperation, backupFileName, buildRestore, createBackup, createEnsembleProject, createProject, findUpdates, latestReleaseId, latestVersions, summarizeUpdates, MAX_BACKUP_BYTES, missingMembers, newInstance, planRestore, readBackup, resolveProject, ENSEMBLES } from '../../../../packages/domain/src/index.js';
 import type { Ensemble, Instance, Project, ProjectChoice, RestorePlan } from '../../../../packages/domain/src/index.js';
 import { useApp } from '../app/context';
 import type { StorageInfo } from '../app/repository';
@@ -8,6 +8,7 @@ import { download, errorText } from '../app/ui';
 import { Thumb } from '../thumbnail/Thumb';
 import { recordBackupReceipt, useBackupStatus } from '../app/backupStatus';
 import { BackupReminder, BackupStatusPanel } from './BackupPanel';
+import './project/updates.css';
 import type { BackupFile } from '../../../../packages/domain/src/index.js';
 
 const mb = (n: number) => `${(n / 1_000_000).toLocaleString('de-DE', { maximumFractionDigits: 1 })} MB`;
@@ -85,7 +86,7 @@ export function ProjectsView() {
     try { void create(createProject({ name: name || 'Neues Projekt' })); } catch (e) { setMessage(errorText(e)); }
   };
   const createSample = () => {
-    const version = (assetId: string) => library.assets.find(a => a.id === assetId)?.versionIds.at(-1);
+    const version = (assetId: string) => { const a = library.assets.find(x => x.id === assetId); return a && latestReleaseId(a, library.versions); };
     const tower = version('sample_tower'), wall = version('sample_wall'), gate = version('sample_gate');
     if (!tower || !wall || !gate) { setMessage('Beispielbauteile fehlen in der Bibliothek.'); return; }
     const at = (assetVersionId: string, name: string, x: number, z: number, quarterTurns: 0 | 1 | 2 | 3 = 0): Instance =>
@@ -151,7 +152,8 @@ export function ProjectsView() {
         <div className="project-body">
         <h2><a href={href({ view: 'project', projectId: p.id, tab: 'editor' })}>{p.name}</a></h2>
         {p.description && <p className="muted">{p.description}</p>}
-        <div className="chips"><span>{p.instances.length} Bauteile</span><span>{p.revisions.length} Revisionen</span><span title={new Date(p.updatedAt).toLocaleString('de-DE')}>geändert {new Date(p.updatedAt).toLocaleDateString('de-DE')}</span></div>
+        <div className="chips"><span>{p.instances.length} Bauteile</span><span>{p.revisions.length} Revisionen</span><span title={new Date(p.updatedAt).toLocaleString('de-DE')}>geändert {new Date(p.updatedAt).toLocaleDateString('de-DE')}</span>
+          {(() => { const n = summarizeUpdates(findUpdates(p, library)).available; return n > 0 && <a className="update-card-chip" href={href({ view: 'project', projectId: p.id, tab: 'updates' })} data-updates={n}>{n === 1 ? '1 Update' : `${n} Updates`}</a>; })()}</div>
         <dl className="stats sr-only"><div><dt>Instanzen</dt><dd>{p.instances.length}</dd></div><div><dt>Freigegebene Revisionen</dt><dd>{p.revisions.length}</dd></div>
           <div><dt>Speicherrevision</dt><dd>{p.revision}</dd></div><div><dt>Profil</dt><dd>{p.profileId}</dd></div></dl>
         <div className="button-row"><a className="primary" href={href({ view: 'project', projectId: p.id, tab: 'editor' })}>Öffnen</a>

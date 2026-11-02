@@ -11,6 +11,7 @@ import type { Operation } from './project.js';
 import { SAMPLE_PROFILE } from './samples.js';
 import { addSection, checkSite, siteOf } from './site.js';
 import type { SitePlan } from './site.js';
+import { latestReleaseId } from './updateState.js';
 import { DomainError } from './types.js';
 import type { Asset, AssetVersion, ConnectorLink, Instance, Project } from './types.js';
 
@@ -252,7 +253,7 @@ export interface SlotState {
 function lookup(lib: AnlageLibrary) {
   const assets = new Map(lib.assets.map(a => [a.id, a]));
   const versionOf = (asset: Asset, label: string | null): AssetVersion | undefined => {
-    if (label === null) return lib.versions.get(asset.versionIds.at(-1) ?? '');
+    if (label === null) return lib.versions.get(latestReleaseId(asset, lib.versions) ?? '');
     for (const id of asset.versionIds) { const v = lib.versions.get(id); if (v?.label === label) return v; }
     return undefined;
   };
