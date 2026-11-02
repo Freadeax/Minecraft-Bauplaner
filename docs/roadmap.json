@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T08:26:29.438Z",
+  "updatedAt": "2026-11-02T08:56:28.176Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -3281,15 +3281,20 @@
           "done": true
         },
         {
+          "id": "GAME-07-S08",
+          "title": "Stufe 3: Platzierhilfe wie Easy Place, aber serverkonform: Vorhersage mit der Platzierlogik des Spiels, Schutz vor falschem Block/falscher Ausrichtung, richtiger Block aus der Schnellleiste, Ausrichtungshinweis, Abbauschutz (0.4.0).",
+          "done": true
+        },
+        {
           "id": "GAME-07-S07",
-          "title": "Stufe 3: Bauabschnitte aus der Website, Shulker-Inhalte, Röntgensicht, NeoForge-Port über mod-core.",
+          "title": "Stufe 4: Bauabschnitte aus der Website, Shulker-Inhalte, Röntgensicht, NeoForge-Port über mod-core.",
           "done": false
         }
       ],
       "acceptance": [
         "Reiner Client: keine Pakete an den Server, keine Weltänderung, kein automatisches Bauen, keine Abhängigkeit von WorldEdit oder Litematica; Ergebnis des Live-Abgleichs gleicht dem Website-Vergleich."
       ],
-      "next": "Philipp testet 0.3.0 auf server.lmnt-gaming.net (Anleitung /mnt/project-files/mod/ANLEITUNG_HOLOGRAMM.md); danach Stufe 3.",
+      "next": "Philipp testet 0.4.0 (Platzierhilfe) auf server.lmnt-gaming.net; danach Stufe 4.",
       "blockers": [],
       "evidence": [
         {
@@ -3315,6 +3320,10 @@
         {
           "path": "scripts/bridge_gametest.mjs",
           "note": "0.3.0: Materialliste, Ebenenmodus, texturierte Geisterblöcke im echten Client und mit Philipps Modpack (Sodium/Iris) geprüft (02.11.2026)."
+        },
+        {
+          "path": "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlacementAdvice.java",
+          "note": "0.4.0 Platzierhilfe: Urteil, Wegsuche und Hinweise; im echten Client und mit Philipps Modpack über den echten Klickweg geprüft (02.11.2026)."
         }
       ],
       "verification": {
@@ -3325,7 +3334,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T06:46:18.043Z"
+      "updatedAt": "2026-11-02T08:56:28.176Z"
     },
     {
       "id": "GAME-03",
@@ -6883,6 +6892,47 @@
           "done": 6,
           "total": 7,
           "next": "Abnahme im Spiel; die gefundenen Katalogfehler (u. a. 109 Laternen ohne Halt, Leitern an Scheiben) in der Gebäudebibliothek beheben; PROFILE-01 kann die Berichtsfakten übernehmen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T08:56:28.176Z",
+      "kind": "progress",
+      "items": [
+        "GAME-07"
+      ],
+      "summary": "Stufe 3 (0.4.0): Platzierhilfe wie Easy Place, aber serverkonform (Vorhersage, Schutz vor falschem Block/falscher Ausrichtung, Block aus der Schnellleiste, Hinweis am Fadenkreuz, Abbauschutz); im echten Client und mit Philipps Modpack geprüft, Release auf #/mod",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/MOD_HOLOGRAM.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.4.0.jar",
+        "mods/bauplaner-bridge/README.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/BridgeClient.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/Hologram.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramCommands.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramHud.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramKeys.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/PlacementAssist.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/PlanScreen.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/resources/assets/bauplaner_bridge/lang/de_de.json",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/resources/assets/bauplaner_bridge/lang/en_us.json",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/resources/fabric.mod.json",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlacementAdvice.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java",
+        "scripts/bridge_gametest.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-07",
+          "status": "implemented",
+          "done": 6,
+          "total": 8,
+          "next": "Philipp testet 0.4.0 (Platzierhilfe) auf server.lmnt-gaming.net; danach Stufe 4."
         }
       ]
     }

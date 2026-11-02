@@ -1,5 +1,7 @@
 package io.github.freadeax.bauplaner.bridge.fabric;
 
+import io.github.freadeax.bauplaner.mod.PlacementAdvice;
+
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 
@@ -13,7 +15,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 
 /**
- * {@code /bauplaner zeigen|hierher|verschieben|drehen|spiegeln|umschalten|fehler|entfernen|fortschritt|ebene|material|texturen}: the same actions as menu and keys, as client commands (no server needed;
+ * {@code /bauplaner zeigen|hierher|verschieben|drehen|spiegeln|umschalten|fehler|entfernen|fortschritt|ebene|material|texturen|platzierhilfe}: the same actions as menu and keys, as client commands (no server needed;
  * also used by the game test).
  */
 final class HologramCommands {
@@ -43,7 +45,21 @@ final class HologramCommands {
                         .then(literal("bis").then(argument("y", IntegerArgumentType.integer()).executes(c -> need(c.getSource(), h, () -> h.setLayers(Hologram.Layers.BELOW, IntegerArgumentType.getInteger(c, "y"))))))
                         .then(argument("y", IntegerArgumentType.integer()).executes(c -> need(c.getSource(), h, () -> h.setLayers(Hologram.Layers.ONE, IntegerArgumentType.getInteger(c, "y"))))),
                 literal("material").executes(c -> materials(c.getSource(), h)),
-                literal("texturen").executes(c -> need(c.getSource(), h, h::toggleTextured)));
+                literal("texturen").executes(c -> need(c.getSource(), h, h::toggleTextured)),
+                literal("platzierhilfe").executes(c -> guard(c.getSource(), h, null))
+                        .then(literal("an").executes(c -> guard(c.getSource(), h, PlacementAdvice.Guard.ON)))
+                        .then(literal("warnen").executes(c -> guard(c.getSource(), h, PlacementAdvice.Guard.WARN)))
+                        .then(literal("aus").executes(c -> guard(c.getSource(), h, PlacementAdvice.Guard.OFF))));
+    }
+
+    private static int guard(FabricClientCommandSource s, Hologram h, PlacementAdvice.Guard g) {
+        if (g != null) h.setGuard(g);
+        say(s, "Platzierhilfe: " + h.guard().label + switch (h.guard()) {
+            case ON -> " – falsche Blöcke und falsche Ausrichtung werden nicht gesetzt, richtige Planblöcke nicht abgebaut.";
+            case WARN -> " – nur Hinweise, gesetzt wird trotzdem.";
+            case OFF -> ".";
+        });
+        return 1;
     }
 
     private static int layer(FabricClientCommandSource s, Hologram h) {

@@ -574,3 +574,8 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Katalogprüfung (339 Versionen, 136.863 Blöcke, 246 ms): 140 Blöcke ohne Halt, 1.239 abweichende Verbindungen, 1 fehlende Hälfte.
 - `tests/e2e/block-logic.e2e.mjs` 3/3: Spielprüfung in der Bauanleitung (1400/390 px, kein Querscrollen), Zaunreihe in der Werkstatt prüfen, verbinden, erneut prüfen, rückgängig.
 - Grenzen: keine Abnahme im echten Spiel; Stützausnahmen über ~2.000 Nachbarzustände gemessen.
+
+## GAME-07 · Stufe 3: Platzierhilfe (Fabric 26.3, 0.4.0) · 02.11.2026 · Claude
+- `./gradlew :mod-core:test` grün (9 Fälle, neu: Platzierhilfe-Urteil mit Treppenform/Wandfackel/geplanter Luft, Modi, Wegauswahl und Hinweistext ohne unnötige Richtung/Neigung).
+- `scripts/test_bridge_ingame.sh` im echten Client und mit Philipps Modpack: Klicks über den echten Klickweg `MultiPlayerGameMode.useItemOn`, Server entscheidet wie immer. Bruchstein statt Eichenstamm → nicht gesetzt, Stamm aus Schnellleistenplatz 2 gewählt; Stamm seitlich angeklickt → nicht gesetzt, Hinweis „Auf den Block darunter klicken“; so geklickt → aufrecht gesetzt; Abbauen des richtigen Planblocks verhindert, nach `/bauplaner platzierhilfe warnen` möglich. Bildschirmfoto `platzierhilfe.png` mit Fadenkreuz-Zeile.
+- Grenzen: kein Mehrspieler-Server mit Anti-Cheat geprüft (die Mod sendet nur normale Klicks und Schnellleistenwahl), Zustände, die erst durch Nachbarn entstehen, werden nur gewarnt.

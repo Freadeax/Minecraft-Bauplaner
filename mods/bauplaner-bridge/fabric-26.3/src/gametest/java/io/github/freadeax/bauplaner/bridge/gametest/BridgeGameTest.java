@@ -148,7 +148,69 @@ public final class BridgeGameTest implements FabricClientGameTest {
         if (!materialScreen.equals("MaterialScreen")) throw new AssertionError("Num 7 öffnet nicht die Materialliste, offen: " + materialScreen);
         copy(context.takeScreenshot("bauplaner-material"), io.resolve("material.png"));
         context.setScreen(() -> null);
+        placementHelper(context, world, io, anchor);
         Files.copy(root.resolve("platzierung.properties"), io.resolve("platzierung.properties"), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    /**
+     * Stage 3, placement helper: right clicks go through the real client path (MultiPlayerGameMode.useItemOn,
+     * the same call a mouse click makes), the server decides as always. Wrong block → not placed, right block
+     * taken from the hotbar; log on its side → not placed, hint names the working way; right click → placed;
+     * correct plan block → not broken while the helper is on, broken after "warnen".
+     */
+    private static void placementHelper(ClientGameTestContext context, TestSingleplayerContext world, Path io, int[] anchor) throws IOException {
+        var server = world.getServer();
+        BlockPos target = new BlockPos(anchor[0] + 3, anchor[1] + 4, anchor[2]);
+        BlockPos below = target.below(), side = target.north();
+        server.runCommand("setblock " + target.getX() + " " + target.getY() + " " + target.getZ() + " minecraft:air");
+        server.runCommand("setblock " + side.getX() + " " + side.getY() + " " + side.getZ() + " minecraft:stone");
+        server.runCommand("tp @a " + (target.getX() + 0.5) + " " + anchor[1] + " " + (target.getZ() - 2.5) + " 0 -30");
+        server.runCommand("gamemode creative @a");
+        server.runCommand("clear @a");
+        server.runCommand("item replace entity @a hotbar.0 with minecraft:stone 16");
+        server.runCommand("item replace entity @a hotbar.1 with minecraft:oak_log 16");
+        chat(context, "/bauplaner platzierhilfe an");
+        context.runOnClient(mc -> mc.player.getInventory().setSelectedSlot(0));
+        context.waitTicks(40);
+        var top = new net.minecraft.world.phys.BlockHitResult(new net.minecraft.world.phys.Vec3(below.getX() + 0.5, below.getY() + 1.0, below.getZ() + 0.5),
+                net.minecraft.core.Direction.UP, below, false);
+        var onSide = new net.minecraft.world.phys.BlockHitResult(new net.minecraft.world.phys.Vec3(side.getX() + 0.5, side.getY() + 0.5, side.getZ() + 1.0),
+                net.minecraft.core.Direction.SOUTH, side, false);
+        // 1. Stone in hand where an oak log belongs: not placed, the log from hotbar slot 2 is taken instead.
+        String r1 = context.computeOnClient(mc -> mc.gameMode.useItemOn(mc.player, net.minecraft.world.InteractionHand.MAIN_HAND, top).getClass().getSimpleName());
+        context.waitTicks(10);
+        int slot = context.computeOnClient(mc -> mc.player.getInventory().getSelectedSlot());
+        expectBlock(context, target, "minecraft:air", "falscher Block wurde gesetzt (" + r1 + ")");
+        if (slot != 1) throw new AssertionError("Platzierhilfe hat den Eichenstamm nicht in die Hand genommen, Platz " + slot);
+        // 2. Log clicked on the side of a block: would lie sideways (axis z) → not placed.
+        String r2 = context.computeOnClient(mc -> mc.gameMode.useItemOn(mc.player, net.minecraft.world.InteractionHand.MAIN_HAND, onSide).getClass().getSimpleName());
+        context.waitTicks(10);
+        expectBlock(context, target, "minecraft:air", "liegender Stamm wurde gesetzt (" + r2 + ")");
+        // Crosshair line while aiming at the open position with the log in hand.
+        context.getInput().lookAt(target);
+        context.waitTicks(10);
+        copy(context.takeScreenshot("bauplaner-platzierhilfe"), io.resolve("platzierhilfe.png"));
+        // 3. The way the hint names (top of the block below): placed upright.
+        context.runOnClient(mc -> mc.gameMode.useItemOn(mc.player, net.minecraft.world.InteractionHand.MAIN_HAND, top));
+        context.waitTicks(10);
+        expectBlock(context, target, "minecraft:oak_log[axis=y]", "richtiger Stamm wurde nicht gesetzt");
+        // 4. Correct plan block is protected against breaking; after "warnen" it can be broken.
+        context.runOnClient(mc -> mc.gameMode.startDestroyBlock(target, net.minecraft.core.Direction.UP));
+        context.waitTicks(10);
+        expectBlock(context, target, "minecraft:oak_log[axis=y]", "geschützter Planblock wurde abgebaut");
+        chat(context, "/bauplaner platzierhilfe warnen");
+        context.runOnClient(mc -> mc.gameMode.startDestroyBlock(target, net.minecraft.core.Direction.UP));
+        context.waitTicks(10);
+        expectBlock(context, target, "minecraft:air", "mit „nur warnen“ lässt sich der Block nicht abbauen");
+        chat(context, "/bauplaner platzierhilfe an");
+        server.runCommand("setblock " + target.getX() + " " + target.getY() + " " + target.getZ() + " minecraft:oak_log[axis=y]");
+        server.runCommand("setblock " + side.getX() + " " + side.getY() + " " + side.getZ() + " minecraft:air");
+        Files.writeString(io.resolve("platzierhilfe.txt"), r1 + " " + r2 + "\n");
+    }
+
+    private static void expectBlock(ClientGameTestContext context, BlockPos pos, String expected, String message) {
+        String actual = context.computeOnClient(mc -> net.minecraft.commands.arguments.blocks.BlockStateParser.serialize(mc.level.getBlockState(pos)));
+        if (!actual.equals(expected)) throw new AssertionError(message + ": " + actual + " bei " + pos.toShortString());
     }
 
     private static void copy(Path from, Path to) throws IOException {

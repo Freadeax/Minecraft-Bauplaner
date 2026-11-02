@@ -15,5 +15,7 @@
   "key.bauplaner_bridge.materials": "Materialliste",
   "key.bauplaner_bridge.layers": "Ebenen: alle / eine / bis",
   "key.bauplaner_bridge.layer_up": "Ebene höher",
-  "key.bauplaner_bridge.layer_down": "Ebene tiefer"
+  "key.bauplaner_bridge.layer_down": "Ebene tiefer",
+  "key.bauplaner_bridge.pick": "Block aus dem Plan in die Hand",
+  "key.bauplaner_bridge.guard": "Platzierhilfe an / warnen / aus"
 }

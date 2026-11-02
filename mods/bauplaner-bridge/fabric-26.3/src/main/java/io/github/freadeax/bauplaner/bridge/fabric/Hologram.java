@@ -37,6 +37,8 @@ final class Hologram {
     private int layerY;
     /** Missing blocks as see-through textured blocks (true) or as blue boxes. */
     private boolean textured = true;
+    /** Placement helper strictness, persisted with the other settings. */
+    private io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard guard = io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard.ON;
 
     Hologram(Path root) {
         this.root = root;
@@ -54,6 +56,8 @@ final class Hologram {
     Layers layers() { return layers; }
     int layerY() { return layerY; }
     boolean textured() { return textured; }
+    io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard guard() { return guard; }
+    void setGuard(io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard g) { guard = g; saveSettings(); }
     /** Lowest and highest world height currently shown. */
     int minY() { return layers == Layers.ONE ? layerY : Integer.MIN_VALUE; }
     int maxY() { return layers == Layers.ALL ? Integer.MAX_VALUE : layerY; }
@@ -99,11 +103,13 @@ final class Hologram {
         var props = new java.util.Properties();
         try (var r = Files.newBufferedReader(settingsFile())) { props.load(r); } catch (IOException | RuntimeException ignored) { return; }
         textured = !"false".equals(props.getProperty("texturen"));
+        guard = io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard.parse(props.getProperty("platzierhilfe"), guard);
     }
 
     private void saveSettings() {
         var props = new java.util.Properties();
         props.setProperty("texturen", Boolean.toString(textured));
+        props.setProperty("platzierhilfe", guard.name());
         try {
             Files.createDirectories(root);
             try (var w = Files.newBufferedWriter(settingsFile())) { props.store(w, "Bauplaner-Mod: Einstellungen"); }

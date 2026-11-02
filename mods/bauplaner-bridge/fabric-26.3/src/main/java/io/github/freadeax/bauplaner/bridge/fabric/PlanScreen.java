@@ -65,6 +65,12 @@ final class PlanScreen extends Screen {
             addRenderableWidget(Button.builder(Component.literal(mode), b -> act(hologram::cycleLayers, "")).bounds(rx, y, 132, H).build());
             addRenderableWidget(Button.builder(Component.literal("▼"), b -> act(() -> hologram.stepLayer(-1), "")).bounds(rx + 136, y, 30, H).build());
             addRenderableWidget(Button.builder(Component.literal("▲"), b -> act(() -> hologram.stepLayer(1), "")).bounds(rx + 170, y, 30, H).build());
+            y += STEP;
+            addRenderableWidget(Button.builder(Component.literal("Platzierhilfe: " + hologram.guard().label), b -> act(() -> hologram.setGuard(hologram.guard().next()), switch (hologram.guard().next()) {
+                case ON -> "Falscher Block oder falsche Ausrichtung wird nicht gesetzt.";
+                case WARN -> "Nur Hinweise, gesetzt wird trotzdem.";
+                case OFF -> "Platzierhilfe aus.";
+            })).bounds(rx, y, 200, H).build());
         }
         addRenderableWidget(Button.builder(Component.literal("Fertig"), b -> onClose()).bounds(width / 2 - 50, height - 26, 100, 20).build());
     }
@@ -118,6 +124,7 @@ final class PlanScreen extends Screen {
             g.text(font, "Pfeile/Bild↑↓ schieben · Ende drehen", rx, 72, 0xFFB0B0B0, true);
             g.text(font, "Einfg spiegeln · Num 7 Material", rx, 84, 0xFFB0B0B0, true);
             g.text(font, "Num 6 Ebenen · Num 9/3 Ebene ▲▼", rx, 96, 0xFFB0B0B0, true);
+            g.text(font, "Num 8 Planblock in die Hand", rx, 108, 0xFFB0B0B0, true);
         }
         if (!message.isEmpty()) g.centeredText(font, message, width / 2, height - 38, 0xFF6BE07B);
     }

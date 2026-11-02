@@ -3,7 +3,7 @@
   "id": "bauplaner_bridge",
   "version": "${version}",
   "name": "Bauplaner-Brücke",
-  "description": "Liest den Planbereich aus der Welt (nur lesend) und schreibt eine Aufnahme für den Minecraft-Bauplaner. Verändert die Welt nie.",
+  "description": "Bauplaner-Pläne als Hologramm mit Live-Abgleich, Materialliste und Platzierhilfe, dazu die Aufnahme für den Minecraft-Bauplaner. Nur Client, baut nie selbst.",
   "authors": ["Freadeax"],
   "contact": { "homepage": "https://freadeax.github.io/Minecraft-Bauplaner/", "sources": "https://github.com/Freadeax/Minecraft-Bauplaner" },
   "license": "All-Rights-Reserved",

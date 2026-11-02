@@ -75,6 +75,20 @@
       "releasedAt": "2026-11-02",
       "sourceCommit": "a5f8a5a7c34dde5717c1c219cd0ae0c58794f8bd",
       "tested": "Echter Minecraft-26.3-Client und Produktionsstart mit allen Mods aus Philipps Modpack (Sodium, Iris, Xaero, Voice Chat, REI …): Aufnahme, Hologramm (fehlt 1/falsch 1, Live-Erkennung, Drehen, Speichern), texturierte Geisterblöcke nach Teilabriss, Materialliste (1 × Bruchstein, 31 offen nach Abriss), Ebenenmodus mit Fehlerfinder, Tasten J und Num 7 (02.11.2026)."
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.4.0.jar",
+      "modVersion": "0.4.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 149034,
+      "sha256": "159971d555fdc7d62a747c8f0bfc33503d5a81241cc2dd6183097f2c5a5d32e0",
+      "releasedAt": "2026-11-02",
+      "sourceCommit": "a5f8a5a7c34dde5717c1c219cd0ae0c58794f8bd",
+      "tested": "Stufe 3 Platzierhilfe: im echten Client und mit Philipps Modpack (Sodium/Iris/Xaero/REI) geprüft – falscher Block nicht gesetzt und richtiger aus der Schnellleiste genommen, liegender Stamm verhindert mit Hinweis, aufrecht gesetzt, Abbauschutz (02.11.2026)."
     }
   ]
 }

@@ -17,6 +17,50 @@ class ModCoreTest {
     private static BlockState s(String text) { return BlockState.parse(text); }
 
     @Test
+    void placementAdviceJudgesAndExplains() {
+        var planned = s("minecraft:oak_stairs[facing=north,half=bottom,shape=straight,waterlogged=false]");
+        assertEquals(PlacementAdvice.Kind.RIGHT, PlacementAdvice.judge(planned, s("minecraft:oak_stairs[facing=north,half=bottom,shape=outer_left,waterlogged=false]"), true).kind(), "Form ergibt sich aus Nachbarn");
+        var wrong = PlacementAdvice.judge(planned, s("minecraft:oak_stairs[facing=east,half=top,shape=straight,waterlogged=false]"), true);
+        assertEquals(PlacementAdvice.Kind.WRONG_STATE, wrong.kind());
+        assertEquals(List.of("Richtung: Osten statt Norden", "Hälfte: oben statt unten"), wrong.differences());
+        assertTrue(wrong.blocks(PlacementAdvice.Guard.ON));
+        assertFalse(wrong.blocks(PlacementAdvice.Guard.WARN));
+        assertEquals(PlacementAdvice.Kind.WRONG_BLOCK, PlacementAdvice.judge(planned, s("minecraft:stone"), false).kind());
+        assertEquals(PlacementAdvice.Kind.WRONG_STATE, PlacementAdvice.judge(s("minecraft:wall_torch[facing=east]"), s("minecraft:torch"), true).kind(), "Fackel am Boden statt an der Wand");
+        assertEquals(PlacementAdvice.Kind.NOT_PLANNED, PlacementAdvice.judge(null, s("minecraft:stone"), false).kind());
+        assertEquals(PlacementAdvice.Kind.NOT_PLANNED, PlacementAdvice.judge(s("minecraft:air"), s("minecraft:stone"), false).kind(), "geplante Luft: Gerüst erlaubt");
+        assertFalse(PlacementAdvice.judge(null, s("minecraft:stone"), false).blocks(PlacementAdvice.Guard.ON));
+        assertEquals(PlacementAdvice.Guard.WARN, PlacementAdvice.Guard.parse("nur warnen", PlacementAdvice.Guard.ON));
+        assertEquals(PlacementAdvice.Guard.OFF, PlacementAdvice.Guard.ON.next());
+        assertEquals(PlacementAdvice.Guard.ON, PlacementAdvice.Guard.parse("kaputt", PlacementAdvice.Guard.ON));
+        // Ways: cardinal first, then least turning, then level view, then the block below.
+        var P = PlacementAdvice.Pitch.LEVEL;
+        var ways = List.of(new PlacementAdvice.Way(9, P, "down", PlacementAdvice.Half.ANY), new PlacementAdvice.Way(8, PlacementAdvice.Pitch.UP, "north", PlacementAdvice.Half.LOWER),
+                new PlacementAdvice.Way(8, P, "north", PlacementAdvice.Half.LOWER), new PlacementAdvice.Way(8, P, "down", PlacementAdvice.Half.ANY));
+        var best = PlacementAdvice.best(ways, 12, P);
+        assertEquals(new PlacementAdvice.Way(8, P, "down", PlacementAdvice.Half.ANY), best);
+        assertEquals("Blick nach Norden, auf den Block darunter klicken", best.text());
+        assertEquals("Blick nach Norden, nach oben, an den Block im Norden klicken (untere Hälfte)", ways.get(1).text());
+        assertNull(PlacementAdvice.best(List.of(), 0, P));
+        assertNull(PlacementAdvice.advice(List.of(), 0, P));
+        assertEquals("Blick nach Norden, auf den Block darunter klicken", PlacementAdvice.advice(ways, 12, P), "Neigung egal wird nur bei allen drei weggelassen");
+        // Upright log: works from every direction and tilt on the block below → only the face is named.
+        var log = new java.util.ArrayList<PlacementAdvice.Way>();
+        for (int y = 0; y < 16; y++) for (var p : PlacementAdvice.Pitch.values()) log.add(new PlacementAdvice.Way(y, p, "down", PlacementAdvice.Half.ANY));
+        assertEquals("Auf den Block darunter klicken", PlacementAdvice.advice(log, 3, PlacementAdvice.Pitch.UP));
+        // Stairs facing east: direction matters, tilt does not.
+        var stairs = List.of(new PlacementAdvice.Way(12, P, "down", PlacementAdvice.Half.ANY), new PlacementAdvice.Way(12, PlacementAdvice.Pitch.UP, "down", PlacementAdvice.Half.ANY),
+                new PlacementAdvice.Way(12, PlacementAdvice.Pitch.DOWN, "down", PlacementAdvice.Half.ANY));
+        assertEquals("Blick nach Osten, auf den Block darunter klicken", PlacementAdvice.advice(stairs, 0, PlacementAdvice.Pitch.DOWN));
+        assertTrue(PlacementAdvice.viewFits(ways, 7, P));
+        assertFalse(PlacementAdvice.viewFits(ways, 12, P));
+        assertEquals(8, PlacementAdvice.yawOf(180f));
+        assertEquals(12, PlacementAdvice.yawOf(-90f));
+        assertEquals(PlacementAdvice.Pitch.DOWN, PlacementAdvice.pitchOf(60f));
+        assertEquals("Nordosten", PlacementAdvice.compass(10));
+    }
+
+    @Test
     void blockStatesParseSortAndPrint() {
         assertEquals("minecraft:oak_stairs[facing=east,half=bottom]", s("minecraft:oak_stairs[half=bottom,facing=east]").toString());
         assertEquals("minecraft:stone", s("minecraft:stone").toString());

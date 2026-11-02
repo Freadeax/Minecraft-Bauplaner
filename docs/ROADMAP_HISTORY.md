@@ -1842,3 +1842,38 @@ Echte Blocklogik 26.3: Fakten aus dem Server, Verbindungen, Halt, Bauschritte, M
 - `tests/block-logic.test.mjs`
 - `tests/e2e/block-logic.e2e.mjs`
 
+## 2026-11-02T08:56:28.176Z · progress
+
+**Aufgaben:** GAME-07
+
+Stufe 3 (0.4.0): Platzierhilfe wie Easy Place, aber serverkonform (Vorhersage, Schutz vor falschem Block/falscher Ausrichtung, Block aus der Schnellleiste, Hinweis am Fadenkreuz, Abbauschutz); im echten Client und mit Philipps Modpack geprüft, Release auf #/mod
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-07 | 🧩 Implementiert · Abnahme offen | 6/8 | Philipp testet 0.4.0 (Platzierhilfe) auf server.lmnt-gaming.net; danach Stufe 4. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/MOD_HOLOGRAM.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.4.0.jar`
+- `mods/bauplaner-bridge/README.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/BridgeClient.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/Hologram.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramCommands.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramHud.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramKeys.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/PlacementAssist.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/PlanScreen.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/resources/assets/bauplaner_bridge/lang/de_de.json`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/resources/assets/bauplaner_bridge/lang/en_us.json`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/resources/fabric.mod.json`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlacementAdvice.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java`
+- `scripts/bridge_gametest.mjs`
+

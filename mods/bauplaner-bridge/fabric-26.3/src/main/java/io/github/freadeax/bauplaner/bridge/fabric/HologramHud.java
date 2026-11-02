@@ -15,11 +15,12 @@ final class HologramHud {
     static final int BLUE = 0xFF5AA9FF, RED = 0xFFFF5A5A, YELLOW = 0xFFFFD54A, GREEN = 0xFF6BE07B, GREY = 0xFFB0B0B0;
 
     private final Hologram hologram;
+    private final PlacementAssist assist;
     /** Layer counts, recomputed only when verdicts or the layer change. */
     private int[] layerCounts;
     private String layerKey = "";
 
-    HologramHud(Hologram hologram) { this.hologram = hologram; }
+    HologramHud(Hologram hologram, PlacementAssist assist) { this.hologram = hologram; this.assist = assist; }
 
     void extract(GuiGraphicsExtractor g, DeltaTracker delta) {
         Minecraft mc = Minecraft.getInstance();
@@ -36,6 +37,7 @@ final class HologramHud {
                 "fehlt " + missing, "falsch " + wrong, "Zustand " + state,
                 unknown > 0 ? "nicht geladen " + unknown : null,
                 layerLine(check),
+                "Platzierhilfe: " + hologram.guard().label,
         };
         int width = 0;
         for (String r : rows) if (r != null) width = Math.max(width, font.width(r));
@@ -56,7 +58,22 @@ final class HologramHud {
         g.text(font, rows[4], x, y, YELLOW, true); y += line;
         if (rows[5] != null) { g.text(font, rows[5], x, y, GREY, true); y += line; }
         if (rows[6] != null) { g.text(font, rows[6], x, y, CYAN, true); y += line; }
+        g.text(font, rows[7], x, y, hologram.guard() == io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard.OFF ? GREY : CYAN, true); y += line;
         if (finder != null) g.text(font, finder, x, y, 0xFFFFFFFF, true);
+        aimLine(g, mc);
+    }
+
+    /** Below the crosshair: what belongs where the player aims and how to click it. */
+    private void aimLine(GuiGraphicsExtractor g, Minecraft mc) {
+        PlacementAssist.Aim aim = assist.aim();
+        if (aim == null || mc.gui.screen() != null) return;
+        var font = mc.font;
+        String text = aim.advice();
+        int max = g.guiWidth() - 20;
+        if (font.width(text) > max) text = font.plainSubstrByWidth(text, max - 6) + "…";
+        int w = font.width(text), cx = g.guiWidth() / 2, y = g.guiHeight() / 2 + 12;
+        g.fill(cx - w / 2 - 3, y - 2, cx + w / 2 + 3, y + font.lineHeight + 1, 0x90000000);
+        g.centeredText(font, text, cx, y, aim.color());
     }
 
     /** "Ebene 70 (nur diese): 12 / 40 richtig, 28 offen". */

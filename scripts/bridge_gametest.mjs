@@ -101,5 +101,10 @@ function hologram(logFile, cells) {
   const finder = [...log.matchAll(/\[Bauplaner\] (Nächster Fehler bei -?\d+ (-?\d+) -?\d+|Keine Fehler in geladenen Chunks)/g)].map(m => m[2] ?? 'keiner');
   const anchorY = Number(readFileSync(join(dir, 'anchor.txt'), 'utf8').trim().split(' ')[1]);
   assert.deepEqual(finder.slice(-2), [String(anchorY), 'keiner'], 'Fehlerfinder bleibt in der gewählten Ebene');
-  console.log(`Hologramm bestanden: ${planned} Planblöcke, Fortschritt ${placed[0]} % → ${built[0]} % nach dem Setzen des fehlenden Blocks, Drehen, Speichern, Materialliste (${material[1][0]} offen nach Teilabriss) und Ebenenmodus geprüft.`);
+  // Stage 3: placement helper (the client test throws if a block was placed or broken against the rules).
+  assert.equal(readFileSync(join(dir, 'platzierhilfe.txt'), 'utf8').trim(), 'Fail Fail', 'beide falschen Klicks abgewiesen');
+  assert.match(log, /\[Platzierhilfe\] Richtigen Block genommen: .+ – nochmal klicken/);
+  assert.match(log, /\[Platzierhilfe\] Nicht gesetzt – Auf den Block darunter klicken/);
+  assert.match(log, /\[Platzierhilfe\] Geschützt: richtig gesetzter Planblock/);
+  console.log(`Hologramm bestanden: ${planned} Planblöcke, Fortschritt ${placed[0]} % → ${built[0]} % nach dem Setzen des fehlenden Blocks, Drehen, Speichern, Materialliste (${material[1][0]} offen nach Teilabriss), Ebenenmodus und Platzierhilfe (falscher Block, liegender Stamm, Abbauschutz) geprüft.`);
 }

@@ -33,8 +33,12 @@ final class HologramKeys {
     private final KeyMapping layers = key("layers", InputConstants.KEY_NUMPAD6);
     private final KeyMapping layerUp = key("layer_up", InputConstants.KEY_NUMPAD9);
     private final KeyMapping layerDown = key("layer_down", InputConstants.KEY_NUMPAD3);
+    private final KeyMapping pick = key("pick", InputConstants.KEY_NUMPAD8);
+    /** Unbound by default (every numpad key near it is taken in Philipp's modpack); menu J and command work too. */
+    private final KeyMapping guard = key("guard", InputConstants.UNKNOWN.getValue());
+    private final PlacementAssist assist;
 
-    HologramKeys(Hologram hologram) { this.hologram = hologram; }
+    HologramKeys(Hologram hologram, PlacementAssist assist) { this.hologram = hologram; this.assist = assist; }
 
     private static KeyMapping key(String name, int code) {
         return KeyMappingHelper.registerKeyMapping(new KeyMapping("key.bauplaner_bridge." + name, InputConstants.Type.KEYBOARD, code, CATEGORY));
@@ -64,6 +68,8 @@ final class HologramKeys {
         while (layers.consumeClick()) if (active) { hologram.cycleLayers(); overlay(mc, layerText()); }
         while (layerUp.consumeClick()) if (active) { hologram.stepLayer(1); overlay(mc, layerText()); }
         while (layerDown.consumeClick()) if (active) { hologram.stepLayer(-1); overlay(mc, layerText()); }
+        while (pick.consumeClick()) if (active) assist.pick(mc);
+        while (guard.consumeClick()) { hologram.setGuard(hologram.guard().next()); overlay(mc, "Platzierhilfe: " + hologram.guard().label); }
         while (here.consumeClick()) if (active) { hologram.moveTo(McCompat.targetBlock(mc)); overlay(mc, "Plan zum angeschauten Block verschoben"); }
     }
 
