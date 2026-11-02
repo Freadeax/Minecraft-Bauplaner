@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T20:30:03.485Z",
+  "updatedAt": "2026-11-02T20:42:10.000Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -5441,6 +5441,94 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-02T20:30:03.485Z"
+    },
+    {
+      "id": "QA-04",
+      "title": "Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage",
+      "phase": "P3",
+      "priority": "P0",
+      "status": "implemented",
+      "owner": "Claude (Thread „Große Testphase vorbereiten und betreuen“)",
+      "dependencies": [
+        "QA-01",
+        "STAB-01",
+        "GAME-07"
+      ],
+      "scope": [
+        "apps/web/src/testing/",
+        "apps/web/src/app/diagnostics.ts",
+        "scripts/render_testplan.mjs",
+        "docs/testing/TESTPLAN.md",
+        "docs/architecture/TESTPHASE.md",
+        ".github/ISSUE_TEMPLATE/",
+        "tests/testphase.test.mjs",
+        "tests/e2e/testphase.e2e.mjs",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Diagnostics.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramDiagnose.java"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "QA-04-S01",
+          "title": "Testplan (eine Quelle: testplan.ts → TESTPLAN.md) mit Kern-/vertieften Fällen für alle Planer-Bereiche und die Mod.",
+          "done": true
+        },
+        {
+          "id": "QA-04-S02",
+          "title": "Seite #/testphase: Checklisten mit Protokoll im Browser, Protokoll-Export, Fehlerbericht mit automatischer Diagnose (Umgebung, Fehlerprotokoll, Konsole, Seiten) und GitHub-Issue-Vorbelegung.",
+          "done": true
+        },
+        {
+          "id": "QA-04-S03",
+          "title": "Mod: /bauplaner diagnose (Datei + Zwischenablage, geschwärzt) mit Tastenkonflikten, Shader, Hologramm-Zustand, Logauszug.",
+          "done": true
+        },
+        {
+          "id": "QA-04-S04",
+          "title": "GitHub-Issue-Formulare „Testphase: Planer“ und „Testphase: Mod“.",
+          "done": true
+        },
+        {
+          "id": "QA-04-S05",
+          "title": "Testphase starten (alle laufenden Blöcke auf main, Mod-Version mit diagnose veröffentlicht), Tester einladen.",
+          "done": false
+        },
+        {
+          "id": "QA-04-S06",
+          "title": "Eingehende Berichte sichten, beheben, Testprotokolle auswerten; Abschluss mit Liste der offenen Punkte.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Jeder Kernfall ist ohne Vorwissen nachspielbar und nennt ein beobachtbares Ergebnis.",
+        "Ein Fehlerbericht aus dem Planer enthält Build, Browser, Grafik und Fehlerprotokoll, aber keine Projektdaten.",
+        "Der Mod-Diagnosebericht nennt Version, Loader, Modliste, Tastenkonflikte und Hologramm-Zustand; Benutzerordner und Adressen sind geschwärzt."
+      ],
+      "next": "Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/testphase.test.mjs",
+          "note": "Testplan-Konsistenz, Protokoll, Fehlerbericht, Issue-Adresse gegen die Vorlage."
+        },
+        {
+          "path": "tests/e2e/testphase.e2e.mjs",
+          "note": "Checklisten, Neuladen, Fehlerbericht mit echtem Fehler und Konsole im Chromium."
+        },
+        {
+          "path": "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/DiagnosticsTest.java",
+          "note": "Logauswahl, Schwärzen, Berichtstext."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Abnahme durch Tester steht aus (ist Zweck der Testphase)."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-02T20:42:10.000Z"
     }
   ],
   "events": [
@@ -9601,6 +9689,77 @@
           "done": 4,
           "total": 5,
           "next": "Abnahme durch Philipp (S05); denkbar: gedrehte Projektlagen auf der Weltkarte, damit gedrehte Hologramme übernommen werden können."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T20:42:09.301Z",
+      "kind": "progress",
+      "items": [
+        "QA-04"
+      ],
+      "summary": "Große Testphase: Testplan, Seite #/testphase mit Protokoll und Fehlerbericht mit Diagnose, Mod /bauplaner diagnose, Issue-Vorlagen",
+      "files": [
+        ".github/ISSUE_TEMPLATE/config.yml",
+        ".github/ISSUE_TEMPLATE/testphase-mod.yml",
+        ".github/ISSUE_TEMPLATE/testphase-planer.yml",
+        "apps/web/src/app/CommandPalette.tsx",
+        "apps/web/src/app/ErrorBoundary.tsx",
+        "apps/web/src/app/Shell.tsx",
+        "apps/web/src/app/diagnostics.ts",
+        "apps/web/src/app/nav.ts",
+        "apps/web/src/app/router.ts",
+        "apps/web/src/main.tsx",
+        "apps/web/src/testing/TestphaseView.tsx",
+        "apps/web/src/testing/protocol.ts",
+        "apps/web/src/testing/testphase.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/SystemView.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/TESTPHASE.md",
+        "docs/testing/TESTPLAN.md",
+        "mods/bauplaner-bridge/README.md",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramDiagnose.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Diagnostics.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/DiagnosticsTest.java",
+        "package.json",
+        "scripts/render_testplan.mjs",
+        "tests/e2e/testphase.e2e.mjs",
+        "tests/testphase.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "QA-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T20:42:10.000Z",
+      "kind": "progress",
+      "items": [
+        "QA-04"
+      ],
+      "summary": "Testplan um die offenen Abnahmen der Novemberrunde ergänzt (65 Fälle), Teststand festgehalten",
+      "files": [
+        "apps/web/src/testing/testplan.ts",
+        "docs/COMMUNICATION.md",
+        "docs/architecture/TESTPHASE.md",
+        "docs/testing/TESTPLAN.md"
+      ],
+      "snapshot": [
+        {
+          "id": "QA-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist."
         }
       ]
     }

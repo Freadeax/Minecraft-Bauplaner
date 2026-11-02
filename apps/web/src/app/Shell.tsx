@@ -42,7 +42,7 @@ export function Shell({ route, children }: { route: Route; children: ReactNode }
     <div id="inhalt" tabIndex={-1} className="content">{children}</div>
     <footer className="site-footer">
       <span><strong>LMNT BUILD STUDIO</strong> · Mit Plan gebaut. Alles bleibt lokal in deinem Browser.</span>
-      <nav aria-label="Weitere Links"><a href="#/mod">Minecraft-Mod</a><a href="#/system">Systemcheck</a><a href={REPO_URL} target="_blank" rel="noreferrer">GitHub ↗</a></nav>
+      <nav aria-label="Weitere Links"><a href="#/mod">Minecraft-Mod</a><a href="#/system">Systemcheck</a><a href="#/testphase">Testphase</a><a href={REPO_URL} target="_blank" rel="noreferrer">GitHub ↗</a></nav>
       <span className="footer-legal">Unabhängiges Projekt · kein offizielles Minecraft-Produkt</span>
     </footer>
     <nav className="bottom-nav" aria-label="Hauptnavigation mobil">

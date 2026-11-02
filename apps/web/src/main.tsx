@@ -13,6 +13,8 @@ import { LibraryView } from './views/LibraryView';
 import { ProjectView } from './views/project/ProjectView';
 import { ViewerView } from './views/ViewerView';
 import { SystemView } from './views/SystemView';
+import { TestphaseView } from './testing/TestphaseView';
+import { installDiagnostics } from './app/diagnostics';
 import { WorldMapView } from './views/map/WorldMapView';
 import { ModView } from './views/mod/ModView';
 import { WorkshopPage } from './editor/WorkshopPage';
@@ -30,6 +32,7 @@ function Page({ route }: { route: Route }) {
     case 'library': return <LibraryView projectId={route.projectId} page={route.page} id={route.id} sub={route.sub} search={route.search} />;
     case 'viewer': return <main><ViewerView /></main>;
     case 'system': return <SystemView />;
+    case 'testphase': return <TestphaseView search={route.search} />;
     case 'map': return <WorldMapView search={route.search} />;
     case 'mod': return <ModView search={route.search} />;
     case 'workshop': return <WorkshopPage key={route.versionId ?? 'neu'} versionId={route.versionId} />;
@@ -48,5 +51,6 @@ function App() {
 }
 
 installErrorCapture();
+installDiagnostics();
 initTextures();
 createRoot(document.getElementById('root')!).render(<App />);

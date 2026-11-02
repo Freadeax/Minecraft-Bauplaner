@@ -2982,3 +2982,62 @@ Baustand aus dem Spiel auf der Live-Karte (Mod 0.7.1 GET /v1/scan, Plankoordinat
 - `tests/game-check.test.mjs`
 - `tests/livelink.test.mjs`
 
+## 2026-11-02T20:42:09.301Z · progress
+
+**Aufgaben:** QA-04
+
+Große Testphase: Testplan, Seite #/testphase mit Protokoll und Fehlerbericht mit Diagnose, Mod /bauplaner diagnose, Issue-Vorlagen
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| QA-04 | 🧩 Implementiert · Abnahme offen | 4/6 | Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist. |
+
+**Geänderte Dateien:**
+
+- `.github/ISSUE_TEMPLATE/config.yml`
+- `.github/ISSUE_TEMPLATE/testphase-mod.yml`
+- `.github/ISSUE_TEMPLATE/testphase-planer.yml`
+- `apps/web/src/app/CommandPalette.tsx`
+- `apps/web/src/app/ErrorBoundary.tsx`
+- `apps/web/src/app/Shell.tsx`
+- `apps/web/src/app/diagnostics.ts`
+- `apps/web/src/app/nav.ts`
+- `apps/web/src/app/router.ts`
+- `apps/web/src/main.tsx`
+- `apps/web/src/testing/TestphaseView.tsx`
+- `apps/web/src/testing/protocol.ts`
+- `apps/web/src/testing/testphase.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/SystemView.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/TESTPHASE.md`
+- `docs/testing/TESTPLAN.md`
+- `mods/bauplaner-bridge/README.md`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramDiagnose.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Diagnostics.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/DiagnosticsTest.java`
+- `package.json`
+- `scripts/render_testplan.mjs`
+- `tests/e2e/testphase.e2e.mjs`
+- `tests/testphase.test.mjs`
+
+## 2026-11-02T20:42:10.000Z · progress
+
+**Aufgaben:** QA-04
+
+Testplan um die offenen Abnahmen der Novemberrunde ergänzt (65 Fälle), Teststand festgehalten
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| QA-04 | 🧩 Implementiert · Abnahme offen | 4/6 | Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `docs/COMMUNICATION.md`
+- `docs/architecture/TESTPHASE.md`
+- `docs/testing/TESTPLAN.md`
+

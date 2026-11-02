@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-02T20:30:03.485Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-02T20:42:10.000Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-02T20:30:03.485Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 15 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 41 |
+| 🧩 Implementiert · Abnahme offen | 42 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -164,6 +164,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [BASE-01](#base-01) | Basisplaner: ganze Survival-Basis aus Funktionszonen (Platz, Lager, Schmiede, Verzauberung, XP-Farm, Küche, Halle, Felder, Tierfarm, Hafen, Händler), Wegenetz mit Laternen, Wasserseite, Spielprüfungen je Zone, Bauphasen | 🧩 Implementiert · Abnahme offen | 5/6 | BUILD-05, TERRAIN-01, BLOCK-02 | ausstehend | ausstehend |
 | [SPLIT-01](#split-01) | Gebäude aus großen Modellen herauslösen: Gebäude, Felder, Gehege und Wegenetz erkennen, einzeln oder zusammen als Bauteile speichern, als Projekt an alter Stelle aufteilen | 🧩 Implementiert · Abnahme offen | 4/5 | LIB-04, WORLD-IMPORT-01, PERF-04 | ausstehend | ausstehend |
 | [MAP-05](#map-05) | Planung auf der Live-Karte vertiefen: Baustand aus dem Spiel (Mod 0.7.1, GET /v1/scan), Ebenen und Abweichungen auf der Karte, bestätigte Schritte abhaken, Bauabschnitte wählen, Weltplan automatisch abgleichen, Hologramm und BlueMap aus dem Kontextmenü | 🧩 Implementiert · Abnahme offen | 4/5 | MAP-03, MAP-04, GAME-07, GAME-01 | ausstehend | ausstehend |
+| [QA-04](#qa-04) | Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage | 🧩 Implementiert · Abnahme offen | 4/6 | QA-01, STAB-01, GAME-07 | ausstehend | ausstehend |
 
 ## P4: Optionale Zusammenarbeit und Integrationen
 
@@ -1860,6 +1861,29 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/e2e/game-progress.e2e.mjs](../tests/e2e/game-progress.e2e.mjs) — Abschnitt wählen, Baustand holen, Ebenenfilter, Kartenspalten, Abhaken + Rückgängig, Bauen-Reiter, Weltplan-Autoabgleich, Hologramm per Kontextmenü, alte Mod.; [tests/game-check.test.mjs](../tests/game-check.test.mjs) — layerProgress, deviationColumns, stepStatusCounts.; [scripts/bridge_gametest.mjs](../scripts/bridge_gametest.mjs) — Echter Spieltest Fabric/NeoForge: Baustand = Live-Zählung, falscher Block an der erwarteten Stelle, gedreht in Plankoordinaten.; [docs/architecture/LIVE_LINK.md](architecture/LIVE_LINK.md) — Protokoll, Oberfläche, Grenzen (BlueMap http).
 
 **Dateiumfang:** `apps/web/src/views/map/`, `apps/web/src/views/project/GameCheckPanel.tsx`, `apps/web/src/map.css`, `packages/domain/src/`, `mods/bauplaner-bridge/`, `downloads/mod/`, `apps/web/src/views/mod/releases.json`, `scripts/bridge_gametest.mjs`, `tests/`, `docs/`. **Abhängigkeiten:** MAP-03, MAP-04, GAME-07, GAME-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### QA-04
+
+**Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Große Testphase vorbereiten und betreuen“) · Aktualisiert: 2026-11-02T20:42:10.000Z
+
+- [x] QA-04-S01: Testplan (eine Quelle: testplan.ts → TESTPLAN.md) mit Kern-/vertieften Fällen für alle Planer-Bereiche und die Mod.
+- [x] QA-04-S02: Seite #/testphase: Checklisten mit Protokoll im Browser, Protokoll-Export, Fehlerbericht mit automatischer Diagnose (Umgebung, Fehlerprotokoll, Konsole, Seiten) und GitHub-Issue-Vorbelegung.
+- [x] QA-04-S03: Mod: /bauplaner diagnose (Datei + Zwischenablage, geschwärzt) mit Tastenkonflikten, Shader, Hologramm-Zustand, Logauszug.
+- [x] QA-04-S04: GitHub-Issue-Formulare „Testphase: Planer“ und „Testphase: Mod“.
+- [ ] QA-04-S05: Testphase starten (alle laufenden Blöcke auf main, Mod-Version mit diagnose veröffentlicht), Tester einladen.
+- [ ] QA-04-S06: Eingehende Berichte sichten, beheben, Testprotokolle auswerten; Abschluss mit Liste der offenen Punkte.
+
+**Abnahme:** Jeder Kernfall ist ohne Vorwissen nachspielbar und nennt ein beobachtbares Ergebnis. Ein Fehlerbericht aus dem Planer enthält Build, Browser, Grafik und Fehlerprotokoll, aber keine Projektdaten. Der Mod-Diagnosebericht nennt Version, Loader, Modliste, Tastenkonflikte und Hologramm-Zustand; Benutzerordner und Adressen sind geschwärzt.
+
+**Nächste Aktion:** Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist.
+
+**Prüfstand:** Abnahme durch Tester steht aus (ist Zweck der Testphase).
+
+**Nachweise:** [tests/testphase.test.mjs](../tests/testphase.test.mjs) — Testplan-Konsistenz, Protokoll, Fehlerbericht, Issue-Adresse gegen die Vorlage.; [tests/e2e/testphase.e2e.mjs](../tests/e2e/testphase.e2e.mjs) — Checklisten, Neuladen, Fehlerbericht mit echtem Fehler und Konsole im Chromium.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/DiagnosticsTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/DiagnosticsTest.java) — Logauswahl, Schwärzen, Berichtstext.
+
+**Dateiumfang:** `apps/web/src/testing/`, `apps/web/src/app/diagnostics.ts`, `scripts/render_testplan.mjs`, `docs/testing/TESTPLAN.md`, `docs/architecture/TESTPHASE.md`, `.github/ISSUE_TEMPLATE/`, `tests/testphase.test.mjs`, `tests/e2e/testphase.e2e.mjs`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Diagnostics.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramDiagnose.java`. **Abhängigkeiten:** QA-01, STAB-01, GAME-07. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

@@ -1,0 +1,52 @@
+name: "Testphase: Planer (Website)"
+description: Fehler oder Auffälligkeit im Planer. Am einfachsten über „Testphase → Fehler melden“ im Planer, dann ist alles vorausgefüllt.
+title: "[Planer] "
+labels: ["testphase", "planer"]
+body:
+  - type: markdown
+    attributes:
+      value: "Danke fürs Testen. Bitte keine privaten Welten oder Zugangsdaten anhängen; die Diagnose aus dem Planer enthält keine Projektdaten."
+  - type: input
+    id: bereich
+    attributes:
+      label: Bereich
+      placeholder: "z. B. Projekt: Editor, Material, Bauen, Export"
+  - type: dropdown
+    id: schwere
+    attributes:
+      label: Schwere
+      options:
+        - Absturz / Datenverlust
+        - Funktion geht nicht
+        - Falsches Ergebnis
+        - Darstellung / Text
+        - Idee / Wunsch
+  - type: input
+    id: testfall
+    attributes:
+      label: Testfall
+      placeholder: "z. B. PROJ-04 (leer lassen, wenn keiner passt)"
+  - type: textarea
+    id: schritte
+    attributes:
+      label: Was ich gemacht habe
+      description: Schritt für Schritt, so dass es jemand nachmachen kann.
+    validations:
+      required: true
+  - type: textarea
+    id: erwartet
+    attributes:
+      label: Erwartet
+  - type: textarea
+    id: tatsaechlich
+    attributes:
+      label: Tatsächlich
+      description: Fehlermeldung wörtlich, falls vorhanden. Bildschirmfoto gern anhängen.
+    validations:
+      required: true
+  - type: textarea
+    id: diagnose
+    attributes:
+      label: Diagnose
+      description: Aus dem Planer („Testphase → Fehler melden“). Wenn die Adresse zu lang war, hier den gespeicherten Bericht einfügen.
+      render: markdown

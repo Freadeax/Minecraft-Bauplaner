@@ -34,6 +34,7 @@ const PAGES: readonly Omit<Entry, 'key' | 'group'>[] = [
   { label: 'Generatoren', hint: 'Haus, Turm, Mauer, Brücke, Dach nach Maß', href: '#/bibliothek/generatoren', icon: 'library' },
   { label: 'Werkstatt', hint: 'Blockeditor: neues Bauteil Block für Block bauen', href: '#/werkstatt/neu', icon: 'editor' },
   { label: 'Systemcheck', hint: 'Auslieferung, Speicher, Datencheck, Fehlerprotokoll', href: '#/system', icon: 'system' },
+  { label: 'Testphase', hint: 'Checklisten für Planer und Mod, Testprotokoll, Fehler melden', href: '#/testphase', icon: 'system' },
 ];
 
 /** Klein, ohne Akzente: „Brücke“ findet man auch mit „brucke“. */

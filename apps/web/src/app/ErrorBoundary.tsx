@@ -48,7 +48,7 @@ export class ErrorBoundary extends Component<Props, State> {
         <button onClick={() => location.reload()}>Seite neu laden</button>
         <a className="button" href="#/">Zur Projektzentrale</a>
         <button onClick={() => void this.copy()}>{copied ? 'Bericht kopiert ✓' : 'Fehlerbericht kopieren'}</button>
-        <a className="button" href="#/system">Systemcheck</a>
+        <a className="button" href="#/testphase?melden">Fehler melden</a>
       </div>
     </section></div>;
   }

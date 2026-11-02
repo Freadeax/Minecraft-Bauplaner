@@ -21,12 +21,14 @@ import { useEffect, useState } from 'react';
  *   #/werkstatt/neu | #/werkstatt/<versionId>  Blockeditor für ein neues oder vorhandenes Bauteil (EDIT-02)
  *   #/welt                 Ausschnitt aus Regionsdateien der eigenen Welt übernehmen (WORLD-IMPORT-01)
  *   #/system               Systemcheck (Auslieferung, Speicher, Datencheck, Fehlerprotokoll)
+ *   #/testphase[?melden[=<fall>]]  Testphase: Checklisten, Testprotokoll, Fehler melden mit Diagnose (QA-04)
  */
 export type Route =
   | { readonly view: 'projects' }
   | { readonly view: 'library'; readonly projectId?: string; readonly page?: LibraryPage; readonly id?: string; readonly sub?: string; readonly search?: string }
   | { readonly view: 'viewer' }
   | { readonly view: 'system' }
+  | { readonly view: 'testphase'; readonly search?: string }
   | { readonly view: 'map'; readonly search?: string }
   | { readonly view: 'mod'; readonly search?: string }
   | { readonly view: 'workshop'; readonly versionId: string | null }
@@ -66,6 +68,7 @@ export function parseRoute(hash: string): Route {
   }
   if (parts[0] === 'betrachter' && parts.length === 1) return { view: 'viewer' };
   if (parts[0] === 'system' && parts.length === 1) return { view: 'system' };
+  if (parts[0] === 'testphase' && parts.length === 1) return { view: 'testphase', ...(search && { search }) };
   if (parts[0] === 'mod' && parts.length === 1) return { view: 'mod', ...(search && { search }) };
   if (parts[0] === 'welt' && parts.length === 1) return { view: 'world' };
   if (parts[0] === 'karte' && parts.length === 1) return { view: 'map', ...(search && { search }) };
@@ -85,6 +88,7 @@ export function href(route: Route): string {
     }
     case 'viewer': return '#/betrachter';
     case 'system': return '#/system';
+    case 'testphase': return `#/testphase${route.search ? `?${route.search}` : ''}`;
     case 'mod': return `#/mod${route.search ? `?${route.search}` : ''}`;
     case 'world': return '#/welt';
     case 'map': return `#/karte${route.search ? `?${route.search}` : ''}`;

@@ -71,6 +71,8 @@ Die passende Datei `bauplaner-bridge-<loader>-26.3-<Version>.jar` (nicht die `-s
 
 Weitere Befehle: `/bauplaner status`, `/bauplaner abbrechen`, `/bauplaner plaene`.
 
+Bei Problemen `/bauplaner diagnose` (Fabric, NeoForge): schreibt einen Diagnosebericht nach `<Instanzordner>/bauplaner/diagnose/` und in die Zwischenablage (Mod-Version, Loader, Mods, Tastenkonflikte, Shader, Hologramm-Zustand, Auszug aus `logs/latest.log`; Benutzerordner, Server-Adressen und Codes geschwärzt). Den Text in ein GitHub-Issue „Testphase: Mod“ einfügen.
+
 ### Hologramm (Fabric, ab 0.2.0; Texturen, Materialliste, Ebenen ab 0.3.0; Platzierhilfe ab 0.4.0)
 
 1. Plan wie oben nach `bauplaner/plans/` legen.

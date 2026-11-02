@@ -1,0 +1,51 @@
+name: "Testphase: Mod (im Spiel)"
+description: Fehler mit der Bauplaner-Mod. Vorher im Spiel `/bauplaner diagnose` eingeben, der Bericht liegt dann in der Zwischenablage.
+title: "[Mod] "
+labels: ["testphase", "mod"]
+body:
+  - type: markdown
+    attributes:
+      value: "Danke fürs Testen. Der Diagnosebericht schwärzt Benutzerordner, Server-Adressen und Codes; bitte trotzdem kurz durchlesen."
+  - type: dropdown
+    id: loader
+    attributes:
+      label: Loader
+      options:
+        - Fabric 26.3
+        - NeoForge 26.3
+        - Forge 26.3
+        - Paper-Plugin (Server)
+    validations:
+      required: true
+  - type: dropdown
+    id: wo
+    attributes:
+      label: Wo
+      options:
+        - Einzelspieler
+        - Mehrspieler-Server
+        - Beides
+  - type: input
+    id: testfall
+    attributes:
+      label: Testfall
+      placeholder: "z. B. MOD-04 oder LIVE-02"
+  - type: textarea
+    id: schritte
+    attributes:
+      label: Was ich gemacht habe
+    validations:
+      required: true
+  - type: textarea
+    id: tatsaechlich
+    attributes:
+      label: Was passiert ist (statt dem Erwarteten)
+      description: Chat-Meldungen wörtlich; bei Absturz die Datei aus crash-reports/ anhängen.
+    validations:
+      required: true
+  - type: textarea
+    id: diagnose
+    attributes:
+      label: Diagnose (/bauplaner diagnose)
+      description: Inhalt der Zwischenablage bzw. der Datei aus bauplaner/diagnose/.
+      render: markdown

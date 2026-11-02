@@ -36,6 +36,7 @@ public final class HologramClient {
     /** @param loader "fabric" or "neoforge" (reported to the website); @param version mod version */
     public HologramClient(Path root, String loader, String version) {
         hologram = new Hologram(root);
+        HologramDiagnose.init(loader, version);
         link = new LiveLink(root, hologram, loader, version, McCompat.gameVersion());
         marks = new MarksRenderer(link);
         link.loadMarks();

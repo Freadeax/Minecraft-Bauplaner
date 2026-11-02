@@ -172,7 +172,8 @@ export function SystemView() {
       {errors.length === 0 ? <p className="muted">Keine Fehler aufgetreten.</p>
         : <ol className="system-errors">{errors.map((e, i) => <li key={i}><small>{new Date(e.at).toLocaleTimeString('de-DE')} · {e.route}</small><code>{e.message}</code></li>)}</ol>}
       <div className="button-row"><button onClick={() => void copyReport()}>Fehlerbericht kopieren</button>
-        {errors.length > 0 && <button onClick={() => clearErrors()}>Protokoll leeren</button>}</div>
+        {errors.length > 0 && <button onClick={() => clearErrors()}>Protokoll leeren</button>}
+        <a className="button" href="#/testphase?melden">Fehler melden (mit Diagnose)</a></div>
     </section>
   </div>;
 }
