@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-02T07:00:21.077Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-02T08:13:54.837Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-02T07:00:21.077Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 16 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 24 |
+| 🧩 Implementiert · Abnahme offen | 25 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -27,6 +27,7 @@ Stand: 2026-11-02T07:00:21.077Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 - **EDIT-02 · Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Picking an 3D-Blockflächen; Registerlücken mit PROFILE-01-Serverreport schließen; Spielprüfung.
 - **GAME-05 · NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen.
 - **EDIT-03 · Werkstatt vertiefen: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Ebenenübersicht und Tastenkürzel** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Picking an 3D-Blockflächen; Spielprüfung der Schablonen-Zustände (Tür, Treppe, Laterne).
+- **GFX-01 · Grafik vertiefen: Minecraft-Licht, Eckschatten, Sonne mit Schatten, Nacht, Spawnprüfung, sortiertes Glas und 32³-Abschnitte für große Modelle** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Prüfung auf echten Geräten und Browsern; danach Biomfarben und leuchtende Blockentities.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -117,6 +118,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | ⏳ Offen | 0/2 | QA-01, VIEW-02 | ausstehend | ausstehend |
 | [UI-02](#ui-02) | App-Hülle, Navigation und Handyoberfläche überarbeiten | ✅ Im beschriebenen Umfang geprüft | 4/4 | UI-01, QA-01 | ausstehend | ausstehend |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen | 5/6 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
+| [GFX-01](#gfx-01) | Grafik vertiefen: Minecraft-Licht, Eckschatten, Sonne mit Schatten, Nacht, Spawnprüfung, sortiertes Glas und 32³-Abschnitte für große Modelle | 🧩 Implementiert · Abnahme offen | 5/6 | VIEW-02 | ausstehend | ausstehend |
 | [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-02, VIEW-01 | ausstehend | ausstehend |
 | [EDIT-02](#edit-02) | Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen | 🧩 Implementiert · Abnahme offen | 5/5 | VIEW-01, STORE-02 | ausstehend | ausstehend |
 | [EDIT-03](#edit-03) | Werkstatt vertiefen: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Ebenenübersicht und Tastenkürzel | 🧩 Implementiert · Abnahme offen | 5/5 | EDIT-02 | ausstehend | ausstehend |
@@ -842,6 +844,29 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/blocks.test.mjs](../tests/blocks.test.mjs) — ZIP, Modelle, Formen aller 1288 Blöcke, Mesh/Kulling, Zustandsregeln.; [tests/e2e/textures.e2e.mjs](../tests/e2e/textures.e2e.mjs) — Texturdialog mit synthetischer Quelle, Speicherung, Entfernen, keine Mojang-Anfrage ohne Klick.; [docs/architecture/BLOCK_MODELS.md](architecture/BLOCK_MODELS.md) — Lizenzentscheidung, Module, Grenzen.
 
 **Dateiumfang:** `apps/web/src/blockmodels/`, `apps/web/src/viewer/`, `apps/web/src/thumbnail/`, `apps/web/src/schem/`, `packages/voxel/src/blockRegistry.ts`, `packages/voxel/src/states.ts`, `scripts/gen_block_data.py`. **Abhängigkeiten:** PROFILE-01, VIEW-01. **Alte IDs:** VIEW-03, B16.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### GFX-01
+
+**Grafik vertiefen: Minecraft-Licht, Eckschatten, Sonne mit Schatten, Nacht, Spawnprüfung, sortiertes Glas und 32³-Abschnitte für große Modelle** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Grafik der Blockdarstellung vertiefen“ · Aktualisiert: 2026-11-02T08:13:54.837Z
+
+- [x] GFX-01-S01: Licht wie im Spiel: Leuchtwerte je Blockzustand, Himmels- und Blocklicht mit Dämpfung, weiches Licht und Eckschatten je Eckpunkt.
+- [x] GFX-01-S02: Lichtmodi Tag/Sonne/Nacht/Flach im Shader ohne Neuaufbau; Sonnenschatten nach Uhrzeit; Menü „Licht“ mit Speicherung im Browser.
+- [x] GFX-01-S03: Spawnprüfung (Blocklicht 0, Boden, zwei freie Zellen; tagsüber/nachts) mit Kreuzen und Zählern.
+- [x] GFX-01-S04: Durchscheinende Flächen von hinten nach vorn sortiert; Standbilder mit festem Look.
+- [x] GFX-01-S05: 32³-Abschnitte mit Fingerabdruck: nur geänderte Abschnitte neu bauen, Picking über Position.
+- [ ] GFX-01-S06: Echte GPUs, Firefox/Safari, Handy-Leistung mit Schatten und Abgleich mit Spielbildern prüfen.
+
+**Abnahme:** Lichtwechsel baut keine Geometrie neu. Inkrementeller Aufbau ergibt dieselben Abschnitte wie ein vollständiger. Keine fremden Texturen; Licht nur aus eigenen Regeln und geladenen Quellen.
+
+**Nächste Aktion:** Prüfung auf echten Geräten und Browsern; danach Biomfarben und leuchtende Blockentities.
+
+**Prüfstand:** Node- und Chromium-Prüfung (Software-WebGL) bestanden; echte GPUs, Firefox/Safari und Geräte offen.
+
+**Nachweise:** [tests/graphics.test.mjs](../tests/graphics.test.mjs) — Leuchtwerte, Ausbreitung, AO, Licht je Eckpunkt, Spawnflächen, Abschnitte inkrementell = neu, Sortierung, Einstellungen.; [tests/e2e/graphics.e2e.mjs](../tests/e2e/graphics.e2e.mjs) — Chromium: Lichtmodi mit Helligkeitsvergleich, Schatten, Spawnprüfung, Speicherung, Abschnitte und Picking.; [docs/architecture/GRAPHICS.md](architecture/GRAPHICS.md) — Regeln, Messwerte, Grenzen.
+
+**Dateiumfang:** `apps/web/src/blockmodels/light.ts`, `apps/web/src/blockmodels/graphics.ts`, `apps/web/src/blockmodels/mesh.ts`, `apps/web/src/blockmodels/threeMesh.ts`, `apps/web/src/blockmodels/blocks.css`, `apps/web/src/viewer/`, `apps/web/src/thumbnail/`, `tests/graphics.test.mjs`, `tests/e2e/graphics.e2e.mjs`, `docs/architecture/GRAPHICS.md`. **Abhängigkeiten:** VIEW-02. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

@@ -1774,3 +1774,32 @@ Echte Litematic-Dateien: unkomprimiert/zlib, große Modelle bis 1 Mio. Blöcke, 
 - `tests/e2e/litematic.e2e.mjs`
 - `tests/litematic.test.mjs`
 
+## 2026-11-02T08:13:54.837Z · progress
+
+**Aufgaben:** GFX-01
+
+Grafik vertieft: Minecraft-Licht (Leuchtwerte, Himmels-/Blocklicht, weiches Licht, Eckschatten), Lichtmodi Tag/Sonne mit Schatten/Nacht/Flach, Spawnprüfung, sortiertes Glas, 32³-Abschnitte mit Wiederverwendung. Node 517 (1 übersprungen), Chromium 95/95; echte GPUs/Firefox/Safari/Geräte offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GFX-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Prüfung auf echten Geräten und Browsern; danach Biomfarben und leuchtende Blockentities. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/blockmodels/blocks.css`
+- `apps/web/src/blockmodels/graphics.ts`
+- `apps/web/src/blockmodels/light.ts`
+- `apps/web/src/blockmodels/mesh.ts`
+- `apps/web/src/blockmodels/threeMesh.ts`
+- `apps/web/src/thumbnail/Thumb.tsx`
+- `apps/web/src/thumbnail/glShot.ts`
+- `apps/web/src/viewer/GraphicsMenu.tsx`
+- `apps/web/src/viewer/ThreeViewer.tsx`
+- `apps/web/src/viewer/sceneController.ts`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/BLOCK_MODELS.md`
+- `docs/architecture/GRAPHICS.md`
+- `tests/e2e/graphics.e2e.mjs`
+- `tests/graphics.test.mjs`
+

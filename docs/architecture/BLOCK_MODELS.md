@@ -24,7 +24,8 @@ Stand 01.11.2026. Betrachter, Katalogbilder, Bildergalerie, Ebenenpläne und Ver
 | `atlas.ts` | Texturatlas 16 px je Kachel (erstes Animationsbild), Einordnung opak/ausgeschnitten/durchscheinend. |
 | `pack.ts`, `packKit.ts` | Quellen laden, entpacken, speichern; nachgeladen (eigener Chunk), damit die Startseite klein bleibt. |
 | `assets.ts`, `TexturePanel.tsx` | Zustand „Eigene Formen“ / „Originaltexturen“, Dialog in der Kopfzeile, Hinweis im Betrachter. |
-| `threeMesh.ts` | three.js-Shader (Atlas, Alpha-Test, Kanten nur ohne Texturen), Picking Dreieck → Viereck → Zelle. |
+| `threeMesh.ts` | three.js-Shader (Atlas, Alpha-Test, Kanten nur ohne Texturen, Lichtmodi, Sonnenschatten, Sortierung durchscheinender Flächen), Abschnitte, Picking Dreieck → Viereck → Zelle. |
+| `light.ts`, `graphics.ts` | Minecraft-Licht (Leuchtwerte, Ausbreitung, Spawnregeln) und Grafikeinstellungen – siehe [GRAPHICS](GRAPHICS.md) (GFX-01). |
 | `colors26.ts` | erzeugt: Durchschnittsfarben oben/Seite/unten und Silhouette je Block. |
 
 Standbilder (`thumbnail/glShot.ts`) nutzen einen einzigen geteilten Offscreen-WebGL-Kontext mit Parallelprojektion und 2× Überabtastung. Ohne WebGL bleiben 2D-Isometrie und Software-Ansicht als Rückfall.

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { VoxelPayload } from '../../../../packages/voxel/src/index.js';
 import { readyKit, useRenderKit } from '../blockmodels/assets';
+import { STILL_LOOK } from '../blockmodels/graphics';
 import type { RenderKit } from '../blockmodels/assets';
 import { renderShot } from './iso';
 import type { ShotOptions } from './iso';
@@ -43,7 +44,7 @@ function pump(): void {
 }
 
 const keyOf = (cacheKey: string, kit: RenderKit, options: ShotOptions, width: number, height: number) =>
-  `${cacheKey}:${kit.key}:${options.view ?? 'so'}:${options.cutY ?? ''}@${width}x${height}`;
+  `${cacheKey}:${kit.key}:${STILL_LOOK}:${options.view ?? 'so'}:${options.cutY ?? ''}@${width}x${height}`;
 
 async function render(payload: Pick<VoxelPayload, 'cells' | 'palette'>, width: number, height: number, kit: RenderKit, options: ShotOptions): Promise<string> {
   const module = await glModule();

@@ -13,6 +13,8 @@ import type { ShotView } from './views';
  * viewer with a parallel camera and hands back a PNG. Catalogue cards, the
  * image gallery and the layer plans all use it; dozens of cards never hold
  * more than this one context. Loaded lazily together with three.js.
+ * Light is the fixed still look (`STILL_LOOK`): Minecraft daylight with
+ * corner shading, independent of the viewer's light menu.
  */
 export interface GlShotOptions {
   readonly view?: ShotView;
@@ -108,6 +110,8 @@ export function renderGlCanvas(payload: Pick<VoxelPayload, 'cells' | 'palette'>,
   }
   camera.left = minX; camera.right = maxX; camera.bottom = minY; camera.top = maxY;
   camera.updateProjectionMatrix();
+  // Glass and water back to front, seen from far along the view direction.
+  if (mesh.translucent.quads) object.sortTranslucent(dir.clone().multiplyScalar(1e4));
 
   // Rendering at up to twice the size and scaling down smooths the nearest-sampled textures.
   const ratio = Math.min(2, globalThis.devicePixelRatio || 1), ss = Math.min(2, 4096 / Math.max(width * ratio, height * ratio));

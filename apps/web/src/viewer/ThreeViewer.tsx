@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Cell } from '../../../../packages/voxel/src/index.js';
 import { useRenderKit } from '../blockmodels/assets';
+import { useGraphics } from '../blockmodels/graphics';
 import { openTextureDialog } from '../blockmodels/TexturePanel';
 import { canvasFallback, newFallbackCamera } from '../canvasFallback';
 import type { FallbackHandle } from '../canvasFallback';
@@ -8,6 +9,7 @@ import { mix, stateColor } from '../colors';
 import { VIEWS } from './camera';
 import type { ViewName } from './camera';
 import { SPEED_STEPS } from './flight';
+import { GraphicsMenu } from './GraphicsMenu';
 import { SceneController } from './sceneController';
 import type { MeshStats, ViewerState } from './sceneController';
 import type { ViewerProps } from './types';
@@ -20,6 +22,7 @@ const fmt = (n: number) => n.toLocaleString('de-DE');
 
 export default function ThreeViewer({ payload, cells, onSelect, markFor, focus = null, drag = null, ghost = null, frameRequest = null }: ViewerProps) {
   const kit = useRenderKit();
+  const graphics = useGraphics();
   const host = useRef<HTMLDivElement>(null), canvasHost = useRef<HTMLDivElement>(null);
   const controller = useRef<SceneController | null>(null);
   const fallback = useRef<FallbackHandle | null>(null), fallbackCamera = useRef(newFallbackCamera());
@@ -38,6 +41,7 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
         hover: setHover, state: setState, lost: () => setLost(true),
       });
       controller.current = c; setSoftware(false);
+      c.setGraphics(graphics);
       return () => { controller.current = null; c.dispose(); };
     } catch { setSoftware(true); return undefined; }
   }, []);
@@ -61,6 +65,7 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
     return () => { fallback.current?.dispose(); fallback.current = null; };
   }, [payload, cells, markFor, software, kit]);
 
+  useEffect(() => { controller.current?.setGraphics(graphics); }, [graphics]);
   useEffect(() => { controller.current?.setFocusTarget(focus); }, [focus]);
   useEffect(() => { if (frameRequest) { controller.current?.focus(frameRequest.bounds); fallback.current?.focus(frameRequest.bounds); } }, [frameRequest]);
   useEffect(() => { controller.current?.setDragHandler(drag); }, [drag]);
@@ -80,7 +85,7 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
   return <div className={`scene${flying ? ' flying' : ''}`} ref={host}>
     <div className="canvas-host" ref={canvasHost} tabIndex={0} aria-label="3D-Ansicht (fokussierbar für Tastatursteuerung)"
       data-mode={software ? 'software' : state.mode} data-projection={state.projection} data-view={state.view ?? ''}
-      data-faces={stats?.quads ?? ''} data-blocks={stats?.blocks ?? ''} data-build-ms={stats ? stats.buildMs.toFixed(1) : ''} />
+      data-faces={stats?.quads ?? ''} data-spawn-day={stats?.spawnDay ?? ''} data-spawn-night={stats?.spawnNight ?? ''} data-blocks={stats?.blocks ?? ''} data-build-ms={stats ? stats.buildMs.toFixed(1) : ''} />
     <div className="viewer-tools" role="toolbar" aria-label="Ansicht">
       <div className="seg" role="group" aria-label="Blickrichtung">
         {VIEWS.map(v => <button key={v.id} title={`${v.title} (${v.key})`} aria-label={v.title} aria-pressed={state.view === v.id && !flying} onClick={() => setView(v.id)}>{v.label}</button>)}
@@ -88,11 +93,14 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
       {!software && <button title="Parallelprojektion ohne Perspektive (O)" aria-label="Parallelprojektion" aria-pressed={state.projection === 'orthographic'}
         onClick={() => controller.current?.setProjection(state.projection === 'perspective' ? 'orthographic' : 'perspective')}>⊞ <span>Ortho</span></button>}
       {!software && <button title="Freier Flug (V), Esc beendet" aria-label="Freier Flug" aria-pressed={flying} onClick={() => controller.current?.setFlight(!flying)}>✈ <span>Flug</span></button>}
+      {!software && <GraphicsMenu stats={stats} />}
       <button title={focus ? 'Auswahl fokussieren (F)' : 'Ganzes Bauwerk einpassen (F)'} aria-label={focus ? 'Auswahl fokussieren' : 'Ganzes Bauwerk einpassen'} onClick={doFocus}>◎ <span>{focus ? 'Auswahl' : 'Einpassen'}</span></button>
     </div>
     <div className="viewer-hud" aria-hidden="true">
       {hovered && hover ? <span><b>X {hover.position[0]} · Y {hover.position[1]} · Z {hover.position[2]}</b> {hovered.id}</span>
         : stats && !software ? <span>{fmt(stats.quads)} Flächen · {fmt(stats.blocks)} Blöcke</span> : null}
+      {graphics.spawn && stats && stats.spawnDay !== null && !software && <span className="spawn-hud">
+        Spawnflächen: <b className="spawn-day">{fmt(stats.spawnDay)}</b> tagsüber · <b className="spawn-night">{fmt(stats.spawnNight ?? 0)}</b> nachts</span>}
       {flying && <span className="hint">WASD bewegen · Leertaste/Shift hoch/runter · Ziehen: umsehen · Mausrad: Tempo {state.speed} B/s · Esc</span>}
     </div>
     {flying && <div className="flight-pad" role="group" aria-label="Flugsteuerung">

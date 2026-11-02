@@ -2,9 +2,11 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import type { BlockState, Bounds, Cell, Vec3 } from '../../../../packages/voxel/src/index.js';
 import type { RenderKit } from '../blockmodels/assets';
-import { buildBlockMesh } from '../blockmodels/mesh';
-import type { Mark } from '../blockmodels/mesh';
-import { BlockObject, blockMaterials } from '../blockmodels/threeMesh';
+import { sunDirection } from '../blockmodels/graphics';
+import type { GraphicsSettings } from '../blockmodels/graphics';
+import { buildSectionMesh } from '../blockmodels/mesh';
+import type { Mark, MeshSection, SpawnMap } from '../blockmodels/mesh';
+import { BlockObject, MODE_INDEX, SunShadow, blockMaterials, lookUniforms, spawnOverlay } from '../blockmodels/threeMesh';
 import type { BlockMaterials } from '../blockmodels/threeMesh';
 import { FOCUS_MIN_RADIUS, VIEWS, boundsCentre, boundsRadius, frameBounds, orthoZoom } from './camera';
 import type { ViewName } from './camera';
@@ -34,7 +36,13 @@ export interface DragHandler {
 export type GhostTone = 'free' | 'snap' | 'conflict';
 const GHOST_COLOR: Record<GhostTone, number> = { free: 0xffffff, snap: 0x5ff0b0, conflict: 0xff6b6b };
 
-export interface MeshStats { readonly blocks: number; readonly quads: number; readonly naiveQuads: number; readonly buildMs: number }
+export interface MeshStats {
+  readonly blocks: number; readonly quads: number; readonly naiveQuads: number; readonly buildMs: number;
+  /** 32³ sections drawn, and how many of them were taken over unchanged from the previous geometry. */
+  readonly sections: number; readonly reused: number;
+  /** Floor cells where monsters could spawn (also by day / only at night); null without light. */
+  readonly spawnDay: number | null; readonly spawnNight: number | null;
+}
 
 export interface ControllerEvents {
   pick(cell: Cell | null): void;
@@ -67,6 +75,15 @@ export class SceneController {
   private controls: OrbitControls;
   private materials: BlockMaterials | null = null;
   private mesh: BlockObject | null = null;
+  private sections: readonly MeshSection[] = [];
+  private readonly look = lookUniforms();
+  private readonly shadow = new SunShadow();
+  private shadowDirty = true;
+  private graphics: GraphicsSettings | null = null;
+  private spawnMesh: THREE.Mesh | null = null;
+  private cells: readonly Cell[] = [];
+  private cellIndex: Map<string, Cell> | null = null;
+  private moving = false;
   private grid: THREE.GridHelper | null = null;
   private readonly marker: THREE.LineSegments;
   /** Integer world offset subtracted from every vertex (keeps float32 precise for far coordinates). */
@@ -150,14 +167,55 @@ export class SceneController {
     const reframe = this.origin === null || elsewhere || (this.autoFrame && !sameBounds(this.bounds, payloadBounds));
     if (!this.origin || elsewhere) { const c = boundsCentre(payloadBounds); this.origin = [Math.floor(c[0]), Math.floor(c[1]), Math.floor(c[2])]; }
     this.bounds = payloadBounds;
-    if (this.materials?.key !== kit.key) { this.materials?.dispose(); this.materials = blockMaterials(kit); }
-    const faces = buildBlockMesh(cells, palette, kit.renderer, kit.atlas.lookup, this.origin, markOf);
-    if (this.mesh) { this.scene.remove(this.mesh.group); this.mesh.dispose(); }
-    this.mesh = new BlockObject(faces, cells, this.materials); this.scene.add(this.mesh.group);
+    let previous = this.sections;
+    if (this.materials?.key !== kit.key) {
+      this.materials?.dispose(); this.materials = blockMaterials(kit, this.look);
+      this.mesh?.setMaterials(this.materials); previous = [];
+    }
+    const built = buildSectionMesh(cells, palette, kit.renderer, kit.atlas.lookup, this.origin, markOf, {}, previous);
+    this.sections = built.sections;
+    if (!this.mesh) { this.mesh = new BlockObject(built.sections, cells, this.materials); this.scene.add(this.mesh.group); }
+    else this.mesh.update(built.sections);
+    this.cells = cells; this.cellIndex = null;
+    this.setSpawn(built.spawn);
+    this.shadowDirty = true;
     this.updateGrid();
     if (reframe) this.setView(this.stateValue.view ?? 'iso', true);
+    this.host.dataset.sections = String(built.sections.length);
+    this.host.dataset.reused = String(built.reused);
     this.requestRender();
-    return { blocks: faces.blocks, quads: faces.quads, naiveQuads: faces.naiveQuads, buildMs: performance.now() - started };
+    let day: number | null = null, night: number | null = null;
+    if (built.spawn) { day = 0; night = 0; for (const w of built.spawn.when) if (w === 1) day++; else night++; }
+    return { blocks: built.blocks, quads: built.quads, naiveQuads: built.naiveQuads, buildMs: performance.now() - started,
+      sections: built.sections.length, reused: built.reused, spawnDay: day, spawnNight: night };
+  }
+
+  /** Applies light mode, occlusion, sun and spawn marks; never rebuilds geometry. */
+  setGraphics(g: GraphicsSettings): void {
+    const before = this.graphics;
+    this.graphics = g;
+    this.look.mode.value = MODE_INDEX[g.mode];
+    this.look.aoStrength.value = g.ao ? 1 : 0;
+    this.look.sunDir.value.set(...sunDirection(g.hour));
+    this.look.shadowOn.value = g.mode === 'sun' && g.shadows ? 1 : 0;
+    if (!before || before.hour !== g.hour || before.shadows !== g.shadows || before.mode !== g.mode) this.shadowDirty = true;
+    if (!before || before.quality !== g.quality) {
+      this.renderer.setPixelRatio(g.quality === 'low' ? 1 : Math.min(window.devicePixelRatio, g.quality === 'high' ? 3 : 2));
+      this.resize();
+    }
+    if (this.spawnMesh) this.spawnMesh.visible = g.spawn;
+    this.host.dataset.light = g.mode;
+    this.host.dataset.spawnCheck = g.spawn ? 'on' : 'off';
+    this.requestRender();
+  }
+
+  private setSpawn(spawn: SpawnMap | null): void {
+    if (this.spawnMesh) { this.scene.remove(this.spawnMesh); this.spawnMesh.geometry.dispose(); (this.spawnMesh.material as THREE.Material).dispose(); this.spawnMesh = null; }
+    this.host.dataset.spawn = spawn ? String(spawn.count) : '';
+    if (!spawn?.count || !this.origin) return;
+    this.spawnMesh = spawnOverlay(spawn, this.origin);
+    this.spawnMesh.visible = this.graphics?.spawn ?? false;
+    this.scene.add(this.spawnMesh);
   }
 
   /** Outlines one cell (selection marker); null hides it. */
@@ -260,7 +318,7 @@ export class SceneController {
     cancelAnimationFrame(this.frame);
     this.disposers.forEach(d => d());
     this.controls.dispose();
-    this.mesh?.dispose(); this.materials?.dispose();
+    this.mesh?.dispose(); this.materials?.dispose(); this.shadow.dispose(); this.setSpawn(null);
     this.marker.geometry.dispose(); (this.marker.material as THREE.Material).dispose();
     this.ghost.geometry.dispose(); (this.ghost.material as THREE.Material).dispose();
     if (this.grid) { this.grid.geometry.dispose(); (this.grid.material as THREE.Material).dispose(); }
@@ -363,6 +421,13 @@ export class SceneController {
       p.set(...next);
       again = this.keys.size > 0;
     } else again = this.controls.update();
+    if (this.mesh && this.materials) {
+      if (this.shadowDirty && this.look.shadowOn.value > 0.5) { this.shadow.render(this.renderer, this.scene, this.mesh, this.materials); this.shadowDirty = false; }
+      // Glass and water back to front; very large translucent sets only once the camera rests.
+      if (this.mesh.translucentQuads && (!again || this.mesh.translucentQuads < 300_000)) this.mesh.sortTranslucent(this.camera.position);
+      else if (this.mesh.translucentQuads) this.moving = true;
+      if (!again && this.moving) { this.moving = false; this.mesh.sortTranslucent(this.camera.position); }
+    }
     this.renderer.render(this.scene, this.camera);
     const c = this.camera.position;
     // Rounded camera position in world coordinates; read by browser tests and handy when debugging.
@@ -377,7 +442,11 @@ export class SceneController {
     const rect = this.renderer.domElement.getBoundingClientRect();
     const pointer = new THREE.Vector2((e.clientX - rect.left) / rect.width * 2 - 1, -(e.clientY - rect.top) / rect.height * 2 + 1);
     this.raycaster.setFromCamera(pointer, this.camera);
-    return this.mesh.pick(this.raycaster);
+    const hit = this.mesh.pick(this.raycaster);
+    if (!hit) return null;
+    // Reused sections still point at the cells of an earlier build: resolve by position.
+    if (!this.cellIndex) { this.cellIndex = new Map(); for (const c of this.cells) this.cellIndex.set(c.position.join(','), c); }
+    return this.cellIndex.get(hit.position.join(',')) ?? null;
   }
 
   private rayAt(e: PointerEvent): void {
