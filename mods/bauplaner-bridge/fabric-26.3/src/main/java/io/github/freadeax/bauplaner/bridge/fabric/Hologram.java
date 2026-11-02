@@ -31,10 +31,17 @@ final class Hologram {
     private boolean visible = true;
     /** Error finder: index of the highlighted block, -1 when off. */
     private int target = -1;
+    /** Layer mode: all layers, only one layer, or everything up to a layer (world height {@link #layerY}). */
+    enum Layers { ALL, ONE, BELOW }
+    private Layers layers = Layers.ALL;
+    private int layerY;
+    /** Missing blocks as see-through textured blocks (true) or as blue boxes. */
+    private boolean textured = true;
 
     Hologram(Path root) {
         this.root = root;
         this.store = new PlacementStore(root.resolve("platzierung.properties"));
+        loadSettings();
     }
 
     Path plansDir() { return root.resolve("plans"); }
@@ -44,6 +51,64 @@ final class Hologram {
     boolean active() { return check != null; }
     boolean visible() { return visible && check != null; }
     int target() { return check == null || target >= check.size() ? -1 : target; }
+    Layers layers() { return layers; }
+    int layerY() { return layerY; }
+    boolean textured() { return textured; }
+    /** Lowest and highest world height currently shown. */
+    int minY() { return layers == Layers.ONE ? layerY : Integer.MIN_VALUE; }
+    int maxY() { return layers == Layers.ALL ? Integer.MAX_VALUE : layerY; }
+
+    /** Next layer mode: all → one layer → up to the layer → all. Starts at the lowest layer that still has work. */
+    void cycleLayers() {
+        if (check == null) return;
+        layers = Layers.values()[(layers.ordinal() + 1) % Layers.values().length];
+        if (layers == Layers.ONE) layerY = firstOpenLayer();
+        target = -1;
+        saveSettings();
+    }
+
+    void setLayers(Layers mode, int y) { layers = mode; layerY = y; target = -1; saveSettings(); }
+
+    /** One layer up or down, inside the plan box. */
+    void stepLayer(int dy) {
+        if (check == null) return;
+        if (layers == Layers.ALL) { layers = Layers.ONE; layerY = firstOpenLayer(); }
+        else {
+            int[] box = check.worldBox();
+            layerY = Math.max(box[1], Math.min(box[4], layerY + dy));
+        }
+        target = -1;
+        saveSettings();
+    }
+
+    void toggleTextured() { textured = !textured; saveSettings(); }
+
+    /** Lowest world height with missing, wrong or misaligned blocks; the bottom of the box when everything is done. */
+    private int firstOpenLayer() {
+        int best = Integer.MAX_VALUE;
+        for (int i = 0; i < check.size(); i++) {
+            var v = check.verdict(i);
+            if (v != Verdict.OK && v != Verdict.UNKNOWN) best = Math.min(best, check.worldY(i));
+        }
+        return best == Integer.MAX_VALUE ? check.worldBox()[1] : best;
+    }
+
+    private Path settingsFile() { return root.resolve("einstellungen.properties"); }
+
+    private void loadSettings() {
+        var props = new java.util.Properties();
+        try (var r = Files.newBufferedReader(settingsFile())) { props.load(r); } catch (IOException | RuntimeException ignored) { return; }
+        textured = !"false".equals(props.getProperty("texturen"));
+    }
+
+    private void saveSettings() {
+        var props = new java.util.Properties();
+        props.setProperty("texturen", Boolean.toString(textured));
+        try {
+            Files.createDirectories(root);
+            try (var w = Files.newBufferedWriter(settingsFile())) { props.store(w, "Bauplaner-Mod: Einstellungen"); }
+        } catch (IOException ignored) { }
+    }
 
     List<String> planFiles() {
         try (Stream<Path> files = Files.list(plansDir())) {
@@ -74,7 +139,7 @@ final class Hologram {
 
     void leave() { clearState(); worldKey = null; }
 
-    private void clearState() { plan = null; planFile = null; check = null; target = -1; visible = true; }
+    private void clearState() { plan = null; planFile = null; check = null; target = -1; visible = true; layers = Layers.ALL; }
 
     /** Load a plan and place its project origin on {@code anchor} (keeps turn and mirror of the current placement). */
     String place(Minecraft mc, String file, BlockPos anchor) throws IOException {
@@ -89,7 +154,7 @@ final class Hologram {
         return "„" + p.name() + "“ platziert bei " + anchor.getX() + " " + anchor.getY() + " " + anchor.getZ() + " (" + p.blockCount() + " Blöcke).";
     }
 
-    void move(int dx, int dy, int dz) { if (check != null) apply(check.placement().moved(dx, dy, dz)); }
+    void move(int dx, int dy, int dz) { if (check != null) { layerY += dy; apply(check.placement().moved(dx, dy, dz)); } }
     void moveTo(BlockPos pos) { if (check != null) { Placement p = check.placement(); apply(new Placement(p.dimension(), pos.getX(), pos.getY(), pos.getZ(), p.turns(), p.mirror())); } }
     void turn(int quarterTurns) { if (check != null) apply(check.placement().turned(quarterTurns)); }
     void mirror() { if (check != null) apply(check.placement().mirrored()); }
@@ -134,7 +199,7 @@ final class Hologram {
     /** Error finder: highlight the nearest wrong/missing block. Returns the index or -1. */
     int findNext(double x, double y, double z) {
         if (check == null) return -1;
-        target = check.nearestProblem(x, y, z);
+        target = check.nearestProblem(x, y, z, minY(), maxY());
         return target;
     }
 

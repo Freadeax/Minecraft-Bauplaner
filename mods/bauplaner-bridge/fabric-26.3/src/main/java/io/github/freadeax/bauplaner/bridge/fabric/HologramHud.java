@@ -11,9 +11,13 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
  * status effect icons, because minimaps (Xaero) take the top left corner.
  */
 final class HologramHud {
+    static final int CYAN = 0xFF40E0FF;
     static final int BLUE = 0xFF5AA9FF, RED = 0xFFFF5A5A, YELLOW = 0xFFFFD54A, GREEN = 0xFF6BE07B, GREY = 0xFFB0B0B0;
 
     private final Hologram hologram;
+    /** Layer counts, recomputed only when verdicts or the layer change. */
+    private int[] layerCounts;
+    private String layerKey = "";
 
     HologramHud(Hologram hologram) { this.hologram = hologram; }
 
@@ -31,6 +35,7 @@ final class HologramHud {
                 check.percent() + " % fertig · " + ok + " / " + check.size() + " richtig",
                 "fehlt " + missing, "falsch " + wrong, "Zustand " + state,
                 unknown > 0 ? "nicht geladen " + unknown : null,
+                layerLine(check),
         };
         int width = 0;
         for (String r : rows) if (r != null) width = Math.max(width, font.width(r));
@@ -50,7 +55,20 @@ final class HologramHud {
         g.text(font, rows[3], x, y, RED, true); y += line;
         g.text(font, rows[4], x, y, YELLOW, true); y += line;
         if (rows[5] != null) { g.text(font, rows[5], x, y, GREY, true); y += line; }
+        if (rows[6] != null) { g.text(font, rows[6], x, y, CYAN, true); y += line; }
         if (finder != null) g.text(font, finder, x, y, 0xFFFFFFFF, true);
+    }
+
+    /** "Ebene 70 (nur diese): 12 / 40 richtig, 28 offen". */
+    private String layerLine(LiveCheck check) {
+        if (hologram.layers() == Hologram.Layers.ALL) return null;
+        String key = check.revision() + "/" + hologram.layers() + "/" + hologram.layerY() + "/" + System.identityHashCode(check);
+        if (!key.equals(layerKey)) { layerCounts = check.countLayers(hologram.minY(), hologram.maxY()); layerKey = key; }
+        int total = 0;
+        for (int c : layerCounts) total += c;
+        int ok = layerCounts[Verdict.OK.ordinal()], unknown = layerCounts[Verdict.UNKNOWN.ordinal()];
+        String mode = hologram.layers() == Hologram.Layers.ONE ? "nur diese" : "bis hier";
+        return "Ebene " + hologram.layerY() + " (" + mode + "): " + ok + " / " + total + " richtig, " + (total - ok - unknown) + " offen";
     }
 
     /** "Nächster Fehler: 12 m Nordost, 2 höher – fehlt: Eichenholztreppe". */

@@ -122,6 +122,32 @@ public final class BridgeGameTest implements FabricClientGameTest {
         chat(context, "/bauplaner drehen -1");
         context.waitTicks(40);
         chat(context, "/bauplaner fortschritt");
+        // Stage 2: material list, layer mode, textured ghost blocks.
+        chat(context, "/bauplaner material");
+        chat(context, "/bauplaner ebene " + anchor[1]);
+        chat(context, "/bauplaner fehler");
+        chat(context, "/bauplaner ebene " + (anchor[1] + 1));
+        chat(context, "/bauplaner fehler");
+        chat(context, "/bauplaner ebene alle");
+        // Tear down part of the wall: those blocks must come back as see-through textured ghosts.
+        world.getServer().runCommand("fill " + (anchor[0] + 4) + " " + (anchor[1] + 1) + " " + anchor[2] + " " + (anchor[0] + 8) + " " + (anchor[1] + 3) + " "
+                + (anchor[2] + 3) + " minecraft:air");
+        context.waitTicks(40);
+        chat(context, "/bauplaner material");
+        context.setScreen(() -> null);
+        context.runOnClient(mc -> mc.gui.hud.getChat().clearMessages(false));
+        world.getServer().runCommand("tp @a " + (anchor[0] + 6.5) + " " + anchor[1] + " " + (anchor[2] - 5.5) + " 0 0");
+        world.getConnection().waitForChunksRender();
+        context.waitTicks(5);
+        context.getInput().lookAt(new BlockPos(anchor[0] + 6, anchor[1] + 1, anchor[2] + 2));
+        context.waitTicks(10);
+        copy(context.takeScreenshot("bauplaner-geister"), io.resolve("geister.png"));
+        context.getInput().pressKey(InputConstants.KEY_NUMPAD7);
+        context.waitTicks(10);
+        String materialScreen = context.computeOnClient(mc -> mc.gui.screen() == null ? "keiner" : mc.gui.screen().getClass().getSimpleName());
+        if (!materialScreen.equals("MaterialScreen")) throw new AssertionError("Num 7 öffnet nicht die Materialliste, offen: " + materialScreen);
+        copy(context.takeScreenshot("bauplaner-material"), io.resolve("material.png"));
+        context.setScreen(() -> null);
         Files.copy(root.resolve("platzierung.properties"), io.resolve("platzierung.properties"), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
     }
 

@@ -129,6 +129,24 @@ class ModCoreTest {
     }
 
     @Test
+    void materialsAndLayers() {
+        PlanModel plan = PlanModel.parse("m.schem", schem(2, 2, 1, new int[] { 0, 0, 0 },
+                new String[] { "minecraft:stone", "minecraft:oak_door[half=lower]", "minecraft:oak_door[half=upper]", "minecraft:oak_slab[type=double]" },
+                new int[] { 0, 3, 1, 2 }));
+        var check = new LiveCheck(plan, Placement.at("d", 0, 64, 0));
+        Map<String, BlockState> world = Map.of("0,64,0", s("minecraft:stone"), "1,64,0", s("minecraft:dirt"));
+        check.sweep((x, y, z) -> world.getOrDefault(x + "," + y + "," + z, BlockState.AIR), 10);
+        assertEquals(List.of(new Materials.Line("minecraft:oak_slab", 2, 2), new Materials.Line("minecraft:oak_door", 1, 1),
+                new Materials.Line("minecraft:stone", 0, 1)), Materials.of(check), "Tür einmal, Doppelstufe zwei, falscher Block offen");
+        assertEquals(List.of(new Materials.Line("minecraft:oak_slab", 2, 2), new Materials.Line("minecraft:stone", 0, 1)), Materials.of(check, 64, 64));
+        int[] layer = check.countLayers(65, 65);
+        assertEquals(2, layer[Verdict.MISSING.ordinal()], "beide Türhälften fehlen");
+        assertEquals(0, layer[Verdict.OK.ordinal()]);
+        assertEquals(-1, check.nearestProblem(0, 64, 0, 66, 70));
+        assertEquals(64, check.worldY(check.nearestProblem(0, 64, 0, 64, 64)));
+    }
+
+    @Test
     void placementsAreRememberedPerWorld(@TempDir Path dir) throws Exception {
         var store = new PlacementStore(dir.resolve("bauplaner/platzierung.properties"));
         assertTrue(store.get("server:lmnt").isEmpty());

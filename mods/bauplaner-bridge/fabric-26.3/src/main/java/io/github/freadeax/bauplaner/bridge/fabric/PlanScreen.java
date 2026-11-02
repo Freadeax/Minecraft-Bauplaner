@@ -13,7 +13,7 @@ import net.minecraft.network.chat.Component;
  * places the plan on the block the player looked at. Right: move, turn, mirror, show/hide, remove.
  */
 final class PlanScreen extends Screen {
-    private static final int PER_PAGE = 8;
+    private static final int PER_PAGE = 6, TOP = 36, STEP = 20, H = 18;
 
     private final Hologram hologram;
     private final BlockPos lookedAt;
@@ -31,35 +31,42 @@ final class PlanScreen extends Screen {
         List<String> files = hologram.planFiles();
         int pages = Math.max(1, (files.size() + PER_PAGE - 1) / PER_PAGE);
         page = Math.min(page, pages - 1);
-        int left = width / 2 - 210, top = 40;
+        int left = width / 2 - 210, top = TOP;
         for (int i = 0; i < PER_PAGE; i++) {
             int k = page * PER_PAGE + i;
             if (k >= files.size()) break;
             String file = files.get(k);
             String label = (file.equals(hologram.planFile()) ? "▶ " : "") + shorten(file, 30);
-            addRenderableWidget(Button.builder(Component.literal(label), b -> place(file)).bounds(left, top + i * 22, 200, 20).build());
+            addRenderableWidget(Button.builder(Component.literal(label), b -> place(file)).bounds(left, top + i * STEP, 200, H).build());
         }
         if (pages > 1) {
-            addRenderableWidget(Button.builder(Component.literal("◀"), b -> { page = (page + pages - 1) % pages; rebuildWidgets(); }).bounds(left, top + PER_PAGE * 22, 40, 20).build());
-            addRenderableWidget(Button.builder(Component.literal("▶"), b -> { page = (page + 1) % pages; rebuildWidgets(); }).bounds(left + 160, top + PER_PAGE * 22, 40, 20).build());
+            addRenderableWidget(Button.builder(Component.literal("◀"), b -> { page = (page + pages - 1) % pages; rebuildWidgets(); }).bounds(left, top + PER_PAGE * STEP, 40, H).build());
+            addRenderableWidget(Button.builder(Component.literal("▶"), b -> { page = (page + 1) % pages; rebuildWidgets(); }).bounds(left + 160, top + PER_PAGE * STEP, 40, H).build());
         }
         int rx = width / 2 + 10;
         if (hologram.active()) {
             int y = top;
-            addRenderableWidget(Button.builder(Component.literal("Hierher (angeschauter Block)"), b -> act(() -> hologram.moveTo(lookedAt), "Verschoben.")).bounds(rx, y, 200, 20).build());
-            y += 24;
+            addRenderableWidget(Button.builder(Component.literal("Hierher (angeschauter Block)"), b -> act(() -> hologram.moveTo(lookedAt), "Verschoben.")).bounds(rx, y, 200, H).build());
+            y += STEP;
             y = row(rx, y, "X", 1, 0, 0);
             y = row(rx, y, "Y", 0, 1, 0);
             y = row(rx, y, "Z", 0, 0, 1);
-            addRenderableWidget(Button.builder(Component.literal("⟲ Links drehen"), b -> act(() -> hologram.turn(-1), "Gedreht.")).bounds(rx, y, 98, 20).build());
-            addRenderableWidget(Button.builder(Component.literal("Rechts drehen ⟳"), b -> act(() -> hologram.turn(1), "Gedreht.")).bounds(rx + 102, y, 98, 20).build());
-            y += 22;
-            addRenderableWidget(Button.builder(Component.literal("Spiegeln"), b -> act(hologram::mirror, "Gespiegelt.")).bounds(rx, y, 98, 20).build());
-            addRenderableWidget(Button.builder(Component.literal(hologram.visible() ? "Ausblenden" : "Einblenden"), b -> act(hologram::toggleVisible, "")).bounds(rx + 102, y, 98, 20).build());
-            y += 22;
-            addRenderableWidget(Button.builder(Component.literal("Plan entfernen"), b -> act(hologram::remove, "Plan entfernt.")).bounds(rx, y, 200, 20).build());
+            addRenderableWidget(Button.builder(Component.literal("⟲ Links"), b -> act(() -> hologram.turn(-1), "Gedreht.")).bounds(rx, y, 64, H).build());
+            addRenderableWidget(Button.builder(Component.literal("Rechts ⟳"), b -> act(() -> hologram.turn(1), "Gedreht.")).bounds(rx + 68, y, 64, H).build());
+            addRenderableWidget(Button.builder(Component.literal("Spiegeln"), b -> act(hologram::mirror, "Gespiegelt.")).bounds(rx + 136, y, 64, H).build());
+            y += STEP;
+            addRenderableWidget(Button.builder(Component.literal(hologram.visible() ? "Ausblenden" : "Einblenden"), b -> act(hologram::toggleVisible, "")).bounds(rx, y, 98, H).build());
+            addRenderableWidget(Button.builder(Component.literal("Plan entfernen"), b -> act(hologram::remove, "Plan entfernt.")).bounds(rx + 102, y, 98, H).build());
+            y += STEP;
+            addRenderableWidget(Button.builder(Component.literal("Materialliste"), b -> MaterialScreen.open(minecraft, hologram)).bounds(rx, y, 98, H).build());
+            addRenderableWidget(Button.builder(Component.literal(hologram.textured() ? "Texturen: an" : "Texturen: aus"), b -> act(hologram::toggleTextured, "")).bounds(rx + 102, y, 98, H).build());
+            y += STEP;
+            String mode = switch (hologram.layers()) { case ALL -> "Ebenen: alle"; case ONE -> "Ebene " + hologram.layerY() + " allein"; case BELOW -> "Bis Ebene " + hologram.layerY(); };
+            addRenderableWidget(Button.builder(Component.literal(mode), b -> act(hologram::cycleLayers, "")).bounds(rx, y, 132, H).build());
+            addRenderableWidget(Button.builder(Component.literal("▼"), b -> act(() -> hologram.stepLayer(-1), "")).bounds(rx + 136, y, 30, H).build());
+            addRenderableWidget(Button.builder(Component.literal("▲"), b -> act(() -> hologram.stepLayer(1), "")).bounds(rx + 170, y, 30, H).build());
         }
-        addRenderableWidget(Button.builder(Component.literal("Fertig"), b -> onClose()).bounds(width / 2 - 50, height - 28, 100, 20).build());
+        addRenderableWidget(Button.builder(Component.literal("Fertig"), b -> onClose()).bounds(width / 2 - 50, height - 26, 100, 20).build());
     }
 
     /** One axis: −10, −1, +1, +10. */
@@ -68,9 +75,9 @@ final class PlanScreen extends Screen {
         for (int i = 0; i < steps.length; i++) {
             int s = steps[i];
             addRenderableWidget(Button.builder(Component.literal(axis + (s > 0 ? "+" : "") + s), b -> act(() -> hologram.move(ax * s, ay * s, az * s), ""))
-                    .bounds(rx + i * 50, y, 48, 20).build());
+                    .bounds(rx + i * 50, y, 48, H).build());
         }
-        return y + 22;
+        return y + STEP;
     }
 
     private void act(Runnable r, String text) {
@@ -91,26 +98,28 @@ final class PlanScreen extends Screen {
     @Override
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
         super.extractRenderState(g, mouseX, mouseY, delta);
-        g.centeredText(font, title, width / 2, 12, 0xFFFFFFFF);
+        g.centeredText(font, title, width / 2, 10, 0xFFFFFFFF);
         int left = width / 2 - 210;
         if (hologram.planFiles().isEmpty()) {
             g.text(font, "Keine Pläne gefunden. Plan auf der Website", left, 44, 0xFFFFFFFF, true);
             g.text(font, "exportieren und hier ablegen:", left, 56, 0xFFFFFFFF, true);
             g.text(font, shorten(hologram.plansDir().toString(), 60), left, 70, 0xFFB0B0B0, true);
         } else {
-            g.text(font, "Pläne", left, 28, 0xFFB0B0B0, true);
-            g.text(font, "Klick: am angeschauten Block platzieren", left, 40 + PER_PAGE * 22 + 24, 0xFFB0B0B0, true);
+            g.text(font, "Pläne", left, 25, 0xFFB0B0B0, true);
+            g.text(font, "Klick: am angeschauten Block platzieren", left, TOP + PER_PAGE * STEP + 24, 0xFFB0B0B0, true);
         }
         int rx = width / 2 + 10;
         if (hologram.active()) {
             var p = hologram.check().placement();
-            g.text(font, "Ursprung " + p.x() + " " + p.y() + " " + p.z() + " · " + p.turns() * 90 + "°" + (p.mirror() ? " · gespiegelt" : ""), rx, 28, 0xFFB0B0B0, true);
+            g.text(font, "Ursprung " + p.x() + " " + p.y() + " " + p.z() + " · " + p.turns() * 90 + "°" + (p.mirror() ? " · gespiegelt" : ""), rx, 25, 0xFFB0B0B0, true);
         } else {
             g.text(font, "Noch kein Plan platziert.", rx, 44, 0xFFB0B0B0, true);
             g.text(font, "Tasten: J Menü · , ein/aus · . Fehler", rx, 60, 0xFFB0B0B0, true);
-            g.text(font, "Pfeile/Bild↑↓ schieben · Ende drehen · Einfg spiegeln", rx, 72, 0xFFB0B0B0, true);
+            g.text(font, "Pfeile/Bild↑↓ schieben · Ende drehen", rx, 72, 0xFFB0B0B0, true);
+            g.text(font, "Einfg spiegeln · Num 7 Material", rx, 84, 0xFFB0B0B0, true);
+            g.text(font, "Num 6 Ebenen · Num 9/3 Ebene ▲▼", rx, 96, 0xFFB0B0B0, true);
         }
-        if (!message.isEmpty()) g.centeredText(font, message, width / 2, height - 44, 0xFF6BE07B);
+        if (!message.isEmpty()) g.centeredText(font, message, width / 2, height - 38, 0xFF6BE07B);
     }
 
     @Override

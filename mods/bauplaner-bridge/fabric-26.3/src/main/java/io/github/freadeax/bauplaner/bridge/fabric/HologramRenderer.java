@@ -11,8 +11,9 @@ import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Draws the placed plan into the world: translucent boxes for every block that still needs work
- * (missing blue, wrong red, wrong state yellow; correct blocks are hidden), a frame around the whole
+ * Draws the placed plan into the world: missing blocks near the camera as see-through block models
+ * (the game's own textures), farther ones as blue boxes; wrong blocks red, wrong state yellow; correct
+ * blocks are hidden. Layer mode limits everything to one layer or the layers up to it. Also a frame around the whole
  * plan and a bright frame around the block the error finder points at. Only vanilla render types,
  * no shaders of its own, so it works next to Sodium and Iris. Draws nothing in other dimensions.
  */
@@ -23,6 +24,19 @@ final class HologramRenderer {
     static final int MAX_BLOCKS = 30_000;
 
     static final int MISSING = 0x555AA9FF, WRONG = 0x70FF4040, STATE = 0x70FFD54A;
+    /** Missing blocks this close to the camera are drawn as see-through block models. */
+    static final int TEXTURED_RADIUS = 40;
+    static final int MAX_TEXTURED = 6_000;
+    /** Direction offsets in {@link net.minecraft.core.Direction} order: down, up, north, south, west, east. */
+    private static final int[][] SIDES = { { 0, -1, 0 }, { 0, 1, 0 }, { 0, 0, -1 }, { 0, 0, 1 }, { -1, 0, 0 }, { 1, 0, 0 } };
+
+    private final GhostModels models = new GhostModels();
+    /** Cached selection of textured ghosts: indices and hidden-face masks. */
+    private int[] ghosts = new int[0];
+    private int[] ghostFaces = new int[0];
+    private GhostModels.Model[] ghostModels = new GhostModels.Model[0];
+    private int ghostCount;
+    private String drawnSettings = "";
 
     private final Hologram hologram;
     /** Cached selection: indices of the blocks to draw. */
@@ -47,6 +61,18 @@ final class HologramRenderer {
         int ox = (int) Math.floor(cam.x), oy = (int) Math.floor(cam.y), oz = (int) Math.floor(cam.z);
         pose.translate(ox - cam.x, oy - cam.y, oz - cam.z);
         var out = ctx.submitNodeCollector();
+        if (ghostCount > 0) {
+            final int[] list = ghosts, faces = ghostFaces;
+            final GhostModels.Model[] ms = ghostModels;
+            final int n = ghostCount;
+            out.submitCustomGeometry(pose, RenderTypes.entityTranslucent(net.minecraft.client.renderer.texture.TextureAtlas.LOCATION_BLOCKS), (p, vc) -> {
+                for (int k = 0; k < n; k++) {
+                    int i = list[k];
+                    if (check.verdict(i) != Verdict.MISSING) continue;
+                    GhostModels.emit(p, vc, ms[k], check.worldX(i) - ox, check.worldY(i) - oy, check.worldZ(i) - oz, 175, faces[k]);
+                }
+            });
+        }
         if (drawnCount > 0) {
             final int[] list = drawn;
             final int n = drawnCount;
@@ -64,8 +90,12 @@ final class HologramRenderer {
         }
         int[] b = check.worldBox();
         int target = hologram.target();
+        boolean layered = hologram.layers() != Hologram.Layers.ALL;
+        int ly = hologram.layerY();
         out.submitCustomGeometry(pose, RenderTypes.lines(), (p, vc) -> {
             frame(p, vc, b[0] - ox, b[1] - oy, b[2] - oz, b[3] + 1 - ox, b[4] + 1 - oy, b[5] + 1 - oz, 0xFFFFFFFF, 2.0f);
+            // Layer mode: a cyan frame marks the current layer.
+            if (layered) frame(p, vc, b[0] - ox - 0.02f, ly - oy, b[2] - oz - 0.02f, b[3] + 1.02f - ox, ly + 1 - oy, b[5] + 1.02f - oz, 0xFF40E0FF, 3.0f);
             if (target >= 0) {
                 float x = check.worldX(target) - ox, y = check.worldY(target) - oy, z = check.worldZ(target) - oz;
                 frame(p, vc, x - 0.04f, y - 0.04f, z - 0.04f, x + 1.04f, y + 1.04f, z + 1.04f, 0xFFFF40FF, 4.0f);
@@ -79,12 +109,18 @@ final class HologramRenderer {
     /** Recompute which blocks to draw when verdicts changed or the camera moved to another chunk. */
     private void select(LiveCheck check, Vec3 cam) {
         int cx = (int) Math.floor(cam.x) >> 4, cz = (int) Math.floor(cam.z) >> 4;
-        if (check == drawnFor && check.revision() == drawnRevision && cx == drawnChunkX && cz == drawnChunkZ) return;
+        String settings = hologram.layers() + "/" + hologram.layerY() + "/" + hologram.textured() + "/" + ((int) Math.floor(cam.y) >> 3);
+        if (check == drawnFor && check.revision() == drawnRevision && cx == drawnChunkX && cz == drawnChunkZ && settings.equals(drawnSettings)) return;
+        drawnSettings = settings;
         drawnFor = check;
         drawnRevision = check.revision();
         drawnChunkX = cx;
         drawnChunkZ = cz;
         drawnCount = 0;
+        ghostCount = 0;
+        int minY = hologram.minY(), maxY = hologram.maxY();
+        boolean textured = hologram.textured();
+        double tr2 = (double) TEXTURED_RADIUS * TEXTURED_RADIUS;
         int r = (RADIUS >> 4) + 1;
         // Rings from the camera chunk outwards, so the limit cuts the farthest blocks.
         for (int ring = 0; ring <= r && drawnCount < MAX_BLOCKS; ring++) {
@@ -93,13 +129,45 @@ final class HologramRenderer {
                 for (int i : check.inChunk(cx + dx, cz + dz)) {
                     Verdict v = check.verdict(i);
                     if (v == Verdict.OK || v == Verdict.UNKNOWN) continue;
-                    if (Math.abs(check.worldY(i) - cam.y) > RADIUS) continue;
+                    int wy = check.worldY(i);
+                    if (wy < minY || wy > maxY) continue;
+                    if (Math.abs(wy - cam.y) > RADIUS) continue;
+                    if (textured && v == Verdict.MISSING && ghostCount < MAX_TEXTURED) {
+                        double gx = check.worldX(i) + 0.5 - cam.x, gy = wy + 0.5 - cam.y, gz = check.worldZ(i) + 0.5 - cam.z;
+                        GhostModels.Model m = gx * gx + gy * gy + gz * gz < tr2 ? models.model(check.expected(i)) : null;
+                        if (m != null) { addGhost(check, i, m, minY, maxY); continue; }
+                    }
                     if (drawnCount == MAX_BLOCKS) break;
                     if (drawnCount == drawn.length) drawn = Arrays.copyOf(drawn, Math.max(1024, drawn.length * 2));
                     drawn[drawnCount++] = i;
                 }
             }
         }
+    }
+
+    private void addGhost(LiveCheck check, int i, GhostModels.Model m, int minY, int maxY) {
+        if (ghostCount == ghosts.length) {
+            int size = Math.max(256, ghosts.length * 2);
+            ghosts = Arrays.copyOf(ghosts, size);
+            ghostFaces = Arrays.copyOf(ghostFaces, size);
+            ghostModels = Arrays.copyOf(ghostModels, size);
+        }
+        int mask = 0;
+        if (m.fullCube()) {
+            // Faces between two full ghost blocks are inside the wall: hide them, otherwise walls look like glass grids.
+            for (int d = 0; d < 6; d++) {
+                int ny = check.worldY(i) + SIDES[d][1];
+                if (ny < minY || ny > maxY) continue;
+                int j = check.indexAt(check.worldX(i) + SIDES[d][0], ny, check.worldZ(i) + SIDES[d][2]);
+                if (j < 0 || check.verdict(j) != Verdict.MISSING) continue;
+                GhostModels.Model other = models.model(check.expected(j));
+                if (other != null && other.fullCube()) mask |= 1 << d;
+            }
+        }
+        ghosts[ghostCount] = i;
+        ghostFaces[ghostCount] = mask;
+        ghostModels[ghostCount] = m;
+        ghostCount++;
     }
 
     private static void box(PoseStack.Pose p, VertexConsumer vc, float x0, float y0, float z0, float x1, float y1, float z1, int c) {

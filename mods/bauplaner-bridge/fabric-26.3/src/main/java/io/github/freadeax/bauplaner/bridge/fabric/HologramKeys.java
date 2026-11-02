@@ -29,6 +29,10 @@ final class HologramKeys {
     private final KeyMapping turn = key("turn", InputConstants.KEY_END);
     private final KeyMapping here = key("here", InputConstants.KEY_HOME);
     private final KeyMapping mirror = key("mirror", InputConstants.KEY_INSERT);
+    private final KeyMapping materials = key("materials", InputConstants.KEY_NUMPAD7);
+    private final KeyMapping layers = key("layers", InputConstants.KEY_NUMPAD6);
+    private final KeyMapping layerUp = key("layer_up", InputConstants.KEY_NUMPAD9);
+    private final KeyMapping layerDown = key("layer_down", InputConstants.KEY_NUMPAD3);
 
     HologramKeys(Hologram hologram) { this.hologram = hologram; }
 
@@ -56,7 +60,19 @@ final class HologramKeys {
         while (down.consumeClick()) move(mc, 0, -1, 0);
         while (turn.consumeClick()) if (active) { hologram.turn(1); overlay(mc, "Gedreht: " + hologram.check().placement().turns() * 90 + "°"); }
         while (mirror.consumeClick()) if (active) { hologram.mirror(); overlay(mc, hologram.check().placement().mirror() ? "Gespiegelt" : "Nicht gespiegelt"); }
+        while (materials.consumeClick()) if (active) MaterialScreen.open(mc, hologram);
+        while (layers.consumeClick()) if (active) { hologram.cycleLayers(); overlay(mc, layerText()); }
+        while (layerUp.consumeClick()) if (active) { hologram.stepLayer(1); overlay(mc, layerText()); }
+        while (layerDown.consumeClick()) if (active) { hologram.stepLayer(-1); overlay(mc, layerText()); }
         while (here.consumeClick()) if (active) { hologram.moveTo(McCompat.targetBlock(mc)); overlay(mc, "Plan zum angeschauten Block verschoben"); }
+    }
+
+    private String layerText() {
+        return switch (hologram.layers()) {
+            case ALL -> "Alle Ebenen";
+            case ONE -> "Nur Ebene " + hologram.layerY();
+            case BELOW -> "Bis Ebene " + hologram.layerY();
+        };
     }
 
     private void move(Minecraft mc, int dx, int dy, int dz) {

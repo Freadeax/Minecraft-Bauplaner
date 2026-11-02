@@ -11,5 +11,9 @@
   "key.bauplaner_bridge.down": "Plan nach unten",
   "key.bauplaner_bridge.turn": "Plan drehen (90° rechts)",
   "key.bauplaner_bridge.here": "Plan zum angeschauten Block",
-  "key.bauplaner_bridge.mirror": "Plan spiegeln"
+  "key.bauplaner_bridge.mirror": "Plan spiegeln",
+  "key.bauplaner_bridge.materials": "Materialliste",
+  "key.bauplaner_bridge.layers": "Ebenen: alle / eine / bis",
+  "key.bauplaner_bridge.layer_up": "Ebene höher",
+  "key.bauplaner_bridge.layer_down": "Ebene tiefer"
 }

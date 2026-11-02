@@ -13,7 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 
 /**
- * {@code /bauplaner zeigen|hierher|verschieben|drehen|spiegeln|umschalten|fehler|entfernen|fortschritt}: the same actions as menu and keys, as client commands (no server needed;
+ * {@code /bauplaner zeigen|hierher|verschieben|drehen|spiegeln|umschalten|fehler|entfernen|fortschritt|ebene|material|texturen}: the same actions as menu and keys, as client commands (no server needed;
  * also used by the game test).
  */
 final class HologramCommands {
@@ -37,7 +37,29 @@ final class HologramCommands {
                 literal("spiegeln").executes(c -> need(c.getSource(), h, h::mirror)),
                 literal("umschalten").executes(c -> need(c.getSource(), h, h::toggleVisible)),
                 literal("fehler").executes(c -> finder(c.getSource(), h)),
-                literal("entfernen").executes(c -> need(c.getSource(), h, h::remove)));
+                literal("entfernen").executes(c -> need(c.getSource(), h, h::remove)),
+                literal("ebene").executes(c -> layer(c.getSource(), h))
+                        .then(literal("alle").executes(c -> need(c.getSource(), h, () -> h.setLayers(Hologram.Layers.ALL, h.layerY()))))
+                        .then(literal("bis").then(argument("y", IntegerArgumentType.integer()).executes(c -> need(c.getSource(), h, () -> h.setLayers(Hologram.Layers.BELOW, IntegerArgumentType.getInteger(c, "y"))))))
+                        .then(argument("y", IntegerArgumentType.integer()).executes(c -> need(c.getSource(), h, () -> h.setLayers(Hologram.Layers.ONE, IntegerArgumentType.getInteger(c, "y"))))),
+                literal("material").executes(c -> materials(c.getSource(), h)),
+                literal("texturen").executes(c -> need(c.getSource(), h, h::toggleTextured)));
+    }
+
+    private static int layer(FabricClientCommandSource s, Hologram h) {
+        if (!h.active()) return fail(s, "Kein Plan platziert.");
+        say(s, switch (h.layers()) { case ALL -> "Alle Ebenen sichtbar."; case ONE -> "Nur Ebene " + h.layerY() + "."; case BELOW -> "Bis Ebene " + h.layerY() + "."; });
+        return 1;
+    }
+
+    /** Open blocks per type (same list as the material screen), in the chat; also used by the game test. */
+    private static int materials(FabricClientCommandSource s, Hologram h) {
+        if (!h.active()) return fail(s, "Kein Plan platziert.");
+        var lines = io.github.freadeax.bauplaner.mod.Materials.of(h.check(), h.minY(), h.maxY());
+        int open = lines.stream().mapToInt(io.github.freadeax.bauplaner.mod.Materials.Line::open).sum();
+        say(s, "Material offen: " + open + " Blöcke in " + lines.stream().filter(l -> l.open() > 0).count() + " Sorten.");
+        lines.stream().filter(l -> l.open() > 0).limit(10).forEach(l -> say(s, "  " + l.open() + " × " + l.id() + " (von " + l.total() + ")"));
+        return open;
     }
 
     private static int place(FabricClientCommandSource s, Hologram h, String name) {
@@ -56,7 +78,9 @@ final class HologramCommands {
         r.run();
         if (h.active()) {
             var p = h.check().placement();
-            say(s, "Ursprung " + p.x() + " " + p.y() + " " + p.z() + " · " + p.turns() * 90 + "°" + (p.mirror() ? " · gespiegelt" : "") + (h.visible() ? "" : " · ausgeblendet"));
+            say(s, "Ursprung " + p.x() + " " + p.y() + " " + p.z() + " · " + p.turns() * 90 + "°" + (p.mirror() ? " · gespiegelt" : "") + (h.visible() ? "" : " · ausgeblendet")
+                    + (h.layers() == Hologram.Layers.ALL ? "" : h.layers() == Hologram.Layers.ONE ? " · Ebene " + h.layerY() : " · bis Ebene " + h.layerY())
+                    + (h.textured() ? "" : " · ohne Texturen"));
         } else {
             say(s, "Plan entfernt.");
         }

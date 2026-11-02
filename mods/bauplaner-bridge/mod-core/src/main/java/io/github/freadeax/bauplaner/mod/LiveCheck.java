@@ -112,16 +112,32 @@ public final class LiveCheck {
 
     /** Nearest block that is wrong, has a wrong state or is missing; -1 when there is none. Wrong blocks win ties of distance. */
     public int nearestProblem(double px, double py, double pz) {
+        return nearestProblem(px, py, pz, Integer.MIN_VALUE, Integer.MAX_VALUE);
+    }
+
+    /** Same, only for world heights {@code minY..maxY} (layer mode). */
+    public int nearestProblem(double px, double py, double pz, int minY, int maxY) {
         int best = -1;
         double bestScore = Double.MAX_VALUE;
         for (int i = 0; i < verdicts.length; i++) {
             Verdict v = verdicts[i];
             if (v == Verdict.OK || v == Verdict.UNKNOWN) continue;
+            if (worldY(i) < minY || worldY(i) > maxY) continue;
             double dx = worldX(i) + 0.5 - px, dy = worldY(i) + 0.5 - py, dz = worldZ(i) + 0.5 - pz;
             double score = dx * dx + dy * dy + dz * dz + (v == Verdict.MISSING ? 0.25 : 0);
             if (score < bestScore) { bestScore = score; best = i; }
         }
         return best;
+    }
+
+    /** Verdict counts of the planned blocks at world heights {@code minY..maxY}, indexed by {@link Verdict#ordinal()}. */
+    public int[] countLayers(int minY, int maxY) {
+        int[] out = new int[Verdict.values().length];
+        for (int i = 0; i < verdicts.length; i++) {
+            int y = worldY(i);
+            if (y >= minY && y <= maxY) out[verdicts[i].ordinal()]++;
+        }
+        return out;
     }
 
     /** World box of the placed plan: min x/y/z and max x/y/z (inclusive), from the plan file's box. */

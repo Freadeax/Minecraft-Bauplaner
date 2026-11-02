@@ -92,5 +92,14 @@ function hologram(logFile, cells) {
   assert.ok(planned > 0 && planned <= cells);
   assert.match(log, /\[Bauplaner\] Nächster Fehler bei -?\d+ -?\d+ -?\d+: erwartet /);
   assert.match(readFileSync(join(dir, 'platzierung.properties'), 'utf8'), /\.plan=spieltest\.schem/);
-  console.log(`Hologramm bestanden: ${planned} Planblöcke, Fortschritt ${placed[0]} % → ${built[0]} % nach dem Setzen des fehlenden Blocks, Drehen und Speichern geprüft.`);
+  // Stage 2: material list (only the diamond block is still wrong → one cobblestone open), layer mode.
+  const material = [...log.matchAll(/\[Bauplaner\] Material offen: (\d+) Blöcke in (\d+) Sorten\./g)].map(m => [Number(m[1]), Number(m[2])]);
+  assert.equal(material.length, 2, 'zwei Materiallisten');
+  assert.deepEqual(material[0], [1, 1], 'nur der falsche Block ist offen');
+  assert.match(log, /\[Bauplaner\] +1 × minecraft:cobblestone \(von \d+\)/);
+  assert.ok(material[1][0] > 1, 'abgerissene Mauer erscheint in der Materialliste');
+  const finder = [...log.matchAll(/\[Bauplaner\] (Nächster Fehler bei -?\d+ (-?\d+) -?\d+|Keine Fehler in geladenen Chunks)/g)].map(m => m[2] ?? 'keiner');
+  const anchorY = Number(readFileSync(join(dir, 'anchor.txt'), 'utf8').trim().split(' ')[1]);
+  assert.deepEqual(finder.slice(-2), [String(anchorY), 'keiner'], 'Fehlerfinder bleibt in der gewählten Ebene');
+  console.log(`Hologramm bestanden: ${planned} Planblöcke, Fortschritt ${placed[0]} % → ${built[0]} % nach dem Setzen des fehlenden Blocks, Drehen, Speichern, Materialliste (${material[1][0]} offen nach Teilabriss) und Ebenenmodus geprüft.`);
 }

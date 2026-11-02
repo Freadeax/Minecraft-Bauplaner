@@ -10,7 +10,7 @@ Die Brücke ist **nur lesend**: Sie setzt und entfernt keine Blöcke und sendet 
 |---|---|
 | `core/` (reines Java 21, ohne Minecraft) | Plan lesen, Aufnahme in Scheiben, Aufnahme-Datei schreiben, Anker je Welt/Server merken. 6 JUnit-Tests und sprachübergreifende Prüfung mit Website und Python-Leser bestanden (`scripts/test_bridge.sh`) |
 | `paper/` (Paper-Server-Plugin, eine .jar für Minecraft 1.18.2 bis 26.3, Java ≥ 17) | Liest auf dem Server die ganze Planbox, lädt vorhandene Chunks kurz nach, erzeugt nie Gelände. Auf echten Paper-Servern 1.18.2, 1.20.6, 1.21.4, 1.21.11 und 26.3 automatisch geprüft (`scripts/test_bridge_paper.sh`, 01.11.2026). Versionsabhängige Aufrufe in `PaperCompat.java` |
-| `mod-core/` (reines Java 21, ohne Minecraft) | Mod 2.0 (GAME-07): Blockzustände, Vergleichsregeln wie die Website, Platzierung mit Drehen/Spiegeln, Planmodell, Live-Abgleich, Platzierungsspeicher. 7 JUnit-Tests. Konzept: [MOD_HOLOGRAM](../../docs/architecture/MOD_HOLOGRAM.md) |
+| `mod-core/` (reines Java 21, ohne Minecraft) | Mod 2.0 (GAME-07): Blockzustände, Vergleichsregeln wie die Website, Platzierung mit Drehen/Spiegeln, Planmodell, Live-Abgleich, Platzierungsspeicher, Materialliste. 8 JUnit-Tests. Konzept: [MOD_HOLOGRAM](../../docs/architecture/MOD_HOLOGRAM.md) |
 | `core/.../session/` | Gemeinsame Befehlslogik `BridgeSession` (plan, anker, scan, status …) und Schnittstelle `BridgeHost` zum Spiel; NeoForge, Forge und das Paper-Plugin nutzen sie, damit alle Loader gleich reagieren. 3 JUnit-Tests mit einem nachgebauten Spiel |
 | `client-26.3/` (nur Vanilla-Klassen, kein eigenes Gradle-Projekt) | `ClientHost` und der `/bauplaner`-Befehlsbaum für den Client, unverändert von NeoForge und Forge eingebunden; dazu der gemeinsame Spieltest `ClientScenario` |
 | `neoforge-26.3/` (Minecraft 26.3, NeoForge ≥ 26.3.0, Java 25) | Gebaut und im echten 26.3-Client automatisch durchgespielt (`scripts/test_bridge_ingame_forge.sh neoforge`, 01.11.2026). Reine Client-Mod, braucht keine weiteren Mods |
@@ -70,12 +70,13 @@ Die passende Datei `bauplaner-bridge-<loader>-26.3-<Version>.jar` (nicht die `-s
 
 Weitere Befehle: `/bauplaner status`, `/bauplaner abbrechen`, `/bauplaner plaene`.
 
-### Hologramm (Fabric, ab 0.2.0)
+### Hologramm (Fabric, ab 0.2.0; Texturen, Materialliste, Ebenen ab 0.3.0)
 
 1. Plan wie oben nach `bauplaner/plans/` legen.
 2. Auf den Block schauen, an dem Projektkoordinate 0/0/0 stehen soll, **J** drücken und den Plan anklicken.
 3. Mit Pfeiltasten/Bild↑↓ verschieben, **Ende** dreht, **Einfg** spiegelt. **,** (Komma) blendet aus, **.** (Punkt) zeigt den nächsten Fehler. Alle Tasten sind unter Optionen → Steuerung → „Bauplaner“ änderbar.
-4. Bauen: Fehlende Blöcke sind blau, falsche rot, falsch ausgerichtete gelb; richtige verschwinden. Am rechten Rand steht der Fortschritt. Die Platzierung bleibt je Server/Welt gespeichert.
+4. Bauen: Fehlende Blöcke erscheinen als durchscheinende, bläuliche Blöcke mit echter Textur (weiter weg als blaue Kästen), falsche rot, falsch ausgerichtete gelb; richtige verschwinden. Am rechten Rand steht der Fortschritt. Die Platzierung bleibt je Server/Welt gespeichert.
+5. **Num 7** Materialliste (offen / im Inventar / noch holen), **Num 6** Ebenenmodus (alle → nur eine → bis zu einer Ebene), **Num 9/Num 3** Ebene höher/tiefer. Alles auch im Menü (J).
 
 Alles nur auf deinem Rechner; der Server merkt nichts davon. Details: [MOD_HOLOGRAM](../../docs/architecture/MOD_HOLOGRAM.md).
 

@@ -11,5 +11,9 @@
   "key.bauplaner_bridge.down": "Move plan down",
   "key.bauplaner_bridge.turn": "Rotate plan (90° clockwise)",
   "key.bauplaner_bridge.here": "Move plan to targeted block",
-  "key.bauplaner_bridge.mirror": "Mirror plan"
+  "key.bauplaner_bridge.mirror": "Mirror plan",
+  "key.bauplaner_bridge.materials": "Material list",
+  "key.bauplaner_bridge.layers": "Layers: all / one / up to",
+  "key.bauplaner_bridge.layer_up": "Layer up",
+  "key.bauplaner_bridge.layer_down": "Layer down"
 }
