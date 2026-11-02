@@ -61,6 +61,20 @@
       "releasedAt": "2026-11-02",
       "sourceCommit": "ca0819e8a5e089e49e967039e295a83e38a80d6b",
       "tested": "Echter Minecraft-26.3-Client (Fabric Client Game Test) und Produktionsstart mit allen Mods aus Philipps Modpack (Sodium, Iris, Xaero, Simple Voice Chat, REI …): Aufnahme wie 0.1.0, dazu Hologramm platziert, Live-Abgleich fehlt 1/falsch 1, gesetzter Block ohne Befehl erkannt, Drehen, Speichern je Welt, Taste J öffnet das Menü (02.11.2026)."
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.3.0.jar",
+      "modVersion": "0.3.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 122371,
+      "sha256": "b7d8831613923e139b31dfbc8f49b5f4f9522851ced4811ba2f5aad71a127b3c",
+      "releasedAt": "2026-11-02",
+      "sourceCommit": "a5f8a5a7c34dde5717c1c219cd0ae0c58794f8bd",
+      "tested": "Echter Minecraft-26.3-Client und Produktionsstart mit allen Mods aus Philipps Modpack (Sodium, Iris, Xaero, Voice Chat, REI …): Aufnahme, Hologramm (fehlt 1/falsch 1, Live-Erkennung, Drehen, Speichern), texturierte Geisterblöcke nach Teilabriss, Materialliste (1 × Bruchstein, 31 offen nach Abriss), Ebenenmodus mit Fehlerfinder, Tasten J und Num 7 (02.11.2026)."
     }
   ]
 }

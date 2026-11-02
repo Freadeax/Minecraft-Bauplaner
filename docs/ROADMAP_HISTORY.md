@@ -1702,3 +1702,39 @@ Download-Prüfung: Website prüft .jar vor dem Speichern (Größe, SHA-256, EOCD
 - `tests/e2e/mod-download.e2e.mjs`
 - `tests/mod-releases.test.mjs`
 
+## 2026-11-02T06:46:18.043Z · progress
+
+**Aufgaben:** GAME-07
+
+Stufe 2 (0.3.0): texturierte Geisterblöcke, Materialliste, Ebenenmodus; im echten Client und mit Philipps Modpack geprüft, Release auf #/mod
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-07 | 🧩 Implementiert · Abnahme offen | 5/7 | Philipp testet 0.3.0 auf server.lmnt-gaming.net (Anleitung /mnt/project-files/mod/ANLEITUNG_HOLOGRAMM.md); danach Stufe 3. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/MOD_HOLOGRAM.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.3.0.jar`
+- `mods/bauplaner-bridge/README.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/GhostModels.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/Hologram.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramCommands.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramHud.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramKeys.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramRenderer.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/MaterialScreen.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/PlanScreen.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/resources/assets/bauplaner_bridge/lang/de_de.json`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/resources/assets/bauplaner_bridge/lang/en_us.json`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/LiveCheck.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Materials.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java`
+- `scripts/bridge_gametest.mjs`
+

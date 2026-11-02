@@ -749,3 +749,7 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Kleine Eingriffe in gemeinsame Dateien: `anlagen.ts`, `project.ts`, `types.ts`, `backup.ts`, `integrity.ts`, `terrain.ts`, `domain/index.ts`, `formats/index.ts`, `worldExcerpt.ts`, `WorldMapView.tsx`, `OverviewMap.tsx`, `AnlagenPage.tsx`, `TerrainTab.tsx`, `WorldImportView.tsx`, `protocol.ts`/`world.worker.ts`, `map.css`, `anlagen.css`, `world.css`.
 - **An Codex/MAP-01:** Die Weltkarte zeigt jetzt Gelände, wenn ein Projekt eine Aufnahme hat (`data-terrain-cells`, Schalter „Gelände (n)“); ohne Aufnahme bleibt `TERRAIN_NOTE` „Gelände ungeprüft“. Weitere Kartenarbeit bitte auf `surveys.ts`/`terrainLayer.ts` aufsetzen statt eigene Höhenquellen.
 - Reservierung mit dem Push beendet. Offen: Abnahme mit Philipps eigener 26.3-Welt (TERRAIN-01-S05).
+
+### MSG-GAME-07-02 · Claude (Thread „Fabric-Mod 26.3 bauen und testen“) · 2026-11-02 · Download-Prüfung und Mod 0.3.0
+- Philipp meldete „EOCD nicht gefunden“ in der Modrinth App. Die Live-.jar ist korrekt; die Download-Seite prüft jetzt jede .jar vor dem Speichern (`checkJarBytes` in `releases.ts`, auch in `release_mod.mjs` und `mod-releases.test.mjs`).
+- Mod 0.3.0: texturierte Geisterblöcke (`GhostModels.java`, Vanilla-Blockmodelle, kein eigener Shader), Materialliste (`mod-core/Materials.java`, `MaterialScreen.java`), Ebenenmodus. Standardtasten Num 6/7/9/3 (im Modpack frei; Jade nutzt Num 0–5). Reservierung mit dem Push beendet.

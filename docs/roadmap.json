@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T06:32:41.549Z",
+  "updatedAt": "2026-11-02T06:46:18.043Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -3074,14 +3074,19 @@
         },
         {
           "id": "GAME-07-S06",
-          "title": "Stufe 3 ff.: texturierte Geisterblöcke, Materialliste im Spiel, Bauabschnitte/Ebenenfilter, NeoForge-Port.",
+          "title": "Stufe 2: texturierte Geisterblöcke, Materialliste im Spiel, Ebenenmodus (0.3.0).",
+          "done": true
+        },
+        {
+          "id": "GAME-07-S07",
+          "title": "Stufe 3: Bauabschnitte aus der Website, Shulker-Inhalte, Röntgensicht, NeoForge-Port über mod-core.",
           "done": false
         }
       ],
       "acceptance": [
         "Reiner Client: keine Pakete an den Server, keine Weltänderung, kein automatisches Bauen, keine Abhängigkeit von WorldEdit oder Litematica; Ergebnis des Live-Abgleichs gleicht dem Website-Vergleich."
       ],
-      "next": "Philipp testet 0.2.0 auf server.lmnt-gaming.net (Anleitung /mnt/project-files/mod/ANLEITUNG_HOLOGRAMM.md); danach Stufe 3 (texturierte Geisterblöcke, Materialliste im Spiel).",
+      "next": "Philipp testet 0.3.0 auf server.lmnt-gaming.net (Anleitung /mnt/project-files/mod/ANLEITUNG_HOLOGRAMM.md); danach Stufe 3.",
       "blockers": [],
       "evidence": [
         {
@@ -3103,6 +3108,10 @@
         {
           "path": "tests/mod-releases.test.mjs",
           "note": "Jede .jar wie ein Launcher geprüft (EOCD, Verzeichnis, Loader-Metadaten); abgeschnittene/HTML/beschädigte Dateien erkannt. Download-Seite speichert nur geprüfte Bytes (02.11.2026)."
+        },
+        {
+          "path": "scripts/bridge_gametest.mjs",
+          "note": "0.3.0: Materialliste, Ebenenmodus, texturierte Geisterblöcke im echten Client und mit Philipps Modpack (Sodium/Iris) geprüft (02.11.2026)."
         }
       ],
       "verification": {
@@ -3113,7 +3122,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T06:32:41.549Z"
+      "updatedAt": "2026-11-02T06:46:18.043Z"
     },
     {
       "id": "GAME-03",
@@ -6507,6 +6516,48 @@
           "done": 4,
           "total": 6,
           "next": "Philipp testet 0.2.0 auf server.lmnt-gaming.net (Anleitung /mnt/project-files/mod/ANLEITUNG_HOLOGRAMM.md); danach Stufe 3 (texturierte Geisterblöcke, Materialliste im Spiel)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T06:46:18.043Z",
+      "kind": "progress",
+      "items": [
+        "GAME-07"
+      ],
+      "summary": "Stufe 2 (0.3.0): texturierte Geisterblöcke, Materialliste, Ebenenmodus; im echten Client und mit Philipps Modpack geprüft, Release auf #/mod",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/MOD_HOLOGRAM.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.3.0.jar",
+        "mods/bauplaner-bridge/README.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/GhostModels.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/Hologram.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramCommands.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramHud.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramKeys.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramRenderer.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/MaterialScreen.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/PlanScreen.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/resources/assets/bauplaner_bridge/lang/de_de.json",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/resources/assets/bauplaner_bridge/lang/en_us.json",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/LiveCheck.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Materials.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java",
+        "scripts/bridge_gametest.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-07",
+          "status": "implemented",
+          "done": 5,
+          "total": 7,
+          "next": "Philipp testet 0.3.0 auf server.lmnt-gaming.net (Anleitung /mnt/project-files/mod/ANLEITUNG_HOLOGRAMM.md); danach Stufe 3."
         }
       ]
     }
