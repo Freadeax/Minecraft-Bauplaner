@@ -133,7 +133,7 @@ export const TEST_AREAS: readonly TestArea[] = [
       v('MOD-11', 'Großer Plan', ['Plan mit über 10 000 Blöcken einblenden und herumlaufen.'], 'Bildrate bleibt spielbar; weiter entfernte Blöcke werden zu Kisten (Grenze: Texturen bis 40 Blöcke, höchstens 30 000 offene Blöcke).'),
       v('MOD-12', 'Abschnitt fertig', ['Einen Bauabschnitt zu Ende bauen.'], 'Genau eine Chat-Meldung nennt den nächsten Abschnitt; HUD-Zeile „Abschnitt k/n“ stimmt mit dem Planer überein.'),
       v('MOD-13', 'Platzierhilfe im Detail', ['Falschen Block in die Hand nehmen und setzen; Treppe falsch herum setzen; richtigen Planblock abbauen; Num 8 auf einen Planblock.', 'Tür, Kiste, Knopf bedienen; Gerüst auf Luft-Feldern setzen.'], 'Falsches wird nicht gesetzt und der Hinweis erklärt es; Num 8 nimmt den Planblock in die Hand; Bedienen und Gerüst gehen normal; mit Tool Switcher kein ungewollter Werkzeugwechsel.'),
-      v('MOD-14', 'Tasten umbelegen', ['Optionen → Steuerung → Bauplaner: eine Taste umbelegen, Spiel neu starten.'], 'Belegung bleibt; `/bauplaner diagnose` zeigt keine Konflikte mit Jade (Num 0–5), Xaero (Num +), Voice Chat (H/N), Iris (I/K/R).'),
+      v('MOD-14', 'Tasten umbelegen', ['Optionen → Steuerung → Bauplaner: eine Taste umbelegen, Spiel neu starten.'], 'Belegung bleibt; `/bauplaner diagnose` zeigt keine Konflikte mit Jade (Num 0–5), Xaero (Num +), Voice Chat (H/N), Iris (I/K/R). Meldet er einen (alte Belegung aus einer früheren Version, z. B. „Ebene tiefer“ auf Num 3), die Taste dort zurücksetzen und erneut prüfen.'),
     ],
   },
   {

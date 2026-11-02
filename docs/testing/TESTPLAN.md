@@ -117,7 +117,7 @@ Die Bauplaner-Mod im Spiel (Fabric oder NeoForge, Minecraft 26.3). Nur Client �
 | MOD-11 | Großer Plan | vertieft | 1. Plan mit über 10 000 Blöcken einblenden und herumlaufen. | Bildrate bleibt spielbar; weiter entfernte Blöcke werden zu Kisten (Grenze: Texturen bis 40 Blöcke, höchstens 30 000 offene Blöcke). |
 | MOD-12 | Abschnitt fertig | vertieft | 1. Einen Bauabschnitt zu Ende bauen. | Genau eine Chat-Meldung nennt den nächsten Abschnitt; HUD-Zeile „Abschnitt k/n“ stimmt mit dem Planer überein. |
 | MOD-13 | Platzierhilfe im Detail | vertieft | 1. Falschen Block in die Hand nehmen und setzen; Treppe falsch herum setzen; richtigen Planblock abbauen; Num 8 auf einen Planblock.<br>2. Tür, Kiste, Knopf bedienen; Gerüst auf Luft-Feldern setzen. | Falsches wird nicht gesetzt und der Hinweis erklärt es; Num 8 nimmt den Planblock in die Hand; Bedienen und Gerüst gehen normal; mit Tool Switcher kein ungewollter Werkzeugwechsel. |
-| MOD-14 | Tasten umbelegen | vertieft | 1. Optionen → Steuerung → Bauplaner: eine Taste umbelegen, Spiel neu starten. | Belegung bleibt; `/bauplaner diagnose` zeigt keine Konflikte mit Jade (Num 0–5), Xaero (Num +), Voice Chat (H/N), Iris (I/K/R). |
+| MOD-14 | Tasten umbelegen | vertieft | 1. Optionen → Steuerung → Bauplaner: eine Taste umbelegen, Spiel neu starten. | Belegung bleibt; `/bauplaner diagnose` zeigt keine Konflikte mit Jade (Num 0–5), Xaero (Num +), Voice Chat (H/N), Iris (I/K/R). Meldet er einen (alte Belegung aus einer früheren Version, z. B. „Ebene tiefer“ auf Num 3), die Taste dort zurücksetzen und erneut prüfen. |
 
 ## LIVE · Mod: Verbindung mit dem Planer (Mod)
 

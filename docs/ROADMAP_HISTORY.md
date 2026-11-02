@@ -3067,3 +3067,19 @@ Mod 0.7.2 für die Testphase: /bauplaner diagnose (mit Fehlerzähler des Absturz
 - `mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java`
 - `scripts/bridge_gametest.mjs`
 
+## 2026-11-02T22:22:15.691Z · progress
+
+**Aufgaben:** QA-04
+
+Teststand Mod 0.7.2 mit diagnose; Hinweis alte Tastenbelegung
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| QA-04 | 🧩 Implementiert · Abnahme offen | 4/6 | Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `docs/architecture/TESTPHASE.md`
+- `docs/testing/TESTPLAN.md`
+

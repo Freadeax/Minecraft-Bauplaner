@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T22:14:34.982Z",
+  "updatedAt": "2026-11-02T22:22:15.691Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -5528,7 +5528,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T20:42:10.000Z"
+      "updatedAt": "2026-11-02T22:22:15.691Z"
     }
   ],
   "events": [
@@ -9792,6 +9792,28 @@
           "done": 8,
           "total": 10,
           "next": "Philipp testet 0.7.0 auf server.lmnt-gaming.net (Bauabschnitte aus seinem Projekt, Röntgensicht mit Shader); danach Stufe 6."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T22:22:15.691Z",
+      "kind": "progress",
+      "items": [
+        "QA-04"
+      ],
+      "summary": "Teststand Mod 0.7.2 mit diagnose; Hinweis alte Tastenbelegung",
+      "files": [
+        "apps/web/src/testing/testplan.ts",
+        "docs/architecture/TESTPHASE.md",
+        "docs/testing/TESTPLAN.md"
+      ],
+      "snapshot": [
+        {
+          "id": "QA-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist."
         }
       ]
     }

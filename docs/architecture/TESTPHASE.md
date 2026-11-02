@@ -29,7 +29,7 @@ Stand 02.11.2026. Die große Testphase läuft, sobald die laufenden Blöcke auf 
 ## Teststand
 
 - Planer: main ab dem QA-04-Commit (alle Blöcke der Novemberrunde im Kern fertig: LIB-05 Runde 3, EDIT-05, BASE-01/SPLIT-01, PERF-04-S07, MAP-05, Mod-Absturzschutz). Der genaue Stand steht im Systemcheck unter „Auslieferung → Quellstand“ und in jedem Fehlerbericht unter „Build“.
-- Mod: 0.7.1 (Fabric, NeoForge) auf `#/mod`. `/bauplaner diagnose` kommt mit der nächsten Version (Thread Mod); bis dahin bei Mod-Fehlern `logs/latest.log` und ggf. `crash-reports/` anhängen.
+- Mod: 0.7.2 (Fabric, NeoForge, main 8ce80fc) auf `#/mod`, mit `/bauplaner diagnose` und Absturzschutz; im Spieltest auf NeoForge, Fabric und Fabric mit Philipps Modpack samt Shader geprüft (der Spieltest führt `diagnose` aus und prüft den Bericht). Beispielbericht: `/mnt/project-files/mod/0.7.2-diagnose-beispiel.txt`. Bekannt: eine alte `options.txt` behält Tastenbelegungen über Updates, der Bericht meldet dann z. B. „Ebene tiefer“ auf Num 3 im Konflikt mit Jade; Abhilfe Optionen → Steuerung → Bauplaner zurücksetzen (Standard Num *).
 - Offene Abnahmen, die Teil der Testphase sind: BASE-01-S06 (Basisplaner), SPLIT-01-S05 (Herauslösen mit echten Dateien), LIB-05-S08 (neue Gebäude im Spiel), EDIT-05-S07 (gestapelte/gedrehte Bauteile im Spiel), GAME-07-S05/MAP-05 (Paper-Server, Langdruck-Menü am Handy), PERF-04-S06 (Firefox/Safari). Jede hat einen Testfall (BIB-10/11/12, WERK-06, MOD-10, LIVE-01, START-07).
 
 ## Wo Berichte landen
