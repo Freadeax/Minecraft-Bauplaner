@@ -2930,6 +2930,94 @@
       "updatedAt": "2026-11-01T14:16:52.468Z"
     },
     {
+      "id": "GAME-07",
+      "title": "Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server)",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Fabric-Mod 26.3 bauen und testen“)",
+      "dependencies": [
+        "GAME-02"
+      ],
+      "scope": [
+        "mods/bauplaner-bridge/mod-core/",
+        "mods/bauplaner-bridge/fabric-26.3/",
+        "mods/bauplaner-bridge/settings.gradle",
+        "mods/bauplaner-bridge/VERSION",
+        "scripts/bridge_gametest.mjs",
+        "scripts/test_bridge_ingame.sh",
+        "docs/architecture/MOD_HOLOGRAM.md",
+        "downloads/mod/",
+        "apps/web/src/views/mod/releases.json",
+        "tests/e2e/mod-download.e2e.mjs"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "GAME-07-S01",
+          "title": "Versionsneutraler Mod-Kern: Blockzustände, Vergleichsregeln wie gameCheck.ts, Platzierung mit Drehen/Spiegeln, Planmodell, Live-Abgleich, Platzierungsspeicher; JUnit-Tests.",
+          "done": true
+        },
+        {
+          "id": "GAME-07-S02",
+          "title": "Fabric 26.3: Planmenü, Tasten, Platzieren/Verschieben/Drehen/Spiegeln, Rahmen, Speicherung je Server/Welt.",
+          "done": true
+        },
+        {
+          "id": "GAME-07-S03",
+          "title": "Hologramm: farbige Geisterblöcke (fehlt blau, falsch rot, Zustand gelb), HUD-Fortschritt, Fehlerfinder.",
+          "done": true
+        },
+        {
+          "id": "GAME-07-S04",
+          "title": "Echter Spieltest (Client und Modpack mit Sodium/Iris), Release auf #/mod.",
+          "done": true
+        },
+        {
+          "id": "GAME-07-S05",
+          "title": "Abnahme durch Philipp auf server.lmnt-gaming.net.",
+          "done": false
+        },
+        {
+          "id": "GAME-07-S06",
+          "title": "Stufe 3 ff.: texturierte Geisterblöcke, Materialliste im Spiel, Bauabschnitte/Ebenenfilter, NeoForge-Port.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Reiner Client: keine Pakete an den Server, keine Weltänderung, kein automatisches Bauen, keine Abhängigkeit von WorldEdit oder Litematica; Ergebnis des Live-Abgleichs gleicht dem Website-Vergleich."
+      ],
+      "next": "Philipp testet 0.2.0 auf server.lmnt-gaming.net (Anleitung /mnt/project-files/mod/ANLEITUNG_HOLOGRAMM.md); danach Stufe 3 (texturierte Geisterblöcke, Materialliste im Spiel).",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java",
+          "note": "7 JUnit-Fälle: Zustände, Regeln wie gameCheck.ts, Drehen/Spiegeln mit Rückweg, Planlesen, Live-Abgleich, Speicher."
+        },
+        {
+          "path": "scripts/test_bridge_ingame.sh",
+          "note": "Echter 26.3-Client und Produktionsstart mit Philipps Modpack (Sodium, Iris, Xaero …): Hologramm fehlt 1/falsch 1, gesetzter Block ohne Befehl erkannt, Drehen, Speichern, Taste J öffnet das Menü (02.11.2026)."
+        },
+        {
+          "path": "docs/architecture/MOD_HOLOGRAM.md",
+          "note": "Grundsätze, Aufbau, Tasten, Darstellung, Live-Abgleich, Prüfung."
+        },
+        {
+          "path": "tests/e2e/mod-download.e2e.mjs",
+          "note": "Download-Seite wählt 0.2.0 vor, 0.1.0 bleibt wählbar."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Automatisch im echten Client und mit Modpack geprüft; Mehrspieler-Abnahme durch Philipp offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-02T05:50:00.000Z"
+    },
+    {
       "id": "GAME-03",
       "title": "Optionale lokale Verbindung und Anzeige im Spiel",
       "phase": "P3",

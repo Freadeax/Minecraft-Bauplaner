@@ -9,6 +9,7 @@ version = rootProject.file('VERSION').text.trim()
 group = 'io.github.freadeax.bauplaner'
 
 sourceSets.main.java.srcDir '../core/src/main/java'
+sourceSets.main.java.srcDir '../mod-core/src/main/java'
 
 // Echter Spieltest (Fabric Client Game Test): startet Minecraft 26.3 mit der Mod, baut einen Plan per
 // Testbefehl auf und lässt die Mod ihn wie ein Spieler aufnehmen. Nur über scripts/test_bridge_ingame.sh,

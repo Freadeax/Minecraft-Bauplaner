@@ -1,0 +1,15 @@
+{
+  "key.category.bauplaner_bridge.bauplaner": "Bauplaner",
+  "key.bauplaner_bridge.menu": "Plans and placement",
+  "key.bauplaner_bridge.toggle": "Toggle hologram",
+  "key.bauplaner_bridge.finder": "Show next mistake",
+  "key.bauplaner_bridge.forward": "Move plan forward",
+  "key.bauplaner_bridge.back": "Move plan back",
+  "key.bauplaner_bridge.left": "Move plan left",
+  "key.bauplaner_bridge.right": "Move plan right",
+  "key.bauplaner_bridge.up": "Move plan up",
+  "key.bauplaner_bridge.down": "Move plan down",
+  "key.bauplaner_bridge.turn": "Rotate plan (90° clockwise)",
+  "key.bauplaner_bridge.here": "Move plan to targeted block",
+  "key.bauplaner_bridge.mirror": "Mirror plan"
+}

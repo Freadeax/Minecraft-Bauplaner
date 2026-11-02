@@ -7,12 +7,13 @@
 # not work: Minecraft 26.3 asks for an sRGB-capable GL visual that Xvfb's GLX does not offer.
 # Optional: BAUPLANER_MODPACK_MODS=<mods folder of a Fabric instance> runs the same test as a production
 # start with the built .jar plus every mod of that folder (compatibility with a real modpack).
+# Optional: BAUPLANER_KEEP=<dir> keeps the work folder (game.log, hologramm.png, menue.png, scan) there.
 # Not part of `npm run check` (several minutes, large downloads on the first run).
 set -euo pipefail
 cd "$(git rev-parse --show-toplevel)"
 work=$(mktemp -d)
 weston_pid=
-cleanup() { [ -n "$weston_pid" ] && kill "$weston_pid" 2>/dev/null; rm -rf "$work"; }
+cleanup() { [ -n "$weston_pid" ] && kill "$weston_pid" 2>/dev/null; [ -n "${BAUPLANER_KEEP:-}" ] && cp -r "$work" "$BAUPLANER_KEEP"; rm -rf "$work"; }
 trap cleanup EXIT
 
 node scripts/bridge_gametest.mjs prepare "$work"

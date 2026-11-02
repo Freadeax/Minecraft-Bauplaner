@@ -16,6 +16,8 @@ plugins {
 }
 rootProject.name = 'bauplaner-bridge'
 include 'core'
+// Bauplaner-Mod 2.0: versionsneutraler Kern (Plan, Platzierung, Blockregeln, Live-Abgleich).
+include 'mod-core'
 if (providers.gradleProperty('withFabric').isPresent()) {
     include 'fabric-26.3'
 }

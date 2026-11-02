@@ -38,6 +38,31 @@ final class McCompat {
         };
     }
 
+    /** States seen so far: the game keeps one object per block state, so the text form is built once. */
+    private static final java.util.Map<net.minecraft.world.level.block.state.BlockState, io.github.freadeax.bauplaner.mod.BlockState> STATES = new java.util.IdentityHashMap<>();
+
+    /** Read-only reader for the live check; {@code null} for blocks in chunks that are not loaded. */
+    static io.github.freadeax.bauplaner.mod.LiveCheck.WorldReader liveReader(ClientLevel level) {
+        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+        return (x, y, z) -> {
+            if (level.isOutsideBuildHeight(y)) return io.github.freadeax.bauplaner.mod.BlockState.AIR;
+            if (!level.hasChunk(x >> 4, z >> 4)) return null;
+            return modState(level.getBlockState(pos.set(x, y, z)));
+        };
+    }
+
+    static io.github.freadeax.bauplaner.mod.BlockState modState(net.minecraft.world.level.block.state.BlockState state) {
+        return STATES.computeIfAbsent(state, s -> io.github.freadeax.bauplaner.mod.BlockState.parse(BlockStateParser.serialize(s)));
+    }
+
+    /** Display name of a block in the player's language ("Eichenholztreppe"); the id for unknown blocks. */
+    static String blockName(io.github.freadeax.bauplaner.mod.BlockState state) {
+        if (state == null) return "?";
+        var id = net.minecraft.resources.Identifier.tryParse(state.id());
+        if (id == null) return state.id();
+        return net.minecraft.core.registries.BuiltInRegistries.BLOCK.getOptional(id).map(b -> b.getName().getString()).orElse(state.id());
+    }
+
     /** Block the player looks at (crosshair), or the block below the player's feet. */
     static BlockPos targetBlock(Minecraft mc) {
         if (mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult hit && hit.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK) return hit.getBlockPos();

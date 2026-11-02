@@ -35,7 +35,10 @@ for (const viewport of [{ width: 1400, height: 900 }, { width: 390, height: 844 
     await p.getByRole('link', { name: 'Minecraft-Mod' }).click();
     await p.getByRole('heading', { name: 'Mod herunterladen' }).waitFor();
     assert.equal(await p.title(), 'Mod herunterladen · LMNT Build Studio');
-    const newest = releases.toSorted((a, b) => b.minecraft.localeCompare(a.minecraft, 'de', { numeric: true }))[0];
+    const byVersion = (a, b) => b.minecraft.localeCompare(a.minecraft, 'de', { numeric: true }) || b.modVersion.localeCompare(a.modVersion, 'de', { numeric: true });
+    // Vorauswahl: neueste Minecraft-Version, Fabric, neueste Mod-Version.
+    const newest = releases.filter(r => r.loader === 'fabric').toSorted(byVersion)[0];
+    const older = releases.find(r => r.loader === 'fabric' && r.minecraft === newest.minecraft && r.modVersion !== newest.modVersion);
     assert.equal(await p.getByLabel('Minecraft-Version').inputValue(), newest.minecraft);
     assert.equal(await p.getByLabel('Mod-Loader').inputValue(), 'fabric');
     assert.equal(await p.locator('option[value=forge]').evaluate(o => o.disabled), true, 'geplante Loader nicht wählbar');
@@ -54,6 +57,11 @@ for (const viewport of [{ width: 1400, height: 900 }, { width: 390, height: 844 
     assert.equal(download.suggestedFilename(), newest.file);
     // Browser downloads bypass request routing; the same URL fetched by the page goes through it.
     assert.equal(await p.evaluate(href => fetch(href).then(r => r.arrayBuffer()).then(b => b.byteLength), await link.getAttribute('href')), newest.bytes);
+    // Ältere Mod-Versionen bleiben wählbar.
+    if (older) {
+      await p.getByLabel('Mod-Version').selectOption(older.modVersion);
+      assert.equal(await link.getAttribute('href'), `/Minecraft-Bauplaner/downloads/mod/${older.file}`);
+    }
     // Die Auswahl steht als teilbarer Link in der Adresszeile.
     await p.getByLabel('Mod-Version').selectOption(newest.modVersion);
     assert.match(p.url(), new RegExp(`#/mod\\?minecraft=${newest.minecraft.replace('.', '\\.')}&loader=fabric&version=`));

@@ -34,6 +34,7 @@ public final class BridgeGameTest implements FabricClientGameTest {
             Files.copy(io.resolve("plan.schem"), root.resolve("plans").resolve(PLAN), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
             deleteScans(root);
             Files.deleteIfExists(root.resolve("state.properties"));
+            Files.deleteIfExists(root.resolve("platzierung.properties"));
             List<String> setblocks = Files.readAllLines(io.resolve("setblocks.txt")).stream().filter(l -> !l.isBlank()).toList();
 
             try (TestSingleplayerContext world = context.worldBuilder().create()) {
@@ -61,6 +62,15 @@ public final class BridgeGameTest implements FabricClientGameTest {
                 context.waitFor(mc -> hasScan(root), 20 * 60);
                 context.takeScreenshot("bauplaner-aufnahme");
 
+                try {
+                    hologram(context, world, io, root, anchor);
+                } catch (Throwable t) {
+                    // Modpack runs can hang on shutdown before the failure is reported: log it right away.
+                    t.printStackTrace();
+                    Files.writeString(io.resolve("fehler.txt"), String.valueOf(t));
+                    throw t;
+                }
+
                 String state = Files.readString(root.resolve("state.properties"));
                 if (!state.contains(".anchor=" + anchor[0] + " " + anchor[1] + " " + anchor[2]))
                     throw new AssertionError("Anker nicht gespeichert oder falsch: " + state);
@@ -70,6 +80,53 @@ public final class BridgeGameTest implements FabricClientGameTest {
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
+    }
+
+    /**
+     * Mod 2.0: the plan as hologram on the same building. Progress must show exactly the wrong and the
+     * missing block, follow a block placed afterwards, react to turning, and the placement must be
+     * remembered. Chat lines are checked by scripts/bridge_gametest.mjs verify (game.log).
+     */
+    private static void hologram(ClientGameTestContext context, TestSingleplayerContext world, Path io, Path root, int[] anchor) throws IOException {
+        chat(context, "/bauplaner zeigen " + PLAN);
+        context.waitTicks(40);
+        chat(context, "/bauplaner fortschritt");
+        chat(context, "/bauplaner fehler");
+        // Overview from the north-west on the ground, for the screenshot with blue/red ghost blocks.
+        world.getServer().runCommand("tp @a " + (anchor[0] - 5.5) + " " + anchor[1] + " " + (anchor[2] - 8.5) + " 0 0");
+        world.getConnection().waitForChunksRender();
+        context.setScreen(() -> null);
+        context.runOnClient(mc -> mc.gui.hud.getChat().clearMessages(false));
+        context.waitTicks(5);
+        context.getInput().lookAt(new BlockPos(anchor[0] + 3, anchor[1] + 4, anchor[2] + 2));
+        context.waitTicks(10);
+        copy(context.takeScreenshot("bauplaner-hologramm"), io.resolve("hologramm.png"));
+        // Key J opens the plan menu.
+        context.getInput().pressKey(InputConstants.KEY_J);
+        context.waitTicks(10);
+        String screen = context.computeOnClient(mc -> mc.gui.screen() == null ? "keiner" : mc.gui.screen().getClass().getSimpleName());
+        if (!screen.equals("PlanScreen")) throw new AssertionError("Taste J öffnet nicht das Planmenü, offen: " + screen);
+        copy(context.takeScreenshot("bauplaner-menue"), io.resolve("menue.png"));
+        context.setScreen(() -> null);
+        // Build the missing block: the live check must notice it without any command.
+        String json = Files.readString(io.resolve("state.json"));
+        var m = java.util.regex.Pattern.compile("\"missing\":\\[(-?\\d+),(-?\\d+),(-?\\d+)\\],\"missingState\":\"([^\"]+)\"").matcher(json);
+        if (!m.find()) throw new AssertionError("state.json ohne missing/missingState");
+        world.getServer().runCommand("setblock " + (anchor[0] + Integer.parseInt(m.group(1))) + " " + (anchor[1] + Integer.parseInt(m.group(2))) + " "
+                + (anchor[2] + Integer.parseInt(m.group(3))) + " " + m.group(4));
+        context.waitTicks(40);
+        chat(context, "/bauplaner fortschritt");
+        chat(context, "/bauplaner drehen");
+        context.waitTicks(40);
+        chat(context, "/bauplaner fortschritt");
+        chat(context, "/bauplaner drehen -1");
+        context.waitTicks(40);
+        chat(context, "/bauplaner fortschritt");
+        Files.copy(root.resolve("platzierung.properties"), io.resolve("platzierung.properties"), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    private static void copy(Path from, Path to) throws IOException {
+        Files.copy(from, to, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
     }
 
     private static void chat(ClientGameTestContext context, String line) {

@@ -1,0 +1,15 @@
+{
+  "key.category.bauplaner_bridge.bauplaner": "Bauplaner",
+  "key.bauplaner_bridge.menu": "Pläne und Platzierung",
+  "key.bauplaner_bridge.toggle": "Hologramm ein/aus",
+  "key.bauplaner_bridge.finder": "Nächsten Fehler zeigen",
+  "key.bauplaner_bridge.forward": "Plan nach vorn",
+  "key.bauplaner_bridge.back": "Plan nach hinten",
+  "key.bauplaner_bridge.left": "Plan nach links",
+  "key.bauplaner_bridge.right": "Plan nach rechts",
+  "key.bauplaner_bridge.up": "Plan nach oben",
+  "key.bauplaner_bridge.down": "Plan nach unten",
+  "key.bauplaner_bridge.turn": "Plan drehen (90° rechts)",
+  "key.bauplaner_bridge.here": "Plan zum angeschauten Block",
+  "key.bauplaner_bridge.mirror": "Plan spiegeln"
+}

@@ -42,7 +42,7 @@ if (mode === 'prepare') {
   }
   writeFileSync(join(dir, 'plan.schem'), plan.bytes);
   writeFileSync(join(dir, 'setblocks.txt'), commands.join('\n') + '\n');
-  writeFileSync(join(dir, 'state.json'), JSON.stringify({ project, revisionId: revision.id, planSha256: plan.sha256, wrong: wrong.position, missing: missing.position }));
+  writeFileSync(join(dir, 'state.json'), JSON.stringify({ project, revisionId: revision.id, planSha256: plan.sha256, wrong: wrong.position, missing: missing.position, missingState: stateString(resolution.world.palette[missing.paletteIndex]) }));
   console.log(`Spieltest vorbereitet: ${blocks.length} Blöcke, Abweichungen bei ${wrong.position.join('/')} (Diamant) und ${missing.position.join('/')} (fehlt).`);
 } else {
   const expected = JSON.parse(readFileSync(join(dir, 'state.json'), 'utf8'));
@@ -67,5 +67,30 @@ if (mode === 'prepare') {
   assert.deepEqual(byVerdict.wrong.position, expected.wrong);
   assert.equal(byVerdict.wrong.actual, 'minecraft:diamond_block');
   assert.deepEqual(byVerdict.missing.position, expected.missing);
+  hologram(join(dir, 'game.log'), check.totals.cells);
   console.log(`Spieltest bestanden: Minecraft ${scan.meta.gameVersion ?? '26.3'} (${scan.meta.loader ?? '?'}), ${check.totals.cells} Zellen aus ${scan.meta.source === 'server' ? 'der echten Serverwelt' : 'dem echten Client'} gelesen, ${check.totals.ok} korrekt, 1 falscher Block und 1 fehlender Block an den erwarteten Stellen erkannt.`);
+}
+
+/**
+ * Mod 2.0 hologram (Fabric only, skipped when the log has no hologram lines, e.g. the Paper server test):
+ * live progress after placing, after building the missing block, turned and turned back; placement saved.
+ */
+function hologram(logFile, cells) {
+  let log;
+  try { log = readFileSync(logFile, 'utf8'); } catch { return; }
+  const progress = [...log.matchAll(/\[Bauplaner\] .*?: (\d+) % · richtig (\d+) · fehlt (\d+) · falsch (\d+) · Zustand (\d+) · nicht geladen (\d+)/g)]
+    .map(m => m.slice(1).map(Number));
+  if (progress.length === 0) return;
+  assert.equal(progress.length, 4, 'vier Fortschrittszeilen');
+  const [placed, built, turned, back] = progress;
+  const planned = placed[1] + placed[2] + placed[3] + placed[4] + placed[5];
+  assert.deepEqual(placed.slice(2), [1, 1, 0, 0], 'nach dem Platzieren: 1 fehlt, 1 falsch');
+  assert.deepEqual(built.slice(2), [0, 1, 0, 0], 'fehlender Block gesetzt: Live-Abgleich erkennt ihn');
+  assert.equal(built[1], placed[1] + 1);
+  assert.ok(turned[1] < built[1], 'gedreht passt der Plan nicht mehr');
+  assert.deepEqual(back.slice(1), built.slice(1), 'zurückgedreht wieder wie vorher');
+  assert.ok(planned > 0 && planned <= cells);
+  assert.match(log, /\[Bauplaner\] Nächster Fehler bei -?\d+ -?\d+ -?\d+: erwartet /);
+  assert.match(readFileSync(join(dir, 'platzierung.properties'), 'utf8'), /\.plan=spieltest\.schem/);
+  console.log(`Hologramm bestanden: ${planned} Planblöcke, Fortschritt ${placed[0]} % → ${built[0]} % nach dem Setzen des fehlenden Blocks, Drehen und Speichern geprüft.`);
 }

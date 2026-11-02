@@ -47,6 +47,20 @@
       "releasedAt": "2026-11-01",
       "sourceCommit": "742fe0382a01b7c21bc1e77fb9bc468a8bf4ddb8",
       "tested": "Im echten Minecraft-26.3-Client mit NeoForge 26.3.0.100 automatisch geprüft (Testwelt, Plan laden, Anker auf angeschauten Block, Aufnahme, Website-Vergleich erkennt genau den falschen und den fehlenden Block). Über einen echten Launcher und auf einem Mehrspieler-Server noch nicht abgenommen."
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.2.0.jar",
+      "modVersion": "0.2.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 95726,
+      "sha256": "e6df207796f15039885df0820dadc5c2220593b0bb2b5421c8d0a9b3266d99ff",
+      "releasedAt": "2026-11-02",
+      "sourceCommit": "ca0819e8a5e089e49e967039e295a83e38a80d6b",
+      "tested": "Echter Minecraft-26.3-Client (Fabric Client Game Test) und Produktionsstart mit allen Mods aus Philipps Modpack (Sodium, Iris, Xaero, Simple Voice Chat, REI …): Aufnahme wie 0.1.0, dazu Hologramm platziert, Live-Abgleich fehlt 1/falsch 1, gesetzter Block ohne Befehl erkannt, Drehen, Speichern je Welt, Taste J öffnet das Menü (02.11.2026)."
     }
   ]
 }

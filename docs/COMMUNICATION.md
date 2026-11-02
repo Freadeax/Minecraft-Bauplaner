@@ -722,3 +722,14 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - **Fehlerbehebung mit Wirkung auf andere Bereiche:** Versionen aus dem Projekt-Reiter „Blöcke“ tragen jetzt `source.localTo` (`editor/commit.ts`). Überall, wo „die neueste Version“ gemeint ist, gilt jetzt `latestReleaseId` (überspringt lokale Änderungen): `ensembles.latestVersions`, `buildCatalog`, Anlagen (`versionOf(null)`), Editor-Einfügeliste, Anschluss-Panel, Beispielprojekt. Vorher wurde die lokale Änderung eines Projekts in Bibliothek, Katalogbild und neuen Projekten als Standard verwendet. `BuildingDetail`/Werkstatt-Einstieg (`versionIds.at(-1)`) unverändert gelassen.
 - Gemeinsame Verträge (anhängend): `Project.updates?`, `AssetVersionSource.localTo?`, Operation `updates.set`, `referencedVersionIds` enthält Verlaufsversionen, Projektreiter „Updates“, Symbol `update`.
 - Reservierung mit dem Push beendet. Offen: Echtgeräteabnahme (QA-02); Updateoperationen in der Teamreihenfolge (TEAM-02).
+### MSG-GAME-07-00 · Claude (Thread „Fabric-Mod 26.3 bauen und testen“) · 2026-11-02 · Anmeldung GAME-07 Mod 2.0
+- Auftrag Philipp (02.11.): Mod von Grund auf überarbeiten, rein clientseitig. Gewählte erste Stufe „Fundament + Hologramm“. Neue Roadmap-Aufgabe **GAME-07**.
+- Eigene Dateien: neu `mods/bauplaner-bridge/mod-core/` (Java-Kern, Paket `io.github.freadeax.bauplaner.mod`), neue Klassen in `fabric-26.3/.../fabric/` (Hologram*, PlanScreen), `fabric-26.3/src/main/resources/assets/`, `docs/architecture/MOD_HOLOGRAM.md`.
+- Kleine Eingriffe: `settings.gradle` (`include 'mod-core'`), `BridgeClient.java`/`McCompat.java`, Spieltest (`BridgeGameTest.java`, `bridge_gametest.mjs` – Hologrammprüfung nur, wenn das Log sie enthält; Paper-Test unverändert), `test_bridge_ingame.sh` (`BAUPLANER_KEEP`), `VERSION` 0.1.0 → 0.2.0 (betrifft nur künftige Builds; vorhandene .jar-Dateien bleiben).
+- **An NeoForge/Forge (GAME-05):** `core/` und `client-26.3/` unverändert. `mod-core` ist loaderneutral (Java 21) und kann später als Quelltext eingebunden werden.
+- Reservierung bis zum Push.
+
+### MSG-GAME-07-01 · Claude (Thread „Fabric-Mod 26.3 bauen und testen“) · 2026-11-02 · GAME-07 Stufe 1 umgesetzt
+- Fabric-Mod 0.2.0 mit Hologramm auf `#/mod` (0.1.0 bleibt wählbar). Im echten Client und mit Philipps Modpack automatisch geprüft (TESTING „GAME-07“).
+- Für alle Mod-Threads: Minecraft 26.x nutzt SDL-Scancodes; Tasten immer über `InputConstants.KEY_*` angeben, nie GLFW-Zahlen. Standardtasten mit Philipps Modpack abgleichen (B, H, N, M, U, Y, V, I, K, R sind dort belegt).
+- `mod-download.e2e.mjs` prüft jetzt die neueste Fabric-Version statt fest 0.1.0. Reservierung mit dem Push beendet.

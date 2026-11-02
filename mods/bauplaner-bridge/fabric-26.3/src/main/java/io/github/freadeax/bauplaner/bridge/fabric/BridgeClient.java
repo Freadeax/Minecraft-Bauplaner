@@ -38,6 +38,9 @@ public final class BridgeClient implements ClientModInitializer {
     private String anchorDimension;
     private ScanJob job;
     private String jobDimension;
+    private final Hologram hologram = new Hologram(root);
+    private final HologramRenderer renderer = new HologramRenderer(hologram);
+    private final HologramKeys keys = new HologramKeys(hologram);
 
     @Override
     public void onInitializeClient() {
@@ -53,7 +56,9 @@ public final class BridgeClient implements ClientModInitializer {
             var anchorCmd = literal("anker")
                     .then(literal("hier").executes(c -> setAnchor(c.getSource(), McCompat.targetBlock(c.getSource().getClient()))))
                     .then(xyz);
-            dispatcher.register(literal("bauplaner")
+            var cmd = literal("bauplaner");
+            HologramCommands.build(hologram).forEach(cmd::then);
+            dispatcher.register(cmd
                     .executes(c -> help(c.getSource()))
                     .then(literal("plaene").executes(c -> listPlans(c.getSource())))
                     .then(planCmd)
@@ -63,6 +68,16 @@ public final class BridgeClient implements ClientModInitializer {
                     .then(literal("status").executes(c -> status(c.getSource()))));
         });
         ClientTickEvents.END_CLIENT_TICK.register(this::tick);
+        ClientTickEvents.END_CLIENT_TICK.register(mc -> { keys.tick(mc); hologram.tick(mc); });
+        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents.CHUNK_UNLOAD.register((level, chunk) -> hologram.chunkUnloaded(chunk.getPos().x(), chunk.getPos().z()));
+        net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.JOIN.register((handler, sender, mc) -> mc.execute(() -> {
+            String msg = hologram.join(mc);
+            if (msg != null) McCompat.chat(mc, Component.literal("[Bauplaner] " + msg));
+        }));
+        net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.DISCONNECT.register((handler, mc) -> mc.execute(hologram::leave));
+        net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents.COLLECT_SUBMITS.register(renderer::submit);
+        net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry.addLast(
+                net.minecraft.resources.Identifier.fromNamespaceAndPath("bauplaner_bridge", "fortschritt"), new HologramHud(hologram)::extract);
     }
 
     private static void say(FabricClientCommandSource s, String text) { s.sendFeedback(Component.literal("[Bauplaner] " + text)); }
