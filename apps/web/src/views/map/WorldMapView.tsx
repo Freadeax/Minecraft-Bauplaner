@@ -455,7 +455,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
       <section className="map-main">
         <LiveGamePanel game={game} actions={{
           follow, onFollow: setFollow, terrainBusy, onLoadTerrain: () => void loadTerrainHere(), chunkCount: liveChunks?.size ?? 0,
-          onShowPlayer: () => { if (player) { setDimension(player.dimension); setFollow(true); } },
+          onShowPlayer: () => { if (player) { setDimension(player.dimension); setFollow(true); document.querySelector('.overview-canvas')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); } },
           onSendMarks: connected && sending !== 'marks' ? () => void sendMarks() : null,
           marksInfo: `${items.length} Einträge in ${dimensionLabel(dimension)}${status?.marks ? ` · im Spiel: ${status.marks}` : ''}`,
           hologramProject: holoProject, hologramMatch: holoMatch,
