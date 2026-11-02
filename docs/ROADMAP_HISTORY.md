@@ -1460,3 +1460,17 @@ Dateizuordnung der GAME-05-Integration (742fe03..10d71cc) nachgetragen: NeoForge
 - `scripts/test_bridge_ingame_forge.sh`
 - `tests/e2e/mod-download.e2e.mjs`
 
+## 2026-11-02T05:07:08.400Z · progress
+
+**Aufgaben:** BUILD-06
+
+BUILD-06 angemeldet: Aufgabe, Dateiumfang und Teilschritte; noch keine Implementierung.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| BUILD-06 | 🚧 In Arbeit | 0/5 | Domäne buildRun.ts mit Tests, dann Oberfläche im Bauen-Tab. |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+

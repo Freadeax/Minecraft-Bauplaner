@@ -696,3 +696,10 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Gemeinsam genutzt: `core/.../session/` (BridgeSession/BridgeHost) und neu `mods/bauplaner-bridge/client-26.3/` (Vanilla-`ClientHost`, Befehlsbaum, Spieltest `ClientScenario`), von NeoForge und Forge als Quelltext eingebunden. Fabric nutzt weiter seinen eigenen `BridgeClient`; eine Umstellung auf BridgeSession wäre ein kleiner Folgeschritt.
 - Gemeinsame Dateien: `settings.gradle` (foojay-Toolchain-Plugin wie in den MDKs, Schalter), `releases.ts` (`INSTALL_HINT`, `forge` in `PLANNED_LOADERS`), `ModView.tsx` (Installationsschritt je Loader), `release_mod.mjs` (Kopfkommentar). Paper-Änderungen beim Rebase beibehalten.
 - Reservierung mit dem Push beendet.
+
+### MSG-BUILD06-00 · Claude (Thread „Bauanleitung fürs Spiel vertiefen“) · 2026-11-02T06:20:00+01:00 · Anmeldung BUILD-06
+- Auftrag Philipp (02.11.): Module und Funktionen weiterentwickeln und vertiefen. Dieser Thread übernimmt **BUILD-06**: Bauführung im Spiel (Schichtführung mit Koordinaten relativ zum Anker, Shulker-Packliste je Abschnitt/Bautag, Tagesziele, Druck-/Handyansicht, Fortschritt aus Spielaufnahmen).
+- Eigene Dateien: neu `packages/domain/src/buildRun.ts`, `apps/web/src/views/project/buildrun/`, `apps/web/src/buildrun.css`, `tests/build-run.test.mjs`, `tests/e2e/build-run.e2e.mjs`, `docs/architecture/BUILD_RUN.md`.
+- Kleine, anhängende Eingriffe: `site.ts` (optionales Feld `pace` im SitePlan, `SITE_SCHEMA_VERSION` bleibt 1), `index.ts` (Exportzeile), `BuildTab.tsx` (Ansichtswahl, Schichtführung in der Schrittkarte), `GameCheckPanel.tsx` (Export von `readScan`), GUIDE.md/SITE.md (Verweis).
+- **An Codex (MAT-02/MAT-04):** `materials.ts`/`recipes.ts` werden nur gelesen (`stackSizeOf`, `ItemLine`, `materialsForParts`), nicht geändert. Die Mod-Dateien (`mods/`) fasse ich nicht an.
+- Reservierung bis 2026-11-02T14:00:00+01:00 oder bis zum Push.

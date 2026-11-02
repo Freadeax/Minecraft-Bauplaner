@@ -1,13 +1,14 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-01T19:18:40.607Z",
+  "updatedAt": "2026-11-02T05:07:08.400Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
     "MAP-01",
     "EDIT-01",
     "EDIT-02",
-    "GAME-05"
+    "GAME-05",
+    "BUILD-06"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -2427,6 +2428,72 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-01T14:55:14.685Z"
+    },
+    {
+      "id": "BUILD-06",
+      "title": "Bauführung im Spiel: Schichtführung, Tagesziele, Packlisten, Druck-/Handyansicht, Spielfortschritt",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Claude-Thread „Bauanleitung fürs Spiel vertiefen“",
+      "dependencies": [
+        "BUILD-01",
+        "GAME-01",
+        "MAP-01"
+      ],
+      "scope": [
+        "packages/domain/src/buildRun.ts",
+        "packages/domain/src/site.ts",
+        "apps/web/src/views/project/BuildTab.tsx",
+        "apps/web/src/views/project/buildrun/",
+        "apps/web/src/buildrun.css",
+        "tests/build-run.test.mjs",
+        "tests/e2e/build-run.e2e.mjs",
+        "docs/architecture/BUILD_RUN.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "BUILD-06-S01",
+          "title": "Schichtführung: Reihen/Rechtecke je Schritt mit Koordinaten relativ zum Anker und in Weltkoordinaten; Anker aus Weltlage oder Spielaufnahme.",
+          "done": false
+        },
+        {
+          "id": "BUILD-06-S02",
+          "title": "Shulker-Packliste je Bauabschnitt und Bautag in Reihenfolge des ersten Bedarfs.",
+          "done": false
+        },
+        {
+          "id": "BUILD-06-S03",
+          "title": "Tagesziele: offene Schritte nach Block- und Kistenbudget in Bautage teilen, Tagesverlauf aus Haken.",
+          "done": false
+        },
+        {
+          "id": "BUILD-06-S04",
+          "title": "Druckansicht (Bauzettel) und Handy-Baumodus.",
+          "done": false
+        },
+        {
+          "id": "BUILD-06-S05",
+          "title": "Spielfortschritt: bestätigte Schritte je Bautag übernehmen, Nacharbeitsliste mit Koordinaten.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Keine zweite Geometrie-, Zähl- oder Itemlogik: alles aus buildGuide/materialsForParts; Haken bleiben manuell und nur auf ausdrücklichen Klick."
+      ],
+      "next": "Domäne buildRun.ts mit Tests, dann Oberfläche im Bauen-Tab.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "In Arbeit."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-02T05:07:08.400Z"
     },
     {
       "id": "GEN-02",
@@ -5872,6 +5939,26 @@
           "done": 3,
           "total": 4,
           "next": "Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T05:07:08.400Z",
+      "kind": "progress",
+      "items": [
+        "BUILD-06"
+      ],
+      "summary": "BUILD-06 angemeldet: Aufgabe, Dateiumfang und Teilschritte; noch keine Implementierung.",
+      "files": [
+        "docs/COMMUNICATION.md"
+      ],
+      "snapshot": [
+        {
+          "id": "BUILD-06",
+          "status": "in_progress",
+          "done": 0,
+          "total": 5,
+          "next": "Domäne buildRun.ts mit Tests, dann Oberfläche im Bauen-Tab."
         }
       ]
     }
