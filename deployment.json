@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "90b2284dd6fdcb1a5409d1c9577f44b6627e3ff5",
-  "builtAt": "2026-11-02T19:19:30.705Z",
-  "node": "v22.22.0",
+  "sourceCommit": "988d23087017b95ba67955c60cbac1c3122181b7",
+  "builtAt": "2026-11-02T19:30:02.504Z",
+  "node": "v22.23.4",
   "files": [
     {
       "path": ".nojekyll",
@@ -35,24 +35,24 @@
       "sha256": "8104dbf7cb9de5c84ee3107b625ec7dc205e8c656b28ac9323bf2eede4b996b5"
     },
     {
-      "path": "assets/entityScene-CHumUQWa.js",
+      "path": "assets/entityScene-Bhfbfrdq.js",
       "bytes": 544106,
-      "sha256": "4a17d65d52eb850ceb4f56b44e1ad62a7633136c68a6fb4d018a25789d23cfcc"
+      "sha256": "c7afff9d2ca5297692f0f5b4d595ac84449697b14f329701d792443041ec8a4c"
     },
     {
-      "path": "assets/glShot-DYtX4gpT.js",
+      "path": "assets/glShot-DYOSJ_9W.js",
       "bytes": 3294,
-      "sha256": "f12d77a11372270c9acf3471947011e65469a29feaa6cde4ee03305efe3521f3"
+      "sha256": "50fa98dd97c741e8e984d54bb2da393f07dc56cb57a1e731839c3590c4f56c27"
     },
     {
-      "path": "assets/heavy.worker-CY3MjauV.js",
+      "path": "assets/heavy.worker-nbKD6CiY.js",
       "bytes": 1132,
-      "sha256": "9d442cbd27b97edaa28f3804b269a9fd65035c174cbe9bbc0a82848e8fa96578"
+      "sha256": "c2eea6f1574eabf555e200e29b45affbfe8a45b5b78a4f6ed4e501e3ad4b38a7"
     },
     {
-      "path": "assets/idbRepository-DXS4-n5J.js",
+      "path": "assets/idbRepository-DaeaqhYE.js",
       "bytes": 9032,
-      "sha256": "5ce9b6502cd342c7a376ed2d1b4dab2beb4266672982a78a3ad8ef29b7b90c02"
+      "sha256": "6c6ac189c6486dbbd35e68a056efa39b483045af20c715edb85b3a5d2b545f1e"
     },
     {
       "path": "assets/importJob-vhO0_0je.js",
@@ -60,19 +60,19 @@
       "sha256": "8fa41d738c537e3a16ca66c24b07c344e96c6d0da65e83ed5ff560f13966f252"
     },
     {
-      "path": "assets/index-B3J1-RW7.css",
-      "bytes": 184501,
-      "sha256": "348e551038e4ac60a966a6389a5c8220ae7e120061fa1f3e33a177bc6651a385"
+      "path": "assets/index-CqzYYLxo.js",
+      "bytes": 1151275,
+      "sha256": "5066894770eb42f57384ba165f3836057faa5552f00ef7615d40037ee566dbb9"
     },
     {
-      "path": "assets/index-BSiiWhgD.js",
-      "bytes": 1139618,
-      "sha256": "c08250162181167800670848e11a75584db39bbbb5fc96752dd83e958f5b429a"
+      "path": "assets/index-JTy8G0AJ.css",
+      "bytes": 184929,
+      "sha256": "b602d8f98088e1087b72e0df3d40a814dde7e13092a39aafd4f04bbeb50e54c7"
     },
     {
-      "path": "assets/libraryJob-8fpj1RvX.js",
+      "path": "assets/libraryJob-DgCzPoU7.js",
       "bytes": 3438,
-      "sha256": "d72c1a2880fe3501457605785cf162fa854f317de5eb6475bed7e871f68aeb30"
+      "sha256": "3b8005a05667232cc87b67ad1bb1761426c7702a248a17b04f05fbeb1379ad7c"
     },
     {
       "path": "assets/map.worker-w-UgmHTv.js",
@@ -100,9 +100,9 @@
       "sha256": "8351dd56de9e6e8827e666b03e7966068aa2fbbef6e8334cdef0593cf9114358"
     },
     {
-      "path": "assets/packKit-DuJBMqOK.js",
+      "path": "assets/packKit-Cm_yggSx.js",
       "bytes": 8054,
-      "sha256": "a3abc8ab76f2eaaf245811a1f1c7b0e490d5a83819528ea4ddfd262636ec7c42"
+      "sha256": "d1247205a7775c6a93ae28c9112764eb826f37f0a0b3fdcfb85ac93b2e13a921"
     },
     {
       "path": "assets/preload-helper-YpCHtD0s.js",
@@ -115,9 +115,9 @@
       "sha256": "014dd1872dc1c17fa78d6313c95747509abb0ab74435f942fefe41af1f110d48"
     },
     {
-      "path": "assets/repository-D_jxOwB4.js",
-      "bytes": 1021680,
-      "sha256": "04dfcc3a4d97f0d48c977bd977bb8924082f88ebac0930b16d14d88d7dc26e63"
+      "path": "assets/repository-5pcr_3N1.js",
+      "bytes": 1032690,
+      "sha256": "8a645738bc254f33932abc6ab662922af210afa80c4a81dae859000b97c20ebb"
     },
     {
       "path": "assets/scan.worker-BRAkokHN.js",
@@ -130,19 +130,19 @@
       "sha256": "8396800a04c40b589c23c718fe3f221643e375ac39051515fa8a4a20f9d44be1"
     },
     {
+      "path": "assets/snapshot-B0oVD1NV.js",
+      "bytes": 1034,
+      "sha256": "0f6d4ec05120be9bb0a7bc1dd117224398113d6e6b510c9203a3fa0146ce82f1"
+    },
+    {
       "path": "assets/snapshot-BIVv1xSj.js",
       "bytes": 14170,
       "sha256": "709a7a60ca74182be2d10a93039f20ae4a5df8621d6170f628345cb04b9d5c1c"
     },
     {
-      "path": "assets/snapshot-DbtuLjhT.js",
-      "bytes": 1034,
-      "sha256": "02958e998348d92eadc553c217ec75952800ea416d69ee0810960dad8453aa54"
-    },
-    {
-      "path": "assets/src-B3nC9M7q.js",
-      "bytes": 677691,
-      "sha256": "e22ee613f0622435218781935b3edf6c39bdd41ae524163ccb0033c9cb913aa5"
+      "path": "assets/src-8s12Nrw3.js",
+      "bytes": 678047,
+      "sha256": "1c1ddff76637446f7771a98e90bf1999b774fe2f65fb413b25b9e33e00eec5d8"
     },
     {
       "path": "assets/src-DdPTVSx_.js",
@@ -155,24 +155,24 @@
       "sha256": "18e4fbae05dba52ab5ee46f2febdec8cd653bddfba2a230159a9f63bcb6a8377"
     },
     {
-      "path": "assets/ThreeViewer-CxkXeUgz.js",
+      "path": "assets/ThreeViewer-Cqv_evDm.js",
       "bytes": 51593,
-      "sha256": "26114222dcd56d0197da37dc225935baeae5b13ac8b4c14d15d0ed7b65632f64"
+      "sha256": "c211bc04c2e919956ea940c51de8a405a9d6ec3b2fd659273ae6f986c88d4451"
     },
     {
-      "path": "assets/updateJob-DXrcSwAx.js",
+      "path": "assets/updateJob-BuwcnYzU.js",
       "bytes": 1099,
-      "sha256": "9cc34d7198601a2fdbfd4f02dbd19670bbc72fec0d5c892f9df41427a1d94647"
+      "sha256": "e7d3503afb84b13a7ed680161e78045871ce63453dd8ef87b4c1ac8827ec805c"
     },
     {
-      "path": "assets/versionJob-D96dyKoK.js",
+      "path": "assets/versionJob-zBiUE0Ki.js",
       "bytes": 735,
-      "sha256": "c900cea626fc9e533333a63f611bae166df87a0cfefa9059b95706e3003749b7"
+      "sha256": "6793d36113396c3a6b41c11208fc6cf57cfa89ee161acc7b86bcdce360ea70a3"
     },
     {
-      "path": "assets/world.worker-56cLozCL.js",
-      "bytes": 922080,
-      "sha256": "f76ec1b75581f68b8f333c69c332b71f9b30501dbf535d5d8467fa7f2604fc9f"
+      "path": "assets/world.worker-CqmFJ6Zj.js",
+      "bytes": 922436,
+      "sha256": "b0fdcd0f43680afd5c8d25b10bda3703a77dae8682459d486202b19160ecf157"
     },
     {
       "path": "examples/contract-multiregion.litematic",
@@ -192,7 +192,7 @@
     {
       "path": "index.html",
       "bytes": 1248,
-      "sha256": "09e5dcafca302232cae5c2974b6f57ae504f717ab5d2003148198697be8d8bce"
+      "sha256": "d22c48b7150fe985c5fa17775b6e3313e0199f301600504de6f57244ff02e7e2"
     },
     {
       "path": "THIRD_PARTY_NOTICES.txt",
