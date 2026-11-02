@@ -67,3 +67,11 @@ export type { FrozenPin, UpdateKind, UpdateRecord, UpdateState, PatchPolicy, Upd
   ConnectorChange, ConnectorChangeKind, UpdateChoice, InstanceUpdatePlan, LinkChange, StepChange, MaterialChange, UpdatePlan, PreparedUpdate, PrepareOptions } from './updates.js';
 export { anchorOf, anchorFromScan, sameAnchor, worldPos, cellLookup, stepRuns, stepRunsIn, runLabel, runCoords, stepText, packSteps, stockMap, packText, DEFAULT_PACE, PACE_LIMITS, checkPace, paceOf, stepWork, planSessions, progressByDay, sessionText, reworkList, REWORK_ACTION, gameCounts } from './buildRun.js';
 export type { BuildAnchor, CellLookup, RunKind, StepRun, PackLine, PackSlot, PackBox, PackPlan, PaceSetting, BuildSession, SessionPlan, DayProgress, ReworkItem, ReworkGroup, GameCounts } from './buildRun.js';
+export { SURVEY_SCHEMA_VERSION, SURVEY_UNKNOWN, SURVEY_MAX_SIDE, SURVEY_MAX_COLUMNS, SURVEY_MEDIA_TYPE, EARTHWORK_NOTE, checkSurveyArea, checkTerrainReference, createSurvey, encodeSurvey, decodeSurvey,
+  surveyStats, surveyFile, columnAt, surveyCovers, estimateEarthwork, columnBases, surveyDisplayCells } from './terrainSurvey.js';
+export type { SurveyArea, TerrainSurvey, ProjectTerrainReference, SurveyColumnsInput, SurveyColumn, ColumnBase, EarthworkEstimate, SurveyDisplay } from './terrainSurvey.js';
+export { isGroundId, isTreePartId, SURFACE_SKIP_IDS } from './terrain.js';
+export { entranceOf, turnedSide, turnsToFace, facesSide, SIDE_LABEL } from './entrance.js';
+export type { Entrance, Side } from './entrance.js';
+export { fitAnlageToTerrain, findTerrainSpot, placementColumns, TERRAIN_MODE_LABEL, STEP_LIMIT, SLOPE_LIMIT } from './anlagenTerrain.js';
+export type { TerrainMode, AnlageTerrainInput, UnitTerrain, AnlageTerrainFit, TerrainSpot } from './anlagenTerrain.js';

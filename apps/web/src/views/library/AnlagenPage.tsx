@@ -1,4 +1,8 @@
 import { useCallback, useDeferredValue, useMemo, useState } from 'react';
+import { SIDE_LABEL, TERRAIN_MODE_LABEL, EARTHWORK_NOTE, findTerrainSpot, fitAnlageToTerrain } from '../../../../../packages/domain/src/index.js';
+import type { AnlageTerrainFit, TerrainMode, TerrainSurvey } from '../../../../../packages/domain/src/index.js';
+import { useSurvey } from '../world/surveys';
+import { surveyImage } from '../map/terrainLayer';
 import type { Cell } from '../../../../../packages/voxel/src/index.js';
 import { ANLAGEN, MAX_SPACING, MIN_SPACING, anlageById, anlageIntoProject, applyOperation, besideOffset, createAnlageProject, planAnlage, previewAnlage, resolveProject, swapCandidates, themeOfAnlage } from '../../../../../packages/domain/src/index.js';
 import type { Anlage, AnlageChoices, AnlageLibrary, AnlagePlan, AnlagePreview, CatalogEntry, Project, SlotState } from '../../../../../packages/domain/src/index.js';
@@ -18,10 +22,12 @@ type Target = { readonly kind: 'new' } | { readonly kind: 'project'; readonly pr
 function safePlan(anlage: Anlage, lib: AnlageLibrary, choices: AnlageChoices): { plan: AnlagePlan | null; error: string } {
   try { return { plan: planAnlage(anlage, lib, choices), error: '' }; } catch (e) { return { plan: null, error: errorText(e) }; }
 }
-function safePreview(plan: AnlagePlan | null, base: Project | undefined, offset: readonly [number, number], versions: AnlageLibrary['versions']): { preview: AnlagePreview | null; error: string } {
+function safePreview(plan: AnlagePlan | null, base: Project | undefined, offset: readonly [number, number], versions: AnlageLibrary['versions'], heights?: ReadonlyMap<string, number>): { preview: AnlagePreview | null; error: string } {
   if (!plan) return { preview: null, error: '' };
-  try { return { preview: previewAnlage(plan, { ...(base && { base }), offset, versions }), error: '' }; } catch (e) { return { preview: null, error: errorText(e) }; }
+  try { return { preview: previewAnlage(plan, { ...(base && { base }), offset, versions, ...(heights && { heights }) }), error: '' }; } catch (e) { return { preview: null, error: errorText(e) }; }
 }
+/** Survey usable for a target project: same dimension as its world placement. */
+const terrainOf = (p: Project | undefined) => p?.world && p.terrain && p.terrain.dimension === p.world.dimension ? p.terrain : null;
 const size = (f: { x0: number; z0: number; x1: number; z1: number } | null) => f ? `${f.x1 - f.x0} × ${f.z1 - f.z0}` : '–';
 
 /**
@@ -77,6 +83,10 @@ function AnlagePlanner({ anlage, lib, entries, projects, libHref, onMessage }: {
   const [name, setName] = useState(anlage.name);
   const [accept, setAccept] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [useTerrain, setUseTerrain] = useState(true);
+  const [mode, setMode] = useState<TerrainMode>('terrassen');
+  const [searching, setSearching] = useState(false);
+  const [spotNote, setSpotNote] = useState('');
   const deferred = useDeferredValue(choices);
   const theme = themeOfAnlage(anlage);
 
@@ -84,7 +94,14 @@ function AnlagePlanner({ anlage, lib, entries, projects, libHref, onMessage }: {
   const base = target.kind === 'project' ? projects.find(p => p.id === target.projectId) : undefined;
   const baseResolution = useMemo(() => { if (!base) return null; try { return resolveProject(base, lib.versions); } catch { return null; } }, [base, lib]);
   const offset = useMemo<[number, number]>(() => !base ? [0, 0] : placement === 'beside' && plan ? besideOffset(plan, baseResolution) : manual, [base, placement, plan, baseResolution, manual]);
-  const { preview, error: previewError } = useMemo(() => safePreview(plan, base, offset, lib.versions), [plan, base, offset, lib]);
+  // Gelände (TERRAIN-01): the target's terrain survey fits the plan to the real ground.
+  const terrainRef = terrainOf(base);
+  const { survey, error: surveyError } = useSurvey(repo, terrainRef);
+  const fit = useMemo((): { fit: AnlageTerrainFit | null; error: string } => {
+    if (!plan || !survey || !useTerrain || !base?.world) return { fit: null, error: '' };
+    try { return { fit: fitAnlageToTerrain(plan, { survey, origin: base.world.origin, offset, mode }), error: '' }; } catch (e) { return { fit: null, error: errorText(e) }; }
+  }, [plan, survey, useTerrain, base, offset, mode]);
+  const { preview, error: previewError } = useMemo(() => safePreview(plan, base, offset, lib.versions, fit.fit?.heights), [plan, base, offset, lib, fit]);
   const conflictCells = useMemo(() => new Set(preview?.conflicts.map(c => c.position.join(',')) ?? []), [preview]);
   const markFor = useCallback((cell: Cell) => conflictCells.has(cell.position.join(',')) ? CONFLICT_MARK : null, [conflictCells]);
   const noSelect = useMemo(() => () => {}, []);
@@ -96,6 +113,21 @@ function AnlagePlanner({ anlage, lib, entries, projects, libHref, onMessage }: {
   const resetShift = (did: string) => update(c => { const rest = { ...c.shifts }; delete rest[did]; return { ...c, shifts: rest }; });
   const swap = (slot: SlotState, assetId: string) => update(c => { const rest = { ...c.swaps }; if (assetId === slot.curatedAssetId) delete rest[slot.key]; else rest[slot.key] = assetId; return { ...c, swaps: rest }; });
   const turn = (slot: SlotState) => update(c => ({ ...c, turns: { ...c.turns, [slot.key]: ((slot.turns + 1) % 4) as 0 | 1 | 2 | 3 } }));
+  const resetTurn = (slot: SlotState) => update(c => { const rest = { ...c.turns }; delete rest[slot.key]; return { ...c, turns: rest }; });
+  const searchSpot = () => {
+    if (!plan || !survey || !base?.world) return;
+    setSearching(true); setSpotNote('');
+    // Let the button show its busy state before the (synchronous) search runs.
+    setTimeout(() => {
+      try {
+        const spot = findTerrainSpot(plan, { survey, origin: base.world!.origin, mode });
+        if (!spot) setSpotNote('Die Anlage ist größer als die Geländeaufnahme. Bitte eine größere Fläche aufnehmen oder Bereiche abwählen.');
+        else { setAccept(false); setPlacement('manual'); setManual([spot.offset[0], spot.offset[1]]);
+          setSpotNote(`Platz mit den wenigsten Erdarbeiten gewählt (${spot.tried} Lagen verglichen): Versatz x ${spot.offset[0]}, z ${spot.offset[1]}, ${formatNumber(spot.fit.totals.fill)} Blöcke Unterbau, ${formatNumber(spot.fit.totals.cut)} Blöcke Abtrag.`); }
+      } catch (e) { setSpotNote(`Keine Lage gefunden: ${errorText(e)}`); }
+      finally { setSearching(false); }
+    }, 30);
+  };
 
   const adopt = async () => {
     if (!plan) return;
@@ -114,7 +146,11 @@ function AnlagePlanner({ anlage, lib, entries, projects, libHref, onMessage }: {
       let storedWorld = null;
       try { storedWorld = resolveProject(stored, lib.versions); } catch { /* unresolved projects: place at the manual/zero offset */ }
       const at = placement === 'beside' ? besideOffset(plan, storedWorld) : manual;
-      const fresh = previewAnlage(plan, { base: stored, offset: at, versions: lib.versions });
+      // Heights from the stored project's terrain (its origin may have changed since the preview).
+      const storedRef = terrainOf(stored);
+      if (useTerrain && terrainRef && storedRef?.sha256 !== terrainRef.sha256) throw new Error('Die Geländeaufnahme des Projekts wurde seit der Vorschau geändert; bitte Vorschau prüfen');
+      const heights = useTerrain && storedRef && survey && stored.world ? fitAnlageToTerrain(plan, { survey, origin: stored.world.origin, offset: at, mode }).heights : undefined;
+      const fresh = previewAnlage(plan, { base: stored, offset: at, versions: lib.versions, ...(heights && { heights }) });
       if (fresh.conflicts.length && !accept) throw new Error(`${fresh.conflicts.length} Voxelkonflikt(e) nach Neuberechnung; bitte prüfen und bestätigen`);
       const saved = await repo.saveProject(applyOperation(stored, anlageIntoProject(fresh, stored, { acceptConflicts: accept })).project, stored.revision);
       onMessage(`„${anlage.name}“ in „${saved.name}“ eingefügt: ${fresh.draft.instances.length} Instanzen, ${fresh.draft.sections.length} Bauabschnitte. Rückgängig im Editor möglich.`,
@@ -158,13 +194,15 @@ function AnlagePlanner({ anlage, lib, entries, projects, libHref, onMessage }: {
     <div className="anlage-columns">
       <section className="anlage-panel" aria-labelledby="anlage-layout-title">
         <h3 id="anlage-layout-title">Lageplan</h3>
-        {plan && <SitePlanSvg plan={plan} preview={preview} offset={offset} />}
+        {plan && <SitePlanSvg plan={plan} preview={preview} offset={offset} survey={fit.fit ? survey : null} origin={base?.world?.origin ?? null} fit={fit.fit} />}
         <div className="anlage-controls">
           <label className="anlage-range">Abstand zwischen Gebäuden und zum Weg: <strong>{spacing} Blöcke</strong>
             <input type="range" min={MIN_SPACING} max={MAX_SPACING} value={spacing} onChange={e => update(c => ({ ...c, spacing: Number(e.target.value) }))} aria-label="Abstand in Blöcken" />
             <small>Empfohlen: {anlage.spacing}. {spacing < anlage.spacing ? 'Enger als empfohlen – Zugänge und Freiraum prüfen.' : ''}</small></label>
           {anlage.path && <label className="chip-check"><input type="checkbox" checked={choices.path !== false} onChange={e => update(c => ({ ...c, path: e.target.checked }))} />
             Hauptweg aus {anlage.path === 'weg' ? 'Wegmodulen' : 'Stadtstraßen'} bauen</label>}
+          {anlage.path && <label className="chip-check"><input type="checkbox" checked={choices.doors !== false} onChange={e => update(c => ({ ...c, doors: e.target.checked }))} />
+            Türen zum Weg drehen <small>({plan?.slots.filter(sl => sl.facesPath).length ?? 0} von {plan?.slots.filter(sl => sl.facesPath !== null).length ?? 0} Eingängen zeigen zum Weg)</small></label>}
         </div>
       </section>
 
@@ -185,9 +223,13 @@ function AnlagePlanner({ anlage, lib, entries, projects, libHref, onMessage }: {
         {conflicts > 0 && preview && <details className="anlage-conflicts"><summary>Konfliktstellen anzeigen</summary><ol>
           {preview.conflicts.slice(0, 12).map(c => <li key={c.position.join(',')}>x {c.position[0]} · y {c.position[1]} · z {c.position[2]}: {c.instanceIds.map(i => preview.names.get(i) ?? i).join(' / ')}</li>)}
           {conflicts > 12 && <li>… und {conflicts - 12} weitere</li>}</ol></details>}
-        <p className="small-note">Gelände ungeprüft: Die Anlage kennt nur geplante Blöcke, nicht das Gelände deiner Welt.</p>
+        {fit.fit ? <p className="small-note">Gelände aus der Geländeaufnahme von „{base!.name}“ ({TERRAIN_MODE_LABEL[fit.fit.mode]}). {EARTHWORK_NOTE}</p>
+          : <p className="small-note">Gelände ungeprüft: Die Anlage kennt nur geplante Blöcke{terrainRef ? ', die Geländeaufnahme ist abgeschaltet.' : '. Für Hanglagen einen Bauplatz mit Geländeaufnahme anlegen (Weltimport oder Projektreiter „Gelände“) und hier als Ziel wählen.'}</p>}
       </section>
     </div>
+
+    {terrainRef && <TerrainPanel base={base!} survey={survey} error={surveyError || fit.error} fit={fit.fit} useTerrain={useTerrain} mode={mode} searching={searching} note={spotNote}
+      onUse={v => { setAccept(false); setUseTerrain(v); }} onMode={m => { setAccept(false); setMode(m); }} onSearch={searchSpot} />}
 
     <section className="anlage-panel" aria-labelledby="anlage-districts-title">
       <h3 id="anlage-districts-title">Bereiche und Bauabschnitte</h3>
@@ -213,7 +255,7 @@ function AnlagePlanner({ anlage, lib, entries, projects, libHref, onMessage }: {
             {(sx || sz) ? <button type="button" className="text-button" onClick={() => resetShift(district.id)}>zurücksetzen</button> : null}
           </div>}
           <ul className="anlage-slots">{slots.map(slot => <SlotRow key={slot.key} slot={slot} anlage={anlage} entries={entries} editable={enabled && !slot.ensembleId}
-            libHref={libHref} onSwap={a => swap(slot, a)} onTurn={() => turn(slot)} />)}</ul>
+            libHref={libHref} onSwap={a => swap(slot, a)} onTurn={() => turn(slot)} onResetTurn={() => resetTurn(slot)} unit={fit.fit?.units.find(u => u.keys.includes(slot.key)) ?? null} />)}</ul>
         </li>;
       })}</ol>
     </section>
@@ -224,7 +266,7 @@ function AnlagePlanner({ anlage, lib, entries, projects, libHref, onMessage }: {
       <div className="anlage-target">
         <label>Ziel<select value={target.kind === 'new' ? '' : target.projectId} onChange={e => { setAccept(false); setTarget(e.target.value ? { kind: 'project', projectId: e.target.value } : { kind: 'new' }); }}>
           <option value="">Neues Projekt</option>
-          {projects.map(p => <option key={p.id} value={p.id}>In „{p.name}“ einfügen</option>)}</select></label>
+          {projects.map(p => <option key={p.id} value={p.id}>In „{p.name}“ einfügen{terrainOf(p) ? ' (mit Gelände)' : ''}</option>)}</select></label>
         {target.kind === 'new' ? <label>Projektname<input value={name} maxLength={120} onChange={e => setName(e.target.value)} /></label>
           : <fieldset className="anlage-offset"><legend>Lage im Projekt</legend>
             <label className="chip-check"><input type="radio" name="anlage-offset" checked={placement === 'beside'} onChange={() => { setAccept(false); setPlacement('beside'); }} />neben die bestehenden Bauten</label>
@@ -242,9 +284,10 @@ function AnlagePlanner({ anlage, lib, entries, projects, libHref, onMessage }: {
   </section>;
 }
 
-function SlotRow({ slot, anlage, entries, editable, libHref, onSwap, onTurn }: {
+function SlotRow({ slot, anlage, entries, editable, libHref, onSwap, onTurn, onResetTurn, unit }: {
   slot: SlotState; anlage: Anlage; entries: readonly CatalogEntry[]; editable: boolean;
-  libHref(page: LibraryPage, id?: string): string; onSwap(assetId: string): void; onTurn(): void;
+  libHref(page: LibraryPage, id?: string): string; onSwap(assetId: string): void; onTurn(): void; onResetTurn(): void;
+  unit: AnlageTerrainFit['units'][number] | null;
 }) {
   const entry = entries.find(e => e.asset.id === slot.assetId);
   const candidates = useMemo(() => editable ? swapCandidates(entries, anlage, slot) : [], [editable, entries, anlage, slot]);
@@ -256,19 +299,25 @@ function SlotRow({ slot, anlage, entries, editable, libHref, onSwap, onTurn }: {
       <span>{slot.role !== (entry?.asset.name ?? slot.assetId) ? `${slot.role} · ` : ''}{slot.turns ? `${slot.turns * 90}° gedreht · ` : ''}<span className="anlage-pin" title={slot.version?.id}>Version {slot.pin} fest</span>
         {slot.newer && <span className="anlage-newer"> · neuer: {slot.newer} (nicht übernommen)</span>}
         {slot.swapped && <span className="anlage-newer"> · getauscht</span>}
-        {status && <span className="warn-text"> · {status}</span>}</span>
+        {status && <span className="warn-text"> · {status}</span>}
+        {slot.facesPath !== null && <span className={slot.facesPath ? 'anlage-door ok-text' : 'anlage-door warn-text'} title={slot.entrance ? `Eingang (${slot.entrance.kind === 'door' ? 'Tür' : 'Tor'}) im ${slot.entrance.sides.map(x => SIDE_LABEL[x]).join('/')} des Bauteils` : undefined}>
+          {' · '}{slot.facesPath ? `Eingang zum Weg${slot.turnSource === 'door' ? ' (automatisch gedreht)' : ''}` : 'Eingang zeigt nicht zum Weg'}</span>}
+        {slot.facesPath === null && !slot.ensembleId && slot.version && anlage.path && <span className="muted"> · ohne Tür</span>}
+        {unit && unit.kind === 'building' && <span className="anlage-height"> · Y {unit.baseY}{unit.stepToPath ? ` (${unit.stepToPath > 0 ? '+' : ''}${unit.stepToPath} zum Weg)` : ''}{unit.estimate.fill ? ` · ${formatNumber(unit.estimate.fill)} Unterbau` : ''}{unit.estimate.cut ? ` · ${formatNumber(unit.estimate.cut)} Abtrag` : ''}</span>}</span>
     </div>
     {editable && <div className="anlage-slot-actions">
       {candidates.length > 0 && <select aria-label={`${slot.role} tauschen`} value={slot.assetId} onChange={e => onSwap(e.target.value)}>
         <option value={slot.assetId}>{entry?.asset.name ?? slot.assetId}</option>
         {candidates.map(c => <option key={c.assetId} value={c.assetId}>{c.reason === 'variante' ? 'Variante: ' : ''}{c.name}</option>)}</select>}
       <button type="button" aria-label={`${slot.role} drehen`} onClick={onTurn}>↻ 90°</button>
+      {slot.turnSource === 'manual' && <button type="button" className="text-button" onClick={onResetTurn}>automatisch</button>}
     </div>}
   </li>;
 }
 
-/** Top view of all footprints: districts coloured, path grey, overlaps outlined. */
-function SitePlanSvg({ plan, preview, offset }: { plan: AnlagePlan; preview: AnlagePreview | null; offset: readonly [number, number] }) {
+/** Top view of all footprints: districts coloured, path grey, overlaps outlined; with terrain the height map underneath. */
+function SitePlanSvg({ plan, preview, offset, survey, origin, fit }: { plan: AnlagePlan; preview: AnlagePreview | null; offset: readonly [number, number]; survey: TerrainSurvey | null; origin: readonly number[] | null; fit: AnlageTerrainFit | null }) {
+  const terrainHref = useMemo(() => { if (!survey) return null; try { return surveyImage(survey).toDataURL(); } catch { return null; } }, [survey]);
   const base = preview && preview.project.instances.length > preview.draft.instances.length ? preview.resolution.placed.filter(p => !preview.draft.instances.some(i => i.id === p.instance.id)) : [];
   const rects = [
     ...base.map(p => ({ key: `base-${p.instance.id}`, f: { x0: p.payload.bounds.min[0], z0: p.payload.bounds.min[2], x1: p.payload.bounds.maxExclusive[0], z1: p.payload.bounds.maxExclusive[2] }, fill: 'var(--muted)', label: p.instance.name, base: true })),
@@ -282,9 +331,48 @@ function SitePlanSvg({ plan, preview, offset }: { plan: AnlagePlan; preview: Anl
   const x0 = Math.min(...rects.map(r => r.f.x0)) - 2, z0 = Math.min(...rects.map(r => r.f.z0)) - 2;
   const x1 = Math.max(...rects.map(r => r.f.x1)) + 2, z1 = Math.max(...rects.map(r => r.f.z1)) + 2;
   const conflictNames = new Set(preview?.conflicts.flatMap(c => c.instanceIds.map(i => preview.names.get(i) ?? '')) ?? []);
-  return <svg className="anlage-plan" viewBox={`${x0} ${z0} ${x1 - x0} ${z1 - z0}`} role="img" aria-label={`Lageplan, ${x1 - x0 - 4} × ${z1 - z0 - 4} Blöcke, Norden oben`}>
+  const heightOf = new Map(fit?.units.flatMap(u => u.keys.map(k => [k, u] as const)) ?? []);
+  return <svg className="anlage-plan" viewBox={`${x0} ${z0} ${x1 - x0} ${z1 - z0}`} role="img" aria-label={`Lageplan, ${x1 - x0 - 4} × ${z1 - z0 - 4} Blöcke, Norden oben${survey ? ', mit Gelände' : ''}`}>
+    {terrainHref && survey && origin && <image href={terrainHref} x={survey.minX - origin[0]!} y={survey.minZ - origin[2]!} width={survey.width} height={survey.length} preserveAspectRatio="none" style={{ imageRendering: 'pixelated' }} opacity={0.85} data-testid="anlage-plan-terrain" />}
     {rects.map(r => <rect key={r.key} x={r.f.x0} y={r.f.z0} width={r.f.x1 - r.f.x0} height={r.f.z1 - r.f.z0} fill={r.fill} fillOpacity={r.base ? 0.35 : 0.55}
-      stroke={conflictNames.has(r.label) ? '#ff5f57' : 'rgba(0,0,0,.45)'} strokeWidth={conflictNames.has(r.label) ? 1.2 : 0.3}><title>{r.label}{r.base ? ' (bestehend)' : ''}</title></rect>)}
+      stroke={conflictNames.has(r.label) ? '#ff5f57' : 'rgba(0,0,0,.45)'} strokeWidth={conflictNames.has(r.label) ? 1.2 : 0.3}><title>{r.label}{r.base ? ' (bestehend)' : ''}{heightOf.get(r.key) ? ` · Y ${heightOf.get(r.key)!.baseY}` : ''}</title></rect>)}
     <text x={x1 - 1} y={z0 + 4} fontSize="3.5" textAnchor="end" fill="currentColor">N ↑</text>
   </svg>;
+}
+
+/** Gelände-Panel (TERRAIN-01): mode, totals, units with heights and earthwork, flattest spot. */
+function TerrainPanel({ base, survey, error, fit, useTerrain, mode, searching, note, onUse, onMode, onSearch }: {
+  base: Project; survey: TerrainSurvey | null; error: string; fit: AnlageTerrainFit | null; useTerrain: boolean; mode: TerrainMode; searching: boolean; note: string;
+  onUse(v: boolean): void; onMode(m: TerrainMode): void; onSearch(): void;
+}) {
+  const t = fit?.totals;
+  const units = fit?.units.filter(u => u.kind !== 'path') ?? [];
+  const path = fit?.units.find(u => u.kind === 'path');
+  return <section className="anlage-panel anlage-terrain" aria-labelledby="anlage-terrain-title">
+    <h3 id="anlage-terrain-title">Gelände</h3>
+    <p className="small-note">Geländeaufnahme von „{base.name}“: {base.terrain!.area.width} × {base.terrain!.area.length} Blöcke ab X {base.terrain!.area.minX}, Z {base.terrain!.area.minZ}. Das Projekt liegt bei X {base.world!.origin[0]} · Y {base.world!.origin[1]} · Z {base.world!.origin[2]}.</p>
+    {error && <p className="notice warning" role="alert">{error}</p>}
+    {!survey && !error && <p role="status">Geländeaufnahme wird geladen …</p>}
+    <div className="anlage-controls">
+      <label className="chip-check"><input type="checkbox" checked={useTerrain} onChange={e => onUse(e.target.checked)} /> Anlage ans Gelände anpassen</label>
+      {useTerrain && <div className="seg" role="group" aria-label="Höhenanpassung">
+        {(Object.keys(TERRAIN_MODE_LABEL) as TerrainMode[]).map(m => <button key={m} type="button" aria-pressed={mode === m} onClick={() => onMode(m)}>{TERRAIN_MODE_LABEL[m]}</button>)}</div>}
+      {useTerrain && <button type="button" className="secondary" disabled={!survey || searching} onClick={onSearch}>{searching ? 'Suche läuft …' : 'Flachsten Platz suchen'}</button>}
+    </div>
+    {note && <p className="anlage-terrain-note" role="status">{note}</p>}
+    {fit && t && <>
+      <dl className="stat-tiles" data-testid="anlage-terrain-totals">
+        <div><dt>Unterbau</dt><dd>{formatNumber(t.fill)}</dd></div>
+        <div><dt>Abtrag</dt><dd>{formatNumber(t.cut)}</dd></div>
+        <div><dt>Im Wasser</dt><dd>{t.water}</dd></div>
+        <div><dt>Unbekannt</dt><dd>{t.unknown ? <span className="warn-text">{t.unknown}</span> : 0}</dd></div>
+      </dl>
+      {path && <p className="small-note">Hauptweg auf Y {path.baseY} (eine Höhe, damit die Wegmodule verbunden bleiben){path.estimate.fill || path.estimate.cut ? `: ${formatNumber(path.estimate.fill)} Blöcke Unterbau, ${formatNumber(path.estimate.cut)} Abtrag` : ''}.</p>}
+      <ul className="anlage-checks">{fit.notes.map(n => <li key={n} className="warn"><span>{n}</span></li>)}</ul>
+      <details className="anlage-terrain-units"><summary>Höhen je Gebäude ({units.length})</summary>
+        <table><thead><tr><th>Einheit</th><th>Y</th><th>zum Weg</th><th>Hang</th><th>Unterbau</th><th>Abtrag</th></tr></thead>
+          <tbody>{units.map(u => <tr key={u.id}><td>{u.name}</td><td>{u.baseY}</td><td>{u.stepToPath === null ? '–' : `${u.stepToPath > 0 ? '+' : ''}${u.stepToPath}`}</td><td>{u.slope ?? '–'}</td>
+            <td>{formatNumber(u.estimate.fill)}</td><td>{formatNumber(u.estimate.cut)}</td></tr>)}</tbody></table></details>
+    </>}
+  </section>;
 }

@@ -536,3 +536,9 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Gesamtprüfung: `npm run check` grün (477 Tests, 476 bestanden, 1 übersprungen). `npm run test:e2e` **85/85** bestanden.
 - Grenzen: kein echter Drucker, keine echten Geräte (QA-02), kein Spieltest im Client (die Aufnahme ist aus dem Plan abgeleitet wie in GAME-01).
 
+
+## TERRAIN-01 · Gelände in Weltkarte und Anlagen · 02.11.2026 · Claude
+- Kern: `tests/terrain-survey.test.mjs` 9/9 bestanden (echte Regionsdatei aus `scripts/make_terrain_fixture.py` mit Hang, Teich, Baum und Gras gegen Handwerte und gegen die dichte 3D-Probe; Dateiformat/Hash; `terrain.set` mit Rückgängig, Sicherung, Wiederherstellung, Datencheck; Erdarbeiten von Hand gezählt; 3D-Anzeigezellen; Eingangsregel; alle 69 Katalogplätze mit Tür zeigen zum Weg; Terrassen/eine Ebene mit verbundenen Wegmodulen; Platzsuche).
+- Browser: `tests/e2e/terrain.e2e.mjs` bei 1400 und 390 px bestanden (Bauplatz aus Regionsdatei, Weltkarte mit Gelände 2D/3D, Anlage „Dorf mit Hof“ auf dem Hang mit flachstem Platz und Moduswechsel, Einfügen, Erdarbeiten-Schätzung, Reiter „Gelände“, kein waagerechtes Scrollen, keine Konsolenfehler).
+- Gesamtprüfung nach Rebase auf BUILD-06 (`a132275`): `npm run check` grün (505 Tests, 504 bestanden, 1 übersprungen), `npm run test:e2e` **91/91**.
+- Nicht geprüft: Philipps eigene 26.3-Welt, echte Geräte.

@@ -741,3 +741,11 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - **An den Mod-Thread:** Die Website wertet `Metadata.Bauplaner.WorldAnchor`/`Dimension` der Aufnahme aus (Anker übernehmen) – bitte in der neuen clientseitigen Mod weiter schreiben.
 - Reservierung mit dem Push beendet.
 
+
+### MSG-TERRAIN01-01 · Claude (Thread „Gelände in Anlagen und Weltkarte“) · 2026-11-02 · TERRAIN-01 umgesetzt
+- Nutzerauftrag Philipp: Module und Funktionen weiterentwickeln und vertiefen. Neue Roadmapaufgabe **TERRAIN-01** (Folge von WORLD-IMPORT-01, BUILD-05, MAP-01): Geländeaufnahmen aus Regionsdateien dauerhaft im Projekt, Gelände in der Weltkarte, Anlagen auf Hanglagen, Türen automatisch zum Weg. Details [TERRAIN](architecture/TERRAIN.md).
+- Eigene neue Dateien: `packages/domain/src/terrainSurvey.ts`, `anlagenTerrain.ts`, `entrance.ts`, `apps/web/src/views/world/surveys.ts`, `views/project/TerrainSurveyPanel.tsx`, `views/map/terrainLayer.ts`, `scripts/make_terrain_fixture.py`, `tests/terrain-survey.test.mjs`, `tests/e2e/terrain.e2e.mjs`.
+- Gemeinsame Verträge (anhängend, alle optional): `Project.terrain?` (Verweis auf ein Original `application/x-bauplaner-terrain`), Operation `terrain.set`, `AnlageChoices.doors?` (Standard an), `SlotState.turnSource/entrance/facesPath`, `previewAnlage(…, { heights })`, `draftAnlage(…, heights?)`, Worker-Anfrage `survey`, `terrainColumns` in `formats` (Bodenregel als Funktion übergeben, Architekturregel bleibt). `DB_VERSION` bleibt 3, Sicherungsformat unverändert (Aufnahme läuft über `projectOriginals`).
+- Kleine Eingriffe in gemeinsame Dateien: `anlagen.ts`, `project.ts`, `types.ts`, `backup.ts`, `integrity.ts`, `terrain.ts`, `domain/index.ts`, `formats/index.ts`, `worldExcerpt.ts`, `WorldMapView.tsx`, `OverviewMap.tsx`, `AnlagenPage.tsx`, `TerrainTab.tsx`, `WorldImportView.tsx`, `protocol.ts`/`world.worker.ts`, `map.css`, `anlagen.css`, `world.css`.
+- **An Codex/MAP-01:** Die Weltkarte zeigt jetzt Gelände, wenn ein Projekt eine Aufnahme hat (`data-terrain-cells`, Schalter „Gelände (n)“); ohne Aufnahme bleibt `TERRAIN_NOTE` „Gelände ungeprüft“. Weitere Kartenarbeit bitte auf `surveys.ts`/`terrainLayer.ts` aufsetzen statt eigene Höhenquellen.
+- Reservierung mit dem Push beendet. Offen: Abnahme mit Philipps eigener 26.3-Welt (TERRAIN-01-S05).

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { addAssetVersion, createAsset, dimensionLabel, NATURAL_TERRAIN_IDS } from '../../../../../packages/domain/src/index.js';
+import { addAssetVersion, applyOperation, createAsset, createPlacement, createProject, dimensionLabel, NATURAL_TERRAIN_IDS, SAMPLE_PROFILE, SURVEY_MAX_COLUMNS, SURVEY_MAX_SIDE, columnAt } from '../../../../../packages/domain/src/index.js';
 import type { AssetVersionSource, OriginalFile } from '../../../../../packages/domain/src/index.js';
 import { CHUNK_STATE_LABEL, WORLD_SAMPLE_LIMITS, EXCERPT_PAYLOAD_LIMITS } from '../../../../../packages/formats/src/index.js';
 import type { ChunkState, SurfaceMap } from '../../../../../packages/formats/src/index.js';
@@ -11,6 +11,7 @@ import { Viewer } from '../../Viewer';
 import { WorldClient } from './protocol';
 import type { WorldResponse } from './protocol';
 import { RegionPicker } from './RegionPicker';
+import { areaLabel, readSurvey, storeSurvey } from './surveys';
 import type { PickedWorld } from './RegionPicker';
 import { SurfaceCanvas, surfaceRange } from './SurfaceCanvas';
 import type { AreaXZ } from './SurfaceCanvas';
@@ -127,6 +128,37 @@ export function WorldImportView() {
     } catch (e) { setMessage(`Nicht gespeichert: ${errorText(e)}`); }
   };
 
+  // Bauplatz (TERRAIN-01): the chosen X/Z rectangle as a new project with world placement and terrain survey.
+  const siteArea = useMemo(() => {
+    const v = [fields.x1, fields.z1, fields.x2, fields.z2].map(int);
+    if (v.some(n => n === null)) return 'Für einen Bauplatz X und Z beider Ecken angeben.';
+    const [x1, z1, x2, z2] = v as number[];
+    const a = { minX: Math.min(x1!, x2!), minZ: Math.min(z1!, z2!), width: Math.abs(x2! - x1!) + 1, length: Math.abs(z2! - z1!) + 1 };
+    if (a.width > SURVEY_MAX_SIDE || a.length > SURVEY_MAX_SIDE || a.width * a.length > SURVEY_MAX_COLUMNS) return `Bauplatz höchstens ${SURVEY_MAX_SIDE} × ${SURVEY_MAX_SIDE} Blöcke (gewählt ${a.width} × ${a.length}).`;
+    return a;
+  }, [fields]);
+  const createSite = async (form: FormData) => {
+    if (typeof siteArea === 'string') return;
+    const survey = await run('Gelände wird aufgenommen', p => readSurvey(client.current!, siteArea, dimension, incomplete, p));
+    if (!survey) return;
+    try {
+      // Origin: north-west corner of the site, one block above the median ground (where a base layer at y 0 stands on the ground).
+      const ground: number[] = [];
+      for (let z = 0; z < survey.length; z++) for (let x = 0; x < survey.width; x++) { const c = columnAt(survey, survey.minX + x, survey.minZ + z); if (c && c.groundId !== '?') ground.push(c.ground); }
+      if (!ground.length) throw new Error('Im Bereich ist kein Gelände bekannt (Regionsdateien gewählt? Chunks erzeugt?).');
+      ground.sort((a, b) => a - b);
+      const name = String(form.get('siteName') ?? '').trim() || `Bauplatz bei X ${siteArea.minX} Z ${siteArea.minZ}`;
+      const reference = await storeSurvey(repo, survey, name);
+      const created = createProject({ name, profileId: SAMPLE_PROFILE, description: `Bauplatz aus der eigenen Welt (${dimensionLabel(dimension)}), ${areaLabel(siteArea)}. Gelände aufgenommen am ${new Date(survey.readAt).toLocaleString('de-DE')}.` });
+      const project = applyOperation(created, { kind: 'batch', label: 'Bauplatz aus der Welt angelegt', operations: [
+        { kind: 'world.set', world: createPlacement([siteArea.minX, ground[Math.floor(ground.length / 2)]! + 1, siteArea.minZ], dimension, 'Aus dem Weltimport') },
+        { kind: 'terrain.set', terrain: reference },
+      ] }).project;
+      await repo.saveProject(project, 0);
+      navigate({ view: 'map', search: `projekt=${encodeURIComponent(project.id)}${dimension !== 'minecraft:overworld' ? `&dim=${encodeURIComponent(dimension)}` : ''}` });
+    } catch (e) { setMessage(`Bauplatz nicht angelegt: ${errorText(e)}`); }
+  };
+
   const states = excerpt ? excerpt.chunks.reduce<Partial<Record<ChunkState, number>>>((m, c) => ({ ...m, [c.state]: (m[c.state] ?? 0) + 1 }), {}) : {};
   const set = (k: keyof typeof fields) => (e: { target: { value: string } }) => { setFields(f => ({ ...f, [k]: e.target.value })); setArea(null); };
 
@@ -144,6 +176,7 @@ export function WorldImportView() {
           {windows.map(w => <option key={`${w.rx},${w.rz}`} value={`${w.rx},${w.rz}`}>{windowLabel(w)}</option>)}</select></label>}
         {map ? <SurfaceCanvas map={map} area={area} onArea={chooseArea} /> : <div className="world-map-empty">{windows.length ? 'Übersicht wird vorbereitet …' : 'Keine lesbaren Chunks in den gewählten Dateien.'}</div>}
       </div>
+      <div className="world-side">
       <form className="world-box" onSubmit={e => { e.preventDefault(); void read(); }}>
         <h2>Bereich</h2>
         <p className="muted">Zwei gegenüberliegende Ecken wie im Spiel (F3). Ziehen in der Übersicht füllt X und Z und schlägt Y nach der Oberfläche vor.</p>
@@ -161,6 +194,14 @@ export function WorldImportView() {
         </fieldset>
         <div className="button-row"><button className="primary" type="submit" disabled={!!busy || typeof box === 'string'}>Ausschnitt lesen</button></div>
       </form>
+      <form className="world-site" aria-label="Als Bauplatz anlegen" onSubmit={e => { e.preventDefault(); void createSite(new FormData(e.currentTarget)); }}>
+        <h2>Als Bauplatz anlegen</h2>
+        <p className="muted">Statt Blöcke zu übernehmen: ein neues, leeres Projekt an genau dieser Stelle deiner Welt, mit Geländeaufnahme (Höhenkarte) des Bereichs. Weltkarte und Anlagen zeigen dann das echte Gelände; eine Anlage lässt sich mit Terrassen auf den Hang setzen.</p>
+        <label>Titel des Bauplatzes<input name="siteName" maxLength={120} placeholder={typeof siteArea === 'string' ? 'Bauplatz' : `Bauplatz bei X ${siteArea.minX} Z ${siteArea.minZ}`} /></label>
+        <p className={typeof siteArea === 'string' ? 'field-error' : 'muted'} role="status">{typeof siteArea === 'string' ? siteArea : `Bereich ${areaLabel(siteArea)}`}</p>
+        <div className="button-row"><button className="secondary" type="submit" disabled={!!busy || typeof siteArea === 'string'}>Bauplatz anlegen</button></div>
+      </form>
+      </div>
     </section>}
 
     {excerpt && <section className="world-result" aria-label="Gelesener Ausschnitt">

@@ -7,6 +7,10 @@ import { deepFreeze, verifyAssetVersion } from './library.js';
 import { checkSite } from './site.js';
 import { checkWorldPlacement } from './worldmap.js';
 import { checkUpdates, updateLogVersionIds } from './updateState.js';
+import { checkTerrainReference } from './terrainSurvey.js';
+
+/** Original files a project refers to: game recordings and the terrain survey (TERRAIN-01). */
+const projectOriginals = (p: Pick<Project, 'scanHistory' | 'terrain'>): string[] => [...(p.scanHistory ?? []).map(s => s.sha256), ...(p.terrain ? [p.terrain.sha256] : [])];
 import { checkCollectionRecord, checkTemplateRecord, pinnedVersionIds, sameLibraryRecord, templateVersionIds } from './collections.js';
 import type { Collection, LibraryTemplate } from './collections.js';
 
@@ -153,7 +157,7 @@ export async function createBackup(source: BackupSource, scope: 'project' | 'all
     versions.push(v);
   }
   const originals: BackupOriginal[] = [], missing: string[] = [];
-  for (const sha of new Set([...versions.flatMap(v => v.source.originalSha256 ? [v.source.originalSha256] : []), ...projects.flatMap(p => (p.scanHistory ?? []).map(s => s.sha256))])) {
+  for (const sha of new Set([...versions.flatMap(v => v.source.originalSha256 ? [v.source.originalSha256] : []), ...projects.flatMap(projectOriginals)])) {
     const o = await source.getOriginal(sha);
     if (!o) { missing.push(sha); continue; }
     if (await sha256Hex(o.bytes) !== sha) throw new DomainError('BACKUP', `Gespeicherte Originaldatei ${o.fileName} ist beschädigt`);
@@ -214,6 +218,10 @@ export function checkProjectRecord(raw: unknown): Project {
   }
   if (raw.updates !== undefined) {
     try { checkUpdates(raw.updates); }
+    catch (e) { throw new DomainError('BACKUP', `${where}: ${e instanceof Error ? e.message : String(e)}`); }
+  }
+  if (raw.terrain !== undefined) {
+    try { checkTerrainReference(raw.terrain); }
     catch (e) { throw new DomainError('BACKUP', `${where}: ${e instanceof Error ? e.message : String(e)}`); }
   }
   if (raw.scanHistory !== undefined) {
@@ -297,7 +305,7 @@ export async function readBackup(text: string): Promise<Backup> {
     if (await sha256Hex(bytes) !== o.sha256 || bytes.length !== o.size) throw new DomainError('BACKUP', `Originaldatei ${String(o.fileName)} ist beschädigt (SHA-256 abweichend)`);
     originals.push({ sha256: o.sha256, fileName: str(o.fileName, 'Dateiname'), mediaType: str(o.mediaType, 'Medientyp'), size: o.size, createdAt: str(o.createdAt, 'Zeit'), bytes });
   }
-  const missingOriginals = validateOriginalManifest([...versions.values()].flatMap(v => v.source.originalSha256 ? [v.source.originalSha256] : []).concat(projects.flatMap(p => (p.scanHistory ?? []).map(s => s.sha256))), originals, raw.missingOriginals ?? []);
+  const missingOriginals = validateOriginalManifest([...versions.values()].flatMap(v => v.source.originalSha256 ? [v.source.originalSha256] : []).concat(projects.flatMap(projectOriginals)), originals, raw.missingOriginals ?? []);
   // Byte arrays cannot be frozen; records around them are.
   return Object.freeze({ createdAt: str(raw.createdAt, 'Sicherungszeit'), scope: raw.scope === 'project' ? 'project' as const : 'all' as const,
     projects: deepFreeze(projects), assets: deepFreeze(assets), versions: deepFreeze([...versions.values()]),

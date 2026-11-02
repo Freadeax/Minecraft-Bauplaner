@@ -64,3 +64,7 @@
 @media(max-width:650px){.map-page{padding:0 16px 30px}.map-head{padding-top:18px}.overview{height:320px}.map-3d{height:380px}.placement-note{grid-column:auto}.live-adopt{flex-direction:column;align-items:stretch}.map-controls .seg button{min-height:40px}}
 .map-page .chip-check input{width:auto;min-height:0;padding:0}
 .placement-grid .chip-check,.live-panel .chip-check{display:inline-flex;align-self:center;justify-self:start;color:inherit}
+/* TERRAIN-01: earthwork estimate from a terrain survey */
+.map-terrain-estimate{border-top:1px solid var(--line);margin-top:12px;padding-top:10px;display:grid;gap:6px;font-size:13px}
+.map-terrain-estimate h3{margin:0;font-size:14px}.map-terrain-estimate h3 small{font-weight:400;color:var(--muted);margin-left:6px}
+.map-terrain-estimate p{margin:0}.map-terrain-estimate button{margin-left:8px}

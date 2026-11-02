@@ -10,6 +10,8 @@ import type { Mark } from '../../viewer/types';
 import { WorldClient } from '../world/protocol';
 import type { WorldResponse } from '../world/protocol';
 import { RegionPicker } from '../world/RegionPicker';
+import { TerrainSurveyPanel } from './TerrainSurveyPanel';
+import { translateBounds } from '../../../../../packages/domain/src/index.js';
 import type { PickedWorld } from '../world/RegionPicker';
 import { isResolved } from './session';
 import type { ProjectSession } from './session';
@@ -82,22 +84,27 @@ export function TerrainTab({ session }: { session: ProjectSession }) {
     <strong>Noch keine Weltlage.</strong> Lege auf der <a href={`#/karte?projekt=${encodeURIComponent(project.id)}`}>Weltkarte</a> fest, wo das Projekt in deiner Welt stehen soll. Danach prüft dieser Bereich das echte Gelände an dieser Stelle.</div></section>;
   if (!isResolved(resolution) || !resolution.world) return <section className="terrain" aria-label="Gelände"><p role="status">{'error' in resolution ? resolution.error : 'Projekt wird berechnet …'}</p></section>;
   const world = resolution.world;
-  if (!world.cells.length) return <section className="terrain" aria-label="Gelände"><div className="notice">Noch nichts geplant. Füge im <a href={`#/projekt/${project.id}/editor`}>Editor</a> Bauteile ein.</div></section>;
   const b = world.bounds, o = placement.origin;
+  const empty = !world.cells.length;
+  const survey = <TerrainSurveyPanel project={project} placement={placement} worldBounds={empty ? null : translateBounds(b, o)} client={client.current!} canRead={!!picked}
+    busy={!!busy} setBusy={setBusy} execute={op => session.execute(op)} />;
 
   return <section className="terrain" aria-label="Gelände">
     <header className="terrain-head">
       <div><span className="panel-kicker">GELÄNDE AN DER WELTLAGE</span>
-        <h2>{dimensionLabel(placement.dimension)} · X {b.min[0] + o[0]} … {b.maxExclusive[0] + o[0] - 1} · Y {b.min[1] + o[1]} … {b.maxExclusive[1] + o[1] - 1} · Z {b.min[2] + o[2]} … {b.maxExclusive[2] + o[2] - 1}</h2>
-        <p className="muted">Wähle die Regionsdateien dieser Dimension. Gelesen werden nur die Chunks unter dem Projekt und {depth} Blöcke darunter.</p></div>
+        {empty ? <h2>{dimensionLabel(placement.dimension)} · Ursprung X {o[0]} · Y {o[1]} · Z {o[2]}</h2>
+          : <h2>{dimensionLabel(placement.dimension)} · X {b.min[0] + o[0]} … {b.maxExclusive[0] + o[0] - 1} · Y {b.min[1] + o[1]} … {b.maxExclusive[1] + o[1] - 1} · Z {b.min[2] + o[2]} … {b.maxExclusive[2] + o[2] - 1}</h2>}
+        <p className="muted">Wähle die Regionsdateien dieser Dimension. Gelesen werden nur die Chunks unter dem Projekt und {depth} Blöcke darunter, für die Geländeaufnahme die Oberfläche rund um den Bauplatz.</p></div>
     </header>
     <RegionPicker dimension={placement.dimension} picked={picked} busy={!!busy} onFiles={f => void open(f)} />
-    {picked && <div className="terrain-run">
+    {busy && <div className="notice world-busy" role="status">{busy}{progress && ` … ${progress[0]} / ${progress[1]} Chunks`}<button onClick={() => client.current?.abort()}>Abbrechen</button></div>}
+    {survey}
+    {empty && <div className="notice">Noch nichts geplant. Füge im <a href={`#/projekt/${project.id}/editor`}>Editor</a> Bauteile ein oder plane eine <a href="#/bibliothek/anlagen">Anlage</a> auf diesem Gelände.</div>}
+    {picked && !empty && <div className="terrain-run">
       <label>Tiefe unter dem Fundament <input type="number" min={1} max={64} value={depth} onChange={e => setDepth(Math.max(1, Math.min(64, Number(e.target.value) || TERRAIN_DEPTH)))} /></label>
       <label className="chip-check"><input type="checkbox" checked={incomplete} onChange={e => setIncomplete(e.target.checked)} /> unfertige Chunks lesen</label>
       <button className="primary" disabled={!!busy} onClick={() => void check()}>{result ? 'Erneut prüfen' : 'Gelände prüfen'}</button>
     </div>}
-    {busy && <div className="notice world-busy" role="status">{busy}{progress && ` … ${progress[0]} / ${progress[1]} Chunks`}<button onClick={() => client.current?.abort()}>Abbrechen</button></div>}
     {error && <div className="notice warning" role="alert">{error}</div>}
     {note && <div className="notice" role="status">{note}</div>}
     {c && <>

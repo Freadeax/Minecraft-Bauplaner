@@ -32,7 +32,7 @@ Wahlmöglichkeiten (`AnlageChoices`): Bereiche abwählen, Abstand 0–12, Hauptw
 - **Grundflächen** (AABB, nur Vorfilter) und **Abstände** unter dem gewählten Wert; innerhalb eines Ensembles nicht geprüft, Wegmodule untereinander nicht.
 - **Anschlüsse** über `checkLinks`.
 
-Der Lageplan zeigt alle Grundflächen von oben, Bereiche farbig, Weg grau, bestehende Bauten des Zielprojekts blass, Konfliktbeteiligte rot umrandet. Gelände bleibt ungeprüft.
+Der Lageplan zeigt alle Grundflächen von oben, Bereiche farbig, Weg grau, bestehende Bauten des Zielprojekts blass, Konfliktbeteiligte rot umrandet. Mit Geländeaufnahme des Zielprojekts liegt die Höhenkarte darunter und jede Einheit wird auf den Hang gesetzt ([TERRAIN](TERRAIN.md)); ohne Aufnahme bleibt Gelände ungeprüft.
 
 ## Übernahme
 
@@ -48,4 +48,6 @@ Mit Voxelkonflikten ist die Übernahme nur nach ausdrücklicher Bestätigung mö
 - `tests/anlagen.test.mjs`: Kuratierung (jede Bauwelt, echte Bauteile, Ensembles), alle Standardlayouts ohne Voxelkonflikte und Abstandsbefunde, verbundener Hauptweg, Seiten, Determinismus, Ensemblelayout, feste Versionen trotz neuerer Version, Tausch, fehlende Versionen, echte Konflikte durch Verschieben, Übernahme mit Bauabschnitten, Einfügen mit Rückgängig und Veraltungsprüfung, Wahlprüfung, Tauschkandidaten.
 - `tests/e2e/anlagen.e2e.mjs`: Bauwelt → Planer, Vorschau speichert nichts, Konflikt sperrt die Übernahme, Abwählen/Tauschen/Anlegen, Einfügen in bestehendes Projekt, Handy 390 px.
 
-Grenzen: Terrassen und Hanglagen plant die Anlage nicht; Drehungen der Plätze richten Türen nicht automatisch zum Weg aus; Weg nur gerade entlang einer Achse.
+Gelände und Türen (TERRAIN-01, [TERRAIN](TERRAIN.md)): Terrassen oder eine Ebene auf der Geländeaufnahme des Zielprojekts, Unterbau/Abtrag je Einheit, Suche nach dem flachsten Platz; Einzelgebäude drehen sich automatisch mit dem Eingang zum Weg (Schalter „Türen zum Weg drehen“, Handdrehung hat Vorrang).
+
+Grenzen: Weg nur gerade entlang einer Achse und auf einer Höhe; Treppen, Rampen und Stützmauern werden als Bedarf genannt, nicht als Blöcke geplant; Höhenkarte statt Volumen.

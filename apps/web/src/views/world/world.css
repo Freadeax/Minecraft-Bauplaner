@@ -55,3 +55,10 @@
 .terrain-ground{font-size:12px;line-height:1.6}.terrain-ground button{margin-left:8px}
 .terrain-removal{width:100%;font-size:12px;border-collapse:collapse}.terrain-removal td{border-top:1px solid var(--line);padding:3px 0}.terrain-removal td:last-child{text-align:right}
 @media (max-width:860px){.world-select,.world-result,.terrain-grid{grid-template-columns:minmax(0,1fr)}.world-result-3d,.terrain-3d{height:380px}}
+/* TERRAIN-01: building site from the world, terrain survey of a project */
+.world-side{display:grid;gap:12px;min-width:0}
+.world-site{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;display:grid;gap:8px}
+.world-site h2{font-size:15px;margin:0}.world-site p{margin:0;font-size:12px}.world-site label{display:grid;gap:4px;font-size:12px}
+.terrain-survey{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:12px 0;display:grid;gap:8px}
+.terrain-survey h3{font-size:14px;margin:0}.terrain-survey p{margin:0;font-size:12px}
+.terrain-survey-state .text-button{margin-left:8px}

@@ -1,8 +1,8 @@
 import {
-  RegionReader, collectWorldFiles, sampleWorld, sampleToPayload, surfaceMap, writeSchemV3, FormatError, parseRegionFileName,
+  RegionReader, collectWorldFiles, sampleWorld, sampleToPayload, surfaceMap, terrainColumns, writeSchemV3, FormatError, parseRegionFileName,
 } from '../../../../../packages/formats/src/index.js';
 import type { RegionSource, WorldFiles, ExcerptOptions } from '../../../../../packages/formats/src/index.js';
-import { checkTerrain, terrainBox } from '../../../../../packages/domain/src/index.js';
+import { checkTerrain, isGroundId, SURFACE_SKIP_IDS, terrainBox } from '../../../../../packages/domain/src/index.js';
 import type { WorldPlacement } from '../../../../../packages/domain/src/index.js';
 import type { Bounds, NbtTag, VoxelPayload } from '../../../../../packages/voxel/src/index.js';
 import type { RegionInfo, WorldRequest, WorldResponse } from './protocol';
@@ -79,6 +79,14 @@ self.onmessage = async (event: MessageEvent<WorldRequest>) => {
       const sample = await sampleWorld(files, box, { onProgress: progress, signal, includeIncomplete: req.includeIncomplete });
       const check = checkTerrain(req.planned as VoxelPayload, req.placement as WorldPlacement, sample, { depth: req.depth });
       post({ id: req.id, kind: 'terrain', check, chunks: sample.chunks, warnings: sample.warnings, box });
+      return;
+    }
+    if (req.kind === 'survey') {
+      const columns = await terrainColumns(files, req.area, { onProgress: progress, signal, includeIncomplete: req.includeIncomplete, isGround: isGroundId, skip: SURFACE_SKIP_IDS, ...(req.maxY !== undefined && { maxY: req.maxY }) });
+      const read = columns.chunks.filter(c => c.state === 'ok' || c.state === 'incomplete');
+      const regions = [...new Set(read.map(c => `r.${Math.floor(c.cx / 32)}.${Math.floor(c.cz / 32)}.mca`))].sort();
+      const newest = Math.max(0, ...read.map(c => c.timestamp ?? 0));
+      post({ id: req.id, kind: 'survey', columns, regions, newest }, [columns.surface.buffer, columns.surfaceBlock.buffer, columns.ground.buffer, columns.groundBlock.buffer]);
       return;
     }
   } catch (e) {

@@ -31,3 +31,11 @@
 .anlage-accept{margin-top:12px;border-color:#ff5f57}
 @media(max-width:900px){.anlage-columns,.anlagen-intro{grid-template-columns:1fr}}
 @media(max-width:650px){.anlage-panel{padding:14px}.anlage-slots{grid-template-columns:1fr}.anlage-target>label{min-width:0;width:100%}}
+/* TERRAIN-01: Anlage on real terrain, doors to the path */
+.anlage-terrain .seg{display:inline-flex}
+.anlage-terrain-units table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+.anlage-terrain-units th,.anlage-terrain-units td{text-align:left;padding:3px 6px;border-bottom:1px solid var(--line)}
+.anlage-terrain-units td:not(:first-child),.anlage-terrain-units th:not(:first-child){text-align:right;font-variant-numeric:tabular-nums}
+.anlage-terrain-units{overflow-x:auto}
+.anlage-door,.anlage-height{overflow-wrap:anywhere}
+.anlage-terrain-note{font-size:12px;margin:6px 0;color:var(--muted)}

@@ -354,3 +354,70 @@ export async function surfaceMap(files: WorldFiles, chunkMin: { cx: number; cz: 
   }
   return { minX: chunkMin.cx * 16, minZ: chunkMin.cz * 16, width, length, heights, blocks, ids, chunks };
 }
+
+/**
+ * Terrain columns of an XZ area (TERRAIN-01): per column the top visible block
+ * (`surface`, plants and air skipped, water and leaves count) and the highest
+ * ground block (`ground`, decided by the caller's `isGround`, e.g. solid and
+ * not part of a tree). Columns of unavailable chunks stay unknown
+ * (SURFACE_UNKNOWN, index 0), never "flat" or "empty".
+ */
+export interface TerrainColumns {
+  readonly minX: number; readonly minZ: number;
+  readonly width: number; readonly length: number;
+  readonly surface: Int16Array; readonly surfaceBlock: Uint16Array;
+  readonly ground: Int16Array; readonly groundBlock: Uint16Array;
+  /** Block ids; index 0 = unknown. */
+  readonly ids: readonly string[];
+  readonly chunks: readonly ChunkSummary[];
+  readonly dataVersions: readonly number[];
+}
+export const TERRAIN_COLUMN_LIMIT = 262_144;
+export const TERRAIN_SIDE_LIMIT = 512;
+
+export async function terrainColumns(files: WorldFiles, area: { readonly minX: number; readonly minZ: number; readonly width: number; readonly length: number },
+  options: Pick<WorldSampleOptions, 'anvil' | 'includeIncomplete' | 'onProgress' | 'signal'> & { readonly isGround: (id: string) => boolean; readonly skip?: ReadonlySet<string>; readonly maxY?: number }): Promise<TerrainColumns> {
+  const { minX, minZ, width, length } = area;
+  if (![minX, minZ, width, length].every(Number.isSafeInteger) || width < 1 || length < 1) throw new FormatError('BOX', 'Geländebereich braucht ganze Koordinaten und eine Fläche.');
+  if (width > TERRAIN_SIDE_LIMIT || length > TERRAIN_SIDE_LIMIT || width * length > TERRAIN_COLUMN_LIMIT) failLimit(`Geländeaufnahme höchstens ${TERRAIN_SIDE_LIMIT} × ${TERRAIN_SIDE_LIMIT} Blöcke (gewählt ${width} × ${length}).`);
+  const skip = options.skip ?? SURFACE_SKIP;
+  const n = width * length;
+  const surface = new Int16Array(n).fill(SURFACE_UNKNOWN), ground = new Int16Array(n).fill(SURFACE_UNKNOWN);
+  const surfaceBlock = new Uint16Array(n), groundBlock = new Uint16Array(n);
+  const ids: string[] = ['?'], idIndex = new Map<string, number>();
+  const idOf = (id: string) => { let i = idIndex.get(id); if (i === undefined) { i = ids.length; ids.push(id); idIndex.set(id, i); } return i; };
+  const groundCache = new Map<string, boolean>();
+  const isGround = (id: string) => { let g = groundCache.get(id); if (g === undefined) { g = options.isGround(id); groundCache.set(id, g); } return g; };
+  const cache = createRegionCache(files), chunks: ChunkSummary[] = [], dataVersions = new Set<number>();
+  const list = chunksOfBox({ min: [minX, 0, minZ], maxExclusive: [minX + width, 1, minZ + length] });
+  for (const [k, { cx, cz }] of list.entries()) {
+    if (options.signal?.aborted) throw new FormatError('ABORT', 'Geländeaufnahme abgebrochen.');
+    const { summary, chunk } = await readExcerptChunk(cache, cx, cz, { ...options, ...(files.external && { external: files.external }) });
+    chunks.push(summary);
+    options.onProgress?.(k + 1, list.length);
+    if (!chunk) continue;
+    dataVersions.add(chunk.dataVersion);
+    const ys = [...chunk.sections.keys()].sort((a, b) => b - a);
+    const x0 = Math.max(minX, cx * 16), x1 = Math.min(minX + width, cx * 16 + 16), z0 = Math.max(minZ, cz * 16), z1 = Math.min(minZ + length, cz * 16 + 16);
+    for (let z = z0; z < z1; z++) for (let x = x0; x < x1; x++) {
+      const at = (z - minZ) * width + (x - minX);
+      // A readable chunk is known: an empty column (void) has neither surface nor ground below the world bottom.
+      surface[at] = chunk.minSectionY * 16 - 1; ground[at] = chunk.minSectionY * 16 - 1;
+      let haveSurface = false;
+      search: for (const sy of ys) {
+        const s = chunk.sections.get(sy)!;
+        if (options.maxY !== undefined && sy * 16 > options.maxY) continue;
+        if (!s.indices && skip.has(s.palette[0]!.id)) continue;
+        for (let ly = 15; ly >= 0; ly--) {
+          const y = sy * 16 + ly;
+          if (options.maxY !== undefined && y > options.maxY) continue;
+          const id = chunkBlockAt(chunk, x & 15, y, z & 15)!.id;
+          if (skip.has(id)) continue;
+          if (!haveSurface) { surface[at] = y; surfaceBlock[at] = idOf(id); haveSurface = true; }
+          if (isGround(id)) { ground[at] = y; groundBlock[at] = idOf(id); break search; }
+        }
+      }
+    }
+  }
+  return { minX, minZ, width, length, surface, surfaceBlock, ground, groundBlock, ids, chunks, dataVersions: [...dataVersions].sort((a, b) => a - b) };
+}

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { applyOperation, describeOperation } from '../../../../../packages/domain/src/index.js';
-import type { Operation, Project } from '../../../../../packages/domain/src/index.js';
+import { EARTHWORK_NOTE, MAP_MAX_CELLS, applyOperation, columnBases, describeOperation, estimateEarthwork, surveyCovers, surveyDisplayCells } from '../../../../../packages/domain/src/index.js';
+import type { EarthworkEstimate, Operation, Project, TerrainSurvey } from '../../../../../packages/domain/src/index.js';
 import {
   DIMENSIONS, MAP_SKIP_LABEL, TERRAIN_NOTE, chunkOf, dimensionLabel, footprintNeighbours, suggestPlacement, topViews, translateBounds, worldOperation, createPlacement,
 } from '../../../../../packages/domain/src/worldmap.js';
@@ -18,6 +18,7 @@ import { PlacementForm } from './PlacementForm';
 import { LiveMapPanel, LiveMapLink } from './LiveMapPanel';
 import { useLiveMapSettings } from './liveMapConfig';
 import { computeMap } from './transport';
+import { loadSurvey } from '../world/surveys';
 import '../../map.css';
 
 export type ColorMode = 'block' | 'project' | 'progress';
@@ -61,6 +62,9 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   const [hover, setHover] = useState<Cell | null>(null);
   const [tour, setTour] = useState(false);
   const [live, setLive] = useLiveMapSettings();
+  const [surveys, setSurveys] = useState<ReadonlyMap<string, TerrainSurvey>>(new Map());
+  const [surveyErrors, setSurveyErrors] = useState<readonly string[]>([]);
+  const [showTerrain, setShowTerrain] = useState(true);
   const seq = useRef(0);
 
   const load = useCallback(async () => {
@@ -81,6 +85,21 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   }, [projects, library.versions, dimension, showHidden]);
 
   useEffect(() => { writeParams({ projectId: selected, dimension }); }, [selected, dimension]);
+
+  // Geländeaufnahmen (TERRAIN-01) of the projects in this dimension, loaded from the original store.
+  useEffect(() => {
+    if (!projects) return;
+    const withTerrain = projects.filter(p => p.terrain && p.terrain.dimension === dimension && p.world?.dimension === dimension);
+    let live = true;
+    void Promise.allSettled(withTerrain.map(p => loadSurvey(repo, p.terrain!))).then(results => {
+      if (!live) return;
+      const next = new Map<string, TerrainSurvey>(), errors: string[] = [];
+      results.forEach((r, i) => { if (r.status === 'fulfilled') next.set(withTerrain[i]!.id, r.value); else errors.push(`${withTerrain[i]!.name}: ${errorText(r.reason)}`); });
+      setSurveys(next); setSurveyErrors(errors);
+    });
+    return () => { live = false; };
+  }, [projects, dimension, repo]);
+  const terrain = useMemo(() => showTerrain ? [...surveys.values()] : [], [surveys, showTerrain]);
 
   const entry = map?.entries.find(e => e.projectId === selected) ?? null;
   const project = projects?.find(p => p.id === selected) ?? null;
@@ -109,16 +128,41 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
     return null;
   }, [ownerOf, selectedIndex, map, mode]);
   const tops = useMemo(() => map ? topViews(map) : [], [map]);
-  const payload = useMemo<VoxelPayload | null>(() => map?.bounds ? {
-    schemaVersion: 1, profileId: 'weltkarte:anzeige', bounds: map.bounds, pivot: [0, 0, 0], sourceOrigin: [0, 0, 0], palette: map.palette, cells: map.cells, blockEntities: [],
-  } : null, [map]);
+  // Terrain cells join the 3D scene as display data; planned blocks win where both stand.
+  const ground = useMemo(() => {
+    if (!map || !terrain.length) return null;
+    const occupied = new Set<string>();
+    for (const c of map.cells) if (terrain.some(s => surveyCovers(s, c.position[0], c.position[2], c.position[0] + 1, c.position[2] + 1))) occupied.add(`${c.position[0]},${c.position[1]},${c.position[2]}`);
+    return surveyDisplayCells(terrain, { maxCells: MAP_MAX_CELLS - map.cells.length, occupied: (x, y, z) => occupied.has(`${x},${y},${z}`) });
+  }, [map, terrain]);
+  const payload = useMemo<VoxelPayload | null>(() => {
+    if (!map) return null;
+    if (!ground?.count) return map.bounds ? { schemaVersion: 1, profileId: 'weltkarte:anzeige', bounds: map.bounds, pivot: [0, 0, 0], sourceOrigin: [0, 0, 0], palette: map.palette, cells: map.cells, blockEntities: [] } : null;
+    const offset = map.palette.length, cells: Cell[] = [...map.cells];
+    const min = [Infinity, Infinity, Infinity], max = [-Infinity, -Infinity, -Infinity];
+    if (map.bounds) for (let k = 0; k < 3; k++) { min[k] = map.bounds.min[k]!; max[k] = map.bounds.maxExclusive[k]!; }
+    for (let i = 0; i < ground.count; i++) {
+      const position: [number, number, number] = [ground.cells[i * 4]!, ground.cells[i * 4 + 1]!, ground.cells[i * 4 + 2]!];
+      cells.push({ position, kind: 'block', paletteIndex: offset + ground.cells[i * 4 + 3]! });
+      for (let k = 0; k < 3; k++) { min[k] = Math.min(min[k]!, position[k]!); max[k] = Math.max(max[k]!, position[k]! + 1); }
+    }
+    return { schemaVersion: 1, profileId: 'weltkarte:anzeige', bounds: { min: min as [number, number, number], maxExclusive: max as [number, number, number] }, pivot: [0, 0, 0], sourceOrigin: [0, 0, 0],
+      palette: [...map.palette, ...ground.ids.map(id => ({ id, properties: {} }))], cells, blockEntities: [] };
+  }, [map, ground]);
+  /** Survey area as bounds, for framing projects without blocks (an empty building site). */
+  const surveyBounds = useCallback((projectId: string): Bounds | null => {
+    const s = surveys.get(projectId); if (!s) return null;
+    const p = projects?.find(x => x.id === projectId), y = p?.world?.origin[1] ?? 64;
+    return { min: [s.minX, y - 8, s.minZ], maxExclusive: [s.minX + s.width, y + 8, s.minZ + s.length] };
+  }, [surveys, projects]);
 
   const fly = useCallback((projectId: string) => {
     const e = map?.entries.find(x => x.projectId === projectId);
     setSelected(projectId);
-    if (e?.worldBounds && !e.skipped) setFrame3d({ bounds: e.worldBounds, seq: ++seq.current });
+    const b = e?.worldBounds && !e.skipped ? e.worldBounds : surveyBounds(projectId);
+    if (b) setFrame3d({ bounds: b, seq: ++seq.current });
     setFrame2d({ projectId, seq: ++seq.current });
-  }, [map]);
+  }, [map, surveyBounds]);
   const onPick = useCallback((cell: Cell | null) => {
     setHover(cell);
     const i = cell ? ownerOf.get(cell) : undefined;
@@ -180,8 +224,21 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   const otherDims = map ? Object.entries(map.elsewhere) : [];
   const dims = [...DIMENSIONS.map(d => d.id), ...otherDims.map(([d]) => d).filter(d => !DIMENSIONS.some(x => x.id === d))];
   const collisionsOf = (id: string) => map?.collisions.filter(c => c.cells && (c.a === id || c.b === id)) ?? [];
+  // Earthwork estimate of the selected project on the first survey that covers its footprint (own survey first).
+  const estimate = useMemo((): { survey: TerrainSurvey; own: boolean; result: EarthworkEstimate; shift: number } | null => {
+    if (!map || !entry?.worldBounds || entry.skipped || !project?.world) return null;
+    const b = entry.worldBounds;
+    const dy = preview && preview.dimension === dimension ? [preview.origin[0] - project.world.origin[0], preview.origin[1] - project.world.origin[1], preview.origin[2] - project.world.origin[2]] as const : [0, 0, 0] as const;
+    const own = surveys.get(entry.projectId);
+    const candidates = [...(own ? [own] : []), ...[...surveys.values()].filter(s => s !== own)];
+    const survey = candidates.find(s => surveyCovers(s, b.min[0] + dy[0], b.min[2] + dy[2], b.maxExclusive[0] + dy[0], b.maxExclusive[2] + dy[2]))
+      ?? candidates.find(s => surveyCovers(s, b.min[0] + dy[0], b.min[2] + dy[2], b.min[0] + dy[0] + 1, b.min[2] + dy[2] + 1));
+    if (!survey) return null;
+    const cells = map.cells.filter((_, i) => map.owner[i] === entry.index);
+    return { survey, own: survey === own, result: estimateEarthwork(columnBases(cells, dy), survey), shift: dy[1] };
+  }, [map, entry, project, surveys, preview, dimension]);
 
-  return <div className="page map-page" data-map-state={busy ? 'busy' : map ? 'ready' : 'empty'} data-map-cells={map?.cells.length ?? ''}>
+  return <div className="page map-page" data-map-state={busy ? 'busy' : map ? 'ready' : 'empty'} data-map-cells={map?.cells.length ?? ''} data-terrain-cells={ground?.count ?? 0}>
     <header className="map-head">
       <div><h1 className="page-title">Weltkarte</h1>
         <p className="map-lead">Alle Projekte an ihren Weltkoordinaten. Fliege frei darüber, prüfe Abstände und Überschneidungen und sieh, was schon gebaut ist.</p></div>
@@ -194,10 +251,14 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
           {COLOR_MODES.map(([m, label]) => <button key={m} aria-pressed={mode === m} onClick={() => setMode(m)}>{label}</button>)}
         </div>
         <label className="chip-check"><input type="checkbox" checked={showHidden} onChange={e => setShowHidden(e.target.checked)} /> Ausgeblendete zeigen</label>
+        {surveys.size > 0 && <label className="chip-check"><input type="checkbox" checked={showTerrain} onChange={e => setShowTerrain(e.target.checked)} /> Gelände ({surveys.size})</label>}
         <button className="secondary" aria-pressed={tour} disabled={!drawn.length} onClick={() => setTour(t => !t)}>{tour ? '■ Rundflug beenden' : '▶ Rundflug'}</button>
       </div>
     </header>
-    <p className="map-terrain" role="note">{TERRAIN_NOTE} Lage, Höhe und Abstände prüfst du im Spiel oder auf eurer Live-Karte.</p>
+    <p className="map-terrain" role="note">{surveys.size ? <>Gelände aus {surveys.size} Geländeaufnahme{surveys.size === 1 ? '' : 'n'} (gestrichelt umrandet); außerhalb bleibt es ungeprüft. Aufnehmen im Projektreiter „Gelände“ oder als Bauplatz im <a href="#/welt">Weltimport</a>.</>
+      : <>{TERRAIN_NOTE} Lage, Höhe und Abstände prüfst du im Spiel oder auf eurer Live-Karte. Echtes Gelände zeigt die Karte, sobald ein Projekt eine Geländeaufnahme hat (Reiter „Gelände“ oder Bauplatz im <a href="#/welt">Weltimport</a>).</>}</p>
+    {surveyErrors.length > 0 && <div className="notice warning" role="alert">Geländeaufnahme nicht geladen: {surveyErrors.join(' · ')}</div>}
+    {ground && ground.skipped > 0 && <p className="notice" role="status">{ground.skipped} Geländeaufnahme(n) in 3D nicht gezeigt: Anzeigebudget erreicht. Die Draufsicht zeigt sie weiter.</p>}
     {notice && <div className="notice" role="status">{notice} {lastUndo && <button className="text-button" onClick={() => void undoLast()}>Rückgängig</button>}</div>}
     {mapError && <div className="notice warning" role="alert"><strong>Karte nicht berechnet</strong><p>{mapError}</p></div>}
 
@@ -219,7 +280,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
       <section className="map-main">
         <div className="map-panels">
           {map ? <OverviewMap map={map} tops={tops} colorOf={baseColor} selected={selected} onSelect={setSelected} onFly={fly} frame={frame2d}
-            preview={previewBounds ? { bounds: previewBounds, conflict: previewHits.length > 0 } : null} />
+            preview={previewBounds ? { bounds: previewBounds, conflict: previewHits.length > 0 } : null} terrain={terrain} boundsOf={surveyBounds} />
             : <div className="overview"><div className="loading" role="status">Karte wird berechnet …</div></div>}
           <div className="map-3d">
             {payload ? <Viewer payload={payload} cells={payload.cells} onSelect={onPick} markFor={markFor} frameRequest={frame3d}
@@ -235,13 +296,18 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
         {entry && project && <section className="map-detail" aria-label={`Details zu ${entry.name}`}>
           <header><h2>{entry.name}</h2>
             <div className="button-row">
-              <button className="primary" disabled={!!entry.skipped} onClick={() => fly(entry.projectId)}>✈ Hinfliegen</button>
+              <button className="primary" disabled={!!entry.skipped && !surveys.has(entry.projectId)} onClick={() => fly(entry.projectId)}>✈ Hinfliegen</button>
               <a href={href({ view: 'project', projectId: entry.projectId, tab: 'editor' })}>Im Editor öffnen</a>
               <a href={href({ view: 'project', projectId: entry.projectId, tab: 'bauen' })}>Bauanleitung</a>
               <LiveMapLink settings={live} entry={entry} />
             </div></header>
           <Facts entry={entry} />
           {entry.skipped && <p className="notice">Nicht gezeichnet: {MAP_SKIP_LABEL[entry.skipped]}{entry.error ? ` (${entry.error})` : ''}.</p>}
+          {estimate && <TerrainEstimate estimate={estimate} preview={!!preview} onApply={estimate.result.suggestedShift && !preview ? () => {
+            const w = project.world!;
+            void save(project, worldOperation({ ...w, origin: [w.origin[0], w.origin[1] + estimate.result.suggestedShift!, w.origin[2]] }, 'Höhe ans Gelände angepasst'));
+          } : null} />}
+          {!estimate && entry.worldBounds && !entry.skipped && surveys.size > 0 && <p className="muted small">Keine Geländeaufnahme unter diesem Projekt.</p>}
           {collisionsOf(entry.projectId).map(c => {
             const other = c.a === entry.projectId ? c.b : c.a, name = map?.entries.find(e => e.projectId === other)?.name ?? other;
             return <p key={other} className="notice warning" role="alert">Überschneidung mit „{name}“: {formatNumber(c.cells)} Blöcke widersprechen sich{c.sample ? `, z. B. bei X ${c.sample[0]} · Y ${c.sample[1]} · Z ${c.sample[2]}` : ''}. Die Karte entscheidet das nicht – verschiebe eines der Projekte.</p>;
@@ -283,4 +349,18 @@ function Facts({ entry }: { entry: MapEntry }) {
     {entry.conflicts > 0 && <div><dt>Interne Konflikte</dt><dd>{entry.conflicts} ungeklärt (im Editor lösen)</dd></div>}
     {entry.placement.note && <div><dt>Notiz</dt><dd>{entry.placement.note}</dd></div>}
   </dl>;
+}
+
+function TerrainEstimate({ estimate, preview, onApply }: { estimate: { survey: TerrainSurvey; own: boolean; result: EarthworkEstimate; shift: number }; preview: boolean; onApply: (() => void) | null }) {
+  const r = estimate.result;
+  const ok = !r.hanging && !r.buried && !r.water && !r.unknown;
+  return <section className="map-terrain-estimate" aria-label="Gelände unter dem Projekt" data-testid="map-terrain-estimate">
+    <h3>Gelände {preview ? 'an der neuen Lage' : 'unter dem Projekt'} <small>{estimate.own ? 'eigene Geländeaufnahme' : 'Geländeaufnahme eines Nachbarprojekts'}</small></h3>
+    <p className={ok ? 'ok-text' : 'warn-text'}>{ok ? 'Fundament liegt laut Höhenkarte überall auf, kein Gelände im Weg.'
+      : [r.hanging && `${r.hanging} Fundamentspalten hängen (${formatNumber(r.fill)} Blöcke Unterbau, bis ${r.maxGap} tief)`, r.buried && `${r.buried} Spalten im Boden (${formatNumber(r.cut)} Blöcke abtragen)`,
+        r.water && `${r.water} Spalten im Wasser`, r.unknown && `${r.unknown} Spalten unbekannt`].filter(Boolean).join(' · ')}</p>
+    {r.ground && <p>Boden im Grundriss Y {r.ground.min} … {r.ground.max} (Median {r.ground.median}); unterste Bauschicht Y {r.baseY}.
+      {r.suggestedShift ? <> Vorschlag: {r.suggestedShift > 0 ? `${r.suggestedShift} höher` : `${-r.suggestedShift} tiefer`}. {onApply && <button type="button" className="secondary" onClick={onApply}>Höhe ans Gelände anpassen</button>}</> : null}</p>}
+    <p className="muted small">{EARTHWORK_NOTE}</p>
+  </section>;
 }

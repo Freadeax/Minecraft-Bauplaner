@@ -2,6 +2,7 @@ import type { Bounds, Transform, Vec3, VoxelPayload } from '../../voxel/src/type
 import type { SitePlan } from './site.js';
 import type { UpdateState } from './updateState.js';
 import type { WorldPlacement } from './worldmap.js';
+import type { ProjectTerrainReference } from './terrainSurvey.js';
 
 /**
  * Shared domain contract (P2-01). All records are JSON-safe and versioned so
@@ -171,6 +172,8 @@ export interface Project {
   readonly scanHistory?: readonly ProjectScanReference[];
   /** Version pins and update log (updates.ts, UPDATE-01). Absent = nothing frozen, no switches recorded. */
   readonly updates?: UpdateState;
+  /** Stored terrain survey (height map) of the building site (terrainSurvey.ts, TERRAIN-01); bytes in the original store. */
+  readonly terrain?: ProjectTerrainReference;
 }
 
 export class DomainError extends Error {

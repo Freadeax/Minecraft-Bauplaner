@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-02T05:47:56.343Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-02T06:01:12.819Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-02T05:47:56.343Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 16 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 23 |
+| 🧩 Implementiert · Abnahme offen | 24 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -125,6 +125,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [LIB-03](#lib-03) | Eigene Ensembles und Generatorvorlagen speichern | 🧩 Implementiert · Abnahme offen | 2/2 | LIB-02, GEN-01 | ausstehend | ausstehend |
 | [WORLD-02](#world-02) | Weitere kuratierte Bauwelten | ✅ Im beschriebenen Umfang geprüft | 2/2 | LIB-01, UI-01 | `c3e6478` | `c3e6478` |
 | [BUILD-05](#build-05) | Bauwelt-Anlagen mit Konfliktvorschau | ✅ Im beschriebenen Umfang geprüft | 3/3 | LIB-03, CORE-03 | ausstehend | ausstehend |
+| [TERRAIN-01](#terrain-01) | Geländeaufnahmen für Weltkarte und Anlagen | 🧩 Implementiert · Abnahme offen | 4/5 | WORLD-IMPORT-01, BUILD-05, MAP-01 | ausstehend | ausstehend |
 | [BUILD-06](#build-06) | Bauführung im Spiel: Schichtführung, Tagesziele, Packlisten, Druck-/Handyansicht, Spielfortschritt | 🧩 Implementiert · Abnahme offen | 5/5 | BUILD-01, GAME-01, MAP-01 | ausstehend | ausstehend |
 | [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | 🧩 Implementiert · Abnahme offen | 5/5 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
 | [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen | 4/4 | CORE-03, STORE-02 | `84838f0` | `e232b26` |
@@ -999,6 +1000,28 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/anlagen.test.mjs](../tests/anlagen.test.mjs) — 12 Fälle gegen den echten Katalog: 11 Anlagen konflikt- und befundfrei, feste Versionen, Tausch, Blocker, echte Voxelkonflikte mit Bestätigungspflicht, Übernahme mit Bauabschnitten, Einfügen mit Rückgängig.; [tests/e2e/anlagen.e2e.mjs](../tests/e2e/anlagen.e2e.mjs) — Chromium: Bauwelt-Link, Vorschau speichert nichts, Konflikt sperrt Übernahme, Anlegen und Einfügen, 390 px.; [docs/architecture/ANLAGEN.md](architecture/ANLAGEN.md) — Datenmodell, Layout, Konfliktvorschau, Übernahme und Grenzen.
 
 **Dateiumfang:** `packages/domain/src/anlagen.ts`, `packages/domain/src/ensembles.ts`, `apps/web/src/views/library/`, `tests/anlagen.test.mjs`, `tests/e2e/anlagen.e2e.mjs`, `docs/architecture/ANLAGEN.md`. **Abhängigkeiten:** LIB-03, CORE-03. **Alte IDs:** BUILD-05.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### TERRAIN-01
+
+**Geländeaufnahmen für Weltkarte und Anlagen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread Gelände in Anlagen und Weltkarte) · Aktualisiert: 2026-11-02T06:01:12.819Z
+
+- [x] TERRAIN-01-S01: Geländeaufnahme (Höhenkarte) aus Regionsdateien lesen, als Original speichern, sichern und prüfen; Bauplatz aus dem Weltimport.
+- [x] TERRAIN-01-S02: Gelände in der Weltkarte (Draufsicht, 3D, Höhe unter dem Zeiger) mit Erdarbeiten-Schätzung und Höhenvorschlag.
+- [x] TERRAIN-01-S03: Anlagen auf Gelände: Terrassen oder eine Ebene, Unterbau/Abtrag je Einheit, flachster Platz.
+- [x] TERRAIN-01-S04: Türen der Einzelgebäude automatisch zum Hauptweg drehen.
+- [ ] TERRAIN-01-S05: Abnahme mit Philipps eigener 26.3-Welt und echten Geräten.
+
+**Abnahme:** Unbekannte Spalten werden nie als eben gewertet; Anlagen setzen sich nur mit ausdrücklicher Übernahme; Wegmodule bleiben verbunden; alle Katalogeingänge zeigen zum Weg.
+
+**Nächste Aktion:** Abnahme mit eigener Welt (S05); danach Weg mit Stufen/Kurven und Stützmauern als Blöcke als eigene Folgeaufgabe.
+
+**Prüfstand:** Kern- und Chromiumtests bestanden; Abnahme mit eigener Welt und echten Geräten offen.
+
+**Nachweise:** [tests/terrain-survey.test.mjs](../tests/terrain-survey.test.mjs) — 9 Fälle: echte Regionsdatei mit Hang/Teich/Baum/Gras gegen Handwerte und dichte Probe, Dateiformat, terrain.set mit Rückgängig/Sicherung/Datencheck, Erdarbeiten, 3D-Zellen, Eingangsregel, Katalogtüren, Terrassen/Ebene, Platzsuche.; [tests/e2e/terrain.e2e.mjs](../tests/e2e/terrain.e2e.mjs) — Chromium 1400/390 px: Bauplatz aus Regionsdatei, Weltkarte mit Gelände, Anlage auf dem Hang, Einfügen, Schätzung, Reiter Gelände.; [docs/architecture/TERRAIN.md](architecture/TERRAIN.md) — Datenmodell, Weltkarte, Anlagen auf Gelände, Türregel, Grenzen.
+
+**Dateiumfang:** `packages/domain/src/terrainSurvey.ts`, `packages/domain/src/anlagenTerrain.ts`, `packages/domain/src/entrance.ts`, `packages/formats/src/worldExcerpt.ts`, `apps/web/src/views/world/surveys.ts`, `apps/web/src/views/project/TerrainSurveyPanel.tsx`, `apps/web/src/views/map/terrainLayer.ts`, `scripts/make_terrain_fixture.py`, `tests/terrain-survey.test.mjs`, `tests/e2e/terrain.e2e.mjs`, `docs/architecture/TERRAIN.md`. **Abhängigkeiten:** WORLD-IMPORT-01, BUILD-05, MAP-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

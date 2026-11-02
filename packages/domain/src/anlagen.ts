@@ -12,6 +12,8 @@ import { SAMPLE_PROFILE } from './samples.js';
 import { addSection, checkSite, siteOf } from './site.js';
 import type { SitePlan } from './site.js';
 import { latestReleaseId } from './updateState.js';
+import { entranceOf, facesSide, turnsToFace } from './entrance.js';
+import type { Entrance, Side } from './entrance.js';
 import { DomainError } from './types.js';
 import type { Asset, AssetVersion, ConnectorLink, Instance, Project } from './types.js';
 
@@ -200,6 +202,8 @@ export interface AnlageChoices {
   readonly shifts?: Readonly<Record<string, readonly [number, number]>>;
   /** Build the main path (default true when the Anlage has one). */
   readonly path?: boolean;
+  /** Turn single buildings so their entrance faces the main path (default true; manual turns win). */
+  readonly doors?: boolean;
 }
 
 const fail = (message: string): never => { throw new DomainError('ANLAGE', `Anlage: ${message}`); };
@@ -220,7 +224,7 @@ export function normalizeChoices(anlage: Anlage, raw: AnlageChoices = {}): Requi
   }
   const spacing = raw.spacing ?? anlage.spacing;
   if (!Number.isInteger(spacing) || spacing < MIN_SPACING || spacing > MAX_SPACING) fail(`Abstand muss ${MIN_SPACING}–${MAX_SPACING} Blöcke sein`);
-  return { off, swaps, turns, spacing, shifts, path: anlage.path !== null && raw.path !== false };
+  return { off, swaps, turns, spacing, shifts, path: anlage.path !== null && raw.path !== false, doors: raw.doors !== false };
 }
 
 // ---------------------------------------------------------------------------
@@ -248,6 +252,12 @@ export interface SlotState {
   readonly pin: string;
   /** Label of a newer version of the same asset; the plan keeps the pin. */
   readonly newer?: string;
+  /** Where `turns` comes from: a manual turn, the entrance rule (door to the path) or the curated value. */
+  readonly turnSource: 'manual' | 'door' | 'curated';
+  /** Entrance found in the pinned version (null: no door or gate, or missing version). */
+  readonly entrance: Entrance | null;
+  /** Entrance faces the main path side after `turns`; null without entrance or ensemble member. */
+  readonly facesPath: boolean | null;
 }
 
 function lookup(lib: AnlageLibrary) {
@@ -263,7 +273,8 @@ function lookup(lib: AnlageLibrary) {
 function slotState(lib: ReturnType<typeof lookup>, base: { key: string; districtId: string; ensembleId?: string; assetId: string; pin: string; role: string; turns: 0 | 1 | 2 | 3 }, swap: string | undefined): SlotState {
   const assetId = swap ?? base.assetId;
   const asset = lib.assets.get(assetId);
-  const common = { key: base.key, districtId: base.districtId, ...(base.ensembleId && { ensembleId: base.ensembleId }), assetId, curatedAssetId: base.assetId, swapped: !!swap && swap !== base.assetId, role: base.role, turns: base.turns };
+  const common = { key: base.key, districtId: base.districtId, ...(base.ensembleId && { ensembleId: base.ensembleId }), assetId, curatedAssetId: base.assetId, swapped: !!swap && swap !== base.assetId, role: base.role, turns: base.turns,
+    turnSource: 'curated' as const, entrance: null, facesPath: null };
   if (!asset) return { ...common, status: 'missing-asset', version: null, pin: base.pin };
   // A swapped slot pins the version that is current when the swap is made.
   const version = swap && swap !== base.assetId ? lib.versionOf(asset, null) : lib.versionOf(asset, base.pin);
@@ -373,7 +384,15 @@ export function planAnlage(anlage: Anlage, library: AnlageLibrary, rawChoices: A
       if (f) units.push({ w: f.x1 - f.x0, d: f.z1 - f.z0, parts: ok.map(p => ({ ...p, dx: p.dx - f.x0, dz: p.dz - f.z0 })) });
     }
     for (const sl of district.slots) {
-      const slot = slotState(lib, { key: sl.key, districtId: district.id, assetId: sl.assetId, pin: sl.pin ?? SHIPPED_LABEL, role: sl.role ?? sl.assetId, turns: choices.turns[sl.key] ?? sl.turns ?? 0 }, choices.swaps[sl.key]);
+      const manual = choices.turns[sl.key];
+      let slot = slotState(lib, { key: sl.key, districtId: district.id, assetId: sl.assetId, pin: sl.pin ?? SHIPPED_LABEL, role: sl.role ?? sl.assetId, turns: manual ?? sl.turns ?? 0 }, choices.swaps[sl.key]);
+      if (slot.version) {
+        // Door to the path: north districts face +z (south), south districts −z (north).
+        const entrance = entranceOf(slot.version.payload), want: Side = district.side === 'nord' ? 'south' : 'north';
+        const auto = choices.doors && manual === undefined && anlage.path !== null ? turnsToFace(entrance, want) : null;
+        const turns = auto ?? slot.turns;
+        slot = { ...slot, turns, entrance, turnSource: manual !== undefined ? 'manual' : auto !== null ? 'door' : 'curated', facesPath: anlage.path !== null ? facesSide(entrance, turns, want) : null };
+      }
       states.push(slot);
       if (slot.version) { const b = footOf(slot.version, turned(slot.turns)); units.push({ w: b.x1 - b.x0, d: b.z1 - b.z0, parts: [{ slot, dx: 0, dz: 0 }] }); }
     }
@@ -436,10 +455,14 @@ export interface AnlageDraft {
   readonly sections: readonly { readonly name: string; readonly note: string; readonly instanceIds: readonly string[] }[];
 }
 
-/** Instances, mating links and build sections of a plan, shifted by `offset` (x, z). */
-export function draftAnlage(plan: AnlagePlan, offset: readonly [number, number] = [0, 0], ids: (key: string) => string = instanceIdOf): AnlageDraft {
+/**
+ * Instances, mating links and build sections of a plan, shifted by `offset`
+ * (x, z) and per placement key by `heights` (y, e.g. terraces from
+ * fitAnlageToTerrain; path modules share one height so their joints still mate).
+ */
+export function draftAnlage(plan: AnlagePlan, offset: readonly [number, number] = [0, 0], ids: (key: string) => string = instanceIdOf, heights?: ReadonlyMap<string, number>): AnlageDraft {
   const instances = plan.placements.map((p): Instance => ({ id: ids(p.key), assetVersionId: p.version.id, name: p.name, override: false,
-    transform: { ...p.transform, position: [p.transform.position[0] + offset[0], p.transform.position[1], p.transform.position[2] + offset[1]] } }));
+    transform: { ...p.transform, position: [p.transform.position[0] + offset[0], p.transform.position[1] + (heights?.get(p.key) ?? 0), p.transform.position[2] + offset[1]] } }));
   const versions = new Map(plan.placements.map(p => [p.version.id, p.version]));
   const probe = { ...createProject({ name: 'Anlage' }), instances };
   const links = unlinkedMates(probe, versions).map((m, i): ConnectorLink => ({ id: `link_anl_${i + 1}`, a: m.a, b: m.b }));
@@ -495,10 +518,11 @@ const gapBetween = (a: Footprint, b: Footprint): number => {
  * hint). `base` is an existing project the Anlage would be added to; `offset`
  * shifts the whole Anlage.
  */
-export function previewAnlage(plan: AnlagePlan, input: { base?: Project; offset?: readonly [number, number]; versions?: ReadonlyMap<string, AssetVersion> } = {}): AnlagePreview {
+export function previewAnlage(plan: AnlagePlan, input: { base?: Project; offset?: readonly [number, number]; versions?: ReadonlyMap<string, AssetVersion>; heights?: ReadonlyMap<string, number> } = {}): AnlagePreview {
   const offset = input.offset ?? [0, 0];
   if (!offset.every(n => Number.isInteger(n) && Math.abs(n) <= 30_000_000)) fail('Versatz muss ganzzahlig sein');
-  const draft = draftAnlage(plan, offset);
+  for (const [k, y] of input.heights ?? []) if (!Number.isInteger(y) || Math.abs(y) > 4096) fail(`Höhe für ${k} muss ganzzahlig sein`);
+  const draft = draftAnlage(plan, offset, instanceIdOf, input.heights);
   const base = input.base ?? createProject({ name: plan.anlage.name, description: plan.anlage.description, profileId: SAMPLE_PROFILE });
   const taken = new Set(base.instances.map(i => i.id));
   if (draft.instances.some(i => taken.has(i.id))) fail('Die Anlage ist in diesem Projekt bereits enthalten (gleiche Instanz-IDs)');

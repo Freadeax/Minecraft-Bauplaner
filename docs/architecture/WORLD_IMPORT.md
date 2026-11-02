@@ -40,6 +40,10 @@ Optionen: Luft weglassen oder als ausdrückliche Luft übernehmen, auf Blöcke z
 
 Box = Projektgrenzen an der Weltlage, nach unten um die Suchtiefe (Standard 16) erweitert. Je geplanter Zelle: steht schon (gleiche Block-ID), frei (Luft oder ersetzbar wie Gras, Schnee), Gelände im Weg, freiräumen (geplante Luft in festem Gelände), im Wasser/Lava, unbekannt. Je Spalte der untersten Bauschicht: trägt, hängt in der Luft (mit Unterbautiefe bis zum Boden, als Untergrenze markiert, wenn die Suchtiefe nicht reicht), auf Wasser/Lava, unbekannt. Überhänge und obere Stockwerke werden nicht als Fundament gewertet. Dazu Abtragliste je Blockart, Bodenhöhe im Grundriss (Bäume zählen nicht als Boden) und ein Vorschlag für den Ursprung Y, den man als rückgängig machbare Operation `world.set` übernehmen kann.
 
+## Geländeaufnahme und Bauplatz (TERRAIN-01)
+
+Aus den gewählten Regionsdateien speichert der Reiter „Gelände“ eine dauerhafte Geländeaufnahme (Höhenkarte) des Bauplatzes; „Als Bauplatz anlegen“ in `#/welt` legt aus einem X/Z-Bereich ein leeres Projekt mit Weltlage und Aufnahme an und öffnet die Weltkarte. Weltkarte und Anlagen nutzen sie ohne die Dateien ([TERRAIN](TERRAIN.md)).
+
 ## Grenzen
 
 - Nur Blöcke: keine Entities, kein Redstone-Verhalten, keine Server-Schutzgebiete.

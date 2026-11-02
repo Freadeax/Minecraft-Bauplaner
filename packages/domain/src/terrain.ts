@@ -44,6 +44,11 @@ export const NATURAL_TERRAIN_IDS: ReadonlySet<string> = new Set([
 export const FLUID_IDS: ReadonlySet<string> = new Set(['minecraft:water', 'minecraft:lava', 'minecraft:bubble_column']);
 /** Not ground: trees and their parts stand on the ground, they are obstacles. */
 const isTreePart = (id: string) => /_(leaves|log|wood|stem|hyphae)$/.test(id) || id === 'minecraft:mangrove_roots' || id === 'minecraft:muddy_mangrove_roots' || id.endsWith('mushroom_block');
+/** Ground for heightmaps (TERRAIN-01): solid, not replaceable, no fluid, not part of a tree, not unknown. Same classes as checkTerrain. */
+export const isGroundId = (id: string): boolean => id !== UNLOADED_STATE && !REPLACEABLE_IDS.has(id) && !FLUID_IDS.has(id) && !isTreePart(id);
+export const isTreePartId = (id: string): boolean => isTreePart(id);
+/** Not a surface for height maps: air, markers and everything a placed block replaces (plants, snow layers). */
+export const SURFACE_SKIP_IDS: ReadonlySet<string> = new Set([...REPLACEABLE_IDS, 'minecraft:barrier', 'minecraft:structure_void', 'minecraft:light']);
 
 export type TerrainVerdict = 'present' | 'free' | 'obstacle' | 'clear' | 'fluid' | 'unknown';
 export const TERRAIN_VERDICT_LABEL: Readonly<Record<TerrainVerdict, string>> = {

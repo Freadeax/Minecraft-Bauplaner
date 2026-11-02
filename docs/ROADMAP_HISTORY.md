@@ -1634,3 +1634,51 @@ BUILD-06 umgesetzt: Schichtführung mit Anker-/Weltkoordinaten, Anker aus Weltla
 - `tests/build-run.test.mjs`
 - `tests/e2e/build-run.e2e.mjs`
 
+## 2026-11-02T06:01:12.819Z · progress
+
+**Aufgaben:** TERRAIN-01
+
+Geländeaufnahmen für Weltkarte und Anlagen: Höhenkarte als Original, Bauplatz aus dem Weltimport, Gelände in der Karte mit Erdarbeiten-Schätzung, Anlagen in Terrassen mit flachstem Platz, Türen automatisch zum Weg.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| TERRAIN-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme mit eigener Welt (S05); danach Weg mit Stufen/Kurven und Stützmauern als Blöcke als eigene Folgeaufgabe. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/map.css`
+- `apps/web/src/views/library/AnlagenPage.tsx`
+- `apps/web/src/views/library/anlagen.css`
+- `apps/web/src/views/map/OverviewMap.tsx`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/map/terrainLayer.ts`
+- `apps/web/src/views/project/TerrainSurveyPanel.tsx`
+- `apps/web/src/views/project/TerrainTab.tsx`
+- `apps/web/src/views/world/WorldImportView.tsx`
+- `apps/web/src/views/world/protocol.ts`
+- `apps/web/src/views/world/surveys.ts`
+- `apps/web/src/views/world/world.css`
+- `apps/web/src/views/world/world.worker.ts`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/ANLAGEN.md`
+- `docs/architecture/TERRAIN.md`
+- `docs/architecture/WORLDMAP.md`
+- `docs/architecture/WORLD_IMPORT.md`
+- `packages/domain/src/anlagen.ts`
+- `packages/domain/src/anlagenTerrain.ts`
+- `packages/domain/src/backup.ts`
+- `packages/domain/src/entrance.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/integrity.ts`
+- `packages/domain/src/project.ts`
+- `packages/domain/src/terrain.ts`
+- `packages/domain/src/terrainSurvey.ts`
+- `packages/domain/src/types.ts`
+- `packages/formats/src/index.ts`
+- `packages/formats/src/worldExcerpt.ts`
+- `scripts/make_terrain_fixture.py`
+- `tests/e2e/terrain.e2e.mjs`
+- `tests/terrain-survey.test.mjs`
+

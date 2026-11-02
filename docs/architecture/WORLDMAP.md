@@ -21,7 +21,7 @@ Die Weltkarte zeigt alle Projekte an ihren Koordinaten in einer Minecraft-Welt. 
 4. Anzeigebudget `MAP_MAX_CELLS` (1,5 Mio. Blöcke): Ein Projekt, das nicht mehr passt, wird mit Grund „über dem Anzeigebudget“ gelistet, nie abgeschnitten.
 5. `topViews` liefert je Projekt den höchsten Block je X/Z-Säule für die Draufsicht.
 
-Die zusammengeführten Zellen sind **Anzeigedaten, kein Bauplan**, und werden nie exportiert. **Gelände ist ungeprüft:** Die Karte kennt nur geplante Blöcke, nicht die Welt (`TERRAIN_NOTE`, sichtbar auf der Seite).
+Die zusammengeführten Zellen sind **Anzeigedaten, kein Bauplan**, und werden nie exportiert. **Gelände:** Ohne Geländeaufnahme kennt die Karte nur geplante Blöcke (`TERRAIN_NOTE`, sichtbar auf der Seite). Projekte mit Geländeaufnahme (TERRAIN-01) zeigen ihr Gelände in Draufsicht und 3D, die Geländehöhe unter dem Zeiger und eine Erdarbeiten-Schätzung mit Höhenvorschlag ([TERRAIN](TERRAIN.md)).
 
 `suggestPlacement` setzt ein neues Projekt östlich aller vorhandenen der Dimension, mit 8 Blöcken Abstand, chunkbündig (X-Kante auf Vielfachem von 16), Unterkante auf Y 64.
 
@@ -55,6 +55,6 @@ Die LMNT-Website (`lmnt-gaming.net`, Seiten Start, Gameserver, Tools) zeigt am 2
 
 ## Grenzen
 
-- Kein Gelände, keine Weltdaten: Fundament, Höhe und Umgebung bleiben ungeprüft.
+- Gelände nur, wo eine Geländeaufnahme gespeichert ist, und nur als Höhenkarte (keine Höhlen/Überhänge); sonst bleiben Fundament, Höhe und Umgebung ungeprüft.
 - Fortschritt stammt aus den Haken der Bauanleitung, nicht aus einer Messung im Spiel (die Spielbrücke ergänzt das je Projekt).
 - Livekarten-Vorlagen sind aus Quelltext abgeleitet, aber nicht gegen einen laufenden Kartenserver geprüft. GPU- und Touch-Prüfung auf echten Geräten offen (QA-02).

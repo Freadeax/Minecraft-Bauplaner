@@ -2,6 +2,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Bounds } from '../../../../../packages/voxel/src/index.js';
 import { chunkOf, regionOf } from '../../../../../packages/domain/src/worldmap.js';
 import type { TopView, WorldMapView } from '../../../../../packages/domain/src/worldmap.js';
+import { columnAt } from '../../../../../packages/domain/src/index.js';
+import type { TerrainSurvey } from '../../../../../packages/domain/src/index.js';
+import { surveyImage } from './terrainLayer';
 
 /**
  * 2D Draufsicht (MAP-01): every placed project as a top-down image of its
@@ -22,6 +25,10 @@ export interface OverviewProps {
   readonly preview?: { readonly bounds: Bounds; readonly conflict: boolean } | null;
   /** Bumped by the parent to frame a project (or everything with null). */
   readonly frame?: { readonly projectId: string | null; readonly seq: number } | null;
+  /** Stored terrain surveys drawn under the projects (TERRAIN-01). */
+  readonly terrain?: readonly TerrainSurvey[];
+  /** Fallback frame for a project without drawn blocks (e.g. an empty building site with a survey). */
+  readonly boundsOf?: (projectId: string) => Bounds | null;
 }
 
 interface View { cx: number; cz: number; scale: number }
@@ -34,7 +41,9 @@ function hexRgb(hex: string): [number, number, number] {
   return [(v >> 16) & 255, (v >> 8) & 255, v & 255];
 }
 
-export function OverviewMap({ map, tops, colorOf, selected, onSelect, onFly, preview = null, frame = null }: OverviewProps) {
+const NO_TERRAIN: readonly TerrainSurvey[] = [];
+
+export function OverviewMap({ map, tops, colorOf, selected, onSelect, onFly, preview = null, frame = null, terrain = NO_TERRAIN, boundsOf }: OverviewProps) {
   const canvas = useRef<HTMLCanvasElement>(null), wrap = useRef<HTMLDivElement>(null);
   const view = useRef<View>({ cx: 0, cz: 0, scale: 4 });
   const [cursor, setCursor] = useState<{ x: number; z: number } | null>(null);
@@ -60,6 +69,8 @@ export function OverviewMap({ map, tops, colorOf, selected, onSelect, onFly, pre
     ctx.putImageData(data, 0, 0);
     return { entry: t.entry, img, min: t.min };
   }), [tops, map, colorOf]);
+
+  const terrainImages = useMemo(() => terrain.map(s => ({ s, img: surveyImage(s) })), [terrain]);
 
   const draw = useCallback(() => {
     raf.current = 0;
@@ -90,6 +101,12 @@ export function OverviewMap({ map, tops, colorOf, selected, onSelect, onFly, pre
     ctx.moveTo(sx(0), 0); ctx.lineTo(sx(0), h); ctx.moveTo(0, sz(0)); ctx.lineTo(w, sz(0)); ctx.stroke(); ctx.setLineDash([]);
 
     ctx.imageSmoothingEnabled = false;
+    for (const { s, img } of terrainImages) {
+      ctx.globalAlpha = 0.9;
+      ctx.drawImage(img, sx(s.minX), sz(s.minZ), s.width * scale, s.length * scale);
+      ctx.globalAlpha = 1; ctx.strokeStyle = strong; ctx.lineWidth = 1; ctx.setLineDash([2, 3]);
+      ctx.strokeRect(sx(s.minX), sz(s.minZ), s.width * scale, s.length * scale); ctx.setLineDash([]);
+    }
     for (const { entry, img, min } of images) {
       const e = map.entries[entry]!;
       ctx.globalAlpha = selected && selected !== e.projectId ? 0.55 : 1;
@@ -124,7 +141,7 @@ export function OverviewMap({ map, tops, colorOf, selected, onSelect, onFly, pre
     }
     // Compass.
     ctx.fillStyle = text; ctx.font = '700 12px system-ui, sans-serif'; ctx.textBaseline = 'top'; ctx.fillText('N ↑', w - 34, 8);
-  }, [images, map, selected, preview]);
+  }, [images, terrainImages, map, selected, preview]);
 
   const redraw = useCallback(() => { if (!raf.current) raf.current = requestAnimationFrame(draw); }, [draw]);
   useEffect(() => { redraw(); }, [redraw]);
@@ -137,20 +154,24 @@ export function OverviewMap({ map, tops, colorOf, selected, onSelect, onFly, pre
 
   const fit = useCallback((b: Bounds | null) => {
     const c = canvas.current; if (!c) return;
-    const target = b ?? map.bounds;
+    const surveyed = terrain.length ? { min: [Math.min(...terrain.map(s => s.minX)), 0, Math.min(...terrain.map(s => s.minZ))] as [number, number, number],
+      maxExclusive: [Math.max(...terrain.map(s => s.minX + s.width)), 1, Math.max(...terrain.map(s => s.minZ + s.length))] as [number, number, number] } : null;
+    const target = b ?? map.bounds ?? surveyed;
     if (!target) { view.current = { cx: 0, cz: 0, scale: 4 }; setScaleShown(4); redraw(); return; }
     const w = Math.max(c.clientWidth, 100), h = Math.max(c.clientHeight, 100);
     const bw = target.maxExclusive[0] - target.min[0], bd = target.maxExclusive[2] - target.min[2];
     const scale = clampScale(Math.min(w / (bw + 16), h / (bd + 16)));
     view.current = { cx: (target.min[0] + target.maxExclusive[0]) / 2, cz: (target.min[2] + target.maxExclusive[2]) / 2, scale };
     setScaleShown(scale); redraw();
-  }, [map, redraw]);
+  }, [map, redraw, terrain]);
   // Frame everything when a new map arrives; the parent can frame one project.
   const framedMap = useRef<WorldMapView | null>(null);
   useEffect(() => { if (framedMap.current !== map) { framedMap.current = map; fit(null); } }, [map, fit]);
+  // Surveys load after the map: frame them when there is nothing else to frame.
+  useEffect(() => { if (!map.bounds && terrain.length) fit(null); }, [terrain]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!frame) return;
-    fit(frame.projectId ? map.entries.find(e => e.projectId === frame.projectId)?.worldBounds ?? null : null);
+    fit(frame.projectId ? map.entries.find(e => e.projectId === frame.projectId)?.worldBounds ?? boundsOf?.(frame.projectId) ?? null : null);
   }, [frame]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const worldAt = (clientX: number, clientY: number) => {
@@ -241,7 +262,7 @@ export function OverviewMap({ map, tops, colorOf, selected, onSelect, onFly, pre
       <button onClick={() => fit(null)}>Alles</button>
     </div>
     <div className="overview-hud" aria-live="off">
-      {cursor ? <span><b>X {fmt(cursor.x)} · Z {fmt(cursor.z)}</b> · Chunk {chunkOf(cursor.x)}, {chunkOf(cursor.z)} · Region r.{regionOf(cursor.x)}.{regionOf(cursor.z)}</span> : <span>Norden oben · Osten rechts</span>}
+      {cursor ? <span><b>X {fmt(cursor.x)} · Z {fmt(cursor.z)}</b> · Chunk {chunkOf(cursor.x)}, {chunkOf(cursor.z)} · Region r.{regionOf(cursor.x)}.{regionOf(cursor.z)}<GroundAt terrain={terrain} x={cursor.x} z={cursor.z} /></span> : <span>Norden oben · Osten rechts</span>}
       <span>{scaleText}</span>
     </div>
   </div>;
@@ -251,4 +272,13 @@ const area = (b: Bounds) => (b.maxExclusive[0] - b.min[0]) * (b.maxExclusive[2] 
 function canvasCentre(c: HTMLCanvasElement | null): { x: number; y: number } {
   const r = c?.getBoundingClientRect();
   return r ? { x: r.left + r.width / 2, y: r.top + r.height / 2 } : { x: 0, y: 0 };
+}
+
+/** Ground under the pointer from the first survey that knows the column. */
+function GroundAt({ terrain, x, z }: { terrain: readonly TerrainSurvey[]; x: number; z: number }) {
+  for (const s of terrain) {
+    const c = columnAt(s, x, z);
+    if (c) return <> · Gelände Y {c.fluid ? `${c.surface} (${c.surfaceId.replace(/^minecraft:/, '')} über Boden ${c.ground})` : `${c.ground} (${c.groundId.replace(/^minecraft:/, '')})`}</>;
+  }
+  return null;
 }

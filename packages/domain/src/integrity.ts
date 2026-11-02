@@ -88,6 +88,10 @@ export async function checkIntegrity(source: IntegritySource, now: () => Date = 
       usedOriginals.add(scan.sha256);
       if (!originals.has(scan.sha256)) add({ severity: 'warning', code: 'ORIGINAL_MISSING', subject, message: `Spielaufnahme ${scan.fileName} (${scan.sha256.slice(0, 12)}…) fehlt; bitte das Original erneut importieren.` });
     }
+    if (p.terrain) {
+      usedOriginals.add(p.terrain.sha256);
+      if (!originals.has(p.terrain.sha256)) add({ severity: 'warning', code: 'ORIGINAL_MISSING', subject, message: `Geländeaufnahme ${p.terrain.fileName} (${p.terrain.sha256.slice(0, 12)}…) fehlt; Weltkarte und Anlagen zeigen dort kein Gelände. Bitte im Reiter „Gelände“ neu aufnehmen.` });
+    }
     p.revisions.forEach((r, i) => {
       if (i > 0 && r.number <= p.revisions[i - 1]!.number) add({ severity: 'warning', code: 'REVISION_ORDER', subject, message: `Revision ${r.number} steht nach Revision ${p.revisions[i - 1]!.number}.` });
     });

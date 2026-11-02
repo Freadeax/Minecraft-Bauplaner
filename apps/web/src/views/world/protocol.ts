@@ -1,4 +1,4 @@
-import type { ChunkSummary, ExcerptReport, SurfaceMap } from '../../../../../packages/formats/src/index.js';
+import type { ChunkSummary, ExcerptReport, SurfaceMap, TerrainColumns } from '../../../../../packages/formats/src/index.js';
 import type { TerrainCheck, WorldPlacement } from '../../../../../packages/domain/src/index.js';
 import type { Bounds, VoxelPayload } from '../../../../../packages/voxel/src/index.js';
 
@@ -19,6 +19,7 @@ export type WorldRequest =
   | { readonly id: number; readonly kind: 'surface'; readonly min: { cx: number; cz: number }; readonly max: { cx: number; cz: number }; readonly includeIncomplete: boolean; readonly maxY?: number }
   | { readonly id: number; readonly kind: 'excerpt'; readonly box: Bounds; readonly air: 'none' | 'explicit'; readonly trim: boolean; readonly exclude: readonly string[]; readonly includeIncomplete: boolean; readonly name: string; readonly dimension: string }
   | { readonly id: number; readonly kind: 'terrain'; readonly planned: VoxelPayload; readonly placement: WorldPlacement; readonly depth: number; readonly includeIncomplete: boolean }
+  | { readonly id: number; readonly kind: 'survey'; readonly area: { readonly minX: number; readonly minZ: number; readonly width: number; readonly length: number }; readonly includeIncomplete: boolean; readonly maxY?: number }
   | { readonly id: number; readonly kind: 'abort' };
 
 export type WorldResponse =
@@ -27,6 +28,7 @@ export type WorldResponse =
   | { readonly id: number; readonly kind: 'surface'; readonly map: SurfaceMap }
   | { readonly id: number; readonly kind: 'excerpt'; readonly payload: VoxelPayload; readonly report: ExcerptReport; readonly chunks: readonly ChunkSummary[]; readonly regions: readonly string[]; readonly original: Uint8Array; readonly originalSha256: string }
   | { readonly id: number; readonly kind: 'terrain'; readonly check: TerrainCheck; readonly chunks: readonly ChunkSummary[]; readonly warnings: readonly string[]; readonly box: Bounds }
+  | { readonly id: number; readonly kind: 'survey'; readonly columns: TerrainColumns; readonly regions: readonly string[]; readonly newest: number }
   | { readonly id: number; readonly kind: 'error'; readonly message: string; readonly code: string };
 
 type Result<K extends WorldResponse['kind']> = Extract<WorldResponse, { kind: K }>;
@@ -60,6 +62,7 @@ export class WorldClient {
   surface(body: Body<'surface'>, progress?: Progress): Promise<Result<'surface'>> { return this.ask('surface', body, progress); }
   excerpt(body: Body<'excerpt'>, progress?: Progress): Promise<Result<'excerpt'>> { return this.ask('excerpt', body, progress); }
   terrain(body: Body<'terrain'>, progress?: Progress): Promise<Result<'terrain'>> { return this.ask('terrain', body, progress); }
+  survey(body: Body<'survey'>, progress?: Progress): Promise<Result<'survey'>> { return this.ask('survey', body, progress); }
 
   private ask<R extends WorldResponse>(kind: WorldRequest['kind'], body: object, progress?: Progress): Promise<R> {
     const w = this.ensure();
