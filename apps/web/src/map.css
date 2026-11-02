@@ -69,8 +69,8 @@
 .map-terrain-estimate h3{margin:0;font-size:14px}.map-terrain-estimate h3 small{font-weight:400;color:var(--muted);margin-left:6px}
 .map-terrain-estimate p{margin:0}.map-terrain-estimate button{margin-left:8px}
 /* MAP-03: Weltplan, Planungswerkzeuge und Spielverbindung */
-.map-page{--map-site:#f2b84b;--map-player:#ffffff;--map-hologram:#5fd7e8;--map-trail:#ffffff;--map-live-ok:var(--mint);--map-live-off:var(--muted)}
-:root[data-appearance=light] .map-page{--map-site:#a86a00;--map-player:#16302b;--map-hologram:#0f7f92;--map-trail:#16302b}
+.map-page{--map-label-bg:rgba(0,0,0,0.62);--map-site:#f2b84b;--map-player:#ffffff;--map-hologram:#5fd7e8;--map-trail:#ffffff;--map-live-ok:var(--mint);--map-live-off:var(--muted)}
+:root[data-appearance=light] .map-page{--map-label-bg:rgba(255,255,255,0.88);--map-site:#a86a00;--map-player:#16302b;--map-hologram:#0f7f92;--map-trail:#16302b}
 .plan-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 10px}
 .plan-toolbar .seg button{min-height:36px;padding:6px 12px}
 .plan-toolbar>button{min-width:38px;min-height:36px}
@@ -101,3 +101,6 @@
 .live-hologram h3{margin:0 0 6px;font-size:14px}.live-hologram p{margin:6px 0 0;font-size:13px}
 .map-game-actions{margin:6px 0 10px}
 @media(max-width:650px){.plan-toolbar .seg{flex-wrap:wrap}.plan-toolbar .seg button{min-height:40px}.live-pair input{width:100%}}
+.map-panels.no-3d{grid-template-columns:1fr}.map-panels.no-3d .map-3d{display:none}
+.live-connect{display:grid;gap:8px}.live-connect>p{margin:0}
+.live-howto summary{cursor:pointer;font-size:13px}

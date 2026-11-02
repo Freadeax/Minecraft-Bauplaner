@@ -2171,3 +2171,21 @@ Live-Karte mit Spielanbindung: Weltplan (Bauplätze, Wege, Punkte) mit Werkzeuge
 - `tests/livelink.test.mjs`
 - `tests/worldplan.test.mjs`
 
+## 2026-11-02T10:40:33.215Z · progress
+
+**Aufgaben:** MAP-03
+
+Nachbesserung nach Live-Rückmeldung: Ansichtsknöpfe und Kartenbeschriftungen im hellen Design lesbar, Spielverbindung oben über den Werkzeugen, keine leere 3D-Fläche ohne Projekte, neuer Einleitungstext; Handy 390 px ohne Überlauf geprüft.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MAP-03 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/map.css`
+- `apps/web/src/style.css`
+- `apps/web/src/views/map/LiveGamePanel.tsx`
+- `apps/web/src/views/map/OverviewMap.tsx`
+- `apps/web/src/views/map/WorldMapView.tsx`
+

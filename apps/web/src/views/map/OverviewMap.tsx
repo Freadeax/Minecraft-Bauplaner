@@ -130,7 +130,8 @@ export function OverviewMap({ map, tops, colorOf, selected, onSelect, onFly, pre
     const css = getComputedStyle(c);
     const bg = css.getPropertyValue('--map-bg').trim() || '#0f1d22', line = css.getPropertyValue('--map-grid').trim() || '#29444d',
       strong = css.getPropertyValue('--map-grid-strong').trim() || '#47766f', text = css.getPropertyValue('--map-text').trim() || '#d8ece8',
-      accent = css.getPropertyValue('--map-accent').trim() || '#5ff0b0', danger = css.getPropertyValue('--map-danger').trim() || '#ff6b6b';
+      accent = css.getPropertyValue('--map-accent').trim() || '#5ff0b0', danger = css.getPropertyValue('--map-danger').trim() || '#ff6b6b',
+      labelBg = css.getPropertyValue('--map-label-bg').trim() || 'rgba(0,0,0,0.6)';
     ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
     const { cx, cz, scale } = view.current;
     const sx = (x: number) => (x - cx) * scale + w / 2, sz = (z: number) => (z - cz) * scale + h / 2;
@@ -177,7 +178,7 @@ export function OverviewMap({ map, tops, colorOf, selected, onSelect, onFly, pre
       if (on || rw > 40 || map.entries.length < 12) {
         const label = e.name.length > 28 ? `${e.name.slice(0, 27)}…` : e.name;
         const tw = ctx.measureText(label).width;
-        ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(rx, rz - 17, tw + 8, 16);
+        ctx.fillStyle = labelBg; ctx.fillRect(rx, rz - 17, tw + 8, 16);
         ctx.fillStyle = on ? accent : text; ctx.fillText(label, rx + 4, rz - 3);
       }
     }
@@ -463,7 +464,7 @@ function drawPlan(ctx: CanvasRenderingContext2D, plan: PlanLayer, d: Draw, st: {
   const label = (txt: string, x: number, y: number, color: string) => {
     ctx.font = '600 11px system-ui, sans-serif'; ctx.textBaseline = 'bottom';
     const tw = ctx.measureText(txt).width;
-    ctx.fillStyle = 'rgba(0,0,0,0.62)'; ctx.fillRect(x, y - 15, tw + 8, 14);
+    ctx.fillStyle = d.css.getPropertyValue('--map-label-bg').trim() || 'rgba(0,0,0,0.62)'; ctx.fillRect(x, y - 15, tw + 8, 14);
     ctx.fillStyle = color; ctx.fillText(txt, x + 4, y - 2);
   };
   const off = (id: string) => st.moveBy?.hit.kind === 'item' && st.moveBy.hit.id === id ? st.moveBy : null;

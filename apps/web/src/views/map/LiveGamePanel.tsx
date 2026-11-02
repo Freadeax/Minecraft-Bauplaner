@@ -43,12 +43,13 @@ export function LiveGamePanel({ game, actions }: { game: LiveGame; actions: Live
     {game.originProblem && <p className="notice warning" role="alert">{game.originProblem}</p>}
 
     {(game.phase === 'off' || game.phase === 'searching') && <div className="live-connect">
-      <p className="muted">Mit der Bauplaner-Mod (ab 0.5) siehst du hier deine Position, das Gelände um dich und den Baufortschritt des Hologramms – live. Pläne und Markierungen schickst du von hier ins Spiel. Nur dieser Computer, nichts geht an den Server.</p>
-      <ol className="live-steps">
-        <li>Minecraft mit der Mod starten (<a href="#/mod">Mod herunterladen</a>) und eine Welt oder den Server betreten.</li>
-        <li>Unten auf „Verbinden“ drücken. Fragt der Browser nach Zugriff auf Geräte im lokalen Netzwerk: erlauben.</li>
-        <li>Im Spiel <code>/bauplaner verbinden</code> eingeben und den sechsstelligen Code hier eintragen.</li>
-      </ol>
+      <p className="muted">Mit der Bauplaner-Mod (ab 0.5) siehst du deine Position, das Gelände um dich und den Baufortschritt des Hologramms live auf der Karte und schickst Pläne direkt ins Spiel. Nur dieser Computer, nichts geht an den Server.</p>
+      <details className="live-howto"><summary>So verbindest du</summary>
+        <ol className="live-steps">
+          <li>Minecraft mit der Mod 0.5 starten (<a href="#/mod">Mod herunterladen</a>) und eine Welt oder den Server betreten.</li>
+          <li>Hier auf „Verbinden“ drücken. Fragt der Browser nach Zugriff auf Geräte im lokalen Netzwerk: erlauben.</li>
+          <li>Im Spiel <code>/bauplaner verbinden</code> eingeben und den sechsstelligen Code hier eintragen.</li>
+        </ol></details>
       <div className="button-row">
         <button className="primary" disabled={game.phase === 'searching' || !!game.originProblem} onClick={() => { if (portValid) game.setPort(Number(port)); void game.connect(); }}>
           {game.phase === 'searching' ? 'Suche Mod …' : 'Verbinden'}</button>

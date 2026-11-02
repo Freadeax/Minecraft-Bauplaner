@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T10:18:11.573Z",
+  "updatedAt": "2026-11-02T10:40:33.215Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -3464,7 +3464,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T10:18:11.573Z"
+      "updatedAt": "2026-11-02T10:40:33.215Z"
     },
     {
       "id": "MAP-02",
@@ -7742,6 +7742,30 @@
           "done": 2,
           "total": 2,
           "next": "Abnahme mit MAP-03-S06; Forge/NeoForge/Paper haben die Verbindung noch nicht."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T10:40:33.215Z",
+      "kind": "progress",
+      "items": [
+        "MAP-03"
+      ],
+      "summary": "Nachbesserung nach Live-Rückmeldung: Ansichtsknöpfe und Kartenbeschriftungen im hellen Design lesbar, Spielverbindung oben über den Werkzeugen, keine leere 3D-Fläche ohne Projekte, neuer Einleitungstext; Handy 390 px ohne Überlauf geprüft.",
+      "files": [
+        "apps/web/src/map.css",
+        "apps/web/src/style.css",
+        "apps/web/src/views/map/LiveGamePanel.tsx",
+        "apps/web/src/views/map/OverviewMap.tsx",
+        "apps/web/src/views/map/WorldMapView.tsx"
+      ],
+      "snapshot": [
+        {
+          "id": "MAP-03",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server."
         }
       ]
     }

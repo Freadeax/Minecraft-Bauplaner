@@ -412,7 +412,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   return <div className="page map-page" data-map-state={busy ? 'busy' : map ? 'ready' : 'empty'} data-map-cells={map?.cells.length ?? ''} data-terrain-cells={ground?.count ?? 0}>
     <header className="map-head">
       <div><h1 className="page-title">Weltkarte</h1>
-        <p className="map-lead">Alle Projekte an ihren Weltkoordinaten. Fliege frei darüber, prüfe Abstände und Überschneidungen und sieh, was schon gebaut ist.</p></div>
+        <p className="map-lead">Plane hier deine Welt: Projekte setzen und ziehen, Bauplätze, Wege und Punkte zeichnen, messen. Mit der Bauplaner-Mod siehst du dich selbst und das echte Gelände live auf der Karte und schickst Pläne direkt ins Spiel.</p></div>
       <div className="map-controls">
         <div className="seg" role="group" aria-label="Dimension">
           {dims.map(d => <button key={d} aria-pressed={dimension === d} onClick={() => { setDimension(d); setSelected(null); }}>
@@ -437,7 +437,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
     <div className="map-layout">
       <aside className="map-list" aria-label="Projekte auf der Karte">
         <h2>Auf der Karte <small>{map ? map.entries.length : '…'}</small></h2>
-        {map && !map.entries.length && <p className="muted">In dieser Dimension liegt noch kein Projekt. Setze unten eines auf die Karte.</p>}
+        {map && !map.entries.length && <p className="muted">In dieser Dimension liegt noch kein Projekt. Platziere eines aus „Noch nicht platziert“, oder zeichne zuerst einen Bauplatz.</p>}
         <ul>{map?.entries.map(e => <EntryCard key={e.projectId} entry={e} selected={selected === e.projectId} collisions={collisionsOf(e.projectId).length}
           onSelect={() => { setSelected(e.projectId); setFrame2d({ projectId: e.projectId, seq: ++seq.current }); }} onFly={() => fly(e.projectId)} />)}</ul>
         {map && map.unplaced.length > 0 && <>
@@ -453,9 +453,17 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
       </aside>
 
       <section className="map-main">
+        <LiveGamePanel game={game} actions={{
+          follow, onFollow: setFollow, terrainBusy, onLoadTerrain: () => void loadTerrainHere(), chunkCount: liveChunks?.size ?? 0,
+          onShowPlayer: () => { if (player) { setDimension(player.dimension); setFollow(true); } },
+          onSendMarks: connected && sending !== 'marks' ? () => void sendMarks() : null,
+          marksInfo: `${items.length} Einträge in ${dimensionLabel(dimension)}${status?.marks ? ` · im Spiel: ${status.marks}` : ''}`,
+          hologramProject: holoProject, hologramMatch: holoMatch,
+          onAdoptHologram: holoMatch && holoMatch !== 'same' && holoMatch !== 'turned' ? () => void adoptHologram() : null,
+        }} />
         <PlanToolbar tool={tool} onTool={setTool} canUndo={wp.canUndo} canRedo={wp.canRedo} onUndo={() => void wp.undo()} onRedo={() => void wp.redo()} />
         {wp.error && <div className="notice warning" role="alert">{wp.error}</div>}
-        <div className="map-panels">
+        <div className={`map-panels${payload ? '' : ' no-3d'}`}>
           {map ? <OverviewMap map={map} tops={tops} colorOf={baseColor} selected={selected} onSelect={setSelected} onFly={fly} frame={frame2d}
             preview={previewBounds ? { bounds: previewBounds, conflict: previewHits.length > 0 } : null} terrain={terrain} boundsOf={surveyBounds} plan={planLayer} />
             : <div className="overview"><div className="loading" role="status">Karte wird berechnet …</div></div>}
@@ -463,7 +471,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
             {payload ? <Viewer payload={payload} cells={payload.cells} onSelect={onPick} markFor={markFor} frameRequest={frame3d}
               focus={entry?.worldBounds && !entry.skipped ? entry.worldBounds : null}
               ghost={previewBounds ? { bounds: { min: previewBounds.min, maxExclusive: previewBounds.maxExclusive }, tone: previewHits.length ? 'conflict' : 'snap' } : null} />
-              : <div className="scene"><div className="viewer-loading" role="status">{busy ? 'Karte wird berechnet …' : 'Noch nichts zu zeigen: Platziere ein Projekt mit Bauteilen.'}</div></div>}
+              : <div className="scene map-3d-empty"><div className="viewer-loading" role="status">{busy ? 'Karte wird berechnet …' : '3D-Ansicht erscheint, sobald ein Projekt mit Bauteilen auf der Karte liegt.'}</div></div>}
             {busy && map && <div className="map-busy" role="status">aktualisiert …</div>}
           </div>
         </div>
@@ -474,14 +482,6 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
           onSave={next => void wp.apply({ kind: 'update', item: next }).then(ok => ok && setNotice(`„${next.name}“ gespeichert.`))}
           onRemove={() => void wp.apply({ kind: 'remove', id: item.id }).then(ok => { if (ok) { setSelectedItem(null); setNotice(`„${item.name}“ entfernt. Rückgängig mit ↶ oder Strg+Z.`); } })}
           actions={siteActions(item)} />}
-        <LiveGamePanel game={game} actions={{
-          follow, onFollow: setFollow, terrainBusy, onLoadTerrain: () => void loadTerrainHere(), chunkCount: liveChunks?.size ?? 0,
-          onShowPlayer: () => { if (player) { setDimension(player.dimension); setFollow(true); } },
-          onSendMarks: connected && sending !== 'marks' ? () => void sendMarks() : null,
-          marksInfo: `${items.length} Einträge in ${dimensionLabel(dimension)}${status?.marks ? ` · im Spiel: ${status.marks}` : ''}`,
-          hologramProject: holoProject, hologramMatch: holoMatch,
-          onAdoptHologram: holoMatch && holoMatch !== 'same' && holoMatch !== 'turned' ? () => void adoptHologram() : null,
-        }} />
         {entry && project && <section className="map-detail" aria-label={`Details zu ${entry.name}`}>
           <header><h2>{entry.name}</h2>
             <div className="button-row">
