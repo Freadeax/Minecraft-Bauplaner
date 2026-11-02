@@ -66,6 +66,8 @@ test('Bibliothek zeigt Beispielbauteile mit Herkunft, Suche und Tags', async () 
   await p.goto(`${BASE}#/bibliothek`);
   // The catalogue grows; find the sample by name instead of relying on the first page.
   await p.getByLabel('Bauteile suchen').fill('eckturm');
+  // The catalogue loads in a worker (PERF-04-S05); under load the list can take a while.
+  await p.getByRole('link', { name: /^Eckturm/ }).first().waitFor({ timeout: 30000 });
   await p.getByRole('link', { name: /^Eckturm/ }).first().click();
   await p.getByText('Synthetisches Beispiel').waitFor();
   assert.match(await p.locator('.building-detail').innerText(), /west, east, north, south/);

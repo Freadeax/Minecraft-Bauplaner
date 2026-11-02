@@ -930,3 +930,14 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - **An Bibliotheks-Threads:** herausgelöste Teile tragen die Schlagworte `herausgeloest`, `gebaeude`/`flaeche`, `funktion:<id>`; Quelle `crop`. Das Wegenetz des Basisplaners hat Quelle `base-plan`.
 - **An Gelände (TERRAIN-01/02):** der Basisplaner nutzt `fitAnlageToTerrain` unverändert; die Küstenlinie ist eine gewählte Seite, nicht aus der Aufnahme gelesen (offen, BASE-01-S06).
 - Reservierung mit dem Push beendet. Offen: BASE-01-S06 und SPLIT-01-S05 (Abnahme in der Testphase).
+
+
+
+
+### MSG-LIB05-03 · 02.11.2026 · Claude (Thread „Bibliothek im Stil der Vorlagen neu gestalten“) · Runde 3
+
+- Auftrag: Untergrundhallen, Inneneinrichtungen und Redstone-Bauten gestalterisch nachziehen.
+- Neu in `build/facade.ts`: `dressRoom` (Wandgliederung für `roomShell`-Räume) und `innerRibs` (Wandrippen in Hallen).
+- Überarbeitet: 17 Interieur-Räume, Zwergenhalle, Erzgießerei, Bergbaulager, Wasseraufzug. Größen und Anschlüsse unverändert.
+- Reservierung mit dem Push beendet. Offen: LIB-05-S08 (Abnahme einiger neuer Gebäude im Spiel durch Philipp).
+

@@ -2,6 +2,7 @@ import { Plot, axis, barrel, bed, campfire, candle, chest, door, furnace, lanter
 import { bell, chair, cupboard, beamLamp, longTable, roomShell, rug, sofa, table, wallBanner } from '../furnish.js';
 import { WIKI } from '../spec.js';
 import type { BuildingSpec } from '../spec.js';
+import { dressRoom } from '../facade.js';
 
 /**
  * Interieur & Räume (Katalog v3): eingerichtete Raummodule als offener
@@ -26,6 +27,7 @@ function bauernkueche() {
   table(p, 3, 1, 3, 'spruce'); p.set(3, 2, 3, 'candle', candle(3, true));
   for (const [x, z, b] of [[2, 3, 'west'], [4, 3, 'east'], [3, 4, 'south']] as const) chair(p, x, 1, z, 'spruce', b);
   beamLamp(p, 3, 3, 5, 7, 'spruce_log', 1);
+  dressRoom(p, 7, 7, 4, 'spruce', { posts: 3, border: 'stripped_spruce_wood' });
   return p.payload();
 }
 
@@ -41,6 +43,7 @@ function schlafzimmer() {
   rug(p, 2, 3, 4, 5, 1, 'white', 'red');
   p.set(5, 1, 5, 'oak_stairs', stairs('east')); p.set(5, 1, 4, 'chest', chest('west'));
   beamLamp(p, 3, 4, 5, 7, 'oak_log', 1);
+  dressRoom(p, 7, 7, 4, 'dark_oak', { posts: 3, border: 'dark_oak_planks' });
   return p.payload();
 }
 
@@ -54,6 +57,7 @@ function lesezimmer() {
   table(p, 3, 1, 4, 'dark_oak', 'carpet', 'green'); p.set(1, 1, 1, 'potted_fern'); p.set(5, 1, 1, 'candle', candle(2, true));
   for (let x = 1; x <= 5; x++) for (let z = 2; z <= 5; z++) if (!p.get(x, 1, z)) p.set(x, 1, z, x === 1 || x === 5 || z === 2 || z === 5 ? 'lime_carpet' : 'green_carpet');
   beamLamp(p, 3, 3, 5, 7, 'dark_oak_log', 1);
+  dressRoom(p, 7, 7, 4, 'dark_oak', { dado: false, posts: 0 });
   return p.payload();
 }
 
@@ -71,6 +75,7 @@ function kaminzimmer() {
   p.set(1, 1, 1, 'barrel', barrel('up')); p.set(7, 1, 1, 'potted_azalea_bush');
   p.set(1, 2, 0, 'glass_pane', pane); p.set(7, 2, 0, 'glass_pane', pane);
   beamLamp(p, 2, 3, 5, 9, 'spruce_log', 1); beamLamp(p, 6, 3, 5, 9, 'spruce_log', 1);
+  dressRoom(p, 9, 7, 4, 'spruce', { posts: 4, border: 'stripped_spruce_wood' });
   return p.payload();
 }
 
@@ -85,6 +90,7 @@ function esszimmer() {
   for (const x of [2, 6]) p.set(x, 2, 0, 'glass_pane', pane);
   cupboard(p, 1, 1, 1, 'dark_oak', 'south', 2); cupboard(p, 7, 1, 1, 'dark_oak', 'south', 2);
   beamLamp(p, 3, 3, 5, 9, 'dark_oak_log', 1); beamLamp(p, 5, 3, 5, 9, 'dark_oak_log', 1);
+  dressRoom(p, 9, 7, 4, 'dark_oak', { posts: 4, border: 'dark_oak_planks' });
   return p.payload();
 }
 
@@ -99,6 +105,7 @@ function badezimmer() {
   p.set(5, 1, 1, 'potted_bamboo'); rug(p, 2, 3, 3, 4, 1, 'light_blue');
   p.set(2, 2, 2, 'white_candle', candle(2, true));
   p.set(3, 4, 2, 'sea_lantern');
+  dressRoom(p, 7, 6, 4, 'birch', { dado: false });
   return p.payload();
 }
 
@@ -116,6 +123,7 @@ function thronsaal() {
   for (const z of [5, 9]) { for (let i = 0; i < 2; i++) p.set(5, 7 - i, z, 'iron_chain', { axis: 'y', waterlogged: F }); p.set(5, 5, z, 'lantern', lantern(true));
     for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) p.set(5 + dx, 5, z + dz, 'dark_oak_trapdoor', trapdoor(dx > 0 ? 'east' : dx < 0 ? 'west' : dz > 0 ? 'south' : 'north', 'top', true)); }
   p.set(5, 7, 1, 'bell', bell('north', 'single_wall'));
+  dressRoom(p, 11, 15, 7, 'dark_oak', { dado: false, border: 'polished_deepslate' });
   return p.payload();
 }
 
@@ -128,6 +136,7 @@ function vorratskammer() {
   p.set(4, 1, 3, 'composter'); p.set(1, 1, 4, 'dried_kelp_block'); p.set(1, 2, 4, 'honey_block');
   for (const x of [2, 4]) p.set(x, 4, 4, 'spruce_slab', slab('top'));
   beamLamp(p, 3, 3, 5, 7, 'spruce_log', 1);
+  dressRoom(p, 7, 7, 4, 'spruce', { posts: 3 });
   return p.payload();
 }
 
@@ -141,6 +150,7 @@ function alchemielabor() {
   p.set(3, 1, 3, 'water_cauldron', water3); p.set(3, 1, 4, 'cauldron'); p.set(5, 1, 4, 'ender_chest', { facing: 'west', waterlogged: F }); p.set(1, 1, 4, 'lectern', lectern('east'));
   for (const x of [1, 5]) p.set(x, 3, 1, 'potted_crimson_fungus');
   beamLamp(p, 3, 3, 5, 7, 'dark_oak_log', 1, 'soul_lantern');
+  dressRoom(p, 7, 7, 4, 'dark_oak', { posts: 3, border: 'polished_deepslate' });
   return p.payload();
 }
 
@@ -155,6 +165,7 @@ function kartenraum() {
   p.set(5, 2, 1, 'blue_concrete'); // globe stand on the barrel
   p.set(1, 1, 3, 'chest', chest('east')); p.set(5, 1, 3, 'white_banner', { rotation: '12' });
   beamLamp(p, 3, 2, 5, 7, 'birch_log', 0);
+  dressRoom(p, 7, 7, 4, 'spruce', { dado: false, border: 'stripped_birch_wood' });
   return p.payload();
 }
 
@@ -169,6 +180,7 @@ function handwerkskammer() {
   p.set(1, 1, 4, 'chest', chest('east')); p.set(4, 1, 3, 'barrel', barrel('up'));
   for (let x = 1; x <= 7; x++) p.set(x, 3, 1, 'oak_trapdoor', trapdoor('south', 'top'));
   beamLamp(p, 4, 3, 5, 9, 'oak_log', 1);
+  dressRoom(p, 9, 7, 4, 'spruce', { posts: 4, border: 'polished_andesite' });
   return p.payload();
 }
 
@@ -196,6 +208,7 @@ function moderneKueche() {
   for (const x of [3, 4, 5]) chair(p, x, 1, 4, 'birch', 'south');
   for (const x of [3, 5]) p.set(x, 4, 3, 'sea_lantern');
   p.set(7, 1, 3, 'potted_dandelion');
+  dressRoom(p, 9, 7, 4, 'birch', { dado: false, border: 'polished_andesite' });
   return p.payload();
 }
 
@@ -208,6 +221,7 @@ function arbeitszimmer() {
   p.fill(5, 1, 3, 5, 3, 3, 'bookshelf'); p.fill(1, 1, 3, 1, 1, 4, 'bookshelf');
   rug(p, 2, 3, 4, 4, 1, 'gray');
   p.set(3, 4, 3, 'sea_lantern');
+  dressRoom(p, 7, 6, 4, 'birch', { posts: 3, border: 'stripped_birch_wood' });
   return p.payload();
 }
 
@@ -224,6 +238,7 @@ function schankraum() {
   p.set(2, 1, 6, 'barrel', barrel('up')); p.set(2, 2, 6, 'candle', candle(2, true));
   p.set(1, 3, 1, 'red_wall_banner', wallBanner('south'));
   beamLamp(p, 3, 3, 5, 11, 'dark_oak_log', 1); beamLamp(p, 7, 5, 5, 11, 'dark_oak_log', 1);
+  dressRoom(p, 11, 9, 4, 'dark_oak', { dado: false, border: 'stripped_spruce_wood' });
   return p.payload();
 }
 
@@ -261,6 +276,7 @@ function wintergarten() {
   for (const [x, z] of [[1, 1], [7, 1], [1, 5], [7, 5]] as const) { p.set(x, 0, z, 'moss_block'); p.set(x, 1, z, 'flowering_azalea'); }
   for (const [x, plant] of [[2, 'potted_red_tulip'], [3, 'potted_fern'], [5, 'potted_blue_orchid'], [6, 'potted_cactus']] as const) p.set(x, 1, 1, plant);
   sofa(p, 3, 1, 5, 'birch', 'south', 3); p.set(4, 1, 3, 'birch_fence'); p.set(4, 2, 3, 'potted_white_tulip');
+  dressRoom(p, 9, 7, 4, 'birch', { crown: false });
   return p.payload();
 }
 
@@ -273,6 +289,7 @@ function gaestezimmer() {
   cupboard(p, 5, 1, 5, 'birch', 'west', 2); p.set(1, 1, 5, 'chest', chest('east'));
   rug(p, 2, 3, 4, 4, 1, 'light_blue');
   beamLamp(p, 3, 3, 5, 7, 'birch_log', 1);
+  dressRoom(p, 7, 7, 4, 'spruce', { posts: 3, border: 'spruce_planks' });
   return p.payload();
 }
 
@@ -286,6 +303,7 @@ function waffenkammer() {
   p.set(1, 1, 4, 'chest', chest('east')); p.set(5, 1, 4, 'chest', chest('west'));
   p.set(5, 1, 3, 'target', { power: '0' }); p.set(1, 1, 3, 'fletching_table');
   beamLamp(p, 3, 3, 5, 7, 'spruce_log', 1);
+  dressRoom(p, 7, 7, 4, 'spruce', { posts: 3, border: 'polished_andesite' });
   return p.payload();
 }
 

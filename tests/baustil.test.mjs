@@ -92,7 +92,7 @@ test('Veredelung: Grenzen bleiben, kein Block verschwindet, Luft bleibt Luft', (
 });
 
 // ------------------------------------------------------------ LIB-05 Runde 2
-import { facade, machicolations } from '../dist/domain/src/build/facade.js';
+import { facade, machicolations, dressRoom, innerRibs } from '../dist/domain/src/build/facade.js';
 
 test('Runde 2: Stadt mit Relief, Meisterstücke reich gegliedert', () => {
   const stadt = BUILDING_SPECS.filter(s => s.id.startsWith('bld_stadt_') && ['oeffentlich', 'wohnhaus', 'handel'].includes(s.facets.kategorie[0])).map(s => designMetrics(s.payload()));
@@ -131,4 +131,42 @@ test('machicolations(): Konsolen, Brüstung und Zinnen außen um den Turm', () =
   assert.equal(at(3, 6, 0).properties.half, 'top');
   assert.equal(at(3, 7, 0).id, 'minecraft:stone_bricks');
   assert.equal(at(0, 6, 0).id, 'minecraft:stone_brick_slab');
+});
+
+test('dressRoom(): Pfosten, Sockelleiste, Deckenprofil und Bodenrand nur an geschlossenen Wänden', async () => {
+  const { roomShell } = await import('../dist/domain/src/build/furnish.js');
+  const p = new Plot([7, 6, 7]);
+  roomShell(p, 7, 7, 4, 'oak_planks', 'cobblestone', ['south', 'east'], null);
+  p.set(1, 1, 1, 'barrel');
+  dressRoom(p, 7, 7, 4, 'spruce', { posts: 3, border: 'spruce_planks' });
+  const out = p.payload();
+  const at = (x, y, z) => { const c = out.cells.find(c => c.kind === 'block' && c.position.join() === [x, y, z].join()); return c && out.palette[c.paletteIndex]; };
+  assert.equal(at(3, 2, 0).id, 'minecraft:spruce_log', 'Pfosten in der Nordwand');
+  assert.equal(at(2, 1, 0).id, 'minecraft:stripped_spruce_log', 'Sockelleiste');
+  assert.equal(at(2, 4, 1).id, 'minecraft:spruce_stairs'); assert.equal(at(2, 4, 1).properties.half, 'top', 'Deckenprofil');
+  assert.equal(at(1, 1, 1).id, 'minecraft:barrel', 'Möbel bleiben');
+  assert.equal(at(2, 0, 1).id, 'minecraft:spruce_planks', 'Bodenrand');
+  assert.equal(at(3, 0, 3).id, 'minecraft:oak_planks', 'Bodenmitte bleibt');
+  assert.equal(at(3, 2, 6), undefined, 'offene Südseite bleibt offen');
+});
+
+test('innerRibs(): Wandrippen nur in freien Spalten vor geschlossener Wand', () => {
+  const p = new Plot([9, 6, 9]);
+  p.room(0, 0, 8, 8, 1, 4, 'stone_bricks');
+  p.set(3, 1, 1, 'chest');
+  p.fill(1, 1, 8, 1, 2, 8, null);
+  const n = innerRibs(p, 0, 0, 8, 8, 1, 4, 'polished_deepslate', 3, 'chiseled_deepslate');
+  const out = p.payload();
+  const at = (x, y, z) => { const c = out.cells.find(c => c.kind === 'block' && c.position.join() === [x, y, z].join()); return c && out.palette[c.paletteIndex].id; };
+  assert.equal(at(3, 1, 1), 'minecraft:chest', 'Truhe bleibt, keine Rippe');
+  assert.equal(at(6, 1, 7), 'minecraft:chiseled_deepslate'); assert.equal(at(6, 4, 7), 'minecraft:polished_deepslate');
+  assert.equal(at(1, 2, 3), 'minecraft:polished_deepslate');
+  assert.ok(n >= 5 && n <= 7, `${n} Rippen`);
+});
+
+test('Runde 3: Interieur-Räume vertäfelt, Hallen mit Rippen', () => {
+  const room = BUILDING_SPECS.find(s => s.id === 'bld_raum_bauernkueche').payload();
+  assert.ok(room.palette.some(s => s.id === 'minecraft:stripped_spruce_log'), 'Sockelleiste in der Bauernküche');
+  const hall = BUILDING_SPECS.find(s => s.id === 'bld_untergrund_zwergenhalle').payload();
+  assert.ok(hall.palette.some(s => s.id === 'minecraft:chiseled_deepslate'), 'Rippenfüße in der Zwergenhalle');
 });

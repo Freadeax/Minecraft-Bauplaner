@@ -2894,3 +2894,47 @@ Basisplaner (Funktionszonen, Wegenetz, Spielprüfungen, Bauphasen) und Gebäude 
 - `tests/base.test.mjs`
 - `tests/e2e/base.e2e.mjs`
 
+## 2026-11-02T20:12:54.947Z · progress
+
+**Aufgaben:** LIB-05
+
+Runde 3: Interieur-Räume gegliedert (dressRoom), Untergrundhallen mit Wandrippen (innerRibs), Wasseraufzug mit Gehäuse
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LIB-05 | 🧩 Implementiert · Abnahme offen | 7/8 | LIB-05-S08: Abnahme neuer Gebäude im Spiel durch Philipp. |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/BAUSTIL.md`
+- `packages/domain/src/build/facade.ts`
+- `packages/domain/src/build/sets/interieur.ts`
+- `packages/domain/src/build/sets/redstone.ts`
+- `packages/domain/src/build/sets/untergrund.ts`
+- `tests/baustil.test.mjs`
+
+## 2026-11-02T20:15:42.955Z · progress
+
+**Aufgaben:** LIB-05
+
+Runde 3: Interieur-Räume gegliedert (dressRoom), Untergrundhallen mit Wandrippen (innerRibs), Wasseraufzug mit Gehäuse; Browsertests warten auf die im Worker geladene Bibliothek
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LIB-05 | 🧩 Implementiert · Abnahme offen | 7/8 | LIB-05-S08: Abnahme neuer Gebäude im Spiel durch Philipp. |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/BAUSTIL.md`
+- `packages/domain/src/build/facade.ts`
+- `packages/domain/src/build/sets/interieur.ts`
+- `packages/domain/src/build/sets/redstone.ts`
+- `packages/domain/src/build/sets/untergrund.ts`
+- `tests/baustil.test.mjs`
+- `tests/e2e/app.e2e.mjs`
+- `tests/e2e/snap.e2e.mjs`
+

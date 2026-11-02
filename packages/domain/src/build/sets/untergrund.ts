@@ -3,6 +3,7 @@ import type { H, Props } from '../plot.js';
 import { chair, hangingLamp, longTable, rug, sofa, table, wallBanner } from '../furnish.js';
 import { WIKI, joint } from '../spec.js';
 import type { BuildingSpec } from '../spec.js';
+import { innerRibs } from '../facade.js';
 
 /**
  * Bergbau & Untergrund (Katalog v3): Minen, Schächte, Hallen und Höhlen.
@@ -188,6 +189,8 @@ function zwergenhalle() {
   for (const x of [5, 9]) p.fill(x, 1, 12, x, 4, 12, 'chiseled_deepslate');
   p.fill(6, 4, 12, 8, 4, 12, 'polished_deepslate');
   for (const [x, z] of [[5, 5], [9, 5], [7, 10]] as const) hangingLamp(p, x, 7, z, 2);
+  // wall ribs under the vault stairs: polished pilasters on chiseled feet
+  innerRibs(p, 0, 0, 14, 12, 1, 5, 'polished_deepslate', 3, 'chiseled_deepslate');
   return p.payload();
 }
 
@@ -276,6 +279,9 @@ function erzgiesserei() {
   p.fill(6, 1, 9, 6, 2, 9, null); door(p, 6, 1, 9, 'spruce', 'north');
   for (const x of [3, 9]) hangingLamp(p, x, 7, 3, 1);
   hangingLamp(p, 6, 7, 8, 1);
+  // inner ribs in line with the outer posts, a crown of upside-down stairs over the side walls
+  innerRibs(p, 0, 0, 12, 9, 1, 6, 'polished_deepslate', 4, 'chiseled_stone_bricks');
+  for (let z = 2; z <= 7; z++) for (const [x, f] of [[1, 'west'], [11, 'east']] as const) if (!p.get(x, 6, z)) p.set(x, 6, z, 'stone_brick_stairs', stairs(f, 'top'));
   return p.payload();
 }
 
@@ -361,6 +367,9 @@ function bergbauLager() {
   p.fill(6, 1, 8, 6, 2, 8, null); door(p, 6, 1, 8, 'spruce', 'north');
   for (const x of [2, 3, 9, 10]) p.fill(x, 2, 8, x, 3, 8, 'iron_bars');
   for (const x of [3, 9]) hangingLamp(p, x, 5, 4, 0);
+  // timber ribs under the ceiling beams, with knee braces against the planks
+  innerRibs(p, 0, 0, 12, 8, 1, 4, 'spruce_log', 4, null, axis('y'));
+  for (const x of [4, 8]) for (const [z, f] of [[1, 'north'], [7, 'south']] as const) for (const dx of [-1, 1]) if (!p.get(x + dx, 4, z)) p.set(x + dx, 4, z, 'spruce_stairs', stairs(f, 'top'));
   return p.payload();
 }
 

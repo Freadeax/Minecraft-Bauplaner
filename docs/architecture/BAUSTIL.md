@@ -129,7 +129,32 @@ Philipp (02.11.2026): „sowie alle weiteren Punkte auch, sauber über jedes Mod
 
 Alle überarbeiteten und neuen Gebäude halten im Spiel (`catalog-game`: 0 Fehler).
 
-Nicht überarbeitet sind die Untergrundhallen (Zwergenhalle, Erzgießerei, Lager, Bahnhof unter Tage). Sie liegen im Fels, deshalb bringt dort nur das Innere etwas. Auch die Redstone-Technik bleibt, weil Funktion vor Form geht, und die Interieur-Räume, die offene Schnitte sind. Diese drei Gruppen sind die nächsten Kandidaten.
+Nicht überarbeitet sind die Untergrundhallen (Zwergenhalle, Erzgießerei, Lager, Bahnhof unter Tage). Sie liegen im Fels, deshalb bringt dort nur das Innere etwas. Auch die Redstone-Technik bleibt, weil Funktion vor Form geht, und die Interieur-Räume, die offene Schnitte sind. Diese drei Gruppen folgen in Runde 3.
+
+## Runde 3: Innenräume, Untergrundhallen, Technik
+
+Auftrag (02.11.2026): Untergrundhallen, Inneneinrichtungen und Redstone-Bauten nachziehen.
+
+**Regel für Innenräume.** Ein Raum wirkt erst fertig, wenn seine Wände gegliedert sind. Die Vorlagen zeigen dafür vier Mittel: Holzpfosten in der Wand, eine Sockelleiste, ein Deckenprofil aus umgedrehten Treppen und einen Bodenrand in einem zweiten Material. Für Hallen unter Tage kommen Wandrippen dazu, also Pfeiler vor der Wand mit eigenem Fuß.
+
+**Baukasten** (`build/facade.ts`, schreibt nur in Wandmaterial oder freie Zellen; Möbel, Fenster und Maschinen bleiben):
+
+- `dressRoom(p, w, d, h, holz, {posts, dado, crown, border})` erkennt die geschlossenen Wände eines `roomShell`-Raums selbst. Offene Schnittseiten bleiben offen.
+- `innerRibs(p, x0, z0, x1, z1, y0, y1, id, abstand, fuß)` setzt Rippen nur in Spalten, die vom Boden bis zur Decke frei sind und vor geschlossener Wand stehen, also nie vor Türen oder Fenstern.
+
+**Überarbeitet:**
+
+| Gruppe | Bauten | Was dazukam |
+|---|---|---|
+| Interieur | 17 von 20 Räumen (ohne Weinkeller, Schatzkammer, Kerker, die schon gewölbt sind) | Pfosten, Sockelleiste, Deckenprofil, Bodenrand; Holz je Raum passend |
+| Untergrund | Zwergenhalle | Tiefenschiefer-Rippen auf gemeißelten Füßen unter dem Gewölbe |
+| Untergrund | Erzgießerei | Rippen in der Achse der Außenpfosten, Deckenprofil über den Seitenwänden |
+| Untergrund | Bergbaulager | Fichtenstämme unter den Deckenbalken mit Kopfbändern |
+| Redstone | Wasseraufzug | Steinpfosten statt Glaskanten, Gurtbänder alle vier Lagen, Kopfgesims |
+
+Die übrigen Redstone- und Technikmodule bleiben unverändert. Sie sind klein und reihbar, und jede zusätzliche Wand würde Anschlüsse oder Schaltungen stören.
+
+Interieur-Median: Nicht-Vollblöcke 13 % → 17 %, Blockarten 15 → 16. Alle Bauten halten weiter im Spiel (`catalog-game`: 0 Fehler).
 
 ## Veredelung (`build/refine.ts`)
 

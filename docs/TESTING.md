@@ -696,3 +696,15 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `tests/base.test.mjs` 10/10: Funktionen und Vorlagen gegen den echten Katalog; Verzauberungsstufe 15/15 am Zaubererturm, Bewässerung 80/80 am Weizenacker und 4/11 bei 11 Blöcken Entfernung; alle drei Vorlagen ohne Voxelkonflikt, jede Zone am Wegenetz, Abstand ≥ Wegbreite + 2 × Abstand, Wege nie durch Gebäude oder Wasser, Stege im Wasser, Land nie im Wasser, XP-Farm im Hinterland am weitesten vom Platz, deterministisch; Zonenwahl; Übernahme mit „Wege & Platz“ und Phasen; Einfügen mit Rückgängig und Veraltungsprüfung; ganze Starterbasis auf Gras zerlegt (Gebäude, 4 Felder, ein Wegenetz, Schmiede 95–110 % ihrer Blöcke, Bilanz Natur + Teile + Rest = alle Blöcke); aufgeteiltes Projekt ohne Konflikte mit jedem Block am alten Platz.
 - `tests/e2e/base.e2e.mjs` 1/1 (Chromium, Port 4297): Basisplaner mit Abwählen, Tausch, freiem Bauplatz, Wasserseite West, Zusatzzone, Übernahme (Abschnitte, Wegenetz-Bauteil), Herauslösen an der Handelsscheune, 390 px.
 - Grenzen: nur Chromium im Container; keine Abnahme mit Philipps eigenen Litematic-Basen; Küstenlinie als Wahl, nicht aus der Geländeaufnahme.
+
+
+
+## LIB-05 Runde 3 · Innenräume, Untergrundhallen, Technik · 02.11.2026 · Claude
+- `tests/baustil.test.mjs` 12/12, neu:
+  - `dressRoom()` setzt Pfosten, Sockelleiste, Deckenprofil und Bodenrand nur an geschlossenen Wänden; Möbel, Bodenmitte und offene Seite bleiben.
+  - `innerRibs()` setzt Rippen nur in freien Spalten vor geschlossener Wand; Truhe und Türöffnung bleiben.
+  - Bauernküche und Zwergenhalle tragen die neuen Bauteile.
+- `tests/catalog-game.test.mjs`: weiter 0 Fehler über alle Gebäude und Generator-Fälle.
+- Sichtprüfung: Schnittansichten der Hallen und Räume (nicht im Repository). Die Skizzen-Farbtabelle kennt jetzt alle im Katalog benutzten Blockarten.
+- Grenzen: keine Abnahme im Spiel.
+

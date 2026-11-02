@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-02T19:48:53.099Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-02T20:15:42.955Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -34,7 +34,7 @@ Stand: 2026-11-02T19:48:53.099Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 - **ENTITY-01 · Gemälde, Rahmen, Rüstungsständer und Blockinhalte** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Export mit Entities im Spiel prüfen; Entities bei Auswahl-Verschieben in der Werkstatt mitnehmen; Truhen-/Schildinhalte bearbeiten.
 - **MAP-04 · Weltbuilder vertiefen: Löschen und Entfernen für alle Objekte der Weltkarte, Mehrfachauswahl, Kontextmenü, gemeinsames Rückgängig, Duplizieren/Drehen/Spiegeln, Wegecken, Ebenen, Objektliste** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06); denkbare Folge: benannte Gruppen/Sperren mit Schemaerweiterung, abgestimmt mit der Mod.
 - **PERF-04 · Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); GPU-Upload großer Szenen bleibt im Hauptthread.
-- **LIB-05 · Bibliothek im Stil der Vorlagen: Gestaltungsregeln, Baukasten, neu gezeichnete Gebäude und Generatoren** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: LIB-05-S07: Untergrund innen, Interieur, Technik; Abnahme neuer Gebäude im Spiel durch Philipp.
+- **LIB-05 · Bibliothek im Stil der Vorlagen: Gestaltungsregeln, Baukasten, neu gezeichnete Gebäude und Generatoren** — 🧩 Implementiert · Abnahme offen, 7/8 Teilschritte. Nächster Schritt: LIB-05-S08: Abnahme neuer Gebäude im Spiel durch Philipp.
 - **EDIT-05 · Auswahl- und Formwerkzeuge aus Editor-Mods: Zauberauswahl, Auswahl wachsen/schrumpfen/einpassen, Stapeln, Extrudieren, Ellipsoid/Torus/Spirale, Entities ziehen mit** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: EDIT-05-S07: Abnahme durch Philipp in der Werkstatt (Zauberstab, Stapeln, Extrudieren, Wendel) und Spielprüfung gestapelter/gedrehter Bauteile mit Ausstattung.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
@@ -159,7 +159,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [GAME-04](#game-04) | Paper-Plugin der Bauplaner-Brücke (serverseitig, mehrere Minecraft-Versionen) | 🚧 In Arbeit | 3/4 | GAME-02 | ausstehend | ausstehend |
 | [GAME-05](#game-05) | NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik | 🧩 Implementiert · Abnahme offen | 3/4 | GAME-02 | ausstehend | ausstehend |
 | [LIB-04](#lib-04) | Gebäudebibliothek v3: Inhalte in alle Richtungen | 🧩 Implementiert · Abnahme offen | 4/4 | LIB-01 | ausstehend | ausstehend |
-| [LIB-05](#lib-05) | Bibliothek im Stil der Vorlagen: Gestaltungsregeln, Baukasten, neu gezeichnete Gebäude und Generatoren | 🧩 Implementiert · Abnahme offen | 6/7 | LIB-04, BLOCK-02, GEN-02 | ausstehend | ausstehend |
+| [LIB-05](#lib-05) | Bibliothek im Stil der Vorlagen: Gestaltungsregeln, Baukasten, neu gezeichnete Gebäude und Generatoren | 🧩 Implementiert · Abnahme offen | 7/8 | LIB-04, BLOCK-02, GEN-02 | ausstehend | ausstehend |
 | [BASE-01](#base-01) | Basisplaner: ganze Survival-Basis aus Funktionszonen (Platz, Lager, Schmiede, Verzauberung, XP-Farm, Küche, Halle, Felder, Tierfarm, Hafen, Händler), Wegenetz mit Laternen, Wasserseite, Spielprüfungen je Zone, Bauphasen | 🧩 Implementiert · Abnahme offen | 5/6 | BUILD-05, TERRAIN-01, BLOCK-02 | ausstehend | ausstehend |
 | [SPLIT-01](#split-01) | Gebäude aus großen Modellen herauslösen: Gebäude, Felder, Gehege und Wegenetz erkennen, einzeln oder zusammen als Bauteile speichern, als Projekt an alter Stelle aufteilen | 🧩 Implementiert · Abnahme offen | 4/5 | LIB-04, WORLD-IMPORT-01, PERF-04 | ausstehend | ausstehend |
 
@@ -1771,7 +1771,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LIB-05
 
-**Bibliothek im Stil der Vorlagen: Gestaltungsregeln, Baukasten, neu gezeichnete Gebäude und Generatoren** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Bibliothek im Stil der Vorlagen neu gestalten“) · Aktualisiert: 2026-11-02T18:40:22.884Z
+**Bibliothek im Stil der Vorlagen: Gestaltungsregeln, Baukasten, neu gezeichnete Gebäude und Generatoren** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Bibliothek im Stil der Vorlagen neu gestalten“) · Aktualisiert: 2026-11-02T20:15:42.955Z
 
 - [x] LIB-05-S01: 31 Vorlagen (4 brauchbare der 5 hochgeladenen, 27 freie von minemev.com) vermessen: Detailblöcke, umgedrehte Treppen, Fassadenrelief, Fenster, Dächer; Regeln in BAUSTIL.md. Dateien nur als Studienmaterial, nicht im Repository.
 - [x] LIB-05-S02: Baukasten build/style.ts: Mischungen, Looks, Fenster mit Läden/Sturz/Blumenkasten, Tür, Dächer mit Überstand/Traufkasten/Ortgang und Quergiebeln, house(), ladderUp, hangLantern; designMetrics.
@@ -1779,11 +1779,12 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 - [x] LIB-05-S04: Veredelung build/refine.ts (Verwitterung, Fensterläden und Sims) für jedes Katalog-Gebäude vor den Materialvarianten.
 - [x] LIB-05-S05: Generatoren: Stil-Mischungen, pitchedRoof für alle Steildächer, Haus v3 (Vorkragung, Sockel, Läden, Quergiebel); alle Versionen erhöht.
 - [x] LIB-05-S06: Runde 2: Fassadenbaukasten build/facade.ts (Lisenen, Gesimse, Fensterbänke, Maschikulis, Strebepfeiler, Dachtechnik) für Stadt, Küste, Epochen, Fantasy, Nether und Torhaus; sieben neue, eingerichtete Meisterstücke (sets/meister.ts).
-- [ ] LIB-05-S07: Untergrundhallen innen, Interieur-Räume und Redstone-Technik gestalterisch nachziehen; Abnahme einiger neuer Gebäude im Spiel.
+- [x] LIB-05-S07: Runde 3: Wandgliederung für Interieur-Räume (dressRoom), Wandrippen für Untergrundhallen (innerRibs), Gehäuse des Wasseraufzugs.
+- [ ] LIB-05-S08: Abnahme einiger neuer Gebäude im Spiel durch Philipp.
 
 **Abnahme:** Wohnhäuser im Median ≥ 30 % Nicht-Vollblöcke, ≥ 20 % umgedrehte Treppen, ≤ 50 % Fassade auf der Hauptebene; alle Gebäude und Generator-Fälle weiter ohne Spielfehler (catalog-game). Runde 2: Stadt im Median ≤ 62 % Fassade auf der Hauptebene; jedes Meisterstück ≤ 50 % Hauptebene, ≥ 30 Blockarten, ≥ 20 % umgedrehte Treppen.
 
-**Nächste Aktion:** LIB-05-S07: Untergrund innen, Interieur, Technik; Abnahme neuer Gebäude im Spiel durch Philipp.
+**Nächste Aktion:** LIB-05-S08: Abnahme neuer Gebäude im Spiel durch Philipp.
 
 **Prüfstand:** Node-Prüfungen bestanden (baustil 9/9, catalog-game, catalog, generators); Sichtprüfung über isometrische Ansichten; Abnahme im echten Spiel steht aus.
 

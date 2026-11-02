@@ -110,6 +110,10 @@ function wasseraufzug() {
   p.fill(0, 14, 0, 6, 14, 3, 'stone_bricks'); p.air(3, 14, 1);
   p.set(3, 14, 2, 'stone_brick_slab', slab());
   for (const x of [1, 5]) p.set(x, 1, 1, 'lantern', lantern());
+  // housing: stone corner posts instead of glass edges, a band every four layers, a stair cap
+  for (let y = 3; y <= 13; y++) for (const [x, z] of [[2, 0], [4, 0], [2, 2], [4, 2]] as const) p.set(x, y, z, y % 4 === 1 ? 'chiseled_stone_bricks' : 'stone_bricks');
+  for (const y of [5, 9]) for (const [x, z, f] of [[3, 3, 'north'], [1, 1, 'east'], [5, 1, 'west']] as const) p.set(x, y, z, 'stone_brick_stairs', stairs(f, 'top'));
+  for (const [x, z] of [[1, 0], [5, 0], [1, 2], [5, 2]] as const) p.set(x, 13, z, 'stone_brick_stairs', stairs(x === 1 ? 'east' : 'west', 'top'));
   return p.payload();
 }
 

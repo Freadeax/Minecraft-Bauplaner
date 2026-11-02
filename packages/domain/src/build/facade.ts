@@ -221,3 +221,72 @@ export function buttresses(p: Plot, r: Rect, sides: readonly H[], every: number,
     }
   }
 }
+
+/**
+ * Room panelling for the interior modules (LIB-05 Runde 3): on every closed
+ * wall of a `w`×`d` room of height `h` – posts of `trim` logs every `posts`
+ * cells, a dado rail of stripped logs along the floor, a crown moulding of
+ * upside-down trim stairs under the top row – and a floor border. Only the
+ * wall's own material and empty or air cells are replaced; windows,
+ * furniture and fittings stay.
+ */
+export function dressRoom(p: Plot, w: number, d: number, h: number, trim: string,
+  o: { posts?: number; dado?: boolean; crown?: boolean; border?: string | null } = {}): void {
+  const stem = trim === 'crimson' || trim === 'warped';
+  const log = stem ? `${trim}_stem` : `${trim}_log`, stripped = stem ? `stripped_${trim}_stem` : `stripped_${trim}_log`;
+  const sides: { out: H; cells: [number, number][]; inward: [number, number] }[] = [
+    { out: 'north', cells: Array.from({ length: w }, (_, i) => [i, 0] as [number, number]), inward: [0, 1] },
+    { out: 'south', cells: Array.from({ length: w }, (_, i) => [i, d - 1] as [number, number]), inward: [0, -1] },
+    { out: 'west', cells: Array.from({ length: d }, (_, i) => [0, i] as [number, number]), inward: [1, 0] },
+    { out: 'east', cells: Array.from({ length: d }, (_, i) => [w - 1, i] as [number, number]), inward: [-1, 0] },
+  ];
+  const id = (x: number, y: number, z: number) => { const s = p.get(x, y, z); return s && s.id !== 'minecraft:air' ? s.id.slice(10) : null; };
+  for (const { out, cells, inward } of sides) {
+    const count = new Map<string, number>();
+    let solid = 0;
+    for (const [x, z] of cells) for (let y = 1; y <= h; y++) { const i = id(x, y, z); if (i) { solid++; count.set(i, (count.get(i) ?? 0) + 1); } }
+    if (solid < cells.length * h * 0.5) continue; // open side
+    const wall = [...count].sort((a, b) => b[1] - a[1])[0]![0];
+    const along: 'x' | 'z' = out === 'north' || out === 'south' ? 'x' : 'z';
+    cells.forEach(([x, z], a) => {
+      const inner = a > 0 && a < cells.length - 1;
+      if (o.posts && inner && a % o.posts === 0) for (let y = 1; y <= h; y++) if (id(x, y, z) === wall) p.set(x, y, z, log, { axis: 'y' });
+      if (o.dado !== false && inner && id(x, 1, z) === wall) p.set(x, 1, z, stripped, { axis: along });
+      if (o.crown !== false && inner) {
+        const ix = x + inward[0], iz = z + inward[1];
+        const free = !p.get(ix, h, iz);
+        if (free && id(x, h, z) && !/glass|pane|bars/.test(id(x, h, z)!) && ix > 0 && iz > 0 && ix < w - 1 && iz < d - 1) p.set(ix, h, iz, `${trim}_stairs`, stairs(out, 'top'));
+      }
+    });
+  }
+  if (o.border) {
+    const floor = id(Math.floor(w / 2), 0, Math.floor(d / 2));
+    for (let x = 1; x < w - 1; x++) for (let z = 1; z < d - 1; z++)
+      if ((x === 1 || x === w - 2 || z === 1 || z === d - 2) && id(x, 0, z) === floor) p.set(x, 0, z, o.border, /_(wood|log|stem|hyphae)$/.test(o.border) ? { axis: 'y' } : {});
+  }
+}
+
+/**
+ * Inner wall ribs for halls (LIB-05 Runde 3): along the inside of the walls
+ * of the rectangle x0..x1 × z0..z1, every `every` cells a pilaster column of
+ * `id` from y0 to y1 on the first inner cell – with a `base` block at the
+ * foot – where that whole column is still empty (furniture, doors and
+ * machines stay untouched).
+ */
+export function innerRibs(p: Plot, x0: number, z0: number, x1: number, z1: number, y0: number, y1: number,
+  id: string, every: number, base: string | null = null, props: Record<string, string> = {}): number {
+  const spots: [number, number][] = [];
+  for (let x = x0 + every; x < x1 - 1; x += every) spots.push([x, z0 + 1], [x, z1 - 1]);
+  for (let z = z0 + every; z < z1 - 1; z += every) spots.push([x0 + 1, z], [x1 - 1, z]);
+  let n = 0;
+  for (const [x, z] of spots) {
+    let free = true;
+    for (let y = y0; y <= y1 && free; y++) if (p.get(x, y, z)) free = false;
+    // the wall behind must be solid at foot and head (no door or window opening)
+    const wx = x === x0 + 1 ? x0 : x === x1 - 1 ? x1 : x, wz = z === z0 + 1 ? z0 : z === z1 - 1 ? z1 : z;
+    if (!free || !p.get(wx, y0, wz) || !p.get(wx, y1, wz)) continue;
+    for (let y = y0; y <= y1; y++) p.set(x, y, z, y === y0 && base ? base : id, y === y0 && base ? {} : props);
+    n++;
+  }
+  return n;
+}

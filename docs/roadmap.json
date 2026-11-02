@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T19:48:53.099Z",
+  "updatedAt": "2026-11-02T20:15:42.955Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -5144,7 +5144,12 @@
         },
         {
           "id": "LIB-05-S07",
-          "title": "Untergrundhallen innen, Interieur-Räume und Redstone-Technik gestalterisch nachziehen; Abnahme einiger neuer Gebäude im Spiel.",
+          "title": "Runde 3: Wandgliederung für Interieur-Räume (dressRoom), Wandrippen für Untergrundhallen (innerRibs), Gehäuse des Wasseraufzugs.",
+          "done": true
+        },
+        {
+          "id": "LIB-05-S08",
+          "title": "Abnahme einiger neuer Gebäude im Spiel durch Philipp.",
           "done": false
         }
       ],
@@ -5152,7 +5157,7 @@
         "Wohnhäuser im Median ≥ 30 % Nicht-Vollblöcke, ≥ 20 % umgedrehte Treppen, ≤ 50 % Fassade auf der Hauptebene; alle Gebäude und Generator-Fälle weiter ohne Spielfehler (catalog-game).",
         "Runde 2: Stadt im Median ≤ 62 % Fassade auf der Hauptebene; jedes Meisterstück ≤ 50 % Hauptebene, ≥ 30 Blockarten, ≥ 20 % umgedrehte Treppen."
       ],
-      "next": "LIB-05-S07: Untergrund innen, Interieur, Technik; Abnahme neuer Gebäude im Spiel durch Philipp.",
+      "next": "LIB-05-S08: Abnahme neuer Gebäude im Spiel durch Philipp.",
       "blockers": [],
       "evidence": [
         {
@@ -5172,7 +5177,7 @@
           "note": "Sieben neue Meisterstücke mit Einrichtung."
         }
       ],
-      "updatedAt": "2026-11-02T18:40:22.884Z",
+      "updatedAt": "2026-11-02T20:15:42.955Z",
       "verification": {
         "state": "pending",
         "note": "Node-Prüfungen bestanden (baustil 9/9, catalog-game, catalog, generators); Sichtprüfung über isometrische Ansichten; Abnahme im echten Spiel steht aus."
@@ -9401,6 +9406,62 @@
           "done": 4,
           "total": 5,
           "next": "Abnahme mit echten Dateien (S05)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T20:12:54.947Z",
+      "kind": "progress",
+      "items": [
+        "LIB-05"
+      ],
+      "summary": "Runde 3: Interieur-Räume gegliedert (dressRoom), Untergrundhallen mit Wandrippen (innerRibs), Wasseraufzug mit Gehäuse",
+      "files": [
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/BAUSTIL.md",
+        "packages/domain/src/build/facade.ts",
+        "packages/domain/src/build/sets/interieur.ts",
+        "packages/domain/src/build/sets/redstone.ts",
+        "packages/domain/src/build/sets/untergrund.ts",
+        "tests/baustil.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "LIB-05",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "LIB-05-S08: Abnahme neuer Gebäude im Spiel durch Philipp."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T20:15:42.955Z",
+      "kind": "progress",
+      "items": [
+        "LIB-05"
+      ],
+      "summary": "Runde 3: Interieur-Räume gegliedert (dressRoom), Untergrundhallen mit Wandrippen (innerRibs), Wasseraufzug mit Gehäuse; Browsertests warten auf die im Worker geladene Bibliothek",
+      "files": [
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/BAUSTIL.md",
+        "packages/domain/src/build/facade.ts",
+        "packages/domain/src/build/sets/interieur.ts",
+        "packages/domain/src/build/sets/redstone.ts",
+        "packages/domain/src/build/sets/untergrund.ts",
+        "tests/baustil.test.mjs",
+        "tests/e2e/app.e2e.mjs",
+        "tests/e2e/snap.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "LIB-05",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "LIB-05-S08: Abnahme neuer Gebäude im Spiel durch Philipp."
         }
       ]
     }
