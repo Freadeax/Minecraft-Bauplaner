@@ -135,7 +135,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [WORLD-02](#world-02) | Weitere kuratierte Bauwelten | ✅ Im beschriebenen Umfang geprüft | 2/2 | LIB-01, UI-01 | `c3e6478` | `c3e6478` |
 | [BUILD-05](#build-05) | Bauwelt-Anlagen mit Konfliktvorschau | ✅ Im beschriebenen Umfang geprüft | 3/3 | LIB-03, CORE-03 | ausstehend | ausstehend |
 | [TERRAIN-01](#terrain-01) | Geländeaufnahmen für Weltkarte und Anlagen | 🧩 Implementiert · Abnahme offen | 4/5 | WORLD-IMPORT-01, BUILD-05, MAP-01 | ausstehend | ausstehend |
-| [TERRAIN-02](#terrain-02) | Landschaft gestalten: Gelände formen, bemalen, Wasser und Wege | 🧩 Implementiert · Abnahme offen | 4/6 | TERRAIN-01, BUILD-05, MAP-01 | ausstehend | ausstehend |
+| [TERRAIN-02](#terrain-02) | Landschaft gestalten: Gelände formen, bemalen, Wasser und Wege | 🧩 Implementiert · Abnahme offen | 5/7 | TERRAIN-01, BUILD-05, MAP-01 | ausstehend | ausstehend |
 | [BUILD-06](#build-06) | Bauführung im Spiel: Schichtführung, Tagesziele, Packlisten, Druck-/Handyansicht, Spielfortschritt | 🧩 Implementiert · Abnahme offen | 5/5 | BUILD-01, GAME-01, MAP-01 | ausstehend | ausstehend |
 | [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | 🧩 Implementiert · Abnahme offen | 5/5 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
 | [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen | 4/4 | CORE-03, STORE-02 | `84838f0` | `e232b26` |
@@ -1162,17 +1162,18 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 - [x] TERRAIN-02-S03: Wasser füllen/entfernen, Wege mit Steigungsgrenze und Damm, Bauplätze einebnen.
 - [x] TERRAIN-02-S04: Übergabe: geplantes Gelände in Weltkarte und Anlagen, Gelände als Bauteil im Projekt ohne Konflikt mit Bauten.
 - [ ] TERRAIN-02-S05: Abnahme in Philipps eigener 26.3-Welt und auf Touch-Geräten.
-- [ ] TERRAIN-02-S06: Streu-Ebene: Natur-Bauteile aus der Werkstatt (EDIT-04) nach Oberflächenstil verteilen; Wegstufen als Treppen/Stufen.
+- [x] TERRAIN-02-S06: Streu-Ebene: Natur-Bauteile (eingebaute Bäume, Büsche, Felsen, Pflanzen und eigene Schablonen aus der Werkstatt) nach Oberflächenstil, Hang, Höhe, Ufer und Dichte deterministisch verteilen, von Hand setzen/entfernen, im Geländebauteil für Material, Bauen, Export und Mod.
+- [ ] TERRAIN-02-S07: Wegstufen als Treppen/Stufen an den Höhenwechseln eines Wegs.
 
-**Abnahme:** Unbekannte Spalten werden nie verändert; Werkzeuge sind deterministisch; in der Welt ändert sich nichts ohne Bau; Geländebauteil gerät nicht in Konflikt mit geplanten Bauten; Weltkarte und Anlagen zeigen dasselbe geplante Gelände.
+**Abnahme:** Unbekannte Spalten werden nie verändert; Werkzeuge sind deterministisch; in der Welt ändert sich nichts ohne Bau; Geländebauteil gerät nicht in Konflikt mit geplanten Bauten; Weltkarte und Anlagen zeigen dasselbe geplante Gelände. Streu-Ebene: gleiche Regeln und gleiches Gelände ergeben dieselben Teile; Teile stehen nie im Wasser, auf Wegen, in Bauten, im Bestand oder ineinander; sie folgen dem geplanten Boden und sind Teil des Geländebauteils.
 
-**Nächste Aktion:** Abnahme mit eigener Welt (S05); danach Streu-Ebene mit EDIT-04 (S06).
+**Nächste Aktion:** Abnahme mit eigener Welt (S05); Wegstufen als Treppen (S07).
 
 **Prüfstand:** Kern- und Chromiumtests bestanden; Abnahme mit eigener Welt und echten Geräten offen.
 
-**Nachweise:** [tests/terrain-design.test.mjs](../tests/terrain-design.test.mjs) — 10 Fälle: Pinsel mit Handwerten, Stile/Filter, Wasser, Wege, Automatik, Einebnen, Blöcke, geplantes Gelände, Datei, Operation, Sicherung, Datencheck.; [tests/e2e/landscape.e2e.mjs](../tests/e2e/landscape.e2e.mjs) — Chromium 1400/390 px: formen, bemalen, Wasser, Weg, speichern, Weltkarte, Anlagen, Bauteil im Projekt.; [docs/architecture/LANDSCAPE.md](architecture/LANDSCAPE.md) — Datenmodell, Werkzeuge, Übergabe, Grenzen.
+**Nachweise:** [tests/terrain-design.test.mjs](../tests/terrain-design.test.mjs) — 10 Fälle: Pinsel mit Handwerten, Stile/Filter, Wasser, Wege, Automatik, Einebnen, Blöcke, geplantes Gelände, Datei, Operation, Sicherung, Datencheck.; [tests/e2e/landscape.e2e.mjs](../tests/e2e/landscape.e2e.mjs) — Chromium 1400/390 px: formen, bemalen, Wasser, Weg, speichern, Weltkarte, Anlagen, Bauteil im Projekt.; [docs/architecture/LANDSCAPE.md](architecture/LANDSCAPE.md) — Datenmodell, Werkzeuge, Übergabe, Grenzen.; [tests/terrain-scatter.test.mjs](../tests/terrain-scatter.test.mjs) — 8 Fälle: Bauteile (Zustände 26.3, dauerhaftes Laub), Determinismus/Dichte/Abstand, Regeln (Stil, Hang, Höhe, Ufer, Wasser, Weg, Bauten, Bestand), Handsetzen/Entfernen, Teile folgen dem Gelände, Blöcke im Geländebauteil, Datei, Schablonen gedreht, Kaktus.; [tests/e2e/landscape-scatter.e2e.mjs](../tests/e2e/landscape-scatter.e2e.mjs) — Chromium 1400/390 px: Mischung streuen, Ebene ändern, von Hand setzen/entfernen, Rückgängig, 3D, Speichern/Neuladen, Bauteil mit Laub und Stämmen in der Materialliste.
 
-**Dateiumfang:** `packages/domain/src/terrainDesign.ts`, `apps/web/src/views/world/designs.ts`, `apps/web/src/views/project/LandscapeTab.tsx`, `apps/web/src/views/project/landscape/`, `tests/terrain-design.test.mjs`, `tests/e2e/landscape.e2e.mjs`, `docs/architecture/LANDSCAPE.md`. **Abhängigkeiten:** TERRAIN-01, BUILD-05, MAP-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/terrainDesign.ts`, `apps/web/src/views/world/designs.ts`, `apps/web/src/views/project/LandscapeTab.tsx`, `apps/web/src/views/project/landscape/`, `tests/terrain-design.test.mjs`, `tests/e2e/landscape.e2e.mjs`, `docs/architecture/LANDSCAPE.md`, `packages/domain/src/terrainScatter.ts`, `packages/domain/src/terrainScatterPlan.ts`, `tests/terrain-scatter.test.mjs`, `tests/e2e/landscape-scatter.e2e.mjs`. **Abhängigkeiten:** TERRAIN-01, BUILD-05, MAP-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

@@ -4,8 +4,11 @@ import { completeState } from '../../voxel/src/blocklogic/facts.js';
 import type { OriginalFile } from './backup.js';
 import { sha256Hex } from './hash.js';
 import { checkSurveyArea, createSurvey, SURVEY_UNKNOWN } from './terrainSurvey.js';
+import { SURFACE_SKIP_IDS } from './terrain.js';
 import type { ColumnBase, SurveyArea, TerrainSurvey } from './terrainSurvey.js';
 import { DomainError } from './types.js';
+import { checkScatterPlan, cloneScatter } from './terrainScatterPlan.js';
+import type { ScatterPlan } from './terrainScatterPlan.js';
 
 /**
  * Geländegestaltung (TERRAIN-02): a planned terrain on top of a Geländeaufnahme
@@ -52,6 +55,8 @@ export interface TerrainDesign extends SurveyArea {
   /** Block id palette; index 0 is reserved (unknown). Tools append. */
   readonly ids: string[];
   updatedAt: string;
+  /** Streu-Ebene (S06): Natur-Bauteile on the planned ground; see terrainScatter.ts. */
+  scatter?: ScatterPlan;
 }
 
 /** What a project stores about its design; the bytes are an original file. */
@@ -196,14 +201,15 @@ export function designFromSurvey(s: TerrainSurvey, base: DesignBase): TerrainDes
 }
 
 export function cloneDesign(d: TerrainDesign): TerrainDesign {
-  return { ...d, height: d.height.slice(), top: d.top.slice(), fill: d.fill.slice(), water: d.water.slice(), path: d.path.slice(), ids: [...d.ids] };
+  return { ...d, height: d.height.slice(), top: d.top.slice(), fill: d.fill.slice(), water: d.water.slice(), path: d.path.slice(), ids: [...d.ids], ...(d.scatter && { scatter: cloneScatter(d.scatter) }) };
 }
 
 // ------------------------------------------------------------------ file
 
 /** Binary file: "BPTDES01", uint32 LE header length, header JSON, padding to even, then height, top, fill, water (16 bit LE) and path (8 bit). */
 export function encodeDesign(d: TerrainDesign): Uint8Array {
-  const header = new TextEncoder().encode(JSON.stringify({ schemaVersion: d.schemaVersion, dimension: d.dimension, base: d.base, minX: d.minX, minZ: d.minZ, width: d.width, length: d.length, ids: d.ids, updatedAt: d.updatedAt }));
+  const header = new TextEncoder().encode(JSON.stringify({ schemaVersion: d.schemaVersion, dimension: d.dimension, base: d.base, minX: d.minX, minZ: d.minZ, width: d.width, length: d.length, ids: d.ids, updatedAt: d.updatedAt,
+    ...(d.scatter && (d.scatter.layers.length || d.scatter.items.length) && { scatter: d.scatter }) }));
   const start = 12 + header.length + ((12 + header.length) % 2), n = d.width * d.length;
   const out = new Uint8Array(start + n * 9), view = new DataView(out.buffer);
   out.set(new TextEncoder().encode(MAGIC), 0);
@@ -239,7 +245,8 @@ export function decodeDesign(bytes: Uint8Array): TerrainDesign {
   const ids = h.ids as string[];
   const d: TerrainDesign = { schemaVersion: DESIGN_SCHEMA_VERSION, dimension: h.dimension as string, base, ...area,
     height: read16(0, true) as Int16Array, top: read16(1, false) as Uint16Array, fill: read16(2, false) as Uint16Array, water: read16(3, true) as Int16Array,
-    path: bytes.slice(start + n * 8, start + n * 9), ids: [...ids], updatedAt: typeof h.updatedAt === 'string' ? h.updatedAt : new Date(0).toISOString() };
+    path: bytes.slice(start + n * 8, start + n * 9), ids: [...ids], updatedAt: typeof h.updatedAt === 'string' ? h.updatedAt : new Date(0).toISOString(),
+    ...(h.scatter !== undefined && { scatter: checkScatterPlan(h.scatter) }) };
   for (let i = 0; i < n; i++) if (d.top[i]! >= ids.length || d.fill[i]! >= ids.length || d.path[i]! > 1) fail('Blockindex außerhalb der Liste');
   return d;
 }
@@ -692,8 +699,8 @@ export function resetToBase(d: TerrainDesign, base: TerrainSurvey): void {
 
 // ------------------------------------------------------------------ comparison and blocks
 
-/** One cell the design asks for, world coordinates. */
-interface DesignCell { readonly x: number; readonly y: number; readonly z: number; readonly id: string }
+/** One cell the design asks for, world coordinates; `state` carries properties (scatter parts), otherwise the defaults of `id`. */
+export interface DesignCell { readonly x: number; readonly y: number; readonly z: number; readonly id: string; readonly state?: BlockState }
 
 const AIR = 'minecraft:air';
 
@@ -783,32 +790,38 @@ export const DESIGN_MAX_CELLS = 1_000_000;
  * when nothing changed. `skip` leaves cells to planned buildings, so the
  * terrain never conflicts with them.
  */
-export function designPayload(base: TerrainSurvey, d: TerrainDesign, profileId: string, skip?: (x: number, y: number, z: number) => boolean): DesignBlocks | null {
-  const cells: DesignCell[] = [];
+export function designPayload(base: TerrainSurvey, d: TerrainDesign, profileId: string, skip?: (x: number, y: number, z: number) => boolean,
+  extra: readonly DesignCell[] = []): DesignBlocks | null {
+  // Keyed by position: `extra` (Streu-Ebene) wins over the terrain cell at the same place (a rock replaces the top block).
+  const cells = new Map<string, DesignCell>();
   let lo = [Infinity, Infinity, Infinity], hi = [-Infinity, -Infinity, -Infinity], skipped = 0;
-  visitDesign(base, d, c => {
+  const add = (c: DesignCell) => {
     if (skip?.(c.x, c.y, c.z)) { skipped++; return; }
-    if (cells.length >= DESIGN_MAX_CELLS) fail(`mehr als ${DESIGN_MAX_CELLS.toLocaleString('de-DE')} Blöcke. Bitte in kleineren Teilen gestalten.`);
-    cells.push(c);
+    const key = `${c.x},${c.y},${c.z}`;
+    if (!cells.has(key) && cells.size >= DESIGN_MAX_CELLS) fail(`mehr als ${DESIGN_MAX_CELLS.toLocaleString('de-DE')} Blöcke. Bitte in kleineren Teilen gestalten.`);
+    cells.set(key, c);
     lo = [Math.min(lo[0]!, c.x), Math.min(lo[1]!, c.y), Math.min(lo[2]!, c.z)];
     hi = [Math.max(hi[0]!, c.x), Math.max(hi[1]!, c.y), Math.max(hi[2]!, c.z)];
-  });
-  if (!cells.length) return null;
+  };
+  visitDesign(base, d, add);
+  for (const c of extra) add(c);
+  if (!cells.size) return null;
   const palette: BlockState[] = [], index = new Map<string, number>();
-  const stateOf = (id: string): number => {
-    let i = index.get(id);
+  const stateOf = (c: DesignCell): number => {
+    const key = c.state ? `${c.state.id}[${Object.entries(c.state.properties).sort(([a], [b]) => a.localeCompare(b)).map(([k, v]) => `${k}=${v}`).join(',')}]` : c.id;
+    let i = index.get(key);
     if (i === undefined) {
-      const state = id === WATER_ID ? { id, properties: { level: '0' } } : completeState({ id, properties: {} }) ?? { id, properties: {} };
-      i = palette.length; palette.push(state); index.set(id, i);
+      const state = c.state ?? (c.id === WATER_ID ? { id: c.id, properties: { level: '0' } } : completeState({ id: c.id, properties: {} }) ?? { id: c.id, properties: {} });
+      i = palette.length; palette.push(state); index.set(key, i);
     }
     return i;
   };
   let blocks = 0, air = 0;
-  const out: Cell[] = cells.map(c => {
+  const out: Cell[] = [...cells.values()].map(c => {
     const position = [c.x - lo[0]!, c.y - lo[1]!, c.z - lo[2]!] as const;
-    if (c.id === AIR) { air++; return { position: [...position] as [number, number, number], kind: 'air' as const, paletteIndex: stateOf(AIR) }; }
+    if (c.id === AIR) { air++; return { position: [...position] as [number, number, number], kind: 'air' as const, paletteIndex: stateOf(c) }; }
     blocks++;
-    return { position: [...position] as [number, number, number], kind: 'block' as const, paletteIndex: stateOf(c.id) };
+    return { position: [...position] as [number, number, number], kind: 'block' as const, paletteIndex: stateOf(c) };
   });
   const size: [number, number, number] = [hi[0]! - lo[0]! + 1, hi[1]! - lo[1]! + 1, hi[2]! - lo[2]! + 1];
   const payload = createPayload({ schemaVersion: 1, profileId, bounds: { min: [0, 0, 0], maxExclusive: size }, pivot: [0, 0, 0], sourceOrigin: [lo[0]!, lo[1]!, lo[2]!], palette, cells: out, blockEntities: [] });
@@ -821,7 +834,7 @@ export function designPayload(base: TerrainSurvey, d: TerrainDesign, profileId: 
  * columns keep the measured surface (trees, lava); changed ones show the
  * planned top or water.
  */
-export function designedSurvey(base: TerrainSurvey, d: TerrainDesign): TerrainSurvey {
+export function designedSurvey(base: TerrainSurvey, d: TerrainDesign, extra: readonly DesignCell[] = []): TerrainSurvey {
   if (!designMatchesBase(d, base)) fail('Gestaltung und Grundlage haben verschiedene Bereiche');
   const n = d.width * d.length;
   const ids = [...base.ids], index = new Map(ids.map((id, i) => [id, i] as const));
@@ -837,6 +850,14 @@ export function designedSurvey(base: TerrainSurvey, d: TerrainDesign): TerrainSu
     ground[i] = h; groundBlock[i] = idOf(top);
     if (d.water[i] !== NO_WATER) { surface[i] = d.water[i]!; surfaceBlock[i] = water; }
     else { surface[i] = h; surfaceBlock[i] = groundBlock[i]!; }
+  }
+  // Streu-Ebene: trees and rocks raise the visible surface (plants do not, like in a real survey).
+  for (const c of extra) {
+    const gx = c.x - d.minX, gz = c.z - d.minZ;
+    if (gx < 0 || gz < 0 || gx >= d.width || gz >= d.length || c.id === AIR || SURFACE_SKIP_IDS.has(c.id)) continue;
+    const i = gx + gz * d.width;
+    if (surface[i] === SURVEY_UNKNOWN || c.y < surface[i]!) continue;
+    surface[i] = c.y; surfaceBlock[i] = idOf(c.id);
   }
   return createSurvey({ minX: base.minX, minZ: base.minZ, width: base.width, length: base.length, surface, surfaceBlock, ground, groundBlock, ids },
     { dimension: base.dimension, readAt: d.updatedAt, newestChunkSave: base.newestChunkSave, dataVersions: base.dataVersions, regions: base.regions });

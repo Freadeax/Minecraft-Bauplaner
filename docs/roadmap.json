@@ -3088,7 +3088,11 @@
         "apps/web/src/views/project/landscape/",
         "tests/terrain-design.test.mjs",
         "tests/e2e/landscape.e2e.mjs",
-        "docs/architecture/LANDSCAPE.md"
+        "docs/architecture/LANDSCAPE.md",
+        "packages/domain/src/terrainScatter.ts",
+        "packages/domain/src/terrainScatterPlan.ts",
+        "tests/terrain-scatter.test.mjs",
+        "tests/e2e/landscape-scatter.e2e.mjs"
       ],
       "legacyIds": [],
       "steps": [
@@ -3119,14 +3123,20 @@
         },
         {
           "id": "TERRAIN-02-S06",
-          "title": "Streu-Ebene: Natur-Bauteile aus der Werkstatt (EDIT-04) nach Oberflächenstil verteilen; Wegstufen als Treppen/Stufen.",
+          "title": "Streu-Ebene: Natur-Bauteile (eingebaute Bäume, Büsche, Felsen, Pflanzen und eigene Schablonen aus der Werkstatt) nach Oberflächenstil, Hang, Höhe, Ufer und Dichte deterministisch verteilen, von Hand setzen/entfernen, im Geländebauteil für Material, Bauen, Export und Mod.",
+          "done": true
+        },
+        {
+          "id": "TERRAIN-02-S07",
+          "title": "Wegstufen als Treppen/Stufen an den Höhenwechseln eines Wegs.",
           "done": false
         }
       ],
       "acceptance": [
-        "Unbekannte Spalten werden nie verändert; Werkzeuge sind deterministisch; in der Welt ändert sich nichts ohne Bau; Geländebauteil gerät nicht in Konflikt mit geplanten Bauten; Weltkarte und Anlagen zeigen dasselbe geplante Gelände."
+        "Unbekannte Spalten werden nie verändert; Werkzeuge sind deterministisch; in der Welt ändert sich nichts ohne Bau; Geländebauteil gerät nicht in Konflikt mit geplanten Bauten; Weltkarte und Anlagen zeigen dasselbe geplante Gelände.",
+        "Streu-Ebene: gleiche Regeln und gleiches Gelände ergeben dieselben Teile; Teile stehen nie im Wasser, auf Wegen, in Bauten, im Bestand oder ineinander; sie folgen dem geplanten Boden und sind Teil des Geländebauteils."
       ],
-      "next": "Abnahme mit eigener Welt (S05); danach Streu-Ebene mit EDIT-04 (S06).",
+      "next": "Abnahme mit eigener Welt (S05); Wegstufen als Treppen (S07).",
       "blockers": [],
       "evidence": [
         {
@@ -3140,6 +3150,14 @@
         {
           "path": "docs/architecture/LANDSCAPE.md",
           "note": "Datenmodell, Werkzeuge, Übergabe, Grenzen."
+        },
+        {
+          "path": "tests/terrain-scatter.test.mjs",
+          "note": "8 Fälle: Bauteile (Zustände 26.3, dauerhaftes Laub), Determinismus/Dichte/Abstand, Regeln (Stil, Hang, Höhe, Ufer, Wasser, Weg, Bauten, Bestand), Handsetzen/Entfernen, Teile folgen dem Gelände, Blöcke im Geländebauteil, Datei, Schablonen gedreht, Kaktus."
+        },
+        {
+          "path": "tests/e2e/landscape-scatter.e2e.mjs",
+          "note": "Chromium 1400/390 px: Mischung streuen, Ebene ändern, von Hand setzen/entfernen, Rückgängig, 3D, Speichern/Neuladen, Bauteil mit Laub und Stämmen in der Materialliste."
         }
       ],
       "verification": {

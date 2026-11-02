@@ -74,7 +74,12 @@ export { DESIGN_SCHEMA_VERSION, DESIGN_MEDIA_TYPE, NO_WATER, SURFACE_STYLES, BRU
   checkTerrainDesignReference, heightLimits, flatSurvey, designFromSurvey, cloneDesign, encodeDesign, decodeDesign, designFile, designMatchesBase, brushWeight, slopeAt, paintColumn,
   applyBrush, strokePoints, floodWater, pathLine, layPath, autoPaint, gradeFootprints, resetToBase, compareDesign, designPayload, designedSurvey } from './terrainDesign.js';
 export type { DesignBase, TerrainDesign, ProjectTerrainDesignReference, SurfaceStyle, BrushTool, Falloff, Brush, PaintFilter, FloodResult, PathOptions, PathReport, AutoPaintRules,
-  GradeResult, DesignStats, DesignBlocks } from './terrainDesign.js';
+  GradeResult, DesignStats, DesignBlocks, DesignCell } from './terrainDesign.js';
+export { MAX_SCATTER_LAYERS, MAX_SCATTER_ITEMS, EMPTY_SCATTER, checkScatterLayer, checkScatterPlan } from './terrainScatterPlan.js';
+export type { ScatterPartRef, ScatterLayer, ScatterItem, ScatterPlan } from './terrainScatterPlan.js';
+export { SCATTER_NEED_LABEL, SCATTER_GROUP_LABEL, SCATTER_MISS_LABEL, BUILTIN_SCATTER_PARTS, SCATTER_PRESETS, builtinScatterPart, stencilScatterPart, builtinResolver, newScatterLayer,
+  addScatterPreset, groundFits, scatterLayers, clearScatterLayer, putScatterLayer, removeScatterLayer, addScatterItem, removeScatterItems, scatterCells, plannedSurvey, cloneScatter } from './terrainScatter.js';
+export type { ScatterNeed, ScatterGroup, PartCell, ScatterPart, ScatterPartResolver, ScatterLayerInput, ScatterPreset, ScatterMiss, ScatterContext, ScatterRun, ScatterCells } from './terrainScatter.js';
 export { isGroundId, isTreePartId, SURFACE_SKIP_IDS } from './terrain.js';
 export { entranceOf, turnedSide, turnsToFace, facesSide, SIDE_LABEL } from './entrance.js';
 export type { Entrance, Side } from './entrance.js';

@@ -52,3 +52,26 @@
 .landscape-handover li{display:grid;gap:4px}.landscape-handover a{color:var(--mint)}
 @media(max-width:1100px){.landscape-grid{grid-template-columns:1fr}.landscape-side{border-left:0;border-top:1px solid var(--line);padding:12px 0 0}}
 @media(max-width:650px){.landscape{padding:14px 12px}.landscape-tools button{flex:1 1 30%}.landscape-3d{height:320px}}
+/* TERRAIN-02-S06 Streu-Ebene */
+.scatter-dot{stroke:rgba(0,0,0,.55);stroke-width:1;vector-effect:non-scaling-stroke}
+.scatter-baum{fill:#2f8f3a}.scatter-busch{fill:#5fb04a}.scatter-fels{fill:#9aa2a8}.scatter-pflanze{fill:#e8c84a}
+.scatter-dot.active{stroke:#fff}
+.scatter-panel{display:grid;gap:8px}
+.scatter-add{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.scatter-add label{display:flex;gap:6px;align-items:center}
+.scatter-add select{width:auto;max-width:180px}
+.scatter-add button,.scatter-panel>button,.scatter-actions button{border:1px solid var(--line);border-radius:6px;padding:8px 10px;font-size:12px;background:var(--panel-2);color:var(--text)}
+.scatter-actions button.active{border-color:var(--mint);color:var(--mint)}
+.scatter-actions .text-button{background:transparent;border:0}
+.scatter-layers{list-style:none;padding:0;margin:0;display:grid;gap:6px}
+.scatter-layers>li{border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.scatter-layers>li.active{border-color:var(--mint)}
+.scatter-layers summary{cursor:pointer;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.scatter-layers details[open]{display:grid;gap:8px}
+.scatter-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px}
+.scatter-grid label{display:flex;gap:4px;align-items:center;flex-wrap:wrap}
+.scatter-grid input[type=number]{width:62px;border:1px solid var(--line);border-radius:5px;background:var(--panel-2);color:var(--text);padding:6px}
+.scatter-styles{border:0;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:4px}
+.scatter-styles legend{font-size:12px;color:var(--muted);padding:0;margin-bottom:4px}
+.scatter-actions{display:flex;flex-wrap:wrap;gap:6px}
+.scatter-modes{display:inline-flex;gap:6px}

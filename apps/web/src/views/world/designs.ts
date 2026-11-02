@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { cloneDesign, decodeDesign, designedSurvey, designFile, flatSurvey } from '../../../../../packages/domain/src/index.js';
+import { cloneDesign, decodeDesign, designFile, flatSurvey, plannedSurvey } from '../../../../../packages/domain/src/index.js';
 import type { Project, ProjectTerrainDesignReference, ProjectTerrainReference, TerrainDesign, TerrainSurvey } from '../../../../../packages/domain/src/index.js';
 import type { Repository } from '../../app/repository';
 import { errorText } from '../../app/ui';
@@ -39,7 +39,8 @@ export function loadDesignBase(repo: Repository, ref: Pick<ProjectTerrainDesignR
 export function loadPlannedSurvey(repo: Repository, ref: ProjectTerrainDesignReference): Promise<TerrainSurvey> {
   let p = planned.get(ref.sha256);
   if (!p) {
-    p = Promise.all([loadDesignBase(repo, ref), loadDesign(repo, ref)]).then(([base, d]) => designedSurvey(base, d));
+    // Built-in scatter parts (trees, rocks) raise the surface like real vegetation; own Schablonen need the library and are left out here.
+    p = Promise.all([loadDesignBase(repo, ref), loadDesign(repo, ref)]).then(([base, d]) => plannedSurvey(base, d));
     p.catch(() => planned.delete(ref.sha256));
     planned.set(ref.sha256, p);
   }

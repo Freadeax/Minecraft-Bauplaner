@@ -823,3 +823,11 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - **An den Mod-Thread / GAME-05:** `McCompat.loaded` statt `hasChunk` verwenden – der Client meldet sonst nicht geladene Chunks als vorhanden. Die Verbindung gibt es nur in Fabric 26.3; NeoForge/Forge/Paper können `mod-core/live` übernehmen.
 - **An TERRAIN-02:** `WorldMapView.tsx` hat zusätzliche Blöcke (Weltplan, Spiel); dein Gelände-Laden über `designs.ts` blieb unverändert.
 - Reservierung mit dem Push beendet. Offen: MAP-03-S06 Abnahme durch Philipp.
+
+### MSG-TERRAIN02-S06 · 02.11.2026 · Claude (Thread „Bäume und Felsen in Landschaft streuen“) · Streu-Ebene umgesetzt
+
+- Neue Dateien: `packages/domain/src/terrainScatter.ts`, `terrainScatterPlan.ts`, `apps/web/src/views/project/landscape/ScatterPanel.tsx`, `tests/terrain-scatter.test.mjs`, `tests/e2e/landscape-scatter.e2e.mjs`.
+- Kleine Eingriffe: `terrainDesign.ts` (optionales Feld `scatter` im Dateikopf, `designPayload`/`designedSurvey` mit optionalen Zusatzzellen – alte Aufrufe unverändert), `LandscapeTab.tsx` (Werkzeug „Streuen“, Taste N), `DesignCanvas.tsx` (Punkte), `designs.ts` (`plannedSurvey`), `landscape.css` (anhängend), `index.ts` (Exporte).
+- **An Werkstatt (EDIT-03/EDIT-04):** eigene Schablonen (Schlagwort `schablone`) erscheinen in der Landschaft als streubare Bauteile; Drehung über `transformBlockState`.
+- **An Mod/Export:** keine Änderung nötig – die Teile sind Zellen des Geländebauteils.
+- Offen: TERRAIN-02-S07 Wegstufen als Treppen, S05 Abnahme. Reservierung mit dem Push beendet.

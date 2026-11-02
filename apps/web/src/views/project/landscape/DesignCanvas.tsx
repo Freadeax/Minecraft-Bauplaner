@@ -61,6 +61,10 @@ export function renderDesign(ctx: CanvasRenderingContext2D, d: TerrainDesign, ba
   ctx.putImageData(img, 0, 0);
 }
 
+/** A scatter item on the map (TERRAIN-02-S06). */
+export interface ScatterDot { readonly x: number; readonly z: number; readonly group: 'baum' | 'busch' | 'fels' | 'pflanze'; readonly active: boolean }
+const DOT_RADIUS: Readonly<Record<ScatterDot['group'], number>> = { baum: 1.4, busch: 0.9, fels: 1, pflanze: 0.45 };
+
 export interface StrokeHandlers {
   start(x: number, z: number): void;
   move(x: number, z: number): void;
@@ -73,9 +77,9 @@ export interface StrokeHandlers {
  * Draufsicht of a design with pointer painting (mouse, pen, touch). The
  * overlay shows the brush, planned path points and the project's footprint.
  */
-export function DesignCanvas({ design, base, version, mode, handlers, brushRadius, hover, pathPoints, footprint }: {
+export function DesignCanvas({ design, base, version, mode, handlers, brushRadius, hover, pathPoints, footprint, scatter = [] }: {
   design: TerrainDesign; base: TerrainSurvey; version: number; mode: CanvasMode; handlers: StrokeHandlers; brushRadius: number | null;
-  hover: [number, number] | null; pathPoints: readonly (readonly [number, number])[]; footprint: string | null;
+  hover: [number, number] | null; pathPoints: readonly (readonly [number, number])[]; footprint: string | null; scatter?: readonly ScatterDot[];
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
@@ -98,6 +102,8 @@ export function DesignCanvas({ design, base, version, mode, handlers, brushRadiu
       onPointerLeave={() => handlers.leave()} />
     <svg viewBox={`0 0 ${design.width} ${design.length}`} preserveAspectRatio="none" aria-hidden="true">
       {footprint && <path d={footprint} className="landscape-footprint" />}
+      {scatter.length > 0 && <g data-testid="scatter-dots" data-count={scatter.length}>{scatter.map((s, k) =>
+        <circle key={k} cx={s.x - design.minX + 0.5} cy={s.z - design.minZ + 0.5} r={DOT_RADIUS[s.group]} className={`scatter-dot scatter-${s.group}${s.active ? ' active' : ''}`} />)}</g>}
       {pathPoints.length > 0 && <polyline points={line} className="landscape-path" />}
       {pathPoints.map(([x, z], k) => <circle key={k} cx={x - design.minX + 0.5} cy={z - design.minZ + 0.5} r={Math.max(0.8, design.width / 120)} className="landscape-path-point" />)}
       {hover && brushRadius !== null && <circle cx={hover[0] - design.minX + 0.5} cy={hover[1] - design.minZ + 0.5} r={brushRadius + 0.5} className="landscape-brush" />}

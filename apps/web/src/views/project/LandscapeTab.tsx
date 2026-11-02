@@ -3,8 +3,10 @@ import {
   BRUSH_LABEL, DEFAULT_AUTO_PAINT, DESIGN_NOTE, NO_WATER, SAMPLE_PROFILE, SURFACE_STYLES, SURVEY_UNKNOWN, addAssetVersion, applyBrush, autoPaint, cloneDesign, columnBases,
   compareDesign, createAsset, designFromSurvey, designMatchesBase, designPayload, designedSurvey, dimensionLabel, flatSurvey, floodWater, gradeFootprints,
   heightLimits, layPath, newInstance, positionKey, resetToBase, strokePoints, surveyDisplayCells, translateBounds,
+  SCATTER_MISS_LABEL, STENCIL_TAG, addScatterItem, builtinResolver, removeScatterItems, scatterCells, stencilScatterPart,
 } from '../../../../../packages/domain/src/index.js';
-import type { AssetVersionSource, Brush, BrushTool, DesignStats, Falloff, Operation, PathReport, TerrainDesign, TerrainSurvey } from '../../../../../packages/domain/src/index.js';
+import type { AssetVersionSource, Brush, BrushTool, DesignStats, Falloff, Operation, PathReport, ScatterCells, ScatterContext, ScatterGroup, ScatterPart, ScatterPartResolver,
+  TerrainDesign, TerrainSurvey } from '../../../../../packages/domain/src/index.js';
 import { createPayload } from '../../../../../packages/voxel/src/index.js';
 import type { Cell } from '../../../../../packages/voxel/src/index.js';
 import { useApp } from '../../app/context';
@@ -14,14 +16,16 @@ import { Viewer } from '../../Viewer';
 import { loadDesign, loadDesignBase, storeDesign } from '../world/designs';
 import { areaAround, areaLabel, useSurvey } from '../world/surveys';
 import { CANVAS_MODE_LABEL, DesignCanvas } from './landscape/DesignCanvas';
-import type { CanvasMode } from './landscape/DesignCanvas';
+import type { CanvasMode, ScatterDot } from './landscape/DesignCanvas';
+import { ScatterPanel } from './landscape/ScatterPanel';
+import type { StencilOption } from './landscape/ScatterPanel';
 import { isResolved } from './session';
 import type { ProjectSession } from './session';
 import './landscape/landscape.css';
 
-type Tool = BrushTool | 'water' | 'path' | 'pick';
+type Tool = BrushTool | 'water' | 'path' | 'pick' | 'scatter';
 const SHAPE_TOOLS: readonly BrushTool[] = ['raise', 'lower', 'smooth', 'flatten', 'roughen', 'terrace', 'soften'];
-const TOOL_KEYS: Readonly<Record<string, Tool>> = { a: 'raise', s: 'lower', g: 'smooth', e: 'flatten', r: 'roughen', t: 'terrace', h: 'soften', b: 'paint', w: 'water', d: 'drain', p: 'path', i: 'pick' };
+const TOOL_KEYS: Readonly<Record<string, Tool>> = { a: 'raise', s: 'lower', g: 'smooth', e: 'flatten', r: 'roughen', t: 'terrace', h: 'soften', b: 'paint', w: 'water', d: 'drain', p: 'path', i: 'pick', n: 'scatter' };
 const TOOL_HELP: Readonly<Record<Tool, string>> = {
   raise: 'Ziehen hebt das Gelände an, die Kante läuft weich aus.', lower: 'Ziehen senkt das Gelände ab.', smooth: 'Ziehen gleicht Höhen an die Nachbarn an.',
   flatten: 'Ziehen ebnet auf die Zielhöhe ein (leer = Höhe beim Ansetzen).', roughen: 'Ziehen macht das Gelände unruhig (Hügel, Mulden), immer gleich für dieselbe Stelle.',
@@ -29,8 +33,9 @@ const TOOL_HELP: Readonly<Record<Tool, string>> = {
   paint: 'Ziehen bemalt die Oberfläche mit dem Stil, auf Wunsch nur an Hängen oder in Höhenbereichen.', drain: 'Ziehen entfernt Wasser.',
   water: 'Klick füllt Wasser bis zum Wasserspiegel – wie ein Eimer in einer Mulde.', path: 'Klicks setzen Wegpunkte, „Weg legen“ baut den Weg mit höchstens einem Block Steigung je Schritt.',
   pick: 'Klick übernimmt Höhe und Block der Stelle als Zielhöhe und Wasserspiegel.',
+  scatter: 'Setzen: Klick stellt ein Teil der gewählten Streu-Ebene hin. Entfernen: Ziehen nimmt Teile im Pinselkreis weg.',
 };
-const TOOL_LABEL: Readonly<Record<Tool, string>> = { ...BRUSH_LABEL, water: 'Wasser füllen', path: 'Weg', pick: 'Pipette' };
+const TOOL_LABEL: Readonly<Record<Tool, string>> = { ...BRUSH_LABEL, water: 'Wasser füllen', path: 'Weg', pick: 'Pipette', scatter: 'Streuen' };
 const UNDO_LIMIT = 30;
 const short = (id: string) => id.replace(/^minecraft:/, '');
 
@@ -87,6 +92,8 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
   const [note, setNote] = useState('');
   const [busy, setBusy] = useState('');
   const [show3d, setShow3d] = useState(false);
+  const [scatterLayer, setScatterLayer] = useState<string | null>(null);
+  const [scatterMode, setScatterMode] = useState<'add' | 'remove'>('add');
   const stroke = useRef<{ last: [number, number]; changed: number; target: number | undefined } | null>(null);
 
   const design = work?.design ?? null, base = work?.base ?? null;
@@ -127,6 +134,23 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
         setNote(`Übernommen: Höhe Y ${h}, ${short(design.ids[design.top[i]!]!)}. Zielhöhe und Wasserspiegel gesetzt.`);
         return;
       }
+      if (tool === 'scatter') {
+        if (scatterMode === 'add') {
+          const layer = design.scatter?.layers.find(l => l.id === scatterLayer) ?? design.scatter?.layers[0];
+          if (!layer) { setNote('Erst rechts unter „Streu-Ebene“ eine Ebene oder Mischung anlegen.'); return; }
+          snapshot();
+          try {
+            const miss = addScatterItem(design, scatterCtx, layer.id, x, z);
+            if (miss) { undoStack.current.pop(); setNote(`„${layer.label}“ passt hier nicht: ${SCATTER_MISS_LABEL[miss]}.`); return; }
+            setNote(`„${layer.label}“ gesetzt bei X ${x} · Z ${z}.`); bump(); setStatsVersion(v => v + 1);
+          } catch (e) { undoStack.current.pop(); setNote(errorText(e)); }
+          return;
+        }
+        snapshot();
+        stroke.current = { last: [x, z], changed: removeScatterItems(design, x, z, radius), target: undefined };
+        bump();
+        return;
+      }
       if (tool === 'water') {
         const h = heightAt(x, z);
         const level = waterLevel.trim() ? Number(waterLevel) : h + 2;
@@ -148,7 +172,8 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
     move(x: number, z: number) {
       const s = stroke.current;
       if (!design || !s || (x === s.last[0] && z === s.last[1])) return;
-      for (const [px, pz] of strokePoints(s.last[0], s.last[1], x, z, radius)) s.changed += applyBrush(design, px, pz, brush(tool as BrushTool, s.target));
+      for (const [px, pz] of strokePoints(s.last[0], s.last[1], x, z, radius))
+        s.changed += tool === 'scatter' ? removeScatterItems(design, px, pz, radius) : applyBrush(design, px, pz, brush(tool as BrushTool, s.target));
       s.last = [x, z];
       bump();
     },
@@ -156,6 +181,7 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
       const s = stroke.current; stroke.current = null;
       if (!s) return;
       if (!s.changed) undoStack.current.pop();
+      else if (tool === 'scatter') setNote(`${formatNumber(s.changed)} Teile entfernt.`);
       setStatsVersion(v => v + 1);
     },
     hover(x: number, z: number) { setHover([x, z]); },
@@ -194,6 +220,40 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
     return footprint.filter(c => c.x >= design.minX && c.z >= design.minZ && c.x < design.minX + design.width && c.z < design.minZ + design.length)
       .map(c => `M${c.x - design.minX} ${c.z - design.minZ}h1v1h-1z`).join('');
   }, [footprint, design]);
+
+  // ------------------------------------------------------------------ Streu-Ebene
+  // Own Schablonen (library modules tagged „schablone“) can be scattered like the built-in parts.
+  const stencils = useMemo((): StencilOption[] => library.assets.filter(a => !a.archived && a.tags.includes(STENCIL_TAG)).flatMap(a => {
+    const v = library.versions.get(a.versionIds.at(-1) ?? '');
+    return v ? [{ ref: { kind: 'stencil' as const, assetId: a.id, versionId: v.id, label: a.name.slice(0, 120) }, blocks: v.payload.cells.filter(c => c.kind === 'block').length }] : [];
+  }), [library.assets, library.versions]);
+  const resolve = useMemo((): ScatterPartResolver => {
+    const cache = new Map<string, ScatterPart | undefined>();
+    return ref => {
+      if (ref.kind === 'builtin') return builtinResolver(ref);
+      if (cache.has(ref.versionId)) return cache.get(ref.versionId);
+      const v = library.versions.get(ref.versionId);
+      let part: ScatterPart | undefined;
+      try { part = v ? stencilScatterPart(ref, v.payload) : undefined; } catch { part = undefined; }
+      cache.set(ref.versionId, part);
+      return part;
+    };
+  }, [library.versions]);
+  const scatterCtx = useMemo((): ScatterContext => {
+    const o0 = placement?.origin ?? [0, 0, 0];
+    const occupied = new Set((buildingCells ?? []).map(c => `${c.position[0] + o0[0]},${c.position[1] + o0[1]},${c.position[2] + o0[2]}`));
+    return { base: work?.base ?? flatSurvey({ minX: 0, minZ: 0, width: 1, length: 1 }, 0, 'minecraft:overworld'), resolve,
+      buildingColumns: (footprint ?? []).map(c => [c.x, c.z] as const), occupied: (x, y, z) => occupied.has(`${x},${y},${z}`) };
+  }, [work?.base, resolve, footprint, buildingCells, placement]);
+  const scatterInfo = useMemo((): ScatterCells | null => {
+    if (!design || !base || !design.scatter?.items.length) return null;
+    try { return scatterCells(design, scatterCtx); } catch { return null; }
+  }, [design, base, scatterCtx, statsVersion]); // eslint-disable-line react-hooks/exhaustive-deps
+  const scatterDots = useMemo((): ScatterDot[] => {
+    if (!design?.scatter) return [];
+    const groupOf = new Map(design.scatter.layers.map(l => [l.id, { group: resolve(l.part)?.group ?? 'baum' as ScatterGroup, on: l.enabled }] as const));
+    return design.scatter.items.flatMap(it => { const g = groupOf.get(it.layer); return g?.on ? [{ x: it.x, z: it.z, group: g.group, active: it.layer === scatterLayer }] : []; });
+  }, [design, version, resolve, scatterLayer]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ------------------------------------------------------------------ start
   const area = useMemo(() => {
@@ -243,10 +303,11 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
     try {
       const o0 = placement?.origin ?? [0, 0, 0];
       const occupied = new Set((buildingCells ?? []).map(c => `${c.position[0] + o0[0]},${c.position[1] + o0[1]},${c.position[2] + o0[2]}`));
-      const blocks = designPayload(work.base, work.design, project.profileId || SAMPLE_PROFILE, (x, y, z) => occupied.has(`${x},${y},${z}`));
+      const scatter = work.design.scatter?.items.length ? scatterCells(work.design, scatterCtx) : null;
+      const blocks = designPayload(work.base, work.design, project.profileId || SAMPLE_PROFILE, (x, y, z) => occupied.has(`${x},${y},${z}`), scatter?.cells ?? []);
       if (!blocks) { setNote('Noch nichts gestaltet: die Gestaltung entspricht dem Gelände.'); return; }
       const asset = createAsset({ name: `Gelände ${project.name}`.slice(0, 120), tags: ['gelaende', 'landschaft'],
-        description: `Geländegestaltung für „${project.name}“: ${areaLabel(work.design)}, ${formatNumber(blocks.blocks)} Blöcke setzen, ${formatNumber(blocks.air)} Blöcke abtragen (Luft).`,
+        description: `Geländegestaltung für „${project.name}“: ${areaLabel(work.design)}, ${formatNumber(blocks.blocks)} Blöcke setzen, ${formatNumber(blocks.air)} Blöcke abtragen (Luft)${scatter?.placed ? `, davon ${formatNumber(scatter.placed)} gestreute Natur-Bauteile` : ''}.`,
         provenance: { author: '', source: 'Eigene Geländegestaltung im Bauplaner', license: 'eigene Planung' } });
       const o = blocks.origin, size = blocks.payload.bounds.maxExclusive;
       const source: AssetVersionSource = { format: 'terrain-design', localTo: project.id,
@@ -258,7 +319,7 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
       const instance = newInstance({ assetVersionId: r.version.id, name: 'Gelände', transform: { position: [o[0] - origin[0], o[1] - origin[1], o[2] - origin[2]], quarterTurns: 0, mirrorX: false } });
       const ops: Operation[] = [...terrainInstances.map(i => ({ kind: 'instance.remove' as const, instanceId: i.id })), { kind: 'instance.add', instance }];
       const err = session.execute(ops.length === 1 ? ops[0]! : { kind: 'batch', label: 'Gelände ins Projekt übernommen', operations: ops });
-      setNote(err || `Gelände als Bauteil im Projekt: ${formatNumber(blocks.blocks)} Blöcke setzen, ${formatNumber(blocks.air)} abtragen.${blocks.skipped ? ` ${formatNumber(blocks.skipped)} Zellen bleiben den Bauten überlassen.` : ''}${terrainInstances.length ? ' Das frühere Geländebauteil wurde ersetzt.' : ''} Material, Bauen, Export und Mod enthalten es jetzt.`);
+      setNote(err || `Gelände als Bauteil im Projekt: ${formatNumber(blocks.blocks)} Blöcke setzen, ${formatNumber(blocks.air)} abtragen.${scatter?.placed ? ` Mit ${formatNumber(scatter.placed)} Bäumen, Felsen und Pflanzen der Streu-Ebene.` : ''}${blocks.skipped ? ` ${formatNumber(blocks.skipped)} Zellen bleiben den Bauten überlassen.` : ''}${terrainInstances.length ? ' Das frühere Geländebauteil wurde ersetzt.' : ''} Material, Bauen, Export und Mod enthalten es jetzt.`);
     } catch (e) { setNote(`Nicht übernommen: ${errorText(e)}`); } finally { setBusy(''); }
   };
   const runArea = (label: string, fn: (d: TerrainDesign) => string) => {
@@ -282,18 +343,35 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
     try {
       const planned = designedSurvey(base, design);
       const disp = surveyDisplayCells([planned], { maxCells: 400_000, skirt: 3 });
+      const extra = scatterInfo?.cells ?? [];
       if (!disp.count) return null;
       let lo = Infinity;
       for (let k = 0; k < disp.count; k++) lo = Math.min(lo, disp.cells[k * 4 + 1]!);
       let hi = -Infinity;
       for (let k = 0; k < disp.count; k++) hi = Math.max(hi, disp.cells[k * 4 + 1]!);
-      const cells: Cell[] = [];
-      for (let k = 0; k < disp.count; k++) cells.push({ position: [disp.cells[k * 4]! - design.minX, disp.cells[k * 4 + 1]! - lo, disp.cells[k * 4 + 2]! - design.minZ], kind: 'block', paletteIndex: disp.cells[k * 4 + 3]! });
+      for (const c of extra) { lo = Math.min(lo, c.y); hi = Math.max(hi, c.y); }
+      // Terrain columns first, then the scatter parts (they replace a terrain cell at the same place).
+      const at = new Map<string, Cell>();
+      for (let k = 0; k < disp.count; k++) {
+        const position: [number, number, number] = [disp.cells[k * 4]! - design.minX, disp.cells[k * 4 + 1]! - lo, disp.cells[k * 4 + 2]! - design.minZ];
+        at.set(position.join(','), { position, kind: 'block', paletteIndex: disp.cells[k * 4 + 3]! });
+      }
+      const palette = disp.ids.map(id => ({ id, properties: id === 'minecraft:water' ? { level: '0' } : {} as Record<string, string> }));
+      const index = new Map<string, number>();
+      for (const c of extra) {
+        const key = JSON.stringify(c.state ?? c.id);
+        let p = index.get(key);
+        if (p === undefined) { p = palette.length; palette.push(c.state ? { id: c.state.id, properties: { ...c.state.properties } } : { id: c.id, properties: {} }); index.set(key, p); }
+        const position: [number, number, number] = [c.x - design.minX, c.y - lo, c.z - design.minZ];
+        if (position[0] < 0 || position[2] < 0 || position[0] >= design.width || position[2] >= design.length) continue;
+        at.set(position.join(','), { position, kind: 'block', paletteIndex: p });
+      }
+      const cells = [...at.values()];
       const payload = createPayload({ schemaVersion: 1, profileId: SAMPLE_PROFILE, bounds: { min: [0, 0, 0], maxExclusive: [design.width, hi - lo + 1, design.length] }, pivot: [0, 0, 0], sourceOrigin: [design.minX, lo, design.minZ],
-        palette: disp.ids.map(id => ({ id, properties: id === 'minecraft:water' ? { level: '0' } : {} })), cells, blockEntities: [] }, { maxCells: 400_000 });
+        palette, cells, blockEntities: [] }, { maxCells: 600_000 });
       return { payload, cells: payload.cells };
     } catch { return null; }
-  }, [show3d, design, base, statsVersion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [show3d, design, base, statsVersion, scatterInfo]); // eslint-disable-line react-hooks/exhaustive-deps
   const noop = useCallback((_: Cell | null) => {}, []);
 
   // ------------------------------------------------------------------ render
@@ -304,7 +382,7 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
     const g = base.ground[i]!, delta = h - g;
     return `X ${hover[0]} · Z ${hover[1]} · Y ${h}${delta ? ` (${delta > 0 ? '+' : ''}${delta})` : ''} · ${short(design.ids[design.top[i]!]!)}${design.water[i] !== NO_WATER ? ` · Wasser bis Y ${design.water[i]}` : ''}${design.path[i] ? ' · Weg' : ''}`;
   })();
-  const isBrush = tool !== 'water' && tool !== 'path' && tool !== 'pick';
+  const isBrush = tool !== 'water' && tool !== 'path' && tool !== 'pick' && (tool !== 'scatter' || scatterMode === 'remove');
 
   if (!work) return <section className="landscape" aria-label="Landschaft">
     <header className="landscape-head"><div><span className="panel-kicker">LANDSCHAFT GESTALTEN</span><h2>Gelände formen und bemalen</h2>
@@ -348,7 +426,7 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
     <div className="landscape-grid">
       <div className="landscape-main">
         <div className="landscape-tools" role="toolbar" aria-label="Werkzeuge">
-          {([...SHAPE_TOOLS, 'paint', 'water', 'drain', 'path', 'pick'] as Tool[]).map(t =>
+          {([...SHAPE_TOOLS, 'paint', 'water', 'drain', 'path', 'scatter', 'pick'] as Tool[]).map(t =>
             <button key={t} className={tool === t ? 'active' : ''} aria-pressed={tool === t} onClick={() => setTool(t)}
               title={`${TOOL_LABEL[t]} (${Object.entries(TOOL_KEYS).find(([, v]) => v === t)![0].toUpperCase()})`}>{TOOL_LABEL[t]}</button>)}
         </div>
@@ -356,8 +434,8 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
         <div className="landscape-options">
           {isBrush && <>
             <label>Größe <input type="range" min={0} max={32} value={radius} onChange={e => setRadius(Number(e.target.value))} aria-label="Pinselgröße" /> <b>{radius * 2 + 1}</b></label>
-            {tool !== 'paint' && tool !== 'drain' && tool !== 'flatten' && <label>{tool === 'soften' ? 'Höchste Stufe' : tool === 'smooth' ? 'Durchgänge' : 'Stärke'} <input type="number" min={1} max={tool === 'smooth' ? 8 : 16} value={strength} onChange={e => setStrength(Math.max(1, Math.min(16, Math.trunc(Number(e.target.value)) || 1)))} /></label>}
-            {tool !== 'paint' && tool !== 'drain' && <label>Kante <select value={falloff} onChange={e => setFalloff(e.target.value as Falloff)}><option value="soft">weich</option><option value="cone">spitz</option><option value="hard">hart</option></select></label>}
+            {tool !== 'paint' && tool !== 'drain' && tool !== 'flatten' && tool !== 'scatter' && <label>{tool === 'soften' ? 'Höchste Stufe' : tool === 'smooth' ? 'Durchgänge' : 'Stärke'} <input type="number" min={1} max={tool === 'smooth' ? 8 : 16} value={strength} onChange={e => setStrength(Math.max(1, Math.min(16, Math.trunc(Number(e.target.value)) || 1)))} /></label>}
+            {tool !== 'paint' && tool !== 'drain' && tool !== 'scatter' && <label>Kante <select value={falloff} onChange={e => setFalloff(e.target.value as Falloff)}><option value="soft">weich</option><option value="cone">spitz</option><option value="hard">hart</option></select></label>}
           </>}
           {(tool === 'flatten' || tool === 'pick') && <label>Zielhöhe Y <input type="number" placeholder="beim Ansetzen" value={target} onChange={e => setTarget(e.target.value)} /></label>}
           {tool === 'terrace' && <label>Stufenhöhe <input type="number" min={2} max={16} value={step} onChange={e => setStep(Math.max(2, Math.min(16, Math.trunc(Number(e.target.value)) || 4)))} /></label>}
@@ -370,6 +448,16 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
             <span className="landscape-swatches" aria-hidden="true">{styleSwatch(style)}</span>
           </>}
           {(tool === 'water' || tool === 'pick') && <label>Wasserspiegel Y <input type="number" placeholder="Boden + 2" value={waterLevel} onChange={e => setWaterLevel(e.target.value)} aria-label="Wasserspiegel" /></label>}
+          {tool === 'scatter' && <>
+            <span className="scatter-modes" role="radiogroup" aria-label="Streuen">
+              <label className="chip-check"><input type="radio" name="scatter-mode" checked={scatterMode === 'add'} onChange={() => setScatterMode('add')} /> Setzen</label>
+              <label className="chip-check"><input type="radio" name="scatter-mode" checked={scatterMode === 'remove'} onChange={() => setScatterMode('remove')} /> Entfernen</label>
+            </span>
+            {scatterMode === 'add' && (d.scatter?.layers.length
+              ? <label>Ebene <select value={scatterLayer ?? d.scatter.layers[0]!.id} onChange={e => setScatterLayer(e.target.value)} aria-label="Streu-Ebene zum Setzen">
+                {d.scatter.layers.map(l => <option key={l.id} value={l.id}>{l.label}</option>)}</select></label>
+              : <span className="muted">Erst rechts eine Streu-Ebene anlegen.</span>)}
+          </>}
           {tool === 'path' && <>
             <label>Belag <select value={pathStyle} onChange={e => setPathStyle(e.target.value)} aria-label="Wegbelag">{SURFACE_STYLES.filter(s => s.path).map(s => <option key={s.id} value={s.id}>{s.label}</option>)}</select></label>
             <label>Breite <input type="number" min={1} max={9} value={pathWidth} onChange={e => setPathWidth(Math.max(1, Math.min(9, Math.trunc(Number(e.target.value)) || 1)))} aria-label="Wegbreite" /></label>
@@ -385,8 +473,8 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
             <label className="chip-check"><input type="checkbox" checked={show3d} onChange={e => setShow3d(e.target.checked)} /> 3D-Vorschau</label>
           </div>
           <DesignCanvas design={d} base={work.base} version={version} mode={mode} handlers={handlers} brushRadius={isBrush ? radius : null}
-            hover={hover} pathPoints={pathPoints} footprint={footprintPath} />
-          <p className="landscape-hover" aria-live="polite" data-testid="landscape-hover">{hoverInfo ?? 'Zeiger über die Karte bewegen: Höhe und Block erscheinen hier. Tasten: A/S/G/E/R/T/H formen, B malen, W Wasser, D trocknen, P Weg, I Pipette, +/− Größe.'}</p>
+            hover={hover} pathPoints={pathPoints} footprint={footprintPath} scatter={scatterDots} />
+          <p className="landscape-hover" aria-live="polite" data-testid="landscape-hover">{hoverInfo ?? 'Zeiger über die Karte bewegen: Höhe und Block erscheinen hier. Tasten: A/S/G/E/R/T/H formen, B malen, W Wasser, D trocknen, P Weg, N Streuen, I Pipette, +/− Größe.'}</p>
           {show3d && <div className="landscape-3d build-3d">{preview3d ? <Viewer payload={preview3d.payload} cells={preview3d.cells} onSelect={noop} /> : <p className="muted">3D-Vorschau nicht verfügbar (zu groß).</p>}</div>}
         </div>
         {note && <div className="notice" role="status" data-testid="landscape-note">{note}</div>}
@@ -436,10 +524,14 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
           <button onClick={() => runArea('Zurücksetzen', x => { resetToBase(x, work.base); return 'Auf die Grundlage zurückgesetzt.'; })}>Alles zurücksetzen</button>
         </details>
 
+        <h3>Streu-Ebene</h3>
+        <ScatterPanel design={d} ctx={scatterCtx} resolve={resolve} stencils={stencils} info={scatterInfo} active={scatterLayer}
+          onActive={id => { setScatterLayer(id); if (id) { setTool('scatter'); setScatterMode('add'); } }} run={runArea} />
+
         <h3>Übergabe</h3>
         <ul className="landscape-handover">
-          <li><button className="secondary" disabled={!!busy || !stats?.changed} onClick={() => void toProject()}>{terrainInstances.length ? 'Geländebauteil im Projekt erneuern' : 'Als Bauteil ins Projekt übernehmen'}</button>
-            <small className="muted">Setzt die Blöcke (mit Luft zum Abtragen) als Bauteil an die Weltlage. Danach zählen Material, Bauen, Export und die Mod das Gelände mit.</small></li>
+          <li><button className="secondary" disabled={!!busy || (!stats?.changed && !scatterInfo?.placed)} onClick={() => void toProject()}>{terrainInstances.length ? 'Geländebauteil im Projekt erneuern' : 'Als Bauteil ins Projekt übernehmen'}</button>
+            <small className="muted">Setzt die Blöcke (mit Luft zum Abtragen) samt Streu-Ebene als Bauteil an die Weltlage. Danach zählen Material, Bauen, Export und die Mod Gelände, Bäume und Felsen mit.</small></li>
           <li><a href={`#/karte?projekt=${encodeURIComponent(project.id)}`}>Auf der Weltkarte ansehen</a> <small className="muted">nach dem Speichern als geplantes Gelände</small></li>
           <li><a href={`#/bibliothek/anlagen?ziel=${encodeURIComponent(project.id)}`}>Anlage auf diesem Gelände planen</a> <small className="muted">Terrassen und flachster Platz rechnen mit dem geplanten Gelände</small></li>
         </ul>
