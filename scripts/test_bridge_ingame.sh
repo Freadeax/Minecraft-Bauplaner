@@ -7,6 +7,8 @@
 # not work: Minecraft 26.3 asks for an sRGB-capable GL visual that Xvfb's GLX does not offer.
 # Optional: BAUPLANER_MODPACK_MODS=<mods folder of a Fabric instance> runs the same test as a production
 # start with the built .jar plus every mod of that folder (compatibility with a real modpack).
+# Optional: BAUPLANER_SHADERPACK=<shaderpack .zip> (with BAUPLANER_MODPACK_MODS containing Iris) runs the
+# modpack test with that shaderpack switched on, so the hologram is checked under shaders too.
 # Optional: BAUPLANER_KEEP=<dir> keeps the work folder (game.log, hologramm.png, menue.png, scan) there.
 # Not part of `npm run check` (several minutes, large downloads on the first run).
 set -euo pipefail
@@ -27,6 +29,16 @@ if [ -z "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]; then
 fi
 gradle_args=(-PwithFabric :fabric-26.3:runClientGameTest)
 [ -n "${BAUPLANER_MODPACK_MODS:-}" ] && gradle_args=(-PwithFabric "-PmodpackMods=$BAUPLANER_MODPACK_MODS" :fabric-26.3:runModpackGameTest)
+modpack_run=mods/bauplaner-bridge/fabric-26.3/build/run/modpackGameTest
+if [ -n "${BAUPLANER_MODPACK_MODS:-}" ]; then
+  mkdir -p "$modpack_run/config" "$modpack_run/shaderpacks"
+  if [ -n "${BAUPLANER_SHADERPACK:-}" ]; then
+    cp "$BAUPLANER_SHADERPACK" "$modpack_run/shaderpacks/"
+    printf 'enableShaders=true\nshaderPack=%s\n' "$(basename "$BAUPLANER_SHADERPACK")" >"$modpack_run/config/iris.properties"
+  else
+    printf 'enableShaders=false\n' >"$modpack_run/config/iris.properties"
+  fi
+fi
 # Some modpack mods keep the game process alive after the test closed the world, so the test counts
 # as finished once the game test has handed back its results (state.properties is written last).
 (cd mods/bauplaner-bridge && BAUPLANER_GAMETEST_DIR="$work" exec ./gradlew -q "${gradle_args[@]}" --console=plain) >"$work/game.log" 2>&1 &

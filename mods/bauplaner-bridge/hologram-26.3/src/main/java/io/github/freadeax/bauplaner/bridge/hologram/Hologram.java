@@ -1,4 +1,4 @@
-package io.github.freadeax.bauplaner.bridge.fabric;
+package io.github.freadeax.bauplaner.bridge.hologram;
 
 import io.github.freadeax.bauplaner.mod.BlockRules.Verdict;
 import io.github.freadeax.bauplaner.mod.LiveCheck;
@@ -18,9 +18,9 @@ import net.minecraft.core.BlockPos;
  * running comparison with the world. Lives only on this computer (see {@link PlacementStore}); nothing
  * is ever sent to the server and the world is never changed.
  */
-final class Hologram {
+public final class Hologram {
     /** Planned blocks re-read per client tick (about 160 000 per second). */
-    static final int SWEEP_PER_TICK = 8_000;
+    public static final int SWEEP_PER_TICK = 8_000;
 
     private final Path root;
     private final PlacementStore store;
@@ -32,7 +32,7 @@ final class Hologram {
     /** Error finder: index of the highlighted block, -1 when off. */
     private int target = -1;
     /** Layer mode: all layers, only one layer, or everything up to a layer (world height {@link #layerY}). */
-    enum Layers { ALL, ONE, BELOW }
+    public enum Layers { ALL, ONE, BELOW }
     private Layers layers = Layers.ALL;
     private int layerY;
     /** Missing blocks as see-through textured blocks (true) or as blue boxes. */
@@ -46,24 +46,24 @@ final class Hologram {
         loadSettings();
     }
 
-    Path plansDir() { return root.resolve("plans"); }
-    LiveCheck check() { return check; }
-    PlanModel plan() { return plan; }
-    String planFile() { return planFile; }
-    boolean active() { return check != null; }
-    boolean visible() { return visible && check != null; }
-    int target() { return check == null || target >= check.size() ? -1 : target; }
-    Layers layers() { return layers; }
-    int layerY() { return layerY; }
-    boolean textured() { return textured; }
-    io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard guard() { return guard; }
-    void setGuard(io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard g) { guard = g; saveSettings(); }
+    public Path plansDir() { return root.resolve("plans"); }
+    public LiveCheck check() { return check; }
+    public PlanModel plan() { return plan; }
+    public String planFile() { return planFile; }
+    public boolean active() { return check != null; }
+    public boolean visible() { return visible && check != null; }
+    public int target() { return check == null || target >= check.size() ? -1 : target; }
+    public Layers layers() { return layers; }
+    public int layerY() { return layerY; }
+    public boolean textured() { return textured; }
+    public io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard guard() { return guard; }
+    public void setGuard(io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard g) { guard = g; saveSettings(); }
     /** Lowest and highest world height currently shown. */
-    int minY() { return layers == Layers.ONE ? layerY : Integer.MIN_VALUE; }
-    int maxY() { return layers == Layers.ALL ? Integer.MAX_VALUE : layerY; }
+    public int minY() { return layers == Layers.ONE ? layerY : Integer.MIN_VALUE; }
+    public int maxY() { return layers == Layers.ALL ? Integer.MAX_VALUE : layerY; }
 
     /** Next layer mode: all → one layer → up to the layer → all. Starts at the lowest layer that still has work. */
-    void cycleLayers() {
+    public void cycleLayers() {
         if (check == null) return;
         layers = Layers.values()[(layers.ordinal() + 1) % Layers.values().length];
         if (layers == Layers.ONE) layerY = firstOpenLayer();
@@ -71,10 +71,10 @@ final class Hologram {
         saveSettings();
     }
 
-    void setLayers(Layers mode, int y) { layers = mode; layerY = y; target = -1; saveSettings(); }
+    public void setLayers(Layers mode, int y) { layers = mode; layerY = y; target = -1; saveSettings(); }
 
     /** One layer up or down, inside the plan box. */
-    void stepLayer(int dy) {
+    public void stepLayer(int dy) {
         if (check == null) return;
         if (layers == Layers.ALL) { layers = Layers.ONE; layerY = firstOpenLayer(); }
         else {
@@ -85,7 +85,7 @@ final class Hologram {
         saveSettings();
     }
 
-    void toggleTextured() { textured = !textured; saveSettings(); }
+    public void toggleTextured() { textured = !textured; saveSettings(); }
 
     /** Lowest world height with missing, wrong or misaligned blocks; the bottom of the box when everything is done. */
     private int firstOpenLayer() {
@@ -116,7 +116,7 @@ final class Hologram {
         } catch (IOException ignored) { }
     }
 
-    List<String> planFiles() {
+    public List<String> planFiles() {
         try (Stream<Path> files = Files.list(plansDir())) {
             return files.map(p -> p.getFileName().toString()).filter(n -> n.endsWith(".schem")).sorted(String.CASE_INSENSITIVE_ORDER).toList();
         } catch (IOException e) {
@@ -125,7 +125,7 @@ final class Hologram {
     }
 
     /** World joined: restore what was placed here last time. Returns a message for the player or null. */
-    String join(Minecraft mc) {
+    public String join(Minecraft mc) {
         clearState();
         worldKey = McCompat.worldKey(mc);
         try {
@@ -143,12 +143,12 @@ final class Hologram {
         }
     }
 
-    void leave() { clearState(); worldKey = null; }
+    public void leave() { clearState(); worldKey = null; }
 
     private void clearState() { plan = null; planFile = null; check = null; target = -1; visible = true; layers = Layers.ALL; }
 
     /** Load a plan and place its project origin on {@code anchor} (keeps turn and mirror of the current placement). */
-    String place(Minecraft mc, String file, BlockPos anchor) throws IOException {
+    public String place(Minecraft mc, String file, BlockPos anchor) throws IOException {
         PlanModel p = PlanModel.read(plansDir().resolve(file));
         Placement old = check == null ? null : check.placement();
         Placement at = new Placement(McCompat.dimension(mc.level), anchor.getX(), anchor.getY(), anchor.getZ(),
@@ -161,7 +161,7 @@ final class Hologram {
     }
 
     /** Live link (MAP-03): load a plan file and place it exactly as the website asks (dimension, anchor, turn, mirror). */
-    String placeExact(String file, Placement at) throws IOException {
+    public String placeExact(String file, Placement at) throws IOException {
         PlanModel p = PlanModel.read(plansDir().resolve(file));
         plan = p;
         planFile = file;
@@ -171,27 +171,27 @@ final class Hologram {
     }
 
     /** Live link: move the current plan to an exact placement. */
-    boolean setPlacement(Placement at) {
+    public boolean setPlacement(Placement at) {
         if (check == null) return false;
         apply(at);
         return true;
     }
 
-    String worldKey() { return worldKey; }
+    public String worldKey() { return worldKey; }
 
-    void move(int dx, int dy, int dz) { if (check != null) { layerY += dy; apply(check.placement().moved(dx, dy, dz)); } }
-    void moveTo(BlockPos pos) { if (check != null) { Placement p = check.placement(); apply(new Placement(p.dimension(), pos.getX(), pos.getY(), pos.getZ(), p.turns(), p.mirror())); } }
-    void turn(int quarterTurns) { if (check != null) apply(check.placement().turned(quarterTurns)); }
-    void mirror() { if (check != null) apply(check.placement().mirrored()); }
+    public void move(int dx, int dy, int dz) { if (check != null) { layerY += dy; apply(check.placement().moved(dx, dy, dz)); } }
+    public void moveTo(BlockPos pos) { if (check != null) { Placement p = check.placement(); apply(new Placement(p.dimension(), pos.getX(), pos.getY(), pos.getZ(), p.turns(), p.mirror())); } }
+    public void turn(int quarterTurns) { if (check != null) apply(check.placement().turned(quarterTurns)); }
+    public void mirror() { if (check != null) apply(check.placement().mirrored()); }
 
-    void toggleVisible() {
+    public void toggleVisible() {
         if (check == null) return;
         visible = !visible;
         save();
     }
 
     /** Remove the plan from this world (the plan file stays). */
-    void remove() {
+    public void remove() {
         clearState();
         if (worldKey != null) try { store.remove(worldKey); } catch (IOException ignored) { }
     }
@@ -212,21 +212,21 @@ final class Hologram {
     }
 
     /** Compare a slice of the planned blocks with the world. Only in the plan's dimension. */
-    void tick(Minecraft mc) {
+    public void tick(Minecraft mc) {
         if (check == null || mc.level == null) return;
         if (!McCompat.dimension(mc.level).equals(check.placement().dimension())) return;
         check.sweep(McCompat.liveReader(mc.level), SWEEP_PER_TICK);
         if (target >= 0 && check.verdict(target) == Verdict.OK) target = -1;
     }
 
-    void chunkUnloaded(int cx, int cz) { if (check != null) check.forgetChunk(cx, cz); }
+    public void chunkUnloaded(int cx, int cz) { if (check != null) check.forgetChunk(cx, cz); }
 
     /** Error finder: highlight the nearest wrong/missing block. Returns the index or -1. */
-    int findNext(double x, double y, double z) {
+    public int findNext(double x, double y, double z) {
         if (check == null) return -1;
         target = check.nearestProblem(x, y, z, minY(), maxY());
         return target;
     }
 
-    void clearTarget() { target = -1; }
+    public void clearTarget() { target = -1; }
 }

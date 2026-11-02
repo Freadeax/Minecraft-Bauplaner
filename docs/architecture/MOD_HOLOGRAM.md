@@ -1,11 +1,11 @@
 # Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (GAME-07)
 
-Stand 02.11.2026 · Stufe 1 „Fundament + Hologramm“ (0.2.0, Wahl Philipp) Stufe 2 „Texturen, Material, Ebenen“ (0.3.0) und Stufe 3 „Platzierhilfe“ (0.4.0). Nur Fabric 26.3; die bisherige Aufnahme (`/bauplaner scan`, [MOD_BRIDGE](MOD_BRIDGE.md)) bleibt unverändert erhalten.
+Stand 02.11.2026 · Stufe 1 „Fundament + Hologramm“ (0.2.0, Wahl Philipp) Stufe 2 „Texturen, Material, Ebenen“ (0.3.0) und Stufe 3 „Platzierhilfe“ (0.4.0) und Stufe 4 „NeoForge, Shader, andere Mods“ (0.6.0). Fabric 26.3 und NeoForge 26.3 mit demselben Client-Kern; die bisherige Aufnahme (`/bauplaner scan`, [MOD_BRIDGE](MOD_BRIDGE.md)) bleibt unverändert erhalten.
 
 ## Grundsätze
 
 - **Reiner Client.** Kein zusätzliches oder verändertes Paket an den Server (die Platzierhilfe lässt einen normalen Klick durch oder verwirft ihn vorher, und wählt höchstens einen Schnellleistenplatz wie eine Zifferntaste), keine Weltänderung, kein automatisches Bauen („Printer“), kein Teleport. Funktioniert damit auf jedem Server, auch ohne Plugin und ohne Rechte.
-- **Keine Abhängigkeiten** außer Fabric API: kein WorldEdit, kein Litematica, keine eigenen Shader. Gezeichnet wird mit Vanilla-Rendertypen (`debugQuads`, `lines`) über `LevelRenderEvents.COLLECT_SUBMITS`, damit Sodium und Iris nichts ersetzen müssen.
+- **Keine Abhängigkeiten** außer Fabric API bzw. NeoForge: kein WorldEdit, kein Litematica, keine eigenen Shader. Gezeichnet wird mit Vanilla-Rendertypen (`debugQuads`, `lines`) über `LevelRenderEvents.COLLECT_SUBMITS` (Fabric) bzw. `SubmitCustomGeometryEvent` (NeoForge), damit Sodium und Iris nichts ersetzen müssen.
 - **Eine Wahrheit für den Vergleich.** `BlockRules.compare` ist eine Portierung von `compareBlock`/`ignoredProperties` aus `packages/domain/src/gameCheck.ts`: Ergebnis im Spiel = Ergebnis der Website.
 
 ## Aufbau
@@ -14,7 +14,8 @@ Stand 02.11.2026 · Stufe 1 „Fundament + Hologramm“ (0.2.0, Wahl Philipp) St
 |---|---|
 | `mod-core/` (Java 21, ohne Minecraft) | `BlockState` (Text `id[k=v]`, sortiert), `BlockRules` (OK/STATE/MISSING/WRONG/UNKNOWN), `Placement` (Anker, Viertel­drehungen im Uhrzeigersinn, Spiegelung der x-Achse vor dem Drehen; Positionen und Zustände: facing, axis, rotation 0–15, Schienenformen, Jigsaw-Ausrichtung, Seiten-Eigenschaften, Tür-Scharnier, Treppenform, Kistentyp), `PlanModel` (liest die exportierte `.schem` inkl. `Metadata.Bauplaner.ProjectMin`), `LiveCheck` (Urteil je Planblock, Chunk-Index, Runden-Abgleich, nächster Fehler), `PlacementStore` (`bauplaner/platzierung.properties` je Server/Welt). 7 JUnit-Tests |
 | `mod-core/.../Materials.java` | Materialliste: je Block offen/gesamt; Türen, hohe Pflanzen und Betten zählen einmal, Doppelstufen zwei Stufen; optional nur bestimmte Höhen (Ebenen) |
-| `fabric-26.3/.../Hologram*.java`, `PlanScreen.java`, `MaterialScreen.java`, `GhostModels.java` | Zustand der Platzierung, Menü, Materialliste, Tasten, Befehle, HUD, Zeichnen, Blockmodelle der Geisterblöcke |
+| `hologram-26.3/` (nur Vanilla-Klassen, von Fabric und NeoForge als Quellordner eingebunden) | `HologramClient` (Fassade: Tick, Zeichnen, HUD, Tasten, Befehle, Klicks, Welt betreten/verlassen), `Hologram*.java`, `PlanScreen`, `MaterialScreen`, `GhostModels`, `PlacementAssist`, `McCompat`, Sprachdateien |
+| `fabric-26.3/.../BridgeClient.java`, `neoforge-26.3/.../BridgeNeoForge.java` | nur die Verdrahtung mit den Ereignissen des Loaders; sonst kein eigener Code je Loader |
 
 ## Bedienung
 
@@ -48,7 +49,8 @@ Jeder Tick prüft 8 000 Planblöcke reihum (`LiveCheck.sweep`, ca. 160 000/s), n
 ## Prüfung
 
 - `./gradlew :mod-core:test` (9 Tests: Platzierhilfe-Urteil und Wegauswahl, Materialliste und Ebenen, Zustände, Regeln wie Website, Drehen/Spiegeln von Positionen und Zuständen inkl. Rückweg, Planlesen, Live-Abgleich, Speicher).
-- `scripts/test_bridge_ingame.sh` spielt nach der Aufnahme das Hologramm durch: platzieren am angeschauten Block, Fortschritt genau „fehlt 1 · falsch 1“, Fehlerfinder zeigt den Diamantblock, Server setzt den fehlenden Block → ohne Befehl „fehlt 0“, gedreht passt der Plan nicht mehr, zurückgedreht wieder wie vorher, Platzierung gespeichert, Taste J öffnet das Menü; Materialliste „1 × Bruchstein“, Fehlerfinder bleibt in der gewählten Ebene, nach Teilabriss erscheinen die Mauerblöcke als texturierte Geister und in der Materialliste, Num 7 öffnet die Materialliste; Platzierhilfe über den echten Klickweg (`MultiPlayerGameMode.useItemOn`): Bruchstein statt Eichenstamm wird nicht gesetzt und der Stamm aus der Schnellleiste genommen, seitlich angeklickter Stamm wird nicht gesetzt und der Hinweis nennt „auf den Block darunter klicken“, so geklickt steht er aufrecht, Abbauen ist geschützt, nach „warnen“ möglich; Bildschirmfotos `hologramm.png`, `menue.png`, `geister.png`, `material.png`, `platzierhilfe.png` (mit `BAUPLANER_KEEP=<ordner>`).
+- `scripts/test_bridge_ingame.sh` spielt nach der Aufnahme das Hologramm durch: platzieren am angeschauten Block, Fortschritt genau „fehlt 1 · falsch 1“, Fehlerfinder zeigt den Diamantblock, Server setzt den fehlenden Block → ohne Befehl „fehlt 0“, gedreht passt der Plan nicht mehr, zurückgedreht wieder wie vorher, Platzierung gespeichert, Taste J öffnet das Menü; Materialliste „1 × Bruchstein“, Fehlerfinder bleibt in der gewählten Ebene, nach Teilabriss erscheinen die Mauerblöcke als texturierte Geister und in der Materialliste, Num 7 öffnet die Materialliste; Platzierhilfe über den echten Klickweg (`MultiPlayerGameMode.useItemOn`): Bruchstein statt Eichenstamm wird nicht gesetzt und der Stamm aus der Schnellleiste genommen, seitlich angeklickter Stamm wird nicht gesetzt und der Hinweis nennt „auf den Block darunter klicken“, so geklickt steht er aufrecht, Abbauen ist geschützt, nach „warnen“ möglich; Bildschirmfotos `hologramm.png`, `menue.png`, `geister.png`, `material.png`, `platzierhilfe.png` (mit `BAUPLANER_KEEP=<ordner>`). Mit `BAUPLANER_MODPACK_MODS` und `BAUPLANER_SHADERPACK` dasselbe mit Philipps Mods und Complementary-Shader.
+- `scripts/test_bridge_ingame_forge.sh neoforge` spielt dieselben Schritte im echten NeoForge-Client (`HologramScenario`): Fortschritt, Fehlerfinder, Drehen, Materialliste, Ebenen, J und Num 7, Platzierhilfe über `Minecraft.startUseItem`/`startAttack` mit dem Fadenkreuzziel; ob die Mod den Klick verworfen hat, hält ein Ereignis-Hörer mit niedrigster Priorität fest. Geprüft wird mit demselben `bridge_gametest.mjs verify`.
 
 ## Ebenen und Materialliste (0.3.0)
 
@@ -68,6 +70,13 @@ Vorbild ist Litematicas „Easy Place“, aber serverkonform: Easy Place veränd
 - **Modi:** an / nur warnen / aus, im Menü J, mit `/bauplaner platzierhilfe an|warnen|aus` oder einer frei belegbaren Taste (Standard: keine, alle Nummernblocktasten in der Nähe sind im Modpack belegt). Num 8 nimmt den Planblock in die Hand (nur Schnellleiste; Inventarverschiebungen werden bewusst nicht ausgelöst).
 - Jede Meldung steht einmal im `latest.log` als `[Platzierhilfe] …` (für Fehlerberichte und den Spieltest).
 
+## NeoForge, Shader und andere Mods (0.6.0)
+
+- **Ein Client-Kern für beide Loader.** Alles außer der Verdrahtung liegt in `hologram-26.3`. NeoForge nutzt `RegisterKeyMappingsEvent`, `RegisterGuiLayersEvent`, `RegisterClientCommandsEvent`, `ClientTickEvent.Post`, `SubmitCustomGeometryEvent`, `ClientPlayerNetworkEvent` und `ChunkEvent.Unload`. Die Platzierhilfe hängt an `InputEvent.InteractionKeyMappingTriggered`: Das Ereignis kommt in `Minecraft.startUseItem`/`startAttack`/`continueAttack`, bevor `MultiPlayerGameMode` etwas sendet; abgebrochen (ohne Armschwung) gibt es keinen Klick und kein Paket.
+- **Shader (Iris, z. B. Complementary Unbound).** Hologramm, Rahmen und Fehlerfinder bleiben sichtbar. Weil die durchscheinenden Geisterblöcke mit Shader-Licht fast wie echte Blöcke aussehen, bekommt jeder texturierte Geist bei aktivem Shaderpaket zusätzlich eine blaue Tönung und hellblaue Kanten (`McCompat.shadersActive`, über `IrisApi` per Reflexion, ohne Abhängigkeit). Getestet mit `BAUPLANER_SHADERPACK=<zip>` in `scripts/test_bridge_ingame.sh`.
+- **Tool Switcher.** Die Fabric-Klickhaken laufen in einer eigenen Phase `bauplaner_bridge:platzierhilfe` vor der Standardphase. Ein Klick, den die Platzierhilfe verwirft (z. B. Abbauschutz), erreicht Tool Switcher nicht mehr, das Werkzeug wird also nicht unnötig gewechselt.
+- **Tasten.** „Ebene tiefer“ liegt seit 0.5.0 auf Num * statt Num 3 (Jade belegt Num 0–5).
+
 ## Nächste Stufen
 
-Bauabschnitte aus der Website (BUILD-06) als Filter, Shulker-Inhalte in der Materialliste, Sicht durch Blöcke (Röntgen) für verdeckte Fehler, NeoForge-Port über `mod-core`.
+Bauabschnitte aus der Website (BUILD-06) als Filter, Shulker-Inhalte in der Materialliste, Sicht durch Blöcke (Röntgen) für verdeckte Fehler.

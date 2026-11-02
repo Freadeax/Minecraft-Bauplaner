@@ -1,4 +1,4 @@
-package io.github.freadeax.bauplaner.bridge.fabric;
+package io.github.freadeax.bauplaner.bridge.hologram;
 
 import io.github.freadeax.bauplaner.mod.Materials;
 import java.util.List;
@@ -17,7 +17,7 @@ import net.minecraft.world.item.Items;
  * Material list of the placed plan (or the shown layers): per block how many are still open, how many
  * are in the player's inventory and how many still have to be fetched. Only reads the own inventory.
  */
-final class MaterialScreen extends Screen {
+public final class MaterialScreen extends Screen {
     private static final int ROWS = 12;
     private final Hologram hologram;
     private final Screen parent;

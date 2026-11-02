@@ -1,4 +1,4 @@
-package io.github.freadeax.bauplaner.bridge.fabric;
+package io.github.freadeax.bauplaner.bridge.hologram;
 
 import io.github.freadeax.bauplaner.bridge.BlockSource;
 import net.minecraft.SharedConstants;
@@ -12,17 +12,17 @@ import net.minecraft.network.chat.Component;
  * Every Minecraft-version-specific call of the adapter in one place. Porting to another
  * Minecraft version means adjusting this class (and the build properties), nothing else.
  */
-final class McCompat {
+public final class McCompat {
     private McCompat() {}
 
-    static String gameVersion() { return SharedConstants.getCurrentVersion().name(); }
+    public static String gameVersion() { return SharedConstants.getCurrentVersion().name(); }
 
-    static int dataVersion() { return SharedConstants.getCurrentVersion().dataVersion().version(); }
+    public static int dataVersion() { return SharedConstants.getCurrentVersion().dataVersion().version(); }
 
-    static String dimension(ClientLevel level) { return level.dimension().identifier().toString(); }
+    public static String dimension(ClientLevel level) { return level.dimension().identifier().toString(); }
 
     /** Server address in multiplayer, world name in singleplayer: the key for the stored anchor. */
-    static String worldKey(Minecraft mc) {
+    public static String worldKey(Minecraft mc) {
         if (mc.getCurrentServer() != null) return "server:" + mc.getCurrentServer().ip;
         if (mc.getSingleplayerServer() != null) return "welt:" + mc.getSingleplayerServer().getWorldData().getLevelName();
         return "unbekannt";
@@ -32,14 +32,14 @@ final class McCompat {
      * Whether the client really holds this chunk. {@code hasChunk} is not enough: the client answers
      * unknown chunks with an empty placeholder chunk (found by the MAP-03 game test).
      */
-    static boolean loaded(net.minecraft.world.level.Level level, int cx, int cz) {
+    public static boolean loaded(net.minecraft.world.level.Level level, int cx, int cz) {
         if (!(level instanceof ClientLevel client)) return level.hasChunk(cx, cz);
         net.minecraft.world.level.chunk.LevelChunk c = client.getChunkSource().getChunk(cx, cz, net.minecraft.world.level.chunk.status.ChunkStatus.FULL, false);
         return c != null && !c.isEmpty();
     }
 
     /** Read-only view on the blocks the client has loaded. Unloaded chunks are reported, never guessed. */
-    static BlockSource clientBlocks(ClientLevel level) {
+    public static BlockSource clientBlocks(ClientLevel level) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         return (x, y, z) -> {
             if (level.isOutsideBuildHeight(y)) return "minecraft:air";
@@ -52,7 +52,7 @@ final class McCompat {
     private static final java.util.Map<net.minecraft.world.level.block.state.BlockState, io.github.freadeax.bauplaner.mod.BlockState> STATES = new java.util.IdentityHashMap<>();
 
     /** Read-only reader for the live check; {@code null} for blocks in chunks that are not loaded. */
-    static io.github.freadeax.bauplaner.mod.LiveCheck.WorldReader liveReader(ClientLevel level) {
+    public static io.github.freadeax.bauplaner.mod.LiveCheck.WorldReader liveReader(ClientLevel level) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         return (x, y, z) -> {
             if (level.isOutsideBuildHeight(y)) return io.github.freadeax.bauplaner.mod.BlockState.AIR;
@@ -61,12 +61,12 @@ final class McCompat {
         };
     }
 
-    static io.github.freadeax.bauplaner.mod.BlockState modState(net.minecraft.world.level.block.state.BlockState state) {
+    public static io.github.freadeax.bauplaner.mod.BlockState modState(net.minecraft.world.level.block.state.BlockState state) {
         return STATES.computeIfAbsent(state, s -> io.github.freadeax.bauplaner.mod.BlockState.parse(BlockStateParser.serialize(s)));
     }
 
     /** Display name of a block in the player's language ("Eichenholztreppe"); the id for unknown blocks. */
-    static String blockName(io.github.freadeax.bauplaner.mod.BlockState state) {
+    public static String blockName(io.github.freadeax.bauplaner.mod.BlockState state) {
         if (state == null) return "?";
         var id = net.minecraft.resources.Identifier.tryParse(state.id());
         if (id == null) return state.id();
@@ -74,14 +74,34 @@ final class McCompat {
     }
 
     /** Block the player looks at (crosshair), or the block below the player's feet. */
-    static BlockPos targetBlock(Minecraft mc) {
+    public static BlockPos targetBlock(Minecraft mc) {
         if (mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult hit && hit.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK) return hit.getBlockPos();
         return mc.player.blockPosition().below();
     }
 
+    private static long shadersCheckedAt;
+    private static boolean shaders;
+
+    /**
+     * Whether an Iris shader pack is in use (Iris is optional; looked up by name, at most every half second).
+     * Shader packs relight the textured ghosts, so the renderer adds a tint and edges then.
+     */
+    public static boolean shadersActive() {
+        long now = System.nanoTime();
+        if (now - shadersCheckedAt < 500_000_000L && shadersCheckedAt != 0) return shaders;
+        shadersCheckedAt = now;
+        try {
+            Object api = Class.forName("net.irisshaders.iris.api.v0.IrisApi").getMethod("getInstance").invoke(null);
+            shaders = (Boolean) api.getClass().getMethod("isShaderPackInUse").invoke(api);
+        } catch (ReflectiveOperationException | RuntimeException | LinkageError e) {
+            shaders = false;
+        }
+        return shaders;
+    }
+
     /** Message in the chat, only visible to this player. */
-    static void chat(Minecraft mc, Component text) { if (mc.player != null) mc.player.sendSystemMessage(text); }
+    public static void chat(Minecraft mc, Component text) { if (mc.player != null) mc.player.sendSystemMessage(text); }
 
     /** Short status line above the hotbar. */
-    static void overlay(Minecraft mc, Component text) { if (mc.player != null) mc.player.sendOverlayMessage(text); }
+    public static void overlay(Minecraft mc, Component text) { if (mc.player != null) mc.player.sendOverlayMessage(text); }
 }

@@ -1,4 +1,4 @@
-package io.github.freadeax.bauplaner.bridge.fabric;
+package io.github.freadeax.bauplaner.bridge.hologram;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -24,7 +24,7 @@ import org.joml.Vector3fc;
  * Blocks without a model (chests, signs, banners … drawn by block entity renderers) and unknown mod
  * blocks fall back to the coloured box.
  */
-final class GhostModels {
+public final class GhostModels {
     /** Quads of one state plus whether it hides the faces of a neighbouring ghost block. */
     record Model(List<BakedQuad> quads, int[] tints, boolean fullCube) {}
 

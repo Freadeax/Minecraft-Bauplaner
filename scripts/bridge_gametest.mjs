@@ -68,12 +68,12 @@ if (mode === 'prepare') {
   assert.equal(byVerdict.wrong.actual, 'minecraft:diamond_block');
   assert.deepEqual(byVerdict.missing.position, expected.missing);
   hologram(join(dir, 'game.log'), check.totals.cells);
-  await live(join(dir, 'live.json'));
+  await live(join(dir, 'live.json'), scan.meta.loader ?? 'fabric');
   console.log(`Spieltest bestanden: Minecraft ${scan.meta.gameVersion ?? '26.3'} (${scan.meta.loader ?? '?'}), ${check.totals.cells} Zellen aus ${scan.meta.source === 'server' ? 'der echten Serverwelt' : 'dem echten Client'} gelesen, ${check.totals.ok} korrekt, 1 falscher Block und 1 fehlender Block an den erwarteten Stellen erkannt.`);
 }
 
 /**
- * Mod 2.0 hologram (Fabric only, skipped when the log has no hologram lines, e.g. the Paper server test):
+ * Mod 2.0 hologram (Fabric and NeoForge, skipped when the log has no hologram lines, e.g. the Paper server test):
  * live progress after placing, after building the missing block, turned and turned back; placement saved.
  */
 function hologram(logFile, cells) {
@@ -111,16 +111,16 @@ function hologram(logFile, cells) {
 }
 
 /**
- * MAP-03 website link (Fabric only, skipped without live.json): the answers the website gets over
+ * MAP-03 website link (Fabric and NeoForge, skipped without live.json): the answers the website gets over
  * 127.0.0.1, read with the website's own strict readers (liveLink.ts).
  */
-async function live(file) {
+async function live(file, loader) {
   let raw;
   try { raw = JSON.parse(readFileSync(file, 'utf8')); } catch { return; }
   const { readLiveHello, readLiveStatus, readLiveChunks, chunkColumns } = await import('../dist/domain/src/index.js');
   assert.equal(raw.hello.status, 200);
   const hello = readLiveHello(raw.hello.body);
-  assert.equal(hello.mod.loader, 'fabric');
+  assert.equal(hello.mod.loader, loader, 'Loader wie in der Aufnahme');
   assert.equal(hello.pairing, true, 'Kopplung nach /bauplaner verbinden offen');
   assert.equal(raw.foreign.status, 403, 'fremde Website abgewiesen');
   assert.equal(raw.unpaired.status, 401, 'ohne Kopplung kein Status');

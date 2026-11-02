@@ -1,11 +1,10 @@
-package io.github.freadeax.bauplaner.bridge.fabric;
+package io.github.freadeax.bauplaner.bridge.hologram;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.freadeax.bauplaner.mod.BlockRules.Verdict;
 import io.github.freadeax.bauplaner.mod.LiveCheck;
 import java.util.Arrays;
-import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.world.phys.Vec3;
@@ -17,12 +16,14 @@ import net.minecraft.world.phys.Vec3;
  * plan and a bright frame around the block the error finder points at. Only vanilla render types,
  * no shaders of its own, so it works next to Sodium and Iris. Draws nothing in other dimensions.
  */
-final class HologramRenderer {
+public final class HologramRenderer {
     /** Radius (blocks) around the camera in which ghost blocks are drawn. */
     static final int RADIUS = 72;
     /** Upper limit of drawn ghost blocks per frame; the nearest chunks come first. */
     static final int MAX_BLOCKS = 30_000;
 
+    /** Extra tint and edges for textured ghosts while a shader pack is on. */
+    static final int SHADER_TINT = 0x405AA9FF, SHADER_EDGE = 0xFF7FC4FF;
     static final int MISSING = 0x555AA9FF, WRONG = 0x70FF4040, STATE = 0x70FFD54A;
     /** Missing blocks this close to the camera are drawn as see-through block models. */
     static final int TEXTURED_RADIUS = 40;
@@ -46,21 +47,19 @@ final class HologramRenderer {
     private long drawnRevision = -1;
     private int drawnChunkX = Integer.MIN_VALUE, drawnChunkZ;
 
-    HologramRenderer(Hologram hologram) { this.hologram = hologram; }
+    public HologramRenderer(Hologram hologram) { this.hologram = hologram; }
 
-    void submit(LevelRenderContext ctx) {
+    /** Called by the loader once per frame in the level render pass, with the camera position. */
+    public void submit(PoseStack pose, net.minecraft.client.renderer.SubmitNodeCollector out, Vec3 cam) {
         LiveCheck check = hologram.check();
         Minecraft mc = Minecraft.getInstance();
         if (check == null || !hologram.visible() || mc.level == null) return;
         if (!McCompat.dimension(mc.level).equals(check.placement().dimension())) return;
-        Vec3 cam = ctx.levelState().cameraRenderState.pos;
         select(check, cam);
-        PoseStack pose = ctx.poseStack();
         pose.pushPose();
         // Floats lose precision far from 0/0/0, so everything is relative to the camera.
         int ox = (int) Math.floor(cam.x), oy = (int) Math.floor(cam.y), oz = (int) Math.floor(cam.z);
         pose.translate(ox - cam.x, oy - cam.y, oz - cam.z);
-        var out = ctx.submitNodeCollector();
         if (ghostCount > 0) {
             final int[] list = ghosts, faces = ghostFaces;
             final GhostModels.Model[] ms = ghostModels;
@@ -70,6 +69,28 @@ final class HologramRenderer {
                     int i = list[k];
                     if (check.verdict(i) != Verdict.MISSING) continue;
                     GhostModels.emit(p, vc, ms[k], check.worldX(i) - ox, check.worldY(i) - oy, check.worldZ(i) - oz, 175, faces[k]);
+                }
+            });
+        }
+        if (ghostCount > 0 && McCompat.shadersActive()) {
+            // Shader packs (Iris) relight and recolour the ghost textures until they look like real blocks.
+            // A light blue tint plus block edges keep them recognisable as "still missing".
+            final int[] list = ghosts;
+            final int n = ghostCount;
+            out.submitCustomGeometry(pose, RenderTypes.debugQuads(), (p, vc) -> {
+                for (int k = 0; k < n; k++) {
+                    int i = list[k];
+                    if (check.verdict(i) != Verdict.MISSING) continue;
+                    float x = check.worldX(i) - ox, y = check.worldY(i) - oy, z = check.worldZ(i) - oz;
+                    box(p, vc, x - 0.01f, y - 0.01f, z - 0.01f, x + 1.01f, y + 1.01f, z + 1.01f, SHADER_TINT);
+                }
+            });
+            out.submitCustomGeometry(pose, RenderTypes.lines(), (p, vc) -> {
+                for (int k = 0; k < n; k++) {
+                    int i = list[k];
+                    if (check.verdict(i) != Verdict.MISSING) continue;
+                    float x = check.worldX(i) - ox, y = check.worldY(i) - oy, z = check.worldZ(i) - oz;
+                    frame(p, vc, x, y, z, x + 1, y + 1, z + 1, SHADER_EDGE, 1.5f);
                 }
             });
         }
@@ -187,7 +208,7 @@ final class HologramRenderer {
         vc.addVertex(p, dx, dy, dz).setColor(c);
     }
 
-    static void frame(PoseStack.Pose p, VertexConsumer vc, float x0, float y0, float z0, float x1, float y1, float z1, int c, float w) {
+    public static void frame(PoseStack.Pose p, VertexConsumer vc, float x0, float y0, float z0, float x1, float y1, float z1, int c, float w) {
         float[][] corners = { { x0, y0, z0 }, { x1, y0, z0 }, { x1, y0, z1 }, { x0, y0, z1 }, { x0, y1, z0 }, { x1, y1, z0 }, { x1, y1, z1 }, { x0, y1, z1 } };
         int[][] edges = { { 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 0 }, { 4, 5 }, { 5, 6 }, { 6, 7 }, { 7, 4 }, { 0, 4 }, { 1, 5 }, { 2, 6 }, { 3, 7 } };
         for (int[] e : edges) {
@@ -196,7 +217,7 @@ final class HologramRenderer {
         }
     }
 
-    static void line(PoseStack.Pose p, VertexConsumer vc, float ax, float ay, float az, float bx, float by, float bz, int c, float w) {
+    public static void line(PoseStack.Pose p, VertexConsumer vc, float ax, float ay, float az, float bx, float by, float bz, int c, float w) {
         float nx = bx - ax, ny = by - ay, nz = bz - az;
         float len = (float) Math.sqrt(nx * nx + ny * ny + nz * nz);
         nx /= len; ny /= len; nz /= len;

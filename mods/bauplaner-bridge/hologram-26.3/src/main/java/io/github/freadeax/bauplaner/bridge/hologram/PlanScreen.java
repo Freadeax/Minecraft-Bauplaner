@@ -1,4 +1,4 @@
-package io.github.freadeax.bauplaner.bridge.fabric;
+package io.github.freadeax.bauplaner.bridge.hologram;
 
 import java.util.List;
 import net.minecraft.client.Minecraft;
@@ -12,7 +12,7 @@ import net.minecraft.network.chat.Component;
  * Plan list and placement controls (key J). Left: plan files from {@code bauplaner/plans/}; a click
  * places the plan on the block the player looked at. Right: move, turn, mirror, show/hide, remove.
  */
-final class PlanScreen extends Screen {
+public final class PlanScreen extends Screen {
     private static final int PER_PAGE = 6, TOP = 36, STEP = 20, H = 18;
 
     private final Hologram hologram;

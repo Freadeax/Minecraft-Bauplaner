@@ -1,5 +1,5 @@
 // NeoForge-Adapter für Minecraft 26.3 (clientseitig). Aufbau nach dem NeoForge-MDK 26.3 (ModDevGradle).
-// Kern (loaderneutral) und client-26.3 (nur Vanilla-Klassen, mit Forge geteilt) werden als Quelltext
+// Kern (loaderneutral), mod-core, hologram-26.3 (Client-Mod 2.0, mit Fabric geteilt) und client-26.3 (nur Vanilla-Klassen, mit Forge geteilt) werden als Quelltext
 // eingebunden; die fertige .jar braucht nur NeoForge.
 plugins {
     id 'java'
@@ -12,6 +12,10 @@ group = 'io.github.freadeax.bauplaner'
 
 sourceSets.main.java.srcDir '../core/src/main/java'
 sourceSets.main.java.srcDir '../client-26.3/src/main/java'
+// Client mod 2.0 (hologram, live check, material list, placement helper): same sources as the Fabric mod.
+sourceSets.main.java.srcDir '../mod-core/src/main/java'
+sourceSets.main.java.srcDir '../hologram-26.3/src/main/java'
+sourceSets.main.resources.srcDir '../hologram-26.3/src/main/resources'
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 tasks.withType(JavaCompile).configureEach { options.release = 25; options.encoding = 'UTF-8' }

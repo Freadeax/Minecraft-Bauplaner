@@ -1,14 +1,14 @@
-package io.github.freadeax.bauplaner.bridge.fabric;
+package io.github.freadeax.bauplaner.bridge.hologram;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.freadeax.bauplaner.mod.live.WorldMarks;
 import java.util.ArrayList;
 import java.util.List;
-import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
@@ -91,17 +91,15 @@ final class MarksRenderer {
         col.add(c);
     }
 
-    void submit(LevelRenderContext ctx) {
+    void submit(PoseStack pose, SubmitNodeCollector out, Vec3 cam) {
         if (count == 0) return;
-        Vec3 cam = ctx.levelState().cameraRenderState.pos;
-        PoseStack pose = ctx.poseStack();
         pose.pushPose();
         int ox = (int) Math.floor(cam.x), oy = (int) Math.floor(cam.y), oz = (int) Math.floor(cam.z);
         pose.translate(ox - cam.x, oy - cam.y, oz - cam.z);
         final float[] l = lines;
         final int[] c = colors;
         final int n = count;
-        ctx.submitNodeCollector().submitCustomGeometry(pose, RenderTypes.lines(), (p, vc) -> {
+        out.submitCustomGeometry(pose, RenderTypes.lines(), (p, vc) -> {
             for (int i = 0; i < n; i++) {
                 int k = i * 6;
                 HologramRenderer.line(p, vc, l[k] - ox, l[k + 1] - oy, l[k + 2] - oz, l[k + 3] - ox, l[k + 4] - oy, l[k + 5] - oz, c[i], 3.0f);

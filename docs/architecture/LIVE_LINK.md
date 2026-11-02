@@ -27,7 +27,7 @@ Die Weltkarte (`#/karte`) wird zur Live-Karte: Die Bauplaner-Mod (Fabric 26.3, a
 
 Fehler: `{error:"…"}` mit Status 400/401/403/404/409/411/413/503. Arbeit im Spiel läuft über den Spielthread (`CompletableFuture.supplyAsync(…, mc)`, 3 s Zeitlimit → 503).
 
-Code: `mods/bauplaner-bridge/mod-core/…/mod/live/` (versionsneutral: `LiveLinkServer`, `Json`, `WorldMarks`, `SurfaceRuns`), `fabric-26.3/…/LiveLink.java` (Handler), `MarksRenderer.java` (Linien und HUD); Website `packages/domain/src/liveLink.ts` (strenge Leser, Geländeeinstufung wie TERRAIN-01), `apps/web/src/views/map/liveClient.ts`.
+Code: `mods/bauplaner-bridge/mod-core/…/mod/live/` (versionsneutral: `LiveLinkServer`, `Json`, `WorldMarks`, `SurfaceRuns`), `hologram-26.3/…/LiveLink.java` (Handler, Fabric und NeoForge), `MarksRenderer.java` (Linien und HUD); Website `packages/domain/src/liveLink.ts` (strenge Leser, Geländeeinstufung wie TERRAIN-01), `apps/web/src/views/map/liveClient.ts`.
 
 ## Weltplan
 
@@ -52,4 +52,4 @@ Code: `mods/bauplaner-bridge/mod-core/…/mod/live/` (versionsneutral: `LiveLink
 
 - Das Gelände kommt nur aus Chunks, die der Client gerade geladen hat (Sichtweite). Höhlen und Überhänge unter der Oberfläche fehlen (2,5D wie TERRAIN-01).
 - Die Weltkarte plant Projekte ungedreht; ein im Spiel gedrehtes Hologramm wird gemeldet, aber nicht übernommen.
-- Nur Fabric 26.3; Forge/NeoForge/Paper haben die Verbindung noch nicht.
+- Fabric 26.3 und seit 0.6.0 NeoForge 26.3 (gemeinsamer Code in `hologram-26.3`, `LiveLink`/`MarksRenderer`); Forge und Paper haben die Verbindung noch nicht.

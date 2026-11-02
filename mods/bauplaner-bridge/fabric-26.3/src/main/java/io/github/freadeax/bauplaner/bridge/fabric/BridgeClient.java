@@ -22,6 +22,8 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
+import io.github.freadeax.bauplaner.bridge.hologram.HologramClient;
+import io.github.freadeax.bauplaner.bridge.hologram.McCompat;
 
 /**
  * Client entry point. Commands only read the world and write files below
@@ -38,13 +40,9 @@ public final class BridgeClient implements ClientModInitializer {
     private String anchorDimension;
     private ScanJob job;
     private String jobDimension;
-    private final Hologram hologram = new Hologram(root);
-    private final HologramRenderer renderer = new HologramRenderer(hologram);
-    private final PlacementAssist assist = new PlacementAssist(hologram);
-    private final HologramKeys keys = new HologramKeys(hologram, assist);
-    private final LiveLink link = new LiveLink(root, hologram,
-            FabricLoader.getInstance().getModContainer("bauplaner_bridge").map(c -> c.getMetadata().getVersion().getFriendlyString()).orElse("?"), McCompat.gameVersion());
-    private final MarksRenderer marks = new MarksRenderer(link);
+    /** Hologram, live check, HUD, keys, menu, material list, placement helper: shared with NeoForge (hologram-26.3). */
+    private final HologramClient client = new HologramClient(root, "fabric",
+            FabricLoader.getInstance().getModContainer("bauplaner_bridge").map(c -> c.getMetadata().getVersion().getFriendlyString()).orElse("?"));
 
     @Override
     public void onInitializeClient() {
@@ -60,13 +58,8 @@ public final class BridgeClient implements ClientModInitializer {
             var anchorCmd = literal("anker")
                     .then(literal("hier").executes(c -> setAnchor(c.getSource(), McCompat.targetBlock(c.getSource().getClient()))))
                     .then(xyz);
-            var connect = literal("verbinden").executes(c -> { say(c.getSource(), link.connect()); return 1; })
-                    .then(literal("aus").executes(c -> { say(c.getSource(), link.disconnect()); return 1; }))
-                    .then(literal("status").executes(c -> { say(c.getSource(), link.statusText()); return 1; }))
-                    .then(literal("port").then(argument("port", IntegerArgumentType.integer(1024, 65535))
-                            .executes(c -> { say(c.getSource(), link.setPort(IntegerArgumentType.getInteger(c, "port"))); return 1; })));
-            var cmd = literal("bauplaner").then(connect);
-            HologramCommands.build(hologram).forEach(cmd::then);
+            var cmd = literal("bauplaner");
+            client.<FabricClientCommandSource>commands().forEach(cmd::then);
             dispatcher.register(cmd
                     .executes(c -> help(c.getSource()))
                     .then(literal("plaene").executes(c -> listPlans(c.getSource())))
@@ -77,26 +70,28 @@ public final class BridgeClient implements ClientModInitializer {
                     .then(literal("status").executes(c -> status(c.getSource()))));
         });
         ClientTickEvents.END_CLIENT_TICK.register(this::tick);
-        ClientTickEvents.END_CLIENT_TICK.register(mc -> { keys.tick(mc); hologram.tick(mc); assist.tick(mc); marks.tick(mc); });
+        client.keys().forEach(net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper::registerKeyMapping);
+        ClientTickEvents.END_CLIENT_TICK.register(client::tick);
         // Website link (MAP-03): off until /bauplaner verbinden; resumes after a restart once switched on.
-        link.loadMarks();
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents.CLIENT_STARTED.register(link::resume);
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents.CLIENT_STOPPING.register(mc -> link.close());
-        net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents.COLLECT_SUBMITS.register(marks::submit);
-        net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry.addLast(
-                net.minecraft.resources.Identifier.fromNamespaceAndPath("bauplaner_bridge", "markierungen"), marks::hud);
+        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents.CLIENT_STARTED.register(client::started);
+        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents.CLIENT_STOPPING.register(mc -> client.stopping());
         // Placement helper: decides on the client before anything is sent; FAIL means the click is dropped.
-        net.fabricmc.fabric.api.event.player.UseBlockCallback.EVENT.register(assist::onUse);
-        net.fabricmc.fabric.api.event.player.AttackBlockCallback.EVENT.register((player, level, hand, pos, dir) -> assist.onAttack(player, level, pos));
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents.CHUNK_UNLOAD.register((level, chunk) -> hologram.chunkUnloaded(chunk.getPos().x(), chunk.getPos().z()));
-        net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.JOIN.register((handler, sender, mc) -> mc.execute(() -> {
-            String msg = hologram.join(mc);
-            if (msg != null) McCompat.chat(mc, Component.literal("[Bauplaner] " + msg));
-        }));
-        net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.DISCONNECT.register((handler, mc) -> mc.execute(hologram::leave));
-        net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents.COLLECT_SUBMITS.register(renderer::submit);
+        // Own phase before the default one: a click the helper drops is never seen by other mods, e.g. Tool
+        // Switcher would otherwise swap to a pickaxe for a protected block that is not going to break.
+        var early = net.minecraft.resources.Identifier.fromNamespaceAndPath("bauplaner_bridge", "platzierhilfe");
+        var use = net.fabricmc.fabric.api.event.player.UseBlockCallback.EVENT;
+        use.addPhaseOrdering(early, net.fabricmc.fabric.api.event.Event.DEFAULT_PHASE);
+        use.register(early, client::use);
+        var attack = net.fabricmc.fabric.api.event.player.AttackBlockCallback.EVENT;
+        attack.addPhaseOrdering(early, net.fabricmc.fabric.api.event.Event.DEFAULT_PHASE);
+        attack.register(early, (player, level, hand, pos, dir) -> client.attack(player, level, pos));
+        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents.CHUNK_UNLOAD.register((level, chunk) -> client.chunkUnloaded(chunk.getPos().x(), chunk.getPos().z()));
+        net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.JOIN.register((handler, sender, mc) -> mc.execute(() -> client.join(mc)));
+        net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.DISCONNECT.register((handler, mc) -> mc.execute(client::leave));
+        net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents.COLLECT_SUBMITS.register(ctx ->
+                client.render(ctx.poseStack(), ctx.submitNodeCollector(), ctx.levelState().cameraRenderState.pos));
         net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry.addLast(
-                net.minecraft.resources.Identifier.fromNamespaceAndPath("bauplaner_bridge", "fortschritt"), new HologramHud(hologram, assist)::extract);
+                net.minecraft.resources.Identifier.fromNamespaceAndPath("bauplaner_bridge", "fortschritt"), client::hud);
     }
 
     private static void say(FabricClientCommandSource s, String text) { s.sendFeedback(Component.literal("[Bauplaner] " + text)); }

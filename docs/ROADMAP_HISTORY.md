@@ -2297,3 +2297,54 @@ Streu-Ebene (S06): Bäume, Büsche, Felsen, Pflanzen und eigene Schablonen nach 
 - `tests/e2e/landscape-scatter.e2e.mjs`
 - `tests/terrain-scatter.test.mjs`
 
+## 2026-11-02T12:14:07.007Z · progress
+
+**Aufgaben:** GAME-07
+
+Mod 0.6.0: NeoForge auf Fabric-Stand (gemeinsamer Client-Kern hologram-26.3 inkl. Website-Verbindung), Geister unter Iris-Shadern getönt und umrandet, Platzierhilfe vor Tool Switcher; Spieltests Fabric (auch Modpack + Complementary) und NeoForge bestanden.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-07 | 🧩 Implementiert · Abnahme offen | 7/9 | Philipp testet 0.6.0 (Fabric oder NeoForge) auf server.lmnt-gaming.net, auch mit Complementary-Shader; danach Stufe 5. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/LIVE_LINK.md`
+- `docs/architecture/MOD_HOLOGRAM.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.6.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.6.0.jar`
+- `mods/bauplaner-bridge/README.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/client-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/ClientScenario.java`
+- `mods/bauplaner-bridge/fabric-26.3/build.gradle`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/BridgeClient.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramCommands.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/GhostModels.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Hologram.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramHud.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramKeys.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramRenderer.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/MarksRenderer.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/MaterialScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/McCompat.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlacementAssist.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/resources/assets/bauplaner_bridge/lang/de_de.json`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/resources/assets/bauplaner_bridge/lang/en_us.json`
+- `mods/bauplaner-bridge/neoforge-26.3/build.gradle`
+- `mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java`
+- `mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/LiveLinkScenario.java`
+- `mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/NeoForgeGameTest.java`
+- `mods/bauplaner-bridge/neoforge-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/neoforge/BridgeNeoForge.java`
+- `mods/bauplaner-bridge/neoforge-26.3/src/main/templates/META-INF/neoforge.mods.toml`
+- `scripts/bridge_gametest.mjs`
+- `scripts/test_bridge_ingame.sh`
+- `tests/e2e/mod-download.e2e.mjs`
+

@@ -1,4 +1,4 @@
-package io.github.freadeax.bauplaner.bridge.fabric;
+package io.github.freadeax.bauplaner.bridge.hologram;
 
 import io.github.freadeax.bauplaner.mod.BlockRules.Verdict;
 import io.github.freadeax.bauplaner.mod.PlacementAdvice;
@@ -51,7 +51,7 @@ import net.minecraft.world.phys.Vec3;
  * click itself is never altered: no faked view direction, no faked hit position, nothing extra is sent.
  * Switching to the right block uses the normal hotbar selection, like pressing a number key.
  */
-final class PlacementAssist {
+public final class PlacementAssist {
     /** What belongs where the player is aiming, for the crosshair line. */
     record Aim(BlockPos pos, io.github.freadeax.bauplaner.mod.BlockState planned, Verdict verdict, Kind kind, String advice, int color) {}
 

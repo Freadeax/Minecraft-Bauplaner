@@ -43,8 +43,29 @@ public final class ClientScenario {
     private int wait = 0;
     private int ticks = 0;
     private int[] anchor;
+    private final Extra extra;
+    private final Deque<Step> steps = new ArrayDeque<>();
+    private java.util.function.BooleanSupplier until;
 
-    public ClientScenario(Path gameDir) {
+    /**
+     * One step of a loader-specific follow-up scenario, then {@code waitTicks} client ticks of waiting and,
+     * if given, until {@code until} is true (the overall time limit still applies).
+     */
+    public record Step(int waitTicks, Action action, java.util.function.BooleanSupplier until) {
+        public Step(int waitTicks, Action action) { this(waitTicks, action, null); }
+    }
+
+    @FunctionalInterface
+    public interface Action { void run(Minecraft mc) throws Exception; }
+
+    /** Follow-up after the recording (NeoForge: the client mod's hologram and placement helper). */
+    @FunctionalInterface
+    public interface Extra { List<Step> steps(ClientScenario scenario) throws Exception; }
+
+    public ClientScenario(Path gameDir) { this(gameDir, null); }
+
+    public ClientScenario(Path gameDir, Extra extra) {
+        this.extra = extra;
         String dir = System.getenv("BAUPLANER_GAMETEST_DIR");
         this.io = dir == null ? null : Path.of(dir);
         this.root = gameDir.resolve("bauplaner");
@@ -55,6 +76,7 @@ public final class ClientScenario {
                 Files.copy(io.resolve("plan.schem"), root.resolve("plans").resolve(PLAN), StandardCopyOption.REPLACE_EXISTING);
                 for (Path p : scans()) Files.delete(p);
                 Files.deleteIfExists(root.resolve("state.properties"));
+                Files.deleteIfExists(root.resolve("platzierung.properties"));
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
@@ -128,7 +150,17 @@ public final class ClientScenario {
                         throw new AssertionError("Anker nicht gespeichert oder falsch: " + state);
                     Files.copy(scans.get(0), io.resolve("scan.schem"), StandardCopyOption.REPLACE_EXISTING);
                     Files.writeString(io.resolve("state.properties"), state);
-                    finish(mc, null);
+                    if (extra == null) { finish(mc, null); return; }
+                    steps.addAll(extra.steps(this));
+                    phase = 5;
+                }
+                case 5 -> { // loader-specific follow-up, one step per tick plus its waiting time
+                    if (until != null && !until.getAsBoolean()) return;
+                    Step step = steps.poll();
+                    if (step == null) { finish(mc, null); return; }
+                    step.action().run(mc);
+                    wait = step.waitTicks();
+                    until = step.until();
                 }
                 default -> {}
             }
@@ -150,6 +182,25 @@ public final class ClientScenario {
                 }
             }
         }
+    }
+
+    public Path io() { return io; }
+
+    public Path root() { return root; }
+
+    /** Project origin in the world (x, y, z). */
+    public int[] anchor() { return anchor.clone(); }
+
+    /** Server command in the test world (as an operator; the mod itself never sends one). */
+    public void server(String command) {
+        MinecraftServer server = Minecraft.getInstance().getSingleplayerServer();
+        server.submit(() -> run(server, command)).join();
+    }
+
+    /** Client chat command like the player types it ({@code bauplaner …}, without the slash). */
+    public void command(String command) {
+        LOG.info("Befehl: /{}", command);
+        Minecraft.getInstance().player.connection.sendCommand(command);
     }
 
     private static void run(MinecraftServer server, String command) {

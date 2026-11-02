@@ -1,4 +1,4 @@
-package io.github.freadeax.bauplaner.bridge.fabric;
+package io.github.freadeax.bauplaner.bridge.hologram;
 
 import io.github.freadeax.bauplaner.mod.BlockRules.Verdict;
 import io.github.freadeax.bauplaner.mod.LiveCheck;
@@ -31,13 +31,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.levelgen.Heightmap;
 
 /**
- * Live-Verbindung zur Website (MAP-03/GAME-03), Fabric side. Off until the player types
+ * Live-Verbindung zur Website (MAP-03/GAME-03), the same on Fabric and NeoForge. Off until the player types
  * {@code /bauplaner verbinden}; then a small service on 127.0.0.1 answers the paired website:
  * player position, the placed plan and its live check, the surface of loaded chunks. The website can
  * place a plan in the hologram and send Weltplan marks. Everything game related runs on the game
  * thread; nothing is sent to the server and the world is never changed.
  */
-final class LiveLink implements LiveLinkServer.Handler {
+public final class LiveLink implements LiveLinkServer.Handler {
     private final Path root;
     private final Hologram hologram;
     private final LiveLinkServer server;
@@ -46,31 +46,31 @@ final class LiveLink implements LiveLinkServer.Handler {
     private int port = LiveLinkServer.DEFAULT_PORT;
     private boolean enabled;
 
-    LiveLink(Path root, Hologram hologram, String version, String minecraft) {
+    public LiveLink(Path root, Hologram hologram, String loader, String version, String minecraft) {
         this.root = root;
         this.hologram = hologram;
         Properties p = load();
         enabled = "true".equals(p.getProperty("aktiv"));
         try { port = Integer.parseInt(p.getProperty("port", String.valueOf(LiveLinkServer.DEFAULT_PORT))); } catch (NumberFormatException ignored) { }
         List<String> tokens = Arrays.stream(p.getProperty("schluessel", "").split(",")).filter(s -> !s.isBlank()).toList();
-        server = new LiveLinkServer(new LiveLinkServer.Info(version, "fabric", minecraft), this, tokens, this::saveTokens, System::currentTimeMillis);
+        server = new LiveLinkServer(new LiveLinkServer.Info(version, loader, minecraft), this, tokens, this::saveTokens, System::currentTimeMillis);
     }
 
-    WorldMarks marks() { return marks; }
-    boolean running() { return server.running(); }
-    int port() { return server.port(); }
+    public WorldMarks marks() { return marks; }
+    public boolean running() { return server.running(); }
+    public int port() { return server.port(); }
     /** A paired website asked within the last five seconds. */
-    boolean websiteActive() { return System.currentTimeMillis() - lastRequest < 5_000; }
+    public boolean websiteActive() { return System.currentTimeMillis() - lastRequest < 5_000; }
 
     /** Game start: resume the service when the player switched it on before. */
-    void resume(Minecraft mc) {
+    public void resume(Minecraft mc) {
         if (!enabled) return;
         try { server.start(port); } catch (IOException e) { mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] Verbindung zur Website nicht gestartet: " + e.getMessage()))); }
     }
 
     // ------------------------------------------------------------------ commands
 
-    String connect() {
+    public String connect() {
         try {
             server.start(port);
         } catch (IOException e) {
@@ -83,7 +83,7 @@ final class LiveLink implements LiveLinkServer.Handler {
                 + " – auf der Website unter „Spiel“ oder in der Weltkarte eintragen. Gilt 5 Minuten.";
     }
 
-    String disconnect() {
+    public String disconnect() {
         server.close();
         server.revokeAll();
         enabled = false;
@@ -91,7 +91,7 @@ final class LiveLink implements LiveLinkServer.Handler {
         return "Website-Verbindung aus. Alle gekoppelten Browser müssen sich neu koppeln.";
     }
 
-    String setPort(int p) {
+    public String setPort(int p) {
         if (p < 1024 || p > 65535) return "Port muss zwischen 1024 und 65535 liegen.";
         server.close();
         port = p;
@@ -102,13 +102,13 @@ final class LiveLink implements LiveLinkServer.Handler {
         return "Port " + p + " gespeichert" + (p == LiveLinkServer.DEFAULT_PORT ? "" : " – auf der Website unter „Port“ denselben eintragen") + ". " + connected;
     }
 
-    String statusText() {
+    public String statusText() {
         if (!server.running()) return "Website-Verbindung aus. Einschalten: /bauplaner verbinden";
         return "Website-Verbindung an, Port " + server.port() + ", " + server.pairedClients() + " gekoppelte(r) Browser" + (websiteActive() ? ", Website fragt gerade ab" : "")
                 + (server.pairingOpen() ? ", Kopplung offen" : "") + ". Markierungen: " + marks.size() + ".";
     }
 
-    void close() { server.close(); }
+    public void close() { server.close(); }
 
     // ------------------------------------------------------------------ handler (server threads)
 
@@ -241,7 +241,7 @@ final class LiveLink implements LiveLinkServer.Handler {
     }
 
     /** Marks of the last session, so the player sees them again without opening the website. */
-    void loadMarks() {
+    public void loadMarks() {
         try {
             String text = Files.readString(root.resolve("markierungen.json"), StandardCharsets.UTF_8);
             marks = WorldMarks.parse(Json.obj(Json.parse(text), "Markierungen"));

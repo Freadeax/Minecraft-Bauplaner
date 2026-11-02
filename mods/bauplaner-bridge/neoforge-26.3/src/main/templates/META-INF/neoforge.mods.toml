@@ -8,7 +8,7 @@ displayName="Bauplaner-Brücke"
 displayURL="https://freadeax.github.io/Minecraft-Bauplaner/#/mod"
 authors="Freadeax"
 description='''
-Liest den Bereich eines Bauplans aus der Welt und schreibt eine Aufnahme, die der Minecraft-Bauplaner im Tab „Bauen“ vergleicht. Nur lesend, reine Client-Mod: setzt keine Blöcke, sendet nichts ins Internet, braucht nichts auf dem Server.
+Bauplaner-Pläne als Hologramm mit Live-Abgleich, Materialliste, Ebenen und Platzierhilfe, dazu die Aufnahme für den Soll/Ist-Vergleich des Minecraft-Bauplaners. Reine Client-Mod: baut nie selbst, sendet nichts ins Internet, braucht nichts auf dem Server.
 '''
 
 [[dependencies.bauplaner_bridge]]

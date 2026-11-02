@@ -117,6 +117,33 @@
       "releasedAt": "2026-11-02",
       "sourceCommit": "093f0e23bdf284c1ebb8e9442e48a11016aed446",
       "tested": "Im echten Minecraft-26.3-Client automatisch geprüft, auch mit Philipps Modpack (Fabric 26.3 1.0.1 mit REI): Hologramm, Platzierhilfe, Website-Verbindung über 127.0.0.1 ab „/bauplaner verbinden port 47615“ (Kopplung, Status, Gelände, Markierungen, Plan direkt gesendet). Neu in 0.5.1: der Port-Befehl startet die Verbindung und zeigt den Code."
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.6.0.jar",
+      "modVersion": "0.6.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 205427,
+      "sha256": "189bc5f9131bfd1804c158ddbf5b8a5ac32b914c1be4bdd3c38b48af5384cdab",
+      "releasedAt": "2026-11-02",
+      "sourceCommit": "093f0e23bdf284c1ebb8e9442e48a11016aed446",
+      "tested": "Echter 26.3-Client und Philipps 25 Mods mit Complementary-Shader: Hologramm, Platzierhilfe, Website-Verbindung (02.11.2026)"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.6.0.jar",
+      "modVersion": "0.6.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 202880,
+      "sha256": "c61f505a01522ac74673d544f599218e09207daa21ee63bf257fdc5515f75630",
+      "releasedAt": "2026-11-02",
+      "sourceCommit": "093f0e23bdf284c1ebb8e9442e48a11016aed446",
+      "tested": "Echter NeoForge-26.3-Client: Aufnahme, Hologramm, Materialliste, Ebenen, Platzierhilfe, Website-Verbindung (02.11.2026)"
     }
   ]
 }

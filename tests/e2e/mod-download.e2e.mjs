@@ -47,7 +47,7 @@ for (const viewport of [{ width: 1400, height: 900 }, { width: 390, height: 844 
     assert.equal(await p.locator('option[value=paper]').count(), 0, 'Paper nicht in der Client-Auswahl');
     assert.ok(await p.getByText(/Ordner öffnen/).first().isVisible(), 'Modrinth-Anleitung');
     // NeoForge-Mod (GAME-05): eigene .jar und eigener Installationsschritt.
-    const neo = releases.find(r => r.loader === 'neoforge' && r.minecraft === newest.minecraft);
+    const neo = releases.filter(r => r.loader === 'neoforge' && r.minecraft === newest.minecraft).toSorted(byVersion)[0];
     if (neo) {
       await p.getByLabel('Mod-Loader').selectOption('neoforge');
       assert.equal(await p.getByRole('link', { name: /herunterladen$/ }).getAttribute('href'), `/Minecraft-Bauplaner/downloads/mod/${neo.file}`);

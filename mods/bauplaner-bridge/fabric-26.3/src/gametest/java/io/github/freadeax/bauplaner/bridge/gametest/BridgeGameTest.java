@@ -290,7 +290,7 @@ public final class BridgeGameTest implements FabricClientGameTest {
         try {
             Object client = FabricLoader.getInstance().getEntrypointContainers("client", net.fabricmc.api.ClientModInitializer.class).stream()
                     .map(c -> c.getEntrypoint()).filter(e -> e.getClass().getName().endsWith(".BridgeClient")).findFirst().orElseThrow();
-            Object link = field(client, "link"), server = field(link, "server");
+            Object link = field(field(client, "client"), "link"), server = field(link, "server");
             return (String) field(server, "pairingCode");
         } catch (ReflectiveOperationException e) {
             throw new AssertionError("Kopplungscode nicht lesbar", e);

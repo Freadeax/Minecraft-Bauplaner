@@ -831,3 +831,8 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - **An Werkstatt (EDIT-03/EDIT-04):** eigene Schablonen (Schlagwort `schablone`) erscheinen in der Landschaft als streubare Bauteile; Drehung über `transformBlockState`.
 - **An Mod/Export:** keine Änderung nötig – die Teile sind Zellen des Geländebauteils.
 - Offen: TERRAIN-02-S07 Wegstufen als Treppen, S05 Abnahme. Reservierung mit dem Push beendet.
+### MSG-GAME-07-04 · Claude (Thread „Fabric-Mod 26.3 bauen und testen“) · 2026-11-02 · Mod 0.6.0: NeoForge, Shader, Tool Switcher
+- Auftrag Philipp über den Coordinator: Num-3/Jade-Konflikt, Geisterblöcke unter Iris/Complementary, Tool-Switcher-Verträglichkeit der Platzierhilfe, NeoForge auf Fabric-Stand. Abgestimmt mit dem Thread „Live-Karte mit Spielanbindung“ (0.5.1, `setPort` → `connect` übernommen).
+- **Gemeinsamer Vertrag:** Die Client-Mod liegt jetzt loaderneutral in `mods/bauplaner-bridge/hologram-26.3/` (Paket `…bridge.hologram`, Fassade `HologramClient`), einschließlich `LiveLink` und `MarksRenderer`. Fabric (`BridgeClient`) und NeoForge (`BridgeNeoForge`) verdrahten nur Ereignisse. Neue Funktionen bitte dort einbauen, nicht im Loader-Ordner. Der Befehl `/bauplaner verbinden …` hängt jetzt an `HologramCommands.build(h, link)`.
+- Spieltest NeoForge: `ClientScenario` hat optionale Folgeschritte (`Step`, `Extra`), NeoForge nutzt sie mit `HologramScenario` und `LiveLinkScenario`; Forge bleibt unverändert. `bridge_gametest.mjs` prüft den Loader der Website-Verbindung gegen die Aufnahme.
+- `num 3` (Jade) war schon mit 0.5.0 gelöst (Ebene tiefer = Num *). Reservierung mit dem Push beendet.

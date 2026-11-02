@@ -1,7 +1,6 @@
-package io.github.freadeax.bauplaner.bridge.fabric;
+package io.github.freadeax.bauplaner.bridge.hologram;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Direction;
@@ -13,10 +12,12 @@ import net.minecraft.resources.Identifier;
  * relative to the view direction, so "up" always means "away from me". Key codes are InputConstants
  * constants (SDL scancodes since 26.x, not GLFW codes).
  */
-final class HologramKeys {
-    private static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath("bauplaner_bridge", "bauplaner"));
+public final class HologramKeys {
+    public static final KeyMapping.Category CATEGORY = KeyMapping.Category.register(Identifier.fromNamespaceAndPath("bauplaner_bridge", "bauplaner"));
 
     private final Hologram hologram;
+    /** Every key of the mod, in declaration order; the loader registers them (Fabric KeyMappingHelper, NeoForge event). */
+    private final java.util.List<KeyMapping> all = new java.util.ArrayList<>();
     private final KeyMapping menu = key("menu", InputConstants.KEY_J);
     private final KeyMapping toggle = key("toggle", InputConstants.KEY_COMMA);
     private final KeyMapping finder = key("finder", InputConstants.KEY_PERIOD);
@@ -38,13 +39,17 @@ final class HologramKeys {
     private final KeyMapping guard = key("guard", InputConstants.UNKNOWN.getValue());
     private final PlacementAssist assist;
 
-    HologramKeys(Hologram hologram, PlacementAssist assist) { this.hologram = hologram; this.assist = assist; }
+    public HologramKeys(Hologram hologram, PlacementAssist assist) { this.hologram = hologram; this.assist = assist; }
 
-    private static KeyMapping key(String name, int code) {
-        return KeyMappingHelper.registerKeyMapping(new KeyMapping("key.bauplaner_bridge." + name, InputConstants.Type.KEYBOARD, code, CATEGORY));
+    public java.util.List<KeyMapping> all() { return java.util.List.copyOf(all); }
+
+    private KeyMapping key(String name, int code) {
+        KeyMapping k = new KeyMapping("key.bauplaner_bridge." + name, InputConstants.Type.KEYBOARD, code, CATEGORY);
+        all.add(k);
+        return k;
     }
 
-    void tick(Minecraft mc) {
+    public void tick(Minecraft mc) {
         if (mc.player == null) return;
         while (menu.consumeClick()) PlanScreen.open(mc, hologram);
         boolean active = hologram.active();

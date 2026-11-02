@@ -1,4 +1,4 @@
-package io.github.freadeax.bauplaner.bridge.fabric;
+package io.github.freadeax.bauplaner.bridge.hologram;
 
 import io.github.freadeax.bauplaner.mod.BlockRules.Verdict;
 import io.github.freadeax.bauplaner.mod.LiveCheck;
@@ -10,9 +10,9 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
  * Progress panel on the right edge while a plan is placed, plus the error finder line. Right, below the
  * status effect icons, because minimaps (Xaero) take the top left corner.
  */
-final class HologramHud {
-    static final int CYAN = 0xFF40E0FF;
-    static final int BLUE = 0xFF5AA9FF, RED = 0xFFFF5A5A, YELLOW = 0xFFFFD54A, GREEN = 0xFF6BE07B, GREY = 0xFFB0B0B0;
+public final class HologramHud {
+    public static final int CYAN = 0xFF40E0FF;
+    public static final int BLUE = 0xFF5AA9FF, RED = 0xFFFF5A5A, YELLOW = 0xFFFFD54A, GREEN = 0xFF6BE07B, GREY = 0xFFB0B0B0;
 
     private final Hologram hologram;
     private final PlacementAssist assist;
@@ -106,7 +106,7 @@ final class HologramHud {
         return "Nächster Fehler: " + dist + " m " + dir + height + " – " + what;
     }
 
-    static String compass(double dx, double dz) {
+    public static String compass(double dx, double dz) {
         double deg = Math.toDegrees(Math.atan2(dx, -dz));
         String[] names = { "Nord", "Nordost", "Ost", "Südost", "Süd", "Südwest", "West", "Nordwest" };
         return names[(int) Math.floorMod(Math.round(deg / 45), 8)];
