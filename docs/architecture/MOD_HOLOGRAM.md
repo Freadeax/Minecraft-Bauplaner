@@ -90,3 +90,7 @@ Vorbild ist Litematicas „Easy Place“, aber serverkonform: Easy Place veränd
 ## Nächste Stufen
 
 Gruppen/Sperren aus dem Weltbuilder (MAP-04) in der Mod, Bauabschnitt als Packliste mit Kistenstandorten, Gerüst-Hinweise für hängende Blöcke.
+
+## Absturzschutz für die Testphase
+
+`HologramClient` führt Tick, Weltzeichnen, HUD und die Klick-Haken der Platzierhilfe geschützt aus: Ein Fehler der Mod beendet das Spiel nicht mehr. Er landet einmal je Art mit Stack im Log (Logger `bauplaner`, Präfix `[Fehler]`), gleiche Fehler in jedem Bild werden nur gezählt (`errors()`), und der erste zeigt einen Chat-Hinweis auf `/bauplaner diagnose`. Klicks laufen bei einem Fehler normal durch (PASS).

@@ -2793,3 +2793,18 @@ Bibliotheksstart im Worker (Auftrag library): Katalog erzeugen, Seed planen, Ken
 - `tests/e2e/library-start.e2e.mjs`
 - `tests/library-start.test.mjs`
 
+## 2026-11-02T19:16:30.126Z · progress
+
+**Aufgaben:** GAME-07
+
+Absturzschutz der Client-Mod für die Testphase: Fehler in Tick, Zeichnen, HUD und Klicks beenden das Spiel nicht, landen als [Fehler] im Log mit Chat-Hinweis auf /bauplaner diagnose
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-07 | 🧩 Implementiert · Abnahme offen | 8/10 | Philipp testet 0.7.0 auf server.lmnt-gaming.net (Bauabschnitte aus seinem Projekt, Röntgensicht mit Shader); danach Stufe 6. |
+
+**Geänderte Dateien:**
+
+- `docs/architecture/MOD_HOLOGRAM.md`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java`
+

@@ -64,23 +64,46 @@ public final class HologramClient {
 
     /** End of every client tick. */
     public void tick(Minecraft mc) {
-        keys.tick(mc);
-        hologram.tick(mc);
-        assist.tick(mc);
-        marks.tick(mc);
+        guarded("tick", () -> { keys.tick(mc); hologram.tick(mc); assist.tick(mc); marks.tick(mc); });
     }
 
     /** Level render pass: ghost blocks, frames, finder beam. */
     public void render(PoseStack pose, SubmitNodeCollector out, Vec3 camera) {
-        renderer.submit(pose, out, camera);
-        marks.submit(pose, out, camera);
+        guarded("render", () -> { renderer.submit(pose, out, camera); marks.submit(pose, out, camera); });
     }
 
     /** HUD layer: progress panel and the crosshair line of the placement helper. */
     public void hud(GuiGraphicsExtractor g, DeltaTracker delta) {
-        hud.extract(g, delta);
-        marks.hud(g, delta);
+        guarded("hud", () -> { hud.extract(g, delta); marks.hud(g, delta); });
     }
+
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger("bauplaner");
+    private final java.util.Set<String> reported = new java.util.HashSet<>();
+    private int errors;
+
+    /**
+     * Crash guard for the test phase: a bug in the mod must not end the game. The error goes to the log
+     * once per kind ("[Fehler]" with stack, read by /bauplaner diagnose) and one chat hint; the same error
+     * every frame is only counted.
+     */
+    private void guarded(String where, Runnable work) {
+        try {
+            work.run();
+        } catch (RuntimeException | LinkageError e) {
+            errors++;
+            StackTraceElement top = e.getStackTrace().length > 0 ? e.getStackTrace()[0] : null;
+            String kind = where + ":" + e.getClass().getName() + "@" + top;
+            if (reported.size() < 50 && reported.add(kind)) {
+                LOG.error("[Fehler] {} ({}): {}", where, errors, e.toString(), e);
+                if (reported.size() == 1) McCompat.chat(Minecraft.getInstance(), Component.literal(
+                        "[Bauplaner] Interner Fehler (" + e.getClass().getSimpleName() + "), das Spiel läuft weiter. Bitte /bauplaner diagnose ausführen und die Datei schicken.")
+                        .withStyle(net.minecraft.ChatFormatting.GOLD));
+            }
+        }
+    }
+
+    /** Errors caught by the crash guard since start (for the diagnose report). */
+    public int errors() { return errors; }
 
     /** Joined a world or server: restore its saved placement. */
     public void join(Minecraft mc) {
@@ -96,8 +119,16 @@ public final class HologramClient {
      * Right click on a block, before anything is sent. {@link InteractionResult#FAIL} means: drop the click
      * (nothing placed, nothing sent); {@link InteractionResult#PASS}: carry on normally.
      */
-    public InteractionResult use(Player player, Level level, InteractionHand hand, BlockHitResult hit) { return assist.onUse(player, level, hand, hit); }
+    public InteractionResult use(Player player, Level level, InteractionHand hand, BlockHitResult hit) {
+        InteractionResult[] r = { InteractionResult.PASS };
+        guarded("rechtsklick", () -> r[0] = assist.onUse(player, level, hand, hit));
+        return r[0];
+    }
 
     /** Left click on a block, before anything is sent; FAIL keeps a correct plan block from being broken. */
-    public InteractionResult attack(Player player, Level level, BlockPos pos) { return assist.onAttack(player, level, pos); }
+    public InteractionResult attack(Player player, Level level, BlockPos pos) {
+        InteractionResult[] r = { InteractionResult.PASS };
+        guarded("linksklick", () -> r[0] = assist.onAttack(player, level, pos));
+        return r[0];
+    }
 }

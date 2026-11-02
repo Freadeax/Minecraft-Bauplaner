@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T19:07:27.604Z",
+  "updatedAt": "2026-11-02T19:16:30.126Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -4088,7 +4088,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T18:46:03.589Z"
+      "updatedAt": "2026-11-02T19:16:30.126Z"
     },
     {
       "id": "GAME-03",
@@ -9000,6 +9000,27 @@
           "done": 5,
           "total": 6,
           "next": "Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); GPU-Upload großer Szenen bleibt im Hauptthread."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T19:16:30.126Z",
+      "kind": "progress",
+      "items": [
+        "GAME-07"
+      ],
+      "summary": "Absturzschutz der Client-Mod für die Testphase: Fehler in Tick, Zeichnen, HUD und Klicks beenden das Spiel nicht, landen als [Fehler] im Log mit Chat-Hinweis auf /bauplaner diagnose",
+      "files": [
+        "docs/architecture/MOD_HOLOGRAM.md",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-07",
+          "status": "implemented",
+          "done": 8,
+          "total": 10,
+          "next": "Philipp testet 0.7.0 auf server.lmnt-gaming.net (Bauabschnitte aus seinem Projekt, Röntgensicht mit Shader); danach Stufe 6."
         }
       ]
     }
