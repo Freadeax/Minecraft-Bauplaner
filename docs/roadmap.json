@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T18:46:03.589Z",
+  "updatedAt": "2026-11-02T19:07:27.604Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -1980,7 +1980,7 @@
     },
     {
       "id": "PERF-04",
-      "title": "Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau",
+      "title": "Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart",
       "phase": "P3",
       "priority": "P1",
       "status": "implemented",
@@ -2001,7 +2001,15 @@
         "apps/web/src/app/importFile.ts",
         "tests/background-jobs.test.mjs",
         "tests/e2e/background-jobs.e2e.mjs",
-        "docs/architecture/BACKGROUND_JOBS.md"
+        "docs/architecture/BACKGROUND_JOBS.md",
+        "apps/web/src/app/context.tsx",
+        "apps/web/src/app/repository.ts",
+        "apps/web/src/app/idbRepository.ts",
+        "packages/application/src/catalogSync.ts",
+        "packages/application/src/repository.ts",
+        "packages/domain/src/buildings.ts",
+        "tests/library-start.test.mjs",
+        "tests/e2e/library-start.e2e.mjs"
       ],
       "legacyIds": [],
       "steps": [
@@ -2027,16 +2035,22 @@
         },
         {
           "id": "PERF-04-S05",
-          "title": "Bibliotheksstart (Entpacken) und Katalogkennwerte sehr großer Versionen im Hintergrund; Abnahme auf echten Geräten, Firefox/Safari.",
+          "title": "Bibliotheksstart im Hintergrund: mitgelieferten Katalog erzeugen, Auslieferung planen und Katalogkennwerte aller Versionen im Worker; Seite schreibt nur den Plan und entpackt in Scheiben, Fortschritt auf dem Startbildschirm, Rückfall ohne Worker.",
+          "done": true
+        },
+        {
+          "id": "PERF-04-S06",
+          "title": "Abnahme auf echten Geräten (Philipps Rechner mit Olympus), Firefox/Safari; GPU-Upload großer Szenen in Stücken.",
           "done": false
         }
       ],
       "acceptance": [
         "Ergebnisse (Prüfsumme, Version-ID, gepackte Zellen, 3D-Netz, Exportdatei) sind gleich wie auf dem direkten Weg.",
         "Abbrechen beendet die Berechnung sofort; nichts wird gespeichert oder heruntergeladen.",
-        "Ein 927 000-Block-Litematic blockiert die Seite beim Speichern nicht mehr in langen Stücken (vorher bis 17 s)."
+        "Ein 927 000-Block-Litematic blockiert die Seite beim Speichern nicht mehr in langen Stücken (vorher bis 17 s).",
+        "Der Start blockiert die Seite nicht mehr in langen Stücken (vorher bei jedem Start 3–4 s am Stück); die Bibliothek ist danach dieselbe wie auf dem direkten Weg."
       ],
-      "next": "Bibliotheksstart und Katalogkennwerte sehr großer Versionen auslagern; Abnahme auf Philipps Rechner mit Olympus (S05).",
+      "next": "Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); GPU-Upload großer Szenen bleibt im Hauptthread.",
       "blockers": [],
       "evidence": [
         {
@@ -2050,6 +2064,14 @@
         {
           "path": "docs/architecture/BACKGROUND_JOBS.md",
           "note": "Aufträge, Vertrauensregel, Caches, Schwellen, Messung, Grenzen."
+        },
+        {
+          "path": "tests/library-start.test.mjs",
+          "note": "Worker-Start schreibt genau das, was seedSamples schreibt; Kennwerte gleich wie im Katalog; nichts zu schreiben beim zweiten Start; beschädigte Version stoppt den Start nicht."
+        },
+        {
+          "path": "tests/e2e/library-start.e2e.mjs",
+          "note": "Chromium: Fortschritt beim Start, längste Blockade < 1,5 s, Katalog vollständig, Neuladen schreibt nichts, Datencheck ohne Befund; Start ohne Worker und mit defektem Worker."
         }
       ],
       "verification": {
@@ -2060,7 +2082,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T13:48:27.653Z"
+      "updatedAt": "2026-11-02T19:07:27.604Z"
     },
     {
       "id": "VIEW-01",
@@ -8943,6 +8965,41 @@
           "done": 8,
           "total": 10,
           "next": "Philipp testet 0.7.0 auf server.lmnt-gaming.net (Bauabschnitte aus seinem Projekt, Röntgensicht mit Shader); danach Stufe 6."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T19:07:27.604Z",
+      "kind": "progress",
+      "items": [
+        "PERF-04"
+      ],
+      "summary": "Bibliotheksstart im Worker (Auftrag library): Katalog erzeugen, Seed planen, Kennwerte; Startbildschirm mit Fortschritt; Blockierung beim Start 4,6 s → 0,8 s; nur Chromium geprüft",
+      "files": [
+        "apps/web/src/app/context.tsx",
+        "apps/web/src/app/idbRepository.ts",
+        "apps/web/src/app/repository.ts",
+        "apps/web/src/jobs/jobs.css",
+        "apps/web/src/jobs/jobs.ts",
+        "apps/web/src/jobs/library.ts",
+        "apps/web/src/jobs/libraryJob.ts",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/BACKGROUND_JOBS.md",
+        "packages/application/src/catalogSync.ts",
+        "packages/application/src/index.ts",
+        "packages/application/src/repository.ts",
+        "packages/domain/src/buildings.ts",
+        "tests/e2e/library-start.e2e.mjs",
+        "tests/library-start.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-04",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); GPU-Upload großer Szenen bleibt im Hauptthread."
         }
       ]
     }

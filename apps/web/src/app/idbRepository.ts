@@ -175,6 +175,8 @@ export class IdbRepository implements Repository {
     for (const v of list) checkSchemaVersion('Version', v);
     return list;
   }
+  /** Raw records, cells still packed (PERF-04-S05): the library start unpacks them in slices and hands them to the worker. */
+  async listVersionRecords() { return this.all<unknown>('versions'); }
   async saveVersion(version: AssetVersion) { await this.applyBatch({ versions: [version] }); }
 
   async listCollections(): Promise<Collection[]> { return (await this.all<unknown>('collections')).map(checkCollectionRecord); }

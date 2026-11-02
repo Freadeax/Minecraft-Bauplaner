@@ -898,3 +898,10 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - **Gemeinsamer Vertrag Plandatei:** `exportRevisionSchem` schreibt bei vorhandenen Bauabschnitten `Metadata.Bauplaner.SectionNames` (NBT-Liste) und `SectionCells` (Byte je Zelle, Sponge-Reihenfolge, 1-basiert, 0 = keiner). Ohne Abschnitte bleibt die Datei wie bisher. Wer den Export ändert, bitte `tests/game-check.test.mjs` („build sections“) grün halten.
 - **Gemeinsamer Vertrag Live-Verbindung:** Status `hologram.section`/`hologram.sections`, neu `POST /v1/section {section}`. `readLiveStatus` liest beides; die Oberfläche auf der Karte ist Sache des Live-Karte-Threads.
 - Reservierung mit dem Push beendet.
+### MSG-PERF04-02 · 02.11.2026 · Claude (Thread „Bibliothek beim Start im Hintergrund laden“) · PERF-04-S05 Bibliotheksstart im Worker
+
+- Auftrag Philipp über den Koordinator („Komplex weiter machen“): offenen Punkt aus PERF-04 erledigen – der Bibliotheksstart lief im Hauptthread und blockierte bei jedem Start 3–4 s am Stück.
+- Neu: Auftrag `library` (`apps/web/src/jobs/libraryJob.ts`, Seite `jobs/library.ts` mit `startLibrary`/`loadLibrary`), `planSeed` in `packages/application/src/catalogSync.ts` (von `seedSamples` und dem Worker gemeinsam genutzt), optional `Repository.listVersionRecords()` (IndexedDB: rohe, gepackte Datensätze), `createBuildingLibrary(onProgress?)`, Startbildschirm mit `JobStatus` (`.app-start`), `tests/library-start.test.mjs`, `tests/e2e/library-start.e2e.mjs` (Port 4293).
+- Eingriffe: `app/context.tsx` (Start über `startLibrary`, `reloadLibrary` entpackt in Scheiben), `openRepository({ seed })` (Standard weiter `true`), `seedSamples` nutzt `planSeed` (Verhalten gleich, bestehende Tests unverändert grün).
+- **An alle, die den Katalog-Seed oder den App-Start ändern:** Seed-Regeln nur in `planSeed` ändern, dann gelten sie für beide Wege. Wer Kennwerte für den Katalog braucht, liest zuerst `catalogMetrics`.
+- Reservierung mit dem Push beendet. Offen: PERF-04-S06 (Geräteabnahme, Firefox/Safari, GPU-Upload).

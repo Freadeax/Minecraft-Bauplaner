@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-02T18:46:03.589Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-02T19:07:27.604Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -33,7 +33,7 @@ Stand: 2026-11-02T18:46:03.589Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 - **EDIT-04 · Kreativwerkzeuge aus dem Planer-Vergleich: Symmetrie, Kurven, Naturwerkzeuge, Oberflächenmaske, Farbpaletten, Bild → Blöcke** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: Spielprüfung gespiegelter Zustände; danach Gelände-Werkzeuge auf Projektgelände (eigener Thread) und Symmetrie/Kurven im Mod.
 - **ENTITY-01 · Gemälde, Rahmen, Rüstungsständer und Blockinhalte** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Export mit Entities im Spiel prüfen; Entities bei Auswahl-Verschieben in der Werkstatt mitnehmen; Truhen-/Schildinhalte bearbeiten.
 - **MAP-04 · Weltbuilder vertiefen: Löschen und Entfernen für alle Objekte der Weltkarte, Mehrfachauswahl, Kontextmenü, gemeinsames Rückgängig, Duplizieren/Drehen/Spiegeln, Wegecken, Ebenen, Objektliste** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06); denkbare Folge: benannte Gruppen/Sperren mit Schemaerweiterung, abgestimmt mit der Mod.
-- **PERF-04 · Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Bibliotheksstart und Katalogkennwerte sehr großer Versionen auslagern; Abnahme auf Philipps Rechner mit Olympus (S05).
+- **PERF-04 · Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); GPU-Upload großer Szenen bleibt im Hauptthread.
 - **LIB-05 · Bibliothek im Stil der Vorlagen: Gestaltungsregeln, Baukasten, neu gezeichnete Gebäude und Generatoren** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: LIB-05-S07: Untergrund innen, Interieur, Technik; Abnahme neuer Gebäude im Spiel durch Philipp.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
@@ -126,7 +126,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 |---|---|---|---:|---|---|---|
 | [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | ⏳ Offen | 0/2 | QA-01, VIEW-02 | ausstehend | ausstehend |
 | [UI-02](#ui-02) | App-Hülle, Navigation und Handyoberfläche überarbeiten | ✅ Im beschriebenen Umfang geprüft | 4/4 | UI-01, QA-01 | ausstehend | ausstehend |
-| [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau | 🧩 Implementiert · Abnahme offen | 4/5 | PERF-01, MODEL-01, ARCH-02 | ausstehend | ausstehend |
+| [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart | 🧩 Implementiert · Abnahme offen | 5/6 | PERF-01, MODEL-01, ARCH-02 | ausstehend | ausstehend |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen | 5/6 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material | 🧩 Implementiert · Abnahme offen | 6/7 | VIEW-02, BUILD-01, MAT-01 | ausstehend | ausstehend |
 | [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel | 🧩 Implementiert · Abnahme offen | 5/6 | BLOCK-01, LIB-04, UPDATE-01 | ausstehend | ausstehend |
@@ -847,23 +847,24 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-04
 
-**Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Große Modelle flüssig berechnen“ · Aktualisiert: 2026-11-02T13:48:27.653Z
+**Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Große Modelle flüssig berechnen“ · Aktualisiert: 2026-11-02T19:07:27.604Z
 
 - [x] PERF-04-S01: Gemeinsame Auftragsschicht: ein Worker je Auftrag, Fortschritt, Abbrechen per terminate, Zeitlimit, Rückfall ohne Worker; Zellen als übertragbare Spalten.
 - [x] PERF-04-S02: Litematic-Import und Speichern großer Versionen (Prüfsumme, ID, Packen, Kennwerte) im Worker; versiegelte Payloads ohne erneute Kopie.
 - [x] PERF-04-S03: 3D-Ansicht und Standbilder mit Licht ab 120 000 Zellen im Worker (Renderer-Schnappschuss, byte-gleiches Netz); 3D-Export im Worker mit Schrittanzeige.
 - [x] PERF-04-S04: Versionsvergleich und Update-Vorschau großer Stände im Worker.
-- [ ] PERF-04-S05: Bibliotheksstart (Entpacken) und Katalogkennwerte sehr großer Versionen im Hintergrund; Abnahme auf echten Geräten, Firefox/Safari.
+- [x] PERF-04-S05: Bibliotheksstart im Hintergrund: mitgelieferten Katalog erzeugen, Auslieferung planen und Katalogkennwerte aller Versionen im Worker; Seite schreibt nur den Plan und entpackt in Scheiben, Fortschritt auf dem Startbildschirm, Rückfall ohne Worker.
+- [ ] PERF-04-S06: Abnahme auf echten Geräten (Philipps Rechner mit Olympus), Firefox/Safari; GPU-Upload großer Szenen in Stücken.
 
-**Abnahme:** Ergebnisse (Prüfsumme, Version-ID, gepackte Zellen, 3D-Netz, Exportdatei) sind gleich wie auf dem direkten Weg. Abbrechen beendet die Berechnung sofort; nichts wird gespeichert oder heruntergeladen. Ein 927 000-Block-Litematic blockiert die Seite beim Speichern nicht mehr in langen Stücken (vorher bis 17 s).
+**Abnahme:** Ergebnisse (Prüfsumme, Version-ID, gepackte Zellen, 3D-Netz, Exportdatei) sind gleich wie auf dem direkten Weg. Abbrechen beendet die Berechnung sofort; nichts wird gespeichert oder heruntergeladen. Ein 927 000-Block-Litematic blockiert die Seite beim Speichern nicht mehr in langen Stücken (vorher bis 17 s). Der Start blockiert die Seite nicht mehr in langen Stücken (vorher bei jedem Start 3–4 s am Stück); die Bibliothek ist danach dieselbe wie auf dem direkten Weg.
 
-**Nächste Aktion:** Bibliotheksstart und Katalogkennwerte sehr großer Versionen auslagern; Abnahme auf Philipps Rechner mit Olympus (S05).
+**Nächste Aktion:** Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); GPU-Upload großer Szenen bleibt im Hauptthread.
 
 **Prüfstand:** Node- und Chromium-Prüfung bestanden; echte Geräte und andere Browser offen.
 
-**Nachweise:** [tests/background-jobs.test.mjs](../tests/background-jobs.test.mjs) — Spaltenübergabe, Versiegeln, Caches, byte-gleiches Netz, Exportfortschritt, Auftragsclient mit Abbrechen und Fehlern.; [tests/e2e/background-jobs.e2e.mjs](../tests/e2e/background-jobs.e2e.mjs) — Chromium: 130 000 Blöcke importieren, speichern, Datencheck, STL wasserdicht; Abbrechen; Update-Vorschau und Vergleich über den Worker.; [docs/architecture/BACKGROUND_JOBS.md](architecture/BACKGROUND_JOBS.md) — Aufträge, Vertrauensregel, Caches, Schwellen, Messung, Grenzen.
+**Nachweise:** [tests/background-jobs.test.mjs](../tests/background-jobs.test.mjs) — Spaltenübergabe, Versiegeln, Caches, byte-gleiches Netz, Exportfortschritt, Auftragsclient mit Abbrechen und Fehlern.; [tests/e2e/background-jobs.e2e.mjs](../tests/e2e/background-jobs.e2e.mjs) — Chromium: 130 000 Blöcke importieren, speichern, Datencheck, STL wasserdicht; Abbrechen; Update-Vorschau und Vergleich über den Worker.; [docs/architecture/BACKGROUND_JOBS.md](architecture/BACKGROUND_JOBS.md) — Aufträge, Vertrauensregel, Caches, Schwellen, Messung, Grenzen.; [tests/library-start.test.mjs](../tests/library-start.test.mjs) — Worker-Start schreibt genau das, was seedSamples schreibt; Kennwerte gleich wie im Katalog; nichts zu schreiben beim zweiten Start; beschädigte Version stoppt den Start nicht.; [tests/e2e/library-start.e2e.mjs](../tests/e2e/library-start.e2e.mjs) — Chromium: Fortschritt beim Start, längste Blockade < 1,5 s, Katalog vollständig, Neuladen schreibt nichts, Datencheck ohne Befund; Start ohne Worker und mit defektem Worker.
 
-**Dateiumfang:** `apps/web/src/jobs/`, `packages/voxel/src/cellColumns.ts`, `packages/voxel/src/validation.ts`, `packages/domain/src/library.ts`, `packages/domain/src/versionStorage.ts`, `apps/web/src/viewer/backgroundMesh.ts`, `apps/web/src/blockmodels/snapshot.ts`, `apps/web/src/app/importFile.ts`, `tests/background-jobs.test.mjs`, `tests/e2e/background-jobs.e2e.mjs`, `docs/architecture/BACKGROUND_JOBS.md`. **Abhängigkeiten:** PERF-01, MODEL-01, ARCH-02. **Alte IDs:** —.
+**Dateiumfang:** `apps/web/src/jobs/`, `packages/voxel/src/cellColumns.ts`, `packages/voxel/src/validation.ts`, `packages/domain/src/library.ts`, `packages/domain/src/versionStorage.ts`, `apps/web/src/viewer/backgroundMesh.ts`, `apps/web/src/blockmodels/snapshot.ts`, `apps/web/src/app/importFile.ts`, `tests/background-jobs.test.mjs`, `tests/e2e/background-jobs.e2e.mjs`, `docs/architecture/BACKGROUND_JOBS.md`, `apps/web/src/app/context.tsx`, `apps/web/src/app/repository.ts`, `apps/web/src/app/idbRepository.ts`, `packages/application/src/catalogSync.ts`, `packages/application/src/repository.ts`, `packages/domain/src/buildings.ts`, `tests/library-start.test.mjs`, `tests/e2e/library-start.e2e.mjs`. **Abhängigkeiten:** PERF-01, MODEL-01, ARCH-02. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

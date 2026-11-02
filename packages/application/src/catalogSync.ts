@@ -1,5 +1,5 @@
 import { canonicalJson } from '../../domain/src/hash.js';
-import { addAssetVersion } from '../../domain/src/library.js';
+import { addAssetVersion, updateAssetMeta } from '../../domain/src/library.js';
 import type { Asset, AssetVersion } from '../../domain/src/types.js';
 
 /**
@@ -55,4 +55,35 @@ export async function planCatalogDelivery(stored: ReadonlyMap<string, Asset>, st
     assets.push(r.asset); versions.push(r.version); delivered.set(asset.id, label);
   }
   return { assets, versions, delivered };
+}
+
+export interface SeedPlan {
+  /** New shipped assets, demo assets with refreshed metadata and assets with a delivered version (CAS base = stored revision). */
+  readonly assets: readonly Asset[];
+  /** Versions of the new assets plus delivered versions. */
+  readonly versions: readonly AssetVersion[];
+}
+
+/**
+ * What seeding the shipped catalogue writes (B9, UPDATE-01, PERF-04-S05): every
+ * shipped asset that is not stored yet with its versions, shipped metadata
+ * (description, tags) for stored demo assets, and delivered new geometry.
+ * Never overwrites user assets, archive state or version lists. Stored
+ * versions are only read when a delivery candidate exists. Empty plan = nothing to write.
+ * Shared by the page (`seedSamples`) and the start in the background worker.
+ */
+export async function planSeed(stored: ReadonlyMap<string, Asset>, storedVersions: () => Promise<ReadonlyMap<string, AssetVersion>>, shipments: readonly CatalogShipment[]): Promise<SeedPlan> {
+  const shipped = shipments.flatMap(l => l.assets), versions = shipments.flatMap(l => l.versions);
+  const added = shipped.filter(a => !stored.has(a.id));
+  const current = new Map(stored);
+  for (const a of shipped) {
+    const s = stored.get(a.id);
+    if (s?.demo && (s.description !== a.description || s.tags.join('|') !== a.tags.join('|'))) current.set(a.id, updateAssetMeta(s, { description: a.description, tags: a.tags }));
+  }
+  const shipment = { assets: shipped, versions };
+  const delivery = catalogCandidates(current, shipment).length ? await planCatalogDelivery(current, await storedVersions(), shipment) : { assets: [], versions: [] };
+  for (const a of delivery.assets) current.set(a.id, a);
+  const changed = [...current.values()].filter(a => a !== stored.get(a.id));
+  if (!added.length && !changed.length) return { assets: [], versions: [] };
+  return { assets: [...added, ...changed], versions: [...versions.filter(v => added.some(a => a.id === v.assetId)), ...delivery.versions] };
 }

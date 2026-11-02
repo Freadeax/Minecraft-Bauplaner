@@ -1,6 +1,6 @@
 # Schwere Berechnungen im Hintergrund (PERF-04)
 
-Stand: 02.11.2026. Ziel: Die Seite friert bei großen Modellen nie ein. Lesen großer Dateien, Prüfsummen, Packen, 3D-Netz mit Licht, 3D-Export, Versionsvergleich und Update-Vorschau laufen in einem Web Worker, mit Fortschrittsanzeige und „Abbrechen“. Ergebnisse sind bitgenau dieselben wie im Hauptthread (Node-Prüfungen vergleichen beide Wege).
+Stand: 02.11.2026. Ziel: Die Seite friert bei großen Modellen nie ein. Lesen großer Dateien, Prüfsummen, Packen, 3D-Netz mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau und der Bibliotheksstart laufen in einem Web Worker, mit Fortschrittsanzeige und „Abbrechen“. Ergebnisse sind bitgenau dieselben wie im Hauptthread (Node-Prüfungen vergleichen beide Wege).
 
 ## Aufträge
 
@@ -14,11 +14,34 @@ Stand: 02.11.2026. Ziel: Die Seite friert bei großen Modellen nie ein. Lesen gr
 | `model` | `export3d/ModelExportPanel.tsx` | `exportModel` (Ansichtsmodell, Druckhülle, Dateischreiben) | immer im Browser |
 | `diff` | `schem/DiffView.tsx` | `diffPayloads` + farbige Vereinigung | ab 120 000 Zellen (beide Stände) |
 | `update` | `jobs/updates.ts` `prepareUpdateInBackground` (Projekt → Updates) | `prepareUpdate` mit Rebase und Folgen | ab 100 000 Zellen |
+| `library` | `jobs/library.ts` `startLibrary` (App-Start, `app/context.tsx`) | mitgelieferten Katalog erzeugen, gespeicherte Versionen entpacken, Auslieferung planen (`planSeed`), Katalogkennwerte aller neuesten Versionen | immer im Browser |
 
 - **Protokoll** (`protocol.ts`): `run {id, kind, input}` → `progress {step, fraction}` (höchstens alle 80 ms) → `done {result}` oder `error {message, code}`. Fehler kommen als lesbare deutsche Meldung an.
 - **Abbrechen** = `worker.terminate()`. Ein abgebrochener oder überholter Auftrag liefert nie ein Ergebnis; nichts wird gespeichert oder heruntergeladen. Zeitlimit 10 Minuten mit Hinweis „zu groß für diesen Rechner“.
 - **Rückfall:** ohne `Worker` (Node, sehr alte Browser) rechnet der Hauptthread wie vorher. Die 3D-Ansicht fällt bei einem Workerfehler auf den direkten Weg zurück.
 - **Anzeige:** `JobStatus.tsx` zeigt Titel, Schritt, Prozent, Sekunden und „Abbrechen“; in der 3D-Ansicht als Überlagerung (`.viewer-busy`), `data-mesh="pending|ready"` am Ansichtsrahmen.
+
+## Bibliotheksstart (S05)
+
+Vorher lief bei **jedem** Start im Hauptthread: alle 336 mitgelieferten Gebäude erzeugen und hashen (`createBuildingLibrary`, im Browser ~3 s am Stück), die Auslieferung geänderter Katalogbauten planen und beim ersten Öffnen der Bibliothek die Kennwerte jeder neuesten Version berechnen (~1 s, mit großen eigenen Bauten mehr).
+
+Jetzt (`jobs/library.ts`, `jobs/libraryJob.ts`):
+
+1. Die Seite öffnet die Datenbank (`openRepository({ seed: false })`) und liest Bauteile und die **rohen** Versionsdatensätze (`listVersionRecords`, Zellen noch gepackt – billig zu lesen und zu kopieren).
+2. Der Worker erzeugt den Katalog, entpackt die Datensätze, plant mit `planSeed` (dieselbe Funktion wie `seedSamples` in `app/repository.ts`) und berechnet die Kennwerte. Er schickt nur den Schreibplan (Versionen gepackt, Bytes übertragen) und die Kennwerte zurück.
+3. Die Seite schreibt den Plan selbst über `applyBatch` (Revisionsprüfung bleibt an einer Stelle; die Packbytes des Workers werden über `rememberPackedCells` wiederverwendet), übernimmt die Kennwerte in `catalogMetrics` und entpackt die Bibliothek in Scheiben zu 150 000 Zellen mit Pausen (`loadLibrary`, auch für `reloadLibrary`).
+4. Der Startbildschirm zeigt `JobStatus` „Bibliothek wird geladen“ mit Schritt und Prozent (`.app-start`).
+
+Zwei Tabs gleichzeitig: Revisionskonflikt beim Schreiben → bis zu zweimal neu von vorn. Ohne Worker oder bei einem Workerfehler seedet die Seite direkt wie vorher (`console.warn`), die App startet immer.
+
+Messung (Chromium headless, Cloud-Container, 336 Katalogbauten; Blockierung = Summe der Long Tasks bis zum Katalog):
+
+| | vorher | nachher |
+|---|---|---|
+| Neuladen, nur Katalog | 4,6 s, größter Block 2,8 s | 0,8 s, größter Block 0,12 s |
+| Neuladen mit eigenem Bau (600 000 Blöcke) | 6,7 s, größter Block 3,3 s | 0,5–0,8 s, größter Block 0,26 s |
+
+Die Zeit bis zum fertigen Katalog bleibt etwa gleich (~5 s), aber die Seite zeichnet und reagiert in dieser Zeit.
 
 ## Zellübergabe
 
@@ -54,10 +77,13 @@ Die verbleibenden Blockierungen sind das Hochladen der Geometrie auf die Grafikk
 ## Prüfungen
 
 - `tests/background-jobs.test.mjs` (Node, 11 Tests): verlustfreie Spaltenübergabe mit gleicher Prüfsumme, beschädigte Spalten und Limits abgewiesen, `createPayload`/`cropPayload` unverändert, gemerkte Prüfsumme und gepackte Zellen nur für versiegelte Payloads, Verbindungsprüfung wie vorher, Renderer-Schnappschuss ergibt byte-gleiches 3D-Netz, Fortschritt von Netz und Export ohne Einfluss auf die Datei, Auftragsclient mit Fortschritt, Fehlern, fremden Antworten, Abbrechen und Zeitlimit.
+- `tests/library-start.test.mjs` (Node, 3 Tests): Worker-Start schreibt genau das, was `seedSamples` schreibt, mit denselben Kennwerten wie der Katalog; zweiter Start schreibt nichts, eigene Bauten bekommen Kennwerte, veraltete Katalogangaben werden erneuert, Archivstand bleibt; beschädigte Version stoppt den Start nicht.
+- `tests/e2e/library-start.e2e.mjs` (Chromium): Fortschritt auf dem Startbildschirm, längste Blockade < 1,5 s, Katalog vollständig, Neuladen schreibt nichts, Datencheck ohne Befund; Start ohne Worker und mit defektem Worker.
 - `tests/e2e/background-jobs.e2e.mjs` (Chromium, 130 000 Blöcke): Import, 3D-Ansicht, Speichern, Datencheck ohne Befund nach Neuladen, STL wasserdicht; Abbrechen von 3MF-Export und Import; Update-Vorschau und Versionsvergleich über den Worker.
 
 ## Grenzen
 
-- Das Entpacken der Bibliothek beim Start und die Kennwerte sehr großer Versionen im Katalog laufen weiter im Hauptthread.
+- Der mitgelieferte Katalog wird bei jedem Start im Worker neu erzeugt (Zeit bis zum Katalog ~5 s); ein Zwischenspeicher je App-Version wäre der nächste Schritt.
+- Eine einzelne sehr große Version (900 000 Blöcke) wird beim Start in einem Stück entpackt (~0,2–0,3 s).
 - Hochladen auf die Grafikkarte und Sortieren durchsichtiger Flächen bleiben im Hauptthread.
 - Nur Chromium geprüft; Firefox/Safari und echte Geräte offen.

@@ -2764,3 +2764,32 @@ Mod 0.7.0: Bauabschnitte aus dem Planer im Spiel (Num /, /bauplaner abschnitt), 
 - `tests/game-check.test.mjs`
 - `tests/livelink.test.mjs`
 
+## 2026-11-02T19:07:27.604Z · progress
+
+**Aufgaben:** PERF-04
+
+Bibliotheksstart im Worker (Auftrag library): Katalog erzeugen, Seed planen, Kennwerte; Startbildschirm mit Fortschritt; Blockierung beim Start 4,6 s → 0,8 s; nur Chromium geprüft
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-04 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); GPU-Upload großer Szenen bleibt im Hauptthread. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/context.tsx`
+- `apps/web/src/app/idbRepository.ts`
+- `apps/web/src/app/repository.ts`
+- `apps/web/src/jobs/jobs.css`
+- `apps/web/src/jobs/jobs.ts`
+- `apps/web/src/jobs/library.ts`
+- `apps/web/src/jobs/libraryJob.ts`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/BACKGROUND_JOBS.md`
+- `packages/application/src/catalogSync.ts`
+- `packages/application/src/index.ts`
+- `packages/application/src/repository.ts`
+- `packages/domain/src/buildings.ts`
+- `tests/e2e/library-start.e2e.mjs`
+- `tests/library-start.test.mjs`
+

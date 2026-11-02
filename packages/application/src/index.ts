@@ -5,5 +5,5 @@ export { MemoryRepository } from './memoryRepository.js';
 export { assetRevision, checkAssetBatch, checkStorageBatch, nextAssetRevision } from './assetConcurrency.js';
 export { computeProject, mergeBuildItems } from './projectComputation.js';
 export type { ComputeInput, ProjectComputation, BuildItemSummary } from './projectComputation.js';
-export { catalogCandidates, nextReleaseLabel, planCatalogDelivery } from './catalogSync.js';
-export type { CatalogShipment, CatalogDelivery } from './catalogSync.js';
+export { catalogCandidates, nextReleaseLabel, planCatalogDelivery, planSeed } from './catalogSync.js';
+export type { CatalogShipment, CatalogDelivery, SeedPlan } from './catalogSync.js';

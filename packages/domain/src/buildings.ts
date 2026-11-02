@@ -318,13 +318,14 @@ export interface BuildingLibrary { readonly assets: readonly Asset[]; readonly v
 
 const PROVENANCE = { author: 'Minecraft-Bauplaner', source: 'eigener synthetischer Entwurf (Gebäudegenerator)', license: 'frei für dieses Projekt' };
 
-/** Builds every shipped building as demo asset with one immutable version 1.0. */
-export async function createBuildingLibrary(): Promise<BuildingLibrary> {
+/** Builds every shipped building as demo asset with one immutable version 1.0. `onProgress` gets (done, total) after each building. */
+export async function createBuildingLibrary(onProgress?: (done: number, total: number) => void): Promise<BuildingLibrary> {
   const assets: Asset[] = [], versions: AssetVersion[] = [];
   for (const spec of BUILDING_SPECS) {
     const asset = createAsset({ id: spec.id, name: spec.name, description: spec.description, tags: specTags(spec), provenance: PROVENANCE, demo: true });
     const r = await addAssetVersion(asset, { payload: spec.payload(), label: '1.0', connectors: spec.connectors ?? [], source: { format: 'demo' } });
     assets.push(r.asset); versions.push(r.version);
+    onProgress?.(versions.length, BUILDING_SPECS.length);
   }
   return { assets, versions };
 }

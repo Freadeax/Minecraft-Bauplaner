@@ -25,6 +25,12 @@ export interface Repository {
   /** Incoming revision is the expected stored base; reload after saving to obtain the incremented revision. */
   saveAsset(asset: Asset): Promise<void>;
   listVersions(): Promise<AssetVersion[]>;
+  /**
+   * Optional (PERF-04-S05): the stored version records as they are, cells still
+   * packed (see `unpackVersionOrDamaged`). Cheap to read and to hand to a
+   * worker; the caller unpacks and checks them itself.
+   */
+  listVersionRecords?(): Promise<unknown[]>;
   saveVersion(version: AssetVersion): Promise<void>;
   getOriginal(sha256: string): Promise<OriginalFile | null>;
   listOriginalHashes(): Promise<string[]>;
