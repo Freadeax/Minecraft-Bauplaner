@@ -31,6 +31,13 @@ export interface Repository {
    * worker; the caller unpacks and checks them itself.
    */
   listVersionRecords?(): Promise<unknown[]>;
+  /**
+   * Optional (PERF-04-S06): the catalogue cache of the app start, stored as
+   * given and returned unchecked (undefined when none). Only a convenience:
+   * losing it costs one rebuild of the shipped catalogue, never data.
+   */
+  getCatalogCache?(): Promise<unknown>;
+  saveCatalogCache?(cache: unknown): Promise<void>;
   saveVersion(version: AssetVersion): Promise<void>;
   getOriginal(sha256: string): Promise<OriginalFile | null>;
   listOriginalHashes(): Promise<string[]>;

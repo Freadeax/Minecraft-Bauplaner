@@ -6,6 +6,10 @@ import { catalogMetrics } from '../app/metricsCache';
 import { pause, runJob, workersAvailable } from './client';
 import type { JobOptions } from './client';
 import type { JobProgress } from './protocol';
+import type { LibraryJobOutput } from './libraryJob';
+
+/** Set by Vite at build time (vite.config.mjs): fingerprint of the core code; empty on the dev server. */
+declare const __CATALOG_KEY__: string | undefined;
 
 /**
  * App start of the library (PERF-04-S05). The shipped catalogue is built, the
@@ -44,14 +48,29 @@ export async function loadLibrary(repo: Repository, onProgress?: (progress: JobP
 
 /** Seeds the shipped catalogue through the worker and adopts its catalogue metrics. */
 async function seedInBackground(repo: Repository, options: Pick<JobOptions, 'onProgress' | 'signal'>, attempt = 0): Promise<void> {
-  const [assets, records] = await Promise.all([repo.listAssets(), repo.listVersionRecords ? repo.listVersionRecords() : repo.listVersions().then(l => l.map(packVersion))]);
-  const out = await runJob('library', { assets, records }, {
+  const catalogKey = typeof __CATALOG_KEY__ === 'string' ? __CATALOG_KEY__ : '';
+  const [assets, records, cache] = await Promise.all([
+    repo.listAssets(), repo.listVersionRecords ? repo.listVersionRecords() : repo.listVersions().then(l => l.map(packVersion)),
+    // A cache that cannot be read only costs one rebuild.
+    catalogKey && repo.getCatalogCache ? repo.getCatalogCache().catch(() => undefined) : undefined,
+  ]);
+  const out = await runJob('library', { assets, records, ...(catalogKey && { catalogKey }), ...(cache !== undefined && { cache }) }, {
     ...options,
     // The worker computes up to 95 %, the page then writes and unpacks.
     onProgress: p => options.onProgress?.({ step: p.step, fraction: p.fraction === null ? null : p.fraction * 0.95 }),
   });
   for (const [id, metrics] of out.metrics) catalogMetrics.set(id, metrics);
-  if (!out.assets.length && !out.versions.length) return;
+  markStart(out.source);
+  if (out.assets.length || out.versions.length) await writePlan(repo, out, options, attempt);
+  if (out.cache && repo.saveCatalogCache) await repo.saveCatalogCache(out.cache).catch(e => console.warn('Katalogspeicher nicht geschrieben:', e));
+}
+
+/** Test hook and diagnosis: where the shipped catalogue of this start came from (`cache`, `built`, `direct`). */
+function markStart(source: string): void {
+  try { document.documentElement.dataset.libraryStart = source; } catch { /* no document (Node) */ }
+}
+
+async function writePlan(repo: Repository, out: { assets: LibraryJobOutput['assets']; versions: LibraryJobOutput['versions'] }, options: Pick<JobOptions, 'onProgress' | 'signal'>, attempt: number): Promise<void> {
   options.onProgress?.({ step: 'Neue Katalogeinträge speichern', fraction: 0.95 });
   const versions = out.versions.map(record => {
     const v = unpackVersion(record);
@@ -73,7 +92,7 @@ async function seedInBackground(repo: Repository, options: Pick<JobOptions, 'onP
 
 /** The whole library start: seed (worker or page) and load. */
 export async function startLibrary(repo: Repository, options: Pick<JobOptions, 'onProgress' | 'signal'> = {}): Promise<LoadedLibrary> {
-  if (!workersAvailable()) { await seedSamples(repo); return loadLibrary(repo, options.onProgress); }
+  if (!workersAvailable()) { await seedSamples(repo); markStart('direct'); return loadLibrary(repo, options.onProgress); }
   try {
     await seedInBackground(repo, options);
   } catch (e) {
@@ -82,6 +101,7 @@ export async function startLibrary(repo: Repository, options: Pick<JobOptions, '
     options.onProgress?.({ step: 'Mitgelieferte Gebäude erzeugen (direkt)', fraction: null });
     await pause();
     await seedSamples(repo);
+    markStart('direct');
   }
   return loadLibrary(repo, options.onProgress);
 }

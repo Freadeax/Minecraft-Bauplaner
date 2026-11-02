@@ -41,7 +41,15 @@ Messung (Chromium headless, Cloud-Container, 336 Katalogbauten; Blockierung = Su
 | Neuladen, nur Katalog | 4,6 s, größter Block 2,8 s | 0,8 s, größter Block 0,12 s |
 | Neuladen mit eigenem Bau (600 000 Blöcke) | 6,7 s, größter Block 3,3 s | 0,5–0,8 s, größter Block 0,26 s |
 
-Die Zeit bis zum fertigen Katalog bleibt etwa gleich (~5 s), aber die Seite zeichnet und reagiert in dieser Zeit.
+Die Zeit bis zum fertigen Katalog blieb dabei etwa gleich (~5 s), aber die Seite zeichnet und reagiert in dieser Zeit.
+
+### Katalogspeicher je App-Version (S07)
+
+- `vite.config.mjs` berechnet beim Bauen `__CATALOG_KEY__`: SHA-256 über alle Quelldateien unter `packages/` (Geometrie, Prüfsummen, IDs, Kennwerte hängen nur davon ab). Der Entwicklungsserver setzt keinen Schlüssel – dort gibt es keinen Speicher.
+- Der Worker legt den gebauten Katalog (Bauteile, Versionen gepackt) und die Kennwerte nach Version-ID als `CatalogCache` zurück; die Seite speichert ihn im `meta`-Speicher (Schlüssel `catalogCache`, keine Migration). Passt beim nächsten Start der Schlüssel, nimmt der Worker Katalog und Kennwerte daraus und berechnet nur Kennwerte neuer Versionen (dann wird der Speicher erneuert).
+- Anderer Schlüssel, beschädigter oder unvollständiger Datensatz → neu bauen, Ergebnis gleich. Der Speicher ist reine Bequemlichkeit: Verlust kostet einmal Neubau, nie Daten. Er ist nicht Teil von Sicherungen.
+- `document.documentElement.dataset.libraryStart` = `built` | `cache` | `direct` (Testhaken).
+- Messung: Neuladen bis zum Katalog 5,1 s → 1,0 s; mit eigenem 600.000-Block-Bau beim ersten Start danach 3,2 s (Kennwerte des neuen Baus), dann 1,0 s.
 
 ## Zellübergabe
 
@@ -77,13 +85,13 @@ Die verbleibenden Blockierungen sind das Hochladen der Geometrie auf die Grafikk
 ## Prüfungen
 
 - `tests/background-jobs.test.mjs` (Node, 11 Tests): verlustfreie Spaltenübergabe mit gleicher Prüfsumme, beschädigte Spalten und Limits abgewiesen, `createPayload`/`cropPayload` unverändert, gemerkte Prüfsumme und gepackte Zellen nur für versiegelte Payloads, Verbindungsprüfung wie vorher, Renderer-Schnappschuss ergibt byte-gleiches 3D-Netz, Fortschritt von Netz und Export ohne Einfluss auf die Datei, Auftragsclient mit Fortschritt, Fehlern, fremden Antworten, Abbrechen und Zeitlimit.
-- `tests/library-start.test.mjs` (Node, 3 Tests): Worker-Start schreibt genau das, was `seedSamples` schreibt, mit denselben Kennwerten wie der Katalog; zweiter Start schreibt nichts, eigene Bauten bekommen Kennwerte, veraltete Katalogangaben werden erneuert, Archivstand bleibt; beschädigte Version stoppt den Start nicht.
+- `tests/library-start.test.mjs` (Node, 4 Tests; Test 4: Katalogspeicher mit passendem Schlüssel gibt exakt das gebaute Ergebnis ohne Bauen, anderer Schlüssel/beschädigt/fehlend baut neu): Worker-Start schreibt genau das, was `seedSamples` schreibt, mit denselben Kennwerten wie der Katalog; zweiter Start schreibt nichts, eigene Bauten bekommen Kennwerte, veraltete Katalogangaben werden erneuert, Archivstand bleibt; beschädigte Version stoppt den Start nicht.
 - `tests/e2e/library-start.e2e.mjs` (Chromium): Fortschritt auf dem Startbildschirm, längste Blockade < 1,5 s, Katalog vollständig, Neuladen schreibt nichts, Datencheck ohne Befund; Start ohne Worker und mit defektem Worker.
 - `tests/e2e/background-jobs.e2e.mjs` (Chromium, 130 000 Blöcke): Import, 3D-Ansicht, Speichern, Datencheck ohne Befund nach Neuladen, STL wasserdicht; Abbrechen von 3MF-Export und Import; Update-Vorschau und Versionsvergleich über den Worker.
 
 ## Grenzen
 
-- Der mitgelieferte Katalog wird bei jedem Start im Worker neu erzeugt (Zeit bis zum Katalog ~5 s); ein Zwischenspeicher je App-Version wäre der nächste Schritt.
+- Der erste Start nach einem App-Update baut den Katalog neu (~5 s bis zum Katalog, Seite bleibt bedienbar).
 - Eine einzelne sehr große Version (900 000 Blöcke) wird beim Start in einem Stück entpackt (~0,2–0,3 s).
 - Hochladen auf die Grafikkarte und Sortieren durchsichtiger Flächen bleiben im Hauptthread.
 - Nur Chromium geprüft; Firefox/Safari und echte Geräte offen.

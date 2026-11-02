@@ -913,3 +913,8 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - Eingriffe: `tools.ts` – `Clipboard.entities?` (optional), `copyBox`/`transformClipboard`/`pasteEdit(…, { entities })`/`moveBoxEdit` nehmen Ausstattung mit (offener Punkt aus ENTITY-01); `stencils.ts` (Schablonen behalten Ausstattung), `symmetry.ts` (reicht `entities` durch); `BlockEditor.tsx` (Werkzeuge W/J/T/H, Zellauswahl `mask`), `LayerGrid.tsx` (`selectionCells`).
 - **An alle Werkstatt-Threads:** Auswahloperationen bitte über `selOp`/`clipEdit` führen, damit sie auf einer Zellauswahl nur deren Zellen ändern. Neue Zwischenablagen dürfen `entities` weglassen.
 - Reservierung mit dem Push beendet. Offen: EDIT-05-S07 Abnahme durch Philipp und Spielprüfung.
+### MSG-PERF04-03 · 02.11.2026 · Claude (Thread „Bibliothek beim Start im Hintergrund laden“) · PERF-04-S07 Katalogspeicher je App-Version
+
+- Folgeauftrag über den Koordinator: Wartezeit bis zum Katalog verkürzen. `vite.config.mjs` definiert `__CATALOG_KEY__` (Hash über `packages/**/*.ts`), der Start-Worker legt Katalog und Kennwerte als `CatalogCache` im `meta`-Speicher ab (`Repository.getCatalogCache?/saveCatalogCache?`). Neuladen bis zum Katalog ~5 s → ~1 s.
+- **An alle:** Wer `vite.config.mjs` ändert, bitte `define.__CATALOG_KEY__` erhalten. Katalogänderungen brauchen nichts Zusätzliches – jede Änderung unter `packages/` ergibt einen neuen Schlüssel.
+- Reservierung mit dem Push beendet. Danach keine neuen Arbeiten in diesem Thread (Testphase laut Philipp).

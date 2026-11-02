@@ -2840,3 +2840,26 @@ Auswahl- und Formwerkzeuge: Zauberauswahl als Zellauswahl, wachsen/schrumpfen/ei
 - `tests/e2e/workshop-region.e2e.mjs`
 - `tests/editor-region.test.mjs`
 
+## 2026-11-02T19:41:48.238Z · progress
+
+**Aufgaben:** PERF-04
+
+Katalogspeicher je App-Version (Schlüssel aus packages/ beim Bauen, CatalogCache im meta-Speicher): Neuladen bis zum Katalog 5 s → 1 s; Rückfall bei anderem Schlüssel oder Schaden; nur Chromium geprüft
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-04 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); GPU-Upload großer Szenen bleibt im Hauptthread. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/idbRepository.ts`
+- `apps/web/src/jobs/library.ts`
+- `apps/web/src/jobs/libraryJob.ts`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/BACKGROUND_JOBS.md`
+- `packages/application/src/repository.ts`
+- `tests/e2e/library-start.e2e.mjs`
+- `tests/library-start.test.mjs`
+- `vite.config.mjs`
+

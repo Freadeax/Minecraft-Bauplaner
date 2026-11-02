@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T19:23:55.694Z",
+  "updatedAt": "2026-11-02T19:41:48.238Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -2010,7 +2010,8 @@
         "packages/application/src/repository.ts",
         "packages/domain/src/buildings.ts",
         "tests/library-start.test.mjs",
-        "tests/e2e/library-start.e2e.mjs"
+        "tests/e2e/library-start.e2e.mjs",
+        "vite.config.mjs"
       ],
       "legacyIds": [],
       "steps": [
@@ -2043,6 +2044,11 @@
           "id": "PERF-04-S06",
           "title": "Abnahme auf echten Geräten (Philipps Rechner mit Olympus), Firefox/Safari; GPU-Upload großer Szenen in Stücken.",
           "done": false
+        },
+        {
+          "id": "PERF-04-S07",
+          "title": "Katalogspeicher je App-Version: Kennung aus dem Kerncode beim Bauen, gebauter Katalog und Kennwerte im meta-Speicher; Neuladen bis zum Katalog ~5 s → ~1 s.",
+          "done": true
         }
       ],
       "acceptance": [
@@ -2083,7 +2089,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T19:07:27.604Z"
+      "updatedAt": "2026-11-02T19:41:48.238Z"
     },
     {
       "id": "VIEW-01",
@@ -9156,6 +9162,35 @@
           "done": 6,
           "total": 7,
           "next": "EDIT-05-S07: Abnahme durch Philipp in der Werkstatt (Zauberstab, Stapeln, Extrudieren, Wendel) und Spielprüfung gestapelter/gedrehter Bauteile mit Ausstattung."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T19:41:48.238Z",
+      "kind": "progress",
+      "items": [
+        "PERF-04"
+      ],
+      "summary": "Katalogspeicher je App-Version (Schlüssel aus packages/ beim Bauen, CatalogCache im meta-Speicher): Neuladen bis zum Katalog 5 s → 1 s; Rückfall bei anderem Schlüssel oder Schaden; nur Chromium geprüft",
+      "files": [
+        "apps/web/src/app/idbRepository.ts",
+        "apps/web/src/jobs/library.ts",
+        "apps/web/src/jobs/libraryJob.ts",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/BACKGROUND_JOBS.md",
+        "packages/application/src/repository.ts",
+        "tests/e2e/library-start.e2e.mjs",
+        "tests/library-start.test.mjs",
+        "vite.config.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-04",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); GPU-Upload großer Szenen bleibt im Hauptthread."
         }
       ]
     }

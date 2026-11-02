@@ -177,6 +177,14 @@ export class IdbRepository implements Repository {
   }
   /** Raw records, cells still packed (PERF-04-S05): the library start unpacks them in slices and hands them to the worker. */
   async listVersionRecords() { return this.all<unknown>('versions'); }
+  // PERF-04-S07: the catalogue cache lives in the existing `meta` store (key 'catalogCache'); no schema migration needed.
+  async getCatalogCache(): Promise<unknown> {
+    const raw = await this.run(['meta'], 'readonly', tx => req(tx.objectStore('meta').get('catalogCache')));
+    return (raw as { cache?: unknown } | undefined)?.cache;
+  }
+  async saveCatalogCache(cache: unknown): Promise<void> {
+    await this.run(['meta'], 'readwrite', tx => { tx.objectStore('meta').put({ key: 'catalogCache', cache }); });
+  }
   async saveVersion(version: AssetVersion) { await this.applyBatch({ versions: [version] }); }
 
   async listCollections(): Promise<Collection[]> { return (await this.all<unknown>('collections')).map(checkCollectionRecord); }

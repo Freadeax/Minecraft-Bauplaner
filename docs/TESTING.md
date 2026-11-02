@@ -684,3 +684,9 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `tests/e2e/workshop-region.e2e.mjs` 2/2 (Chromium 1400 px und 390 px Touch).
 - Nach Rebase auf main 1ac08e9 (LIB-05 Runde 2), erneut geprüft nach Rebase auf 68773a6 (Mod 0.7.0, Bibliotheksstart im Worker): `npm run check` grün (659 Tests, 658 bestanden, 1 übersprungen), `npm run test:e2e` 117/118 in 47 Dateien; der eine Ausfall `worldbuilder.e2e.mjs` (Weltkarte, von EDIT-05 nicht berührt) bestand im Einzellauf 2/2.
 - Grenzen: nur Chromium im Container; keine Abnahme durch Philipp und keine Spielprüfung (EDIT-05-S07).
+
+## PERF-04-S07 · Katalogspeicher je App-Version · 02.11.2026 · Claude
+- `tests/library-start.test.mjs` 4/4 (neu Test 4): Katalogspeicher mit passendem Schlüssel liefert ohne Bauen exakt dieselben Bauteile, Versionen und Kennwerte; eigener Bau ergänzt nur seine Kennwerte und erneuert den Speicher; anderer Schlüssel, fehlende oder beschädigte Version, Text oder null → neu gebaut mit gleichem Ergebnis; ohne Schlüssel kein Speicher.
+- `tests/e2e/library-start.e2e.mjs` 2/2: erster Start `built` mit 32-stelligem Schlüssel im meta-Speicher, Neuladen `cache`, Rückfall `direct`.
+- Messung (Chromium headless): Neuladen bis zum Katalog 5,1 s → 1,0 s; mit eigenem 600.000-Block-Bau 3,2 s beim ersten Start danach, dann 1,0 s; Blockierung weiter ≤ 0,6 s gesamt.
+- `npm run check` grün (650 Tests, 649 bestanden, 1 übersprungen), `npm run test:e2e` **118/118**. Nach Rebase auf main 951395f (EDIT-05): `npm run check` grün (664 Tests, 663 bestanden, 1 übersprungen), Browser `library-start`, `background-jobs`, `catalog`, `persistence`, `stability`, `workshop-tools`, `app` 21/21.

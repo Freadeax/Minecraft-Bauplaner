@@ -68,8 +68,16 @@ test('Bibliotheksstart im Hintergrund: Fortschritt, Seite bleibt bedienbar, Kata
   }));
   assert.equal(assets.length, TOTAL, 'every shipped building and sample was stored');
 
+  assert.equal(await p.evaluate(() => document.documentElement.dataset.libraryStart), 'built', 'first start builds the catalogue');
+  const cacheKey = await p.evaluate(() => new Promise(res => {
+    const r = indexedDB.open('minecraft-bauplaner');
+    r.onsuccess = () => { const q = r.result.transaction('meta').objectStore('meta').get('catalogCache'); q.onsuccess = () => { res(q.result?.cache?.key ?? null); r.result.close(); }; };
+  }));
+  assert.match(cacheKey ?? '', /^[0-9a-f]{32}$/, 'the built catalogue is kept for this app version');
+
   await p.reload();
   await catalogueCount(p);
+  assert.equal(await p.evaluate(() => document.documentElement.dataset.libraryStart), 'cache', 'a reload takes the catalogue from the cache');
   const again = await p.evaluate(() => new Promise(res => {
     const r = indexedDB.open('minecraft-bauplaner');
     r.onsuccess = () => { const q = r.result.transaction('assets').objectStore('assets').getAll(); q.onsuccess = () => { res(q.result.map(a => [a.id, a.revision, a.versionIds.length])); r.result.close(); }; };
@@ -93,6 +101,7 @@ test('Ohne Worker und mit defektem Worker startet die App direkt wie vorher', as
       r.onsuccess = () => { const q = r.result.transaction('assets').objectStore('assets').count(); q.onsuccess = () => { res(q.result); r.result.close(); }; };
     }));
     assert.equal(n, TOTAL);
+    assert.equal(await p.evaluate(() => document.documentElement.dataset.libraryStart), 'direct');
     assert.deepEqual(errors, []);
     if (init.toString().includes('kaputt')) assert.ok(warnings.some(w => w.includes('Bibliotheksstart im Hintergrund fehlgeschlagen')), 'the fallback is logged');
     await context.close();
