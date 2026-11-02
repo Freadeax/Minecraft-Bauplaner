@@ -2462,3 +2462,33 @@ Gemälde, Rahmen, Rüstungsständer und Blockinhalte: Import/Export, 3D/Bilder/E
 - `tests/litematic.test.mjs`
 - `tests/voxel.test.mjs`
 
+## 2026-11-02T13:29:25.610Z · progress
+
+**Aufgaben:** MAP-04
+
+Weltbuilder: Löschen/Entfernen aller Kartenobjekte (Entf, Kontextmenü, Auswahlleiste, Listen), Mehrfachauswahl mit Rahmen, ein Rückgängig für Weltplan und Projektlagen, Duplizieren/Drehen/Spiegeln/Gelände, Wegecken, Ebenen, Objektliste; check 625 und e2e 113/113 grün, Abnahme offen
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MAP-04 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme durch Philipp (S06); denkbare Folge: benannte Gruppen/Sperren mit Schemaerweiterung, abgestimmt mit der Mod. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/map.css`
+- `apps/web/src/views/map/Builder.tsx`
+- `apps/web/src/views/map/OverviewMap.tsx`
+- `apps/web/src/views/map/PlanPanel.tsx`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/map/useMapHistory.ts`
+- `apps/web/src/views/map/useWorldPlan.ts`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/WORLDMAP.md`
+- `docs/architecture/WORLD_BUILDER.md`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/worldPlan.ts`
+- `packages/domain/src/worldPlanEdit.ts`
+- `tests/e2e/livelink.e2e.mjs`
+- `tests/e2e/worldbuilder.e2e.mjs`
+- `tests/worldbuilder.test.mjs`
+

@@ -109,3 +109,27 @@
 .live-panel .button-row a.secondary{display:inline-flex;align-items:center}
 .live-wait{font-size:12px;color:var(--mint)}
 .live-help{margin-top:10px;font-size:12px;line-height:1.7}.live-help summary{cursor:pointer;font-weight:600}.live-help ol{margin:6px 0 0;padding-left:20px}.live-help a{color:var(--mint);text-decoration:underline}
+/* MAP-04 Weltbuilder: selection bar, layers, context menu, object list. Theme variables only. */
+.builder-layers{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:0 0 10px;font-size:12px}
+.builder-layers small{color:var(--muted)}
+.builder-selection{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 10px;padding:8px 10px;border:1px solid var(--map-accent);border-radius:10px;background:var(--panel)}
+.builder-selection b{font-size:13px;margin-right:4px}
+.builder-selection button{min-height:36px;font-size:12px;padding:6px 10px}
+.builder-menu{position:fixed;z-index:60;min-width:220px;max-width:min(320px,calc(100vw - 16px));max-height:calc(100vh - 16px);overflow:auto;display:grid;padding:6px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.builder-menu-title{font-size:11px;color:var(--muted);padding:4px 8px 6px;overflow-wrap:anywhere}
+.builder-menu button{text-align:left;background:transparent;border:0;border-radius:6px;padding:8px 10px;min-height:36px;color:inherit;font-size:13px}
+.builder-menu button:hover:not([disabled]),.builder-menu button:focus-visible{background:var(--panel-2)}
+.builder-menu button[disabled]{opacity:.45}
+.builder-menu hr{border:0;border-top:1px solid var(--line);margin:4px 2px}
+.builder-menu .danger-item,.plan-list .plan-row-act.danger-item,.map-entry-fly.danger-item{color:var(--map-danger)}
+.builder-filter{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 8px}
+.builder-filter input{flex:1 1 100%;min-width:0;min-height:34px}
+.builder-filter select{flex:1;min-height:34px}
+.builder-objects .plan-list li{display:flex;gap:2px;align-items:stretch}
+.builder-objects .plan-list li>.plan-row{flex:1;min-width:0}
+.builder-objects .plan-list li.on>.plan-row{border-color:var(--map-accent);box-shadow:inset 3px 0 0 var(--map-accent)}
+.plan-list .plan-row-act{display:inline-flex;align-items:center;justify-content:center;flex:0 0 32px;width:32px;min-height:34px;padding:0;background:transparent;border:1px solid transparent;border-radius:8px;color:var(--muted);font-size:14px}
+.plan-list .plan-row-act:hover,.plan-list .plan-row-act:focus-visible{border-color:var(--line);color:var(--text)}
+.plan-list .plan-row-act.danger-item:hover{border-color:var(--map-danger)}
+.overview[data-tool=box] .overview-canvas{cursor:crosshair}
+@media(max-width:650px){.builder-selection button{min-height:40px}.builder-selection b{flex-basis:100%}}

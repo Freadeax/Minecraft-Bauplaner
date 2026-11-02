@@ -50,6 +50,8 @@ test('Live-Karte: Weltplan zeichnen, rückgängig, Spiel koppeln, Gelände, Holo
   await p.getByRole('status').filter({ hasText: 'Auf die Weltkarte gesetzt' }).waitFor();
 
   const canvas = p.locator('.overview-canvas');
+  // The selection bar (MAP-04) can push the map below the fold: bring it into view before pointing at it.
+  await canvas.evaluate(el => el.scrollIntoView({ block: 'center' }));
   // Zoom so blocks are big enough to hit reliably, around the origin.
   for (let i = 0; i < 3; i++) await p.getByRole('button', { name: 'Hineinzoomen' }).click();
 
@@ -70,13 +72,14 @@ test('Live-Karte: Weltplan zeichnen, rückgängig, Spiel koppeln, Gelände, Holo
   await editor.getByLabel('Projekt auf diesem Bauplatz').selectOption({ label: 'Burgmauer (Beispiel)' });
   await editor.getByRole('button', { name: 'Übernehmen' }).click();
   await editor.getByRole('heading', { name: 'Bauplatz: Burgplatz' }).waitFor();
-  await p.getByRole('button', { name: 'Weltplan: Schritt zurück' }).click();
+  await p.getByRole('button', { name: 'Karte: Schritt zurück' }).click();
   await editor.getByRole('heading', { name: 'Bauplatz: Bauplatz 1' }).waitFor();
-  await p.getByRole('button', { name: 'Weltplan: wiederholen' }).click();
+  await p.getByRole('button', { name: 'Karte: wiederholen' }).click();
   await editor.getByRole('heading', { name: 'Bauplatz: Burgplatz' }).waitFor();
 
   // Path: three corners, finish with Enter.
   await p.getByRole('group', { name: 'Planungswerkzeug' }).getByRole('button', { name: 'Weg' }).click();
+  await canvas.evaluate(el => el.scrollIntoView({ block: 'center' }));
   for (const [dx, dz] of [[1, 0], [6, 0], [6, 4]]) { const q = await at(canvas, cx + dx, cz + dz); await p.mouse.click(q.x, q.y); await p.waitForTimeout(400); }
   assert.equal(await canvas.getAttribute('data-draft'), 'path:3');
   await canvas.press('Enter');

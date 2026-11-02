@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T12:23:17.039Z",
+  "updatedAt": "2026-11-02T13:29:25.610Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -13,7 +13,8 @@
     "MODEL-01",
     "MAP-03",
     "EDIT-04",
-    "ENTITY-01"
+    "ENTITY-01",
+    "MAP-04"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -3564,6 +3565,87 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-02T12:00:34.846Z"
+    },
+    {
+      "id": "MAP-04",
+      "title": "Weltbuilder vertiefen: Löschen und Entfernen für alle Objekte der Weltkarte, Mehrfachauswahl, Kontextmenü, gemeinsames Rückgängig, Duplizieren/Drehen/Spiegeln, Wegecken, Ebenen, Objektliste",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Weltbuilder mit Löschen vertiefen“)",
+      "dependencies": [
+        "MAP-03"
+      ],
+      "scope": [
+        "apps/web/src/views/map/",
+        "apps/web/src/map.css",
+        "packages/domain/src/",
+        "tests/",
+        "docs/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "MAP-04-S01",
+          "title": "Löschen/Entfernen für alle Objekte: Entf-Taste, Auswahlleiste, Kontextmenü, Listenzeilen; Projekte nur von der Karte nehmen.",
+          "done": true
+        },
+        {
+          "id": "MAP-04-S02",
+          "title": "Mehrfachauswahl (Umschalt/Strg-Klick, Rahmen, Strg+A) und gemeinsames Rückgängig für Weltplan und Projektlagen.",
+          "done": true
+        },
+        {
+          "id": "MAP-04-S03",
+          "title": "Verschieben (Ziehen, Pfeiltasten), Duplizieren, Drehen, Spiegeln, ans Gelände ausrichten.",
+          "done": true
+        },
+        {
+          "id": "MAP-04-S04",
+          "title": "Wege bearbeiten: Ecken ziehen, einfügen, löschen, Weg teilen, umkehren, verbinden.",
+          "done": true
+        },
+        {
+          "id": "MAP-04-S05",
+          "title": "Ebenen (Projekte/Bauplätze/Wege/Punkte) und durchsuchbare Objektliste mit Zeigen und Löschen je Zeile.",
+          "done": true
+        },
+        {
+          "id": "MAP-04-S06",
+          "title": "Abnahme durch Philipp, Langdruck-Menü auf echtem Touch-Gerät.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Jedes Objekt der Weltkarte lässt sich ohne Umweg löschen bzw. von der Karte nehmen und mit einem Schritt wiederherstellen.",
+        "Aktionen auf mehreren Objekten sind ein Rückgängig-Schritt; Projekte selbst werden auf der Karte nie gelöscht.",
+        "Weltplan-Schema und Mod-Vertrag bleiben unverändert."
+      ],
+      "next": "Abnahme durch Philipp (S06); denkbare Folge: benannte Gruppen/Sperren mit Schemaerweiterung, abgestimmt mit der Mod.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/worldbuilder.test.mjs",
+          "note": "Löschen mit linearer Umkehrung, Einfügen, Auswahl, Drehen/Spiegeln im Raster, Duplizieren, Wegecken, Geländehöhe."
+        },
+        {
+          "path": "tests/e2e/worldbuilder.e2e.mjs",
+          "note": "Entf, Kontextmenü, Listenlöschen, Rahmen, Verschieben mit Pfeilen, Löschen samt Projekt und Rückgängig, Duplizieren, Drehen, Wegecken, Ebenen, Strg+A, Neuladen; Handy 390 px."
+        },
+        {
+          "path": "docs/architecture/WORLD_BUILDER.md",
+          "note": "Bedienung, Technik, Grenzen."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Einheits- und Browsertests grün; Abnahme durch Philipp offen (S06)."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-02T13:29:25.610Z"
     },
     {
       "id": "MAP-02",
@@ -8315,6 +8397,42 @@
           "done": 5,
           "total": 6,
           "next": "Export mit Entities im Spiel prüfen; Entities bei Auswahl-Verschieben in der Werkstatt mitnehmen; Truhen-/Schildinhalte bearbeiten."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T13:29:25.610Z",
+      "kind": "progress",
+      "items": [
+        "MAP-04"
+      ],
+      "summary": "Weltbuilder: Löschen/Entfernen aller Kartenobjekte (Entf, Kontextmenü, Auswahlleiste, Listen), Mehrfachauswahl mit Rahmen, ein Rückgängig für Weltplan und Projektlagen, Duplizieren/Drehen/Spiegeln/Gelände, Wegecken, Ebenen, Objektliste; check 625 und e2e 113/113 grün, Abnahme offen",
+      "files": [
+        "apps/web/src/map.css",
+        "apps/web/src/views/map/Builder.tsx",
+        "apps/web/src/views/map/OverviewMap.tsx",
+        "apps/web/src/views/map/PlanPanel.tsx",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "apps/web/src/views/map/useMapHistory.ts",
+        "apps/web/src/views/map/useWorldPlan.ts",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/WORLDMAP.md",
+        "docs/architecture/WORLD_BUILDER.md",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/worldPlan.ts",
+        "packages/domain/src/worldPlanEdit.ts",
+        "tests/e2e/livelink.e2e.mjs",
+        "tests/e2e/worldbuilder.e2e.mjs",
+        "tests/worldbuilder.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "MAP-04",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme durch Philipp (S06); denkbare Folge: benannte Gruppen/Sperren mit Schemaerweiterung, abgestimmt mit der Mod."
         }
       ]
     }

@@ -852,3 +852,11 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - Domain: `MaterialReport.entities`/`.contents`, Regel `entity`, Grund `mob`; Bauanleitung Phase `furnish` („Ausstattung“, Schritt-ID `<instanz>~furnish`); `Edit.entities` und `DraftSummary.entities` im Editor; `compose` sammelt Entities aller Instanzen, `UNRESOLVED_ENTITY` blockiert den Export.
 - **An NBT-01:** Drehen von BlockEntity-NBT (Schädel-/Banner-`Rotation`) bleibt offen. **An Werkstatt-Threads:** Auswahl verschieben/drehen bewegt Entities noch nicht mit.
 - Offen: Export mit Entities im Spiel laden (Litematica/WorldEdit, Philipps PC).
+
+### MSG-MAP04-01 · 02.11.2026 · Claude (Thread „Weltbuilder mit Löschen vertiefen“) · MAP-04 Weltbuilder umgesetzt
+
+- Auftrag Philipp (02.11.): „im weltbuilder gibt es keine möglichkeit sachen zu löschen und zu entfernen – der Weltbuilder mehr in die tiefe ausbauen“. Gelesen als Weltkarte `#/karte` (Projekte, Bauplätze, Wege, Punkte). Neue Roadmapaufgabe **MAP-04**, Doku [WORLD_BUILDER](architecture/WORLD_BUILDER.md).
+- Neue Dateien: `packages/domain/src/worldPlanEdit.ts`, `apps/web/src/views/map/useMapHistory.ts`, `Builder.tsx`, `tests/worldbuilder.test.mjs`, `tests/e2e/worldbuilder.e2e.mjs` (Port 4291).
+- Eingriffe: `worldPlan.ts` (Operation `insert`, `remove` kehrt sich jetzt über `insert` um – lineare Umkehrung; Schema 1 und gespeicherte Daten unverändert), `useWorldPlan.ts` (nur noch `commit` + `epoch`, Verlauf liegt in `useMapHistory`), `OverviewMap.tsx` (`PlanLayer`: `selection`/`selectedProjects` statt `selectedItem`, `onBox`, `onNudge`, `onContext`, `onVertex`, `onMove(dx, dz)` für die ganze Auswahl, neues Werkzeug „Rahmen“ Taste A), `WorldMapView.tsx`, `PlanPanel.tsx` (`PlanList` ersetzt durch `ObjectList`), `map.css` (anhängend), `domain/index.ts` (Exporte), `livelink.e2e.mjs` (Knopfnamen „Karte: Schritt zurück/wiederholen“).
+- **An MAP-03/Live-Karte:** Abgestimmt über den gemeinsamen Code: Weltplan-Einträge und der Mod-Vertrag (`/v1/marks`) sind unverändert. Wer weitere Kartenaktionen baut, bitte über `useMapHistory` (`change(...)` in `WorldMapView`) gehen, damit Rückgängig alles umfasst.
+- Reservierung mit dem Push beendet. Offen: MAP-04-S06 Abnahme durch Philipp, Langdruck auf echtem Touch-Gerät.

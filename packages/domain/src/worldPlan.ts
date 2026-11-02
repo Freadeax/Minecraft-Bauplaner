@@ -81,6 +81,8 @@ export type WorldPlanOp =
   | { readonly kind: 'add'; readonly item: WorldItem }
   | { readonly kind: 'update'; readonly item: WorldItem }
   | { readonly kind: 'remove'; readonly id: string }
+  /** Adds an item at a list position (exact inverse of `remove`, keeps the order). */
+  | { readonly kind: 'insert'; readonly item: WorldItem; readonly at: number }
   | { readonly kind: 'batch'; readonly label: string; readonly ops: readonly WorldPlanOp[] };
 
 const fail = (message: string): never => { throw new DomainError('INVALID', `Weltplan: ${message}`); };
@@ -153,6 +155,7 @@ export function describeWorldPlanOp(op: WorldPlanOp): string {
   const what = (i: WorldItem) => `${i.kind === 'site' ? 'Bauplatz' : i.kind === 'path' ? 'Weg' : pointTypeLabel(i.type)} „${i.name}“`;
   switch (op.kind) {
     case 'add': return `${what(op.item)} angelegt`;
+    case 'insert': return `${what(op.item)} wiederhergestellt`;
     case 'update': return `${what(op.item)} geändert`;
     case 'remove': return 'Eintrag entfernt';
     case 'batch': return op.label;
@@ -177,16 +180,19 @@ export function applyWorldPlanOp(plan: WorldPlan, op: WorldPlanOp): { plan: Worl
       const items = [...plan.items]; const old = items[at]!; items[at] = item;
       return { plan: { ...plan, items }, inverse: { kind: 'update', item: old } };
     }
+    case 'insert': {
+      const item = checkWorldItem(op.item);
+      if (plan.items.some(i => i.id === item.id)) fail(`ID ${item.id} gibt es schon`);
+      if (plan.items.length >= WORLD_PLAN_MAX_ITEMS) fail(`höchstens ${WORLD_PLAN_MAX_ITEMS} Einträge`);
+      if (!Number.isInteger(op.at) || op.at < 0 || op.at > plan.items.length) fail('ungültige Listenposition');
+      const items = [...plan.items]; items.splice(op.at, 0, item);
+      return { plan: { ...plan, items }, inverse: { kind: 'remove', id: item.id } };
+    }
     case 'remove': {
       const at = plan.items.findIndex(i => i.id === op.id);
       if (at < 0) fail(`Eintrag ${op.id} fehlt`);
-      const old = plan.items[at]!;
-      // Re-adding appends; keep the order by re-inserting through a batch of the remaining tail.
-      const tail = plan.items.slice(at + 1);
-      const inverse: WorldPlanOp = tail.length
-        ? { kind: 'batch', label: 'Wiederhergestellt', ops: [...tail.map(t => ({ kind: 'remove', id: t.id }) as WorldPlanOp), { kind: 'add', item: old }, ...tail.map(t => ({ kind: 'add', item: t }) as WorldPlanOp)] }
-        : { kind: 'add', item: old };
-      return { plan: { ...plan, items: plan.items.filter(i => i.id !== op.id) }, inverse };
+      // The inverse puts the entry back at its old place, so undo keeps list order.
+      return { plan: { ...plan, items: plan.items.filter(i => i.id !== op.id) }, inverse: { kind: 'insert', item: plan.items[at]!, at } };
     }
     case 'batch': {
       if (op.ops.length > WORLD_PLAN_MAX_ITEMS * 2) fail('zu viele Schritte');

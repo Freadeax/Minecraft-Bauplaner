@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import {
-  WORLD_PATH_STYLES, WORLD_POINT_TYPES, pathColumns, pathLength, pointTypeLabel, snapSiteToChunks, worldPlanSummary,
+  WORLD_PATH_STYLES, WORLD_POINT_TYPES, pathColumns, pathLength, pointTypeLabel, snapSiteToChunks,
 } from '../../../../../packages/domain/src/index.js';
 import type { Project, WorldItem, WorldPathStyle, WorldPointType } from '../../../../../packages/domain/src/index.js';
 import { formatNumber } from '../../app/ui';
 import { MAP_TOOLS } from './OverviewMap';
 import type { MapTool } from './OverviewMap';
 
-/** Toolbar of the planning tools with undo/redo (MAP-03). */
+/** Toolbar of the planning tools with undo/redo (MAP-03); undo covers Weltplan and placements (MAP-04). */
 export function PlanToolbar({ tool, onTool, canUndo, canRedo, onUndo, onRedo }: {
   tool: MapTool; onTool: (t: MapTool) => void; canUndo: string | null; canRedo: string | null; onUndo: () => void; onRedo: () => void;
 }) {
@@ -16,8 +16,8 @@ export function PlanToolbar({ tool, onTool, canUndo, canRedo, onUndo, onRedo }: 
     <div className="seg" role="group" aria-label="Planungswerkzeug">
       {MAP_TOOLS.map(t => <button key={t.id} aria-pressed={tool === t.id} title={`${t.hint} (Taste ${t.key})`} onClick={() => onTool(t.id)}>{t.label}</button>)}
     </div>
-    <button className="secondary" disabled={!canUndo} title={canUndo ? `Rückgängig: ${canUndo}` : 'Nichts rückgängig zu machen'} onClick={onUndo} aria-label="Weltplan: Schritt zurück">↶</button>
-    <button className="secondary" disabled={!canRedo} title={canRedo ? `Wiederholen: ${canRedo}` : 'Nichts zu wiederholen'} onClick={onRedo} aria-label="Weltplan: wiederholen">↷</button>
+    <button className="secondary" disabled={!canUndo} title={canUndo ? `Rückgängig: ${canUndo}` : 'Nichts rückgängig zu machen'} onClick={onUndo} aria-label="Karte: Schritt zurück">↶</button>
+    <button className="secondary" disabled={!canRedo} title={canRedo ? `Wiederholen: ${canRedo}` : 'Nichts zu wiederholen'} onClick={onRedo} aria-label="Karte: wiederholen">↷</button>
     <span className="muted small plan-hint">{info.hint}</span>
   </div>;
 }
@@ -69,24 +69,9 @@ export function PlanItemEditor({ item, projects, onSave, onRemove, onClose, acti
       <div className="button-row">
         <button className="primary" disabled={!changed || !draft.name.trim()}>Übernehmen</button>
         {draft.kind === 'site' && <button type="button" className="secondary" onClick={() => setDraft({ ...draft, ...snapSiteToChunks(draft) })}>An Chunks ausrichten</button>}
-        <button type="button" className="danger" onClick={onRemove}>Entfernen</button>
+        <button type="button" className="danger" onClick={onRemove} title="Löscht den Eintrag (Entf). Rückgängig mit Strg+Z.">🗑 Löschen</button>
       </div>
     </form>
     {actions && <div className="button-row plan-actions">{actions}</div>}
   </section>;
-}
-
-/** Overview list of the Weltplan of one dimension. */
-export function PlanList({ items, selected, onSelect }: { items: readonly WorldItem[]; selected: string | null; onSelect: (id: string) => void }) {
-  if (!items.length) return <p className="muted small">Noch kein Weltplan in dieser Dimension. Zeichne mit „Bauplatz“, „Weg“ oder „Punkt“ direkt auf der Draufsicht.</p>;
-  const sum = worldPlanSummary(items);
-  return <>
-    <p className="muted small">{sum.sites} Bauplätze ({sum.freeSites} frei) · {sum.paths} Wege, {formatNumber(sum.pathLength)} Blöcke lang · {sum.points} Punkte</p>
-    <ul className="plan-list">{items.map(i => <li key={i.id}>
-      <button aria-pressed={selected === i.id} onClick={() => onSelect(i.id)}>
-        <i className={`plan-kind ${i.kind}`} aria-hidden="true" />
-        <b>{i.name}</b>
-        <small>{i.kind === 'site' ? `Bauplatz ${i.width}×${i.length}${i.projectId ? '' : ' · frei'}` : i.kind === 'path' ? `${WORLD_PATH_STYLES.find(s => s.id === i.style)?.label} · ${formatNumber(pathLength(i.points))} Blöcke` : `${pointTypeLabel(i.type)} · X ${i.x} · Z ${i.z}`}</small>
-      </button></li>)}</ul>
-  </>;
 }

@@ -630,3 +630,9 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Vorher (main 1b1b08a): 140 Blöcke ohne Halt im Standardmodus, 208 im strengen Modus in 85 Gebäuden, 1.239 Verbindungsabweichungen, 152 `minecraft:chain` (unbekannt in 26.3); Generatoren Kirche, Hafen, Torhaus, Windmühle mit Fehlern.
 - Angepasst: `catalog.test.mjs` (sechs der 16 klassischen Inhaltsadressen bewusst neu), `generators.test.mjs` (Pin-Hashes Kirche, Hafen, Windmühle zusammen mit erhöhter Version).
 - Grenzen: keine Abnahme im echten Spiel (BLOCK-02-S06); Licht/Spawnfreiheit nicht Teil dieser Prüfung.
+
+## MAP-04 · Weltbuilder (Löschen, Mehrfachauswahl, Kontextmenü, Rückgängig) · 02.11.2026 · Claude
+- `npm run check` grün: 625 Tests (davon neu `tests/worldbuilder.test.mjs` 7/7: Löschen mehrerer Einträge mit linearer Umkehrung auch bei 2000 Einträgen, `insert`, Auswahlgrenzen/Rahmen, Drehen/Spiegeln im Blockraster und umkehrbar, Duplizieren, Wegecken, Geländehöhe), Doku-Links gültig.
+- `npm run test:e2e` 113/113 grün (Basis main 387fb4e), darunter `tests/e2e/worldbuilder.e2e.mjs` (1400 px: Entf + Strg+Z/Strg+Y, Rechtsklick-Menü, Löschen je Listenzeile, Rahmen-Auswahl, Pfeiltasten verschieben Einträge und Projekt in einem Schritt, Löschen samt „von der Karte nehmen“ und ein Rückgängig, Duplizieren, Drehen, Wegecke einfügen/löschen, Ebenen, Strg+A + Entf, Neuladen; 390 px Touch: Auswahlleiste, Löschen, kein waagerechtes Scrollen).
+- Angepasst: `livelink.e2e.mjs` – Knopfnamen „Karte: Schritt zurück/wiederholen“ und Zeichenfläche vor dem Zeichnen in die Bildmitte scrollen (Auswahlleiste und Ebenenzeile machen die Seite höher).
+- Grenzen: Langdruck-Menü nicht auf echtem Touch-Gerät geprüft; Abnahme durch Philipp offen (MAP-04-S06).

@@ -37,6 +37,8 @@ Die zusammengeführten Zellen sind **Anzeigedaten, kein Bauplan**, und werden ni
 
 Seit MAP-03 plant man direkt auf der Draufsicht (Bauplätze, Wege, Punkte, Messen, Projekte ziehen, Rückgängig) und verbindet die Karte über die Bauplaner-Mod live mit dem eigenen Spiel (Position, Gelände der geladenen Chunks, Hologramm-Fortschritt, Plan und Markierungen ins Spiel). Vertrag, Sicherheit und Protokoll: [LIVE_LINK](LIVE_LINK.md).
 
+Seit MAP-04 (Weltbuilder) lässt sich alles auf der Karte mehrfach auswählen, löschen (Entf, Rechtsklick, Listen), verschieben, duplizieren, drehen, spiegeln und ans Gelände ausrichten; Wegecken sind direkt bearbeitbar, Ebenen blenden Arten aus, ein Verlauf deckt Weltplan und Projektlagen ab: [WORLD_BUILDER](WORLD_BUILDER.md).
+
 ## Server-Livekarte (Verknüpfung, keine Datenquelle)
 
 Die LMNT-Website (`lmnt-gaming.net`, Seiten Start, Gameserver, Tools) zeigt am 28.10.2026 keine öffentliche Live-Karte; der Minecraft-Server ist dort als geschlossen geführt. Es wird nichts von einer Karte gelesen oder gescrapt. Stattdessen:
