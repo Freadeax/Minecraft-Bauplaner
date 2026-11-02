@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "29ee3227a46063e629fd222128f476d8b8c8139a",
-  "builtAt": "2026-11-02T12:52:28.892Z",
+  "sourceCommit": "2a022b8cc5b00c8c42fa809dc7da4c4955102cd1",
+  "builtAt": "2026-11-02T13:30:18.276Z",
   "node": "v22.23.4",
   "files": [
     {
@@ -10,9 +10,9 @@
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
-      "path": "assets/build-xNQzqntS.js",
+      "path": "assets/build-Ca2U6fEv.js",
       "bytes": 6183,
-      "sha256": "f15f67033cb752ed9222668aed54bbadda64ea5ac2217a5f8e1049c0e2af0934"
+      "sha256": "da6c584f847165fe64e528edb21540cd8bc62a97ee78b45d2a41689542b8ea9e"
     },
     {
       "path": "assets/entities-BwKr3sHO.js",
@@ -20,19 +20,19 @@
       "sha256": "d3dcbda8ded2128ffec41156b1c7fb93f29b6310471c84db342213be30c0e939"
     },
     {
-      "path": "assets/entityScene-BRN4mXKh.js",
+      "path": "assets/entityScene-Jw9eMCik.js",
       "bytes": 542754,
-      "sha256": "7cc438dd586058a76def318da502b9ee09744cbf59eabc534c9ac938be24b08d"
+      "sha256": "811e4649e7ffac47c7b4407713e8b254d23326bfcc2364b39d343a529d8d0d71"
     },
     {
-      "path": "assets/glShot-BAfCQcQB.js",
+      "path": "assets/glShot-DnSIy_mh.js",
       "bytes": 2668,
-      "sha256": "401aa2ac0368943d292bd806047f6a4228f87db0bdbb70d60e4d4cebbe9e200e"
+      "sha256": "9fdf5c551f084a052622c9aa0b999892a25e50e03662be8ef3c2ce2063033c63"
     },
     {
-      "path": "assets/idbRepository-C5BrgTtP.js",
+      "path": "assets/idbRepository-CV5qk9E9.js",
       "bytes": 8898,
-      "sha256": "ab230e7c0ee1eec335811ea54919140d9ffa1dddb5eb7dedf2e3673e95a8cb4d"
+      "sha256": "199e034677974a21b50d7df2eb6bd9161bd8d4188ea254ff27b9f93bb258c5d7"
     },
     {
       "path": "assets/import.worker-CM45SNW1.js",
@@ -40,14 +40,14 @@
       "sha256": "a82257ddfa8b96dfcec2616d47724e9a03331197ddd9a06a8131b4d5f981a4fa"
     },
     {
-      "path": "assets/index-0UUhXYO0.css",
-      "bytes": 181053,
-      "sha256": "1d801bb70fb03cbb2af2a018ff613e2be81daff57e0b1d6bb3cb6728655b5ae9"
+      "path": "assets/index-CFOd85rA.js",
+      "bytes": 2317337,
+      "sha256": "3dec1c0f81fa8b4dcdc24bf595958bf05f7311029ba2ce8dae1d8ac9c6c6df8e"
     },
     {
-      "path": "assets/index-TSaNbPM9.js",
-      "bytes": 2291863,
-      "sha256": "123b4dc9f301cca1bd4802497c7fd6869514463336ddb3ae4560a00c88d88a5f"
+      "path": "assets/index-PIOVcgYi.css",
+      "bytes": 183387,
+      "sha256": "e2f99f0d1b62ffa87a89b01eb5ec4dbe2ff87fd7acdab47ba5ff24dff0587f80"
     },
     {
       "path": "assets/map.worker-CfU9mc25.js",
@@ -55,14 +55,14 @@
       "sha256": "2842959dc28263aa06331effe8cc70d825526da1431815536e6d9e0d950cd68b"
     },
     {
-      "path": "assets/mesh-GG6c-W7c.js",
+      "path": "assets/mesh-DbZ7KE3F.js",
       "bytes": 12806,
-      "sha256": "26d2092156f8568230a09fe1bd60cdd574047288f8e7d1196d93763101e8de75"
+      "sha256": "1bb143c02935c0a850230fcfbf72af62a0743985ef8d95e34991b987d6064fa1"
     },
     {
-      "path": "assets/packKit-CosuXfq1.js",
+      "path": "assets/packKit-CP9yrSP4.js",
       "bytes": 8020,
-      "sha256": "fab1e57562a562a60d0b97b048bb234f826b264297bd0b311938b80f6ba9402a"
+      "sha256": "d2985ad1a457ae8d3dd12d8b37c175e9bbcb7993186b878d10e27806a62eabc2"
     },
     {
       "path": "assets/project.worker-gYtx5IGh.js",
@@ -75,9 +75,9 @@
       "sha256": "4bedf829f62251b42918d85742b111a55f159d0430db2abba8db31be9b0af216"
     },
     {
-      "path": "assets/ThreeViewer-CC32B53-.js",
+      "path": "assets/ThreeViewer-BWezUkfC.js",
       "bytes": 50396,
-      "sha256": "b00fd62b0c619ff43df2dc2e8ed353c5d52ef6e181d8c3648236a92c7af9005f"
+      "sha256": "00bbc9ee59430326724df6659f3782c20c4724f1f939ed383fce29718ca2ea89"
     },
     {
       "path": "assets/world.worker-12ZFH04Q.js",
@@ -102,7 +102,7 @@
     {
       "path": "index.html",
       "bytes": 758,
-      "sha256": "a0d99ea50140f9ee591486535940f732ffdc5252c9581a3e1e2d8877f5d493d0"
+      "sha256": "6786ac16c53fcee0ac2e440adff499f507b2d586875999162858f442087844f0"
     },
     {
       "path": "THIRD_PARTY_NOTICES.txt",
