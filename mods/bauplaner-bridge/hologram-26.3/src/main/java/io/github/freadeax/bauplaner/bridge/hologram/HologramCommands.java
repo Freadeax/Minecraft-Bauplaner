@@ -15,7 +15,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 
 /**
- * {@code /bauplaner zeigen|hierher|verschieben|drehen|spiegeln|umschalten|fehler|entfernen|fortschritt|ebene|material|texturen|platzierhilfe|abschnitt|roentgen|verbinden|diagnose}: the same actions as menu and keys, as client commands (no server needed;
+ * {@code /bauplaner zeigen|hierher|verschieben|drehen|spiegeln|umschalten|fehler|entfernen|fortschritt|ebene|material|texturen|platzierhilfe|abschnitt|roentgen|verbinden|ebenen|diagnose}: the same actions as menu and keys, as client commands (no server needed;
  * also used by the game test). Generic over the command source, so every loader registers the same tree
  * with its own client command source; answers go straight to the local chat.
  */
@@ -70,11 +70,31 @@ public final class HologramCommands {
                         .then(HologramCommands.<S>literal("status").executes(c -> said(link.statusText())))
                         .then(HologramCommands.<S>literal("port").then(HologramCommands.<S, Integer>argument("port", IntegerArgumentType.integer(1024, 65535))
                                 .executes(c -> said(link.setPort(IntegerArgumentType.getInteger(c, "port")))))),
+                // Weltplan layers (GAME-08): list, hide/show one, show all.
+                HologramCommands.<S>literal("ebenen").executes(c -> layers(link))
+                        .then(HologramCommands.<S>literal("alle").executes(c -> { link.showAllLayers(); return said("Alle Weltplan-Ebenen sichtbar."); }))
+                        .then(HologramCommands.<S, String>argument("ebene", StringArgumentType.greedyString())
+                                .suggests((c, b) -> { link.marks().layers().keySet().forEach(b::suggest); return b.buildFuture(); })
+                                .executes(c -> {
+                                    String name = StringArgumentType.getString(c, "ebene").trim();
+                                    if (!link.marks().layers().containsKey(name)) return fail(null, "Keine Weltplan-Ebene „" + name + "“. Liste: /bauplaner ebenen");
+                                    return said("Ebene „" + name + "“ " + (link.toggleLayer(name) ? "sichtbar." : "ausgeblendet."));
+                                })),
                 // Testphase (QA-04): diagnosis report into bauplaner/diagnose/ and the clipboard.
                 HologramCommands.<S>literal("diagnose").executes(c -> HologramDiagnose.run(h, link)));
     }
 
     private static int said(String text) { say(null, text); return 1; }
+
+    /** Weltplan layers of the marks from the website with their entry counts and state. */
+    private static int layers(LiveLink link) {
+        var layers = link.marks().layers();
+        if (link.marks().size() == 0) return said("Keine Markierungen von der Website.");
+        if (layers.isEmpty()) return said(link.marks().size() + " Markierungen ohne Ebenen.");
+        say(null, "Weltplan-Ebenen (" + layers.size() + "). Umschalten: /bauplaner ebenen <name>, alle: /bauplaner ebenen alle");
+        layers.forEach((name, n) -> say(null, (link.layerShown(name) ? "  ● " : "  ○ ") + name + ": " + n + (link.layerShown(name) ? "" : " (ausgeblendet)")));
+        return 1;
+    }
 
     /** All sections with their progress; the active one marked. */
     private static int sections(Hologram h) {

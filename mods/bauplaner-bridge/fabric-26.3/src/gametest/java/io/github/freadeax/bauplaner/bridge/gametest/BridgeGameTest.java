@@ -296,8 +296,15 @@ public final class BridgeGameTest implements FabricClientGameTest {
         out.append(",\"chunks\":").append(request(context, http, base + "/v1/chunks?c=" + cx + "," + cz + ";4000,4000", "GET", null, token, "https://freadeax.github.io"));
         String marks = "{\"dimension\":\"minecraft:overworld\",\"items\":[{\"kind\":\"point\",\"id\":\"point_test\",\"name\":\"Brunnen\",\"note\":\"\",\"dimension\":\"minecraft:overworld\",\"type\":\"ziel\",\"x\":"
                 + (anchor[0] + 12) + ",\"y\":" + anchor[1] + ",\"z\":" + (anchor[2] + 3) + "},{\"kind\":\"site\",\"id\":\"site_test\",\"name\":\"Platz\",\"note\":\"\",\"dimension\":\"minecraft:overworld\",\"minX\":"
-                + (anchor[0] - 4) + ",\"minZ\":" + (anchor[2] - 4) + ",\"width\":16,\"length\":12,\"y\":null,\"projectId\":null}]}";
+                + (anchor[0] - 4) + ",\"minZ\":" + (anchor[2] - 4) + ",\"width\":16,\"length\":12,\"y\":null,\"projectId\":null}"
+                // Protocol 2 (GAME-08): a zone with layer and colour, a new point type on the same layer.
+                + ",{\"kind\":\"zone\",\"id\":\"zone_test\",\"name\":\"Hofanlage\",\"note\":\"\",\"dimension\":\"minecraft:overworld\",\"category\":\"wohnen\",\"layer\":\"Phase 2\",\"color\":\"#ff8800\",\"points\":[["
+                + (anchor[0] - 10) + "," + (anchor[2] - 10) + "],[" + (anchor[0] + 2) + "," + (anchor[2] - 10) + "],[" + (anchor[0] + 2) + "," + (anchor[2] - 2) + "],[" + (anchor[0] - 4) + "," + (anchor[2] - 2) + "],[" + (anchor[0] - 10) + "," + (anchor[2] - 6) + "]]}"
+                + ",{\"kind\":\"point\",\"id\":\"point_gefahr\",\"name\":\"Lava\",\"note\":\"\",\"dimension\":\"minecraft:overworld\",\"type\":\"gefahr\",\"layer\":\"Phase 2\",\"x\":"
+                + (anchor[0] - 8) + ",\"y\":" + anchor[1] + ",\"z\":" + (anchor[2] - 8) + "}]}";
         out.append(",\"marks\":").append(request(context, http, base + "/v1/marks", "POST", marks, token, "https://freadeax.github.io"));
+        out.append(",\"players\":").append(request(context, http, base + "/v1/players", "GET", null, token, "https://freadeax.github.io"));
+        chat(context, "/bauplaner ebenen");
         context.waitTicks(30);
         copy(context.takeScreenshot("bauplaner-markierungen"), io.resolve("markierungen.png"));
         byte[] plan = Files.readAllBytes(io.resolve("plan.schem"));

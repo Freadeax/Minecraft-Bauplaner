@@ -3135,3 +3135,33 @@ STATUS: Weltkarte und Spielanbindung nach MAP-06 nachgeführt
 
 - `docs/STATUS.md`
 
+## 2026-11-02T23:23:44.219Z · progress
+
+**Aufgaben:** GAME-08
+
+Mod 0.8.0: Live-Protokoll 2 im Spiel (Zonen als Bodenteppich, Ebenen mit /bauplaner ebenen, Farben, fünf neue Punktarten, GET /v1/players, hello.protocol 2); Spieltests Fabric, Modpack+Shader und NeoForge gegen die Leser der Website
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-08 | undefined | 4/4 | Protokoll 3: Rückrichtung „Markierung im Spiel setzen → Weltplan“ mit Zeitstempel je Eintrag (siehe LIVE_LINK.md); Forge und Paper ohne Live-Verbindung. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/LIVE_LINK.md`
+- `docs/architecture/MOD_HOLOGRAM.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.8.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.8.0.jar`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/MarksRenderer.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WorldMarks.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`
+- `mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/LiveLinkScenario.java`
+- `scripts/bridge_gametest.mjs`
+

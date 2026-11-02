@@ -30,6 +30,7 @@ class LiveLinkTest {
             public String placement(Map<String, Object> b) { calls.add("placement " + b.get("x")); return "{}"; }
             public String marks(Map<String, Object> b) { calls.add("marks " + WorldMarks.parse(b).size()); return "{}"; }
             public LiveLinkServer.Binary scan() { calls.add("scan"); return new LiveLinkServer.Binary("haus_r1_x.schem", new byte[] { 31, -117, 8 }); }
+            public String players() { calls.add("players"); return "{\"dimension\":\"minecraft:overworld\",\"players\":[]}"; }
         };
         return new LiveLinkServer(new LiveLinkServer.Info("0.5.0", "fabric", "26.3"), h, known, t -> saved.add(List.copyOf(t)), now::get);
     }
@@ -59,7 +60,7 @@ class LiveLinkTest {
         assertEquals(200, r.status());
         var m = Json.obj(Json.parse(r.text()), "hello");
         assertEquals("bauplaner-mod", m.get("app"));
-        assertEquals(1.0, m.get("protocol"));
+        assertEquals(2.0, m.get("protocol"));
         assertEquals(false, m.get("pairing"));
         assertEquals(SITE, r.headers().get("Access-Control-Allow-Origin"));
         s.openPairing();
@@ -70,7 +71,7 @@ class LiveLinkTest {
     void baustandIsAFileWithItsNameExposedToTheSite() {
         var s = server(List.of());
         var hello = Json.obj(Json.parse(s.handle(req("GET", "/v1/hello", SITE, null, null)).text()), "hello");
-        assertEquals(List.of("scan"), hello.get("features"));
+        assertEquals(List.of("scan", "marks2", "players"), hello.get("features"));
         assertEquals(401, s.handle(req("GET", "/v1/scan", SITE, null, null)).status());
         String token = pair(s);
         var r = s.handle(req("GET", "/v1/scan", SITE, token, null));
@@ -154,8 +155,15 @@ class LiveLinkTest {
         assertEquals(200, s.handle(req("POST", "/v1/placement", SITE, token, "{\"x\":5}")).status());
         assertEquals(200, s.handle(req("POST", "/v1/marks", SITE, token, "{\"dimension\":\"minecraft:overworld\",\"items\":[{\"kind\":\"point\",\"id\":\"a\",\"name\":\"Lager\",\"note\":\"\",\"dimension\":\"minecraft:overworld\",\"type\":\"lager\",\"x\":1,\"y\":64,\"z\":2}]}")).status());
         assertEquals(400, s.handle(req("POST", "/v1/marks", SITE, token, "{\"dimension\":\"minecraft:overworld\",\"items\":[{\"kind\":\"point\",\"name\":\"x\",\"dimension\":\"minecraft:overworld\",\"type\":\"bombe\",\"x\":1,\"y\":64,\"z\":2}]}")).status());
+        // Protocol 2 (GAME-08): zones, new point types, layer and colour; players route.
+        assertEquals(200, s.handle(req("POST", "/v1/marks", SITE, token, "{\"dimension\":\"minecraft:overworld\",\"items\":[{\"kind\":\"zone\",\"id\":\"z\",\"name\":\"Markt\",\"dimension\":\"minecraft:overworld\",\"category\":\"wohnen\",\"points\":[[0,0],[8,0],[8,8]],\"layer\":\"Phase 2\",\"color\":\"#ff8800\"},{\"kind\":\"point\",\"id\":\"g\",\"name\":\"Lava\",\"dimension\":\"minecraft:overworld\",\"type\":\"gefahr\",\"x\":1,\"y\":64,\"z\":2}]}")).status());
+        assertEquals(400, s.handle(req("POST", "/v1/marks", SITE, token, "{\"dimension\":\"minecraft:overworld\",\"items\":[{\"kind\":\"zone\",\"name\":\"x\",\"dimension\":\"minecraft:overworld\",\"category\":\"wohnen\",\"points\":[[0,0],[8,0]]}]}")).status(), "Zone mit zwei Ecken");
+        assertEquals(400, s.handle(req("POST", "/v1/marks", SITE, token, "{\"dimension\":\"minecraft:overworld\",\"items\":[{\"kind\":\"point\",\"name\":\"x\",\"dimension\":\"minecraft:overworld\",\"type\":\"ziel\",\"x\":1,\"y\":64,\"z\":2,\"color\":\"rot\"}]}")).status(), "Farbe nicht #rrggbb");
+        assertEquals(200, s.handle(req("GET", "/v1/players", SITE, token, null)).status());
+        assertTrue(new String(s.handle(req("GET", "/v1/hello", SITE, null, null)).body(), StandardCharsets.UTF_8).contains("\"protocol\":2"));
+        assertTrue(new String(s.handle(req("GET", "/v1/hello", SITE, null, null)).body(), StandardCharsets.UTF_8).contains("\"features\":[\"scan\",\"marks2\",\"players\"]"));
         assertEquals(404, s.handle(req("GET", "/v1/welt-aendern", SITE, token, null)).status());
-        assertEquals(List.of("status", "chunks 2", "plan a.schem 3", "placement 5.0", "marks 1"), calls);
+        assertEquals(List.of("status", "chunks 2", "plan a.schem 3", "placement 5.0", "marks 1", "marks 2", "players"), calls);
         assertEquals(200, s.handle(req("POST", "/v1/unpair", SITE, token, null)).status());
         assertEquals(401, s.handle(req("GET", "/v1/status", SITE, token, null)).status(), "nach dem Trennen ungültig");
         s.revokeAll();
@@ -218,6 +226,24 @@ class LiveLinkTest {
              {"kind":"point","id":"b","name":"Portal","note":"","dimension":"minecraft:the_nether","type":"portal","x":0,"y":64,"z":0}]}"""), "m"));
         assertEquals(3, m.size(), "andere Dimension bleibt draußen");
         assertNull(m.sites().get(0).y());
+        assertEquals(WorldMarks.Extras.NONE, m.points().get(0).extras(), "Schema 1 ohne Ebene und Farbe");
+        var z = WorldMarks.parse(Json.obj(Json.parse("""
+            {"dimension":"minecraft:overworld","items":[
+             {"kind":"zone","id":"z","name":"Hof","note":"","dimension":"minecraft:overworld","category":"lager","points":[[0,0],[10,0],[10,10],[5,5],[0,10]],"layer":" Phase 2 ","color":"#FF8800"},
+             {"kind":"point","id":"s","name":"Bett","note":"","dimension":"minecraft:overworld","type":"spawn","x":3,"y":64,"z":3,"layer":"Phase 2"}]}"""), "z"));
+        assertEquals(2, z.size());
+        var zone = z.zones().get(0);
+        assertEquals("Phase 2", zone.extras().layer(), "Ebene getrimmt");
+        assertEquals(0xFFFF8800, zone.extras().color());
+        assertEquals(0xFFFF8800, WorldMarks.color(zone.extras(), WorldMarks.zoneColor("lager")));
+        assertTrue(zone.contains(2.5, 2.5), "innen");
+        assertTrue(!zone.contains(5.5, 8.5), "in der Kerbe des Polygons");
+        assertTrue(!zone.contains(12, 2), "außen");
+        assertEquals("Hof", z.zoneAt(1.5, 1.5).name());
+        assertNull(z.zoneAt(12, 12));
+        assertEquals(java.util.Map.of("Phase 2", 2), z.layers());
+        assertThrows(Json.JsonException.class, () -> WorldMarks.parse(Json.obj(Json.parse("""
+            {"dimension":"minecraft:overworld","items":[{"kind":"zone","name":"x","dimension":"minecraft:overworld","category":"park","points":[[0,0],[1,0],[1,1]]}]}"""), "x")), "Zonenart unbekannt");
         assertEquals("Lager", m.nearestPoint(0, 0).name());
         assertEquals("O", WorldMarks.direction(0, 0, 100, 0));
         assertEquals("N", WorldMarks.direction(0, 0, 0, -5));

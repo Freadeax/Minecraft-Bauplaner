@@ -225,6 +225,33 @@
       "releasedAt": "2026-11-02",
       "sourceCommit": "8c07dd6aaceb26209522069298e0c2d4cdc5eb05",
       "tested": "Testphase: /bauplaner diagnose (Bericht mit Tastenkonflikten, Shader, Modliste, Hologramm, Log-Auszug), Absturzschutz für Tick, Zeichnen, HUD und Klicks"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.8.0.jar",
+      "modVersion": "0.8.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 244416,
+      "sha256": "6f967897c0f3aebf768f506240696adbe8203ea2edd49759d4e4bb1ba2f21fc7",
+      "releasedAt": "2026-11-02",
+      "sourceCommit": "8ce80fcbc3e9a2e0d9880704b566a33acff374c1",
+      "tested": "Live-Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten der Weltkarte im Spiel, Mitspieler für die Live-Karte (/bauplaner ebenen)"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.8.0.jar",
+      "modVersion": "0.8.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 241725,
+      "sha256": "5007d835a465b91a5910838d8046a01debd367bb85badcff689b245934b14499",
+      "releasedAt": "2026-11-02",
+      "sourceCommit": "8ce80fcbc3e9a2e0d9880704b566a33acff374c1",
+      "tested": "Live-Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten der Weltkarte im Spiel, Mitspieler für die Live-Karte (/bauplaner ebenen)"
     }
   ]
 }

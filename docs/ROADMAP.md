@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-02T23:03:24.346Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-02T23:23:44.219Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,10 +12,10 @@ Stand: 2026-11-02T23:03:24.346Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 16 |
+| ⏳ Offen | 15 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 43 |
+| 🧩 Implementiert · Abnahme offen | 44 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -155,7 +155,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter | ⏳ Offen | 0/2 | MAP-01 | ausstehend | ausstehend |
 | [GAME-02](#game-02) | Fabric-Brücke kompilieren und im Spiel abnehmen | 🧩 Implementiert · Abnahme offen | 4/5 | FORMAT-01, GAME-01 | `84838f0` | `e232b26` |
 | [GAME-07](#game-07) | Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server) | 🧩 Implementiert · Abnahme offen | 8/10 | GAME-02 | ausstehend | ausstehend |
-| [GAME-08](#game-08) | Bauplaner-Mod Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten im Spiel (marks2), Mitspieler für die Karte (GET /v1/players), hello.protocol 2 | ⏳ Offen | 0/4 | GAME-07, MAP-06 | ausstehend | ausstehend |
+| [GAME-08](#game-08) | Bauplaner-Mod Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten im Spiel (marks2), Mitspieler für die Karte (GET /v1/players), hello.protocol 2 | 🧩 Implementiert · Abnahme offen | 4/4 | GAME-07, MAP-06 | ausstehend | ausstehend |
 | [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | 🧩 Implementiert · Abnahme offen | 2/2 | GAME-02 | ausstehend | ausstehend |
 | [WORLD-IMPORT-01](#world-import-01) | Bereichsweiser Weltimport und Terrainprüfung | 🧩 Implementiert · Abnahme offen | 2/2 | PROFILE-01, PERF-02, FORMAT-01 | ausstehend | ausstehend |
 | [BACKUP-02](#backup-02) | Sicherungserinnerung und Abschnittsrevisionen | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-01, BUILD-01 | ausstehend | ausstehend |
@@ -1466,22 +1466,22 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-08
 
-**Bauplaner-Mod Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten im Spiel (marks2), Mitspieler für die Karte (GET /v1/players), hello.protocol 2** · ⏳ Offen · Priorität P2 · Verantwortlich: Claude (Thread „Bauplaner-Mod von Grund auf neu entwickeln“) · Aktualisiert: 2026-11-02T23:00:01.616Z
+**Bauplaner-Mod Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten im Spiel (marks2), Mitspieler für die Karte (GET /v1/players), hello.protocol 2** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Bauplaner-Mod von Grund auf neu entwickeln“) · Aktualisiert: 2026-11-02T23:23:44.219Z
 
-- [ ] GAME-08-S01: WorldMarks: Art zone (category, points 3–256), Felder layer/color an allen Einträgen, Punktarten notiz/gefahr/rohstoff/spawn/aussicht; feature marks2 in hello.features.
-- [ ] GAME-08-S02: MarksRenderer: Zonen als gefüllte Fläche auf Bodenhöhe mit Rand und Name, Farbe aus color, Ebenen im Spiel ein-/ausblenden (/bauplaner ebene).
-- [ ] GAME-08-S03: GET /v1/players → {dimension, players:[{name,x,y,z,yaw}]} aus den sichtbaren Spielern des Clients; feature players; hello.protocol 2.
-- [ ] GAME-08-S04: Spieltest mit scripts/bridge_gametest.mjs (Zonen und Mitspieler gegen die Leser der Website), Release auf #/mod.
+- [x] GAME-08-S01: WorldMarks: Art zone (category, points 3–256), Felder layer/color an allen Einträgen, Punktarten notiz/gefahr/rohstoff/spawn/aussicht; feature marks2 in hello.features.
+- [x] GAME-08-S02: MarksRenderer: Zonen als gefüllte Fläche auf Bodenhöhe mit Rand, Name in der HUD-Zeile, Farbe aus color, Ebenen im Spiel ein-/ausblenden (/bauplaner ebenen).
+- [x] GAME-08-S03: GET /v1/players → {dimension, players:[{name,x,y,z,yaw}]} aus den sichtbaren Spielern des Clients; feature players; hello.protocol 2.
+- [x] GAME-08-S04: Spieltest mit scripts/bridge_gametest.mjs (Zonen und Mitspieler gegen die Leser der Website), Release auf #/mod.
 
 **Abnahme:** Eine Website ohne Kenntnis von Protokoll 2 arbeitet unverändert (alle alten Routen und Antworten bleiben). marks mit Zonen und neuen Punktarten werden angenommen und gezeichnet; Antworten entsprechen den Lesern in packages/domain/src/liveLink.ts (readLivePlayers). Der Simulator tests/e2e/modSimulator.mjs mit {protocol: 2, features: ['scan','marks2','players']} bleibt das Vorbild für Formen und Fehlerfälle.
 
-**Nächste Aktion:** Umsetzung im Mod-Thread nach der Testphase; Vertrag in LIVE_LINK.md „Protokoll 2 (Entwurf)“.
+**Nächste Aktion:** Protokoll 3: Rückrichtung „Markierung im Spiel setzen → Weltplan“ mit Zeitstempel je Eintrag (siehe LIVE_LINK.md); Forge und Paper ohne Live-Verbindung.
 
 **Prüfstand:** Noch nicht begonnen.
 
-**Nachweise:** [docs/architecture/LIVE_LINK.md](architecture/LIVE_LINK.md) — Protokoll 2 (Entwurf, GAME-08).; [tests/e2e/modSimulator.mjs](../tests/e2e/modSimulator.mjs) — Simulator mit Protokoll 2, marks2, players.
+**Nachweise:** [docs/architecture/LIVE_LINK.md](architecture/LIVE_LINK.md) — Protokoll 2 (GAME-08, Mod 0.8.0): Vertrag und Umsetzung.; [tests/e2e/modSimulator.mjs](../tests/e2e/modSimulator.mjs) — Simulator mit Protokoll 2, marks2, players.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java) — 0.8.0: Zone mit Ebene/Farbe, Punkt-in-Polygon, Ebenenliste, Ablehnungen (Zonenart, zwei Ecken, Farbe), /v1/players, hello mit protocol 2 und features (02.11.2026).; [scripts/bridge_gametest.mjs](../scripts/bridge_gametest.mjs) — 0.8.0: Spieltest schickt Zone und Gefahr-Punkt auf Ebene „Phase 2“, liest /v1/players mit readLivePlayers und die Ebenenliste im Chat; Fabric, Modpack + Complementary und NeoForge bestanden (02.11.2026).; [docs/TESTING.md](TESTING.md) — Abschnitt „GAME-08 · Mod 0.8.0 (Live-Protokoll 2)“.
 
-**Dateiumfang:** `mods/bauplaner-bridge/`, `downloads/mod/`, `apps/web/src/views/mod/releases.json`, `scripts/bridge_gametest.mjs`, `docs/architecture/LIVE_LINK.md`, `docs/architecture/MOD_HOLOGRAM.md`. **Abhängigkeiten:** GAME-07, MAP-06. **Alte IDs:** —.
+**Dateiumfang:** `apps/web/src/views/mod/releases.json`, `docs/COMMUNICATION.md`, `docs/TESTING.md`, `docs/architecture/LIVE_LINK.md`, `docs/architecture/MOD_HOLOGRAM.md`, `downloads/mod/`, `mods/bauplaner-bridge/`, `scripts/bridge_gametest.mjs`. **Abhängigkeiten:** GAME-07, MAP-06. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

@@ -44,7 +44,7 @@ import java.util.regex.Pattern;
  * </ul>
  */
 public final class LiveLinkServer implements AutoCloseable {
-    public static final int PROTOCOL = 1;
+    public static final int PROTOCOL = 2;
     public static final int DEFAULT_PORT = 47615;
     public static final String TOKEN_HEADER = "x-bauplaner-token";
     public static final int MAX_CHUNKS = 64;
@@ -68,13 +68,15 @@ public final class LiveLinkServer implements AutoCloseable {
         default String section(Map<String, Object> body) throws Exception { throw new HttpError(404, "Diese Mod kennt keine Bauabschnitte."); }
         /** Baustand of the placed plan as {@code bauplaner-scan} file (MAP-05, since 0.7.1). */
         default Binary scan() throws Exception { throw new HttpError(404, "Diese Mod kann keinen Baustand liefern."); }
+        /** GET /v1/players: other players the client sees, {@code {dimension, players:[{name,x,y,z,yaw}]}} (GAME-08, since 0.8.0). */
+        default String players() throws Exception { throw new HttpError(404, "Diese Mod meldet keine Mitspieler."); }
     }
 
     /** A file answer: name for the website, bytes as sent. */
     public record Binary(String fileName, byte[] bytes) {}
 
     /** What this mod can do beyond protocol 1; the website enables buttons by it. */
-    public static final List<String> FEATURES = List.of("scan");
+    public static final List<String> FEATURES = List.of("scan", "marks2", "players");
 
     public record Info(String version, String loader, String minecraft) {}
 
@@ -258,6 +260,7 @@ public final class LiveLinkServer implements AutoCloseable {
                 case "POST /v1/placement": return ok(h, handler.placement(Json.obj(Json.parse(text(r, 65_536)), "Lage")));
                 case "POST /v1/marks": return ok(h, handler.marks(Json.obj(Json.parse(text(r, MAX_JSON_BYTES)), "Markierungen")));
                 case "POST /v1/section": return ok(h, handler.section(Json.obj(Json.parse(text(r, 4_096)), "Abschnitt")));
+                case "GET /v1/players": return ok(h, handler.players());
                 case "GET /v1/scan": {
                     Binary file = handler.scan();
                     h.put("Content-Type", "application/octet-stream");

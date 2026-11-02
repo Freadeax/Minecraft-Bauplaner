@@ -69,7 +69,7 @@ if (mode === 'prepare') {
   assert.equal(byVerdict.wrong.actual, 'minecraft:diamond_block');
   assert.deepEqual(byVerdict.missing.position, expected.missing);
   hologram(join(dir, 'game.log'), check.totals.cells);
-  await live(join(dir, 'live.json'), scan.meta.loader ?? 'fabric', { project, guide, resolution, expected });
+  await live(join(dir, 'live.json'), scan.meta.loader ?? 'fabric', { project, guide, resolution, expected }, join(dir, 'game.log'));
   console.log(`Spieltest bestanden: Minecraft ${scan.meta.gameVersion ?? '26.3'} (${scan.meta.loader ?? '?'}), ${check.totals.cells} Zellen aus ${scan.meta.source === 'server' ? 'der echten Serverwelt' : 'dem echten Client'} gelesen, ${check.totals.ok} korrekt, 1 falscher Block und 1 fehlender Block an den erwarteten Stellen erkannt.`);
 }
 
@@ -132,10 +132,10 @@ function hologram(logFile, cells) {
  * MAP-03 website link (Fabric and NeoForge, skipped without live.json): the answers the website gets over
  * 127.0.0.1, read with the website's own strict readers (liveLink.ts).
  */
-async function live(file, loader, plan) {
+async function live(file, loader, plan, logFile) {
   let raw;
   try { raw = JSON.parse(readFileSync(file, 'utf8')); } catch { return; }
-  const { readLiveHello, readLiveStatus, readLiveChunks, chunkColumns } = await import('../dist/domain/src/index.js');
+  const { readLiveHello, readLiveStatus, readLiveChunks, readLivePlayers, chunkColumns } = await import('../dist/domain/src/index.js');
   assert.equal(raw.hello.status, 200);
   const hello = readLiveHello(raw.hello.body);
   assert.equal(hello.mod.loader, loader, 'Loader wie in der Aufnahme');
@@ -156,13 +156,23 @@ async function live(file, loader, plan) {
   const columns = chunkColumns(chunks)[0].columns.filter(Boolean);
   assert.ok(columns.length >= 200, `Oberfläche gelesen (${columns.length} Spalten)`);
   assert.equal(raw.marks.status, 200);
-  assert.equal(raw.marks.body.marks, 2);
+  assert.equal(raw.marks.body.marks, 4, 'Punkt, Bauplatz, Zone und Gefahr-Punkt angenommen');
+  // Protocol 2 (GAME-08): hello announces it, players route answers, layers are listed in the chat.
+  assert.equal(hello.protocol, 2, 'Protokoll 2');
+  for (const f of ['scan', 'marks2', 'players']) assert.ok(hello.features.includes(f), `Fähigkeit ${f}`);
+  assert.equal(raw.players.status, 200, JSON.stringify(raw.players.body));
+  const players = readLivePlayers(raw.players.body);
+  assert.equal(players.dimension, 'minecraft:overworld');
+  assert.deepEqual(players.players, [], 'im Einzelspieler ohne Mitspieler, eigener Spieler fehlt');
+  const log = readFileSync(logFile, 'utf8');
+  assert.match(log, /\[Bauplaner\] Weltplan-Ebenen \(1\)\./);
+  assert.match(log, /\[Bauplaner\] +● Phase 2: 2/);
   assert.equal(raw.plan.status, 200, JSON.stringify(raw.plan.body));
   const after = readLiveStatus(raw.after.body);
   assert.equal(after.hologram.planFile, 'website-plan.schem');
   const anchor = readFileSync(join(dir, 'anchor.txt'), 'utf8').trim().split(' ').map(Number);
   assert.deepEqual([after.hologram.placement.x, after.hologram.placement.y, after.hologram.placement.z], [anchor[0] + 20, anchor[1], anchor[2]], 'Plan an der von der Website gesendeten Stelle');
-  assert.equal(after.marks, 2);
+  assert.equal(after.marks, 4);
   // 0.7.0: build sections in the status, chosen from the website (POST /v1/section).
   assert.deepEqual(status.hologram.sections.map(s => s.name), ['Turm', 'Mauer'], 'Abschnitte aus der Plandatei im Status');
   assert.equal(status.hologram.sections.reduce((n, s) => n + s.total, 0), status.hologram.total, 'jeder Block gehört zu einem Abschnitt');

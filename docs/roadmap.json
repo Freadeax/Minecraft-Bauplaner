@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T23:03:24.346Z",
+  "updatedAt": "2026-11-02T23:23:44.219Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -4200,41 +4200,43 @@
       "title": "Bauplaner-Mod Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten im Spiel (marks2), Mitspieler für die Karte (GET /v1/players), hello.protocol 2",
       "phase": "P3",
       "priority": "P2",
-      "status": "planned",
+      "status": "implemented",
       "owner": "Claude (Thread „Bauplaner-Mod von Grund auf neu entwickeln“)",
       "dependencies": [
         "GAME-07",
         "MAP-06"
       ],
       "scope": [
-        "mods/bauplaner-bridge/",
-        "downloads/mod/",
         "apps/web/src/views/mod/releases.json",
-        "scripts/bridge_gametest.mjs",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
         "docs/architecture/LIVE_LINK.md",
-        "docs/architecture/MOD_HOLOGRAM.md"
+        "docs/architecture/MOD_HOLOGRAM.md",
+        "downloads/mod/",
+        "mods/bauplaner-bridge/",
+        "scripts/bridge_gametest.mjs"
       ],
       "legacyIds": [],
       "steps": [
         {
           "id": "GAME-08-S01",
           "title": "WorldMarks: Art zone (category, points 3–256), Felder layer/color an allen Einträgen, Punktarten notiz/gefahr/rohstoff/spawn/aussicht; feature marks2 in hello.features.",
-          "done": false
+          "done": true
         },
         {
           "id": "GAME-08-S02",
-          "title": "MarksRenderer: Zonen als gefüllte Fläche auf Bodenhöhe mit Rand und Name, Farbe aus color, Ebenen im Spiel ein-/ausblenden (/bauplaner ebene).",
-          "done": false
+          "title": "MarksRenderer: Zonen als gefüllte Fläche auf Bodenhöhe mit Rand, Name in der HUD-Zeile, Farbe aus color, Ebenen im Spiel ein-/ausblenden (/bauplaner ebenen).",
+          "done": true
         },
         {
           "id": "GAME-08-S03",
           "title": "GET /v1/players → {dimension, players:[{name,x,y,z,yaw}]} aus den sichtbaren Spielern des Clients; feature players; hello.protocol 2.",
-          "done": false
+          "done": true
         },
         {
           "id": "GAME-08-S04",
           "title": "Spieltest mit scripts/bridge_gametest.mjs (Zonen und Mitspieler gegen die Leser der Website), Release auf #/mod.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
@@ -4242,16 +4244,28 @@
         "marks mit Zonen und neuen Punktarten werden angenommen und gezeichnet; Antworten entsprechen den Lesern in packages/domain/src/liveLink.ts (readLivePlayers).",
         "Der Simulator tests/e2e/modSimulator.mjs mit {protocol: 2, features: ['scan','marks2','players']} bleibt das Vorbild für Formen und Fehlerfälle."
       ],
-      "next": "Umsetzung im Mod-Thread nach der Testphase; Vertrag in LIVE_LINK.md „Protokoll 2 (Entwurf)“.",
+      "next": "Protokoll 3: Rückrichtung „Markierung im Spiel setzen → Weltplan“ mit Zeitstempel je Eintrag (siehe LIVE_LINK.md); Forge und Paper ohne Live-Verbindung.",
       "blockers": [],
       "evidence": [
         {
           "path": "docs/architecture/LIVE_LINK.md",
-          "note": "Protokoll 2 (Entwurf, GAME-08)."
+          "note": "Protokoll 2 (GAME-08, Mod 0.8.0): Vertrag und Umsetzung."
         },
         {
           "path": "tests/e2e/modSimulator.mjs",
           "note": "Simulator mit Protokoll 2, marks2, players."
+        },
+        {
+          "path": "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+          "note": "0.8.0: Zone mit Ebene/Farbe, Punkt-in-Polygon, Ebenenliste, Ablehnungen (Zonenart, zwei Ecken, Farbe), /v1/players, hello mit protocol 2 und features (02.11.2026)."
+        },
+        {
+          "path": "scripts/bridge_gametest.mjs",
+          "note": "0.8.0: Spieltest schickt Zone und Gefahr-Punkt auf Ebene „Phase 2“, liest /v1/players mit readLivePlayers und die Ebenenliste im Chat; Fabric, Modpack + Complementary und NeoForge bestanden (02.11.2026)."
+        },
+        {
+          "path": "docs/TESTING.md",
+          "note": "Abschnitt „GAME-08 · Mod 0.8.0 (Live-Protokoll 2)“."
         }
       ],
       "verification": {
@@ -4262,7 +4276,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T23:00:01.616Z"
+      "updatedAt": "2026-11-02T23:23:44.219Z"
     },
     {
       "id": "GAME-03",
@@ -10062,6 +10076,42 @@
           "done": 7,
           "total": 8,
           "next": "Abnahme durch Philipp (S08); Mod-Umsetzung GAME-08; denkbar für Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (Zeitstempel je Eintrag)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T23:23:44.219Z",
+      "kind": "progress",
+      "items": [
+        "GAME-08"
+      ],
+      "summary": "Mod 0.8.0: Live-Protokoll 2 im Spiel (Zonen als Bodenteppich, Ebenen mit /bauplaner ebenen, Farben, fünf neue Punktarten, GET /v1/players, hello.protocol 2); Spieltests Fabric, Modpack+Shader und NeoForge gegen die Leser der Website",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/LIVE_LINK.md",
+        "docs/architecture/MOD_HOLOGRAM.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.8.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.8.0.jar",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/MarksRenderer.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WorldMarks.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/LiveLinkScenario.java",
+        "scripts/bridge_gametest.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-08",
+          "status": "done",
+          "done": 4,
+          "total": 4,
+          "next": "Protokoll 3: Rückrichtung „Markierung im Spiel setzen → Weltplan“ mit Zeitstempel je Eintrag (siehe LIVE_LINK.md); Forge und Paper ohne Live-Verbindung."
         }
       ]
     }

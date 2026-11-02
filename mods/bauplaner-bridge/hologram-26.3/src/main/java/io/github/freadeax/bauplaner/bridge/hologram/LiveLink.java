@@ -46,6 +46,8 @@ public final class LiveLink implements LiveLinkServer.Handler {
     private final String loader;
     private final String version;
     private volatile WorldMarks marks = WorldMarks.NONE;
+    /** Weltplan layers hidden in the game (GAME-08); not persisted, cleared with new marks. */
+    private final java.util.Set<String> hiddenLayers = java.util.concurrent.ConcurrentHashMap.newKeySet();
     private volatile long lastRequest;
     private int port = LiveLinkServer.DEFAULT_PORT;
     private boolean enabled;
@@ -63,6 +65,34 @@ public final class LiveLink implements LiveLinkServer.Handler {
     }
 
     public WorldMarks marks() { return marks; }
+
+    /** Whether entries on this Weltplan layer are drawn ("" = entries without a layer, always shown). */
+    public boolean layerShown(String layer) { return layer.isEmpty() || !hiddenLayers.contains(layer); }
+
+    /** Shows or hides a layer; returns the new state. */
+    public boolean toggleLayer(String layer) { if (!hiddenLayers.remove(layer)) hiddenLayers.add(layer); return layerShown(layer); }
+
+    public void showAllLayers() { hiddenLayers.clear(); }
+
+    /** GET /v1/players (GAME-08): the other players the client currently sees, without the own one. */
+    @Override
+    public String players() throws Exception {
+        lastRequest = System.currentTimeMillis();
+        return onGame(() -> {
+            Minecraft mc = Minecraft.getInstance();
+            StringBuilder b = new StringBuilder("{\"dimension\":");
+            if (mc.level == null || mc.player == null) return b.append("\"minecraft:overworld\",\"players\":[]}").toString();
+            b.append(Json.quote(McCompat.dimension(mc.level))).append(",\"players\":[");
+            int n = 0;
+            for (var p : mc.level.players()) {
+                if (p == mc.player || n >= 200) continue;
+                if (n++ > 0) b.append(',');
+                b.append("{\"name\":").append(Json.quote(p.getName().getString())).append(",\"x\":").append(Json.num(p.getX())).append(",\"y\":").append(Json.num(p.getY()))
+                        .append(",\"z\":").append(Json.num(p.getZ())).append(",\"yaw\":").append(Json.num(p.getYRot())).append('}');
+            }
+            return b.append("]}").toString();
+        });
+    }
     public boolean running() { return server.running(); }
     public int port() { return server.port(); }
     /** A paired website asked within the last five seconds. */
@@ -267,6 +297,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
         lastRequest = System.currentTimeMillis();
         WorldMarks next = WorldMarks.parse(body);
         marks = next;
+        hiddenLayers.retainAll(next.layers().keySet());
         try {
             Files.createDirectories(root);
             Files.writeString(root.resolve("markierungen.json"), "{\"dimension\":" + Json.quote(next.dimension()) + ",\"items\":" + itemsText(body) + "}", StandardCharsets.UTF_8);

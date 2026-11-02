@@ -1,6 +1,6 @@
 # Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (GAME-07)
 
-Stand 02.11.2026 · Stufe 1 „Fundament + Hologramm“ (0.2.0, Wahl Philipp) Stufe 2 „Texturen, Material, Ebenen“ (0.3.0) und Stufe 3 „Platzierhilfe“ (0.4.0) Stufe 4 „NeoForge, Shader, andere Mods“ (0.6.0) und Stufe 5 „Bauabschnitte, Röntgensicht, Shulker“ (0.7.0); 0.7.1 Baustand für die Live-Karte (`GET /v1/scan`, [LIVE_LINK](LIVE_LINK.md)), 0.7.2 Testphase (`/bauplaner diagnose`, Absturzschutz). Fabric 26.3 und NeoForge 26.3 mit demselben Client-Kern; die bisherige Aufnahme (`/bauplaner scan`, [MOD_BRIDGE](MOD_BRIDGE.md)) bleibt unverändert erhalten.
+Stand 02.11.2026 · Stufe 1 „Fundament + Hologramm“ (0.2.0, Wahl Philipp) Stufe 2 „Texturen, Material, Ebenen“ (0.3.0) und Stufe 3 „Platzierhilfe“ (0.4.0) Stufe 4 „NeoForge, Shader, andere Mods“ (0.6.0) und Stufe 5 „Bauabschnitte, Röntgensicht, Shulker“ (0.7.0); 0.7.1 Baustand für die Live-Karte (`GET /v1/scan`, [LIVE_LINK](LIVE_LINK.md)), 0.7.2 Testphase (`/bauplaner diagnose`, Absturzschutz), 0.8.0 Live-Protokoll 2 (Zonen, Ebenen, Farben, neue Punktarten, Mitspieler; GAME-08). Fabric 26.3 und NeoForge 26.3 mit demselben Client-Kern; die bisherige Aufnahme (`/bauplaner scan`, [MOD_BRIDGE](MOD_BRIDGE.md)) bleibt unverändert erhalten.
 
 ## Grundsätze
 
@@ -96,3 +96,7 @@ Gruppen/Sperren aus dem Weltbuilder (MAP-04) in der Mod, Bauabschnitt als Packli
 `/bauplaner diagnose` (QA-04, `HologramDiagnose` + `mod-core/Diagnostics`) schreibt einen Bericht nach `bauplaner/diagnose/diagnose-<zeit>.txt` und in die Zwischenablage: Mod, Loader, Minecraft, Java, System, Launcher, Modliste, Shader, jede Bauplaner-Taste mit Konflikten (`KeyMapping.same`), Welt, Hologramm (Plan, Platzierung, Fortschritt, Ebenen, Abschnitt, Texturen, Röntgen, Platzierhilfe), Website-Verbindung, abgefangene Fehler und ein geschwärzter Auszug aus `logs/latest.log`. Der Spieltest führt den Befehl aus und prüft den Bericht.
 
 `HologramClient` führt Tick, Weltzeichnen, HUD und die Klick-Haken der Platzierhilfe geschützt aus: Ein Fehler der Mod beendet das Spiel nicht mehr. Er landet einmal je Art mit Stack im Log (Logger `bauplaner`, Präfix `[Fehler]`), gleiche Fehler in jedem Bild werden nur gezählt (`errors()`), und der erste zeigt einen Chat-Hinweis auf `/bauplaner diagnose`. Klicks laufen bei einem Fehler normal durch (PASS).
+
+## Live-Protokoll 2 (0.8.0, GAME-08)
+
+Weltplan-Schema 2 von der Website im Spiel ([LIVE_LINK](LIVE_LINK.md#protokoll-2-game-08-mod-080)): Zonen als durchscheinender Teppich auf Bodenhöhe mit Rand, Bauplätze/Wege/Punkte mit eigener Farbe, fünf neue Punktarten (Notiz, Gefahr, Rohstoff, Spawn/Bett, Aussicht), HUD-Zeile mit der Zone am Standort, `/bauplaner ebenen` zum Ein-/Ausblenden benannter Ebenen, `GET /v1/players` für die Mitspieler auf der Karte, `hello.protocol` 2 mit `features` scan, marks2, players. Der Spieltest schickt Zone und Gefahr-Punkt auf einer Ebene, fragt die Mitspieler ab und liest die Ebenenliste im Chat.

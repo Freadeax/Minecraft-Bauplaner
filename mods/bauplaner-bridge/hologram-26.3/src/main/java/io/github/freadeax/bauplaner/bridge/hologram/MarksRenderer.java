@@ -14,9 +14,11 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * Weltplan marks from the website in the world (MAP-03): building sites as frames on the ground,
- * paths as lines along the surface, points as a short pillar with a beam. Heights come from the
- * client's own height map of loaded chunks; nothing is placed. A HUD line points to the nearest point.
+ * Weltplan marks from the website in the world (MAP-03, schema 2 since GAME-08): building sites as
+ * frames on the ground, paths as lines along the surface, points as a short pillar with a beam, zones
+ * as a translucent carpet of ground cells with a border. Heights come from the client's own height map
+ * of loaded chunks; nothing is placed. Entries use their own colour when the website gave one; hidden
+ * layers are skipped. A HUD line points to the nearest point and names the zone the player stands in.
  */
 final class MarksRenderer {
     static final int RADIUS = 256;
@@ -26,6 +28,11 @@ final class MarksRenderer {
     private int[] colors = new int[0];
     private int count;
     private int ticks;
+    /** Zone cells in world coordinates: x, y, z (top of the ground column) and colour, rebuilt with the lines. */
+    private float[] cells = new float[0];
+    private int[] cellColors = new int[0];
+    private int cellCount;
+    static final int MAX_CELLS = 40_000;
 
     MarksRenderer(LiveLink link) { this.link = link; }
 
@@ -33,41 +40,55 @@ final class MarksRenderer {
         if (++ticks % 20 != 0) return;
         WorldMarks m = link.marks();
         count = 0;
+        cellCount = 0;
         if (mc.level == null || mc.player == null || m.size() == 0 || !m.dimension().equals(McCompat.dimension(mc.level))) return;
         List<float[]> out = new ArrayList<>();
         List<Integer> col = new ArrayList<>();
+        List<float[]> cellOut = new ArrayList<>();
+        List<Integer> cellCol = new ArrayList<>();
         ClientLevel level = mc.level;
         double px = mc.player.getX(), pz = mc.player.getZ();
+        for (WorldMarks.Zone zone : m.zones()) {
+            if (!link.layerShown(zone.extras().layer())) continue;
+            int[] b = zone.bounds();
+            if (far(px, pz, (b[0] + b[2]) / 2.0, (b[1] + b[3]) / 2.0, Math.max(b[2] - b[0], b[3] - b[1]))) continue;
+            int color = WorldMarks.color(zone.extras(), WorldMarks.zoneColor(zone.category()));
+            // Carpet: one cell per ground column inside the polygon, coarser for big zones so the count stays bounded.
+            long area = (long) (b[2] - b[0] + 1) * (b[3] - b[1] + 1);
+            int step = area <= 4_096 ? 1 : area <= 16_384 ? 2 : area <= 65_536 ? 4 : 8;
+            for (int x = b[0]; x <= b[2] && cellOut.size() < MAX_CELLS; x += step) {
+                for (int z = b[1]; z <= b[3] && cellOut.size() < MAX_CELLS; z += step) {
+                    if (!zone.contains(x + 0.5, z + 0.5) || Math.hypot(px - x, pz - z) > RADIUS) continue;
+                    Integer g = ground(level, x, z);
+                    if (g == null) continue;
+                    cellOut.add(new float[] { x, g + 0.03f, z, step });
+                    cellCol.add((color & 0xFFFFFF) | 0x48000000);
+                }
+            }
+            // Border along the ground, like paths.
+            int[][] pts = zone.points();
+            for (int i = 0; i < pts.length; i++) surfaceLine(level, out, col, pts[i], pts[(i + 1) % pts.length], px, pz, color);
+        }
         for (WorldMarks.Site s : m.sites()) {
+            if (!link.layerShown(s.extras().layer())) continue;
             if (far(px, pz, s.minX() + s.width() / 2.0, s.minZ() + s.length() / 2.0, Math.max(s.width(), s.length()))) continue;
             Integer y = s.y() != null ? s.y() : ground(level, s.minX() + s.width() / 2, s.minZ() + s.length() / 2);
             if (y == null) continue;
+            int c = WorldMarks.color(s.extras(), 0xFFFFFFFF);
             float x0 = s.minX(), z0 = s.minZ(), x1 = s.minX() + s.width(), z1 = s.minZ() + s.length(), fy = y + 0.05f;
-            add(out, col, x0, fy, z0, x1, fy, z0, 0xFFFFFFFF); add(out, col, x1, fy, z0, x1, fy, z1, 0xFFFFFFFF);
-            add(out, col, x1, fy, z1, x0, fy, z1, 0xFFFFFFFF); add(out, col, x0, fy, z1, x0, fy, z0, 0xFFFFFFFF);
-            for (float[] c : new float[][] { { x0, z0 }, { x1, z0 }, { x1, z1 }, { x0, z1 } }) add(out, col, c[0], fy, c[1], c[0], fy + 3, c[1], 0xFFFFFFFF);
+            add(out, col, x0, fy, z0, x1, fy, z0, c); add(out, col, x1, fy, z0, x1, fy, z1, c);
+            add(out, col, x1, fy, z1, x0, fy, z1, c); add(out, col, x0, fy, z1, x0, fy, z0, c);
+            for (float[] k : new float[][] { { x0, z0 }, { x1, z0 }, { x1, z1 }, { x0, z1 } }) add(out, col, k[0], fy, k[1], k[0], fy + 3, k[1], c);
         }
         for (WorldMarks.Path p : m.paths()) {
-            int color = WorldMarks.pathColor(p.style());
-            for (int i = 0; i + 1 < p.points().length; i++) {
-                int[] a = p.points()[i], b = p.points()[i + 1];
-                if (far(px, pz, (a[0] + b[0]) / 2.0, (a[1] + b[1]) / 2.0, Math.hypot(a[0] - b[0], a[1] - b[1]))) continue;
-                // Follow the ground in steps of about four blocks so the line does not cut through hills.
-                int steps = Math.max(1, (int) Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 4));
-                Float lastX = null, lastY = null, lastZ = null;
-                for (int k = 0; k <= steps; k++) {
-                    float x = a[0] + (b[0] - a[0]) * k / (float) steps + 0.5f, z = a[1] + (b[1] - a[1]) * k / (float) steps + 0.5f;
-                    Integer g = ground(level, (int) Math.floor(x), (int) Math.floor(z));
-                    if (g == null) { lastX = null; continue; }
-                    float y = g + 0.15f;
-                    if (lastX != null) add(out, col, lastX, lastY, lastZ, x, y, z, color);
-                    lastX = x; lastY = y; lastZ = z;
-                }
-            }
+            if (!link.layerShown(p.extras().layer())) continue;
+            int color = WorldMarks.color(p.extras(), WorldMarks.pathColor(p.style()));
+            for (int i = 0; i + 1 < p.points().length; i++) surfaceLine(level, out, col, p.points()[i], p.points()[i + 1], px, pz, color);
         }
         for (WorldMarks.Point p : m.points()) {
+            if (!link.layerShown(p.extras().layer())) continue;
             if (far(px, pz, p.x(), p.z(), 0)) continue;
-            int c = WorldMarks.pointColor(p.type());
+            int c = WorldMarks.color(p.extras(), WorldMarks.pointColor(p.type()));
             float x = p.x(), y = p.y(), z = p.z();
             add(out, col, x + 0.5f, y, z + 0.5f, x + 0.5f, y + 40, z + 0.5f, c);
             add(out, col, x, y, z, x + 1, y, z, c); add(out, col, x + 1, y, z, x + 1, y, z + 1, c);
@@ -76,6 +97,24 @@ final class MarksRenderer {
         if (lines.length < out.size() * 6) { lines = new float[out.size() * 6]; colors = new int[out.size()]; }
         for (int i = 0; i < out.size(); i++) { System.arraycopy(out.get(i), 0, lines, i * 6, 6); colors[i] = col.get(i); }
         count = out.size();
+        if (cells.length < cellOut.size() * 4) { cells = new float[cellOut.size() * 4]; cellColors = new int[cellOut.size()]; }
+        for (int i = 0; i < cellOut.size(); i++) { System.arraycopy(cellOut.get(i), 0, cells, i * 4, 4); cellColors[i] = cellCol.get(i); }
+        cellCount = cellOut.size();
+    }
+
+    /** A line from corner a to corner b that follows the ground in steps of about four blocks, so it does not cut through hills. */
+    private static void surfaceLine(ClientLevel level, List<float[]> out, List<Integer> col, int[] a, int[] b, double px, double pz, int color) {
+        if (far(px, pz, (a[0] + b[0]) / 2.0, (a[1] + b[1]) / 2.0, Math.hypot(a[0] - b[0], a[1] - b[1]))) return;
+        int steps = Math.max(1, (int) Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 4));
+        Float lastX = null, lastY = null, lastZ = null;
+        for (int k = 0; k <= steps; k++) {
+            float x = a[0] + (b[0] - a[0]) * k / (float) steps + 0.5f, z = a[1] + (b[1] - a[1]) * k / (float) steps + 0.5f;
+            Integer g = ground(level, (int) Math.floor(x), (int) Math.floor(z));
+            if (g == null) { lastX = null; continue; }
+            float y = g + 0.15f;
+            if (lastX != null) add(out, col, lastX, lastY, lastZ, x, y, z, color);
+            lastX = x; lastY = y; lastZ = z;
+        }
     }
 
     private static boolean far(double px, double pz, double x, double z, double size) { return Math.hypot(px - x, pz - z) > RADIUS + size; }
@@ -92,10 +131,26 @@ final class MarksRenderer {
     }
 
     void submit(PoseStack pose, SubmitNodeCollector out, Vec3 cam) {
-        if (count == 0) return;
+        if (count == 0 && cellCount == 0) return;
         pose.pushPose();
         int ox = (int) Math.floor(cam.x), oy = (int) Math.floor(cam.y), oz = (int) Math.floor(cam.z);
         pose.translate(ox - cam.x, oy - cam.y, oz - cam.z);
+        if (cellCount > 0) {
+            final float[] q = cells;
+            final int[] qc = cellColors;
+            final int n = cellCount;
+            out.submitCustomGeometry(pose, RenderTypes.debugQuads(), (p, vc) -> {
+                for (int i = 0; i < n; i++) {
+                    int k = i * 4;
+                    float x = q[k] - ox, y = q[k + 1] - oy, z = q[k + 2] - oz, s = q[k + 3];
+                    vc.addVertex(p, x, y, z).setColor(qc[i]);
+                    vc.addVertex(p, x, y, z + s).setColor(qc[i]);
+                    vc.addVertex(p, x + s, y, z + s).setColor(qc[i]);
+                    vc.addVertex(p, x + s, y, z).setColor(qc[i]);
+                }
+            });
+        }
+        if (count == 0) { pose.popPose(); return; }
         final float[] l = lines;
         final int[] c = colors;
         final int n = count;
@@ -115,6 +170,8 @@ final class MarksRenderer {
         List<String> rows = new ArrayList<>();
         WorldMarks m = link.marks();
         if (m.size() > 0 && m.dimension().equals(McCompat.dimension(mc.level))) {
+            WorldMarks.Zone zone = m.zoneAt(mc.player.getX(), mc.player.getZ());
+            if (zone != null && link.layerShown(zone.extras().layer())) rows.add(WorldMarks.categoryLabel(zone.category()) + " „" + zone.name() + "“");
             WorldMarks.Point p = m.nearestPoint(mc.player.getX(), mc.player.getZ());
             if (p != null) {
                 int d = (int) Math.round(Math.hypot(p.x() + 0.5 - mc.player.getX(), p.z() + 0.5 - mc.player.getZ()));

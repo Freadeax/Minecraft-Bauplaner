@@ -57,8 +57,15 @@ final class LiveLinkScenario {
         request(steps, out, "chunks", () -> get(http, "/v1/chunks?c=" + cx + "," + cz + ";4000,4000", token[0], SITE));
         String marks = "{\"dimension\":\"minecraft:overworld\",\"items\":[{\"kind\":\"point\",\"id\":\"point_test\",\"name\":\"Brunnen\",\"note\":\"\",\"dimension\":\"minecraft:overworld\",\"type\":\"ziel\",\"x\":"
                 + (a[0] + 12) + ",\"y\":" + a[1] + ",\"z\":" + (a[2] + 3) + "},{\"kind\":\"site\",\"id\":\"site_test\",\"name\":\"Platz\",\"note\":\"\",\"dimension\":\"minecraft:overworld\",\"minX\":"
-                + (a[0] - 4) + ",\"minZ\":" + (a[2] - 4) + ",\"width\":16,\"length\":12,\"y\":null,\"projectId\":null}]}";
+                + (a[0] - 4) + ",\"minZ\":" + (a[2] - 4) + ",\"width\":16,\"length\":12,\"y\":null,\"projectId\":null}"
+                // Protocol 2 (GAME-08): a zone with layer and colour, a new point type on the same layer.
+                + ",{\"kind\":\"zone\",\"id\":\"zone_test\",\"name\":\"Hofanlage\",\"note\":\"\",\"dimension\":\"minecraft:overworld\",\"category\":\"wohnen\",\"layer\":\"Phase 2\",\"color\":\"#ff8800\",\"points\":[["
+                + (a[0] - 10) + "," + (a[2] - 10) + "],[" + (a[0] + 2) + "," + (a[2] - 10) + "],[" + (a[0] + 2) + "," + (a[2] - 2) + "],[" + (a[0] - 4) + "," + (a[2] - 2) + "],[" + (a[0] - 10) + "," + (a[2] - 6) + "]]}"
+                + ",{\"kind\":\"point\",\"id\":\"point_gefahr\",\"name\":\"Lava\",\"note\":\"\",\"dimension\":\"minecraft:overworld\",\"type\":\"gefahr\",\"layer\":\"Phase 2\",\"x\":"
+                + (a[0] - 8) + ",\"y\":" + a[1] + ",\"z\":" + (a[2] - 8) + "}]}";
         request(steps, out, "marks", () -> post(http, "/v1/marks", marks, token[0]));
+        request(steps, out, "players", () -> get(http, "/v1/players", token[0], SITE));
+        steps.add(new ClientScenario.Step(3, mc -> s.command("bauplaner ebenen")));
         String q = "name=website-plan.schem&dimension=minecraft%3Aoverworld&x=" + (a[0] + 20) + "&y=" + a[1] + "&z=" + a[2] + "&turns=0&mirror=false";
         request(steps, out, "plan", () -> {
             try {
