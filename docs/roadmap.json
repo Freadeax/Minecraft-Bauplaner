@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T05:07:08.400Z",
+  "updatedAt": "2026-11-02T05:07:24.985Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -2139,8 +2139,8 @@
       "title": "Kontrollierte Versionsupdates mit lokalen Overrides",
       "phase": "P3",
       "priority": "P1",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "in_progress",
+      "owner": "Claude (Thread „Updates und neue Versionen anzeigen“)",
       "dependencies": [
         "DIFF-01",
         "STORE-02"
@@ -2178,7 +2178,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-02T05:07:24.985Z"
     },
     {
       "id": "LIB-02",
@@ -5959,6 +5959,26 @@
           "done": 0,
           "total": 5,
           "next": "Domäne buildRun.ts mit Tests, dann Oberfläche im Bauen-Tab."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T05:07:24.985Z",
+      "kind": "progress",
+      "items": [
+        "UPDATE-01"
+      ],
+      "summary": "UPDATE-01 übernommen: Anmeldung und Dateiumfang in COMMUNICATION",
+      "files": [
+        "docs/COMMUNICATION.md"
+      ],
+      "snapshot": [
+        {
+          "id": "UPDATE-01",
+          "status": "in_progress",
+          "done": 0,
+          "total": 2,
+          "next": "Updateplan mit Geometrie/Material/Anschluss-/Aufgabendiff erstellen."
         }
       ]
     }

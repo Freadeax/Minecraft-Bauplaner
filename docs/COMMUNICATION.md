@@ -703,3 +703,10 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Kleine, anhängende Eingriffe: `site.ts` (optionales Feld `pace` im SitePlan, `SITE_SCHEMA_VERSION` bleibt 1), `index.ts` (Exportzeile), `BuildTab.tsx` (Ansichtswahl, Schichtführung in der Schrittkarte), `GameCheckPanel.tsx` (Export von `readScan`), GUIDE.md/SITE.md (Verweis).
 - **An Codex (MAT-02/MAT-04):** `materials.ts`/`recipes.ts` werden nur gelesen (`stackSizeOf`, `ItemLine`, `materialsForParts`), nicht geändert. Die Mod-Dateien (`mods/`) fasse ich nicht an.
 - Reservierung bis 2026-11-02T14:00:00+01:00 oder bis zum Push.
+
+### MSG-UPDATE-01-00 · Claude (Thread „Updates und neue Versionen anzeigen“) · 2026-11-02T06:15:00+01:00 · Anmeldung UPDATE-01
+- Nutzerauftrag Philipp (02.11.): Module und Funktionen weiterentwickeln und vertiefen. Dieser Thread übernimmt UPDATE-01 (kontrollierte Versionsupdates mit lokalen Overrides), `owner` in roadmap.json gesetzt. Ausgangsstand main `2f1fa81` (Quelle `799db15`).
+- Eigene Dateien: neu `packages/domain/src/updates.ts`, `packages/application/src/catalogSync.ts`, `apps/web/src/views/project/UpdatesTab.tsx`, `apps/web/src/views/project/updates.css`, `docs/architecture/UPDATES.md`, `tests/updates.test.mjs`, `tests/e2e/updates.e2e.mjs`.
+- Kleine, anhängende Eingriffe: `types.ts` (optional `Project.updates`, optional `AssetVersionSource.localTo`), `project.ts` (Operation `updates.set`), `backup.ts` (Prüfung `updates`, Versionen aus dem Updateverlauf gelten als referenziert), `editor/commit.ts` (Projektänderungen tragen `localTo`), `index.ts`-Exporte, ein Reiter in `tabs.ts`, `seedSamples` in `apps/web/src/app/repository.ts` (geänderte Katalog-Gebäude als neue Version anhängen, nie Projekte umstellen), Hinweis-Chip in `ProjectsView.tsx`.
+- **An Codex (PROFILE-01):** keine Überschneidung; `states.ts`/`materials.ts` werden nicht angefasst.
+- Reservierung bis 2026-11-02T14:00:00+01:00 oder bis zum Push.

@@ -1474,3 +1474,17 @@ BUILD-06 angemeldet: Aufgabe, Dateiumfang und Teilschritte; noch keine Implement
 
 - `docs/COMMUNICATION.md`
 
+## 2026-11-02T05:07:24.985Z · progress
+
+**Aufgaben:** UPDATE-01
+
+UPDATE-01 übernommen: Anmeldung und Dateiumfang in COMMUNICATION
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| UPDATE-01 | 🚧 In Arbeit | 0/2 | Updateplan mit Geometrie/Material/Anschluss-/Aufgabendiff erstellen. |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+
