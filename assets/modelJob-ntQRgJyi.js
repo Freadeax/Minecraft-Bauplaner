@@ -1,4 +1,4 @@
-import{t as e}from"./src-C9enBmvu.js";import{r as t,t as n}from"./src-qZEgSggw.js";import{i as r,n as i,t as a}from"./snapshot-BIVv1xSj.js";const o={grass:`short_grass`,chain:`iron_chain`};let s=null;function c(e){if(!s){s=/* @__PURE__ */ new Map;for(let e of`acacia_button=a85a32@b6.14.5.10.16.11
+import{t as e}from"./src-DdPTVSx_.js";import{r as t,t as n}from"./src-DTprXYpG.js";import{i as r,n as i,t as a}from"./snapshot-BIVv1xSj.js";const o={grass:`short_grass`,chain:`iron_chain`};let s=null;function c(e){if(!s){s=/* @__PURE__ */ new Map;for(let e of`acacia_button=a85a32@b6.14.5.10.16.11
 acacia_door=a35c39@b0.0.0.3.16.16
 acacia_fence=a85a32@b6.0.6.10.16.10
 acacia_fence_gate=a85a32@b7.5.0.9.16.16
