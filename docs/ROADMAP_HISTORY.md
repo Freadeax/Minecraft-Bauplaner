@@ -2241,3 +2241,17 @@ Philipps Spieltest: „/bauplaner verbinden port“ speicherte nur den Port, Ver
 - `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/LiveLink.java`
 - `tests/e2e/livelink.e2e.mjs`
 
+## 2026-11-02T11:45:46.079Z · progress
+
+**Aufgaben:** GAME-03
+
+Download-Eintrag Mod 0.5.1 auf den Quellcommit gesetzt.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-03 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme mit MAP-03-S06; Forge/NeoForge/Paper haben die Verbindung noch nicht. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+

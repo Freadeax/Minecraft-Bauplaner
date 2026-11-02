@@ -115,7 +115,7 @@
       "bytes": 201817,
       "sha256": "3fab0c40571a2d9a80abab9c6c4e3c13a984e60eed8f2ae8cffeee0ad64b855b",
       "releasedAt": "2026-11-02",
-      "sourceCommit": "e39991ac3b0e91d29fe42a71daff263180d55cd7",
+      "sourceCommit": "093f0e23bdf284c1ebb8e9442e48a11016aed446",
       "tested": "Im echten Minecraft-26.3-Client automatisch geprüft, auch mit Philipps Modpack (Fabric 26.3 1.0.1 mit REI): Hologramm, Platzierhilfe, Website-Verbindung über 127.0.0.1 ab „/bauplaner verbinden port 47615“ (Kopplung, Status, Gelände, Markierungen, Plan direkt gesendet). Neu in 0.5.1: der Port-Befehl startet die Verbindung und zeigt den Code."
     }
   ]

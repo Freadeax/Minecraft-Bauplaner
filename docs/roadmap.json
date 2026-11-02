@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T11:45:38.986Z",
+  "updatedAt": "2026-11-02T11:45:46.079Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -3826,7 +3826,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T11:45:38.986Z"
+      "updatedAt": "2026-11-02T11:45:46.079Z"
     },
     {
       "id": "WORLD-IMPORT-01",
@@ -7839,6 +7839,26 @@
           "total": 6,
           "next": "Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server."
         },
+        {
+          "id": "GAME-03",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme mit MAP-03-S06; Forge/NeoForge/Paper haben die Verbindung noch nicht."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T11:45:46.079Z",
+      "kind": "progress",
+      "items": [
+        "GAME-03"
+      ],
+      "summary": "Download-Eintrag Mod 0.5.1 auf den Quellcommit gesetzt.",
+      "files": [
+        "apps/web/src/views/mod/releases.json"
+      ],
+      "snapshot": [
         {
           "id": "GAME-03",
           "status": "implemented",
