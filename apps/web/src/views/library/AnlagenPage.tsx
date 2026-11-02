@@ -12,6 +12,7 @@ import type { LibraryPage } from '../../app/router';
 import { errorText, formatNumber } from '../../app/ui';
 import { Viewer } from '../../Viewer';
 import { Thumb } from '../../thumbnail/Thumb';
+import { ModelExportPanel } from '../../export3d/ModelExportPanel';
 import './anlagen.css';
 
 const SHIFT_STEP = 4;
@@ -281,6 +282,10 @@ function AnlagePlanner({ anlage, lib, entries, projects, libHref, onMessage }: {
       <div className="button-row"><button className="primary" type="button" disabled={!canAdopt} onClick={() => void adopt()}>
         {target.kind === 'new' ? 'Als Projekt anlegen' : 'In Projekt einfügen'}</button></div>
     </section>
+    {preview?.resolution.world && !stale && <details className="anlage-panel anlage-model3d">
+      <summary>3D-Datei der Anlage (OBJ, GLB, STL, 3MF)</summary>
+      <ModelExportPanel key={`${anlage.id}-${preview.resolution.world.cells.length}`} cells={preview.resolution.world.cells} palette={preview.resolution.world.palette} name={name.trim() || anlage.name} source={`Anlage ${anlage.name}`} />
+    </details>}
   </section>;
 }
 

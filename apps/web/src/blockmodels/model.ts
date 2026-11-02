@@ -31,6 +31,8 @@ export interface BakedQuad {
   readonly shade: FaceName | null;
   /** Texture marked force_translucent (stained glass and the like). */
   readonly translucent: boolean;
+  /** Own shapes only: the closed box (all six faces) this quad belongs to – 3D print export reads solids from it. */
+  readonly part?: number;
 }
 
 export interface BakedBlock {

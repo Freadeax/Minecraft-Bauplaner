@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-02T09:21:57.765Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-02T09:23:43.965Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-02T09:21:57.765Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 16 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 27 |
+| 🧩 Implementiert · Abnahme offen | 28 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -28,6 +28,7 @@ Stand: 2026-11-02T09:21:57.765Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 - **GAME-05 · NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen.
 - **EDIT-03 · Werkstatt vertiefen: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Ebenenübersicht und Tastenkürzel** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Picking an 3D-Blockflächen; Spielprüfung der Schablonen-Zustände (Tür, Treppe, Laterne).
 - **GFX-01 · Grafik vertiefen: Minecraft-Licht, Eckschatten, Sonne mit Schatten, Nacht, Spawnprüfung, sortiertes Glas und 32³-Abschnitte für große Modelle** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Prüfung auf echten Geräten und Browsern; danach Biomfarben und leuchtende Blockentities.
+- **MODEL-01 · 3D-Export: Bauteile, Projekte und Anlagen als OBJ/MTL, glTF/GLB, STL und 3MF (Ansichtsmodell mit Blockformen/Texturen, wasserdichte Druckhülle mit Maßstab, Füllen, Aushöhlen, Farben)** — 🧩 Implementiert · Abnahme offen, 4/6 Teilschritte. Nächster Schritt: Dateien in Blender und Slicern prüfen und ein Testdruck; danach Worker und Flächenzusammenfassung (S06).
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -121,6 +122,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen | 5/6 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material | 🧩 Implementiert · Abnahme offen | 6/7 | VIEW-02, BUILD-01, MAT-01 | ausstehend | ausstehend |
 | [GFX-01](#gfx-01) | Grafik vertiefen: Minecraft-Licht, Eckschatten, Sonne mit Schatten, Nacht, Spawnprüfung, sortiertes Glas und 32³-Abschnitte für große Modelle | 🧩 Implementiert · Abnahme offen | 5/6 | VIEW-02 | ausstehend | ausstehend |
+| [MODEL-01](#model-01) | 3D-Export: Bauteile, Projekte und Anlagen als OBJ/MTL, glTF/GLB, STL und 3MF (Ansichtsmodell mit Blockformen/Texturen, wasserdichte Druckhülle mit Maßstab, Füllen, Aushöhlen, Farben) | 🧩 Implementiert · Abnahme offen | 4/6 | VIEW-02, GFX-01 | ausstehend | ausstehend |
 | [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-02, VIEW-01 | ausstehend | ausstehend |
 | [EDIT-02](#edit-02) | Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen | 🧩 Implementiert · Abnahme offen | 5/5 | VIEW-01, STORE-02 | ausstehend | ausstehend |
 | [EDIT-03](#edit-03) | Werkstatt vertiefen: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Ebenenübersicht und Tastenkürzel | 🧩 Implementiert · Abnahme offen | 5/5 | EDIT-02 | ausstehend | ausstehend |
@@ -915,6 +917,29 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/graphics.test.mjs](../tests/graphics.test.mjs) — Leuchtwerte, Ausbreitung, AO, Licht je Eckpunkt, Spawnflächen, Abschnitte inkrementell = neu, Sortierung, Einstellungen.; [tests/e2e/graphics.e2e.mjs](../tests/e2e/graphics.e2e.mjs) — Chromium: Lichtmodi mit Helligkeitsvergleich, Schatten, Spawnprüfung, Speicherung, Abschnitte und Picking.; [docs/architecture/GRAPHICS.md](architecture/GRAPHICS.md) — Regeln, Messwerte, Grenzen.
 
 **Dateiumfang:** `apps/web/src/blockmodels/light.ts`, `apps/web/src/blockmodels/graphics.ts`, `apps/web/src/blockmodels/mesh.ts`, `apps/web/src/blockmodels/threeMesh.ts`, `apps/web/src/blockmodels/blocks.css`, `apps/web/src/viewer/`, `apps/web/src/thumbnail/`, `tests/graphics.test.mjs`, `tests/e2e/graphics.e2e.mjs`, `docs/architecture/GRAPHICS.md`. **Abhängigkeiten:** VIEW-02. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### MODEL-01
+
+**3D-Export: Bauteile, Projekte und Anlagen als OBJ/MTL, glTF/GLB, STL und 3MF (Ansichtsmodell mit Blockformen/Texturen, wasserdichte Druckhülle mit Maßstab, Füllen, Aushöhlen, Farben)** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude-Thread „Bauten als 3D-Modell exportieren“ · Aktualisiert: 2026-11-02T09:23:43.965Z
+
+- [x] MODEL-01-S01: Neutrales Dreiecksnetz und Schreiber OBJ/MTL, GLB (Textur eingebettet), STL, 3MF mit Farben; ZIP-Schreiber.
+- [x] MODEL-01-S02: Ansichtsmodell aus buildBlockMesh: Blockformen, Glas getrennt, Texturen oder Farben, eingebackene Helligkeit, Lage.
+- [x] MODEL-01-S03: Druckhülle aus dem Voxelgitter: Feinheit 1/2/4 mit eigenen Blockformen, Innenräume füllen, Aushöhlen, lose Teile, Kanten-/Eckreparatur, Wasserdichtprüfung.
+- [x] MODEL-01-S04: Oberfläche „Modelldatei“ bei Bauteilen und im Betrachter, im Projekt-Export und bei Anlagen; Maßstab in mm/m, Warnungen.
+- [ ] MODEL-01-S05: Dateien in Blender, Cura/PrusaSlicer/Bambu Studio öffnen und ein Modell drucken; Firefox/Safari.
+- [ ] MODEL-01-S06: Export großer Modelle in einem Worker; Flächen der Druckhülle ohne T-Stöße zusammenfassen.
+
+**Abnahme:** Druckhülle ist bei jeder Feinheit geschlossen und mannigfaltig (unabhängige Prüfung der heruntergeladenen Datei). Ansichtsmodell nutzt dieselbe Geometrie wie der Betrachter. Keine Texturen im Repository; Texturen nur aus der geladenen Nutzerquelle.
+
+**Nächste Aktion:** Dateien in Blender und Slicern prüfen und ein Testdruck; danach Worker und Flächenzusammenfassung (S06).
+
+**Prüfstand:** Node- und Chromium-Prüfung bestanden; Öffnen in Fremdprogrammen und echter Druck offen.
+
+**Nachweise:** [tests/model3d.test.mjs](../tests/model3d.test.mjs) — Wasserdichtheit/Volumen, Reparatur, Füllen/Aushöhlen, Formen je Zustand, OBJ/GLB/STL/3MF/ZIP-Aufbau und Rundreisen.; [tests/e2e/model3d.e2e.mjs](../tests/e2e/model3d.e2e.mjs) — Chromium: GLB, STL (wasserdicht, 100 mm), 3MF mit 4 Farben, OBJ-ZIP auf Handybreite, Anlage.; [docs/architecture/MODEL_EXPORT.md](architecture/MODEL_EXPORT.md) — Verfahren, Formate, Achsen, Messwerte, Grenzen.
+
+**Dateiumfang:** `packages/formats/src/model3d.ts`, `packages/formats/src/printGrid.ts`, `packages/formats/src/zipWrite.ts`, `apps/web/src/export3d/`, `apps/web/src/blockmodels/shapes.ts`, `apps/web/src/schem/SchemView.tsx`, `tests/model3d.test.mjs`, `tests/e2e/model3d.e2e.mjs`, `docs/architecture/MODEL_EXPORT.md`. **Abhängigkeiten:** VIEW-02, GFX-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

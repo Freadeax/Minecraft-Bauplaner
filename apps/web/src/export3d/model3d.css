@@ -1,0 +1,21 @@
+/* 3D-Export (MODEL-01) */
+.model3d { display: grid; gap: 14px; padding: 14px; align-content: start; font-size: 13px; }
+.model3d-form { display: grid; gap: 12px; max-width: 760px; }
+.model3d-head p { margin: 4px 0 0; }
+.model3d fieldset { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin: 0; display: grid; gap: 8px; min-width: 0; }
+.model3d legend { padding: 0 6px; font-size: 12px; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+.model3d-formats { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+.model3d-format { display: grid; gap: 3px; padding: 9px 10px; border: 1px solid var(--line-2, var(--line)); border-radius: 9px; background: var(--panel-2); cursor: pointer; }
+.model3d-format input { position: absolute; opacity: 0; pointer-events: none; }
+.model3d-format.active { border-color: var(--mint); }
+.model3d-format:focus-within { outline: 2px solid var(--mint); outline-offset: 1px; }
+.model3d-format small { color: var(--muted); line-height: 1.4; }
+.model3d label:not(.check):not(.model3d-format) { display: grid; gap: 4px; font-size: 12.5px; }
+.model3d input[type=number], .model3d select { max-width: 280px; border: 1px solid #31444f; border-radius: 6px; background: #0f1d26; padding: 7px 8px; color: #e0eaee; font: inherit; }
+.model3d input[aria-invalid=true] { border-color: #7a3c3c; }
+.model3d .check { display: flex; gap: 8px; align-items: flex-start; line-height: 1.4; }
+.model3d .muted { margin: 0; }
+.model3d-size .text-button { margin-left: 8px; }
+.model3d-report dd.ok { color: var(--mint); }
+.model3d-report dd.bad { color: #ffb38a; }
+@media (max-width: 700px) { .model3d { padding: 10px; } .model3d-formats { grid-template-columns: 1fr; } }

@@ -64,3 +64,7 @@ Prüfattribute am `.canvas-host`: `data-light`, `data-spawn-check`, `data-spawn`
 - Node `tests/graphics.test.mjs`: Leuchtwerte, Ausbreitung (Fackel, geschlossener Raum, Wasser, Dachöffnung), Eckschatten, Licht je Eckpunkt, Spawnflächen (dunkler Raum, Fackel, niedrige Decke, Glas/Laub), Abschnitte (gleiche Flächenzahl wie ein Mesh, Reihenfolge egal, Änderung/Markierung/Ursprung/Licht über Grenzen, inkrementell = neu gebaut), Sortierung, Einstellungen, Sonnenbahn.
 - Browser `tests/e2e/graphics.e2e.mjs` (Chromium, Software-WebGL): alle Lichtmodi mit Helligkeitsvergleich der Bildschirmfotos (Schatten dunkeln ab, Nacht dunkler als Tag), Uhrzeit, Spawnzähler und Kreuze, Umschalten ohne Neuaufbau, Speicherung über Neuladen, Dorfplatz mit mehreren Abschnitten und Picking.
 - Nicht geprüft: echte GPUs, Firefox/Safari, Handy-Leistung mit Schatten; Vergleich mit Bildschirmfotos aus dem Spiel. Biomfarben, Wolken, Himmelsfarbe und Nebel gibt es nicht. Blockentities (Truhen, Banner) leuchten nicht und werfen Schatten nur als eigene Form.
+
+## Weiterverwendung
+
+Der 3D-Export ([MODEL_EXPORT](MODEL_EXPORT.md), MODEL-01) übernimmt das Netz aus `buildBlockMesh` als Ansichtsmodell (Formen, Farben/Texturen, wahlweise Flächenhelligkeit und Eckschatten als Eckpunktfarbe) und baut die Druckhülle aus denselben eigenen Blockformen (`solidParts`).

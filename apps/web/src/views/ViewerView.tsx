@@ -11,7 +11,7 @@ import { Cube } from '../app/ui';
 import { SchemView } from '../schem/SchemView';
 import type { SchemTab } from '../schem/SchemView';
 let shotSeq=0;
-const PLAN_TABS:readonly (readonly [SchemTab,string])[]=[['bilder','Bilder'],['ebenen','Bauplan je Ebene']];
+const PLAN_TABS:readonly (readonly [SchemTab,string])[]=[['bilder','Bilder'],['ebenen','Bauplan je Ebene'],['modell','Modelldatei']];
 const names: Record<string,string>={'minecraft:stone':'Stein','minecraft:oak_log':'Eichenstamm'};
 export function ViewerView(){
   const [payload,setPayload]=useState<VoxelPayload>(makeDemo);

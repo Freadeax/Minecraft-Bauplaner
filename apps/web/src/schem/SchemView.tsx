@@ -5,14 +5,16 @@ import type { Mark } from '../viewer/types';
 import { useLayerFilter } from '../viewer/LayerControl';
 import { LayerSheet } from './LayerSheet';
 import { ShotGallery } from './ShotGallery';
+import { ModelExportPanel } from '../export3d/ModelExportPanel';
 
 /**
  * Schem-Ansicht (B12): one structure in three views behind tabs – 3D with the
  * layer filter, a still image gallery (nine views, cutaway, PNG download) and
- * the build plan per layer. Pure view: counts and exports never read from it.
+ * the build plan per layer, plus the 3D file export (OBJ, GLB, STL, 3MF).
+ * Pure view: counts and Minecraft exports never read from it.
  */
-export type SchemTab = '3d' | 'bilder' | 'ebenen';
-export const SCHEM_TABS: readonly (readonly [SchemTab, string])[] = [['3d', '3D'], ['bilder', 'Bilder'], ['ebenen', 'Ebenen']];
+export type SchemTab = '3d' | 'bilder' | 'ebenen' | 'modell';
+export const SCHEM_TABS: readonly (readonly [SchemTab, string])[] = [['3d', '3D'], ['bilder', 'Bilder'], ['ebenen', 'Ebenen'], ['modell', 'Modelldatei']];
 
 export function SchemView({ payload, cacheKey, name, tab, onTab, markFor, tabs = SCHEM_TABS }: {
   payload: VoxelPayload;
@@ -46,6 +48,7 @@ export function SchemView({ payload, cacheKey, name, tab, onTab, markFor, tabs =
       </>}
       {tab === 'bilder' && <ShotGallery key={cacheKey} payload={payload} cacheKey={cacheKey} name={name} />}
       {tab === 'ebenen' && <LayerSheet key={cacheKey} payload={payload} name={name} />}
+      {tab === 'modell' && <ModelExportPanel key={cacheKey} cells={payload.cells} palette={payload.palette} name={name} />}
     </div>
   </div>;
 }

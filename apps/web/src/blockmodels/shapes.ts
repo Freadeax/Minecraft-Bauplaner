@@ -40,15 +40,19 @@ const ON_BOUNDARY: Readonly<Record<FaceName, (f: V3, t: V3) => boolean>> = {
   down: f => f[1] === 0, up: (_f, t) => t[1] === 16, north: f => f[2] === 0, south: (_f, t) => t[2] === 16, west: f => f[0] === 0, east: (_f, t) => t[0] === 16,
 };
 
+let partSeq = 0;
 /** Axis-aligned box in 1/16 block units. */
 export function box(from: V3, to: V3, paint: Paint, faces: readonly FaceName[] = FACE_NAMES): BakedQuad[] {
   const out: BakedQuad[] = [];
+  // Closed boxes carry a part number, so the print export can read the solid back after rotations.
+  const part = faces.length === 6 ? ++partSeq : undefined;
   for (const face of faces) {
     const pts: V3[] = CORNERS[face].map(([a, b, c]) => [(a ? to[0] : from[0]) / 16, (b ? to[1] : from[1]) / 16, (c ? to[2] : from[2]) / 16]);
     out.push({
       pos: pts.flat(), uv: pts.flatMap(p => uvOf(face, p)),
       sprite: face === 'up' ? paint.top : face === 'down' ? paint.bottom : paint.side,
       tint: -1, cull: ON_BOUNDARY[face](from, to) ? face : null, shade: face, translucent: paint.translucent === true,
+      ...(part !== undefined && { part }),
     });
   }
   return out;
@@ -262,6 +266,25 @@ export function hashedColor(id: string): string {
   return `#${f(0)}${f(8)}${f(4)}`;
 }
 const hashedPaint = (id: string): Paint => { const c = hashedColor(id); return { top: c, side: c, bottom: c }; };
+
+/** Solid box in block units (0..1, may reach outside the cell for banners and gates in walls). */
+export type SolidPart = readonly [number, number, number, number, number, number];
+
+/**
+ * Closed boxes of the own shape of a state (3D print export): slabs, stairs,
+ * walls, fences, doors, carpets … as boxes; planes (plants, rails, ladders,
+ * vines) have no volume and are left out. Same geometry as the view.
+ */
+export function solidParts(id: string, props: Props): SolidPart[] {
+  const parts = new Map<number, number[]>();
+  for (const q of fallbackQuads(id, props)) {
+    if (q.part === undefined) continue;
+    let b = parts.get(q.part);
+    if (!b) { b = [Infinity, Infinity, Infinity, -Infinity, -Infinity, -Infinity]; parts.set(q.part, b); }
+    for (let i = 0; i < 12; i++) { const a = i % 3, v = q.pos[i]!; if (v < b[a]!) b[a] = v; if (v > b[a + 3]!) b[a + 3] = v; }
+  }
+  return [...parts.values()].filter(b => b[3]! > b[0]! && b[4]! > b[1]! && b[5]! > b[2]!) as unknown as SolidPart[];
+}
 
 /** Fallback block for a state (no texture source, or a block the source does not describe). */
 export function fallbackBlock(id: string, props: Props, paint?: Paint): BakedBlock {

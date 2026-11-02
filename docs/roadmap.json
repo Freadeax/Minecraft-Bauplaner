@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T09:21:57.765Z",
+  "updatedAt": "2026-11-02T09:23:43.965Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -9,7 +9,8 @@
     "EDIT-02",
     "GAME-05",
     "EDIT-03",
-    "GFX-01"
+    "GFX-01",
+    "MODEL-01"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -2284,6 +2285,92 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-02T08:13:54.837Z"
+    },
+    {
+      "id": "MODEL-01",
+      "title": "3D-Export: Bauteile, Projekte und Anlagen als OBJ/MTL, glTF/GLB, STL und 3MF (Ansichtsmodell mit Blockformen/Texturen, wasserdichte Druckhülle mit Maßstab, Füllen, Aushöhlen, Farben)",
+      "phase": "P3",
+      "priority": "P2",
+      "status": "implemented",
+      "owner": "Claude-Thread „Bauten als 3D-Modell exportieren“",
+      "dependencies": [
+        "VIEW-02",
+        "GFX-01"
+      ],
+      "scope": [
+        "packages/formats/src/model3d.ts",
+        "packages/formats/src/printGrid.ts",
+        "packages/formats/src/zipWrite.ts",
+        "apps/web/src/export3d/",
+        "apps/web/src/blockmodels/shapes.ts",
+        "apps/web/src/schem/SchemView.tsx",
+        "tests/model3d.test.mjs",
+        "tests/e2e/model3d.e2e.mjs",
+        "docs/architecture/MODEL_EXPORT.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "MODEL-01-S01",
+          "title": "Neutrales Dreiecksnetz und Schreiber OBJ/MTL, GLB (Textur eingebettet), STL, 3MF mit Farben; ZIP-Schreiber.",
+          "done": true
+        },
+        {
+          "id": "MODEL-01-S02",
+          "title": "Ansichtsmodell aus buildBlockMesh: Blockformen, Glas getrennt, Texturen oder Farben, eingebackene Helligkeit, Lage.",
+          "done": true
+        },
+        {
+          "id": "MODEL-01-S03",
+          "title": "Druckhülle aus dem Voxelgitter: Feinheit 1/2/4 mit eigenen Blockformen, Innenräume füllen, Aushöhlen, lose Teile, Kanten-/Eckreparatur, Wasserdichtprüfung.",
+          "done": true
+        },
+        {
+          "id": "MODEL-01-S04",
+          "title": "Oberfläche „Modelldatei“ bei Bauteilen und im Betrachter, im Projekt-Export und bei Anlagen; Maßstab in mm/m, Warnungen.",
+          "done": true
+        },
+        {
+          "id": "MODEL-01-S05",
+          "title": "Dateien in Blender, Cura/PrusaSlicer/Bambu Studio öffnen und ein Modell drucken; Firefox/Safari.",
+          "done": false
+        },
+        {
+          "id": "MODEL-01-S06",
+          "title": "Export großer Modelle in einem Worker; Flächen der Druckhülle ohne T-Stöße zusammenfassen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Druckhülle ist bei jeder Feinheit geschlossen und mannigfaltig (unabhängige Prüfung der heruntergeladenen Datei).",
+        "Ansichtsmodell nutzt dieselbe Geometrie wie der Betrachter.",
+        "Keine Texturen im Repository; Texturen nur aus der geladenen Nutzerquelle."
+      ],
+      "next": "Dateien in Blender und Slicern prüfen und ein Testdruck; danach Worker und Flächenzusammenfassung (S06).",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/model3d.test.mjs",
+          "note": "Wasserdichtheit/Volumen, Reparatur, Füllen/Aushöhlen, Formen je Zustand, OBJ/GLB/STL/3MF/ZIP-Aufbau und Rundreisen."
+        },
+        {
+          "path": "tests/e2e/model3d.e2e.mjs",
+          "note": "Chromium: GLB, STL (wasserdicht, 100 mm), 3MF mit 4 Farben, OBJ-ZIP auf Handybreite, Anlage."
+        },
+        {
+          "path": "docs/architecture/MODEL_EXPORT.md",
+          "note": "Verfahren, Formate, Achsen, Messwerte, Grenzen."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Node- und Chromium-Prüfung bestanden; Öffnen in Fremdprogrammen und echter Druck offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-02T09:23:43.965Z"
     },
     {
       "id": "EDIT-01",
@@ -7086,6 +7173,45 @@
           "done": 6,
           "total": 8,
           "next": "Philipp testet 0.4.0 (Platzierhilfe) auf server.lmnt-gaming.net; danach Stufe 4."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T09:23:43.965Z",
+      "kind": "progress",
+      "items": [
+        "MODEL-01"
+      ],
+      "summary": "3D-Export OBJ/MTL-ZIP, GLB, STL, 3MF: Ansichtsmodell aus buildBlockMesh, wasserdichte Druckhülle (Feinheit 1/2/4, Füllen, Aushöhlen, Reparatur, Farben); Node 15/15, E2E 2/2, Gesamt-E2E 100/100. Offen: Fremdprogramme, Testdruck, Worker.",
+      "files": [
+        "apps/web/src/blockmodels/model.ts",
+        "apps/web/src/blockmodels/shapes.ts",
+        "apps/web/src/export3d/ModelExportPanel.tsx",
+        "apps/web/src/export3d/build.ts",
+        "apps/web/src/export3d/model3d.css",
+        "apps/web/src/schem/SchemView.tsx",
+        "apps/web/src/views/ViewerView.tsx",
+        "apps/web/src/views/library/AnlagenPage.tsx",
+        "apps/web/src/views/project/ExportTab.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/GRAPHICS.md",
+        "docs/architecture/MODEL_EXPORT.md",
+        "packages/formats/src/index.ts",
+        "packages/formats/src/model3d.ts",
+        "packages/formats/src/printGrid.ts",
+        "packages/formats/src/zipWrite.ts",
+        "tests/e2e/model3d.e2e.mjs",
+        "tests/model3d.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "MODEL-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Dateien in Blender und Slicern prüfen und ein Testdruck; danach Worker und Flächenzusammenfassung (S06)."
         }
       ]
     }

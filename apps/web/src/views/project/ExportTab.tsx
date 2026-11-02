@@ -7,6 +7,7 @@ import type { SchemAnchor, UnselectedPolicy } from '../../../../../packages/form
 import { useApp } from '../../app/context';
 import { download, errorText, formatNumber } from '../../app/ui';
 import { isResolved } from './session';
+import { ModelExportPanel } from '../../export3d/ModelExportPanel';
 import type { ProjectSession } from './session';
 
 const date = (iso: string): string => new Date(iso).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
@@ -108,6 +109,11 @@ export function ExportTab({ session }: { session: ProjectSession }) {
       </form>
       {error && <div className="notice warning" role="alert"><strong>Export fehlgeschlagen.</strong><p>{error}</p></div>}
       {result && <ExportReport result={result} />}
+      {world && <details className="report export-model3d">
+        <summary>3D-Datei für Blender und 3D-Druck (OBJ, GLB, STL, 3MF)</summary>
+        <p className="muted">Exportiert den aktuellen Stand des Projekts als 3D-Modell – auch mit offenen Konflikten, ohne Revision. Kein Minecraft-Bauplan.</p>
+        <ModelExportPanel cells={world.cells} palette={world.palette} name={project.name} source={`Projekt ${project.name}`} />
+      </details>}
     </div>
 
     <aside className="export-revisions" aria-label="Revisionen">

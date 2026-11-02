@@ -1934,3 +1934,36 @@ Download-Seite #/mod: zuerst Client-Mod (für mein Spiel, vorausgewählt, Modrin
 - `docs/TESTING.md`
 - `tests/e2e/mod-download.e2e.mjs`
 
+## 2026-11-02T09:23:43.965Z · progress
+
+**Aufgaben:** MODEL-01
+
+3D-Export OBJ/MTL-ZIP, GLB, STL, 3MF: Ansichtsmodell aus buildBlockMesh, wasserdichte Druckhülle (Feinheit 1/2/4, Füllen, Aushöhlen, Reparatur, Farben); Node 15/15, E2E 2/2, Gesamt-E2E 100/100. Offen: Fremdprogramme, Testdruck, Worker.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MODEL-01 | 🧩 Implementiert · Abnahme offen | 4/6 | Dateien in Blender und Slicern prüfen und ein Testdruck; danach Worker und Flächenzusammenfassung (S06). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/blockmodels/model.ts`
+- `apps/web/src/blockmodels/shapes.ts`
+- `apps/web/src/export3d/ModelExportPanel.tsx`
+- `apps/web/src/export3d/build.ts`
+- `apps/web/src/export3d/model3d.css`
+- `apps/web/src/schem/SchemView.tsx`
+- `apps/web/src/views/ViewerView.tsx`
+- `apps/web/src/views/library/AnlagenPage.tsx`
+- `apps/web/src/views/project/ExportTab.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/GRAPHICS.md`
+- `docs/architecture/MODEL_EXPORT.md`
+- `packages/formats/src/index.ts`
+- `packages/formats/src/model3d.ts`
+- `packages/formats/src/printGrid.ts`
+- `packages/formats/src/zipWrite.ts`
+- `tests/e2e/model3d.e2e.mjs`
+- `tests/model3d.test.mjs`
+

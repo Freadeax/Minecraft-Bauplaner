@@ -20,3 +20,9 @@ export { lz4BlockStreamDecompress, lz4DecodeBlock, xxhash32, LZ4_CHECKSUM_SEED }
 export { sampleWorld, sampleToPayload, sampleAt, surfaceMap, collectWorldFiles, checkWorldBox, chunksOfBox, regionKey, createRegionCache, readExcerptChunk, WORLD_SAMPLE_LIMITS, EXCERPT_PAYLOAD_LIMITS, CHUNK_STATE_LABEL, SURFACE_UNKNOWN, terrainColumns, TERRAIN_COLUMN_LIMIT, TERRAIN_SIDE_LIMIT } from './worldExcerpt.js';
 export type { WorldFiles, WorldSample, WorldSampleLimits, WorldSampleOptions, ChunkState, ChunkSummary, ExcerptOptions, ExcerptReport, SurfaceMap, TerrainColumns } from './worldExcerpt.js';
 export { defaultProperties, defaultStateCount, DEFAULT_STATES_VERSION, DEFAULT_STATES_DATA_VERSION, DEFAULT_STATES_REPORT_SHA256 } from './defaultStates.js';
+export { meshStats, weldMesh, checkClosed, writeObj, writeGlb, writeStl, readStl, write3mf, safeName, toLinear } from './model3d.js';
+export type { Rgb, Material3d, MeshGroup3d, Mesh3d, MeshStats, WeldedMesh, ClosedCheck, ObjOptions, GlbOptions, ThreeMfOptions } from './model3d.js';
+export { createPrintGrid, fillCavities, hollowGrid, labelParts, removeSmallParts, repairGrid, reduceMaterials, shellMesh, PRINT_GRID_LIMIT } from './printGrid.js';
+export type { PrintGrid, ShellOptions } from './printGrid.js';
+export { writeZip, crc32, deflateRaw } from './zipWrite.js';
+export type { ZipInput, ZipWriteOptions } from './zipWrite.js';
