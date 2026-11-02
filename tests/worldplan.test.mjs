@@ -27,7 +27,8 @@ test('Einträge werden streng geprüft', () => {
   assert.throws(() => checkWorldItem({ ...point('x', 0, 64, 0), type: 'schatz' }), /Punktart/);
   assert.throws(() => checkWorldItem({ kind: 'kreis', id: 'k', name: 'K', note: '', dimension: OW }), /unbekannte Art/);
   assert.throws(() => checkWorldPlan({ ...emptyWorldPlan(), items: [point('a', 0, 0, 0), point('a', 1, 1, 1)] }), /doppelt/);
-  assert.throws(() => checkWorldPlan({ ...emptyWorldPlan(), schemaVersion: 2 }), /Schemaversion/);
+  assert.throws(() => checkWorldPlan({ ...emptyWorldPlan(), schemaVersion: 3 }), /Schemaversion/);
+  assert.equal(checkWorldPlan({ ...emptyWorldPlan(), schemaVersion: 1 }).schemaVersion, 2);
 });
 
 test('Operationen mit exakter Umkehrung, auch Entfernen in der Mitte', () => {
@@ -87,7 +88,7 @@ test('Geometrie: Rechteck aus Ecken, Chunkraster, Wegspalten, Länge, Treffer', 
   assert.deepEqual(sitesTouching(items, [12, 12, 13, 13]).map(s => s.id).sort(), ['big', 'small']);
   assert.deepEqual(sitesTouching(items, [12, 12, 13, 13], 'big').map(s => s.id), ['small']);
   const sum = worldPlanSummary(items);
-  assert.deepEqual({ ...sum, pathBlocks: undefined }, { sites: 2, freeSites: 2, siteArea: 2525, paths: 1, pathBlocks: undefined, pathLength: 49, points: 1 });
+  assert.deepEqual({ ...sum, pathBlocks: undefined }, { sites: 2, freeSites: 2, siteArea: 2525, paths: 1, pathBlocks: undefined, pathLength: 49, points: 1, zones: 0, zoneArea: 0 });
   assert.equal(sum.pathBlocks, 52 * 3); // x −1…50 (brush reaches one past both ends), three wide
   assert.deepEqual(moveItem(path('p', [[0, 0], [1, 1]]), 2, 3).points, [[2, 3], [3, 4]]);
   assert.equal(itemsOf({ ...emptyWorldPlan(), items: [point('a', 0, 0, 0), { ...point('b', 0, 0, 0), dimension: 'minecraft:the_nether' }] }, OW).length, 1);
@@ -136,4 +137,45 @@ test('Sicherung: Weltplan reist mit (Format 2), Wiederherstellung ergänzt ohne 
   assert.equal(plain.formatVersion, 1);
   const bad = { ...JSON.parse(serializeBackup(plain)), worldPlanItems: [] };
   await assert.rejects(readBackup(JSON.stringify(bad)), /Weltplan/);
+});
+
+// ------------------------------------------------------------------ Schema 2 (MAP-06): Zonen, Ebenen, Farben, neue Punktarten
+test('Schema 2: Zonen, Ebene und Farbe werden geprüft, alte Einträge bleiben unverändert', async () => {
+  const { insideZone, zoneArea, zonesAt, itemColor, layerNames, itemKindLabel, WORLD_POINT_TYPES, WORLD_ZONE_CATEGORIES } = await import('../dist/domain/src/index.js');
+  const zone = { kind: 'zone', id: 'z1', name: 'Farmland', note: '', dimension: OW, category: 'farm', points: [[0, 0], [9, 0], [9, 9], [0, 9]] };
+  assert.deepEqual(checkWorldItem(zone), zone);
+  assert.throws(() => checkWorldItem({ ...zone, points: [[0, 0], [1, 1]] }), /3 bis/);
+  assert.throws(() => checkWorldItem({ ...zone, category: 'mond' }), /Zonenart/);
+  // Old entries pass byte-identical (no layer/colour added), new fields are optional and normalised.
+  assert.deepEqual(checkWorldItem(point('p', 1, 64, 1)), point('p', 1, 64, 1));
+  assert.deepEqual(checkWorldItem({ ...point('p', 1, 64, 1), layer: ' Phase 2 ', color: '#FFAA00' }), { ...point('p', 1, 64, 1), layer: 'Phase 2', color: '#ffaa00' });
+  assert.deepEqual(checkWorldItem({ ...point('p', 1, 64, 1), layer: '', color: '' }), point('p', 1, 64, 1));
+  assert.throws(() => checkWorldItem({ ...point('p', 1, 64, 1), color: 'rot' }), /Farbe/);
+  assert.throws(() => checkWorldItem({ ...point('p', 1, 64, 1), layer: 'x'.repeat(41) }), /Ebene/);
+  assert.equal(checkWorldItem(point('n', 0, 64, 0, 'notiz')).type, 'notiz');
+  assert.equal(WORLD_POINT_TYPES.filter(t => t.v1).length, 6);
+  assert.equal(WORLD_ZONE_CATEGORIES.length, 8);
+  // Geometry of a zone: inside, area, bounds, hit test (corners count like points, the area lies under sites).
+  assert.ok(insideZone(zone, 4.5, 4.5));
+  assert.ok(!insideZone(zone, 12, 4));
+  assert.equal(zoneArea(zone), 81);
+  assert.deepEqual(itemBounds(zone), [0, 0, 10, 10]);
+  const s = site('s', 2, 2, 3, 3);
+  assert.equal(itemAt([zone, s], 3, 3).id, 's');
+  assert.equal(itemAt([zone, s], 7, 7).id, 'z1');
+  assert.equal(itemAt([zone], 9.4, 0.4).id, 'z1');
+  assert.equal(zonesAt([zone, s], 1, 1).length, 1);
+  assert.equal(zonesAt([zone, s], 20, 20).length, 0);
+  assert.deepEqual(moveItem(zone, 1, 2).points, [[1, 2], [10, 2], [10, 11], [1, 11]]);
+  assert.equal(itemColor(zone), '#8fe36a');
+  assert.equal(itemColor({ ...zone, color: '#123456' }), '#123456');
+  assert.equal(itemKindLabel(zone), 'Zone');
+  assert.deepEqual(layerNames([{ ...zone, layer: 'Süd' }, { ...point('p', 0, 0, 0), layer: 'Nord' }, s]), ['Nord', 'Süd']);
+  const sum = worldPlanSummary([zone, s]);
+  assert.equal(sum.zones, 1); assert.equal(sum.zoneArea, 81);
+  // Operations and the plan: schema version 2 on save, schema 1 still loads.
+  const plan = applyWorldPlanOp(emptyWorldPlan(), { kind: 'add', item: zone }).plan;
+  assert.equal(plan.schemaVersion, 2);
+  assert.equal(describeWorldPlanOp({ kind: 'add', item: zone }), 'Zone „Farmland“ angelegt');
+  assert.deepEqual(checkWorldPlan({ ...plan, schemaVersion: 1, items: [point('p', 1, 64, 1)] }).items, [point('p', 1, 64, 1)]);
 });

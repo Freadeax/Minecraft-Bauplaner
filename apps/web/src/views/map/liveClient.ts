@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  LIVE_DEFAULT_PORT, LIVE_TOKEN_HEADER, chunkColumns, chunkQuery, liveBaseUrl, marksBody, originAllowed, planUploadQuery,
-  readLiveChunks, readLiveHello, readLivePairing, readLiveStatus, wantedChunks,
+  LIVE_DEFAULT_PORT, LIVE_FEATURE_PLAYERS, LIVE_TOKEN_HEADER, chunkColumns, chunkQuery, liveBaseUrl, liveCan, marksBody, originAllowed, planUploadQuery,
+  readLiveChunks, readLiveHello, readLivePairing, readLivePlayers, readLiveStatus, wantedChunks,
 } from '../../../../../packages/domain/src/index.js';
-import type { LiveChunkColumns, LiveHello, LivePlacement, LiveStatus, WorldItem } from '../../../../../packages/domain/src/index.js';
+import type { LiveChunkColumns, LiveHello, LivePlacement, LivePlayers, LiveStatus, WorldItem } from '../../../../../packages/domain/src/index.js';
 
 /**
  * Website side of the live link (MAP-03, docs/architecture/LIVE_LINK.md): talks
@@ -94,6 +94,8 @@ export const liveApi = {
   /** Build section shown in the game (1-based, 0 = all); mod 0.7.0+. */
   section: async (port: number, token: string, section: number): Promise<void> => { await call(port, '/v1/section', { method: 'POST', token, body: JSON.stringify({ section }), headers: { 'Content-Type': 'application/json' } }); },
   unpair: async (port: number, token: string): Promise<void> => { await call(port, '/v1/unpair', { method: 'POST', token, body: '{}', headers: { 'Content-Type': 'application/json' } }); },
+  /** Other players the client sees (feature `players`, protocol 2). */
+  players: async (port: number, token: string): Promise<LivePlayers> => readLivePlayers(await call(port, '/v1/players', { token, timeoutMs: 4000 })),
 };
 
 export type LivePhase = 'off' | 'searching' | 'unpaired' | 'connected' | 'lost';
@@ -110,6 +112,8 @@ export interface LiveGame {
   /** Classified chunks per dimension, "cx,cz" → columns. */
   readonly chunks: ReadonlyMap<string, ReadonlyMap<string, LiveChunkColumns>>;
   readonly chunkVersion: number;
+  /** Other players (feature `players`), refreshed every other poll; empty for mods without it. */
+  readonly others: LivePlayers | null;
   readonly originProblem: string;
   /** The browser has refused access to this computer's local services ("lokales Netzwerk" blocked). */
   readonly accessDenied: boolean;
@@ -148,6 +152,8 @@ export function useLiveGame(): LiveGame {
   const [trail, setTrail] = useState<TrailPoint[]>([]);
   const chunks = useRef(new Map<string, Map<string, LiveChunkColumns>>());
   const [chunkVersion, setChunkVersion] = useState(0);
+  const [others, setOthers] = useState<LivePlayers | null>(null);
+  const helloRef = useRef<LiveHello | null>(null);
   const live = useRef(settings); live.current = settings;
   const originProblem = typeof location !== 'undefined' && !originAllowed(location.origin)
     ? `Diese Seite (${location.origin}) darf die Mod nicht abfragen. Nutze https://freadeax.github.io/Minecraft-Bauplaner/ oder eine lokale Kopie auf localhost.` : '';
@@ -203,7 +209,7 @@ export function useLiveGame(): LiveGame {
   // Poll while connected; on failure keep the last state and show "lost", retry slower.
   useEffect(() => {
     if (phase !== 'connected' && phase !== 'lost') return;
-    let stop = false, timer = 0;
+    let stop = false, timer = 0, n = 0;
     const tick = async () => {
       const t = live.current.token;
       if (!t) { setPhase('unpaired'); return; }
@@ -211,6 +217,9 @@ export function useLiveGame(): LiveGame {
         const s = await liveApi.status(live.current.port, t);
         if (stop) return;
         setStatus(s); setPhase('connected'); setError('');
+        if (liveCan(helloRef.current, LIVE_FEATURE_PLAYERS) && n++ % 2 === 0) {
+          try { const o = await liveApi.players(live.current.port, t); if (!stop) setOthers(o); } catch { /* optional: keep the last list */ }
+        }
         if (s.player) {
           const now = Date.now(), p = s.player;
           setTrail(old => {
@@ -260,8 +269,9 @@ export function useLiveGame(): LiveGame {
     return { read, missing };
   }, [status?.player?.dimension]);
 
+  helloRef.current = hello;
   return {
-    settings, phase, hello, status, error, trail, chunks: chunks.current, chunkVersion, originProblem, accessDenied,
+    settings, phase, hello, status, error, trail, chunks: chunks.current, chunkVersion, others: phase === 'connected' || phase === 'lost' ? others : null, originProblem, accessDenied,
     setPort: port => update({ ...live.current, port }), setAuto: auto => update({ ...live.current, auto }),
     connect, pair, disconnect, loadTerrain, token: () => live.current.token,
   };

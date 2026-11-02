@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T22:22:15.691Z",
+  "updatedAt": "2026-11-02T23:00:01.616Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -18,7 +18,8 @@
     "PERF-04",
     "LIB-05",
     "EDIT-05",
-    "MAP-05"
+    "MAP-05",
+    "MAP-06"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -4195,6 +4196,75 @@
       "updatedAt": "2026-11-02T22:14:34.982Z"
     },
     {
+      "id": "GAME-08",
+      "title": "Bauplaner-Mod Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten im Spiel (marks2), Mitspieler für die Karte (GET /v1/players), hello.protocol 2",
+      "phase": "P3",
+      "priority": "P2",
+      "status": "planned",
+      "owner": "Claude (Thread „Bauplaner-Mod von Grund auf neu entwickeln“)",
+      "dependencies": [
+        "GAME-07",
+        "MAP-06"
+      ],
+      "scope": [
+        "mods/bauplaner-bridge/",
+        "downloads/mod/",
+        "apps/web/src/views/mod/releases.json",
+        "scripts/bridge_gametest.mjs",
+        "docs/architecture/LIVE_LINK.md",
+        "docs/architecture/MOD_HOLOGRAM.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "GAME-08-S01",
+          "title": "WorldMarks: Art zone (category, points 3–256), Felder layer/color an allen Einträgen, Punktarten notiz/gefahr/rohstoff/spawn/aussicht; feature marks2 in hello.features.",
+          "done": false
+        },
+        {
+          "id": "GAME-08-S02",
+          "title": "MarksRenderer: Zonen als gefüllte Fläche auf Bodenhöhe mit Rand und Name, Farbe aus color, Ebenen im Spiel ein-/ausblenden (/bauplaner ebene).",
+          "done": false
+        },
+        {
+          "id": "GAME-08-S03",
+          "title": "GET /v1/players → {dimension, players:[{name,x,y,z,yaw}]} aus den sichtbaren Spielern des Clients; feature players; hello.protocol 2.",
+          "done": false
+        },
+        {
+          "id": "GAME-08-S04",
+          "title": "Spieltest mit scripts/bridge_gametest.mjs (Zonen und Mitspieler gegen die Leser der Website), Release auf #/mod.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Eine Website ohne Kenntnis von Protokoll 2 arbeitet unverändert (alle alten Routen und Antworten bleiben).",
+        "marks mit Zonen und neuen Punktarten werden angenommen und gezeichnet; Antworten entsprechen den Lesern in packages/domain/src/liveLink.ts (readLivePlayers).",
+        "Der Simulator tests/e2e/modSimulator.mjs mit {protocol: 2, features: ['scan','marks2','players']} bleibt das Vorbild für Formen und Fehlerfälle."
+      ],
+      "next": "Umsetzung im Mod-Thread nach der Testphase; Vertrag in LIVE_LINK.md „Protokoll 2 (Entwurf)“.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "docs/architecture/LIVE_LINK.md",
+          "note": "Protokoll 2 (Entwurf, GAME-08)."
+        },
+        {
+          "path": "tests/e2e/modSimulator.mjs",
+          "note": "Simulator mit Protokoll 2, marks2, players."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Noch nicht begonnen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-02T23:00:01.616Z"
+    },
+    {
       "id": "GAME-03",
       "title": "Optionale lokale Verbindung und Anzeige im Spiel",
       "phase": "P3",
@@ -5441,6 +5511,113 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-02T20:30:03.485Z"
+    },
+    {
+      "id": "MAP-06",
+      "title": "Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players)",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Weltkarte in die Tiefe ausbauen“)",
+      "dependencies": [
+        "MAP-04",
+        "MAP-05",
+        "GAME-07"
+      ],
+      "scope": [
+        "apps/web/src/views/map/",
+        "apps/web/src/map.css",
+        "packages/domain/src/worldPlan.ts",
+        "packages/domain/src/worldPlanEdit.ts",
+        "packages/domain/src/worldRoute.ts",
+        "packages/domain/src/liveLink.ts",
+        "packages/domain/src/index.ts",
+        "tests/worldplan.test.mjs",
+        "tests/worldbuilder.test.mjs",
+        "tests/worldroute.test.mjs",
+        "tests/livelink.test.mjs",
+        "tests/e2e/map-depth.e2e.mjs",
+        "tests/e2e/modSimulator.mjs",
+        "apps/web/src/testing/testplan.ts",
+        "docs/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "MAP-06-S01",
+          "title": "Plan und Vertrag: Stufen festgelegt, Mod-Protokoll 2 (hello.features marks2/players) als Entwurf in LIVE_LINK.md, GAME-08 für den Mod-Thread angelegt.",
+          "done": true
+        },
+        {
+          "id": "MAP-06-S02",
+          "title": "Weltplan-Schema 2: Zonen (Polygon, Art, Fläche), Ebene und Farbe je Eintrag, neue Punktarten; Schema 1 lesbar, Umkehrungen, Sicherung.",
+          "done": true
+        },
+        {
+          "id": "MAP-06-S03",
+          "title": "Ebenen und Filter: benannte Ebenen zuweisen (ein Rückgängig-Schritt), ausblenden (je Browser), Objektliste nach Ebene filtern, Farben.",
+          "done": true
+        },
+        {
+          "id": "MAP-06-S04",
+          "title": "Messen mit mehreren Punkten und Fläche, Höhenprofil je Weg, Route übers Gelände (A* mit Stufen-, Steigungs- und Wasserkosten, Vereinfachung).",
+          "done": true
+        },
+        {
+          "id": "MAP-06-S05",
+          "title": "Marker und Spieler: Notiz/Gefahr aus dem Kontextmenü, Punkt wo ich stehe, Spur als Weg, Entfernung zum Spieler, Mitspieler auf der Karte (players).",
+          "done": true
+        },
+        {
+          "id": "MAP-06-S06",
+          "title": "Zwei-Wege-Abgleich Karte ↔ Spiel: marksForMod schickt jeder Mod nur, was sie versteht, und meldet den Rest; Simulator mit Protokoll 1 und 2.",
+          "done": true
+        },
+        {
+          "id": "MAP-06-S07",
+          "title": "Mod-API-Versionierung: readLiveHello nimmt Protokoll 1–2, Oberfläche schaltet über hello.features („Mod kann … fehlt …“), Protokollnummer im Panel.",
+          "done": true
+        },
+        {
+          "id": "MAP-06-S08",
+          "title": "Abnahme durch Philipp auf der Weltkarte und mit Mod GAME-08 im Spiel.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Ein Weltplan mit Schema 1 lädt unverändert; nach dem Speichern ist er Schema 2 und enthält alles Alte.",
+        "Eine Mod ohne marks2 bekommt nie Zonen, neue Punktarten oder die Felder layer/color und bricht nicht; die Website nennt, was auf der Karte bleibt.",
+        "Route übers Gelände ersetzt den Weg als genau einen Rückgängig-Schritt und meldet Abschnitte ohne Route statt zu raten."
+      ],
+      "next": "Abnahme durch Philipp (S08); Mod-Umsetzung GAME-08; denkbar für Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (Zeitstempel je Eintrag).",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/e2e/map-depth.e2e.mjs",
+          "note": "Zonen, Ebenen, Messen, Notiz, Neuladen; alte Mod gefiltert, Höhenprofil, Route, Punkt wo ich stehe; Protokoll-2-Simulator mit Mitspielern und Zonen."
+        },
+        {
+          "path": "tests/worldroute.test.mjs",
+          "note": "Messung, Profil, A*-Route um Kamm/Tor/Wasser, Vereinfachung."
+        },
+        {
+          "path": "tests/livelink.test.mjs",
+          "note": "Protokoll 1–2, marksForMod, readLivePlayers."
+        },
+        {
+          "path": "docs/architecture/LIVE_LINK.md",
+          "note": "Protokoll 2 (Entwurf) als Vertrag mit der Mod."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Einheits- und Browsertests grün; Protokoll 2 nur gegen den Simulator; Abnahme durch Philipp offen (S08)."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-02T23:00:01.616Z"
     },
     {
       "id": "QA-04",
@@ -9814,6 +9991,57 @@
           "done": 4,
           "total": 6,
           "next": "Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T23:00:01.616Z",
+      "kind": "progress",
+      "items": [
+        "MAP-06",
+        "GAME-08"
+      ],
+      "summary": "MAP-06 Weltkarte in die Tiefe (Schema 2, Zonen, Ebenen, Messen, Route, Protokoll 2) umgesetzt; GAME-08 für die Mod geplant",
+      "files": [
+        "apps/web/src/map.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/map/Builder.tsx",
+        "apps/web/src/views/map/LiveGamePanel.tsx",
+        "apps/web/src/views/map/OverviewMap.tsx",
+        "apps/web/src/views/map/PlanPanel.tsx",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "apps/web/src/views/map/liveClient.ts",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/LIVE_LINK.md",
+        "docs/architecture/WORLD_BUILDER.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/liveLink.ts",
+        "packages/domain/src/worldPlan.ts",
+        "packages/domain/src/worldPlanEdit.ts",
+        "packages/domain/src/worldRoute.ts",
+        "tests/e2e/map-depth.e2e.mjs",
+        "tests/e2e/modSimulator.mjs",
+        "tests/livelink.test.mjs",
+        "tests/worldbuilder.test.mjs",
+        "tests/worldplan.test.mjs",
+        "tests/worldroute.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "MAP-06",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "Abnahme durch Philipp (S08); Mod-Umsetzung GAME-08; denkbar für Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (Zeitstempel je Eintrag)."
+        },
+        {
+          "id": "GAME-08",
+          "status": "planned",
+          "done": 0,
+          "total": 4,
+          "next": "Umsetzung im Mod-Thread nach der Testphase; Vertrag in LIVE_LINK.md „Protokoll 2 (Entwurf)“."
         }
       ]
     }

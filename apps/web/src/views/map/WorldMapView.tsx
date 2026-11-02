@@ -4,8 +4,9 @@ import {
   moveItem, newWorldItemId, originFromPlayer, siteFromCorners, snapSiteToChunks, surveyCovers, surveyDisplayCells, suggestDataVersion,
   alignToGround, duplicateItems, insertPathVertex, itemsInRect, joinPaths, mirrorItem, movePathVertex, removeItemsOp, removePathVertex, reversePath,
   rotateItem, selectionBounds, selectionPivot, splitPath, updateItemsOp,
+  layerNames, marksForMod, routePath, setLayerOp, trailToPath, pointTypeLabel,
 } from '../../../../../packages/domain/src/index.js';
-import type { EarthworkEstimate, Operation, Project, TerrainSurvey, WorldItem, WorldPath, WorldPlanOp } from '../../../../../packages/domain/src/index.js';
+import type { EarthworkEstimate, Operation, Project, TerrainSurvey, WorldItem, WorldPath, WorldPlanOp, WorldPointType, Polyline } from '../../../../../packages/domain/src/index.js';
 import { prepareRevisionExport } from '../../../../../packages/application/src/index.js';
 import {
   DIMENSIONS, MAP_SKIP_LABEL, TERRAIN_NOTE, chunkOf, dimensionLabel, footprintNeighbours, suggestPlacement, topViews, translateBounds, worldOperation, createPlacement,
@@ -27,7 +28,7 @@ import { PlanItemEditor, PlanToolbar } from './PlanPanel';
 import { useWorldPlan } from './useWorldPlan';
 import { useMapHistory } from './useMapHistory';
 import type { MapChange, MapStep } from './useMapHistory';
-import { LayerToggles, MapContextMenu, ObjectList, SelectionBar, useLayers } from './Builder';
+import { LayerToggles, MapContextMenu, ObjectList, SelectionBar, useHiddenLayers, useLayers } from './Builder';
 import type { MenuEntry } from './Builder';
 import { chunkImage } from './terrainLayer';
 import { areaAround, storeSurvey } from '../world/surveys';
@@ -95,6 +96,8 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   const [tool, setTool] = useState<MapTool>('select');
   const selectedItem = primary?.kind === 'item' ? primary.id : null;
   const [layers, setLayers] = useLayers();
+  // MAP-06: named layers (hidden ones are remembered per browser).
+  const [hiddenNames, setHiddenNames] = useHiddenLayers();
   const [menu, setMenu] = useState<{ at: { x: number; y: number }; hit: MapHit | null; vertex: MapVertex | null; column: readonly [number, number] } | null>(null);
   const [follow, setFollow] = useState(false);
   const [terrainBusy, setTerrainBusy] = useState(false);
@@ -279,7 +282,8 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   useEffect(() => { if (follow && player && player.dimension !== dimension) { setDimension(player.dimension); setSelected(null); } }, [follow, player?.dimension]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ------------------------------------------------------------ MAP-04: Weltbuilder (selection and editing)
-  const visibleItems = useMemo(() => items.filter(i => layers[i.kind]), [items, layers]);
+  const names = useMemo(() => layerNames(items), [items]);
+  const visibleItems = useMemo(() => items.filter(i => layers[i.kind] && !(i.layer && hiddenNames.has(i.layer))), [items, layers, hiddenNames]);
   const selItemIds = useMemo(() => new Set(selection.filter(h => h.kind === 'item').map(h => h.id)), [selection]);
   const selItems = useMemo(() => visibleItems.filter(i => selItemIds.has(i.id)), [visibleItems, selItemIds]);
   const selProjectIds = useMemo(() => new Set(selection.filter(h => h.kind === 'project').map(h => h.id)), [selection]);
@@ -360,21 +364,21 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
     } catch (e) { setNotice(errorText(e)); setNoticeUndo(false); }
   }, [selItems, selProjects.length, change]);
 
-  const editPath = useCallback((path: WorldPath, next: WorldPath | readonly [WorldPath, WorldPath], label: string) => {
+  const editPath = useCallback((path: Polyline, next: Polyline | readonly [WorldPath, WorldPath], label: string) => {
     try {
-      const ops: WorldPlanOp[] = Array.isArray(next) ? [{ kind: 'update', item: next[0] }, { kind: 'add', item: next[1] }] : [{ kind: 'update', item: next as WorldPath }];
+      const ops: WorldPlanOp[] = Array.isArray(next) ? [{ kind: 'update', item: next[0] }, { kind: 'add', item: next[1] }] : [{ kind: 'update', item: next as Polyline }];
       void change({ label: `${label}: „${path.name}“`, steps: [{ kind: 'plan', op: { kind: 'batch', label, ops } }] }).then(ok => {
         if (ok && Array.isArray(next)) setSelection([{ kind: 'item', id: next[1].id }]);
       });
     } catch (e) { setNotice(errorText(e)); setNoticeUndo(false); }
   }, [change]);
-  const pathOp = (fn: () => WorldPath | readonly [WorldPath, WorldPath]): WorldPath | readonly [WorldPath, WorldPath] | null => {
+  const pathOp = (fn: () => Polyline | readonly [WorldPath, WorldPath]): Polyline | readonly [WorldPath, WorldPath] | null => {
     try { return fn(); } catch (e) { setNotice(errorText(e)); setNoticeUndo(false); return null; }
   };
   const onVertex = useCallback((pathId: string, index: number, to: readonly [number, number], insert: boolean) => {
-    const path = items.find((i): i is WorldPath => i.id === pathId && i.kind === 'path'); if (!path) return;
+    const path = items.find((i): i is Polyline => i.id === pathId && (i.kind === 'path' || i.kind === 'zone')); if (!path) return;
     const next = pathOp(() => insert ? insertPathVertex(path, index, to) : movePathVertex(path, index, to));
-    if (next) editPath(path, next, insert ? 'Wegecke eingefügt' : 'Wegecke verschoben');
+    if (next) editPath(path, next, `${path.kind === 'zone' ? 'Zonenecke' : 'Wegecke'} ${insert ? 'eingefügt' : 'verschoben'}`);
   }, [items, editPath]); // eslint-disable-line react-hooks/exhaustive-deps
   const twoPaths = selItems.length === 2 && selItems.every(i => i.kind === 'path') && !selProjects.length ? selItems as WorldPath[] : null;
   const joinable = useMemo(() => { if (!twoPaths) return null; try { return joinPaths(twoPaths[0]!, twoPaths[1]!); } catch { return null; } }, [twoPaths]);
@@ -389,41 +393,80 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
     if (!op) { setNotice(r.unknown ? 'Unter der Auswahl ist kein Gelände bekannt. Lade Gelände aus dem Spiel oder lege eine Geländeaufnahme an.' : 'Die Höhen passen schon zum Gelände.'); setNoticeUndo(false); return; }
     void change({ label: 'Ans Gelände ausgerichtet', steps: [{ kind: 'plan', op }] }, `${r.aligned} ${r.aligned === 1 ? 'Eintrag' : 'Einträge'} auf die Geländehöhe gesetzt${r.unknown ? `, bei ${r.unknown} ist kein Gelände bekannt` : ''}.${selProjects.length ? ' Projekte passt du im Detailfeld mit „Höhe ans Gelände anpassen“ an.' : ''}`);
   }, [selItems, selProjects.length, groundAt, change]);
-  const canAlign = selItems.some(i => i.kind !== 'path');
+  const canAlign = selItems.some(i => i.kind !== 'path' && i.kind !== 'zone');
+  /** MAP-06: put the selected entries into a named layer (or take them out). */
+  const assignLayer = useCallback((name: string) => {
+    const op = setLayerOp(selItems, name);
+    if (!op) return;
+    void change({ label: op.kind === 'batch' ? op.label : 'Ebene geändert', steps: [{ kind: 'plan', op }] }, name ? `${selItems.length} ${selItems.length === 1 ? 'Eintrag' : 'Einträge'} in Ebene „${name}“ gelegt.` : `${selItems.length} ${selItems.length === 1 ? 'Eintrag' : 'Einträge'} aus der Ebene genommen.`)
+      .then(ok => { if (ok && name && hiddenNames.has(name)) { const h = new Set(hiddenNames); h.delete(name); setHiddenNames(h); } });
+  }, [selItems, change, hiddenNames, setHiddenNames]);
+  const selectionLayer = selItems.length ? (selItems.every(i => (i.layer ?? '') === (selItems[0]!.layer ?? '')) ? selItems[0]!.layer ?? '' : null) : null;
+  /** MAP-06: re-route a path over the known terrain between its corners. */
+  const routeSelected = useCallback((path: WorldPath) => {
+    const r = routePath(path, groundAt, { unknownCost: null });
+    if (!r) { setNotice('Keine Route gefunden: Unter dem Weg ist kein Gelände bekannt oder Stufen sind zu steil. Lade Gelände aus dem Spiel oder lege eine Geländeaufnahme an.'); setNoticeUndo(false); return; }
+    void change({ label: `Route übers Gelände: „${path.name}“`, steps: [{ kind: 'plan', op: { kind: 'update', item: r.path } }] },
+      `„${path.name}“ über das Gelände geführt (${r.path.points.length} Ecken${r.failed ? `, ${r.failed} von ${r.legs} Abschnitten ohne Route – gerade belassen` : ''}).`);
+  }, [groundAt, change]);
 
-  const draw = useCallback((d: MapDraft) => {
-    const n = (kind: WorldItem['kind']) => items.filter(i => i.kind === kind).length + 1;
-    let next: WorldItem;
-    if (d.kind === 'site') {
-      const rect = d.snap ? snapSiteToChunks(siteFromCorners(d.a, d.b)) : siteFromCorners(d.a, d.b);
-      const g = groundAt(rect.minX + Math.floor(rect.width / 2), rect.minZ + Math.floor(rect.length / 2));
-      next = { kind: 'site', id: newWorldItemId('site'), name: `Bauplatz ${n('site')}`, note: '', dimension, ...rect, y: g ? g.y + 1 : null, projectId: null };
-    } else if (d.kind === 'path') {
-      next = { kind: 'path', id: newWorldItemId('path'), name: `Weg ${n('path')}`, note: '', dimension, style: 'weg', width: 3, points: d.points.map(p => [p[0], p[1]] as const) };
-    } else {
-      const g = groundAt(d.x, d.z);
-      const y = g ? g.y + 1 : player && player.dimension === dimension ? Math.floor(player.y) : 64;
-      next = { kind: 'point', id: newWorldItemId('point'), name: `Punkt ${n('point')}`, note: '', dimension, type: 'ziel', x: d.x, y, z: d.z };
-    }
-    // A drawn kind must be visible, or the new entry would vanish at once.
+  /** Adds a new entry (drawn, from the menu or from the game); switches its layer on and selects it. */
+  const addItem = useCallback((next: WorldItem, message?: string) => {
     if (!layers[next.kind]) setLayers({ ...layers, [next.kind]: true });
-    void change({ label: `${next.name} angelegt`, steps: [{ kind: 'plan', op: { kind: 'add', item: next } }] },
-      `${next.name} angelegt${next.kind === 'point' && !groundAt(next.x, next.z) ? ' (Höhe geschätzt: kein Gelände bekannt)' : ''}.`).then(ok => {
+    void change({ label: `${next.name} angelegt`, steps: [{ kind: 'plan', op: { kind: 'add', item: next } }] }, message ?? `${next.name} angelegt.`).then(ok => {
       if (!ok) return;
       setSelection([{ kind: 'item', id: next.id }]); setTool('select');
     });
-  }, [items, dimension, groundAt, player, change, layers, setLayers]);
+  }, [change, layers, setLayers]);
+  const countOf = (kind: WorldItem['kind']) => items.filter(i => i.kind === kind).length + 1;
+  /** A point at a column; height from the ground, else from the player, else 64. */
+  const addPoint = useCallback((x: number, z: number, type: WorldPointType = 'ziel', opts: { y?: number; name?: string } = {}) => {
+    const g = groundAt(x, z);
+    const y = opts.y ?? (g ? g.y + 1 : player && player.dimension === dimension ? Math.floor(player.y) : 64);
+    const name = opts.name ?? (type === 'ziel' ? `Punkt ${countOf('point')}` : `${pointTypeLabel(type)} ${items.filter(i => i.kind === 'point' && i.type === type).length + 1}`);
+    addItem({ kind: 'point', id: newWorldItemId('point'), name, note: '', dimension, type, x, y, z }, `${name} angelegt${opts.y === undefined && !g ? ' (Höhe geschätzt: kein Gelände bekannt)' : ''}.`);
+  }, [items, dimension, groundAt, player, addItem]); // eslint-disable-line react-hooks/exhaustive-deps
+  const draw = useCallback((d: MapDraft) => {
+    if (d.kind === 'site') {
+      const rect = d.snap ? snapSiteToChunks(siteFromCorners(d.a, d.b)) : siteFromCorners(d.a, d.b);
+      const g = groundAt(rect.minX + Math.floor(rect.width / 2), rect.minZ + Math.floor(rect.length / 2));
+      addItem({ kind: 'site', id: newWorldItemId('site'), name: `Bauplatz ${countOf('site')}`, note: '', dimension, ...rect, y: g ? g.y + 1 : null, projectId: null });
+    } else if (d.kind === 'path') {
+      addItem({ kind: 'path', id: newWorldItemId('path'), name: `Weg ${countOf('path')}`, note: '', dimension, style: 'weg', width: 3, points: d.points.map(p => [p[0], p[1]] as const) });
+    } else if (d.kind === 'zone') {
+      addItem({ kind: 'zone', id: newWorldItemId('zone'), name: `Zone ${countOf('zone')}`, note: '', dimension, category: 'sonstiges', points: d.points.map(p => [p[0], p[1]] as const) });
+    } else addPoint(d.x, d.z);
+  }, [items, dimension, groundAt, addItem, addPoint]); // eslint-disable-line react-hooks/exhaustive-deps
+  /** MAP-06: a point where the player stands and the trail of the last minutes as a path. */
+  const pointAtPlayer = () => { if (player) addPoint(Math.floor(player.x), Math.floor(player.z), 'anker', { y: Math.floor(player.y), name: `${player.name || 'Ich'} ${new Date().toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}` }); };
+  const trailAsPath = () => {
+    if (!player || player.dimension !== dimension) return;
+    const path = trailToPath(game.trail, { kind: 'path', id: newWorldItemId('path'), name: `Spur ${countOf('path')}`, note: `Spur von ${player.name || 'mir'} aus dem Spiel`, dimension, style: 'weg', width: 1 });
+    if (!path) { setNotice('Die Spur ist noch zu kurz – laufe ein paar Blöcke, dann noch einmal.'); setNoticeUndo(false); return; }
+    addItem(path, `„${path.name}“ aus deiner Spur angelegt (${path.points.length} Ecken).`);
+  };
 
   const openMenu = useCallback((hit: MapHit | null, at: { x: number; y: number }, vertex: MapVertex | null, column: readonly [number, number]) => {
     // Right click on something unselected selects it first (like a file manager).
     if (hit && !selection.some(h => h.kind === hit.kind && h.id === hit.id)) setSelection([hit]);
     setMenu({ at, hit, vertex, column });
   }, [selection]);
+  /** MAP-06: distance from the player in the game to the middle of the selection. */
+  const playerDistance = useMemo(() => {
+    if (!player || player.dimension !== dimension || !selectionCount) return null;
+    const b = selectionBounds(selItems), boxes = [...(b ? [b] : []), ...selProjects.flatMap(p => { const e = map?.entries.find(x => x.projectId === p.id)?.worldBounds; return e ? [[e.min[0], e.min[2], e.maxExclusive[0], e.maxExclusive[2]] as const] : []; })];
+    if (!boxes.length) return null;
+    const cx = (Math.min(...boxes.map(x => x[0])) + Math.max(...boxes.map(x => x[2]))) / 2, cz = (Math.min(...boxes.map(x => x[1])) + Math.max(...boxes.map(x => x[3]))) / 2;
+    const dx = cx - player.x, dz = cz - player.z, d = Math.hypot(dx, dz);
+    const dir = ['N', 'NO', 'O', 'SO', 'S', 'SW', 'W', 'NW'][((Math.round(Math.atan2(dx, -dz) / (Math.PI / 4)) % 8) + 8) % 8];
+    return `${formatNumber(Math.round(d))} Blöcke von dir (${dir})`;
+  }, [player, dimension, selectionCount, selItems, selProjects, map]);
   const planLayer: PlanLayer = {
     items: visibleItems, selection: visibleSelection, selectedProjects: visibleProjects, hideProjects: !layers.projects,
     tool, onTool: setTool, onPick: pick, onBox: boxSelect, onMove: moveSelection, onNudge: moveSelection, onContext: openMenu, onVertex, onDraw: draw, follow, groundAt, tiles,
     player: player && player.dimension === dimension ? { x: player.x, z: player.z, yaw: player.yaw, name: player.name } : null,
     trail: player && player.dimension === dimension ? game.trail : [],
+    others: game.others && game.others.dimension === dimension ? game.others.players.filter(o => o.name !== player?.name) : [],
     hologram: holo && holo.placement.dimension === dimension ? { box: [holo.box[0], holo.box[2], holo.box[3], holo.box[5]], matches: holoMatch === 'same',
       label: `Hologramm ${holo.name} · ${Math.round(liveShare(holo).share * 100)} % im Spiel` } : null,
     deviations: progress.columns,
@@ -473,16 +516,19 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   const marksSent = useRef<string>('');
   // The game object changes with every poll; the timer must only restart when the Weltplan changes.
   const gameRef = useRef(game); gameRef.current = game;
+  // MAP-06: an older mod (without `marks2`) gets only the entries it understands; the panel says what stays here.
+  const marksOut = useMemo(() => marksForMod(items, game.hello), [items, game.hello]);
+  const marksSkipped = marksOut.skipped ? `${marksOut.skipped} ${marksOut.skipped === 1 ? 'Eintrag bleibt' : 'Einträge bleiben'} nur auf der Karte (${marksOut.skippedKinds.join(', ')}): Diese Mod kennt sie noch nicht – eine neuere Mod mit „marks2“ zeigt sie im Spiel.` : null;
   useEffect(() => {
     if (!autoMarks || !connected) return;
-    const key = `${dimension}|${JSON.stringify(items)}`;
+    const key = `${dimension}|${JSON.stringify(marksOut.items)}`;
     if (key === marksSent.current) return;
     const t = setTimeout(() => {
       const g = gameRef.current, token = g.token(); if (!token) return;
-      void liveApi.marks(g.settings.port, token, dimension, items).then(() => { marksSent.current = key; }, e => setNotice(`Weltplan nicht abgeglichen: ${errorText(e)}`));
+      void liveApi.marks(g.settings.port, token, dimension, marksOut.items).then(() => { marksSent.current = key; }, e => setNotice(`Weltplan nicht abgeglichen: ${errorText(e)}`));
     }, 1500);
     return () => clearTimeout(t);
-  }, [autoMarks, connected, items, dimension]);
+  }, [autoMarks, connected, marksOut, dimension]);
   /** Moves the hologram in the game so that the project origin stands on this column (rotation kept). */
   const moveHologramTo = async (x: number, z: number) => {
     const t = game.token(); if (!t || !holo) return;
@@ -495,7 +541,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   const sendMarks = async () => {
     const t = game.token(); if (!t) return;
     setSending('marks');
-    try { const n = await liveApi.marks(game.settings.port, t, dimension, items); setNotice(`${n} Weltplan-Einträge (${dimensionLabel(dimension)}) im Spiel als Markierungen eingeblendet.`); }
+    try { const n = await liveApi.marks(game.settings.port, t, dimension, marksOut.items); setNotice(`${n} Weltplan-Einträge (${dimensionLabel(dimension)}) im Spiel als Markierungen eingeblendet${marksOut.skipped ? `, ${marksOut.skipped} kann diese Mod nicht zeigen (${marksOut.skippedKinds.join(', ')})` : ''}.`); }
     catch (e) { setNotice(errorText(e)); }
     finally { setSending(''); }
   };
@@ -552,7 +598,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   };
 
   // Context menu (right click / long press) for what is selected, or for the empty map.
-  const menuPath = menu?.vertex ? items.find((i): i is WorldPath => i.id === menu.vertex!.pathId && i.kind === 'path') ?? null : null;
+  const menuPath = menu?.vertex ? items.find((i): i is Polyline => i.id === menu.vertex!.pathId && (i.kind === 'path' || i.kind === 'zone')) ?? null : null;
   const menuProject = menu?.hit?.kind === 'project' ? projects?.find(p => p.id === menu.hit!.id) ?? null : null;
   const menuTitle = !menu?.hit && !selectionCount ? `X ${menu?.column[0]} · Z ${menu?.column[1]}`
     : selectionCount > 1 ? `${selectionCount} gewählt` : selItems[0]?.name ?? selProjects[0]?.name ?? menuProject?.name ?? 'Auswahl';
@@ -561,7 +607,10 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   const menuEntries: (MenuEntry | null)[] = !menu ? [] : !menu.hit && !selectionCount ? [
     { label: 'Bauplatz hier zeichnen', onClick: () => setTool('site') },
     { label: 'Weg hier beginnen', onClick: () => setTool('path') },
-    { label: 'Punkt hier setzen', onClick: () => draw({ kind: 'point', x: menu.column[0], z: menu.column[1] }) },
+    { label: 'Zone hier beginnen', onClick: () => setTool('zone') },
+    { label: 'Punkt hier setzen', onClick: () => addPoint(menu.column[0], menu.column[1]) },
+    { label: '📝 Notiz hier setzen', onClick: () => addPoint(menu.column[0], menu.column[1], 'notiz') },
+    { label: '⚠ Gefahr hier markieren', onClick: () => addPoint(menu.column[0], menu.column[1], 'gefahr') },
     null,
     { label: 'Alles auswählen (Strg+A)', onClick: selectAll },
     { label: 'Messen ab hier', onClick: () => setTool('measure') },
@@ -569,11 +618,14 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
     ...(menuLiveUrl ? [null, { label: `Diese Stelle auf ${live.name || 'der Live-Karte'} zeigen ↗`, onClick: () => window.open(menuLiveUrl, '_blank', 'noopener,noreferrer') }] : []),
   ] : [
     ...(menuPath && menu.vertex ? [
-      { label: 'Wegecke löschen', onClick: () => { const n = pathOp(() => removePathVertex(menuPath, menu.vertex!.index)); if (n) editPath(menuPath, n, 'Wegecke gelöscht'); }, disabled: menuPath.points.length <= 2, hint: menuPath.points.length <= 2 ? 'Ein Weg braucht mindestens zwei Ecken.' : undefined },
-      { label: 'Weg an dieser Ecke teilen', onClick: () => { const n = pathOp(() => splitPath(menuPath, menu.vertex!.index)); if (n) editPath(menuPath, n, 'Weg geteilt'); }, disabled: menu.vertex.index === 0 || menu.vertex.index === menuPath.points.length - 1 },
+      { label: `${menuPath.kind === 'zone' ? 'Zonenecke' : 'Wegecke'} löschen`, onClick: () => { const n = pathOp(() => removePathVertex(menuPath, menu.vertex!.index)); if (n) editPath(menuPath, n, `${menuPath.kind === 'zone' ? 'Zonenecke' : 'Wegecke'} gelöscht`); }, disabled: menuPath.points.length <= (menuPath.kind === 'zone' ? 3 : 2), hint: menuPath.points.length <= (menuPath.kind === 'zone' ? 3 : 2) ? (menuPath.kind === 'zone' ? 'Eine Zone braucht mindestens drei Ecken.' : 'Ein Weg braucht mindestens zwei Ecken.') : undefined },
+      ...(menuPath.kind === 'path' ? [{ label: 'Weg an dieser Ecke teilen', onClick: () => { const n = pathOp(() => splitPath(menuPath, menu.vertex!.index)); if (n) editPath(menuPath, n, 'Weg geteilt'); }, disabled: menu.vertex.index === 0 || menu.vertex.index === menuPath.points.length - 1 }] : []),
       null,
     ] : []),
-    ...(selItems.length === 1 && selItems[0]!.kind === 'path' && !menu.vertex ? [{ label: 'Wegrichtung umkehren', onClick: () => editPath(selItems[0] as WorldPath, reversePath(selItems[0] as WorldPath), 'Weg umgekehrt') }] : []),
+    ...(selItems.length === 1 && selItems[0]!.kind === 'path' && !menu.vertex ? [
+      { label: 'Wegrichtung umkehren', onClick: () => editPath(selItems[0] as WorldPath, reversePath(selItems[0] as WorldPath), 'Weg umgekehrt') },
+      { label: '⤳ Route übers Gelände', onClick: () => routeSelected(selItems[0] as WorldPath) },
+    ] : []),
     ...(joinable ? [{ label: 'Wege verbinden', onClick: joinSelected }] : []),
     ...(selProjects.length === 1 && !selItems.length ? [
       { label: '✈ Hinfliegen', onClick: () => fly(selProjects[0]!.id) },
@@ -619,7 +671,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   return <div className="page map-page" data-map-state={busy ? 'busy' : map ? 'ready' : 'empty'} data-map-cells={map?.cells.length ?? ''} data-terrain-cells={ground?.count ?? 0}>
     <header className="map-head">
       <div><h1 className="page-title">Weltkarte</h1>
-        <p className="map-lead">Plane hier deine Welt: Projekte setzen und ziehen, Bauplätze, Wege und Punkte zeichnen, messen. Mit der Bauplaner-Mod siehst du dich selbst und das echte Gelände live auf der Karte und schickst Pläne direkt ins Spiel.</p></div>
+        <p className="map-lead">Plane hier deine Welt: Projekte setzen und ziehen, Bauplätze, Wege, Zonen und Punkte zeichnen, in Ebenen ordnen, messen. Mit der Bauplaner-Mod siehst du dich selbst und das echte Gelände live auf der Karte, führst Wege übers Gelände und schickst Pläne direkt ins Spiel.</p></div>
       <div className="map-controls">
         <div className="seg" role="group" aria-label="Dimension">
           {dims.map(d => <button key={d} aria-pressed={dimension === d} onClick={() => { setDimension(d); setSelected(null); }}>
@@ -657,10 +709,10 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
           </li>)}</ul></>}
         {projects && !projects.length && <p className="muted">Noch keine Projekte. <a href="#/">Projekt anlegen</a></p>}
         <h2>Weltplan <small>{items.length}</small></h2>
-        <ObjectList items={visibleItems} selection={visibleSelection} onSelect={pick}
+        <ObjectList items={visibleItems} selection={visibleSelection} onSelect={pick} layerNames={names}
           onDelete={id => deleteHits([id], [])} onFrame={id => { const it = items.find(i => i.id === id); if (it) { setSelection([{ kind: 'item', id }]); frameItems([it]); } }}
           onSelectAll={ids => setSelection(ids.map(id => ({ kind: 'item' as const, id })))} />
-        {visibleItems.length < items.length && <p className="muted small">{items.length - visibleItems.length} Einträge in ausgeblendeten Ebenen.</p>}
+        {visibleItems.length < items.length && <p className="muted small">{items.length - visibleItems.length} Einträge in ausgeblendeten Ebenen.{hiddenNames.size ? <> <button className="text-button" onClick={() => setHiddenNames(new Set())}>Benannte Ebenen zeigen</button></> : null}</p>}
       </aside>
 
       <section className="map-main">
@@ -671,18 +723,22 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
           marksInfo: `${items.length} Einträge in ${dimensionLabel(dimension)}${status?.marks ? ` · im Spiel: ${status.marks}` : ''}`,
           hologramProject: holoProject, hologramMatch: holoMatch,
           onAdoptHologram: holoMatch && holoMatch !== 'same' && holoMatch !== 'turned' ? () => void adoptHologram() : null,
-          autoMarks, onAutoMarks: setAutoMarks,
+          autoMarks, onAutoMarks: setAutoMarks, marksSkipped,
+          onPointAtPlayer: connected && player ? pointAtPlayer : null, onTrailToPath: connected && player && game.trail.length > 1 ? trailAsPath : null,
           onSection: connected ? n => { const t = game.token(); if (t) void liveApi.section(game.settings.port, t, n).then(() => setNotice(n ? `Im Spiel wird nur Abschnitt „${holo?.sections[n - 1]?.name ?? n}“ gezeigt.` : 'Im Spiel wird wieder der ganze Plan gezeigt.'), e => setNotice(errorText(e))); } : null,
           progress: holoProject ? <GameProgressPanel progress={progress} modVersion={game.hello?.mod.version ?? null}
             onTick={op => void save(holoProject, op)} /> : null,
         }} />
         <PlanToolbar tool={tool} onTool={setTool} canUndo={history.canUndo} canRedo={history.canRedo} onUndo={() => void undo()} onRedo={() => void redo()} />
         <LayerToggles layers={layers} onChange={l => { setLayers(l); setSelection(cur => cur.filter(h => h.kind === 'project' ? l.projects : (() => { const it = items.find(i => i.id === h.id); return !it || l[it.kind]; })())); }}
-          counts={{ projects: map?.entries.length ?? 0, site: items.filter(i => i.kind === 'site').length, path: items.filter(i => i.kind === 'path').length, point: items.filter(i => i.kind === 'point').length }} />
+          counts={{ projects: map?.entries.length ?? 0, site: items.filter(i => i.kind === 'site').length, path: items.filter(i => i.kind === 'path').length, point: items.filter(i => i.kind === 'point').length, zone: items.filter(i => i.kind === 'zone').length }}
+          names={names} hidden={hiddenNames} nameCounts={new Map(names.map(n => [n, items.filter(i => i.layer === n).length]))}
+          onHidden={h => { setHiddenNames(h); setSelection(cur => cur.filter(x => { if (x.kind !== 'item') return true; const it = items.find(i => i.id === x.id); return !it?.layer || !h.has(it.layer); })); }} />
         {selectionCount > 0 && <SelectionBar items={selItems.length} projects={selProjects.length} actions={{
           onDelete: deleteSelection, onDuplicate: selItems.length ? duplicateSelection : null,
           onRotate: selItems.length ? turns => transformSelection({ turns }) : null, onMirror: selItems.length ? axis => transformSelection({ axis }) : null,
           onAlign: canAlign ? alignSelection : null, onFrame: () => frameItems(selItems, selProjects), onClear: () => setSelection([]),
+          layers: selItems.length ? { names, current: selectionLayer, onPick: assignLayer } : null, playerDistance,
         }} />}
         {wp.error && <div className="notice warning" role="alert">{wp.error}</div>}
         <div className={`map-panels${payload ? '' : ' no-3d'}`}>
@@ -704,7 +760,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
         {item && <PlanItemEditor key={item.id} item={item} projects={projects ?? []} onClose={() => setSelection([])}
           onSave={next => void change({ label: `„${next.name}“ geändert`, steps: [{ kind: 'plan', op: { kind: 'update', item: next } }] }, `„${next.name}“ gespeichert.`)}
           onRemove={() => deleteHits([item.id], [])}
-          actions={siteActions(item)} />}
+          actions={siteActions(item)} layerNames={names} groundAt={groundAt} onRoute={routeSelected} />}
         {entry && project && <section className="map-detail" aria-label={`Details zu ${entry.name}`}>
           <header><h2>{entry.name}</h2>
             <div className="button-row">

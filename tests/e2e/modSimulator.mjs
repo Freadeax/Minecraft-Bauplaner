@@ -39,12 +39,19 @@ export function scanFromPlan(planBytes, worldAnchor) {
   return gzipSync(writeNbt({ name: root.name, tag }));
 }
 
-export function startModSimulator(port) {
+/**
+ * `options.protocol` (1 or 2) and `options.features` (default ['scan']) model the mod version: a mod without
+ * `marks2` rejects zones and unknown point types exactly like mod-core WorldMarks.parse; with `players` it
+ * answers GET /v1/players (MAP-06, protocol 2 draft).
+ */
+export function startModSimulator(port, options = {}) {
   const state = {
     pairingCode: null, tokens: new Set(),
     player: { x: 40.5, y: 65, z: -20.5, yaw: 0, pitch: 0, dimension: 'minecraft:overworld', name: 'Philipp' },
-    hologram: null, marks: [], plans: [], placements: [], requests: [], planBytes: null, features: ['scan'],
+    others: [{ name: 'Anna', x: 52.5, y: 64, z: -14.5, yaw: 90 }],
+    hologram: null, marks: [], plans: [], placements: [], requests: [], planBytes: null, features: options.features ?? ['scan'], protocol: options.protocol ?? 1,
   };
+  const V1_POINT_TYPES = new Set(['anker', 'ziel', 'lager', 'portal', 'farm', 'treffpunkt']);
   const allowed = o => o === 'https://freadeax.github.io' || /^http:\/\/(localhost|127\.0\.0\.1)(:\d{1,5})?$/.test(o);
   // Ground: grass at y 64, a pond (water at 62 over sand at 60) for x in 48..55, z in -8..-1.
   const column = (x, z) => x >= 48 && x < 56 && z >= -8 && z < 0 ? [62, 1, 60, 2] : [64, 0, 63, 3];
@@ -68,7 +75,7 @@ export function startModSimulator(port) {
         return send(204, null);
       }
       const route = `${req.method} ${url.pathname}`;
-      if (route === 'GET /v1/hello') return send(200, { app: 'bauplaner-mod', protocol: 1, mod: { version: '0.5.0-sim', loader: 'fabric', minecraft: '26.3' }, pairing: state.pairingCode !== null, features: state.features });
+      if (route === 'GET /v1/hello') return send(200, { app: 'bauplaner-mod', protocol: state.protocol, mod: { version: state.protocol === 2 ? '0.8.0-sim' : '0.5.0-sim', loader: 'fabric', minecraft: '26.3' }, pairing: state.pairingCode !== null, features: state.features });
       if (route === 'POST /v1/pair') {
         const code = JSON.parse(body.toString() || '{}').code;
         if (!state.pairingCode) return send(403, { error: 'Keine Kopplung offen. Im Spiel /bauplaner verbinden eingeben und den Code hier eintragen.' });
@@ -101,7 +108,20 @@ export function startModSimulator(port) {
         return send(200, { placed: true, planFile: q.name, message: `„${q.name}“ von der Website platziert.` });
       }
       if (route === 'POST /v1/placement') { state.placements.push(JSON.parse(body.toString())); return send(200, { moved: true }); }
-      if (route === 'POST /v1/marks') { const m = JSON.parse(body.toString()); state.marks = m.items; return send(200, { marks: m.items.length }); }
+      if (route === 'POST /v1/marks') {
+        const m = JSON.parse(body.toString());
+        if (!state.features.includes('marks2')) {
+          for (const it of m.items) {
+            if (!['site', 'path', 'point'].includes(it.kind)) return send(400, { error: 'Unbekannte Art' });
+            if (it.kind === 'point' && !V1_POINT_TYPES.has(it.type)) return send(400, { error: 'Punktart unbekannt' });
+          }
+        }
+        state.marks = m.items; return send(200, { marks: m.items.length });
+      }
+      if (route === 'GET /v1/players') {
+        if (!state.features.includes('players')) return send(404, { error: 'Unbekannte Adresse.' });
+        return send(200, { dimension: state.player.dimension, players: state.others });
+      }
       if (route === 'POST /v1/section') {
         if (!state.hologram) return send(409, { error: 'Im Spiel ist kein Plan platziert.' });
         const n = JSON.parse(body.toString()).section;

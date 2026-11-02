@@ -15,22 +15,48 @@ import { DomainError } from './types.js';
  * shows these marks (client side).
  */
 
-export const WORLD_PLAN_SCHEMA_VERSION = 1;
+/**
+ * Schema 2 (MAP-06): zones (polygons with a category), optional named layer
+ * and colour on every entry, more point types. Plans of schema 1 load
+ * unchanged. The mod reads the same entries over /v1/marks; what a mod
+ * cannot show is filtered by `marksForMod` (liveLink.ts) by its features.
+ */
+export const WORLD_PLAN_SCHEMA_VERSION = 2;
+export const WORLD_PLAN_SCHEMA_VERSIONS: readonly number[] = [1, 2];
 export const WORLD_PLAN_MAX_ITEMS = 2000;
 export const WORLD_PATH_MAX_POINTS = 256;
+export const WORLD_ZONE_MAX_POINTS = 256;
+export const WORLD_LAYER_MAX = 40;
 export const WORLD_SITE_MAX_SIDE = 4096;
 const XZ = 29_999_984, Y_MIN = -2032, Y_MAX = 2031;
 const DIMENSION_ID = /^[a-z0-9_.-]{1,64}:[a-z0-9_./-]{1,128}$/;
 const ID = /^[A-Za-z0-9_-]{1,64}$/;
 
-export type WorldPointType = 'anker' | 'ziel' | 'lager' | 'portal' | 'farm' | 'treffpunkt';
-export const WORLD_POINT_TYPES: readonly { readonly id: WorldPointType; readonly label: string; readonly color: string }[] = [
-  { id: 'anker', label: 'Anker', color: '#5ff0b0' },
-  { id: 'ziel', label: 'Ziel', color: '#7ab8ff' },
-  { id: 'lager', label: 'Lager', color: '#f2b84b' },
-  { id: 'portal', label: 'Portal', color: '#c79bff' },
-  { id: 'farm', label: 'Farm', color: '#8fe36a' },
-  { id: 'treffpunkt', label: 'Treffpunkt', color: '#ff8fa3' },
+export type WorldPointType = 'anker' | 'ziel' | 'lager' | 'portal' | 'farm' | 'treffpunkt' | 'notiz' | 'gefahr' | 'rohstoff' | 'spawn' | 'aussicht';
+/** `v1`: known to mods of protocol 1 (0.5–0.7); newer types need the mod feature `marks2`. */
+export const WORLD_POINT_TYPES: readonly { readonly id: WorldPointType; readonly label: string; readonly color: string; readonly v1: boolean }[] = [
+  { id: 'anker', label: 'Anker', color: '#5ff0b0', v1: true },
+  { id: 'ziel', label: 'Ziel', color: '#7ab8ff', v1: true },
+  { id: 'lager', label: 'Lager', color: '#f2b84b', v1: true },
+  { id: 'portal', label: 'Portal', color: '#c79bff', v1: true },
+  { id: 'farm', label: 'Farm', color: '#8fe36a', v1: true },
+  { id: 'treffpunkt', label: 'Treffpunkt', color: '#ff8fa3', v1: true },
+  { id: 'notiz', label: 'Notiz', color: '#ffe08a', v1: false },
+  { id: 'gefahr', label: 'Gefahr', color: '#ff5c5c', v1: false },
+  { id: 'rohstoff', label: 'Rohstoff', color: '#b8c4cc', v1: false },
+  { id: 'spawn', label: 'Spawn / Bett', color: '#f5f5f5', v1: false },
+  { id: 'aussicht', label: 'Aussicht', color: '#8ad3ff', v1: false },
+];
+export type WorldZoneCategory = 'wohnen' | 'farm' | 'industrie' | 'lager' | 'natur' | 'gefahr' | 'verkehr' | 'sonstiges';
+export const WORLD_ZONE_CATEGORIES: readonly { readonly id: WorldZoneCategory; readonly label: string; readonly color: string }[] = [
+  { id: 'wohnen', label: 'Wohnen', color: '#f2b84b' },
+  { id: 'farm', label: 'Farmen', color: '#8fe36a' },
+  { id: 'industrie', label: 'Industrie / Redstone', color: '#c79bff' },
+  { id: 'lager', label: 'Lager', color: '#5fd7e8' },
+  { id: 'natur', label: 'Natur / Schutzgebiet', color: '#3ddc84' },
+  { id: 'gefahr', label: 'Gefahr / Sperrgebiet', color: '#ff5c5c' },
+  { id: 'verkehr', label: 'Verkehr / Hafen', color: '#9aa4ab' },
+  { id: 'sonstiges', label: 'Sonstiges', color: '#7ab8ff' },
 ];
 export type WorldPathStyle = 'weg' | 'strasse' | 'bahn' | 'bruecke';
 export const WORLD_PATH_STYLES: readonly { readonly id: WorldPathStyle; readonly label: string; readonly color: string; readonly width: number }[] = [
@@ -45,6 +71,10 @@ interface ItemBase {
   readonly name: string;
   readonly dimension: string;
   readonly note: string;
+  /** Named layer (MAP-06), e.g. „Phase 2“ or „Nether-Hub“; absent = no layer. */
+  readonly layer?: string;
+  /** Own colour `#rrggbb` instead of the colour of the kind/type. */
+  readonly color?: string;
 }
 export interface WorldSite extends ItemBase {
   readonly kind: 'site';
@@ -67,10 +97,18 @@ export interface WorldPoint extends ItemBase {
   readonly type: WorldPointType;
   readonly x: number; readonly y: number; readonly z: number;
 }
-export type WorldItem = WorldSite | WorldPath | WorldPoint;
+/** Zone (MAP-06): a polygon of column centres with a category – an area of the base, not a building site. */
+export interface WorldZone extends ItemBase {
+  readonly kind: 'zone';
+  readonly category: WorldZoneCategory;
+  /** Column coordinates [x, z] of the corners, at least three; the polygon closes itself. */
+  readonly points: readonly (readonly [number, number])[];
+}
+export type WorldItem = WorldSite | WorldPath | WorldPoint | WorldZone;
+export type WorldItemKind = WorldItem['kind'];
 
 export interface WorldPlan {
-  readonly schemaVersion: 1;
+  readonly schemaVersion: 1 | 2;
   /** Increases with every saved change (optimistic concurrency like projects). */
   readonly revision: number;
   readonly updatedAt: string;
@@ -96,9 +134,29 @@ const text = (v: unknown, max: number, what: string, required = false): string =
   if (required && !(v as string).trim()) fail(`${what} fehlt`);
   return v as string;
 };
+const BASE_KEYS = ['kind', 'id', 'name', 'note', 'dimension', 'layer', 'color'];
 function fields(raw: Record<string, unknown>, keys: readonly string[], what: string): void {
-  const extra = Object.keys(raw).filter(k => !keys.includes(k));
+  const extra = Object.keys(raw).filter(k => !keys.includes(k) && !BASE_KEYS.includes(k));
   if (extra.length) fail(`${what}: unbekannte Felder ${extra.join(', ')}`);
+}
+const COLOR = /^#[0-9a-f]{6}$/;
+/** Optional layer/colour of schema 2; omitted when empty so schema-1 entries stay byte-identical. */
+function extras(raw: Record<string, unknown>): { layer?: string; color?: string } {
+  const out: { layer?: string; color?: string } = {};
+  if (raw.layer !== undefined && raw.layer !== null && raw.layer !== '') { const l = text(raw.layer, WORLD_LAYER_MAX, 'Ebene').trim(); if (l) out.layer = l; }
+  if (raw.color !== undefined && raw.color !== null && raw.color !== '') {
+    const c = typeof raw.color === 'string' ? raw.color.toLowerCase() : fail('Farbe muss #rrggbb sein');
+    if (!COLOR.test(c)) fail('Farbe muss #rrggbb sein');
+    out.color = c;
+  }
+  return out;
+}
+function polygon(raw: unknown, min: number, max: number, what: string): (readonly [number, number])[] {
+  if (!Array.isArray(raw) || raw.length < min || raw.length > max) fail(`${what} braucht ${min} bis ${max} Punkte`);
+  return (raw as unknown[]).map((p, i) => {
+    if (!Array.isArray(p) || p.length !== 2) return fail(`${what}punkt ${i + 1} braucht X und Z`);
+    return [int(p[0], -XZ, XZ, 'X'), int(p[1], -XZ, XZ, 'Z')] as const;
+  });
 }
 
 export const emptyWorldPlan = (): WorldPlan => ({ schemaVersion: WORLD_PLAN_SCHEMA_VERSION, revision: 0, updatedAt: new Date(0).toISOString(), items: [] });
@@ -108,7 +166,7 @@ export function checkWorldItem(raw: unknown): WorldItem {
   if (!isObj(raw)) return fail('Eintrag ist kein Objekt');
   if (typeof raw.id !== 'string' || !ID.test(raw.id)) fail('ungültige ID');
   const base = { id: raw.id as string, name: text(raw.name, 120, 'Name', true), note: text(raw.note, 500, 'Notiz'),
-    dimension: typeof raw.dimension === 'string' && DIMENSION_ID.test(raw.dimension) ? raw.dimension : fail('Dimension muss eine ID wie minecraft:overworld sein') };
+    dimension: typeof raw.dimension === 'string' && DIMENSION_ID.test(raw.dimension) ? raw.dimension : fail('Dimension muss eine ID wie minecraft:overworld sein'), ...extras(raw) };
   switch (raw.kind) {
     case 'site': {
       fields(raw, ['kind', 'id', 'name', 'note', 'dimension', 'minX', 'minZ', 'width', 'length', 'y', 'projectId'], 'Bauplatz');
@@ -122,12 +180,13 @@ export function checkWorldItem(raw: unknown): WorldItem {
     case 'path': {
       fields(raw, ['kind', 'id', 'name', 'note', 'dimension', 'style', 'width', 'points'], 'Weg');
       if (!WORLD_PATH_STYLES.some(s => s.id === raw.style)) fail('unbekannte Wegart');
-      if (!Array.isArray(raw.points) || raw.points.length < 2 || raw.points.length > WORLD_PATH_MAX_POINTS) fail(`Weg braucht 2 bis ${WORLD_PATH_MAX_POINTS} Punkte`);
-      const points = (raw.points as unknown[]).map((p, i) => {
-        if (!Array.isArray(p) || p.length !== 2) return fail(`Wegpunkt ${i + 1} braucht X und Z`);
-        return [int(p[0], -XZ, XZ, 'X'), int(p[1], -XZ, XZ, 'Z')] as const;
-      });
+      const points = polygon(raw.points, 2, WORLD_PATH_MAX_POINTS, 'Weg');
       return { kind: 'path', ...base, style: raw.style as WorldPathStyle, width: int(raw.width, 1, 15, 'Wegbreite'), points };
+    }
+    case 'zone': {
+      fields(raw, ['category', 'points'], 'Zone');
+      if (!WORLD_ZONE_CATEGORIES.some(c => c.id === raw.category)) fail('unbekannte Zonenart');
+      return { kind: 'zone', ...base, category: raw.category as WorldZoneCategory, points: polygon(raw.points, 3, WORLD_ZONE_MAX_POINTS, 'Zone') };
     }
     case 'point': {
       fields(raw, ['kind', 'id', 'name', 'note', 'dimension', 'type', 'x', 'y', 'z'], 'Punkt');
@@ -142,7 +201,7 @@ export function checkWorldItem(raw: unknown): WorldItem {
 export function checkWorldPlan(raw: unknown): WorldPlan {
   if (!isObj(raw)) return fail('kein Objekt');
   fields(raw, ['schemaVersion', 'revision', 'updatedAt', 'items'], 'Weltplan');
-  if (raw.schemaVersion !== WORLD_PLAN_SCHEMA_VERSION) fail(`unbekannte Schemaversion ${String(raw.schemaVersion)}`);
+  if (!WORLD_PLAN_SCHEMA_VERSIONS.includes(raw.schemaVersion as number)) fail(`unbekannte Schemaversion ${String(raw.schemaVersion)}`);
   const revision = int(raw.revision, 0, Number.MAX_SAFE_INTEGER, 'Revision');
   if (typeof raw.updatedAt !== 'string' || !Number.isFinite(Date.parse(raw.updatedAt))) fail('ungültige Änderungszeit');
   if (!Array.isArray(raw.items) || raw.items.length > WORLD_PLAN_MAX_ITEMS) fail(`höchstens ${WORLD_PLAN_MAX_ITEMS} Einträge`);
@@ -152,7 +211,7 @@ export function checkWorldPlan(raw: unknown): WorldPlan {
 }
 
 export function describeWorldPlanOp(op: WorldPlanOp): string {
-  const what = (i: WorldItem) => `${i.kind === 'site' ? 'Bauplatz' : i.kind === 'path' ? 'Weg' : pointTypeLabel(i.type)} „${i.name}“`;
+  const what = (i: WorldItem) => `${itemKindLabel(i)} „${i.name}“`;
   switch (op.kind) {
     case 'add': return `${what(op.item)} angelegt`;
     case 'insert': return `${what(op.item)} wiederhergestellt`;
@@ -207,10 +266,26 @@ export function applyWorldPlanOp(plan: WorldPlan, op: WorldPlanOp): { plan: Worl
 
 export const pointTypeLabel = (t: WorldPointType): string => WORLD_POINT_TYPES.find(x => x.id === t)?.label ?? t;
 export const pathStyleOf = (s: WorldPathStyle) => WORLD_PATH_STYLES.find(x => x.id === s) ?? WORLD_PATH_STYLES[0]!;
+export const zoneCategoryOf = (c: WorldZoneCategory) => WORLD_ZONE_CATEGORIES.find(x => x.id === c) ?? WORLD_ZONE_CATEGORIES.at(-1)!;
+export const WORLD_KIND_LABEL: Readonly<Record<WorldItemKind, string>> = { site: 'Bauplatz', path: 'Weg', point: 'Punkt', zone: 'Zone' };
+/** „Bauplatz“, „Weg“, „Zone“ or the point type („Anker“ …). */
+export const itemKindLabel = (i: WorldItem): string => i.kind === 'point' ? pointTypeLabel(i.type) : WORLD_KIND_LABEL[i.kind];
+/** Colour an entry is drawn with: its own colour, else the colour of its kind, type or category. */
+export function itemColor(i: WorldItem, siteColor = '#f2b84b'): string {
+  if (i.color) return i.color;
+  if (i.kind === 'point') return WORLD_POINT_TYPES.find(t => t.id === i.type)?.color ?? siteColor;
+  if (i.kind === 'path') return pathStyleOf(i.style).color;
+  if (i.kind === 'zone') return zoneCategoryOf(i.category).color;
+  return siteColor;
+}
+/** Named layers in use, sorted (German collation), without the empty layer. */
+export function layerNames(items: readonly WorldItem[]): string[] {
+  return [...new Set(items.flatMap(i => i.layer ? [i.layer] : []))].sort((a, b) => a.localeCompare(b, 'de'));
+}
 
 let counter = 0;
 /** Short unique id; `seed` makes tests deterministic. */
-export function newWorldItemId(prefix: 'site' | 'path' | 'point', seed?: string): string {
+export function newWorldItemId(prefix: WorldItemKind, seed?: string): string {
   if (seed) return `${prefix}_${seed}`;
   counter = (counter + 1) % 1_000_000;
   return `${prefix}_${Date.now().toString(36)}${counter.toString(36)}${Math.floor(Math.random() * 36 ** 4).toString(36)}`;
@@ -270,6 +345,10 @@ export function pathLength(points: readonly (readonly [number, number])[]): numb
 export function itemBounds(item: WorldItem): [number, number, number, number] {
   if (item.kind === 'site') return [item.minX, item.minZ, item.minX + item.width, item.minZ + item.length];
   if (item.kind === 'point') return [item.x, item.z, item.x + 1, item.z + 1];
+  if (item.kind === 'zone') {
+    const xs = item.points.map(p => p[0]), zs = item.points.map(p => p[1]);
+    return [Math.min(...xs), Math.min(...zs), Math.max(...xs) + 1, Math.max(...zs) + 1];
+  }
   const h = Math.floor((item.width - 1) / 2), e = item.width - 1 - h;
   const xs = item.points.map(p => p[0]), zs = item.points.map(p => p[1]);
   return [Math.min(...xs) - h, Math.min(...zs) - h, Math.max(...xs) + e + 1, Math.max(...zs) + e + 1];
@@ -282,10 +361,30 @@ function segmentDistance(px: number, pz: number, a: readonly [number, number], b
   return Math.hypot(px - (ax + t * vx), pz - (az + t * vz));
 }
 
+/** Point in polygon (even-odd) over the column centres of a zone. */
+export function insideZone(zone: Pick<WorldZone, 'points'>, x: number, z: number): boolean {
+  let inside = false;
+  const pts = zone.points;
+  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+    const xi = pts[i]![0] + 0.5, zi = pts[i]![1] + 0.5, xj = pts[j]![0] + 0.5, zj = pts[j]![1] + 0.5;
+    if ((zi > z) !== (zj > z) && x < (xj - xi) * (z - zi) / (zj - zi) + xi) inside = !inside;
+  }
+  return inside;
+}
+
+/** Area of a zone in blocks² (shoelace over the column centres, rounded). */
+export function zoneArea(zone: Pick<WorldZone, 'points'>): number {
+  let sum = 0;
+  const pts = zone.points;
+  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) sum += (pts[j]![0] - pts[i]![0]) * (pts[j]![1] + pts[i]![1]);
+  return Math.round(Math.abs(sum) / 2);
+}
+
 /**
  * Item under a world position (fractional block coordinates); `tolerance`
  * in blocks (grows when zoomed out). Points win over paths, paths over sites,
- * smaller sites over larger ones.
+ * smaller sites over larger ones; zones lie underneath everything (a corner
+ * of a zone counts like a point so it can be grabbed).
  */
 export function itemAt(items: readonly WorldItem[], x: number, z: number, tolerance = 1): WorldItem | null {
   let best: { item: WorldItem; rank: number } | null = null;
@@ -296,6 +395,10 @@ export function itemAt(items: readonly WorldItem[], x: number, z: number, tolera
       let d = Infinity;
       for (let i = 0; i + 1 < item.points.length; i++) d = Math.min(d, segmentDistance(x, z, item.points[i]!, item.points[i + 1]!));
       if (d <= item.width / 2 + tolerance) rank = 1000 + d;
+    } else if (item.kind === 'zone') {
+      const corner = item.points.some(p => Math.hypot(x - (p[0] + 0.5), z - (p[1] + 0.5)) <= tolerance + 0.5);
+      if (corner) rank = 500;
+      else if (insideZone(item, x, z)) rank = 2e6 + zoneArea(item);
     } else if (x >= item.minX && x < item.minX + item.width && z >= item.minZ && z < item.minZ + item.length) rank = 1e6 + item.width * item.length;
     if (rank < (best?.rank ?? Infinity)) best = { item, rank };
   }
@@ -309,6 +412,11 @@ export function moveItem<T extends WorldItem>(item: T, dx: number, dz: number, d
   return { ...item, points: item.points.map(p => [p[0] + dx, p[1] + dz] as const) };
 }
 
+/** Zones whose polygon contains a column. */
+export function zonesAt(items: readonly WorldItem[], x: number, z: number): WorldZone[] {
+  return items.filter((i): i is WorldZone => i.kind === 'zone' && insideZone(i, x + 0.5, z + 0.5));
+}
+
 /** Sites overlapping each other or a given rectangle (minX, minZ, maxX excl., maxZ excl.). */
 export function sitesTouching(items: readonly WorldItem[], rect: readonly [number, number, number, number], exceptId?: string): WorldSite[] {
   return items.filter((i): i is WorldSite => i.kind === 'site' && i.id !== exceptId
@@ -316,12 +424,13 @@ export function sitesTouching(items: readonly WorldItem[], rect: readonly [numbe
 }
 
 /** Totals for the plan overview of one dimension. */
-export function worldPlanSummary(items: readonly WorldItem[]): { sites: number; freeSites: number; siteArea: number; paths: number; pathBlocks: number; pathLength: number; points: number } {
-  let sites = 0, freeSites = 0, siteArea = 0, paths = 0, pathBlocks = 0, length = 0, points = 0;
+export function worldPlanSummary(items: readonly WorldItem[]): { sites: number; freeSites: number; siteArea: number; paths: number; pathBlocks: number; pathLength: number; points: number; zones: number; zoneArea: number } {
+  let sites = 0, freeSites = 0, siteArea = 0, paths = 0, pathBlocks = 0, length = 0, points = 0, zones = 0, zoneAreaSum = 0;
   for (const i of items) {
     if (i.kind === 'site') { sites++; if (!i.projectId) freeSites++; siteArea += i.width * i.length; }
     else if (i.kind === 'path') { paths++; length += pathLength(i.points); pathBlocks += pathColumns(i).length; }
+    else if (i.kind === 'zone') { zones++; zoneAreaSum += zoneArea(i); }
     else points++;
   }
-  return { sites, freeSites, siteArea, paths, pathBlocks, pathLength: Math.round(length * 10) / 10, points };
+  return { sites, freeSites, siteArea, paths, pathBlocks, pathLength: Math.round(length * 10) / 10, points, zones, zoneArea: zoneAreaSum };
 }

@@ -130,3 +130,34 @@ test('Am Gelände ausrichten: Punkt eins über Boden, Bauplatz Median, unbekannt
   assert.equal(r.aligned, 2); assert.equal(r.unknown, 1);
   assert.deepEqual(r.items.map(i => i.y), [61, 67, 64, undefined]);
 });
+
+// ------------------------------------------------------------------ MAP-06: Zonen und Ebenen
+test('Zonen: Drehen/Spiegeln im Blockraster, Ecken, Duplizieren; Ebene zuweisen', async () => {
+  const { setLayerOp } = await import('../dist/domain/src/index.js');
+  const zone = { kind: 'zone', id: 'z', name: 'Hafen', note: '', dimension: OW, category: 'verkehr', points: [[0, 0], [6, 0], [6, 4], [0, 4]] };
+  let z = zone;
+  for (let i = 0; i < 4; i++) z = rotateItem(z, [3, 2], 1);
+  assert.deepEqual(z, zone);
+  assert.deepEqual(mirrorItem(mirrorItem(zone, [3, 2], 'x'), [3, 2], 'x'), zone);
+  assert.deepEqual(itemsInRect([zone], [5, 3, 20, 20]).map(i => i.id), ['z']);
+  assert.equal(pathVertexAt(zone, 6.4, 4.4), 2);
+  assert.deepEqual(movePathVertex(zone, 2, [8, 5]).points[2], [8, 5]);
+  // A corner on the closing side (after the last corner) is allowed for a zone only.
+  assert.deepEqual(insertPathVertex(zone, 3, [-2, 2]).points, [[0, 0], [6, 0], [6, 4], [0, 4], [-2, 2]]);
+  assert.throws(() => insertPathVertex(path('p', [[0, 0], [5, 5]]), 1, [1, 1]), /Wegabschnitt/);
+  assert.throws(() => removePathVertex({ ...zone, points: zone.points.slice(0, 3) }, 0), /drei Ecken/);
+  assert.equal(removePathVertex(zone, 0).points.length, 3);
+  const copies = duplicateItems([zone], { seed: 'c' });
+  assert.equal(copies[0].id, 'zone_c0');
+  assert.deepEqual(copies[0].points[0], [9, 0]);
+  assert.equal(groundHeight(zone, () => ({ y: 70 })), null);
+  assert.deepEqual(alignToGround([zone], () => ({ y: 70 })).items, [zone]);
+  const items = [zone, { ...point('p', 1, 64, 1), layer: 'alt' }];
+  const op = setLayerOp(items, ' Nord ');
+  assert.equal(op.label, 'Ebene „Nord“ zugewiesen');
+  assert.deepEqual(op.ops.map(o => o.item.layer), ['Nord', 'Nord']);
+  const off = setLayerOp(op.ops.map(o => o.item), '');
+  assert.equal(off.label, 'Aus der Ebene genommen');
+  assert.ok(off.ops.every(o => !('layer' in o.item)));
+  assert.equal(setLayerOp([zone], ''), null);
+});

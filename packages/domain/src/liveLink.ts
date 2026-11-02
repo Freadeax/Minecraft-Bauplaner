@@ -3,6 +3,7 @@ import { SURVEY_UNKNOWN, createSurvey } from './terrainSurvey.js';
 import type { SurveyArea, TerrainSurvey } from './terrainSurvey.js';
 import { DomainError } from './types.js';
 import type { Project } from './types.js';
+import { WORLD_POINT_TYPES } from './worldPlan.js';
 import type { WorldItem } from './worldPlan.js';
 
 /**
@@ -22,11 +23,19 @@ import type { WorldItem } from './worldPlan.js';
  * - POST /v1/placement        ← {dimension,x,y,z,turns,mirror}; moves the hologram
  * - POST /v1/marks            ← {dimension, items}; Weltplan marks shown in game
  * - POST /v1/section          ← {section}; build section shown in game (0 = all), mod 0.7.0+
+ * - GET  /v1/scan             → bauplaner-scan file of the hologram box (feature `scan`, mod 0.7.1+)
+ * Protocol 2 (MAP-06/GAME-08, draft for the next mod): same routes; `hello.protocol` 2,
+ * `hello.features` lists what the mod can do (`scan`, `marks2`, `players`).
+ * - POST /v1/marks (feature `marks2`) also takes zones, layer/colour and the new point types
+ * - GET  /v1/players (feature `players`) → other players the client can see
+ * The website speaks protocol 1 and 2 and enables buttons by features, never by version numbers.
  * Every request after pairing carries the header X-Bauplaner-Token. The mod
  * answers only for allowed origins and never changes the world.
  */
 
 export const LIVE_PROTOCOL = 1;
+/** Protocols this website understands (the mod may answer with any of them). */
+export const LIVE_PROTOCOLS: readonly number[] = [1, 2];
 export const LIVE_DEFAULT_PORT = 47615;
 export const LIVE_TOKEN_HEADER = 'X-Bauplaner-Token';
 export const LIVE_MAX_CHUNKS_PER_REQUEST = 64;
@@ -66,7 +75,20 @@ export interface LiveHello {
 }
 /** Baustand: `GET /v1/scan` records the hologram's plan box as `bauplaner-scan` file (MAP-05). */
 export const LIVE_FEATURE_SCAN = 'scan';
+/** Marks of schema 2 (zones, layers, colours, new point types) are shown in the game (MAP-06, GAME-08). */
+export const LIVE_FEATURE_MARKS2 = 'marks2';
+/** `GET /v1/players`: other players the client sees (GAME-08). */
+export const LIVE_FEATURE_PLAYERS = 'players';
 export const liveCan = (hello: LiveHello | null, feature: string): boolean => !!hello?.features.includes(feature);
+/** Known features with what they mean, for the „Mod kann“ line of the panel. */
+export const LIVE_FEATURE_LABELS: readonly { readonly id: string; readonly label: string }[] = [
+  { id: LIVE_FEATURE_SCAN, label: 'Baustand aus dem Spiel' },
+  { id: LIVE_FEATURE_MARKS2, label: 'Zonen, Ebenen und neue Punktarten im Spiel' },
+  { id: LIVE_FEATURE_PLAYERS, label: 'Mitspieler auf der Karte' },
+];
+/** Other players (feature `players`): name and position in the client's dimension. */
+export interface LiveOtherPlayer { readonly name: string; readonly x: number; readonly y: number; readonly z: number; readonly yaw: number }
+export interface LivePlayers { readonly dimension: string; readonly players: readonly LiveOtherPlayer[] }
 export interface LivePlayer { readonly x: number; readonly y: number; readonly z: number; readonly yaw: number; readonly pitch: number; readonly dimension: string; readonly name: string }
 export interface LiveWorld { readonly key: string; readonly server: string | null; readonly singleplayer: boolean }
 export interface LiveCounts { readonly ok: number; readonly state: number; readonly missing: number; readonly wrong: number; readonly unknown: number }
@@ -107,7 +129,7 @@ export interface LiveChunks {
 export function readLiveHello(raw: unknown): LiveHello {
   if (!isObj(raw) || raw.app !== 'bauplaner-mod') return fail('Unter dieser Adresse antwortet keine Bauplaner-Mod');
   const protocol = int(raw.protocol, 'Protokoll', 1, 1000);
-  if (protocol !== LIVE_PROTOCOL) fail(`Protokoll ${protocol} wird nicht unterstützt (erwartet ${LIVE_PROTOCOL}). Bitte Mod und Website aktualisieren.`);
+  if (!LIVE_PROTOCOLS.includes(protocol)) fail(`Protokoll ${protocol} wird nicht unterstützt (diese Website spricht ${LIVE_PROTOCOLS.join(' und ')}). Bitte Mod und Website aktualisieren.`);
   const mod = isObj(raw.mod) ? raw.mod : fail('Modangaben fehlen');
   return { app: 'bauplaner-mod', protocol, mod: { version: str(mod.version, 'Modversion', 40), loader: str(mod.loader, 'Loader', 40), minecraft: str(mod.minecraft, 'Spielversion', 40) }, pairing: raw.pairing === true,
     features: Array.isArray(raw.features) ? raw.features.filter((f): f is string => typeof f === 'string' && /^[a-z0-9-]{1,32}$/.test(f)).slice(0, 32) : [] };
@@ -154,6 +176,18 @@ export function readLiveStatus(raw: unknown): LiveStatus {
     };
   }
   return { time, player, world, hologram, marks: raw.marks == null ? 0 : int(raw.marks, 'Markierungen', 0, 1e6) };
+}
+
+/** `GET /v1/players` (feature `players`); at most 200 players, strictly read. */
+export function readLivePlayers(raw: unknown): LivePlayers {
+  if (!isObj(raw)) return fail('Spielerliste ist kein Objekt');
+  const dimension = dim(raw.dimension);
+  if (!Array.isArray(raw.players) || raw.players.length > 200) fail('Spielerliste ungültig');
+  const players = (raw.players as unknown[]).map(p => {
+    const o = isObj(p) ? p : fail('Spieler ungültig');
+    return { name: str(o.name, 'Spielername', 64), x: num(o.x, 'X'), y: num(o.y, 'Y', -5000, 5000), z: num(o.z, 'Z'), yaw: o.yaw == null ? 0 : num(o.yaw, 'Blickrichtung', -1e6, 1e6) };
+  });
+  return { dimension, players };
 }
 
 export function readLiveChunks(raw: unknown): LiveChunks {
@@ -294,6 +328,26 @@ export function marksBody(dimension: string, items: readonly WorldItem[]): { dim
   const own = items.filter(i => i.dimension === dimension);
   if (own.length > LIVE_MAX_MARKS) fail(`höchstens ${LIVE_MAX_MARKS} Markierungen an die Mod`);
   return { dimension, items: own.map(i => ({ ...i })) };
+}
+
+/**
+ * What a mod can show of the Weltplan (MAP-06): a mod without `marks2`
+ * (protocol 1, 0.5–0.7) knows sites, paths and the six first point types and
+ * ignores unknown fields – zones and newer point types would make it reject
+ * the whole request, so they are left out and counted. With `marks2` every
+ * entry goes as it is.
+ */
+export function marksForMod(items: readonly WorldItem[], hello: LiveHello | null): { items: WorldItem[]; skipped: number; skippedKinds: string[] } {
+  if (liveCan(hello, LIVE_FEATURE_MARKS2)) return { items: [...items], skipped: 0, skippedKinds: [] };
+  const v1 = new Set(WORLD_POINT_TYPES.filter(t => t.v1).map(t => t.id));
+  const kept: WorldItem[] = [], kinds = new Set<string>();
+  for (const i of items) {
+    if (i.kind === 'zone') { kinds.add('Zonen'); continue; }
+    if (i.kind === 'point' && !v1.has(i.type)) { kinds.add(`Punkte „${WORLD_POINT_TYPES.find(t => t.id === i.type)?.label ?? i.type}“`); continue; }
+    const { layer: _l, color: _c, ...plain } = i;
+    kept.push(plain as WorldItem);
+  }
+  return { items: kept, skipped: items.length - kept.length, skippedKinds: [...kinds] };
 }
 
 /** Base URL of the mod on this computer. */

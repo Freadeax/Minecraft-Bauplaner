@@ -3083,3 +3083,41 @@ Teststand Mod 0.7.2 mit diagnose; Hinweis alte Tastenbelegung
 - `docs/architecture/TESTPHASE.md`
 - `docs/testing/TESTPLAN.md`
 
+## 2026-11-02T23:00:01.616Z · progress
+
+**Aufgaben:** MAP-06, GAME-08
+
+MAP-06 Weltkarte in die Tiefe (Schema 2, Zonen, Ebenen, Messen, Route, Protokoll 2) umgesetzt; GAME-08 für die Mod geplant
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MAP-06 | 🧩 Implementiert · Abnahme offen | 7/8 | Abnahme durch Philipp (S08); Mod-Umsetzung GAME-08; denkbar für Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (Zeitstempel je Eintrag). |
+| GAME-08 | ⏳ Offen | 0/4 | Umsetzung im Mod-Thread nach der Testphase; Vertrag in LIVE_LINK.md „Protokoll 2 (Entwurf)“. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/map.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/map/Builder.tsx`
+- `apps/web/src/views/map/LiveGamePanel.tsx`
+- `apps/web/src/views/map/OverviewMap.tsx`
+- `apps/web/src/views/map/PlanPanel.tsx`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/map/liveClient.ts`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/LIVE_LINK.md`
+- `docs/architecture/WORLD_BUILDER.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/liveLink.ts`
+- `packages/domain/src/worldPlan.ts`
+- `packages/domain/src/worldPlanEdit.ts`
+- `packages/domain/src/worldRoute.ts`
+- `tests/e2e/map-depth.e2e.mjs`
+- `tests/e2e/modSimulator.mjs`
+- `tests/livelink.test.mjs`
+- `tests/worldbuilder.test.mjs`
+- `tests/worldplan.test.mjs`
+- `tests/worldroute.test.mjs`
+

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {
   readLiveHello, liveCan, readLivePairing, readLiveStatus, readLiveChunks, classifyRuns, chunkColumns, wantedChunks, chunkQuery, liveSurvey, compareHologram, hologramProject,
   liveShare, playerBlock, originFromPlayer, planUploadQuery, marksBody, liveBaseUrl, originAllowed, columnAt, encodeSurvey, decodeSurvey, createPlacement,
-  LIVE_PROTOCOL, SURVEY_UNKNOWN,
+  LIVE_PROTOCOL, SURVEY_UNKNOWN, marksForMod, readLivePlayers,
 } from '../dist/domain/src/index.js';
 
 const hello = { app: 'bauplaner-mod', protocol: LIVE_PROTOCOL, mod: { version: '0.5.0', loader: 'fabric', minecraft: '26.3' }, pairing: true };
@@ -22,7 +22,7 @@ test('Begrüßung, Kopplung und Status werden streng gelesen', () => {
   assert.equal(liveCan(withScan, 'scan'), true);
   assert.equal(liveCan(readLiveHello(hello), 'scan'), false);
   assert.throws(() => readLiveHello({ ...hello, app: 'etwas' }), /keine Bauplaner-Mod/);
-  assert.throws(() => readLiveHello({ ...hello, protocol: 2 }), /Protokoll 2/);
+  assert.throws(() => readLiveHello({ ...hello, protocol: 3 }), /Protokoll 3/);
   assert.equal(readLivePairing({ token: 'a'.repeat(32) }), 'a'.repeat(32));
   assert.throws(() => readLivePairing({ token: 'kurz' }), /Schlüssel/);
   const s = readLiveStatus(status);
@@ -114,6 +114,18 @@ test('Übergabe: Planabfrage, Markierungen, Adresse, Ursprünge', () => {
     { kind: 'point', id: 'b', name: 'B', note: '', dimension: 'minecraft:the_nether', type: 'portal', x: 0, y: 64, z: 0 }];
   assert.deepEqual(marksBody('minecraft:overworld', items).items.map(i => i.id), ['a']);
   assert.throws(() => marksBody('minecraft:overworld', Array.from({ length: 501 }, (_, i) => ({ ...items[0], id: `p${i}` }))), /höchstens 500/);
+  // MAP-06: a mod without `marks2` gets only what it understands (sites, paths, old point types, no layer/colour).
+  const v2 = [{ ...items[0], layer: 'Nord', color: '#112233' }, { ...items[0], id: 'n', type: 'notiz' },
+    { kind: 'zone', id: 'z', name: 'Z', note: '', dimension: 'minecraft:overworld', category: 'farm', points: [[0, 0], [5, 0], [5, 5]] }];
+  const old = marksForMod(v2, { app: 'bauplaner-mod', protocol: 1, mod: { version: '0.7.2', loader: 'fabric', minecraft: '26.3' }, pairing: false, features: ['scan'] });
+  assert.deepEqual(old.items, [items[0]]); assert.equal(old.skipped, 2); assert.deepEqual(old.skippedKinds, ['Punkte „Notiz“', 'Zonen']);
+  const neu = marksForMod(v2, { app: 'bauplaner-mod', protocol: 2, mod: { version: '0.8.0', loader: 'fabric', minecraft: '26.3' }, pairing: false, features: ['scan', 'marks2'] });
+  assert.equal(neu.items.length, 3); assert.equal(neu.skipped, 0);
+  assert.equal(readLiveHello({ app: 'bauplaner-mod', protocol: 2, mod: { version: '0.8.0', loader: 'fabric', minecraft: '26.3' }, features: ['marks2', 'players'] }).protocol, 2);
+  assert.throws(() => readLiveHello({ app: 'bauplaner-mod', protocol: 3, mod: { version: '1', loader: 'f', minecraft: '1' } }), /spricht 1 und 2/);
+  const pl = readLivePlayers({ dimension: 'minecraft:overworld', players: [{ name: 'Anna', x: 1.5, y: 64, z: -2.5 }] });
+  assert.equal(pl.players[0].yaw, 0); assert.equal(pl.players[0].name, 'Anna');
+  assert.throws(() => readLivePlayers({ dimension: 'minecraft:overworld', players: [{ name: 'A', x: 'x', y: 0, z: 0 }] }), /X ungültig/);
   assert.equal(liveBaseUrl(47615), 'http://127.0.0.1:47615');
   assert.throws(() => liveBaseUrl(80), /Port/);
   assert.ok(originAllowed('https://freadeax.github.io'));

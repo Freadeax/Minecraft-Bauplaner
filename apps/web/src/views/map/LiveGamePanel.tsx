@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ReactNode } from 'react';
-import { HOLOGRAM_MATCH_LABEL, LIVE_DEFAULT_PORT, liveShare, playerBlock } from '../../../../../packages/domain/src/index.js';
+import { HOLOGRAM_MATCH_LABEL, LIVE_DEFAULT_PORT, LIVE_FEATURE_LABELS, liveShare, playerBlock } from '../../../../../packages/domain/src/index.js';
 import type { HologramMatch, Project } from '../../../../../packages/domain/src/index.js';
 import { dimensionLabel } from '../../../../../packages/domain/src/worldmap.js';
 import { formatNumber } from '../../app/ui';
@@ -28,6 +28,11 @@ export interface LiveActions {
   /** Weltplan follows into the game by itself (MAP-05). */
   readonly autoMarks?: boolean;
   readonly onAutoMarks?: (on: boolean) => void;
+  /** MAP-06: a point where the player stands, the trail of the last minutes as a path. */
+  readonly onPointAtPlayer?: (() => void) | null;
+  readonly onTrailToPath?: (() => void) | null;
+  /** What the Weltplan sending would leave out for this mod (older mod without `marks2`). */
+  readonly marksSkipped?: string | null;
 }
 
 /**
@@ -46,7 +51,7 @@ export function LiveGamePanel({ game, actions }: { game: LiveGame; actions: Live
   return <section className="live-game" aria-label="Spielverbindung" data-live-phase={game.phase}>
     <header>
       <h2>Spiel <small className={`live-dot ${game.phase}`}>{state}</small></h2>
-      {game.hello && <span className="muted small">Mod {game.hello.mod.version} · {game.hello.mod.loader} · Minecraft {game.hello.mod.minecraft}</span>}
+      {game.hello && <span className="muted small">Mod {game.hello.mod.version} · {game.hello.mod.loader} · Minecraft {game.hello.mod.minecraft} · Protokoll {game.hello.protocol}</span>}
     </header>
     {game.originProblem && <p className="notice warning" role="alert">{game.originProblem}</p>}
 
@@ -96,8 +101,13 @@ export function LiveGamePanel({ game, actions }: { game: LiveGame; actions: Live
         <button className="secondary" disabled={!p} onClick={actions.onShowPlayer}>Zu mir</button>
         <button className="secondary" disabled={!p || actions.terrainBusy} onClick={actions.onLoadTerrain} title="Liest die oberste Schicht der im Spiel geladenen Chunks um dich (etwa 160 Blöcke Umkreis).">
           {actions.terrainBusy ? 'Gelände wird gelesen …' : 'Gelände um mich lesen'}</button>
+        {actions.onPointAtPlayer !== undefined && <button className="secondary" disabled={!p || !actions.onPointAtPlayer} onClick={() => actions.onPointAtPlayer?.()} title="Legt einen Punkt im Weltplan an, genau dort, wo du im Spiel stehst.">📍 Punkt, wo ich stehe</button>}
+        {actions.onTrailToPath !== undefined && <button className="secondary" disabled={!actions.onTrailToPath} onClick={() => actions.onTrailToPath?.()} title="Macht aus deiner Spur der letzten Minuten einen Weg im Weltplan.">Spur als Weg</button>}
         {actions.chunkCount > 0 && <span className="muted small">{actions.chunkCount} Chunks aus dem Spiel</span>}
       </div>
+      {game.others && game.others.players.length > 0 && <p className="muted small" data-testid="live-others">Mitspieler in Sichtweite: {game.others.players.map(o => `${o.name} (X ${Math.floor(o.x)} · Z ${Math.floor(o.z)})`).join(', ')}</p>}
+      {game.hello && <p className="muted small live-features">Mod kann: {game.hello.features.length ? LIVE_FEATURE_LABELS.filter(f => game.hello!.features.includes(f.id)).map(f => f.label).concat(game.hello.features.filter(f => !LIVE_FEATURE_LABELS.some(l => l.id === f))).join(', ') : 'Grundfunktionen (Protokoll 1)'}
+        {LIVE_FEATURE_LABELS.some(f => !game.hello!.features.includes(f.id)) && <> · fehlt: {LIVE_FEATURE_LABELS.filter(f => !game.hello!.features.includes(f.id)).map(f => f.label).join(', ')} (<a href="#/mod">neuere Mod</a>)</>}</p>}
 
       {h && share && <section className="live-hologram" aria-label="Hologramm im Spiel">
         <h3>Hologramm: {h.name}</h3>
@@ -126,6 +136,7 @@ export function LiveGamePanel({ game, actions }: { game: LiveGame; actions: Live
         <button className="secondary" disabled={!actions.onSendMarks} onClick={() => actions.onSendMarks?.()}>Weltplan ins Spiel senden</button>
         <span className="muted small">{actions.marksInfo}</span>
       </div>
+      {actions.marksSkipped && <p className="warn-text small" role="note">{actions.marksSkipped}</p>}
       {actions.onAutoMarks && <label className="check-inline live-auto-marks"><input type="checkbox" checked={!!actions.autoMarks} onChange={e => actions.onAutoMarks!(e.target.checked)} /> Weltplan automatisch abgleichen (jede Änderung erscheint gleich im Spiel)</label>}
       <p className="muted small"><button className="text-button" onClick={() => void game.disconnect()}>Trennen</button> · Die Kopplung bleibt in diesem Browser gespeichert, bis du trennst.</p>
     </div>}

@@ -2,8 +2,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Bounds } from '../../../../../packages/voxel/src/index.js';
 import { chunkOf, regionOf } from '../../../../../packages/domain/src/worldmap.js';
 import type { TopView, WorldMapView } from '../../../../../packages/domain/src/worldmap.js';
-import { columnAt, itemAt, pathColumns, pathStyleOf, pathVertexAt, WORLD_POINT_TYPES } from '../../../../../packages/domain/src/index.js';
-import type { DeviationColumn, TerrainSurvey, WorldItem } from '../../../../../packages/domain/src/index.js';
+import { columnAt, itemAt, itemColor, measureText, pathColumns, pathVertexAt, zoneArea, zoneCategoryOf } from '../../../../../packages/domain/src/index.js';
+import type { DeviationColumn, LiveOtherPlayer, Polyline, TerrainSurvey, WorldItem } from '../../../../../packages/domain/src/index.js';
 import { surveyImage } from './terrainLayer';
 
 /**
@@ -34,23 +34,25 @@ export interface OverviewProps {
 }
 
 /** Planning tool of the top view. „select“ selects, drags selected things and pans. */
-export type MapTool = 'select' | 'box' | 'site' | 'path' | 'point' | 'measure';
+export type MapTool = 'select' | 'box' | 'site' | 'path' | 'zone' | 'point' | 'measure';
 export const MAP_TOOLS: readonly { readonly id: MapTool; readonly label: string; readonly key: string; readonly hint: string }[] = [
   { id: 'select', label: 'Auswählen', key: 'V', hint: 'Klick wählt, Umschalt/Strg-Klick wählt dazu, Ziehen verschiebt das Gewählte (sonst die Karte), Umschalt-Ziehen zieht einen Auswahlrahmen, Rechtsklick öffnet das Menü, Entf löscht' },
   { id: 'box', label: 'Rahmen', key: 'A', hint: 'Rahmen aufziehen wählt alles darin (Umschalt: dazu), Klick wählt einzeln' },
   { id: 'site', label: 'Bauplatz', key: 'B', hint: 'Rechteck aufziehen; Umschalt rastet an Chunks ein' },
   { id: 'path', label: 'Weg', key: 'W', hint: 'Klick setzt Ecken, Doppelklick oder Eingabe beendet, Rücktaste nimmt die letzte Ecke zurück' },
-  { id: 'point', label: 'Punkt', key: 'P', hint: 'Klick setzt einen Punkt (Anker, Ziel, Lager …)' },
-  { id: 'measure', label: 'Messen', key: 'M', hint: 'Zwei Klicks messen Abstand und Höhenunterschied' },
+  { id: 'zone', label: 'Zone', key: 'Z', hint: 'Klick setzt Ecken eines Gebiets (mindestens drei), Doppelklick oder Eingabe schließt es, Rücktaste nimmt die letzte Ecke zurück' },
+  { id: 'point', label: 'Punkt', key: 'P', hint: 'Klick setzt einen Punkt (Anker, Ziel, Lager, Notiz …)' },
+  { id: 'measure', label: 'Messen', key: 'M', hint: 'Klicks setzen Messpunkte (Abstand, Höhe, ab drei Punkten auch Fläche), Doppelklick oder Eingabe beendet, Escape löscht' },
 ];
 
 export type MapHit = { readonly kind: 'project'; readonly id: string } | { readonly kind: 'item'; readonly id: string };
 export type MapDraft =
   | { readonly kind: 'site'; readonly a: readonly [number, number]; readonly b: readonly [number, number]; readonly snap: boolean }
   | { readonly kind: 'path'; readonly points: readonly (readonly [number, number])[] }
+  | { readonly kind: 'zone'; readonly points: readonly (readonly [number, number])[] }
   | { readonly kind: 'point'; readonly x: number; readonly z: number };
 
-/** Corner of a path under the pointer (for the context menu). */
+/** Corner of a path or zone under the pointer (for the context menu). */
 export interface MapVertex { readonly pathId: string; readonly index: number }
 
 export interface PlanLayer {
@@ -77,6 +79,8 @@ export interface PlanLayer {
   readonly onDraw: (draft: MapDraft) => void;
   /** Live: the player, the way behind and chunk tiles read from the game. */
   readonly player?: { readonly x: number; readonly z: number; readonly yaw: number; readonly name: string } | null;
+  /** Other players the mod sees (feature `players`, MAP-06). */
+  readonly others?: readonly LiveOtherPlayer[];
   readonly trail?: readonly { readonly x: number; readonly z: number }[];
   readonly tiles?: readonly { readonly x: number; readonly z: number; readonly img: HTMLCanvasElement }[];
   /** Hologram box in the game: x0,z0,x1,z1 inclusive, with its label. */
@@ -116,7 +120,8 @@ export function OverviewMap({ map, tops, colorOf, selected, onSelect, onFly, pre
   const draftRef = useRef<MapDraft | null>(null);
   const setDraftBoth = (d: MapDraft | null) => { draftRef.current = d; setDraft(d); };
   const [hoverCol, setHoverCol] = useState<[number, number] | null>(null);
-  const [measure, setMeasure] = useState<{ a: [number, number]; b: [number, number] | null } | null>(null);
+  // MAP-06: measuring with several points; `done` after Doppelklick/Eingabe (the next click starts afresh).
+  const [measure, setMeasure] = useState<{ points: [number, number][]; done: boolean } | null>(null);
   const moving = useRef<{ hit: MapHit; x: number; z: number } | null>(null);
   const [moveBy, setMoveBy] = useState<{ hit: MapHit; dx: number; dz: number } | null>(null);
   // MAP-04: selection rectangle, dragged path corner, long press.
@@ -294,20 +299,21 @@ export function OverviewMap({ map, tops, colorOf, selected, onSelect, onFly, pre
     return project ? { kind: 'project', id: project } : null;
   };
   const isSelected = (hit: MapHit | null) => !!hit && (hit.kind === 'project' ? hit.id === selected || !!plan?.selectedProjects.has(hit.id) : !!plan?.selection.has(hit.id));
-  /** The only selected entry when it is a path (its corners get handles). */
-  const soloPath = (): WorldItem & { kind: 'path' } | null => {
+  /** The only selected entry when it is a path or zone (its corners get handles). */
+  const soloPath = (): Polyline | null => {
     if (!plan || plan.selection.size !== 1 || plan.selectedProjects.size) return null;
     const it = plan.items.find(i => plan.selection.has(i.id));
-    return it?.kind === 'path' ? it : null;
+    return it?.kind === 'path' || it?.kind === 'zone' ? it : null;
   };
-  /** Corner or midpoint handle of the selected path within 9 px of the pointer. */
+  /** Corner or midpoint handle of the selected path/zone within 9 px of the pointer (a zone also has its closing side). */
   const handleAt = (clientX: number, clientY: number): { pathId: string; index: number; insert: boolean } | null => {
     const path = soloPath(); if (!path || view.current.scale < 1) return null;
     const p = worldAt(clientX, clientY), tol = 9 / view.current.scale;
     const v = pathVertexAt(path, p.x, p.z, tol);
     if (v >= 0) return { pathId: path.id, index: v, insert: false };
-    for (let i = 0; i + 1 < path.points.length; i++) {
-      const a = path.points[i]!, b = path.points[i + 1]!;
+    const n = path.points.length, sides = path.kind === 'zone' ? n : n - 1;
+    for (let i = 0; i < sides; i++) {
+      const a = path.points[i]!, b = path.points[(i + 1) % n]!;
       if (Math.hypot(p.x - ((a[0] + b[0]) / 2 + 0.5), p.z - ((a[1] + b[1]) / 2 + 0.5)) <= tol && Math.hypot(b[0] - a[0], b[1] - a[1]) >= 2) return { pathId: path.id, index: i, insert: true };
     }
     return null;
@@ -430,17 +436,22 @@ export function OverviewMap({ map, tops, colorOf, selected, onSelect, onFly, pre
       return;
     }
     if (!d || d.moved || e.button === 1 || e.button === 2) return;
-    if (plan && tool === 'path') {
-      const c = col(p), cur = draftRef.current?.kind === 'path' ? draftRef.current.points : [];
-      if (double && cur.length >= 2) { finishPath(); return; }
+    if (plan && (tool === 'path' || tool === 'zone')) {
+      const c = col(p), cur = draftRef.current?.kind === tool ? draftRef.current.points : [];
+      if (double && cur.length >= (tool === 'zone' ? 3 : 2)) { finishPath(); return; }
       const last = cur.at(-1);
-      if (!last || last[0] !== c[0] || last[1] !== c[1]) setDraftBoth({ kind: 'path', points: [...cur, c] });
+      if (!last || last[0] !== c[0] || last[1] !== c[1]) setDraftBoth({ kind: tool, points: [...cur, c] });
       return;
     }
     if (plan && tool === 'point') { const c = col(p); plan.onDraw({ kind: 'point', x: c[0], z: c[1] }); return; }
     if (plan && tool === 'measure') {
       const c = col(p);
-      setMeasure(m => !m || m.b ? { a: c, b: null } : { a: m.a, b: c });
+      setMeasure(m => {
+        if (!m || m.done) return { points: [c], done: false };
+        const last = m.points.at(-1)!;
+        if (double && m.points.length >= 2) return { ...m, done: true };
+        return last[0] === c[0] && last[1] === c[1] ? m : { points: [...m.points, c], done: false };
+      });
       return;
     }
     const hit = hitAt(e.clientX, e.clientY);
@@ -449,19 +460,22 @@ export function OverviewMap({ map, tops, colorOf, selected, onSelect, onFly, pre
     else onSelect(hit?.kind === 'project' ? hit.id : null);
   };
   const finishPath = () => {
-    const cur = draftRef.current?.kind === 'path' ? draftRef.current.points : [];
+    const d = draftRef.current;
+    if (d?.kind !== 'path' && d?.kind !== 'zone') return;
     setDraftBoth(null);
-    if (cur.length >= 2) plan?.onDraw({ kind: 'path', points: cur });
+    if (d.points.length >= (d.kind === 'zone' ? 3 : 2)) plan?.onDraw({ kind: d.kind, points: d.points });
   };
   const onWheel = (e: React.WheelEvent) => { zoomAt(e.clientX, e.clientY, Math.exp(-e.deltaY * 0.0015)); };
   const onKey = (e: React.KeyboardEvent) => {
     if (plan) {
       if (e.key === 'Escape' && (draftRef.current || measure)) { e.preventDefault(); setDraftBoth(null); setMeasure(null); return; }
-      if (e.key === 'Enter' && draftRef.current?.kind === 'path') { e.preventDefault(); finishPath(); return; }
-      if (e.key === 'Backspace' && draftRef.current?.kind === 'path') {
-        e.preventDefault(); const pts = draftRef.current.points.slice(0, -1);
-        setDraftBoth(pts.length ? { kind: 'path', points: pts } : null); return;
+      if (e.key === 'Enter' && (draftRef.current?.kind === 'path' || draftRef.current?.kind === 'zone')) { e.preventDefault(); finishPath(); return; }
+      if (e.key === 'Enter' && measure && !measure.done && measure.points.length >= 2) { e.preventDefault(); setMeasure({ ...measure, done: true }); return; }
+      if (e.key === 'Backspace' && (draftRef.current?.kind === 'path' || draftRef.current?.kind === 'zone')) {
+        e.preventDefault(); const kind = draftRef.current.kind, pts = draftRef.current.points.slice(0, -1);
+        setDraftBoth(pts.length ? { kind, points: pts } : null); return;
       }
+      if (e.key === 'Backspace' && measure && !measure.done) { e.preventDefault(); const pts = measure.points.slice(0, -1); setMeasure(pts.length ? { points: pts, done: false } : null); return; }
       const t = !e.ctrlKey && !e.metaKey && !e.altKey ? MAP_TOOLS.find(x => x.key === e.key.toUpperCase()) : undefined;
       if (t) { e.preventDefault(); plan.onTool(t.id); return; }
       // Arrow keys move the selection (Umschalt: one chunk) instead of the view.
@@ -493,14 +507,14 @@ export function OverviewMap({ map, tops, colorOf, selected, onSelect, onFly, pre
   }, [plan?.follow, px, pz, redraw]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const toolInfo = plan ? MAP_TOOLS.find(t => t.id === tool) : undefined;
-  const measured = measure?.b ? measureText(measure.a, measure.b, plan?.groundAt) : null;
+  const measured = measure && measure.points.length >= 2 ? measureText(measure.points, plan?.groundAt) : null;
   const scaleText = scaleShown >= 1 ? `${fmt(Math.round(scaleShown * 10) / 10)} px je Block` : `1 px ≙ ${fmt(Math.round(1 / scaleShown))} Blöcke`;
   return <div className="overview" ref={wrap} data-tool={tool}>
     <canvas ref={canvas} className="overview-canvas" tabIndex={0} role="img"
       aria-label={plan ? `Draufsicht der Weltkarte, Werkzeug ${toolInfo?.label}: ${toolInfo?.hint}. Ziehen mit zwei Fingern oder rechter Maustaste verschiebt, Mausrad zoomt. Tasten V, A, B, W, P, M wechseln das Werkzeug, Pfeiltasten verschieben die Auswahl, Entf löscht sie, Escape bricht ab.`
         : 'Draufsicht der Weltkarte: Ziehen verschiebt, Mausrad oder zwei Finger zoomen, Klick wählt ein Projekt, Doppelklick fliegt hin. Pfeiltasten verschieben, Plus/Minus zoomen.'}
       data-deviations={plan?.deviations?.length ?? 0} data-scale={scaleShown.toFixed(3)} data-center={`${Math.round(view.current.cx)},${Math.round(view.current.cz)}`}
-      data-draft={draft ? (draft.kind === 'path' ? `path:${draft.points.length}` : draft.kind) : ''}
+      data-draft={draft ? (draft.kind === 'path' || draft.kind === 'zone' ? `${draft.kind}:${draft.points.length}` : draft.kind) : measure && !measure.done ? `measure:${measure.points.length}` : ''}
       data-selected={plan ? plan.selection.size + plan.selectedProjects.size : undefined}
       onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}
       onPointerCancel={e => { pointers.current.delete(e.pointerId); drag.current = null; moving.current = null; setMoveBy(null); cancelLongPress(); boxRef.current = null; setBox(null); vertexRef.current = null; setVertexDrag(null); }}
@@ -512,8 +526,10 @@ export function OverviewMap({ map, tops, colorOf, selected, onSelect, onFly, pre
       <button onClick={() => fit(null)}>Alles</button>
     </div>
     <div className="overview-hud" aria-live="off">
-      {measured ? <span data-testid="map-measure"><b>{measured}</b></span>
+      {measured ? <span data-testid="map-measure"><b>{measured}</b>{measure && !measure.done ? ' · weiterer Klick misst weiter, Doppelklick beendet' : ''}</span>
+        : measure && !measure.done ? <span><b>Messen:</b> nächster Klick setzt den zweiten Punkt · Escape bricht ab</span>
         : draft?.kind === 'path' ? <span><b>Weg: {draft.points.length} Ecken</b> · Doppelklick oder Eingabe beendet · Rücktaste nimmt zurück · Escape bricht ab</span>
+        : draft?.kind === 'zone' ? <span><b>Zone: {draft.points.length} Ecken</b> · ab drei Ecken schließt Doppelklick oder Eingabe · Rücktaste nimmt zurück · Escape bricht ab</span>
         : cursor ? <span><b>X {fmt(cursor.x)} · Z {fmt(cursor.z)}</b> · Chunk {chunkOf(cursor.x)}, {chunkOf(cursor.z)} · Region r.{regionOf(cursor.x)}.{regionOf(cursor.z)}<GroundAt terrain={terrain} x={cursor.x} z={cursor.z} live={plan?.groundAt} /></span> : <span>Norden oben · Osten rechts</span>}
       <span>{scaleText}</span>
     </div>
@@ -537,16 +553,6 @@ function GroundAt({ terrain, x, z, live }: { terrain: readonly TerrainSurvey[]; 
   return null;
 }
 
-/** Measuring result: straight line, walking distance on the block grid, chunks and height difference when known. */
-export function measureText(a: readonly [number, number], b: readonly [number, number], groundAt?: PlanLayer['groundAt']): string {
-  const dx = b[0] - a[0], dz = b[1] - a[1];
-  const parts = [`${fmt(Math.round(Math.hypot(dx, dz) * 10) / 10)} Blöcke Luftlinie`, `${fmt(Math.abs(dx) + Math.abs(dz))} zu Fuß (ΔX ${dx}, ΔZ ${dz})`];
-  const ga = groundAt?.(a[0], a[1]), gb = groundAt?.(b[0], b[1]);
-  if (ga && gb) parts.push(`Höhe ${ga.y} → ${gb.y} (${gb.y - ga.y >= 0 ? '+' : ''}${gb.y - ga.y})`);
-  parts.push(`${fmt(Math.round(Math.hypot(dx, dz) / 8 * 10) / 10)} Blöcke im Nether`);
-  return parts.join(' · ');
-}
-
 interface Draw {
   readonly sx: (x: number) => number; readonly sz: (z: number) => number; readonly scale: number; readonly w: number; readonly h: number;
   readonly css: CSSStyleDeclaration; readonly accent: string; readonly danger: string; readonly text: string; readonly strong: string;
@@ -554,7 +560,7 @@ interface Draw {
 
 /** Weltplan, drafts, measuring, hologram box and the player on top of the projects. */
 function drawPlan(ctx: CanvasRenderingContext2D, plan: PlanLayer, d: Draw, st: {
-  draft: MapDraft | null; measure: { a: [number, number]; b: [number, number] | null } | null; hoverCol: [number, number] | null;
+  draft: MapDraft | null; measure: { points: [number, number][]; done: boolean } | null; hoverCol: [number, number] | null;
   moveBy: { hit: MapHit; dx: number; dz: number } | null; selectedProject: string | null; map: WorldMapView;
   box: { a: [number, number]; b: [number, number] } | null;
   vertexDrag: { pathId: string; index: number; insert: boolean; to: [number, number] } | null;
@@ -570,45 +576,67 @@ function drawPlan(ctx: CanvasRenderingContext2D, plan: PlanLayer, d: Draw, st: {
   };
   // While dragging, everything selected moves together.
   const off = (id: string) => st.moveBy && plan.selection.has(id) ? st.moveBy : null;
-  // Sites, then paths, then points (as in itemAt).
-  for (const item of plan.items) {
-    if (item.kind !== 'site') continue;
-    const o = off(item.id), x = item.minX + (o?.dx ?? 0), z = item.minZ + (o?.dz ?? 0), on = plan.selection.has(item.id);
-    ctx.fillStyle = site; ctx.globalAlpha = item.projectId ? 0.08 : 0.16;
-    ctx.fillRect(sx(x), sz(z), item.width * scale, item.length * scale); ctx.globalAlpha = 1;
-    ctx.strokeStyle = on ? d.accent : site; ctx.lineWidth = on ? 2.5 : 1.5; ctx.setLineDash(item.projectId ? [] : [7, 4]);
-    ctx.strokeRect(sx(x), sz(z), item.width * scale, item.length * scale); ctx.setLineDash([]);
-    if (on || item.width * scale > 50) label(`${item.name} · ${item.width}×${item.length}`, sx(x), sz(z + item.length) + 16, on ? d.accent : site);
-  }
-  for (const item of plan.items) {
-    if (item.kind !== 'path') continue;
-    const o = off(item.id), style = pathStyleOf(item.style), on = plan.selection.has(item.id);
+  /** Corners of a path or zone on screen, with a dragged corner applied. */
+  const corners = (item: Polyline, o: { dx: number; dz: number } | null) => {
     const vd = st.vertexDrag?.pathId === item.id ? st.vertexDrag : null;
     let src: (readonly [number, number])[] = [...item.points];
     if (vd) { if (vd.insert) src.splice(vd.index + 1, 0, vd.to); else src = src.map((p, i) => i === vd.index ? vd.to : p); }
-    const pts = src.map(p => [sx(p[0] + 0.5 + (o?.dx ?? 0)), sz(p[1] + 0.5 + (o?.dz ?? 0))] as const);
+    return { src, pts: src.map(p => [sx(p[0] + 0.5 + (o?.dx ?? 0)), sz(p[1] + 0.5 + (o?.dz ?? 0))] as const) };
+  };
+  /** Handles of the solo-selected path or zone: corners (drag moves) and midpoints (drag inserts a corner). */
+  const handles = (src: readonly (readonly [number, number])[], pts: readonly (readonly [number, number])[], closed: boolean) => {
+    const n = pts.length, sides = closed ? n : n - 1;
+    for (let i = 0; i < sides; i++) {
+      const j = (i + 1) % n;
+      if (Math.hypot(src[j]![0] - src[i]![0], src[j]![1] - src[i]![1]) < 2) continue;
+      const mx = (pts[i]![0] + pts[j]![0]) / 2, mz = (pts[i]![1] + pts[j]![1]) / 2;
+      ctx.fillStyle = d.css.getPropertyValue('--map-label-bg').trim() || 'rgba(0,0,0,0.6)'; ctx.strokeStyle = d.accent; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(mx, mz, 4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    }
+    for (const p of pts) { ctx.fillStyle = d.accent; ctx.strokeStyle = 'rgba(0,0,0,0.8)'; ctx.lineWidth = 1.5; ctx.fillRect(p[0] - 4, p[1] - 4, 8, 8); ctx.strokeRect(p[0] - 4, p[1] - 4, 8, 8); }
+  };
+  const solo = plan.selection.size === 1 && !plan.selectedProjects.size && scale >= 1;
+  // Zones (MAP-06) lie under everything, then sites, paths, points (as in itemAt).
+  for (const item of plan.items) {
+    if (item.kind !== 'zone') continue;
+    const o = off(item.id), on = plan.selection.has(item.id), color = itemColor(item, site);
+    const { src, pts } = corners(item, o);
+    ctx.fillStyle = color; ctx.globalAlpha = on ? 0.26 : 0.14;
+    ctx.beginPath(); ctx.moveTo(pts[0]![0], pts[0]![1]); for (const p of pts.slice(1)) ctx.lineTo(p[0], p[1]); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
+    ctx.strokeStyle = on ? d.accent : color; ctx.lineWidth = on ? 2.5 : 1.5; ctx.setLineDash([3, 3]); ctx.stroke(); ctx.setLineDash([]);
+    if (on && solo) handles(src, pts, true);
+    const b = pts.reduce<[number, number, number, number]>((acc, p) => [Math.min(acc[0], p[0]), Math.min(acc[1], p[1]), Math.max(acc[2], p[0]), Math.max(acc[3], p[1])], [Infinity, Infinity, -Infinity, -Infinity]);
+    if (on || b[2] - b[0] > 60) label(`${item.name} · ${zoneCategoryOf(item.category).label} · ≈${fmt(zoneArea(item))} Blöcke²`, b[0] + 4, b[1] + 18, on ? d.accent : color);
+  }
+  for (const item of plan.items) {
+    if (item.kind !== 'site') continue;
+    const o = off(item.id), x = item.minX + (o?.dx ?? 0), z = item.minZ + (o?.dz ?? 0), on = plan.selection.has(item.id), color = itemColor(item, site);
+    ctx.fillStyle = color; ctx.globalAlpha = item.projectId ? 0.08 : 0.16;
+    ctx.fillRect(sx(x), sz(z), item.width * scale, item.length * scale); ctx.globalAlpha = 1;
+    ctx.strokeStyle = on ? d.accent : color; ctx.lineWidth = on ? 2.5 : 1.5; ctx.setLineDash(item.projectId ? [] : [7, 4]);
+    ctx.strokeRect(sx(x), sz(z), item.width * scale, item.length * scale); ctx.setLineDash([]);
+    if (on || item.width * scale > 50) label(`${item.name} · ${item.width}×${item.length}`, sx(x), sz(z + item.length) + 16, on ? d.accent : color);
+  }
+  for (const item of plan.items) {
+    if (item.kind !== 'path') continue;
+    const o = off(item.id), on = plan.selection.has(item.id), color = itemColor(item, site);
+    const { src, pts } = corners(item, o);
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     if (on) { ctx.strokeStyle = d.accent; ctx.lineWidth = Math.max(4, item.width * scale + 4); polyline(ctx, pts); }
-    ctx.strokeStyle = style.color; ctx.lineWidth = Math.max(2, item.width * scale); polyline(ctx, pts);
-    if (on && plan.selection.size === 1 && scale >= 1) {
-      // Handles: corners (drag moves, right click deletes) and midpoints (drag inserts a corner).
-      for (let i = 0; i + 1 < pts.length; i++) {
-        if (Math.hypot(src[i + 1]![0] - src[i]![0], src[i + 1]![1] - src[i]![1]) < 2) continue;
-        const mx = (pts[i]![0] + pts[i + 1]![0]) / 2, mz = (pts[i]![1] + pts[i + 1]![1]) / 2;
-        ctx.fillStyle = d.css.getPropertyValue('--map-label-bg').trim() || 'rgba(0,0,0,0.6)'; ctx.strokeStyle = d.accent; ctx.lineWidth = 1.5;
-        ctx.beginPath(); ctx.arc(mx, mz, 4, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-      }
-      for (const p of pts) { ctx.fillStyle = d.accent; ctx.strokeStyle = 'rgba(0,0,0,0.8)'; ctx.lineWidth = 1.5; ctx.fillRect(p[0] - 4, p[1] - 4, 8, 8); ctx.strokeRect(p[0] - 4, p[1] - 4, 8, 8); }
-    } else if (scale >= 4) for (const p of pts) { ctx.fillStyle = on ? d.accent : style.color; ctx.fillRect(p[0] - 2, p[1] - 2, 4, 4); }
+    ctx.strokeStyle = color; ctx.lineWidth = Math.max(2, item.width * scale); polyline(ctx, pts);
+    if (on && solo) handles(src, pts, false);
+    else if (scale >= 4) for (const p of pts) { ctx.fillStyle = on ? d.accent : color; ctx.fillRect(p[0] - 2, p[1] - 2, 4, 4); }
     if (on && pts.length) label(item.name, pts[0]![0] + 6, pts[0]![1] - 4, d.accent);
   }
   for (const item of plan.items) {
     if (item.kind !== 'point') continue;
-    const o = off(item.id), on = plan.selection.has(item.id), color = WORLD_POINT_TYPES.find(t => t.id === item.type)?.color ?? d.accent;
+    const o = off(item.id), on = plan.selection.has(item.id), color = itemColor(item, d.accent);
     const x = sx(item.x + 0.5 + (o?.dx ?? 0)), z = sz(item.z + 0.5 + (o?.dz ?? 0)), r = on ? 8 : 6;
     ctx.fillStyle = color; ctx.strokeStyle = on ? d.accent : 'rgba(0,0,0,0.7)'; ctx.lineWidth = on ? 3 : 1.5;
     ctx.beginPath(); ctx.moveTo(x, z - r - 6); ctx.lineTo(x + r, z - 6); ctx.lineTo(x, z + 2); ctx.lineTo(x - r, z - 6); ctx.closePath(); ctx.fill(); ctx.stroke();
     if (on || scale >= 1) label(item.name, x + 9, z - 4, on ? d.accent : d.text);
+    // Notes (MAP-06) read on the map once zoomed in, or on the selected point.
+    if (item.note && (on || scale >= 6)) label(item.note.length > 48 ? `${item.note.slice(0, 47)}…` : item.note, x + 9, z + 12, d.text);
   }
   // Selected projects being dragged: outlines at the new place.
   if (st.moveBy) {
@@ -662,21 +690,30 @@ function drawPlan(ctx: CanvasRenderingContext2D, plan: PlanLayer, d: Draw, st: {
     ctx.strokeRect(sx(sn[0]!), sz(sn[1]!), (sn[2]! - sn[0]!) * scale, (sn[3]! - sn[1]!) * scale); ctx.setLineDash([]);
     label(`${sn[2]! - sn[0]!} × ${sn[3]! - sn[1]!}${dr.snap ? ' (Chunks)' : ''}`, sx(sn[0]!), sz(sn[1]!), d.accent);
   }
-  if (dr?.kind === 'path') {
+  if (dr?.kind === 'path' || dr?.kind === 'zone') {
     const pts = [...dr.points, ...(st.hoverCol ? [st.hoverCol] : [])].map(p => [sx(p[0] + 0.5), sz(p[1] + 0.5)] as const);
-    ctx.strokeStyle = d.accent; ctx.lineWidth = 3; ctx.setLineDash([6, 4]); polyline(ctx, pts); ctx.setLineDash([]);
+    ctx.strokeStyle = d.accent; ctx.lineWidth = 3; ctx.setLineDash([6, 4]); polyline(ctx, pts);
+    if (dr.kind === 'zone' && pts.length >= 3) {
+      ctx.lineWidth = 1.5; polyline(ctx, [pts.at(-1)!, pts[0]!]);
+      ctx.fillStyle = d.accent; ctx.globalAlpha = 0.12; ctx.beginPath(); ctx.moveTo(pts[0]![0], pts[0]![1]); for (const p of pts.slice(1)) ctx.lineTo(p[0], p[1]); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
+    }
+    ctx.setLineDash([]);
     if (dr.points.length >= 1 && scale >= 0.5) {
-      const cols = pathColumns({ points: dr.points, width: 1 }, 200_000).length;
-      label(`${cols} Blöcke`, pts[0]![0] + 6, pts[0]![1] - 4, d.accent);
+      const txt = dr.kind === 'zone' ? (dr.points.length >= 3 ? `≈${fmt(zoneArea({ points: dr.points }))} Blöcke²` : `${dr.points.length} Ecken`) : `${pathColumns({ points: dr.points, width: 1 }, 200_000).length} Blöcke`;
+      label(txt, pts[0]![0] + 6, pts[0]![1] - 4, d.accent);
     }
   }
   if (st.measure) {
-    const a = st.measure.a, b = st.measure.b ?? st.hoverCol;
-    ctx.fillStyle = d.accent; ctx.fillRect(sx(a[0] + 0.5) - 3, sz(a[1] + 0.5) - 3, 6, 6);
-    if (b) {
-      ctx.strokeStyle = d.accent; ctx.lineWidth = 2; ctx.setLineDash([2, 3]);
-      polyline(ctx, [[sx(a[0] + 0.5), sz(a[1] + 0.5)], [sx(b[0] + 0.5), sz(b[1] + 0.5)]]); ctx.setLineDash([]);
-      label(`${fmt(Math.round(Math.hypot(b[0] - a[0], b[1] - a[1]) * 10) / 10)} Blöcke`, (sx(a[0]) + sx(b[0])) / 2 + 6, (sz(a[1]) + sz(b[1])) / 2, d.accent);
+    const fixed = st.measure.points, all = [...fixed, ...(!st.measure.done && st.hoverCol ? [st.hoverCol] : [])];
+    const pts = all.map(p => [sx(p[0] + 0.5), sz(p[1] + 0.5)] as const);
+    for (const p of fixed) { ctx.fillStyle = d.accent; ctx.fillRect(sx(p[0] + 0.5) - 3, sz(p[1] + 0.5) - 3, 6, 6); }
+    if (pts.length >= 2) {
+      ctx.strokeStyle = d.accent; ctx.lineWidth = 2; ctx.setLineDash([2, 3]); polyline(ctx, pts);
+      if (pts.length >= 3) { ctx.lineWidth = 1; polyline(ctx, [pts.at(-1)!, pts[0]!]); }
+      ctx.setLineDash([]);
+      let len = 0; for (let i = 0; i + 1 < all.length; i++) len += Math.hypot(all[i + 1]![0] - all[i]![0], all[i + 1]![1] - all[i]![1]);
+      const a = pts.at(-2)!, b = pts.at(-1)!;
+      label(`${fmt(Math.round(len * 10) / 10)} Blöcke`, (a[0] + b[0]) / 2 + 6, (a[1] + b[1]) / 2, d.accent);
     }
   }
   if (st.hoverCol && plan.tool !== 'select' && plan.tool !== 'box' && scale >= 3) {
@@ -687,13 +724,16 @@ function drawPlan(ctx: CanvasRenderingContext2D, plan: PlanLayer, d: Draw, st: {
     ctx.strokeStyle = trailColor; ctx.globalAlpha = 0.5; ctx.lineWidth = 2; ctx.setLineDash([2, 4]);
     polyline(ctx, plan.trail.map(t => [sx(t.x), sz(t.z)] as const)); ctx.setLineDash([]); ctx.globalAlpha = 1;
   }
-  if (plan.player) {
-    const p = plan.player, x = sx(p.x), z = sz(p.z), a = p.yaw * Math.PI / 180, fx = -Math.sin(a), fz = Math.cos(a);
-    ctx.fillStyle = player; ctx.strokeStyle = 'rgba(0,0,0,0.85)'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(x + fx * 12, z + fz * 12); ctx.lineTo(x - fz * 7 - fx * 6, z + fx * 7 - fz * 6); ctx.lineTo(x - fx * 2, z - fz * 2); ctx.lineTo(x + fz * 7 - fx * 6, z - fx * 7 - fz * 6); ctx.closePath();
+  const arrow = (px: number, pz: number, yaw: number, size: number, color: string, name: string) => {
+    const x = sx(px), z = sz(pz), a = yaw * Math.PI / 180, fx = -Math.sin(a), fz = Math.cos(a), k = size / 12;
+    ctx.fillStyle = color; ctx.strokeStyle = 'rgba(0,0,0,0.85)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(x + fx * 12 * k, z + fz * 12 * k); ctx.lineTo(x - fz * 7 * k - fx * 6 * k, z + fx * 7 * k - fz * 6 * k); ctx.lineTo(x - fx * 2 * k, z - fz * 2 * k); ctx.lineTo(x + fz * 7 * k - fx * 6 * k, z - fx * 7 * k - fz * 6 * k); ctx.closePath();
     ctx.stroke(); ctx.fill();
-    label(p.name || 'Spieler', x + 12, z - 8, player);
-  }
+    label(name, x + 12, z - 8, color);
+  };
+  // Other players the mod sees (MAP-06), smaller and in the hologram colour.
+  for (const o of plan.others ?? []) arrow(o.x, o.z, o.yaw, 9, holo, o.name);
+  if (plan.player) arrow(plan.player.x, plan.player.z, plan.player.yaw, 12, player, plan.player.name || 'Spieler');
 }
 
 function polyline(ctx: CanvasRenderingContext2D, pts: readonly (readonly [number, number])[]): void {

@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
-  WORLD_PATH_STYLES, WORLD_POINT_TYPES, pathColumns, pathLength, pointTypeLabel, snapSiteToChunks,
+  WORLD_PATH_STYLES, WORLD_POINT_TYPES, WORLD_ZONE_CATEGORIES, itemColor, itemKindLabel, pathColumns, pathLength, pathProfile, snapSiteToChunks, zoneArea,
 } from '../../../../../packages/domain/src/index.js';
-import type { Project, WorldItem, WorldPathStyle, WorldPointType } from '../../../../../packages/domain/src/index.js';
+import type { GroundAt, PathProfile, Project, WorldItem, WorldPath, WorldPathStyle, WorldPointType, WorldZoneCategory } from '../../../../../packages/domain/src/index.js';
 import { formatNumber } from '../../app/ui';
 import { MAP_TOOLS } from './OverviewMap';
 import type { MapTool } from './OverviewMap';
@@ -23,15 +23,19 @@ export function PlanToolbar({ tool, onTool, canUndo, canRedo, onUndo, onRedo }: 
 }
 
 /** Editor of one Weltplan entry. Changes are saved on „Übernehmen“ as one undoable step. */
-export function PlanItemEditor({ item, projects, onSave, onRemove, onClose, actions }: {
+export function PlanItemEditor({ item, projects, onSave, onRemove, onClose, actions, layerNames = [], groundAt, onRoute }: {
   item: WorldItem; projects: readonly Project[]; onSave: (next: WorldItem) => void; onRemove: () => void; onClose: () => void;
   actions?: React.ReactNode;
+  /** MAP-06: named layers in use (suggestions), the known ground (height profile of paths) and re-routing over the terrain. */
+  layerNames?: readonly string[]; groundAt?: GroundAt | undefined; onRoute?: ((path: WorldPath) => void) | null;
 }) {
   const [draft, setDraft] = useState<WorldItem>(item);
   useEffect(() => { setDraft(item); }, [item]);
   const changed = JSON.stringify(draft) !== JSON.stringify(item);
   const num = (v: string, fallback: number) => { const n = Number.parseInt(v, 10); return Number.isFinite(n) ? n : fallback; };
-  const kindLabel = item.kind === 'site' ? 'Bauplatz' : item.kind === 'path' ? 'Weg' : pointTypeLabel(item.type);
+  const kindLabel = itemKindLabel(item);
+  const setExtra = (key: 'layer' | 'color', value: string) => { const { [key]: _old, ...rest } = draft; setDraft(value ? { ...rest, [key]: value } as WorldItem : rest as WorldItem); };
+  const profile = useMemo(() => item.kind === 'path' && groundAt ? pathProfile(item.points, groundAt) : null, [item, groundAt]);
 
   return <section className="plan-editor" aria-label={`${kindLabel} „${item.name}“`}>
     <header><h2>{kindLabel}: {item.name}</h2><button className="text-button" onClick={onClose} aria-label="Schließen">✕</button></header>
@@ -57,15 +61,24 @@ export function PlanItemEditor({ item, projects, onSave, onRemove, onClose, acti
         </>}
         {draft.kind === 'point' && <>
           <label>Art<select value={draft.type} onChange={e => setDraft({ ...draft, type: e.target.value as WorldPointType })}>
-            {WORLD_POINT_TYPES.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}</select></label>
+            {WORLD_POINT_TYPES.map(t => <option key={t.id} value={t.id}>{t.label}{t.v1 ? '' : ' (Mod ab marks2)'}</option>)}</select></label>
           <label>X<input inputMode="numeric" value={draft.x} onChange={e => setDraft({ ...draft, x: num(e.target.value, draft.x) })} /></label>
           <label>Y<input inputMode="numeric" value={draft.y} onChange={e => setDraft({ ...draft, y: num(e.target.value, draft.y) })} /></label>
           <label>Z<input inputMode="numeric" value={draft.z} onChange={e => setDraft({ ...draft, z: num(e.target.value, draft.z) })} /></label>
         </>}
-        <label className="wide">Notiz<input value={draft.note} maxLength={500} onChange={e => setDraft({ ...draft, note: e.target.value })} /></label>
+        {draft.kind === 'zone' && <label>Art<select value={draft.category} onChange={e => setDraft({ ...draft, category: e.target.value as WorldZoneCategory })}>
+          {WORLD_ZONE_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}</select></label>}
+        <label>Ebene<input list="plan-layer-names" value={draft.layer ?? ''} maxLength={40} placeholder="keine" onChange={e => setExtra('layer', e.target.value)} title="Benannte Ebene, z. B. „Phase 2“ – ein-/ausblendbar und in der Liste filterbar" />
+          <datalist id="plan-layer-names">{layerNames.map(n => <option key={n} value={n} />)}</datalist></label>
+        <label className="plan-color">Farbe<span>
+          <input type="color" value={draft.color ?? itemColor(draft)} aria-label="Farbe" onChange={e => setExtra('color', e.target.value.toLowerCase())} />
+          {draft.color ? <button type="button" className="text-button" onClick={() => setExtra('color', '')}>Standard</button> : <small className="muted">Standard</small>}</span></label>
+        <label className="wide">Notiz<textarea value={draft.note} maxLength={500} rows={draft.note.length > 60 ? 3 : 1} onChange={e => setDraft({ ...draft, note: e.target.value })} placeholder="Erscheint bei Punkten auch auf der Karte" /></label>
       </div>
       {item.kind === 'path' && <p className="muted small">{item.points.length} Ecken · {formatNumber(pathLength(item.points))} Blöcke lang · {formatNumber(pathColumns(item).length)} Wegblöcke bei {item.width} Breite</p>}
       {item.kind === 'site' && <p className="muted small">{item.width} × {item.length} = {formatNumber(item.width * item.length)} Blöcke Fläche · Chunks {Math.floor(item.minX / 16)},{Math.floor(item.minZ / 16)} bis {Math.floor((item.minX + item.width - 1) / 16)},{Math.floor((item.minZ + item.length - 1) / 16)}</p>}
+      {item.kind === 'zone' && <p className="muted small">{item.points.length} Ecken · ≈ {formatNumber(zoneArea(item))} Blöcke² · Ecken ziehen wie bei Wegen (runder Griff fügt eine Ecke ein)</p>}
+      {item.kind === 'path' && profile && <PathProfileView profile={profile} onRoute={onRoute ? () => onRoute(item) : null} />}
       <div className="button-row">
         <button className="primary" disabled={!changed || !draft.name.trim()}>Übernehmen</button>
         {draft.kind === 'site' && <button type="button" className="secondary" onClick={() => setDraft({ ...draft, ...snapSiteToChunks(draft) })}>An Chunks ausrichten</button>}
@@ -73,5 +86,29 @@ export function PlanItemEditor({ item, projects, onSave, onRemove, onClose, acti
       </div>
     </form>
     {actions && <div className="button-row plan-actions">{actions}</div>}
+  </section>;
+}
+
+/** Height profile of a path along the known ground (MAP-06): small chart and the numbers a builder needs. */
+export function PathProfileView({ profile: p, onRoute }: { profile: PathProfile; onRoute: (() => void) | null }) {
+  const W = 260, H = 48;
+  const known = p.samples.filter((y): y is number => y !== null);
+  const lo = p.yMin ?? 0, hi = p.yMax ?? 0, span = Math.max(1, hi - lo);
+  const x = (i: number) => (i / Math.max(1, p.samples.length - 1)) * W;
+  const y = (v: number) => H - 4 - ((v - lo) / span) * (H - 8);
+  let d = '', open = false;
+  p.samples.forEach((v, i) => { if (v === null) { open = false; return; } d += `${open ? 'L' : 'M'}${x(i).toFixed(1)} ${y(v).toFixed(1)} `; open = true; });
+  const walkable = p.steep === 0 && p.unknown === 0;
+  return <section className="plan-profile" aria-label="Höhenprofil" data-testid="path-profile">
+    <h3>Höhenprofil <small>{p.known ? `Y ${lo} … ${hi}` : 'kein Gelände bekannt'}</small></h3>
+    {known.length > 1 && <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} role="img" aria-label={`Höhe entlang des Wegs von ${lo} bis ${hi}`}>
+      <path d={d} fill="none" stroke="currentColor" strokeWidth="1.5" />
+    </svg>}
+    <p className={walkable ? 'ok-text' : 'warn-text'}>
+      {p.known ? `↑ ${p.climb} ↓ ${p.descent} Blöcke · größte Stufe ${p.maxStep}${p.steep ? ` · ${p.steep} Stufen ab 2 Blöcken (Treppe nötig)` : ' · ohne Treppe begehbar'}` : 'Lade Gelände aus dem Spiel oder lege eine Geländeaufnahme an, dann zeigt der Weg sein Profil.'}
+      {p.water ? ` · ${p.water} Spalten im Wasser` : ''}{p.unknown && p.known ? ` · ${p.unknown} Spalten ohne Gelände` : ''}
+    </p>
+    {onRoute && <button type="button" className="secondary" onClick={onRoute} disabled={!p.known}
+      title="Sucht zwischen den Ecken den flachsten begehbaren Weg über das bekannte Gelände (höchstens ein Block Stufe, Wasser und Unbekanntes gemieden). Die Ecken bleiben Wegpunkte.">⤳ Route übers Gelände</button>}
   </section>;
 }

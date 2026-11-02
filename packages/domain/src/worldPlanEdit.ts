@@ -1,6 +1,6 @@
 import { DomainError } from './types.js';
-import { WORLD_PATH_MAX_POINTS, WORLD_PLAN_MAX_ITEMS, itemBounds, newWorldItemId } from './worldPlan.js';
-import type { WorldItem, WorldPath, WorldPlan, WorldPlanOp, WorldSite } from './worldPlan.js';
+import { WORLD_PATH_MAX_POINTS, WORLD_PLAN_MAX_ITEMS, WORLD_ZONE_MAX_POINTS, itemBounds, newWorldItemId } from './worldPlan.js';
+import type { WorldItem, WorldPath, WorldPlan, WorldPlanOp, WorldSite, WorldZone } from './worldPlan.js';
 
 /**
  * Weltbuilder (MAP-04): editing several Weltplan entries at once – delete,
@@ -54,7 +54,7 @@ export function mirrorColumn(c: XZ, pivot: XZ, axis: 'x' | 'z'): [number, number
 
 function mapColumns<T extends WorldItem>(item: T, f: (c: XZ) => [number, number]): T {
   if (item.kind === 'point') { const [x, z] = f([item.x, item.z]); return { ...item, x, z }; }
-  if (item.kind === 'path') return { ...item, points: item.points.map(p => f(p) as readonly [number, number]) };
+  if (item.kind === 'path' || item.kind === 'zone') return { ...item, points: item.points.map(p => f(p) as readonly [number, number]) };
   const a = f([item.minX, item.minZ]), b = f([item.minX + item.width - 1, item.minZ + item.length - 1]);
   return { ...item, minX: Math.min(a[0], b[0]), minZ: Math.min(a[1], b[1]), width: Math.abs(a[0] - b[0]) + 1, length: Math.abs(a[1] - b[1]) + 1 };
 }
@@ -88,31 +88,36 @@ export function duplicateItems(items: readonly WorldItem[], opts: { dx?: number;
   });
 }
 
-// ------------------------------------------------------------------ path corners
+// ------------------------------------------------------------------ path and zone corners
 
-/** Index of the corner of a path near (x, z) in blocks; -1 when none. */
-export function pathVertexAt(path: WorldPath, x: number, z: number, tolerance = 1): number {
+/** Entries with corners: paths (open) and zones (closed polygons, MAP-06). */
+export type Polyline = WorldPath | WorldZone;
+const minCorners = (p: Polyline) => p.kind === 'zone' ? 3 : 2;
+const maxCorners = (p: Polyline) => p.kind === 'zone' ? WORLD_ZONE_MAX_POINTS : WORLD_PATH_MAX_POINTS;
+
+/** Index of the corner of a path or zone near (x, z) in blocks; -1 when none. */
+export function pathVertexAt(path: Polyline, x: number, z: number, tolerance = 1): number {
   let best = -1, bestD = Infinity;
   path.points.forEach((p, i) => { const d = Math.hypot(x - (p[0] + 0.5), z - (p[1] + 0.5)); if (d <= tolerance && d < bestD) { best = i; bestD = d; } });
   return best;
 }
 
-export function movePathVertex(path: WorldPath, index: number, to: XZ): WorldPath {
-  if (index < 0 || index >= path.points.length) fail('Wegecke fehlt');
+export function movePathVertex<T extends Polyline>(path: T, index: number, to: XZ): T {
+  if (index < 0 || index >= path.points.length) fail('Ecke fehlt');
   return { ...path, points: path.points.map((p, i) => i === index ? [to[0], to[1]] as const : p) };
 }
 
-/** New corner after corner `after` (so between `after` and `after + 1`). */
-export function insertPathVertex(path: WorldPath, after: number, at: XZ): WorldPath {
-  if (after < 0 || after >= path.points.length - 1) fail('Wegabschnitt fehlt');
-  if (path.points.length >= WORLD_PATH_MAX_POINTS) fail(`Weg hat schon ${WORLD_PATH_MAX_POINTS} Ecken`);
+/** New corner after corner `after` (so between `after` and `after + 1`; for a zone also on the closing side). */
+export function insertPathVertex<T extends Polyline>(path: T, after: number, at: XZ): T {
+  if (after < 0 || after >= path.points.length - (path.kind === 'zone' ? 0 : 1)) fail(path.kind === 'zone' ? 'Zonenabschnitt fehlt' : 'Wegabschnitt fehlt');
+  if (path.points.length >= maxCorners(path)) fail(`${path.kind === 'zone' ? 'Zone' : 'Weg'} hat schon ${maxCorners(path)} Ecken`);
   const points = [...path.points]; points.splice(after + 1, 0, [at[0], at[1]] as const);
   return { ...path, points };
 }
 
-export function removePathVertex(path: WorldPath, index: number): WorldPath {
-  if (index < 0 || index >= path.points.length) fail('Wegecke fehlt');
-  if (path.points.length <= 2) fail('ein Weg braucht mindestens zwei Ecken – lösche stattdessen den ganzen Weg');
+export function removePathVertex<T extends Polyline>(path: T, index: number): T {
+  if (index < 0 || index >= path.points.length) fail('Ecke fehlt');
+  if (path.points.length <= minCorners(path)) fail(path.kind === 'zone' ? 'eine Zone braucht mindestens drei Ecken – lösche stattdessen die ganze Zone' : 'ein Weg braucht mindestens zwei Ecken – lösche stattdessen den ganzen Weg');
   return { ...path, points: path.points.filter((_, i) => i !== index) };
 }
 
@@ -151,7 +156,7 @@ export type GroundAt = (x: number, z: number) => { readonly y: number } | null;
  */
 export function groundHeight(item: WorldItem, groundAt: GroundAt): { y: number; known: number; total: number } | null {
   if (item.kind === 'point') { const g = groundAt(item.x, item.z); return g ? { y: g.y + 1, known: 1, total: 1 } : null; }
-  if (item.kind === 'path') return null;
+  if (item.kind === 'path' || item.kind === 'zone') return null;
   const step = Math.max(1, Math.ceil(Math.max(item.width, item.length) / 64)), ys: number[] = [];
   let total = 0;
   for (let x = item.minX; x < item.minX + item.width; x += step) for (let z = item.minZ; z < item.minZ + item.length; z += step) {
@@ -162,11 +167,18 @@ export function groundHeight(item: WorldItem, groundAt: GroundAt): { y: number; 
   return { y: ys[Math.floor(ys.length / 2)]! + 1, known: ys.length, total };
 }
 
+/** Sets the named layer of entries (empty = no layer); one batch, null when nothing changes. */
+export function setLayerOp(items: readonly WorldItem[], layer: string): WorldPlanOp | null {
+  const name = layer.trim();
+  const next = items.map(i => { const { layer: _old, ...rest } = i; return name ? { ...rest, layer: name } as WorldItem : rest as WorldItem; });
+  return updateItemsOp(items, next, name ? `Ebene „${name}“ zugewiesen` : 'Aus der Ebene genommen');
+}
+
 /** Entries with their height set from the ground; entries without known ground stay unchanged. */
 export function alignToGround(items: readonly WorldItem[], groundAt: GroundAt): { items: WorldItem[]; aligned: number; unknown: number } {
   let aligned = 0, unknown = 0;
   const out = items.map(i => {
-    if (i.kind === 'path') return i;
+    if (i.kind === 'path' || i.kind === 'zone') return i;
     const g = groundHeight(i, groundAt);
     if (!g) { unknown++; return i; }
     aligned++;
