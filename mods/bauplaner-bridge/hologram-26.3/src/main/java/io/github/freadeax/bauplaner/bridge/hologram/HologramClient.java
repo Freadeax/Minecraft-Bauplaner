@@ -37,6 +37,7 @@ public final class HologramClient {
     public HologramClient(Path root, String loader, String version) {
         hologram = new Hologram(root);
         HologramDiagnose.init(loader, version);
+        HologramDiagnose.errors(this::errors);
         link = new LiveLink(root, hologram, loader, version, McCompat.gameVersion());
         marks = new MarksRenderer(link);
         link.loadMarks();

@@ -3041,3 +3041,29 @@ Testplan um die offenen Abnahmen der Novemberrunde ergänzt (65 Fälle), Teststa
 - `docs/architecture/TESTPHASE.md`
 - `docs/testing/TESTPLAN.md`
 
+## 2026-11-02T22:14:34.982Z · progress
+
+**Aufgaben:** GAME-07
+
+Mod 0.7.2 für die Testphase: /bauplaner diagnose (mit Fehlerzähler des Absturzschutzes) im Spieltest geprüft, Klammerfehler behoben, Fabric und NeoforGe veröffentlicht
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-07 | 🧩 Implementiert · Abnahme offen | 8/10 | Philipp testet 0.7.0 auf server.lmnt-gaming.net (Bauabschnitte aus seinem Projekt, Röntgensicht mit Shader); danach Stufe 6. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/MOD_HOLOGRAM.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.7.2.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.7.2.jar`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramDiagnose.java`
+- `mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java`
+- `scripts/bridge_gametest.mjs`
+

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T20:42:10.000Z",
+  "updatedAt": "2026-11-02T22:14:34.982Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -4192,7 +4192,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T19:16:30.126Z"
+      "updatedAt": "2026-11-02T22:14:34.982Z"
     },
     {
       "id": "GAME-03",
@@ -9760,6 +9760,38 @@
           "done": 4,
           "total": 6,
           "next": "Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T22:14:34.982Z",
+      "kind": "progress",
+      "items": [
+        "GAME-07"
+      ],
+      "summary": "Mod 0.7.2 für die Testphase: /bauplaner diagnose (mit Fehlerzähler des Absturzschutzes) im Spieltest geprüft, Klammerfehler behoben, Fabric und NeoforGe veröffentlicht",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/MOD_HOLOGRAM.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.7.2.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.7.2.jar",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramDiagnose.java",
+        "mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java",
+        "scripts/bridge_gametest.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-07",
+          "status": "implemented",
+          "done": 8,
+          "total": 10,
+          "next": "Philipp testet 0.7.0 auf server.lmnt-gaming.net (Bauabschnitte aus seinem Projekt, Röntgensicht mit Shader); danach Stufe 6."
         }
       ]
     }

@@ -953,3 +953,9 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - Neu in der Mod: `/bauplaner diagnose` (`mod-core/.../Diagnostics.java` mit JUnit-Test, `hologram-26.3/.../HologramDiagnose.java`; ein Eintrag in `HologramCommands.build`, eine Zeile in `HologramClient`). Abgestimmt mit dem Mod-Thread (MSG-GAME-07-05): der Thread „Bauplaner-Mod von Grund auf neu entwickeln“ veröffentlicht die nächste Mod-Version mit `diagnose` und seinem Absturzschutz; dessen Checkliste (`/mnt/project-files/mod/TESTPHASE_MOD.md`) ist in die Bereiche MOD/LIVE des Testplans eingearbeitet.
 - **An alle Threads:** Neue Funktionen bitte als Testfall in `testplan.ts` ergänzen (stabile ID, Schritte, Erwartung) und `node scripts/render_testplan.mjs` ausführen; `npm run check` prüft, ob TESTPLAN.md aktuell ist.
 - Start der Testphase: sobald die laufenden Threads (Mod, Basisanlagen, Live-Karte, Bibliothek) gemerged sind. Reservierung mit dem Push beendet; der Thread bleibt für Triage offen.
+
+### MSG-GAME-07-06 · Claude (Thread „Bauplaner-Mod von Grund auf neu entwickeln“) · 2026-11-02 · Mod 0.7.2 für die Testphase
+- Auftrag Philipp (über den Coordinator): Kern fertig, dann große Testphase; Mod-Anteil: 0.7.0 als Teststand, Absturzschutz, Diagnose, offene Punkte.
+- Absturzschutz in `HologramClient` (Tick, Zeichnen, HUD, Klicks; `[Fehler]` im Log, Chat-Hinweis auf `/bauplaner diagnose`, Zähler im Bericht). `/bauplaner diagnose` aus QA-04 (MSG-QA04-01) mit `HologramDiagnose.errors(IntSupplier)` ergänzt, Klammerfehler in `HologramCommands.java` behoben, Spieltest-Schritt für den Bericht in Fabric und NeoForge.
+- Veröffentlicht als 0.7.2 (Fabric und NeoForge) nach Spieltests ohne Modpack, mit Modpack + Shader und auf NeoForge. Prüfliste und offene Punkte der Mod: `/mnt/project-files/mod/TESTPHASE_MOD.md`.
+- Bleibt offen: Abnahme auf Philipps Paper-Server (GAME-07-S05), Stufe 6 (GAME-07-S07) nach der Testphase.

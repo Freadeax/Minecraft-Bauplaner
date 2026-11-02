@@ -162,9 +162,20 @@ public final class BridgeGameTest implements FabricClientGameTest {
         copy(context.takeScreenshot("bauplaner-roentgen"), io.resolve("roentgen.png"));
         chat(context, "/bauplaner roentgen");
         chat(context, "/bauplaner abschnitt alle");
+        // Test phase (QA-04): the diagnosis report is written and readable.
+        chat(context, "/bauplaner diagnose");
         context.setScreen(() -> null);
+        copyDiagnose(root, io);
         placementHelper(context, world, io, anchor);
         Files.copy(root.resolve("platzierung.properties"), io.resolve("platzierung.properties"), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    /** Copies the newest report from bauplaner/diagnose/ to io/diagnose.txt for the verify step. */
+    static void copyDiagnose(Path root, Path io) throws java.io.IOException {
+        try (var files = Files.list(root.resolve("diagnose"))) {
+            Path newest = files.filter(f -> f.getFileName().toString().endsWith(".txt")).max(java.util.Comparator.comparing(f -> f.getFileName().toString())).orElseThrow(() -> new AssertionError("kein Diagnosebericht in bauplaner/diagnose/"));
+            Files.copy(newest, io.resolve("diagnose.txt"), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        }
     }
 
     /**

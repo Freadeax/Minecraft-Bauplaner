@@ -23,11 +23,15 @@ import net.minecraft.network.chat.Component;
 public final class HologramDiagnose {
     private static String loader = "unbekannt";
     private static String version = "unbekannt";
+    private static java.util.function.IntSupplier errors = () -> 0;
 
     private HologramDiagnose() {}
 
     /** Vom {@link HologramClient} beim Start gesetzt. */
     static void init(String loaderName, String modVersion) { loader = loaderName; version = modVersion; }
+
+    /** Zähler des Absturzschutzes ({@link HologramClient#errors()}), erscheint im Bericht unter „Mod“. */
+    static void errors(java.util.function.IntSupplier count) { errors = count; }
 
     /** Baut den Bericht, schreibt ihn und meldet das Ergebnis im Chat. */
     static int run(Hologram h, LiveLink link) {
@@ -67,7 +71,8 @@ public final class HologramDiagnose {
                 .put("Mod", "System", System.getProperty("os.name") + " " + System.getProperty("os.version") + " · " + System.getProperty("os.arch"))
                 .put("Mod", "Arbeitsspeicher", (rt.totalMemory() - rt.freeMemory()) / 1_048_576 + " von " + rt.maxMemory() / 1_048_576 + " MB")
                 .put("Mod", "Launcher (geschätzt)", launcher(game))
-                .put("Mod", "Instanzordner", game.toAbsolutePath());
+                .put("Mod", "Instanzordner", game.toAbsolutePath())
+                .put("Mod", "Abgefangene Fehler seit Start", errors.getAsInt());
 
         List<String> mods = modFiles(game);
         d.put("Modpack", "Mods im Ordner mods", mods.size()).put("Modpack", "Dateien", mods.isEmpty() ? "–" : String.join(", ", mods))

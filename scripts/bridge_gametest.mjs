@@ -114,6 +114,12 @@ function hologram(logFile, cells) {
   assert.match(log, /\[Bauplaner\] Abschnitt 2\/2: „Mauer“ – \d+ % · \d+ offen/);
   assert.match(log, /\[Bauplaner\] Röntgensicht an/);
   assert.match(log, /\[Bauplaner\] Alle Bauabschnitte\./);
+  // Test phase (QA-04): /bauplaner diagnose writes a readable report with the facts testers need.
+  assert.match(log, /\[Bauplaner\] Diagnose gespeichert: bauplaner\/diagnose\/diagnose-[^ ]+\.txt/);
+  const diagnose = readFileSync(join(dir, 'diagnose.txt'), 'utf8');
+  for (const needle of ['Version', 'Loader', 'Minecraft', 'Konflikte gesamt', 'Plan eingeblendet: ja', 'Planblöcke', 'Fortschritt', 'Abgefangene Fehler seit Start: 0', 'Website-Verbindung']) {
+    assert.ok(diagnose.includes(needle), `Diagnosebericht nennt „${needle}“`);
+  }
   // Stage 3: placement helper (the client test throws if a block was placed or broken against the rules).
   assert.equal(readFileSync(join(dir, 'platzierhilfe.txt'), 'utf8').trim(), 'Fail Fail', 'beide falschen Klicks abgewiesen');
   assert.match(log, /\[Platzierhilfe\] Richtigen Block genommen: .+ – nochmal klicken/);

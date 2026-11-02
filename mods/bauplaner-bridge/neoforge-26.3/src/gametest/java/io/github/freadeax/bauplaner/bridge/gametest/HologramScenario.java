@@ -70,6 +70,14 @@ final class HologramScenario {
         step(out, 10, mc -> s.command("bauplaner roentgen"));
         step(out, 3, mc -> s.command("bauplaner roentgen"));
         step(out, 3, mc -> s.command("bauplaner abschnitt alle"));
+        // Test phase (QA-04): the diagnosis report is written and readable.
+        step(out, 3, mc -> s.command("bauplaner diagnose"));
+        step(out, 3, mc -> {
+            try (var files = Files.list(s.root().resolve("diagnose"))) {
+                var newest = files.filter(f -> f.getFileName().toString().endsWith(".txt")).max(java.util.Comparator.comparing(f -> f.getFileName().toString())).orElseThrow(() -> new AssertionError("kein Diagnosebericht in bauplaner/diagnose/"));
+                Files.copy(newest, s.io().resolve("diagnose.txt"), StandardCopyOption.REPLACE_EXISTING);
+            }
+        });
         placementHelper(out, s, a);
         step(out, 1, mc -> Files.copy(s.root().resolve("platzierung.properties"), s.io().resolve("platzierung.properties"), StandardCopyOption.REPLACE_EXISTING));
         return out;

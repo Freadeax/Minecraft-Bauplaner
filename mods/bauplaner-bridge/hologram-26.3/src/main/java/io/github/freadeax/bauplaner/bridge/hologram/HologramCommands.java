@@ -69,7 +69,7 @@ public final class HologramCommands {
                         .then(HologramCommands.<S>literal("aus").executes(c -> said(link.disconnect())))
                         .then(HologramCommands.<S>literal("status").executes(c -> said(link.statusText())))
                         .then(HologramCommands.<S>literal("port").then(HologramCommands.<S, Integer>argument("port", IntegerArgumentType.integer(1024, 65535))
-                                .executes(c -> said(link.setPort(IntegerArgumentType.getInteger(c, "port"))))))),
+                                .executes(c -> said(link.setPort(IntegerArgumentType.getInteger(c, "port")))))),
                 // Testphase (QA-04): diagnosis report into bauplaner/diagnose/ and the clipboard.
                 HologramCommands.<S>literal("diagnose").executes(c -> HologramDiagnose.run(h, link)));
     }

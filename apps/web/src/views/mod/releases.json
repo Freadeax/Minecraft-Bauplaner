@@ -198,6 +198,33 @@
       "releasedAt": "2026-11-02",
       "sourceCommit": "642be79441dfa031cabf3ac3663edfc4915ca5da",
       "tested": "Im echten Minecraft-26.3-Client mit NeoForge automatisch geprüft wie 0.7.0 (Hologramm, Abschnitte, Röntgensicht, Platzierhilfe, Website-Verbindung) und neu der Baustand über GET /v1/scan: gleiche Abweichungen wie die Live-Zählung der Mod, falscher Block an der erwarteten Stelle, gedrehtes Hologramm in Plankoordinaten. Auf Philipps Server noch nicht abgenommen."
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.7.2.jar",
+      "modVersion": "0.7.2",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 235625,
+      "sha256": "7070f6199e939d51ab6866820dc19a82020102c22378b51bb8c769c581bb2c00",
+      "releasedAt": "2026-11-02",
+      "sourceCommit": "8c07dd6aaceb26209522069298e0c2d4cdc5eb05",
+      "tested": "Testphase: /bauplaner diagnose (Bericht mit Tastenkonflikten, Shader, Modliste, Hologramm, Log-Auszug), Absturzschutz für Tick, Zeichnen, HUD und Klicks"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.7.2.jar",
+      "modVersion": "0.7.2",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 232966,
+      "sha256": "67ff9b2430b7ce66d1a380eafe7b25f3732766d21075d02f41065982d01ff863",
+      "releasedAt": "2026-11-02",
+      "sourceCommit": "8c07dd6aaceb26209522069298e0c2d4cdc5eb05",
+      "tested": "Testphase: /bauplaner diagnose (Bericht mit Tastenkonflikten, Shader, Modliste, Hologramm, Log-Auszug), Absturzschutz für Tick, Zeichnen, HUD und Klicks"
     }
   ]
 }

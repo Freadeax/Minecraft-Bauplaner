@@ -1,6 +1,6 @@
 # Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (GAME-07)
 
-Stand 02.11.2026 · Stufe 1 „Fundament + Hologramm“ (0.2.0, Wahl Philipp) Stufe 2 „Texturen, Material, Ebenen“ (0.3.0) und Stufe 3 „Platzierhilfe“ (0.4.0) Stufe 4 „NeoForge, Shader, andere Mods“ (0.6.0) und Stufe 5 „Bauabschnitte, Röntgensicht, Shulker“ (0.7.0). Fabric 26.3 und NeoForge 26.3 mit demselben Client-Kern; die bisherige Aufnahme (`/bauplaner scan`, [MOD_BRIDGE](MOD_BRIDGE.md)) bleibt unverändert erhalten.
+Stand 02.11.2026 · Stufe 1 „Fundament + Hologramm“ (0.2.0, Wahl Philipp) Stufe 2 „Texturen, Material, Ebenen“ (0.3.0) und Stufe 3 „Platzierhilfe“ (0.4.0) Stufe 4 „NeoForge, Shader, andere Mods“ (0.6.0) und Stufe 5 „Bauabschnitte, Röntgensicht, Shulker“ (0.7.0); 0.7.1 Baustand für die Live-Karte (`GET /v1/scan`, [LIVE_LINK](LIVE_LINK.md)), 0.7.2 Testphase (`/bauplaner diagnose`, Absturzschutz). Fabric 26.3 und NeoForge 26.3 mit demselben Client-Kern; die bisherige Aufnahme (`/bauplaner scan`, [MOD_BRIDGE](MOD_BRIDGE.md)) bleibt unverändert erhalten.
 
 ## Grundsätze
 
@@ -91,6 +91,8 @@ Vorbild ist Litematicas „Easy Place“, aber serverkonform: Easy Place veränd
 
 Gruppen/Sperren aus dem Weltbuilder (MAP-04) in der Mod, Bauabschnitt als Packliste mit Kistenstandorten, Gerüst-Hinweise für hängende Blöcke.
 
-## Absturzschutz für die Testphase
+## Testphase: Diagnose und Absturzschutz (0.7.2)
+
+`/bauplaner diagnose` (QA-04, `HologramDiagnose` + `mod-core/Diagnostics`) schreibt einen Bericht nach `bauplaner/diagnose/diagnose-<zeit>.txt` und in die Zwischenablage: Mod, Loader, Minecraft, Java, System, Launcher, Modliste, Shader, jede Bauplaner-Taste mit Konflikten (`KeyMapping.same`), Welt, Hologramm (Plan, Platzierung, Fortschritt, Ebenen, Abschnitt, Texturen, Röntgen, Platzierhilfe), Website-Verbindung, abgefangene Fehler und ein geschwärzter Auszug aus `logs/latest.log`. Der Spieltest führt den Befehl aus und prüft den Bericht.
 
 `HologramClient` führt Tick, Weltzeichnen, HUD und die Klick-Haken der Platzierhilfe geschützt aus: Ein Fehler der Mod beendet das Spiel nicht mehr. Er landet einmal je Art mit Stack im Log (Logger `bauplaner`, Präfix `[Fehler]`), gleiche Fehler in jedem Bild werden nur gezählt (`errors()`), und der erste zeigt einen Chat-Hinweis auf `/bauplaner diagnose`. Klicks laufen bei einem Fehler normal durch (PASS).
