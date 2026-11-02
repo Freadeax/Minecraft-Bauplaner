@@ -43,7 +43,7 @@ const num = (v: ParamValues, k: string) => v[k] as number;
 const str = (v: ParamValues, k: string) => v[k] as string;
 
 export const CASTLE_COMPOUND: Compound = {
-  id: 'burganlage', name: 'Burganlage', version: 2,
+  id: 'burganlage', name: 'Burganlage', version: 3,
   description: 'Vier Ecktürme, verbunden durch Wehrmauern mit Tor, optional mit Bergfried im Hof – als fertiges Projekt aus generierten Bauteilen.',
   params: [
     { key: 'hofBreite', label: 'Mauerlänge x', group: 'Maße', type: 'int', min: 6, max: 48, default: 16, unit: 'Blöcke' },
@@ -110,7 +110,7 @@ export const CASTLE_COMPOUND: Compound = {
 };
 
 export const STREET_COMPOUND: Compound = {
-  id: 'haeuserzeile', name: 'Häuserzeile', version: 2,
+  id: 'haeuserzeile', name: 'Häuserzeile', version: 3,
   description: 'Eine Straße aus unterschiedlichen Häusern eines Stils: Breite, Tiefe, Geschosse, Dach und Details je Haus aus der Variante gewürfelt, Fronten in einer Flucht.',
   params: [
     { key: 'anzahl', label: 'Häuser', group: 'Maße', type: 'int', min: 2, max: 10, default: 5 },
@@ -162,7 +162,7 @@ function footprint(g: Generator, raw: Readonly<Record<string, unknown>>): readon
 }
 
 export const VILLAGE_COMPOUND: Compound = {
-  id: 'dorfplatz', name: 'Dorfplatz', version: 2,
+  id: 'dorfplatz', name: 'Dorfplatz', version: 3,
   description: 'Dorfmitte als fertiges Projekt: Kirche an der Nordseite mit Portal zum Platz, Brunnen in der Mitte, Häuserzeile gegenüber und Windmühle am Rand.',
   params: [
     { key: 'platzBreite', label: 'Platzbreite (x)', group: 'Maße', type: 'int', min: 12, max: 40, default: 20, unit: 'Blöcke' },

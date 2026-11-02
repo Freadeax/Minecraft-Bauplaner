@@ -14,7 +14,7 @@ import type { Generator } from './types.js';
  * centring, so towers, walls and gatehouses of one section snap together.
  */
 export const GATEHOUSE_GENERATOR: Generator = {
-  id: 'torhaus', name: 'Torhaus', version: 2,
+  id: 'torhaus', name: 'Torhaus', version: 3,
   description: 'Torbau mit Durchfahrt, Fallgitter, Wachstuben, Obergeschoss auf Wehrgangshöhe, Zinnen oder Dach und Mauer-Anschlüssen auf beiden Seiten.',
   params: [
     { key: 'breite', label: 'Breite (entlang der Mauer)', group: 'Maße', type: 'int', min: 7, max: 21, step: 2, default: 11, unit: 'Blöcke' },

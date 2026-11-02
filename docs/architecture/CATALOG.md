@@ -106,6 +106,10 @@ Prüfung: Jeder Entwurf läuft durch dieselben Katalogtests wie v2 (B7-Schema, v
 
 Grenzen: Raummodule zeigen keinen echten Deckenabschluss (Schnittdarstellung). Redstone- und Wassermechaniken (Item-Aufzug, Seetangfarm, Türklingel …) sind nach Java-Regeln gesetzt, aber nicht im Spiel abgenommen. Doppeltruhen folgen der Java-Regel „Partner einer linken Hälfte im Uhrzeigersinn der Blickrichtung“, ebenfalls ohne Spielabnahme. Chorus-Pflanzen sind nicht als Bauitem erhältlich, daher nur Chorusblüten.
 
+## Baustil (LIB-05)
+
+Seit 02.11.2026 folgen die Gebäude den Gestaltungsregeln in [BAUSTIL.md](BAUSTIL.md): gemischte Materialien, Sockel, Fachwerk, Vorkragung, Fenster mit Läden und Sturz, Dächer mit Überstand und Traufkasten. Rund 50 Entwürfe sind mit dem Baukasten `build/style.ts` neu gezeichnet (darunter neun der 16 Klassiker in `sets/klassiker.ts`), alle übrigen durchlaufen die Veredelung `build/refine.ts`. Geänderte Gebäude erreichen gespeicherte Bibliotheken als neue Version (Katalog-Lieferung, UPDATE-01); die Inhaltsadressen der Klassiker in `tests/catalog.test.mjs` sind entsprechend neu festgehalten.
+
 ## Vorbild und Abgrenzung
 
 Struktur angelehnt an öffentliche Schematic-Bibliotheken (gesichtet: shulkr.com, Java-Filter): Oberkategorien wie Gebäude/Deko/Farm/Landschaft/Redstone, Filter Kategorie/Stil/Tag/Version/Größe/Mods, Steckbrief mit Maßen, Blockzahl, Blockarten, Größenklasse nach Blöcken, häufigsten Materialien, „gespeichert in“ und Mods. Übernommen wurden nur Ordnungsideen, keine Inhalte. Nicht übernommen: Downloads, Aufrufe, Trend-Sortierung (keine Nutzungsdaten in einer lokalen App) und „läuft in Version X“ (nicht prüfbar; Profile bleiben explizit `registry-unverified`).

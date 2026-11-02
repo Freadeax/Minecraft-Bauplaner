@@ -5,7 +5,8 @@ import type { BuildingFacets } from '../catalog.js';
 import type { Connector } from '../types.js';
 import { Args } from './params.js';
 import type { ParamDef, ParamValues } from './params.js';
-import { aged, isAxial, STYLE_OPTIONS, styleOf } from './styles.js';
+import { aged, isAxial, lookOfStyle, mixed, STYLE_OPTIONS, styleOf } from './styles.js';
+import type { Look } from '../build/style.js';
 import type { Style } from './styles.js';
 
 /** What a generator produces from normalised parameters. */
@@ -52,10 +53,13 @@ export const WEATHER_PARAMS: readonly ParamDef[] = [
  */
 export class Mason {
   readonly style: Style;
+  /** The style as a look of the design kit (LIB-05). */
+  readonly look: Look;
   private readonly weather: number;
-  private readonly seed: number;
+  readonly seed: number;
   constructor(readonly p: Plot, args: Args) {
     this.style = styleOf(args.str('stil'));
+    this.look = lookOfStyle(this.style);
     this.weather = args.int('verwitterung');
     this.seed = args.int('variante');
   }
@@ -64,9 +68,10 @@ export class Mason {
     const block = aged(this.style, id, this.weather, this.seed, x, y, z);
     this.p.set(x, y, z, block, isAxial(block) && !props.axis ? axis('y') : props);
   }
-  wall(x: number, y: number, z: number): void { this.put(x, y, z, this.style.wall); }
+  /** Wall block from the style's wall mix (LIB-05), then weathered. */
+  wall(x: number, y: number, z: number): void { this.put(x, y, z, mixed(this.style.mix.wall, this.seed, x, y, z)); }
   corner(x: number, y: number, z: number): void { this.put(x, y, z, this.style.corner); }
-  base(x: number, y: number, z: number): void { this.put(x, y, z, this.style.base.full); }
+  base(x: number, y: number, z: number): void { this.put(x, y, z, mixed(this.style.mix.base, this.seed, x, y, z)); }
   /** Horizontal beam along an axis (logs lie, other blocks unchanged). */
   beam(x: number, y: number, z: number, along: 'x' | 'z'): void {
     const b = this.style.beam;

@@ -10,7 +10,7 @@ import type { Generator } from './types.js';
  * on a real mill; sails that would hit the ground are shortened visibly.
  */
 export const WINDMILL_GENERATOR: Generator = {
-  id: 'windmuehle', name: 'Windmühle', version: 2,
+  id: 'windmuehle', name: 'Windmühle', version: 3,
   description: 'Turmwindmühle mit Verjüngung, Geschossen, Galerie, Kappe und vier Flügeln als Kreuz oder schräg; innen Mahlboden mit Vorräten.',
   params: [
     { key: 'radius', label: 'Radius unten', group: 'Maße', type: 'int', min: 3, max: 6, default: 4, unit: 'Blöcke' },

@@ -1,0 +1,91 @@
+# Baustil: Gestaltungsregeln für Bibliothek und Generatoren (LIB-05)
+
+Stand: 02.11.2026. Code: `packages/domain/src/build/style.ts` (Gestaltungsbaukasten), `packages/domain/src/build/refine.ts` (Veredelung), `packages/domain/src/build/quality.ts` (Gestaltungskennwerte), Stile der Generatoren in `packages/domain/src/generators/styles.ts`. Tests: `tests/baustil.test.mjs`.
+
+Auftrag (Philipp, 02.11.2026): „Prüfe die hochgeladenen Bauobjekte, wie sie aufgebaut sind, die Muster und Varianten, und gehe darauf hin über die komplette Bibliothek – die ganzen Sachen, die wir haben, sehen nicht gut aus.“ Dazu drei Seiten als weitere Quelle.
+
+## Studienmaterial und Rechte
+
+Untersucht wurden **31 fertige Bauten** im Litematica-Format: die fünf hochgeladenen Dateien (Rathaus, zwei mittelalterliche Häuser, Olymp; „Ocean Kingdom“ enthält nur einen Block) und 27 frei herunterladbare Gebäude von minemev.com (Anbieter choculaterie und redenmc, Kategorie Gebäude). Von minecraftschem.com führen alle Downloads auf Patreon, sereyka.com verkauft die Dateien; beide wurden nur als Übersicht angesehen.
+
+Die Dateien dienten **nur als Studienmaterial**: ausgelesen wurden Kennzahlen (Blockanteile, Formen, Tiefe der Fassaden, Fensterumgebung, Dachaufbau), keine Geometrie. Keine Datei, kein Ausschnitt und kein Nachbau liegt im Repository; alle Katalog-Gebäude bleiben eigene Entwürfe (Provenienz „eigener synthetischer Entwurf“).
+
+## Messwerte
+
+Gemessen pro Gebäude ohne Gelände (Gras, Erde, Pflanzen):
+
+| Kennwert | Vorlagen (Median, 31 Bauten) | Unser Katalog vorher (336) |
+|---|---|---|
+| Anteil Nicht-Vollblöcke (Treppen, Stufen, Falltüren, Zäune, Mauern, Scheiben …) | **40 %** (Häuser 43–56 %) | 18 % |
+| davon Treppen umgedreht (`half=top`) | **52 %** | 4 % |
+| Falltüren offen (Läden, Verkleidung) | **49 %** (mittelalterliche Häuser 74–77 %) | – |
+| sichtbare Fassade auf der Hauptebene (Rest steht davor oder dahinter) | **24 %** | 64 % |
+| verschiedene Blöcke je Gebäude | 25–90 | 13 |
+
+Typische Muster (Häufigkeit in den Häusern):
+
+- **Sockel aus gemischtem Stein**: Steinziegel mit 15–25 % bemoosten/rissigen Ziegeln, Andesit, Bruchstein; 2–6 Reihen hoch, Pfosten laufen hindurch.
+- **Wandfläche nie aus einem Block**: Putz aus Calcit + Betonpulver + Diorit (≈ 6 : 2 : 2; im Baukasten Beton statt Betonpulver, weil Pulver ohne Unterbau fällt), oder Bretter mit entrindetem Holz.
+- **Fachwerk**: entrindete Stämme als Pfosten alle 2–4 Blöcke und als liegende Balken auf jeder Geschossdecke (Achse entlang der Wand).
+- **Vorkragung**: jedes Obergeschoss steht 1 Block vor, darunter Knaggen aus umgedrehten Treppen (Häuser: 33 → 35 → 37 Blöcke Breite).
+- **Fenster** meist 1 × 2 (Rathaus 1 × 6): darüber eine umgedrehte Treppe als Sturz (50 %), außen seitlich offene Falltüren als Läden (60 %), darunter umgedrehte Treppe oder Falltür als Sims, oft ein Blumenkasten.
+- **Dach** ≈ ein Drittel der Gebäudehöhe, 45° oder steiler; Überstand 1–2 Blöcke an allen Seiten; zweischichtig (Treppen über Vollblöcken); Ortgang (Giebelkante) aus dunklerem Holz; Traufkasten aus umgedrehten Treppen; Quergiebel mit Kehlen; Zaun-/Mauerspitzen auf dem First; Schornstein mit Kragen.
+- **Material gemischt auch auf Dächern und Kuppeln** (Olymp: blaues und hellblaues Glas gemischt; Rathaus: zwei Kupferstufen gemischt).
+- **Klassische Bauten**: Sockel (3 Lagen), Säulenreihe mit Fenstern dazwischen, Gebälk aus Treppen, gestuftes Dach, Tambour mit Säulen, Kuppel, Laterne.
+
+## Gestaltungsregeln
+
+1. **Mischen statt flächig**: jede große Fläche aus einer Mischung (`Mix`) mit 2–5 Blöcken derselben Farbfamilie; deterministisch je Zelle (`pick`). Mehr Verwitterung in Bodennähe.
+2. **Relief**: höchstens die Hälfte der Fassade auf einer Ebene. Mittel: Sockel, Vorkragung, Dachüberstand, Läden, Simse, Blumenkästen, Pfosten.
+3. **Rahmen**: Ecken und Pfosten aus Stämmen, Geschossdecken als liegende Balken, Giebel mit Mittelpfosten.
+4. **Fenster nie nackt**: Sturz, Sims, Läden (rustikale Stile) oder Gewände.
+5. **Dächer mit Gewicht**: Überstand ≥ 1, Traufkasten, Ortgang, zweischichtiger Körper, steil bei Fachwerk; Quergiebel statt einer langen Kiste.
+6. **Detailblöcke statt Vollblöcke**: Ziel ≥ 30 % Nicht-Vollblöcke an Wohn- und Handelsbauten, davon ein großer Teil umgedrehte Treppen.
+7. **Proportion**: Dach ≈ ⅓ der Höhe; Geschosse 4–5 Blöcke; Erdgeschoss aus Stein, Obergeschosse leichter.
+8. **Varianten** über Rollen: dieselbe Form mit anderem Look (Holzart, Putz, Dach) – das nutzen Materialfamilien und Generator-Stile.
+
+## Gestaltungsbaukasten (`build/style.ts`)
+
+- `Mix`, `pick`, `Look` (Rollen: Sockel, Wand, Rahmen, Dach, Zierholz, Ladenholz, Tür, Boden, Fenster, Licht) und fertige Looks (`LOOKS`: Fachwerk hell, Fachwerk Backstein, Nordisch, Stein, Wüste, Kirsche, Antik, Sumpf), `woodLook` für die acht Holz-Starterhäuser.
+- `windowKit` (Scheiben, Sturz, Sims, Läden, optional Blumenkasten), `flowerBox`, `doorKit` (Tür, Sturz, Stufe, Laterne an Konsole).
+- `pitchedRoof`: Sattel-, Walm-, Krüppelwalm- und Pultdach, Neigung flach/normal/steil, Überstand, Traufkasten, Ortgang, Firstspitzen, gefüllte Giebel mit Pfosten und Fenstern; mehrere Flügel bilden **ein Höhenfeld**, Quergiebel treffen sich in Kehlen.
+- `house`: ganzes Haus aus Sockel, Geschossen (Stein, Fachwerk, Wand), Vorkragung mit Knaggen, Flügeln (L-, T-, Kreuzgrundriss), Fensterrhythmus, Tür, Dach, Schornstein; liefert Böden und Räume zum Einrichten.
+- `chimneyKit`, `column`, `dome`, `beltCourse`, `skirt`.
+
+Alle Helfer schreiben nur Zustände des B7-Katalogs (drehbar, spiegelbar) und überspringen Zellen außerhalb des Plots.
+
+Dazu `ladderUp` (Leiter, die an runden oder sich verjüngenden Wänden immer Halt findet) und `hangLantern` (Laterne an `iron_chain` bis zur Decke). Laternen hängen an Zaun-Konsolen, nicht unter oberen Stufen: eine obere Stufe trägt im Spiel keine hängende Laterne (BLOCK_LOGIC.md).
+
+## Neu gezeichnete Gebäude
+
+Von Hand mit dem Baukasten neu entworfen (gleicher Zweck, gleiche Räume und Einrichtung, Grundfläche teils größer):
+
+| Set | Gebäude |
+|---|---|
+| Klassiker (`sets/klassiker.ts`) | Fachwerkhaus, Blockhütte, Wüstenhaus, Leuchtturm, Schmiede, Scheune, Kapelle, Holz-Wachturm, Baumhaus |
+| Wohnen | Starterhaus (8 Holzarten), Stadthaus, Bauernhaus, Fischerhütte, Japanisches Haus, Rundhütte, Chalet, Langhaus, Strandhaus, Würfelhaus, Stelzenhaus, Lehmhaus, großes Baumhaus |
+| Dorf | 12 Berufswerkstätten (Ladenfenster mit Theke, Vordach, Sockel, wechselnde Dachformen), Taverne (L-Grundriss mit Biergarten), Rathaus (Säulenportikus, Uhrturm), Windmühle, Lagerhaus |
+| Befestigung | Bergfried (Pechnasen-Kranz, Schießscharten, Wachstube), Rundturm (Galerie auf Konsolen, Kegeldach), Wüstenfort |
+| Sakral | Kathedrale (Strebebögen, Rosette, Doppelturmfront mit Helmen, Apsis), Antiker Tempel (Säulen mit Kapitellen, Gebälk, Giebel), Zaubererturm |
+| Hof | Kuhstall, Zuchthaus, Handelsscheune |
+
+Materialvarianten (B12) entstehen weiter aus dem Grundgebäude; Ensembles Marktdorf, Burg, Küstendorf und Wüstenaußenposten sind für die neuen Maße neu angeordnet.
+
+## Ergebnis (Median, gemessen mit `designMetrics`)
+
+| | Nicht-Vollblöcke | Treppen umgedreht | Fassade auf Hauptebene | Blockarten |
+|---|---|---|---|---|
+| Vorlagen (31 Bauten) | 40 % | 52 % | 24 % | 25–90 |
+| Wohnhäuser vorher → nachher (48) | 28 % → 33 % | 0 % → 27 % | 76 % → 46 % | 14 → 24 |
+| Architektur vorher → nachher (169) | 22 % → 29 % | 0 % → 4 % | 70 % → 50 % | 14 → 21 |
+| ganzer Katalog vorher → nachher (336) | 17 % → 25 % | 0 % → 0 % | 64 % → 53 % | 13 → 13 |
+
+`tests/baustil.test.mjs` hält die Ziele fest (Wohnhäuser: ≥ 30 % Detailblöcke, ≥ 20 % umgedrehte Treppen, ≤ 50 % Hauptebene, ≥ 20 Blockarten; Architektur ≤ 55 % Hauptebene) und prüft Mischung, `house`, `pitchedRoof` und Veredelung. Die Abstände zu den Vorlagen bleiben bei Stadt (moderne Bauten), Küste, Epochen und Fantasy am größten; sie sind die nächsten Kandidaten.
+
+## Veredelung (`build/refine.ts`)
+
+Für jedes Katalog-Gebäude, abhängig von Kategorie und Stil (`refineOptionsFor`): außen liegende Steinziegel, Bruchstein, Tiefenschiefer-, Schwarzstein- und Netherziegel erhalten ihre bemoosten/rissigen Varianten (Treppen/Stufen/Mauern ihre bemoosten Formen); einfache Fenster in Wohn-, Handels- und Handwerksbauten bekommen Läden und Sims, wo innerhalb der Grenzen Platz ist. Grenzen, Anschlüsse und explizite Luft bleiben unverändert. Die Veredelung läuft für jedes Katalog-Gebäude (`refinedSpec`, vor den Materialvarianten); moderne, technische und End-Bauten verwittern nicht.
+
+## Generatoren
+
+Weil sich Dächer und Mischungen aller Stile geändert haben, ist die Version jedes Generators und jeder Anlage um eins erhöht (Haus 3, Mauer 2, alle übrigen 3); gespeicherte Generator-Bauten melden sich dadurch als älter. Die acht Stile haben jetzt Rollen-Mischungen (`mix.wall`, `mix.base`, `mix.roof`), Zierholz und Ladenholz; „Fachwerk“ entspricht dem studierten Look (Calcit-Putz, Fichtenfachwerk, Schieferdach, Schwarzeichen-Ortgang). Alle Satteldächer, Walm- und Pultdächer der Generatoren kommen aus `pitchedRoof`. Das **Haus** (Version 3) baut die Hülle mit `house`: neue Parameter Vorkragung, Steinsockel, Fensterläden/Blumenkästen, Quergiebel; neue Neigung „sehr steil“.

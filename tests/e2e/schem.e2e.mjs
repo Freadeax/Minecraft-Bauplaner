@@ -107,7 +107,7 @@ test('Bauversionen: Varianten vergleichen, Materialvariante erzeugen und als eig
   await p.goto(`${BASE}#/bibliothek/gebaeude/bld_wachturm/versionen`);
   const versions = p.getByRole('region', { name: 'Bauversionen' });
   await versions.getByText('Materialvariante erzeugen', { exact: true }).click();
-  await versions.getByLabel('Eiche ersetzen durch').selectOption({ label: 'Kirsche' });
+  await versions.getByLabel('Eiche ersetzen durch', { exact: true }).selectOption({ label: 'Kirsche' });
   await versions.locator('.swap-preview').waitFor();
   assert.match(await versions.locator('.swap-preview').innerText(), /\d+ Blöcke getauscht/);
   assert.equal(await versions.getByLabel('Name der Variante').inputValue(), 'Holz-Wachturm (Kirsche)');

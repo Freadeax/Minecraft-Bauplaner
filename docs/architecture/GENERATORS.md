@@ -67,6 +67,13 @@ Sechs weitere Generatoren (`stairwell.ts`, `church.ts`, `harbor.ts`, `gatehouse.
 
 **Prüfung.** `tests/generators.test.mjs` hat jetzt 17 Fälle: alle bisherigen Prüfungen für alle elf Generatoren (Standard, Vorlagen, acht Stile, 25 gewürfelte Sätze, Bereichsgrenzen) plus Begehbarkeit aller Treppenhaus-Geschosse und Türhöhen, Eckformen nach Spielregel (auch Innenecke direkt am Plot), Parameterwirkung von Kirche, Hafen, Torhaus, Windmühle und Brunnen (auch Durchfahrt offen bzw. durch Fallgitter geschlossen) und das genaue Andocken des Torhauses in der Burganlage. Die Browserprüfung zählt 14 Karten, öffnet die Basilika-Vorlage mit sichtbarem Hinweis und den Dorfplatz ohne Überschneidungen.
 
+## LIB-05: Baustil der Generatoren (02.11.2026)
+
+- Stile mit Rollen-Mischungen (`mix.wall`, `mix.base`, `mix.roof`), Zier- und Ladenholz; `lookOfStyle` übersetzt einen Stil in einen Look des Baukastens (`build/style.ts`).
+- Sattel-, Walm- und Pultdächer kommen aus `pitchedRoof` (Überstand, Traufkasten aus umgedrehten Treppen, Ortgang, zweischichtiger Körper, gefüllte Giebel mit Pfosten und Fenstern, Firstspitzen). Neue Neigung „sehr steil“.
+- Haus (Version 3) baut die Hülle mit `house`: Vorkragung, Steinsockel (0–4 Reihen), Fensterläden und Blumenkästen, Quergiebel, Vorlage „Bürgerhaus“.
+- Alle Generatoren und Anlagen haben eine höhere Version; `PINNED` in `tests/generators.test.mjs` ist neu festgehalten.
+
 ## Grenzen
 
 Keine Statik, kein Gelände (Brückenenden und Pfeiler stehen auf y = 0 bzw. auf Höhe der Enden). Die Vorschau zeichnet Treppen, Stufen und Zäune als Würfel. Fenster von Rundtürmen nur an den vier Achsen. Mauern ungerader Stärke: Anschlusspunkt liegt einen halben Block neben der Mitte (Gitterpunkt), Anlagen setzen deshalb nach Geometrie. Bauwerke sind nicht im Spiel abgenommen. GEN-02: Hafen ohne Wasserblöcke, Brunnen-Wasser nicht als Item gezählt, Windmühlenflügel als feste Blöcke (keine Drehung), Treppenhaus und Haus werden nicht automatisch verbunden (Tür in der Hauswand selbst setzen).

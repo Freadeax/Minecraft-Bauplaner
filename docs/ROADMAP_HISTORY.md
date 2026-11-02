@@ -2556,3 +2556,106 @@ PERF-04: Import, Speichern, 3D-Netz mit Licht, 3D-Export, Versionsvergleich und 
 - `tests/pages.test.mjs`
 - `vite.config.mjs`
 
+## 2026-11-02T15:09:27.531Z · progress
+
+**Aufgaben:** LIB-05
+
+Bibliothek im Stil der Vorlagen neu gestaltet: Baukasten style.ts, Veredelung, Klassiker/Wohnen/Dorf/Befestigung/Sakral/Hof neu, Generatoren v3
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LIB-05 | 🧩 Implementiert · Abnahme offen | 5/6 | LIB-05-S06: Stadt, Küste, Epochen und Fantasy neu zeichnen; Abnahme einiger neuer Gebäude im Spiel. |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/BAUSTIL.md`
+- `docs/architecture/CATALOG.md`
+- `docs/architecture/GENERATORS.md`
+- `packages/domain/src/build/quality.ts`
+- `packages/domain/src/build/refine.ts`
+- `packages/domain/src/build/sets/befestigung.ts`
+- `packages/domain/src/build/sets/dorf.ts`
+- `packages/domain/src/build/sets/hof.ts`
+- `packages/domain/src/build/sets/index.ts`
+- `packages/domain/src/build/sets/klassiker.ts`
+- `packages/domain/src/build/sets/sakral.ts`
+- `packages/domain/src/build/sets/wohnen.ts`
+- `packages/domain/src/build/style.ts`
+- `packages/domain/src/buildings.ts`
+- `packages/domain/src/ensembles.ts`
+- `packages/domain/src/generators/bridge.ts`
+- `packages/domain/src/generators/church.ts`
+- `packages/domain/src/generators/compound.ts`
+- `packages/domain/src/generators/gatehouse.ts`
+- `packages/domain/src/generators/harbor.ts`
+- `packages/domain/src/generators/house.ts`
+- `packages/domain/src/generators/roof.ts`
+- `packages/domain/src/generators/roofs.ts`
+- `packages/domain/src/generators/stairwell.ts`
+- `packages/domain/src/generators/styles.ts`
+- `packages/domain/src/generators/tower.ts`
+- `packages/domain/src/generators/types.ts`
+- `packages/domain/src/generators/wall.ts`
+- `packages/domain/src/generators/well.ts`
+- `packages/domain/src/generators/windmill.ts`
+- `tests/baustil.test.mjs`
+- `tests/catalog.test.mjs`
+- `tests/e2e/catalog.e2e.mjs`
+- `tests/e2e/model3d.e2e.mjs`
+- `tests/e2e/schem.e2e.mjs`
+- `tests/generators.test.mjs`
+
+## 2026-11-02T15:51:20.990Z · progress
+
+**Aufgaben:** LIB-05
+
+Bibliothek im Stil der Vorlagen neu gestaltet: Baukasten style.ts, Veredelung, Klassiker/Wohnen/Dorf/Befestigung/Sakral/Hof neu, Generatoren v3
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LIB-05 | 🧩 Implementiert · Abnahme offen | 5/6 | LIB-05-S06: Stadt, Küste, Epochen und Fantasy neu zeichnen; Abnahme einiger neuer Gebäude im Spiel. |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/BAUSTIL.md`
+- `docs/architecture/CATALOG.md`
+- `docs/architecture/GENERATORS.md`
+- `packages/domain/src/build/quality.ts`
+- `packages/domain/src/build/refine.ts`
+- `packages/domain/src/build/sets/befestigung.ts`
+- `packages/domain/src/build/sets/dorf.ts`
+- `packages/domain/src/build/sets/hof.ts`
+- `packages/domain/src/build/sets/index.ts`
+- `packages/domain/src/build/sets/klassiker.ts`
+- `packages/domain/src/build/sets/sakral.ts`
+- `packages/domain/src/build/sets/wohnen.ts`
+- `packages/domain/src/build/style.ts`
+- `packages/domain/src/buildings.ts`
+- `packages/domain/src/ensembles.ts`
+- `packages/domain/src/generators/bridge.ts`
+- `packages/domain/src/generators/church.ts`
+- `packages/domain/src/generators/compound.ts`
+- `packages/domain/src/generators/gatehouse.ts`
+- `packages/domain/src/generators/harbor.ts`
+- `packages/domain/src/generators/house.ts`
+- `packages/domain/src/generators/roof.ts`
+- `packages/domain/src/generators/roofs.ts`
+- `packages/domain/src/generators/stairwell.ts`
+- `packages/domain/src/generators/styles.ts`
+- `packages/domain/src/generators/tower.ts`
+- `packages/domain/src/generators/types.ts`
+- `packages/domain/src/generators/wall.ts`
+- `packages/domain/src/generators/well.ts`
+- `packages/domain/src/generators/windmill.ts`
+- `tests/baustil.test.mjs`
+- `tests/catalog.test.mjs`
+- `tests/e2e/catalog.e2e.mjs`
+- `tests/e2e/model3d.e2e.mjs`
+- `tests/e2e/schem.e2e.mjs`
+- `tests/e2e/worldbuilder.e2e.mjs`
+- `tests/generators.test.mjs`
+

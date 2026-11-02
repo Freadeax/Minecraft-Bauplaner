@@ -1,6 +1,9 @@
 import { slab, stairs } from '../build/plot.js';
 import type { H, Plot } from '../build/plot.js';
 import type { Style } from './styles.js';
+import { lookOfStyle } from './styles.js';
+import { pitchedRoof } from '../build/style.js';
+import type { RoofPitch } from '../build/style.js';
 
 /**
  * Dachformen (B13), shared by the roof, house and tower generators. A roof is
@@ -9,12 +12,14 @@ import type { Style } from './styles.js';
  * (stairs), shallow roofs half a block (slabs alternating bottom/top).
  */
 export type RoofForm = 'sattel' | 'walm' | 'pult' | 'flach';
-export type Pitch = 'steil' | 'flach';
+export type Pitch = 'steil' | 'sehrsteil' | 'flach';
 export const ROOF_OPTIONS = [
   { value: 'sattel', label: 'Satteldach' }, { value: 'walm', label: 'Walmdach (auf Quadrat: Zeltdach)' },
   { value: 'pult', label: 'Pultdach' }, { value: 'flach', label: 'Flachdach' },
 ] as const;
-export const PITCH_OPTIONS = [{ value: 'steil', label: 'Steil (1:1, Treppen)' }, { value: 'flach', label: 'Flach (1:2, Stufen)' }] as const;
+export const PITCH_OPTIONS = [{ value: 'steil', label: 'Steil (1:1, Treppen)' }, { value: 'sehrsteil', label: 'Sehr steil (2:1, Fachwerkgiebel)' }, { value: 'flach', label: 'Flach (1:2, Stufen)' }] as const;
+/** Generator pitch → design kit pitch (LIB-05). */
+export const kitPitch = (p: string): RoofPitch => p === 'sehrsteil' ? 'steil' : p === 'flach' ? 'flach' : 'normal';
 
 export interface RoofSpec {
   readonly x0: number; readonly x1: number; readonly z0: number; readonly z1: number;
@@ -31,25 +36,8 @@ export interface RoofSpec {
   readonly parapet?: boolean;
   /** Shed roofs: rise toward west/north instead of east/south (GEN-02, e.g. the east aisle of a church). */
   readonly flip?: boolean;
-}
-
-interface Slope { readonly d: number; readonly up: H }
-
-/** Distance to the eaves and the direction in which the roof rises at (x, z). */
-function slopeAt(r: RoofSpec, x: number, z: number): Slope {
-  const w = x - r.x0, e = r.x1 - x, n = z - r.z0, s = r.z1 - z;
-  const across = r.ridge === 'z' ? [[w, 'east'], [e, 'west']] as const : [[n, 'south'], [s, 'north']] as const;
-  switch (r.form) {
-    case 'sattel': return across[0][0] <= across[1][0] ? { d: across[0][0], up: across[0][1] } : { d: across[1][0], up: across[1][1] };
-    case 'pult': return r.ridge === 'z' ? (r.flip ? { d: e, up: 'west' } : { d: w, up: 'east' }) : (r.flip ? { d: s, up: 'north' } : { d: n, up: 'south' });
-    case 'walm': {
-      const opts: readonly (readonly [number, H])[] = [[w, 'east'], [e, 'west'], [n, 'south'], [s, 'north']];
-      let best = opts[0]!;
-      for (const o of opts) if (o[0] < best[0]) best = o;
-      return { d: best[0], up: best[1] };
-    }
-    case 'flach': return { d: 0, up: 'north' };
-  }
+  /** Seed of the material mixes (generator variant). */
+  readonly seed?: number;
 }
 
 /** Builds the roof; returns the highest layer used (for chimneys and spires). */
@@ -61,52 +49,12 @@ export function buildRoof(p: Plot, r: RoofSpec): number {
     if (r.parapet) { p.ring(r.x0, r.z0, r.x1, r.z1, r.y + 1, style.trim.wall ?? style.trim.slab, style.trim.wall ? {} : slab()); top = r.y + 1; }
     return top;
   }
-  const maxD = Math.max(...range(r.x0, r.x1).flatMap(x => range(r.z0, r.z1).map(z => slopeAt(r, x, z).d)));
-  for (let x = r.x0; x <= r.x1; x++) for (let z = r.z0; z <= r.z1; z++) {
-    const { d, up } = slopeAt(r, x, z);
-    const ridge = d === maxD && r.form !== 'pult';
-    // Two cells share the ridge when the span is even: both keep their stairs and meet back to back.
-    const lone = ridge && isLoneRidge(r, x, z, maxD);
-    if (r.pitch === 'steil') {
-      const y = r.y + d;
-      if (lone) p.set(x, y, z, style.roof.slab, slab());
-      else p.set(x, y, z, style.roof.stairs, stairs(up));
-      for (let yy = r.y + Math.max(0, d - 1); yy < y && d > 0; yy++) if (!p.has(x, yy, z)) p.set(x, yy, z, style.roof.full);
-      top = Math.max(top, y);
-    } else {
-      const y = r.y + Math.floor(d / 2);
-      p.set(x, y, z, style.roof.slab, slab(d % 2 === 0 ? 'bottom' : 'top'));
-      if (d % 2 === 0 && d > 0 && !p.has(x, y - 1, z)) p.set(x, y - 1, z, style.roof.full);
-      top = Math.max(top, y);
-    }
-  }
-  if (r.gable && (r.form === 'sattel' || r.form === 'pult')) closeGables(p, r, maxD);
-  return top;
-}
-
-function isLoneRidge(r: RoofSpec, x: number, z: number, maxD: number): boolean {
-  const n = (dx: number, dz: number) => {
-    const xx = x + dx, zz = z + dz;
-    return xx >= r.x0 && xx <= r.x1 && zz >= r.z0 && zz <= r.z1 && slopeAt(r, xx, zz).d === maxD && slopeAt(r, xx, zz).up !== slopeAt(r, x, z).up;
-  };
-  return !(n(1, 0) || n(-1, 0) || n(0, 1) || n(0, -1));
-}
-
-/** Fills the triangle under the roof on both gable walls. */
-function closeGables(p: Plot, r: RoofSpec, maxD: number): void {
-  const g = r.gable!;
-  // Gable ends across the ridge; a shed roof also closes its high side.
-  const lines: [number, number][] = [];
-  if (r.ridge === 'z') { for (let x = g.x0; x <= g.x1; x++) lines.push([x, g.z0], [x, g.z1]); if (r.form === 'pult') for (let z = g.z0; z <= g.z1; z++) lines.push([r.flip ? g.x0 : g.x1, z]); }
-  else { for (let z = g.z0; z <= g.z1; z++) lines.push([g.x0, z], [g.x1, z]); if (r.form === 'pult') for (let x = g.x0; x <= g.x1; x++) lines.push([x, r.flip ? g.z0 : g.z1]); }
-  {
-    for (const [x, z] of lines) {
-      const { d } = slopeAt(r, x, z);
-      const surface = r.pitch === 'steil' ? r.y + d : r.y + Math.floor(d / 2) - (d % 2 === 0 ? 1 : 0);
-      for (let y = r.y; y < surface; y++) p.set(x, y, z, g.block);
-      if (d === maxD && r.pitch === 'steil' && r.form === 'sattel' && isLoneRidge(r, x, z, maxD)) p.set(x, surface, z, g.block);
-    }
-  }
+  // LIB-05: pitched roofs come from the design kit (overhang with soffit, verge boards, thick body, gables with post and windows).
+  const walls = r.gable ? { x0: r.gable.x0, x1: r.gable.x1, z0: r.gable.z0, z1: r.gable.z1 } : { x0: r.x0, x1: r.x1, z0: r.z0, z1: r.z1 };
+  const ov = Math.max(0, walls.x0 - r.x0);
+  const look = lookOfStyle(style);
+  return pitchedRoof(p, r.gable && r.gable.block !== style.wall ? { ...look, wall: [[r.gable.block, 1]] } : look, { walls, y: r.y, kind: r.form, ridge: r.ridge, overhang: ov, pitch: kitPitch(r.pitch),
+    flip: !!r.flip, gables: !!r.gable, seed: r.seed ?? 0 });
 }
 
 export const range = (a: number, b: number): number[] => Array.from({ length: b - a + 1 }, (_, i) => a + i);

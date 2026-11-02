@@ -1,0 +1,92 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { BUILDING_SPECS } from '../dist/domain/src/index.js';
+import { Plot } from '../dist/domain/src/build/plot.js';
+import { house, pick, LOOKS, pitchedRoof } from '../dist/domain/src/build/style.js';
+import { designMetrics } from '../dist/domain/src/build/quality.js';
+import { refinePayload, refineOptionsFor } from '../dist/domain/src/build/refine.js';
+
+/**
+ * LIB-05 Baustil: die Regeln aus docs/architecture/BAUSTIL.md als Messwerte.
+ * Vorlagen (31 untersuchte Bauten): 40 % Nicht-Vollblöcke, 52 % umgedrehte
+ * Treppen, 24 % der Fassade auf der Hauptebene. Der Katalog lag vorher bei
+ * 18 %, 4 % und 64 %.
+ */
+const median = xs => { const s = [...xs].sort((a, b) => a - b); return s[Math.floor(s.length / 2)]; };
+const ofKind = k => BUILDING_SPECS.filter(s => s.facets?.kategorie?.includes(k)).map(s => designMetrics(s.payload()));
+
+test('Wohnhäuser erreichen die Gestaltungsziele: Detailblöcke, Konsolen und Relief', () => {
+  const m = ofKind('wohnhaus');
+  assert.ok(m.length >= 40, `${m.length} Wohnhäuser`);
+  assert.ok(median(m.map(x => x.detail)) >= 0.3, `Nicht-Vollblöcke ${median(m.map(x => x.detail))}`);
+  assert.ok(median(m.map(x => x.upsideDown)) >= 0.2, `umgedrehte Treppen ${median(m.map(x => x.upsideDown))}`);
+  assert.ok(median(m.map(x => x.flatFacade)) <= 0.5, `Fassade auf der Hauptebene ${median(m.map(x => x.flatFacade))}`);
+  assert.ok(median(m.map(x => x.materials)) >= 20, 'gemischte Materialien');
+});
+
+test('Architektur insgesamt: mehr Relief als vorher (64 % → höchstens 55 % auf der Hauptebene)', () => {
+  const kinds = ['wohnhaus', 'handel', 'handwerk', 'landwirtschaft', 'oeffentlich', 'sakral', 'befestigung', 'wahrzeichen', 'magie'];
+  const m = BUILDING_SPECS.filter(s => s.facets?.kategorie?.some(k => kinds.includes(k))).map(s => designMetrics(s.payload()));
+  assert.ok(median(m.map(x => x.flatFacade)) <= 0.55);
+  assert.ok(median(m.map(x => x.detail)) >= 0.25);
+});
+
+test('Mischung ist deterministisch und folgt den Gewichten', () => {
+  const mix = [['stone_bricks', 8], ['mossy_stone_bricks', 2]];
+  const counts = { stone_bricks: 0, mossy_stone_bricks: 0 };
+  for (let x = 0; x < 40; x++) for (let z = 0; z < 40; z++) counts[pick(mix, x, 0, z, 5)]++;
+  assert.equal(pick(mix, 3, 4, 5, 5), pick(mix, 3, 4, 5, 5));
+  const share = counts.mossy_stone_bricks / 1600;
+  assert.ok(share > 0.12 && share < 0.28, `Anteil bemoost ${share}`);
+});
+
+const build = () => {
+  const p = new Plot([13, 2, 13]);
+  const info = house(p, LOOKS.fachwerk, { at: { x0: 2, z0: 2, x1: 10, z1: 10 }, storeys: [{ h: 4, kind: 'stein' }, { h: 4, kind: 'fachwerk' }], jetty: 1,
+    roof: { kind: 'sattel', ridge: 'z', overhang: 1, pitch: 'steil' }, flowerBoxes: true, chimney: { x: 9, z: 6 }, seed: 1 });
+  return { payload: p.payload(), info };
+};
+
+test('house(): gleiche Eingabe, gleiches Haus; Fenster mit Läden, Sturz und Blumenkasten; Dach mit Traufkasten', () => {
+  const a = build(), b = build();
+  assert.deepEqual(a.payload, b.payload);
+  const ids = a.payload.cells.filter(c => c.kind === 'block').map(c => a.payload.palette[c.paletteIndex]);
+  assert.ok(ids.some(s => s.id.endsWith('_trapdoor') && s.properties.open === 'true'), 'Fensterläden');
+  assert.ok(ids.some(s => s.id === 'minecraft:moss_block'), 'Blumenkasten');
+  assert.ok(ids.filter(s => s.id.endsWith('_stairs') && s.properties.half === 'top').length >= 20, 'Sturz, Knaggen, Traufkasten');
+  assert.ok(ids.some(s => s.id === 'minecraft:campfire'), 'Schornstein raucht');
+  assert.equal(a.info.floors.length, 2);
+  assert.ok(a.info.roofTop > a.info.eaves + 3, 'steiles Dach');
+  const m = designMetrics(a.payload);
+  assert.ok(m.detail >= 0.2 && m.upsideDown >= 0.2 && m.flatFacade <= 0.5, JSON.stringify(m));
+});
+
+test('pitchedRoof(): Überstand an allen Seiten, Giebel geschlossen', () => {
+  const p = new Plot([11, 2, 11]);
+  for (let x = 1; x <= 9; x++) for (let z = 1; z <= 9; z++) p.set(x, 0, z, 'stone_bricks');
+  const top = pitchedRoof(p, LOOKS.fachwerk, { walls: { x0: 1, z0: 1, x1: 9, z1: 9 }, y: 1, kind: 'sattel', ridge: 'z', overhang: 1 });
+  assert.ok(top > 4);
+  const at = (x, y, z) => p.get(x, y, z)?.id ?? 'minecraft:air';
+  assert.match(at(0, 1, 5), /stairs/, 'Traufe steht über');
+  for (let y = 2; y < top - 1; y++) assert.notEqual(at(5, y, 1), 'minecraft:air', `Giebel geschlossen auf ${y}`);
+});
+
+test('Veredelung: Grenzen bleiben, kein Block verschwindet, Luft bleibt Luft', () => {
+  const spec = BUILDING_SPECS.find(s => s.id === 'bld_villa');
+  const p = new Plot([7, 6, 7]);
+  p.fill(0, 0, 0, 6, 0, 6, 'stone_bricks');
+  p.room(0, 0, 6, 6, 1, 3, 'stone_bricks');
+  p.set(3, 2, 0, 'glass_pane'); p.air(3, 2, 3);
+  const raw = p.payload();
+  const out = refinePayload(raw, { seed: 3, weather: true, windows: true });
+  assert.deepEqual(out.bounds, raw.bounds);
+  const key = c => c.position.join(',');
+  const after = new Map(out.cells.map(c => [key(c), c]));
+  for (const c of raw.cells) {
+    const a = after.get(key(c));
+    assert.ok(a, `Zelle ${key(c)} bleibt`);
+    assert.equal(a.kind, c.kind);
+  }
+  assert.ok(out.palette.some(s => /mossy|cracked/.test(s.id)), 'Verwitterung');
+  assert.ok(refineOptionsFor(spec.id, spec.facets)?.weather === false, 'moderne Bauten verwittern nicht');
+});

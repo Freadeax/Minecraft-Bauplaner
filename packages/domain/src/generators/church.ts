@@ -14,7 +14,7 @@ import type { Style } from './styles.js';
  * an arcade and clerestory windows, pews, altar and bell.
  */
 export const CHURCH_GENERATOR: Generator = {
-  id: 'kirche', name: 'Kirche', version: 2,
+  id: 'kirche', name: 'Kirche', version: 3,
   description: 'Kirche mit Langhaus, Turm (Helm, Zeltdach, Zinnen) oder Dachreiter, Apsis oder Rechteckchor, Seitenschiffen, Fensterreihen, Rosette, Bänken, Altar und Glocke.',
   params: [
     { key: 'breite', label: 'Breite Langhaus', group: 'Maße', type: 'int', min: 7, max: 19, step: 2, default: 9, unit: 'Blöcke', hint: 'Ungerade, damit Tür, Turm und Mittelgang mittig liegen.' },
@@ -126,7 +126,7 @@ export const CHURCH_GENERATOR: Generator = {
       p.set(cx + 2 <= x1 - 1 ? cx + 2 : cx, 1, Math.min(zb - 2, altarZ - 2), 'lectern', lectern('north'));
       for (let z = zf + 2; z <= zb - 2; z += 4) {
         let y = h + 1;
-        while (y < ridgeTop && !p.has(cx, y, z)) y++;
+        while (y < ridgeTop && (p.get(cx, y, z)?.id ?? 'minecraft:air') === 'minecraft:air') y++;
         for (let yy = h + 1; yy < y; yy++) p.set(cx, yy, z, 'iron_chain', chain('y'));
         p.set(cx, h, z, s.light, lantern(true));
       }

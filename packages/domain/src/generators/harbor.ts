@@ -13,7 +13,7 @@ import type { Generator } from './types.js';
  * connector (weg_4 = the shipped path kit).
  */
 export const HARBOR_GENERATOR: Generator = {
-  id: 'hafen', name: 'Hafen', version: 2,
+  id: 'hafen', name: 'Hafen', version: 3,
   description: 'Kaimauer mit Holzstegen auf Pfählen, Pollern, Treppen, Kran, Lagerschuppen, Laternen und Leuchtfeuer; Landseite als Weg-Anschluss.',
   params: [
     { key: 'laenge', label: 'Kailänge (x)', group: 'Maße', type: 'int', min: 10, max: 48, default: 24, unit: 'Blöcke' },

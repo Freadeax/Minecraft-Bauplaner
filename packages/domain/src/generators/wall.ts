@@ -10,7 +10,7 @@ import type { Generator } from './types.js';
  * sample wall, tower and gatehouse.
  */
 export const WALL_GENERATOR: Generator = {
-  id: 'mauer', name: 'Mauer', version: 1,
+  id: 'mauer', name: 'Mauer', version: 2,
   description: 'Gerade Wehrmauer mit wählbarer Länge, Höhe und Stärke, Zinnen oder Mauerkrone, Wehrgang, Strebepfeilern, Schießscharten und Tor.',
   params: [
     { key: 'laenge', label: 'Länge', group: 'Maße', type: 'int', min: 3, max: 64, default: 12, unit: 'Blöcke' },

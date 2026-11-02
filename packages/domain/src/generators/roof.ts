@@ -26,7 +26,7 @@ export const ridgeFor = (choice: string, width: number, depth: number): 'x' | 'z
  * x/z = −Überstand.
  */
 export const ROOF_GENERATOR: Generator = {
-  id: 'dach', name: 'Dach', version: 2,
+  id: 'dach', name: 'Dach', version: 3,
   description: 'Sattel-, Walm-, Pult- oder Flachdach für ein beliebiges Rechteck, steil oder flach geneigt, mit Überstand, Giebelwänden und Schornstein.',
   params: [
     { key: 'breite', label: 'Breite (x)', group: 'Maße', type: 'int', min: 3, max: 31, default: 9, unit: 'Blöcke', hint: 'Außenmaß des Gebäudes, ohne Überstand.' },

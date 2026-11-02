@@ -196,10 +196,12 @@ test('geometry follows the parameters', () => {
   const blocks = v => runGenerator('turm', v).payload.cells.filter(c => c.kind === 'block').length;
   assert.ok(blocks({ hoehe: 20 }) > blocks({ hoehe: 10 }), 'höher ⇒ mehr Blöcke');
   assert.deepEqual(runGenerator('turm', { radius: 5 }).payload.bounds.maxExclusive.filter((_, i) => i !== 1), [11, 11]);
-  const house = runGenerator('haus', { breite: 9, tiefe: 7, ueberstand: 1, vordach: false }).payload.bounds.maxExclusive;
+  const house = runGenerator('haus', { breite: 9, tiefe: 7, ueberstand: 1, vordach: false, vorkragung: 0 }).payload.bounds.maxExclusive;
   assert.deepEqual([house[0], house[2]], [11, 9], 'Hausmaß + Überstand');
+  const jettied = runGenerator('haus', { breite: 9, tiefe: 7, ueberstand: 1, vordach: false, vorkragung: 1 }).payload.bounds.maxExclusive;
+  assert.deepEqual([jettied[0], jettied[2]], [11, 11], 'Vorkragung vorn und hinten (LIB-05)');
   const roof = runGenerator('dach', { breite: 9, tiefe: 7, ueberstand: 0, form: 'sattel', neigung: 'steil', first: 'x' });
-  assert.deepEqual(roof.payload.bounds.maxExclusive, [9, 4, 7], 'Satteldach 7 tief, steil: 4 Lagen');
+  assert.deepEqual(roof.payload.bounds.maxExclusive, [9, 5, 7], 'Satteldach 7 tief, steil: 4 Lagen und Firstspitzen (LIB-05)');
   const bridge = runGenerator('bruecke', { form: 'bogen', laenge: 8, hoehe: 12 });
   assert.ok(bridge.notes.some(n => /nicht erreichbar/.test(n)), 'unerreichbare Höhe wird gemeldet');
   // Walkable: the deck never rises more than one block per step (stairs bridge every step).
@@ -212,11 +214,10 @@ test('geometry follows the parameters', () => {
 test('pinned generator output: same parameters keep their geometry until the generator version is raised', async () => {
   const pinned = {};
   for (const g of GENERATORS) pinned[g.id] = (await createGeneratedAsset(runGenerator(g.id), { name: 'Pin' })).version.payloadHash.slice(0, 16);
-  // Update these hashes only together with a raised `version` of the changed generator (BLOCK-02 raised kirche, hafen, windmuehle, bruecke, treppenhaus, torhaus, brunnen).
+  // Update these hashes only together with a raised `version` of the changed generator (BLOCK-02 raised kirche, hafen, windmuehle, bruecke, treppenhaus, torhaus, brunnen; LIB-05 raised all eleven for the design kit).
   assert.deepEqual(pinned, PINNED);
 });
-const PINNED = { haus: "4cf30ea478f98733", turm: "bc5adeedabb35bd4", mauer: "4da92383b6b39497", bruecke: "04e077c30b072b61", dach: "d3de7fa1d13a8330",
-  treppenhaus: "20628bc43149a44b", kirche: "109fcc930fd94683", hafen: "d31f07b5fe476c1d", torhaus: "319098e62eb12ba8", windmuehle: "6e1f6bc7cc77aae4", brunnen: "c44599292a566006" };
+const PINNED = { haus: "86b653adf27a1116", turm: "305be143c97ba8f8", mauer: "bce307b15c0977d2", bruecke: "b6fcf5cbef91853f", dach: "0eca3766a7ef319a", treppenhaus: "6649f6b36d559aa8", kirche: "4ddc2030741cd73f", hafen: "d3f2b1f998647248", torhaus: "75ee60a4e5189e68", windmuehle: "98a036222a6f388c", brunnen: "f727b1daddaf9604" };
 
 test('compounds: castle and street become conflict-free projects with shared generated assets', async () => {
   for (const c of COMPOUNDS) {
@@ -304,7 +305,7 @@ test('stair corners: hip roofs get the outer and inner shapes the game would com
   // A gable roof stays straight; the stored v1 generator versions are reported as older.
   const gable = runGenerator('dach', { form: 'sattel' }).payload;
   assert.deepEqual([...new Set(gable.palette.filter(s => s.id.endsWith('_stairs')).map(s => s.properties.shape))], ['straight']);
-  for (const id of ['haus', 'turm', 'dach']) assert.equal(gen(id).version, 2, `${id}: Version wegen Eckformen erhöht`);
+  for (const id of ['haus', 'turm', 'dach']) assert.ok(gen(id).version >= 2, `${id}: Version wegen Eckformen erhöht`);
 });
 
 test('church, harbour, gatehouse, windmill and well follow their parameters', () => {

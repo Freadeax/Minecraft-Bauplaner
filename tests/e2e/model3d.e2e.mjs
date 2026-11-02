@@ -39,10 +39,10 @@ function stlMesh(stl) {
 
 test('Bauteil: Reiter Modelldatei exportiert GLB, wasserdichtes STL und 3MF mit Farben', async () => {
   const { p, errors } = await page();
-  await p.goto(`${BASE}#/bibliothek/gebaeude/bld_fachwerkhaus`);
+  await p.goto(`${BASE}#/bibliothek/gebaeude/bld_villa`);
   const tabs = p.getByRole('tablist', { name: 'Ansicht' });
   await tabs.getByRole('tab', { name: 'Modelldatei' }).click();
-  assert.match(p.url(), /gebaeude\/bld_fachwerkhaus\/modell$/);
+  assert.match(p.url(), /gebaeude\/bld_villa\/modell$/);
   const panel = p.getByRole('region', { name: '3D-Datei' });
   await panel.waitFor();
 

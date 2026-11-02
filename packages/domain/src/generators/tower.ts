@@ -11,7 +11,7 @@ import type { Generator } from './types.js';
  * profile (thickness × total height), so generated walls dock on directly.
  */
 export const TOWER_GENERATOR: Generator = {
-  id: 'turm', name: 'Turm', version: 2,
+  id: 'turm', name: 'Turm', version: 3,
   description: 'Runder oder eckiger Turm mit Geschossen, Leiter, Fenstern und Kegeldach, Walmdach, Zinnen oder Plattform; optional mit Mauer-Anschlüssen.',
   params: [
     { key: 'form', label: 'Grundriss', group: 'Maße', type: 'choice', default: 'rund', options: [{ value: 'rund', label: 'Rund' }, { value: 'eckig', label: 'Eckig' }] },

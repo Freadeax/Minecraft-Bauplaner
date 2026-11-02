@@ -23,8 +23,9 @@ import { FAHRZEUGE_SPECS } from './fahrzeuge.js';
 import { UNTERGRUND_SPECS } from './untergrund.js';
 import { DIMENSIONEN_SPECS } from './dimensionen.js';
 import { withMaterialFamilies } from './varianten.js';
+import { refinedSpec } from '../refine.js';
 
-/** All themed building sets of the extended catalogue, in display order, with the generated material families (B12). */
+/** All themed building sets of the extended catalogue, in display order, with the generated material families (B12); every design passes the finishing pass first (LIB-05). */
 export const ALL_SET_SPECS: readonly BuildingSpec[] = withMaterialFamilies([
   ...WOHNEN_SPECS,
   ...DORF_SPECS,
@@ -49,4 +50,4 @@ export const ALL_SET_SPECS: readonly BuildingSpec[] = withMaterialFamilies([
   ...FAHRZEUGE_SPECS,
   ...UNTERGRUND_SPECS,
   ...DIMENSIONEN_SPECS,
-]);
+].map(refinedSpec));

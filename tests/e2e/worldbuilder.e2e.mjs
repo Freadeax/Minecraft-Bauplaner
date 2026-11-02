@@ -188,6 +188,8 @@ test('Weltbuilder: löschen (Entf, Menü, Liste), Rahmen, duplizieren, drehen, W
   await p.getByText(/Noch kein Weltplan in dieser Dimension/).waitFor();
   await p.keyboard.press('Control+z');
   await ready(p);
+  // The list renders a frame after the undo; wait for it before reading.
+  await p.locator('.builder-objects .plan-row b').nth(2).waitFor();
   assert.deepEqual(await names(p), ['Bauplatz 1', 'Weg 1', 'Bauplatz 1 (Kopie)']);
   await p.reload(); await ready(p);
   assert.deepEqual(await names(p), ['Bauplatz 1', 'Weg 1', 'Bauplatz 1 (Kopie)']);

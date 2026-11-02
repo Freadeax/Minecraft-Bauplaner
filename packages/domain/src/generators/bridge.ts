@@ -9,7 +9,7 @@ import type { Generator } from './types.js';
  * path connectors with profile weg_<breite> (weg_4 = the shipped path kit).
  */
 export const BRIDGE_GENERATOR: Generator = {
-  id: 'bruecke', name: 'Brücke', version: 2,
+  id: 'bruecke', name: 'Brücke', version: 3,
   description: 'Bogen-, Balken- oder Hängebrücke mit wählbarer Spannweite, Breite und Höhe, Geländer, Pfeilern und Laternen; Enden als Weg-Anschlüsse.',
   params: [
     { key: 'form', label: 'Bauart', group: 'Maße', type: 'choice', default: 'bogen', options: [

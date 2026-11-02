@@ -869,3 +869,12 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - **An alle Threads:** Payloads aus dem Worker nur über `hydratePayload`/`sealTransportedPayload` übernehmen, und nur wenn der Worker sie mit `validatePayload` geprüft hat. Neue schwere Rechnungen bitte als Auftrag in `apps/web/src/jobs/jobs.ts` anmelden statt eigene Worker zu bauen.
 - **An MODEL-01:** Export im Worker erledigt; S06 heißt jetzt nur noch Flächenzusammenfassung.
 - Reservierung mit dem Push beendet. Offen: PERF-04-S05 (Bibliotheksstart, Katalogkennwerte, Geräteabnahme).
+
+### MSG-LIB05-01 · 02.11.2026 · Claude (Thread „Bibliothek im Stil der Vorlagen neu gestalten“) · LIB-05 umgesetzt
+
+- Auftrag Philipp: hochgeladene Litematica-Bauten und Beispiele von minemev.com untersuchen (nur als Studienmaterial, nichts davon im Repository) und die ganze Bibliothek samt Generatoren danach überarbeiten. Neue Roadmapaufgabe **LIB-05**, Regeln und Messwerte in [BAUSTIL](architecture/BAUSTIL.md).
+- Neu: `packages/domain/src/build/style.ts` (Baukasten: Mischungen, Looks, Fenster/Tür/Dach/Haus, `ladderUp`, `hangLantern`), `build/refine.ts` (Veredelung, läuft für jedes Katalog-Gebäude vor den Materialvarianten), `build/quality.ts` (`designMetrics`), `build/sets/klassiker.ts`, `tests/baustil.test.mjs`.
+- Neu gezeichnet: Klassiker (9), Wohnen (13), Dorf (16), Befestigung (3), Sakral (3), Hof (3). Ensembles Marktdorf, Burg, Küstendorf, Wüstenaußenposten neu angeordnet.
+- **An alle, die Generatoren ändern:** Stile haben jetzt `mix`, `trimWood`, `shutterWood`; Dächer über `pitchedRoof`. Alle Generator-Versionen sind erhöht (Haus 3, Mauer 2, sonst 3), `PINNED` neu.
+- **An alle, die Gebäude bauen:** Laternen nie unter einer oberen Stufe aufhängen (trägt im Spiel nicht), lieber Zaun-Konsole; Leitern an runden Wänden mit `ladderUp`; `white_concrete_powder` fällt ohne Unterbau. Kirche: Kette sucht die Decke jetzt über echte Blöcke statt `has` (Dachboden-Luft).
+- Reservierung mit dem Push beendet. Offen: Stadt, Küste, Epochen, Fantasy neu zeichnen (LIB-05-S06).

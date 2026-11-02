@@ -1,7 +1,9 @@
-import { Plot, axis, barrel, bed, beehive, campfire, candle, chest, crop, door, farmland, furnace, gableRoof, gableRoofX, gate, grass, hipRoof, lampPost, lantern, lectern, noise, slab, stairs, tallPlant, water, F, T } from '../plot.js';
+import { Plot, axis, barrel, bed, beehive, campfire, candle, chest, crop, door, farmland, furnace, gableRoof, gableRoofX, gate, grass, lampPost, lantern, lectern, noise, slab, stairs, tallPlant, water, F, T } from '../plot.js';
 import { berries, chair, hangingLamp, kelp } from '../furnish.js';
 import { WIKI } from '../spec.js';
 import type { BuildingSpec } from '../spec.js';
+import { hangLantern, house, LOOKS, lookWith, putFree } from '../style.js';
+import type { Look } from '../style.js';
 import type { Props } from '../plot.js';
 
 /**
@@ -22,35 +24,36 @@ function ground(p: Plot, w: number, d: number, id = 'grass_block'): void {
 
 // ------------------------------------------------------------ Ställe
 
+const STALL_LOOK: Look = lookWith(LOOKS.backstein, { wall: [['spruce_planks', 5], ['stripped_spruce_wood', 1]], frame: 'spruce_log',
+  roof: [['dark_oak_planks', 1]], roofStairs: 'dark_oak_stairs', roofSlab: 'dark_oak_slab', trim: 'spruce', shutter: 'spruce' });
+
 function kuhstall() {
-  const p = new Plot([13, 10, 15]);
-  ground(p, 13, 15);
-  p.fill(1, 0, 1, 11, 0, 7, 'cobblestone'); p.fill(2, 0, 2, 10, 0, 6, 'coarse_dirt');
-  p.room(1, 1, 11, 7, 1, 4, 'spruce_planks');
-  p.ring(1, 1, 11, 7, 1, 'cobblestone');
-  for (const x of [1, 6, 11]) p.fill(x, 1, 1, x, 4, 1, 'spruce_log', axis('y'));
-  for (const x of [1, 11]) { p.fill(x, 1, 7, x, 4, 7, 'spruce_log', axis('y')); p.fill(x, 1, 4, x, 4, 4, 'spruce_log', axis('y')); }
-  for (const x of [1, 11]) for (const z of [3, 5]) { p.set(x, 2, z, 'spruce_fence'); p.set(x, 3, z, 'spruce_fence'); }
-  for (const x of [3, 9]) p.set(x, 3, 1, 'spruce_fence');
-  // barn gate: three fence gates, open above
-  p.fill(5, 1, 7, 7, 3, 7, null);
+  const p = new Plot([13, 2, 16]), l = STALL_LOOK;
+  ground(p, 13, 16);
+  house(p, l, { at: { x0: 1, z0: 1, x1: 11, z1: 7 }, storeys: [{ h: 4, kind: 'fachwerk' }], plinth: 1, postEvery: 5, windowEvery: 3,
+    roof: { kind: 'krueppelwalm', ridge: 'x', overhang: 1 }, door: null, noShutters: true, seed: 51, noWindow: (x, _y, z) => z === 7 && x >= 4 && x <= 8 });
+  // Window openings as fence-barred hay hatches.
+  for (const x of [3, 9]) { const s = p.get(x, 3, 1); if (s?.id === 'minecraft:glass_pane') p.set(x, 3, 1, 'spruce_fence'); }
+  // Barn gate: three fence gates under a beam, braced with stairs.
+  for (let x = 5; x <= 7; x++) for (let y = 1; y <= 3; y++) p.air(x, y, 7);
   for (let x = 5; x <= 7; x++) p.set(x, 1, 7, 'spruce_fence_gate', gate('south'));
-  p.fill(4, 4, 7, 8, 4, 7, 'stripped_spruce_log', axis('x'));
-  gableRoofX(p, 1, 11, 0, 8, 5, 'dark_oak_stairs', 'spruce_planks', 'dark_oak_slab');
-  for (const x of [3, 6, 9]) { p.fill(x, 5, 1, x, 5, 7, 'spruce_log', axis('z')); p.set(x, 4, 4, 'lantern', lantern(true)); }
-  // stalls: hay troughs along the back wall, fence partitions, water cauldron
+  for (let x = 4; x <= 8; x++) p.set(x, 4, 7, 'stripped_spruce_log', axis('x'));
+  p.set(5, 3, 7, 'spruce_stairs', stairs('east', 'top')); p.set(7, 3, 7, 'spruce_stairs', stairs('west', 'top'));
+  for (let x = 4; x <= 8; x++) putFree(p, x, 5, 8, 'spruce_slab', slab()); putFree(p, 4, 4, 8, 'spruce_stairs', stairs('east', 'top')); putFree(p, 8, 4, 8, 'spruce_stairs', stairs('west', 'top'));
+  for (let x = 2; x <= 10; x++) for (let z = 2; z <= 6; z++) p.set(x, 0, z, (x + z) % 4 ? 'coarse_dirt' : 'cobblestone');
   for (const x of [2, 3, 5, 7, 9, 10]) p.set(x, 1, 2, 'hay_block', axis('x'));
   p.set(6, 1, 2, 'water_cauldron', waterCauldron);
   for (const x of [4, 8]) p.fill(x, 1, 2, x, 1, 4, 'spruce_fence');
   p.set(2, 1, 6, 'barrel', barrel('up')); p.set(2, 2, 6, 'barrel', barrel('up'));
   p.set(10, 1, 6, 'chest', chest('west')); p.set(10, 1, 5, 'composter');
-  // paddock in front
-  p.fill(0, 1, 7, 0, 1, 14, 'oak_fence'); p.fill(12, 1, 7, 12, 1, 14, 'oak_fence'); p.fill(0, 1, 14, 12, 1, 14, 'oak_fence');
-  p.set(6, 1, 14, 'oak_fence_gate', gate('south'));
-  for (const x of [5, 7]) p.set(x, 2, 14, 'lantern', lantern());
-  p.fill(9, 0, 10, 10, 0, 11, 'water', water());
-  for (const [x, z] of [[2, 13], [3, 13]] as const) p.set(x, 1, z, 'hay_block', axis('y'));
-  for (const [x, z] of [[3, 10], [5, 12], [10, 13]] as const) tallPlant(p, x, 1, z, 'tall_grass');
+  for (const x of [3, 6, 9]) hangLantern(p, l, x, 4, 4);
+  // Paddock.
+  p.fill(0, 1, 8, 0, 1, 15, 'oak_fence'); p.fill(12, 1, 8, 12, 1, 15, 'oak_fence'); p.fill(0, 1, 15, 12, 1, 15, 'oak_fence');
+  p.set(6, 1, 15, 'oak_fence_gate', gate('south'));
+  for (const x of [5, 7]) p.set(x, 2, 15, 'lantern', lantern());
+  p.fill(9, 0, 11, 10, 0, 12, 'water', water());
+  for (const [x, z] of [[2, 14], [3, 14]] as const) p.set(x, 1, z, 'hay_block', axis('y'));
+  for (const [x, z] of [[3, 11], [5, 13], [10, 14]] as const) tallPlant(p, x, 1, z, 'tall_grass');
   return p.payload();
 }
 
@@ -275,25 +278,21 @@ function netherwarze() {
 // ------------------------------------------------------------ Dorfbewohner
 
 function zuchthaus() {
-  const p = new Plot([13, 12, 13]);
-  ground(p, 13, 13);
-  p.fill(1, 0, 1, 11, 0, 11, 'spruce_planks');
-  p.room(1, 1, 11, 11, 1, 5, 'oak_planks');
-  for (const [x, z] of [[1, 1], [11, 1], [1, 11], [11, 11], [6, 1], [1, 6], [11, 6]] as const) p.fill(x, 1, z, x, 5, z, 'oak_log', axis('y'));
-  for (const [x, z] of [[3, 1], [9, 1], [1, 3], [1, 9], [11, 3], [11, 9], [3, 11], [9, 11]] as const) { p.set(x, 2, z, 'glass_pane'); p.set(x, 3, z, 'glass_pane'); }
-  // entrance: fence gate, villagers cannot open it
-  p.set(6, 1, 11, 'oak_fence_gate', gate('south')); p.air(6, 2, 11);
-  p.fill(2, 5, 2, 10, 5, 10, 'oak_planks');
-  hipRoof(p, 0, 12, 0, 12, 5, 'spruce_stairs', 'spruce_slab');
-  // four beds, workstation, field
-  for (const x of [3, 5, 7, 9]) bed(p, x, 1, 3, 'white', 'north');
-  p.set(2, 1, 2, 'barrel', barrel('up')); p.set(10, 1, 2, 'chest', chest('south'));
-  p.set(6, 1, 5, 'composter');
-  for (let x = 3; x <= 9; x++) for (let z = 7; z <= 9; z++) {
-    if (x === 6 && z === 8) { p.set(x, 0, z, 'water', water()); p.set(x, 1, z, 'oak_slab', slab()); continue; }
+  const p = new Plot([15, 2, 15]), l = lookWith(LOOKS.fachwerk, { frame: 'stripped_oak_log', roof: [['spruce_planks', 1]], roofStairs: 'spruce_stairs', roofSlab: 'spruce_slab', trim: 'dark_oak', shutter: 'oak' });
+  ground(p, 15, 15);
+  house(p, l, { at: { x0: 2, z0: 2, x1: 12, z1: 12 }, storeys: [{ h: 5, kind: 'fachwerk' }], plinth: 1, postEvery: 5, windowEvery: 3,
+    roof: { kind: 'walm', ridge: 'x', overhang: 1 }, flowerBoxes: true, door: null, seed: 53 });
+  // Entrance: fence gate (villagers cannot open it) under a small porch.
+  p.air(7, 1, 12); p.air(7, 2, 12); p.set(7, 1, 12, 'oak_fence_gate', gate('south')); p.set(7, 3, 12, 'dark_oak_stairs', stairs('north', 'top'));
+  for (let x = 6; x <= 8; x++) putFree(p, x, 4, 13, 'dark_oak_slab', slab());
+  for (const x of [4, 6, 8, 10]) bed(p, x, 1, 4, 'white', 'north');
+  p.set(3, 1, 3, 'barrel', barrel('up')); p.set(11, 1, 3, 'chest', chest('south'));
+  p.set(7, 1, 6, 'composter');
+  for (let x = 4; x <= 10; x++) for (let z = 8; z <= 10; z++) {
+    if (x === 7 && z === 9) { p.set(x, 0, z, 'water', water()); p.set(x, 1, z, 'oak_slab', slab()); continue; }
     p.set(x, 0, z, 'farmland', farmland()); p.set(x, 1, z, x % 2 ? 'carrots' : 'potatoes', crop(7));
   }
-  for (const [x, z] of [[4, 5], [8, 5], [6, 9]] as const) p.set(x, 4, z, 'lantern', lantern(true));
+  for (const [x, z] of [[5, 6], [9, 6], [7, 9]] as const) hangLantern(p, l, x, 5, z);
   return p.payload();
 }
 
@@ -306,25 +305,28 @@ const STATIONS_S: readonly [string, Props][] = [
 ];
 
 function handelsscheune() {
-  const p = new Plot([13, 12, 12]);
-  ground(p, 13, 12);
-  p.fill(0, 0, 1, 12, 0, 10, 'spruce_planks'); p.fill(1, 0, 5, 11, 0, 6, 'stone_bricks');
-  p.room(0, 1, 12, 10, 1, 4, 'spruce_planks');
-  p.ring(0, 1, 12, 10, 1, 'cobblestone');
-  for (const [x, z] of [[0, 1], [12, 1], [0, 10], [12, 10], [6, 1], [6, 10]] as const) p.fill(x, 1, z, x, 4, z, 'spruce_log', axis('y'));
-  // two rows of trade cells facing the aisle
-  for (const x of [1, 3, 5, 7, 9, 11]) { p.fill(x, 1, 2, x, 3, 4, 'spruce_planks'); p.fill(x, 1, 7, x, 3, 9, 'spruce_planks'); }
-  p.fill(1, 3, 2, 11, 3, 3, 'spruce_planks'); p.fill(1, 3, 8, 11, 3, 9, 'spruce_planks');
-  p.fill(1, 3, 4, 11, 3, 4, 'stripped_spruce_log', axis('x')); p.fill(1, 3, 7, 11, 3, 7, 'stripped_spruce_log', axis('x'));
-  [2, 4, 6, 8, 10].forEach((x, i) => {
+  const p = new Plot([15, 2, 14]), l = lookWith(STALL_LOOK, { roof: [['spruce_planks', 3], ['dark_oak_planks', 1]], roofStairs: 'spruce_stairs', roofSlab: 'spruce_slab', trim: 'dark_oak' });
+  ground(p, 15, 14);
+  house(p, l, { at: { x0: 1, z0: 2, x1: 13, z1: 11 }, storeys: [{ h: 5, kind: 'fachwerk' }], plinth: 2, postEvery: 6, windowEvery: 4,
+    roof: { kind: 'sattel', ridge: 'x', overhang: 1, pitch: 'steil' }, door: null, seed: 55, noWindow: (x, _y, z) => z === 2 || z === 11 || x === 1 || x === 13 });
+  for (let x = 2; x <= 12; x++) for (let z = 3; z <= 10; z++) p.set(x, 0, z, z === 6 || z === 7 ? 'stone_bricks' : 'spruce_planks');
+  // Two rows of trade cells facing the aisle.
+  for (const x of [2, 4, 6, 8, 10, 12]) { p.fill(x, 1, 3, x, 3, 5, 'spruce_planks'); p.fill(x, 1, 8, x, 3, 10, 'spruce_planks'); }
+  p.fill(2, 3, 3, 12, 3, 4, 'spruce_planks'); p.fill(2, 3, 9, 12, 3, 10, 'spruce_planks');
+  p.fill(2, 3, 5, 12, 3, 5, 'stripped_spruce_log', axis('x')); p.fill(2, 3, 8, 12, 3, 8, 'stripped_spruce_log', axis('x'));
+  [3, 5, 7, 9, 11].forEach((x, i) => {
     const [nId, nProps] = STATIONS_N[i]!, [sId, sProps] = STATIONS_S[i]!;
-    p.set(x, 1, 2, nId, nProps); p.air(x, 2, 2); p.air(x, 1, 3); p.air(x, 2, 3); p.set(x, 1, 4, 'spruce_fence'); p.air(x, 2, 4);
-    p.set(x, 1, 9, sId, sProps); p.air(x, 2, 9); p.air(x, 1, 8); p.air(x, 2, 8); p.set(x, 1, 7, 'spruce_fence'); p.air(x, 2, 7);
+    p.set(x, 1, 3, nId, nProps); p.air(x, 2, 3); p.air(x, 1, 4); p.air(x, 2, 4); p.set(x, 1, 5, 'spruce_fence'); p.air(x, 2, 5);
+    p.set(x, 1, 10, sId, sProps); p.air(x, 2, 10); p.air(x, 1, 9); p.air(x, 2, 9); p.set(x, 1, 8, 'spruce_fence'); p.air(x, 2, 8);
   });
-  door(p, 0, 1, 5, 'spruce', 'east', 'left'); door(p, 0, 1, 6, 'spruce', 'east', 'right');
-  door(p, 12, 1, 5, 'spruce', 'west', 'right'); door(p, 12, 1, 6, 'spruce', 'west', 'left');
-  gableRoofX(p, 0, 12, 0, 11, 5, 'spruce_stairs', 'spruce_planks', null);
-  for (const x of [3, 6, 9]) { p.fill(x, 5, 1, x, 5, 10, 'spruce_log', axis('z')); p.set(x, 4, 5, 'lantern', lantern(true)); }
+  for (const [x, f] of [[1, 'east'], [13, 'west']] as const) {
+    for (const z of [6, 7]) for (let y = 1; y <= 3; y++) p.air(x, y, z);
+    door(p, x, 1, 6, 'spruce', f, f === 'east' ? 'left' : 'right'); door(p, x, 1, 7, 'spruce', f, f === 'east' ? 'right' : 'left');
+    p.set(x, 3, 6, 'spruce_stairs', stairs(f === 'east' ? 'south' : 'south', 'top')); p.set(x, 3, 7, 'spruce_stairs', stairs('north', 'top'));
+    const ox = x === 1 ? 0 : 14;
+    for (const z of [5, 8]) { p.set(ox, 1, z, 'spruce_fence'); p.set(ox, 2, z, 'lantern', lantern()); }
+  }
+  for (const x of [4, 7, 10]) hangLantern(p, l, x, 4, 6);
   return p.payload();
 }
 

@@ -9,7 +9,9 @@ import type { Asset, AssetVersion } from './types.js';
 import { PATH_PROFILE, WIKI, joint } from './build/spec.js';
 import type { BuildingSpec, Inspiration } from './build/spec.js';
 import { ALL_SET_SPECS } from './build/sets/index.js';
+import { refinedSpec } from './build/refine.js';
 import { gameReady } from './build/gameReady.js';
+import { baumhaus, blockhuette, fachwerkhaus, kapelle, leuchtturm, scheune, schmiede, wachturm, wuestenhaus } from './build/sets/klassiker.js';
 
 export { PATH_PROFILE };
 export type { BuildingSpec, Inspiration };
@@ -108,7 +110,6 @@ const chest = (f: H): Props => ({ facing: f, type: 'single', waterlogged: F });
 const furnace = (f: H): Props => ({ facing: f, lit: F });
 const ladder = (f: H): Props => ({ facing: f, waterlogged: F });
 const trapdoor = (f: H, half: 'top' | 'bottom' = 'bottom', open = false): Props => ({ facing: f, half, open: open ? T : F, powered: F, waterlogged: F });
-const leaves = (): Props => ({ distance: '1', persistent: T, waterlogged: F });
 
 function door(p: Plot, x: number, y: number, z: number, wood: string, f: H, hinge: 'left' | 'right' = 'left'): void {
   p.set(x, y, z, `${wood}_door`, { facing: f, half: 'lower', hinge, open: F, powered: F });
@@ -120,109 +121,7 @@ function bed(p: Plot, x: number, y: number, z: number, color: string, f: H): voi
   p.set(x, y, z, `${color}_bed`, { facing: f, occupied: F, part: 'foot' });
   p.set(x + dx!, y, z + dz!, `${color}_bed`, { facing: f, occupied: F, part: 'head' });
 }
-/**
- * Gable roof with ridge along z over x0..x1, starting at y; gables at z0 and z1
- * in `gable` material; odd widths end in a ridge of `ridge` slabs (or gable
- * blocks). Returns the first layer above the roof.
- */
-function gableRoof(p: Plot, x0: number, x1: number, z0: number, z1: number, y: number, stair: string, gable: string, ridge: string | null): number {
-  let layer = 0;
-  for (let l = x0, r = x1; l <= r; l++, r--, layer++) {
-    const yy = y + layer;
-    if (l === r) { p.fill(l, yy, z0, l, yy, z1, ridge ?? gable, ridge ? slab() : {}); layer++; break; }
-    for (let z = z0; z <= z1; z++) { p.set(l, yy, z, stair, stairs('east')); p.set(r, yy, z, stair, stairs('west')); }
-    for (let x = l + 1; x < r; x++) {
-      p.set(x, yy, z0, gable); p.set(x, yy, z1, gable);
-      for (let z = z0 + 1; z < z1; z++) p.air(x, yy, z);
-    }
-  }
-  return y + layer;
-}
-
 // ------------------------------------------------------------ buildings
-
-function fachwerkhaus(): VoxelPayload {
-  const p = new Plot([7, 9, 9]);
-  p.fill(0, 0, 0, 6, 0, 8, 'cobblestone'); p.fill(1, 0, 1, 5, 0, 7, 'oak_planks');
-  for (let y = 1; y <= 3; y++) p.ring(0, 0, 6, 8, y, 'white_terracotta');
-  for (const [x, z] of [[0, 0], [6, 0], [0, 8], [6, 8], [3, 0], [3, 8], [0, 4], [6, 4]] as const) p.fill(x, 1, z, x, 3, z, 'oak_log', axis('y'));
-  p.fill(0, 4, 0, 6, 4, 0, 'oak_log', axis('x')); p.fill(0, 4, 8, 6, 4, 8, 'oak_log', axis('x'));
-  p.fill(0, 4, 1, 0, 4, 7, 'oak_log', axis('z')); p.fill(6, 4, 1, 6, 4, 7, 'oak_log', axis('z'));
-  p.fill(1, 1, 1, 5, 3, 7, null); p.fill(1, 4, 1, 5, 4, 7, 'oak_planks');
-  for (const z of [2, 6]) { p.set(0, 2, z, 'glass_pane'); p.set(6, 2, z, 'glass_pane'); }
-  p.set(1, 2, 0, 'glass_pane'); p.set(5, 2, 0, 'glass_pane'); p.set(1, 2, 8, 'glass_pane'); p.set(4, 2, 8, 'glass_pane');
-  door(p, 3, 1, 0, 'oak', 'north');
-  bed(p, 1, 1, 6, 'red', 'south'); p.set(5, 1, 1, 'crafting_table'); p.set(1, 1, 3, 'furnace', furnace('east'));
-  p.set(5, 1, 3, 'chest', chest('west')); p.set(3, 3, 7, 'wall_torch', facing('north'));
-  p.fill(5, 1, 7, 5, 4, 7, 'ladder', ladder('north'));
-  gableRoof(p, 0, 6, 0, 8, 5, 'oak_stairs', 'white_terracotta', 'oak_slab');
-  p.set(3, 5, 0, 'glass_pane'); p.set(3, 5, 8, 'glass_pane');
-  p.set(1, 5, 4, 'bookshelf'); p.set(2, 5, 6, 'chest', chest('east')); p.set(4, 5, 2, 'white_bed', { facing: 'south', occupied: F, part: 'foot' }); p.set(4, 5, 3, 'white_bed', { facing: 'south', occupied: F, part: 'head' });
-  p.set(3, 5, 4, 'lantern', lantern());
-  return p.payload();
-}
-
-function blockhuette(): VoxelPayload {
-  const p = new Plot([7, 8, 6]);
-  p.fill(0, 0, 0, 5, 0, 5, 'cobblestone'); p.fill(1, 0, 1, 4, 0, 4, 'spruce_planks');
-  for (let y = 1; y <= 4; y++) {
-    p.fill(1, y, 0, 4, y, 0, 'spruce_log', axis('x')); p.fill(1, y, 5, 4, y, 5, 'spruce_log', axis('x'));
-    p.fill(0, y, 1, 0, y, 4, 'spruce_log', axis('z')); p.fill(5, y, 1, 5, y, 4, 'spruce_log', axis('z'));
-    for (const [x, z] of [[0, 0], [5, 0], [0, 5], [5, 5]] as const) p.set(x, y, z, 'stripped_spruce_log', axis('y'));
-  }
-  p.fill(1, 1, 1, 4, 4, 4, null);
-  door(p, 2, 1, 0, 'spruce', 'north'); p.set(4, 2, 0, 'glass_pane'); p.set(0, 2, 2, 'glass_pane'); p.set(5, 2, 3, 'glass_pane');
-  gableRoof(p, 0, 5, 0, 5, 5, 'spruce_stairs', 'spruce_planks', null);
-  bed(p, 1, 1, 3, 'brown', 'south'); p.set(4, 1, 4, 'barrel', { facing: 'up', open: F }); p.set(4, 2, 4, 'lantern', lantern());
-  p.set(4, 1, 1, 'crafting_table'); p.set(3, 1, 4, 'chest', chest('north'));
-  p.fill(6, 0, 2, 6, 6, 2, 'cobblestone'); p.set(6, 7, 2, 'cobblestone_wall');
-  return p.payload();
-}
-
-function wuestenhaus(): VoxelPayload {
-  const p = new Plot([9, 6, 9]);
-  p.fill(0, 0, 0, 8, 0, 8, 'sandstone'); p.fill(1, 0, 1, 7, 0, 7, 'smooth_sandstone');
-  for (let y = 1; y <= 3; y++) p.ring(0, 0, 8, 8, y, 'sandstone');
-  for (const [x, z] of [[0, 0], [8, 0], [0, 8], [8, 8]] as const) p.fill(x, 1, z, x, 4, z, 'cut_sandstone');
-  p.fill(1, 1, 1, 7, 3, 7, null);
-  p.fill(0, 4, 0, 8, 4, 8, 'smooth_sandstone');
-  for (let x = 0; x <= 8; x++) for (let z = 0; z <= 8; z++) if ((x === 0 || x === 8 || z === 0 || z === 8) && (x + z) % 2 === 0) p.set(x, 5, z, 'cut_sandstone');
-  door(p, 4, 1, 0, 'acacia', 'north');
-  for (const [x, z] of [[2, 0], [6, 0], [0, 4], [8, 4], [4, 8]] as const) p.set(x, 2, z, 'acacia_trapdoor', trapdoor(z === 0 ? 'north' : z === 8 ? 'south' : x === 0 ? 'west' : 'east', 'bottom', true));
-  p.fill(2, 1, 6, 5, 1, 6, 'orange_carpet'); p.fill(2, 1, 2, 2, 1, 4, 'orange_carpet');
-  bed(p, 6, 1, 6, 'orange', 'west'); p.set(7, 1, 1, 'smoker', furnace('west')); p.set(1, 1, 1, 'barrel', { facing: 'up', open: F });
-  p.set(1, 1, 7, 'cauldron'); p.set(6, 1, 1, 'potted_cactus'); p.set(4, 3, 7, 'wall_torch', facing('north'));
-  p.fill(7, 1, 7, 7, 4, 7, 'ladder', ladder('west'));
-  return p.payload();
-}
-
-function leuchtturm(): VoxelPayload {
-  const p = new Plot([7, 19, 7]);
-  // Octagonal rings around the centre column (3, 3).
-  const octagon = (r: number) => (x: number, z: number) => { const dx = Math.abs(x - 3), dz = Math.abs(z - 3); return Math.max(dx, dz) <= r && dx + dz <= r + 1; };
-  const outer = octagon(3), inner = octagon(2);
-  for (let x = 0; x < 7; x++) for (let z = 0; z < 7; z++) {
-    if (!outer(x, z)) continue;
-    p.set(x, 0, z, 'stone_bricks');
-    for (let y = 1; y <= 13; y++) {
-      if (inner(x, z)) p.air(x, y, z);
-      else p.set(x, y, z, Math.floor((y - 1) / 3) % 2 === 0 ? 'white_concrete' : 'red_concrete');
-    }
-    p.set(x, 14, z, 'smooth_stone');
-    if (!inner(x, z)) p.set(x, 15, z, 'iron_bars');
-  }
-  p.fill(3, 1, 5, 3, 14, 5, 'ladder', ladder('north'));
-  door(p, 3, 1, 0, 'spruce', 'north');
-  p.set(0, 6, 3, 'glass_pane'); p.set(6, 10, 3, 'glass_pane'); p.set(0, 12, 3, 'glass_pane');
-  for (let x = 2; x <= 4; x++) for (let z = 2; z <= 4; z++) {
-    if (x === 3 && z === 3) continue;
-    p.set(x, 15, z, 'glass'); p.set(x, 16, z, 'glass');
-  }
-  p.set(3, 15, 3, 'glowstone'); p.set(3, 16, 3, 'sea_lantern');
-  p.fill(2, 17, 2, 4, 17, 4, 'red_concrete');
-  p.set(3, 18, 3, 'lightning_rod', { facing: 'up', powered: F, waterlogged: F });
-  return p.payload();
-}
 
 function dorfbrunnen(): VoxelPayload {
   const p = new Plot([5, 5, 5]);
@@ -234,46 +133,6 @@ function dorfbrunnen(): VoxelPayload {
   return p.payload();
 }
 
-function schmiede(): VoxelPayload {
-  const p = new Plot([9, 7, 7]);
-  p.fill(0, 0, 0, 8, 0, 6, 'cobblestone'); p.fill(0, 0, 0, 5, 0, 3, 'gravel');
-  p.fill(0, 1, 6, 8, 3, 6, 'stone_bricks'); p.fill(8, 1, 0, 8, 3, 6, 'stone_bricks');
-  p.fill(0, 1, 0, 7, 3, 5, null);
-  for (const [x, z] of [[0, 0], [0, 6], [4, 0]] as const) p.fill(x, 1, z, x, 3, z, 'spruce_log', axis('y'));
-  p.set(8, 2, 2, 'cracked_stone_bricks'); p.set(3, 2, 6, 'mossy_stone_bricks');
-  p.set(6, 1, 5, 'furnace', furnace('north')); p.set(7, 1, 5, 'blast_furnace', furnace('north'));
-  p.fill(6, 2, 5, 7, 3, 5, 'cobblestone');
-  p.set(3, 1, 3, 'anvil', facing('east')); p.set(1, 1, 5, 'smithing_table'); p.set(2, 1, 5, 'grindstone', { face: 'floor', facing: 'north' });
-  p.set(4, 1, 5, 'chest', chest('north')); p.set(7, 1, 1, 'barrel', { facing: 'west', open: F }); p.set(5, 1, 5, 'cauldron');
-  p.set(0, 3, 1, 'wall_torch', facing('south')); p.set(7, 3, 2, 'wall_torch', facing('west'));
-  p.fill(0, 4, 0, 8, 4, 6, 'spruce_planks'); p.fill(0, 5, 0, 8, 5, 6, 'spruce_slab', slab());
-  p.fill(7, 4, 5, 7, 6, 5, 'cobblestone');
-  return p.payload();
-}
-
-function scheune(): VoxelPayload {
-  const p = new Plot([11, 11, 13]);
-  p.fill(0, 0, 0, 10, 0, 12, 'cobblestone'); p.fill(1, 0, 1, 9, 0, 11, 'coarse_dirt');
-  for (let y = 1; y <= 4; y++) p.ring(0, 0, 10, 12, y, 'spruce_planks');
-  for (const x of [0, 10]) for (const z of [0, 4, 8, 12]) p.fill(x, 1, z, x, 4, z, 'dark_oak_log', axis('y'));
-  for (const x of [3, 7]) for (const z of [0, 12]) p.fill(x, 1, z, x, 4, z, 'dark_oak_log', axis('y'));
-  p.fill(1, 1, 1, 9, 4, 11, null);
-  p.fill(4, 1, 0, 6, 3, 0, null);
-  for (const z of [2, 6, 10]) { p.set(0, 3, z, 'spruce_trapdoor', trapdoor('west', 'top', true)); p.set(10, 3, z, 'spruce_trapdoor', trapdoor('east', 'top', true)); }
-  for (const x of [1, 2, 3, 7, 8, 9]) for (const z of [4, 7]) p.set(x, 1, z, 'oak_fence');
-  for (const z of [5, 6]) { p.set(3, 1, z, 'oak_fence'); p.set(7, 1, z, 'oak_fence'); }
-  p.fill(1, 4, 8, 9, 4, 11, 'spruce_planks');
-  p.fill(1, 1, 10, 2, 2, 11, 'hay_block', axis('x'));
-  p.fill(9, 1, 8, 9, 4, 8, 'ladder', ladder('west'));
-  p.set(5, 4, 4, 'lantern', lantern(true)); p.set(5, 4, 7, 'lantern', lantern(true));
-  p.set(8, 1, 11, 'chest', chest('north')); p.set(9, 1, 11, 'barrel', { facing: 'up', open: F });
-  gableRoof(p, 0, 10, 0, 12, 5, 'dark_oak_stairs', 'spruce_planks', 'dark_oak_slab');
-  p.set(5, 7, 0, 'glass_pane'); p.set(5, 7, 12, 'glass_pane');
-  // Hay on the loft is placed after the roof, which clears the attic volume.
-  p.fill(1, 5, 10, 3, 6, 11, 'hay_block', axis('y')); p.fill(7, 5, 10, 9, 5, 11, 'hay_block', axis('y'));
-  return p.payload();
-}
-
 function marktstand(): VoxelPayload {
   const p = new Plot([5, 4, 3]);
   for (const [x, z] of [[0, 0], [4, 0], [0, 2], [4, 2]] as const) p.fill(x, 0, z, x, 2, z, 'spruce_fence');
@@ -282,30 +141,6 @@ function marktstand(): VoxelPayload {
   p.set(2, 0, 2, 'chest', chest('north')); p.set(1, 0, 2, 'crafting_table'); p.set(3, 0, 2, 'hay_block', axis('y'));
   for (let x = 0; x <= 4; x++) for (let z = 0; z <= 2; z++) p.set(x, 3, z, x % 2 === 0 ? 'red_wool' : 'white_wool');
   p.set(2, 2, 1, 'lantern', lantern(true));
-  return p.payload();
-}
-
-function kapelle(): VoxelPayload {
-  const p = new Plot([7, 12, 13]);
-  p.fill(0, 0, 0, 6, 0, 12, 'stone_bricks'); p.fill(1, 0, 1, 5, 0, 11, 'andesite');
-  for (let y = 1; y <= 4; y++) p.ring(0, 0, 6, 12, y, 'stone_bricks');
-  for (const z of [3, 6, 9, 12]) { p.fill(0, 1, z, 0, 4, z, 'chiseled_stone_bricks'); p.fill(6, 1, z, 6, 4, z, 'chiseled_stone_bricks'); }
-  p.fill(1, 1, 1, 5, 4, 11, null);
-  for (const z of [2, 5, 8, 11]) for (const y of [2, 3]) { p.set(0, y, z, y === 2 ? 'light_blue_stained_glass_pane' : 'yellow_stained_glass_pane'); p.set(6, y, z, y === 2 ? 'light_blue_stained_glass_pane' : 'yellow_stained_glass_pane'); }
-  for (const z of [3, 5, 7]) for (const x of [1, 2, 4, 5]) p.set(x, 1, z, 'oak_stairs', stairs('north'));
-  p.fill(3, 1, 1, 3, 1, 9, 'red_carpet');
-  p.set(3, 1, 10, 'chiseled_quartz_block'); p.set(3, 2, 10, 'candle', { candles: '3', lit: F, waterlogged: F });
-  p.set(2, 1, 10, 'lectern', { facing: 'north', has_book: F, powered: F }); p.set(4, 1, 11, 'potted_lily_of_the_valley'); p.set(2, 1, 11, 'potted_lily_of_the_valley');
-  p.set(1, 4, 6, 'wall_torch', facing('east')); p.set(5, 4, 6, 'wall_torch', facing('west'));
-  gableRoof(p, 0, 6, 0, 12, 5, 'stone_brick_stairs', 'stone_bricks', 'stone_brick_slab');
-  p.set(3, 6, 12, 'light_blue_stained_glass_pane');
-  for (let y = 1; y <= 9; y++) p.ring(2, 0, 4, 2, y, 'stone_bricks');
-  p.fill(3, 1, 1, 3, 6, 1, null); p.fill(3, 1, 2, 3, 2, 2, null); p.set(3, 1, 1, 'red_carpet'); p.set(3, 1, 2, 'red_carpet');
-  door(p, 3, 1, 0, 'dark_oak', 'north');
-  for (const y of [7, 8]) { p.air(3, y, 0); p.air(2, y, 1); p.air(4, y, 1); p.air(3, y, 2); }
-  p.air(3, 7, 1); p.set(3, 8, 1, 'lantern', lantern(true)); p.set(3, 9, 1, 'stone_bricks');
-  p.fill(2, 10, 0, 4, 10, 2, 'stone_brick_slab', slab()); p.set(3, 10, 1, 'stone_brick_wall');
-  p.set(3, 11, 1, 'lightning_rod', { facing: 'up', powered: F, waterlogged: F });
   return p.payload();
 }
 
@@ -395,46 +230,9 @@ function hafensteg(): VoxelPayload {
   return p.payload();
 }
 
-function wachturm(): VoxelPayload {
-  const p = new Plot([5, 12, 5]);
-  for (const [x, z] of [[0, 0], [4, 0], [0, 4], [4, 4]] as const) p.fill(x, 0, z, x, 10, z, 'oak_log', axis('y'));
-  for (const y of [3, 6]) { p.fill(1, y, 0, 3, y, 0, 'stripped_oak_log', axis('x')); p.fill(1, y, 4, 3, y, 4, 'stripped_oak_log', axis('x')); p.fill(0, y, 1, 0, y, 3, 'stripped_oak_log', axis('z')); p.fill(4, y, 1, 4, y, 3, 'stripped_oak_log', axis('z')); }
-  p.fill(1, 0, 0, 1, 8, 0, 'ladder', ladder('east'));
-  p.fill(0, 8, 0, 4, 8, 4, 'spruce_planks'); p.set(1, 8, 0, 'ladder', ladder('east'));
-  p.ring(0, 0, 4, 4, 9, 'spruce_fence'); p.air(1, 9, 0);
-  for (const [x, z] of [[0, 0], [4, 0], [0, 4], [4, 4]] as const) p.set(x, 9, z, 'oak_log', axis('y'));
-  p.fill(0, 11, 0, 4, 11, 4, 'spruce_slab', slab()); p.set(2, 11, 2, 'spruce_planks');
-  p.set(2, 10, 2, 'lantern', lantern(true)); p.set(3, 9, 3, 'barrel', { facing: 'up', open: F });
-  p.fill(1, 1, 1, 3, 7, 3, null);
-  return p.payload();
-}
-
-function baumhaus(): VoxelPayload {
-  const p = new Plot([9, 14, 9]);
-  p.fill(4, 0, 4, 4, 9, 4, 'jungle_log', axis('y'));
-  p.fill(0, 6, 0, 8, 6, 8, 'jungle_planks'); p.set(4, 6, 4, 'jungle_log', axis('y'));
-  for (let y = 7; y <= 8; y++) p.ring(2, 2, 6, 6, y, 'jungle_planks');
-  p.fill(3, 7, 3, 5, 8, 5, null); p.fill(4, 7, 4, 4, 8, 4, 'jungle_log', axis('y'));
-  p.ring(0, 0, 8, 8, 7, 'jungle_fence');
-  for (const y of [7, 8]) p.air(4, y, 2);
-  door(p, 4, 7, 2, 'jungle', 'north');
-  p.set(2, 8, 4, 'glass_pane'); p.set(6, 8, 4, 'glass_pane'); p.set(4, 8, 6, 'glass_pane');
-  p.fill(2, 9, 2, 6, 9, 6, 'jungle_slab', slab());
-  for (let x = 0; x < 9; x++) for (let z = 0; z < 9; z++) for (let y = 10; y <= 13; y++) {
-    const r = y === 13 ? 1.5 : y === 10 ? 3.6 : 3.1, d = (x - 4) ** 2 + (z - 4) ** 2;
-    if (d <= r * r) p.set(x, y, z, 'jungle_leaves', leaves());
-  }
-  p.fill(4, 10, 4, 4, 11, 4, 'jungle_log', axis('y'));
-  p.fill(4, 1, 3, 4, 6, 3, 'ladder', ladder('north'));
-  p.set(4, 6, 3, 'ladder', ladder('north'));
-  p.set(3, 7, 4, 'crafting_table'); p.set(3, 7, 5, 'chest', chest('east')); p.set(3, 7, 3, 'lantern', lantern());
-  bed(p, 5, 7, 4, 'cyan', 'south');
-  return p.payload();
-}
-
 // ------------------------------------------------------------ catalogue
 
-/** The 16 original B9 designs; unchanged so their content addresses stay stable. */
+/** The 16 original B9 designs; nine were redrawn with the design kit in LIB-05 (build/sets/klassiker.ts). */
 const CLASSIC_SPECS: readonly BuildingSpec[] = [
   { id: 'bld_fachwerkhaus', name: 'Fachwerkhaus', payload: fachwerkhaus, tags: ['dorf', 'zweistöckig'],
     description: 'Zweistöckiges Wohnhaus mit Eichenfachwerk, Satteldach, Dachboden mit Schlafplatz und Leiter.',
@@ -454,7 +252,8 @@ const CLASSIC_SPECS: readonly BuildingSpec[] = [
     gaps: ['minecraft:water'], tips: ['Wasser als Quelle setzen: zwei Eimer in gegenüberliegende Ecken füllen das Becken unendlich.'], inspiration: [WIKI('Village', 'Dorf')] },
   { id: 'bld_schmiede', name: 'Schmiede', payload: schmiede, tags: ['werkstatt', 'esse'],
     description: 'Offene Werkstatt mit Ofen, Schmelzofen, Amboss, Schmiedetisch und Schleifstein unter Pultdach.',
-    facets: { kategorie: ['handwerk'], stil: ['mittelalterlich'], biom: ['ebene', 'wald', 'taiga'], funktion: ['handwerk', 'lagern'] } },
+    facets: { kategorie: ['handwerk'], stil: ['mittelalterlich'], biom: ['ebene', 'wald', 'taiga'], funktion: ['handwerk', 'lagern'] },
+    assumed: ['minecraft:cauldron'], tips: ['Der Löschtrog ist ein Kessel mit Wasser: Kessel setzen und mit einem Eimer füllen.'] },
   { id: 'bld_scheune', name: 'Scheune', payload: scheune, tags: ['bauernhof', 'heuboden', 'stall'],
     description: 'Große Scheune mit Tierboxen aus Zäunen, Heuboden mit Leiter und breitem Tor.',
     facets: { kategorie: ['landwirtschaft'], stil: ['rustikal'], biom: ['ebene', 'savanne'], funktion: ['tierhaltung', 'lagern'] } },
@@ -490,7 +289,7 @@ const CLASSIC_SPECS: readonly BuildingSpec[] = [
     facets: { kategorie: ['wohnhaus'], stil: ['rustikal'], biom: ['dschungel', 'wald'], funktion: ['wohnen', 'aussicht'] } },
 ];
 
-export const BUILDING_SPECS: readonly BuildingSpec[] = [...CLASSIC_SPECS, ...ALL_SET_SPECS];
+export const BUILDING_SPECS: readonly BuildingSpec[] = [...CLASSIC_SPECS.map(refinedSpec), ...ALL_SET_SPECS];
 
 /** Plain tags, facet tags and the family tag of a spec. */
 export function specTags(spec: BuildingSpec): string[] {

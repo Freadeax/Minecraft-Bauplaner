@@ -17,7 +17,7 @@ import type { Generator } from './types.js';
  * every step (the next turn is a whole storey higher).
  */
 export const STAIRWELL_GENERATOR: Generator = {
-  id: 'treppenhaus', name: 'Treppenhaus', version: 2,
+  id: 'treppenhaus', name: 'Treppenhaus', version: 3,
   description: 'Treppenturm mit Wendeltreppe um Pfeiler, offenes Treppenauge oder Lichtschacht; Türen je Geschoss übereinander, passend zur Geschosshöhe des Hauses.',
   params: [
     { key: 'breite', label: 'Außenmaß', group: 'Maße', type: 'int', min: 5, max: 11, default: 7, unit: 'Blöcke', hint: 'Quadratischer Grundriss; innen 2 Blöcke weniger.' },
