@@ -1,8 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { BlockState, Cell } from '../../../../packages/voxel/src/index.js';
 import { useRenderKit } from '../blockmodels/assets';
 import { download, errorText, formatNumber } from '../app/ui';
 import type { ExportResult, ModelFormat, ModelKind } from './build';
+import { workersAvailable } from '../jobs/client';
+import { JobStatus } from '../jobs/JobStatus';
+import type { JobProgress } from '../jobs/protocol';
 import './model3d.css';
 
 /**
@@ -46,6 +49,8 @@ export function ModelExportPanel({ cells, palette, name, source }: {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState<ExportResult | null>(null);
+  const [progress, setProgress] = useState<JobProgress | null>(null);
+  const running = useRef<AbortController | null>(null);
 
   const info = FORMATS.find(f => f.id === format)!;
   const asPrint = info.print || kind === 'print';
@@ -65,25 +70,45 @@ export function ModelExportPanel({ cells, palette, name, source }: {
   const wallCells = Math.max(1, Math.ceil(wallMm / cellMm));
 
   async function run() {
-    setError(''); setBusy(true); setResult(null);
-    // Let the button show "Erzeugt …" before the main thread is busy.
-    await new Promise(r => setTimeout(r, 30));
+    running.current?.abort();
+    const controller = new AbortController(); running.current = controller;
+    setError(''); setBusy(true); setResult(null); setProgress({ step: 'Vorbereiten', fraction: 0 });
+    const texturePng = kit.textured ? () => new Promise<Uint8Array | null>(resolve => kit.atlas.canvas.toBlob(b => {
+      if (!b) { resolve(null); return; }
+      void b.arrayBuffer().then(buf => resolve(new Uint8Array(buf)), () => resolve(null));
+    }, 'image/png')) : undefined;
+    const print = { detail, smallParts, fill, hollow: hollow ? wallCells : 0, minPart: dropLoose ? 8 * detail ** 3 : 0, maxColors: format === '3mf' ? maxColors : 0 };
     try {
-      const [{ exportModel }, formats] = await Promise.all([import('./build'), import('../../../../packages/formats/src/index.js')]);
-      const texturePng = kit.textured ? () => new Promise<Uint8Array | null>(resolve => kit.atlas.canvas.toBlob(b => {
-        if (!b) { resolve(null); return; }
-        void b.arrayBuffer().then(buf => resolve(new Uint8Array(buf)), () => resolve(null));
-      }, 'image/png')) : undefined;
-      const out = await exportModel(formats, {
-        format, kind, name, cells, palette, blockSize, ...(source && { source }),
-        view: { renderer: kit.renderer, sprites: kit.atlas.lookup, textured: kit.textured, place, bake, ...(texturePng && { texturePng }) },
-        print: { detail, smallParts, fill, hollow: hollow ? wallCells : 0, minPart: dropLoose ? 8 * detail ** 3 : 0, maxColors: format === '3mf' ? maxColors : 0 },
-      });
+      let out: ExportResult;
+      if (workersAvailable()) {
+        // In the background (PERF-04): the page stays usable, „Abbrechen“ stops at once.
+        const [{ runJob }, { snapshotRenderer }] = await Promise.all([import('../jobs/client'), import('../blockmodels/snapshot')]);
+        const { cellsToColumns, columnBuffers } = await import('../../../../packages/voxel/src/index.js');
+        const viewKind = !(format === 'stl' || format === '3mf') && kind === 'view';
+        const png = viewKind && texturePng ? await texturePng() : null;
+        const columns = cellsToColumns(cells);
+        out = await runJob('model', {
+          format, kind, name, columns, palette, blockSize, ...(source && { source }), print,
+          view: { snapshot: viewKind ? snapshotRenderer(kit.renderer, kit.atlas.lookup, palette) : { key: kit.renderer.key, textured: false, blocks: [], tints: [], sprites: [] },
+            textured: kit.textured, place, bake, texturePng: png },
+        }, { signal: controller.signal, transfer: columnBuffers(columns), onProgress: p => { if (running.current === controller) setProgress(p); } });
+      } else {
+        // Let the button show "Erzeugt …" before the main thread is busy.
+        await new Promise(r => setTimeout(r, 30));
+        const [{ exportModel }, formats] = await Promise.all([import('./build'), import('../../../../packages/formats/src/index.js')]);
+        out = await exportModel(formats, {
+          format, kind, name, cells, palette, blockSize, ...(source && { source }), print,
+          view: { renderer: kit.renderer, sprites: kit.atlas.lookup, textured: kit.textured, place, bake, ...(texturePng && { texturePng }) },
+        });
+      }
+      if (controller.signal.aborted) return;
       download(out.file.name, out.file.bytes as Uint8Array<ArrayBuffer>, out.file.type);
       setResult(out);
-    } catch (e) { setError(errorText(e)); }
-    finally { setBusy(false); }
+    } catch (e) { if (!controller.signal.aborted) setError(errorText(e)); }
+    finally { if (running.current === controller) { running.current = null; setBusy(false); setProgress(null); } }
   }
+  const cancel = () => { running.current?.abort(); running.current = null; setBusy(false); setProgress(null); setError('Export abgebrochen – es wurde keine Datei erzeugt.'); };
+  useEffect(() => () => running.current?.abort(), []);
 
   if (!size.blocks) return <section className="model3d" aria-label="3D-Datei"><p className="muted">Keine Blöcke – nichts zu exportieren.</p></section>;
   return <section className="model3d" aria-label="3D-Datei" data-format={format} data-kind={asPrint ? 'print' : 'view'}>
@@ -154,13 +179,14 @@ export function ModelExportPanel({ cells, palette, name, source }: {
         {info.print && cellMm < MIN_FEATURE_MM && <p className="notice warning" role="status">Eine Gitterzelle ist nur {fmt(cellMm, 2)} mm. Teile dünner als etwa {fmt(MIN_FEATURE_MM)} mm brechen leicht – Maßstab erhöhen oder Feinheit verringern.</p>}
       </fieldset>}
 
-      {!tooBig && (asPrint ? gridCells > 8_000_000 : size.blocks > 300_000) && <p className="muted" role="status">Großes Modell: der Export kann bis zu einer halben Minute dauern, die Seite reagiert in der Zeit nicht.</p>}
+      {!tooBig && (asPrint ? gridCells > 8_000_000 : size.blocks > 300_000) && <p className="muted" role="status">Großes Modell: der Export kann bis zu einer halben Minute dauern. Er läuft im Hintergrund – die Seite bleibt bedienbar und du kannst ihn abbrechen.</p>}
       {tooBig && <p className="notice warning" role="alert">Zu groß für den Druckexport: {formatNumber(gridCells)} Gitterzellen (höchstens {formatNumber(PRINT_GRID_LIMIT)}). Feinheit verringern.</p>}
       <div className="button-row">
         <button className="primary" type="submit" disabled={busy || tooBig || !validSize}>{busy ? 'Erzeugt …' : `⤓ ${info.label.split(' (')[0]} exportieren`}</button>
       </div>
     </form>
-    {error && <div className="notice warning" role="alert"><strong>Export fehlgeschlagen.</strong><p>{error}</p></div>}
+    {busy && <JobStatus title={`${info.label.split(' (')[0]} wird erzeugt`} progress={progress} onCancel={cancel} />}
+    {error && <div className="notice warning" role="alert"><strong>{error.startsWith('Export abgebrochen') ? 'Abgebrochen.' : 'Export fehlgeschlagen.'}</strong><p>{error}</p></div>}
     {result && <ModelReport result={result} />}
   </section>;
 }

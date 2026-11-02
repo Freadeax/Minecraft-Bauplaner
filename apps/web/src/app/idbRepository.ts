@@ -225,7 +225,9 @@ export class IdbRepository implements Repository {
 
   async applyBatch(input: StorageBatch): Promise<Project[]> {
     // Snapshot before async reads; callers cannot change the expected revision mid-transaction.
-    const batch = structuredClone(input);
+    // Versions are packed first (PERF-04): cloning the packed form is cheap, cloning a million cells is not,
+    // and a packed form a worker already made for these cells is reused instead of packing again.
+    const batch = structuredClone(input.versions?.length ? { ...input, versions: input.versions.map(v => packVersion(v) as unknown as AssetVersion) } : input);
     checkStorageBatch(batch);
     const stores = new Set<StoreName>();
     if (batch.projects?.length) stores.add('projects');

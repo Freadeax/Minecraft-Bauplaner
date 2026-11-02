@@ -98,6 +98,8 @@ export interface MeshOptions {
   readonly light?: boolean;
   /** Ambient occlusion (default true). */
   readonly ao?: boolean;
+  /** Section builds only: share done 0..1 (light and culling count as the first third). Not part of the look. */
+  readonly progress?: (fraction: number) => void;
 }
 
 export const SECTION = 32;
@@ -386,7 +388,9 @@ export function buildBlockMesh(cells: readonly Cell[], palette: readonly BlockSt
  */
 export function buildSectionMesh(cells: readonly Cell[], palette: readonly BlockState[], renderer: BlockRenderer, sprites: SpriteLookup, origin: Vec3,
   markOf?: (cell: Cell) => Mark | null, options: MeshOptions = {}, previous?: readonly MeshSection[]): SectionMesh {
+  options.progress?.(0);
   const c = core(cells, palette, renderer, sprites, origin, markOf, options);
+  options.progress?.(0.35);
   const seed = fnv(`${renderer.key}|${origin.join(',')}|${options.light !== false}|${options.ao !== false}`);
   const stateHash = palette.map(s => fnv(stateKey(s)));
   const markHash = new Map<string, number>();
@@ -444,7 +448,9 @@ export function buildSectionMesh(cells: readonly Cell[], palette: readonly Block
   const old = new Map((previous ?? []).map(s => [s.key, s]));
   const sections: MeshSection[] = [];
   let reused = 0, built = 0, quads = 0;
+  let visited = 0;
   for (const [key, a] of acc) {
+    if (options.progress && (++visited & 15) === 0) options.progress(0.35 + 0.65 * visited / acc.size);
     if (!a.members.length) continue;
     const hash = `${a.sum.toString(36)}.${a.xor.toString(36)}.${a.members.length}`;
     const before = old.get(key);

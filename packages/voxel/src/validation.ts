@@ -214,8 +214,15 @@ function deepFreeze(value: unknown): void {
   }
 }
 
-/** Validates before returning an isolated, recursively immutable snapshot. */
+/**
+ * Validates before returning an isolated, recursively immutable snapshot. A
+ * payload that is already sealed (deeply frozen and validated against limits
+ * at least as strict) is returned as it is: nobody can change it, so a copy
+ * would only cost time – for a million cells several seconds (PERF-04).
+ */
 export function createPayload(input: unknown, limits: Partial<Limits> = {}): VoxelPayload {
+  const passed = input !== null && typeof input === 'object' ? validated.get(input) : undefined;
+  if (passed && covers(passed, { ...DEFAULT_LIMITS, ...limits })) return input as VoxelPayload;
   validatePayload(input, limits);
   const copy = structuredClone(input);
   deepFreeze(copy);
@@ -235,5 +242,24 @@ export function adoptPayload(input: unknown, limits: Partial<Limits> = {}): Voxe
   validatePayload(input, limits);
   deepFreeze(input);
   validated.set(input as object, { ...DEFAULT_LIMITS, ...limits });
+  return input;
+}
+
+/**
+ * Seals a payload that was validated on another thread and rebuilt here from
+ * its transport form (`payloadToTransport` → `columnsToCells`), without
+ * validating it a second time. The cells must already be frozen (as
+ * `columnsToCells` builds them); head parts are frozen here. Only for
+ * transports this application produced itself from a sealed payload, never
+ * for data from files or the network – those go through createPayload.
+ */
+export function sealTransportedPayload(input: VoxelPayload, limits: Partial<Limits>): VoxelPayload {
+  for (const [key, value] of Object.entries({ ...DEFAULT_LIMITS, ...limits })) integer(value, 1, Number.MAX_SAFE_INTEGER, `limits.${key}`);
+  if (input.cells.length > ({ ...DEFAULT_LIMITS, ...limits }).maxCells) fail('cells', 'Zellenlimit überschritten');
+  const { cells, ...head } = input;
+  deepFreeze(head);
+  Object.freeze(cells);
+  Object.freeze(input);
+  validated.set(input, { ...DEFAULT_LIMITS, ...limits });
   return input;
 }

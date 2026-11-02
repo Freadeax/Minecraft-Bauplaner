@@ -15,6 +15,10 @@ import { GraphicsMenu } from './GraphicsMenu';
 import { SceneController } from './sceneController';
 import type { MeshStats, ViewerState } from './sceneController';
 import type { ViewerProps } from './types';
+import { buildSectionMeshInBackground, meshInBackground } from './backgroundMesh';
+import { isAbort } from '../jobs/client';
+import { JobStatus } from '../jobs/JobStatus';
+import type { JobProgress } from '../jobs/protocol';
 
 const PAD: readonly (readonly [code: string, label: string, name: string])[] = [
   ['KeyQ', '⤓', 'Abwärts'], ['KeyW', '▲', 'Vorwärts'], ['Space', '⤒', 'Aufwärts'],
@@ -48,6 +52,8 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
   const [state, setState] = useState<ViewerState>({ mode: 'orbit', projection: 'perspective', view: 'iso', speed: 8 });
   const [hover, setHover] = useState<Cell | null>(null);
   const [stats, setStats] = useState<MeshStats | null>(null);
+  /** Background build of the 3D view in progress (PERF-04). */
+  const [busy, setBusy] = useState<JobProgress | null>(null);
 
   useEffect(() => {
     const el = canvasHost.current; if (!el) return;
@@ -66,9 +72,36 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
     const c = controller.current;
     if (c) {
       const first = stats === null;
-      setStats(c.setCells(scene.cells, payload.bounds, scene.palette, kit, markScene));
-      if (first) c.resetSpeed();
-      return;
+      if (!meshInBackground(scene.cells.length)) {
+        setBusy(null);
+        setStats(c.setCells(scene.cells, payload.bounds, scene.palette, kit, markScene));
+        if (first) c.resetSpeed();
+        return;
+      }
+      // Large models (PERF-04): faces, occlusion and light are computed in the background; the page stays usable
+      // and the previous geometry stays visible until the new one is ready.
+      const controllerAbort = new AbortController(), started = performance.now();
+      const plan = c.planCells(payload.bounds, kit);
+      setBusy({ step: 'Blöcke vorbereiten', fraction: 0 });
+      buildSectionMeshInBackground(scene.cells, scene.palette, kit, plan.origin, markScene, plan.previous, {
+        signal: controllerAbort.signal, onProgress: p => { if (!controllerAbort.signal.aborted) setBusy(p); },
+      }).then(built => {
+        if (controllerAbort.signal.aborted || controller.current !== c) return;
+        setStats(c.applyCells(plan, built, scene.cells, started));
+        if (first) c.resetSpeed();
+        setBusy(null);
+      }, e => {
+        if (controllerAbort.signal.aborted || isAbort(e) || controller.current !== c) return;
+        // The worker failed (memory, old browser): build here as before rather than showing nothing.
+        setBusy({ step: 'Hintergrund nicht verfügbar – Ansicht wird direkt berechnet', fraction: null });
+        setTimeout(() => {
+          if (controllerAbort.signal.aborted || controller.current !== c) return;
+          setStats(c.setCells(scene.cells, payload.bounds, scene.palette, kit, markScene));
+          if (first) c.resetSpeed();
+          setBusy(null);
+        }, 30);
+      });
+      return () => controllerAbort.abort();
     }
     if (!software || !canvasHost.current) return;
     // Software view: flat colours, marks mixed in.
@@ -102,7 +135,7 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
   return <div className={`scene${flying ? ' flying' : ''}`} ref={host}>
     <div className="canvas-host" ref={canvasHost} tabIndex={0} aria-label="3D-Ansicht (fokussierbar für Tastatursteuerung)"
       data-mode={software ? 'software' : state.mode} data-projection={state.projection} data-view={state.view ?? ''}
-      data-faces={stats?.quads ?? ''} data-spawn-day={stats?.spawnDay ?? ''} data-spawn-night={stats?.spawnNight ?? ''} data-blocks={stats ? stats.blocks - scene.count : ''} data-entities={scene.count} data-build-ms={stats ? stats.buildMs.toFixed(1) : ''} />
+      data-faces={stats?.quads ?? ''} data-spawn-day={stats?.spawnDay ?? ''} data-spawn-night={stats?.spawnNight ?? ''} data-blocks={stats ? stats.blocks - scene.count : ''} data-entities={scene.count} data-build-ms={stats ? stats.buildMs.toFixed(1) : ''} data-mesh={busy ? 'pending' : stats ? 'ready' : ''} />
     <div className="viewer-tools" role="toolbar" aria-label="Ansicht">
       <div className="seg" role="group" aria-label="Blickrichtung">
         {VIEWS.map(v => <button key={v.id} title={`${v.title} (${v.key})`} aria-label={v.title} aria-pressed={state.view === v.id && !flying} onClick={() => setView(v.id)}>{v.label}</button>)}
@@ -130,6 +163,7 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
         {SPEED_STEPS.map(s => <option key={s} value={s}>{s} B/s</option>)}</select></label>
       <button className="end" onClick={() => controller.current?.setFlight(false)}>✕ Flug beenden</button>
     </div>}
+    {busy && !software && <JobStatus className="viewer-busy" title={stats ? '3D-Ansicht wird aktualisiert' : '3D-Ansicht wird berechnet'} progress={busy} />}
     {software && <div className="render-mode" role="status">Isometrische Ersatzansicht · WebGL hier nicht verfügbar</div>}
     {!software && !kit.textured && <button type="button" className="texture-hint" onClick={openTextureDialog}
       title="Blockformen sind eigene Nachbildungen in Durchschnittsfarben. Originaltexturen aus deiner Minecraft-Version laden.">▦ Originaltexturen laden</button>}

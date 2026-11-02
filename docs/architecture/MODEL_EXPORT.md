@@ -49,11 +49,11 @@ ZIP-Pakete (OBJ, 3MF) schreibt `packages/formats/src/zipWrite.ts` (CRC-32, defla
 
 ## Messung (Node, Container)
 
-Synthetische Siedlung, 64.912 Blöcke (128 × 10 × 128, 144 Häuser), als 3MF mit Füllen: Feinheit 1 ≈ 1 s (160 Tsd. Dreiecke, 1,3 MB), Feinheit 2 ≈ 4 s (717 Tsd., 5,8 MB), Feinheit 4 ≈ 20 s (2,9 Mio., 23 MB) – alle wasserdicht. Ansichtsmodell derselben Siedlung ≈ 0,5 s. Ab 8 Mio. Gitterzellen weist die Oberfläche auf die Wartezeit hin; der Export läuft im Hauptthread.
+Synthetische Siedlung, 64.912 Blöcke (128 × 10 × 128, 144 Häuser), als 3MF mit Füllen: Feinheit 1 ≈ 1 s (160 Tsd. Dreiecke, 1,3 MB), Feinheit 2 ≈ 4 s (717 Tsd., 5,8 MB), Feinheit 4 ≈ 20 s (2,9 Mio., 23 MB) – alle wasserdicht. Ansichtsmodell derselben Siedlung ≈ 0,5 s. Ab 8 Mio. Gitterzellen weist die Oberfläche auf die Wartezeit hin. Im Browser läuft der Export im Hintergrund-Worker mit Schrittanzeige und „Abbrechen“ ([BACKGROUND_JOBS](BACKGROUND_JOBS.md), PERF-04); die Seite bleibt bedienbar.
 
 ## Prüfungen und Grenzen
 
 - Node `tests/model3d.test.mjs`: Wasserdichtheit und Volumen (Würfel, Raum, Haus mit Treppen/Zaun/Tür/Glas bei Feinheit 1/2/4, gefüllt/hohl), Kanten- und Eckreparatur inkl. Schachbrett, Aushöhlen/Füllen, lose Teile, Farbreduktion, Druckformen je Zustand, Ansichtsnetz (Flächen, Glas, Eingebackenes), OBJ/MTL-Verweise, GLB-Aufbau (Chunks, Accessoren, Ausrichtung, Textur), STL-Rundreise mit Normalen, ZIP gegen den App-ZIP-Leser, 3MF-Paket.
 - Browser `tests/e2e/model3d.e2e.mjs` (Chromium): Bauteil → GLB, STL (heruntergeladene Datei unabhängig auf Wasserdichtheit und 100 mm geprüft), 3MF mit 4 Farben und Aushöhlen; Betrachter auf Handybreite → OBJ-ZIP; Anlage zeigt den Export.
-- Nicht geprüft: Öffnen in Blender, Cura/PrusaSlicer/Bambu Studio und echter Druck; Firefox/Safari. Biomfarben, Blockentities als Modelle (Truhen, Banner nur als eigene Form), freie Entities und animierte Texturen fehlen. Das Druckmodell fasst keine Flächen zusammen (größere Dateien, dafür ohne T-Stöße). Kein Worker: sehr große Modelle blockieren die Seite während des Exports.
+- Nicht geprüft: Öffnen in Blender, Cura/PrusaSlicer/Bambu Studio und echter Druck; Firefox/Safari. Biomfarben, Blockentities als Modelle (Truhen, Banner nur als eigene Form), freie Entities und animierte Texturen fehlen. Das Druckmodell fasst keine Flächen zusammen (größere Dateien, dafür ohne T-Stöße). Der Export läuft seit PERF-04 im Worker; offen bleibt nur die Flächenzusammenfassung (S06).
 - Lizenz: Texturen stammen ausschließlich aus der vom Nutzer geladenen Quelle (ADR-020) und landen nur in seiner Datei; das Repo und Pages enthalten keine.

@@ -2,8 +2,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { countBlocks, selectLayers, transformPayload } from '../../../../packages/voxel/src/index.js';
 import type { Cell, VoxelPayload } from '../../../../packages/voxel/src/index.js';
 import type { SchemResult, LitematicResult } from '../../../../packages/formats/src/index.js';
-import { IMPORT_ACCEPT, IMPORT_FORMAT_LABEL, MAX_IMPORT_BYTES, MAX_IMPORT_LABEL } from '../app/importFile';
-import type { ImportFormat } from '../app/importFile';
+import { IMPORT_ACCEPT, IMPORT_FORMAT_LABEL, MAX_IMPORT_BYTES, MAX_IMPORT_LABEL, importFile } from '../app/importFile';
+import { JobStatus } from '../jobs/JobStatus';
+import type { JobProgress } from '../jobs/protocol';
 import { makeDemo } from '../demo';
 import { Viewer } from '../Viewer';
 import { stateColor } from '../colors';
@@ -20,39 +21,33 @@ export function ViewerView(){
   const [mode,setMode]=useState('all');const [selected,setSelected]=useState<Cell|null>(null);
   const [notice,setNotice]=useState('');const [busy,setBusy]=useState(false);const [issues,setIssues]=useState<string[]>([]);
   const [report,setReport]=useState<SchemResult|LitematicResult|null>(null);const lit=report&&'regions' in report?report:null;
-  const original=useRef<{name:string;buffer:ArrayBuffer}|null>(null);const deadline=useRef<ReturnType<typeof setTimeout>|undefined>(undefined);
-  const [showInfo,setShowInfo]=useState(false);const file=useRef<HTMLInputElement>(null);const worker=useRef<Worker|null>(null);const job=useRef(0);
+  const original=useRef<{name:string;buffer:ArrayBuffer}|null>(null);const running=useRef<AbortController|null>(null);const [progress,setProgress]=useState<JobProgress|null>(null);
+  const [showInfo,setShowInfo]=useState(false);const file=useRef<HTMLInputElement>(null);const job=useRef(0);
   const index={x:0,y:1,z:2}[axis];const min=payload.bounds.min[index]!;const max=payload.bounds.maxExclusive[index]!-1;
   const current=Math.max(min,Math.min(max,layer));
   const visible=useMemo(()=>mode==='all'?payload:selectLayers(payload,axis,mode==='single'?current:min,current+1),[payload,axis,current,min,mode]);
   const counts=useMemo(()=>countBlocks(payload),[payload]);const visibleCounts=useMemo(()=>countBlocks(visible),[visible]);
   const onSelect=useCallback((cell:Cell|null)=>setSelected(cell),[]);
-  useEffect(()=>()=>{worker.current?.terminate();clearTimeout(deadline.current);},[]);
+  useEffect(()=>()=>{running.current?.abort();},[]);
   useEffect(()=>setSelected(null),[visible]);
-  const reset=()=>{job.current++;worker.current?.terminate();clearTimeout(deadline.current);setReport(null);original.current=null;setBusy(false);setPayload(makeDemo());setTitle('Das kleine Hafenhaus');setIsDemo(true);setIssues([]);setSelected(null);setAxis('y');setLayer(10);setMode('all');setNotice('Beispiel neu geladen.');};
+  const reset=()=>{job.current++;running.current?.abort();setReport(null);original.current=null;setBusy(false);setPayload(makeDemo());setTitle('Das kleine Hafenhaus');setIsDemo(true);setIssues([]);setSelected(null);setAxis('y');setLayer(10);setMode('all');setNotice('Beispiel neu geladen.');};
   const rotate=()=>{const r=transformPayload(payload,{position:payload.pivot,quarterTurns:1,mirrorX:false});setPayload(r.payload);setIssues(r.issues.map(i=>i.message));setSelected(null);};
   const openFile=async (f:File)=>{
-    job.current++;const id=job.current;worker.current?.terminate();clearTimeout(deadline.current);setNotice('');setBusy(false);
+    job.current++;const id=job.current;running.current?.abort();setNotice('');setBusy(false);setProgress(null);
     if(f.size>MAX_IMPORT_BYTES){setNotice(`Die Datei ist zu groß. Erlaubt sind maximal ${MAX_IMPORT_LABEL}.`);return;}
-    setBusy(true);
+    const controller=new AbortController();running.current=controller;setBusy(true);
     try{
-      const buffer=await f.arrayBuffer();if(id!==job.current)return;
-      const w=new Worker(new URL('../import.worker.ts',import.meta.url),{type:'module'});worker.current=w;
-      deadline.current=setTimeout(()=>{if(id===job.current){job.current++;w.terminate();setBusy(false);setNotice('Import wegen überschrittenem Zeitbudget abgebrochen. Der bisherige Plan bleibt erhalten.');}},12_000);
-      w.onmessage=(event:MessageEvent<{jobId:number;error?:string;payload:VoxelPayload;format:ImportFormat;report?:SchemResult|LitematicResult}>)=>{
-        if(event.data.jobId!==job.current)return;
-        clearTimeout(deadline.current);setBusy(false);w.terminate();
-        if(event.data.error){setNotice(`Import nicht übernommen: ${event.data.error}`);return;}
-        const p=event.data.payload;setPayload(p);setTitle(f.name);setIsDemo(false);setSelected(null);setMode('all');setAxis('y');setLayer(p.bounds.maxExclusive[1]-1);setIssues([]);
-        setReport(event.data.report??null);original.current=event.data.format!=='json'?{name:f.name,buffer}:null;
-        setNotice(event.data.format==='json'?'JSON-Voxeldaten geprüft und lokal geöffnet.':`${IMPORT_FORMAT_LABEL[event.data.format]} geprüft und lokal geöffnet. Originaldatei und vollständiges Quell-NBT bleiben erhalten.`);
-      };
-      w.onerror=()=>{if(id===job.current){clearTimeout(deadline.current);setBusy(false);setNotice('Der Datei-Worker ist fehlgeschlagen. Der bisherige Plan bleibt erhalten.');}w.terminate();};
-      const transferred=buffer.slice(0);w.postMessage({jobId:id,buffer:transferred,name:f.name},[transferred]);
-    }catch(e){if(id===job.current){clearTimeout(deadline.current);setBusy(false);setNotice(e instanceof Error?e.message:'Datei konnte nicht geöffnet werden.');}}
+      // Read in the background worker and rebuilt here in slices (PERF-04): large files never freeze the page.
+      const r=await importFile(f,controller.signal,undefined,p=>{if(id===job.current)setProgress(p);});
+      if(id!==job.current)return;
+      const p=r.payload;setPayload(p);setTitle(f.name);setIsDemo(false);setSelected(null);setMode('all');setAxis('y');setLayer(p.bounds.maxExclusive[1]-1);setIssues([]);
+      setReport(r.report);original.current=r.format!=='json'?{name:f.name,buffer:r.original}:null;
+      setNotice(r.format==='json'?'JSON-Voxeldaten geprüft und lokal geöffnet.':`${IMPORT_FORMAT_LABEL[r.format]} geprüft und lokal geöffnet. Originaldatei und vollständiges Quell-NBT bleiben erhalten.`);
+    }catch(e){if(id===job.current)setNotice(`Import nicht übernommen: ${e instanceof Error?e.message:'Datei konnte nicht gelesen werden.'} Der bisherige Plan bleibt erhalten.`);}
+    finally{if(id===job.current){setBusy(false);setProgress(null);if(running.current===controller)running.current=null;}}
   };
   const loadExample=async(path='contract-v3.schem',name='Vertragsfixture-v3.schem')=>{
-    const id=++job.current;worker.current?.terminate();clearTimeout(deadline.current);setBusy(true);setNotice('Testdatei wird geladen …');
+    const id=++job.current;running.current?.abort();setBusy(true);setNotice('Testdatei wird geladen …');
     try{const response=await fetch(`${import.meta.env.BASE_URL}examples/${path}`);if(!response.ok)throw new Error('Testdatei konnte nicht geladen werden.');const blob=await response.blob();if(id!==job.current)return;await openFile(new File([blob],name));}
     catch(e){if(id===job.current){setBusy(false);setNotice(e instanceof Error?e.message:'Testdatei konnte nicht geladen werden.');}}
   };
@@ -67,7 +62,7 @@ export function ViewerView(){
     <div className="viewport"><div className="view-toolbar"><span className="view-label"><span/> 3D-VORSCHAU</span><div><button aria-label="Bauwerk um 90 Grad drehen" onClick={rotate}>↻ <span>90° drehen</span></button><button aria-label="Alle Schichten anzeigen" onClick={()=>setMode('all')}>▣ <span>Alles zeigen</span></button></div></div><Viewer key={title} payload={payload} cells={visible.cells} onSelect={onSelect} focus={selected?{min:selected.position,maxExclusive:[selected.position[0]+1,selected.position[1]+1,selected.position[2]+1]}:null}/><div className="axis-key" aria-hidden="true"><span className="axis-x">X →</span><span className="axis-y">Y ↑</span><span className="axis-z">Z ↙</span></div><div className="viewport-footer"><span>Ziehen: drehen · Scrollen: zoomen · Klick: Block prüfen · 1–6 Ansichten · F einpassen · V Flug</span><span>{visibleCounts.blocks.toLocaleString('de-DE')} sichtbar</span></div><div className="coordinate-bar" aria-live="polite">{selected?<><span className="mint">BLOCKAUSWAHL</span><strong>X {selected.position[0]} · Y {selected.position[1]} · Z {selected.position[2]}</strong><span>{chosen?.id??'Löschzelle'}</span></>:<><span className="mint">BLOCKINSPEKTOR</span><span>Klicke einen Block im Bauwerk an.</span></>}</div></div>
     <aside className="layers"><span className="panel-kicker">SCHICHT FÜR SCHICHT</span><h2>Dein Durchblick.</h2><p>Blende Schichten aus und entdecke, was darunterliegt.</p><label htmlFor="axis">Schnittrichtung</label><div className="axis-tabs" role="group" aria-label="Schnittrichtung">{(['x','y','z'] as const).map(a=><button key={a} aria-pressed={axis===a} onClick={()=>{setAxis(a);setLayer(payload.bounds.maxExclusive[{x:0,y:1,z:2}[a]]!-1);}}>{a.toUpperCase()}</button>)}</div><label htmlFor="layer-mode">Ansicht</label><select id="layer-mode" value={mode} onChange={e=>setMode(e.target.value)}><option value="all">Ganzes Bauwerk</option><option value="upto">Bis zu dieser Schicht</option><option value="single">Nur diese Schicht</option></select><div className="layer-value"><span>{axis.toUpperCase()}-Schicht</span><strong>{current.toString().padStart(2,'0')}</strong></div><input type="range" aria-label="Aktuelle Schicht" min={min} max={max} step="1" value={current} onChange={e=>{setLayer(Number(e.target.value));if(mode==='all')setMode('upto');}}/><div className="range-labels"><span>{min}</span><span>{max}</span></div><div className="stepper"><button aria-label="Vorherige Schicht" disabled={current<=min} onClick={()=>{setLayer(current-1);if(mode==='all')setMode('upto');}}>−</button><span>Schicht wechseln</span><button aria-label="Nächste Schicht" disabled={current>=max} onClick={()=>{setLayer(current+1);if(mode==='all')setMode('upto');}}>＋</button></div><div className="layer-tip"><span>◈</span><strong>Der Plan bleibt vollständig.</strong><p>Schichtfilter ändern nur die Ansicht. Die Gesamtmengen bleiben erhalten.</p></div></aside></section>
     {report&&<section className="import-report" aria-label="Importbericht"><div><span className="eyebrow">DATEI GEPRÜFT</span><h2>{lit?'Litematic':'Schem'}-Importbericht</h2></div><dl><div><dt>DataVersion</dt><dd>{report.dataVersion} · Registry ungeprüft</dd></div>{lit&&<div><dt>Format · Regionen</dt><dd>Litematic {lit.version}{lit.subVersion!==null?`.${lit.subVersion}`:''} · {lit.regions.map(r=>`${r.name} (${r.dimensions.join('×')} ab ${r.min.join('/')})`).join(', ')}</dd></div>}<div><dt>{lit?'Minimum relativ zum Ursprung':'Offset der Quelle'}</dt><dd>{report.offset.join(' / ')}</dd></div><div><dt>BlockEntities</dt><dd>{report.payload.blockEntities.length}</dd></div><div><dt>SHA-256 des Originals</dt><dd className="hash">{report.sourceSha256}</dd></div></dl><ul>{report.warnings.map((w,i)=><li key={i}>{w}</li>)}</ul><p>Voxel-JSON sichert nur die aktuelle Blockansicht. Metadata, Biome, freie Entities und geplante Ticks sind separat im Quell-NBT und unveränderten Original erhalten. Für eine vollständige Sicherung „Original-{lit?'Litematic':'Schem'} sichern“ verwenden.</p></section>}
-    {(notice||busy)&&<div className="notice" role="status">{busy?'Bauplandatei wird im Hintergrund geprüft …':notice}{busy&&<button onClick={()=>{job.current++;worker.current?.terminate();clearTimeout(deadline.current);setBusy(false);setNotice('Import abgebrochen.');}}>Abbrechen</button>}</div>}
+    {busy&&<JobStatus title="Bauplandatei wird im Hintergrund geprüft" progress={progress} onCancel={()=>{job.current++;running.current?.abort();running.current=null;setBusy(false);setProgress(null);setNotice('Import abgebrochen.');}}/>}{notice&&!busy&&<div className="notice" role="status">{notice}</div>}
     {issues.length>0&&<div className="notice warning" role="alert"><strong>Offene Transformationsregeln</strong><p>{issues.join(' ')}</p><p>Die Vorschau ist keine Freigabe für einen Minecraft-Export.</p></div>}
     <section className="viewer-plans" aria-label="Bilder und Bauplan"><div className="section-head"><div><span className="eyebrow">ANSICHTEN UND BAUPLAN</span><h2>Von allen Seiten, Ebene für Ebene.</h2></div><p>Neun Blickwinkel mit Schnitt und PNG-Export<br/><span>Bauplan je Y-Ebene zum Nachbauen und Drucken.</span></p></div>
       <div className="viewer-plans-body"><SchemView payload={payload} cacheKey={shotKey} name={title} tab={planTab} onTab={setPlanTab} tabs={PLAN_TABS}/></div></section>

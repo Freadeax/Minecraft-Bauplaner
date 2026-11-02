@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { countBlocks } from '../../../../packages/voxel/src/index.js';
 import type { Cell } from '../../../../packages/voxel/src/index.js';
-import { addAssetVersion, applyOperation, buildCatalog, buildingInfo, createAsset, createEnsembleProject, createProject, ensemblesWith, facetCounts, FACETS, familyMembers,
+import { applyOperation, buildCatalog, buildingInfo, createAsset, createEnsembleProject, createProject, ensemblesWith, facetCounts, FACETS, familyMembers,
   latestVersions, newInstance, projectContext, queryCatalog, resolveProject, similarEntries, suggestForProject, updateAssetMeta, withFacets,
   ENSEMBLES, ANLAGEN, GENERATORS, SORT_LABEL, STAGES, variantGroup, assetIdsIn, templateFromEnsemble, collectionTree, flattenTree } from '../../../../packages/domain/src/index.js';
 import type { Asset, AssetVersionSource, BuildingFacets, CatalogEntry, Ensemble, OriginalFile, Project, SortKey } from '../../../../packages/domain/src/index.js';
@@ -11,6 +11,11 @@ import { useApp } from '../app/context';
 import { importFile, IMPORT_ACCEPT, IMPORT_FORMAT_LABEL } from '../app/importFile';
 import type { ImportedFile } from '../app/importFile';
 import { errorText, formatNumber } from '../app/ui';
+import { catalogMetrics } from '../app/metricsCache';
+import { addAssetVersionInBackground } from '../jobs/versions';
+import { isAbort } from '../jobs/client';
+import { JobStatus } from '../jobs/JobStatus';
+import type { JobProgress } from '../jobs/protocol';
 import { DIM_MARK, HIT_MARK } from '../viewer/marks';
 import type { Mark } from '../viewer/types';
 import type { Highlight } from './library/ConnectorEditor';
@@ -71,6 +76,8 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
   const [link, setLink] = useState<{ href: string; label: string } | null>(null);
   const [imported, setImported] = useState<ImportedFile | null>(null);
   const [busy, setBusy] = useState(false);
+  /** Background job shown with progress and „Abbrechen“ (PERF-04). */
+  const [job, setJob] = useState<{ title: string; progress: JobProgress | null } | null>(null);
   const [message, setMessage] = useState('');
   const [collapse, setCollapse] = useState(initial.collapse);
   const [layout, setLayout] = useState<'raster' | 'liste'>(initial.layout);
@@ -86,8 +93,7 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
   const file = useRef<HTMLInputElement>(null);
   const scroll = useRef(0);
   // Metrics are pure functions of immutable, content-addressed versions: cache by version id.
-  const metricsCache = useRef(new Map());
-  const catalog = useMemo(() => buildCatalog(library.assets, library.versions, metricsCache.current), [library]);
+  const catalog = useMemo(() => buildCatalog(library.assets, library.versions, catalogMetrics), [library]);
   const tags = useMemo(() => [...new Set(catalog.entries.flatMap(e => e.tags))].sort(), [catalog]);
   const byAsset = useMemo(() => latestVersions(library.assets, library.versions), [library]);
   const assetNames = useMemo(() => new Map(library.assets.map(a => [a.id, a.name])), [library]);
@@ -192,18 +198,18 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
   const say = (text: string, next: { href: string; label: string } | null = null) => { setMessage(text); setLink(next); };
   const open = async (f: File) => {
     abort.current?.abort(); const controller = new AbortController(); abort.current = controller;
-    setBusy(true); say('');
-    try { const r = await importFile(f, controller.signal); if (!controller.signal.aborted) { setImported(r); window.scrollTo(0, 0); } }
+    setBusy(true); say(''); setJob({ title: `${f.name} wird gelesen`, progress: null });
+    try { const r = await importFile(f, controller.signal, undefined, p => { if (abort.current === controller) setJob({ title: `${f.name} wird gelesen`, progress: p }); }); if (!controller.signal.aborted) { setImported(r); window.scrollTo(0, 0); } }
     catch (e) { if (!controller.signal.aborted) say(`Import nicht übernommen: ${errorText(e)}`); }
-    finally { if (abort.current === controller) setBusy(false); }
+    finally { if (abort.current === controller) { setBusy(false); setJob(null); } }
   };
   const pickRegion = async (region: string | undefined) => {
     if (!imported) return;
     abort.current?.abort(); const controller = new AbortController(); abort.current = controller;
-    setBusy(true); say('');
-    try { const r = await importFile(new File([imported.original], imported.name), controller.signal, region); if (!controller.signal.aborted) setImported(r); }
+    setBusy(true); say(''); setJob({ title: 'Region wird gelesen', progress: null });
+    try { const r = await importFile(new File([imported.original], imported.name), controller.signal, region, p => { if (abort.current === controller) setJob({ title: 'Region wird gelesen', progress: p }); }); if (!controller.signal.aborted) setImported(r); }
     catch (e) { if (!controller.signal.aborted) say(`Region nicht übernommen: ${errorText(e)}`); }
-    finally { if (abort.current === controller) setBusy(false); }
+    finally { if (abort.current === controller) { setBusy(false); setJob(null); } }
   };
   const sourceOf = (r: ImportedFile): Promise<AssetVersionSource> => crypto.subtle.digest('SHA-256', r.original).then(d => ({
     format: r.format === 'schem' ? 'schem-v3' : r.format === 'litematic' ? 'litematic' : 'voxel-json', fileName: r.name,
@@ -216,26 +222,34 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
     size: r.original.byteLength, createdAt: new Date().toISOString(), bytes: new Uint8Array(r.original.slice(0)),
   });
   const showBuilding = (assetId: string) => navigate({ view: 'library', ...(projectId && { projectId }), page: 'building', id: assetId });
-  const saveNew = async (form: FormData) => {
-    if (!imported) return;
-    try {
-      const asset = createAsset({ name: String(form.get('name')), description: String(form.get('description') ?? ''),
-        tags: withFacets(String(form.get('tags') ?? '').split(',').map(t => t.trim()).filter(Boolean), facetsFromForm(form)),
-        provenance: { author: String(form.get('author') ?? ''), source: String(form.get('source') ?? ''), license: String(form.get('license') ?? '') } });
-      const r = await addAssetVersion(asset, { payload: imported.payload, label: '1.0', source: await sourceOf(imported) });
-      await repo.applyBatch({ versions: [r.version], assets: [r.asset], originals: [originalOf(imported, r.version.source)] }); await reloadLibrary();
-      setImported(null); say(`„${r.asset.name}“ als Bauteil gespeichert.`); showBuilding(r.asset.id);
-    } catch (e) { say(`Nicht gespeichert: ${errorText(e)}`); }
+  /** Runs a save of the imported file with progress; large payloads are prepared in the background (PERF-04). */
+  const saving = async (title: string, work: (signal: AbortSignal, onProgress: (p: JobProgress) => void) => Promise<void>) => {
+    abort.current?.abort(); const controller = new AbortController(); abort.current = controller;
+    setBusy(true); say(''); setJob({ title, progress: null });
+    try { await work(controller.signal, p => { if (abort.current === controller) setJob({ title, progress: p }); }); }
+    catch (e) { if (!controller.signal.aborted && !isAbort(e)) say(`Nicht gespeichert: ${errorText(e)}`); }
+    finally { if (abort.current === controller) { setBusy(false); setJob(null); } }
   };
-  const saveVersion = async (asset: Asset, label: string) => {
+  const saveNew = (form: FormData) => saving('Bauteil wird gespeichert', async (signal, onProgress) => {
     if (!imported) return;
-    try {
-      const previous = library.versions.get(asset.versionIds.at(-1) ?? '');
-      const r = await addAssetVersion(asset, { payload: imported.payload, label, connectors: previous?.connectors ?? [], source: await sourceOf(imported) });
-      await repo.applyBatch({ versions: [r.version], assets: [r.asset], originals: [originalOf(imported, r.version.source)] }); await reloadLibrary();
-      setImported(null); say(`Version ${r.version.label} von „${asset.name}“ gespeichert. Bestehende Projekte behalten ihre Version.`); showBuilding(asset.id);
-    } catch (e) { say(`Nicht gespeichert: ${errorText(e)}`); }
-  };
+    const asset = createAsset({ name: String(form.get('name')), description: String(form.get('description') ?? ''),
+      tags: withFacets(String(form.get('tags') ?? '').split(',').map(t => t.trim()).filter(Boolean), facetsFromForm(form)),
+      provenance: { author: String(form.get('author') ?? ''), source: String(form.get('source') ?? ''), license: String(form.get('license') ?? '') } });
+    const r = await addAssetVersionInBackground(asset, { payload: imported.payload, label: '1.0', source: await sourceOf(imported), columns: imported.columns }, { signal, onProgress });
+    if (signal.aborted) return;
+    onProgress({ step: 'Im Browser speichern', fraction: null });
+    await repo.applyBatch({ versions: [r.version], assets: [r.asset], originals: [originalOf(imported, r.version.source)] }); await reloadLibrary();
+    setImported(null); say(`„${r.asset.name}“ als Bauteil gespeichert.`); showBuilding(r.asset.id);
+  });
+  const saveVersion = (asset: Asset, label: string) => saving(`Version ${label} wird gespeichert`, async (signal, onProgress) => {
+    if (!imported) return;
+    const previous = library.versions.get(asset.versionIds.at(-1) ?? '');
+    const r = await addAssetVersionInBackground(asset, { payload: imported.payload, label, connectors: previous?.connectors ?? [], source: await sourceOf(imported), columns: imported.columns }, { signal, onProgress });
+    if (signal.aborted) return;
+    onProgress({ step: 'Im Browser speichern', fraction: null });
+    await repo.applyBatch({ versions: [r.version], assets: [r.asset], originals: [originalOf(imported, r.version.source)] }); await reloadLibrary();
+    setImported(null); say(`Version ${r.version.label} von „${asset.name}“ gespeichert. Bestehende Projekte behalten ihre Version.`); showBuilding(asset.id);
+  });
   const archive = async (asset: Asset) => {
     try { await repo.saveAsset(updateAssetMeta(asset, { archived: !asset.archived })); await reloadLibrary(); }
     catch (e) { say(errorText(e)); }
@@ -307,7 +321,8 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
       <input ref={file} className="file-input" type="file" aria-label="Bauteildatei" accept={IMPORT_ACCEPT}
         onChange={e => { const f = e.target.files?.[0]; if (f) void open(f); e.target.value = ''; }} />
       <a className="button" href="#/werkstatt/neu" title="Blockeditor: neues Bauteil Block für Block bauen">✎ Neues Bauteil bauen</a>
-      {busy && <button onClick={() => { abort.current?.abort(); setBusy(false); say('Import abgebrochen.'); }}>Abbrechen</button>}</div></header>
+      </div>
+    {job && <JobStatus title={job.title} progress={job.progress} onCancel={() => { abort.current?.abort(); abort.current = null; setBusy(false); setJob(null); say(job.title.includes('gespeichert') ? 'Speichern abgebrochen – nichts wurde gespeichert.' : 'Import abgebrochen.'); }} />}</header>
   const tabs = <nav className="lib-tabs" aria-label="Ansicht">
     <a href={libHref('browse')} aria-current={page === 'browse' || page === 'building' ? 'page' : undefined}>Gebäude <small>{total}</small></a>
     <a href={libHref('ensembles')} aria-current={page === 'ensembles' ? 'page' : undefined}>Ensembles <small>{ENSEMBLES.length}</small></a>
@@ -469,6 +484,7 @@ function ImportPanel({ imported, busy, library, onRegion, onSave, onVersion, onC
   const setCropMarks = useCallback((h: Highlight) => setCropMarksState(() => h), []);
   const noSelect = useMemo(() => () => {}, []);
   const preview = imported.payload;
+  const blockCount = useMemo(() => countBlocks(preview).blocks, [preview]);
   const markFor = useMemo(() => (cell: Cell): Mark | null => {
     const mark = cropMarks?.(cell) ?? null;
     return mark === 'hit' ? HIT_MARK : mark === 'dim' ? DIM_MARK : null;
@@ -484,7 +500,7 @@ function ImportPanel({ imported, busy, library, onRegion, onSave, onVersion, onC
     <aside className="inspector detail-summary">
       <form onSubmit={e => { e.preventDefault(); onSave(new FormData(e.currentTarget)); }}>
         <span className="panel-kicker">DATEI GEPRÜFT</span>
-        <p className="muted">{imported.name} · {IMPORT_FORMAT_LABEL[imported.format]}{imported.report ? `, DataVersion ${imported.report.dataVersion}` : ''} · {size(preview.bounds)} · {formatNumber(countBlocks(preview).blocks)} Blöcke</p>
+        <p className="muted">{imported.name} · {IMPORT_FORMAT_LABEL[imported.format]}{imported.report ? `, DataVersion ${imported.report.dataVersion}` : ''} · {size(preview.bounds)} · {formatNumber(blockCount)} Blöcke</p>
         {imported.report && 'regions' in imported.report && <LitematicRegions report={imported.report} disabled={busy} onChange={onRegion} />}
         {imported.report?.warnings.map((w, i) => <p className="small-note" key={i}>{w}</p>)}
         <label>Name<input name="name" required maxLength={120} key={regionName ?? ''} defaultValue={regionName || metaName || imported.name.replace(/\.(schem|litematic|json)$/i, '')} /></label>
@@ -494,13 +510,13 @@ function ImportPanel({ imported, busy, library, onRegion, onSave, onVersion, onC
         <label>Autor<input name="author" maxLength={120} defaultValue={metaAuthor} /></label>
         <label>Herkunft<input name="source" maxLength={300} defaultValue={imported.name} /></label>
         <label>Nutzungsrechte<input name="license" maxLength={300} placeholder="ungeklärt" /></label>
-        <button className="primary" type="submit">Als neues Bauteil speichern</button>
+        <button className="primary" type="submit" disabled={busy}>Als neues Bauteil speichern</button>
         <button className="text-button" type="button" onClick={onCancel}>Verwerfen</button>
       </form>
       <CropPanel key={`r-import-${imported.name}`} payload={preview} name={imported.name.replace(/\.(schem|litematic|json)$/i, '')}
         provenance={{ author: '', source: imported.name, license: '' }} getSource={() => sourceOf(imported)} onHighlight={setCropMarks} onSaved={onCropSaved} />
       {library.length > 0 && <details className="version-from-import"><summary>Stattdessen als neue Version speichern</summary>
-        <ul className="asset-picker">{own.map(a => <li key={a.id}><button onClick={() => onVersion(a, `${a.versionIds.length + 1}.0`)}>→ {a.name} (v{a.versionIds.length + 1}.0)</button></li>)}</ul>
+        <ul className="asset-picker">{own.map(a => <li key={a.id}><button disabled={busy} onClick={() => onVersion(a, `${a.versionIds.length + 1}.0`)}>→ {a.name} (v{a.versionIds.length + 1}.0)</button></li>)}</ul>
         {own.length === 0 && <p className="small-note">Beispielbauteile erhalten keine neuen Versionen.</p>}</details>}
     </aside>
   </section>;

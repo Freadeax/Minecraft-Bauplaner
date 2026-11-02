@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T13:29:25.610Z",
+  "updatedAt": "2026-11-02T13:48:27.653Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -14,7 +14,8 @@
     "MAP-03",
     "EDIT-04",
     "ENTITY-01",
-    "MAP-04"
+    "MAP-04",
+    "PERF-04"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -1977,6 +1978,90 @@
       "updatedAt": "2026-11-01T06:15:35+01:00"
     },
     {
+      "id": "PERF-04",
+      "title": "Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude-Thread „Große Modelle flüssig berechnen“",
+      "dependencies": [
+        "PERF-01",
+        "MODEL-01",
+        "ARCH-02"
+      ],
+      "scope": [
+        "apps/web/src/jobs/",
+        "packages/voxel/src/cellColumns.ts",
+        "packages/voxel/src/validation.ts",
+        "packages/domain/src/library.ts",
+        "packages/domain/src/versionStorage.ts",
+        "apps/web/src/viewer/backgroundMesh.ts",
+        "apps/web/src/blockmodels/snapshot.ts",
+        "apps/web/src/app/importFile.ts",
+        "tests/background-jobs.test.mjs",
+        "tests/e2e/background-jobs.e2e.mjs",
+        "docs/architecture/BACKGROUND_JOBS.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "PERF-04-S01",
+          "title": "Gemeinsame Auftragsschicht: ein Worker je Auftrag, Fortschritt, Abbrechen per terminate, Zeitlimit, Rückfall ohne Worker; Zellen als übertragbare Spalten.",
+          "done": true
+        },
+        {
+          "id": "PERF-04-S02",
+          "title": "Litematic-Import und Speichern großer Versionen (Prüfsumme, ID, Packen, Kennwerte) im Worker; versiegelte Payloads ohne erneute Kopie.",
+          "done": true
+        },
+        {
+          "id": "PERF-04-S03",
+          "title": "3D-Ansicht und Standbilder mit Licht ab 120 000 Zellen im Worker (Renderer-Schnappschuss, byte-gleiches Netz); 3D-Export im Worker mit Schrittanzeige.",
+          "done": true
+        },
+        {
+          "id": "PERF-04-S04",
+          "title": "Versionsvergleich und Update-Vorschau großer Stände im Worker.",
+          "done": true
+        },
+        {
+          "id": "PERF-04-S05",
+          "title": "Bibliotheksstart (Entpacken) und Katalogkennwerte sehr großer Versionen im Hintergrund; Abnahme auf echten Geräten, Firefox/Safari.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Ergebnisse (Prüfsumme, Version-ID, gepackte Zellen, 3D-Netz, Exportdatei) sind gleich wie auf dem direkten Weg.",
+        "Abbrechen beendet die Berechnung sofort; nichts wird gespeichert oder heruntergeladen.",
+        "Ein 927 000-Block-Litematic blockiert die Seite beim Speichern nicht mehr in langen Stücken (vorher bis 17 s)."
+      ],
+      "next": "Bibliotheksstart und Katalogkennwerte sehr großer Versionen auslagern; Abnahme auf Philipps Rechner mit Olympus (S05).",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/background-jobs.test.mjs",
+          "note": "Spaltenübergabe, Versiegeln, Caches, byte-gleiches Netz, Exportfortschritt, Auftragsclient mit Abbrechen und Fehlern."
+        },
+        {
+          "path": "tests/e2e/background-jobs.e2e.mjs",
+          "note": "Chromium: 130 000 Blöcke importieren, speichern, Datencheck, STL wasserdicht; Abbrechen; Update-Vorschau und Vergleich über den Worker."
+        },
+        {
+          "path": "docs/architecture/BACKGROUND_JOBS.md",
+          "note": "Aufträge, Vertrauensregel, Caches, Schwellen, Messung, Grenzen."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Node- und Chromium-Prüfung bestanden; echte Geräte und andere Browser offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-02T13:48:27.653Z"
+    },
+    {
       "id": "VIEW-01",
       "title": "Vorhandenen Viewer vollständig abnehmen",
       "phase": "P2",
@@ -2421,7 +2506,7 @@
         },
         {
           "id": "MODEL-01-S06",
-          "title": "Export großer Modelle in einem Worker; Flächen der Druckhülle ohne T-Stöße zusammenfassen.",
+          "title": "Flächen der Druckhülle ohne T-Stöße zusammenfassen (Export im Worker ist mit PERF-04 erledigt).",
           "done": false
         }
       ],
@@ -2430,7 +2515,7 @@
         "Ansichtsmodell nutzt dieselbe Geometrie wie der Betrachter.",
         "Keine Texturen im Repository; Texturen nur aus der geladenen Nutzerquelle."
       ],
-      "next": "Dateien in Blender und Slicern prüfen und ein Testdruck; danach Worker und Flächenzusammenfassung (S06).",
+      "next": "Dateien in Blender und Slicern prüfen und ein Testdruck; danach Flächenzusammenfassung (S06). Export läuft seit PERF-04 im Worker.",
       "blockers": [],
       "evidence": [
         {
@@ -2454,7 +2539,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T09:23:43.965Z"
+      "updatedAt": "2026-11-02T13:48:27.653Z"
     },
     {
       "id": "EDIT-01",
@@ -8433,6 +8518,83 @@
           "done": 5,
           "total": 6,
           "next": "Abnahme durch Philipp (S06); denkbare Folge: benannte Gruppen/Sperren mit Schemaerweiterung, abgestimmt mit der Mod."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T13:48:27.653Z",
+      "kind": "progress",
+      "items": [
+        "PERF-04",
+        "MODEL-01"
+      ],
+      "summary": "PERF-04: Import, Speichern, 3D-Netz mit Licht, 3D-Export, Versionsvergleich und Update-Vorschau großer Modelle im Web Worker mit Fortschritt und Abbrechen; Speichern 927k Blöcke 70 s → 18 s, Blockierung ~100 s → 7 s. MODEL-01-S06 auf Flächenzusammenfassung reduziert. Freie Entities (ENTITY-01) laufen im Worker-Netz mit. Nur Chromium geprüft.",
+      "files": [
+        "apps/web/src/app/idbRepository.ts",
+        "apps/web/src/app/importFile.ts",
+        "apps/web/src/app/metricsCache.ts",
+        "apps/web/src/blockmodels/mesh.ts",
+        "apps/web/src/blockmodels/snapshot.ts",
+        "apps/web/src/export3d/ModelExportPanel.tsx",
+        "apps/web/src/export3d/build.ts",
+        "apps/web/src/import.worker.ts",
+        "apps/web/src/jobs/JobStatus.tsx",
+        "apps/web/src/jobs/client.ts",
+        "apps/web/src/jobs/diffJob.ts",
+        "apps/web/src/jobs/heavy.worker.ts",
+        "apps/web/src/jobs/importJob.ts",
+        "apps/web/src/jobs/jobs.css",
+        "apps/web/src/jobs/jobs.ts",
+        "apps/web/src/jobs/meshJob.ts",
+        "apps/web/src/jobs/modelJob.ts",
+        "apps/web/src/jobs/protocol.ts",
+        "apps/web/src/jobs/transport.ts",
+        "apps/web/src/jobs/updateJob.ts",
+        "apps/web/src/jobs/updates.ts",
+        "apps/web/src/jobs/versionJob.ts",
+        "apps/web/src/jobs/versions.ts",
+        "apps/web/src/schem/DiffView.tsx",
+        "apps/web/src/thumbnail/Thumb.tsx",
+        "apps/web/src/thumbnail/glShot.ts",
+        "apps/web/src/viewer/ThreeViewer.tsx",
+        "apps/web/src/viewer/backgroundMesh.ts",
+        "apps/web/src/viewer/sceneController.ts",
+        "apps/web/src/views/LibraryView.tsx",
+        "apps/web/src/views/ViewerView.tsx",
+        "apps/web/src/views/library/CropPanel.tsx",
+        "apps/web/src/views/project/UpdatesTab.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/BACKGROUND_JOBS.md",
+        "docs/architecture/MODEL_EXPORT.md",
+        "packages/domain/src/connectors.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/library.ts",
+        "packages/domain/src/versionStorage.ts",
+        "packages/formats/src/structure.ts",
+        "packages/voxel/src/cellColumns.ts",
+        "packages/voxel/src/index.ts",
+        "packages/voxel/src/validation.ts",
+        "tests/background-jobs.test.mjs",
+        "tests/e2e/background-jobs.e2e.mjs",
+        "tests/pages.test.mjs",
+        "vite.config.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Bibliotheksstart und Katalogkennwerte sehr großer Versionen auslagern; Abnahme auf Philipps Rechner mit Olympus (S05)."
+        },
+        {
+          "id": "MODEL-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Dateien in Blender und Slicern prüfen und ein Testdruck; danach Flächenzusammenfassung (S06). Export läuft seit PERF-04 im Worker."
         }
       ]
     }

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import {
-  CONNECTOR_CHANGE_LABEL, PATCH_POLICY_LABEL, UPDATE_KIND_LABEL, UPDATE_STATUS_LABEL, findUpdates, freezeOperation, pivotAligned, prepareUpdate, returnChoice,
+  CONNECTOR_CHANGE_LABEL, PATCH_POLICY_LABEL, UPDATE_KIND_LABEL, UPDATE_STATUS_LABEL, findUpdates, freezeOperation, pivotAligned, returnChoice,
   summarizeUpdates, unfreezeOperation, updatesOf,
 } from '../../../../../packages/domain/src/index.js';
 import type { AssetVersion, InstanceUpdateInfo, PatchPolicy, PreparedUpdate, Project, UpdateChoice } from '../../../../../packages/domain/src/index.js';
@@ -9,6 +9,10 @@ import { errorText, formatNumber } from '../../app/ui';
 import { DiffView } from '../../schem/DiffView';
 import { isResolved } from './session';
 import type { ProjectSession } from './session';
+import { prepareUpdateInBackground } from '../../jobs/updates';
+import { isAbort } from '../../jobs/client';
+import { JobStatus } from '../../jobs/JobStatus';
+import type { JobProgress } from '../../jobs/protocol';
 import './updates.css';
 
 /**
@@ -51,6 +55,7 @@ export function UpdatesTab({ session }: { session: ProjectSession }) {
   const [policy, setPolicy] = useState<PatchPolicy>('local');
   const [pending, setPending] = useState<Pending | null>(null);
   const [prepared, setPrepared] = useState<Prepared | null>(null);
+  const [progress, setProgress] = useState<JobProgress | null>(null);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<{ text: string; error?: boolean; undo?: boolean } | null>(null);
   const [note, setNote] = useState('');
@@ -66,16 +71,18 @@ export function UpdatesTab({ session }: { session: ProjectSession }) {
   };
 
   // Computes the consequences off the click handler so the page can show progress first.
+  // Large projects are computed in the background worker with progress and „Abbrechen“ (PERF-04).
   useEffect(() => {
     if (!pending) return;
-    let live = true;
-    setPrepared(null);
+    const controller = new AbortController();
+    setPrepared(null); setProgress(null);
     const timer = setTimeout(() => {
-      prepareUpdate(pending.project, library, pending.choices, { policy: pending.policy, ...(isResolved(session.resolution) && pending.project === project && { before: session.resolution }) })
-        .then(result => { if (live) setPrepared({ key: pending, result }); })
-        .catch(e => { if (live) setPrepared({ key: pending, error: errorText(e) }); });
+      prepareUpdateInBackground(pending.project, library, pending.choices, { policy: pending.policy, ...(isResolved(session.resolution) && pending.project === project && { before: session.resolution }) },
+        { signal: controller.signal, onProgress: p => { if (!controller.signal.aborted) setProgress(p); } })
+        .then(result => { if (!controller.signal.aborted) setPrepared({ key: pending, result }); })
+        .catch(e => { if (!controller.signal.aborted && !isAbort(e)) setPrepared({ key: pending, error: errorText(e) }); });
     }, 0);
-    return () => { live = false; clearTimeout(timer); };
+    return () => { controller.abort(); clearTimeout(timer); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pending, library]);
 
@@ -169,7 +176,7 @@ export function UpdatesTab({ session }: { session: ProjectSession }) {
       </div>
     </>}
 
-    {pending && <UpdatePlanView prepared={prepared && prepared.key === pending ? prepared : null} stale={stale} busy={busy}
+    {pending && <UpdatePlanView prepared={prepared && prepared.key === pending ? prepared : null} stale={stale} busy={busy} progress={progress}
       onApply={() => void apply()} onCancel={() => { setPending(null); setPrepared(null); }} onRefresh={() => show(pending.choices)} profileId={project.profileId} />}
 
     <section className="updates-log" aria-label="Updateverlauf">
@@ -183,11 +190,12 @@ export function UpdatesTab({ session }: { session: ProjectSession }) {
   </section>;
 }
 
-function UpdatePlanView({ prepared, stale, busy, onApply, onCancel, onRefresh, profileId }: {
-  prepared: Prepared | null; stale: boolean; busy: boolean; onApply(): void; onCancel(): void; onRefresh(): void; profileId: string;
+function UpdatePlanView({ prepared, stale, busy, onApply, onCancel, onRefresh, profileId, progress }: {
+  prepared: Prepared | null; stale: boolean; busy: boolean; onApply(): void; onCancel(): void; onRefresh(): void; profileId: string; progress: JobProgress | null;
 }) {
   const [index, setIndex] = useState(0);
-  if (!prepared) return <section className="update-plan" aria-label="Folgen des Updates" aria-busy="true"><p role="status">Folgen werden berechnet …</p></section>;
+  if (!prepared) return <section className="update-plan" aria-label="Folgen des Updates" aria-busy="true">
+    {progress ? <JobStatus title="Folgen werden berechnet …" progress={progress} onCancel={onCancel} /> : <p role="status">Folgen werden berechnet …</p>}</section>;
   if ('error' in prepared) return <section className="update-plan" aria-label="Folgen des Updates">
     <div className="notice warning" role="alert"><p>{prepared.error}</p></div><button type="button" onClick={onCancel}>Schließen</button></section>;
   const { plan } = prepared.result;

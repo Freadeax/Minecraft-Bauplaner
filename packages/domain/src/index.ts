@@ -1,7 +1,7 @@
 export type * from './types.js';
 export { DomainError, DOMAIN_SCHEMA_VERSION } from './types.js';
 export { canonicalJson, sha256Hex, quickHash, newId } from './hash.js';
-export { createAsset, addAssetVersion, verifyAssetVersion, updateAssetMeta, cropPayload, searchAssets, payloadHash, checkConnectorShape, deepFreeze } from './library.js';
+export { createAsset, addAssetVersion, verifyAssetVersion, updateAssetMeta, cropPayload, searchAssets, payloadHash, rememberPayloadHash, checkConnectorShape, deepFreeze } from './library.js';
 export type { NewAssetInput, NewVersionInput, AssetQuery } from './library.js';
 export { createProject, applyOperation, execute, undo, redo, newInstance, freezeRevision, describeOperation, rotateInPlace, checkTransform, EMPTY_HISTORY } from './project.js';
 export type { Operation, History, HistoryEntry } from './project.js';
@@ -88,7 +88,7 @@ export type { TerrainMode, AnlageTerrainInput, UnitTerrain, AnlageTerrainFit, Te
 export { checkPlacement, settlePayload, payloadLookup, needText, changedKeys, PLACEMENT_LABEL } from './placement.js';
 export type { PlacementKind, PlacementIssue, PlacementAid, PlacementReport, PlacementOptions, SettleResult } from './placement.js';
 export { gameReady, hangLanterns, MAX_CHAIN } from './build/gameReady.js';
-export { packVersion, unpackVersion, unpackVersionOrDamaged, packVersionForFile, unpackVersionFromFile, isPackedVersionRecord, cellStorageEstimate } from './versionStorage.js';
+export { packVersion, unpackVersion, unpackVersionOrDamaged, packVersionForFile, unpackVersionFromFile, isPackedVersionRecord, cellStorageEstimate, rememberPackedCells } from './versionStorage.js';
 export type { StoredPayload, PackedVersionRecord, PackedVersionFileRecord, StoredVersionRecord } from './versionStorage.js';
 export { buildPlanGraph, whereUsed, projectEdges, assetEdges, versionEdges, collectionEdges, templateEdges, projectVersionIds, PLAN_ROLE_LABEL, PLAN_KIND_LABEL } from './planGraph.js';
 export type { PlanGraph, PlanEdge, PlanNodeKind, PlanNodeRef, PlanRole, PlanSource, UsageGroup } from './planGraph.js';

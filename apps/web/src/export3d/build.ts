@@ -151,7 +151,7 @@ export interface PrintReport {
   readonly cellSize: number;
 }
 
-export function printModel(f: FormatsApi, cells: readonly Cell[], palette: readonly BlockState[], options: PrintModelOptions): Mesh3d & { readonly report: PrintReport; readonly welded: WeldedMesh } {
+export function printModel(f: FormatsApi, cells: readonly Cell[], palette: readonly BlockState[], options: PrintModelOptions, progress: Progress = () => {}): Mesh3d & { readonly report: PrintReport; readonly welded: WeldedMesh } {
   const blocks = blocksOf(cells);
   if (!blocks.length) throw new Error('Keine Blöcke zum Exportieren.');
   const d = options.detail, pad = 2;
@@ -196,6 +196,7 @@ export function printModel(f: FormatsApi, cells: readonly Cell[], palette: reado
     return [i0, i1];
   };
   let skipped = 0;
+  progress('Druckgitter füllen', 0.05);
   for (const c of blocks) {
     const list = parts(c.paletteIndex);
     if (!list) { skipped++; continue; }
@@ -207,15 +208,23 @@ export function printModel(f: FormatsApi, cells: readonly Cell[], palette: reado
     }
   }
   if (skipped === blocks.length) throw new Error('Kein Block hat ein druckbares Volumen (nur Pflanzen, Schienen, Flüssigkeiten oder Kleinteile).');
+  if (options.fill) progress('Innenräume füllen', 0.25);
   const cellsFilled = options.fill ? f.fillCavities(grid) : 0;
+  if (options.hollow > 0) progress('Aushöhlen', 0.35);
   const cellsHollowed = options.hollow > 0 ? f.hollowGrid(grid, options.hollow) : 0;
+  if (options.minPart > 0) progress('Kleine lose Teile entfernen', 0.42);
   const removed = options.minPart > 0 ? f.removeSmallParts(grid, options.minPart) : { removedParts: 0, removedCells: 0 };
+  progress('Kanten- und Eckberührungen verbinden', 0.48);
   const repairCells = f.repairGrid(grid);
   const reduced = options.maxColors > 0 && materials.length > options.maxColors ? f.reduceMaterials(grid, colors, options.maxColors).kept : null;
+  progress('Teile zählen', 0.55);
   const partCount = f.labelParts(grid).sizes.length;
   const cellSize = options.blockSize / d;
+  progress('Hülle bauen', 0.6);
   const mesh = f.shellMesh(grid, { cellSize, unit: options.unit, up: options.up, name: options.name, materials });
+  progress('Eckpunkte verschweißen', 0.75);
   const welded = f.weldMesh(mesh);
+  progress('Druckprüfung (wasserdicht)', 0.82);
   const check = f.checkClosed(welded);
   const used = new Set(mesh.groups.map(g => g.material)).size;
   return {
@@ -242,7 +251,11 @@ export interface ExportRequest {
   readonly print: Omit<PrintModelOptions, 'name' | 'blockSize' | 'unit' | 'up'>;
   /** Herkunftszeilen für Kommentare/Metadaten. */
   readonly source?: string;
+  /** Fortschritt (Schritt, Anteil 0..1) für die Hintergrundberechnung (PERF-04). */
+  readonly progress?: Progress;
 }
+
+export type Progress = (step: string, fraction: number) => void;
 
 export interface ExportResult {
   readonly file: ModelFile;
@@ -265,14 +278,17 @@ export async function exportModel(f: FormatsApi, req: ExportRequest): Promise<Ex
     `1 Block = ${req.blockSize} ${unit === 'meter' ? 'm' : 'mm'}`, kind === 'print' ? `Druckmodell, Feinheit ${req.print.detail} je Block` : 'Ansichtsmodell mit Blockformen'];
   let mesh: Mesh3d, print: PrintReport | null = null, blocks: number, welded: WeldedMesh | undefined;
   let textured = false;
+  const progress: Progress = req.progress ?? (() => {});
   if (kind === 'view') {
     textured = req.view.textured;
+    progress('Blockflächen bauen', 0.1);
     const v = viewModel(req.cells, req.palette, req.view.renderer, req.view.sprites, textured, { name: req.name, blockSize: req.blockSize, place: req.view.place, bake: req.view.bake });
     mesh = v; blocks = v.blocks;
   } else {
-    const p = printModel(f, req.cells, req.palette, { ...req.print, name: req.name, blockSize: req.blockSize, unit, up });
+    const p = printModel(f, req.cells, req.palette, { ...req.print, name: req.name, blockSize: req.blockSize, unit, up }, progress);
     mesh = p; print = p.report; blocks = p.report.blocks; welded = p.welded;
   }
+  progress('Datei schreiben', 0.9);
   const png = textured && req.view.texturePng ? await req.view.texturePng() : null;
   if (textured && !png) textured = false;
   let file: ModelFile;

@@ -2492,3 +2492,67 @@ Weltbuilder: Löschen/Entfernen aller Kartenobjekte (Entf, Kontextmenü, Auswahl
 - `tests/e2e/worldbuilder.e2e.mjs`
 - `tests/worldbuilder.test.mjs`
 
+## 2026-11-02T13:48:27.653Z · progress
+
+**Aufgaben:** PERF-04, MODEL-01
+
+PERF-04: Import, Speichern, 3D-Netz mit Licht, 3D-Export, Versionsvergleich und Update-Vorschau großer Modelle im Web Worker mit Fortschritt und Abbrechen; Speichern 927k Blöcke 70 s → 18 s, Blockierung ~100 s → 7 s. MODEL-01-S06 auf Flächenzusammenfassung reduziert. Freie Entities (ENTITY-01) laufen im Worker-Netz mit. Nur Chromium geprüft.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-04 | 🧩 Implementiert · Abnahme offen | 4/5 | Bibliotheksstart und Katalogkennwerte sehr großer Versionen auslagern; Abnahme auf Philipps Rechner mit Olympus (S05). |
+| MODEL-01 | 🧩 Implementiert · Abnahme offen | 4/6 | Dateien in Blender und Slicern prüfen und ein Testdruck; danach Flächenzusammenfassung (S06). Export läuft seit PERF-04 im Worker. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/idbRepository.ts`
+- `apps/web/src/app/importFile.ts`
+- `apps/web/src/app/metricsCache.ts`
+- `apps/web/src/blockmodels/mesh.ts`
+- `apps/web/src/blockmodels/snapshot.ts`
+- `apps/web/src/export3d/ModelExportPanel.tsx`
+- `apps/web/src/export3d/build.ts`
+- `apps/web/src/import.worker.ts`
+- `apps/web/src/jobs/JobStatus.tsx`
+- `apps/web/src/jobs/client.ts`
+- `apps/web/src/jobs/diffJob.ts`
+- `apps/web/src/jobs/heavy.worker.ts`
+- `apps/web/src/jobs/importJob.ts`
+- `apps/web/src/jobs/jobs.css`
+- `apps/web/src/jobs/jobs.ts`
+- `apps/web/src/jobs/meshJob.ts`
+- `apps/web/src/jobs/modelJob.ts`
+- `apps/web/src/jobs/protocol.ts`
+- `apps/web/src/jobs/transport.ts`
+- `apps/web/src/jobs/updateJob.ts`
+- `apps/web/src/jobs/updates.ts`
+- `apps/web/src/jobs/versionJob.ts`
+- `apps/web/src/jobs/versions.ts`
+- `apps/web/src/schem/DiffView.tsx`
+- `apps/web/src/thumbnail/Thumb.tsx`
+- `apps/web/src/thumbnail/glShot.ts`
+- `apps/web/src/viewer/ThreeViewer.tsx`
+- `apps/web/src/viewer/backgroundMesh.ts`
+- `apps/web/src/viewer/sceneController.ts`
+- `apps/web/src/views/LibraryView.tsx`
+- `apps/web/src/views/ViewerView.tsx`
+- `apps/web/src/views/library/CropPanel.tsx`
+- `apps/web/src/views/project/UpdatesTab.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/BACKGROUND_JOBS.md`
+- `docs/architecture/MODEL_EXPORT.md`
+- `packages/domain/src/connectors.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/library.ts`
+- `packages/domain/src/versionStorage.ts`
+- `packages/formats/src/structure.ts`
+- `packages/voxel/src/cellColumns.ts`
+- `packages/voxel/src/index.ts`
+- `packages/voxel/src/validation.ts`
+- `tests/background-jobs.test.mjs`
+- `tests/e2e/background-jobs.e2e.mjs`
+- `tests/pages.test.mjs`
+- `vite.config.mjs`
+

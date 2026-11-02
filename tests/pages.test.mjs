@@ -21,10 +21,10 @@ test('Pages manifest matches every published file and contains no source files',
   function walk(dir){for(const e of readdirSync(dir,{withFileTypes:true})){const full=path.join(dir,e.name);if(e.isDirectory())walk(full);else expected.push(path.relative(root,full).split(path.sep).join('/'));}}
   walk(root);assert.deepEqual([...paths].sort(),expected.filter(p=>p!=='deployment.json').sort());
 });
-test('Pages entry uses repository subpath and ships a separate import worker',()=>{
+test('Pages entry uses repository subpath and ships a separate background worker',()=>{
   const html=readFileSync(path.join(root,'index.html'),'utf8');
   assert.match(html,/lang="de"/);assert.match(html,/\/Minecraft-Bauplaner\/assets\//);
-  assert.ok(manifest.files.some(f=>/assets\/import\.worker-.*\.js$/.test(f.path)));
+  assert.ok(manifest.files.some(f=>/assets\/heavy\.worker-.*\.js$/.test(f.path)));
   const notices=readFileSync(path.join(root,'THIRD_PARTY_NOTICES.txt'),'utf8');
   for(const name of ['react','react-dom','three'])assert.ok(notices.includes(name));
 });

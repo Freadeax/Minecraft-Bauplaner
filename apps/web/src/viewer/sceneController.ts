@@ -5,7 +5,7 @@ import type { RenderKit } from '../blockmodels/assets';
 import { sunDirection } from '../blockmodels/graphics';
 import type { GraphicsSettings } from '../blockmodels/graphics';
 import { buildSectionMesh } from '../blockmodels/mesh';
-import type { Mark, MeshSection, SpawnMap } from '../blockmodels/mesh';
+import type { Mark, MeshSection, SectionMesh, SpawnMap } from '../blockmodels/mesh';
 import { BlockObject, MODE_INDEX, SunShadow, blockMaterials, lookUniforms, spawnOverlay } from '../blockmodels/threeMesh';
 import type { BlockMaterials } from '../blockmodels/threeMesh';
 import { FOCUS_MIN_RADIUS, VIEWS, boundsCentre, boundsRadius, frameBounds, orthoZoom } from './camera';
@@ -42,6 +42,15 @@ export interface MeshStats {
   readonly sections: number; readonly reused: number;
   /** Floor cells where monsters could spawn (also by day / only at night); null without light. */
   readonly spawnDay: number | null; readonly spawnNight: number | null;
+}
+
+/** What a geometry change needs before its mesh is built (see SceneController.planCells). */
+export interface CellsPlan {
+  readonly payloadBounds: Bounds;
+  readonly kit: RenderKit;
+  readonly origin: Vec3;
+  readonly reframe: boolean;
+  readonly previous: readonly MeshSection[];
 }
 
 export interface ControllerEvents {
@@ -162,19 +171,39 @@ export class SceneController {
    */
   setCells(cells: readonly Cell[], payloadBounds: Bounds, palette: readonly BlockState[], kit: RenderKit, markOf?: (cell: Cell) => Mark | null): MeshStats {
     const started = performance.now();
+    const plan = this.planCells(payloadBounds, kit);
+    const built = buildSectionMesh(cells, palette, kit.renderer, kit.atlas.lookup, plan.origin, markOf, {}, plan.previous);
+    return this.applyCells(plan, built, cells, started);
+  }
+
+  /**
+   * First half of a geometry change whose mesh is built elsewhere (PERF-04,
+   * background worker): the origin and the sections that may be reused. The
+   * current view stays untouched until {@link applyCells}.
+   */
+  planCells(payloadBounds: Bounds, kit: RenderKit): CellsPlan {
     // A structure that does not overlap the previous one (another file in the same view) is framed anew.
     const elsewhere = this.origin !== null && !overlaps(this.bounds, payloadBounds);
     const reframe = this.origin === null || elsewhere || (this.autoFrame && !sameBounds(this.bounds, payloadBounds));
-    if (!this.origin || elsewhere) { const c = boundsCentre(payloadBounds); this.origin = [Math.floor(c[0]), Math.floor(c[1]), Math.floor(c[2])]; }
-    this.bounds = payloadBounds;
-    let previous = this.sections;
+    const c = boundsCentre(payloadBounds);
+    const origin: Vec3 = !this.origin || elsewhere ? [Math.floor(c[0]), Math.floor(c[1]), Math.floor(c[2])] : this.origin;
+    const previous = this.materials?.key !== kit.key || origin !== this.origin ? [] : this.sections;
+    return { payloadBounds, kit, origin, reframe, previous };
+  }
+
+  /** Second half: shows a mesh built for `plan` (here or in the background). */
+  applyCells(plan: CellsPlan, built: SectionMesh, cells: readonly Cell[], started = performance.now()): MeshStats {
+    const { kit } = plan;
+    // The camera may have moved while the mesh was computed: re-check whether framing is still wanted.
+    const reframe = plan.reframe && (this.origin === null || this.origin !== plan.origin || this.autoFrame);
+    this.origin = plan.origin;
+    this.bounds = plan.payloadBounds;
     if (this.materials?.key !== kit.key) {
       this.materials?.dispose(); this.materials = blockMaterials(kit, this.look);
-      this.mesh?.setMaterials(this.materials); previous = [];
+      this.mesh?.setMaterials(this.materials);
     }
-    const built = buildSectionMesh(cells, palette, kit.renderer, kit.atlas.lookup, this.origin, markOf, {}, previous);
     this.sections = built.sections;
-    if (!this.mesh) { this.mesh = new BlockObject(built.sections, cells, this.materials); this.scene.add(this.mesh.group); }
+    if (!this.mesh) { this.mesh = new BlockObject(built.sections, cells, this.materials!); this.scene.add(this.mesh.group); }
     else this.mesh.update(built.sections);
     this.cells = cells; this.cellIndex = null;
     this.setSpawn(built.spawn);

@@ -49,7 +49,7 @@ const keyOf = (cacheKey: string, kit: RenderKit, options: ShotOptions, width: nu
 async function render(payload: Pick<VoxelPayload, 'cells' | 'palette' | 'entities'>, width: number, height: number, kit: RenderKit, options: ShotOptions): Promise<string> {
   const module = await glModule();
   if (module) {
-    try { return module.renderGlShot(payload, width, height, kit, options); } catch { /* lost context etc.: plain image */ }
+    try { return await module.renderGlShotAsync(payload, width, height, kit, options); } catch { /* lost context, worker failure etc.: plain image */ }
   }
   return renderShot(payload, width, height, options);
 }

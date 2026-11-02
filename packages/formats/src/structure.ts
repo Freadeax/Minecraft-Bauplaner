@@ -25,9 +25,11 @@ export function detectStructureFormat(tag: NbtTag): StructureFormat {
 }
 
 /** GZip structure file → Sponge Schem v3 or Litematic, decompressed and parsed once. */
-export async function importStructure(buffer: ArrayBuffer, options: { region?: string } = {}): Promise<StructureImport> {
+export async function importStructure(buffer: ArrayBuffer, options: { region?: string; onStep?: (step: string) => void } = {}): Promise<StructureImport> {
   const limits = { ...SCHEM_LIMITS, ...LITEMATIC_LIMITS };
+  options.onStep?.('Datei entpacken und lesen');
   const { sourceNbt, sourceSha256, compression } = await readCompressedNbt(buffer, limits);
+  options.onStep?.('Blöcke zusammensetzen');
   if (detectStructureFormat(sourceNbt.tag) === 'schem') return { format: 'schem', result: { ...normalizeSchem(sourceNbt), sourceSha256 } };
   return { format: 'litematic', result: { ...normalizeLitematic(sourceNbt, options.region === undefined ? {} : { region: options.region }), sourceSha256, compression } };
 }

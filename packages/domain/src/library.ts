@@ -1,4 +1,4 @@
-import { createPayload, validatePayload } from '../../voxel/src/validation.js';
+import { adoptPayload, createPayload, isSealedPayload, validatePayload } from '../../voxel/src/validation.js';
 import { assertVec3 } from '../../voxel/src/validation.js';
 import type { Bounds, VoxelPayload } from '../../voxel/src/types.js';
 import { canonicalJson, newId, sha256Hex } from './hash.js';
@@ -50,8 +50,24 @@ export function checkConnectorShape(connectors: readonly Connector[]): void {
   });
 }
 
+/** Hashes of sealed (immutable) payloads; the canonical JSON of a million cells takes seconds. */
+const hashes = new WeakMap<VoxelPayload, string>();
+
 export async function payloadHash(payload: VoxelPayload): Promise<string> {
-  return sha256Hex(canonicalJson(payload));
+  const known = hashes.get(payload);
+  if (known !== undefined) return known;
+  const hash = await sha256Hex(canonicalJson(payload));
+  if (isSealedPayload(payload)) hashes.set(payload, hash);
+  return hash;
+}
+
+/**
+ * Records the hash a worker computed for the same sealed payload (PERF-04:
+ * the worker hashes the identical cells it handed over). Ignored for payloads
+ * that are not sealed, because those could still change.
+ */
+export function rememberPayloadHash(payload: VoxelPayload, hash: string): void {
+  if (isSealedPayload(payload) && /^[0-9a-f]{64}$/.test(hash)) hashes.set(payload, hash);
 }
 
 async function versionId(assetId: string, label: string, hash: string, connectors: readonly Connector[]): Promise<string> {
@@ -109,7 +125,9 @@ export function cropPayload(payload: VoxelPayload, region: Bounds): VoxelPayload
   const shift = (p: readonly number[]): [number, number, number] => [p[0]! - min[0], p[1]! - min[1], p[2]! - min[2]];
   const cells = payload.cells.filter(c => inside(c.position));
   if (!cells.length) throw new DomainError('EMPTY', 'Der Auswahlbereich enthält keine ausgewählten Zellen');
-  return createPayload({
+  // Fresh cell objects; when the source is sealed its shared parts are frozen already, so adopt instead of
+  // copying a possibly huge list again (PERF-04). Otherwise copy as before, never freezing the caller's objects.
+  return (isSealedPayload(payload) ? adoptPayload : createPayload)({
     ...payload,
     bounds: { min: [0, 0, 0], maxExclusive: shift(max) }, pivot: [0, 0, 0],
     sourceOrigin: payload.sourceOrigin.map((n, i) => n + min[i]!),

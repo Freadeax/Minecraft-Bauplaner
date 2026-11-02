@@ -50,7 +50,14 @@ export function validateConnectors(payload: VoxelPayload, connectors: readonly C
   try { checkConnectorShape(connectors); } catch (e) {
     return [{ connectorId: '', severity: 'error', code: 'SHAPE', message: e instanceof Error ? e.message : String(e) }];
   }
-  const occupied = new Set(payload.cells.filter(c => c.kind === 'block').map(c => c.position.join(',')));
+  // Only the few anchor cells are looked up, so a large payload is scanned once without building a key per block (PERF-04).
+  const wanted = new Set(connectors.flatMap(c => anchorCells(c).map(p => p.join(','))));
+  const occupied = new Set<string>();
+  if (wanted.size) for (const cell of payload.cells) {
+    if (cell.kind !== 'block') continue;
+    const k = `${cell.position[0]},${cell.position[1]},${cell.position[2]}`;
+    if (wanted.has(k)) occupied.add(k);
+  }
   const { min, maxExclusive: max } = payload.bounds;
   for (const c of connectors) {
     const err = (code: ConnectorIssue['code'], message: string) => issues.push({ connectorId: c.id, severity: 'error', code, message: `${c.id}: ${message}` });

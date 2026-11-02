@@ -1,8 +1,9 @@
 import * as THREE from 'three';
-import type { Cell, VoxelPayload } from '../../../../packages/voxel/src/index.js';
+import type { Cell, Vec3, VoxelPayload } from '../../../../packages/voxel/src/index.js';
 import type { RenderKit } from '../blockmodels/assets';
 import { buildBlockMesh } from '../blockmodels/mesh';
-import type { Mark } from '../blockmodels/mesh';
+import type { Mark, MeshSection } from '../blockmodels/mesh';
+import { buildSectionMeshInBackground, meshInBackground } from '../viewer/backgroundMesh';
 import { BlockObject, blockMaterials } from '../blockmodels/threeMesh';
 import type { BlockMaterials } from '../blockmodels/threeMesh';
 import type { ShotView } from './views';
@@ -64,9 +65,14 @@ export function renderGlShot(payload: Pick<VoxelPayload, 'cells' | 'palette' | '
   return renderGlCanvas(payload, width, height, kit, options)?.toDataURL('image/png') ?? '';
 }
 
-/** Renders a view into a new canvas (device pixels); null when nothing is visible. */
-export function renderGlCanvas(payload: Pick<VoxelPayload, 'cells' | 'palette' | 'entities'>, width: number, height: number, kit: RenderKit, options: GlShotOptions): HTMLCanvasElement | null {
-  const view = options.view ?? 'so';
+/** Like {@link renderGlShot}; the block mesh of large models is built in the background worker (PERF-04). */
+export async function renderGlShotAsync(payload: Pick<VoxelPayload, 'cells' | 'palette' | 'entities'>, width: number, height: number, kit: RenderKit, options: GlShotOptions = {}): Promise<string> {
+  return (await renderGlCanvasAsync(payload, width, height, kit, options))?.toDataURL('image/png') ?? '';
+}
+
+interface Selection { readonly cells: readonly Cell[]; readonly palette: VoxelPayload['palette']; readonly origin: Vec3; readonly markOf: ((cell: Cell) => Mark | null) | undefined }
+
+function select(payload: Pick<VoxelPayload, 'cells' | 'palette' | 'entities'>, options: GlShotOptions): Selection | null {
   const cells: Cell[] = [], marks = new Map<Cell, Mark>();
   payload.cells.forEach((c, i) => {
     if (c.kind !== 'block') return;
@@ -79,14 +85,35 @@ export function renderGlCanvas(payload: Pick<VoxelPayload, 'cells' | 'palette' |
     cells.push(c);
   });
   if (!cells.length) return null;
-  const r = context();
-  if (materials?.key !== kit.key) { materials?.dispose(); materials = blockMaterials(kit); }
-  const origin: [number, number, number] = [cells[0]!.position[0], cells[0]!.position[1], cells[0]!.position[2]];
   // Free entities (paintings, frames, armor stands) with the same layer rules as the cells.
   const withEnt = withEntities(cells, payload.palette, payload.entities, a => (options.cutY === undefined || a[1] <= options.cutY) && (options.onlyY === undefined || a[1] === options.onlyY));
-  const mesh = buildBlockMesh(withEnt.cells, withEnt.palette, kit.renderer, kit.atlas.lookup, origin, marks.size ? c => marks.get(c) ?? null : undefined);
+  return { cells: withEnt.cells, palette: withEnt.palette, origin: [cells[0]!.position[0], cells[0]!.position[1], cells[0]!.position[2]], markOf: marks.size ? c => marks.get(c) ?? null : undefined };
+}
+
+/** Renders a view into a new canvas (device pixels); null when nothing is visible. */
+export function renderGlCanvas(payload: Pick<VoxelPayload, 'cells' | 'palette' | 'entities'>, width: number, height: number, kit: RenderKit, options: GlShotOptions): HTMLCanvasElement | null {
+  const sel = select(payload, options);
+  if (!sel) return null;
+  const mesh = buildBlockMesh(sel.cells, sel.palette, kit.renderer, kit.atlas.lookup, sel.origin, sel.markOf);
   if (!mesh.quads) return null;
-  const object = new BlockObject(mesh, withEnt.cells, materials);
+  return draw([{ key: 'all', solid: mesh.solid, translucent: mesh.translucent, hash: '', min: [0, 0, 0], cells: sel.cells }], sel, width, height, kit, options);
+}
+
+/** Like {@link renderGlCanvas}; large models are meshed in the background, only drawing happens here. */
+export async function renderGlCanvasAsync(payload: Pick<VoxelPayload, 'cells' | 'palette' | 'entities'>, width: number, height: number, kit: RenderKit, options: GlShotOptions): Promise<HTMLCanvasElement | null> {
+  const sel = select(payload, options);
+  if (!sel) return null;
+  if (!meshInBackground(sel.cells.length)) return renderGlCanvas(payload, width, height, kit, options);
+  const built = await buildSectionMeshInBackground(sel.cells, sel.palette, kit, sel.origin, sel.markOf, []);
+  if (!built.quads) return null;
+  return draw(built.sections, sel, width, height, kit, options);
+}
+
+function draw(sections: readonly MeshSection[], sel: Selection, width: number, height: number, kit: RenderKit, options: GlShotOptions): HTMLCanvasElement | null {
+  const view = options.view ?? 'so', origin = sel.origin;
+  const r = context();
+  if (materials?.key !== kit.key) { materials?.dispose(); materials = blockMaterials(kit); }
+  const object = new BlockObject(sections, sel.cells, materials);
   const scene = new THREE.Scene();
   scene.add(object.group);
 
@@ -102,7 +129,7 @@ export function renderGlCanvas(payload: Pick<VoxelPayload, 'cells' | 'palette' |
     minX = a.x0 - origin[0]; maxX = a.x1 + 1 - origin[0]; minY = -(a.z1 + 1 - origin[2]); maxY = -(a.z0 - origin[2]);
   } else {
     const p = new THREE.Vector3();
-    for (const layer of [mesh.solid, mesh.translucent]) for (let i = 0; i < layer.positions.length; i += 3) {
+    for (const layer of sections.flatMap(sec => [sec.solid, sec.translucent])) for (let i = 0; i < layer.positions.length; i += 3) {
       p.set(layer.positions[i]!, layer.positions[i + 1]!, layer.positions[i + 2]!).applyMatrix4(toView);
       if (p.x < minX) minX = p.x; if (p.x > maxX) maxX = p.x; if (p.y < minY) minY = p.y; if (p.y > maxY) maxY = p.y;
     }
@@ -114,7 +141,7 @@ export function renderGlCanvas(payload: Pick<VoxelPayload, 'cells' | 'palette' |
   camera.left = minX; camera.right = maxX; camera.bottom = minY; camera.top = maxY;
   camera.updateProjectionMatrix();
   // Glass and water back to front, seen from far along the view direction.
-  if (mesh.translucent.quads) object.sortTranslucent(dir.clone().multiplyScalar(1e4));
+  if (sections.some(sec => sec.translucent.quads)) object.sortTranslucent(dir.clone().multiplyScalar(1e4));
 
   // Rendering at up to twice the size and scaling down smooths the nearest-sampled textures.
   const ratio = Math.min(2, globalThis.devicePixelRatio || 1), ss = Math.min(2, 4096 / Math.max(width * ratio, height * ratio));

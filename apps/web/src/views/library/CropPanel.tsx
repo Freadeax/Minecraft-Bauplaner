@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { addAssetVersion, createAsset, cropPayload } from '../../../../../packages/domain/src/index.js';
+import { createAsset, cropPayload } from '../../../../../packages/domain/src/index.js';
+import { addAssetVersionInBackground } from '../../jobs/versions';
 import type { AssetVersionSource, Provenance } from '../../../../../packages/domain/src/index.js';
 import { countBlocks } from '../../../../../packages/voxel/src/index.js';
 import type { Cell, VoxelPayload } from '../../../../../packages/voxel/src/index.js';
@@ -25,10 +26,12 @@ export function CropPanel({ payload, name, provenance, getSource, onHighlight, o
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const region = useMemo(() => ({ min: box[0], maxExclusive: box[1].map(n => n + 1) as Box[1] }), [box]);
+  // Only while the panel is open: cropping a million cells costs seconds and is not needed before (PERF-04).
   const preview = useMemo(() => {
-    try { const p = cropPayload(payload, region); return { payload: p, error: '' }; }
-    catch (e) { return { payload: null, error: errorText(e) }; }
-  }, [payload, region]);
+    if (!open) return { payload: null, error: '', blocks: 0 };
+    try { const p = cropPayload(payload, region); return { payload: p, error: '', blocks: countBlocks(p).blocks }; }
+    catch (e) { return { payload: null, error: errorText(e), blocks: 0 }; }
+  }, [payload, region, open]);
 
   useEffect(() => {
     if (!open) { onHighlight(null); return; }
@@ -50,7 +53,7 @@ export function CropPanel({ payload, name, provenance, getSource, onHighlight, o
       const asset = createAsset({ name: String(form.get('cropName')), tags: String(form.get('cropTags') ?? '').split(',').map(t => t.trim()).filter(Boolean),
         description: `Ausschnitt aus „${name}“, Bereich ${box[0].join('/')} bis ${box[1].join('/')} (einschließlich).`, provenance });
       const source: AssetVersionSource = { ...parent, format: 'crop' };
-      const r = await addAssetVersion(asset, { payload: preview.payload, label: '1.0', source });
+      const r = await addAssetVersionInBackground(asset, { payload: preview.payload, label: '1.0', source });
       await repo.applyBatch({ versions: [r.version], assets: [r.asset] }); await reloadLibrary();
       onSaved(`Bereich als neues Bauteil „${r.asset.name}“ gespeichert. Anschlüsse jetzt im Anschluss-Editor festlegen.`, r.asset.id);
     } catch (e) { setError(errorText(e)); } finally { setBusy(false); }
@@ -63,8 +66,8 @@ export function CropPanel({ payload, name, provenance, getSource, onHighlight, o
       {(['von', 'bis'] as const).map((l, corner) => <div className="coord-row three" key={l}>{(['X', 'Y', 'Z'] as const).map((a, axis) => <label key={a}>{a} {l}
         <input key={`${corner}-${axis}-${box[corner as 0 | 1][axis]!}`} inputMode="numeric" defaultValue={box[corner as 0 | 1][axis]!} aria-label={`${a} ${l}`}
           onBlur={e => set(corner as 0 | 1, axis, e.target.value)} onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); (e.target as HTMLInputElement).blur(); } }} /></label>)}</div>)}
-      {preview.payload ? <p className="muted">{preview.payload.bounds.maxExclusive.join(' × ')} · {formatNumber(countBlocks(preview.payload).blocks)} Blöcke im Bereich</p>
-        : <p className="field-error" role="alert">{preview.error}</p>}
+      {preview.payload ? <p className="muted">{preview.payload.bounds.maxExclusive.join(' × ')} · {formatNumber(preview.blocks)} Blöcke im Bereich</p>
+        : preview.error ? <p className="field-error" role="alert">{preview.error}</p> : null}
       <label>Bezeichnung<input name="cropName" required maxLength={120} defaultValue={`${name} Ausschnitt`} /></label>
       <label>Schlagworte (Komma-getrennt)<input name="cropTags" /></label>
       <p className="small-note">Herkunft wird übernommen: {provenance.author || 'ohne Autor'} · {provenance.source || '–'} · {provenance.license || 'ungeklärt'}</p>

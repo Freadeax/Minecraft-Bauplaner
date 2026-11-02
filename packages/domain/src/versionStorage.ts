@@ -28,12 +28,20 @@ const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object
 /** True when the record carries packed cells (IndexedDB or backup form). */
 export const isPackedVersionRecord = (raw: unknown): boolean => isObj(raw) && isObj(raw.packedCells);
 
+/** Packed forms a worker already computed (and self-checked) for a frozen cell list (PERF-04). */
+const packedByCells = new WeakMap<readonly Cell[], PackedCells>();
+
+/** Lets `packVersion` reuse the packed cells a worker made for exactly this (frozen) cell list. */
+export function rememberPackedCells(payload: VoxelPayload, packed: PackedCells): void {
+  if (Object.isFrozen(payload.cells) && packed.encoding === PACKED_CELLS_ENCODING && packed.count === payload.cells.length && packed.bytes instanceof Uint8Array) packedByCells.set(payload.cells, packed);
+}
+
 /** Packs the cell list; returns the version unchanged when packing would not be exact. */
 export function packVersion(version: AssetVersion): StoredVersionRecord {
   // Records that do not look like a complete version stay as they are; their own checks report them.
   const p = (version as { payload?: unknown }).payload;
   if (!isObj(p) || !Array.isArray(p.cells) || !isObj(p.bounds) || !Array.isArray(p.bounds.min) || !Array.isArray(p.bounds.maxExclusive)) return version;
-  const packed = packCells(version.payload);
+  const packed = packedByCells.get(version.payload.cells) ?? packCells(version.payload);
   if (!packed) return version;
   const { cells: _cells, ...payload } = version.payload;
   return { ...version, payload, packedCells: packed };

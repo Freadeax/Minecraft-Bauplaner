@@ -1,6 +1,11 @@
-import { useMemo, useState } from 'react';
-import { diffAsPayload, diffPayloads } from '../../../../packages/voxel/src/index.js';
-import type { Cell, DiffKind, VoxelPayload } from '../../../../packages/voxel/src/index.js';
+import { useEffect, useMemo, useState } from 'react';
+import { columnBuffers, diffAsPayload, diffPayloads, hydratePayload } from '../../../../packages/voxel/src/index.js';
+import type { Cell, DiffKind, PayloadDiff, VoxelPayload } from '../../../../packages/voxel/src/index.js';
+import { backgroundFrom, isAbort, pause, runJob, workersAvailable } from '../jobs/client';
+import { JobStatus } from '../jobs/JobStatus';
+import type { JobProgress } from '../jobs/protocol';
+import { transportInSlices } from '../jobs/transport';
+import { DIFF_KINDS } from '../jobs/diffJob';
 import { formatNumber } from '../app/ui';
 import { stateColor } from '../colors';
 import { Viewer } from '../Viewer';
@@ -19,20 +24,67 @@ export const DIFF_LABEL: Readonly<Record<DiffKind, string>> = { same: 'unveränd
 const KINDS: readonly DiffKind[] = ['added', 'removed', 'material', 'state', 'same'];
 const bare = (id: string) => id.replace(/^minecraft:/, '');
 
-export function DiffView({ a, b, labelA, labelB, cacheKey, profileId }: {
+type Union = { readonly payload: VoxelPayload; readonly kinds: readonly DiffKind[] };
+type Computed = { readonly diff: Omit<PayloadDiff, 'cells'>; readonly union: Union };
+/** From this many cells (both sides) the comparison runs in the background worker (PERF-04). */
+const BACKGROUND_DIFF_CELLS = 120_000;
+
+/** Diff and coloured union; large structures are compared in the background, small ones right here. */
+function useDiff(a: VoxelPayload, b: VoxelPayload, profileId: string): { computed: Computed | null; progress: JobProgress | null; error: string } {
+  const background = workersAvailable() && a.cells.length + b.cells.length >= backgroundFrom(BACKGROUND_DIFF_CELLS);
+  const direct = useMemo(() => {
+    if (background) return null;
+    const diff = diffPayloads(a, b);
+    return { diff, union: diffAsPayload(diff, profileId) };
+  }, [a, b, profileId, background]);
+  const [state, setState] = useState<{ key: readonly unknown[]; computed: Computed | null; progress: JobProgress | null; error: string }>({ key: [], computed: null, progress: null, error: '' });
+  useEffect(() => {
+    if (!background) return;
+    const key = [a, b, profileId], controller = new AbortController();
+    setState({ key, computed: null, progress: { step: 'Stände vorbereiten', fraction: 0 }, error: '' });
+    void (async () => {
+      try {
+        const [ta, tb] = [await transportInSlices(a, controller.signal), await transportInSlices(b, controller.signal)];
+        const out = await runJob('diff', { a: ta, b: tb, profileId }, {
+          signal: controller.signal, transfer: [...columnBuffers(ta.columns), ...columnBuffers(tb.columns)],
+          onProgress: p => { if (!controller.signal.aborted) setState(s => ({ ...s, progress: { step: p.step, fraction: p.fraction === null ? null : p.fraction * 0.9 } })); },
+        });
+        const payload = await hydratePayload(out.union, { pause, signal: controller.signal, onProgress: f => setState(s => ({ ...s, progress: { step: 'Ansicht übernehmen', fraction: 0.9 + f * 0.1 } })) });
+        const kinds = Array.from(out.kinds, k => DIFF_KINDS[k] ?? 'same');
+        if (!controller.signal.aborted) setState({ key, computed: { diff: out.summary, union: { payload, kinds } }, progress: null, error: '' });
+      } catch (e) {
+        if (!controller.signal.aborted && !isAbort(e)) setState({ key, computed: null, progress: null, error: e instanceof Error ? e.message : String(e) });
+      }
+    })();
+    return () => controller.abort();
+  }, [a, b, profileId, background]);
+  if (direct) return { computed: direct, progress: null, error: '' };
+  const current = state.key[0] === a && state.key[1] === b && state.key[2] === profileId;
+  return current ? state : { computed: null, progress: { step: 'Stände vorbereiten', fraction: 0 }, error: '' };
+}
+
+export function DiffView(props: {
   a: VoxelPayload; b: VoxelPayload; labelA: string; labelB: string; cacheKey: string; profileId: string;
 }) {
-  const diff = useMemo(() => diffPayloads(a, b), [a, b]);
-  const union = useMemo(() => diffAsPayload(diff, profileId), [diff, profileId]);
+  const { computed, progress, error } = useDiff(props.a, props.b, props.profileId);
+  if (error) return <div className="notice warning" role="alert"><strong>Vergleich nicht möglich.</strong><p>{error}</p></div>;
+  if (!computed) return <div className="diff-view" aria-busy="true"><JobStatus title="Unterschiede werden im Hintergrund berechnet" progress={progress} /></div>;
+  return <DiffBody {...props} diff={computed.diff} union={computed.union} />;
+}
+
+function DiffBody({ a, b, labelA, labelB, cacheKey, diff, union }: {
+  a: VoxelPayload; b: VoxelPayload; labelA: string; labelB: string; cacheKey: string; diff: Omit<PayloadDiff, 'cells'>; union: Union;
+}) {
   const [mode, setMode] = useState<'3d' | 'bild' | 'ebenen'>('bild');
   const [hideSame, setHideSame] = useState(false);
   const [allRows, setAllRows] = useState(false);
-  const kindAt = useMemo(() => new Map(union.payload.cells.map((c, i) => [c.position.join(','), union.kinds[i]!])), [union]);
+  // Only needed for the 3D view; keyed by the cell objects (no string per cell).
+  const kindAt = useMemo(() => mode === '3d' ? new Map(union.payload.cells.map((c, i) => [c, union.kinds[i]!])) : null, [union, mode]);
   const markOfKind = (kind: DiffKind): Mark | false => kind === 'same' ? (hideSame ? false : SAME_MARK) : { color: DIFF_COLOR[kind], amount: 0.7 };
   const markOfIndex = (i: number) => markOfKind(union.kinds[i]!);
   const cells3d = useMemo(() => hideSame ? union.payload.cells.filter((_, i) => union.kinds[i] !== 'same') : union.payload.cells, [union, hideSame]);
   const markFor = useMemo(() => (cell: Cell): Mark | null => {
-    const kind = kindAt.get(cell.position.join(',')) ?? 'same';
+    const kind = kindAt?.get(cell) ?? 'same';
     return kind === 'same' ? SAME_MARK : { color: DIFF_COLOR[kind], amount: 0.7 };
   }, [kindAt]);
   const noSelect = useMemo(() => () => {}, []);
