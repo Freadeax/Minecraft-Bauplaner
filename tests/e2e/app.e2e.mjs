@@ -64,6 +64,8 @@ test('Projektzentrale → Beispielprojekt → Editor: konfliktfrei, Konflikt erz
 test('Bibliothek zeigt Beispielbauteile mit Herkunft, Suche und Tags', async () => {
   const { p, errors } = await page();
   await p.goto(`${BASE}#/bibliothek`);
+  // The catalogue grows; find the sample by name instead of relying on the first page.
+  await p.getByLabel('Bauteile suchen').fill('eckturm');
   await p.getByRole('link', { name: /^Eckturm/ }).first().click();
   await p.getByText('Synthetisches Beispiel').waitFor();
   assert.match(await p.locator('.building-detail').innerText(), /west, east, north, south/);

@@ -653,3 +653,16 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `worldbuilder.e2e.mjs`: Liste nach Strg+Z erst lesen, wenn die dritte Zeile gerendert ist (las vorher gelegentlich eine leere Liste).
 - Sichtprüfung: isometrische Ansichten aller neu gezeichneten Gebäude (nicht im Repository).
 - Grenzen: keine Abnahme im Spiel; Stadt, Küste, Epochen und Fantasy nur veredelt, nicht neu gezeichnet.
+
+## LIB-05 Runde 2 · Fassadenbaukasten und Meisterstücke · 02.11.2026 · Claude
+- `tests/baustil.test.mjs` 9/9, neu:
+  - Stadt im Median höchstens 62 % auf der Hauptebene (gemessen 56 %, vorher 77 %).
+  - Jedes Meisterstück höchstens 50 % auf der Hauptebene, mindestens 30 Blockarten und mindestens 20 % umgedrehte Treppen.
+  - `facade()` setzt Lisenen, Fensterbank und Gesims nur in freie Zellen, belegte Zellen und Entwurf bleiben.
+  - `machicolations()` setzt Konsole, Brüstung und Eckstufe.
+- `tests/catalog-game.test.mjs`: weiter 0 Fehler über alle 343 Gebäude und alle Generator-Fälle.
+- `npm run check` 644/644. Browsertests 116/116, zwei Tests angepasst: `app.e2e.mjs` und `snap.e2e.mjs` suchen das Beispiel „Eckturm“ jetzt über die Suche. Mit 343 Gebäuden steht es nicht mehr sicher auf der ersten Katalogseite.
+- Sichtprüfung: isometrische Ansichten der überarbeiteten Gebäude und der Meisterstücke (nicht im Repository).
+- Grenzen:
+  - Keine Abnahme im Spiel.
+  - Untergrundhallen, Interieur-Räume und Redstone-Technik sind nicht überarbeitet.

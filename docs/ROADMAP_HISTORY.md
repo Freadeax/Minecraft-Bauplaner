@@ -2659,3 +2659,61 @@ Bibliothek im Stil der Vorlagen neu gestaltet: Baukasten style.ts, Veredelung, K
 - `tests/e2e/worldbuilder.e2e.mjs`
 - `tests/generators.test.mjs`
 
+## 2026-11-02T18:20:40.445Z · progress
+
+**Aufgaben:** LIB-05
+
+Runde 2: Fassadenbaukasten für Stadt, Küste, Epochen, Fantasy, Nether und Torhaus; sieben neue Meisterstücke
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LIB-05 | 🧩 Implementiert · Abnahme offen | 6/7 | LIB-05-S07: Untergrund innen, Interieur, Technik; Abnahme neuer Gebäude im Spiel durch Philipp. |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/BAUSTIL.md`
+- `docs/architecture/CATALOG.md`
+- `packages/domain/src/build/facade.ts`
+- `packages/domain/src/build/plot.ts`
+- `packages/domain/src/build/sets/befestigung.ts`
+- `packages/domain/src/build/sets/epochen.ts`
+- `packages/domain/src/build/sets/fantasy.ts`
+- `packages/domain/src/build/sets/index.ts`
+- `packages/domain/src/build/sets/kueste.ts`
+- `packages/domain/src/build/sets/meister.ts`
+- `packages/domain/src/build/sets/stadt.ts`
+- `packages/domain/src/build/sets/welten.ts`
+- `tests/baustil.test.mjs`
+
+## 2026-11-02T18:40:22.884Z · progress
+
+**Aufgaben:** LIB-05
+
+Runde 2: Fassadenbaukasten für Stadt, Küste, Epochen, Fantasy, Nether und Torhaus; sieben neue Meisterstücke
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LIB-05 | 🧩 Implementiert · Abnahme offen | 6/7 | LIB-05-S07: Untergrund innen, Interieur, Technik; Abnahme neuer Gebäude im Spiel durch Philipp. |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/BAUSTIL.md`
+- `docs/architecture/CATALOG.md`
+- `packages/domain/src/build/facade.ts`
+- `packages/domain/src/build/plot.ts`
+- `packages/domain/src/build/sets/befestigung.ts`
+- `packages/domain/src/build/sets/epochen.ts`
+- `packages/domain/src/build/sets/fantasy.ts`
+- `packages/domain/src/build/sets/index.ts`
+- `packages/domain/src/build/sets/kueste.ts`
+- `packages/domain/src/build/sets/meister.ts`
+- `packages/domain/src/build/sets/stadt.ts`
+- `packages/domain/src/build/sets/welten.ts`
+- `tests/baustil.test.mjs`
+- `tests/e2e/app.e2e.mjs`
+- `tests/e2e/snap.e2e.mjs`
+

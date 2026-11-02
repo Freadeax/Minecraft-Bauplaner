@@ -1,6 +1,8 @@
 import { Plot, axis, chest, door, facing, lantern, slab } from '../plot.js';
 import { WIKI } from '../spec.js';
 import type { BuildingSpec } from '../spec.js';
+import { buttresses, facade } from '../facade.js';
+import type { Mix } from '../style.js';
 
 /** Nether, End & Ozean: builds for the other dimensions and under water. */
 
@@ -18,7 +20,13 @@ function netherbasis() {
   for (let x = 0; x <= 10; x += 2) { p.set(x, 7, 0, 'polished_blackstone_brick_wall'); p.set(x, 7, 10, 'polished_blackstone_brick_wall'); }
   for (let z = 2; z <= 8; z += 2) { p.set(0, 7, z, 'polished_blackstone_brick_wall'); p.set(10, 7, z, 'polished_blackstone_brick_wall'); }
   p.set(5, 7, 5, 'shroomlight');
-  return p.payload();
+  // LIB-05: basalt buttresses, a blackstone plinth and a cornice under the parapet (plan two blocks wider on each side).
+  const q = p.moved(2, 0, 2, [15, 9, 15]), r = { x0: 2, z0: 2, x1: 12, z1: 12 };
+  const black: Mix = [['polished_blackstone_bricks', 6], ['cracked_polished_blackstone_bricks', 2], ['blackstone', 2]];
+  buttresses(q, r, ['north', 'east', 'south', 'west'], 5, 1, 4, black, 'polished_blackstone_brick_stairs', 3, (x, z) => x === 7 && z === 2);
+  facade(q, { pilaster: 'basalt', band: 'polished_blackstone_brick_stairs', bandSlab: 'polished_blackstone_brick_slab', plinth: 'blackstone_stairs' },
+    { at: r, y0: 1, y1: 5, crown: 6, pilasters: 'none', sills: true, plinth: true });
+  return q.payload();
 }
 
 /** End launch platform: obsidian pad with purpur railing and end rods; elytra start point. */

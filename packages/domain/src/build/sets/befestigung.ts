@@ -1,6 +1,7 @@
 import { Plot, axis, banner, barrel, bed, chest, crenels, door, facing, furnace, gate, hipRoof, ladder, lantern, slab, stairs, trapdoor, F } from '../plot.js';
 import { WIKI, joint } from '../spec.js';
 import type { BuildingSpec } from '../spec.js';
+import { facade, machicolations } from '../facade.js';
 import { beltCourse, hangLantern, LOOKS, lookWith, pick, pitchedRoof, put, putFree, skirt } from '../style.js';
 import type { Look, Mix, Rect } from '../style.js';
 
@@ -142,7 +143,15 @@ function torhaus() {
   p.set(5, 4, 1, 'wall_torch', facing('east')); p.set(7, 4, 1, 'wall_torch', facing('west'));
   p.set(5, 3, 5, 'red_wall_banner', facing('east')); p.set(7, 3, 5, 'red_wall_banner', facing('west'));
   p.set(2, 4, 3, 'lantern', lantern(true)); p.set(10, 4, 3, 'lantern', lantern(true));
-  return p.payload();
+  // LIB-05: plan one block deeper on both sides for the projecting battlements (Maschikulis) and the plinth.
+  const q = p.moved(0, 0, 1, [13, 13, 9]);
+  for (const x0 of [0, 8]) {
+    const r = { x0, z0: 1, x1: x0 + 4, z1: 7 };
+    facade(q, { pilaster: 'stone_bricks', band: 'stone_brick_stairs', bandSlab: 'stone_brick_slab', plinth: 'stone_brick_stairs' },
+      { at: r, y0: 1, y1: 7, bands: [5], crown: null, pilasters: 'none', sills: false, plinth: true, sides: ['north', 'south'] });
+    machicolations(q, r, 8, 'stone_brick_stairs', [['stone_bricks', 8], ['mossy_stone_bricks', 2], ['cracked_stone_bricks', 1]], 'stone_brick_slab', x0);
+  }
+  return q.payload();
 }
 
 /** Desert fort: battered walls with corbelled walkways, four corner towers with awnings, a gate with a portcullis and a barracks. */
@@ -236,7 +245,7 @@ export const BEFESTIGUNG_SPECS: readonly BuildingSpec[] = [
   { id: 'bld_torhaus', name: 'Torhaus', payload: torhaus, tags: ['burg', 'tor', 'fallgitter'],
     description: 'Torhaus mit zwei Flankentürmen, Torbogen, Fallgitter aus Eisenstäben und Wehrgang; passt zwischen die Beispiel-Mauerstücke.',
     facets: { kategorie: ['befestigung'], stil: ['mittelalterlich'], biom: ['ueberall'], funktion: ['verteidigung', 'verbindung'] },
-    connectors: [joint('west', [0, 0, 1], [-1, 0, 0], 'wall_joint', 'wall_2x5'), joint('east', [13, 0, 1], [1, 0, 0], 'wall_joint', 'wall_2x5')],
+    connectors: [joint('west', [0, 0, 2], [-1, 0, 0], 'wall_joint', 'wall_2x5'), joint('east', [13, 0, 2], [1, 0, 0], 'wall_joint', 'wall_2x5')],
     tips: ['Die Anschlüsse passen zur Beispiel-Mauer: Torhaus und Mauerstücke rasten im Editor ein.'] },
   { id: 'bld_wuestenfort', name: 'Wüstenfort', payload: wuestenfort, tags: ['fort', 'sandstein', 'innenhof'],
     description: 'Quadratisches Sandsteinfort mit vier Ecktürmen, Wehrgang, Torbogen und Unterkunft im Innenhof.',

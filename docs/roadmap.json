@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T15:51:20.990Z",
+  "updatedAt": "2026-11-02T18:40:22.884Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -5001,14 +5001,20 @@
         },
         {
           "id": "LIB-05-S06",
-          "title": "Stadt (moderne Bauten), Küste, Epochen, Fantasy mit dem Baukasten neu zeichnen.",
+          "title": "Runde 2: Fassadenbaukasten build/facade.ts (Lisenen, Gesimse, Fensterbänke, Maschikulis, Strebepfeiler, Dachtechnik) für Stadt, Küste, Epochen, Fantasy, Nether und Torhaus; sieben neue, eingerichtete Meisterstücke (sets/meister.ts).",
+          "done": true
+        },
+        {
+          "id": "LIB-05-S07",
+          "title": "Untergrundhallen innen, Interieur-Räume und Redstone-Technik gestalterisch nachziehen; Abnahme einiger neuer Gebäude im Spiel.",
           "done": false
         }
       ],
       "acceptance": [
-        "Wohnhäuser im Median ≥ 30 % Nicht-Vollblöcke, ≥ 20 % umgedrehte Treppen, ≤ 50 % Fassade auf der Hauptebene; alle Gebäude und Generator-Fälle weiter ohne Spielfehler (catalog-game)."
+        "Wohnhäuser im Median ≥ 30 % Nicht-Vollblöcke, ≥ 20 % umgedrehte Treppen, ≤ 50 % Fassade auf der Hauptebene; alle Gebäude und Generator-Fälle weiter ohne Spielfehler (catalog-game).",
+        "Runde 2: Stadt im Median ≤ 62 % Fassade auf der Hauptebene; jedes Meisterstück ≤ 50 % Hauptebene, ≥ 30 Blockarten, ≥ 20 % umgedrehte Treppen."
       ],
-      "next": "LIB-05-S06: Stadt, Küste, Epochen und Fantasy neu zeichnen; Abnahme einiger neuer Gebäude im Spiel.",
+      "next": "LIB-05-S07: Untergrund innen, Interieur, Technik; Abnahme neuer Gebäude im Spiel durch Philipp.",
       "blockers": [],
       "evidence": [
         {
@@ -5018,12 +5024,20 @@
         {
           "path": "docs/architecture/BAUSTIL.md",
           "note": "Quellen, Messwerte vorher/nachher, Regeln, Baukasten."
+        },
+        {
+          "path": "packages/domain/src/build/facade.ts",
+          "note": "Fassadenbaukasten der Runde 2, getestet in tests/baustil.test.mjs."
+        },
+        {
+          "path": "packages/domain/src/build/sets/meister.ts",
+          "note": "Sieben neue Meisterstücke mit Einrichtung."
         }
       ],
-      "updatedAt": "2026-11-02T15:51:20.990Z",
+      "updatedAt": "2026-11-02T18:40:22.884Z",
       "verification": {
         "state": "pending",
-        "note": "Node-Prüfungen bestanden (baustil, catalog-game, catalog, generators); Sichtprüfung über isometrische Ansichten; Abnahme im echten Spiel steht aus."
+        "note": "Node-Prüfungen bestanden (baustil 9/9, catalog-game, catalog, generators); Sichtprüfung über isometrische Ansichten; Abnahme im echten Spiel steht aus."
       },
       "delivery": {
         "main": null,
@@ -8793,6 +8807,76 @@
           "done": 5,
           "total": 6,
           "next": "LIB-05-S06: Stadt, Küste, Epochen und Fantasy neu zeichnen; Abnahme einiger neuer Gebäude im Spiel."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T18:20:40.445Z",
+      "kind": "progress",
+      "items": [
+        "LIB-05"
+      ],
+      "summary": "Runde 2: Fassadenbaukasten für Stadt, Küste, Epochen, Fantasy, Nether und Torhaus; sieben neue Meisterstücke",
+      "files": [
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/BAUSTIL.md",
+        "docs/architecture/CATALOG.md",
+        "packages/domain/src/build/facade.ts",
+        "packages/domain/src/build/plot.ts",
+        "packages/domain/src/build/sets/befestigung.ts",
+        "packages/domain/src/build/sets/epochen.ts",
+        "packages/domain/src/build/sets/fantasy.ts",
+        "packages/domain/src/build/sets/index.ts",
+        "packages/domain/src/build/sets/kueste.ts",
+        "packages/domain/src/build/sets/meister.ts",
+        "packages/domain/src/build/sets/stadt.ts",
+        "packages/domain/src/build/sets/welten.ts",
+        "tests/baustil.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "LIB-05",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "LIB-05-S07: Untergrund innen, Interieur, Technik; Abnahme neuer Gebäude im Spiel durch Philipp."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T18:40:22.884Z",
+      "kind": "progress",
+      "items": [
+        "LIB-05"
+      ],
+      "summary": "Runde 2: Fassadenbaukasten für Stadt, Küste, Epochen, Fantasy, Nether und Torhaus; sieben neue Meisterstücke",
+      "files": [
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/BAUSTIL.md",
+        "docs/architecture/CATALOG.md",
+        "packages/domain/src/build/facade.ts",
+        "packages/domain/src/build/plot.ts",
+        "packages/domain/src/build/sets/befestigung.ts",
+        "packages/domain/src/build/sets/epochen.ts",
+        "packages/domain/src/build/sets/fantasy.ts",
+        "packages/domain/src/build/sets/index.ts",
+        "packages/domain/src/build/sets/kueste.ts",
+        "packages/domain/src/build/sets/meister.ts",
+        "packages/domain/src/build/sets/stadt.ts",
+        "packages/domain/src/build/sets/welten.ts",
+        "tests/baustil.test.mjs",
+        "tests/e2e/app.e2e.mjs",
+        "tests/e2e/snap.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "LIB-05",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "LIB-05-S07: Untergrund innen, Interieur, Technik; Abnahme neuer Gebäude im Spiel durch Philipp."
         }
       ]
     }

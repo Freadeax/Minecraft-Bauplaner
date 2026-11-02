@@ -78,6 +78,15 @@ export class Plot {
   }
   get(x: number, y: number, z: number): BlockState | undefined { return this.cells.get(`${x},${y},${z}`)?.state; }
   has(x: number, y: number, z: number): boolean { return this.cells.has(`${x},${y},${z}`); }
+  /**
+   * Copy of this plan moved by (dx, dy, dz) into a plot with another footprint
+   * (LIB-05: margins for façade relief around an existing design).
+   */
+  moved(dx: number, dy: number, dz: number, size: readonly [number, number, number]): Plot {
+    const q = new Plot(size);
+    for (const c of this.cells.values()) q.put(c.position[0] + dx, c.position[1] + dy, c.position[2] + dz, c.air ? { air: true } : { air: false, state: c.state! });
+    return q;
+  }
 
   /** Sets fence/pane/wall arms from neighbours, like the game does on placement. */
   private connect(): void {

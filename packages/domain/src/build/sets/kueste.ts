@@ -3,6 +3,7 @@ import type { H, Props } from '../plot.js';
 import { pot, bell, cocoa, hangingLamp, table, wallBanner } from '../furnish.js';
 import { PATH_PROFILE, WIKI, joint } from '../spec.js';
 import type { BuildingSpec } from '../spec.js';
+import { facade } from '../facade.js';
 
 /**
  * Küste & Hafen (Katalog v3): Bauten am und im Wasser – Bootshaus, Werft,
@@ -69,6 +70,8 @@ function bootshaus() {
   // porch lights and slip lights
   for (const x of [3, 9]) { p.set(x, 2, 0, 'spruce_fence'); p.set(x, 3, 0, 'lantern', lantern()); }
   for (const x of [1, 11]) { p.set(x, 2, 15, 'spruce_fence'); p.set(x, 3, 15, 'lantern', lantern()); }
+  // Steinsockel und Fensterbänke an den Längsseiten.
+  facade(p, { pilaster: 'spruce_log', band: 'spruce_stairs', bandSlab: 'spruce_slab', plinth: 'stone_brick_stairs' }, { at: { x0: 1, z0: 1, x1: 11, z1: 14 }, y0: 2, y1: 5, pilasters: 'none', plinth: true, crown: null, sides: ['east', 'west'] });
   return p.payload();
 }
 
@@ -316,6 +319,8 @@ function hafenspeicher() {
   // quay: bollards and waiting goods
   for (const x of [1, 9]) p.set(x, 1, 0, 'stone_brick_wall');
   p.set(2, 1, 1, 'barrel', barrel('up')); p.set(3, 1, 1, 'barrel', barrel('north')); p.set(8, 1, 1, 'hay_block', axis('y'));
+  // Speicher: Gurtgesimse auf den Böden, Lisenen zwischen den Luken, Sockel.
+  facade(p, { pilaster: 'bricks', band: 'stone_brick_stairs', bandSlab: 'stone_brick_slab', plinth: 'stone_brick_stairs' }, { at: { x0: 1, z0: 3, x1: 9, z1: 13 }, y0: 1, y1: 12, bands: [5, 9], crown: null, plinth: true, seed: 4 });
   return p.payload();
 }
 

@@ -3,6 +3,10 @@ import type { H, Props } from '../plot.js';
 import { pot, bamboo, bell, hangingLamp, longTable, rug, wallBanner } from '../furnish.js';
 import { WIKI } from '../spec.js';
 import type { BuildingSpec } from '../spec.js';
+import { buttress, facade, machicolations } from '../facade.js';
+import type { FacadeLook } from '../facade.js';
+import { putFree } from '../style.js';
+import type { Mix } from '../style.js';
 
 /**
  * Epochen (Katalog v3): historische Baustile von Fernost über Rom und
@@ -27,6 +31,10 @@ function stairRing(p: Plot, c: number, d: number, y: number, id: string, toward:
 }
 const vine = (side: H): Props => ({ east: side === 'east' ? T : F, north: side === 'north' ? T : F, south: side === 'south' ? T : F, up: F, west: side === 'west' ? T : F });
 const ruinStone = (x: number, y: number, z: number): string => { const n = noise(x, y, z); return n < 0.35 ? 'mossy_stone_bricks' : n < 0.5 ? 'cracked_stone_bricks' : n < 0.58 ? 'mossy_cobblestone' : 'stone_bricks'; };
+
+/** Masonry trim of the historic designs (LIB-05 Runde 2). */
+const MOSSY: Mix = [['stone_bricks', 8], ['mossy_stone_bricks', 3], ['cracked_stone_bricks', 2]];
+const STEIN: FacadeLook = { pilaster: 'stone_bricks', band: 'stone_brick_stairs', bandSlab: 'stone_brick_slab', plinth: 'stone_brick_stairs' };
 
 function pagode() {
   const p = new Plot([15, 30, 15]), c = 7;
@@ -122,6 +130,8 @@ function glockenturm() {
   for (const x of [2, 6]) { p.set(x, 1, 9, 'stone_brick_wall'); p.set(x, 2, 9, 'lantern', lantern()); }
   p.set(4, 0, 9, 'stone_brick_stairs', stairs('north')); p.set(2, 0, 9, 'stone_bricks'); p.set(6, 0, 9, 'stone_bricks');
   p.set(6, 1, 6, 'chest', chest('west')); p.set(2, 1, 6, 'barrel', { facing: 'up', open: F }); p.set(4, 5, 4, 'lantern', lantern(true)); p.set(4, 11, 4, 'lantern', lantern(true));
+  // Campanile: Eckpfeiler, Gesimse auf den Geschossdecken, Sockel.
+  facade(p, STEIN, { at: { x0: 1, z0: 1, x1: 7, z1: 7 }, y0: 1, y1: 12, bands: [6, 12], crown: null, pilasters: 'corners', plinth: true });
   return p.payload();
 }
 
@@ -157,7 +167,17 @@ function kreuzgang() {
     if (x === c || z === c || Math.max(Math.abs(x - c), Math.abs(z - c)) <= 1) continue;
     if ((x + z) % 2 === 0) p.set(x, 1, z, herbs[(Math.abs(x - c) + Math.abs(z - c)) % herbs.length]!);
   }
-  return p.payload();
+  // Außenwand mit Spitzbogenfenstern zwischen Strebepfeilern (Pläne um 2 erweitert).
+  const q = p.moved(2, 0, 2, [23, 11, 23]);
+  for (const a of [3, 5, 13, 15].map(v => v + 2)) for (const [x, z, f] of [[a, 2, 'south'], [a, 20, 'north'], [2, a, 'east'], [20, a, 'west']] as const) {
+    q.set(x, 3, z, 'glass_pane'); q.set(x, 4, z, 'glass_pane'); q.set(x, 5, z, 'stone_brick_stairs', stairs(f, 'top'));
+  }
+  for (const a of [1, 4, 7, 11, 14, 17].map(v => v + 2)) {
+    buttress(q, a, 2, 'north', 1, 5, MOSSY, 'stone_brick_stairs'); buttress(q, a, 20, 'south', 1, 5, MOSSY, 'stone_brick_stairs');
+    buttress(q, 2, a, 'west', 1, 5, MOSSY, 'stone_brick_stairs'); buttress(q, 20, a, 'east', 1, 5, MOSSY, 'stone_brick_stairs');
+  }
+  facade(q, { ...STEIN, pave: [['gravel', 2], ['cobblestone', 2], ['mossy_cobblestone', 1]] }, { at: { x0: 2, z0: 2, x1: 20, z1: 20 }, y0: 1, y1: 7, pilasters: 'none', sills: false, plinth: true, crown: null, ground: 0 });
+  return q.payload();
 }
 
 function amphitheater() {
@@ -222,6 +242,9 @@ function roemischeVilla() {
   // store rooms beside the entrance hall and atrium plants
   for (const x of [6, 10]) { p.set(x, 2, 12, 'barrel', { facing: 'up', open: F }); p.set(x, 3, 12, 'barrel', { facing: 'up', open: F }); p.set(x, 2, 14, 'decorated_pot', pot()); }
   for (const [x, z] of [[6, 6], [10, 6], [6, 10], [10, 10]] as const) p.set(x, 2, z, 'potted_fern');
+  // Pilaster mit Sockel und Gebälk vor den Außenwänden.
+  facade(p, { pilaster: 'quartz_pillar', band: 'smooth_quartz_stairs', bandSlab: 'smooth_quartz_slab', plinth: 'stone_brick_stairs' },
+    { at: { x0: 1, z0: 1, x1: 15, z1: 15 }, y0: 2, y1: 4, crown: null, plinth: true, seed: 5 });
   return p.payload();
 }
 
@@ -296,6 +319,12 @@ function zugbrueckentor() {
     for (const x of [6, 10]) { p.set(x, 1, z, 'stripped_spruce_log', axis('z')); p.set(x, 8 - (z - 10), z, 'iron_chain', { axis: 'z', waterlogged: F }); }
   }
   for (const x of [6, 10]) { p.set(x, 1, 17, 'spruce_fence'); p.set(x, 2, 17, 'lantern', lantern()); }
+  // Türme mit Gurtgesims und vorkragendem Wehrgang (Maschikulis).
+  for (const x0 of [1, 11]) {
+    const r = { x0, z0: 4, x1: x0 + 4, z1: 10 };
+    facade(p, STEIN, { at: r, y0: 1, y1: 10, bands: [6], crown: null, pilasters: 'none', sills: false, plinth: true, sides: x0 === 1 ? ['north', 'west', 'south'] : ['north', 'east', 'south'] });
+    machicolations(p, r, 11, 'stone_brick_stairs', MOSSY, 'stone_brick_slab', x0);
+  }
   return p.payload();
 }
 
@@ -337,6 +366,11 @@ function kaserne() {
   for (const z of [3, 6]) { p.set(20, 1, z, 'hay_block', axis('y')); p.set(20, 2, z, 'target', { power: '0' }); }
   for (const z of [9, 11]) { p.set(18, 1, z, 'spruce_fence'); p.set(18, 2, z, 'hay_block', axis('y')); p.set(18, 3, z, 'carved_pumpkin', { facing: 'west' }); p.set(17, 2, z, 'spruce_fence'); p.set(19, 2, z, 'spruce_fence'); }
   p.set(16, 1, 4, 'barrel', { facing: 'up', open: F }); p.set(16, 2, 4, 'lantern', lantern());
+  // Bruchsteinsockel, Fensterbänke und ein Vordach über der Tür.
+  facade(p, { pilaster: 'cobblestone', band: 'spruce_stairs', bandSlab: 'spruce_slab', plinth: 'cobblestone_stairs' }, { at: { x0: 1, z0: 1, x1: 15, z1: 9 }, y0: 1, y1: 4, pilasters: 'none', plinth: true, crown: null });
+  for (let x = 6; x <= 10; x++) for (const z of [10, 11]) putFree(p, x, 3, z, 'spruce_slab', slab('top'));
+  for (const x of [6, 10]) { putFree(p, x, 1, 11, 'spruce_fence'); putFree(p, x, 2, 11, 'spruce_fence'); }
+  for (const x of [6, 10]) putFree(p, x, 4, 11, 'lantern', lantern());
   return p.payload();
 }
 

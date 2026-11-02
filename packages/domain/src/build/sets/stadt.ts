@@ -3,6 +3,9 @@ import type { H } from '../plot.js';
 import { pot, bell, chair, cupboard, daylight, hangingLamp, longTable, rug, sofa, table, wallBanner } from '../furnish.js';
 import { PATH_PROFILE, WIKI, joint } from '../spec.js';
 import type { BuildingSpec } from '../spec.js';
+import { facade, roofKit } from '../facade.js';
+import type { FacadeLook } from '../facade.js';
+import { putFree } from '../style.js';
 
 /**
  * Stadt (Katalog v3): moderne Kleinstadt mit öffentlichen Gebäuden,
@@ -36,6 +39,15 @@ function streetLamp(p: Plot, x: number, z: number, dz: 1 | -1): void {
   p.set(x, 6, z + 2 * dz, 'polished_andesite'); // volle Unterseite: daran hält die Laterne
   p.set(x, 5, z + 2 * dz, 'lantern', lantern(true));
 }
+
+/** Façade looks (LIB-05 Runde 2): light stone trim on brick, quartz on plaster, andesite on concrete. */
+const PAVE: FacadeLook['pave'] = [['smooth_stone', 4], ['polished_andesite', 2], ['stone', 1]];
+const ZIEGEL: FacadeLook = { pilaster: 'bricks', band: 'stone_brick_stairs', bandSlab: 'smooth_stone_slab', plinth: 'polished_andesite_stairs', pave: PAVE };
+const HELL: FacadeLook = { pilaster: 'smooth_quartz', band: 'smooth_quartz_stairs', bandSlab: 'smooth_quartz_slab', plinth: 'polished_andesite_stairs', pave: PAVE };
+const GRAU: FacadeLook = { pilaster: 'polished_andesite', band: 'polished_andesite_stairs', bandSlab: 'polished_andesite_slab', plinth: 'polished_deepslate_stairs', pave: PAVE };
+const QUARZ: FacadeLook = { pilaster: 'quartz_pillar', band: 'quartz_stairs', bandSlab: 'quartz_slab', plinth: 'polished_andesite_stairs', pave: PAVE };
+/** The design moved into a plot with a margin of `mx`/`mz` blocks for façade relief. */
+const widen = (p: Plot, mx = 1, mz = 1): Plot => p.moved(mx, 0, mz, [p.size[0] + 2 * mx, p.size[1], p.size[2] + 2 * mz]);
 
 // ------------------------------------------------------------ Wohnen
 function hochhaus() {
@@ -88,6 +100,11 @@ function hochhaus() {
   planter(p, 2, 33, 4); planter(p, 3, 33, 4); planter(p, 2, 33, 10);
   table(p, 4, 33, 7, 'birch'); chair(p, 3, 33, 7, 'birch', 'west'); chair(p, 5, 33, 7, 'birch', 'east');
   for (let y = 1; y <= 33; y++) p.set(8, y, 10, 'ladder', ladder('west'));
+  // Lisenen: Finnen vor den Stützen zwischen den Geschossgesimsen (Relief statt glatter Fassade).
+  for (let k = 1; k < 8; k++) for (let yy = 4 * k + 1; yy <= 4 * k + 3; yy++) {
+    for (const x of colX) for (const z of [2, 12]) putFree(p, x, yy, z, 'polished_andesite');
+    for (const z of colZ) for (const x of [0, 10]) putFree(p, x, yy, z, 'polished_andesite');
+  }
   return p.payload();
 }
 
@@ -134,7 +151,10 @@ function wohnblock() {
   p.fill(0, 12, 2, 16, 12, 10, 'light_gray_concrete'); p.ring(0, 2, 16, 10, 13, 'gray_concrete');
   for (const x of [...span(2, 5), ...span(11, 14)]) for (let z = 5; z <= 7; z++) p.set(x, 13, z, 'daylight_detector', daylight());
   for (let y = 1; y <= 12; y++) p.set(8, y, 9, 'ladder', ladder('north'));
-  return p.payload();
+  const q = widen(p);
+  facade(q, { ...HELL, pilaster: 'light_gray_concrete' }, { at: { x0: 1, z0: 3, x1: 17, z1: 11 }, y0: 1, y1: 11, bands: [4, 8], crown: 12, seed: 3 });
+  roofKit(q, { x0: 2, z0: 4, x1: 16, z1: 10 }, 13, 1);
+  return q.payload();
 }
 
 const REIHEN: readonly (readonly [string, string, string, string, string, string])[] = [
@@ -176,7 +196,9 @@ function reihenhaus(color: string, accent: string, bedColor: string) {
     rug(p, 2, 7, 3, 8, 5, bedColor);
     hangingLamp(p, 2, 13, 7, 1);
     for (let y = 1; y <= 4; y++) p.set(4, y, 11, 'ladder', ladder('west'));
-    return p.payload();
+    const q = widen(p, 0, 1);
+    facade(q, { ...HELL, pilaster: accent }, { at: { x0: 0, z0: 4, x1: 5, z1: 13 }, y0: 1, y1: 7, bands: [4], crown: null, sides: ['north', 'south'], pilasters: 'corners', plinth: true });
+    return q.payload();
   };
 }
 
@@ -215,7 +237,9 @@ function cafe() {
   for (let x = 1; x <= 9; x++) p.set(x, 3, 12, 'dark_oak_trapdoor', trapdoor('north', 'top'));
   for (const tx of [2, 8]) { table(p, tx, 1, 8, 'dark_oak'); chair(p, tx - 1, 1, 8, 'dark_oak', 'west'); chair(p, tx + 1, 1, 8, 'dark_oak', 'east'); }
   hangingLamp(p, 2, 5, 8, 1); hangingLamp(p, 8, 5, 8, 1); hangingLamp(p, 5, 5, 11, 1);
-  return p.payload();
+  const q = widen(p);
+  facade(q, ZIEGEL, { at: { x0: 1, z0: 7, x1: 11, z1: 14 }, y0: 1, y1: 4, crown: 5, sides: ['east', 'south', 'west'], plinth: true });
+  return q.payload();
 }
 
 function baeckerei() {
@@ -252,7 +276,10 @@ function baeckerei() {
   // chimney in the back wall
   p.fill(3, 1, 10, 3, 14, 10, 'bricks'); p.set(3, 15, 10, 'campfire', { facing: 'north', lit: 'true', signal_fire: F, waterlogged: F });
   for (let y = 1; y <= 5; y++) p.set(8, y, 9, 'ladder', ladder('west'));
-  return p.payload();
+  const q = widen(p);
+  facade(q, ZIEGEL, { at: { x0: 2, z0: 2, x1: 10, z1: 11 }, y0: 1, y1: 4, bands: [5], crown: null, sides: ['east', 'south', 'west'], plinth: true });
+  facade(q, ZIEGEL, { at: { x0: 2, z0: 2, x1: 10, z1: 11 }, y0: 1, y1: 3, sides: ['north'], sills: false });
+  return q.payload();
 }
 
 function kiosk() {
@@ -300,7 +327,10 @@ function supermarkt() {
   // checkouts
   for (const cx of [10, 13]) { p.set(cx, 1, 7, 'smooth_stone_slab', slab('top')); p.set(cx + 1, 1, 7, 'smooth_stone_slab', slab('top')); chair(p, cx, 1, 8, 'birch', 'south'); }
   lampPost(p, 0, 1, 4, 'andesite_wall', 3); lampPost(p, 16, 1, 4, 'andesite_wall', 3);
-  return p.payload();
+  const q = widen(p);
+  facade(q, GRAU, { at: { x0: 1, z0: 6, x1: 17, z1: 18 }, y0: 1, y1: 5, crown: 6, plinth: true, seed: 5 });
+  roofKit(q, { x0: 2, z0: 7, x1: 16, z1: 17 }, 7, 2);
+  return q.payload();
 }
 
 // ------------------------------------------------------------ Öffentliche Gebäude
@@ -350,7 +380,10 @@ function feuerwache() {
   for (let y = 1; y <= 13; y++) p.set(12, y, 11, 'ladder', ladder('west'));
   for (let y = 1; y <= 6; y++) p.set(9, y, 12, 'ladder', ladder('north'));
   lampPost(p, 5, 1, 0, 'andesite_wall', 3);
-  return p.payload();
+  const q = widen(p);
+  facade(q, ZIEGEL, { at: { x0: 1, z0: 4, x1: 11, z1: 14 }, y0: 1, y1: 9, bands: [6], crown: 10, plinth: true, seed: 7 });
+  facade(q, ZIEGEL, { at: { x0: 12, z0: 11, x1: 14, z1: 13 }, y0: 1, y1: 14, crown: null, sides: ['north', 'east', 'south'], pilasters: 'corners' });
+  return q.payload();
 }
 
 /** One classroom (6×9 inside), `m` mirrors it so the door side stays free. */
@@ -396,7 +429,10 @@ function schule() {
   p.fill(9, 12, 10, 11, 12, 10, 'smooth_stone_slab', slab()); p.set(10, 12, 10, 'white_concrete');
   p.set(10, 11, 10, 'bell', bell('north', 'ceiling'));
   for (let y = 1; y <= 4; y++) p.set(12, y, 14, 'ladder', ladder('west'));
-  return p.payload();
+  const q = widen(p);
+  facade(q, ZIEGEL, { at: { x0: 1, z0: 6, x1: 21, z1: 16 }, y0: 1, y1: 7, bands: [4], crown: 8, plinth: true, canopy: true, seed: 11 });
+  roofKit(q, { x0: 2, z0: 7, x1: 20, z1: 15 }, 9, 3);
+  return q.payload();
 }
 
 function aerztehaus() {
@@ -435,7 +471,10 @@ function aerztehaus() {
   hangingLamp(p, 6, 8, 6, 0); hangingLamp(p, 4, 8, 9, 0);
   p.set(12, 2, 4, 'white_concrete'); // kein Fenster hinter der Leiter
   for (let y = 1; y <= 4; y++) p.set(11, y, 4, 'ladder', ladder('west'));
-  return p.payload();
+  const q = widen(p);
+  facade(q, HELL, { at: { x0: 1, z0: 3, x1: 13, z1: 13 }, y0: 1, y1: 7, bands: [4], crown: 8, hoods: true, plinth: true, canopy: true, seed: 13 });
+  roofKit(q, { x0: 2, z0: 4, x1: 12, z1: 12 }, 9, 0);
+  return q.payload();
 }
 
 function bibliothek() {
@@ -469,7 +508,9 @@ function bibliothek() {
   sofa(p, 2, 1, 1, 'birch', 'north', 3, 'smooth_quartz'); sofa(p, 12, 1, 1, 'birch', 'north', 3, 'smooth_quartz');
   p.set(10, 1, 2, 'barrel', barrel('north'));
   lampPost(p, 6, 1, 0, 'andesite_wall', 3); lampPost(p, 10, 1, 0, 'andesite_wall', 3);
-  return p.payload();
+  const q = widen(p);
+  facade(q, QUARZ, { at: { x0: 1, z0: 4, x1: 17, z1: 15 }, y0: 1, y1: 8, crown: 9, sides: ['east', 'south', 'west'], plinth: true, seed: 17 });
+  return q.payload();
 }
 
 function polizeiwache() {
@@ -508,7 +549,10 @@ function polizeiwache() {
   hangingLamp(p, 4, 8, 7, 0); hangingLamp(p, 9, 8, 6, 0);
   for (let y = 1; y <= 4; y++) p.set(6, y, 11, 'ladder', ladder('north'));
   lampPost(p, 1, 1, 0, 'andesite_wall', 3); lampPost(p, 11, 1, 0, 'andesite_wall', 3);
-  return p.payload();
+  const q = widen(p);
+  facade(q, GRAU, { at: { x0: 1, z0: 3, x1: 13, z1: 13 }, y0: 1, y1: 7, bands: [4], crown: 8, hoods: true, plinth: true, canopy: true, seed: 19 });
+  roofKit(q, { x0: 2, z0: 4, x1: 12, z1: 12 }, 9, 1);
+  return q.payload();
 }
 
 function stadtplatz() {

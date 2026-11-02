@@ -22,6 +22,7 @@ import { KUESTE_SPECS } from './kueste.js';
 import { FAHRZEUGE_SPECS } from './fahrzeuge.js';
 import { UNTERGRUND_SPECS } from './untergrund.js';
 import { DIMENSIONEN_SPECS } from './dimensionen.js';
+import { MEISTER_SPECS } from './meister.js';
 import { withMaterialFamilies } from './varianten.js';
 import { refinedSpec } from '../refine.js';
 
@@ -50,4 +51,5 @@ export const ALL_SET_SPECS: readonly BuildingSpec[] = withMaterialFamilies([
   ...FAHRZEUGE_SPECS,
   ...UNTERGRUND_SPECS,
   ...DIMENSIONEN_SPECS,
+  ...MEISTER_SPECS,
 ].map(refinedSpec));

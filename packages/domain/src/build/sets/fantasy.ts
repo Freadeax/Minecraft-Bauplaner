@@ -3,6 +3,8 @@ import type { H, Props } from '../plot.js';
 import { hangingLamp } from '../furnish.js';
 import { WIKI } from '../spec.js';
 import type { BuildingSpec } from '../spec.js';
+import { buttress, facade } from '../facade.js';
+import type { Mix } from '../style.js';
 
 /**
  * Fantasy (Katalog v3): Drachen, Elfen, Kristalle, Feen und Hexen. Eigene
@@ -283,7 +285,13 @@ function magierakademie() {
   for (const y of [4, 9, 13]) { p.set(18, y, 4, 'purple_stained_glass'); p.set(18, y, 8, 'purple_stained_glass'); }
   for (let k = 0; k <= 5; k++) p.disc(18, 6, 18 + k, 3 - k * 0.5, 'purple_terracotta');
   p.set(18, 24, 6, 'end_rod', facing('up'));
-  return p.payload();
+  // LIB-05: Strebepfeiler zwischen den Fensterachsen, Gurtgesims, Sockel (Plan um zwei Blöcke tiefer).
+  const q = p.moved(0, 0, 2, [22, 25, 17]), r = { x0: 0, z0: 3, x1: 16, z1: 13 };
+  const deep: Mix = [['deepslate_bricks', 6], ['cracked_deepslate_bricks', 2], ['polished_deepslate', 2]];
+  for (const x of [5, 11]) { buttress(q, x, 3, 'north', 1, 8, deep, 'deepslate_brick_stairs'); buttress(q, x, 13, 'south', 1, 8, deep, 'deepslate_brick_stairs'); }
+  facade(q, { pilaster: 'polished_deepslate', band: 'deepslate_brick_stairs', bandSlab: 'deepslate_brick_slab', plinth: 'polished_deepslate_stairs' },
+    { at: r, y0: 1, y1: 9, bands: [5], crown: null, pilasters: 'none', plinth: true, sides: ['north', 'south', 'west'] });
+  return q.payload();
 }
 
 function schaedelhoehle() {

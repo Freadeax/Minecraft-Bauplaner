@@ -120,6 +120,8 @@ test('Editor: Instanz im 3D-Bild ziehen, rastet am Anschluss ein, ein Undo-Schri
 test('Bibliothek: Bereich als Bauteil speichern und Anschlüsse als neue Version anlegen', async () => {
   const { p, errors } = await page();
   await p.goto(`${BASE}#/bibliothek`);
+  // The catalogue grows; find the sample by name instead of relying on the first page.
+  await p.getByLabel('Bauteile suchen').fill('eckturm');
   await p.getByRole('link', { name: /^Eckturm/ }).first().click();
   assert.match(await p.locator('.connector-editor').innerText(), /schreibgeschützt/);
   await p.getByText('Bereich als Bauteil speichern').click();

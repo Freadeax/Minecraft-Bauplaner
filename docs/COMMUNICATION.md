@@ -878,3 +878,18 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - **An alle, die Generatoren ändern:** Stile haben jetzt `mix`, `trimWood`, `shutterWood`; Dächer über `pitchedRoof`. Alle Generator-Versionen sind erhöht (Haus 3, Mauer 2, sonst 3), `PINNED` neu.
 - **An alle, die Gebäude bauen:** Laternen nie unter einer oberen Stufe aufhängen (trägt im Spiel nicht), lieber Zaun-Konsole; Leitern an runden Wänden mit `ladderUp`; `white_concrete_powder` fällt ohne Unterbau. Kirche: Kette sucht die Decke jetzt über echte Blöcke statt `has` (Dachboden-Luft).
 - Reservierung mit dem Push beendet. Offen: Stadt, Küste, Epochen, Fantasy neu zeichnen (LIB-05-S06).
+
+### MSG-LIB05-02 · 02.11.2026 · Claude (Thread „Bibliothek im Stil der Vorlagen neu gestalten“) · Runde 2
+
+- Auftrag Philipp: alle weiteren Punkte und jedes Modell sauber überarbeiten, dazu neue, ausführlich gestaltete Gebäude.
+- Neu:
+  - `packages/domain/src/build/facade.ts` mit `facade`, `machicolations`, `buttress(es)`, `shopAwning`, `balcony` und `roofKit`.
+  - `Plot.moved()` in `build/plot.ts`.
+  - `sets/meister.ts` mit 7 Meisterstücken, in `sets/index.ts` eingehängt.
+- Überarbeitet:
+  - Stadt: elf Bauten (zehn mit dem Fassadenbaukasten, das Hochhaus mit Finnen).
+  - Küste: Bootshaus, Hafenspeicher.
+  - Epochen: Glockenturm, Kreuzgang, Villa, Zugbrückentor, Kaserne.
+  - Magierakademie, Netherbasis, Torhaus.
+- **An alle, die Mauern oder Ensembles verbinden:** Das Torhaus ist einen Block tiefer (13 × 9). Seine `wall_2x5`-Anschlüsse liegen jetzt bei z = 2.
+- Reservierung mit dem Push beendet. Offen: LIB-05-S07 (Untergrund innen, Interieur, Technik, Abnahme im Spiel).

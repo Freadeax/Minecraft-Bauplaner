@@ -90,3 +90,45 @@ test('Veredelung: Grenzen bleiben, kein Block verschwindet, Luft bleibt Luft', (
   assert.ok(out.palette.some(s => /mossy|cracked/.test(s.id)), 'Verwitterung');
   assert.ok(refineOptionsFor(spec.id, spec.facets)?.weather === false, 'moderne Bauten verwittern nicht');
 });
+
+// ------------------------------------------------------------ LIB-05 Runde 2
+import { facade, machicolations } from '../dist/domain/src/build/facade.js';
+
+test('Runde 2: Stadt mit Relief, Meisterstücke reich gegliedert', () => {
+  const stadt = BUILDING_SPECS.filter(s => s.id.startsWith('bld_stadt_') && ['oeffentlich', 'wohnhaus', 'handel'].includes(s.facets.kategorie[0])).map(s => designMetrics(s.payload()));
+  assert.ok(median(stadt.map(x => x.flatFacade)) <= 0.62, `Stadt Hauptebene ${median(stadt.map(x => x.flatFacade))}`);
+  const meister = BUILDING_SPECS.filter(s => s.id.startsWith('bld_meister_'));
+  assert.ok(meister.length >= 7, `${meister.length} Meisterstücke`);
+  for (const s of meister) {
+    const m = designMetrics(s.payload());
+    assert.ok(m.flatFacade <= 0.5 && m.materials >= 30 && m.upsideDown >= 0.2, `${s.id} ${JSON.stringify(m)}`);
+  }
+});
+
+test('facade(): Lisenen neben Fenstern, Fensterbank, Gesims; nur freie Zellen, Entwurf bleibt', () => {
+  const p = new Plot([9, 2, 9]);
+  p.room(1, 1, 7, 7, 1, 4, 'bricks');
+  p.set(3, 2, 1, 'glass_pane'); p.set(3, 3, 1, 'glass_pane');
+  p.set(1, 2, 0, 'oak_fence'); // already used cell in front of the wall
+  const before = p.payload();
+  facade(p, { pilaster: 'stone_bricks', band: 'stone_brick_stairs', bandSlab: 'stone_brick_slab' }, { at: { x0: 1, z0: 1, x1: 7, z1: 7 }, y0: 1, y1: 4, bands: [3], crown: 5, sides: ['north'] });
+  const out = p.payload();
+  const at = (x, y, z) => { const c = out.cells.find(c => c.position.join() === [x, y, z].join()); return c && out.palette[c.paletteIndex]; };
+  assert.equal(at(2, 2, 0).id, 'minecraft:stone_bricks', 'Lisene links vom Fenster');
+  assert.equal(at(4, 2, 0).id, 'minecraft:stone_bricks', 'Lisene rechts vom Fenster');
+  assert.equal(at(3, 1, 0).properties.half, 'top', 'Fensterbank');
+  assert.equal(at(5, 3, 0).id, 'minecraft:stone_brick_stairs', 'Geschossgesims');
+  assert.equal(at(1, 2, 0).id, 'minecraft:oak_fence', 'belegte Zelle bleibt');
+  for (const c of before.cells) if (c.kind === 'block') assert.equal(at(...c.position).id, before.palette[c.paletteIndex].id, `Zelle ${c.position}`);
+});
+
+test('machicolations(): Konsolen, Brüstung und Zinnen außen um den Turm', () => {
+  const p = new Plot([7, 2, 7]);
+  p.room(1, 1, 5, 5, 1, 6, 'stone_bricks');
+  machicolations(p, { x0: 1, z0: 1, x1: 5, z1: 5 }, 6, 'stone_brick_stairs', [['stone_bricks', 1]], 'stone_brick_slab');
+  const out = p.payload();
+  const at = (x, y, z) => { const c = out.cells.find(c => c.position.join() === [x, y, z].join()); return c && out.palette[c.paletteIndex]; };
+  assert.equal(at(3, 6, 0).properties.half, 'top');
+  assert.equal(at(3, 7, 0).id, 'minecraft:stone_bricks');
+  assert.equal(at(0, 6, 0).id, 'minecraft:stone_brick_slab');
+});

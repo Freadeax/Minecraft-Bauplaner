@@ -82,6 +82,55 @@ Materialvarianten (B12) entstehen weiter aus dem Grundgebäude; Ensembles Marktd
 
 `tests/baustil.test.mjs` hält die Ziele fest (Wohnhäuser: ≥ 30 % Detailblöcke, ≥ 20 % umgedrehte Treppen, ≤ 50 % Hauptebene, ≥ 20 Blockarten; Architektur ≤ 55 % Hauptebene) und prüft Mischung, `house`, `pitchedRoof` und Veredelung. Die Abstände zu den Vorlagen bleiben bei Stadt (moderne Bauten), Küste, Epochen und Fantasy am größten; sie sind die nächsten Kandidaten.
 
+## Runde 2: Fassadenbaukasten, Stadt bis Fantasy, Meisterstücke
+
+Philipp (02.11.2026): „sowie alle weiteren Punkte auch, sauber über jedes Modell und neue in die Tiefe entwickelte hinzufügen“.
+
+**Fassadenbaukasten `build/facade.ts`.** Arbeitet auf einer fertigen Hülle und schreibt nur in freie Zellen vor der Wand, sodass Entwurf und Einrichtung bleiben:
+
+- `facade()` liest die Außenebene eines Rechtecks, erkennt Fenster- und Türachsen und setzt Lisenen zwischen den Öffnungen (`rhythm`) oder nur an den Ecken, Gesimse auf den Geschosslinien, ein Kranzgesims, Fensterbänke (umgedrehte Treppen), Sonnenblenden (obere Stufen), einen Sockel aus Treppen, ein Vordach über Türen und einen Gehweg.
+- `machicolations()` baut einen vorkragenden Wehrgang: Konsolen aus umgedrehten Treppen, Brüstung und Zinnen.
+- `buttress()` und `buttresses()` bauen Strebepfeiler mit abgeschrägter Kappe und breiterem Fuß.
+- Dazu kommen `shopAwning()`, `balcony()` und `roofKit()` mit Klimageräten, Lüftern, Solarfeldern und Wassertank für Flachdächer.
+
+`Plot.moved()` verschiebt einen fertigen Entwurf in eine größere Grundfläche, damit vor den Wänden Platz für das Relief ist. Anschlüsse werden dabei mitverschoben (Torhaus: `wall_2x5` jetzt bei z = 2).
+
+**Überarbeitet:**
+
+| Set | Gebäude | Was dazukam |
+|---|---|---|
+| Stadt | Schule, Feuerwache, Ärztehaus, Bibliothek, Polizeiwache, Wohnblock, Reihenhäuser, Café, Bäckerei, Supermarkt | Lisenen, Geschoss- und Kranzgesimse, Fensterbänke, Sonnenblenden, Sockel, Vordächer, Gehweg, Dachtechnik |
+| Stadt | Hochhaus | Finnen vor den Stützen |
+| Küste | Bootshaus | Sockel und Fensterbänke |
+| Küste | Hafenspeicher | Gurtgesimse auf den Böden, Lisenen zwischen den Luken |
+| Epochen | Glockenturm | Eckpfeiler und Geschossgesimse |
+| Epochen | Kreuzgang | Spitzbogenfenster zwischen Strebepfeilern |
+| Epochen | Römische Villa | Pilaster mit Sockel |
+| Epochen | Zugbrückentor | Gurtgesims und Maschikulis |
+| Epochen | Kaserne | Sockel, Fensterbänke, Vordach |
+| Fantasy | Magierakademie | Strebepfeiler und Gurtgesims |
+| Nether | Netherbasis | Basalt-Strebepfeiler, Kranzgesims |
+| Befestigung | Torhaus | Maschikulis und Gurtgesims |
+
+**Meisterstücke `sets/meister.ts`.** Sieben neue, vollständig eingerichtete Entwürfe nach den Regeln oben:
+
+- Gildehaus: drei Geschosse, zweifach vorkragend, Zwerchgiebel, Marktstände.
+- Wassermühle: Wasserrad auf Eichenwelle, Mahlstein, Steg über den Bach.
+- Markthalle: Säulenarkaden mit Ständen und Brunnen, Ratssaal, Glocke.
+- Bahnhof: Uhrturm mit drei Zifferblättern, Wartehalle, Bahnsteigdach, Gleis.
+- Fischerkate: auf Pfählen, mit Terrasse, Steg und Netzgestell.
+- Alchemistenturm: Rundturm, Fachwerkerker auf Konsolen, Kegeldach, Labor, Bibliothek, Sternwarte.
+- Stadtvilla: Turmflügel, Veranda mit Balkon, Salon, Esszimmer, Schlafzimmer, Garten.
+
+| Median `designMetrics` | Fassade auf Hauptebene vorher → nachher | Nicht-Vollblöcke | Blockarten |
+|---|---|---|---|
+| Stadt (21) | 77 % → 56 % | 27 % → 28 % | 27 → 34 |
+| Meisterstücke (7) | 37 % (neu) | 28 % | 40 |
+
+Alle überarbeiteten und neuen Gebäude halten im Spiel (`catalog-game`: 0 Fehler).
+
+Nicht überarbeitet sind die Untergrundhallen (Zwergenhalle, Erzgießerei, Lager, Bahnhof unter Tage). Sie liegen im Fels, deshalb bringt dort nur das Innere etwas. Auch die Redstone-Technik bleibt, weil Funktion vor Form geht, und die Interieur-Räume, die offene Schnitte sind. Diese drei Gruppen sind die nächsten Kandidaten.
+
 ## Veredelung (`build/refine.ts`)
 
 Für jedes Katalog-Gebäude, abhängig von Kategorie und Stil (`refineOptionsFor`): außen liegende Steinziegel, Bruchstein, Tiefenschiefer-, Schwarzstein- und Netherziegel erhalten ihre bemoosten/rissigen Varianten (Treppen/Stufen/Mauern ihre bemoosten Formen); einfache Fenster in Wohn-, Handels- und Handwerksbauten bekommen Läden und Sims, wo innerhalb der Grenzen Platz ist. Grenzen, Anschlüsse und explizite Luft bleiben unverändert. Die Veredelung läuft für jedes Katalog-Gebäude (`refinedSpec`, vor den Materialvarianten); moderne, technische und End-Bauten verwittern nicht.
