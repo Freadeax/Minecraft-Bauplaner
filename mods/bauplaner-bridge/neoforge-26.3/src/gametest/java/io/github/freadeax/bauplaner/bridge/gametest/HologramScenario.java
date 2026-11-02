@@ -64,6 +64,12 @@ final class HologramScenario {
         step(out, 3, mc -> mc.gui.setScreen(null));
         step(out, 10, mc -> KeyMapping.click(InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_NUMPAD7)));
         step(out, 3, mc -> { expectScreen(mc, "MaterialScreen", "Num 7 öffnet nicht die Materialliste"); mc.gui.setScreen(null); });
+        // Stage 5: build sections from the plan file (Turm, Mauer) and X-ray.
+        step(out, 3, mc -> s.command("bauplaner abschnitt 2"));
+        step(out, 3, mc -> s.command("bauplaner abschnitt"));
+        step(out, 10, mc -> s.command("bauplaner roentgen"));
+        step(out, 3, mc -> s.command("bauplaner roentgen"));
+        step(out, 3, mc -> s.command("bauplaner abschnitt alle"));
         placementHelper(out, s, a);
         step(out, 1, mc -> Files.copy(s.root().resolve("platzierung.properties"), s.io().resolve("platzierung.properties"), StandardCopyOption.REPLACE_EXISTING));
         return out;

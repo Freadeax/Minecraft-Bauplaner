@@ -666,3 +666,8 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Grenzen:
   - Keine Abnahme im Spiel.
   - Untergrundhallen, Interieur-Räume und Redstone-Technik sind nicht überarbeitet.
+## GAME-07 Stufe 5 · Mod 0.7.0 (Bauabschnitte, Röntgensicht, Shulker) · 02.11.2026 · Claude
+- `tests/game-check.test.mjs`: Planexport trägt `SectionNames`/`SectionCells` (Zellen je Abschnitt, Plan ohne Abschnitte ohne Felder); `tests/livelink.test.mjs`: Status mit `section`/`sections`, Abschnitt 300 und negative Zahlen werden abgelehnt.
+- `mod-core` JUnit 10/10, neu `buildSectionsFilterEverything` (Filter aus Höhe und Abschnitt für Fehler, Zählung, Material).
+- Spieltest NeoForge (`scripts/test_bridge_ingame_forge.sh neoforge`), Fabric ohne Modpack und Fabric mit Philipps Modpack + Complementary-Shader (`BAUPLANER_MODPACK_MODS`, `BAUPLANER_SHADERPACK`) jeweils bestanden: Abschnitte „Turm“ (1 offen) und „Mauer“ (30 offen), Zeile „Abschnitt 2/2: „Mauer““, Röntgensicht an/aus, „Alle Bauabschnitte.“; Website-Verbindung mit Abschnittssummen (Turm 93/94, Mauer 24/54) und `POST /v1/section`. Bildschirmfoto `roentgen.png` unter Shader geprüft.
+- Grenzen: keine Abnahme auf Philipps Paper-Server; Shulker-/Bündelinhalt nur durch Code und Sichtprüfung, nicht im Spieltest gezählt.

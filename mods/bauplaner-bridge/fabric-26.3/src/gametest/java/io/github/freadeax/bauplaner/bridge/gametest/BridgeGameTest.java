@@ -149,6 +149,19 @@ public final class BridgeGameTest implements FabricClientGameTest {
         if (!materialScreen.equals("MaterialScreen")) throw new AssertionError("Num 7 öffnet nicht die Materialliste, offen: " + materialScreen);
         copy(context.takeScreenshot("bauplaner-material"), io.resolve("material.png"));
         context.setScreen(() -> null);
+        // Stage 5: build sections from the plan file (Turm, Mauer) and X-ray through the walls.
+        chat(context, "/bauplaner abschnitt 2");
+        chat(context, "/bauplaner abschnitt");
+        chat(context, "/bauplaner roentgen");
+        context.setScreen(() -> null);
+        context.runOnClient(mc -> mc.gui.hud.getChat().clearMessages(false));
+        world.getServer().runCommand("tp @a " + (anchor[0] - 6.5) + " " + anchor[1] + " " + (anchor[2] - 6.5) + " -45 10");
+        world.getConnection().waitForChunksRender();
+        context.waitTicks(10);
+        copy(context.takeScreenshot("bauplaner-roentgen"), io.resolve("roentgen.png"));
+        chat(context, "/bauplaner roentgen");
+        chat(context, "/bauplaner abschnitt alle");
+        context.setScreen(() -> null);
         placementHelper(context, world, io, anchor);
         Files.copy(root.resolve("platzierung.properties"), io.resolve("platzierung.properties"), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
     }
@@ -279,6 +292,7 @@ public final class BridgeGameTest implements FabricClientGameTest {
         String q = "name=website-plan.schem&dimension=minecraft%3Aoverworld&x=" + (anchor[0] + 20) + "&y=" + anchor[1] + "&z=" + anchor[2] + "&turns=0&mirror=false";
         out.append(",\"plan\":").append(requestBytes(context, http, base + "/v1/plan?" + q, plan, token));
         context.waitTicks(40);
+        out.append(",\"section\":").append(request(context, http, base + "/v1/section", "POST", "{\"section\":2}", token, "https://freadeax.github.io"));
         out.append(",\"after\":").append(request(context, http, base + "/v1/status", "GET", null, token, "https://freadeax.github.io"));
         out.append("}");
         Files.writeString(io.resolve("live.json"), out.toString());

@@ -191,6 +191,30 @@ class ModCoreTest {
     }
 
     @Test
+    void buildSectionsFilterEverything() {
+        // Three stones in a row: section 1, section 2, no section.
+        PlanModel plan = PlanModel.parse("s.schem", schem(3, 1, 1, new int[] { 0, 0, 0 }, new String[] { "minecraft:stone" }, new int[] { 0, 0, 0 },
+                List.of("Fundament", "Wände"), new byte[] { 1, 2, 0 }));
+        assertEquals(List.of("Fundament", "Wände"), plan.sectionNames());
+        assertArrayEquals(new int[] { 1, 2, 0 }, new int[] { plan.section(0), plan.section(1), plan.section(2) });
+        var check = new LiveCheck(plan, Placement.at("d", 0, 64, 0));
+        check.sweep((x, y, z) -> x == 0 ? s("minecraft:stone") : BlockState.AIR, 10);
+        assertEquals(1, check.count(new Filter(Integer.MIN_VALUE, Integer.MAX_VALUE, 1))[Verdict.OK.ordinal()]);
+        assertEquals(1, check.count(new Filter(Integer.MIN_VALUE, Integer.MAX_VALUE, 2))[Verdict.MISSING.ordinal()]);
+        assertEquals(2, check.count(Filter.ALL)[Verdict.MISSING.ordinal()]);
+        assertEquals(-1, check.nearestProblem(0, 64, 0, new Filter(Integer.MIN_VALUE, Integer.MAX_VALUE, 1)), "Abschnitt 1 ist fertig");
+        assertEquals(1, check.worldX(check.nearestProblem(0, 64, 0, new Filter(Integer.MIN_VALUE, Integer.MAX_VALUE, 2))));
+        assertEquals(List.of(new Materials.Line("minecraft:stone", 1, 1)), Materials.of(check, new Filter(Integer.MIN_VALUE, Integer.MAX_VALUE, 2)));
+        assertEquals(List.of(), Materials.of(check, new Filter(70, 80, 0)), "Ebenen und Abschnitt gelten zusammen");
+        // Plans without sections: everything is in "no section"; broken section data is refused.
+        assertTrue(PlanModel.parse("p.schem", schem(1, 1, 1, new int[] { 0, 0, 0 }, new String[] { "minecraft:stone" }, new int[] { 0 })).sectionNames().isEmpty());
+        assertThrows(RuntimeException.class, () -> PlanModel.parse("x.schem", schem(2, 1, 1, new int[] { 0, 0, 0 }, new String[] { "minecraft:stone" }, new int[] { 0, 0 },
+                List.of("A"), new byte[] { 1 })), "zu kurz");
+        assertThrows(RuntimeException.class, () -> PlanModel.parse("x.schem", schem(1, 1, 1, new int[] { 0, 0, 0 }, new String[] { "minecraft:stone" }, new int[] { 0 },
+                List.of("A"), new byte[] { 2 })), "unbekannter Abschnitt");
+    }
+
+    @Test
     void placementsAreRememberedPerWorld(@TempDir Path dir) throws Exception {
         var store = new PlacementStore(dir.resolve("bauplaner/platzierung.properties"));
         assertTrue(store.get("server:lmnt").isEmpty());
@@ -204,7 +228,10 @@ class ModCoreTest {
     }
 
     /** Minimal plan file in the website's export format (Sponge v3 + Metadata.Bauplaner). */
-    static byte[] schem(int w, int h, int l, int[] projectMin, String[] palette, int[] data) {
+    static byte[] schem(int w, int h, int l, int[] projectMin, String[] palette, int[] data) { return schem(w, h, l, projectMin, palette, data, null, null); }
+
+    /** Same with build sections (names and one byte per cell), as the website writes them since 0.7.0. */
+    static byte[] schem(int w, int h, int l, int[] projectMin, String[] palette, int[] data, List<String> sectionNames, byte[] sectionCells) {
         Map<String, Nbt.Tag> pal = new LinkedHashMap<>();
         for (int i = 0; i < palette.length; i++) pal.put(palette[i], Nbt.Tag.ofInt(i));
         var bytes = new ByteArrayOutputStream();
@@ -214,6 +241,10 @@ class ModCoreTest {
         bauplaner.put("RevisionId", Nbt.Tag.ofString("r1"));
         bauplaner.put("RevisionNumber", Nbt.Tag.ofInt(1));
         bauplaner.put("ProjectMin", Nbt.Tag.ofIntArray(projectMin));
+        if (sectionNames != null) {
+            bauplaner.put("SectionNames", new Nbt.Tag(Nbt.LIST, new Nbt.NbtList(Nbt.STRING, sectionNames.stream().map(Nbt.Tag::ofString).toList())));
+            bauplaner.put("SectionCells", Nbt.Tag.ofBytes(sectionCells));
+        }
         Map<String, Nbt.Tag> meta = new LinkedHashMap<>();
         meta.put("Name", Nbt.Tag.ofString("Testhaus"));
         meta.put("Bauplaner", Nbt.Tag.ofCompound(bauplaner));

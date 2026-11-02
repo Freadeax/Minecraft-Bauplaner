@@ -35,6 +35,12 @@ public final class Hologram {
     public enum Layers { ALL, ONE, BELOW }
     private Layers layers = Layers.ALL;
     private int layerY;
+    /** Build section from the website (1-based), 0 = all sections. */
+    private int section;
+    /** Section whose completion was already announced in the chat, so the message comes once. */
+    private int announced;
+    /** X-ray: frames of wrong and missing blocks also through walls (finder beam always). */
+    private boolean xray;
     /** Missing blocks as see-through textured blocks (true) or as blue boxes. */
     private boolean textured = true;
     /** Placement helper strictness, persisted with the other settings. */
@@ -61,6 +67,59 @@ public final class Hologram {
     /** Lowest and highest world height currently shown. */
     public int minY() { return layers == Layers.ONE ? layerY : Integer.MIN_VALUE; }
     public int maxY() { return layers == Layers.ALL ? Integer.MAX_VALUE : layerY; }
+
+    /** Layer mode and build section together: what hologram, HUD, material list and finder look at. */
+    public io.github.freadeax.bauplaner.mod.Filter filter() { return new io.github.freadeax.bauplaner.mod.Filter(minY(), maxY(), section); }
+
+    public List<String> sectionNames() { return plan == null ? List.of() : plan.sectionNames(); }
+    public int section() { return section; }
+    /** Name of the active section, or null for all. */
+    public String sectionName() { return section == 0 || section > sectionNames().size() ? null : sectionNames().get(section - 1); }
+
+    /** Choose a build section (0 = all). Returns a message for the player. */
+    public String setSection(int n) {
+        if (check == null) return "Kein Plan eingeblendet.";
+        var names = sectionNames();
+        if (names.isEmpty()) return "Dieser Plan hat keine Bauabschnitte. Auf der Website im Tab „Baustelle“ Abschnitte anlegen und neu exportieren.";
+        if (n < 0 || n > names.size()) return "Abschnitt " + n + " gibt es nicht (1–" + names.size() + ").";
+        section = n;
+        announced = 0;
+        target = -1;
+        if (layers != Layers.ALL) layerY = firstOpenLayer();
+        return n == 0 ? "Alle Bauabschnitte." : "Abschnitt " + n + "/" + names.size() + ": „" + names.get(n - 1) + "“ – " + sectionLine(n);
+    }
+
+    /** Next or previous section, cycling through "all". */
+    public String stepSection(int d) {
+        int count = sectionNames().size();
+        if (check == null || count == 0) return setSection(section);
+        return setSection(Math.floorMod(section + d, count + 1));
+    }
+
+    /** First section in build order that still has work, or 0 when all are done. */
+    public int firstOpenSection() {
+        int count = sectionNames().size();
+        for (int k = 1; k <= count; k++) if (open(k) > 0) return k;
+        return 0;
+    }
+
+    /** Open (missing, wrong, misaligned) blocks of a section. */
+    public int open(int k) {
+        int[] c = check.count(new io.github.freadeax.bauplaner.mod.Filter(Integer.MIN_VALUE, Integer.MAX_VALUE, k));
+        return c[Verdict.MISSING.ordinal()] + c[Verdict.WRONG.ordinal()] + c[Verdict.STATE.ordinal()];
+    }
+
+    /** "73 % · 12 offen" for one section. */
+    public String sectionLine(int k) {
+        int[] c = check.count(new io.github.freadeax.bauplaner.mod.Filter(Integer.MIN_VALUE, Integer.MAX_VALUE, k));
+        int total = 0;
+        for (int v : c) total += v;
+        int ok = c[Verdict.OK.ordinal()], open = c[Verdict.MISSING.ordinal()] + c[Verdict.WRONG.ordinal()] + c[Verdict.STATE.ordinal()];
+        return (total == 0 ? 100 : ok * 100 / total) + " % · " + open + " offen" + (c[Verdict.UNKNOWN.ordinal()] > 0 ? " · " + c[Verdict.UNKNOWN.ordinal()] + " nicht geladen" : "");
+    }
+
+    public boolean xray() { return xray; }
+    public void toggleXray() { xray = !xray; saveSettings(); }
 
     /** Next layer mode: all → one layer → up to the layer → all. Starts at the lowest layer that still has work. */
     public void cycleLayers() {
@@ -92,6 +151,7 @@ public final class Hologram {
         int best = Integer.MAX_VALUE;
         for (int i = 0; i < check.size(); i++) {
             var v = check.verdict(i);
+            if (section != 0 && check.plan().section(i) != section) continue;
             if (v != Verdict.OK && v != Verdict.UNKNOWN) best = Math.min(best, check.worldY(i));
         }
         return best == Integer.MAX_VALUE ? check.worldBox()[1] : best;
@@ -104,12 +164,14 @@ public final class Hologram {
         try (var r = Files.newBufferedReader(settingsFile())) { props.load(r); } catch (IOException | RuntimeException ignored) { return; }
         textured = !"false".equals(props.getProperty("texturen"));
         guard = io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard.parse(props.getProperty("platzierhilfe"), guard);
+        xray = "true".equals(props.getProperty("roentgen"));
     }
 
     private void saveSettings() {
         var props = new java.util.Properties();
         props.setProperty("texturen", Boolean.toString(textured));
         props.setProperty("platzierhilfe", guard.name());
+        props.setProperty("roentgen", Boolean.toString(xray));
         try {
             Files.createDirectories(root);
             try (var w = Files.newBufferedWriter(settingsFile())) { props.store(w, "Bauplaner-Mod: Einstellungen"); }
@@ -145,7 +207,7 @@ public final class Hologram {
 
     public void leave() { clearState(); worldKey = null; }
 
-    private void clearState() { plan = null; planFile = null; check = null; target = -1; visible = true; layers = Layers.ALL; }
+    private void clearState() { plan = null; planFile = null; check = null; target = -1; visible = true; layers = Layers.ALL; section = 0; announced = 0; }
 
     /** Load a plan and place its project origin on {@code anchor} (keeps turn and mirror of the current placement). */
     public String place(Minecraft mc, String file, BlockPos anchor) throws IOException {
@@ -153,6 +215,7 @@ public final class Hologram {
         Placement old = check == null ? null : check.placement();
         Placement at = new Placement(McCompat.dimension(mc.level), anchor.getX(), anchor.getY(), anchor.getZ(),
                 old == null ? 0 : old.turns(), old != null && old.mirror());
+        if (!file.equals(planFile)) { section = 0; announced = 0; }
         plan = p;
         planFile = file;
         visible = true;
@@ -163,6 +226,7 @@ public final class Hologram {
     /** Live link (MAP-03): load a plan file and place it exactly as the website asks (dimension, anchor, turn, mirror). */
     public String placeExact(String file, Placement at) throws IOException {
         PlanModel p = PlanModel.read(plansDir().resolve(file));
+        if (!file.equals(planFile)) { section = 0; announced = 0; }
         plan = p;
         planFile = file;
         visible = true;
@@ -217,6 +281,14 @@ public final class Hologram {
         if (!McCompat.dimension(mc.level).equals(check.placement().dimension())) return;
         check.sweep(McCompat.liveReader(mc.level), SWEEP_PER_TICK);
         if (target >= 0 && check.verdict(target) == Verdict.OK) target = -1;
+        // Section finished: say so once and name the next one (the player switches, nothing jumps by itself).
+        if (section > 0 && announced != section && mc.level.getGameTime() % 20 == 0 && open(section) == 0
+                && check.count(new io.github.freadeax.bauplaner.mod.Filter(Integer.MIN_VALUE, Integer.MAX_VALUE, section))[Verdict.UNKNOWN.ordinal()] == 0) {
+            announced = section;
+            int next = firstOpenSection();
+            McCompat.chat(mc, net.minecraft.network.chat.Component.literal("[Bauplaner] Abschnitt „" + sectionName() + "“ fertig."
+                    + (next == 0 ? " Alle Abschnitte sind fertig." : " Weiter mit „" + sectionNames().get(next - 1) + "“: /bauplaner abschnitt " + next + " oder Num /.")));
+        }
     }
 
     public void chunkUnloaded(int cx, int cz) { if (check != null) check.forgetChunk(cx, cz); }
@@ -224,7 +296,7 @@ public final class Hologram {
     /** Error finder: highlight the nearest wrong/missing block. Returns the index or -1. */
     public int findNext(double x, double y, double z) {
         if (check == null) return -1;
-        target = check.nearestProblem(x, y, z, minY(), maxY());
+        target = check.nearestProblem(x, y, z, filter());
         return target;
     }
 

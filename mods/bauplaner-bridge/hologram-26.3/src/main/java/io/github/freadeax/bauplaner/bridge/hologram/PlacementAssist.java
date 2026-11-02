@@ -302,7 +302,10 @@ public final class PlacementAssist {
         var inv = player.getInventory();
         int n = 0;
         for (int s = 9; s < Math.min(36, inv.getContainerSize()); s++) if (inv.getItem(s).getItem() == item) n += inv.getItem(s).getCount();
-        return n > 0 ? " (nicht in der Schnellleiste, " + n + " im Inventar)" : " (nicht im Inventar)";
+        if (n > 0) return " (nicht in der Schnellleiste, " + n + " im Inventar)";
+        // Shulker boxes and bundles count too: the player only has to take it out.
+        int packed = McCompat.carried(player).getOrDefault(item, 0);
+        return packed > 0 ? " (" + packed + " in Shulkerkiste/Bündel)" : " (nicht im Inventar)";
     }
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger("bauplaner");

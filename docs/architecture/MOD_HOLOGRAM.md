@@ -1,6 +1,6 @@
 # Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (GAME-07)
 
-Stand 02.11.2026 · Stufe 1 „Fundament + Hologramm“ (0.2.0, Wahl Philipp) Stufe 2 „Texturen, Material, Ebenen“ (0.3.0) und Stufe 3 „Platzierhilfe“ (0.4.0) und Stufe 4 „NeoForge, Shader, andere Mods“ (0.6.0). Fabric 26.3 und NeoForge 26.3 mit demselben Client-Kern; die bisherige Aufnahme (`/bauplaner scan`, [MOD_BRIDGE](MOD_BRIDGE.md)) bleibt unverändert erhalten.
+Stand 02.11.2026 · Stufe 1 „Fundament + Hologramm“ (0.2.0, Wahl Philipp) Stufe 2 „Texturen, Material, Ebenen“ (0.3.0) und Stufe 3 „Platzierhilfe“ (0.4.0) Stufe 4 „NeoForge, Shader, andere Mods“ (0.6.0) und Stufe 5 „Bauabschnitte, Röntgensicht, Shulker“ (0.7.0). Fabric 26.3 und NeoForge 26.3 mit demselben Client-Kern; die bisherige Aufnahme (`/bauplaner scan`, [MOD_BRIDGE](MOD_BRIDGE.md)) bleibt unverändert erhalten.
 
 ## Grundsätze
 
@@ -27,9 +27,11 @@ Stand 02.11.2026 · Stufe 1 „Fundament + Hologramm“ (0.2.0, Wahl Philipp) St
 | , (Komma) | Hologramm ein/aus |
 | Num 7 | Materialliste: je Block offen, im Inventar, noch holen (Ebenen beachtet) |
 | Num 6 / Num 9 / Num * | Ebenenmodus wechseln (alle → nur eine Ebene → bis zur Ebene) / Ebene höher / tiefer |
+| Num / | Nächster Bauabschnitt aus der Website (alle → 1 → 2 → … → alle) |
+| Num - | Röntgensicht: offene Blöcke als Rahmen auch durch Wände |
 | . (Punkt) | Fehlerfinder: nächster falscher/fehlender Block bekommt violetten Rahmen und Strahl, HUD zeigt Richtung, Entfernung und was falsch ist |
 
-Befehle (gleiche Aktionen, für Tastaturlose und Tests): `/bauplaner zeigen <datei>`, `fortschritt`, `hierher [x y z]`, `verschieben <dx> <dy> <dz>`, `drehen [viertel]`, `spiegeln`, `umschalten`, `fehler`, `entfernen`, `ebene <y>|bis <y>|alle`, `material`, `texturen`.
+Befehle (gleiche Aktionen, für Tastaturlose und Tests): `/bauplaner zeigen <datei>`, `fortschritt`, `hierher [x y z]`, `verschieben <dx> <dy> <dz>`, `drehen [viertel]`, `spiegeln`, `umschalten`, `fehler`, `entfernen`, `ebene <y>|bis <y>|alle`, `material`, `texturen`, `abschnitt [<nummer>|alle|weiter]`, `roentgen`.
 
 ## Darstellung
 
@@ -77,6 +79,14 @@ Vorbild ist Litematicas „Easy Place“, aber serverkonform: Easy Place veränd
 - **Tool Switcher.** Die Fabric-Klickhaken laufen in einer eigenen Phase `bauplaner_bridge:platzierhilfe` vor der Standardphase. Ein Klick, den die Platzierhilfe verwirft (z. B. Abbauschutz), erreicht Tool Switcher nicht mehr, das Werkzeug wird also nicht unnötig gewechselt.
 - **Tasten.** „Ebene tiefer“ liegt seit 0.5.0 auf Num * statt Num 3 (Jade belegt Num 0–5).
 
+## Bauabschnitte, Röntgensicht, Shulker (0.7.0)
+
+- **Bauabschnitte aus der Website.** Der Plan-Export schreibt die Abschnitte aus dem Tab „Baustelle“ (BUILD-01/06) in die Plandatei: `Metadata.Bauplaner.SectionNames` (Liste in Bauordnung) und `SectionCells` (ein Byte je Zelle der Planbox in Sponge-Reihenfolge, 1-basiert, 0 = kein Abschnitt). Zugehörigkeit wie auf der Website (`sectionOfStep`: Bauteil und Lagenbereich, erster passender Abschnitt). Ältere Pläne ohne Abschnitte laufen unverändert.
+- **Ein Filter für alles:** `mod-core/Filter` (Höhen aus dem Ebenenmodus und Abschnitt) gilt für Geisterblöcke, HUD-Zählung, Materialliste und Fehlerfinder; Ebenen und Abschnitt lassen sich kombinieren. Wahl mit Num /, im Menü J (◀ ▶), mit `/bauplaner abschnitt …` oder von der Website (`POST /v1/section`). HUD-Zeile „Abschnitt 2/5 „Erdgeschoss“: 73 % · 12 offen“. Ist ein Abschnitt fertig (alles geladen und richtig), meldet der Chat das einmal und nennt den nächsten offenen; gewechselt wird nur auf Wunsch.
+- **Röntgensicht:** Rahmen um offene Blöcke (blau fehlt, rot falsch, gelb Zustand, höchstens 4 000 nächste) in einer eigenen Linien-Pipeline ohne Tiefentest, gebaut aus der Vanilla-Linien-Pipeline wie die durchscheinenden Namensschilder; schlägt das fehl, normale Linien. Einstellung bleibt gespeichert (`roentgen` in `einstellungen.properties`).
+- **Shulkerkisten und Bündel:** Materialliste (Spalte „Inventar“) und Platzierhilfe („3 in Shulkerkiste/Bündel“) zählen den Inhalt mit, gelesen aus den Itemdaten, die der Client ohnehin hat.
+- **Website-Verbindung:** `GET /v1/status` meldet `hologram.section` und `hologram.sections` (Name, richtig, gesamt); `readLiveStatus` liest beides.
+
 ## Nächste Stufen
 
-Bauabschnitte aus der Website (BUILD-06) als Filter, Shulker-Inhalte in der Materialliste, Sicht durch Blöcke (Röntgen) für verdeckte Fehler.
+Gruppen/Sperren aus dem Weltbuilder (MAP-04) in der Mod, Bauabschnitt als Packliste mit Kistenstandorten, Gerüst-Hinweise für hängende Blöcke.

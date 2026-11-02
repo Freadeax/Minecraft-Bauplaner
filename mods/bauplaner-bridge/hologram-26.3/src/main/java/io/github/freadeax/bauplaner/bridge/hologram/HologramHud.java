@@ -37,7 +37,8 @@ public final class HologramHud {
                 "fehlt " + missing, "falsch " + wrong, "Zustand " + state,
                 unknown > 0 ? "nicht geladen " + unknown : null,
                 layerLine(check),
-                "Platzierhilfe: " + hologram.guard().label,
+                "Platzierhilfe: " + hologram.guard().label + (hologram.xray() ? " · Röntgen" : ""),
+                sectionRow(check),
         };
         int width = 0;
         for (String r : rows) if (r != null) width = Math.max(width, font.width(r));
@@ -57,6 +58,7 @@ public final class HologramHud {
         g.text(font, rows[3], x, y, RED, true); y += line;
         g.text(font, rows[4], x, y, YELLOW, true); y += line;
         if (rows[5] != null) { g.text(font, rows[5], x, y, GREY, true); y += line; }
+        if (rows[8] != null) { g.text(font, rows[8], x, y, 0xFFFFB040, true); y += line; }
         if (rows[6] != null) { g.text(font, rows[6], x, y, CYAN, true); y += line; }
         g.text(font, rows[7], x, y, hologram.guard() == io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard.OFF ? GREY : CYAN, true); y += line;
         if (finder != null) g.text(font, finder, x, y, 0xFFFFFFFF, true);
@@ -76,11 +78,24 @@ public final class HologramHud {
         g.centeredText(font, text, cx, y, aim.color());
     }
 
+    private String sectionKey = "", sectionText;
+
+    /** "Abschnitt 2/5 „Erdgeschoss“: 73 % · 12 offen", null without sections or with all sections. */
+    private String sectionRow(LiveCheck check) {
+        if (hologram.section() == 0 || hologram.sectionName() == null) return null;
+        String key = check.revision() + "/" + hologram.section() + "/" + System.identityHashCode(check);
+        if (!key.equals(sectionKey)) {
+            sectionText = "Abschnitt " + hologram.section() + "/" + hologram.sectionNames().size() + " „" + hologram.sectionName() + "“: " + hologram.sectionLine(hologram.section());
+            sectionKey = key;
+        }
+        return sectionText;
+    }
+
     /** "Ebene 70 (nur diese): 12 / 40 richtig, 28 offen". */
     private String layerLine(LiveCheck check) {
         if (hologram.layers() == Hologram.Layers.ALL) return null;
-        String key = check.revision() + "/" + hologram.layers() + "/" + hologram.layerY() + "/" + System.identityHashCode(check);
-        if (!key.equals(layerKey)) { layerCounts = check.countLayers(hologram.minY(), hologram.maxY()); layerKey = key; }
+        String key = check.revision() + "/" + hologram.layers() + "/" + hologram.layerY() + "/" + hologram.section() + "/" + System.identityHashCode(check);
+        if (!key.equals(layerKey)) { layerCounts = check.count(hologram.filter()); layerKey = key; }
         int total = 0;
         for (int c : layerCounts) total += c;
         int ok = layerCounts[Verdict.OK.ordinal()], unknown = layerCounts[Verdict.UNKNOWN.ordinal()];

@@ -117,12 +117,17 @@ public final class LiveCheck {
 
     /** Same, only for world heights {@code minY..maxY} (layer mode). */
     public int nearestProblem(double px, double py, double pz, int minY, int maxY) {
+        return nearestProblem(px, py, pz, new Filter(minY, maxY, 0));
+    }
+
+    /** Same, only inside a filter (layer mode, build section). */
+    public int nearestProblem(double px, double py, double pz, Filter filter) {
         int best = -1;
         double bestScore = Double.MAX_VALUE;
         for (int i = 0; i < verdicts.length; i++) {
             Verdict v = verdicts[i];
             if (v == Verdict.OK || v == Verdict.UNKNOWN) continue;
-            if (worldY(i) < minY || worldY(i) > maxY) continue;
+            if (!filter.test(this, i)) continue;
             double dx = worldX(i) + 0.5 - px, dy = worldY(i) + 0.5 - py, dz = worldZ(i) + 0.5 - pz;
             double score = dx * dx + dy * dy + dz * dz + (v == Verdict.MISSING ? 0.25 : 0);
             if (score < bestScore) { bestScore = score; best = i; }
@@ -131,12 +136,12 @@ public final class LiveCheck {
     }
 
     /** Verdict counts of the planned blocks at world heights {@code minY..maxY}, indexed by {@link Verdict#ordinal()}. */
-    public int[] countLayers(int minY, int maxY) {
+    public int[] countLayers(int minY, int maxY) { return count(new Filter(minY, maxY, 0)); }
+
+    /** Verdict counts of the planned blocks inside a filter, indexed by {@link Verdict#ordinal()}. */
+    public int[] count(Filter filter) {
         int[] out = new int[Verdict.values().length];
-        for (int i = 0; i < verdicts.length; i++) {
-            int y = worldY(i);
-            if (y >= minY && y <= maxY) out[verdicts[i].ordinal()]++;
-        }
+        for (int i = 0; i < verdicts.length; i++) if (filter.test(this, i)) out[verdicts[i].ordinal()]++;
         return out;
     }
 

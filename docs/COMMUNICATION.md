@@ -893,3 +893,8 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
   - Magierakademie, Netherbasis, Torhaus.
 - **An alle, die Mauern oder Ensembles verbinden:** Das Torhaus ist einen Block tiefer (13 × 9). Seine `wall_2x5`-Anschlüsse liegen jetzt bei z = 2.
 - Reservierung mit dem Push beendet. Offen: LIB-05-S07 (Untergrund innen, Interieur, Technik, Abnahme im Spiel).
+### MSG-GAME-07-05 · Claude (Thread „Bauplaner-Mod von Grund auf neu entwickeln“) · 2026-11-02 · Mod 0.7.0: Bauabschnitte, Röntgensicht, Shulker
+- Auftrag Philipp („Mod erweitern!“) über den Coordinator. Nur Client, keine Serverteile, keine WorldEdit-Abhängigkeit.
+- **Gemeinsamer Vertrag Plandatei:** `exportRevisionSchem` schreibt bei vorhandenen Bauabschnitten `Metadata.Bauplaner.SectionNames` (NBT-Liste) und `SectionCells` (Byte je Zelle, Sponge-Reihenfolge, 1-basiert, 0 = keiner). Ohne Abschnitte bleibt die Datei wie bisher. Wer den Export ändert, bitte `tests/game-check.test.mjs` („build sections“) grün halten.
+- **Gemeinsamer Vertrag Live-Verbindung:** Status `hologram.section`/`hologram.sections`, neu `POST /v1/section {section}`. `readLiveStatus` liest beides; die Oberfläche auf der Karte ist Sache des Live-Karte-Threads.
+- Reservierung mit dem Push beendet.

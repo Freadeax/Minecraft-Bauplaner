@@ -52,4 +52,5 @@ Code: `mods/bauplaner-bridge/mod-core/…/mod/live/` (versionsneutral: `LiveLink
 
 - Das Gelände kommt nur aus Chunks, die der Client gerade geladen hat (Sichtweite). Höhlen und Überhänge unter der Oberfläche fehlen (2,5D wie TERRAIN-01).
 - Die Weltkarte plant Projekte ungedreht; ein im Spiel gedrehtes Hologramm wird gemeldet, aber nicht übernommen.
+- Seit Mod 0.7.0: `POST /v1/section {section}` wählt den Bauabschnitt im Spiel (0 = alle); der Status meldet `hologram.section` und `hologram.sections`.
 - Fabric 26.3 und seit 0.6.0 NeoForge 26.3 (gemeinsamer Code in `hologram-26.3`, `LiveLink`/`MarksRenderer`); Forge und Paper haben die Verbindung noch nicht.

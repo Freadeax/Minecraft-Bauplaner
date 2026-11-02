@@ -10,7 +10,7 @@ import { join } from 'node:path';
 import assert from 'node:assert/strict';
 import { readWorldScan } from '../dist/formats/src/index.js';
 import { exportRevisionSchem } from '../dist/application/src/index.js';
-import { applyOperation, buildGuide, checkScan, createProject, createSampleLibrary, freezeRevision, newInstance, resolveProject, scanTarget } from '../dist/domain/src/index.js';
+import { addSection, applyOperation, buildGuide, checkScan, createProject, createSampleLibrary, emptySite, freezeRevision, newInstance, resolveProject, scanTarget } from '../dist/domain/src/index.js';
 
 const [mode, dir] = process.argv.slice(2);
 if (!['prepare', 'verify'].includes(mode) || !dir) throw new Error('usage: bridge_gametest.mjs prepare|verify <dir>');
@@ -22,9 +22,10 @@ const versions = new Map(lib.versions.map(v => [v.id, v]));
 const latest = id => lib.versions.find(v => v.assetId === id).id;
 const at = (id, name, position) => newInstance({ assetVersionId: latest(id), name, transform: { position, quarterTurns: 0, mirrorX: false } });
 // Deterministic project: same ids are not needed, the scan names its revision and plan hash.
-const base = applyOperation(createProject({ name: 'Spieltest Brücke' }), { kind: 'batch', label: 't', operations: [
-  at('sample_tower', 'Turm West', [0, 0, 0]), at('sample_wall', 'Mauer', [4, 0, 1]),
-].map(instance => ({ kind: 'instance.add', instance })) }).project;
+const tower = at('sample_tower', 'Turm West', [0, 0, 0]), wall = at('sample_wall', 'Mauer', [4, 0, 1]);
+const built = applyOperation(createProject({ name: 'Spieltest Brücke' }), { kind: 'batch', label: 't', operations: [tower, wall].map(instance => ({ kind: 'instance.add', instance })) }).project;
+// Two build sections (Baustelle tab): the mod gets them in the plan file (0.7.0).
+const base = { ...built, site: addSection(addSection(emptySite(), 'Turm', [{ instanceId: tower.id }]), 'Mauer', [{ instanceId: wall.id }]) };
 
 const stateString = s => s.id + (Object.keys(s.properties).length ? `[${Object.entries(s.properties).sort(([a], [b]) => a < b ? -1 : 1).map(([k, v]) => `${k}=${v}`).join(',')}]` : '');
 
@@ -102,12 +103,23 @@ function hologram(logFile, cells) {
   const finder = [...log.matchAll(/\[Bauplaner\] (Nächster Fehler bei -?\d+ (-?\d+) -?\d+|Keine Fehler in geladenen Chunks)/g)].map(m => m[2] ?? 'keiner');
   const anchorY = Number(readFileSync(join(dir, 'anchor.txt'), 'utf8').trim().split(' ')[1]);
   assert.deepEqual(finder.slice(-2), [String(anchorY), 'keiner'], 'Fehlerfinder bleibt in der gewählten Ebene');
+  // Stage 5 (0.7.0): build sections from the plan file, chosen in the game; X-ray switch.
+  const sectionList = log.match(/\[Bauplaner\] Bauabschnitte \((\d+)\), aktiv: (\d+)\./);
+  assert.ok(sectionList, 'Abschnittsliste im Chat');
+  assert.deepEqual([Number(sectionList[1]), Number(sectionList[2])], [2, 2], 'zwei Abschnitte, Mauer gewählt');
+  const towerOpen = Number(log.match(/\[Bauplaner\] +1\. Turm: \d+ % · (\d+) offen/)?.[1] ?? -1);
+  const wallOpen = Number(log.match(/\[Bauplaner\] ▶ 2\. Mauer: \d+ % · (\d+) offen/)?.[1] ?? -1);
+  assert.ok(towerOpen >= 1, 'Turm: der falsche Block ist offen');
+  assert.ok(wallOpen > 1, 'Mauer: die abgerissenen Blöcke sind offen');
+  assert.match(log, /\[Bauplaner\] Abschnitt 2\/2: „Mauer“ – \d+ % · \d+ offen/);
+  assert.match(log, /\[Bauplaner\] Röntgensicht an/);
+  assert.match(log, /\[Bauplaner\] Alle Bauabschnitte\./);
   // Stage 3: placement helper (the client test throws if a block was placed or broken against the rules).
   assert.equal(readFileSync(join(dir, 'platzierhilfe.txt'), 'utf8').trim(), 'Fail Fail', 'beide falschen Klicks abgewiesen');
   assert.match(log, /\[Platzierhilfe\] Richtigen Block genommen: .+ – nochmal klicken/);
   assert.match(log, /\[Platzierhilfe\] Nicht gesetzt – Auf den Block darunter klicken/);
   assert.match(log, /\[Platzierhilfe\] Geschützt: richtig gesetzter Planblock/);
-  console.log(`Hologramm bestanden: ${planned} Planblöcke, Fortschritt ${placed[0]} % → ${built[0]} % nach dem Setzen des fehlenden Blocks, Drehen, Speichern, Materialliste (${material[1][0]} offen nach Teilabriss), Ebenenmodus und Platzierhilfe (falscher Block, liegender Stamm, Abbauschutz) geprüft.`);
+  console.log(`Hologramm bestanden: ${planned} Planblöcke, Fortschritt ${placed[0]} % → ${built[0]} % nach dem Setzen des fehlenden Blocks, Drehen, Speichern, Materialliste (${material[1][0]} offen nach Teilabriss), Ebenenmodus, Bauabschnitte (Turm ${towerOpen} offen, Mauer ${wallOpen} offen), Röntgensicht und Platzierhilfe (falscher Block, liegender Stamm, Abbauschutz) geprüft.`);
 }
 
 /**
@@ -145,5 +157,10 @@ async function live(file, loader) {
   const anchor = readFileSync(join(dir, 'anchor.txt'), 'utf8').trim().split(' ').map(Number);
   assert.deepEqual([after.hologram.placement.x, after.hologram.placement.y, after.hologram.placement.z], [anchor[0] + 20, anchor[1], anchor[2]], 'Plan an der von der Website gesendeten Stelle');
   assert.equal(after.marks, 2);
-  console.log(`Website-Verbindung bestanden: Kopplung, Status (Spieler, Hologramm ${status.hologram.counts.ok}/${status.hologram.total}), Gelände (${columns.length} Spalten), 2 Markierungen und ein direkt gesendeter Plan.`);
+  // 0.7.0: build sections in the status, chosen from the website (POST /v1/section).
+  assert.deepEqual(status.hologram.sections.map(s => s.name), ['Turm', 'Mauer'], 'Abschnitte aus der Plandatei im Status');
+  assert.equal(status.hologram.sections.reduce((n, s) => n + s.total, 0), status.hologram.total, 'jeder Block gehört zu einem Abschnitt');
+  assert.equal(raw.section.status, 200, JSON.stringify(raw.section.body));
+  assert.equal(after.hologram.section, 2, 'Website hat Abschnitt 2 gewählt');
+  console.log(`Website-Verbindung bestanden: Kopplung, Status (Spieler, Hologramm ${status.hologram.counts.ok}/${status.hologram.total}, Abschnitte ${status.hologram.sections.map(s => `${s.name} ${s.ok}/${s.total}`).join(', ')}), Gelände (${columns.length} Spalten), 2 Markierungen, ein direkt gesendeter Plan und Abschnittswahl.`);
 }

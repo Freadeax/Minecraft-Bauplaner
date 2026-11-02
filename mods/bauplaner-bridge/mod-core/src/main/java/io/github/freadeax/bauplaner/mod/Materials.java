@@ -29,11 +29,13 @@ public final class Materials {
     }
 
     /** Within world heights {@code minY..maxY}; sorted by open items, then total, then id. */
-    public static List<Line> of(LiveCheck check, int minY, int maxY) {
+    public static List<Line> of(LiveCheck check, int minY, int maxY) { return of(check, new Filter(minY, maxY, 0)); }
+
+    /** Inside a filter (layer mode, build section); same sorting. */
+    public static List<Line> of(LiveCheck check, Filter filter) {
         Map<String, int[]> map = new HashMap<>();
         for (int i = 0; i < check.size(); i++) {
-            int y = check.worldY(i);
-            if (y < minY || y > maxY) continue;
+            if (!filter.test(check, i)) continue;
             BlockState s = check.expected(i);
             int n = itemsFor(s);
             if (n == 0) continue;
@@ -48,5 +50,5 @@ public final class Materials {
         return out;
     }
 
-    public static List<Line> of(LiveCheck check) { return of(check, Integer.MIN_VALUE, Integer.MAX_VALUE); }
+    public static List<Line> of(LiveCheck check) { return of(check, Filter.ALL); }
 }

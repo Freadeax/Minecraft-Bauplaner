@@ -71,6 +71,18 @@ public final class PlanScreen extends Screen {
                 case WARN -> "Nur Hinweise, gesetzt wird trotzdem.";
                 case OFF -> "Platzierhilfe aus.";
             })).bounds(rx, y, 200, H).build());
+            y += STEP;
+            // Build sections from the website (only when the plan file has them) and X-ray.
+            if (!hologram.sectionNames().isEmpty()) {
+                String name = hologram.sectionName();
+                String label = name == null ? "Abschnitt: alle" : hologram.section() + ". " + name;
+                if (font.width(label) > 128) label = font.plainSubstrByWidth(label, 122) + "…";
+                addRenderableWidget(Button.builder(Component.literal(label), b -> act(() -> hologram.stepSection(1), "")).bounds(rx, y, 132, H).build());
+                addRenderableWidget(Button.builder(Component.literal("◀"), b -> act(() -> hologram.stepSection(-1), "")).bounds(rx + 136, y, 30, H).build());
+                addRenderableWidget(Button.builder(Component.literal("▶"), b -> act(() -> hologram.stepSection(1), "")).bounds(rx + 170, y, 30, H).build());
+                y += STEP;
+            }
+            addRenderableWidget(Button.builder(Component.literal(hologram.xray() ? "Röntgensicht: an" : "Röntgensicht: aus"), b -> act(hologram::toggleXray, "")).bounds(rx, y, 200, H).build());
         }
         addRenderableWidget(Button.builder(Component.literal("Fertig"), b -> onClose()).bounds(width / 2 - 50, height - 26, 100, 20).build());
     }

@@ -47,6 +47,40 @@ export interface RevisionExport {
 
 import { dataVersionFromProfile, resolveRevision, revisionForExport } from '../../domain/src/revisionExport.js';
 import { resolveProject } from '../../domain/src/compose.js';
+import { buildGuide } from '../../domain/src/guide.js';
+import { sectionOfStep } from '../../domain/src/sectionMembership.js';
+import type { Resolution } from '../../domain/src/compose.js';
+
+/** Most build sections a plan file carries (one byte per cell, 0 = no section). */
+export const MAX_FILE_SECTIONS = 255;
+
+/**
+ * Build sections (BUILD-01/06) for the game mod: section names in build order and, per cell of the
+ * export box (Sponge order x + z·W + y·W·L), the 1-based section number or 0. The mod uses them as a
+ * filter for hologram, progress, material list and error finder. Null when the project has no sections.
+ */
+export function sectionCells(project: Pick<Project, 'site'>, revision: Pick<BlueprintRevision, 'instances'>, resolution: Resolution): { readonly names: readonly string[]; readonly cells: Uint8Array } | null {
+  const site = project.site;
+  if (!site || site.sections.length === 0 || !resolution.world) return null;
+  const sections = site.sections.slice(0, MAX_FILE_SECTIONS);
+  const number = new Map(sections.map((s, i) => [s.id, i + 1]));
+  const min = resolution.world.bounds.min, max = resolution.world.bounds.maxExclusive;
+  const W = max[0] - min[0], L = max[2] - min[2], H = max[1] - min[1];
+  const cells = new Uint8Array(W * H * L);
+  let any = false;
+  for (const step of buildGuide({ instances: revision.instances }, resolution).steps) {
+    const id = sectionOfStep(site, step);
+    const n = id === null ? undefined : number.get(id);
+    if (n === undefined) continue;
+    for (const p of step.positions) {
+      const x = p[0] - min[0], y = p[1] - min[1], z = p[2] - min[2];
+      if (x < 0 || y < 0 || z < 0 || x >= W || y >= H || z >= L) continue;
+      cells[x + z * W + y * W * L] = n;
+      any = true;
+    }
+  }
+  return any ? { names: sections.map(s => s.name), cells } : null;
+}
 
 export function exportFileName(project: Project, revision: BlueprintRevision, format: ExportFormat = 'schem'): string {
   const slug = project.name.normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/ß/g, 'ss').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'bauplan';
@@ -80,6 +114,14 @@ export async function exportRevisionSchem(project: Project, revisionId: string, 
       ProjectMin: { type: 'intArray', value: [...resolution.world.bounds.min] },
     } },
   };
+  const sections = sectionCells(project, revision, resolution);
+  if (sections) {
+    const b = extra.Bauplaner as { type: 'compound'; value: Record<string, NbtTag> };
+    // Build sections for the game mod (GAME-07 0.7.0): names in build order, cell → 1-based section or 0.
+    b.value.SectionNames = { type: 'list', elementType: 'string', value: sections.names.map(n => ({ type: 'string', value: n })) };
+    b.value.SectionCells = { type: 'byteArray', value: Array.from(sections.cells, v => (v >= 128 ? v - 256 : v)) };
+    if ((project.site?.sections.length ?? 0) > MAX_FILE_SECTIONS) notes.push(`Nur die ersten ${MAX_FILE_SECTIONS} Bauabschnitte gehen in die Datei.`);
+  }
   const date = Date.parse(revision.createdAt);
   const format = settings.format ?? 'schem';
   if (format !== 'schem' && format !== 'litematic') throw new DomainError('EXPORT_FORMAT', `Unbekanntes Exportformat ${String(format)}.`);

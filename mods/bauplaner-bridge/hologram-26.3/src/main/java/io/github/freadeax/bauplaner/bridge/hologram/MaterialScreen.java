@@ -24,6 +24,9 @@ public final class MaterialScreen extends Screen {
     private List<Materials.Line> lines = List.of();
     private int page;
     private boolean onlyOpen = true;
+    /** Carried items incl. shulker boxes and bundles, refreshed once a second. */
+    private java.util.Map<Item, Integer> carried = java.util.Map.of();
+    private int ticks;
 
     MaterialScreen(Hologram hologram, Screen parent) {
         super(Component.literal("Bauplaner – Materialliste"));
@@ -33,7 +36,8 @@ public final class MaterialScreen extends Screen {
 
     @Override
     protected void init() {
-        lines = hologram.active() ? Materials.of(hologram.check(), hologram.minY(), hologram.maxY()) : List.of();
+        lines = hologram.active() ? Materials.of(hologram.check(), hologram.filter()) : List.of();
+        if (minecraft.player != null) carried = McCompat.carried(minecraft.player);
         if (onlyOpen) lines = lines.stream().filter(l -> l.open() > 0).toList();
         int pages = Math.max(1, (lines.size() + ROWS - 1) / ROWS);
         page = Math.min(page, pages - 1);
@@ -49,6 +53,12 @@ public final class MaterialScreen extends Screen {
     public void onClose() { minecraft.gui.setScreen(parent); }
 
     @Override
+    public void tick() {
+        super.tick();
+        if (++ticks % 20 == 0 && minecraft.player != null) carried = McCompat.carried(minecraft.player);
+    }
+
+    @Override
     public boolean isPauseScreen() { return false; }
 
     @Override
@@ -61,6 +71,7 @@ public final class MaterialScreen extends Screen {
             case ONE -> "nur Ebene " + hologram.layerY();
             case BELOW -> "bis Ebene " + hologram.layerY();
         };
+        if (hologram.sectionName() != null) scope = "Abschnitt „" + hologram.sectionName() + "“ · " + scope;
         int open = 0, fetch = 0;
         for (var l : lines) { open += l.open(); fetch += Math.max(0, l.open() - inInventory(l.id())); }
         g.centeredText(font, hologram.plan().name() + " · " + scope + " · " + open + " Blöcke offen, " + fetch + " noch holen", width / 2, 22, 0xFFB0B0B0);
@@ -87,7 +98,7 @@ public final class MaterialScreen extends Screen {
             g.text(font, need == 0 ? "✓" : Integer.toString(need), left + 305, y, need == 0 ? 0xFF6BE07B : 0xFFFFD54A, true);
         }
         int pages = Math.max(1, (lines.size() + ROWS - 1) / ROWS);
-        g.text(font, "Seite " + (page + 1) + " / " + pages + "  ·  Shulkerkisten im Inventar werden nicht mitgezählt", left, height - 44, 0xFF808080, true);
+        g.text(font, "Seite " + (page + 1) + " / " + pages + "  ·  Inventar zählt Shulkerkisten und Bündel mit", left, height - 44, 0xFF808080, true);
     }
 
     private static Item item(String id) {
@@ -98,14 +109,7 @@ public final class MaterialScreen extends Screen {
 
     private int inInventory(String id) {
         Item item = item(id);
-        if (item == Items.AIR || minecraft.player == null) return 0;
-        var inv = minecraft.player.getInventory();
-        int n = 0;
-        for (int i = 0; i < inv.getContainerSize(); i++) {
-            ItemStack s = inv.getItem(i);
-            if (s.getItem() == item) n += s.getCount();
-        }
-        return n;
+        return item == Items.AIR ? 0 : carried.getOrDefault(item, 0);
     }
 
     static void open(Minecraft mc, Hologram hologram) { mc.gui.setScreen(new MaterialScreen(hologram, mc.gui.screen())); }

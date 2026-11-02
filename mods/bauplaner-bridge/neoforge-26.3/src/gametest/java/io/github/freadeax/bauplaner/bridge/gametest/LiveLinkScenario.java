@@ -71,6 +71,7 @@ final class LiveLinkScenario {
             }
         });
         steps.add(new ClientScenario.Step(40, mc -> {}));
+        request(steps, out, "section", () -> post(http, "/v1/section", "{\"section\":2}", token[0]));
         request(steps, out, "after", () -> get(http, "/v1/status", token[0], SITE));
         steps.add(new ClientScenario.Step(1, mc -> {
             Files.writeString(s.io().resolve("live.json"), out + "}");

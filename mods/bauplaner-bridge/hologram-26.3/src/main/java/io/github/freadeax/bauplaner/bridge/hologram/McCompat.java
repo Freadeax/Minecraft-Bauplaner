@@ -99,6 +99,47 @@ public final class McCompat {
         return shaders;
     }
 
+    /**
+     * Items the player carries, including the contents of shulker boxes and bundles in the inventory
+     * (read from the item data the client already has; nothing is opened or sent).
+     */
+    public static java.util.Map<net.minecraft.world.item.Item, Integer> carried(net.minecraft.world.entity.player.Player player) {
+        var out = new java.util.HashMap<net.minecraft.world.item.Item, Integer>();
+        var inv = player.getInventory();
+        for (int i = 0; i < inv.getContainerSize(); i++) {
+            var stack = inv.getItem(i);
+            if (stack.isEmpty()) continue;
+            out.merge(stack.getItem(), stack.getCount(), Integer::sum);
+            var box = stack.get(net.minecraft.core.component.DataComponents.CONTAINER);
+            if (box != null) box.nonEmptyItemCopyStream().forEach(s -> out.merge(s.getItem(), s.getCount(), Integer::sum));
+            var bundle = stack.get(net.minecraft.core.component.DataComponents.BUNDLE_CONTENTS);
+            if (bundle != null) bundle.itemCopies().forEach(s -> out.merge(s.getItem(), s.getCount(), Integer::sum));
+        }
+        return out;
+    }
+
+    private static net.minecraft.client.renderer.rendertype.RenderType xray;
+
+    /**
+     * Lines without depth test (X-ray): built once from the vanilla line pipeline with the depth test switched
+     * off, the same way vanilla draws see-through name tags. Falls back to normal lines if the game refuses it.
+     */
+    public static net.minecraft.client.renderer.rendertype.RenderType xrayLines() {
+        if (xray != null) return xray;
+        try {
+            var pipeline = com.mojang.renderpearl.api.pipeline.RenderPipeline.builder(net.minecraft.client.renderer.RenderPipelines.LINES_SNIPPET)
+                    .withLocation(net.minecraft.resources.Identifier.fromNamespaceAndPath("bauplaner_bridge", "pipeline/lines_xray"))
+                    .withColorTargetState(new com.mojang.renderpearl.api.pipeline.ColorTargetState(com.mojang.renderpearl.api.pipeline.BlendFunction.TRANSLUCENT))
+                    .withDepthStencilState(java.util.Optional.empty())
+                    .build();
+            xray = net.minecraft.client.renderer.rendertype.RenderType.create("bauplaner_bridge_lines_xray",
+                    net.minecraft.client.renderer.rendertype.RenderSetup.builder(pipeline).createRenderSetup());
+        } catch (RuntimeException | LinkageError e) {
+            xray = net.minecraft.client.renderer.rendertype.RenderTypes.lines();
+        }
+        return xray;
+    }
+
     /** Message in the chat, only visible to this player. */
     public static void chat(Minecraft mc, Component text) { if (mc.player != null) mc.player.sendSystemMessage(text); }
 

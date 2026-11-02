@@ -64,6 +64,8 @@ public final class LiveLinkServer implements AutoCloseable {
         String plan(Map<String, String> query, byte[] schem) throws Exception;
         String placement(Map<String, Object> body) throws Exception;
         String marks(Map<String, Object> body) throws Exception;
+        /** POST /v1/section {"section":n}: choose the build section shown in the game (0 = all). Since mod 0.7.0. */
+        default String section(Map<String, Object> body) throws Exception { throw new HttpError(404, "Diese Mod kennt keine Bauabschnitte."); }
     }
 
     public record Info(String version, String loader, String minecraft) {}
@@ -246,6 +248,7 @@ public final class LiveLinkServer implements AutoCloseable {
                     return ok(h, handler.plan(r.query(), r.body()));
                 case "POST /v1/placement": return ok(h, handler.placement(Json.obj(Json.parse(text(r, 65_536)), "Lage")));
                 case "POST /v1/marks": return ok(h, handler.marks(Json.obj(Json.parse(text(r, MAX_JSON_BYTES)), "Markierungen")));
+                case "POST /v1/section": return ok(h, handler.section(Json.obj(Json.parse(text(r, 4_096)), "Abschnitt")));
                 case "POST /v1/unpair": revoke(token); return ok(h, "{\"unpaired\":true}");
                 default: return error(h, 404, "Unbekannte Adresse.");
             }

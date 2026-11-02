@@ -7,7 +7,7 @@ import { createPayload } from '../dist/voxel/src/index.js';
 import { normalizeScan, readWorldScan, readNbt, writeNbt, UNLOADED_STATE, FormatError } from '../dist/formats/src/index.js';
 import {
   createAsset, addAssetVersion, createProject, applyOperation, newInstance, resolveProject, buildGuide, evaluateProgress, freezeRevision,
-  checkScan, compareBlock, ignoredProperties, scanTarget, confirmedUnticked, tickedButNotBuilt, tickConfirmed,
+  checkScan, compareBlock, ignoredProperties, scanTarget, confirmedUnticked, tickedButNotBuilt, tickConfirmed, emptySite, addSection,
 } from '../dist/domain/src/index.js';
 
 const provenance = { author: 'Test', source: 'synthetisch', license: '' };
@@ -202,4 +202,25 @@ test('plan export carries ProjectMin so recordings align for every anchor', asyn
     assert.deepEqual(b.ProjectMin, { type: 'intArray', value: [5, 10, 0] });
     assert.equal(b.Kind, undefined, 'plan files carry no Kind and are refused as recordings');
   }
+});
+
+test('plan export carries build sections for the game mod: names in build order, one byte per cell', async () => {
+  const c = await column();
+  const inst = c.revision.instances[0].id;
+  const site = addSection(addSection(emptySite(), 'Unten', [{ instanceId: inst, fromLayer: 0, toLayer: 0 }]), 'Oben', [{ instanceId: inst, fromLayer: 1 }]);
+  const { gunzipSync } = await import('node:zlib');
+  const read = async project => readNbt(new Uint8Array(gunzipSync((await exportRevisionSchem(project, c.revision.id, c.versions, { dataVersion: 4189, anchor: 'project-origin', unselected: 'air' })).bytes))).tag.value.Schematic.value.Metadata.value.Bauplaner.value;
+  const b = await read({ ...c.project, site });
+  assert.deepEqual(b.SectionNames.value.map(t => t.value), ['Unten', 'Oben']);
+  // Box 3 × 3 × 1, Sponge order x + z·W + y·W·L: bottom layer section 1, the layers above section 2 (erase cell included, empty corner none).
+  const cells = b.SectionCells.value;
+  assert.equal(cells.length, 9);
+  assert.deepEqual(cells.slice(0, 3), [1, 1, 1]);
+  assert.deepEqual(cells.slice(3, 6), [2, 2, 2]);
+  assert.ok(cells.slice(6).every(v => v === 2 || v === 0));
+  assert.equal(cells[6], 2, 'water at y2 is in the upper section');
+  // Without sections nothing is added, so older mods and files stay as they were.
+  const plain = await read(c.project);
+  assert.equal(plain.SectionNames, undefined);
+  assert.equal(plain.SectionCells, undefined);
 });

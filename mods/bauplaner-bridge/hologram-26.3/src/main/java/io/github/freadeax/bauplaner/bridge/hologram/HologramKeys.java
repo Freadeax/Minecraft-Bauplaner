@@ -35,6 +35,10 @@ public final class HologramKeys {
     private final KeyMapping layerUp = key("layer_up", InputConstants.KEY_NUMPAD9);
     private final KeyMapping layerDown = key("layer_down", InputConstants.KEY_MULTIPLY);
     private final KeyMapping pick = key("pick", InputConstants.KEY_NUMPAD8);
+    /** Num / (SDL scancode 84, no InputConstants name): next build section from the website. */
+    private final KeyMapping section = key("section", 84);
+    /** Num - (SDL scancode 86): X-ray, open blocks also visible through walls. */
+    private final KeyMapping xray = key("xray", 86);
     /** Unbound by default (every numpad key near it is taken in Philipp's modpack); menu J and command work too. */
     private final KeyMapping guard = key("guard", InputConstants.UNKNOWN.getValue());
     private final PlacementAssist assist;
@@ -74,6 +78,8 @@ public final class HologramKeys {
         while (layerUp.consumeClick()) if (active) { hologram.stepLayer(1); overlay(mc, layerText()); }
         while (layerDown.consumeClick()) if (active) { hologram.stepLayer(-1); overlay(mc, layerText()); }
         while (pick.consumeClick()) if (active) assist.pick(mc);
+        while (section.consumeClick()) if (active) overlay(mc, hologram.stepSection(1));
+        while (xray.consumeClick()) { hologram.toggleXray(); overlay(mc, hologram.xray() ? "Röntgensicht an: offene Blöcke auch durch Wände" : "Röntgensicht aus"); }
         while (guard.consumeClick()) { hologram.setGuard(hologram.guard().next()); overlay(mc, "Platzierhilfe: " + hologram.guard().label); }
         while (here.consumeClick()) if (active) { hologram.moveTo(McCompat.targetBlock(mc)); overlay(mc, "Plan zum angeschauten Block verschoben"); }
     }

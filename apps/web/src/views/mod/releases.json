@@ -144,6 +144,33 @@
       "releasedAt": "2026-11-02",
       "sourceCommit": "093f0e23bdf284c1ebb8e9442e48a11016aed446",
       "tested": "Echter NeoForge-26.3-Client: Aufnahme, Hologramm, Materialliste, Ebenen, Platzierhilfe, Website-Verbindung (02.11.2026)"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.7.0.jar",
+      "modVersion": "0.7.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 215582,
+      "sha256": "3f2d34dbf657dc993f5d4692b1bcf94e2e5fe4c12c14fd89d9606052332e40c9",
+      "releasedAt": "2026-11-02",
+      "sourceCommit": "fb6c4c9ce60bfcbe8de9f8c7c0802d6b0e0a4315",
+      "tested": "Bauabschnitte aus dem Planer (Num /), Röntgensicht (Num -), Shulkerkisten und Bündel in der Materialliste, Abschnittswahl von der Website"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.7.0.jar",
+      "modVersion": "0.7.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 213019,
+      "sha256": "ca2c64ac5177bffb18287e4d66aad0592f7cfdf9b6bedd4ef6d5c689fb7f9f98",
+      "releasedAt": "2026-11-02",
+      "sourceCommit": "fb6c4c9ce60bfcbe8de9f8c7c0802d6b0e0a4315",
+      "tested": "Bauabschnitte aus dem Planer (Num /), Röntgensicht (Num -), Shulkerkisten und Bündel in der Materialliste, Abschnittswahl von der Website"
     }
   ]
 }

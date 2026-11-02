@@ -151,7 +151,18 @@ public final class LiveLink implements LiveLinkServer.Handler {
                         .append(",\"turns\":").append(pl.turns()).append(",\"mirror\":").append(pl.mirror()).append("},\"visible\":").append(hologram.visible())
                         .append(",\"box\":[").append(box[0]).append(',').append(box[1]).append(',').append(box[2]).append(',').append(box[3]).append(',').append(box[4]).append(',').append(box[5]).append(']')
                         .append(",\"counts\":{\"ok\":").append(check.count(Verdict.OK)).append(",\"state\":").append(check.count(Verdict.STATE)).append(",\"missing\":").append(check.count(Verdict.MISSING))
-                        .append(",\"wrong\":").append(check.count(Verdict.WRONG)).append(",\"unknown\":").append(check.count(Verdict.UNKNOWN)).append("},\"total\":").append(check.size()).append('}');
+                        .append(",\"wrong\":").append(check.count(Verdict.WRONG)).append(",\"unknown\":").append(check.count(Verdict.UNKNOWN)).append("},\"total\":").append(check.size());
+                // Build sections (0.7.0): active one (0 = all) and per section name, correct and total blocks.
+                b.append(",\"section\":").append(hologram.section()).append(",\"sections\":[");
+                var names = hologram.sectionNames();
+                for (int k = 1; k <= names.size(); k++) {
+                    int[] c = check.count(new io.github.freadeax.bauplaner.mod.Filter(Integer.MIN_VALUE, Integer.MAX_VALUE, k));
+                    int total = 0;
+                    for (int v : c) total += v;
+                    if (k > 1) b.append(',');
+                    b.append("{\"name\":").append(Json.quote(names.get(k - 1))).append(",\"ok\":").append(c[Verdict.OK.ordinal()]).append(",\"total\":").append(total).append('}');
+                }
+                b.append("]}");
             } else b.append(",\"hologram\":null");
             return b.append(",\"marks\":").append(marks.size()).append('}').toString();
         });
@@ -224,6 +235,23 @@ public final class LiveLink implements LiveLinkServer.Handler {
         boolean moved = onGame(() -> hologram.setPlacement(at));
         if (!moved) throw new LiveLinkServer.HttpError(409, "Im Spiel ist kein Plan platziert.");
         return "{\"moved\":true}";
+    }
+
+    /** Website chooses the build section (0 = all); the game shows it like Num / would. */
+    @Override
+    public String section(Map<String, Object> body) throws Exception {
+        lastRequest = System.currentTimeMillis();
+        int n = Json.integer(body.get("section"), "Abschnitt", 0, 255);
+        String msg = onGame(() -> {
+            if (!hologram.active()) return null;
+            String text = hologram.setSection(n);
+            Minecraft mc = Minecraft.getInstance();
+            McCompat.chat(mc, Component.literal("[Bauplaner] Website: " + text));
+            return text;
+        });
+        if (msg == null) throw new LiveLinkServer.HttpError(409, "Im Spiel ist kein Plan platziert.");
+        if (hologram.section() != n) throw new LiveLinkServer.HttpError(400, msg);
+        return "{\"section\":" + n + "}";
     }
 
     @Override

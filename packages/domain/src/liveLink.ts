@@ -21,6 +21,7 @@ import type { WorldItem } from './worldPlan.js';
  * - POST /v1/plan?…           ← Schem v3 bytes; places the hologram (client only)
  * - POST /v1/placement        ← {dimension,x,y,z,turns,mirror}; moves the hologram
  * - POST /v1/marks            ← {dimension, items}; Weltplan marks shown in game
+ * - POST /v1/section          ← {section}; build section shown in game (0 = all), mod 0.7.0+
  * Every request after pairing carries the header X-Bauplaner-Token. The mod
  * answers only for allowed origins and never changes the world.
  */
@@ -76,7 +77,12 @@ export interface LiveHologram {
   readonly box: readonly [number, number, number, number, number, number];
   readonly counts: LiveCounts;
   readonly total: number;
+  /** Build section shown in the game (1-based, 0 = all); mod 0.7.0+, else 0. */
+  readonly section: number;
+  /** Build sections of the plan file in build order with progress; empty for older mods or plans without sections. */
+  readonly sections: readonly LiveSection[];
 }
+export interface LiveSection { readonly name: string; readonly ok: number; readonly total: number }
 export interface LiveStatus {
   readonly time: string;
   readonly player: LivePlayer | null;
@@ -134,6 +140,11 @@ export function readLiveStatus(raw: unknown): LiveStatus {
       revisionNumber: h.revisionNumber == null ? null : int(h.revisionNumber, 'Revision', 0, 1e9),
       placement: { dimension: dim(pl.dimension), x: int(pl.x, 'Anker X'), y: int(pl.y, 'Anker Y', -5000, 5000), z: int(pl.z, 'Anker Z'), turns: int(pl.turns, 'Drehung', 0, 3), mirror: pl.mirror === true },
       visible: h.visible !== false, box, counts, total: int(h.total, 'Blockzahl', 0, 1e9),
+      section: h.section == null ? 0 : int(h.section, 'Abschnitt', 0, 255),
+      sections: h.sections == null ? [] : (Array.isArray(h.sections) && h.sections.length <= 255 ? h.sections : fail('Abschnitte ungültig')).map((x: unknown, i: number) => {
+        const o = isObj(x) ? x : fail(`Abschnitt ${i + 1} ungültig`);
+        return { name: str(o.name, `Abschnittsname ${i + 1}`), ok: int(o.ok, `Abschnitt ${i + 1} richtig`, 0, 1e9), total: int(o.total, `Abschnitt ${i + 1} gesamt`, 0, 1e9) };
+      }),
     };
   }
   return { time, player, world, hologram, marks: raw.marks == null ? 0 : int(raw.marks, 'Markierungen', 0, 1e6) };

@@ -28,6 +28,8 @@ public final class HologramRenderer {
     /** Missing blocks this close to the camera are drawn as see-through block models. */
     static final int TEXTURED_RADIUS = 40;
     static final int MAX_TEXTURED = 6_000;
+    /** X-ray: at most this many open blocks get a see-through frame (the nearest ones, chunk rings first). */
+    static final int MAX_XRAY = 4_000;
     /** Direction offsets in {@link net.minecraft.core.Direction} order: down, up, north, south, west, east. */
     private static final int[][] SIDES = { { 0, -1, 0 }, { 0, 1, 0 }, { 0, 0, -1 }, { 0, 0, 1 }, { -1, 0, 0 }, { 1, 0, 0 } };
 
@@ -109,6 +111,23 @@ public final class HologramRenderer {
                 }
             });
         }
+        if (hologram.xray() && drawnCount + ghostCount > 0) {
+            // X-ray: frames of open blocks drawn without depth test, so hidden errors behind walls show up.
+            final int[] a = drawn, g = ghosts;
+            final int na = drawnCount, ng = ghostCount;
+            out.submitCustomGeometry(pose, McCompat.xrayLines(), (p, vc) -> {
+                int done = 0;
+                for (int k = 0; k < ng + na && done < MAX_XRAY; k++) {
+                    int i = k < ng ? g[k] : a[k - ng];
+                    Verdict v = check.verdict(i);
+                    int color = v == Verdict.MISSING ? 0xC05AA9FF : v == Verdict.WRONG ? 0xE0FF4040 : v == Verdict.STATE ? 0xE0FFD54A : 0;
+                    if (color == 0) continue;
+                    float x = check.worldX(i) - ox, y = check.worldY(i) - oy, z = check.worldZ(i) - oz;
+                    frame(p, vc, x + 0.1f, y + 0.1f, z + 0.1f, x + 0.9f, y + 0.9f, z + 0.9f, color, 1.5f);
+                    done++;
+                }
+            });
+        }
         int[] b = check.worldBox();
         int target = hologram.target();
         boolean layered = hologram.layers() != Hologram.Layers.ALL;
@@ -130,7 +149,7 @@ public final class HologramRenderer {
     /** Recompute which blocks to draw when verdicts changed or the camera moved to another chunk. */
     private void select(LiveCheck check, Vec3 cam) {
         int cx = (int) Math.floor(cam.x) >> 4, cz = (int) Math.floor(cam.z) >> 4;
-        String settings = hologram.layers() + "/" + hologram.layerY() + "/" + hologram.textured() + "/" + ((int) Math.floor(cam.y) >> 3);
+        String settings = hologram.layers() + "/" + hologram.layerY() + "/" + hologram.section() + "/" + hologram.textured() + "/" + ((int) Math.floor(cam.y) >> 3);
         if (check == drawnFor && check.revision() == drawnRevision && cx == drawnChunkX && cz == drawnChunkZ && settings.equals(drawnSettings)) return;
         drawnSettings = settings;
         drawnFor = check;
@@ -139,7 +158,7 @@ public final class HologramRenderer {
         drawnChunkZ = cz;
         drawnCount = 0;
         ghostCount = 0;
-        int minY = hologram.minY(), maxY = hologram.maxY();
+        io.github.freadeax.bauplaner.mod.Filter filter = hologram.filter();
         boolean textured = hologram.textured();
         double tr2 = (double) TEXTURED_RADIUS * TEXTURED_RADIUS;
         int r = (RADIUS >> 4) + 1;
@@ -151,12 +170,12 @@ public final class HologramRenderer {
                     Verdict v = check.verdict(i);
                     if (v == Verdict.OK || v == Verdict.UNKNOWN) continue;
                     int wy = check.worldY(i);
-                    if (wy < minY || wy > maxY) continue;
+                    if (!filter.test(check, i)) continue;
                     if (Math.abs(wy - cam.y) > RADIUS) continue;
                     if (textured && v == Verdict.MISSING && ghostCount < MAX_TEXTURED) {
                         double gx = check.worldX(i) + 0.5 - cam.x, gy = wy + 0.5 - cam.y, gz = check.worldZ(i) + 0.5 - cam.z;
                         GhostModels.Model m = gx * gx + gy * gy + gz * gz < tr2 ? models.model(check.expected(i)) : null;
-                        if (m != null) { addGhost(check, i, m, minY, maxY); continue; }
+                        if (m != null) { addGhost(check, i, m, filter); continue; }
                     }
                     if (drawnCount == MAX_BLOCKS) break;
                     if (drawnCount == drawn.length) drawn = Arrays.copyOf(drawn, Math.max(1024, drawn.length * 2));
@@ -166,7 +185,7 @@ public final class HologramRenderer {
         }
     }
 
-    private void addGhost(LiveCheck check, int i, GhostModels.Model m, int minY, int maxY) {
+    private void addGhost(LiveCheck check, int i, GhostModels.Model m, io.github.freadeax.bauplaner.mod.Filter filter) {
         if (ghostCount == ghosts.length) {
             int size = Math.max(256, ghosts.length * 2);
             ghosts = Arrays.copyOf(ghosts, size);
@@ -178,9 +197,9 @@ public final class HologramRenderer {
             // Faces between two full ghost blocks are inside the wall: hide them, otherwise walls look like glass grids.
             for (int d = 0; d < 6; d++) {
                 int ny = check.worldY(i) + SIDES[d][1];
-                if (ny < minY || ny > maxY) continue;
+                if (!filter.inHeight(ny)) continue;
                 int j = check.indexAt(check.worldX(i) + SIDES[d][0], ny, check.worldZ(i) + SIDES[d][2]);
-                if (j < 0 || check.verdict(j) != Verdict.MISSING) continue;
+                if (j < 0 || check.verdict(j) != Verdict.MISSING || !filter.test(check, j)) continue;
                 GhostModels.Model other = models.model(check.expected(j));
                 if (other != null && other.fullCube()) mask |= 1 << d;
             }

@@ -15,7 +15,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 
 /**
- * {@code /bauplaner zeigen|hierher|verschieben|drehen|spiegeln|umschalten|fehler|entfernen|fortschritt|ebene|material|texturen|platzierhilfe|verbinden}: the same actions as menu and keys, as client commands (no server needed;
+ * {@code /bauplaner zeigen|hierher|verschieben|drehen|spiegeln|umschalten|fehler|entfernen|fortschritt|ebene|material|texturen|platzierhilfe|abschnitt|roentgen|verbinden}: the same actions as menu and keys, as client commands (no server needed;
  * also used by the game test). Generic over the command source, so every loader registers the same tree
  * with its own client command source; answers go straight to the local chat.
  */
@@ -54,6 +54,16 @@ public final class HologramCommands {
                         .then(HologramCommands.<S>literal("an").executes(c -> guard(c.getSource(), h, PlacementAdvice.Guard.ON)))
                         .then(HologramCommands.<S>literal("warnen").executes(c -> guard(c.getSource(), h, PlacementAdvice.Guard.WARN)))
                         .then(HologramCommands.<S>literal("aus").executes(c -> guard(c.getSource(), h, PlacementAdvice.Guard.OFF))),
+                // Build sections from the website (0.7.0): list, choose, all, next open one.
+                HologramCommands.<S>literal("abschnitt").executes(c -> sections(h))
+                        .then(HologramCommands.<S>literal("alle").executes(c -> said(h.setSection(0))))
+                        .then(HologramCommands.<S>literal("weiter").executes(c -> {
+                            if (!h.active()) return said("Kein Plan eingeblendet.");
+                            int next = h.firstOpenSection();
+                            return said(next == 0 && !h.sectionNames().isEmpty() ? "Alle Bauabschnitte sind fertig." : h.setSection(next));
+                        }))
+                        .then(HologramCommands.<S, Integer>argument("nummer", IntegerArgumentType.integer(0, 255)).executes(c -> said(h.setSection(IntegerArgumentType.getInteger(c, "nummer"))))),
+                HologramCommands.<S>literal("roentgen").executes(c -> { h.toggleXray(); return said(h.xray() ? "Röntgensicht an: offene Blöcke auch durch Wände." : "Röntgensicht aus."); }),
                 // Website link (MAP-03): off until typed; a port starts it on that port.
                 HologramCommands.<S>literal("verbinden").executes(c -> said(link.connect()))
                         .then(HologramCommands.<S>literal("aus").executes(c -> said(link.disconnect())))
@@ -63,6 +73,16 @@ public final class HologramCommands {
     }
 
     private static int said(String text) { say(null, text); return 1; }
+
+    /** All sections with their progress; the active one marked. */
+    private static int sections(Hologram h) {
+        if (!h.active()) return said("Kein Plan eingeblendet.");
+        var names = h.sectionNames();
+        if (names.isEmpty()) return said("Dieser Plan hat keine Bauabschnitte. Auf der Website im Tab „Baustelle“ Abschnitte anlegen und neu exportieren.");
+        say(null, "Bauabschnitte (" + names.size() + "), aktiv: " + (h.section() == 0 ? "alle" : h.section()) + ". Wählen: /bauplaner abschnitt <nummer>|alle|weiter oder Num /.");
+        for (int k = 1; k <= names.size(); k++) say(null, (k == h.section() ? "▶ " : "  ") + k + ". " + names.get(k - 1) + ": " + h.sectionLine(k));
+        return names.size();
+    }
 
     private static int guard(Object s, Hologram h, PlacementAdvice.Guard g) {
         if (g != null) h.setGuard(g);
@@ -83,7 +103,7 @@ public final class HologramCommands {
     /** Open blocks per type (same list as the material screen), in the chat; also used by the game test. */
     private static int materials(Object s, Hologram h) {
         if (!h.active()) return fail(s, "Kein Plan platziert.");
-        var lines = io.github.freadeax.bauplaner.mod.Materials.of(h.check(), h.minY(), h.maxY());
+        var lines = io.github.freadeax.bauplaner.mod.Materials.of(h.check(), h.filter());
         int open = lines.stream().mapToInt(io.github.freadeax.bauplaner.mod.Materials.Line::open).sum();
         say(s, "Material offen: " + open + " Blöcke in " + lines.stream().filter(l -> l.open() > 0).count() + " Sorten.");
         lines.stream().filter(l -> l.open() > 0).limit(10).forEach(l -> say(s, "  " + l.open() + " × " + l.id() + " (von " + l.total() + ")"));

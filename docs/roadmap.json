@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T18:40:22.884Z",
+  "updatedAt": "2026-11-02T18:46:03.589Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -3956,7 +3956,11 @@
         "mods/bauplaner-bridge/client-26.3/",
         "scripts/test_bridge_ingame_forge.sh",
         "mods/bauplaner-bridge/README.md",
-        "docs/architecture/LIVE_LINK.md"
+        "docs/architecture/LIVE_LINK.md",
+        "packages/application/src/revisionExport.ts",
+        "packages/domain/src/liveLink.ts",
+        "tests/game-check.test.mjs",
+        "tests/livelink.test.mjs"
       ],
       "legacyIds": [],
       "steps": [
@@ -4001,15 +4005,20 @@
           "done": true
         },
         {
+          "id": "GAME-07-S10",
+          "title": "Stufe 5: Bauabschnitte aus der Website als Filter für Hologramm, Fortschritt, Material und Fehlerfinder (Num /, Menü, Befehl, Website über /v1/section), Röntgensicht (Num -), Shulkerkisten und Bündel im Inventar mitgezählt (0.7.0).",
+          "done": true
+        },
+        {
           "id": "GAME-07-S07",
-          "title": "Stufe 5: Bauabschnitte aus der Website, Shulker-Inhalte, Röntgensicht.",
+          "title": "Stufe 6: Gruppen/Sperren aus dem Weltbuilder, Abschnitt als Packliste mit Kistenstandorten, Gerüst-Hinweise für hängende Blöcke.",
           "done": false
         }
       ],
       "acceptance": [
         "Reiner Client: keine Pakete an den Server, keine Weltänderung, kein automatisches Bauen, keine Abhängigkeit von WorldEdit oder Litematica; Ergebnis des Live-Abgleichs gleicht dem Website-Vergleich."
       ],
-      "next": "Philipp testet 0.6.0 (Fabric oder NeoForge) auf server.lmnt-gaming.net, auch mit Complementary-Shader; danach Stufe 5.",
+      "next": "Philipp testet 0.7.0 auf server.lmnt-gaming.net (Bauabschnitte aus seinem Projekt, Röntgensicht mit Shader); danach Stufe 6.",
       "blockers": [],
       "evidence": [
         {
@@ -4043,6 +4052,10 @@
         {
           "path": "mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java",
           "note": "0.6.0: echter NeoForge-26.3-Client spielt Hologramm, Materialliste, Ebenen, J/Num 7, Platzierhilfe über Minecraft.startUseItem/startAttack und die Website-Verbindung durch; Fabric zusätzlich mit Philipps 25 Mods und Complementary Unbound (BAUPLANER_SHADERPACK) bestanden (02.11.2026)."
+        },
+        {
+          "path": "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Filter.java",
+          "note": "0.7.0: ein Filter (Ebenen + Bauabschnitt) für Hologramm, HUD, Material und Fehlerfinder; JUnit buildSectionsFilterEverything, Website-Test für SectionNames/SectionCells im Export und Abschnitte im Live-Status; Spieltests Fabric (auch Modpack + Complementary) und NeoForge prüfen Abschnittsliste, Röntgensicht und Abschnittswahl über die Website (02.11.2026)."
         }
       ],
       "verification": {
@@ -4053,7 +4066,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T12:14:07.007Z"
+      "updatedAt": "2026-11-02T18:46:03.589Z"
     },
     {
       "id": "GAME-03",
@@ -8877,6 +8890,59 @@
           "done": 6,
           "total": 7,
           "next": "LIB-05-S07: Untergrund innen, Interieur, Technik; Abnahme neuer Gebäude im Spiel durch Philipp."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T18:46:03.589Z",
+      "kind": "progress",
+      "items": [
+        "GAME-07"
+      ],
+      "summary": "Mod 0.7.0: Bauabschnitte aus dem Planer im Spiel (Num /, /bauplaner abschnitt), Röntgensicht (Num -), Shulkerkisten und Bündel in der Materialliste, Abschnittswahl von der Website (POST /v1/section)",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/LIVE_LINK.md",
+        "docs/architecture/MOD_HOLOGRAM.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.7.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.7.0.jar",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Hologram.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramHud.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramKeys.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramRenderer.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/MaterialScreen.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/McCompat.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlacementAssist.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/resources/assets/bauplaner_bridge/lang/de_de.json",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/resources/assets/bauplaner_bridge/lang/en_us.json",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Filter.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/LiveCheck.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Materials.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlanModel.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java",
+        "mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java",
+        "mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/LiveLinkScenario.java",
+        "packages/application/src/revisionExport.ts",
+        "packages/domain/src/liveLink.ts",
+        "scripts/bridge_gametest.mjs",
+        "tests/game-check.test.mjs",
+        "tests/livelink.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-07",
+          "status": "implemented",
+          "done": 8,
+          "total": 10,
+          "next": "Philipp testet 0.7.0 auf server.lmnt-gaming.net (Bauabschnitte aus seinem Projekt, Röntgensicht mit Shader); danach Stufe 6."
         }
       ]
     }
