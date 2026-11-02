@@ -158,5 +158,16 @@ export function ModView({ search }: { search?: string | undefined }) {
       </ol>
       <p className="muted">Läuft nur auf deinem Rechner, auch auf fremden Servern ohne Plugin. Alle Tasten unter Optionen → Steuerung → „Bauplaner“.</p>
     </section>}
+
+    {!server && <section className="system-card system-wide" aria-labelledby="mod-live">
+      <h2 id="mod-live">Mit dem Spiel verbinden (Live-Karte, ab Mod 0.5)</h2>
+      <p>Die Weltkarte zeigt dann deine Position, das Gelände um dich und den Baufortschritt des Hologramms live. Pläne schickst du mit einem Klick ins Spiel, ohne Dateien zu kopieren, und Bauplätze, Wege und Punkte aus dem Weltplan erscheinen im Spiel als Linien.</p>
+      <ol className="mod-steps">
+        <li>Minecraft mit der Mod starten und eine Welt oder den Server betreten.</li>
+        <li>Im Spiel <code>/bauplaner verbinden</code> eingeben. Der Chat zeigt einen sechsstelligen Code (5 Minuten gültig).</li>
+        <li>Auf der <a href="#/karte">Weltkarte</a> unter „Spiel“ auf „Verbinden“ drücken, den Code eintragen, „Koppeln“. Fragt der Browser nach Zugriff auf Geräte im lokalen Netzwerk: erlauben.</li>
+      </ol>
+      <p className="muted">Die Verbindung läuft nur zwischen diesem Browser und deinem Minecraft auf demselben Computer (127.0.0.1), nichts geht an den Server, die Welt wird nie verändert. Nur diese Website darf die Mod abfragen. <code>/bauplaner verbinden status</code> zeigt den Stand, <code>/bauplaner verbinden aus</code> trennt alle Browser.</p>
+    </section>}
   </div>;
 }

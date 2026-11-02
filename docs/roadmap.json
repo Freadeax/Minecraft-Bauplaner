@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T10:07:03.926Z",
+  "updatedAt": "2026-11-02T10:18:11.573Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -3381,7 +3381,7 @@
       "title": "Live-Karte mit Spielanbindung: Weltplan auf der Karte, Live-Position/Gelände/Fortschritt aus der Mod, Übergabe an die Mod",
       "phase": "P3",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "implemented",
       "owner": "Claude (Thread „Live-Karte mit Spielanbindung neu bauen“)",
       "dependencies": [
         "MAP-01"
@@ -3405,22 +3405,22 @@
         {
           "id": "MAP-03-S02",
           "title": "Weltplan (Bauplätze, Wege, Punkte/Anker) mit Rückgängig, Speicher und Sicherung.",
-          "done": false
+          "done": true
         },
         {
           "id": "MAP-03-S03",
           "title": "Planungswerkzeuge auf der Draufsicht: Projekte ziehen, Bauplatz/Weg/Punkt zeichnen, Messen.",
-          "done": false
+          "done": true
         },
         {
           "id": "MAP-03-S04",
           "title": "Live-Verbindung zur Mod (127.0.0.1, Kopplung): Spielerposition, Gelände geladener Chunks, Hologramm-Fortschritt auf der Karte.",
-          "done": false
+          "done": true
         },
         {
           "id": "MAP-03-S05",
           "title": "Übergabe: Plan und Lage an die Mod senden, Weltplan-Markierungen im Spiel, Lage aus dem Spiel übernehmen.",
-          "done": false
+          "done": true
         },
         {
           "id": "MAP-03-S06",
@@ -3432,18 +3432,39 @@
         "Karte zeigt Spielerposition und Gelände live, wenn die Mod gekoppelt ist; ohne Mod bleibt alles nutzbar.",
         "Keine Weltänderung, nur Loopback mit Kopplungscode, fremde Ursprünge werden abgewiesen."
       ],
-      "next": "Weltplan und Planungswerkzeuge umsetzen (S02/S03), danach Live-Verbindung (S04, zusammen mit GAME-03).",
+      "next": "Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/worldplan.test.mjs",
+          "note": "Weltplan: Prüfung, Umkehrung, Wege, Sicherung."
+        },
+        {
+          "path": "tests/livelink.test.mjs",
+          "note": "Live-Leser, Geländeeinstufung, Hologrammabgleich, Übergabe."
+        },
+        {
+          "path": "tests/e2e/livelink.e2e.mjs",
+          "note": "Zeichnen, Rückgängig, Kopplung, Spieler, Gelände, Hologramm, Senden gegen tests/e2e/modSimulator.mjs; 1400/390 px."
+        },
+        {
+          "path": "scripts/test_bridge_ingame.sh",
+          "note": "Echter 26.3-Client allein und mit Philipps Modpack: Website-Verbindung über 127.0.0.1 (live.json)."
+        },
+        {
+          "path": "docs/architecture/LIVE_LINK.md",
+          "note": "Vertrag, Sicherheit, Protokoll 1, Grenzen."
+        }
+      ],
       "verification": {
         "state": "pending",
-        "note": "In Arbeit."
+        "note": "Automatisch und im echten Client geprüft; Abnahme durch Philipp offen (S06)."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T09:49:37.649Z"
+      "updatedAt": "2026-11-02T10:18:11.573Z"
     },
     {
       "id": "MAP-02",
@@ -3757,7 +3778,7 @@
       "title": "Optionale lokale Verbindung und Anzeige im Spiel",
       "phase": "P3",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "implemented",
       "owner": "Claude (Thread „Live-Karte mit Spielanbindung neu bauen“)",
       "dependencies": [
         "GAME-02"
@@ -3774,29 +3795,38 @@
         {
           "id": "GAME-03-S01",
           "title": "Loopback-Sicherheitsvertrag mit expliziter Kopplung definieren.",
-          "done": false
+          "done": true
         },
         {
           "id": "GAME-03-S02",
           "title": "Planübertragung und Bestätigungen getrennt von Weltänderungen umsetzen.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Keine unautorisierte Fernverbindung; Overlay ist kein serverseitiger Blocksetter."
       ],
-      "next": "LiveLink in mod-core (Loopback, Kopplungscode, Ursprungsprüfung) und Fabric 0.5.0.",
+      "next": "Abnahme mit MAP-03-S06; Forge/NeoForge/Paper haben die Verbindung noch nicht.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+          "note": "Kopplung, Token, Ursprung, Host, Grenzen."
+        },
+        {
+          "path": "docs/architecture/LIVE_LINK.md",
+          "note": "Loopback-Sicherheitsvertrag."
+        }
+      ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "note": "Im echten Client geprüft; Abnahme durch Philipp offen."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T09:49:37.649Z"
+      "updatedAt": "2026-11-02T10:18:11.573Z"
     },
     {
       "id": "WORLD-IMPORT-01",
@@ -7568,6 +7598,150 @@
           "done": 6,
           "total": 7,
           "next": "Spielprüfung gespiegelter Zustände; danach Gelände-Werkzeuge auf Projektgelände (eigener Thread) und Symmetrie/Kurven im Mod."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T10:18:02.455Z",
+      "kind": "progress",
+      "items": [
+        "MAP-03",
+        "GAME-03"
+      ],
+      "summary": "Live-Karte mit Spielanbindung: Weltplan (Bauplätze, Wege, Punkte) mit Werkzeugen und Rückgängig auf der Weltkarte, Live-Verbindung zur Mod 0.5.0 über 127.0.0.1 mit Kopplungscode (Spielerposition, Gelände, Hologramm-Fortschritt), Plan und Markierungen ins Spiel, Lage übernehmen; Spieltest mit Modpack",
+      "files": [
+        "apps/web/src/app/idbRepository.ts",
+        "apps/web/src/app/repository.ts",
+        "apps/web/src/map.css",
+        "apps/web/src/views/ProjectsView.tsx",
+        "apps/web/src/views/map/LiveGamePanel.tsx",
+        "apps/web/src/views/map/OverviewMap.tsx",
+        "apps/web/src/views/map/PlanPanel.tsx",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "apps/web/src/views/map/liveClient.ts",
+        "apps/web/src/views/map/terrainLayer.ts",
+        "apps/web/src/views/map/useWorldPlan.ts",
+        "apps/web/src/views/mod/ModView.tsx",
+        "apps/web/src/views/mod/releases.json",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/LIVE_LINK.md",
+        "docs/architecture/MOD_HOLOGRAM.md",
+        "docs/architecture/WORLDMAP.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.5.0.jar",
+        "mods/bauplaner-bridge/README.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/BridgeClient.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/Hologram.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramKeys.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramRenderer.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/LiveLink.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/MarksRenderer.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/McCompat.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/Json.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/SurfaceRuns.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WorldMarks.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "packages/application/src/memoryRepository.ts",
+        "packages/application/src/repository.ts",
+        "packages/domain/src/backup.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/liveLink.ts",
+        "packages/domain/src/worldPlan.ts",
+        "scripts/bridge_gametest.mjs",
+        "tests/e2e/livelink.e2e.mjs",
+        "tests/e2e/modSimulator.mjs",
+        "tests/livelink.test.mjs",
+        "tests/worldplan.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "MAP-03",
+          "status": "review",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server."
+        },
+        {
+          "id": "GAME-03",
+          "status": "review",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme mit MAP-03-S06; Forge/NeoForge/Paper haben die Verbindung noch nicht."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T10:18:11.573Z",
+      "kind": "progress",
+      "items": [
+        "MAP-03",
+        "GAME-03"
+      ],
+      "summary": "Live-Karte mit Spielanbindung: Weltplan (Bauplätze, Wege, Punkte) mit Werkzeugen und Rückgängig auf der Weltkarte, Live-Verbindung zur Mod 0.5.0 über 127.0.0.1 mit Kopplungscode (Spielerposition, Gelände, Hologramm-Fortschritt), Plan und Markierungen ins Spiel, Lage übernehmen; Spieltest mit Modpack",
+      "files": [
+        "apps/web/src/app/idbRepository.ts",
+        "apps/web/src/app/repository.ts",
+        "apps/web/src/map.css",
+        "apps/web/src/views/ProjectsView.tsx",
+        "apps/web/src/views/map/LiveGamePanel.tsx",
+        "apps/web/src/views/map/OverviewMap.tsx",
+        "apps/web/src/views/map/PlanPanel.tsx",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "apps/web/src/views/map/liveClient.ts",
+        "apps/web/src/views/map/terrainLayer.ts",
+        "apps/web/src/views/map/useWorldPlan.ts",
+        "apps/web/src/views/mod/ModView.tsx",
+        "apps/web/src/views/mod/releases.json",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/LIVE_LINK.md",
+        "docs/architecture/MOD_HOLOGRAM.md",
+        "docs/architecture/WORLDMAP.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.5.0.jar",
+        "mods/bauplaner-bridge/README.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/BridgeClient.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/Hologram.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramKeys.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramRenderer.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/LiveLink.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/MarksRenderer.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/McCompat.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/Json.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/SurfaceRuns.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WorldMarks.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "packages/application/src/memoryRepository.ts",
+        "packages/application/src/repository.ts",
+        "packages/domain/src/backup.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/liveLink.ts",
+        "packages/domain/src/worldPlan.ts",
+        "scripts/bridge_gametest.mjs",
+        "tests/e2e/livelink.e2e.mjs",
+        "tests/e2e/modSimulator.mjs",
+        "tests/livelink.test.mjs",
+        "tests/worldplan.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "MAP-03",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server."
+        },
+        {
+          "id": "GAME-03",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme mit MAP-03-S06; Forge/NeoForge/Paper haben die Verbindung noch nicht."
         }
       ]
     }

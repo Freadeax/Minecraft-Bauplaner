@@ -42,6 +42,9 @@ public final class BridgeClient implements ClientModInitializer {
     private final HologramRenderer renderer = new HologramRenderer(hologram);
     private final PlacementAssist assist = new PlacementAssist(hologram);
     private final HologramKeys keys = new HologramKeys(hologram, assist);
+    private final LiveLink link = new LiveLink(root, hologram,
+            FabricLoader.getInstance().getModContainer("bauplaner_bridge").map(c -> c.getMetadata().getVersion().getFriendlyString()).orElse("?"), McCompat.gameVersion());
+    private final MarksRenderer marks = new MarksRenderer(link);
 
     @Override
     public void onInitializeClient() {
@@ -57,7 +60,12 @@ public final class BridgeClient implements ClientModInitializer {
             var anchorCmd = literal("anker")
                     .then(literal("hier").executes(c -> setAnchor(c.getSource(), McCompat.targetBlock(c.getSource().getClient()))))
                     .then(xyz);
-            var cmd = literal("bauplaner");
+            var connect = literal("verbinden").executes(c -> { say(c.getSource(), link.connect()); return 1; })
+                    .then(literal("aus").executes(c -> { say(c.getSource(), link.disconnect()); return 1; }))
+                    .then(literal("status").executes(c -> { say(c.getSource(), link.statusText()); return 1; }))
+                    .then(literal("port").then(argument("port", IntegerArgumentType.integer(1024, 65535))
+                            .executes(c -> { say(c.getSource(), link.setPort(IntegerArgumentType.getInteger(c, "port"))); return 1; })));
+            var cmd = literal("bauplaner").then(connect);
             HologramCommands.build(hologram).forEach(cmd::then);
             dispatcher.register(cmd
                     .executes(c -> help(c.getSource()))
@@ -69,7 +77,14 @@ public final class BridgeClient implements ClientModInitializer {
                     .then(literal("status").executes(c -> status(c.getSource()))));
         });
         ClientTickEvents.END_CLIENT_TICK.register(this::tick);
-        ClientTickEvents.END_CLIENT_TICK.register(mc -> { keys.tick(mc); hologram.tick(mc); assist.tick(mc); });
+        ClientTickEvents.END_CLIENT_TICK.register(mc -> { keys.tick(mc); hologram.tick(mc); assist.tick(mc); marks.tick(mc); });
+        // Website link (MAP-03): off until /bauplaner verbinden; resumes after a restart once switched on.
+        link.loadMarks();
+        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents.CLIENT_STARTED.register(link::resume);
+        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents.CLIENT_STOPPING.register(mc -> link.close());
+        net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents.COLLECT_SUBMITS.register(marks::submit);
+        net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry.addLast(
+                net.minecraft.resources.Identifier.fromNamespaceAndPath("bauplaner_bridge", "markierungen"), marks::hud);
         // Placement helper: decides on the client before anything is sent; FAIL means the click is dropped.
         net.fabricmc.fabric.api.event.player.UseBlockCallback.EVENT.register(assist::onUse);
         net.fabricmc.fabric.api.event.player.AttackBlockCallback.EVENT.register((player, level, hand, pos, dir) -> assist.onAttack(player, level, pos));
@@ -90,6 +105,7 @@ public final class BridgeClient implements ClientModInitializer {
     private int help(FabricClientCommandSource s) {
         say(s, "1) Plan im Tab „Export“ der Website exportieren und nach " + root.resolve("plans") + " legen.");
         say(s, "2) /bauplaner plan <datei>  3) /bauplaner anker hier (angeschauter Block = Projektursprung 0/0/0)  4) /bauplaner scan");
+        say(s, "Mit der Website verbinden (Spielerposition, Gelände, Plan direkt übergeben): /bauplaner verbinden – Code auf der Website unter „Spiel“ eintragen.");
         say(s, "Die Aufnahme landet in " + root.resolve("scans") + " und wird im Tab „Bauen“ importiert. Die Welt wird nie verändert.");
         return 1;
     }

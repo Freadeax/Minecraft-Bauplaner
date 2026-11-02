@@ -32,7 +32,7 @@ final class HologramKeys {
     private final KeyMapping materials = key("materials", InputConstants.KEY_NUMPAD7);
     private final KeyMapping layers = key("layers", InputConstants.KEY_NUMPAD6);
     private final KeyMapping layerUp = key("layer_up", InputConstants.KEY_NUMPAD9);
-    private final KeyMapping layerDown = key("layer_down", InputConstants.KEY_NUMPAD3);
+    private final KeyMapping layerDown = key("layer_down", InputConstants.KEY_MULTIPLY);
     private final KeyMapping pick = key("pick", InputConstants.KEY_NUMPAD8);
     /** Unbound by default (every numpad key near it is taken in Philipp's modpack); menu J and command work too. */
     private final KeyMapping guard = key("guard", InputConstants.UNKNOWN.getValue());

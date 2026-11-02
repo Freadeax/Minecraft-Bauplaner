@@ -1,9 +1,9 @@
-import type { Asset, AssetVersion, BackupLedger, BackupReceipt, Collection, LibraryTemplate, OriginalFile, Project } from '../../../../packages/domain/src/index.js';
-import { addReceipt, checkBackupLedger, emptyLedger } from '../../../../packages/domain/src/index.js';
+import type { Asset, AssetVersion, BackupLedger, BackupReceipt, Collection, LibraryTemplate, OriginalFile, Project, WorldPlan } from '../../../../packages/domain/src/index.js';
+import { addReceipt, checkBackupLedger, checkWorldPlan, emptyLedger, emptyWorldPlan } from '../../../../packages/domain/src/index.js';
 import { checkAssetRecord, checkCollectionRecord, checkProjectRecord, checkSchemaVersion, checkTemplateRecord, DOMAIN_SCHEMA_VERSION, LibraryRecordConflictError, nextLibraryRevision } from '../../../../packages/domain/src/index.js';
 import { packVersion, unpackVersion, unpackVersionOrDamaged } from '../../../../packages/domain/src/index.js';
 import { assetRevision, checkStorageBatch, nextAssetRevision } from '../../../../packages/application/src/assetConcurrency.js';
-import { RevisionConflictError } from './repository';
+import { RevisionConflictError, WorldPlanConflictError } from './repository';
 import type { Repository, StorageBatch, StorageChange, StorageInfo } from './repository';
 
 /**
@@ -194,6 +194,23 @@ export class IdbRepository implements Repository {
     });
     this.announce({ kind: 'backups' });
     return ledger;
+  }
+
+  // MAP-03: the Weltplan is one record in the existing `meta` store (key 'worldPlan'); no schema migration needed.
+  async getWorldPlan(): Promise<WorldPlan> {
+    const raw = await this.run(['meta'], 'readonly', tx => req(tx.objectStore('meta').get('worldPlan')));
+    return raw === undefined ? emptyWorldPlan() : checkWorldPlan((raw as { plan: unknown }).plan);
+  }
+  async saveWorldPlan(plan: WorldPlan, baseRevision: number): Promise<WorldPlan> {
+    const next = checkWorldPlan({ ...structuredClone(plan), revision: baseRevision + 1, updatedAt: new Date().toISOString() });
+    await this.run(['meta'], 'readwrite', async tx => {
+      const store = tx.objectStore('meta'), raw = await req(store.get('worldPlan'));
+      const stored = raw === undefined ? 0 : checkWorldPlan((raw as { plan: unknown }).plan).revision;
+      if (stored !== baseRevision) throw new WorldPlanConflictError(stored, baseRevision);
+      store.put({ key: 'worldPlan', plan: next });
+    });
+    this.announce({ kind: 'worldPlan' });
+    return next;
   }
 
   async getOriginal(sha256: string): Promise<OriginalFile | null> {

@@ -86,3 +86,11 @@ export { packVersion, unpackVersion, unpackVersionOrDamaged, packVersionForFile,
 export type { StoredPayload, PackedVersionRecord, PackedVersionFileRecord, StoredVersionRecord } from './versionStorage.js';
 export { buildPlanGraph, whereUsed, projectEdges, assetEdges, versionEdges, collectionEdges, templateEdges, projectVersionIds, PLAN_ROLE_LABEL, PLAN_KIND_LABEL } from './planGraph.js';
 export type { PlanGraph, PlanEdge, PlanNodeKind, PlanNodeRef, PlanRole, PlanSource, UsageGroup } from './planGraph.js';
+export { WORLD_PLAN_SCHEMA_VERSION, WORLD_PLAN_MAX_ITEMS, WORLD_PATH_MAX_POINTS, WORLD_SITE_MAX_SIDE, WORLD_POINT_TYPES, WORLD_PATH_STYLES, emptyWorldPlan, checkWorldItem, checkWorldPlan,
+  describeWorldPlanOp, applyWorldPlanOp, pointTypeLabel, pathStyleOf, newWorldItemId, itemsOf, siteFromCorners, snapSiteToChunks, pathColumns, pathLength, itemBounds, itemAt, moveItem,
+  sitesTouching, worldPlanSummary } from './worldPlan.js';
+export type { WorldPlan, WorldItem, WorldSite, WorldPath, WorldPoint, WorldPointType, WorldPathStyle, WorldPlanOp } from './worldPlan.js';
+export { LIVE_PROTOCOL, LIVE_DEFAULT_PORT, LIVE_TOKEN_HEADER, LIVE_MAX_CHUNKS_PER_REQUEST, LIVE_MAX_RUNS, LIVE_MAX_MARKS, LIVE_MAX_PLAN_BYTES, LIVE_ALLOWED_ORIGINS, readLiveHello, readLivePairing,
+  readLiveStatus, readLiveChunks, classifyRuns, chunkColumns, wantedChunks, chunkQuery, liveSurvey, HOLOGRAM_MATCH_LABEL, hologramProject, compareHologram, liveShare, playerBlock,
+  originFromPlayer, planUploadQuery, marksBody, liveBaseUrl, originAllowed } from './liveLink.js';
+export type { LiveHello, LivePlayer, LiveWorld, LiveCounts, LivePlacement, LiveHologram, LiveStatus, LiveChunk, LiveChunks, LiveColumn, LiveChunkColumns, HologramMatch } from './liveLink.js';

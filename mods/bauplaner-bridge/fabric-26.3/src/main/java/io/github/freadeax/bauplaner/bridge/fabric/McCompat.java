@@ -28,12 +28,22 @@ final class McCompat {
         return "unbekannt";
     }
 
+    /**
+     * Whether the client really holds this chunk. {@code hasChunk} is not enough: the client answers
+     * unknown chunks with an empty placeholder chunk (found by the MAP-03 game test).
+     */
+    static boolean loaded(net.minecraft.world.level.Level level, int cx, int cz) {
+        if (!(level instanceof ClientLevel client)) return level.hasChunk(cx, cz);
+        net.minecraft.world.level.chunk.LevelChunk c = client.getChunkSource().getChunk(cx, cz, net.minecraft.world.level.chunk.status.ChunkStatus.FULL, false);
+        return c != null && !c.isEmpty();
+    }
+
     /** Read-only view on the blocks the client has loaded. Unloaded chunks are reported, never guessed. */
     static BlockSource clientBlocks(ClientLevel level) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         return (x, y, z) -> {
             if (level.isOutsideBuildHeight(y)) return "minecraft:air";
-            if (!level.hasChunk(x >> 4, z >> 4)) return null;
+            if (!loaded(level, x >> 4, z >> 4)) return null;
             return BlockStateParser.serialize(level.getBlockState(pos.set(x, y, z)));
         };
     }
@@ -46,7 +56,7 @@ final class McCompat {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
         return (x, y, z) -> {
             if (level.isOutsideBuildHeight(y)) return io.github.freadeax.bauplaner.mod.BlockState.AIR;
-            if (!level.hasChunk(x >> 4, z >> 4)) return null;
+            if (!loaded(level, x >> 4, z >> 4)) return null;
             return modState(level.getBlockState(pos.set(x, y, z)));
         };
     }

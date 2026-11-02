@@ -68,3 +68,36 @@
 .map-terrain-estimate{border-top:1px solid var(--line);margin-top:12px;padding-top:10px;display:grid;gap:6px;font-size:13px}
 .map-terrain-estimate h3{margin:0;font-size:14px}.map-terrain-estimate h3 small{font-weight:400;color:var(--muted);margin-left:6px}
 .map-terrain-estimate p{margin:0}.map-terrain-estimate button{margin-left:8px}
+/* MAP-03: Weltplan, Planungswerkzeuge und Spielverbindung */
+.map-page{--map-site:#f2b84b;--map-player:#ffffff;--map-hologram:#5fd7e8;--map-trail:#ffffff;--map-live-ok:var(--mint);--map-live-off:var(--muted)}
+:root[data-appearance=light] .map-page{--map-site:#a86a00;--map-player:#16302b;--map-hologram:#0f7f92;--map-trail:#16302b}
+.plan-toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 10px}
+.plan-toolbar .seg button{min-height:36px;padding:6px 12px}
+.plan-toolbar>button{min-width:38px;min-height:36px}
+.plan-hint{flex:1 1 240px}
+.overview[data-tool=site] .overview-canvas,.overview[data-tool=path] .overview-canvas,.overview[data-tool=point] .overview-canvas,.overview[data-tool=measure] .overview-canvas{cursor:crosshair}
+.plan-editor,.live-game{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:12px 0;background:var(--panel)}
+.plan-editor header,.live-game header{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.plan-editor h2,.live-game h2{margin:0 0 8px;font-size:16px}
+.plan-fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.plan-fields label{display:grid;gap:3px;font-size:12px;color:var(--muted)}
+.plan-fields .wide{grid-column:1/-1}
+.plan-fields input,.plan-fields select{min-height:36px}
+.plan-actions{border-top:1px solid var(--line);margin-top:10px;padding-top:10px}
+.plan-list{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.plan-list button{display:grid;grid-template-columns:12px 1fr;column-gap:8px;width:100%;text-align:left;background:transparent;border:1px solid transparent;border-radius:8px;padding:6px 8px;color:inherit}
+.plan-list button[aria-pressed=true]{border-color:var(--map-accent)}
+.plan-list b{font-weight:600;overflow-wrap:anywhere}.plan-list small{grid-column:2;color:var(--muted);font-size:11px}
+.plan-kind{width:10px;height:10px;margin-top:4px;border-radius:2px;background:var(--map-site)}
+.plan-kind.path{border-radius:5px;background:var(--map-grid-strong)}.plan-kind.point{border-radius:50%;background:var(--map-accent)}
+.live-dot{font-size:12px;font-weight:500;color:var(--map-live-off);margin-left:6px}
+.live-dot::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:currentColor}
+.live-dot.connected{color:var(--map-live-ok)}.live-dot.lost{color:var(--map-danger)}
+.live-steps{margin:6px 0 10px;padding-left:20px;font-size:13px;display:grid;gap:4px}
+.live-port{font-size:12px}.live-port label{display:grid;gap:3px;margin:6px 0 2px}.live-port input{max-width:110px}
+.live-pair{display:flex;flex-wrap:wrap;align-items:end;gap:8px}.live-pair p{flex:1 1 100%;margin:0}
+.live-pair label{display:grid;gap:3px;font-size:12px}.live-pair input{font-size:20px;letter-spacing:4px;width:140px;min-height:40px}
+.live-hologram{border-top:1px solid var(--line);margin-top:10px;padding-top:8px}
+.live-hologram h3{margin:0 0 6px;font-size:14px}.live-hologram p{margin:6px 0 0;font-size:13px}
+.map-game-actions{margin:6px 0 10px}
+@media(max-width:650px){.plan-toolbar .seg{flex-wrap:wrap}.plan-toolbar .seg button{min-height:40px}.live-pair input{width:100%}}

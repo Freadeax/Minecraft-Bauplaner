@@ -187,7 +187,7 @@ final class HologramRenderer {
         vc.addVertex(p, dx, dy, dz).setColor(c);
     }
 
-    private static void frame(PoseStack.Pose p, VertexConsumer vc, float x0, float y0, float z0, float x1, float y1, float z1, int c, float w) {
+    static void frame(PoseStack.Pose p, VertexConsumer vc, float x0, float y0, float z0, float x1, float y1, float z1, int c, float w) {
         float[][] corners = { { x0, y0, z0 }, { x1, y0, z0 }, { x1, y0, z1 }, { x0, y0, z1 }, { x0, y1, z0 }, { x1, y1, z0 }, { x1, y1, z1 }, { x0, y1, z1 } };
         int[][] edges = { { 0, 1 }, { 1, 2 }, { 2, 3 }, { 3, 0 }, { 4, 5 }, { 5, 6 }, { 6, 7 }, { 7, 4 }, { 0, 4 }, { 1, 5 }, { 2, 6 }, { 3, 7 } };
         for (int[] e : edges) {
@@ -196,7 +196,7 @@ final class HologramRenderer {
         }
     }
 
-    private static void line(PoseStack.Pose p, VertexConsumer vc, float ax, float ay, float az, float bx, float by, float bz, int c, float w) {
+    static void line(PoseStack.Pose p, VertexConsumer vc, float ax, float ay, float az, float bx, float by, float bz, int c, float w) {
         float nx = bx - ax, ny = by - ay, nz = bz - az;
         float len = (float) Math.sqrt(nx * nx + ny * ny + nz * nz);
         nx /= len; ny /= len; nz /= len;

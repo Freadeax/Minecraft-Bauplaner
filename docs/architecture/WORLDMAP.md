@@ -33,7 +33,11 @@ Die zusammengeführten Zellen sind **Anzeigedaten, kein Bauplan**, und werden ni
 - `PlacementForm.tsx`: Ursprung, ±16-Schritte, Dimension (auch Mod-Dimension), Notiz, Ausblenden. Jede Eingabe zeigt sofort eine Umrissvorschau in Draufsicht und 3D und nennt berührte Nachbarflächen.
 - `map.worker.ts`/`transport.ts`: Die Berechnung läuft in einem Worker; Zellen kommen als ein übertragbares `Int32Array` zurück. Ohne Worker-Unterstützung wird auf dem Hauptthread gerechnet.
 
-## Live-Karte (Verknüpfung, keine Datenquelle)
+## Live-Karte mit Spielanbindung und Weltplan (MAP-03)
+
+Seit MAP-03 plant man direkt auf der Draufsicht (Bauplätze, Wege, Punkte, Messen, Projekte ziehen, Rückgängig) und verbindet die Karte über die Bauplaner-Mod live mit dem eigenen Spiel (Position, Gelände der geladenen Chunks, Hologramm-Fortschritt, Plan und Markierungen ins Spiel). Vertrag, Sicherheit und Protokoll: [LIVE_LINK](LIVE_LINK.md).
+
+## Server-Livekarte (Verknüpfung, keine Datenquelle)
 
 Die LMNT-Website (`lmnt-gaming.net`, Seiten Start, Gameserver, Tools) zeigt am 28.10.2026 keine öffentliche Live-Karte; der Minecraft-Server ist dort als geschlossen geführt. Es wird nichts von einer Karte gelesen oder gescrapt. Stattdessen:
 

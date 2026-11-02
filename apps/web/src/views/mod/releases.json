@@ -89,6 +89,20 @@
       "releasedAt": "2026-11-02",
       "sourceCommit": "a5f8a5a7c34dde5717c1c219cd0ae0c58794f8bd",
       "tested": "Stufe 3 Platzierhilfe: im echten Client und mit Philipps Modpack (Sodium/Iris/Xaero/REI) geprüft – falscher Block nicht gesetzt und richtiger aus der Schnellleiste genommen, liegender Stamm verhindert mit Hinweis, aufrecht gesetzt, Abbauschutz (02.11.2026)."
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.5.0.jar",
+      "modVersion": "0.5.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 201822,
+      "sha256": "51ad22fa6bcafd118f0ed64be5e66a599629493b196ef686647bb8e3f13a82e9",
+      "releasedAt": "2026-11-02",
+      "sourceCommit": "bd7bd4d5f4381eb570538c173b1d03274f8c3e95",
+      "tested": "Echter Minecraft-26.3-Client (Fabric Client Game Test) allein und mit allen Mods aus Philipps Modpack: Aufnahme, Hologramm, Materialliste, Ebenen, Platzierhilfe und neu die Website-Verbindung (Kopplung mit Code, Status mit Spieler und Hologramm, Gelände der geladenen Chunks, Markierungen, Plan direkt von der Website platziert, fremde Website abgewiesen)."
     }
   ]
 }

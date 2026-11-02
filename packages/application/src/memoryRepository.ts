@@ -1,8 +1,9 @@
-import type { Asset, AssetVersion, BackupLedger, BackupReceipt, Collection, LibraryTemplate, OriginalFile, Project } from '../../domain/src/index.js';
+import type { Asset, AssetVersion, BackupLedger, BackupReceipt, Collection, LibraryTemplate, OriginalFile, Project, WorldPlan } from '../../domain/src/index.js';
+import { checkWorldPlan, emptyWorldPlan } from '../../domain/src/worldPlan.js';
 import { addReceipt, checkBackupLedger, emptyLedger } from '../../domain/src/backupStatus.js';
 import { LibraryRecordConflictError, nextLibraryRevision } from '../../domain/src/collections.js';
 import { checkStorageBatch, nextAssetRevision } from './assetConcurrency.js';
-import { RevisionConflictError } from './repository.js';
+import { RevisionConflictError, WorldPlanConflictError } from './repository.js';
 import type { Repository, StorageBatch, StorageInfo } from './repository.js';
 
 /** Session-only store; data is lost on reload and the UI must say so. */
@@ -67,5 +68,11 @@ export class MemoryRepository implements Repository {
   private ledger: BackupLedger = emptyLedger();
   async getBackupLedger() { return structuredClone(this.ledger); }
   async recordBackup(receipt: BackupReceipt) { this.ledger = addReceipt(checkBackupLedger(this.ledger), structuredClone(receipt)); return structuredClone(this.ledger); }
+  private worldPlan: WorldPlan = emptyWorldPlan();
+  async getWorldPlan() { return structuredClone(this.worldPlan); }
+  async saveWorldPlan(plan: WorldPlan, baseRevision: number) {
+    if (this.worldPlan.revision !== baseRevision) throw new WorldPlanConflictError(this.worldPlan.revision, baseRevision);
+    this.worldPlan = checkWorldPlan(structuredClone({ ...plan, revision: baseRevision + 1, updatedAt: new Date().toISOString() }));
+    return structuredClone(this.worldPlan);
+  }
 }
-

@@ -25,7 +25,7 @@ Stand 02.11.2026 · Stufe 1 „Fundament + Hologramm“ (0.2.0, Wahl Philipp) St
 | Ende / Pos1 / Einfg | 90° rechts drehen / zum angeschauten Block / spiegeln |
 | , (Komma) | Hologramm ein/aus |
 | Num 7 | Materialliste: je Block offen, im Inventar, noch holen (Ebenen beachtet) |
-| Num 6 / Num 9 / Num 3 | Ebenenmodus wechseln (alle → nur eine Ebene → bis zur Ebene) / Ebene höher / tiefer |
+| Num 6 / Num 9 / Num * | Ebenenmodus wechseln (alle → nur eine Ebene → bis zur Ebene) / Ebene höher / tiefer |
 | . (Punkt) | Fehlerfinder: nächster falscher/fehlender Block bekommt violetten Rahmen und Strahl, HUD zeigt Richtung, Entfernung und was falsch ist |
 
 Befehle (gleiche Aktionen, für Tastaturlose und Tests): `/bauplaner zeigen <datei>`, `fortschritt`, `hierher [x y z]`, `verschieben <dx> <dy> <dz>`, `drehen [viertel]`, `spiegeln`, `umschalten`, `fehler`, `entfernen`, `ebene <y>|bis <y>|alle`, `material`, `texturen`.

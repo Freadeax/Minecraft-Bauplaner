@@ -64,6 +64,7 @@ public final class BridgeGameTest implements FabricClientGameTest {
 
                 try {
                     hologram(context, world, io, root, anchor);
+                    liveLink(context, io, anchor);
                 } catch (Throwable t) {
                     // Modpack runs can hang on shutdown before the failure is reported: log it right away.
                     t.printStackTrace();
@@ -236,6 +237,91 @@ public final class BridgeGameTest implements FabricClientGameTest {
 
     private static void deleteScans(Path root) throws IOException {
         for (Path p : scans(root)) Files.delete(p);
+    }
+
+    // ------------------------------------------------------------------ MAP-03 website link
+
+    /**
+     * Website link over 127.0.0.1 like the website does it: pairing with the code from the chat, status
+     * with player and hologram, live terrain of a chunk, Weltplan marks and a plan sent directly. Every
+     * answer goes to live.json and is checked by scripts/bridge_gametest.mjs verify. The game thread
+     * only runs while the test waits, so requests run on their own thread and the test waits in ticks.
+     */
+    private static void liveLink(ClientGameTestContext context, Path io, int[] anchor) throws IOException {
+        chat(context, "/bauplaner verbinden");
+        String code = pairingCode();
+        var http = java.net.http.HttpClient.newBuilder().connectTimeout(java.time.Duration.ofSeconds(5)).build();
+        String base = "http://127.0.0.1:47615";
+        StringBuilder out = new StringBuilder("{");
+        String hello = request(context, http, base + "/v1/hello", "GET", null, null, "https://freadeax.github.io");
+        out.append("\"hello\":").append(hello);
+        String foreign = request(context, http, base + "/v1/hello", "GET", null, null, "https://example.com");
+        out.append(",\"foreign\":").append(foreign);
+        String unpaired = request(context, http, base + "/v1/status", "GET", null, null, "https://freadeax.github.io");
+        out.append(",\"unpaired\":").append(unpaired);
+        String pair = request(context, http, base + "/v1/pair", "POST", "{\"code\":\"" + code + "\"}", null, "https://freadeax.github.io");
+        out.append(",\"pair\":").append(pair);
+        var m = java.util.regex.Pattern.compile("\"token\":\"([A-Za-z0-9_-]+)\"").matcher(pair);
+        if (!m.find()) throw new AssertionError("Kopplung ohne Schlüssel: " + pair);
+        String token = m.group(1);
+        out.append(",\"status\":").append(request(context, http, base + "/v1/status", "GET", null, token, "https://freadeax.github.io"));
+        int cx = Math.floorDiv(anchor[0], 16), cz = Math.floorDiv(anchor[2], 16);
+        out.append(",\"chunks\":").append(request(context, http, base + "/v1/chunks?c=" + cx + "," + cz + ";4000,4000", "GET", null, token, "https://freadeax.github.io"));
+        String marks = "{\"dimension\":\"minecraft:overworld\",\"items\":[{\"kind\":\"point\",\"id\":\"point_test\",\"name\":\"Brunnen\",\"note\":\"\",\"dimension\":\"minecraft:overworld\",\"type\":\"ziel\",\"x\":"
+                + (anchor[0] + 12) + ",\"y\":" + anchor[1] + ",\"z\":" + (anchor[2] + 3) + "},{\"kind\":\"site\",\"id\":\"site_test\",\"name\":\"Platz\",\"note\":\"\",\"dimension\":\"minecraft:overworld\",\"minX\":"
+                + (anchor[0] - 4) + ",\"minZ\":" + (anchor[2] - 4) + ",\"width\":16,\"length\":12,\"y\":null,\"projectId\":null}]}";
+        out.append(",\"marks\":").append(request(context, http, base + "/v1/marks", "POST", marks, token, "https://freadeax.github.io"));
+        context.waitTicks(30);
+        copy(context.takeScreenshot("bauplaner-markierungen"), io.resolve("markierungen.png"));
+        byte[] plan = Files.readAllBytes(io.resolve("plan.schem"));
+        String q = "name=website-plan.schem&dimension=minecraft%3Aoverworld&x=" + (anchor[0] + 20) + "&y=" + anchor[1] + "&z=" + anchor[2] + "&turns=0&mirror=false";
+        out.append(",\"plan\":").append(requestBytes(context, http, base + "/v1/plan?" + q, plan, token));
+        context.waitTicks(40);
+        out.append(",\"after\":").append(request(context, http, base + "/v1/status", "GET", null, token, "https://freadeax.github.io"));
+        out.append("}");
+        Files.writeString(io.resolve("live.json"), out.toString());
+        chat(context, "/bauplaner verbinden status");
+    }
+
+    /** Pairing code the mod just showed in the chat (read from the running link, like the player reads it). */
+    private static String pairingCode() {
+        try {
+            Object client = FabricLoader.getInstance().getEntrypointContainers("client", net.fabricmc.api.ClientModInitializer.class).stream()
+                    .map(c -> c.getEntrypoint()).filter(e -> e.getClass().getName().endsWith(".BridgeClient")).findFirst().orElseThrow();
+            Object link = field(client, "link"), server = field(link, "server");
+            return (String) field(server, "pairingCode");
+        } catch (ReflectiveOperationException e) {
+            throw new AssertionError("Kopplungscode nicht lesbar", e);
+        }
+    }
+
+    private static Object field(Object o, String name) throws ReflectiveOperationException {
+        var f = o.getClass().getDeclaredField(name);
+        f.setAccessible(true);
+        return f.get(o);
+    }
+
+    /** One request as {"status":n,"body":...}; runs beside the game so the mod can answer on the game thread. */
+    private static String request(ClientGameTestContext context, java.net.http.HttpClient http, String url, String method, String body, String token, String origin) {
+        var b = java.net.http.HttpRequest.newBuilder(java.net.URI.create(url)).timeout(java.time.Duration.ofSeconds(10)).header("Origin", origin);
+        if (token != null) b.header("X-Bauplaner-Token", token);
+        b.method(method, body == null ? java.net.http.HttpRequest.BodyPublishers.noBody() : java.net.http.HttpRequest.BodyPublishers.ofString(body));
+        if (body != null) b.header("Content-Type", "application/json");
+        return send(context, http, b.build());
+    }
+
+    private static String requestBytes(ClientGameTestContext context, java.net.http.HttpClient http, String url, byte[] body, String token) {
+        return send(context, http, java.net.http.HttpRequest.newBuilder(java.net.URI.create(url)).timeout(java.time.Duration.ofSeconds(20))
+                .header("Origin", "https://freadeax.github.io").header("X-Bauplaner-Token", token).header("Content-Type", "application/octet-stream")
+                .POST(java.net.http.HttpRequest.BodyPublishers.ofByteArray(body)).build());
+    }
+
+    private static String send(ClientGameTestContext context, java.net.http.HttpClient http, java.net.http.HttpRequest r) {
+        var f = http.sendAsync(r, java.net.http.HttpResponse.BodyHandlers.ofString());
+        context.waitFor(mc -> f.isDone(), 20 * 30);
+        var res = f.join();
+        String text = res.body().isBlank() ? "null" : res.body();
+        return "{\"status\":" + res.statusCode() + ",\"body\":" + text + "}";
     }
 
     private static <T> T require(T value, String message) {

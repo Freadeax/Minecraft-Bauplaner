@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { EARTHWORK_NOTE, MAP_MAX_CELLS, applyOperation, columnBases, describeOperation, estimateEarthwork, surveyCovers, surveyDisplayCells } from '../../../../../packages/domain/src/index.js';
-import type { EarthworkEstimate, Operation, Project, TerrainSurvey } from '../../../../../packages/domain/src/index.js';
+import {
+  EARTHWORK_NOTE, MAP_MAX_CELLS, applyOperation, columnAt, columnBases, compareHologram, describeOperation, estimateEarthwork, hologramProject, itemsOf, liveShare, liveSurvey,
+  moveItem, newWorldItemId, originFromPlayer, siteFromCorners, snapSiteToChunks, surveyCovers, surveyDisplayCells, suggestDataVersion,
+} from '../../../../../packages/domain/src/index.js';
+import type { EarthworkEstimate, Operation, Project, TerrainSurvey, WorldItem } from '../../../../../packages/domain/src/index.js';
+import { prepareRevisionExport } from '../../../../../packages/application/src/index.js';
 import {
   DIMENSIONS, MAP_SKIP_LABEL, TERRAIN_NOTE, chunkOf, dimensionLabel, footprintNeighbours, suggestPlacement, topViews, translateBounds, worldOperation, createPlacement,
 } from '../../../../../packages/domain/src/worldmap.js';
@@ -14,6 +18,13 @@ import { mix, stateColor } from '../../colors';
 import { Viewer } from '../../Viewer';
 import type { Mark } from '../../viewer/types';
 import { OverviewMap } from './OverviewMap';
+import type { MapDraft, MapHit, MapTool, PlanLayer } from './OverviewMap';
+import { LiveGamePanel } from './LiveGamePanel';
+import { liveApi, useLiveGame } from './liveClient';
+import { PlanItemEditor, PlanList, PlanToolbar } from './PlanPanel';
+import { useWorldPlan } from './useWorldPlan';
+import { chunkImage } from './terrainLayer';
+import { areaAround, storeSurvey } from '../world/surveys';
 import { PlacementForm } from './PlacementForm';
 import { LiveMapPanel, LiveMapLink } from './LiveMapPanel';
 import { useLiveMapSettings } from './liveMapConfig';
@@ -69,6 +80,14 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   const [planned, setPlanned] = useState(true);
   const [plannedCount, setPlannedCount] = useState(0);
   const seq = useRef(0);
+  // MAP-03: Weltplan, planning tools and the live game.
+  const wp = useWorldPlan(repo);
+  const game = useLiveGame();
+  const [tool, setTool] = useState<MapTool>('select');
+  const [selectedItem, setSelectedItem] = useState<string | null>(null);
+  const [follow, setFollow] = useState(false);
+  const [terrainBusy, setTerrainBusy] = useState(false);
+  const [sending, setSending] = useState('');
 
   const load = useCallback(async () => {
     try { setProjects((await repo.listProjects()).sort((a, b) => a.name.localeCompare(b.name, 'de') || a.id.localeCompare(b.id))); setLoadError(''); }
@@ -221,6 +240,152 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
     }
   };
 
+  // ------------------------------------------------------------ MAP-03: Weltplan and live game
+  const items = useMemo(() => itemsOf(wp.plan, dimension), [wp.plan, dimension]);
+  const item = items.find(i => i.id === selectedItem) ?? null;
+  const status = game.status, player = status?.player ?? null;
+  const liveChunks = game.chunks.get(dimension);
+  const tiles = useMemo(() => {
+    if (!liveChunks?.size) return [];
+    let lo = Infinity, hi = -Infinity;
+    for (const c of liveChunks.values()) for (const col of c.columns) if (col) { lo = Math.min(lo, col.surface); hi = Math.max(hi, col.surface); }
+    return [...liveChunks.values()].map(c => ({ x: c.x, z: c.z, img: chunkImage(c, lo, hi) }));
+  }, [liveChunks, game.chunkVersion]); // eslint-disable-line react-hooks/exhaustive-deps
+  const groundAt = useCallback((x: number, z: number) => {
+    const col = liveChunks?.get(`${Math.floor(x / 16)},${Math.floor(z / 16)}`)?.columns[((z & 15) << 4) | (x & 15)];
+    if (col) return { y: col.surface, id: col.surfaceId, live: true };
+    for (const sv of terrain) { const c = columnAt(sv, x, z); if (c) return { y: c.surface, id: c.surfaceId, live: false }; }
+    return null;
+  }, [liveChunks, terrain, game.chunkVersion]); // eslint-disable-line react-hooks/exhaustive-deps
+  const holo = status?.hologram ?? null;
+  const holoProject = holo && projects ? hologramProject(holo, projects) : null;
+  const holoMatch = holo && holoProject ? compareHologram(holo, holoProject) : null;
+  // Following the player also follows them into another dimension.
+  useEffect(() => { if (follow && player && player.dimension !== dimension) { setDimension(player.dimension); setSelected(null); } }, [follow, player?.dimension]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const pick = useCallback((hit: MapHit | null) => {
+    if (hit?.kind === 'item') { setSelectedItem(hit.id); setSelected(null); }
+    else { setSelectedItem(null); setSelected(hit?.id ?? null); }
+  }, []);
+  const moveHit = useCallback((hit: MapHit, dx: number, dz: number) => {
+    if (hit.kind === 'item') {
+      const it = items.find(i => i.id === hit.id); if (!it) return;
+      void wp.apply({ kind: 'update', item: moveItem(it, dx, dz) }).then(ok => ok && setNotice(`„${it.name}“ um ${dx} / ${dz} verschoben.`));
+      return;
+    }
+    const p = projects?.find(x => x.id === hit.id); if (!p?.world) return;
+    const o = p.world.origin;
+    void save(p, worldOperation({ ...p.world, origin: [o[0] + dx, o[1], o[2] + dz] }, 'Auf der Karte verschoben'));
+  }, [items, wp, projects, save]);
+  const draw = useCallback((d: MapDraft) => {
+    const n = (kind: WorldItem['kind']) => items.filter(i => i.kind === kind).length + 1;
+    let next: WorldItem;
+    if (d.kind === 'site') {
+      const rect = d.snap ? snapSiteToChunks(siteFromCorners(d.a, d.b)) : siteFromCorners(d.a, d.b);
+      const g = groundAt(rect.minX + Math.floor(rect.width / 2), rect.minZ + Math.floor(rect.length / 2));
+      next = { kind: 'site', id: newWorldItemId('site'), name: `Bauplatz ${n('site')}`, note: '', dimension, ...rect, y: g ? g.y + 1 : null, projectId: null };
+    } else if (d.kind === 'path') {
+      next = { kind: 'path', id: newWorldItemId('path'), name: `Weg ${n('path')}`, note: '', dimension, style: 'weg', width: 3, points: d.points.map(p => [p[0], p[1]] as const) };
+    } else {
+      const g = groundAt(d.x, d.z);
+      const y = g ? g.y + 1 : player && player.dimension === dimension ? Math.floor(player.y) : 64;
+      next = { kind: 'point', id: newWorldItemId('point'), name: `Punkt ${n('point')}`, note: '', dimension, type: 'ziel', x: d.x, y, z: d.z };
+    }
+    void wp.apply({ kind: 'add', item: next }).then(ok => {
+      if (!ok) return;
+      setSelectedItem(next.id); setSelected(null); setTool('select');
+      setNotice(`${next.name} angelegt${next.kind === 'point' && !groundAt(next.x, next.z) ? ' (Höhe geschätzt: kein Gelände bekannt)' : ''}.`);
+    });
+  }, [items, dimension, groundAt, player, wp]);
+  const planLayer: PlanLayer = {
+    items, selectedItem, tool, onTool: setTool, onPick: pick, onMove: moveHit, onDraw: draw, follow, groundAt, tiles,
+    player: player && player.dimension === dimension ? { x: player.x, z: player.z, yaw: player.yaw, name: player.name } : null,
+    trail: player && player.dimension === dimension ? game.trail : [],
+    hologram: holo && holo.placement.dimension === dimension ? { box: [holo.box[0], holo.box[2], holo.box[3], holo.box[5]], matches: holoMatch === 'same',
+      label: `Hologramm ${holo.name} · ${Math.round(liveShare(holo).share * 100)} % im Spiel` } : null,
+  };
+  // Ctrl+Z / Ctrl+Y for the Weltplan while no text field has the focus.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!(e.ctrlKey || e.metaKey) || (e.target as HTMLElement | null)?.closest('input, textarea, select, [contenteditable=true]')) return;
+      const k = e.key.toLowerCase();
+      if (k === 'z' && !e.shiftKey && wp.canUndo) { e.preventDefault(); void wp.undo(); }
+      else if ((k === 'y' || (k === 'z' && e.shiftKey)) && wp.canRedo) { e.preventDefault(); void wp.redo(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [wp]);
+
+  const connected = game.phase === 'connected';
+  const loadTerrainHere = async () => {
+    if (!player) return;
+    setTerrainBusy(true);
+    try {
+      const r = await game.loadTerrain(player.x, player.z, 10);
+      if (player.dimension !== dimension) setDimension(player.dimension);
+      setNotice(`${r.read} Chunks aus dem Spiel gelesen${r.missing ? `, ${r.missing} sind im Spiel gerade nicht geladen` : ''}.`);
+    } catch (e) { setNotice(errorText(e)); }
+    finally { setTerrainBusy(false); }
+  };
+  const sendMarks = async () => {
+    const t = game.token(); if (!t) return;
+    setSending('marks');
+    try { const n = await liveApi.marks(game.settings.port, t, dimension, items); setNotice(`${n} Weltplan-Einträge (${dimensionLabel(dimension)}) im Spiel als Markierungen eingeblendet.`); }
+    catch (e) { setNotice(errorText(e)); }
+    finally { setSending(''); }
+  };
+  /** Plan of a project as .schem to the mod and place it exactly where the map has it. */
+  const sendToGame = async (p: Project) => {
+    const t = game.token(); if (!t || !p.world) return;
+    setSending(p.id);
+    try {
+      const dv = suggestDataVersion(p, library.versions).dataVersion ?? 5023;
+      const prepared = await prepareRevisionExport(p, library.versions, { format: 'schem', dataVersion: dv, anchor: 'project-origin', unselected: 'structure_void' });
+      if (prepared.created) await repo.saveProject(prepared.project, p.revision);
+      const w = p.world, out = prepared.output;
+      const msg = await liveApi.plan(game.settings.port, t, out.fileName, { dimension: w.dimension, x: w.origin[0], y: w.origin[1], z: w.origin[2], turns: 0, mirror: false }, out.bytes);
+      setNotice(`${msg} Revision ${out.revision.number}.`);
+      if (prepared.created) await load();
+    } catch (e) { setNotice(errorText(e)); }
+    finally { setSending(''); }
+  };
+  const adoptHologram = async () => {
+    if (!holo || !holoProject) return;
+    if (holo.placement.turns || holo.placement.mirror) { setNotice('Das Hologramm ist im Spiel gedreht oder gespiegelt. Die Weltkarte plant Projekte ungedreht – drehe das Projekt im Editor oder setze das Hologramm im Spiel zurück.'); return; }
+    const pl = holo.placement;
+    if (await save(holoProject, worldOperation({ ...(holoProject.world ?? createPlacement([pl.x, pl.y, pl.z], pl.dimension)), origin: [pl.x, pl.y, pl.z], dimension: pl.dimension }, 'Lage aus dem Spiel übernommen'))) {
+      setDimension(pl.dimension); setSelected(holoProject.id); setFrame2d({ projectId: holoProject.id, seq: ++seq.current });
+    }
+  };
+  const placeAtPlayer = async (p: Project) => {
+    if (!player) return;
+    const origin = originFromPlayer(player);
+    if (await save(p, worldOperation({ ...(p.world ?? createPlacement(origin, player.dimension)), origin, dimension: player.dimension }, 'An die Spielerposition gesetzt'))) {
+      setDimension(player.dimension); setFrame2d({ projectId: p.id, seq: ++seq.current });
+    }
+  };
+  /** Site actions: put its project there; keep the live terrain under it as the project's survey. */
+  const siteActions = (it: WorldItem) => {
+    if (it.kind !== 'site') return null;
+    const p = it.projectId ? projects?.find(x => x.id === it.projectId) ?? null : null;
+    const covered = liveChunks && [...liveChunks.values()].some(c => c.x * 16 < it.minX + it.width && c.x * 16 + 16 > it.minX && c.z * 16 < it.minZ + it.length && c.z * 16 + 16 > it.minZ);
+    return <>
+      {p && <button className="secondary" onClick={() => {
+        const origin: [number, number, number] = [it.minX, it.y ?? p.world?.origin[1] ?? 64, it.minZ];
+        void save(p, worldOperation({ ...(p.world ?? createPlacement(origin, it.dimension)), origin, dimension: it.dimension }, `Auf Bauplatz „${it.name}“ gesetzt`)).then(ok => ok && setFrame2d({ projectId: p.id, seq: ++seq.current }));
+      }} title="Setzt den Projektursprung auf die Nordwestecke des Bauplatzes (Höhe des Bauplatzes).">„{p.name}“ hierher setzen</button>}
+      {p && covered && <button className="secondary" onClick={() => void (async () => {
+        try {
+          const area = areaAround(it.minX, it.minZ, it.minX + it.width, it.minZ + it.length, 8);
+          const sv = liveSurvey(area, it.dimension, (cx, cz) => liveChunks!.get(`${cx},${cz}`));
+          const ref = await storeSurvey(repo, sv, `Gelände ${it.name} (aus dem Spiel)`);
+          await save(p, { kind: 'terrain.set', terrain: ref, label: 'Geländeaufnahme aus dem Spiel' });
+        } catch (e) { setNotice(errorText(e)); }
+      })()} title="Speichert die oberste Schicht, die die Mod geliefert hat, als Geländeaufnahme des Projekts (Reiter „Gelände“).">Gelände aus dem Spiel ins Projekt</button>}
+      {!p && <span className="muted small">Wähle oben ein Projekt für diesen Bauplatz, dann kannst du es hierher setzen.</span>}
+    </>;
+  };
+
   // Preview of an edited placement: outline + neighbours whose footprint it touches.
   const previewBounds = preview && entry?.localBounds && preview.dimension === dimension ? translateBounds(entry.localBounds, preview.origin) : null;
   const previewHits = previewBounds && map ? footprintNeighbours(map, previewBounds, selected ?? undefined) : [];
@@ -280,14 +445,19 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
           <ul className="map-unplaced">{map.unplaced.map(u => <li key={u.projectId}>
             <span>{u.name}{u.localBounds ? <small> · {u.localBounds.maxExclusive[0] - u.localBounds.min[0]}×{u.localBounds.maxExclusive[2] - u.localBounds.min[2]} Blöcke</small> : <small> · leer</small>}</span>
             <button className="secondary" onClick={() => void placeSuggested(u.projectId)} title={`Östlich der vorhandenen Projekte in ${dimensionLabel(dimension)} platzieren, chunkbündig`}>Platzieren</button>
+            {connected && player && <button className="secondary" onClick={() => { const p = projects?.find(x => x.id === u.projectId); if (p) void placeAtPlayer(p); }} title="Setzt den Projektursprung auf den Block, auf dem du im Spiel stehst.">Wo ich stehe</button>}
           </li>)}</ul></>}
         {projects && !projects.length && <p className="muted">Noch keine Projekte. <a href="#/">Projekt anlegen</a></p>}
+        <h2>Weltplan <small>{items.length}</small></h2>
+        <PlanList items={items} selected={selectedItem} onSelect={id => { setSelectedItem(id); setSelected(null); }} />
       </aside>
 
       <section className="map-main">
+        <PlanToolbar tool={tool} onTool={setTool} canUndo={wp.canUndo} canRedo={wp.canRedo} onUndo={() => void wp.undo()} onRedo={() => void wp.redo()} />
+        {wp.error && <div className="notice warning" role="alert">{wp.error}</div>}
         <div className="map-panels">
           {map ? <OverviewMap map={map} tops={tops} colorOf={baseColor} selected={selected} onSelect={setSelected} onFly={fly} frame={frame2d}
-            preview={previewBounds ? { bounds: previewBounds, conflict: previewHits.length > 0 } : null} terrain={terrain} boundsOf={surveyBounds} />
+            preview={previewBounds ? { bounds: previewBounds, conflict: previewHits.length > 0 } : null} terrain={terrain} boundsOf={surveyBounds} plan={planLayer} />
             : <div className="overview"><div className="loading" role="status">Karte wird berechnet …</div></div>}
           <div className="map-3d">
             {payload ? <Viewer payload={payload} cells={payload.cells} onSelect={onPick} markFor={markFor} frameRequest={frame3d}
@@ -300,6 +470,18 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
         {mode === 'progress' && <p className="map-legend"><i style={{ background: PROGRESS_COLOR[1] }} /> abgehakt <i style={{ background: PROGRESS_COLOR[2] }} /> abgehakt, aber seitdem geändert <i style={{ background: mix('#c7d4d5', PROGRESS_COLOR[0], 0.7) }} /> offen · aus den Haken der Bauanleitung, keine Messung im Spiel</p>}
         {hover && map && hover.kind !== 'erase' && <p className="map-hover">Block <b>X {hover.position[0]} · Y {hover.position[1]} · Z {hover.position[2]}</b> · Chunk {chunkOf(hover.position[0])}, {chunkOf(hover.position[2])} · {map.palette[hover.paletteIndex]?.id}</p>}
 
+        {item && <PlanItemEditor key={item.id} item={item} projects={projects ?? []} onClose={() => setSelectedItem(null)}
+          onSave={next => void wp.apply({ kind: 'update', item: next }).then(ok => ok && setNotice(`„${next.name}“ gespeichert.`))}
+          onRemove={() => void wp.apply({ kind: 'remove', id: item.id }).then(ok => { if (ok) { setSelectedItem(null); setNotice(`„${item.name}“ entfernt. Rückgängig mit ↶ oder Strg+Z.`); } })}
+          actions={siteActions(item)} />}
+        <LiveGamePanel game={game} actions={{
+          follow, onFollow: setFollow, terrainBusy, onLoadTerrain: () => void loadTerrainHere(), chunkCount: liveChunks?.size ?? 0,
+          onShowPlayer: () => { if (player) { setDimension(player.dimension); setFollow(true); } },
+          onSendMarks: connected && sending !== 'marks' ? () => void sendMarks() : null,
+          marksInfo: `${items.length} Einträge in ${dimensionLabel(dimension)}${status?.marks ? ` · im Spiel: ${status.marks}` : ''}`,
+          hologramProject: holoProject, hologramMatch: holoMatch,
+          onAdoptHologram: holoMatch && holoMatch !== 'same' && holoMatch !== 'turned' ? () => void adoptHologram() : null,
+        }} />
         {entry && project && <section className="map-detail" aria-label={`Details zu ${entry.name}`}>
           <header><h2>{entry.name}</h2>
             <div className="button-row">
@@ -308,6 +490,12 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
               <a href={href({ view: 'project', projectId: entry.projectId, tab: 'bauen' })}>Bauanleitung</a>
               <LiveMapLink settings={live} entry={entry} />
             </div></header>
+          {connected && <div className="button-row map-game-actions">
+            <button className="primary" disabled={!!sending || entry.blocks === 0} onClick={() => void sendToGame(project)}
+              title="Exportiert den aktuellen Stand als Revision (.schem) und blendet ihn im Spiel genau an dieser Lage als Hologramm ein.">{sending === project.id ? 'Wird gesendet …' : '▶ Ins Spiel senden'}</button>
+            <button className="secondary" disabled={!player} onClick={() => void placeAtPlayer(project)} title="Setzt den Projektursprung auf den Block, auf dem du im Spiel stehst.">Hier platzieren, wo ich stehe</button>
+            {holoProject?.id === project.id && holoMatch && holoMatch !== 'same' && <span className="warn-text small">Im Spiel: {holoMatch === 'moved' ? 'an anderer Stelle' : holoMatch === 'turned' ? 'gedreht/gespiegelt' : 'andere Dimension'}</span>}
+          </div>}
           <Facts entry={entry} />
           {entry.skipped && <p className="notice">Nicht gezeichnet: {MAP_SKIP_LABEL[entry.skipped]}{entry.error ? ` (${entry.error})` : ''}.</p>}
           {estimate && <TerrainEstimate estimate={estimate} preview={!!preview} onApply={estimate.result.suggestedShift && !preview ? () => {

@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-02T10:07:03.926Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-02T10:18:11.573Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -13,9 +13,9 @@ Stand: 2026-11-02T10:07:03.926Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | Status | Pakete |
 |---|---:|
 | ⏳ Offen | 15 |
-| 🚧 In Arbeit | 3 |
+| 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 30 |
+| 🧩 Implementiert · Abnahme offen | 32 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -29,7 +29,7 @@ Stand: 2026-11-02T10:07:03.926Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 - **EDIT-03 · Werkstatt vertiefen: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Ebenenübersicht und Tastenkürzel** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Picking an 3D-Blockflächen; Spielprüfung der Schablonen-Zustände (Tür, Treppe, Laterne).
 - **GFX-01 · Grafik vertiefen: Minecraft-Licht, Eckschatten, Sonne mit Schatten, Nacht, Spawnprüfung, sortiertes Glas und 32³-Abschnitte für große Modelle** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Prüfung auf echten Geräten und Browsern; danach Biomfarben und leuchtende Blockentities.
 - **MODEL-01 · 3D-Export: Bauteile, Projekte und Anlagen als OBJ/MTL, glTF/GLB, STL und 3MF (Ansichtsmodell mit Blockformen/Texturen, wasserdichte Druckhülle mit Maßstab, Füllen, Aushöhlen, Farben)** — 🧩 Implementiert · Abnahme offen, 4/6 Teilschritte. Nächster Schritt: Dateien in Blender und Slicern prüfen und ein Testdruck; danach Worker und Flächenzusammenfassung (S06).
-- **MAP-03 · Live-Karte mit Spielanbindung: Weltplan auf der Karte, Live-Position/Gelände/Fortschritt aus der Mod, Übergabe an die Mod** — 🚧 In Arbeit, 1/6 Teilschritte. Nächster Schritt: Weltplan und Planungswerkzeuge umsetzen (S02/S03), danach Live-Verbindung (S04, zusammen mit GAME-03).
+- **MAP-03 · Live-Karte mit Spielanbindung: Weltplan auf der Karte, Live-Position/Gelände/Fortschritt aus der Mod, Übergabe an die Mod** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server.
 - **EDIT-04 · Kreativwerkzeuge aus dem Planer-Vergleich: Symmetrie, Kurven, Naturwerkzeuge, Oberflächenmaske, Farbpaletten, Bild → Blöcke** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: Spielprüfung gespiegelter Zustände; danach Gelände-Werkzeuge auf Projektgelände (eigener Thread) und Symmetrie/Kurven im Mod.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
@@ -139,11 +139,11 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [BUILD-06](#build-06) | Bauführung im Spiel: Schichtführung, Tagesziele, Packlisten, Druck-/Handyansicht, Spielfortschritt | 🧩 Implementiert · Abnahme offen | 5/5 | BUILD-01, GAME-01, MAP-01 | ausstehend | ausstehend |
 | [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | 🧩 Implementiert · Abnahme offen | 5/5 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
 | [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen | 4/4 | CORE-03, STORE-02 | `84838f0` | `e232b26` |
-| [MAP-03](#map-03) | Live-Karte mit Spielanbindung: Weltplan auf der Karte, Live-Position/Gelände/Fortschritt aus der Mod, Übergabe an die Mod | 🚧 In Arbeit | 1/6 | MAP-01 | ausstehend | ausstehend |
+| [MAP-03](#map-03) | Live-Karte mit Spielanbindung: Weltplan auf der Karte, Live-Position/Gelände/Fortschritt aus der Mod, Übergabe an die Mod | 🧩 Implementiert · Abnahme offen | 5/6 | MAP-01 | ausstehend | ausstehend |
 | [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter | ⏳ Offen | 0/2 | MAP-01 | ausstehend | ausstehend |
 | [GAME-02](#game-02) | Fabric-Brücke kompilieren und im Spiel abnehmen | 🧩 Implementiert · Abnahme offen | 4/5 | FORMAT-01, GAME-01 | `84838f0` | `e232b26` |
 | [GAME-07](#game-07) | Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server) | 🧩 Implementiert · Abnahme offen | 6/8 | GAME-02 | ausstehend | ausstehend |
-| [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | 🚧 In Arbeit | 0/2 | GAME-02 | ausstehend | ausstehend |
+| [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | 🧩 Implementiert · Abnahme offen | 2/2 | GAME-02 | ausstehend | ausstehend |
 | [WORLD-IMPORT-01](#world-import-01) | Bereichsweiser Weltimport und Terrainprüfung | 🧩 Implementiert · Abnahme offen | 2/2 | PROFILE-01, PERF-02, FORMAT-01 | ausstehend | ausstehend |
 | [BACKUP-02](#backup-02) | Sicherungserinnerung und Abschnittsrevisionen | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-01, BUILD-01 | ausstehend | ausstehend |
 | [GAME-04](#game-04) | Paper-Plugin der Bauplaner-Brücke (serverseitig, mehrere Minecraft-Versionen) | 🚧 In Arbeit | 3/4 | GAME-02 | ausstehend | ausstehend |
@@ -1243,22 +1243,22 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAP-03
 
-**Live-Karte mit Spielanbindung: Weltplan auf der Karte, Live-Position/Gelände/Fortschritt aus der Mod, Übergabe an die Mod** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread „Live-Karte mit Spielanbindung neu bauen“) · Aktualisiert: 2026-11-02T09:49:37.649Z
+**Live-Karte mit Spielanbindung: Weltplan auf der Karte, Live-Position/Gelände/Fortschritt aus der Mod, Übergabe an die Mod** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Live-Karte mit Spielanbindung neu bauen“) · Aktualisiert: 2026-11-02T10:18:11.573Z
 
 - [x] MAP-03-S01: Ist-Stand prüfen und Schwächen dokumentieren; Mod-Seite sichtbar in der Hauptnavigation („Spiel“).
-- [ ] MAP-03-S02: Weltplan (Bauplätze, Wege, Punkte/Anker) mit Rückgängig, Speicher und Sicherung.
-- [ ] MAP-03-S03: Planungswerkzeuge auf der Draufsicht: Projekte ziehen, Bauplatz/Weg/Punkt zeichnen, Messen.
-- [ ] MAP-03-S04: Live-Verbindung zur Mod (127.0.0.1, Kopplung): Spielerposition, Gelände geladener Chunks, Hologramm-Fortschritt auf der Karte.
-- [ ] MAP-03-S05: Übergabe: Plan und Lage an die Mod senden, Weltplan-Markierungen im Spiel, Lage aus dem Spiel übernehmen.
+- [x] MAP-03-S02: Weltplan (Bauplätze, Wege, Punkte/Anker) mit Rückgängig, Speicher und Sicherung.
+- [x] MAP-03-S03: Planungswerkzeuge auf der Draufsicht: Projekte ziehen, Bauplatz/Weg/Punkt zeichnen, Messen.
+- [x] MAP-03-S04: Live-Verbindung zur Mod (127.0.0.1, Kopplung): Spielerposition, Gelände geladener Chunks, Hologramm-Fortschritt auf der Karte.
+- [x] MAP-03-S05: Übergabe: Plan und Lage an die Mod senden, Weltplan-Markierungen im Spiel, Lage aus dem Spiel übernehmen.
 - [ ] MAP-03-S06: Abnahme durch Philipp im echten Spiel (Browserfreigabe lokales Netzwerk, LMNT-Server).
 
 **Abnahme:** Karte zeigt Spielerposition und Gelände live, wenn die Mod gekoppelt ist; ohne Mod bleibt alles nutzbar. Keine Weltänderung, nur Loopback mit Kopplungscode, fremde Ursprünge werden abgewiesen.
 
-**Nächste Aktion:** Weltplan und Planungswerkzeuge umsetzen (S02/S03), danach Live-Verbindung (S04, zusammen mit GAME-03).
+**Nächste Aktion:** Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server.
 
-**Prüfstand:** In Arbeit.
+**Prüfstand:** Automatisch und im echten Client geprüft; Abnahme durch Philipp offen (S06).
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/worldplan.test.mjs](../tests/worldplan.test.mjs) — Weltplan: Prüfung, Umkehrung, Wege, Sicherung.; [tests/livelink.test.mjs](../tests/livelink.test.mjs) — Live-Leser, Geländeeinstufung, Hologrammabgleich, Übergabe.; [tests/e2e/livelink.e2e.mjs](../tests/e2e/livelink.e2e.mjs) — Zeichnen, Rückgängig, Kopplung, Spieler, Gelände, Hologramm, Senden gegen tests/e2e/modSimulator.mjs; 1400/390 px.; [scripts/test_bridge_ingame.sh](../scripts/test_bridge_ingame.sh) — Echter 26.3-Client allein und mit Philipps Modpack: Website-Verbindung über 127.0.0.1 (live.json).; [docs/architecture/LIVE_LINK.md](architecture/LIVE_LINK.md) — Vertrag, Sicherheit, Protokoll 1, Grenzen.
 
 **Dateiumfang:** `apps/web/src/views/map/`, `apps/web/src/views/mod/`, `apps/web/src/app/`, `packages/domain/src/`, `mods/bauplaner-bridge/`, `tests/`, `docs/`. **Abhängigkeiten:** MAP-01. **Alte IDs:** —.
 
@@ -1350,18 +1350,18 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-03
 
-**Optionale lokale Verbindung und Anzeige im Spiel** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread „Live-Karte mit Spielanbindung neu bauen“) · Aktualisiert: 2026-11-02T09:49:37.649Z
+**Optionale lokale Verbindung und Anzeige im Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Live-Karte mit Spielanbindung neu bauen“) · Aktualisiert: 2026-11-02T10:18:11.573Z
 
-- [ ] GAME-03-S01: Loopback-Sicherheitsvertrag mit expliziter Kopplung definieren.
-- [ ] GAME-03-S02: Planübertragung und Bestätigungen getrennt von Weltänderungen umsetzen.
+- [x] GAME-03-S01: Loopback-Sicherheitsvertrag mit expliziter Kopplung definieren.
+- [x] GAME-03-S02: Planübertragung und Bestätigungen getrennt von Weltänderungen umsetzen.
 
 **Abnahme:** Keine unautorisierte Fernverbindung; Overlay ist kein serverseitiger Blocksetter.
 
-**Nächste Aktion:** LiveLink in mod-core (Loopback, Kopplungscode, Ursprungsprüfung) und Fabric 0.5.0.
+**Nächste Aktion:** Abnahme mit MAP-03-S06; Forge/NeoForge/Paper haben die Verbindung noch nicht.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Im echten Client geprüft; Abnahme durch Philipp offen.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java) — Kopplung, Token, Ursprung, Host, Grenzen.; [docs/architecture/LIVE_LINK.md](architecture/LIVE_LINK.md) — Loopback-Sicherheitsvertrag.
 
 **Dateiumfang:** `mods/bauplaner-bridge/`, `packages/application/`. **Abhängigkeiten:** GAME-02. **Alte IDs:** B8-M3, B8-M4.
 

@@ -68,6 +68,7 @@ if (mode === 'prepare') {
   assert.equal(byVerdict.wrong.actual, 'minecraft:diamond_block');
   assert.deepEqual(byVerdict.missing.position, expected.missing);
   hologram(join(dir, 'game.log'), check.totals.cells);
+  await live(join(dir, 'live.json'));
   console.log(`Spieltest bestanden: Minecraft ${scan.meta.gameVersion ?? '26.3'} (${scan.meta.loader ?? '?'}), ${check.totals.cells} Zellen aus ${scan.meta.source === 'server' ? 'der echten Serverwelt' : 'dem echten Client'} gelesen, ${check.totals.ok} korrekt, 1 falscher Block und 1 fehlender Block an den erwarteten Stellen erkannt.`);
 }
 
@@ -107,4 +108,42 @@ function hologram(logFile, cells) {
   assert.match(log, /\[Platzierhilfe\] Nicht gesetzt – Auf den Block darunter klicken/);
   assert.match(log, /\[Platzierhilfe\] Geschützt: richtig gesetzter Planblock/);
   console.log(`Hologramm bestanden: ${planned} Planblöcke, Fortschritt ${placed[0]} % → ${built[0]} % nach dem Setzen des fehlenden Blocks, Drehen, Speichern, Materialliste (${material[1][0]} offen nach Teilabriss), Ebenenmodus und Platzierhilfe (falscher Block, liegender Stamm, Abbauschutz) geprüft.`);
+}
+
+/**
+ * MAP-03 website link (Fabric only, skipped without live.json): the answers the website gets over
+ * 127.0.0.1, read with the website's own strict readers (liveLink.ts).
+ */
+async function live(file) {
+  let raw;
+  try { raw = JSON.parse(readFileSync(file, 'utf8')); } catch { return; }
+  const { readLiveHello, readLiveStatus, readLiveChunks, chunkColumns } = await import('../dist/domain/src/index.js');
+  assert.equal(raw.hello.status, 200);
+  const hello = readLiveHello(raw.hello.body);
+  assert.equal(hello.mod.loader, 'fabric');
+  assert.equal(hello.pairing, true, 'Kopplung nach /bauplaner verbinden offen');
+  assert.equal(raw.foreign.status, 403, 'fremde Website abgewiesen');
+  assert.equal(raw.unpaired.status, 401, 'ohne Kopplung kein Status');
+  assert.equal(raw.pair.status, 200);
+  assert.equal(raw.status.status, 200);
+  const status = readLiveStatus(raw.status.body);
+  assert.ok(status.player, 'Spieler im Status');
+  assert.equal(status.player.dimension, 'minecraft:overworld');
+  assert.ok(status.hologram, 'Hologramm im Status');
+  assert.equal(status.hologram.planFile, 'spieltest.schem');
+  assert.ok(status.hologram.total > 0 && status.hologram.counts.ok > 0);
+  const chunks = readLiveChunks(raw.chunks.body);
+  assert.equal(chunks.chunks.length, 1, 'der Chunk am Bauplatz ist geladen');
+  assert.deepEqual(chunks.missing, [[4000, 4000]], 'ferner Chunk als nicht geladen gemeldet');
+  const columns = chunkColumns(chunks)[0].columns.filter(Boolean);
+  assert.ok(columns.length >= 200, `Oberfläche gelesen (${columns.length} Spalten)`);
+  assert.equal(raw.marks.status, 200);
+  assert.equal(raw.marks.body.marks, 2);
+  assert.equal(raw.plan.status, 200, JSON.stringify(raw.plan.body));
+  const after = readLiveStatus(raw.after.body);
+  assert.equal(after.hologram.planFile, 'website-plan.schem');
+  const anchor = readFileSync(join(dir, 'anchor.txt'), 'utf8').trim().split(' ').map(Number);
+  assert.deepEqual([after.hologram.placement.x, after.hologram.placement.y, after.hologram.placement.z], [anchor[0] + 20, anchor[1], anchor[2]], 'Plan an der von der Website gesendeten Stelle');
+  assert.equal(after.marks, 2);
+  console.log(`Website-Verbindung bestanden: Kopplung, Status (Spieler, Hologramm ${status.hologram.counts.ok}/${status.hologram.total}), Gelände (${columns.length} Spalten), 2 Markierungen und ein direkt gesendeter Plan.`);
 }

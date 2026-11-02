@@ -1,3 +1,5 @@
+import { checkWorldItem, newWorldItemId } from './worldPlan.js';
+import type { WorldItem, WorldPlan } from './worldPlan.js';
 import { assertAssetRecordFields, validateOriginalManifest } from './recordValidation.js';
 import type { Asset, AssetVersion, Instance, Project } from './types.js';
 import { DOMAIN_SCHEMA_VERSION, DomainError } from './types.js';
@@ -63,6 +65,8 @@ interface BackupContent {
   /** Format 2 only. */
   readonly collections?: readonly Collection[];
   readonly templates?: readonly LibraryTemplate[];
+  /** Format 2 only, and only when the Weltplan has entries (MAP-03); joins the content hash only when present. */
+  readonly worldPlanItems?: readonly WorldItem[];
 }
 export interface BackupFile extends BackupContent {
   readonly format: typeof BACKUP_FORMAT;
@@ -87,6 +91,8 @@ export interface Backup {
   readonly missingOriginals: readonly string[];
   readonly collections: readonly Collection[];
   readonly templates: readonly LibraryTemplate[];
+  /** Weltplan entries (sites, paths, points) of a full backup; empty when none. */
+  readonly worldPlanItems: readonly WorldItem[];
 }
 
 /** Rejects records written by a newer app and unknown old schemas. */
@@ -119,7 +125,8 @@ export function fromBase64(text: string): Uint8Array {
 
 // Format 1 hashes exactly the four original lists; the library lists join the hash only when present (format 2).
 const contentHash = (c: BackupContent) => sha256Hex(canonicalJson({ projects: c.projects, assets: c.assets, versions: c.versions, originals: c.originals,
-  ...(c.collections !== undefined && { collections: c.collections }), ...(c.templates !== undefined && { templates: c.templates }) }));
+  ...(c.collections !== undefined && { collections: c.collections }), ...(c.templates !== undefined && { templates: c.templates }),
+  ...(c.worldPlanItems !== undefined && { worldPlanItems: c.worldPlanItems }) }));
 const byId = <T extends { id: string }>(a: T, b: T) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
 
 export interface BackupSource {
@@ -131,6 +138,8 @@ export interface BackupSource {
   /** Own collections and templates; included in full backups (scope "all"). */
   readonly collections?: readonly Collection[];
   readonly templates?: readonly LibraryTemplate[];
+  /** Weltplan (MAP-03); its entries join full backups. */
+  readonly worldPlan?: WorldPlan;
 }
 
 /**
@@ -175,9 +184,10 @@ export async function createBackup(source: BackupSource, scope: 'project' | 'all
     if (await sha256Hex(o.bytes) !== sha) throw new DomainError('BACKUP', `Gespeicherte Originaldatei ${o.fileName} ist beschädigt`);
     originals.push({ sha256: sha, fileName: o.fileName, mediaType: o.mediaType, size: o.size, createdAt: o.createdAt, base64: toBase64(o.bytes) });
   }
-  const library = collections.length || templates.length;
+  const worldPlanItems = scope === 'all' ? [...(source.worldPlan?.items ?? [])].sort(byId) : [];
+  const library = collections.length || templates.length || worldPlanItems.length;
   const content: BackupContent = { projects: [...projects].sort(byId), assets: [...assets].sort(byId), versions: versions.sort(byId), originals: originals.sort((a, b) => a.sha256 < b.sha256 ? -1 : 1),
-    ...(library && { collections, templates }) };
+    ...(library && { collections, templates }), ...(worldPlanItems.length > 0 && { worldPlanItems }) };
   return {
     format: BACKUP_FORMAT, formatVersion: library ? BACKUP_FORMAT_VERSION_LIBRARY : BACKUP_FORMAT_VERSION, schemaVersion: DOMAIN_SCHEMA_VERSION, createdAt: new Date().toISOString(), scope,
     ...content, missingOriginals: missing.sort(), contentSha256: await contentHash(content),
@@ -307,17 +317,19 @@ export async function readBackup(text: string): Promise<Backup> {
       `Sicherungsformat ${String(raw.formatVersion)} wird nicht unterstützt (erwartet ${BACKUP_FORMAT_VERSION} bis ${BACKUP_FORMAT_VERSION_PACKED})`);
   }
   const withLibrary = raw.formatVersion === BACKUP_FORMAT_VERSION_LIBRARY;
-  if (!withLibrary && (raw.collections !== undefined || raw.templates !== undefined)) throw new DomainError('BACKUP', 'Sicherungsformat 1 darf keine Sammlungen oder Vorlagen enthalten');
+  if (!withLibrary && (raw.collections !== undefined || raw.templates !== undefined || raw.worldPlanItems !== undefined)) throw new DomainError('BACKUP', 'Sicherungsformat 1 darf keine Sammlungen, Vorlagen oder Weltplan-Einträge enthalten');
   checkSchemaVersion('Sicherung', raw);
   const content: BackupContent = {
     projects: arr(raw.projects, 'Projekte') as Project[], assets: arr(raw.assets, 'Bauteile') as Asset[],
     versions: arr(raw.versions, 'Versionen') as AssetVersion[], originals: arr(raw.originals, 'Originaldateien') as BackupOriginal[],
     ...(withLibrary && { collections: arr(raw.collections, 'Sammlungen') as Collection[], templates: arr(raw.templates, 'Vorlagen') as LibraryTemplate[] }),
+    ...(withLibrary && raw.worldPlanItems !== undefined && { worldPlanItems: arr(raw.worldPlanItems, 'Weltplan') as WorldItem[] }),
   };
   if (await contentHash(content) !== raw.contentSha256) throw new DomainError('BACKUP', 'Prüfsumme der Sicherung stimmt nicht – Datei beschädigt oder verändert');
   const projects = content.projects.map(checkProjectRecord), assets = content.assets.map(checkAssetRecord);
   const collections = (content.collections ?? []).map(checkCollectionRecord), templates = (content.templates ?? []).map(checkTemplateRecord);
-  for (const [label, list] of [['Sammlung', collections], ['Vorlage', templates]] as const) {
+  const worldPlanItems = (content.worldPlanItems ?? []).map(checkWorldItem);
+  for (const [label, list] of [['Sammlung', collections], ['Vorlage', templates], ['Weltplan-Eintrag', worldPlanItems]] as const) {
     const seen = new Set<string>();
     for (const r of list) { if (seen.has(r.id)) throw new DomainError('BACKUP', `${label} ${r.id} doppelt enthalten`); seen.add(r.id); }
   }
@@ -347,7 +359,7 @@ export async function readBackup(text: string): Promise<Backup> {
   return Object.freeze({ createdAt: str(raw.createdAt, 'Sicherungszeit'), scope: raw.scope === 'project' ? 'project' as const : 'all' as const,
     projects: deepFreeze(projects), assets: deepFreeze(assets), versions: deepFreeze([...versions.values()]),
     originals: Object.freeze(originals.map(o => Object.freeze(o))), missingOriginals: deepFreeze(missingOriginals),
-    collections: deepFreeze(collections), templates: deepFreeze(templates) });
+    collections: deepFreeze(collections), templates: deepFreeze(templates), worldPlanItems: deepFreeze(worldPlanItems) });
 }
 
 /** What the target store already holds. */
@@ -358,6 +370,7 @@ export interface RestoreTarget {
   readonly originalHashes: ReadonlySet<string>;
   readonly collections?: readonly Collection[];
   readonly templates?: readonly LibraryTemplate[];
+  readonly worldPlanItems?: readonly WorldItem[];
 }
 
 export type ProjectChoice = 'copy' | 'replace' | 'skip';
@@ -384,6 +397,7 @@ export interface RestorePlan {
   readonly newOriginals: readonly OriginalFile[];
   readonly collections: readonly LibraryRecordPlan<Collection>[];
   readonly templates: readonly LibraryRecordPlan<LibraryTemplate>[];
+  readonly worldPlanItems: readonly LibraryRecordPlan<WorldItem>[];
 }
 
 /** Content equality ignoring storage revision and save time. */
@@ -412,6 +426,10 @@ export function planRestore(backup: Backup, target: RestoreTarget): RestorePlan 
   };
   return Object.freeze({ backup, projects: Object.freeze(projects), assets: Object.freeze(assets),
     collections: Object.freeze(planRecords(backup.collections, target.collections)), templates: Object.freeze(planRecords(backup.templates, target.templates)),
+    worldPlanItems: Object.freeze(backup.worldPlanItems.map((record): LibraryRecordPlan<WorldItem> => {
+      const local = target.worldPlanItems?.find(i => i.id === record.id);
+      return !local ? { record, status: 'new' } : { record, local, status: canonicalJson(local) === canonicalJson(record) ? 'same' : 'differs' };
+    })),
     newVersions: backup.versions.filter(v => !target.versionIds.has(v.id)),
     newOriginals: backup.originals.filter(o => !target.originalHashes.has(o.sha256)) });
 }
@@ -426,6 +444,8 @@ export interface RestoreWrite {
   /** New records (revision 0); a differing local record is never replaced, the backup state is added as a copy. */
   readonly collections: readonly Collection[];
   readonly templates: readonly LibraryTemplate[];
+  /** Weltplan entries to add (new ones, and copies of differing ones under a new id); local entries are never replaced. */
+  readonly worldPlanItems: readonly WorldItem[];
   readonly summary: readonly string[];
 }
 
@@ -474,9 +494,16 @@ export function buildRestore(plan: RestorePlan, choices: Readonly<Record<string,
     templates.push({ ...t.record, id: newId('tpl'), name, revision: 0 });
     summary.push(`Vorlage „${t.record.name}“ unterscheidet sich lokal – als Kopie „${name}“ angelegt, lokale Fassung unverändert.`);
   }
+  const worldPlanItems: WorldItem[] = [];
+  for (const w of plan.worldPlanItems ?? []) {
+    if (w.status === 'same') continue;
+    if (w.status === 'new') { worldPlanItems.push(w.record); continue; }
+    worldPlanItems.push({ ...w.record, id: newWorldItemId(w.record.kind), name: copyName(w.record.name) });
+  }
+  if (worldPlanItems.length) summary.push(`Weltplan: ${worldPlanItems.length} Eintrag/Einträge ergänzt (Bauplätze, Wege, Punkte; lokale Einträge unverändert).`);
   const sameRecords = [...plan.collections, ...plan.templates].filter(r => r.status === 'same').length;
   if (sameRecords) summary.push(`${sameRecords} Sammlung(en)/Vorlage(n) bereits identisch vorhanden – übersprungen.`);
   if (plan.newOriginals.length) summary.push(`${plan.newOriginals.length} Originaldatei(en) ergänzt.`);
   if (plan.backup.missingOriginals.length) summary.push(`${plan.backup.missingOriginals.length} Originaldatei(en) waren schon bei der Sicherung nicht vorhanden.`);
-  return { assets, versions: plan.newVersions, originals: plan.newOriginals, projects, collections, templates, summary };
+  return { assets, versions: plan.newVersions, originals: plan.newOriginals, projects, collections, templates, worldPlanItems, summary };
 }

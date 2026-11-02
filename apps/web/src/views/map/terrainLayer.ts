@@ -1,5 +1,5 @@
 import { SURVEY_UNKNOWN } from '../../../../../packages/domain/src/index.js';
-import type { TerrainSurvey } from '../../../../../packages/domain/src/index.js';
+import type { LiveChunkColumns, TerrainSurvey } from '../../../../../packages/domain/src/index.js';
 import { faceColors } from '../../colors';
 
 /**
@@ -26,6 +26,30 @@ export function surveyImage(s: TerrainSurvey): HTMLCanvasElement {
     const shade = Math.max(0.45, Math.min(1.25, 0.8 + (hi > lo ? 0.2 * (y - lo) / (hi - lo) : 0.1) + 0.07 * slope));
     const [r, g, b] = colors[s.surfaceBlock[i]!]!;
     data.data.set([Math.min(255, r * shade), Math.min(255, g * shade), Math.min(255, b * shade), 255], i * 4);
+  }
+  ctx.putImageData(data, 0, 0);
+  return img;
+}
+
+/**
+ * One 16×16 tile of a chunk read live from the game (MAP-03), coloured like
+ * a survey: top block colour, shaded by height inside the chunk and by the
+ * slope. Columns the mod did not know stay transparent.
+ */
+export function chunkImage(c: LiveChunkColumns, lo: number, hi: number): HTMLCanvasElement {
+  const img = document.createElement('canvas'); img.width = 16; img.height = 16;
+  const ctx = img.getContext('2d'); if (!ctx) return img;
+  const data = ctx.createImageData(16, 16);
+  const h = (x: number, z: number, fallback: number) => {
+    if (x < 0 || z < 0 || x > 15 || z > 15) return fallback;
+    return c.columns[(z << 4) | x]?.surface ?? fallback;
+  };
+  for (let z = 0; z < 16; z++) for (let x = 0; x < 16; x++) {
+    const col = c.columns[(z << 4) | x]; if (!col) continue;
+    const y = col.surface, slope = (h(x - 1, z, y) - h(x + 1, z, y)) + (h(x, z - 1, y) - h(x, z + 1, y));
+    const shade = Math.max(0.45, Math.min(1.25, 0.8 + (hi > lo ? 0.2 * (y - lo) / (hi - lo) : 0.1) + 0.07 * slope));
+    const v = Number.parseInt(faceColors(col.surfaceId).top.slice(1), 16);
+    data.data.set([Math.min(255, ((v >> 16) & 255) * shade), Math.min(255, ((v >> 8) & 255) * shade), Math.min(255, (v & 255) * shade), 255], ((z << 4) | x) * 4);
   }
   ctx.putImageData(data, 0, 0);
   return img;

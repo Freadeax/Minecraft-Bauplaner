@@ -2053,3 +2053,121 @@ Kreativwerkzeuge aus dem Planer-Vergleich: Gap-Analyse, Symmetrie, Kurven, Natur
 - `tests/e2e/workshop-creative.e2e.mjs`
 - `tests/editor-creative.test.mjs`
 
+## 2026-11-02T10:18:02.455Z · progress
+
+**Aufgaben:** MAP-03, GAME-03
+
+Live-Karte mit Spielanbindung: Weltplan (Bauplätze, Wege, Punkte) mit Werkzeugen und Rückgängig auf der Weltkarte, Live-Verbindung zur Mod 0.5.0 über 127.0.0.1 mit Kopplungscode (Spielerposition, Gelände, Hologramm-Fortschritt), Plan und Markierungen ins Spiel, Lage übernehmen; Spieltest mit Modpack
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MAP-03 | undefined | 5/6 | Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server. |
+| GAME-03 | undefined | 2/2 | Abnahme mit MAP-03-S06; Forge/NeoForge/Paper haben die Verbindung noch nicht. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/idbRepository.ts`
+- `apps/web/src/app/repository.ts`
+- `apps/web/src/map.css`
+- `apps/web/src/views/ProjectsView.tsx`
+- `apps/web/src/views/map/LiveGamePanel.tsx`
+- `apps/web/src/views/map/OverviewMap.tsx`
+- `apps/web/src/views/map/PlanPanel.tsx`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/map/liveClient.ts`
+- `apps/web/src/views/map/terrainLayer.ts`
+- `apps/web/src/views/map/useWorldPlan.ts`
+- `apps/web/src/views/mod/ModView.tsx`
+- `apps/web/src/views/mod/releases.json`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/LIVE_LINK.md`
+- `docs/architecture/MOD_HOLOGRAM.md`
+- `docs/architecture/WORLDMAP.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.5.0.jar`
+- `mods/bauplaner-bridge/README.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/BridgeClient.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/Hologram.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramKeys.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramRenderer.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/LiveLink.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/MarksRenderer.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/McCompat.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/Json.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/SurfaceRuns.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WorldMarks.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`
+- `packages/application/src/memoryRepository.ts`
+- `packages/application/src/repository.ts`
+- `packages/domain/src/backup.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/liveLink.ts`
+- `packages/domain/src/worldPlan.ts`
+- `scripts/bridge_gametest.mjs`
+- `tests/e2e/livelink.e2e.mjs`
+- `tests/e2e/modSimulator.mjs`
+- `tests/livelink.test.mjs`
+- `tests/worldplan.test.mjs`
+
+## 2026-11-02T10:18:11.573Z · progress
+
+**Aufgaben:** MAP-03, GAME-03
+
+Live-Karte mit Spielanbindung: Weltplan (Bauplätze, Wege, Punkte) mit Werkzeugen und Rückgängig auf der Weltkarte, Live-Verbindung zur Mod 0.5.0 über 127.0.0.1 mit Kopplungscode (Spielerposition, Gelände, Hologramm-Fortschritt), Plan und Markierungen ins Spiel, Lage übernehmen; Spieltest mit Modpack
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MAP-03 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server. |
+| GAME-03 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme mit MAP-03-S06; Forge/NeoForge/Paper haben die Verbindung noch nicht. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/idbRepository.ts`
+- `apps/web/src/app/repository.ts`
+- `apps/web/src/map.css`
+- `apps/web/src/views/ProjectsView.tsx`
+- `apps/web/src/views/map/LiveGamePanel.tsx`
+- `apps/web/src/views/map/OverviewMap.tsx`
+- `apps/web/src/views/map/PlanPanel.tsx`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/map/liveClient.ts`
+- `apps/web/src/views/map/terrainLayer.ts`
+- `apps/web/src/views/map/useWorldPlan.ts`
+- `apps/web/src/views/mod/ModView.tsx`
+- `apps/web/src/views/mod/releases.json`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/LIVE_LINK.md`
+- `docs/architecture/MOD_HOLOGRAM.md`
+- `docs/architecture/WORLDMAP.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.5.0.jar`
+- `mods/bauplaner-bridge/README.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/BridgeClient.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/Hologram.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramKeys.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramRenderer.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/LiveLink.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/MarksRenderer.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/McCompat.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/Json.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/SurfaceRuns.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WorldMarks.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`
+- `packages/application/src/memoryRepository.ts`
+- `packages/application/src/repository.ts`
+- `packages/domain/src/backup.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/liveLink.ts`
+- `packages/domain/src/worldPlan.ts`
+- `scripts/bridge_gametest.mjs`
+- `tests/e2e/livelink.e2e.mjs`
+- `tests/e2e/modSimulator.mjs`
+- `tests/livelink.test.mjs`
+- `tests/worldplan.test.mjs`
+

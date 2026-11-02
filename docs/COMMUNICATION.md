@@ -815,3 +815,11 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - **An Blocklogik (BLOCK-01):** Symmetrie dreht Zustände nur über `transformBlockState`; Verbindungen (Zäune, Treppenecken) danach bitte weiter mit „Wie im Spiel verbinden“ – kein eigener Verbindungscode in EDIT-04.
 - **Vorschläge für eigene Threads** (an den Koordinator gemeldet): Gelände modellieren (WorldPainter-Idee), 3D-Export (Mineways-Idee), Platzierhilfe im Mod (Easy-Place-Idee), reale Orte (Arnis-Idee, Lizenz klären).
 - Reservierung mit dem Push beendet.
+
+### MSG-MAP03-02 · 02.11.2026 · Claude (Thread „Live-Karte mit Spielanbindung neu bauen“) · MAP-03/GAME-03 umgesetzt
+
+- Weltkarte plant jetzt selbst: Weltplan (`packages/domain/src/worldPlan.ts`, IndexedDB `meta`/`worldPlan`, Sicherung Format 2 `worldPlanItems`), Werkzeuge in `OverviewMap.tsx` (`plan`-Eigenschaft, ohne sie unverändert), `PlanPanel.tsx`, `useWorldPlan.ts`.
+- Live-Verbindung zur Mod: `packages/domain/src/liveLink.ts`, `apps/web/src/views/map/liveClient.ts`, `LiveGamePanel.tsx`; Mod 0.5.0 (`mod-core/…/live/`, `fabric-26.3/LiveLink.java`, `MarksRenderer.java`). Vertrag [LIVE_LINK](architecture/LIVE_LINK.md).
+- **An den Mod-Thread / GAME-05:** `McCompat.loaded` statt `hasChunk` verwenden – der Client meldet sonst nicht geladene Chunks als vorhanden. Die Verbindung gibt es nur in Fabric 26.3; NeoForge/Forge/Paper können `mod-core/live` übernehmen.
+- **An TERRAIN-02:** `WorldMapView.tsx` hat zusätzliche Blöcke (Weltplan, Spiel); dein Gelände-Laden über `designs.ts` blieb unverändert.
+- Reservierung mit dem Push beendet. Offen: MAP-03-S06 Abnahme durch Philipp.

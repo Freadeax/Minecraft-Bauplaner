@@ -160,6 +160,25 @@ final class Hologram {
         return "„" + p.name() + "“ platziert bei " + anchor.getX() + " " + anchor.getY() + " " + anchor.getZ() + " (" + p.blockCount() + " Blöcke).";
     }
 
+    /** Live link (MAP-03): load a plan file and place it exactly as the website asks (dimension, anchor, turn, mirror). */
+    String placeExact(String file, Placement at) throws IOException {
+        PlanModel p = PlanModel.read(plansDir().resolve(file));
+        plan = p;
+        planFile = file;
+        visible = true;
+        apply(at);
+        return "„" + p.name() + "“ von der Website platziert bei " + at.x() + " " + at.y() + " " + at.z() + " (" + p.blockCount() + " Blöcke).";
+    }
+
+    /** Live link: move the current plan to an exact placement. */
+    boolean setPlacement(Placement at) {
+        if (check == null) return false;
+        apply(at);
+        return true;
+    }
+
+    String worldKey() { return worldKey; }
+
     void move(int dx, int dy, int dz) { if (check != null) { layerY += dy; apply(check.placement().moved(dx, dy, dz)); } }
     void moveTo(BlockPos pos) { if (check != null) { Placement p = check.placement(); apply(new Placement(p.dimension(), pos.getX(), pos.getY(), pos.getZ(), p.turns(), p.mirror())); } }
     void turn(int quarterTurns) { if (check != null) apply(check.placement().turned(quarterTurns)); }

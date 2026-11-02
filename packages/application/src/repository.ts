@@ -1,4 +1,4 @@
-import type { Asset, AssetVersion, BackupLedger, BackupReceipt, Collection, LibraryTemplate, OriginalFile, Project } from '../../domain/src/index.js';
+import type { Asset, AssetVersion, BackupLedger, BackupReceipt, Collection, LibraryTemplate, OriginalFile, Project, WorldPlan } from '../../domain/src/index.js';
 
 /**
  * Storage boundary of the web app. Every implementation must:
@@ -44,6 +44,10 @@ export interface Repository {
   getBackupLedger(): Promise<BackupLedger>;
   /** Appends one receipt atomically (read-modify-write in one transaction) and returns the new ledger. */
   recordBackup(receipt: BackupReceipt): Promise<BackupLedger>;
+  /** Weltplan (MAP-03): sites, paths and points of the world map. Empty plan (revision 0) when none is stored. */
+  getWorldPlan(): Promise<WorldPlan>;
+  /** Saves when the stored revision equals `baseRevision`; returns the plan with revision + 1. */
+  saveWorldPlan(plan: WorldPlan, baseRevision: number): Promise<WorldPlan>;
 }
 
 export interface StorageBatch {
@@ -62,13 +66,20 @@ export interface StorageBatch {
 }
 export interface LibraryRecordRef { readonly id: string; readonly revision: number }
 /** `userLibrary`: own collections or templates changed (LIB-02/LIB-03). `backups`: a backup receipt was recorded (BACKUP-02). */
-export interface StorageChange { readonly kind: 'projects' | 'library' | 'userLibrary' | 'backups'; readonly projectIds?: readonly string[] }
+export interface StorageChange { readonly kind: 'projects' | 'library' | 'userLibrary' | 'backups' | 'worldPlan'; readonly projectIds?: readonly string[] }
 export interface StorageInfo { readonly usage?: number; readonly quota?: number; readonly persisted?: boolean }
 
 export class RevisionConflictError extends Error {
   constructor(readonly stored: number, readonly base: number) {
     super(`Das Projekt wurde zwischenzeitlich anderswo gespeichert (Revision ${stored}, Basis ${base}). Bitte neu laden.`);
     this.name = 'RevisionConflictError';
+  }
+}
+
+export class WorldPlanConflictError extends Error {
+  constructor(readonly stored: number, readonly base: number) {
+    super(`Der Weltplan wurde zwischenzeitlich anderswo gespeichert (Revision ${stored}, Basis ${base}). Die Karte lädt den gespeicherten Stand; bitte die Änderung erneut ausführen.`);
+    this.name = 'WorldPlanConflictError';
   }
 }
 

@@ -5,7 +5,7 @@ import { AssetRevisionConflictError } from '../../../../packages/application/src
 import { catalogCandidates, planCatalogDelivery } from '../../../../packages/application/src/catalogSync.js';
 import type { CatalogShipment } from '../../../../packages/application/src/catalogSync.js';
 export type { Repository, StorageBatch, StorageChange, StorageInfo } from '../../../../packages/application/src/repository.js';
-export { RevisionConflictError, AssetRevisionConflictError } from '../../../../packages/application/src/repository.js';
+export { RevisionConflictError, AssetRevisionConflictError, WorldPlanConflictError } from '../../../../packages/application/src/repository.js';
 export { MemoryRepository } from '../../../../packages/application/src/memoryRepository.js';
 
 /**

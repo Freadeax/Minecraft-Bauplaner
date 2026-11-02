@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { applyOperation, backupFileName, buildRestore, createBackup, createEnsembleProject, createProject, findUpdates, latestReleaseId, latestVersions, summarizeUpdates, MAX_BACKUP_BYTES, missingMembers, newInstance, planRestore, readBackup, resolveProject, serializeBackup, ENSEMBLES } from '../../../../packages/domain/src/index.js';
+import { applyOperation, applyWorldPlanOp, backupFileName, buildRestore, createBackup, createEnsembleProject, createProject, findUpdates, latestReleaseId, latestVersions, summarizeUpdates, MAX_BACKUP_BYTES, missingMembers, newInstance, planRestore, readBackup, resolveProject, serializeBackup, ENSEMBLES } from '../../../../packages/domain/src/index.js';
 import type { Ensemble, Instance, Project, ProjectChoice, RestorePlan } from '../../../../packages/domain/src/index.js';
 import { useApp } from '../app/context';
 import type { StorageInfo } from '../app/repository';
@@ -37,13 +37,13 @@ export function ProjectsView() {
   const backup = async (scope: 'project' | 'all', project?: Project) => {
     setBusy(true);
     try {
-      const [collections, templates] = scope === 'all' ? await Promise.all([repo.listCollections(), repo.listTemplates()]) : [[], []];
-      const file = await createBackup({ projects: projects ?? [], assets: library.assets, versions: library.versions, getOriginal: sha => repo.getOriginal(sha), collections, templates },
+      const [collections, templates, worldPlan] = scope === 'all' ? await Promise.all([repo.listCollections(), repo.listTemplates(), repo.getWorldPlan()]) : [[], [], undefined];
+      const file = await createBackup({ projects: projects ?? [], assets: library.assets, versions: library.versions, getOriginal: sha => repo.getOriginal(sha), collections, templates, ...(worldPlan && { worldPlan }) },
         scope, project ? [project.id] : undefined);
       const fileName = backupFileName(file);
       download(fileName, serializeBackup(file), 'application/json');
       const ledgerError = await recordBackupReceipt(repo, file, 'download', fileName);
-      setMessage(`Sicherungsdatei erzeugt und zum Herunterladen übergeben: ${file.projects.length} Projekt(e), ${file.assets.length} Bauteil(e), ${file.versions.length} Version(en), ${file.originals.length} Originaldatei(en)${file.collections?.length || file.templates?.length ? `, ${file.collections?.length ?? 0} Sammlung(en), ${file.templates?.length ?? 0} Vorlage(n)` : ''}${file.missingOriginals.length ? ` – ${file.missingOriginals.length} Original(e) lokal nicht vorhanden` : ''}. Bitte prüfen, ob „${fileName}“ im Download-Ordner liegt, und eine Kopie außerhalb dieses Browsers ablegen.${ledgerError ? ` ${ledgerError}` : ''}`);
+      setMessage(`Sicherungsdatei erzeugt und zum Herunterladen übergeben: ${file.projects.length} Projekt(e), ${file.assets.length} Bauteil(e), ${file.versions.length} Version(en), ${file.originals.length} Originaldatei(en)${file.collections?.length || file.templates?.length ? `, ${file.collections?.length ?? 0} Sammlung(en), ${file.templates?.length ?? 0} Vorlage(n)` : ''}${file.worldPlanItems?.length ? `, ${file.worldPlanItems.length} Weltplan-Eintrag/Einträge` : ''}${file.missingOriginals.length ? ` – ${file.missingOriginals.length} Original(e) lokal nicht vorhanden` : ''}. Bitte prüfen, ob „${fileName}“ im Download-Ordner liegt, und eine Kopie außerhalb dieses Browsers ablegen.${ledgerError ? ` ${ledgerError}` : ''}`);
     } catch (e) { setMessage(`Sicherung fehlgeschlagen: ${errorText(e)}`); }
     finally { setBusy(false); }
   };
@@ -55,8 +55,8 @@ export function ProjectsView() {
       const parsed = await readBackup(text);
       // Opening a file for restore verifies its checksum: record it as a verified copy (writes nothing else).
       await recordBackupReceipt(repo, JSON.parse(text) as BackupFile, 'verified', file.name);
-      const [localProjects, assets, versions, originals, collections, templates] = await Promise.all([repo.listProjects(), repo.listAssets(), repo.listVersions(), repo.listOriginalHashes(), repo.listCollections(), repo.listTemplates()]);
-      const plan = planRestore(parsed, { projects: localProjects, assets, versionIds: new Set(versions.map(v => v.id)), originalHashes: new Set(originals), collections, templates });
+      const [localProjects, assets, versions, originals, collections, templates, worldPlan] = await Promise.all([repo.listProjects(), repo.listAssets(), repo.listVersions(), repo.listOriginalHashes(), repo.listCollections(), repo.listTemplates(), repo.getWorldPlan()]);
+      const plan = planRestore(parsed, { projects: localProjects, assets, versionIds: new Set(versions.map(v => v.id)), originalHashes: new Set(originals), collections, templates, worldPlanItems: worldPlan.items });
       setRestore({ plan, fileName: file.name, choices: {} });
     } catch (e) { setMessage(`Sicherung nicht lesbar – nichts geändert: ${errorText(e)}`); }
     finally { setBusy(false); if (restoreInput.current) restoreInput.current.value = ''; }
@@ -66,7 +66,13 @@ export function ProjectsView() {
     setBusy(true);
     try {
       const write = buildRestore(restore.plan, restore.choices);
-      await repo.applyBatch(write);
+      const { worldPlanItems, ...batch } = write;
+      await repo.applyBatch(batch);
+      // Weltplan entries are added afterwards (own record); a conflict there leaves the restored projects intact and says so.
+      if (worldPlanItems.length) {
+        const current = await repo.getWorldPlan();
+        await repo.saveWorldPlan(applyWorldPlanOp(current, { kind: 'batch', label: 'Aus Sicherung', ops: worldPlanItems.filter(i => !current.items.some(c => c.id === i.id)).map(item => ({ kind: 'add' as const, item })) }).plan, current.revision);
+      }
       setRestore(null); await reloadLibrary(); await load();
       setMessage(`Wiederhergestellt. ${write.summary.join(' ')}`);
     } catch (e) { setMessage(`Wiederherstellung abgebrochen, nichts geschrieben: ${errorText(e)}`); }
