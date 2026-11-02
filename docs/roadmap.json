@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T05:34:31.591Z",
+  "updatedAt": "2026-11-02T05:45:11.173Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -3015,7 +3015,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T05:50:00.000Z"
+      "updatedAt": "2026-11-02T05:45:11.173Z"
     },
     {
       "id": "GAME-03",
@@ -6239,6 +6239,57 @@
           "done": 2,
           "total": 2,
           "next": "Echtgeräteabnahme (QA-02); Teamreihenfolge der Updateoperationen in TEAM-02."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T05:45:11.173Z",
+      "kind": "progress",
+      "items": [
+        "GAME-07"
+      ],
+      "summary": "Mod 2.0 Stufe 1: Hologramm, Live-Abgleich, Fehlerfinder, Planmenü; Fabric 0.2.0 auf #/mod, im echten Client und mit Philipps Modpack geprüft",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/MOD_HOLOGRAM.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.2.0.jar",
+        "mods/bauplaner-bridge/README.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/build.gradle",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/BridgeClient.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/Hologram.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramCommands.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramHud.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramKeys.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/HologramRenderer.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/McCompat.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/PlanScreen.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/resources/assets/bauplaner_bridge/lang/de_de.json",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/resources/assets/bauplaner_bridge/lang/en_us.json",
+        "mods/bauplaner-bridge/mod-core/build.gradle",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/BlockRules.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/BlockState.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/LiveCheck.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Placement.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlacementStore.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlanModel.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java",
+        "mods/bauplaner-bridge/settings.gradle",
+        "scripts/bridge_gametest.mjs",
+        "scripts/test_bridge_ingame.sh",
+        "tests/e2e/mod-download.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-07",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Philipp testet 0.2.0 auf server.lmnt-gaming.net (Anleitung /mnt/project-files/mod/ANLEITUNG_HOLOGRAMM.md); danach Stufe 3 (texturierte Geisterblöcke, Materialliste im Spiel)."
         }
       ]
     }
