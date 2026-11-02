@@ -93,3 +93,41 @@ export function parseSelectionSearch(search: string | undefined): Partial<Select
   const q = new URLSearchParams(search ?? '');
   return { ...(q.get('minecraft') && { minecraft: q.get('minecraft')! }), ...(q.get('loader') && { loader: q.get('loader')! }), ...(q.get('version') && { modVersion: q.get('version')! }) };
 }
+
+/** Metadata file each loader needs inside the jar (what a launcher like the Modrinth App reads). */
+export const LOADER_METADATA: Readonly<Record<string, string>> = {
+  fabric: 'fabric.mod.json', neoforge: 'META-INF/neoforge.mods.toml', forge: 'META-INF/mods.toml', paper: 'plugin.yml',
+};
+
+/**
+ * Checks a downloaded jar like a mod launcher opens it: exact size, an intact ZIP end record (EOCD)
+ * whose central directory fits the file, and the loader's metadata file in it. Returns problems in
+ * plain words; empty means the file is complete. The SHA-256 is compared separately (async in the browser).
+ */
+export function checkJarBytes(bytes: Uint8Array, release: Pick<ModRelease, 'bytes' | 'loader'>): string[] {
+  const problems: string[] = [];
+  if (bytes.length !== release.bytes) problems.push(`Größe ${bytes.length} Bytes statt ${release.bytes} Bytes (Download unvollständig oder falsche Datei).`);
+  if (bytes.length < 22 || bytes[0] !== 0x50 || bytes[1] !== 0x4b) {
+    problems.push(bytes[0] === 0x3c ? 'Statt der .jar kam eine Webseite an.' : 'Die Datei ist keine .jar (kein ZIP-Anfang).');
+    return problems;
+  }
+  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+  let eocd = -1;
+  for (let i = bytes.length - 22; i >= Math.max(0, bytes.length - 22 - 0xffff); i--) {
+    if (view.getUint32(i, true) === 0x06054b50) { eocd = i; break; }
+  }
+  if (eocd < 0) { problems.push('Das ZIP-Ende (EOCD) fehlt: die Datei ist abgeschnitten.'); return problems; }
+  const entries = view.getUint16(eocd + 10, true), cdSize = view.getUint32(eocd + 12, true), cdOffset = view.getUint32(eocd + 16, true);
+  if (cdOffset + cdSize !== eocd) { problems.push('Das Inhaltsverzeichnis der .jar passt nicht zur Dateigröße.'); return problems; }
+  const names: string[] = [];
+  const decoder = new TextDecoder();
+  for (let p = cdOffset, n = 0; n < entries; n++) {
+    if (p + 46 > eocd || view.getUint32(p, true) !== 0x02014b50) { problems.push('Das Inhaltsverzeichnis der .jar ist beschädigt.'); return problems; }
+    const nameLen = view.getUint16(p + 28, true), extraLen = view.getUint16(p + 30, true), commentLen = view.getUint16(p + 32, true);
+    names.push(decoder.decode(bytes.subarray(p + 46, p + 46 + nameLen)));
+    p += 46 + nameLen + extraLen + commentLen;
+  }
+  const meta = LOADER_METADATA[release.loader];
+  if (meta && !names.includes(meta)) problems.push(`${meta} fehlt in der .jar.`);
+  return problems;
+}

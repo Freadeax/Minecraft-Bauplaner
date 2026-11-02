@@ -542,3 +542,8 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Browser: `tests/e2e/terrain.e2e.mjs` bei 1400 und 390 px bestanden (Bauplatz aus Regionsdatei, Weltkarte mit Gelände 2D/3D, Anlage „Dorf mit Hof“ auf dem Hang mit flachstem Platz und Moduswechsel, Einfügen, Erdarbeiten-Schätzung, Reiter „Gelände“, kein waagerechtes Scrollen, keine Konsolenfehler).
 - Gesamtprüfung nach Rebase auf BUILD-06 (`a132275`): `npm run check` grün (505 Tests, 504 bestanden, 1 übersprungen), `npm run test:e2e` **91/91**.
 - Nicht geprüft: Philipps eigene 26.3-Welt, echte Geräte.
+
+## GAME-07 · Download-Prüfung gegen „EOCD nicht gefunden“ · 02.11.2026 · Claude
+- Anlass: Modrinth App meldete beim Hinzufügen der 0.2.0-.jar „EOCD nicht gefunden“. Live-Datei von Pages geladen: 95 726 Bytes, SHA-256 wie Build, `unzip -t` und Python-`zipfile` fehlerfrei, EOCD am Dateiende, Verzeichnis passt → auf dem Server korrekt; bei Philipp kam eine abgeschnittene/falsche Datei an.
+- Neu: `checkJarBytes` (releases.ts) prüft wie ein Launcher Größe, ZIP-Anfang, EOCD, Verzeichnis und Loader-Metadaten (`fabric.mod.json`, `neoforge.mods.toml`, `mods.toml`, `plugin.yml`). Die Download-Seite lädt die .jar, prüft zusätzlich SHA-256 und speichert nur geprüfte Bytes; sonst Meldung „Nicht gespeichert …“. `release_mod.mjs` bricht bei fehlerhafter .jar ab.
+- `tests/mod-releases.test.mjs`: jede angebotene .jar besteht die Prüfung; abgeschnittene Datei, HTML-Seite, beschädigtes Verzeichnis und fehlende Metadaten werden erkannt. `mod-download.e2e.mjs` (1400/390 px): gespeicherte Datei hat genau die gelistete Größe, Statusmeldung „Geprüft und gespeichert“; abgeschnittene Antwort wird abgelehnt und nicht gespeichert.

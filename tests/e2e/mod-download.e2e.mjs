@@ -53,8 +53,12 @@ for (const viewport of [{ width: 1400, height: 900 }, { width: 390, height: 844 
     const link = p.getByRole('link', { name: /herunterladen$/ });
     assert.equal(await link.getAttribute('href'), `/Minecraft-Bauplaner/downloads/mod/${newest.file}`);
     assert.ok(await p.getByText(newest.sha256).isVisible());
+    // The page loads the jar, checks it like a launcher (size, SHA-256, ZIP end, fabric.mod.json) and saves those bytes.
     const [download] = await Promise.all([p.waitForEvent('download'), link.click()]);
     assert.equal(download.suggestedFilename(), newest.file);
+    const saved = readFileSync(await download.path());
+    assert.equal(saved.length, newest.bytes, 'gespeicherte Datei vollständig');
+    await p.getByText(/Geprüft und gespeichert/).waitFor();
     // Browser downloads bypass request routing; the same URL fetched by the page goes through it.
     assert.equal(await p.evaluate(href => fetch(href).then(r => r.arrayBuffer()).then(b => b.byteLength), await link.getAttribute('href')), newest.bytes);
     // Ältere Mod-Versionen bleiben wählbar.
@@ -80,6 +84,20 @@ for (const viewport of [{ width: 1400, height: 900 }, { width: 390, height: 844 
       assert.equal(await link.getAttribute('href'), `/Minecraft-Bauplaner/downloads/mod/${paper.file}`);
     }
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), 'keine waagerechte Scrollleiste');
+    // A cut-off download (the Modrinth "EOCD not found" case) is refused instead of saved.
+    await context.unroute('**/downloads/mod/*.jar');
+    await context.route('**/downloads/mod/*.jar', route => {
+      const file = new URL(route.request().url()).pathname.split('/').pop();
+      route.fulfill({ status: 200, contentType: 'application/java-archive', body: readFileSync(`downloads/mod/${file}`).subarray(0, 20_000) });
+    });
+    await p.getByLabel('Minecraft-Version').selectOption(newest.minecraft);
+    await p.getByLabel('Mod-Loader').selectOption('fabric');
+    let saved2 = false;
+    p.on('download', () => { saved2 = true; });
+    await link.click();
+    await p.getByText(/Nicht gespeichert, die geladene Datei ist fehlerhaft/).waitFor();
+    assert.match(await p.locator('.mod-check').innerText(), /EOCD/);
+    assert.equal(saved2, false, 'fehlerhafte Datei nicht gespeichert');
     assert.deepEqual(errors, []);
     await context.close();
   });

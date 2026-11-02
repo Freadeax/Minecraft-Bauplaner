@@ -1,12 +1,38 @@
 import { useMemo, useState } from 'react';
+import type React from 'react';
 import releasesData from './releases.json';
-import { buildsFor, INSTALL_HINT, LOADER_LABEL, loadersFor, minecraftVersions, parseSelectionSearch, PLANNED_LOADERS, resolveSelection, selectionSearch, SERVER_LOADERS, versionsOf } from './releases';
+import { buildsFor, checkJarBytes, INSTALL_HINT, LOADER_LABEL, loadersFor, minecraftVersions, parseSelectionSearch, PLANNED_LOADERS, resolveSelection, selectionSearch, SERVER_LOADERS, versionsOf } from './releases';
 import type { ModRelease, Selection } from './releases';
 import { formatNumber } from '../../app/ui';
 
 const releases: readonly ModRelease[] = releasesData.releases;
 const base = import.meta.env.BASE_URL;
 const kb = (n: number) => `${formatNumber(Math.round(n / 1024))} KB`;
+
+type Check = { state: 'idle' } | { state: 'busy' } | { state: 'ok'; file: string } | { state: 'bad'; file: string; problems: string[] };
+
+/**
+ * Downloads the jar, checks it like a launcher would (size, SHA-256, ZIP end, metadata) and only then
+ * saves exactly these bytes. A cut-off download or an HTML page never lands in the mods folder.
+ */
+async function verifiedDownload(href: string, build: ModRelease): Promise<string[]> {
+  const response = await fetch(href, { cache: 'no-store' });
+  if (!response.ok) return [`Server antwortet mit ${response.status}.`];
+  const bytes = new Uint8Array(await response.arrayBuffer());
+  const problems = checkJarBytes(bytes, build);
+  if (!problems.length) {
+    const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes));
+    const hex = [...digest].map(b => b.toString(16).padStart(2, '0')).join('');
+    if (hex !== build.sha256) problems.push('Prüfsumme (SHA-256) stimmt nicht.');
+  }
+  if (problems.length) return problems;
+  const url = URL.createObjectURL(new Blob([bytes], { type: 'application/java-archive' }));
+  const a = document.createElement('a');
+  a.href = url; a.download = build.file; a.rel = 'noopener';
+  document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60_000);
+  return [];
+}
 
 /** Download page of the game bridge: pick Minecraft version, loader and mod version, then download the jar. */
 export function ModView({ search }: { search?: string | undefined }) {
@@ -24,6 +50,16 @@ export function ModView({ search }: { search?: string | undefined }) {
   const builds = selection ? buildsFor(releases, selection.minecraft, selection.loader) : [];
   const build = builds.find(b => b.modVersion === selection?.modVersion);
   const server = !!selection && SERVER_LOADERS.includes(selection.loader);
+  const [check, setCheck] = useState<Check>({ state: 'idle' });
+  const download = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!build || !window.crypto?.subtle) return; // without WebCrypto the plain link downloads
+    event.preventDefault();
+    const href = event.currentTarget.href;
+    setCheck({ state: 'busy' });
+    verifiedDownload(href, build).then(
+      problems => setCheck(problems.length ? { state: 'bad', file: build.file, problems } : { state: 'ok', file: build.file }),
+      () => setCheck({ state: 'bad', file: build.file, problems: ['Keine Verbindung zum Server.'] }));
+  };
 
   return <div className="page system-page mod-page">
     <div className="page-head"><div><span className="eyebrow">MOD · BAUPLANER-BRÜCKE</span><h1 className="page-title">Mod herunterladen</h1>
@@ -60,7 +96,12 @@ export function ModView({ search }: { search?: string | undefined }) {
           <div><dt>Größe</dt><dd>{kb(build.bytes)}</dd></div>
           <div><dt>Bereitgestellt</dt><dd>{new Date(build.releasedAt).toLocaleDateString('de-DE')} · Quelle <code>{build.sourceCommit.slice(0, 7)}</code></dd></div>
         </dl>
-        <div className="button-row"><a className="primary" href={`${base}downloads/mod/${build.file}`} download={build.file}>⬇ {build.file} herunterladen</a></div>
+        <div className="button-row"><a className="primary" href={`${base}downloads/mod/${build.file}`} download={build.file} onClick={download} aria-busy={check.state === 'busy'}>⬇ {build.file} herunterladen</a></div>
+        <p className="mod-check" role="status">
+          {check.state === 'busy' && 'Lade und prüfe die Datei …'}
+          {check.state === 'ok' && check.file === build.file && <>✓ Geprüft und gespeichert: vollständig ({formatNumber(build.bytes)} Bytes), Prüfsumme stimmt, als Mod lesbar. Prüfe im Download-Ordner, dass die Datei genau {formatNumber(build.bytes)} Bytes hat.</>}
+          {check.state === 'bad' && check.file === build.file && <span className="mod-check-bad">Nicht gespeichert, die geladene Datei ist fehlerhaft: {check.problems.join(' ')} Bitte erneut versuchen.</span>}
+        </p>
         <p className="muted mod-sha">SHA-256: <code>{build.sha256}</code></p>
         <p className="muted"><b>Geprüft:</b> {build.tested}</p>
       </section>}

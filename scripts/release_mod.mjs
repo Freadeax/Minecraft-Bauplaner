@@ -24,6 +24,10 @@ const multi = !adapter.includes('-');
 const flag = { fabric: 'withFabric', paper: 'withPaper', neoforge: 'withNeoForge', forge: 'withForge' }[loader] ?? 'with' + loader;
 if (!existsSync(built)) throw new Error(`${built} fehlt: zuerst ./gradlew -P${flag} :${adapter}:build`);
 const bytes = readFileSync(built);
+// Same check as the download page and launchers: never publish a jar a launcher cannot open.
+const { checkJarBytes } = await import('../apps/web/src/views/mod/releases.ts');
+const problems = checkJarBytes(new Uint8Array(bytes), { bytes: bytes.length, loader });
+if (problems.length) throw new Error(`${built}: ${problems.join(' ')}`);
 copyFileSync(built, join('downloads/mod', file));
 
 const manifestPath = 'apps/web/src/views/mod/releases.json';

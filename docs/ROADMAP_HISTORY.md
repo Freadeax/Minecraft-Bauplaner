@@ -1682,3 +1682,23 @@ Geländeaufnahmen für Weltkarte und Anlagen: Höhenkarte als Original, Bauplatz
 - `tests/e2e/terrain.e2e.mjs`
 - `tests/terrain-survey.test.mjs`
 
+## 2026-11-02T06:32:41.549Z · progress
+
+**Aufgaben:** GAME-07
+
+Download-Prüfung: Website prüft .jar vor dem Speichern (Größe, SHA-256, EOCD, Metadaten), Tests für jede .jar, release_mod bricht bei fehlerhafter .jar ab
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-07 | 🧩 Implementiert · Abnahme offen | 4/6 | Philipp testet 0.2.0 auf server.lmnt-gaming.net (Anleitung /mnt/project-files/mod/ANLEITUNG_HOLOGRAMM.md); danach Stufe 3 (texturierte Geisterblöcke, Materialliste im Spiel). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/catalog.css`
+- `apps/web/src/views/mod/ModView.tsx`
+- `apps/web/src/views/mod/releases.ts`
+- `docs/TESTING.md`
+- `scripts/release_mod.mjs`
+- `tests/e2e/mod-download.e2e.mjs`
+- `tests/mod-releases.test.mjs`
+

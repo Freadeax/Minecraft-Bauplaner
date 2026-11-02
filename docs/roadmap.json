@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T06:01:12.819Z",
+  "updatedAt": "2026-11-02T06:32:41.549Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -3039,7 +3039,11 @@
         "docs/architecture/MOD_HOLOGRAM.md",
         "downloads/mod/",
         "apps/web/src/views/mod/releases.json",
-        "tests/e2e/mod-download.e2e.mjs"
+        "tests/e2e/mod-download.e2e.mjs",
+        "apps/web/src/views/mod/",
+        "apps/web/src/catalog.css",
+        "tests/mod-releases.test.mjs",
+        "scripts/release_mod.mjs"
       ],
       "legacyIds": [],
       "steps": [
@@ -3095,6 +3099,10 @@
         {
           "path": "tests/e2e/mod-download.e2e.mjs",
           "note": "Download-Seite wählt 0.2.0 vor, 0.1.0 bleibt wählbar."
+        },
+        {
+          "path": "tests/mod-releases.test.mjs",
+          "note": "Jede .jar wie ein Launcher geprüft (EOCD, Verzeichnis, Loader-Metadaten); abgeschnittene/HTML/beschädigte Dateien erkannt. Download-Seite speichert nur geprüfte Bytes (02.11.2026)."
         }
       ],
       "verification": {
@@ -3105,7 +3113,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T05:45:11.173Z"
+      "updatedAt": "2026-11-02T06:32:41.549Z"
     },
     {
       "id": "GAME-03",
@@ -6473,6 +6481,32 @@
           "done": 4,
           "total": 5,
           "next": "Abnahme mit eigener Welt (S05); danach Weg mit Stufen/Kurven und Stützmauern als Blöcke als eigene Folgeaufgabe."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T06:32:41.549Z",
+      "kind": "progress",
+      "items": [
+        "GAME-07"
+      ],
+      "summary": "Download-Prüfung: Website prüft .jar vor dem Speichern (Größe, SHA-256, EOCD, Metadaten), Tests für jede .jar, release_mod bricht bei fehlerhafter .jar ab",
+      "files": [
+        "apps/web/src/catalog.css",
+        "apps/web/src/views/mod/ModView.tsx",
+        "apps/web/src/views/mod/releases.ts",
+        "docs/TESTING.md",
+        "scripts/release_mod.mjs",
+        "tests/e2e/mod-download.e2e.mjs",
+        "tests/mod-releases.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-07",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Philipp testet 0.2.0 auf server.lmnt-gaming.net (Anleitung /mnt/project-files/mod/ANLEITUNG_HOLOGRAMM.md); danach Stufe 3 (texturierte Geisterblöcke, Materialliste im Spiel)."
         }
       ]
     }
