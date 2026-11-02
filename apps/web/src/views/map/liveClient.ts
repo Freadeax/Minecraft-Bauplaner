@@ -91,6 +91,8 @@ export interface LiveGame {
   readonly chunks: ReadonlyMap<string, ReadonlyMap<string, LiveChunkColumns>>;
   readonly chunkVersion: number;
   readonly originProblem: string;
+  /** The browser has refused access to this computer's local services ("lokales Netzwerk" blocked). */
+  readonly accessDenied: boolean;
   setPort(port: number): void;
   setAuto(auto: boolean): void;
   connect(): Promise<void>;
@@ -102,6 +104,19 @@ export interface LiveGame {
 }
 
 const POLL_MS = 1000, TRAIL_MS = 10 * 60_000, CHUNK_MAX_AGE = 60_000;
+/** After „Verbinden“ the page keeps looking this long, so the player can type the command in game afterwards. */
+const SEARCH_MS = 3 * 60_000, SEARCH_EVERY_MS = 2000;
+
+/** Chrome's permission for local services (named differently across versions); null when unknown. */
+async function localAccessState(): Promise<PermissionState | null> {
+  if (typeof navigator === 'undefined' || !navigator.permissions) return null;
+  for (const name of ['local-network-access', 'loopback-network', 'local-network']) {
+    try { return (await navigator.permissions.query({ name } as unknown as PermissionDescriptor)).state; } catch { /* unknown name */ }
+  }
+  return null;
+}
+export const LIVE_NOT_FOUND = 'Die Mod meldet sich nicht. Im Spiel /bauplaner verbinden eingeben (Code erscheint im Chat), dann hier erneut „Verbinden“.';
+export const LIVE_BLOCKED = 'Der Browser blockiert den Zugriff auf die Mod auf diesem PC. Links in der Adresszeile auf das Symbol neben der Adresse klicken → Website-Einstellungen → „Lokales Netzwerk“ bzw. „Geräte im lokalen Netzwerk“ auf „Zulassen“ stellen, Seite neu laden.';
 
 /** State of the game connection for the map; polls the mod about once a second while connected. */
 export function useLiveGame(): LiveGame {
@@ -119,17 +134,31 @@ export function useLiveGame(): LiveGame {
 
   const update = useCallback((next: LiveSettings) => { setSettings(next); live.current = next; writeSettings(next); }, []);
 
+  const search = useRef(0);
+  const [accessDenied, setAccessDenied] = useState(false);
   const connect = useCallback(async () => {
-    setError(''); setPhase('searching');
-    try {
-      const h = await liveApi.hello(live.current.port);
-      setHello(h);
-      if (!live.current.token) { setPhase('unpaired'); return; }
-      setStatus(await liveApi.status(live.current.port, live.current.token));
-      setPhase('connected');
-    } catch (e) {
-      if (e instanceof LiveError && e.status === 401) { update({ ...live.current, token: null }); setPhase('unpaired'); setError('Die Kopplung gilt nicht mehr. Bitte neu koppeln.'); return; }
-      setPhase('off'); setError(e instanceof Error ? e.message : String(e));
+    const id = ++search.current, until = Date.now() + SEARCH_MS;
+    setError(''); setPhase('searching'); setAccessDenied(false);
+    for (;;) {
+      try {
+        const h = await liveApi.hello(live.current.port);
+        if (id !== search.current) return;
+        setHello(h); setError('');
+        if (!live.current.token) { setPhase('unpaired'); return; }
+        setStatus(await liveApi.status(live.current.port, live.current.token));
+        setPhase('connected');
+        return;
+      } catch (e) {
+        if (id !== search.current) return;
+        if (e instanceof LiveError && e.status === 401) { update({ ...live.current, token: null }); setPhase('unpaired'); setError('Die Kopplung gilt nicht mehr. Bitte neu koppeln.'); return; }
+        if (!(e instanceof LiveError) || e.status !== 0) { setPhase('off'); setError(e instanceof Error ? e.message : String(e)); return; }
+        const denied = (await localAccessState()) === 'denied';
+        if (id !== search.current) return;
+        if (denied) { setAccessDenied(true); setPhase('off'); setError(LIVE_BLOCKED); return; }
+        if (Date.now() > until) { setPhase('off'); setError(LIVE_NOT_FOUND); return; }
+        await new Promise(r => setTimeout(r, SEARCH_EVERY_MS));
+        if (id !== search.current) return;
+      }
     }
   }, [update]);
 
@@ -145,8 +174,9 @@ export function useLiveGame(): LiveGame {
 
   const disconnect = useCallback(async () => {
     const t = live.current.token;
+    search.current++;
     update({ ...live.current, token: null, auto: false });
-    setPhase('off'); setStatus(null); setHello(null);
+    setPhase('off'); setError(''); setStatus(null); setHello(null);
     if (t) try { await liveApi.unpair(live.current.port, t); } catch { /* mod closed: the key is forgotten here anyway */ }
   }, [update]);
 
@@ -211,7 +241,7 @@ export function useLiveGame(): LiveGame {
   }, [status?.player?.dimension]);
 
   return {
-    settings, phase, hello, status, error, trail, chunks: chunks.current, chunkVersion, originProblem,
+    settings, phase, hello, status, error, trail, chunks: chunks.current, chunkVersion, originProblem, accessDenied,
     setPort: port => update({ ...live.current, port }), setAuto: auto => update({ ...live.current, auto }),
     connect, pair, disconnect, loadTerrain, token: () => live.current.token,
   };

@@ -4,7 +4,7 @@ Die Weltkarte (`#/karte`) wird zur Live-Karte: Die Bauplaner-Mod (Fabric 26.3, a
 
 ## Sicherheit
 
-- Dienst nur auf `127.0.0.1` (Loopback), Standardport **47615**, im Spiel änderbar (`/bauplaner verbinden port <n>`).
+- Dienst nur auf `127.0.0.1` (Loopback), Standardport **47615**, aus bis `/bauplaner verbinden`. `/bauplaner verbinden port <n>` speichert den Port und startet die Verbindung samt Code (ab 0.5.1; in 0.5.0 speicherte der Befehl nur den Port, die Website fand dann nichts – Philipps erster Spieltest 02.11.2026).
 - `Host` muss `127.0.0.1:<port>` oder `localhost:<port>` sein (Schutz gegen DNS-Rebinding).
 - `Origin`: nur `https://freadeax.github.io` und `http://localhost`/`http://127.0.0.1` mit beliebigem Port (lokale Entwicklung). Andere Ursprünge: 403. Antworten tragen CORS-Header nur für erlaubte Ursprünge; Vorabanfragen beantworten `Access-Control-Allow-Private-Network`.
 - Kopplung: `/bauplaner verbinden` zeigt einen sechsstelligen Code, 5 Minuten gültig, höchstens 5 Fehlversuche. Die Website tauscht ihn gegen einen Schlüssel (32 Byte, base64url). Die Mod speichert höchstens 8 Schlüssel in `bauplaner/verbindung.properties`; `/bauplaner verbinden aus` widerruft alle.
@@ -34,6 +34,8 @@ Code: `mods/bauplaner-bridge/mod-core/…/mod/live/` (versionsneutral: `LiveLink
 `packages/domain/src/worldPlan.ts`: Bauplätze (Rechteck, Höhe, Projekt), Wege (Ecken, Art, Breite; vierfach verbundene Spalten, begehbar) und Punkte (Anker, Ziel, Lager, Portal, Farm, Treffpunkt) je Dimension. Jede Änderung ist eine Operation mit exakter Umkehrung (Rückgängig/Wiederholen, Strg+Z/Strg+Y). Gespeichert in IndexedDB (`meta`, Schlüssel `worldPlan`) mit Revisionsprüfung wie Projekte; reist in der vollen Sicherung (Format 2, `worldPlanItems`) mit.
 
 ## Oberfläche
+
+- Verbinden: Schritte in der richtigen Reihenfolge (erst im Spiel `/bauplaner verbinden`, dann „Verbinden“, dann Code). Nach „Verbinden“ sucht die Seite bis zu 3 Minuten alle 2 s weiter, damit der Befehl auch danach kommen darf. Meldet Chrome die Berechtigung für das lokale Netzwerk als „denied“ (`navigator.permissions`, Namen `local-network-access`/`loopback-network`), nennt die Seite den Weg in die Website-Einstellungen. Sonst bietet sie einen Selbsttest: `http://127.0.0.1:<port>/v1/hello` im neuen Tab unterscheidet „Dienst aus“ von „Browser blockiert“.
 
 - Werkzeugleiste über der Draufsicht: Auswählen (V), Bauplatz (B, Umschalt rastet an Chunks), Weg (W, Doppelklick/Eingabe beendet, Rücktaste nimmt zurück), Punkt (P), Messen (M: Luftlinie, Weg auf dem Raster, Höhenunterschied, Nether-Entfernung). Gewählte Projekte und Einträge lassen sich ziehen; Verschieben eines Projekts ist ein normaler, rückgängig machbarer Projektschritt.
 - Bauplatz: Projekt zuordnen, „hierher setzen“, „Gelände aus dem Spiel ins Projekt“ (aus den gelesenen Chunks eine TERRAIN-01-Geländeaufnahme, `terrain.set`).

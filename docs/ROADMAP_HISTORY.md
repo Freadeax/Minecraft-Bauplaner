@@ -2217,3 +2217,27 @@ Server-Webkarte verständlicher: echter Link in jedem Feld wird zur Vorlage, ges
 - `docs/architecture/WORLDMAP.md`
 - `tests/e2e/worldmap.e2e.mjs`
 
+## 2026-11-02T11:45:38.986Z · progress
+
+**Aufgaben:** MAP-03, GAME-03
+
+Philipps Spieltest: „/bauplaner verbinden port“ speicherte nur den Port, Verbindung blieb aus. Mod 0.5.1 startet sie mit dem Port-Befehl (Spieltest mit Modpack bestanden). Website: Schritte in richtiger Reihenfolge, sucht nach „Verbinden“ 3 Minuten weiter, erkennt blockierte Browserfreigabe, Selbsttest 127.0.0.1/v1/hello.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MAP-03 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server. |
+| GAME-03 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme mit MAP-03-S06; Forge/NeoForge/Paper haben die Verbindung noch nicht. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/map.css`
+- `apps/web/src/views/map/LiveGamePanel.tsx`
+- `apps/web/src/views/map/liveClient.ts`
+- `apps/web/src/views/mod/releases.json`
+- `docs/architecture/LIVE_LINK.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.5.1.jar`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/LiveLink.java`
+- `tests/e2e/livelink.e2e.mjs`
+

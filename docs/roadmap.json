@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T11:28:21.794Z",
+  "updatedAt": "2026-11-02T11:45:38.986Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -3464,7 +3464,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T10:57:37.022Z"
+      "updatedAt": "2026-11-02T11:45:38.986Z"
     },
     {
       "id": "MAP-02",
@@ -3826,7 +3826,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T10:18:11.573Z"
+      "updatedAt": "2026-11-02T11:45:38.986Z"
     },
     {
       "id": "WORLD-IMPORT-01",
@@ -7808,6 +7808,43 @@
           "done": 4,
           "total": 4,
           "next": "Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T11:45:38.986Z",
+      "kind": "progress",
+      "items": [
+        "MAP-03",
+        "GAME-03"
+      ],
+      "summary": "Philipps Spieltest: „/bauplaner verbinden port“ speicherte nur den Port, Verbindung blieb aus. Mod 0.5.1 startet sie mit dem Port-Befehl (Spieltest mit Modpack bestanden). Website: Schritte in richtiger Reihenfolge, sucht nach „Verbinden“ 3 Minuten weiter, erkennt blockierte Browserfreigabe, Selbsttest 127.0.0.1/v1/hello.",
+      "files": [
+        "apps/web/src/map.css",
+        "apps/web/src/views/map/LiveGamePanel.tsx",
+        "apps/web/src/views/map/liveClient.ts",
+        "apps/web/src/views/mod/releases.json",
+        "docs/architecture/LIVE_LINK.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.5.1.jar",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/LiveLink.java",
+        "tests/e2e/livelink.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "MAP-03",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server."
+        },
+        {
+          "id": "GAME-03",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme mit MAP-03-S06; Forge/NeoForge/Paper haben die Verbindung noch nicht."
         }
       ]
     }

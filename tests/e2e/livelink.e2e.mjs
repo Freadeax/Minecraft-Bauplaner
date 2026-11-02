@@ -103,6 +103,16 @@ test('Live-Karte: Weltplan zeichnen, rückgängig, Spiel koppeln, Gelände, Holo
   // ---------------------------------------------------------------- game link
   const game = p.getByRole('region', { name: 'Spielverbindung' });
   await game.getByText('Port', { exact: true }).click();
+  // „Verbinden“ before the command in game: the page keeps looking and finds the mod once it starts.
+  await game.getByLabel('Port der Mod').fill(String(MOD_PORT + 2));
+  await game.getByRole('button', { name: 'Verbinden' }).click();
+  await game.getByRole('status').filter({ hasText: /Suche die Mod auf diesem PC/ }).waitFor();
+  await p.waitForTimeout(2500);
+  const late = await startModSimulator(MOD_PORT + 2);
+  await game.getByText('Mod gefunden, nicht gekoppelt').waitFor({ timeout: 10000 });
+  await game.getByRole('button', { name: 'Abbrechen' }).click();
+  await late.close();
+  if (!(await game.getByLabel('Port der Mod').isVisible())) await game.getByText('Port', { exact: true }).click();
   await game.getByLabel('Port der Mod').fill(String(MOD_PORT));
   await game.getByRole('button', { name: 'Verbinden' }).click();
   await game.getByText('Mod gefunden, nicht gekoppelt').waitFor();

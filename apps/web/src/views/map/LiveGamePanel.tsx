@@ -43,21 +43,31 @@ export function LiveGamePanel({ game, actions }: { game: LiveGame; actions: Live
     {game.originProblem && <p className="notice warning" role="alert">{game.originProblem}</p>}
 
     {(game.phase === 'off' || game.phase === 'searching') && <div className="live-connect">
-      <p className="muted">Mit der Bauplaner-Mod (ab 0.5) siehst du deine Position, das Gelände um dich und den Baufortschritt des Hologramms live auf der Karte und schickst Pläne direkt ins Spiel. Nur dieser Computer, nichts geht an den Server.</p>
-      <details className="live-howto"><summary>So verbindest du</summary>
-        <ol className="live-steps">
-          <li>Minecraft mit der Mod 0.5 starten (<a href="#/mod">Mod herunterladen</a>) und eine Welt oder den Server betreten.</li>
-          <li>Hier auf „Verbinden“ drücken. Fragt der Browser nach Zugriff auf Geräte im lokalen Netzwerk: erlauben.</li>
-          <li>Im Spiel <code>/bauplaner verbinden</code> eingeben und den sechsstelligen Code hier eintragen.</li>
-        </ol></details>
+      <p className="muted">Mit der Bauplaner-Mod (ab 0.5, nur auf deinem PC, der Server braucht nichts) siehst du deine Position, das Gelände um dich und den Baufortschritt des Hologramms live auf der Karte und schickst Pläne direkt ins Spiel.</p>
+      <ol className="live-steps">
+        <li>Minecraft mit der Mod starten (<a href="#/mod">Mod herunterladen</a>) und eine Welt oder den Server betreten.</li>
+        <li>Im Spiel <code>/bauplaner verbinden</code> eingeben. Im Chat erscheint ein sechsstelliger Code.</li>
+        <li>Hier auf „Verbinden“ drücken. Fragt der Browser nach Zugriff auf Geräte im lokalen Netzwerk: „Zulassen“.</li>
+        <li>Den Code aus dem Chat eintragen. Danach verbindet sich die Seite bei jedem Besuch von selbst.</li>
+      </ol>
       <div className="button-row">
-        <button className="primary" disabled={game.phase === 'searching' || !!game.originProblem} onClick={() => { if (portValid) game.setPort(Number(port)); void game.connect(); }}>
-          {game.phase === 'searching' ? 'Suche Mod …' : 'Verbinden'}</button>
+        {game.phase === 'searching'
+          ? <><span className="live-wait" role="status">Suche die Mod auf diesem PC … falls noch nicht geschehen, jetzt im Spiel <code>/bauplaner verbinden</code> eingeben.</span>
+            <button className="secondary" onClick={() => void game.disconnect()}>Abbrechen</button></>
+          : <button className="primary" disabled={!!game.originProblem} onClick={() => { if (portValid) game.setPort(Number(port)); void game.connect(); }}>Verbinden</button>}
         <details className="live-port"><summary>Port</summary>
           <label>Port der Mod <input inputMode="numeric" value={port} onChange={e => setPort(e.target.value.trim())} aria-invalid={!portValid} /></label>
-          <small className="muted">Standard {LIVE_DEFAULT_PORT}. Im Spiel änderbar mit <code>/bauplaner verbinden port &lt;Zahl&gt;</code>.</small>
+          <small className="muted">Standard {LIVE_DEFAULT_PORT}. Nur ändern, wenn du im Spiel einen anderen Port gewählt hast (<code>/bauplaner verbinden port &lt;Zahl&gt;</code>).</small>
         </details>
       </div>
+      {game.phase === 'off' && game.error && <details className="live-help" open>
+        <summary>Klappt nicht? Selbsttest</summary>
+        <ol>
+          <li>Diese Adresse in einem neuen Tab öffnen: <a href={`http://127.0.0.1:${game.settings.port}/v1/hello`} target="_blank" rel="noreferrer noopener">127.0.0.1:{game.settings.port}/v1/hello ↗</a></li>
+          <li>Lädt sie nicht: Die Verbindung im Spiel ist aus. <code>/bauplaner verbinden</code> eingeben; mit <code>/bauplaner verbinden status</code> siehst du, ob sie läuft. Gibt es den Befehl nicht, ist eine Mod-Version vor 0.5 installiert.</li>
+          <li>Steht dort Text mit „bauplaner-mod“: Die Mod läuft, aber der Browser blockiert diese Seite. Symbol links neben der Adresse → Website-Einstellungen → „Lokales Netzwerk“ / „Geräte im lokalen Netzwerk“ → „Zulassen“, dann neu laden. Brave: Schutzschild aus oder „Localhost-Zugriff“ erlauben.</li>
+        </ol>
+      </details>}
     </div>}
 
     {game.phase === 'unpaired' && <form className="live-pair" onSubmit={e => { e.preventDefault(); void game.pair(code); }}>

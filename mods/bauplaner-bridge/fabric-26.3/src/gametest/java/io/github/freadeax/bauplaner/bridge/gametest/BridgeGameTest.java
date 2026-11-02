@@ -248,8 +248,10 @@ public final class BridgeGameTest implements FabricClientGameTest {
      * only runs while the test waits, so requests run on their own thread and the test waits in ticks.
      */
     private static void liveLink(ClientGameTestContext context, Path io, int[] anchor) throws IOException {
-        chat(context, "/bauplaner verbinden");
+        // Philipp's first try (0.5.0): only the port command. Since 0.5.1 it starts the service and shows a code.
+        chat(context, "/bauplaner verbinden port 47615");
         String code = pairingCode();
+        if (code == null) throw new AssertionError("„/bauplaner verbinden port“ hat die Verbindung nicht gestartet");
         var http = java.net.http.HttpClient.newBuilder().connectTimeout(java.time.Duration.ofSeconds(5)).build();
         String base = "http://127.0.0.1:47615";
         StringBuilder out = new StringBuilder("{");

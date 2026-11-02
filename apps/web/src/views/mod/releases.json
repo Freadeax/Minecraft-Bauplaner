@@ -103,6 +103,20 @@
       "releasedAt": "2026-11-02",
       "sourceCommit": "bd7bd4d5f4381eb570538c173b1d03274f8c3e95",
       "tested": "Echter Minecraft-26.3-Client (Fabric Client Game Test) allein und mit allen Mods aus Philipps Modpack: Aufnahme, Hologramm, Materialliste, Ebenen, Platzierhilfe und neu die Website-Verbindung (Kopplung mit Code, Status mit Spieler und Hologramm, Gelände der geladenen Chunks, Markierungen, Plan direkt von der Website platziert, fremde Website abgewiesen)."
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.5.1.jar",
+      "modVersion": "0.5.1",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 201817,
+      "sha256": "3fab0c40571a2d9a80abab9c6c4e3c13a984e60eed8f2ae8cffeee0ad64b855b",
+      "releasedAt": "2026-11-02",
+      "sourceCommit": "e39991ac3b0e91d29fe42a71daff263180d55cd7",
+      "tested": "Im echten Minecraft-26.3-Client automatisch geprüft, auch mit Philipps Modpack (Fabric 26.3 1.0.1 mit REI): Hologramm, Platzierhilfe, Website-Verbindung über 127.0.0.1 ab „/bauplaner verbinden port 47615“ (Kopplung, Status, Gelände, Markierungen, Plan direkt gesendet). Neu in 0.5.1: der Port-Befehl startet die Verbindung und zeigt den Code."
     }
   ]
 }

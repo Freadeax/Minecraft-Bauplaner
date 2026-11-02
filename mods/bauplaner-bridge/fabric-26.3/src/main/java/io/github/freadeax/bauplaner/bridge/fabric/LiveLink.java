@@ -93,14 +93,13 @@ final class LiveLink implements LiveLinkServer.Handler {
 
     String setPort(int p) {
         if (p < 1024 || p > 65535) return "Port muss zwischen 1024 und 65535 liegen.";
-        boolean was = server.running();
         server.close();
         port = p;
         save();
-        if (was) {
-            try { server.start(port); } catch (IOException e) { return "Port " + p + " nicht nutzbar: " + e.getMessage(); }
-        }
-        return "Port " + p + " gespeichert. Auf der Website denselben Port eintragen.";
+        // Setting the port means "connect on this port": start the service and show a code right away
+        // (0.5.0 only saved it, so the website found nothing until /bauplaner verbinden was typed again).
+        String connected = connect();
+        return "Port " + p + " gespeichert" + (p == LiveLinkServer.DEFAULT_PORT ? "" : " – auf der Website unter „Port“ denselben eintragen") + ". " + connected;
     }
 
     String statusText() {
