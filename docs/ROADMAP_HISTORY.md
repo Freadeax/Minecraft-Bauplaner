@@ -2255,3 +2255,17 @@ Download-Eintrag Mod 0.5.1 auf den Quellcommit gesetzt.
 
 - `apps/web/src/views/mod/releases.json`
 
+## 2026-11-02T12:00:34.846Z · progress
+
+**Aufgaben:** MAP-03
+
+Weltkarten-Browsertest holt die Draufsicht vor dem Zeigen in den sichtbaren Bereich (Spiel-Kasten mit Schritten ist höher).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MAP-03 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server. |
+
+**Geänderte Dateien:**
+
+- `tests/e2e/worldmap.e2e.mjs`
+

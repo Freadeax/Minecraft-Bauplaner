@@ -78,6 +78,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     // Top view: clicking a footprint selects; the cursor shows world coordinates and chunk.
     const canvas = p.locator('.overview-canvas');
     await p.getByRole('button', { name: 'Alles' }).click();
+    await canvas.scrollIntoViewIfNeeded();
     const box = await canvas.boundingBox();
     await p.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     await p.locator('.overview-hud').getByText(/Chunk -?\d+, -?\d+/).waitFor();

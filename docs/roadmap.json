@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T11:45:46.079Z",
+  "updatedAt": "2026-11-02T12:00:34.846Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -3464,7 +3464,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T11:45:38.986Z"
+      "updatedAt": "2026-11-02T12:00:34.846Z"
     },
     {
       "id": "MAP-02",
@@ -7865,6 +7865,26 @@
           "done": 2,
           "total": 2,
           "next": "Abnahme mit MAP-03-S06; Forge/NeoForge/Paper haben die Verbindung noch nicht."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T12:00:34.846Z",
+      "kind": "progress",
+      "items": [
+        "MAP-03"
+      ],
+      "summary": "Weltkarten-Browsertest holt die Draufsicht vor dem Zeigen in den sichtbaren Bereich (Spiel-Kasten mit Schritten ist höher).",
+      "files": [
+        "tests/e2e/worldmap.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "MAP-03",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server."
         }
       ]
     }
