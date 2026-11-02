@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-02T08:56:28.176Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-02T09:08:13.761Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-02T08:56:28.176Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 16 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 26 |
+| 🧩 Implementiert · Abnahme offen | 27 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -65,6 +65,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [OPS-01](#ops-01) | Main/root-Pages mit manifestgeprüften Artefakten | ✅ Im beschriebenen Umfang geprüft | 1/1 | — | `84838f0` | `e232b26` |
 | [PLAN-01](#plan-01) | Verbindlicher Aufgabenbestand und Merge-Fortschritt | ✅ Im beschriebenen Umfang geprüft | 4/4 | — | `b5eb5b9` | `b5eb5b9` |
 | [ARCH-01](#arch-01) | Anwendungsschicht und überprüfte Modulgrenzen | ✅ Im beschriebenen Umfang geprüft | 4/4 | CORE-01, CORE-02 | `ccf4fa7` | `ccf4fa7` |
+| [ARCH-02](#arch-02) | Planmodell: Verweisgraph, kompakter Blockdatenspeicher und Migrationsregeln | 🧩 Implementiert · Abnahme offen | 4/5 | ARCH-01, STORE-01, STORE-02 | ausstehend | ausstehend |
 | [DOC-01](#doc-01) | Widerspruchsfreie aktuelle Statusdokumentation | ✅ Im beschriebenen Umfang geprüft | 3/3 | PLAN-01 | `b5eb5b9` | `b5eb5b9` |
 | [STORE-02](#store-02) | Revisionsschutz bei konkurrierenden Assetänderungen | ✅ Im beschriebenen Umfang geprüft | 3/3 | ARCH-01 | `b5eb5b9` | `b5eb5b9` |
 | [QA-01](#qa-01) | Aktuelle Browserregression für alle Hauptabläufe | ✅ Im beschriebenen Umfang geprüft | 2/2 | ARCH-01 | `b5eb5b9` | `b5eb5b9` |
@@ -370,6 +371,28 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Dateiumfang:** `packages/application/`, `packages/domain/src/revisionExport.ts`, `scripts/check_architecture.mjs`. **Abhängigkeiten:** CORE-01, CORE-02. **Alte IDs:** —.
 
 **Integration:** Main [ccf4fa7](https://github.com/Freadeax/Minecraft-Bauplaner/commit/ccf4fa71c033c2f9415528192a04faed36730660); Pages-Quelle [ccf4fa7](https://github.com/Freadeax/Minecraft-Bauplaner/commit/ccf4fa71c033c2f9415528192a04faed36730660).
+
+### ARCH-02
+
+**Planmodell: Verweisgraph, kompakter Blockdatenspeicher und Migrationsregeln** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Grundstruktur des Planers erweitern“) · Aktualisiert: 2026-11-02T09:08:13.761Z
+
+- [x] ARCH-02-S01: Bestand aller gespeicherten Datensätze, Teilschemata und Verweise dokumentieren (PLAN_MODEL).
+- [x] ARCH-02-S02: Blockzellen gepackt speichern (bp-cells-1, bitgenau, IndexedDB-Migration 4, Sicherungsformat 3).
+- [x] ARCH-02-S03: Gemeinsamer Verweisgraph für Sicherung, Datencheck und „Verwendet in“; Abschnittsstände in Projektsicherungen.
+- [x] ARCH-02-S04: Datencheck um Sammlungen, Vorlagen und Verlaufsverweise erweitern; Datenmodell-Karte im Systemcheck.
+- [ ] ARCH-02-S05: Migration mit echten, über Monate gewachsenen Browserdaten auf Philipps Geräten abnehmen.
+
+**Abnahme:** Inhaltsadressen und Prüfsummen bleiben durch die Speicherform unverändert; ältere Sicherungen bleiben lesbar und werden nicht strenger geprüft; neue Verweise werden nur in planGraph.ts ergänzt.
+
+**Nächste Aktion:** Abnahme der Migration mit echten Browserdaten (S05); danach kompakte Laufzeitform der Zellen als Folge von PERF-02.
+
+**Prüfstand:** Kern- und Chromiumtests bestanden; Abnahme mit echten Bestandsdaten auf Philipps Geräten offen.
+
+**Nachweise:** [tests/plan-model.test.mjs](../tests/plan-model.test.mjs) — 13 Fälle: handgerechnete Bytes, Reihenfolge/negative Grenzen/>32 Bit, Ablehnung nicht exakter Zellen, beschädigte Daten, ganzer Katalog bitgenau (41× kleiner), Sicherungsformat 3, Abschnittsstand in Projektsicherung, whereUsed, Datencheck-Schweregrade.; [tests/e2e/plan-model.e2e.mjs](../tests/e2e/plan-model.e2e.mjs) — Chromium: echte Datenbank Version 3 → Migration 4 packt in place, Datencheck ohne Befund, Datenmodell-Karte; „Verwendet in“ nach Projektanlage.; [docs/architecture/PLAN_MODEL.md](architecture/PLAN_MODEL.md) — Datensätze, Verweisrollen mit Pflichtgrad, Speicherform, Migrationsregeln, Grenzen.
+
+**Dateiumfang:** `packages/domain/src/planGraph.ts`, `packages/domain/src/versionStorage.ts`, `packages/voxel/src/packedCells.ts`, `packages/domain/src/backup.ts`, `packages/domain/src/integrity.ts`, `apps/web/src/app/idbRepository.ts`, `apps/web/src/views/SystemView.tsx`, `apps/web/src/views/library/UsageSection.tsx`, `docs/architecture/PLAN_MODEL.md`, `tests/plan-model.test.mjs`, `tests/e2e/plan-model.e2e.mjs`. **Abhängigkeiten:** ARCH-01, STORE-01, STORE-02. **Alte IDs:** STORE-03.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### DOC-01
 

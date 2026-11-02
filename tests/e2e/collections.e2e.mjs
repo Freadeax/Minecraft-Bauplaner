@@ -172,7 +172,7 @@ test('Vorlagen: eigenes Ensemble, Bearbeiten mit Verlauf, Wiederherstellen, Proj
   await p.goto(`${BASE}#/`);
   const [download] = await Promise.all([p.waitForEvent('download'), p.getByRole('button', { name: 'Alles sichern' }).click()]);
   const file = JSON.parse(await readFile(await download.path(), 'utf8'));
-  assert.equal(file.formatVersion, 2);
+  assert.equal(file.formatVersion, 3); assert.equal(file.baseFormatVersion, 2); // packed container (STORE-03) around format 2
   assert.deepEqual(file.collections.map(c => c.name), ['Türme']);
   assert.deepEqual(file.templates.map(t => t.name).sort(), ['Burg (eigene Vorlage)', 'Mein Wachturm']);
   assert.match(await status(p).innerText(), /1 Sammlung\(en\), 2 Vorlage\(n\)/);

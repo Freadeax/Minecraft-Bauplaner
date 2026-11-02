@@ -1,6 +1,7 @@
 import type { Asset, AssetVersion, BackupLedger, BackupReceipt, Collection, LibraryTemplate, OriginalFile, Project } from '../../../../packages/domain/src/index.js';
 import { addReceipt, checkBackupLedger, emptyLedger } from '../../../../packages/domain/src/index.js';
 import { checkAssetRecord, checkCollectionRecord, checkProjectRecord, checkSchemaVersion, checkTemplateRecord, DOMAIN_SCHEMA_VERSION, LibraryRecordConflictError, nextLibraryRevision } from '../../../../packages/domain/src/index.js';
+import { packVersion, unpackVersion, unpackVersionOrDamaged } from '../../../../packages/domain/src/index.js';
 import { assetRevision, checkStorageBatch, nextAssetRevision } from '../../../../packages/application/src/assetConcurrency.js';
 import { RevisionConflictError } from './repository';
 import type { Repository, StorageBatch, StorageChange, StorageInfo } from './repository';
@@ -8,7 +9,7 @@ import type { Repository, StorageBatch, StorageChange, StorageInfo } from './rep
 /**
  * IndexedDB implementation of the storage boundary (P2-01, B3).
  *
- * Stores: projects, assets, versions (key id), originals (key sha256, bytes as
+ * Stores: projects, assets, versions (key id, cells packed – STORE-03), originals (key sha256, bytes as
  * Blob) and meta. Every write runs in one readwrite transaction; the promise
  * resolves only on `complete`, so a quota or revision error aborts the whole
  * transaction. Other tabs learn about changes via BroadcastChannel; actual
@@ -16,7 +17,7 @@ import type { Repository, StorageBatch, StorageChange, StorageInfo } from './rep
  */
 export const DB_NAME = 'minecraft-bauplaner';
 /** Bump together with a new entry in MIGRATIONS. */
-export const DB_VERSION = 3;
+export const DB_VERSION = 4;
 const STORES = ['projects', 'assets', 'versions', 'originals', 'meta', 'collections', 'templates'] as const;
 type StoreName = typeof STORES[number];
 
@@ -46,6 +47,22 @@ const MIGRATIONS: Record<number, (db: IDBDatabase, tx: IDBTransaction, fail: (er
   3: db => {
     db.createObjectStore('collections', { keyPath: 'id' });
     db.createObjectStore('templates', { keyPath: 'id' });
+  },
+  // STORE-03: version cells as packed byte stream (versionStorage.ts). id, payloadHash and all
+  // other fields stay unchanged; a version that cannot be packed exactly stays plain.
+  4: (_db, tx, fail) => {
+    const request = tx.objectStore('versions').openCursor();
+    request.onsuccess = () => {
+      const cursor = request.result;
+      if (!cursor) return;
+      try {
+        // Only plain schema-1 versions are packed; anything else stays untouched for the read checks to report.
+        const version = cursor.value as AssetVersion;
+        const stored = version?.schemaVersion === 1 ? packVersion(unpackVersion(version)) : version;
+        if (stored !== version) cursor.update(stored);
+        cursor.continue();
+      } catch (error) { fail(error); }
+    };
   },
 };
 
@@ -154,7 +171,7 @@ export class IdbRepository implements Repository {
   async listAssets() { return (await this.all<unknown>('assets')).map(checkAssetRecord); }
   async saveAsset(asset: Asset) { await this.applyBatch({ assets: [asset] }); }
   async listVersions() {
-    const list = await this.all<AssetVersion>('versions');
+    const list = (await this.all<unknown>('versions')).map(unpackVersionOrDamaged);
     for (const v of list) checkSchemaVersion('Version', v);
     return list;
   }
@@ -228,7 +245,7 @@ export class IdbRepository implements Repository {
       const nextTemplates = (batch.templates ?? []).map((t, i) => nextLibraryRevision('template', t, storedTemplates[i]));
       (batch.removeCollections ?? []).forEach((ref, i) => { const stored = removedCollections[i]?.revision ?? 0; if (stored !== ref.revision) throw new LibraryRecordConflictError('collection', ref.id, stored, ref.revision); });
       (batch.removeTemplates ?? []).forEach((ref, i) => { const stored = removedTemplates[i]?.revision ?? 0; if (stored !== ref.revision) throw new LibraryRecordConflictError('template', ref.id, stored, ref.revision); });
-      (batch.versions ?? []).forEach((v, i) => { if (!existingVersions[i]) versions().put(v); });
+      (batch.versions ?? []).forEach((v, i) => { if (!existingVersions[i]) versions().put(packVersion(v)); });
       for (const c of nextCollections) tx.objectStore('collections').put(c);
       for (const t of nextTemplates) tx.objectStore('templates').put(t);
       for (const ref of batch.removeCollections ?? []) tx.objectStore('collections').delete(ref.id);

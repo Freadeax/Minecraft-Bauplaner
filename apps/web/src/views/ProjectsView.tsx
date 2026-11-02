@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { applyOperation, backupFileName, buildRestore, createBackup, createEnsembleProject, createProject, findUpdates, latestReleaseId, latestVersions, summarizeUpdates, MAX_BACKUP_BYTES, missingMembers, newInstance, planRestore, readBackup, resolveProject, ENSEMBLES } from '../../../../packages/domain/src/index.js';
+import { applyOperation, backupFileName, buildRestore, createBackup, createEnsembleProject, createProject, findUpdates, latestReleaseId, latestVersions, summarizeUpdates, MAX_BACKUP_BYTES, missingMembers, newInstance, planRestore, readBackup, resolveProject, serializeBackup, ENSEMBLES } from '../../../../packages/domain/src/index.js';
 import type { Ensemble, Instance, Project, ProjectChoice, RestorePlan } from '../../../../packages/domain/src/index.js';
 import { useApp } from '../app/context';
 import type { StorageInfo } from '../app/repository';
@@ -41,7 +41,7 @@ export function ProjectsView() {
       const file = await createBackup({ projects: projects ?? [], assets: library.assets, versions: library.versions, getOriginal: sha => repo.getOriginal(sha), collections, templates },
         scope, project ? [project.id] : undefined);
       const fileName = backupFileName(file);
-      download(fileName, JSON.stringify(file), 'application/json');
+      download(fileName, serializeBackup(file), 'application/json');
       const ledgerError = await recordBackupReceipt(repo, file, 'download', fileName);
       setMessage(`Sicherungsdatei erzeugt und zum Herunterladen übergeben: ${file.projects.length} Projekt(e), ${file.assets.length} Bauteil(e), ${file.versions.length} Version(en), ${file.originals.length} Originaldatei(en)${file.collections?.length || file.templates?.length ? `, ${file.collections?.length ?? 0} Sammlung(en), ${file.templates?.length ?? 0} Vorlage(n)` : ''}${file.missingOriginals.length ? ` – ${file.missingOriginals.length} Original(e) lokal nicht vorhanden` : ''}. Bitte prüfen, ob „${fileName}“ im Download-Ordner liegt, und eine Kopie außerhalb dieses Browsers ablegen.${ledgerError ? ` ${ledgerError}` : ''}`);
     } catch (e) { setMessage(`Sicherung fehlgeschlagen: ${errorText(e)}`); }

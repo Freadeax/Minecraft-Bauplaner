@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import { checkIntegrity, INTEGRITY_SEVERITY_LABEL, sha256Hex } from '../../../../packages/domain/src/index.js';
-import type { IntegrityReport } from '../../../../packages/domain/src/index.js';
+import { buildPlanGraph, cellStorageEstimate, checkIntegrity, INTEGRITY_SEVERITY_LABEL, PLAN_KIND_LABEL, sha256Hex } from '../../../../packages/domain/src/index.js';
+import type { IntegrityReport, PlanNodeKind } from '../../../../packages/domain/src/index.js';
+import '../datamodel.css';
 import { useApp } from '../app/context';
 import { parseManifest, verifyDelivery } from '../app/delivery';
 import type { DeliveryResult, DeploymentManifest } from '../app/delivery';
@@ -26,6 +27,33 @@ function capabilities(kind: string): Capability[] {
   ];
 }
 
+interface DataModelFacts {
+  readonly counts: Readonly<Record<PlanNodeKind, number>>;
+  readonly references: number;
+  readonly dangling: number;
+  readonly cells: ReturnType<typeof cellStorageEstimate>;
+}
+
+const KINDS: readonly PlanNodeKind[] = ['project', 'asset', 'version', 'original', 'collection', 'template'];
+
+/** Datenmodell (ARCH-02): records per kind, references between them and how compactly block data is stored. */
+function DataModelCard({ model, storedAs }: { model: DataModelFacts | null; storedAs: string }) {
+  return <section className="system-card system-wide datamodel" aria-labelledby="sys-model">
+    <h2 id="sys-model">Datenmodell</h2>
+    <p className="muted">Was gespeichert ist und wie es zusammenhängt: Projekte platzieren feste Bauteilversionen, Vorlagen und Sammlungen verweisen auf Bauteile, Aufnahmen und Gelände auf Originaldateien. Die Zahlen erscheinen nach dem Datencheck.</p>
+    {model ? <>
+      <ul className="datamodel-counts">{KINDS.map(k => <li key={k} data-kind={k}><b>{formatNumber(model.counts[k])}</b><span>{PLAN_KIND_LABEL[k]}</span></li>)}</ul>
+      <dl className="system-facts">
+        <div><dt>Verweise zwischen Datensätzen</dt><dd>{formatNumber(model.references)}{model.dangling ? ` · ${formatNumber(model.dangling)} ins Leere` : ' · alle aufgelöst'}</dd></div>
+        <div><dt>Blockzellen in allen Versionen</dt><dd>{formatNumber(model.cells.cells)}</dd></div>
+        <div><dt>Blockdaten als Einzelobjekte</dt><dd>{mb(model.cells.plainBytes)}</dd></div>
+        <div><dt>Blockdaten gepackt ({storedAs})</dt><dd data-packed-bytes={model.cells.packedBytes}>{mb(model.cells.packedBytes)}{model.cells.plainBytes ? ` · ${Math.max(1, Math.round(model.cells.plainBytes / Math.max(1, model.cells.packedBytes)))}× kleiner` : ''}</dd></div>
+        {model.cells.unpackable > 0 && <div><dt>Ungepackt gespeichert</dt><dd>{formatNumber(model.cells.unpackable)} Version(en)</dd></div>}
+      </dl>
+    </> : <p className="muted">Noch nicht ermittelt.</p>}
+  </section>;
+}
+
 /** Systemcheck (S-01…S-03): build delivery, browser capabilities, storage, data check and session error log. */
 export function SystemView() {
   const { repo, library } = useApp();
@@ -34,6 +62,7 @@ export function SystemView() {
   const [manifestError, setManifestError] = useState('');
   const [delivery, setDelivery] = useState<DeliveryResult | null>(null);
   const [report, setReport] = useState<IntegrityReport | null>(null);
+  const [model, setModel] = useState<DataModelFacts | null>(null);
   const [deep, setDeep] = useState(false);
   const [busy, setBusy] = useState<'' | 'data' | 'delivery'>('');
   const [message, setMessage] = useState('');
@@ -53,7 +82,10 @@ export function SystemView() {
     try {
       const [projects, originalHashes] = await Promise.all([repo.listProjects(), repo.listOriginalHashes()]);
       const assets = await repo.listAssets(), versions = await repo.listVersions();
-      setReport(await checkIntegrity({ projects, assets, versions, originalHashes, ...(deep && { getOriginal: (sha: string) => repo.getOriginal(sha) }) }));
+      const [collections, templates] = await Promise.all([repo.listCollections(), repo.listTemplates()]);
+      setReport(await checkIntegrity({ projects, assets, versions, originalHashes, collections, templates, ...(deep && { getOriginal: (sha: string) => repo.getOriginal(sha) }) }));
+      const graph = buildPlanGraph({ projects, assets, versions, collections, templates, originalHashes });
+      setModel({ counts: graph.counts, references: graph.edges.length, dangling: graph.dangling.length, cells: cellStorageEstimate(versions) });
     } catch (e) { setMessage(`Datencheck nicht möglich: ${errorText(e)}`); }
     finally { setBusy(''); }
   }, [repo, deep]);
@@ -132,6 +164,8 @@ export function SystemView() {
         </tbody></table>}
       </div>}
     </section>
+
+    <DataModelCard model={model} storedAs={repo.kind === 'indexeddb' ? 'Browserspeicher und Sicherungen' : 'nur Sicherungen; Sitzungsspeicher'} />
 
     <section className="system-card system-wide" aria-labelledby="sys-errors">
       <h2 id="sys-errors">Fehlerprotokoll dieser Sitzung</h2>

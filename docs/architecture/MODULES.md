@@ -37,3 +37,7 @@ STORE-02 ergänzt Asset-Revisionsschutz samt Migration und UI-Konfliktbehandlung
 ## Projektberechnung · PERF-01
 
 `application/projectComputation.ts` verbindet reine Auflösung, Anleitung, Materialberichte und Baustellenplanung. Der Browserworker/Client in `apps/web/src/computation` ist ein austauschbarer Transportadapter; Reacts `useProjectComputation` prüft die aktuelle Snapshotbindung. Jobs verändern und speichern keine Projektdaten. Der Fachkern bleibt ohne Browser-/Workerimporte. Abbruch, Deadline, Retry und Cachegrenzen: [PROJECT_COMPUTATION](PROJECT_COMPUTATION.md).
+
+## Planmodell · ARCH-02
+
+Verweise zwischen gespeicherten Datensätzen (Projekt, Bauteil, Version, Original, Sammlung, Vorlage) kennt ausschließlich `domain/planGraph.ts`; Sicherung, Datencheck und „Verwendet in“ nutzen ihn. Die Speicherform der Blockdaten (`voxel/packedCells.ts`, `domain/versionStorage.ts`) ist nur Speichern und Sicherungen bekannt. Vertrag und Regeln für neue Verweise: [PLAN_MODEL](PLAN_MODEL.md).

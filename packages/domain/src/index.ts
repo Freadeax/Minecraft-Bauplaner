@@ -14,7 +14,7 @@ export type { Guide, GuideStep, GuideProgress, StepMaterial, StepPhase, StepStat
 export { revisionForExport, resolveRevision, suggestDataVersion, dataVersionFromProfile } from './revisionExport.js';
 export { computeMaterials, materialsForResolution, materialsForParts, itemsForCell, stackSizeOf, formatStacks, materialsToCsv, MATERIAL_CATALOG_VERSION, SHULKER_SLOTS } from './materials.js';
 export type { MaterialReport, MaterialScope, ItemLine, ItemSource, ItemRule, UnresolvedLine, UnresolvedReason, StateCount, MaterialTotals, Confidence, MaterialOptions } from './materials.js';
-export { createBackup, readBackup, planRestore, buildRestore, backupFileName, checkSchemaVersion, checkProjectRecord, checkAssetRecord, referencedVersionIds, toBase64, fromBase64, BACKUP_FORMAT, BACKUP_FORMAT_VERSION, BACKUP_FORMAT_VERSION_LIBRARY, MAX_BACKUP_BYTES } from './backup.js';
+export { createBackup, readBackup, planRestore, buildRestore, backupFileName, checkSchemaVersion, checkProjectRecord, checkAssetRecord, referencedVersionIds, toBase64, fromBase64, BACKUP_FORMAT, BACKUP_FORMAT_VERSION, BACKUP_FORMAT_VERSION_LIBRARY, BACKUP_FORMAT_VERSION_PACKED, serializeBackup, MAX_BACKUP_BYTES } from './backup.js';
 export type { OriginalFile, Backup, BackupFile, BackupSource, RestoreTarget, RestorePlan, ProjectPlan, AssetPlan, ProjectChoice, RestoreWrite, LibraryRecordPlan } from './backup.js';
 export { FACES, faceOf, anchorCells, capacityOf, validateConnectors, transformConnector, placedConnectors, connectorsMate, handednessFits, linkUsage, checkLinks, findSnapCandidates, snapOperation, linkOperation, unlinkedMates, suggestConnector, placementBounds, nearestSnap, DRAG_SNAP_RADIUS } from './connectors.js';
 export type { FaceName, ConnectorIssue, PlacedConnector, LinkState, LinkStatus, SnapCandidate, SnapQuery } from './connectors.js';
@@ -77,3 +77,7 @@ export { fitAnlageToTerrain, findTerrainSpot, placementColumns, TERRAIN_MODE_LAB
 export type { TerrainMode, AnlageTerrainInput, UnitTerrain, AnlageTerrainFit, TerrainSpot } from './anlagenTerrain.js';
 export { checkPlacement, settlePayload, payloadLookup, needText, changedKeys, PLACEMENT_LABEL } from './placement.js';
 export type { PlacementKind, PlacementIssue, PlacementAid, PlacementReport, PlacementOptions, SettleResult } from './placement.js';
+export { packVersion, unpackVersion, unpackVersionOrDamaged, packVersionForFile, unpackVersionFromFile, isPackedVersionRecord, cellStorageEstimate } from './versionStorage.js';
+export type { StoredPayload, PackedVersionRecord, PackedVersionFileRecord, StoredVersionRecord } from './versionStorage.js';
+export { buildPlanGraph, whereUsed, projectEdges, assetEdges, versionEdges, collectionEdges, templateEdges, projectVersionIds, PLAN_ROLE_LABEL, PLAN_KIND_LABEL } from './planGraph.js';
+export type { PlanGraph, PlanEdge, PlanNodeKind, PlanNodeRef, PlanRole, PlanSource, UsageGroup } from './planGraph.js';

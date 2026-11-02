@@ -89,7 +89,13 @@ test('Datencheck findet eine beschädigte Bauteilversion und eine fehlende Versi
         project.instances = [{ id: 'kaputt', name: 'Verwaiste Instanz', assetVersionId: 'av_gibt_es_nicht', transform: { position: [0, 0, 0], quarterTurns: 0, mirrorX: false }, override: false }];
         projects.put(project);
       };
-      all.onsuccess = () => { const v = all.result[0]; v.payload.cells = v.payload.cells.slice(1); versions.put(v); };
+      all.onsuccess = () => {
+        const v = all.result[0];
+        // Since ARCH-02 cells are stored packed: drop the first run (3 bytes) and adjust the count, like a truncated write would.
+        if (v.packedCells) { const b = v.packedCells.bytes, n = b[2] + 1; v.packedCells = { ...v.packedCells, bytes: b.slice(3), count: v.packedCells.count - n }; }
+        else v.payload.cells = v.payload.cells.slice(1);
+        versions.put(v);
+      };
     };
   }));
   assert.ok(damaged);

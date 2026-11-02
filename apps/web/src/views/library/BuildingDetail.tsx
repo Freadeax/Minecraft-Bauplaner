@@ -10,6 +10,7 @@ import { SchemView, SCHEM_TABS } from '../../schem/SchemView';
 import type { SchemTab } from '../../schem/SchemView';
 import { Thumb } from '../../thumbnail/Thumb';
 import { VersionsSection } from './VersionsSection';
+import { UsageSection } from './UsageSection';
 import { GeneratedInfo } from './GeneratorsPage';
 import { ConnectorEditor } from './ConnectorEditor';
 import type { Highlight } from './ConnectorEditor';
@@ -166,6 +167,7 @@ export function BuildingDetail({ entry, asset, latest, versions, info, group, va
             <div><dt>Anschlüsse</dt><dd>{latest.connectors.map(c => c.id).join(', ') || 'keine'}</dd></div></dl>
           <span className="panel-kicker">VERSIONEN</span>
           <ul className="version-list">{asset.versionIds.map(id => { const v = versions.get(id); return <li key={id}><strong>{v?.label ?? '?'}</strong> <span className="hash">{v?.payloadHash.slice(0, 12) ?? 'fehlt'}</span> {v && <small>{new Date(v.createdAt).toLocaleDateString('de-DE')} · {v.source.format}</small>}</li>; })}</ul>
+          <UsageSection asset={asset} projects={projects} />
           <div className="button-row"><button onClick={onArchive}>{asset.archived ? 'Aus Archiv holen' : 'Archivieren'}</button></div>
         </div>
         <div className="sheet-section">

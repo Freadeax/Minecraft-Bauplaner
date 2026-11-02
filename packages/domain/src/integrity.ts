@@ -3,6 +3,10 @@ import { sha256Hex } from './hash.js';
 import { verifyAssetVersion } from './library.js';
 import { checkAssetRecord, checkProjectRecord, referencedVersionIds } from './backup.js';
 import type { OriginalFile } from './backup.js';
+import { checkCollectionRecord, checkTemplateRecord } from './collections.js';
+import type { Collection, LibraryTemplate } from './collections.js';
+import { buildPlanGraph, PLAN_KIND_LABEL, PLAN_ROLE_LABEL } from './planGraph.js';
+import type { PlanEdge, PlanRole } from './planGraph.js';
 
 /**
  * Datencheck (S-02): read-only consistency check of everything stored in the
@@ -17,13 +21,14 @@ export type IntegrityCode =
   | 'PROJECT_RECORD' | 'ASSET_RECORD' | 'VERSION_HASH'
   | 'MISSING_VERSION' | 'VERSION_WITHOUT_ASSET' | 'VERSION_NOT_LISTED' | 'ASSET_VERSION_MISSING'
   | 'REVISION_ORDER'
-  | 'ORIGINAL_MISSING' | 'ORIGINAL_HASH' | 'ORIGINAL_UNUSED';
+  | 'ORIGINAL_MISSING' | 'ORIGINAL_HASH' | 'ORIGINAL_UNUSED'
+  | 'COLLECTION_RECORD' | 'TEMPLATE_RECORD' | 'DANGLING_REFERENCE';
 
 export interface IntegrityFinding {
   readonly severity: IntegritySeverity;
   readonly code: IntegrityCode;
   /** Record kind and id the finding is about. */
-  readonly subject: { readonly kind: 'project' | 'asset' | 'version' | 'original'; readonly id: string; readonly name?: string };
+  readonly subject: { readonly kind: 'project' | 'asset' | 'version' | 'original' | 'collection' | 'template'; readonly id: string; readonly name?: string };
   readonly message: string;
 }
 
@@ -35,7 +40,32 @@ export interface IntegritySource {
   readonly originalHashes: readonly string[];
   /** Optional: when given, original bytes are re-hashed (slower, finds bit rot). */
   readonly getOriginal?: (sha256: string) => Promise<OriginalFile | null>;
+  /** Own collections and templates (LIB-02/LIB-03); checked when given. */
+  readonly collections?: readonly Collection[];
+  readonly templates?: readonly LibraryTemplate[];
 }
+
+/**
+ * References the specific checks above do not cover yet, judged by the
+ * reference graph (ARCH-02). Required references that dangle are errors,
+ * history and convenience references warnings or hints.
+ */
+const DANGLING: Partial<Record<PlanRole, { readonly severity: IntegritySeverity; readonly advice: string }>> = {
+  pin: { severity: 'warning', advice: 'Die Einfrierung zeigt auf eine fehlende Version; im Reiter „Updates“ lösen.' },
+  'section-snapshot': { severity: 'warning', advice: 'Dieser Abschnittsstand lässt sich nicht vollständig wiederherstellen; Sicherung mit der Version einspielen.' },
+  'edited-from': { severity: 'info', advice: 'Die Ausgangsversion der Bearbeitung ist nicht mehr gespeichert; die Version selbst ist vollständig.' },
+  'local-to': { severity: 'info', advice: 'Lokale Änderung eines Projekts, das nicht mehr gespeichert ist.' },
+  'collection-asset': { severity: 'warning', advice: 'Der Sammlungseintrag zeigt ins Leere; Eintrag entfernen oder Bauteil wiederherstellen.' },
+  'collection-version': { severity: 'warning', advice: 'Die fest gewählte Version fehlt; der Eintrag folgt nun der neuesten Version.' },
+  'collection-template': { severity: 'warning', advice: 'Die Vorlage wurde gelöscht; Eintrag entfernen.' },
+  'collection-parent': { severity: 'info', advice: 'Der übergeordnete Ordner fehlt; die Sammlung erscheint oben.' },
+  'template-member': { severity: 'error', advice: 'Die Vorlage kann so nicht übernommen werden; Sicherung mit der Version einspielen.' },
+};
+const severityOf = (e: PlanEdge): IntegritySeverity | null => {
+  const rule = DANGLING[e.role];
+  if (!rule) return null;
+  return e.role === 'template-member' && !e.required ? 'info' : rule.severity;
+};
 
 export interface IntegrityReport {
   readonly checkedAt: string;
@@ -106,6 +136,27 @@ export async function checkIntegrity(source: IntegritySource, now: () => Date = 
       if (!file) add({ severity: 'warning', code: 'ORIGINAL_MISSING', subject, message: 'Originaldatei ist gelistet, aber nicht lesbar.' });
       else if (await sha256Hex(file.bytes) !== sha) add({ severity: 'error', code: 'ORIGINAL_HASH', subject: { ...subject, name: file.fileName }, message: 'Prüfsumme der Originaldatei stimmt nicht – Datei ist beschädigt.' });
     } catch (e) { add({ severity: 'warning', code: 'ORIGINAL_MISSING', subject, message: `Originaldatei nicht lesbar: ${msg(e)}` }); }
+  }
+
+  const collections = (source.collections ?? []).filter(c => {
+    try { checkCollectionRecord(c); return true; } catch (e) { add({ severity: 'error', code: 'COLLECTION_RECORD', subject: { kind: 'collection', id: c.id, name: c.name }, message: msg(e) }); return false; }
+  });
+  const templates = (source.templates ?? []).filter(t => {
+    try { checkTemplateRecord(t); return true; } catch (e) { add({ severity: 'error', code: 'TEMPLATE_RECORD', subject: { kind: 'template', id: t.id, name: t.name }, message: msg(e) }); return false; }
+  });
+  const graph = buildPlanGraph({ projects: source.projects, assets: source.assets, versions: source.versions, collections, templates });
+  const names = new Map<string, string>([...source.projects.map(p => [`project:${p.id}`, p.name] as const), ...collections.map(c => [`collection:${c.id}`, c.name] as const),
+    ...templates.map(t => [`template:${t.id}`, t.name] as const), ...source.versions.map(v => [`version:${v.id}`, v.label] as const)]);
+  const reported = new Set<string>();
+  for (const e of graph.dangling) {
+    const severity = severityOf(e);
+    if (!severity) continue;
+    const once = `${e.from.kind}:${e.from.id}|${e.role}|${e.to.id}`;
+    if (reported.has(once)) continue;
+    reported.add(once);
+    const name = names.get(`${e.from.kind}:${e.from.id}`);
+    add({ severity, code: 'DANGLING_REFERENCE', subject: { kind: e.from.kind as IntegrityFinding['subject']['kind'], id: e.from.id, ...(name !== undefined && { name }) },
+      message: `${PLAN_ROLE_LABEL[e.role]}${e.detail ? ` (${e.detail})` : ''} verweist auf ${PLAN_KIND_LABEL[e.to.kind]} ${e.to.id}, ${e.to.kind === 'asset' || e.to.kind === 'project' ? 'das' : 'die'} nicht gespeichert ist. ${DANGLING[e.role]!.advice}` });
   }
 
   const rank: Record<IntegritySeverity, number> = { error: 0, warning: 1, info: 2 };

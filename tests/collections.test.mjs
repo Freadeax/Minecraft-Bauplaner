@@ -252,7 +252,7 @@ test('backups: format 1 unchanged without own records; format 2 roundtrip keeps 
   assert.deepEqual((await readBackup(JSON.stringify(plain))).collections, []);
   await assert.rejects(readBackup(JSON.stringify({ ...file, collections: [{ ...col, name: 'manipuliert' }] })), /Prüfsumme/);
   await assert.rejects(readBackup(JSON.stringify({ ...plain, collections: [] })), /format 1 darf keine/i);
-  await assert.rejects(readBackup(JSON.stringify({ ...file, formatVersion: 3 })), e => e.code === 'SCHEMA_NEWER');
+  await assert.rejects(readBackup(JSON.stringify({ ...file, formatVersion: 4 })), e => e.code === 'SCHEMA_NEWER'); // 3 = packed container (STORE-03); 4 is newer
   await assert.rejects(createBackup({ ...source, versions: new Map([...allVersions].filter(([id]) => id !== tower.id)), collections: [], templates: [tpl] }, 'all'), /Vorlage verweist auf fehlende Version/);
 
   // Restore: new records are added, identical ones skipped, differing ones added as copies – the local record stays.

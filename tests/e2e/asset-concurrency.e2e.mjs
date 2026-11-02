@@ -51,7 +51,7 @@ test('v1 upgrade preserves records and originals, closes old client and enforces
     const error=results[1].reason;
     return {DB_VERSION,preservedRevision,closed,migrated:left,winner,versionIds:versions.map(v=>v.id),bytes,orphan:await a.getOriginal('orphan-original'),conflict:{name:error?.name,assetId:error?.assetId,stored:error?.stored,base:error?.base},statuses:results.map(r=>r.status)};
   },asset);
-  assert.equal(result.DB_VERSION,3);assert.equal(result.preservedRevision,7);assert.match(result.closed,/neu laden/);
+  assert.equal(result.DB_VERSION,4);assert.equal(result.preservedRevision,7);assert.match(result.closed,/neu laden/);
   assert.deepEqual(result.migrated,{...asset,revision:1});
   assert.deepEqual(result.statuses,['fulfilled','rejected']);
   assert.deepEqual(result.conflict,{name:'AssetRevisionConflictError',assetId:asset.id,stored:2,base:1});

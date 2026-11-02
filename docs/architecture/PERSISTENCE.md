@@ -17,7 +17,7 @@ Stand: 27.10.2026. Umsetzung zu P2-01, R-023/R-024. Code: `apps/web/src/app/idbR
 
 ## IndexedDB
 
-- Datenbank `minecraft-bauplaner`, Version `DB_VERSION = 3`. Speicher: `projects`, `assets`, `versions` (Schlüssel `id`), `originals` (Schlüssel `sha256`, Bytes als `Blob`), `meta` (Schema-Eintrag); seit Migration 3 zusätzlich `collections` und `templates` für eigene Sammlungen und Vorlagen ([COLLECTIONS](COLLECTIONS.md)). Migration 2 ergänzt die Assetrevision.
+- Datenbank `minecraft-bauplaner`, Version `DB_VERSION = 4`. Speicher: `projects`, `assets`, `versions` (Schlüssel `id`), `originals` (Schlüssel `sha256`, Bytes als `Blob`), `meta` (Schema-Eintrag); seit Migration 3 zusätzlich `collections` und `templates` für eigene Sammlungen und Vorlagen ([COLLECTIONS](COLLECTIONS.md)). Migration 2 ergänzt die Assetrevision. Migration 4 (STORE-03) speichert die Zellen jeder Version gepackt (`packedCells`, Inhaltsadressen unverändert, siehe [PLAN_MODEL](PLAN_MODEL.md)).
 - **Migration:** `MIGRATIONS[n]` hebt Version n−1 auf n; beim Öffnen laufen alle fehlenden Schritte nacheinander in der Upgrade-Transaktion. Freigegebene Schritte werden nie verändert, nur ergänzt. Jeder gelesene Datensatz prüft zusätzlich `schemaVersion` (`checkSchemaVersion`): neuere Daten ⇒ Fehler „neuere App-Version“, nie stilles Umschreiben.
 - **Neuere Datenbank** (`VersionError`) ⇒ `StorageNewerError`, die App zeigt den Fehler statt auf Sitzungsspeicher auszuweichen (sonst würden neue Arbeiten scheinbar gespeichert, aber getrennt von den echten Daten liegen).
 - **Upgrade in anderem Tab:** `onversionchange` schließt die Verbindung, weitere Schreibversuche melden „Bitte Seite neu laden“. Blockiertes Öffnen wird als verständlicher Fehler gemeldet.
@@ -41,6 +41,8 @@ JSON-Datei `bauplaner-<projekt|alle-projekte>-<datum>.bauplaner.json`:
 | `originals` | `{sha256, fileName, mediaType, size, createdAt, base64}` je referenzierter Originaldatei |
 | `missingOriginals` | Originale, die lokal schon fehlten (sichtbar, nie erfunden) |
 | `contentSha256` | SHA-256 über kanonisches JSON von `projects/assets/versions/originals` |
+
+Seit STORE-03 schreibt die App **Format 3**: derselbe Inhalt, Versionszellen gepackt (`packedCells.base64`), `baseFormatVersion` nennt 1 oder 2; die Prüfsumme gilt für den entpackten Inhalt ([PLAN_MODEL](PLAN_MODEL.md)). Format 1 und 2 bleiben lesbar.
 
 Vor dem Schreiben wird jede Version mit `verifyAssetVersion` geprüft und jedes Original neu gehasht; beschädigte lokale Daten brechen die Sicherung ab.
 

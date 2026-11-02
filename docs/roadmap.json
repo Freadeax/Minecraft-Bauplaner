@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T08:56:28.176Z",
+  "updatedAt": "2026-11-02T09:08:13.761Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -620,6 +620,90 @@
         "pagesSource": "ccf4fa71c033c2f9415528192a04faed36730660"
       },
       "updatedAt": "2026-11-01T09:33:55.354Z"
+    },
+    {
+      "id": "ARCH-02",
+      "title": "Planmodell: Verweisgraph, kompakter Blockdatenspeicher und Migrationsregeln",
+      "phase": "P1",
+      "priority": "P0",
+      "status": "implemented",
+      "owner": "Claude (Thread „Grundstruktur des Planers erweitern“)",
+      "dependencies": [
+        "ARCH-01",
+        "STORE-01",
+        "STORE-02"
+      ],
+      "scope": [
+        "packages/domain/src/planGraph.ts",
+        "packages/domain/src/versionStorage.ts",
+        "packages/voxel/src/packedCells.ts",
+        "packages/domain/src/backup.ts",
+        "packages/domain/src/integrity.ts",
+        "apps/web/src/app/idbRepository.ts",
+        "apps/web/src/views/SystemView.tsx",
+        "apps/web/src/views/library/UsageSection.tsx",
+        "docs/architecture/PLAN_MODEL.md",
+        "tests/plan-model.test.mjs",
+        "tests/e2e/plan-model.e2e.mjs"
+      ],
+      "legacyIds": [
+        "STORE-03"
+      ],
+      "steps": [
+        {
+          "id": "ARCH-02-S01",
+          "title": "Bestand aller gespeicherten Datensätze, Teilschemata und Verweise dokumentieren (PLAN_MODEL).",
+          "done": true
+        },
+        {
+          "id": "ARCH-02-S02",
+          "title": "Blockzellen gepackt speichern (bp-cells-1, bitgenau, IndexedDB-Migration 4, Sicherungsformat 3).",
+          "done": true
+        },
+        {
+          "id": "ARCH-02-S03",
+          "title": "Gemeinsamer Verweisgraph für Sicherung, Datencheck und „Verwendet in“; Abschnittsstände in Projektsicherungen.",
+          "done": true
+        },
+        {
+          "id": "ARCH-02-S04",
+          "title": "Datencheck um Sammlungen, Vorlagen und Verlaufsverweise erweitern; Datenmodell-Karte im Systemcheck.",
+          "done": true
+        },
+        {
+          "id": "ARCH-02-S05",
+          "title": "Migration mit echten, über Monate gewachsenen Browserdaten auf Philipps Geräten abnehmen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Inhaltsadressen und Prüfsummen bleiben durch die Speicherform unverändert; ältere Sicherungen bleiben lesbar und werden nicht strenger geprüft; neue Verweise werden nur in planGraph.ts ergänzt."
+      ],
+      "next": "Abnahme der Migration mit echten Browserdaten (S05); danach kompakte Laufzeitform der Zellen als Folge von PERF-02.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/plan-model.test.mjs",
+          "note": "13 Fälle: handgerechnete Bytes, Reihenfolge/negative Grenzen/>32 Bit, Ablehnung nicht exakter Zellen, beschädigte Daten, ganzer Katalog bitgenau (41× kleiner), Sicherungsformat 3, Abschnittsstand in Projektsicherung, whereUsed, Datencheck-Schweregrade."
+        },
+        {
+          "path": "tests/e2e/plan-model.e2e.mjs",
+          "note": "Chromium: echte Datenbank Version 3 → Migration 4 packt in place, Datencheck ohne Befund, Datenmodell-Karte; „Verwendet in“ nach Projektanlage."
+        },
+        {
+          "path": "docs/architecture/PLAN_MODEL.md",
+          "note": "Datensätze, Verweisrollen mit Pflichtgrad, Speicherform, Migrationsregeln, Grenzen."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Kern- und Chromiumtests bestanden; Abnahme mit echten Bestandsdaten auf Philipps Geräten offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-02T09:08:13.761Z"
     },
     {
       "id": "DOC-01",
@@ -6933,6 +7017,51 @@
           "done": 6,
           "total": 8,
           "next": "Philipp testet 0.4.0 (Platzierhilfe) auf server.lmnt-gaming.net; danach Stufe 4."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T09:08:13.761Z",
+      "kind": "progress",
+      "items": [
+        "ARCH-02"
+      ],
+      "summary": "Planmodell: gemeinsamer Verweisgraph (Sicherung, Datencheck, Verwendet in), Blockzellen gepackt bp-cells-1 (Katalog 41× kleiner, Inhaltsadressen unverändert), IndexedDB v4, Sicherungsformat 3, Abschnittsstände in Projektsicherungen; 539 Node-/100 Browsertests, Abnahme mit echten Bestandsdaten offen.",
+      "files": [
+        "apps/web/src/app/idbRepository.ts",
+        "apps/web/src/datamodel.css",
+        "apps/web/src/views/ProjectsView.tsx",
+        "apps/web/src/views/SystemView.tsx",
+        "apps/web/src/views/library/BuildingDetail.tsx",
+        "apps/web/src/views/library/UsageSection.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/DOMAIN.md",
+        "docs/architecture/MODULES.md",
+        "docs/architecture/PERSISTENCE.md",
+        "docs/architecture/PLAN_MODEL.md",
+        "packages/domain/src/backup.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/integrity.ts",
+        "packages/domain/src/planGraph.ts",
+        "packages/domain/src/versionStorage.ts",
+        "packages/voxel/src/index.ts",
+        "packages/voxel/src/packedCells.ts",
+        "tests/collections.test.mjs",
+        "tests/e2e/asset-concurrency.e2e.mjs",
+        "tests/e2e/collections.e2e.mjs",
+        "tests/e2e/plan-model.e2e.mjs",
+        "tests/e2e/stability.e2e.mjs",
+        "tests/plan-model.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "ARCH-02",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme der Migration mit echten Browserdaten (S05); danach kompakte Laufzeitform der Zellen als Folge von PERF-02."
         }
       ]
     }

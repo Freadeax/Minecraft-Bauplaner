@@ -1877,3 +1877,42 @@ Stufe 3 (0.4.0): Platzierhilfe wie Easy Place, aber serverkonform (Vorhersage, S
 - `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java`
 - `scripts/bridge_gametest.mjs`
 
+## 2026-11-02T09:08:13.761Z · progress
+
+**Aufgaben:** ARCH-02
+
+Planmodell: gemeinsamer Verweisgraph (Sicherung, Datencheck, Verwendet in), Blockzellen gepackt bp-cells-1 (Katalog 41× kleiner, Inhaltsadressen unverändert), IndexedDB v4, Sicherungsformat 3, Abschnittsstände in Projektsicherungen; 539 Node-/100 Browsertests, Abnahme mit echten Bestandsdaten offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| ARCH-02 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme der Migration mit echten Browserdaten (S05); danach kompakte Laufzeitform der Zellen als Folge von PERF-02. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/idbRepository.ts`
+- `apps/web/src/datamodel.css`
+- `apps/web/src/views/ProjectsView.tsx`
+- `apps/web/src/views/SystemView.tsx`
+- `apps/web/src/views/library/BuildingDetail.tsx`
+- `apps/web/src/views/library/UsageSection.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/DOMAIN.md`
+- `docs/architecture/MODULES.md`
+- `docs/architecture/PERSISTENCE.md`
+- `docs/architecture/PLAN_MODEL.md`
+- `packages/domain/src/backup.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/integrity.ts`
+- `packages/domain/src/planGraph.ts`
+- `packages/domain/src/versionStorage.ts`
+- `packages/voxel/src/index.ts`
+- `packages/voxel/src/packedCells.ts`
+- `tests/collections.test.mjs`
+- `tests/e2e/asset-concurrency.e2e.mjs`
+- `tests/e2e/collections.e2e.mjs`
+- `tests/e2e/plan-model.e2e.mjs`
+- `tests/e2e/stability.e2e.mjs`
+- `tests/plan-model.test.mjs`
+

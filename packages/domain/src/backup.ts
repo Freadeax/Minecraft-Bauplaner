@@ -6,8 +6,10 @@ import { checkTransform } from './project.js';
 import { deepFreeze, verifyAssetVersion } from './library.js';
 import { checkSite } from './site.js';
 import { checkWorldPlacement } from './worldmap.js';
-import { checkUpdates, updateLogVersionIds } from './updateState.js';
+import { checkUpdates } from './updateState.js';
+import { projectVersionIds } from './planGraph.js';
 import { checkTerrainReference } from './terrainSurvey.js';
+import { packVersionForFile, unpackVersionFromFile } from './versionStorage.js';
 
 /** Original files a project refers to: game recordings and the terrain survey (TERRAIN-01). */
 const projectOriginals = (p: Pick<Project, 'scanHistory' | 'terrain'>): string[] => [...(p.scanHistory ?? []).map(s => s.sha256), ...(p.terrain ? [p.terrain.sha256] : [])];
@@ -39,6 +41,14 @@ export const BACKUP_FORMAT_VERSION = 1;
  * and older app versions can still read them. Format 1 files remain valid.
  */
 export const BACKUP_FORMAT_VERSION_LIBRARY = 2;
+/**
+ * Format 3 (STORE-03) is a storage container around format 1 or 2: version
+ * cells are packed (`packedCells`, Base64) and `baseFormatVersion` names the
+ * logical format. `contentSha256` is computed over the unpacked logical content
+ * exactly as in the base format, so a receipt and the checksum stay the same
+ * whether a file was written packed or plain. Written by {@link serializeBackup}.
+ */
+export const BACKUP_FORMAT_VERSION_PACKED = 3;
 /** Upper bound for a backup file read in the browser. */
 export const MAX_BACKUP_BYTES = 100_000_000;
 
@@ -87,11 +97,9 @@ export function checkSchemaVersion(kind: string, record: { readonly schemaVersio
 
 /** Version ids an instance list and its frozen revisions depend on. */
 export function referencedVersionIds(project: Project): Set<string> {
-  const ids = new Set(project.instances.map(i => i.assetVersionId));
-  for (const r of project.revisions) for (const i of r.instances) ids.add(i.assetVersionId);
-  // Versions an update can return to stay reproducible after a restore (UPDATE-01).
-  for (const id of updateLogVersionIds(project)) ids.add(id);
-  return ids;
+  // Required references of the reference graph (planGraph.ts): instances, frozen revisions and
+  // versions an update can return to (UPDATE-01). History references are added by createBackup.
+  return projectVersionIds(project, true);
 }
 
 export function toBase64(bytes: Uint8Array): string {
@@ -138,6 +146,8 @@ export async function createBackup(source: BackupSource, scope: 'project' | 'all
     if (!v) throw new DomainError('BACKUP', `Projekt „${p.name}“ verweist auf fehlende Version ${id}; Sicherung wäre unvollständig`);
     assetIds.add(v.assetId);
   }
+  // History references (section snapshots, frozen pins): included when stored, never a reason to fail.
+  for (const p of projects) for (const id of projectVersionIds(p)) { const v = source.versions.get(id); if (v) assetIds.add(v.assetId); }
   // Full backups keep own collections and templates with every version they pin (also of shipped assets).
   const collections = scope === 'all' ? [...(source.collections ?? [])].sort(byId) : [];
   const templates = scope === 'all' ? [...(source.templates ?? [])].sort(byId) : [];
@@ -170,6 +180,25 @@ export async function createBackup(source: BackupSource, scope: 'project' | 'all
     format: BACKUP_FORMAT, formatVersion: library ? BACKUP_FORMAT_VERSION_LIBRARY : BACKUP_FORMAT_VERSION, schemaVersion: DOMAIN_SCHEMA_VERSION, createdAt: new Date().toISOString(), scope,
     ...content, missingOriginals: missing.sort(), contentSha256: await contentHash(content),
   };
+}
+
+/**
+ * Text of a backup file. Versions are packed (format 3) whenever that is exact;
+ * otherwise, or for a file without versions, the logical file is written as is.
+ */
+export function serializeBackup(file: BackupFile): string {
+  const versions = file.versions.map(v => packVersionForFile(v, toBase64));
+  if (!versions.some(v => 'packedCells' in v)) return JSON.stringify(file);
+  return JSON.stringify({ ...file, formatVersion: BACKUP_FORMAT_VERSION_PACKED, baseFormatVersion: file.formatVersion, versions });
+}
+
+/** Turns a format 3 container back into its logical base format; other formats pass through. */
+function unpackBackupContainer(raw: Record<string, unknown>): Record<string, unknown> {
+  if (raw.formatVersion !== BACKUP_FORMAT_VERSION_PACKED) return raw;
+  const base = raw.baseFormatVersion;
+  if (base !== BACKUP_FORMAT_VERSION && base !== BACKUP_FORMAT_VERSION_LIBRARY) throw new DomainError('BACKUP', `Gepackte Sicherung nennt unbekanntes Grundformat ${String(base)}`);
+  const { baseFormatVersion: _b, ...rest } = raw;
+  return { ...rest, formatVersion: base, versions: arr(raw.versions, 'Versionen').map(v => unpackVersionFromFile(v, fromBase64)) };
 }
 
 export function backupFileName(file: BackupFile): string {
@@ -265,9 +294,11 @@ export async function readBackup(text: string): Promise<Backup> {
   let raw: unknown;
   try { raw = JSON.parse(text); } catch { throw new DomainError('BACKUP', 'Keine gültige Sicherungsdatei (kein JSON)'); }
   if (!isObj(raw) || raw.format !== BACKUP_FORMAT) throw new DomainError('BACKUP', 'Keine Minecraft-Bauplaner-Sicherung');
+  raw = unpackBackupContainer(raw);
+  if (!isObj(raw)) throw new DomainError('BACKUP', 'Keine Minecraft-Bauplaner-Sicherung');
   if (raw.formatVersion !== BACKUP_FORMAT_VERSION && raw.formatVersion !== BACKUP_FORMAT_VERSION_LIBRARY) {
-    throw new DomainError(typeof raw.formatVersion === 'number' && raw.formatVersion > BACKUP_FORMAT_VERSION_LIBRARY ? 'SCHEMA_NEWER' : 'BACKUP',
-      `Sicherungsformat ${String(raw.formatVersion)} wird nicht unterstützt (erwartet ${BACKUP_FORMAT_VERSION} oder ${BACKUP_FORMAT_VERSION_LIBRARY})`);
+    throw new DomainError(typeof raw.formatVersion === 'number' && raw.formatVersion > BACKUP_FORMAT_VERSION_PACKED ? 'SCHEMA_NEWER' : 'BACKUP',
+      `Sicherungsformat ${String(raw.formatVersion)} wird nicht unterstützt (erwartet ${BACKUP_FORMAT_VERSION} bis ${BACKUP_FORMAT_VERSION_PACKED})`);
   }
   const withLibrary = raw.formatVersion === BACKUP_FORMAT_VERSION_LIBRARY;
   if (!withLibrary && (raw.collections !== undefined || raw.templates !== undefined)) throw new DomainError('BACKUP', 'Sicherungsformat 1 darf keine Sammlungen oder Vorlagen enthalten');

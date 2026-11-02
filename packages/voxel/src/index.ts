@@ -12,3 +12,5 @@ export { UNLOADED_STATE } from './observation.js';
 export type { ScanMeta, WorldScan } from './observation.js';
 export { vanillaBlockIds, vanillaBlockProperties, isVanillaBlock, BLOCK_REGISTRY_VERSION } from './blockRegistry.js';
 export * from './blocklogic/index.js';
+export { packCells, unpackCells, PACKED_CELLS_ENCODING, PackedCellsError } from './packedCells.js';
+export type { PackedCells } from './packedCells.js';
