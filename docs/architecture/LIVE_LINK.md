@@ -23,6 +23,7 @@ Die Weltkarte (`#/karte`) wird zur Live-Karte: Die Bauplaner-Mod (Fabric 26.3, a
 | `POST /v1/plan?name&dimension&x&y&z&turns&mirror` (Rumpf: `.schem`) | Plan wird geprüft (`PlanModel.parse`), atomar nach `bauplaner/plans/` geschrieben und genau so als Hologramm platziert |
 | `POST /v1/placement` `{dimension,x,y,z,turns,mirror}` | verschiebt das aktuelle Hologramm |
 | `POST /v1/marks` `{dimension, items:[Weltplan-Einträge]}` | Markierungen, gespeichert in `bauplaner/markierungen.json` |
+| `GET /v1/scan` (ab 0.7.1, `hello.features` enthält `scan`) | **Baustand**: die ganze Planbox des Hologramms als Aufnahme (`bauplaner-scan` v1, gzip, `application/octet-stream`, Dateiname im Kopf `X-Bauplaner-File`, per `Access-Control-Expose-Headers` freigegeben). In **Plankoordinaten und Planausrichtung**, auch wenn das Hologramm gedreht oder gespiegelt ist (`ScanJob.inProjectFrame`, `PlanScan`); `WorldAnchor` = Lage des Hologramms. Höchstens 4 000 000 Zellen (413), Hologramm in anderer Dimension als der Spieler: 409. Die Datei landet zusätzlich in `bauplaner/scans/`. |
 | `POST /v1/unpair` | widerruft den eigenen Schlüssel |
 
 Fehler: `{error:"…"}` mit Status 400/401/403/404/409/411/413/503. Arbeit im Spiel läuft über den Spielthread (`CompletableFuture.supplyAsync(…, mc)`, 3 s Zeitlimit → 503).
@@ -40,17 +41,22 @@ Code: `mods/bauplaner-bridge/mod-core/…/mod/live/` (versionsneutral: `LiveLink
 - Werkzeugleiste über der Draufsicht: Auswählen (V), Bauplatz (B, Umschalt rastet an Chunks), Weg (W, Doppelklick/Eingabe beendet, Rücktaste nimmt zurück), Punkt (P), Messen (M: Luftlinie, Weg auf dem Raster, Höhenunterschied, Nether-Entfernung). Gewählte Projekte und Einträge lassen sich ziehen; Verschieben eines Projekts ist ein normaler, rückgängig machbarer Projektschritt.
 - Bauplatz: Projekt zuordnen, „hierher setzen“, „Gelände aus dem Spiel ins Projekt“ (aus den gelesenen Chunks eine TERRAIN-01-Geländeaufnahme, `terrain.set`).
 - Panel „Spiel“: Verbinden, Koppeln, Spielerposition mit Blickrichtung, Folgen (auch über Dimensionen), Spur der letzten 10 Minuten, „Gelände um mich lesen“ (etwa 10 Chunks Umkreis, gefärbte Kacheln unter den Projekten, Höhe im Zeiger), Hologramm-Fortschritt mit Abgleich zur Weltkarte („Lage aus dem Spiel übernehmen“), „Weltplan ins Spiel senden“.
+- **Baustand aus dem Spiel (MAP-05, Mod 0.7.1)** im Hologramm-Kasten des Panels „Spiel“: „⟳ Baustand holen“ liest die Planbox über `GET /v1/scan`, vergleicht sie mit `gameCheck.ts` genau wie eine importierte Aufnahme (Revision der Aufnahme als Grundlage) und speichert sie im Aufnahmeverlauf des Projekts (Reiter „Bauen“ zeigt sie mit Koordinaten). Anzeige: richtige Blöcke, fehlend/falsch/Zustand/abbauen, Schritte bestätigt/teilweise/abweichend, Ebenen von oben nach unten mit Balken (Klick filtert die Karte auf eine Höhe), Abweichungen als farbige Spalten auf der Draufsicht (dringendste je Spalte: falsch > Zustand > abbauen > fehlt; „nicht geladen“ wird nicht gezeichnet). „N bestätigte Schritte abhaken“ ist ein Kartenschritt mit Rückgängig; Haken ändern sich nie von selbst. „alle 20 s nachsehen“ holt den Baustand wiederholt, ohne jedes Mal zu speichern. Ältere Mods ohne `scan` bekommen einen Hinweis auf das Update.
+- Weltplan automatisch abgleichen (Schalter, im Browser gemerkt): jede Änderung geht 1,5 s nach der letzten Änderung als Markierungen ins Spiel.
+- Kontextmenü auf freier Fläche: „Hologramm hierher setzen“ (Projektursprung auf diese Spalte, Höhe aus dem Gelände, Drehung bleibt) und „Diese Stelle auf BlueMap/… zeigen ↗“ (Vorlage aus dem Feld „Live-Karte“). Für ein gewähltes Projekt zusätzlich „▶ Ins Spiel senden“.
 - Projekt: „Ins Spiel senden“ (Revision einfrieren, `.schem`, an genau die Kartenlage), „Hier platzieren, wo ich stehe“.
 
 ## Prüfung
 
 - `tests/worldplan.test.mjs`, `tests/livelink.test.mjs` (Domäne), `mod-core` `LiveLinkTest` (Kopplung, Ursprung, Host, Grenzen).
+- `tests/game-check.test.mjs` (Ebenen, Kartenspalten, Schrittzählung), `tests/e2e/game-progress.e2e.mjs` (Baustand holen, Ebenenfilter, Abweichungen auf der Karte, Abhaken mit Rückgängig, Speicherung im Projekt, automatischer Weltplanabgleich, Hologramm per Kontextmenü, Hinweis bei alter Mod); `mod-core` `ModCoreTest` (gedrehter Baustand in Plankoordinaten, nicht geladene Chunks) und `LiveLinkTest` (Route, Kopf, Freigabe).
 - `tests/e2e/livelink.e2e.mjs` gegen den Mod-Simulator `tests/e2e/modSimulator.mjs` (gleiche Routen und Regeln).
-- Spieltest `scripts/test_bridge_ingame.sh`: echtes Minecraft 26.3, `/bauplaner verbinden`, alle Anfragen über 127.0.0.1, Prüfung mit den Lesern der Website (`live.json`).
+- Spieltest `scripts/test_bridge_ingame.sh`: echtes Minecraft 26.3, `/bauplaner verbinden`, alle Anfragen über 127.0.0.1, Prüfung mit den Lesern der Website (`live.json`); seit 0.7.1 auch der Baustand am gebauten Plan (gleich der Live-Zählung der Mod, falscher Block an der erwarteten Stelle) und gedreht auf leerem Boden (gleiche Box, nichts gebaut).
 
 ## Grenzen
 
 - Das Gelände kommt nur aus Chunks, die der Client gerade geladen hat (Sichtweite). Höhlen und Überhänge unter der Oberfläche fehlen (2,5D wie TERRAIN-01).
-- Die Weltkarte plant Projekte ungedreht; ein im Spiel gedrehtes Hologramm wird gemeldet, aber nicht übernommen.
 - Seit Mod 0.7.0: `POST /v1/section {section}` wählt den Bauabschnitt im Spiel (0 = alle); der Status meldet `hologram.section` und `hologram.sections`.
+- Die Weltkarte plant Projekte ungedreht; ein im Spiel gedrehtes Hologramm wird gemeldet, aber nicht übernommen. Der Baustand funktioniert trotzdem (Plankoordinaten); die Abweichungen erscheinen an der Kartenlage des Projekts.
+- BlueMap wird nicht eingebettet und nicht abgefragt: `server.lmnt-gaming.net:8100` läuft über `http://` und ist aus einer `https`-Seite heraus gesperrt. Der echte Vergleich läuft über die Mod (sie liest die tatsächlichen Blöcke), BlueMap bleibt der Blick von oben per Link.
 - Fabric 26.3 und seit 0.6.0 NeoForge 26.3 (gemeinsamer Code in `hologram-26.3`, `LiveLink`/`MarksRenderer`); Forge und Paper haben die Verbindung noch nicht.

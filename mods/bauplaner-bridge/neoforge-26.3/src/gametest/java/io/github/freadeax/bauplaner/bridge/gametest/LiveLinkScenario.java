@@ -73,6 +73,13 @@ final class LiveLinkScenario {
         steps.add(new ClientScenario.Step(40, mc -> {}));
         request(steps, out, "section", () -> post(http, "/v1/section", "{\"section\":2}", token[0]));
         request(steps, out, "after", () -> get(http, "/v1/status", token[0], SITE));
+        // MAP-05 Baustand, as in the Fabric test: back onto the built plan, then turned once on empty ground.
+        request(steps, out, "back", () -> post(http, "/v1/placement", "{\"dimension\":\"minecraft:overworld\",\"x\":" + a[0] + ",\"y\":" + a[1] + ",\"z\":" + a[2] + ",\"turns\":0,\"mirror\":false}", token[0]));
+        steps.add(new ClientScenario.Step(10, mc -> {}));
+        request(steps, out, "scan", () -> download(http, token[0], s.io().resolve("live-scan.schem")));
+        request(steps, out, "turned", () -> post(http, "/v1/placement", "{\"dimension\":\"minecraft:overworld\",\"x\":" + (a[0] + 20) + ",\"y\":" + a[1] + ",\"z\":" + (a[2] + 20) + ",\"turns\":1,\"mirror\":false}", token[0]));
+        steps.add(new ClientScenario.Step(10, mc -> {}));
+        request(steps, out, "scanTurned", () -> download(http, token[0], s.io().resolve("live-scan-gedreht.schem")));
         steps.add(new ClientScenario.Step(1, mc -> {
             Files.writeString(s.io().resolve("live.json"), out + "}");
             s.command("bauplaner verbinden status");
@@ -99,6 +106,17 @@ final class LiveLinkScenario {
                 .header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(body));
         if (token != null) b.header("X-Bauplaner-Token", token);
         return send(http, b.build());
+    }
+
+    /** Baustand file: saved to {@code to}; answered as {"status":n,"file":name,"expose":…,"bytes":n} or the error body. */
+    private static CompletableFuture<String> download(HttpClient http, String token, java.nio.file.Path to) {
+        var r = HttpRequest.newBuilder(URI.create(BASE + "/v1/scan")).timeout(Duration.ofSeconds(30)).header("Origin", SITE).header("X-Bauplaner-Token", token).GET().build();
+        return http.sendAsync(r, HttpResponse.BodyHandlers.ofByteArray()).thenApply(res -> {
+            if (res.statusCode() != 200) return "{\"status\":" + res.statusCode() + ",\"body\":" + new String(res.body(), java.nio.charset.StandardCharsets.UTF_8) + "}";
+            try { Files.write(to, res.body()); } catch (java.io.IOException e) { throw new java.io.UncheckedIOException(e); }
+            return "{\"status\":200,\"file\":\"" + res.headers().firstValue("X-Bauplaner-File").orElse("") + "\",\"expose\":\""
+                    + res.headers().firstValue("Access-Control-Expose-Headers").orElse("") + "\",\"bytes\":" + res.body().length + "}";
+        });
     }
 
     private static CompletableFuture<String> send(HttpClient http, HttpRequest r) {

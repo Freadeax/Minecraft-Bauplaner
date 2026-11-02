@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T20:15:42.955Z",
+  "updatedAt": "2026-11-02T20:30:03.485Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -17,7 +17,8 @@
     "MAP-04",
     "PERF-04",
     "LIB-05",
-    "EDIT-05"
+    "EDIT-05",
+    "MAP-05"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -5352,6 +5353,94 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-02T19:48:53.099Z"
+    },
+    {
+      "id": "MAP-05",
+      "title": "Planung auf der Live-Karte vertiefen: Baustand aus dem Spiel (Mod 0.7.1, GET /v1/scan), Ebenen und Abweichungen auf der Karte, bestätigte Schritte abhaken, Bauabschnitte wählen, Weltplan automatisch abgleichen, Hologramm und BlueMap aus dem Kontextmenü",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Planung auf der Live-Karte vertiefen“)",
+      "dependencies": [
+        "MAP-03",
+        "MAP-04",
+        "GAME-07",
+        "GAME-01"
+      ],
+      "scope": [
+        "apps/web/src/views/map/",
+        "apps/web/src/views/project/GameCheckPanel.tsx",
+        "apps/web/src/map.css",
+        "packages/domain/src/",
+        "mods/bauplaner-bridge/",
+        "downloads/mod/",
+        "apps/web/src/views/mod/releases.json",
+        "scripts/bridge_gametest.mjs",
+        "tests/",
+        "docs/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "MAP-05-S01",
+          "title": "Mod 0.7.1: GET /v1/scan liefert die Planbox des Hologramms als bauplaner-scan-Aufnahme in Plankoordinaten (auch gedreht/gespiegelt), hello.features.",
+          "done": true
+        },
+        {
+          "id": "MAP-05-S02",
+          "title": "Karte: Baustand holen (auch alle 20 s), Vergleich wie Spielaufnahme, Speicherung im Projektverlauf, Ebenen mit Filter, Abweichungen als Spalten auf der Draufsicht, bestätigte Schritte abhaken mit Rückgängig.",
+          "done": true
+        },
+        {
+          "id": "MAP-05-S03",
+          "title": "Bauabschnitte der Mod 0.7.0 im Spielpanel anzeigen und im Spiel wählen (POST /v1/section).",
+          "done": true
+        },
+        {
+          "id": "MAP-05-S04",
+          "title": "Weltplan automatisch abgleichen; Kontextmenü: Hologramm hierher setzen, Stelle auf BlueMap zeigen, Projekt ins Spiel senden.",
+          "done": true
+        },
+        {
+          "id": "MAP-05-S05",
+          "title": "Abnahme durch Philipp mit Mod 0.7.1 auf server.lmnt-gaming.net.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Der Baustand aus dem Spiel ergibt dieselben Abweichungen wie eine per /bauplaner scan erzeugte Aufnahme und wie die Live-Zählung der Mod (echter Spieltest).",
+        "Haken ändern sich nur auf ausdrücklichen Klick und sind ein Rückgängig-Schritt auf der Karte.",
+        "Ältere Mods ohne scan bekommen einen Hinweis, keine Fehlermeldung."
+      ],
+      "next": "Abnahme durch Philipp (S05); denkbar: gedrehte Projektlagen auf der Weltkarte, damit gedrehte Hologramme übernommen werden können.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/e2e/game-progress.e2e.mjs",
+          "note": "Abschnitt wählen, Baustand holen, Ebenenfilter, Kartenspalten, Abhaken + Rückgängig, Bauen-Reiter, Weltplan-Autoabgleich, Hologramm per Kontextmenü, alte Mod."
+        },
+        {
+          "path": "tests/game-check.test.mjs",
+          "note": "layerProgress, deviationColumns, stepStatusCounts."
+        },
+        {
+          "path": "scripts/bridge_gametest.mjs",
+          "note": "Echter Spieltest Fabric/NeoForge: Baustand = Live-Zählung, falscher Block an der erwarteten Stelle, gedreht in Plankoordinaten."
+        },
+        {
+          "path": "docs/architecture/LIVE_LINK.md",
+          "note": "Protokoll, Oberfläche, Grenzen (BlueMap http)."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Einheits-, Browser- und echte Spieltests grün; Abnahme durch Philipp offen (S05)."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-02T20:30:03.485Z"
     }
   ],
   "events": [
@@ -9462,6 +9551,56 @@
           "done": 7,
           "total": 8,
           "next": "LIB-05-S08: Abnahme neuer Gebäude im Spiel durch Philipp."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T20:30:03.485Z",
+      "kind": "progress",
+      "items": [
+        "MAP-05"
+      ],
+      "summary": "Baustand aus dem Spiel auf der Live-Karte (Mod 0.7.1 GET /v1/scan, Plankoordinaten auch gedreht), Ebenen und Abweichungen auf der Karte, bestätigte Schritte abhaken, Bauabschnitte der Mod 0.7.0 wählen, Weltplan-Autoabgleich, Kontextmenü Hologramm/BlueMap; Grenzen: Abnahme durch Philipp offen, gedrehte Lagen nicht übernommen, BlueMap nur als Link",
+      "files": [
+        "apps/web/src/map.css",
+        "apps/web/src/views/map/GameProgress.tsx",
+        "apps/web/src/views/map/LiveGamePanel.tsx",
+        "apps/web/src/views/map/LiveMapPanel.tsx",
+        "apps/web/src/views/map/OverviewMap.tsx",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "apps/web/src/views/map/liveClient.ts",
+        "apps/web/src/views/mod/releases.json",
+        "apps/web/src/views/project/GameCheckPanel.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/LIVE_LINK.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.7.1.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.7.1.jar",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/ScanJob.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/PlanScan.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/LiveLinkScenario.java",
+        "packages/domain/src/gameCheck.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/liveLink.ts",
+        "scripts/bridge_gametest.mjs",
+        "tests/e2e/game-progress.e2e.mjs",
+        "tests/e2e/modSimulator.mjs",
+        "tests/game-check.test.mjs",
+        "tests/livelink.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "MAP-05",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05); denkbar: gedrehte Projektlagen auf der Weltkarte, damit gedrehte Hologramme übernommen werden können."
         }
       ]
     }

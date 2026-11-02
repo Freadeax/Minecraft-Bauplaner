@@ -61,7 +61,12 @@ export interface LiveHello {
   readonly mod: { readonly version: string; readonly loader: string; readonly minecraft: string };
   /** True while the mod shows a pairing code in the chat. */
   readonly pairing: boolean;
+  /** Abilities beyond protocol 1, e.g. `scan` (Baustand, mod 0.7.1+); empty for older mods. */
+  readonly features: readonly string[];
 }
+/** Baustand: `GET /v1/scan` records the hologram's plan box as `bauplaner-scan` file (MAP-05). */
+export const LIVE_FEATURE_SCAN = 'scan';
+export const liveCan = (hello: LiveHello | null, feature: string): boolean => !!hello?.features.includes(feature);
 export interface LivePlayer { readonly x: number; readonly y: number; readonly z: number; readonly yaw: number; readonly pitch: number; readonly dimension: string; readonly name: string }
 export interface LiveWorld { readonly key: string; readonly server: string | null; readonly singleplayer: boolean }
 export interface LiveCounts { readonly ok: number; readonly state: number; readonly missing: number; readonly wrong: number; readonly unknown: number }
@@ -104,7 +109,8 @@ export function readLiveHello(raw: unknown): LiveHello {
   const protocol = int(raw.protocol, 'Protokoll', 1, 1000);
   if (protocol !== LIVE_PROTOCOL) fail(`Protokoll ${protocol} wird nicht unterstützt (erwartet ${LIVE_PROTOCOL}). Bitte Mod und Website aktualisieren.`);
   const mod = isObj(raw.mod) ? raw.mod : fail('Modangaben fehlen');
-  return { app: 'bauplaner-mod', protocol, mod: { version: str(mod.version, 'Modversion', 40), loader: str(mod.loader, 'Loader', 40), minecraft: str(mod.minecraft, 'Spielversion', 40) }, pairing: raw.pairing === true };
+  return { app: 'bauplaner-mod', protocol, mod: { version: str(mod.version, 'Modversion', 40), loader: str(mod.loader, 'Loader', 40), minecraft: str(mod.minecraft, 'Spielversion', 40) }, pairing: raw.pairing === true,
+    features: Array.isArray(raw.features) ? raw.features.filter((f): f is string => typeof f === 'string' && /^[a-z0-9-]{1,32}$/.test(f)).slice(0, 32) : [] };
 }
 
 export function readLivePairing(raw: unknown): string {

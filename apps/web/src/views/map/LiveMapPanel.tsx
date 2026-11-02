@@ -13,6 +13,13 @@ function linkFor(settings: LiveMapSettings, entry: MapEntry): string | null {
   try { return buildLiveMapUrl({ name: settings.name || 'Live-Karte', urlTemplate: settings.urlTemplate }, position); } catch { return null; }
 }
 
+/** Link to any block of the Weltkarte on the server's web map (BlueMap …); null without a usable template. */
+export function liveMapUrlAt(settings: LiveMapSettings, dimension: string, x: number, y: number, z: number): string | null {
+  if (!settings.urlTemplate || templateProblem(settings)) return null;
+  const world = settings.worlds[dimension]; if (!world) return null;
+  try { return buildLiveMapUrl({ name: settings.name || 'Live-Karte', urlTemplate: settings.urlTemplate }, { x: Math.floor(x), y: Math.floor(y), z: Math.floor(z), world, dimension }); } catch { return null; }
+}
+
 /** “Auf der Live-Karte” for one project; nothing when no usable template is set. */
 export function LiveMapLink({ settings, entry }: { settings: LiveMapSettings; entry: MapEntry }) {
   const url = linkFor(settings, entry);

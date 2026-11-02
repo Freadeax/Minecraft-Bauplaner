@@ -33,6 +33,13 @@ export class LiveError extends Error {
 
 /** One request to the mod. Network failures become a readable LiveError with status 0. */
 async function call(port: number, path: string, init: RequestInit & { token?: string | null; timeoutMs?: number } = {}): Promise<unknown> {
+  const res = await request(port, path, init);
+  let body: unknown = null;
+  try { body = await res.json(); } catch { /* empty */ }
+  return body;
+}
+
+async function request(port: number, path: string, init: RequestInit & { token?: string | null; timeoutMs?: number } = {}): Promise<Response> {
   const { token, timeoutMs = 6000, ...rest } = init;
   const headers = new Headers(rest.headers);
   if (token) headers.set(LIVE_TOKEN_HEADER, token);
@@ -47,14 +54,17 @@ async function call(port: number, path: string, init: RequestInit & { token?: st
     throw new LiveError(ctrl.signal.aborted ? 'Die Mod antwortet nicht (Zeitüberschreitung).'
       : 'Keine Verbindung zur Mod. Läuft Minecraft mit der Bauplaner-Mod 0.5 oder neuer, und hat der Browser den Zugriff auf Geräte im lokalen Netzwerk erlaubt?', 0);
   } finally { clearTimeout(timer); }
-  let body: unknown = null;
-  try { body = await res.json(); } catch { /* empty */ }
   if (!res.ok) {
+    let body: unknown = null;
+    try { body = await res.json(); } catch { /* empty */ }
     const msg = body && typeof body === 'object' && typeof (body as { error?: unknown }).error === 'string' ? (body as { error: string }).error : `Fehler ${res.status}`;
     throw new LiveError(msg, res.status);
   }
-  return body;
+  return res;
 }
+
+/** Largest Baustand file the page accepts (same bound as imported recordings). */
+const MAX_SCAN_BYTES = 16_000_000;
 
 export const liveApi = {
   hello: async (port: number): Promise<LiveHello> => readLiveHello(await call(port, '/v1/hello', { timeoutMs: 2500 })),
@@ -73,6 +83,16 @@ export const liveApi = {
     const n = r && typeof r === 'object' ? (r as { marks?: unknown }).marks : null;
     return typeof n === 'number' ? n : items.length;
   },
+  /** Baustand of the hologram (mod 0.7.1+): the whole plan box as `bauplaner-scan` file, in plan coordinates. */
+  scan: async (port: number, token: string): Promise<{ fileName: string; bytes: Uint8Array }> => {
+    const res = await request(port, '/v1/scan', { token, timeoutMs: 30000 });
+    const bytes = new Uint8Array(await res.arrayBuffer());
+    if (!bytes.length || bytes.length > MAX_SCAN_BYTES) throw new LiveError('Der Baustand aus dem Spiel ist leer oder zu groß (höchstens 16 MB).', 413);
+    const name = res.headers.get('X-Bauplaner-File') ?? '';
+    return { fileName: /^[A-Za-z0-9._-]{1,120}\.schem$/.test(name) ? name : `baustand_${Date.now()}.schem`, bytes };
+  },
+  /** Build section shown in the game (1-based, 0 = all); mod 0.7.0+. */
+  section: async (port: number, token: string, section: number): Promise<void> => { await call(port, '/v1/section', { method: 'POST', token, body: JSON.stringify({ section }), headers: { 'Content-Type': 'application/json' } }); },
   unpair: async (port: number, token: string): Promise<void> => { await call(port, '/v1/unpair', { method: 'POST', token, body: '{}', headers: { 'Content-Type': 'application/json' } }); },
 };
 

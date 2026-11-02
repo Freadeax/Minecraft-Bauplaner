@@ -29,6 +29,7 @@ class LiveLinkTest {
             public String plan(Map<String, String> q, byte[] b) { calls.add("plan " + q.get("name") + " " + b.length); return "{\"placed\":true}"; }
             public String placement(Map<String, Object> b) { calls.add("placement " + b.get("x")); return "{}"; }
             public String marks(Map<String, Object> b) { calls.add("marks " + WorldMarks.parse(b).size()); return "{}"; }
+            public LiveLinkServer.Binary scan() { calls.add("scan"); return new LiveLinkServer.Binary("haus_r1_x.schem", new byte[] { 31, -117, 8 }); }
         };
         return new LiveLinkServer(new LiveLinkServer.Info("0.5.0", "fabric", "26.3"), h, known, t -> saved.add(List.copyOf(t)), now::get);
     }
@@ -63,6 +64,22 @@ class LiveLinkTest {
         assertEquals(SITE, r.headers().get("Access-Control-Allow-Origin"));
         s.openPairing();
         assertEquals(true, Json.obj(Json.parse(s.handle(req("GET", "/v1/hello", SITE, null, null)).text()), "h").get("pairing"));
+    }
+
+    @Test
+    void baustandIsAFileWithItsNameExposedToTheSite() {
+        var s = server(List.of());
+        var hello = Json.obj(Json.parse(s.handle(req("GET", "/v1/hello", SITE, null, null)).text()), "hello");
+        assertEquals(List.of("scan"), hello.get("features"));
+        assertEquals(401, s.handle(req("GET", "/v1/scan", SITE, null, null)).status());
+        String token = pair(s);
+        var r = s.handle(req("GET", "/v1/scan", SITE, token, null));
+        assertEquals(200, r.status(), r.text());
+        assertEquals("application/octet-stream", r.headers().get("Content-Type"));
+        assertEquals("haus_r1_x.schem", r.headers().get("X-Bauplaner-File"));
+        assertEquals("X-Bauplaner-File", r.headers().get("Access-Control-Expose-Headers"));
+        assertArrayEquals(new byte[] { 31, -117, 8 }, r.body());
+        assertTrue(calls.contains("scan"));
     }
 
     @Test

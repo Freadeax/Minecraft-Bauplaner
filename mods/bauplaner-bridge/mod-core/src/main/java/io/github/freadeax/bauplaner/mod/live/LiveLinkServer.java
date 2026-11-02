@@ -66,7 +66,15 @@ public final class LiveLinkServer implements AutoCloseable {
         String marks(Map<String, Object> body) throws Exception;
         /** POST /v1/section {"section":n}: choose the build section shown in the game (0 = all). Since mod 0.7.0. */
         default String section(Map<String, Object> body) throws Exception { throw new HttpError(404, "Diese Mod kennt keine Bauabschnitte."); }
+        /** Baustand of the placed plan as {@code bauplaner-scan} file (MAP-05, since 0.7.1). */
+        default Binary scan() throws Exception { throw new HttpError(404, "Diese Mod kann keinen Baustand liefern."); }
     }
+
+    /** A file answer: name for the website, bytes as sent. */
+    public record Binary(String fileName, byte[] bytes) {}
+
+    /** What this mod can do beyond protocol 1; the website enables buttons by it. */
+    public static final List<String> FEATURES = List.of("scan");
 
     public record Info(String version, String loader, String minecraft) {}
 
@@ -228,7 +236,8 @@ public final class LiveLinkServer implements AutoCloseable {
             switch (route) {
                 case "GET /v1/hello":
                     return ok(h, "{\"app\":\"bauplaner-mod\",\"protocol\":" + PROTOCOL + ",\"mod\":{\"version\":" + Json.quote(info.version()) + ",\"loader\":"
-                            + Json.quote(info.loader()) + ",\"minecraft\":" + Json.quote(info.minecraft()) + "},\"pairing\":" + pairingOpen() + "}");
+                            + Json.quote(info.loader()) + ",\"minecraft\":" + Json.quote(info.minecraft()) + "},\"pairing\":" + pairingOpen()
+                            + ",\"features\":[" + String.join(",", FEATURES.stream().map(Json::quote).toList()) + "]}");
                 case "POST /v1/pair": {
                     Map<String, Object> body = Json.obj(Json.parse(text(r, 4096)), "Kopplung");
                     String code = body.get("code") instanceof String s ? s : null;
@@ -249,6 +258,13 @@ public final class LiveLinkServer implements AutoCloseable {
                 case "POST /v1/placement": return ok(h, handler.placement(Json.obj(Json.parse(text(r, 65_536)), "Lage")));
                 case "POST /v1/marks": return ok(h, handler.marks(Json.obj(Json.parse(text(r, MAX_JSON_BYTES)), "Markierungen")));
                 case "POST /v1/section": return ok(h, handler.section(Json.obj(Json.parse(text(r, 4_096)), "Abschnitt")));
+                case "GET /v1/scan": {
+                    Binary file = handler.scan();
+                    h.put("Content-Type", "application/octet-stream");
+                    h.put("X-Bauplaner-File", file.fileName());
+                    if (h.containsKey("Access-Control-Allow-Origin")) h.put("Access-Control-Expose-Headers", "X-Bauplaner-File");
+                    return new Response(200, h, file.bytes());
+                }
                 case "POST /v1/unpair": revoke(token); return ok(h, "{\"unpaired\":true}");
                 default: return error(h, 404, "Unbekannte Adresse.");
             }

@@ -228,6 +228,42 @@ class ModCoreTest {
     }
 
     /** Minimal plan file in the website's export format (Sponge v3 + Metadata.Bauplaner). */
+    @Test
+    void baustandOfATurnedHologramIsRecordedInPlanCoordinates() {
+        // Plan 2×1×1 at project x = 3..4: stairs facing north, then stone. Hologram turned once at 100/64/100.
+        PlanModel plan = PlanModel.parse("haus.schem", schem(2, 1, 1, new int[] { 3, 0, 0 },
+                new String[] { "minecraft:oak_stairs[facing=north,half=bottom]", "minecraft:stone" }, new int[] { 0, 1 }));
+        Placement at = new Placement("minecraft:overworld", 100, 64, 100, 1, false);
+        int[] stairs = at.toWorld(3, 0, 0), stone = at.toWorld(4, 0, 0);
+        Map<String, String> world = new java.util.HashMap<>();
+        // Built correctly in the world: the stairs therefore face east there.
+        world.put(stairs[0] + "," + stairs[1] + "," + stairs[2], "minecraft:oak_stairs[facing=east,half=bottom]");
+        world.put(stone[0] + "," + stone[1] + "," + stone[2], "minecraft:dirt");
+        var r = io.github.freadeax.bauplaner.mod.live.PlanScan.record(plan.identity(), at, (x, y, z) -> world.getOrDefault(x + "," + y + "," + z, "minecraft:air"),
+                5023, new io.github.freadeax.bauplaner.bridge.ScanJob.Info("26.3", "0.7.1", "fabric", "minecraft:overworld", "client"), java.time.Instant.parse("2026-11-02T18:00:00Z"));
+        assertEquals(2, r.cells());
+        assertEquals(0, r.unloaded());
+        assertTrue(r.fileName().endsWith("_r1_20261102-180000.schem"), r.fileName());
+        var s = Nbt.readGzip(r.bytes(), 1_000_000).tag().compound("Wurzel").get("Schematic").compound("Schematic");
+        var b = s.get("Metadata").compound("Metadata").get("Bauplaner").compound("Bauplaner");
+        assertEquals("scan", b.get("Kind").asString("Kind"));
+        assertArrayEquals(new int[] { 3, 0, 0 }, b.get("ProjectMin").asIntArray("ProjectMin"));
+        assertArrayEquals(new int[] { 100, 64, 100 }, b.get("WorldAnchor").asIntArray("WorldAnchor"));
+        var palette = s.get("Blocks").compound("Blocks").get("Palette").compound("Palette");
+        // Turned back into the plan's orientation, in plan cell order.
+        assertEquals(0, palette.get("minecraft:oak_stairs[facing=north,half=bottom]").asInt("p"));
+        assertEquals(1, palette.get("minecraft:dirt").asInt("p"));
+        assertArrayEquals(new byte[] { 0, 1 }, s.get("Blocks").compound("Blocks").get("Data").asBytes("Data"));
+    }
+
+    @Test
+    void baustandMarksUnloadedChunks() {
+        PlanModel plan = PlanModel.parse("haus.schem", schem(1, 1, 1, new int[] { 0, 0, 0 }, new String[] { "minecraft:stone" }, new int[] { 0 }));
+        var r = io.github.freadeax.bauplaner.mod.live.PlanScan.record(plan.identity(), Placement.at("minecraft:overworld", 0, 64, 0), (x, y, z) -> null,
+                5023, new io.github.freadeax.bauplaner.bridge.ScanJob.Info("26.3", "0.7.1", "fabric", "minecraft:overworld", "client"), java.time.Instant.now());
+        assertEquals(1, r.unloaded());
+    }
+
     static byte[] schem(int w, int h, int l, int[] projectMin, String[] palette, int[] data) { return schem(w, h, l, projectMin, palette, data, null, null); }
 
     /** Same with build sections (names and one byte per cell), as the website writes them since 0.7.0. */

@@ -204,6 +204,22 @@ test('plan export carries ProjectMin so recordings align for every anchor', asyn
   }
 });
 
+test('Baustand (MAP-05): Ebenen, Spalten für die Karte, Schrittzählung', async () => {
+  const { layerProgress, deviationColumns, stepStatusCounts } = await import('../dist/domain/src/index.js');
+  const world = { cells: [[0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 1, 0], [0, 2, 0]].map(position => ({ position, kind: 'block', paletteIndex: 0 })) };
+  const dev = (position, verdict) => [position.join(','), { position, verdict, stepId: 's', expected: 'minecraft:stone', actual: null }];
+  const check = { deviations: new Map([dev([1, 0, 0], 'wrong'), dev([0, 1, 0], 'missing'), dev([0, 2, 0], 'missing'), dev([1, 1, 0], 'unknown')]),
+    steps: new Map([['a', { total: 2, status: 'confirmed' }], ['b', { total: 3, status: 'deviating' }], ['c', { total: 0, status: 'unchecked' }]]) };
+  const layers = layerProgress(world, check);
+  assert.deepEqual(layers.map(l => [l.y, l.ok, l.total, l.wrong, l.missing, l.unknown]), [[0, 1, 2, 1, 0, 0], [1, 0, 2, 0, 1, 1], [2, 0, 1, 0, 1, 0]]);
+  assert.equal(layers[0].share, 0.5);
+  // Column x=0 has two missing heights; unknown is not an error; the origin moves it into world coordinates.
+  const cols = deviationColumns(check, [100, 64, -5]).sort((a, b) => a.x - b.x);
+  assert.deepEqual(cols, [{ x: 100, z: -5, verdict: 'missing', count: 2, minY: 65, maxY: 66 }, { x: 101, z: -5, verdict: 'wrong', count: 1, minY: 64, maxY: 64 }]);
+  assert.deepEqual(deviationColumns(check, [0, 0, 0], 0).map(c => c.verdict), ['wrong'], 'nur eine Ebene');
+  assert.deepEqual(stepStatusCounts(check), { confirmed: 1, partial: 0, deviating: 1, unchecked: 0 });
+});
+
 test('plan export carries build sections for the game mod: names in build order, one byte per cell', async () => {
   const c = await column();
   const inst = c.revision.instances[0].id;

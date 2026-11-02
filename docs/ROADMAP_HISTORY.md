@@ -2938,3 +2938,47 @@ Runde 3: Interieur-Räume gegliedert (dressRoom), Untergrundhallen mit Wandrippe
 - `tests/e2e/app.e2e.mjs`
 - `tests/e2e/snap.e2e.mjs`
 
+## 2026-11-02T20:30:03.485Z · progress
+
+**Aufgaben:** MAP-05
+
+Baustand aus dem Spiel auf der Live-Karte (Mod 0.7.1 GET /v1/scan, Plankoordinaten auch gedreht), Ebenen und Abweichungen auf der Karte, bestätigte Schritte abhaken, Bauabschnitte der Mod 0.7.0 wählen, Weltplan-Autoabgleich, Kontextmenü Hologramm/BlueMap; Grenzen: Abnahme durch Philipp offen, gedrehte Lagen nicht übernommen, BlueMap nur als Link
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MAP-05 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05); denkbar: gedrehte Projektlagen auf der Weltkarte, damit gedrehte Hologramme übernommen werden können. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/map.css`
+- `apps/web/src/views/map/GameProgress.tsx`
+- `apps/web/src/views/map/LiveGamePanel.tsx`
+- `apps/web/src/views/map/LiveMapPanel.tsx`
+- `apps/web/src/views/map/OverviewMap.tsx`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/map/liveClient.ts`
+- `apps/web/src/views/mod/releases.json`
+- `apps/web/src/views/project/GameCheckPanel.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/LIVE_LINK.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.7.1.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.7.1.jar`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/ScanJob.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/PlanScan.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`
+- `mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/LiveLinkScenario.java`
+- `packages/domain/src/gameCheck.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/liveLink.ts`
+- `scripts/bridge_gametest.mjs`
+- `tests/e2e/game-progress.e2e.mjs`
+- `tests/e2e/modSimulator.mjs`
+- `tests/game-check.test.mjs`
+- `tests/livelink.test.mjs`
+

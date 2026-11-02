@@ -69,7 +69,7 @@ if (mode === 'prepare') {
   assert.equal(byVerdict.wrong.actual, 'minecraft:diamond_block');
   assert.deepEqual(byVerdict.missing.position, expected.missing);
   hologram(join(dir, 'game.log'), check.totals.cells);
-  await live(join(dir, 'live.json'), scan.meta.loader ?? 'fabric');
+  await live(join(dir, 'live.json'), scan.meta.loader ?? 'fabric', { project, guide, resolution, expected });
   console.log(`Spieltest bestanden: Minecraft ${scan.meta.gameVersion ?? '26.3'} (${scan.meta.loader ?? '?'}), ${check.totals.cells} Zellen aus ${scan.meta.source === 'server' ? 'der echten Serverwelt' : 'dem echten Client'} gelesen, ${check.totals.ok} korrekt, 1 falscher Block und 1 fehlender Block an den erwarteten Stellen erkannt.`);
 }
 
@@ -126,7 +126,7 @@ function hologram(logFile, cells) {
  * MAP-03 website link (Fabric and NeoForge, skipped without live.json): the answers the website gets over
  * 127.0.0.1, read with the website's own strict readers (liveLink.ts).
  */
-async function live(file, loader) {
+async function live(file, loader, plan) {
   let raw;
   try { raw = JSON.parse(readFileSync(file, 'utf8')); } catch { return; }
   const { readLiveHello, readLiveStatus, readLiveChunks, chunkColumns } = await import('../dist/domain/src/index.js');
@@ -162,5 +162,34 @@ async function live(file, loader) {
   assert.equal(status.hologram.sections.reduce((n, s) => n + s.total, 0), status.hologram.total, 'jeder Block gehört zu einem Abschnitt');
   assert.equal(raw.section.status, 200, JSON.stringify(raw.section.body));
   assert.equal(after.hologram.section, 2, 'Website hat Abschnitt 2 gewählt');
-  console.log(`Website-Verbindung bestanden: Kopplung, Status (Spieler, Hologramm ${status.hologram.counts.ok}/${status.hologram.total}, Abschnitte ${status.hologram.sections.map(s => `${s.name} ${s.ok}/${s.total}`).join(', ')}), Gelände (${columns.length} Spalten), 2 Markierungen, ein direkt gesendeter Plan und Abschnittswahl.`);
+  // MAP-05 Baustand over the link: compared exactly like the recording made with /bauplaner scan.
+  let baustand = '';
+  if (raw.scan) {
+    assert.ok(hello.features.includes('scan'), 'Mod meldet die Fähigkeit „scan“');
+    assert.equal(raw.back.status, 200, JSON.stringify(raw.back.body));
+    assert.equal(raw.scan.status, 200, JSON.stringify(raw.scan.body));
+    assert.match(raw.scan.file, /^[a-z0-9-]+_r\d+_\d{8}-\d{6}\.schem$/, 'Dateiname im Kopf X-Bauplaner-File');
+    assert.equal(raw.scan.expose, 'X-Bauplaner-File', 'Dateiname für die Website freigegeben');
+    const read = async name => { const b = readFileSync(join(dir, name)); return readWorldScan(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength)); };
+    const s1 = await read('live-scan.schem');
+    assert.deepEqual(s1.meta.worldAnchor, anchor, 'WorldAnchor = Lage des Hologramms');
+    const t1 = scanTarget(plan.project, s1);
+    const c1 = checkScan(plan.guide, plan.resolution.world, s1, t1.projectMin, t1.notes);
+    const d1 = Object.fromEntries([...c1.deviations.values()].map(d => [d.verdict, d]));
+    assert.equal(c1.totals.unknown, 0);
+    // The hologram test tore part of the building down again: the Baustand must match the mod's own live count.
+    assert.equal(c1.totals.wrong, 1); assert.deepEqual(d1.wrong.position, plan.expected.wrong);
+    assert.equal(c1.totals.blocksOk, status.hologram.counts.ok, 'Baustand = Live-Zählung der Mod');
+    assert.equal(c1.totals.missing, status.hologram.counts.missing);
+    assert.equal(raw.turned.status, 200);
+    assert.equal(raw.scanTurned.status, 200, JSON.stringify(raw.scanTurned.body));
+    const s2 = await read('live-scan-gedreht.schem');
+    const t2 = scanTarget(plan.project, s2);
+    const c2 = checkScan(plan.guide, plan.resolution.world, s2, t2.projectMin, t2.notes);
+    assert.deepEqual(s2.size, s1.size, 'gedrehter Baustand in Plankoordinaten (gleiche Box)');
+    assert.equal(c2.totals.unknown, 0);
+    assert.equal(c2.totals.blocksOk, 0, 'auf leerem Boden ist nichts gebaut');
+    baustand = `, Baustand über die Verbindung (${c1.totals.blocksOk} richtig, 1 falsch, ${c1.totals.missing} fehlen wie die Live-Zählung; gedreht ${c2.totals.missing} fehlen)`;
+  }
+  console.log(`Website-Verbindung bestanden: Kopplung, Status (Spieler, Hologramm ${status.hologram.counts.ok}/${status.hologram.total}, Abschnitte ${status.hologram.sections.map(s => `${s.name} ${s.ok}/${s.total}`).join(', ')}), Gelände (${columns.length} Spalten), 2 Markierungen, ein direkt gesendeter Plan und Abschnittswahl${baustand}.`);
 }

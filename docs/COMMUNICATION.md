@@ -941,3 +941,8 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - Überarbeitet: 17 Interieur-Räume, Zwergenhalle, Erzgießerei, Bergbaulager, Wasseraufzug. Größen und Anschlüsse unverändert.
 - Reservierung mit dem Push beendet. Offen: LIB-05-S08 (Abnahme einiger neuer Gebäude im Spiel durch Philipp).
 
+### MSG-MAP-05-01 · Claude (Thread „Planung auf der Live-Karte vertiefen“) · 2026-11-02 · Baustand aus dem Spiel, Mod 0.7.1
+- Auftrag Philipp („Komplex weiter machen!“) über den Coordinator: Planung auf der Live-Karte mit dem Weltbuilder vertiefen.
+- **Gemeinsamer Vertrag Live-Verbindung (Mod 0.7.1):** `hello.features` (Liste, `scan`), neu `GET /v1/scan` → `bauplaner-scan`-Datei der Hologramm-Planbox in Plankoordinaten (`PlanScan`, `ScanJob.inProjectFrame`), Kopf `X-Bauplaner-File` mit `Access-Control-Expose-Headers`. `LiveLinkServer.Handler.scan()` hat einen 404-Standard wie `section()`.
+- Website: `apps/web/src/views/map/GameProgress.tsx` (Baustand, Ebenen, Abweichungen auf der Karte, Abhaken), Abschnittswahl im Spielpanel, automatischer Weltplanabgleich, Kontextmenü (Hologramm hierher, BlueMap-Link, ins Spiel senden). Domäne `layerProgress`, `deviationColumns`, `stepStatusCounts` (gameCheck.ts), `liveCan` (liveLink.ts).
+- Reihenfolge mit GAME-07 abgestimmt: 0.7.0 (Abschnitte) zuerst, 0.7.1 (Baustand) danach. Reservierung mit dem Push beendet.

@@ -708,3 +708,10 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Sichtprüfung: Schnittansichten der Hallen und Räume (nicht im Repository). Die Skizzen-Farbtabelle kennt jetzt alle im Katalog benutzten Blockarten.
 - Grenzen: keine Abnahme im Spiel.
 
+## MAP-05 · Baustand aus dem Spiel auf der Live-Karte, Mod 0.7.1 · 02.11.2026 · Claude
+
+- `npm run check`: Architektur, Roadmap, Typen, Build, Node-Tests (neu: `game-check.test.mjs` Ebenen/Kartenspalten/Schrittzählung, `livelink.test.mjs` Fähigkeitenliste), Doku.
+- `mod-core`/`core` JUnit 31/31 (neu: gedrehter Baustand in Plankoordinaten, nicht geladene Chunks, Route `GET /v1/scan` mit Kopf und Freigabe).
+- Browser: `tests/e2e/game-progress.e2e.mjs` gegen den Mod-Simulator (Abschnitt wählen, Baustand holen, Ebenenfilter, Abweichungen auf der Karte, Abhaken mit Rückgängig, Aufnahme im Reiter „Bauen“, Weltplan-Autoabgleich, Hologramm per Kontextmenü, Hinweis bei alter Mod); dazu die gesamte `npm run test:e2e`.
+- Echtes Spiel: `scripts/test_bridge_ingame.sh` (Fabric) und `scripts/test_bridge_ingame_forge.sh neoforge` mit 0.7.1 bestanden: Baustand über 127.0.0.1 = Live-Zählung der Mod (117 richtig, 1 falsch, 30 fehlen nach Teilabriss im Hologrammtest), falscher Block an der erwarteten Stelle, gedrehtes Hologramm auf leerem Boden in Plankoordinaten (148 fehlen, gleiche Box).
+- Grenze: im Container antwortete Maven Central mit 429; gebaut wurde über den Google-Spiegel per Gradle-Init-Skript außerhalb des Repos. BlueMap (http) nicht erreichbar, nur Links.

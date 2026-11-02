@@ -11,7 +11,7 @@ export type LoadedScan = WorldScan & { readonly sourceSha256: string; readonly f
 const MAX_SCAN_BYTES = 16_000_000;
 
 /** Reads one recording in a worker. */
-function readScan(file: File): Promise<LoadedScan> {
+export function readScan(file: File): Promise<LoadedScan> {
   return new Promise((resolve, reject) => {
     if (file.size > MAX_SCAN_BYTES) { reject(new Error('Die Aufnahme ist zu groß (maximal 16 MB).')); return; }
     void file.arrayBuffer().then(buffer => {

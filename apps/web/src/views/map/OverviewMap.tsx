@@ -3,7 +3,7 @@ import type { Bounds } from '../../../../../packages/voxel/src/index.js';
 import { chunkOf, regionOf } from '../../../../../packages/domain/src/worldmap.js';
 import type { TopView, WorldMapView } from '../../../../../packages/domain/src/worldmap.js';
 import { columnAt, itemAt, pathColumns, pathStyleOf, pathVertexAt, WORLD_POINT_TYPES } from '../../../../../packages/domain/src/index.js';
-import type { TerrainSurvey, WorldItem } from '../../../../../packages/domain/src/index.js';
+import type { DeviationColumn, TerrainSurvey, WorldItem } from '../../../../../packages/domain/src/index.js';
 import { surveyImage } from './terrainLayer';
 
 /**
@@ -82,6 +82,8 @@ export interface PlanLayer {
   /** Hologram box in the game: x0,z0,x1,z1 inclusive, with its label. */
   readonly hologram?: { readonly box: readonly [number, number, number, number]; readonly label: string; readonly matches: boolean } | null;
   readonly follow?: boolean;
+  /** Baustand from the game (MAP-05): per column the most urgent deviation of the hologram project. */
+  readonly deviations?: readonly DeviationColumn[];
   /** Ground height under a column (for measuring), from surveys or live chunks. */
   readonly groundAt?: (x: number, z: number) => { readonly y: number; readonly id: string; readonly live: boolean } | null;
 }
@@ -97,6 +99,7 @@ function hexRgb(hex: string): [number, number, number] {
 }
 
 const NO_TERRAIN: readonly TerrainSurvey[] = [];
+const DEVIATION_COLOR: Readonly<Record<DeviationColumn['verdict'], string>> = { missing: '#ff8fa3', wrong: '#ff4d4d', state: '#f2b84b', remove: '#c79bff' };
 
 export function OverviewMap({ map, tops, colorOf, selected, onSelect, onFly, preview = null, frame = null, terrain = NO_TERRAIN, boundsOf, plan }: OverviewProps) {
   const canvas = useRef<HTMLCanvasElement>(null), wrap = useRef<HTMLDivElement>(null);
@@ -496,7 +499,7 @@ export function OverviewMap({ map, tops, colorOf, selected, onSelect, onFly, pre
     <canvas ref={canvas} className="overview-canvas" tabIndex={0} role="img"
       aria-label={plan ? `Draufsicht der Weltkarte, Werkzeug ${toolInfo?.label}: ${toolInfo?.hint}. Ziehen mit zwei Fingern oder rechter Maustaste verschiebt, Mausrad zoomt. Tasten V, A, B, W, P, M wechseln das Werkzeug, Pfeiltasten verschieben die Auswahl, Entf löscht sie, Escape bricht ab.`
         : 'Draufsicht der Weltkarte: Ziehen verschiebt, Mausrad oder zwei Finger zoomen, Klick wählt ein Projekt, Doppelklick fliegt hin. Pfeiltasten verschieben, Plus/Minus zoomen.'}
-      data-scale={scaleShown.toFixed(3)} data-center={`${Math.round(view.current.cx)},${Math.round(view.current.cz)}`}
+      data-deviations={plan?.deviations?.length ?? 0} data-scale={scaleShown.toFixed(3)} data-center={`${Math.round(view.current.cx)},${Math.round(view.current.cz)}`}
       data-draft={draft ? (draft.kind === 'path' ? `path:${draft.points.length}` : draft.kind) : ''}
       data-selected={plan ? plan.selection.size + plan.selectedProjects.size : undefined}
       onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}
@@ -630,6 +633,18 @@ function drawPlan(ctx: CanvasRenderingContext2D, plan: PlanLayer, d: Draw, st: {
     ctx.fillStyle = d.accent; ctx.globalAlpha = 0.12; ctx.fillRect(sx(x0), sz(z0), (x1 - x0) * scale, (z1 - z0) * scale); ctx.globalAlpha = 1;
     ctx.strokeStyle = d.accent; ctx.lineWidth = 1.5; ctx.setLineDash([4, 3]);
     ctx.strokeRect(sx(x0), sz(z0), (x1 - x0) * scale, (z1 - z0) * scale); ctx.setLineDash([]);
+  }
+  // Baustand: what is missing or wrong, per column (MAP-05).
+  if (plan.deviations?.length) {
+    const size = Math.max(2, scale), inset = scale >= 6 ? 1 : 0;
+    const colors = Object.fromEntries((Object.keys(DEVIATION_COLOR) as DeviationColumn['verdict'][])
+      .map(k => [k, d.css.getPropertyValue(`--map-dev-${k}`).trim() || DEVIATION_COLOR[k]])) as Record<DeviationColumn['verdict'], string>;
+    ctx.globalAlpha = 0.8;
+    for (const c of plan.deviations) {
+      ctx.fillStyle = colors[c.verdict];
+      ctx.fillRect(sx(c.x) + inset, sz(c.z) + inset, size - 2 * inset, size - 2 * inset);
+    }
+    ctx.globalAlpha = 1;
   }
   // Hologram in the game.
   if (plan.hologram) {

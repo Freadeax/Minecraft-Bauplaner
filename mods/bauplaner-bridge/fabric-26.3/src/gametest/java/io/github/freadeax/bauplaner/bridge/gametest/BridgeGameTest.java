@@ -60,6 +60,8 @@ public final class BridgeGameTest implements FabricClientGameTest {
                 chat(context, "/bauplaner status");
                 chat(context, "/bauplaner scan");
                 context.waitFor(mc -> hasScan(root), 20 * 60);
+                // Keep this recording: the Baustand requests later write more files into scans/.
+                Files.copy(scans(root).getFirst(), io.resolve("scan.schem"), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                 context.takeScreenshot("bauplaner-aufnahme");
 
                 try {
@@ -75,7 +77,6 @@ public final class BridgeGameTest implements FabricClientGameTest {
                 String state = Files.readString(root.resolve("state.properties"));
                 if (!state.contains(".anchor=" + anchor[0] + " " + anchor[1] + " " + anchor[2]))
                     throw new AssertionError("Anker nicht gespeichert oder falsch: " + state);
-                Files.copy(scans(root).getFirst(), io.resolve("scan.schem"), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                 Files.writeString(io.resolve("state.properties"), state);
             }
         } catch (IOException e) {
@@ -294,6 +295,16 @@ public final class BridgeGameTest implements FabricClientGameTest {
         context.waitTicks(40);
         out.append(",\"section\":").append(request(context, http, base + "/v1/section", "POST", "{\"section\":2}", token, "https://freadeax.github.io"));
         out.append(",\"after\":").append(request(context, http, base + "/v1/status", "GET", null, token, "https://freadeax.github.io"));
+        // MAP-05 Baustand: hologram back onto the built plan, then the whole box as recording (one wrong, one missing block).
+        String back = "{\"dimension\":\"minecraft:overworld\",\"x\":" + anchor[0] + ",\"y\":" + anchor[1] + ",\"z\":" + anchor[2] + ",\"turns\":0,\"mirror\":false}";
+        out.append(",\"back\":").append(request(context, http, base + "/v1/placement", "POST", back, token, "https://freadeax.github.io"));
+        context.waitTicks(10);
+        out.append(",\"scan\":").append(download(context, http, base + "/v1/scan", token, io.resolve("live-scan.schem")));
+        // Turned once on empty ground: the recording must still be in plan coordinates (everything missing).
+        String turned = "{\"dimension\":\"minecraft:overworld\",\"x\":" + (anchor[0] + 20) + ",\"y\":" + anchor[1] + ",\"z\":" + (anchor[2] + 20) + ",\"turns\":1,\"mirror\":false}";
+        out.append(",\"turned\":").append(request(context, http, base + "/v1/placement", "POST", turned, token, "https://freadeax.github.io"));
+        context.waitTicks(10);
+        out.append(",\"scanTurned\":").append(download(context, http, base + "/v1/scan", token, io.resolve("live-scan-gedreht.schem")));
         out.append("}");
         Files.writeString(io.resolve("live.json"), out.toString());
         chat(context, "/bauplaner verbinden status");
@@ -330,6 +341,19 @@ public final class BridgeGameTest implements FabricClientGameTest {
         return send(context, http, java.net.http.HttpRequest.newBuilder(java.net.URI.create(url)).timeout(java.time.Duration.ofSeconds(20))
                 .header("Origin", "https://freadeax.github.io").header("X-Bauplaner-Token", token).header("Content-Type", "application/octet-stream")
                 .POST(java.net.http.HttpRequest.BodyPublishers.ofByteArray(body)).build());
+    }
+
+    /** GET of a file: saved to {@code to}, answered as {"status":n,"file":name,"bytes":n} (or the error body). */
+    private static String download(ClientGameTestContext context, java.net.http.HttpClient http, String url, String token, Path to) {
+        var r = java.net.http.HttpRequest.newBuilder(java.net.URI.create(url)).timeout(java.time.Duration.ofSeconds(30))
+                .header("Origin", "https://freadeax.github.io").header("X-Bauplaner-Token", token).GET().build();
+        var f = http.sendAsync(r, java.net.http.HttpResponse.BodyHandlers.ofByteArray());
+        context.waitFor(mc -> f.isDone(), 20 * 40);
+        var res = f.join();
+        if (res.statusCode() != 200) return "{\"status\":" + res.statusCode() + ",\"body\":" + new String(res.body(), java.nio.charset.StandardCharsets.UTF_8) + "}";
+        try { Files.write(to, res.body()); } catch (IOException e) { throw new java.io.UncheckedIOException(e); }
+        return "{\"status\":200,\"file\":\"" + res.headers().firstValue("X-Bauplaner-File").orElse("") + "\",\"expose\":\""
+                + res.headers().firstValue("Access-Control-Expose-Headers").orElse("") + "\",\"bytes\":" + res.body().length + "}";
     }
 
     private static String send(ClientGameTestContext context, java.net.http.HttpClient http, java.net.http.HttpRequest r) {

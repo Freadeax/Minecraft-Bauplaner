@@ -171,6 +171,33 @@
       "releasedAt": "2026-11-02",
       "sourceCommit": "fb6c4c9ce60bfcbe8de9f8c7c0802d6b0e0a4315",
       "tested": "Bauabschnitte aus dem Planer (Num /), Röntgensicht (Num -), Shulkerkisten und Bündel in der Materialliste, Abschnittswahl von der Website"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.7.1.jar",
+      "modVersion": "0.7.1",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 221123,
+      "sha256": "358e194ab37cad7ad058ec6eb47ec8e7c2cca11c75effe93c9d043f7de8cf38c",
+      "releasedAt": "2026-11-02",
+      "sourceCommit": "642be79441dfa031cabf3ac3663edfc4915ca5da",
+      "tested": "Im echten Minecraft-26.3-Client automatisch geprüft wie 0.7.0 (Hologramm, Abschnitte, Röntgensicht, Platzierhilfe, Website-Verbindung) und neu der Baustand über GET /v1/scan: gleiche Abweichungen wie die Live-Zählung der Mod, falscher Block an der erwarteten Stelle, gedrehtes Hologramm in Plankoordinaten. Auf Philipps Server noch nicht abgenommen."
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.7.1.jar",
+      "modVersion": "0.7.1",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 218513,
+      "sha256": "88733a03f6365d94fb1cf11e4b9c757d9a93da06436dadcece07a3388d7e0144",
+      "releasedAt": "2026-11-02",
+      "sourceCommit": "642be79441dfa031cabf3ac3663edfc4915ca5da",
+      "tested": "Im echten Minecraft-26.3-Client mit NeoForge automatisch geprüft wie 0.7.0 (Hologramm, Abschnitte, Röntgensicht, Platzierhilfe, Website-Verbindung) und neu der Baustand über GET /v1/scan: gleiche Abweichungen wie die Live-Zählung der Mod, falscher Block an der erwarteten Stelle, gedrehtes Hologramm in Plankoordinaten. Auf Philipps Server noch nicht abgenommen."
     }
   ]
 }

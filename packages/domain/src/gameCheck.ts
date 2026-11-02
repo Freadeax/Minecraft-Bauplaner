@@ -194,3 +194,48 @@ export function tickConfirmed(guide: Guide, check: GameCheck, status: (id: strin
   const steps = confirmedUnticked(guide, check, status);
   return tickSteps(steps, `${steps.length} im Spiel bestätigte Schritte abgehakt`, at);
 }
+
+/** One height of the plan in a game check (MAP-05): every planned cell at this Y, by verdict. */
+export interface LayerProgress extends VerdictCounts {
+  readonly y: number;
+  readonly total: number;
+  /** ok / total, 0 for an empty layer. */
+  readonly share: number;
+}
+
+/** Progress per height, bottom up; the ok count is what the check did not list as a deviation. */
+export function layerProgress(world: Pick<VoxelPayload, 'cells'>, check: Pick<GameCheck, 'deviations'>): LayerProgress[] {
+  const byY = new Map<number, Record<CellVerdict, number> & { total: number }>();
+  const row = (y: number) => byY.get(y) ?? (byY.set(y, { ...zero(), total: 0 }), byY.get(y)!);
+  for (const c of world.cells) { const r = row(c.position[1]); r.total++; r.ok++; }
+  for (const d of check.deviations.values()) { const r = row(d.position[1]); r.ok--; r[d.verdict]++; }
+  return [...byY.entries()].sort((a, b) => a[0] - b[0]).map(([y, r]) => ({ y, ...r, share: r.total ? r.ok / r.total : 0 }));
+}
+
+/** Steps of a check by game status (for a short summary line). */
+export function stepStatusCounts(check: Pick<GameCheck, 'steps'>): Readonly<Record<GameStepStatus, number>> {
+  const out: Record<GameStepStatus, number> = { confirmed: 0, partial: 0, deviating: 0, unchecked: 0 };
+  for (const s of check.steps.values()) if (s.total) out[s.status]++;
+  return out;
+}
+
+/** Map overlay of a check: per column the most urgent deviation (wrong > state > remove > missing), with its height range. */
+export interface DeviationColumn { readonly x: number; readonly z: number; readonly verdict: Exclude<CellVerdict, 'ok' | 'unknown'>; readonly count: number; readonly minY: number; readonly maxY: number }
+const URGENCY: Readonly<Record<Exclude<CellVerdict, 'ok' | 'unknown'>, number>> = { wrong: 4, state: 3, remove: 2, missing: 1 };
+
+/**
+ * Deviations as world columns: project position + `origin` (where the project stands on the map).
+ * `layer` limits to one project height. Unknown cells are left out: they are not a building error.
+ */
+export function deviationColumns(check: Pick<GameCheck, 'deviations'>, origin: Vec3, layer: number | null = null): DeviationColumn[] {
+  const cols = new Map<string, { x: number; z: number; verdict: DeviationColumn['verdict']; count: number; minY: number; maxY: number }>();
+  for (const d of check.deviations.values()) {
+    if (d.verdict === 'unknown' || (layer !== null && d.position[1] !== layer)) continue;
+    const x = d.position[0] + origin[0], z = d.position[2] + origin[2], y = d.position[1] + origin[1], k = `${x},${z}`;
+    const c = cols.get(k);
+    if (!c) { cols.set(k, { x, z, verdict: d.verdict, count: 1, minY: y, maxY: y }); continue; }
+    c.count++; c.minY = Math.min(c.minY, y); c.maxY = Math.max(c.maxY, y);
+    if (URGENCY[d.verdict] > URGENCY[c.verdict]) c.verdict = d.verdict;
+  }
+  return [...cols.values()];
+}

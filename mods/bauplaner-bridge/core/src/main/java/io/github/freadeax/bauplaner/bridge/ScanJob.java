@@ -21,6 +21,8 @@ public final class ScanJob {
 
     private final Plan plan;
     private final int[] anchor;
+    /** Written as {@code WorldAnchor}; differs from {@link #anchor} only for recordings in project coordinates. */
+    private final int[] reportedAnchor;
     private final BlockSource source;
     private final int dataVersion;
     private final Info info;
@@ -34,12 +36,26 @@ public final class ScanJob {
      * @param dataVersion DataVersion of the running game
      */
     public ScanJob(Plan plan, int[] anchor, BlockSource source, int dataVersion, Info info) {
-        if (anchor.length != 3) throw new IllegalArgumentException("anchor");
+        this(plan, anchor, anchor, source, dataVersion, info);
+    }
+
+    private ScanJob(Plan plan, int[] anchor, int[] reportedAnchor, BlockSource source, int dataVersion, Info info) {
+        if (anchor.length != 3 || reportedAnchor.length != 3) throw new IllegalArgumentException("anchor");
         this.plan = plan;
         this.anchor = anchor.clone();
+        this.reportedAnchor = reportedAnchor.clone();
         this.source = source;
         this.dataVersion = dataVersion;
         this.info = info;
+    }
+
+    /**
+     * Recording of a placed plan that may be turned or mirrored (live link, MAP-05): {@code projectSource}
+     * is asked with project coordinates and answers in the plan's orientation, so the file lines up with
+     * the plan like an unturned recording. {@code worldAnchor} is only written as metadata.
+     */
+    public static ScanJob inProjectFrame(Plan plan, BlockSource projectSource, int[] worldAnchor, int dataVersion, Info info) {
+        return new ScanJob(plan, new int[] { 0, 0, 0 }, worldAnchor, projectSource, dataVersion, info);
     }
 
     public long total() { return plan.volume(); }
@@ -92,7 +108,7 @@ public final class ScanJob {
         b.put("RevisionNumber", Nbt.Tag.ofInt(plan.revisionNumber()));
         b.put("PlanSha256", Nbt.Tag.ofString(plan.sha256()));
         b.put("ProjectMin", Nbt.Tag.ofIntArray(plan.projectMin().clone()));
-        b.put("WorldAnchor", Nbt.Tag.ofIntArray(anchor.clone()));
+        b.put("WorldAnchor", Nbt.Tag.ofIntArray(reportedAnchor.clone()));
         b.put("Dimension", Nbt.Tag.ofString(info.dimension()));
         b.put("ScannedAt", Nbt.Tag.ofString(scannedAt.toString()));
         b.put("Source", Nbt.Tag.ofString(info.source()));
@@ -111,7 +127,8 @@ public final class ScanJob {
         s.put("Width", Nbt.Tag.ofShort(plan.width()));
         s.put("Height", Nbt.Tag.ofShort(plan.height()));
         s.put("Length", Nbt.Tag.ofShort(plan.length()));
-        s.put("Offset", Nbt.Tag.ofIntArray(worldMin()));
+        int[] m = plan.projectMin();
+        s.put("Offset", Nbt.Tag.ofIntArray(new int[] { reportedAnchor[0] + m[0], reportedAnchor[1] + m[1], reportedAnchor[2] + m[2] }));
         s.put("Blocks", Nbt.Tag.ofCompound(blocks));
         Map<String, Nbt.Tag> root = new LinkedHashMap<>();
         root.put("Schematic", Nbt.Tag.ofCompound(s));

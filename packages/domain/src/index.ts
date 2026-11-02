@@ -20,8 +20,8 @@ export { FACES, faceOf, anchorCells, capacityOf, validateConnectors, transformCo
 export type { FaceName, ConnectorIssue, PlacedConnector, LinkState, LinkStatus, SnapCandidate, SnapQuery } from './connectors.js';
 export { inspectCell } from './inspect.js';
 export type { CellInspection, CellSource } from './inspect.js';
-export { checkScan, compareBlock, ignoredProperties, scanTarget, confirmedUnticked, tickedButNotBuilt, tickConfirmed, GAME_STATUS_LABEL, VERDICT_LABEL } from './gameCheck.js';
-export type { GameCheck, StepCheck, CellDeviation, CellVerdict, GameStepStatus, ScanTarget, VerdictCounts } from './gameCheck.js';
+export { checkScan, compareBlock, ignoredProperties, scanTarget, confirmedUnticked, tickedButNotBuilt, tickConfirmed, GAME_STATUS_LABEL, VERDICT_LABEL, layerProgress, stepStatusCounts, deviationColumns } from './gameCheck.js';
+export type { GameCheck, StepCheck, CellDeviation, CellVerdict, GameStepStatus, ScanTarget, VerdictCounts, LayerProgress, DeviationColumn } from './gameCheck.js';
 export { FACETS, CATALOG_VERSION, BUILD_TIME_MODEL, MATERIAL_GROUP_LABEL, SIZE_CLASS_LABEL, BLOCK_CLASS_LABEL, blockClassOf, SORT_LABEL, facetLabel, facetTags, facetsOf, plainTags, withFacets, FAMILY_PREFIX, familyOf, familyMembers, BASIS_PREFIX, basisOf, variantGroup, STAGES, STAGE_LABEL, STAGE_HINT, STAGE_RULES, stageOf, stageIndex, progressionOf, materialGroupOf, sizeClassOf, needsOrientation, analyzeVersion, buildCatalog, queryCatalog, facetCounts, fitsPlot, materialOverlap, projectContext, suggestForProject, similarEntries } from './catalog.js';
 export type { Stage, FacetKey, BuildingFacets, FacetDefinition, BlockClass, MaterialGroup, Factor, BuildingMetrics, CatalogEntry, CatalogQuery, SortKey, Plot, ProjectContext, Suggestion, Similar } from './catalog.js';
 export { createBuildingLibrary, BUILDING_SPECS, PATH_PROFILE, specTags, familyLabel, buildingInfo } from './buildings.js';
@@ -98,7 +98,7 @@ export { WORLD_PLAN_SCHEMA_VERSION, WORLD_PLAN_MAX_ITEMS, WORLD_PATH_MAX_POINTS,
 export type { WorldPlan, WorldItem, WorldSite, WorldPath, WorldPoint, WorldPointType, WorldPathStyle, WorldPlanOp } from './worldPlan.js';
 export { LIVE_PROTOCOL, LIVE_DEFAULT_PORT, LIVE_TOKEN_HEADER, LIVE_MAX_CHUNKS_PER_REQUEST, LIVE_MAX_RUNS, LIVE_MAX_MARKS, LIVE_MAX_PLAN_BYTES, LIVE_ALLOWED_ORIGINS, readLiveHello, readLivePairing,
   readLiveStatus, readLiveChunks, classifyRuns, chunkColumns, wantedChunks, chunkQuery, liveSurvey, HOLOGRAM_MATCH_LABEL, hologramProject, compareHologram, liveShare, playerBlock,
-  originFromPlayer, planUploadQuery, marksBody, liveBaseUrl, originAllowed } from './liveLink.js';
+  originFromPlayer, planUploadQuery, marksBody, liveBaseUrl, originAllowed, liveCan, LIVE_FEATURE_SCAN } from './liveLink.js';
 export type { LiveHello, LivePlayer, LiveWorld, LiveCounts, LivePlacement, LiveHologram, LiveStatus, LiveChunk, LiveChunks, LiveColumn, LiveChunkColumns, HologramMatch } from './liveLink.js';
 export { removeItemsOp, selectionBounds, selectionPivot, itemsInRect, rotateColumn, mirrorColumn, rotateItem, mirrorItem, updateItemsOp, duplicateItems,
   pathVertexAt, movePathVertex, insertPathVertex, removePathVertex, reversePath, splitPath, joinPaths, groundHeight, alignToGround } from './worldPlanEdit.js';

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  readLiveHello, readLivePairing, readLiveStatus, readLiveChunks, classifyRuns, chunkColumns, wantedChunks, chunkQuery, liveSurvey, compareHologram, hologramProject,
+  readLiveHello, liveCan, readLivePairing, readLiveStatus, readLiveChunks, classifyRuns, chunkColumns, wantedChunks, chunkQuery, liveSurvey, compareHologram, hologramProject,
   liveShare, playerBlock, originFromPlayer, planUploadQuery, marksBody, liveBaseUrl, originAllowed, columnAt, encodeSurvey, decodeSurvey, createPlacement,
   LIVE_PROTOCOL, SURVEY_UNKNOWN,
 } from '../dist/domain/src/index.js';
@@ -16,7 +16,11 @@ const status = { time: '2026-11-02T10:00:00Z', player: { x: 101.7, y: 64, z: -18
   world: { key: 'server.lmnt-gaming.net', server: 'server.lmnt-gaming.net', singleplayer: false }, hologram, marks: 3 };
 
 test('Begrüßung, Kopplung und Status werden streng gelesen', () => {
-  assert.deepEqual(readLiveHello(hello), hello);
+  assert.deepEqual(readLiveHello(hello), { ...hello, features: [] }, 'ältere Mod ohne Fähigkeitenliste');
+  const withScan = readLiveHello({ ...hello, features: ['scan', 'BÖSE', 42] });
+  assert.deepEqual(withScan.features, ['scan']);
+  assert.equal(liveCan(withScan, 'scan'), true);
+  assert.equal(liveCan(readLiveHello(hello), 'scan'), false);
   assert.throws(() => readLiveHello({ ...hello, app: 'etwas' }), /keine Bauplaner-Mod/);
   assert.throws(() => readLiveHello({ ...hello, protocol: 2 }), /Protokoll 2/);
   assert.equal(readLivePairing({ token: 'a'.repeat(32) }), 'a'.repeat(32));

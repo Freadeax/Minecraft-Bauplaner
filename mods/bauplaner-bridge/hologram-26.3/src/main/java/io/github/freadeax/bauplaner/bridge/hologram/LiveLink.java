@@ -4,7 +4,9 @@ import io.github.freadeax.bauplaner.mod.BlockRules.Verdict;
 import io.github.freadeax.bauplaner.mod.LiveCheck;
 import io.github.freadeax.bauplaner.mod.Placement;
 import io.github.freadeax.bauplaner.mod.live.Json;
+import io.github.freadeax.bauplaner.bridge.ScanJob;
 import io.github.freadeax.bauplaner.mod.live.LiveLinkServer;
+import io.github.freadeax.bauplaner.mod.live.PlanScan;
 import io.github.freadeax.bauplaner.mod.live.SurfaceRuns;
 import io.github.freadeax.bauplaner.mod.live.WorldMarks;
 import java.io.IOException;
@@ -41,6 +43,8 @@ public final class LiveLink implements LiveLinkServer.Handler {
     private final Path root;
     private final Hologram hologram;
     private final LiveLinkServer server;
+    private final String loader;
+    private final String version;
     private volatile WorldMarks marks = WorldMarks.NONE;
     private volatile long lastRequest;
     private int port = LiveLinkServer.DEFAULT_PORT;
@@ -49,6 +53,8 @@ public final class LiveLink implements LiveLinkServer.Handler {
     public LiveLink(Path root, Hologram hologram, String loader, String version, String minecraft) {
         this.root = root;
         this.hologram = hologram;
+        this.loader = loader;
+        this.version = version;
         Properties p = load();
         enabled = "true".equals(p.getProperty("aktiv"));
         try { port = Integer.parseInt(p.getProperty("port", String.valueOf(LiveLinkServer.DEFAULT_PORT))); } catch (NumberFormatException ignored) { }
@@ -112,10 +118,12 @@ public final class LiveLink implements LiveLinkServer.Handler {
 
     // ------------------------------------------------------------------ handler (server threads)
 
-    private static <T> T onGame(Supplier<T> task) throws Exception {
+    private static <T> T onGame(Supplier<T> task) throws Exception { return onGame(task, 3); }
+
+    private static <T> T onGame(Supplier<T> task, int seconds) throws Exception {
         Minecraft mc = Minecraft.getInstance();
         try {
-            return CompletableFuture.supplyAsync(task, mc).get(3, TimeUnit.SECONDS);
+            return CompletableFuture.supplyAsync(task, mc).get(seconds, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
             throw new LiveLinkServer.HttpError(503, "Das Spiel antwortet gerade nicht (Ladebildschirm?).");
         } catch (java.util.concurrent.ExecutionException e) {
@@ -266,6 +274,31 @@ public final class LiveLink implements LiveLinkServer.Handler {
         Minecraft mc = Minecraft.getInstance();
         mc.execute(() -> McCompat.overlay(mc, Component.literal("Bauplaner: " + next.size() + " Markierungen von der Website")));
         return "{\"marks\":" + next.size() + "}";
+    }
+
+    @Override
+    public LiveLinkServer.Binary scan() throws Exception {
+        lastRequest = System.currentTimeMillis();
+        PlanScan.Result r = onGame(() -> {
+            Minecraft mc = Minecraft.getInstance();
+            var level = mc.level;
+            if (level == null) throw new LiveLinkServer.HttpError(409, "Keine Welt geladen.");
+            LiveCheck check = hologram.check();
+            if (check == null) throw new LiveLinkServer.HttpError(409, "Im Spiel ist kein Plan platziert.");
+            Placement pl = check.placement();
+            String here = McCompat.dimension(level);
+            if (!pl.dimension().equals(here))
+                throw new LiveLinkServer.HttpError(409, "Das Hologramm steht in " + pl.dimension() + ", du bist in " + here + ". Für den Baustand in dieselbe Dimension wechseln.");
+            return PlanScan.record(hologram.plan().identity(), pl, McCompat.clientBlocks(level), McCompat.dataVersion(),
+                    new ScanJob.Info(McCompat.gameVersion(), version, loader, pl.dimension(), "client"), Instant.now());
+        }, 15);
+        // Same folder as /bauplaner scan, so the file can also be imported by hand.
+        try {
+            Path dir = root.resolve("scans");
+            Files.createDirectories(dir);
+            Files.write(dir.resolve(r.fileName()), r.bytes());
+        } catch (IOException ignored) { }
+        return new LiveLinkServer.Binary(r.fileName(), r.bytes());
     }
 
     /** Marks of the last session, so the player sees them again without opening the website. */

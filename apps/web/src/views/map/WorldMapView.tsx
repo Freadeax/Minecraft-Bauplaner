@@ -21,6 +21,7 @@ import type { Mark } from '../../viewer/types';
 import { OverviewMap } from './OverviewMap';
 import type { MapDraft, MapHit, MapTool, MapVertex, PlanLayer } from './OverviewMap';
 import { LiveGamePanel } from './LiveGamePanel';
+import { GameProgressPanel, useGameProgress } from './GameProgress';
 import { liveApi, useLiveGame } from './liveClient';
 import { PlanItemEditor, PlanToolbar } from './PlanPanel';
 import { useWorldPlan } from './useWorldPlan';
@@ -31,7 +32,7 @@ import type { MenuEntry } from './Builder';
 import { chunkImage } from './terrainLayer';
 import { areaAround, storeSurvey } from '../world/surveys';
 import { PlacementForm } from './PlacementForm';
-import { LiveMapPanel, LiveMapLink } from './LiveMapPanel';
+import { LiveMapPanel, LiveMapLink, liveMapUrlAt } from './LiveMapPanel';
 import { useLiveMapSettings } from './liveMapConfig';
 import { computeMap } from './transport';
 import { projectTerrain, projectTerrainDimension } from '../world/designs';
@@ -272,6 +273,8 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   const holo = status?.hologram ?? null;
   const holoProject = holo && projects ? hologramProject(holo, projects) : null;
   const holoMatch = holo && holoProject ? compareHologram(holo, holoProject) : null;
+  // MAP-05: Baustand of the hologram project from the game (mod 0.7.1+).
+  const progress = useGameProgress(game, holoProject, dimension);
   // Following the player also follows them into another dimension.
   useEffect(() => { if (follow && player && player.dimension !== dimension) { setDimension(player.dimension); setSelected(null); } }, [follow, player?.dimension]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -423,6 +426,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
     trail: player && player.dimension === dimension ? game.trail : [],
     hologram: holo && holo.placement.dimension === dimension ? { box: [holo.box[0], holo.box[2], holo.box[3], holo.box[5]], matches: holoMatch === 'same',
       label: `Hologramm ${holo.name} · ${Math.round(liveShare(holo).share * 100)} % im Spiel` } : null,
+    deviations: progress.columns,
   };
   // Keyboard of the Weltbuilder while no text field has the focus:
   // Strg+Z/Strg+Y, Entf/Rücktaste löschen, Strg+D duplizieren, Strg+A alles, R drehen, Escape hebt die Auswahl auf.
@@ -462,6 +466,31 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
       setNotice(`${r.read} Chunks aus dem Spiel gelesen${r.missing ? `, ${r.missing} sind im Spiel gerade nicht geladen` : ''}.`);
     } catch (e) { setNotice(errorText(e)); }
     finally { setTerrainBusy(false); }
+  };
+  // MAP-05: Weltplan follows into the game by itself while switched on (a short pause after each change).
+  const [autoMarks, setAutoMarksState] = useState(() => { try { return localStorage.getItem('bauplaner.weltplan.abgleich') === 'an'; } catch { return false; } });
+  const setAutoMarks = (on: boolean) => { setAutoMarksState(on); try { localStorage.setItem('bauplaner.weltplan.abgleich', on ? 'an' : 'aus'); } catch { /* private window */ } };
+  const marksSent = useRef<string>('');
+  // The game object changes with every poll; the timer must only restart when the Weltplan changes.
+  const gameRef = useRef(game); gameRef.current = game;
+  useEffect(() => {
+    if (!autoMarks || !connected) return;
+    const key = `${dimension}|${JSON.stringify(items)}`;
+    if (key === marksSent.current) return;
+    const t = setTimeout(() => {
+      const g = gameRef.current, token = g.token(); if (!token) return;
+      void liveApi.marks(g.settings.port, token, dimension, items).then(() => { marksSent.current = key; }, e => setNotice(`Weltplan nicht abgeglichen: ${errorText(e)}`));
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [autoMarks, connected, items, dimension]);
+  /** Moves the hologram in the game so that the project origin stands on this column (rotation kept). */
+  const moveHologramTo = async (x: number, z: number) => {
+    const t = game.token(); if (!t || !holo) return;
+    const g = groundAt(x, z), y = g ? g.y + 1 : holo.placement.y;
+    try {
+      await liveApi.placement(game.settings.port, t, { ...holo.placement, dimension, x, y, z });
+      setNotice(`Hologramm „${holo.name}“ im Spiel nach X ${x} · Y ${y} · Z ${z} gesetzt${g ? '' : ' (Höhe beibehalten: kein Gelände bekannt)'}. Lage auf der Karte mit „Lage aus dem Spiel übernehmen“ nachziehen.`);
+    } catch (e) { setNotice(errorText(e)); }
   };
   const sendMarks = async () => {
     const t = game.token(); if (!t) return;
@@ -527,6 +556,8 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   const menuProject = menu?.hit?.kind === 'project' ? projects?.find(p => p.id === menu.hit!.id) ?? null : null;
   const menuTitle = !menu?.hit && !selectionCount ? `X ${menu?.column[0]} · Z ${menu?.column[1]}`
     : selectionCount > 1 ? `${selectionCount} gewählt` : selItems[0]?.name ?? selProjects[0]?.name ?? menuProject?.name ?? 'Auswahl';
+  const menuGround = menu ? groundAt(menu.column[0], menu.column[1]) : null;
+  const menuLiveUrl = menu ? liveMapUrlAt(live, dimension, menu.column[0], menuGround?.y ?? 64, menu.column[1]) : null;
   const menuEntries: (MenuEntry | null)[] = !menu ? [] : !menu.hit && !selectionCount ? [
     { label: 'Bauplatz hier zeichnen', onClick: () => setTool('site') },
     { label: 'Weg hier beginnen', onClick: () => setTool('path') },
@@ -534,6 +565,8 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
     null,
     { label: 'Alles auswählen (Strg+A)', onClick: selectAll },
     { label: 'Messen ab hier', onClick: () => setTool('measure') },
+    ...(connected && holo ? [null, { label: `Hologramm „${holo.name}“ hierher setzen`, onClick: () => void moveHologramTo(menu.column[0], menu.column[1]) }] : []),
+    ...(menuLiveUrl ? [null, { label: `Diese Stelle auf ${live.name || 'der Live-Karte'} zeigen ↗`, onClick: () => window.open(menuLiveUrl, '_blank', 'noopener,noreferrer') }] : []),
   ] : [
     ...(menuPath && menu.vertex ? [
       { label: 'Wegecke löschen', onClick: () => { const n = pathOp(() => removePathVertex(menuPath, menu.vertex!.index)); if (n) editPath(menuPath, n, 'Wegecke gelöscht'); }, disabled: menuPath.points.length <= 2, hint: menuPath.points.length <= 2 ? 'Ein Weg braucht mindestens zwei Ecken.' : undefined },
@@ -545,6 +578,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
     ...(selProjects.length === 1 && !selItems.length ? [
       { label: '✈ Hinfliegen', onClick: () => fly(selProjects[0]!.id) },
       { label: 'Im Editor öffnen', onClick: () => { location.hash = href({ view: 'project', projectId: selProjects[0]!.id, tab: 'editor' }); } },
+      ...(connected && selProjects[0]!.world ? [{ label: '▶ Ins Spiel senden', onClick: () => void sendToGame(selProjects[0]!) }] : []),
     ] : []),
     ...(selItems.length ? [
       { label: '⧉ Duplizieren (Strg+D)', onClick: duplicateSelection },
@@ -637,6 +671,10 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
           marksInfo: `${items.length} Einträge in ${dimensionLabel(dimension)}${status?.marks ? ` · im Spiel: ${status.marks}` : ''}`,
           hologramProject: holoProject, hologramMatch: holoMatch,
           onAdoptHologram: holoMatch && holoMatch !== 'same' && holoMatch !== 'turned' ? () => void adoptHologram() : null,
+          autoMarks, onAutoMarks: setAutoMarks,
+          onSection: connected ? n => { const t = game.token(); if (t) void liveApi.section(game.settings.port, t, n).then(() => setNotice(n ? `Im Spiel wird nur Abschnitt „${holo?.sections[n - 1]?.name ?? n}“ gezeigt.` : 'Im Spiel wird wieder der ganze Plan gezeigt.'), e => setNotice(errorText(e))); } : null,
+          progress: holoProject ? <GameProgressPanel progress={progress} modVersion={game.hello?.mod.version ?? null}
+            onTick={op => void save(holoProject, op)} /> : null,
         }} />
         <PlanToolbar tool={tool} onTool={setTool} canUndo={history.canUndo} canRedo={history.canRedo} onUndo={() => void undo()} onRedo={() => void redo()} />
         <LayerToggles layers={layers} onChange={l => { setLayers(l); setSelection(cur => cur.filter(h => h.kind === 'project' ? l.projects : (() => { const it = items.find(i => i.id === h.id); return !it || l[it.kind]; })())); }}
