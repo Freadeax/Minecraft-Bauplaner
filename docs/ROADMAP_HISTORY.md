@@ -2269,3 +2269,31 @@ Weltkarten-Browsertest holt die Draufsicht vor dem Zeigen in den sichtbaren Bere
 
 - `tests/e2e/worldmap.e2e.mjs`
 
+## 2026-11-02T12:10:10.657Z · progress
+
+**Aufgaben:** TERRAIN-02
+
+Streu-Ebene (S06): Bäume, Büsche, Felsen, Pflanzen und eigene Schablonen nach Stil, Hang, Höhe, Ufer und Dichte deterministisch verteilen, von Hand setzen/entfernen, im Geländebauteil für Material, Bauen, Export und Mod. Kern 8/8, Browser 2/2, gesamt 110/110 E2E; Abnahme in eigener Welt offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| TERRAIN-02 | 🧩 Implementiert · Abnahme offen | 5/7 | Abnahme mit eigener Welt (S05); Wegstufen als Treppen (S07). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/project/LandscapeTab.tsx`
+- `apps/web/src/views/project/landscape/DesignCanvas.tsx`
+- `apps/web/src/views/project/landscape/ScatterPanel.tsx`
+- `apps/web/src/views/project/landscape/landscape.css`
+- `apps/web/src/views/world/designs.ts`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/LANDSCAPE.md`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/terrainDesign.ts`
+- `packages/domain/src/terrainScatter.ts`
+- `packages/domain/src/terrainScatterPlan.ts`
+- `tests/e2e/landscape-scatter.e2e.mjs`
+- `tests/terrain-scatter.test.mjs`
+

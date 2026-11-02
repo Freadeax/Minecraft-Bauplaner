@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T12:00:34.846Z",
+  "updatedAt": "2026-11-02T12:10:10.657Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -3168,7 +3168,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T09:32:44.995Z"
+      "updatedAt": "2026-11-02T12:10:10.657Z"
     },
     {
       "id": "BUILD-06",
@@ -7903,6 +7903,40 @@
           "done": 5,
           "total": 6,
           "next": "Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T12:10:10.657Z",
+      "kind": "progress",
+      "items": [
+        "TERRAIN-02"
+      ],
+      "summary": "Streu-Ebene (S06): Bäume, Büsche, Felsen, Pflanzen und eigene Schablonen nach Stil, Hang, Höhe, Ufer und Dichte deterministisch verteilen, von Hand setzen/entfernen, im Geländebauteil für Material, Bauen, Export und Mod. Kern 8/8, Browser 2/2, gesamt 110/110 E2E; Abnahme in eigener Welt offen.",
+      "files": [
+        "apps/web/src/views/project/LandscapeTab.tsx",
+        "apps/web/src/views/project/landscape/DesignCanvas.tsx",
+        "apps/web/src/views/project/landscape/ScatterPanel.tsx",
+        "apps/web/src/views/project/landscape/landscape.css",
+        "apps/web/src/views/world/designs.ts",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/LANDSCAPE.md",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/terrainDesign.ts",
+        "packages/domain/src/terrainScatter.ts",
+        "packages/domain/src/terrainScatterPlan.ts",
+        "tests/e2e/landscape-scatter.e2e.mjs",
+        "tests/terrain-scatter.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "TERRAIN-02",
+          "status": "implemented",
+          "done": 5,
+          "total": 7,
+          "next": "Abnahme mit eigener Welt (S05); Wegstufen als Treppen (S07)."
         }
       ]
     }
