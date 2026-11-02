@@ -11,6 +11,8 @@ import { rawSource, resolveRecipes } from './recipes.js';
 import type { RecipeMethod } from './recipes.js';
 import { memberMatches, sectionOfStep } from './sectionMembership.js';
 import { checkSnapshots } from './sectionSnapshots.js';
+import { checkPace } from './buildRun.js';
+import type { PaceSetting } from './buildRun.js';
 import type { SectionSnapshot } from './sectionSnapshots.js';
 import { DomainError } from './types.js';
 import type { AssetVersion, Connector, Project } from './types.js';
@@ -77,6 +79,8 @@ export interface SitePlan {
   };
   /** Frozen section states (BACKUP-02, sectionSnapshots.ts); absent = none. Never rewritten, only added or explicitly deleted. */
   readonly snapshots?: readonly SectionSnapshot[];
+  /** Building pace for daily goals (BUILD-06, buildRun.ts); absent = DEFAULT_PACE. */
+  readonly pace?: PaceSetting;
 }
 
 export function emptySite(): SitePlan {
@@ -132,6 +136,7 @@ export function checkSite(raw: unknown): SitePlan {
     if (v.height !== undefined) intIn(v.height, 1, 64, `Freiraumhöhe ${key}`);
   }
   if (raw.snapshots !== undefined) checkSnapshots(raw.snapshots);
+  if (raw.pace !== undefined) checkPace(raw.pace);
   return raw as unknown as SitePlan;
 }
 
@@ -176,6 +181,13 @@ export function toggleResolvedStock(site: SitePlan, itemId: string): SitePlan {
   const id = ns(itemId), has = site.resolvedStock.includes(id);
   return { ...site, resolvedStock: has ? site.resolvedStock.filter(i => i !== id) : [...site.resolvedStock, id].sort() };
 }
+/** Building pace for daily goals; null restores the default. */
+export function setPace(site: SitePlan, pace: PaceSetting | null): SitePlan {
+  const { pace: _old, ...rest } = site;
+  void _old;
+  return pace ? { ...rest, pace: checkPace({ ...pace }) } : rest;
+}
+
 export const reservationKey = (instanceId: string, connectorId: string): string => `${instanceId}/${connectorId}`;
 export function setReservation(site: SitePlan, instanceId: string, connectorId: string, setting: ReservationSetting | null): SitePlan {
   const overrides = { ...site.reservations.overrides }, key = reservationKey(instanceId, connectorId);

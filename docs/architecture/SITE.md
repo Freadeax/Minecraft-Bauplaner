@@ -46,3 +46,7 @@ Jede Änderung ist eine Operation `site.set` mit exakter Umkehrung (Rückgängig
 ## Abschnittsstände (BACKUP-02)
 
 Bauabschnitte lassen sich einfrieren; `project.site.snapshots` hält Stände mit Versionen, Platzierungen und Schrittgeometrie fest, jede spätere Abweichung wird angezeigt, Zurücksetzen läuft mit Vorschau als eine rückgängig machbare Operation. Details: [BACKUPS](BACKUPS.md).
+
+## Bautempo (BUILD-06)
+
+Optionales Feld `pace` (`blocksPerSession`, `boxesPerSession`) für Bautage und Shulker-Packlisten; `SITE_SCHEMA_VERSION` bleibt 1, ältere Pläne nutzen den Standard. Details: [BUILD_RUN](BUILD_RUN.md).

@@ -3,8 +3,8 @@ import { mergeBuildItems } from '../../../../../packages/application/src/project
 import type { BuildItemSummary } from '../../../../../packages/application/src/projectComputation.js';
 import { selectLayers } from '../../../../../packages/voxel/src/index.js';
 import type { BlockState, Cell } from '../../../../../packages/voxel/src/index.js';
-import { checkScan, confirmedUnticked, formatStacks, PHASE_LABEL, positionKey, scanTarget, sectionOfStep, siteOf, tickConfirmed, tickedButNotBuilt, tickStep, tickSteps, untickStep, untickSteps, VERDICT_LABEL } from '../../../../../packages/domain/src/index.js';
-import type { CellDeviation, GameCheck, Guide, GuideStep, MaterialReport, Resolution, StepStatus } from '../../../../../packages/domain/src/index.js';
+import { anchorOf, cellLookup, emptySite, planSessions, progressByDay, checkScan, confirmedUnticked, formatStacks, PHASE_LABEL, positionKey, scanTarget, sectionOfStep, siteOf, tickConfirmed, tickedButNotBuilt, tickStep, tickSteps, untickStep, untickSteps, VERDICT_LABEL } from '../../../../../packages/domain/src/index.js';
+import type { BuildAnchor, CellDeviation, CellLookup, GameCheck, Guide, GuideStep, MaterialReport, Resolution, StepStatus } from '../../../../../packages/domain/src/index.js';
 import type { Vec3 } from '../../../../../packages/voxel/src/index.js';
 import { useApp } from '../../app/context';
 import { formatNumber } from '../../app/ui';
@@ -15,6 +15,14 @@ import { GAME_BADGE, GameCheckPanel, gameStatusText } from './GameCheckPanel';
 import type { LoadedScan } from './GameCheckPanel';
 import { useProjectComputation } from '../../app/useProjectComputation';
 import type { ProjectSession } from './session';
+import { AnchorBar } from './buildrun/AnchorBar';
+import { BuildFocus } from './buildrun/BuildFocus';
+import { localDay, storedView, storeView } from './buildrun/common';
+import type { BuildView, PrintTarget } from './buildrun/common';
+import { PrintSheet } from './buildrun/PrintSheet';
+import { SessionsView } from './buildrun/SessionsView';
+import { StepRows, useStepRuns } from './buildrun/StepRows';
+import '../../buildrun.css';
 
 type Filter = 'all' | 'todo' | 'review';
 const STATUS_LABEL: Readonly<Record<StepStatus, string>> = { open: 'offen', done: 'abgehakt', review: 'prüfbedürftig' };
@@ -77,6 +85,18 @@ export function BuildTab({ session }: { session: ProjectSession }) {
   const step = guide?.byId.get(selectedId ?? '') ?? guide?.steps.find(s => ready.has(s.id)) ?? guide?.steps.find(s => status(s.id) !== 'done') ?? guide?.steps[0] ?? null;
   useEffect(() => { if (step && step.id !== selectedId) setSelectedId(step.id); }, [step, selectedId]);
 
+  // Bauführung (BUILD-06): anchor, building days with pack lists, focus mode and print sheet.
+  const [view, setViewState] = useState<BuildView>(storedView);
+  const setView = (v: BuildView) => { setViewState(v); storeView(v); };
+  const [printTarget, setPrintTarget] = useState<PrintTarget | null>(null);
+  const endPrint = useCallback(() => setPrintTarget(null), []);
+  const lookup = useMemo(() => world ? cellLookup(world) : null, [world]);
+  const anchor = anchorOf(project);
+  const projectSite = project.site;
+  const plan = useMemo(() => guide && progress && stepItems ? planSessions(guide, progress, projectSite ?? emptySite(), stepItems) : null, [guide, progress, projectSite, stepItems]);
+  const focusOrder = useMemo(() => plan?.sessions.flatMap(d => d.steps.map(s => ({ id: s.id, day: d.index }))) ?? [], [plan]);
+  const todayBlocks = useMemo(() => guide ? progressByDay(project.progress, guide, localDay).find(d => d.day === localDay(new Date()))?.blocks ?? 0 : 0, [project.progress, guide]);
+
   const run = (op: Parameters<ProjectSession['execute']>[0] | null) => { if (op) setMessage(session.execute(op)); };
   const nextOpen = (after: GuideStep) => guide!.steps.find(s => s.order > after.order && status(s.id) !== 'done') ?? guide!.steps.find(s => status(s.id) !== 'done');
   const tick = (s: GuideStep) => {
@@ -132,6 +152,10 @@ export function BuildTab({ session }: { session: ProjectSession }) {
         <small>{formatNumber(progress.blocksDone)} von {formatNumber(guide.totals.blocks)} Blöcken ({pct} %){progress.review > 0 && <> · <em className="badge review">{progress.review} prüfbedürftig</em></>}</small>
       </div>
       {basisControl}
+      <div className="chips build-views" role="group" aria-label="Ansicht">
+        {([['steps', 'Schritte'], ['days', 'Bautage & Packliste'], ['focus', 'Baumodus (Handy)']] as const).map(([v, label]) =>
+          <button key={v} aria-pressed={view === v} onClick={() => setView(v)}>{label}</button>)}
+      </div>
       <p className="muted build-honesty">Haken sind manuelle Angaben, keine Messung im Spiel. Ändert sich die Geometrie eines Schritts, wird sein Haken „prüfbedürftig“.</p>
     </header>
 
@@ -143,10 +167,32 @@ export function BuildTab({ session }: { session: ProjectSession }) {
     {progress.orphaned.length > 0 && <div className="notice build-wide" role="status">
       {progress.orphaned.length} gespeicherte Haken gehören zu Schritten, die es nicht mehr gibt (Bauteil entfernt oder Schicht leer).
       <button onClick={() => run(untickSteps(progress.orphaned, 'Verwaiste Haken entfernt'))}>Verwaiste Haken entfernen</button></div>}
+    {view === 'focus' && step && world && lookup && (() => {
+      const index = focusOrder.findIndex(f => f.id === step.id);
+      const go = (delta: 1 | -1) => {
+        if (index < 0) { const first = focusOrder[0]; if (first) setSelectedId(first.id); return; }
+        const t = focusOrder[index + delta]; if (t) setSelectedId(t.id);
+      };
+      return <BuildFocus step={step} guide={guide} status={status} ready={ready.has(step.id)} game={game} anchor={anchor} world={world} lookup={lookup}
+        items={stepItems?.get(step.id) ?? null} position={{ index: Math.max(0, index), total: focusOrder.length, day: focusOrder[index]?.day ?? null }}
+        today={{ blocks: todayBlocks, goal: plan?.pace.blocksPerSession ?? 1 }}
+        onTick={() => { run(tickStep(step)); const next = focusOrder.slice(index + 1).find(f => status(f.id) !== 'done' && f.id !== step.id); if (next) setSelectedId(next.id); }}
+        onUntick={() => run(untickStep(step.id))} onPrev={() => go(-1)} onNext={() => go(1)} onExit={() => setView('steps')} onSelect={setSelectedId} />;
+    })()}
+    <AnchorBar project={project} scanMeta={scan?.meta ?? null} execute={op => session.execute(op)} />
     {gamePanel}
     {message && <div className="notice warning build-wide" role="alert">{message}<button onClick={() => setMessage('')}>OK</button></div>}
 
-    <aside className="build-list" aria-label="Schritte">
+    {view === 'days' && plan && world && <SessionsView project={project} guide={guide} progress={progress} plan={plan} reports={stepItems!} game={game} anchor={anchor} world={world}
+      execute={op => session.execute(op)} onSelectStep={id => { setSelectedId(id); setView('steps'); }} onPrint={setPrintTarget}
+      onFocus={id => { setSelectedId(id); setView('focus'); }} />}
+    {printTarget && plan && world && lookup && <PrintSheet target={printTarget} title={`${project.name} – Bauzettel`} sessions={plan.sessions} guide={guide} game={game}
+      world={world} lookup={lookup} anchor={anchor} />}
+    {printTarget && <div className="notice build-wide print-banner" role="status">
+      <strong>Bauzettel {printTarget.kind === 'day' ? `Bautag ${printTarget.index}` : 'Nacharbeit'} ist druckbereit.</strong> Strg+P oder „Erneut drucken“ druckt nur den Zettel (Schwarz auf Weiß, mit Kästchen zum Abhaken auf Papier).
+      <div className="button-row"><button onClick={() => window.print()}>Erneut drucken</button><button onClick={endPrint}>Bauzettel schließen</button></div></div>}
+
+    {view === 'steps' && <aside className="build-list" aria-label="Schritte">
       <div className="chips" role="group" aria-label="Filter">
         {(['all', 'todo', 'review'] as const).map(f => <button key={f} aria-pressed={filter === f} onClick={() => setFilter(f)}>{f === 'all' ? 'Alle' : f === 'todo' ? 'Nicht erledigt' : 'Prüfbedürftig'}</button>)}
       </div>
@@ -169,9 +215,9 @@ export function BuildTab({ session }: { session: ProjectSession }) {
           </button></li>;
         })}</ol>
       </div>)}
-    </aside>
+    </aside>}
 
-    {step && <StepDetail step={step} guide={guide} status={status} game={game} ready={ready.has(step.id)} world={computation?.resolution ?? null}
+    {view === 'steps' && step && <StepDetail anchor={anchor} lookup={lookup} step={step} guide={guide} status={status} game={game} ready={ready.has(step.id)} world={computation?.resolution ?? null}
       items={stepItems?.get(step.id) ?? null} layerItems={layerItems}
       show3d={show3d} setShow3d={setShow3d} onSelect={setSelectedId}
       onTick={() => tick(step)} onUntick={() => run(untickStep(step.id))}
@@ -183,15 +229,17 @@ export function BuildTab({ session }: { session: ProjectSession }) {
 
 interface DetailProps {
   step: GuideStep; guide: Guide; status: (id: string) => StepStatus; game: GameCheck | null; ready: boolean; world: Resolution | null;
+  anchor: BuildAnchor; lookup: CellLookup | null;
   items: MaterialReport | null; layerItems: { y: number; steps: number; report: BuildItemSummary } | null;
   show3d: boolean; setShow3d(v: boolean): void; onSelect(id: string): void;
   onTick(): void; onUntick(): void; onNext(): void; onPrev(): void; onTickLayer(): void;
 }
 
-function StepDetail({ step, guide, status, game, ready, world, items, layerItems, show3d, setShow3d, onSelect, onTick, onUntick, onNext, onPrev, onTickLayer }: DetailProps) {
+function StepDetail({ anchor, lookup, step, guide, status, game, ready, world, items, layerItems, show3d, setShow3d, onSelect, onTick, onUntick, onNext, onPrev, onTickLayer }: DetailProps) {
   const st = status(step.id);
   const waiting = step.prerequisites.filter(p => status(p) !== 'done');
   const g = game?.steps.get(step.id);
+  const runs = useStepRuns(step, world?.world ?? null, lookup);
   const deviations = useMemo(() => game ? [...game.deviations.values()].filter(d => d.stepId === step.id) : [], [game, step.id]);
   return <article className="build-step" aria-label={`Schritt ${step.order}`}>
     <header>
@@ -220,6 +268,7 @@ function StepDetail({ step, guide, status, game, ready, world, items, layerItems
       <thead><tr><th>Block</th><th>Anzahl</th></tr></thead>
       <tbody>{step.materials.map(m => <tr key={m.key}><td><i style={{ background: stateColor(m.state.id) }} aria-hidden="true" /><code>{stateText(m.state)}</code></td><td>{formatNumber(m.count)}</td></tr>)}</tbody></table>}
     {items && <StepItems report={items} />}
+    <StepRows runs={runs} anchor={anchor} />
     {(step.air > 0 || step.erase > 0) && <p className="muted">{step.air > 0 && `${step.air} Zellen ausdrücklich Luft (freihalten). `}{step.erase > 0 && `${step.erase} Zellen abbauen/löschen.`}</p>}
     {step.notes.length > 0 && <ul className="build-notes">{step.notes.map(n => <li key={n}>{n}</li>)}</ul>}
 

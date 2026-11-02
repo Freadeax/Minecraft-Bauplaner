@@ -32,7 +32,7 @@ export { ENSEMBLES, memberTransform, latestVersions, missingMembers, createEnsem
 export type { Ensemble, EnsembleMember } from './ensembles.js';
 export { MATERIAL_SETS, MATERIAL_KIND_LABEL, materialSet, materialOf, detectMaterials, swapMaterials, swapLabel } from './variants.js';
 export type { MaterialSet, MaterialKind, MaterialUse, MaterialSwap, SwapResult } from './variants.js';
-export { SITE_SCHEMA_VERSION, DEFAULT_RESERVATION_DEPTH, MAX_RESERVATION_DEPTH, emptySite, siteOf, checkSite, siteOperation, addSection, updateSection, removeSection, moveSection, setStock, toggleResolvedStock, reservationKey, setReservation, pruneSite, sectionOfStep, SECTION_PRESET_LABEL, suggestSections, checkSections, gatherRuleFor, GATHER_BUILDING_IDS, planSite, RESERVATION_STATE_LABEL, profileSize, reservationCells, reservationsFor } from './site.js';
+export { SITE_SCHEMA_VERSION, DEFAULT_RESERVATION_DEPTH, MAX_RESERVATION_DEPTH, emptySite, siteOf, checkSite, siteOperation, addSection, updateSection, removeSection, moveSection, setStock, toggleResolvedStock, setPace, reservationKey, setReservation, pruneSite, sectionOfStep, SECTION_PRESET_LABEL, suggestSections, checkSections, gatherRuleFor, GATHER_BUILDING_IDS, planSite, RESERVATION_STATE_LABEL, profileSize, reservationCells, reservationsFor } from './site.js';
 export type { SitePlan, SiteSection, SectionMember, ReservationSetting, SectionPreset, SectionIssue, GatherRule, GatherLine, BuildItemLine, SectionPlan, SiteOverview, ReservationState, Reservation } from './site.js';
 export { checkIntegrity, INTEGRITY_SEVERITY_LABEL } from './integrity.js';
 export type { IntegrityReport, IntegrityFinding, IntegritySeverity, IntegrityCode, IntegritySource } from './integrity.js';
@@ -65,3 +65,5 @@ export { UPDATES_SCHEMA_VERSION, MAX_UPDATE_LOG, UPDATE_KIND_LABEL, UPDATE_STATU
   latestReleaseId, isLocalPatch, patchBase, findUpdates, summarizeUpdates, rebasePatch, localLabel, diffVersions, pivotAligned, diffConnectors, prepareUpdate, freezeOperation, unfreezeOperation, returnChoice } from './updates.js';
 export type { FrozenPin, UpdateKind, UpdateRecord, UpdateState, PatchPolicy, UpdateLibrary, InstanceUpdateStatus, InstanceUpdateInfo, UpdateSummary, PatchCell, PatchConflict, RebaseResult,
   ConnectorChange, ConnectorChangeKind, UpdateChoice, InstanceUpdatePlan, LinkChange, StepChange, MaterialChange, UpdatePlan, PreparedUpdate, PrepareOptions } from './updates.js';
+export { anchorOf, anchorFromScan, sameAnchor, worldPos, cellLookup, stepRuns, stepRunsIn, runLabel, runCoords, stepText, packSteps, stockMap, packText, DEFAULT_PACE, PACE_LIMITS, checkPace, paceOf, stepWork, planSessions, progressByDay, sessionText, reworkList, REWORK_ACTION, gameCounts } from './buildRun.js';
+export type { BuildAnchor, CellLookup, RunKind, StepRun, PackLine, PackSlot, PackBox, PackPlan, PaceSetting, BuildSession, SessionPlan, DayProgress, ReworkItem, ReworkGroup, GameCounts } from './buildRun.js';

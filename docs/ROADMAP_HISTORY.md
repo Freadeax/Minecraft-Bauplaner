@@ -1601,3 +1601,36 @@ Mod 2.0 Stufe 1: Hologramm, Live-Abgleich, Fehlerfinder, Planmenü; Fabric 0.2.0
 - `scripts/test_bridge_ingame.sh`
 - `tests/e2e/mod-download.e2e.mjs`
 
+## 2026-11-02T05:47:56.343Z · progress
+
+**Aufgaben:** BUILD-06
+
+BUILD-06 umgesetzt: Schichtführung mit Anker-/Weltkoordinaten, Anker aus Weltlage oder Spielaufnahme, Bautage nach Block-/Kistenbudget, Shulker-Packliste je Bautag/Abschnitt, Tagesziel, Bauzettel (Druck/Text), Handy-Baumodus, Spielstatus und bestätigte Schritte je Tag, Nacharbeitsliste. npm run check grün (476/477, 1 übersprungen), test:e2e 85/85. Grenzen: keine echten Geräte/Drucker, kein Client-Spieltest.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| BUILD-06 | 🧩 Implementiert · Abnahme offen | 5/5 | Echtgeräte- und Druckerabnahme mit QA-02; Philipps Spieltest mit Mod-Aufnahme (WorldAnchor) auf seinem Server. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/buildrun.css`
+- `apps/web/src/views/project/BuildTab.tsx`
+- `apps/web/src/views/project/buildrun/AnchorBar.tsx`
+- `apps/web/src/views/project/buildrun/BuildFocus.tsx`
+- `apps/web/src/views/project/buildrun/PackList.tsx`
+- `apps/web/src/views/project/buildrun/PrintSheet.tsx`
+- `apps/web/src/views/project/buildrun/SessionsView.tsx`
+- `apps/web/src/views/project/buildrun/StepRows.tsx`
+- `apps/web/src/views/project/buildrun/common.ts`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/BUILD_RUN.md`
+- `docs/architecture/GUIDE.md`
+- `docs/architecture/SITE.md`
+- `packages/domain/src/buildRun.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/site.ts`
+- `tests/build-run.test.mjs`
+- `tests/e2e/build-run.e2e.mjs`
+

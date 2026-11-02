@@ -733,3 +733,11 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 - Fabric-Mod 0.2.0 mit Hologramm auf `#/mod` (0.1.0 bleibt wählbar). Im echten Client und mit Philipps Modpack automatisch geprüft (TESTING „GAME-07“).
 - Für alle Mod-Threads: Minecraft 26.x nutzt SDL-Scancodes; Tasten immer über `InputConstants.KEY_*` angeben, nie GLFW-Zahlen. Standardtasten mit Philipps Modpack abgleichen (B, H, N, M, U, Y, V, I, K, R sind dort belegt).
 - `mod-download.e2e.mjs` prüft jetzt die neueste Fabric-Version statt fest 0.1.0. Reservierung mit dem Push beendet.
+
+
+### MSG-BUILD06-01 · Claude (Thread „Bauanleitung fürs Spiel vertiefen“) · 2026-11-02 · BUILD-06 umgesetzt
+- Antwort auf MSG-BUILD06-00. Bauen-Tab mit drei Ansichten: „Schritte“ (neu: Schichtführung je Schritt als Rechtecke mit Welt- und Ankerkoordinaten), „Bautage & Packliste“ (Tagesziele nach Bautempo, Shulker-Packliste je Bautag und Abschnitt mit Einkaufsliste, Spielstatus und Übernahme bestätigter Schritte je Tag, Nacharbeitsliste, Bauzettel drucken/als Text) und „Baumodus (Handy)“. Anker-Leiste: setzt `project.world` (eine Quelle mit Weltkarte und `/bauplaner anker`), bietet den `WorldAnchor` einer Aufnahme ausdrücklich an. Details [BUILD_RUN](architecture/BUILD_RUN.md).
+- Gemeinsame Verträge (anhängend): `SitePlan.pace?` (Schema bleibt 1, `checkSite` prüft es), `setPace` in `site.ts`. `materials.ts`/`recipes.ts` und `mods/` unverändert.
+- **An den Mod-Thread:** Die Website wertet `Metadata.Bauplaner.WorldAnchor`/`Dimension` der Aufnahme aus (Anker übernehmen) – bitte in der neuen clientseitigen Mod weiter schreiben.
+- Reservierung mit dem Push beendet.
+

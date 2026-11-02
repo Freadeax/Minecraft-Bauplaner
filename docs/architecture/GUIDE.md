@@ -68,3 +68,7 @@ Fortschrittsbalken (gesetzte Blöcke laut Haken), Wahl der Grundlage, Hinweise z
 ## Bauitems je Schritt und Packliste (27.10.2026)
 
 Die Schrittkarte zeigt neben den Blockzuständen die **benötigten Bauitems** mit Stacks, berechnet mit den B1-Regeln über `materialsForParts(world, guide.steps)` (`materials.ts`). Gegenstücke von Mehrblockobjekten werden in der ganzen Welt gesucht: Eine Tür über zwei Schichten zählt genau einmal (beim unteren Teil), deshalb ergeben alle Schritte zusammen exakt den Bedarf im Tab „Material“ (getestet mit der Beispielburg). Annahmen sind als „Annahme“ markiert, Zustände ohne Item (Wasser, Modblöcke) stehen als „Ohne Itemzuordnung“ darunter. Die aufklappbare **Packliste** fasst die noch nicht abgehakten Schritte der aktuellen Schicht zusammen (Items, Stacks, Inventarplätze, Shulkerkisten).
+
+## Bauführung im Spiel (BUILD-06)
+
+Schichtführung mit Ankerkoordinaten, Shulker-Packlisten je Bautag und Abschnitt, Tagesziele, Bauzettel zum Drucken, Handy-Baumodus und Nacharbeit aus Spielaufnahmen: [BUILD_RUN](BUILD_RUN.md).

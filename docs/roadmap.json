@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T05:45:11.173Z",
+  "updatedAt": "2026-11-02T05:47:56.343Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -8,7 +8,6 @@
     "EDIT-01",
     "EDIT-02",
     "GAME-05",
-    "BUILD-06",
     "EDIT-03"
   ],
   "policy": {
@@ -2526,7 +2525,7 @@
       "title": "Bauführung im Spiel: Schichtführung, Tagesziele, Packlisten, Druck-/Handyansicht, Spielfortschritt",
       "phase": "P3",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "implemented",
       "owner": "Claude-Thread „Bauanleitung fürs Spiel vertiefen“",
       "dependencies": [
         "BUILD-01",
@@ -2537,55 +2536,64 @@
         "packages/domain/src/buildRun.ts",
         "packages/domain/src/site.ts",
         "apps/web/src/views/project/BuildTab.tsx",
-        "apps/web/src/views/project/buildrun/",
         "apps/web/src/buildrun.css",
         "tests/build-run.test.mjs",
         "tests/e2e/build-run.e2e.mjs",
-        "docs/architecture/BUILD_RUN.md"
+        "docs/architecture/BUILD_RUN.md",
+        "apps/web/src/views/project/buildrun/"
       ],
       "legacyIds": [],
       "steps": [
         {
           "id": "BUILD-06-S01",
           "title": "Schichtführung: Reihen/Rechtecke je Schritt mit Koordinaten relativ zum Anker und in Weltkoordinaten; Anker aus Weltlage oder Spielaufnahme.",
-          "done": false
+          "done": true
         },
         {
           "id": "BUILD-06-S02",
           "title": "Shulker-Packliste je Bauabschnitt und Bautag in Reihenfolge des ersten Bedarfs.",
-          "done": false
+          "done": true
         },
         {
           "id": "BUILD-06-S03",
           "title": "Tagesziele: offene Schritte nach Block- und Kistenbudget in Bautage teilen, Tagesverlauf aus Haken.",
-          "done": false
+          "done": true
         },
         {
           "id": "BUILD-06-S04",
           "title": "Druckansicht (Bauzettel) und Handy-Baumodus.",
-          "done": false
+          "done": true
         },
         {
           "id": "BUILD-06-S05",
           "title": "Spielfortschritt: bestätigte Schritte je Bautag übernehmen, Nacharbeitsliste mit Koordinaten.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Keine zweite Geometrie-, Zähl- oder Itemlogik: alles aus buildGuide/materialsForParts; Haken bleiben manuell und nur auf ausdrücklichen Klick."
       ],
-      "next": "Domäne buildRun.ts mit Tests, dann Oberfläche im Bauen-Tab.",
+      "next": "Echtgeräte- und Druckerabnahme mit QA-02; Philipps Spieltest mit Mod-Aufnahme (WorldAnchor) auf seinem Server.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/build-run.test.mjs",
+          "note": "9 Fälle: Rechteckabdeckung, Anker, Packliste = Material-Tab, Bautage/Budget/Abschnitte/Lager, Haken je Tag, Textzettel, Nacharbeit."
+        },
+        {
+          "path": "tests/e2e/build-run.e2e.mjs",
+          "note": "Chromium 1400/390 px: Anker aus Aufnahme, Weltkoordinaten, Bautage, Packliste, Nacharbeit, Tag abhaken, Druckmedienemulation, Textdownload, Baumodus."
+        }
+      ],
       "verification": {
-        "state": "pending",
-        "note": "In Arbeit."
+        "state": "passed",
+        "note": "npm run check grün (476 bestanden, 1 übersprungen); BUILD-06-E2E bestanden; keine echten Geräte/Drucker, kein Client-Spieltest."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T05:07:08.400Z"
+      "updatedAt": "2026-11-02T05:35:21.519Z"
     },
     {
       "id": "GEN-02",
@@ -6290,6 +6298,45 @@
           "done": 4,
           "total": 6,
           "next": "Philipp testet 0.2.0 auf server.lmnt-gaming.net (Anleitung /mnt/project-files/mod/ANLEITUNG_HOLOGRAMM.md); danach Stufe 3 (texturierte Geisterblöcke, Materialliste im Spiel)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T05:47:56.343Z",
+      "kind": "progress",
+      "items": [
+        "BUILD-06"
+      ],
+      "summary": "BUILD-06 umgesetzt: Schichtführung mit Anker-/Weltkoordinaten, Anker aus Weltlage oder Spielaufnahme, Bautage nach Block-/Kistenbudget, Shulker-Packliste je Bautag/Abschnitt, Tagesziel, Bauzettel (Druck/Text), Handy-Baumodus, Spielstatus und bestätigte Schritte je Tag, Nacharbeitsliste. npm run check grün (476/477, 1 übersprungen), test:e2e 85/85. Grenzen: keine echten Geräte/Drucker, kein Client-Spieltest.",
+      "files": [
+        "apps/web/src/buildrun.css",
+        "apps/web/src/views/project/BuildTab.tsx",
+        "apps/web/src/views/project/buildrun/AnchorBar.tsx",
+        "apps/web/src/views/project/buildrun/BuildFocus.tsx",
+        "apps/web/src/views/project/buildrun/PackList.tsx",
+        "apps/web/src/views/project/buildrun/PrintSheet.tsx",
+        "apps/web/src/views/project/buildrun/SessionsView.tsx",
+        "apps/web/src/views/project/buildrun/StepRows.tsx",
+        "apps/web/src/views/project/buildrun/common.ts",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/BUILD_RUN.md",
+        "docs/architecture/GUIDE.md",
+        "docs/architecture/SITE.md",
+        "packages/domain/src/buildRun.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/site.ts",
+        "tests/build-run.test.mjs",
+        "tests/e2e/build-run.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "BUILD-06",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Echtgeräte- und Druckerabnahme mit QA-02; Philipps Spieltest mit Mod-Aufnahme (WorldAnchor) auf seinem Server."
         }
       ]
     }
