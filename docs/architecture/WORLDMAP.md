@@ -46,6 +46,8 @@ Die LMNT-Website (`lmnt-gaming.net`, Seiten Start, Gameserver, Tools) zeigt am 2
   - Dynmap `?worldname=…&mapname=…&zoom=…&x=…&y=…&z=…` – Quelle: Dynmap `web/js/map.js`, `getLink`.
   - `?world=…&x=…&z=…` (Pl3xMap und ähnlich) – Quelle: Pl3xMap `webmap/src/control/LinkControl.ts`.
   - squaremap wird nicht eigens angeboten (Format nicht an einer Primärquelle geprüft).
+- **Echte Links in jedem Feld:** Abschnitt heißt „Server-Webkarte verknüpfen“ (getrennt von der Spielverbindung über die Mod). Ein echter Link ohne Platzhalter wird auch im Feld „URL-Vorlage“ oder in einem Kartennamen-Feld umgewandelt statt abgewiesen; „gilt für“ wählt die Dimension. Ein früher gespeicherter roher Link wird beim Laden repariert (`repairPastedLink`, Oberwelt). Name, Vorlage, Kartennamen, Einbetten und Export stehen unter „Erweitert“. Rückmeldung Philipp 02.11.2026 (BlueMap `http://…:8100/#1026:…`).
+- **Gemischte Inhalte:** Eine `http://`-Karte kann in die `https`-Seite nicht eingebettet werden (der Browser blockiert sie still). Dann gibt es statt des leeren Rahmens den Hinweis und „in neuem Tab öffnen“ (`blockedAsMixedContent`). Links in neuen Tabs funktionieren auch mit `http`.
 - **Vorlagen** für BlueMap, Dynmap und Pl3xMap mit Platzhalter-Server; die Kameraparameter sind die üblichen Startwerte.
 - Je Projekt der Link „Auf <Karte> zeigen“ zur Mitte der Grundfläche, Höhe = Oberkante des Plans.
 - Optionales Einbetten per `iframe` (Sandbox, kein Referrer). Viele Kartenserver verbieten das Einbetten; dann bleibt nur der Link.

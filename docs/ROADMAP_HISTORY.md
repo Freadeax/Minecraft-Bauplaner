@@ -2199,3 +2199,21 @@ Nachbesserung nach Live-Rückmeldung: Ansichtsknöpfe und Kartenbeschriftungen i
 |---|---|---:|---|
 | MAP-03 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server. |
 
+## 2026-11-02T11:28:21.794Z · progress
+
+**Aufgaben:** MAP-01
+
+Server-Webkarte verständlicher: echter Link in jedem Feld wird zur Vorlage, gespeicherte Rohlinks werden repariert, http-Karte in https-Seite nicht still leer eingebettet, sondern in neuem Tab; worldmap-Browsertest prüft Umwandlung.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MAP-01 | 🧩 Implementiert · Abnahme offen | 4/4 | Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/map.css`
+- `apps/web/src/views/map/LiveMapPanel.tsx`
+- `apps/web/src/views/map/liveMapConfig.ts`
+- `docs/architecture/WORLDMAP.md`
+- `tests/e2e/worldmap.e2e.mjs`
+

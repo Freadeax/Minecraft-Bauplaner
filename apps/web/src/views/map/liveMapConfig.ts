@@ -1,5 +1,8 @@
 import { useCallback, useState } from 'react';
 import { checkLiveMapTarget } from '../../../../../packages/domain/src/livemap.js';
+import { liveMapTemplateFromLink } from '../../../../../packages/domain/src/worldmap.js';
+
+export const LIVE_MAP_KIND_LABEL = { bluemap: 'BlueMap', dynmap: 'Dynmap', 'world-x-z': 'Webkarte' } as const;
 
 /**
  * Live map connection for this browser (MAP-01). Only a URL template and the
@@ -49,8 +52,22 @@ function read(): LiveMapSettings {
     const raw = JSON.parse(localStorage.getItem(KEY) ?? 'null') as Partial<LiveMapSettings> | null;
     if (!raw || typeof raw !== 'object') return EMPTY_LIVE_MAP;
     const worlds = raw.worlds && typeof raw.worlds === 'object' ? Object.fromEntries(Object.entries(raw.worlds).filter(([, v]) => typeof v === 'string')) as Record<string, string> : EMPTY_LIVE_MAP.worlds;
-    return { name: typeof raw.name === 'string' && raw.name.trim() ? raw.name : EMPTY_LIVE_MAP.name, urlTemplate: typeof raw.urlTemplate === 'string' ? raw.urlTemplate : '', worlds, embed: raw.embed === true };
+    const settings = { name: typeof raw.name === 'string' && raw.name.trim() ? raw.name : EMPTY_LIVE_MAP.name, urlTemplate: typeof raw.urlTemplate === 'string' ? raw.urlTemplate : '', worlds, embed: raw.embed === true };
+    return repairPastedLink(settings);
   } catch { return EMPTY_LIVE_MAP; }
+}
+
+/**
+ * A real map link saved as template (pasted into the wrong field, no
+ * placeholders) is turned into a template for the overworld, so an earlier
+ * paste works without retyping.
+ */
+export function repairPastedLink(s: LiveMapSettings): LiveMapSettings {
+  if (!s.urlTemplate || s.urlTemplate.includes('{')) return s;
+  const t = liveMapTemplateFromLink(s.urlTemplate);
+  if (!t) return s;
+  const generic = ['Live-Karte', 'BlueMap', 'Dynmap', 'Pl3xMap', 'Webkarte'].includes(s.name);
+  return { ...s, name: generic ? LIVE_MAP_KIND_LABEL[t.kind] : s.name, urlTemplate: t.template, worlds: { ...s.worlds, 'minecraft:overworld': t.world } };
 }
 
 /** Validation message for a template, or '' when it is usable. */

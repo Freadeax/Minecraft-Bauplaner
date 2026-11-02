@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-02T10:57:37.022Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-02T11:28:21.794Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -1222,7 +1222,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAP-01
 
-**Weltlage und begehbare Projektkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread Weltkarte) · Aktualisiert: 2026-11-01T13:15:45.514Z
+**Weltlage und begehbare Projektkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread Weltkarte) · Aktualisiert: 2026-11-02T11:28:21.794Z
 
 - [x] MAP-01-S01: B15-Konzept und generischer Livekarten-/Markeradapter vorhanden.
 - [x] MAP-01-S02: B15-Reservierung vor Übernahme abgleichen.

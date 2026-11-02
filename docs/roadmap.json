@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T10:57:37.022Z",
+  "updatedAt": "2026-11-02T11:28:21.794Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -3374,7 +3374,7 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T13:15:45.514Z"
+      "updatedAt": "2026-11-02T11:28:21.794Z"
     },
     {
       "id": "MAP-03",
@@ -7784,6 +7784,30 @@
           "done": 5,
           "total": 6,
           "next": "Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T11:28:21.794Z",
+      "kind": "progress",
+      "items": [
+        "MAP-01"
+      ],
+      "summary": "Server-Webkarte verständlicher: echter Link in jedem Feld wird zur Vorlage, gespeicherte Rohlinks werden repariert, http-Karte in https-Seite nicht still leer eingebettet, sondern in neuem Tab; worldmap-Browsertest prüft Umwandlung.",
+      "files": [
+        "apps/web/src/map.css",
+        "apps/web/src/views/map/LiveMapPanel.tsx",
+        "apps/web/src/views/map/liveMapConfig.ts",
+        "docs/architecture/WORLDMAP.md",
+        "tests/e2e/worldmap.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "MAP-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 4,
+          "next": "Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02."
         }
       ]
     }

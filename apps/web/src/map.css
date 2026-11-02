@@ -104,3 +104,6 @@
 .map-panels.no-3d{grid-template-columns:1fr}.map-panels.no-3d .map-3d{display:none}
 .live-connect{display:grid;gap:8px}.live-connect>p{margin:0}
 .live-howto summary{cursor:pointer;font-size:13px}
+.live-adopt .live-target{flex:0 0 auto}.live-adopt select{width:auto;padding:9px 6px}
+.live-advanced{margin-top:12px;border-top:1px solid var(--line);padding-top:8px}.live-advanced>summary{cursor:pointer;font-size:12px;color:var(--muted);padding:4px 0}
+.live-panel .button-row a.secondary{display:inline-flex;align-items:center}

@@ -116,10 +116,17 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await p.locator('.map-entry').first().getByRole('button', { name: /fliegen/ }).click();
 
     // Live map: a pasted BlueMap link becomes a template; the project link points at its centre.
-    await p.getByText('Live-Karte des Servers verbinden').click();
-    await p.getByLabel('Link aus der Live-Karte einfügen').fill('https://karte.example.net/#world:12:64:-30:150:0:0.9:0:0:perspective');
+    // A real link typed into the template field (no placeholders) is converted, not rejected.
+    await p.getByText('Server-Webkarte verknüpfen').click();
+    await p.getByText('Erweitert: Vorlage, Kartennamen, Einbetten, Export').click();
+    await p.getByLabel(/URL-Vorlage/).fill('http://server.example.net:8100/#1026:-2532:4:-2699:190:0:0.61:0:0:perspective');
+    await p.getByText(/Link erkannt \(BlueMap-Format\): Karte „1026“ gilt jetzt für Oberwelt/).waitFor();
+    assert.equal(await p.getByLabel(/URL-Vorlage/).inputValue(), 'http://server.example.net:8100/#{world}:{x}:{y}:{z}:190:0:0.61:0:0:perspective');
+    assert.equal(await p.locator('.live-panel .field-error').count(), 0);
+    await p.getByLabel('Link aus eurer Server-Karte').fill('https://karte.example.net/#world:12:64:-30:150:0:0.9:0:0:perspective');
     await p.getByRole('button', { name: 'Übernehmen' }).click();
     await p.getByText(/BlueMap-Format/).waitFor();
+    await p.getByRole('link', { name: 'BlueMap öffnen ↗' }).waitFor();
     const link = p.locator('.map-detail a[target=_blank]');
     assert.equal(await link.getAttribute('href'), 'https://karte.example.net/#world:13:72:2:150:0:0.9:0:0:perspective');
     const download = p.waitForEvent('download');
