@@ -30,7 +30,7 @@ import { SHOTS } from '../thumbnail/views';
 import type { ShotView } from '../thumbnail/views';
 import { Viewer } from '../Viewer';
 import { Thumb } from '../thumbnail/Thumb';
-import { LitematicRegions } from './library/LitematicRegions';
+import { LitematicRegions, PLACEHOLDER_NAMES } from './library/LitematicRegions';
 import { decodeLibraryState, encodeLibraryState } from './library/urlState';
 import { useUserLibrary } from './library/userLibrary';
 import { CollectionsPage } from './library/CollectionsPage';
@@ -475,6 +475,10 @@ function ImportPanel({ imported, busy, library, onRegion, onSave, onVersion, onC
   }, [cropMarks]);
   const own = library.filter(a => !a.demo);
   const regionName = imported.report && 'selectedRegion' in imported.report ? imported.report.selectedRegion : undefined;
+  // Litematica stores name and author in Metadata; prefill them unless they are placeholders.
+  const fileMeta = imported.report && 'metadata' in imported.report ? imported.report.metadata : undefined;
+  const metaName = fileMeta?.name !== undefined && !PLACEHOLDER_NAMES.has(fileMeta.name.trim()) ? fileMeta.name.trim().slice(0, 120) : undefined;
+  const metaAuthor = fileMeta?.author?.trim().slice(0, 120) || undefined;
   return <section className="detail-hero import-hero" aria-label="Import prüfen">
     <div className="viewport detail-stage"><Viewer key={`import-${imported.name}-${regionName ?? ''}`} payload={preview} cells={preview.cells} onSelect={noSelect} markFor={markFor} /></div>
     <aside className="inspector detail-summary">
@@ -483,11 +487,11 @@ function ImportPanel({ imported, busy, library, onRegion, onSave, onVersion, onC
         <p className="muted">{imported.name} · {IMPORT_FORMAT_LABEL[imported.format]}{imported.report ? `, DataVersion ${imported.report.dataVersion}` : ''} · {size(preview.bounds)} · {formatNumber(countBlocks(preview).blocks)} Blöcke</p>
         {imported.report && 'regions' in imported.report && <LitematicRegions report={imported.report} disabled={busy} onChange={onRegion} />}
         {imported.report?.warnings.map((w, i) => <p className="small-note" key={i}>{w}</p>)}
-        <label>Name<input name="name" required maxLength={120} key={regionName ?? ''} defaultValue={regionName || imported.name.replace(/\.(schem|litematic|json)$/i, '')} /></label>
-        <label>Beschreibung<textarea name="description" maxLength={2000} rows={2} /></label>
+        <label>Name<input name="name" required maxLength={120} key={regionName ?? ''} defaultValue={regionName || metaName || imported.name.replace(/\.(schem|litematic|json)$/i, '')} /></label>
+        <label>Beschreibung<textarea name="description" maxLength={2000} rows={2} defaultValue={fileMeta?.description && !/^Converted from /.test(fileMeta.description) ? fileMeta.description.slice(0, 2000) : undefined} /></label>
         <label>Tags (Komma-getrennt)<input name="tags" placeholder="mauer, hafen" /></label>
         <FacetFields />
-        <label>Autor<input name="author" maxLength={120} /></label>
+        <label>Autor<input name="author" maxLength={120} defaultValue={metaAuthor} /></label>
         <label>Herkunft<input name="source" maxLength={300} defaultValue={imported.name} /></label>
         <label>Nutzungsrechte<input name="license" maxLength={300} placeholder="ungeklärt" /></label>
         <button className="primary" type="submit">Als neues Bauteil speichern</button>

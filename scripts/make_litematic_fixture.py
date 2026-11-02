@@ -89,3 +89,33 @@ raw = bytes([10]) + mutf('') + data(10, root)
 p = Path(__file__).resolve().parents[1] / 'fixtures/litematic/multiregion.nbt.hex'
 p.write_text('\n'.join(raw[i:i + 24].hex() for i in range(0, len(raw), 24)) + '\n')
 print(f'{len(raw)} independent raw NBT bytes written')
+
+# Second fixture: the shape of real files seen in the wild (Litematica 1.21 saves and
+# converter output), all written here from scratch. Uncompressed on purpose (several
+# download sites ship uncompressed NBT). One region "Unnamed" whose Position is the
+# far corner with an all-negative Size, root keys in Litematica's HashMap order without
+# SubVersion, no PreviewImageData, empty lists typed TAG_End, tile entities relative to
+# the minimum corner, entities with Pos relative to the region Position (negative).
+# Position (2,1,3), Size (-3,-2,-4) -> minimum corner (0,0,0), 3x2x4, index y*12 + z*3 + x.
+real_palette = [state('minecraft:air'), state('minecraft:grass_block', snowy='false'), state('minecraft:spruce_planks'),
+                state('minecraft:oak_sign', rotation='8', waterlogged='false'), state('minecraft:chain', axis='y', waterlogged='false'),
+                state('minecraft:grass')]
+real = [1, 1, 1,  1, 1, 1,  1, 1, 1,  1, 1, 1,   # y=0: grass_block floor
+        2, 0, 5,  0, 3, 0,  0, 0, 4,  2, 0, 2]   # y=1: planks, sign at (1,1,1), chain at (2,1,2), old "grass" at (2,1,0)
+sign = xyz(1, 1, 1) + [('id', 8, 'minecraft:sign'), ('is_waxed', 1, 0),
+                       ('front_text', 10, [('has_glowing_text', 1, 0), ('color', 8, 'black'), ('messages', 9, (8, ['"Rathaus"', '""', '""', '""']))]),
+                       ('back_text', 10, [('has_glowing_text', 1, 0), ('color', 8, 'black'), ('messages', 9, (8, ['""', '""', '""', '""']))])]
+painting = [('id', 8, 'minecraft:painting'), ('variant', 8, 'minecraft:sea'), ('facing', 1, 3),
+            ('Pos', 9, (6, [-0.96875, -0.5, -2.0])), ('TileX', 3, -1), ('TileY', 3, -1), ('TileZ', 3, -2)]
+frame = [('id', 8, 'minecraft:item_frame'), ('Facing', 1, 3), ('Pos', 9, (6, [-1.5, -0.5, -0.96875]))]
+real_region = [('BlockStates', 12, pack(real, bits_for(len(real_palette)))), ('PendingBlockTicks', 9, (0, [])),
+               ('Position', 10, xyz(2, 1, 3)), ('BlockStatePalette', 9, (10, real_palette)), ('Size', 10, xyz(-3, -2, -4)),
+               ('PendingFluidTicks', 9, (0, [])), ('TileEntities', 9, (10, [sign])), ('Entities', 9, (10, [painting, frame]))]
+real_meta = [('TimeCreated', 4, 1763717646505), ('TimeModified', 4, 1763717646505), ('EnclosingSize', 10, xyz(3, 2, 4)),
+             ('Description', 8, ''), ('RegionCount', 3, 1), ('TotalBlocks', 3, 18), ('Author', 8, 'Eigene Testdaten'),
+             ('TotalVolume', 3, 24), ('Name', 8, 'Unnamed')]
+real_root = [('MinecraftDataVersion', 3, 4556), ('Version', 3, 7), ('Metadata', 10, real_meta), ('Regions', 10, [('Unnamed', 10, real_region)])]
+raw = bytes([10]) + mutf('') + data(10, real_root)
+p = Path(__file__).resolve().parents[1] / 'fixtures/litematic/realworld.nbt.hex'
+p.write_text('\n'.join(raw[i:i + 24].hex() for i in range(0, len(raw), 24)) + '\n')
+print(f'{len(raw)} independent raw NBT bytes written (realworld)')

@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-02T06:46:18.043Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-02T07:00:21.077Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -91,7 +91,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [PROFILE-01](#profile-01) | Ein verbindliches Java-Versionsprofil | ⏳ Offen | 0/2 | ARCH-01 | ausstehend | ausstehend |
 | [NBT-01](#nbt-01) | Semantische BlockEntity-Transformationen | ⏳ Offen | 0/2 | PROFILE-01 | ausstehend | ausstehend |
 | [FORMAT-01](#format-01) | Schem v3 an echten Referenzwerkzeugen abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | PROFILE-01, NBT-01 | `84838f0` | `e232b26` |
-| [FORMAT-02](#format-02) | Litematic an echten Referenzdateien abnehmen | 🧩 Implementiert · Abnahme offen | 1/3 | PROFILE-01, NBT-01 | `84838f0` | `e232b26` |
+| [FORMAT-02](#format-02) | Litematic an echten Referenzdateien abnehmen | 🧩 Implementiert · Abnahme offen | 3/4 | PROFILE-01, NBT-01 | `84838f0` | `e232b26` |
 | [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | ⏳ Offen | 0/2 | PROFILE-01, MAT-01 | ausstehend | ausstehend |
 | [MAT-03](#mat-03) | Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen | 🧩 Implementiert · Abnahme offen | 2/3 | PROFILE-01, QA-01 | `84838f0` | `e232b26` |
 | [MAT-04](#mat-04) | Kupfer mit Oxidation und Wachsstatus | ⏳ Offen | 0/2 | PROFILE-01, MAT-03 | ausstehend | ausstehend |
@@ -646,21 +646,22 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### FORMAT-02
 
-**Litematic an echten Referenzdateien abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Litematic an echten Referenzdateien abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Litematic-Dateien wie Vorlagen aufschlüsseln“) · Aktualisiert: 2026-11-02T07:00:21.077Z
 
 - [x] FORMAT-02-S01: Mehrregionen, negative Größen, Regionswahl und Writer mit unabhängigen Fixtures vorhanden.
-- [ ] FORMAT-02-S02: Echte Litematica-Datei und Export im Spiel prüfen.
-- [ ] FORMAT-02-S03: Grenzen für Entities/Ticks und ältere Formate im Bericht bestätigen.
+- [ ] FORMAT-02-S02: Echte Litematica-Dateien lesen (erledigt 02.11.: 2 Litematica- und 3 Konverterdateien) und Export im Spiel prüfen (offen).
+- [x] FORMAT-02-S03: Grenzen für Entities/Ticks und ältere Formate im Bericht bestätigen.
+- [x] FORMAT-02-S04: Unkomprimierte/zlib-Dateien, große Modelle bis 1 Mio. Blöcke, Aufschlüsselung (Metadata, Regionen, TileEntities/Entities nach Art) und alte IDs chain/grass in der Ansicht.
 
-**Abnahme:** Format- und DataVersion-Grenzen werden explizit gemeldet.
+**Abnahme:** Format- und DataVersion-Grenzen werden explizit gemeldet. Echte Dateien aus dem Netz (unkomprimiert, ferne Ecke mit negativer Größe, große Modelle) lesen sich mit stimmigen Blockzahlen; Export hat dieselbe Gliederung wie Litematica.
 
-**Nächste Aktion:** Echte Litematica-Datei und Export im Spiel prüfen.
+**Nächste Aktion:** Export im Spiel mit Litematica laden (Philipps PC, Fabric 26.3) – FORMAT-02-S02.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Leser an fünf echten Dateien geprüft (lokal, nicht im Repo); Export im Spiel weiter offen.
 
-**Nachweise:** [tests/litematic.test.mjs](../tests/litematic.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+**Nachweise:** [tests/litematic.test.mjs](../tests/litematic.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/litematic.test.mjs](../tests/litematic.test.mjs) — realworld-Fixture, Kompression, große Modelle, Metadata-Abgleich; [tests/e2e/litematic.e2e.mjs](../tests/e2e/litematic.e2e.mjs) — unkomprimierte Datei mit Aufschlüsselung in der Bibliothek; [docs/architecture/LITEMATIC.md](architecture/LITEMATIC.md) — Tabelle der fünf echten Dateien vorher/nachher
 
-**Dateiumfang:** `packages/formats/src/litematic.ts`, `packages/formats/src/litematicWrite.ts`. **Abhängigkeiten:** PROFILE-01, NBT-01. **Alte IDs:** B10, P5-01.
+**Dateiumfang:** `apps/web/src/app/importLimits.ts`, `apps/web/src/import.worker.ts`, `apps/web/src/views/library/LitematicRegions.tsx`, `fixtures/litematic/realworld.nbt.hex`, `packages/formats/src/litematic.ts`, `packages/formats/src/litematicWrite.ts`, `packages/formats/src/structure.ts`. **Abhängigkeiten:** PROFILE-01, NBT-01. **Alte IDs:** B10, P5-01.
 
 **Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
 

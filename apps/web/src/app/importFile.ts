@@ -15,7 +15,8 @@ export const IMPORT_FORMAT_LABEL: Readonly<Record<ImportFormat, string>> = { sch
 /** File dialog filter for every importable structure format. */
 export const IMPORT_ACCEPT = '.schem,.litematic,.json,application/json,application/octet-stream';
 
-export const MAX_IMPORT_BYTES = 2_000_000;
+export { MAX_IMPORT_BYTES, MAX_IMPORT_LABEL } from './importLimits';
+import { MAX_IMPORT_BYTES, MAX_IMPORT_LABEL } from './importLimits';
 
 /**
  * Runs the existing import worker for one file. Rejects with a readable message; abort() terminates it.
@@ -23,7 +24,7 @@ export const MAX_IMPORT_BYTES = 2_000_000;
  */
 export function importFile(file: File, signal?: AbortSignal, region?: string): Promise<ImportedFile> {
   return new Promise((resolve, reject) => {
-    if (file.size > MAX_IMPORT_BYTES) { reject(new Error('Die Datei ist zu groß (maximal 2 MB).')); return; }
+    if (file.size > MAX_IMPORT_BYTES) { reject(new Error(`Die Datei ist zu groß (maximal ${MAX_IMPORT_LABEL}).`)); return; }
     void file.arrayBuffer().then(buffer => {
       if (signal?.aborted) { reject(new Error('Import abgebrochen.')); return; }
       const worker = new Worker(new URL('../import.worker.ts', import.meta.url), { type: 'module' });

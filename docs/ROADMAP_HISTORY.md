@@ -1738,3 +1738,39 @@ Stufe 2 (0.3.0): texturierte Geisterblöcke, Materialliste, Ebenenmodus; im echt
 - `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java`
 - `scripts/bridge_gametest.mjs`
 
+## 2026-11-02T07:00:21.077Z · progress
+
+**Aufgaben:** FORMAT-02
+
+Echte Litematic-Dateien: unkomprimiert/zlib, große Modelle bis 1 Mio. Blöcke, Aufschlüsselung im Import, Metadata-Vorbelegung, alte IDs chain/grass, Exportbox bis 16,7 Mio. Zellen; an fünf echten Dateien lokal geprüft, Export im Spiel offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| FORMAT-02 | 🧩 Implementiert · Abnahme offen | 3/4 | Export im Spiel mit Litematica laden (Philipps PC, Fabric 26.3) – FORMAT-02-S02. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/importFile.ts`
+- `apps/web/src/app/importLimits.ts`
+- `apps/web/src/blockmodels/colors26.ts`
+- `apps/web/src/import.worker.ts`
+- `apps/web/src/style.css`
+- `apps/web/src/views/LibraryView.tsx`
+- `apps/web/src/views/ViewerView.tsx`
+- `apps/web/src/views/library/LitematicRegions.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/LITEMATIC.md`
+- `fixtures/litematic/README.md`
+- `fixtures/litematic/realworld.nbt.hex`
+- `packages/formats/src/index.ts`
+- `packages/formats/src/litematic.ts`
+- `packages/formats/src/litematicWrite.ts`
+- `packages/formats/src/structure.ts`
+- `scripts/gen_block_data.py`
+- `scripts/make_litematic_fixture.py`
+- `tests/blocks.test.mjs`
+- `tests/e2e/litematic.e2e.mjs`
+- `tests/litematic.test.mjs`
+

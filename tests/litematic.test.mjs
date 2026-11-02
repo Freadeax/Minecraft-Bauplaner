@@ -7,12 +7,12 @@ import { readFileSync, writeFileSync, mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { gzipSync } from 'node:zlib';
+import { gzipSync, deflateSync } from 'node:zlib';
 import { createHash } from 'node:crypto';
-import { createPayload, countBlocks } from '../dist/voxel/src/index.js';
+import { createPayload, countBlocks, stateKey } from '../dist/voxel/src/index.js';
 import {
   readNbt, writeNbt, importLitematic, normalizeLitematic, importStructure, detectStructureFormat, buildLitematic, writeLitematic,
-  packLongs, unpackAt, litematicBits, litematicVersionFor, FormatError,
+  packLongs, unpackAt, litematicBits, litematicVersionFor, FormatError, detectNbtCompression,
 } from '../dist/formats/src/index.js';
 import {
   createProject, execute, newInstance, EMPTY_HISTORY, resolveProject, createSampleLibrary, revisionForExport,
@@ -166,7 +166,60 @@ test('content sniffing: one entry point for Schem v3 and Litematic', async () =>
   assert.throws(() => detectStructureFormat(tag({ Blocks: { type: 'byteArray', value: [] }, Materials: { type: 'string', value: 'Alpha' } })), /MCEdit/);
   assert.throws(() => detectStructureFormat(tag({ size: { type: 'list', elementType: 'int', value: [] }, palette: { type: 'list', elementType: 'end', value: [] } })), /\.nbt/);
   assert.throws(() => detectStructureFormat(tag({})), /Unbekanntes Strukturformat/);
-  await assert.rejects(importStructure(ab(raw)), /GZip/);
+  // Uncompressed and zlib NBT are recognised by content and read the same as GZip.
+  for (const bytes of [raw, deflateSync(raw)]) {
+    const other = await importStructure(ab(bytes));
+    assert.equal(other.format, 'litematic'); assert.deepEqual(other.result.payload, lit.result.payload);
+  }
+  assert.equal((await importStructure(ab(raw))).result.compression, 'none');
+  assert.equal((await importStructure(ab(deflateSync(raw)))).result.compression, 'zlib');
+  assert.equal(lit.result.compression, 'gzip');
+  assert.equal(detectNbtCompression(new TextEncoder().encode('{"schemaVersion":1}')), null);
+  await assert.rejects(importStructure(ab(Buffer.from('kein NBT'))), /Erwartet NBT/);
+});
+
+// Real-world shape (Litematica 1.21 saves, converter output): own data, independent Python bytes.
+const realRaw = Buffer.from(readFileSync(new URL('../fixtures/litematic/realworld.nbt.hex', import.meta.url), 'utf8').replace(/\s/g, ''), 'hex');
+
+test('real-world shape: uncompressed, far-corner Position, negative Size, TAG_End lists, entity breakdown', async () => {
+  const r = (await importStructure(ab(realRaw))).result;
+  assert.equal(r.compression, 'none'); assert.equal(r.version, 7); assert.equal(r.subVersion, null); assert.equal(r.dataVersion, 4556);
+  const [region] = r.regions;
+  assert.deepEqual(region.position, [2, 1, 3]); assert.deepEqual(region.size, [-3, -2, -4]);
+  assert.deepEqual(region.min, [0, 0, 0]); assert.deepEqual(region.dimensions, [3, 2, 4]);
+  assert.equal(region.blocks, 18); assert.equal(region.air, 6); assert.equal(region.bitsPerEntry, 3); assert.equal(region.pendingTicks, 0);
+  assert.deepEqual(region.tileEntityTypes, [['minecraft:sign', 1]]);
+  assert.deepEqual(region.entityTypes, [['minecraft:item_frame', 1], ['minecraft:painting', 1]]);
+  const at = (x, y, z) => { const c = r.payload.cells.find(c => c.position.join() === [x, y, z].join()); return c && r.payload.palette[c.paletteIndex].id; };
+  assert.equal(at(1, 1, 1), 'minecraft:oak_sign'); assert.equal(at(2, 1, 2), 'minecraft:chain'); assert.equal(at(2, 1, 0), 'minecraft:grass'); assert.equal(at(0, 0, 3), 'minecraft:grass_block');
+  assert.deepEqual(r.payload.blockEntities.map(e => e.position), [[1, 1, 1]]);
+  assert.equal(r.payload.cells.length, 24);
+  assert.deepEqual(r.metadata, { name: 'Unnamed', author: 'Eigene Testdaten', description: '', timeCreated: '1763717646505', timeModified: '1763717646505', totalBlocks: 18, totalVolume: 24, regionCount: 1, enclosingSize: [3, 2, 4] });
+  assert.ok(r.warnings.some(w => /2 freie Entities \(1× item_frame, 1× painting\)/.test(w)));
+  assert.ok(!r.warnings.some(w => /Metadata nennt/.test(w)));
+  // Same cells after our export and re-import (the writer sorts properties and starts at the minimum corner).
+  const out = await writeLitematic(r.payload, { dataVersion: 4556, anchor: 'min-corner', unselected: 'air' });
+  const back = (await importStructure(ab(out.bytes))).result;
+  const norm = res => res.payload.cells.map(c => [c.position.join(), c.kind, stateKey(res.payload.palette[c.paletteIndex])].join('|')).sort();
+  assert.deepEqual(norm(back), norm(r));
+  assert.equal(back.payload.blockEntities.length, 1); assert.equal(back.regions[0].size.join(), '3,2,4');
+});
+
+test('large models keep blocks only, Metadata mismatches and single-block files are named', () => {
+  const big = normalizeLitematic(source(), { maxAirVolume: 29 });
+  assert.equal(big.payload.cells.length, 22); assert.ok(big.payload.cells.every(c => c.kind === 'block'));
+  assert.ok(big.warnings.some(w => /Großes Modell: 8 Luftzellen/.test(w)));
+  const small = normalizeLitematic(source());
+  assert.deepEqual(big.payload.cells.map(c => c.position.join()), small.payload.cells.filter(c => c.kind === 'block').map(c => c.position.join()));
+  assert.throws(() => normalizeLitematic(source(), { maxAirVolume: 29, maxCells: 21 }), e => e.code === 'LIMIT' && /21 Blöcke/.test(e.message));
+  const t = readNbt(realRaw).tag;
+  const meta = { ...t.value.Metadata.value, TotalBlocks: { type: 'int', value: 17 }, Software: { type: 'string', value: 'Litemapy_0.11.0b0' }, PreviewImageData: { type: 'intArray', value: [] } };
+  const changed = normalizeLitematic({ name: '', tag: { type: 'compound', value: { ...t.value, Metadata: { type: 'compound', value: meta } } } });
+  assert.ok(changed.warnings.some(w => /Metadata nennt 17 Blöcke, gelesen wurden 18/.test(w)));
+  assert.ok(changed.warnings.some(w => /Erstellt mit Litemapy_0\.11\.0b0/.test(w)));
+  assert.equal(changed.metadata.software, 'Litemapy_0.11.0b0'); assert.equal(changed.metadata.previewImageSize, 0);
+  const one = buildLitematic(createPayload({ schemaVersion: 1, profileId: 'p', bounds: { min: [0, 0, 0], maxExclusive: [1, 1, 1] }, pivot: [0, 0, 0], sourceOrigin: [0, 0, 0], palette: [{ id: 'minecraft:gold_block', properties: {} }], cells: [{ position: [0, 0, 0], kind: 'block', paletteIndex: 0 }], blockEntities: [] }), { dataVersion: 2975, anchor: 'min-corner', unselected: 'air' });
+  assert.ok(normalizeLitematic(one.nbt).warnings.some(w => /nur einen einzelnen Block/.test(w)));
 });
 
 // Writer.

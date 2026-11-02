@@ -3,7 +3,7 @@ import { python } from '../../scripts/python.mjs';
 // The exported file is verified by the independent Python reader.
 import { createRequire } from 'node:module';
 import { spawn, spawnSync } from 'node:child_process';
-import { mkdtempSync } from 'node:fs';
+import { mkdtempSync, readFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test, before, after } from 'node:test';
@@ -62,6 +62,25 @@ test('Bibliothek: Litematic importieren, einzelne Region wählen und speichern',
   assert.equal(await p.getByLabel('Name').inputValue(), 'Turm');
   await p.getByRole('button', { name: 'Als neues Bauteil speichern' }).click();
   await p.getByText('„Turm“ als Bauteil gespeichert.').waitFor();
+  assert.deepEqual(errors, []);
+  await context.close();
+});
+
+test('Bibliothek: unkomprimierte Litematic wie aus dem Netz, mit Aufschlüsselung', async () => {
+  const { p, errors, context } = await page();
+  await p.goto(`${BASE}#/bibliothek`);
+  const raw = Buffer.from(readFileSync(new URL('../../fixtures/litematic/realworld.nbt.hex', import.meta.url), 'utf8').replace(/\s/g, ''), 'hex');
+  await p.locator('input[type=file]').setInputFiles({ name: 'rathaus.litematic', mimeType: 'application/octet-stream', buffer: raw });
+  await p.getByText('DATEI GEPRÜFT').waitFor();
+  assert.match(await p.locator('.inspector').innerText(), /Litematic, DataVersion 4556 · 3 × 2 × 4 · 18 Blöcke/);
+  await p.getByText('Aufschlüsselung der Datei').click();
+  const breakdown = await p.locator('.litematic-breakdown').innerText();
+  assert.match(breakdown, /Speicherung\s+unkomprimiert/); assert.match(breakdown, /Position · Size\s+2\/1\/3 · -3\/-2\/-4/);
+  assert.match(breakdown, /1× sign/); assert.match(breakdown, /1× item_frame, 1× painting/);
+  assert.equal(await p.locator('input[name=author]').inputValue(), 'Eigene Testdaten');
+  assert.equal(await p.locator('input[name=name]').first().inputValue(), 'rathaus');
+  await p.getByRole('button', { name: 'Als neues Bauteil speichern' }).click();
+  await p.getByText('„rathaus“ als Bauteil gespeichert.').waitFor();
   assert.deepEqual(errors, []);
   await context.close();
 });

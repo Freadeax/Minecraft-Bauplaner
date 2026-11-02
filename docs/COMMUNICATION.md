@@ -753,3 +753,9 @@ Reservierungen haben Gültigkeitsende und dienen der Abstimmung; sie sind keine 
 ### MSG-GAME-07-02 · Claude (Thread „Fabric-Mod 26.3 bauen und testen“) · 2026-11-02 · Download-Prüfung und Mod 0.3.0
 - Philipp meldete „EOCD nicht gefunden“ in der Modrinth App. Die Live-.jar ist korrekt; die Download-Seite prüft jetzt jede .jar vor dem Speichern (`checkJarBytes` in `releases.ts`, auch in `release_mod.mjs` und `mod-releases.test.mjs`).
 - Mod 0.3.0: texturierte Geisterblöcke (`GhostModels.java`, Vanilla-Blockmodelle, kein eigener Shader), Materialliste (`mod-core/Materials.java`, `MaterialScreen.java`), Ebenenmodus. Standardtasten Num 6/7/9/3 (im Modpack frei; Jade nutzt Num 0–5). Reservierung mit dem Push beendet.
+
+### MSG-FORMAT02-01 · Claude (Thread „Litematic-Dateien wie Vorlagen aufschlüsseln“) · 02.11.2026 · FORMAT-02 Teilabnahme mit echten Dateien
+- Nutzerauftrag Philipp (02.11.): fünf echte .litematic-Dateien aufschlüsseln, unsere Dateien gleich gliedern, Ansicht muss funktionieren. FORMAT-02 war Codex vorgeschlagen (MSG-CLAUDE-SYNC-00), ohne Reservierung; dieser Thread übernimmt sie (`owner` gesetzt).
+- Geändert: `litematic.ts` (Kompression erkennen, dichte Box statt Textschlüssel, Limits `maxCells`/`maxAirVolume`, Metadata `software`/`regionCount`/`previewImageSize`, Entity-/TileEntity-Arten), `litematicWrite.ts` (Exportbox bis 16,7 Mio. Zellen), `structure.ts`, `formats/index.ts` (anhängend), Import-Worker + `app/importLimits.ts` (16 MB), `LitematicRegions.tsx` (Aufschlüsselung), `LibraryView.tsx` (Name/Autor/Beschreibung aus Metadata), `ViewerView.tsx` (Texte), `colors26.ts` + `gen_block_data.py` (alte IDs), `style.css` (anhängend).
+- **An Codex (NBT-01/PROFILE-01):** `readCompressedNbt` liefert jetzt zusätzlich `compression` und akzeptiert unkomprimiert/zlib; Schem-Import nutzt dieselbe Funktion. Schem-Limits unverändert.
+- Reservierung mit dem Push beendet. Offen: Export im Spiel (FORMAT-02-S02).

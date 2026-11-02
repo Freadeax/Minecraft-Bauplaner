@@ -11,6 +11,7 @@ import { extractArchive, packSource, referencedSprites } from '../apps/web/src/b
 import { fallbackRenderer, packRenderer } from '../apps/web/src/blockmodels/renderers.ts';
 import { buildBlockMesh } from '../apps/web/src/blockmodels/mesh.ts';
 import { tintColor } from '../apps/web/src/blockmodels/tint.ts';
+import { blockLook } from '../apps/web/src/blockmodels/colors26.ts';
 import { makeZip, miniPackFiles, miniPackZip } from './helpers/minipack.mjs';
 
 const slot = () => ({ rect: [0, 0, 1, 1], layer: 0 });
@@ -181,4 +182,10 @@ test('litematic with every 26.3 block imports and meshes (optional local file)',
   assert.ok(ids.size > 1000);
   const mesh = buildBlockMesh(payload.cells, payload.palette, fallbackRenderer(), slot, [0, 0, 0]);
   assert.ok(mesh.quads > 0);
+});
+
+test('renamed ids from older Litematic files keep their look (chain → iron_chain, grass → short_grass)', () => {
+  assert.equal(blockLook('iron_chain'), blockLook('chain'));
+  assert.equal(blockLook('short_grass'), blockLook('grass'));
+  assert.ok(blockLook('chain')); assert.equal(blockLook('no_such_block'), undefined);
 });

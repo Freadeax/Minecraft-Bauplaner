@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T06:46:18.043Z",
+  "updatedAt": "2026-11-02T07:00:21.077Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -1426,14 +1426,19 @@
       "phase": "P2",
       "priority": "P0",
       "status": "implemented",
-      "owner": "nicht zugewiesen",
+      "owner": "Claude (Thread „Litematic-Dateien wie Vorlagen aufschlüsseln“)",
       "dependencies": [
         "PROFILE-01",
         "NBT-01"
       ],
       "scope": [
+        "apps/web/src/app/importLimits.ts",
+        "apps/web/src/import.worker.ts",
+        "apps/web/src/views/library/LitematicRegions.tsx",
+        "fixtures/litematic/realworld.nbt.hex",
         "packages/formats/src/litematic.ts",
-        "packages/formats/src/litematicWrite.ts"
+        "packages/formats/src/litematicWrite.ts",
+        "packages/formats/src/structure.ts"
       ],
       "legacyIds": [
         "B10",
@@ -1447,35 +1452,53 @@
         },
         {
           "id": "FORMAT-02-S02",
-          "title": "Echte Litematica-Datei und Export im Spiel prüfen.",
+          "title": "Echte Litematica-Dateien lesen (erledigt 02.11.: 2 Litematica- und 3 Konverterdateien) und Export im Spiel prüfen (offen).",
           "done": false
         },
         {
           "id": "FORMAT-02-S03",
           "title": "Grenzen für Entities/Ticks und ältere Formate im Bericht bestätigen.",
-          "done": false
+          "done": true
+        },
+        {
+          "id": "FORMAT-02-S04",
+          "title": "Unkomprimierte/zlib-Dateien, große Modelle bis 1 Mio. Blöcke, Aufschlüsselung (Metadata, Regionen, TileEntities/Entities nach Art) und alte IDs chain/grass in der Ansicht.",
+          "done": true
         }
       ],
       "acceptance": [
-        "Format- und DataVersion-Grenzen werden explizit gemeldet."
+        "Format- und DataVersion-Grenzen werden explizit gemeldet.",
+        "Echte Dateien aus dem Netz (unkomprimiert, ferne Ecke mit negativer Größe, große Modelle) lesen sich mit stimmigen Blockzahlen; Export hat dieselbe Gliederung wie Litematica."
       ],
-      "next": "Echte Litematica-Datei und Export im Spiel prüfen.",
+      "next": "Export im Spiel mit Litematica laden (Philipps PC, Fabric 26.3) – FORMAT-02-S02.",
       "blockers": [],
       "evidence": [
         {
           "path": "tests/litematic.test.mjs",
           "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        },
+        {
+          "path": "tests/litematic.test.mjs",
+          "note": "realworld-Fixture, Kompression, große Modelle, Metadata-Abgleich"
+        },
+        {
+          "path": "tests/e2e/litematic.e2e.mjs",
+          "note": "unkomprimierte Datei mit Aufschlüsselung in der Bibliothek"
+        },
+        {
+          "path": "docs/architecture/LITEMATIC.md",
+          "note": "Tabelle der fünf echten Dateien vorher/nachher"
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "note": "Leser an fünf echten Dateien geprüft (lokal, nicht im Repo); Export im Spiel weiter offen."
       },
       "delivery": {
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-02T07:00:21.077Z"
     },
     {
       "id": "MAT-02",
@@ -6558,6 +6581,48 @@
           "done": 5,
           "total": 7,
           "next": "Philipp testet 0.3.0 auf server.lmnt-gaming.net (Anleitung /mnt/project-files/mod/ANLEITUNG_HOLOGRAMM.md); danach Stufe 3."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T07:00:21.077Z",
+      "kind": "progress",
+      "items": [
+        "FORMAT-02"
+      ],
+      "summary": "Echte Litematic-Dateien: unkomprimiert/zlib, große Modelle bis 1 Mio. Blöcke, Aufschlüsselung im Import, Metadata-Vorbelegung, alte IDs chain/grass, Exportbox bis 16,7 Mio. Zellen; an fünf echten Dateien lokal geprüft, Export im Spiel offen.",
+      "files": [
+        "apps/web/src/app/importFile.ts",
+        "apps/web/src/app/importLimits.ts",
+        "apps/web/src/blockmodels/colors26.ts",
+        "apps/web/src/import.worker.ts",
+        "apps/web/src/style.css",
+        "apps/web/src/views/LibraryView.tsx",
+        "apps/web/src/views/ViewerView.tsx",
+        "apps/web/src/views/library/LitematicRegions.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/LITEMATIC.md",
+        "fixtures/litematic/README.md",
+        "fixtures/litematic/realworld.nbt.hex",
+        "packages/formats/src/index.ts",
+        "packages/formats/src/litematic.ts",
+        "packages/formats/src/litematicWrite.ts",
+        "packages/formats/src/structure.ts",
+        "scripts/gen_block_data.py",
+        "scripts/make_litematic_fixture.py",
+        "tests/blocks.test.mjs",
+        "tests/e2e/litematic.e2e.mjs",
+        "tests/litematic.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "FORMAT-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Export im Spiel mit Litematica laden (Philipps PC, Fabric 26.3) – FORMAT-02-S02."
         }
       ]
     }

@@ -18,6 +18,11 @@ import type { SchemAnchor, SchemExportLimits, SchemExportReport, UnselectedPolic
 /** First DataVersion of MC 1.18 (format 6) and last of MC 1.20.4 (format 6). */
 export const LITEMATIC_V6_FIRST_DATA_VERSION = 2860, LITEMATIC_V6_LAST_DATA_VERSION = 3700;
 export type LitematicWriteVersion = 5 | 6 | 7;
+/**
+ * Litematic packs block indices tightly, so a box of 256³ cells stays a few MB;
+ * the export accepts what the Litematic import accepts (whole converted maps).
+ */
+export const LITEMATIC_EXPORT_MAX_VOLUME = 16_777_216;
 export function litematicVersionFor(dataVersion: number): LitematicWriteVersion {
   return dataVersion > LITEMATIC_V6_LAST_DATA_VERSION ? 7 : dataVersion >= LITEMATIC_V6_FIRST_DATA_VERSION ? 6 : 5;
 }
@@ -109,7 +114,7 @@ function tileEntry(entity: BlockEntity, local: Vec3): { tag: NbtTag; converted: 
 
 /** Pure and deterministic: palette index 0 is air, further states in Y→Z→X order of first use. */
 export function buildLitematic(world: VoxelPayload, options: LitematicWriteOptions, limitOverrides: Partial<SchemExportLimits> = {}): { nbt: { name: string; tag: NbtTag }; report: LitematicExportReport } {
-  const limits = { ...SCHEM_EXPORT_LIMITS, ...limitOverrides };
+  const limits = { ...SCHEM_EXPORT_LIMITS, maxVolume: LITEMATIC_EXPORT_MAX_VOLUME, ...limitOverrides };
   validatePayload(world, { maxVolume: Math.max(limits.maxVolume, 1) });
   if (!Number.isSafeInteger(options.dataVersion) || options.dataVersion < 1 || options.dataVersion > 2_147_483_647) fail('DataVersion muss eine positive Ganzzahl sein.');
   if (options.anchor !== 'project-origin' && options.anchor !== 'min-corner') fail('Unbekannter Ankerpunkt.');
@@ -159,7 +164,9 @@ export function buildLitematic(world: VoxelPayload, options: LitematicWriteOptio
   const requiredMods = [...new Set(world.palette.map(s => s.id.split(':')[0]!).filter(ns => ns !== 'minecraft'))].sort();
   const date = options.metadata?.date;
   if (date !== undefined && !Number.isSafeInteger(date)) fail('Metadata-Zeit muss Millisekunden als Ganzzahl sein.');
-  const totalBlocks = Array.from(values).filter(v => !AIR_IDS.has(states[v]!.id)).length;
+  const isAirState = states.map(s => AIR_IDS.has(s.id));
+  let totalBlocks = 0;
+  for (let i = 0; i < volume; i++) if (!isAirState[values[i]!]) totalBlocks++;
   const meta: Record<string, NbtTag> = {
     Name: str(options.metadata?.name ?? regionName), Author: str(options.metadata?.author ?? ''), Description: str(options.metadata?.description ?? ''),
     RegionCount: int(1), TotalVolume: int(volume), TotalBlocks: int(totalBlocks),

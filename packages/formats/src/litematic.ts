@@ -1,11 +1,12 @@
-import { createPayload, stateKey, AIR_IDS } from '../../voxel/src/validation.js';
+import { adoptPayload, stateKey, AIR_IDS } from '../../voxel/src/validation.js';
 import type { BlockEntity, BlockState, Cell, NbtTag, Vec3, VoxelPayload } from '../../voxel/src/types.js';
 import { FormatError, NBT_LIMITS, readNbt } from './nbt.js';
 import { gunzipLimited } from './schem.js';
 
 /**
  * Litematica `.litematic` reader (P5-01). Layout as written by Litematica
- * (LitematicaSchematic / LitematicaBitArray): GZip NBT root with Version,
+ * (LitematicaSchematic / LitematicaBitArray): NBT root (GZip as Litematica
+ * writes it; also uncompressed or zlib, as some converters do) with Version,
  * SubVersion, MinecraftDataVersion, Metadata and Regions. Every region has a
  * Position and a signed Size relative to the schematic origin, a palette list
  * and the block indices tightly bit-packed into a LongArray (entries may span
@@ -22,16 +23,29 @@ const FLATTENED_VERSION = 5, FLATTENED_DATA_VERSION = 1631;
 
 export interface LitematicLimits {
   maxCompressedBytes: number; maxUncompressedBytes: number;
-  /** Cells over all imported regions (every region cell becomes a payload cell). */
+  /** Cells over all imported regions' boxes (air included). */
   maxVolume: number;
+  /** Payload cells actually kept (blocks, plus explicit air while the volume allows it). */
+  maxCells: number;
+  /**
+   * Up to this imported volume air stays an explicit `air` cell. Larger files
+   * (e.g. converted maps) keep only their blocks; air becomes unselected so the
+   * preview stays responsive. A warning names the case.
+   */
+  maxAirVolume: number;
   /** Per axis of the enclosing box. */
   maxDimension: number;
   maxRegions: number; maxPalette: number; maxDepth: number; maxNodes: number; maxDurationMs: number;
 }
-/** Same budget as the Schem import, so both formats behave alike in the viewer. */
+/**
+ * Up to 250 000 cells the result is the same as the Schem import (air explicit).
+ * Bigger Litematic files are common (whole builds converted from schematics),
+ * so the box may reach the viewer's 256 per axis and up to one million blocks;
+ * the BlockStates LongArray of such a box needs up to ~3 million NBT nodes.
+ */
 export const LITEMATIC_LIMITS: Readonly<LitematicLimits> = Object.freeze({
-  maxCompressedBytes: 4_000_000, maxUncompressedBytes: 16_000_000, maxVolume: 250_000, maxDimension: 256,
-  maxRegions: 64, maxPalette: 20_000, maxDepth: 32, maxNodes: 200_000, maxDurationMs: 5_000,
+  maxCompressedBytes: 4_000_000, maxUncompressedBytes: 32_000_000, maxVolume: 16_777_216, maxCells: 1_000_000, maxAirVolume: 250_000, maxDimension: 256,
+  maxRegions: 64, maxPalette: 20_000, maxDepth: 32, maxNodes: 4_000_000, maxDurationMs: 8_000,
 });
 
 export interface LitematicOptions extends Partial<LitematicLimits> {
@@ -54,6 +68,11 @@ export interface LitematicRegion {
   readonly air: number;
   readonly tileEntities: number;
   readonly entities: number;
+  /** Count per `id` (e.g. minecraft:sign, minecraft:painting), most frequent first; '?' without id. */
+  readonly tileEntityTypes: readonly (readonly [string, number])[];
+  readonly entityTypes: readonly (readonly [string, number])[];
+  /** Scheduled block and fluid ticks stored with the region. */
+  readonly pendingTicks: number;
 }
 
 export interface LitematicMetadata {
@@ -66,6 +85,11 @@ export interface LitematicMetadata {
   readonly enclosingSize?: Vec3;
   readonly totalBlocks?: number;
   readonly totalVolume?: number;
+  readonly regionCount?: number;
+  /** Not written by Litematica itself; converters such as Litemapy add it. */
+  readonly software?: string;
+  /** Edge length of the square ARGB `PreviewImageData`, 0 when the array is empty. */
+  readonly previewImageSize?: number;
 }
 
 export interface LitematicResult {
@@ -83,6 +107,8 @@ export interface LitematicResult {
   readonly metadata: LitematicMetadata;
   readonly sourceSha256: string;
   readonly sourceNbt: { name: string; tag: NbtTag };
+  /** How the file was stored; Litematica itself writes gzip. */
+  readonly compression?: NbtCompression;
   readonly warnings: string[];
 }
 
@@ -137,6 +163,13 @@ export function unpackAt(words: Uint32Array, bits: number, index: number): numbe
   return (v & mask) >>> 0;
 }
 
+/** `id` histogram of tile entity / entity compounds, most frequent first, then by name. */
+function typeCounts(tags: readonly NbtTag[]): [string, number][] {
+  const counts = new Map<string, number>();
+  for (const t of tags) { const id = t.type === 'compound' && t.value.id?.type === 'string' ? t.value.id.value : '?'; counts.set(id, (counts.get(id) ?? 0) + 1); }
+  return [...counts].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1));
+}
+
 interface ParsedRegion { info: LitematicRegion; palette: BlockState[]; words: Uint32Array; tiles: readonly NbtTag[] }
 
 function readRegion(name: string, tag: NbtTag, limits: LitematicLimits, budget: { volume: number }): ParsedRegion {
@@ -163,9 +196,10 @@ function readRegion(name: string, tag: NbtTag, limits: LitematicLimits, budget: 
     if (v >= palette.length) fail(`${path}: Zelle ${i} verweist auf Paletteneintrag ${v}, Palette hat ${palette.length}.`);
     if (AIR_IDS.has(palette[v]!.id)) air++; else blocks++;
   }
-  const tiles = list(r.TileEntities, `${path}.TileEntities`);
-  const entities = list(r.Entities, `${path}.Entities`).length;
-  return { info: { name, position, size, min, dimensions, volume, paletteSize: palette.length, bitsPerEntry: bits, blocks, air, tileEntities: tiles.length, entities }, palette, words, tiles };
+  const tiles = list(r.TileEntities, `${path}.TileEntities`), entityTags = list(r.Entities, `${path}.Entities`);
+  const pendingTicks = list(r.PendingBlockTicks, `${path}.PendingBlockTicks`).length + list(r.PendingFluidTicks, `${path}.PendingFluidTicks`).length;
+  return { info: { name, position, size, min, dimensions, volume, paletteSize: palette.length, bitsPerEntry: bits, blocks, air, tileEntities: tiles.length, entities: entityTags.length,
+    tileEntityTypes: typeCounts(tiles), entityTypes: typeCounts(entityTags), pendingTicks }, palette, words, tiles };
 }
 
 function readMetadata(tag: NbtTag | undefined): LitematicMetadata {
@@ -174,7 +208,8 @@ function readMetadata(tag: NbtTag | undefined): LitematicMetadata {
   const text = (k: string) => m[k]?.type === 'string' ? m[k].value : undefined;
   const long = (k: string) => m[k]?.type === 'long' ? m[k].value : undefined;
   const num = (k: string) => m[k]?.type === 'int' ? m[k].value : undefined;
-  const out: Record<string, unknown> = { name: text('Name'), author: text('Author'), description: text('Description'), timeCreated: long('TimeCreated'), timeModified: long('TimeModified'), totalBlocks: num('TotalBlocks'), totalVolume: num('TotalVolume') };
+  const out: Record<string, unknown> = { name: text('Name'), author: text('Author'), description: text('Description'), timeCreated: long('TimeCreated'), timeModified: long('TimeModified'), totalBlocks: num('TotalBlocks'), totalVolume: num('TotalVolume'), regionCount: num('RegionCount'), software: text('Software') };
+  if (m.PreviewImageData?.type === 'intArray') out.previewImageSize = Math.floor(Math.sqrt(m.PreviewImageData.value.length));
   if (m.EnclosingSize?.type === 'compound') out.enclosingSize = blockPos(m.EnclosingSize, 'Metadata.EnclosingSize');
   for (const k of Object.keys(out)) if (out[k] === undefined) delete out[k];
   return out as LitematicMetadata;
@@ -209,8 +244,13 @@ export function normalizeLitematic(sourceNbt: { name: string; tag: NbtTag }, opt
   if (box.some(n => n > limits.maxDimension)) throw new FormatError('LIMIT', `Die Regionen spannen ${box.join(' × ')} Blöcke auf; erlaubt sind höchstens ${limits.maxDimension} je Achse. Einzelne Regionen lassen sich getrennt importieren.`);
 
   const palette: BlockState[] = [], byState = new Map<string, number>();
-  const cellAt = new Map<string, Cell>(), entityAt = new Map<string, BlockEntity>();
-  let overlaps = 0, droppedTiles = 0, tilesWithoutId = 0;
+  const [BW, BH, BL] = box, boxVolume = BW * BH * BL;
+  const keepAir = used.reduce((n, p) => n + p.info.volume, 0) <= limits.maxAirVolume;
+  // Dense box: payload palette index + 1 per cell, 0 = not covered by any imported region.
+  const dense = new Int32Array(boxVolume);
+  const boxIndex = (x: number, y: number, z: number) => (y * BL + z) * BW + x;
+  const entityAt = new Map<number, BlockEntity>();
+  let overlaps = 0, droppedTiles = 0, tilesWithoutId = 0, airCells = 0;
   const warnings: string[] = [];
   for (const p of used) {
     const remap = p.palette.map(state => {
@@ -218,51 +258,70 @@ export function normalizeLitematic(sourceNbt: { name: string; tag: NbtTag }, opt
       if (i === undefined) { i = palette.length; palette.push(state); byState.set(key, i); }
       return i;
     });
-    const [W, H, L] = p.info.dimensions, base = p.info.min.map((v, i) => v - lo[i]!);
+    const [W, H, L] = p.info.dimensions, base = p.info.min.map((v, i) => v - lo[i]!), bits = p.info.bitsPerEntry;
     // LitematicaBlockStateContainer.getIndex: y·W·L + z·W + x.
-    for (let y = 0; y < H; y++) for (let z = 0; z < L; z++) for (let x = 0; x < W; x++) {
-      const v = unpackAt(p.words, p.info.bitsPerEntry, y * W * L + z * W + x), paletteIndex = remap[v]!;
-      const position: Vec3 = [base[0]! + x, base[1]! + y, base[2]! + z], key = position.join(',');
-      const before = cellAt.get(key);
-      if (before) { if (before.kind === 'erase' || before.paletteIndex !== paletteIndex) overlaps++; entityAt.delete(key); }
-      cellAt.set(key, { position, kind: AIR_IDS.has(palette[paletteIndex]!.id) ? 'air' : 'block', paletteIndex });
+    let source = 0;
+    for (let y = 0; y < H; y++) for (let z = 0; z < L; z++) {
+      let at = boxIndex(base[0]!, base[1]! + y, base[2]! + z);
+      for (let x = 0; x < W; x++, at++, source++) {
+        const next = remap[unpackAt(p.words, bits, source)]! + 1, before = dense[at]!;
+        if (before) { if (before !== next) overlaps++; entityAt.delete(at); }
+        dense[at] = next;
+      }
     }
     for (const [i, t] of p.tiles.entries()) {
       const tilePath = `Regions.${p.info.name}.TileEntities[${i}]`, c = compound(t, tilePath);
       // Tile positions are relative to the region's minimum corner.
       const rel = [int(c.x, `${tilePath}.x`), int(c.y, `${tilePath}.y`), int(c.z, `${tilePath}.z`)];
       if (rel.some((n, k) => n < 0 || n >= p.info.dimensions[k]!)) { droppedTiles++; continue; }
-      const position: Vec3 = [base[0]! + rel[0]!, base[1]! + rel[1]!, base[2]! + rel[2]!], key = position.join(',');
-      if (cellAt.get(key)?.kind !== 'block') { droppedTiles++; continue; }
+      const position: Vec3 = [base[0]! + rel[0]!, base[1]! + rel[1]!, base[2]! + rel[2]!], at = boxIndex(...position);
+      if (!dense[at] || AIR_IDS.has(palette[dense[at]! - 1]!.id)) { droppedTiles++; continue; }
       if (c.id?.type !== 'string') tilesWithoutId++;
-      entityAt.set(key, { position, data: t });
+      entityAt.set(at, { position, data: t });
     }
   }
-  const cells = [...cellAt.values()].sort((a, b) => a.position[1] - b.position[1] || a.position[2] - b.position[2] || a.position[0] - b.position[0]);
-  const blockEntities = [...entityAt.values()].sort((a, b) => a.position[1] - b.position[1] || a.position[2] - b.position[2] || a.position[0] - b.position[0]);
+  const isAir = palette.map(s => AIR_IDS.has(s.id));
+  // Cells in Y→Z→X order straight from the dense box (already sorted).
+  const cells: Cell[] = [];
+  for (let at = 0, y = 0; y < BH; y++) for (let z = 0; z < BL; z++) for (let x = 0; x < BW; x++, at++) {
+    const v = dense[at]!; if (!v) continue;
+    const paletteIndex = v - 1;
+    if (isAir[paletteIndex]) { airCells++; if (!keepAir) continue; }
+    if (cells.length >= limits.maxCells) throw new FormatError('LIMIT', `Mehr als ${limits.maxCells.toLocaleString('de-DE')} Blöcke; einzelne Regionen lassen sich getrennt importieren.`);
+    cells.push({ position: [x, y, z], kind: isAir[paletteIndex] ? 'air' : 'block', paletteIndex });
+  }
+  const blockEntities = [...entityAt.keys()].sort((a, b) => a - b).map(k => entityAt.get(k)!);
 
   const regions = parsed.map(p => p.info);
   const selectedRegion = only ?? null;
   if (used.length > 1) warnings.push(`${used.length} Regionen zu einem Bauteil zusammengeführt (${used.map(p => p.info.name).join(', ')}). Zwischenräume bleiben unausgewählt.`);
   if (only !== undefined && names.length > 1) warnings.push(`Nur Region „${only}“ von ${names.length} importiert; die übrigen bleiben im Original erhalten.`);
+  if (!keepAir && airCells) warnings.push(`Großes Modell: ${airCells.toLocaleString('de-DE')} Luftzellen sind nicht als Zellen übernommen (bleiben unausgewählt), damit Vorschau und Mengen flüssig bleiben. Das Original enthält sie unverändert.`);
   if (overlaps) warnings.push(`${overlaps} Zellen liegen in mehreren Regionen mit verschiedenem Inhalt. Hier gilt die spätere Region; Litematica legt die Reihenfolge nicht fest.`);
   if (version < FLATTENED_VERSION || (dataVersion > 0 && dataVersion < FLATTENED_DATA_VERSION)) warnings.push('Datei stammt aus Minecraft 1.12 oder älter: Block-IDs sind nicht umgewandelt und passen nicht zu 1.13+.');
   if (dataVersion === 0) warnings.push('MinecraftDataVersion fehlt; die Zielversion ist unbekannt.');
   warnings.push('Vorschau in lokalen Koordinaten; Regionspositionen und vollständige Quelldaten bleiben separat erhalten.', 'MinecraftDataVersion ist aus der Datei gelesen; Registry-/Modpack-Kompatibilität ist nicht geprüft.');
   if (droppedTiles) warnings.push(`${droppedTiles} BlockEntities liegen außerhalb ihrer Region oder auf Luft und sind nur im Original erhalten.`);
   if (tilesWithoutId) warnings.push(`${tilesWithoutId} BlockEntities ohne id; ein späterer Export kann sie nicht zuordnen.`);
+  const metadata = readMetadata(root.Metadata);
+  const counted = used.reduce((n, p) => n + p.info.blocks, 0);
+  if (only === undefined && metadata.totalBlocks !== undefined && metadata.totalBlocks !== counted) warnings.push(`Metadata nennt ${metadata.totalBlocks} Blöcke, gelesen wurden ${counted}; die Datei wurde vermutlich außerhalb von Litematica verändert.`);
+  if (metadata.software) warnings.push(`Erstellt mit ${metadata.software}, nicht von Litematica selbst gespeichert.`);
+  if (counted <= 1 && parsed.every(p => p.info.volume <= 1)) warnings.push('Die Datei enthält nur einen einzelnen Block; vermutlich ist die Umwandlung an der Quelle fehlgeschlagen.');
   const entities = used.reduce((n, p) => n + p.info.entities, 0);
-  if (entities) warnings.push(`${entities} freie Entities sind im Original/NBT erhalten, werden aber nicht dargestellt.`);
-  const ticks = used.reduce((n, p) => { const r = compound(regionsTag[p.info.name], 'Region'); return n + list(r.PendingBlockTicks, 'PendingBlockTicks').length + list(r.PendingFluidTicks, 'PendingFluidTicks').length; }, 0);
+  if (entities) {
+    const kinds = typeCounts(used.flatMap(p => list(compound(regionsTag[p.info.name], 'Region').Entities, 'Entities'))).map(([id, n]) => `${n}× ${id.replace(/^minecraft:/, '')}`).join(', ');
+    warnings.push(`${entities} freie Entities (${kinds}) sind im Original/NBT erhalten, werden aber nicht dargestellt.`);
+  }
+  const ticks = used.reduce((n, p) => n + p.info.pendingTicks, 0);
   if (ticks) warnings.push(`${ticks} geplante Block-/Flüssigkeitsticks sind im Original erhalten, werden aber nicht übernommen.`);
   if (palette.some(s => !s.id.startsWith('minecraft:'))) warnings.push('Modblöcke gefunden: IDs/Properties bleiben erhalten, Registry unbekannt.');
-  const metadata = readMetadata(root.Metadata);
 
-  const payload = createPayload({
+  const payload = adoptPayload({
     schemaVersion: 1, profileId: `java:dataversion-${dataVersion}:registry-unverified`,
     bounds: { min: [0, 0, 0], maxExclusive: box }, pivot: [0, 0, 0], sourceOrigin: lo,
     palette, cells, blockEntities,
-  }, { maxCells: limits.maxVolume, maxVolume: limits.maxDimension ** 3, maxPalette: limits.maxPalette, maxNbtDepth: limits.maxDepth, maxNbtNodes: limits.maxNodes });
+  }, { maxCells: limits.maxCells, maxVolume: limits.maxDimension ** 3, maxPalette: limits.maxPalette, maxNbtDepth: limits.maxDepth, maxNbtNodes: limits.maxNodes });
   return { format: 'litematic', payload, dataVersion, version, subVersion, offset: lo, regions, selectedRegion, metadata, sourceNbt, warnings };
 }
 
@@ -271,21 +330,47 @@ async function sha256Hex(buffer: ArrayBuffer): Promise<string> {
   return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('');
 }
 
-/** GZip → NBT with the shared byte, node and time budgets. */
-export async function readCompressedNbt(buffer: ArrayBuffer, limits: Pick<LitematicLimits, 'maxCompressedBytes' | 'maxUncompressedBytes' | 'maxDepth' | 'maxNodes' | 'maxDurationMs'>): Promise<{ sourceNbt: { name: string; tag: NbtTag }; sourceSha256: string }> {
-  if (buffer.byteLength > limits.maxCompressedBytes) throw new FormatError('LIMIT', 'Komprimierte Datei überschreitet das Größenlimit.');
-  const input = new Uint8Array(buffer);
-  if (input[0] !== 31 || input[1] !== 139) throw new FormatError('GZIP', 'Erwartet GZip-komprimiertes NBT.');
+export type NbtCompression = 'gzip' | 'zlib' | 'none';
+/**
+ * Litematica and Sponge tools write GZip; converters (e.g. Litemapy-based
+ * sites) and hand-built files also produce uncompressed or zlib NBT. All three
+ * are recognised by their first bytes, never by the file name.
+ */
+export function detectNbtCompression(bytes: Uint8Array): NbtCompression | null {
+  if (bytes[0] === 0x1f && bytes[1] === 0x8b) return 'gzip';
+  if (bytes[0] === 0x78 && bytes.length > 1 && ((bytes[0] << 8) | bytes[1]!) % 31 === 0) return 'zlib';
+  // Uncompressed NBT: TAG_Compound followed by a name length.
+  if (bytes[0] === 0x0a && bytes.length >= 3) return 'none';
+  return null;
+}
+
+async function inflateLimited(buffer: ArrayBuffer, limits: Pick<LitematicLimits, 'maxUncompressedBytes' | 'maxDurationMs'>): Promise<Uint8Array> {
+  const reader = new Blob([buffer]).stream().pipeThrough(new DecompressionStream('deflate')).getReader();
+  const chunks: Uint8Array[] = []; let total = 0; let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new FormatError('TIMEOUT', 'Zeitbudget beim Entpacken überschritten.')), limits.maxDurationMs); });
+  try {
+    while (true) { const { done, value } = await Promise.race([reader.read(), timeout]); if (done) break; total += value.byteLength; if (total > limits.maxUncompressedBytes) throw new FormatError('LIMIT', 'Entpackte Datei überschreitet das Größenlimit.'); chunks.push(value); }
+  } catch (e) { if (e instanceof FormatError) throw e; throw new FormatError('ZLIB', 'zlib-Daten sind beschädigt oder unvollständig.'); }
+  finally { clearTimeout(timer); void reader.cancel().catch(() => {}); }
+  const raw = new Uint8Array(total); let p = 0; for (const chunk of chunks) { raw.set(chunk, p); p += chunk.byteLength; }
+  return raw;
+}
+
+/** GZip, zlib or uncompressed → NBT with the shared byte, node and time budgets. */
+export async function readCompressedNbt(buffer: ArrayBuffer, limits: Pick<LitematicLimits, 'maxCompressedBytes' | 'maxUncompressedBytes' | 'maxDepth' | 'maxNodes' | 'maxDurationMs'>): Promise<{ sourceNbt: { name: string; tag: NbtTag }; sourceSha256: string; compression: NbtCompression }> {
+  const input = new Uint8Array(buffer), compression = detectNbtCompression(input);
+  if (compression === null) throw new FormatError('GZIP', 'Erwartet NBT (GZip-komprimiert, zlib oder unkomprimiert).');
+  if (buffer.byteLength > (compression === 'none' ? limits.maxUncompressedBytes : limits.maxCompressedBytes)) throw new FormatError('LIMIT', compression === 'none' ? 'Datei überschreitet das Größenlimit.' : 'Komprimierte Datei überschreitet das Größenlimit.');
   const start = performance.now();
-  const raw = await gunzipLimited(buffer, limits);
+  const raw = compression === 'gzip' ? await gunzipLimited(buffer, limits) : compression === 'zlib' ? await inflateLimited(buffer, limits) : input;
   const remaining = limits.maxDurationMs - (performance.now() - start);
   if (remaining < 1) throw new FormatError('TIMEOUT', 'Zeitbudget überschritten.');
   const sourceNbt = readNbt(raw, { ...NBT_LIMITS, maxBytes: limits.maxUncompressedBytes, maxDepth: limits.maxDepth, maxNodes: limits.maxNodes, maxDurationMs: Math.max(1, Math.floor(remaining)) });
-  return { sourceNbt, sourceSha256: await sha256Hex(buffer) };
+  return { sourceNbt, sourceSha256: await sha256Hex(buffer), compression };
 }
 
 export async function importLitematic(buffer: ArrayBuffer, options: LitematicOptions = {}): Promise<LitematicResult> {
   const limits = { ...LITEMATIC_LIMITS, ...options };
-  const { sourceNbt, sourceSha256 } = await readCompressedNbt(buffer, limits);
-  return { ...normalizeLitematic(sourceNbt, options), sourceSha256 };
+  const { sourceNbt, sourceSha256, compression } = await readCompressedNbt(buffer, limits);
+  return { ...normalizeLitematic(sourceNbt, options), sourceSha256, compression };
 }

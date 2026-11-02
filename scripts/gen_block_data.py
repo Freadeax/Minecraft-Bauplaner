@@ -268,6 +268,8 @@ export interface BlockLook {{
   /** Box from/to in 1/16 for shape 'b'. */
   readonly box?: readonly number[];
 }}
+/** Ids renamed since 1.13 that older files (e.g. Litematics from 1.19/1.21) still use. */
+const LEGACY_NAMES: Readonly<Record<string, string>> = {{ grass: 'short_grass', chain: 'iron_chain' }};
 let parsed: Map<string, BlockLook> | null = null;
 /** Average colours (`#rrggbb`) and silhouette of a vanilla block; undefined for unknown names (without namespace). */
 export function blockLook(name: string): BlockLook | undefined {{
@@ -281,7 +283,7 @@ export function blockLook(name: string): BlockLook | undefined {{
       parsed.set(key, {{ top: c[0]!, side: c[1] ?? c[0]!, bottom: c[2] ?? c[0]!, shape: kind, ...(kind === 'b' && {{ box: shape.slice(1).split('.').map(Number) }}) }});
     }}
   }}
-  return parsed.get(name);
+  return parsed.get(name) ?? parsed.get(LEGACY_NAMES[name] ?? '');
 }}
 ''')
 print(len(lines), 'blocks', len(colours), 'colours')
