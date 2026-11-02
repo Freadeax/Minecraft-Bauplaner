@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T09:49:37.649Z",
+  "updatedAt": "2026-11-02T10:07:03.926Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -11,7 +11,8 @@
     "EDIT-03",
     "GFX-01",
     "MODEL-01",
-    "MAP-03"
+    "MAP-03",
+    "EDIT-04"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -2586,6 +2587,97 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-02T05:30:31.682Z"
+    },
+    {
+      "id": "EDIT-04",
+      "title": "Kreativwerkzeuge aus dem Planer-Vergleich: Symmetrie, Kurven, Naturwerkzeuge, Oberflächenmaske, Farbpaletten, Bild → Blöcke",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude-Thread „Ideen aus anderen Planern übernehmen“",
+      "dependencies": [
+        "EDIT-03"
+      ],
+      "scope": [
+        "packages/domain/src/editor/symmetry.ts",
+        "packages/domain/src/editor/curves.ts",
+        "packages/domain/src/editor/sculpt.ts",
+        "packages/domain/src/editor/colorMatch.ts",
+        "apps/web/src/editor/",
+        "tests/editor-creative.test.mjs",
+        "tests/e2e/workshop-creative.e2e.mjs",
+        "docs/architecture/CREATIVE_TOOLS.md",
+        "docs/project/PLANER_VERGLEICH.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "EDIT-04-S01",
+          "title": "Gap-Analyse: andere Planer und Bautools gegen unsere Module, Auswahl und Vorschläge für eigene Threads (docs/project/PLANER_VERGLEICH.md).",
+          "done": true
+        },
+        {
+          "id": "EDIT-04-S02",
+          "title": "Symmetrie (Spiegeln X/Z, 2-/4-fach drehen, Achse auf Zellmitte oder -grenze) mit Zustandsdrehung über transformBlockState für alle Pinsel-Werkzeuge.",
+          "done": true
+        },
+        {
+          "id": "EDIT-04-S03",
+          "title": "Kurven durch Punkte (Catmull-Rom, offen/geschlossen) mit Profilen Rohr, Weg, Mauer; lückenlos.",
+          "done": true
+        },
+        {
+          "id": "EDIT-04-S04",
+          "title": "Natur- und Formwerkzeuge in der Auswahl: Glätten, Abtragen, Aufbauen, Überziehen, Naturalisieren; Oberflächenmaske (alle/oben/seitlich).",
+          "done": true
+        },
+        {
+          "id": "EDIT-04-S05",
+          "title": "Farbpaletten (ähnliche Blöcke, Farbverlauf in Lab als Muster) und Bild → Blöcke (Wand/Boden, Dithering, Blockgruppen) über die Zwischenablage.",
+          "done": true
+        },
+        {
+          "id": "EDIT-04-S06",
+          "title": "Unit-, Browser- und Handyprüfung, Doku.",
+          "done": true
+        },
+        {
+          "id": "EDIT-04-S07",
+          "title": "Spielprüfung gespiegelter und gedrehter Zustände (Türen, Truhen, Schienen) sowie Firefox/Safari/Geräte.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Gleiche Eingaben ergeben dieselben Zellen und dieselbe Version (auch Dithering).",
+        "Keine zweite Koordinaten- oder Drehregel; Symmetrie nutzt transformVector/transformBlockState, ungelöste Zustände werden gemeldet.",
+        "Jede Kurve ist flächenverbunden; jedes Werkzeug ist ein Rückgängig-Schritt.",
+        "Keine Farbtabellen oder Texturen im Kern."
+      ],
+      "next": "Spielprüfung gespiegelter Zustände; danach Gelände-Werkzeuge auf Projektgelände (eigener Thread) und Symmetrie/Kurven im Mod.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/editor-creative.test.mjs",
+          "note": "Symmetrie, Kurven, Natur, Maske, Farben, Bild mit Handzählung."
+        },
+        {
+          "path": "tests/e2e/workshop-creative.e2e.mjs",
+          "note": "Chromium 1400/390 px: Symmetrie, Kurve, Abtragen, Naturalisieren, Farbverlauf, Oberfläche, PNG → Wollbild."
+        },
+        {
+          "path": "docs/architecture/CREATIVE_TOOLS.md",
+          "note": "Vertrag und Grenzen EDIT-04."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Unit- und Chromium-Prüfung bestanden; Spielprüfung, Firefox/Safari und Geräte offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-02T10:07:03.926Z"
     },
     {
       "id": "UPDATE-01",
@@ -7439,6 +7531,43 @@
           "done": 0,
           "total": 2,
           "next": "LiveLink in mod-core (Loopback, Kopplungscode, Ursprungsprüfung) und Fabric 0.5.0."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T10:07:03.926Z",
+      "kind": "progress",
+      "items": [
+        "EDIT-04"
+      ],
+      "summary": "Kreativwerkzeuge aus dem Planer-Vergleich: Gap-Analyse, Symmetrie, Kurven, Natur-/Formwerkzeuge, Oberflächenmaske, Farbpaletten, Bild → Blöcke. Auf e003884 integriert; Node und Chromium grün (Zahlen in TESTING); Spielprüfung gespiegelter Zustände, Firefox/Safari, Geräte offen.",
+      "files": [
+        "apps/web/src/editor/BlockEditor.tsx",
+        "apps/web/src/editor/CreativePanel.tsx",
+        "apps/web/src/editor/LayerGrid.tsx",
+        "apps/web/src/editor/colorCandidates.ts",
+        "apps/web/src/editor/editor.css",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/BLOCK_EDITOR.md",
+        "docs/architecture/CREATIVE_TOOLS.md",
+        "docs/project/PLANER_VERGLEICH.md",
+        "packages/domain/src/editor/colorMatch.ts",
+        "packages/domain/src/editor/curves.ts",
+        "packages/domain/src/editor/index.ts",
+        "packages/domain/src/editor/sculpt.ts",
+        "packages/domain/src/editor/symmetry.ts",
+        "tests/e2e/workshop-creative.e2e.mjs",
+        "tests/editor-creative.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "EDIT-04",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Spielprüfung gespiegelter Zustände; danach Gelände-Werkzeuge auf Projektgelände (eigener Thread) und Symmetrie/Kurven im Mod."
         }
       ]
     }

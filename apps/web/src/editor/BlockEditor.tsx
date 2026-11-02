@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import {
   ARCH_STYLE_LABEL, BOX_SHAPE_LABEL, PATTERN_KIND_LABEL, archEdit, boxBounds, boxEdit, boxVolume, cellAt, coneEdit, copyBox, countMatches, cylinderEdit, defaultState, floodEdit, lineEdit, materializeDraft,
-  moveBoxEdit, paintEdit, pasteEdit, pyramidEdit, replaceEdit, replacePatternEdit, rotateCellEdit, setCells, sphereEdit, blockSchema, blockLabel, transformClipboard, wallLineEdit,
+  curveEdit, moveBoxEdit, paintEdit, pasteEdit, symmetricEdit, symmetryActive, pyramidEdit, replaceEdit, replacePatternEdit, rotateCellEdit, setCells, sphereEdit, blockSchema, blockLabel, transformClipboard, wallLineEdit,
   checkPlacement, settleEdit,
 } from '../../../../packages/domain/src/index.js';
 import type { ArchStyle, Box, BoxShape, CellSlot, Clipboard, Edit, ReplaceQuery } from '../../../../packages/domain/src/index.js';
@@ -15,11 +15,14 @@ import { LayerGrid } from './LayerGrid';
 import { INITIAL_PATTERN, PatternPanel, patternActive, toPattern } from './PatternPanel';
 import type { PatternState } from './PatternPanel';
 import { StencilPanel } from './StencilPanel';
+import { ColorPanel, CurveControls, INITIAL_CURVE, INITIAL_SYMMETRY, ImagePanel, NaturePanel, SymmetryControls, toSymmetry } from './CreativePanel';
+import type { CurveState, SymmetryState } from './CreativePanel';
+import { fromPattern } from './PatternPanel';
 import type { GridBox, Stroke } from './LayerGrid';
 import { useDraft } from './useDraft';
 import type { DraftModel } from './useDraft';
 
-export type Tool = 'stift' | 'abbauen' | 'pipette' | 'fuellen' | 'drehen' | 'zustand' | 'auswahl' | 'linie' | 'quader' | 'zylinder' | 'kugel' | 'einfuegen' | 'bogen' | 'pyramide' | 'kegel';
+export type Tool = 'stift' | 'abbauen' | 'pipette' | 'fuellen' | 'drehen' | 'zustand' | 'auswahl' | 'linie' | 'quader' | 'zylinder' | 'kugel' | 'einfuegen' | 'bogen' | 'pyramide' | 'kegel' | 'kurve';
 /** Tool, icon, label, hint, letter key (EDIT-03). Digits 1–9 select the first nine tools. */
 const TOOLS: readonly (readonly [Tool, string, string, string, string])[] = [
   ['stift', '✎', 'Setzen', 'Pinsel auf Zellen malen (Ziehen malt mehrere, ein Rückgängig-Schritt je Strich)', 'B'],
@@ -37,8 +40,9 @@ const TOOLS: readonly (readonly [Tool, string, string, string, string])[] = [
   ['pyramide', '▲', 'Pyramide', 'Grundfläche aufziehen: Stufenpyramide, auf Rechtecken ein Walmdach', 'Y'],
   ['kegel', '⏶', 'Kegel', 'Vom Mittelpunkt aus aufziehen: Kegeldach für runde Türme', 'C'],
   ['einfuegen', '⎘', 'Einfügen', 'Zwischenablage oder Schablone an der geklickten Zelle einfügen (untere Ecke); R dreht', 'V'],
+  ['kurve', '∿', 'Kurve', 'Punkte klicken, Enter setzt eine weiche Kurve: Weg, Mauer oder Rohr (EDIT-04)', 'U'],
 ];
-const BRUSH_TOOLS: ReadonlySet<Tool> = new Set(['stift', 'fuellen', 'linie', 'quader', 'zylinder', 'kugel', 'bogen', 'pyramide', 'kegel']);
+const BRUSH_TOOLS: ReadonlySet<Tool> = new Set(['stift', 'fuellen', 'linie', 'quader', 'zylinder', 'kugel', 'bogen', 'pyramide', 'kegel', 'kurve']);
 /** Shortcut list for the help panel (also the documentation of the keys). */
 const SHORTCUTS: readonly (readonly [string, string])[] = [
   ['1–9 · Buchstabe im Werkzeug', 'Werkzeug wählen (B Setzen, E Abbauen, I Pipette, F Füllen, L Linie, Q Quader, K Kugel, O Bogen …)'],
@@ -50,6 +54,7 @@ const SHORTCUTS: readonly (readonly [string, string])[] = [
   ['Pfeiltasten · Shift+↑/↓', 'Auswahl samt Inhalt verschieben (Norden/Süden/Westen/Osten · oben/unten)'],
   ['R · M', 'Zwischenablage (beim Einfügen) oder Auswahl drehen · spiegeln'],
   ['G', '3D nur bis zur aktuellen Ebene (Schnitt) an/aus'],
+  ['U · Enter · Rücktaste', 'Kurve: Punkte klicken · Kurve setzen · letzten Punkt entfernen'],
   ['Esc', 'Auswahl aufheben, Ziehen abbrechen'],
   ['Shift+Ziehen', 'mit jedem Werkzeug einen Bereich auswählen'],
   ['Rechtsklick/Leertaste+Ziehen · Strg+Mausrad', 'Ebene verschieben · zoomen'],
@@ -113,6 +118,9 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
   const [replaceFrom, setReplaceFrom] = useState('');
   const [replaceScope, setReplaceScope] = useState<'all' | 'selection'>('all');
   const [keepProps, setKeepProps] = useState(true);
+  const [symState, setSymState] = useState<SymmetryState>(INITIAL_SYMMETRY);
+  const [curve, setCurve] = useState<CurveState>(INITIAL_CURVE);
+  const [curvePts, setCurvePts] = useState<readonly Vec3[]>([]);
 
   const setBrush = (b: CellSlot) => { setBrushRaw(b); if (tool === 'abbauen' || tool === 'pipette' || tool === 'zustand') setTool('stift'); };
   const run = useCallback((edit: Edit, ok = '') => { const err = model.run(edit); setMessage(err === '' ? ok || `${edit.label}: ${formatNumber(edit.changes.length)} Zellen` : err); return err === ''; }, [model]);
@@ -121,6 +129,21 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
   const activePattern = useMemo(() => toPattern(pattern, brush), [pattern, brush]);
   /** Applies the pattern to brush edits (painting, shapes, fills); removals and other tools stay as they are. */
   const paint = useCallback((e: Edit): Edit => usePattern ? paintEdit(e, activePattern) : e, [usePattern, activePattern]);
+  // Symmetry (EDIT-04): copies brush edits to all symmetric positions with turned block states.
+  const symmetry = useMemo(() => toSymmetry(symState), [symState]);
+  const symOn = symmetryActive(symmetry);
+  const unresolvedRef = useRef<readonly string[]>([]);
+  const sym = useCallback((e: Edit): Edit => {
+    if (!symOn) { unresolvedRef.current = []; return e; }
+    const r = symmetricEdit(e, symmetry); unresolvedRef.current = r.unresolved; return r.edit;
+  }, [symOn, symmetry]);
+  const symNote = () => unresolvedRef.current.length ? `Ohne Drehregel ungedreht übernommen: ${unresolvedRef.current.join(', ')}` : '';
+  const curveOptions = { profile: curve.profile, radius: curve.radius, width: curve.width, height: curve.height, closed: curve.closed, tension: curve.smooth ? 1 : 0 };
+  const finishCurve = () => {
+    if (curvePts.length < 2) { setMessage('Eine Kurve braucht mindestens zwei Punkte.'); return; }
+    try { if (run(sym(paint(curveEdit(curvePts, brush, curveOptions))), symNote())) setCurvePts([]); }
+    catch (e) { setMessage(e instanceof Error ? e.message : String(e)); }
+  };
 
   // Shape being dragged → edit (preview and final).
   const shapeEdit = useCallback((s: NonNullable<typeof stroke>, final = true): Edit | null => {
@@ -139,19 +162,26 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
         default: return null;
       }
     };
-    try { const e = raw(); return e && tool !== 'abbauen' ? paint(e) : e; }
+    try { const e = raw(), painted = e && tool !== 'abbauen' ? paint(e) : e; return painted && sym(painted); }
     // While dragging an unfinished shape (e.g. an arch narrower than 3) only the release reports the reason.
     catch (e) { if (final) setMessage(e instanceof Error ? e.message : String(e)); return null; }
-  }, [tool, brush, height, shape, hollow, dome, arch, line, pyramid, coneHeight, paint]);
+  }, [tool, brush, height, shape, hollow, dome, arch, line, pyramid, coneHeight, paint, sym]);
 
   const previewEdit = useMemo((): Edit | null => {
     if (stroke) return stroke.selecting ? null : shapeEdit(stroke, false);
     // Paste preview: the clipboard (or stencil) follows the pointer.
-    if (tool === 'einfuegen' && clip && hover) return pasteEdit(clip, hover);
+    if (tool === 'einfuegen' && clip && hover) { try { return sym(pasteEdit(clip, hover)); } catch { return null; } }
+    // Curve preview: the placed points plus the pointer as the next point.
+    if (tool === 'kurve' && curvePts.length) {
+      const pts = hover && curvePts.length < 64 ? [...curvePts, hover] : curvePts;
+      if (pts.length < 2) return null;
+      try { return sym(paint(curveEdit(pts, brush, curveOptions))); } catch { return null; }
+    }
     return null;
-  }, [stroke, shapeEdit, tool, clip, hover]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stroke, shapeEdit, tool, clip, hover, sym, curvePts, curve, paint, brush]);
   const preview = useMemo(() => previewEdit ? previewEdit.changes.slice(0, PREVIEW_LIMIT).map(c => c.position) : [], [previewEdit]);
-  const previewColors = useMemo(() => previewEdit && (usePattern || tool === 'einfuegen') ? previewEdit.changes.slice(0, PREVIEW_LIMIT).map(c => brushColor(c.value)) : undefined, [previewEdit, usePattern, tool]);
+  const previewColors = useMemo(() => previewEdit && (usePattern || tool === 'einfuegen' || symOn) ? previewEdit.changes.slice(0, PREVIEW_LIMIT).map(c => brushColor(c.value)) : undefined, [previewEdit, usePattern, tool]);
   /** Size of the shape being drawn, for the grid HUD. */
   const previewInfo = useMemo(() => {
     if (!previewEdit?.changes.length) return '';
@@ -170,11 +200,12 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
         const limit = selection ? toBox(selection) : extentBox;
         // With a pattern the fill value is only a marker that differs from the area (the pattern paints every cell).
         const target = cellAt(draft, p), marker: CellSlot = usePattern ? (target?.kind === 'erase' ? { kind: 'air' } : { kind: 'erase' }) : brush;
-        try { run(paint(floodEdit(draft, p, marker, { plane: 'y', ...(limit && { limitBox: { a: [limit.a[0], p[1], limit.a[2]], b: [limit.b[0], p[1], limit.b[2]] } }) }))); }
+        try { run(sym(paint(floodEdit(draft, p, marker, { plane: 'y', ...(limit && { limitBox: { a: [limit.a[0], p[1], limit.a[2]], b: [limit.b[0], p[1], limit.b[2]] } }) }))), symNote()); }
         catch (e) { setMessage(e instanceof Error ? e.message : String(e)); }
         return true;
       }
-      case 'einfuegen': if (clip) run(pasteEdit(clip, p)); else setMessage('Zwischenablage ist leer: zuerst einen Bereich kopieren.'); return true;
+      case 'kurve': setCurvePts(pts => pts.length >= 64 ? pts : [...pts, p]); return true;
+      case 'einfuegen': if (clip) { try { run(sym(pasteEdit(clip, p)), symNote()); } catch (e) { setMessage(e instanceof Error ? e.message : String(e)); } } else setMessage('Zwischenablage ist leer: zuerst einen Bereich kopieren.'); return true;
       case 'abbauen': if (from3d) { run(setCells([p], null, 'Abbauen')); return true; } return false;
       default: return false;
     }
@@ -200,7 +231,7 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
     setLiveStroke(null);
     if (stroke.selecting) return;
     const e = shapeEdit(next);
-    if (e) run(e);
+    if (e) run(e, symNote());
   };
 
   // Keyboard (EDIT-03): layers, tools, clipboard, selection. The latest state is read through a ref so the
@@ -290,7 +321,9 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
     }
     if (k === 'PageUp' || k === ']') { e.preventDefault(); setY(v => v + 1); }
     else if (k === 'PageDown' || k === '[') { e.preventDefault(); setY(v => v - 1); }
-    else if (k === 'Escape') { setSelection(null); strokeRef.current = null; setStroke(null); setHelp(false); }
+    else if (tool === 'kurve' && k === 'Enter') { e.preventDefault(); finishCurve(); }
+    else if (tool === 'kurve' && k === 'Backspace' && curvePts.length) { e.preventDefault(); setCurvePts(pts => pts.slice(0, -1)); }
+    else if (k === 'Escape') { setCurvePts([]); setSelection(null); strokeRef.current = null; setStroke(null); setHelp(false); }
     else if (k === '?') { setHelp(h => !h); }
     else if (/^[1-9]$/.test(k)) { const t = TOOLS[Number(k) - 1]; if (t) setTool(t[0]); }
     else if ((k === 'Delete' || k === 'Backspace') && selBox) { e.preventDefault(); run({ ...boxEdit(selBox, 'fill', null), label: 'Auswahl leeren' }); }
@@ -369,7 +402,9 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
             <button onClick={() => turnClip({ quarterTurns: 0, mirrorX: true })} title="M">Ablage spiegeln</button>
           </div>}
         </>}
+        {tool === 'kurve' && <CurveControls state={curve} onChange={setCurve} points={curvePts} onFinish={finishCurve} onUndoPoint={() => setCurvePts(pts => pts.slice(0, -1))} onClear={() => setCurvePts([])} />}
         {BRUSH_TOOLS.has(tool) && <PatternPanel state={pattern} onChange={setPattern} brush={brush} />}
+        <SymmetryControls state={symState} onChange={setSymState} symmetry={symmetry} model={extent} selection={selection ? toBox(selection) : null} />
       </aside>
 
       <section className="editor-canvas" aria-label="Arbeitsfläche">
@@ -387,7 +422,12 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
         {extent && <LayerStrip layers={layers} min={extent.min[1]} max={extent.max[1]} y={y} onY={setY} />}
         <div className={`canvas-split${show3d ? ' with-3d' : ''}`}>
           <LayerGrid layers={layers} y={y} extent={extent} selection={selection} preview={preview} previewColor={brushColor(toolValue(tool))} previewColors={previewColors}
-            previewInfo={previewInfo} picked={picked} onStroke={onStroke} onHover={setHover} />
+            previewInfo={previewInfo} picked={picked} onStroke={onStroke} onHover={setHover}
+            guides={symOn || curvePts.length ? {
+              lineX: symmetry.mirrorX || symmetry.rotate > 1 ? symmetry.centre2[0] / 2 + 0.5 : undefined,
+              lineZ: symmetry.mirrorZ || symmetry.rotate > 1 ? symmetry.centre2[1] / 2 + 0.5 : undefined,
+              centre: symmetry.rotate > 1, points: curvePts,
+            } : undefined} />
           {show3d && <div className="editor-3d">
             {payload ? <Viewer payload={payload} cells={cells3d ?? payload.cells} onSelect={onSelect3d} markFor={markFor}
               focus={selection ? { min: selection.min, maxExclusive: selection.maxExclusive } : null} />
@@ -432,6 +472,12 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY }: 
         </section>
 
         <StencilPanel profileId={draft.profileId} onClip={takeClip} onMessage={setMessage} selectionClip={() => selBox ? copyBox(draft, selBox) : null} />
+        <NaturePanel draft={draft} box={selBox} pattern={activePattern} run={run} onMessage={setMessage} />
+        <ColorPanel brush={brush} onBrush={setBrush} onGradient={stops => {
+          setPattern(p => fromPattern({ kind: 'gradient', stops, axis: p.gradientAxis, blend: p.blend, seed: p.seed }, p));
+          setMessage(`Farbverlauf mit ${stops.length} Stufen als Muster übernommen (wirkt auf Setzen, Formen und Füllen).`);
+        }} />
+        <ImagePanel onClip={takeClip} onMessage={setMessage} />
 
         <section className="panel-lite" aria-label="Ersetzen">
           <span className="panel-kicker">ERSETZEN</span>

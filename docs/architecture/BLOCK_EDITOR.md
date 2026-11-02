@@ -84,3 +84,7 @@ Prüfung: `node --test tests/editor-patterns.test.mjs` (Muster, Formen mit Handz
 - `node --test tests/editor.test.mjs`: Entwurf und Umkehrung, Determinismus, Formen mit Handzählung, Ersetzen, Füllen, Drehen, Ablage, Speichern, `localCell` für alle acht Transformationen, Projektzuordnung mit Rückgängig, Gruppenoperationen.
 - `node --test tests/e2e/editor.e2e.mjs` (nach `npm run build`): Werkstatt mit Speichern und Version 2.0, Projekt-Reiter mit einem Rückgängig-Schritt, Mehrfachauswahl drehen/rückgängig/verschieben, 390 px.
 - Offen: Picking direkt im 3D-Bild an Blockflächen (bisher Ebenenansicht), Prüfung im Spiel, Firefox/Safari.
+
+## Kreativwerkzeuge (EDIT-04)
+
+Stand 02.11.2026. Symmetrie beim Bauen, Kurven/Pfade, Natur- und Formwerkzeuge (Glätten, Abtragen, Aufbauen, Überziehen, Naturalisieren), Oberflächenmaske, Farbverläufe nach Blockfarbe und Bild → Blöcke. Vertrag und Prüfung: [CREATIVE_TOOLS](CREATIVE_TOOLS.md). Werkzeug „Kurve“ hat die Taste U; Enter setzt die Kurve, Rücktaste nimmt den letzten Punkt.

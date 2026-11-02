@@ -2022,3 +2022,34 @@ Menüpunkt „Spiel“ (#/mod) in der Hauptnavigation, Kopfzeile für sechs Bere
 - `docs/COMMUNICATION.md`
 - `tests/e2e/shell.e2e.mjs`
 
+## 2026-11-02T10:07:03.926Z · progress
+
+**Aufgaben:** EDIT-04
+
+Kreativwerkzeuge aus dem Planer-Vergleich: Gap-Analyse, Symmetrie, Kurven, Natur-/Formwerkzeuge, Oberflächenmaske, Farbpaletten, Bild → Blöcke. Auf e003884 integriert; Node und Chromium grün (Zahlen in TESTING); Spielprüfung gespiegelter Zustände, Firefox/Safari, Geräte offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| EDIT-04 | 🧩 Implementiert · Abnahme offen | 6/7 | Spielprüfung gespiegelter Zustände; danach Gelände-Werkzeuge auf Projektgelände (eigener Thread) und Symmetrie/Kurven im Mod. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/editor/BlockEditor.tsx`
+- `apps/web/src/editor/CreativePanel.tsx`
+- `apps/web/src/editor/LayerGrid.tsx`
+- `apps/web/src/editor/colorCandidates.ts`
+- `apps/web/src/editor/editor.css`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/BLOCK_EDITOR.md`
+- `docs/architecture/CREATIVE_TOOLS.md`
+- `docs/project/PLANER_VERGLEICH.md`
+- `packages/domain/src/editor/colorMatch.ts`
+- `packages/domain/src/editor/curves.ts`
+- `packages/domain/src/editor/index.ts`
+- `packages/domain/src/editor/sculpt.ts`
+- `packages/domain/src/editor/symmetry.ts`
+- `tests/e2e/workshop-creative.e2e.mjs`
+- `tests/editor-creative.test.mjs`
+

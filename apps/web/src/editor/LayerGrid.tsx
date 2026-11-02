@@ -23,6 +23,8 @@ interface Props {
   readonly picked: Vec3 | null;
   readonly onStroke: (s: Stroke) => void;
   readonly onHover: (cell: Vec3 | null) => void;
+  /** EDIT-04: symmetry axes (grid coordinates, e.g. 5.5 = through the centre of cell 5) and curve control points. */
+  readonly guides?: { readonly lineX?: number | undefined; readonly lineZ?: number | undefined; readonly centre?: boolean; readonly points?: readonly Vec3[] } | undefined;
 }
 
 const FACING: Readonly<Record<string, readonly [number, number]>> = { north: [0, -1], south: [0, 1], east: [1, 0], west: [-1, 0] };
@@ -38,7 +40,7 @@ function fillFor(v: CellValue): string { return v.kind === 'block' ? topColor(v.
  * or Space+drag pans, wheel scrolls, Ctrl+wheel (or the buttons) zooms.
  * The layer below is drawn faintly as a guide.
  */
-export function LayerGrid({ layers, y, extent, selection, preview, previewColor, previewColors, previewInfo, picked, onStroke, onHover }: Props) {
+export function LayerGrid({ layers, y, extent, selection, preview, previewColor, previewColors, previewInfo, picked, onStroke, onHover, guides }: Props) {
   const canvas = useRef<HTMLCanvasElement>(null), wrap = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState<[number, number]>([600, 420]);
   const [cell, setCell] = useState(22);
@@ -138,9 +140,23 @@ export function LayerGrid({ layers, y, extent, selection, preview, previewColor,
       g.setLineDash([6, 4]); g.lineWidth = 2; g.strokeStyle = inLayer ? css('--mint', '#5be3b5') : 'rgba(127,127,127,0.6)';
       g.strokeRect(ax + 1, az + 1, bx - ax - 2, bz - az - 2); g.setLineDash([]); g.lineWidth = 1;
     }
+    // Guides (EDIT-04): symmetry axes as dashed lines, the rotation axis as a ring, curve points as numbered dots.
+    if (guides) {
+      g.save(); g.setLineDash([8, 5]); g.lineWidth = 2; g.strokeStyle = '#ff9f43';
+      if (guides.lineX !== undefined) { const [sx] = toScreen(guides.lineX, 0); g.beginPath(); g.moveTo(sx, 0); g.lineTo(sx, size[1]); g.stroke(); }
+      if (guides.lineZ !== undefined) { const [, sz] = toScreen(0, guides.lineZ); g.beginPath(); g.moveTo(0, sz); g.lineTo(size[0], sz); g.stroke(); }
+      g.setLineDash([]);
+      if (guides.centre && guides.lineX !== undefined && guides.lineZ !== undefined) { const [sx, sz] = toScreen(guides.lineX, guides.lineZ); g.beginPath(); g.arc(sx, sz, Math.max(5, cell * 0.4), 0, Math.PI * 2); g.stroke(); }
+      (guides.points ?? []).forEach((p, i) => {
+        const [sx, sz] = toScreen(p[0] + 0.5, p[2] + 0.5);
+        g.fillStyle = p[1] === y ? '#ff9f43' : 'rgba(255,159,67,0.5)'; g.beginPath(); g.arc(sx, sz, Math.max(4, cell * 0.3), 0, Math.PI * 2); g.fill();
+        if (cell >= 14) { g.fillStyle = '#1b1b1b'; g.font = `bold ${Math.round(cell * 0.4)}px sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(String(i + 1), sx, sz + 0.5); }
+      });
+      g.restore();
+    }
     if (picked && picked[1] === y) { const [sx, sz] = toScreen(picked[0], picked[2]); g.strokeStyle = '#ffd34d'; g.lineWidth = 2; g.strokeRect(sx + 1, sz + 1, cell - 2, cell - 2); g.lineWidth = 1; }
     if (hover) { const [sx, sz] = toScreen(hover[0], hover[2]); g.strokeStyle = css('--text', '#fff'); g.strokeRect(sx + 0.5, sz + 0.5, cell - 1, cell - 1); }
-  }, [layers, y, extent, selection, preview, previewColor, previewColors, picked, hover, size, cell, centre, toScreen]);
+  }, [layers, y, extent, selection, preview, previewColor, previewColors, picked, hover, size, cell, centre, toScreen, guides]);
 
   const point = (e: React.PointerEvent | React.WheelEvent): [number, number] => { const r = canvas.current!.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
   const zoom = (factor: number) => setCell(c => Math.max(4, Math.min(48, Math.round(c * factor))));

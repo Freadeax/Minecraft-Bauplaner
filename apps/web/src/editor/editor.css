@@ -92,3 +92,20 @@
 .shortcut-help dt{font-family:ui-monospace,monospace;font-size:11px;color:var(--mint,#5be3b5)}
 .shortcut-help dd{margin:0}
 @media (max-width:720px){.tool-grid kbd{display:none}.shortcut-help dl>div{grid-template-columns:1fr}}
+/* EDIT-04 Kreativwerkzeuge */
+.creative-sym{display:flex;flex-direction:column;gap:6px;padding-top:8px;border-top:1px solid var(--line,#26363d)}
+.creative-sym .seg,.creative-nature .seg{display:flex;flex-wrap:wrap;gap:4px}
+.creative-sym .seg button,.creative-nature .seg button{flex:1 1 auto}
+.creative-curve{display:flex;flex-direction:column;gap:6px}
+.creative-nature hr{border:0;border-top:1px solid var(--line,#26363d);margin:4px 0;width:100%}
+.color-row{display:flex;flex-wrap:wrap;gap:4px}
+.color-row.gradient{gap:0;border-radius:6px;overflow:hidden;min-height:22px}
+.color-row.gradient .color-chip{flex:1 1 0;border-radius:0;border:0}
+.color-chip{display:inline-block;width:24px;height:22px;min-width:0;padding:0;border-radius:5px;border:1px solid rgba(0,0,0,.35);cursor:pointer;vertical-align:middle}
+span.color-chip{cursor:default;width:16px;height:14px}
+.image-preview{width:100%;max-height:220px;object-fit:contain;image-rendering:pixelated;background:var(--canvas,#0f1a1f);border-radius:6px}
+.image-counts{list-style:none;margin:0;padding:0;display:grid;gap:3px}
+.creative-image input[type=file]{max-width:100%}
+.editor-tools,.editor-side{min-width:0}
+.creative-curve select,.creative-sym input,.creative-nature select,.creative-colors select,.creative-image select{min-width:0;max-width:100%;width:100%}
+.creative-sym .seg button,.creative-nature .seg button{min-width:0;white-space:normal}
