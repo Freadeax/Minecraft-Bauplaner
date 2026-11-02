@@ -13,6 +13,8 @@ interface Props {
   readonly y: number;
   readonly extent: { readonly min: Vec3; readonly max: Vec3 } | null;
   readonly selection: GridBox | null;
+  /** EDIT-05: cells of a cell selection (magic select) in this layer; drawn instead of only the box. */
+  readonly selectionCells?: readonly Vec3[] | undefined;
   /** Shape preview while dragging (positions on any layer; only this layer is drawn strongly). */
   readonly preview: readonly Vec3[];
   readonly previewColor: string;
@@ -40,7 +42,7 @@ function fillFor(v: CellValue): string { return v.kind === 'block' ? topColor(v.
  * or Space+drag pans, wheel scrolls, Ctrl+wheel (or the buttons) zooms.
  * The layer below is drawn faintly as a guide.
  */
-export function LayerGrid({ layers, y, extent, selection, preview, previewColor, previewColors, previewInfo, picked, onStroke, onHover, guides }: Props) {
+export function LayerGrid({ layers, y, extent, selection, selectionCells, preview, previewColor, previewColors, previewInfo, picked, onStroke, onHover, guides }: Props) {
   const canvas = useRef<HTMLCanvasElement>(null), wrap = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState<[number, number]>([600, 420]);
   const [cell, setCell] = useState(22);
@@ -140,6 +142,22 @@ export function LayerGrid({ layers, y, extent, selection, preview, previewColor,
       g.setLineDash([6, 4]); g.lineWidth = 2; g.strokeStyle = inLayer ? css('--mint', '#5be3b5') : 'rgba(127,127,127,0.6)';
       g.strokeRect(ax + 1, az + 1, bx - ax - 2, bz - az - 2); g.setLineDash([]); g.lineWidth = 1;
     }
+    if (selectionCells?.length) {
+      const mint = css('--mint', '#5be3b5'), inSel = new Set(selectionCells.map(p => `${p[0]},${p[2]}`));
+      g.fillStyle = mint; g.globalAlpha = 0.28;
+      for (const p of selectionCells) if (visible(p[0], p[2])) { const [sx, sz] = toScreen(p[0], p[2]); g.fillRect(sx, sz, cell, cell); }
+      // Outline of the cell selection: only edges towards unselected cells.
+      g.globalAlpha = 1; g.strokeStyle = mint; g.lineWidth = 2; g.beginPath();
+      for (const p of selectionCells) {
+        if (!visible(p[0], p[2])) continue;
+        const [sx, sz] = toScreen(p[0], p[2]);
+        if (!inSel.has(`${p[0]},${p[2] - 1}`)) { g.moveTo(sx, sz); g.lineTo(sx + cell, sz); }
+        if (!inSel.has(`${p[0]},${p[2] + 1}`)) { g.moveTo(sx, sz + cell); g.lineTo(sx + cell, sz + cell); }
+        if (!inSel.has(`${p[0] - 1},${p[2]}`)) { g.moveTo(sx, sz); g.lineTo(sx, sz + cell); }
+        if (!inSel.has(`${p[0] + 1},${p[2]}`)) { g.moveTo(sx + cell, sz); g.lineTo(sx + cell, sz + cell); }
+      }
+      g.stroke(); g.lineWidth = 1;
+    }
     // Guides (EDIT-04): symmetry axes as dashed lines, the rotation axis as a ring, curve points as numbered dots.
     if (guides) {
       g.save(); g.setLineDash([8, 5]); g.lineWidth = 2; g.strokeStyle = '#ff9f43';
@@ -156,7 +174,7 @@ export function LayerGrid({ layers, y, extent, selection, preview, previewColor,
     }
     if (picked && picked[1] === y) { const [sx, sz] = toScreen(picked[0], picked[2]); g.strokeStyle = '#ffd34d'; g.lineWidth = 2; g.strokeRect(sx + 1, sz + 1, cell - 2, cell - 2); g.lineWidth = 1; }
     if (hover) { const [sx, sz] = toScreen(hover[0], hover[2]); g.strokeStyle = css('--text', '#fff'); g.strokeRect(sx + 0.5, sz + 0.5, cell - 1, cell - 1); }
-  }, [layers, y, extent, selection, preview, previewColor, previewColors, picked, hover, size, cell, centre, toScreen, guides]);
+  }, [layers, y, extent, selection, selectionCells, preview, previewColor, previewColors, picked, hover, size, cell, centre, toScreen, guides]);
 
   const point = (e: React.PointerEvent | React.WheelEvent): [number, number] => { const r = canvas.current!.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
   const zoom = (factor: number) => setCell(c => Math.max(4, Math.min(48, Math.round(c * factor))));

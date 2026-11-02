@@ -39,7 +39,7 @@ Bereich „Ausstattung“ im Blockeditor: Block wählen (Prüfen oder Klick in 3
 ## Grenzen
 
 - Kein Bearbeiten von Truhen-Inhalten oder Schild-Text in der Werkstatt (nur Anzeige).
-- Verschieben/Drehen einer Auswahl in der Werkstatt bewegt Entities nicht mit; der Projekt-Blockreiter bearbeitet keine Entities.
+- Seit EDIT-05 ziehen Entities beim Verschieben, Drehen, Spiegeln, Stapeln, Kopieren und Ausschneiden einer Werkstatt-Auswahl mit (Ankerzelle in der Auswahl, Drehung über `transformEntity`, siehe [CREATIVE_TOOLS](CREATIVE_TOOLS.md)). Der Projekt-Blockreiter bearbeitet weiterhin keine Entities.
 - Drehen von BlockEntity-NBT (z. B. Schädel-`Rotation`) bleibt Teil von NBT-01.
 - Nicht im Spiel geprüft: Laden exportierter Entities mit Litematica/WorldEdit auf Philipps PC.
 

@@ -1,5 +1,6 @@
 import { transformBlockState, transformVector } from '../../../voxel/src/states.js';
-import type { BlockState, Bounds, Transform, Vec3 } from '../../../voxel/src/types.js';
+import { entityAnchor, transformEntity } from '../../../voxel/src/entities.js';
+import type { BlockState, Bounds, FreeEntity, Transform, Vec3 } from '../../../voxel/src/types.js';
 import { DomainError } from '../types.js';
 import { MAX_EDIT_CELLS, cellAt, draftEntries, keyPos, posKey, sameSlot } from './draft.js';
 import type { CellChange, CellSlot, CellValue, Draft, Edit } from './draft.js';
@@ -220,8 +221,17 @@ export function rotateCellEdit(draft: Draft, p: Vec3, t: Pick<Transform, 'quarte
 // ------------------------------------------------------------------ clipboard
 
 export interface ClipCell { readonly offset: Vec3; readonly value: CellValue }
-/** Copied region relative to its minimum corner. Empty (null) cells are not stored. */
-export interface Clipboard { readonly size: Vec3; readonly cells: readonly ClipCell[] }
+/**
+ * Copied region relative to its minimum corner. Empty (null) cells are not stored. `entities` (EDIT-05,
+ * optional) are the free entities (paintings, frames, armor stands) anchored in the region, with positions
+ * relative to the same corner.
+ */
+export interface Clipboard { readonly size: Vec3; readonly cells: readonly ClipCell[]; readonly entities?: readonly FreeEntity[] }
+
+/** Free entities whose anchor cell satisfies `inside`, moved so `min` becomes the origin. */
+export function entitiesRelative(entities: readonly FreeEntity[] | undefined, inside: (p: Vec3) => boolean, min: Vec3): FreeEntity[] {
+  return (entities ?? []).filter(e => inside(entityAnchor(e))).map(e => ({ position: [e.position[0] - min[0], e.position[1] - min[1], e.position[2] - min[2]] as [number, number, number], data: e.data }));
+}
 
 export function copyBox(draft: Draft, box: Box): Clipboard {
   const { min } = boxBounds(box), cells: ClipCell[] = [];
@@ -230,7 +240,8 @@ export function copyBox(draft: Draft, box: Box): Clipboard {
     if (inBox(box, p)) cells.push({ offset: [p[0] - min[0], p[1] - min[1], p[2] - min[2]], value: v });
   }
   guard(cells.length);
-  return { size: boxSize(box), cells };
+  const entities = entitiesRelative(draft.entities, p => inBox(box, p), min);
+  return { size: boxSize(box), cells, ...(entities.length && { entities }) };
 }
 
 export interface ClipTransformResult { readonly clip: Clipboard; readonly unresolved: readonly string[] }
@@ -253,18 +264,30 @@ export function transformClipboard(clip: Clipboard, t: Pick<Transform, 'quarterT
     return { offset, value: c.value.entity ? { kind: 'block' as const, state: s.state, entity: c.value.entity } : { kind: 'block' as const, state: s.state } };
   });
   const size = transformVector(clip.size, full).map(Math.abs) as unknown as Vec3;
-  return { clip: { size, cells }, unresolved: [...unresolved].sort() };
+  // Entities follow the same rule as the cell centres: q → R(q) + shift (EDIT-05).
+  const entities = (clip.entities ?? []).map(e => {
+    const r = transformEntity(e, [0, 0, 0], { position: shift as unknown as Vec3, ...t });
+    if (!r.resolved) unresolved.add(r.note ?? 'Entity');
+    return r.entity;
+  });
+  return { clip: { size, cells, ...(entities.length && { entities }) }, unresolved: [...unresolved].sort() };
 }
 
-/** Pastes with the clipboard minimum at `at`. `withAir` false skips explicit air cells. */
-export function pasteEdit(clip: Clipboard, at: Vec3, opts: { withAir?: boolean; label?: string } = {}): Edit {
+/**
+ * Pastes with the clipboard minimum at `at`. `withAir` false skips explicit air cells. With `entities`
+ * (the model's current free entities) the clipboard's entities are added to that list; without it they
+ * are left out (models that do not keep free entities).
+ */
+export function pasteEdit(clip: Clipboard, at: Vec3, opts: { withAir?: boolean; label?: string; entities?: readonly FreeEntity[] } = {}): Edit {
   const changes: CellChange[] = [];
   for (const c of clip.cells) {
     if (c.value.kind === 'air' && opts.withAir === false) continue;
     changes.push({ position: [at[0] + c.offset[0], at[1] + c.offset[1], at[2] + c.offset[2]], value: c.value });
   }
   guard(changes.length);
-  return { label: opts.label ?? 'Einfügen', changes };
+  const added = opts.entities && clip.entities?.length
+    ? clip.entities.map(e => ({ position: [e.position[0] + at[0], e.position[1] + at[1], e.position[2] + at[2]] as [number, number, number], data: e.data })) : [];
+  return { label: opts.label ?? 'Einfügen', changes, ...(added.length && { entities: [...opts.entities!, ...added] }) };
 }
 
 /** Clears the box and writes its content again moved by `delta` (one undo step). */
@@ -275,8 +298,10 @@ export function moveBoxEdit(draft: Draft, box: Box, delta: Vec3, t?: Pick<Transf
   const centre = [0, 1, 2].map(i => Math.floor((clip0.size[i]! - r.clip.size[i]!) / 2));
   const at: Vec3 = [min[0] + delta[0] + centre[0]!, min[1] + delta[1], min[2] + delta[2] + centre[2]!];
   const clear: CellChange[] = clip0.cells.map(c => ({ position: [min[0] + c.offset[0], min[1] + c.offset[1], min[2] + c.offset[2]] as Vec3, value: null }));
-  const paste = pasteEdit(r.clip, at).changes;
-  return { edit: { label: t ? (t.mirrorX ? 'Bereich spiegeln' : 'Bereich drehen') : 'Bereich verschieben', changes: [...clear, ...paste] }, unresolved: r.unresolved };
+  // Paintings, frames and armor stands in the box move along (EDIT-05); all others stay.
+  const rest = clip0.entities?.length ? (draft.entities ?? []).filter(e => !inBox(box, entityAnchor(e))) : undefined;
+  const paste = pasteEdit(r.clip, at, rest ? { entities: rest } : {});
+  return { edit: { label: t ? (t.mirrorX ? 'Bereich spiegeln' : 'Bereich drehen') : 'Bereich verschieben', changes: [...clear, ...paste.changes], ...(paste.entities && { entities: paste.entities }) }, unresolved: r.unresolved };
 }
 
 /** Bounds of the current model, or null when empty. */

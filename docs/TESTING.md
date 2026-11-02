@@ -678,3 +678,9 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `npm run check` grün (645 Tests, 644 bestanden, 1 übersprungen), `npm run test:e2e` **118/118** in 48 Dateien (Basis main 4178c7b).
 - Nach Rebase auf main dd9d930 (LIB-05 Runde 2, Mod 0.7.0): `npm run check` grün (649 Tests, 648 bestanden, 1 übersprungen), Browser `library-start`, `background-jobs`, `catalog`, `persistence`, `updates`, `app`, `stability`, `collections`, `ui-acceptance` 28/28.
 - Grenzen: nur Chromium; Katalog wird bei jedem Start im Worker neu erzeugt.
+
+## EDIT-05 · Auswahl- und Formwerkzeuge · 02.11.2026 · Claude
+- `tests/editor-region.test.mjs` 14/14: Materialfamilien, Zauberauswahl (Zustand/Block/Material/alle, Ebene, über Kanten, Grenze), Wachsen/Schrumpfen/Einpassen/Größe ändern, Quaderwerkzeuge nur auf der Zellauswahl, Verschieben/Drehen einer L-Zellauswahl mit gedrehten Treppen und exaktem Rückgängig, Leeren samt verankerter Ausstattung, Gemälde/Rüstungsständer beim Verschieben und Drehen eines Bereichs (Gemälde hängt danach an der gedrehten Wand), Zwischenablage/Schablone mit Ausstattung, Stapeln (auch diagonal, ohne Luft), Extrudieren heraus/hinein, Ellipsoid/Torus/Wendel (Symmetrie, Flächenverbund, Stufenrichtung, Begehbarkeit, deterministisch).
+- `tests/e2e/workshop-region.e2e.mjs` 2/2 (Chromium 1400 px und 390 px Touch).
+- Nach Rebase auf main 1ac08e9 (LIB-05 Runde 2), erneut geprüft nach Rebase auf 68773a6 (Mod 0.7.0, Bibliotheksstart im Worker): `npm run check` grün (659 Tests, 658 bestanden, 1 übersprungen), `npm run test:e2e` 117/118 in 47 Dateien; der eine Ausfall `worldbuilder.e2e.mjs` (Weltkarte, von EDIT-05 nicht berührt) bestand im Einzellauf 2/2.
+- Grenzen: nur Chromium im Container; keine Abnahme durch Philipp und keine Spielprüfung (EDIT-05-S07).

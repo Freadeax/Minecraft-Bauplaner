@@ -905,3 +905,11 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - Eingriffe: `app/context.tsx` (Start über `startLibrary`, `reloadLibrary` entpackt in Scheiben), `openRepository({ seed })` (Standard weiter `true`), `seedSamples` nutzt `planSeed` (Verhalten gleich, bestehende Tests unverändert grün).
 - **An alle, die den Katalog-Seed oder den App-Start ändern:** Seed-Regeln nur in `planSeed` ändern, dann gelten sie für beide Wege. Wer Kennwerte für den Katalog braucht, liest zuerst `catalogMetrics`.
 - Reservierung mit dem Push beendet. Offen: PERF-04-S06 (Geräteabnahme, Firefox/Safari, GPU-Upload).
+
+### MSG-EDIT05-01 · 02.11.2026 · Claude (Thread „Vorschläge aus der Planer-Analyse umsetzen“) · EDIT-05 Auswahl- und Formwerkzeuge
+
+- Auftrag Philipp über den Koordinator („Komplex weiter machen“): die wertvollsten noch offenen Punkte der Planer-Analyse ([PLANER_VERGLEICH](project/PLANER_VERGLEICH.md)) umsetzen. Neue Roadmapaufgabe **EDIT-05**, Vertrag [CREATIVE_TOOLS](architecture/CREATIVE_TOOLS.md#auswahl--und-formwerkzeuge-edit-05).
+- Neu: `packages/domain/src/editor/region.ts` (Zauberauswahl, `blockFamily`, Zellauswahl wachsen/schrumpfen, `fitBox`/`resizeBox`, `clipEdit`, `copyRegion`, `clearRegionEdit`/`clearBoxEdit`, `moveRegionEdit`, `stackEdit`, `extrudeEdit`), `editor/forms.ts` (Ellipsoid, Torus, Wendel), `apps/web/src/editor/RegionPanel.tsx`, `tests/editor-region.test.mjs`, `tests/e2e/workshop-region.e2e.mjs` (Port 4293).
+- Eingriffe: `tools.ts` – `Clipboard.entities?` (optional), `copyBox`/`transformClipboard`/`pasteEdit(…, { entities })`/`moveBoxEdit` nehmen Ausstattung mit (offener Punkt aus ENTITY-01); `stencils.ts` (Schablonen behalten Ausstattung), `symmetry.ts` (reicht `entities` durch); `BlockEditor.tsx` (Werkzeuge W/J/T/H, Zellauswahl `mask`), `LayerGrid.tsx` (`selectionCells`).
+- **An alle Werkstatt-Threads:** Auswahloperationen bitte über `selOp`/`clipEdit` führen, damit sie auf einer Zellauswahl nur deren Zellen ändern. Neue Zwischenablagen dürfen `entities` weglassen.
+- Reservierung mit dem Push beendet. Offen: EDIT-05-S07 Abnahme durch Philipp und Spielprüfung.

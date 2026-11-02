@@ -2808,3 +2808,35 @@ Absturzschutz der Client-Mod für die Testphase: Fehler in Tick, Zeichnen, HUD u
 - `docs/architecture/MOD_HOLOGRAM.md`
 - `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java`
 
+## 2026-11-02T19:23:55.694Z · progress
+
+**Aufgaben:** EDIT-05
+
+Auswahl- und Formwerkzeuge: Zauberauswahl als Zellauswahl, wachsen/schrumpfen/einpassen, Stapeln, Extrudieren, Ellipsoid/Torus/Wendel, Ausstattung zieht beim Verschieben/Drehen/Stapeln mit
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| EDIT-05 | 🧩 Implementiert · Abnahme offen | 6/7 | EDIT-05-S07: Abnahme durch Philipp in der Werkstatt (Zauberstab, Stapeln, Extrudieren, Wendel) und Spielprüfung gestapelter/gedrehter Bauteile mit Ausstattung. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/editor/BlockEditor.tsx`
+- `apps/web/src/editor/LayerGrid.tsx`
+- `apps/web/src/editor/RegionPanel.tsx`
+- `apps/web/src/editor/editor.css`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/BLOCK_EDITOR.md`
+- `docs/architecture/CREATIVE_TOOLS.md`
+- `docs/architecture/ENTITIES.md`
+- `docs/project/PLANER_VERGLEICH.md`
+- `packages/domain/src/editor/forms.ts`
+- `packages/domain/src/editor/index.ts`
+- `packages/domain/src/editor/region.ts`
+- `packages/domain/src/editor/stencils.ts`
+- `packages/domain/src/editor/symmetry.ts`
+- `packages/domain/src/editor/tools.ts`
+- `tests/e2e/workshop-region.e2e.mjs`
+- `tests/editor-region.test.mjs`
+

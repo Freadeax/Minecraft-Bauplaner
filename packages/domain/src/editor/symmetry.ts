@@ -108,7 +108,7 @@ export function symmetricEdit(edit: Edit, s: Symmetry): SymmetricResult {
   }
   const total = images.length + edit.changes.length;
   if (total > MAX_EDIT_CELLS) throw new DomainError('LIMIT', `Mit Symmetrie umfasst der Schritt ${total.toLocaleString('de-DE')} Zellen; höchstens ${MAX_EDIT_CELLS.toLocaleString('de-DE')}.`);
-  return { edit: { label: `${edit.label} · Symmetrie ×${group.length}`, changes: [...images, ...edit.changes] }, unresolved: [...unresolved].sort(), images: group.length };
+  return { edit: { label: `${edit.label} · Symmetrie ×${group.length}`, changes: [...images, ...edit.changes], ...(edit.entities && { entities: edit.entities }) }, unresolved: [...unresolved].sort(), images: group.length };
 }
 
 /** Axis through the middle of an extent (inclusive min/max): `centre2 = min + max`. */

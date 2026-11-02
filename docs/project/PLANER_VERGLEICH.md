@@ -30,7 +30,7 @@ Legende: ✅ vorhanden (gleichwertig oder besser) · ◐ teilweise · ✗ fehlt 
 | Idee | Vorbild | Stand bei uns | Bewertung |
 | --- | --- | --- | --- |
 | Setzen/Abbauen/Pipette/Füllen/Ersetzen mit Zustand | alle | ✅ inkl. Übernahme passender Eigenschaften | – |
-| Quader, Kugel, Zylinder, Linie, Bogen, Pyramide, Kegel | WorldEdit, Plotz, Axiom | ✅ ★ Bogen mit Rund-/Spitz-/Flachbogen und Lückenschluss | Torus/Ellipsoid fehlen (klein) |
+| Quader, Kugel, Zylinder, Linie, Bogen, Pyramide, Kegel | WorldEdit, Plotz, Axiom | ✅ ★ Bogen mit Rund-/Spitz-/Flachbogen und Lückenschluss; Ellipsoid, Torus und Wendel(treppe) mit EDIT-05 | – |
 | Muster (Mischung, Verlauf, Schachbrett, Streifen) | WorldEdit-Muster, Axiom-Painter | ✅ ★ reproduzierbar (fester Hash, gleiche Version) | – |
 | **Symmetrie beim Bauen** (Spiegelachsen, Drehsymmetrie) | Axiom Symmetry | ✗ | **hoch** – halbiert Arbeit an Burgen, Kirchen, Brunnen |
 | **Kurven/Pfade durch Punkte** (Spline mit Profil) | WorldEdit `//curve`, Axiom Path Tool | ✗ (nur gerade Linie/Mauerzug) | **hoch** – Stadtmauern, Wege, Flüsse, Brücken |
@@ -39,7 +39,10 @@ Legende: ✅ vorhanden (gleichwertig oder besser) · ◐ teilweise · ✗ fehlt 
 | **Farbverlauf zwischen zwei Blöcken, ähnliche Blöcke** | Blockpaletten, Axiom-Verlaufshelfer | ◐ Verlauf nur mit selbst gewählten Stufen | **mittel–hoch** – Stufen werden automatisch nach Farbe gewählt |
 | **Bild → Blöcke** (Wandbild, Bodenmosaik, Banner-Motiv) | Pixel-Art-Generatoren | ✗ | **mittel–hoch** – kreativ, eigenständig |
 | Formelformen | WorldEdit `//generate` | ✗ | niedrig (für Spielerinnen schwer zugänglich) |
-| Auswahl nach Ähnlichkeit/Lasso | Axiom | ◐ Quader-Auswahl, „Im Modell“ | mittel, später |
+| Auswahl nach Ähnlichkeit (Zauberauswahl) | Axiom Magic Select | ✅ EDIT-05: Zustand/Block/Material/ganzes Bauteil, Ebene, über Kanten, Shift/Alt; alle Auswahlknöpfe wirken nur auf die Zellen | Lasso (freihand) bewusst nicht: Zauberauswahl + Wachsen/Schrumpfen deckt die Fälle im Raster ab |
+| Stapeln / Array | WorldEdit `//stack`, Axiom | ✅ EDIT-05: Richtung, Anzahl, Abstand, mit Ausstattung | – |
+| Extrudieren einer Fläche | Axiom Shape/Extrude | ✅ EDIT-05: Herausziehen bis zum Hindernis, Einschieben in der Auswahl | – |
+| Auswahl wachsen/schrumpfen/an Inhalt anpassen | WorldEdit `//expand`, `//contract`, `//shift` | ✅ EDIT-05 | – |
 | Schablonen/Blueprint-Browser | Axiom Blueprints, Litematica | ✅ ★ versionierte Schablonen in der Bibliothek | – |
 
 ### Bibliothek, Katalog, Generatoren
@@ -96,6 +99,10 @@ Ausgewählt nach Nutzen für Philipps Bauweise (große Burg-/Stadtanlagen, Modpa
 6. **Bild → Blöcke** – Bilddatei als Wand- oder Bodenbild, Farbabgleich nur mit vollen Würfeln, wahlweise Fehlerverteilung (Dithering), Blockgruppen wählbar (Wolle, Beton, Terrakotta, alle).
 
 Technischer Vertrag: [CREATIVE_TOOLS](../architecture/CREATIVE_TOOLS.md).
+
+## 3a. Zweite Runde: EDIT-05 (Thread „Vorschläge aus der Planer-Analyse umsetzen“)
+
+Aus den verbliebenen Lücken der Werkstatt: Zauberauswahl mit Zellauswahl als eigener Auswahlart, Wachsen/Schrumpfen/Einpassen, Stapeln, Extrudieren, Ellipsoid, Torus, Wendel sowie der offene Punkt aus ENTITY-01 (Ausstattung zieht beim Verschieben/Drehen/Stapeln mit). Vertrag: [CREATIVE_TOOLS](../architecture/CREATIVE_TOOLS.md#auswahl--und-formwerkzeuge-edit-05). Weiter offen: Formelformen (niedrig), reale Orte (eigener Thread), Symmetrie/Kurven im Mod.
 
 ## 4. Vorschläge für eigene Threads
 

@@ -88,3 +88,7 @@ Prüfung: `node --test tests/editor-patterns.test.mjs` (Muster, Formen mit Handz
 ## Kreativwerkzeuge (EDIT-04)
 
 Stand 02.11.2026. Symmetrie beim Bauen, Kurven/Pfade, Natur- und Formwerkzeuge (Glätten, Abtragen, Aufbauen, Überziehen, Naturalisieren), Oberflächenmaske, Farbverläufe nach Blockfarbe und Bild → Blöcke. Vertrag und Prüfung: [CREATIVE_TOOLS](CREATIVE_TOOLS.md). Werkzeug „Kurve“ hat die Taste U; Enter setzt die Kurve, Rücktaste nimmt den letzten Punkt.
+
+## Auswahl- und Formwerkzeuge (EDIT-05)
+
+Stand 02.11.2026. Zauberstab (W, Zauberauswahl als Zellauswahl; Shift/Alt fügt hinzu/nimmt weg), Auswahl wachsen/schrumpfen/an Inhalt anpassen/nur Blöcke, Stapeln, Extrudieren (Herausziehen/Einschieben), Ellipsoid (J), Torus (T), Wendel (H); Gemälde, Rahmen und Rüstungsständer ziehen beim Verschieben, Drehen, Spiegeln, Stapeln und Ausschneiden mit. Vertrag und Prüfung: [CREATIVE_TOOLS](CREATIVE_TOOLS.md#auswahl--und-formwerkzeuge-edit-05).

@@ -30,7 +30,7 @@ export function clipboardFromPayload(payload: VoxelPayload): Clipboard {
 /** A new draft containing only the clipboard at the origin (to save it as a module/stencil). */
 export function draftFromClipboard(clip: Clipboard, profileId: string): Draft {
   const empty = createDraft(null, profileId);
-  return applyEdit(empty, pasteEdit(clip, [0, 0, 0])).draft;
+  return applyEdit(empty, pasteEdit(clip, [0, 0, 0], { entities: [] })).draft;
 }
 
 // ------------------------------------------------------------------ built-in stencils

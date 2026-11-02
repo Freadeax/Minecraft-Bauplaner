@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-02T19:16:30.126Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-02T19:23:55.694Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-02T19:16:30.126Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 15 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 37 |
+| 🧩 Implementiert · Abnahme offen | 38 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -35,6 +35,7 @@ Stand: 2026-11-02T19:16:30.126Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 - **MAP-04 · Weltbuilder vertiefen: Löschen und Entfernen für alle Objekte der Weltkarte, Mehrfachauswahl, Kontextmenü, gemeinsames Rückgängig, Duplizieren/Drehen/Spiegeln, Wegecken, Ebenen, Objektliste** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06); denkbare Folge: benannte Gruppen/Sperren mit Schemaerweiterung, abgestimmt mit der Mod.
 - **PERF-04 · Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); GPU-Upload großer Szenen bleibt im Hauptthread.
 - **LIB-05 · Bibliothek im Stil der Vorlagen: Gestaltungsregeln, Baukasten, neu gezeichnete Gebäude und Generatoren** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: LIB-05-S07: Untergrund innen, Interieur, Technik; Abnahme neuer Gebäude im Spiel durch Philipp.
+- **EDIT-05 · Auswahl- und Formwerkzeuge aus Editor-Mods: Zauberauswahl, Auswahl wachsen/schrumpfen/einpassen, Stapeln, Extrudieren, Ellipsoid/Torus/Spirale, Entities ziehen mit** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: EDIT-05-S07: Abnahme durch Philipp in der Werkstatt (Zauberstab, Stapeln, Extrudieren, Wendel) und Spielprüfung gestapelter/gedrehter Bauteile mit Ausstattung.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -136,6 +137,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [EDIT-02](#edit-02) | Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen | 🧩 Implementiert · Abnahme offen | 5/5 | VIEW-01, STORE-02 | ausstehend | ausstehend |
 | [EDIT-03](#edit-03) | Werkstatt vertiefen: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Ebenenübersicht und Tastenkürzel | 🧩 Implementiert · Abnahme offen | 5/5 | EDIT-02 | ausstehend | ausstehend |
 | [EDIT-04](#edit-04) | Kreativwerkzeuge aus dem Planer-Vergleich: Symmetrie, Kurven, Naturwerkzeuge, Oberflächenmaske, Farbpaletten, Bild → Blöcke | 🧩 Implementiert · Abnahme offen | 6/7 | EDIT-03 | ausstehend | ausstehend |
+| [EDIT-05](#edit-05) | Auswahl- und Formwerkzeuge aus Editor-Mods: Zauberauswahl, Auswahl wachsen/schrumpfen/einpassen, Stapeln, Extrudieren, Ellipsoid/Torus/Spirale, Entities ziehen mit | 🧩 Implementiert · Abnahme offen | 6/7 | EDIT-04, ENTITY-01 | ausstehend | ausstehend |
 | [UPDATE-01](#update-01) | Kontrollierte Versionsupdates mit lokalen Overrides | 🧩 Implementiert · Abnahme offen | 2/2 | DIFF-01, STORE-02 | ausstehend | ausstehend |
 | [LIB-02](#lib-02) | Eigene Sammlungen, Ordner und Kategorien | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-02, LIB-01 | ausstehend | ausstehend |
 | [LIB-03](#lib-03) | Eigene Ensembles und Generatorvorlagen speichern | 🧩 Implementiert · Abnahme offen | 2/2 | LIB-02, GEN-01 | ausstehend | ausstehend |
@@ -1087,6 +1089,30 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/editor-creative.test.mjs](../tests/editor-creative.test.mjs) — Symmetrie, Kurven, Natur, Maske, Farben, Bild mit Handzählung.; [tests/e2e/workshop-creative.e2e.mjs](../tests/e2e/workshop-creative.e2e.mjs) — Chromium 1400/390 px: Symmetrie, Kurve, Abtragen, Naturalisieren, Farbverlauf, Oberfläche, PNG → Wollbild.; [docs/architecture/CREATIVE_TOOLS.md](architecture/CREATIVE_TOOLS.md) — Vertrag und Grenzen EDIT-04.
 
 **Dateiumfang:** `packages/domain/src/editor/symmetry.ts`, `packages/domain/src/editor/curves.ts`, `packages/domain/src/editor/sculpt.ts`, `packages/domain/src/editor/colorMatch.ts`, `apps/web/src/editor/`, `tests/editor-creative.test.mjs`, `tests/e2e/workshop-creative.e2e.mjs`, `docs/architecture/CREATIVE_TOOLS.md`, `docs/project/PLANER_VERGLEICH.md`. **Abhängigkeiten:** EDIT-03. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### EDIT-05
+
+**Auswahl- und Formwerkzeuge aus Editor-Mods: Zauberauswahl, Auswahl wachsen/schrumpfen/einpassen, Stapeln, Extrudieren, Ellipsoid/Torus/Spirale, Entities ziehen mit** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Vorschläge aus der Planer-Analyse umsetzen“ · Aktualisiert: 2026-11-02T19:23:55.694Z
+
+- [x] EDIT-05-S01: Zauberauswahl (zusammenhängend: gleicher Zustand, gleicher Block, Blockfamilie, alles Feste; Ebene oder 3D) als Zellauswahl; wachsen, schrumpfen, an Inhalt anpassen.
+- [x] EDIT-05-S02: Auswahloperationen auf Zellauswahlen: füllen/Muster, leeren, kopieren, verschieben, drehen, spiegeln, ersetzen.
+- [x] EDIT-05-S03: Stapeln (Wiederholen in eine Richtung mit Abstand) und Extrudieren/Einschieben der Sichtfläche einer Richtung.
+- [x] EDIT-05-S04: Neue Formen: Ellipsoid im aufgezogenen Quader, Torus (liegend/stehend), Spirale/Wendel.
+- [x] EDIT-05-S05: Gemälde, Rahmen und Rüstungsständer ziehen beim Verschieben, Drehen, Spiegeln, Stapeln und Ausschneiden der Auswahl mit.
+- [x] EDIT-05-S06: Werkstatt-Oberfläche, Tastenkürzel, Unit- und Browserprüfung (auch 390 px), Doku.
+- [ ] EDIT-05-S07: Abnahme durch Philipp und Spielprüfung gestapelter/gedrehter Bauteile.
+
+**Abnahme:** Jede Operation ist ein Rückgängig-Schritt und deterministisch. Keine zweite Koordinaten- oder Drehregel: Drehen/Spiegeln über transformBlockState und transformEntity. Zellauswahlen begrenzen jede Operation exakt auf ihre Zellen; Nachbarn bleiben unverändert. Grenzen MAX_EDIT_CELLS gelten auch für Zauberauswahl und Stapeln.
+
+**Nächste Aktion:** EDIT-05-S07: Abnahme durch Philipp in der Werkstatt (Zauberstab, Stapeln, Extrudieren, Wendel) und Spielprüfung gestapelter/gedrehter Bauteile mit Ausstattung.
+
+**Prüfstand:** Unit- und Chromium-Prüfung bestanden; Abnahme durch Philipp, Spielprüfung, Firefox/Safari und Geräte offen.
+
+**Nachweise:** [tests/editor-region.test.mjs](../tests/editor-region.test.mjs) — Zauberauswahl, Zellauswahl-Operationen, Ausstattung zieht mit, Stapeln, Extrudieren, Ellipsoid/Torus/Wendel.; [tests/e2e/workshop-region.e2e.mjs](../tests/e2e/workshop-region.e2e.mjs) — Chromium 1400/390 px: Zauberstab mit Shift/Alt, Stapeln, Extrudieren, Leeren der Zellauswahl, Verschieben, Ellipsoid, Torus, Wendel.; [docs/architecture/CREATIVE_TOOLS.md](architecture/CREATIVE_TOOLS.md) — Vertrag EDIT-05.
+
+**Dateiumfang:** `packages/domain/src/editor/region.ts`, `packages/domain/src/editor/forms.ts`, `packages/domain/src/editor/tools.ts`, `apps/web/src/editor/`, `tests/editor-region.test.mjs`, `tests/e2e/workshop-region.e2e.mjs`, `docs/architecture/CREATIVE_TOOLS.md`, `docs/project/PLANER_VERGLEICH.md`, `packages/domain/src/editor/stencils.ts`, `packages/domain/src/editor/symmetry.ts`, `packages/domain/src/editor/index.ts`, `docs/architecture/BLOCK_EDITOR.md`, `docs/architecture/ENTITIES.md`. **Abhängigkeiten:** EDIT-04, ENTITY-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

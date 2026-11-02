@@ -2,7 +2,7 @@ export { AIR_VALUE, ERASE_VALUE, MAX_EDIT_CELLS, MAX_DRAFT_CELLS, EMPTY_DRAFT_HI
   applyEdit, executeEdit, undoEdit, redoEdit, draftEntries, summarizeDraft, materializeDraft } from './draft.js';
 export type { CellValue, CellSlot, CellChange, Edit, Draft, DraftHistory, DraftSummary } from './draft.js';
 export { BOX_SHAPE_LABEL, boxBounds, boxSize, boxVolume, inBox, setCells, boxEdit, sphereEdit, cylinderEdit, lineEdit, carryProperties, replaceEdit, countMatches, floodEdit,
-  rotateCellEdit, copyBox, transformClipboard, pasteEdit, moveBoxEdit, draftBounds } from './tools.js';
+  rotateCellEdit, copyBox, entitiesRelative, transformClipboard, pasteEdit, moveBoxEdit, draftBounds } from './tools.js';
 export type { Box, Corner, BoxShape, PropertySchema, SchemaLookup, ReplaceQuery, ClipCell, Clipboard, ClipTransformResult } from './tools.js';
 export { EDITOR_PROVENANCE, commitDraftAsVersion, commitDraftAsNewAsset, inverseRotation, localCell, planProjectEdit, commitProjectEdit } from './commit.js';
 export type { CommitWarning, VersionCommit, ProjectEditTarget, InstanceEditPlan, ProjectEditPlan, ProjectCommit } from './commit.js';
@@ -23,3 +23,8 @@ export { NATURAL_GROUND, SURFACE_FACES_LABEL, erodeEdit, dilateEdit, smoothEdit,
 export type { ErodeOptions, DilateOptions, SmoothOptions, OverlayOptions, NaturalizeOptions, SurfaceFaces } from './sculpt.js';
 export { IMAGE_ORIENTATION_LABEL, MAX_IMAGE_SIDE, hexToRgb, rgbToHex, rgbToLab, deltaE, similarBlocks, colorGradient, imageToBlocks, valueOf as colorCandidateValue } from './colorMatch.js';
 export type { Rgb, Lab, ColorCandidate, Face, PixelImage, ImageOrientation, ImageOptions } from './colorMatch.js';
+export { MAGIC_MODE_LABEL, FACE_DIRECTION_LABEL, FACE_DIRECTION_VECTOR, blockFamily, magicSelect, sortKeys, regionBounds, boxRegion, growRegion, shrinkRegion, fitBox, resizeBox, clipEdit,
+  copyRegion, clearRegionEdit, clearBoxEdit, fillRegionEdit, moveRegionEdit, stackEdit, extrudeEdit } from './region.js';
+export type { Region, MagicMode, MagicOptions, StackOptions, FaceDirection } from './region.js';
+export { TORUS_AXIS_LABEL, ellipsoidEdit, torusEdit, helixEdit } from './forms.js';
+export type { TorusAxis, HelixOptions } from './forms.js';

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T19:16:30.126Z",
+  "updatedAt": "2026-11-02T19:23:55.694Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -16,7 +16,8 @@
     "ENTITY-01",
     "MAP-04",
     "PERF-04",
-    "LIB-05"
+    "LIB-05",
+    "EDIT-05"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -2868,6 +2869,102 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-02T10:07:03.926Z"
+    },
+    {
+      "id": "EDIT-05",
+      "title": "Auswahl- und Formwerkzeuge aus Editor-Mods: Zauberauswahl, Auswahl wachsen/schrumpfen/einpassen, Stapeln, Extrudieren, Ellipsoid/Torus/Spirale, Entities ziehen mit",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude-Thread „Vorschläge aus der Planer-Analyse umsetzen“",
+      "dependencies": [
+        "EDIT-04",
+        "ENTITY-01"
+      ],
+      "scope": [
+        "packages/domain/src/editor/region.ts",
+        "packages/domain/src/editor/forms.ts",
+        "packages/domain/src/editor/tools.ts",
+        "apps/web/src/editor/",
+        "tests/editor-region.test.mjs",
+        "tests/e2e/workshop-region.e2e.mjs",
+        "docs/architecture/CREATIVE_TOOLS.md",
+        "docs/project/PLANER_VERGLEICH.md",
+        "packages/domain/src/editor/stencils.ts",
+        "packages/domain/src/editor/symmetry.ts",
+        "packages/domain/src/editor/index.ts",
+        "docs/architecture/BLOCK_EDITOR.md",
+        "docs/architecture/ENTITIES.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "EDIT-05-S01",
+          "title": "Zauberauswahl (zusammenhängend: gleicher Zustand, gleicher Block, Blockfamilie, alles Feste; Ebene oder 3D) als Zellauswahl; wachsen, schrumpfen, an Inhalt anpassen.",
+          "done": true
+        },
+        {
+          "id": "EDIT-05-S02",
+          "title": "Auswahloperationen auf Zellauswahlen: füllen/Muster, leeren, kopieren, verschieben, drehen, spiegeln, ersetzen.",
+          "done": true
+        },
+        {
+          "id": "EDIT-05-S03",
+          "title": "Stapeln (Wiederholen in eine Richtung mit Abstand) und Extrudieren/Einschieben der Sichtfläche einer Richtung.",
+          "done": true
+        },
+        {
+          "id": "EDIT-05-S04",
+          "title": "Neue Formen: Ellipsoid im aufgezogenen Quader, Torus (liegend/stehend), Spirale/Wendel.",
+          "done": true
+        },
+        {
+          "id": "EDIT-05-S05",
+          "title": "Gemälde, Rahmen und Rüstungsständer ziehen beim Verschieben, Drehen, Spiegeln, Stapeln und Ausschneiden der Auswahl mit.",
+          "done": true
+        },
+        {
+          "id": "EDIT-05-S06",
+          "title": "Werkstatt-Oberfläche, Tastenkürzel, Unit- und Browserprüfung (auch 390 px), Doku.",
+          "done": true
+        },
+        {
+          "id": "EDIT-05-S07",
+          "title": "Abnahme durch Philipp und Spielprüfung gestapelter/gedrehter Bauteile.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Jede Operation ist ein Rückgängig-Schritt und deterministisch.",
+        "Keine zweite Koordinaten- oder Drehregel: Drehen/Spiegeln über transformBlockState und transformEntity.",
+        "Zellauswahlen begrenzen jede Operation exakt auf ihre Zellen; Nachbarn bleiben unverändert.",
+        "Grenzen MAX_EDIT_CELLS gelten auch für Zauberauswahl und Stapeln."
+      ],
+      "next": "EDIT-05-S07: Abnahme durch Philipp in der Werkstatt (Zauberstab, Stapeln, Extrudieren, Wendel) und Spielprüfung gestapelter/gedrehter Bauteile mit Ausstattung.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/editor-region.test.mjs",
+          "note": "Zauberauswahl, Zellauswahl-Operationen, Ausstattung zieht mit, Stapeln, Extrudieren, Ellipsoid/Torus/Wendel."
+        },
+        {
+          "path": "tests/e2e/workshop-region.e2e.mjs",
+          "note": "Chromium 1400/390 px: Zauberstab mit Shift/Alt, Stapeln, Extrudieren, Leeren der Zellauswahl, Verschieben, Ellipsoid, Torus, Wendel."
+        },
+        {
+          "path": "docs/architecture/CREATIVE_TOOLS.md",
+          "note": "Vertrag EDIT-05."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Unit- und Chromium-Prüfung bestanden; Abnahme durch Philipp, Spielprüfung, Firefox/Safari und Geräte offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-02T19:23:55.694Z"
     },
     {
       "id": "UPDATE-01",
@@ -9021,6 +9118,44 @@
           "done": 8,
           "total": 10,
           "next": "Philipp testet 0.7.0 auf server.lmnt-gaming.net (Bauabschnitte aus seinem Projekt, Röntgensicht mit Shader); danach Stufe 6."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T19:23:55.694Z",
+      "kind": "progress",
+      "items": [
+        "EDIT-05"
+      ],
+      "summary": "Auswahl- und Formwerkzeuge: Zauberauswahl als Zellauswahl, wachsen/schrumpfen/einpassen, Stapeln, Extrudieren, Ellipsoid/Torus/Wendel, Ausstattung zieht beim Verschieben/Drehen/Stapeln mit",
+      "files": [
+        "apps/web/src/editor/BlockEditor.tsx",
+        "apps/web/src/editor/LayerGrid.tsx",
+        "apps/web/src/editor/RegionPanel.tsx",
+        "apps/web/src/editor/editor.css",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/BLOCK_EDITOR.md",
+        "docs/architecture/CREATIVE_TOOLS.md",
+        "docs/architecture/ENTITIES.md",
+        "docs/project/PLANER_VERGLEICH.md",
+        "packages/domain/src/editor/forms.ts",
+        "packages/domain/src/editor/index.ts",
+        "packages/domain/src/editor/region.ts",
+        "packages/domain/src/editor/stencils.ts",
+        "packages/domain/src/editor/symmetry.ts",
+        "packages/domain/src/editor/tools.ts",
+        "tests/e2e/workshop-region.e2e.mjs",
+        "tests/editor-region.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "EDIT-05",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "EDIT-05-S07: Abnahme durch Philipp in der Werkstatt (Zauberstab, Stapeln, Extrudieren, Wendel) und Spielprüfung gestapelter/gedrehter Bauteile mit Ausstattung."
         }
       ]
     }
