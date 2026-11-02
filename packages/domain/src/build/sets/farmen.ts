@@ -132,14 +132,15 @@ function eisenfarm() {
   p.ring(1, 1, 7, 7, 1, 'glass'); p.ring(1, 1, 7, 7, 2, 'glass');
   p.fill(2, 1, 2, 6, 1, 6, 'water', water()); p.set(4, 1, 4, 'water', water());
   p.fill(2, 3, 2, 6, 3, 6, 'stone_bricks'); p.fill(3, 3, 3, 5, 3, 5, null);
-  p.set(4, 3, 4, 'lava', lava()); p.set(4, 2, 4, 'oak_sign', { rotation: '0', waterlogged: F });
+  // Das Schild steht auf einem Trichter (oben volle Fläche) und hält die Lava; der Trichter sammelt mit.
+  p.set(4, 1, 4, 'hopper', hopper('down')); p.set(4, 3, 4, 'lava', lava()); p.set(4, 2, 4, 'oak_sign', { rotation: '0', waterlogged: F });
   // Dorfbewohner-Kammer
   p.fill(0, 4, 0, 8, 4, 8, 'stone_bricks');
   p.ring(0, 0, 8, 8, 5, 'glass'); p.ring(0, 0, 8, 8, 6, 'glass');
   for (const x of [2, 4, 6]) { p.set(x, 5, 1, 'white_bed', { facing: 'north', occupied: F, part: 'head' }); p.set(x, 5, 2, 'white_bed', { facing: 'north', occupied: F, part: 'foot' }); p.set(x, 5, 3, 'composter'); }
   p.fill(0, 7, 0, 8, 7, 8, 'stone_brick_slab', slab());
   p.ring(3, 6, 5, 8, 5, 'glass'); p.set(4, 5, 7, 'green_wool');
-  p.set(4, 8, 4, 'lantern', lantern());
+  p.set(4, 7, 4, 'stone_bricks'); p.set(4, 8, 4, 'lantern', lantern());
   return p.payload();
 }
 

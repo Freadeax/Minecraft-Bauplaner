@@ -2348,3 +2348,59 @@ Mod 0.6.0: NeoForge auf Fabric-Stand (gemeinsamer Client-Kern hologram-26.3 inkl
 - `scripts/test_bridge_ingame.sh`
 - `tests/e2e/mod-download.e2e.mjs`
 
+## 2026-11-02T12:25:42.264Z · progress
+
+**Aufgaben:** BLOCK-02, BLOCK-01
+
+Katalog und Generatoren spielgerecht: gemeinsame Bauregel gameReady (Laternen an iron_chain bis zur Decke, Verbindungen wie im Spiel), chain→iron_chain, alle 336 Gebäude und 466 Generator-Fälle ohne Halt-, Verbindungs- und ID-Fehler (vorher 208 bzw. 140 Blöcke ohne Halt, 1.239 Verbindungsabweichungen, 152 unbekannte Ketten); 178 Gebäude als neue Katalogversion, Generatoren Kirche/Hafen/Torhaus/Windmühle/Brücke/Treppenhaus/Brunnen v2; neuer Dauertest tests/catalog-game.test.mjs; npm run check und 108/108 Browsertests grün. Offen: Abnahme im Spiel.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| BLOCK-02 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme im Spiel (S06): geänderte Gebäude (z. B. Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen. |
+| BLOCK-01 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme im Spiel; PROFILE-01 kann die Berichtsfakten übernehmen. Die Katalogfehler aus der Spielprüfung behebt BLOCK-02. |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/BLOCK_LOGIC.md`
+- `packages/domain/src/build/furnish.ts`
+- `packages/domain/src/build/gameReady.ts`
+- `packages/domain/src/build/plot.ts`
+- `packages/domain/src/build/sets/befestigung.ts`
+- `packages/domain/src/build/sets/deko.ts`
+- `packages/domain/src/build/sets/dimensionen.ts`
+- `packages/domain/src/build/sets/dorf.ts`
+- `packages/domain/src/build/sets/epochen.ts`
+- `packages/domain/src/build/sets/fahrzeuge.ts`
+- `packages/domain/src/build/sets/fantasy.ts`
+- `packages/domain/src/build/sets/farmen.ts`
+- `packages/domain/src/build/sets/garten.ts`
+- `packages/domain/src/build/sets/hof.ts`
+- `packages/domain/src/build/sets/infrastruktur.ts`
+- `packages/domain/src/build/sets/interieur.ts`
+- `packages/domain/src/build/sets/kueste.ts`
+- `packages/domain/src/build/sets/landschaft.ts`
+- `packages/domain/src/build/sets/natur.ts`
+- `packages/domain/src/build/sets/redstone.ts`
+- `packages/domain/src/build/sets/stadt.ts`
+- `packages/domain/src/build/sets/untergrund.ts`
+- `packages/domain/src/build/sets/wohnen.ts`
+- `packages/domain/src/buildings.ts`
+- `packages/domain/src/generators/bridge.ts`
+- `packages/domain/src/generators/church.ts`
+- `packages/domain/src/generators/compound.ts`
+- `packages/domain/src/generators/gatehouse.ts`
+- `packages/domain/src/generators/harbor.ts`
+- `packages/domain/src/generators/stairwell.ts`
+- `packages/domain/src/generators/well.ts`
+- `packages/domain/src/generators/windmill.ts`
+- `packages/domain/src/guide.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/materials.ts`
+- `packages/domain/src/placement.ts`
+- `packages/voxel/src/blocklogic/support.ts`
+- `tests/catalog-game.test.mjs`
+- `tests/catalog.test.mjs`
+- `tests/generators.test.mjs`
+

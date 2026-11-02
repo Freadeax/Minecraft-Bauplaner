@@ -82,6 +82,7 @@ function blumenwiese() {
   lawn(p, 0, 0, 11, 9);
   const flowers = ['poppy', 'dandelion', 'cornflower', 'oxeye_daisy', 'allium', 'azure_bluet', 'red_tulip', 'orange_tulip', 'lily_of_the_valley', 'short_grass', 'short_grass', 'short_grass'];
   for (let x = 0; x < 12; x++) for (let z = 0; z < 10; z++) {
+    if (x === 5 && z === 4) continue; // Bienenstock
     const n = noise(x, 0, z);
     if (n > 0.9) tallPlant(p, x, 1, z, n > 0.95 ? 'rose_bush' : 'lilac');
     else if (n > 0.25) p.set(x, 1, z, flowers[Math.floor(n * 100) % flowers.length]!);
@@ -111,7 +112,7 @@ function pavillon() {
   for (const [x, z] of [[1, 1], [7, 1], [1, 7], [7, 7], [4, 0], [4, 8], [0, 4], [8, 4]] as const) if (Math.abs(x - 4) + Math.abs(z - 4) > 3) p.fill(x, 1, z, x, 3, z, 'birch_fence');
   p.disc(4, 4, 4, 4, 'birch_slab', slab('top'));
   p.disc(4, 4, 5, 3, 'dark_oak_slab', slab()); p.disc(4, 4, 6, 1, 'dark_oak_slab', slab()); p.set(4, 6, 4, 'dark_oak_planks'); p.set(4, 7, 4, 'lightning_rod', { facing: 'up', powered: F, waterlogged: F });
-  p.set(4, 3, 4, 'lantern', lantern(true));
+  p.set(4, 4, 4, 'birch_planks'); p.set(4, 3, 4, 'lantern', lantern(true));
   for (const [x, z, f] of [[3, 2, 'south'], [5, 2, 'south'], [3, 6, 'north'], [5, 6, 'north']] as const) p.set(x, 1, z, 'birch_stairs', stairs(f));
   return p.payload();
 }

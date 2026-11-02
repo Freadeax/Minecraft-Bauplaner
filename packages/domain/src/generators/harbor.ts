@@ -13,7 +13,7 @@ import type { Generator } from './types.js';
  * connector (weg_4 = the shipped path kit).
  */
 export const HARBOR_GENERATOR: Generator = {
-  id: 'hafen', name: 'Hafen', version: 1,
+  id: 'hafen', name: 'Hafen', version: 2,
   description: 'Kaimauer mit Holzstegen auf Pfählen, Pollern, Treppen, Kran, Lagerschuppen, Laternen und Leuchtfeuer; Landseite als Weg-Anschluss.',
   params: [
     { key: 'laenge', label: 'Kailänge (x)', group: 'Maße', type: 'int', min: 10, max: 48, default: 24, unit: 'Blöcke' },
@@ -85,7 +85,7 @@ export const HARBOR_GENERATOR: Generator = {
         for (let z = zq - 3; z <= Math.min(ze, kz + 1); z++) if (z !== kz) m.beam(kx, top, z, 'z');
         p.set(kx, top + 1, kz, s.trim.slab, { type: 'bottom', waterlogged: 'false' });
         if (kz + 1 <= ze) p.set(kx, top - 1, kz + 1, 'barrel', barrel('up'));
-        for (let y = top - 1; y >= quayY + 3; y--) p.set(kx, y, zq - 3, 'chain', chain('y'));
+        for (let y = top - 1; y >= quayY + 3; y--) p.set(kx, y, zq - 3, 'iron_chain', chain('y'));
         p.set(kx, quayY + 2, zq - 3, 'hay_block', { axis: 'y' });
         for (let z = zq; z <= Math.min(ze, kz + 1); z++) take(kx, z);
         notes.push('Kran am Ostende: Last hängt über dem Wasser.');
@@ -105,7 +105,8 @@ export const HARBOR_GENERATOR: Generator = {
         door(p, cx, quayY + 1, sz0, s.wood, 'south');
         for (let x = sx0 + 1; x < sx1; x++) if (x !== cx) p.set(x, quayY + 1, sz1 - 1, x % 2 ? 'barrel' : 'chest', x % 2 ? barrel('up') : chest('north'));
         if (sz1 - sz0 >= 4) p.set(sx0 + 1, quayY + 1, sz0 + 1, 'barrel', barrel('up'));
-        p.set(cx, quayY + wh, sz0 + Math.floor((sz1 - sz0) / 2), s.light, lantern(true));
+        // A top slab has no full underside: the lantern hangs from a chain link (BLOCK-02).
+        p.set(cx, quayY + wh, sz0 + Math.floor((sz1 - sz0) / 2), 'iron_chain', chain('y')); p.set(cx, quayY + wh - 1, sz0 + Math.floor((sz1 - sz0) / 2), s.light, lantern(true));
         for (const x of [sx0 + 2, sx1 - 2]) if (x !== cx) p.set(x, quayY + 3, sz0, s.window);
         for (let x = sx0; x <= sx1; x++) take(x, sz0 - 1);
         buildRoof(p, { x0: sx0, x1: sx1, z0: sz0, z1: sz1, y: quayY + wh + 1, form: s.flat ? 'flach' : 'sattel', pitch: 'flach', ridge: 'x', style: s,

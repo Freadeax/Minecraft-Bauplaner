@@ -10,6 +10,8 @@ import type { StateLookup } from './connect.js';
  * below (cactus, sugar cane, chorus) are game rules that look at more than one block.
  */
 
+/** Members of #minecraft:jungle_logs in 26.3 (cocoa holds only there). */
+const JUNGLE_LOGS: ReadonlySet<string> = new Set(['minecraft:jungle_log', 'minecraft:jungle_wood', 'minecraft:stripped_jungle_log', 'minecraft:stripped_jungle_wood']);
 const isAir = (s: BlockState | undefined): boolean => !s || /^minecraft:(air|cave_air|void_air)$/.test(namespacedId(s.id));
 const id = (s: BlockState): string => namespacedId(s.id);
 
@@ -49,6 +51,7 @@ export function supportNeed(state: BlockState): SupportNeed {
   const f = stateFacts(state);
   if (!f) return { kind: 'unknown' };
   if (f.survivesAlone) return { kind: 'none' };
+  if (id(state) === 'minecraft:cocoa' && HORIZONTAL.includes(state.properties.facing as Dir)) return { kind: 'face', dirs: [state.properties.facing as Dir] };
   if (f.supportDirs.length) return { kind: 'face', dirs: f.supportDirs };
   if (f.grounds) return { kind: 'ground', rule: f.grounds, water: false };
   if (f.groundsWithWater) return { kind: 'ground', rule: f.groundsWithWater, water: true };
@@ -120,6 +123,14 @@ function specialSurvive(state: BlockState, f: StateFacts, position: Vec3, lookup
       else if (d !== 'up' && above && id(above) === i && above.properties[d] === 'true') heldBy.push('up');
     }
     return { survives: heldBy.length > 0, heldBy: [...new Set(heldBy)], assumed: false };
+  }
+  if (i === 'minecraft:cocoa') {
+    // CocoaBlock.canSurvive: the block in `facing` is in #jungle_logs. The probe tested support with stone only,
+    // so the facts know no support for cocoa; the tag members are fixed in 26.3 (BLOCK-02).
+    const d = state.properties.facing as Dir | undefined;
+    const n = d && HORIZONTAL.includes(d) ? lookup(step(position, d)) : undefined;
+    const ok = !!n && JUNGLE_LOGS.has(id(n));
+    return { survives: ok, heldBy: ok ? [d!] : [], assumed: false };
   }
   if (i === 'minecraft:scaffolding') {
     // ScaffoldingBlock.getDistance: 0 on a sturdy top, the value of scaffolding below, else nearest side + 1; breaks at 7.

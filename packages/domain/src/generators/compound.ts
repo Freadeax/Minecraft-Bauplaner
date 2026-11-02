@@ -162,7 +162,7 @@ function footprint(g: Generator, raw: Readonly<Record<string, unknown>>): readon
 }
 
 export const VILLAGE_COMPOUND: Compound = {
-  id: 'dorfplatz', name: 'Dorfplatz', version: 1,
+  id: 'dorfplatz', name: 'Dorfplatz', version: 2,
   description: 'Dorfmitte als fertiges Projekt: Kirche an der Nordseite mit Portal zum Platz, Brunnen in der Mitte, Häuserzeile gegenüber und Windmühle am Rand.',
   params: [
     { key: 'platzBreite', label: 'Platzbreite (x)', group: 'Maße', type: 'int', min: 12, max: 40, default: 20, unit: 'Blöcke' },

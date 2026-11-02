@@ -124,7 +124,7 @@ function bastionTurm() {
   // inside: storage and a soul campfire on the ground floor
   p.set(2, 1, 6, 'chest', chest('east')); p.set(6, 1, 6, 'barrel', barrel('up')); p.set(6, 1, 3, 'soul_campfire', { facing: 'west', lit: T, signal_fire: F, waterlogged: F });
   p.set(2, 6, 3, 'chest', chest('east')); p.set(6, 6, 6, 'smithing_table');
-  for (const y of [8, 12]) { p.set(3, y, 4, 'chain', { axis: 'y', waterlogged: F }); p.set(3, y - 1, 4, 'soul_lantern', lantern(true)); }
+  for (const y of [8, 12]) { p.set(3, y, 4, 'iron_chain', { axis: 'y', waterlogged: F }); p.set(3, y - 1, 4, 'soul_lantern', lantern(true)); }
   return p.payload();
 }
 

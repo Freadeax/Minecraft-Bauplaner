@@ -9,7 +9,7 @@ import type { Generator } from './types.js';
  * lamps at the corners. Water source blocks are part of the plan.
  */
 export const WELL_GENERATOR: Generator = {
-  id: 'brunnen', name: 'Brunnen', version: 1,
+  id: 'brunnen', name: 'Brunnen', version: 2,
   description: 'Ziehbrunnen mit Dach und Kette oder runder Springbrunnen mit bis zu drei Schalen, auf Wunsch mit gepflastertem Platz und Laternen.',
   params: [
     { key: 'form', label: 'Bauart', group: 'Maße', type: 'choice', default: 'springbrunnen', options: [{ value: 'ziehbrunnen', label: 'Ziehbrunnen' }, { value: 'springbrunnen', label: 'Springbrunnen' }] },
@@ -46,7 +46,7 @@ export const WELL_GENERATOR: Generator = {
       if (a.bool('dach')) {
         for (const x of [c - R, c + R]) for (let y = 2; y <= 4; y++) m.put(x, y, c, s.beam);
         for (let x = c - R; x <= c + R; x++) m.beam(x, 5, c, 'x');
-        for (let y = 3; y <= 4; y++) p.set(c, y, c, 'chain', chain('y'));
+        for (let y = 3; y <= 4; y++) p.set(c, y, c, 'iron_chain', chain('y'));
         buildRoof(p, { x0: c - R - 1, x1: c + R + 1, z0: c - R - 1, z1: c + R + 1, y: 6, form: 'sattel', pitch: 'steil', ridge: 'x', style: s });
       } else notes.push('Ohne Dach: Brunnenrand mit Mauerkrone.');
     } else {

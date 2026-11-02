@@ -91,13 +91,13 @@ function esszimmer() {
 function badezimmer() {
   const p = new Plot([7, 6, 6]);
   roomShell(p, 7, 6, 4, 'smooth_quartz', 'white_concrete', ['south', 'east'], null);
-  p.fill(1, 1, 1, 2, 1, 1, 'water_cauldron', water3); p.fill(1, 1, 2, 2, 1, 2, 'quartz_slab', slab('bottom'));
-  p.set(1, 2, 0, 'tripwire_hook', { attached: F, facing: 'south', powered: F });
-  p.set(4, 1, 1, 'cauldron'); p.set(4, 2, 0, 'tripwire_hook', { attached: F, facing: 'south', powered: F });
+  p.fill(1, 1, 1, 2, 1, 1, 'water_cauldron', water3); p.fill(1, 1, 2, 2, 1, 2, 'quartz_slab', slab('top'));
+  p.set(1, 2, 1, 'tripwire_hook', { attached: F, facing: 'south', powered: F });
+  p.set(4, 1, 1, 'cauldron'); p.set(4, 2, 1, 'tripwire_hook', { attached: F, facing: 'south', powered: F });
   p.set(4, 3, 0, 'glass'); p.set(3, 3, 0, 'glass'); p.set(5, 3, 0, 'glass');
   p.set(5, 1, 3, 'quartz_stairs', stairs('east')); p.set(5, 1, 2, 'birch_trapdoor', trapdoor('south', 'bottom', true));
   p.set(5, 1, 1, 'potted_bamboo'); rug(p, 2, 3, 3, 4, 1, 'light_blue');
-  p.set(1, 3, 1, 'white_candle', candle(2, true));
+  p.set(2, 2, 2, 'white_candle', candle(2, true));
   p.set(3, 4, 2, 'sea_lantern');
   return p.payload();
 }
@@ -112,10 +112,10 @@ function thronsaal() {
   p.fill(4, 3, 1, 6, 3, 1, 'gold_block'); p.set(5, 4, 1, 'gold_block'); p.set(5, 5, 1, 'player_head', head(0));
   for (const x of [3, 7]) p.set(x, 2, 1, 'lantern', lantern());
   for (const z of [5, 9, 13]) { p.set(1, 4, z, 'red_wall_banner', wallBanner('east')); }
-  for (const x of [3, 7]) p.set(x, 5, 0, 'yellow_wall_banner', wallBanner('south'));
-  for (const z of [5, 9]) { for (let i = 0; i < 2; i++) p.set(5, 7 - i, z, 'chain', { axis: 'y', waterlogged: F }); p.set(5, 5, z, 'lantern', lantern(true));
+  for (const x of [3, 7]) p.set(x, 5, 1, 'yellow_wall_banner', wallBanner('south'));
+  for (const z of [5, 9]) { for (let i = 0; i < 2; i++) p.set(5, 7 - i, z, 'iron_chain', { axis: 'y', waterlogged: F }); p.set(5, 5, z, 'lantern', lantern(true));
     for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) p.set(5 + dx, 5, z + dz, 'dark_oak_trapdoor', trapdoor(dx > 0 ? 'east' : dx < 0 ? 'west' : dz > 0 ? 'south' : 'north', 'top', true)); }
-  p.set(5, 7, 0, 'bell', bell('south', 'single_wall'));
+  p.set(5, 7, 1, 'bell', bell('north', 'single_wall'));
   return p.payload();
 }
 
@@ -188,7 +188,7 @@ function moderneKueche() {
   const p = new Plot([9, 6, 7]);
   roomShell(p, 9, 7, 4, 'polished_diorite', 'white_concrete', ['south', 'east'], null);
   for (let x = 1; x <= 7; x++) p.set(x, 1, 1, 'white_concrete');
-  p.set(3, 1, 1, 'smoker', furnace('south')); p.set(5, 1, 1, 'cauldron'); p.set(5, 2, 0, 'tripwire_hook', { attached: F, facing: 'south', powered: F });
+  p.set(3, 1, 1, 'smoker', furnace('south')); p.set(5, 1, 1, 'cauldron'); p.set(5, 2, 1, 'tripwire_hook', { attached: F, facing: 'south', powered: F });
   for (let x = 1; x <= 7; x++) if (x !== 3 && x !== 5) p.set(x, 2, 1, 'smooth_stone_slab', slab('bottom'));
   for (let x = 1; x <= 7; x++) p.set(x, 3, 1, 'iron_trapdoor', trapdoor('south', 'top'));
   p.fill(4, 2, 0, 4, 3, 0, 'glass'); p.set(1, 1, 2, 'iron_trapdoor', trapdoor('south', 'bottom', true));
@@ -230,13 +230,13 @@ function schankraum() {
 function schatzkammer() {
   const p = new Plot([7, 6, 7]);
   roomShell(p, 7, 7, 4, 'polished_blackstone_bricks', 'polished_blackstone_bricks', ['east'], null);
-  p.fill(2, 1, 6, 4, 3, 6, 'iron_bars'); p.fill(3, 1, 6, 3, 2, 6, null); door(p, 3, 1, 6, 'iron', 'north');
+  p.fill(2, 1, 6, 4, 3, 6, 'iron_bars'); p.fill(4, 1, 6, 4, 3, 6, 'polished_blackstone_bricks'); p.fill(3, 1, 6, 3, 2, 6, null); door(p, 3, 1, 6, 'iron', 'north');
   p.set(4, 1, 5, 'stone_button', { face: 'wall', facing: 'north', powered: F });
   p.fill(1, 1, 1, 2, 1, 1, 'gold_block'); p.set(1, 2, 1, 'gold_block'); p.set(5, 1, 1, 'emerald_block'); p.set(4, 1, 1, 'diamond_block');
   p.set(1, 1, 2, 'chest', chest('east', 'left')); p.set(1, 1, 3, 'chest', chest('east', 'right'));
   p.set(5, 1, 3, 'chest', chest('west', 'left')); p.set(5, 1, 2, 'chest', chest('west', 'right'));
   p.set(3, 1, 1, 'lapis_block'); p.set(3, 2, 1, 'player_head', head(8));
-  for (const x of [1, 5]) p.set(x, 3, 1, 'lantern', lantern());
+  p.set(1, 3, 1, 'lantern', lantern()); p.set(5, 2, 1, 'lantern', lantern());
   return p.payload();
 }
 
@@ -247,10 +247,9 @@ function kerker() {
   p.fill(1, 1, 3, 2, 4, 3, 'iron_bars'); p.fill(4, 1, 3, 5, 4, 3, 'iron_bars'); p.fill(7, 1, 3, 7, 4, 3, 'iron_bars');
   p.fill(1, 1, 1, 2, 4, 2, null); p.fill(4, 1, 1, 5, 4, 2, null); p.fill(7, 1, 1, 7, 4, 2, null);
   p.set(1, 1, 1, 'skeleton_skull', head(2)); p.set(5, 1, 1, 'cobweb'); p.set(7, 1, 1, 'cobweb'); p.set(4, 4, 1, 'cobweb');
-  for (const x of [2, 4]) for (const y of [3, 4]) p.set(x, y, 1, 'chain', { axis: 'y', waterlogged: F });
+  for (const x of [2, 4]) for (const y of [3, 4]) p.set(x, y, 1, 'iron_chain', { axis: 'y', waterlogged: F });
   p.set(1, 1, 5, 'barrel', barrel('up')); p.set(7, 1, 5, 'soul_lantern', lantern());
-  p.set(4, 3, 5, 'soul_lantern', lantern(false));
-  p.set(4, 1, 5, 'oak_slab', slab('bottom')); p.set(4, 2, 5, 'candle', candle(1, true));
+  p.set(4, 1, 5, 'oak_slab', slab('top')); p.set(4, 2, 5, 'candle', candle(1, true));
   return p.payload();
 }
 
@@ -259,7 +258,7 @@ function wintergarten() {
   roomShell(p, 9, 7, 4, 'mossy_stone_bricks', 'glass', ['south', 'east'], null);
   for (const x of [0, 4, 8]) p.fill(x, 1, 0, x, 4, 0, 'stripped_birch_log', axis('y'));
   p.fill(0, 1, 6, 0, 4, 6, 'stripped_birch_log', axis('y'));
-  for (const [x, z] of [[1, 1], [7, 1], [1, 5], [7, 5]] as const) { p.set(x, 1, z, 'flowering_azalea'); }
+  for (const [x, z] of [[1, 1], [7, 1], [1, 5], [7, 5]] as const) { p.set(x, 0, z, 'moss_block'); p.set(x, 1, z, 'flowering_azalea'); }
   for (const [x, plant] of [[2, 'potted_red_tulip'], [3, 'potted_fern'], [5, 'potted_blue_orchid'], [6, 'potted_cactus']] as const) p.set(x, 1, 1, plant);
   sofa(p, 3, 1, 5, 'birch', 'south', 3); p.set(4, 1, 3, 'birch_fence'); p.set(4, 2, 3, 'potted_white_tulip');
   return p.payload();
@@ -282,7 +281,7 @@ function waffenkammer() {
   roomShell(p, 7, 7, 4, 'stone_bricks', 'cobblestone', ['south', 'east'], null);
   p.set(1, 1, 1, 'grindstone', { face: 'floor', facing: 'south' }); p.set(2, 1, 1, 'smithing_table'); p.set(3, 1, 1, 'anvil', { facing: 'east' });
   p.set(4, 1, 1, 'blast_furnace', furnace('south', true)); p.set(5, 1, 1, 'barrel', barrel('up'));
-  for (const x of [1, 3, 5]) p.set(x, 3, 0, 'red_wall_banner', wallBanner('south'));
+  for (const x of [1, 3, 5]) p.set(x, 3, 1, 'red_wall_banner', wallBanner('south'));
   for (const z of [2, 4]) p.set(1, 3, z, 'skeleton_wall_skull', { facing: 'east', powered: F });
   p.set(1, 1, 4, 'chest', chest('east')); p.set(5, 1, 4, 'chest', chest('west'));
   p.set(5, 1, 3, 'target', { power: '0' }); p.set(1, 1, 3, 'fletching_table');

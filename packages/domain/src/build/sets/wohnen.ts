@@ -30,7 +30,7 @@ function stadthaus() {
   for (let y = 1; y <= 8; y++) for (const [x, z] of [[0, 0], [6, 0], [0, 8], [6, 8]] as const) p.set(x, y, z, 'dark_oak_log', axis('y'));
   p.fill(1, 5, 1, 5, 5, 7, 'dark_oak_planks'); p.fill(0, 5, 0, 6, 5, 0, 'dark_oak_log', axis('x')); p.fill(0, 5, 8, 6, 5, 8, 'dark_oak_log', axis('x'));
   door(p, 3, 1, 0, 'dark_oak', 'south');
-  for (const x of [1, 5]) { p.set(x, 2, 0, 'glass_pane', pane); p.set(x, 6, 0, 'glass_pane', pane); p.set(x, 7, 0, 'glass_pane', pane); p.set(x, 2, 8, 'glass_pane', pane); }
+  for (const x of [1, 5]) { p.set(x, 2, 0, 'glass_pane', pane); p.set(x, 6, 0, 'glass_pane', pane); p.set(x, 7, 0, 'glass_pane', pane); p.set(x === 1 ? 2 : x, 2, 8, 'glass_pane', pane); }
   p.set(3, 6, 0, 'glass_pane', pane); p.set(3, 7, 0, 'glass_pane', pane);
   gableRoof(p, 0, 6, 0, 8, 9, 'deepslate_tile_stairs', 'white_terracotta', 'deepslate_tile_slab');
   p.fill(5, 9, 6, 5, 12, 6, 'bricks'); p.set(5, 13, 6, 'campfire', campfire('north'));
@@ -85,7 +85,7 @@ function erdhaus() {
   p.set(3, 2, 1, 'glass'); p.set(7, 2, 1, 'glass');
   bed(p, 7, 1, 5, 'green', 'west'); p.set(3, 1, 6, 'crafting_table'); p.set(4, 1, 6, 'furnace', furnace('north')); p.set(3, 1, 3, 'chest', chest('east'));
   p.set(5, 3, 4, 'lantern', lantern(true));
-  p.set(2, 4, 4, 'oxeye_daisy'); p.set(8, 3, 5, 'poppy');
+  p.set(2, 4, 4, 'oxeye_daisy'); p.set(8, 4, 5, 'poppy');
   return p.payload();
 }
 
@@ -213,7 +213,7 @@ function stelzenhaus() {
   for (const [x, z] of [[1, 1], [7, 1], [1, 7], [7, 7]] as const) p.fill(x, 5, z, x, 7, z, 'mangrove_log', axis('y'));
   door(p, 4, 5, 1, 'mangrove', 'south'); p.set(1, 6, 4, 'glass_pane', pane); p.set(7, 6, 4, 'glass_pane', pane);
   gableRoof(p, 0, 8, 0, 8, 8, 'mangrove_stairs', 'mangrove_planks', 'mangrove_slab');
-  p.fill(4, 1, 0, 4, 3, 0, 'ladder', ladder('north'));
+  p.fill(4, 0, 1, 4, 3, 1, 'mangrove_log', axis('y')); p.fill(4, 1, 0, 4, 4, 0, 'ladder', ladder('north'));
   for (let x = 0; x <= 8; x++) if (x !== 4) p.set(x, 5, 0, 'mangrove_fence');
   bed(p, 5, 5, 5, 'green', 'south'); p.set(2, 5, 6, 'chest', chest('east')); p.set(2, 5, 2, 'crafting_table'); p.set(4, 7, 4, 'lantern', lantern(true));
   return p.payload();

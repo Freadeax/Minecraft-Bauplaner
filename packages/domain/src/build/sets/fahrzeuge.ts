@@ -114,7 +114,7 @@ function luftschiff() {
     for (let y = bottom(x, cz) - 1; y >= 6 + Math.max(0, x - 5); y--) p.set(x, y, cz, 'red_wool');
     for (let z = 0; z < 11; z++) if (!inside(x, cy, z) && (x <= 5 || z === 0 || z === 10 || z === 1 || z === 9) && !p.get(x, cy, z)) p.set(x, cy, z, 'red_wool');
   }
-  p.set(2, cy, cz, 'chain', chain('x')); p.set(1, cy, cz, 'iron_block');
+  p.set(2, cy, cz, 'iron_chain', chain('x')); p.set(1, cy, cz, 'iron_block');
   for (const [y, z] of [[cy - 1, cz], [cy + 1, cz], [cy, cz - 1], [cy, cz + 1]] as const) p.set(1, y, z, 'iron_trapdoor', trapdoor('east', 'bottom', true));
   // gondola: floor, plank walls with window band, slab roof
   p.fill(9, 0, 3, 19, 0, 7, 'spruce_planks');
@@ -125,7 +125,7 @@ function luftschiff() {
   p.fill(9, 3, 3, 19, 3, 7, 'spruce_slab', slab());
   door(p, 12, 1, 7, 'spruce', 'north');
   // suspension chains up to the envelope
-  for (const x of [10, 18]) for (const z of [4, 6]) for (let y = 4; y < 16 && !p.get(x, y, z); y++) p.set(x, y, z, 'chain', chain());
+  for (const x of [10, 18]) for (const z of [4, 6]) for (let y = 4; y < 16 && !p.get(x, y, z); y++) p.set(x, y, z, 'iron_chain', chain());
   // bridge and cabin
   p.set(18, 1, 5, 'lectern', { facing: 'west', has_book: F, powered: F }); p.set(17, 1, 4, 'cartography_table'); p.set(17, 1, 6, 'spruce_stairs', stairs('west'));
   bed(p, 10, 1, 4, 'white', 'east'); p.set(10, 1, 6, 'chest', chest('east')); p.set(13, 1, 4, 'barrel', barrel('up'));

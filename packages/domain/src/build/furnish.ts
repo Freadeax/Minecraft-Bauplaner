@@ -61,7 +61,7 @@ export function counter(p: Plot, x0: number, z0: number, x1: number, z1: number,
 }
 /** Ceiling lamp: chain down from the ceiling with a hanging lantern. */
 export function hangingLamp(p: Plot, x: number, yCeil: number, z: number, chainLen = 1, light = 'lantern'): void {
-  for (let i = 1; i <= chainLen; i++) p.set(x, yCeil - i, z, 'chain', { axis: 'y', waterlogged: F });
+  for (let i = 1; i <= chainLen; i++) p.set(x, yCeil - i, z, 'iron_chain', { axis: 'y', waterlogged: F });
   p.set(x, yCeil - chainLen - 1, z, light, lantern(true));
 }
 /** Rug: carpet rectangle. */

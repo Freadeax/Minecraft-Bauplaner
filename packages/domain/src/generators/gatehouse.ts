@@ -14,7 +14,7 @@ import type { Generator } from './types.js';
  * centring, so towers, walls and gatehouses of one section snap together.
  */
 export const GATEHOUSE_GENERATOR: Generator = {
-  id: 'torhaus', name: 'Torhaus', version: 1,
+  id: 'torhaus', name: 'Torhaus', version: 2,
   description: 'Torbau mit Durchfahrt, Fallgitter, Wachstuben, Obergeschoss auf Wehrgangshöhe, Zinnen oder Dach und Mauer-Anschlüssen auf beiden Seiten.',
   params: [
     { key: 'breite', label: 'Breite (entlang der Mauer)', group: 'Maße', type: 'int', min: 7, max: 21, step: 2, default: 11, unit: 'Blöcke' },
@@ -79,6 +79,11 @@ export const GATEHOUSE_GENERATOR: Generator = {
     if (tw >= 3) for (const z of [0, T - 1]) { p.set(gx0, gh, z, s.trim.stairs, stairs('east', 'top')); p.set(gx1, gh, z, s.trim.stairs, stairs('west', 'top')); }
     if (a.bool('fallgitter')) { for (let x = gx0; x <= gx1; x++) for (let y = 1; y <= gh - (tw >= 3 ? 1 : 0); y++) p.set(x, y, 1, 'iron_bars'); notes.push('Fallgitter herabgelassen: Durchfahrt geschlossen.'); }
     // Guard rooms: doors to the courtyard (south), storage, light, ladder up in the west room.
+    // The ladder needs the west wall behind it: not in the wall-walk doorway (BLOCK-02).
+    const walkZ0 = cz - Math.floor((t - 1) / 2) + Math.floor(t / 2) - Math.floor(t / 2);
+    const inDoorway = (z: number) => matchWalk && z > walkZ0 && z < walkZ0 + t;
+    let lz = T - 2;
+    while (lz > 2 && inDoorway(lz)) lz--;
     if (roomW) {
       for (const [r0, r1] of [[1, gx0 - 2], [gx1 + 2, W - 2]] as const) {
         const dx = Math.floor((r0 + r1) / 2);
@@ -86,12 +91,12 @@ export const GATEHOUSE_GENERATOR: Generator = {
         if (T >= 7) { p.set(r0, 1, 1, 'chest', chest('south')); p.set(r1, 1, 1, 'barrel', barrel('up')); }
         if (fy - 1 >= 3) p.set(dx, fy - 1, cz, s.light, lantern(true));
       }
-      for (let y = 1; y < H; y++) p.set(1, y, T - 2, 'ladder', ladder('east'));
+      for (let y = 1; y < H; y++) p.set(1, y, lz, 'ladder', ladder('east'));
     } else {
-      for (let y = fy + 1; y < H; y++) p.set(1, y, T - 2, 'ladder', ladder('east'));
+      for (let y = fy + 1; y < H; y++) p.set(1, y, lz, 'ladder', ladder('east'));
       notes.push(roomW ? '' : 'Ohne Wachstuben: Obergeschoss nur über den Wehrgang erreichbar.');
     }
-    if (top === 'zinnen') p.set(1, H, T - 2, 'ladder', ladder('east'));
+    if (top === 'zinnen') p.set(1, H, lz, 'ladder', ladder('east'));
     // Upper hall: arrow slits to the field and the courtyard, light.
     for (let x = 2; x < W - 2; x += 2) for (const z of [0, T - 1]) p.set(x, fy + 2, z, s.window);
     if (H - fy >= 4) p.set(cx, H - 1, cz, s.light, lantern(true));

@@ -212,11 +212,11 @@ test('geometry follows the parameters', () => {
 test('pinned generator output: same parameters keep their geometry until the generator version is raised', async () => {
   const pinned = {};
   for (const g of GENERATORS) pinned[g.id] = (await createGeneratedAsset(runGenerator(g.id), { name: 'Pin' })).version.payloadHash.slice(0, 16);
-  // Update these hashes only together with a raised `version` of the changed generator.
+  // Update these hashes only together with a raised `version` of the changed generator (BLOCK-02 raised kirche, hafen, windmuehle, bruecke, treppenhaus, torhaus, brunnen).
   assert.deepEqual(pinned, PINNED);
 });
 const PINNED = { haus: "4cf30ea478f98733", turm: "bc5adeedabb35bd4", mauer: "4da92383b6b39497", bruecke: "04e077c30b072b61", dach: "d3de7fa1d13a8330",
-  treppenhaus: "20628bc43149a44b", kirche: "1cd111c7ec836fea", hafen: "99dc5becf72ac0c4", torhaus: "319098e62eb12ba8", windmuehle: "cf31aecc9829e826", brunnen: "c44599292a566006" };
+  treppenhaus: "20628bc43149a44b", kirche: "109fcc930fd94683", hafen: "d31f07b5fe476c1d", torhaus: "319098e62eb12ba8", windmuehle: "6e1f6bc7cc77aae4", brunnen: "c44599292a566006" };
 
 test('compounds: castle and street become conflict-free projects with shared generated assets', async () => {
   for (const c of COMPOUNDS) {

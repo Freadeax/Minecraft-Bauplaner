@@ -56,7 +56,7 @@ function werkstatt(pr: Profession) {
     p.set(3, 1, 3, pr.station, pr.stationProps ?? {});
     pr.extra(p);
     p.set(3, 3, 3, 'lantern', lantern(true));
-    p.set(0, 1, 7, 'lantern', lantern()); p.set(6, 1, 7, 'lantern', lantern());
+    p.set(0, 0, 7, 'cobblestone'); p.set(6, 0, 7, 'cobblestone'); p.set(0, 1, 7, 'lantern', lantern()); p.set(6, 1, 7, 'lantern', lantern());
     p.clear(0, 3, 7); p.clear(6, 3, 7); for (let x = 1; x <= 5; x++) p.clear(x, 3, 7);
     return p.payload();
   };
@@ -139,7 +139,7 @@ function windmuehle() {
     p.set(6, 12 + i, 8, 'spruce_fence'); p.set(6, 12 - i, 8, 'spruce_fence'); p.set(6 + i, 12, 8, 'spruce_fence'); p.set(6 - i, 12, 8, 'spruce_fence');
     if (i > 1) { p.set(7, 12 + i, 8, 'white_wool'); p.set(5, 12 - i, 8, 'white_wool'); p.set(6 + i, 11, 8, 'white_wool'); p.set(6 - i, 13, 8, 'white_wool'); }
   }
-  p.fill(4, 1, 6, 4, 8, 6, 'ladder', { facing: 'north', waterlogged: F });
+  p.fill(6, 1, 6, 6, 8, 6, 'ladder', { facing: 'north', waterlogged: F });
   p.set(7, 1, 6, 'barrel', barrel('up')); p.set(8, 1, 4, 'hay_block', axis('y')); p.set(8, 2, 4, 'hay_block', axis('y')); p.set(6, 1, 4, 'composter');
   p.set(6, 9, 4, 'lantern', lantern(true));
   return p.payload();
@@ -171,7 +171,7 @@ function dorfplatz() {
   for (const [x, z] of [[2, 2], [12, 2], [2, 12], [12, 12]] as const) { p.fill(x, 1, z, x, 2, z, 'spruce_fence'); p.set(x, 3, z, 'lantern', lantern()); }
   for (const [x, z, f] of [[4, 2, 'north'], [10, 12, 'south']] as const) for (let i = 0; i < 3; i++) p.set(x + i, 1, z, 'spruce_stairs', stairs(f));
   p.set(11, 1, 4, 'oak_log', axis('y')); p.set(11, 2, 4, 'oak_fence'); p.set(11, 3, 4, 'oak_planks');
-  for (const [x, z] of [[1, 6], [13, 8], [6, 13], [8, 1]] as const) p.set(x, 1, z, (x + z) % 2 ? 'poppy' : 'dandelion');
+  for (const [x, z] of [[1, 6], [13, 8], [6, 13], [8, 1]] as const) { p.set(x, 0, z, 'grass_block', grass()); p.set(x, 1, z, (x + z) % 2 ? 'poppy' : 'dandelion'); }
   for (const [x, z] of [[0, 0], [14, 14]] as const) { p.set(x, 1, z, 'oak_leaves', { distance: '1', persistent: T, waterlogged: F }); }
   return p.payload();
 }

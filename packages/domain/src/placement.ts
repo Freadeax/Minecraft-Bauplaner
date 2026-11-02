@@ -85,11 +85,20 @@ export function needText(need: SupportNeed): string {
   }
 }
 
-export interface PlacementOptions { readonly maxIssues?: number }
+export interface PlacementOptions {
+  readonly maxIssues?: number;
+  /**
+   * The plan owns its space (catalogue buildings, generators): empty cells at or above
+   * the base layer are air, not Umgebung. Only the ground below the base stays open.
+   */
+  readonly ownSpace?: boolean;
+}
 
 export function checkPlacement(payload: VoxelPayload, options: PlacementOptions = {}): PlacementReport {
   const max = options.maxIssues ?? 400;
   const look = payloadLookup(payload);
+  const baseY = payload.bounds.min[1];
+  const selected = options.ownSpace ? (p: Vec3): boolean => p[1] >= baseY : look.selected;
   const issues: PlacementIssue[] = [];
   const counts: Record<PlacementKind, number> = { connection: 0, unsupported: 0, falls: 0, half: 0, 'invalid-state': 0 };
   let blocks = 0, surroundings = 0, unknown = 0, truncated = 0, water = 0, lava = 0, waterlogged = 0;
@@ -112,7 +121,7 @@ export function checkPlacement(payload: VoxelPayload, options: PlacementOptions 
     }
     if (falls(state, p, look.state)) {
       const below = step(p, 'down');
-      if (look.selected(below)) push({ kind: 'falls', position: p, state, note: 'Darunter ist frei: fällt beim Setzen herunter. Einen Block darunter planen oder ein nicht fallendes Material nehmen.' });
+      if (selected(below)) push({ kind: 'falls', position: p, state, note: 'Darunter ist frei: fällt beim Setzen herunter. Einen Block darunter planen oder ein nicht fallendes Material nehmen.' });
       else surroundings++;
     }
     if (!f.survivesAlone) {
@@ -120,7 +129,7 @@ export function checkPlacement(payload: VoxelPayload, options: PlacementOptions 
       if (!r.survives) {
         const need = supportNeed(state);
         const dirs: Dir[] = need.kind === 'face' ? [...need.dirs] : need.kind === 'hang' ? ['up'] : ['down'];
-        if (dirs.some(d => !look.selected(step(p, d)))) surroundings++;
+        if (dirs.some(d => !selected(step(p, d)))) surroundings++;
         else push({ kind: 'unsupported', position: p, state, note: `Bricht im Spiel ab: ${needText(need)}.` });
       }
     }
@@ -128,7 +137,7 @@ export function checkPlacement(payload: VoxelPayload, options: PlacementOptions 
     if (partner) {
       const q = step(p, partner), other = look.state(q);
       if (!other || other.id !== state.id) {
-        if (look.selected(q)) push({ kind: 'half', position: p, state, note: hasClass(state.id, 'BedBlock') ? 'Bett ohne zweites Teil – das Spiel setzt beide Teile zusammen.' : 'Zweiteiliger Block ohne zweite Hälfte – im Spiel entstehen immer beide.' });
+        if (selected(q)) push({ kind: 'half', position: p, state, note: hasClass(state.id, 'BedBlock') ? 'Bett ohne zweites Teil – das Spiel setzt beide Teile zusammen.' : 'Zweiteiliger Block ohne zweite Hälfte – im Spiel entstehen immer beide.' });
         else surroundings++;
       }
     }

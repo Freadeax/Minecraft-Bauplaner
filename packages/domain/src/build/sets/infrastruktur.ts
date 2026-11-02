@@ -44,7 +44,7 @@ function laterne(kind: 'holz' | 'eisen' | 'seele') {
   return () => {
     const p = new Plot([3, 6, 3]);
     if (kind === 'holz') { p.set(1, 0, 1, 'cobblestone'); p.fill(1, 1, 1, 1, 3, 1, 'oak_fence'); p.set(1, 4, 1, 'oak_planks'); p.set(2, 4, 1, 'oak_fence'); p.set(2, 3, 1, 'lantern', lantern(true)); p.set(0, 4, 1, 'oak_fence'); p.set(0, 3, 1, 'lantern', lantern(true)); }
-    if (kind === 'eisen') { p.set(1, 0, 1, 'smooth_stone'); p.fill(1, 1, 1, 1, 4, 1, 'iron_bars'); p.set(1, 5, 1, 'smooth_stone_slab', slab()); p.set(0, 4, 1, 'chain', chain('x')); p.set(0, 3, 1, 'lantern', lantern(true)); p.set(2, 4, 1, 'chain', chain('x')); p.set(2, 3, 1, 'lantern', lantern(true)); }
+    if (kind === 'eisen') { p.set(1, 0, 1, 'smooth_stone'); p.fill(1, 1, 1, 1, 4, 1, 'iron_bars'); p.set(1, 5, 1, 'smooth_stone_slab', slab()); p.set(0, 4, 1, 'iron_bars'); p.set(0, 3, 1, 'lantern', lantern(true)); p.set(2, 4, 1, 'iron_bars'); p.set(2, 3, 1, 'lantern', lantern(true)); }
     if (kind === 'seele') { p.set(1, 0, 1, 'polished_blackstone'); p.fill(1, 1, 1, 1, 3, 1, 'blackstone_wall'); p.set(1, 4, 1, 'soul_lantern', lantern()); for (const [x, z] of [[0, 1], [2, 1], [1, 0], [1, 2]] as const) p.set(x, 0, z, 'polished_blackstone_slab', slab()); }
     return p.payload();
   };
@@ -108,8 +108,8 @@ function hafenkran() {
   p.room(0, 0, 4, 4, 7, 9, 'spruce_planks'); p.fill(0, 6, 0, 4, 6, 4, 'spruce_planks');
   hipRoof(p, 0, 4, 0, 4, 10, 'dark_oak_stairs', 'dark_oak_slab');
   for (let x = 4; x <= 8; x++) p.set(x, 9, 2, 'spruce_log', axis('x'));
-  p.fill(8, 4, 2, 8, 8, 2, 'chain', chain('y')); p.set(8, 3, 2, 'barrel', barrel()); p.set(7, 9, 2, 'spruce_log', axis('x'));
-  p.fill(2, 1, 0, 2, 6, 0, 'ladder', { facing: 'south', waterlogged: F }); p.fill(2, 7, 0, 2, 8, 0, 'ladder', { facing: 'south', waterlogged: F });
+  p.fill(8, 4, 2, 8, 8, 2, 'iron_chain', chain('y')); p.set(8, 3, 2, 'barrel', barrel()); p.set(7, 9, 2, 'spruce_log', axis('x'));
+  p.fill(1, 1, 0, 1, 8, 0, 'ladder', { facing: 'east', waterlogged: F });
   p.set(2, 7, 2, 'chest', chest('north')); p.set(2, 8, 2, 'lantern', lantern());
   for (const [x, z] of [[1, 1], [3, 3]] as const) p.set(x, 1, z, 'barrel', barrel());
   return p.payload();

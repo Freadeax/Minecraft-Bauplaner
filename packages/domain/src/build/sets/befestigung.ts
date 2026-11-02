@@ -79,8 +79,9 @@ function torhaus() {
   for (const x of [4, 8]) { p.fill(x, 1, 3, x, 2, 3, null); door(p, x, 1, 3, 'spruce', x === 4 ? 'east' : 'west'); }
   for (const x0 of [0, 8]) p.fill(x0 + 3, 1, 5, x0 + 3, 9, 5, 'ladder', ladder('north'));
   p.fill(0, 0, 1, 0, 4, 2, 'stone_bricks'); p.fill(12, 0, 1, 12, 4, 2, 'stone_bricks');
-  for (const x of [3, 9]) p.set(x, 4, 0, 'red_wall_banner', facing('north'));
-  for (const x of [5, 7]) p.set(x, 4, 0, 'wall_torch', facing('north'));
+  // Fackeln und Banner hängen in der Tordurchfahrt an den Seitenwänden.
+  p.set(5, 4, 1, 'wall_torch', facing('east')); p.set(7, 4, 1, 'wall_torch', facing('west'));
+  p.set(5, 3, 5, 'red_wall_banner', facing('east')); p.set(7, 3, 5, 'red_wall_banner', facing('west'));
   p.set(2, 4, 3, 'lantern', lantern(true)); p.set(10, 4, 3, 'lantern', lantern(true));
   return p.payload();
 }
@@ -107,9 +108,10 @@ function aussenposten() {
   for (const [x, z] of [[1, 1], [7, 1], [1, 7], [7, 7]] as const) p.fill(x, 1, z, x, 15, z, 'dark_oak_log', axis('y'));
   for (const y of [5, 10, 15]) { p.fill(0, y, 0, 8, y, 8, 'dark_oak_planks'); p.ring(0, 0, 8, 8, y + 1, 'dark_oak_fence'); }
   p.room(2, 2, 6, 6, 1, 4, 'cobblestone'); p.fill(4, 1, 2, 4, 2, 2, null); door(p, 4, 1, 2, 'dark_oak', 'south');
+  p.fill(5, 5, 6, 5, 16, 6, 'dark_oak_log', axis('y'));
   for (let y = 1; y <= 16; y++) p.set(5, y, 5, 'ladder', ladder('north'));
   hipRoof(p, 0, 8, 0, 8, 17, 'dark_oak_stairs', 'dark_oak_slab');
-  for (const y of [7, 12]) p.set(2, y, 2, 'lantern', lantern());
+  for (const y of [6, 11]) p.set(2, y, 2, 'lantern', lantern());
   p.set(3, 16, 3, 'chest', { facing: 'south', type: 'single', waterlogged: F });
   return p.payload();
 }

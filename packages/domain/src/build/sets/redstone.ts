@@ -37,8 +37,9 @@ function sortierModul() {
   p.set(2, 2, 2, 'hopper', hopper('down'));       // filter
   p.set(2, 1, 2, 'hopper', hopper('down'));       // locked
   p.set(2, 0, 2, 'chest', chest('north'));
-  p.set(2, 2, 3, 'comparator', comparator('north'));
-  p.set(2, 2, 4, 'redstone_wire', wire(true, false)); p.set(2, 1, 4, 'stone_bricks');
+  // Komparator neben dem Filtertrichter auf festem Block; Staub führt zum Block, an dem die Sperrfackel hängt.
+  p.set(3, 1, 2, 'stone_bricks'); p.set(3, 2, 2, 'comparator', comparator('west'));
+  for (const [x, z] of [[4, 2], [4, 3], [4, 4], [3, 4], [2, 4]] as const) { p.set(x, 1, z, 'stone_bricks'); p.set(x, 2, z, 'redstone_wire', wire(true, true)); }
   p.set(2, 1, 3, 'redstone_wall_torch', redstoneWallTorch('north'));
   p.fill(1, 1, 1, 3, 2, 1, 'glass');
   return p.payload();
@@ -95,7 +96,7 @@ function bahnhof() {
   for (let x = 0; x < 16; x++) p.set(x, 5, 2, 'dark_oak_stairs', stairs('north'));
   for (const x of [3, 8, 12]) { p.set(x, 2, 5, 'spruce_stairs', stairs('south')); p.set(x + 1, 2, 5, 'spruce_stairs', stairs('south')); }
   for (const x of [3, 12]) p.set(x, 4, 4, 'lantern', lantern(true));
-  p.set(1, 2, 2, 'stone_button', button('north', 'floor'));
+  p.set(2, 2, 3, 'stone_button', button('north', 'floor'));
   p.set(7, 2, 6, 'chest', chest('north'));
   return p.payload();
 }

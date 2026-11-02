@@ -9,7 +9,7 @@ import type { Generator } from './types.js';
  * path connectors with profile weg_<breite> (weg_4 = the shipped path kit).
  */
 export const BRIDGE_GENERATOR: Generator = {
-  id: 'bruecke', name: 'Brücke', version: 1,
+  id: 'bruecke', name: 'Brücke', version: 2,
   description: 'Bogen-, Balken- oder Hängebrücke mit wählbarer Spannweite, Breite und Höhe, Geländer, Pfeilern und Laternen; Enden als Weg-Anschlüsse.',
   params: [
     { key: 'form', label: 'Bauart', group: 'Maße', type: 'choice', default: 'bogen', options: [
@@ -85,8 +85,8 @@ export const BRIDGE_GENERATOR: Generator = {
       for (const x of [0, L - 1]) for (const z of [0, W - 1]) { for (let y = 0; y <= towerTop; y++) m.put(x, y, z, s.corner); }
       for (const z of [0, W - 1]) for (let x = 1; x < L - 1; x++) {
         const cable = e[x]! + 1 + Math.round(3 * ((x - c) / c) ** 2) + 1;
-        p.set(x, cable, z, 'chain', chain('x'));
-        if (x % 3 === 0) for (let y = e[x]! + 2; y < cable; y++) p.set(x, y, z, 'chain', chain('y'));
+        p.set(x, cable, z, 'iron_chain', chain('x'));
+        if (x % 3 === 0) for (let y = e[x]! + 2; y < cable; y++) p.set(x, y, z, 'iron_chain', chain('y'));
       }
       if (rail === 'mauer') notes.push('Hängebrücke: Steinbrüstung wirkt schwer, Holzzaun passt besser.');
     }

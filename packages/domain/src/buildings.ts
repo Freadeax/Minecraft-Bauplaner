@@ -9,6 +9,7 @@ import type { Asset, AssetVersion } from './types.js';
 import { PATH_PROFILE, WIKI, joint } from './build/spec.js';
 import type { BuildingSpec, Inspiration } from './build/spec.js';
 import { ALL_SET_SPECS } from './build/sets/index.js';
+import { gameReady } from './build/gameReady.js';
 
 export { PATH_PROFILE };
 export type { BuildingSpec, Inspiration };
@@ -89,7 +90,7 @@ class Plot {
       if (!index.has(key)) { index.set(key, palette.length); palette.push(c.state!); }
       cells.push({ position: c.position, kind: 'block', paletteIndex: index.get(key)! });
     }
-    return createPayload({ schemaVersion: 1, profileId: SAMPLE_PROFILE, bounds: { min: [0, 0, 0], maxExclusive: [...this.size] }, pivot: [0, 0, 0], sourceOrigin: [0, 0, 0], palette, cells, blockEntities: [] });
+    return gameReady(createPayload({ schemaVersion: 1, profileId: SAMPLE_PROFILE, bounds: { min: [0, 0, 0], maxExclusive: [...this.size] }, pivot: [0, 0, 0], sourceOrigin: [0, 0, 0], palette, cells, blockEntities: [] }));
   }
 }
 
@@ -149,7 +150,7 @@ function fachwerkhaus(): VoxelPayload {
   p.fill(0, 4, 1, 0, 4, 7, 'oak_log', axis('z')); p.fill(6, 4, 1, 6, 4, 7, 'oak_log', axis('z'));
   p.fill(1, 1, 1, 5, 3, 7, null); p.fill(1, 4, 1, 5, 4, 7, 'oak_planks');
   for (const z of [2, 6]) { p.set(0, 2, z, 'glass_pane'); p.set(6, 2, z, 'glass_pane'); }
-  p.set(1, 2, 0, 'glass_pane'); p.set(5, 2, 0, 'glass_pane'); p.set(1, 2, 8, 'glass_pane'); p.set(5, 2, 8, 'glass_pane');
+  p.set(1, 2, 0, 'glass_pane'); p.set(5, 2, 0, 'glass_pane'); p.set(1, 2, 8, 'glass_pane'); p.set(4, 2, 8, 'glass_pane');
   door(p, 3, 1, 0, 'oak', 'north');
   bed(p, 1, 1, 6, 'red', 'south'); p.set(5, 1, 1, 'crafting_table'); p.set(1, 1, 3, 'furnace', furnace('east'));
   p.set(5, 1, 3, 'chest', chest('west')); p.set(3, 3, 7, 'wall_torch', facing('north'));
@@ -212,7 +213,7 @@ function leuchtturm(): VoxelPayload {
   }
   p.fill(3, 1, 5, 3, 14, 5, 'ladder', ladder('north'));
   door(p, 3, 1, 0, 'spruce', 'north');
-  p.set(0, 6, 3, 'glass_pane'); p.set(6, 10, 3, 'glass_pane'); p.set(3, 8, 6, 'glass_pane');
+  p.set(0, 6, 3, 'glass_pane'); p.set(6, 10, 3, 'glass_pane'); p.set(0, 12, 3, 'glass_pane');
   for (let x = 2; x <= 4; x++) for (let z = 2; z <= 4; z++) {
     if (x === 3 && z === 3) continue;
     p.set(x, 15, z, 'glass'); p.set(x, 16, z, 'glass');

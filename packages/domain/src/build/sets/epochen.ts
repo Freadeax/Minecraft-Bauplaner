@@ -254,6 +254,7 @@ function stufenpyramide() {
     for (let y = 2 * t; y <= 2 * t + 1; y++) for (let i = -d; i <= d; i++) for (const side of ['north', 'south', 'east', 'west'] as const) {
       const x = side === 'east' ? c + d + 1 : side === 'west' ? c - d - 1 : c + i, z = side === 'south' ? c + d + 1 : side === 'north' ? c - d - 1 : c + i;
       if (!p.inside(x, y, z) || p.has(x, y, z) || noise(x, y, z) > 0.22) continue;
+      if (side === 'south' && Math.abs(i) <= 1) continue; // Freitreppe: Stufen tragen keine Ranken
       p.set(x, y, z, 'vine', vine(INWARD[side]));
     }
   });
@@ -292,7 +293,7 @@ function zugbrueckentor() {
   // lowered drawbridge with side beams and chains back to the gate
   for (let z = 11; z <= 16; z++) {
     for (let x = 7; x <= 9; x++) p.set(x, 1, z, 'spruce_slab', slab());
-    for (const x of [6, 10]) { p.set(x, 1, z, 'stripped_spruce_log', axis('z')); p.set(x, 8 - (z - 10), z, 'chain', { axis: 'z', waterlogged: F }); }
+    for (const x of [6, 10]) { p.set(x, 1, z, 'stripped_spruce_log', axis('z')); p.set(x, 8 - (z - 10), z, 'iron_chain', { axis: 'z', waterlogged: F }); }
   }
   for (const x of [6, 10]) { p.set(x, 1, 17, 'spruce_fence'); p.set(x, 2, 17, 'lantern', lantern()); }
   return p.payload();

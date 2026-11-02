@@ -32,7 +32,8 @@ function kitchen(p: Plot, x: number, y: number, z: number, dx: number, dz: numbe
 /** Modern street lamp: wall pole with an arm of top slabs and a hanging lantern over the road. */
 function streetLamp(p: Plot, x: number, z: number, dz: 1 | -1): void {
   p.fill(x, 1, z, x, 5, z, 'andesite_wall');
-  for (let i = 0; i <= 2; i++) p.set(x, 6, z + i * dz, 'polished_andesite_slab', slab('top'));
+  for (let i = 0; i <= 1; i++) p.set(x, 6, z + i * dz, 'polished_andesite_slab', slab('top'));
+  p.set(x, 6, z + 2 * dz, 'polished_andesite'); // volle Unterseite: daran hält die Laterne
   p.set(x, 5, z + 2 * dz, 'lantern', lantern(true));
 }
 
@@ -324,11 +325,11 @@ function feuerwache() {
   for (let z = 8; z <= 12; z++) { p.set(1, 1, z, 'barrel', barrel('east')); p.set(1, 2, z, 'barrel', barrel('east')); }
   for (let z = 9; z <= 11; z++) chair(p, 3, 1, z, 'spruce', 'east');
   p.set(4, 1, 12, 'crafting_table'); p.set(4, 1, 4, 'cauldron');
-  for (let y = 1; y <= 9; y++) p.set(3, y, 6, 'chain', chain('y'));
+  for (let y = 1; y <= 9; y++) p.set(3, y, 6, 'iron_chain', chain('y'));
   hangingLamp(p, 2, 6, 9, 0); hangingLamp(p, 8, 6, 8, 0);
   // upper floor: dormitory and kitchen
   p.fill(0, 6, 3, 10, 6, 13, 'spruce_planks'); p.ring(0, 3, 10, 13, 6, 'stone_bricks');
-  p.set(3, 6, 6, 'chain', chain('y'));
+  p.set(3, 6, 6, 'iron_chain', chain('y'));
   p.room(0, 3, 10, 13, 7, 9, 'bricks');
   panesX(p, [1, 2, 3, 4, 6, 7, 8, 9], 3, 7, 8); panesX(p, [2, 3, 4], 13, 8, 8); panesZ(p, 0, span(6, 10), 8, 8); panesZ(p, 10, span(5, 8), 8, 8);
   p.set(5, 8, 2, 'red_wall_banner', wallBanner('north'));
@@ -342,7 +343,7 @@ function feuerwache() {
   p.fill(0, 10, 3, 10, 10, 13, 'smooth_stone'); p.ring(0, 3, 10, 13, 11, 'brick_slab', slab());
   // hose tower with bell
   p.room(11, 10, 13, 12, 1, 14, 'bricks');
-  for (const y of [12, 13]) for (const [x, z] of [[12, 10], [12, 12], [11, 11], [13, 11]] as const) p.set(x, y, z, 'iron_bars');
+  for (const y of [12, 13]) for (const [x, z] of [[12, 10], [12, 12], [11, 11]] as const) p.set(x, y, z, 'iron_bars'); // Ostwand bleibt zu: dort hängt die Leiter
   p.fill(10, 15, 9, 14, 15, 13, 'brick_slab', slab());
   p.set(12, 14, 11, 'bell', bell('north', 'ceiling')); p.set(12, 16, 11, 'lightning_rod', rod('up'));
   p.air(10, 1, 11); p.air(10, 2, 11); door(p, 11, 1, 11, 'spruce', 'east');
@@ -432,6 +433,7 @@ function aerztehaus() {
   bed(p, 5, 5, 10, 'light_blue', 'south'); bed(p, 8, 5, 10, 'light_blue', 'south'); p.set(6, 5, 11, 'barrel', barrel('up')); p.set(7, 5, 11, 'potted_fern');
   p.set(9, 5, 4, 'smooth_quartz_slab', slab('top')); p.set(9, 6, 4, 'brewing_stand', BREW); p.set(10, 5, 4, 'cauldron');
   hangingLamp(p, 6, 8, 6, 0); hangingLamp(p, 4, 8, 9, 0);
+  p.set(12, 2, 4, 'white_concrete'); // kein Fenster hinter der Leiter
   for (let y = 1; y <= 4; y++) p.set(11, y, 4, 'ladder', ladder('west'));
   return p.payload();
 }

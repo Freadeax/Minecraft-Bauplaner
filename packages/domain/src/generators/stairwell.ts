@@ -17,7 +17,7 @@ import type { Generator } from './types.js';
  * every step (the next turn is a whole storey higher).
  */
 export const STAIRWELL_GENERATOR: Generator = {
-  id: 'treppenhaus', name: 'Treppenhaus', version: 1,
+  id: 'treppenhaus', name: 'Treppenhaus', version: 2,
   description: 'Treppenturm mit Wendeltreppe um Pfeiler, offenes Treppenauge oder Lichtschacht; Türen je Geschoss übereinander, passend zur Geschosshöhe des Hauses.',
   params: [
     { key: 'breite', label: 'Außenmaß', group: 'Maße', type: 'int', min: 5, max: 11, default: 7, unit: 'Blöcke', hint: 'Quadratischer Grundriss; innen 2 Blöcke weniger.' },
@@ -110,11 +110,11 @@ export const STAIRWELL_GENERATOR: Generator = {
       }
       for (let y = 1; y < ceiling; y++) for (let x = k0; x <= k1; x++) for (let z = z0 + k0; z <= z0 + k1; z++) if (!p.has(x, y, z)) p.air(x, y, z);
       // Hanging light in the well.
-      if (a.bool('licht')) { const cx = Math.floor((k0 + k1) / 2), cz = z0 + Math.floor((k0 + k1) / 2); for (let y = ceiling - 1; y > ceiling - 3; y--) p.set(cx, y, cz, 'chain', chain('y')); p.set(cx, ceiling - 3, cz, s.light, lantern(true)); }
+      if (a.bool('licht')) { const cx = Math.floor((k0 + k1) / 2), cz = z0 + Math.floor((k0 + k1) / 2); for (let y = ceiling - 1; y > ceiling - 3; y--) p.set(cx, y, cz, 'iron_chain', chain('y')); p.set(cx, ceiling - 3, cz, s.light, lantern(true)); }
     }
     if (kern === 'lichtschacht' && a.bool('licht')) {
       const cx = Math.floor((k0 + k1) / 2), cz = z0 + Math.floor((k0 + k1) / 2);
-      for (let y = 1; y < ceiling - 1; y++) p.set(cx, y, cz, 'chain', chain('y'));
+      for (let y = 1; y < ceiling - 1; y++) p.set(cx, y, cz, 'iron_chain', chain('y'));
       for (let k = 0; k < F; k++) if (k * R + 2 < ceiling - 1) p.set(cx, k * R + 2, cz, s.light, lantern(true));
     }
     // Doors in the north face above each other, one per storey; landings inside.

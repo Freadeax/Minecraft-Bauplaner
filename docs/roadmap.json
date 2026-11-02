@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T12:10:10.657Z",
+  "updatedAt": "2026-11-02T12:25:42.264Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -2176,7 +2176,7 @@
       "acceptance": [
         "Verbindungen und Halt entsprechen dem Spielcode (Prüfvektoren aus dem echten Server); keine Mojang-Dateien im Repository (ADR-020)."
       ],
-      "next": "Abnahme im Spiel; die gefundenen Katalogfehler (u. a. 109 Laternen ohne Halt, Leitern an Scheiben) in der Gebäudebibliothek beheben; PROFILE-01 kann die Berichtsfakten übernehmen.",
+      "next": "Abnahme im Spiel; PROFILE-01 kann die Berichtsfakten übernehmen. Die Katalogfehler aus der Spielprüfung behebt BLOCK-02.",
       "blockers": [],
       "evidence": [
         {
@@ -2200,7 +2200,87 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T08:26:29.438Z"
+      "updatedAt": "2026-11-02T12:25:42.264Z"
+    },
+    {
+      "id": "BLOCK-02",
+      "title": "Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Schwebende Blöcke im Katalog reparieren“)",
+      "dependencies": [
+        "BLOCK-01",
+        "LIB-04",
+        "UPDATE-01"
+      ],
+      "scope": [
+        "packages/domain/src/build/",
+        "packages/domain/src/buildings.ts",
+        "packages/domain/src/generators/",
+        "packages/domain/src/placement.ts",
+        "packages/voxel/src/blocklogic/support.ts",
+        "packages/domain/src/materials.ts",
+        "packages/domain/src/guide.ts",
+        "tests/catalog-game.test.mjs"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "BLOCK-02-S01",
+          "title": "Gemeinsame Bauregel gameReady(): Laternen ohne Halt hängen an iron_chain bis zur nächsten Decke, danach alle Verbindungen wie im Spiel (settlePayload); gilt für jedes Katalog-Gebäude und jeden Generator.",
+          "done": true
+        },
+        {
+          "id": "BLOCK-02-S02",
+          "title": "Alte Block-ID chain durch iron_chain ersetzt (in 26.3 gibt es chain nicht mehr): 152 Katalog- und alle Generator-Ketten.",
+          "done": true
+        },
+        {
+          "id": "BLOCK-02-S03",
+          "title": "Alle 336 Katalog-Gebäude ohne Fehler: Leitern vor Fenstern/in Wandzellen, Banner, Fackeln, Haken, Glocke, Blumen auf Stein, Kakao, Kaktus, Zuckerrohr, Betten, Türen; 178 Gebäude erhalten über die Katalog-Lieferung eine neue Version.",
+          "done": true
+        },
+        {
+          "id": "BLOCK-02-S04",
+          "title": "Generatoren erzeugen nur gültige Bauten (Kirche, Hafen, Torhaus, Windmühle, Brücke, Treppenhaus, Brunnen; Version jeweils erhöht, Dorfplatz-Anlage v2).",
+          "done": true
+        },
+        {
+          "id": "BLOCK-02-S05",
+          "title": "Dauerhafte Prüfung tests/catalog-game.test.mjs (checkPlacement mit ownSpace) über alle Gebäude und Generator-Fälle; Kakao-Regel nachgetragen.",
+          "done": true
+        },
+        {
+          "id": "BLOCK-02-S06",
+          "title": "Abnahme im echten Spiel: einige geänderte Gebäude per Litematic setzen, nichts bricht ab.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Spielprüfung mit ownSpace meldet für jedes Katalog-Gebäude und jeden geprüften Generator-Fall 0 Fehler (ohne Halt, fällt, Hälfte, Verbindung, ungültiger Zustand, unbekannte Blöcke)."
+      ],
+      "next": "Abnahme im Spiel (S06): geänderte Gebäude (z. B. Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/catalog-game.test.mjs",
+          "note": "Alle Gebäude und Generator-Fälle ohne Halt-, Verbindungs- und ID-Fehler; hangLanterns, ownSpace, Kakao."
+        },
+        {
+          "path": "docs/architecture/BLOCK_LOGIC.md",
+          "note": "Abschnitt „Spielgerechter Katalog (BLOCK-02)“."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Node-Prüfungen bestanden; Abnahme im echten Spiel steht aus."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-02T12:25:42.264Z"
     },
     {
       "id": "GFX-01",
@@ -8009,6 +8089,75 @@
           "done": 7,
           "total": 9,
           "next": "Philipp testet 0.6.0 (Fabric oder NeoForge) auf server.lmnt-gaming.net, auch mit Complementary-Shader; danach Stufe 5."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-02T12:25:42.264Z",
+      "kind": "progress",
+      "items": [
+        "BLOCK-02",
+        "BLOCK-01"
+      ],
+      "summary": "Katalog und Generatoren spielgerecht: gemeinsame Bauregel gameReady (Laternen an iron_chain bis zur Decke, Verbindungen wie im Spiel), chain→iron_chain, alle 336 Gebäude und 466 Generator-Fälle ohne Halt-, Verbindungs- und ID-Fehler (vorher 208 bzw. 140 Blöcke ohne Halt, 1.239 Verbindungsabweichungen, 152 unbekannte Ketten); 178 Gebäude als neue Katalogversion, Generatoren Kirche/Hafen/Torhaus/Windmühle/Brücke/Treppenhaus/Brunnen v2; neuer Dauertest tests/catalog-game.test.mjs; npm run check und 108/108 Browsertests grün. Offen: Abnahme im Spiel.",
+      "files": [
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/BLOCK_LOGIC.md",
+        "packages/domain/src/build/furnish.ts",
+        "packages/domain/src/build/gameReady.ts",
+        "packages/domain/src/build/plot.ts",
+        "packages/domain/src/build/sets/befestigung.ts",
+        "packages/domain/src/build/sets/deko.ts",
+        "packages/domain/src/build/sets/dimensionen.ts",
+        "packages/domain/src/build/sets/dorf.ts",
+        "packages/domain/src/build/sets/epochen.ts",
+        "packages/domain/src/build/sets/fahrzeuge.ts",
+        "packages/domain/src/build/sets/fantasy.ts",
+        "packages/domain/src/build/sets/farmen.ts",
+        "packages/domain/src/build/sets/garten.ts",
+        "packages/domain/src/build/sets/hof.ts",
+        "packages/domain/src/build/sets/infrastruktur.ts",
+        "packages/domain/src/build/sets/interieur.ts",
+        "packages/domain/src/build/sets/kueste.ts",
+        "packages/domain/src/build/sets/landschaft.ts",
+        "packages/domain/src/build/sets/natur.ts",
+        "packages/domain/src/build/sets/redstone.ts",
+        "packages/domain/src/build/sets/stadt.ts",
+        "packages/domain/src/build/sets/untergrund.ts",
+        "packages/domain/src/build/sets/wohnen.ts",
+        "packages/domain/src/buildings.ts",
+        "packages/domain/src/generators/bridge.ts",
+        "packages/domain/src/generators/church.ts",
+        "packages/domain/src/generators/compound.ts",
+        "packages/domain/src/generators/gatehouse.ts",
+        "packages/domain/src/generators/harbor.ts",
+        "packages/domain/src/generators/stairwell.ts",
+        "packages/domain/src/generators/well.ts",
+        "packages/domain/src/generators/windmill.ts",
+        "packages/domain/src/guide.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/materials.ts",
+        "packages/domain/src/placement.ts",
+        "packages/voxel/src/blocklogic/support.ts",
+        "tests/catalog-game.test.mjs",
+        "tests/catalog.test.mjs",
+        "tests/generators.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "BLOCK-02",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme im Spiel (S06): geänderte Gebäude (z. B. Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen."
+        },
+        {
+          "id": "BLOCK-01",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Abnahme im Spiel; PROFILE-01 kann die Berichtsfakten übernehmen. Die Katalogfehler aus der Spielprüfung behebt BLOCK-02."
         }
       ]
     }

@@ -1,6 +1,7 @@
 import { createPayload, stateKey } from '../../../voxel/src/validation.js';
 import type { BlockState, Cell, Vec3, VoxelPayload } from '../../../voxel/src/types.js';
 import { SAMPLE_PROFILE } from '../samples.js';
+import { gameReady } from './gameReady.js';
 
 /**
  * Gebäudebaukasten (B9 Ausbau): sparse voxel plot plus shape and state helpers
@@ -152,7 +153,8 @@ export class Plot {
       cells.push({ position: c.position, kind: 'block', paletteIndex: index.get(key)! });
     }
     const maxExclusive: Vec3 = [this.size[0], Math.max(this.size[1], this.top), this.size[2]];
-    return createPayload({ schemaVersion: 1, profileId: SAMPLE_PROFILE, bounds: { min: [0, 0, 0], maxExclusive }, pivot: [0, 0, 0], sourceOrigin: [0, 0, 0], palette, cells, blockEntities: [] });
+    // BLOCK-02: lanterns hang from chains, connections as in the game (gameReady.ts).
+    return gameReady(createPayload({ schemaVersion: 1, profileId: SAMPLE_PROFILE, bounds: { min: [0, 0, 0], maxExclusive }, pivot: [0, 0, 0], sourceOrigin: [0, 0, 0], palette, cells, blockEntities: [] }));
   }
 }
 

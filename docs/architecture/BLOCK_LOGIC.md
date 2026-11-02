@@ -69,3 +69,20 @@ Folge: Schritte, deren Blöcke die Phase wechseln (z. B. Türen jetzt „angebra
 - `tests/block-logic.test.mjs`: Fakten gegen den Bericht und die Standardzustandstabelle, Stützflächen/Halt/Items/Stapel, **alle 3.060 Spielvektoren**, Wasser/Kaktus/Gerüst, Platzierprüfung, Verbinden (idempotent), Werkstatt-Schritt, Bauanleitung mit hängender Laterne, Material.
 - Lokal zusätzlich 42.000 Vektoren (2.000 je Familie, 16.000 Halt): alle gleich außer 9 Feuer-Fällen (bewusst nicht nachgebildet) und 6 Pilz-Fällen (Prüfwelt hell, Planer nimmt Dunkelheit an).
 - Katalog: 339 Versionen, 136.863 Blöcke in 246 ms geprüft; 140 Blöcke ohne Halt (109 Laternen unter Luft …), 1.239 Verbindungen anders als im Spiel.
+
+## Spielgerechter Katalog (BLOCK-02)
+
+Stand 02.11.2026. Die Spielprüfung fand im Katalog 140 Blöcke ohne Halt (meist Laternen in der Luft), 1.239 Verbindungen anders als im Spiel und 152 Ketten mit der alten ID `minecraft:chain`, die es in 26.3 nicht mehr gibt (seit 1.21.9 `minecraft:iron_chain`; ein Litematic-Import im Spiel hätte sie verworfen). Streng gezählt – leere Zellen im Gebäuderaum als Luft – waren es 208 Fehler in 85 Gebäuden, dazu Fehler in vier Generatoren.
+
+**Gemeinsame Bauregel** [`build/gameReady.ts`](../../packages/domain/src/build/gameReady.ts): `gameReady(payload)` ist der letzte Schritt von `Plot.payload()` (Baukasten `build/plot.ts` und die Kopie der 16 Klassiker in `buildings.ts`), gilt also für jedes Katalog-Gebäude und jeden Generator.
+
+- `hangLanterns`: Eine Laterne (auch Seelen-/Kupferlaterne), die an ihrer Stelle nicht hält, hängt an `iron_chain`-Gliedern bis zum nächsten Block darüber (höchstens `MAX_CHAIN` = 8 Glieder). Eine stehende Laterne ohne Boden, aber mit tragendem Block direkt darüber, wird hängend. Ohne Decke bleibt sie unverändert – dann meldet die Prüfung den Fehler und das Gebäude muss von Hand repariert werden.
+- Danach `settlePayload`: Zäune, Mauern, Scheiben, Gitter, Treppenformen usw. bekommen den Zustand, den das Spiel aus den Nachbarn ableitet.
+
+Alles andere ist im Entwurf behoben (nicht automatisch): Leitern, Banner, Fackeln, Haken und Knöpfe brauchen einen festen Block auf ihrer Rückseite (keine Glasscheibe, kein Gitter, nicht die eigene Wandzelle – in offenen Raummodulen an z = 1 statt z = 0), Blumen und Azaleen brauchen Gras/Erde/Moos, Laternen und Kerzen stehen nicht auf unteren Platten, Wegeblöcken oder Truhen, Laternen hängen nicht an Laub, oberen Platten oder waagerechten Ketten, Betten liegen mit dem Kopf in `facing`-Richtung, Türen brauchen einen vollen Block darunter.
+
+**Prüfung** `checkPlacement(payload, { ownSpace: true })`: Der Plan beansprucht seinen Raum; leere Zellen ab der Grundfläche zählen als Luft, nur der Boden unter y = 0 bleibt Umgebung. [`tests/catalog-game.test.mjs`](../../tests/catalog-game.test.mjs) verlangt für alle Katalog-Gebäude und für jeden Generator (Standard, Vorlagen, Stile, 25 Würfelwerte, Bereichsenden) 0 Fehler jeder Art und 0 Blöcke ohne 26.3-Fakten. Neue Gebäude und Generatoren sind automatisch geprüft.
+
+**Kakao**: Das Prüfprogramm testete Halt nur mit Stein; Kakao hält aber nur an `#jungle_logs` in `facing`-Richtung. Diese Regel steht jetzt als Sonderfall in `support.ts` (`survives`, `supportNeed`).
+
+**Versionen**: 178 der 336 Gebäude haben neue Geometrie. Gespeicherte Bibliotheken bekommen sie über die Katalog-Lieferung (UPDATE-01) als neue Version „2.0“ usw.; Projekte behalten ihre Version und sehen das Update im Reiter „Updates“. Generatoren mit geänderter Ausgabe haben eine höhere Version (Kirche, Hafen, Torhaus, Windmühle, Brücke, Treppenhaus, Brunnen jeweils v2, Anlage Dorfplatz v2); ältere generierte Versionen zeigen deshalb „ältere Generatorversion“ statt „abweichend“.

@@ -282,26 +282,30 @@ test('sort "match" always lists the best match first, whatever the direction fla
 
 // ------------------------------------------------------------------ catalogue extension (families, play stage, ensembles)
 
-/** Version ids of the samples and the 16 original buildings before the extension: content addresses must not move. */
+/**
+ * Version ids of the samples and the 16 original buildings: content addresses move only on purpose.
+ * BLOCK-02 (02.11.2026) changed six of them deliberately (ladders, lanterns, connections as in the game);
+ * stored copies receive the new geometry as version 2.0 through the catalogue delivery (UPDATE-01).
+ */
 const STABLE_IDS = {
   "sample_tower": "av_10868f41c30db28a998b712b3ff28906",
   "sample_wall": "av_2364aa8e50e630d75286475dcaa02bfd",
   "sample_gate": "av_232e4073dde45df918ee8dd851c7b950",
-  "bld_fachwerkhaus": "av_fd29e080b20522ebeb8a4604b1c4404f",
+  "bld_fachwerkhaus": "av_e297340958730d4684fbb031dccf6dcc",
   "bld_blockhuette": "av_6d57766cf83ad16ac7cf6eba289cf6db",
   "bld_wuestenhaus": "av_4334b47f14b9a245ab98f31e63f372b9",
-  "bld_leuchtturm": "av_7381dc8ac7a87bbb8f676b108c365c62",
+  "bld_leuchtturm": "av_fe2870f589043912f085b66096562586",
   "bld_dorfbrunnen": "av_1c1f494915b946bab90a0b1f8d95246d",
   "bld_schmiede": "av_76190f1b0adca7269f03fb0bf5c723b5",
-  "bld_scheune": "av_d3861f67fd6c645dbe85032c02a0a5eb",
-  "bld_marktstand": "av_293f2ab7e7a9bf483a67f9604a40f77d",
+  "bld_scheune": "av_61217967ebbba4c4e72f1d2d4bf0e6d6",
+  "bld_marktstand": "av_c1016d18cc2a0b87f14ca8fbaff3d141",
   "bld_kapelle": "av_3a477ee1819c80fef039d35857eeb9e5",
   "bld_gewaechshaus": "av_932d26fba4c83a254b03853641b53f78",
   "bld_villa": "av_b7c1fe8edd3b13a277eb1995f2b010e5",
   "bld_iglu": "av_4018067748565430daa8029bf0418229",
   "bld_steinbruecke": "av_593e75b5a07da133e6a451f42195052e",
-  "bld_hafensteg": "av_39fe4d3fc8b939fda6439479da1e0d93",
-  "bld_wachturm": "av_9fa54ab1f4633842ac2fc3de73398700",
+  "bld_hafensteg": "av_f47aea28cbbe0ab082e820f4a6301b87",
+  "bld_wachturm": "av_ff1efb55b4c0c07514345cf62bfe3095",
   "bld_baumhaus": "av_4b1086b4da1164c57c7b3feb4c3bacda"
 };
 

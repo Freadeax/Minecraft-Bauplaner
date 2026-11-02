@@ -170,7 +170,7 @@ function fischteich() {
     else if (noise(x, 6, z) > 0.86) p.set(x, 3, z, 'lily_pad');
   }
   // jetty from the south shore
-  for (let z = 6; z <= 10; z++) for (const x of [6, 7]) { p.set(x, 2, z, 'spruce_planks'); p.clear(x, 3, z); }
+  for (let z = 6; z <= 10; z++) for (const x of [6, 7]) { p.set(x, 2, z, 'spruce_planks'); p.clear(x, 3, z); p.clear(x, 4, z); }
   for (const x of [6, 7]) { p.set(x, 1, 6, 'spruce_log', axis('y')); p.set(x, 0, 6, 'spruce_log', axis('y')); }
   chair(p, 6, 3, 6, 'spruce', 'south');
   p.set(7, 3, 6, 'spruce_fence'); p.set(7, 4, 6, 'lantern', lantern());

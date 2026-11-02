@@ -14,7 +14,7 @@ import type { Style } from './styles.js';
  * an arcade and clerestory windows, pews, altar and bell.
  */
 export const CHURCH_GENERATOR: Generator = {
-  id: 'kirche', name: 'Kirche', version: 1,
+  id: 'kirche', name: 'Kirche', version: 2,
   description: 'Kirche mit Langhaus, Turm (Helm, Zeltdach, Zinnen) oder Dachreiter, Apsis oder Rechteckchor, Seitenschiffen, Fensterreihen, Rosette, Bänken, Altar und Glocke.',
   params: [
     { key: 'breite', label: 'Breite Langhaus', group: 'Maße', type: 'int', min: 7, max: 19, step: 2, default: 9, unit: 'Blöcke', hint: 'Ungerade, damit Tür, Turm und Mittelgang mittig liegen.' },
@@ -127,7 +127,7 @@ export const CHURCH_GENERATOR: Generator = {
       for (let z = zf + 2; z <= zb - 2; z += 4) {
         let y = h + 1;
         while (y < ridgeTop && !p.has(cx, y, z)) y++;
-        for (let yy = h + 1; yy < y; yy++) p.set(cx, yy, z, 'chain', chain('y'));
+        for (let yy = h + 1; yy < y; yy++) p.set(cx, yy, z, 'iron_chain', chain('y'));
         p.set(cx, h, z, s.light, lantern(true));
       }
     }
@@ -151,7 +151,8 @@ export const CHURCH_GENERATOR: Generator = {
       p.air(cx, 1, zf); p.air(cx, 2, zf);
       for (let y = 3; y <= Math.min(h - 2, 5); y++) p.set(cx, y + 1, 0, s.window);
       // Belfry: sound openings near the top.
-      const faces: [number, number, H][] = [[cx, 0, 'north'], [tx0, czt, 'west'], [tx1, czt, 'east']];
+      // No opening in the east face: the ladder hangs there (BLOCK-02).
+      const faces: [number, number, H][] = [[cx, 0, 'north'], [tx0, czt, 'west']];
       if (Ht - 3 > ridgeTop) faces.push([cx, zf, 'south']);
       const ow = rt >= 3 ? 1 : 0;
       for (const [fx, fz, f] of faces) for (let o = -ow; o <= ow; o++) for (let y = Ht - 3; y <= Ht - 1; y++) {

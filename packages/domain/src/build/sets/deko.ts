@@ -79,7 +79,7 @@ function heissluftballon() {
   const p = new Plot([9, 17, 9]);
   p.room(3, 3, 5, 5, 0, 1, 'spruce_planks'); p.fill(3, 0, 3, 5, 0, 5, 'spruce_planks'); p.fill(4, 1, 4, 4, 1, 4, null);
   p.set(4, 1, 4, 'campfire', campfire());
-  for (const [x, z] of [[3, 3], [5, 3], [3, 5], [5, 5]] as const) p.fill(x, 2, z, x, 5, z, 'chain', chain());
+  for (const [x, z] of [[3, 3], [5, 3], [3, 5], [5, 5]] as const) p.fill(x, 2, z, x, 5, z, 'iron_chain', chain());
   const rows = [3, 4, 4, 4, 4, 3, 3, 2, 1];
   rows.forEach((r, i) => { const y = 7 + i; p.disc(4, 4, y, r, i % 2 ? 'red_wool' : 'white_wool', {}, true); });
   p.disc(4, 4, 6, 2, 'red_wool', {}, true);
@@ -109,7 +109,7 @@ function segelschiff() {
   }
   p.fill(0, 4, 4, 0, 6, 4, 'spruce_fence');
   p.set(14, 19, 4, 'black_banner', banner(4));
-  p.set(22, 8, 4, 'lantern', lantern());
+  p.set(22, 7, 4, 'spruce_planks'); p.set(22, 8, 4, 'lantern', lantern());
   return p.payload();
 }
 
@@ -135,7 +135,7 @@ function zeltlager() {
       p.set(x0 + 1, 2, z, `${c}_wool`); p.set(x0 + 3, 2, z, `${c}_wool`); p.set(x0 + 2, 3, z, `${c}_wool`);
     }
     p.fill(x0 + 1, 1, 5, x0 + 3, 1, 5, null); p.air(x0 + 2, 2, 5);
-    p.set(x0 + 2, 1, 2, `${c === 'white' ? 'red' : 'yellow'}_bed`, { facing: 'south', occupied: F, part: 'head' }); p.set(x0 + 2, 1, 3, `${c === 'white' ? 'red' : 'yellow'}_bed`, { facing: 'south', occupied: F, part: 'foot' });
+    p.set(x0 + 2, 1, 2, `${c === 'white' ? 'red' : 'yellow'}_bed`, { facing: 'north', occupied: F, part: 'head' }); p.set(x0 + 2, 1, 3, `${c === 'white' ? 'red' : 'yellow'}_bed`, { facing: 'north', occupied: F, part: 'foot' });
   }
   p.set(6, 1, 8, 'campfire', campfire()); p.set(5, 1, 8, 'spruce_log', axis('z')); p.set(7, 1, 8, 'spruce_log', axis('z'));
   p.set(2, 1, 8, 'chest', { facing: 'north', type: 'single', waterlogged: F }); p.set(10, 1, 8, 'crafting_table');

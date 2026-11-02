@@ -310,7 +310,7 @@ function schaedelhoehle() {
   p.set(7, 1, 4, 'chest', chest('south')); p.set(6, 1, 4, 'skeleton_skull', { powered: F, rotation: '0' });
   p.set(8, 1, 4, 'candle', candle(2, true)); p.set(4, 1, 6, 'soul_lantern', lantern()); p.set(10, 1, 6, 'soul_lantern', lantern());
   p.set(7, 7, 8, 'cobweb'); p.set(5, 6, 5, 'cobweb');
-  p.set(7, 7, 6, 'chain', { axis: 'y', waterlogged: F }); p.set(7, 6, 6, 'soul_lantern', lantern(true));
+  p.set(7, 7, 6, 'iron_chain', { axis: 'y', waterlogged: F }); p.set(7, 6, 6, 'soul_lantern', lantern(true));
   return p.payload();
 }
 

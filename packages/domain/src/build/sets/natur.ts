@@ -256,7 +256,7 @@ function felsnadeln() {
     if (p.has(x, 1, z) || !is(p, x, 0, z, 'red_sand')) continue;
     if (noise(x, 1, z) > 0.88) p.set(x, 1, z, 'dead_bush');
   }
-  for (const [x, z, h] of [[11, 11, 3], [1, 8, 2]] as const) if (!SIDES.some(f => { const [dx, dz] = STEP[f]; return p.has(x + dx, 1, z + dz); })) p.fill(x, 1, z, x, h, z, 'cactus', { age: '0' });
+  for (const [x, z, h] of [[11, 11, 3], [1, 8, 2]] as const) if (!SIDES.some(f => { const [dx, dz] = STEP[f]; return p.has(x + dx, 1, z + dz); })) { p.set(x, 0, z, 'red_sand'); p.fill(x, 1, z, x, h, z, 'cactus', { age: '0' }); }
   return p.payload();
 }
 

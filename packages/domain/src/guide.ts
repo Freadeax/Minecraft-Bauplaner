@@ -81,7 +81,7 @@ const GRAVITY = new Set(['sand', 'red_sand', 'gravel', 'suspicious_sand', 'suspi
 const LIQUID = new Set(['water', 'lava', 'bubble_column']);
 const ATTACHED = new Set(['torch', 'wall_torch', 'soul_torch', 'soul_wall_torch', 'redstone_torch', 'redstone_wall_torch', 'ladder', 'lever', 'rail', 'powered_rail',
   'detector_rail', 'activator_rail', 'redstone_wire', 'repeater', 'comparator', 'tripwire_hook', 'tripwire', 'lantern', 'soul_lantern', 'vine', 'glow_lichen',
-  'flower_pot', 'cocoa', 'snow', 'candle', 'sea_pickle', 'end_rod', 'chain', 'bell']);
+  'flower_pot', 'cocoa', 'snow', 'candle', 'sea_pickle', 'end_rod', 'chain', 'iron_chain', 'bell']);
 const ATTACHED_SUFFIX = ['_button', '_pressure_plate', '_carpet', '_sign', '_banner', '_sapling', '_trapdoor', '_coral_fan', '_wall_fan', '_head', '_skull', '_candle', '_torch'];
 
 /**

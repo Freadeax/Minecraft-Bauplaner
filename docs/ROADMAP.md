@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-02T12:10:10.657Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-02T12:25:42.264Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-02T12:10:10.657Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 15 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 32 |
+| 🧩 Implementiert · Abnahme offen | 33 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -123,6 +123,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [UI-02](#ui-02) | App-Hülle, Navigation und Handyoberfläche überarbeiten | ✅ Im beschriebenen Umfang geprüft | 4/4 | UI-01, QA-01 | ausstehend | ausstehend |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen | 5/6 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material | 🧩 Implementiert · Abnahme offen | 6/7 | VIEW-02, BUILD-01, MAT-01 | ausstehend | ausstehend |
+| [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel | 🧩 Implementiert · Abnahme offen | 5/6 | BLOCK-01, LIB-04, UPDATE-01 | ausstehend | ausstehend |
 | [GFX-01](#gfx-01) | Grafik vertiefen: Minecraft-Licht, Eckschatten, Sonne mit Schatten, Nacht, Spawnprüfung, sortiertes Glas und 32³-Abschnitte für große Modelle | 🧩 Implementiert · Abnahme offen | 5/6 | VIEW-02 | ausstehend | ausstehend |
 | [MODEL-01](#model-01) | 3D-Export: Bauteile, Projekte und Anlagen als OBJ/MTL, glTF/GLB, STL und 3MF (Ansichtsmodell mit Blockformen/Texturen, wasserdichte Druckhülle mit Maßstab, Füllen, Aushöhlen, Farben) | 🧩 Implementiert · Abnahme offen | 4/6 | VIEW-02, GFX-01 | ausstehend | ausstehend |
 | [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-02, VIEW-01 | ausstehend | ausstehend |
@@ -880,7 +881,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### BLOCK-01
 
-**Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Echte Minecraft-Blocklogik einbauen“) · Aktualisiert: 2026-11-02T08:26:29.438Z
+**Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Echte Minecraft-Blocklogik einbauen“) · Aktualisiert: 2026-11-02T12:25:42.264Z
 
 - [x] BLOCK-01-S01: Blockfakten aus dem echten 26.3-Server (Berichte + Prüfprogramm): alle 1286 Blöcke, 35.723 Zustände, Stützflächen, Halt, Items, Stapelgrößen, Tags.
 - [x] BLOCK-01-S02: Verbindungen wie im Spiel (Zäune, Mauern hoch/niedrig/Pfosten, Scheiben/Gitter, Treppenformen, Tore, Schneegras, Pilzblöcke); 3.060 Spielvektoren gleich.
@@ -892,13 +893,36 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Verbindungen und Halt entsprechen dem Spielcode (Prüfvektoren aus dem echten Server); keine Mojang-Dateien im Repository (ADR-020).
 
-**Nächste Aktion:** Abnahme im Spiel; die gefundenen Katalogfehler (u. a. 109 Laternen ohne Halt, Leitern an Scheiben) in der Gebäudebibliothek beheben; PROFILE-01 kann die Berichtsfakten übernehmen.
+**Nächste Aktion:** Abnahme im Spiel; PROFILE-01 kann die Berichtsfakten übernehmen. Die Katalogfehler aus der Spielprüfung behebt BLOCK-02.
 
 **Prüfstand:** Node- und Chromium-Prüfungen bestanden; Abnahme im echten Spiel offen.
 
 **Nachweise:** [tests/block-logic.test.mjs](../tests/block-logic.test.mjs) — Fakten, alle 3.060 Spielvektoren, Halt-Sonderfälle, Platzierprüfung, Verbinden, Bauanleitung, Material.; [tests/e2e/block-logic.e2e.mjs](../tests/e2e/block-logic.e2e.mjs) — Spielprüfung in der Bauanleitung (1400/390 px), Zaunreihe in der Werkstatt verbinden und rückgängig.; [docs/architecture/BLOCK_LOGIC.md](architecture/BLOCK_LOGIC.md) — Herkunft der Fakten, Module, Regeln, Grenzen.
 
 **Dateiumfang:** `packages/voxel/src/blockFacts.ts`, `packages/voxel/src/blocklogic/`, `packages/domain/src/placement.ts`, `packages/domain/src/editor/settle.ts`, `packages/domain/src/guide.ts`, `packages/domain/src/materials.ts`, `packages/domain/src/editor/blocks.ts`, `apps/web/src/views/project/PlacementPanel.tsx`, `apps/web/src/editor/BlockEditor.tsx`, `scripts/probe/`, `scripts/gen_block_facts.mjs`, `fixtures/blocks/`. **Abhängigkeiten:** VIEW-02, BUILD-01, MAT-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### BLOCK-02
+
+**Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Schwebende Blöcke im Katalog reparieren“) · Aktualisiert: 2026-11-02T12:25:42.264Z
+
+- [x] BLOCK-02-S01: Gemeinsame Bauregel gameReady(): Laternen ohne Halt hängen an iron_chain bis zur nächsten Decke, danach alle Verbindungen wie im Spiel (settlePayload); gilt für jedes Katalog-Gebäude und jeden Generator.
+- [x] BLOCK-02-S02: Alte Block-ID chain durch iron_chain ersetzt (in 26.3 gibt es chain nicht mehr): 152 Katalog- und alle Generator-Ketten.
+- [x] BLOCK-02-S03: Alle 336 Katalog-Gebäude ohne Fehler: Leitern vor Fenstern/in Wandzellen, Banner, Fackeln, Haken, Glocke, Blumen auf Stein, Kakao, Kaktus, Zuckerrohr, Betten, Türen; 178 Gebäude erhalten über die Katalog-Lieferung eine neue Version.
+- [x] BLOCK-02-S04: Generatoren erzeugen nur gültige Bauten (Kirche, Hafen, Torhaus, Windmühle, Brücke, Treppenhaus, Brunnen; Version jeweils erhöht, Dorfplatz-Anlage v2).
+- [x] BLOCK-02-S05: Dauerhafte Prüfung tests/catalog-game.test.mjs (checkPlacement mit ownSpace) über alle Gebäude und Generator-Fälle; Kakao-Regel nachgetragen.
+- [ ] BLOCK-02-S06: Abnahme im echten Spiel: einige geänderte Gebäude per Litematic setzen, nichts bricht ab.
+
+**Abnahme:** Spielprüfung mit ownSpace meldet für jedes Katalog-Gebäude und jeden geprüften Generator-Fall 0 Fehler (ohne Halt, fällt, Hälfte, Verbindung, ungültiger Zustand, unbekannte Blöcke).
+
+**Nächste Aktion:** Abnahme im Spiel (S06): geänderte Gebäude (z. B. Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen.
+
+**Prüfstand:** Node-Prüfungen bestanden; Abnahme im echten Spiel steht aus.
+
+**Nachweise:** [tests/catalog-game.test.mjs](../tests/catalog-game.test.mjs) — Alle Gebäude und Generator-Fälle ohne Halt-, Verbindungs- und ID-Fehler; hangLanterns, ownSpace, Kakao.; [docs/architecture/BLOCK_LOGIC.md](architecture/BLOCK_LOGIC.md) — Abschnitt „Spielgerechter Katalog (BLOCK-02)“.
+
+**Dateiumfang:** `packages/domain/src/build/`, `packages/domain/src/buildings.ts`, `packages/domain/src/generators/`, `packages/domain/src/placement.ts`, `packages/voxel/src/blocklogic/support.ts`, `packages/domain/src/materials.ts`, `packages/domain/src/guide.ts`, `tests/catalog-game.test.mjs`. **Abhängigkeiten:** BLOCK-01, LIB-04, UPDATE-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

@@ -268,7 +268,7 @@ function fischmarkt() {
 function leuchtboje() {
   const p = new Plot([7, 15, 7]);
   p.set(3, 0, 3, 'anvil', facing('north'));
-  p.fill(3, 1, 3, 3, 3, 3, 'chain', chain());
+  p.fill(3, 1, 3, 3, 3, 3, 'iron_chain', chain());
   p.set(3, 4, 3, 'red_concrete');
   p.disc(3, 3, 5, 1, 'red_concrete'); p.disc(3, 3, 6, 2, 'red_concrete'); p.disc(3, 3, 7, 2, 'white_concrete'); p.disc(3, 3, 8, 1, 'white_concrete');
   p.ring(2, 2, 4, 4, 9, 'iron_bars'); p.ring(2, 2, 4, 4, 10, 'iron_bars');
@@ -301,7 +301,7 @@ function hafenspeicher() {
   overhangZ(p, 3, 2, 0, 10, 13, 18); overhangZ(p, 13, 14, 0, 10, 13, 18);
   p.set(5, 14, 3, 'glass_pane', pane);
   p.fill(5, 16, 1, 5, 16, 2, 'stripped_spruce_log', axis('z')); p.set(5, 17, 2, 'dark_oak_planks'); p.set(5, 17, 1, 'dark_oak_slab', slab());
-  p.fill(5, 9, 1, 5, 15, 1, 'chain', chain()); p.set(5, 8, 1, 'barrel', barrel('up'));
+  p.fill(5, 9, 1, 5, 15, 1, 'iron_chain', chain()); p.set(5, 8, 1, 'barrel', barrel('up'));
   p.fill(4, 16, 4, 6, 16, 4, 'stripped_spruce_log', axis('x'));
   // ladder through all floors
   p.fill(8, 1, 12, 8, 10, 12, 'ladder', ladder('west'));

@@ -41,7 +41,7 @@ function pergola() {
   for (const x of [2, 3, 5, 6]) p.set(x, 1, 1, 'oak_leaves', leaves());
   sofa(p, 2, 1, 2, 'oak', 'north', 5);
   table(p, 4, 1, 3, 'oak');
-  p.set(4, 4, 3, 'chain', chain()); p.set(4, 3, 3, 'lantern', lantern(true));
+  p.set(4, 4, 3, 'iron_chain', chain()); p.set(4, 3, 3, 'lantern', lantern(true));
   // vines hang from the rafters and climb the posts
   for (const x of [0, 2, 4, 6, 8]) for (const z of [0, 2, 3, 5]) if (!p.has(x, 4, z) && noise(x, 4, z) > 0.3) p.set(x, 4, z, 'vine', vine('up'));
   for (const [x, z, f] of [[0, 1, 'east'], [8, 4, 'west'], [1, 5, 'north'], [7, 0, 'south'], [4, 5, 'north']] as const)
@@ -87,7 +87,7 @@ function rosenbogen() {
     p.fill(1, 1, z, 1, 3, z, 'spruce_fence'); p.fill(5, 1, z, 5, 3, z, 'spruce_fence');
     for (let x = 1; x <= 5; x++) p.set(x, 4, z, noise(x, 4, z) > 0.45 ? 'flowering_azalea_leaves' : 'oak_leaves', leaves());
     for (let x = 2; x <= 4; x++) p.set(x, 5, z, noise(x, 5, z) > 0.35 ? 'flowering_azalea_leaves' : 'oak_leaves', leaves());
-    p.set(3, 3, z, 'lantern', lantern(true));
+    p.set(3, 4, z, 'stripped_oak_log', axis('x')); p.set(3, 3, z, 'lantern', lantern(true)); // Laub trägt keine Laterne
     tallPlant(p, 0, 1, z, 'rose_bush'); tallPlant(p, 6, 1, z, 'rose_bush');
     for (const x of [1, 5]) p.set(x, 1, z + 2, 'oak_leaves', leaves());
   }
@@ -139,7 +139,7 @@ function geraeteschuppen() {
   p.set(4, 1, 3, 'composter');
   for (const x of [2, 3, 4]) p.set(x, 3, 2, 'spruce_trapdoor', trapdoor('south', 'top'));
   p.set(2, 4, 2, 'flower_pot'); p.set(4, 4, 2, 'potted_oak_sapling');
-  p.set(3, 5, 3, 'chain', chain()); p.set(3, 4, 3, 'lantern', lantern(true));
+  p.set(3, 5, 3, 'iron_chain', chain()); p.set(3, 4, 3, 'lantern', lantern(true));
   p.set(1, 1, 5, 'cauldron'); p.set(5, 1, 5, 'composter'); p.set(0, 1, 2, 'hay_block', axis('y'));
   p.set(6, 1, 1, 'flowering_azalea'); p.set(0, 1, 4, 'azalea');
   return p.payload();
@@ -257,7 +257,7 @@ function spielplatz() {
   // swing: two posts, beam, two seats on chains
   p.fill(1, 1, 2, 1, 4, 2, 'spruce_log', axis('y')); p.fill(7, 1, 2, 7, 4, 2, 'spruce_log', axis('y'));
   p.fill(1, 5, 2, 7, 5, 2, 'spruce_log', axis('x'));
-  for (const x of [3, 5]) { p.fill(x, 2, 2, x, 4, 2, 'chain', chain()); p.set(x, 1, 2, 'spruce_slab', slab('top')); }
+  for (const x of [3, 5]) { p.fill(x, 2, 2, x, 4, 2, 'iron_chain', chain()); p.set(x, 1, 2, 'spruce_slab', slab('top')); }
   // slide tower with ladder, railing, roof and a stair slide
   for (const [x, z] of [[9, 1], [11, 1], [9, 3], [11, 3]] as const) p.fill(x, 1, z, x, 5, z, 'oak_fence');
   p.fill(9, 1, 2, 9, 2, 2, 'oak_planks');

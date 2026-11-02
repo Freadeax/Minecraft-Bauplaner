@@ -83,7 +83,7 @@ function mineneingang() {
   const wheel: readonly [number, number][] = [[2, 0], [2, 1], [1, 2], [0, 2], [-1, 2], [-2, 1], [-2, 0], [-2, -1], [-1, -2], [0, -2], [1, -2], [2, -1]];
   for (const [dx, dy] of wheel) p.set(11 + dx, 12 + dy, 11, 'stripped_dark_oak_wood', axis('z'));
   for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) p.set(11 + dx, 12 + dy, 11, 'dark_oak_fence');
-  p.fill(11, 4, 11, 11, 9, 11, 'chain', { axis: 'y', waterlogged: F });
+  p.fill(11, 4, 11, 11, 9, 11, 'iron_chain', { axis: 'y', waterlogged: F });
   // cage: iron bars on three sides, open towards the track
   for (let y = 1; y <= 2; y++) for (const [x, z] of [[10, 10], [11, 10], [12, 10], [12, 11], [10, 12], [11, 12], [12, 12]] as const) p.set(x, y, z, 'iron_bars');
   p.fill(10, 3, 10, 12, 3, 12, 'iron_trapdoor', trapdoor('north', 'bottom'));
@@ -214,7 +214,7 @@ function hoehlenbasis() {
   rug(p, 6, 7, 8, 8, 1, 'brown', 'orange');
   p.set(11, 1, 6, 'barrel', barrel('up')); p.set(11, 1, 7, 'composter'); p.set(11, 1, 8, 'potted_azalea_bush');
   p.set(5, 1, 8, 'stonecutter', facing('east'));
-  p.set(7, 5, 6, 'stone'); p.set(7, 4, 6, 'chain', { axis: 'y', waterlogged: F }); p.set(7, 3, 6, 'lantern', lantern(true));
+  p.set(7, 5, 6, 'stone'); p.set(7, 4, 6, 'iron_chain', { axis: 'y', waterlogged: F }); p.set(7, 3, 6, 'lantern', lantern(true));
   p.set(4, 5, 4, 'glowstone'); p.set(10, 5, 4, 'glowstone');
   return p.payload();
 }
