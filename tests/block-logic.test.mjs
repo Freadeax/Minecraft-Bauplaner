@@ -38,7 +38,7 @@ test('block facts: every 26.3 block from the server report, defaults identical t
     else assert.deepEqual(b.defaults, {}, id);
     for (const [k, v] of Object.entries(b.defaults)) assert.ok(b.properties[k].includes(v), `${id} ${k}`);
   }
-  // The VIEW-02 registry knows every block (plus two legacy entity ids).
+  // The VIEW-02 registry is bound to the profile (PROFILE-01): exactly the blocks of the server report.
   const reg = new Set(vanillaBlockIds());
   for (const id of ids) assert.ok(reg.has(id), id);
   // Complete property values where the old registry only saw samples.

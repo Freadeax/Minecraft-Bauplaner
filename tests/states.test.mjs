@@ -212,10 +212,10 @@ test('payload transform reports catalogue reasons per palette entry', () => {
 test('26.3 block list: every block with an orientation property has a rule', () => {
   const ORIENTING = /^(facing|axis|rotation|north|east|south|west|shape|orientation|hinge|side_chain|face|attachment)$/;
   const ids = vanillaBlockIds();
-  assert.ok(ids.length >= 1288, `${ids.length} Blöcke`);
-  // Item and technical states that are not placeable in survival building plans.
-  const skip = new Set(['minecraft:item_frame', 'minecraft:glow_item_frame', 'minecraft:moving_piston']);
-  const missing = ids.filter(id => !skip.has(id) && Object.keys(vanillaBlockProperties(id)).some(k => ORIENTING.test(k)) && !stateRuleFor(id));
+  // PROFILE-01: the registry is the server block report (1286 blocks); item frames are entities (ENTITY-01).
+  assert.equal(ids.length, 1286, `${ids.length} Blöcke`);
+  assert.ok(!ids.includes('minecraft:item_frame') && !ids.includes('minecraft:glow_item_frame'));
+  const missing = ids.filter(id => Object.keys(vanillaBlockProperties(id)).some(k => ORIENTING.test(k)) && !stateRuleFor(id));
   assert.deepEqual(missing, []);
   for (const [id, props] of [['poplar_stairs', { facing: 'north', half: 'bottom', shape: 'outer_left', waterlogged: 'false' }],
     ['oak_shelf', { facing: 'north', powered: 'false', side_chain: 'left', waterlogged: 'false' }], ['iron_chain', { axis: 'x', waterlogged: 'false' }],

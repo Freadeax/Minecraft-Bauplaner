@@ -112,6 +112,8 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     const text = await p.locator('.building-detail').innerText();
     for (const s of ['Angaben', 'Kennwerte', 'Abmessungen (B × H × T)', '11 × 22 × 17', 'Bibliothekar', 'Schätzung', 'drehbar', 'Materialliste', '♥ Gemerkt']) assert.ok(text.includes(s), s);
     assert.match(text, /Ähnliche Gebäude/);
+    // PROFILE-01: content check against Java 26.3, never the DataVersion alone.
+    assert.equal(await p.getByTestId('profile-check').innerText(), 'gültig in Java 26.3 (ohne Versionsangabe)');
     await p.getByRole('button', { name: '♥ Gemerkt' }).click();
     await p.getByRole('button', { name: '♡ Merken' }).waitFor();
 

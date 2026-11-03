@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-03T21:33:16.961Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-03T21:37:46.206Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,10 +12,10 @@ Stand: 2026-11-03T21:33:16.961Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 13 |
+| ⏳ Offen | 12 |
 | 🚧 In Arbeit | 2 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 58 |
+| 🧩 Implementiert · Abnahme offen | 59 |
 | ✅ Im beschriebenen Umfang geprüft | 25 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -25,7 +25,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 
 | Bereich | Offen | Verwaist | Nur Philipp | Geprüft |
 |---|---:|---:|---:|---:|
-| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 19 | 10 | 18 | 2 |
+| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 19 | 9 | 18 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 4 | 10 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 3 | 1 | 3 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 6 | 1 | 6 | 0 |
@@ -33,9 +33,9 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 7 | 0 | 6 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 2 | 0 | 2 | 0 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
-| [Performance und Stabilität](#bereich-perf) | 4 | 2 | 1 | 2 |
-| [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 12 | 8 | 5 | 8 |
-| [Testphase, Qualität und Betrieb](#bereich-qa) | 2 | 1 | 2 | 8 |
+| [Performance und Stabilität](#bereich-perf) | 4 | 1 | 1 | 2 |
+| [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 12 | 2 | 5 | 8 |
+| [Testphase, Qualität und Betrieb](#bereich-qa) | 2 | 0 | 2 | 8 |
 | [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 6 | 0 | 0 | 0 |
 
 <a id="bereich-planer"></a>
@@ -46,7 +46,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 |---|---|---|---|---|---|
 | [BACKUP-02](#backup-02) | Sicherungserinnerung und Abschnittsrevisionen | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Sicherungs-Download in Safari; Rückmeldung, ob 7 Tage für die Erinnerung passen. |
 | [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Mehrfachauswahl auf echten Geräten (QA-02). |
-| [EDIT-02](#edit-02) | Blockeditor | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ · 2 verwaist | Gesetzte und gedrehte Zustände im Spiel prüfen. |
+| [EDIT-02](#edit-02) | Blockeditor | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Gesetzte und gedrehte Zustände im Spiel prüfen. |
 | [EDIT-03](#edit-03) | Werkstatt vertiefen | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Schablonen-Zustände (Tür, Treppe, Laterne) im Spiel prüfen. |
 | [EDIT-04](#edit-04) | Kreativwerkzeuge aus dem Planer-Vergleich | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ · 2 verwaist | Gespiegelte und gedrehte Zustände (Türen, Truhen, Schienen) im Spiel (S07). |
 | [EDIT-05](#edit-05) | Auswahl- und Formwerkzeuge aus Editor-Mods | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Zauberstab, Stapeln, Extrudieren und Wendel in der Werkstatt abnehmen (S07).<br>Gestapelte und gedrehte Bauteile mit Ausstattung im Spiel. |
@@ -60,7 +60,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [TERRAIN-01](#terrain-01) | Geländeaufnahmen für Weltkarte und Anlagen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Kopie deiner 26.3-Welt für die Geländeabnahme (S05). |
 | [TERRAIN-02](#terrain-02) | Landschaft gestalten | 🧩 Implementiert · Abnahme offen 5/7 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Abnahme in deiner eigenen Welt und auf Touch-Geräten (S05). |
 | [VIEW-01](#view-01) | Vorhandenen Viewer vollständig abnehmen | 🧩 Implementiert · Abnahme offen 1/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Ansicht auf echter GPU und mit Touch prüfen, negative Koordinaten, alle Schnittachsen (S02). |
-| [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Mojang-Download und Blockformen in Firefox/Safari und auf echten Geräten (S06). |
+| [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Mojang-Download und Blockformen in Firefox/Safari und auf echten Geräten (S06). |
 | [WORLD-IMPORT-01](#world-import-01) | Bereichsweiser Weltimport und Terrainprüfung | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Ausschnitt aus einer Kopie deiner Modpack-Welt übernehmen. |
 | [MODEL-01](#model-01) | 3D-Export | 🧩 Implementiert · Abnahme offen 4/6 | P2 | **verwaist** · 1 verwaist | Export in Blender und einem Slicer öffnen, ein Testdruck (S05). |
 
@@ -155,7 +155,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
-| [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen 2/3 | P1 | **verwaist** · 1 verwaist | — |
+| [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [PERF-03](#perf-03) | Bundle, große Views und Vorschaucache | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ | — |
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Olympus auf deinem Rechner, dazu Firefox/Safari (S06). |
 | [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert | 🧩 Implementiert · Abnahme offen 6/8 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ | — |
@@ -169,17 +169,17 @@ Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft).
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
 | [ARCH-02](#arch-02) | Planmodell | 🧩 Implementiert · Abnahme offen 4/5 | P0 | „Große Testphase vorbereiten und betreuen“ | Datencheck unter #/system mit deinen über Monate gewachsenen Browserdaten (S05). |
-| [FORMAT-01](#format-01) | Schem v3 an echten Referenzwerkzeugen abnehmen | 🧩 Implementiert · Abnahme offen 1/2 | P0 | **verwaist** · 1 verwaist | — |
+| [FORMAT-01](#format-01) | Schem v3 an echten Referenzwerkzeugen abnehmen | 🧩 Implementiert · Abnahme offen 1/2 | P0 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [FORMAT-02](#format-02) | Litematic an echten Referenzdateien abnehmen | 🧩 Implementiert · Abnahme offen 3/4 | P0 | „Große Testphase vorbereiten und betreuen“ | Litematic-Export im Spiel mit Litematica laden (S02). |
-| [NBT-01](#nbt-01) | Semantische BlockEntity-Transformationen | ⏳ Offen 0/2 | P0 | **verwaist** · 1 verwaist | — |
-| [PROFILE-01](#profile-01) | Ein verbindliches Java-Versionsprofil | ⏳ Offen 0/2 | P0 | **verwaist** · 1 verwaist | — |
+| [NBT-01](#nbt-01) | Semantische BlockEntity-Transformationen | ⏳ Offen 0/2 | P0 | „Liegengebliebene Datenpakete abarbeiten“ | — |
+| [PROFILE-01](#profile-01) | Ein verbindliches Java-Versionsprofil | 🧩 Implementiert · Abnahme offen 3/3 | P0 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3 | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Einen Bau mit Spielprüfung ohne Hinweise nachbauen und Verbindungen vergleichen (S07). |
 | [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Geänderte Gebäude (Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen (S06). |
-| [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen 1/3 | P1 | **verwaist** · 1 verwaist | — |
+| [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen 1/3 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [ENTITY-01](#entity-01) | Gemälde, Rahmen, Rüstungsständer und Blockinhalte | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Export mit Gemälden, Rahmen und Rüstungsständern im Spiel laden (S06). |
-| [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | ⏳ Offen 0/2 | P1 | **verwaist** · 1 verwaist | — |
+| [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | ⏳ Offen 0/2 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [MAT-03](#mat-03) | Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen | 🧩 Implementiert · Abnahme offen 2/3 | P1 | **verwaist** · 1 verwaist | — |
-| [MAT-04](#mat-04) | Kupfer mit Oxidation und Wachsstatus | ⏳ Offen 0/2 | P1 | **verwaist** · 1 verwaist | — |
+| [MAT-04](#mat-04) | Kupfer mit Oxidation und Wachsstatus | ⏳ Offen 0/2 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 
 Abgeschlossen oder zurückgestellt: CORE-01 (geprüft), CORE-02 (geprüft), CORE-03 (geprüft), STORE-01 (geprüft), MAT-01 (geprüft), ARCH-01 (geprüft), STORE-02 (geprüft), GAME-01 (geprüft).
 
@@ -190,7 +190,7 @@ Abgeschlossen oder zurückgestellt: CORE-01 (geprüft), CORE-02 (geprüft), CORE
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
 | [QA-04](#qa-04) | Große Testphase | 🧩 Implementiert · Abnahme offen 4/6 | P0 | „Große Testphase vorbereiten und betreuen“ | Testphase mit weiteren Testern: erst die Kernfälle auf #/testphase. |
-| [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | ⏳ Offen 0/2 | P1 | **verwaist** · 1 verwaist | Safari/iPhone, Touch und echte GPU – nur auf deinen Geräten möglich. |
+| [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | ⏳ Offen 0/2 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | Safari/iPhone, Touch und echte GPU – nur auf deinen Geräten möglich. |
 
 Abgeschlossen oder zurückgestellt: OPS-01 (geprüft), PLAN-01 (geprüft), DOC-01 (geprüft), QA-01 (geprüft), QA-03 (geprüft), OPS-02 (geprüft), OPS-03 (geprüft), LICENSE-01 (geprüft).
 
@@ -294,14 +294,10 @@ Arbeit, für die gerade kein laufender Thread zuständig ist. Zum Verteilen: Thr
 
 | ID | Bereich | Prio | Status | Offen ohne Bearbeiter |
 |---|---|---|---|---|
-| [FORMAT-01](#format-01) | Kern, Minecraft-Daten und Dateiformate | P0 | 🧩 Implementiert · Abnahme offen | S02 Abgleich mit echten WorldEdit-Dateien. Philipp nutzt kein WorldEdit: mit öffentlichen .schem-Referenzdateien prüfen oder zurückstellen. |
-| [NBT-01](#nbt-01) | Kern, Minecraft-Daten und Dateiformate | P0 | ⏳ Offen | Komplett offen (Codex-Vorschlag ohne Umsetzung): NBT-Familien und Ausrichtungsregeln für BlockEntities festlegen und prüfen. |
-| [PROFILE-01](#profile-01) | Kern, Minecraft-Daten und Dateiformate | P0 | ⏳ Offen | Komplett offen. War Codex vorgeschlagen, seit 01.11. keine Codex-Commits. Blockiert VIEW-02-S06, MAT-02, MAT-04 und die Registerlücken in EDIT-02. Die Berichtsfakten aus BLOCK-01 (blockFacts.ts) lassen sich übernehmen. |
 | [BASE-01](#base-01) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Küstenlinie aus der Geländeaufnahme, Wegstufen als Treppen, Brücken. |
 | [COOP-01](#coop-01) | Teambau live | P1 | 🧩 Implementiert · Abnahme offen | „Verlauf verdichten“ für große Teamprotokolle (TEAMBAU §16) – vorgesehen, nicht gebaut. |
-| [DIFF-01](#diff-01) | Kern, Minecraft-Daten und Dateiformate | P1 | 🧩 Implementiert · Abnahme offen | S02 Verschiebung von echter Geometrieänderung unterscheiden, S03 NBT-Änderungen im Vergleich anzeigen. |
 | [EDIT-01](#edit-01) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Gruppenziehen direkt im 3D-Bild. |
-| [EDIT-02](#edit-02) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Picking direkt an 3D-Blockflächen (gilt auch für EDIT-03).<br>Registerlücken über PROFILE-01 schließen. |
+| [EDIT-02](#edit-02) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Picking direkt an 3D-Blockflächen (gilt auch für EDIT-03). |
 | [EDIT-04](#edit-04) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Gelände-Werkzeuge auf dem Projektgelände (als eigener Thread angekündigt, nie gestartet).<br>Symmetrie und Kurven auch in der Mod. |
 | [ENTITY-01](#entity-01) | Kern, Minecraft-Daten und Dateiformate | P1 | 🧩 Implementiert · Abnahme offen | Truhen- und Schildinhalte in der Werkstatt bearbeiten (Folgeidee aus der nächsten Aktion). |
 | [GEN-03](#gen-03) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Feinschliff Kolosseum: Statuen in den Attika-Fenstern, Treppen im Hypogäum. |
@@ -310,16 +306,11 @@ Arbeit, für die gerade kein laufender Thread zuständig ist. Zum Verteilen: Thr
 | [MAP-02](#map-02) | Planer | P1 | ⏳ Offen | Komplett offen: gespeicherte Kartenziele und Provideradapter (BlueMap, Dynmap, Squaremap) mit eigenen Markerdateien. |
 | [MAP-04](#map-04) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Benannte Gruppen und Sperren mit Schemaerweiterung, abgestimmt mit der Mod (siehe GAME-07-S07). |
 | [MAP-05](#map-05) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Gedrehte Projektlagen auf der Weltkarte, damit gedrehte Hologramme übernommen werden. |
-| [MAT-02](#mat-02) | Kern, Minecraft-Daten und Dateiformate | P1 | ⏳ Offen | Komplett offen, wartet auf PROFILE-01: Rezeptalternativen, Mehrblockobjekte, Rest- und Brennstoffbilanzen profilgenau. |
 | [MAT-03](#mat-03) | Kern, Minecraft-Daten und Dateiformate | P1 | 🧩 Implementiert · Abnahme offen | S03 Glas-/Beton-/Terrakottavarianten in Profil und Oberfläche prüfen – im Cloud-Browser machbar. |
-| [MAT-04](#mat-04) | Kern, Minecraft-Daten und Dateiformate | P1 | ⏳ Offen | Komplett offen: Kupfer mit Oxidation und Wachs. |
-| [PERF-02](#perf-02) | Performance und Stabilität | P1 | 🧩 Implementiert · Abnahme offen | S03 Chunk-/Übertragungsstrategie und selektive Neuberechnung (Codex-Vorschlag ohne Umsetzung; mit PERF-05-S08 abstimmen). |
 | [PERF-04](#perf-04) | Performance und Stabilität | P1 | 🧩 Implementiert · Abnahme offen | GPU-Upload großer Szenen in Stücken. |
 | [PROJ-01](#proj-01) | Projektmodul | P1 | 🧩 Implementiert · Abnahme offen | Abhängigkeiten zwischen Projekten auf der Weltkarte; Bauleute aus dem Spiel; Lagerbuchungen je Bauleute. |
-| [QA-02](#qa-02) | Testphase, Qualität und Betrieb | P1 | ⏳ Offen | S01 Geräte- und Browsermatrix mit reproduzierbaren Aufgaben vorbereiten. |
 | [SPLIT-01](#split-01) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Unterirdische Räume und Brückenverbindungen erkennen. |
 | [TERRAIN-02](#terrain-02) | Planer | P1 | 🧩 Implementiert · Abnahme offen | S07 Wegstufen als Treppen an Höhenwechseln (auch BASE-01). |
-| [VIEW-02](#view-02) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Registerdaten an PROFILE-01 binden, sobald es existiert. |
 | [MODEL-01](#model-01) | Planer | P2 | 🧩 Implementiert · Abnahme offen | S06 Flächen der Druckhülle ohne T-Stöße zusammenfassen – Thread „Bauten als 3D-Modell exportieren“ ist beendet. |
 
 ## Eingänge ohne eigenes Paket
@@ -333,7 +324,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 | IN-03 | Befehle und Status von Mod und Plugin im J-Menü per Klick – als GAME-10 übernommen (Mod 0.11.0). | Philipp, 2026-11-03 | Client-Mod | übernommen | „Teambau und Befehle in der Mod ausbauen“ | GAME-10 |
 | IN-04 | Client-Mod in mehreren Minecraft-Versionen und Launchern; bisher gibt es Fabric/NeoForge nur für 26.3 (Paper-Plugin läuft 1.18.2–26.3). | Philipp, 2026-10-27 | Client-Mod | zugeteilt | „Teambau und Befehle in der Mod ausbauen“ | GAME-02, GAME-05, GAME-11 |
 | IN-05 | Reale Orte aus Kartendaten (OSM) – zurückgestellt, bis die Lizenzfrage geklärt ist. | Koordinator, 2026-11-02 | Planer | zurückgestellt | — | LICENSE-01 |
-| IN-06 | Seit 01.11. keine Codex-Commits auf main; die vorgeschlagenen Codex-Pakete (PROFILE-01, NBT-01, MAT-02/04, DIFF-01, PERF-02/03, FORMAT-01, QA-02) haben dadurch keinen Bearbeiter. | Koordinator, 2026-11-01 | Kern, Minecraft-Daten und Dateiformate | verwaist | **verwaist** | PROFILE-01, NBT-01, MAT-02, MAT-04, DIFF-01, PERF-02, PERF-03, FORMAT-01, QA-02 |
+| IN-06 | Seit 01.11. keine Codex-Commits auf main; die vorgeschlagenen Codex-Pakete (PROFILE-01, NBT-01, MAT-02/04, DIFF-01, PERF-02/03, FORMAT-01, QA-02) haben dadurch keinen Bearbeiter. | Koordinator, 2026-11-01 | Kern, Minecraft-Daten und Dateiformate | zugeteilt | „Liegengebliebene Datenpakete abarbeiten“ | PROFILE-01, NBT-01, MAT-02, MAT-04, DIFF-01, PERF-02, PERF-03, FORMAT-01, QA-02 |
 | IN-07 | Alte Issues #2 (B16), #3 (B17) und #4 (S4) sind noch offen, obwohl VIEW-02, LIB-02/03 und STORE-02 auf main liegen: prüfen und schließen. | GitHub, 2026-10-31 | Testphase, Qualität und Betrieb | übernommen | „Offene Punkte prüfen und Roadmap neu ordnen“ | VIEW-02, LIB-02, LIB-03, STORE-02 |
 
 ## Aktiver Arbeitsblock
@@ -341,7 +332,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **PERF-02 · Zellindizes, Chunkdaten und selektive Neuberechnung** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Gemessene Structured-Clone-/Worker-Rückgabekosten reduzieren; selektive Geometrie-/Fortschrittsinvalidierung zuerst mit vollständigen semantischen Regressionen absichern.
 - **MAP-01 · Weltlage und begehbare Projektkarte** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02.
 - **EDIT-01 · Mehrfachauswahl und sichtbare Freiraumhüllen** — 🧩 Implementiert · Abnahme offen, 2/2 Teilschritte. Nächster Schritt: Geräteprüfung (QA-02); Gruppenziehen direkt im 3D-Bild als Folgeschritt.
-- **EDIT-02 · Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Picking an 3D-Blockflächen; Registerlücken mit PROFILE-01-Serverreport schließen; Spielprüfung.
+- **EDIT-02 · Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Picking an 3D-Blockflächen; Spielprüfung. Registerlücken sind seit PROFILE-01 geschlossen.
 - **GAME-05 · NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen.
 - **EDIT-03 · Werkstatt vertiefen: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Ebenenübersicht und Tastenkürzel** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Picking an 3D-Blockflächen; Spielprüfung der Schablonen-Zustände (Tür, Treppe, Laterne).
 - **GFX-01 · Grafik vertiefen: Minecraft-Licht, Eckschatten, Sonne mit Schatten, Nacht, Spawnprüfung, sortiertes Glas und 32³-Abschnitte für große Modelle** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Prüfung auf echten Geräten und Browsern; danach Biomfarben und leuchtende Blockentities.
@@ -427,7 +418,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 | ID | Arbeitspaket | Status | Schritte | Abhängigkeiten | Main | Pages-Quelle |
 |---|---|---|---:|---|---|---|
-| [PROFILE-01](#profile-01) | Ein verbindliches Java-Versionsprofil | ⏳ Offen | 0/2 | ARCH-01 | ausstehend | ausstehend |
+| [PROFILE-01](#profile-01) | Ein verbindliches Java-Versionsprofil | 🧩 Implementiert · Abnahme offen | 3/3 | ARCH-01 | ausstehend | ausstehend |
 | [NBT-01](#nbt-01) | Semantische BlockEntity-Transformationen | ⏳ Offen | 0/2 | PROFILE-01 | ausstehend | ausstehend |
 | [FORMAT-01](#format-01) | Schem v3 an echten Referenzwerkzeugen abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | PROFILE-01, NBT-01 | `84838f0` | `e232b26` |
 | [FORMAT-02](#format-02) | Litematic an echten Referenzdateien abnehmen | 🧩 Implementiert · Abnahme offen | 3/4 | PROFILE-01, NBT-01 | `84838f0` | `e232b26` |
@@ -825,7 +816,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### QA-02
 
-**Echte GPU-, Safari- und iPhone-Abnahme** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: **verwaist** · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Echte GPU-, Safari- und iPhone-Abnahme** · ⏳ Offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T21:37:46.206Z
 
 - [ ] QA-02-S01: Geräte-/Browsermatrix und reproduzierbare Aufgaben definieren.
 - [ ] QA-02-S02: Dateiimport, IndexedDB, Touch, Themes und Layer auf echten Geräten prüfen.
@@ -835,8 +826,6 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nächste Aktion:** Geräte-/Browsermatrix und reproduzierbare Aufgaben definieren.
 
 **Nur Philipp:** Auf echten Geräten und Browsern: Safari/iPhone, Touch und echte GPU – nur auf deinen Geräten möglich.
-
-**Verwaist (ohne Bearbeiter):** S01 Geräte- und Browsermatrix mit reproduzierbaren Aufgaben vorbereiten.
 
 **Prüfstand:** Abnahme noch nicht vollständig erbracht.
 
@@ -989,28 +978,27 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROFILE-01
 
-**Ein verbindliches Java-Versionsprofil** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: **verwaist** · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Ein verbindliches Java-Versionsprofil** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T21:37:46.206Z
 
-- [ ] PROFILE-01-S01: Registryreport und Zielversion mit Herkunft/Hash dokumentieren.
-- [ ] PROFILE-01-S02: Block-/Property-/Item-/Rezeptdaten an das Profil binden.
+- [x] PROFILE-01-S01: Registryreport und Zielversion mit Herkunft/Hash dokumentieren.
+- [x] PROFILE-01-S02: Block-/Property-/Item-/Rezeptdaten an das Profil binden.
+- [x] PROFILE-01-S03: Profilprüfung (Inhalt statt DataVersion) im Gebäudeblatt anzeigen.
 
 **Abnahme:** DataVersion allein behauptet keine Kompatibilität.
 
-**Nächste Aktion:** Registryreport und Zielversion mit Herkunft/Hash dokumentieren.
+**Nächste Aktion:** Abnahme: Profilprüfung im Gebäudeblatt an einer echten älteren Schem-/Litematic-Datei ansehen (Testphase).
 
-**Verwaist (ohne Bearbeiter):** Komplett offen. War Codex vorgeschlagen, seit 01.11. keine Codex-Commits. Blockiert VIEW-02-S06, MAT-02, MAT-04 und die Registerlücken in EDIT-02. Die Berichtsfakten aus BLOCK-01 (blockFacts.ts) lassen sich übernehmen.
+**Prüfstand:** Offizielle server.jar 26.3 (SHA-1 geprüft) mit JDK 25 ausgewertet; blocks.json-Hash identisch mit BLOCK-01. tests/profile.test.mjs und die Block-/Zustandstests grün. Browserdarstellung der Profilprüfung nur im Build geprüft.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Nachweise:** [tests/profile.test.mjs](../tests/profile.test.mjs) — Hashes/gleiche Jar wie BLOCK-01, Register = Serverbericht, Items, Brennstoffe, DataVersion-Regel.; [docs/architecture/VERSION_PROFILE.md](architecture/VERSION_PROFILE.md) — Herkunft, Hashes, Neuerzeugung, Regeln.
 
-**Nachweise:** noch ausstehend
-
-**Dateiumfang:** `packages/voxel/src/states.ts`, `packages/domain/src/materials.ts`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** P1-02a.
+**Dateiumfang:** `packages/voxel/src/profile.ts`, `packages/voxel/src/profileData.ts`, `packages/domain/src/profileRecipes.ts`, `packages/voxel/src/blockRegistry.ts`, `scripts/gen_profile.mjs`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** P1-02a.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### NBT-01
 
-**Semantische BlockEntity-Transformationen** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: **verwaist** · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Semantische BlockEntity-Transformationen** · ⏳ Offen · Priorität P0 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T21:37:46.206Z
 
 - [ ] NBT-01-S01: Zu unterstützende NBT-Familien und Positions-/Ausrichtungsregeln festlegen.
 - [ ] NBT-01-S02: Adapter mit konkreten Richtungen und unbekannten Restdaten prüfen.
@@ -1018,8 +1006,6 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Abnahme:** Ungeklärte Transformation sperrt verlässlichen Export; keine stillen NBT-Verluste.
 
 **Nächste Aktion:** Zu unterstützende NBT-Familien und Positions-/Ausrichtungsregeln festlegen.
-
-**Verwaist (ohne Bearbeiter):** Komplett offen (Codex-Vorschlag ohne Umsetzung): NBT-Familien und Ausrichtungsregeln für BlockEntities festlegen und prüfen.
 
 **Prüfstand:** Abnahme noch nicht vollständig erbracht.
 
@@ -1031,7 +1017,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### FORMAT-01
 
-**Schem v3 an echten Referenzwerkzeugen abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: **verwaist** · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Schem v3 an echten Referenzwerkzeugen abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T21:37:46.206Z
 
 - [x] FORMAT-01-S01: Import/Export, Worker, Limits, unabhängige Binärfixture und Python-Verifier vorhanden.
 - [ ] FORMAT-01-S02: Echte WorldEdit-Dateien importieren, exportieren und im Referenzwerkzeug vergleichen.
@@ -1039,8 +1025,6 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Abnahme:** Zellen, Zustände, Ursprung und BlockEntities semantisch erhalten.
 
 **Nächste Aktion:** Echte WorldEdit-Dateien importieren, exportieren und im Referenzwerkzeug vergleichen.
-
-**Verwaist (ohne Bearbeiter):** S02 Abgleich mit echten WorldEdit-Dateien. Philipp nutzt kein WorldEdit: mit öffentlichen .schem-Referenzdateien prüfen oder zurückstellen.
 
 **Prüfstand:** Abnahme noch nicht vollständig erbracht.
 
@@ -1075,7 +1059,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAT-02
 
-**Versionierte Item-/Rezeptauflösung vervollständigen** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: **verwaist** · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Versionierte Item-/Rezeptauflösung vervollständigen** · ⏳ Offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T21:37:46.206Z
 
 - [ ] MAT-02-S01: Vorhandene Regeln mit Profilreport abgleichen.
 - [ ] MAT-02-S02: Mehrblockobjekte, Rezeptalternativen, Rest-/Brennstoffbilanzen profilgenau prüfen.
@@ -1083,8 +1067,6 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Abnahme:** Blockzahl, Bauitems, Rohstoffe und Lagerbestand bleiben getrennt.
 
 **Nächste Aktion:** Vorhandene Regeln mit Profilreport abgleichen.
-
-**Verwaist (ohne Bearbeiter):** Komplett offen, wartet auf PROFILE-01: Rezeptalternativen, Mehrblockobjekte, Rest- und Brennstoffbilanzen profilgenau.
 
 **Prüfstand:** Abnahme noch nicht vollständig erbracht.
 
@@ -1118,7 +1100,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAT-04
 
-**Kupfer mit Oxidation und Wachsstatus** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: **verwaist** · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Kupfer mit Oxidation und Wachsstatus** · ⏳ Offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T21:37:46.206Z
 
 - [ ] MAT-04-S01: Zustandsmatrix und Formfamilien mit Profilbeleg definieren.
 - [ ] MAT-04-S02: Tausch mit Properties, Wachs und Oxidation testen.
@@ -1126,8 +1108,6 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Abnahme:** Keine unvollständige Kupferzuordnung als kompatibel anbieten.
 
 **Nächste Aktion:** Zustandsmatrix und Formfamilien mit Profilbeleg definieren.
-
-**Verwaist (ohne Bearbeiter):** Komplett offen: Kupfer mit Oxidation und Wachs.
 
 **Prüfstand:** Abnahme noch nicht vollständig erbracht.
 
@@ -1139,7 +1119,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### DIFF-01
 
-**Verschiebungserkennung und BlockEntity-Diff** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: **verwaist** · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Verschiebungserkennung und BlockEntity-Diff** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T21:37:46.206Z
 
 - [x] DIFF-01-S01: Basisvergleich A/B für Geometrie und Materialien vorhanden.
 - [ ] DIFF-01-S02: Verschiebung von echten Geometrieänderungen unterscheiden.
@@ -1148,8 +1128,6 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Abnahme:** Diff ist deterministisch und verändert keine Version.
 
 **Nächste Aktion:** Verschiebung von echten Geometrieänderungen unterscheiden.
-
-**Verwaist (ohne Bearbeiter):** S02 Verschiebung von echter Geometrieänderung unterscheiden, S03 NBT-Änderungen im Vergleich anzeigen.
 
 **Prüfstand:** Abnahme noch nicht vollständig erbracht.
 
@@ -1181,7 +1159,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-02
 
-**Zellindizes, Chunkdaten und selektive Neuberechnung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Codex · Zuständiger Thread: **verwaist** · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Zellindizes, Chunkdaten und selektive Neuberechnung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T21:37:46.206Z
 
 - [x] PERF-02-S01: Kosten von owners/Strings/Übertragungen messen.
 - [x] PERF-02-S02: Index-/Chunkstrategie nur mit identischem semantischem Ergebnis einführen.
@@ -1190,8 +1168,6 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Abnahme:** Unabhängige Mengen-/Geometrieregressionen; Importlimits bleiben wirksam.
 
 **Nächste Aktion:** Gemessene Structured-Clone-/Worker-Rückgabekosten reduzieren; selektive Geometrie-/Fortschrittsinvalidierung zuerst mit vollständigen semantischen Regressionen absichern.
-
-**Verwaist (ohne Bearbeiter):** S03 Chunk-/Übertragungsstrategie und selektive Neuberechnung (Codex-Vorschlag ohne Umsetzung; mit PERF-05-S08 abstimmen).
 
 **Prüfstand:** Interner Indexteil mit 15 passenden bestehenden/neuen Regressionen und sechs hashgleichen Vergleichsausgaben geprüft. Kein Browser-, Chunk- oder selektiver Cache-Nachweis. Gemeinsame vollständige Prüfung mit 377 Node-Tests bestanden.
 
@@ -1297,22 +1273,20 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### VIEW-02
 
-**Minecraft-nahe zustandsabhängige Blockformen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude Thread „Blockdarstellung“ (B16) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Minecraft-nahe zustandsabhängige Blockformen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude Thread „Blockdarstellung“ (B16) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T21:37:46.206Z
 
 - [x] VIEW-02-S01: B16-Dateizuständigkeit vor Beginn prüfen.
 - [x] VIEW-02-S02: Treppen, Stufen, Zäune, Mauern und Glas nach Zuständen darstellen.
 - [x] VIEW-02-S03: Picking, Layer, Fallbacks und Performance unabhängig prüfen.
 - [x] VIEW-02-S04: Originaltexturen nur im Browser des Nutzers (Mojang-Jar oder eigene Dateien), nichts mitgeliefert.
 - [x] VIEW-02-S05: Blockregister 26.3 (1288 Blöcke) und Zustandsregeln für alle ausrichtbaren Blöcke.
-- [ ] VIEW-02-S06: Mojang-Download im Browser, Firefox/Safari und echte Geräte prüfen; Registryreport über PROFILE-01 übernehmen.
+- [ ] VIEW-02-S06: Mojang-Download im Browser, Firefox/Safari und echte Geräte prüfen (Registryreport seit PROFILE-01 übernommen).
 
 **Abnahme:** Keine fremden Texturen ohne Rechte; sichtbare Geometrie stimmt mit Zellwahl überein.
 
-**Nächste Aktion:** Mojang-Download im echten Browser und weitere Browser prüfen; Registerdaten an PROFILE-01 binden, sobald es auf main liegt.
+**Nächste Aktion:** Mojang-Download im echten Browser und weitere Browser prüfen (Testphase); Register ist seit PROFILE-01 an den Serverbericht gebunden.
 
 **Nur Philipp:** Auf echten Geräten und Browsern: Mojang-Download und Blockformen in Firefox/Safari und auf echten Geräten (S06).
-
-**Verwaist (ohne Bearbeiter):** Registerdaten an PROFILE-01 binden, sobald es existiert.
 
 **Prüfstand:** Node- und Chromium-Prüfungen bestanden (391 Node, 59 Browser); Mojang-Download im Browser, Firefox/Safari und Geräte offen.
 
@@ -1452,7 +1426,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### EDIT-02
 
-**Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Vollständigen Block-Builder bauen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Vollständigen Block-Builder bauen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T21:37:46.206Z
 
 - [x] EDIT-02-S01: Entwurfsvertrag mit invertierbaren Zelländerungen, Undo/Redo und Speichern als neue AssetVersion.
 - [x] EDIT-02-S02: Werkzeuge: Setzen, Abbauen, Pipette, Ersetzen, Quader/Hohlkörper/Wände, Kugel, Zylinder, Linie, Fläche füllen, Drehen, Kopieren/Einfügen/Verschieben.
@@ -1462,11 +1436,11 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Gespeicherte Versionen bleiben unverändert; jede Bearbeitung erzeugt eine neue Version, Projekte wechseln nur per invertierbarer Operation. Keine zweite Koordinaten- oder Drehlogik; Zustände ohne Regel bleiben sichtbar ungelöst. Gleiche Eingaben ergeben die gleiche Version (deterministische Palette).
 
-**Nächste Aktion:** Picking an 3D-Blockflächen; Registerlücken mit PROFILE-01-Serverreport schließen; Spielprüfung.
+**Nächste Aktion:** Picking an 3D-Blockflächen; Spielprüfung. Registerlücken sind seit PROFILE-01 geschlossen.
 
 **Nur Philipp:** Im Spiel an deinem PC: Gesetzte und gedrehte Zustände im Spiel prüfen.
 
-**Verwaist (ohne Bearbeiter):** Picking direkt an 3D-Blockflächen (gilt auch für EDIT-03). Registerlücken über PROFILE-01 schließen.
+**Verwaist (ohne Bearbeiter):** Picking direkt an 3D-Blockflächen (gilt auch für EDIT-03).
 
 **Prüfstand:** Unit- und Chromium-Prüfung bestanden; Spielprüfung, Firefox/Safari und Geräte offen.
 

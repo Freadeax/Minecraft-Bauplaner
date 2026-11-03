@@ -18,7 +18,7 @@ Stand 01.11.2026. Betrachter, Katalogbilder, Bildergalerie, Ebenenpläne und Ver
 | --- | --- |
 | `zip.ts` | ZIP/JAR-Leser ohne Abhängigkeit (Zentralverzeichnis, `DecompressionStream('deflate-raw')`), Grenzen für Archiv, Einträge und entpackte Bytes; ZIP64/mehrteilig abgewiesen. |
 | `model.ts` | Blockstates (`variants`, `multipart` mit `OR`/`AND`), Modellvererbung, Texturvariablen (auch `{sprite, force_translucent}` und Variablen ohne `#` wie bei `heavy_core`), Elemente mit `uv`, Flächenrotation, alter `rotation`-Achse mit `rescale` und neuer x/y/z-Form, Varianten-`x`/`y`, `uvlock`, `cullface`, `tintindex`, `shade`. Ergebnis: gebackene Vierecke je Zustand (gecacht). |
-| `shapes.ts` | Eigene Formen für alle 1288 Blöcke ohne Texturquelle, und für Blockentity-Blöcke (Truhen, Schilder, Banner, Köpfe, Betten, Shulkerkisten, Krug), deren Aussehen Minecraft nicht über Blockmodelle beschreibt. |
+| `shapes.ts` | Eigene Formen für alle 1286 Blöcke ohne Texturquelle, und für Blockentity-Blöcke (Truhen, Schilder, Banner, Köpfe, Betten, Shulkerkisten, Krug), deren Aussehen Minecraft nicht über Blockmodelle beschreibt. |
 | `tint.ts` | Färbung für Gras, Laub, Wasser, Redstone-Stärke, Stängel (Ebenen-Standardwerte, kein Biom). |
 | `mesh.ts` | Mesh aus Zellen: zwei Schichten (fest/ausgeschnitten und durchscheinend), Flächen gegen verdeckende Nachbarn verworfen; gleiche volle Blöcke (Glas, Wasser, Laub) verbergen ihre gemeinsamen Flächen. Feste Minecraft-Helligkeit je Seite. Markierungen (`Mark {color, amount}`) für Auswahl, Konflikte und Vergleiche. |
 | `atlas.ts` | Texturatlas 16 px je Kachel (erstes Animationsbild), Einordnung opak/ausgeschnitten/durchscheinend. |
@@ -32,7 +32,7 @@ Standbilder (`thumbnail/glShot.ts`) nutzen einen einzigen geteilten Offscreen-We
 
 ## Blockregister 26.3
 
-`packages/voxel/src/blockRegistry.ts` (erzeugt mit `scripts/gen_block_data.py <client.jar> [palette.json]`, nur Entwicklerwerkzeug, Pillow nötig): 1288 Block-IDs mit Property-Werten. Quelle sind die Blockstate-Dateien der 26.3-Client-Jar und die Palette der Litematic „All Blocks in 26.3 v2“. Properties, die kein Modell auswertet und die in der Palette fehlen, können fehlen (z. B. `waterlogged` mancher Blöcke); **Standardwerte sind nicht enthalten**. Der Datengenerator des Servers (vollständiger Registryreport) wurde nicht ausgeführt; das bleibt Teil von PROFILE-01. Die Editor-Schicht `packages/domain/src/editor/blocks.ts` (EDIT-01) ergänzt Standardwerte darüber; ein zweites Register gibt es nicht.
+`packages/voxel/src/blockRegistry.ts`: seit PROFILE-01 (03.11.2026) kein eigenes Register mehr, sondern die 1286 Block-IDs mit allen Property-Werten aus dem Blockbericht des 26.3-Servers (`blockFacts.ts`, [VERSION_PROFILE](VERSION_PROFILE.md)). Die frühere Liste aus Client-Blockstates und Litematica-Palette kannte manche Werte nicht (Laub `distance=1…6`, Setzling `stage=0`, `waterlogged` an Wandschildern) und führte die Rahmen als Blöcke; das ist behoben. `scripts/gen_block_data.py <client.jar>` erzeugt nur noch die Durchschnittsfarben. Die Editor-Schicht `packages/domain/src/editor/blocks.ts` ergänzt deutsche Namen und Kategorien; ein zweites Register gibt es nicht.
 
 Die Zustandsregeln (`states.ts`, Profil `java-vanilla-1.21.4-manual+26.3`) decken jetzt jeden Registerblock mit Ausrichtungs-Property ab (Test in `tests/blocks.test.mjs`), darunter Kupferketten/-gitter/-laternen/-truhen/-golemstatuen, Regale, Glocke, Kakao, Krug, Tresor, Pappel-Holz und Zinnober-/Schwefel-Familien.
 
@@ -42,7 +42,7 @@ Schem und Litematic: 4 MB komprimiert, 16 MB entpackt, 250.000 Zellen (vorher 2 
 
 ## Prüfungen und Grenzen
 
-- Node (`tests/blocks.test.mjs`): ZIP gespeichert/deflate/Grenzen, Pack-Extraktion nur benötigter Dateien, Modellbacken mit synthetischem Minipaket (`tests/helpers/minipack.mjs`, eigene PNGs, keine Mojang-Dateien), Formen für alle 1288 Blöcke, Tönung, Kulling, 27³-Hülle, Markierungen, optionaler Import der All-Blocks-Litematic über `BAUPLANER_ALL_BLOCKS=<pfad>`.
+- Node (`tests/blocks.test.mjs`): ZIP gespeichert/deflate/Grenzen, Pack-Extraktion nur benötigter Dateien, Modellbacken mit synthetischem Minipaket (`tests/helpers/minipack.mjs`, eigene PNGs, keine Mojang-Dateien), Formen für alle 1286 Blöcke, Tönung, Kulling, 27³-Hülle, Markierungen, optionaler Import der All-Blocks-Litematic über `BAUPLANER_ALL_BLOCKS=<pfad>`.
 - Großmodell (605.568 Blöcke, 1,22 Mio. Flächen): Meshaufbau rund 5,4 s in Node (`tests/stability.test.mjs`).
 - Browser (`tests/e2e/textures.e2e.mjs`): Dialog, Quelle laden, Speicherung über Neuladen, Fehlermeldung für Ressourcenpaket ohne Blockstates, Entfernen, keine Mojang-Anfrage ohne Klick.
 - Manuell in Chromium mit der echten 26.3-Jar und der All-Blocks-Litematic: 1011 Zustände aus Modellen, 54 Blockentity-/Flüssigkeitszustände über eigene Formen; Türen, Falltüren, Schilder, Treppen, Stufen, Teppiche, Lagerfeuer, Pflanzen, Betten und Glas sichtbar korrekt.

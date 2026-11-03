@@ -4380,3 +4380,41 @@ Plugin-Uplink zum Team-Raum (team-room v1): RoomLink.java mit /bp team verbinden
 - `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`
 - `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`
 
+## 2026-11-03T21:37:46.206Z · progress
+
+**Aufgaben:** PROFILE-01, VIEW-02, EDIT-02, NBT-01, MAT-02, MAT-04, DIFF-01, PERF-02, FORMAT-01, QA-02
+
+PROFILE-01: verbindliches Java-26.3-Profil aus der offiziellen server.jar (SHA-1 33680f5f…, JDK 25): Items, Item-Tags, 1696 Rezepte, 347 Brennstoffe (cooking_fuel) mit Quellhashes; Blockregister (VIEW-02/EDIT-02) direkt aus dem Serverbericht statt Client-Blockstates (264 fehlende Property-Werte ergänzt, Rahmen sind Entities); checkProfileStates: DataVersion allein behauptet keine Verträglichkeit, Profilprüfung im Gebäudeblatt. Thread „Liegengebliebene Datenpakete abarbeiten“ übernimmt die verwaisten Codex-Pakete (IN-06). Prüfung: Node-Tests; Browseransicht nur gebaut. Browser: Katalog-E2E prüft die Profilprüfung im Gebäudeblatt.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PROFILE-01 | 🧩 Implementiert · Abnahme offen | 3/3 | Abnahme: Profilprüfung im Gebäudeblatt an einer echten älteren Schem-/Litematic-Datei ansehen (Testphase). |
+| VIEW-02 | 🧩 Implementiert · Abnahme offen | 5/6 | Mojang-Download im echten Browser und weitere Browser prüfen (Testphase); Register ist seit PROFILE-01 an den Serverbericht gebunden. |
+| EDIT-02 | 🧩 Implementiert · Abnahme offen | 5/5 | Picking an 3D-Blockflächen; Spielprüfung. Registerlücken sind seit PROFILE-01 geschlossen. |
+| NBT-01 | ⏳ Offen | 0/2 | Zu unterstützende NBT-Familien und Positions-/Ausrichtungsregeln festlegen. |
+| MAT-02 | ⏳ Offen | 0/2 | Vorhandene Regeln mit Profilreport abgleichen. |
+| MAT-04 | ⏳ Offen | 0/2 | Zustandsmatrix und Formfamilien mit Profilbeleg definieren. |
+| DIFF-01 | 🧩 Implementiert · Abnahme offen | 1/3 | Verschiebung von echten Geometrieänderungen unterscheiden. |
+| PERF-02 | 🧩 Implementiert · Abnahme offen | 2/3 | Gemessene Structured-Clone-/Worker-Rückgabekosten reduzieren; selektive Geometrie-/Fortschrittsinvalidierung zuerst mit vollständigen semantischen Regressionen absichern. |
+| FORMAT-01 | 🧩 Implementiert · Abnahme offen | 1/2 | Echte WorldEdit-Dateien importieren, exportieren und im Referenzwerkzeug vergleichen. |
+| QA-02 | ⏳ Offen | 0/2 | Geräte-/Browsermatrix und reproduzierbare Aufgaben definieren. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/library/BuildingSheet.tsx`
+- `docs/architecture/BLOCK_EDITOR.md`
+- `docs/architecture/BLOCK_MODELS.md`
+- `docs/architecture/VERSION_PROFILE.md`
+- `packages/domain/src/profileRecipes.ts`
+- `packages/voxel/src/blockRegistry.ts`
+- `packages/voxel/src/index.ts`
+- `packages/voxel/src/profile.ts`
+- `packages/voxel/src/profileData.ts`
+- `packages/voxel/src/states.ts`
+- `scripts/gen_block_data.py`
+- `scripts/gen_profile.mjs`
+- `tests/block-logic.test.mjs`
+- `tests/e2e/catalog.e2e.mjs`
+- `tests/profile.test.mjs`
+- `tests/states.test.mjs`
+

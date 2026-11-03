@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T21:33:16.961Z",
+  "updatedAt": "2026-11-03T21:37:46.206Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -981,7 +981,7 @@
       "phase": "P3",
       "priority": "P1",
       "status": "planned",
-      "owner": "nicht zugewiesen",
+      "owner": "Claude (Thread „Liegengebliebene Datenpakete abarbeiten“)",
       "dependencies": [
         "QA-01",
         "VIEW-02"
@@ -1016,18 +1016,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T21:37:46.206Z",
       "area": "QA",
-      "thread": null,
+      "thread": "Liegengebliebene Datenpakete abarbeiten",
       "philipp": [
         {
           "kind": "geraet",
           "text": "Safari/iPhone, Touch und echte GPU – nur auf deinen Geräten möglich."
         }
       ],
-      "orphans": [
-        "S01 Geräte- und Browsermatrix mit reproduzierbaren Aufgaben vorbereiten."
-      ]
+      "orphans": []
     },
     {
       "id": "QA-03",
@@ -1508,14 +1506,17 @@
       "title": "Ein verbindliches Java-Versionsprofil",
       "phase": "P2",
       "priority": "P0",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "implemented",
+      "owner": "Claude (Thread „Liegengebliebene Datenpakete abarbeiten“)",
       "dependencies": [
         "ARCH-01"
       ],
       "scope": [
-        "packages/voxel/src/states.ts",
-        "packages/domain/src/materials.ts"
+        "packages/voxel/src/profile.ts",
+        "packages/voxel/src/profileData.ts",
+        "packages/domain/src/profileRecipes.ts",
+        "packages/voxel/src/blockRegistry.ts",
+        "scripts/gen_profile.mjs"
       ],
       "legacyIds": [
         "P1-02a"
@@ -1524,35 +1525,47 @@
         {
           "id": "PROFILE-01-S01",
           "title": "Registryreport und Zielversion mit Herkunft/Hash dokumentieren.",
-          "done": false
+          "done": true
         },
         {
           "id": "PROFILE-01-S02",
           "title": "Block-/Property-/Item-/Rezeptdaten an das Profil binden.",
-          "done": false
+          "done": true
+        },
+        {
+          "id": "PROFILE-01-S03",
+          "title": "Profilprüfung (Inhalt statt DataVersion) im Gebäudeblatt anzeigen.",
+          "done": true
         }
       ],
       "acceptance": [
         "DataVersion allein behauptet keine Kompatibilität."
       ],
-      "next": "Registryreport und Zielversion mit Herkunft/Hash dokumentieren.",
+      "next": "Abnahme: Profilprüfung im Gebäudeblatt an einer echten älteren Schem-/Litematic-Datei ansehen (Testphase).",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/profile.test.mjs",
+          "note": "Hashes/gleiche Jar wie BLOCK-01, Register = Serverbericht, Items, Brennstoffe, DataVersion-Regel."
+        },
+        {
+          "path": "docs/architecture/VERSION_PROFILE.md",
+          "note": "Herkunft, Hashes, Neuerzeugung, Regeln."
+        }
+      ],
       "verification": {
-        "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "state": "passed",
+        "note": "Offizielle server.jar 26.3 (SHA-1 geprüft) mit JDK 25 ausgewertet; blocks.json-Hash identisch mit BLOCK-01. tests/profile.test.mjs und die Block-/Zustandstests grün. Browserdarstellung der Profilprüfung nur im Build geprüft."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T21:37:46.206Z",
       "area": "KERN",
-      "thread": null,
+      "thread": "Liegengebliebene Datenpakete abarbeiten",
       "philipp": [],
-      "orphans": [
-        "Komplett offen. War Codex vorgeschlagen, seit 01.11. keine Codex-Commits. Blockiert VIEW-02-S06, MAT-02, MAT-04 und die Registerlücken in EDIT-02. Die Berichtsfakten aus BLOCK-01 (blockFacts.ts) lassen sich übernehmen."
-      ]
+      "orphans": []
     },
     {
       "id": "NBT-01",
@@ -1560,7 +1573,7 @@
       "phase": "P2",
       "priority": "P0",
       "status": "planned",
-      "owner": "nicht zugewiesen",
+      "owner": "Claude (Thread „Liegengebliebene Datenpakete abarbeiten“)",
       "dependencies": [
         "PROFILE-01"
       ],
@@ -1594,13 +1607,11 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T21:37:46.206Z",
       "area": "KERN",
-      "thread": null,
+      "thread": "Liegengebliebene Datenpakete abarbeiten",
       "philipp": [],
-      "orphans": [
-        "Komplett offen (Codex-Vorschlag ohne Umsetzung): NBT-Familien und Ausrichtungsregeln für BlockEntities festlegen und prüfen."
-      ]
+      "orphans": []
     },
     {
       "id": "FORMAT-01",
@@ -1608,7 +1619,7 @@
       "phase": "P2",
       "priority": "P0",
       "status": "implemented",
-      "owner": "nicht zugewiesen",
+      "owner": "Claude (Thread „Liegengebliebene Datenpakete abarbeiten“)",
       "dependencies": [
         "PROFILE-01",
         "NBT-01"
@@ -1657,13 +1668,11 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T21:37:46.206Z",
       "area": "KERN",
-      "thread": null,
+      "thread": "Liegengebliebene Datenpakete abarbeiten",
       "philipp": [],
-      "orphans": [
-        "S02 Abgleich mit echten WorldEdit-Dateien. Philipp nutzt kein WorldEdit: mit öffentlichen .schem-Referenzdateien prüfen oder zurückstellen."
-      ]
+      "orphans": []
     },
     {
       "id": "FORMAT-02",
@@ -1760,7 +1769,7 @@
       "phase": "P2",
       "priority": "P1",
       "status": "planned",
-      "owner": "nicht zugewiesen",
+      "owner": "Claude (Thread „Liegengebliebene Datenpakete abarbeiten“)",
       "dependencies": [
         "PROFILE-01",
         "MAT-01"
@@ -1796,13 +1805,11 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T21:37:46.206Z",
       "area": "KERN",
-      "thread": null,
+      "thread": "Liegengebliebene Datenpakete abarbeiten",
       "philipp": [],
-      "orphans": [
-        "Komplett offen, wartet auf PROFILE-01: Rezeptalternativen, Mehrblockobjekte, Rest- und Brennstoffbilanzen profilgenau."
-      ]
+      "orphans": []
     },
     {
       "id": "MAT-03",
@@ -1871,7 +1878,7 @@
       "phase": "P2",
       "priority": "P1",
       "status": "planned",
-      "owner": "nicht zugewiesen",
+      "owner": "Claude (Thread „Liegengebliebene Datenpakete abarbeiten“)",
       "dependencies": [
         "PROFILE-01",
         "MAT-03"
@@ -1908,13 +1915,11 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T21:37:46.206Z",
       "area": "KERN",
-      "thread": null,
+      "thread": "Liegengebliebene Datenpakete abarbeiten",
       "philipp": [],
-      "orphans": [
-        "Komplett offen: Kupfer mit Oxidation und Wachs."
-      ]
+      "orphans": []
     },
     {
       "id": "DIFF-01",
@@ -1922,7 +1927,7 @@
       "phase": "P2",
       "priority": "P1",
       "status": "implemented",
-      "owner": "nicht zugewiesen",
+      "owner": "Claude (Thread „Liegengebliebene Datenpakete abarbeiten“)",
       "dependencies": [
         "CORE-02",
         "NBT-01"
@@ -1970,13 +1975,11 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T21:37:46.206Z",
       "area": "KERN",
-      "thread": null,
+      "thread": "Liegengebliebene Datenpakete abarbeiten",
       "philipp": [],
-      "orphans": [
-        "S02 Verschiebung von echter Geometrieänderung unterscheiden, S03 NBT-Änderungen im Vergleich anzeigen."
-      ]
+      "orphans": []
     },
     {
       "id": "PERF-01",
@@ -2063,7 +2066,7 @@
       "phase": "P2",
       "priority": "P1",
       "status": "implemented",
-      "owner": "Codex",
+      "owner": "Claude (Thread „Liegengebliebene Datenpakete abarbeiten“)",
       "dependencies": [
         "PERF-01"
       ],
@@ -2116,13 +2119,11 @@
         "main": "7dffd922f46876c70700afc0429afb969e5478aa",
         "pagesSource": "7dffd922f46876c70700afc0429afb969e5478aa"
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T21:37:46.206Z",
       "area": "PERF",
-      "thread": null,
+      "thread": "Liegengebliebene Datenpakete abarbeiten",
       "philipp": [],
-      "orphans": [
-        "S03 Chunk-/Übertragungsstrategie und selektive Neuberechnung (Codex-Vorschlag ohne Umsetzung; mit PERF-05-S08 abstimmen)."
-      ]
+      "orphans": []
     },
     {
       "id": "PERF-03",
@@ -2549,14 +2550,14 @@
         },
         {
           "id": "VIEW-02-S06",
-          "title": "Mojang-Download im Browser, Firefox/Safari und echte Geräte prüfen; Registryreport über PROFILE-01 übernehmen.",
+          "title": "Mojang-Download im Browser, Firefox/Safari und echte Geräte prüfen (Registryreport seit PROFILE-01 übernommen).",
           "done": false
         }
       ],
       "acceptance": [
         "Keine fremden Texturen ohne Rechte; sichtbare Geometrie stimmt mit Zellwahl überein."
       ],
-      "next": "Mojang-Download im echten Browser und weitere Browser prüfen; Registerdaten an PROFILE-01 binden, sobald es auf main liegt.",
+      "next": "Mojang-Download im echten Browser und weitere Browser prüfen (Testphase); Register ist seit PROFILE-01 an den Serverbericht gebunden.",
       "blockers": [],
       "evidence": [
         {
@@ -2580,7 +2581,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T21:37:46.206Z",
       "area": "PLANER",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -2589,9 +2590,7 @@
           "text": "Mojang-Download und Blockformen in Firefox/Safari und auf echten Geräten (S06)."
         }
       ],
-      "orphans": [
-        "Registerdaten an PROFILE-01 binden, sobald es existiert."
-      ]
+      "orphans": []
     },
     {
       "id": "BLOCK-01",
@@ -3099,7 +3098,7 @@
         "Keine zweite Koordinaten- oder Drehlogik; Zustände ohne Regel bleiben sichtbar ungelöst.",
         "Gleiche Eingaben ergeben die gleiche Version (deterministische Palette)."
       ],
-      "next": "Picking an 3D-Blockflächen; Registerlücken mit PROFILE-01-Serverreport schließen; Spielprüfung.",
+      "next": "Picking an 3D-Blockflächen; Spielprüfung. Registerlücken sind seit PROFILE-01 geschlossen.",
       "blockers": [],
       "evidence": [
         {
@@ -3123,7 +3122,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T21:37:46.206Z",
       "area": "PLANER",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -3133,8 +3132,7 @@
         }
       ],
       "orphans": [
-        "Picking direkt an 3D-Blockflächen (gilt auch für EDIT-03).",
-        "Registerlücken über PROFILE-01 schließen."
+        "Picking direkt an 3D-Blockflächen (gilt auch für EDIT-03)."
       ]
     },
     {
@@ -14388,6 +14386,113 @@
           "next": "Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server."
         }
       ]
+    },
+    {
+      "at": "2026-11-03T21:37:46.206Z",
+      "kind": "progress",
+      "items": [
+        "PROFILE-01",
+        "VIEW-02",
+        "EDIT-02",
+        "NBT-01",
+        "MAT-02",
+        "MAT-04",
+        "DIFF-01",
+        "PERF-02",
+        "FORMAT-01",
+        "QA-02"
+      ],
+      "summary": "PROFILE-01: verbindliches Java-26.3-Profil aus der offiziellen server.jar (SHA-1 33680f5f…, JDK 25): Items, Item-Tags, 1696 Rezepte, 347 Brennstoffe (cooking_fuel) mit Quellhashes; Blockregister (VIEW-02/EDIT-02) direkt aus dem Serverbericht statt Client-Blockstates (264 fehlende Property-Werte ergänzt, Rahmen sind Entities); checkProfileStates: DataVersion allein behauptet keine Verträglichkeit, Profilprüfung im Gebäudeblatt. Thread „Liegengebliebene Datenpakete abarbeiten“ übernimmt die verwaisten Codex-Pakete (IN-06). Prüfung: Node-Tests; Browseransicht nur gebaut. Browser: Katalog-E2E prüft die Profilprüfung im Gebäudeblatt.",
+      "files": [
+        "apps/web/src/views/library/BuildingSheet.tsx",
+        "docs/architecture/BLOCK_EDITOR.md",
+        "docs/architecture/BLOCK_MODELS.md",
+        "docs/architecture/VERSION_PROFILE.md",
+        "packages/domain/src/profileRecipes.ts",
+        "packages/voxel/src/blockRegistry.ts",
+        "packages/voxel/src/index.ts",
+        "packages/voxel/src/profile.ts",
+        "packages/voxel/src/profileData.ts",
+        "packages/voxel/src/states.ts",
+        "scripts/gen_block_data.py",
+        "scripts/gen_profile.mjs",
+        "tests/block-logic.test.mjs",
+        "tests/e2e/catalog.e2e.mjs",
+        "tests/profile.test.mjs",
+        "tests/states.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PROFILE-01",
+          "status": "implemented",
+          "done": 3,
+          "total": 3,
+          "next": "Abnahme: Profilprüfung im Gebäudeblatt an einer echten älteren Schem-/Litematic-Datei ansehen (Testphase)."
+        },
+        {
+          "id": "VIEW-02",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Mojang-Download im echten Browser und weitere Browser prüfen (Testphase); Register ist seit PROFILE-01 an den Serverbericht gebunden."
+        },
+        {
+          "id": "EDIT-02",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Picking an 3D-Blockflächen; Spielprüfung. Registerlücken sind seit PROFILE-01 geschlossen."
+        },
+        {
+          "id": "NBT-01",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Zu unterstützende NBT-Familien und Positions-/Ausrichtungsregeln festlegen."
+        },
+        {
+          "id": "MAT-02",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Vorhandene Regeln mit Profilreport abgleichen."
+        },
+        {
+          "id": "MAT-04",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Zustandsmatrix und Formfamilien mit Profilbeleg definieren."
+        },
+        {
+          "id": "DIFF-01",
+          "status": "implemented",
+          "done": 1,
+          "total": 3,
+          "next": "Verschiebung von echten Geometrieänderungen unterscheiden."
+        },
+        {
+          "id": "PERF-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Gemessene Structured-Clone-/Worker-Rückgabekosten reduzieren; selektive Geometrie-/Fortschrittsinvalidierung zuerst mit vollständigen semantischen Regressionen absichern."
+        },
+        {
+          "id": "FORMAT-01",
+          "status": "implemented",
+          "done": 1,
+          "total": 2,
+          "next": "Echte WorldEdit-Dateien importieren, exportieren und im Referenzwerkzeug vergleichen."
+        },
+        {
+          "id": "QA-02",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Geräte-/Browsermatrix und reproduzierbare Aufgaben definieren."
+        }
+      ]
     }
   ],
   "areas": [
@@ -14509,7 +14614,7 @@
       "source": "Koordinator",
       "title": "Seit 01.11. keine Codex-Commits auf main; die vorgeschlagenen Codex-Pakete (PROFILE-01, NBT-01, MAT-02/04, DIFF-01, PERF-02/03, FORMAT-01, QA-02) haben dadurch keinen Bearbeiter.",
       "area": "KERN",
-      "thread": null,
+      "thread": "Liegengebliebene Datenpakete abarbeiten",
       "items": [
         "PROFILE-01",
         "NBT-01",
@@ -14521,7 +14626,7 @@
         "FORMAT-01",
         "QA-02"
       ],
-      "state": "verwaist"
+      "state": "zugeteilt"
     },
     {
       "id": "IN-07",

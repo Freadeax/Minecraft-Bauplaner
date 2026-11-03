@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { BLOCK_CLASS_LABEL, FACETS, MATERIAL_GROUP_LABEL, SIZE_CLASS_LABEL, facetLabel } from '../../../../../packages/domain/src/index.js';
 import type { Asset, BuildingFacets, BuildingInfo, CatalogEntry, MaterialGroup, Suggestion } from '../../../../../packages/domain/src/index.js';
 import { formatNumber } from '../../app/ui';
 import { stateColor } from '../../colors';
 import { FacetFields, facetsFromForm } from './FacetFields';
 import { AssetRevisionNotice } from './AssetRevisionNotice';
+import { checkProfileStates, dataVersionOfProfileId } from '../../../../../packages/voxel/src/profile.js';
 
 export const GROUP_COLOR: Readonly<Record<MaterialGroup, string>> = {
   holz: '#b58452', stein: '#a3a6a8', glas: '#bfe3ea', beton: '#e0e0dc', wolle: '#d46a6a', natur: '#6d9b45', licht: '#ffd166',
@@ -107,8 +108,15 @@ export function EquipmentSection({ entry }: { entry: CatalogEntry }) {
   </section>;
 }
 
+const PROFILE_BADGE = { passt: 'ok', 'zustaende-passen': 'source', abweichend: 'warn' } as const;
+const profileLabel = (status: keyof typeof PROFILE_BADGE, dataVersion: number | null): string => status === 'passt' ? 'passt zu Java 26.3'
+  : status === 'abweichend' ? 'weicht von Java 26.3 ab' : dataVersion === null ? 'gültig in Java 26.3 (ohne Versionsangabe)' : `gültig in Java 26.3, Datei aus DataVersion ${dataVersion}`;
+
 export function TechSection({ entry }: { entry: CatalogEntry }) {
   const m = entry.metrics;
+  // PROFILE-01: content check against the version profile – the DataVersion alone claims nothing.
+  const payload = entry.version.payload;
+  const check = useMemo(() => checkProfileStates(payload.palette, m.dataVersion ?? dataVersionOfProfileId(payload.profileId)), [payload, m.dataVersion]);
   return <section className="sheet-section" aria-label="Bauen und Technik">
     <h3>Bauen &amp; Technik <span className="badge ok">berechnet</span></h3>
     <dl className="stats">
@@ -118,9 +126,11 @@ export function TechSection({ entry }: { entry: CatalogEntry }) {
       <Row label="Anschlüsse">{m.connectors.length ? m.connectors.map(c => `${c.id} (${c.type})`).join(', ') : 'keine'}</Row>
       <Row label="Profil">{m.profileId}</Row>
       <Row label="Gespeichert in" hint="DataVersion aus der importierten Datei">{m.dataVersion !== undefined ? `DataVersion ${m.dataVersion}` : 'unbekannt (kein Dateiimport)'}</Row>
+      <Row label="Profilprüfung" hint={check.summary}><span className={`badge ${PROFILE_BADGE[check.status]}`} data-testid="profile-check">{profileLabel(check.status, check.dataVersion)}</span> {check.checkedStates} Zustände geprüft</Row>
       <Row label="Mods">{m.modNamespaces.length ? m.modNamespaces.join(', ') : 'keine, nur Vanilla-Namensraum'}</Row>
       {m.blockEntities > 0 && <Row label="BlockEntities">{m.blockEntities}</Row>}
     </dl>
+    {check.issues.length > 0 && <details className="profile-issues"><summary>{check.summary}</summary><ul>{check.issues.slice(0, 20).map((i, n) => <li key={n}>{i.message}</li>)}</ul>{check.issues.length > 20 && <p>… und {check.issues.length - 20} weitere.</p>}</details>}
     {m.transform.unresolvedStates.length > 0 && <p className="small-note">Ungelöste Zustände bei Transformation: {m.transform.unresolvedStates.map(short).join(', ')}</p>}
   </section>;
 }

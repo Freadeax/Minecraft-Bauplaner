@@ -33,7 +33,7 @@ Die Ablage dreht mit `transformCellPosition` und `transformBlockState`; vier Vie
 
 ## Blockschicht (`editor/blocks.ts`)
 
-Das einzige Register ist `packages/voxel/src/blockRegistry.ts` (VIEW-02, 1288 Blöcke Java 26.3). Die Schicht ergänzt:
+Das einzige Register ist `packages/voxel/src/blockRegistry.ts` (VIEW-02, 1286 Blöcke Java 26.3, seit PROFILE-01 direkt aus dem Serverbericht, siehe [VERSION_PROFILE](VERSION_PROFILE.md)). Die Schicht ergänzt:
 
 - `blockSchema(id)`: Registerwerte, ergänzt um Eigenschaften, die die Litematic-Quelle nicht vollständig liefert (z. B. `waterlogged`, `powered`, `note_block` `instrument`/`note`, Laub `distance`/`persistent`, `stage`, `power`), überlagert mit dem Schema der B7-Drehregel.
 - `defaultState`: Spielstandard (z. B. `facing=north`, `half=bottom`, `type=bottom`, Laub `persistent=true`).

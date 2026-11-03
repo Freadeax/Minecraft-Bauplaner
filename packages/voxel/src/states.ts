@@ -177,6 +177,7 @@ const RULES: readonly StateRule[] = [
   { family: 'facing (6 Richtungen): Beobachter', ids: ids('observer'), schema: { facing: FACING6, powered: BOOL }, apply: facing },
   { family: 'facing (6 Richtungen): Kolben', ids: ids('piston','sticky_piston'), schema: { extended: BOOL, facing: FACING6 }, apply: facing },
   { family: 'facing (6 Richtungen): Kolbenkopf', ids: ids('piston_head'), schema: { facing: FACING6, short: BOOL, type: ['normal','sticky'] }, apply: facing },
+  { family: 'facing (6 Richtungen): bewegter Kolben (technisch)', ids: ids('moving_piston'), schema: { facing: FACING6, type: ['normal','sticky'] }, apply: facing },
   { family: 'facing (6 Richtungen)', ids: ids('end_rod','shulker_box',...each(COLORS, c => `${c}_shulker_box`)), schema: { facing: FACING6 }, apply: facing },
   { family: 'facing (6 Richtungen): Befehlsblöcke', ids: ids('command_block','chain_command_block','repeating_command_block'),
     schema: { conditional: BOOL, facing: FACING6 }, apply: facing },

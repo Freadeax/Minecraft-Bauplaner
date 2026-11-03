@@ -19,3 +19,6 @@ export { cellsToColumns, emptyColumns, fillColumns, columnsToCells, columnBuffer
 export type { CellColumns, PayloadTransport, HydrateOptions } from './cellColumns.js';
 export * from './sizeLimits.js';
 export { stableAtan, stableAtan2, stableCos, stableHypot, stableSin } from './stableMath.js';
+export { JAVA_PROFILE, JAVA_PROFILE_ID, assertProfileConsistent, isProfileItem, profileItemIds, profileItemTag, profileItemTagNames, fuelOf, profileFuels, smeltsPerFuel,
+  checkProfileStates, checkPayloadProfile, dataVersionOfProfileId } from './profile.js';
+export type { VersionProfile, FuelFacts, ProfileStatus, ProfileStateIssue, ProfileCheck } from './profile.js';
