@@ -781,3 +781,11 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `node --test tests/e2e/team.e2e.mjs`: 2/2 bestanden (1400 und 390 px, Chromium 1243 als 1248 verlinkt) – zwei getrennte Browser: Gründen, Freigabe, Teampaket mit Plan öffnen, Beitreten, Übernehmen, Fertig melden, Beitrag, Notiz, Meldecode, Doppelübernahme als Hinweis, Bestätigen, Rolle, Neuladen, Teampaket nur Teamstand, Rückgängig; kein waagerechtes Scrollen, keine Konsolenfehler.
 - `scripts/bridge_paperteam.mjs` auf echten Paper-Servern 1.18.2 (Build 388), 1.21.4 (Build 232) und 26.3 (Build 238, JDK 25): Baustag per Konsole für drei Spieler, Neustart, Ausfuhr; Planer-Faltung der Ausfuhr = Serverstand, keine Plugin-Warnungen.
 - Grenzen: Aktionsleiste, Partikelumriss und Schutz brauchen echte Spieler (TEAMBAU-06 auf Philipps Server); keine Mitspieler-Abnahme.
+
+## PERF-04 · Erststart der Bibliothek, gemeinsamer Startwarter · 03.11.2026 · Claude
+
+- Ursache der 46 roten Browsertests auf main 2b83089: der erste Katalogaufbau (frischer Browser, kein Cache) dauerte seit Kolosseum und Großprojekten rund 12 s, die Tests warteten 10 s auf „Beispielprojekt „Burgmauer““.
+- Katalogaufbau beschleunigt: `refinePayload` mit Zahlenraster statt Zeichenketten-Schlüsseln und flacher Außen-Flutfüllung; `Plot.payload()` und `refinePayload` versiegeln frische Arrays mit `adoptPayload` statt zu kopieren. `createBuildingLibrary` 7,5 s → 4,7 s; alle Versionskennungen bitgenau gleich (Vergleich der Kennungsliste vorher/nachher).
+- `tests/e2e/start.mjs` mit `waitForStart`/`openSampleProject` (90 s Startgrenze) in allen 28 betroffenen Browsertest-Dateien.
+- `ui-acceptance` „Bauwelten“: Wüstenhandel zeigt 8 statt 7 Treffer, weil das Kolosseum (GEN-03) Wahrzeichen im Wüstenstil ist; Erwartung angepasst.
+- Node-Tests 706 bestanden, 1 übersprungen. Browser-Suite komplett (`--test-concurrency=1`): 132/134, danach die zwei Bauwelten-Fälle mit neuer Erwartung 2/2 grün.

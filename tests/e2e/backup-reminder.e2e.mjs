@@ -5,6 +5,7 @@ import { spawn } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { openSampleProject } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -37,7 +38,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await p.goto(BASE);
     const status = p.getByRole('region', { name: 'Sicherungsstand' });
     await status.getByText('Noch nichts zu sichern.').waitFor();
-    await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+    await openSampleProject(p);
     await p.waitForURL(/#\/projekt\//);
     await p.locator('.backup-chip[data-backup-state=never]').waitFor();
     await p.goto(BASE);
@@ -92,7 +93,7 @@ test('Abschnittsstände: einfrieren, Abweichung sichtbar, zurücksetzen, als Pro
   const errors = watch(p);
   p.on('dialog', d => void d.accept());
   await p.goto(BASE);
-  await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
   const projectUrl = p.url().replace(/\/[a-z]+$/, '');
   await p.getByRole('navigation', { name: 'Projektbereiche' }).getByRole('link', { name: 'Baustelle' }).click();

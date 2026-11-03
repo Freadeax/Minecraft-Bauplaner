@@ -9,6 +9,7 @@ import { join } from 'node:path';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { python } from '../../scripts/python.mjs';
+import { openSampleProject } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -83,7 +84,7 @@ test('Gelände: unplatziertes Projekt verweist auf die Karte, platziertes wird g
   const errors = [];
   p.on('pageerror', e => errors.push(e.message));
   await p.goto(`${BASE}#/`);
-  await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
   const id = decodeURIComponent(p.url().split('#/projekt/')[1].split('/')[0]);
   await p.goto(`${BASE}#/projekt/${encodeURIComponent(id)}/gelaende`);

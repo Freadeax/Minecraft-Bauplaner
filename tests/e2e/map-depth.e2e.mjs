@@ -7,6 +7,7 @@ import { spawn } from 'node:child_process';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { startModSimulator } from './modSimulator.mjs';
+import { openSampleProject } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -38,7 +39,7 @@ async function clickAll(p, canvas, cols) {
 }
 async function openMap(p) {
   await p.goto(`${BASE}#/`);
-  await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
   await p.goto(`${BASE}#/karte`);
   await ready(p);

@@ -4,6 +4,7 @@ import { createRequire } from 'node:module';
 import { spawn } from 'node:child_process';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { openSampleProject } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -51,7 +52,7 @@ test('Updates: neue Version anzeigen, Folgen prüfen, übernehmen, zurückkehren
   p.setDefaultTimeout(15_000);
   const errors = watch(p);
   await p.goto(BASE);
-  await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
   const projectUrl = p.url().replace(/(#\/projekt\/[^/]+).*$/, '$1');
   await p.getByRole('link', { name: 'Updates' }).click();
@@ -133,7 +134,7 @@ test('Updates: Reiter auf dem Telefon ohne waagerechtes Scrollen', async () => {
   p.setDefaultTimeout(15_000);
   const errors = watch(p);
   await p.goto(BASE);
-  await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
   await p.goto(`${p.url().replace(/(#\/projekt\/[^/]+).*$/, '$1')}/updates`);
   await p.getByRole('heading', { name: 'Updates und Versionen' }).waitFor();

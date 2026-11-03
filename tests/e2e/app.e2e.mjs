@@ -5,6 +5,7 @@ import { createRequire } from 'node:module';
 import { spawn } from 'node:child_process';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { openSampleProject } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -33,7 +34,7 @@ async function page() {
 test('Projektzentrale → Beispielprojekt → Editor: konfliktfrei, Konflikt erzeugen, Undo', async () => {
   const { p, errors } = await page();
   await p.goto(BASE);
-  await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
   await p.getByText('✓ Geometrisch konfliktfrei').waitFor();
   assert.equal(await p.locator('.instance-list li').count(), 5);

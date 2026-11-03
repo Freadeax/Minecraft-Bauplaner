@@ -6,6 +6,7 @@ import { spawn } from 'node:child_process';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { startModSimulator } from './modSimulator.mjs';
+import { openSampleProject } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -42,7 +43,7 @@ test('Live-Karte: Weltplan zeichnen, rückgängig, Spiel koppeln, Gelände, Holo
 
   // A sample project on the map so there is something to send.
   await p.goto(`${BASE}#/`);
-  await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
   await p.goto(`${BASE}#/karte`);
   await ready(p);

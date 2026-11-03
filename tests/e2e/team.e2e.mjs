@@ -5,6 +5,7 @@ import { createRequire } from 'node:module';
 import { spawn } from 'node:child_process';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { openSampleProject } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -44,7 +45,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
 
     // ---- Bauleitung: project with three sections, found the team, release the plan.
     await a.goto(BASE);
-    await a.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+    await openSampleProject(a);
     await a.waitForURL(/#\/projekt\//);
     await a.getByRole('navigation', { name: 'Projektbereiche' }).getByRole('link', { name: 'Baustelle' }).click();
     await a.getByRole('region', { name: 'Baustelle' }).getByRole('button', { name: /Fundament · Rohbau · Dach/ }).click();

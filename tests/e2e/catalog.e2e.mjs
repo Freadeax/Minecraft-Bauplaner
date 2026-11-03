@@ -4,6 +4,7 @@ import { createRequire } from 'node:module';
 import { spawn } from 'node:child_process';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { openSampleProject } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -135,7 +136,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
 
     // Sample project, then suggestions for it and adding a building.
     await p.goto(BASE);
-    await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+    await openSampleProject(p);
     await p.waitForURL(/#\/projekt\//);
     await p.getByText('✓ Geometrisch konfliktfrei').waitFor();
     await p.getByRole('link', { name: /Passende Gebäude vorschlagen/ }).click();

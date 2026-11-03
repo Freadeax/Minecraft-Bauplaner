@@ -3466,3 +3466,49 @@ Dateizuordnung Teambau (Domäne, Reiter Team, Paper-Teammodul, Tests, Doku).
 - `tests/e2e/team.e2e.mjs`
 - `tests/team.test.mjs`
 
+## 2026-11-03T17:39:42.853Z · progress
+
+**Aufgaben:** PERF-04
+
+Erststart der Bibliothek schneller (7,5 s → 4,7 s), gemeinsamer Startwarter für Browsertests
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-04 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); GPU-Upload großer Szenen bleibt im Hauptthread. |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+- `packages/domain/src/build/plot.ts`
+- `packages/domain/src/build/refine.ts`
+- `tests/e2e/app.e2e.mjs`
+- `tests/e2e/background-jobs.e2e.mjs`
+- `tests/e2e/backup-reminder.e2e.mjs`
+- `tests/e2e/block-logic.e2e.mjs`
+- `tests/e2e/build-run.e2e.mjs`
+- `tests/e2e/catalog.e2e.mjs`
+- `tests/e2e/editor.e2e.mjs`
+- `tests/e2e/export.e2e.mjs`
+- `tests/e2e/game-check.e2e.mjs`
+- `tests/e2e/game-progress.e2e.mjs`
+- `tests/e2e/guide.e2e.mjs`
+- `tests/e2e/litematic.e2e.mjs`
+- `tests/e2e/livelink.e2e.mjs`
+- `tests/e2e/map-depth.e2e.mjs`
+- `tests/e2e/materials.e2e.mjs`
+- `tests/e2e/persistence.e2e.mjs`
+- `tests/e2e/project-computation.e2e.mjs`
+- `tests/e2e/recipes.e2e.mjs`
+- `tests/e2e/scan-persistence.e2e.mjs`
+- `tests/e2e/shell.e2e.mjs`
+- `tests/e2e/site.e2e.mjs`
+- `tests/e2e/snap.e2e.mjs`
+- `tests/e2e/start.mjs`
+- `tests/e2e/team.e2e.mjs`
+- `tests/e2e/ui-acceptance.e2e.mjs`
+- `tests/e2e/updates.e2e.mjs`
+- `tests/e2e/viewer.e2e.mjs`
+- `tests/e2e/world-import.e2e.mjs`
+- `tests/e2e/worldbuilder.e2e.mjs`
+- `tests/e2e/worldmap.e2e.mjs`
+

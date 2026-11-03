@@ -8,6 +8,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { openSampleProject } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -45,7 +46,7 @@ test('Export: Revision einfrieren, Datei prüfen, Sperre bei Konflikt, alte Revi
   p.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
 
   await p.goto(BASE);
-  await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
   await p.getByRole('link', { name: 'Export' }).click();
   await p.getByText('✓ Exportbereit').waitFor();

@@ -4,6 +4,7 @@ import { mkdir } from 'node:fs/promises';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
+import { openSampleProject } from './start.mjs';
 
 const PORT = 4207, BASE = `http://127.0.0.1:${PORT}/Minecraft-Bauplaner/`;
 const themes = ['modern', 'medieval', 'industrial', 'fantasy', 'nether'];
@@ -45,7 +46,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     page.on('pageerror', error => errors.push(error.message));
     try {
       await page.goto(BASE);
-      await page.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+      await openSampleProject(page);
       await page.getByText('✓ Geometrisch konfliktfrei').waitFor();
       await page.getByRole('link', { name: 'Material', exact: true }).click();
       const lab = page.getByRole('region', { name: 'Materiallabor', exact: true });
@@ -93,7 +94,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
         });
         await capture(page, `worlds-${viewport.width}-${theme}-${mode}`);
       }
-      for (const [id, count] of [['fernost', 5], ['wuestenhandel', 7], ['endposten', 6]]) {
+      for (const [id, count] of [['fernost', 5], ['wuestenhandel', 8], ['endposten', 6]]) {
         await page.goto(`${BASE}#/bibliothek/bauwelten`);
         const card = page.locator(`#bauwelt-${id}`);
         await card.waitFor();

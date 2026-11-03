@@ -1,4 +1,4 @@
-import { createPayload, stateKey } from '../../../voxel/src/validation.js';
+import { adoptPayload, stateKey } from '../../../voxel/src/validation.js';
 import type { BlockState, Cell, Vec3, VoxelPayload } from '../../../voxel/src/types.js';
 import type { BuildingFacets } from '../catalog.js';
 import type { BuildingSpec } from './spec.js';
@@ -64,29 +64,38 @@ const isFullish = (id: string): boolean =>
 
 export function refinePayload(payload: VoxelPayload, o: RefineOptions): VoxelPayload {
   const [sx, sy, sz] = payload.bounds.maxExclusive, [mx, my, mz] = payload.bounds.min;
-  const key = (x: number, y: number, z: number) => `${x},${y},${z}`;
-  const cells = new Map<string, { position: Vec3; air: boolean; state: BlockState }>();
+  // Cells and the exterior flood live on a padded index grid (one cell around x/z, one above): string keys made
+  // the catalogue start slow for large buildings (STAB/PERF, 03.11.2026). Cells outside the grid count as empty.
+  const DX = sx - mx + 2, DY = sy - my + 1, DZ = sz - mz + 2;
+  const key = (x: number, y: number, z: number): number => {
+    const i = x - mx + 1, j = y - my, k = z - mz + 1;
+    return i < 0 || j < 0 || k < 0 || i >= DX || j >= DY || k >= DZ ? -1 : (i * DY + j) * DZ + k;
+  };
+  const cells = new Map<number, { position: Vec3; air: boolean; state: BlockState }>();
   const erased: Cell[] = [];
   for (const c of payload.cells) {
     if (c.kind === 'erase') { erased.push(c); continue; }
     cells.set(key(...c.position), { position: c.position, air: c.kind === 'air', state: payload.palette[c.paletteIndex]! });
   }
   const inside = (x: number, y: number, z: number) => x >= mx && y >= my && z >= mz && x < sx && y < sy && z < sz;
-  const name = (x: number, y: number, z: number) => { const c = cells.get(key(x, y, z)); return c && !c.air ? c.state.id.slice(10) : null; };
+  const name = (x: number, y: number, z: number) => { const k = key(x, y, z); const c = k < 0 ? undefined : cells.get(k); return c && !c.air ? c.state.id.slice(10) : null; };
 
   // Exterior air: flood from a one-cell shell around the bounds through cells without a block.
-  const outside = new Set<string>();
-  const queue: [number, number, number][] = [[mx - 1, my, mz - 1]];
-  outside.add(key(mx - 1, my, mz - 1));
+  const outside = new Uint8Array(DX * DY * DZ);
+  const queue: number[] = [mx - 1, my, mz - 1];
+  outside[key(mx - 1, my, mz - 1)] = 1;
+  const STEPS = [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]] as const;
   while (queue.length) {
-    const [x, y, z] = queue.pop()!;
-    for (const [dx, dy, dz] of [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]] as const) {
-      const nx = x + dx, ny = y + dy, nz = z + dz, k = key(nx, ny, nz);
-      if (nx < mx - 1 || ny < my || nz < mz - 1 || nx > sx || ny > sy || nz > sz || outside.has(k) || name(nx, ny, nz)) continue;
-      outside.add(k); queue.push([nx, ny, nz]);
+    const z = queue.pop()!, y = queue.pop()!, x = queue.pop()!;
+    for (const [dx, dy, dz] of STEPS) {
+      const nx = x + dx, ny = y + dy, nz = z + dz;
+      if (nx < mx - 1 || ny < my || nz < mz - 1 || nx > sx || ny > sy || nz > sz) continue;
+      const k = key(nx, ny, nz);
+      if (outside[k] || name(nx, ny, nz)) continue;
+      outside[k] = 1; queue.push(nx, ny, nz);
     }
   }
-  const out = (x: number, y: number, z: number) => outside.has(key(x, y, z));
+  const out = (x: number, y: number, z: number) => { const k = key(x, y, z); return k >= 0 && outside[k] === 1; };
   const exposed = (x: number, y: number, z: number) => H4.some(([, dx, dz]) => out(x + dx, y, z + dz)) || out(x, y + 1, z);
   const set = (x: number, y: number, z: number, id: string, properties: Record<string, string>) =>
     cells.set(key(x, y, z), { position: [x, y, z], air: false, state: { id: `minecraft:${id}`, properties } });
@@ -109,7 +118,7 @@ export function refinePayload(payload: VoxelPayload, o: RefineOptions): VoxelPay
     const main = [...count].sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'spruce';
     const shutter = main === 'bamboo' ? 'spruce' : main;
     const trim = ['oak', 'birch', 'cherry', 'jungle', 'pale_oak', 'bamboo'].includes(main) ? 'spruce' : main === 'dark_oak' ? 'spruce' : 'dark_oak';
-    const done = new Set<string>();
+    const done = new Set<number>();
     for (const c of [...cells.values()]) {
       if (c.air || !c.state.id.endsWith('glass_pane')) continue;
       const [x, y, z] = c.position;
@@ -147,7 +156,8 @@ export function refinePayload(payload: VoxelPayload, o: RefineOptions): VoxelPay
     if (!index.has(k)) { index.set(k, palette.length); palette.push(c.state); }
     list.push({ position: c.position, kind: 'block', paletteIndex: index.get(k)! });
   }
-  return createPayload({ ...payload, palette, cells: [...list, ...erased] });
+  // Fresh arrays built here: sealed in place instead of copied (catalogue start).
+  return adoptPayload({ ...payload, palette, cells: [...list, ...erased] });
 }
 
 /** A catalogue spec whose payload passes the finishing pass (material variants are derived from the refined base). */

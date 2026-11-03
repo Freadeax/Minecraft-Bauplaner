@@ -9,6 +9,7 @@ import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { writeLitematic, checkClosed, readStl } from '../../dist/formats/src/index.js';
 import { adoptPayload } from '../../dist/voxel/src/index.js';
+import { openSampleProject } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -129,7 +130,7 @@ test('Abbrechen: Import und 3D-Export großer Modelle stoppen sofort, nichts wir
 test('Update-Vorschau und Versionsvergleich über den Hintergrund (Testschwelle 1 Zelle) mit gleichem Ergebnis', async () => {
   const { p, errors, context } = await page(() => localStorage.setItem('bauplaner.hintergrund.ab', '1'));
   await p.goto(BASE);
-  await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
   const projectUrl = p.url().replace(/(#\/projekt\/[^/]+).*$/, '$1');
   // Even the small project view is meshed in the worker with this hook.

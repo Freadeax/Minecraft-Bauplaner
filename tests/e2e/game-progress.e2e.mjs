@@ -8,6 +8,7 @@ import { spawn } from 'node:child_process';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { startModSimulator } from './modSimulator.mjs';
+import { openSampleProject } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -36,7 +37,7 @@ test('Baustand aus dem Spiel: holen, Ebenen, Abweichungen auf der Karte, abhaken
   p.on('console', m => { if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) errors.push(m.text()); });
 
   await p.goto(`${BASE}#/`);
-  await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
   const projectId = decodeURIComponent(p.url().split('#/projekt/')[1].split(/[/?]/)[0]);
   await p.goto(`${BASE}#/karte`);
@@ -146,7 +147,7 @@ test('Baustand: ältere Mod ohne „scan“ bekommt einen Hinweis statt eines Kn
   const p = await context.newPage();
   p.setDefaultTimeout(15_000);
   await p.goto(`${BASE}#/`);
-  await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
   const projectId = decodeURIComponent(p.url().split('#/projekt/')[1].split(/[/?]/)[0]);
   await p.goto(`${BASE}#/karte`);

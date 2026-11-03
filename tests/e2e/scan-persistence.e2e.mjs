@@ -6,6 +6,7 @@ import { gzipSync } from 'node:zlib';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { writeNbt } from '../../dist/formats/src/index.js';
+import { openSampleProject } from './start.mjs';
 
 const { chromium } = createRequire(import.meta.url)('playwright');
 const PORT = 4194, BASE = `http://127.0.0.1:${PORT}/Minecraft-Bauplaner/`;
@@ -36,7 +37,7 @@ test('saved recording survives reload with manual alignment and byte-exact origi
   const errors = [];
   p.on('pageerror', e => errors.push(e.message));
   await p.goto(BASE);
-  await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
   await p.locator('.save-state.saved').waitFor();
   await p.getByRole('link', { name: 'Bauen', exact: true }).click();

@@ -3,6 +3,7 @@ import { createRequire } from 'node:module';
 import { spawn } from 'node:child_process';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { openSampleProject } from './start.mjs';
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 const PORT = 4199, BASE = `http://127.0.0.1:${PORT}/Minecraft-Bauplaner/`;
@@ -20,7 +21,7 @@ const state = (page, expected) => page.locator(`.project-page[data-computation-s
 async function openSample(page) {
   page.setDefaultTimeout(15_000);
   await page.goto(BASE);
-  await page.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await openSampleProject(page);
   await page.waitForURL(/#\/projekt\//);
 }
 

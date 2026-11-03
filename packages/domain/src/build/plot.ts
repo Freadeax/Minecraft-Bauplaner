@@ -1,4 +1,4 @@
-import { createPayload, stateKey } from '../../../voxel/src/validation.js';
+import { adoptPayload, stateKey } from '../../../voxel/src/validation.js';
 import type { BlockState, Cell, Vec3, VoxelPayload } from '../../../voxel/src/types.js';
 import { SAMPLE_PROFILE } from '../samples.js';
 import { gameReady } from './gameReady.js';
@@ -163,7 +163,8 @@ export class Plot {
     }
     const maxExclusive: Vec3 = [this.size[0], Math.max(this.size[1], this.top), this.size[2]];
     // BLOCK-02: lanterns hang from chains, connections as in the game (gameReady.ts).
-    return gameReady(createPayload({ schemaVersion: 1, profileId: SAMPLE_PROFILE, bounds: { min: [0, 0, 0], maxExclusive }, pivot: [0, 0, 0], sourceOrigin: [0, 0, 0], palette, cells, blockEntities: [] }));
+    // Fresh arrays: sealed in place instead of copied (catalogue start, 03.11.2026); state objects are replaced, never mutated, by the plot.
+    return gameReady(adoptPayload({ schemaVersion: 1, profileId: SAMPLE_PROFILE, bounds: { min: [0, 0, 0], maxExclusive }, pivot: [0, 0, 0], sourceOrigin: [0, 0, 0], palette, cells, blockEntities: [] }));
   }
 }
 

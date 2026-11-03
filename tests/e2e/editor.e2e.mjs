@@ -4,6 +4,7 @@ import { createRequire } from 'node:module';
 import { spawn } from 'node:child_process';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { openSampleProject } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -127,7 +128,7 @@ test('Projekt-Reiter „Blöcke“: abbauen und neu setzen, als neue Versionen s
   p.setDefaultTimeout(15_000);
   const errors = watch(p);
   await p.goto(BASE);
-  await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
   await p.getByRole('link', { name: 'Blöcke' }).click();
   await p.locator('.layer-grid canvas').waitFor();
@@ -166,7 +167,7 @@ test('Mehrfachauswahl im Editor: Gruppe bilden, als Ganzes drehen, ein Rückgän
   p.setDefaultTimeout(15_000);
   const errors = watch(p);
   await p.goto(BASE);
-  await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
   const checks = p.locator('.instance-list .group-check');
   await checks.nth(0).check();

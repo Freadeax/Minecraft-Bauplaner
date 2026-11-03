@@ -3,6 +3,7 @@ import { spawn } from 'node:child_process';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
+import { openSampleProject, waitForStart } from './start.mjs';
 
 const PORT = 4211, BASE = `http://127.0.0.1:${PORT}/Minecraft-Bauplaner/`;
 let server, browser;
@@ -72,7 +73,7 @@ test('Desktop: Projektkopf mit Pfad, Bereichen und Sprung per Schnellsuche', asy
   const { p, errors, context } = await open({ width: 1400, height: 1000 }, 'light');
   try {
     await p.goto(BASE);
-    await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+    await openSampleProject(p);
     await p.getByText('✓ Geometrisch konfliktfrei').waitFor();
     assert.match(await p.getByRole('navigation', { name: 'Pfad' }).innerText(), /Projekte\s*›\s*Burgmauer \(Beispiel\)/);
     await p.waitForFunction(() => document.title.startsWith('Burgmauer (Beispiel) ·'));
@@ -95,7 +96,7 @@ for (const colorScheme of ['dark', 'light']) test(`Handy 390 px (${colorScheme})
   const { p, errors, context } = await open({ width: 390, height: 844 }, colorScheme);
   try {
     await p.goto(BASE);
-    await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).waitFor();
+    await waitForStart(p);
     assert.equal(await p.getByRole('navigation', { name: 'Hauptnavigation', exact: true }).isVisible(), false);
     const bottom = p.getByRole('navigation', { name: 'Hauptnavigation mobil' });
     const box = await bottom.boundingBox();
@@ -112,7 +113,7 @@ for (const colorScheme of ['dark', 'light']) test(`Handy 390 px (${colorScheme})
     await p.keyboard.press('Escape');
 
     await bottom.getByRole('link', { name: 'Projekte' }).click();
-    await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+    await openSampleProject(p);
     await p.getByText('✓ Geometrisch konfliktfrei').waitFor();
     const viewport = await p.locator('.editor > .viewport').boundingBox(), list = await p.locator('.editor-tree').boundingBox();
     assert.ok(viewport && list && viewport.y < list.y, '3D-Ansicht steht über der Instanzliste');

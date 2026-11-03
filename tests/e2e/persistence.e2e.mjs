@@ -7,6 +7,7 @@ import { readFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { openSampleProject } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -36,7 +37,7 @@ const newContext = () => browser.newContext({ viewport: { width: 1400, height: 1
 const sampleName = 'Burgmauer (Beispiel)';
 
 async function createSample(p) {
-  await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
   await p.getByText('✓ Geometrisch konfliktfrei').waitFor();
   await p.locator('.save-state.saved').waitFor();

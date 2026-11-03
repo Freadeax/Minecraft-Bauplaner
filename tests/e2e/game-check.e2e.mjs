@@ -9,6 +9,7 @@ import { gzipSync, gunzipSync } from 'node:zlib';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { readNbt, writeNbt } from '../../dist/formats/src/index.js';
+import { openSampleProject } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -61,7 +62,7 @@ test('Bauen: Spielaufnahme importieren, Abweichung finden, bestätigte Schritte 
   p.on('pageerror', e => errors.push(e.message));
   p.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
   await p.goto(BASE);
-  await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
 
   await p.getByRole('link', { name: 'Export' }).click();
@@ -114,7 +115,7 @@ test('Bauen: Spielaufnahme importieren, Abweichung finden, bestätigte Schritte 
 test('Bauen mobil: Abgleich bleibt bedienbar', async () => {
   const p = await browser.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true });
   await p.goto(BASE);
-  await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
   await p.getByRole('link', { name: 'Bauen' }).click();
   const button = p.locator('.game-check .file-button');

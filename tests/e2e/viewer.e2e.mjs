@@ -4,6 +4,7 @@ import { createRequire } from 'node:module';
 import { spawn } from 'node:child_process';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { openSampleProject } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium, devices } = require('playwright');
@@ -106,7 +107,7 @@ test('Leistung: 27³ Blöcke (19 683) als sichtbare Hülle, Messwerte protokolli
 
 test('Editor: Block wählen zeigt Welt- und Lokalkoordinate, Schichtmodi, Fokus', async () => {
   const { p, errors, close } = await open('');
-  await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
   await ready(p);
   const all = Number((await data(p)).faces);

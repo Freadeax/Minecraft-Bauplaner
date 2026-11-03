@@ -8,6 +8,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
+import { openSampleProject } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -88,7 +89,7 @@ test('Bibliothek: unkomprimierte Litematic wie aus dem Netz, mit Aufschlüsselun
 test('Export: Revision als .litematic, unabhängig geprüft', async () => {
   const { p, errors, context } = await page();
   await p.goto(BASE);
-  await p.getByRole('button', { name: 'Beispielprojekt „Burgmauer“' }).click();
+  await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
   await p.getByRole('link', { name: 'Export' }).click();
   await p.getByText('✓ Exportbereit').waitFor();
