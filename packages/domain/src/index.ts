@@ -113,3 +113,8 @@ export { BASE_TEMPLATES, baseTemplateById, defaultZones, zoneKeyFor, normalizeBa
 export type { BaseTemplate, BaseZoneChoice, BaseChoices, NormalizedBaseChoices, WaterSide, PathStyle, BaseMemberPlan, BaseZonePlan, BaseLayout, BasePlan } from './base.js';
 export { analyzeSplit, extractParts, extractRest, splitProject, blockClass, SPLIT_DEFAULTS, SPLIT_MAX_COLUMNS, NO_GROUND } from './split.js';
 export type { SplitOptions, SplitPart, SplitAnalysis, ExtractOptions, ExtractedPart, GroundMode, SplitProjectPart, BlockClass as SplitBlockClass } from './split.js';
+export { GROSSPROJEKT_SCHEMA_VERSION, MIN_STREET_WIDTH, MAX_STREET_WIDTH, MAX_GP_SPACING, DEFAULT_QUARTER_ROW, LAMP_STEP, QUARTIER_KIND_LABEL, STREET_STYLE_LABEL, SCALE_LABEL, scaleOf,
+  normalizeGpChoices, validateGrossprojekt, planGrossprojekt, streetPayload, buildGrossprojektPlan, previewGrossprojekt, grossprojektSections, createGrossprojektProject, grossprojektIntoProject,
+  summarizeGrossprojekt, themeOfGrossprojekt, grossprojektAssetIds } from './grossprojekte.js';
+export type { QuartierKind, StreetStyle, GrossprojektUnit, Quartier, GrossprojektPhase, GrossprojektStreets, Grossprojekt, ProjectScale, GrossprojektChoices, NormalizedGpChoices, QuartierLayout, StreetLayout, GrossprojektLayout, GrossprojektPlan, GrossprojektSummary } from './grossprojekte.js';
+export { GROSSPROJEKTE, grossprojektById, grossprojekteForTheme } from './grossprojekte/index.js';

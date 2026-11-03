@@ -1,0 +1,9 @@
+/* Großprojekte (GROSS-01): builds on anlagen.css */
+.gp-thumb{display:block;width:100%;aspect-ratio:36/22;background:#0d1b24;border-bottom:1px solid var(--line)}
+.gp-card .gp-thumb rect{shape-rendering:crispEdges}
+.gp-phases{list-style:none;margin:0;padding:0;display:grid;gap:16px}.gp-phases>li{border-left:3px solid var(--mint);padding-left:12px}
+.gp-phase-head{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;margin-bottom:8px;font-size:12px}.gp-phase-head strong{font-size:14px;font-weight:550}.gp-phase-head .muted{flex:1 1 240px;line-height:1.6}
+.gp-phase-actions{display:flex;gap:10px}
+.gp-slots{margin-top:6px;font-size:12px}.gp-slots summary{cursor:pointer;color:var(--mint);min-height:32px}
+.gp-select{display:grid;gap:6px;font-size:12px}.gp-select select{width:auto;max-width:320px;padding:6px;font-size:12px}
+@media (max-width:720px){.gp-phase-head{flex-direction:column}}

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-02T23:23:44.219Z",
+  "updatedAt": "2026-11-03T15:22:00.823Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -19,7 +19,8 @@
     "LIB-05",
     "EDIT-05",
     "MAP-05",
-    "MAP-06"
+    "MAP-06",
+    "GROSS-01"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -5439,6 +5440,93 @@
       "updatedAt": "2026-11-02T19:48:53.099Z"
     },
     {
+      "id": "GROSS-01",
+      "title": "Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Bibliothek um größere Projekte erweitern“)",
+      "dependencies": [
+        "BUILD-05",
+        "BASE-01",
+        "LIB-05"
+      ],
+      "scope": [
+        "packages/domain/src/grossprojekte.ts",
+        "packages/domain/src/grossprojekte/",
+        "apps/web/src/views/library/GrossprojektePage.tsx",
+        "apps/web/src/views/library/grossprojekte.css",
+        "apps/web/src/views/LibraryView.tsx",
+        "apps/web/src/app/router.ts",
+        "tests/grossprojekte.test.mjs",
+        "tests/e2e/grossprojekte.e2e.mjs",
+        "docs/architecture/GROSSPROJEKTE.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "GROSS-01-S01",
+          "title": "Lückenanalyse der Größenstufen (Gebäude ≤ 25 × 25, Ensembles, Anlagen, Basisplaner) und Datenmodell Großprojekt (Quartiere, Einheiten slot/ensemble/anlage, Phasen, Straßen), abgestimmt mit Projektmodul- und ChatGPT-Projekt-Thread.",
+          "done": true
+        },
+        {
+          "id": "GROSS-01-S02",
+          "title": "Engine: deterministisches Rasterlayout aus echten Grundflächen, Türen zur Straße, Straßennetz als eigenes Bauteil (vier Stile, Laternen, Ring, Aussparung in Quartieren über mehrere Zellen), AnlagePlan-kompatible Vorschau, Übernahme mit Abschnitten je Phase.",
+          "done": true
+        },
+        {
+          "id": "GROSS-01-S03",
+          "title": "Zehn kuratierte Großprojekte (27–62 Gebäude) für neun Bauwelten, darunter eines aus zwei ganzen Anlagen; alle ohne Voxelkonflikt.",
+          "done": true
+        },
+        {
+          "id": "GROSS-01-S04",
+          "title": "Oberfläche #/bibliothek/grossprojekte: Übersicht mit Lageplan-Vorschau, Planer mit 3D-Ansicht, Lageplan, Prüfung, Quartiere je Phase (ab, Tausch, Drehung), Straßenwahl, Übernahme, 3D-Export.",
+          "done": true
+        },
+        {
+          "id": "GROSS-01-S05",
+          "title": "Großbauten-Set: große Einzelgebäude (Größenklasse L) für Wahrzeichen in Großprojekten.",
+          "done": false
+        },
+        {
+          "id": "GROSS-01-S06",
+          "title": "Abnahme durch Philipp in der Testphase (BIB-13); danach Geländeanpassung im Planer, Wasserkanten, eigene Großprojekte aus Sammlungen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Alle mitgelieferten Großprojekte planen ohne Voxelkonflikt und Abstandsbefund; das Straßennetz ist zusammenhängend, Laternen stehen neben der Fahrbahn.",
+        "Übernahme liefert Abschnitte „Straßen & Plätze“ und „Phase N“ mit Zwecken; Einfügen ist ein Rückgängig-Schritt; nichts wird ohne Knopfdruck gespeichert.",
+        "Eigene Großprojekte brauchen nur eine Datei und eine Registry-Zeile."
+      ],
+      "next": "Abnahme durch Philipp (S06); Großbauten-Set (S05).",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/grossprojekte.test.mjs",
+          "note": "Kuratierung, Layouts ohne Konflikte, Straßennetz, Wahl, Datenprüfung, Übernahme, Einfügen mit Rückgängig."
+        },
+        {
+          "path": "tests/e2e/grossprojekte.e2e.mjs",
+          "note": "Chromium: Übersicht, Planer, Quartier ab, Straßen, Tausch/Drehung, Übernahme mit Netz-Bauteil, Einfügen, 390 px."
+        },
+        {
+          "path": "docs/architecture/GROSSPROJEKTE.md",
+          "note": "Daten, Layout, Vorschau/Übernahme, eigene Projekte, Grenzen."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Einheits- und Browsertests grün; Abnahme durch Philipp offen (S06)."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-03T15:22:00.823Z"
+    },
+    {
       "id": "MAP-05",
       "title": "Planung auf der Live-Karte vertiefen: Baustand aus dem Spiel (Mod 0.7.1, GET /v1/scan), Ebenen und Abweichungen auf der Karte, bestätigte Schritte abhaken, Bauabschnitte wählen, Weltplan automatisch abgleichen, Hologramm und BlueMap aus dem Kontextmenü",
       "phase": "P3",
@@ -10112,6 +10200,51 @@
           "done": 4,
           "total": 4,
           "next": "Protokoll 3: Rückrichtung „Markierung im Spiel setzen → Weltplan“ mit Zeitstempel je Eintrag (siehe LIVE_LINK.md); Forge und Paper ohne Live-Verbindung."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T15:22:00.823Z",
+      "kind": "progress",
+      "items": [
+        "GROSS-01"
+      ],
+      "summary": "Großprojekte als neue Größenstufe der Bibliothek: Engine mit Rasterlayout, Straßennetz und Phasen, zehn kuratierte Pläne, Seite #/bibliothek/grossprojekte, 11 Einheits- und 2 Browsertests grün; Großbauten-Set und Abnahme offen",
+      "files": [
+        "apps/web/src/app/router.ts",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/LibraryView.tsx",
+        "apps/web/src/views/library/GrossprojektePage.tsx",
+        "apps/web/src/views/library/grossprojekte.css",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/ANLAGEN.md",
+        "docs/architecture/GROSSPROJEKTE.md",
+        "packages/domain/src/grossprojekte.ts",
+        "packages/domain/src/grossprojekte/bergbaustadt.ts",
+        "packages/domain/src/grossprojekte/burganlage.ts",
+        "packages/domain/src/grossprojekte/hafenstadt.ts",
+        "packages/domain/src/grossprojekte/hauptstadt.ts",
+        "packages/domain/src/grossprojekte/helpers.ts",
+        "packages/domain/src/grossprojekte/index.ts",
+        "packages/domain/src/grossprojekte/industriehafen.ts",
+        "packages/domain/src/grossprojekte/innenstadt.ts",
+        "packages/domain/src/grossprojekte/landgut.ts",
+        "packages/domain/src/grossprojekte/magierstadt.ts",
+        "packages/domain/src/grossprojekte/marktstadt.ts",
+        "packages/domain/src/grossprojekte/tempelstadt.ts",
+        "packages/domain/src/index.ts",
+        "tests/e2e/grossprojekte.e2e.mjs",
+        "tests/grossprojekte.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GROSS-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Abnahme durch Philipp (S06); Großbauten-Set (S05)."
         }
       ]
     }

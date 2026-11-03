@@ -3,7 +3,7 @@ import { countBlocks } from '../../../../packages/voxel/src/index.js';
 import type { Cell } from '../../../../packages/voxel/src/index.js';
 import { applyOperation, buildCatalog, buildingInfo, createAsset, createEnsembleProject, createProject, ensemblesWith, facetCounts, FACETS, familyMembers,
   latestVersions, newInstance, projectContext, queryCatalog, resolveProject, similarEntries, suggestForProject, updateAssetMeta, withFacets,
-  ENSEMBLES, ANLAGEN, GENERATORS, SORT_LABEL, STAGES, variantGroup, assetIdsIn, templateFromEnsemble, collectionTree, flattenTree } from '../../../../packages/domain/src/index.js';
+  ENSEMBLES, ANLAGEN, GROSSPROJEKTE, GENERATORS, SORT_LABEL, STAGES, variantGroup, assetIdsIn, templateFromEnsemble, collectionTree, flattenTree } from '../../../../packages/domain/src/index.js';
 import type { Asset, AssetVersionSource, BuildingFacets, CatalogEntry, Ensemble, OriginalFile, Project, SortKey } from '../../../../packages/domain/src/index.js';
 import { href, navigate } from '../app/router';
 import type { LibraryPage } from '../app/router';
@@ -30,6 +30,7 @@ import { EnsemblesPage } from './library/EnsemblesPage';
 import { GeneratorsPage } from './library/GeneratorsPage';
 import { BuildThemesPage } from './library/BuildThemesPage';
 import { AnlagenPage } from './library/AnlagenPage';
+import { GrossprojektePage } from './library/GrossprojektePage';
 import { FacetFields, facetsFromForm } from './library/FacetFields';
 import { useCardView, useCompare, useFavorites, MAX_COMPARE } from './library/prefs';
 import { SHOTS } from '../thumbnail/views';
@@ -332,6 +333,7 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
     <a href={libHref('themes')} aria-current={page === 'themes' ? 'page' : undefined}>Bauwelten</a>
     <a href={libHref('facilities')} aria-current={page === 'facilities' ? 'page' : undefined}>Anlagen <small>{ANLAGEN.length}</small></a>
     <a href={libHref('base')} aria-current={page === 'base' ? 'page' : undefined}>Basisplaner</a>
+    <a href={libHref('grossprojekte')} aria-current={page === 'grossprojekte' ? 'page' : undefined}>Großprojekte <small>{GROSSPROJEKTE.length}</small></a>
     <a href={libHref('collections')} aria-current={page === 'collections' ? 'page' : undefined}>Sammlungen <small>{userLib.collections.filter(c => !c.archived).length}</small></a>
     <a href={libHref('templates')} aria-current={page === 'templates' ? 'page' : undefined}>Vorlagen <small>{userLib.templates.filter(t => !t.archived).length}</small></a>
   </nav>;
@@ -382,6 +384,8 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
       buildingHref={id => libHref('building', id)} anlageHref={id => libHref('facilities', id)} /></div>;
   if (page === 'facilities') return <div className="page">{header}{tabs}{notices}
     <AnlagenPage id={id} entries={catalog.entries} projects={projects} libHref={libHref} onMessage={(m, l) => say(m, l ?? null)} /></div>;
+  if (page === 'grossprojekte') return <div className="page">{header}{tabs}{notices}
+    <GrossprojektePage id={id} entries={catalog.entries} projects={projects} libHref={libHref} onMessage={(m, l) => say(m, l ?? null)} /></div>;
   if (page === 'base') return <div className="page">{header}{tabs}{notices}
     <BasePage projects={projects} libHref={libHref} onMessage={(m, l) => say(m, l ?? null)} /></div>;
   if (page === 'generators') return <div className="page">{header}{tabs}{notices}

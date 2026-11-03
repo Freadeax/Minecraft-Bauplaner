@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 67 Fälle in 9 Bereichen, davon 32 Kernfälle.
+Umfang: 68 Fälle in 9 Bereichen, davon 33 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -22,7 +22,7 @@ Erster Eindruck, Projekte anlegen und Daten sichern. Am besten in einem frischen
 
 ## BIB · Bibliothek (Planer)
 
-Katalog mit Gebäuden, Ensembles, Generatoren, Sammlungen, Vorlagen und Anlagen.
+Katalog mit Gebäuden, Ensembles, Generatoren, Sammlungen, Vorlagen, Anlagen und Großprojekten.
 
 | ID | Fall | Stufe | Schritte | Erwartet |
 |---|---|---|---|---|
@@ -37,6 +37,7 @@ Katalog mit Gebäuden, Ensembles, Generatoren, Sammlungen, Vorlagen und Anlagen.
 | BIB-09 | Anlagen und Bauwelten ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek/anlagen)) | vertieft | 1. Anlagen öffnen, eine Anlage mit Konfliktvorschau ansehen.<br>2. Bauwelten durchblättern. | Konflikte werden markiert; Übernahme legt die Anlage in ein Projekt. |
 | BIB-10 | Basisplaner ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek/basis)) | kern | 1. Bibliothek → Reiter „Basisplaner“.<br>2. Zonen an- und abwählen, zwei Zonen tauschen, Wasserseite und Bauplatz ändern.<br>3. Übernehmen. | Vorschau ohne Überschneidungen, Wege durch kein Gebäude; das Projekt hat Abschnitte „Wege & Platz“ und „Phase 1–4“, das Wegenetz liegt als Bauteil vor. (Abnahme BASE-01-S06) |
 | BIB-11 | Gebäude aus einer eigenen Basis herauslösen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek)) | vertieft | 1. Eine eigene große .litematic/.schem (ganze Basis) in die Bibliothek importieren.<br>2. Gebäudeblatt → „Verwalten“ → „Gebäude herauslösen“.<br>3. Teile ansehen, einige einzeln speichern, als Projekt aufteilen. | Gebäude, Felder, Gehege und Wege werden erkannt (Grenze: unterirdische Räume und Brücken noch nicht sicher); das Projekt zeigt jeden Block am alten Platz ohne Konflikte. (Abnahme SPLIT-01-S05 mit echten Dateien) |
+| BIB-13 | Großprojekt planen und übernehmen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek/grossprojekte)) | kern | 1. Bibliothek → Reiter „Großprojekte“, ein Projekt (z. B. „Freie Marktstadt“) öffnen.<br>2. Ein Quartier abwählen, Straßenbreite und -stil ändern, einen Platz tauschen und drehen.<br>3. Als Projekt anlegen; Baustelle und Editor ansehen. | Lageplan und 3D-Vorschau zeigen Quartiere und Straßen ohne Voxelkonflikte; das Projekt hat Abschnitte „Straßen & Plätze“ und „Phase 1–4“, das Straßennetz liegt als Bauteil vor; Türen zeigen zur Straße. (Abnahme GROSS-01-S06) |
 | BIB-12 | Neue Gebäude im Spiel bauen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek)) | vertieft | 1. Zwei bis drei neue Bibliotheksgebäude (z. B. ein Meisterstück, eine Untergrundhalle, ein Interieur) als .schem exportieren und im Spiel (Litematica oder Mod-Hologramm) aufstellen. | Nichts schwebt, Türen/Treppen/Laternen stehen richtig, Innenräume sind begehbar und eingerichtet. (Abnahme LIB-05-S08) |
 
 ## PROJ · Projekt: Editor, Material, Bauen, Export (Planer)

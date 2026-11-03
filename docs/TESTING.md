@@ -740,3 +740,9 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `mod-core` JUnit 25/25: Zone mit Ebene (getrimmt) und Farbe, Punkt-in-Polygon mit Kerbe, `zoneAt`, `layers()`, unbekannte Zonenart, Zone mit zwei Ecken (400), Farbe „rot“ (400), `GET /v1/players` über den Handler, `hello` mit `protocol` 2 und `features` scan/marks2/players; Schema-1-Einträge ohne Ebene und Farbe unverändert.
 - Spieltest NeoForge, Fabric ohne Modpack und Fabric mit Philipps Modpack + Complementary-Shader (`scripts/bridge_gametest.mjs verify`): 4 Markierungen angenommen (Punkt, Bauplatz, Zone „Hofanlage“ mit Farbe, Gefahr-Punkt auf Ebene „Phase 2“), `readLivePlayers` liest `/v1/players` (Einzelspieler: leer, Dimension overworld), Chat „Weltplan-Ebenen (1)“ mit „● Phase 2: 2“, Bildschirmfoto `markierungen.png` mit der Zone.
 - Grenzen: Mitspieler nur im Einzelspieler geprüft (leere Liste); Zonen-Teppich folgt nur geladenen Chunks; Ebenen-Ausblendung nicht gespeichert.
+
+## GROSS-01 · Großprojekte in der Bibliothek · 03.11.2026 · Claude
+
+- `npm run build:core && node --test tests/grossprojekte.test.mjs`: 11/11 bestanden – alle zehn Großprojekte ohne Voxelkonflikt und Abstandsbefund, Straßennetz zusammenhängend, Laternen neben der Fahrbahn, Übernahme mit Abschnitten „Straßen & Plätze“ und „Phase N“, Einfügen mit Rückgängig und Veraltungsprüfung.
+- `npm run build && node --test tests/e2e/grossprojekte.e2e.mjs`: 2/2 bestanden (Chromium 1243 per `PLAYWRIGHT_BROWSERS_PATH` als 1248 verlinkt): Übersicht mit zehn Karten, Planer, Quartier ab, Straßenbreite 6 und Asphalt, Tausch und Drehung, Übernahme „Meine Burg“ mit vier Abschnitten und Straßennetz-Bauteil, Einfügen der Tempelstadt, 390 px.
+- Grenzen: keine Geländeanpassung im Großprojekt-Planer; Abnahme im Spiel offen (BIB-13).

@@ -3165,3 +3165,42 @@ Mod 0.8.0: Live-Protokoll 2 im Spiel (Zonen als Bodenteppich, Ebenen mit /baupla
 - `mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/LiveLinkScenario.java`
 - `scripts/bridge_gametest.mjs`
 
+## 2026-11-03T15:22:00.823Z · progress
+
+**Aufgaben:** GROSS-01
+
+Großprojekte als neue Größenstufe der Bibliothek: Engine mit Rasterlayout, Straßennetz und Phasen, zehn kuratierte Pläne, Seite #/bibliothek/grossprojekte, 11 Einheits- und 2 Browsertests grün; Großbauten-Set und Abnahme offen
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GROSS-01 | 🧩 Implementiert · Abnahme offen | 4/6 | Abnahme durch Philipp (S06); Großbauten-Set (S05). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/router.ts`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/LibraryView.tsx`
+- `apps/web/src/views/library/GrossprojektePage.tsx`
+- `apps/web/src/views/library/grossprojekte.css`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/ANLAGEN.md`
+- `docs/architecture/GROSSPROJEKTE.md`
+- `packages/domain/src/grossprojekte.ts`
+- `packages/domain/src/grossprojekte/bergbaustadt.ts`
+- `packages/domain/src/grossprojekte/burganlage.ts`
+- `packages/domain/src/grossprojekte/hafenstadt.ts`
+- `packages/domain/src/grossprojekte/hauptstadt.ts`
+- `packages/domain/src/grossprojekte/helpers.ts`
+- `packages/domain/src/grossprojekte/index.ts`
+- `packages/domain/src/grossprojekte/industriehafen.ts`
+- `packages/domain/src/grossprojekte/innenstadt.ts`
+- `packages/domain/src/grossprojekte/landgut.ts`
+- `packages/domain/src/grossprojekte/magierstadt.ts`
+- `packages/domain/src/grossprojekte/marktstadt.ts`
+- `packages/domain/src/grossprojekte/tempelstadt.ts`
+- `packages/domain/src/index.ts`
+- `tests/e2e/grossprojekte.e2e.mjs`
+- `tests/grossprojekte.test.mjs`
+

@@ -2,6 +2,8 @@
 
 Eine Bauwelt ([BUILD_THEMES](BUILD_THEMES.md)) zeigt passende Gebäude. Eine **Anlage** macht daraus einen planbaren Ort: kuratierte Bereiche entlang eines Hauptwegs, feste Bauteilversionen, eingebettete Ensembles, echte Konfliktvorschau und eine ausdrückliche Übernahme als Projekt mit Bauabschnitten für die Baustelle ([SITE](SITE.md)).
 
+Die Stufe darüber – ganze Städte mit Quartieren, Straßenraster und Bauphasen – sind die [Großprojekte](GROSSPROJEKTE.md).
+
 Route: `#/bibliothek/anlagen[/<id>]`, Reiter „Anlagen“ in der Bibliothek. Jede Bauwelt-Karte verlinkt „Als Anlage planen“. Das Öffnen platziert nichts.
 
 ## Daten
