@@ -1,4 +1,5 @@
-import { createPayload, stateKey, AIR_IDS } from '../../voxel/src/validation.js';
+import { adoptPayload, stateKey, AIR_IDS } from '../../voxel/src/validation.js';
+import { MODEL_MAX_CELLS, MODEL_MAX_VOLUME, formatCount } from '../../voxel/src/sizeLimits.js';
 import { UNLOADED_STATE } from '../../voxel/src/observation.js';
 import type { BlockEntity, BlockState, Bounds, Cell, Vec3, VoxelPayload } from '../../voxel/src/types.js';
 import { FormatError } from './nbt.js';
@@ -29,8 +30,8 @@ export interface WorldSampleLimits {
 export const WORLD_SAMPLE_LIMITS: Readonly<WorldSampleLimits> = Object.freeze({
   maxVolume: 16_777_216, maxSpan: 1024, maxHeight: 4064, maxChunks: 4096, maxBlockEntities: 20_000,
 });
-/** Library assets keep the same per-axis budget as file imports. */
-export const EXCERPT_PAYLOAD_LIMITS = Object.freeze({ maxCells: 250_000, maxDimension: 256 });
+/** Library assets: same cell budget as file imports (SIZE-01, vorher 250.000 Zellen und 256 je Achse); the area itself is bounded by WORLD_SAMPLE_LIMITS. */
+export const EXCERPT_PAYLOAD_LIMITS = Object.freeze({ maxCells: MODEL_MAX_CELLS, maxDimension: 4064 });
 
 /** The files a user picked from a world folder, keyed by region coordinates. */
 export interface WorldFiles {
@@ -273,7 +274,7 @@ export function sampleToPayload(sample: WorldSample, options: ExcerptOptions): {
     if (i === undefined) { i = palette.length; palette.push(sample.palette[v]!); remap.set(v, i); }
     const kind = isAir[v] ? 'air' : 'block';
     if (kind === 'air') air++; else blocks++;
-    if (cells.length >= EXCERPT_PAYLOAD_LIMITS.maxCells) failLimit(`Mehr als ${EXCERPT_PAYLOAD_LIMITS.maxCells.toLocaleString('de-DE')} Zellen; bitte den Bereich verkleinern${options.air === 'explicit' ? ' oder Luft weglassen' : ''}.`);
+    if (cells.length >= EXCERPT_PAYLOAD_LIMITS.maxCells) failLimit(`Mehr als ${formatCount(EXCERPT_PAYLOAD_LIMITS.maxCells)} Zellen; bitte den Bereich verkleinern${options.air === 'explicit' ? ' oder Luft weglassen' : ''}.`);
     cells.push({ position: [x - lo[0], y - lo[1], z - lo[2]], kind, paletteIndex: i });
   }
   if (blocks === 0) throw new FormatError('EMPTY', 'Im Bereich steht kein Block (nur Luft, ausgeschlossene oder unbekannte Zellen).');
@@ -285,11 +286,12 @@ export function sampleToPayload(sample: WorldSample, options: ExcerptOptions): {
     if (placed.has(local.join(','))) blockEntities.push({ position: local, data: be.data });
   }
   const dataVersion = sample.dataVersions.at(-1) ?? 0;
-  const payload = createPayload({
+  // Cells are built here: seal in place instead of copying (SIZE-01); shared parts (palette states, NBT) are copied once.
+  const payload = adoptPayload({
     schemaVersion: 1, profileId: `java:dataversion-${dataVersion}:registry-unverified`,
     bounds: { min: [0, 0, 0], maxExclusive: [dims[0], dims[1], dims[2]] }, pivot: [0, 0, 0], sourceOrigin: origin,
-    palette, cells, blockEntities,
-  }, { maxCells: EXCERPT_PAYLOAD_LIMITS.maxCells, maxVolume: 256 ** 3, maxPalette: 20_000, maxNbtDepth: 64, maxNbtNodes: 2_000_000 });
+    palette: structuredClone(palette), cells, blockEntities: structuredClone(blockEntities),
+  }, { maxCells: EXCERPT_PAYLOAD_LIMITS.maxCells, maxVolume: MODEL_MAX_VOLUME, maxPalette: 20_000, maxNbtDepth: 64, maxNbtNodes: 2_000_000 });
   const warnings = [...sample.warnings];
   if (unknown) warnings.push(`${unknown.toLocaleString('de-DE')} Zellen mit unbekanntem Gelände bleiben unausgewählt.`);
   if (excluded) warnings.push(`${excluded.toLocaleString('de-DE')} Blöcke ausgeschlossen (${[...(options.exclude ?? [])].join(', ')}).`);

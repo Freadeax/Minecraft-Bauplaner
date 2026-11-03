@@ -235,8 +235,13 @@ test('plan export carries build sections for the game mod: names in build order,
   assert.deepEqual(cells.slice(3, 6), [2, 2, 2]);
   assert.ok(cells.slice(6).every(v => v === 2 || v === 0));
   assert.equal(cells[6], 2, 'water at y2 is in the upper section');
+  // SIZE-01: the same sections as runs (count, section) for mod 0.9.0+, covering the whole box.
+  const runs = b.SectionRuns.value, expanded = [];
+  for (let i = 0; i < runs.length; i += 2) for (let k = 0; k < runs[i]; k++) expanded.push(runs[i + 1]);
+  assert.deepEqual(expanded, [...cells].map(v => v & 255));
   // Without sections nothing is added, so older mods and files stay as they were.
   const plain = await read(c.project);
   assert.equal(plain.SectionNames, undefined);
   assert.equal(plain.SectionCells, undefined);
+  assert.equal(plain.SectionRuns, undefined);
 });

@@ -1,6 +1,6 @@
 # Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (GAME-07)
 
-Stand 02.11.2026 · Stufe 1 „Fundament + Hologramm“ (0.2.0, Wahl Philipp) Stufe 2 „Texturen, Material, Ebenen“ (0.3.0) und Stufe 3 „Platzierhilfe“ (0.4.0) Stufe 4 „NeoForge, Shader, andere Mods“ (0.6.0) und Stufe 5 „Bauabschnitte, Röntgensicht, Shulker“ (0.7.0); 0.7.1 Baustand für die Live-Karte (`GET /v1/scan`, [LIVE_LINK](LIVE_LINK.md)), 0.7.2 Testphase (`/bauplaner diagnose`, Absturzschutz), 0.8.0 Live-Protokoll 2 (Zonen, Ebenen, Farben, neue Punktarten, Mitspieler; GAME-08). Fabric 26.3 und NeoForge 26.3 mit demselben Client-Kern; die bisherige Aufnahme (`/bauplaner scan`, [MOD_BRIDGE](MOD_BRIDGE.md)) bleibt unverändert erhalten.
+Stand 02.11.2026 · Stufe 1 „Fundament + Hologramm“ (0.2.0, Wahl Philipp) Stufe 2 „Texturen, Material, Ebenen“ (0.3.0) und Stufe 3 „Platzierhilfe“ (0.4.0) Stufe 4 „NeoForge, Shader, andere Mods“ (0.6.0) und Stufe 5 „Bauabschnitte, Röntgensicht, Shulker“ (0.7.0); 0.7.1 Baustand für die Live-Karte (`GET /v1/scan`, [LIVE_LINK](LIVE_LINK.md)), 0.7.2 Testphase (`/bauplaner diagnose`, Absturzschutz), 0.8.0 Live-Protokoll 2 (Zonen, Ebenen, Farben, neue Punktarten, Mitspieler; GAME-08), 0.9.0 große Pläne (SIZE-01). Fabric 26.3 und NeoForge 26.3 mit demselben Client-Kern; die bisherige Aufnahme (`/bauplaner scan`, [MOD_BRIDGE](MOD_BRIDGE.md)) bleibt unverändert erhalten.
 
 ## Grundsätze
 
@@ -100,3 +100,7 @@ Gruppen/Sperren aus dem Weltbuilder (MAP-04) in der Mod, Bauabschnitt als Packli
 ## Live-Protokoll 2 (0.8.0, GAME-08)
 
 Weltplan-Schema 2 von der Website im Spiel ([LIVE_LINK](LIVE_LINK.md#protokoll-2-game-08-mod-080)): Zonen als durchscheinender Teppich auf Bodenhöhe mit Rand, Bauplätze/Wege/Punkte mit eigener Farbe, fünf neue Punktarten (Notiz, Gefahr, Rohstoff, Spawn/Bett, Aussicht), HUD-Zeile mit der Zone am Standort, `/bauplaner ebenen` zum Ein-/Ausblenden benannter Ebenen, `GET /v1/players` für die Mitspieler auf der Karte, `hello.protocol` 2 mit `features` scan, marks2, players. Der Spieltest schickt Zone und Gefahr-Punkt auf einer Ebene, fragt die Mitspieler ab und liest die Ebenenliste im Chat.
+
+## Große Pläne (0.9.0, SIZE-01)
+
+Planbox bis 16,7 Mio. Zellen und 4 Mio. Blöcke, Übertragung von der Website bis 64 MB (Fähigkeit `bigplans`). Der Plan wird einmal entpackt, `LiveCheck` braucht rund 30 Byte je Block (keine HashMap je Block), große Pläne und das Verschieben großer Hologramme werden im Thread „Bauplaner-Planlader“ vorbereitet, der Baustand liest in Scheiben. Bauabschnitte kommen als Läufe (`SectionRuns`), alte Dateien mit `SectionCells` gehen weiter. Render-Budget mit `/bauplaner leistung niedrig|normal|hoch` (15 000 / 30 000 / 60 000 offene Blöcke im Umkreis von 72); greift es, zeigt die Anzeige „Zeigt die nächsten …“. Die Diagnose nennt Planbox, Chunks, Leistung und Java-Speicher. Einzelheiten und Messwerte: [SIZE_LIMITS](SIZE_LIMITS.md).

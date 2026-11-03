@@ -1,4 +1,5 @@
 import { AIR_IDS, createPayload, stateKey } from '../../../voxel/src/validation.js';
+import { MODEL_MAX_CELLS, formatCount } from '../../../voxel/src/sizeLimits.js';
 import type { BlockState, Bounds, Cell, FreeEntity, NbtTag, Vec3, VoxelPayload } from '../../../voxel/src/types.js';
 import { entityAnchor } from '../../../voxel/src/entities.js';
 import { canonicalJson } from '../hash.js';
@@ -25,10 +26,15 @@ export const ERASE_VALUE: CellValue = Object.freeze({ kind: 'erase' });
 export const posKey = (p: Vec3): string => `${p[0]},${p[1]},${p[2]}`;
 export const keyPos = (k: string): Vec3 => k.split(',').map(Number) as unknown as Vec3;
 
-/** Largest number of cells one edit may touch; keeps the browser responsive and the undo stack bounded. */
-export const MAX_EDIT_CELLS = 250_000;
-/** Largest draft model (cells after the edit) the editor accepts. */
-export const MAX_DRAFT_CELLS = 400_000;
+/** Largest number of cells one edit may touch; keeps the browser responsive (SIZE-01, vorher 250 000). */
+export const MAX_EDIT_CELLS = 1_000_000;
+/** Largest draft model (cells after the edit) the editor accepts: the planner's model limit (SIZE-01, vorher 400 000). */
+export const MAX_DRAFT_CELLS = MODEL_MAX_CELLS;
+/**
+ * Undo budget in changed cells over all steps (forward + inverse). Large fills on big builds would otherwise
+ * keep hundreds of megabytes alive; the oldest steps are dropped first, the newest step always stays.
+ */
+export const HISTORY_MAX_CELLS = 6_000_000;
 
 export function blockValue(state: BlockState, entity?: NbtTag): CellValue {
   const s = { id: state.id, properties: { ...state.properties } };
@@ -72,13 +78,16 @@ const HISTORY_LIMIT = 300;
 export function payloadCells(payload: VoxelPayload): Map<string, CellValue> {
   const entities = new Map(payload.blockEntities.map(e => [posKey(e.position), e.data]));
   const out = new Map<string, CellValue>();
+  // One frozen value per palette entry for cells without block entity: a million cells then share a handful
+  // of objects instead of a million (SIZE-01). Values are compared by content (sameSlot), never by identity.
+  const shared: (CellValue | undefined)[] = [];
   for (const c of payload.cells) {
     const k = posKey(c.position);
     if (c.kind === 'erase') out.set(k, ERASE_VALUE);
     else if (c.kind === 'air') out.set(k, AIR_VALUE);
     else {
       const state = payload.palette[c.paletteIndex]!, entity = entities.get(k);
-      out.set(k, entity ? { kind: 'block', state, entity } : { kind: 'block', state });
+      out.set(k, entity ? { kind: 'block', state, entity } : (shared[c.paletteIndex] ??= Object.freeze({ kind: 'block', state }) as CellValue));
     }
   }
   return out;
@@ -109,7 +118,7 @@ export function draftCellCount(draft: Draft): number {
  * returns an empty inverse and is not recorded.
  */
 export function applyEdit(draft: Draft, edit: Edit): { draft: Draft; inverse: Edit; changed: number } {
-  if (edit.changes.length > MAX_EDIT_CELLS) throw new DomainError('LIMIT', `Eine Änderung darf höchstens ${MAX_EDIT_CELLS.toLocaleString('de-DE')} Zellen betreffen (hier ${edit.changes.length.toLocaleString('de-DE')}).`);
+  if (edit.changes.length > MAX_EDIT_CELLS) throw new DomainError('LIMIT', `Eine Änderung darf höchstens ${formatCount(MAX_EDIT_CELLS)} Zellen betreffen (hier ${formatCount(edit.changes.length)}). Bitte in mehreren Schritten arbeiten.`);
   const overlay = new Map(draft.overlay), inverse: CellChange[] = [], seen = new Set<string>();
   for (const change of edit.changes) {
     const p = change.position;
@@ -118,16 +127,18 @@ export function applyEdit(draft: Draft, edit: Edit): { draft: Draft; inverse: Ed
     const k = posKey(p);
     const before = overlay.has(k) ? overlay.get(k)! : draft.baseCells.get(k) ?? null;
     if (sameSlot(before, change.value)) continue;
-    if (!seen.has(k)) { inverse.unshift({ position: p, value: before }); seen.add(k); }
+    // Collected forwards and reversed once below: unshift would make big edits quadratic.
+    if (!seen.has(k)) { inverse.push({ position: p, value: before }); seen.add(k); }
     if (sameSlot(draft.baseCells.get(k) ?? null, change.value)) overlay.delete(k); else overlay.set(k, change.value);
   }
+  inverse.reverse();
   const before = draft.entities ?? [];
   const entitiesChanged = edit.entities !== undefined && canonicalJson(edit.entities) !== canonicalJson(before);
   if (entitiesChanged) for (const e of edit.entities!) {
     if (!e.position.every(n => Number.isFinite(n))) throw new DomainError('INVALID', 'Entity-Position muss endlich sein');
   }
   const next: Draft = { ...draft, overlay, entities: entitiesChanged ? edit.entities! : before };
-  if (inverse.length && draftCellCount(next) > MAX_DRAFT_CELLS) throw new DomainError('LIMIT', `Das Modell darf höchstens ${MAX_DRAFT_CELLS.toLocaleString('de-DE')} Zellen haben.`);
+  if (inverse.length && draftCellCount(next) > MAX_DRAFT_CELLS) throw new DomainError('LIMIT', `Das Modell darf höchstens ${formatCount(MAX_DRAFT_CELLS)} Zellen haben. Bitte in mehrere Bauteile teilen.`);
   return { draft: next, inverse: { label: edit.label, changes: inverse, ...(entitiesChanged && { entities: before }) }, changed: inverse.length + (entitiesChanged ? 1 : 0) };
 }
 
@@ -135,7 +146,19 @@ export function executeEdit(draft: Draft, history: DraftHistory, edit: Edit): { 
   const r = applyEdit(draft, edit);
   if (!r.changed) return { draft, history, changed: 0 };
   const entry = { label: edit.label, forward: edit, inverse: r.inverse };
-  return { draft: r.draft, history: { undo: [...history.undo, entry].slice(-HISTORY_LIMIT), redo: [] }, changed: r.changed };
+  return { draft: r.draft, history: { undo: trimHistory([...history.undo, entry]), redo: [] }, changed: r.changed };
+}
+
+type HistoryEntry = DraftHistory['undo'][number];
+const entryCells = (e: HistoryEntry): number => e.forward.changes.length + e.inverse.changes.length;
+/** Keeps at most HISTORY_LIMIT steps and HISTORY_MAX_CELLS changed cells; the newest step always stays. */
+export function trimHistory(undo: readonly HistoryEntry[]): readonly HistoryEntry[] {
+  let start = Math.max(0, undo.length - HISTORY_LIMIT), cells = 0;
+  for (let i = undo.length - 1; i >= start; i--) {
+    cells += entryCells(undo[i]!);
+    if (cells > HISTORY_MAX_CELLS && i < undo.length - 1) { start = i + 1; break; }
+  }
+  return start ? undo.slice(start) : undo;
 }
 export function undoEdit(draft: Draft, history: DraftHistory): { draft: Draft; history: DraftHistory } | null {
   const entry = history.undo.at(-1);
@@ -147,7 +170,7 @@ export function redoEdit(draft: Draft, history: DraftHistory): { draft: Draft; h
   const entry = history.redo.at(-1);
   if (!entry) return null;
   const r = applyEdit(draft, entry.forward);
-  return { draft: r.draft, history: { undo: [...history.undo, { ...entry, inverse: r.inverse }], redo: history.redo.slice(0, -1) } };
+  return { draft: r.draft, history: { undo: trimHistory([...history.undo, { ...entry, inverse: r.inverse }]), redo: history.redo.slice(0, -1) } };
 }
 
 /** All cells of the draft model (base with overlay applied). */

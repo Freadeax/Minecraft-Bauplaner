@@ -1,7 +1,8 @@
 import type { Limits, Vec3, VoxelPayload } from './types.js';
+import { MODEL_MAX_CELLS, MODEL_MAX_VOLUME } from './sizeLimits.js';
 
 export const DEFAULT_LIMITS: Limits = Object.freeze({
-  maxCells: 1_000_000, maxPalette: 65_536, maxVolume: 16_777_216,
+  maxCells: MODEL_MAX_CELLS, maxPalette: 65_536, maxVolume: MODEL_MAX_VOLUME,
   maxNbtDepth: 64, maxNbtNodes: 1_000_000, maxStringLength: 1_000_000,
 });
 export class VoxelValidationError extends Error {

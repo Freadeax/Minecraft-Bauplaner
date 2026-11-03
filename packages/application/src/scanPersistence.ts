@@ -1,3 +1,4 @@
+import { MODEL_MAX_FILE_BYTES } from '../../voxel/src/sizeLimits.js';
 import type { Project, OriginalFile, ProjectScanReference } from '../../domain/src/index.js';
 import type { WorldScan } from '../../voxel/src/observation.js';
 import type { Vec3 } from '../../voxel/src/index.js';
@@ -5,12 +6,12 @@ import { sha256Hex } from '../../domain/src/hash.js';
 import type { Repository } from './repository.js';
 
 export type PersistableScan = WorldScan & { readonly sourceSha256: string; readonly fileName: string };
-export const MAX_STORED_SCAN_BYTES = 16_000_000;
+export const MAX_STORED_SCAN_BYTES = MODEL_MAX_FILE_BYTES;
 
 /** Save the unchanged recording and its project reference in one baseRevision-checked transaction. */
 export async function saveProjectScan(repo: Pick<Repository, 'applyBatch'>, project: Project, scan: PersistableScan,
   bytes: Uint8Array, alignment: Vec3, importedAt = new Date().toISOString()): Promise<Project> {
-  if (bytes.length > MAX_STORED_SCAN_BYTES) throw new Error('Die Aufnahme ist zu groß (maximal 16 MB).');
+  if (bytes.length > MAX_STORED_SCAN_BYTES) throw new Error(`Die Aufnahme ist zu groß (maximal ${MAX_STORED_SCAN_BYTES / 1_000_000} MB).`);
   if (!/^[a-f0-9]{64}$/.test(scan.sourceSha256) || await sha256Hex(bytes) !== scan.sourceSha256)
     throw new Error('Prüfsumme der Aufnahmedatei stimmt nicht. Bitte erneut importieren.');
   if (!scan.fileName.trim() || scan.fileName.length > 255 || /[\x00-\x1f]/.test(scan.fileName)) throw new Error('Ungültiger Dateiname der Aufnahme.');

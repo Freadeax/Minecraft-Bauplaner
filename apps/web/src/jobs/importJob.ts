@@ -1,4 +1,4 @@
-import { countBlocks, createPayload, payloadToTransport, columnBuffers, validatePayload } from '../../../../packages/voxel/src/index.js';
+import { adoptPayload, countBlocks, payloadToTransport, columnBuffers, validatePayload, MODEL_MAX_CELLS, MODEL_MAX_SIDE } from '../../../../packages/voxel/src/index.js';
 import type { PayloadTransport } from '../../../../packages/voxel/src/index.js';
 import { importStructure, detectNbtCompression, FormatError } from '../../../../packages/formats/src/index.js';
 import type { LitematicResult, SchemResult } from '../../../../packages/formats/src/index.js';
@@ -35,8 +35,9 @@ export async function importJob(input: ImportJobInput, ctx: JobContext): Promise
     } else {
       if (!name.toLowerCase().endsWith('.json')) throw new Error('Erwartet Sponge Schem v3, Litematic (.litematic, komprimiert oder unkomprimiert) oder Voxel-JSON. Alte Schematic-Versionen werden nicht unterstützt.');
       ctx.progress('JSON lesen', 0.2);
-      const payload = createPayload(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)), { maxCells: 250_000, maxNbtNodes: 50_000, maxNbtDepth: 32, maxStringLength: 100_000 });
-      if (payload.bounds.maxExclusive.some((n, i) => n - payload.bounds.min[i]! > 256)) throw new Error('Die Vorschau unterstützt höchstens 256 Blöcke pro Achse.');
+      // Freshly parsed JSON belongs to this job alone: seal it in place instead of copying (SIZE-01).
+      const payload = adoptPayload(JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)), { maxCells: MODEL_MAX_CELLS, maxNbtNodes: 200_000, maxNbtDepth: 32, maxStringLength: 100_000 });
+      if (payload.bounds.maxExclusive.some((n, i) => n - payload.bounds.min[i]! > MODEL_MAX_SIDE)) throw new Error(`Höchstens ${MODEL_MAX_SIDE} Blöcke pro Achse.`);
       out = { format: 'json', payload, report: null };
     }
     ctx.progress('Blöcke prüfen', 0.8);

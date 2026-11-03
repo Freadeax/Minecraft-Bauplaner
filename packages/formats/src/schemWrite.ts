@@ -1,3 +1,4 @@
+import { MODEL_MAX_VOLUME, formatCount } from '../../voxel/src/sizeLimits.js';
 import { validatePayload } from '../../voxel/src/validation.js';
 import type { BlockEntity, BlockState, NbtTag, Vec3, VoxelPayload } from '../../voxel/src/types.js';
 import { entityExportData } from '../../voxel/src/entities.js';
@@ -30,7 +31,8 @@ export interface SchemWriteOptions {
 
 export interface SchemExportLimits { readonly maxVolume: number; readonly maxDimension: number }
 /** Unsigned-short dimensions; the volume cap keeps the browser export bounded. */
-export const SCHEM_EXPORT_LIMITS: Readonly<SchemExportLimits> = Object.freeze({ maxVolume: 4_000_000, maxDimension: 65_535 });
+/** SIZE-01: box up to 16.7 million cells (vorher 4 Mio.); the Data array then holds up to ~33 MB before GZip. */
+export const SCHEM_EXPORT_LIMITS: Readonly<SchemExportLimits> = Object.freeze({ maxVolume: MODEL_MAX_VOLUME, maxDimension: 65_535 });
 
 export interface SchemExportReport {
   readonly dimensions: Vec3;
@@ -125,7 +127,7 @@ export function buildSchemV3(world: VoxelPayload, options: SchemWriteOptions, li
   const [W, H, L] = [0, 1, 2].map(i => max[i]! - min[i]!) as [number, number, number];
   for (const [name, n] of [['Breite', W], ['Höhe', H], ['Länge', L]] as const) if (n > limits.maxDimension) fail(`${name} ${n} überschreitet ${limits.maxDimension}.`);
   const volume = W * H * L;
-  if (volume > limits.maxVolume) fail(`Exportvolumen ${volume} überschreitet ${limits.maxVolume} Zellen.`);
+  if (volume > limits.maxVolume) fail(`Exportbox mit ${formatCount(volume)} Zellen überschreitet ${formatCount(limits.maxVolume)} Zellen. Bitte das Projekt in mehrere Teilprojekte oder Bauabschnitte teilen.`);
 
   // Dense index: palette text per cell; -1 = unselected.
   const cellText = new Int32Array(volume).fill(-1);

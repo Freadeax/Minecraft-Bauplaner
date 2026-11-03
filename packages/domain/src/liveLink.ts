@@ -1,3 +1,4 @@
+import { LEGACY_MOD_MAX_VOLUME, MODEL_MAX_FILE_BYTES, MODEL_MAX_VOLUME, assessSize, formatCount } from '../../voxel/src/sizeLimits.js';
 import { SURFACE_SKIP_IDS, isGroundId } from './terrain.js';
 import { SURVEY_UNKNOWN, createSurvey } from './terrainSurvey.js';
 import type { SurveyArea, TerrainSurvey } from './terrainSurvey.js';
@@ -41,7 +42,9 @@ export const LIVE_TOKEN_HEADER = 'X-Bauplaner-Token';
 export const LIVE_MAX_CHUNKS_PER_REQUEST = 64;
 export const LIVE_MAX_RUNS = 16;
 export const LIVE_MAX_MARKS = 500;
-export const LIVE_MAX_PLAN_BYTES = 16 * 1024 * 1024;
+/** Largest plan file a mod with feature `bigplans` (0.9.0+) takes; older mods take 16 MiB (SIZE-01). */
+export const LIVE_MAX_PLAN_BYTES = MODEL_MAX_FILE_BYTES;
+export const LIVE_LEGACY_PLAN_BYTES = 16 * 1024 * 1024;
 /** Origins the mod accepts (besides http://localhost:* and http://127.0.0.1:* for development). */
 export const LIVE_ALLOWED_ORIGINS: readonly string[] = ['https://freadeax.github.io'];
 
@@ -79,12 +82,39 @@ export const LIVE_FEATURE_SCAN = 'scan';
 export const LIVE_FEATURE_MARKS2 = 'marks2';
 /** `GET /v1/players`: other players the client sees (GAME-08). */
 export const LIVE_FEATURE_PLAYERS = 'players';
+/** Big plans (SIZE-01, mod 0.9.0): plan box up to 16.7 million cells, file up to 64 MB, loaded without freezing the game. */
+export const LIVE_FEATURE_BIGPLANS = 'bigplans';
 export const liveCan = (hello: LiveHello | null, feature: string): boolean => !!hello?.features.includes(feature);
+
+export interface PlanSendCheck {
+  /** False: the mod would refuse the plan; `message` says why and what helps. */
+  readonly ok: boolean;
+  /** Hint or reason, empty for small plans. */
+  readonly message: string;
+  /** Request timeout that fits the file size. */
+  readonly timeoutMs: number;
+}
+/**
+ * Before a plan goes to the game (POST /v1/plan): fits it what this mod can load? Older mods (without
+ * `bigplans`) refuse boxes over 4 million cells and files over 16 MiB; the website then says so instead of
+ * sending 30 seconds in vain. Big plans get a hint and a longer timeout (about 1 s per MB, at least 20 s).
+ */
+export function checkPlanForMod(hello: LiveHello | null, plan: { readonly volume: number; readonly cells: number; readonly bytes: number }): PlanSendCheck {
+  const big = liveCan(hello, LIVE_FEATURE_BIGPLANS);
+  const maxBytes = big ? LIVE_MAX_PLAN_BYTES : LIVE_LEGACY_PLAN_BYTES, maxVolume = big ? MODEL_MAX_VOLUME : LEGACY_MOD_MAX_VOLUME;
+  const timeoutMs = Math.min(180_000, Math.max(20_000, Math.ceil(plan.bytes / 1_000_000) * 1000 + 15_000 + Math.ceil(plan.cells / 100_000) * 1000));
+  if (plan.bytes > maxBytes) return { ok: false, timeoutMs, message: `Die Plandatei ist ${(plan.bytes / 1_000_000).toLocaleString('de-DE', { maximumFractionDigits: 1 })} MB groß; ${big ? 'die Mod' : 'diese Mod-Version'} nimmt höchstens ${Math.floor(maxBytes / 1_000_000)} MB.${big ? ' Bitte das Projekt in Teilprojekte teilen.' : ' Mod 0.9.0 nimmt bis 64 MB (#/mod).'}` };
+  if (plan.volume > maxVolume) return { ok: false, timeoutMs, message: `Die Planbox hat ${formatCount(plan.volume)} Zellen; ${big ? `die Mod lädt höchstens ${formatCount(maxVolume)}. Bitte das Projekt in Teilprojekte teilen.` : `diese Mod-Version lädt höchstens ${formatCount(maxVolume)}. Mod 0.9.0 lädt Pläne bis ${formatCount(MODEL_MAX_VOLUME)} Zellen Box (#/mod).`}` };
+  const size = assessSize(plan.cells, plan.volume);
+  const message = size.level === 'normal' ? '' : `Großer Plan (${formatCount(plan.cells)} Blöcke): ${big ? 'die Mod lädt ihn im Hintergrund und zeigt die nächsten Blöcke zuerst; Bauabschnitte (Num /) halten das Hologramm übersichtlich.' : 'eine ältere Mod lädt ihn im Spielthread – das Spiel kann kurz hängen. Mod 0.9.0 lädt im Hintergrund (#/mod).'}`;
+  return { ok: true, timeoutMs, message };
+}
 /** Known features with what they mean, for the „Mod kann“ line of the panel. */
 export const LIVE_FEATURE_LABELS: readonly { readonly id: string; readonly label: string }[] = [
   { id: LIVE_FEATURE_SCAN, label: 'Baustand aus dem Spiel' },
   { id: LIVE_FEATURE_MARKS2, label: 'Zonen, Ebenen und neue Punktarten im Spiel' },
   { id: LIVE_FEATURE_PLAYERS, label: 'Mitspieler auf der Karte' },
+  { id: LIVE_FEATURE_BIGPLANS, label: 'große Pläne bis 16,7 Mio. Zellen' },
 ];
 /** Other players (feature `players`): name and position in the client's dimension. */
 export interface LiveOtherPlayer { readonly name: string; readonly x: number; readonly y: number; readonly z: number; readonly yaw: number }

@@ -1,4 +1,4 @@
-export { AIR_VALUE, ERASE_VALUE, MAX_EDIT_CELLS, MAX_DRAFT_CELLS, EMPTY_DRAFT_HISTORY, posKey, keyPos, blockValue, sameSlot, payloadCells, createDraft, cellAt, draftCellCount,
+export { AIR_VALUE, ERASE_VALUE, MAX_EDIT_CELLS, MAX_DRAFT_CELLS, HISTORY_MAX_CELLS, trimHistory, EMPTY_DRAFT_HISTORY, posKey, keyPos, blockValue, sameSlot, payloadCells, createDraft, cellAt, draftCellCount,
   applyEdit, executeEdit, undoEdit, redoEdit, draftEntries, summarizeDraft, materializeDraft } from './draft.js';
 export type { CellValue, CellSlot, CellChange, Edit, Draft, DraftHistory, DraftSummary } from './draft.js';
 export { BOX_SHAPE_LABEL, boxBounds, boxSize, boxVolume, inBox, setCells, boxEdit, sphereEdit, cylinderEdit, lineEdit, carryProperties, replaceEdit, countMatches, floodEdit,

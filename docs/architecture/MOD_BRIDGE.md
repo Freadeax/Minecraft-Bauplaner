@@ -53,7 +53,7 @@ Revision einfrieren  ──.schem──▶ Plan laden (Soll, Metadaten)
 
 `DataVersion` kommt aus dem laufenden Spiel. Die Website zeigt eine Abweichung zur Plan-DataVersion als Hinweis an.
 
-Für Aufnahmen gelten eigene Leselimits (Volumen bis zur Exportgrenze 4 000 000 Zellen, Achse bis 65 535) statt der Bauteil-Importlimits (`SCHEM_LIMITS`, 20 000 Zellen). Der Vergleich arbeitet auf der Palette, nicht auf einem Voxelpayload, damit große Aufnahmen nicht als Bauteil validiert werden müssen.
+Für Aufnahmen gelten eigene Leselimits (Volumen bis zur Exportgrenze 16 777 216 Zellen seit SIZE-01, Achse bis 65 535) statt der Bauteil-Importlimits (`SCHEM_LIMITS`, 20 000 Zellen). Der Vergleich arbeitet auf der Palette, nicht auf einem Voxelpayload, damit große Aufnahmen nicht als Bauteil validiert werden müssen.
 
 ## Zellvergleich
 
@@ -147,7 +147,7 @@ M1 hängt von keiner der offenen Entscheidungen ab und kann sofort beginnen.
 
 ## Umsetzung M1 (Website)
 
-- `packages/formats/src/scan.ts`: `readWorldScan`/`normalizeScan` mit eigenen Limits (`SCAN_LIMITS`: 4 000 000 Zellen, 16 MB komprimiert, 40 MB entpackt, 20 s), dichte Palettenindizes statt Voxelpayload, `bauplaner:unloaded`, Metadatenprüfung (Plan-Dateien ohne `Kind` werden mit Hinweis abgewiesen, `ScanVersion` ≠ 1 ebenfalls). Entpacken über das gemeinsame `gunzipLimited` aus `schem.ts`.
+- `packages/formats/src/scan.ts`: `readWorldScan`/`normalizeScan` mit eigenen Limits (`SCAN_LIMITS`: 16 777 216 Zellen, 64 MB komprimiert, 192 MB entpackt, 60 s; SIZE-01), dichte Palettenindizes statt Voxelpayload, `bauplaner:unloaded`, Metadatenprüfung (Plan-Dateien ohne `Kind` werden mit Hinweis abgewiesen, `ScanVersion` ≠ 1 ebenfalls). Entpacken über das gemeinsame `gunzipLimited` aus `schem.ts`.
 - `packages/domain/src/gameCheck.ts`: `scanTarget` (Projekt und Revision müssen passen), `checkScan` (Zellvergleich, Zuordnung über `buildGuide`-Positionen), `compareBlock`/`ignoredProperties` (expliziter Katalog oben), `confirmedUnticked`, `tickedButNotBuilt`, `tickConfirmed` (ein rückgängig machbarer `batch`).
 - Plan-Export schreibt zusätzlich `Bauplaner.ProjectMin`, damit Aufnahmen bei jedem Anker ausrichtbar sind.
 - Tab „Bauen“: Bereich „Fortschritt laut Spielaufnahme“ (`GameCheckPanel.tsx`, Lesen im Worker `scan.worker.ts`), Grundlage springt auf die Revision der Aufnahme, Spielstatus je Schritt in der Liste, Abweichungen mit Koordinaten in der Schrittkarte und rot umrandet im Schichtplan, Hinweis auf abgehakte, aber im Spiel fehlende Schritte, Knopf „bestätigte Schritte abhaken“.
@@ -157,7 +157,7 @@ M1 hängt von keiner der offenen Entscheidungen ab und kann sofort beginnen.
 
 [`mods/bauplaner-bridge`](../../mods/bauplaner-bridge/README.md), Gradle 9.8.2 mit Wrapper.
 
-- `core/` (Java 21, ohne Minecraft): `Nbt` (Big-Endian, Modified UTF-8), `Plan` (liest Plan-Dateien, weist Aufnahmen und Pläne ohne `ProjectMin` ab, Grenze 4 000 000 Zellen), `ScanJob` (liest über `BlockSource` in Scheiben, Sponge-Reihenfolge, `bauplaner:unloaded`, prüft das Zustandsformat, schreibt `bauplaner-scan` v1), `AnchorStore` (Plan und Anker je Server/Welt in `bauplaner/state.properties`).
+- `core/` (Java 21, ohne Minecraft): `Nbt` (Big-Endian, Modified UTF-8), `Plan` (liest Plan-Dateien, weist Aufnahmen und Pläne ohne `ProjectMin` ab, Grenze 16 777 216 Zellen seit Mod 0.9.0), `ScanJob` (liest über `BlockSource` in Scheiben, Sponge-Reihenfolge, `bauplaner:unloaded`, prüft das Zustandsformat, schreibt `bauplaner-scan` v1), `AnchorStore` (Plan und Anker je Server/Welt in `bauplaner/state.properties`).
 - `fabric-26.3/`: Client-Befehle `/bauplaner plan|anker|scan|status|abbrechen|plaene`, 12 000 Zellen je Tick, Fortschritt über der Hotbar, atomares Schreiben nach `bauplaner/scans/`, Abbruch bei Welt- oder Dimensionswechsel. Versionsabhängiges nur in `McCompat.java`. Seit 01.11.2026 kompiliert und im echten Spiel geprüft, siehe GAME-02 unten.
 - Prüfung: `scripts/test_bridge.sh` führt die JUnit-Tests aus und prüft sprachübergreifend: Website exportiert einen Plan, der Java-Kern nimmt eine daraus gebaute Welt mit einem falschen Block auf, der unabhängige Python-Leser und der Website-Vergleich finden genau diese Zelle.
 - Noch offen in M2: Umriss der Planbox im Spiel, Speicherung der Aufnahme auf der Website.

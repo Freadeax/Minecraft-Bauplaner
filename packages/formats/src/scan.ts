@@ -1,3 +1,4 @@
+import { MODEL_MAX_FILE_BYTES, MODEL_MAX_UNCOMPRESSED_BYTES, MODEL_MAX_VOLUME, formatCount } from '../../voxel/src/sizeLimits.js';
 import { UNLOADED_STATE } from '../../voxel/src/observation.js';
 import type { ScanMeta, WorldScan } from '../../voxel/src/observation.js';
 export { UNLOADED_STATE } from '../../voxel/src/observation.js';
@@ -15,7 +16,8 @@ import { gunzipLimited, parseBlockState } from './schem.js';
 
 export interface ScanLimits { maxCompressedBytes: number; maxUncompressedBytes: number; maxVolume: number; maxDimension: number; maxPalette: number; maxDepth: number; maxNodes: number; maxDurationMs: number }
 /** Same volume as the Schem export; the byte array counts as nodes in the NBT reader. */
-export const SCAN_LIMITS: Readonly<ScanLimits> = Object.freeze({ maxCompressedBytes: 16_000_000, maxUncompressedBytes: 40_000_000, maxVolume: 4_000_000, maxDimension: 65_535, maxPalette: 65_536, maxDepth: 32, maxNodes: 6_000_000, maxDurationMs: 20_000 });
+/** SIZE-01: recordings of the whole plan box of big builds (vorher 4 Mio. Zellen, 16 MB). */
+export const SCAN_LIMITS: Readonly<ScanLimits> = Object.freeze({ maxCompressedBytes: MODEL_MAX_FILE_BYTES, maxUncompressedBytes: MODEL_MAX_UNCOMPRESSED_BYTES, maxVolume: MODEL_MAX_VOLUME, maxDimension: 65_535, maxPalette: 65_536, maxDepth: 32, maxNodes: 3 * MODEL_MAX_VOLUME, maxDurationMs: 60_000 });
 
 function fail(message: string): never { throw new FormatError('SCAN', message); }
 type Compound = Readonly<Record<string, NbtTag>>;
@@ -66,7 +68,7 @@ export function normalizeScan(sourceNbt: { name: string; tag: NbtTag }, options:
     return n;
   }) as unknown as Vec3;
   const volume = size[0] * size[1] * size[2];
-  if (volume > limits.maxVolume) throw new FormatError('LIMIT', `Aufnahme überschreitet ${limits.maxVolume} Zellen.`);
+  if (volume > limits.maxVolume) throw new FormatError('LIMIT', `Aufnahme mit ${formatCount(volume)} Zellen überschreitet ${formatCount(limits.maxVolume)} Zellen.`);
   const offset = s.Offset ? vec(s.Offset, 'Offset') : [0, 0, 0] as const;
   const blocks = compound(s.Blocks, 'Blocks');
   const entries = Object.entries(compound(blocks.Palette, 'Blocks.Palette'));

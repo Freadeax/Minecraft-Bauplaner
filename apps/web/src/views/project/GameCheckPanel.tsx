@@ -6,14 +6,15 @@ import type { Vec3 } from '../../../../../packages/voxel/src/index.js';
 import { download, errorText, formatNumber } from '../../app/ui';
 import { useApp } from '../../app/context';
 import { loadProjectScanOriginal, saveProjectScan } from '../../app/scanPersistence';
+import { MODEL_MAX_FILE_BYTES } from '../../../../../packages/voxel/src/sizeLimits.js';
 
 export type LoadedScan = WorldScan & { readonly sourceSha256: string; readonly fileName: string };
-const MAX_SCAN_BYTES = 16_000_000;
+const MAX_SCAN_BYTES = MODEL_MAX_FILE_BYTES;
 
 /** Reads one recording in a worker. */
 export function readScan(file: File): Promise<LoadedScan> {
   return new Promise((resolve, reject) => {
-    if (file.size > MAX_SCAN_BYTES) { reject(new Error('Die Aufnahme ist zu groß (maximal 16 MB).')); return; }
+    if (file.size > MAX_SCAN_BYTES) { reject(new Error(`Die Aufnahme ist zu groß (maximal ${MAX_SCAN_BYTES / 1_000_000} MB).`)); return; }
     void file.arrayBuffer().then(buffer => {
       const worker = new Worker(new URL('../../scan.worker.ts', import.meta.url), { type: 'module' });
       const timer = setTimeout(() => { worker.terminate(); reject(new Error('Lesen der Aufnahme wegen Zeitbudget abgebrochen.')); }, 30_000);
@@ -92,7 +93,7 @@ export function GameCheckPanel(p: Props) {
     setBusy(true); setError('');
     const request = ++requestId.current;
     try {
-      if (file.size > MAX_SCAN_BYTES) throw new Error('Die Aufnahme ist zu groß (maximal 16 MB).');
+      if (file.size > MAX_SCAN_BYTES) throw new Error(`Die Aufnahme ist zu groß (maximal ${MAX_SCAN_BYTES / 1_000_000} MB).`);
       const bytes = new Uint8Array(await file.arrayBuffer());
       const scan = await readScan(file);
       if (request !== requestId.current) return;

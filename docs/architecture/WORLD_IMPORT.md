@@ -29,7 +29,7 @@ Standardzustände neu erzeugen: `java -DbundlerMainClass=net.minecraft.data.Main
 
 - Gelesen wird eine Kopie der Regionsdateien, am besten bei geschlossener Welt (Einzelspieler verlassen, Server-Sicherung oder nach `/save-all flush`). Eine während des Schreibens kopierte Datei fällt durch die Kopfprüfung auf: Einträge außerhalb der Datei oder überlappende Sektoren machen die Region unlesbar, ein Chunk mit fremden Koordinaten oder beschädigten Daten wird als „unlesbar“ geführt.
 - Speicherzeiten je Chunk werden angezeigt (zuletzt gespeichert) und im Original vermerkt.
-- Bereich: zwei Ecken wie im Spiel (inklusive). Höchstens 1024 Blöcke je waagerechter Richtung, 4064 Höhe, 16 777 216 Zellen, 4096 Chunks; für die Bibliothek zusätzlich 256 je Achse und 250 000 Zellen wie bei Dateiimporten.
+- Bereich: zwei Ecken wie im Spiel (inklusive). Höchstens 1024 Blöcke je waagerechter Richtung, 4064 Höhe, 16 777 216 Zellen, 4096 Chunks; für die Bibliothek zusätzlich höchstens 4 Mio. Zellen wie bei Dateiimporten (SIZE-01, vorher 256 je Achse und 250 000).
 - Unbekannt ist jede Zelle, deren Chunk fehlt (Regionsdatei nicht gewählt, nie erzeugt, nicht fertig generiert, externe `.mcc` fehlt, unlesbar). Unbekannt wird nie zu Luft: In der Bibliothek bleibt es unausgewählt, in der Geländeprüfung „unbekannt“. Unfertige Chunks liest man nur auf ausdrücklichen Wunsch.
 
 ## Übernahme in die Bibliothek

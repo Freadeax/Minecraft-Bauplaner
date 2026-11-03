@@ -100,6 +100,7 @@ public final class HologramDiagnose {
             var p = c.placement();
             d.put("Hologramm", "Datei", h.planFile()).put("Hologramm", "Planname", h.plan().name())
                     .put("Hologramm", "Planblöcke", c.size())
+                    .put("Hologramm", "Planbox", h.plan().size()[0] + " × " + h.plan().size()[1] + " × " + h.plan().size()[2] + " · " + c.chunkCount() + " Chunks")
                     .put("Hologramm", "Platzierung", p.dimension() + " " + p.x() + " " + p.y() + " " + p.z() + " · " + p.turns() * 90 + "°" + (p.mirror() ? " · gespiegelt" : ""))
                     .put("Hologramm", "Fortschritt", c.percent() + " % · richtig " + c.count(Verdict.OK) + " · fehlt " + c.count(Verdict.MISSING) + " · falsch " + c.count(Verdict.WRONG)
                             + " · Zustand " + c.count(Verdict.STATE) + " · nicht geladen " + c.count(Verdict.UNKNOWN))
@@ -107,6 +108,8 @@ public final class HologramDiagnose {
                     .put("Hologramm", "Ebenen", switch (h.layers()) { case ALL -> "alle"; case ONE -> "nur " + h.layerY(); case BELOW -> "bis " + h.layerY(); })
                     .put("Hologramm", "Bauabschnitt", h.section() == 0 ? "alle (" + h.sectionNames().size() + " vorhanden)" : h.section() + " „" + h.sectionName() + "“");
         }
+        d.put("Hologramm", "Leistung", h.budget().label + " · gezeigt " + h.shown() + (h.capped() ? " (gekappt)" : "") + (h.loading() ? " · lädt" : ""))
+                .put("Speicher", "Java-Heap", (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1_048_576 + " MB belegt von " + Runtime.getRuntime().maxMemory() / 1_048_576 + " MB");
         d.put("Hologramm", "Texturen", h.textured() ? "an" : "aus").put("Hologramm", "Röntgensicht", h.xray() ? "an" : "aus")
                 .put("Hologramm", "Platzierhilfe", h.guard().label);
 

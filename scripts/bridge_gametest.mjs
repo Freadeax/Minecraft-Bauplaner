@@ -159,7 +159,7 @@ async function live(file, loader, plan, logFile) {
   assert.equal(raw.marks.body.marks, 4, 'Punkt, Bauplatz, Zone und Gefahr-Punkt angenommen');
   // Protocol 2 (GAME-08): hello announces it, players route answers, layers are listed in the chat.
   assert.equal(hello.protocol, 2, 'Protokoll 2');
-  for (const f of ['scan', 'marks2', 'players']) assert.ok(hello.features.includes(f), `Fähigkeit ${f}`);
+  for (const f of ['scan', 'marks2', 'players', 'bigplans']) assert.ok(hello.features.includes(f), `Fähigkeit ${f}`);
   assert.equal(raw.players.status, 200, JSON.stringify(raw.players.body));
   const players = readLivePlayers(raw.players.body);
   assert.equal(players.dimension, 'minecraft:overworld');

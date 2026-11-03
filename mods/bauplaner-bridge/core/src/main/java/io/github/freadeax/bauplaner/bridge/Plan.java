@@ -16,9 +16,13 @@ public record Plan(String fileName, String sha256, int dataVersion, String name,
                    String projectId, String revisionId, int revisionNumber,
                    int width, int height, int length, int[] projectMin) {
 
-    /** Same bound as the website's recording reader (SCAN_LIMITS.maxVolume). */
-    public static final long MAX_VOLUME = 4_000_000L;
-    static final int MAX_UNCOMPRESSED = 64_000_000;
+    /**
+     * Largest plan box: same bound as the website (SIZE-01, packages/voxel/src/sizeLimits.ts MODEL_MAX_VOLUME,
+     * 16.7 million cells; before mod 0.9.0 it was 4 million).
+     */
+    public static final long MAX_VOLUME = 16_777_216L;
+    /** Largest uncompressed plan file: Blocks.Data takes up to two bytes per box cell, plus block entities. */
+    public static final int MAX_UNCOMPRESSED = 96_000_000;
 
     public long volume() { return (long) width * height * length; }
 
@@ -27,7 +31,12 @@ public record Plan(String fileName, String sha256, int dataVersion, String name,
     }
 
     public static Plan parse(String fileName, byte[] bytes) {
-        var root = Nbt.readGzip(bytes, MAX_UNCOMPRESSED).tag().compound("Wurzel");
+        return parse(fileName, bytes, Nbt.readGzip(bytes, MAX_UNCOMPRESSED));
+    }
+
+    /** Same, from an already decompressed file (the hologram reads the blocks from the same tree, so the file is unpacked once). */
+    public static Plan parse(String fileName, byte[] bytes, Nbt.Root decoded) {
+        var root = decoded.tag().compound("Wurzel");
         var s = require(root, "Schematic").compound("Schematic");
         if (require(s, "Version").asInt("Version") != 3) throw new BridgeException("Nur Sponge Schematic Version 3 wird unterstützt.");
         int w = require(s, "Width").asUShort("Width"), h = require(s, "Height").asUShort("Height"), l = require(s, "Length").asUShort("Length");
@@ -44,7 +53,7 @@ public record Plan(String fileName, String sha256, int dataVersion, String name,
                 meta.compound("Metadata").containsKey("Name") ? meta.compound("Metadata").get("Name").asString("Name") : fileName,
                 require(bp, "ProjectId").asString("ProjectId"), require(bp, "RevisionId").asString("RevisionId"),
                 require(bp, "RevisionNumber").asInt("RevisionNumber"), w, h, l, min.clone());
-        if (plan.volume() > MAX_VOLUME) throw new BridgeException("Planbox mit " + plan.volume() + " Zellen ist größer als " + MAX_VOLUME + ".");
+        if (plan.volume() > MAX_VOLUME) throw new BridgeException("Planbox mit " + plan.volume() + " Zellen ist größer als " + MAX_VOLUME + ". Bitte das Projekt auf der Website in Teilprojekte teilen.");
         return plan;
     }
 

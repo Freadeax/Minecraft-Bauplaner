@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-03T16:37:18.371Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-03T16:33:52.289Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-03T16:37:18.371Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 15 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 47 |
+| 🧩 Implementiert · Abnahme offen | 48 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -40,6 +40,7 @@ Stand: 2026-11-03T16:37:18.371Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 - **MAP-06 · Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players)** — 🧩 Implementiert · Abnahme offen, 7/8 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S08); Mod-Umsetzung GAME-08; denkbar für Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (Zeitstempel je Eintrag).
 - **GROSS-01 · Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06); Großbauten-Set (S05).
 - **LIB-06 · Bibliotheksbeiträge: eigene Bauwerke (Importe, Werkstatt, Generator) als festen Katalogeintrag für alle einreichen – Beitragspaket mit Prüfsumme und Rechtebestätigung, GitHub-Formular, Übernahme-Skript, Auslieferung wie mitgelieferte Gebäude** — 🧩 Implementiert · Abnahme offen, 5/7 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06) und erster echter Beitrag (S07).
+- **SIZE-01 · Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05) mit einem großen Bau im Spiel.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -173,6 +174,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [MAP-06](#map-06) | Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players) | 🧩 Implementiert · Abnahme offen | 7/8 | MAP-04, MAP-05, GAME-07 | ausstehend | ausstehend |
 | [QA-04](#qa-04) | Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage | 🧩 Implementiert · Abnahme offen | 4/6 | QA-01, STAB-01, GAME-07 | ausstehend | ausstehend |
 | [GEN-03](#gen-03) | Kolosseum aus Philipps Bauplan: Arena-Generator, Bauset Antike und Großprojekt Kolosseum-Viertel | 🧩 Implementiert · Abnahme offen | 4/5 | GEN-02, GROSS-01 | ausstehend | ausstehend |
+| [SIZE-01](#size-01) | Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger | 🧩 Implementiert · Abnahme offen | 4/5 | PERF-04, ARCH-02, GFX-01, GAME-08 | ausstehend | ausstehend |
 
 ## P4: Optionale Zusammenarbeit und Integrationen
 
@@ -2007,6 +2009,28 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/generators.test.mjs](../tests/generators.test.mjs) — Arena in allen Generatorprüfungen (Vorlagen, Stile, Zufallswerte, Bereichsenden, Spielprüfung, Material, Anschlüsse, festgehaltener Hash).; [tests/grossprojekte.test.mjs](../tests/grossprojekte.test.mjs) — Kolosseum-Viertel automatisch geprüft: echte Bauteile, keine Voxelkonflikte, Straßennetz, Phasen, Übernahme.; [docs/architecture/GENERATORS.md](architecture/GENERATORS.md) — Abschnitt GEN-03 Arena mit Aufbau, Parametern und Grenzen.
 
 **Dateiumfang:** `packages/domain/src/generators/arena.ts`, `packages/domain/src/generators/index.ts`, `packages/domain/src/build/sets/antike.ts`, `packages/domain/src/build/sets/index.ts`, `packages/domain/src/ensembles.ts`, `packages/domain/src/grossprojekte/kolosseum.ts`, `packages/domain/src/grossprojekte/index.ts`, `tests/generators.test.mjs`, `tests/e2e/generators.e2e.mjs`, `tests/e2e/grossprojekte.e2e.mjs`, `apps/web/src/testing/testplan.ts`, `docs/architecture/GENERATORS.md`, `docs/architecture/CATALOG.md`, `docs/architecture/GROSSPROJEKTE.md`. **Abhängigkeiten:** GEN-02, GROSS-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### SIZE-01
+
+**Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Volumenlimit für große Builds aufheben“) · Aktualisiert: 2026-11-03T16:33:52.289Z
+
+- [x] SIZE-01-S01: Bestandsaufnahme aller harten Größen-/Blockgrenzen in Planer und Mod, Messung von Speicher und Zeit bei 1–4 Mio. Zellen.
+- [x] SIZE-01-S02: Planer: zentrale Grenzen in sizeLimits.ts, Importe ohne Kopie (adoptPayload), Luft ab 250.000 Zellen Box unausgewählt, Werkstatt 4 Mio./1 Mio. je Schritt mit linearer Umkehrung und Rückgängig-Budget, Export/Aufnahmen bis 16,7 Mio. Box, Größenhinweise.
+- [x] SIZE-01-S03: Übertragung: SectionRuns statt einem Byte je Boxzelle, Prüfung gegen die verbundene Mod (Fähigkeit bigplans), Dateien bis 64 MB, passende Wartezeit.
+- [x] SIZE-01-S04: Mod 0.9.0 (Fabric, NeoForge): Plan einmal entpacken, 6 Byte je Planblock, LiveCheck ohne Objekt je Block mit Abschnittszählung, Laden/Verschieben großer Pläne im Hintergrund, Baustand in Scheiben, Render-Budget /bauplaner leistung, Diagnose.
+- [ ] SIZE-01-S05: Abnahme durch Philipp in der Testphase (DATEI-05, WERK-07, MOD-11, MOD-15, LIVE-09) mit einem echten großen Bau im Spiel.
+
+**Abnahme:** Schem/Litematic bis 16,7 Mio. Zellen Box und 4 Mio. Blöcke importieren, bearbeiten, exportieren und ins Spiel senden, ohne harte Grenze darunter. Über der Grenze eine Meldung mit Rat (teilen) statt Abbruch ohne Erklärung; darunter nur Hinweise. Ältere Mods bekommen nur Pläne, die sie laden können; die Website sagt es vor dem Senden. Mod: 3 Mio. Blöcke Live-Abgleich in unter einer Sekunde, Verschieben großer Hologramme ohne Spielhänger.
+
+**Nächste Aktion:** Abnahme durch Philipp (S05) mit einem großen Bau im Spiel.
+
+**Prüfstand:** Node- und JUnit-Tests grün, Spieltests Fabric/NeoForge/Modpack; Abnahme durch Philipp mit einem großen Bau offen (S05).
+
+**Nachweise:** [tests/size-limits.test.mjs](../tests/size-limits.test.mjs) — Grenzen, Stufen, großer Schem-Import ohne Luft, SectionRuns, lineare Werkstattschritte, Rückgängig-Budget, Prüfung gegen alte/neue Mod.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/BigPlanTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/BigPlanTest.java) — 6,3 Mio. Box / 3,1 Mio. Blöcke laden und abgleichen, SectionRuns = SectionCells, Ablehnung zu großer Pläne.; [docs/architecture/SIZE_LIMITS.md](architecture/SIZE_LIMITS.md) — Grenzen vorher/jetzt, Messwerte, Umbau Website und Mod.
+
+**Dateiumfang:** `packages/voxel/src/sizeLimits.ts`, `packages/voxel/src/validation.ts`, `packages/formats/src/schem.ts`, `packages/formats/src/litematic.ts`, `packages/formats/src/worldExcerpt.ts`, `packages/formats/src/schemWrite.ts`, `packages/formats/src/litematicWrite.ts`, `packages/formats/src/scan.ts`, `packages/domain/src/editor/draft.ts`, `packages/domain/src/liveLink.ts`, `packages/application/src/revisionExport.ts`, `packages/application/src/scanPersistence.ts`, `apps/web/src/app/SizeNotice.tsx`, `apps/web/src/app/importLimits.ts`, `apps/web/src/jobs/importJob.ts`, `apps/web/src/editor/BlockEditor.tsx`, `apps/web/src/views/map/WorldMapView.tsx`, `apps/web/src/views/map/liveClient.ts`, `mods/bauplaner-bridge/`, `tests/size-limits.test.mjs`, `docs/architecture/SIZE_LIMITS.md`. **Abhängigkeiten:** PERF-04, ARCH-02, GFX-01, GAME-08. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

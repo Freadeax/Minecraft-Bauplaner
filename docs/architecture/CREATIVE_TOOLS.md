@@ -34,7 +34,7 @@ Wirken in der Auswahl; Nachbarn außerhalb werden gelesen, aber nicht geändert.
 | `naturalizeEdit` (Naturalisieren) | natürlicher Boden (`NATURAL_GROUND`) wird von oben Gras, `dirt` Lagen Erde (Standard 3), darunter Stein; Bauwerke bleiben, Boden darunter zählt als tief |
 | `surfaceCells` / `paintSurfaceEdit` | Maske „nur sichtbare Blöcke“: alle Seiten, nur oben offen oder nur seitlich offen (Fassade); bemalt mit Pinsel oder Muster und übernimmt Ausrichtung/Blockentitäten wie `replacePatternEdit` |
 
-Grenze: höchstens `MAX_EDIT_CELLS` (250 000) Zellen Auswahl.
+Grenze: höchstens `MAX_EDIT_CELLS` (1 000 000 seit SIZE-01) Zellen Auswahl.
 
 ## Farbpaletten und Bild → Blöcke (`editor/colorMatch.ts`)
 

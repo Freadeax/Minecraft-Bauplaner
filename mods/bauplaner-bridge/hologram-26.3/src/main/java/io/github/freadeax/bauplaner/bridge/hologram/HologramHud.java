@@ -39,6 +39,8 @@ public final class HologramHud {
                 layerLine(check),
                 "Platzierhilfe: " + hologram.guard().label + (hologram.xray() ? " · Röntgen" : ""),
                 sectionRow(check),
+                // SIZE-01: a plan or placement being prepared in the background, or a render budget that cut far blocks.
+                hologram.loading() ? "Plan wird vorbereitet …" : hologram.capped() ? "Zeigt die nächsten " + String.format(java.util.Locale.GERMANY, "%,d", hologram.shown()) + " (Leistung " + hologram.budget().label + ")" : null,
         };
         int width = 0;
         for (String r : rows) if (r != null) width = Math.max(width, font.width(r));
@@ -60,6 +62,7 @@ public final class HologramHud {
         if (rows[5] != null) { g.text(font, rows[5], x, y, GREY, true); y += line; }
         if (rows[8] != null) { g.text(font, rows[8], x, y, 0xFFFFB040, true); y += line; }
         if (rows[6] != null) { g.text(font, rows[6], x, y, CYAN, true); y += line; }
+        if (rows[9] != null) { g.text(font, rows[9], x, y, GREY, true); y += line; }
         g.text(font, rows[7], x, y, hologram.guard() == io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard.OFF ? GREY : CYAN, true); y += line;
         if (finder != null) g.text(font, finder, x, y, 0xFFFFFFFF, true);
         aimLine(g, mc);

@@ -1,3 +1,4 @@
+import { EXPLICIT_AIR_MAX_VOLUME, MODEL_MAX_CELLS, MODEL_MAX_FILE_BYTES, MODEL_MAX_SIDE, MODEL_MAX_UNCOMPRESSED_BYTES, MODEL_MAX_VOLUME, formatCount } from '../../voxel/src/sizeLimits.js';
 import { adoptPayload, stateKey, AIR_IDS } from '../../voxel/src/validation.js';
 import type { BlockEntity, BlockState, Cell, FreeEntity, NbtTag, Vec3, VoxelPayload } from '../../voxel/src/types.js';
 import { readFileEntities } from './entityIo.js';
@@ -41,12 +42,13 @@ export interface LitematicLimits {
 /**
  * Up to 250 000 cells the result is the same as the Schem import (air explicit).
  * Bigger Litematic files are common (whole builds converted from schematics),
- * so the box may reach the viewer's 256 per axis and up to one million blocks;
- * the BlockStates LongArray of such a box needs up to ~3 million NBT nodes.
+ * so the box may reach 16.7 million cells (4096 per axis) and up to four million blocks (SIZE-01);
+ * the BlockStates LongArray of such a box needs up to ~4 million NBT nodes at 16 bit.
  */
 export const LITEMATIC_LIMITS: Readonly<LitematicLimits> = Object.freeze({
-  maxCompressedBytes: 4_000_000, maxUncompressedBytes: 32_000_000, maxVolume: 16_777_216, maxCells: 1_000_000, maxAirVolume: 250_000, maxDimension: 256,
-  maxRegions: 64, maxPalette: 20_000, maxDepth: 32, maxNodes: 4_000_000, maxDurationMs: 8_000,
+  // SIZE-01: large builds (vorher 256 je Achse, 1 Mio. Blöcke, 4 MB Datei).
+  maxCompressedBytes: MODEL_MAX_FILE_BYTES, maxUncompressedBytes: MODEL_MAX_UNCOMPRESSED_BYTES, maxVolume: MODEL_MAX_VOLUME, maxCells: MODEL_MAX_CELLS, maxAirVolume: EXPLICIT_AIR_MAX_VOLUME, maxDimension: MODEL_MAX_SIDE,
+  maxRegions: 64, maxPalette: 20_000, maxDepth: 32, maxNodes: MODEL_MAX_VOLUME, maxDurationMs: 60_000,
 });
 
 export interface LitematicOptions extends Partial<LitematicLimits> {
@@ -183,7 +185,7 @@ function readRegion(name: string, tag: NbtTag, limits: LitematicLimits, budget: 
   if (dimensions.some(n => n > limits.maxDimension)) fail(`${path}: höchstens ${limits.maxDimension} Blöcke je Achse.`);
   const volume = dimensions[0] * dimensions[1] * dimensions[2];
   budget.volume += volume;
-  if (budget.volume > limits.maxVolume) throw new FormatError('LIMIT', `Regionen überschreiten zusammen ${limits.maxVolume} Zellen.`);
+  if (budget.volume > limits.maxVolume) throw new FormatError('LIMIT', `Regionen überschreiten zusammen ${formatCount(limits.maxVolume)} Zellen.`);
   const paletteTags = list(r.BlockStatePalette, `${path}.BlockStatePalette`);
   if (paletteTags.length < 1 || paletteTags.length > limits.maxPalette) fail(`${path}.BlockStatePalette fehlt oder ist zu groß.`);
   const palette = paletteTags.map((t, i) => paletteState(t, `${path}.BlockStatePalette[${i}]`));
@@ -246,6 +248,8 @@ export function normalizeLitematic(sourceNbt: { name: string; tag: NbtTag }, opt
 
   const palette: BlockState[] = [], byState = new Map<string, number>();
   const [BW, BH, BL] = box, boxVolume = BW * BH * BL;
+  // Regions far apart span a box much larger than their own volume; the merge works on that dense box.
+  if (boxVolume > limits.maxVolume) throw new FormatError('LIMIT', `Die Regionen spannen ${box.join(' × ')} Blöcke (${formatCount(boxVolume)} Zellen) auf; erlaubt sind höchstens ${formatCount(limits.maxVolume)}. Einzelne Regionen lassen sich getrennt importieren.`);
   const keepAir = used.reduce((n, p) => n + p.info.volume, 0) <= limits.maxAirVolume;
   // Dense box: payload palette index + 1 per cell, 0 = not covered by any imported region.
   const dense = new Int32Array(boxVolume);
@@ -288,7 +292,7 @@ export function normalizeLitematic(sourceNbt: { name: string; tag: NbtTag }, opt
     const v = dense[at]!; if (!v) continue;
     const paletteIndex = v - 1;
     if (isAir[paletteIndex]) { airCells++; if (!keepAir) continue; }
-    if (cells.length >= limits.maxCells) throw new FormatError('LIMIT', `Mehr als ${limits.maxCells.toLocaleString('de-DE')} Blöcke; einzelne Regionen lassen sich getrennt importieren.`);
+    if (cells.length >= limits.maxCells) throw new FormatError('LIMIT', `Mehr als ${formatCount(limits.maxCells)} Blöcke; einzelne Regionen lassen sich getrennt importieren.`);
     cells.push({ position: [x, y, z], kind: isAir[paletteIndex] ? 'air' : 'block', paletteIndex });
   }
   const blockEntities = [...entityAt.keys()].sort((a, b) => a - b).map(k => entityAt.get(k)!);
@@ -330,7 +334,7 @@ export function normalizeLitematic(sourceNbt: { name: string; tag: NbtTag }, opt
     schemaVersion: 1, profileId: `java:dataversion-${dataVersion}:registry-unverified`,
     bounds: { min: [0, 0, 0], maxExclusive: box }, pivot: [0, 0, 0], sourceOrigin: lo,
     palette, cells, blockEntities, ...(entities.length && { entities }),
-  }, { maxCells: limits.maxCells, maxVolume: limits.maxDimension ** 3, maxPalette: limits.maxPalette, maxNbtDepth: limits.maxDepth, maxNbtNodes: limits.maxNodes });
+  }, { maxCells: limits.maxCells, maxVolume: Math.max(limits.maxVolume, boxVolume), maxPalette: limits.maxPalette, maxNbtDepth: limits.maxDepth, maxNbtNodes: limits.maxNodes });
   return { format: 'litematic', payload, dataVersion, version, subVersion, offset: lo, regions, selectedRegion, metadata, sourceNbt, warnings };
 }
 

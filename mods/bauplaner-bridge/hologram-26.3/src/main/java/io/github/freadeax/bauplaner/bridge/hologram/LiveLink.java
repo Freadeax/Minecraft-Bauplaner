@@ -247,18 +247,26 @@ public final class LiveLink implements LiveLinkServer.Handler {
         String name = q.getOrDefault("name", "");
         if (!name.matches("[A-Za-z0-9._-]{1,120}\\.schem") || name.startsWith(".")) throw new LiveLinkServer.HttpError(400, "Dateiname ungültig.");
         Placement at = placementOf(q.get("dimension"), q.get("x"), q.get("y"), q.get("z"), q.get("turns"), q.get("mirror"));
-        // Check the file before it lands in the plans folder.
-        try { io.github.freadeax.bauplaner.mod.PlanModel.parse(name, schem); }
-        catch (RuntimeException e) { throw new LiveLinkServer.HttpError(400, "Plandatei nicht lesbar: " + e.getMessage()); }
+        // Read and check the file here, on the web request's thread, before it lands in the plans folder. Big
+        // plans (SIZE-01, millions of blocks) are fully prepared here too, so the game thread only swaps them in.
+        io.github.freadeax.bauplaner.mod.PlanModel model;
+        LiveCheck prepared;
+        try {
+            model = io.github.freadeax.bauplaner.mod.PlanModel.parse(name, schem);
+            prepared = new LiveCheck(model, at);
+        } catch (RuntimeException e) {
+            throw new LiveLinkServer.HttpError(400, "Plandatei nicht lesbar: " + e.getMessage());
+        } catch (OutOfMemoryError e) {
+            throw new LiveLinkServer.HttpError(507, "Zu wenig Arbeitsspeicher für diesen Plan. Mehr Speicher für Minecraft einstellen oder den Plan auf der Website in Teilprojekte teilen.");
+        }
         Path dir = hologram.plansDir();
         Files.createDirectories(dir);
         Path tmp = dir.resolve(name + ".tmp"), out = dir.resolve(name);
         Files.write(tmp, schem);
         Files.move(tmp, out, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-        String msg = onGame(() -> {
-            try { return hologram.placeExact(name, at); }
-            catch (IOException e) { throw new LiveLinkServer.HttpError(500, e.getMessage()); }
-        });
+        final io.github.freadeax.bauplaner.mod.PlanModel m = model;
+        final LiveCheck c = prepared;
+        String msg = onGame(() -> hologram.install(name, m, c));
         Minecraft mc = Minecraft.getInstance();
         mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] " + msg)));
         return "{\"placed\":true,\"planFile\":" + Json.quote(name) + ",\"message\":" + Json.quote(msg) + "}";
@@ -310,7 +318,11 @@ public final class LiveLink implements LiveLinkServer.Handler {
     @Override
     public LiveLinkServer.Binary scan() throws Exception {
         lastRequest = System.currentTimeMillis();
-        PlanScan.Result r = onGame(() -> {
+        // Big plan boxes (SIZE-01, up to 16.7 million cells) are read in slices on the game thread, one slice
+        // per call, so the game keeps rendering between them instead of hanging for seconds.
+        final io.github.freadeax.bauplaner.bridge.Plan[] identity = new io.github.freadeax.bauplaner.bridge.Plan[1];
+        final net.minecraft.client.multiplayer.ClientLevel[] at = new net.minecraft.client.multiplayer.ClientLevel[1];
+        ScanJob job = onGame(() -> {
             Minecraft mc = Minecraft.getInstance();
             var level = mc.level;
             if (level == null) throw new LiveLinkServer.HttpError(409, "Keine Welt geladen.");
@@ -320,9 +332,19 @@ public final class LiveLink implements LiveLinkServer.Handler {
             String here = McCompat.dimension(level);
             if (!pl.dimension().equals(here))
                 throw new LiveLinkServer.HttpError(409, "Das Hologramm steht in " + pl.dimension() + ", du bist in " + here + ". Für den Baustand in dieselbe Dimension wechseln.");
-            return PlanScan.record(hologram.plan().identity(), pl, McCompat.clientBlocks(level), McCompat.dataVersion(),
-                    new ScanJob.Info(McCompat.gameVersion(), version, loader, pl.dimension(), "client"), Instant.now());
+            identity[0] = hologram.plan().identity();
+            at[0] = level;
+            return PlanScan.begin(identity[0], pl, McCompat.clientBlocks(level), McCompat.dataVersion(),
+                    new ScanJob.Info(McCompat.gameVersion(), version, loader, pl.dimension(), "client"));
         }, 15);
+        while (!job.finished()) {
+            boolean done = onGame(() -> {
+                if (Minecraft.getInstance().level != at[0]) throw new LiveLinkServer.HttpError(409, "Die Welt wurde während des Baustands gewechselt.");
+                return job.step(PlanScan.CELLS_PER_SLICE);
+            }, 15);
+            if (done) break;
+        }
+        PlanScan.Result r = PlanScan.finish(identity[0], job, Instant.now());
         // Same folder as /bauplaner scan, so the file can also be imported by hand.
         try {
             Path dir = root.resolve("scans");

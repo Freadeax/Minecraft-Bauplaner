@@ -1,3 +1,4 @@
+import { MODEL_MAX_VOLUME, formatCount } from '../../voxel/src/sizeLimits.js';
 import { validatePayload, AIR_IDS } from '../../voxel/src/validation.js';
 import type { BlockEntity, BlockState, NbtTag, Vec3, VoxelPayload } from '../../voxel/src/types.js';
 import { FormatError } from './nbt.js';
@@ -23,7 +24,7 @@ export type LitematicWriteVersion = 5 | 6 | 7;
  * Litematic packs block indices tightly, so a box of 256³ cells stays a few MB;
  * the export accepts what the Litematic import accepts (whole converted maps).
  */
-export const LITEMATIC_EXPORT_MAX_VOLUME = 16_777_216;
+export const LITEMATIC_EXPORT_MAX_VOLUME = MODEL_MAX_VOLUME;
 export function litematicVersionFor(dataVersion: number): LitematicWriteVersion {
   return dataVersion > LITEMATIC_V6_LAST_DATA_VERSION ? 7 : dataVersion >= LITEMATIC_V6_FIRST_DATA_VERSION ? 6 : 5;
 }
@@ -125,7 +126,7 @@ export function buildLitematic(world: VoxelPayload, options: LitematicWriteOptio
   const [W, H, L] = [0, 1, 2].map(i => max[i]! - min[i]!) as [number, number, number];
   for (const [name, n] of [['Breite', W], ['Höhe', H], ['Länge', L]] as const) if (n > limits.maxDimension) fail(`${name} ${n} überschreitet ${limits.maxDimension}.`);
   const volume = W * H * L;
-  if (volume > limits.maxVolume) fail(`Exportvolumen ${volume} überschreitet ${limits.maxVolume} Zellen.`);
+  if (volume > limits.maxVolume) fail(`Exportbox mit ${formatCount(volume)} Zellen überschreitet ${formatCount(limits.maxVolume)} Zellen. Bitte das Projekt in mehrere Teilprojekte oder Bauabschnitte teilen.`);
 
   const AIR = 'minecraft:air';
   const states: BlockState[] = [{ id: AIR, properties: {} }];

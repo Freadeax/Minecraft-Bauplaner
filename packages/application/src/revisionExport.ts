@@ -3,6 +3,7 @@ import { writeLitematic } from '../../formats/src/litematicWrite.js';
 import type { LitematicExportReport } from '../../formats/src/litematicWrite.js';
 import type { SchemAnchor, SchemExportReport, UnselectedPolicy } from '../../formats/src/schemWrite.js';
 import type { NbtTag } from '../../voxel/src/types.js';
+import { LEGACY_MOD_MAX_VOLUME } from '../../voxel/src/sizeLimits.js';
 import { DomainError } from '../../domain/src/types.js';
 import type { AssetVersion, BlueprintRevision, Project } from '../../domain/src/types.js';
 
@@ -82,6 +83,17 @@ export function sectionCells(project: Pick<Project, 'site'>, revision: Pick<Blue
   return any ? { names: sections.map(s => s.name), cells } : null;
 }
 
+/** Run-length form of section cells: pairs (count ≥ 1, section 0–255) covering the box in order. */
+export function sectionRuns(cells: Uint8Array): number[] {
+  const out: number[] = [];
+  for (let i = 0; i < cells.length;) {
+    const v = cells[i]!; let j = i + 1;
+    while (j < cells.length && cells[j] === v && j - i < 0x7fffffff) j++;
+    out.push(j - i, v); i = j;
+  }
+  return out;
+}
+
 export function exportFileName(project: Project, revision: BlueprintRevision, format: ExportFormat = 'schem'): string {
   const slug = project.name.normalize('NFKD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/ß/g, 'ss').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'bauplan';
   return `${slug}-rev${revision.number}.${format}`;
@@ -119,7 +131,11 @@ export async function exportRevisionSchem(project: Project, revisionId: string, 
     const b = extra.Bauplaner as { type: 'compound'; value: Record<string, NbtTag> };
     // Build sections for the game mod (GAME-07 0.7.0): names in build order, cell → 1-based section or 0.
     b.value.SectionNames = { type: 'list', elementType: 'string', value: sections.names.map(n => ({ type: 'string', value: n })) };
-    b.value.SectionCells = { type: 'byteArray', value: Array.from(sections.cells, v => (v >= 128 ? v - 256 : v)) };
+    // SIZE-01: runs (count, section) over the box in Sponge order – a few kilobytes even for 16 million cells.
+    // Mod 0.9.0+ reads SectionRuns; the old one byte per cell (SectionCells) is written only for boxes older
+    // mods can load at all (≤ 4 million cells), so their section filter keeps working.
+    b.value.SectionRuns = { type: 'intArray', value: sectionRuns(sections.cells) };
+    if (sections.cells.length <= LEGACY_MOD_MAX_VOLUME) b.value.SectionCells = { type: 'byteArray', value: Array.from(sections.cells, v => (v >= 128 ? v - 256 : v)) };
     if ((project.site?.sections.length ?? 0) > MAX_FILE_SECTIONS) notes.push(`Nur die ersten ${MAX_FILE_SECTIONS} Bauabschnitte gehen in die Datei.`);
   }
   const date = Date.parse(revision.createdAt);

@@ -10,7 +10,7 @@ Die Weltkarte (`#/karte`) wird zur Live-Karte: Die Bauplaner-Mod (Fabric 26.3, a
 - Kopplung: `/bauplaner verbinden` zeigt einen sechsstelligen Code, 5 Minuten gültig, höchstens 5 Fehlversuche. Die Website tauscht ihn gegen einen Schlüssel (32 Byte, base64url). Die Mod speichert höchstens 8 Schlüssel in `bauplaner/verbindung.properties`; `/bauplaner verbinden aus` widerruft alle.
 - Jede Anfrage außer `hello`/`pair` braucht den Kopf `X-Bauplaner-Token`, sonst 401.
 - Die Website speichert Port und Schlüssel nur im Browser (`localStorage`, Schlüssel `bauplaner.spielverbindung`). Chrome fragt ggf. nach „Geräte im lokalen Netzwerk“; der Abruf setzt `targetAddressSpace: 'loopback'` (mit `'local'` verweigert Chrome die Anfrage an 127.0.0.1).
-- Grenzen: höchstens 64 Chunks je Anfrage, Plandatei höchstens 16 MB, höchstens 500 Markierungen.
+- Grenzen: höchstens 64 Chunks je Anfrage, Plandatei höchstens 64 MB ab Mod 0.9.0 (Fähigkeit `bigplans`, Planbox bis 16,7 Mio. Zellen; ältere Mods 16 MiB und 4 Mio. Zellen, die Website prüft das vor dem Senden mit `checkPlanForMod`), höchstens 500 Markierungen. Siehe [SIZE_LIMITS](SIZE_LIMITS.md).
 
 ## Protokoll 1
 
@@ -23,7 +23,7 @@ Die Weltkarte (`#/karte`) wird zur Live-Karte: Die Bauplaner-Mod (Fabric 26.3, a
 | `POST /v1/plan?name&dimension&x&y&z&turns&mirror` (Rumpf: `.schem`) | Plan wird geprüft (`PlanModel.parse`), atomar nach `bauplaner/plans/` geschrieben und genau so als Hologramm platziert |
 | `POST /v1/placement` `{dimension,x,y,z,turns,mirror}` | verschiebt das aktuelle Hologramm |
 | `POST /v1/marks` `{dimension, items:[Weltplan-Einträge]}` | Markierungen, gespeichert in `bauplaner/markierungen.json` |
-| `GET /v1/scan` (ab 0.7.1, `hello.features` enthält `scan`) | **Baustand**: die ganze Planbox des Hologramms als Aufnahme (`bauplaner-scan` v1, gzip, `application/octet-stream`, Dateiname im Kopf `X-Bauplaner-File`, per `Access-Control-Expose-Headers` freigegeben). In **Plankoordinaten und Planausrichtung**, auch wenn das Hologramm gedreht oder gespiegelt ist (`ScanJob.inProjectFrame`, `PlanScan`); `WorldAnchor` = Lage des Hologramms. Höchstens 4 000 000 Zellen (413), Hologramm in anderer Dimension als der Spieler: 409. Die Datei landet zusätzlich in `bauplaner/scans/`. |
+| `GET /v1/scan` (ab 0.7.1, `hello.features` enthält `scan`) | **Baustand**: die ganze Planbox des Hologramms als Aufnahme (`bauplaner-scan` v1, gzip, `application/octet-stream`, Dateiname im Kopf `X-Bauplaner-File`, per `Access-Control-Expose-Headers` freigegeben). In **Plankoordinaten und Planausrichtung**, auch wenn das Hologramm gedreht oder gespiegelt ist (`ScanJob.inProjectFrame`, `PlanScan`); `WorldAnchor` = Lage des Hologramms. Höchstens 16 777 216 Zellen ab 0.9.0 (vorher 4 000 000; 413); gelesen in Scheiben zu 200 000 Zellen je Spieltick, Hologramm in anderer Dimension als der Spieler: 409. Die Datei landet zusätzlich in `bauplaner/scans/`. |
 | `POST /v1/unpair` | widerruft den eigenen Schlüssel |
 
 Fehler: `{error:"…"}` mit Status 400/401/403/404/409/411/413/503. Arbeit im Spiel läuft über den Spielthread (`CompletableFuture.supplyAsync(…, mc)`, 3 s Zeitlimit → 503).

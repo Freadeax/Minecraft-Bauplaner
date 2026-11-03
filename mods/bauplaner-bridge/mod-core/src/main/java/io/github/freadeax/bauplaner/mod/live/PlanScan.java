@@ -14,8 +14,10 @@ import java.time.Instant;
  * construction step and can tick confirmed steps. Read-only towards the world.
  */
 public final class PlanScan {
-    /** Same bound as the website's recording reader and the bridge (4 000 000 cells). */
+    /** Same bound as the website's recording reader and the bridge (16.7 million cells since 0.9.0). */
     public static final long MAX_VOLUME = Plan.MAX_VOLUME;
+    /** Cells read per game-thread slice; the website's request waits while the game keeps running between slices. */
+    public static final int CELLS_PER_SLICE = 200_000;
 
     public record Result(String fileName, byte[] bytes, long cells, int unloaded) {}
 
@@ -36,10 +38,23 @@ public final class PlanScan {
     }
 
     public static Result record(Plan plan, Placement placement, BlockSource world, int dataVersion, ScanJob.Info info, Instant at) {
+        ScanJob job = begin(plan, placement, world, dataVersion, info);
+        while (!job.step(CELLS_PER_SLICE)) { }
+        return finish(plan, job, at);
+    }
+
+    /**
+     * Starts a Baustand recording that the caller advances in slices ({@link ScanJob#step}) on the game thread,
+     * so a big plan box (millions of cells) never freezes the game: each slice takes a few dozen milliseconds at most.
+     */
+    public static ScanJob begin(Plan plan, Placement placement, BlockSource world, int dataVersion, ScanJob.Info info) {
         if (plan.volume() > MAX_VOLUME)
             throw new LiveLinkServer.HttpError(413, "Der Plan ist zu groß für einen Baustand (" + plan.volume() + " Zellen, höchstens " + MAX_VOLUME + ").");
-        ScanJob job = ScanJob.inProjectFrame(plan, projected(placement, world), new int[] { placement.x(), placement.y(), placement.z() }, dataVersion, info);
-        job.step((int) Math.min(Integer.MAX_VALUE, plan.volume()));
+        return ScanJob.inProjectFrame(plan, projected(placement, world), new int[] { placement.x(), placement.y(), placement.z() }, dataVersion, info);
+    }
+
+    public static Result finish(Plan plan, ScanJob job, Instant at) {
+        if (!job.finished()) throw new IllegalStateException("Aufnahme nicht fertig");
         return new Result(ScanJob.fileName(plan, at), job.toFile(at), job.total(), job.unloaded());
     }
 }

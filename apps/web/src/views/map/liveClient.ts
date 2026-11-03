@@ -4,6 +4,7 @@ import {
   readLiveChunks, readLiveHello, readLivePairing, readLivePlayers, readLiveStatus, wantedChunks,
 } from '../../../../../packages/domain/src/index.js';
 import type { LiveChunkColumns, LiveHello, LivePlacement, LivePlayers, LiveStatus, WorldItem } from '../../../../../packages/domain/src/index.js';
+import { MODEL_MAX_FILE_BYTES } from '../../../../../packages/voxel/src/sizeLimits.js';
 
 /**
  * Website side of the live link (MAP-03, docs/architecture/LIVE_LINK.md): talks
@@ -64,7 +65,7 @@ async function request(port: number, path: string, init: RequestInit & { token?:
 }
 
 /** Largest Baustand file the page accepts (same bound as imported recordings). */
-const MAX_SCAN_BYTES = 16_000_000;
+const MAX_SCAN_BYTES = MODEL_MAX_FILE_BYTES;
 
 export const liveApi = {
   hello: async (port: number): Promise<LiveHello> => readLiveHello(await call(port, '/v1/hello', { timeoutMs: 2500 })),
@@ -73,8 +74,8 @@ export const liveApi = {
   status: async (port: number, token: string): Promise<LiveStatus> => readLiveStatus(await call(port, '/v1/status', { token, timeoutMs: 4000 })),
   chunks: async (port: number, token: string, list: readonly (readonly [number, number])[]) =>
     readLiveChunks(await call(port, `/v1/chunks?c=${encodeURIComponent(chunkQuery(list))}`, { token, timeoutMs: 8000 })),
-  plan: async (port: number, token: string, fileName: string, placement: LivePlacement, bytes: Uint8Array): Promise<string> => {
-    const r = await call(port, `/v1/plan?${planUploadQuery(fileName, placement)}`, { method: 'POST', token, body: bytes as Uint8Array<ArrayBuffer>, headers: { 'Content-Type': 'application/octet-stream' }, timeoutMs: 20000 });
+  plan: async (port: number, token: string, fileName: string, placement: LivePlacement, bytes: Uint8Array, timeoutMs = 20000): Promise<string> => {
+    const r = await call(port, `/v1/plan?${planUploadQuery(fileName, placement)}`, { method: 'POST', token, body: bytes as Uint8Array<ArrayBuffer>, headers: { 'Content-Type': 'application/octet-stream' }, timeoutMs });
     return r && typeof r === 'object' && typeof (r as { message?: unknown }).message === 'string' ? (r as { message: string }).message : 'Plan im Spiel platziert.';
   },
   placement: async (port: number, token: string, p: LivePlacement): Promise<void> => { await call(port, '/v1/placement', { method: 'POST', token, body: JSON.stringify(p), headers: { 'Content-Type': 'application/json' } }); },
@@ -85,9 +86,9 @@ export const liveApi = {
   },
   /** Baustand of the hologram (mod 0.7.1+): the whole plan box as `bauplaner-scan` file, in plan coordinates. */
   scan: async (port: number, token: string): Promise<{ fileName: string; bytes: Uint8Array }> => {
-    const res = await request(port, '/v1/scan', { token, timeoutMs: 30000 });
+    const res = await request(port, '/v1/scan', { token, timeoutMs: 120000 });
     const bytes = new Uint8Array(await res.arrayBuffer());
-    if (!bytes.length || bytes.length > MAX_SCAN_BYTES) throw new LiveError('Der Baustand aus dem Spiel ist leer oder zu groß (höchstens 16 MB).', 413);
+    if (!bytes.length || bytes.length > MAX_SCAN_BYTES) throw new LiveError(`Der Baustand aus dem Spiel ist leer oder zu groß (höchstens ${MAX_SCAN_BYTES / 1_000_000} MB).`, 413);
     const name = res.headers.get('X-Bauplaner-File') ?? '';
     return { fileName: /^[A-Za-z0-9._-]{1,120}\.schem$/.test(name) ? name : `baustand_${Date.now()}.schem`, bytes };
   },

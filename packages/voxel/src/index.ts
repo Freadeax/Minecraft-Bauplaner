@@ -17,3 +17,4 @@ export type { PackedCells } from './packedCells.js';
 export * from './entities.js';
 export { cellsToColumns, emptyColumns, fillColumns, columnsToCells, columnBuffers, copyColumns, checkColumns, payloadToTransport, hydratePayload } from './cellColumns.js';
 export type { CellColumns, PayloadTransport, HydrateOptions } from './cellColumns.js';
+export * from './sizeLimits.js';

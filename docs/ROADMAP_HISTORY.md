@@ -3309,3 +3309,69 @@ Bibliotheksbeiträge: eigene Bauwerke über „In Bibliothek einreichen“ als g
 - `tests/contribution.test.mjs`
 - `tests/e2e/contribution.e2e.mjs`
 
+## 2026-11-03T16:33:52.289Z · progress
+
+**Aufgaben:** SIZE-01
+
+Größengrenzen zentral (4 Mio. Zellen, 16,7 Mio. Box), Import ohne Kopie, Werkstatt linear, Mod 0.9.0 mit großen Plänen im Hintergrund, Render-Budget und Baustand in Scheiben
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| SIZE-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05) mit einem großen Bau im Spiel. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/SizeNotice.tsx`
+- `apps/web/src/app/importLimits.ts`
+- `apps/web/src/editor/BlockEditor.tsx`
+- `apps/web/src/jobs/importJob.ts`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/ViewerView.tsx`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/map/liveClient.ts`
+- `apps/web/src/views/project/GameCheckPanel.tsx`
+- `docs/TESTING.md`
+- `docs/architecture/BLOCK_EDITOR.md`
+- `docs/architecture/CREATIVE_TOOLS.md`
+- `docs/architecture/LITEMATIC.md`
+- `docs/architecture/LIVE_LINK.md`
+- `docs/architecture/MOD_BRIDGE.md`
+- `docs/architecture/MOD_HOLOGRAM.md`
+- `docs/architecture/SCHEM_IMPORT.md`
+- `docs/architecture/SIZE_LIMITS.md`
+- `docs/architecture/WORLD_IMPORT.md`
+- `docs/testing/TESTPLAN.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/Plan.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Hologram.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramDiagnose.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramHud.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramRenderer.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/LiveCheck.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlanModel.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/PlanScan.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/BigPlanTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`
+- `packages/application/src/revisionExport.ts`
+- `packages/application/src/scanPersistence.ts`
+- `packages/domain/src/editor/draft.ts`
+- `packages/domain/src/editor/index.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/liveLink.ts`
+- `packages/formats/src/litematic.ts`
+- `packages/formats/src/litematicWrite.ts`
+- `packages/formats/src/scan.ts`
+- `packages/formats/src/schem.ts`
+- `packages/formats/src/schemWrite.ts`
+- `packages/formats/src/worldExcerpt.ts`
+- `packages/voxel/src/index.ts`
+- `packages/voxel/src/sizeLimits.ts`
+- `packages/voxel/src/validation.ts`
+- `scripts/bridge_gametest.mjs`
+- `tests/game-check.test.mjs`
+- `tests/schem.test.mjs`
+- `tests/size-limits.test.mjs`
+

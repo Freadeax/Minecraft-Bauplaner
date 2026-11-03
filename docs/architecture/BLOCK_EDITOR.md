@@ -13,7 +13,7 @@ Der Blockeditor setzt, entfernt, ersetzt und dreht einzelne Blöcke mit ihren Zu
 - `applyEdit(draft, edit)` gibt den neuen Entwurf **und die exakte Umkehrung** zurück. No-ops fallen weg, ein Overlay-Eintrag gleich dem Ausgangswert wird gelöscht. Luft-IDs als Block werden abgewiesen.
 - `executeEdit`/`undoEdit`/`redoEdit` bilden die Verlaufsliste; eine Werkzeugaktion (Linie, Quader, Einfügen …) ist genau ein Schritt.
 - `materializeDraft` erzeugt die Nutzlast deterministisch: Zellreihenfolge y, z, x; Palette in Reihenfolge der ersten Verwendung; Grenzen = Vereinigung aus Ausgangsgrenzen und Zellen; `pivot` und `sourceOrigin` bleiben. Gleiche Eingaben ergeben dieselbe Version.
-- Grenzen: `MAX_EDIT_CELLS` 250 000 je Aktion, `MAX_DRAFT_CELLS` 400 000 im Entwurf.
+- Grenzen (SIZE-01, [SIZE_LIMITS](SIZE_LIMITS.md)): `MAX_EDIT_CELLS` 1 000 000 je Aktion, `MAX_DRAFT_CELLS` 4 000 000 im Entwurf, Rückgängig bis 300 Schritte und 6 Mio. geänderte Zellen. Ab 500 000 Zellen zeigt die Werkstatt einen Größenhinweis.
 
 ## Werkzeuge (`editor/tools.ts`)
 

@@ -9,6 +9,7 @@ import {
 import type { ArchStyle, Box, BoxShape, CellSlot, Clipboard, Edit, Region, ReplaceQuery } from '../../../../packages/domain/src/index.js';
 import type { BlockState, Cell, Vec3, VoxelPayload } from '../../../../packages/voxel/src/index.js';
 import { formatNumber } from '../app/ui';
+import { SizeNotice } from '../app/SizeNotice';
 import { Viewer } from '../Viewer';
 import type { Mark } from '../viewer/types';
 import { BlockPalette, StateFields, brushColor, brushLabel, stateText } from './BlockPalette';
@@ -417,6 +418,7 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
       {saveBar(model)}
     </div>
     {message && <p className="editor-message" role="status">{message}</p>}
+    <SizeNotice cells={model.cellCount} />
     <div className="editor-main">
       <aside className="editor-tools" aria-label="Werkzeuge">
         <div className="tool-grid" role="radiogroup" aria-label="Werkzeug">

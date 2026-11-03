@@ -4,7 +4,7 @@ import {
   moveItem, newWorldItemId, originFromPlayer, siteFromCorners, snapSiteToChunks, surveyCovers, surveyDisplayCells, suggestDataVersion,
   alignToGround, duplicateItems, insertPathVertex, itemsInRect, joinPaths, mirrorItem, movePathVertex, removeItemsOp, removePathVertex, reversePath,
   rotateItem, selectionBounds, selectionPivot, splitPath, updateItemsOp,
-  layerNames, marksForMod, routePath, setLayerOp, trailToPath, pointTypeLabel,
+  layerNames, marksForMod, routePath, setLayerOp, trailToPath, pointTypeLabel, checkPlanForMod,
 } from '../../../../../packages/domain/src/index.js';
 import type { EarthworkEstimate, Operation, Project, TerrainSurvey, WorldItem, WorldPath, WorldPlanOp, WorldPointType, Polyline } from '../../../../../packages/domain/src/index.js';
 import { prepareRevisionExport } from '../../../../../packages/application/src/index.js';
@@ -554,8 +554,13 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
       const prepared = await prepareRevisionExport(p, library.versions, { format: 'schem', dataVersion: dv, anchor: 'project-origin', unselected: 'structure_void' });
       if (prepared.created) await repo.saveProject(prepared.project, p.revision);
       const w = p.world, out = prepared.output;
-      const msg = await liveApi.plan(game.settings.port, t, out.fileName, { dimension: w.dimension, x: w.origin[0], y: w.origin[1], z: w.origin[2], turns: 0, mirror: false }, out.bytes);
-      setNotice(`${msg} Revision ${out.revision.number}.`);
+      // SIZE-01: does the plan fit what this mod can load? Big plans get a hint and a longer timeout.
+      const report = out.report as { volume: number; counts: { blocks: number } };
+      const fit = checkPlanForMod(game.hello, { volume: report.volume, cells: report.counts.blocks, bytes: out.bytes.length });
+      if (!fit.ok) { setNotice(fit.message); if (prepared.created) await load(); return; }
+      if (fit.message) setNotice(`Sende „${p.name}“ (${(out.bytes.length / 1_000_000).toLocaleString('de-DE', { maximumFractionDigits: 1 })} MB) … ${fit.message}`);
+      const msg = await liveApi.plan(game.settings.port, t, out.fileName, { dimension: w.dimension, x: w.origin[0], y: w.origin[1], z: w.origin[2], turns: 0, mirror: false }, out.bytes, fit.timeoutMs);
+      setNotice(`${msg} Revision ${out.revision.number}.${fit.message ? ` ${fit.message}` : ''}`);
       if (prepared.created) await load();
     } catch (e) { setNotice(errorText(e)); }
     finally { setSending(''); }

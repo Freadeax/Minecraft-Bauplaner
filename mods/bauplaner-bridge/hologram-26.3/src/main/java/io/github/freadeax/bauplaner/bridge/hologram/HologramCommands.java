@@ -15,7 +15,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 
 /**
- * {@code /bauplaner zeigen|hierher|verschieben|drehen|spiegeln|umschalten|fehler|entfernen|fortschritt|ebene|material|texturen|platzierhilfe|abschnitt|roentgen|verbinden|ebenen|diagnose}: the same actions as menu and keys, as client commands (no server needed;
+ * {@code /bauplaner zeigen|hierher|verschieben|drehen|spiegeln|umschalten|fehler|entfernen|fortschritt|ebene|material|texturen|platzierhilfe|abschnitt|roentgen|leistung|verbinden|ebenen|diagnose}: the same actions as menu and keys, as client commands (no server needed;
  * also used by the game test). Generic over the command source, so every loader registers the same tree
  * with its own client command source; answers go straight to the local chat.
  */
@@ -64,6 +64,11 @@ public final class HologramCommands {
                         }))
                         .then(HologramCommands.<S, Integer>argument("nummer", IntegerArgumentType.integer(0, 255)).executes(c -> said(h.setSection(IntegerArgumentType.getInteger(c, "nummer"))))),
                 HologramCommands.<S>literal("roentgen").executes(c -> { h.toggleXray(); return said(h.xray() ? "Röntgensicht an: offene Blöcke auch durch Wände." : "Röntgensicht aus."); }),
+                // Render budget for big builds (SIZE-01, 0.9.0): how many open blocks are drawn around you.
+                HologramCommands.<S>literal("leistung").executes(c -> said(budgetText(h)))
+                        .then(HologramCommands.<S>literal("niedrig").executes(c -> { h.setBudget(Hologram.Budget.NIEDRIG); return said(budgetText(h)); }))
+                        .then(HologramCommands.<S>literal("normal").executes(c -> { h.setBudget(Hologram.Budget.NORMAL); return said(budgetText(h)); }))
+                        .then(HologramCommands.<S>literal("hoch").executes(c -> { h.setBudget(Hologram.Budget.HOCH); return said(budgetText(h)); })),
                 // Website link (MAP-03): off until typed; a port starts it on that port.
                 HologramCommands.<S>literal("verbinden").executes(c -> said(link.connect()))
                         .then(HologramCommands.<S>literal("aus").executes(c -> said(link.disconnect())))
@@ -82,6 +87,15 @@ public final class HologramCommands {
                                 })),
                 // Testphase (QA-04): diagnosis report into bauplaner/diagnose/ and the clipboard.
                 HologramCommands.<S>literal("diagnose").executes(c -> HologramDiagnose.run(h, link)));
+    }
+
+    /** "Leistung: normal – bis 30 000 offene Blöcke …" */
+    static String budgetText(Hologram h) {
+        Hologram.Budget b = h.budget();
+        String n = String.format(java.util.Locale.GERMANY, "%,d", (int) (HologramRenderer.MAX_BLOCKS * b.factor));
+        return "Leistung: " + b.label + " – zeigt bis " + n + " offene Blöcke im Umkreis von " + HologramRenderer.RADIUS + " Blöcken, die nächsten zuerst."
+                + (h.capped() ? " Gerade sind es mehr; weiter entfernte erscheinen, wenn du näher kommst." : "")
+                + " Ändern: /bauplaner leistung niedrig|normal|hoch";
     }
 
     private static int said(String text) { say(null, text); return 1; }

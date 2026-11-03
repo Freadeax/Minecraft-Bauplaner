@@ -19,8 +19,14 @@ import net.minecraft.world.phys.Vec3;
 public final class HologramRenderer {
     /** Radius (blocks) around the camera in which ghost blocks are drawn. */
     static final int RADIUS = 72;
-    /** Upper limit of drawn ghost blocks per frame; the nearest chunks come first. */
+    /** Upper limit of drawn ghost blocks per frame at budget "normal"; the nearest chunks come first. */
     static final int MAX_BLOCKS = 30_000;
+    /**
+     * Big builds (SIZE-01): while only verdicts change (chunks loading, the sweep), the selection is rebuilt at
+     * most this often. Rebuilding walks every planned block in the radius, which for a dense city are millions.
+     */
+    static final long REVISION_REFRESH_NANOS = 250_000_000L;
+    private long selectedAt;
 
     /** Extra tint and edges for textured ghosts while a shader pack is on. */
     static final int SHADER_TINT = 0x405AA9FF, SHADER_EDGE = 0xFF7FC4FF;
@@ -117,7 +123,8 @@ public final class HologramRenderer {
             final int na = drawnCount, ng = ghostCount;
             out.submitCustomGeometry(pose, McCompat.xrayLines(), (p, vc) -> {
                 int done = 0;
-                for (int k = 0; k < ng + na && done < MAX_XRAY; k++) {
+                final int limit = xrayLimit;
+                for (int k = 0; k < ng + na && done < limit; k++) {
                     int i = k < ng ? g[k] : a[k - ng];
                     Verdict v = check.verdict(i);
                     int color = v == Verdict.MISSING ? 0xC05AA9FF : v == Verdict.WRONG ? 0xE0FF4040 : v == Verdict.STATE ? 0xE0FFD54A : 0;
@@ -150,8 +157,14 @@ public final class HologramRenderer {
     private void select(LiveCheck check, Vec3 cam) {
         int cx = (int) Math.floor(cam.x) >> 4, cz = (int) Math.floor(cam.z) >> 4;
         String settings = hologram.layers() + "/" + hologram.layerY() + "/" + hologram.section() + "/" + hologram.textured() + "/" + ((int) Math.floor(cam.y) >> 3);
-        if (check == drawnFor && check.revision() == drawnRevision && cx == drawnChunkX && cz == drawnChunkZ && settings.equals(drawnSettings)) return;
-        drawnSettings = settings;
+        String settings2 = settings + "/" + hologram.budget();
+        boolean sameView = check == drawnFor && cx == drawnChunkX && cz == drawnChunkZ && settings2.equals(drawnSettings);
+        if (sameView && check.revision() == drawnRevision) return;
+        long now = System.nanoTime();
+        // Only verdicts moved: the draw loops skip blocks that became correct anyway, so a short delay costs nothing visible.
+        if (sameView && now - selectedAt < REVISION_REFRESH_NANOS) return;
+        selectedAt = now;
+        drawnSettings = settings2;
         drawnFor = check;
         drawnRevision = check.revision();
         drawnChunkX = cx;
@@ -162,9 +175,13 @@ public final class HologramRenderer {
         boolean textured = hologram.textured();
         double tr2 = (double) TEXTURED_RADIUS * TEXTURED_RADIUS;
         int r = (RADIUS >> 4) + 1;
+        double f = hologram.budget().factor;
+        int maxBlocks = (int) (MAX_BLOCKS * f), maxTextured = (int) (MAX_TEXTURED * f);
+        xrayLimit = (int) (MAX_XRAY * f);
+        boolean cut = false;
         // Rings from the camera chunk outwards, so the limit cuts the farthest blocks.
-        for (int ring = 0; ring <= r && drawnCount < MAX_BLOCKS; ring++) {
-            for (int dx = -ring; dx <= ring; dx++) for (int dz = -ring; dz <= ring; dz++) {
+        for (int ring = 0; ring <= r && !cut; ring++) {
+            for (int dx = -ring; dx <= ring && !cut; dx++) for (int dz = -ring; dz <= ring && !cut; dz++) {
                 if (Math.max(Math.abs(dx), Math.abs(dz)) != ring) continue;
                 for (int i : check.inChunk(cx + dx, cz + dz)) {
                     Verdict v = check.verdict(i);
@@ -172,18 +189,22 @@ public final class HologramRenderer {
                     int wy = check.worldY(i);
                     if (!filter.test(check, i)) continue;
                     if (Math.abs(wy - cam.y) > RADIUS) continue;
-                    if (textured && v == Verdict.MISSING && ghostCount < MAX_TEXTURED) {
+                    if (textured && v == Verdict.MISSING && ghostCount < maxTextured) {
                         double gx = check.worldX(i) + 0.5 - cam.x, gy = wy + 0.5 - cam.y, gz = check.worldZ(i) + 0.5 - cam.z;
                         GhostModels.Model m = gx * gx + gy * gy + gz * gz < tr2 ? models.model(check.expected(i)) : null;
                         if (m != null) { addGhost(check, i, m, filter); continue; }
                     }
-                    if (drawnCount == MAX_BLOCKS) break;
+                    if (drawnCount == maxBlocks) { cut = true; break; }
                     if (drawnCount == drawn.length) drawn = Arrays.copyOf(drawn, Math.max(1024, drawn.length * 2));
                     drawn[drawnCount++] = i;
                 }
             }
         }
+        hologram.reportShown(drawnCount + ghostCount, cut);
     }
+
+    /** X-ray frames at the current budget. */
+    private int xrayLimit = MAX_XRAY;
 
     private void addGhost(LiveCheck check, int i, GhostModels.Model m, io.github.freadeax.bauplaner.mod.Filter filter) {
         if (ghostCount == ghosts.length) {

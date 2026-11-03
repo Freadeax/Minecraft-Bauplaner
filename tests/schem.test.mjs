@@ -40,7 +40,7 @@ test('valid sparse palette IDs, default namespace and canonical duplicate states
 for(const [name,change,pattern] of [
  ['v2',s=>s.Version.value=2,/Version 3/],['missing DataVersion',s=>delete s.DataVersion,/DataVersion/],
  ['zero dimension',s=>s.Width.value=0,/Width/],['unsigned dimension limit',s=>s.Width.value=-1,/Width/],
- ['wrong dimension type',s=>s.Width.type='int',/Short/],['volume limit',s=>{s.Width.value=256;s.Height.value=256;s.Length.value=256;},/Bauvolumen/],
+ ['wrong dimension type',s=>s.Width.type='int',/Short/],['volume limit',s=>{s.Width.value=257;s.Height.value=256;s.Length.value=256;},/Bauvolumen/],
  ['invalid offset',s=>s.Offset.value=[0,0],/drei/],['missing blocks',s=>delete s.Blocks,/Blocks/],
  ['duplicate palette IDs',s=>s.Blocks.value.Palette.value['minecraft:air'].value=7,/doppelte/],
  ['negative palette IDs',s=>s.Blocks.value.Palette.value['minecraft:air'].value=-1,/Negative/],

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T16:37:18.371Z",
+  "updatedAt": "2026-11-03T16:33:52.289Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -21,7 +21,8 @@
     "MAP-05",
     "MAP-06",
     "GROSS-01",
-    "LIB-06"
+    "LIB-06",
+    "SIZE-01"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -5997,6 +5998,102 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-03T15:52:52.715Z"
+    },
+    {
+      "id": "SIZE-01",
+      "title": "Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Volumenlimit für große Builds aufheben“)",
+      "dependencies": [
+        "PERF-04",
+        "ARCH-02",
+        "GFX-01",
+        "GAME-08"
+      ],
+      "scope": [
+        "packages/voxel/src/sizeLimits.ts",
+        "packages/voxel/src/validation.ts",
+        "packages/formats/src/schem.ts",
+        "packages/formats/src/litematic.ts",
+        "packages/formats/src/worldExcerpt.ts",
+        "packages/formats/src/schemWrite.ts",
+        "packages/formats/src/litematicWrite.ts",
+        "packages/formats/src/scan.ts",
+        "packages/domain/src/editor/draft.ts",
+        "packages/domain/src/liveLink.ts",
+        "packages/application/src/revisionExport.ts",
+        "packages/application/src/scanPersistence.ts",
+        "apps/web/src/app/SizeNotice.tsx",
+        "apps/web/src/app/importLimits.ts",
+        "apps/web/src/jobs/importJob.ts",
+        "apps/web/src/editor/BlockEditor.tsx",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "apps/web/src/views/map/liveClient.ts",
+        "mods/bauplaner-bridge/",
+        "tests/size-limits.test.mjs",
+        "docs/architecture/SIZE_LIMITS.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "SIZE-01-S01",
+          "title": "Bestandsaufnahme aller harten Größen-/Blockgrenzen in Planer und Mod, Messung von Speicher und Zeit bei 1–4 Mio. Zellen.",
+          "done": true
+        },
+        {
+          "id": "SIZE-01-S02",
+          "title": "Planer: zentrale Grenzen in sizeLimits.ts, Importe ohne Kopie (adoptPayload), Luft ab 250.000 Zellen Box unausgewählt, Werkstatt 4 Mio./1 Mio. je Schritt mit linearer Umkehrung und Rückgängig-Budget, Export/Aufnahmen bis 16,7 Mio. Box, Größenhinweise.",
+          "done": true
+        },
+        {
+          "id": "SIZE-01-S03",
+          "title": "Übertragung: SectionRuns statt einem Byte je Boxzelle, Prüfung gegen die verbundene Mod (Fähigkeit bigplans), Dateien bis 64 MB, passende Wartezeit.",
+          "done": true
+        },
+        {
+          "id": "SIZE-01-S04",
+          "title": "Mod 0.9.0 (Fabric, NeoForge): Plan einmal entpacken, 6 Byte je Planblock, LiveCheck ohne Objekt je Block mit Abschnittszählung, Laden/Verschieben großer Pläne im Hintergrund, Baustand in Scheiben, Render-Budget /bauplaner leistung, Diagnose.",
+          "done": true
+        },
+        {
+          "id": "SIZE-01-S05",
+          "title": "Abnahme durch Philipp in der Testphase (DATEI-05, WERK-07, MOD-11, MOD-15, LIVE-09) mit einem echten großen Bau im Spiel.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Schem/Litematic bis 16,7 Mio. Zellen Box und 4 Mio. Blöcke importieren, bearbeiten, exportieren und ins Spiel senden, ohne harte Grenze darunter.",
+        "Über der Grenze eine Meldung mit Rat (teilen) statt Abbruch ohne Erklärung; darunter nur Hinweise.",
+        "Ältere Mods bekommen nur Pläne, die sie laden können; die Website sagt es vor dem Senden.",
+        "Mod: 3 Mio. Blöcke Live-Abgleich in unter einer Sekunde, Verschieben großer Hologramme ohne Spielhänger."
+      ],
+      "next": "Abnahme durch Philipp (S05) mit einem großen Bau im Spiel.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/size-limits.test.mjs",
+          "note": "Grenzen, Stufen, großer Schem-Import ohne Luft, SectionRuns, lineare Werkstattschritte, Rückgängig-Budget, Prüfung gegen alte/neue Mod."
+        },
+        {
+          "path": "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/BigPlanTest.java",
+          "note": "6,3 Mio. Box / 3,1 Mio. Blöcke laden und abgleichen, SectionRuns = SectionCells, Ablehnung zu großer Pläne."
+        },
+        {
+          "path": "docs/architecture/SIZE_LIMITS.md",
+          "note": "Grenzen vorher/jetzt, Messwerte, Umbau Website und Mod."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Node- und JUnit-Tests grün, Spieltests Fabric/NeoForge/Modpack; Abnahme durch Philipp mit einem großen Bau offen (S05)."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-03T16:33:52.289Z"
     }
   ],
   "events": [
@@ -10563,6 +10660,78 @@
           "done": 5,
           "total": 7,
           "next": "Abnahme durch Philipp (S06) und erster echter Beitrag (S07)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T16:33:52.289Z",
+      "kind": "progress",
+      "items": [
+        "SIZE-01"
+      ],
+      "summary": "Größengrenzen zentral (4 Mio. Zellen, 16,7 Mio. Box), Import ohne Kopie, Werkstatt linear, Mod 0.9.0 mit großen Plänen im Hintergrund, Render-Budget und Baustand in Scheiben",
+      "files": [
+        "apps/web/src/app/SizeNotice.tsx",
+        "apps/web/src/app/importLimits.ts",
+        "apps/web/src/editor/BlockEditor.tsx",
+        "apps/web/src/jobs/importJob.ts",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/ViewerView.tsx",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "apps/web/src/views/map/liveClient.ts",
+        "apps/web/src/views/project/GameCheckPanel.tsx",
+        "docs/TESTING.md",
+        "docs/architecture/BLOCK_EDITOR.md",
+        "docs/architecture/CREATIVE_TOOLS.md",
+        "docs/architecture/LITEMATIC.md",
+        "docs/architecture/LIVE_LINK.md",
+        "docs/architecture/MOD_BRIDGE.md",
+        "docs/architecture/MOD_HOLOGRAM.md",
+        "docs/architecture/SCHEM_IMPORT.md",
+        "docs/architecture/SIZE_LIMITS.md",
+        "docs/architecture/WORLD_IMPORT.md",
+        "docs/testing/TESTPLAN.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/Plan.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Hologram.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramDiagnose.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramHud.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramRenderer.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/LiveCheck.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlanModel.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/PlanScan.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/BigPlanTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "packages/application/src/revisionExport.ts",
+        "packages/application/src/scanPersistence.ts",
+        "packages/domain/src/editor/draft.ts",
+        "packages/domain/src/editor/index.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/liveLink.ts",
+        "packages/formats/src/litematic.ts",
+        "packages/formats/src/litematicWrite.ts",
+        "packages/formats/src/scan.ts",
+        "packages/formats/src/schem.ts",
+        "packages/formats/src/schemWrite.ts",
+        "packages/formats/src/worldExcerpt.ts",
+        "packages/voxel/src/index.ts",
+        "packages/voxel/src/sizeLimits.ts",
+        "packages/voxel/src/validation.ts",
+        "scripts/bridge_gametest.mjs",
+        "tests/game-check.test.mjs",
+        "tests/schem.test.mjs",
+        "tests/size-limits.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "SIZE-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05) mit einem großen Bau im Spiel."
         }
       ]
     }

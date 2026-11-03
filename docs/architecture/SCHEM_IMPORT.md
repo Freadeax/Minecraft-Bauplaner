@@ -22,9 +22,9 @@ Die vorherige Ansicht bleibt bei Fehler oder Abbruch erhalten. GZip wird an der 
 
 Unterstützte Tags: Byte, Short, Int, Long, Float, Double, ByteArray, String, List, Compound, IntArray, LongArray. Longwerte als int64-Dezimalstrings. Listen-/Arraylängen, Typen, doppelte Compoundnamen und Restbytes werden geprüft. Strings werden als Java Modified-UTF-8 gelesen, einschließlich NUL und UTF-16-Surrogatpaaren. Fehlerhafte Sequenzen werden abgewiesen. Nicht-endliche Gleitkommazahlen und negatives Float-/Double-Null sind im aktuellen JSON-Vertrag nicht verlustfrei abbildbar und führen ausdrücklich zum Importfehler; keine stille Normalisierung.
 
-Standardlimits: 4.000.000 komprimierte Bytes, 16.000.000 entpackte Bytes, 250.000 Volumenzellen (seit VIEW-02 angehoben), 256 je Achse, 20.000 Paletteneinträge, NBT-Tiefe 32 und 200.000 Knoten/Arraybudget. Zeitbudget 5 Sekunden für Entpacken/Lesen/Normalisieren; zusätzlich beendet die Oberfläche einen Worker nach 12 Sekunden. Abbrechen und neue Dateiauswahl entwerten ältere Jobantworten. Limits sind konservative Startwerte, keine Lastmessung.
+Standardlimits seit SIZE-01 ([SIZE_LIMITS](SIZE_LIMITS.md)): 64 MB komprimiert, 192 MB entpackt, 16,7 Mio. Zellen Box, 4096 je Achse, 4 Mio. übernommene Blöcke, 20.000 Paletteneinträge, NBT-Tiefe 32. Bis 250.000 Zellen Box bleibt Luft eine ausdrückliche Zelle, darüber übernimmt der Import nur Blöcke. Zeitbudget 60 Sekunden für Entpacken/Lesen/Normalisieren; zusätzlich beendet die Oberfläche einen Worker nach 12 Sekunden. Abbrechen und neue Dateiauswahl entwerten ältere Jobantworten. Limits sind konservative Startwerte, keine Lastmessung.
 
-Der interne JSON-Import bleibt separat begrenzt (2 MB, 250.000 ausgewählte Zellen, 50.000 NBT-Budget). Datenbank, freie Entities und Biomgeometrie werden durch diesen Reader nicht implementiert.
+Der interne JSON-Import ist separat begrenzt (4 Mio. Zellen, 4096 je Achse, 200.000 NBT-Budget; SIZE-01). Datenbank, freie Entities und Biomgeometrie werden durch diesen Reader nicht implementiert.
 
 ## Nachweis und offene Abnahme
 

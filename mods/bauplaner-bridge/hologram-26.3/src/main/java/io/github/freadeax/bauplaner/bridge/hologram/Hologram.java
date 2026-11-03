@@ -21,6 +21,29 @@ import net.minecraft.core.BlockPos;
 public final class Hologram {
     /** Planned blocks re-read per client tick (about 160 000 per second). */
     public static final int SWEEP_PER_TICK = 8_000;
+    /**
+     * Big builds (SIZE-01): from this many planned blocks the live check for a new placement is built on a
+     * background thread, and plan files from this size on are read there too. The old hologram stays until the
+     * new one is ready, so arrow keys and plan changes never freeze the game.
+     */
+    public static final int ASYNC_BLOCKS = 250_000;
+    public static final long ASYNC_FILE_BYTES = 512 * 1024;
+    private static final java.util.concurrent.ExecutorService LOADER = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "Bauplaner-Planlader");
+        t.setDaemon(true);
+        t.setPriority(Thread.MIN_PRIORITY);
+        return t;
+    });
+
+    /** Result of a background load, installed by {@link #tick} when it is still the newest request. */
+    private record Pending(long generation, String file, PlanModel plan, LiveCheck check, String message, String error) {}
+    private volatile Pending pending;
+    /** Counts placement and plan requests; only the newest background result is installed. */
+    private long generation;
+    /** Placement the newest request asks for (equals the check's placement when nothing is loading). */
+    private Placement wanted;
+    /** File name of a plan that is being read in the background, for the HUD; null when none. */
+    private volatile String loadingFile;
 
     private final Path root;
     private final PlacementStore store;
@@ -43,6 +66,25 @@ public final class Hologram {
     private boolean xray;
     /** Missing blocks as see-through textured blocks (true) or as blue boxes. */
     private boolean textured = true;
+    /**
+     * Render budget (SIZE-01): how many open blocks the hologram draws at most per frame. The nearest come
+     * first, so a big build only shows its surroundings in detail. "niedrig" for shader packs on weak
+     * graphics cards, "hoch" for strong ones.
+     */
+    public enum Budget {
+        NIEDRIG("niedrig", 0.5), NORMAL("normal", 1), HOCH("hoch", 2);
+        public final String label;
+        public final double factor;
+        Budget(String label, double factor) { this.label = label; this.factor = factor; }
+        public static Budget parse(String s, Budget fallback) {
+            for (Budget b : values()) if (b.label.equals(s) || b.name().equals(s)) return b;
+            return fallback;
+        }
+    }
+    private Budget budget = Budget.NORMAL;
+    /** What the renderer drew last: blocks shown and whether the budget cut farther ones off (HUD line). */
+    private volatile int shown;
+    private volatile boolean capped;
     /** Placement helper strictness, persisted with the other settings. */
     private io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard guard = io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard.ON;
 
@@ -57,6 +99,11 @@ public final class Hologram {
     public PlanModel plan() { return plan; }
     public String planFile() { return planFile; }
     public boolean active() { return check != null; }
+    /** True while a plan or a new placement is prepared in the background (HUD shows it). */
+    public boolean loading() { return loadingFile != null || (check != null && wanted != null && !wanted.equals(check.placement())); }
+    public String loadingFile() { return loadingFile; }
+    /** Placement as last asked for (moves, turns), even while the check for it is still being built. */
+    private Placement current() { return wanted != null ? wanted : check == null ? null : check.placement(); }
     public boolean visible() { return visible && check != null; }
     public int target() { return check == null || target >= check.size() ? -1 : target; }
     public Layers layers() { return layers; }
@@ -64,6 +111,12 @@ public final class Hologram {
     public boolean textured() { return textured; }
     public io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard guard() { return guard; }
     public void setGuard(io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard g) { guard = g; saveSettings(); }
+    public Budget budget() { return budget; }
+    public void setBudget(Budget b) { budget = b; saveSettings(); }
+    void reportShown(int count, boolean cut) { shown = count; capped = cut; }
+    public int shown() { return shown; }
+    /** True when the render budget left out open blocks farther away. */
+    public boolean capped() { return capped; }
     /** Lowest and highest world height currently shown. */
     public int minY() { return layers == Layers.ONE ? layerY : Integer.MIN_VALUE; }
     public int maxY() { return layers == Layers.ALL ? Integer.MAX_VALUE : layerY; }
@@ -165,6 +218,7 @@ public final class Hologram {
         textured = !"false".equals(props.getProperty("texturen"));
         guard = io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard.parse(props.getProperty("platzierhilfe"), guard);
         xray = "true".equals(props.getProperty("roentgen"));
+        budget = Budget.parse(props.getProperty("leistung"), Budget.NORMAL);
     }
 
     private void saveSettings() {
@@ -172,6 +226,7 @@ public final class Hologram {
         props.setProperty("texturen", Boolean.toString(textured));
         props.setProperty("platzierhilfe", guard.name());
         props.setProperty("roentgen", Boolean.toString(xray));
+        props.setProperty("leistung", budget.label);
         try {
             Files.createDirectories(root);
             try (var w = Files.newBufferedWriter(settingsFile())) { props.store(w, "Bauplaner-Mod: Einstellungen"); }
@@ -194,10 +249,16 @@ public final class Hologram {
             var entry = store.get(worldKey);
             if (entry.isEmpty()) return null;
             var e = entry.get();
-            plan = PlanModel.read(plansDir().resolve(e.planFile()));
-            planFile = e.planFile();
+            Path file = plansDir().resolve(e.planFile());
             visible = e.visible();
+            if (Files.size(file) >= ASYNC_FILE_BYTES) {
+                loadInBackground(e.planFile(), e.placement(), "wieder eingeblendet");
+                return "Großer Plan „" + e.planFile() + "“ wird im Hintergrund geladen …";
+            }
+            plan = PlanModel.read(file);
+            planFile = e.planFile();
             check = new LiveCheck(plan, e.placement());
+            wanted = check.placement();
             return "Plan „" + plan.name() + "“ wieder eingeblendet (" + planFile + ").";
         } catch (IOException | RuntimeException ex) {
             clearState();
@@ -207,46 +268,92 @@ public final class Hologram {
 
     public void leave() { clearState(); worldKey = null; }
 
-    private void clearState() { plan = null; planFile = null; check = null; target = -1; visible = true; layers = Layers.ALL; section = 0; announced = 0; }
+    private void clearState() { plan = null; planFile = null; check = null; target = -1; visible = true; layers = Layers.ALL; section = 0; announced = 0; wanted = null; generation++; pending = null; loadingFile = null; }
+
+    /** Builds the check of an already read plan on the loader thread; {@link #tick} installs it. */
+    private void checkInBackground(String file, PlanModel p, Placement at, String message) {
+        long gen = ++generation;
+        wanted = at;
+        loadingFile = file;
+        LOADER.execute(() -> {
+            try { pending = new Pending(gen, file, p, new LiveCheck(p, at), message, null); }
+            catch (RuntimeException | OutOfMemoryError ex) { pending = new Pending(gen, file, null, null, null, "Plan „" + file + "“ konnte nicht platziert werden: " + ex.getMessage()); }
+        });
+    }
+
+    /** Reads a plan file and builds its check on the loader thread; {@link #tick} installs it. */
+    private void loadInBackground(String file, Placement at, String verb) {
+        long gen = ++generation;
+        wanted = at;
+        loadingFile = file;
+        Path path = plansDir().resolve(file);
+        LOADER.execute(() -> {
+            try {
+                PlanModel p = PlanModel.read(path);
+                LiveCheck c = new LiveCheck(p, at);
+                pending = new Pending(gen, file, p, c, "„" + p.name() + "“ " + verb + " (" + p.blockCount() + " Blöcke).", null);
+            } catch (IOException | RuntimeException | OutOfMemoryError ex) {
+                pending = new Pending(gen, file, null, null, null, "Plan „" + file + "“ konnte nicht geladen werden: " + ex.getMessage());
+            }
+        });
+    }
+
+    /**
+     * Installs a plan that was read and checked elsewhere (live link: on the web request's thread), so the
+     * game thread only swaps references. Returns the chat message.
+     */
+    public String install(String file, PlanModel p, LiveCheck c) {
+        generation++;
+        pending = null;
+        loadingFile = null;
+        if (!file.equals(planFile)) { section = 0; announced = 0; }
+        plan = p;
+        planFile = file;
+        visible = true;
+        check = c;
+        wanted = c.placement();
+        target = -1;
+        save();
+        Placement at = c.placement();
+        return "„" + p.name() + "“ von der Website platziert bei " + at.x() + " " + at.y() + " " + at.z() + " (" + p.blockCount() + " Blöcke).";
+    }
 
     /** Load a plan and place its project origin on {@code anchor} (keeps turn and mirror of the current placement). */
     public String place(Minecraft mc, String file, BlockPos anchor) throws IOException {
-        PlanModel p = PlanModel.read(plansDir().resolve(file));
-        Placement old = check == null ? null : check.placement();
+        Placement old = current();
         Placement at = new Placement(McCompat.dimension(mc.level), anchor.getX(), anchor.getY(), anchor.getZ(),
                 old == null ? 0 : old.turns(), old != null && old.mirror());
-        if (!file.equals(planFile)) { section = 0; announced = 0; }
-        plan = p;
-        planFile = file;
-        visible = true;
-        apply(at);
-        return "„" + p.name() + "“ platziert bei " + anchor.getX() + " " + anchor.getY() + " " + anchor.getZ() + " (" + p.blockCount() + " Blöcke).";
-    }
-
-    /** Live link (MAP-03): load a plan file and place it exactly as the website asks (dimension, anchor, turn, mirror). */
-    public String placeExact(String file, Placement at) throws IOException {
+        if (Files.size(plansDir().resolve(file)) >= ASYNC_FILE_BYTES) {
+            if (!file.equals(planFile)) { section = 0; announced = 0; }
+            visible = true;
+            loadInBackground(file, at, "platziert bei " + anchor.getX() + " " + anchor.getY() + " " + anchor.getZ());
+            return "Großer Plan „" + file + "“ wird im Hintergrund geladen – das Hologramm erscheint gleich.";
+        }
         PlanModel p = PlanModel.read(plansDir().resolve(file));
         if (!file.equals(planFile)) { section = 0; announced = 0; }
+        visible = true;
+        String msg = "„" + p.name() + "“ platziert bei " + anchor.getX() + " " + anchor.getY() + " " + anchor.getZ() + " (" + p.blockCount() + " Blöcke).";
+        if (p.blockCount() >= ASYNC_BLOCKS) { checkInBackground(file, p, at, msg); return "Großer Plan (" + p.blockCount() + " Blöcke) wird vorbereitet – das Hologramm erscheint gleich."; }
         plan = p;
         planFile = file;
-        visible = true;
         apply(at);
-        return "„" + p.name() + "“ von der Website platziert bei " + at.x() + " " + at.y() + " " + at.z() + " (" + p.blockCount() + " Blöcke).";
+        return msg;
     }
 
     /** Live link: move the current plan to an exact placement. */
     public boolean setPlacement(Placement at) {
         if (check == null) return false;
+        if (at.equals(current())) return true;
         apply(at);
         return true;
     }
 
     public String worldKey() { return worldKey; }
 
-    public void move(int dx, int dy, int dz) { if (check != null) { layerY += dy; apply(check.placement().moved(dx, dy, dz)); } }
-    public void moveTo(BlockPos pos) { if (check != null) { Placement p = check.placement(); apply(new Placement(p.dimension(), pos.getX(), pos.getY(), pos.getZ(), p.turns(), p.mirror())); } }
-    public void turn(int quarterTurns) { if (check != null) apply(check.placement().turned(quarterTurns)); }
-    public void mirror() { if (check != null) apply(check.placement().mirrored()); }
+    public void move(int dx, int dy, int dz) { if (check != null) { layerY += dy; apply(current().moved(dx, dy, dz)); } }
+    public void moveTo(BlockPos pos) { if (check != null) { Placement p = current(); apply(new Placement(p.dimension(), pos.getX(), pos.getY(), pos.getZ(), p.turns(), p.mirror())); } }
+    public void turn(int quarterTurns) { if (check != null) apply(current().turned(quarterTurns)); }
+    public void mirror() { if (check != null) apply(current().mirrored()); }
 
     public void toggleVisible() {
         if (check == null) return;
@@ -261,9 +368,44 @@ public final class Hologram {
     }
 
     private void apply(Placement p) {
-        check = new LiveCheck(plan, p);
+        long gen = ++generation;
+        pending = null;
+        wanted = p;
+        target = -1;
+        if (plan.blockCount() < ASYNC_BLOCKS || check == null || check.plan() != plan) {
+            check = new LiveCheck(plan, p);
+            save();
+            return;
+        }
+        // Big plan: build the check for the new place in the background; the old one stays visible meanwhile.
+        PlanModel pm = plan;
+        String file = planFile;
+        LOADER.execute(() -> {
+            try { pending = new Pending(gen, file, pm, new LiveCheck(pm, p), null, null); }
+            catch (RuntimeException | OutOfMemoryError ex) { pending = new Pending(gen, file, null, null, null, "Hologramm konnte nicht verschoben werden: " + ex.getMessage()); }
+        });
+    }
+
+    /** Installs a finished background result (game thread). Older results than the newest request are dropped. */
+    private void installPending(Minecraft mc) {
+        Pending p = pending;
+        if (p == null) return;
+        pending = null;
+        if (p.generation() != generation) return;
+        loadingFile = null;
+        if (p.error() != null) {
+            if (check == null) wanted = null;
+            else wanted = check.placement();
+            McCompat.chat(mc, net.minecraft.network.chat.Component.literal("[Bauplaner] " + p.error()));
+            return;
+        }
+        plan = p.plan();
+        planFile = p.file();
+        check = p.check();
+        wanted = check.placement();
         target = -1;
         save();
+        if (p.message() != null) McCompat.chat(mc, net.minecraft.network.chat.Component.literal("[Bauplaner] " + p.message()));
     }
 
     private void save() {
@@ -277,6 +419,7 @@ public final class Hologram {
 
     /** Compare a slice of the planned blocks with the world. Only in the plan's dimension. */
     public void tick(Minecraft mc) {
+        installPending(mc);
         if (check == null || mc.level == null) return;
         if (!McCompat.dimension(mc.level).equals(check.placement().dimension())) return;
         check.sweep(McCompat.liveReader(mc.level), SWEEP_PER_TICK);

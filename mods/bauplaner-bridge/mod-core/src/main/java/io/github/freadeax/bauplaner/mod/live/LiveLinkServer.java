@@ -48,7 +48,8 @@ public final class LiveLinkServer implements AutoCloseable {
     public static final int DEFAULT_PORT = 47615;
     public static final String TOKEN_HEADER = "x-bauplaner-token";
     public static final int MAX_CHUNKS = 64;
-    public static final int MAX_PLAN_BYTES = 16 * 1024 * 1024;
+    /** Largest plan upload (SIZE-01, mod 0.9.0; before 16 MiB). Same as the website's MODEL_MAX_FILE_BYTES. */
+    public static final int MAX_PLAN_BYTES = 64_000_000;
     static final int MAX_JSON_BYTES = 1024 * 1024;
     static final int MAX_HEADER_BYTES = 16 * 1024;
     static final long PAIRING_MS = 5 * 60_000L;
@@ -76,7 +77,7 @@ public final class LiveLinkServer implements AutoCloseable {
     public record Binary(String fileName, byte[] bytes) {}
 
     /** What this mod can do beyond protocol 1; the website enables buttons by it. */
-    public static final List<String> FEATURES = List.of("scan", "marks2", "players");
+    public static final List<String> FEATURES = List.of("scan", "marks2", "players", "bigplans");
 
     public record Info(String version, String loader, String minecraft) {}
 
@@ -255,7 +256,7 @@ public final class LiveLinkServer implements AutoCloseable {
                 case "GET /v1/status": return ok(h, handler.status());
                 case "GET /v1/chunks": return ok(h, handler.chunks(chunkList(r.query().get("c"))));
                 case "POST /v1/plan":
-                    if (r.body().length == 0 || r.body().length > MAX_PLAN_BYTES) throw new HttpError(413, "Plandatei fehlt oder ist zu groß (höchstens 16 MB).");
+                    if (r.body().length == 0 || r.body().length > MAX_PLAN_BYTES) throw new HttpError(413, "Plandatei fehlt oder ist zu groß (höchstens " + MAX_PLAN_BYTES / 1_000_000 + " MB).");
                     return ok(h, handler.plan(r.query(), r.body()));
                 case "POST /v1/placement": return ok(h, handler.placement(Json.obj(Json.parse(text(r, 65_536)), "Lage")));
                 case "POST /v1/marks": return ok(h, handler.marks(Json.obj(Json.parse(text(r, MAX_JSON_BYTES)), "Markierungen")));
