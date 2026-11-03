@@ -4458,3 +4458,19 @@ Team live ohne Dateien: Team-Raum-Dienst, Sync-Kern, Live-Abgleich im Planer, Ei
 - `services/team-room/.gitignore`
 - `tests/router.test.mjs`
 
+## 2026-11-03T21:58:17.986Z · progress
+
+**Aufgaben:** COOP-07
+
+Paper-Plugin im Team-Raum: RoomLink (verbinden/trennen/raum, Planstand aus dem Raum, Ereignisse live hoch und runter, Cursor und Outbox über Neustart, 4401/4403); echte Paper-Server 1.18.2, 1.21.4, 26.3 gegen wrangler dev grün.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-07 | 🧩 Implementiert · Abnahme offen | 5/6 | Plugin-Thread: RoomLink gegen team-room v1; Philipp: Cloudflare-Konto, wrangler deploy, Spieltest. |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+- `scripts/bridge_paperroom.mjs`
+- `scripts/test_bridge_paper_room.sh`
+

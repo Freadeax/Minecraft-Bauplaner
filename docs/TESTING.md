@@ -886,3 +886,13 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Gefundener Fehler: Unter React 19 setzte `ErrorBoundary.getDerivedStateFromError` keinen Zustand, der Fehler lief bis zur Wurzel, die App wurde leer. Korrigiert; ohne Korrektur schlägt der neue Test fehl (Gegenprobe).
 - `tests/e2e/stability.e2e.mjs` und `tests/e2e/app.e2e.mjs` nach der Korrektur 9/9 grün. Lauf im Cloud-Browser mit Playwright 1.64.1; dort fehlte Chromium 1248, Lauf mit `PLAYWRIGHT_BROWSERS_PATH` auf die vorhandene Build 1243.
 - LICENSE-01: `LICENSE` (MIT) und `docs/LICENSING.md` (Bestandsaufnahme); `npm run check:docs` grün. LAGER-01 und PERF-03 nur in der Roadmap mit COOP-04/05 bzw. PERF-05 abgeglichen, kein Code geändert. GitHub-Issues #2 bis #4 geschlossen.
+
+## COOP-07-S05 · Paper-Plugin im Team-Raum (RoomLink) · 03.11.2026 · Claude
+- `scripts/test_bridge_paper_room.sh` gegen `npx wrangler dev` (services/team-room, Port 8787) auf echten Paper-Servern 1.18.2 (388), 1.21.4 (232), 26.3 (238), Server ohne Teamdatei:
+  - `/bauplaner team verbinden <Server-Link>` holt den Planstand aus dem Raum (3 Abschnitte), Status „live“, Schlüssel steht nie im Log.
+  - Serverereignisse (`nehmen`, `notiz`) liegen sofort mit Herkunft server im Raum; ein Planerereignis (Zuweisung) kommt live auf dem Server an.
+  - Neuer Kopf (Abschnitt umbenannt) wird nach `type: header` neu geladen.
+  - Neustart: Verbindung aus `TEAMID.room.json`, Fortsetzung am Cursor, neues Ereignis geht hoch, keine doppelten IDs im Raum.
+  - Serverschlüssel erneuert (Close 4403): kein neuer Versuch, Status „Schlüssel ungültig oder erneuert“.
+  - Planer-Faltung des Raum-Feeds = Serverzustand.
+- Grenzen: nur lokaler Raum (wrangler dev); der gehostete Dienst und Mitspieler auf Philipps Server bleiben COOP-07-S06/TEAMBAU-09.

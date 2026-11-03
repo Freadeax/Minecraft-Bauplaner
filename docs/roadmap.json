@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T21:37:46.206Z",
+  "updatedAt": "2026-11-03T21:58:17.986Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -7753,7 +7753,10 @@
         "docs/testing/TESTPLAN.md",
         "packages/domain/src/index.ts",
         "services/team-room/.gitignore",
-        "tests/router.test.mjs"
+        "tests/router.test.mjs",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java",
+        "scripts/bridge_paperroom.mjs",
+        "scripts/test_bridge_paper_room.sh"
       ],
       "legacyIds": [],
       "steps": [
@@ -7779,8 +7782,8 @@
         },
         {
           "id": "COOP-07-S05",
-          "title": "Paper-Plugin verbindet sich mit dem Serverschlüssel (RoomLink, /bauplaner team verbinden).",
-          "done": false
+          "title": "Paper-Plugin verbindet sich mit dem Serverschlüssel (RoomLink, /bauplaner team verbinden|trennen|raum); echter Paper-Server 1.18.2, 1.21.4, 26.3 gegen wrangler dev (scripts/test_bridge_paper_room.sh).",
+          "done": true
         },
         {
           "id": "COOP-07-S06",
@@ -7818,7 +7821,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T21:00:35.000Z",
+      "updatedAt": "2026-11-03T21:58:17.986Z",
       "area": "TEAM",
       "thread": "Gemeinsames Bauen mehrerer Spieler ermöglichen",
       "philipp": [
@@ -14654,6 +14657,28 @@
           "id": "COOP-07",
           "status": "implemented",
           "done": 4,
+          "total": 6,
+          "next": "Plugin-Thread: RoomLink gegen team-room v1; Philipp: Cloudflare-Konto, wrangler deploy, Spieltest."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T21:58:17.986Z",
+      "kind": "progress",
+      "items": [
+        "COOP-07"
+      ],
+      "summary": "Paper-Plugin im Team-Raum: RoomLink (verbinden/trennen/raum, Planstand aus dem Raum, Ereignisse live hoch und runter, Cursor und Outbox über Neustart, 4401/4403); echte Paper-Server 1.18.2, 1.21.4, 26.3 gegen wrangler dev grün.",
+      "files": [
+        "docs/TESTING.md",
+        "scripts/bridge_paperroom.mjs",
+        "scripts/test_bridge_paper_room.sh"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-07",
+          "status": "implemented",
+          "done": 5,
           "total": 6,
           "next": "Plugin-Thread: RoomLink gegen team-room v1; Philipp: Cloudflare-Konto, wrangler deploy, Spieltest."
         }

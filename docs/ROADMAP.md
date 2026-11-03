@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-03T21:37:46.206Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-03T21:58:17.986Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -109,7 +109,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [COOP-04](#coop-04) | Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams z… | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | TEAMBAU-07/08 mit echten Spielern. |
 | [COOP-05](#coop-05) | Geprüfte Lagerkisten im Paper-Plugin | 🧩 Implementiert · Abnahme offen 3/5 | P1 | „Server-Plugin mit geprüften Lagerkisten“ | LAGER-01…09 mit echten Spielern. |
 | [COOP-06](#coop-06) | Teamplanung im Planer | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Gemeinsames Bauen im Planer vertiefen“ | TEAMBAU-21…24 mit Mitspielern an einem großen Bau. |
-| [COOP-07](#coop-07) | Team live ohne Dateien | 🧩 Implementiert · Abnahme offen 4/6 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | Cloudflare-Konto anlegen, in services/team-room npx wrangler login und npx wrangler deploy; Adresse im Reiter Team bei „Live schalten“ eintragen.<br>TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat). |
+| [COOP-07](#coop-07) | Team live ohne Dateien | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | Cloudflare-Konto anlegen, in services/team-room npx wrangler login und npx wrangler deploy; Adresse im Reiter Team bei „Live schalten“ eintragen.<br>TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat). |
 
 <a id="bereich-groesse"></a>
 
@@ -359,7 +359,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **COOP-05 · Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf** — 🧩 Implementiert · Abnahme offen, 3/5 Teilschritte. Nächster Schritt: Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server.
 - **PERF-05 · Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund** — 🧩 Implementiert · Abnahme offen, 6/8 Teilschritte. Nächster Schritt: O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8).
 - **COOP-06 · Teamplanung im Planer: Arbeitspakete, Zuteilung, Zeitplan, Material je Spieler, Fortschritt mit Hinweisen, Konflikthilfe, Planstand-Vergleich, Übergabe und Abwesenheit** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern.
-- **COOP-07 · Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** — 🧩 Implementiert · Abnahme offen, 4/6 Teilschritte. Nächster Schritt: Plugin-Thread: RoomLink gegen team-room v1; Philipp: Cloudflare-Konto, wrangler deploy, Spieltest.
+- **COOP-07 · Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Plugin-Thread: RoomLink gegen team-room v1; Philipp: Cloudflare-Konto, wrangler deploy, Spieltest.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -528,7 +528,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [COOP-05](#coop-05) | Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf | 🧩 Implementiert · Abnahme offen | 3/5 | COOP-04 | ausstehend | ausstehend |
 | [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-03, COOP-05, GAME-07 | ausstehend | ausstehend |
 | [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher | ⏳ Offen | 0/4 | GAME-07, GAME-10 | ausstehend | ausstehend |
-| [COOP-07](#coop-07) | Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel | 🧩 Implementiert · Abnahme offen | 4/6 | COOP-01, COOP-04 | ausstehend | ausstehend |
+| [COOP-07](#coop-07) | Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel | 🧩 Implementiert · Abnahme offen | 5/6 | COOP-01, COOP-04 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
 
@@ -2752,13 +2752,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-07
 
-**Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Aktualisiert: 2026-11-03T21:00:35.000Z
+**Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Aktualisiert: 2026-11-03T21:58:17.986Z
 
 - [x] COOP-07-S01: Konzept TEAM_LIVE.md: Varianten, Raumprotokoll team-room v1, Schlüssel und Rollen, Ablauf, Offline, Aufteilung.
 - [x] COOP-07-S02: Sync-Kern teamSync.ts: Postausgang, Stapel, Cursor, Einladungs- und Server-Link; Pakete ohne Schlüssel.
 - [x] COOP-07-S03: Raumdienst services/team-room (core.js in Node getestet, Worker + Durable Object mit SQLite, WebSocket, Anwesenheit, Planstand, Kopfdaten); Rauchtest gegen wrangler dev.
 - [x] COOP-07-S04: Planer: Verbindung je geöffnetem Projekt, Bereich „Team live“ (Live schalten, Links, Plan in den Raum, Planstand übernehmen, Anwesenheit, Status), Seite #/team/beitreten.
-- [ ] COOP-07-S05: Paper-Plugin verbindet sich mit dem Serverschlüssel (RoomLink, /bauplaner team verbinden).
+- [x] COOP-07-S05: Paper-Plugin verbindet sich mit dem Serverschlüssel (RoomLink, /bauplaner team verbinden|trennen|raum); echter Paper-Server 1.18.2, 1.21.4, 26.3 gegen wrangler dev (scripts/test_bridge_paper_room.sh).
 - [ ] COOP-07-S06: Deploy des Raumdienstes durch Philipp und Spieltest mit Mitspielern (TEAMBAU-09).
 
 **Abnahme:** Beitreten nur per Link, keine Datei; Plan und Protokoll kommen aus dem Raum. Jeder neue lokale Eintrag (Aktion, Import, Spielabgleich) geht ohne weiteres Zutun in den Raum; wiederholtes Senden bucht nichts doppelt. Ereignisse mit Herkunft server nimmt der Raum nur mit dem Serverschlüssel an. Offline weiterarbeiten; beim nächsten Verbinden gleichen alle auf denselben Stand ab.
@@ -2771,7 +2771,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/team-room.test.mjs](../tests/team-room.test.mjs) — Raum, zwei Browser und Server ohne Datei, Serverschlüssel, verlorene Antworten, Seiten.; [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — Zwei Browser 1400/390 px über den Raumkern: Live schalten, Beitreten per Link, Schritte live, Servermessung, neuer Planstand übernommen, Neuladen.; [scripts/team_room_smoke.mjs](../scripts/team_room_smoke.mjs) — Gegen wrangler dev (Worker + Durable Object) bestanden, 03.11.2026.
 
-**Dateiumfang:** `packages/domain/src/teamSync.ts`, `packages/domain/src/team.ts`, `services/team-room/src/core.js`, `services/team-room/src/index.js`, `services/team-room/wrangler.toml`, `services/team-room/README.md`, `apps/web/src/views/project/roomClient.ts`, `apps/web/src/views/project/TeamRoom.tsx`, `apps/web/src/views/project/TeamJoinView.tsx`, `apps/web/src/views/project/teamTransfer.ts`, `apps/web/src/views/project/TeamOpen.tsx`, `apps/web/src/views/project/TeamExchange.tsx`, `apps/web/src/views/project/ProjectView.tsx`, `apps/web/src/views/project/TeamTab.tsx`, `apps/web/src/app/router.ts`, `apps/web/src/main.tsx`, `apps/web/src/team.css`, `docs/architecture/TEAM_LIVE.md`, `tests/team-room.test.mjs`, `tests/e2e/team-room.e2e.mjs`, `scripts/team_room_smoke.mjs`, `apps/web/src/testing/testplan.ts`, `docs/architecture/TEAMBAU.md`, `docs/testing/TESTPLAN.md`, `packages/domain/src/index.ts`, `services/team-room/.gitignore`, `tests/router.test.mjs`. **Abhängigkeiten:** COOP-01, COOP-04. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/teamSync.ts`, `packages/domain/src/team.ts`, `services/team-room/src/core.js`, `services/team-room/src/index.js`, `services/team-room/wrangler.toml`, `services/team-room/README.md`, `apps/web/src/views/project/roomClient.ts`, `apps/web/src/views/project/TeamRoom.tsx`, `apps/web/src/views/project/TeamJoinView.tsx`, `apps/web/src/views/project/teamTransfer.ts`, `apps/web/src/views/project/TeamOpen.tsx`, `apps/web/src/views/project/TeamExchange.tsx`, `apps/web/src/views/project/ProjectView.tsx`, `apps/web/src/views/project/TeamTab.tsx`, `apps/web/src/app/router.ts`, `apps/web/src/main.tsx`, `apps/web/src/team.css`, `docs/architecture/TEAM_LIVE.md`, `tests/team-room.test.mjs`, `tests/e2e/team-room.e2e.mjs`, `scripts/team_room_smoke.mjs`, `apps/web/src/testing/testplan.ts`, `docs/architecture/TEAMBAU.md`, `docs/testing/TESTPLAN.md`, `packages/domain/src/index.ts`, `services/team-room/.gitignore`, `tests/router.test.mjs`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`, `scripts/bridge_paperroom.mjs`, `scripts/test_bridge_paper_room.sh`. **Abhängigkeiten:** COOP-01, COOP-04. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
