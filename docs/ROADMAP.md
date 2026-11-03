@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-03T20:52:59.449Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-03T20:57:38.742Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,7 +12,7 @@ Stand: 2026-11-03T20:52:59.449Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 15 |
+| ⏳ Offen | 16 |
 | 🚧 In Arbeit | 2 |
 | ⛔ Blockiert | 0 |
 | 🧩 Implementiert · Abnahme offen | 57 |
@@ -30,7 +30,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 3 | 1 | 3 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 6 | 1 | 6 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
-| [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 6 | 3 | 6 | 0 |
+| [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 7 | 0 | 6 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 2 | 1 | 1 | 0 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
 | [Performance und Stabilität](#bereich-perf) | 5 | 4 | 1 | 1 |
@@ -126,10 +126,11 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 |---|---|---|---|---|---|
 | [GAME-02](#game-02) | Fabric-Brücke kompilieren und im Spiel abnehmen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Bauplaner-Mod von Grund auf neu entwickeln“ | Mehrspieler-Abnahme auf server.lmnt-gaming.net (S04). |
 | [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Bauplaner-Mod von Grund auf neu entwickeln“ | Zusammen mit MAP-03-S06. |
-| [GAME-05](#game-05) | NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik | 🧩 Implementiert · Abnahme offen 3/4 | P1 | **verwaist** · 1 verwaist | Forge-Testversion auf einem Rechner mit Bildschirm starten (S03). |
-| [GAME-07](#game-07) | Bauplaner-Mod 2.0 | 🧩 Implementiert · Abnahme offen 8/10 | P1 | „Bauplaner-Mod von Grund auf neu entwickeln“ · 1 verwaist | Hologramm, Abschnitte und Röntgensicht auf server.lmnt-gaming.net (S05). |
-| [GAME-08](#game-08) | Bauplaner-Mod Protokoll 2 | 🧩 Implementiert · Abnahme offen 4/4 | P2 | „Bauplaner-Mod von Grund auf neu entwickeln“ · 1 verwaist | Mitspieler-Pfeile auf der Live-Karte mit einem zweiten Spieler. |
+| [GAME-05](#game-05) | NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Teambau und Befehle in der Mod ausbauen“ | Forge-Testversion auf einem Rechner mit Bildschirm starten (S03). |
+| [GAME-07](#game-07) | Bauplaner-Mod 2.0 | 🧩 Implementiert · Abnahme offen 8/10 | P1 | „Teambau und Befehle in der Mod ausbauen“ | Hologramm, Abschnitte und Röntgensicht auf server.lmnt-gaming.net (S05). |
+| [GAME-08](#game-08) | Bauplaner-Mod Protokoll 2 | 🧩 Implementiert · Abnahme offen 4/5 | P2 | „Teambau und Befehle in der Mod ausbauen“ | Mitspieler-Pfeile auf der Live-Karte mit einem zweiten Spieler. |
 | [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0 | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Teambau und Befehle in der Mod ausbauen“ | Befehlsseite im J-Menü zusammen mit dem Plugin auf deinem Server (MOD-16). |
+| [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher | ⏳ Offen 0/4 | P2 | „Teambau und Befehle in der Mod ausbauen“ | — |
 
 <a id="bereich-plugin"></a>
 
@@ -306,8 +307,6 @@ Arbeit, für die gerade kein laufender Thread zuständig ist. Zum Verteilen: Thr
 | [EDIT-02](#edit-02) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Picking direkt an 3D-Blockflächen (gilt auch für EDIT-03).<br>Registerlücken über PROFILE-01 schließen. |
 | [EDIT-04](#edit-04) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Gelände-Werkzeuge auf dem Projektgelände (als eigener Thread angekündigt, nie gestartet).<br>Symmetrie und Kurven auch in der Mod. |
 | [ENTITY-01](#entity-01) | Kern, Minecraft-Daten und Dateiformate | P1 | 🧩 Implementiert · Abnahme offen | Truhen- und Schildinhalte in der Werkstatt bearbeiten (Folgeidee aus der nächsten Aktion). |
-| [GAME-05](#game-05) | Client-Mod | P1 | 🧩 Implementiert · Abnahme offen | Forge-Adapter im echten Client prüfen und Forge-Jar bereitstellen – Thread „Mod für NeoForge und Forge bauen“ ist beendet. |
-| [GAME-07](#game-07) | Client-Mod | P1 | 🧩 Implementiert · Abnahme offen | S07 Stufe 6: Gruppen/Sperren aus dem Weltbuilder, Abschnitt als Packliste mit Kistenstandorten, Gerüst-Hinweise für hängende Blöcke. |
 | [GEN-03](#gen-03) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Feinschliff Kolosseum: Statuen in den Attika-Fenstern, Treppen im Hypogäum. |
 | [GFX-01](#gfx-01) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Biomfarben und leuchtende Blockentities (angekündigte Folgestufe). |
 | [GROSS-01](#gross-01) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Geländeanpassung und Wasserkanten für Großprojekte, eigene Großprojekte aus Sammlungen. |
@@ -327,7 +326,6 @@ Arbeit, für die gerade kein laufender Thread zuständig ist. Zum Verteilen: Thr
 | [STAB-01](#stab-01) | Performance und Stabilität | P1 | 🧩 Implementiert · Abnahme offen | S02 echten Renderingfehler auslösen und Wiederaufnahme prüfen – im Cloud-Browser machbar. |
 | [TERRAIN-02](#terrain-02) | Planer | P1 | 🧩 Implementiert · Abnahme offen | S07 Wegstufen als Treppen an Höhenwechseln (auch BASE-01). |
 | [VIEW-02](#view-02) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Registerdaten an PROFILE-01 binden, sobald es existiert. |
-| [GAME-08](#game-08) | Client-Mod | P2 | 🧩 Implementiert · Abnahme offen | Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (auch MAP-06). |
 | [MODEL-01](#model-01) | Planer | P2 | 🧩 Implementiert · Abnahme offen | S06 Flächen der Druckhülle ohne T-Stöße zusammenfassen – Thread „Bauten als 3D-Modell exportieren“ ist beendet. |
 
 ## Eingänge ohne eigenes Paket
@@ -339,7 +337,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 | IN-01 | Plan kommt nicht richtig vom Planer ins Spiel; das große Bauprojekt läuft weiter nicht sauber. | Philipp, 2026-11-03 | Volumenlimit und Übertragung großer Pläne | zugeteilt | „Volumenlimit für große Builds aufheben“ | SIZE-01 |
 | IN-02 | Teambau live statt Teampaket herunter- und hochladen; einfacher und komplexer überarbeiten. | Philipp, 2026-11-03 | Teambau live | zugeteilt | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | COOP-01 |
 | IN-03 | Befehle und Status von Mod und Plugin im J-Menü per Klick – als GAME-10 übernommen (Mod 0.11.0). | Philipp, 2026-11-03 | Client-Mod | übernommen | „Teambau und Befehle in der Mod ausbauen“ | GAME-10 |
-| IN-04 | Client-Mod in mehreren Minecraft-Versionen und Launchern; bisher gibt es Fabric/NeoForge nur für 26.3 (Paper-Plugin läuft 1.18.2–26.3). | Philipp, 2026-10-27 | Client-Mod | verwaist | **verwaist** | GAME-02, GAME-05 |
+| IN-04 | Client-Mod in mehreren Minecraft-Versionen und Launchern; bisher gibt es Fabric/NeoForge nur für 26.3 (Paper-Plugin läuft 1.18.2–26.3). | Philipp, 2026-10-27 | Client-Mod | zugeteilt | „Teambau und Befehle in der Mod ausbauen“ | GAME-02, GAME-05, GAME-11 |
 | IN-05 | Reale Orte aus Kartendaten (OSM) – zurückgestellt, bis die Lizenzfrage geklärt ist. | Koordinator, 2026-11-02 | Planer | zurückgestellt | — | LICENSE-01 |
 | IN-06 | Seit 01.11. keine Codex-Commits auf main; die vorgeschlagenen Codex-Pakete (PROFILE-01, NBT-01, MAT-02/04, DIFF-01, PERF-02/03, FORMAT-01, QA-02) haben dadurch keinen Bearbeiter. | Koordinator, 2026-11-01 | Kern, Minecraft-Daten und Dateiformate | verwaist | **verwaist** | PROFILE-01, NBT-01, MAT-02, MAT-04, DIFF-01, PERF-02, PERF-03, FORMAT-01, QA-02 |
 | IN-07 | Alte Issues #2 (B16), #3 (B17) und #4 (S4) sind noch offen, obwohl VIEW-02, LIB-02/03 und STORE-02 auf main liegen: prüfen und schließen. | GitHub, 2026-10-31 | Testphase, Qualität und Betrieb | verwaist | **verwaist** | VIEW-02, LIB-02, LIB-03, STORE-02 |
@@ -491,7 +489,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter | ⏳ Offen | 0/2 | MAP-01 | ausstehend | ausstehend |
 | [GAME-02](#game-02) | Fabric-Brücke kompilieren und im Spiel abnehmen | 🧩 Implementiert · Abnahme offen | 4/5 | FORMAT-01, GAME-01 | `84838f0` | `e232b26` |
 | [GAME-07](#game-07) | Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server) | 🧩 Implementiert · Abnahme offen | 8/10 | GAME-02 | ausstehend | ausstehend |
-| [GAME-08](#game-08) | Bauplaner-Mod Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten im Spiel (marks2), Mitspieler für die Karte (GET /v1/players), hello.protocol 2 | 🧩 Implementiert · Abnahme offen | 4/4 | GAME-07, MAP-06 | ausstehend | ausstehend |
+| [GAME-08](#game-08) | Bauplaner-Mod Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten im Spiel (marks2), Mitspieler für die Karte (GET /v1/players), hello.protocol 2 | 🧩 Implementiert · Abnahme offen | 4/5 | GAME-07, MAP-06 | ausstehend | ausstehend |
 | [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | 🧩 Implementiert · Abnahme offen | 2/2 | GAME-02 | ausstehend | ausstehend |
 | [WORLD-IMPORT-01](#world-import-01) | Bereichsweiser Weltimport und Terrainprüfung | 🧩 Implementiert · Abnahme offen | 2/2 | PROFILE-01, PERF-02, FORMAT-01 | ausstehend | ausstehend |
 | [BACKUP-02](#backup-02) | Sicherungserinnerung und Abschnittsrevisionen | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-01, BUILD-01 | ausstehend | ausstehend |
@@ -540,6 +538,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [COOP-04](#coop-04) | Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-02, LAGER-01 | ausstehend | ausstehend |
 | [COOP-05](#coop-05) | Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf | 🧩 Implementiert · Abnahme offen | 3/5 | COOP-04 | ausstehend | ausstehend |
 | [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-03, COOP-05, GAME-07 | ausstehend | ausstehend |
+| [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher | ⏳ Offen | 0/4 | GAME-07, GAME-10 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
 
@@ -1911,7 +1910,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-07
 
-**Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Fabric-Mod 26.3 bauen und testen“) · Zuständiger Thread: „Bauplaner-Mod von Grund auf neu entwickeln“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Teambau und Befehle in der Mod ausbauen“) · Zuständiger Thread: „Teambau und Befehle in der Mod ausbauen“ · Aktualisiert: 2026-11-03T20:57:38.742Z
 
 - [x] GAME-07-S01: Versionsneutraler Mod-Kern: Blockzustände, Vergleichsregeln wie gameCheck.ts, Platzierung mit Drehen/Spiegeln, Planmodell, Live-Abgleich, Platzierungsspeicher; JUnit-Tests.
 - [x] GAME-07-S02: Fabric 26.3: Planmenü, Tasten, Platzieren/Verschieben/Drehen/Spiegeln, Rahmen, Speicherung je Server/Welt.
@@ -1930,8 +1929,6 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nur Philipp:** Auf deinem Server mit Mitspielern: Hologramm, Abschnitte und Röntgensicht auf server.lmnt-gaming.net (S05).
 
-**Verwaist (ohne Bearbeiter):** S07 Stufe 6: Gruppen/Sperren aus dem Weltbuilder, Abschnitt als Packliste mit Kistenstandorten, Gerüst-Hinweise für hängende Blöcke.
-
 **Prüfstand:** Automatisch im echten Client und mit Modpack geprüft; Mehrspieler-Abnahme durch Philipp offen.
 
 **Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java) — 7 JUnit-Fälle: Zustände, Regeln wie gameCheck.ts, Drehen/Spiegeln mit Rückweg, Planlesen, Live-Abgleich, Speicher.; [scripts/test_bridge_ingame.sh](../scripts/test_bridge_ingame.sh) — Echter 26.3-Client und Produktionsstart mit Philipps Modpack (Sodium, Iris, Xaero …): Hologramm fehlt 1/falsch 1, gesetzter Block ohne Befehl erkannt, Drehen, Speichern, Taste J öffnet das Menü (02.11.2026).; [docs/architecture/MOD_HOLOGRAM.md](architecture/MOD_HOLOGRAM.md) — Grundsätze, Aufbau, Tasten, Darstellung, Live-Abgleich, Prüfung.; [tests/e2e/mod-download.e2e.mjs](../tests/e2e/mod-download.e2e.mjs) — Download-Seite wählt 0.2.0 vor, 0.1.0 bleibt wählbar.; [tests/mod-releases.test.mjs](../tests/mod-releases.test.mjs) — Jede .jar wie ein Launcher geprüft (EOCD, Verzeichnis, Loader-Metadaten); abgeschnittene/HTML/beschädigte Dateien erkannt. Download-Seite speichert nur geprüfte Bytes (02.11.2026).; [scripts/bridge_gametest.mjs](../scripts/bridge_gametest.mjs) — 0.3.0: Materialliste, Ebenenmodus, texturierte Geisterblöcke im echten Client und mit Philipps Modpack (Sodium/Iris) geprüft (02.11.2026).; [mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlacementAdvice.java](../mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlacementAdvice.java) — 0.4.0 Platzierhilfe: Urteil, Wegsuche und Hinweise; im echten Client und mit Philipps Modpack über den echten Klickweg geprüft (02.11.2026).; [mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java](../mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java) — 0.6.0: echter NeoForge-26.3-Client spielt Hologramm, Materialliste, Ebenen, J/Num 7, Platzierhilfe über Minecraft.startUseItem/startAttack und die Website-Verbindung durch; Fabric zusätzlich mit Philipps 25 Mods und Complementary Unbound (BAUPLANER_SHADERPACK) bestanden (02.11.2026).; [mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Filter.java](../mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Filter.java) — 0.7.0: ein Filter (Ebenen + Bauabschnitt) für Hologramm, HUD, Material und Fehlerfinder; JUnit buildSectionsFilterEverything, Website-Test für SectionNames/SectionCells im Export und Abschnitte im Live-Status; Spieltests Fabric (auch Modpack + Complementary) und NeoForge prüfen Abschnittsliste, Röntgensicht und Abschnittswahl über die Website (02.11.2026).
@@ -1942,20 +1939,19 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-08
 
-**Bauplaner-Mod Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten im Spiel (marks2), Mitspieler für die Karte (GET /v1/players), hello.protocol 2** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Bauplaner-Mod von Grund auf neu entwickeln“) · Zuständiger Thread: „Bauplaner-Mod von Grund auf neu entwickeln“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Bauplaner-Mod Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten im Spiel (marks2), Mitspieler für die Karte (GET /v1/players), hello.protocol 2** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Teambau und Befehle in der Mod ausbauen“) · Zuständiger Thread: „Teambau und Befehle in der Mod ausbauen“ · Aktualisiert: 2026-11-03T20:57:38.742Z
 
 - [x] GAME-08-S01: WorldMarks: Art zone (category, points 3–256), Felder layer/color an allen Einträgen, Punktarten notiz/gefahr/rohstoff/spawn/aussicht; feature marks2 in hello.features.
 - [x] GAME-08-S02: MarksRenderer: Zonen als gefüllte Fläche auf Bodenhöhe mit Rand, Name in der HUD-Zeile, Farbe aus color, Ebenen im Spiel ein-/ausblenden (/bauplaner ebenen).
 - [x] GAME-08-S03: GET /v1/players → {dimension, players:[{name,x,y,z,yaw}]} aus den sichtbaren Spielern des Clients; feature players; hello.protocol 2.
 - [x] GAME-08-S04: Spieltest mit scripts/bridge_gametest.mjs (Zonen und Mitspieler gegen die Leser der Website), Release auf #/mod.
+- [ ] GAME-08-S05: Protokoll 3: Markierungen im Spiel setzen und zurück in den Weltplan (Zeitstempel je Eintrag, Abgleich mit MAP-06), siehe LIVE_LINK.md.
 
 **Abnahme:** Eine Website ohne Kenntnis von Protokoll 2 arbeitet unverändert (alle alten Routen und Antworten bleiben). marks mit Zonen und neuen Punktarten werden angenommen und gezeichnet; Antworten entsprechen den Lesern in packages/domain/src/liveLink.ts (readLivePlayers). Der Simulator tests/e2e/modSimulator.mjs mit {protocol: 2, features: ['scan','marks2','players']} bleibt das Vorbild für Formen und Fehlerfälle.
 
 **Nächste Aktion:** Protokoll 3: Rückrichtung „Markierung im Spiel setzen → Weltplan“ mit Zeitstempel je Eintrag (siehe LIVE_LINK.md); Forge und Paper ohne Live-Verbindung.
 
 **Nur Philipp:** Auf deinem Server mit Mitspielern: Mitspieler-Pfeile auf der Live-Karte mit einem zweiten Spieler.
-
-**Verwaist (ohne Bearbeiter):** Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (auch MAP-06).
 
 **Prüfstand:** Noch nicht begonnen.
 
@@ -2129,7 +2125,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-05
 
-**NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Mod für NeoForge und Forge bauen“) · Zuständiger Thread: **verwaist** · Aktualisiert: 2026-11-03T20:52:59.449Z
+**NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Teambau und Befehle in der Mod ausbauen“) · Zuständiger Thread: „Teambau und Befehle in der Mod ausbauen“ · Aktualisiert: 2026-11-03T20:57:38.742Z
 
 - [x] GAME-05-S01: Gemeinsame Befehlslogik BridgeSession/BridgeHost im Kern, von allen Loadern genutzt, mit Tests.
 - [x] GAME-05-S02: NeoForge-Adapter 26.3 bauen und im echten Client prüfen.
@@ -2141,8 +2137,6 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nächste Aktion:** Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen.
 
 **Nur Philipp:** Im Spiel an deinem PC: Forge-Testversion auf einem Rechner mit Bildschirm starten (S03).
-
-**Verwaist (ohne Bearbeiter):** Forge-Adapter im echten Client prüfen und Forge-Jar bereitstellen – Thread „Mod für NeoForge und Forge bauen“ ist beendet.
 
 **Prüfstand:** NeoForge im echten Client bestanden; Forge-Spielprüfung, Start über echten Launcher und Mehrspieler offen.
 
@@ -2767,6 +2761,27 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java) — Katalog deckt alle Mod-Befehle und alle Plugin-Befehle ab (aus TeamModule.COMMANDS und StorageModule.SUBCOMMANDS gelesen), Eingaben werden geprüft, Gründe für ausgegraute Knöpfe, Antwortfenster, keine doppelten Zeilen.; [scripts/bridge_gametest.mjs](../scripts/bridge_gametest.mjs) — Echter Fabric-Client 26.3 mit echten Mausklicks: Reiter Team, Übersicht, „Abschnitt zeigen 2“, Antworten auf der Seite, Serverknöpfe ohne Plugin ausgegraut. NeoForge-Szenario öffnet die Seite und führt einen Befehl aus.
 
 **Dateiumfang:** `mods/bauplaner-bridge/`, `scripts/bridge_gametest.mjs`, `apps/web/src/views/mod/`, `apps/web/src/testing/testplan.ts`, `downloads/mod/`, `docs/`. **Abhängigkeiten:** COOP-03, COOP-05, GAME-07. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### GAME-11
+
+**Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** · ⏳ Offen · Priorität P2 · Verantwortlich: Claude (Thread „Teambau und Befehle in der Mod ausbauen“) · Zuständiger Thread: „Teambau und Befehle in der Mod ausbauen“ · Aktualisiert: 2026-11-03T20:57:38.742Z
+
+- [ ] GAME-11-S01: Versionsmatrix festlegen: welche Minecraft-Versionen und Loader (Philipps Server, verbreitete Modpacks), was der Kern schon versionsneutral abdeckt.
+- [ ] GAME-11-S02: Zweite Minecraft-Version (Fabric und NeoForge) als eigener Adapter über mod-core und eine Versionsfassade, ohne 26.3 zu verändern.
+- [ ] GAME-11-S03: Echte Spieltests je Version, Release auf #/mod mit Versionswahl, Modrinth je Version.
+- [ ] GAME-11-S04: Installationsanleitung für Modrinth App, Prism Launcher, CurseForge und den offiziellen Launcher auf #/mod.
+
+**Abnahme:** Die Mod läuft in mindestens einer weiteren Minecraft-Version mit Hologramm, Platzierhilfe, Website-Verbindung, Teambau und Befehlsseite. #/mod und Modrinth bieten je Version und Loader die passende Datei an.
+
+**Nächste Aktion:** Versionsmatrix mit Philipp abstimmen (welche Versionen braucht er wirklich?).
+
+**Prüfstand:** Noch nicht begonnen.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `mods/bauplaner-bridge/`, `scripts/`, `apps/web/src/views/mod/`, `downloads/mod/`, `docs/`. **Abhängigkeiten:** GAME-07, GAME-10. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

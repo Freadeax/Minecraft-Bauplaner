@@ -4270,3 +4270,16 @@ Roadmap nach 12 Bereichen neu geordnet: je Aufgabe Bereich, zuständiger Thread,
 - `scripts/roadmap.mjs`
 - `tests/roadmap.test.mjs`
 
+## 2026-11-03T20:57:38.742Z · progress
+
+**Aufgaben:** GAME-05, GAME-07, GAME-08, GAME-11
+
+Mod-Punkte aus der Roadmap übernommen (Thread „Teambau und Befehle in der Mod ausbauen“): Forge-Test, Stufe 6, Protokoll 3, neu GAME-11 weitere Versionen und Launcher (IN-04 zugeteilt).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-05 | 🧩 Implementiert · Abnahme offen | 3/4 | Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen. |
+| GAME-07 | 🧩 Implementiert · Abnahme offen | 8/10 | Philipp testet 0.7.0 auf server.lmnt-gaming.net (Bauabschnitte aus seinem Projekt, Röntgensicht mit Shader); danach Stufe 6. |
+| GAME-08 | 🧩 Implementiert · Abnahme offen | 4/5 | Protokoll 3: Rückrichtung „Markierung im Spiel setzen → Weltplan“ mit Zeitstempel je Eintrag (siehe LIVE_LINK.md); Forge und Paper ohne Live-Verbindung. |
+| GAME-11 | ⏳ Offen | 0/4 | Versionsmatrix mit Philipp abstimmen (welche Versionen braucht er wirklich?). |
+

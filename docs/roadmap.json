@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T20:52:59.449Z",
+  "updatedAt": "2026-11-03T20:57:38.742Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -4615,7 +4615,7 @@
       "phase": "P3",
       "priority": "P1",
       "status": "implemented",
-      "owner": "Claude (Thread „Fabric-Mod 26.3 bauen und testen“)",
+      "owner": "Claude (Thread „Teambau und Befehle in der Mod ausbauen“)",
       "dependencies": [
         "GAME-02"
       ],
@@ -4749,18 +4749,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T20:57:38.742Z",
       "area": "MOD",
-      "thread": "Bauplaner-Mod von Grund auf neu entwickeln",
+      "thread": "Teambau und Befehle in der Mod ausbauen",
       "philipp": [
         {
           "kind": "server",
           "text": "Hologramm, Abschnitte und Röntgensicht auf server.lmnt-gaming.net (S05)."
         }
       ],
-      "orphans": [
-        "S07 Stufe 6: Gruppen/Sperren aus dem Weltbuilder, Abschnitt als Packliste mit Kistenstandorten, Gerüst-Hinweise für hängende Blöcke."
-      ]
+      "orphans": []
     },
     {
       "id": "GAME-08",
@@ -4768,7 +4766,7 @@
       "phase": "P3",
       "priority": "P2",
       "status": "implemented",
-      "owner": "Claude (Thread „Bauplaner-Mod von Grund auf neu entwickeln“)",
+      "owner": "Claude (Thread „Teambau und Befehle in der Mod ausbauen“)",
       "dependencies": [
         "GAME-07",
         "MAP-06"
@@ -4804,6 +4802,11 @@
           "id": "GAME-08-S04",
           "title": "Spieltest mit scripts/bridge_gametest.mjs (Zonen und Mitspieler gegen die Leser der Website), Release auf #/mod.",
           "done": true
+        },
+        {
+          "id": "GAME-08-S05",
+          "title": "Protokoll 3: Markierungen im Spiel setzen und zurück in den Weltplan (Zeitstempel je Eintrag, Abgleich mit MAP-06), siehe LIVE_LINK.md.",
+          "done": false
         }
       ],
       "acceptance": [
@@ -4843,18 +4846,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T20:57:38.742Z",
       "area": "MOD",
-      "thread": "Bauplaner-Mod von Grund auf neu entwickeln",
+      "thread": "Teambau und Befehle in der Mod ausbauen",
       "philipp": [
         {
           "kind": "server",
           "text": "Mitspieler-Pfeile auf der Live-Karte mit einem zweiten Spieler."
         }
       ],
-      "orphans": [
-        "Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (auch MAP-06)."
-      ]
+      "orphans": []
     },
     {
       "id": "GAME-03",
@@ -5362,7 +5363,7 @@
       "phase": "P3",
       "priority": "P1",
       "status": "implemented",
-      "owner": "Claude (Thread „Mod für NeoForge und Forge bauen“)",
+      "owner": "Claude (Thread „Teambau und Befehle in der Mod ausbauen“)",
       "dependencies": [
         "GAME-02"
       ],
@@ -5433,18 +5434,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T20:57:38.742Z",
       "area": "MOD",
-      "thread": null,
+      "thread": "Teambau und Befehle in der Mod ausbauen",
       "philipp": [
         {
           "kind": "spiel",
           "text": "Forge-Testversion auf einem Rechner mit Bildschirm starten (S03)."
         }
       ],
-      "orphans": [
-        "Forge-Adapter im echten Client prüfen und Forge-Jar bereitstellen – Thread „Mod für NeoForge und Forge bauen“ ist beendet."
-      ]
+      "orphans": []
     },
     {
       "id": "GAME-06",
@@ -7614,6 +7613,67 @@
           "text": "Befehlsseite im J-Menü zusammen mit dem Plugin auf deinem Server (MOD-16)."
         }
       ],
+      "orphans": []
+    },
+    {
+      "id": "GAME-11",
+      "title": "Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher",
+      "phase": "P4",
+      "priority": "P2",
+      "status": "planned",
+      "owner": "Claude (Thread „Teambau und Befehle in der Mod ausbauen“)",
+      "dependencies": [
+        "GAME-07",
+        "GAME-10"
+      ],
+      "scope": [
+        "mods/bauplaner-bridge/",
+        "scripts/",
+        "apps/web/src/views/mod/",
+        "downloads/mod/",
+        "docs/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "GAME-11-S01",
+          "title": "Versionsmatrix festlegen: welche Minecraft-Versionen und Loader (Philipps Server, verbreitete Modpacks), was der Kern schon versionsneutral abdeckt.",
+          "done": false
+        },
+        {
+          "id": "GAME-11-S02",
+          "title": "Zweite Minecraft-Version (Fabric und NeoForge) als eigener Adapter über mod-core und eine Versionsfassade, ohne 26.3 zu verändern.",
+          "done": false
+        },
+        {
+          "id": "GAME-11-S03",
+          "title": "Echte Spieltests je Version, Release auf #/mod mit Versionswahl, Modrinth je Version.",
+          "done": false
+        },
+        {
+          "id": "GAME-11-S04",
+          "title": "Installationsanleitung für Modrinth App, Prism Launcher, CurseForge und den offiziellen Launcher auf #/mod.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Die Mod läuft in mindestens einer weiteren Minecraft-Version mit Hologramm, Platzierhilfe, Website-Verbindung, Teambau und Befehlsseite.",
+        "#/mod und Modrinth bieten je Version und Loader die passende Datei an."
+      ],
+      "next": "Versionsmatrix mit Philipp abstimmen (welche Versionen braucht er wirklich?).",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Noch nicht begonnen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-03T20:57:38.742Z",
+      "area": "MOD",
+      "thread": "Teambau und Befehle in der Mod ausbauen",
       "orphans": []
     }
   ],
@@ -14098,6 +14158,48 @@
           "next": "Abnahme MOD-16 auf Philipps Server mit Paper-Plugin."
         }
       ]
+    },
+    {
+      "at": "2026-11-03T20:57:38.742Z",
+      "kind": "progress",
+      "items": [
+        "GAME-05",
+        "GAME-07",
+        "GAME-08",
+        "GAME-11"
+      ],
+      "summary": "Mod-Punkte aus der Roadmap übernommen (Thread „Teambau und Befehle in der Mod ausbauen“): Forge-Test, Stufe 6, Protokoll 3, neu GAME-11 weitere Versionen und Launcher (IN-04 zugeteilt).",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "GAME-05",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen."
+        },
+        {
+          "id": "GAME-07",
+          "status": "implemented",
+          "done": 8,
+          "total": 10,
+          "next": "Philipp testet 0.7.0 auf server.lmnt-gaming.net (Bauabschnitte aus seinem Projekt, Röntgensicht mit Shader); danach Stufe 6."
+        },
+        {
+          "id": "GAME-08",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Protokoll 3: Rückrichtung „Markierung im Spiel setzen → Weltplan“ mit Zeitstempel je Eintrag (siehe LIVE_LINK.md); Forge und Paper ohne Live-Verbindung."
+        },
+        {
+          "id": "GAME-11",
+          "status": "planned",
+          "done": 0,
+          "total": 4,
+          "next": "Versionsmatrix mit Philipp abstimmen (welche Versionen braucht er wirklich?)."
+        }
+      ]
     }
   ],
   "areas": [
@@ -14193,12 +14295,13 @@
       "source": "Philipp",
       "title": "Client-Mod in mehreren Minecraft-Versionen und Launchern; bisher gibt es Fabric/NeoForge nur für 26.3 (Paper-Plugin läuft 1.18.2–26.3).",
       "area": "MOD",
-      "thread": null,
+      "thread": "Teambau und Befehle in der Mod ausbauen",
       "items": [
         "GAME-02",
-        "GAME-05"
+        "GAME-05",
+        "GAME-11"
       ],
-      "state": "verwaist"
+      "state": "zugeteilt"
     },
     {
       "id": "IN-05",
