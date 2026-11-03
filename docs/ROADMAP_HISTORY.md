@@ -3927,3 +3927,31 @@ Runde 2: dauerhafter Vorschaubildcache (Cache Storage je Render-Revision), Neust
 - `reload.cpuprofile`
 - `tests/e2e/thumb-store.e2e.mjs`
 
+## 2026-11-03T19:49:18.315Z · progress
+
+**Aufgaben:** GAME-09
+
+Modrinth-Projekt vorbereitet: project.json, Beschreibung EN/DE, Icon, 6 Bilder, CHANGELOG.md, scripts/modrinth_publish.mjs (check/plan/create/sync/release) ohne Actions, Sperre gegen KI-Werkzeugnamen; Tests 4/4, nachgebaute API; echte Veröffentlichung wartet auf Philipps Bestätigung und MODRINTH_TOKEN in neuer Sitzung
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 2/5 | Philipps Bestätigung (Name, Text, Sichtbarkeit, Lizenz) und MODRINTH_TOKEN in der Cloud-Umgebung abwarten, dann create in einer neuen Sitzung. |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/README.md`
+- `mods/bauplaner-bridge/modrinth/DESCRIPTION.md`
+- `mods/bauplaner-bridge/modrinth/gallery/01-hologram.png`
+- `mods/bauplaner-bridge/modrinth/gallery/02-placement-helper-shaders.png`
+- `mods/bauplaner-bridge/modrinth/gallery/03-sections-xray.png`
+- `mods/bauplaner-bridge/modrinth/gallery/04-material-list.png`
+- `mods/bauplaner-bridge/modrinth/gallery/05-plan-menu.png`
+- `mods/bauplaner-bridge/modrinth/gallery/06-website-link.png`
+- `mods/bauplaner-bridge/modrinth/icon.png`
+- `mods/bauplaner-bridge/modrinth/project.json`
+- `scripts/modrinth_publish.mjs`
+- `scripts/release_mod.mjs`
+- `tests/modrinth.test.mjs`
+

@@ -114,3 +114,24 @@ Konzept: [TEAMBAU](../../docs/architecture/TEAMBAU.md). Die Bauleitung lädt im 
 | Baumeister: `zuweisen <nr> <spieler>`, `pruefen <nr> ok\|nacharbeit [notiz]` · Bauleitung: `rolle <spieler> <rolle>`, `team export`, `team wahl <name>` | |
 
 Jede Handlung landet als Ereignis in `team/<teamId>.events.jsonl`; `/bauplaner team export` schreibt den Stand, den der Planer einliest. Wer in einem Abschnitt steht, sieht ihn in der Aktionsleiste. `config.yml` → `team.schutz`: `hinweis` (Standard), `sperren` (Blockänderungen in fremden Abschnitten verhindern) oder `aus`. Rechte `bauplaner.team.use` (alle) und `bauplaner.team.leitung` (Operatoren). In der Konsole handelt `bauplaner team als <spieler> <befehl>` für einen Spieler. Servertest: `scripts/test_bridge_paper_team.sh`.
+
+## Modrinth
+
+Die Mod (Fabric, NeoForge) und das Paper-Plugin erscheinen als ein Projekt auf Modrinth (Slug `bauplaner-bridge`, GAME-09). Alles dafür liegt im Repo:
+
+- `modrinth/project.json` – Titel, Kurztext, Sichtbarkeit, Kategorien, Seiten, Lizenz, Links, Loader und Abhängigkeiten (Fabric braucht die Fabric API). Forge fehlt bewusst, bis es im Spiel geprüft ist.
+- `modrinth/DESCRIPTION.md` – Projektseite, Englisch (Pflicht bei Modrinth) und Deutsch.
+- `modrinth/icon.png`, `modrinth/gallery/` – Icon und Bilder aus den Spieltests.
+- `CHANGELOG.md` – je Version ein Abschnitt `## <Version>`, wird unverändert als Änderungsliste hochgeladen.
+
+Hochgeladen werden genau die .jar aus `downloads/mod/`, die `releases.json` ab `firstVersion` nennt (SHA-256 wird verglichen). Ohne GitHub Actions (Projektregel): Der Token liegt als Umgebungsvariable `MODRINTH_TOKEN` in der Cloud-Umgebung des Projekts und nie im Repo. Nötige Rechte: Create/Read/Write projects, Create/Read versions.
+
+```
+node scripts/modrinth_publish.mjs check     # offline, auch in npm test
+node scripts/modrinth_publish.mjs plan      # was passieren würde
+node scripts/modrinth_publish.mjs create    # einmalig: Projekt anlegen, Bilder, Versionen, zur Prüfung einreichen
+node scripts/modrinth_publish.mjs release   # nach jeder Mod-Veröffentlichung: fehlende Versionen hochladen
+node scripts/modrinth_publish.mjs sync      # nach Änderungen an Text, Bildern oder Kategorien
+```
+
+Ablauf bei einer neuen Mod-Version: bauen und im Spiel prüfen, `release_mod.mjs` je Loader, Abschnitt in `CHANGELOG.md`, Push auf main, dann `modrinth_publish.mjs release`.

@@ -6,6 +6,8 @@
 // (scripts/test_bridge_ingame.sh for Fabric, scripts/test_bridge_ingame_forge.sh neoforge|forge), or for
 // Paper ./gradlew -PwithPaper :paper:build and scripts/test_bridge_paper.sh. An adapter without a version in
 // its name (paper) is one jar for several Minecraft versions: tested_versions in its gradle.properties.
+// Afterwards: section in mods/bauplaner-bridge/CHANGELOG.md, push, then `node scripts/modrinth_publish.mjs release` (GAME-09).
+// Afterwards: section in mods/bauplaner-bridge/CHANGELOG.md, push, then `node scripts/modrinth_publish.mjs release` (GAME-09).
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs';
@@ -42,3 +44,4 @@ const entry = {
 manifest.releases = [...manifest.releases.filter(r => r.file !== file), entry];
 writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + '\n');
 console.log(`Bereitgestellt: downloads/mod/${file} (${bytes.length} Bytes, ${entry.sha256}).`);
+console.log('Für Modrinth: Abschnitt in mods/bauplaner-bridge/CHANGELOG.md, nach dem Push node scripts/modrinth_publish.mjs release.');

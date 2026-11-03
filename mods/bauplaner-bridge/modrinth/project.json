@@ -1,0 +1,92 @@
+{
+  "schemaVersion": 1,
+  "comment": "Modrinth-Projekt der Bauplaner-Brücke. Gelesen von scripts/modrinth_publish.mjs (check | plan | create | sync | release). Text: DESCRIPTION.md, Änderungen: ../CHANGELOG.md.",
+  "slug": "bauplaner-bridge",
+  "title": "Bauplaner Bridge",
+  "summary": "Shows your Minecraft-Bauplaner build plans as a hologram in the world: live progress, material list, placement helper and team building. Client-side, never builds for you.",
+  "visibility": "approved",
+  "projectType": "mod",
+  "clientSide": "required",
+  "serverSide": "optional",
+  "categories": [
+    "utility",
+    "social"
+  ],
+  "additionalCategories": [
+    "management"
+  ],
+  "license": {
+    "id": "LicenseRef-All-Rights-Reserved",
+    "url": null
+  },
+  "links": {
+    "source": "https://github.com/Freadeax/Minecraft-Bauplaner/tree/main/mods/bauplaner-bridge",
+    "issues": "https://github.com/Freadeax/Minecraft-Bauplaner/issues",
+    "wiki": "https://freadeax.github.io/Minecraft-Bauplaner/#/mod"
+  },
+  "icon": "icon.png",
+  "gallery": [
+    {
+      "file": "gallery/01-hologram.png",
+      "title": "Hologram with live progress",
+      "description": "The plan as a hologram over the build. The HUD counts missing, wrong and misrotated blocks and points to the next mistake.",
+      "featured": true
+    },
+    {
+      "file": "gallery/02-placement-helper-shaders.png",
+      "title": "Placement helper with shaders",
+      "description": "Ghost blocks show what is still missing. Works with Iris and Complementary shaders."
+    },
+    {
+      "file": "gallery/03-sections-xray.png",
+      "title": "Build sections and x-ray",
+      "description": "Build one section at a time and see open blocks through walls."
+    },
+    {
+      "file": "gallery/04-material-list.png",
+      "title": "Material list",
+      "description": "What is still open, what is in your inventory and what you still need to fetch."
+    },
+    {
+      "file": "gallery/05-plan-menu.png",
+      "title": "Plan menu",
+      "description": "Load a plan, move, rotate and mirror it, or put it where you are looking."
+    },
+    {
+      "file": "gallery/06-website-link.png",
+      "title": "Link to the planner website",
+      "description": "Optional local link to the Bauplaner website on the same PC: send plans and map markers, read back the build state."
+    }
+  ],
+  "firstVersion": "0.10.0",
+  "versionType": "beta",
+  "loaders": {
+    "fabric": {
+      "loaders": [
+        "fabric"
+      ],
+      "label": "Fabric",
+      "dependencies": [
+        {
+          "project_id": "P7dR8mSH",
+          "dependency_type": "required",
+          "comment": "Fabric API"
+        }
+      ]
+    },
+    "neoforge": {
+      "loaders": [
+        "neoforge"
+      ],
+      "label": "NeoForge",
+      "dependencies": []
+    },
+    "paper": {
+      "loaders": [
+        "paper"
+      ],
+      "label": "Paper server plugin",
+      "dependencies": []
+    }
+  }
+}

@@ -842,3 +842,9 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 ## COOP-01-S04 · Team in die Projektplanung · 03.11.2026 · Claude
 - `node --test tests/team.test.mjs tests/program.test.mjs`: 24/24 – Minecraft-Name aus der Planung gilt im Team, Beigetretene werden Bauleute, Zuweisungen folgen den Abschnittsinhabern, unberührte bleiben, zweites Übernehmen ändert nichts, `checkProgram` lehnt ungültige Minecraft-Namen ab.
 - `node --test tests/e2e/team.e2e.mjs tests/e2e/program.e2e.mjs`: 4/4 (Knopf „In die Projektplanung übernehmen“ im Ablauf).
+
+## GAME-09 · Modrinth-Projekt der Bauplaner-Brücke · 03.11.2026 · Claude
+- `tests/modrinth.test.mjs` 3/3: project.json, Beschreibung, Icon (< 256 KiB), 6 Bilder (< 5 MiB), Änderungsliste je Version, SHA-256 der hochzuladenden .jar gegen releases.json, eindeutige Versionsnummern (`0.10.0+fabric-26.3`, `0.10.0+neoforge-26.3`, `0.10.0+paper`), Fabric API als Pflichtabhängigkeit, kein Forge.
+- `node scripts/modrinth_publish.mjs plan` gegen die echte Modrinth-API ohne Token: Minecraft 26.3/1.18.2–1.21.11, Loader fabric/neoforge/paper und Kategorien sind bekannt; Slug `bauplaner-bridge` ist frei.
+- `create`, `sync`, `release` gegen eine nachgebaute Modrinth-API (lokaler Server): Projekt als Entwurf mit Icon, 6 Bilder, 3 Versionen mit Datei und Abhängigkeiten, Einreichen zur Prüfung; zweiter Lauf lädt nichts doppelt hoch.
+- Grenzen: echte Modrinth-API mit Token noch nicht benutzt (Token fehlt, Bestätigung von Philipp offen).

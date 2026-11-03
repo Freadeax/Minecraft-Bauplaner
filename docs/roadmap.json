@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T19:23:40.842Z",
+  "updatedAt": "2026-11-03T19:49:18.315Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -6647,6 +6647,79 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-03T18:54:07.036Z"
+    },
+    {
+      "id": "GAME-09",
+      "title": "Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch",
+      "phase": "P3",
+      "priority": "P2",
+      "status": "in_progress",
+      "owner": "Claude (Thread „Mod auf Modrinth veröffentlichen“)",
+      "dependencies": [
+        "GAME-07",
+        "GAME-04"
+      ],
+      "scope": [
+        "mods/bauplaner-bridge/modrinth/",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "scripts/modrinth_publish.mjs",
+        "tests/modrinth.test.mjs",
+        "mods/bauplaner-bridge/README.md",
+        "scripts/release_mod.mjs",
+        "docs/TESTING.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "GAME-09-S01",
+          "title": "Projektdaten: project.json (Slug, Titel, Kurztext, Kategorien, Seiten, Lizenz, Links, Loader, Abhängigkeit Fabric API), DESCRIPTION.md Englisch + Deutsch, Icon 512 px, 6 Bilder aus den Spieltests.",
+          "done": true
+        },
+        {
+          "id": "GAME-09-S02",
+          "title": "scripts/modrinth_publish.mjs check|plan|create|sync|release: Dateien aus releases.json mit SHA-256-Vergleich, Änderungsliste aus CHANGELOG.md je Version, Token nur aus MODRINTH_TOKEN; Offline-Prüfung in npm test, Ablauf gegen nachgebaute API geprüft.",
+          "done": true
+        },
+        {
+          "id": "GAME-09-S03",
+          "title": "Philipp bestätigt Namen, Beschreibung, Sichtbarkeit und Lizenz; MODRINTH_TOKEN in der Cloud-Umgebung (keine Actions, Entscheidung Philipp 03.11.2026).",
+          "done": false
+        },
+        {
+          "id": "GAME-09-S04",
+          "title": "Projekt anlegen (create), 0.10.0 für Fabric, NeoForge und Paper hochladen, Modrinth-Prüfung bestehen.",
+          "done": false
+        },
+        {
+          "id": "GAME-09-S05",
+          "title": "Jede neue Mod-Version: nach release_mod.mjs und Abschnitt in CHANGELOG.md `node scripts/modrinth_publish.mjs release`.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Das Projekt ist auf Modrinth sichtbar und im Modrinth-Launcher für Fabric und NeoForge 26.3 installierbar; Fabric zieht die Fabric API mit.",
+        "Nur auf der Website geprüfte .jar (gleiche SHA-256) werden hochgeladen; Forge bleibt draußen, bis es im Spiel geprüft ist.",
+        "Kein Token im Repo, in Logs oder im Chat."
+      ],
+      "next": "Philipps Bestätigung (Name, Text, Sichtbarkeit, Lizenz) und MODRINTH_TOKEN in der Cloud-Umgebung abwarten, dann create in einer neuen Sitzung.",
+      "blockers": [
+        "MODRINTH_TOKEN fehlt noch in der Cloud-Umgebung."
+      ],
+      "evidence": [
+        {
+          "path": "tests/modrinth.test.mjs",
+          "note": "Offline-Prüfung der Modrinth-Daten und Versionen (03.11.2026)."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Echte Modrinth-API noch nicht benutzt (kein Token)."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-03T19:49:18.315Z"
     }
   ],
   "events": [
@@ -12027,6 +12100,40 @@
           "done": 6,
           "total": 8,
           "next": "O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T19:49:18.315Z",
+      "kind": "progress",
+      "items": [
+        "GAME-09"
+      ],
+      "summary": "Modrinth-Projekt vorbereitet: project.json, Beschreibung EN/DE, Icon, 6 Bilder, CHANGELOG.md, scripts/modrinth_publish.mjs (check/plan/create/sync/release) ohne Actions, Sperre gegen KI-Werkzeugnamen; Tests 4/4, nachgebaute API; echte Veröffentlichung wartet auf Philipps Bestätigung und MODRINTH_TOKEN in neuer Sitzung",
+      "files": [
+        "docs/TESTING.md",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/README.md",
+        "mods/bauplaner-bridge/modrinth/DESCRIPTION.md",
+        "mods/bauplaner-bridge/modrinth/gallery/01-hologram.png",
+        "mods/bauplaner-bridge/modrinth/gallery/02-placement-helper-shaders.png",
+        "mods/bauplaner-bridge/modrinth/gallery/03-sections-xray.png",
+        "mods/bauplaner-bridge/modrinth/gallery/04-material-list.png",
+        "mods/bauplaner-bridge/modrinth/gallery/05-plan-menu.png",
+        "mods/bauplaner-bridge/modrinth/gallery/06-website-link.png",
+        "mods/bauplaner-bridge/modrinth/icon.png",
+        "mods/bauplaner-bridge/modrinth/project.json",
+        "scripts/modrinth_publish.mjs",
+        "scripts/release_mod.mjs",
+        "tests/modrinth.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 2,
+          "total": 5,
+          "next": "Philipps Bestätigung (Name, Text, Sichtbarkeit, Lizenz) und MODRINTH_TOKEN in der Cloud-Umgebung abwarten, dann create in einer neuen Sitzung."
         }
       ]
     }
