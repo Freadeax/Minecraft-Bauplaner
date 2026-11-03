@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T22:26:51.801Z",
+  "updatedAt": "2026-11-03T23:02:57.928Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -2155,7 +2155,7 @@
         {
           "id": "PERF-02-S03",
           "title": "Chunk-/Übertragungsstrategie und selektive Neuberechnung mit vollständiger Invalidierungsprüfung ergänzen.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
@@ -2185,7 +2185,7 @@
         "main": "7dffd922f46876c70700afc0429afb969e5478aa",
         "pagesSource": "7dffd922f46876c70700afc0429afb969e5478aa"
       },
-      "updatedAt": "2026-11-03T22:26:51.801Z",
+      "updatedAt": "2026-11-03T23:02:57.928Z",
       "area": "PERF",
       "thread": "Gesamtsystem auf Performance und Stabilität optimieren",
       "philipp": [],
@@ -2458,7 +2458,7 @@
         {
           "id": "PERF-05-S08",
           "title": "Zellen erst bei Bedarf entpacken statt alle Versionen beim Start (O-2).",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
@@ -2499,7 +2499,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T23:02:57.928Z",
       "area": "PERF",
       "thread": "Gesamtsystem auf Performance und Stabilität optimieren",
       "philipp": [],
@@ -14926,6 +14926,54 @@
           "done": 2,
           "total": 3,
           "next": "PERF-02-S03 zusammen mit PERF-05-S08 (Zellen erst bei Bedarf entpacken) im Performance-Thread umsetzen; beide ändern compose/Entpacken. Übergabe abgestimmt am 03.11.2026."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T23:02:57.928Z",
+      "kind": "progress",
+      "items": [
+        "PERF-02",
+        "PERF-05"
+      ],
+      "summary": "PERF-02-S03 selektive Neuberechnung (computeGeometry/computeSite, sameGeometry vergleicht genau die Geometrieeingaben; Fortschritt, Baustelle, Name ohne Worker), Besitzer als Zahlen übertragen, doppelte Arbeit in Material/Anleitung entfernt (gleiche Prüfsummen, computeProject 2,2 → 1,85 s, Rückweg 0,8 → 0,45 s bei 256 000 Zellen); PERF-05-S08 Zellen erst beim Lesen entpacken (Heap nach Neustart 42 → 18 MB). npm run check grün, Browser-Suite 149/149.",
+      "files": [
+        "apps/web/src/app/useProjectComputation.ts",
+        "apps/web/src/jobs/library.ts",
+        "apps/web/src/views/ProjectsView.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/PERFORMANCE_AUDIT.md",
+        "packages/application/src/computationTransport.ts",
+        "packages/application/src/index.ts",
+        "packages/application/src/projectComputation.ts",
+        "packages/domain/src/compose.ts",
+        "packages/domain/src/connectors.ts",
+        "packages/domain/src/guide.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/materials.ts",
+        "packages/domain/src/ownerWire.ts",
+        "packages/domain/src/revisionExport.ts",
+        "packages/domain/src/versionStorage.ts",
+        "packages/voxel/src/validation.ts",
+        "tests/lazy-cells.test.mjs",
+        "tests/owner-wire.test.mjs",
+        "tests/selective-recompute.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 3,
+          "next": "PERF-02-S03 zusammen mit PERF-05-S08 (Zellen erst bei Bedarf entpacken) im Performance-Thread umsetzen; beide ändern compose/Entpacken. Übergabe abgestimmt am 03.11.2026."
+        },
+        {
+          "id": "PERF-05",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8)."
         }
       ]
     }

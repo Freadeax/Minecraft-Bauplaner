@@ -1,6 +1,7 @@
 import { cellOwnersOf, resolveProject } from '../../domain/src/compose.js';
 import type { Resolution } from '../../domain/src/compose.js';
-import { buildGuide, evaluateProgress } from '../../domain/src/guide.js';
+import { buildGuide, evaluateProgress, stepCellIndices } from '../../domain/src/guide.js';
+import { canonicalJson } from '../../domain/src/hash.js';
 import type { Guide, GuideProgress } from '../../domain/src/guide.js';
 import { computeMaterials, materialsForParts, materialsForResolution, SHULKER_SLOTS } from '../../domain/src/materials.js';
 import type { ItemLine, ItemSource, MaterialReport, UnresolvedLine } from '../../domain/src/materials.js';
@@ -24,13 +25,32 @@ export interface ProjectComputation {
   readonly site: { readonly progress: GuideProgress; readonly plan: SiteOverview; readonly issues: readonly SectionIssue[]; readonly reservations: readonly Reservation[] };
 }
 
+/** Everything that depends only on the placed geometry: instances, project profile and the versions they use. */
+export type ProjectGeometry = Omit<ProjectComputation, 'site'>;
+/** What the geometry part may read from a project (PERF-02-S03): the type is the invalidation contract. */
+export type GeometrySource = Pick<Project, 'instances' | 'profileId'>;
+
 /** Framework/transport-free composition over the existing shared calculation rules. */
 export function computeProject(input: ComputeInput): ProjectComputation {
-  const project = input.basis ? { ...input.project, instances: input.basis.instances, links: input.basis.links } : input.project;
-  const resolution = resolveProject(project, input.versions);
-  const guide = buildGuide(input.basis ?? project, resolution);
+  const project = effectiveProject(input);
+  const geometry = computeGeometry(project, input.versions);
+  return { ...geometry, site: computeSite(project, input.versions, geometry) };
+}
+
+/** The project as computed: a historical basis replaces instances and links, everything else stays current. */
+function effectiveProject(input: ComputeInput): Project {
+  return input.basis ? { ...input.project, instances: input.basis.instances, links: input.basis.links } : input.project;
+}
+
+/** Resolution, guide and material reports; reads nothing of the project but `GeometrySource`. */
+export function computeGeometry(project: GeometrySource, versions: ReadonlyMap<string, AssetVersion>): ProjectGeometry {
+  const resolution = resolveProject(project, versions);
+  const guide = buildGuide(project, resolution);
   const materials = materialsForResolution(resolution);
-  const stepMaterials = resolution.world ? materialsForParts(resolution.world, guide.steps.map(step => ({ id: step.id, positions: step.positions, conflicts: step.conflicts }))) : new Map<string, MaterialReport>();
+  const stepMaterials = resolution.world ? materialsForParts(resolution.world, guide.steps.map(step => {
+    const cellIndices = stepCellIndices(step, resolution.world!);
+    return { id: step.id, positions: step.positions, conflicts: step.conflicts, ...(cellIndices && { cellIndices }) };
+  })) : new Map<string, MaterialReport>();
   // Partition ownership once instead of filtering the whole world for each instance.
   const cellsByInstance = new Map<string, Cell[]>();
   const ownerOf = cellOwnersOf(resolution), worldCells = resolution.world?.cells ?? [];
@@ -48,11 +68,42 @@ export function computeProject(input: ComputeInput): ProjectComputation {
     // Supplied include enables the core's matching container-content scope; cells already select the partition.
     include: () => true, conflicts: conflictsByInstance.get(instance.id) ?? 0,
   })]));
-  const sitePlan = siteOf(project), progress = evaluateProgress(guide, project.progress);
-  const site = { progress, plan: planSite(sitePlan, guide, progress, resolution), issues: checkSections(sitePlan, project, guide), reservations: reservationsFor(project, input.versions, sitePlan, resolution) };
-  return { resolution, guide, materials, stepMaterials, instanceMaterials, site };
+  return { resolution, guide, materials, stepMaterials, instanceMaterials };
 }
 
+/** Progress, site plan, section checks and reservations on top of a computed geometry: cheap, may run on the page. */
+export function computeSite(project: Project, versions: ReadonlyMap<string, AssetVersion>, geometry: ProjectGeometry): ProjectComputation['site'] {
+  const { guide, resolution } = geometry;
+  const sitePlan = siteOf(project), progress = evaluateProgress(guide, project.progress);
+  return { progress, plan: planSite(sitePlan, guide, progress, resolution), issues: checkSections(sitePlan, project, guide), reservations: reservationsFor(project, versions, sitePlan, resolution) };
+}
+
+/**
+ * Selective recomputation (PERF-02-S03): when two inputs place the same geometry, the earlier geometry is
+ * reused and only the site part is computed again (progress ticks, site plan, names of the project).
+ *
+ * Invalidation is complete by construction: `computeGeometry` can only read `GeometrySource` and the
+ * versions its instances name, and this check compares exactly those – profile, every instance field
+ * (canonical JSON) and every used version (same object, or same id, payload hash and all other fields).
+ */
+export function sameGeometry(a: ComputeInput, b: ComputeInput): boolean {
+  const pa = effectiveProject(a), pb = effectiveProject(b);
+  if (pa.profileId !== pb.profileId) return false;
+  if (pa.instances !== pb.instances && canonicalJson(pa.instances) !== canonicalJson(pb.instances)) return false;
+  for (const instance of pa.instances) {
+    const va = a.versions.get(instance.assetVersionId), vb = b.versions.get(instance.assetVersionId);
+    if (va === vb) continue;
+    if (!va || !vb || va.id !== vb.id || va.payloadHash !== vb.payloadHash || canonicalJson({ ...va, payload: null }) !== canonicalJson({ ...vb, payload: null })) return false;
+  }
+  return true;
+}
+
+/** The new input's result from an earlier one with the same geometry; null when the geometry differs. */
+export function recomputeSite(input: ComputeInput, previous: { readonly input: ComputeInput; readonly result: ProjectComputation }): ProjectComputation | null {
+  if (!sameGeometry(previous.input, input)) return null;
+  const { site: _site, ...geometry } = previous.result;
+  return { ...geometry, site: computeSite(effectiveProject(input), input.versions, geometry) };
+}
 
 export type BuildItemSummary = Pick<MaterialReport, 'items' | 'unresolved' | 'totals' | 'conflicts'>;
 

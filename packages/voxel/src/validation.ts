@@ -54,6 +54,19 @@ export function stateKey(state: { readonly id: string; readonly properties: Read
   if (cacheable) stateKeys.set(state, key);
   return key;
 }
+const paletteKeyLists = new WeakMap<object, readonly string[]>();
+/**
+ * stateKey of every palette entry, in palette order (PERF-02). A frozen palette (every payload
+ * palette) cannot change, so the list is worked out once per palette, not once per material/step call.
+ */
+export function paletteKeys(palette: readonly { readonly id: string; readonly properties: Readonly<Record<string, string>> }[]): readonly string[] {
+  const cacheable = Object.isFrozen(palette);
+  const cached = cacheable ? paletteKeyLists.get(palette) : undefined;
+  if (cached) return cached;
+  const keys = Object.freeze(palette.map(stateKey));
+  if (cacheable) paletteKeyLists.set(palette, keys);
+  return keys;
+}
 /**
  * Payloads produced by createPayload/adoptPayload are deeply frozen, so their validation result cannot change.
  * Remembering the limits they passed lets later checks (transforms, composition) skip a full re-validation,

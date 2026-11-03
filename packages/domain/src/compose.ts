@@ -1,4 +1,5 @@
 import { adoptPayload, stateKey } from '../../voxel/src/validation.js';
+import { rememberOwnerEntries } from './ownerWire.js';
 import { transformPayload } from '../../voxel/src/transforms.js';
 import type { BlockEntity, BlockState, Bounds, Cell, FreeEntity, Limits, Vec3, VoxelPayload } from '../../voxel/src/types.js';
 import { canonicalJson } from './hash.js';
@@ -103,7 +104,7 @@ export function cellOwnersOf(resolution: Pick<Resolution, 'world' | 'owners'>): 
  * explicit override. Material counts must use `world`, which counts every
  * world cell once.
  */
-export function resolveProject(project: Project, versions: ReadonlyMap<string, AssetVersion>, limits: Partial<Limits> = {}): Resolution {
+export function resolveProject(project: Pick<Project, 'instances' | 'profileId'>, versions: ReadonlyMap<string, AssetVersion>, limits: Partial<Limits> = {}): Resolution {
   const placed: PlacedInstance[] = [], issues: CompositionIssue[] = [];
   for (const instance of project.instances) {
     const version = versions.get(instance.assetVersionId);
@@ -160,7 +161,6 @@ export function resolveProject(project: Project, versions: ReadonlyMap<string, A
       ...(slot.conflict.resolvedBy !== undefined && { resolvedBy: slot.conflict.resolvedBy }) };
     (slot.conflict.resolvedBy ? overridden : conflicts).push(c);
   }
-  const owners = new Map<string, string[]>();
   // One shared owner list per instance for the usual case (one owner, no conflict): far less memory and
   // copying when the result goes from the worker to the page (SIZE-01).
   const single = new Map<string, string[]>();
@@ -172,19 +172,30 @@ export function resolveProject(project: Project, versions: ReadonlyMap<string, A
     if (!list) single.set(id, list = [id]);
     return list;
   };
-  for (const slot of slots.values()) owners.set(positionKey(slot.cell.position), slot.owners = ownersOf(slot));
+  const owners = new Map<string, string[]>(), ownerPositions: Vec3[] = [], ownerLists: string[][] = [];
+  for (const slot of slots.values()) {
+    owners.set(positionKey(slot.cell.position), slot.owners = ownersOf(slot));
+    ownerPositions.push(slot.cell.position); ownerLists.push(slot.owners);
+  }
+  // Positions and lists in map order: the transport sends them as numbers without parsing keys (PERF-02).
+  rememberOwnerEntries(owners, ownerPositions, ownerLists);
   let world: VoxelPayload | null = null;
   if (slots.size) {
-    const palette: BlockState[] = [], index = new Map<string, number>();
+    const palette: BlockState[] = [], index = new Map<string, number>(), byState = new Map<BlockState, number>();
     const cells: Cell[] = [], blockEntities: BlockEntity[] = [], cellOwners: string[] = [];
     const sorted = 'sorted' in slots ? slots.sorted()
       : [...slots.values()].sort((a, b) => a.cell.position[1] - b.cell.position[1] || a.cell.position[2] - b.cell.position[2] || a.cell.position[0] - b.cell.position[0]);
     for (const slot of sorted) {
       cellOwners.push(slot.owners[0]!);
       if (slot.cell.kind === 'erase') { cells.push({ position: slot.cell.position, kind: 'erase' }); continue; }
-      const key = stateKey(slot.state!);
-      let paletteIndex = index.get(key);
-      if (paletteIndex === undefined) { paletteIndex = palette.length; palette.push(slot.state!); index.set(key, paletteIndex); }
+      // Same state object → same key → same entry; the identity lookup skips stateKey for almost every cell.
+      let paletteIndex = byState.get(slot.state!);
+      if (paletteIndex === undefined) {
+        const key = stateKey(slot.state!);
+        paletteIndex = index.get(key);
+        if (paletteIndex === undefined) { paletteIndex = palette.length; palette.push(slot.state!); index.set(key, paletteIndex); }
+        byState.set(slot.state!, paletteIndex);
+      }
       cells.push({ position: slot.cell.position, kind: slot.cell.kind, paletteIndex });
       if (slot.entity && slot.cell.kind === 'block') blockEntities.push({ position: slot.cell.position, data: slot.entity.data });
     }

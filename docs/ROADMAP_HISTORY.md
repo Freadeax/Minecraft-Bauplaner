@@ -4596,3 +4596,38 @@ FORMAT-01-S02: Rundlauf-Prüfwerkzeug npm run format:check-schem (Import → Exp
 - `scripts/check_schem_roundtrip.mjs`
 - `tests/schem-roundtrip.test.mjs`
 
+## 2026-11-03T23:02:57.928Z · progress
+
+**Aufgaben:** PERF-02, PERF-05
+
+PERF-02-S03 selektive Neuberechnung (computeGeometry/computeSite, sameGeometry vergleicht genau die Geometrieeingaben; Fortschritt, Baustelle, Name ohne Worker), Besitzer als Zahlen übertragen, doppelte Arbeit in Material/Anleitung entfernt (gleiche Prüfsummen, computeProject 2,2 → 1,85 s, Rückweg 0,8 → 0,45 s bei 256 000 Zellen); PERF-05-S08 Zellen erst beim Lesen entpacken (Heap nach Neustart 42 → 18 MB). npm run check grün, Browser-Suite 149/149.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-02 | 🧩 Implementiert · Abnahme offen | 3/3 | PERF-02-S03 zusammen mit PERF-05-S08 (Zellen erst bei Bedarf entpacken) im Performance-Thread umsetzen; beide ändern compose/Entpacken. Übergabe abgestimmt am 03.11.2026. |
+| PERF-05 | 🧩 Implementiert · Abnahme offen | 7/8 | O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/useProjectComputation.ts`
+- `apps/web/src/jobs/library.ts`
+- `apps/web/src/views/ProjectsView.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/PERFORMANCE_AUDIT.md`
+- `packages/application/src/computationTransport.ts`
+- `packages/application/src/index.ts`
+- `packages/application/src/projectComputation.ts`
+- `packages/domain/src/compose.ts`
+- `packages/domain/src/connectors.ts`
+- `packages/domain/src/guide.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/materials.ts`
+- `packages/domain/src/ownerWire.ts`
+- `packages/domain/src/revisionExport.ts`
+- `packages/domain/src/versionStorage.ts`
+- `packages/voxel/src/validation.ts`
+- `tests/lazy-cells.test.mjs`
+- `tests/owner-wire.test.mjs`
+- `tests/selective-recompute.test.mjs`
+

@@ -264,7 +264,7 @@ export function findSnapCandidates(q: SnapQuery): SnapCandidate[] {
         const bounds = transformedBounds(version, transform);
         const near = others.filter(x => boundsOverlap(bounds, x.bounds)).map(x => x.instance);
         const map = versions.has(version.id) ? versions : new Map([...versions, [version.id, version]]);
-        const r = resolveProject({ ...project, instances: [...near, probe], links: [] }, map);
+        const r = resolveProject({ profileId: project.profileId, instances: [...near, probe] }, map);
         const pairs: SnapCandidate['pairs'][number][] = [];
         const placed = placedConnectors(probe, version);
         const taken = new Set<string>();

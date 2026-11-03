@@ -1,7 +1,7 @@
-import { stateKey } from '../../voxel/src/validation.js';
+import { paletteKeys } from '../../voxel/src/validation.js';
 import { blockFacts, stateFacts, step as stepDir, supportNeed, survives } from '../../voxel/src/blocklogic/index.js';
 import type { Dir } from '../../voxel/src/blocklogic/index.js';
-import type { BlockState, Bounds, Vec3 } from '../../voxel/src/types.js';
+import type { BlockState, Bounds, Vec3, VoxelPayload } from '../../voxel/src/types.js';
 import { blockEntityContent, entityAnchor, entityItems, entityLabel, hasContent, sortedEntities } from '../../voxel/src/entities.js';
 import type { ItemStack } from '../../voxel/src/entities.js';
 import { cellIndexer, containerLabel } from './materials.js';
@@ -136,7 +136,7 @@ export function hangsOnly(state: BlockState): boolean {
 
 interface Draft {
   instanceId: string; sectionName: string; instanceIndex: number; phase: StepPhase; y: number; layer: number;
-  positions: Vec3[]; states: Map<string, { state: BlockState; count: number }>; hash: QuickHasher; hashed: number;
+  positions: Vec3[]; cells: number[]; states: Map<string, { state: BlockState; count: number }>; hash: QuickHasher; hashed: number;
   blocks: number; air: number; erase: number; blockEntities: number; conflicts: number; mods: Set<string>; waterlogged: number;
   /** Cells of attached/hanging/gravity blocks that do not hold in the plan (BLOCK-01). */
   loose: number; sortY: number;
@@ -187,7 +187,7 @@ export function buildGuide(project: Pick<Project, 'instances'>, resolution: Reso
   const entities = new Map(world.blockEntities.map(e => [ix(e.position), e]));
   const ownerOf = cellOwnersOf(resolution);
   // Per palette entry once instead of per cell (SIZE-01: a million cells).
-  const keyByPalette = world.palette.map(stateKey), jsonKeyByPalette = keyByPalette.map(k => JSON.stringify(k));
+  const keyByPalette = paletteKeys(world.palette), jsonKeyByPalette = keyByPalette.map(k => JSON.stringify(k));
   const modByPalette = world.palette.map(st => !st.id.startsWith('minecraft:')), wetByPalette = world.palette.map(st => st.properties.waterlogged === 'true');
   const phaseByPalette: StepPhase[] = world.palette.map(st => { const p = phaseOf(st); return p === 'attached' && hangsOnly(st) ? 'hanging' : p; });
   const volume = sx * sy * (wMax[2] - wMin[2]);
@@ -207,12 +207,12 @@ export function buildGuide(project: Pick<Project, 'instances'>, resolution: Reso
     let d = id === lastId ? last : drafts.get(id);
     if (!d) {
       const inst = project.instances[instanceIndex.get(owner)!]!;
-      d = { instanceId: owner, sectionName: inst.name, instanceIndex: instanceIndex.get(owner)!, phase, y, layer, positions: [], states: new Map(), hash: new QuickHasher().add(`[${JSON.stringify(phase)},[`), hashed: 0,
+      d = { instanceId: owner, sectionName: inst.name, instanceIndex: instanceIndex.get(owner)!, phase, y, layer, positions: [], cells: [], states: new Map(), hash: new QuickHasher().add(`[${JSON.stringify(phase)},[`), hashed: 0,
         blocks: 0, air: 0, erase: 0, blockEntities: 0, conflicts: 0, mods: new Set(), waterlogged: 0, loose: 0, sortY: y };
       drafts.set(id, d);
     }
     last = d; lastId = id;
-    d.positions.push(cell.position); cellStep.set(key, id);
+    d.positions.push(cell.position); d.cells.push(ci); cellStep.set(key, id);
     if (conflictKeys.has(key)) d.conflicts++;
     const entity = entities.get(key);
     if (cell.kind === 'erase') d.erase++;
@@ -292,7 +292,9 @@ export function buildGuide(project: Pick<Project, 'instances'>, resolution: Reso
     const prerequisites = [...pre].sort((a, b) => order.get(a)! - order.get(b)!);
     if (prerequisites.some(p => order.get(p)! >= order.get(id)!)) throw new DomainError('GUIDE', `Schritt ${id} hätte eine zyklische Voraussetzung`);
 
-    const positions = [...d.positions].sort((a, b) => a[2] - b[2] || a[0] - b[0]);
+    // Sorted as world cell indices (stable, same order as sorting the positions) so the transport needs no lookup.
+    const wc = world.cells, cellOrder = d.cells.slice().sort((a, b) => { const p = wc[a]!.position, q = wc[b]!.position; return p[2] - q[2] || p[0] - q[0]; });
+    const positions = cellOrder.map(i => wc[i]!.position);
     const min: [number, number, number] = [Infinity, d.y, Infinity], max: [number, number, number] = [-Infinity, d.y + 1, -Infinity];
     for (const [x, , z] of positions) { min[0] = Math.min(min[0], x); min[2] = Math.min(min[2], z); max[0] = Math.max(max[0], x + 1); max[2] = Math.max(max[2], z + 1); }
     const materials = [...d.states.entries()].map(([key, m]) => ({ state: m.state, key, count: m.count }))
@@ -316,10 +318,21 @@ export function buildGuide(project: Pick<Project, 'instances'>, resolution: Reso
       bounds: { min, maxExclusive: max }, positions, materials, blocks: d.blocks, air: d.air, erase: d.erase, blockEntities: d.blockEntities,
       conflicts: d.conflicts, prerequisites, geometryHash: d.hash.add(']]').digest(), check, notes,
     });
+    stepCells.set(steps[steps.length - 1]!, { world, cells: Int32Array.from(cellOrder) });
   }
   steps.push(...furnishSteps(project, resolution, steps, sectionLayers));
   const totals = steps.reduce((t, s) => ({ blocks: t.blocks + s.blocks, air: t.air + s.air, erase: t.erase + s.erase }), { blocks: 0, air: 0, erase: 0 });
   return { steps, byId: new Map(steps.map(s => [s.id, s])), warnings, totals };
+}
+
+const stepCells = new WeakMap<GuideStep, { readonly world: VoxelPayload; readonly cells: Int32Array }>();
+/**
+ * Indices into `world.cells` of a step's positions, in `positions` order – only for steps that `buildGuide`
+ * made from exactly this world in this thread (PERF-02); otherwise undefined and callers look the cells up.
+ */
+export function stepCellIndices(step: GuideStep, world: VoxelPayload): Int32Array | undefined {
+  const known = stepCells.get(step);
+  return known && known.world === world ? known.cells : undefined;
 }
 
 /**
@@ -336,6 +349,19 @@ function furnishSteps(project: Pick<Project, 'instances'>, resolution: Resolutio
     if (!steps) { steps = new Map(); for (const st of built) for (const q of st.positions) steps.set(index(q), st); }
     return steps.get(index(p));
   } };
+  // Owner of each block entity's cell, worked out once from the world order instead of a positionKey lookup per
+  // instance and block entity (which would also build the whole owner map, see OwnerIndex).
+  const ownerOf = cellOwnersOf(resolution);
+  let beOwners: (string | undefined)[] | null = null;
+  const blockEntityOwner = (k: number): string | undefined => {
+    if (!beOwners) {
+      const at = new Map<number | string, number[]>();
+      world.blockEntities.forEach((be, j) => { const key = index(be.position), list = at.get(key); if (list) list.push(j); else at.set(key, [j]); });
+      beOwners = new Array<string | undefined>(world.blockEntities.length);
+      if (at.size) world.cells.forEach((c, i) => { const list = at.get(index(c.position)); if (list) for (const j of list) beOwners![j] = ownerOf(i, c); });
+    }
+    return beOwners[k];
+  };
   const out: GuideStep[] = [];
   let order = built.length;
   project.instances.forEach(inst => {
@@ -351,8 +377,9 @@ function furnishSteps(project: Pick<Project, 'instances'>, resolution: Resolutio
         if (st && st.instanceId === inst.id && st.phase !== 'clear') pre.add(st.id);
       }
     }
-    for (const be of world.blockEntities) {
-      if (resolution.owners.get(positionKey(be.position))?.[0] !== inst.id) continue;
+    for (let k = 0; k < world.blockEntities.length; k++) {
+      const be = world.blockEntities[k]!;
+      if (blockEntityOwner(k) !== inst.id) continue;
       const c = blockEntityContent(be.data);
       if (!hasContent(c)) continue;
       const text = [...(c.sign ? [...c.sign.front, ...c.sign.back].filter(l => l.trim()) : []), ...(c.patterns ?? []).map(p => `${p.color} ${p.pattern}`)];

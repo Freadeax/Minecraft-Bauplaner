@@ -36,8 +36,18 @@ export function rememberPackedCells(payload: VoxelPayload, packed: PackedCells):
   if (Object.isFrozen(payload.cells) && packed.encoding === PACKED_CELLS_ENCODING && packed.count === payload.cells.length && packed.bytes instanceof Uint8Array) packedByCells.set(payload.cells, packed);
 }
 
+/** Payloads from {@link unpackVersionLazily} whose cells nobody has read yet, with their stored bytes. */
+const notYetUnpacked = new WeakMap<object, PackedCells>();
+
 /** Packs the cell list; returns the version unchanged when packing would not be exact. */
 export function packVersion(version: AssetVersion): StoredVersionRecord {
+  const lazy = typeof version === 'object' && version !== null ? notYetUnpacked.get((version as { payload?: object }).payload ?? {}) : undefined;
+  if (lazy) {
+    // Never unpacked: the stored bytes are still exactly these cells; no unpack and repack just to save again.
+    const payload: Record<string, unknown> = {};
+    for (const key of Object.keys(version.payload)) if (key !== 'cells') payload[key] = (version.payload as unknown as Record<string, unknown>)[key];
+    return { ...version, payload: payload as unknown as StoredPayload, packedCells: lazy };
+  }
   // Records that do not look like a complete version stay as they are; their own checks report them.
   const p = (version as { payload?: unknown }).payload;
   if (!isObj(p) || !Array.isArray(p.cells) || !isObj(p.bounds) || !Array.isArray(p.bounds.min) || !Array.isArray(p.bounds.maxExclusive)) return version;
@@ -63,6 +73,46 @@ export function unpackVersion(raw: unknown): AssetVersion {
   if (!isPackedVersionRecord(raw)) return raw as AssetVersion;
   const r = raw as Record<string, unknown> & { packedCells: PackedCells; payload: StoredPayload };
   return decode(r, () => unpackCells(r.payload.bounds, r.packedCells));
+}
+
+/**
+ * Like {@link unpackVersionOrDamaged}, but the cells are only unpacked when `payload.cells` is first read
+ * (PERF-05-S08, Befund O-2). Starting the app then only reads the version heads; a library with many large
+ * own models no longer turns every cell into an object up front, most versions are never opened in a session.
+ *
+ * `payload.cells` is an enumerable accessor at the same place as in the eager form (last key), so spreading,
+ * JSON, canonicalJson and structuredClone see the same cell list. A damaged record yields an empty list on
+ * first read, like {@link unpackVersionOrDamaged}; its payload hash then no longer matches (data check).
+ * The record shape is checked here, so a broken head still fails at start, not later.
+ */
+export function unpackVersionLazily(raw: unknown): AssetVersion {
+  if (!isPackedVersionRecord(raw)) return raw as AssetVersion;
+  const { packedCells, ...rest } = raw as Record<string, unknown> & { packedCells: PackedCells; payload: StoredPayload };
+  if (!isObj(rest.payload) || 'cells' in rest.payload) throw new DomainError('STORAGE', `Version ${String(rest.id)}: gepackte Version enthält zusätzlich eine Zellliste`);
+  if (packedCells.encoding !== PACKED_CELLS_ENCODING || !Number.isSafeInteger(packedCells.count) || !(packedCells.bytes instanceof Uint8Array)) return unpackVersionOrDamaged(raw);
+  const payload = { ...rest.payload } as VoxelPayload;
+  let cells: Cell[] | null = null;
+  Object.defineProperty(payload, 'cells', {
+    enumerable: true, configurable: false,
+    get(): Cell[] {
+      if (cells) return cells;
+      notYetUnpacked.delete(payload);
+      try { cells = unpackCells(payload.bounds, packedCells); }
+      catch (e) {
+        if (!(e instanceof PackedCellsError)) throw e;
+        console.warn(`Version ${String(rest.id)}: gepackte Blockdaten beschädigt (${e.message})`);
+        cells = [];
+      }
+      return cells;
+    },
+  });
+  notYetUnpacked.set(payload, packedCells);
+  return { ...rest, payload } as unknown as AssetVersion;
+}
+
+/** Cell count of a version without unpacking a lazily loaded one. */
+export function cellCount(version: AssetVersion): number {
+  return notYetUnpacked.get(version.payload)?.count ?? version.payload.cells.length;
 }
 
 /**

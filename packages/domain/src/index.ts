@@ -98,7 +98,7 @@ export type { TerrainMode, AnlageTerrainInput, UnitTerrain, AnlageTerrainFit, Te
 export { checkPlacement, settlePayload, payloadLookup, needText, changedKeys, PLACEMENT_LABEL } from './placement.js';
 export type { PlacementKind, PlacementIssue, PlacementAid, PlacementReport, PlacementOptions, SettleResult } from './placement.js';
 export { gameReady, hangLanterns, MAX_CHAIN } from './build/gameReady.js';
-export { packVersion, unpackVersion, unpackVersionOrDamaged, packVersionForFile, unpackVersionFromFile, isPackedVersionRecord, cellStorageEstimate, rememberPackedCells } from './versionStorage.js';
+export { packVersion, unpackVersion, unpackVersionOrDamaged, unpackVersionLazily, cellCount, packVersionForFile, unpackVersionFromFile, isPackedVersionRecord, cellStorageEstimate, rememberPackedCells } from './versionStorage.js';
 export type { StoredPayload, PackedVersionRecord, PackedVersionFileRecord, StoredVersionRecord } from './versionStorage.js';
 export { buildPlanGraph, whereUsed, projectEdges, assetEdges, versionEdges, collectionEdges, templateEdges, projectVersionIds, PLAN_ROLE_LABEL, PLAN_KIND_LABEL } from './planGraph.js';
 export type { PlanGraph, PlanEdge, PlanNodeKind, PlanNodeRef, PlanRole, PlanSource, UsageGroup } from './planGraph.js';

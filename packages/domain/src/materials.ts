@@ -1,4 +1,4 @@
-import { stateKey } from '../../voxel/src/validation.js';
+import { paletteKeys } from '../../voxel/src/validation.js';
 import { isFactBlock, itemOf, stackOfItem } from '../../voxel/src/blocklogic/index.js';
 import type { BlockState, Cell, FreeEntity, Vec3, VoxelPayload } from '../../voxel/src/types.js';
 import { blockEntityContent, entityItems, entityKind, entityKindLabel, entityLabel } from '../../voxel/src/entities.js';
@@ -303,7 +303,7 @@ export function computeMaterials(world: VoxelPayload | null, options: MaterialOp
   // Large worlds (SIZE-01): everything that depends only on the block state is worked out once per
   // palette entry; positions are numeric cell indices instead of "x,y,z" strings.
   const palette = world?.palette ?? [];
-  const keys = palette.map(stateKey);
+  const keys = paletteKeys(palette);
   const index = world ? cellIndexer(world) : (): number => -1;
   const stateCounts = new Array<number>(palette.length).fill(0);
   const firstSeen: number[] = [];
@@ -329,8 +329,9 @@ export function computeMaterials(world: VoxelPayload | null, options: MaterialOp
   const worldLookup = options.partners === 'world' && world ? blockLookup(world) : null;
   const at: Lookup = worldLookup ?? ((position) => selection().get(index(position)));
   // Rules that do not look at neighbours (everything but door/bed halves) are the same for every cell of a state.
-  const fixed = new Array<{ result: CellResult; sourceKeys: string[] } | null | undefined>(palette.length);
-  const ruleFor = (paletteIndex: number): { result: CellResult; sourceKeys: string[] } | null => {
+  // Shared by every call on the same frozen palette (PERF-02: one call per guide step and instance).
+  const fixed = fixedRules(palette);
+  const ruleFor = (paletteIndex: number): { readonly result: CellResult; readonly sourceKeys: readonly string[] } | null => {
     let entry = fixed[paletteIndex];
     if (entry === undefined) {
       let looked = false;
@@ -502,12 +503,28 @@ function blockLookup(world: VoxelPayload): Lookup {
  * and the parts add up to the whole-world report. Positions without a cell
  * are ignored.
  */
-export function materialsForParts(world: VoxelPayload, parts: readonly { readonly id: string; readonly positions: readonly Vec3[]; readonly conflicts?: number }[]): Map<string, MaterialReport> {
-  const cellAt = cellsByIndex(world), index = cellIndexer(world);
+type FixedRule = { readonly result: CellResult; readonly sourceKeys: readonly string[] } | null | undefined;
+const fixedRuleLists = new WeakMap<object, FixedRule[]>();
+/** Per palette entry: the neighbour-free item rule (null = depends on neighbours, undefined = not worked out yet). */
+function fixedRules(palette: readonly BlockState[]): FixedRule[] {
+  if (!Object.isFrozen(palette)) return new Array<FixedRule>(palette.length);
+  let list = fixedRuleLists.get(palette);
+  if (!list) fixedRuleLists.set(palette, list = new Array<FixedRule>(palette.length));
+  return list;
+}
+
+export function materialsForParts(world: VoxelPayload, parts: readonly { readonly id: string; readonly positions: readonly Vec3[]; readonly conflicts?: number;
+  /** Indices into `world.cells` in `positions` order, when known (guide steps): no position lookup needed. */
+  readonly cellIndices?: ArrayLike<number> }[]): Map<string, MaterialReport> {
+  let lookup: { cellAt: Map<number | string, Cell>; index: (p: Vec3) => number | string } | null = null;
   const out = new Map<string, MaterialReport>();
   for (const part of parts) {
     const cells: Cell[] = [];
-    for (const p of part.positions) { const c = cellAt.get(index(p)); if (c) cells.push(c); }
+    if (part.cellIndices) for (let i = 0; i < part.cellIndices.length; i++) { const c = world.cells[part.cellIndices[i]!]; if (c) cells.push(c); }
+    else {
+      lookup ??= { cellAt: cellsByIndex(world), index: cellIndexer(world) };
+      for (const p of part.positions) { const c = lookup.cellAt.get(lookup.index(p)); if (c) cells.push(c); }
+    }
     out.set(part.id, computeMaterials(world, { cells, partners: 'world', conflicts: part.conflicts ?? 0 }));
   }
   return out;

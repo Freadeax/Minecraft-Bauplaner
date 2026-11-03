@@ -5,6 +5,9 @@ import { transformPayload } from '../../voxel/src/transforms.js';
 import type { Cell, Vec3, VoxelPayload } from '../../voxel/src/types.js';
 import { rememberPayloadHash } from '../../domain/src/library.js';
 import type { PlacedInstance } from '../../domain/src/compose.js';
+import { decodeOwners, encodeOwners } from '../../domain/src/ownerWire.js';
+import type { OwnerWire } from '../../domain/src/ownerWire.js';
+import { stepCellIndices } from '../../domain/src/guide.js';
 import type { GuideStep } from '../../domain/src/guide.js';
 import type { SectionPlan } from '../../domain/src/site.js';
 import type { AssetVersion, Instance } from '../../domain/src/types.js';
@@ -28,7 +31,7 @@ interface WirePlaced { readonly instance: Instance; readonly versionId: string; 
 export interface WireResult {
   readonly wire: 1;
   readonly world: PayloadTransport | null;
-  readonly resolution: Omit<ProjectComputation['resolution'], 'world' | 'placed'> & { readonly placed: readonly WirePlaced[] };
+  readonly resolution: Omit<ProjectComputation['resolution'], 'world' | 'placed' | 'owners'> & { readonly placed: readonly WirePlaced[]; readonly owners: OwnerWire };
   readonly guide: Omit<ProjectComputation['guide'], 'steps' | 'byId'> & { readonly steps: readonly (WireStep | GuideStep)[] };
   readonly materials: ProjectComputation['materials'];
   readonly stepMaterials: ProjectComputation['stepMaterials'];
@@ -73,9 +76,17 @@ export function encodeComputeResult(result: ProjectComputation): { readonly resu
   const { resolution, guide, site } = result, transfer: ArrayBuffer[] = [];
   const world = resolution.world ? payloadToTransport(resolution.world) : null;
   if (world) transfer.push(...columnBuffers(world.columns));
-  const at = new Map<Vec3, number>();
-  resolution.world?.cells.forEach((c, i) => at.set(c.position, i));
+  // Cell indices are known from building the guide (PERF-02); the position lookup is only the fallback.
+  let at: Map<Vec3, number> | null = null;
   const steps = guide.steps.map((step): WireStep | GuideStep => {
+    const known = resolution.world ? stepCellIndices(step, resolution.world) : undefined;
+    if (known) {
+      const cellIndex = known.slice();
+      transfer.push(cellIndex.buffer as ArrayBuffer);
+      const { positions: _positions, ...rest } = step;
+      return { ...rest, positions: null, cellIndex };
+    }
+    if (!at) { at = new Map(); resolution.world?.cells.forEach((c, i) => at!.set(c.position, i)); }
     const cellIndex = new Int32Array(step.positions.length);
     for (let i = 0; i < step.positions.length; i++) {
       const k = at.get(step.positions[i]!);
@@ -88,11 +99,14 @@ export function encodeComputeResult(result: ProjectComputation): { readonly resu
   });
   const placed = resolution.placed.map(p => ({ instance: p.instance, versionId: p.version.id, semanticsResolved: p.semanticsResolved }));
   const sections = site.plan.sections.map(({ steps: sectionSteps, ...rest }) => ({ ...rest, stepIds: sectionSteps.map(s => s.id) }));
-  const { world: _world, placed: _placed, ...resolutionRest } = resolution;
+  // Owners as numbers instead of one text key and list per world cell (PERF-02): 256 000 cells took 200 ms to copy.
+  const owners = encodeOwners(resolution.owners);
+  transfer.push(owners.xyz.buffer as ArrayBuffer, owners.list.buffer as ArrayBuffer);
+  const { world: _world, placed: _placed, owners: _owners, ...resolutionRest } = resolution;
   const { steps: _steps, byId: _byId, ...guideRest } = guide;
   return {
     result: {
-      wire: 1, world, resolution: { ...resolutionRest, placed }, guide: { ...guideRest, steps },
+      wire: 1, world, resolution: { ...resolutionRest, placed, owners }, guide: { ...guideRest, steps },
       materials: result.materials, stepMaterials: result.stepMaterials, instanceMaterials: result.instanceMaterials,
       site: { ...site, plan: { ...site.plan, sections } },
     },
@@ -124,7 +138,7 @@ export function decodeComputeResult(wire: WireResult, versions: ReadonlyMap<stri
   });
   const sections: SectionPlan[] = wire.site.plan.sections.map(({ stepIds, ...rest }) => ({ ...rest, steps: stepIds.map(id => byId.get(id)!).filter(Boolean) }));
   return {
-    resolution: { ...wire.resolution, world, placed },
+    resolution: { ...wire.resolution, world, placed, owners: decodeOwners(wire.resolution.owners) },
     guide: { ...wire.guide, steps, byId },
     materials: wire.materials, stepMaterials: wire.stepMaterials, instanceMaterials: wire.instanceMaterials,
     site: { ...wire.site, plan: { ...wire.site.plan, sections } },

@@ -1027,6 +1027,12 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - **Neue Seiten:** in `main.tsx` mit `lazyPage(() => import(...).then(m => m.X))` anmelden, nicht statisch importieren.
 - Nicht angefasst: `mods/`, `TeamTab`/`team.ts`/`ProjectsView.tsx`, Lagerkisten. Mod- und Plugin-Analyse folgt nach deren Merge (O-8).
 
+### MSG-PERF-05-02 · 03.11.2026 · Claude (Thread „Gesamtsystem auf Performance und Stabilität optimieren“) · Projektberechnung und Zellen bei Bedarf
+- Übernommen aus „Liegengebliebene Datenpakete abarbeiten“: **PERF-02-S03** zusammen mit **PERF-05-S08**. Befund und Zahlen: [PERFORMANCE_AUDIT, Runde 3](architecture/PERFORMANCE_AUDIT.md).
+- Neu: `packages/domain/src/ownerWire.ts`, Tests `owner-wire`, `selective-recompute`, `lazy-cells`. Geändert: `compose.ts`, `guide.ts` (`stepCellIndices`), `materials.ts`, `validation.ts` (`paletteKeys`), `versionStorage.ts` (`unpackVersionLazily`, `cellCount`), `projectComputation.ts` (`computeGeometry`, `computeSite`, `sameGeometry`, `recomputeSite`), `computationTransport.ts`, `useProjectComputation.ts`, `jobs/library.ts`, eine Zeile in `ProjectsView.tsx`, `connectors.ts`/`revisionExport.ts` (Aufruf von `resolveProject`).
+- **An alle Threads:** Versionen der Bibliothek entpacken ihre Zellen erst beim ersten Lesen von `payload.cells`. Für die reine Anzahl `cellCount(version)` nehmen, sonst wird entpackt. `payload.cells` nicht neu zuweisen (Zugriffseigenschaft ohne Setter).
+- **An alle Threads:** `resolveProject` nimmt nur noch `{ profileId, instances }`. Was die Geometrie eines Projekts zusätzlich beeinflussen soll, muss in `GeometrySource` (projectComputation.ts) und in `sameGeometry` aufgenommen werden, sonst rechnet die Seite nach einer solchen Änderung mit der alten Geometrie weiter.
+
 ### MSG-COOP-06-01 · 03.11.2026 · Claude (Thread „Gemeinsames Bauen im Planer vertiefen“) · Teamplanung im Planer (COOP-06)
 - Auftrag Philipp (17:50): „mehrere Threads in die erweiterte Entwicklung von der Mod und dem Planen im Punkto gemeinsames Bauen, komplett strukturiert und in die Tiefe“. Dieser Thread: Planer. Konzept [TEAMBAU §4, §18](architecture/TEAMBAU.md), neue Aufgabe **COOP-05**.
 - Neu: `packages/domain/src/teamPlan.ts`, `views/project/TeamPlan.tsx`, `teamplan.css`, Tests `tests/teamPlan.test.mjs`, `tests/e2e/teamplan.e2e.mjs` (Port 4317), Testfälle TEAMBAU-21…24.

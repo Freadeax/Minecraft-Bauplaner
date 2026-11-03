@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-03T22:26:51.801Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-03T23:02:57.928Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -156,10 +156,10 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
-| [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ | — |
+| [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ | — |
 | [PERF-03](#perf-03) | Bundle, große Views und Vorschaucache | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ | — |
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Olympus auf deinem Rechner, dazu Firefox/Safari (S06). |
-| [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert | 🧩 Implementiert · Abnahme offen 6/8 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ | — |
+| [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ | — |
 
 Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft).
 
@@ -333,7 +333,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 
 ## Aktiver Arbeitsblock
 
-- **PERF-02 · Zellindizes, Chunkdaten und selektive Neuberechnung** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: PERF-02-S03 zusammen mit PERF-05-S08 (Zellen erst bei Bedarf entpacken) im Performance-Thread umsetzen; beide ändern compose/Entpacken. Übergabe abgestimmt am 03.11.2026.
+- **PERF-02 · Zellindizes, Chunkdaten und selektive Neuberechnung** — 🧩 Implementiert · Abnahme offen, 3/3 Teilschritte. Nächster Schritt: PERF-02-S03 zusammen mit PERF-05-S08 (Zellen erst bei Bedarf entpacken) im Performance-Thread umsetzen; beide ändern compose/Entpacken. Übergabe abgestimmt am 03.11.2026.
 - **MAP-01 · Weltlage und begehbare Projektkarte** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02.
 - **EDIT-01 · Mehrfachauswahl und sichtbare Freiraumhüllen** — 🧩 Implementiert · Abnahme offen, 2/2 Teilschritte. Nächster Schritt: Geräteprüfung (QA-02); Gruppenziehen direkt im 3D-Bild als Folgeschritt.
 - **EDIT-02 · Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Picking an 3D-Blockflächen; Spielprüfung. Registerlücken sind seit PROFILE-01 geschlossen.
@@ -358,7 +358,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **COOP-04 · Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung in COOP-05 (geprüfte Lagerkisten, docs/architecture/LAGERKISTEN.md).
 - **PROJ-01 · Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel.
 - **COOP-05 · Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf** — 🧩 Implementiert · Abnahme offen, 3/5 Teilschritte. Nächster Schritt: Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server.
-- **PERF-05 · Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund** — 🧩 Implementiert · Abnahme offen, 6/8 Teilschritte. Nächster Schritt: O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8).
+- **PERF-05 · Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund** — 🧩 Implementiert · Abnahme offen, 7/8 Teilschritte. Nächster Schritt: O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8).
 - **COOP-06 · Teamplanung im Planer: Arbeitspakete, Zuteilung, Zeitplan, Material je Spieler, Fortschritt mit Hinweisen, Konflikthilfe, Planstand-Vergleich, Übergabe und Abwesenheit** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern.
 - **COOP-07 · Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Plugin-Thread: RoomLink gegen team-room v1; Philipp: Cloudflare-Konto, wrangler deploy, Spieltest.
 
@@ -432,7 +432,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [MAT-04](#mat-04) | Kupfer mit Oxidation und Wachsstatus | 🧩 Implementiert · Abnahme offen | 2/2 | PROFILE-01, MAT-03 | ausstehend | ausstehend |
 | [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen | 3/3 | CORE-02, NBT-01 | `84838f0` | `e232b26` |
 | [PERF-01](#perf-01) | Große Berechnungen als abbrechbare Worker-Aufträge | ✅ Im beschriebenen Umfang geprüft | 3/3 | ARCH-01 | `7dffd92` | `7dffd92` |
-| [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen | 2/3 | PERF-01 | `7dffd92` | `7dffd92` |
+| [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen | 3/3 | PERF-01 | `7dffd92` | `7dffd92` |
 | [PERF-03](#perf-03) | Bundle, große Views und Vorschaucache | 🧩 Implementiert · Abnahme offen | 3/3 | ARCH-01, QA-01 | ausstehend | ausstehend |
 | [VIEW-01](#view-01) | Vorhandenen Viewer vollständig abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | QA-01 | `84838f0` | `e232b26` |
 | [ENTITY-01](#entity-01) | Gemälde, Rahmen, Rüstungsständer und Blockinhalte | 🧩 Implementiert · Abnahme offen | 5/6 | FORMAT-02 | ausstehend | ausstehend |
@@ -453,7 +453,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | 🚧 In Arbeit | 1/2 | QA-01, VIEW-02 | ausstehend | ausstehend |
 | [UI-02](#ui-02) | App-Hülle, Navigation und Handyoberfläche überarbeiten | ✅ Im beschriebenen Umfang geprüft | 4/4 | UI-01, QA-01 | ausstehend | ausstehend |
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart | 🧩 Implementiert · Abnahme offen | 6/7 | PERF-01, MODEL-01, ARCH-02 | ausstehend | ausstehend |
-| [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund | 🧩 Implementiert · Abnahme offen | 6/8 | PERF-04 | ausstehend | ausstehend |
+| [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund | 🧩 Implementiert · Abnahme offen | 7/8 | PERF-04 | ausstehend | ausstehend |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen | 5/6 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material | 🧩 Implementiert · Abnahme offen | 6/7 | VIEW-02, BUILD-01, MAT-01 | ausstehend | ausstehend |
 | [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel | 🧩 Implementiert · Abnahme offen | 5/6 | BLOCK-01, LIB-04, UPDATE-01 | ausstehend | ausstehend |
@@ -1169,11 +1169,11 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-02
 
-**Zellindizes, Chunkdaten und selektive Neuberechnung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gesamtsystem auf Performance und Stabilität optimieren“) · Zuständiger Thread: „Gesamtsystem auf Performance und Stabilität optimieren“ · Aktualisiert: 2026-11-03T22:26:51.801Z
+**Zellindizes, Chunkdaten und selektive Neuberechnung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gesamtsystem auf Performance und Stabilität optimieren“) · Zuständiger Thread: „Gesamtsystem auf Performance und Stabilität optimieren“ · Aktualisiert: 2026-11-03T23:02:57.928Z
 
 - [x] PERF-02-S01: Kosten von owners/Strings/Übertragungen messen.
 - [x] PERF-02-S02: Index-/Chunkstrategie nur mit identischem semantischem Ergebnis einführen.
-- [ ] PERF-02-S03: Chunk-/Übertragungsstrategie und selektive Neuberechnung mit vollständiger Invalidierungsprüfung ergänzen.
+- [x] PERF-02-S03: Chunk-/Übertragungsstrategie und selektive Neuberechnung mit vollständiger Invalidierungsprüfung ergänzen.
 
 **Abnahme:** Unabhängige Mengen-/Geometrieregressionen; Importlimits bleiben wirksam.
 
@@ -1237,7 +1237,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-05
 
-**Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Gesamtsystem auf Performance und Stabilität optimieren“ · Zuständiger Thread: „Gesamtsystem auf Performance und Stabilität optimieren“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Gesamtsystem auf Performance und Stabilität optimieren“ · Zuständiger Thread: „Gesamtsystem auf Performance und Stabilität optimieren“ · Aktualisiert: 2026-11-03T23:02:57.928Z
 
 - [x] PERF-05-S01: Messbasis und priorisierter Befund (Ladezeiten, Pakete, CPU-Brennpunkte, Fehlerbehandlung) in PERFORMANCE_AUDIT.md; Messskript scripts/perf/measure_start.mjs.
 - [x] PERF-05-S02: Mitgelieferter Katalog als Datei beim Bauen (assets/catalog-<key>.json), Worker lädt sie bei fehlendem Katalogspeicher, Rückfall auf Erzeugen; Erststart 5,2 s → 1,4 s.
@@ -1246,7 +1246,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 - [x] PERF-05-S05: Plattformfeste Winkelfunktionen für gespeicherte Geometrie (Kolosseum war in Node und Chromium verschieden).
 - [x] PERF-05-S06: Dauerhafter Vorschaubildcache (O-1): Cache Storage je Render-Revision, Neustart ohne erneutes Rendern.
 - [ ] PERF-05-S07: Analyse Mod und Paper-Plugin nach Merge der Teambau-Threads (O-8); Aufteilen großer Dateien nach Merge des jeweiligen Threads (O-6).
-- [ ] PERF-05-S08: Zellen erst bei Bedarf entpacken statt alle Versionen beim Start (O-2).
+- [x] PERF-05-S08: Zellen erst bei Bedarf entpacken statt alle Versionen beim Start (O-2).
 
 **Abnahme:** Katalog aus der Datei ist Asset für Asset und Version für Version gleich dem im Browser erzeugten. Fehlende, beschädigte oder fremde Katalogdatei führt zum Erzeugen wie bisher, ohne Fehler. Hash- und ID-Ausgabe unverändert; kein mitgeliefertes Gebäude bekommt eine neue Version-ID gegenüber Node. Alle Kern- und Browsertests grün.
 

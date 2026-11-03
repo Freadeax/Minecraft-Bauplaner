@@ -1,4 +1,4 @@
-import { checkSchemaVersion, isPackedVersionRecord, packVersion, rememberPackedCells, unpackVersion, unpackVersionOrDamaged } from '../../../../packages/domain/src/index.js';
+import { checkSchemaVersion, isPackedVersionRecord, packVersion, rememberPackedCells, unpackVersion, unpackVersionLazily } from '../../../../packages/domain/src/index.js';
 import type { Asset, AssetVersion } from '../../../../packages/domain/src/index.js';
 import { AssetRevisionConflictError, seedSamples } from '../app/repository';
 import type { Repository } from '../app/repository';
@@ -24,21 +24,21 @@ export interface LoadedLibrary {
   readonly versions: ReadonlyMap<string, AssetVersion>;
 }
 
-/** Cells unpacked between two pauses of the page. */
-const SLICE_CELLS = 150_000;
+/** Versions read between two pauses of the page. */
+const SLICE_VERSIONS = 500;
 
-/** Reads assets and versions; packed records are unpacked one by one with pauses in between. */
+/**
+ * Reads assets and versions. Packed records keep their bytes and unpack their cells on first use
+ * (PERF-05-S08): the start reads only version heads; a version nobody opens is never unpacked.
+ */
 export async function loadLibrary(repo: Repository, onProgress?: (progress: JobProgress) => void): Promise<LoadedLibrary> {
   const [assets, records] = await Promise.all([repo.listAssets(), repo.listVersionRecords ? repo.listVersionRecords() : repo.listVersions()]);
   const versions = new Map<string, AssetVersion>();
-  let since = 0;
   for (let i = 0; i < records.length; i++) {
-    const v = unpackVersionOrDamaged(records[i]);
+    const v = unpackVersionLazily(records[i]);
     checkSchemaVersion('Version', v);
     versions.set(v.id, v);
-    since += v.payload.cells.length;
-    if (since >= SLICE_CELLS && i + 1 < records.length) {
-      since = 0;
+    if ((i + 1) % SLICE_VERSIONS === 0 && i + 1 < records.length) {
       onProgress?.({ step: 'Bibliothek zusammensetzen', fraction: 0.95 + 0.05 * (i + 1) / records.length });
       await pause();
     }

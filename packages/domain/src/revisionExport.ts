@@ -32,7 +32,7 @@ export function suggestDataVersion(project: Project, versions: ReadonlyMap<strin
 
 /** Resolves the frozen instances of one revision with the same composer as the editor. */
 export function resolveRevision(project: Project, revision: BlueprintRevision, versions: ReadonlyMap<string, AssetVersion>): Resolution {
-  return resolveProject({ ...project, instances: revision.instances, links: revision.links }, versions);
+  return resolveProject({ profileId: project.profileId, instances: revision.instances }, versions);
 }
 
 const sameContent = (project: Project, revision: BlueprintRevision): boolean =>
