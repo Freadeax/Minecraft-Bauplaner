@@ -870,3 +870,8 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `TeamLog.java` faltet `section.handover/accept/decline`, `member.away`, `issue.ack` nach TEAMBAU §4 wie `team.ts` (Angebot verfällt bei claim/assign/release/done/verify; leere Notiz = keine Notiz).
 - `scripts/test_bridge_paper_team.sh` auf echten Paper-Servern 1.18.2 (388), 1.21.4 (232), 26.3 (238): `uebergeben 3 Carla …`, Anzeige im `team`/`abschnitte`, falscher Annehmer abgelehnt, `annehmen` ohne Nummer, `abwesend bis 2026-11-10 Urlaub`, `abwesend`/`zurueck`; Planer-Faltung der Ausfuhr: neuer Inhaber, Notiz übernommen, kein offenes Angebot, Abwesenheit wie im Spiel. `test_bridge_paper_lager.sh 26.3` weiter grün.
 - Grenzen: Benachrichtigung des Empfängers im Chat braucht echte Spieler (TEAMBAU-21…24).
+
+## PLAN-01 · Roadmap nach Bereichen neu geordnet · 03.11.2026 · Claude
+- `tests/roadmap.test.mjs` um zwei Fälle erweitert: Übersicht enthält alle Bereiche, „Was nur Philipp tun kann“ und jede offene Aufgabe ohne Thread unter „Verwaiste Punkte“; Aufgaben ohne `area` bleiben gültig (eigene Gruppe); unbekannte Bereiche, Philipp-Arten und Eingangsbezüge werden abgelehnt.
+- `npm run check` auf main f18c3c3 plus diesem Stand: Architektur, Roadmap (99 Aufgaben), Typprüfung, Build, 770 Node-Tests (769 bestanden, 1 übersprungen, 0 fehlgeschlagen), Doku-, Testplan- und Bibliotheksprüfung bestanden.
+- Browsertests nicht ausgeführt: die Anwendung liest roadmap.json nicht, kein Anwendungscode geändert. Grenzen: Zuordnung der Threads ist der Stand vom 03.11.2026 ~20:45.

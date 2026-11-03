@@ -52,11 +52,83 @@ export function validateRoadmap(data, root = process.cwd()) {
   }
   for (const id of ids) visit(id);
   if (!Array.isArray(data.active) || data.active.some(id => !ids.has(id))) errors.push('Aktive Aufgaben unbekannt.');
+  errors.push(...validateOverview(data, ids));
   for (const event of data.events) {
     if (!validDate(event.at) || !event.summary || !event.kind || !event.items?.length || event.items.some(id => !ids.has(id))) errors.push('Ungültiger Verlaufseintrag.');
     if (event.files && (!Array.isArray(event.files) || event.files.some(p => !safePath(p)))) errors.push('Ungültige Dateizuordnung im Verlauf.');
   }
   return errors;
+}
+export const philippKinds = { server: 'Auf deinem Server mit Mitspielern', spiel: 'Im Spiel an deinem PC', geraet: 'Auf echten Geräten und Browsern', datei: 'Dateien oder Welt liefern', planer: 'Im Planer abnehmen', entscheidung: 'Entscheiden oder Rückfrage beantworten' };
+export const intakeStates = ['verwaist', 'zugeteilt', 'zurückgestellt', 'übernommen', 'verworfen'];
+// Übersicht nach Bereichen (optional je Aufgabe, damit parallele Threads ohne Zuordnung nicht scheitern).
+function validateOverview(data, ids) {
+  const errors = [];
+  if (data.areas === undefined) return errors;
+  const areas = new Set();
+  if (!Array.isArray(data.areas)) return ['Bereiche ungültig.'];
+  for (const a of data.areas) {
+    if (!/^[A-Z]+$/.test(a?.id ?? '') || areas.has(a.id) || !a.title) errors.push(`Ungültiger/doppelter Bereich ${a?.id}`);
+    areas.add(a?.id);
+  }
+  for (const i of data.items) {
+    if (i.area !== undefined && !areas.has(i.area)) errors.push(`${i.id}: unbekannter Bereich ${i.area}`);
+    if (i.thread !== undefined && i.thread !== null && (typeof i.thread !== 'string' || !i.thread.trim())) errors.push(`${i.id}: zuständiger Thread ungültig.`);
+    if (i.philipp !== undefined && (!Array.isArray(i.philipp) || i.philipp.some(p => !Object.hasOwn(philippKinds, p?.kind) || !p.text))) errors.push(`${i.id}: Philipp-Aufgaben ungültig.`);
+    if (i.orphans !== undefined && (!Array.isArray(i.orphans) || i.orphans.some(o => typeof o !== 'string' || !o))) errors.push(`${i.id}: verwaiste Punkte ungültig.`);
+  }
+  const seen = new Set();
+  for (const e of data.intake ?? []) {
+    if (!/^IN-\d{2,}$/.test(e?.id ?? '') || seen.has(e.id)) errors.push(`Ungültiger/doppelter Eingang ${e?.id}`);
+    seen.add(e?.id);
+    if (!validDate(e.at) || !e.title || !e.source || !areas.has(e.area) || !intakeStates.includes(e.state) || !Array.isArray(e.items) || e.items.some(id => !ids.has(id))) errors.push(`${e.id}: Eingang unvollständig.`);
+    if (e.thread !== null && (typeof e.thread !== 'string' || !e.thread.trim())) errors.push(`${e.id}: Thread ungültig.`);
+  }
+  return errors;
+}
+const open = i => !['verified', 'deferred'].includes(i.status);
+const parked = i => i.area === 'SPAETER';
+const orphaned = i => open(i) && !parked(i) && (!i.thread || i.orphans?.length > 0);
+const threadLabel = i => i.thread ? `„${esc(i.thread)}“` : (open(i) && !parked(i) ? '**verwaist**' : '—');
+const shortTitle = t => { const s = t.split(': ')[0]; return s.length > 90 ? `${s.slice(0, 88)}…` : s; };
+export function renderOverview(data) {
+  if (!Array.isArray(data.areas)) return '';
+  const areaOf = new Map(data.areas.map(a => [a.id, a]));
+  const groups = [...data.areas, { id: '', title: 'Noch keinem Bereich zugeordnet' }];
+  let out = '## Überblick nach Bereichen\n\nJe Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und dem, was nur Philipp tun kann. „Verwaist“ heißt: Arbeit offen, aber kein laufender Thread zuständig. Abgeschlossene Pakete stehen darunter in einer Zeile. Pflege: Felder `area`, `thread`, `philipp`, `orphans` je Aufgabe in roadmap.json; neue Wünsche ohne Paket als Eingang (`intake`).\n\n| Bereich | Offen | Verwaist | Nur Philipp | Geprüft |\n|---|---:|---:|---:|---:|\n';
+  const inArea = id => data.items.filter(i => (areaOf.has(i.area) ? i.area : '') === id);
+  for (const g of groups) {
+    const items = inArea(g.id); if (!items.length) continue;
+    out += `| [${esc(g.title)}](#bereich-${(g.id || 'ohne').toLowerCase()}) | ${items.filter(open).length} | ${items.filter(orphaned).length} | ${items.filter(i => i.philipp?.length).length} | ${items.filter(i => i.status === 'verified').length} |\n`;
+  }
+  out += '\n';
+  for (const g of groups) {
+    const items = inArea(g.id); if (!items.length) continue;
+    const active = items.filter(open).sort((a, b) => a.priority.localeCompare(b.priority) || a.id.localeCompare(b.id));
+    out += `<a id="bereich-${(g.id || 'ohne').toLowerCase()}"></a>\n\n### Bereich: ${g.title}\n\n`;
+    if (active.length) {
+      out += '| ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |\n|---|---|---|---|---|---|\n';
+      for (const i of active) out += `| [${i.id}](#${i.id.toLowerCase()}) | ${esc(shortTitle(i.title))} | ${labels[i.status]} ${done(i)}/${i.steps.length} | ${i.priority} | ${threadLabel(i)}${i.orphans?.length ? ` · ${i.orphans.length} verwaist` : ''} | ${(i.philipp ?? []).map(p => esc(p.text)).join('<br>') || '—'} |\n`;
+      out += '\n';
+    }
+    const closed = items.filter(i => !open(i));
+    if (closed.length) out += `Abgeschlossen oder zurückgestellt: ${closed.map(i => `${i.id} (${i.status === 'verified' ? 'geprüft' : 'zurückgestellt'})`).join(', ')}.\n\n`;
+  }
+  out += '## Was nur Philipp tun kann\n\nGesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](https://freadeax.github.io/Minecraft-Bauplaner/#/testphase); Fehler dort über „Fehler melden“ oder im Spiel mit `/bauplaner diagnose`.\n\n';
+  for (const [kind, title] of Object.entries(philippKinds)) {
+    const rows = data.items.flatMap(i => (i.philipp ?? []).filter(p => p.kind === kind).map(p => `- **${i.id}** · ${esc(p.text)}`));
+    if (rows.length) out += `### ${title}\n\n${rows.join('\n')}\n\n`;
+  }
+  out += '## Verwaiste Punkte\n\nArbeit, für die gerade kein laufender Thread zuständig ist. Zum Verteilen: Thread starten, `thread` in roadmap.json setzen und den Punkt aus `orphans` entfernen, sobald er ein eigener Teilschritt oder erledigt ist.\n\n| ID | Bereich | Prio | Status | Offen ohne Bearbeiter |\n|---|---|---|---|---|\n';
+  const orphanItems = data.items.filter(orphaned).sort((a, b) => a.priority.localeCompare(b.priority) || a.id.localeCompare(b.id));
+  for (const i of orphanItems) out += `| [${i.id}](#${i.id.toLowerCase()}) | ${esc(areaOf.get(i.area)?.title.split(':')[0].split(' (')[0] ?? '—')} | ${i.priority} | ${labels[i.status]} | ${(i.orphans?.length ? i.orphans : [i.next]).map(esc).join('<br>')} |\n`;
+  out += '\n';
+  if (data.intake?.length) {
+    out += `## Eingänge ohne eigenes Paket\n\n${esc(data.intakeRule ?? '')}\n\n| ID | Eingang | Von | Bereich | Zustand | Thread | Bezug |\n|---|---|---|---|---|---|---|\n`;
+    for (const e of data.intake) out += `| ${e.id} | ${esc(e.title)} | ${esc(e.source)}, ${e.at.slice(0, 10)} | ${esc(areaOf.get(e.area)?.title.split(':')[0].split(' (')[0] ?? e.area)} | ${e.state} | ${e.thread ? `„${esc(e.thread)}“` : (e.state === 'verwaist' ? '**verwaist**' : '—')} | ${e.items.join(', ') || '—'} |\n`;
+    out += '\n';
+  }
+  return out;
 }
 const esc = s => String(s).replaceAll('|', '\\|').replaceAll('\n', ' ');
 const done = i => i.steps.filter(s => s.done).length;
@@ -64,7 +136,7 @@ const short = h => h ? `\`${h.slice(0, 7)}\`` : 'ausstehend';
 const commit = h => h ? `[${h.slice(0, 7)}](https://github.com/Freadeax/Minecraft-Bauplaner/commit/${h})` : 'ausstehend';
 export function renderRoadmap(data) {
   const counts = Object.keys(labels).map(k => `| ${labels[k]} | ${data.items.filter(i => i.status === k).length} |`).join('\n');
-  let out = `# Verbindliche Roadmap und Fortschritt\n\nStand: ${data.updatedAt}. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: ${commit(data.baselineCommit)}.\n\n## So liest du den Stand\n\n- Jede Aufgabe hat eine feste ID, echte Teilschritte, Abhängigkeiten, Nachweise und eine nächste Aktion.\n- **Implementiert ≠ geprüft ≠ auf Main ≠ live.** „Geprüft“ gilt nur für den beschriebenen Umfang und den genannten Nachweis.\n- Teilschritte sind abzählbare Ergebnisse, keine geschätzten Fertigstellungsprozente. Eine Phase ist erst nach ihren Austrittskriterien abgeschlossen.\n- Main-/Pages-Spalten nennen den letzten eingetragenen Nachweis; jüngste Integration ist über Git-Historie und das [Live-Manifest](https://freadeax.github.io/Minecraft-Bauplaner/deployment.json) nachprüfbar. Ein neuer Commit kann den eigenen Hash nicht enthalten.\n- Historische Nachweise ersetzen keinen aktuellen Browser-, Geräte- oder Spieltest.\n\n| Status | Pakete |\n|---|---:|\n${counts}\n\n## Aktiver Arbeitsblock\n\n`;
+  let out = `# Verbindliche Roadmap und Fortschritt\n\nStand: ${data.updatedAt}. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: ${commit(data.baselineCommit)}.\n\n## So liest du den Stand\n\n- Jede Aufgabe hat eine feste ID, echte Teilschritte, Abhängigkeiten, Nachweise und eine nächste Aktion.\n- **Implementiert ≠ geprüft ≠ auf Main ≠ live.** „Geprüft“ gilt nur für den beschriebenen Umfang und den genannten Nachweis.\n- Teilschritte sind abzählbare Ergebnisse, keine geschätzten Fertigstellungsprozente. Eine Phase ist erst nach ihren Austrittskriterien abgeschlossen.\n- Main-/Pages-Spalten nennen den letzten eingetragenen Nachweis; jüngste Integration ist über Git-Historie und das [Live-Manifest](https://freadeax.github.io/Minecraft-Bauplaner/deployment.json) nachprüfbar. Ein neuer Commit kann den eigenen Hash nicht enthalten.\n- Historische Nachweise ersetzen keinen aktuellen Browser-, Geräte- oder Spieltest.\n\n| Status | Pakete |\n|---|---:|\n${counts}\n\n${renderOverview(data)}## Aktiver Arbeitsblock\n\n`;
   for (const id of data.active) {
     const i = data.items.find(i => i.id === id);
     out += `- **${i.id} · ${i.title}** — ${labels[i.status]}, ${done(i)}/${i.steps.length} Teilschritte. Nächster Schritt: ${i.next}\n`;
@@ -77,8 +149,10 @@ export function renderRoadmap(data) {
   }
   out += '## Details aller Arbeitspakete\n\n';
   for (const i of data.items) {
-    out += `### ${i.id}\n\n**${i.title}** · ${labels[i.status]} · Priorität ${i.priority} · Verantwortlich: ${i.owner} · Aktualisiert: ${i.updatedAt}\n\n${i.steps.map(s => `- [${s.done ? 'x' : ' '}] ${s.id}: ${s.title}`).join('\n')}\n\n**Abnahme:** ${i.acceptance.join(' ')}\n\n**Nächste Aktion:** ${i.next}\n\n`;
+    out += `### ${i.id}\n\n**${i.title}** · ${labels[i.status]} · Priorität ${i.priority} · Verantwortlich: ${i.owner}${i.thread !== undefined ? ` · Zuständiger Thread: ${threadLabel(i)}` : ''} · Aktualisiert: ${i.updatedAt}\n\n${i.steps.map(s => `- [${s.done ? 'x' : ' '}] ${s.id}: ${s.title}`).join('\n')}\n\n**Abnahme:** ${i.acceptance.join(' ')}\n\n**Nächste Aktion:** ${i.next}\n\n`;
     if (i.blockers.length) out += `**Blocker:** ${i.blockers.join(' ')}\n\n`;
+    if (i.philipp?.length) out += `**Nur Philipp:** ${i.philipp.map(p => `${philippKinds[p.kind]}: ${p.text}`).join(' ')}\n\n`;
+    if (i.orphans?.length) out += `**Verwaist (ohne Bearbeiter):** ${i.orphans.join(' ')}\n\n`;
     out += `**Prüfstand:** ${i.verification.note}\n\n**Nachweise:** ${i.evidence.length ? i.evidence.map(e => `[${e.path}](${path.posix.relative('docs', e.path)}) — ${e.note}`).join('; ') : 'noch ausstehend'}\n\n**Dateiumfang:** ${i.scope.map(p => `\`${p}\``).join(', ')}. **Abhängigkeiten:** ${i.dependencies.join(', ') || 'keine'}. **Alte IDs:** ${i.legacyIds.join(', ') || '—'}.\n\n**Integration:** Main ${commit(i.delivery.main)}; Pages-Quelle ${commit(i.delivery.pagesSource)}.\n\n`;
   }
   out += '## Weiterführende Dokumente\n\n- [Änderungsverlauf mit Dateien und Aufgabenständen](ROADMAP_HISTORY.md)\n- [Aktueller Systemstatus](STATUS.md)\n- [Tests und Prüfgrenzen](TESTING.md)\n- [Historische Roadmap, nicht mehr steuernd](ROADMAP_LEGACY.md)\n- [Modulvertrag](architecture/MODULES.md)\n- [Entwicklungskoordination](COMMUNICATION.md)\n';

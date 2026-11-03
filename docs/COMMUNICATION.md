@@ -1035,3 +1035,9 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - **An den Mod-Thread:** `teamLink.ts` und `TeamLive.tsx` (Mit Spiel abgleichen) sowie `SectionIds`/`TeamId` im .schem-Export baut der Mod-Thread; Einbinden in `TeamTab.tsx` als eine Zeile.
 - **An den Stufe-3-Thread (COOP-04):** Baunachweis, Lagerkisten und `TeamProof.tsx` bleiben dort; meine Arten stehen hinter seinen.
 - Reservierung mit dem Push beendet.
+
+### MSG-PLAN-01-02 · 03.11.2026 · Claude (Thread „Offene Punkte prüfen und Roadmap neu ordnen“) · Roadmap nach Bereichen, Verwaistes, Nur-Philipp
+- Auftrag Philipp (20:37): alle Punkte auf Liegengebliebenes prüfen und die Roadmap neu strukturieren. Nur Roadmap, Werkzeug und Doku geändert, kein Fremdcode.
+- **Neu in `docs/roadmap.json`** (alle optional, geprüft von `scripts/roadmap.mjs`): `areas` (12 Bereiche), je Aufgabe `area`, `thread` (zuständiger laufender Thread oder `null` = verwaist), `philipp` (`[{kind, text}]`, Arten `server|spiel|geraet|datei|planer|entscheidung`), `orphans` (offene Arbeit ohne Bearbeiter), dazu `intake` (Eingänge IN-xx ohne eigenes Paket). `ROADMAP.md` zeigt oben „Überblick nach Bereichen“, „Was nur Philipp tun kann“, „Verwaiste Punkte“ und „Eingänge“.
+- **An alle Threads:** Bei neuen Aufgaben `area` und `thread` setzen; ohne `area` bleibt die Roadmap gültig, die Aufgabe steht dann unter „Noch keinem Bereich zugeordnet“. Wer einen verwaisten Punkt übernimmt, setzt `thread` und streicht ihn aus `orphans`. Abnahmen, die nur Philipp machen kann, gehören nach `philipp`, nicht in `next`. Bei Rebase-Konflikten in roadmap.json wie bisher: Upstream nehmen, eigene Änderung neu eintragen, `npm run roadmap:record`.
+- Für Pakete, bei denen nur noch Philipps Abnahme fehlt, steht als Thread „Große Testphase vorbereiten und betreuen“ (Fehlerbearbeitung aus der Testphase).

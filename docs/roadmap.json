@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T20:38:19.401Z",
+  "updatedAt": "2026-11-03T20:52:59.449Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -125,7 +125,11 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "KERN",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "CORE-02",
@@ -171,7 +175,11 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "KERN",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "CORE-03",
@@ -217,7 +225,11 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "KERN",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "STORE-01",
@@ -266,7 +278,11 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "KERN",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "MAT-01",
@@ -316,7 +332,11 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "KERN",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "BUILD-01",
@@ -366,7 +386,11 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PROJEKT",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "LIB-01",
@@ -413,7 +437,11 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "BIBLIOTHEK",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "GEN-01",
@@ -457,7 +485,11 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "BIBLIOTHEK",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "OPS-01",
@@ -502,7 +534,11 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "QA",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "PLAN-01",
@@ -570,7 +606,11 @@
         "main": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933",
         "pagesSource": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933"
       },
-      "updatedAt": "2026-11-01T12:48:14.548Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "QA",
+      "thread": "Offene Punkte prüfen und Roadmap neu ordnen",
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "ARCH-01",
@@ -639,7 +679,11 @@
         "main": "ccf4fa71c033c2f9415528192a04faed36730660",
         "pagesSource": "ccf4fa71c033c2f9415528192a04faed36730660"
       },
-      "updatedAt": "2026-11-01T09:33:55.354Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "KERN",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "ARCH-02",
@@ -723,7 +767,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T09:08:13.761Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "KERN",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "geraet",
+          "text": "Datencheck unter #/system mit deinen über Monate gewachsenen Browserdaten (S05)."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "DOC-01",
@@ -782,7 +835,11 @@
         "main": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933",
         "pagesSource": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933"
       },
-      "updatedAt": "2026-11-01T12:42:58.241Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "QA",
+      "thread": "Offene Punkte prüfen und Roadmap neu ordnen",
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "STORE-02",
@@ -857,7 +914,11 @@
         "main": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933",
         "pagesSource": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933"
       },
-      "updatedAt": "2026-11-01T12:42:58.241Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "KERN",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "QA-01",
@@ -908,7 +969,11 @@
         "main": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933",
         "pagesSource": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933"
       },
-      "updatedAt": "2026-11-01T12:42:58.241Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "QA",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "QA-02",
@@ -951,7 +1016,18 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "QA",
+      "thread": null,
+      "philipp": [
+        {
+          "kind": "geraet",
+          "text": "Safari/iPhone, Touch und echte GPU – nur auf deinen Geräten möglich."
+        }
+      ],
+      "orphans": [
+        "S01 Geräte- und Browsermatrix mit reproduzierbaren Aufgaben vorbereiten."
+      ]
     },
     {
       "id": "QA-03",
@@ -1032,7 +1108,11 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T18:52:18.883Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "QA",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "UI-01",
@@ -1106,7 +1186,11 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T12:42:58.241Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "UI-02",
@@ -1179,7 +1263,11 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T13:31:11.269Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "STAB-01",
@@ -1234,7 +1322,13 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PERF",
+      "thread": null,
+      "philipp": [],
+      "orphans": [
+        "S02 echten Renderingfehler auslösen und Wiederaufnahme prüfen – im Cloud-Browser machbar."
+      ]
     },
     {
       "id": "OPS-02",
@@ -1291,7 +1385,11 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T12:42:58.241Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "QA",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "OPS-03",
@@ -1338,7 +1436,11 @@
         "main": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933",
         "pagesSource": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933"
       },
-      "updatedAt": "2026-11-01T12:42:58.241Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "QA",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "LICENSE-01",
@@ -1379,7 +1481,18 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "QA",
+      "thread": null,
+      "philipp": [
+        {
+          "kind": "entscheidung",
+          "text": "Lizenz für das ganze Repository bestätigen (Modrinth nutzt bereits MIT)."
+        }
+      ],
+      "orphans": [
+        "Eigene und fremde Bestandteile inventarisieren; Herkunft öffentlicher Assets prüfen."
+      ]
     },
     {
       "id": "PROFILE-01",
@@ -1424,7 +1537,13 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "KERN",
+      "thread": null,
+      "philipp": [],
+      "orphans": [
+        "Komplett offen. War Codex vorgeschlagen, seit 01.11. keine Codex-Commits. Blockiert VIEW-02-S06, MAT-02, MAT-04 und die Registerlücken in EDIT-02. Die Berichtsfakten aus BLOCK-01 (blockFacts.ts) lassen sich übernehmen."
+      ]
     },
     {
       "id": "NBT-01",
@@ -1466,7 +1585,13 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "KERN",
+      "thread": null,
+      "philipp": [],
+      "orphans": [
+        "Komplett offen (Codex-Vorschlag ohne Umsetzung): NBT-Familien und Ausrichtungsregeln für BlockEntities festlegen und prüfen."
+      ]
     },
     {
       "id": "FORMAT-01",
@@ -1523,7 +1648,13 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "KERN",
+      "thread": null,
+      "philipp": [],
+      "orphans": [
+        "S02 Abgleich mit echten WorldEdit-Dateien. Philipp nutzt kein WorldEdit: mit öffentlichen .schem-Referenzdateien prüfen oder zurückstellen."
+      ]
     },
     {
       "id": "FORMAT-02",
@@ -1603,7 +1734,16 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-02T07:00:21.077Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "KERN",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Litematic-Export im Spiel mit Litematica laden (S02)."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "MAT-02",
@@ -1647,7 +1787,13 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "KERN",
+      "thread": null,
+      "philipp": [],
+      "orphans": [
+        "Komplett offen, wartet auf PROFILE-01: Rezeptalternativen, Mehrblockobjekte, Rest- und Brennstoffbilanzen profilgenau."
+      ]
     },
     {
       "id": "MAT-03",
@@ -1702,7 +1848,13 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "KERN",
+      "thread": null,
+      "philipp": [],
+      "orphans": [
+        "S03 Glas-/Beton-/Terrakottavarianten in Profil und Oberfläche prüfen – im Cloud-Browser machbar."
+      ]
     },
     {
       "id": "MAT-04",
@@ -1747,7 +1899,13 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "KERN",
+      "thread": null,
+      "philipp": [],
+      "orphans": [
+        "Komplett offen: Kupfer mit Oxidation und Wachs."
+      ]
     },
     {
       "id": "DIFF-01",
@@ -1803,7 +1961,13 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "KERN",
+      "thread": null,
+      "philipp": [],
+      "orphans": [
+        "S02 Verschiebung von echter Geometrieänderung unterscheiden, S03 NBT-Änderungen im Vergleich anzeigen."
+      ]
     },
     {
       "id": "PERF-01",
@@ -1878,7 +2042,11 @@
         "main": "7dffd922f46876c70700afc0429afb969e5478aa",
         "pagesSource": "7dffd922f46876c70700afc0429afb969e5478aa"
       },
-      "updatedAt": "2026-11-01T12:42:58.241Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PERF",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "PERF-02",
@@ -1939,7 +2107,13 @@
         "main": "7dffd922f46876c70700afc0429afb969e5478aa",
         "pagesSource": "7dffd922f46876c70700afc0429afb969e5478aa"
       },
-      "updatedAt": "2026-11-01T12:42:58.241Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PERF",
+      "thread": null,
+      "philipp": [],
+      "orphans": [
+        "S03 Chunk-/Übertragungsstrategie und selektive Neuberechnung (Codex-Vorschlag ohne Umsetzung; mit PERF-05-S08 abstimmen)."
+      ]
     },
     {
       "id": "PERF-03",
@@ -1989,7 +2163,13 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PERF",
+      "thread": null,
+      "philipp": [],
+      "orphans": [
+        "Teilweise durch PERF-05 erledigt (Seiten bei Bedarf geladen, Vorschaubilder dauerhaft gespeichert): Schritte abgleichen und schließen."
+      ]
     },
     {
       "id": "PERF-04",
@@ -2101,7 +2281,18 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T17:39:42.853Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PERF",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "geraet",
+          "text": "Olympus auf deinem Rechner, dazu Firefox/Safari (S06)."
+        }
+      ],
+      "orphans": [
+        "GPU-Upload großer Szenen in Stücken."
+      ]
     },
     {
       "id": "PERF-05",
@@ -2214,7 +2405,11 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:21:00.399Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PERF",
+      "thread": "Gesamtsystem auf Performance und Stabilität optimieren",
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "VIEW-01",
@@ -2264,7 +2459,16 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "geraet",
+          "text": "Ansicht auf echter GPU und mit Touch prüfen, negative Koordinaten, alle Schnittachsen (S02)."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "VIEW-02",
@@ -2349,7 +2553,18 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T13:02:14.162Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "geraet",
+          "text": "Mojang-Download und Blockformen in Firefox/Safari und auf echten Geräten (S06)."
+        }
+      ],
+      "orphans": [
+        "Registerdaten an PROFILE-01 binden, sobald es existiert."
+      ]
     },
     {
       "id": "BLOCK-01",
@@ -2442,7 +2657,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T12:25:42.264Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "KERN",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Einen Bau mit Spielprüfung ohne Hinweise nachbauen und Verbindungen vergleichen (S07)."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "BLOCK-02",
@@ -2522,7 +2746,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T12:25:42.264Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "KERN",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Geänderte Gebäude (Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen (S06)."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "GFX-01",
@@ -2608,7 +2841,18 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T08:13:54.837Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "geraet",
+          "text": "Licht und Schatten auf echten GPUs, Firefox/Safari und Handy (S06)."
+        }
+      ],
+      "orphans": [
+        "Biomfarben und leuchtende Blockentities (angekündigte Folgestufe)."
+      ]
     },
     {
       "id": "MODEL-01",
@@ -2694,7 +2938,18 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T13:48:27.653Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": null,
+      "philipp": [
+        {
+          "kind": "datei",
+          "text": "Export in Blender und einem Slicer öffnen, ein Testdruck (S05)."
+        }
+      ],
+      "orphans": [
+        "S06 Flächen der Druckhülle ohne T-Stöße zusammenfassen – Thread „Bauten als 3D-Modell exportieren“ ist beendet."
+      ]
     },
     {
       "id": "EDIT-01",
@@ -2752,7 +3007,18 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T14:29:20.816Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "geraet",
+          "text": "Mehrfachauswahl auf echten Geräten (QA-02)."
+        }
+      ],
+      "orphans": [
+        "Gruppenziehen direkt im 3D-Bild."
+      ]
     },
     {
       "id": "EDIT-02",
@@ -2830,7 +3096,19 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T14:29:20.816Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Gesetzte und gedrehte Zustände im Spiel prüfen."
+        }
+      ],
+      "orphans": [
+        "Picking direkt an 3D-Blockflächen (gilt auch für EDIT-03).",
+        "Registerlücken über PROFILE-01 schließen."
+      ]
     },
     {
       "id": "EDIT-03",
@@ -2908,7 +3186,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T05:30:31.682Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Schablonen-Zustände (Tür, Treppe, Laterne) im Spiel prüfen."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "EDIT-04",
@@ -2999,7 +3286,19 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T10:07:03.926Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Gespiegelte und gedrehte Zustände (Türen, Truhen, Schienen) im Spiel (S07)."
+        }
+      ],
+      "orphans": [
+        "Gelände-Werkzeuge auf dem Projektgelände (als eigener Thread angekündigt, nie gestartet).",
+        "Symmetrie und Kurven auch in der Mod."
+      ]
     },
     {
       "id": "EDIT-05",
@@ -3095,7 +3394,20 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T19:23:55.694Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "planer",
+          "text": "Zauberstab, Stapeln, Extrudieren und Wendel in der Werkstatt abnehmen (S07)."
+        },
+        {
+          "kind": "spiel",
+          "text": "Gestapelte und gedrehte Bauteile mit Ausstattung im Spiel."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "UPDATE-01",
@@ -3154,7 +3466,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T05:34:31.591Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PROJEKT",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "geraet",
+          "text": "Versionsupdates auf echten Geräten (QA-02)."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "LIB-02",
@@ -3214,7 +3535,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T13:30:13.842Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "BIBLIOTHEK",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "planer",
+          "text": "Rückmeldung zur Bedienung der Sammlungen."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "LIB-03",
@@ -3271,7 +3601,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T13:30:13.842Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "BIBLIOTHEK",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "planer",
+          "text": "Eigene Ensembles und Generatorvorlagen ausprobieren."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "WORLD-02",
@@ -3335,7 +3674,11 @@
         "main": "c3e647855dc3b1bc5417a64cc6350b375b9b510d",
         "pagesSource": "c3e647855dc3b1bc5417a64cc6350b375b9b510d"
       },
-      "updatedAt": "2026-11-01T12:42:58.241Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "BIBLIOTHEK",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "BUILD-05",
@@ -3403,7 +3746,11 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T14:55:14.685Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "BIBLIOTHEK",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "TERRAIN-01",
@@ -3485,7 +3832,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T06:01:12.819Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "datei",
+          "text": "Kopie deiner 26.3-Welt für die Geländeabnahme (S05)."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "TERRAIN-02",
@@ -3586,7 +3942,18 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T12:10:10.657Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "datei",
+          "text": "Abnahme in deiner eigenen Welt und auf Touch-Geräten (S05)."
+        }
+      ],
+      "orphans": [
+        "S07 Wegstufen als Treppen an Höhenwechseln (auch BASE-01)."
+      ]
     },
     {
       "id": "BUILD-06",
@@ -3661,7 +4028,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T05:35:21.519Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PROJEKT",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "Bauführung mit Mod-Aufnahme auf deinem Server; Druck- und Handyansicht."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "GEN-02",
@@ -3736,7 +4112,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T14:48:06.970Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "BIBLIOTHEK",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Treppenhaus, Torhaus-Wehrgang und Hafen im Spiel."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "MAP-01",
@@ -3810,7 +4195,16 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-02T11:28:21.794Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "geraet",
+          "text": "Weltkarte auf echter GPU und mit Touch (QA-02)."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "MAP-03",
@@ -3900,7 +4294,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T12:00:34.846Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "Kopplung und Senden auf dem LMNT-Server mit Browserfreigabe „lokales Netzwerk“ (S06)."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "MAP-04",
@@ -3981,7 +4384,18 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T13:29:25.610Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "geraet",
+          "text": "Langdruck-Menü auf echtem Touch-Gerät (S06)."
+        }
+      ],
+      "orphans": [
+        "Benannte Gruppen und Sperren mit Schemaerweiterung, abgestimmt mit der Mod (siehe GAME-07-S07)."
+      ]
     },
     {
       "id": "MAP-02",
@@ -4024,7 +4438,13 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": null,
+      "philipp": [],
+      "orphans": [
+        "Komplett offen: gespeicherte Kartenziele und Provideradapter (BlueMap, Dynmap, Squaremap) mit eigenen Markerdateien."
+      ]
     },
     {
       "id": "GAME-01",
@@ -4083,7 +4503,11 @@
         "main": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933",
         "pagesSource": "b5eb5b9bc039160e668a7183c0ccfcdcd764a933"
       },
-      "updatedAt": "2026-11-01T12:42:58.241Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "KERN",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "GAME-02",
@@ -4174,7 +4598,16 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-01T14:16:52.468Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "MOD",
+      "thread": "Bauplaner-Mod von Grund auf neu entwickeln",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "Mehrspieler-Abnahme auf server.lmnt-gaming.net (S04)."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "GAME-07",
@@ -4316,7 +4749,18 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T22:14:34.982Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "MOD",
+      "thread": "Bauplaner-Mod von Grund auf neu entwickeln",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "Hologramm, Abschnitte und Röntgensicht auf server.lmnt-gaming.net (S05)."
+        }
+      ],
+      "orphans": [
+        "S07 Stufe 6: Gruppen/Sperren aus dem Weltbuilder, Abschnitt als Packliste mit Kistenstandorten, Gerüst-Hinweise für hängende Blöcke."
+      ]
     },
     {
       "id": "GAME-08",
@@ -4399,7 +4843,18 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T23:23:44.219Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "MOD",
+      "thread": "Bauplaner-Mod von Grund auf neu entwickeln",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "Mitspieler-Pfeile auf der Live-Karte mit einem zweiten Spieler."
+        }
+      ],
+      "orphans": [
+        "Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (auch MAP-06)."
+      ]
     },
     {
       "id": "GAME-03",
@@ -4454,7 +4909,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T11:45:46.079Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "MOD",
+      "thread": "Bauplaner-Mod von Grund auf neu entwickeln",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "Zusammen mit MAP-03-S06."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "WORLD-IMPORT-01",
@@ -4535,7 +4999,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T15:10:37.702Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "datei",
+          "text": "Ausschnitt aus einer Kopie deiner Modpack-Welt übernehmen."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "BACKUP-02",
@@ -4596,7 +5069,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T17:44:58.271Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "geraet",
+          "text": "Sicherungs-Download in Safari; Rückmeldung, ob 7 Tage für die Erinnerung passen."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "TEAM-01",
@@ -4644,7 +5126,11 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T16:19:59.131Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "SPAETER",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "AUTH-01",
@@ -4687,7 +5173,11 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T16:19:59.131Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "SPAETER",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "TEAM-02",
@@ -4733,7 +5223,11 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T16:19:59.131Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "SPAETER",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "TEAM-03",
@@ -4777,7 +5271,11 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T16:19:59.131Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "SPAETER",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "GAME-04",
@@ -4847,7 +5345,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T17:47:04.911Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLUGIN",
+      "thread": "Server-Plugin mit geprüften Lagerkisten",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "Plugin-Abnahme auf deinem Paper-Server (S04)."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "GAME-05",
@@ -4926,7 +5433,18 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T19:17:43.235Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "MOD",
+      "thread": null,
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Forge-Testversion auf einem Rechner mit Bildschirm starten (S03)."
+        }
+      ],
+      "orphans": [
+        "Forge-Adapter im echten Client prüfen und Forge-Jar bereitstellen – Thread „Mod für NeoForge und Forge bauen“ ist beendet."
+      ]
     },
     {
       "id": "GAME-06",
@@ -4967,7 +5485,11 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T17:45:29.973Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "SPAETER",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "LAGER-01",
@@ -5013,7 +5535,13 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLUGIN",
+      "thread": null,
+      "philipp": [],
+      "orphans": [
+        "Weitgehend durch COOP-04/05 abgedeckt: zusammenführen oder schließen."
+      ]
     },
     {
       "id": "OPS-04",
@@ -5055,7 +5583,11 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "SPAETER",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "DEFER-01",
@@ -5090,7 +5622,11 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "SPAETER",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "DEFER-02",
@@ -5129,7 +5665,11 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "SPAETER",
+      "thread": null,
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "LIB-04",
@@ -5200,7 +5740,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T13:36:58.036Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "BIBLIOTHEK",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Redstone-Bauten im Spiel abnehmen."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "ENTITY-01",
@@ -5292,7 +5841,18 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T12:23:17.039Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "KERN",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Export mit Gemälden, Rahmen und Rüstungsständern im Spiel laden (S06)."
+        }
+      ],
+      "orphans": [
+        "Truhen- und Schildinhalte in der Werkstatt bearbeiten (Folgeidee aus der nächsten Aktion)."
+      ]
     },
     {
       "id": "LIB-05",
@@ -5385,7 +5945,7 @@
           "note": "Sieben neue Meisterstücke mit Einrichtung."
         }
       ],
-      "updatedAt": "2026-11-02T20:15:42.955Z",
+      "updatedAt": "2026-11-03T20:52:59.449Z",
       "verification": {
         "state": "pending",
         "note": "Node-Prüfungen bestanden (baustil 9/9, catalog-game, catalog, generators); Sichtprüfung über isometrische Ansichten; Abnahme im echten Spiel steht aus."
@@ -5393,7 +5953,16 @@
       "delivery": {
         "main": null,
         "pagesSource": null
-      }
+      },
+      "area": "BIBLIOTHEK",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Einige neu gezeichnete Gebäude im Spiel ansehen (S08)."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "LIB-06",
@@ -5495,7 +6064,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T16:37:18.371Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "BIBLIOTHEK",
+      "thread": "Hochgeladene Bauobjekte fest in Bibliothek übernehmen",
+      "philipp": [
+        {
+          "kind": "datei",
+          "text": "Eigenes Bauwerk einreichen und das Paket im Thread hochladen (BIB-15/16)."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "BASE-01",
@@ -5582,7 +6160,18 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T19:48:53.099Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "BIBLIOTHEK",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "datei",
+          "text": "Basisplaner mit einer echten Basis aus eurer Welt abnehmen (S06)."
+        }
+      ],
+      "orphans": [
+        "Küstenlinie aus der Geländeaufnahme, Wegstufen als Treppen, Brücken."
+      ]
     },
     {
       "id": "SPLIT-01",
@@ -5661,7 +6250,18 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T19:48:53.099Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "BIBLIOTHEK",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "datei",
+          "text": "Echte Litematic-Basen zum Herauslösen bereitstellen (S05)."
+        }
+      ],
+      "orphans": [
+        "Unterirdische Räume und Brückenverbindungen erkennen."
+      ]
     },
     {
       "id": "GROSS-01",
@@ -5750,7 +6350,18 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T16:15:14.846Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "BIBLIOTHEK",
+      "thread": "Bibliothek um größere Projekte erweitern",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Großprojekte und die sechs Großbauten im Spiel ansehen (BIB-13)."
+        }
+      ],
+      "orphans": [
+        "Geländeanpassung und Wasserkanten für Großprojekte, eigene Großprojekte aus Sammlungen."
+      ]
     },
     {
       "id": "MAP-05",
@@ -5838,7 +6449,18 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T20:30:03.485Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "„Baustand holen“ mit der Mod auf server.lmnt-gaming.net (S05)."
+        }
+      ],
+      "orphans": [
+        "Gedrehte Projektlagen auf der Weltkarte, damit gedrehte Hologramme übernommen werden."
+      ]
     },
     {
       "id": "MAP-06",
@@ -5945,7 +6567,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T23:03:24.346Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PLANER",
+      "thread": "Weltkarte in die Tiefe ausbauen",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Weltkarte mit Mod 0.8.0 oder neuer im Spiel abnehmen (S08, KARTE-05/06, LIVE-08)."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "QA-04",
@@ -6033,7 +6664,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-02T22:22:15.691Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "QA",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "Testphase mit weiteren Testern: erst die Kernfälle auf #/testphase."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "GEN-03",
@@ -6117,7 +6757,18 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T15:52:52.715Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "BIBLIOTHEK",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Kolosseum exportieren und im Spiel aufstellen (BIB-14)."
+        }
+      ],
+      "orphans": [
+        "Feinschliff Kolosseum: Statuen in den Attika-Fenstern, Treppen im Hypogäum."
+      ]
     },
     {
       "id": "SIZE-01",
@@ -6213,7 +6864,20 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T19:23:40.842Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "GROESSE",
+      "thread": "Volumenlimit für große Builds aufheben",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Großen Bau (Olympus) ins Spiel senden und prüfen (DATEI-05, MOD-11, MOD-15, LIVE-09)."
+        },
+        {
+          "kind": "entscheidung",
+          "text": "Im Thread beschreiben, was beim Senden falsch ankommt."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "COOP-01",
@@ -6290,7 +6954,22 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T19:07:52.295Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "TEAM",
+      "thread": "Gemeinsames Bauen mehrerer Spieler ermöglichen",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "Mit Mitspielern TEAMBAU-01…05."
+        },
+        {
+          "kind": "entscheidung",
+          "text": "Weg für den Live-Abgleich ohne Herunter- und Hochladen wählen (Rückfrage im Thread)."
+        }
+      ],
+      "orphans": [
+        "„Verlauf verdichten“ für große Teamprotokolle (TEAMBAU §16) – vorgesehen, nicht gebaut."
+      ]
     },
     {
       "id": "COOP-02",
@@ -6351,7 +7030,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T18:22:37.656Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "TEAM",
+      "thread": "Gemeinsames Bauen mehrerer Spieler ermöglichen",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "Plugin auf deinem Paper-Server, TEAMBAU-06 mit Mitspielern."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "COOP-03",
@@ -6428,7 +7116,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T18:41:55.872Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "TEAM",
+      "thread": "Teambau und Befehle in der Mod ausbauen",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "TEAMBAU-09: aktuelle Mod und aktuelles Plugin (ab 0.10.0) zusammen auf deinem Server."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "COOP-04",
@@ -6492,7 +7189,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T19:04:30.091Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "TEAM",
+      "thread": "Gemeinsames Bauen mehrerer Spieler ermöglichen",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "TEAMBAU-07/08 mit echten Spielern."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "COOP-05",
@@ -6567,7 +7273,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:38:19.401Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "TEAM",
+      "thread": "Server-Plugin mit geprüften Lagerkisten",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "LAGER-01…09 mit echten Spielern."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "COOP-06",
@@ -6642,7 +7357,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:20:27.809Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "TEAM",
+      "thread": "Gemeinsames Bauen im Planer vertiefen",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "TEAMBAU-21…24 mit Mitspielern an einem großen Bau."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "PROJ-01",
@@ -6723,7 +7447,18 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T18:54:07.036Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "PROJEKT",
+      "thread": "Projektmodul vertiefen",
+      "philipp": [
+        {
+          "kind": "planer",
+          "text": "Reiter „Planung“ abnehmen (PROJ-09…11)."
+        }
+      ],
+      "orphans": [
+        "Abhängigkeiten zwischen Projekten auf der Weltkarte; Bauleute aus dem Spiel; Lagerbuchungen je Bauleute."
+      ]
     },
     {
       "id": "GAME-09",
@@ -6796,7 +7531,11 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:20:12.136Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "MODRINTH",
+      "thread": "Mod auf Modrinth veröffentlichen",
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "GAME-10",
@@ -6866,7 +7605,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:41:53.052Z"
+      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "area": "MOD",
+      "thread": "Teambau und Befehle in der Mod ausbauen",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "Befehlsseite im J-Menü zusammen mit dem Plugin auf deinem Server (MOD-16)."
+        }
+      ],
+      "orphans": []
     }
   ],
   "events": [
@@ -12543,6 +13291,962 @@
           "next": "Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server."
         }
       ]
+    },
+    {
+      "at": "2026-11-03T20:52:59.449Z",
+      "kind": "progress",
+      "items": [
+        "CORE-01",
+        "CORE-02",
+        "CORE-03",
+        "STORE-01",
+        "MAT-01",
+        "BUILD-01",
+        "LIB-01",
+        "GEN-01",
+        "OPS-01",
+        "PLAN-01",
+        "ARCH-01",
+        "ARCH-02",
+        "DOC-01",
+        "STORE-02",
+        "QA-01",
+        "QA-02",
+        "QA-03",
+        "UI-01",
+        "UI-02",
+        "STAB-01",
+        "OPS-02",
+        "OPS-03",
+        "LICENSE-01",
+        "PROFILE-01",
+        "NBT-01",
+        "FORMAT-01",
+        "FORMAT-02",
+        "MAT-02",
+        "MAT-03",
+        "MAT-04",
+        "DIFF-01",
+        "PERF-01",
+        "PERF-02",
+        "PERF-03",
+        "PERF-04",
+        "PERF-05",
+        "VIEW-01",
+        "VIEW-02",
+        "BLOCK-01",
+        "BLOCK-02",
+        "GFX-01",
+        "MODEL-01",
+        "EDIT-01",
+        "EDIT-02",
+        "EDIT-03",
+        "EDIT-04",
+        "EDIT-05",
+        "UPDATE-01",
+        "LIB-02",
+        "LIB-03",
+        "WORLD-02",
+        "BUILD-05",
+        "TERRAIN-01",
+        "TERRAIN-02",
+        "BUILD-06",
+        "GEN-02",
+        "MAP-01",
+        "MAP-03",
+        "MAP-04",
+        "MAP-02",
+        "GAME-01",
+        "GAME-02",
+        "GAME-07",
+        "GAME-08",
+        "GAME-03",
+        "WORLD-IMPORT-01",
+        "BACKUP-02",
+        "TEAM-01",
+        "AUTH-01",
+        "TEAM-02",
+        "TEAM-03",
+        "GAME-04",
+        "GAME-05",
+        "GAME-06",
+        "LAGER-01",
+        "OPS-04",
+        "DEFER-01",
+        "DEFER-02",
+        "LIB-04",
+        "ENTITY-01",
+        "LIB-05",
+        "LIB-06",
+        "BASE-01",
+        "SPLIT-01",
+        "GROSS-01",
+        "MAP-05",
+        "MAP-06",
+        "QA-04",
+        "GEN-03",
+        "SIZE-01",
+        "COOP-01",
+        "COOP-02",
+        "COOP-03",
+        "COOP-04",
+        "COOP-05",
+        "COOP-06",
+        "PROJ-01",
+        "GAME-09",
+        "GAME-10"
+      ],
+      "summary": "Roadmap nach 12 Bereichen neu geordnet: je Aufgabe Bereich, zuständiger Thread, was nur Philipp tun kann und verwaiste Arbeit; Eingänge IN-01…07 aus Projektchat, Threads, Konzeptdokumenten und GitHub-Issues. Nur Roadmap-Werkzeug und Doku, kein Anwendungscode; Zuordnung der Threads Stand 03.11.2026 20:50.",
+      "files": [
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "scripts/roadmap.mjs",
+        "tests/roadmap.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "CORE-01",
+          "status": "verified",
+          "done": 1,
+          "total": 1,
+          "next": "Regressionen bei Änderungen weiterführen."
+        },
+        {
+          "id": "CORE-02",
+          "status": "verified",
+          "done": 1,
+          "total": 1,
+          "next": "Regressionen bei Änderungen weiterführen."
+        },
+        {
+          "id": "CORE-03",
+          "status": "verified",
+          "done": 1,
+          "total": 1,
+          "next": "Regressionen bei Änderungen weiterführen."
+        },
+        {
+          "id": "STORE-01",
+          "status": "verified",
+          "done": 1,
+          "total": 1,
+          "next": "Regressionen bei Änderungen weiterführen."
+        },
+        {
+          "id": "MAT-01",
+          "status": "verified",
+          "done": 1,
+          "total": 1,
+          "next": "Regressionen bei Änderungen weiterführen."
+        },
+        {
+          "id": "BUILD-01",
+          "status": "verified",
+          "done": 1,
+          "total": 1,
+          "next": "Regressionen bei Änderungen weiterführen."
+        },
+        {
+          "id": "LIB-01",
+          "status": "verified",
+          "done": 1,
+          "total": 1,
+          "next": "Regressionen bei Änderungen weiterführen."
+        },
+        {
+          "id": "GEN-01",
+          "status": "verified",
+          "done": 1,
+          "total": 1,
+          "next": "Regressionen bei Änderungen weiterführen."
+        },
+        {
+          "id": "OPS-01",
+          "status": "verified",
+          "done": 1,
+          "total": 1,
+          "next": "Regressionen bei Änderungen weiterführen."
+        },
+        {
+          "id": "PLAN-01",
+          "status": "verified",
+          "done": 4,
+          "total": 4,
+          "next": "Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen."
+        },
+        {
+          "id": "ARCH-01",
+          "status": "verified",
+          "done": 4,
+          "total": 4,
+          "next": "Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen."
+        },
+        {
+          "id": "ARCH-02",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme der Migration mit echten Browserdaten (S05); danach kompakte Laufzeitform der Zellen als Folge von PERF-02."
+        },
+        {
+          "id": "DOC-01",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Aktuelle Prüf-/Main-/Live-Nachweise im nächsten sachlichen Quellblock nachführen; keine selbstreferenzielle Deploymentfolge."
+        },
+        {
+          "id": "STORE-02",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "CAS-/Migrationsregressionen bei Speicheränderungen fortführen; Safari/iPhone gesondert in QA-02."
+        },
+        {
+          "id": "QA-01",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Suite nach relevanten Änderungen wiederholen; echte Geräte in QA-02 und große Worker-Browserlatenz in PERF-01 prüfen."
+        },
+        {
+          "id": "QA-02",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Geräte-/Browsermatrix und reproduzierbare Aufgaben definieren."
+        },
+        {
+          "id": "QA-03",
+          "status": "verified",
+          "done": 7,
+          "total": 7,
+          "next": "Bei neuen Ausfällen zuerst nach Lesen vor dem Laden (Manifest, IndexedDB, ResizeObserver, Worker-Neuberechnung) suchen."
+        },
+        {
+          "id": "UI-01",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Oberflächenregression bei Themen-/Layoutänderungen weiterführen; echte Geräte separat in QA-02."
+        },
+        {
+          "id": "UI-02",
+          "status": "verified",
+          "done": 4,
+          "total": 4,
+          "next": "Echte Geräteprüfung (Safari/iPhone, Touch) in QA-02; weitere Hauptbereiche (z. B. Karte MAP-01) als Eintrag in nav.ts anhängen."
+        },
+        {
+          "id": "STAB-01",
+          "status": "implemented",
+          "done": 1,
+          "total": 2,
+          "next": "Echten Renderingfehler auslösen und Wiederaufnahme im Browser prüfen."
+        },
+        {
+          "id": "OPS-02",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Bei tatsächlichem Vorfall bekannten Build neu bestätigen und Recovery regulär ohne Force vorbereiten; Livehashes danach gesondert prüfen."
+        },
+        {
+          "id": "OPS-03",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Bei künftigem temporärem Branch erneut vollständige Integration prüfen; aktuell keine Bereinigung nötig."
+        },
+        {
+          "id": "LICENSE-01",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Eigene und fremde Bestandteile inventarisieren."
+        },
+        {
+          "id": "PROFILE-01",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Registryreport und Zielversion mit Herkunft/Hash dokumentieren."
+        },
+        {
+          "id": "NBT-01",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Zu unterstützende NBT-Familien und Positions-/Ausrichtungsregeln festlegen."
+        },
+        {
+          "id": "FORMAT-01",
+          "status": "implemented",
+          "done": 1,
+          "total": 2,
+          "next": "Echte WorldEdit-Dateien importieren, exportieren und im Referenzwerkzeug vergleichen."
+        },
+        {
+          "id": "FORMAT-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Export im Spiel mit Litematica laden (Philipps PC, Fabric 26.3) – FORMAT-02-S02."
+        },
+        {
+          "id": "MAT-02",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Vorhandene Regeln mit Profilreport abgleichen."
+        },
+        {
+          "id": "MAT-03",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Varianten im Zielprofil und in der Oberfläche prüfen."
+        },
+        {
+          "id": "MAT-04",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Zustandsmatrix und Formfamilien mit Profilbeleg definieren."
+        },
+        {
+          "id": "DIFF-01",
+          "status": "implemented",
+          "done": 1,
+          "total": 3,
+          "next": "Verschiebung von echten Geometrieänderungen unterscheiden."
+        },
+        {
+          "id": "PERF-01",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Messung bei Rechenkernänderungen wiederholen; Übertragungs-/Invalidierungsarbeit in PERF-02, vollständige React-/Gerätelatenz gesondert prüfen."
+        },
+        {
+          "id": "PERF-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Gemessene Structured-Clone-/Worker-Rückgabekosten reduzieren; selektive Geometrie-/Fortschrittsinvalidierung zuerst mit vollständigen semantischen Regressionen absichern."
+        },
+        {
+          "id": "PERF-03",
+          "status": "planned",
+          "done": 0,
+          "total": 3,
+          "next": "Bundleanteile und UI-Verantwortungen messen."
+        },
+        {
+          "id": "PERF-04",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); GPU-Upload großer Szenen bleibt im Hauptthread."
+        },
+        {
+          "id": "PERF-05",
+          "status": "implemented",
+          "done": 6,
+          "total": 8,
+          "next": "O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8)."
+        },
+        {
+          "id": "VIEW-01",
+          "status": "implemented",
+          "done": 1,
+          "total": 2,
+          "next": "Aktuelle GPU-/Touch-Prüfung mit negativen Koordinaten und allen Schnittachsen."
+        },
+        {
+          "id": "VIEW-02",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Mojang-Download im echten Browser und weitere Browser prüfen; Registerdaten an PROFILE-01 binden, sobald es auf main liegt."
+        },
+        {
+          "id": "BLOCK-01",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Abnahme im Spiel; PROFILE-01 kann die Berichtsfakten übernehmen. Die Katalogfehler aus der Spielprüfung behebt BLOCK-02."
+        },
+        {
+          "id": "BLOCK-02",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme im Spiel (S06): geänderte Gebäude (z. B. Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen."
+        },
+        {
+          "id": "GFX-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Prüfung auf echten Geräten und Browsern; danach Biomfarben und leuchtende Blockentities."
+        },
+        {
+          "id": "MODEL-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Dateien in Blender und Slicern prüfen und ein Testdruck; danach Flächenzusammenfassung (S06). Export läuft seit PERF-04 im Worker."
+        },
+        {
+          "id": "EDIT-01",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Geräteprüfung (QA-02); Gruppenziehen direkt im 3D-Bild als Folgeschritt."
+        },
+        {
+          "id": "EDIT-02",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Picking an 3D-Blockflächen; Registerlücken mit PROFILE-01-Serverreport schließen; Spielprüfung."
+        },
+        {
+          "id": "EDIT-03",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Picking an 3D-Blockflächen; Spielprüfung der Schablonen-Zustände (Tür, Treppe, Laterne)."
+        },
+        {
+          "id": "EDIT-04",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Spielprüfung gespiegelter Zustände; danach Gelände-Werkzeuge auf Projektgelände (eigener Thread) und Symmetrie/Kurven im Mod."
+        },
+        {
+          "id": "EDIT-05",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "EDIT-05-S07: Abnahme durch Philipp in der Werkstatt (Zauberstab, Stapeln, Extrudieren, Wendel) und Spielprüfung gestapelter/gedrehter Bauteile mit Ausstattung."
+        },
+        {
+          "id": "UPDATE-01",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Echtgeräteabnahme (QA-02); Teamreihenfolge der Updateoperationen in TEAM-02."
+        },
+        {
+          "id": "LIB-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme auf echten Geräten (QA-02); Rückmeldung zur Bedienung der Sammlungen einholen."
+        },
+        {
+          "id": "LIB-03",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme auf echten Geräten (QA-02); Vorlagen für Anlagen (Compounds) und BUILD-05 prüfen."
+        },
+        {
+          "id": "WORLD-02",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Kuratierte Filter-/Treffernachweise bei Katalogänderungen fortführen; keine weitere Karte ohne tatsächliche Assets."
+        },
+        {
+          "id": "BUILD-05",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Gelände-/Hanglagen und Türausrichtung zum Weg als eigene Folgeaufgabe; Echtgeräteabnahme mit QA-02."
+        },
+        {
+          "id": "TERRAIN-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme mit eigener Welt (S05); danach Weg mit Stufen/Kurven und Stützmauern als Blöcke als eigene Folgeaufgabe."
+        },
+        {
+          "id": "TERRAIN-02",
+          "status": "implemented",
+          "done": 5,
+          "total": 7,
+          "next": "Abnahme mit eigener Welt (S05); Wegstufen als Treppen (S07)."
+        },
+        {
+          "id": "BUILD-06",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Echtgeräte- und Druckerabnahme mit QA-02; Philipps Spieltest mit Mod-Aufnahme (WorldAnchor) auf seinem Server."
+        },
+        {
+          "id": "GEN-02",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Generierte Bauten (v. a. Treppenhaus, Torhaus-Wehrgang, Hafen) im Spiel abnehmen; Treppenhaus-Anbau an Haus als Anlage erwägen."
+        },
+        {
+          "id": "MAP-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 4,
+          "next": "Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02."
+        },
+        {
+          "id": "MAP-03",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server."
+        },
+        {
+          "id": "MAP-04",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme durch Philipp (S06); denkbare Folge: benannte Gruppen/Sperren mit Schemaerweiterung, abgestimmt mit der Mod."
+        },
+        {
+          "id": "MAP-02",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "URL-/Markerformate anhand Primärquellen pro Provider verifizieren."
+        },
+        {
+          "id": "GAME-01",
+          "status": "verified",
+          "done": 1,
+          "total": 1,
+          "next": "Regressionen bei Änderungen weiterführen."
+        },
+        {
+          "id": "GAME-02",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Philipp testet die .jar aus /mnt/project-files/mod/ auf server.lmnt-gaming.net und meldet Ergebnis/Fehler (Anleitung ANLEITUNG_SPIELTEST.md)."
+        },
+        {
+          "id": "GAME-07",
+          "status": "implemented",
+          "done": 8,
+          "total": 10,
+          "next": "Philipp testet 0.7.0 auf server.lmnt-gaming.net (Bauabschnitte aus seinem Projekt, Röntgensicht mit Shader); danach Stufe 6."
+        },
+        {
+          "id": "GAME-08",
+          "status": "implemented",
+          "done": 4,
+          "total": 4,
+          "next": "Protokoll 3: Rückrichtung „Markierung im Spiel setzen → Weltplan“ mit Zeitstempel je Eintrag (siehe LIVE_LINK.md); Forge und Paper ohne Live-Verbindung."
+        },
+        {
+          "id": "GAME-03",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme mit MAP-03-S06; Forge/NeoForge/Paper haben die Verbindung noch nicht."
+        },
+        {
+          "id": "WORLD-IMPORT-01",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Mit einer Kopie von Philipps eigener 26.3-Welt (Modpack) einen Ausschnitt übernehmen und ein platziertes Projekt prüfen."
+        },
+        {
+          "id": "BACKUP-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme auf echten Geräten (QA-02), besonders Safari-Downloads; Rückmeldung zur Erinnerungsschwelle (7 Tage) einholen."
+        },
+        {
+          "id": "TEAM-01",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "API, Betriebsmodell und Kostenrahmen dokumentieren. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option."
+        },
+        {
+          "id": "AUTH-01",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Gast-/Kontovertrag und serverseitige Rechte definieren. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option."
+        },
+        {
+          "id": "TEAM-02",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Operation-ID, Revisionsprüfung und Wiederholung serverseitig umsetzen. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option."
+        },
+        {
+          "id": "TEAM-03",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Zuständigkeiten und Lagerbuchungen versionieren. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option."
+        },
+        {
+          "id": "GAME-04",
+          "status": "in_progress",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme auf Philipps eigenem Paper-Server (GAME-04-S04)."
+        },
+        {
+          "id": "GAME-05",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen."
+        },
+        {
+          "id": "GAME-06",
+          "status": "planned",
+          "done": 0,
+          "total": 1,
+          "next": "Nach TEAM-02 spezifizieren."
+        },
+        {
+          "id": "LAGER-01",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Inventar-/NBT-Rechte und Herkunft der Aufnahme festlegen."
+        },
+        {
+          "id": "OPS-04",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Monitoring, Datenmigration, Lösch-/Aufbewahrung und Wiederanlauf definieren."
+        },
+        {
+          "id": "DEFER-01",
+          "status": "deferred",
+          "done": 0,
+          "total": 1,
+          "next": "Nur nach neuem ausdrücklichem Nutzerauftrag neu bewerten."
+        },
+        {
+          "id": "DEFER-02",
+          "status": "deferred",
+          "done": 0,
+          "total": 1,
+          "next": "Erst bei konkretem Bedarf und ausdrücklichem Auftrag spezifizieren."
+        },
+        {
+          "id": "LIB-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 4,
+          "next": "Weitere Ensembles und Tipps nach Spielrückmeldung; Redstone-Bauten im Spiel abnehmen."
+        },
+        {
+          "id": "ENTITY-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Export mit Entities im Spiel prüfen; Entities bei Auswahl-Verschieben in der Werkstatt mitnehmen; Truhen-/Schildinhalte bearbeiten."
+        },
+        {
+          "id": "LIB-05",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "LIB-05-S08: Abnahme neuer Gebäude im Spiel durch Philipp."
+        },
+        {
+          "id": "LIB-06",
+          "status": "implemented",
+          "done": 5,
+          "total": 7,
+          "next": "Abnahme durch Philipp (S06) und erster echter Beitrag (S07)."
+        },
+        {
+          "id": "BASE-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme durch Philipp (S06); danach Küstenlinie aus der Geländeaufnahme und Wegstufen."
+        },
+        {
+          "id": "SPLIT-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme mit echten Dateien (S05)."
+        },
+        {
+          "id": "GROSS-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme durch Philipp (S06); Großbauten-Set (S05)."
+        },
+        {
+          "id": "MAP-05",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05); denkbar: gedrehte Projektlagen auf der Weltkarte, damit gedrehte Hologramme übernommen werden können."
+        },
+        {
+          "id": "MAP-06",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "Abnahme durch Philipp (S08); Mod-Umsetzung GAME-08; denkbar für Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (Zeitstempel je Eintrag)."
+        },
+        {
+          "id": "QA-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist."
+        },
+        {
+          "id": "GEN-03",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Philipp baut das Kolosseum im Spiel nach (BIB-14); danach Feinschliff (Statuen in den Attika-Fenstern, Treppen im Hypogäum)."
+        },
+        {
+          "id": "SIZE-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05) mit einem großen Bau im Spiel."
+        },
+        {
+          "id": "COOP-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp mit Mitspielern (TEAMBAU-01…05)."
+        },
+        {
+          "id": "COOP-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme auf Philipps Server."
+        },
+        {
+          "id": "COOP-03",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Abnahme TEAMBAU-09 auf Philipps Server mit Mod 0.10.0 und Paper-Plugin mit Teamkanal; Lagerkisten (COOP-04) über TeamChannel.decorate/broadcastStore."
+        },
+        {
+          "id": "COOP-04",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung in COOP-05 (geprüfte Lagerkisten, docs/architecture/LAGERKISTEN.md)."
+        },
+        {
+          "id": "COOP-05",
+          "status": "implemented",
+          "done": 3,
+          "total": 5,
+          "next": "Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server."
+        },
+        {
+          "id": "COOP-06",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern."
+        },
+        {
+          "id": "PROJ-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel."
+        },
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 3,
+          "total": 5,
+          "next": "Modrinth-Prüfung abwarten (Status processing → approved); danach jede neue Mod-Version mit modrinth_publish.mjs release."
+        },
+        {
+          "id": "GAME-10",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme MOD-16 auf Philipps Server mit Paper-Plugin."
+        }
+      ]
     }
-  ]
+  ],
+  "areas": [
+    {
+      "id": "PLANER",
+      "title": "Planer: Werkstatt, Ansicht, Weltkarte, Gelände"
+    },
+    {
+      "id": "BIBLIOTHEK",
+      "title": "Bibliothek, Generatoren und Großprojekte"
+    },
+    {
+      "id": "PROJEKT",
+      "title": "Projektmodul: Baustelle, Bauanleitung, Planung"
+    },
+    {
+      "id": "TEAM",
+      "title": "Teambau live (Planer, Mod, Plugin zusammen)"
+    },
+    {
+      "id": "GROESSE",
+      "title": "Volumenlimit und Übertragung großer Pläne"
+    },
+    {
+      "id": "MOD",
+      "title": "Client-Mod (Fabric, NeoForge, Forge)"
+    },
+    {
+      "id": "PLUGIN",
+      "title": "Paper-Plugin (Server)"
+    },
+    {
+      "id": "MODRINTH",
+      "title": "Modrinth-Veröffentlichung"
+    },
+    {
+      "id": "PERF",
+      "title": "Performance und Stabilität"
+    },
+    {
+      "id": "KERN",
+      "title": "Kern, Minecraft-Daten und Dateiformate"
+    },
+    {
+      "id": "QA",
+      "title": "Testphase, Qualität und Betrieb"
+    },
+    {
+      "id": "SPAETER",
+      "title": "Zurückgestellt (Backend-Option, ohne Auftrag)"
+    }
+  ],
+  "intake": [
+    {
+      "id": "IN-01",
+      "at": "2026-11-03T20:35:16Z",
+      "source": "Philipp",
+      "title": "Plan kommt nicht richtig vom Planer ins Spiel; das große Bauprojekt läuft weiter nicht sauber.",
+      "area": "GROESSE",
+      "thread": "Volumenlimit für große Builds aufheben",
+      "items": [
+        "SIZE-01"
+      ],
+      "state": "zugeteilt"
+    },
+    {
+      "id": "IN-02",
+      "at": "2026-11-03T20:35:16Z",
+      "source": "Philipp",
+      "title": "Teambau live statt Teampaket herunter- und hochladen; einfacher und komplexer überarbeiten.",
+      "area": "TEAM",
+      "thread": "Gemeinsames Bauen mehrerer Spieler ermöglichen",
+      "items": [
+        "COOP-01"
+      ],
+      "state": "zugeteilt"
+    },
+    {
+      "id": "IN-03",
+      "at": "2026-11-03T19:53:44Z",
+      "source": "Philipp",
+      "title": "Befehle und Status von Mod und Plugin im J-Menü per Klick – als GAME-10 übernommen (Mod 0.11.0).",
+      "area": "MOD",
+      "thread": "Teambau und Befehle in der Mod ausbauen",
+      "items": [
+        "GAME-10"
+      ],
+      "state": "übernommen"
+    },
+    {
+      "id": "IN-04",
+      "at": "2026-10-27T12:41:26Z",
+      "source": "Philipp",
+      "title": "Client-Mod in mehreren Minecraft-Versionen und Launchern; bisher gibt es Fabric/NeoForge nur für 26.3 (Paper-Plugin läuft 1.18.2–26.3).",
+      "area": "MOD",
+      "thread": null,
+      "items": [
+        "GAME-02",
+        "GAME-05"
+      ],
+      "state": "verwaist"
+    },
+    {
+      "id": "IN-05",
+      "at": "2026-11-02T08:39:18Z",
+      "source": "Koordinator",
+      "title": "Reale Orte aus Kartendaten (OSM) – zurückgestellt, bis die Lizenzfrage geklärt ist.",
+      "area": "PLANER",
+      "thread": null,
+      "items": [
+        "LICENSE-01"
+      ],
+      "state": "zurückgestellt"
+    },
+    {
+      "id": "IN-06",
+      "at": "2026-11-01T12:51:07Z",
+      "source": "Koordinator",
+      "title": "Seit 01.11. keine Codex-Commits auf main; die vorgeschlagenen Codex-Pakete (PROFILE-01, NBT-01, MAT-02/04, DIFF-01, PERF-02/03, FORMAT-01, QA-02) haben dadurch keinen Bearbeiter.",
+      "area": "KERN",
+      "thread": null,
+      "items": [
+        "PROFILE-01",
+        "NBT-01",
+        "MAT-02",
+        "MAT-04",
+        "DIFF-01",
+        "PERF-02",
+        "PERF-03",
+        "FORMAT-01",
+        "QA-02"
+      ],
+      "state": "verwaist"
+    },
+    {
+      "id": "IN-07",
+      "at": "2026-10-31T21:37:14Z",
+      "source": "GitHub",
+      "title": "Alte Issues #2 (B16), #3 (B17) und #4 (S4) sind noch offen, obwohl VIEW-02, LIB-02/03 und STORE-02 auf main liegen: prüfen und schließen.",
+      "area": "QA",
+      "thread": null,
+      "items": [
+        "VIEW-02",
+        "LIB-02",
+        "LIB-03",
+        "STORE-02"
+      ],
+      "state": "verwaist"
+    }
+  ],
+  "intakeRule": "Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur anhängen). Ein Eingang ist erledigt, sobald er als Aufgabe in items steht oder ausdrücklich verworfen ist."
 }
