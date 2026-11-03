@@ -797,7 +797,7 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 
 ## GAME-10 · Befehlsseite im Plan-Menü, Mod 0.11.0 (Fabric, NeoForge) · 03.11.2026 · Claude
 - `npm run check` grün. Gradle `:mod-core:test`, `:paper:build`, `:fabric-26.3:build` und `:neoforge-26.3:build` grün.
-  - `CommandCatalogTest`: alle Mod-Befehle und alle Plugin-Befehle (`/bp`) im Katalog, Eingaben werden geprüft und zu genau dem getippten Befehl, Gründe für ausgegraute Knöpfe, Antwortfenster für Serverbefehle, keine doppelten eigenen Zeilen.
+  - `CommandCatalogTest`: alle Mod-Befehle und alle Plugin-Befehle (`/bp`, aus `TeamModule.COMMANDS` und `StorageModule.SUBCOMMANDS` gelesen, also auch `uebergeben`, `annehmen`, `ablehnen`, `abwesend`, `zurueck` aus COOP-06) im Katalog, 103 Befehle, Eingaben werden geprüft und zu genau dem getippten Befehl, Gründe für ausgegraute Knöpfe, Antwortfenster für Serverbefehle, keine doppelten eigenen Zeilen.
 - Echter Fabric-Client 26.3 (`scripts/test_bridge_ingame.sh`, weston, Fenster 854×480 = GUI 427×240) mit echten Mausklicks: `/bauplaner befehle`, Reiter „Team“, „Übersicht“, „Abschnitt zeigen …“ mit Eingabe 2, „Ausführen“. Die Antworten stehen auf der Seite, im Einzelspieler sind die Serverknöpfe ausgegraut.
   - Gefunden und behoben: Bei kleinem Fenster passten nur zwei Knöpfe auf die Seite (Blättern jetzt unten links, Status nur im Reiter „Status“). Eigene Antwortzeilen standen doppelt auf der Seite (Chat-Ereignis des Loaders meldete sie noch einmal).
   - Hinweis für Spieltests: Minecraft 26.3 nutzt SDL, die linke Maustaste ist dort 1 (`InputConstants.MOUSE_BUTTON_LEFT`), nicht 0.

@@ -8,9 +8,11 @@ Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/modrinth_publish.m
 
 - New page “Befehle & Status” in the plan menu (J), also via `/bauplaner befehle`: every command of the mod and of the Bauplaner Paper plugin (hologram, team, storage chests, proof, website link, capture) by click, with input fields, a status overview and the answers of mod and server.
 - A click sends exactly the command you would type – no extra packets. Server buttons only work when the server has the Bauplaner plugin; buttons that need something else (a plan, a team, the build lead role, a chest in view) are greyed out and say why.
+- Paper plugin: hand over sections (`/bp uebergeben`, `annehmen`, `ablehnen`) and mark yourself away (`/bp abwesend`, `zurueck`); the team channel carries these events too.
 
 - Neue Seite „Befehle & Status“ im Plan-Menü (J), auch mit `/bauplaner befehle`: alle Befehle der Mod und des Bauplaner-Paper-Plugins (Hologramm, Team, Lagerkisten, Nachweis, Website-Verbindung, Aufnahme) per Klick, mit Eingabefeldern, Statusübersicht und den Antworten von Mod und Server.
 - Ein Klick sendet genau den Befehl, den man eintippen würde – keine zusätzlichen Pakete. Serverknöpfe gehen nur, wenn der Server das Bauplaner-Plugin hat; Knöpfe, denen etwas fehlt (Plan, Team, Bauleitung, angeschaute Kiste), sind ausgegraut und nennen den Grund.
+- Paper-Plugin: Abschnitte übergeben (`/bp uebergeben`, `annehmen`, `ablehnen`) und Abwesenheit melden (`/bp abwesend`, `zurueck`); auch über den Teamkanal.
 
 ## 0.10.0 – 2026-11-03
 

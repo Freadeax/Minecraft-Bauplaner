@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-03T20:27:03.185Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-03T20:34:44.327Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -2250,9 +2250,9 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-10
 
-**Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Teambau in der Mod“) · Aktualisiert: 2026-11-03T20:27:03.185Z
+**Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Teambau in der Mod“) · Aktualisiert: 2026-11-03T20:34:44.327Z
 
-- [x] GAME-10-S01: Befehlskatalog im Mod-Kern (CommandCatalog, CommandContext, ReplyLog) mit den Befehlen von Mod und Paper-Plugin (/bp), mit dem Plugin-Thread abgeglichen; JUnit.
+- [x] GAME-10-S01: Befehlskatalog im Mod-Kern (CommandCatalog, CommandContext, ReplyLog) mit den Befehlen von Mod und Paper-Plugin (/bp), mit dem Plugin-Thread abgeglichen; JUnit liest die Plugin-Befehle aus den Quellen, damit ein neuer Befehl ohne Knopf auffällt.
 - [x] GAME-10-S02: Befehlsseite „Befehle & Status“ (Knopf im Plan-Menü, /bauplaner befehle): Reiter je Gruppe, Statusübersicht, Eingabefelder, ausgegraute Knöpfe mit Grund, Antworten von Mod und Server; Fabric + NeoForge.
 - [x] GAME-10-S03: Spieltest Fabric mit echten Mausklicks und NeoForge-Szenario, Release 0.11.0 auf #/mod.
 - [ ] GAME-10-S04: Abnahme im Spiel auf Philipps Server mit Plugin (MOD-16).
@@ -2263,7 +2263,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Prüfstand:** Spieltests Fabric und NeoForge 26.3 bestanden; Serverbefehle mit echtem Paper-Plugin nur auf Philipps Server prüfbar (MOD-16).
 
-**Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java) — Katalog deckt alle Mod- und Plugin-Befehle ab, Eingaben werden geprüft, Gründe für ausgegraute Knöpfe, Antwortfenster.; [scripts/bridge_gametest.mjs](../scripts/bridge_gametest.mjs) — Echter Fabric-Client 26.3 mit echten Mausklicks: Reiter Team, Übersicht, „Abschnitt zeigen 2“, Antworten auf der Seite, Serverknöpfe ohne Plugin ausgegraut. NeoForge-Szenario öffnet die Seite und führt einen Befehl aus.
+**Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java) — Katalog deckt alle Mod-Befehle und alle Plugin-Befehle ab (aus TeamModule.COMMANDS und StorageModule.SUBCOMMANDS gelesen), Eingaben werden geprüft, Gründe für ausgegraute Knöpfe, Antwortfenster, keine doppelten Zeilen.; [scripts/bridge_gametest.mjs](../scripts/bridge_gametest.mjs) — Echter Fabric-Client 26.3 mit echten Mausklicks: Reiter Team, Übersicht, „Abschnitt zeigen 2“, Antworten auf der Seite, Serverknöpfe ohne Plugin ausgegraut. NeoForge-Szenario öffnet die Seite und führt einen Befehl aus.
 
 **Dateiumfang:** `mods/bauplaner-bridge/`, `scripts/bridge_gametest.mjs`, `apps/web/src/views/mod/`, `apps/web/src/testing/testplan.ts`, `downloads/mod/`, `docs/`. **Abhängigkeiten:** COOP-03, COOP-05, GAME-07. **Alte IDs:** —.
 

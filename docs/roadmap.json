@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T20:27:03.185Z",
+  "updatedAt": "2026-11-03T20:34:44.327Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -6822,7 +6822,7 @@
       "steps": [
         {
           "id": "GAME-10-S01",
-          "title": "Befehlskatalog im Mod-Kern (CommandCatalog, CommandContext, ReplyLog) mit den Befehlen von Mod und Paper-Plugin (/bp), mit dem Plugin-Thread abgeglichen; JUnit.",
+          "title": "Befehlskatalog im Mod-Kern (CommandCatalog, CommandContext, ReplyLog) mit den Befehlen von Mod und Paper-Plugin (/bp), mit dem Plugin-Thread abgeglichen; JUnit liest die Plugin-Befehle aus den Quellen, damit ein neuer Befehl ohne Knopf auffällt.",
           "done": true
         },
         {
@@ -6851,7 +6851,7 @@
       "evidence": [
         {
           "path": "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java",
-          "note": "Katalog deckt alle Mod- und Plugin-Befehle ab, Eingaben werden geprüft, Gründe für ausgegraute Knöpfe, Antwortfenster."
+          "note": "Katalog deckt alle Mod-Befehle und alle Plugin-Befehle ab (aus TeamModule.COMMANDS und StorageModule.SUBCOMMANDS gelesen), Eingaben werden geprüft, Gründe für ausgegraute Knöpfe, Antwortfenster, keine doppelten Zeilen."
         },
         {
           "path": "scripts/bridge_gametest.mjs",
@@ -6866,7 +6866,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:27:03.185Z"
+      "updatedAt": "2026-11-03T20:34:44.327Z"
     }
   ],
   "events": [
@@ -12458,6 +12458,32 @@
         "mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java",
         "mods/bauplaner-bridge/neoforge-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/neoforge/BridgeNeoForge.java",
         "scripts/bridge_gametest.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-10",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme MOD-16 auf Philipps Server mit Paper-Plugin."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T20:34:44.327Z",
+      "kind": "progress",
+      "items": [
+        "GAME-10"
+      ],
+      "summary": "Katalog um die COOP-06-Serverbefehle (uebergeben, annehmen, ablehnen, abwesend, zurueck) ergänzt, 103 Befehle; JUnit liest die Plugin-Befehle aus den Quellen. Spieltests Fabric und NeoForge mit Endstand bestanden.",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "docs/TESTING.md",
+        "docs/architecture/MOD_HOLOGRAM.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.11.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.11.0.jar",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java"
       ],
       "snapshot": [
         {

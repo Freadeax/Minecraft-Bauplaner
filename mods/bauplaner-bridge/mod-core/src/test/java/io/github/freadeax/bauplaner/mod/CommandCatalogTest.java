@@ -40,6 +40,30 @@ class CommandCatalogTest {
             assertTrue(CommandCatalog.all().stream().anyMatch(e -> e.side() == Side.SERVER && e.path().equals(path)), "bp " + path);
     }
 
+    /** Read from the plugin sources, so a new plugin command fails here until the page knows it. */
+    @Test
+    void everyPluginCommandInTheSourcesHasAButton() throws Exception {
+        var paper = java.nio.file.Path.of("..", "paper", "src", "main", "java", "io", "github", "freadeax", "bauplaner", "bridge", "paper");
+        List<String> team = listIn(java.nio.file.Files.readString(paper.resolve("TeamModule.java")), "COMMANDS");
+        List<String> storage = listIn(java.nio.file.Files.readString(paper.resolve("StorageModule.java")), "SUBCOMMANDS");
+        assertTrue(team.size() > 10 && storage.size() > 10, team + " " + storage);
+        Set<String> aliases = Set.of("setzen", "entfernen", "zaehlen"); // markieren, entmarkieren, pruefen
+        for (String c : team) {
+            if (c.equals("lager")) continue;
+            assertTrue(CommandCatalog.all().stream().anyMatch(e -> e.side() == Side.SERVER && (e.path().equals(c) || e.path().startsWith(c + " "))), "Knopf für /bp " + c);
+        }
+        for (String c : storage) {
+            if (aliases.contains(c)) continue;
+            assertTrue(CommandCatalog.all().stream().anyMatch(e -> e.side() == Side.SERVER && e.path().equals("lager " + c)), "Knopf für /bp lager " + c);
+        }
+    }
+
+    private static List<String> listIn(String source, String name) {
+        var m = java.util.regex.Pattern.compile(name + "\\s*=\\s*List\\.of\\(([^)]*)\\)").matcher(source);
+        assertTrue(m.find(), name);
+        return java.util.regex.Pattern.compile("\"([a-z ]+)\"").matcher(m.group(1)).results().map(r -> r.group(1)).toList();
+    }
+
     @Test
     void inputsBecomeTheTypedCommandOrAGermanReason() {
         var nehmen = CommandCatalog.byId("team.nehmen");
@@ -58,6 +82,9 @@ class CommandCatalogTest {
         assertThrows(IllegalArgumentException.class, () -> CommandCatalog.command(CommandCatalog.byId("verschieben"), List.of("1", "zwei", "3")));
         assertEquals("bauplaner verschieben -10 0 4", CommandCatalog.command(CommandCatalog.byId("verschieben"), List.of("-10", "0", "4")));
         assertThrows(IllegalArgumentException.class, () -> CommandCatalog.command(fertig, List.of("2", "x".repeat(251))));
+        assertEquals("bp abwesend 2026-11-10 Urlaub", CommandCatalog.command(CommandCatalog.byId("bp.abwesend"), List.of("2026-11-10 Urlaub")));
+        assertEquals("bp uebergeben 3 Anna Dach fehlt", CommandCatalog.command(CommandCatalog.byId("bp.uebergeben"), List.of("3", "Anna", "Dach fehlt")));
+        assertEquals("bp annehmen", CommandCatalog.command(CommandCatalog.byId("bp.annehmen"), List.of("")));
         assertEquals("bp scan", CommandCatalog.command(CommandCatalog.byId("bp.scan"), List.of("")));
         assertEquals("bp scan geladen", CommandCatalog.command(CommandCatalog.byId("bp.scan"), List.of("geladen")));
         assertEquals("bauplaner fortschritt", CommandCatalog.command(CommandCatalog.byId("fortschritt"), List.of()));

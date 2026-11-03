@@ -4098,3 +4098,23 @@ Befehlsseite im Plan-Menü (Mod 0.11.0): 98 Befehle von Mod und Plugin per Klick
 - `mods/bauplaner-bridge/neoforge-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/neoforge/BridgeNeoForge.java`
 - `scripts/bridge_gametest.mjs`
 
+## 2026-11-03T20:34:44.327Z · progress
+
+**Aufgaben:** GAME-10
+
+Katalog um die COOP-06-Serverbefehle (uebergeben, annehmen, ablehnen, abwesend, zurueck) ergänzt, 103 Befehle; JUnit liest die Plugin-Befehle aus den Quellen. Spieltests Fabric und NeoForge mit Endstand bestanden.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-10 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme MOD-16 auf Philipps Server mit Paper-Plugin. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `docs/TESTING.md`
+- `docs/architecture/MOD_HOLOGRAM.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.11.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.11.0.jar`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java`
+

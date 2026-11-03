@@ -355,10 +355,10 @@
       "loaderMin": "0.19.5",
       "fabricApi": "0.164.0+26.3",
       "java": "25",
-      "bytes": 376221,
-      "sha256": "1268598dda390045dbcbb152f5255d585f11b181f71bc12379a371c0610b4ac5",
+      "bytes": 376594,
+      "sha256": "0982c8f1dfc17529039c3baf1a5a4bf2eb47ceb4e4f7c77d9a6207445c30c559",
       "releasedAt": "2026-11-03",
-      "sourceCommit": "3e96804899c3ef268d4c59b6bce0de6ef3951b10",
+      "sourceCommit": "bf3828407c36961ae235c3051ce2b2f591b7b537",
       "tested": "Echter Fabric-Client 26.3: Hologramm, Platzierhilfe, Website-Verbindung, Teambau und Befehlsseite (Klicks auf Reiter, Übersicht, Abschnitt zeigen 2, Antworten auf der Seite) bestanden"
     },
     {
@@ -368,11 +368,31 @@
       "minecraft": "26.3",
       "loaderMin": "26.3.0.100",
       "java": "25",
-      "bytes": 373071,
-      "sha256": "e675e07e5f4c7ee548b4fcb57b0784956813ed33edbae0ae62c54dabfb349c85",
+      "bytes": 373444,
+      "sha256": "e2d895840aba3f3c46b9428c62eae90b1dac6d067cf63bbc3d1a1deff96c44f2",
       "releasedAt": "2026-11-03",
-      "sourceCommit": "3e96804899c3ef268d4c59b6bce0de6ef3951b10",
+      "sourceCommit": "bf3828407c36961ae235c3051ce2b2f591b7b537",
       "tested": "Echter NeoForge-Client 26.3: Hologramm, Platzierhilfe, Website-Verbindung, Teambau und Befehlsseite (/bauplaner befehle, Antwort auf der Seite) bestanden"
+    },
+    {
+      "file": "bauplaner-bridge-paper-0.11.0.jar",
+      "modVersion": "0.11.0",
+      "loader": "paper",
+      "minecraft": "26.3",
+      "loaderMin": "1.18",
+      "minecraftVersions": [
+        "1.18.2",
+        "1.20.6",
+        "1.21.4",
+        "1.21.11",
+        "26.3"
+      ],
+      "java": "17",
+      "bytes": 189020,
+      "sha256": "74e062bc64e920a2fb1e0f25403cb690292abbab3f40017150e961195fb18742",
+      "releasedAt": "2026-11-03",
+      "sourceCommit": "bf3828407c36961ae235c3051ce2b2f591b7b537",
+      "tested": "Echte Paper-Server 1.18.2, 1.21.4 und 26.3 (Teambau mit Übergabe, Abwesenheit, Lagerkisten; Thread Server-Plugin) und erneut 26.3 Build 238 Teambau mit dieser Jar bestanden"
     }
   ]
 }

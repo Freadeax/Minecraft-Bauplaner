@@ -191,6 +191,11 @@ public final class CommandCatalog {
         s(m, SERVER_TEAM, "bp.sammle", "Sammelauftrag (Server)", "sammle", "Ich sammle … (ohne Menge: was laut Bedarf noch fehlt).", Need.PLUGIN, Arg.opt("item", Kind.ITEM), Arg.opt("menge", Kind.NUMBER));
         s(m, SERVER_TEAM, "bp.pruefen", "Prüfen (Server)", "pruefen", "Bestätigen oder Nacharbeit (Baumeister).", Need.PLUGIN, Arg.of("abschnitt", Kind.SECTION), Arg.choice("ergebnis", "ok", "nacharbeit"), Arg.opt("notiz", Kind.TEXT));
         s(m, SERVER_TEAM, "bp.zuweisen", "Zuweisen (Server)", "zuweisen", "Abschnitt einem Spieler geben.", Need.PLUGIN, Arg.of("abschnitt", Kind.SECTION), Arg.of("spieler", Kind.PLAYER));
+        s(m, SERVER_TEAM, "bp.uebergeben", "Übergeben (Server)", "uebergeben", "Abschnitt einem Mitspieler anbieten; er bleibt deiner, bis er annimmt.", Need.PLUGIN, Arg.of("abschnitt", Kind.SECTION), Arg.of("spieler", Kind.PLAYER), Arg.opt("notiz", Kind.TEXT));
+        s(m, SERVER_TEAM, "bp.annehmen", "Übergabe annehmen", "annehmen", "Angebotenen Abschnitt übernehmen (leer = das Angebot an dich).", Need.PLUGIN, Arg.opt("abschnitt", Kind.SECTION));
+        s(m, SERVER_TEAM, "bp.ablehnen", "Übergabe ablehnen", "ablehnen", "Übergabeangebot ablehnen (leer = das Angebot an dich).", Need.PLUGIN, Arg.opt("abschnitt", Kind.SECTION));
+        s(m, SERVER_TEAM, "bp.abwesend", "Abwesend melden", "abwesend", "Für das Team als abwesend eintragen, optional mit Datum (JJJJ-MM-TT, bis einschließlich) und Notiz, z. B. „2026-11-10 Urlaub“.", Need.PLUGIN, Arg.opt("datum notiz", Kind.TEXT));
+        s(m, SERVER_TEAM, "bp.zurueck", "Wieder da", "zurueck", "Abwesenheit aufheben.", Need.PLUGIN);
         s(m, SERVER_TEAM, "bp.rolle", "Rolle vergeben", "rolle", "Rolle eines Spielers ändern.", Need.LEAD, Arg.of("spieler", Kind.PLAYER), Arg.choice("rolle", "bauleitung", "baumeister", "helfer", "gast"));
         s(m, SERVER_TEAM, "bp.team.wahl", "Team wählen", "team wahl", "Bei mehreren Teams: welches für dich gilt.", Need.PLUGIN, Arg.of("team", Kind.TEXT));
         s(m, SERVER_TEAM, "bp.team.export", "Ausfuhr schreiben", "team export", "Teamprotokoll für den Planer schreiben.", Need.LEAD);
