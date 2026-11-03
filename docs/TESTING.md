@@ -855,3 +855,9 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `create`, `sync`, `release` gegen eine nachgebaute Modrinth-API (lokaler Server): Projekt als Entwurf mit Icon, 6 Bilder, 3 Versionen mit Datei und Abhängigkeiten, Einreichen zur Prüfung; zweiter Lauf lädt nichts doppelt hoch.
 - Echte Modrinth-API (03.11.2026, nach Philipps Bestätigung, Lizenz MIT): `create` legte das Projekt `bauplaner-bridge` (ID uL1mPEKJ) mit Icon, 6 Bildern und 3 Versionen an. Modrinth verlangt vor dem Einreichen die Umgebung je Version (API v3: Fabric/NeoForge `client_only`, Paper `server_only`); das Skript setzt sie jetzt nach jedem Hochladen, `sync` schickt `client_side/server_side` nicht mehr (überschreibt sonst die Versionen). Danach `sync`: eingereicht, Status `processing`. Livetext ohne „Claude“/„Anthropic“.
 - Grenzen: Freigabe durch das Modrinth-Team steht aus.
+- Grenzen: echte Modrinth-API mit Token noch nicht benutzt (Token fehlt, Bestätigung von Philipp offen).
+
+## COOP-06-S04 · Übergabe und Abwesenheit im Paper-Plugin · 03.11.2026 · Claude
+- `TeamLog.java` faltet `section.handover/accept/decline`, `member.away`, `issue.ack` nach TEAMBAU §4 wie `team.ts` (Angebot verfällt bei claim/assign/release/done/verify; leere Notiz = keine Notiz).
+- `scripts/test_bridge_paper_team.sh` auf echten Paper-Servern 1.18.2 (388), 1.21.4 (232), 26.3 (238): `uebergeben 3 Carla …`, Anzeige im `team`/`abschnitte`, falscher Annehmer abgelehnt, `annehmen` ohne Nummer, `abwesend bis 2026-11-10 Urlaub`, `abwesend`/`zurueck`; Planer-Faltung der Ausfuhr: neuer Inhaber, Notiz übernommen, kein offenes Angebot, Abwesenheit wie im Spiel. `test_bridge_paper_lager.sh 26.3` weiter grün.
+- Grenzen: Benachrichtigung des Empfängers im Chat braucht echte Spieler (TEAMBAU-21…24).

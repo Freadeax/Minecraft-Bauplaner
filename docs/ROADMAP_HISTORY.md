@@ -4045,3 +4045,22 @@ Wettlauf im Kartenverlauf behoben: Strg+Z direkt nach dem Löschen (mit Projektl
 - `apps/web/src/views/map/useMapHistory.ts`
 - `docs/TESTING.md`
 
+## 2026-11-03T20:20:27.809Z · progress
+
+**Aufgaben:** COOP-06
+
+Plugin faltet die COOP-06-Arten (Übergabe mit Annahme, Abwesenheit, erledigte Hinweise) in TeamLog.java wie team.ts; neue Befehle /bp uebergeben, annehmen, ablehnen, abwesend, zurueck, auch über den Teamkanal; echte Paper-Server 1.18.2, 1.21.4, 26.3 grün.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-06 | 🧩 Implementiert · Abnahme offen | 4/5 | Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern. |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+- `docs/architecture/TEAMBAU.md`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`
+- `mods/bauplaner-bridge/paper/src/main/resources/plugin.yml`
+- `scripts/bridge_paperteam.mjs`
+

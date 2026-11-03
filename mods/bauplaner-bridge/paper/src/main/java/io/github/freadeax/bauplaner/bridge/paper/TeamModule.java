@@ -54,7 +54,7 @@ import org.bukkit.scheduler.BukkitTask;
  */
 final class TeamModule implements Listener {
     static final List<String> COMMANDS = List.of("team", "abschnitte", "nehmen", "abgeben", "fertig", "zeigen", "notiz", "notizen", "geliefert", "sammle",
-            "zuweisen", "pruefen", "rolle", "lager", "nachweis", "beitrag");
+            "zuweisen", "pruefen", "rolle", "lager", "nachweis", "beitrag", "uebergeben", "annehmen", "ablehnen", "abwesend", "zurueck");
     private static final String PREFIX = ChatColor.GOLD + "[Bauplaner] " + ChatColor.RESET;
 
     private final JavaPlugin plugin;
@@ -329,6 +329,47 @@ final class TeamModule implements Listener {
                 if (args.length > 2) e.addProperty("note", clip(String.join(" ", java.util.Arrays.copyOfRange(args, 2, args.length)), 300));
                 return submit(team, e, s, "Abschnitt " + sec.number() + (r.equals("ok") ? " bestätigt." : " braucht Nacharbeit."));
             });
+            case "uebergeben" -> args.length < 2 ? fail(s, "/" + label + " uebergeben <nr> <spieler> [notiz]") : withSection(s, team, args[0], sec -> {
+                if (me.isEmpty() && !a.console) return fail(s, "Du bist nicht im Team.");
+                Optional<String> target = memberByName(v, args[1]);
+                if (target.isEmpty()) return fail(s, "„" + args[1] + "“ ist nicht im Team.");
+                JsonObject e = team.event(me.orElse(team.founder), "section.handover"); e.addProperty("section", sec.id()); e.addProperty("member", target.get());
+                if (args.length > 2) e.addProperty("note", clip(String.join(" ", java.util.Arrays.copyOfRange(args, 2, args.length)), 300));
+                boolean ok = submit(team, e, s, "Übergabe von Abschnitt " + sec.number() + " „" + sec.name() + "“ an " + v.name(target.get()) + " angeboten. Bis zur Annahme bleibt der Abschnitt beim bisherigen Inhaber.");
+                notifyMember(team, target.get(), "Dir wird Abschnitt " + sec.number() + " „" + sec.name() + "“ übergeben: /" + label + " annehmen " + sec.number() + " oder /" + label + " ablehnen " + sec.number());
+                return ok;
+            });
+            case "annehmen", "ablehnen" -> {
+                if (me.isEmpty()) yield fail(s, "Du bist nicht im Team.");
+                Optional<TeamLog.Section> sec = args.length > 0 ? team.section(args[0])
+                        : team.ordered().stream().filter(x -> { TeamLog.Offer o = v.section(x.id()).offer; return o != null && o.to().equals(me.get()); }).findFirst();
+                if (sec.isEmpty()) yield fail(s, args.length > 0 ? "Abschnitt „" + args[0] + "“ gibt es nicht." : "Für dich liegt kein Übergabeangebot vor.");
+                boolean accept = sub.equals("annehmen");
+                JsonObject e = team.event(me.get(), accept ? "section.accept" : "section.decline"); e.addProperty("section", sec.get().id());
+                yield submit(team, e, s, accept ? "Abschnitt " + sec.get().number() + " „" + sec.get().name() + "“ gehört jetzt dir."
+                        : "Übergabeangebot für Abschnitt " + sec.get().number() + " „" + sec.get().name() + "“ beendet.");
+            }
+            case "abwesend", "zurueck" -> {
+                Optional<String> m = ensureMember(team, a);
+                if (m.isEmpty()) yield fail(s, "Du bist nicht im Team.");
+                JsonObject e = team.event(m.get(), "member.away"); e.addProperty("member", m.get());
+                List<String> rest = new java.util.ArrayList<>(List.of(args));
+                boolean back = sub.equals("zurueck") || rest.size() == 1 && rest.get(0).equalsIgnoreCase("aus");
+                String until = null;
+                if (!back) {
+                    if (!rest.isEmpty() && rest.get(0).equalsIgnoreCase("bis")) rest.remove(0);
+                    if (!rest.isEmpty() && rest.get(0).matches("\\d{4}-\\d{2}-\\d{2}")) {
+                        try { java.time.LocalDate.parse(rest.get(0)); } catch (java.time.format.DateTimeParseException ex) { yield fail(s, "Datum als JJJJ-MM-TT, z. B. 2026-11-10."); }
+                        until = rest.remove(0);
+                    }
+                    String note = clip(String.join(" ", rest).trim(), 120);
+                    if (until != null) e.addProperty("until", until);
+                    if (!note.isEmpty()) e.addProperty("note", note);
+                    if (until == null && note.isEmpty()) e.addProperty("note", "abwesend");
+                }
+                yield submit(team, e, s, back ? "Willkommen zurück – du bist wieder als anwesend eingetragen."
+                        : "Als abwesend eingetragen" + (until != null ? " bis einschließlich " + until : "") + ". /" + label + " zurueck hebt das auf.");
+            }
             case "lager" -> storage.command(s, a.playerName, a.uuid, a.console, label, args);
             case "nachweis" -> tallySwitch(s, a, team, v, args, label);
             case "beitrag" -> contributionReport(s, a, team, args, label);
@@ -396,8 +437,22 @@ final class TeamModule implements Listener {
         say(s, "Team: /" + label + " team · abschnitte · nehmen <nr> · abgeben <nr> · fertig [<nr>] [notiz] · zeigen <nr>");
         say(s, "notiz <frage|problem|material|info> <text> · notizen · geliefert <item|hand> [menge] · sammle <item> <menge>");
         say(s, "Lager: lager hilfe · lager info · lager bedarf [nr] · nachweis [an|aus] · beitrag [alle] · Baumeister: lager markieren [name] · lager siegeln · lager schutz <stufe>");
+        say(s, "Übergabe: uebergeben <nr> <spieler> [notiz] · annehmen [nr] · ablehnen [nr] · abwesend [bis JJJJ-MM-TT] [notiz] · zurueck");
         say(s, "Baumeister: zuweisen <nr> <spieler> · pruefen <nr> ok|nacharbeit [notiz] · Bauleitung: rolle <spieler> <rolle> · team laden · team export · team wahl <name>");
         return true;
+    }
+
+    private static Optional<String> memberByName(TeamLog.View v, String name) {
+        return v.memberOfPlayer(name).or(() -> v.names.entrySet().stream().filter(x -> x.getValue().equalsIgnoreCase(name)).map(Map.Entry::getKey).findFirst())
+                .or(() -> v.known.contains(name) ? Optional.of(name) : Optional.empty());
+    }
+
+    /** Tells an online member (by linked player name) something, e.g. a handover offer. */
+    private void notifyMember(TeamLog team, String member, String text) {
+        String player = view(team).players.get(member);
+        if (player == null) return;
+        Player p = Bukkit.getPlayerExact(player);
+        if (p != null) say(p, text);
     }
 
     private boolean overview(CommandSender s, TeamLog team, TeamLog.View v, Optional<String> me, String label) {
@@ -409,9 +464,16 @@ final class TeamModule implements Listener {
             List<String> mine = team.ordered().stream().filter(sec -> m.equals(v.section(sec.id()).owner))
                     .map(sec -> sec.number() + " " + sec.name() + " (" + TeamLog.STATUS_LABEL.get(v.section(sec.id()).status) + ")").collect(Collectors.toList());
             say(s, mine.isEmpty() ? "Du hast keinen Abschnitt. /" + label + " nehmen <nr>" : "Deine Abschnitte: " + String.join(", ", mine));
+            for (TeamLog.Section sec : team.ordered()) {
+                TeamLog.Offer o = v.section(sec.id()).offer;
+                if (o != null && o.to().equals(m)) say(s, ChatColor.AQUA + "Übergabe an dich: " + sec.number() + " " + sec.name() + " (von " + v.name(o.by()) + (o.note() != null ? ": " + o.note() : "") + ") – /" + label + " annehmen " + sec.number() + ChatColor.RESET);
+            }
+            TeamLog.Away aw = v.away.get(m);
+            if (aw != null) say(s, "Du bist als abwesend eingetragen" + (aw.until() != null ? " bis " + aw.until() : "") + ". /" + label + " zurueck");
         } else say(s, "Du bist noch nicht im Team. Mit /" + label + " nehmen <nr> trittst du bei.");
         List<String> free = team.ordered().stream().filter(sec -> v.section(sec.id()).status.equals("frei")).limit(5).map(sec -> sec.number() + " " + sec.name()).collect(Collectors.toList());
         say(s, free.isEmpty() ? "Kein Abschnitt frei." : "Frei: " + String.join(", ", free));
+        if (!v.away.isEmpty()) say(s, "Abwesend: " + v.away.entrySet().stream().map(x -> v.name(x.getKey()) + (x.getValue().until() != null ? " (bis " + x.getValue().until() + ")" : "")).collect(Collectors.joining(", ")));
         long open = v.notes.values().stream().filter(n -> n.resolvedBy == null).count();
         if (open > 0) say(s, open + " offene Notiz(en): /" + label + " notizen");
         return true;
@@ -421,7 +483,8 @@ final class TeamModule implements Listener {
         for (TeamLog.Section sec : team.ordered()) {
             TeamLog.SectionState st = v.section(sec.id());
             ChatColor c = switch (st.status) { case "frei" -> ChatColor.GREEN; case "vergeben" -> ChatColor.YELLOW; case "gemeldet" -> ChatColor.AQUA; case "bestaetigt" -> ChatColor.GRAY; default -> ChatColor.RED; };
-            say(s, c + "" + sec.number() + ". " + sec.name() + ChatColor.RESET + " – " + TeamLog.STATUS_LABEL.get(st.status) + (st.owner != null ? " · " + v.name(st.owner) : ""));
+            say(s, c + "" + sec.number() + ". " + sec.name() + ChatColor.RESET + " – " + TeamLog.STATUS_LABEL.get(st.status) + (st.owner != null ? " · " + v.name(st.owner) : "")
+                    + (st.owner != null && v.away.containsKey(st.owner) ? " (abwesend)" : "") + (st.offer != null ? ChatColor.AQUA + " → Übergabe an " + v.name(st.offer.to()) + " offen" : ""));
         }
         if (team.sections.isEmpty()) say(s, "Das Projekt hat keine Bauabschnitte.");
         return true;
@@ -578,7 +641,9 @@ final class TeamModule implements Listener {
         TeamLog team = teams.values().iterator().next();
         List<String> numbers = team.ordered().stream().map(sec -> String.valueOf(sec.number())).collect(Collectors.toList());
         return switch (sub) {
-            case "nehmen", "abgeben", "fertig", "zeigen" -> args.length == 2 ? numbers : List.of();
+            case "nehmen", "abgeben", "fertig", "zeigen", "annehmen", "ablehnen" -> args.length == 2 ? numbers : List.of();
+            case "uebergeben" -> args.length == 2 ? numbers : args.length == 3 ? Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()) : List.of();
+            case "abwesend" -> args.length == 2 ? List.of("bis", "aus", java.time.LocalDate.now().plusDays(7).toString()) : List.of();
             case "zuweisen" -> args.length == 2 ? numbers : args.length == 3 ? Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()) : List.of();
             case "pruefen" -> args.length == 2 ? numbers : args.length == 3 ? List.of("ok", "nacharbeit") : List.of();
             case "notiz" -> args.length == 2 ? TeamLog.NOTE_TAGS : List.of();
@@ -741,8 +806,9 @@ final class TeamModule implements Listener {
     record ChannelResult(boolean ok, boolean fin, String text) {}
 
     private static final java.util.Set<String> CHANNEL_KINDS = java.util.Set.of("section.claim", "section.release", "section.done", "section.verify", "section.assign",
-            "contribution", "gather.claim", "note.add", "note.resolve");
-    private static final List<String> CHANNEL_FIELDS = List.of("section", "note", "ok", "member", "blocks", "items", "item", "count", "noteId", "text", "tag", "pos");
+            "contribution", "gather.claim", "note.add", "note.resolve",
+            "section.handover", "section.accept", "section.decline", "member.away");
+    private static final List<String> CHANNEL_FIELDS = List.of("section", "note", "ok", "member", "blocks", "items", "item", "count", "noteId", "text", "tag", "pos", "until");
 
     /**
      * An action a player sent with the mod over the team channel. The event keeps the id the mod chose (so a

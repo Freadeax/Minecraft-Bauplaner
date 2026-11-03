@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T20:20:12.136Z",
+  "updatedAt": "2026-11-03T20:20:27.809Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -6585,7 +6585,9 @@
         "apps/web/src/views/project/TeamPlan.tsx",
         "apps/web/src/teamplan.css",
         "tests/teamPlan.test.mjs",
-        "tests/e2e/teamplan.e2e.mjs"
+        "tests/e2e/teamplan.e2e.mjs",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java",
+        "scripts/bridge_paperteam.mjs"
       ],
       "legacyIds": [],
       "steps": [
@@ -6606,8 +6608,8 @@
         },
         {
           "id": "COOP-06-S04",
-          "title": "Plugin faltet die neuen Arten in TeamLog.java (Plugin-Thread).",
-          "done": false
+          "title": "Plugin faltet die neuen Arten in TeamLog.java; Befehle /bp uebergeben, annehmen, ablehnen, abwesend, zurueck; Teamkanal nimmt sie an.",
+          "done": true
         },
         {
           "id": "COOP-06-S05",
@@ -6640,7 +6642,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:01:09.951Z"
+      "updatedAt": "2026-11-03T20:20:27.809Z"
     },
     {
       "id": "PROJ-01",
@@ -12329,6 +12331,31 @@
           "done": 6,
           "total": 8,
           "next": "O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T20:20:27.809Z",
+      "kind": "progress",
+      "items": [
+        "COOP-06"
+      ],
+      "summary": "Plugin faltet die COOP-06-Arten (Übergabe mit Annahme, Abwesenheit, erledigte Hinweise) in TeamLog.java wie team.ts; neue Befehle /bp uebergeben, annehmen, ablehnen, abwesend, zurueck, auch über den Teamkanal; echte Paper-Server 1.18.2, 1.21.4, 26.3 grün.",
+      "files": [
+        "docs/TESTING.md",
+        "docs/architecture/TEAMBAU.md",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java",
+        "mods/bauplaner-bridge/paper/src/main/resources/plugin.yml",
+        "scripts/bridge_paperteam.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-06",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern."
         }
       ]
     }

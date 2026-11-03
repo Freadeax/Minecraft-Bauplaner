@@ -41,6 +41,9 @@ final class TeamLog {
         NEED.put("build.tally", "gast"); NEED.put("member.tally", "gast"); NEED.put("store.chest", "meister"); NEED.put("store.count", "gast");
         // Checked storage chests (COOP-05, docs/architecture/LAGERKISTEN.md).
         NEED.put("store.config", "meister"); NEED.put("store.seal", "meister"); NEED.put("store.move", "gast"); NEED.put("store.check", "gast");
+        // Handover with acceptance, absence, acknowledged hints (COOP-06, TEAMBAU §4).
+        NEED.put("section.handover", "helfer"); NEED.put("section.accept", "helfer"); NEED.put("section.decline", "helfer");
+        NEED.put("member.away", "gast"); NEED.put("issue.ack", "meister");
     }
     /** Measurements only the server writes (origin server), as in team.ts SERVER_ONLY_KINDS. */
     static final Set<String> SERVER_ONLY = Set.of("build.tally", "store.count", "store.move", "store.check");
@@ -159,8 +162,13 @@ final class TeamLog {
 
     static final class SectionState {
         String status = "frei", owner, doneBy, verifiedBy, note;
+        /** Open handover offer (section.handover) until accepted, declined or overtaken. */
+        Offer offer;
         final List<String> history = new ArrayList<>();
     }
+    record Offer(String to, String by, String at, String note) {}
+    /** Absence (member.away): until that day inclusive ({@code YYYY-MM-DD}) or open-ended. */
+    record Away(String until, String note) {}
     static final class NoteState {
         String id, by, text, tag, section, at, resolvedBy;
         int[] pos;
@@ -190,6 +198,9 @@ final class TeamLog {
         final Map<String, Map<String, Long>> stored = new HashMap<>(), taken = new HashMap<>();
         /** Checked storage chests (COOP-05): expected content, check status, bookings per player. */
         final StoreIndex stores = new StoreIndex();
+        /** COOP-06: absent members and event ids of hints marked as done. */
+        final Map<String, Away> away = new HashMap<>();
+        final Set<String> acknowledged = new java.util.LinkedHashSet<>();
 
         /** Sum of the last counts of all chests. */
         Map<String, Long> stock() {
@@ -243,7 +254,7 @@ final class TeamLog {
         String kind = str(e, "kind"), by = str(e, "by"), id = str(e, "id"), at = str(e, "at");
         if (!NEED.containsKey(kind)) return; // newer kind: kept, no effect
         String role = v.role(by);
-        boolean selfAllowed = (kind.equals("member.join") || kind.equals("member.player") || kind.equals("member.tally")) && by.equals(str(e, "member"));
+        boolean selfAllowed = (kind.equals("member.join") || kind.equals("member.player") || kind.equals("member.tally") || kind.equals("member.away")) && by.equals(str(e, "member"));
         if (SERVER_ONLY.contains(kind) && !"server".equals(str(e, "origin"))) { reject(v, id, "Dieser Eintrag kommt nur vom Server-Plugin."); return; }
         if (!selfAllowed && !can(role, kind)) {
             NoteState n = kind.equals("note.resolve") ? v.notes.get(str(e, "noteId")) : null;
@@ -275,7 +286,7 @@ final class TeamLog {
                 if (by.equals(s.owner)) return;
                 if (s.owner != null) { conflict(v, id, v.name(by) + " wollte „" + sectionName(sec) + "“ übernehmen, der Abschnitt war schon an " + v.name(s.owner) + " vergeben."); return; }
                 if (s.status.equals("bestaetigt")) { reject(v, id, "„" + sectionName(sec) + "“ ist schon bestätigt."); return; }
-                s.owner = by; s.status = "vergeben"; s.doneBy = null; s.verifiedBy = null;
+                s.owner = by; s.status = "vergeben"; s.doneBy = null; s.verifiedBy = null; s.offer = null;
                 if (str(e, "note") != null) s.note = str(e, "note");
                 s.history.add(at + " " + v.name(by) + ": übernommen");
             }
@@ -284,7 +295,7 @@ final class TeamLog {
                 String m = str(e, "member");
                 if (!v.known.contains(m)) { reject(v, id, "Unbekanntes Mitglied."); return; }
                 if (s.owner != null && !s.owner.equals(m)) conflict(v, id, v.name(by) + " hat „" + sectionName(sec) + "“ von " + v.name(s.owner) + " an " + v.name(m) + " umgewiesen.");
-                s.owner = m;
+                s.owner = m; s.offer = null;
                 if (s.status.equals("frei")) s.status = "vergeben";
                 s.history.add(at + " " + v.name(by) + ": zugewiesen an " + v.name(m));
             }
@@ -292,14 +303,14 @@ final class TeamLog {
                 SectionState s = v.section(sec);
                 if (!by.equals(s.owner) && !can(role, "section.assign")) { reject(v, id, "Nur " + (s.owner == null ? "der Inhaber" : v.name(s.owner)) + " oder ein Baumeister kann „" + sectionName(sec) + "“ abgeben."); return; }
                 if (s.status.equals("bestaetigt")) { reject(v, id, "„" + sectionName(sec) + "“ ist bestätigt und kann nicht mehr abgegeben werden."); return; }
-                s.owner = null; s.status = "frei"; s.doneBy = null;
+                s.owner = null; s.status = "frei"; s.doneBy = null; s.offer = null;
                 s.history.add(at + " " + v.name(by) + ": abgegeben");
             }
             case "section.done" -> {
                 SectionState s = v.section(sec);
                 if (s.owner != null && !s.owner.equals(by)) conflict(v, id, v.name(by) + " hat „" + sectionName(sec) + "“ fertig gemeldet, Inhaber ist " + v.name(s.owner) + ".");
                 if (s.owner == null) s.owner = by;
-                s.status = "gemeldet"; s.doneBy = by; s.verifiedBy = null;
+                s.status = "gemeldet"; s.doneBy = by; s.verifiedBy = null; s.offer = null;
                 if (str(e, "note") != null) s.note = str(e, "note");
                 s.history.add(at + " " + v.name(by) + ": fertig gemeldet");
             }
@@ -307,7 +318,7 @@ final class TeamLog {
                 SectionState s = v.section(sec);
                 if (s.status.equals("frei")) { reject(v, id, "„" + sectionName(sec) + "“ ist frei, es gibt nichts zu prüfen."); return; }
                 boolean ok = e.get("ok").getAsBoolean();
-                s.status = ok ? "bestaetigt" : "nacharbeit"; s.verifiedBy = by;
+                s.status = ok ? "bestaetigt" : "nacharbeit"; s.verifiedBy = by; s.offer = null;
                 if (str(e, "note") != null) s.note = str(e, "note");
                 s.history.add(at + " " + v.name(by) + ": " + (ok ? "bestätigt" : "Nacharbeit"));
             }
@@ -368,6 +379,40 @@ final class TeamLog {
                 }
                 ch.items = next; ch.partial = more; ch.counted = true; ch.countedBy = by; ch.countedAt = at;
             }
+            case "section.handover" -> {
+                SectionState s = v.section(sec);
+                String m = str(e, "member"), label = sectionName(sec), note = opt(e, "note");
+                if (s.status.equals("bestaetigt") || s.status.equals("gemeldet")) { reject(v, id, "„" + label + "“ ist " + (s.status.equals("bestaetigt") ? "bestätigt" : "fertig gemeldet") + " und wird nicht mehr übergeben."); return; }
+                if (!by.equals(s.owner) && !can(role, "section.assign")) { reject(v, id, "Nur " + (s.owner == null ? "der Inhaber" : v.name(s.owner)) + " oder ein Baumeister kann „" + label + "“ übergeben."); return; }
+                if (m == null || !v.known.contains(m)) { reject(v, id, "Unbekanntes Mitglied " + m + "."); return; }
+                if (m.equals(s.owner)) { reject(v, id, v.name(m) + " hat „" + label + "“ schon."); return; }
+                if (!can(v.role(m), "section.claim")) { reject(v, id, v.name(m) + " ist " + ROLE_LABEL.get(v.role(m)) + " und kann keine Abschnitte übernehmen."); return; }
+                s.offer = new Offer(m, by, at, note);
+                s.history.add(at + " " + v.name(by) + ": Übergabe an " + v.name(m) + " angeboten" + (note != null ? ": " + note : ""));
+            }
+            case "section.accept" -> {
+                SectionState s = v.section(sec);
+                if (s.offer == null || !s.offer.to().equals(by)) { reject(v, id, "Für " + v.name(by) + " liegt kein Übergabeangebot für „" + sectionName(sec) + "“ vor."); return; }
+                String from = s.owner;
+                s.owner = by; if (s.status.equals("frei")) s.status = "vergeben";
+                if (s.offer.note() != null) s.note = s.offer.note();
+                s.offer = null;
+                s.history.add(at + " " + v.name(by) + ": Übergabe angenommen" + (from != null ? " (von " + v.name(from) + ")" : ""));
+            }
+            case "section.decline" -> {
+                SectionState s = v.section(sec);
+                if (s.offer == null) { reject(v, id, "Für „" + sectionName(sec) + "“ gibt es kein offenes Übergabeangebot."); return; }
+                if (!by.equals(s.offer.to()) && !by.equals(s.offer.by()) && !by.equals(s.owner) && !can(role, "section.assign")) { reject(v, id, "Ein fremdes Übergabeangebot zieht ein Baumeister zurück."); return; }
+                s.history.add(at + " " + v.name(by) + ": " + (by.equals(s.offer.to()) ? "Übergabe abgelehnt" : "Übergabeangebot zurückgezogen"));
+                s.offer = null;
+            }
+            case "member.away" -> {
+                String m = str(e, "member");
+                if (!by.equals(m) && !role.equals("leitung")) { reject(v, id, "Abwesenheit trägt jeder selbst ein oder die Bauleitung."); return; }
+                String until = opt(e, "until"), note = opt(e, "note");
+                if (until != null || note != null) v.away.put(m, new Away(until, note)); else v.away.remove(m);
+            }
+            case "issue.ack" -> { for (JsonElement x : array(e, "events")) v.acknowledged.add(x.getAsString()); }
             case "store.config", "store.move", "store.check", "store.seal" -> {
                 if (!v.chests.containsKey(str(e, "chest"))) { reject(v, id, "Lagerkiste unbekannt oder entfernt."); return; }
             }
@@ -391,6 +436,11 @@ final class TeamLog {
     static String str(JsonObject o, String key) {
         JsonElement e = o.get(key);
         return e == null || e.isJsonNull() ? null : e.getAsString();
+    }
+    /** Like {@link #str} but an empty text counts as missing (as {@code event.note && …} in team.ts). */
+    static String opt(JsonObject o, String key) {
+        String s = str(o, key);
+        return s == null || s.isEmpty() ? null : s;
     }
     static String req(JsonObject o, String key) {
         String s = str(o, key);

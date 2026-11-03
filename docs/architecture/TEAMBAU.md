@@ -71,7 +71,7 @@ interface TeamEventBase { id: string; at: string; by: string /* builderId */; or
 | `member.away` (COOP-06) | `member`, `until?` (`YYYY-MM-DD`, einschließlich), `note?` (≤ 120) | Abwesenheit; ohne `until` und `note` = wieder da |
 | `issue.ack` (COOP-06) | `events` (1–200 Ereignis-IDs) | Hinweise/abgelehnte Ereignisse als erledigt markieren (Baumeister+); ändert sonst nichts |
 
-**Regeln der COOP-06-Arten** (gleich in `team.ts` und – nachzuziehen – `TeamLog.java`; Rechteprüfung wie überall mit der Rolle zum Ereigniszeitpunkt):
+**Regeln der COOP-06-Arten** (gleich in `team.ts` und `TeamLog.java` (Plugin: `/bp uebergeben <nr> <spieler> [notiz]`, `annehmen [nr]`, `ablehnen [nr]`, `abwesend [bis JJJJ-MM-TT] [notiz]`, `zurueck`; auch über den Teamkanal); Rechteprüfung wie überall mit der Rolle zum Ereigniszeitpunkt):
 
 - `section.handover`: Mindestrolle Helfer. Nur der Inhaber oder Baumeister+. Abgelehnt, wenn der Abschnitt gemeldet oder bestätigt ist, das Ziel unbekannt ist, schon Inhaber ist oder nur Gast ist. Ein freier Abschnitt kann von Baumeister+ angeboten werden. Ein neues Angebot ersetzt ein offenes.
 - `section.accept`: nur das angebotene Mitglied, solange das Angebot offen ist (sonst abgelehnt „kein Übergabeangebot“). Wirkung: Inhaber = Annehmender, Status `frei` → `vergeben`, sonst unverändert; Angebot gelöscht.

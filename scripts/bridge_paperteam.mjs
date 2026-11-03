@@ -103,6 +103,16 @@ try {
   await run(as('Carla', 'sammle oak_log 128'), /Du sammelst 128 × oak_log/);
   await run(as('Carla', 'notiz frage Wo kommt die Treppe hin?'), /Notiz gespeichert/);
   await run(as('Ben_MC', 'zuweisen 3 Anna_MC'), /Abschnitt 3 „Dach“ an Anna zugewiesen/);
+  // COOP-06: Übergabe mit Annahme, Abwesenheit.
+  await run(as('Anna_MC', 'uebergeben 3 Carla Dachlatten liegen bereit'), /Übergabe von Abschnitt 3 „Dach“ an Carla angeboten/);
+  await run(as('Carla', 'team'), /Übergabe an dich: 3 Dach \(von Anna: Dachlatten liegen bereit\)/);
+  await run('bauplaner abschnitte', /3\. Dach[^\n]*Anna[^\n]*Übergabe an Carla offen/);
+  await run(as('Ben_MC', 'annehmen 3'), /kein Übergabeangebot/);
+  await run(as('Carla', 'annehmen'), /Abschnitt 3 „Dach“ gehört jetzt dir/);
+  await run(as('Anna_MC', 'abwesend bis 2026-11-10 Urlaub'), /abwesend eingetragen bis einschließlich 2026-11-10/);
+  await run(as('Ben_MC', 'abwesend'), /abwesend eingetragen/);
+  await run(as('Ben_MC', 'zurueck'), /wieder als anwesend/);
+  await run(as('Ben_MC', 'team'), /Abwesend: Anna \(bis 2026-11-10\)/);
   // Lagerkiste (COOP-04): a real chest, filled and emptied with vanilla commands, counted by the plugin.
   await run('forceload add 1000 1010', /forceload|Marked|already/i);
   await run('setblock 1000 -60 1010 minecraft:chest', /Changed the block|Could not set/);
@@ -144,7 +154,10 @@ try {
   assert.ok(carla && carla.role === 'helfer', 'Carla ist als Helfer beigetreten');
   assert.equal(st('sec_fund').status, 'bestaetigt'); assert.equal(st('sec_fund').owner, 'bld_anna'); assert.equal(st('sec_fund').verifiedBy, 'bld_ben');
   assert.equal(st('sec_roh').owner, carla.id);
-  assert.equal(st('sec_dach').owner, 'bld_anna');
+  assert.equal(st('sec_dach').owner, carla.id, 'Übergabe angenommen');
+  assert.equal(st('sec_dach').offer, undefined); assert.equal(st('sec_dach').note, 'Dachlatten liegen bereit');
+  assert.deepEqual(view.members.find(m => m.id === 'bld_anna').away, { until: '2026-11-10', note: 'Urlaub' });
+  assert.equal(view.members.find(m => m.id === 'bld_ben').away, undefined);
   assert.equal(view.members.find(m => m.id === 'bld_ben').role, 'meister');
   assert.deepEqual(view.delivered, { 'minecraft:stone': 192 });
   assert.deepEqual(view.gather.map(g => [g.item, g.count]), [['minecraft:oak_log', 128]]);
