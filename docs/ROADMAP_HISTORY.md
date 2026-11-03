@@ -3955,3 +3955,18 @@ Modrinth-Projekt vorbereitet: project.json, Beschreibung EN/DE, Icon, 6 Bilder, 
 - `scripts/release_mod.mjs`
 - `tests/modrinth.test.mjs`
 
+## 2026-11-03T19:57:31.636Z · progress
+
+**Aufgaben:** PERF-05
+
+Nachtrag: versehentlich eingecheckte Profildatei reload.cpuprofile entfernt, *.cpuprofile ignoriert; Testprotokoll Runde 2 (vorheriger Commit) liegt im PERF-05-Abschnitt von TESTING.md.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-05 | 🧩 Implementiert · Abnahme offen | 6/8 | O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8). |
+
+**Geänderte Dateien:**
+
+- `.gitignore`
+- `reload.cpuprofile`
+

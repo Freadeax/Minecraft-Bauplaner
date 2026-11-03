@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T19:49:18.315Z",
+  "updatedAt": "2026-11-03T19:57:31.636Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -2212,7 +2212,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T19:17:47.115Z"
+      "updatedAt": "2026-11-03T19:57:31.636Z"
     },
     {
       "id": "VIEW-01",
@@ -12134,6 +12134,27 @@
           "done": 2,
           "total": 5,
           "next": "Philipps Bestätigung (Name, Text, Sichtbarkeit, Lizenz) und MODRINTH_TOKEN in der Cloud-Umgebung abwarten, dann create in einer neuen Sitzung."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T19:57:31.636Z",
+      "kind": "progress",
+      "items": [
+        "PERF-05"
+      ],
+      "summary": "Nachtrag: versehentlich eingecheckte Profildatei reload.cpuprofile entfernt, *.cpuprofile ignoriert; Testprotokoll Runde 2 (vorheriger Commit) liegt im PERF-05-Abschnitt von TESTING.md.",
+      "files": [
+        ".gitignore",
+        "reload.cpuprofile"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-05",
+          "status": "implemented",
+          "done": 6,
+          "total": 8,
+          "next": "O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8)."
         }
       ]
     }
