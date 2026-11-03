@@ -3559,3 +3559,17 @@ Plugin-Jar bauplaner-bridge-paper-0.9.0 mit Teammodul, Baunachweis und Lagerkist
 - `apps/web/src/views/mod/releases.json`
 - `downloads/mod/bauplaner-bridge-paper-0.9.0.jar`
 
+## 2026-11-03T18:22:37.656Z · progress
+
+**Aufgaben:** COOP-02
+
+Download-Browsertest wählt das neueste Paper-Plugin (0.9.0) statt des ersten Eintrags.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-02 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme auf Philipps Server. |
+
+**Geänderte Dateien:**
+
+- `tests/e2e/mod-download.e2e.mjs`
+

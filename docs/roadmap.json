@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T18:00:55.314Z",
+  "updatedAt": "2026-11-03T18:22:37.656Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -6233,7 +6233,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T18:00:55.314Z"
+      "updatedAt": "2026-11-03T18:22:37.656Z"
     },
     {
       "id": "COOP-03",
@@ -11260,6 +11260,26 @@
       "files": [
         "apps/web/src/views/mod/releases.json",
         "downloads/mod/bauplaner-bridge-paper-0.9.0.jar"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme auf Philipps Server."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T18:22:37.656Z",
+      "kind": "progress",
+      "items": [
+        "COOP-02"
+      ],
+      "summary": "Download-Browsertest wählt das neueste Paper-Plugin (0.9.0) statt des ersten Eintrags.",
+      "files": [
+        "tests/e2e/mod-download.e2e.mjs"
       ],
       "snapshot": [
         {
