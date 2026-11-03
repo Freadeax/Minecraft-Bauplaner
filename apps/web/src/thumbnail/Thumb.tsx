@@ -5,6 +5,7 @@ import { STILL_LOOK } from '../blockmodels/graphics';
 import type { RenderKit } from '../blockmodels/assets';
 import { renderShot } from './iso';
 import type { ShotOptions } from './iso';
+import { readStoredShot, storeShot } from './thumbStore';
 
 /**
  * Lazily rendered preview image. Versions are immutable and content-addressed,
@@ -34,6 +35,17 @@ function glModule(): Promise<Gl | null> {
   return gl;
 }
 
+/**
+ * Render code identity for the stored images (PERF-05 O-1): the WebGL renderer's chunk or
+ * the plain renderer, plus this module. Empty on the dev server, where code changes
+ * without new addresses: nothing is stored there.
+ */
+let revisionOf: Promise<string> | null = null;
+function revision(): Promise<string> {
+  revisionOf ??= import.meta.env.DEV ? Promise.resolve('') : glModule().then(m => `${m ? m.RENDER_REVISION : 'plain'}|${import.meta.url}`, () => '');
+  return revisionOf;
+}
+
 function pump(): void {
   if (running) return;
   const next = queue.shift();
@@ -58,7 +70,12 @@ async function render(payload: Pick<VoxelPayload, 'cells' | 'palette' | 'entitie
 export async function shotUrl(cacheKey: string, payload: Pick<VoxelPayload, 'cells' | 'palette' | 'entities'>, width: number, height: number, options: ShotOptions = {}): Promise<string> {
   const kit = await readyKit(), key = keyOf(cacheKey, kit, options, width, height);
   let url = cache.get(key);
-  if (url === undefined) { url = await render(payload, width, height, kit, options); cache.set(key, url); }
+  if (url === undefined) {
+    const rev = await revision();
+    url = (rev && await readStoredShot(rev, key)) || await render(payload, width, height, kit, options);
+    if (rev) storeShot(rev, key, url);
+    cache.set(key, url);
+  }
   return url;
 }
 
@@ -95,12 +112,21 @@ export function Thumb({ cacheKey, payload, alt, width = 320, height = 220, class
         url = p ? await render(p, width, height, kit, { ...options, ...(latest.current.markOf && { markOf: latest.current.markOf }) }) : '';
       } catch { url = ''; }
       cache.set(key, url);
+      void revision().then(rev => { if (rev) storeShot(rev, key, url); });
       if (!cancelled) setSrc(url);
     };
+    /** A stored image from an earlier start shows at once; only a miss waits for a render slot (PERF-05 O-1). */
+    const start = (first: boolean) => void revision().then(async rev => {
+      const stored = rev ? await readStoredShot(rev, key) : undefined;
+      if (cancelled) return;
+      if (stored) { cache.set(key, stored); setSrc(stored); return; }
+      if (first) queue.unshift(job); else queue.push(job);
+      pump();
+    });
     const el = ref.current;
-    if (eager || !el || !('IntersectionObserver' in window)) { queue.unshift(job); pump(); return () => { cancelled = true; }; }
+    if (eager || !el || !('IntersectionObserver' in window)) { start(true); return () => { cancelled = true; }; }
     const io = new IntersectionObserver(entries => {
-      if (entries.some(e => e.isIntersecting)) { io.disconnect(); queue.push(job); pump(); }
+      if (entries.some(e => e.isIntersecting)) { io.disconnect(); start(false); }
     }, { rootMargin: '300px' });
     io.observe(el);
     return () => { cancelled = true; io.disconnect(); };

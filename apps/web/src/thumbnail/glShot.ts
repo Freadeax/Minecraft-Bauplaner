@@ -9,6 +9,9 @@ import type { BlockMaterials } from '../blockmodels/threeMesh';
 import type { ShotView } from './views';
 import { withEntities } from '../blockmodels/entityScene';
 
+/** Identity of this render code (hashed chunk address in a build): stored preview images are only valid for it (thumbStore.ts). */
+export const RENDER_REVISION = import.meta.url;
+
 /**
  * Still images with real block shapes and textures (B12 + Blockdarstellung):
  * one shared offscreen WebGL renderer draws the same block mesh as the 3D

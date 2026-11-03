@@ -2126,7 +2126,10 @@
         "apps/web/src/jobs/library.ts",
         "tests/e2e/catalog-snapshot.e2e.mjs",
         "tests/stable-math.test.mjs",
-        "tests/canonical-json.test.mjs"
+        "tests/canonical-json.test.mjs",
+        "apps/web/src/thumbnail/thumbStore.ts",
+        "apps/web/src/thumbnail/Thumb.tsx",
+        "tests/e2e/thumb-store.e2e.mjs"
       ],
       "legacyIds": [],
       "steps": [
@@ -2157,12 +2160,17 @@
         },
         {
           "id": "PERF-05-S06",
-          "title": "Dauerhafter Vorschaubildcache (O-1) und Zellen erst bei Bedarf entpacken (O-2).",
-          "done": false
+          "title": "Dauerhafter Vorschaubildcache (O-1): Cache Storage je Render-Revision, Neustart ohne erneutes Rendern.",
+          "done": true
         },
         {
           "id": "PERF-05-S07",
           "title": "Analyse Mod und Paper-Plugin nach Merge der Teambau-Threads (O-8); Aufteilen großer Dateien nach Merge des jeweiligen Threads (O-6).",
+          "done": false
+        },
+        {
+          "id": "PERF-05-S08",
+          "title": "Zellen erst bei Bedarf entpacken statt alle Versionen beim Start (O-2).",
           "done": false
         }
       ],
@@ -2172,7 +2180,7 @@
         "Hash- und ID-Ausgabe unverändert; kein mitgeliefertes Gebäude bekommt eine neue Version-ID gegenüber Node.",
         "Alle Kern- und Browsertests grün."
       ],
-      "next": "O-1 Vorschaubildcache und O-2 Zellen bei Bedarf entpacken; Mod/Plugin-Analyse nach Merge der Teambau-Threads.",
+      "next": "O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8).",
       "blockers": [],
       "evidence": [
         {
@@ -2190,6 +2198,10 @@
         {
           "path": "tests/canonical-json.test.mjs",
           "note": "2000 Zufallswerte und Sonderfälle gleich der alten Implementierung."
+        },
+        {
+          "path": "tests/e2e/thumb-store.e2e.mjs",
+          "note": "Chromium: Vorschaubilder nach Neustart aus dem Speicher (blob), alter Speicher entfernt, ohne Cache Storage normal gerendert."
         }
       ],
       "verification": {
@@ -2200,7 +2212,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T18:49:57.179Z"
+      "updatedAt": "2026-11-03T19:17:47.115Z"
     },
     {
       "id": "VIEW-01",
@@ -11989,6 +12001,32 @@
           "done": 4,
           "total": 5,
           "next": "Abnahme durch Philipp mit Mitspielern (TEAMBAU-01…05)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T19:17:47.115Z",
+      "kind": "progress",
+      "items": [
+        "PERF-05"
+      ],
+      "summary": "Runde 2: dauerhafter Vorschaubildcache (Cache Storage je Render-Revision), Neustart ohne erneutes Rendern; Hauptthread-Blockade beim Neustart 326 ms → 123 ms. Geprüft: npm run check, Browser-Suite in Chromium 1243.",
+      "files": [
+        "apps/web/src/thumbnail/Thumb.tsx",
+        "apps/web/src/thumbnail/glShot.ts",
+        "apps/web/src/thumbnail/thumbStore.ts",
+        "docs/TESTING.md",
+        "docs/architecture/PERFORMANCE_AUDIT.md",
+        "reload.cpuprofile",
+        "tests/e2e/thumb-store.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-05",
+          "status": "implemented",
+          "done": 6,
+          "total": 8,
+          "next": "O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8)."
         }
       ]
     }

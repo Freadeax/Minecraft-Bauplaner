@@ -841,3 +841,4 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 ## COOP-01-S04 · Team in die Projektplanung · 03.11.2026 · Claude
 - `node --test tests/team.test.mjs tests/program.test.mjs`: 24/24 – Minecraft-Name aus der Planung gilt im Team, Beigetretene werden Bauleute, Zuweisungen folgen den Abschnittsinhabern, unberührte bleiben, zweites Übernehmen ändert nichts, `checkProgram` lehnt ungültige Minecraft-Namen ab.
 - `node --test tests/e2e/team.e2e.mjs tests/e2e/program.e2e.mjs`: 4/4 (Knopf „In die Projektplanung übernehmen“ im Ablauf).
+- Runde 2 (O-1 Vorschaubildcache): neu `tests/e2e/thumb-store.e2e.mjs` (Port 4319). Neustart im Profil: kein `drawImage`/WebGL-Rendern mehr, längste Hauptthread-Blockade 326 ms → 123 ms (Wandzeit bis Projektzentrale unverändert ~1,1 s, bestimmt durch Worker und IndexedDB). `npm run check` 746 Tests grün, Browser-Suite **144/144**.

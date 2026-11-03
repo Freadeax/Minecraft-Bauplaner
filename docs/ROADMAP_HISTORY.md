@@ -3907,3 +3907,23 @@ COOP-01-S04: Bauleute der Projektplanung mit Minecraft-Namen (Builder.player), T
 - `tests/e2e/team.e2e.mjs`
 - `tests/team.test.mjs`
 
+## 2026-11-03T19:17:47.115Z · progress
+
+**Aufgaben:** PERF-05
+
+Runde 2: dauerhafter Vorschaubildcache (Cache Storage je Render-Revision), Neustart ohne erneutes Rendern; Hauptthread-Blockade beim Neustart 326 ms → 123 ms. Geprüft: npm run check, Browser-Suite in Chromium 1243.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-05 | 🧩 Implementiert · Abnahme offen | 6/8 | O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/thumbnail/Thumb.tsx`
+- `apps/web/src/thumbnail/glShot.ts`
+- `apps/web/src/thumbnail/thumbStore.ts`
+- `docs/TESTING.md`
+- `docs/architecture/PERFORMANCE_AUDIT.md`
+- `reload.cpuprofile`
+- `tests/e2e/thumb-store.e2e.mjs`
+
