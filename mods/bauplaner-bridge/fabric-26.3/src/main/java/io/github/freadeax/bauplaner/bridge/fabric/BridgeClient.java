@@ -86,13 +86,32 @@ public final class BridgeClient implements ClientModInitializer {
         attack.addPhaseOrdering(early, net.fabricmc.fabric.api.event.Event.DEFAULT_PHASE);
         attack.register(early, (player, level, hand, pos, dir) -> client.attack(player, level, pos));
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents.CHUNK_UNLOAD.register((level, chunk) -> client.chunkUnloaded(chunk.getPos().x(), chunk.getPos().z()));
-        net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.JOIN.register((handler, sender, mc) -> mc.execute(() -> client.join(mc)));
+        // Teambau (COOP-03): payload type for the team channel of the Paper plugin. Registering the type sends nothing;
+        // the receiver (and with it the channel announcement) comes only after /bauplaner team erlauben.
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.serverboundPlay().register(io.github.freadeax.bauplaner.bridge.hologram.TeamPayload.TYPE, io.github.freadeax.bauplaner.bridge.hologram.TeamPayload.CODEC);
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(io.github.freadeax.bauplaner.bridge.hologram.TeamPayload.TYPE, io.github.freadeax.bauplaner.bridge.hologram.TeamPayload.CODEC);
+        net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.JOIN.register((handler, sender, mc) -> mc.execute(() -> client.join(mc, teamChannel)));
         net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents.DISCONNECT.register((handler, mc) -> mc.execute(client::leave));
         net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents.COLLECT_SUBMITS.register(ctx ->
                 client.render(ctx.poseStack(), ctx.submitNodeCollector(), ctx.levelState().cameraRenderState.pos));
         net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry.addLast(
                 net.minecraft.resources.Identifier.fromNamespaceAndPath("bauplaner_bridge", "fortschritt"), client::hud);
     }
+
+    /** The team channel on Fabric: announced by the server → canSend; receiver registered after the player's OK. */
+    private final io.github.freadeax.bauplaner.mod.team.TeamSync.Transport teamChannel = new io.github.freadeax.bauplaner.mod.team.TeamSync.Transport() {
+        @Override public boolean serverHasChannel() {
+            try { return net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.canSend(io.github.freadeax.bauplaner.bridge.hologram.TeamPayload.TYPE); }
+            catch (IllegalStateException e) { return false; }
+        }
+        @Override public void open() {
+            net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.registerReceiver(io.github.freadeax.bauplaner.bridge.hologram.TeamPayload.TYPE,
+                    (payload, context) -> client.teamFrame(payload.data()));
+        }
+        @Override public void send(byte[] frame) {
+            net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking.send(new io.github.freadeax.bauplaner.bridge.hologram.TeamPayload(frame));
+        }
+    };
 
     private static void say(FabricClientCommandSource s, String text) { s.sendFeedback(Component.literal("[Bauplaner] " + text)); }
     private static int fail(FabricClientCommandSource s, String text) { s.sendError(Component.literal("[Bauplaner] " + text)); return 0; }

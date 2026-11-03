@@ -213,10 +213,10 @@ public final class LiveCheck {
      */
     public int[] count(Filter filter) {
         boolean allHeights = filter.minY() == Integer.MIN_VALUE && filter.maxY() == Integer.MAX_VALUE;
-        if (allHeights && filter.section() == 0) return counts.clone();
+        if (allHeights && filter.allSections()) return counts.clone();
         if (allHeights) {
             int[] out = new int[V];
-            if (filter.section() > 0 && filter.section() < sectionRows) System.arraycopy(sectionCounts, filter.section() * V, out, 0, V);
+            for (int s = 0; s < sectionRows; s++) if (filter.keeps(s) && (s > 0 || filter.mask() != null)) for (int v = 0; v < V; v++) out[v] += sectionCounts[s * V + v];
             return out;
         }
         int[] out = new int[V];

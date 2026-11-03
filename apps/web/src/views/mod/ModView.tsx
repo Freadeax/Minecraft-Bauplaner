@@ -169,5 +169,16 @@ export function ModView({ search }: { search?: string | undefined }) {
       </ol>
       <p className="muted">Die Verbindung läuft nur zwischen diesem Browser und deinem Minecraft auf demselben Computer (127.0.0.1), nichts geht an den Server, die Welt wird nie verändert. Nur diese Website darf die Mod abfragen. <code>/bauplaner verbinden status</code> zeigt den Stand, <code>/bauplaner verbinden aus</code> trennt alle Browser.</p>
     </section>}
+
+    {!server && <section className="system-card system-wide" aria-labelledby="mod-team">
+      <h2 id="mod-team">Gemeinsam bauen im Spiel (ab Mod 0.10.0)</h2>
+      <p>Mit einem Team im Projekt (Reiter „Team“) zeigt das Hologramm die Bauabschnitte in der Farbe ihres Inhabers, rechts unten steht dein Auftrag mit Fortschritt. Übernehmen, fertig melden, Notizen und Lieferungen gehen direkt aus dem Spiel.</p>
+      <ol className="mod-steps">
+        <li>Im Planer im Reiter „Team“ „Ich bin“ wählen, mit dem Spiel verbinden (siehe oben) und unter „Mit Spiel abgleichen“ „Jetzt abgleichen“ drücken.</li>
+        <li>Im Spiel <code>/bauplaner team abschnitte</code>, <code>/bauplaner team nehmen &lt;nr&gt;</code>, <code>/bauplaner team mein</code> (nur deine Abschnitte einblenden), <code>/bauplaner team material</code>, <code>/bauplaner team fertig</code>.</li>
+        <li>Läuft auf dem Server das Bauplaner-Plugin, einmal <code>/bauplaner team erlauben</code>: dann kommen die Meldungen aller Mitspieler live an und die Bauleitung kann den Planstand vom Planer aus auf den Server legen.</li>
+      </ol>
+      <p className="muted">Ohne <code>/bauplaner team erlauben</code> sendet die Mod nichts an den Server, auch wenn er das Plugin hat. Deine Meldungen warten dann im Ausgangskorb, bis der Planer sie beim nächsten Abgleich abholt (<code>/bauplaner team korb</code>). <code>/bauplaner team verbieten</code> schaltet den Kanal für diesen Server wieder ab. Mit NeoForge nennt der Client beim Verbinden die Namen aller optionalen Kanäle seiner Mods, auch <code>bauplaner:team</code>. Das ist Teil der Verbindungsaushandlung von NeoForge, dabei wird kein Teampaket gesendet.</p>
+    </section>}
   </div>;
 }

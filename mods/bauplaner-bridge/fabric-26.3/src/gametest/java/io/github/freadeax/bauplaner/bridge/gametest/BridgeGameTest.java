@@ -313,6 +313,20 @@ public final class BridgeGameTest implements FabricClientGameTest {
         context.waitTicks(40);
         out.append(",\"section\":").append(request(context, http, base + "/v1/section", "POST", "{\"section\":2}", token, "https://freadeax.github.io"));
         out.append(",\"after\":").append(request(context, http, base + "/v1/status", "GET", null, token, "https://freadeax.github.io"));
+        // COOP-03 Teambau: team view from the planner (written by bridge_gametest.mjs), take section 2 in the game,
+        // only my sections in the hologram, the planner fetches the claim from the outbox and acknowledges it.
+        out.append(",\"teamPost\":").append(request(context, http, base + "/v1/team", "POST", Files.readString(io.resolve("team.json")), token, "https://freadeax.github.io"));
+        context.waitTicks(25);
+        chat(context, "/bauplaner team abschnitte");
+        chat(context, "/bauplaner team nehmen 2");
+        context.waitTicks(25);
+        chat(context, "/bauplaner team mein");
+        context.waitTicks(30);
+        copy(context.takeScreenshot("bauplaner-team"), io.resolve("team.png"));
+        out.append(",\"team\":").append(request(context, http, base + "/v1/team", "GET", null, token, "https://freadeax.github.io"));
+        out.append(",\"teamPull\":").append(request(context, http, base + "/v1/team/pull?teamId=x", "GET", null, token, "https://freadeax.github.io"));
+        chat(context, "/bauplaner team alle");
+        context.waitTicks(5);
         // MAP-05 Baustand: hologram back onto the built plan, then the whole box as recording (one wrong, one missing block).
         String back = "{\"dimension\":\"minecraft:overworld\",\"x\":" + anchor[0] + ",\"y\":" + anchor[1] + ",\"z\":" + anchor[2] + ",\"turns\":0,\"mirror\":false}";
         out.append(",\"back\":").append(request(context, http, base + "/v1/placement", "POST", back, token, "https://freadeax.github.io"));

@@ -185,4 +185,39 @@ public final class Json {
         if (d == Math.rint(d) && Math.abs(d) < 1e15) return Long.toString((long) d);
         return Double.toString(Math.round(d * 1000) / 1000.0);
     }
+
+    /** Writes maps, lists, strings, numbers, booleans and null as compact JSON (Teambau messages, COOP-03). */
+    public static String write(Object v) {
+        StringBuilder b = new StringBuilder();
+        write(b, v, 0);
+        return b.toString();
+    }
+
+    private static void write(StringBuilder b, Object v, int depth) {
+        if (depth > MAX_DEPTH) throw new JsonException("JSON zu tief verschachtelt");
+        if (v == null) b.append("null");
+        else if (v instanceof String s) b.append(quote(s));
+        else if (v instanceof Boolean x) b.append(x);
+        else if (v instanceof Number n) b.append(num(n.doubleValue()));
+        else if (v instanceof Map<?, ?> m) {
+            b.append('{');
+            boolean first = true;
+            for (Map.Entry<?, ?> e : m.entrySet()) {
+                if (e.getValue() == null) continue;
+                if (!first) b.append(',');
+                first = false;
+                b.append(quote(String.valueOf(e.getKey()))).append(':');
+                write(b, e.getValue(), depth + 1);
+            }
+            b.append('}');
+        } else if (v instanceof List<?> l) {
+            b.append('[');
+            for (int i = 0; i < l.size(); i++) { if (i > 0) b.append(','); write(b, l.get(i), depth + 1); }
+            b.append(']');
+        } else if (v instanceof int[] a) {
+            b.append('[');
+            for (int i = 0; i < a.length; i++) { if (i > 0) b.append(','); b.append(a[i]); }
+            b.append(']');
+        } else throw new JsonException("Nicht schreibbar: " + v.getClass().getSimpleName());
+    }
 }

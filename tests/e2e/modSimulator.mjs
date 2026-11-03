@@ -49,7 +49,7 @@ export function startModSimulator(port, options = {}) {
     pairingCode: null, tokens: new Set(),
     player: { x: 40.5, y: 65, z: -20.5, yaw: 0, pitch: 0, dimension: 'minecraft:overworld', name: 'Philipp' },
     others: [{ name: 'Anna', x: 52.5, y: 64, z: -14.5, yaw: 90 }],
-    hologram: null, marks: [], plans: [], placements: [], requests: [], planBytes: null, features: options.features ?? ['scan'], protocol: options.protocol ?? 1,
+    hologram: null, marks: [], plans: [], placements: [], requests: [], planBytes: null, teamPushed: null, teamOutbox: [], teamAcked: [], teamRejections: [], teamServerEvents: [], teamLink: 'none', features: options.features ?? ['scan'], protocol: options.protocol ?? 1,
   };
   const V1_POINT_TYPES = new Set(['anker', 'ziel', 'lager', 'portal', 'farm', 'treffpunkt']);
   const allowed = o => o === 'https://freadeax.github.io' || /^http:\/\/(localhost|127\.0\.0\.1)(:\d{1,5})?$/.test(o);
@@ -134,6 +134,17 @@ export function startModSimulator(port, options = {}) {
         const pl = state.hologram.placement, file = scanFromPlan(state.planBytes, [pl.x, pl.y, pl.z]);
         res.writeHead(200, { ...h, 'Content-Type': 'application/octet-stream', 'X-Bauplaner-File': 'burgmauer_r1_20261102-180000.schem', 'Access-Control-Expose-Headers': 'X-Bauplaner-File' });
         return res.end(file);
+      }
+      // Teambau (COOP-03, feature `team`): team view in, own actions out (outbox), acknowledgements, server only when `teamLink` is 'live'.
+      if (url.pathname.startsWith('/v1/team') && !state.features.includes('team')) return send(404, { error: 'Unbekannte Adresse.' });
+      if (route === 'POST /v1/team') { state.teamPushed = JSON.parse(body.toString()); return send(200, { ok: true, sections: state.teamPushed.sections.length, inPlan: state.hologram ? state.teamPushed.sections.length : 0, link: state.teamLink }); }
+      if (route === 'GET /v1/team') return send(200, { link: state.teamLink, linkText: state.teamLink, allowed: state.teamLink === 'live', outbox: state.teamOutbox, waiting: state.teamOutbox.length, rejections: state.teamRejections,
+        ...(state.teamPushed && { shown: { teamId: state.teamPushed.teamId, name: state.teamPushed.name, source: 'planer', me: state.teamPushed.me, sections: state.teamPushed.sections.length } }) });
+      if (route === 'POST /v1/team/ack') { const ids = JSON.parse(body.toString()).ids; state.teamAcked.push(...ids); state.teamOutbox = state.teamOutbox.filter(e => !ids.includes(e.id)); return send(200, { removed: ids.length }); }
+      if (route === 'GET /v1/team/pull') {
+        if (state.teamLink !== 'live') return send(409, { error: 'team-plugin-fehlt: Auf diesem Server läuft kein Bauplaner-Plugin mit Teambau.' });
+        const since = url.searchParams.get('since'), i = since ? state.teamServerEvents.findIndex(e => e.id === since) + 1 : 0;
+        return send(200, { teamId: url.searchParams.get('teamId'), name: 'Server', events: state.teamServerEvents.slice(i), more: false, total: state.teamServerEvents.length });
       }
       if (route === 'POST /v1/unpair') { state.tokens.delete(req.headers['x-bauplaner-token']); return send(200, { unpaired: true }); }
       return send(404, { error: 'Unbekannte Adresse.' });

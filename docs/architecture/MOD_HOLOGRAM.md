@@ -1,10 +1,10 @@
 # Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (GAME-07)
 
-Stand 02.11.2026 · Stufe 1 „Fundament + Hologramm“ (0.2.0, Wahl Philipp) Stufe 2 „Texturen, Material, Ebenen“ (0.3.0) und Stufe 3 „Platzierhilfe“ (0.4.0) Stufe 4 „NeoForge, Shader, andere Mods“ (0.6.0) und Stufe 5 „Bauabschnitte, Röntgensicht, Shulker“ (0.7.0); 0.7.1 Baustand für die Live-Karte (`GET /v1/scan`, [LIVE_LINK](LIVE_LINK.md)), 0.7.2 Testphase (`/bauplaner diagnose`, Absturzschutz), 0.8.0 Live-Protokoll 2 (Zonen, Ebenen, Farben, neue Punktarten, Mitspieler; GAME-08), 0.9.0 große Pläne (SIZE-01). Fabric 26.3 und NeoForge 26.3 mit demselben Client-Kern; die bisherige Aufnahme (`/bauplaner scan`, [MOD_BRIDGE](MOD_BRIDGE.md)) bleibt unverändert erhalten.
+Stand 02.11.2026 · Stufe 1 „Fundament + Hologramm“ (0.2.0, Wahl Philipp) Stufe 2 „Texturen, Material, Ebenen“ (0.3.0) und Stufe 3 „Platzierhilfe“ (0.4.0) Stufe 4 „NeoForge, Shader, andere Mods“ (0.6.0) und Stufe 5 „Bauabschnitte, Röntgensicht, Shulker“ (0.7.0); 0.7.1 Baustand für die Live-Karte (`GET /v1/scan`, [LIVE_LINK](LIVE_LINK.md)), 0.7.2 Testphase (`/bauplaner diagnose`, Absturzschutz), 0.8.0 Live-Protokoll 2 (Zonen, Ebenen, Farben, neue Punktarten, Mitspieler; GAME-08), 0.9.0 große Pläne (SIZE-01), 0.10.0 Teambau (COOP-03). Fabric 26.3 und NeoForge 26.3 mit demselben Client-Kern; die bisherige Aufnahme (`/bauplaner scan`, [MOD_BRIDGE](MOD_BRIDGE.md)) bleibt unverändert erhalten.
 
 ## Grundsätze
 
-- **Reiner Client.** Kein zusätzliches oder verändertes Paket an den Server (die Platzierhilfe lässt einen normalen Klick durch oder verwirft ihn vorher, und wählt höchstens einen Schnellleistenplatz wie eine Zifferntaste), keine Weltänderung, kein automatisches Bauen („Printer“), kein Teleport. Funktioniert damit auf jedem Server, auch ohne Plugin und ohne Rechte.
+- **Reiner Client.** Kein zusätzliches oder verändertes Paket an den Server (die Platzierhilfe lässt einen normalen Klick durch oder verwirft ihn vorher, und wählt höchstens einen Schnellleistenplatz wie eine Zifferntaste), keine Weltänderung, kein automatisches Bauen („Printer“), kein Teleport. Funktioniert damit auf jedem Server, auch ohne Plugin und ohne Rechte. Einzige Ausnahme seit 0.10.0: der Teamkanal `bauplaner:team` – nur wenn der Server ihn selbst anbietet (Bauplaner-Plugin) **und** der Spieler ihn mit `/bauplaner team erlauben` für diesen Server eingeschaltet hat (Entscheidung Philipp 03.11.2026, [TEAMBAU §7](TEAMBAU.md)).
 - **Keine Abhängigkeiten** außer Fabric API bzw. NeoForge: kein WorldEdit, kein Litematica, keine eigenen Shader. Gezeichnet wird mit Vanilla-Rendertypen (`debugQuads`, `lines`) über `LevelRenderEvents.COLLECT_SUBMITS` (Fabric) bzw. `SubmitCustomGeometryEvent` (NeoForge), damit Sodium und Iris nichts ersetzen müssen.
 - **Eine Wahrheit für den Vergleich.** `BlockRules.compare` ist eine Portierung von `compareBlock`/`ignoredProperties` aus `packages/domain/src/gameCheck.ts`: Ergebnis im Spiel = Ergebnis der Website.
 
@@ -104,3 +104,25 @@ Weltplan-Schema 2 von der Website im Spiel ([LIVE_LINK](LIVE_LINK.md#protokoll-2
 ## Große Pläne (0.9.0, SIZE-01)
 
 Planbox bis 16,7 Mio. Zellen und 4 Mio. Blöcke, Übertragung von der Website bis 64 MB (Fähigkeit `bigplans`). Der Plan wird einmal entpackt, `LiveCheck` braucht rund 30 Byte je Block (keine HashMap je Block), große Pläne und das Verschieben großer Hologramme werden im Thread „Bauplaner-Planlader“ vorbereitet, der Baustand liest in Scheiben. Bauabschnitte kommen als Läufe (`SectionRuns`), alte Dateien mit `SectionCells` gehen weiter. Render-Budget mit `/bauplaner leistung niedrig|normal|hoch` (15 000 / 30 000 / 60 000 offene Blöcke im Umkreis von 72); greift es, zeigt die Anzeige „Zeigt die nächsten …“. Die Diagnose nennt Planbox, Chunks, Leistung und Java-Speicher. Einzelheiten und Messwerte: [SIZE_LIMITS](SIZE_LIMITS.md).
+
+## Teambau (0.10.0, COOP-03)
+
+Die Mod zeigt den Teamstand im Spiel und meldet aus dem Spiel. Das vollständige Protokoll steht in [TEAMBAU §7](TEAMBAU.md).
+
+- **Quelle des Teamstands.** Der Planer schickt ihn über „Mit Spiel abgleichen“ (`POST /v1/team`). Ist der Kanal erlaubt, kommt er vom Paper-Plugin. Abschnitte ordnet die Mod über `SectionIds`/`TeamId` der Plandatei zu, bei älteren Plänen über eindeutige Namen.
+- **Darstellung.**
+  - Abschnittsrahmen in der Farbe des Inhabers, eigene dicker. Frei ist grün, gemeldet cyan, bestätigt grau, Nacharbeit rot.
+  - Lagerkisten (vom Plugin) nach Prüfstatus und Notizpfosten.
+  - HUD unten rechts: Team und Weg zum Server, „Hier: Abschnitt …“, „Mein Auftrag … % · offen“ und die nächste Notiz.
+- **Befehle `/bauplaner team …`:**
+  - `abschnitte`, `nehmen <nr>`, `abgeben`, `fertig [nr] [notiz]`, `pruefen <nr> ok|nacharbeit` und `zuweisen <nr> <spieler>`
+  - `zeigen <nr>`, `mein`, `frei` und `alle` (Abschnittsmaske im Hologramm, gilt auch für Materialliste und Fehlersuche)
+  - `material [spieler]` und `notiz <art> <text>`, `notizen`, `erledigt <id>`
+  - `geliefert hand|<item> <menge>`, `sammle` und `lager`
+  - `erlauben`, `verbieten`, `status`, `korb [leeren]`, `rahmen` und `anzeige`
+- **Ausgang.** Eigene Meldungen liegen in `bauplaner/team/<server>.ausgang.json`, bis Planer oder Plugin sie quittieren. Das Spiel zeigt sie sofort als vorläufigen Stand. Die Erlaubnis je Server steht in `bauplaner/team/erlaubt.properties`.
+- **Prüfung.**
+  - JUnit `TeamTest`: Teamstand, vorläufiger Stand, Planzuordnung, Rahmen und Stücke, und dass ohne Ankündigung und Erlaubnis nichts gesendet wird.
+  - `LiveLinkTest`: Merkmal `team`, Schlüssel für alle Teamwege.
+  - Spieltest Fabric: Teamstand vom Planer, `nehmen 2`, `mein`, die Übernahme im Ausgang als Ereignis von „Ich bin“, und ohne Plugin 409 `team-plugin-fehlt`.
+  - Echter Paper-26.3-Servertest mit eingeschaltetem Kanal.

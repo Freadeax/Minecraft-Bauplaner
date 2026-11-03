@@ -115,6 +115,7 @@ export const LIVE_FEATURE_LABELS: readonly { readonly id: string; readonly label
   { id: LIVE_FEATURE_MARKS2, label: 'Zonen, Ebenen und neue Punktarten im Spiel' },
   { id: LIVE_FEATURE_PLAYERS, label: 'Mitspieler auf der Karte' },
   { id: LIVE_FEATURE_BIGPLANS, label: 'große Pläne bis 16,7 Mio. Zellen' },
+  { id: 'team', label: 'Teambau im Spiel (Abschnitte, Meldungen, Server-Plugin)' },
 ];
 /** Other players (feature `players`): name and position in the client's dimension. */
 export interface LiveOtherPlayer { readonly name: string; readonly x: number; readonly y: number; readonly z: number; readonly yaw: number }

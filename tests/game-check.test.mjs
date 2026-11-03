@@ -228,6 +228,12 @@ test('plan export carries build sections for the game mod: names in build order,
   const read = async project => readNbt(new Uint8Array(gunzipSync((await exportRevisionSchem(project, c.revision.id, c.versions, { dataVersion: 4189, anchor: 'project-origin', unselected: 'air' })).bytes))).tag.value.Schematic.value.Metadata.value.Bauplaner.value;
   const b = await read({ ...c.project, site });
   assert.deepEqual(b.SectionNames.value.map(t => t.value), ['Unten', 'Oben']);
+  // COOP-03: section ids in the same order so the mod maps team sections onto plan numbers; TeamId only with a team.
+  assert.deepEqual(b.SectionIds.value.map(t => t.value), site.sections.map(s => s.id));
+  assert.equal(b.TeamId, undefined);
+  const { createTeam } = await import('../dist/domain/src/index.js');
+  const withTeam = await read({ ...c.project, site: { ...site, team: createTeam({ name: 'Bautrupp', founder: 'bld_a', teamId: 'team_link0001', at: '2026-11-03T09:00:00Z' }) } });
+  assert.equal(withTeam.TeamId.value, 'team_link0001');
   // Box 3 × 3 × 1, Sponge order x + z·W + y·W·L: bottom layer section 1, the layers above section 2 (erase cell included, empty corner none).
   const cells = b.SectionCells.value;
   assert.equal(cells.length, 9);
@@ -244,4 +250,5 @@ test('plan export carries build sections for the game mod: names in build order,
   assert.equal(plain.SectionNames, undefined);
   assert.equal(plain.SectionCells, undefined);
   assert.equal(plain.SectionRuns, undefined);
+  assert.equal(plain.SectionIds, undefined);
 });

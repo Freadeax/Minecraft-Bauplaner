@@ -48,6 +48,7 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
     private ServerScan scan;
     private BukkitTask task;
     private TeamModule team;
+    private TeamChannel channel;
 
     @Override
     public void onEnable() {
@@ -61,15 +62,24 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
         }
         team = new TeamModule(this, root);
         team.enable();
+        // Teamkanal für die Bauplaner-Mod (COOP-03): Spieler mit Mod sehen Abschnitte, Inhaber und Meldungen live.
+        if (getConfig().getBoolean("team.kanal", true)) { channel = new TeamChannel(this, team); channel.enable(); }
         var command = getCommand("bauplaner");
         if (command != null) { command.setExecutor(this); command.setTabCompleter(this); }
         getLogger().info("Bereit: Minecraft " + PaperCompat.gameVersion() + ", DataVersion " + PaperCompat.dataVersion()
                 + ". Pläne in " + root.resolve("plans") + ", Aufnahmen in " + root.resolve("scans") + ".");
     }
 
+    /** Team channel to the Bauplaner mod, null when switched off in the config (for the storage module: broadcastStore). */
+    TeamChannel teamChannel() { return channel; }
+
+    /** Team module (team logs, rights, facade for the storage module). */
+    TeamModule teamModule() { return team; }
+
     @Override
     public void onDisable() {
         stopScan();
+        if (channel != null) channel.disable();
         if (team != null) team.disable();
     }
 

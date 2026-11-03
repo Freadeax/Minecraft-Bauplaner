@@ -85,6 +85,18 @@ public final class HologramHud {
 
     /** "Abschnitt 2/5 „Erdgeschoss“: 73 % · 12 offen", null without sections or with all sections. */
     private String sectionRow(LiveCheck check) {
+        if (hologram.sectionSetLabel() != null) {
+            String key = check.revision() + "/" + hologram.sectionSet() + "/" + System.identityHashCode(check);
+            if (!key.equals(sectionKey)) {
+                int[] c = check.count(hologram.filter());
+                int total = 0;
+                for (int v : c) total += v;
+                int ok = c[Verdict.OK.ordinal()], open = c[Verdict.MISSING.ordinal()] + c[Verdict.WRONG.ordinal()] + c[Verdict.STATE.ordinal()];
+                sectionText = hologram.sectionSetLabel() + " (" + hologram.sectionSet().size() + "): " + (total == 0 ? 100 : (int) ((long) ok * 100 / total)) + " % · " + open + " offen";
+                sectionKey = key;
+            }
+            return sectionText;
+        }
         if (hologram.section() == 0 || hologram.sectionName() == null) return null;
         String key = check.revision() + "/" + hologram.section() + "/" + System.identityHashCode(check);
         if (!key.equals(sectionKey)) {
@@ -97,7 +109,7 @@ public final class HologramHud {
     /** "Ebene 70 (nur diese): 12 / 40 richtig, 28 offen". */
     private String layerLine(LiveCheck check) {
         if (hologram.layers() == Hologram.Layers.ALL) return null;
-        String key = check.revision() + "/" + hologram.layers() + "/" + hologram.layerY() + "/" + hologram.section() + "/" + System.identityHashCode(check);
+        String key = check.revision() + "/" + hologram.layers() + "/" + hologram.layerY() + "/" + hologram.section() + "/" + hologram.sectionSet() + "/" + System.identityHashCode(check);
         if (!key.equals(layerKey)) { layerCounts = check.count(hologram.filter()); layerKey = key; }
         int total = 0;
         for (int c : layerCounts) total += c;

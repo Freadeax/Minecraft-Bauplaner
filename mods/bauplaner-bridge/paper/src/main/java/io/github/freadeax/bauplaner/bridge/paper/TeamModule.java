@@ -174,6 +174,7 @@ final class TeamModule implements Listener {
             say(s, summary);
             for (String p : problems) fail(s, p);
         } else plugin.getLogger().info(summary);
+        changed.run();
         return summary;
     }
 
@@ -220,6 +221,7 @@ final class TeamModule implements Listener {
         try {
             write(team, e);
             team.add(e);
+            changed.run();
             return true;
         } catch (IOException ex) {
             fail(s, "Nicht gespeichert: " + ex.getMessage());
@@ -836,5 +838,91 @@ final class TeamModule implements Listener {
         lastHint.put(p.getUniqueId(), now);
         say(p, ChatColor.YELLOW + "Abschnitt " + hit.section.number() + " „" + hit.section.name() + "“ baut " + v.name(st.owner) + "."
                 + (block ? " Hier kannst du nichts ändern." : " Bitte absprechen."));
+    }
+
+    // ------------------------------------------------------------------ Teamkanal (COOP-03, TeamChannel)
+
+    private Runnable changed = () -> { };
+
+    /** Called after every new event and after (re)loading the team files. */
+    void onChange(Runnable r) { changed = r == null ? () -> { } : r; }
+
+    java.util.Collection<TeamLog> teamList() { return teams.values(); }
+
+    TeamLog team(String teamId) { return teams.get(teamId); }
+
+    /** The team a player works in (chosen with /bp team wahl, else the one they stand in, else the first); null without teams. */
+    TeamLog teamFor(Player p) { return teams.isEmpty() ? null : teamOf(new Actor(p, p.getName(), p.getUniqueId(), false)); }
+
+    TeamLog.View viewOf(TeamLog team) { return view(team); }
+
+    Optional<String> memberFor(TeamLog team, Player p) { return memberOf(team, new Actor(p, p.getName(), p.getUniqueId(), false)); }
+
+    /** Answer to an action from the mod: ok, final (false = try again later) and a text for the player. */
+    record ChannelResult(boolean ok, boolean fin, String text) {}
+
+    private static final java.util.Set<String> CHANNEL_KINDS = java.util.Set.of("section.claim", "section.release", "section.done", "section.verify", "section.assign",
+            "contribution", "gather.claim", "note.add", "note.resolve");
+    private static final List<String> CHANNEL_FIELDS = List.of("section", "note", "ok", "member", "blocks", "items", "item", "count", "noteId", "text", "tag", "pos");
+
+    /**
+     * An action a player sent with the mod over the team channel. The event keeps the id the mod chose (so a
+     * resend after a lost answer counts once) but gets the server time, the player's real member id and
+     * origin "server"; rights and conflicts are judged by the same fold as the chat commands.
+     */
+    ChannelResult submitFor(Player p, TeamLog team, JsonObject body) {
+        String id = TeamLog.str(body, "id"), kind = TeamLog.str(body, "kind");
+        if (id == null || !id.matches("[A-Za-z0-9_-]{4,64}")) return new ChannelResult(false, true, "Ungültige Ereignis-ID.");
+        if (team.has(id)) return new ChannelResult(true, true, null);
+        if (kind == null || !CHANNEL_KINDS.contains(kind)) return new ChannelResult(false, true, "Diese Teamaktion geht nicht über die Mod: " + kind);
+        if (!p.hasPermission("bauplaner.team.use")) return new ChannelResult(false, true, "Dir fehlt das Recht bauplaner.team.use.");
+        Actor a = new Actor(p, p.getName(), p.getUniqueId(), false);
+        Optional<String> m = kind.equals("note.add") ? ensureMember(team, a).or(() -> memberOf(team, a)) : ensureMember(team, a);
+        if (m.isEmpty()) return new ChannelResult(false, true, "Du bist nicht im Team „" + team.name + "“ (neue Spieler treten auf diesem Server nicht selbst bei).");
+        String sec = TeamLog.str(body, "section");
+        if (sec != null && team.sections.stream().noneMatch(x -> x.id().equals(sec))) return new ChannelResult(false, true, "Diesen Abschnitt kennt der Server nicht (anderer Planstand?).");
+        JsonObject e = new JsonObject();
+        e.addProperty("id", id);
+        e.addProperty("at", team.nextTime());
+        e.addProperty("by", m.get());
+        e.addProperty("origin", "server");
+        e.addProperty("kind", kind);
+        for (String f : CHANNEL_FIELDS) if (body.has(f)) e.add(f, body.get(f).deepCopy());
+        if (e.has("note") && e.get("note").isJsonPrimitive()) e.addProperty("note", clip(e.get("note").getAsString(), 300));
+        if (e.has("text") && e.get("text").isJsonPrimitive()) e.addProperty("text", clip(e.get("text").getAsString(), 500));
+        if (TeamLog.GSON.toJson(e).length() > 4096) return new ChannelResult(false, true, "Teamaktion zu groß.");
+        TeamLog probe = TeamLog.parse(team.exportJson());
+        probe.add(e);
+        TeamLog.View pv = probe.view();
+        String problem = pv.problems.get(id);
+        if (pv.rejectedIds.contains(id) || problem != null && kind.equals("section.claim")) return new ChannelResult(false, true, problem == null ? "Nicht erlaubt." : problem);
+        try { write(team, e); }
+        catch (IOException ex) { return new ChannelResult(false, false, "Server konnte nicht speichern: " + ex.getMessage()); }
+        team.add(e);
+        changed.run();
+        return new ChannelResult(true, true, problem);
+    }
+
+    /**
+     * A team server file from the planner, handed over by the mod of a leader (POST /v1/team/push). Written next
+     * to the other team files and loaded; events of an already known team join its log.
+     */
+    String importFile(String json) throws IOException {
+        TeamLog t = TeamLog.parse(json);
+        String safe = t.name.replaceAll("[^A-Za-z0-9ÄÖÜäöüß_-]+", "-").replaceAll("^-+|-+$", "");
+        String file = (safe.isEmpty() ? "team" : safe.length() > 40 ? safe.substring(0, 40) : safe) + "-" + t.teamId.replaceFirst("^team_", "").substring(0, Math.min(8, t.teamId.replaceFirst("^team_", "").length())) + ".team.json";
+        Path out = dir.resolve(file);
+        Path tmp = out.resolveSibling(file + ".tmp");
+        Files.writeString(tmp, json, StandardCharsets.UTF_8);
+        Files.move(tmp, out, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        return load(null);
+    }
+
+    /** Whether a player may hand over plan files for a team: permission or role Bauleitung in it. */
+    boolean leads(Player p, TeamLog team) {
+        if (p.hasPermission("bauplaner.team.leitung")) return true;
+        if (team == null) return false;
+        Optional<String> m = memberFor(team, p);
+        return m.isPresent() && "leitung".equals(view(team).role(m.get()));
     }
 }

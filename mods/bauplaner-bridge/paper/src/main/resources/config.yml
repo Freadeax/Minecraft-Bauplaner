@@ -24,3 +24,6 @@ team:
   nachweis: true
   # Wie oft der Baunachweis ins Teamprotokoll geschrieben wird (Minuten; zusätzlich bei Ausfuhr, Neuladen und Serverstopp).
   nachweis-minuten: 5
+  # Teamkanal für Spieler mit Bauplaner-Mod (ab 0.10.0): Abschnitte in Inhaberfarbe, Meldungen ohne Befehle, Abgleich mit dem Planer.
+  # Die Mod nutzt ihn nur, wenn der Spieler ihn einmal je Server erlaubt (/bauplaner team erlauben). Spieler ohne Mod merken nichts.
+  kanal: true

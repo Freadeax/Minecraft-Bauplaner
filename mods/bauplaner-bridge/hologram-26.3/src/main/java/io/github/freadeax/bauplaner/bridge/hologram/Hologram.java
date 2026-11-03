@@ -122,7 +122,30 @@ public final class Hologram {
     public int maxY() { return layers == Layers.ALL ? Integer.MAX_VALUE : layerY; }
 
     /** Layer mode and build section together: what hologram, HUD, material list and finder look at. */
-    public io.github.freadeax.bauplaner.mod.Filter filter() { return new io.github.freadeax.bauplaner.mod.Filter(minY(), maxY(), section); }
+    public io.github.freadeax.bauplaner.mod.Filter filter() {
+        if (sectionSet != null) return io.github.freadeax.bauplaner.mod.Filter.sections(minY(), maxY(), sectionSet);
+        return new io.github.freadeax.bauplaner.mod.Filter(minY(), maxY(), section);
+    }
+
+    /**
+     * Teambau (COOP-03): several sections at once, e.g. "meine Abschnitte" or "freie Abschnitte". Null = off
+     * (single section or all). Set by the team client, which keeps it up to date while the team state moves.
+     */
+    private java.util.Set<Integer> sectionSet;
+    private String sectionSetLabel;
+
+    public String sectionSetLabel() { return sectionSet == null ? null : sectionSetLabel; }
+    public java.util.Set<Integer> sectionSet() { return sectionSet; }
+
+    /** Shows only these sections (label for HUD and menu); null switches back to all. */
+    public void setSectionSet(java.util.Set<Integer> sections, String label) {
+        java.util.Set<Integer> next = sections == null ? null : java.util.Set.copyOf(sections);
+        if (java.util.Objects.equals(next, sectionSet) && java.util.Objects.equals(label, sectionSetLabel)) return;
+        sectionSet = next;
+        sectionSetLabel = label;
+        section = 0;
+        target = -1;
+    }
 
     public List<String> sectionNames() { return plan == null ? List.of() : plan.sectionNames(); }
     public int section() { return section; }
@@ -136,6 +159,7 @@ public final class Hologram {
         if (names.isEmpty()) return "Dieser Plan hat keine Bauabschnitte. Auf der Website im Tab „Baustelle“ Abschnitte anlegen und neu exportieren.";
         if (n < 0 || n > names.size()) return "Abschnitt " + n + " gibt es nicht (1–" + names.size() + ").";
         section = n;
+        sectionSet = null;
         announced = 0;
         target = -1;
         if (layers != Layers.ALL) layerY = firstOpenLayer();
@@ -202,9 +226,10 @@ public final class Hologram {
     /** Lowest world height with missing, wrong or misaligned blocks; the bottom of the box when everything is done. */
     private int firstOpenLayer() {
         int best = Integer.MAX_VALUE;
+        var f = filter();
         for (int i = 0; i < check.size(); i++) {
             var v = check.verdict(i);
-            if (section != 0 && check.plan().section(i) != section) continue;
+            if (!f.keeps(check.plan().section(i))) continue;
             if (v != Verdict.OK && v != Verdict.UNKNOWN) best = Math.min(best, check.worldY(i));
         }
         return best == Integer.MAX_VALUE ? check.worldBox()[1] : best;
@@ -268,7 +293,7 @@ public final class Hologram {
 
     public void leave() { clearState(); worldKey = null; }
 
-    private void clearState() { plan = null; planFile = null; check = null; target = -1; visible = true; layers = Layers.ALL; section = 0; announced = 0; wanted = null; generation++; pending = null; loadingFile = null; }
+    private void clearState() { plan = null; planFile = null; check = null; target = -1; visible = true; layers = Layers.ALL; section = 0; sectionSet = null; announced = 0; wanted = null; generation++; pending = null; loadingFile = null; }
 
     /** Builds the check of an already read plan on the loader thread; {@link #tick} installs it. */
     private void checkInBackground(String file, PlanModel p, Placement at, String message) {
@@ -306,7 +331,7 @@ public final class Hologram {
         generation++;
         pending = null;
         loadingFile = null;
-        if (!file.equals(planFile)) { section = 0; announced = 0; }
+        if (!file.equals(planFile)) { section = 0; sectionSet = null; announced = 0; }
         plan = p;
         planFile = file;
         visible = true;
@@ -324,13 +349,13 @@ public final class Hologram {
         Placement at = new Placement(McCompat.dimension(mc.level), anchor.getX(), anchor.getY(), anchor.getZ(),
                 old == null ? 0 : old.turns(), old != null && old.mirror());
         if (Files.size(plansDir().resolve(file)) >= ASYNC_FILE_BYTES) {
-            if (!file.equals(planFile)) { section = 0; announced = 0; }
+            if (!file.equals(planFile)) { section = 0; sectionSet = null; announced = 0; }
             visible = true;
             loadInBackground(file, at, "platziert bei " + anchor.getX() + " " + anchor.getY() + " " + anchor.getZ());
             return "Großer Plan „" + file + "“ wird im Hintergrund geladen – das Hologramm erscheint gleich.";
         }
         PlanModel p = PlanModel.read(plansDir().resolve(file));
-        if (!file.equals(planFile)) { section = 0; announced = 0; }
+        if (!file.equals(planFile)) { section = 0; sectionSet = null; announced = 0; }
         visible = true;
         String msg = "„" + p.name() + "“ platziert bei " + anchor.getX() + " " + anchor.getY() + " " + anchor.getZ() + " (" + p.blockCount() + " Blöcke).";
         if (p.blockCount() >= ASYNC_BLOCKS) { checkInBackground(file, p, at, msg); return "Großer Plan (" + p.blockCount() + " Blöcke) wird vorbereitet – das Hologramm erscheint gleich."; }

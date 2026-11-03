@@ -156,7 +156,7 @@ public final class HologramRenderer {
     /** Recompute which blocks to draw when verdicts changed or the camera moved to another chunk. */
     private void select(LiveCheck check, Vec3 cam) {
         int cx = (int) Math.floor(cam.x) >> 4, cz = (int) Math.floor(cam.z) >> 4;
-        String settings = hologram.layers() + "/" + hologram.layerY() + "/" + hologram.section() + "/" + hologram.textured() + "/" + ((int) Math.floor(cam.y) >> 3);
+        String settings = hologram.layers() + "/" + hologram.layerY() + "/" + hologram.section() + "/" + hologram.sectionSet() + "/" + hologram.textured() + "/" + ((int) Math.floor(cam.y) >> 3);
         String settings2 = settings + "/" + hologram.budget();
         boolean sameView = check == drawnFor && cx == drawnChunkX && cz == drawnChunkZ && settings2.equals(drawnSettings);
         if (sameView && check.revision() == drawnRevision) return;

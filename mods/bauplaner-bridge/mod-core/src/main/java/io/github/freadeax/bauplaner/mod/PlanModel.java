@@ -33,6 +33,10 @@ public final class PlanModel {
     private final List<String> sectionNames;
     /** Per planned block: 1-based section number, 0 = in no section; null when the plan has no sections. */
     private final byte[] sections;
+    /** Website ids of the sections (site.sections[].id, same order as the names; COOP-03), empty when the file has none. */
+    private List<String> sectionIds = List.of();
+    /** Team of the project (site.team.teamId) when the plan was exported from a team project; null otherwise. */
+    private String teamId;
 
     private PlanModel(Plan plan, BlockState[] palette, int[] index, char[] state, List<String> sectionNames, byte[] sections) {
         this.plan = plan;
@@ -131,7 +135,18 @@ public final class PlanModel {
             count++;
         }
         if (pos != data.length) throw new BridgeException("Blocks.Data ist länger als die Planbox.");
-        return new PlanModel(plan, palette, Arrays.copyOf(idx, count), Arrays.copyOf(st, count), names, sec == null ? null : Arrays.copyOf(sec, count));
+        PlanModel model = new PlanModel(plan, palette, Arrays.copyOf(idx, count), Arrays.copyOf(st, count), names, sec == null ? null : Arrays.copyOf(sec, count));
+        // Teambau (COOP-03, website 0.10+): section ids and team id, so team sections match hologram sections by id.
+        if (b2 != null && b2.containsKey("SectionIds") && b2.get("SectionIds").type() == Nbt.LIST) {
+            List<String> ids = new ArrayList<>();
+            for (var t : ((Nbt.NbtList) b2.get("SectionIds").value()).values()) ids.add(t.asString("Bauplaner.SectionIds"));
+            if (ids.size() == names.size()) model.sectionIds = List.copyOf(ids);
+        }
+        if (b2 != null && b2.containsKey("TeamId")) {
+            String t = b2.get("TeamId").asString("Bauplaner.TeamId");
+            if (!t.isBlank() && t.length() <= 64) model.teamId = t;
+        }
+        return model;
     }
 
     public Plan identity() { return plan; }
@@ -149,6 +164,10 @@ public final class PlanModel {
 
     /** Build sections of the plan in build order (from the website's Baustelle tab); empty when none. */
     public List<String> sectionNames() { return sectionNames; }
+    /** Website section ids in the order of {@link #sectionNames()}; empty for plans exported before COOP-03. */
+    public List<String> sectionIds() { return sectionIds; }
+    /** Team id of the project, null when the plan is not from a team project. */
+    public String teamId() { return teamId; }
     /** 1-based build section of a planned block, 0 when it is in none. */
     public int section(int i) { return sections == null ? 0 : sections[i] & 0xff; }
 

@@ -122,12 +122,63 @@ Das vorhandene Plugin (GAME-04) bekommt ein Teammodul. Es ist der einzige Ort, a
 
 ## 7. Live-Abgleich über die Mod (COOP-03)
 
-Für Planer-Nutzer mit Mod entfällt jeder Dateiversand:
+Für Planer-Nutzer mit Mod entfällt jeder Dateiversand. Umgesetzt mit Mod 0.10.0 (Fabric und NeoForge, 26.3), siehe §17.
 
-- Neues Merkmal `team` in `hello.features` (Live-Protokoll, abgestimmt mit dem Mod-Thread). Website → Mod: `POST /v1/team/push` (Planstand-Kopf + neue Ereignisse), `GET /v1/team/pull?since=<id>`. Die Mod reicht beides über den Plugin-Kanal `bauplaner:team` (Custom Payload, eine Nachricht ≤ 1 MB, in Stücken) an das Plugin weiter und gibt die Antwort zurück. Ohne Plugin auf dem Server antwortet die Mod mit 404 `team-plugin-fehlt`.
-- Das Plugin prüft Rechte mit der UUID der Verbindung; der Planer schreibt nie stellvertretend für andere.
-- **Regel „keine zusätzlichen Pakete an den Server“ (Philipp, Client-Mod):** Der Kanal `bauplaner:team` ist streng freiwillig. Die Mod sendet darauf nur, wenn (1) der Server den Kanal selbst angemeldet hat (`minecraft:register` durch das Paper-Plugin) und (2) der Spieler es je Server einmal bestätigt hat (`/bauplaner team erlauben`). Sonst sendet sie nie etwas. Diese Ausnahme von Philipps Regel bestätigt Philipp vor Beginn von COOP-03 (abgestimmt mit dem Mod-Thread, 03.11.2026). Mod-Version: nach 0.9.0 (reserviert für „Volumenlimit für große Builds aufheben“).
-- Die Mod zeigt im Hologramm Abschnitte in der Farbe ihres Inhabers und den eigenen Auftrag hervorgehoben; `/bauplaner abschnitt mein` wählt den eigenen.
+**Zwei Wege, ein Format.** Den Teamstand („team-link“) bekommt die Mod entweder vom Planer auf demselben PC (`POST /v1/team`) oder vom Paper-Plugin über den Kanal `bauplaner:team`. Das Format ist in beiden Fällen gleich:
+
+- `teamId`, `name`, `dimension`, `revision`, `revisionSummary` und `me` (das „Ich bin“ des Browsers bzw. das Mitglied mit der UUID des Spielers).
+- `sections[{id, nr, name, owner, status, boxes?, need?, offer?}]`. `nr` zählt ab 1 in Bauordnung, wie in der Plandatei.
+- `members[{id, name, player, role, color?, away?}]`, offene `notes[]`, beim Server zusätzlich `stores[]` (Lagerkisten, COOP-04) und `at`.
+
+Die Mod nimmt den Stand des Servers, wenn er da ist, sonst den des Planers.
+
+**Planabgleich.** Die Plandatei (`revisionExport.ts`) trägt neben `SectionNames` jetzt `SectionIds` in derselben Reihenfolge und `TeamId`. Damit ordnet die Mod Teamabschnitte genau den Planabschnitten zu. Ältere Dateien ohne IDs werden über eindeutige Namen zugeordnet. Passt das Team nicht zum eingeblendeten Plan, sagt das HUD es offen.
+
+**Live-Protokoll (Mod, Merkmal `team` in `hello.features`, Protokoll bleibt 2):**
+
+| Weg | Inhalt |
+|---|---|
+| `POST /v1/team` | Teamstand vom Planer. Antwort: Abschnitte und wie viele davon im Plan erkannt wurden. |
+| `GET /v1/team` | Weg zum Server (`link`: `none`, `no_plugin`, `ask`, `waiting`, `live`, `off`), Erlaubnis, gezeigter Stand, Serverstand, `outbox` (eigene Meldungen aus dem Spiel als Planer-Ereignisse von „Ich bin“), Ablehnungen, letzter Fehler. |
+| `POST /v1/team/ack` | `{ids}` – der Planer hat diese Meldungen übernommen; die Mod streicht sie aus dem Ausgang. |
+| `GET /v1/team/pull?teamId=&since=` | Ereignisse vom Server-Plugin (Herkunft `server`), in Seiten zu höchstens 5000. |
+| `POST /v1/team/push` | `{file}` – die Serverdatei (`teamServerFile`), nur für die Bauleitung, landet auf dem Server. |
+
+Ohne Kanal antworten `pull` und `push` mit 409 und einem Code am Textanfang: `team-plugin-fehlt` oder `team-nicht-erlaubt`.
+
+**Kanal `bauplaner:team`.** Er transportiert rohe Bytes mit UTF-8-JSON `{"v":1,"t":…}`. Ein Rahmen ist höchstens 24 000 Bytes groß, größere Nachrichten gehen als `{"t":"part","id","i","n","d":base64}` (bis 6 MB).
+
+- Mod → Plugin: `hello`, `act{teamId, event}`, `pull{req, teamId, since}`, `push{req, file}`.
+- Plugin → Mod: `state{state}`, `none`, `ack{id, ok, final, reason}`, `answer{req, …}`, `store{store}`, `error`.
+
+Das Plugin setzt Urheber (Mitglied zur UUID), Zeit und Herkunft `server` selbst. Rechte und Konflikte prüft es mit seiner Faltung, bevor es das Ereignis anhängt. Die Ereignis-ID der Mod (`tev_m…`) bleibt, damit der Planer dieselbe Meldung nie doppelt zählt.
+
+**Regel „keine zusätzlichen Pakete an den Server“ (Philipp, Client-Mod).** Philipp hat am 03.11.2026 entschieden: „Ja, nur freiwillig je Server“. Die Mod sendet auf `bauplaner:team` nur, wenn beides zutrifft:
+
+1. Der Server hat den Kanal angemeldet, Fabric über `ClientPlayNetworking.canSend`, NeoForge über `NetworkRegistry.hasChannel`.
+2. Der Spieler hat es für diesen Server einmal mit `/bauplaner team erlauben` bestätigt (`bauplaner/team/erlaubt.properties`).
+
+Sonst sendet die Mod nichts. Eingehende Rahmen ignoriert sie, solange der Kanal nicht geöffnet ist. Die Mod prüft jede Sekunde neu, ob der Server den Kanal anbietet.
+
+Ehrlicher Hinweis zu den Loadern: Fabric meldet beim Registrieren eines Empfängers den Kanalnamen per `minecraft:register` an. Deshalb registriert die Mod ihren Empfänger erst nach der Erlaubnis. NeoForge handelt beim Verbinden alle optionalen Kanäle der installierten Mods aus. Dabei wird der Name `bauplaner:team` dem Server genannt, ohne dass ein Teampaket gesendet wird. Das ist ein Teil der Verbindungsaushandlung von NeoForge, den keine Mod abschalten kann.
+
+**Ausgang und Offline.** Eigene Meldungen liegen je Server in `bauplaner/team/<server>.ausgang.json`. Die Mod sendet sie alle 15 s erneut, bis das Plugin `ack` schickt oder der Planer `ack` gibt. Bis dahin zeigt die Mod sie schon als vorläufigen Stand („wartet“). Lehnt das Plugin eine Meldung endgültig ab (`final`), etwa weil der Abschnitt schon vergeben ist, fliegt sie aus dem Ausgang und erscheint im Spiel und auf der Website als „Abgelehnt“.
+
+**Im Spiel:**
+
+- Abschnittsrahmen in der Farbe des Inhabers. Eigene Rahmen sind dicker, freie grün, gemeldete cyan, bestätigte grau und Nacharbeit rot.
+- Lagerkisten als Rahmen nach Prüfstatus, Notizpfosten an ihrer Stelle.
+- HUD: Teamzeile mit Verbindungsweg, „Hier: Abschnitt …“, „Mein Auftrag … % · offen“ und die nächste Notiz.
+- `/bauplaner team …` mit `abschnitte`, `nehmen`, `abgeben`, `fertig`, `pruefen`, `zuweisen`, `zeigen`, `mein`, `frei`, `alle`, `material`, `notiz`, `notizen`, `erledigt`, `geliefert`, `sammle`, `lager`, `erlauben`, `verbieten`, `status`, `korb` und `rahmen`.
+- `mein` und `frei` blenden nur die eigenen bzw. freien Abschnitte ein (Abschnittsmaske bis 256 Abschnitte, mit Fortschritt im HUD).
+- `material` zeigt, was im eigenen Auftrag noch fehlt, getrennt nach „hab ich dabei“, „holen“ und „liegt im Lager“.
+
+**Website.** Der Reiter „Team“ hat den Block **„Mit Spiel abgleichen“** (`TeamLive.tsx`).
+
+- „Jetzt abgleichen“ schickt den Teamstand und holt die Meldungen aus dem Spiel. Vor dem Übernehmen zeigt eine Vorschau mit `mergeTeam` neue Konflikte und Ablehnungen. Das Übernehmen ist ein `site.set`, das sich direkt im Block mit „Rückgängig“ zurücknehmen lässt (oder im Editor), danach folgt die Quittung an die Mod.
+- „Meldungen vom Server holen“ holt die Ereignisse aller Spieler.
+- „Planstand auf den Server legen“ steht nur der Bauleitung zur Verfügung.
+- Optional gleicht die Seite alle 15 s automatisch ab, ohne Vorschau.
 
 ## 8. Wer hat was gebaut (COOP-04)
 
@@ -181,13 +232,13 @@ Tokens, Konten oder Cloud-Dienste werden für keine Stufe benötigt.
 |---|---|---|---|
 | **COOP-01** | `team.ts` (Ereignisse, Rechte, Zusammenführen, Ansicht, Prüfung), Bauleute mit `player`/`role`/`color`, Reiter „Team“ (Mitglieder, Abschnitte vergeben/übernehmen/melden/bestätigen, Beiträge, Sammelaufträge, Notizen, Freigabe), Teampaket, Meldecode, Statustext, Testfälle TEAM-01…05 | PROJ-01 | Zwei getrennte Browser tauschen Pakete/Codes in beliebiger Reihenfolge und kommen zum selben Stand; doppelte Übernahme und fehlende Rechte werden gezeigt; nichts geht verloren; Rückgängig für jeden Import |
 | **COOP-02** | Teammodul im Paper-Plugin: Teamdatei, Befehle, Aktionsleiste, Hinweis/Sperre, Ausfuhr; Servertest | COOP-01, GAME-04 | Befehle auf echtem Paper-Server (Testskript), Ereignisse der Ausfuhr ergeben im Planer denselben Stand |
-| **COOP-03** | Merkmal `team` in Mod und Plugin-Kanal; Website „Mit Server abgleichen“ | COOP-02, GAME-08 | Spieltest: Freigabe hoch, Meldung im Spiel, Website holt sie |
+| **COOP-03** | Merkmal `team` in Mod und Plugin-Kanal; Website „Mit Spiel abgleichen“ | COOP-02, GAME-08 | Spieltest: Freigabe hoch, Meldung im Spiel, Website holt sie |
 | **COOP-04** | Spielnachweis je Spieler, Lagerkisten zählen, Beitragsauswertung | COOP-02, LAGER-01 | Zähler stimmen mit gesetzten Blöcken im Servertest |
 
 ## 15. Schnittstellen
 
 - **PROJ-01 (Thread „Projektmodul vertiefen“):** `Builder` bekommt optional `player`, `role`, `color` (geprüft in `checkProgram`, Patch in `updateBuilder`). `section.assign` schreibt zugleich `program.assignments` (eine Quelle für „wer baut was“ im Zeitplan). Teamprotokoll in `site.team`, geprüft in `checkSite`.
-- **Mod-Thread (GAME-07/08):** COOP-03 braucht das Merkmal `team` und den Plugin-Kanal; Vorschlag oben, Abstimmung vor Umsetzung.
+- **Mod-Thread (GAME-07/08):** COOP-03 ist umgesetzt (§7). Die Lagerkisten (COOP-04) hängen sich über `TeamChannel.decorate` (Felder `stores`, `need`) und `TeamChannel.broadcastStore` an den Kanal.
 - **Paper-Thread (GAME-04):** COOP-02 erweitert `BridgePlugin` um ein eigenes `TeamModule` (eigene Klasse, eigene Befehle), Servertest wie `scripts/test_bridge_paper.sh`.
 - **Testphase (QA-04):** neue Fälle im Bereich „Team“.
 - **TEAM-01…03 / AUTH-01:** bleiben als Backend-Option zurückgestellt. Das Ereignismodell ist so gebaut, dass ein späterer Dienst dieselben Ereignisse speichern könnte (ID, Zeit, Urheber, Herkunft).
@@ -219,4 +270,22 @@ Tokens, Konten oder Cloud-Dienste werden für keine Stufe benötigt.
 - Planer: Bereich „Baunachweis & Lager“ (`TeamProof.tsx`): je Mitglied gesetzt/abgebaut/ins Lager/entnommen, je Abschnitt Anteile, Verbautes, Lagerkisten, Bestand → Baustellen-Lager, eigener Nachweis an/aus.
 - Prüfung: `tests/team.test.mjs` (14), `tests/e2e/team.e2e.mjs` liest eine Serverausfuhr mit Nachweis und Lager, `scripts/bridge_paperteam.mjs` mit echter Kiste auf Paper 1.18.2, 1.20.6, 1.21.4, 1.21.11 und 26.3. Testfälle TEAMBAU-07/08.
 
-**Offen:** Aktionsleiste, Partikel und Schutz mit echten Spielern (Konsole kann sie nicht auslösen) → TEAMBAU-06 bis 08 auf Philipps Server; COOP-03 (Mod); Vertiefung Lagerkisten (eigener Thread); „Verlauf verdichten“.
+**COOP-03 (Mod 0.10.0, Plugin-Kanal, Website)**
+- Mod-Kern (`mod-core/…/team/`):
+  - `TeamState`: Teamstand, Fragen wie „wer hat Abschnitt 3“, vorläufiger Stand mit Ausgang.
+  - `TeamColors`: Farbe je Mitglied aus der ID, ohne Grün.
+  - `TeamWire`: Rahmen und Stücke.
+  - `TeamOutbox`: Ausgang je Server, atomar gespeichert.
+  - `TeamPlan`: Zuordnung zu Planabschnitten, Fortschritt und Material je Mitglied.
+  - `TeamSync`: Kanalzustand, Erlaubnis, Anfragen mit Antwort.
+  - Dazu `Filter.sections` (Abschnittsmaske) und `PlanModel.sectionIds/teamId`.
+  - Tests: `TeamTest` (5) und `LiveLinkTest` (Merkmal `team`, Schlüssel für alle Teamwege).
+- Spiel (`hologram-26.3`): `TeamClient` (Rahmen, HUD, Befehle), `TeamPayload`, Anbindung in `HologramClient` und `LiveLink`. Loader: Fabric `PayloadTypeRegistry`/`ClientPlayNetworking`, NeoForge `RegisterPayloadHandlersEvent` (optional, beidseitig).
+- Plugin: `TeamChannel.java` und `config.yml` `team.kanal: true`. Die Fassade in `TeamModule` heißt `submitFor`, `importFile` und `onChange`. Das Plugin verwendet `Json`/`TeamWire` aus mod-core als gemeinsame Quelle (Gradle-Sync).
+- Planer: `packages/domain/src/teamLink.ts` (`teamLinkState`, `readLiveTeam`, `readLiveTeamPull`), `revisionExport.ts` (`SectionIds`, `TeamId`), `liveClient.ts` und `TeamLive.tsx`. Tests: `tests/team-link.test.mjs` und `tests/game-check.test.mjs`.
+
+**Offen:**
+- Aktionsleiste, Partikel und Schutz mit echten Spielern, denn die Konsole kann sie nicht auslösen. Das prüft TEAMBAU-06 bis 08 auf Philipps Server.
+- Teamkanal mit echtem Client gegen echten Paper-Server (Anmeldung des Kanals, Meldung, Quittung). Das prüft TEAMBAU-09.
+- Lagerkisten vertiefen (eigener Thread). Sie hängen sich über `TeamChannel.decorate` und `broadcastStore` an den Kanal.
+- „Verlauf verdichten“.

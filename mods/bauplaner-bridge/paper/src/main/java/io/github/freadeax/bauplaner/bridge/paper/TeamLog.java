@@ -100,15 +100,17 @@ final class TeamLog {
     }
 
     List<JsonObject> events() { return new ArrayList<>(events.values()); }
+    /** Whether an event with this id is in the log (Teamkanal: an action sent twice counts once). */
+    boolean has(String id) { return sortKey.containsKey(id); }
     int size() { return events.size(); }
 
     /** Time for a new event: now, never before the last one (keeps the order of the planner). */
     String nextTime() {
-        String now = Instant.now().toString();
+        String now = io.github.freadeax.bauplaner.mod.team.TeamWire.time(Instant.now());
         if (events.isEmpty()) return now;
         String last = str(events.lastEntry().getValue(), "at");
         if (now.compareTo(last) > 0) return now;
-        return Instant.parse(last).plusMillis(1).toString();
+        return io.github.freadeax.bauplaner.mod.team.TeamWire.time(Instant.parse(last).plusMillis(1));
     }
 
     static String newId(String prefix) {

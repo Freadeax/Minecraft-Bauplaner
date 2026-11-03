@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-03T18:22:37.656Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-03T18:31:28.782Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,10 +12,10 @@ Stand: 2026-11-03T18:22:37.656Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 16 |
+| ⏳ Offen | 15 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 51 |
+| 🧩 Implementiert · Abnahme offen | 52 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -203,7 +203,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [OPS-04](#ops-04) | Teamdienst betreiben und Wiederherstellung prüfen | ⏳ Offen | 0/2 | TEAM-02 | ausstehend | ausstehend |
 | [DEFER-01](#defer-01) | GitHub-Login, externes Materialrepo und Registry | ⏸ Zurückgestellt | 0/1 | — | ausstehend | ausstehend |
 | [DEFER-02](#defer-02) | Optionale Discord-Integration | ⏸ Zurückgestellt | 0/1 | AUTH-01 | ausstehend | ausstehend |
-| [COOP-03](#coop-03) | Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm | ⏳ Offen | 0/2 | COOP-02, GAME-08 | ausstehend | ausstehend |
+| [COOP-03](#coop-03) | Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm | 🧩 Implementiert · Abnahme offen | 2/3 | COOP-02, GAME-08 | ausstehend | ausstehend |
 | [COOP-04](#coop-04) | Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-02, LAGER-01 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
@@ -2086,20 +2086,21 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-03
 
-**Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm** · ⏳ Offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Aktualisiert: 2026-11-03T16:19:54.092Z
+**Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Teambau in der Mod“) · Aktualisiert: 2026-11-03T18:31:28.782Z
 
-- [ ] COOP-03-S01: Vertrag mit dem Mod-Thread abstimmen (Vorschlag TEAMBAU.md §7).
-- [ ] COOP-03-S02: Mod, Plugin und Website umsetzen, Spieltest.
+- [x] COOP-03-S01: Vertrag mit dem Mod-Thread abstimmen (Vorschlag TEAMBAU.md §7).
+- [x] COOP-03-S02: Mod, Plugin und Website umsetzen, Spieltest.
+- [ ] COOP-03-S03: Abnahme im Spiel auf Philipps Server (TEAMBAU-09): Kanal mit echtem Paper-Plugin, Meldungen mehrerer Spieler.
 
-**Abnahme:** Ohne Plugin meldet die Mod 404 team-plugin-fehlt; der Planer schreibt nie stellvertretend für andere.
+**Abnahme:** Ohne Plugin oder ohne /bauplaner team erlauben sendet die Mod nichts an den Server; pull/push antworten 409 mit Grund. Teamstand vom Planer erscheint im Spiel (Abschnitte in Inhaberfarbe, Mein Auftrag), Meldungen aus dem Spiel kommen als Ereignisse von „Ich bin“ zurück und werden mit Vorschau übernommen und quittiert. Der Planer schreibt nie stellvertretend für andere; das Plugin setzt Urheber und Zeit selbst.
 
-**Nächste Aktion:** Nach der Testphase mit dem Mod-Thread abstimmen.
+**Nächste Aktion:** Abnahme TEAMBAU-09 auf Philipps Server; Lagerkisten (COOP-04) hängen sich an TeamChannel.decorate/broadcastStore.
 
-**Prüfstand:** Geplant.
+**Prüfstand:** Spieltests Fabric und NeoForge 26.3, Paper-26.3-Servertest mit eingeschaltetem Kanal und Browsertest bestanden; der Kanal selbst mit echtem Client gegen echtes Paper-Plugin ist nur auf Philipps Server prüfbar (TEAMBAU-09).
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/TeamTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/TeamTest.java) — Teamstand, Ausgang, Planzuordnung, Rahmen, Kanalregel (nichts ohne Ankündigung und Erlaubnis).; [scripts/bridge_gametest.mjs](../scripts/bridge_gametest.mjs) — Echter Fabric-Client 26.3: Teamstand vom Planer, nehmen 2, mein, Übernahme im Ausgang, 409 ohne Server. NeoForge-Spieltest grün.; [tests/e2e/team-live.e2e.mjs](../tests/e2e/team-live.e2e.mjs) — Browser gegen Mod-Simulator: Vorschau, Übernehmen, Quittung, Server-Meldungen, Rückgängig (1400/390 px).; [tests/team-link.test.mjs](../tests/team-link.test.mjs) — Format team-link, Lesen der Mod-Antworten, Fehlercodes.
 
-**Dateiumfang:** `mods/`, `apps/web/src/views/project/TeamExchange.tsx`, `docs/architecture/LIVE_LINK.md`. **Abhängigkeiten:** COOP-02, GAME-08. **Alte IDs:** —.
+**Dateiumfang:** `mods/bauplaner-bridge/`, `packages/domain/src/teamLink.ts`, `packages/application/src/revisionExport.ts`, `apps/web/src/views/project/TeamLive.tsx`, `apps/web/src/views/project/TeamTab.tsx`, `apps/web/src/views/map/liveClient.ts`, `apps/web/src/views/mod/`, `apps/web/src/testing/testplan.ts`, `scripts/bridge_gametest.mjs`, `tests/`, `docs/`. **Abhängigkeiten:** COOP-02, GAME-08. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

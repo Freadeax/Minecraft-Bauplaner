@@ -20,6 +20,15 @@ dependencies {
 }
 
 sourceSets.main.java.srcDir '../core/src/main/java'
+// Teamkanal (COOP-03): dasselbe Nachrichtenformat wie die Mod – nur Json und TeamWire aus dem Mod-Kern.
+def teamWire = tasks.register('teamWireSources', Sync) {
+    from('../mod-core/src/main/java') {
+        include 'io/github/freadeax/bauplaner/mod/live/Json.java'
+        include 'io/github/freadeax/bauplaner/mod/team/TeamWire.java'
+    }
+    into layout.buildDirectory.dir('generated/teamwire')
+}
+sourceSets.main.java.srcDir teamWire
 
 java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
 tasks.withType(JavaCompile).configureEach { options.release = 17; options.encoding = 'UTF-8'; options.compilerArgs << '-Xlint:deprecation' }

@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   LIVE_DEFAULT_PORT, LIVE_FEATURE_PLAYERS, LIVE_TOKEN_HEADER, chunkColumns, chunkQuery, liveBaseUrl, liveCan, marksBody, originAllowed, planUploadQuery,
-  readLiveChunks, readLiveHello, readLivePairing, readLivePlayers, readLiveStatus, wantedChunks,
+  readLiveChunks, readLiveHello, readLivePairing, readLivePlayers, readLiveStatus, readLiveTeam, readLiveTeamPull, wantedChunks,
 } from '../../../../../packages/domain/src/index.js';
-import type { LiveChunkColumns, LiveHello, LivePlacement, LivePlayers, LiveStatus, WorldItem } from '../../../../../packages/domain/src/index.js';
+import type { LiveChunkColumns, LiveHello, LivePlacement, LivePlayers, LiveStatus, LiveTeam, LiveTeamPull, TeamLinkState, TeamServerFile, WorldItem } from '../../../../../packages/domain/src/index.js';
 import { MODEL_MAX_FILE_BYTES } from '../../../../../packages/voxel/src/sizeLimits.js';
 
 /**
@@ -16,6 +16,9 @@ import { MODEL_MAX_FILE_BYTES } from '../../../../../packages/voxel/src/sizeLimi
 const KEY = 'bauplaner.spielverbindung';
 export interface LiveSettings { readonly port: number; readonly token: string | null; readonly auto: boolean }
 const DEFAULTS: LiveSettings = { port: LIVE_DEFAULT_PORT, token: null, auto: true };
+
+/** Port and pairing key of this browser (also for pages without the live hook, e.g. the team tab). */
+export const readLiveSettings = (): LiveSettings => readSettings();
 
 function readSettings(): LiveSettings {
   try {
@@ -97,6 +100,23 @@ export const liveApi = {
   unpair: async (port: number, token: string): Promise<void> => { await call(port, '/v1/unpair', { method: 'POST', token, body: '{}', headers: { 'Content-Type': 'application/json' } }); },
   /** Other players the client sees (feature `players`, protocol 2). */
   players: async (port: number, token: string): Promise<LivePlayers> => readLivePlayers(await call(port, '/v1/players', { token, timeoutMs: 4000 })),
+  /** Teambau (feature `team`, mod 0.10.0): the team view for the game. */
+  teamPush: async (port: number, token: string, state: TeamLinkState): Promise<{ inPlan: number; sections: number }> => {
+    const r = await call(port, '/v1/team', { method: 'POST', token, body: JSON.stringify(state), headers: { 'Content-Type': 'application/json' } }) as { inPlan?: unknown; sections?: unknown } | null;
+    return { inPlan: typeof r?.inPlan === 'number' ? r.inPlan : 0, sections: typeof r?.sections === 'number' ? r.sections : state.sections.length };
+  },
+  /** Link to the server plugin and own actions from the game. */
+  team: async (port: number, token: string): Promise<LiveTeam> => readLiveTeam(await call(port, '/v1/team', { token, timeoutMs: 4000 })),
+  /** The planner merged these events from the game. */
+  teamAck: async (port: number, token: string, ids: readonly string[]): Promise<void> => { await call(port, '/v1/team/ack', { method: 'POST', token, body: JSON.stringify({ ids }), headers: { 'Content-Type': 'application/json' } }); },
+  /** Events of the server plugin (only with the team channel live). */
+  teamPull: async (port: number, token: string, teamId: string, since?: string): Promise<LiveTeamPull> =>
+    readLiveTeamPull(await call(port, `/v1/team/pull?teamId=${encodeURIComponent(teamId)}${since ? `&since=${encodeURIComponent(since)}` : ''}`, { token, timeoutMs: 20000 })),
+  /** Team server file to the plugin (Bauleitung). */
+  teamServer: async (port: number, token: string, file: TeamServerFile): Promise<string> => {
+    const r = await call(port, '/v1/team/push', { method: 'POST', token, body: JSON.stringify({ file }), headers: { 'Content-Type': 'application/json' }, timeoutMs: 30000 }) as { text?: unknown } | null;
+    return typeof r?.text === 'string' ? r.text : 'Planstand auf dem Server.';
+  },
 };
 
 export type LivePhase = 'off' | 'searching' | 'unpaired' | 'connected' | 'lost';

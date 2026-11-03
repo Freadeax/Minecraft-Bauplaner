@@ -32,6 +32,7 @@ public final class HologramClient {
     private final HologramHud hud;
     private final LiveLink link;
     private final MarksRenderer marks;
+    private final TeamClient team;
 
     /** @param loader "fabric" or "neoforge" (reported to the website); @param version mod version */
     public HologramClient(Path root, String loader, String version) {
@@ -45,7 +46,12 @@ public final class HologramClient {
         assist = new PlacementAssist(hologram);
         keys = new HologramKeys(hologram, assist);
         hud = new HologramHud(hologram, assist);
+        team = new TeamClient(root, hologram, version);
+        link.team(team);
     }
+
+    /** Teambau (COOP-03): team state, channel to the server plugin, section frames, {@code /bauplaner team}. */
+    public TeamClient team() { return team; }
 
     public Hologram hologram() { return hologram; }
 
@@ -62,21 +68,25 @@ public final class HologramClient {
     public List<KeyMapping> keys() { return keys.all(); }
 
     /** {@code zeigen}, {@code fortschritt}, … to hang below the loader's {@code /bauplaner} node. */
-    public <S> List<LiteralArgumentBuilder<S>> commands() { return HologramCommands.build(hologram, link); }
+    public <S> List<LiteralArgumentBuilder<S>> commands() {
+        List<LiteralArgumentBuilder<S>> list = new java.util.ArrayList<>(HologramCommands.build(hologram, link));
+        list.add(team.command());
+        return list;
+    }
 
     /** End of every client tick. */
     public void tick(Minecraft mc) {
-        guarded("tick", () -> { keys.tick(mc); hologram.tick(mc); assist.tick(mc); marks.tick(mc); });
+        guarded("tick", () -> { keys.tick(mc); hologram.tick(mc); assist.tick(mc); marks.tick(mc); team.tick(mc); });
     }
 
     /** Level render pass: ghost blocks, frames, finder beam. */
     public void render(PoseStack pose, SubmitNodeCollector out, Vec3 camera) {
-        guarded("render", () -> { renderer.submit(pose, out, camera); marks.submit(pose, out, camera); });
+        guarded("render", () -> { renderer.submit(pose, out, camera); marks.submit(pose, out, camera); team.render(pose, out, camera); });
     }
 
     /** HUD layer: progress panel and the crosshair line of the placement helper. */
     public void hud(GuiGraphicsExtractor g, DeltaTracker delta) {
-        guarded("hud", () -> { hud.extract(g, delta); marks.hud(g, delta); });
+        guarded("hud", () -> { hud.extract(g, delta); marks.hud(g, delta); team.hud(g); });
     }
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger("bauplaner");
@@ -108,12 +118,22 @@ public final class HologramClient {
     public int errors() { return errors; }
 
     /** Joined a world or server: restore its saved placement. */
-    public void join(Minecraft mc) {
+    public void join(Minecraft mc) { join(mc, null); }
+
+    /**
+     * Joined a world or server. {@code teamChannel}: the loader's way to the team channel of the server
+     * plugin (null in singleplayer or when the loader cannot offer it); nothing is sent before the player allows it.
+     */
+    public void join(Minecraft mc, io.github.freadeax.bauplaner.mod.team.TeamSync.Transport teamChannel) {
         String msg = hologram.join(mc);
         if (msg != null) McCompat.chat(mc, Component.literal("[Bauplaner] " + msg));
+        guarded("team", () -> team.join(mc, mc.isLocalServer() ? null : teamChannel));
     }
 
-    public void leave() { hologram.leave(); }
+    public void leave() { hologram.leave(); guarded("team", team::leave); }
+
+    /** A frame on the team channel from the server plugin (any thread). */
+    public void teamFrame(byte[] frame) { guarded("teamkanal", () -> team.receive(frame)); }
 
     public void chunkUnloaded(int cx, int cz) { hologram.chunkUnloaded(cx, cz); }
 

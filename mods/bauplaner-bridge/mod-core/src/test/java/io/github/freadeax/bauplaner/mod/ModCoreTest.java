@@ -268,6 +268,11 @@ class ModCoreTest {
 
     /** Same with build sections (names and one byte per cell), as the website writes them since 0.7.0. */
     static byte[] schem(int w, int h, int l, int[] projectMin, String[] palette, int[] data, List<String> sectionNames, byte[] sectionCells) {
+        return schem(w, h, l, projectMin, palette, data, sectionNames, sectionCells, Map.of());
+    }
+
+    /** Same with extra Bauplaner tags (e.g. SectionIds and TeamId, COOP-03). */
+    static byte[] schem(int w, int h, int l, int[] projectMin, String[] palette, int[] data, List<String> sectionNames, byte[] sectionCells, Map<String, Nbt.Tag> extra) {
         Map<String, Nbt.Tag> pal = new LinkedHashMap<>();
         for (int i = 0; i < palette.length; i++) pal.put(palette[i], Nbt.Tag.ofInt(i));
         var bytes = new ByteArrayOutputStream();
@@ -281,6 +286,7 @@ class ModCoreTest {
             bauplaner.put("SectionNames", new Nbt.Tag(Nbt.LIST, new Nbt.NbtList(Nbt.STRING, sectionNames.stream().map(Nbt.Tag::ofString).toList())));
             bauplaner.put("SectionCells", Nbt.Tag.ofBytes(sectionCells));
         }
+        bauplaner.putAll(extra);
         Map<String, Nbt.Tag> meta = new LinkedHashMap<>();
         meta.put("Name", Nbt.Tag.ofString("Testhaus"));
         meta.put("Bauplaner", Nbt.Tag.ofCompound(bauplaner));

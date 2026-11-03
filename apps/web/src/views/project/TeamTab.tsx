@@ -8,6 +8,7 @@ import { errorText, formatNumber } from '../../app/ui';
 import type { ProjectSession } from './session';
 import { TeamExchange } from './TeamExchange';
 import { TeamProof } from './TeamProof';
+import { TeamLive } from './TeamLive';
 import '../../team.css';
 
 const short = (id: string) => id.replace(/^minecraft:/, '');
@@ -142,6 +143,7 @@ function TeamPage({ session, site, team, message, setMessage, saveTeam, saveSite
     </div>
     <TeamProof view={view} sections={ctx.sections} me={me?.id ?? null} role={role} act={act} nameOf={nameOf} sectionBlocks={sectionBlocks} siteStock={site.stock} onTakeStock={takeStock} />
     <Notes view={view} ctx={ctx} me={me?.id ?? null} role={role} act={act} nameOf={nameOf} />
+    <TeamLive session={session} team={team} view={view} onMessage={setMessage} />
     <TeamExchange session={session} team={team} view={view} onMessage={setMessage} />
     <Log team={team} ctx={ctx} names={names} />
   </section>;

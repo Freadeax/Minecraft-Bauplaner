@@ -393,6 +393,108 @@ public final class LiveLink implements LiveLinkServer.Handler {
         }
     }
 
+    // ------------------------------------------------------------------ Teambau (COOP-03)
+
+    private TeamClient team;
+
+    /** Set once by {@link HologramClient}; the team endpoints answer 404 without it. */
+    void team(TeamClient team) { this.team = team; }
+
+    private TeamClient needTeam() {
+        if (team == null) throw new LiveLinkServer.HttpError(404, "Teambau ist in dieser Mod aus.");
+        lastRequest = System.currentTimeMillis();
+        return team;
+    }
+
+    /** GET /v1/team: link to the plugin, waiting own actions as planner events, what the game shows. */
+    @Override
+    public String teamGet() {
+        TeamClient t = needTeam();
+        var sync = t.sync();
+        var shown = t.state();
+        var server = sync.serverState();
+        Map<String, Object> out = new LinkedHashMap<>();
+        out.put("link", sync.link().name().toLowerCase(java.util.Locale.ROOT));
+        out.put("linkText", sync.link().label);
+        out.put("allowed", sync.allowed());
+        if (shown != null) {
+            Map<String, Object> s = new LinkedHashMap<>();
+            s.put("teamId", shown.teamId()); s.put("name", shown.name()); s.put("source", shown.source().name().toLowerCase(java.util.Locale.ROOT));
+            s.put("revision", shown.revision()); s.put("me", shown.me()); s.put("sections", shown.sections().size());
+            out.put("shown", s);
+        }
+        if (server != null) {
+            Map<String, Object> s = new LinkedHashMap<>();
+            s.put("teamId", server.teamId()); s.put("name", server.name()); s.put("revision", server.revision()); s.put("me", server.me());
+            s.put("stores", server.stores().size());
+            out.put("server", s);
+        }
+        out.put("outbox", new ArrayList<Object>(sync.outboxForPlaner()));
+        out.put("waiting", sync.outbox().pending().size());
+        out.put("rejections", new ArrayList<Object>(sync.rejections()));
+        if (sync.lastError() != null) out.put("lastError", sync.lastError());
+        return Json.write(out);
+    }
+
+    /** POST /v1/team: the planner's team view (format team-link 1). */
+    @Override
+    public String teamPost(Map<String, Object> body) {
+        TeamClient t = needTeam();
+        t.sync().fromPlaner(body);
+        var p = t.sync().planerState();
+        int matched = 0;
+        var plan = hologram.plan();
+        if (plan != null) { var tp = new io.github.freadeax.bauplaner.mod.team.TeamPlan(p, plan); for (var s : p.sections()) if (tp.number(s.id()) > 0) matched++; }
+        Map<String, Object> out = new LinkedHashMap<>();
+        out.put("ok", true);
+        out.put("sections", p.sections().size());
+        out.put("inPlan", matched);
+        out.put("link", t.sync().link().name().toLowerCase(java.util.Locale.ROOT));
+        return Json.write(out);
+    }
+
+    /** POST /v1/team/ack {ids}: the planner merged these events. */
+    @Override
+    public String teamAck(Map<String, Object> body) {
+        TeamClient t = needTeam();
+        List<String> ids = new ArrayList<>();
+        for (Object o : Json.arr(body.get("ids"), "IDs")) ids.add(Json.str(o, "ID", 64));
+        return "{\"removed\":" + t.sync().ackFromPlaner(ids) + "}";
+    }
+
+    /** POST /v1/team/push {file}: a team server file to the plugin (Bauleitung only, the plugin checks). */
+    @Override
+    public String teamPush(Map<String, Object> body) throws Exception {
+        TeamClient t = needTeam();
+        Map<String, Object> file = Json.obj(body.get("file"), "Teamdatei");
+        return relay(t.sync().request("push", Map.of("file", file)));
+    }
+
+    /** GET /v1/team/pull?teamId=…&since=…: raw events from the plugin for the planner. */
+    @Override
+    public String teamPull(Map<String, String> query) throws Exception {
+        TeamClient t = needTeam();
+        Map<String, Object> q = new LinkedHashMap<>();
+        if (query.get("teamId") != null) q.put("teamId", query.get("teamId"));
+        if (query.get("since") != null) q.put("since", query.get("since"));
+        return relay(t.sync().request("pull", q));
+    }
+
+    private static String relay(java.util.concurrent.CompletableFuture<Map<String, Object>> f) throws Exception {
+        Map<String, Object> answer;
+        try {
+            answer = f.get(15, TimeUnit.SECONDS);
+        } catch (java.util.concurrent.ExecutionException e) {
+            throw new LiveLinkServer.HttpError(409, e.getCause() == null ? "Kein Weg zum Server." : e.getCause().getMessage());
+        } catch (TimeoutException e) {
+            throw new LiveLinkServer.HttpError(504, "Das Server-Plugin hat nicht innerhalb von 15 Sekunden geantwortet.");
+        }
+        if (answer.get("error") instanceof String err) throw new LiveLinkServer.HttpError(err.startsWith("Nur die Bauleitung") ? 403 : 409, err);
+        Map<String, Object> out = new LinkedHashMap<>(answer);
+        out.remove("t"); out.remove("v"); out.remove("req");
+        return Json.write(out);
+    }
+
     // ------------------------------------------------------------------ settings
 
     private Path file() { return root.resolve("verbindung.properties"); }

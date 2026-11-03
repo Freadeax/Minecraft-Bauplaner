@@ -60,7 +60,7 @@ export const MAX_FILE_SECTIONS = 255;
  * export box (Sponge order x + z·W + y·W·L), the 1-based section number or 0. The mod uses them as a
  * filter for hologram, progress, material list and error finder. Null when the project has no sections.
  */
-export function sectionCells(project: Pick<Project, 'site'>, revision: Pick<BlueprintRevision, 'instances'>, resolution: Resolution): { readonly names: readonly string[]; readonly cells: Uint8Array } | null {
+export function sectionCells(project: Pick<Project, 'site'>, revision: Pick<BlueprintRevision, 'instances'>, resolution: Resolution): { readonly names: readonly string[]; readonly ids: readonly string[]; readonly cells: Uint8Array } | null {
   const site = project.site;
   if (!site || site.sections.length === 0 || !resolution.world) return null;
   const sections = site.sections.slice(0, MAX_FILE_SECTIONS);
@@ -80,7 +80,7 @@ export function sectionCells(project: Pick<Project, 'site'>, revision: Pick<Blue
       any = true;
     }
   }
-  return any ? { names: sections.map(s => s.name), cells } : null;
+  return any ? { names: sections.map(s => s.name), ids: sections.map(s => s.id), cells } : null;
 }
 
 /** Run-length form of section cells: pairs (count ≥ 1, section 0–255) covering the box in order. */
@@ -126,11 +126,16 @@ export async function exportRevisionSchem(project: Project, revisionId: string, 
       ProjectMin: { type: 'intArray', value: [...resolution.world.bounds.min] },
     } },
   };
+  // Teambau (COOP-03): plans of a team project carry the team id, so the mod notices a plan of another team.
+  const teamId = project.site?.team?.teamId;
+  if (teamId) (extra.Bauplaner as { type: 'compound'; value: Record<string, NbtTag> }).value.TeamId = { type: 'string', value: teamId };
   const sections = sectionCells(project, revision, resolution);
   if (sections) {
     const b = extra.Bauplaner as { type: 'compound'; value: Record<string, NbtTag> };
     // Build sections for the game mod (GAME-07 0.7.0): names in build order, cell → 1-based section or 0.
     b.value.SectionNames = { type: 'list', elementType: 'string', value: sections.names.map(n => ({ type: 'string', value: n })) };
+    // Teambau (COOP-03, mod 0.10.0): section ids in the same order, so the mod matches team sections by id, not by name.
+    b.value.SectionIds = { type: 'list', elementType: 'string', value: sections.ids.map(n => ({ type: 'string', value: n })) };
     // SIZE-01: runs (count, section) over the box in Sponge order – a few kilobytes even for 16 million cells.
     // Mod 0.9.0+ reads SectionRuns; the old one byte per cell (SectionCells) is written only for boxes older
     // mods can load at all (≤ 4 million cells), so their section filter keeps working.

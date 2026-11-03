@@ -72,6 +72,7 @@ public final class MaterialScreen extends Screen {
             case BELOW -> "bis Ebene " + hologram.layerY();
         };
         if (hologram.sectionName() != null) scope = "Abschnitt „" + hologram.sectionName() + "“ · " + scope;
+        if (hologram.sectionSetLabel() != null) scope = hologram.sectionSetLabel() + " · " + scope;
         int open = 0, fetch = 0;
         for (var l : lines) { open += l.open(); fetch += Math.max(0, l.open() - inInventory(l.id())); }
         g.centeredText(font, hologram.plan().name() + " · " + scope + " · " + open + " Blöcke offen, " + fetch + " noch holen", width / 2, 22, 0xFFB0B0B0);
@@ -101,7 +102,7 @@ public final class MaterialScreen extends Screen {
         g.text(font, "Seite " + (page + 1) + " / " + pages + "  ·  Inventar zählt Shulkerkisten und Bündel mit", left, height - 44, 0xFF808080, true);
     }
 
-    private static Item item(String id) {
+    static Item item(String id) {
         var key = Identifier.tryParse(id);
         if (key == null) return Items.AIR;
         return BuiltInRegistries.BLOCK.getOptional(key).map(b -> b.asItem()).orElse(Items.AIR);

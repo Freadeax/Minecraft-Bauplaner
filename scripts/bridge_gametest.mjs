@@ -10,7 +10,7 @@ import { join } from 'node:path';
 import assert from 'node:assert/strict';
 import { readWorldScan } from '../dist/formats/src/index.js';
 import { exportRevisionSchem } from '../dist/application/src/index.js';
-import { addSection, applyOperation, buildGuide, checkScan, createProject, createSampleLibrary, emptySite, freezeRevision, newInstance, resolveProject, scanTarget } from '../dist/domain/src/index.js';
+import { addSection, appendEvents, applyOperation, createTeam, teamContextOf, teamEvent, teamLinkState, teamView, buildGuide, checkScan, createProject, createSampleLibrary, emptySite, freezeRevision, newInstance, resolveProject, scanTarget } from '../dist/domain/src/index.js';
 
 const [mode, dir] = process.argv.slice(2);
 if (!['prepare', 'verify'].includes(mode) || !dir) throw new Error('usage: bridge_gametest.mjs prepare|verify <dir>');
@@ -43,6 +43,11 @@ if (mode === 'prepare') {
   }
   writeFileSync(join(dir, 'plan.schem'), plan.bytes);
   writeFileSync(join(dir, 'setblocks.txt'), commands.join('\n') + '\n');
+  // COOP-03: the team view the planner sends to the mod ("Ich bin" = the tester; Turm already taken by them, Mauer free).
+  const ctx = teamContextOf(project.site);
+  let team = createTeam({ name: 'Spieltest-Team', founder: 'bld_test', teamId: 'team_gametest01', at: '2026-11-03T09:00:00Z' });
+  team = { ...appendEvents(team, [teamEvent('bld_test', { kind: 'section.claim', section: project.site.sections[0].id }, '2026-11-03T09:01:00Z')]), self: 'bld_test' };
+  writeFileSync(join(dir, 'team.json'), JSON.stringify(teamLinkState(team, teamView(team, ctx), ctx, { dimension: 'minecraft:overworld' })));
   writeFileSync(join(dir, 'state.json'), JSON.stringify({ project, revisionId: revision.id, planSha256: plan.sha256, wrong: wrong.position, missing: missing.position, missingState: stateString(resolution.world.palette[missing.paletteIndex]) }));
   console.log(`Spieltest vorbereitet: ${blocks.length} Blöcke, Abweichungen bei ${wrong.position.join('/')} (Diamant) und ${missing.position.join('/')} (fehlt).`);
 } else {
@@ -169,6 +174,27 @@ async function live(file, loader, plan, logFile) {
   assert.match(log, /\[Bauplaner\] +● Phase 2: 2/);
   assert.equal(raw.plan.status, 200, JSON.stringify(raw.plan.body));
   const after = readLiveStatus(raw.after.body);
+  // COOP-03 Teambau: team view in, claim in the game, claim back to the planner as an event of "Ich bin".
+  if (raw.teamPost) {
+    const { readLiveTeam, teamContextOf, mergeTeam, createTeam, teamView } = await import('../dist/domain/src/index.js');
+    assert.ok(hello.features.includes('team'), 'Fähigkeit team');
+    assert.equal(raw.teamPost.status, 200, JSON.stringify(raw.teamPost.body));
+    assert.equal(raw.teamPost.body.sections, 2);
+    assert.equal(raw.teamPost.body.inPlan, 2, 'beide Teamabschnitte über SectionIds im Plan erkannt');
+    assert.equal(raw.team.status, 200, JSON.stringify(raw.team.body));
+    const team = readLiveTeam(raw.team.body);
+    assert.equal(team.way, 'none', 'Einzelspieler: kein Server');
+    const sections = plan.project.site.sections;
+    assert.deepEqual(team.outbox.map(e => [e.kind, e.section, e.by, e.origin]), [['section.claim', sections[1].id, 'bld_test', 'planer']], 'Übernahme aus dem Spiel im Ausgang');
+    assert.match(team.outbox[0].id, /^tev_m/);
+    const base = createTeam({ name: 'Spieltest-Team', founder: 'bld_test', teamId: 'team_gametest01', at: '2026-11-03T09:00:00Z' });
+    const merged = mergeTeam(base, { ...base, events: team.outbox }).team;
+    assert.equal(teamView(merged, teamContextOf(plan.project.site)).sections.find(s => s.sectionId === sections[1].id).owner, 'bld_test');
+    assert.equal(raw.teamPull.status, 409, 'ohne Server-Plugin kein Abholen');
+    assert.match(String(raw.teamPull.body.error ?? raw.teamPull.body), /keinem Server/, 'Einzelspieler: kein Server zum Abholen');
+    const log = readFileSync(logFile, 'utf8');
+    assert.match(log, /\[Bauplaner\] Hologramm zeigt nur deine Abschnitte \(2\)/, 'eigene Abschnitte eingeblendet');
+  }
   assert.equal(after.hologram.planFile, 'website-plan.schem');
   const anchor = readFileSync(join(dir, 'anchor.txt'), 'utf8').trim().split(' ').map(Number);
   assert.deepEqual([after.hologram.placement.x, after.hologram.placement.y, after.hologram.placement.z], [anchor[0] + 20, anchor[1], anchor[2]], 'Plan an der von der Website gesendeten Stelle');

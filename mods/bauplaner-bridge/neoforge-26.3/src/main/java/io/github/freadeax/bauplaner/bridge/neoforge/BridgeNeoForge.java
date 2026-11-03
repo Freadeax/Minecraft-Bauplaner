@@ -50,6 +50,14 @@ public final class BridgeNeoForge {
             e.registerCategory(HologramKeys.CATEGORY);
             client.keys().forEach(e::register);
         });
+        // Teambau (COOP-03): optional payload for the team channel of the Paper plugin; servers without it are fine.
+        // NeoForge 26.3 wants the client handler of a clientbound payload explicitly (otherwise the game stops at
+        // load: "clientbound payloads are missing client-side handlers"). The server side ignores the payload:
+        // the mod is client only, an integrated server never takes part in the team channel.
+        modBus.addListener((net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent e) ->
+                e.registrar("1").optional().playBidirectional(io.github.freadeax.bauplaner.bridge.hologram.TeamPayload.TYPE,
+                        io.github.freadeax.bauplaner.bridge.hologram.TeamPayload.CODEC, (payload, ctx) -> { },
+                        (payload, ctx) -> client.teamFrame(payload.data())));
         modBus.addListener((RegisterGuiLayersEvent e) ->
                 e.registerAboveAll(Identifier.fromNamespaceAndPath(MOD_ID, "fortschritt"), client::hud));
 
@@ -69,7 +77,7 @@ public final class BridgeNeoForge {
         // Website link (MAP-03): off until /bauplaner verbinden; resumes after a restart once switched on.
         bus.addListener((net.neoforged.neoforge.client.event.lifecycle.ClientStartedEvent e) -> client.started(e.getClient()));
         bus.addListener((net.neoforged.neoforge.event.GameShuttingDownEvent e) -> client.stopping());
-        bus.addListener((ClientPlayerNetworkEvent.LoggingIn e) -> client.join(Minecraft.getInstance()));
+        bus.addListener((ClientPlayerNetworkEvent.LoggingIn e) -> client.join(Minecraft.getInstance(), teamChannel));
         bus.addListener((ClientPlayerNetworkEvent.LoggingOut e) -> client.leave());
         bus.addListener((ChunkEvent.Unload e) -> {
             if (e.getLevel().isClientSide()) client.chunkUnloaded(e.getChunk().getPos().x(), e.getChunk().getPos().z());
@@ -78,6 +86,19 @@ public final class BridgeNeoForge {
         // MultiPlayerGameMode sends anything. Cancelled = the click never happens (nothing placed, nothing sent).
         bus.addListener(this::click);
     }
+
+    /** The team channel on NeoForge: the server announced it (minecraft:register from the plugin); NeoForge registers its side itself. */
+    private final io.github.freadeax.bauplaner.mod.team.TeamSync.Transport teamChannel = new io.github.freadeax.bauplaner.mod.team.TeamSync.Transport() {
+        @Override public boolean serverHasChannel() {
+            var c = Minecraft.getInstance().getConnection();
+            try { return c != null && net.neoforged.neoforge.network.registration.NetworkRegistry.hasChannel(c, io.github.freadeax.bauplaner.bridge.hologram.TeamPayload.TYPE.id()); }
+            catch (RuntimeException e) { return false; }
+        }
+        @Override public void open() { }
+        @Override public void send(byte[] frame) {
+            net.neoforged.neoforge.client.network.ClientPacketDistributor.sendToServer(new io.github.freadeax.bauplaner.bridge.hologram.TeamPayload(frame));
+        }
+    };
 
     private void click(InputEvent.InteractionKeyMappingTriggered e) {
         Minecraft mc = Minecraft.getInstance();

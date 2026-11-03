@@ -788,6 +788,25 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `scripts/test_bridge_paper_team.sh` auf echten Paper-Servern 1.18.2 (388), 1.20.6 (151), 1.21.4 (232), 1.21.11 (132), 26.3 (238): echte Kiste per `setblock`/`item replace`, Lagerkiste setzen, Zählen mit +32/-64, `beitrag`/`beitrag alle`, `nachweis aus`; Planer-Faltung der Ausfuhr = Serverzustand. Die Testskripte nehmen jetzt die Jar der aktuellen VERSION (vorher konnte eine ältere Jar im build-Ordner gewählt werden).
 - Grenzen: Zählen beim Blocksetzen und beim Schließen einer Kiste braucht echte Spieler (TEAMBAU-07/08); kein Vergleich „richtig nach Plan“ im Plugin.
 
+## COOP-03 · Teambau in der Mod 0.10.0 (Fabric, NeoForge, Plugin-Kanal, Website) · 03.11.2026 · Claude
+- `npm run check`: 727 bestanden, 0 fehlgeschlagen, 1 übersprungen. Neu sind `tests/team-link.test.mjs` (Format team-link, Lesen von `GET /v1/team` und `/v1/team/pull`, Fehlercodes) und die Prüfung von `SectionIds`/`TeamId` in `tests/game-check.test.mjs`.
+- Gradle `:mod-core:test`, `:paper:build`, `:fabric-26.3:build` und `:neoforge-26.3:build` sind grün.
+  - `TeamTest`: Teamstand, vorläufiger Stand mit Ausgang, Planzuordnung über IDs und Namen, Rahmen und Stücke bis 6 MB, Zeitformat wie `toISOString`, und dass der Kanal ohne Ankündigung und Erlaubnis nichts sendet.
+  - `LiveLinkTest`: Merkmal `team`, alle Teamwege nur mit Schlüssel.
+- Echter Fabric-Client 26.3 (`scripts/test_bridge_ingame.sh`, weston): alle bisherigen Schritte und zusätzlich der Team-Rundweg.
+  - `POST /v1/team` erkennt 2 von 2 Abschnitten im Plan.
+  - `/bauplaner team nehmen 2` legt die Übernahme in den Ausgang, `GET /v1/team` liefert sie als Ereignis von „Ich bin“, und die Planer-Faltung ergibt den neuen Inhaber.
+  - `/bauplaner team mein` blendet nur die eigenen Abschnitte ein.
+  - Im Einzelspieler antwortet `pull` mit 409.
+- Echter NeoForge-Client 26.3 (`scripts/test_bridge_ingame_forge.sh neoforge`): Der erste Lauf fand einen Absturz beim Laden („clientbound payloads are missing client-side handlers: [bauplaner:team]“). Behoben mit einem eigenen Client-Handler in `playBidirectional`, danach bestanden.
+- Echter Paper-Server 26.3 (Build 238, `scripts/test_bridge_paper_team.sh 26.3`) mit eingeschaltetem `team.kanal`: Baustag, Neustart und Ausfuhr bestanden; die Planer-Faltung entspricht dem Serverstand.
+- Browser (`tests/e2e/team-live.e2e.mjs`, Mod-Simulator, Chromium 1243 als 1248 verlinkt, 1400 und 390 px), alles bestanden:
+  - Teamstand an die Mod, Übernahme aus dem Spiel mit Vorschau, Quittung.
+  - Eine schon bekannte Meldung wird ohne Vorschau quittiert.
+  - Server live: eine Notiz vom Server wird übernommen und mit „Rückgängig“ zurückgenommen.
+  - Kein waagerechtes Scrollen, keine Konsolenfehler.
+- Grenzen: Den Kanal `bauplaner:team` zwischen echtem Client und echtem Paper-Plugin (Anmeldung über `minecraft:register`, `act`/`ack`, `state` an alle Spieler) hat noch kein automatischer Test durchlaufen. Die Testumgebung hat keinen Client, der sich mit einem Paper-Server verbindet. Plugin-Seite und Mod-Seite sind je für sich geprüft, das Zusammenspiel prüft TEAMBAU-09 auf Philipps Server.
+
 ## PERF-04 · Erststart der Bibliothek, gemeinsamer Startwarter · 03.11.2026 · Claude
 
 - Ursache der 46 roten Browsertests auf main 2b83089: der erste Katalogaufbau (frischer Browser, kein Cache) dauerte seit Kolosseum und Großprojekten rund 12 s, die Tests warteten 10 s auf „Beispielprojekt „Burgmauer““.

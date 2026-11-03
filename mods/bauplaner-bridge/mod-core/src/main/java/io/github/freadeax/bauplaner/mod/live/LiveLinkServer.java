@@ -51,6 +51,8 @@ public final class LiveLinkServer implements AutoCloseable {
     /** Largest plan upload (SIZE-01, mod 0.9.0; before 16 MiB). Same as the website's MODEL_MAX_FILE_BYTES. */
     public static final int MAX_PLAN_BYTES = 64_000_000;
     static final int MAX_JSON_BYTES = 1024 * 1024;
+    /** Team server file handed to the plugin (20 000 events ≈ 3 MB). */
+    static final int TEAM_PUSH_BYTES = 6 * 1024 * 1024;
     static final int MAX_HEADER_BYTES = 16 * 1024;
     static final long PAIRING_MS = 5 * 60_000L;
     static final int PAIRING_ATTEMPTS = 5;
@@ -71,13 +73,25 @@ public final class LiveLinkServer implements AutoCloseable {
         default Binary scan() throws Exception { throw new HttpError(404, "Diese Mod kann keinen Baustand liefern."); }
         /** GET /v1/players: other players the client sees, {@code {dimension, players:[{name,x,y,z,yaw}]}} (GAME-08, since 0.8.0). */
         default String players() throws Exception { throw new HttpError(404, "Diese Mod meldet keine Mitspieler."); }
+        /**
+         * Teambau (COOP-03, since 0.10.0). GET /v1/team: link to the server plugin, own waiting actions as planner
+         * events ({@code outbox}); POST /v1/team: the planner's team view for the game; POST /v1/team/ack {ids}:
+         * the planner merged those events; POST /v1/team/push {file}: hand a team server file to the plugin;
+         * GET /v1/team/pull?teamId=…&since=…: events from the plugin. Push and pull answer 409 with code
+         * {@code team-plugin-fehlt} / {@code team-nicht-erlaubt} when there is no way to the server.
+         */
+        default String teamGet() throws Exception { throw new HttpError(404, "Diese Mod kennt keinen Teambau."); }
+        default String teamPost(Map<String, Object> body) throws Exception { throw new HttpError(404, "Diese Mod kennt keinen Teambau."); }
+        default String teamAck(Map<String, Object> body) throws Exception { throw new HttpError(404, "Diese Mod kennt keinen Teambau."); }
+        default String teamPush(Map<String, Object> body) throws Exception { throw new HttpError(404, "Diese Mod kennt keinen Teambau."); }
+        default String teamPull(Map<String, String> query) throws Exception { throw new HttpError(404, "Diese Mod kennt keinen Teambau."); }
     }
 
     /** A file answer: name for the website, bytes as sent. */
     public record Binary(String fileName, byte[] bytes) {}
 
     /** What this mod can do beyond protocol 1; the website enables buttons by it. */
-    public static final List<String> FEATURES = List.of("scan", "marks2", "players", "bigplans");
+    public static final List<String> FEATURES = List.of("scan", "marks2", "players", "bigplans", "team");
 
     public record Info(String version, String loader, String minecraft) {}
 
@@ -262,6 +276,11 @@ public final class LiveLinkServer implements AutoCloseable {
                 case "POST /v1/marks": return ok(h, handler.marks(Json.obj(Json.parse(text(r, MAX_JSON_BYTES)), "Markierungen")));
                 case "POST /v1/section": return ok(h, handler.section(Json.obj(Json.parse(text(r, 4_096)), "Abschnitt")));
                 case "GET /v1/players": return ok(h, handler.players());
+                case "GET /v1/team": return ok(h, handler.teamGet());
+                case "POST /v1/team": return ok(h, handler.teamPost(Json.obj(Json.parse(text(r, MAX_JSON_BYTES)), "Teamstand")));
+                case "POST /v1/team/ack": return ok(h, handler.teamAck(Json.obj(Json.parse(text(r, 65_536)), "Quittung")));
+                case "POST /v1/team/push": return ok(h, handler.teamPush(Json.obj(Json.parse(text(r, TEAM_PUSH_BYTES)), "Teamdatei")));
+                case "GET /v1/team/pull": return ok(h, handler.teamPull(r.query()));
                 case "GET /v1/scan": {
                     Binary file = handler.scan();
                     h.put("Content-Type", "application/octet-stream");
