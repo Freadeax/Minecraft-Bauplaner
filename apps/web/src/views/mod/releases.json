@@ -299,6 +299,33 @@
       "releasedAt": "2026-11-03",
       "sourceCommit": "bd58cf785d7b61eb74172c0ec578015cc839a40c",
       "tested": "Teambau (COOP-02/04) auf echten Paper-Servern 1.18.2, 1.20.6, 1.21.4, 1.21.11 und 26.3 automatisch geprüft: Teambefehle mehrerer Spieler, Doppelübernahme, Rollen, Neustart, Lagerkiste mit Zählungen, Baunachweis; Ausfuhr ergibt im Planer denselben Stand. Brückenfunktionen wie 0.1.0. Aktionsleiste, Schutz und Zählen beim Bauen auf Philipps Server noch nicht abgenommen."
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.10.0.jar",
+      "modVersion": "0.10.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 337646,
+      "sha256": "c7422ba9af66cd1e6a3e895f6ddf71abf53eabbbf2c0b87883a3ecdef5dc86ac",
+      "releasedAt": "2026-11-03",
+      "sourceCommit": "aa96ffd8c1d0e5006f7cc2bc3e71e93e6244243a",
+      "tested": "Spieltest 26.3: Hologramm, Website-Verbindung, Baustand und Teambau-Rundweg (Teamstand vom Planer, /bauplaner team nehmen und mein, Übernahme zurück an den Planer); Teamkanal zum Paper-Plugin nur nach /bauplaner team erlauben"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.10.0.jar",
+      "modVersion": "0.10.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 334653,
+      "sha256": "a2ed5a5acc686a3b375c1d0a599ac4d7df6d0fea3fc711ad84058ff85b366ac5",
+      "releasedAt": "2026-11-03",
+      "sourceCommit": "aa96ffd8c1d0e5006f7cc2bc3e71e93e6244243a",
+      "tested": "Spieltest 26.3 (NeoForge): Hologramm, Website-Verbindung, Baustand; Teambau mit eigenem Client-Handler für den Teamkanal (nur nach /bauplaner team erlauben)"
     }
   ]
 }

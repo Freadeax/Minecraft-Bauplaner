@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-03T18:38:37.063Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-03T18:38:13.844Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -2086,7 +2086,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-03
 
-**Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Teambau in der Mod“) · Aktualisiert: 2026-11-03T18:31:28.782Z
+**Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Teambau in der Mod“) · Aktualisiert: 2026-11-03T18:38:13.844Z
 
 - [x] COOP-03-S01: Vertrag mit dem Mod-Thread abstimmen (Vorschlag TEAMBAU.md §7).
 - [x] COOP-03-S02: Mod, Plugin und Website umsetzen, Spieltest.
@@ -2094,7 +2094,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Ohne Plugin oder ohne /bauplaner team erlauben sendet die Mod nichts an den Server; pull/push antworten 409 mit Grund. Teamstand vom Planer erscheint im Spiel (Abschnitte in Inhaberfarbe, Mein Auftrag), Meldungen aus dem Spiel kommen als Ereignisse von „Ich bin“ zurück und werden mit Vorschau übernommen und quittiert. Der Planer schreibt nie stellvertretend für andere; das Plugin setzt Urheber und Zeit selbst.
 
-**Nächste Aktion:** Abnahme TEAMBAU-09 auf Philipps Server; Lagerkisten (COOP-04) hängen sich an TeamChannel.decorate/broadcastStore.
+**Nächste Aktion:** Abnahme TEAMBAU-09 auf Philipps Server mit Mod 0.10.0 und Paper-Plugin mit Teamkanal; Lagerkisten (COOP-04) über TeamChannel.decorate/broadcastStore.
 
 **Prüfstand:** Spieltests Fabric und NeoForge 26.3, Paper-26.3-Servertest mit eingeschaltetem Kanal und Browsertest bestanden; der Kanal selbst mit echtem Client gegen echtes Paper-Plugin ist nur auf Philipps Server prüfbar (TEAMBAU-09).
 

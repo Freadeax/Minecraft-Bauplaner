@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T18:38:37.063Z",
+  "updatedAt": "2026-11-03T18:38:13.844Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -6282,7 +6282,7 @@
         "Teamstand vom Planer erscheint im Spiel (Abschnitte in Inhaberfarbe, Mein Auftrag), Meldungen aus dem Spiel kommen als Ereignisse von „Ich bin“ zurück und werden mit Vorschau übernommen und quittiert.",
         "Der Planer schreibt nie stellvertretend für andere; das Plugin setzt Urheber und Zeit selbst."
       ],
-      "next": "Abnahme TEAMBAU-09 auf Philipps Server; Lagerkisten (COOP-04) hängen sich an TeamChannel.decorate/broadcastStore.",
+      "next": "Abnahme TEAMBAU-09 auf Philipps Server mit Mod 0.10.0 und Paper-Plugin mit Teamkanal; Lagerkisten (COOP-04) über TeamChannel.decorate/broadcastStore.",
       "blockers": [],
       "evidence": [
         {
@@ -6310,7 +6310,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T18:31:28.782Z"
+      "updatedAt": "2026-11-03T18:38:13.844Z"
     },
     {
       "id": "COOP-04",
@@ -11410,6 +11410,28 @@
           "done": 4,
           "total": 5,
           "next": "Abnahme durch Philipp (S05) mit einem großen Bau im Spiel."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T18:38:13.844Z",
+      "kind": "progress",
+      "items": [
+        "COOP-03"
+      ],
+      "summary": "Mod 0.10.0 (Fabric und NeoForge 26.3) auf #/mod freigegeben: Teambau im Spiel, Teamkanal nur nach /bauplaner team erlauben.",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.10.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.10.0.jar"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-03",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Abnahme TEAMBAU-09 auf Philipps Server mit Mod 0.10.0 und Paper-Plugin mit Teamkanal; Lagerkisten (COOP-04) über TeamChannel.decorate/broadcastStore."
         }
       ]
     }
