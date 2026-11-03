@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T18:38:13.844Z",
+  "updatedAt": "2026-11-03T18:41:55.872Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -6310,7 +6310,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T18:38:13.844Z"
+      "updatedAt": "2026-11-03T18:41:55.872Z"
     },
     {
       "id": "COOP-04",
@@ -11424,6 +11424,26 @@
         "apps/web/src/views/mod/releases.json",
         "downloads/mod/bauplaner-bridge-fabric-26.3-0.10.0.jar",
         "downloads/mod/bauplaner-bridge-neoforge-26.3-0.10.0.jar"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-03",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Abnahme TEAMBAU-09 auf Philipps Server mit Mod 0.10.0 und Paper-Plugin mit Teamkanal; Lagerkisten (COOP-04) über TeamChannel.decorate/broadcastStore."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T18:41:55.872Z",
+      "kind": "progress",
+      "items": [
+        "COOP-03"
+      ],
+      "summary": "Weltkarten-Browsertest: simulierte aktuelle Mod meldet auch das Merkmal team (Mod kann … Teambau im Spiel).",
+      "files": [
+        "tests/e2e/map-depth.e2e.mjs"
       ],
       "snapshot": [
         {

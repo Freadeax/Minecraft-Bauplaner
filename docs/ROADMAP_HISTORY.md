@@ -3667,3 +3667,17 @@ Mod 0.10.0 (Fabric und NeoForge 26.3) auf #/mod freigegeben: Teambau im Spiel, T
 - `downloads/mod/bauplaner-bridge-fabric-26.3-0.10.0.jar`
 - `downloads/mod/bauplaner-bridge-neoforge-26.3-0.10.0.jar`
 
+## 2026-11-03T18:41:55.872Z · progress
+
+**Aufgaben:** COOP-03
+
+Weltkarten-Browsertest: simulierte aktuelle Mod meldet auch das Merkmal team (Mod kann … Teambau im Spiel).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-03 | 🧩 Implementiert · Abnahme offen | 2/3 | Abnahme TEAMBAU-09 auf Philipps Server mit Mod 0.10.0 und Paper-Plugin mit Teamkanal; Lagerkisten (COOP-04) über TeamChannel.decorate/broadcastStore. |
+
+**Geänderte Dateien:**
+
+- `tests/e2e/map-depth.e2e.mjs`
+

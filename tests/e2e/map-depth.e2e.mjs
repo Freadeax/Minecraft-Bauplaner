@@ -21,7 +21,7 @@ before(async () => {
     await new Promise(r => setTimeout(r, 200));
   }
   oldMod = await startModSimulator(OLD_MOD);
-  newMod = await startModSimulator(NEW_MOD, { protocol: 2, features: ['scan', 'marks2', 'players', 'bigplans'] });
+  newMod = await startModSimulator(NEW_MOD, { protocol: 2, features: ['scan', 'marks2', 'players', 'bigplans', 'team'] });
   browser = await chromium.launch();
 });
 after(async () => { await browser?.close(); server?.kill(); await oldMod?.close(); await newMod?.close(); });
@@ -221,7 +221,7 @@ test('Neue Mod (Protokoll 2): Mitspieler, Zonen und Ebenen gehen ins Spiel', asy
 
   const game = await connect(p, NEW_MOD, newMod);
   await game.getByText(/Protokoll 2/).waitFor();
-  assert.match(await game.locator('.live-features').innerText(), /^Mod kann: Baustand aus dem Spiel, Zonen, Ebenen und neue Punktarten im Spiel, Mitspieler auf der Karte, große Pläne bis 16,7 Mio. Zellen$/);
+  assert.match(await game.locator('.live-features').innerText(), /^Mod kann: Baustand aus dem Spiel, Zonen, Ebenen und neue Punktarten im Spiel, Mitspieler auf der Karte, große Pläne bis 16,7 Mio. Zellen, Teambau im Spiel \(Abschnitte, Meldungen, Server-Plugin\)$/);
   await p.getByTestId('live-others').waitFor();
   assert.match(await p.getByTestId('live-others').innerText(), /Mitspieler in Sichtweite: Anna \(X 52 · Z -15\)/);
   assert.equal(await game.getByText(/bleiben nur auf der Karte/).count(), 0);
