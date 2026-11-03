@@ -72,21 +72,24 @@
           "dependency_type": "required",
           "comment": "Fabric API"
         }
-      ]
+      ],
+      "environment": "client_only"
     },
     "neoforge": {
       "loaders": [
         "neoforge"
       ],
       "label": "NeoForge",
-      "dependencies": []
+      "dependencies": [],
+      "environment": "client_only"
     },
     "paper": {
       "loaders": [
         "paper"
       ],
       "label": "Paper server plugin",
-      "dependencies": []
+      "dependencies": [],
+      "environment": "server_only"
     }
   }
 }

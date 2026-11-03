@@ -4014,3 +4014,19 @@ Lizenz MIT (Philipp): LICENSE unter mods/bauplaner-bridge, project.json und fabr
 - `mods/bauplaner-bridge/fabric-26.3/src/main/resources/fabric.mod.json`
 - `mods/bauplaner-bridge/modrinth/project.json`
 
+## 2026-11-03T20:20:12.136Z · progress
+
+**Aufgaben:** GAME-09
+
+Projekt auf Modrinth angelegt (uL1mPEKJ), 0.10.0 Fabric/NeoForge/Paper hochgeladen, Umgebung je Version über API v3, zur Prüfung eingereicht
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 3/5 | Modrinth-Prüfung abwarten (Status processing → approved); danach jede neue Mod-Version mit modrinth_publish.mjs release. |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+- `mods/bauplaner-bridge/modrinth/project.json`
+- `scripts/modrinth_publish.mjs`
+

@@ -16,12 +16,15 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const API = process.env.MODRINTH_API ?? 'https://api.modrinth.com/v2';
+// Modrinth keeps the client/server environment per version only in API v3 (required before review).
+const API3 = API.replace(/\/v2$/, '/v3');
 const UA = 'Freadeax/Minecraft-Bauplaner (github.com/Freadeax/Minecraft-Bauplaner; scripts/modrinth_publish.mjs)';
 const DIR = 'mods/bauplaner-bridge/modrinth';
 const MANIFEST = 'apps/web/src/views/mod/releases.json';
 const CHANGELOG = 'mods/bauplaner-bridge/CHANGELOG.md';
 const SIDES = ['required', 'optional', 'unsupported'];
 const STATUSES = ['approved', 'unlisted', 'private'];
+const ENVIRONMENTS = ['client_only', 'server_only', 'client_and_server', 'client_only_server_optional', 'server_only_client_optional', 'client_or_server', 'client_or_server_prefers_both', 'singleplayer_only', 'dedicated_server_only'];
 
 export function loadConfig(root = '.') {
   const project = JSON.parse(readFileSync(join(root, DIR, 'project.json'), 'utf8'));
@@ -62,7 +65,7 @@ export function wantedVersions({ root, project, manifest, changelog }) {
         changelog: changelogFor(changelog, r.modVersion),
         loaders: cfg.loaders, game_versions: gameVersions, version_type: project.versionType,
         dependencies: cfg.dependencies.map(({ project_id, dependency_type }) => ({ project_id, dependency_type })),
-        modVersion: r.modVersion,
+        modVersion: r.modVersion, environment: cfg.environment,
       };
     })
     .sort((a, b) => compareVersions(a.modVersion, b.modVersion) || a.version_number.localeCompare(b.version_number));
@@ -100,6 +103,7 @@ export function checkConfig(cfg) {
   const numbers = new Set();
   for (const v of wanted) {
     need(!numbers.has(v.version_number), `Versionsnummer doppelt: ${v.version_number}`); numbers.add(v.version_number);
+    need(ENVIRONMENTS.includes(v.environment), `${v.version_number}: environment fehlt oder unbekannt`);
     need(v.changelog, `${CHANGELOG}: Abschnitt „## ${v.modVersion}“ fehlt`);
     need(!forbidden.test(v.changelog ?? '') && !forbidden.test(v.name), `${v.version_number}: Änderungsliste nennt ein KI-Werkzeug`);
     if (!existsSync(v.path)) { problems.push(`${v.path} fehlt`); continue; }
@@ -109,14 +113,14 @@ export function checkConfig(cfg) {
   return problems;
 }
 
-async function api(method, path, { token, json, form, raw, contentType, ok = [200, 201, 204] } = {}) {
+async function api(method, path, { token, json, form, raw, contentType, ok = [200, 201, 204], base = API } = {}) {
   const headers = { 'User-Agent': UA };
   if (token) headers.Authorization = token;
   let body;
   if (json) { headers['Content-Type'] = 'application/json'; body = JSON.stringify(json); }
   else if (form) body = form;
   else if (raw) { headers['Content-Type'] = contentType; body = raw; }
-  const res = await fetch(API + path, { method, headers, body });
+  const res = await fetch(base + path, { method, headers, body });
   if (res.status === 404 && method === 'GET') return null;
   const text = await res.text();
   if (!ok.includes(res.status)) throw new Error(`${method} ${path}: HTTP ${res.status} ${text.slice(0, 500)}`);
@@ -200,10 +204,12 @@ async function sync(cfg, dry) {
   const { project: p, body } = cfg;
   const live = await api('GET', `/project/${p.slug}`, { token: t });
   if (!live) { console.log(`Projekt ${p.slug} gibt es noch nicht – zuerst create.`); return; }
-  const want = projectFields(p, body);
+  // client_side/server_side are only sent on create: a later v2 change overwrites every version's environment.
+  const { client_side, server_side, ...want } = projectFields(p, body);
   const diff = Object.keys(want).filter(k => {
     const have = k === 'license_id' ? live.license?.id : k === 'license_url' ? live.license?.url : live[k];
-    return JSON.stringify(have ?? null) !== JSON.stringify(want[k]);
+    const norm = x => JSON.stringify(Array.isArray(x) ? [...x].sort() : x ?? null);
+    return norm(have) !== norm(want[k]);
   });
   console.log(diff.length ? `${dry ? '[plan] würde ändern' : 'Ändere'}: ${diff.join(', ')}` : 'Projekttexte aktuell.');
   if (diff.length && !dry) await api('PATCH', `/project/${p.slug}`, { token: t, json: Object.fromEntries(diff.map(k => [k, want[k]])) });
@@ -239,7 +245,8 @@ async function release(cfg, dry) {
     form.append('data', JSON.stringify(data));
     form.append('file', new Blob([bytes], { type: 'application/java-archive' }), v.file);
     const made = await api('POST', '/version', { token: t, form });
-    console.log(`  → https://modrinth.com/mod/${p.slug}/version/${made.id}`);
+    await api('PATCH', `/version/${made.id}`, { token: t, json: { environment: v.environment }, base: API3 });
+    console.log(`  → https://modrinth.com/mod/${p.slug}/version/${made.id} (${v.environment})`);
   }
 }
 

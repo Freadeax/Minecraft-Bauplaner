@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-03T20:09:28.132Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-03T20:20:12.136Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -2227,19 +2227,19 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-09
 
-**Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** · 🚧 In Arbeit · Priorität P2 · Verantwortlich: Claude (Thread „Mod auf Modrinth veröffentlichen“) · Aktualisiert: 2026-11-03T20:09:28.132Z
+**Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** · 🚧 In Arbeit · Priorität P2 · Verantwortlich: Claude (Thread „Mod auf Modrinth veröffentlichen“) · Aktualisiert: 2026-11-03T20:20:12.136Z
 
 - [x] GAME-09-S01: Projektdaten: project.json (Slug, Titel, Kurztext, Kategorien, Seiten, Lizenz, Links, Loader, Abhängigkeit Fabric API), DESCRIPTION.md Englisch + Deutsch, Icon 512 px, 6 Bilder aus den Spieltests.
 - [x] GAME-09-S02: scripts/modrinth_publish.mjs check|plan|create|sync|release: Dateien aus releases.json mit SHA-256-Vergleich, Änderungsliste aus CHANGELOG.md je Version, Token nur aus MODRINTH_TOKEN; Offline-Prüfung in npm test, Ablauf gegen nachgebaute API geprüft.
 - [x] GAME-09-S03: Philipp bestätigt Name, Beschreibung, Sichtbarkeit öffentlich (03.11.2026) und Lizenz MIT; MODRINTH_TOKEN in der Cloud-Umgebung (keine Actions).
-- [ ] GAME-09-S04: Projekt anlegen (create), 0.10.0 für Fabric, NeoForge und Paper hochladen, Modrinth-Prüfung bestehen.
+- [ ] GAME-09-S04: Projekt angelegt (create, Modrinth-ID uL1mPEKJ), 0.10.0 für Fabric, NeoForge (client_only) und Paper (server_only) hochgeladen, 03.11.2026 zur Prüfung eingereicht; offen: Freigabe durch Modrinth.
 - [ ] GAME-09-S05: Jede neue Mod-Version: nach release_mod.mjs und Abschnitt in CHANGELOG.md `node scripts/modrinth_publish.mjs release`.
 
 **Abnahme:** Das Projekt ist auf Modrinth sichtbar und im Modrinth-Launcher für Fabric und NeoForge 26.3 installierbar; Fabric zieht die Fabric API mit. Nur auf der Website geprüfte .jar (gleiche SHA-256) werden hochgeladen; Forge bleibt draußen, bis es im Spiel geprüft ist. Kein Token im Repo, in Logs oder im Chat.
 
-**Nächste Aktion:** Projekt anlegen (create) und 0.10.0 hochladen.
+**Nächste Aktion:** Modrinth-Prüfung abwarten (Status processing → approved); danach jede neue Mod-Version mit modrinth_publish.mjs release.
 
-**Prüfstand:** Echte Modrinth-API noch nicht benutzt (kein Token).
+**Prüfstand:** Echte API: Projekt, 6 Bilder, 3 Versionen und Einreichung erfolgreich; kein „Claude“ im Livetext (geprüft 03.11.2026). Freigabe durch Modrinth offen.
 
 **Nachweise:** [tests/modrinth.test.mjs](../tests/modrinth.test.mjs) — Offline-Prüfung der Modrinth-Daten und Versionen (03.11.2026).
 

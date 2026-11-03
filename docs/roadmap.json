@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T20:09:28.132Z",
+  "updatedAt": "2026-11-03T20:20:12.136Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -6763,7 +6763,7 @@
         },
         {
           "id": "GAME-09-S04",
-          "title": "Projekt anlegen (create), 0.10.0 für Fabric, NeoForge und Paper hochladen, Modrinth-Prüfung bestehen.",
+          "title": "Projekt angelegt (create, Modrinth-ID uL1mPEKJ), 0.10.0 für Fabric, NeoForge (client_only) und Paper (server_only) hochgeladen, 03.11.2026 zur Prüfung eingereicht; offen: Freigabe durch Modrinth.",
           "done": false
         },
         {
@@ -6777,7 +6777,7 @@
         "Nur auf der Website geprüfte .jar (gleiche SHA-256) werden hochgeladen; Forge bleibt draußen, bis es im Spiel geprüft ist.",
         "Kein Token im Repo, in Logs oder im Chat."
       ],
-      "next": "Projekt anlegen (create) und 0.10.0 hochladen.",
+      "next": "Modrinth-Prüfung abwarten (Status processing → approved); danach jede neue Mod-Version mit modrinth_publish.mjs release.",
       "blockers": [],
       "evidence": [
         {
@@ -6787,13 +6787,13 @@
       ],
       "verification": {
         "state": "pending",
-        "note": "Echte Modrinth-API noch nicht benutzt (kein Token)."
+        "note": "Echte API: Projekt, 6 Bilder, 3 Versionen und Einreichung erfolgreich; kein „Claude“ im Livetext (geprüft 03.11.2026). Freigabe durch Modrinth offen."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:09:28.132Z"
+      "updatedAt": "2026-11-03T20:20:12.136Z"
     }
   ],
   "events": [
@@ -12285,6 +12285,28 @@
           "done": 3,
           "total": 5,
           "next": "Projekt anlegen (create) und 0.10.0 hochladen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T20:20:12.136Z",
+      "kind": "progress",
+      "items": [
+        "GAME-09"
+      ],
+      "summary": "Projekt auf Modrinth angelegt (uL1mPEKJ), 0.10.0 Fabric/NeoForge/Paper hochgeladen, Umgebung je Version über API v3, zur Prüfung eingereicht",
+      "files": [
+        "docs/TESTING.md",
+        "mods/bauplaner-bridge/modrinth/project.json",
+        "scripts/modrinth_publish.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 3,
+          "total": 5,
+          "next": "Modrinth-Prüfung abwarten (Status processing → approved); danach jede neue Mod-Version mit modrinth_publish.mjs release."
         }
       ]
     }
