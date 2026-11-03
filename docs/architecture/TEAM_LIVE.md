@@ -1,0 +1,92 @@
+# Team live – Team-Raum statt Datei-Austausch (COOP-07)
+
+Stand 03.11.2026 · Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · baut auf [TEAMBAU](TEAMBAU.md) auf.
+
+## 1. Anlass
+
+Philipp (03.11.2026): „Das Team ist gut gedacht, aber viel zu umständlich mit extra was runterladen und dann hochladen. Das muss besser und live sein.“
+Bisher wandern Ereignisse als Teampaket, Meldecode oder Serverdatei. Das Datenmodell bleibt richtig, denn das Teamprotokoll ist eine Ereignisliste, und Zusammenführen bedeutet Vereinigung nach ID. Falsch ist nur der Transport. Dieses Konzept ersetzt ihn durch einen **Team-Raum**: Jede neue Aktion geht sofort an alle, ohne Datei und ohne Knopf.
+
+## 2. Warum nicht einfach „Browser ↔ Minecraft-Server“
+
+- Der Planer läuft über **https** (GitHub Pages). Browser erlauben von dort keine Verbindung zu `http://` oder `ws://` auf einem fremden Rechner. Mixed Content wird gesperrt, bei `127.0.0.1` gibt es die Ausnahme, die die Mod nutzt.
+- Ein Paper-Server bei einem Hoster hat meist weder Domain noch Zertifikat noch einen freien Port. Er läuft außerdem nicht immer.
+- Mitspieler planen auch, wenn Minecraft nicht läuft, etwa abends am Handy.
+
+Ein Live-Weg, der für alle funktioniert, braucht deshalb einen Ort mit https, den Browser **und** Server von sich aus erreichen. Beide bauen dabei nur **ausgehende** Verbindungen auf. Das ist der Team-Raum.
+
+## 3. Varianten (Entscheidung Philipp)
+
+| Variante | Live für | Was Philipp tun muss | Grenzen |
+|---|---|---|---|
+| **A Team-Raum im Netz** (empfohlen) | alle, immer, auch Handy | einmal ein Cloudflare-Konto anlegen, `npx wrangler deploy` im Ordner `services/team-room` ausführen (Gratis-Tarif), die Adresse im Planer eintragen | ein kleiner Dienst außerhalb von GitHub Pages; Daten liegen bei Cloudflare |
+| **B Plugin als Hub** | alle, solange der Server läuft | Port freigeben, Domain mit Zertifikat beim Hoster | bei den meisten Hostern nicht möglich; aus, wenn der Server aus ist |
+| **C Nur über die Mod** | wer gerade mit Mod im Spiel ist | nichts | alle anderen bleiben bei Code/Link |
+
+Das **Protokoll ist für alle drei gleich** (§4). Der Sync-Kern im Planer (`teamSync.ts`) kennt nur „Ereignisse nach Cursor holen“ und „Stapel anhängen“. Ob dahinter der Raum, das Plugin oder die Mod (`/v1/team`) steht, ist ein austauschbarer Adapter. Wenn A gewählt wird, bleiben B und C als zusätzliche Wege bestehen. Die Mod zeigt im Spiel weiter alles über den Plugin-Kanal (COOP-03).
+
+## 4. Raum-Protokoll `team-room` 1
+
+Ein Raum gehört zu genau einem Team (`teamId`). Alle Antworten sind JSON. Grenzen: höchstens 20 000 Ereignisse und 4 KB je Ereignis wie `team.ts`, höchstens 200 Ereignisse je Stapel.
+
+| Aufruf | Zweck |
+|---|---|
+| `POST /v1/rooms` `{teamId, name}` | Raum anlegen; Antwort `{room, adminKey, memberKey, serverKey}` (nur jetzt im Klartext, der Raum speichert SHA-256) |
+| `POST /v1/rooms/{room}/events` `{batch, events[]}` | Stapel anhängen. Antwort `{cursor, accepted[], known[], rejected[{id, reason}]}`. Gleicher `batch` ergibt dieselbe Antwort, also keine Doppelbuchung bei Wiederholung |
+| `GET /v1/rooms/{room}/events?after=<cursor>&limit=500` | Ereignisse in Ankunftsreihenfolge nach dem Cursor; `{events, cursor, more}` |
+| `GET /v1/rooms/{room}/live` (WebSocket) | Client sendet zuerst `hello {key, member, device, where, after}`; der Raum antwortet `welcome` und schickt **von sich aus** alle Seiten `events {events, cursor, more}` ab `after`, danach jede neue Menge als Push. Weiter: `append {batch, events}` → `appended`, `presence {where, section?}`, `header`/`plan` (neu holen), `ping` → `pong`. Close 4401/4403 = Schlüssel ungültig/erneuert, nicht erneut versuchen |
+| `PUT/GET /v1/rooms/{room}/plan/{sha256}` | Planstand (gzip-Sicherung, höchstens 25 MB) zu einer Freigabe |
+| `PUT/GET /v1/rooms/{room}/header` | Abschnitte mit Weltboxen, Dimension, Bedarf (heute Inhalt der Serverdatei) für Plugin und Mod |
+| `POST /v1/rooms/{room}/rotate?wer=member\|server` (admin) | neuer `memberKey` bzw. `serverKey`; alte Links werden ungültig, offene Verbindungen mit dem alten Schlüssel schließen mit 4403 |
+
+- **Cursor** ist die Ankunftsnummer im Raum, nicht die Ereigniszeit. Die Faltung sortiert weiter nach `(at, id)`, der Cursor sagt nur „was habe ich schon“. Damit gehen Ereignisse mit älterer Zeit nicht verloren, etwa von einem Gerät, das offline war.
+- Der Raum **prüft nur Form und Größe** (`checkTeamEvent`), keine Rechte. Rechte bleiben die Faltung jedes Teilnehmers. Damit gilt dieselbe Wahrheit wie offline, und der Dienst bleibt dumm und billig.
+- **Anwesenheit** ist flüchtig, sie wird nicht ins Protokoll geschrieben: wer gerade im Planer, im Spiel oder auf dem Server ist, in welchem Abschnitt, seit wann.
+
+## 5. Zugang und Fälschungsschutz
+
+- **Einladung = Link:** `…/#/team/beitreten?raum=<url>&id=<room>&k=<memberKey>`. Der Schlüssel steht im Fragment und geht damit nicht in Server-Logs von Pages. Wer den Link hat, ist Gast, bis er beitritt (`member.join`). Rollen vergibt weiter die Bauleitung im Protokoll.
+- **Drei Schlüssel, drei Rollen im Raum:** `adminKey` (Bauleitung: Planstand und Kopfdaten hochladen, Schlüssel erneuern), `memberKey` (alle Mitspieler: lesen, eigene Ereignisse anhängen), `serverKey` (Paper-Plugin). Ereignisse mit `origin: "server"` (`build.tally`, `store.count`, `SERVER_ONLY_KINDS`) nimmt der Raum **nur mit dem Serverschlüssel** an. Damit ist eine Servermessung im Live-Weg fälschungssicher, was sie beim Dateiweg nicht war.
+- **Server-Link:** wie die Einladung, aber `s=<serverKey>` statt `k=`. Die Bauleitung gibt ihn auf dem Server mit `/bauplaner team verbinden <Link>` ein; im Browser geöffnet erklärt der Planer nur, wofür er ist.
+- **Später (nicht in v1):** Gerätschlüssel je Mitglied (ECDSA P-256, `member.key`, Unterschrift `sig`), damit auch innerhalb des Teams niemand im Namen anderer schreibt. Heute gilt wie offline: Rechte prüft die Faltung, der Urheber steht im Ereignis.
+- **Verlust des adminKey:** neuen Raum anlegen und live schalten; das Protokoll geht als Vereinigung wieder hoch.
+
+## 6. Ablauf ohne Datei
+
+1. Bauleitung: Reiter „Team“ → **„Live schalten“**. Raum anlegen, das ganze Protokoll und den freigegebenen Planstand hochladen, Einladungslink und QR anzeigen.
+2. Mitspieler: Link öffnen. Der Planer holt Plan und Protokoll aus dem Raum und fragt „Wer bist du?“. Danach ist er drin. Ein Paket öffnen ist nicht nötig.
+3. Server: Bauleitung gibt im Spiel `/bauplaner team verbinden <Link>` ein (OP). Das Plugin holt Header und Protokoll, meldet seinen Schlüssel und schickt ab dann jedes Ereignis sofort. Eine Teamdatei muss nicht mehr kopiert werden.
+4. Jede Aktion (übernehmen, melden, Notiz, Kiste, Nachweis) geht sofort an alle. Oben steht „● live · 3 im Planer · 2 im Spiel“.
+5. Neue Planfreigabe: der Planstand geht in den Raum. Alle sehen „Neuer Planstand 4 – übernehmen?“. Das Plugin aktualisiert die Abschnittsboxen, die Mod lädt den Plan über den Plugin-Kanal.
+
+## 7. Offline und Störungen
+
+- Der Planer arbeitet immer lokal weiter (IndexedDB). Nicht bestätigte Ereignisse liegen im **Postausgang**, `site.team.live.pending` mit ihren IDs. Sie gehen beim nächsten Kontakt als Stapel raus. Ein Stapel aus mehreren Ereignissen eines Schritts (z. B. `useActMany`) bleibt ein Stapel.
+- Wiederholen ist sicher, weil gleiche `batch`/IDs nicht doppelt gezählt werden. Ein Ereignis mit gleicher ID und anderem Inhalt wird abgelehnt und als Hinweis gezeigt wie heute `clashes`.
+- WebSocket weg → alle 5–60 s `GET …/events?after` (wachsender Abstand), Anzeige „○ offline seit 14:02 · 3 Aktionen warten“.
+- Teampaket, Meldecode und Serverdatei bleiben unter „Ohne Internet“ als Ausweg.
+
+## 8. Aufteilung
+
+| Teil | Wer |
+|---|---|
+| Protokoll, Sync-Kern `packages/domain/src/teamSync.ts`, Raumdienst `services/team-room/` (Worker + Durable Object, Tests), „Live schalten“/Beitreten/Statuszeile | dieser Thread |
+| Bedienung im Reiter Team (Anwesenheit, Hinweise, neue Bereiche) | Thread „Gemeinsames Bauen im Planer vertiefen“ |
+| `TeamUplink` im Plugin (ausgehend wss/https, Serverschlüssel, Header statt Datei), Befehl `team verbinden` | Thread „Server-Plugin mit geprüften Lagerkisten“ |
+| `/v1/team/pull` als Cursor-Feed, Plan aus dem Raum über den Plugin-Kanal | Mod-Thread |
+
+## 9. Was nur Philipp tun kann
+
+- Die Variante wählen.
+- Bei A: Cloudflare-Konto anlegen, einmal `npx wrangler login` und `npx wrangler deploy` in `services/team-room` ausführen (Anleitung `services/team-room/README.md`). Dann die Adresse (z. B. `https://bauplaner-team.<name>.workers.dev`) im Reiter „Team“ bei „Live schalten“ eintragen. Claude hat keinen Zugang zu fremden Konten und deployt nicht selbst.
+- Auf dem Server `/bauplaner team verbinden <Server-Link>` eingeben.
+- Der Live-Test mit Mitspielern.
+
+## 10. Umsetzungsstand (03.11.2026, COOP-07)
+
+- Sync-Kern `packages/domain/src/teamSync.ts`: `goLive`, `joinLive`, `leaveLive`, `trackOutbox` (jeder neue lokale Eintrag geht in den Postausgang, egal über welchen Weg), `nextBatch`/`confirm` (Stapel-ID aus den Ereignis-IDs), `ingest` (Cursor nur vorwärts, `reset`), `roomStatus`, `inviteLink`/`serverLink`/`readInvite`. Teampakete und Sicherungen für das Team tragen nie `live` oder Schlüssel.
+- Raumdienst `services/team-room`: `src/core.js` (Raumlogik ohne Cloudflare, auch in Node getestet), `src/index.js` (Worker + Durable Object mit SQLite, WebSocket-Ruhezustand), `wrangler.toml`.
+- Planer: Die Verbindung hängt am geöffneten Projekt (`ProjectView` → `useTeamRoom` in `views/project/roomClient.ts`), also in jedem Reiter. Eingehende Ereignisse werden ohne Rückgängig-Schritt gespeichert. Reiter „Team“ → Bereich **„Team live“** (`TeamRoom.tsx`): Live schalten, Einladungslink, Link für den Server, Plan in den Raum stellen (bei jeder Freigabe automatisch), „Planstand übernehmen“ für die anderen (vorheriger Stand bleibt als Kopie), Anwesenheit, Status (live / sendet / offline mit wartenden Aktionen), Live trennen. Seite `#/team/beitreten` (`TeamJoinView.tsx`) lädt Plan und Protokoll aus dem Raum, ohne Datei.
+- Prüfung: `tests/team-room.test.mjs` (Raum, zwei Browser und Server ohne Datei, verlorene Antworten, Seiten), `tests/e2e/team-room.e2e.mjs` (zwei echte Browser über den Raumkern hinter Playwright-Routing, 1400 und 390 px), `scripts/team_room_smoke.mjs <url>` gegen `wrangler dev` oder den echten Dienst.
+- Rückgängig: Ein schon gesendetes Ereignis lässt sich nicht zurückholen (das Protokoll ist nur anhängend); Strg+Z nimmt es lokal zurück, beim nächsten Abgleich kommt es aus dem Raum wieder. Korrekturen laufen wie bisher über Gegenereignisse (freigeben, Nacharbeit).
+- Offen: Uplink im Paper-Plugin (Plugin-Thread, `RoomLink.java`), Deploy durch Philipp, Spieltest TEAMBAU-09.

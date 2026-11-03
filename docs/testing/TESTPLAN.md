@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 101 Fälle in 11 Bereichen, davon 48 Kernfälle.
+Umfang: 102 Fälle in 11 Bereichen, davon 49 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -128,6 +128,7 @@ Mehrere Spieler an einem Projekt: Reiter „Team“ im Planer und Teambefehle de
 | TEAMBAU-22 | Zeitplan und Material je Spieler | vertieft | 1. „Planung“ → „Zeitplan“: Bautage je Woche einstellen.<br>2. „Material im Team“: bei einem Item „Ich sammle“, bei einem Mitglied „Packliste kopieren“. | Balken je Mitglied, Wartezeiten auf Vorarbeit und die entscheidende Kette sind sichtbar; „Fertig in … Bautagen“ ist kleiner als „allein“. Das Item zählt danach unter „wird gesammelt“; die Packliste nennt Stacks und Shulkerkisten. |
 | TEAMBAU-23 | Fortschritt, Achtung und Planänderung | vertieft | 1. „Fortschritt“ öffnen, einen Abschnitt im zweiten Browser fertig melden und austauschen.<br>2. Plan im Editor ändern, „Mit Planstand N vergleichen“. | Brett nach Status, je Mitglied abgehakt/gemeldet/bestätigt getrennt; unter „Achtung“ erscheinen gemeldete Abschnitte mit Haken-Lücke oder Planänderung mit Knopf „Bestätigen“ bzw. „Nacharbeit verlangen“. |
 | TEAMBAU-24 | Übergabe, Abwesenheit, Bauleitung übergeben | kern | 1. „Rechte & Übergabe“: eigenen Abschnitt „übergeben an …“ wählen; im anderen Browser nach Austausch „Annehmen“.<br>2. Abwesenheit mit Datum eintragen und austauschen.<br>3. Als Bauleitung „Bauleitung übergeben“. | Bis zur Annahme bleibt der Abschnitt beim alten Inhaber; danach wechselt er mit Notiz. Abwesende erscheinen unter „Achtung“ und im Zeitplan erst nach Rückkehr. Nach der Übergabe ist man Baumeister; es bleibt immer eine Bauleitung. |
+| TEAMBAU-25 | Team live ohne Dateien ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Einmal den Team-Raum einrichten (services/team-room/README.md: Cloudflare-Konto, `npx wrangler deploy`).<br>2. Reiter „Team“ → „Team live“: Adresse eintragen, „Live schalten“, Einladungslink an einen Mitspieler schicken.<br>3. Mitspieler öffnet den Link auf seinem Rechner oder Handy, „Beitreten und Plan laden“, wählt „Ich bin“ und übernimmt einen Abschnitt.<br>4. Bauleitung gibt einen neuen Planstand frei; Mitspieler klickt „Planstand übernehmen“. Danach WLAN kurz aus, eine Notiz schreiben, WLAN wieder an.<br>5. Server: `/bauplaner team verbinden <Link für den Server>`, ein paar Blöcke setzen. | Ohne jede Datei sieht jeder die Schritte der anderen nach wenigen Sekunden; unter „Gerade da“ stehen beide (und der Server); der neue Planstand kommt mit einem Klick an, der alte bleibt als Kopie; offline zeigt der Status „offline · 1 warten“ und holt die Notiz nach dem Verbinden nach; Messungen des Servers erscheinen im Baunachweis. |
 
 ## LAGER · Server: geprüfte Lagerkisten (Server)
 

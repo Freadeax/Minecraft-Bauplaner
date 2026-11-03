@@ -4418,3 +4418,43 @@ PROFILE-01: verbindliches Java-26.3-Profil aus der offiziellen server.jar (SHA-1
 - `tests/profile.test.mjs`
 - `tests/states.test.mjs`
 
+## 2026-11-03T21:00:35.000Z · progress
+
+**Aufgaben:** COOP-07
+
+Team live ohne Dateien: Team-Raum-Dienst, Sync-Kern, Live-Abgleich im Planer, Einladungslink, Planstand live, Serverschlüssel für Messungen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-07 | 🧩 Implementiert · Abnahme offen | 4/6 | Plugin-Thread: RoomLink gegen team-room v1; Philipp: Cloudflare-Konto, wrangler deploy, Spieltest. |
+
+**Geänderte Dateien:**
+
+- `packages/domain/src/teamSync.ts`
+- `packages/domain/src/team.ts`
+- `services/team-room/src/core.js`
+- `services/team-room/src/index.js`
+- `services/team-room/wrangler.toml`
+- `services/team-room/README.md`
+- `apps/web/src/views/project/roomClient.ts`
+- `apps/web/src/views/project/TeamRoom.tsx`
+- `apps/web/src/views/project/TeamJoinView.tsx`
+- `apps/web/src/views/project/teamTransfer.ts`
+- `apps/web/src/views/project/TeamOpen.tsx`
+- `apps/web/src/views/project/TeamExchange.tsx`
+- `apps/web/src/views/project/ProjectView.tsx`
+- `apps/web/src/views/project/TeamTab.tsx`
+- `apps/web/src/app/router.ts`
+- `apps/web/src/main.tsx`
+- `apps/web/src/team.css`
+- `docs/architecture/TEAM_LIVE.md`
+- `tests/team-room.test.mjs`
+- `tests/e2e/team-room.e2e.mjs`
+- `scripts/team_room_smoke.mjs`
+- `apps/web/src/testing/testplan.ts`
+- `docs/architecture/TEAMBAU.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/index.ts`
+- `services/team-room/.gitignore`
+- `tests/router.test.mjs`
+

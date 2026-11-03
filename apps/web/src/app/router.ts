@@ -31,6 +31,7 @@ export type Route =
   | { readonly view: 'testphase'; readonly search?: string }
   | { readonly view: 'map'; readonly search?: string }
   | { readonly view: 'mod'; readonly search?: string }
+  | { readonly view: 'team-join'; readonly search?: string }
   | { readonly view: 'workshop'; readonly versionId: string | null }
   | { readonly view: 'world' }
   | { readonly view: 'project'; readonly projectId: string; readonly tab: string }
@@ -70,6 +71,7 @@ export function parseRoute(hash: string): Route {
   if (parts[0] === 'system' && parts.length === 1) return { view: 'system' };
   if (parts[0] === 'testphase' && parts.length === 1) return { view: 'testphase', ...(search && { search }) };
   if (parts[0] === 'mod' && parts.length === 1) return { view: 'mod', ...(search && { search }) };
+  if (parts[0] === 'team' && parts[1] === 'beitreten' && parts.length === 2) return { view: 'team-join', ...(search && { search }) };
   if (parts[0] === 'welt' && parts.length === 1) return { view: 'world' };
   if (parts[0] === 'karte' && parts.length === 1) return { view: 'map', ...(search && { search }) };
   if (parts[0] === 'werkstatt' && parts[1] && parts.length === 2) return { view: 'workshop', versionId: parts[1] === 'neu' ? null : parts[1] };
@@ -90,6 +92,7 @@ export function href(route: Route): string {
     case 'system': return '#/system';
     case 'testphase': return `#/testphase${route.search ? `?${route.search}` : ''}`;
     case 'mod': return `#/mod${route.search ? `?${route.search}` : ''}`;
+    case 'team-join': return `#/team/beitreten${route.search ? `?${route.search}` : ''}`;
     case 'world': return '#/welt';
     case 'map': return `#/karte${route.search ? `?${route.search}` : ''}`;
     case 'workshop': return `#/werkstatt/${route.versionId ? encodeURIComponent(route.versionId) : 'neu'}`;

@@ -1,0 +1,17 @@
+# Team-Raum des Minecraft-Bauplaners (COOP-07, docs/architecture/TEAM_LIVE.md).
+# Einrichten: services/team-room/README.md. Läuft im kostenlosen Workers-Tarif (Durable Objects mit SQLite).
+name = "bauplaner-team"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "TeamRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["TeamRoom"]
+
+[vars]
+# Weitere erlaubte Herkünfte für den Planer, kommagetrennt (https://freadeax.github.io ist immer erlaubt).
+ALLOWED_ORIGINS = ""

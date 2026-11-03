@@ -330,3 +330,6 @@ Ziel: Ein großer Bau (Burg, Stadt, Kolosseum) lässt sich mit mehreren Spielern
 **Abstimmung:** Mod-Thread baut `teamLink.ts` und `TeamLive.tsx` („Mit Spiel abgleichen“) und ergänzt `SectionIds`/`TeamId` im .schem-Export; Plugin-Thread faltet die COOP-06-Arten in `TeamLog.java` (`/bp uebergeben`, `/bp annehmen`, `/bp abwesend`) und liest `need`; Stufe-3-Thread (COOP-04) besitzt Baunachweis und Lagerkisten.
 
 **Grenzen:** Teilung nur entlang Schichten und Bauteilen (Abschnittsmitglieder kennen keine Flächen). Zeitplan rechnet mit einem Tempo für alle. Abgehakt-Anteile stammen aus dem Browser, der die Ansicht zeigt.
+
+**COOP-07 Team live ohne Dateien (03.11.2026)**
+- Team-Raum (Cloudflare Worker, `services/team-room`), Sync-Kern `teamSync.ts`, Bereich „Team live“ im Reiter Team und Seite `#/team/beitreten`. Einladung per Link statt Teampaket, neuer Planstand kommt live an, Servermessungen nur mit Serverschlüssel. Teampaket, Meldecode und Serverdatei bleiben als Weg ohne Internet. Details: `TEAM_LIVE.md` §10.

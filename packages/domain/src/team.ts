@@ -935,7 +935,8 @@ export interface TeamPackage {
 const packageHash = (team: unknown, backup: string | undefined) => sha256Hex(canonicalJson({ team, ...(backup !== undefined && { backup }) }));
 
 export async function buildTeamPackage(team: TeamState, from: { member: string; name: string }, backup?: string, proposal = false): Promise<TeamPackage> {
-  const { self: _self, ...shared } = team;
+  // Local fields never travel: "Ich bin" and the live connection with its key (TEAM_LIVE.md).
+  const { self: _self, live: _live, ...shared } = team as TeamState & { live?: unknown };
   return { format: TEAM_PACKAGE_FORMAT, formatVersion: 1, createdAt: new Date().toISOString(), team: shared, from, ...(backup !== undefined && { backup }),
     ...(proposal && { proposal: true }), contentSha256: await packageHash(shared, backup) };
 }
@@ -1104,9 +1105,10 @@ export function teamContextOf(site: { readonly sections: readonly { readonly id:
  */
 export function takeOverPlan<P extends { readonly id: string; readonly revision: number; readonly createdAt: string; readonly progress: Readonly<Record<string, unknown>>; readonly site?: { readonly team?: TeamState } }>(
   local: P, incoming: P, team: TeamState): P {
-  const self = local.site?.team?.self;
-  const site = incoming.site ? { ...incoming.site, team: { ...team, ...(self !== undefined ? { self } : {}) } } : undefined;
+  const self = local.site?.team?.self, live = (local.site?.team as { live?: unknown } | undefined)?.live;
+  const site = incoming.site ? { ...incoming.site, team: { ...team, ...(self !== undefined ? { self } : {}), ...(live !== undefined ? { live } : {}) } } : undefined;
   if (site && self === undefined) delete (site.team as { self?: string }).self;
+  if (site && live === undefined) delete (site.team as { live?: unknown }).live;
   return { ...incoming, id: local.id, revision: local.revision, createdAt: local.createdAt,
     progress: { ...incoming.progress, ...local.progress }, ...(site && { site }) };
 }

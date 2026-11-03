@@ -1,13 +1,14 @@
 import { useRef, useState } from 'react';
 import {
-  buildRestore, buildTeamPackage, createBackup, decodeReportCode, encodeReportCode, MAX_BACKUP_BYTES, mergeTeam, planRestore, readBackup, readTeamPackage, readTeamServerFile,
-  sectionNeeds, serializeBackup, siteOf, siteOperation, takeOverPlan, TEAM_PACKAGE_FORMAT, TEAM_SERVER_FORMAT, teamContextOf, teamPackageFileName, teamServerFile, teamServerFileName,
+  decodeReportCode, encodeReportCode, MAX_BACKUP_BYTES, mergeTeam, readBackup, readTeamPackage, readTeamServerFile,
+  sectionNeeds, siteOf, siteOperation, TEAM_PACKAGE_FORMAT, TEAM_SERVER_FORMAT, teamContextOf, teamPackageFileName, teamServerFile, teamServerFileName,
   teamStatusText, teamView, describeEvent,
 } from '../../../../../packages/domain/src/index.js';
 import type { Project, TeamEvent, TeamMerge, TeamState, TeamView } from '../../../../../packages/domain/src/index.js';
 import { useApp } from '../../app/context';
 import { download, errorText } from '../../app/ui';
 import type { ProjectSession } from './session';
+import { takePlan as takeTeamPlan, teamPackageText } from './teamTransfer';
 
 interface Preview {
   readonly source: string;
@@ -43,17 +44,9 @@ export function TeamExchange({ session, team, view, onMessage }: { session: Proj
 
   const exportPackage = (withPlan: boolean) => run(async () => {
     if (!team || !view) return;
-    let backupText: string | undefined;
-    if (withPlan) {
-      // The package must not carry this browser's "Ich bin".
-      const { self: _self, ...shared } = team;
-      const plain = { ...project, site: { ...site, team: shared as TeamState } };
-      const file = await createBackup({ projects: [plain], assets: library.assets, versions: library.versions, getOriginal: sha => repo.getOriginal(sha) }, 'project', [project.id]);
-      backupText = serializeBackup(file);
-    }
-    const pkg = await buildTeamPackage(team, { member: me?.id ?? team.founder, name: me?.name ?? 'unbekannt' }, backupText);
+    const text = await teamPackageText(project, team, { member: me?.id ?? team.founder, name: me?.name ?? 'unbekannt' }, withPlan, { repo, library });
     const name = teamPackageFileName(team);
-    download(name, JSON.stringify(pkg), 'application/json');
+    download(name, text, 'application/json');
     onMessage(`Teampaket „${name}“ erzeugt (${team.events.length} Ereignisse${withPlan ? ', mit Plan' : ', nur Teamstand'}). Über Discord oder Chat an die anderen schicken; die lesen es im Reiter „Team“ ein (neue Mitspieler: Projekte → „Teampaket öffnen“).`);
   });
 
@@ -153,17 +146,7 @@ export function TeamExchange({ session, team, view, onMessage }: { session: Proj
     const self = team?.self;
     const merged: TeamState = self !== undefined ? { ...merge.team, self } : (() => { const { self: _s, ...t } = merge.team; return t as TeamState; })();
     if (preview.plan && takePlan) {
-      const backup = await readBackup(preview.plan.backupText);
-      const [versions, originals] = await Promise.all([repo.listVersions(), repo.listOriginalHashes()]);
-      const plan = planRestore(backup, { projects: [], assets: await repo.listAssets(), versionIds: new Set(versions.map(v => v.id)), originalHashes: new Set(originals) });
-      const write = buildRestore(plan);
-      // Keep the local state as a copy before the plan changes (recoverable without undo).
-      const copyName = `${project.name} (vor Planstand ${preview.plan.number})`.slice(0, 120);
-      const { id: _id, ...rest } = project;
-      await repo.applyBatch({ assets: write.assets, versions: write.versions, originals: write.originals,
-        projects: [{ project: { ...rest, id: `project_${crypto.randomUUID().replace(/-/g, '').slice(0, 20)}`, name: copyName, revision: 0 } as Project, baseRevision: 0 }] });
-      await reloadLibrary();
-      session.replace(takeOverPlan(project, preview.plan.project, merged));
+      const copyName = await takeTeamPlan(session, preview.plan.project, preview.plan.backupText, preview.plan.number, merged, { repo, reloadLibrary });
       onMessage(`Planstand ${preview.plan.number} übernommen, ${merge.added.length} neue Ereignisse eingelesen. Dein vorheriger Stand liegt als Projekt „${copyName}“ in der Projektliste.`);
     } else {
       const e = session.execute(siteOperation({ ...site, team: merged }, `${preview.source}: ${merge.added.length} Ereignisse eingelesen`));

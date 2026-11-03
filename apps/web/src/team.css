@@ -74,3 +74,11 @@
 .team-store-moves{list-style:none;margin:2px 0 0;padding:0;display:grid;gap:2px;font-size:12px}.team-store-moves li{display:grid;grid-template-columns:minmax(80px,140px) minmax(0,1fr);gap:8px}
 .team-store-moves li span:last-child{overflow-wrap:anywhere}
 @media (max-width:560px){.team-store-moves li{grid-template-columns:1fr}}
+/* Team live (COOP-07) */
+.team-live-state{font-size:11px;border:1px solid var(--line);border-radius:12px;padding:3px 10px;color:var(--muted)}
+.team-live-state.live{color:var(--mint);border-color:var(--mint)}
+.team-live-state.waiting{color:var(--text)}
+.team-live-state.offline{color:var(--warn,#c80)}
+.team-presence{list-style:none;margin:0 0 8px;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.team-presence li{border:1px solid var(--line);border-radius:12px;padding:3px 9px;background:var(--panel-2);font-size:11px}
+.team-room label.grow{display:flex;flex-direction:column;gap:4px;font-size:11px;flex:3 1 260px}

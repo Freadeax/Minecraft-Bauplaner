@@ -6,7 +6,9 @@ import { useApp } from '../../app/context';
 import { Icon, tabIcon } from '../../app/icons';
 import { useDocumentTitle } from '../../app/Shell';
 import { useProjectBackupState } from '../../app/backupStatus';
-import { findUpdates, summarizeUpdates } from '../../../../../packages/domain/src/index.js';
+import { findUpdates, siteOf, summarizeUpdates } from '../../../../../packages/domain/src/index.js';
+import type { RoomTeam, TeamState } from '../../../../../packages/domain/src/index.js';
+import { TeamRoomContext, useTeamRoom } from './roomClient';
 import type { Project } from '../../../../../packages/domain/src/index.js';
 import type { Repository } from '../../app/repository';
 import '../../backup.css';
@@ -24,10 +26,19 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
     const bar = tabBar.current, link = bar?.querySelector<HTMLElement>('[aria-current=page]');
     if (bar && link && bar.scrollWidth > bar.clientWidth) bar.scrollLeft = link.offsetLeft - (bar.clientWidth - link.offsetWidth) / 2;
   }, [tab, session !== null]);
+  // Team live (COOP-07): one room connection per open project; incoming events are stored without an undo step.
+  const sessionRef = useRef(session); sessionRef.current = session;
+  const team = session?.project.site?.team as RoomTeam | undefined;
+  const room = useTeamRoom(team, team?.self, next => {
+    const s = sessionRef.current; if (!s) return;
+    const p = s.project, site = siteOf(p);
+    if (site.team?.teamId !== next.teamId) return;
+    s.replace({ ...p, site: { ...site, team: next as TeamState } });
+  });
   useDocumentTitle(session ? `${session.project.name}${active && active.id !== 'editor' ? ` · ${active.label}` : ''}` : 'Projekt');
   if (loadError) return <div className="page"><div className="notice warning" role="alert"><strong>Projekt nicht geladen</strong><p>{loadError}</p><a href="#/">Zur Projektzentrale</a></div></div>;
   if (!session) return <div className="loading" role="status">Projekt wird geladen …</div>;
-  return <div className="page project-page" data-computation-state={session.computationState}>
+  return <TeamRoomContext.Provider value={room}><div className="page project-page" data-computation-state={session.computationState} data-team-live={team?.live ? (room.connected ? 'live' : 'offline') : undefined}>
     <header className="project-head">
       <div className="project-title">
         <nav className="crumbs" aria-label="Pfad"><a className="crumb" href="#/">Projekte</a><span aria-hidden="true">›</span><span aria-current="page">{session.project.name}</span></nav>
@@ -51,7 +62,7 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
       <p>{session.saveError} Deine letzte Änderung ist nur in diesem Tab sichtbar und nicht gespeichert.</p>
       <button onClick={() => void session.reload()}>Gespeicherten Stand laden</button></div>}
     {active ? <active.component session={session} /> : <div className="notice" role="alert">Unbekannter Projektbereich „{tab}“.</div>}
-  </div>;
+  </div></TeamRoomContext.Provider>;
 }
 
 const chipText = { never: 'noch nie gesichert', changed: 'seit Sicherung geändert', current: 'gesichert' } as const;

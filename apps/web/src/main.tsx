@@ -26,6 +26,7 @@ const ViewerView = lazyPage(() => import('./views/ViewerView').then(m => m.Viewe
 const SystemView = lazyPage(() => import('./views/SystemView').then(m => m.SystemView));
 const TestphaseView = lazyPage(() => import('./testing/TestphaseView').then(m => m.TestphaseView));
 const WorldMapView = lazyPage(() => import('./views/map/WorldMapView').then(m => m.WorldMapView));
+const TeamJoinView = lazyPage(() => import('./views/project/TeamJoinView').then(m => m.TeamJoinView));
 const ModView = lazyPage(() => import('./views/mod/ModView').then(m => m.ModView));
 const WorkshopPage = lazyPage(() => import('./editor/WorkshopPage').then(m => m.WorkshopPage));
 const WorldImportView = lazyPage(() => import('./views/world/WorldImportView').then(m => m.WorldImportView));
@@ -39,6 +40,7 @@ function Page({ route }: { route: Route }) {
     case 'testphase': return <TestphaseView search={route.search} />;
     case 'map': return <WorldMapView search={route.search} />;
     case 'mod': return <ModView search={route.search} />;
+    case 'team-join': return <TeamJoinView search={route.search ?? ''} />;
     case 'workshop': return <WorkshopPage key={route.versionId ?? 'neu'} versionId={route.versionId} />;
     case 'world': return <WorldImportView />;
     case 'project': return <ProjectView key={route.projectId} projectId={route.projectId} tab={route.tab} />;

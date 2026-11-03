@@ -29,7 +29,8 @@
     "PROJ-01",
     "COOP-05",
     "PERF-05",
-    "COOP-06"
+    "COOP-06",
+    "COOP-07"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -7713,6 +7714,124 @@
       "area": "MOD",
       "thread": "Teambau und Befehle in der Mod ausbauen",
       "orphans": []
+    },
+    {
+      "id": "COOP-07",
+      "title": "Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel",
+      "phase": "P4",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“)",
+      "dependencies": [
+        "COOP-01",
+        "COOP-04"
+      ],
+      "scope": [
+        "packages/domain/src/teamSync.ts",
+        "packages/domain/src/team.ts",
+        "services/team-room/src/core.js",
+        "services/team-room/src/index.js",
+        "services/team-room/wrangler.toml",
+        "services/team-room/README.md",
+        "apps/web/src/views/project/roomClient.ts",
+        "apps/web/src/views/project/TeamRoom.tsx",
+        "apps/web/src/views/project/TeamJoinView.tsx",
+        "apps/web/src/views/project/teamTransfer.ts",
+        "apps/web/src/views/project/TeamOpen.tsx",
+        "apps/web/src/views/project/TeamExchange.tsx",
+        "apps/web/src/views/project/ProjectView.tsx",
+        "apps/web/src/views/project/TeamTab.tsx",
+        "apps/web/src/app/router.ts",
+        "apps/web/src/main.tsx",
+        "apps/web/src/team.css",
+        "docs/architecture/TEAM_LIVE.md",
+        "tests/team-room.test.mjs",
+        "tests/e2e/team-room.e2e.mjs",
+        "scripts/team_room_smoke.mjs",
+        "apps/web/src/testing/testplan.ts",
+        "docs/architecture/TEAMBAU.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/index.ts",
+        "services/team-room/.gitignore",
+        "tests/router.test.mjs"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "COOP-07-S01",
+          "title": "Konzept TEAM_LIVE.md: Varianten, Raumprotokoll team-room v1, Schlüssel und Rollen, Ablauf, Offline, Aufteilung.",
+          "done": true
+        },
+        {
+          "id": "COOP-07-S02",
+          "title": "Sync-Kern teamSync.ts: Postausgang, Stapel, Cursor, Einladungs- und Server-Link; Pakete ohne Schlüssel.",
+          "done": true
+        },
+        {
+          "id": "COOP-07-S03",
+          "title": "Raumdienst services/team-room (core.js in Node getestet, Worker + Durable Object mit SQLite, WebSocket, Anwesenheit, Planstand, Kopfdaten); Rauchtest gegen wrangler dev.",
+          "done": true
+        },
+        {
+          "id": "COOP-07-S04",
+          "title": "Planer: Verbindung je geöffnetem Projekt, Bereich „Team live“ (Live schalten, Links, Plan in den Raum, Planstand übernehmen, Anwesenheit, Status), Seite #/team/beitreten.",
+          "done": true
+        },
+        {
+          "id": "COOP-07-S05",
+          "title": "Paper-Plugin verbindet sich mit dem Serverschlüssel (RoomLink, /bauplaner team verbinden).",
+          "done": false
+        },
+        {
+          "id": "COOP-07-S06",
+          "title": "Deploy des Raumdienstes durch Philipp und Spieltest mit Mitspielern (TEAMBAU-09).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Beitreten nur per Link, keine Datei; Plan und Protokoll kommen aus dem Raum.",
+        "Jeder neue lokale Eintrag (Aktion, Import, Spielabgleich) geht ohne weiteres Zutun in den Raum; wiederholtes Senden bucht nichts doppelt.",
+        "Ereignisse mit Herkunft server nimmt der Raum nur mit dem Serverschlüssel an.",
+        "Offline weiterarbeiten; beim nächsten Verbinden gleichen alle auf denselben Stand ab."
+      ],
+      "next": "Plugin-Thread: RoomLink gegen team-room v1; Philipp: Cloudflare-Konto, wrangler deploy, Spieltest.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/team-room.test.mjs",
+          "note": "Raum, zwei Browser und Server ohne Datei, Serverschlüssel, verlorene Antworten, Seiten."
+        },
+        {
+          "path": "tests/e2e/team-room.e2e.mjs",
+          "note": "Zwei Browser 1400/390 px über den Raumkern: Live schalten, Beitreten per Link, Schritte live, Servermessung, neuer Planstand übernommen, Neuladen."
+        },
+        {
+          "path": "scripts/team_room_smoke.mjs",
+          "note": "Gegen wrangler dev (Worker + Durable Object) bestanden, 03.11.2026."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Automatisch geprüft; echter Dienst bei Philipp und Spieltest offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-03T21:00:35.000Z",
+      "area": "TEAM",
+      "thread": "Gemeinsames Bauen mehrerer Spieler ermöglichen",
+      "philipp": [
+        {
+          "kind": "geraet",
+          "text": "Cloudflare-Konto anlegen, in services/team-room npx wrangler login und npx wrangler deploy; Adresse im Reiter Team bei „Live schalten“ eintragen."
+        },
+        {
+          "kind": "server",
+          "text": "TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat)."
+        }
+      ],
+      "orphans": []
     }
   ],
   "events": [
@@ -14493,6 +14612,52 @@
           "next": "Geräte-/Browsermatrix und reproduzierbare Aufgaben definieren."
         }
       ]
+    },
+    {
+      "at": "2026-11-03T21:00:35.000Z",
+      "kind": "progress",
+      "items": [
+        "COOP-07"
+      ],
+      "summary": "Team live ohne Dateien: Team-Raum-Dienst, Sync-Kern, Live-Abgleich im Planer, Einladungslink, Planstand live, Serverschlüssel für Messungen.",
+      "files": [
+        "packages/domain/src/teamSync.ts",
+        "packages/domain/src/team.ts",
+        "services/team-room/src/core.js",
+        "services/team-room/src/index.js",
+        "services/team-room/wrangler.toml",
+        "services/team-room/README.md",
+        "apps/web/src/views/project/roomClient.ts",
+        "apps/web/src/views/project/TeamRoom.tsx",
+        "apps/web/src/views/project/TeamJoinView.tsx",
+        "apps/web/src/views/project/teamTransfer.ts",
+        "apps/web/src/views/project/TeamOpen.tsx",
+        "apps/web/src/views/project/TeamExchange.tsx",
+        "apps/web/src/views/project/ProjectView.tsx",
+        "apps/web/src/views/project/TeamTab.tsx",
+        "apps/web/src/app/router.ts",
+        "apps/web/src/main.tsx",
+        "apps/web/src/team.css",
+        "docs/architecture/TEAM_LIVE.md",
+        "tests/team-room.test.mjs",
+        "tests/e2e/team-room.e2e.mjs",
+        "scripts/team_room_smoke.mjs",
+        "apps/web/src/testing/testplan.ts",
+        "docs/architecture/TEAMBAU.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/index.ts",
+        "services/team-room/.gitignore",
+        "tests/router.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-07",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Plugin-Thread: RoomLink gegen team-room v1; Philipp: Cloudflare-Konto, wrangler deploy, Spieltest."
+        }
+      ]
     }
   ],
   "areas": [
@@ -14566,9 +14731,10 @@
       "area": "TEAM",
       "thread": "Gemeinsames Bauen mehrerer Spieler ermöglichen",
       "items": [
-        "COOP-01"
+        "COOP-01",
+        "COOP-07"
       ],
-      "state": "zugeteilt"
+      "state": "übernommen"
     },
     {
       "id": "IN-03",

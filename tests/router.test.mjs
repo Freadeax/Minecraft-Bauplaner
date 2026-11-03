@@ -4,7 +4,7 @@ import { href, parseRoute } from '../apps/web/src/app/router.ts';
 
 test('supported routes preserve semantic values through generated links', () => {
   const routes = [
-    { view: 'projects' }, { view: 'viewer' }, { view: 'system' }, { view: 'mod' }, { view: 'mod', search: 'minecraft=26.3&loader=fabric&version=0.1.0' },
+    { view: 'projects' }, { view: 'viewer' }, { view: 'system' }, { view: 'mod' }, { view: 'team-join', search: 'raum=https%3A%2F%2Fx.example&id=r_abcdef&k=abc' }, { view: 'mod', search: 'minecraft=26.3&loader=fabric&version=0.1.0' },
     { view: 'project', projectId: 'Burg Süd / Tor? #1', tab: 'editor' },
     { view: 'project', projectId: '世界', tab: 'bauen' },
     { view: 'project', projectId: '100%', tab: 'Material / prüfen?' },

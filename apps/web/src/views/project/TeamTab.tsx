@@ -9,6 +9,7 @@ import type { ProjectSession } from './session';
 import { TeamExchange } from './TeamExchange';
 import { TeamProof } from './TeamProof';
 import { TeamLive } from './TeamLive';
+import { TeamRoom } from './TeamRoom';
 import { TeamAreaNav, TeamIssues, TeamPlanning, TeamProgressArea, TeamRightsArea } from './TeamPlan';
 import type { TeamArea } from './TeamPlan';
 import '../../team.css';
@@ -154,6 +155,7 @@ function TeamPage({ session, site, team, message, setMessage, saveTeam, saveSite
     </div>
     <TeamProof view={view} sections={ctx.sections} me={me?.id ?? null} role={role} act={act} nameOf={nameOf} sectionBlocks={sectionBlocks} siteStock={site.stock} onTakeStock={takeStock} />
     <Notes view={view} ctx={ctx} me={me?.id ?? null} role={role} act={act} nameOf={nameOf} />
+    <TeamRoom session={session} team={team} view={view} onMessage={setMessage} />
     <TeamLive session={session} team={team} view={view} onMessage={setMessage} />
     <TeamExchange session={session} team={team} view={view} onMessage={setMessage} />
     <Log team={team} ctx={ctx} names={names} />
