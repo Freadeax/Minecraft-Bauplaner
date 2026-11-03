@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "9102edf1b0a57ffc9d4d4b93786827903f88618f",
-  "builtAt": "2026-11-03T21:45:42.885Z",
+  "sourceCommit": "8de983f2c49d9e058af68c7af3f04d3dff528afd",
+  "builtAt": "2026-11-03T21:49:40.617Z",
   "node": "v22.23.4",
   "files": [
     {
@@ -27,7 +27,7 @@
     {
       "path": "assets/catalog-06eb4bcbc13209907286e1ff73bdb927.json",
       "bytes": 3282557,
-      "sha256": "1e897e3261139d75a260c7f183efea5bf8a248af0ab07935ec5e317e345a49e3"
+      "sha256": "f3f16ae112328f9fbb0c92b08679c165258648dbf21b38fb8793d938747e104b"
     },
     {
       "path": "assets/cellColumns-zoMY0RNL.js",
