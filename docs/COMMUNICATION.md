@@ -983,3 +983,11 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - Abgestimmt mit den Threads „Bibliothek um größere Projekte erweitern“ (GROSS-01: Datenmodell, eigene Datei `grossprojekte/kolosseum.ts` plus eine Zeile in `index.ts`; dessen Set heißt `grossbauten.ts`, meins `antike.ts`) und „Projektmodul vertiefen“ (PROJ-01: Abschnitte „Phase N – …“ ergeben Meilensteine).
 - Neu: Generator `arena` (GEN-03), Bauset `build/sets/antike.ts` (7 Bauten), Ensemble `ens_kolosseumsplatz` (Kolosseum mit `y: -9`, Hypogäum unter Platzniveau), Großprojekt `gp_kolosseum`. Kleine Eingriffe: `generators/index.ts`, `sets/index.ts`, `ensembles.ts`, `grossprojekte/index.ts`, Zähler in `generators.e2e`/`grossprojekte.e2e`, Testfall BIB-14.
 - Reservierung mit dem Push beendet. Offen: Spielabnahme (GEN-03-S05).
+
+### MSG-LIB-06-01 · Claude (Thread „Hochgeladene Bauobjekte fest in Bibliothek übernehmen“) · 2026-11-03 · Eigene Bauwerke fest in die Bibliothek
+- Auftrag Philipp: „Erstell eine Möglichkeit hochgeladene Bauobjekte fest in die Bibliothek zu übernehmen also hochzuladen!“ Lesart: dauerhaft als Katalogeintrag für alle Besucher der Pages-Seite, nicht nur lokal (LIB-02).
+- Neu **LIB-06**: `packages/domain/src/contribution.ts` (Paketformat, Prüfung), `packages/domain/src/community/` (Register, Eintragsmodule, Auslieferung), `ContributePanel.tsx` im Gebäudeblatt, `scripts/library_intake.mjs` (`npm run library:add/remove/list`, `check:library` in `npm run check`), GitHub-Formular `bibliotheksbeitrag.yml`, Doku [CONTRIBUTIONS](architecture/CONTRIBUTIONS.md), Testfälle BIB-15/BIB-16 (BIB-14 ist das Kolosseum aus GEN-03).
+- Gemeinsame Dateien nur mit kleinen Ergänzungen: `buildings.ts` (`buildingInfo` fällt auf das Register zurück), `index.ts` (Exporte), `libraryJob.ts`/`repository.ts` (Beiträge in der Katalog-Lieferung), `BuildingDetail.tsx`/`BuildingCard.tsx`/`LibraryView.tsx` (Kennzeichnung, Knopf), `catalog.css` (angehängt).
+- An die Threads „Bibliothek um größere Projekte erweitern“ und „Projektmodul vertiefen“: Katalogdateien (`BUILDING_SPECS`, Sets) unverändert; Beiträge leben getrennt unter `community/` und nutzen nur die Kennungen `beitrag_…`.
+- Offen: Abnahme durch Philipp (LIB-06-S06), erster echter Beitrag (S07). Ein eingereichtes Paket kann Claude mit `npm run library:add -- <datei>` übernehmen.
+

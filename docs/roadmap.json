@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T16:15:14.846Z",
+  "updatedAt": "2026-11-03T16:37:18.371Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -20,7 +20,8 @@
     "EDIT-05",
     "MAP-05",
     "MAP-06",
-    "GROSS-01"
+    "GROSS-01",
+    "LIB-06"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -5274,6 +5275,108 @@
       }
     },
     {
+      "id": "LIB-06",
+      "title": "Bibliotheksbeiträge: eigene Bauwerke (Importe, Werkstatt, Generator) als festen Katalogeintrag für alle einreichen – Beitragspaket mit Prüfsumme und Rechtebestätigung, GitHub-Formular, Übernahme-Skript, Auslieferung wie mitgelieferte Gebäude",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Hochgeladene Bauobjekte fest in Bibliothek übernehmen“)",
+      "dependencies": [
+        "LIB-02",
+        "LIB-05",
+        "PERF-04",
+        "UPDATE-01"
+      ],
+      "scope": [
+        "packages/domain/src/contribution.ts",
+        "packages/domain/src/community/",
+        "packages/domain/src/buildings.ts",
+        "packages/domain/src/index.ts",
+        "apps/web/src/views/library/ContributePanel.tsx",
+        "apps/web/src/views/library/BuildingDetail.tsx",
+        "apps/web/src/views/library/BuildingCard.tsx",
+        "apps/web/src/views/LibraryView.tsx",
+        "apps/web/src/jobs/libraryJob.ts",
+        "apps/web/src/app/repository.ts",
+        "apps/web/src/catalog.css",
+        "apps/web/src/testing/testplan.ts",
+        "scripts/library_intake.mjs",
+        "package.json",
+        ".github/ISSUE_TEMPLATE/bibliotheksbeitrag.yml",
+        "tests/contribution.test.mjs",
+        "tests/e2e/contribution.e2e.mjs",
+        "docs/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "LIB-06-S01",
+          "title": "Paketformat minecraft-bauplaner/bibliotheksbeitrag v1: Angaben, Rechtebestätigung, Nutzungsrechte, Version in Sicherungsform, Vorschaubild ohne Texturen, Prüfsumme; Prüfung mit Inhalts-Hash und Größengrenzen.",
+          "done": true
+        },
+        {
+          "id": "LIB-06-S02",
+          "title": "Fester Katalog: Register und Eintragsmodule unter community/, je Beitrag ein nachgeladener Chunk; Auslieferung über Katalogabgleich (neu, neue Fassung als 2.0), kaputter Beitrag stoppt den Start nicht.",
+          "done": true
+        },
+        {
+          "id": "LIB-06-S03",
+          "title": "Gebäudeblatt: „In Bibliothek einreichen“ mit Formular, Download und vorausgefülltem GitHub-Formular; Kennzeichnung „Bibliotheksbeitrag von …“ in Blatt, Karte und Kopf.",
+          "done": true
+        },
+        {
+          "id": "LIB-06-S04",
+          "title": "Übernahme-Skript library:add/remove/list/check (Trockenlauf, ersetzen, Übersicht mit Vorschau in docs/library/BEITRAEGE.md), check:library in npm run check.",
+          "done": true
+        },
+        {
+          "id": "LIB-06-S05",
+          "title": "Durchstich: im Browser erzeugtes Paket übernommen, gebaut, im Katalog mit Kennzeichnung und Bautipps geprüft (danach wieder entfernt).",
+          "done": true
+        },
+        {
+          "id": "LIB-06-S06",
+          "title": "Abnahme durch Philipp: eigenes Bauwerk einreichen (Testfall BIB-15).",
+          "done": false
+        },
+        {
+          "id": "LIB-06-S07",
+          "title": "Erster echter Beitrag übernommen und für alle sichtbar (Testfall BIB-16).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Ein eigenes Bauteil ergibt im Browser ein Paket, das readContribution ohne Änderung annimmt; Blöcke, Blockinhalte, Entities und Anschlüsse bleiben exakt (Inhalts-Hash).",
+        "Ohne Rechtebestätigung, mit veränderter Datei oder fremder Formatkennung wird nichts übernommen.",
+        "Nach library:add und Build steht der Beitrag in jedem frischen Browser als mitgeliefertes Gebäude mit Kennzeichnung; gespeicherte Bibliotheken erhalten neue Fassungen als neue Version, nie überschrieben."
+      ],
+      "next": "Abnahme durch Philipp (S06) und erster echter Beitrag (S07).",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/contribution.test.mjs",
+          "note": "Kennung, Angaben, Rundreise mit Blockinhalten, Manipulation, Ausschlüsse, Auslieferung und Katalogabgleich 1.0→2.0, Register, Skript im Testordner."
+        },
+        {
+          "path": "tests/e2e/contribution.e2e.mjs",
+          "note": "Chromium 1400/390 px: Litematic importieren, Paket erstellen, Datei mit readContribution prüfen, GitHub-Link, keine seitliche Überbreite."
+        },
+        {
+          "path": "docs/architecture/CONTRIBUTIONS.md",
+          "note": "Ablauf, Paketformat, Prüfungen, Auslieferung und Grenzen."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Node- und Browsertests grün, Durchstich mit Übernahme und Build lokal geprüft; Abnahme durch Philipp offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-03T16:37:18.371Z"
+    },
+    {
       "id": "BASE-01",
       "title": "Basisplaner: ganze Survival-Basis aus Funktionszonen (Platz, Lager, Schmiede, Verzauberung, XP-Farm, Küche, Halle, Felder, Tierfarm, Hafen, Händler), Wegenetz mit Laternen, Wasserseite, Spielprüfungen je Zone, Bauphasen",
       "phase": "P3",
@@ -10415,6 +10518,51 @@
           "done": 5,
           "total": 6,
           "next": "Abnahme durch Philipp (S06); Großbauten-Set (S05)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T16:37:18.371Z",
+      "kind": "progress",
+      "items": [
+        "LIB-06"
+      ],
+      "summary": "Bibliotheksbeiträge: eigene Bauwerke über „In Bibliothek einreichen“ als geprüftes Paket, Übernahme mit npm run library:add in den festen Katalog, Auslieferung wie mitgelieferte Gebäude; Node 706/706, Browser LIB-06 3/3, Durchstich lokal; Abnahme durch Philipp offen",
+      "files": [
+        ".github/ISSUE_TEMPLATE/bibliotheksbeitrag.yml",
+        "apps/web/src/app/repository.ts",
+        "apps/web/src/catalog.css",
+        "apps/web/src/jobs/libraryJob.ts",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/LibraryView.tsx",
+        "apps/web/src/views/library/BuildingCard.tsx",
+        "apps/web/src/views/library/BuildingDetail.tsx",
+        "apps/web/src/views/library/ContributePanel.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/CATALOG.md",
+        "docs/architecture/CONTRIBUTIONS.md",
+        "docs/library/BEITRAEGE.md",
+        "docs/testing/TESTPLAN.md",
+        "package.json",
+        "packages/domain/src/buildings.ts",
+        "packages/domain/src/community/library.ts",
+        "packages/domain/src/community/registry.ts",
+        "packages/domain/src/community/types.ts",
+        "packages/domain/src/contribution.ts",
+        "packages/domain/src/index.ts",
+        "scripts/library_intake.mjs",
+        "tests/contribution.test.mjs",
+        "tests/e2e/contribution.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "LIB-06",
+          "status": "implemented",
+          "done": 5,
+          "total": 7,
+          "next": "Abnahme durch Philipp (S06) und erster echter Beitrag (S07)."
         }
       ]
     }

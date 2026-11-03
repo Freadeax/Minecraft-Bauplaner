@@ -11,6 +11,7 @@ import type { BuildingSpec, Inspiration } from './build/spec.js';
 import { ALL_SET_SPECS } from './build/sets/index.js';
 import { refinedSpec } from './build/refine.js';
 import { gameReady } from './build/gameReady.js';
+import { communityEntry } from './community/library.js';
 import { baumhaus, blockhuette, fachwerkhaus, kapelle, leuchtturm, scheune, schmiede, wachturm, wuestenhaus } from './build/sets/klassiker.js';
 
 export { PATH_PROFILE };
@@ -309,7 +310,11 @@ const BY_ID = new Map(BUILDING_SPECS.map(s => [s.id, s]));
 /** Static design information of a shipped building (undefined for own assets). */
 export function buildingInfo(assetId: string): BuildingInfo | undefined {
   const spec = BY_ID.get(assetId);
-  if (!spec) return undefined;
+  if (!spec) {
+    // Fixed contributions (LIB-06) carry their tips in the register.
+    const community = communityEntry(assetId);
+    return community && { tips: community.tips, inspiration: [], variants: [] };
+  }
   const variants = spec.family ? BUILDING_SPECS.filter(s => s.family?.id === spec.family!.id).map(s => ({ assetId: s.id, variant: s.family!.variant })) : [];
   return { ...(spec.family && { family: spec.family }), tips: spec.tips ?? [], inspiration: spec.inspiration ?? [], variants };
 }

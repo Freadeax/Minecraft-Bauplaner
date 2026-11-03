@@ -3,7 +3,7 @@ import { countBlocks } from '../../../../packages/voxel/src/index.js';
 import type { Cell } from '../../../../packages/voxel/src/index.js';
 import { applyOperation, buildCatalog, buildingInfo, createAsset, createEnsembleProject, createProject, ensemblesWith, facetCounts, FACETS, familyMembers,
   latestVersions, newInstance, projectContext, queryCatalog, resolveProject, similarEntries, suggestForProject, updateAssetMeta, withFacets,
-  ENSEMBLES, ANLAGEN, GROSSPROJEKTE, GENERATORS, SORT_LABEL, STAGES, variantGroup, assetIdsIn, templateFromEnsemble, collectionTree, flattenTree } from '../../../../packages/domain/src/index.js';
+  ENSEMBLES, ANLAGEN, GROSSPROJEKTE, GENERATORS, SORT_LABEL, STAGES, variantGroup, assetIdsIn, templateFromEnsemble, collectionTree, flattenTree, isContributionId } from '../../../../packages/domain/src/index.js';
 import type { Asset, AssetVersionSource, BuildingFacets, CatalogEntry, Ensemble, OriginalFile, Project, SortKey } from '../../../../packages/domain/src/index.js';
 import { href, navigate } from '../app/router';
 import type { LibraryPage } from '../app/router';
@@ -317,8 +317,9 @@ export function LibraryView({ projectId: initialProjectId, page = 'browse', id, 
   };
   const setKategorie = (value: string | null) => setFilters(f => ({ ...f, facets: { ...f.facets, kategorie: value === null || (f.facets?.kategorie?.length === 1 && f.facets.kategorie[0] === value) ? [] : [value] } }));
 
+  const contributions = catalog.entries.filter(e => e.asset.demo && !e.asset.archived && isContributionId(e.asset.id)).length;
   const header = <header className="page-head library-head"><div><span className="eyebrow">BIBLIOTHEK</span><h1 className="page-title">Gebäude &amp; Bauteile</h1>
-      <p className="muted">{catalog.entries.filter(e => e.asset.demo && !e.asset.archived).length} mitgelieferte Gebäudevorschläge und deine eigenen Bauteile, mit Vorschau, berechneten Kennwerten und Bauplan.</p></div>
+      <p className="muted">{catalog.entries.filter(e => e.asset.demo && !e.asset.archived).length} mitgelieferte Gebäudevorschläge{contributions ? ` (davon ${contributions} ${contributions === 1 ? 'Bibliotheksbeitrag' : 'Bibliotheksbeiträge'})` : ''} und deine eigenen Bauteile, mit Vorschau, berechneten Kennwerten und Bauplan.</p></div>
     <div className="button-row"><button className="primary" disabled={busy} onClick={() => file.current?.click()}>＋ Schem / Litematic / JSON importieren</button>
       <input ref={file} className="file-input" type="file" aria-label="Bauteildatei" accept={IMPORT_ACCEPT}
         onChange={e => { const f = e.target.files?.[0]; if (f) void open(f); e.target.value = ''; }} />

@@ -113,6 +113,10 @@ Seit 02.11.2026 folgen die Gebäude den Gestaltungsregeln in [BAUSTIL.md](BAUSTI
 
 Runde 2 (02.11.2026): Fassadenbaukasten `build/facade.ts` für Stadt, Küste, Epochen, Fantasy, Nether und Torhaus (Lisenen, Gesimse, Fensterbänke, Maschikulis, Strebepfeiler, Dachtechnik) und sieben neue, voll eingerichtete Meisterstücke in `sets/meister.ts` (Gildehaus, Wassermühle, Markthalle, Bahnhof mit Uhrturm, Fischerkate, Alchemistenturm, Stadtvilla) – der Katalog hat damit 343 Gebäude. Das Torhaus ist für den Wehrgang einen Block tiefer geworden; seine `wall_2x5`-Anschlüsse liegen jetzt bei z = 2.
 
+## Bibliotheksbeiträge (LIB-06)
+
+Seit 03.11.2026 können eigene Bauwerke feste Katalogeinträge werden: Gebäudeblatt → „In Bibliothek einreichen“ erzeugt ein Beitragspaket, `npm run library:add` nimmt es unter `packages/domain/src/community/` auf. Beiträge sind mitgelieferte Gebäude (`demo`) mit der Kennung `beitrag_…`, dem Tag `beitrag`, den eingereichten Angaben und Bautipps und ihrer Geometrie ohne Baustil-Veredelung. Ablauf, Format und Prüfungen: [CONTRIBUTIONS](CONTRIBUTIONS.md).
+
 ## Vorbild und Abgrenzung
 
 Struktur angelehnt an öffentliche Schematic-Bibliotheken (gesichtet: shulkr.com, Java-Filter): Oberkategorien wie Gebäude/Deko/Farm/Landschaft/Redstone, Filter Kategorie/Stil/Tag/Version/Größe/Mods, Steckbrief mit Maßen, Blockzahl, Blockarten, Größenklasse nach Blöcken, häufigsten Materialien, „gespeichert in“ und Mods. Übernommen wurden nur Ordnungsideen, keine Inhalte. Nicht übernommen: Downloads, Aufrufe, Trend-Sortierung (keine Nutzungsdaten in einer lokalen App) und „läuft in Version X“ (nicht prüfbar; Profile bleiben explizit `registry-unverified`).

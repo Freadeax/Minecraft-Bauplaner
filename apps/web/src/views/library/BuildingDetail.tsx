@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { Cell } from '../../../../../packages/voxel/src/index.js';
-import { facetLabel, SIZE_CLASS_LABEL, STAGE_HINT, STAGE_LABEL } from '../../../../../packages/domain/src/index.js';
+import { facetLabel, isContributionId, SIZE_CLASS_LABEL, STAGE_HINT, STAGE_LABEL } from '../../../../../packages/domain/src/index.js';
 import type { Asset, AssetVersion, BuildingFacets, BuildingInfo, CatalogEntry, Ensemble, Project, Similar, Suggestion } from '../../../../../packages/domain/src/index.js';
 import { formatNumber } from '../../app/ui';
 import { DIM_MARK, HIT_MARK } from '../../viewer/marks';
@@ -16,6 +16,7 @@ import { ConnectorEditor } from './ConnectorEditor';
 import type { Highlight } from './ConnectorEditor';
 import { CropPanel } from './CropPanel';
 import { SplitPanel } from './SplitPanel';
+import { ContributePanel } from './ContributePanel';
 import { stars } from './BuildingCard';
 import { EquipmentSection, FactsSection, MatchSection, MaterialBar, MaterialsSection, MetricsSection, TechSection, TipsSection } from './BuildingSheet';
 
@@ -87,7 +88,8 @@ export function BuildingDetail({ entry, asset, latest, versions, info, group, va
         <span className="panel-kicker">{kicker ? kicker.toUpperCase() : 'GEBÄUDE'}</span>
         <h1 className="detail-title">{asset.name}</h1>
         <div className="chips sheet-badges">
-          {asset.demo && <span className="tag">Synthetisches Beispiel</span>}
+          {asset.demo && isContributionId(asset.id) && <span className="tag contribution-tag" title={`${asset.provenance.source} · ${asset.provenance.license}`}>Bibliotheksbeitrag von {asset.provenance.author}</span>}
+          {asset.demo && !isContributionId(asset.id) && <span className="tag">Synthetisches Beispiel</span>}
           {!asset.demo && <span className="tag">Eigenes Bauteil</span>}
           {asset.archived && <span className="tag">archiviert</span>}
           <span className={`stage stage-${m.progression.stage}`} title={STAGE_HINT[m.progression.stage]}>{STAGE_LABEL[m.progression.stage]}</span>
@@ -120,6 +122,8 @@ export function BuildingDetail({ entry, asset, latest, versions, info, group, va
             <button type="button" aria-pressed={favorite} onClick={onFavorite}>{favorite ? '♥ Gemerkt' : '♡ Merken'}</button>
             <button type="button" aria-pressed={comparing} onClick={onCompare}>{comparing ? '⇄ Im Vergleich' : '⇄ Vergleichen'}</button>
             <a className="button" href={`#/werkstatt/${encodeURIComponent(latest.id)}`} title="Im Blockeditor Blöcke setzen, entfernen, ersetzen und drehen; speichert als neue Version">✎ Blöcke bearbeiten</a>
+            {!asset.demo && <button type="button" title="Als festen Eintrag für alle in die Bibliothek übernehmen lassen"
+              onClick={() => document.getElementById('sec-einreichen')?.scrollIntoView({ behavior: 'smooth' })}>⇪ In Bibliothek einreichen</button>}
           </div>
           {collections}
         </div>
@@ -172,6 +176,7 @@ export function BuildingDetail({ entry, asset, latest, versions, info, group, va
           <ul className="version-list">{asset.versionIds.map(id => { const v = versions.get(id); return <li key={id}><strong>{v?.label ?? '?'}</strong> <span className="hash">{v?.payloadHash.slice(0, 12) ?? 'fehlt'}</span> {v && <small>{new Date(v.createdAt).toLocaleDateString('de-DE')} · {v.source.format}</small>}</li>; })}</ul>
           <UsageSection asset={asset} projects={projects} />
           <div className="button-row"><button onClick={onArchive}>{asset.archived ? 'Aus Archiv holen' : 'Archivieren'}</button></div>
+          {!asset.demo && <ContributePanel key={`b-${latest.id}`} asset={asset} version={latest} entry={entry} />}
         </div>
         <div className="sheet-section">
           <ConnectorEditor key={`c-${asset.id}`} asset={asset} version={latest} onHighlight={setConnectorMarks} onSaved={onMessage} />

@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-03T16:15:14.846Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-03T16:37:18.371Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-03T16:15:14.846Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 15 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 46 |
+| 🧩 Implementiert · Abnahme offen | 47 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -39,6 +39,7 @@ Stand: 2026-11-03T16:15:14.846Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 - **MAP-05 · Planung auf der Live-Karte vertiefen: Baustand aus dem Spiel (Mod 0.7.1, GET /v1/scan), Ebenen und Abweichungen auf der Karte, bestätigte Schritte abhaken, Bauabschnitte wählen, Weltplan automatisch abgleichen, Hologramm und BlueMap aus dem Kontextmenü** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05); denkbar: gedrehte Projektlagen auf der Weltkarte, damit gedrehte Hologramme übernommen werden können.
 - **MAP-06 · Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players)** — 🧩 Implementiert · Abnahme offen, 7/8 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S08); Mod-Umsetzung GAME-08; denkbar für Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (Zeitstempel je Eintrag).
 - **GROSS-01 · Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06); Großbauten-Set (S05).
+- **LIB-06 · Bibliotheksbeiträge: eigene Bauwerke (Importe, Werkstatt, Generator) als festen Katalogeintrag für alle einreichen – Beitragspaket mit Prüfsumme und Rechtebestätigung, GitHub-Formular, Übernahme-Skript, Auslieferung wie mitgelieferte Gebäude** — 🧩 Implementiert · Abnahme offen, 5/7 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06) und erster echter Beitrag (S07).
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -164,6 +165,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [GAME-05](#game-05) | NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik | 🧩 Implementiert · Abnahme offen | 3/4 | GAME-02 | ausstehend | ausstehend |
 | [LIB-04](#lib-04) | Gebäudebibliothek v3: Inhalte in alle Richtungen | 🧩 Implementiert · Abnahme offen | 4/4 | LIB-01 | ausstehend | ausstehend |
 | [LIB-05](#lib-05) | Bibliothek im Stil der Vorlagen: Gestaltungsregeln, Baukasten, neu gezeichnete Gebäude und Generatoren | 🧩 Implementiert · Abnahme offen | 7/8 | LIB-04, BLOCK-02, GEN-02 | ausstehend | ausstehend |
+| [LIB-06](#lib-06) | Bibliotheksbeiträge: eigene Bauwerke (Importe, Werkstatt, Generator) als festen Katalogeintrag für alle einreichen – Beitragspaket mit Prüfsumme und Rechtebestätigung, GitHub-Formular, Übernahme-Skript, Auslieferung wie mitgelieferte Gebäude | 🧩 Implementiert · Abnahme offen | 5/7 | LIB-02, LIB-05, PERF-04, UPDATE-01 | ausstehend | ausstehend |
 | [BASE-01](#base-01) | Basisplaner: ganze Survival-Basis aus Funktionszonen (Platz, Lager, Schmiede, Verzauberung, XP-Farm, Küche, Halle, Felder, Tierfarm, Hafen, Händler), Wegenetz mit Laternen, Wasserseite, Spielprüfungen je Zone, Bauphasen | 🧩 Implementiert · Abnahme offen | 5/6 | BUILD-05, TERRAIN-01, BLOCK-02 | ausstehend | ausstehend |
 | [SPLIT-01](#split-01) | Gebäude aus großen Modellen herauslösen: Gebäude, Felder, Gehege und Wegenetz erkennen, einzeln oder zusammen als Bauteile speichern, als Projekt an alter Stelle aufteilen | 🧩 Implementiert · Abnahme offen | 4/5 | LIB-04, WORLD-IMPORT-01, PERF-04 | ausstehend | ausstehend |
 | [GROSS-01](#gross-01) | Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt | 🧩 Implementiert · Abnahme offen | 5/6 | BUILD-05, BASE-01, LIB-05 | ausstehend | ausstehend |
@@ -1821,6 +1823,30 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/baustil.test.mjs](../tests/baustil.test.mjs) — Gestaltungsziele als Medianwerte, Baukasten deterministisch, Veredelung verlustfrei.; [docs/architecture/BAUSTIL.md](architecture/BAUSTIL.md) — Quellen, Messwerte vorher/nachher, Regeln, Baukasten.; [packages/domain/src/build/facade.ts](../packages/domain/src/build/facade.ts) — Fassadenbaukasten der Runde 2, getestet in tests/baustil.test.mjs.; [packages/domain/src/build/sets/meister.ts](../packages/domain/src/build/sets/meister.ts) — Sieben neue Meisterstücke mit Einrichtung.
 
 **Dateiumfang:** `packages/domain/src/build/`, `packages/domain/src/buildings.ts`, `packages/domain/src/ensembles.ts`, `packages/domain/src/generators/`, `docs/architecture/BAUSTIL.md`, `docs/architecture/CATALOG.md`, `docs/architecture/GENERATORS.md`, `tests/baustil.test.mjs`, `tests/catalog.test.mjs`, `tests/generators.test.mjs`. **Abhängigkeiten:** LIB-04, BLOCK-02, GEN-02. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### LIB-06
+
+**Bibliotheksbeiträge: eigene Bauwerke (Importe, Werkstatt, Generator) als festen Katalogeintrag für alle einreichen – Beitragspaket mit Prüfsumme und Rechtebestätigung, GitHub-Formular, Übernahme-Skript, Auslieferung wie mitgelieferte Gebäude** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Hochgeladene Bauobjekte fest in Bibliothek übernehmen“) · Aktualisiert: 2026-11-03T16:37:18.371Z
+
+- [x] LIB-06-S01: Paketformat minecraft-bauplaner/bibliotheksbeitrag v1: Angaben, Rechtebestätigung, Nutzungsrechte, Version in Sicherungsform, Vorschaubild ohne Texturen, Prüfsumme; Prüfung mit Inhalts-Hash und Größengrenzen.
+- [x] LIB-06-S02: Fester Katalog: Register und Eintragsmodule unter community/, je Beitrag ein nachgeladener Chunk; Auslieferung über Katalogabgleich (neu, neue Fassung als 2.0), kaputter Beitrag stoppt den Start nicht.
+- [x] LIB-06-S03: Gebäudeblatt: „In Bibliothek einreichen“ mit Formular, Download und vorausgefülltem GitHub-Formular; Kennzeichnung „Bibliotheksbeitrag von …“ in Blatt, Karte und Kopf.
+- [x] LIB-06-S04: Übernahme-Skript library:add/remove/list/check (Trockenlauf, ersetzen, Übersicht mit Vorschau in docs/library/BEITRAEGE.md), check:library in npm run check.
+- [x] LIB-06-S05: Durchstich: im Browser erzeugtes Paket übernommen, gebaut, im Katalog mit Kennzeichnung und Bautipps geprüft (danach wieder entfernt).
+- [ ] LIB-06-S06: Abnahme durch Philipp: eigenes Bauwerk einreichen (Testfall BIB-15).
+- [ ] LIB-06-S07: Erster echter Beitrag übernommen und für alle sichtbar (Testfall BIB-16).
+
+**Abnahme:** Ein eigenes Bauteil ergibt im Browser ein Paket, das readContribution ohne Änderung annimmt; Blöcke, Blockinhalte, Entities und Anschlüsse bleiben exakt (Inhalts-Hash). Ohne Rechtebestätigung, mit veränderter Datei oder fremder Formatkennung wird nichts übernommen. Nach library:add und Build steht der Beitrag in jedem frischen Browser als mitgeliefertes Gebäude mit Kennzeichnung; gespeicherte Bibliotheken erhalten neue Fassungen als neue Version, nie überschrieben.
+
+**Nächste Aktion:** Abnahme durch Philipp (S06) und erster echter Beitrag (S07).
+
+**Prüfstand:** Node- und Browsertests grün, Durchstich mit Übernahme und Build lokal geprüft; Abnahme durch Philipp offen.
+
+**Nachweise:** [tests/contribution.test.mjs](../tests/contribution.test.mjs) — Kennung, Angaben, Rundreise mit Blockinhalten, Manipulation, Ausschlüsse, Auslieferung und Katalogabgleich 1.0→2.0, Register, Skript im Testordner.; [tests/e2e/contribution.e2e.mjs](../tests/e2e/contribution.e2e.mjs) — Chromium 1400/390 px: Litematic importieren, Paket erstellen, Datei mit readContribution prüfen, GitHub-Link, keine seitliche Überbreite.; [docs/architecture/CONTRIBUTIONS.md](architecture/CONTRIBUTIONS.md) — Ablauf, Paketformat, Prüfungen, Auslieferung und Grenzen.
+
+**Dateiumfang:** `packages/domain/src/contribution.ts`, `packages/domain/src/community/`, `packages/domain/src/buildings.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/library/ContributePanel.tsx`, `apps/web/src/views/library/BuildingDetail.tsx`, `apps/web/src/views/library/BuildingCard.tsx`, `apps/web/src/views/LibraryView.tsx`, `apps/web/src/jobs/libraryJob.ts`, `apps/web/src/app/repository.ts`, `apps/web/src/catalog.css`, `apps/web/src/testing/testplan.ts`, `scripts/library_intake.mjs`, `package.json`, `.github/ISSUE_TEMPLATE/bibliotheksbeitrag.yml`, `tests/contribution.test.mjs`, `tests/e2e/contribution.e2e.mjs`, `docs/`. **Abhängigkeiten:** LIB-02, LIB-05, PERF-04, UPDATE-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

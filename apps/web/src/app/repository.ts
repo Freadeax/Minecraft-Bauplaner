@@ -1,4 +1,4 @@
-import { createBuildingLibrary, createSampleLibrary } from '../../../../packages/domain/src/index.js';
+import { createBuildingLibrary, createCommunityLibrary, createSampleLibrary } from '../../../../packages/domain/src/index.js';
 import type { Repository } from '../../../../packages/application/src/repository.js';
 import { MemoryRepository } from '../../../../packages/application/src/memoryRepository.js';
 import { AssetRevisionConflictError } from '../../../../packages/application/src/repository.js';
@@ -18,7 +18,7 @@ export { MemoryRepository } from '../../../../packages/application/src/memoryRep
  */
 export async function seedSamples(repo: Repository, attempt = 0, shipment?: CatalogShipment): Promise<void> {
   const stored = new Map((await repo.listAssets()).map(a => [a.id, a]));
-  const libs = shipment ? [shipment] : await Promise.all([createSampleLibrary(), createBuildingLibrary()]);
+  const libs = shipment ? [shipment] : await Promise.all([createSampleLibrary(), createBuildingLibrary(), createCommunityLibrary()]);
   const plan = await planSeed(stored, async () => new Map((await repo.listVersions()).map(v => [v.id, v])), libs);
   if (!plan.assets.length && !plan.versions.length) return;
   try {

@@ -1,0 +1,47 @@
+name: "Bibliotheksbeitrag: Bauwerk fest in die Bibliothek"
+description: Ein eigenes Bauwerk als festen Eintrag der Bibliothek einreichen. Am einfachsten im Planer über Gebäudeblatt → „In Bibliothek einreichen“, dann ist alles vorausgefüllt.
+title: "[Bibliothek] "
+labels: ["bibliotheksbeitrag"]
+body:
+  - type: markdown
+    attributes:
+      value: "Danke für den Beitrag. Das Paket (Datei `….bauplaner-beitrag.json`) erzeugt der Planer; es enthält Blockdaten, Angaben, Prüfsumme und ein einfaches Vorschaubild. Nach Prüfung wird es mit `npm run library:add` übernommen und erscheint mit dem nächsten Update für alle."
+  - type: input
+    id: name
+    attributes:
+      label: Name des Bauwerks
+    validations:
+      required: true
+  - type: input
+    id: kennung
+    attributes:
+      label: Kennung
+      description: Aus dem Planer, z. B. beitrag_fachwerk_rathaus. Bleibt dauerhaft gleich.
+  - type: input
+    id: autor
+    attributes:
+      label: Autor oder Erbauer
+    validations:
+      required: true
+  - type: input
+    id: rechte
+    attributes:
+      label: Nutzungsrechte
+  - type: textarea
+    id: beschreibung
+    attributes:
+      label: Beschreibung
+  - type: textarea
+    id: datei
+    attributes:
+      label: Beitragsdatei
+      description: Die heruntergeladene Datei hier hineinziehen (GitHub lädt sie als Anhang hoch).
+    validations:
+      required: true
+  - type: checkboxes
+    id: bestaetigung
+    attributes:
+      label: Rechte
+      options:
+        - label: Ich habe das Bauwerk selbst gebaut oder habe die Erlaubnis des Erbauers; es ist keine fremde Schematic ohne Zustimmung.
+          required: true

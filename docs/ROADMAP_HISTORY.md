@@ -3270,3 +3270,42 @@ Großbauten-Set (S05): sechs Wahrzeichen bis 45 × 41 Blöcke (Rathaus mit Turm,
 - `packages/domain/src/build/sets/index.ts`
 - `packages/domain/src/grossprojekte/hauptstadt.ts`
 
+## 2026-11-03T16:37:18.371Z · progress
+
+**Aufgaben:** LIB-06
+
+Bibliotheksbeiträge: eigene Bauwerke über „In Bibliothek einreichen“ als geprüftes Paket, Übernahme mit npm run library:add in den festen Katalog, Auslieferung wie mitgelieferte Gebäude; Node 706/706, Browser LIB-06 3/3, Durchstich lokal; Abnahme durch Philipp offen
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LIB-06 | 🧩 Implementiert · Abnahme offen | 5/7 | Abnahme durch Philipp (S06) und erster echter Beitrag (S07). |
+
+**Geänderte Dateien:**
+
+- `.github/ISSUE_TEMPLATE/bibliotheksbeitrag.yml`
+- `apps/web/src/app/repository.ts`
+- `apps/web/src/catalog.css`
+- `apps/web/src/jobs/libraryJob.ts`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/LibraryView.tsx`
+- `apps/web/src/views/library/BuildingCard.tsx`
+- `apps/web/src/views/library/BuildingDetail.tsx`
+- `apps/web/src/views/library/ContributePanel.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/CATALOG.md`
+- `docs/architecture/CONTRIBUTIONS.md`
+- `docs/library/BEITRAEGE.md`
+- `docs/testing/TESTPLAN.md`
+- `package.json`
+- `packages/domain/src/buildings.ts`
+- `packages/domain/src/community/library.ts`
+- `packages/domain/src/community/registry.ts`
+- `packages/domain/src/community/types.ts`
+- `packages/domain/src/contribution.ts`
+- `packages/domain/src/index.ts`
+- `scripts/library_intake.mjs`
+- `tests/contribution.test.mjs`
+- `tests/e2e/contribution.e2e.mjs`
+

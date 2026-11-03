@@ -1,4 +1,4 @@
-import { analyzeVersion, checkAssetRecord, createBuildingLibrary, createSampleLibrary, latestReleaseId, packVersion, unpackVersion, unpackVersionOrDamaged } from '../../../../packages/domain/src/index.js';
+import { analyzeVersion, checkAssetRecord, createBuildingLibrary, createCommunityLibrary, createSampleLibrary, latestReleaseId, packVersion, unpackVersion, unpackVersionOrDamaged } from '../../../../packages/domain/src/index.js';
 import type { Asset, AssetVersion, BuildingMetrics } from '../../../../packages/domain/src/index.js';
 import type { StoredVersionRecord } from '../../../../packages/domain/src/versionStorage.js';
 import { planSeed } from '../../../../packages/application/src/catalogSync.js';
@@ -75,8 +75,11 @@ export async function libraryJob(input: LibraryJobInput, ctx: JobContext): Promi
   else {
     ctx.progress('Mitgelieferte Gebäude erzeugen', 0);
     const samples = await createSampleLibrary();
-    const buildings = await createBuildingLibrary((done, total) => ctx.progress('Mitgelieferte Gebäude erzeugen', 0.55 * done / total));
-    shipment = { assets: [...samples.assets, ...buildings.assets], versions: [...samples.versions, ...buildings.versions] };
+    const buildings = await createBuildingLibrary((done, total) => ctx.progress('Mitgelieferte Gebäude erzeugen', 0.5 * done / total));
+    // Fixed contributions (LIB-06): checked again here; a broken one is left out and named in the console, never stops the start.
+    const community = await createCommunityLibrary(undefined, (done, total) => ctx.progress('Bibliotheksbeiträge lesen', 0.5 + 0.05 * done / total));
+    for (const f of community.failed) console.warn(`Bibliotheksbeitrag ${f.id} nicht geladen: ${f.reason}`);
+    shipment = { assets: [...samples.assets, ...buildings.assets, ...community.assets], versions: [...samples.versions, ...buildings.versions, ...community.versions] };
   }
   ctx.progress('Gespeicherte Versionen lesen', 0.55);
   const stored = new Map(input.assets.map(raw => { const a = checkAssetRecord(raw); return [a.id, a] as const; }));

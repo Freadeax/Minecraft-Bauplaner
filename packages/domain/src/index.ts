@@ -26,6 +26,14 @@ export { FACETS, CATALOG_VERSION, BUILD_TIME_MODEL, MATERIAL_GROUP_LABEL, SIZE_C
 export type { Stage, FacetKey, BuildingFacets, FacetDefinition, BlockClass, MaterialGroup, Factor, BuildingMetrics, CatalogEntry, CatalogQuery, SortKey, Plot, ProjectContext, Suggestion, Similar } from './catalog.js';
 export { createBuildingLibrary, BUILDING_SPECS, PATH_PROFILE, specTags, familyLabel, buildingInfo } from './buildings.js';
 export type { BuildingSpec, BuildingLibrary, BuildingInfo, Inspiration } from './buildings.js';
+export { CONTRIBUTION_FORMAT, CONTRIBUTION_FORMAT_VERSION, CONTRIBUTION_PREFIX, CONTRIBUTION_TAG, CONTRIBUTION_FILE_SUFFIX, CONTRIBUTION_LICENSES, CONTRIBUTION_ID_PATTERN, CONTRIBUTION_LABEL,
+  MAX_CONTRIBUTION_CELLS, MAX_CONTRIBUTION_BYTES, LARGE_CONTRIBUTION_BYTES, MAX_PREVIEW_BYTES,
+  contributionIdFor, isContributionId, checkContributionMeta, contributionWarnings, createContribution, readContribution, contributionTags, contributionAsset } from './contribution.js';
+export type { ContributionMeta, ContributionFile, ContributionInput, ContributionLicense, CheckedContribution } from './contribution.js';
+export { createCommunityLibrary, communityEntry } from './community/library.js';
+export type { CommunityLibrary } from './community/library.js';
+export { COMMUNITY_ENTRIES } from './community/registry.js';
+export type { CommunityEntry } from './community/types.js';
 export { resolveRecipes, recipesForMaterials, chooseRecipe, recipesFor, rawSource, assertRecipeCatalog, recipesToCsv, RECIPES, RECIPE_TAGS, RECIPE_CATALOG_VERSION } from './recipes.js';
 export type { Recipe, Ingredient, Station, RecipeMethod, RecipeOptions, RecipeReport, RecipeStep, BaseLine, BaseKind, TagChoice, TagDefinition } from './recipes.js';
 export { ENSEMBLES, memberTransform, latestVersions, missingMembers, createEnsembleProject, ensemblesWith } from './ensembles.js';
