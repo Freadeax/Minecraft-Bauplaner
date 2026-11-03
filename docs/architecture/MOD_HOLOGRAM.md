@@ -126,3 +126,16 @@ Die Mod zeigt den Teamstand im Spiel und meldet aus dem Spiel. Das vollständige
   - `LiveLinkTest`: Merkmal `team`, Schlüssel für alle Teamwege.
   - Spieltest Fabric: Teamstand vom Planer, `nehmen 2`, `mein`, die Übernahme im Ausgang als Ereignis von „Ich bin“, und ohne Plugin 409 `team-plugin-fehlt`.
   - Echter Paper-26.3-Servertest mit eingeschaltetem Kanal.
+
+## Befehlsseite (0.11.0, GAME-10)
+
+Im Plan-Menü (J) führt „Befehle & Status“ zu einer Seite, auf der alle Befehle der Mod und des Paper-Plugins per Klick laufen. `/bauplaner befehle` öffnet sie direkt.
+
+- **Katalog.** `mod-core/commands/CommandCatalog` beschreibt jeden Befehl einmal: Gruppe, Beschriftung, Pfad, Eingaben (Abschnitt, Zahl, Wort, Text, Spieler, Auswahl, Item) und Voraussetzung (Plan, Team, Plugin, Bauleitung, Kiste). Der Katalog prüft die Eingaben und baut daraus genau den Befehl, den man eintippen würde. `CommandCatalogTest` hält ihn mit den Befehlen von Mod und Plugin abgeglichen.
+- **Mod oder Server.** Mod-Befehle laufen als `/bauplaner …`. Plugin-Befehle laufen über den Alias `/bp …`, weil die Mod `/bauplaner` selbst belegt. Ein Klick sendet über `connection.sendCommand` dasselbe Befehlspaket wie das Eintippen; es gibt kein zusätzliches Paket an den Server.
+- **Ausgegraut.** Ob der Server das Plugin hat, liest die Seite aus dem Befehlsbaum (`bp` vorhanden). Unterbefehle sieht der Client bei Paper nicht, Rechte prüft der Server und antwortet selbst. Bauleitungs-Knöpfe richten sich nach der Rolle im Teamstand, Kisten-Knöpfe werden erst aktiv, wenn man auf einen Behälter in Reichweite schaut. Der Grund steht im Tooltip.
+- **Status.** Plan, Fortschritt, Filter, Platzierhilfe, Teamkanal, Team, eigener Auftrag, Lager, Server mit oder ohne Plugin und Website-Verbindung. Die Seite aktualisiert sich alle halbe Sekunde.
+- **Antworten.** `ReplyLog` sammelt die eigenen „[Bauplaner]“-Zeilen und für 4 s nach einem Serverbefehl von der Seite alle Systemzeilen des Servers (Fabric `ClientReceiveMessageEvents.GAME`, NeoForge `ClientChatReceivedEvent.System`).
+- **Kleine Fenster.** Ab 520 GUI-Pixeln Breite steht der Status links neben den Knöpfen, darunter nur im Reiter „Status“ über den Knöpfen. Mehr Knöpfe als Platz werden geblättert (◀ ▶ unten links).
+- **Prüfung.** JUnit `CommandCatalogTest`; Spieltest Fabric mit echten Mausklicks (Reiter Team, „Übersicht“, „Abschnitt zeigen 2“, Antworten auf der Seite, Serverknöpfe im Einzelspieler ausgegraut); NeoForge-Szenario öffnet die Seite und führt einen Befehl aus.
+

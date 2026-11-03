@@ -84,6 +84,9 @@ public final class PlanScreen extends Screen {
             }
             addRenderableWidget(Button.builder(Component.literal(hologram.xray() ? "Röntgensicht: an" : "Röntgensicht: aus"), b -> act(hologram::toggleXray, "")).bounds(rx, y, 200, H).build());
         }
+        // GAME-10: every client and server command by click, with status.
+        if (HologramClient.current() != null)
+            addRenderableWidget(Button.builder(Component.literal("Befehle & Status"), b -> HologramClient.current().openCommands(minecraft)).bounds(width / 2 - 154, height - 26, 100, 20).build());
         addRenderableWidget(Button.builder(Component.literal("Fertig"), b -> onClose()).bounds(width / 2 - 50, height - 26, 100, 20).build());
     }
 

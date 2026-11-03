@@ -39,6 +39,22 @@ final class HologramScenario {
         step(out, 3, mc -> s.command("bauplaner fehler"));
         step(out, 10, mc -> KeyMapping.click(InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_J)));
         step(out, 3, mc -> { expectScreen(mc, "PlanScreen", "Taste J öffnet nicht das Planmenü"); mc.gui.setScreen(null); });
+        // GAME-10: command page from the chat command (opens on the next tick), the mod's answers land on the page.
+        step(out, 5, mc -> s.command("bauplaner befehle"));
+        step(out, 3, mc -> {
+            expectScreen(mc, "CommandScreen", "/bauplaner befehle öffnet nicht die Befehlsseite");
+            // Like a click on „Leistung“: what the page sends (its progress lines stay out of the log check).
+            io.github.freadeax.bauplaner.bridge.hologram.CommandScreen.REPLIES.sent("bauplaner leistung", false, System.currentTimeMillis());
+            mc.player.connection.sendCommand("bauplaner leistung");
+        });
+        step(out, 3, mc -> {
+            var last = io.github.freadeax.bauplaner.bridge.hologram.CommandScreen.REPLIES.last(5);
+            int sent = -1;
+            for (int i = 0; i < last.size(); i++) if (last.get(i).text().equals("› /bauplaner leistung")) sent = i;
+            if (sent < 0 || sent == last.size() - 1 || last.get(sent + 1).sent())
+                throw new AssertionError("Antwort von „leistung“ fehlt auf der Befehlsseite: " + last);
+            mc.gui.setScreen(null);
+        });
         // Build the missing block: the live check must notice it without any command.
         step(out, 40, mc -> {
             String json = Files.readString(s.io().resolve("state.json"));

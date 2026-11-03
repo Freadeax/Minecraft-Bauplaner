@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 100 Fälle in 11 Bereichen, davon 47 Kernfälle.
+Umfang: 101 Fälle in 11 Bereichen, davon 48 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -166,6 +166,7 @@ Die Bauplaner-Mod im Spiel (Fabric oder NeoForge, Minecraft 26.3). Nur Client �
 | MOD-12 | Abschnitt fertig | vertieft | 1. Einen Bauabschnitt zu Ende bauen. | Genau eine Chat-Meldung nennt den nächsten Abschnitt; HUD-Zeile „Abschnitt k/n“ stimmt mit dem Planer überein. |
 | MOD-13 | Platzierhilfe im Detail | vertieft | 1. Falschen Block in die Hand nehmen und setzen; Treppe falsch herum setzen; richtigen Planblock abbauen; Num 8 auf einen Planblock.<br>2. Tür, Kiste, Knopf bedienen; Gerüst auf Luft-Feldern setzen. | Falsches wird nicht gesetzt und der Hinweis erklärt es; Num 8 nimmt den Planblock in die Hand; Bedienen und Gerüst gehen normal; mit Tool Switcher kein ungewollter Werkzeugwechsel. |
 | MOD-14 | Tasten umbelegen | vertieft | 1. Optionen → Steuerung → Bauplaner: eine Taste umbelegen, Spiel neu starten. | Belegung bleibt; `/bauplaner diagnose` zeigt keine Konflikte mit Jade (Num 0–5), Xaero (Num +), Voice Chat (H/N), Iris (I/K/R). Meldet er einen (alte Belegung aus einer früheren Version, z. B. „Ebene tiefer“ auf Num 3), die Taste dort zurücksetzen und erneut prüfen. |
+| MOD-16 | Befehlsseite im Plan-Menü (Mod 0.11.0) | kern | 1. Plan ins Spiel schicken, J drücken, unten links „Befehle & Status“.<br>2. Reiter „Status“ lesen, dann Reiter „Hologramm“ → „Fortschritt“ und „Nächster Abschnitt“.<br>3. Reiter „Team“ → „Abschnitt zeigen …“, Nummer eintragen, „Ausführen“.<br>4. Auf einem Server mit Bauplaner-Plugin: Reiter „Lager“ → „Lagerkisten“; auf eine markierte Kiste schauen und „Diese Kiste“. Auf einem Server ohne Plugin den Reiter „Lager“ öffnen.<br>5. Bei kleinem Fenster (oder GUI-Größe 3–4) durch die Reiter blättern (◀ ▶ unten links). | Der Status zeigt Plan, Fortschritt, Ebenen/Abschnitte, Team und ob der Server das Plugin hat. Jeder Klick gibt dieselbe Antwort wie der getippte Befehl, sie erscheint unten auf der Seite. Ohne Plugin sind die Serverknöpfe ausgegraut und nennen beim Darüberfahren den Grund; Knöpfe für eine Kiste werden erst aktiv, wenn man auf eine schaut. Nichts ist abgeschnitten oder überlappt. |
 
 ## LIVE · Mod: Verbindung mit dem Planer (Mod)
 

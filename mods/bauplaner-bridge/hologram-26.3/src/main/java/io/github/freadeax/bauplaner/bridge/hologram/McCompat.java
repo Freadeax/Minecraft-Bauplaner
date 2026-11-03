@@ -141,7 +141,19 @@ public final class McCompat {
     }
 
     /** Message in the chat, only visible to this player. */
-    public static void chat(Minecraft mc, Component text) { if (mc.player != null) mc.player.sendSystemMessage(text); }
+    public static void chat(Minecraft mc, Component text) {
+        // GAME-10: the command page shows the mod's own answers too.
+        CommandScreen.REPLIES.own(text.getString(), System.currentTimeMillis());
+        if (mc.player == null) return;
+        ownLine = true;
+        try { mc.player.sendSystemMessage(text); } finally { ownLine = false; }
+    }
+
+    /** A system line from the server (loader chat event): kept for the command page if it answers a command sent from there. */
+    public static void serverLine(Component text) { if (!ownLine) CommandScreen.REPLIES.offer(text.getString(), System.currentTimeMillis()); }
+
+    /** True while {@link #chat} writes: the loader event then reports the mod's own line, already in the log. */
+    private static boolean ownLine;
 
     /** Short status line above the hotbar. */
     public static void overlay(Minecraft mc, Component text) { if (mc.player != null) mc.player.sendOverlayMessage(text); }

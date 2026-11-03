@@ -1,0 +1,103 @@
+package io.github.freadeax.bauplaner.mod;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import io.github.freadeax.bauplaner.mod.commands.CommandCatalog;
+import io.github.freadeax.bauplaner.mod.commands.CommandCatalog.Side;
+import io.github.freadeax.bauplaner.mod.commands.CommandContext;
+import io.github.freadeax.bauplaner.mod.commands.ReplyLog;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import org.junit.jupiter.api.Test;
+
+/** Command page of the J menu (GAME-10): catalog, inputs, greyed-out buttons, answers. */
+class CommandCatalogTest {
+
+    @Test
+    void catalogCoversClientAndServerAndUsesTheAliasForTheServer() {
+        List<String> groups = CommandCatalog.groups();
+        assertEquals(List.of("Status", "Hologramm", "Team", "Server-Team", "Lager", "Nachweis", "Verbindung", "Aufnahme"), groups);
+        Set<String> ids = new HashSet<>();
+        for (var e : CommandCatalog.all()) {
+            assertTrue(ids.add(e.id()), "doppelte ID " + e.id());
+            assertTrue(e.base().startsWith(e.side() == Side.SERVER ? "bp " : "bauplaner "), e.id());
+            assertFalse(e.help().isBlank(), e.id());
+        }
+        // Every client top-level command of the mod is reachable (no hidden feature).
+        for (String path : List.of("fortschritt", "fehler", "umschalten", "roentgen", "texturen", "material", "hierher", "drehen", "spiegeln", "verschieben", "ebene",
+                "abschnitt", "platzierhilfe", "leistung", "entfernen", "diagnose", "team", "verbinden", "ebenen", "plaene", "plan", "anker hier", "scan", "status", "abbrechen"))
+            assertTrue(CommandCatalog.all().stream().anyMatch(e -> e.side() == Side.CLIENT && e.path().equals(path)), path);
+        // Plugin commands as agreed with the plugin (TeamModule.COMMANDS, StorageModule.SUBCOMMANDS).
+        for (String path : List.of("team", "abschnitte", "nehmen", "abgeben", "fertig", "zeigen", "notiz", "notizen", "geliefert hand", "sammle", "zuweisen", "pruefen", "rolle",
+                "lager liste", "lager info", "lager bedarf", "lager wer", "lager zeigen", "lager verlauf", "lager pruefen", "lager markieren", "lager entmarkieren", "lager siegeln",
+                "lager name", "lager abschnitt", "lager zweck", "lager schutz", "lager hilfe", "nachweis", "beitrag", "beitrag alle", "plan", "anker hier", "scan"))
+            assertTrue(CommandCatalog.all().stream().anyMatch(e -> e.side() == Side.SERVER && e.path().equals(path)), "bp " + path);
+    }
+
+    @Test
+    void inputsBecomeTheTypedCommandOrAGermanReason() {
+        var nehmen = CommandCatalog.byId("team.nehmen");
+        assertEquals("bauplaner team nehmen 3", CommandCatalog.command(nehmen, List.of(" 3 ")));
+        assertEquals("„abschnitt“ fehlt.", assertThrows(IllegalArgumentException.class, () -> CommandCatalog.command(nehmen, List.of(""))).getMessage());
+        var fertig = CommandCatalog.byId("team.fertig");
+        assertEquals("bauplaner team fertig", CommandCatalog.command(fertig, Arrays.asList("", "")));
+        assertEquals("bauplaner team fertig 2 Ecke steht, Dach fehlt", CommandCatalog.command(fertig, List.of("2", "Ecke steht, Dach fehlt")));
+        assertTrue(assertThrows(IllegalArgumentException.class, () -> CommandCatalog.command(fertig, List.of("", "nur Notiz"))).getMessage().contains("zusammen mit dem Feld davor"));
+        var notiz = CommandCatalog.byId("bp.notiz");
+        assertEquals("bp notiz frage Treppe links oder rechts?", CommandCatalog.command(notiz, List.of("Frage", "Treppe links oder rechts?")));
+        assertTrue(assertThrows(IllegalArgumentException.class, () -> CommandCatalog.command(notiz, List.of("bombe", "x"))).getMessage().contains("frage, problem, material, info"));
+        assertEquals("bp lager wer oak_planks", CommandCatalog.command(CommandCatalog.byId("bp.lager.wer"), List.of("Oak_Planks")));
+        assertEquals("bp lager wer minecraft:oak_planks", CommandCatalog.command(CommandCatalog.byId("bp.lager.wer"), List.of("minecraft:oak_planks")));
+        assertThrows(IllegalArgumentException.class, () -> CommandCatalog.command(CommandCatalog.byId("bp.zuweisen"), List.of("2", "kein name!")));
+        assertThrows(IllegalArgumentException.class, () -> CommandCatalog.command(CommandCatalog.byId("verschieben"), List.of("1", "zwei", "3")));
+        assertEquals("bauplaner verschieben -10 0 4", CommandCatalog.command(CommandCatalog.byId("verschieben"), List.of("-10", "0", "4")));
+        assertThrows(IllegalArgumentException.class, () -> CommandCatalog.command(fertig, List.of("2", "x".repeat(251))));
+        assertEquals("bp scan", CommandCatalog.command(CommandCatalog.byId("bp.scan"), List.of("")));
+        assertEquals("bp scan geladen", CommandCatalog.command(CommandCatalog.byId("bp.scan"), List.of("geladen")));
+        assertEquals("bauplaner fortschritt", CommandCatalog.command(CommandCatalog.byId("fortschritt"), List.of()));
+    }
+
+    @Test
+    void buttonsAreGreyedOutWithAReason() {
+        var none = new CommandContext(false, false, null, false, false);
+        assertTrue(none.blocked(CommandCatalog.byId("fehler")).contains("Plan"));
+        assertTrue(none.blocked(CommandCatalog.byId("team.nehmen")).contains("Mit Spiel abgleichen"));
+        assertTrue(none.blocked(CommandCatalog.byId("bp.beitrag")).contains("kein Bauplaner-Plugin"));
+        assertNull(none.blocked(CommandCatalog.byId("diagnose")));
+        assertNull(none.blocked(CommandCatalog.byId("team.erlauben")));
+        var helper = new CommandContext(true, true, "helfer", true, false);
+        assertNull(helper.blocked(CommandCatalog.byId("bp.beitrag")));
+        assertTrue(helper.blocked(CommandCatalog.byId("bp.rolle")).contains("Bauleitung"));
+        assertTrue(helper.blocked(CommandCatalog.byId("bp.lager.markieren")).contains("Kiste"));
+        assertNull(helper.blocked(CommandCatalog.byId("bp.lager.pruefen")), "ohne Blick prüft der Server alle Kisten");
+        var lead = new CommandContext(true, true, "leitung", true, true);
+        assertNull(lead.blocked(CommandCatalog.byId("bp.rolle")));
+        assertNull(lead.blocked(CommandCatalog.byId("bp.lager.markieren")));
+        // Without a team state the role is unknown: the server decides and answers itself.
+        assertNull(new CommandContext(false, false, null, true, false).blocked(CommandCatalog.byId("bp.team.laden")));
+    }
+
+    @Test
+    void answersKeepOwnLinesAndTheServersReplyToACommandSentFromThePage() {
+        ReplyLog log = new ReplyLog();
+        assertFalse(log.offer("<Anna> hallo", 1000), "fremder Chat bleibt draußen");
+        assertTrue(log.own("[Bauplaner] Abschnitt 2 genommen.", 1000));
+        assertFalse(log.offer("[Bauplaner] Abschnitt 2 genommen.", 1000), "eigene Zeile nicht doppelt über das Chat-Ereignis");
+        log.sent("bp lager liste", true, 2000);
+        assertTrue(log.offer("Lagerkisten: 3", 2500), "Antwort des Servers ohne Präfix");
+        assertFalse(log.offer("Server neu gestartet in 5 min", 2000 + ReplyLog.SERVER_WINDOW + 1));
+        log.sent("bauplaner fortschritt", false, 9000);
+        assertFalse(log.offer("<Ben> Hallo", 9100), "nach Client-Befehlen kein Fenster für fremde Zeilen");
+        var last = log.last(10);
+        assertEquals(List.of("Abschnitt 2 genommen.", "› /bp lager liste", "Lagerkisten: 3", "› /bauplaner fortschritt"), last.stream().map(ReplyLog.Line::text).toList());
+        for (int i = 0; i < 100; i++) log.own("[Bauplaner] " + i, 10_000 + i);
+        assertEquals(ReplyLog.MAX, log.last(1000).size());
+        assertEquals("99", log.last(1).get(0).text());
+    }
+}

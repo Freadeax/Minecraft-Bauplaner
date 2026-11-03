@@ -195,6 +195,21 @@ async function live(file, loader, plan, logFile) {
     const log = readFileSync(logFile, 'utf8');
     assert.match(log, /\[Bauplaner\] Hologramm zeigt nur deine Abschnitte \(2\)/, 'eigene Abschnitte eingeblendet');
   }
+  // GAME-10 command page (J menu): real clicks, the typed command and its answer, greyed-out server buttons without plugin.
+  let page;
+  try { page = JSON.parse(readFileSync(join(dir, 'befehle.json'), 'utf8')); } catch { page = null; }
+  if (page) {
+    const sentIndex = page.replies.indexOf('› /bauplaner team');
+    assert.ok(sentIndex >= 0, `Übersicht per Klick gesendet: ${JSON.stringify(page.replies)}`);
+    assert.ok(page.replies.slice(sentIndex + 1).some(r => /^Verbindung: /.test(r)), "Antwort der Übersicht auf der Seite");
+    const zeigen = page.replies.indexOf('› /bauplaner team zeigen 2');
+    assert.ok(zeigen > sentIndex, 'Eingabe 2 übernommen und gesendet');
+    assert.ok(page.replies.length > zeigen + 1, 'Antwort auf „zeigen 2“');
+    assert.equal(page.serverButtonActive, false, 'ohne Plugin sind Server-Knöpfe ausgegraut');
+    assert.equal(page.clientButtonActive, true);
+    const twice = page.replies.findIndex((r, i) => i > 0 && r === page.replies[i - 1] && !r.startsWith('›'));
+    assert.equal(twice, -1, `keine Antwortzeile doppelt: ${page.replies[twice]}`);
+  }
   assert.equal(after.hologram.planFile, 'website-plan.schem');
   const anchor = readFileSync(join(dir, 'anchor.txt'), 'utf8').trim().split(' ').map(Number);
   assert.deepEqual([after.hologram.placement.x, after.hologram.placement.y, after.hologram.placement.z], [anchor[0] + 20, anchor[1], anchor[2]], 'Plan an der von der Website gesendeten Stelle');

@@ -48,7 +48,13 @@ public final class HologramClient {
         hud = new HologramHud(hologram, assist);
         team = new TeamClient(root, hologram, version);
         link.team(team);
+        current = this;
     }
+
+    private static HologramClient current;
+
+    /** The one client of this game (for screens opened from keys). */
+    static HologramClient current() { return current; }
 
     /** Teambau (COOP-03): team state, channel to the server plugin, section frames, {@code /bauplaner team}. */
     public TeamClient team() { return team; }
@@ -71,12 +77,20 @@ public final class HologramClient {
     public <S> List<LiteralArgumentBuilder<S>> commands() {
         List<LiteralArgumentBuilder<S>> list = new java.util.ArrayList<>(HologramCommands.build(hologram, link));
         list.add(team.command());
+        // GAME-10: command page; opened on the next tick because the chat screen closes right after the command.
+        list.add(LiteralArgumentBuilder.<S>literal("befehle").executes(c -> { openCommands = true; return 1; }));
         return list;
     }
+
+    private volatile boolean openCommands;
+
+    /** Commands and status by click (GAME-10), also reachable from the J menu. */
+    public void openCommands(Minecraft mc) { CommandScreen.open(mc, this); }
 
     /** End of every client tick. */
     public void tick(Minecraft mc) {
         guarded("tick", () -> { keys.tick(mc); hologram.tick(mc); assist.tick(mc); marks.tick(mc); team.tick(mc); });
+        if (openCommands && mc.gui.screen() == null) { openCommands = false; openCommands(mc); }
     }
 
     /** Level render pass: ghost blocks, frames, finder beam. */

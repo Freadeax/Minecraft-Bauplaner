@@ -296,6 +296,39 @@ public final class TeamClient {
         return out;
     }
 
+    /**
+     * Status for the command page (GAME-10): channel, team, own task, waiting messages, storage chests,
+     * last rejection. Each row is {text, colour as hex}.
+     */
+    public List<String[]> statusRows() {
+        Minecraft mc = Minecraft.getInstance();
+        List<String[]> out = new ArrayList<>();
+        TeamState t = shown;
+        out.add(row("Teamkanal: " + sync.link().label + (sync.allowed() ? " · erlaubt" : ""), sync.link() == TeamSync.Link.LIVE ? 0xFF6BE07B : 0xFFB0B0B0));
+        if (t == null || mc.player == null || mc.level == null) {
+            out.add(row("Kein Teamstand – im Planer Reiter „Team“ „Mit Spiel abgleichen“", 0xFFB0B0B0));
+        } else {
+            out.addAll(rows(t, mc, mc.player.getBlockX(), mc.player.getBlockY(), mc.player.getBlockZ()));
+            String role = t.me() == null ? null : t.roleOf(t.me());
+            if (role != null) out.add(row("Du: " + t.nameOf(t.me()) + " · " + TeamState.ROLE_LABEL.getOrDefault(role, role) + " · Abschnitte: " + t.count("frei") + " frei, "
+                    + t.count("vergeben") + " vergeben, " + t.count("gemeldet") + " gemeldet", 0xFFFFFFFF));
+            if (!t.stores().isEmpty()) {
+                java.util.Map<String, Integer> by = new java.util.TreeMap<>();
+                for (TeamState.Store st : t.stores()) by.merge(st.status() == null ? "ungeprueft" : st.status(), 1, Integer::sum);
+                StringBuilder b = new StringBuilder("Lagerkisten: " + t.stores().size());
+                by.forEach((k, v) -> b.append(" · ").append(v).append(' ').append(k.replace("geprueft", "geprüft").replace("ungeprueft", "ungeprüft")));
+                out.add(row(b.toString(), by.containsKey("abweichend") || by.containsKey("fehlt") ? 0xFFFFB040 : 0xFFFFFFFF));
+            }
+        }
+        List<String> rej = sync.rejections();
+        if (!rej.isEmpty()) out.add(row("Abgelehnt: " + rej.get(rej.size() - 1), 0xFFFF5A5A));
+        if (sync.lastError() != null) out.add(row("Fehler: " + sync.lastError(), 0xFFFF5A5A));
+        return out;
+    }
+
+    /** Own role in the shown team (leitung, meister, helfer, gast) or null. */
+    public String role() { TeamState t = shown; return t == null || t.me() == null ? null : t.roleOf(t.me()); }
+
     private static String[] row(String text, int color) { return new String[] { text, Integer.toHexString(color) }; }
 
     // ------------------------------------------------------------------ commands

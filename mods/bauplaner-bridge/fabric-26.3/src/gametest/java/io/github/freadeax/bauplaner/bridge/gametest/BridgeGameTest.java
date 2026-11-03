@@ -1,6 +1,7 @@
 package io.github.freadeax.bauplaner.bridge.gametest;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import io.github.freadeax.bauplaner.bridge.hologram.CommandScreen;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -327,6 +328,7 @@ public final class BridgeGameTest implements FabricClientGameTest {
         out.append(",\"teamPull\":").append(request(context, http, base + "/v1/team/pull?teamId=x", "GET", null, token, "https://freadeax.github.io"));
         chat(context, "/bauplaner team alle");
         context.waitTicks(5);
+        commandPage(context, io);
         // MAP-05 Baustand: hologram back onto the built plan, then the whole box as recording (one wrong, one missing block).
         String back = "{\"dimension\":\"minecraft:overworld\",\"x\":" + anchor[0] + ",\"y\":" + anchor[1] + ",\"z\":" + anchor[2] + ",\"turns\":0,\"mirror\":false}";
         out.append(",\"back\":").append(request(context, http, base + "/v1/placement", "POST", back, token, "https://freadeax.github.io"));
@@ -340,6 +342,71 @@ public final class BridgeGameTest implements FabricClientGameTest {
         out.append("}");
         Files.writeString(io.resolve("live.json"), out.toString());
         chat(context, "/bauplaner verbinden status");
+    }
+
+    /**
+     * GAME-10 command page: opened with /bauplaner befehle, real mouse clicks on its buttons. A client command
+     * without input, one with input (section 2), and greyed-out server buttons in singleplayer (no plugin).
+     */
+    private static void commandPage(ClientGameTestContext context, Path io) throws IOException {
+        chat(context, "/bauplaner befehle");
+        context.waitForScreen(CommandScreen.class);
+        context.waitTicks(5);
+        copy(context.takeScreenshot("bauplaner-befehle"), io.resolve("befehle.png"));
+        click(context, "Team");
+        click(context, "Übersicht");
+        click(context, "Abschnitt zeigen …");
+        context.runOnClient(mc -> {
+            var box = mc.gui.screen().children().stream().filter(c -> c instanceof net.minecraft.client.gui.components.EditBox).map(c -> (net.minecraft.client.gui.components.EditBox) c)
+                    .findFirst().orElseThrow(() -> new AssertionError("Eingabefeld fehlt"));
+            box.setValue("2");
+        });
+        click(context, "Ausführen");
+        context.waitTicks(5);
+        copy(context.takeScreenshot("bauplaner-befehle-team"), io.resolve("befehle-team.png"));
+        click(context, "Lager");
+        boolean serverGrey = context.computeOnClient(mc -> button(mc, "Lagerkisten").active);
+        click(context, "Verbindung");
+        boolean linkActive = context.computeOnClient(mc -> button(mc, "Verbindungsstatus").active);
+        List<String> replies = CommandScreen.REPLIES.last(40).stream().map(l -> l.text()).toList();
+        String out = "{\"replies\":[" + String.join(",", replies.stream().map(r -> "\"" + r.replace("\\", "\\\\").replace("\"", "\\\"") + "\"").toList())
+                + "],\"serverButtonActive\":" + serverGrey + ",\"clientButtonActive\":" + linkActive + "}";
+        Files.writeString(io.resolve("befehle.json"), out);
+        context.setScreen(() -> null);
+        context.waitTicks(2);
+    }
+
+    private static net.minecraft.client.gui.components.Button button(net.minecraft.client.Minecraft mc, String label) {
+        return mc.gui.screen().children().stream().filter(c -> c instanceof net.minecraft.client.gui.components.Button b && b.getMessage().getString().equals(label))
+                .map(c -> (net.minecraft.client.gui.components.Button) c).findFirst().orElseThrow(() -> new AssertionError("Knopf fehlt: " + label + " – da sind: " + mc.gui.screen().children().stream()
+                        .filter(c -> c instanceof net.minecraft.client.gui.components.Button).map(c -> ((net.minecraft.client.gui.components.Button) c).getMessage().getString()).toList()));
+    }
+
+    private static void click(ClientGameTestContext context, String label) {
+        // Small windows page the buttons: turn pages like a player until the button shows up.
+        for (int i = 0; i < 8 && !context.computeOnClient(mc -> has(mc, label)) && context.computeOnClient(mc -> has(mc, "▶")); i++) {
+            pressAt(context, "▶");
+        }
+        pressAt(context, label);
+    }
+
+    private static boolean has(net.minecraft.client.Minecraft mc, String label) {
+        return mc.gui.screen().children().stream().anyMatch(c -> c instanceof net.minecraft.client.gui.components.Button b && b.getMessage().getString().equals(label));
+    }
+
+    /**
+     * Real mouse click in the middle of the button: cursor in window pixels, then the left button (26.3 uses SDL,
+     * where the left button is 1, not 0 as with GLFW).
+     */
+    private static void pressAt(ClientGameTestContext context, String label) {
+        double[] at = context.computeOnClient(mc -> {
+            var b = button(mc, label);
+            double scale = (double) mc.getWindow().getScreenWidth() / mc.getWindow().getGuiScaledWidth();
+            return new double[] { (b.getX() + b.getWidth() / 2.0) * scale, (b.getY() + b.getHeight() / 2.0) * scale };
+        });
+        context.getInput().setCursorPos(at[0], at[1]);
+        context.getInput().pressMouse(com.mojang.blaze3d.platform.InputConstants.MOUSE_BUTTON_LEFT);
+        context.waitTicks(3);
     }
 
     /** Pairing code the mod just showed in the chat (read from the running link, like the player reads it). */

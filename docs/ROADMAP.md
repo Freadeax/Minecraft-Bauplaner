@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-03T20:20:27.809Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-03T20:27:03.185Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-03T20:20:27.809Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 15 |
 | 🚧 In Arbeit | 2 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 56 |
+| 🧩 Implementiert · Abnahme offen | 57 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -214,6 +214,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [COOP-03](#coop-03) | Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm | 🧩 Implementiert · Abnahme offen | 2/3 | COOP-02, GAME-08 | ausstehend | ausstehend |
 | [COOP-04](#coop-04) | Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-02, LAGER-01 | ausstehend | ausstehend |
 | [COOP-05](#coop-05) | Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf | 🧩 Implementiert · Abnahme offen | 3/5 | COOP-04 | ausstehend | ausstehend |
+| [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-03, COOP-05, GAME-07 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
 
@@ -2244,6 +2245,27 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/modrinth.test.mjs](../tests/modrinth.test.mjs) — Offline-Prüfung der Modrinth-Daten und Versionen (03.11.2026).
 
 **Dateiumfang:** `mods/bauplaner-bridge/modrinth/`, `mods/bauplaner-bridge/CHANGELOG.md`, `scripts/modrinth_publish.mjs`, `tests/modrinth.test.mjs`, `mods/bauplaner-bridge/README.md`, `scripts/release_mod.mjs`, `docs/TESTING.md`, `mods/bauplaner-bridge/LICENSE`, `mods/bauplaner-bridge/fabric-26.3/src/main/resources/fabric.mod.json`. **Abhängigkeiten:** GAME-07, GAME-04. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### GAME-10
+
+**Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Teambau in der Mod“) · Aktualisiert: 2026-11-03T20:27:03.185Z
+
+- [x] GAME-10-S01: Befehlskatalog im Mod-Kern (CommandCatalog, CommandContext, ReplyLog) mit den Befehlen von Mod und Paper-Plugin (/bp), mit dem Plugin-Thread abgeglichen; JUnit.
+- [x] GAME-10-S02: Befehlsseite „Befehle & Status“ (Knopf im Plan-Menü, /bauplaner befehle): Reiter je Gruppe, Statusübersicht, Eingabefelder, ausgegraute Knöpfe mit Grund, Antworten von Mod und Server; Fabric + NeoForge.
+- [x] GAME-10-S03: Spieltest Fabric mit echten Mausklicks und NeoForge-Szenario, Release 0.11.0 auf #/mod.
+- [ ] GAME-10-S04: Abnahme im Spiel auf Philipps Server mit Plugin (MOD-16).
+
+**Abnahme:** Ein Klick sendet genau den Befehl, den man eintippen würde – keine zusätzlichen Pakete an den Server. Serverbefehle sind nur aktiv, wenn der Server das Bauplaner-Plugin hat (/bp im Befehlsbaum); Knöpfe ohne Voraussetzung sind ausgegraut und nennen den Grund. Antworten von Mod und Server erscheinen auf der Seite.
+
+**Nächste Aktion:** Abnahme MOD-16 auf Philipps Server mit Paper-Plugin.
+
+**Prüfstand:** Spieltests Fabric und NeoForge 26.3 bestanden; Serverbefehle mit echtem Paper-Plugin nur auf Philipps Server prüfbar (MOD-16).
+
+**Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java) — Katalog deckt alle Mod- und Plugin-Befehle ab, Eingaben werden geprüft, Gründe für ausgegraute Knöpfe, Antwortfenster.; [scripts/bridge_gametest.mjs](../scripts/bridge_gametest.mjs) — Echter Fabric-Client 26.3 mit echten Mausklicks: Reiter Team, Übersicht, „Abschnitt zeigen 2“, Antworten auf der Seite, Serverknöpfe ohne Plugin ausgegraut. NeoForge-Szenario öffnet die Seite und führt einen Befehl aus.
+
+**Dateiumfang:** `mods/bauplaner-bridge/`, `scripts/bridge_gametest.mjs`, `apps/web/src/views/mod/`, `apps/web/src/testing/testplan.ts`, `downloads/mod/`, `docs/`. **Abhängigkeiten:** COOP-03, COOP-05, GAME-07. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

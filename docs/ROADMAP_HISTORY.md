@@ -4064,3 +4064,37 @@ Plugin faltet die COOP-06-Arten (Übergabe mit Annahme, Abwesenheit, erledigte H
 - `mods/bauplaner-bridge/paper/src/main/resources/plugin.yml`
 - `scripts/bridge_paperteam.mjs`
 
+## 2026-11-03T20:27:03.185Z · progress
+
+**Aufgaben:** GAME-10
+
+Befehlsseite im Plan-Menü (Mod 0.11.0): 98 Befehle von Mod und Plugin per Klick, Status, Antworten; Spieltests Fabric (echte Klicks) und NeoForge bestanden, Serverbefehle mit echtem Plugin offen (MOD-16).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-10 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme MOD-16 auf Philipps Server mit Paper-Plugin. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/mod/ModView.tsx`
+- `docs/TESTING.md`
+- `docs/architecture/MOD_HOLOGRAM.md`
+- `docs/testing/TESTPLAN.md`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/BridgeClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/CommandScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/McCompat.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandContext.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/ReplyLog.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java`
+- `mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java`
+- `mods/bauplaner-bridge/neoforge-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/neoforge/BridgeNeoForge.java`
+- `scripts/bridge_gametest.mjs`
+

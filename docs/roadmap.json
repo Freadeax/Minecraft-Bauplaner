@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T20:20:27.809Z",
+  "updatedAt": "2026-11-03T20:27:03.185Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -6797,6 +6797,76 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-03T20:20:12.136Z"
+    },
+    {
+      "id": "GAME-10",
+      "title": "Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten",
+      "phase": "P4",
+      "priority": "P2",
+      "status": "implemented",
+      "owner": "Claude (Thread „Teambau in der Mod“)",
+      "dependencies": [
+        "COOP-03",
+        "COOP-05",
+        "GAME-07"
+      ],
+      "scope": [
+        "mods/bauplaner-bridge/",
+        "scripts/bridge_gametest.mjs",
+        "apps/web/src/views/mod/",
+        "apps/web/src/testing/testplan.ts",
+        "downloads/mod/",
+        "docs/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "GAME-10-S01",
+          "title": "Befehlskatalog im Mod-Kern (CommandCatalog, CommandContext, ReplyLog) mit den Befehlen von Mod und Paper-Plugin (/bp), mit dem Plugin-Thread abgeglichen; JUnit.",
+          "done": true
+        },
+        {
+          "id": "GAME-10-S02",
+          "title": "Befehlsseite „Befehle & Status“ (Knopf im Plan-Menü, /bauplaner befehle): Reiter je Gruppe, Statusübersicht, Eingabefelder, ausgegraute Knöpfe mit Grund, Antworten von Mod und Server; Fabric + NeoForge.",
+          "done": true
+        },
+        {
+          "id": "GAME-10-S03",
+          "title": "Spieltest Fabric mit echten Mausklicks und NeoForge-Szenario, Release 0.11.0 auf #/mod.",
+          "done": true
+        },
+        {
+          "id": "GAME-10-S04",
+          "title": "Abnahme im Spiel auf Philipps Server mit Plugin (MOD-16).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Ein Klick sendet genau den Befehl, den man eintippen würde – keine zusätzlichen Pakete an den Server.",
+        "Serverbefehle sind nur aktiv, wenn der Server das Bauplaner-Plugin hat (/bp im Befehlsbaum); Knöpfe ohne Voraussetzung sind ausgegraut und nennen den Grund.",
+        "Antworten von Mod und Server erscheinen auf der Seite."
+      ],
+      "next": "Abnahme MOD-16 auf Philipps Server mit Paper-Plugin.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java",
+          "note": "Katalog deckt alle Mod- und Plugin-Befehle ab, Eingaben werden geprüft, Gründe für ausgegraute Knöpfe, Antwortfenster."
+        },
+        {
+          "path": "scripts/bridge_gametest.mjs",
+          "note": "Echter Fabric-Client 26.3 mit echten Mausklicks: Reiter Team, Übersicht, „Abschnitt zeigen 2“, Antworten auf der Seite, Serverknöpfe ohne Plugin ausgegraut. NeoForge-Szenario öffnet die Seite und führt einen Befehl aus."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Spieltests Fabric und NeoForge 26.3 bestanden; Serverbefehle mit echtem Paper-Plugin nur auf Philipps Server prüfbar (MOD-16)."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-03T20:27:03.185Z"
     }
   ],
   "events": [
@@ -12356,6 +12426,46 @@
           "done": 4,
           "total": 5,
           "next": "Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T20:27:03.185Z",
+      "kind": "progress",
+      "items": [
+        "GAME-10"
+      ],
+      "summary": "Befehlsseite im Plan-Menü (Mod 0.11.0): 98 Befehle von Mod und Plugin per Klick, Status, Antworten; Spieltests Fabric (echte Klicks) und NeoForge bestanden, Serverbefehle mit echtem Plugin offen (MOD-16).",
+      "files": [
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/mod/ModView.tsx",
+        "docs/TESTING.md",
+        "docs/architecture/MOD_HOLOGRAM.md",
+        "docs/testing/TESTPLAN.md",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/BridgeClient.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/CommandScreen.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/McCompat.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandContext.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/ReplyLog.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java",
+        "mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java",
+        "mods/bauplaner-bridge/neoforge-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/neoforge/BridgeNeoForge.java",
+        "scripts/bridge_gametest.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-10",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme MOD-16 auf Philipps Server mit Paper-Plugin."
         }
       ]
     }

@@ -72,6 +72,8 @@ public final class BridgeClient implements ClientModInitializer {
         ClientTickEvents.END_CLIENT_TICK.register(this::tick);
         client.keys().forEach(net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper::registerKeyMapping);
         ClientTickEvents.END_CLIENT_TICK.register(client::tick);
+        // GAME-10: server answers to commands sent from the command page (system lines, not the action bar).
+        net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents.GAME.register((message, overlay) -> { if (!overlay) McCompat.serverLine(message); });
         // Website link (MAP-03): off until /bauplaner verbinden; resumes after a restart once switched on.
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents.CLIENT_STARTED.register(client::started);
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents.CLIENT_STOPPING.register(mc -> client.stopping());

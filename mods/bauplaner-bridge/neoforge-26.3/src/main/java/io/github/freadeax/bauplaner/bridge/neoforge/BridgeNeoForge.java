@@ -79,6 +79,8 @@ public final class BridgeNeoForge {
         bus.addListener((net.neoforged.neoforge.event.GameShuttingDownEvent e) -> client.stopping());
         bus.addListener((ClientPlayerNetworkEvent.LoggingIn e) -> client.join(Minecraft.getInstance(), teamChannel));
         bus.addListener((ClientPlayerNetworkEvent.LoggingOut e) -> client.leave());
+        // GAME-10: server answers to commands sent from the command page (system lines, not the action bar).
+        bus.addListener((net.neoforged.neoforge.client.event.ClientChatReceivedEvent.System e) -> { if (!e.isOverlay()) io.github.freadeax.bauplaner.bridge.hologram.McCompat.serverLine(e.getMessage()); });
         bus.addListener((ChunkEvent.Unload e) -> {
             if (e.getLevel().isClientSide()) client.chunkUnloaded(e.getChunk().getPos().x(), e.getChunk().getPos().z());
         });

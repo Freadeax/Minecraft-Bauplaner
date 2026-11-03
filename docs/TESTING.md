@@ -795,6 +795,15 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `node --test tests/e2e/teamplan.e2e.mjs`: 2/2 bestanden (1400 und 390 px): Team gründen, Freigabe, zweites Mitglied, Rohbau in 2 Schichtpakete teilen, 4 Zuweisungen übernehmen, Zeitplan mit zwei Spuren, Material und Packlisten, Brett mit 4 Abschnitten „in Arbeit“, Vergleich mit Planstand 1, Übergabe anbieten und annehmen, Abwesenheit (erscheint unter „Achtung“), Bauleitung übergeben; keine Konsolenfehler.
 - Grenzen: keine Abnahme mit echten Mitspielern; Plugin faltet die neuen Arten noch nicht (Plugin-Thread).
 
+## GAME-10 · Befehlsseite im Plan-Menü, Mod 0.11.0 (Fabric, NeoForge) · 03.11.2026 · Claude
+- `npm run check` grün. Gradle `:mod-core:test`, `:paper:build`, `:fabric-26.3:build` und `:neoforge-26.3:build` grün.
+  - `CommandCatalogTest`: alle Mod-Befehle und alle Plugin-Befehle (`/bp`) im Katalog, Eingaben werden geprüft und zu genau dem getippten Befehl, Gründe für ausgegraute Knöpfe, Antwortfenster für Serverbefehle, keine doppelten eigenen Zeilen.
+- Echter Fabric-Client 26.3 (`scripts/test_bridge_ingame.sh`, weston, Fenster 854×480 = GUI 427×240) mit echten Mausklicks: `/bauplaner befehle`, Reiter „Team“, „Übersicht“, „Abschnitt zeigen …“ mit Eingabe 2, „Ausführen“. Die Antworten stehen auf der Seite, im Einzelspieler sind die Serverknöpfe ausgegraut.
+  - Gefunden und behoben: Bei kleinem Fenster passten nur zwei Knöpfe auf die Seite (Blättern jetzt unten links, Status nur im Reiter „Status“). Eigene Antwortzeilen standen doppelt auf der Seite (Chat-Ereignis des Loaders meldete sie noch einmal).
+  - Hinweis für Spieltests: Minecraft 26.3 nutzt SDL, die linke Maustaste ist dort 1 (`InputConstants.MOUSE_BUTTON_LEFT`), nicht 0.
+- Echter NeoForge-Client 26.3 (`scripts/test_bridge_ingame_forge.sh neoforge`): `/bauplaner befehle` öffnet die Seite, ein von dort gesendeter Befehl antwortet auf der Seite; alle bisherigen Schritte bestanden.
+- Grenzen: Serverbefehle über `/bp` gegen ein echtes Paper-Plugin laufen in keinem automatischen Test (kein Client, der sich mit Paper verbindet). Das prüft MOD-16 auf Philipps Server.
+
 ## COOP-03 · Teambau in der Mod 0.10.0 (Fabric, NeoForge, Plugin-Kanal, Website) · 03.11.2026 · Claude
 - `npm run check`: 727 bestanden, 0 fehlgeschlagen, 1 übersprungen. Neu sind `tests/team-link.test.mjs` (Format team-link, Lesen von `GET /v1/team` und `/v1/team/pull`, Fehlercodes) und die Prüfung von `SectionIds`/`TeamId` in `tests/game-check.test.mjs`.
 - Gradle `:mod-core:test`, `:paper:build`, `:fabric-26.3:build` und `:neoforge-26.3:build` sind grün.
