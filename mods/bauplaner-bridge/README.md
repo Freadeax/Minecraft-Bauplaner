@@ -115,6 +115,10 @@ Konzept: [TEAMBAU](../../docs/architecture/TEAMBAU.md). Die Bauleitung lädt im 
 
 Jede Handlung landet als Ereignis in `team/<teamId>.events.jsonl`; `/bauplaner team export` schreibt den Stand, den der Planer einliest. Wer in einem Abschnitt steht, sieht ihn in der Aktionsleiste. `config.yml` → `team.schutz`: `hinweis` (Standard), `sperren` (Blockänderungen in fremden Abschnitten verhindern) oder `aus`. Rechte `bauplaner.team.use` (alle) und `bauplaner.team.leitung` (Operatoren). In der Konsole handelt `bauplaner team als <spieler> <befehl>` für einen Spieler. Servertest: `scripts/test_bridge_paper_team.sh`.
 
+## Lizenz
+
+Mod, Paper-Plugin und Kerne unter `mods/bauplaner-bridge/` stehen unter der [MIT-Lizenz](LICENSE) (Philipp, 03.11.2026). Ab der nächsten Version tragen auch die .jar „MIT“ (0.10.0 nennt in Fabric noch „All-Rights-Reserved“).
+
 ## Modrinth
 
 Die Mod (Fabric, NeoForge) und das Paper-Plugin erscheinen als ein Projekt auf Modrinth (Slug `bauplaner-bridge`, GAME-09). Alles dafür liegt im Repo:

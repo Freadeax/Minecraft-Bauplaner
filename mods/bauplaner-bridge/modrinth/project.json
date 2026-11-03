@@ -16,8 +16,8 @@
     "management"
   ],
   "license": {
-    "id": "LicenseRef-All-Rights-Reserved",
-    "url": null
+    "id": "MIT",
+    "url": "https://github.com/Freadeax/Minecraft-Bauplaner/blob/main/mods/bauplaner-bridge/LICENSE"
   },
   "links": {
     "source": "https://github.com/Freadeax/Minecraft-Bauplaner/tree/main/mods/bauplaner-bridge",

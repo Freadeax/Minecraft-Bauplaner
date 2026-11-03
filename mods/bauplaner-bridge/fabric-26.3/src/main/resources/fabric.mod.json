@@ -6,7 +6,7 @@
   "description": "Bauplaner-Pläne als Hologramm mit Live-Abgleich, Materialliste und Platzierhilfe, dazu die Aufnahme für den Minecraft-Bauplaner. Nur Client, baut nie selbst.",
   "authors": ["Freadeax"],
   "contact": { "homepage": "https://freadeax.github.io/Minecraft-Bauplaner/", "sources": "https://github.com/Freadeax/Minecraft-Bauplaner" },
-  "license": "All-Rights-Reserved",
+  "license": "MIT",
   "environment": "client",
   "entrypoints": { "client": ["io.github.freadeax.bauplaner.bridge.fabric.BridgeClient"] },
   "depends": {

@@ -3997,3 +3997,20 @@ Teamplanung im Planer (Reiter Team: Planung, Fortschritt, Rechte & Übergabe) um
 - `tests/e2e/teamplan.e2e.mjs`
 - `tests/teamPlan.test.mjs`
 
+## 2026-11-03T20:09:28.132Z · progress
+
+**Aufgaben:** GAME-09
+
+Lizenz MIT (Philipp): LICENSE unter mods/bauplaner-bridge, project.json und fabric.mod.json
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 3/5 | Projekt anlegen (create) und 0.10.0 hochladen. |
+
+**Geänderte Dateien:**
+
+- `mods/bauplaner-bridge/LICENSE`
+- `mods/bauplaner-bridge/README.md`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/resources/fabric.mod.json`
+- `mods/bauplaner-bridge/modrinth/project.json`
+

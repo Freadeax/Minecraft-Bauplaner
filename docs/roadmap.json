@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T20:01:09.951Z",
+  "updatedAt": "2026-11-03T20:09:28.132Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -6740,7 +6740,9 @@
         "tests/modrinth.test.mjs",
         "mods/bauplaner-bridge/README.md",
         "scripts/release_mod.mjs",
-        "docs/TESTING.md"
+        "docs/TESTING.md",
+        "mods/bauplaner-bridge/LICENSE",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/resources/fabric.mod.json"
       ],
       "legacyIds": [],
       "steps": [
@@ -6756,8 +6758,8 @@
         },
         {
           "id": "GAME-09-S03",
-          "title": "Philipp bestätigt Namen, Beschreibung, Sichtbarkeit und Lizenz; MODRINTH_TOKEN in der Cloud-Umgebung (keine Actions, Entscheidung Philipp 03.11.2026).",
-          "done": false
+          "title": "Philipp bestätigt Name, Beschreibung, Sichtbarkeit öffentlich (03.11.2026) und Lizenz MIT; MODRINTH_TOKEN in der Cloud-Umgebung (keine Actions).",
+          "done": true
         },
         {
           "id": "GAME-09-S04",
@@ -6775,10 +6777,8 @@
         "Nur auf der Website geprüfte .jar (gleiche SHA-256) werden hochgeladen; Forge bleibt draußen, bis es im Spiel geprüft ist.",
         "Kein Token im Repo, in Logs oder im Chat."
       ],
-      "next": "Philipps Bestätigung (Name, Text, Sichtbarkeit, Lizenz) und MODRINTH_TOKEN in der Cloud-Umgebung abwarten, dann create in einer neuen Sitzung.",
-      "blockers": [
-        "MODRINTH_TOKEN fehlt noch in der Cloud-Umgebung."
-      ],
+      "next": "Projekt anlegen (create) und 0.10.0 hochladen.",
+      "blockers": [],
       "evidence": [
         {
           "path": "tests/modrinth.test.mjs",
@@ -6793,7 +6793,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T19:49:18.315Z"
+      "updatedAt": "2026-11-03T20:09:28.132Z"
     }
   ],
   "events": [
@@ -12262,6 +12262,29 @@
           "done": 3,
           "total": 5,
           "next": "Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T20:09:28.132Z",
+      "kind": "progress",
+      "items": [
+        "GAME-09"
+      ],
+      "summary": "Lizenz MIT (Philipp): LICENSE unter mods/bauplaner-bridge, project.json und fabric.mod.json",
+      "files": [
+        "mods/bauplaner-bridge/LICENSE",
+        "mods/bauplaner-bridge/README.md",
+        "mods/bauplaner-bridge/fabric-26.3/src/main/resources/fabric.mod.json",
+        "mods/bauplaner-bridge/modrinth/project.json"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 3,
+          "total": 5,
+          "next": "Projekt anlegen (create) und 0.10.0 hochladen."
         }
       ]
     }
