@@ -3724,3 +3724,66 @@ Dateizuordnung für den PROJ-01-Commit 43fb192 nachgetragen (beim Auflösen der 
 - `tests/e2e/program.e2e.mjs`
 - `tests/program.test.mjs`
 
+## 2026-11-03T19:04:30.091Z · progress
+
+**Aufgaben:** COOP-04, COOP-05
+
+Paper-Plugin 0.10.0: geprüfte, markierte Lagerkisten (Abschnitt, Zweck, Schutzstufen, Protokoll je Spieler und Trichter, Prüfung mit Abweichung und Siegel, Bedarf je Abschnitt, Teamkanal an die Mod); echte Paper-Server 1.18.2–26.3 grün, Spielerklicks offen (LAGER-02…06).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-04 | 🧩 Implementiert · Abnahme offen | 0/4 | Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung in COOP-05 (geprüfte Lagerkisten, docs/architecture/LAGERKISTEN.md). |
+| COOP-05 | 🧩 Implementiert · Abnahme offen | 3/5 | Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/team.css`
+- `apps/web/src/testing/TestphaseView.tsx`
+- `apps/web/src/testing/testphase.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/mod/releases.json`
+- `apps/web/src/views/project/TeamProof.tsx`
+- `assets/ThreeViewer-BA9gr6eN.js`
+- `assets/entityScene-BF8iCKwh.js`
+- `assets/glShot-CBF6-Y03.js`
+- `assets/heavy.worker-Cx-DjMhT.js`
+- `assets/idbRepository-B6ttcIAI.js`
+- `assets/index-BkcVyq-d.css`
+- `assets/index-DCXa3EUQ.js`
+- `assets/index-D_KNMrrl.js`
+- `assets/index-Wfhc_wz9.css`
+- `assets/libraryJob-CJbd3o1D.js`
+- `assets/packKit-C_8KQS7S.js`
+- `assets/repository-DvDM7-hG.js`
+- `assets/repository-DysWJyt9.js`
+- `assets/snapshot-BKFzBdhT.js`
+- `assets/src-DSLIwO4r.js`
+- `assets/src-FclWmkMU.js`
+- `assets/updateJob-BUXzDadq.js`
+- `assets/versionJob-D2TWQZV5.js`
+- `deployment.json`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/LAGERKISTEN.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-paper-0.10.0.jar`
+- `index.html`
+- `mods/bauplaner-bridge/paper/build.gradle`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageModule.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndex.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreLedger.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreWorld.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`
+- `mods/bauplaner-bridge/paper/src/main/resources/config.yml`
+- `mods/bauplaner-bridge/paper/src/main/resources/plugin.yml`
+- `mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndexTest.java`
+- `mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreLedgerTest.java`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/team.ts`
+- `scripts/bridge_paperlager.mjs`
+- `scripts/bridge_paperteam.mjs`
+- `scripts/render_testplan.mjs`
+- `scripts/test_bridge_paper_lager.sh`
+- `tests/lager.test.mjs`
+

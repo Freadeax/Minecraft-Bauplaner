@@ -819,3 +819,10 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `tests/e2e/program.e2e.mjs` 2/2 (Chromium 1400 px und 390 px, Port 4305): Hinweis ohne Abschnitte, Vorschläge übernehmen, Kreis abgelehnt, Meilenstein verspätet mit Abschnittsauswahl, zwei Bauleute mit Matrix und Spuren, Bauzettel, Startdatum mit fünf Bautagen, Textdatei, Neuladen, Projektkarte, kein horizontales Scrollen.
 - Sichtprüfung: Reiter „Planung“ im hellen Thema bei 1400 px (Theme-Tokens, keine festen Farben).
 - Grenzen: nur Chromium im Container; keine Abnahme durch Philipp (PROJ-01-S05).
+
+## COOP-05 · Geprüfte Lagerkisten im Paper-Plugin 0.10.0 · 03.11.2026 · Claude
+- `npm run check`: 741 bestanden, 0 fehlgeschlagen. Neu: `tests/lager.test.mjs` (Planer-Faltung von `store.config/move/check/seal`, Abweichung bleibt bis zum Siegel, Bewegungen sind nur Zuordnung, nur Server darf `store.move/check`).
+- Gradle `:paper:test`: `StoreLedgerTest` (Rechtematrix aller Schutzstufen, Prüfsumme, Mengen, Trichterregeln) und `StoreIndexTest` (Sollstand = letzte Zählung + Bewegungen, Abweichung summiert, Siegel, Doppelkiste) grün.
+- `scripts/test_bridge_paper_lager.sh` auf echten Paper-Servern 1.18.2, 1.20.6 (151), 1.21.4, 1.21.11 (132), 26.3 (238): Markieren, `item replace` → „abweichend“ mit Unterschied, Helfer darf nicht siegeln, Siegel als Baumeister, Trichter rein/raus, TNT lässt die Kiste stehen, Doppelkiste, Entmarkieren, Fass „fehlt“, `bedarf`, `sammle glass` → 3, Neustart, Ausfuhr; Planer-Faltung = Serverzustand. `test_bridge_paper_team.sh` und `test_bridge_paper.sh` (1.21.11, 26.3) weiter grün.
+- Browser `team`, `testphase`, `mod-download`, `team-live`: 9/9.
+- Grenzen: Inventarklicks, Schutz gegen echte Spieler, Abbauen durch Spieler und die Anzeige in der Mod brauchen echte Spieler (LAGER-02…06, LAGER-09 auf Philipps Server).

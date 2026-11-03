@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T18:54:07.036Z",
+  "updatedAt": "2026-11-03T19:04:30.091Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -6376,7 +6376,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T17:57:24.438Z"
+      "updatedAt": "2026-11-03T19:04:30.091Z"
     },
     {
       "id": "COOP-05",
@@ -6451,7 +6451,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T18:50:00.000Z"
+      "updatedAt": "2026-11-03T19:04:30.091Z"
     },
     {
       "id": "PROJ-01",
@@ -11667,6 +11667,82 @@
           "done": 0,
           "total": 5,
           "next": "Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T19:04:30.091Z",
+      "kind": "progress",
+      "items": [
+        "COOP-04",
+        "COOP-05"
+      ],
+      "summary": "Paper-Plugin 0.10.0: geprüfte, markierte Lagerkisten (Abschnitt, Zweck, Schutzstufen, Protokoll je Spieler und Trichter, Prüfung mit Abweichung und Siegel, Bedarf je Abschnitt, Teamkanal an die Mod); echte Paper-Server 1.18.2–26.3 grün, Spielerklicks offen (LAGER-02…06).",
+      "files": [
+        "apps/web/src/team.css",
+        "apps/web/src/testing/TestphaseView.tsx",
+        "apps/web/src/testing/testphase.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/mod/releases.json",
+        "apps/web/src/views/project/TeamProof.tsx",
+        "assets/ThreeViewer-BA9gr6eN.js",
+        "assets/entityScene-BF8iCKwh.js",
+        "assets/glShot-CBF6-Y03.js",
+        "assets/heavy.worker-Cx-DjMhT.js",
+        "assets/idbRepository-B6ttcIAI.js",
+        "assets/index-BkcVyq-d.css",
+        "assets/index-DCXa3EUQ.js",
+        "assets/index-D_KNMrrl.js",
+        "assets/index-Wfhc_wz9.css",
+        "assets/libraryJob-CJbd3o1D.js",
+        "assets/packKit-C_8KQS7S.js",
+        "assets/repository-DvDM7-hG.js",
+        "assets/repository-DysWJyt9.js",
+        "assets/snapshot-BKFzBdhT.js",
+        "assets/src-DSLIwO4r.js",
+        "assets/src-FclWmkMU.js",
+        "assets/updateJob-BUXzDadq.js",
+        "assets/versionJob-D2TWQZV5.js",
+        "deployment.json",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/LAGERKISTEN.md",
+        "docs/testing/TESTPLAN.md",
+        "downloads/mod/bauplaner-bridge-paper-0.10.0.jar",
+        "index.html",
+        "mods/bauplaner-bridge/paper/build.gradle",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageModule.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndex.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreLedger.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreWorld.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java",
+        "mods/bauplaner-bridge/paper/src/main/resources/config.yml",
+        "mods/bauplaner-bridge/paper/src/main/resources/plugin.yml",
+        "mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndexTest.java",
+        "mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreLedgerTest.java",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/team.ts",
+        "scripts/bridge_paperlager.mjs",
+        "scripts/bridge_paperteam.mjs",
+        "scripts/render_testplan.mjs",
+        "scripts/test_bridge_paper_lager.sh",
+        "tests/lager.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-04",
+          "status": "implemented",
+          "done": 0,
+          "total": 4,
+          "next": "Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung in COOP-05 (geprüfte Lagerkisten, docs/architecture/LAGERKISTEN.md)."
+        },
+        {
+          "id": "COOP-05",
+          "status": "implemented",
+          "done": 3,
+          "total": 5,
+          "next": "Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server."
         }
       ]
     }
