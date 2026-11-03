@@ -17,6 +17,7 @@ import { HARBOR_GENERATOR } from './harbor.js';
 import { GATEHOUSE_GENERATOR } from './gatehouse.js';
 import { WINDMILL_GENERATOR } from './windmill.js';
 import { WELL_GENERATOR } from './well.js';
+import { ARENA_GENERATOR } from './arena.js';
 import { buildCompound } from './compound.js';
 import type { CompoundBuild } from './compound.js';
 
@@ -28,7 +29,7 @@ import type { CompoundBuild } from './compound.js';
  * version of the same asset and existing projects keep theirs.
  */
 export const GENERATORS: readonly Generator[] = [HOUSE_GENERATOR, TOWER_GENERATOR, WALL_GENERATOR, BRIDGE_GENERATOR, ROOF_GENERATOR, STAIRWELL_GENERATOR, CHURCH_GENERATOR, HARBOR_GENERATOR,
-  GATEHOUSE_GENERATOR, WINDMILL_GENERATOR, WELL_GENERATOR];
+  GATEHOUSE_GENERATOR, WINDMILL_GENERATOR, WELL_GENERATOR, ARENA_GENERATOR];
 /** Plain tag on generated assets; the generator id follows as `generator:<id>`. */
 export const GENERATOR_TAG = 'generiert';
 export const GENERATOR_TAG_PREFIX = 'generator:';

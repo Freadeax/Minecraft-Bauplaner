@@ -67,6 +67,18 @@ Sechs weitere Generatoren (`stairwell.ts`, `church.ts`, `harbor.ts`, `gatehouse.
 
 **Prüfung.** `tests/generators.test.mjs` hat jetzt 17 Fälle: alle bisherigen Prüfungen für alle elf Generatoren (Standard, Vorlagen, acht Stile, 25 gewürfelte Sätze, Bereichsgrenzen) plus Begehbarkeit aller Treppenhaus-Geschosse und Türhöhen, Eckformen nach Spielregel (auch Innenecke direkt am Plot), Parameterwirkung von Kirche, Hafen, Torhaus, Windmühle und Brunnen (auch Durchfahrt offen bzw. durch Fallgitter geschlossen) und das genaue Andocken des Torhauses in der Burganlage. Die Browserprüfung zählt 14 Karten, öffnet die Basilika-Vorlage mit sichtbarem Hinweis und den Dorfplatz ohne Überschneidungen.
 
+## GEN-03: Arena und Kolosseum (03.11.2026)
+
+Quelle: Philipps Kolosseum-Bauplan aus einem ChatGPT-Verlauf (Java Edition, originalgetreu, Block für Block): 81 × 61 Blöcke, vier Etagen zu je 8 Blöcken, Ellipsen für Außenkante, Gang, Zuschauerbereich und Arena, Sandarena, acht Sitzreihen aus Sandsteintreppen, vier Haupteingänge mit 5 Blöcke breiten Bögen, Hypogäum neun Blöcke unter der Arena, Materialien Sandstein, Steinziegel, Quarz, Eichenfalltüren, Eisenstangen, Laternen, Banner und Sonnensegel.
+
+Generator `arena` (`generators/arena.ts`): Halbachsen 14–60 × 16–50, 1–4 Etagen, Etagenhöhe 7–10, unterer Rang 4–12 und oberer Rang 0–8 Reihen, zwei oder vier Tore, Hypogäum, Velarium, Banner/Laternen, Stil und Verwitterung. Vorlagen: Kolosseum (Sandstein, exakt nach dem Bauplan), Kolosseum aus Marmor, Provinzarena, Kleiner Kampfplatz, Verfallene Arena, Nether-Arena.
+
+Aufbau: Jede Säule bekommt ihre **Tiefe**, die Zahl der verschachtelten Ellipsen (a − k, b − k), in denen sie liegt. Tiefe 0 ist die Fassade, 1–3 der Wandelgang, 4 die innere Ringmauer, dann oberer Rang, Umgang, unterer Rang, Podiumsmauer und Arena. Die **Bögen** werden nach Bogenlänge entlang der Ellipse verteilt (Raster etwa 7: 2 Pfeiler + 5 Öffnung), damit die Pfeiler auf dem Oval gleichmäßig stehen; die oberste Etage ist ab drei Etagen eine geschlossene Attika mit Rechteckfenstern. Ränge sind begehbare Treppen auf Gewölben, unter dem Umgang hängen Laternen; vier diagonale Treppen führen aus den Gewölben auf den Umgang, im Wandelgang neben jedem Tor eine Treppe je Etage. Tore sind Tonnengewölbe durch Fassade, Gang und Gewölbe bis in die Arena, mit Anschluss `path_joint` Profil `weg_5`. Das Hypogäum hat Kreuzgänge, einen Ringgang, vier Kammern mit Gitterzellen, Truhen und Fässern und vier Leiterschächte mit Falltür im Arenaboden. Hängende Laternen ohne Halt werden am Ende entfernt (Spielprüfung).
+
+Mit Hypogäum liegt der Boden auf Ebene 9 des Plans. Als Katalogbauteil `bld_antike_kolosseum` (Set `antike.ts`) und im Ensemble „Kolosseumsplatz“ (Kolosseum um 9 abgesenkt, Ehrenbogen und Ehrensäulen auf Platzhöhe) ist das berücksichtigt; das Großprojekt „Kolosseum-Viertel“ ([GROSSPROJEKTE](GROSSPROJEKTE.md)) nutzt das Ensemble.
+
+Grenzen: Ränge haben keine Einzelsitze und keine Treppen quer durch die Sitzreihen (Zugang über Umgang und Tore); Statuen in der Attika fehlen; Bögen sind auf dem Oval angenähert (Stufenbögen statt runder Bögen); die Bauanleitung des Planers geht ebenenweise, nicht nach den sieben Schritten des Bauplans (die stehen als Phasennotiz im Großprojekt).
+
 ## LIB-05: Baustil der Generatoren (02.11.2026)
 
 - Stile mit Rollen-Mischungen (`mix.wall`, `mix.base`, `mix.roof`), Zier- und Ladenholz; `lookOfStyle` übersetzt einen Stil in einen Look des Baukastens (`build/style.ts`).

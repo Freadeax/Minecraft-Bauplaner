@@ -83,6 +83,9 @@ export const ENSEMBLES: readonly Ensemble[] = [
   { id: 'ens_zauberwald', name: 'Zauberwald', tags: ['fantasy', 'magie', 'wald'],
     description: 'Magierakademie und Kristallturm, dazu Elfen-Baumhaus, Hexenhütte, Feenring und Portalruine.',
     members: [m('fantasy_magierakademie', 0, 0), m('fantasy_kristallturm', 24, 0), m('fantasy_elfenbaumhaus', 39, 0), m('fantasy_hexenhuette', 0, 18), m('fantasy_feenring', 15, 18), m('fantasy_portalruine', 30, 18)] },
+  { id: 'ens_kolosseumsplatz', name: 'Kolosseumsplatz', tags: ['antike', 'rom', 'kolosseum', 'arena'],
+    description: 'Das Kolosseum nach Philipps Bauplan mit Vorplatz: vor dem Südtor der Kaiserliche Ehrenbogen, links und rechts davon je eine Ehrensäule. Das Hypogäum liegt neun Blöcke unter dem Platz, die Arena auf Platzhöhe.',
+    members: [{ assetId: 'bld_antike_kolosseum', at: [0, 0], y: -9 }, m('antike_triumphbogen', 33, 64), m('antike_ehrensaeule', 18, 64), m('antike_ehrensaeule', 56, 64)] },
 ];
 
 /** Transform that puts the rotated member's minimum corner at `at`. */

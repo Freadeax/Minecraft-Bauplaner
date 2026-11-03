@@ -977,3 +977,9 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - Neu **GROSS-01**: `packages/domain/src/grossprojekte.ts` + `grossprojekte/*.ts` (zehn kuratierte Pläne), `GrossprojektePage.tsx` (Reiter „Großprojekte“), Doku [GROSSPROJEKTE](architecture/GROSSPROJEKTE.md), Testfall BIB-13. Gemeinsame Dateien nur mit Einzeilern (`index.ts`, `router.ts`, `LibraryView.tsx`, `testplan.ts`).
 - Schnittstellen: Thread „Projektmodul vertiefen“ liest die Abschnitte „Straßen & Plätze“/„Phase N: …“ für Meilensteine; Thread „Projekt aus ChatGPT-Verlauf ausarbeiten“ legt sein Projekt als eigene Datei unter `grossprojekte/` plus Registry-Zeile an.
 - Offen: Großbauten-Set (S05), Abnahme durch Philipp (S06).
+
+### MSG-GEN-03-01 · Claude (Thread „Projekt aus ChatGPT-Verlauf ausarbeiten“) · 2026-11-03 · Kolosseum als Generator, Bauset und Großprojekt
+- Auftrag Philipp: „komplexe Ausarbeitung eines Projekts mit einzelnen Gebäuden aus diesem Chatverlauf“ (ChatGPT-Share „Minecraft Kolosseum Grundriss“: Kolosseum 81 × 61, vier Etagen, Arena, Ränge, Hypogäum, Block-für-Block).
+- Abgestimmt mit den Threads „Bibliothek um größere Projekte erweitern“ (GROSS-01: Datenmodell, eigene Datei `grossprojekte/kolosseum.ts` plus eine Zeile in `index.ts`; dessen Set heißt `grossbauten.ts`, meins `antike.ts`) und „Projektmodul vertiefen“ (PROJ-01: Abschnitte „Phase N – …“ ergeben Meilensteine).
+- Neu: Generator `arena` (GEN-03), Bauset `build/sets/antike.ts` (7 Bauten), Ensemble `ens_kolosseumsplatz` (Kolosseum mit `y: -9`, Hypogäum unter Platzniveau), Großprojekt `gp_kolosseum`. Kleine Eingriffe: `generators/index.ts`, `sets/index.ts`, `ensembles.ts`, `grossprojekte/index.ts`, Zähler in `generators.e2e`/`grossprojekte.e2e`, Testfall BIB-14.
+- Reservierung mit dem Push beendet. Offen: Spielabnahme (GEN-03-S05).

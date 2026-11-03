@@ -26,7 +26,7 @@ function cases() {
 const CASES = cases();
 
 test('generator declarations: unique ids, sane parameters, presets within range', () => {
-  assert.deepEqual(GENERATORS.map(g => g.id), ['haus', 'turm', 'mauer', 'bruecke', 'dach', 'treppenhaus', 'kirche', 'hafen', 'torhaus', 'windmuehle', 'brunnen']);
+  assert.deepEqual(GENERATORS.map(g => g.id), ['haus', 'turm', 'mauer', 'bruecke', 'dach', 'treppenhaus', 'kirche', 'hafen', 'torhaus', 'windmuehle', 'brunnen', 'arena']);
   for (const g of GENERATORS) {
     assert.ok(Number.isInteger(g.version) && g.version >= 1);
     assert.equal(new Set(g.params.map(p => p.key)).size, g.params.length, `${g.id}: Parameter eindeutig`);
@@ -214,10 +214,10 @@ test('geometry follows the parameters', () => {
 test('pinned generator output: same parameters keep their geometry until the generator version is raised', async () => {
   const pinned = {};
   for (const g of GENERATORS) pinned[g.id] = (await createGeneratedAsset(runGenerator(g.id), { name: 'Pin' })).version.payloadHash.slice(0, 16);
-  // Update these hashes only together with a raised `version` of the changed generator (BLOCK-02 raised kirche, hafen, windmuehle, bruecke, treppenhaus, torhaus, brunnen; LIB-05 raised all eleven for the design kit).
+  // Update these hashes only together with a raised `version` of the changed generator (BLOCK-02 raised kirche, hafen, windmuehle, bruecke, treppenhaus, torhaus, brunnen; LIB-05 raised all eleven for the design kit; GEN-03 added arena).
   assert.deepEqual(pinned, PINNED);
 });
-const PINNED = { haus: "86b653adf27a1116", turm: "305be143c97ba8f8", mauer: "bce307b15c0977d2", bruecke: "b6fcf5cbef91853f", dach: "0eca3766a7ef319a", treppenhaus: "6649f6b36d559aa8", kirche: "4ddc2030741cd73f", hafen: "d3f2b1f998647248", torhaus: "75ee60a4e5189e68", windmuehle: "98a036222a6f388c", brunnen: "f727b1daddaf9604" };
+const PINNED = { haus: "86b653adf27a1116", turm: "305be143c97ba8f8", mauer: "bce307b15c0977d2", bruecke: "b6fcf5cbef91853f", dach: "0eca3766a7ef319a", treppenhaus: "6649f6b36d559aa8", kirche: "4ddc2030741cd73f", hafen: "d3f2b1f998647248", torhaus: "75ee60a4e5189e68", windmuehle: "98a036222a6f388c", brunnen: "f727b1daddaf9604", arena: "bd0da77e88c87aa9" };
 
 test('compounds: castle and street become conflict-free projects with shared generated assets', async () => {
   for (const c of COMPOUNDS) {

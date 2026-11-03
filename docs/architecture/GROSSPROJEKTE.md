@@ -15,7 +15,7 @@ Route: `#/bibliothek/grossprojekte[/<id>]`, Reiter „Großprojekte“ in der Bi
 
 Einheiten sind `slot` (ein Katalogbauteil mit festgehaltener Version `pin`, Standard `1.0`, Drehung und Rolle), `ensemble` (ein mitgeliefertes Ensemble als Block mit seinem kuratierten Layout) oder `anlage` (eine ganze Bauwelt-Anlage samt eigenem Hauptweg). `validateGrossprojekt` prüft Struktur, Raster (keine überlagerten Zellen), Phasen und Verweise; die Tests prüfen alle mitgelieferten Projekte.
 
-Mitgeliefert sind zehn Projekte (Freie Marktstadt, Große Hafenstadt, Moderne Innenstadt, Große Burganlage, Bergbaustadt der Zwerge, Tempelstadt am Kirschhain, Großes Landgut, Stadt der Magier, Industriehafen, Hauptstadt mit Altstadt und Hafen) mit 27–62 Gebäuden. Größenklassen (`scaleOf`): Siedlung (bis 14 Gebäude), Quartier (15–34), Stadtteil (35–69), Stadt (ab 70).
+Mitgeliefert sind elf Projekte (Freie Marktstadt, Große Hafenstadt, Moderne Innenstadt, Große Burganlage, Bergbaustadt der Zwerge, Tempelstadt am Kirschhain, Großes Landgut, Stadt der Magier, Industriehafen, Hauptstadt mit Altstadt und Hafen, Kolosseum-Viertel) mit 27–62 Gebäuden. Das **Kolosseum-Viertel** (GEN-03, `grossprojekte/kolosseum.ts`) setzt Philipps Kolosseum-Bauplan als Mitte eines römischen Viertels um: Kolosseumsplatz (Ensemble, Hypogäum unter Straßenniveau), Gladiatorenschule mit Kaserne, Forum, Ladenzeile aus Tabernae, Thermen, Theater, Wohnvillen, Gärten und Aquädukt; 9 Quartiere, 30 Gebäude, 208 × 137 Blöcke, Straßen 5 breit wie die Kolosseumstore. Größenklassen (`scaleOf`): Siedlung (bis 14 Gebäude), Quartier (15–34), Stadtteil (35–69), Stadt (ab 70).
 
 ## Layout
 

@@ -36,7 +36,7 @@ test('Großprojekt: Übersicht, Planer, Quartiere und Straßen wählen, Übernah
   await p.goto(`${BASE}#/bibliothek`);
   await p.getByRole('link', { name: /^Großprojekte/ }).click();
   await p.getByRole('heading', { name: 'Ganze Städte, Festungen und Anlagen als Plan.' }).waitFor();
-  assert.equal(await p.locator('.gp-card').count(), 10);
+  assert.equal(await p.locator('.gp-card').count(), 11);
   const before = (await readStore(p, 'projects')).length;
   await p.locator('[data-gp=gp_burganlage]').click();
   await p.getByRole('heading', { name: 'Große Burganlage' }).waitFor();

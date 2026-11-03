@@ -3218,3 +3218,34 @@ Nachtrag: gerenderter Testplan (docs/testing/TESTPLAN.md) mit Fall BIB-13 zum Pu
 
 - `docs/testing/TESTPLAN.md`
 
+## 2026-11-03T15:52:52.715Z · progress
+
+**Aufgaben:** GEN-03
+
+Kolosseum aus Philipps ChatGPT-Bauplan: Generator Arena (Vorlage Kolosseum 81 × 61, vier Etagen, Hypogäum, Velarium) mit sechs Vorlagen, Bauset Antike (7 Bauten), Ensemble Kolosseumsplatz und Großprojekt Kolosseum-Viertel (9 Quartiere, 30 Gebäude, 4 Phasen). check grün, Browser catalog/generators/grossprojekte 6/6; Spielabnahme offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GEN-03 | 🧩 Implementiert · Abnahme offen | 4/5 | Philipp baut das Kolosseum im Spiel nach (BIB-14); danach Feinschliff (Statuen in den Attika-Fenstern, Treppen im Hypogäum). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/CATALOG.md`
+- `docs/architecture/GENERATORS.md`
+- `docs/architecture/GROSSPROJEKTE.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/build/sets/antike.ts`
+- `packages/domain/src/build/sets/index.ts`
+- `packages/domain/src/ensembles.ts`
+- `packages/domain/src/generators/arena.ts`
+- `packages/domain/src/generators/index.ts`
+- `packages/domain/src/grossprojekte/index.ts`
+- `packages/domain/src/grossprojekte/kolosseum.ts`
+- `tests/e2e/generators.e2e.mjs`
+- `tests/e2e/grossprojekte.e2e.mjs`
+- `tests/generators.test.mjs`
+

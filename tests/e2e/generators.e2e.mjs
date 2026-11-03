@@ -34,7 +34,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await p.locator('.lib-tabs a', { hasText: 'Generatoren' }).click();
     await p.waitForURL(/#\/bibliothek\/generatoren$/);
     await p.locator('.gen-card').nth(13).waitFor();
-    assert.equal(await p.locator('.gen-card').count(), 14, '11 Generatoren + 3 Anlagen');
+    assert.equal(await p.locator('.gen-card').count(), 15, '12 Generatoren + 3 Anlagen');
     assert.equal(await p.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true, 'kein waagrechtes Scrollen');
 
     // Tower: change a parameter, the preview figures follow.

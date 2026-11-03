@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-03T15:28:11.884185Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-03T15:52:52.715Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-03T15:28:11.884185Z. Automatisch erzeugt aus [roadmap.json](roadm
 | ⏳ Offen | 15 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 45 |
+| 🧩 Implementiert · Abnahme offen | 46 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -170,6 +170,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [MAP-05](#map-05) | Planung auf der Live-Karte vertiefen: Baustand aus dem Spiel (Mod 0.7.1, GET /v1/scan), Ebenen und Abweichungen auf der Karte, bestätigte Schritte abhaken, Bauabschnitte wählen, Weltplan automatisch abgleichen, Hologramm und BlueMap aus dem Kontextmenü | 🧩 Implementiert · Abnahme offen | 4/5 | MAP-03, MAP-04, GAME-07, GAME-01 | ausstehend | ausstehend |
 | [MAP-06](#map-06) | Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players) | 🧩 Implementiert · Abnahme offen | 7/8 | MAP-04, MAP-05, GAME-07 | ausstehend | ausstehend |
 | [QA-04](#qa-04) | Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage | 🧩 Implementiert · Abnahme offen | 4/6 | QA-01, STAB-01, GAME-07 | ausstehend | ausstehend |
+| [GEN-03](#gen-03) | Kolosseum aus Philipps Bauplan: Arena-Generator, Bauset Antike und Großprojekt Kolosseum-Viertel | 🧩 Implementiert · Abnahme offen | 4/5 | GEN-02, GROSS-01 | ausstehend | ausstehend |
 
 ## P4: Optionale Zusammenarbeit und Integrationen
 
@@ -1958,6 +1959,28 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/testphase.test.mjs](../tests/testphase.test.mjs) — Testplan-Konsistenz, Protokoll, Fehlerbericht, Issue-Adresse gegen die Vorlage.; [tests/e2e/testphase.e2e.mjs](../tests/e2e/testphase.e2e.mjs) — Checklisten, Neuladen, Fehlerbericht mit echtem Fehler und Konsole im Chromium.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/DiagnosticsTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/DiagnosticsTest.java) — Logauswahl, Schwärzen, Berichtstext.
 
 **Dateiumfang:** `apps/web/src/testing/`, `apps/web/src/app/diagnostics.ts`, `scripts/render_testplan.mjs`, `docs/testing/TESTPLAN.md`, `docs/architecture/TESTPHASE.md`, `.github/ISSUE_TEMPLATE/`, `tests/testphase.test.mjs`, `tests/e2e/testphase.e2e.mjs`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Diagnostics.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramDiagnose.java`. **Abhängigkeiten:** QA-01, STAB-01, GAME-07. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### GEN-03
+
+**Kolosseum aus Philipps Bauplan: Arena-Generator, Bauset Antike und Großprojekt Kolosseum-Viertel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projekt aus ChatGPT-Verlauf ausarbeiten“) · Aktualisiert: 2026-11-03T15:52:52.715Z
+
+- [x] GEN-03-S01: Bauplan aus Philipps ChatGPT-Verlauf übernehmen (81 × 61, vier Etagen à 8, Ellipsen-Ringe, Arena, 8 Sitzreihen, 4 Tore, Hypogäum Y 55–63, Materialien).
+- [x] GEN-03-S02: Generator „Arena“ (ovale Ringe nach Tiefe, Bögen nach Bogenlänge, Wandelgang mit Treppen, zwei Ränge auf Gewölben, Tore mit Wegeanschluss weg_5, Hypogäum, Velarium) mit sechs Vorlagen.
+- [x] GEN-03-S03: Bauset Antike: Kolosseum, Provinzarena, Kaiserlicher Ehrenbogen, Ehrensäule, Tabernae, Thermen, Gladiatorenschule; Ensemble Kolosseumsplatz.
+- [x] GEN-03-S04: Großprojekt „Kolosseum-Viertel“ (9 Quartiere, 30 Gebäude, 4 Phasen) auf dem Großprojekt-Typ GROSS-01.
+- [ ] GEN-03-S05: Abnahme im Spiel durch Philipp: Kolosseum exportieren und aufstellen (Testfall BIB-14).
+
+**Abnahme:** Vorlage „Kolosseum“ hält die Maße des Bauplans, alle Bauten bestehen Spielprüfung, Material-/Rezeptprüfung und B7-Zustände; das Großprojekt hat keine Voxelkonflikte und ein zusammenhängendes Straßennetz.
+
+**Nächste Aktion:** Philipp baut das Kolosseum im Spiel nach (BIB-14); danach Feinschliff (Statuen in den Attika-Fenstern, Treppen im Hypogäum).
+
+**Prüfstand:** Node-Prüfung bestanden; Browser- und Spielabnahme siehe TESTING.md.
+
+**Nachweise:** [tests/generators.test.mjs](../tests/generators.test.mjs) — Arena in allen Generatorprüfungen (Vorlagen, Stile, Zufallswerte, Bereichsenden, Spielprüfung, Material, Anschlüsse, festgehaltener Hash).; [tests/grossprojekte.test.mjs](../tests/grossprojekte.test.mjs) — Kolosseum-Viertel automatisch geprüft: echte Bauteile, keine Voxelkonflikte, Straßennetz, Phasen, Übernahme.; [docs/architecture/GENERATORS.md](architecture/GENERATORS.md) — Abschnitt GEN-03 Arena mit Aufbau, Parametern und Grenzen.
+
+**Dateiumfang:** `packages/domain/src/generators/arena.ts`, `packages/domain/src/generators/index.ts`, `packages/domain/src/build/sets/antike.ts`, `packages/domain/src/build/sets/index.ts`, `packages/domain/src/ensembles.ts`, `packages/domain/src/grossprojekte/kolosseum.ts`, `packages/domain/src/grossprojekte/index.ts`, `tests/generators.test.mjs`, `tests/e2e/generators.e2e.mjs`, `tests/e2e/grossprojekte.e2e.mjs`, `apps/web/src/testing/testplan.ts`, `docs/architecture/GENERATORS.md`, `docs/architecture/CATALOG.md`, `docs/architecture/GROSSPROJEKTE.md`. **Abhängigkeiten:** GEN-02, GROSS-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
