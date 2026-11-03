@@ -131,6 +131,18 @@ export const TEST_AREAS: readonly TestArea[] = [
     ],
   },
   {
+    id: 'GERAET', kind: 'planer', title: 'Geräte und Browser',
+    intro: 'Dieselben kurzen Aufgaben auf jedem echten Gerät (Geräte- und Browsermatrix QA-02, docs/testing/GERAETEMATRIX.md). Im Testprotokoll beim Namen das Gerät dazuschreiben (z. B. „Anna · Pixel 8“); Browser und System trägt die Seite selbst ein. Eine verkleinerte Desktop-Ansicht zählt nicht als Handy-Test.',
+    cases: [
+      k('GERAET-01', 'Gerät festhalten', ['Systemcheck öffnen und Browser, System und Grafik ablesen.', 'Im Testprotokoll beim Namen das Gerät dazuschreiben.'], 'Systemcheck nennt Browser und Grafik; das kopierte Protokoll enthält Gerät, Browser und System, damit jeder Befund einer Zeile der Matrix zugeordnet werden kann.', '#/system'),
+      k('GERAET-02', 'Datei öffnen', ['Betrachter öffnen, „Schem / Litematic / JSON öffnen“.', 'Eine .schem oder .litematic vom Gerät wählen (auf dem Handy aus „Dateien“/„Downloads“).'], 'Dateiauswahl öffnet sich, das Bauwerk erscheint mit Blockzahl und Maßen; keine Fehlermeldung.', '#/betrachter'),
+      k('GERAET-03', 'Daten bleiben gespeichert', ['Ein Projekt anlegen und ein Gebäude hinzufügen.', 'Browser ganz schließen (auf dem Handy aus den offenen Apps wischen), wieder öffnen.'], 'Projekt und Gebäude sind noch da. In der Projektzentrale steht beim Speicher „vor Löschen geschützt“ oder ein Knopf „Dauerhaft speichern anfragen“. Im privaten Fenster darf das Projekt nach dem Schließen fehlen.', '#/'),
+      k('GERAET-04', 'Bedienen mit dem Finger', ['Ein Gebäude in 3D öffnen: mit einem Finger drehen, mit zwei Fingern zoomen.', 'Ebenenansicht: Ebene mit dem Schieber wechseln.', 'Weltkarte: lange auf ein Objekt drücken.'], 'Drehen und Zoomen folgen dem Finger, die Seite scrollt dabei nicht mit; der Schieber trifft jede Ebene; langes Drücken öffnet das Kontextmenü.', '#/bibliothek'),
+      v('GERAET-05', 'Farbschema des Geräts', ['Im Planer „automatisch“ wählen.', 'Am Gerät zwischen hellem und dunklem Modus wechseln, dann hell und dunkel fest wählen.'], 'Die Seite folgt dem Gerät bei „automatisch“; in jedem Schema sind Texte, Knöpfe und 3D-Hintergrund lesbar.'),
+      v('GERAET-06', 'Ebenen und Druck', ['Gebäude öffnen, Reiter „Ebenen“, „Alle Ebenen“.', '„⎙ Drucken“ wählen und die Druckvorschau ansehen.'], 'Alle Ebenen erscheinen als kleine Pläne; die Druckvorschau zeigt die Pläne ohne abgeschnittene Ränder.', '#/bibliothek'),
+    ],
+  },
+  {
     id: 'TEAMBAU', kind: 'planer', title: 'Gemeinsam bauen (Team)',
     intro: 'Mehrere Spieler an einem Projekt: Reiter „Team“ im Planer und Teambefehle des Paper-Plugins. Für den Austausch zwei Browser oder zwei Rechner nehmen (z. B. normales und privates Fenster).',
     cases: [

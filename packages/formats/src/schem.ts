@@ -13,7 +13,11 @@ export interface SchemLimits {maxCompressedBytes:number;maxUncompressedBytes:num
  * und 4 Mio. Zellen. Knotenbudget zählt das Blocks.Data-Bytearray je Byte (bis zwei Bytes je Zelle).
  */
 export const SCHEM_LIMITS: Readonly<SchemLimits>=Object.freeze({maxCompressedBytes:MODEL_MAX_FILE_BYTES,maxUncompressedBytes:MODEL_MAX_UNCOMPRESSED_BYTES,maxVolume:MODEL_MAX_VOLUME,maxDimension:MODEL_MAX_SIDE,maxPalette:20_000,maxDepth:32,maxNodes:3*MODEL_MAX_VOLUME,maxDurationMs:60_000,maxCells:MODEL_MAX_CELLS,maxAirVolume:EXPLICIT_AIR_MAX_VOLUME});
-export interface SchemResult {payload:VoxelPayload;dataVersion:number;offset:Vec3;sourceSha256:string;sourceNbt:{name:string;tag:NbtTag};warnings:string[]}
+/**
+ * `weOffset`: WorldEdit's paste offset (Metadata.WEOffsetX/Y/Z, minimum corner relative to the player's copy position),
+ * null when the file has none. WorldEdit writes `Offset` = absolute minimum of the copied region (FORMAT-01).
+ */
+export interface SchemResult {payload:VoxelPayload;dataVersion:number;offset:Vec3;weOffset:Vec3|null;sourceSha256:string;sourceNbt:{name:string;tag:NbtTag};warnings:string[]}
 function fail(message:string):never{throw new FormatError('SCHEM',message);}
 function compound(tag:NbtTag|undefined,path:string):Readonly<Record<string,NbtTag>>{if(tag?.type!=='compound')fail(`${path}: NBT-Compound fehlt.`);return tag.value;}
 function int(tag:NbtTag|undefined,path:string):number{if(tag?.type!=='int')fail(`${path}: NBT-Int fehlt.`);return tag.value;}
@@ -82,12 +86,15 @@ export function normalizeSchem(sourceNbt:{name:string;tag:NbtTag},options:Partia
   if(palette.some(p=>!p.id.startsWith('minecraft:')))warnings.push('Modblöcke gefunden: IDs/Properties bleiben erhalten, Registry unbekannt.');
   const knownRoot=['Schematic'];const knownSchem=['Version','DataVersion','Metadata','Width','Height','Length','Offset','Blocks','Biomes','Entities'];const knownBlocks=['Palette','Data','BlockEntities'];
   if(Object.keys(root).some(k=>!knownRoot.includes(k))||Object.keys(s).some(k=>!knownSchem.includes(k))||Object.keys(blocks).some(k=>!knownBlocks.includes(k)))warnings.push('Zusätzliche Formatfelder sind im Original/NBT erhalten, nicht in der Blockvorschau.');
-  if(s.Metadata)compound(s.Metadata,'Metadata');
+  let weOffset:Vec3|null=null;
+  if(s.Metadata){const m=compound(s.Metadata,'Metadata');const we=['WEOffsetX','WEOffsetY','WEOffsetZ'].map(k=>m[k]?.type==='int'?m[k].value:null);
+    if(we.every(v=>v!==null)){weOffset=we as unknown as Vec3;
+      if(we.some((v,i)=>v!==offset[i]))warnings.push(`WorldEdit-Einfügepunkt: Kopierposition ${we.map(v=>-v!).join(' / ')} relativ zur unteren Ecke (WEOffset). Der Planer behält die Weltlage (Offset ${offset.join(' / ')}); beim Export gilt der gewählte Planer-Anker.`);}}
   if(airSkipped)warnings.push(`Große Datei (${formatCount(volume)} Zellen Box): übernommen sind nur die ${formatCount(cells.length)} Blöcke, ${formatCount(airSkipped)} Luftzellen bleiben unausgewählt. Das Original bleibt unverändert erhalten.`);
   // The cells are built here and owned by this call: seal them in place instead of copying (a copy of a million cells costs seconds).
   // Block entity and entity NBT still point into sourceNbt, so they are copied once before freezing.
   const payload=adoptPayload({schemaVersion:1,profileId:`java:dataversion-${dataVersion}:registry-unverified`,bounds:{min:[0,0,0],maxExclusive:[width,height,length]},pivot:[0,0,0],sourceOrigin:[...offset],palette,cells,blockEntities:structuredClone(blockEntities),...(fileEntities.entities.length&&{entities:structuredClone(fileEntities.entities)})},{maxCells:Math.max(limits.maxCells,1),maxVolume:limits.maxVolume,maxPalette:limits.maxPalette,maxNbtDepth:limits.maxDepth,maxNbtNodes:limits.maxNodes});
-  return {payload,dataVersion,offset,sourceNbt,warnings};
+  return {payload,dataVersion,offset,weOffset,sourceNbt,warnings};
 }
 export async function importSchemV3(buffer:ArrayBuffer,options:Partial<SchemLimits>={}):Promise<SchemResult>{
   const limits={...SCHEM_LIMITS,...options};for(const [key,v] of Object.entries(limits))if(!Number.isSafeInteger(v)||v<1)throw new FormatError('LIMIT',`Ungültiges Limit: ${key}`);

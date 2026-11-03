@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 102 Fälle in 11 Bereichen, davon 49 Kernfälle.
+Umfang: 108 Fälle in 12 Bereichen, davon 53 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -108,6 +108,19 @@ Prüft, ob die Seite richtig ausgeliefert ist und die gespeicherten Daten stimme
 |---|---|---|---|---|
 | SYS-01 | Systemcheck ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/system)) | kern | 1. Systemcheck öffnen, „Geladene Dateien prüfen“ und „Datencheck starten“. | Alle Dateien stimmen, Datencheck ohne Fehler (oder verständliche Befunde). |
 | SYS-02 | Fehler melden ausprobieren ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/testphase?melden)) | kern | 1. Unter „Testphase → Fehler melden“ einen Probebericht ausfüllen, kopieren und als Datei speichern (nicht abschicken). | Bericht enthält Build, Browser, Grafik und Protokoll, aber keine Projektdaten. |
+
+## GERAET · Geräte und Browser (Planer)
+
+Dieselben kurzen Aufgaben auf jedem echten Gerät (Geräte- und Browsermatrix QA-02, docs/testing/GERAETEMATRIX.md). Im Testprotokoll beim Namen das Gerät dazuschreiben (z. B. „Anna · Pixel 8“); Browser und System trägt die Seite selbst ein. Eine verkleinerte Desktop-Ansicht zählt nicht als Handy-Test.
+
+| ID | Fall | Stufe | Schritte | Erwartet |
+|---|---|---|---|---|
+| GERAET-01 | Gerät festhalten ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/system)) | kern | 1. Systemcheck öffnen und Browser, System und Grafik ablesen.<br>2. Im Testprotokoll beim Namen das Gerät dazuschreiben. | Systemcheck nennt Browser und Grafik; das kopierte Protokoll enthält Gerät, Browser und System, damit jeder Befund einer Zeile der Matrix zugeordnet werden kann. |
+| GERAET-02 | Datei öffnen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/betrachter)) | kern | 1. Betrachter öffnen, „Schem / Litematic / JSON öffnen“.<br>2. Eine .schem oder .litematic vom Gerät wählen (auf dem Handy aus „Dateien“/„Downloads“). | Dateiauswahl öffnet sich, das Bauwerk erscheint mit Blockzahl und Maßen; keine Fehlermeldung. |
+| GERAET-03 | Daten bleiben gespeichert ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Ein Projekt anlegen und ein Gebäude hinzufügen.<br>2. Browser ganz schließen (auf dem Handy aus den offenen Apps wischen), wieder öffnen. | Projekt und Gebäude sind noch da. In der Projektzentrale steht beim Speicher „vor Löschen geschützt“ oder ein Knopf „Dauerhaft speichern anfragen“. Im privaten Fenster darf das Projekt nach dem Schließen fehlen. |
+| GERAET-04 | Bedienen mit dem Finger ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek)) | kern | 1. Ein Gebäude in 3D öffnen: mit einem Finger drehen, mit zwei Fingern zoomen.<br>2. Ebenenansicht: Ebene mit dem Schieber wechseln.<br>3. Weltkarte: lange auf ein Objekt drücken. | Drehen und Zoomen folgen dem Finger, die Seite scrollt dabei nicht mit; der Schieber trifft jede Ebene; langes Drücken öffnet das Kontextmenü. |
+| GERAET-05 | Farbschema des Geräts | vertieft | 1. Im Planer „automatisch“ wählen.<br>2. Am Gerät zwischen hellem und dunklem Modus wechseln, dann hell und dunkel fest wählen. | Die Seite folgt dem Gerät bei „automatisch“; in jedem Schema sind Texte, Knöpfe und 3D-Hintergrund lesbar. |
+| GERAET-06 | Ebenen und Druck ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek)) | vertieft | 1. Gebäude öffnen, Reiter „Ebenen“, „Alle Ebenen“.<br>2. „⎙ Drucken“ wählen und die Druckvorschau ansehen. | Alle Ebenen erscheinen als kleine Pläne; die Druckvorschau zeigt die Pläne ohne abgeschnittene Ränder. |
 
 ## TEAMBAU · Gemeinsam bauen (Team) (Planer)
 

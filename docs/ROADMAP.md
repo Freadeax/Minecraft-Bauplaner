@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-03T22:26:42.450Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-03T22:26:51.801Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,8 +12,8 @@ Stand: 2026-11-03T22:26:42.450Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 9 |
-| 🚧 In Arbeit | 2 |
+| ⏳ Offen | 8 |
+| 🚧 In Arbeit | 3 |
 | ⛔ Blockiert | 0 |
 | 🧩 Implementiert · Abnahme offen | 63 |
 | ✅ Im beschriebenen Umfang geprüft | 25 |
@@ -34,7 +34,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Paper-Plugin (Server)](#bereich-plugin) | 2 | 0 | 2 | 0 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
 | [Performance und Stabilität](#bereich-perf) | 4 | 1 | 1 | 2 |
-| [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 12 | 2 | 5 | 8 |
+| [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 12 | 2 | 6 | 8 |
 | [Testphase, Qualität und Betrieb](#bereich-qa) | 2 | 0 | 2 | 8 |
 | [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 6 | 0 | 0 | 0 |
 
@@ -156,7 +156,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
-| [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
+| [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ | — |
 | [PERF-03](#perf-03) | Bundle, große Views und Vorschaucache | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ | — |
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Olympus auf deinem Rechner, dazu Firefox/Safari (S06). |
 | [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert | 🧩 Implementiert · Abnahme offen 6/8 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ | — |
@@ -170,7 +170,7 @@ Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft).
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
 | [ARCH-02](#arch-02) | Planmodell | 🧩 Implementiert · Abnahme offen 4/5 | P0 | „Große Testphase vorbereiten und betreuen“ | Datencheck unter #/system mit deinen über Monate gewachsenen Browserdaten (S05). |
-| [FORMAT-01](#format-01) | Schem v3 an echten Referenzwerkzeugen abnehmen | 🧩 Implementiert · Abnahme offen 1/2 | P0 | „Liegengebliebene Datenpakete abarbeiten“ | — |
+| [FORMAT-01](#format-01) | Schem v3 an echten Referenzwerkzeugen abnehmen | 🧩 Implementiert · Abnahme offen 1/2 | P0 | „Liegengebliebene Datenpakete abarbeiten“ | Auf deinem Paper-Server mit WorldEdit ein kleines Gebäude mit Kiste/Schild auswählen, //copy, //schem save bauplaner-test und die Datei aus plugins/WorldEdit/schematics hier hochladen (FORMAT-01-S02). |
 | [FORMAT-02](#format-02) | Litematic an echten Referenzdateien abnehmen | 🧩 Implementiert · Abnahme offen 3/4 | P0 | „Große Testphase vorbereiten und betreuen“ | Litematic-Export im Spiel mit Litematica laden (S02). |
 | [NBT-01](#nbt-01) | Semantische BlockEntity-Transformationen | 🧩 Implementiert · Abnahme offen 2/2 | P0 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [PROFILE-01](#profile-01) | Ein verbindliches Java-Versionsprofil | 🧩 Implementiert · Abnahme offen 3/3 | P0 | „Liegengebliebene Datenpakete abarbeiten“ | — |
@@ -191,7 +191,7 @@ Abgeschlossen oder zurückgestellt: CORE-01 (geprüft), CORE-02 (geprüft), CORE
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
 | [QA-04](#qa-04) | Große Testphase | 🧩 Implementiert · Abnahme offen 4/6 | P0 | „Große Testphase vorbereiten und betreuen“ | Testphase mit weiteren Testern: erst die Kernfälle auf #/testphase. |
-| [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | ⏳ Offen 0/2 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | Safari/iPhone, Touch und echte GPU – nur auf deinen Geräten möglich. |
+| [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | 🚧 In Arbeit 1/2 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | Bereich „Geräte und Browser“ (GERAET-01 … 06) auf #/testphase auf deinem PC (Chrome/Edge und Firefox) und deinem Handy durchgehen und das Protokoll schicken (QA-02-S02). |
 
 Abgeschlossen oder zurückgestellt: OPS-01 (geprüft), PLAN-01 (geprüft), DOC-01 (geprüft), QA-01 (geprüft), QA-03 (geprüft), OPS-02 (geprüft), OPS-03 (geprüft), LICENSE-01 (geprüft).
 
@@ -257,7 +257,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 ### Auf echten Geräten und Browsern
 
 - **ARCH-02** · Datencheck unter #/system mit deinen über Monate gewachsenen Browserdaten (S05).
-- **QA-02** · Safari/iPhone, Touch und echte GPU – nur auf deinen Geräten möglich.
+- **QA-02** · Bereich „Geräte und Browser“ (GERAET-01 … 06) auf #/testphase auf deinem PC (Chrome/Edge und Firefox) und deinem Handy durchgehen und das Protokoll schicken (QA-02-S02).
 - **PERF-04** · Olympus auf deinem Rechner, dazu Firefox/Safari (S06).
 - **VIEW-01** · Ansicht auf echter GPU und mit Touch prüfen, negative Koordinaten, alle Schnittachsen (S02).
 - **VIEW-02** · Mojang-Download und Blockformen in Firefox/Safari und auf echten Geräten (S06).
@@ -271,6 +271,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 
 ### Dateien oder Welt liefern
 
+- **FORMAT-01** · Auf deinem Paper-Server mit WorldEdit ein kleines Gebäude mit Kiste/Schild auswählen, //copy, //schem save bauplaner-test und die Datei aus plugins/WorldEdit/schematics hier hochladen (FORMAT-01-S02).
 - **MODEL-01** · Export in Blender und einem Slicer öffnen, ein Testdruck (S05).
 - **TERRAIN-01** · Kopie deiner 26.3-Welt für die Geländeabnahme (S05).
 - **TERRAIN-02** · Abnahme in deiner eigenen Welt und auf Touch-Geräten (S05).
@@ -332,7 +333,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 
 ## Aktiver Arbeitsblock
 
-- **PERF-02 · Zellindizes, Chunkdaten und selektive Neuberechnung** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Gemessene Structured-Clone-/Worker-Rückgabekosten reduzieren; selektive Geometrie-/Fortschrittsinvalidierung zuerst mit vollständigen semantischen Regressionen absichern.
+- **PERF-02 · Zellindizes, Chunkdaten und selektive Neuberechnung** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: PERF-02-S03 zusammen mit PERF-05-S08 (Zellen erst bei Bedarf entpacken) im Performance-Thread umsetzen; beide ändern compose/Entpacken. Übergabe abgestimmt am 03.11.2026.
 - **MAP-01 · Weltlage und begehbare Projektkarte** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02.
 - **EDIT-01 · Mehrfachauswahl und sichtbare Freiraumhüllen** — 🧩 Implementiert · Abnahme offen, 2/2 Teilschritte. Nächster Schritt: Geräteprüfung (QA-02); Gruppenziehen direkt im 3D-Bild als Folgeschritt.
 - **EDIT-02 · Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Picking an 3D-Blockflächen; Spielprüfung. Registerlücken sind seit PROFILE-01 geschlossen.
@@ -449,7 +450,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 | ID | Arbeitspaket | Status | Schritte | Abhängigkeiten | Main | Pages-Quelle |
 |---|---|---|---:|---|---|---|
-| [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | ⏳ Offen | 0/2 | QA-01, VIEW-02 | ausstehend | ausstehend |
+| [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | 🚧 In Arbeit | 1/2 | QA-01, VIEW-02 | ausstehend | ausstehend |
 | [UI-02](#ui-02) | App-Hülle, Navigation und Handyoberfläche überarbeiten | ✅ Im beschriebenen Umfang geprüft | 4/4 | UI-01, QA-01 | ausstehend | ausstehend |
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart | 🧩 Implementiert · Abnahme offen | 6/7 | PERF-01, MODEL-01, ARCH-02 | ausstehend | ausstehend |
 | [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund | 🧩 Implementiert · Abnahme offen | 6/8 | PERF-04 | ausstehend | ausstehend |
@@ -821,22 +822,22 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### QA-02
 
-**Echte GPU-, Safari- und iPhone-Abnahme** · ⏳ Offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T21:37:46.206Z
+**Echte GPU-, Safari- und iPhone-Abnahme** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T22:26:51.801Z
 
-- [ ] QA-02-S01: Geräte-/Browsermatrix und reproduzierbare Aufgaben definieren.
+- [x] QA-02-S01: Geräte-/Browsermatrix und reproduzierbare Aufgaben definieren.
 - [ ] QA-02-S02: Dateiimport, IndexedDB, Touch, Themes und Layer auf echten Geräten prüfen.
 
 **Abnahme:** Viewportsimulation wird nicht als echte Geräteprüfung ausgegeben.
 
-**Nächste Aktion:** Geräte-/Browsermatrix und reproduzierbare Aufgaben definieren.
+**Nächste Aktion:** Protokolle der Tester in docs/testing/GERAETEMATRIX.md eintragen und Befunde beheben.
 
-**Nur Philipp:** Auf echten Geräten und Browsern: Safari/iPhone, Touch und echte GPU – nur auf deinen Geräten möglich.
+**Nur Philipp:** Auf echten Geräten und Browsern: Bereich „Geräte und Browser“ (GERAET-01 … 06) auf #/testphase auf deinem PC (Chrome/Edge und Firefox) und deinem Handy durchgehen und das Protokoll schicken (QA-02-S02).
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Matrix und Aufgaben stehen; echte Geräteprüfung offen.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [docs/testing/GERAETEMATRIX.md](testing/GERAETEMATRIX.md) — Sechs Geräte/Browser, sechs Aufgaben, Regel: Simulation zählt nie als bestanden.; [apps/web/src/testing/testplan.ts](../apps/web/src/testing/testplan.ts) — Bereich GERAET-01 … GERAET-06 im Testplan und auf #/testphase.
 
-**Dateiumfang:** `docs/TESTING.md`. **Abhängigkeiten:** QA-01, VIEW-02. **Alte IDs:** —.
+**Dateiumfang:** `docs/TESTING.md`, `docs/testing/GERAETEMATRIX.md`, `apps/web/src/testing/testplan.ts`. **Abhängigkeiten:** QA-01, VIEW-02. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -1022,20 +1023,24 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### FORMAT-01
 
-**Schem v3 an echten Referenzwerkzeugen abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T21:37:46.206Z
+**Schem v3 an echten Referenzwerkzeugen abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T22:26:51.801Z
 
 - [x] FORMAT-01-S01: Import/Export, Worker, Limits, unabhängige Binärfixture und Python-Verifier vorhanden.
-- [ ] FORMAT-01-S02: Echte WorldEdit-Dateien importieren, exportieren und im Referenzwerkzeug vergleichen.
+- [ ] FORMAT-01-S02: Echte WorldEdit-Dateien importieren, exportieren und vergleichen: Prüfwerkzeug `npm run format:check-schem` (Zellen, Zustände, Offset, WEOffset, BlockEntities, Entities, unabhängiger Verifier) steht; offen ist der Lauf mit einer echten, in WorldEdit gespeicherten Datei.
 
 **Abnahme:** Zellen, Zustände, Ursprung und BlockEntities semantisch erhalten.
 
-**Nächste Aktion:** Echte WorldEdit-Dateien importieren, exportieren und im Referenzwerkzeug vergleichen.
+**Nächste Aktion:** Hochgeladene WorldEdit-Datei mit npm run format:check-schem prüfen; Befunde beheben.
+
+**Blocker:** Echte WorldEdit-Datei fehlt: WorldEdit/Paper dürfen in der Cloud-Umgebung nicht als Fremdcode laufen.
+
+**Nur Philipp:** Dateien oder Welt liefern: Auf deinem Paper-Server mit WorldEdit ein kleines Gebäude mit Kiste/Schild auswählen, //copy, //schem save bauplaner-test und die Datei aus plugins/WorldEdit/schematics hier hochladen (FORMAT-01-S02).
 
 **Prüfstand:** Abnahme noch nicht vollständig erbracht.
 
-**Nachweise:** [tests/schem.test.mjs](../tests/schem.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/schem-export.test.mjs](../tests/schem-export.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+**Nachweise:** [tests/schem.test.mjs](../tests/schem.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/schem-export.test.mjs](../tests/schem-export.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/schem-roundtrip.test.mjs](../tests/schem-roundtrip.test.mjs) — Datei im WorldEdit-Aufbau (absoluter Offset, WEOffset, ungeordnete Properties, BlockEntity mit Data, Entity): Import → Export → Import semantisch gleich, WEOffset-Verschiebung als Hinweis gemeldet; kaputte Datei = Lesefehler.; [docs/architecture/SCHEM_EXPORT.md](architecture/SCHEM_EXPORT.md) — Abschnitt Rundlauf mit echten WorldEdit-Dateien.
 
-**Dateiumfang:** `packages/formats/src/schem.ts`, `packages/formats/src/schemWrite.ts`. **Abhängigkeiten:** PROFILE-01, NBT-01. **Alte IDs:** B2, P1-01, P3-01.
+**Dateiumfang:** `packages/formats/src/schem.ts`, `packages/formats/src/schemWrite.ts`, `scripts/check_schem_roundtrip.mjs`. **Abhängigkeiten:** PROFILE-01, NBT-01. **Alte IDs:** B2, P1-01, P3-01.
 
 **Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
 
@@ -1164,7 +1169,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-02
 
-**Zellindizes, Chunkdaten und selektive Neuberechnung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T21:37:46.206Z
+**Zellindizes, Chunkdaten und selektive Neuberechnung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gesamtsystem auf Performance und Stabilität optimieren“) · Zuständiger Thread: „Gesamtsystem auf Performance und Stabilität optimieren“ · Aktualisiert: 2026-11-03T22:26:51.801Z
 
 - [x] PERF-02-S01: Kosten von owners/Strings/Übertragungen messen.
 - [x] PERF-02-S02: Index-/Chunkstrategie nur mit identischem semantischem Ergebnis einführen.
@@ -1172,7 +1177,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Unabhängige Mengen-/Geometrieregressionen; Importlimits bleiben wirksam.
 
-**Nächste Aktion:** Gemessene Structured-Clone-/Worker-Rückgabekosten reduzieren; selektive Geometrie-/Fortschrittsinvalidierung zuerst mit vollständigen semantischen Regressionen absichern.
+**Nächste Aktion:** PERF-02-S03 zusammen mit PERF-05-S08 (Zellen erst bei Bedarf entpacken) im Performance-Thread umsetzen; beide ändern compose/Entpacken. Übergabe abgestimmt am 03.11.2026.
 
 **Prüfstand:** Interner Indexteil mit 15 passenden bestehenden/neuen Regressionen und sechs hashgleichen Vergleichsausgaben geprüft. Kein Browser-, Chunk- oder selektiver Cache-Nachweis. Gemeinsame vollständige Prüfung mit 377 Node-Tests bestanden.
 

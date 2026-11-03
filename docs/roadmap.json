@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T22:26:42.450Z",
+  "updatedAt": "2026-11-03T22:26:51.801Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -981,21 +981,23 @@
       "title": "Echte GPU-, Safari- und iPhone-Abnahme",
       "phase": "P3",
       "priority": "P1",
-      "status": "planned",
+      "status": "in_progress",
       "owner": "Claude (Thread „Liegengebliebene Datenpakete abarbeiten“)",
       "dependencies": [
         "QA-01",
         "VIEW-02"
       ],
       "scope": [
-        "docs/TESTING.md"
+        "docs/TESTING.md",
+        "docs/testing/GERAETEMATRIX.md",
+        "apps/web/src/testing/testplan.ts"
       ],
       "legacyIds": [],
       "steps": [
         {
           "id": "QA-02-S01",
           "title": "Geräte-/Browsermatrix und reproduzierbare Aufgaben definieren.",
-          "done": false
+          "done": true
         },
         {
           "id": "QA-02-S02",
@@ -1006,24 +1008,33 @@
       "acceptance": [
         "Viewportsimulation wird nicht als echte Geräteprüfung ausgegeben."
       ],
-      "next": "Geräte-/Browsermatrix und reproduzierbare Aufgaben definieren.",
+      "next": "Protokolle der Tester in docs/testing/GERAETEMATRIX.md eintragen und Befunde beheben.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "docs/testing/GERAETEMATRIX.md",
+          "note": "Sechs Geräte/Browser, sechs Aufgaben, Regel: Simulation zählt nie als bestanden."
+        },
+        {
+          "path": "apps/web/src/testing/testplan.ts",
+          "note": "Bereich GERAET-01 … GERAET-06 im Testplan und auf #/testphase."
+        }
+      ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "note": "Matrix und Aufgaben stehen; echte Geräteprüfung offen."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T21:37:46.206Z",
+      "updatedAt": "2026-11-03T22:26:51.801Z",
       "area": "QA",
       "thread": "Liegengebliebene Datenpakete abarbeiten",
       "philipp": [
         {
           "kind": "geraet",
-          "text": "Safari/iPhone, Touch und echte GPU – nur auf deinen Geräten möglich."
+          "text": "Bereich „Geräte und Browser“ (GERAET-01 … 06) auf #/testphase auf deinem PC (Chrome/Edge und Firefox) und deinem Handy durchgehen und das Protokoll schicken (QA-02-S02)."
         }
       ],
       "orphans": []
@@ -1637,7 +1648,8 @@
       ],
       "scope": [
         "packages/formats/src/schem.ts",
-        "packages/formats/src/schemWrite.ts"
+        "packages/formats/src/schemWrite.ts",
+        "scripts/check_schem_roundtrip.mjs"
       ],
       "legacyIds": [
         "B2",
@@ -1652,15 +1664,17 @@
         },
         {
           "id": "FORMAT-01-S02",
-          "title": "Echte WorldEdit-Dateien importieren, exportieren und im Referenzwerkzeug vergleichen.",
+          "title": "Echte WorldEdit-Dateien importieren, exportieren und vergleichen: Prüfwerkzeug `npm run format:check-schem` (Zellen, Zustände, Offset, WEOffset, BlockEntities, Entities, unabhängiger Verifier) steht; offen ist der Lauf mit einer echten, in WorldEdit gespeicherten Datei.",
           "done": false
         }
       ],
       "acceptance": [
         "Zellen, Zustände, Ursprung und BlockEntities semantisch erhalten."
       ],
-      "next": "Echte WorldEdit-Dateien importieren, exportieren und im Referenzwerkzeug vergleichen.",
-      "blockers": [],
+      "next": "Hochgeladene WorldEdit-Datei mit npm run format:check-schem prüfen; Befunde beheben.",
+      "blockers": [
+        "Echte WorldEdit-Datei fehlt: WorldEdit/Paper dürfen in der Cloud-Umgebung nicht als Fremdcode laufen."
+      ],
       "evidence": [
         {
           "path": "tests/schem.test.mjs",
@@ -1669,6 +1683,14 @@
         {
           "path": "tests/schem-export.test.mjs",
           "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        },
+        {
+          "path": "tests/schem-roundtrip.test.mjs",
+          "note": "Datei im WorldEdit-Aufbau (absoluter Offset, WEOffset, ungeordnete Properties, BlockEntity mit Data, Entity): Import → Export → Import semantisch gleich, WEOffset-Verschiebung als Hinweis gemeldet; kaputte Datei = Lesefehler."
+        },
+        {
+          "path": "docs/architecture/SCHEM_EXPORT.md",
+          "note": "Abschnitt Rundlauf mit echten WorldEdit-Dateien."
         }
       ],
       "verification": {
@@ -1679,10 +1701,15 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-03T21:37:46.206Z",
+      "updatedAt": "2026-11-03T22:26:51.801Z",
       "area": "KERN",
       "thread": "Liegengebliebene Datenpakete abarbeiten",
-      "philipp": [],
+      "philipp": [
+        {
+          "kind": "datei",
+          "text": "Auf deinem Paper-Server mit WorldEdit ein kleines Gebäude mit Kiste/Schild auswählen, //copy, //schem save bauplaner-test und die Datei aus plugins/WorldEdit/schematics hier hochladen (FORMAT-01-S02)."
+        }
+      ],
       "orphans": []
     },
     {
@@ -2105,7 +2132,7 @@
       "phase": "P2",
       "priority": "P1",
       "status": "implemented",
-      "owner": "Claude (Thread „Liegengebliebene Datenpakete abarbeiten“)",
+      "owner": "Claude (Thread „Gesamtsystem auf Performance und Stabilität optimieren“)",
       "dependencies": [
         "PERF-01"
       ],
@@ -2134,7 +2161,7 @@
       "acceptance": [
         "Unabhängige Mengen-/Geometrieregressionen; Importlimits bleiben wirksam."
       ],
-      "next": "Gemessene Structured-Clone-/Worker-Rückgabekosten reduzieren; selektive Geometrie-/Fortschrittsinvalidierung zuerst mit vollständigen semantischen Regressionen absichern.",
+      "next": "PERF-02-S03 zusammen mit PERF-05-S08 (Zellen erst bei Bedarf entpacken) im Performance-Thread umsetzen; beide ändern compose/Entpacken. Übergabe abgestimmt am 03.11.2026.",
       "blockers": [],
       "evidence": [
         {
@@ -2158,9 +2185,9 @@
         "main": "7dffd922f46876c70700afc0429afb969e5478aa",
         "pagesSource": "7dffd922f46876c70700afc0429afb969e5478aa"
       },
-      "updatedAt": "2026-11-03T21:37:46.206Z",
+      "updatedAt": "2026-11-03T22:26:51.801Z",
       "area": "PERF",
-      "thread": "Liegengebliebene Datenpakete abarbeiten",
+      "thread": "Gesamtsystem auf Performance und Stabilität optimieren",
       "philipp": [],
       "orphans": []
     },
@@ -14854,6 +14881,51 @@
           "done": 3,
           "total": 3,
           "next": "Abnahme in der Testphase: zwei Stände eines verschobenen Bauwerks vergleichen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T22:26:51.801Z",
+      "kind": "progress",
+      "items": [
+        "FORMAT-01",
+        "QA-02",
+        "PERF-02"
+      ],
+      "summary": "FORMAT-01-S02: Rundlauf-Prüfwerkzeug npm run format:check-schem (Import → Export → Import, Zellen/Zustände/Offset/BlockEntities/Entities, unabhängiger Verifier), Import liest WorldEdit-WEOffset und meldet den Einfügepunkt; echte WorldEdit-Datei von Philipp offen. QA-02-S01: Gerätematrix docs/testing/GERAETEMATRIX.md und Testplanbereich GERAET-01…06; echte Geräte offen. PERF-02-S03 an den Performance-Thread übergeben. STATUS.md aktualisiert.",
+      "files": [
+        "apps/web/src/testing/testplan.ts",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/SCHEM_EXPORT.md",
+        "docs/testing/GERAETEMATRIX.md",
+        "docs/testing/TESTPLAN.md",
+        "package.json",
+        "packages/formats/src/schem.ts",
+        "scripts/check_schem_roundtrip.mjs",
+        "tests/schem-roundtrip.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "FORMAT-01",
+          "status": "implemented",
+          "done": 1,
+          "total": 2,
+          "next": "Hochgeladene WorldEdit-Datei mit npm run format:check-schem prüfen; Befunde beheben."
+        },
+        {
+          "id": "QA-02",
+          "status": "in_progress",
+          "done": 1,
+          "total": 2,
+          "next": "Protokolle der Tester in docs/testing/GERAETEMATRIX.md eintragen und Befunde beheben."
+        },
+        {
+          "id": "PERF-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "PERF-02-S03 zusammen mit PERF-05-S08 (Zellen erst bei Bedarf entpacken) im Performance-Thread umsetzen; beide ändern compose/Entpacken. Übergabe abgestimmt am 03.11.2026."
         }
       ]
     }

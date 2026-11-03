@@ -4571,3 +4571,28 @@ DIFF-01: Vergleich erkennt eine Verschiebung des ganzen Stands (Eck-Ausrichtunge
 - `tests/diff-shift.test.mjs`
 - `tests/variants.test.mjs`
 
+## 2026-11-03T22:26:51.801Z · progress
+
+**Aufgaben:** FORMAT-01, QA-02, PERF-02
+
+FORMAT-01-S02: Rundlauf-Prüfwerkzeug npm run format:check-schem (Import → Export → Import, Zellen/Zustände/Offset/BlockEntities/Entities, unabhängiger Verifier), Import liest WorldEdit-WEOffset und meldet den Einfügepunkt; echte WorldEdit-Datei von Philipp offen. QA-02-S01: Gerätematrix docs/testing/GERAETEMATRIX.md und Testplanbereich GERAET-01…06; echte Geräte offen. PERF-02-S03 an den Performance-Thread übergeben. STATUS.md aktualisiert.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| FORMAT-01 | 🧩 Implementiert · Abnahme offen | 1/2 | Hochgeladene WorldEdit-Datei mit npm run format:check-schem prüfen; Befunde beheben. |
+| QA-02 | 🚧 In Arbeit | 1/2 | Protokolle der Tester in docs/testing/GERAETEMATRIX.md eintragen und Befunde beheben. |
+| PERF-02 | 🧩 Implementiert · Abnahme offen | 2/3 | PERF-02-S03 zusammen mit PERF-05-S08 (Zellen erst bei Bedarf entpacken) im Performance-Thread umsetzen; beide ändern compose/Entpacken. Übergabe abgestimmt am 03.11.2026. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/SCHEM_EXPORT.md`
+- `docs/testing/GERAETEMATRIX.md`
+- `docs/testing/TESTPLAN.md`
+- `package.json`
+- `packages/formats/src/schem.ts`
+- `scripts/check_schem_roundtrip.mjs`
+- `tests/schem-roundtrip.test.mjs`
+

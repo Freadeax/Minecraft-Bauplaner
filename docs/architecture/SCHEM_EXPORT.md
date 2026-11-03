@@ -44,6 +44,12 @@ Luft räumt in der Welt nur, wenn beim Einfügen Luft nicht übersprungen wird (
 
 `WEOffsetX/Y/Z` wird gleich `Offset` gesetzt, damit WorldEdit (liest Offset als Minimum und WEOffset relativ dazu) denselben Ursprung ergibt. Diese WorldEdit-Auslegung ist nicht mit echtem WorldEdit geprüft.
 
+### Rundlauf mit echten WorldEdit-Dateien (FORMAT-01-S02)
+
+WorldEdit 7 schreibt `Offset` = absolute Weltlage der kopierten unteren Ecke und `Metadata.WEOffsetX/Y/Z` = diese Ecke relativ zur Position, an der der Spieler `//copy` ausgeführt hat. Der Import liest beides: `offset` wird der Ursprung des Bauteils, `weOffset` steht im Ergebnis und als Hinweis „WorldEdit-Einfügepunkt“ in den Importmeldungen. Der Planer-Export setzt `WEOffset = Offset` (Anker Projektursprung bzw. Ecke); die Weltlage bleibt gleich, ein `//paste` relativ zur Spielerposition landet aber anders als beim Original.
+
+`npm run format:check-schem -- datei.schem [--out export.schem] [--json]` macht den Rundlauf Import → Export (Projektursprung, gleiche DataVersion) → Import und vergleicht jede Zelle samt Zustand (Properties in beliebiger Reihenfolge), Größe, Offset, DataVersion, BlockEntities ohne eigene Positionsfelder und freie Entities; der unabhängige Python-Verifier prüft Original und Export und vergleicht die Zustandszählung. Ergebnis: Exit 0 = semantisch gleich, 1 = Abweichung (mit Beispielen), 2 = Datei nicht lesbar. Die WEOffset-Änderung wird als Hinweis gemeldet, nicht verschwiegen. Getestet mit einer Datei im WorldEdit-Aufbau (`tests/schem-roundtrip.test.mjs`); der Lauf mit einer echten, in WorldEdit gespeicherten Datei steht aus, weil WorldEdit/Paper in der Cloud-Umgebung nicht als Fremdcode ausgeführt werden dürfen – dafür lädt Philipp eine Datei hoch.
+
 ## Ablehnungen statt stiller Verluste
 
 DataVersion keine positive int32-Ganzzahl; unbekannter Anker oder unbekannte Politik; Volumen-/Achsgrenzen; Property-Schlüssel oder -Werte außerhalb `[a-z0-9_.+-]` (im Palettentext nicht darstellbar); BlockEntity ohne `Id`/`id`; reservierte Metadata-Felder. Der NBT-Writer prüft jeden Wert (Byte/Short/Int-Bereich, Long als int64-Text, Float exakt float32, endliche Doubles, homogene Listen, leere End-Listen, Text ≤ 65535 Bytes, Tiefe ≤ 512).
@@ -56,4 +62,4 @@ DataVersion keine positive int32-Ganzzahl; unbekannter Anker oder unbekannte Pol
 
 ## Grenzen
 
-Keine Abnahme mit echtem WorldEdit/Minecraft; DataVersion und Blockzustände werden weder geprüft noch zwischen Versionen umgewandelt. Themes/Generatoren (P5-02) gibt es noch nicht, daher wird nichts davon angewendet. Exportgrenze 4 000 000 Zellen im Browser-Hauptthread.
+Keine Abnahme mit echtem WorldEdit/Minecraft (Prüfwerkzeug für eine echte Datei: siehe Rundlauf oben); DataVersion und Blockzustände werden weder geprüft noch zwischen Versionen umgewandelt. Themes/Generatoren (P5-02) gibt es noch nicht, daher wird nichts davon angewendet. Exportgrenze 4 000 000 Zellen im Browser-Hauptthread.

@@ -900,3 +900,10 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
   - Serverschlüssel erneuert (Close 4403): kein neuer Versuch, Status „Schlüssel ungültig oder erneuert“.
   - Planer-Faltung des Raum-Feeds = Serverzustand.
 - Grenzen: nur lokaler Raum (wrangler dev); der gehostete Dienst und Mitspieler auf Philipps Server bleiben COOP-07-S06/TEAMBAU-09.
+
+## DIFF-01, FORMAT-01-S02, QA-02-S01 · Vergleich, WorldEdit-Rundlauf, Gerätematrix · 03.11.2026 · Claude
+
+- DIFF-01: `tests/diff-shift.test.mjs` (reine Verschiebung = 0 Änderungen, Verschiebung plus Anbau, Materialtausch und Pivot-Anbau nicht als Verschiebung, Kisteninhalt als Inhaltsänderung, Zaunverbindung abgeleitet, gedrehte Treppe echt; deterministisch, Eingaben unverändert); `tests/variants.test.mjs` angepasst (neue Art `content`).
+- FORMAT-01-S02: `tests/schem-roundtrip.test.mjs` prüft `scripts/check_schem_roundtrip.mjs` mit einer Datei im WorldEdit-Aufbau (absoluter Offset, WEOffset, ungeordnete Properties, BlockEntity mit Data, Rüstungsständer): semantisch gleich, beide Dateien vom Python-Verifier als gültig erkannt, WEOffset-Änderung als Hinweis.
+- QA-02-S01: Gerätematrix `docs/testing/GERAETEMATRIX.md`, Testplanbereich GERAET-01 … 06 (`npm run check:testplan`).
+- Grenzen: keine echte WorldEdit-Datei (WorldEdit/Paper als Fremdcode in der Cloud nicht erlaubt; Philipp lädt eine hoch); keine echten Geräte – alle Matrixzellen „offen“; Verschiebung nur für das ganze Bauwerk, nicht für Teile oder Drehungen.

@@ -25,6 +25,7 @@
     "preview": "vite preview --host 127.0.0.1",
     "test:e2e": "node --test --test-concurrency=1 tests/e2e/*.e2e.mjs",
     "check:architecture": "node scripts/check_architecture.mjs",
+    "format:check-schem": "npm run build:core && node scripts/check_schem_roundtrip.mjs",
     "check:roadmap": "node scripts/roadmap.mjs check",
     "check:roadmap-change": "node scripts/roadmap.mjs check-change",
     "roadmap:render": "node scripts/roadmap.mjs render",
