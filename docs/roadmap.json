@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T21:19:45.021Z",
+  "updatedAt": "2026-11-03T21:33:16.961Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -7312,7 +7312,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T21:33:16.961Z",
       "area": "TEAM",
       "thread": "Server-Plugin mit geprüften Lagerkisten",
       "philipp": [
@@ -14365,6 +14365,27 @@
           "done": 2,
           "total": 2,
           "next": "Erledigt."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T21:33:16.961Z",
+      "kind": "progress",
+      "items": [
+        "COOP-05"
+      ],
+      "summary": "Plugin-Uplink zum Team-Raum (team-room v1): RoomLink.java mit /bp team verbinden, trennen, raum; Header-Abruf, Live-Kanal mit Cursor und Outbox, Batches bis 200, Backoff, 4401/4403. Nur aktiv nach /bp team verbinden; Test gegen services/team-room steht noch aus.",
+      "files": [
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-05",
+          "status": "implemented",
+          "done": 3,
+          "total": 5,
+          "next": "Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server."
         }
       ]
     }

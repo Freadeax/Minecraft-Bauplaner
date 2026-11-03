@@ -4365,3 +4365,18 @@ Aufräumen: STAB-01-S02 Renderingfehler im Browser geprüft und ErrorBoundary f�
 - `package.json`
 - `tests/e2e/render-crash.e2e.mjs`
 
+## 2026-11-03T21:33:16.961Z · progress
+
+**Aufgaben:** COOP-05
+
+Plugin-Uplink zum Team-Raum (team-room v1): RoomLink.java mit /bp team verbinden, trennen, raum; Header-Abruf, Live-Kanal mit Cursor und Outbox, Batches bis 200, Backoff, 4401/4403. Nur aktiv nach /bp team verbinden; Test gegen services/team-room steht noch aus.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-05 | 🧩 Implementiert · Abnahme offen | 3/5 | Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server. |
+
+**Geänderte Dateien:**
+
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`
+

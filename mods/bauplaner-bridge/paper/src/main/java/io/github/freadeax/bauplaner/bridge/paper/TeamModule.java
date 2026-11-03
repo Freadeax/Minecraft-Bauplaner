@@ -69,6 +69,7 @@ final class TeamModule implements Listener {
     private int cachedSize = -1;
     private BukkitTask barTask, tallyTask;
     private final StorageModule storage;
+    private RoomLink room;
     /** Baunachweis not yet written: team|member|section → counts (COOP-04). */
     private final Map<String, Tally> pending = new TreeMap<>();
     private static final class Tally {
@@ -87,6 +88,9 @@ final class TeamModule implements Listener {
     void enable() {
         try { Files.createDirectories(dir); } catch (IOException e) { plugin.getLogger().warning("Teamordner nicht anlegbar: " + e.getMessage()); }
         load(null);
+        room = new RoomLink(plugin, this, dir);
+        uplink = room;
+        room.enable();
         Bukkit.getPluginManager().registerEvents(this, plugin);
         if (plugin.getConfig().getBoolean("team.anzeige", true)) barTask = Bukkit.getScheduler().runTaskTimer(plugin, this::actionBars, 40L, 20L);
         long minutes = Math.max(1, plugin.getConfig().getLong("team.nachweis-minuten", 5));
@@ -99,7 +103,13 @@ final class TeamModule implements Listener {
         if (tallyTask != null) tallyTask.cancel();
         storage.disable();
         flushTallies();
+        if (room != null) room.disable();
+        uplink = TeamUplink.NONE;
     }
+
+    /** Reads the team files again (new plan from the team room). */
+    void reload() { load(null); }
+
 
     private boolean tallyEnabled() { return plugin.getConfig().getBoolean("team.nachweis", true); }
 
@@ -303,6 +313,15 @@ final class TeamModule implements Listener {
                 case "laden": if (!leader(s)) return true; load(s); return true;
                 case "export": return export(s, a);
                 case "wahl": return choose(s, a, String.join(" ", java.util.Arrays.copyOfRange(args, 1, args.length)));
+                case "verbinden": {
+                    if (!leader(s)) return true;
+                    if (args.length < 2) return fail(s, "/" + label + " team verbinden <server-link aus dem Planer> (am besten in der Serverkonsole)");
+                    say(s, "Verbinde mit dem Team-Raum …");
+                    room.connect(args[1]).thenAccept(text -> Bukkit.getScheduler().runTask(plugin, () -> say(s, text)));
+                    return true;
+                }
+                case "trennen": if (!leader(s)) return true; say(s, room.disconnect(args.length > 1 ? args[1] : null)); return true;
+                case "raum": room.status().forEach(line -> say(s, line)); return true;
                 case "hilfe": return help(s, label);
                 default: break;
             }
@@ -466,7 +485,7 @@ final class TeamModule implements Listener {
         say(s, "notiz <frage|problem|material|info> <text> · notizen · geliefert <item|hand> [menge] · sammle <item> <menge>");
         say(s, "Lager: lager hilfe · lager info · lager bedarf [nr] · nachweis [an|aus] · beitrag [alle] · Baumeister: lager markieren [name] · lager siegeln · lager schutz <stufe>");
         say(s, "Übergabe: uebergeben <nr> <spieler> [notiz] · annehmen [nr] · ablehnen [nr] · abwesend [bis JJJJ-MM-TT] [notiz] · zurueck");
-        say(s, "Baumeister: zuweisen <nr> <spieler> · pruefen <nr> ok|nacharbeit [notiz] · Bauleitung: rolle <spieler> <rolle> · team laden · team export · team wahl <name>");
+        say(s, "Baumeister: zuweisen <nr> <spieler> · pruefen <nr> ok|nacharbeit [notiz] · Bauleitung: rolle <spieler> <rolle> · team laden · team export · team wahl <name> · team verbinden <link> · team trennen · team raum");
         return true;
     }
 
@@ -677,7 +696,7 @@ final class TeamModule implements Listener {
             case "notiz" -> args.length == 2 ? TeamLog.NOTE_TAGS : List.of();
             case "geliefert" -> args.length == 2 ? List.of("hand") : List.of();
             case "rolle" -> args.length == 2 ? Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()) : args.length == 3 ? List.of("bauleitung", "baumeister", "helfer", "gast") : List.of();
-            case "team" -> args.length == 2 ? List.of("laden", "export", "wahl", "hilfe") : List.of();
+            case "team" -> args.length == 2 ? List.of("laden", "export", "wahl", "verbinden", "trennen", "raum", "hilfe") : List.of();
             case "lager" -> storage.complete(args);
             case "nachweis" -> args.length == 2 ? List.of("an", "aus") : List.of();
             case "beitrag" -> args.length == 2 ? List.of("alle") : List.of();
