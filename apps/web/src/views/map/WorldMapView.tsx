@@ -4,7 +4,7 @@ import {
   moveItem, newWorldItemId, originFromPlayer, siteFromCorners, snapSiteToChunks, surveyCovers, surveyDisplayCells, suggestDataVersion,
   alignToGround, duplicateItems, insertPathVertex, itemsInRect, joinPaths, mirrorItem, movePathVertex, removeItemsOp, removePathVertex, reversePath,
   rotateItem, selectionBounds, selectionPivot, splitPath, updateItemsOp,
-  layerNames, marksForMod, routePath, setLayerOp, trailToPath, pointTypeLabel, checkPlanForMod,
+  layerNames, marksForMod, routePath, setLayerOp, trailToPath, pointTypeLabel, checkPlanForMod, LIVE_PLAN_EXPORT,
 } from '../../../../../packages/domain/src/index.js';
 import type { EarthworkEstimate, Operation, Project, TerrainSurvey, WorldItem, WorldPath, WorldPlanOp, WorldPointType, Polyline } from '../../../../../packages/domain/src/index.js';
 import { prepareRevisionExport } from '../../../../../packages/application/src/index.js';
@@ -551,7 +551,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
     setSending(p.id);
     try {
       const dv = suggestDataVersion(p, library.versions).dataVersion ?? 5023;
-      const prepared = await prepareRevisionExport(p, library.versions, { format: 'schem', dataVersion: dv, anchor: 'project-origin', unselected: 'structure_void' });
+      const prepared = await prepareRevisionExport(p, library.versions, { ...LIVE_PLAN_EXPORT, dataVersion: dv });
       if (prepared.created) await repo.saveProject(prepared.project, p.revision);
       const w = p.world, out = prepared.output;
       // SIZE-01: does the plan fit what this mod can load? Big plans get a hint and a longer timeout.

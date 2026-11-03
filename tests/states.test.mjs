@@ -175,7 +175,7 @@ test('unknown, mismatching and unrepresentable states stay unresolved and unchan
     [mc('note_block', { instrument: 'harp', note: '0', powered: 'false' }), 'unknown-block'],
     [{ id: 'example:machine', properties: { facing: 'north' } }, 'unknown-block'],
     [{ id: 'example:plain', properties: {} }, 'unknown-block'],
-    [mc('oak_stairs', { facing: 'north', half: 'bottom', shape: 'straight' }), 'schema-mismatch'],
+    [mc('oak_stairs', { facing: 'north', shape: 'straight' }), 'schema-mismatch'],
     [mc('oak_stairs', { facing: 'up', half: 'bottom', shape: 'straight', waterlogged: 'false' }), 'schema-mismatch'],
     [mc('oak_log', { axis: 'x', extra: 'y' }), 'schema-mismatch'],
     [mc('powered_rail', { shape: 'north_east', powered: 'false', waterlogged: 'false' }), 'schema-mismatch'],
@@ -224,4 +224,18 @@ test('26.3 block list: every block with an orientation property has a rule', () 
     assert.equal(r.resolved, true, id);
   }
   assert.equal(props(mc('oak_shelf', { facing: 'north', powered: 'false', side_chain: 'left', waterlogged: 'false' }), T(0, true)).side_chain, 'right');
+});
+
+test('states from older game versions without waterlogged/powered still turn (SIZE-01, Olympus aus 1.18)', () => {
+  const leaves = run(mc('oak_leaves', { distance: '7', persistent: 'true' }), T(1, true));
+  assert.equal(leaves.resolved, true);
+  assert.deepEqual(leaves.state.properties, { distance: '7', persistent: 'true' });
+  const head = run(mc('player_head', { rotation: '4' }), T(1, false));
+  assert.equal(head.resolved, true);
+  assert.notEqual(head.state.properties.rotation, '4');
+  assert.equal('powered' in head.state.properties, false, 'fehlende Eigenschaft wird nicht erfunden');
+  const stairs = run(mc('oak_stairs', { facing: 'north', half: 'bottom', shape: 'straight' }), T(1, false));
+  assert.equal(stairs.resolved, true);
+  assert.equal(stairs.state.properties.facing, run(mc('oak_stairs', { facing: 'north', half: 'bottom', shape: 'straight', waterlogged: 'false' }), T(1, false)).state.properties.facing);
+  assert.equal(run(mc('oak_leaves', { distance: '9', persistent: 'true' }), T(1, false)).reason, 'schema-mismatch', 'ungültige Werte bleiben ungelöst');
 });

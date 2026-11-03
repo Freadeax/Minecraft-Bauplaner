@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T20:57:38.742Z",
+  "updatedAt": "2026-11-03T20:58:46.186Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -6863,7 +6863,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T20:58:46.186Z",
       "area": "GROESSE",
       "thread": "Volumenlimit für große Builds aufheben",
       "philipp": [
@@ -14198,6 +14198,35 @@
           "done": 0,
           "total": 4,
           "next": "Versionsmatrix mit Philipp abstimmen (welche Versionen braucht er wirklich?)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T20:58:46.186Z",
+      "kind": "progress",
+      "items": [
+        "SIZE-01"
+      ],
+      "summary": "Senden ins Spiel repariert: leere Zellen als Luft statt Strukturleere (Mod nahm sie als Blöcke, Olympus über 4 Mio.), gedrehte ältere Zustände (Laub, Köpfe) nicht mehr gesperrt; Sendeprüfung mit dem Mod-Leser für gedrehte Teile, alle Großprojekte und Olympus",
+      "files": [
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "docs/TESTING.md",
+        "docs/architecture/LIVE_LINK.md",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/DumpPlan.java",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/liveLink.ts",
+        "packages/voxel/src/states.ts",
+        "scripts/bridge_sendcheck.mjs",
+        "scripts/test_bridge.sh",
+        "tests/states.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "SIZE-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05) mit einem großen Bau im Spiel."
         }
       ]
     }

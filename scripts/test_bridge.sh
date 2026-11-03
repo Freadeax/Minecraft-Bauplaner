@@ -9,3 +9,7 @@ gradle_cmd=(gradle)
 (cd mods/bauplaner-bridge && "${gradle_cmd[@]}" -q :core:test :core:testClasses --console=plain)
 cp="mods/bauplaner-bridge/core/build/classes/java/main:mods/bauplaner-bridge/core/build/classes/java/test"
 node scripts/bridge_crosscheck.mjs "$cp"
+# "Senden" from the world map: what the mod's PlanModel reads equals the planner's world, block by block.
+(cd mods/bauplaner-bridge && "${gradle_cmd[@]}" -q :mod-core:testClasses --console=plain)
+modcp="mods/bauplaner-bridge/mod-core/build/classes/java/main:mods/bauplaner-bridge/mod-core/build/classes/java/test:mods/bauplaner-bridge/core/build/classes/java/main"
+node scripts/bridge_sendcheck.mjs "$modcp" ${BAUPLANER_SENDCHECK_FILE:-}

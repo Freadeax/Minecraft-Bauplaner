@@ -107,7 +107,7 @@ export { WORLD_PLAN_SCHEMA_VERSION, WORLD_PLAN_SCHEMA_VERSIONS, WORLD_PLAN_MAX_I
 export type { WorldPlan, WorldItem, WorldItemKind, WorldSite, WorldPath, WorldPoint, WorldZone, WorldPointType, WorldPathStyle, WorldZoneCategory, WorldPlanOp } from './worldPlan.js';
 export { measureSummary, measureText, lineColumns, pathProfile, routeOverTerrain, routePath, simplifyLine, trailToPath } from './worldRoute.js';
 export type { MeasureSummary, PathProfile, RouteOptions, RouteResult } from './worldRoute.js';
-export { LIVE_PROTOCOL, LIVE_DEFAULT_PORT, LIVE_TOKEN_HEADER, LIVE_MAX_CHUNKS_PER_REQUEST, LIVE_MAX_RUNS, LIVE_MAX_MARKS, LIVE_MAX_PLAN_BYTES, LIVE_ALLOWED_ORIGINS, readLiveHello, readLivePairing,
+export { LIVE_PROTOCOL, LIVE_DEFAULT_PORT, LIVE_TOKEN_HEADER, LIVE_MAX_CHUNKS_PER_REQUEST, LIVE_MAX_RUNS, LIVE_MAX_MARKS, LIVE_MAX_PLAN_BYTES, LIVE_ALLOWED_ORIGINS, LIVE_PLAN_EXPORT, readLiveHello, readLivePairing,
   readLiveStatus, readLiveChunks, classifyRuns, chunkColumns, wantedChunks, chunkQuery, liveSurvey, HOLOGRAM_MATCH_LABEL, hologramProject, compareHologram, liveShare, playerBlock,
   originFromPlayer, planUploadQuery, marksBody, marksForMod, readLivePlayers, liveBaseUrl, originAllowed, liveCan, LIVE_FEATURE_SCAN, LIVE_FEATURE_MARKS2, LIVE_FEATURE_PLAYERS, LIVE_FEATURE_LABELS, LIVE_PROTOCOLS, LIVE_FEATURE_BIGPLANS, LIVE_LEGACY_PLAN_BYTES, checkPlanForMod } from './liveLink.js';
 export type { LiveHello, LivePlayer, LiveWorld, LiveCounts, LivePlacement, LiveHologram, LiveStatus, LiveChunk, LiveChunks, LiveColumn, LiveChunkColumns, HologramMatch, LiveOtherPlayer, LivePlayers, PlanSendCheck } from './liveLink.js';

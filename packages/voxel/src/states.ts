@@ -321,6 +321,17 @@ function matches(p: Props, schema: Schema): boolean {
   const keys = Object.keys(p);
   return keys.length === Object.keys(schema).length && keys.every(k => Object.hasOwn(schema, k) && schema[k]!.includes(p[k]!));
 }
+/**
+ * Properties later game versions added that never carry an orientation. States from older files (Olympus is
+ * from 1.18: leaves without `waterlogged`, heads without `powered`) lack them; turning such a state must not
+ * block the whole export (SIZE-01). Every property that is present must still be valid.
+ */
+const ORIENTATION_FREE_EXTRAS: ReadonlySet<string> = new Set(['waterlogged', 'powered']);
+function matchesOlder(p: Props, rule: StateRule): boolean {
+  const keys = Object.keys(p);
+  if (!keys.every(k => Object.hasOwn(rule.schema, k) && rule.schema[k]!.includes(p[k]!))) return false;
+  return rule.apply === same || Object.keys(rule.schema).every(k => Object.hasOwn(p, k) || ORIENTATION_FREE_EXTRAS.has(k));
+}
 
 export type StateUnresolvedReason = 'unknown-block' | 'schema-mismatch' | 'unrepresentable';
 export interface StateTransformResult {
@@ -338,7 +349,7 @@ export function transformBlockState(state: BlockState, t: Transform): StateTrans
   if (rule) {
     // Orientation-free families keep states that leave every property at its default.
     if (rule.apply === same && Object.keys(p).length === 0) return { state, resolved: true, family: rule.family };
-    if (!matches(p, rule.schema)) return { state, resolved: false, family: rule.family, reason: 'schema-mismatch' };
+    if (!matches(p, rule.schema) && !matchesOlder(p, rule)) return { state, resolved: false, family: rule.family, reason: 'schema-mismatch' };
     const next = rule.apply(p, t);
     if (!next) return { state, resolved: false, family: rule.family, reason: 'unrepresentable' };
     return { state: { id: state.id, properties: next }, resolved: true, family: rule.family };

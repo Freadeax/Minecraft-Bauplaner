@@ -4283,3 +4283,26 @@ Mod-Punkte aus der Roadmap übernommen (Thread „Teambau und Befehle in der Mod
 | GAME-08 | 🧩 Implementiert · Abnahme offen | 4/5 | Protokoll 3: Rückrichtung „Markierung im Spiel setzen → Weltplan“ mit Zeitstempel je Eintrag (siehe LIVE_LINK.md); Forge und Paper ohne Live-Verbindung. |
 | GAME-11 | ⏳ Offen | 0/4 | Versionsmatrix mit Philipp abstimmen (welche Versionen braucht er wirklich?). |
 
+## 2026-11-03T20:58:46.186Z · progress
+
+**Aufgaben:** SIZE-01
+
+Senden ins Spiel repariert: leere Zellen als Luft statt Strukturleere (Mod nahm sie als Blöcke, Olympus über 4 Mio.), gedrehte ältere Zustände (Laub, Köpfe) nicht mehr gesperrt; Sendeprüfung mit dem Mod-Leser für gedrehte Teile, alle Großprojekte und Olympus
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| SIZE-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05) mit einem großen Bau im Spiel. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `docs/TESTING.md`
+- `docs/architecture/LIVE_LINK.md`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/DumpPlan.java`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/liveLink.ts`
+- `packages/voxel/src/states.ts`
+- `scripts/bridge_sendcheck.mjs`
+- `scripts/test_bridge.sh`
+- `tests/states.test.mjs`
+
