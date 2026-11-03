@@ -34,6 +34,8 @@ export interface Builder {
   /** Blocks per building day of this builder; absent = project pace (site.pace). */
   readonly blocksPerSession?: number;
   readonly note?: string;
+  /** Minecraft name (Teambau, COOP-01): links the builder to the player on the server. */
+  readonly player?: string;
 }
 
 export interface Milestone {
@@ -127,6 +129,7 @@ export function checkProgram(raw: unknown): BuildProgram {
     builderIds.add(id);
     if (b.blocksPerSession !== undefined && (!Number.isInteger(b.blocksPerSession) || (b.blocksPerSession as number) < 16 || (b.blocksPerSession as number) > 100_000)) fail(`Bautempo von „${name}“ muss eine ganze Zahl von 16 bis 100000 sein`);
     if (b.note !== undefined && (typeof b.note !== 'string' || b.note.length > 300)) fail(`Notiz von „${name}“ zu lang`);
+    if (b.player !== undefined && (typeof b.player !== 'string' || !/^[.*]?[A-Za-z0-9_]{2,16}$/.test(b.player))) fail(`Minecraft-Name von „${name}“ ungültig`);
   }
   if (!Array.isArray(raw.milestones) || raw.milestones.length > MAX_MILESTONES) fail(`höchstens ${MAX_MILESTONES} Meilensteine`);
   const milestoneIds = new Set<string>();
@@ -179,7 +182,7 @@ const edit = (site: SitePlan, f: (p: BuildProgram) => BuildProgram): SitePlan =>
 export function addBuilder(site: SitePlan, name: string, blocksPerSession?: number, id = newId('bld')): SitePlan {
   return edit(site, p => ({ ...p, builders: [...p.builders, { id, name: name.trim(), ...(blocksPerSession !== undefined && { blocksPerSession }) }] }));
 }
-export function updateBuilder(site: SitePlan, id: string, patch: { name?: string; blocksPerSession?: number | null; note?: string }): SitePlan {
+export function updateBuilder(site: SitePlan, id: string, patch: { name?: string; blocksPerSession?: number | null; note?: string; player?: string | null }): SitePlan {
   return edit(site, p => {
     if (!p.builders.some(b => b.id === id)) fail(`Bauleute-Eintrag ${id} existiert nicht`);
     return { ...p, builders: p.builders.map(b => {
@@ -187,6 +190,7 @@ export function updateBuilder(site: SitePlan, id: string, patch: { name?: string
       const next: { -readonly [K in keyof Builder]: Builder[K] } = { ...b, ...(patch.name !== undefined && { name: patch.name.trim() }) };
       if (patch.blocksPerSession !== undefined) { if (patch.blocksPerSession === null) delete next.blocksPerSession; else next.blocksPerSession = patch.blocksPerSession; }
       if (patch.note !== undefined) { if (patch.note.trim()) next.note = patch.note.trim(); else delete next.note; }
+      if (patch.player !== undefined) { if (patch.player?.trim()) next.player = patch.player.trim(); else delete next.player; }
       return next;
     }) };
   });

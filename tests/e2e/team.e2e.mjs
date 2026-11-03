@@ -155,6 +155,10 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await proof.getByRole('button', { name: 'Baustellen-Lager entspricht dem Bestand' }).waitFor();
     await proof.getByRole('button', { name: 'Meinen Baunachweis abschalten' }).click();
     await proof.locator('.team-proof-members tr', { hasText: 'Philipp' }).getByText('Nachweis aus').waitFor();
+    // PROJ-01: the team goes into the project planning (Anna becomes a builder with her section).
+    await a.getByRole('region', { name: 'Mitglieder' }).getByRole('button', { name: 'In die Projektplanung übernehmen' }).click();
+    await a.getByText(/Projektplanung aktualisiert: \d+ Bauleute neu/).waitFor();
+    await a.getByRole('button', { name: 'OK' }).click();
     await proof.getByRole('button', { name: 'Meinen Baunachweis einschalten' }).click();
     await proof.locator('.team-proof-members tr', { hasText: 'Philipp' }).getByText('40', { exact: true }).waitFor();
 

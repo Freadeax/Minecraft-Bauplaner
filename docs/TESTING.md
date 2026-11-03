@@ -838,3 +838,6 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Durch das Nachladen der Seiten zuerst rot: `anlagen` und `app` (die alte Seite blieb während des Ladens versteckt im DOM, der Test traf deren Dateifeld). Behoben mit `Suspense key={route.view}` und direktem Rendern bereits geladener Seiten; danach grün.
 - `map-depth` „Neue Mod (Protokoll 2)“ war auf main 7b975a0 rot (fremd); inzwischen von SIZE-01 auf main behoben (ad668c9), dessen Fassung übernommen.
 - `npm run check:architecture`, `typecheck`, `build`, `npm test`: 732 Tests, 731 bestanden, 1 übersprungen. Browser-Suite dateiweise (`--test-concurrency=1`): 137/138 (nur das fremde `map-depth`); nach Rebase auf main 651e5a6 erneut komplett: **140/140**.
+## COOP-01-S04 · Team in die Projektplanung · 03.11.2026 · Claude
+- `node --test tests/team.test.mjs tests/program.test.mjs`: 24/24 – Minecraft-Name aus der Planung gilt im Team, Beigetretene werden Bauleute, Zuweisungen folgen den Abschnittsinhabern, unberührte bleiben, zweites Übernehmen ändert nichts, `checkProgram` lehnt ungültige Minecraft-Namen ab.
+- `node --test tests/e2e/team.e2e.mjs tests/e2e/program.e2e.mjs`: 4/4 (Knopf „In die Projektplanung übernehmen“ im Ablauf).

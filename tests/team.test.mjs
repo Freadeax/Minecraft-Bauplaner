@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   createTeam, teamEvent, appendEvents, mergeTeam, teamView, checkTeam, checkTeamEvent, canTeam, authorize, laterThan, teamAssignments,
-  encodeReportCode, decodeReportCode, buildTeamPackage, readTeamPackage, teamStatusText, describeEvent, teamPackageFileName,
+  encodeReportCode, decodeReportCode, buildTeamPackage, readTeamPackage, teamStatusText, describeEvent, teamPackageFileName, teamIntoProgram, checkProgram,
 } from '../dist/domain/src/index.js';
 
 const ctx = {
@@ -285,4 +285,26 @@ test('Lagerkisten: Baumeister registers, counts give stock, differences are book
   v = teamView(appendEvents(team, [ev('bld_phil', { ...chest, remove: true }), count('bld_anna', [])]), ctx);
   assert.deepEqual(v.stock, {}); assert.match(v.rejected.at(-1).reason, /Lagerkiste unbekannt/);
   assert.throws(() => checkTeamEvent({ ...srv('bld_anna', { kind: 'store.count', chest: 'lager1', items: [] }), items: [{ item: 'minecraft:stone', count: 1 }, { item: 'minecraft:stone', count: 2 }] }), /doppelt/);
+});
+
+test('Projektplanung (PROJ-01): Minecraft-Namen der Bauleute gelten im Team, Team wird in die Planung übernommen', () => {
+  const builders = [{ id: 'bld_phil', name: 'Philipp', player: 'Freadeax' }, { id: 'bld_anna', name: 'Anna' }, { id: 'bld_ben', name: 'Ben' }];
+  const team = appendEvents(base(), [
+    ev('mc_carla', { kind: 'member.join', member: 'mc_carla', name: 'Carla', player: 'Carla_MC' }),
+    ev('bld_anna', { kind: 'member.player', member: 'bld_anna', player: 'Anna_MC' }),
+    ev('bld_anna', { kind: 'section.claim', section: 'sec_a' }),
+    ev('mc_carla', { kind: 'section.claim', section: 'sec_b' }),
+    ev('bld_ben', { kind: 'section.claim', section: 'sec_c' }), ev('bld_ben', { kind: 'section.release', section: 'sec_c' }),
+  ]);
+  const view = teamView(team, { ...ctx, builders });
+  assert.equal(member(view, 'bld_phil').player, 'Freadeax', 'Minecraft-Name aus der Planung');
+  const program = { schemaVersion: 1, builders, milestones: [], dependencies: [], assignments: { sec_c: ['bld_phil'], sec_x: ['bld_ben'] } };
+  const r = teamIntoProgram(program, view);
+  assert.equal(r.added, 1); assert.equal(r.linked, 1);
+  assert.deepEqual(r.builders.find(b => b.id === 'mc_carla'), { id: 'mc_carla', name: 'Carla', player: 'Carla_MC' });
+  assert.equal(r.builders.find(b => b.id === 'bld_anna').player, 'Anna_MC');
+  assert.deepEqual(r.assignments, { sec_a: ['bld_anna'], sec_b: ['mc_carla'], sec_x: ['bld_ben'] }, 'freigegebener Abschnitt verliert die Zuweisung, unberührte bleiben');
+  checkProgram({ ...program, builders: r.builders, assignments: r.assignments });
+  assert.throws(() => checkProgram({ ...program, builders: [{ id: 'b', name: 'X', player: 'kein name!' }], assignments: {} }), /Minecraft-Name/);
+  assert.equal(teamIntoProgram({ builders: r.builders, assignments: r.assignments }, view).assigned, 0, 'zweites Übernehmen ändert nichts');
 });

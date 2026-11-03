@@ -284,6 +284,10 @@ Tokens, Konten oder Cloud-Dienste werden für keine Stufe benötigt.
 - Plugin: `TeamChannel.java` und `config.yml` `team.kanal: true`. Die Fassade in `TeamModule` heißt `submitFor`, `importFile` und `onChange`. Das Plugin verwendet `Json`/`TeamWire` aus mod-core als gemeinsame Quelle (Gradle-Sync).
 - Planer: `packages/domain/src/teamLink.ts` (`teamLinkState`, `readLiveTeam`, `readLiveTeamPull`), `revisionExport.ts` (`SectionIds`, `TeamId`), `liveClient.ts` und `TeamLive.tsx`. Tests: `tests/team-link.test.mjs` und `tests/game-check.test.mjs`.
 
+**COOP-01-S04 (Projektplanung, 03.11.2026)**
+- `Builder.player?` in `program.ts` (geprüft in `checkProgram`); Minecraft-Namen der Bauleute gelten im Team, solange kein `member.player` etwas anderes sagt.
+- `teamIntoProgram` + Knopf „In die Projektplanung übernehmen“ (Baumeister/Bauleitung, Mitglieder-Block): nur im Team Beigetretene werden Bauleute mit derselben ID, Minecraft-Namen werden ergänzt, jeder vom Team berührte Abschnitt bekommt seinen aktuellen Inhaber als Zuweisung (freigegebene verlieren sie); unberührte Abschnitte behalten die Planung. Ein Schritt, Strg+Z.
+
 **Offen:**
 - Aktionsleiste, Partikel und Schutz mit echten Spielern, denn die Konsole kann sie nicht auslösen. Das prüft TEAMBAU-06 bis 08 auf Philipps Server.
 - Teamkanal mit echtem Client gegen echten Paper-Server (Anmeldung des Kanals, Meldung, Quittung). Das prüft TEAMBAU-09.

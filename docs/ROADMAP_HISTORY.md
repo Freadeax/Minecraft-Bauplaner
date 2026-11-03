@@ -3886,3 +3886,24 @@ Olympus-Prüffall (953.000 Blöcke): Übergabe an den Hintergrundrechner als Spa
 - `tests/computation-transport.test.mjs`
 - `tests/large-edit.test.mjs`
 
+## 2026-11-03T19:07:52.295Z · progress
+
+**Aufgaben:** COOP-01
+
+COOP-01-S04: Bauleute der Projektplanung mit Minecraft-Namen (Builder.player), Team per Knopf in die Planung übernehmen (Beigetretene als Bauleute, Zuweisungen aus den Abschnittsinhabern). Tests team/program und Browsertests grün.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp mit Mitspielern (TEAMBAU-01…05). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/project/TeamTab.tsx`
+- `docs/TESTING.md`
+- `docs/architecture/TEAMBAU.md`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/program.ts`
+- `packages/domain/src/team.ts`
+- `tests/e2e/team.e2e.mjs`
+- `tests/team.test.mjs`
+

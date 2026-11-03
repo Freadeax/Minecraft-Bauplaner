@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import {
   appendEvents, authorize, canTeam, createTeam, describeEvent, freezeRevision, newId, NOTE_TAG_LABEL, NOTE_TAGS, PLAYER_NAME, SECTION_TEAM_STATUS_LABEL, siteOf, siteOperation,
-  setStock, teamContextOf, teamEvent, laterThan, TEAM_ROLE_LABEL, TEAM_ROLE_TEXT, TEAM_ROLES, teamView,
+  programOf, setProgram, setStock, teamContextOf, teamIntoProgram, teamEvent, laterThan, TEAM_ROLE_LABEL, TEAM_ROLE_TEXT, TEAM_ROLES, teamView,
 } from '../../../../../packages/domain/src/index.js';
 import type { NoteTag, SectionTeamState, SitePlan, TeamEventBody, TeamRole, TeamState, TeamView } from '../../../../../packages/domain/src/index.js';
 import { errorText, formatNumber } from '../../app/ui';
@@ -87,6 +87,12 @@ function TeamPage({ session, site, team, message, setMessage, saveTeam, saveSite
   const role: TeamRole = me?.role ?? 'gast';
   const progress = new Map((computation?.site.plan?.sections ?? []).map(s => [s.id, s.blocks ? s.blocksDone / s.blocks : 0]));
   const sectionBlocks = new Map((computation?.site.plan?.sections ?? []).map(s => [s.id, s.blocks]));
+  const toProgram = () => {
+    const program = programOf(site), r = teamIntoProgram(program, view);
+    if (!r.added && !r.linked && !r.assigned) { setMessage('Die Projektplanung entspricht schon dem Team.'); return; }
+    if (saveSite(setProgram(site, { ...program, builders: r.builders, assignments: r.assignments }), 'Team in die Projektplanung übernommen'))
+      setMessage(`Projektplanung aktualisiert: ${r.added} Bauleute neu, ${r.linked} Minecraft-Namen ergänzt, ${r.assigned} Abschnittszuweisungen geändert. Strg+Z macht es rückgängig.`);
+  };
   const takeStock = (stock: Readonly<Record<string, number>>) => {
     let next = site;
     for (const [item, n] of Object.entries(stock)) next = setStock(next, item, n);
@@ -138,7 +144,7 @@ function TeamPage({ session, site, team, message, setMessage, saveTeam, saveSite
     {me && <Mine view={view} me={me.id} ctx={ctx} progress={progress} projectId={project.id} act={act} />}
     <Sections view={view} ctx={ctx} progress={progress} me={me?.id ?? null} role={role} nameOf={nameOf} act={act} />
     <div className="team-columns">
-      <Members view={view} me={me?.id ?? null} role={role} act={act} />
+      <Members view={view} me={me?.id ?? null} role={role} act={act} onToProgram={toProgram} projectId={project.id} />
       <Contribute view={view} ctx={ctx} me={me?.id ?? null} role={role} act={act} nameOf={nameOf} />
     </div>
     <TeamProof view={view} sections={ctx.sections} me={me?.id ?? null} role={role} act={act} nameOf={nameOf} sectionBlocks={sectionBlocks} siteStock={site.stock} onTakeStock={takeStock} />
@@ -224,9 +230,11 @@ function SectionActions({ s, me, role, view, act, name }: { s: SectionTeamState;
   </span>;
 }
 
-function Members({ view, me, role, act }: { view: TeamView; me: string | null; role: TeamRole; act: Act }) {
+function Members({ view, me, role, act, onToProgram, projectId }: { view: TeamView; me: string | null; role: TeamRole; act: Act; onToProgram(): void; projectId: string }) {
   return <div role="region" className="team-block" aria-label="Mitglieder">
-    <h3>Mitglieder</h3>
+    <div className="team-block-head"><h3>Mitglieder</h3>
+      {canTeam(role, 'section.assign') && <button className="link-button" onClick={onToProgram} title="Teammitglieder als Bauleute und die aktuellen Abschnittsinhaber als Zuweisungen in den Reiter „Planung“ übernehmen">In die Projektplanung übernehmen</button>}
+      <a className="link-button" href={`#/projekt/${projectId}/planung`}>Planung →</a></div>
     <table className="team-table team-members"><thead><tr><th>Name</th><th>Rolle</th><th>Abschnitte</th><th>Beitrag</th><th>Zuletzt</th></tr></thead>
       <tbody>{view.members.map(m => {
         const items = Object.values(m.items).reduce((a, b) => a + b, 0);

@@ -41,7 +41,7 @@ Stand: 2026-11-03T19:23:40.842Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 - **GROSS-01 · Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06); Großbauten-Set (S05).
 - **LIB-06 · Bibliotheksbeiträge: eigene Bauwerke (Importe, Werkstatt, Generator) als festen Katalogeintrag für alle einreichen – Beitragspaket mit Prüfsumme und Rechtebestätigung, GitHub-Formular, Übernahme-Skript, Auslieferung wie mitgelieferte Gebäude** — 🧩 Implementiert · Abnahme offen, 5/7 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06) und erster echter Beitrag (S07).
 - **SIZE-01 · Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05) mit einem großen Bau im Spiel.
-- **COOP-01 · Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“** — 🧩 Implementiert · Abnahme offen, 3/5 Teilschritte. Nächster Schritt: PROJ-01-Anbindung (S04) nach dessen Merge; Abnahme durch Philipp mit Mitspielern.
+- **COOP-01 · Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp mit Mitspielern (TEAMBAU-01…05).
 - **COOP-02 · Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme auf Philipps Server.
 - **COOP-04 · Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung in COOP-05 (geprüfte Lagerkisten, docs/architecture/LAGERKISTEN.md).
 - **PROJ-01 · Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel.
@@ -182,7 +182,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [QA-04](#qa-04) | Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage | 🧩 Implementiert · Abnahme offen | 4/6 | QA-01, STAB-01, GAME-07 | ausstehend | ausstehend |
 | [GEN-03](#gen-03) | Kolosseum aus Philipps Bauplan: Arena-Generator, Bauset Antike und Großprojekt Kolosseum-Viertel | 🧩 Implementiert · Abnahme offen | 4/5 | GEN-02, GROSS-01 | ausstehend | ausstehend |
 | [SIZE-01](#size-01) | Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger | 🧩 Implementiert · Abnahme offen | 4/5 | PERF-04, ARCH-02, GFX-01, GAME-08 | ausstehend | ausstehend |
-| [COOP-01](#coop-01) | Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“ | 🧩 Implementiert · Abnahme offen | 3/5 | BUILD-06, BACKUP-02 | ausstehend | ausstehend |
+| [COOP-01](#coop-01) | Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“ | 🧩 Implementiert · Abnahme offen | 4/5 | BUILD-06, BACKUP-02 | ausstehend | ausstehend |
 | [COOP-02](#coop-02) | Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-01, GAME-04 | ausstehend | ausstehend |
 | [PROJ-01](#proj-01) | Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten | 🧩 Implementiert · Abnahme offen | 4/5 | BUILD-01, BUILD-06, BACKUP-02 | ausstehend | ausstehend |
 
@@ -2073,23 +2073,23 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-01
 
-**Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Aktualisiert: 2026-11-03T16:20:13.104Z
+**Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Aktualisiert: 2026-11-03T19:07:52.295Z
 
 - [x] COOP-01-S01: Konzept TEAMBAU.md: Rollen, Ereignismodell, Konfliktregeln, Austauschwege, Plugin, Mod, Nachweis, Lager, Freigabe, Einstieg, was nur Philipp tun kann.
 - [x] COOP-01-S02: Domäne team.ts: Ereignisse, Prüfung, Faltung mit Rechten, Zusammenführen, Meldecode, Teampaket, Statustext, Serverdatei, Planübernahme; site.team in checkSite.
 - [x] COOP-01-S03: Reiter „Team“ und „Teampaket öffnen“ mit Vorschau vor jedem Einlesen.
-- [ ] COOP-01-S04: Bauleute aus PROJ-01 mit Spielernamen verknüpfen und Zuweisungen in den Zeitplan spiegeln.
+- [x] COOP-01-S04: Bauleute aus PROJ-01 mit Spielernamen verknüpfen und Zuweisungen in den Zeitplan spiegeln.
 - [ ] COOP-01-S05: Abnahme mit Mitspielern (TEAMBAU-01…05).
 
 **Abnahme:** Zwei Browser tauschen Pakete/Codes in beliebiger Reihenfolge und kommen zum selben Stand; doppelte Übernahme und fehlende Rechte werden gezeigt; nichts geht verloren. Kein Backend, keine Konten, kein automatischer Versand nach außen.
 
-**Nächste Aktion:** PROJ-01-Anbindung (S04) nach dessen Merge; Abnahme durch Philipp mit Mitspielern.
+**Nächste Aktion:** Abnahme durch Philipp mit Mitspielern (TEAMBAU-01…05).
 
 **Prüfstand:** 12 Domänentests und Browsertest mit zwei getrennten Browsern (1400/390 px) grün; Abnahme mit echten Mitspielern offen.
 
 **Nachweise:** [tests/team.test.mjs](../tests/team.test.mjs) — Faltung, Rechte, Zusammenführen vertauschbar/idempotent, Meldecode, Teampaket, Statustext.; [tests/e2e/team.e2e.mjs](../tests/e2e/team.e2e.mjs) — Zwei Browser: Paket mit Plan, Meldecode, Doppelübernahme, Bestätigen, Neuladen, Rückgängig.
 
-**Dateiumfang:** `packages/domain/src/team.ts`, `packages/domain/src/site.ts`, `apps/web/src/views/project/TeamTab.tsx`, `apps/web/src/views/project/TeamExchange.tsx`, `apps/web/src/views/project/TeamOpen.tsx`, `apps/web/src/team.css`, `tests/team.test.mjs`, `tests/e2e/team.e2e.mjs`, `docs/architecture/TEAMBAU.md`. **Abhängigkeiten:** BUILD-06, BACKUP-02. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/team.ts`, `packages/domain/src/site.ts`, `apps/web/src/views/project/TeamTab.tsx`, `apps/web/src/views/project/TeamExchange.tsx`, `apps/web/src/views/project/TeamOpen.tsx`, `apps/web/src/team.css`, `tests/team.test.mjs`, `tests/e2e/team.e2e.mjs`, `docs/architecture/TEAMBAU.md`, `packages/domain/src/program.ts`. **Abhängigkeiten:** BUILD-06, BACKUP-02. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

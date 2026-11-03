@@ -429,7 +429,7 @@ export interface TeamContext {
   /** Plan sections in build order. */
   readonly sections: readonly { readonly id: string; readonly name: string }[];
   /** site.program.builders (PROJ-01). */
-  readonly builders: readonly { readonly id: string; readonly name: string }[];
+  readonly builders: readonly { readonly id: string; readonly name: string; readonly player?: string }[];
 }
 
 export type TeamAction = TeamEventKind;
@@ -451,7 +451,7 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
   const names = new Map<string, string>(ctx.builders.map(b => [b.id, b.name]));
   const inProgram = new Set(ctx.builders.map(b => b.id));
   const roles = new Map<string, TeamRole>([[team.founder, 'leitung']]);
-  const players = new Map<string, string>();
+  const players = new Map<string, string>(ctx.builders.filter(b => b.player).map(b => [b.id, b.player!]));
   const known = new Set<string>([...inProgram, team.founder]);
   const lastActive = new Map<string, string>();
   type Mutable = { status: SectionTeamStatus; owner: string | null; doneBy?: string; verifiedBy?: string; note?: string; history: { at: string; by: string; text: string }[] };
@@ -981,9 +981,37 @@ export function readTeamServerFile(textValue: string): { teamId: string; name: s
 // ---------------------------------------------------------------- project integration
 
 /** Plan builders (PROJ-01 `site.program.builders`), empty without a program. */
-export function programBuilders(site: unknown): { id: string; name: string }[] {
+export function programBuilders(site: unknown): { id: string; name: string; player?: string }[] {
   const program = isObj(site) && isObj(site.program) ? site.program : null;
-  return program && Array.isArray(program.builders) ? (program.builders as unknown[]).filter(isObj).map(b => ({ id: String(b.id), name: String(b.name) })) : [];
+  return program && Array.isArray(program.builders) ? (program.builders as unknown[]).filter(isObj)
+    .map(b => ({ id: String(b.id), name: String(b.name), ...(typeof b.player === 'string' && { player: b.player }) })) : [];
+}
+
+/**
+ * Takes the team into the project planning (PROJ-01, COOP-01-S04): members who only joined the team
+ * become builders (same id, so the team log keeps pointing at them), Minecraft names are copied where
+ * the builder has none, and every section the team touched gets its current owner as assignment
+ * (a free section loses its assignment). Sections the team never touched keep their planning.
+ */
+export function teamIntoProgram(program: {
+  readonly builders: readonly { readonly id: string; readonly name: string; readonly player?: string }[];
+  readonly assignments: Readonly<Record<string, readonly string[]>>;
+}, view: TeamView): { builders: { id: string; name: string; player?: string }[]; assignments: Record<string, string[]>; added: number; linked: number; assigned: number } {
+  const builders = program.builders.map(b => ({ ...b }));
+  let added = 0, linked = 0, assigned = 0;
+  for (const m of view.members) {
+    if (m.role === 'gast' && !m.sections.length) continue;
+    const b = builders.find(x => x.id === m.id);
+    if (!b) { builders.push({ id: m.id, name: m.name.slice(0, 60), ...(m.player && { player: m.player }) }); added++; }
+    else if (m.player && !b.player) { b.player = m.player; linked++; }
+  }
+  const assignments: Record<string, string[]> = Object.fromEntries(Object.entries(program.assignments).map(([k, v]) => [k, [...v]]));
+  for (const [section, owners] of Object.entries(teamAssignments(view))) {
+    const before = (assignments[section] ?? []).join();
+    if (owners.length) assignments[section] = owners; else delete assignments[section];
+    if ((assignments[section] ?? []).join() !== before) assigned++;
+  }
+  return { builders, assignments, added, linked, assigned };
 }
 
 /** Context of the fold for a site plan: its sections and builders. */

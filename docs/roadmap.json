@@ -6221,7 +6221,8 @@
         "apps/web/src/team.css",
         "tests/team.test.mjs",
         "tests/e2e/team.e2e.mjs",
-        "docs/architecture/TEAMBAU.md"
+        "docs/architecture/TEAMBAU.md",
+        "packages/domain/src/program.ts"
       ],
       "legacyIds": [],
       "steps": [
@@ -6243,7 +6244,7 @@
         {
           "id": "COOP-01-S04",
           "title": "Bauleute aus PROJ-01 mit Spielernamen verknüpfen und Zuweisungen in den Zeitplan spiegeln.",
-          "done": false
+          "done": true
         },
         {
           "id": "COOP-01-S05",
@@ -6255,7 +6256,7 @@
         "Zwei Browser tauschen Pakete/Codes in beliebiger Reihenfolge und kommen zum selben Stand; doppelte Übernahme und fehlende Rechte werden gezeigt; nichts geht verloren.",
         "Kein Backend, keine Konten, kein automatischer Versand nach außen."
       ],
-      "next": "PROJ-01-Anbindung (S04) nach dessen Merge; Abnahme durch Philipp mit Mitspielern.",
+      "next": "Abnahme durch Philipp mit Mitspielern (TEAMBAU-01…05).",
       "blockers": [],
       "evidence": [
         {
@@ -6275,7 +6276,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T16:20:13.104Z"
+      "updatedAt": "2026-11-03T19:07:52.295Z"
     },
     {
       "id": "COOP-02",
@@ -11961,6 +11962,33 @@
           "done": 4,
           "total": 5,
           "next": "Abnahme durch Philipp (S05) mit einem großen Bau im Spiel."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T19:07:52.295Z",
+      "kind": "progress",
+      "items": [
+        "COOP-01"
+      ],
+      "summary": "COOP-01-S04: Bauleute der Projektplanung mit Minecraft-Namen (Builder.player), Team per Knopf in die Planung übernehmen (Beigetretene als Bauleute, Zuweisungen aus den Abschnittsinhabern). Tests team/program und Browsertests grün.",
+      "files": [
+        "apps/web/src/views/project/TeamTab.tsx",
+        "docs/TESTING.md",
+        "docs/architecture/TEAMBAU.md",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/program.ts",
+        "packages/domain/src/team.ts",
+        "tests/e2e/team.e2e.mjs",
+        "tests/team.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp mit Mitspielern (TEAMBAU-01…05)."
         }
       ]
     }
