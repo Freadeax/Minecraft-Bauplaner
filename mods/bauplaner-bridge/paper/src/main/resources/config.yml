@@ -27,3 +27,20 @@ team:
   # Teamkanal für Spieler mit Bauplaner-Mod (ab 0.10.0): Abschnitte in Inhaberfarbe, Meldungen ohne Befehle, Abgleich mit dem Planer.
   # Die Mod nutzt ihn nur, wenn der Spieler ihn einmal je Server erlaubt (/bauplaner team erlauben). Spieler ohne Mod merken nichts.
   kanal: true
+
+# Geprüfte Lagerkisten (COOP-05, docs/architecture/LAGERKISTEN.md). Baumeister markieren Kisten mit /bauplaner lager markieren.
+# Das Plugin zählt beim Öffnen und Schließen, bucht Ein- und Ausgaben je Spieler und meldet Abweichungen. Es verändert nie Kisteninhalte.
+lager:
+  # sperren: verbotene Klicks, Abbau und Anbau werden verhindert · hinweis: erlaubt, aber gebucht und den Baumeistern gemeldet.
+  modus: sperren
+  # Schutzstufe neuer Lager: offen, team (Team legt ein, ab Helfer entnehmen), abschnitt (entnehmen nur Inhaber des Abschnitts
+  # und Baumeister), eingang (alle legen ein, entnehmen nur Baumeister) oder gesperrt (nur Baumeister und Bauleitung).
+  schutz-standard: team
+  # Trichter und Trichterloren: einlegen (dürfen füllen, nicht leeren), beides oder aus.
+  trichter: einlegen
+  # Explosionen (Creeper, TNT, Betten) zerstören markierte Lager nicht.
+  explosionsschutz: true
+  # Lager prüfen, sobald ihr Chunk geladen wird (höchstens einmal je Minute und Lager).
+  pruefen-beim-laden: true
+  # Abweichungen und fehlende Kisten im Chat an Baumeister und Bauleitung melden (online und beim Betreten).
+  meldung-an-baumeister: true

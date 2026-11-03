@@ -26,7 +26,8 @@
     "COOP-01",
     "COOP-02",
     "COOP-04",
-    "PROJ-01"
+    "PROJ-01",
+    "COOP-05"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -6355,7 +6356,7 @@
       "acceptance": [
         "Selbstmeldung, Bestätigung und Spielnachweis bleiben getrennt sichtbar."
       ],
-      "next": "Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung Lagerkisten im Thread „Server-Plugin mit geprüften Lagerkisten“.",
+      "next": "Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung in COOP-05 (geprüfte Lagerkisten, docs/architecture/LAGERKISTEN.md).",
       "blockers": [],
       "evidence": [
         {
@@ -6376,6 +6377,81 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-03T17:57:24.438Z"
+    },
+    {
+      "id": "COOP-05",
+      "title": "Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf",
+      "phase": "P4",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Server-Plugin mit geprüften Lagerkisten“)",
+      "dependencies": [
+        "COOP-04"
+      ],
+      "scope": [
+        "mods/bauplaner-bridge/paper/",
+        "packages/domain/src/team.ts",
+        "apps/web/src/views/project/TeamProof.tsx",
+        "docs/architecture/LAGERKISTEN.md",
+        "scripts/bridge_paperlager.mjs",
+        "apps/web/src/testing/testplan.ts"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "COOP-05-S01",
+          "title": "Konzept LAGERKISTEN.md, reine Regeln StoreLedger/StoreIndex mit Unit-Tests.",
+          "done": true
+        },
+        {
+          "id": "COOP-05-S02",
+          "title": "StorageModule: Markieren, Schutzstufen bei Klicks/Trichtern/Explosionen/Abbau/Anbau, Buchungen je Öffnen, Prüfen gegen Sollstand, Siegeln, Bedarf, Verlauf.",
+          "done": true
+        },
+        {
+          "id": "COOP-05-S03",
+          "title": "Planer: store.config/move/check/seal falten, Lagerkisten mit Status, Abweichung und Buchungen im Reiter Team.",
+          "done": true
+        },
+        {
+          "id": "COOP-05-S04",
+          "title": "Lagerstände über den Teamkanal an die Mod (COOP-03) und Paper-Jar 0.10.0 auf #/mod.",
+          "done": false
+        },
+        {
+          "id": "COOP-05-S05",
+          "title": "Abnahme LAGER-01…09 mit echten Spielern auf Philipps Server.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Jede Abweichung zwischen Zählung und Sollstand bleibt sichtbar, bis ein Baumeister siegelt; Buchungen je Spieler und Trichter stimmen mit dem Inhalt; das Plugin verändert nie Kisteninhalte."
+      ],
+      "next": "Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "scripts/bridge_paperlager.mjs",
+          "note": "Echter Server 1.18.2, 1.21.4, 26.3: Abweichung, Siegel, Trichter, TNT, Doppelkiste, fehlende Kiste, Bedarf, Sammelauftrag, Neustart; Planer-Faltung = Server."
+        },
+        {
+          "path": "tests/lager.test.mjs",
+          "note": "Faltung, Rechte, Herkunft und Prüfung der neuen Arten."
+        },
+        {
+          "path": "mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndexTest.java",
+          "note": "Unit-Tests der Rechte-Matrix, Differenzen, Prüfsumme und Faltung (StoreIndex)."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Servertests und Unit-Tests bestanden; Inventarklicks, Schutz und Buchungen beim Schließen brauchen echte Spieler (LAGER-02…06)."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-03T18:50:00.000Z"
     },
     {
       "id": "PROJ-01",

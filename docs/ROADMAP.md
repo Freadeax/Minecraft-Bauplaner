@@ -15,7 +15,7 @@ Stand: 2026-11-03T18:54:07.036Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 15 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 53 |
+| 🧩 Implementiert · Abnahme offen | 54 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -43,8 +43,9 @@ Stand: 2026-11-03T18:54:07.036Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 - **SIZE-01 · Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05) mit einem großen Bau im Spiel.
 - **COOP-01 · Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“** — 🧩 Implementiert · Abnahme offen, 3/5 Teilschritte. Nächster Schritt: PROJ-01-Anbindung (S04) nach dessen Merge; Abnahme durch Philipp mit Mitspielern.
 - **COOP-02 · Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme auf Philipps Server.
-- **COOP-04 · Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung Lagerkisten im Thread „Server-Plugin mit geprüften Lagerkisten“.
+- **COOP-04 · Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung in COOP-05 (geprüfte Lagerkisten, docs/architecture/LAGERKISTEN.md).
 - **PROJ-01 · Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel.
+- **COOP-05 · Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf** — 🧩 Implementiert · Abnahme offen, 3/5 Teilschritte. Nächster Schritt: Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -207,6 +208,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [DEFER-02](#defer-02) | Optionale Discord-Integration | ⏸ Zurückgestellt | 0/1 | AUTH-01 | ausstehend | ausstehend |
 | [COOP-03](#coop-03) | Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm | 🧩 Implementiert · Abnahme offen | 2/3 | COOP-02, GAME-08 | ausstehend | ausstehend |
 | [COOP-04](#coop-04) | Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-02, LAGER-01 | ausstehend | ausstehend |
+| [COOP-05](#coop-05) | Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf | 🧩 Implementiert · Abnahme offen | 3/5 | COOP-04 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
 
@@ -2117,13 +2119,35 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Selbstmeldung, Bestätigung und Spielnachweis bleiben getrennt sichtbar.
 
-**Nächste Aktion:** Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung Lagerkisten im Thread „Server-Plugin mit geprüften Lagerkisten“.
+**Nächste Aktion:** Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung in COOP-05 (geprüfte Lagerkisten, docs/architecture/LAGERKISTEN.md).
 
 **Prüfstand:** Servertest auf fünf Paper-Versionen und Browsertest bestanden; Zählen beim Bauen und Schließen braucht echte Spieler.
 
 **Nachweise:** [scripts/bridge_paperteam.mjs](../scripts/bridge_paperteam.mjs) — Echte Kiste, Zählungen, Baunachweis und Abschalten auf Paper 1.18.2 bis 26.3; Planer-Faltung = Server.; [tests/team.test.mjs](../tests/team.test.mjs) — Faltung Baunachweis und Lagerkisten.
 
 **Dateiumfang:** `mods/bauplaner-bridge/paper/`, `packages/domain/src/team.ts`, `apps/web/src/views/project/TeamProof.tsx`. **Abhängigkeiten:** COOP-02, LAGER-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### COOP-05
+
+**Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Server-Plugin mit geprüften Lagerkisten“) · Aktualisiert: 2026-11-03T18:50:00.000Z
+
+- [x] COOP-05-S01: Konzept LAGERKISTEN.md, reine Regeln StoreLedger/StoreIndex mit Unit-Tests.
+- [x] COOP-05-S02: StorageModule: Markieren, Schutzstufen bei Klicks/Trichtern/Explosionen/Abbau/Anbau, Buchungen je Öffnen, Prüfen gegen Sollstand, Siegeln, Bedarf, Verlauf.
+- [x] COOP-05-S03: Planer: store.config/move/check/seal falten, Lagerkisten mit Status, Abweichung und Buchungen im Reiter Team.
+- [ ] COOP-05-S04: Lagerstände über den Teamkanal an die Mod (COOP-03) und Paper-Jar 0.10.0 auf #/mod.
+- [ ] COOP-05-S05: Abnahme LAGER-01…09 mit echten Spielern auf Philipps Server.
+
+**Abnahme:** Jede Abweichung zwischen Zählung und Sollstand bleibt sichtbar, bis ein Baumeister siegelt; Buchungen je Spieler und Trichter stimmen mit dem Inhalt; das Plugin verändert nie Kisteninhalte.
+
+**Nächste Aktion:** Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server.
+
+**Prüfstand:** Servertests und Unit-Tests bestanden; Inventarklicks, Schutz und Buchungen beim Schließen brauchen echte Spieler (LAGER-02…06).
+
+**Nachweise:** [scripts/bridge_paperlager.mjs](../scripts/bridge_paperlager.mjs) — Echter Server 1.18.2, 1.21.4, 26.3: Abweichung, Siegel, Trichter, TNT, Doppelkiste, fehlende Kiste, Bedarf, Sammelauftrag, Neustart; Planer-Faltung = Server.; [tests/lager.test.mjs](../tests/lager.test.mjs) — Faltung, Rechte, Herkunft und Prüfung der neuen Arten.; [mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndexTest.java](../mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndexTest.java) — Unit-Tests der Rechte-Matrix, Differenzen, Prüfsumme und Faltung (StoreIndex).
+
+**Dateiumfang:** `mods/bauplaner-bridge/paper/`, `packages/domain/src/team.ts`, `apps/web/src/views/project/TeamProof.tsx`, `docs/architecture/LAGERKISTEN.md`, `scripts/bridge_paperlager.mjs`, `apps/web/src/testing/testplan.ts`. **Abhängigkeiten:** COOP-04. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

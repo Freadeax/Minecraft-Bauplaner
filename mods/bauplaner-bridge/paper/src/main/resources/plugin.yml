@@ -8,7 +8,7 @@ website: https://freadeax.github.io/Minecraft-Bauplaner/#/mod
 commands:
   bauplaner:
     description: Bauplan laden, Anker setzen und den Baufortschritt aufnehmen.
-    usage: /bauplaner [plaene|plan|anker|scan|abbrechen|status|team|abschnitte|nehmen|abgeben|fertig|zeigen|notiz|notizen|geliefert|sammle|zuweisen|pruefen|rolle]
+    usage: /bauplaner [plaene|plan|anker|scan|abbrechen|status|team|abschnitte|nehmen|abgeben|fertig|zeigen|notiz|notizen|geliefert|sammle|zuweisen|pruefen|rolle|lager|nachweis|beitrag]
     aliases: [bp]
     permission: bauplaner.use
 permissions:
@@ -26,4 +26,10 @@ permissions:
     default: true
   bauplaner.team.leitung:
     description: Teamdateien laden und ausführen, Rollen vergeben, vom Schutz ausgenommen.
+    default: op
+  bauplaner.lager.use:
+    description: Lagerkisten des Teams sehen – Liste, Inhalt, Bedarf, Verlauf; was jemand an einer Kiste darf, sagt ihre Schutzstufe und die Rolle im Team.
+    default: true
+  bauplaner.lager.verwalten:
+    description: Lagerkisten markieren, einstellen und siegeln ohne Teamrolle, vom Lagerschutz ausgenommen.
     default: op

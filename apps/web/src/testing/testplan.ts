@@ -21,14 +21,17 @@ export interface TestCase {
 export interface TestArea {
   readonly id: string;
   readonly title: string;
-  /** Planer (Browser) oder Mod (im Spiel). */
-  readonly kind: 'planer' | 'mod';
+  /** Planer (Browser), Mod (im Spiel) oder Server (Paper-Plugin, nur auf einem echten Server testbar). */
+  readonly kind: 'planer' | 'mod' | 'server';
   readonly intro: string;
   readonly cases: readonly TestCase[];
 }
 
 const k = (id: string, title: string, steps: readonly string[], expect: string, start?: string): TestCase => ({ id, title, steps, expect, level: 'kern', ...(start && { start }) });
 const v = (id: string, title: string, steps: readonly string[], expect: string, start?: string): TestCase => ({ id, title, steps, expect, level: 'vertieft', ...(start && { start }) });
+
+/** Anzeigename der Art eines Bereichs. */
+export const AREA_KIND_LABEL: Readonly<Record<TestArea['kind'], string>> = { planer: 'Planer', mod: 'Mod', server: 'Server' };
 
 export const TEST_AREAS: readonly TestArea[] = [
   {
@@ -140,6 +143,21 @@ export const TEST_AREAS: readonly TestArea[] = [
       v('TEAMBAU-07', 'Baunachweis auf dem Server', ['Mit zwei Spielern in Abschnitten des Teams Blöcke setzen und abbauen (einer innerhalb, einer außerhalb der Abschnitte).', '`/bauplaner beitrag` und als Baumeister `/bauplaner beitrag alle`.', 'Ein Spieler: `/bauplaner nachweis aus`, dann wieder `beitrag alle`.', '`/bauplaner team export` und im Planer einlesen, Bereich „Baunachweis & Lager“ ansehen.'], 'Gezählt wird nur in Teamabschnitten; je Abschnitt stimmen die Anteile; nach „nachweis aus“ verschwinden die Zahlen dieses Spielers überall (auch frühere); der Planer zeigt dieselben Zahlen wie der Server.'),
       v('TEAMBAU-08', 'Lagerkiste des Teams', ['Als Baumeister auf eine Kiste schauen: `/bauplaner lager setzen Hauptlager`.', 'Als anderer Spieler etwas hineinlegen und die Kiste schließen, später etwas herausnehmen (auch eine gefüllte Shulkerkiste einlegen).', '`/bauplaner lager`; Ausfuhr im Planer einlesen, „Bestand ins Baustellen-Lager übernehmen“.'], 'Beim Schließen meldet die Aktionsleiste „+64 stone“ bzw. „-32 …“; der Inhalt der Shulkerkiste wird mitgezählt; im Planer stehen Bestand, „ins Lager“ und „entnommen“ beim richtigen Spieler; das Lager im Reiter „Baustelle“ übernimmt die Mengen (Strg+Z möglich).'),
       v('TEAMBAU-09', 'Teambau im Spiel mit der Mod 0.10.0', ['Mod 0.10.0 installieren, im Planer Reiter „Team“ „Ich bin“ wählen, im Menü „Spiel“ koppeln, Plan ins Spiel schicken.', 'Im Reiter „Team“ unter „Mit Spiel abgleichen“ „Jetzt abgleichen“.', 'Im Spiel `/bauplaner team abschnitte`, `/bauplaner team nehmen 2`, `/bauplaner team mein`, `/bauplaner team material`, `/bauplaner team notiz frage Treppe?`.', 'Auf dem Server mit Plugin: `/bauplaner team erlauben`, dann `/bauplaner team status`; im Planer „Meldungen vom Server holen“.'], 'Abschnitte erscheinen als Rahmen in der Farbe ihres Inhabers, das HUD zeigt „Mein Auftrag … %“; nur der eigene Abschnitt ist eingeblendet. Beim nächsten Abgleich zeigt die Website die Meldungen aus dem Spiel zur Übernahme. Ohne `erlauben` sendet die Mod nichts an den Server (Status „Plugin da – /bauplaner team erlauben“); mit Erlaubnis steht „live“ und Meldungen anderer Spieler kommen an.'),
+    ],
+  },
+  {
+    id: 'LAGER', kind: 'server', title: 'Server: geprüfte Lagerkisten',
+    intro: 'Lagerkisten des Teams im Paper-Plugin (COOP-05): markieren, zählen, prüfen, schützen, Buchungen und Bedarf. Braucht einen Paper-Server mit dem Plugin (1.18.2 bis 26.3), die Serverdatei eines Teams und zwei Spieler: einer mit OP oder Rolle Baumeister, einer als Helfer. Die Mod wird dafür nicht gebraucht. Bei jedem Fehler die Ausgabe von `/bauplaner lager info` und die Serverlog-Zeilen mit „BauplanerBridge“ anhängen.',
+    cases: [
+      k('LAGER-01', 'Plugin installieren und Lager markieren', ['Auf der Seite „Spiel“ die Paper-Jar laden und nach plugins/ legen, alte bauplaner-bridge-paper-*.jar löschen, Server neu starten.', 'Serverdatei des Teams nach plugins/BauplanerBridge/team/ legen, `/bauplaner team laden`.', 'Als Baumeister eine Kiste in einem Abschnitt aufstellen, daraufschauen und `/bauplaner lager markieren Steinlager`.'], 'Antwort „Lager „Steinlager“ markiert“, „Zugeordnet: Abschnitt …“ und „erstmals gezählt“. `/bauplaner lager liste` zeigt das Lager als „geprüft“.', '#/mod'),
+      k('LAGER-02', 'Einlegen und entnehmen wird gebucht', ['Als Helfer die Kiste öffnen: Aktionsleiste lesen.', '64 Stein hineinlegen, 10 wieder herausnehmen, Kiste schließen.', '`/bauplaner lager verlauf` (auf die Kiste schauen).'], 'Die Aktionsleiste nennt Lager, Abschnitt, Status und „du darfst einlegen und entnehmen“. Nach dem Schließen: „Gebucht im Lager … +54 stone“. Der Verlauf zeigt die Buchung mit deinem Namen.'),
+      k('LAGER-03', 'Schutzstufen', ['Als Baumeister `/bauplaner lager schutz abschnitt` auf die Kiste.', 'Als Helfer ohne den Abschnitt: etwas herausnehmen (auch Umschalt-Klick und Doppelklick), dann etwas hineinlegen.', 'Als Baumeister `/bauplaner lager schutz gesperrt`; als Helfer wieder hineinlegen.'], 'Bei „abschnitt“ wird das Herausnehmen verhindert (Hinweis im Chat), Hineinlegen geht. Bei „gesperrt“ geht beides nicht. Kein Item verschwindet oder verdoppelt sich.'),
+      k('LAGER-04', 'Abbauen, Trichter, Explosion', ['Als Helfer versuchen, das Lager abzubauen.', 'Einen Trichter unter das Lager setzen; einen Trichter mit Items darüber.', 'Neben dem Lager TNT zünden (Testwelt!).'], 'Abbauen wird verhindert („darf nur ein Baumeister abbauen“). Der untere Trichter zieht nichts heraus, der obere füllt ein (Verlauf: „Trichter: +…“). Das Lager übersteht die Explosion samt Inhalt.'),
+      k('LAGER-05', 'Abweichung erkennen und siegeln', ['Mit einem anderen Plugin, `/item replace` oder im Kreativmodus per Mittelklick-Kopie den Inhalt ändern, ohne die Kiste zu öffnen (z. B. `/item replace block <x y z> container.0 with dirt 5`).', 'Als Baumeister die Kiste öffnen oder `/bauplaner lager pruefen`.', '`/bauplaner lager siegeln Aufgeräumt`.'], 'Beim Prüfen: „abweichend – +5 dirt“, Baumeister bekommen eine Meldung (auch beim nächsten Betreten des Servers). Nach dem Siegeln ist das Lager wieder „geprüft“; `/bauplaner lager info` nennt, wer gesiegelt hat.'),
+      v('LAGER-06', 'Doppelkiste und Shulkerkisten', ['An ein markiertes Lager eine zweite Kiste anbauen (als Baumeister; als Helfer versuchen).', 'Eine gefüllte Shulkerkiste hineinlegen, schließen, `/bauplaner lager info`.'], 'Helfer können nicht anbauen; beim Baumeister gehören beide Hälften zum Lager. Der Inhalt der Shulkerkiste wird mitgezählt.'),
+      v('LAGER-07', 'Bedarf und Sammelaufträge', ['Serverdatei mit Materialbedarf (aktueller Planer) laden.', '`/bauplaner lager bedarf 1` und `/bauplaner lager bedarf`.', '`/bauplaner sammle stone` ohne Menge.'], 'Liste je Material: Bedarf, im Lager, fehlt (rot) oder ✓. „sammle“ ohne Menge übernimmt genau die fehlende Menge abzüglich dessen, was andere schon sammeln.'),
+      v('LAGER-08', 'Neustart und Planer', ['Server neu starten; `/bauplaner lager liste`.', '`/bauplaner team export`, die Datei im Planer im Reiter „Team“ unter „Einlesen“ wählen.', 'Bereich „Baunachweis & Lager“ ansehen.'], 'Nach dem Neustart sind alle Lager mit Status da. Im Planer erscheint jedes Lager mit Status, Abschnitt, Schutz, offener Abweichung, Siegel und den Buchungen je Spieler und Trichter.', '#/'),
+      v('LAGER-09', 'Einstellung „hinweis“', ['In plugins/BauplanerBridge/config.yml `lager: modus: hinweis` setzen, Server neu starten.', 'Als Helfer aus einem „gesperrt“-Lager etwas nehmen.'], 'Die Entnahme geht, wird aber gebucht; Hinweis an den Spieler und eine Meldung an Baumeister.'),
     ],
   },
   {

@@ -1011,3 +1011,9 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - Kleine Eingriffe: `site.ts` (optionales Feld `program`, `checkProgram` in `checkSite`, `removeSection` bereinigt), `tabs.ts`, `icons.tsx`, `ProjectsView.tsx` (Meilenstein-Chip), `updates.css`, `index.ts`.
 - **An „Bibliothek um größere Projekte erweitern“ (GROSS-01) und „Projekt aus ChatGPT-Verlauf ausarbeiten“:** Abschnitte „Straßen & Plätze“ zuerst und „Phase N: …“ benennen; `suggestProgram(site, 'phases')` macht daraus Meilensteine und Abhängigkeiten, optional direkt `applyOperation(p, siteOperation(suggestProgram(siteOf(p)), 'Projektplan'))`. Nichts an Zonen/Wegen/Weltplan geändert.
 - Reservierung mit dem Push beendet. Offen: PROJ-01-S05 Abnahme durch Philipp in der Testphase.
+
+### MSG-COOP-05 · 03.11.2026 · Claude (Thread „Server-Plugin mit geprüften Lagerkisten“) · Geprüfte Lagerkisten
+- Plugin-Lager liegt jetzt in `StorageModule.java` (+ `StoreLedger`, `StoreIndex`, `StoreWorld`); der Lagerabschnitt in `TeamModule.java` ist entfernt, `TeamModule` reicht `lager …` weiter und stellt `StorageModule.TeamAccess` bereit.
+- Neue Ereignisarten hinten angehängt in `team.ts` und `TeamLog.java`: `store.config`, `store.seal` (Baumeister+), `store.move`, `store.check` (nur Server). Bestehende Arten unverändert.
+- **An Mod-Thread (COOP-03):** Lagerstände für `state.stores` und `sections[].need` hänge ich an `TeamChannel.decorate`, sobald der Kanal auf main ist; Paper-Jar 0.10.0 gemeinsam.
+- **An Planer-Thread:** `sections[].need` und `need` in der Serverdatei liest `/bauplaner lager bedarf` schon (Format `[{item, count}]`).

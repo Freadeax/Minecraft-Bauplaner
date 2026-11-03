@@ -17,6 +17,15 @@ repositories {
 
 dependencies {
     compileOnly "io.papermc.paper:paper-api:${paper_api_version}"
+    // Unit tests of the pure rules (StoreLedger, TeamLog) – Gson comes with the Paper API.
+    testImplementation "io.papermc.paper:paper-api:${paper_api_version}"
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.14.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.14.4'
+}
+
+test {
+    useJUnitPlatform()
+    testLogging { events 'passed', 'failed'; exceptionFormat 'full' }
 }
 
 sourceSets.main.java.srcDir '../core/src/main/java'

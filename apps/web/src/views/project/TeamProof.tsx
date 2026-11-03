@@ -1,4 +1,4 @@
-import type { TeamEventBody, TeamRole, TeamView } from '../../../../../packages/domain/src/index.js';
+import type { StoreChest, TeamEventBody, TeamRole, TeamView } from '../../../../../packages/domain/src/index.js';
 import { canTeam } from '../../../../../packages/domain/src/index.js';
 import { formatNumber } from '../../app/ui';
 
@@ -6,6 +6,30 @@ const short = (id: string) => id.replace(/^minecraft:/, '');
 const when = (iso?: string) => iso ? new Date(iso).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '–';
 const total = (m: Readonly<Record<string, number>>) => Object.values(m).reduce((a, b) => a + b, 0);
 const top = (m: Readonly<Record<string, number>>, n = 6) => Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, n);
+const signed = (m: Readonly<Record<string, number>>, n = 6) => Object.entries(m).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1])).slice(0, n)
+  .map(([i, v]) => `${v > 0 ? '+' : '−'}${formatNumber(Math.abs(v))} ${short(i)}`).join(', ');
+const STATUS: Record<StoreChest['status'], string> = { geprueft: 'geprüft', abweichend: 'abweichend', fehlt: 'Kiste fehlt', ungeprueft: 'ungeprüft' };
+const PROTECTION: Record<string, string> = { offen: 'offen für alle', team: 'Team', abschnitt: 'nur Abschnitt', eingang: 'Eingang (nur einlegen)', gesperrt: 'gesperrt' };
+
+/** One checked store (COOP-05): status, content, open difference, bookings per member. */
+function StoreRow({ c, sections, nameOf }: { c: StoreChest; sections: readonly { readonly id: string; readonly name: string }[]; nameOf(id?: string | null): string }) {
+  const section = c.section ? sections.find(x => x.id === c.section)?.name ?? 'entfernter Abschnitt' : 'ganzes Projekt';
+  const movers = [...new Set([...Object.keys(c.movedIn), ...Object.keys(c.movedOut)])];
+  const hopper = Object.keys(c.hopperIn).length || Object.keys(c.hopperOut).length;
+  return <li className={`team-store ${c.status}`} data-status={c.status}>
+    <div className="team-store-head"><strong>{c.name}</strong><span className="team-store-status">{STATUS[c.status]}</span>
+      <span>{section} · {c.purpose} · Schutz {PROTECTION[c.protection ?? (c.purpose === 'eingang' ? 'eingang' : 'team')]}</span>
+      <small>{c.pos.join(' ')}{c.pos2 ? ` + ${c.pos2.join(' ')}` : ''}{c.dimension !== 'minecraft:overworld' ? ` · ${short(c.dimension)}` : ''}</small></div>
+    <small>{c.countedAt ? `${formatNumber(total(c.items))} Items · gezählt ${when(c.countedAt)} von ${nameOf(c.countedBy)}${c.partial ? ' · Liste gekürzt' : ''}` : 'noch nicht gezählt'}
+      {c.checkedAt ? ` · geprüft ${when(c.checkedAt)}` : ''}{c.sealedBy ? ` · gesiegelt ${when(c.sealedAt)} von ${nameOf(c.sealedBy)}` : ''}</small>
+    {Object.keys(c.deviation).length > 0 && <p className="team-store-deviation">Ohne Buchung verändert: {signed(c.deviation, 8)}. Ein Baumeister prüft die Kiste und bestätigt im Spiel mit <code>/bauplaner lager siegeln</code>.</p>}
+    {c.status === 'fehlt' && <p className="team-store-deviation">An der Stelle steht keine Kiste mehr. Im Spiel neu aufstellen oder mit <code>/bauplaner lager entmarkieren</code> aufheben.</p>}
+    {(movers.length > 0 || hopper > 0) && <ul className="team-store-moves" aria-label={`Buchungen in ${c.name}`}>
+      {movers.map(m => <li key={m}><span>{nameOf(m)}</span><span>{top(c.movedIn[m] ?? {}, 3).map(([i, n]) => `+${formatNumber(n)} ${short(i)}`).join(', ')}{c.movedIn[m] && c.movedOut[m] ? ' · ' : ''}{top(c.movedOut[m] ?? {}, 3).map(([i, n]) => `−${formatNumber(n)} ${short(i)}`).join(', ')}</span></li>)}
+      {hopper > 0 && <li><span>Trichter</span><span>{top(c.hopperIn, 3).map(([i, n]) => `+${formatNumber(n)} ${short(i)}`).join(', ')}{top(c.hopperOut, 3).map(([i, n]) => ` −${formatNumber(n)} ${short(i)}`).join(',')}</span></li>}
+    </ul>}
+  </li>;
+}
 
 /**
  * Baunachweis und Lager (COOP-04, docs/architecture/TEAMBAU.md §8–9): numbers measured by the server
@@ -35,7 +59,7 @@ export function TeamProof({ view, sections, me, role, act, nameOf, sectionBlocks
       {self && <button className="link-button" onClick={() => act({ kind: 'member.tally', member: self.id, on: !self.tally }, self.tally ? 'Baunachweis aus' : 'Baunachweis an')}>
         {self.tally ? 'Meinen Baunachweis abschalten' : 'Meinen Baunachweis einschalten'}</button>}</div>
     {nothing && <p className="muted">Das Paper-Plugin zählt auf dem Server, wer in welchem Abschnitt wie viele Blöcke gesetzt hat, und den Inhalt der Lagerkisten.
-      Im Spiel: <code>/bauplaner lager setzen &lt;Name&gt;</code> (Baumeister, auf die Kiste schauen), <code>/bauplaner beitrag</code>, <code>/bauplaner nachweis aus</code>.
+      Im Spiel: <code>/bauplaner lager markieren &lt;Name&gt;</code> (Baumeister, auf die Kiste schauen), <code>/bauplaner lager bedarf</code>, <code>/bauplaner beitrag</code>, <code>/bauplaner nachweis aus</code>.
       Die Zahlen kommen mit der Ausfuhr (<code>/bauplaner team export</code>) hierher.</p>}
     {builders.length > 0 && <>
       <table className="team-table team-proof-members"><thead><tr><th>Mitglied</th><th className="num">gesetzt</th><th className="num">abgebaut</th><th>ins Lager</th><th>entnommen</th></tr></thead>
@@ -56,8 +80,9 @@ export function TeamProof({ view, sections, me, role, act, nameOf, sectionBlocks
     {Object.keys(view.placedBlocks).length > 0 && <><h4>Verbaut</h4>
       <p className="team-chips static">{top(view.placedBlocks, 12).map(([i, n]) => <span key={i}>{formatNumber(n)} × {short(i)}</span>)}</p></>}
     {view.stores.length > 0 && <><h4>Lagerkisten</h4>
-      <ul className="team-list">{view.stores.map(c => <li key={c.id}><strong>{c.name}</strong><span>{c.pos.join(' ')}{c.dimension !== 'minecraft:overworld' ? ` · ${short(c.dimension)}` : ''}</span>
-        <small>{c.countedAt ? `${formatNumber(total(c.items))} Items · gezählt ${when(c.countedAt)} von ${nameOf(c.countedBy)}${c.partial ? ' · Liste gekürzt' : ''}` : 'noch nicht gezählt'}</small></li>)}</ul>
+      {(() => { const bad = view.stores.filter(c => c.status === 'abweichend' || c.status === 'fehlt').length;
+        return <p className={bad ? 'team-store-summary bad' : 'team-store-summary'}>{view.stores.length} Lager · {view.stores.filter(c => c.status === 'geprueft').length} geprüft{bad ? ` · ${bad} mit Abweichung oder fehlender Kiste` : ''}</p>; })()}
+      <ul className="team-list team-stores">{view.stores.map(c => <StoreRow key={c.id} c={c} sections={sections} nameOf={nameOf} />)}</ul>
       {stock.length > 0 && <><p className="team-chips static" aria-label="Lagerbestand">{stock.map(([i, n]) => <span key={i}>{formatNumber(n)} × {short(i)}</span>)}</p>
         {canTeam(role, 'section.verify') ? <button className="secondary" disabled={!differs} onClick={() => onTakeStock(view.stock)}>
           {differs ? 'Bestand ins Baustellen-Lager übernehmen' : 'Baustellen-Lager entspricht dem Bestand'}</button>

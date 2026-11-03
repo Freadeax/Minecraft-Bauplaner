@@ -112,7 +112,7 @@ try {
   await run(as('Carla', 'lager zaehlen'), /\+32 oak_log/);
   await run(as('Carla', 'lager zaehlen'), /unverändert/);
   await run('item replace block 1000 -60 1010 container.0 with minecraft:air', /Replaced|Changed/i);
-  await run(as('Anna_MC', 'lager zaehlen'), /-64 stone/);
+  await run(as('Anna_MC', 'lager zaehlen'), /[−-]64 stone/);
   await run(as('Ben_MC', 'lager'), /Bestand: 32 oak_log/);
   await run(as('Anna_MC', 'beitrag'), /Anna: 300 Blöcke gesetzt, 12 abgebaut/);
   await run(as('Ben_MC', 'beitrag alle'), /1\. Fundament: 340 Blöcke · Anna 300, Ben 40/);

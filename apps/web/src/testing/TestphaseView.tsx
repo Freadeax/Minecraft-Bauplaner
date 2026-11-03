@@ -7,7 +7,7 @@ import type { BugInput, Environment } from '../app/diagnostics';
 import { loggedErrors, onErrorLogged } from '../app/errorLog';
 import { useDocumentTitle } from '../app/Shell';
 import { download, REPO_URL } from '../app/ui';
-import { ALL_CASES, areaOf, TEST_AREAS } from './testplan';
+import { ALL_CASES, AREA_KIND_LABEL, areaOf, TEST_AREAS } from './testplan';
 import type { TestArea, TestCase } from './testplan';
 import { loadProtocol, protocolMarkdown, saveProtocol, setResult, summarize } from './protocol';
 import type { CaseResult, Protocol } from './protocol';
@@ -115,7 +115,7 @@ function AreaSection({ area, protocol, kernOnly, onResult, onReport }: { area: T
   const cases = kernOnly ? area.cases.filter(c => c.level === 'kern') : area.cases;
   return <section className="tp-area" aria-labelledby={`tp-${area.id}`} data-area={area.id}>
     <div className="tp-area-head">
-      <h2 id={`tp-${area.id}`}><span className={`tp-kind tp-kind-${area.kind}`}>{area.kind === 'mod' ? 'Mod' : 'Planer'}</span> {area.title}</h2>
+      <h2 id={`tp-${area.id}`}><span className={`tp-kind tp-kind-${area.kind}`}>{AREA_KIND_LABEL[area.kind]}</span> {area.title}</h2>
       <span className="tp-area-sum" aria-label={`${s.done} von ${s.total} geprüft`}>{s.ok > 0 && <em className="tp-ok">{s.ok} ✓</em>}{s.fehler > 0 && <em className="tp-fehler">{s.fehler} ✕</em>}{s.offen > 0 && <em className="tp-offen">{s.offen} ?</em>}<span>{s.done}/{s.total}</span></span>
     </div>
     <p className="muted">{area.intro}</p>

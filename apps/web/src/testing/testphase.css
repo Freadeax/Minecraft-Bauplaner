@@ -48,3 +48,4 @@
 .tp-report .button-row .button { border: 1px solid #324751; border-radius: 6px; padding: 8px 10px; font-size: 11px; background: #182b36; color: #d5e1e5; text-decoration: none; }
 .tp-report .button-row .button.primary { background: #1f4d3f; border-color: var(--mint); }
 @media (max-width: 600px) { .tp-case-head { flex-wrap: wrap; } .tp-page .page-head { padding-top: 16px; } }
+.tp-kind-server { background: #2b2140; color: #c9b2f2; }

@@ -68,16 +68,30 @@ export type TeamEventBody =
   /** Registers (or with remove removes) a storage chest of the team (COOP-04). */
   | { readonly kind: 'store.chest'; readonly chest: string; readonly name: string; readonly pos: readonly [number, number, number]; readonly dimension: string; readonly remove?: boolean }
   /** Full content of a storage chest, read by the server plugin when someone closed it; `more` when lines were cut. */
-  | { readonly kind: 'store.count'; readonly chest: string; readonly items: readonly ItemCount[]; readonly more?: boolean };
+  | { readonly kind: 'store.count'; readonly chest: string; readonly items: readonly ItemCount[]; readonly more?: boolean }
+  /** Checked storage chests (COOP-05, docs/architecture/LAGERKISTEN.md): section ('' = whole project), purpose, protection, second half of a double chest (null = none). */
+  | { readonly kind: 'store.config'; readonly chest: string; readonly section?: string; readonly purpose?: StorePurpose; readonly protection?: StoreProtection; readonly pos2?: readonly [number, number, number] | null; readonly name?: string }
+  /** What one player (or a hopper) put in / took out, net per opening; moves the expected content, never booked again as stored/taken. */
+  | { readonly kind: 'store.move'; readonly chest: string; readonly in?: readonly ItemCount[]; readonly out?: readonly ItemCount[]; readonly via: 'spieler' | 'trichter' | 'abbau'; readonly player?: string }
+  /** Server comparison of a count with the expected content; differences add up until a seal. */
+  | { readonly kind: 'store.check'; readonly chest: string; readonly status: 'geprueft' | 'abweichend' | 'fehlt'; readonly sha256?: string; readonly diff?: readonly { readonly item: string; readonly delta: number }[] }
+  /** Baumeister+ accepts the current content: open differences are closed. */
+  | { readonly kind: 'store.seal'; readonly chest: string; readonly sha256: string; readonly note?: string };
+export type StorePurpose = 'vorrat' | 'eingang' | 'ausgabe' | 'rest';
+export type StoreProtection = 'offen' | 'team' | 'abschnitt' | 'eingang' | 'gesperrt';
+export const STORE_PURPOSES: readonly StorePurpose[] = ['vorrat', 'eingang', 'ausgabe', 'rest'];
+export const STORE_PROTECTIONS: readonly StoreProtection[] = ['offen', 'team', 'abschnitt', 'eingang', 'gesperrt'];
+export type StoreStatus = 'ungeprueft' | 'geprueft' | 'abweichend' | 'fehlt';
 export type KnownTeamEvent = Base & TeamEventBody;
 /** Events of a newer planner version: kept and passed on, but without effect. */
 export type UnknownTeamEvent = Base & { readonly kind: string; readonly [key: string]: unknown };
 export type TeamEvent = KnownTeamEvent | UnknownTeamEvent;
 export type TeamEventKind = TeamEventBody['kind'];
 const KNOWN = new Set<string>(['member.join', 'member.role', 'member.player', 'section.claim', 'section.assign', 'section.release', 'section.done',
-  'section.verify', 'contribution', 'gather.claim', 'note.add', 'note.resolve', 'plan.release', 'build.tally', 'member.tally', 'store.chest', 'store.count']);
+  'section.verify', 'contribution', 'gather.claim', 'note.add', 'note.resolve', 'plan.release', 'build.tally', 'member.tally', 'store.chest', 'store.count',
+  'store.config', 'store.move', 'store.check', 'store.seal']);
 /** Kinds only the server plugin may write (origin server): they are measurements, not claims. */
-export const SERVER_ONLY_KINDS: ReadonlySet<string> = new Set(['build.tally', 'store.count']);
+export const SERVER_ONLY_KINDS: ReadonlySet<string> = new Set(['build.tally', 'store.count', 'store.move', 'store.check']);
 export const isKnownEvent = (e: TeamEvent): e is KnownTeamEvent => KNOWN.has(e.kind);
 
 export interface TeamState {
@@ -175,6 +189,40 @@ export function checkTeamEvent(raw: unknown): TeamEvent {
       text(raw.chest, 64, `${where}: Kiste`); itemLines(raw.items, 64, `${where}: Inhalt`, true);
       if (raw.more !== undefined && raw.more !== true) fail(`${where}: more ist nur true`);
       break;
+    case 'store.config': {
+      text(raw.chest, 64, `${where}: Kiste`);
+      if (raw.section !== undefined) text(raw.section, 64, `${where}: Abschnitt`, 0);
+      if (raw.purpose !== undefined && !STORE_PURPOSES.includes(raw.purpose as StorePurpose)) fail(`${where}: Zweck unbekannt`);
+      if (raw.protection !== undefined && !STORE_PROTECTIONS.includes(raw.protection as StoreProtection)) fail(`${where}: Schutzstufe unbekannt`);
+      if (raw.pos2 !== undefined && raw.pos2 !== null) {
+        if (!Array.isArray(raw.pos2) || raw.pos2.length !== 3) fail(`${where}: zweite Position ungültig`);
+        for (const c of raw.pos2 as unknown[]) int(c, -30_000_000, 30_000_000, `${where}: zweite Position`);
+      }
+      if (raw.name !== undefined) text(raw.name, 60, `${where}: Name`);
+      break;
+    }
+    case 'store.move':
+      text(raw.chest, 64, `${where}: Kiste`); itemLines(raw.in, 64, `${where}: eingelegt`); itemLines(raw.out, 64, `${where}: entnommen`);
+      if (raw.via !== 'spieler' && raw.via !== 'trichter' && raw.via !== 'abbau') fail(`${where}: Weg unbekannt`);
+      if (raw.player !== undefined) text(raw.player, 40, `${where}: Spieler`);
+      break;
+    case 'store.check': {
+      text(raw.chest, 64, `${where}: Kiste`);
+      if (raw.status !== 'geprueft' && raw.status !== 'abweichend' && raw.status !== 'fehlt') fail(`${where}: Prüfstatus unbekannt`);
+      if (raw.sha256 !== undefined && (typeof raw.sha256 !== 'string' || !/^[0-9a-f]{64}$/.test(raw.sha256))) fail(`${where}: Prüfsumme ungültig`);
+      if (raw.diff !== undefined) {
+        if (!Array.isArray(raw.diff) || raw.diff.length > 64) fail(`${where}: Abweichung: höchstens 64 Zeilen`);
+        for (const l of raw.diff as unknown[]) {
+          if (!isObj(l) || typeof l.item !== 'string' || !ITEM_ID.test(l.item)) fail(`${where}: Abweichung: Item ungültig`);
+          int((l as Record<string, unknown>).delta, -1e9, 1e9, `${where}: Abweichung: Menge`);
+        }
+      }
+      break;
+    }
+    case 'store.seal':
+      text(raw.chest, 64, `${where}: Kiste`);
+      if (typeof raw.sha256 !== 'string' || !/^[0-9a-f]{64}$/.test(raw.sha256)) fail(`${where}: Prüfsumme ungültig`);
+      optText(raw.note, 300, `${where}: Notiz`); break;
     case 'gather.claim': if (typeof raw.item !== 'string' || !ITEM_ID.test(raw.item)) fail(`${where}: Item ungültig`); int(raw.count, 0, 1e9, `${where}: Menge`); break;
     case 'note.add': text(raw.noteId, 64, `${where}: Notiz-ID`); text(raw.text, 500, `${where}: Text`);
       if (!NOTE_TAGS.includes(raw.tag as NoteTag)) fail(`${where}: Notizart unbekannt`);
@@ -318,6 +366,23 @@ export interface StoreChest {
   readonly countedAt?: string;
   readonly countedBy?: string;
   readonly partial: boolean;
+  /** COOP-05: section the store belongs to (absent = whole project), purpose and protection level. */
+  readonly section?: string;
+  readonly purpose: StorePurpose;
+  readonly protection?: StoreProtection;
+  readonly pos2?: readonly [number, number, number];
+  /** Server check: geprueft, abweichend (open difference since the last seal), fehlt (no container any more), ungeprueft. */
+  readonly status: StoreStatus;
+  readonly checkedAt?: string;
+  /** Unexplained difference since the last seal (+ more than expected, − less). */
+  readonly deviation: Readonly<Record<string, number>>;
+  readonly sealedBy?: string;
+  readonly sealedAt?: string;
+  /** Booked moves per member (store.move by players), and of hoppers. */
+  readonly movedIn: Readonly<Record<string, Readonly<Record<string, number>>>>;
+  readonly movedOut: Readonly<Record<string, Readonly<Record<string, number>>>>;
+  readonly hopperIn: Readonly<Record<string, number>>;
+  readonly hopperOut: Readonly<Record<string, number>>;
 }
 export interface TeamNote {
   readonly id: string;
@@ -374,6 +439,7 @@ const NEED: Readonly<Record<TeamEventKind, TeamRole>> = {
   'section.release': 'helfer', 'section.done': 'helfer', 'section.verify': 'meister', contribution: 'helfer', 'gather.claim': 'helfer',
   'note.add': 'gast', 'note.resolve': 'helfer', 'plan.release': 'leitung',
   'build.tally': 'gast', 'member.tally': 'gast', 'store.chest': 'meister', 'store.count': 'gast',
+  'store.config': 'meister', 'store.seal': 'meister', 'store.move': 'gast', 'store.check': 'gast',
 };
 export const canTeam = (role: TeamRole | undefined, action: TeamAction): boolean => RANK[role ?? 'gast'] >= RANK[NEED[action]];
 
@@ -400,7 +466,12 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
   let unknownKinds = 0;
   const tallyOff = new Set<string>();
   const tallies: { by: string; section: string; placed: number; broken: number; blocks?: readonly ItemCount[]; from: string; until: string }[] = [];
-  type Chest = { name: string; pos: readonly [number, number, number]; dimension: string; items: Map<string, number>; countedAt?: string; countedBy?: string; partial: boolean; counted: boolean };
+  type Chest = { name: string; pos: readonly [number, number, number]; dimension: string; items: Map<string, number>; countedAt?: string; countedBy?: string; partial: boolean; counted: boolean;
+    // COOP-05, same rules as StoreIndex.java
+    section?: string; purpose: StorePurpose; protection?: StoreProtection; pos2?: readonly [number, number, number]; expected: Map<string, number> | null;
+    status: StoreStatus; checkedAt?: string; deviation: Map<string, number>; sealedBy?: string; sealedAt?: string;
+    movedIn: Map<string, Map<string, number>>; movedOut: Map<string, Map<string, number>> };
+  const addTo = (m: Map<string, number>, item: string, n: number) => { const v = (m.get(item) ?? 0) + n; if (v === 0) m.delete(item); else m.set(item, v); };
   const chests = new Map<string, Chest>();
   const stored = new Map<string, Map<string, number>>(), taken = new Map<string, Map<string, number>>();
   const book = (m: Map<string, Map<string, number>>, who: string, item: string, n: number) => {
@@ -526,7 +597,8 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
         const c = chests.get(event.chest);
         if (event.remove) { if (!c) reject(event, 'Lagerkiste unbekannt.'); else chests.delete(event.chest); break; }
         if (c) { c.name = event.name; c.pos = event.pos; c.dimension = event.dimension; break; }
-        chests.set(event.chest, { name: event.name, pos: event.pos, dimension: event.dimension, items: new Map(), partial: false, counted: false });
+        chests.set(event.chest, { name: event.name, pos: event.pos, dimension: event.dimension, items: new Map(), partial: false, counted: false,
+          purpose: 'vorrat', expected: null, status: 'ungeprueft', deviation: new Map(), movedIn: new Map(), movedOut: new Map() });
         break;
       }
       case 'store.count': {
@@ -541,6 +613,43 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
           }
         }
         c.items = next; c.countedAt = event.at; c.countedBy = event.by; c.partial = !!event.more; c.counted = true;
+        c.expected = new Map(next);
+        break;
+      }
+      case 'store.config': {
+        const c = chests.get(event.chest);
+        if (!c) { reject(event, 'Lagerkiste unbekannt oder entfernt.'); break; }
+        if (event.section !== undefined) { if (event.section) c.section = event.section; else delete c.section; }
+        if (event.purpose) c.purpose = event.purpose;
+        if (event.protection) c.protection = event.protection;
+        if (event.pos2 !== undefined) { if (event.pos2) c.pos2 = event.pos2; else delete c.pos2; }
+        if (event.name?.trim()) c.name = event.name;
+        break;
+      }
+      case 'store.move': {
+        const c = chests.get(event.chest);
+        if (!c) { reject(event, 'Lagerkiste unbekannt oder entfernt.'); break; }
+        const who = event.via === 'trichter' ? 'trichter' : event.by;
+        for (const [list, target, sign] of [[event.in, c.movedIn, 1], [event.out, c.movedOut, -1]] as const) {
+          let m = target.get(who); if (!m) target.set(who, m = new Map());
+          for (const l of list ?? []) { addTo(m, l.item, l.count); if (c.expected) addTo(c.expected, l.item, sign * l.count); }
+        }
+        break;
+      }
+      case 'store.check': {
+        const c = chests.get(event.chest);
+        if (!c) { reject(event, 'Lagerkiste unbekannt oder entfernt.'); break; }
+        c.checkedAt = event.at;
+        if (event.status === 'abweichend') for (const l of event.diff ?? []) addTo(c.deviation, l.item, l.delta);
+        // A deviation stays until a seal; a later clean check does not hide it.
+        c.status = event.status === 'geprueft' && c.deviation.size ? 'abweichend' : event.status;
+        break;
+      }
+      case 'store.seal': {
+        const c = chests.get(event.chest);
+        if (!c) { reject(event, 'Lagerkiste unbekannt oder entfernt.'); break; }
+        c.deviation.clear(); c.status = 'geprueft'; c.sealedBy = event.by; c.sealedAt = event.at;
+        if (c.counted) c.expected = new Map(c.items);
         break;
       }
     }
@@ -564,7 +673,13 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
   const stock: Record<string, number> = {};
   const stores: StoreChest[] = [...chests.entries()].map(([id, c]) => {
     for (const [item, n] of c.items) stock[item] = (stock[item] ?? 0) + n;
-    return { id, name: c.name, pos: c.pos, dimension: c.dimension, items: Object.fromEntries(c.items), ...(c.countedAt && { countedAt: c.countedAt }), ...(c.countedBy && { countedBy: c.countedBy }), partial: c.partial };
+    const rec = (m: Map<string, Map<string, number>>, hopper: boolean) => Object.fromEntries([...m].filter(([w, x]) => (w === 'trichter') === hopper && x.size).map(([w, x]) => [w, Object.fromEntries(x)]));
+    return { id, name: c.name, pos: c.pos, dimension: c.dimension, items: Object.fromEntries(c.items), ...(c.countedAt && { countedAt: c.countedAt }), ...(c.countedBy && { countedBy: c.countedBy }), partial: c.partial,
+      ...(c.section && { section: c.section }), purpose: c.purpose, ...(c.protection && { protection: c.protection }), ...(c.pos2 && { pos2: c.pos2 }),
+      status: c.status, ...(c.checkedAt && { checkedAt: c.checkedAt }), deviation: Object.fromEntries(c.deviation),
+      ...(c.sealedBy && { sealedBy: c.sealedBy, sealedAt: c.sealedAt }),
+      movedIn: rec(c.movedIn, false), movedOut: rec(c.movedOut, false),
+      hopperIn: Object.fromEntries(c.movedIn.get('trichter') ?? []), hopperOut: Object.fromEntries(c.movedOut.get('trichter') ?? []) };
   }).sort((a, b) => a.name.localeCompare(b.name, 'de'));
 
   const ownerOf = new Map<string, string[]>();
@@ -625,6 +740,10 @@ export function eventLabel(e: TeamEvent): string {
     case 'member.tally': return e.on ? 'Baunachweis an' : 'Baunachweis aus';
     case 'store.chest': return e.remove ? `Lagerkiste „${e.name}“ entfernt` : `Lagerkiste „${e.name}“`;
     case 'store.count': return `Lager gezählt (${e.items.length} Sorten)`;
+    case 'store.config': return 'Lager eingestellt';
+    case 'store.move': return e.via === 'trichter' ? 'Trichter bewegt Items' : 'Lagerbuchung';
+    case 'store.check': return e.status === 'geprueft' ? 'Lager geprüft' : e.status === 'fehlt' ? 'Lagerkiste fehlt' : 'Lager weicht ab';
+    case 'store.seal': return 'Lager gesiegelt';
   }
 }
 

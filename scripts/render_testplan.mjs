@@ -2,7 +2,7 @@
 // Aufruf: node scripts/render_testplan.mjs [--check]  (--check: nur prüfen, ob die Datei aktuell ist)
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { TEST_AREAS } from '../apps/web/src/testing/testplan.ts';
+import { AREA_KIND_LABEL, TEST_AREAS } from '../apps/web/src/testing/testplan.ts';
 
 const out = fileURLToPath(new URL('../docs/testing/TESTPLAN.md', import.meta.url));
 const lines = [
@@ -15,7 +15,7 @@ const lines = [
 ];
 let kern = 0, total = 0;
 for (const area of TEST_AREAS) {
-  lines.push(`## ${area.id} · ${area.title} (${area.kind === 'mod' ? 'Mod' : 'Planer'})`, '', area.intro, '');
+  lines.push(`## ${area.id} · ${area.title} (${AREA_KIND_LABEL[area.kind]})`, '', area.intro, '');
   lines.push('| ID | Fall | Stufe | Schritte | Erwartet |', '|---|---|---|---|---|');
   for (const c of area.cases) {
     total++; if (c.level === 'kern') kern++;

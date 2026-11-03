@@ -39,9 +39,11 @@ final class TeamLog {
         NEED.put("section.done", "helfer"); NEED.put("section.verify", "meister"); NEED.put("contribution", "helfer");
         NEED.put("gather.claim", "helfer"); NEED.put("note.add", "gast"); NEED.put("note.resolve", "helfer"); NEED.put("plan.release", "leitung");
         NEED.put("build.tally", "gast"); NEED.put("member.tally", "gast"); NEED.put("store.chest", "meister"); NEED.put("store.count", "gast");
+        // Checked storage chests (COOP-05, docs/architecture/LAGERKISTEN.md).
+        NEED.put("store.config", "meister"); NEED.put("store.seal", "meister"); NEED.put("store.move", "gast"); NEED.put("store.check", "gast");
     }
     /** Measurements only the server writes (origin server), as in team.ts SERVER_ONLY_KINDS. */
-    static final Set<String> SERVER_ONLY = Set.of("build.tally", "store.count");
+    static final Set<String> SERVER_ONLY = Set.of("build.tally", "store.count", "store.move", "store.check");
     static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
     private static final SecureRandom RANDOM = new SecureRandom();
 
@@ -186,6 +188,8 @@ final class TeamLog {
         final Map<String, Long> placedBlocks = new TreeMap<>();
         final Map<String, Chest> chests = new TreeMap<>();
         final Map<String, Map<String, Long>> stored = new HashMap<>(), taken = new HashMap<>();
+        /** Checked storage chests (COOP-05): expected content, check status, bookings per player. */
+        final StoreIndex stores = new StoreIndex();
 
         /** Sum of the last counts of all chests. */
         Map<String, Long> stock() {
@@ -342,7 +346,7 @@ final class TeamLog {
             case "store.chest" -> {
                 String c = str(e, "chest");
                 Chest known = v.chests.get(c);
-                if (e.has("remove") && e.get("remove").getAsBoolean()) { if (known == null) reject(v, id, "Lagerkiste unbekannt."); else v.chests.remove(c); return; }
+                if (e.has("remove") && e.get("remove").getAsBoolean()) { if (known == null) reject(v, id, "Lagerkiste unbekannt."); else { v.chests.remove(c); v.stores.apply(e); } return; }
                 Chest ch = known != null ? known : new Chest();
                 JsonArray p = e.getAsJsonArray("pos");
                 ch.name = str(e, "name"); ch.dimension = str(e, "dimension"); ch.x = p.get(0).getAsInt(); ch.y = p.get(1).getAsInt(); ch.z = p.get(2).getAsInt();
@@ -364,8 +368,12 @@ final class TeamLog {
                 }
                 ch.items = next; ch.partial = more; ch.counted = true; ch.countedBy = by; ch.countedAt = at;
             }
+            case "store.config", "store.move", "store.check", "store.seal" -> {
+                if (!v.chests.containsKey(str(e, "chest"))) { reject(v, id, "Lagerkiste unbekannt oder entfernt."); return; }
+            }
             default -> { }
         }
+        if (kind.startsWith("store.")) v.stores.apply(e);
     }
 
     private static void reject(View v, String id, String text) { v.rejected.add(text); v.problems.put(id, text); v.rejectedIds.add(id); }
