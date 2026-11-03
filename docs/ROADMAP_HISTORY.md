@@ -3204,3 +3204,17 @@ Großprojekte als neue Größenstufe der Bibliothek: Engine mit Rasterlayout, St
 - `tests/e2e/grossprojekte.e2e.mjs`
 - `tests/grossprojekte.test.mjs`
 
+## 2026-11-03T15:28:11.884185Z · progress
+
+**Aufgaben:** GROSS-01
+
+Nachtrag: gerenderter Testplan (docs/testing/TESTPLAN.md) mit Fall BIB-13 zum Push fe33414 zugeordnet; keine inhaltliche Änderung
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GROSS-01 | 🧩 Implementiert · Abnahme offen | 4/6 | Abnahme durch Philipp (S06); Großbauten-Set (S05). |
+
+**Geänderte Dateien:**
+
+- `docs/testing/TESTPLAN.md`
+

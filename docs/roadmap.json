@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T15:22:00.823Z",
+  "updatedAt": "2026-11-03T15:28:11.884185Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -5524,7 +5524,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T15:22:00.823Z"
+      "updatedAt": "2026-11-03T15:28:11.884185Z"
     },
     {
       "id": "MAP-05",
@@ -10237,6 +10237,26 @@
         "packages/domain/src/index.ts",
         "tests/e2e/grossprojekte.e2e.mjs",
         "tests/grossprojekte.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GROSS-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Abnahme durch Philipp (S06); Großbauten-Set (S05)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T15:28:11.884185Z",
+      "kind": "progress",
+      "items": [
+        "GROSS-01"
+      ],
+      "summary": "Nachtrag: gerenderter Testplan (docs/testing/TESTPLAN.md) mit Fall BIB-13 zum Push fe33414 zugeordnet; keine inhaltliche Änderung",
+      "files": [
+        "docs/testing/TESTPLAN.md"
       ],
       "snapshot": [
         {
