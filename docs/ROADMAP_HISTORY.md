@@ -4140,3 +4140,18 @@ Paper-Jar 0.11.0 (Übergabe, Abwesenheit aus COOP-06) mit freigegeben, Änderung
 - `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
 - `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java`
 
+## 2026-11-03T20:38:19.401Z · progress
+
+**Aufgaben:** COOP-05
+
+Vorbereitung Team-Raum (TEAM_LIVE.md): TeamUplink-Schnittstelle, jedes vom Server geschriebene Ereignis (Befehle, Teamkanal, Baunachweis, Lager) geht einmal an den Uplink; TeamModule.receive nimmt Raum-Ereignisse über TeamLog.add an, ohne Echo. Standard: kein Uplink.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-05 | 🧩 Implementiert · Abnahme offen | 3/5 | Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server. |
+
+**Geänderte Dateien:**
+
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamUplink.java`
+

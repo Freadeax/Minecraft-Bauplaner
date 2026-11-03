@@ -115,7 +115,7 @@ final class TeamModule implements Listener {
             List<Map.Entry<String, Long>> top = t.blocks.entrySet().stream().sorted(Map.Entry.<String, Long>comparingByValue().reversed()).limit(48).collect(Collectors.toList());
             if (!top.isEmpty()) e.add("blocks", lines(top));
             e.addProperty("from", t.from); e.addProperty("until", until.compareTo(t.from) > 0 ? until : t.from);
-            try { write(team, e); team.add(e); } catch (IOException ex) { plugin.getLogger().warning("Baunachweis nicht gespeichert: " + ex.getMessage()); continue; }
+            try { write(team, e); team.add(e); toUplink(team, e); } catch (IOException ex) { plugin.getLogger().warning("Baunachweis nicht gespeichert: " + ex.getMessage()); continue; }
         }
         pending.clear();
     }
@@ -221,14 +221,42 @@ final class TeamModule implements Listener {
         return Optional.of(id);
     }
 
+    /** Live team room (TEAM_LIVE.md); {@link TeamUplink#NONE} until a room is configured. */
+    static volatile TeamUplink uplink = TeamUplink.NONE;
+
+    private void toUplink(TeamLog team, JsonObject e) {
+        try { uplink.sent(team, e); } catch (RuntimeException ex) { plugin.getLogger().warning("Team-Uplink: " + ex.getMessage()); }
+    }
+
     private boolean append(TeamLog team, JsonObject e, CommandSender s) {
         try {
             write(team, e);
             team.add(e);
             changed.run();
+            toUplink(team, e);
             return true;
         } catch (IOException ex) {
             fail(s, "Nicht gespeichert: " + ex.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * An event from the live team room (main thread): stored and folded like a local one, not sent back
+     * to the uplink. Known ids are ignored (the room may resend). False for an unknown team or a write error.
+     */
+    boolean receive(String teamId, JsonObject e) {
+        TeamLog team = teams.values().stream().filter(t -> t.teamId.equals(teamId)).findFirst().orElse(null);
+        String id = TeamLog.str(e, "id");
+        if (team == null || id == null) return false;
+        if (team.has(id)) return true;
+        try {
+            write(team, e);
+            team.add(e);
+            changed.run();
+            return true;
+        } catch (IOException | RuntimeException ex) {
+            plugin.getLogger().warning("Team-Raum: Ereignis " + id + " nicht übernommen: " + ex.getMessage());
             return false;
         }
     }
@@ -845,6 +873,7 @@ final class TeamModule implements Listener {
         catch (IOException ex) { return new ChannelResult(false, false, "Server konnte nicht speichern: " + ex.getMessage()); }
         team.add(e);
         changed.run();
+        toUplink(team, e);
         return new ChannelResult(true, true, problem);
     }
 

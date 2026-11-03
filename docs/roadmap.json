@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T20:41:53.052Z",
+  "updatedAt": "2026-11-03T20:38:19.401Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -6567,7 +6567,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T19:05:43.334Z"
+      "updatedAt": "2026-11-03T20:38:19.401Z"
     },
     {
       "id": "COOP-06",
@@ -12520,6 +12520,27 @@
           "done": 3,
           "total": 4,
           "next": "Abnahme MOD-16 auf Philipps Server mit Paper-Plugin."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T20:38:19.401Z",
+      "kind": "progress",
+      "items": [
+        "COOP-05"
+      ],
+      "summary": "Vorbereitung Team-Raum (TEAM_LIVE.md): TeamUplink-Schnittstelle, jedes vom Server geschriebene Ereignis (Befehle, Teamkanal, Baunachweis, Lager) geht einmal an den Uplink; TeamModule.receive nimmt Raum-Ereignisse über TeamLog.add an, ohne Echo. Standard: kein Uplink.",
+      "files": [
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamUplink.java"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-05",
+          "status": "implemented",
+          "done": 3,
+          "total": 5,
+          "next": "Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server."
         }
       ]
     }
