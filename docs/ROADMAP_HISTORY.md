@@ -4118,3 +4118,25 @@ Katalog um die COOP-06-Serverbefehle (uebergeben, annehmen, ablehnen, abwesend, 
 - `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
 - `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java`
 
+## 2026-11-03T20:41:53.052Z · progress
+
+**Aufgaben:** GAME-10
+
+Paper-Jar 0.11.0 (Übergabe, Abwesenheit aus COOP-06) mit freigegeben, Änderungsliste ergänzt; Paper-26.3-Teamtest mit dieser Jar bestanden.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-10 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme MOD-16 auf Philipps Server mit Paper-Plugin. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `docs/TESTING.md`
+- `docs/architecture/MOD_HOLOGRAM.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.11.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.11.0.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.11.0.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java`
+

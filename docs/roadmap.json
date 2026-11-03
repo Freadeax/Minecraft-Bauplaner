@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T20:34:44.327Z",
+  "updatedAt": "2026-11-03T20:41:53.052Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -6866,7 +6866,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:34:44.327Z"
+      "updatedAt": "2026-11-03T20:41:53.052Z"
     }
   ],
   "events": [
@@ -12482,6 +12482,34 @@
         "docs/architecture/MOD_HOLOGRAM.md",
         "downloads/mod/bauplaner-bridge-fabric-26.3-0.11.0.jar",
         "downloads/mod/bauplaner-bridge-neoforge-26.3-0.11.0.jar",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-10",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme MOD-16 auf Philipps Server mit Paper-Plugin."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T20:41:53.052Z",
+      "kind": "progress",
+      "items": [
+        "GAME-10"
+      ],
+      "summary": "Paper-Jar 0.11.0 (Übergabe, Abwesenheit aus COOP-06) mit freigegeben, Änderungsliste ergänzt; Paper-26.3-Teamtest mit dieser Jar bestanden.",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "docs/TESTING.md",
+        "docs/architecture/MOD_HOLOGRAM.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.11.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.11.0.jar",
+        "downloads/mod/bauplaner-bridge-paper-0.11.0.jar",
+        "mods/bauplaner-bridge/CHANGELOG.md",
         "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java",
         "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java"
       ],
