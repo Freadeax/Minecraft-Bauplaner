@@ -2,6 +2,12 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.11.1 – 2026-11-03
+
+- Plans exported with “structure void” for empty space are shown correctly: those cells are no longer treated as blocks to build.
+
+- Pläne, die leere Stellen als „Strukturleere“ (structure_void) enthalten, werden richtig angezeigt: diese Zellen zählen nicht mehr als zu bauende Blöcke.
+
 ## 0.11.0 – 2026-11-03
 
 **Commands & status page / Befehle & Status**

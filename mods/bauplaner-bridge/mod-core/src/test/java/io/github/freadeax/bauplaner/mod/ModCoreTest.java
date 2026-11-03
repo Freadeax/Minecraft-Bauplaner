@@ -144,6 +144,14 @@ class ModCoreTest {
     }
 
     @Test
+    void structureVoidIsNotAPlannedBlock() {
+        PlanModel plan = PlanModel.parse("leer.schem", schem(3, 1, 1, new int[] { 0, 0, 0 },
+                new String[] { "minecraft:structure_void", "minecraft:stone" }, new int[] { 0, 1, 0 }));
+        assertEquals(1, plan.blockCount());
+        assertEquals(List.of(s("minecraft:stone")), plan.palette());
+    }
+
+    @Test
     void liveCheckFollowsTheWorld() {
         PlanModel plan = PlanModel.parse("haus.schem", schem(2, 1, 1, new int[] { 0, 0, 0 },
                 new String[] { "minecraft:stone", "minecraft:oak_stairs[facing=north]" }, new int[] { 0, 1 }));

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T20:58:46.186Z",
+  "updatedAt": "2026-11-03T21:12:09.080Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -4749,7 +4749,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:57:38.742Z",
+      "updatedAt": "2026-11-03T21:12:09.080Z",
       "area": "MOD",
       "thread": "Teambau und Befehle in der Mod ausbauen",
       "philipp": [
@@ -14227,6 +14227,30 @@
           "done": 4,
           "total": 5,
           "next": "Abnahme durch Philipp (S05) mit einem großen Bau im Spiel."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T21:12:09.080Z",
+      "kind": "progress",
+      "items": [
+        "GAME-07"
+      ],
+      "summary": "Mod 0.11.1: PlanModel überspringt structure_void wie Luft (Fund der Sendeprüfung aus SIZE-01); Brückenprüfung, Sendeprüfung und Spieltests Fabric/NeoForge grün.",
+      "files": [
+        "docs/TESTING.md",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlanModel.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-07",
+          "status": "implemented",
+          "done": 8,
+          "total": 10,
+          "next": "Philipp testet 0.7.0 auf server.lmnt-gaming.net (Bauabschnitte aus seinem Projekt, Röntgensicht mit Shader); danach Stufe 6."
         }
       ]
     }

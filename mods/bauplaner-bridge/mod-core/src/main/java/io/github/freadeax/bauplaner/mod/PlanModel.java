@@ -70,7 +70,7 @@ public final class PlanModel {
             palette[i] = BlockState.parse(k);
         });
         boolean[] air = new boolean[palette.length];
-        for (int i = 0; i < palette.length; i++) air[i] = palette[i].isAir();
+        for (int i = 0; i < palette.length; i++) air[i] = empty(palette[i]);
         byte[] data = dataTag.asBytes("Blocks.Data");
         long volume = plan.volume();
         // Optional build sections: website 0.7.0+ writes one byte per box cell (SectionCells), SIZE-01 adds
@@ -178,7 +178,14 @@ public final class PlanModel {
     /** Distinct planned states (without air), for material lists and render caches. */
     public List<BlockState> palette() {
         var list = new ArrayList<BlockState>();
-        for (BlockState s : palette) if (!s.isAir()) list.add(s);
+        for (BlockState s : palette) if (!empty(s)) list.add(s);
         return list;
     }
+
+    /**
+     * Cells that carry no planned block: air and structure_void (exports with „Strukturleere“ fill the empty
+     * part of the box with it; Minecraft's structure blocks also leave it out). Without this, the mod took the
+     * whole empty box as blocks to build.
+     */
+    static boolean empty(BlockState s) { return s.isAir() || s.id().equals("minecraft:structure_void"); }
 }

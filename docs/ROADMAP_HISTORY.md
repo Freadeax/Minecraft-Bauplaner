@@ -4306,3 +4306,21 @@ Senden ins Spiel repariert: leere Zellen als Luft statt Strukturleere (Mod nahm 
 - `scripts/test_bridge.sh`
 - `tests/states.test.mjs`
 
+## 2026-11-03T21:12:09.080Z · progress
+
+**Aufgaben:** GAME-07
+
+Mod 0.11.1: PlanModel überspringt structure_void wie Luft (Fund der Sendeprüfung aus SIZE-01); Brückenprüfung, Sendeprüfung und Spieltests Fabric/NeoForge grün.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-07 | 🧩 Implementiert · Abnahme offen | 8/10 | Philipp testet 0.7.0 auf server.lmnt-gaming.net (Bauabschnitte aus seinem Projekt, Röntgensicht mit Shader); danach Stufe 6. |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlanModel.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java`
+
