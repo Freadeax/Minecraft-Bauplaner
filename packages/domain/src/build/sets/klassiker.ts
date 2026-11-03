@@ -2,6 +2,7 @@ import { Plot, axis, barrel, bed, chest, door, facing, furnace, ladder, leaves, 
 import type { VoxelPayload } from '../../../../voxel/src/types.js';
 import { beltCourse, hangLantern, ladderUp, house, LOOKS, lookWith, pick, pitchedRoof, put, putFree, skirt } from '../style.js';
 import type { Look, Mix } from '../style.js';
+import { stableHypot } from '../../../../voxel/src/stableMath.js';
 
 /**
  * The B9 classics redrawn with the design kit (LIB-05, docs/architecture/BAUSTIL.md):
@@ -78,7 +79,7 @@ export function leuchtturm(): VoxelPayload {
   const p = new Plot([11, 2, 11]);
   const stone: Mix = [['stone_bricks', 6], ['mossy_stone_bricks', 2], ['cobblestone', 2], ['andesite', 1]];
   const ring = (_y: number, r: number, f: (x: number, z: number, edge: boolean) => void) => {
-    for (let x = 0; x <= 10; x++) for (let z = 0; z <= 10; z++) { const d = Math.hypot(x - 5, z - 5); if (d <= r + 0.3) f(x, z, d > r - 0.9); }
+    for (let x = 0; x <= 10; x++) for (let z = 0; z <= 10; z++) { const d = stableHypot(x - 5, z - 5); if (d <= r + 0.3) f(x, z, d > r - 0.9); }
   };
   ring(0, 5, (x, z) => p.set(x, 0, z, pick(stone, x, 0, z, 2)));
   for (let y = 1; y <= 3; y++) ring(y, 4, (x, z, e) => e ? p.set(x, y, z, pick(stone, x, y, z, 2)) : p.air(x, y, z));
@@ -235,7 +236,7 @@ export function baumhaus(): VoxelPayload {
   for (let y = 1; y <= 7; y++) for (const [x, z] of [[6, 6], [7, 6], [6, 7], [7, 7]] as const) p.set(x, y, z, 'jungle_log', axis('y'));
   for (const [x, z] of [[5, 6], [8, 7], [6, 8], [7, 5]] as const) { p.set(x, 1, z, 'jungle_log', axis('y')); p.set(x, 2, z, 'jungle_wood', axis('y')); }
   for (let x = 1; x <= 11; x++) for (let z = 1; z <= 11; z++) {
-    const d = Math.hypot(x - 6.5, z - 6.5);
+    const d = stableHypot(x - 6.5, z - 6.5);
     if (d <= 5.4) p.set(x, 7, z, 'jungle_planks');
     if (d > 4.6 && d <= 5.4 && (x + z) % 3 === 0) putFree(p, x, 6, z, 'jungle_stairs', stairs(x < 6.5 ? 'east' : 'west', 'top'));
     if (d > 4.6 && d <= 5.4) p.set(x, 8, z, 'jungle_fence');

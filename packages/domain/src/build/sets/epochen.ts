@@ -7,6 +7,7 @@ import { buttress, facade, machicolations } from '../facade.js';
 import type { FacadeLook } from '../facade.js';
 import { putFree } from '../style.js';
 import type { Mix } from '../style.js';
+import { stableAtan2, stableCos } from '../../../../voxel/src/stableMath.js';
 
 /**
  * Epochen (Katalog v3): historische Baustile von Fernost über Rom und
@@ -192,7 +193,7 @@ function amphitheater() {
       p.set(x, n + 1, z, 'smooth_sandstone_stairs', stairs(outward(cx, cz, x, z)));
     } else if (r < 12.4) {
       p.fill(x, 1, z, x, 9, z, 'cut_sandstone');
-      if (Math.round(Math.atan2(z - cz, x - cx) * 6) % 2 === 0) p.set(x, 10, z, 'cut_sandstone_slab', slab());
+      if (Math.round(stableAtan2(z - cz, x - cx) * 6) % 2 === 0) p.set(x, 10, z, 'cut_sandstone_slab', slab());
     }
   }
   // stage and stage wall with columns, three doors and a banner
@@ -382,7 +383,7 @@ function turmruine() {
   }
   const R = 16 + 3.2, in4 = (x: number, z: number) => dist2(x, z, c, c) <= R;
   const height = (x: number, z: number) => {
-    const a = Math.atan2(z - c, x - c), k = Math.cos(a - 0.6);
+    const a = stableAtan2(z - c, x - c), k = stableCos(a - 0.6);
     return k < -0.75 ? 1 + Math.round(noise(x, 1, z) * 2) : Math.round(5 + 9 * Math.max(0, k) + noise(x, 2, z) * 2);
   };
   const shell: [number, number][] = [];
@@ -397,7 +398,7 @@ function turmruine() {
   for (const [x, y, z] of [[2, 4, 6], [6, 6, 2], [10, 8, 6]] as const) if (p.get(x, y, z)) p.air(x, y, z);
   for (let x = 2; x <= 10; x++) for (let z = 2; z <= 10; z++) {
     const d = dist2(x, z, c, c);
-    if (d > 4 && d <= 9 + 2.4 && Math.cos(Math.atan2(z - c, x - c) - 0.6) > 0.3 && noise(x, 6, z) < 0.6) p.set(x, 6, z, 'spruce_planks');
+    if (d > 4 && d <= 9 + 2.4 && stableCos(stableAtan2(z - c, x - c) - 0.6) > 0.3 && noise(x, 6, z) < 0.6) p.set(x, 6, z, 'spruce_planks');
   }
   for (const [x, z] of shell) {
     const h = height(x, z);

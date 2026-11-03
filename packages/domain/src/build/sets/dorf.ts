@@ -4,6 +4,7 @@ import { WIKI } from '../spec.js';
 import { beltCourse, column, hangLantern, ladderUp, house, LOOKS, lookWith, pick, pitchedRoof, put, putFree } from '../style.js';
 import type { Look, Mix } from '../style.js';
 import type { BuildingSpec } from '../spec.js';
+import { stableHypot } from '../../../../voxel/src/stableMath.js';
 
 /** Dorf: one workshop per villager profession, market stalls and the buildings of a village centre. */
 
@@ -180,21 +181,21 @@ function windmuehle() {
   const p = new Plot([15, 23, 11]);
   const stone: Mix = [['cobblestone', 6], ['mossy_cobblestone', 2], ['stone_bricks', 2], ['andesite', 1]];
   for (let y = 0; y <= 9; y++) for (let x = 0; x <= 14; x++) for (let z = 0; z <= 10; z++) {
-    const d = Math.hypot(x - 7, z - 5), r = 3.6 - (y > 6 ? 0.4 : 0);
+    const d = stableHypot(x - 7, z - 5), r = 3.6 - (y > 6 ? 0.4 : 0);
     if (d <= r && d > r - 1.2) p.set(x, y, z, y === 0 ? 'cobblestone' : pick(stone, x, y, z, 2));
     else if (d <= r - 1.2) { if (y === 0) p.set(x, y, z, 'spruce_planks'); else p.air(x, y, z); }
   }
-  for (let x = 0; x <= 14; x++) for (let z = 0; z <= 10; z++) { const d = Math.hypot(x - 7, z - 5); if (d > 3.6 && d <= 4.5) { const dx = 7 - x, dz = 5 - z; p.set(x, 1, z, 'cobblestone_stairs', stairs(Math.abs(dx) >= Math.abs(dz) ? (dx > 0 ? 'east' : 'west') : (dz > 0 ? 'south' : 'north'))); } }
+  for (let x = 0; x <= 14; x++) for (let z = 0; z <= 10; z++) { const d = stableHypot(x - 7, z - 5); if (d > 3.6 && d <= 4.5) { const dx = 7 - x, dz = 5 - z; p.set(x, 1, z, 'cobblestone_stairs', stairs(Math.abs(dx) >= Math.abs(dz) ? (dx > 0 ? 'east' : 'west') : (dz > 0 ? 'south' : 'north'))); } }
   // Timber drum with a gallery.
   for (let y = 10; y <= 14; y++) for (let x = 0; x <= 14; x++) for (let z = 0; z <= 10; z++) {
-    const d = Math.hypot(x - 7, z - 5);
+    const d = stableHypot(x - 7, z - 5);
     if (d <= 3.2 && d > 2.1) { const id = y === 10 || (x + z) % 3 === 0 ? 'stripped_spruce_wood' : 'spruce_planks'; p.set(x, y, z, id, id === 'spruce_planks' ? {} : axis('y')); }
     else if (d <= 2.1) { if (y === 10) p.set(x, y, z, 'spruce_planks'); else p.air(x, y, z); }
   }
-  for (let x = 0; x <= 14; x++) for (let z = 0; z <= 10; z++) { const d = Math.hypot(x - 7, z - 5); if (d > 3.2 && d <= 4.6) { p.set(x, 10, z, 'spruce_slab', slab('top')); if (d > 3.7) p.set(x, 11, z, 'spruce_fence'); } }
+  for (let x = 0; x <= 14; x++) for (let z = 0; z <= 10; z++) { const d = stableHypot(x - 7, z - 5); if (d > 3.2 && d <= 4.6) { p.set(x, 10, z, 'spruce_slab', slab('top')); if (d > 3.7) p.set(x, 11, z, 'spruce_fence'); } }
   // Cap: cone of dark oak stairs.
   for (let i = 0; i < 4; i++) for (let x = 0; x <= 14; x++) for (let z = 0; z <= 10; z++) {
-    const d = Math.hypot(x - 7, z - 5), r = 3.9 - i * 1.05;
+    const d = stableHypot(x - 7, z - 5), r = 3.9 - i * 1.05;
     if (d <= r && d > r - 1.1) { const dx = 7 - x, dz = 5 - z; p.set(x, 15 + i, z, 'dark_oak_stairs', stairs(Math.abs(dx) >= Math.abs(dz) ? (dx > 0 ? 'east' : 'west') : (dz > 0 ? 'south' : 'north'))); }
     else if (d <= r - 1.1) p.air(x, 15 + i, z);
   }
@@ -241,7 +242,7 @@ function lagerhaus() {
 function dorfplatz() {
   const p = new Plot([15, 6, 15]);
   for (let x = 0; x < 15; x++) for (let z = 0; z < 15; z++) {
-    const d = Math.hypot(x - 7, z - 7);
+    const d = stableHypot(x - 7, z - 7);
     p.set(x, 0, z, d < 6.5 ? ((x + z) % 3 ? 'cobblestone' : 'stone_bricks') : (x === 7 || z === 7 ? 'dirt_path' : 'grass_block'), d >= 6.5 && x !== 7 && z !== 7 ? grass() : {});
   }
   p.disc(7, 7, 1, 2, 'stone_brick_wall', {}, true); p.disc(7, 7, 0, 1, 'water', water()); p.set(7, 1, 7, 'chiseled_stone_bricks'); p.set(7, 2, 7, 'lantern', lantern());

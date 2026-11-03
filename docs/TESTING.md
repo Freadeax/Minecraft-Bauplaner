@@ -826,3 +826,13 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `scripts/test_bridge_paper_lager.sh` auf echten Paper-Servern 1.18.2, 1.20.6 (151), 1.21.4, 1.21.11 (132), 26.3 (238): Markieren, `item replace` → „abweichend“ mit Unterschied, Helfer darf nicht siegeln, Siegel als Baumeister, Trichter rein/raus, TNT lässt die Kiste stehen, Doppelkiste, Entmarkieren, Fass „fehlt“, `bedarf`, `sammle glass` → 3, Neustart, Ausfuhr; Planer-Faltung = Serverzustand. `test_bridge_paper_team.sh` und `test_bridge_paper.sh` (1.21.11, 26.3) weiter grün.
 - Browser `team`, `testphase`, `mod-download`, `team-live`: 9/9.
 - Grenzen: Inventarklicks, Schutz gegen echte Spieler, Abbauen durch Spieler und die Anzeige in der Mod brauchen echte Spieler (LAGER-02…06, LAGER-09 auf Philipps Server).
+
+
+## PERF-05 · Ladezeit und Stabilität des Gesamtsystems · 03.11.2026 · Claude
+
+- Messung mit `node scripts/perf/measure_start.mjs --runs 3` (Chromium 1243 headless, Cloud-Container): Erststart bis Projektzentrale 5,2 s → 1,4 s, Neustart unverändert 1,1 s, Einstiegspaket 1 329 kB → 720 kB. Details und offene Punkte: [PERFORMANCE_AUDIT](architecture/PERFORMANCE_AUDIT.md).
+- Neu `tests/canonical-json.test.mjs` (2000 Zufallswerte gleich der alten Ausgabe), `tests/stable-math.test.mjs` (Genauigkeit, Sonderwerte, feste Referenzbits), `tests/e2e/catalog-snapshot.e2e.mjs` (Katalog aus Datei = im Browser erzeugt; fehlende, beschädigte, fremde Datei → Erzeugen).
+- Gefunden beim Abgleich: Kolosseum in Node und Chromium mit verschiedener Version-ID (Winkelfunktionen je Engine); nach `stableMath` sind alle 359 mitgelieferten Versions-IDs gleich dem bisherigen Node-Ergebnis und gleich im Browser.
+- Durch das Nachladen der Seiten zuerst rot: `anlagen` und `app` (die alte Seite blieb während des Ladens versteckt im DOM, der Test traf deren Dateifeld). Behoben mit `Suspense key={route.view}` und direktem Rendern bereits geladener Seiten; danach grün.
+- `map-depth` „Neue Mod (Protokoll 2)“ war auf main 7b975a0 rot (fremd); inzwischen von SIZE-01 auf main behoben (ad668c9), dessen Fassung übernommen.
+- `npm run check:architecture`, `typecheck`, `build`, `npm test`: 732 Tests, 731 bestanden, 1 übersprungen. Browser-Suite dateiweise (`--test-concurrency=1`): 137/138 (nur das fremde `map-depth`); nach Rebase auf main 651e5a6 erneut komplett: **140/140**.

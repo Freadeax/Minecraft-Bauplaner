@@ -4,6 +4,7 @@ import { MAX_EDIT_CELLS, posKey } from './draft.js';
 import type { CellChange, CellSlot, Edit } from './draft.js';
 import { boxBounds } from './tools.js';
 import type { Box } from './tools.js';
+import { stableAtan2 } from '../../../voxel/src/stableMath.js';
 
 /**
  * Weitere Formen (EDIT-05): Ellipsoid im aufgezogenen Quader, Torus und
@@ -124,7 +125,7 @@ export function helixEdit(base: Vec3, radius: number, value: CellSlot, o: HelixO
   for (let dz = -radius; dz <= radius; dz++) for (let dx = -radius; dx <= radius; dx++) {
     const d2 = dx * dx + dz * dz;
     if (d2 > outer || d2 <= inner || (dx === 0 && dz === 0 && o.width <= radius)) continue;
-    let a = Math.atan2(dz, dx) / (2 * Math.PI); if (a < 0) a += 1;
+    let a = stableAtan2(dz, dx) / (2 * Math.PI); if (a < 0) a += 1;
     const f = o.clockwise ? a : (1 - a) % 1, v = oriented(dx, dz);
     for (let k = 0; k < turns; k++) {
       const top = Math.floor((f + k) * o.pitch);
@@ -142,7 +143,7 @@ export function helixEdit(base: Vec3, radius: number, value: CellSlot, o: HelixO
   for (let dz = -radius; dz <= radius; dz++) for (let dx = -radius; dx <= radius; dx++) {
     const d2 = dx * dx + dz * dz;
     if (d2 > outer || d2 <= inner || (dx === 0 && dz === 0 && o.width <= radius)) continue;
-    let a = Math.atan2(dz, dx) / (2 * Math.PI); if (a < 0) a += 1;
+    let a = stableAtan2(dz, dx) / (2 * Math.PI); if (a < 0) a += 1;
     level.set(`${dx},${dz}`, Math.floor((o.clockwise ? a : (1 - a) % 1) * o.pitch));
   }
   const touches = new Set<number>();

@@ -4,6 +4,7 @@ import type { BuildingSpec } from '../spec.js';
 import { facade, machicolations } from '../facade.js';
 import { beltCourse, hangLantern, LOOKS, lookWith, pick, pitchedRoof, put, putFree, skirt } from '../style.js';
 import type { Look, Mix, Rect } from '../style.js';
+import { stableHypot } from '../../../../voxel/src/stableMath.js';
 
 /** Befestigung: palisade kit, keep, towers, gatehouse matching the sample walls, desert fort, outpost, bunker. */
 
@@ -102,7 +103,7 @@ function bergfried() {
 function rundturm() {
   const p = new Plot([13, 2, 13]), c = 6;
   const ring = (_y: number, r: number, f: (x: number, z: number, edge: boolean, d: number) => void) => {
-    for (let x = 0; x <= 12; x++) for (let z = 0; z <= 12; z++) { const d = Math.hypot(x - c, z - c); if (d <= r + 0.35) f(x, z, d > r - 0.95, d); }
+    for (let x = 0; x <= 12; x++) for (let z = 0; z <= 12; z++) { const d = stableHypot(x - c, z - c); if (d <= r + 0.35) f(x, z, d > r - 0.95, d); }
   };
   ring(0, 5, (x, z) => p.set(x, 0, z, pick(KEEP_BASE, x, 0, z, 3)));
   for (let y = 1; y <= 15; y++) ring(y, y <= 2 ? 4.6 : 4, (x, z, e) => e ? p.set(x, y, z, pick(y <= 3 ? KEEP_BASE : KEEP_STONE, x, y, z, 3)) : p.air(x, y, z));

@@ -5,6 +5,7 @@ import { WIKI } from '../spec.js';
 import type { BuildingSpec } from '../spec.js';
 import { STEP, beltCourse, column, dome, hangLantern, house, LOOKS, lookWith, pick, pitchedRoof, put, putFree, skirt } from '../style.js';
 import type { Look, Mix, Rect } from '../style.js';
+import { stableAtan2, stableHypot } from '../../../../voxel/src/stableMath.js';
 
 /**
  * Großbauten (GROSS-01-S05): the catalogue's largest single buildings, made as
@@ -266,7 +267,7 @@ function arena() {
   const out = (x: number, z: number): H => Math.abs(x - cx) / cx >= Math.abs(z - cz) / cz ? (x < cx ? 'west' : 'east') : (z < cz ? 'north' : 'south');
   // Arches on the outer face: piers and openings alternate along the perimeter, ordered by angle.
   const rim = [...depth].filter(([, d]) => d === 0).map(([k]) => k.split(',').map(Number) as [number, number])
-    .sort((a, b) => Math.atan2(a[1] - cz, a[0] - cx) - Math.atan2(b[1] - cz, b[0] - cx));
+    .sort((a, b) => stableAtan2(a[1] - cz, a[0] - cx) - stableAtan2(b[1] - cz, b[0] - cx));
   const opening = new Set(rim.filter((_, i) => i % 3 !== 0).map(([x, z]) => `${x},${z}`));
   for (let x = 0; x < W; x++) for (let z = 0; z < D; z++) {
     if (!inOval(x, z)) continue;
@@ -330,7 +331,7 @@ const STALL_COLORS = [['red', 'white'], ['blue', 'white'], ['yellow', 'orange'],
 function marktplatz() {
   const S = 33, p = new Plot([S, 2, S]), c = 16;
   for (let x = 0; x < S; x++) for (let z = 0; z < S; z++) {
-    const d = Math.max(Math.abs(x - c), Math.abs(z - c)), ring = Math.round(Math.hypot(x - c, z - c));
+    const d = Math.max(Math.abs(x - c), Math.abs(z - c)), ring = Math.round(stableHypot(x - c, z - c));
     put(p, x, 0, z, d >= 15 ? 'cobblestone' : ring % 4 === 0 ? 'polished_andesite' : pick([['stone_bricks', 3], ['andesite', 2], ['cobblestone', 1], ['mossy_cobblestone', 1]], x, 0, z, 111));
   }
   // Fountain: basin ring, water, centre column with lanterns.

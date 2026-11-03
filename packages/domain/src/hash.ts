@@ -1,14 +1,43 @@
-/** Deterministic JSON: object keys sorted, arrays in order, no whitespace. */
+/**
+ * Deterministic JSON: object keys sorted (UTF-16 code unit order), arrays in
+ * order, no whitespace, `undefined` object members left out.
+ *
+ * Hot path: every payload hash and version id runs through it (hundreds of
+ * thousands of cells at the first start). It therefore appends to one string
+ * instead of building arrays of entries per object; the output is byte for
+ * byte the same as the former entries/sort/map/join form (PERF-05, test
+ * `canonical-json.test.mjs`), so stored hashes and ids never change.
+ */
 export function canonicalJson(value: unknown): string {
+  return appendCanonical('', value);
+}
+
+function appendCanonical(out: string, value: unknown): string {
   if (value === null || typeof value !== 'object') {
     if (typeof value === 'number' && !Number.isFinite(value)) throw new Error('Nicht-endliche Zahl ist nicht kanonisch darstellbar');
     if (value === undefined) throw new Error('undefined ist nicht kanonisch darstellbar');
-    return JSON.stringify(value);
+    return out + JSON.stringify(value);
   }
-  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(',')}]`;
-  const entries = Object.entries(value as Record<string, unknown>).filter(([, v]) => v !== undefined)
-    .sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0);
-  return `{${entries.map(([k, v]) => `${JSON.stringify(k)}:${canonicalJson(v)}`).join(',')}}`;
+  if (Array.isArray(value)) {
+    out += '[';
+    for (let i = 0; i < value.length; i++) {
+      if (i) out += ',';
+      out = appendCanonical(out, value[i]);
+    }
+    return out + ']';
+  }
+  const record = value as Record<string, unknown>;
+  const keys = Object.keys(record).sort();
+  out += '{';
+  let first = true;
+  for (const key of keys) {
+    const member = record[key];
+    if (member === undefined) continue;
+    out += first ? '' : ',';
+    first = false;
+    out = appendCanonical(out + JSON.stringify(key) + ':', member);
+  }
+  return out + '}';
 }
 
 /** SHA-256 hex via Web Crypto (browser and Node ≥ 22). */

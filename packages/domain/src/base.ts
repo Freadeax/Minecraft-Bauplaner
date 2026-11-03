@@ -18,6 +18,7 @@ import type { SitePlan } from './site.js';
 import { latestReleaseId } from './updateState.js';
 import { DomainError } from './types.js';
 import type { Asset, AssetVersion, ConnectorLink, Instance, Project } from './types.js';
+import { stableHypot } from '../../voxel/src/stableMath.js';
 
 /**
  * Basisplaner (BASE-01): a whole survival base – storage hall, kitchen,
@@ -167,7 +168,7 @@ const union = (fs: readonly Footprint[]): Footprint | null => fs.length
 const shiftF = (f: Footprint, dx: number, dz: number): Footprint => ({ x0: f.x0 + dx, z0: f.z0 + dz, x1: f.x1 + dx, z1: f.z1 + dz });
 const centre = (f: Footprint): [number, number] => [(f.x0 + f.x1) / 2, (f.z0 + f.z1) / 2];
 const gapOf = (a: Footprint, b: Footprint) => Math.max(b.x0 - a.x1, a.x0 - b.x1, b.z0 - a.z1, a.z0 - b.z1);
-const dist = (a: readonly number[], b: readonly number[]) => Math.hypot(a[0]! - b[0]!, a[1]! - b[1]!);
+const dist = (a: readonly number[], b: readonly number[]) => stableHypot(a[0]! - b[0]!, a[1]! - b[1]!);
 /** Quarter turns of the whole layout so that the canonical water side (+z, south) ends up on `water`. */
 const LAYOUT_TURNS: Readonly<Record<WaterSide, Turns>> = { keine: 0, sued: 0, west: 1, nord: 2, ost: 3 };
 /** One quarter turn of a cell (same convention as the transform kernel: (x, z) → (−z−1, x)). */

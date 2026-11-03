@@ -1,6 +1,7 @@
 import { Plot, axis, campfire, chain, facing, grass, lantern, leaves, slab, stairs, water, spruceTree, banner, F, T } from '../plot.js';
 import { WIKI } from '../spec.js';
 import type { BuildingSpec } from '../spec.js';
+import { stableCos, stableSin } from '../../../../voxel/src/stableMath.js';
 
 /** Dekoration, Statuen & Wahrzeichen: small set pieces and big landmarks. */
 
@@ -196,7 +197,7 @@ function spiralturm() {
   p.tube(5, 5, 3, 1, 22, 'calcite');
   for (let y = 1; y <= 22; y++) {
     const a = (y / 22) * Math.PI * 4;
-    for (const d of [0, 0.3]) { const x = Math.round(5 + Math.cos(a + d) * 4.4), z = Math.round(5 + Math.sin(a + d) * 4.4); p.set(x, y, z, 'amethyst_block'); }
+    for (const d of [0, 0.3]) { const x = Math.round(5 + stableCos(a + d) * 4.4), z = Math.round(5 + stableSin(a + d) * 4.4); p.set(x, y, z, 'amethyst_block'); }
     if (y % 5 === 0) { p.set(5 + (y % 10 === 0 ? 3 : -3), y, 5, 'purple_stained_glass'); }
   }
   for (let y = 23; y <= 26; y++) p.disc(5, 5, y, Math.max(0, 3 - (y - 23)), 'purpur_block', {}, true);

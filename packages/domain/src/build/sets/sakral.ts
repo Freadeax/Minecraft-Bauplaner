@@ -3,6 +3,7 @@ import { WIKI } from '../spec.js';
 import type { BuildingSpec } from '../spec.js';
 import { beltCourse, column, hangLantern, ladderUp, LOOKS, lookWith, pick, pitchedRoof, put, putFree } from '../style.js';
 import type { Look, Mix } from '../style.js';
+import { stableCos, stableHypot, stableSin } from '../../../../voxel/src/stableMath.js';
 
 /** Sakral & Magie: cathedral, temples, shrines, stone circle, enchanting tower, graveyard. */
 
@@ -82,13 +83,13 @@ function kathedrale() {
   p.set(9, 3, 6, 'stone_brick_stairs', stairs('south', 'top')); p.set(8, 4, 6, 'stone_brick_stairs', stairs('east', 'top')); p.set(10, 4, 6, 'stone_brick_stairs', stairs('west', 'top')); p.set(9, 4, 6, 'stone_bricks');
   for (const x of [7, 11]) for (let y = 1; y <= 5; y++) putFree(p, x, y, 5, 'stone_brick_wall');
   // Rose window.
-  for (let x = 7; x <= 11; x++) for (let y = 8; y <= 12; y++) { const d = Math.hypot(x - 9, y - 10); if (d <= 2.3) p.set(x, y, 6, d < 0.5 ? 'orange_stained_glass' : d < 1.5 ? 'red_stained_glass' : 'purple_stained_glass'); }
+  for (let x = 7; x <= 11; x++) for (let y = 8; y <= 12; y++) { const d = stableHypot(x - 9, y - 10); if (d <= 2.3) p.set(x, y, 6, d < 0.5 ? 'orange_stained_glass' : d < 1.5 ? 'red_stained_glass' : 'purple_stained_glass'); }
   pitchedRoof(p, l, { walls: { x0: 8, z0: 6, x1: 10, z1: 7 }, y: 17, kind: 'sattel', ridge: 'z', overhang: 0, pitch: 'steil', seed: 9, noSoffit: true });
   for (let x = 6; x <= 12; x++) putFree(p, x, 0, 1, 'stone_brick_stairs', stairs('south'));
   // Apse: half-round choir beyond z 30.
-  for (let y = 1; y <= 10; y++) for (let x = 6; x <= 12; x++) for (let z = 30; z <= 32; z++) { const d = Math.hypot(x - 9, (z - 30) * 1.4); if (d <= 3.4 && d > 2.4) put(p, x, y, z, pick(GOTH_STONE, x, y, z, 9)); else if (d <= 2.4 && z > 30) p.air(x, y, z); }
+  for (let y = 1; y <= 10; y++) for (let x = 6; x <= 12; x++) for (let z = 30; z <= 32; z++) { const d = stableHypot(x - 9, (z - 30) * 1.4); if (d <= 3.4 && d > 2.4) put(p, x, y, z, pick(GOTH_STONE, x, y, z, 9)); else if (d <= 2.4 && z > 30) p.air(x, y, z); }
   for (let y = 1; y <= 9; y++) for (let x = 7; x <= 11; x++) p.air(x, y, 30);
-  for (let x = 6; x <= 12; x++) for (let z = 30; z <= 32; z++) { const d = Math.hypot(x - 9, (z - 30) * 1.4); if (d <= 3.4) p.set(x, 11, z, d > 2.4 ? 'deepslate_tile_slab' : 'deepslate_tiles', d > 2.4 ? slab() : {}); }
+  for (let x = 6; x <= 12; x++) for (let z = 30; z <= 32; z++) { const d = stableHypot(x - 9, (z - 30) * 1.4); if (d <= 3.4) p.set(x, 11, z, d > 2.4 ? 'deepslate_tile_slab' : 'deepslate_tiles', d > 2.4 ? slab() : {}); }
   for (const x of [8, 10]) for (let y = 3; y <= 6; y++) p.set(x, y, 32, 'yellow_stained_glass_pane');
   // Interior.
   for (let z = 10; z <= 24; z += 2) for (const x of [7, 8, 10, 11]) p.set(x, 1, z, 'spruce_stairs', stairs('south'));
@@ -175,7 +176,7 @@ function steinkreis() {
   const p = new Plot([13, 6, 13]);
   for (let x = 0; x < 13; x++) for (let z = 0; z < 13; z++) p.set(x, 0, z, 'grass_block', grass());
   for (let i = 0; i < 10; i++) {
-    const a = i / 10 * Math.PI * 2, x = Math.round(6 + Math.cos(a) * 5), z = Math.round(6 + Math.sin(a) * 5);
+    const a = i / 10 * Math.PI * 2, x = Math.round(6 + stableCos(a) * 5), z = Math.round(6 + stableSin(a) * 5);
     const h = 2 + (i % 3 === 0 ? 1 : 0);
     p.fill(x, 1, z, x, h, z, noise(x, 0, z) > 0.5 ? 'mossy_cobblestone' : 'stone');
   }
@@ -188,7 +189,7 @@ const MAGE_STONE: Mix = [['deepslate_bricks', 7], ['cracked_deepslate_bricks', 2
 function zaubererturm() {
   const p = new Plot([15, 2, 15]), c = 7;
   const ring = (r: number, f: (x: number, z: number, edge: boolean, d: number) => void) => {
-    for (let x = 0; x <= 14; x++) for (let z = 0; z <= 14; z++) { const d = Math.hypot(x - c, z - c); if (d <= r + 0.35) f(x, z, d > r - 0.95, d); }
+    for (let x = 0; x <= 14; x++) for (let z = 0; z <= 14; z++) { const d = stableHypot(x - c, z - c); if (d <= r + 0.35) f(x, z, d > r - 0.95, d); }
   };
   const face = (x: number, z: number) => { const dx = c - x, dz = c - z; return Math.abs(dx) >= Math.abs(dz) ? (dx > 0 ? 'east' : 'west') : (dz > 0 ? 'south' : 'north'); };
   ring(5.5, (x, z) => p.set(x, 0, z, pick(MAGE_STONE, x, 0, z, 6)));
@@ -202,7 +203,7 @@ function zaubererturm() {
   for (let i = 0; i < 8; i++) {
     const r = 4.2 - i * 0.5, ox = Math.floor(i / 3);
     for (let x = 0; x <= 14; x++) for (let z = 0; z <= 14; z++) {
-      const d = Math.hypot(x - c - ox, z - c); if (d > r + 0.35) continue;
+      const d = stableHypot(x - c - ox, z - c); if (d > r + 0.35) continue;
       if (d > r - 0.95) { const dx = c + ox - x, dz = c - z; p.set(x, 24 + i, z, 'deepslate_tile_stairs', stairs(Math.abs(dx) >= Math.abs(dz) ? (dx > 0 ? 'east' : 'west') : (dz > 0 ? 'south' : 'north'))); }
       else p.set(x, 24 + i, z, (x + z + i) % 3 ? 'purple_concrete' : 'purple_terracotta');
     }

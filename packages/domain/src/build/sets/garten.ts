@@ -3,6 +3,7 @@ import type { H, Props } from '../plot.js';
 import { pot, sofa, table } from '../furnish.js';
 import { WIKI } from '../spec.js';
 import type { BuildingSpec } from '../spec.js';
+import { stableAtan2, stableCos, stableSin } from '../../../../voxel/src/stableMath.js';
 
 /**
  * Garten & Park (Katalog v3): Pergola, Beete, Bogengänge, Labyrinth, Schuppen,
@@ -187,7 +188,7 @@ function kraeuterspirale() {
   const inside = (x: number, z: number) => (x - cx) ** 2 + (z - cz) ** 2 <= R * R;
   const height = (x: number, z: number) => {
     if (x === cx && z === cz) return 4;
-    const a = (Math.atan2(z - cz, x - cx) + 2 * Math.PI) % (2 * Math.PI);
+    const a = (stableAtan2(z - cz, x - cx) + 2 * Math.PI) % (2 * Math.PI);
     return 1 + Math.min(3, Math.floor((a / (2 * Math.PI)) * 4));
   };
   const herbs = ['fern', 'cornflower', 'oxeye_daisy', 'allium'];
@@ -328,7 +329,7 @@ function formschnitt() {
   for (let y = 1; y <= 6; y++) {
     const r = Math.max(0, 2.2 - (y - 1) * 0.4), a = y * 1.6;
     p.disc(13, 4, y, r, L, leaves());
-    if (r >= 1) p.clear(Math.round(13 + Math.cos(a) * r), y, Math.round(4 + Math.sin(a) * r));
+    if (r >= 1) p.clear(Math.round(13 + stableCos(a) * r), y, Math.round(4 + stableSin(a) * r));
   }
   p.set(13, 7, 4, L, leaves());
   for (const x of [5, 11]) lampPost(p, x, 1, 7, 'spruce_fence', 2);

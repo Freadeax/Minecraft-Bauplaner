@@ -5,6 +5,7 @@ import { joint } from '../build/spec.js';
 import type { Connector } from '../types.js';
 import { Mason, pathProfile, styleParam, WEATHER_PARAMS } from './types.js';
 import type { Generator } from './types.js';
+import { stableAtan2, stableCos, stableHypot, stableSin } from '../../../voxel/src/stableMath.js';
 
 /**
  * Arena (GEN-03): oval amphitheatre after the classic Roman model. Outer ring
@@ -91,10 +92,10 @@ export const ARENA_GENERATOR: Generator = {
     const N = 4096, arc = new Float64Array(N + 1);
     for (let i = 1; i <= N; i++) {
       const t0 = (i - 1) / N * 2 * Math.PI, t1 = i / N * 2 * Math.PI;
-      arc[i] = arc[i - 1]! + Math.hypot(A * (Math.cos(t1) - Math.cos(t0)), B * (Math.sin(t1) - Math.sin(t0)));
+      arc[i] = arc[i - 1]! + stableHypot(A * (stableCos(t1) - stableCos(t0)), B * (stableSin(t1) - stableSin(t0)));
     }
     const perimeter = arc[N]!;
-    const theta = (x: number, z: number) => { const t = Math.atan2((z - cz) / B, (x - cx) / A); return t < 0 ? t + 2 * Math.PI : t; };
+    const theta = (x: number, z: number) => { const t = stableAtan2((z - cz) / B, (x - cx) / A); return t < 0 ? t + 2 * Math.PI : t; };
     const arcAt = (t: number) => { const f = t / (2 * Math.PI) * N, i = Math.min(N - 1, Math.floor(f)); return arc[i]! + (arc[i + 1]! - arc[i]!) * (f - i); };
     const nB = Math.max(8, Math.round(perimeter / PITCH)), pitch = perimeter / nB;
     /** Bay index and position within the bay (0 ≤ c < pitch); bay 0 is centred on the east axis. */
@@ -104,7 +105,7 @@ export const ARENA_GENERATOR: Generator = {
     };
     const tangent = (t: number, toPillar: boolean, c: number): H => {
       const sgn = (c < pitch / 2) === toPillar ? -1 : 1;
-      return dom(sgn * -A * Math.sin(t), sgn * B * Math.cos(t));
+      return dom(sgn * -A * stableSin(t), sgn * B * stableCos(t));
     };
     const gateAngles = fourGates ? [0, Math.PI / 2, Math.PI, 1.5 * Math.PI] : [0, Math.PI];
     const gateBays = new Set(gateAngles.map(t => Math.floor(arcAt(t) / pitch + 0.5) % nB));

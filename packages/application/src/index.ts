@@ -7,3 +7,5 @@ export { computeProject, mergeBuildItems } from './projectComputation.js';
 export type { ComputeInput, ProjectComputation, BuildItemSummary } from './projectComputation.js';
 export { catalogCandidates, nextReleaseLabel, planCatalogDelivery, planSeed } from './catalogSync.js';
 export type { CatalogShipment, CatalogDelivery, SeedPlan } from './catalogSync.js';
+export { CATALOG_SNAPSHOT_FORMAT, buildShippedCatalog, readCatalogSnapshot, shipmentMetrics, writeCatalogSnapshot } from './catalogSnapshot.js';
+export type { CatalogShipmentParts, CatalogSnapshot, CatalogSnapshotFile } from './catalogSnapshot.js';

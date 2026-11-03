@@ -27,7 +27,8 @@
     "COOP-02",
     "COOP-04",
     "PROJ-01",
-    "COOP-05"
+    "COOP-05",
+    "PERF-05"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -2100,6 +2101,106 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-03T17:39:42.853Z"
+    },
+    {
+      "id": "PERF-05",
+      "title": "Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude-Thread „Gesamtsystem auf Performance und Stabilität optimieren“",
+      "dependencies": [
+        "PERF-04"
+      ],
+      "scope": [
+        "docs/architecture/PERFORMANCE_AUDIT.md",
+        "packages/application/src/catalogSnapshot.ts",
+        "packages/voxel/src/stableMath.ts",
+        "packages/domain/src/hash.ts",
+        "scripts/build_catalog_snapshot.mjs",
+        "scripts/catalog_key.mjs",
+        "scripts/perf/measure_start.mjs",
+        "apps/web/src/app/lazyPage.tsx",
+        "apps/web/src/main.tsx",
+        "apps/web/src/jobs/libraryJob.ts",
+        "apps/web/src/jobs/library.ts",
+        "tests/e2e/catalog-snapshot.e2e.mjs",
+        "tests/stable-math.test.mjs",
+        "tests/canonical-json.test.mjs"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "PERF-05-S01",
+          "title": "Messbasis und priorisierter Befund (Ladezeiten, Pakete, CPU-Brennpunkte, Fehlerbehandlung) in PERFORMANCE_AUDIT.md; Messskript scripts/perf/measure_start.mjs.",
+          "done": true
+        },
+        {
+          "id": "PERF-05-S02",
+          "title": "Mitgelieferter Katalog als Datei beim Bauen (assets/catalog-<key>.json), Worker lädt sie bei fehlendem Katalogspeicher, Rückfall auf Erzeugen; Erststart 5,2 s → 1,4 s.",
+          "done": true
+        },
+        {
+          "id": "PERF-05-S03",
+          "title": "Seiten bei Bedarf laden mit Vorladen im Leerlauf und einmaligem Neuladen nach Deploy; Startpaket 1,33 MB → 0,72 MB; Gebäudesets nicht mehr im Seitenpaket.",
+          "done": true
+        },
+        {
+          "id": "PERF-05-S04",
+          "title": "canonicalJson ohne Zwischenarrays (Byte für Byte gleiche Ausgabe).",
+          "done": true
+        },
+        {
+          "id": "PERF-05-S05",
+          "title": "Plattformfeste Winkelfunktionen für gespeicherte Geometrie (Kolosseum war in Node und Chromium verschieden).",
+          "done": true
+        },
+        {
+          "id": "PERF-05-S06",
+          "title": "Dauerhafter Vorschaubildcache (O-1) und Zellen erst bei Bedarf entpacken (O-2).",
+          "done": false
+        },
+        {
+          "id": "PERF-05-S07",
+          "title": "Analyse Mod und Paper-Plugin nach Merge der Teambau-Threads (O-8); Aufteilen großer Dateien nach Merge des jeweiligen Threads (O-6).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Katalog aus der Datei ist Asset für Asset und Version für Version gleich dem im Browser erzeugten.",
+        "Fehlende, beschädigte oder fremde Katalogdatei führt zum Erzeugen wie bisher, ohne Fehler.",
+        "Hash- und ID-Ausgabe unverändert; kein mitgeliefertes Gebäude bekommt eine neue Version-ID gegenüber Node.",
+        "Alle Kern- und Browsertests grün."
+      ],
+      "next": "O-1 Vorschaubildcache und O-2 Zellen bei Bedarf entpacken; Mod/Plugin-Analyse nach Merge der Teambau-Threads.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "docs/architecture/PERFORMANCE_AUDIT.md",
+          "note": "Messungen vorher/nachher, umgesetzte und offene Befunde mit Priorität."
+        },
+        {
+          "path": "tests/e2e/catalog-snapshot.e2e.mjs",
+          "note": "Chromium: Erststart aus Datei, Neustart aus Speicher, gleicher Katalog wie selbst erzeugt, Rückfall bei fehlender/beschädigter/fremder Datei."
+        },
+        {
+          "path": "tests/stable-math.test.mjs",
+          "note": "Genauigkeit gegen Math, Sonderwerte, feste Referenzbits."
+        },
+        {
+          "path": "tests/canonical-json.test.mjs",
+          "note": "2000 Zufallswerte und Sonderfälle gleich der alten Implementierung."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Node- und Chromium-Prüfung im Cloud-Container; echte Geräte, Firefox/Safari offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-03T18:49:57.179Z"
     },
     {
       "id": "VIEW-01",
@@ -11763,6 +11864,62 @@
           "done": 3,
           "total": 5,
           "next": "Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T18:49:57.179Z",
+      "kind": "progress",
+      "items": [
+        "PERF-05"
+      ],
+      "summary": "Gesamtoptimierung Runde 1: mitgelieferter Katalog als Datei beim Bauen (Erststart 5,2 s → 1,4 s), Seiten bei Bedarf geladen und im Leerlauf vorgeladen (Einstieg 1,33 MB → 0,72 MB), canonicalJson schneller bei gleicher Ausgabe, plattformfeste Winkelfunktionen (Kolosseum Node/Chromium gleich), Befund PERFORMANCE_AUDIT.md. Geprüft: npm run check, Browser-Suite in Chromium 1243; echte Geräte, Firefox/Safari offen.",
+      "files": [
+        "apps/web/src/app/context.tsx",
+        "apps/web/src/app/lazyPage.tsx",
+        "apps/web/src/app/repository.ts",
+        "apps/web/src/jobs/library.ts",
+        "apps/web/src/jobs/libraryJob.ts",
+        "apps/web/src/main.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/PERFORMANCE_AUDIT.md",
+        "package.json",
+        "packages/application/src/catalogSnapshot.ts",
+        "packages/application/src/index.ts",
+        "packages/domain/src/base.ts",
+        "packages/domain/src/build/sets/befestigung.ts",
+        "packages/domain/src/build/sets/deko.ts",
+        "packages/domain/src/build/sets/dorf.ts",
+        "packages/domain/src/build/sets/epochen.ts",
+        "packages/domain/src/build/sets/garten.ts",
+        "packages/domain/src/build/sets/grossbauten.ts",
+        "packages/domain/src/build/sets/klassiker.ts",
+        "packages/domain/src/build/sets/natur.ts",
+        "packages/domain/src/build/sets/sakral.ts",
+        "packages/domain/src/editor/forms.ts",
+        "packages/domain/src/generators/arena.ts",
+        "packages/domain/src/hash.ts",
+        "packages/domain/src/terrainDesign.ts",
+        "packages/voxel/src/index.ts",
+        "packages/voxel/src/stableMath.ts",
+        "scripts/build_catalog_snapshot.mjs",
+        "scripts/catalog_key.mjs",
+        "scripts/perf/measure_start.mjs",
+        "scripts/prepare_main_pages.mjs",
+        "tests/canonical-json.test.mjs",
+        "tests/e2e/catalog-snapshot.e2e.mjs",
+        "tests/e2e/library-start.e2e.mjs",
+        "tests/stable-math.test.mjs",
+        "vite.config.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-05",
+          "status": "implemented",
+          "done": 5,
+          "total": 7,
+          "next": "O-1 Vorschaubildcache und O-2 Zellen bei Bedarf entpacken; Mod/Plugin-Analyse nach Merge der Teambau-Threads."
         }
       ]
     }

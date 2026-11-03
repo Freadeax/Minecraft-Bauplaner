@@ -6,6 +6,7 @@ import type { Repository } from './repository';
 import { loadLibrary, startLibrary } from '../jobs/library';
 import { JobStatus } from '../jobs/JobStatus';
 import type { JobProgress } from '../jobs/protocol';
+import { preloadPages } from './lazyPage';
 
 export interface Library {
   readonly assets: readonly Asset[];
@@ -41,7 +42,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     openRepository({ seed: false }).then(async r => {
       onProgress({ step: 'Bibliothek prüfen', fraction: null });
       const lib = await startLibrary(r, { onProgress });
-      if (alive) { setLibrary(lib); setRepo(r); }
+      if (alive) { setLibrary(lib); setRepo(r); preloadPages(); }
     }).catch(e => { if (alive) setError(e instanceof Error ? e.message : String(e)); });
     return () => { alive = false; };
   }, []);

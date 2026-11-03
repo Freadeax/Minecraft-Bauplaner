@@ -3,6 +3,7 @@ import type { H, Props } from '../plot.js';
 import { bamboo, kelp } from '../furnish.js';
 import { WIKI } from '../spec.js';
 import type { BuildingSpec } from '../spec.js';
+import { stableCos, stableHypot, stableSin } from '../../../../voxel/src/stableMath.js';
 
 /**
  * Naturwunder (Katalog v3): Wasserfall, Felsbogen, Vulkan, Eisberg, Oase,
@@ -35,7 +36,7 @@ function wasserfall() {
     p.set(x, 0, z, 'grass_block', grass());
   }
   const faceOf = (x: number) => fall(x) ? 4 : 3 + (noise(x, 0, 0) > 0.5 ? 1 : 0);
-  const rockTop = (x: number, z: number) => Math.round(11 + 1.6 * Math.sin(x * 0.6) + noise(x, 1, z) * 1.5 - (z === faceOf(x) ? 1 + noise(x, 2, z) * 2 : 0));
+  const rockTop = (x: number, z: number) => Math.round(11 + 1.6 * stableSin(x * 0.6) + noise(x, 1, z) * 1.5 - (z === faceOf(x) ? 1 + noise(x, 2, z) * 2 : 0));
   // the brook runs in a level channel cut below both banks
   let channel = 99;
   for (let z = 0; z <= 4; z++) for (const x of [4, 7]) channel = Math.min(channel, rockTop(x, z) - 1);
@@ -71,7 +72,7 @@ function felsbogen() {
   const W = 15, D = 7, p = new Plot([W, 14, D]);
   for (let x = 0; x < W; x++) for (let z = 0; z < D; z++) p.set(x, 0, z, noise(x, 0, z) > 0.75 ? 'gravel' : 'grass_block', noise(x, 0, z) > 0.75 ? {} : grass());
   for (let i = 0; i <= 24; i++) {
-    const a = (i / 24) * Math.PI, cx = 7 - 5.4 * Math.cos(a), cy = 1 + 8.6 * Math.sin(a), r = 1.2 + (1 - Math.sin(a)) * 0.9;
+    const a = (i / 24) * Math.PI, cx = 7 - 5.4 * stableCos(a), cy = 1 + 8.6 * stableSin(a), r = 1.2 + (1 - stableSin(a)) * 0.9;
     p.blob(cx, cy, 3, r, r * 0.9, r, 'stone', {}, false, (x, y, z) => y >= 1 && noise(x, y, z) > 0.07);
   }
   recolor(p, [W, 14, D], 'stone', (x, y, z) => { const b = (y + Math.floor(noise(x, 0, z) * 2)) % 5; return b === 0 ? 'granite' : b === 3 ? 'andesite' : noise(x, y, z) > 0.88 ? 'cobblestone' : 'stone'; });
@@ -93,7 +94,7 @@ function vulkan() {
   for (let y = 0; y <= H; y++) {
     const r = 8.2 - y * 0.58;
     for (let x = 0; x < S; x++) for (let z = 0; z < S; z++) {
-      const d = Math.hypot(x - c, z - c) + (noise(x, y, z) - 0.5) * 1.2;
+      const d = stableHypot(x - c, z - c) + (noise(x, y, z) - 0.5) * 1.2;
       if (d > r) continue;
       const craterR = y >= 8 ? 1.6 + (y - 8) * 0.6 : -1;
       if (y >= 9 && d < craterR) continue;
@@ -211,7 +212,7 @@ function riesenfichte() {
 
 function bambushain() {
   const S = 11, p = new Plot([S, 16, S]);
-  const pathX = (z: number) => Math.round(5 + 2 * Math.sin(z * 0.55));
+  const pathX = (z: number) => Math.round(5 + 2 * stableSin(z * 0.55));
   for (let x = 0; x < S; x++) for (let z = 0; z < S; z++) {
     const onPath = Math.abs(x - pathX(z)) <= 0;
     p.set(x, 0, z, onPath ? 'coarse_dirt' : noise(x, 0, z) > 0.5 ? 'podzol' : 'grass_block', onPath ? {} : grass());
@@ -230,7 +231,7 @@ function basaltfeld() {
   const W = 13, D = 11, p = new Plot([W, 10, D]);
   for (let x = 0; x < W; x++) for (let z = 0; z < D; z++) {
     const cz = Math.floor(z / 2), cx = Math.floor((x + (cz % 2)) / 2);
-    const lift = Math.max(0, 1 - Math.hypot(x - 4, z - 3) / 8);
+    const lift = Math.max(0, 1 - stableHypot(x - 4, z - 3) / 8);
     const h = Math.round(lift * 6 + noise(cx, 0, cz) * 2.4 - (z >= 8 ? 1.5 : 0));
     for (let y = 0; y <= Math.max(0, h); y++) p.set(x, y, z, y === h ? (noise(cx, 1, cz) > 0.5 ? 'polished_basalt' : 'smooth_basalt') : 'basalt', y === h && noise(cx, 1, cz) <= 0.5 ? {} : axis('y'));
     if (h < 2 && z >= 6) for (let y = Math.max(0, h) + 1; y <= 2; y++) p.set(x, y, z, 'water', water());
@@ -247,7 +248,7 @@ function felsnadeln() {
     for (let y = 1; y <= h; y++) {
       const r = r0 * (1 - 0.4 * (y / h)) + (y === h ? 0.8 : 0);
       for (let x = 0; x < S; x++) for (let z = 0; z < S; z++) {
-        if (Math.hypot(x - cx, z - cz) > r + (noise(x, y, z) - 0.5) * 0.8) continue;
+        if (stableHypot(x - cx, z - cz) > r + (noise(x, y, z) - 0.5) * 0.8) continue;
         p.set(x, y, z, y === h ? 'red_sandstone' : bands[Math.floor((y + (noise(x, 0, z) > 0.85 ? 1 : 0)) / 1.5) % bands.length]!);
       }
     }
@@ -263,7 +264,7 @@ function felsnadeln() {
 function mangrove() {
   const S = 13, p = new Plot([S, 15, S]);
   for (let x = 0; x < S; x++) for (let z = 0; z < S; z++) {
-    const d = Math.hypot(x - 6, z - 6), wet = d > 3 && noise(x, 0, z) > 0.55;
+    const d = stableHypot(x - 6, z - 6), wet = d > 3 && noise(x, 0, z) > 0.55;
     p.set(x, 0, z, wet ? 'water' : d < 2.5 ? 'muddy_mangrove_roots' : 'mud', wet ? water() : d < 2.5 ? axis('y') : {});
   }
   // raised trunk on prop roots

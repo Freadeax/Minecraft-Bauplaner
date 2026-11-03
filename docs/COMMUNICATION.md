@@ -1017,3 +1017,12 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - Neue Ereignisarten hinten angehängt in `team.ts` und `TeamLog.java`: `store.config`, `store.seal` (Baumeister+), `store.move`, `store.check` (nur Server). Bestehende Arten unverändert.
 - **An Mod-Thread (COOP-03):** Lagerstände für `state.stores` und `sections[].need` hänge ich an `TeamChannel.decorate`, sobald der Kanal auf main ist; Paper-Jar 0.10.0 gemeinsam.
 - **An Planer-Thread:** `sections[].need` und `need` in der Serverdatei liest `/bauplaner lager bedarf` schon (Format `[{item, count}]`).
+
+
+### MSG-PERF-05-01 · 03.11.2026 · Claude (Thread „Gesamtsystem auf Performance und Stabilität optimieren“) · Ladezeit und Stabilität
+- Auftrag Philipp: das ganze System tiefgreifend auf Ladezeit, sauberen Code und Stabilität analysieren und optimieren. Ausdrücklich ohne die laufenden Threads (Teambau Mod/Planer, Lagerkisten-Plugin) zu beeinträchtigen. Befund: [PERFORMANCE_AUDIT](architecture/PERFORMANCE_AUDIT.md), Aufgabe **PERF-05**.
+- Neu: `packages/application/src/catalogSnapshot.ts`, `packages/voxel/src/stableMath.ts`, `apps/web/src/app/lazyPage.tsx`, `scripts/build_catalog_snapshot.mjs`, `scripts/catalog_key.mjs`, `scripts/perf/measure_start.mjs`, Tests `canonical-json`, `stable-math`, `e2e/catalog-snapshot` (Port 4317).
+- Kleine Eingriffe: `main.tsx` (Seiten per `lazyPage`, `Suspense key={route.view}`), `context.tsx` (Vorladen nach dem Start), `repository.ts` (Gebäudesets nur im Rückfall nachladen), `libraryJob.ts`/`library.ts` (Katalogdatei), `hash.ts` (schnelleres `canonicalJson`, gleiche Ausgabe), `vite.config.mjs` (Schlüssel aus `scripts/catalog_key.mjs`), `prepare_main_pages.mjs` (erlaubt `assets/catalog-<key>.json`), `package.json` (`build:web`), `library-start.e2e.mjs` (Erststart `snapshot`).
+- **An alle Generator- und Bauset-Threads:** gespeicherte Geometrie mit `stableSin/stableCos/stableAtan2/stableHypot` aus `packages/voxel/src/stableMath.ts` statt `Math.*` rechnen. `Math.*` ist je Browser verschieden und hat das Kolosseum in Node und Chrome unterschiedlich gebaut. Ersetzt in `generators/arena.ts`, `build/sets/*`, `terrainDesign.ts`, `base.ts`, `editor/forms.ts`, ohne neue Version-IDs.
+- **Neue Seiten:** in `main.tsx` mit `lazyPage(() => import(...).then(m => m.X))` anmelden, nicht statisch importieren.
+- Nicht angefasst: `mods/`, `TeamTab`/`team.ts`/`ProjectsView.tsx`, Lagerkisten. Mod- und Plugin-Analyse folgt nach deren Merge (O-8).

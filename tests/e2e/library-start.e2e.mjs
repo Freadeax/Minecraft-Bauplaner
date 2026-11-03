@@ -68,7 +68,7 @@ test('Bibliotheksstart im Hintergrund: Fortschritt, Seite bleibt bedienbar, Kata
   }));
   assert.equal(assets.length, TOTAL, 'every shipped building and sample was stored');
 
-  assert.equal(await p.evaluate(() => document.documentElement.dataset.libraryStart), 'built', 'first start builds the catalogue');
+  assert.equal(await p.evaluate(() => document.documentElement.dataset.libraryStart), 'snapshot', 'first start takes the catalogue file built with the page (PERF-05; building is checked in catalog-snapshot.e2e.mjs)');
   const cacheKey = await p.evaluate(() => new Promise(res => {
     const r = indexedDB.open('minecraft-bauplaner');
     r.onsuccess = () => { const q = r.result.transaction('meta').objectStore('meta').get('catalogCache'); q.onsuccess = () => { res(q.result?.cache?.key ?? null); r.result.close(); }; };

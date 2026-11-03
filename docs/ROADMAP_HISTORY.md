@@ -3801,3 +3801,53 @@ Quellcommit der Paper-Jar 0.10.0 nach dem Rebase nachgetragen.
 
 - `apps/web/src/views/mod/releases.json`
 
+## 2026-11-03T18:49:57.179Z · progress
+
+**Aufgaben:** PERF-05
+
+Gesamtoptimierung Runde 1: mitgelieferter Katalog als Datei beim Bauen (Erststart 5,2 s → 1,4 s), Seiten bei Bedarf geladen und im Leerlauf vorgeladen (Einstieg 1,33 MB → 0,72 MB), canonicalJson schneller bei gleicher Ausgabe, plattformfeste Winkelfunktionen (Kolosseum Node/Chromium gleich), Befund PERFORMANCE_AUDIT.md. Geprüft: npm run check, Browser-Suite in Chromium 1243; echte Geräte, Firefox/Safari offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-05 | 🧩 Implementiert · Abnahme offen | 5/7 | O-1 Vorschaubildcache und O-2 Zellen bei Bedarf entpacken; Mod/Plugin-Analyse nach Merge der Teambau-Threads. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/context.tsx`
+- `apps/web/src/app/lazyPage.tsx`
+- `apps/web/src/app/repository.ts`
+- `apps/web/src/jobs/library.ts`
+- `apps/web/src/jobs/libraryJob.ts`
+- `apps/web/src/main.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/PERFORMANCE_AUDIT.md`
+- `package.json`
+- `packages/application/src/catalogSnapshot.ts`
+- `packages/application/src/index.ts`
+- `packages/domain/src/base.ts`
+- `packages/domain/src/build/sets/befestigung.ts`
+- `packages/domain/src/build/sets/deko.ts`
+- `packages/domain/src/build/sets/dorf.ts`
+- `packages/domain/src/build/sets/epochen.ts`
+- `packages/domain/src/build/sets/garten.ts`
+- `packages/domain/src/build/sets/grossbauten.ts`
+- `packages/domain/src/build/sets/klassiker.ts`
+- `packages/domain/src/build/sets/natur.ts`
+- `packages/domain/src/build/sets/sakral.ts`
+- `packages/domain/src/editor/forms.ts`
+- `packages/domain/src/generators/arena.ts`
+- `packages/domain/src/hash.ts`
+- `packages/domain/src/terrainDesign.ts`
+- `packages/voxel/src/index.ts`
+- `packages/voxel/src/stableMath.ts`
+- `scripts/build_catalog_snapshot.mjs`
+- `scripts/catalog_key.mjs`
+- `scripts/perf/measure_start.mjs`
+- `scripts/prepare_main_pages.mjs`
+- `tests/canonical-json.test.mjs`
+- `tests/e2e/catalog-snapshot.e2e.mjs`
+- `tests/e2e/library-start.e2e.mjs`
+- `tests/stable-math.test.mjs`
+- `vite.config.mjs`
+

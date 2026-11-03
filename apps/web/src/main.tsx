@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { AppProvider } from './app/context';
 import { ErrorBoundary } from './app/ErrorBoundary';
@@ -9,22 +10,25 @@ import type { Route } from './app/router';
 import { Shell } from './app/Shell';
 import { CommandPalette } from './app/CommandPalette';
 import { ProjectsView } from './views/ProjectsView';
-import { LibraryView } from './views/LibraryView';
-import { ProjectView } from './views/project/ProjectView';
-import { ViewerView } from './views/ViewerView';
-import { SystemView } from './views/SystemView';
-import { TestphaseView } from './testing/TestphaseView';
 import { installDiagnostics } from './app/diagnostics';
-import { WorldMapView } from './views/map/WorldMapView';
-import { ModView } from './views/mod/ModView';
-import { WorkshopPage } from './editor/WorkshopPage';
-import { WorldImportView } from './views/world/WorldImportView';
+import { lazyPage } from './app/lazyPage';
 import './style.css';
 import './catalog.css';
 import './schem.css';
 import './theme/theme.css';
 import './blockmodels/blocks.css';
 import './shell.css';
+
+// PERF-05: pages load when opened; the start needs only the shell and the project centre.
+const LibraryView = lazyPage(() => import('./views/LibraryView').then(m => m.LibraryView));
+const ProjectView = lazyPage(() => import('./views/project/ProjectView').then(m => m.ProjectView));
+const ViewerView = lazyPage(() => import('./views/ViewerView').then(m => m.ViewerView));
+const SystemView = lazyPage(() => import('./views/SystemView').then(m => m.SystemView));
+const TestphaseView = lazyPage(() => import('./testing/TestphaseView').then(m => m.TestphaseView));
+const WorldMapView = lazyPage(() => import('./views/map/WorldMapView').then(m => m.WorldMapView));
+const ModView = lazyPage(() => import('./views/mod/ModView').then(m => m.ModView));
+const WorkshopPage = lazyPage(() => import('./editor/WorkshopPage').then(m => m.WorkshopPage));
+const WorldImportView = lazyPage(() => import('./views/world/WorldImportView').then(m => m.WorldImportView));
 
 function Page({ route }: { route: Route }) {
   switch (route.view) {
@@ -45,7 +49,7 @@ function Page({ route }: { route: Route }) {
 function App() {
   const route = useRoute();
   return <Shell route={route}>
-    <AppProvider><CommandPalette /><ErrorBoundary resetKey={window.location.hash}><Page route={route} /></ErrorBoundary></AppProvider>
+    <AppProvider><CommandPalette /><ErrorBoundary resetKey={window.location.hash}><Suspense key={route.view} fallback={<div className="loading" role="status" data-page-loading="">Seite wird geladen …</div>}><Page route={route} /></Suspense></ErrorBoundary></AppProvider>
     <TextureDialog />
   </Shell>;
 }

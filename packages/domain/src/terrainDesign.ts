@@ -9,6 +9,7 @@ import type { ColumnBase, SurveyArea, TerrainSurvey } from './terrainSurvey.js';
 import { DomainError } from './types.js';
 import { checkScatterPlan, cloneScatter } from './terrainScatterPlan.js';
 import type { ScatterPlan } from './terrainScatterPlan.js';
+import { stableCos, stableHypot } from '../../voxel/src/stableMath.js';
 
 /**
  * Geländegestaltung (TERRAIN-02): a planned terrain on top of a Geländeaufnahme
@@ -298,7 +299,7 @@ export const brushWeight = (dist: number, radius: number, falloff: Falloff): num
   if (dist > radius + 0.5) return 0;
   if (falloff === 'hard') return 1;
   const t = Math.min(1, dist / (radius + 1));
-  return falloff === 'cone' ? 1 - t : 0.5 * (1 + Math.cos(Math.PI * t));
+  return falloff === 'cone' ? 1 - t : 0.5 * (1 + stableCos(Math.PI * t));
 };
 
 /** Highest height difference to the four neighbours (known columns only). */
@@ -363,7 +364,7 @@ export function applyBrush(d: TerrainDesign, cx: number, cz: number, b: Brush): 
     for (let z = z0; z <= z1; z++) for (let x = x0; x <= x1; x++) {
       const i = x + z * d.width;
       if (d.height[i] === SURVEY_UNKNOWN) continue;
-      const w = brushWeight(Math.hypot(x - gx, z - gz), r, b.falloff);
+      const w = brushWeight(stableHypot(x - gx, z - gz), r, b.falloff);
       if (w <= 0) continue;
       if (fn(i, w, x, z)) changed++;
     }
@@ -436,7 +437,7 @@ export function applyBrush(d: TerrainDesign, cx: number, cz: number, b: Brush): 
 
 /** Columns along a stroke from (x0,z0) to (x1,z1), spaced for brushes of the given radius. */
 export function strokePoints(x0: number, z0: number, x1: number, z1: number, radius: number): [number, number][] {
-  const len = Math.hypot(x1 - x0, z1 - z0), spacing = Math.max(1, radius / 2), n = Math.max(1, Math.ceil(len / spacing));
+  const len = stableHypot(x1 - x0, z1 - z0), spacing = Math.max(1, radius / 2), n = Math.max(1, Math.ceil(len / spacing));
   const out: [number, number][] = [];
   for (let k = 1; k <= n; k++) out.push([Math.round(x0 + (x1 - x0) * k / n), Math.round(z0 + (z1 - z0) * k / n)]);
   return out;
@@ -562,13 +563,13 @@ export function layPath(d: TerrainDesign, points: readonly (readonly [number, nu
   line.forEach(([x, z], k) => {
     const r = Math.ceil(half);
     for (let dz = -r; dz <= r; dz++) for (let dx = -r; dx <= r; dx++) {
-      const dist = width % 2 ? Math.max(Math.abs(dx), Math.abs(dz)) : Math.hypot(dx, dz);
+      const dist = width % 2 ? Math.max(Math.abs(dx), Math.abs(dz)) : stableHypot(dx, dz);
       if (dist > half + (width % 2 ? 0 : 0.5)) continue;
       const nx = x + dx, nz = z + dz;
       if (nx < d.minX || nz < d.minZ || nx >= d.minX + d.width || nz >= d.minZ + d.length) continue;
       const i = at(nx, nz);
       if (d.height[i] === SURVEY_UNKNOWN) continue;
-      const before = owner.get(i), exact = Math.hypot(dx, dz);
+      const before = owner.get(i), exact = stableHypot(dx, dz);
       if (!before || exact < before.dist) owner.set(i, { k, dist: exact });
     }
   });

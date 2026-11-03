@@ -54,7 +54,7 @@ async function seedInBackground(repo: Repository, options: Pick<JobOptions, 'onP
     // A cache that cannot be read only costs one rebuild.
     catalogKey && repo.getCatalogCache ? repo.getCatalogCache().catch(() => undefined) : undefined,
   ]);
-  const out = await runJob('library', { assets, records, ...(catalogKey && { catalogKey }), ...(cache !== undefined && { cache }) }, {
+  const out = await runJob('library', { assets, records, ...(catalogKey && { catalogKey, snapshotUrl: snapshotUrl(catalogKey) }), ...(cache !== undefined && { cache }) }, {
     ...options,
     // The worker computes up to 95 %, the page then writes and unpacks.
     onProgress: p => options.onProgress?.({ step: p.step, fraction: p.fraction === null ? null : p.fraction * 0.95 }),
@@ -63,6 +63,11 @@ async function seedInBackground(repo: Repository, options: Pick<JobOptions, 'onP
   markStart(out.source);
   if (out.assets.length || out.versions.length) await writePlan(repo, out, options, attempt);
   if (out.cache && repo.saveCatalogCache) await repo.saveCatalogCache(out.cache).catch(e => console.warn('Katalogspeicher nicht geschrieben:', e));
+}
+
+/** The catalogue file built with the page for this key (PERF-05, scripts/build_catalog_snapshot.mjs). */
+function snapshotUrl(key: string): string {
+  try { return new URL(`assets/catalog-${key}.json`, document.baseURI).href; } catch { return ''; }
 }
 
 /** Test hook and diagnosis: where the shipped catalogue of this start came from (`cache`, `built`, `direct`). */

@@ -19,7 +19,7 @@
     "library:list": "node scripts/library_intake.mjs list",
     "check": "npm run check:architecture && npm run check:roadmap && npm run typecheck && npm run build && npm test && npm run check:docs && npm run check:testplan && npm run check:library",
     "build:core": "tsc",
-    "build:web": "node scripts/clean_pages.mjs && vite build && node scripts/prepare_pages.mjs",
+    "build:web": "node scripts/clean_pages.mjs && vite build && node scripts/build_catalog_snapshot.mjs && node scripts/prepare_pages.mjs",
     "dev": "vite --host 127.0.0.1",
     "preview": "vite preview --host 127.0.0.1",
     "test:e2e": "node --test --test-concurrency=1 tests/e2e/*.e2e.mjs",
