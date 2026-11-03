@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T19:05:43.334Z",
+  "updatedAt": "2026-11-03T19:23:40.842Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -6199,7 +6199,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T18:38:37.063Z"
+      "updatedAt": "2026-11-03T19:23:40.842Z"
     },
     {
       "id": "COOP-01",
@@ -11920,6 +11920,47 @@
           "done": 5,
           "total": 7,
           "next": "O-1 Vorschaubildcache und O-2 Zellen bei Bedarf entpacken; Mod/Plugin-Analyse nach Merge der Teambau-Threads."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T19:23:40.842Z",
+      "kind": "progress",
+      "items": [
+        "SIZE-01"
+      ],
+      "summary": "Olympus-Prüffall (953.000 Blöcke): Übergabe an den Hintergrundrechner als Spalten, Projektberechnung, Export und Werkstatt beschleunigt; Prüfsummen unverändert",
+      "files": [
+        "apps/web/src/app/useProjectComputation.ts",
+        "apps/web/src/computation/client.ts",
+        "apps/web/src/computation/project.worker.ts",
+        "apps/web/src/computation/protocol.ts",
+        "apps/web/src/editor/BlockEditor.tsx",
+        "apps/web/src/editor/useDraft.ts",
+        "docs/TESTING.md",
+        "docs/architecture/SIZE_LIMITS.md",
+        "packages/application/src/computationTransport.ts",
+        "packages/application/src/index.ts",
+        "packages/application/src/projectComputation.ts",
+        "packages/application/src/revisionExport.ts",
+        "packages/domain/src/compose.ts",
+        "packages/domain/src/editor/draft.ts",
+        "packages/domain/src/guide.ts",
+        "packages/domain/src/hash.ts",
+        "packages/domain/src/library.ts",
+        "packages/domain/src/materials.ts",
+        "packages/domain/src/site.ts",
+        "packages/voxel/src/transforms.ts",
+        "tests/computation-transport.test.mjs",
+        "tests/large-edit.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "SIZE-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05) mit einem großen Bau im Spiel."
         }
       ]
     }

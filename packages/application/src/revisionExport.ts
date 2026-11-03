@@ -104,10 +104,12 @@ export function exportFileName(project: Project, revision: BlueprintRevision, fo
  * against that revision's own resolution, so an old revision that later lost a
  * version (or never was clean) is refused as well.
  */
-export async function exportRevisionSchem(project: Project, revisionId: string, versions: ReadonlyMap<string, AssetVersion>, settings: SchemExportSettings): Promise<RevisionExport> {
+export async function exportRevisionSchem(project: Project, revisionId: string, versions: ReadonlyMap<string, AssetVersion>, settings: SchemExportSettings,
+  /** The revision's resolution when the caller has it already (same instances and links). */
+  resolved?: Resolution): Promise<RevisionExport> {
   const revision = project.revisions.find(r => r.id === revisionId);
   if (!revision) throw new DomainError('NOT_FOUND', `Revision ${revisionId} existiert nicht.`);
-  const resolution = resolveRevision(project, revision, versions);
+  const resolution = resolved ?? resolveRevision(project, revision, versions);
   if (resolution.exportBlockers.length || !resolution.world) throw new DomainError('EXPORT_BLOCKED', `Revision ${revision.number} ist nicht exportierbar: ${resolution.exportBlockers.join('; ') || 'leer'}`);
   const notes: string[] = [];
   const mismatches = resolution.issues.filter(i => i.code === 'PROFILE_MISMATCH');
@@ -165,10 +167,13 @@ export async function exportRevisionSchem(project: Project, revisionId: string, 
  * never publish a new revision; callers persist the returned project only after success. */
 export async function prepareRevisionExport(project: Project, versions: ReadonlyMap<string, AssetVersion>, settings: SchemExportSettings,
   options: { readonly revisionId?: string; readonly comment?: string } = {}): Promise<{ readonly project: Project; readonly created: boolean; readonly output: RevisionExport }> {
-  const prepared = options.revisionId === undefined
-    ? revisionForExport(project, resolveProject(project, versions), options.comment ?? '')
+  // The current state is resolved once: the revision frozen from it (or the unchanged last one) has the same
+  // instances and links, so the export reuses it instead of resolving a million cells a second time (SIZE-01).
+  const current = options.revisionId === undefined ? resolveProject(project, versions) : undefined;
+  const prepared = current
+    ? revisionForExport(project, current, options.comment ?? '')
     : { project, revision: project.revisions.find(r => r.id === options.revisionId), created: false };
   if (!prepared.revision) throw new DomainError('NOT_FOUND', `Revision ${options.revisionId} existiert nicht.`);
-  const output = await exportRevisionSchem(prepared.project, prepared.revision.id, versions, settings);
+  const output = await exportRevisionSchem(prepared.project, prepared.revision.id, versions, settings, current);
   return { project: prepared.project, created: prepared.created, output };
 }

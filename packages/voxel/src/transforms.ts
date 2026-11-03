@@ -1,6 +1,6 @@
 import type { StateTransformResult } from './states.js';
 import type { Bounds, Transform, Vec3, VoxelPayload } from './types.js';
-import { adoptPayload, assertVec3, createPayload, isSealedPayload, validatePayload } from './validation.js';
+import { adoptPayload, assertVec3, createPayload, isSealedPayload, sealTransportedPayload, stateKey, validatePayload } from './validation.js';
 import { checkTransform, transformBlockState, transformVector as vector } from './states.js';
 import { entityLabel, transformEntity } from './entities.js';
 
@@ -63,6 +63,22 @@ export function transformPayload(payload: VoxelPayload, t: Transform): PayloadTr
     if (!r.resolved) issues.push({ code: 'UNRESOLVED_ENTITY', path: `entities[${i}]`, message: `${entityLabel(e)}: ${r.note ?? 'Transformation nicht geprüft'}` });
     return r.entity;
   });
+  if (isSealedPayload(payload)) {
+    // Sealed input (SIZE-01): its cells are validated already and a transform maps integer cells one to one,
+    // so the output is built frozen without checking every cell again. An identity transform keeps the payload.
+    if (identity && issues.length === 0 && palette.every((st, i) => st === payload.palette[i] || stateKey(st) === stateKey(payload.palette[i]!)))
+      return { payload, issues: Object.freeze(issues), semanticsResolved: true };
+    const [px, py, pz] = payload.pivot, [tx, ty, tz] = t.position, mirror = t.mirrorX, turns = ((t.quarterTurns % 4) + 4) % 4;
+    const cells = payload.cells.map(c => {
+      let x = c.position[0] + 0.5 - px, z = c.position[2] + 0.5 - pz;
+      if (mirror) x = -x;
+      for (let i = 0; i < turns; i++) { const nx = -z; z = x; x = nx; }
+      const position = Object.freeze([Math.floor(x + tx), c.position[1] - py + ty, Math.floor(z + tz)] as Vec3);
+      return Object.freeze({ ...c, position });
+    });
+    const head = { ...payload, bounds: bounds(payload.bounds,payload.pivot,t), pivot: t.position, palette, cells, blockEntities, ...(entities && { entities }) };
+    return { payload: sealTransportedPayload(head, {}), issues: Object.freeze(issues), semanticsResolved: issues.length === 0 };
+  }
   // Fresh cells and entity wrappers. Palette states and NBT data are shared with the input, so the copy is only
   // skipped when the input is a sealed (deeply frozen) payload; e.g. records read from IndexedDB are copied.
   const output = (isSealedPayload(payload) ? adoptPayload : createPayload)({ ...payload, bounds: bounds(payload.bounds,payload.pivot,t), pivot: t.position, palette,

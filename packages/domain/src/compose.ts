@@ -73,6 +73,29 @@ function conflictKind(a: Slot, cell: Cell, state: BlockState | null, entity: Blo
   return 'duplicate';
 }
 
+/** Map-like slot store over a dense cell index; iterates in insertion order like a Map. */
+function denseSlots(volume: number): { get(k: number | string): Slot | undefined; set(k: number | string, v: Slot): void; values(): Iterable<Slot>; readonly size: number; sorted(): Slot[] } {
+  const at = new Int32Array(volume), list: Slot[] = [];
+  return {
+    get: k => { const i = at[k as number]!; return i ? list[i - 1] : undefined; },
+    set: (k, v) => { const i = at[k as number]!; if (i) list[i - 1] = v; else { list.push(v); at[k as number] = list.length; } },
+    values: () => list,
+    get size() { return list.length; },
+    // The cell key orders by y, then z, then x – the world order – so walking the index needs no sort.
+    sorted: () => { const out: Slot[] = []; for (let i = 0; i < at.length; i++) { const k = at[i]!; if (k) out.push(list[k - 1]!); } return out; },
+  };
+}
+
+const cellOwnerTable = new WeakMap<VoxelPayload, readonly string[]>();
+/**
+ * Owner of each world cell, in the order of `world.cells` (same as `owners.get(positionKey(cell.position))[0]`).
+ * Only known for a world built in this thread by `resolveProject`; callers fall back to `owners` otherwise.
+ */
+export function cellOwnersOf(resolution: Pick<Resolution, 'world' | 'owners'>): (i: number, cell: Cell) => string | undefined {
+  const table = resolution.world ? cellOwnerTable.get(resolution.world) : undefined;
+  return table ? i => table[i] : (_i, cell) => resolution.owners.get(positionKey(cell.position))?.[0];
+}
+
 /**
  * Resolves a project into one world payload. Overlaps are checked per voxel; the
  * AABB result is reported only as a pre-filter. Nothing is decided silently by
@@ -105,7 +128,10 @@ export function resolveProject(project: Project, versions: ReadonlyMap<string, A
   const cellKey: (p: Vec3) => number | string = numericIndex
     ? p => (p[0] - min[0]!) + sx * ((p[2] - min[2]!) + sz * (p[1] - min[1]!))
     : positionKey;
-  const slots = new Map<number | string, Slot>();
+  // A world box up to 32 million cells indexes its slots with an Int32Array instead of a Map entry per cell
+  // (SIZE-01: inserting a million cells into a Map took seconds); larger or sparse projects keep the Map.
+  const volume = sx * sy * sz;
+  const slots = numericIndex && volume <= 33_554_432 ? denseSlots(volume) : new Map<number | string, Slot>();
   let duplicates = 0;
   for (const p of placed) {
     const entities = new Map(p.payload.blockEntities.map(e => [cellKey(e.position), e]));
@@ -135,13 +161,26 @@ export function resolveProject(project: Project, versions: ReadonlyMap<string, A
     (slot.conflict.resolvedBy ? overridden : conflicts).push(c);
   }
   const owners = new Map<string, string[]>();
-  for (const slot of slots.values()) owners.set(positionKey(slot.cell.position), slot.conflict?.resolvedBy ? [slot.conflict.resolvedBy, ...slot.owners.filter(o => o !== slot.conflict!.resolvedBy)] : slot.owners);
+  // One shared owner list per instance for the usual case (one owner, no conflict): far less memory and
+  // copying when the result goes from the worker to the page (SIZE-01).
+  const single = new Map<string, string[]>();
+  const ownersOf = (slot: Slot): string[] => {
+    if (slot.conflict?.resolvedBy) return [slot.conflict.resolvedBy, ...slot.owners.filter(o => o !== slot.conflict!.resolvedBy)];
+    if (slot.owners.length !== 1) return slot.owners;
+    const id = slot.owners[0]!;
+    let list = single.get(id);
+    if (!list) single.set(id, list = [id]);
+    return list;
+  };
+  for (const slot of slots.values()) owners.set(positionKey(slot.cell.position), slot.owners = ownersOf(slot));
   let world: VoxelPayload | null = null;
   if (slots.size) {
     const palette: BlockState[] = [], index = new Map<string, number>();
-    const cells: Cell[] = [], blockEntities: BlockEntity[] = [];
-    const sorted = [...slots.values()].sort((a, b) => a.cell.position[1] - b.cell.position[1] || a.cell.position[2] - b.cell.position[2] || a.cell.position[0] - b.cell.position[0]);
+    const cells: Cell[] = [], blockEntities: BlockEntity[] = [], cellOwners: string[] = [];
+    const sorted = 'sorted' in slots ? slots.sorted()
+      : [...slots.values()].sort((a, b) => a.cell.position[1] - b.cell.position[1] || a.cell.position[2] - b.cell.position[2] || a.cell.position[0] - b.cell.position[0]);
     for (const slot of sorted) {
+      cellOwners.push(slot.owners[0]!);
       if (slot.cell.kind === 'erase') { cells.push({ position: slot.cell.position, kind: 'erase' }); continue; }
       const key = stateKey(slot.state!);
       let paletteIndex = index.get(key);
@@ -159,6 +198,7 @@ export function resolveProject(project: Project, versions: ReadonlyMap<string, A
     try {
       // Cells are built above; states and entity data come from frozen version payloads.
       world = adoptPayload({ schemaVersion: 1, profileId: project.profileId, bounds: { min, maxExclusive: max }, pivot: [0, 0, 0], sourceOrigin: [0, 0, 0], palette, cells, blockEntities, ...(entities.length && { entities }) }, limits);
+      cellOwnerTable.set(world, cellOwners);
     } catch (e) {
       throw new DomainError('LIMIT', `Zusammengesetztes Projekt überschreitet die Grenzen: ${e instanceof Error ? e.message : String(e)}`);
     }

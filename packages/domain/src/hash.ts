@@ -52,14 +52,28 @@ export async function sha256Hex(data: string | Uint8Array | ArrayBuffer): Promis
  * cache keys and "geometry changed" checks, never for integrity of stored data.
  */
 export function quickHash(text: string): string {
-  let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
-  for (let i = 0; i < text.length; i++) {
-    const c = text.charCodeAt(i);
-    h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677);
+  return new QuickHasher().add(text).digest();
+}
+
+/** `quickHash` fed in pieces: the same result as hashing the joined text, without building it (SIZE-01). */
+export class QuickHasher {
+  private h1 = 0xdeadbeef;
+  private h2 = 0x41c6ce57;
+  add(text: string): this {
+    let h1 = this.h1, h2 = this.h2;
+    for (let i = 0; i < text.length; i++) {
+      const c = text.charCodeAt(i);
+      h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677);
+    }
+    this.h1 = h1; this.h2 = h2;
+    return this;
   }
-  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-  return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16).padStart(14, '0');
+  digest(): string {
+    let h1 = this.h1, h2 = this.h2;
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16).padStart(14, '0');
+  }
 }
 
 /** Random id with readable prefix. Uses Web Crypto randomness. */

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { EMPTY_DRAFT_HISTORY, createDraft, draftEntries, executeEdit, keyPos, redoEdit, summarizeDraft, undoEdit } from '../../../../packages/domain/src/index.js';
+import { EMPTY_DRAFT_HISTORY, createDraft, executeEdit, keyPos, redoEdit, summarizeDraft, undoEdit } from '../../../../packages/domain/src/index.js';
 import type { CellValue, Draft, DraftHistory, DraftSummary, Edit } from '../../../../packages/domain/src/index.js';
 import type { Vec3, VoxelPayload } from '../../../../packages/voxel/src/index.js';
 import { errorText } from '../app/ui';
@@ -28,21 +28,7 @@ export function useDraft(base: VoxelPayload | null, profileId: string): DraftMod
   const [history, setHistory] = useState<DraftHistory>(EMPTY_DRAFT_HISTORY);
   const reset = useCallback((next: VoxelPayload | null) => { setDraft(createDraft(next, profileId)); setHistory(EMPTY_DRAFT_HISTORY); }, [profileId]);
 
-  const { layers, extent, cellCount } = useMemo(() => {
-    const layers = new Map<number, LayerCell[]>();
-    const min = [Infinity, Infinity, Infinity], max = [-Infinity, -Infinity, -Infinity];
-    const entries = draftEntries(draft);
-    for (const [k, value] of entries) {
-      const p = keyPos(k);
-      let list = layers.get(p[1]);
-      if (!list) { list = []; layers.set(p[1], list); }
-      list.push({ x: p[0], z: p[2], value });
-      for (let i = 0; i < 3; i++) { min[i] = Math.min(min[i]!, p[i]!); max[i] = Math.max(max[i]!, p[i]!); }
-    }
-    if (draft.base) for (let i = 0; i < 3; i++) { min[i] = Math.min(min[i]!, draft.base.bounds.min[i]!); max[i] = Math.max(max[i]!, draft.base.bounds.maxExclusive[i]! - 1); }
-    const extent = Number.isFinite(min[0]) ? { min: min as unknown as Vec3, max: max as unknown as Vec3 } : null;
-    return { layers, extent, cellCount: entries.size };
-  }, [draft]);
+  const { layers, extent, cellCount } = useMemo(() => draftLayers(draft), [draft]);
 
   const run = useCallback((edit: Edit) => {
     try {
@@ -65,4 +51,62 @@ export function useDraft(base: VoxelPayload | null, profileId: string): DraftMod
   }, [undo, redo]);
 
   return { draft, history, summary: useMemo(() => summarizeDraft(draft), [draft]), layers, extent, cellCount, run, undo, redo, reset };
+}
+
+interface KeyedCell extends LayerCell { readonly k: string }
+interface BaseLayers { readonly layers: ReadonlyMap<number, readonly KeyedCell[]>; readonly min: readonly number[]; readonly max: readonly number[] }
+const baseLayerCache = new WeakMap<Draft['baseCells'], BaseLayers>();
+function baseLayersOf(draft: Draft): BaseLayers {
+  let cached = baseLayerCache.get(draft.baseCells);
+  if (!cached) {
+    const layers = new Map<number, KeyedCell[]>();
+    const min = [Infinity, Infinity, Infinity], max = [-Infinity, -Infinity, -Infinity];
+    for (const [k, value] of draft.baseCells) {
+      const p = keyPos(k);
+      let list = layers.get(p[1]);
+      if (!list) { list = []; layers.set(p[1], list); }
+      list.push({ x: p[0], z: p[2], value, k });
+      for (let i = 0; i < 3; i++) { if (p[i]! < min[i]!) min[i] = p[i]!; if (p[i]! > max[i]!) max[i] = p[i]!; }
+    }
+    cached = { layers, min, max };
+    baseLayerCache.set(draft.baseCells, cached);
+  }
+  return cached;
+}
+
+/**
+ * Cells by Y layer. The base layers are built once per draft base; an edit rebuilds only the layers it
+ * touches (SIZE-01: rebuilding a million-cell model after every click took a second). Cell order within a
+ * layer stays base order with new cells appended, as before.
+ */
+export function draftLayers(draft: Draft): Pick<DraftModel, 'layers' | 'extent' | 'cellCount'> {
+  const base = baseLayersOf(draft);
+  const min = [...base.min], max = [...base.max];
+  let cellCount = draft.baseCells.size, layers: ReadonlyMap<number, readonly LayerCell[]> = base.layers;
+  if (draft.overlay.size) {
+    const touched = new Map<number, [string, Vec3][]>();
+    for (const [k, v] of draft.overlay) {
+      const p = keyPos(k), inBase = draft.baseCells.has(k);
+      if (inBase && !v) cellCount--; else if (!inBase && v) cellCount++;
+      if (v) for (let i = 0; i < 3; i++) { if (p[i]! < min[i]!) min[i] = p[i]!; if (p[i]! > max[i]!) max[i] = p[i]!; }
+      let list = touched.get(p[1]);
+      if (!list) { list = []; touched.set(p[1], list); }
+      list.push([k, p]);
+    }
+    const next = new Map<number, readonly LayerCell[]>(base.layers);
+    for (const [y, edits] of touched) {
+      const out: KeyedCell[] = [];
+      for (const c of base.layers.get(y) ?? []) {
+        if (!draft.overlay.has(c.k)) { out.push(c); continue; }
+        const v = draft.overlay.get(c.k);
+        if (v) out.push({ x: c.x, z: c.z, value: v, k: c.k });
+      }
+      for (const [k, p] of edits) { const v = draft.overlay.get(k); if (v && !draft.baseCells.has(k)) out.push({ x: p[0], z: p[2], value: v, k }); }
+      if (out.length) next.set(y, out); else next.delete(y);
+    }
+    layers = next;
+  }
+  if (draft.base) for (let i = 0; i < 3; i++) { min[i] = Math.min(min[i]!, draft.base.bounds.min[i]!); max[i] = Math.max(max[i]!, draft.base.bounds.maxExclusive[i]! - 1); }
+  const extent = Number.isFinite(min[0]) ? { min: min as unknown as Vec3, max: max as unknown as Vec3 } : null;
+  return { layers, extent, cellCount };
 }

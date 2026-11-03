@@ -6,7 +6,7 @@ import {
   checkPlacement, settleEdit,
   clearBoxEdit, clearRegionEdit, clipEdit, copyRegion, ellipsoidEdit, helixEdit, magicSelect, moveRegionEdit, posKey, regionBounds, torusEdit, MAGIC_MODE_LABEL,
 } from '../../../../packages/domain/src/index.js';
-import type { ArchStyle, Box, BoxShape, CellSlot, Clipboard, Edit, Region, ReplaceQuery } from '../../../../packages/domain/src/index.js';
+import type { ArchStyle, Box, BoxShape, CellSlot, Clipboard, Draft, Edit, Region, ReplaceQuery } from '../../../../packages/domain/src/index.js';
 import type { BlockState, Cell, Vec3, VoxelPayload } from '../../../../packages/voxel/src/index.js';
 import { formatNumber } from '../app/ui';
 import { SizeNotice } from '../app/SizeNotice';
@@ -92,6 +92,25 @@ export interface BlockEditorProps {
 }
 
 /** Complete block editor: layer grid + 3D preview, all blocks, tools, selection operations and undo. */
+type UsedCounts = Map<string, { state: BlockState; count: number }>;
+const baseUsage = new WeakMap<object, UsedCounts>();
+function countValue(counts: UsedCounts, v: CellSlot | undefined, delta: number, texts: Map<BlockState, string>): void {
+  if (!v || v.kind !== 'block') return;
+  let k = texts.get(v.state);
+  if (k === undefined) { k = stateText(v.state); texts.set(v.state, k); }
+  const u = counts.get(k);
+  if (u) u.count += delta; else if (delta > 0) counts.set(k, { state: v.state, count: delta });
+}
+/** Blocks of the model with counts: base counted once per base, edits adjust it (SIZE-01). */
+function usedBlocks(draft: Draft): { state: BlockState; count: number }[] {
+  const texts = new Map<BlockState, string>();
+  let base = baseUsage.get(draft.baseCells);
+  if (!base) { base = new Map(); for (const v of draft.baseCells.values()) countValue(base, v, 1, texts); baseUsage.set(draft.baseCells, base); }
+  const counts: UsedCounts = new Map([...base].map(([k, u]) => [k, { ...u }]));
+  for (const [k, v] of draft.overlay) { countValue(counts, draft.baseCells.get(k), -1, texts); countValue(counts, v, 1, texts); }
+  return [...counts.values()].filter(u => u.count > 0).sort((a, b) => b.count - a.count || (stateText(a.state) < stateText(b.state) ? -1 : 1));
+}
+
 /** One line for the editor message: what the game will do with this model. */
 function placementSummary(r: ReturnType<typeof checkPlacement>): string {
   const parts = [r.counts.unsupported && `${r.counts.unsupported} ohne Halt`, r.counts.falls && `${r.counts.falls} fallen herunter`, r.counts.connection && `${r.counts.connection} Verbindungen anders als im Spiel`,
@@ -288,14 +307,7 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
   }, []);
 
   // Blocks of the model for "Im Modell" and replace.
-  const used = useMemo(() => {
-    const counts = new Map<string, { state: BlockState; count: number }>();
-    for (const list of layers.values()) for (const c of list) if (c.value.kind === 'block') {
-      const k = stateText(c.value.state), u = counts.get(k);
-      if (u) u.count++; else counts.set(k, { state: c.value.state, count: 1 });
-    }
-    return [...counts.values()].sort((a, b) => b.count - a.count || (stateText(a.state) < stateText(b.state) ? -1 : 1));
-  }, [layers]);
+  const used = useMemo(() => usedBlocks(draft), [draft]);
   const usedIds = useMemo(() => {
     const m = new Map<string, number>(); for (const u of used) m.set(u.state.id, (m.get(u.state.id) ?? 0) + u.count);
     return [...m.entries()].sort((a, b) => b[1] - a[1]);

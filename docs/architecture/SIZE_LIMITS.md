@@ -50,6 +50,28 @@ Gemessen in Node 22 (Chromium ähnlich): eine Million Zellen belegen als Zellobj
 - **Baustand in Scheiben:** `GET /v1/scan` liest die Planbox in Scheiben zu 200.000 Zellen, jede in einem eigenen Spieltick.
 - **Render-Budget:** Das Hologramm zeichnet weiter höchstens 30.000 offene Blöcke im Umkreis von 72 (die nächsten zuerst), 6.000 mit Textur und 4.000 in der Röntgensicht. `/bauplaner leistung niedrig|normal|hoch` halbiert oder verdoppelt das. Wenn das Budget greift, steht in der Anzeige „Zeigt die nächsten …“. Die Auswahl wird bei reinen Urteilsänderungen höchstens alle 250 ms neu gebaut.
 
+## Prüffall Olympus: große Blockmengen einfügen und senden
+
+Philipps Datei `olympus.litematic` (952.911 Blöcke, Box 164 × 184 × 189 = 5,7 Mio. Zellen, 464 Zustände) ist der Prüffall für den ganzen Weg: Import, Werkstatt, Projekt, Weltkarte, Senden über Mod 0.9.0. Gemessen im Browser (Chromium ohne GPU) vorher → jetzt:
+
+| Schritt | vorher | jetzt |
+| --- | --- | --- |
+| Werkstatt: ein Block setzen/abbauen, Rückgängig | 5–6 s | 1,5 s |
+| Werkstatt: als neue Version speichern | 15 s | 8 s |
+| Projekt berechnen (Bauteil eingefügt) | 20–35 s | 10 s |
+| .schem-Export | 11 s | 4 s |
+| Senden ins Spiel | 15 s | 7 s |
+
+Was dafür umgebaut wurde:
+
+- **Übergabe an den Hintergrundrechner** (`packages/application/src/computationTransport.ts`): Zellen gehen als Spalten typisierter Arrays hin und zurück (übertragen, nicht kopiert); Bauschritte nennen ihre Zellen als Index in die Welt; die eingefügten Bauteile rechnet die Seite aus ihren eigenen Versionen nach. Vorher kostete allein das Kopieren 16 s.
+- **Projektberechnung** (Node 29 s → 6 s): Zellindex als Zahl statt Text, dichte `Int32Array`-Tabellen für Belegung und Bauschritt, Materialregeln je Palettenzustand einmal, Besitzer je Zelle als Tabelle (`cellOwnersOf`), Geometrie-Hash fortlaufend (`QuickHasher`, gleiche Werte wie vorher), unveränderte Bauteile werden beim Einfügen nicht neu aufgebaut.
+- **Export**: das Projekt wird für die Revision nur noch einmal aufgelöst.
+- **Werkstatt**: Ebenen, Blockliste und Modell werden je Basis einmal aufgebaut; eine Änderung baut nur die betroffenen Ebenen neu und mischt ihre Zellen in die sortierte Basis ein, statt eine Million Zellen zu kopieren, zu zerlegen und zu sortieren. Das Modell wird an Ort und Stelle versiegelt.
+- **Prüfsumme**: `canonicalPayloadJson` schreibt die übliche Zellform direkt und ist textgleich mit `canonicalJson` (Test `tests/large-edit.test.mjs`); gespeicherte Prüfsummen und Versionskennungen bleiben gültig.
+
+Die Mod las den gesendeten Plan (194 KB .schem) in 0,4 s, die Prüfung braucht rund 56 MB.
+
 ## Grenzen, die bleiben
 
 - Mehr als 4 Mio. Blöcke oder eine Box über 16,7 Mio. Zellen: in Teilprojekte oder Bauabschnitte teilen. Die Meldungen sagen das.

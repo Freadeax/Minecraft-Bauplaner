@@ -50,13 +50,37 @@ export function checkConnectorShape(connectors: readonly Connector[]): void {
   });
 }
 
+/**
+ * `canonicalJson(payload)` with a fast path for the usual cell shapes (SIZE-01: the generic walk sorted the
+ * keys of a million cell objects and took 4 s per saved version). Gives exactly the same text, so stored
+ * payload hashes and version ids stay valid; any other cell shape goes through canonicalJson.
+ */
+export function canonicalPayloadJson(payload: VoxelPayload): string {
+  const keys = Object.keys(payload).filter(k => (payload as unknown as Record<string, unknown>)[k] !== undefined).sort();
+  return `{${keys.map(k => `${JSON.stringify(k)}:${k === 'cells' && Array.isArray(payload.cells) ? `[${payload.cells.map(cellJson).join(',')}]` : canonicalJson((payload as unknown as Record<string, unknown>)[k])}`).join(',')}}`;
+}
+function cellJson(cell: unknown): string {
+  const c = cell as { kind?: unknown; paletteIndex?: unknown; position?: unknown } | null;
+  if (c && typeof c === 'object' && !Array.isArray(c)) {
+    let n = 0;
+    for (const key in c) { n++; if (key !== 'kind' && key !== 'paletteIndex' && key !== 'position') { n = -1; break; } }
+    const p = c.position;
+    if (n > 0 && Array.isArray(p) && p.length === 3 && Number.isSafeInteger(p[0]) && Number.isSafeInteger(p[1]) && Number.isSafeInteger(p[2])) {
+      const at = `"position":[${p[0]},${p[1]},${p[2]}]}`;
+      if (n === 2 && c.kind === 'erase') return `{"kind":"erase",${at}`;
+      if (n === 3 && (c.kind === 'block' || c.kind === 'air') && Number.isSafeInteger(c.paletteIndex)) return `{"kind":"${c.kind}","paletteIndex":${c.paletteIndex as number},${at}`;
+    }
+  }
+  return canonicalJson(cell);
+}
+
 /** Hashes of sealed (immutable) payloads; the canonical JSON of a million cells takes seconds. */
 const hashes = new WeakMap<VoxelPayload, string>();
 
 export async function payloadHash(payload: VoxelPayload): Promise<string> {
   const known = hashes.get(payload);
   if (known !== undefined) return known;
-  const hash = await sha256Hex(canonicalJson(payload));
+  const hash = await sha256Hex(canonicalPayloadJson(payload));
   if (isSealedPayload(payload)) hashes.set(payload, hash);
   return hash;
 }

@@ -2,7 +2,7 @@ import { stateKey } from '../../voxel/src/validation.js';
 import { isFactBlock, itemOf, stackOfItem } from '../../voxel/src/blocklogic/index.js';
 import type { BlockState, Cell, FreeEntity, Vec3, VoxelPayload } from '../../voxel/src/types.js';
 import { blockEntityContent, entityItems, entityKind, entityKindLabel, entityLabel } from '../../voxel/src/entities.js';
-import { positionKey } from './compose.js';
+import { cellOwnersOf, positionKey } from './compose.js';
 import type { Resolution } from './compose.js';
 
 /**
@@ -300,40 +300,69 @@ export interface MaterialOptions {
 export function computeMaterials(world: VoxelPayload | null, options: MaterialOptions = {}): MaterialReport {
   const scope = options.scope ?? { kind: 'project' };
   const cells = world ? options.cells ?? (options.include ? world.cells.filter(options.include) : world.cells) : [];
-  const states = new Map<string, { state: BlockState; count: number }>();
-  const byPosition = new Map<string, BlockState>();
+  // Large worlds (SIZE-01): everything that depends only on the block state is worked out once per
+  // palette entry; positions are numeric cell indices instead of "x,y,z" strings.
+  const palette = world?.palette ?? [];
+  const keys = palette.map(stateKey);
+  const index = world ? cellIndexer(world) : (): number => -1;
+  const stateCounts = new Array<number>(palette.length).fill(0);
+  const firstSeen: number[] = [];
   let blocks = 0, air = 0, erase = 0, waterlogged = 0;
   for (const cell of cells) {
     if (cell.kind === 'erase') { erase++; continue; }
     if (cell.kind === 'air') { air++; continue; }
-    const state = world!.palette[cell.paletteIndex]!, key = stateKey(state);
     blocks++;
-    byPosition.set(positionKey(cell.position), state);
-    const s = states.get(key);
-    if (s) s.count++; else states.set(key, { state, count: 1 });
-    if (state.properties.waterlogged === 'true') waterlogged++;
+    if (stateCounts[cell.paletteIndex] === 0) firstSeen.push(cell.paletteIndex);
+    stateCounts[cell.paletteIndex] = stateCounts[cell.paletteIndex]! + 1;
+    if (palette[cell.paletteIndex]!.properties.waterlogged === 'true') waterlogged++;
   }
+  // Counted block positions: only needed for partner halves within the selection and for block entities of a part.
+  let selected: Map<number | string, BlockState> | null = null;
+  const selection = (): Map<number | string, BlockState> => {
+    if (!selected && world && cells === world.cells) selected = blockMap(world);
+    if (!selected) {
+      selected = new Map();
+      for (const cell of cells) if (cell.kind === 'block') selected.set(index(cell.position), palette[cell.paletteIndex]!);
+    }
+    return selected;
+  };
   const worldLookup = options.partners === 'world' && world ? blockLookup(world) : null;
-  const at: Lookup = worldLookup ?? ((position) => byPosition.get(positionKey(position)));
+  const at: Lookup = worldLookup ?? ((position) => selection().get(index(position)));
+  // Rules that do not look at neighbours (everything but door/bed halves) are the same for every cell of a state.
+  const fixed = new Array<{ result: CellResult; sourceKeys: string[] } | null | undefined>(palette.length);
+  const ruleFor = (paletteIndex: number): { result: CellResult; sourceKeys: string[] } | null => {
+    let entry = fixed[paletteIndex];
+    if (entry === undefined) {
+      let looked = false;
+      const result = itemsForCell(palette[paletteIndex]!, [0, 0, 0], () => { looked = true; return undefined; });
+      entry = looked ? null : { result, sourceKeys: 'yields' in result ? result.yields.map(y => `${keys[paletteIndex]}|${y.rule}|${y.note ?? ''}`) : [] };
+      fixed[paletteIndex] = entry;
+    }
+    return entry;
+  };
   const items = new Map<string, { count: number; sources: Map<string, ItemSource & { cells: number; items: number }> }>();
   const unresolved = new Map<string, UnresolvedLine>();
   for (const cell of cells) {
     if (cell.kind !== 'block') continue;
-    const state = world!.palette[cell.paletteIndex]!, key = stateKey(state), r = itemsForCell(state, cell.position, at);
+    const pi = cell.paletteIndex, state = palette[pi]!, key = keys[pi]!, rule = ruleFor(pi);
+    const r = rule ? rule.result : itemsForCell(state, cell.position, at);
     if ('unresolved' in r) {
       const u = unresolved.get(key);
-      unresolved.set(key, u ? { ...u, count: u.count + 1 } : { state, key, count: 1, reason: r.unresolved, message: r.message });
+      if (u) (u as { count: number }).count++;
+      else unresolved.set(key, { state, key, count: 1, reason: r.unresolved, message: r.message });
       continue;
     }
-    for (const y of r.yields) {
+    for (let k = 0; k < r.yields.length; k++) {
+      const y = r.yields[k]!;
       let line = items.get(y.itemId);
       if (!line) items.set(y.itemId, line = { count: 0, sources: new Map() });
       line.count += y.items;
-      const sourceKey = `${key}|${y.rule}|${y.note ?? ''}`, src = line.sources.get(sourceKey);
+      const sourceKey = rule ? rule.sourceKeys[k]! : `${key}|${y.rule}|${y.note ?? ''}`, src = line.sources.get(sourceKey);
       if (src) { src.cells++; src.items += y.items; }
       else line.sources.set(sourceKey, { state, key, cells: 1, items: y.items, rule: y.rule, confidence: y.confidence, ...(y.note !== undefined && { note: y.note }) });
     }
   }
+  const inSelection = (position: Vec3): boolean => selection().has(index(position));
   // Free entities: the item that places them counts as a build item; what they show or wear is furnishing.
   const scopedEntities = options.entities ?? (options.cells || options.include ? [] : world?.entities ?? []);
   const contents = new Map<string, { count: number; places: Map<string, number> }>();
@@ -360,7 +389,7 @@ export function computeMaterials(world: VoxelPayload | null, options: MaterialOp
     for (const c of r.contents) addContent(c.id, c.count, kind === 'other' ? 'Entity' : entityKindLabel(kind));
   }
   if (world) for (const be of world.blockEntities) {
-    if (options.cells || options.include ? !byPosition.has(positionKey(be.position)) : false) continue;
+    if (options.cells || options.include ? !inSelection(be.position) : false) continue;
     const content = blockEntityContent(be.data);
     if (!content.items.length) continue;
     const label = containerLabel(content.id);
@@ -382,7 +411,7 @@ export function computeMaterials(world: VoxelPayload | null, options: MaterialOp
     shulkerBoxes: Math.ceil(packableSlots / SHULKER_SLOTS),
     unpackableSlots: itemLines.filter(l => !l.packable).reduce((s, l) => s + l.slots, 0),
   };
-  const containersWithContents = world ? world.blockEntities.filter(e => (!options.include || byPosition.has(positionKey(e.position))) &&
+  const containersWithContents = world ? world.blockEntities.filter(e => (!options.include || inSelection(e.position)) &&
     e.data.type === 'compound' && e.data.value.Items !== undefined).length : 0;
   const conflicts = options.conflicts ?? 0;
   const assumed = itemLines.some(l => l.confidence === 'assumed');
@@ -396,7 +425,7 @@ export function computeMaterials(world: VoxelPayload | null, options: MaterialOp
   if (totals.unpackableSlots) notes.push('Shulkerkisten lassen sich nicht in Shulkerkisten lagern und sind separat ausgewiesen.');
   return {
     catalogVersion: MATERIAL_CATALOG_VERSION, profileId: world?.profileId ?? null, scope,
-    placed: { blocks, air, erase, states: [...states.entries()].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0).map(([key, v]) => ({ state: v.state, key, count: v.count })) },
+    placed: { blocks, air, erase, states: firstSeen.map(pi => ({ state: palette[pi]!, key: keys[pi]!, count: stateCounts[pi]! })).sort((a, b) => a.key < b.key ? -1 : a.key > b.key ? 1 : 0) },
     items: itemLines, unresolved: unresolvedLines, totals, notes, waterlogged, containersWithContents, entities: scopedEntities.length, contents: contentLines, conflicts,
     complete: blocks > 0 && conflicts === 0 && unresolvedLines.length === 0 && !assumed,
   };
@@ -410,20 +439,58 @@ export function computeMaterials(world: VoxelPayload | null, options: MaterialOp
 export function materialsForResolution(resolution: Resolution, scope: MaterialScope = { kind: 'project' }): MaterialReport {
   const conflicts = resolution.conflicts.length;
   if (scope.kind === 'project') return computeMaterials(resolution.world, { scope, conflicts });
-  const include = (cell: Cell): boolean => resolution.owners.get(positionKey(cell.position))?.[0] === scope.instanceId;
+  const ownerOf = cellOwnersOf(resolution), cells = (resolution.world?.cells ?? []).filter((cell, i) => ownerOf(i, cell) === scope.instanceId);
+  const include = (): boolean => true;
   const own = resolution.conflicts.filter(c => c.instanceIds.includes(scope.instanceId)).length;
   const entities = resolution.placed.find(p => p.instance.id === scope.instanceId)?.payload.entities ?? [];
-  return computeMaterials(resolution.world, { scope, include, conflicts: own, entities });
+  return computeMaterials(resolution.world, { scope, cells, include, conflicts: own, entities });
+}
+
+/**
+ * Numeric cell index inside the payload bounds, −1 outside. Much cheaper than "x,y,z" strings for
+ * worlds with a million cells (SIZE-01); a payload box is at most 16.7 million cells.
+ */
+export function cellIndexer(world: Pick<VoxelPayload, 'bounds'>): (p: Vec3) => number | string {
+  const { min, maxExclusive: max } = world.bounds;
+  const sx = max[0] - min[0], sy = max[1] - min[1], sz = max[2] - min[2];
+  // Sparse far-apart project worlds may not fit a safe integer: fall back to text keys there.
+  if (sx * sy * sz > Number.MAX_SAFE_INTEGER) return positionKey;
+  return p => p[0] < min[0] || p[1] < min[1] || p[2] < min[2] || p[0] >= max[0] || p[1] >= max[1] || p[2] >= max[2]
+    ? -1 : (p[0] - min[0]) + sx * ((p[1] - min[1]) + sy * (p[2] - min[2]));
+}
+
+const cellMaps = new WeakMap<VoxelPayload, Map<number | string, Cell>>();
+function cellsByIndex(world: VoxelPayload): Map<number | string, Cell> {
+  let m = cellMaps.get(world);
+  if (!m) {
+    const index = cellIndexer(world);
+    m = new Map();
+    for (const c of world.cells) m.set(index(c.position), c);
+    cellMaps.set(world, m);
+  }
+  return m;
 }
 
 /** Payloads are immutable, so the whole-world lookup is built once per payload. */
 const lookups = new WeakMap<VoxelPayload, Lookup>();
+const blockMaps = new WeakMap<VoxelPayload, Map<number | string, BlockState>>();
+function blockMap(world: VoxelPayload): Map<number | string, BlockState> {
+  let all = blockMaps.get(world);
+  if (!all) {
+    const index = cellIndexer(world);
+    all = new Map();
+    for (const c of world.cells) if (c.kind === 'block') all.set(index(c.position), world.palette[c.paletteIndex]!);
+    blockMaps.set(world, all);
+  }
+  return all;
+}
+/** Block state at a world position (cached per payload). */
+export function worldBlockAt(world: VoxelPayload): Lookup { return blockLookup(world); }
 function blockLookup(world: VoxelPayload): Lookup {
   let at = lookups.get(world);
   if (!at) {
-    const all = new Map<string, BlockState>();
-    for (const c of world.cells) if (c.kind === 'block') all.set(positionKey(c.position), world.palette[c.paletteIndex]!);
-    lookups.set(world, at = (position) => all.get(positionKey(position)));
+    const all = blockMap(world), index = cellIndexer(world);
+    lookups.set(world, at = (position) => all.get(index(position)));
   }
   return at;
 }
@@ -436,10 +503,11 @@ function blockLookup(world: VoxelPayload): Lookup {
  * are ignored.
  */
 export function materialsForParts(world: VoxelPayload, parts: readonly { readonly id: string; readonly positions: readonly Vec3[]; readonly conflicts?: number }[]): Map<string, MaterialReport> {
-  const cellAt = new Map(world.cells.map(c => [positionKey(c.position), c]));
+  const cellAt = cellsByIndex(world), index = cellIndexer(world);
   const out = new Map<string, MaterialReport>();
   for (const part of parts) {
-    const cells = part.positions.map(p => cellAt.get(positionKey(p))).filter((c): c is Cell => c !== undefined);
+    const cells: Cell[] = [];
+    for (const p of part.positions) { const c = cellAt.get(index(p)); if (c) cells.push(c); }
     out.set(part.id, computeMaterials(world, { cells, partners: 'world', conflicts: part.conflicts ?? 0 }));
   }
   return out;

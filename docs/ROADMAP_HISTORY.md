@@ -3851,3 +3851,38 @@ Gesamtoptimierung Runde 1: mitgelieferter Katalog als Datei beim Bauen (Erststar
 - `tests/stable-math.test.mjs`
 - `vite.config.mjs`
 
+## 2026-11-03T19:23:40.842Z · progress
+
+**Aufgaben:** SIZE-01
+
+Olympus-Prüffall (953.000 Blöcke): Übergabe an den Hintergrundrechner als Spalten, Projektberechnung, Export und Werkstatt beschleunigt; Prüfsummen unverändert
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| SIZE-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05) mit einem großen Bau im Spiel. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/useProjectComputation.ts`
+- `apps/web/src/computation/client.ts`
+- `apps/web/src/computation/project.worker.ts`
+- `apps/web/src/computation/protocol.ts`
+- `apps/web/src/editor/BlockEditor.tsx`
+- `apps/web/src/editor/useDraft.ts`
+- `docs/TESTING.md`
+- `docs/architecture/SIZE_LIMITS.md`
+- `packages/application/src/computationTransport.ts`
+- `packages/application/src/index.ts`
+- `packages/application/src/projectComputation.ts`
+- `packages/application/src/revisionExport.ts`
+- `packages/domain/src/compose.ts`
+- `packages/domain/src/editor/draft.ts`
+- `packages/domain/src/guide.ts`
+- `packages/domain/src/hash.ts`
+- `packages/domain/src/library.ts`
+- `packages/domain/src/materials.ts`
+- `packages/domain/src/site.ts`
+- `packages/voxel/src/transforms.ts`
+- `tests/computation-transport.test.mjs`
+- `tests/large-edit.test.mjs`
+

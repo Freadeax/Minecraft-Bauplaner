@@ -4,7 +4,7 @@ import type { Resolution } from './compose.js';
 import { connectorsMate, linkUsage, placedConnectors } from './connectors.js';
 import type { GuideProgress, GuideStep, Guide, StepStatus } from './guide.js';
 import { newId } from './hash.js';
-import { materialsForParts, stackSizeOf } from './materials.js';
+import { materialsForParts, stackSizeOf, worldBlockAt } from './materials.js';
 import type { ItemLine, MaterialReport } from './materials.js';
 import type { Operation } from './project.js';
 import { rawSource, resolveRecipes } from './recipes.js';
@@ -536,8 +536,9 @@ export function reservationCells(c: Connector, depth: number, width: number, hei
 export function reservationsFor(project: Pick<Project, 'instances' | 'links'>, versions: ReadonlyMap<string, AssetVersion>, site: SitePlan, resolution: Pick<Resolution, 'world' | 'owners'>): Reservation[] {
   const usage = linkUsage(project.links);
   const names = new Map(project.instances.map(i => [i.id, i.name]));
-  const blocks = new Map<string, Vec3>();
-  if (resolution.world) for (const c of resolution.world.cells) if (c.kind === 'block') blocks.set(positionKey(c.position), c.position);
+  // Shared, cached block lookup of the world (SIZE-01); only built when a free zone is checked.
+  const world = resolution.world;
+  const blocks = { has: (p: Vec3): boolean => world ? worldBlockAt(world)(p) !== undefined : false };
   const placed = project.instances.flatMap(inst => { const v = versions.get(inst.assetVersionId); return v ? placedConnectors(inst, v) : []; });
   const out: Reservation[] = [];
   for (const inst of project.instances) {
@@ -549,7 +550,7 @@ export function reservationsFor(project: Pick<Project, 'instances' | 'links'>, v
       const mate = linked ? undefined : placed.find(o => o.instanceId !== inst.id && connectorsMate(pc.world, o.world));
       const state0: ReservationState = linked ? 'linked' : mate ? 'docked' : depth === 0 ? 'off' : 'free';
       const cells = state0 === 'free' ? reservationCells(pc.world, depth, width, height) : [];
-      const blockedBy = cells.filter(p => blocks.has(positionKey(p))).map(position => {
+      const blockedBy = cells.filter(p => blocks.has(p)).map(position => {
         const owner = resolution.owners.get(positionKey(position))?.[0] ?? '';
         return { position, instanceId: owner, instanceName: names.get(owner) ?? owner };
       });

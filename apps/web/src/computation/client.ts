@@ -6,10 +6,18 @@ export interface ComputationWorker {
   onmessage: ((event: MessageEvent<unknown>) => void) | null;
   onerror: ((event: ErrorEvent) => void) | null;
   onmessageerror: ((event: MessageEvent<unknown>) => void) | null;
-  postMessage(request: ComputationRequest): void;
+  postMessage(request: ComputationRequest, options?: { transfer?: Transferable[] }): void;
   terminate(): void;
 }
-export interface ComputationClientOptions { readonly workerFactory?: () => ComputationWorker; readonly timeoutMs?: number }
+/**
+ * Wire form for the trip to the worker and back (SIZE-01: columns instead of a structured clone of a million cells).
+ * The page passes `computationTransport`; without it requests and results travel as they are (tests).
+ */
+export interface ComputationCodec {
+  encodeInput(input: ComputeInput): { readonly input: ComputationRequest['input']; readonly transfer: Transferable[] };
+  decodeResult(result: unknown, versions: ComputeInput['versions']): unknown;
+}
+export interface ComputationClientOptions { readonly workerFactory?: () => ComputationWorker; readonly timeoutMs?: number; readonly codec?: ComputationCodec }
 export interface ProjectComputationClient {
   run(input: ComputeInput, signal?: AbortSignal): Promise<ProjectComputation>;
   cancel(): void;
@@ -38,7 +46,7 @@ function transportInput(input: ComputeInput): ComputeInput {
 export function createProjectComputationClient(options: ComputationClientOptions = {}): ProjectComputationClient {
   const timeoutMs = options.timeoutMs ?? 120_000;
   if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1) throw new Error('Berechnungs-Timeout muss eine positive Ganzzahl sein.');
-  const factory = options.workerFactory ?? defaultFactory;
+  const factory = options.workerFactory ?? defaultFactory, codec = options.codec;
   let sequence = 0, disposed = false;
   let cancelActive: (() => void) | null = null;
   return {
@@ -65,6 +73,7 @@ export function createProjectComputationClient(options: ComputationClientOptions
           if (error) reject(error); else resolve(result!);
         };
         cancelActive = abort;
+        const sent = transportInput(input);
         try {
           worker = factory();
           worker.onmessage = event => {
@@ -76,18 +85,23 @@ export function createProjectComputationClient(options: ComputationClientOptions
             if (response.type === 'project-computation-error' && typeof response.error === 'string') {
               finish(failure('ComputationError', response.error)); return;
             }
-            if (response.type !== 'project-computed' || !validResult(response.result)) {
+            let result: unknown = response.result;
+            if (response.type === 'project-computed' && codec) {
+              try { result = codec.decodeResult(result, sent.versions); } catch (e) { finish(failure('ComputationError', e instanceof Error ? e.message : 'Ergebnis konnte nicht gelesen werden.')); return; }
+            }
+            if (response.type !== 'project-computed' || !validResult(result)) {
               finish(failure('ComputationError', 'Berechnung lieferte ein unvollständiges Ergebnis. Bitte erneut versuchen.')); return;
             }
-            finish(null, response.result);
+            finish(null, result);
           };
           worker.onerror = event => finish(failure('ComputationError', event.message || 'Rechen-Worker ist abgestürzt. Bitte erneut versuchen.'));
           worker.onmessageerror = () => finish(failure('ComputationError', 'Worker-Ergebnis konnte nicht übertragen werden. Bitte erneut versuchen.'));
           signal?.addEventListener('abort', abort, { once: true });
           if (signal?.aborted) { abort(); return; }
           timer = setTimeout(() => finish(failure('TimeoutError', 'Projektberechnung dauert zu lange und wurde beendet. Bitte erneut versuchen.')), timeoutMs);
-          const request: ComputationRequest = { ...tag, type: 'compute-project', input: transportInput(input) };
-          worker.postMessage(request);
+          const wire = codec ? codec.encodeInput(sent) : { input: sent, transfer: [] };
+          const request: ComputationRequest = { ...tag, type: 'compute-project', input: wire.input };
+          worker.postMessage(request, { transfer: wire.transfer });
         } catch (error) { finish(failure('ComputationError', error instanceof Error ? `Rechen-Worker konnte nicht gestartet werden: ${error.message}. Bitte erneut versuchen.` : 'Rechen-Worker ist nicht verfügbar. Bitte erneut versuchen.')); }
       });
     },

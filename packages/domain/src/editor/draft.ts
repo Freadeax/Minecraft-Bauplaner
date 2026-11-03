@@ -1,4 +1,4 @@
-import { AIR_IDS, createPayload, stateKey } from '../../../voxel/src/validation.js';
+import { AIR_IDS, adoptPayload, stateKey } from '../../../voxel/src/validation.js';
 import { MODEL_MAX_CELLS, formatCount } from '../../../voxel/src/sizeLimits.js';
 import type { BlockState, Bounds, Cell, FreeEntity, NbtTag, Vec3, VoxelPayload } from '../../../voxel/src/types.js';
 import { entityAnchor } from '../../../voxel/src/entities.js';
@@ -212,33 +212,70 @@ function union(a: Bounds | null, b: Bounds | null): Bounds | null {
  * first-use order with equal states merged. Returns null for an empty model.
  */
 export function materializeDraft(draft: Draft): VoxelPayload | null {
-  const entries = draftEntries(draft);
-  if (!entries.size) return null;
-  // Deterministic order: y, z, x (layer by layer like the build guide).
-  const keys = [...entries.keys()].map(k => ({ k, p: keyPos(k) })).sort((a, b) => a.p[1] - b.p[1] || a.p[2] - b.p[2] || a.p[0] - b.p[0]);
-  const palette: BlockState[] = [], index = new Map<string, number>();
+  const { baseCells, overlay } = draft;
+  // Deterministic order: y, z, x (layer by layer like the build guide). The base order is sorted once per
+  // draft base; an edit only sorts its own new cells and merges them in (SIZE-01: a million-cell model
+  // took seconds per edit when every cell was copied, parsed and sorted again).
+  const order = sortedBase(baseCells);
+  const added: Located[] = [];
+  for (const [k, v] of overlay) if (v && !baseCells.has(k)) added.push({ k, p: keyPos(k) });
+  added.sort(byLayer);
+  const palette: BlockState[] = [], index = new Map<string, number>(), byObject = new Map<BlockState, number>();
   const paletteIndex = (s: BlockState): number => {
+    let i = byObject.get(s);
+    if (i !== undefined) return i;
     const key = stateKey(s);
-    let i = index.get(key);
+    i = index.get(key);
     if (i === undefined) { i = palette.length; palette.push({ id: s.id, properties: { ...s.properties } }); index.set(key, i); }
+    byObject.set(s, i);
     return i;
   };
   const cells: Cell[] = [], blockEntities: { position: Vec3; data: NbtTag }[] = [];
-  for (const { k, p } of keys) {
-    const v = entries.get(k)!;
+  const min = [Infinity, Infinity, Infinity], max = [-Infinity, -Infinity, -Infinity];
+  const emit = ({ p }: Located, v: CellSlot | undefined) => {
+    if (!v) return;
+    for (let a = 0; a < 3; a++) { if (p[a]! < min[a]!) min[a] = p[a]!; if (p[a]! + 1 > max[a]!) max[a] = p[a]! + 1; }
     if (v.kind === 'erase') cells.push({ position: p, kind: 'erase' });
-    else if (v.kind === 'air') cells.push({ position: p, kind: 'air', paletteIndex: paletteIndex({ id: 'minecraft:air', properties: {} }) });
+    else if (v.kind === 'air') cells.push({ position: p, kind: 'air', paletteIndex: paletteIndex(AIR_STATE) });
     else {
       cells.push({ position: p, kind: 'block', paletteIndex: paletteIndex(v.state) });
       if (v.entity) blockEntities.push({ position: p, data: v.entity });
     }
+  };
+  const editedBase = overlay.size > 0;
+  let j = 0;
+  for (const at of order) {
+    while (j < added.length && byLayer(added[j]!, at) < 0) { emit(added[j]!, overlay.get(added[j]!.k)); j++; }
+    emit(at, editedBase && overlay.has(at.k) ? overlay.get(at.k) : baseCells.get(at.k));
   }
+  for (; j < added.length; j++) emit(added[j]!, overlay.get(added[j]!.k));
+  if (!cells.length) return null;
   const entities = draft.entities ?? [];
   // The box grows to every cell and to the cell each entity belongs to.
-  const bounds = union(union(draft.base?.bounds ?? null, cellBox(entries.keys())), cellBox(entities.map(e => posKey(entityAnchor(e)))))!;
-  return createPayload({
+  const cellBounds: Bounds = { min: min as unknown as Vec3, maxExclusive: max as unknown as Vec3 };
+  const bounds = union(union(draft.base?.bounds ?? null, cellBounds), cellBox(entities.map(e => posKey(entityAnchor(e)))))!;
+  // Fresh cells around shared, frozen positions and values: sealed in place instead of copied (the copy of a
+  // million cells cost more than building them). Entities belong to the draft, so they get their own copy.
+  return adoptPayload({
     schemaVersion: 1, profileId: draft.base?.profileId ?? draft.profileId, bounds,
-    pivot: draft.base?.pivot ?? bounds.min, sourceOrigin: draft.base?.sourceOrigin ?? [0, 0, 0],
-    palette, cells, blockEntities, ...(entities.length && { entities }),
+    pivot: draft.base?.pivot ? [...draft.base.pivot] : [...bounds.min], sourceOrigin: draft.base?.sourceOrigin ? [...draft.base.sourceOrigin] : [0, 0, 0],
+    palette, cells, blockEntities: blockEntities.map(e => ({ position: e.position, data: structuredClone(e.data) })),
+    ...(entities.length && { entities: structuredClone(entities) }),
   });
+}
+
+interface Located { readonly k: string; readonly p: Vec3 }
+const AIR_STATE: BlockState = Object.freeze({ id: 'minecraft:air', properties: Object.freeze({}) }) as BlockState;
+const byLayer = (a: Located, b: Located): number => a.p[1] - b.p[1] || a.p[2] - b.p[2] || a.p[0] - b.p[0];
+const sortedBases = new WeakMap<ReadonlyMap<string, CellValue>, readonly Located[]>();
+/** Base cells in y, z, x order with frozen positions, once per base map. */
+function sortedBase(base: ReadonlyMap<string, CellValue>): readonly Located[] {
+  let order = sortedBases.get(base);
+  if (!order) {
+    const list: Located[] = [];
+    for (const k of base.keys()) list.push({ k, p: Object.freeze(keyPos(k)) as Vec3 });
+    order = list.sort(byLayer);
+    sortedBases.set(base, order);
+  }
+  return order;
 }

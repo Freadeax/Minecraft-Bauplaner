@@ -1,4 +1,4 @@
-import { positionKey, resolveProject } from '../../domain/src/compose.js';
+import { cellOwnersOf, resolveProject } from '../../domain/src/compose.js';
 import type { Resolution } from '../../domain/src/compose.js';
 import { buildGuide, evaluateProgress } from '../../domain/src/guide.js';
 import type { Guide, GuideProgress } from '../../domain/src/guide.js';
@@ -33,8 +33,9 @@ export function computeProject(input: ComputeInput): ProjectComputation {
   const stepMaterials = resolution.world ? materialsForParts(resolution.world, guide.steps.map(step => ({ id: step.id, positions: step.positions, conflicts: step.conflicts }))) : new Map<string, MaterialReport>();
   // Partition ownership once instead of filtering the whole world for each instance.
   const cellsByInstance = new Map<string, Cell[]>();
-  for (const cell of resolution.world?.cells ?? []) {
-    const owner = resolution.owners.get(positionKey(cell.position))?.[0];
+  const ownerOf = cellOwnersOf(resolution), worldCells = resolution.world?.cells ?? [];
+  for (let i = 0; i < worldCells.length; i++) {
+    const cell = worldCells[i]!, owner = ownerOf(i, cell);
     if (!owner) continue;
     let cells = cellsByInstance.get(owner);
     if (!cells) cellsByInstance.set(owner, cells = []);

@@ -2,6 +2,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { AssetVersion, BlueprintRevision, Project } from '../../../../packages/domain/src/types.js';
 import type { ComputeInput, ProjectComputation } from '../../../../packages/application/src/projectComputation.js';
 import { createProjectComputationClient } from '../computation/client';
+import type { ComputationCodec } from '../computation/client';
+import { decodeComputeResult, encodeComputeInput, isWireResult } from '../../../../packages/application/src/computationTransport.js';
+
+/** Columns and cell indices instead of a structured clone of every cell (SIZE-01). */
+const computationTransport: ComputationCodec = {
+  encodeInput: input => encodeComputeInput(input),
+  decodeResult: (result, versions) => isWireResult(result) ? decodeComputeResult(result, versions) : result,
+};
 
 export type ComputationStatus = 'pending' | 'ready' | 'error' | 'cancelled';
 interface ComputationState {
@@ -27,7 +35,7 @@ export function useProjectComputation(
   const active = useRef<{ readonly input: ComputeInput; readonly attempt: number; readonly client: ReturnType<typeof createProjectComputationClient> } | null>(null);
   useEffect(() => {
     if (!input) return;
-    const client = createProjectComputationClient();
+    const client = createProjectComputationClient({ codec: computationTransport });
     const request = { input, attempt, client };
     active.current = request;
     setState({ input, attempt, status: 'pending', result: null, error: '' });
