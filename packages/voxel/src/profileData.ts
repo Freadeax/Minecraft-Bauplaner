@@ -19,6 +19,9 @@ export const PROFILE_COUNTS = {"blocks":1286,"items":1658,"recipeFiles":2042,"re
 /** Recipe files per type in the jar (kept or not). */
 export const PROFILE_RECIPE_TYPES: Readonly<Record<string, number>> = {"minecraft:blasting":25,"minecraft:brewing":279,"minecraft:campfire_cooking":9,"minecraft:crafting_decorated_pot":1,"minecraft:crafting_dye":6,"minecraft:crafting_imbue":1,"minecraft:crafting_shaped":827,"minecraft:crafting_shapeless":375,"minecraft:crafting_special_bannerduplicate":16,"minecraft:crafting_special_bookcloning":1,"minecraft:crafting_special_firework_rocket":1,"minecraft:crafting_special_firework_star":1,"minecraft:crafting_special_firework_star_fade":1,"minecraft:crafting_special_mapextending":1,"minecraft:crafting_special_repairitem":1,"minecraft:crafting_special_shielddecoration":1,"minecraft:crafting_transmute":33,"minecraft:smelting":73,"minecraft:smithing_transform":12,"minecraft:smithing_trim":18,"minecraft:smoking":9,"minecraft:stonecutting":351};
 
+/** Block entity types of the profile (registry minecraft:block_entity_type), bare, sorted (NBT-01). */
+export const PROFILE_BLOCK_ENTITY_TYPES: readonly string[] = ["banner","barrel","beacon","beehive","bell","blast_furnace","brewing_stand","brushable_block","calibrated_sculk_sensor","campfire","chest","chiseled_bookshelf","command_block","comparator","conduit","copper_golem_statue","crafter","creaking_heart","daylight_detector","decorated_pot","dispenser","dropper","enchanting_table","end_gateway","end_portal","ender_chest","furnace","hanging_sign","hopper","jigsaw","jukebox","lectern","mob_spawner","piston","potent_sulfur","sculk_catalyst","sculk_sensor","sculk_shrieker","shelf","shulker_box","sign","skull","smoker","structure_block","test_block","test_instance_block","trapped_chest","trial_spawner","vault"];
+
 /** Every item id of the profile (registry minecraft:item), bare, sorted. */
 export const PROFILE_ITEMS = `abandoned_camp_map
 acacia_boat

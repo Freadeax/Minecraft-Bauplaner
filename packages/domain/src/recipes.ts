@@ -1,4 +1,9 @@
 import { DomainError } from './types.js';
+import { factBlockIds, itemOf } from '../../voxel/src/blocklogic/index.js';
+import { JAVA_PROFILE_ID, fuelOf, smeltsPerFuel } from '../../voxel/src/profile.js';
+import { matchProfileRecipe, profileRecipesFor } from './recipeProfile.js';
+import type { ProfileRecipe } from './recipeProfile.js';
+import { COPPER_STAGES, COPPER_STAGE_LABEL, copperMatrix } from './copper.js';
 import { stackSizeOf } from './materials.js';
 import type { MaterialReport } from './materials.js';
 
@@ -18,8 +23,15 @@ import type { MaterialReport } from './materials.js';
  *  - items without recipe and without raw-material entry stay visible as
  *    'unknown'; nothing is guessed silently. Fuel and tools are reported
  *    separately and never mixed into the raw materials.
+ *
+ * Profile binding (MAT-02, PROFILE-01): every crafting, stonecutter and
+ * smelting recipe of the catalogue is proven against the recipes of the
+ * official 26.3 server (`recipeProfile.ts`, test recipe-profile). Block items
+ * the catalogue does not cover take a recipe from the profile (marked with
+ * `profileFile` and `source: 'profile'`); the other profile recipes of an item
+ * are shown as alternatives. Fuel counts use the profile's burn times.
  */
-export const RECIPE_CATALOG_VERSION = 'vanilla-java-recipes-v1';
+export const RECIPE_CATALOG_VERSION = `vanilla-java-recipes-v2+${JAVA_PROFILE_ID}`;
 
 export type Station = 'crafting' | 'stonecutter' | 'smelting' | 'tool' | 'water';
 export type RecipeMethod = 'stonecutter' | 'crafting';
@@ -35,6 +47,12 @@ export interface Recipe {
   readonly inputs: readonly Ingredient[];
   readonly station: Station;
   readonly note?: string;
+  /** Recipe file of the version profile this recipe follows (crafting, stonecutter, smelting). */
+  readonly profileFile?: string;
+  /** 'catalog' = own catalogue (checked against the profile), 'profile' = taken from the profile for an item the catalogue lacks. */
+  readonly source?: 'catalog' | 'profile';
+  /** Cooking time in ticks (smelting). */
+  readonly cookTicks?: number;
 }
 export interface TagDefinition { readonly label: string; readonly members: readonly string[]; readonly fallback: string }
 
@@ -64,6 +82,8 @@ export interface RecipeStep {
   readonly inputs: readonly Ingredient[];
   /** True when the item is itself a build item (not only an intermediate). */
   readonly buildItem: boolean;
+  /** Other recipes of the version profile for the same item (alternatives the game accepts). */
+  readonly alternatives: readonly ProfileRecipe[];
 }
 export interface TagChoice { readonly tag: string; readonly label: string; readonly chosen: string; readonly reason: 'tree' | 'fallback'; readonly count: number }
 export interface RecipeReport {
@@ -76,13 +96,22 @@ export interface RecipeReport {
   readonly surplus: readonly Ingredient[];
   /** Operations per station. */
   readonly stations: Readonly<Record<Station, number>>;
-  /** Smelting operations and coal needed for them (8 per coal); not part of `base`. */
-  readonly fuel: { readonly smelts: number; readonly coal: number };
+  /** Smelting operations and fuel for them (profile burn times); not part of `base`. */
+  readonly fuel: FuelBalance;
   readonly tagChoices: readonly TagChoice[];
   readonly totals: { readonly raw: number; readonly stock: number; readonly unknown: number; readonly slots: number };
   readonly notes: readonly string[];
   /** True when every item reached a raw material or stock entry. */
   readonly complete: boolean;
+}
+export interface FuelBalance {
+  readonly smelts: number;
+  /** Cooking ticks of all smelts (200 per standard smelt). */
+  readonly ticks: number;
+  /** Coal needed (burn time from the profile: 1600 ticks = 8 smelts). */
+  readonly coal: number;
+  /** The same demand in other fuels of the profile, each alone, with what remains unburnt. */
+  readonly options: readonly { readonly itemId: string; readonly count: number; readonly smeltsEach: number; readonly spareSmelts: number }[];
 }
 export interface RecipeOptions {
   readonly method?: RecipeMethod;
@@ -94,14 +123,16 @@ export interface RecipeOptions {
 // Catalogue. Ids without namespace while building; '#name' for tags.
 
 const COLORS = ['white', 'orange', 'magenta', 'light_blue', 'yellow', 'lime', 'pink', 'gray', 'light_gray', 'cyan', 'purple', 'blue', 'brown', 'green', 'red', 'black'];
-const WOODS = ['oak', 'spruce', 'birch', 'jungle', 'acacia', 'dark_oak', 'mangrove', 'cherry', 'pale_oak'];
+const WOODS = ['oak', 'spruce', 'birch', 'jungle', 'acacia', 'dark_oak', 'mangrove', 'cherry', 'pale_oak', 'poplar'];
 const STEMS = ['crimson', 'warped'];
 
-const TAG_DEFS: Readonly<Record<string, TagDefinition>> = {
+const TAG_DEFS: Record<string, TagDefinition> = {
   planks: { label: 'beliebige Planken', members: [...WOODS, ...STEMS, 'bamboo'].map(w => `${w}_planks`), fallback: 'oak_planks' },
   logs: { label: 'beliebige Stämme', members: [...WOODS.map(w => `${w}_log`), ...STEMS.map(w => `${w}_stem`)], fallback: 'oak_log' },
   wooden_slabs: { label: 'beliebige Holzstufen', members: [...WOODS, ...STEMS, 'bamboo'].map(w => `${w}_slab`), fallback: 'oak_slab' },
   coals: { label: 'Kohle oder Holzkohle', members: ['coal', 'charcoal'], fallback: 'coal' },
+  // Profile tag: nether stems do not burn and give no charcoal (found by the profile check, MAT-02).
+  logs_that_burn: { label: 'brennbare Stämme', members: WOODS.map(w => `${w}_log`), fallback: 'oak_log' },
   stone_crafting: { label: 'Bruchstein, Bruchtiefenschiefer oder Schwarzstein', members: ['cobblestone', 'cobbled_deepslate', 'blackstone'], fallback: 'cobblestone' },
   soul_base: { label: 'Seelensand oder Seelenerde', members: ['soul_sand', 'soul_soil'], fallback: 'soul_soil' },
 };
@@ -135,7 +166,7 @@ function woodFamily(w: string, log: string, wood: string | null, planksPerLog = 
   craft(`${w}_button`, 1, { [planks]: 1 });
   craft(`${w}_pressure_plate`, 1, { [planks]: 2 });
   craft(`${w}_sign`, 3, { [planks]: 6, stick: 1 });
-  craft(`${w}_hanging_sign`, 6, { [`stripped_${log}`]: 6, chain: 2 });
+  craft(`${w}_hanging_sign`, 6, { [`stripped_${log}`]: 6, iron_chain: 2 });
   craft(`${w}_shelf`, 6, { [`stripped_${log}`]: 6 });
 }
 for (const w of WOODS) woodFamily(w, `${w}_log`, `${w}_wood`);
@@ -187,7 +218,7 @@ const CHISELED: readonly (readonly [string, string, string])[] = [
 for (const [out, slab, block] of CHISELED) { craft(out, 1, { [slab]: 2 }); cut(out, 1, block); }
 craft('quartz_pillar', 2, { quartz_block: 2 }); cut('quartz_pillar', 1, 'quartz_block');
 craft('purpur_pillar', 1, { purpur_slab: 2 }); cut('purpur_pillar', 1, 'purpur_block');
-craft('quartz_bricks', 1, { quartz_block: 4 }); cut('quartz_bricks', 1, 'quartz_block');
+craft('quartz_bricks', 4, { quartz_block: 4 }); cut('quartz_bricks', 1, 'quartz_block');
 craft('stone_button', 1, { stone: 1 }); craft('stone_pressure_plate', 1, { stone: 2 });
 craft('polished_blackstone_button', 1, { polished_blackstone: 1 }); craft('polished_blackstone_pressure_plate', 1, { polished_blackstone: 2 });
 
@@ -197,7 +228,7 @@ for (const [out, from] of [['stone', 'cobblestone'], ['smooth_stone', 'stone'], 
   ['terracotta', 'clay'], ['cracked_stone_bricks', 'stone_bricks'], ['cracked_deepslate_bricks', 'deepslate_bricks'], ['cracked_deepslate_tiles', 'deepslate_tiles'],
   ['cracked_nether_bricks', 'nether_bricks'], ['cracked_polished_blackstone_bricks', 'polished_blackstone_bricks'], ['iron_ingot', 'raw_iron'], ['gold_ingot', 'raw_gold'],
   ['copper_ingot', 'raw_copper'], ['popped_chorus_fruit', 'chorus_fruit'], ['dried_kelp', 'kelp'], ['green_dye', 'cactus'], ['sponge', 'wet_sponge'],
-  ['charcoal', '#logs']] as const) smelt(out, from);
+  ['charcoal', '#logs_that_burn']] as const) smelt(out, from);
 
 // Colours.
 craft('bone_meal', 3, { bone: 1 });
@@ -241,7 +272,7 @@ craft('packed_mud', 1, { mud: 1, wheat: 1 });
 craft('snow', 6, { snow_block: 3 });
 craft('glass_pane', 16, { glass: 6 }); craft('iron_bars', 16, { iron_ingot: 6 });
 craft('iron_nugget', 9, { iron_ingot: 1 }); craft('gold_nugget', 9, { gold_ingot: 1 });
-craft('chain', 1, { iron_nugget: 2, iron_ingot: 1 }); craft('iron_chain', 1, { iron_nugget: 2, iron_ingot: 1 });
+craft('iron_chain', 1, { iron_nugget: 2, iron_ingot: 1 });
 craft('iron_door', 3, { iron_ingot: 6 }); craft('iron_trapdoor', 1, { iron_ingot: 4 });
 craft('heavy_weighted_pressure_plate', 1, { iron_ingot: 2 }); craft('light_weighted_pressure_plate', 1, { gold_ingot: 2 });
 craft('torch', 4, { '#coals': 1, stick: 1 }); craft('soul_torch', 4, { '#coals': 1, stick: 1, '#soul_base': 1 }); craft('redstone_torch', 1, { redstone: 1, stick: 1 });
@@ -282,11 +313,14 @@ craft('cake', 1, { milk_bucket: 3, sugar: 2, egg: 1, wheat: 3 }); craft('sugar',
 craft('copper_grate', 4, { copper_block: 4 }); cut('copper_grate', 4, 'copper_block');
 craft('chiseled_copper', 1, { cut_copper_slab: 2 }); cut('chiseled_copper', 4, 'copper_block');
 craft('copper_bulb', 4, { copper_block: 3, blaze_rod: 1, redstone: 1 }); craft('copper_door', 3, { copper_ingot: 6 }); craft('copper_trapdoor', 1, { copper_ingot: 4 });
-for (const base of ['copper_block', 'cut_copper', 'cut_copper_stairs', 'cut_copper_slab', 'chiseled_copper', 'copper_grate', 'copper_bulb', 'copper_door', 'copper_trapdoor']) {
-  const stage = (s: string): string => base === 'copper_block' ? (s ? `${s}_copper` : base) : s ? `${s}_${base}` : base;
-  let prev = base;
-  for (const s of ['exposed', 'weathered', 'oxidized']) { tool(stage(s), prev, 'oxidieren lassen (Zeit) oder Zwischenstufe mit Axt abschaben'); prev = stage(s); }
-  for (const s of ['', 'exposed', 'weathered', 'oxidized']) craft(`waxed_${stage(s)}`, 1, { [stage(s)]: 1, honeycomb: 1 });
+// MAT-04: every complete copper family of the profile (copper.ts) – stages by oxidation, each stage waxed with honeycomb.
+for (const f of copperMatrix().families) {
+  let prev = f.ids.unaffected;
+  for (const s of ['exposed', 'weathered', 'oxidized'] as const) {
+    tool(f.ids[s], prev, `${COPPER_STAGE_LABEL[s]}: an der Luft oxidieren lassen (Zeit) oder höhere Stufe mit der Axt abschaben`);
+    prev = f.ids[s];
+  }
+  for (const s of COPPER_STAGES) craft(f.waxed[s], 1, { [f.ids[s]]: 1, honeycomb: 1 });
 }
 
 /** Gathered raw materials and how they are obtained. */
@@ -294,7 +328,9 @@ const RAW: Readonly<Record<string, string>> = {};
 const raw = (source: string, ids: readonly string[]): void => { for (const id of ids) (RAW as Record<string, string>)[id] = source; };
 raw('Abbau', ['cobblestone', 'cobbled_deepslate', 'granite', 'diorite', 'andesite', 'tuff', 'calcite', 'dripstone_block', 'pointed_dripstone', 'dirt', 'sand', 'red_sand', 'gravel',
   'clay_ball', 'netherrack', 'blackstone', 'basalt', 'soul_sand', 'soul_soil', 'end_stone', 'obsidian', 'crying_obsidian', 'magma_block', 'coal', 'raw_iron', 'raw_gold', 'raw_copper',
-  'redstone', 'lapis_lazuli', 'diamond', 'emerald', 'quartz', 'amethyst_shard', 'glowstone_dust', 'flint', 'gilded_blackstone', 'ancient_debris', 'rooted_dirt']);
+  'redstone', 'lapis_lazuli', 'diamond', 'emerald', 'quartz', 'amethyst_shard', 'glowstone_dust', 'flint', 'gilded_blackstone', 'ancient_debris', 'rooted_dirt',
+  // 26.3 (profile check, MAT-02): no recipe in the game, stone-like (hardness 1.5, pickaxe); sulfur spikes give sulfur.
+  'cinnabar', 'sulfur_spike']);
 raw('Abbau mit Behutsamkeit', ['bee_nest', 'creaking_heart', 'grass_block', 'mycelium', 'podzol', 'crimson_nylium', 'warped_nylium', 'ice', 'amethyst_cluster', 'sculk', 'sculk_vein', 'sculk_sensor', 'sculk_catalyst', 'sculk_shrieker']);
 raw('Holzfällen', [...WOODS.map(w => `${w}_log`), ...STEMS.map(w => `${w}_stem`), 'bamboo']);
 raw('Pflanzen sammeln/anbauen', ['sugar_cane', 'cactus', 'kelp', 'vine', 'wheat', 'pumpkin', 'melon', 'cocoa_beans', 'nether_wart', 'chorus_fruit', 'sweet_berries', 'glow_berries',
@@ -303,16 +339,73 @@ raw('Pflanzen sammeln/anbauen', ['sugar_cane', 'cactus', 'kelp', 'vine', 'wheat'
   'big_dripleaf', 'small_dripleaf', 'glow_lichen', 'hanging_roots', 'mangrove_roots', 'muddy_mangrove_roots', 'pink_petals', 'wildflowers', 'leaf_litter', 'carrot', 'potato', 'beetroot_seeds',
   'wheat_seeds', 'melon_seeds', 'pumpkin_seeds', 'torchflower_seeds', 'pitcher_pod', 'sea_pickle', 'crimson_fungus', 'warped_fungus', 'crimson_roots', 'warped_roots', 'nether_sprouts',
   'twisting_vines', 'weeping_vines', 'shroomlight', 'nether_wart_block', 'warped_wart_block', 'brown_mushroom_block', 'red_mushroom_block', 'mushroom_stem', 'dead_bush', 'bush', 'firefly_bush',
-  'cactus_flower', 'short_dry_grass', 'tall_dry_grass', 'chorus_flower', 'open_eyeblossom', 'closed_eyeblossom', 'pale_hanging_moss', 'resin_clump']);
+  'cactus_flower', 'short_dry_grass', 'tall_dry_grass', 'chorus_flower', 'open_eyeblossom', 'closed_eyeblossom', 'pale_hanging_moss', 'resin_clump', 'pale_moss_block']);
 raw('Mit Schere sammeln', ['short_grass', 'tall_grass', 'fern', 'large_fern', 'seagrass', 'cobweb', 'white_wool']);
 raw('Mob-Drop/Tiere', ['string', 'leather', 'bone', 'ink_sac', 'glow_ink_sac', 'slime_ball', 'gunpowder', 'feather', 'blaze_rod', 'shulker_shell', 'prismarine_shard', 'prismarine_crystals',
   'ender_pearl', 'snowball', 'egg', 'honeycomb', 'honey_bottle', 'turtle_egg', 'sniffer_egg', 'milk_bucket', 'wet_sponge']);
 raw('Mob-Drop/Tiere', ['ochre_froglight', 'verdant_froglight', 'pearlescent_froglight']);
+// No recipe in 26.3: a copper golem that oxidizes completely turns into the statue.
+raw('Kupfergolem (versteinert)', ['copper_golem_statue']);
 raw('Fund/Handel', ['dried_ghast', 'bell', 'heavy_core', 'dragon_head', 'conduit', 'beacon', 'trial_key', 'ominous_trial_key']);
 const RAW_PATTERNS: readonly (readonly [RegExp, string])[] = [
   [/_leaves$/, 'Mit Schere sammeln'], [/_sapling$|_propagule$/, 'Pflanzen sammeln/anbauen'], [/_coral(_block|_fan)?$/, 'Abbau mit Behutsamkeit'],
   [/_ore$/, 'Abbau mit Behutsamkeit'], [/_(head|skull)$/, 'Mob-Drop/Tiere'],
 ];
+
+// ---------------------------------------------------------------------------
+// Profile binding (MAT-02). Catalogue tags in namespaced form for the matcher.
+const catalogTag = (tag: string): readonly string[] | undefined => TAG_DEFS[tag.replace(/^#/, '')]?.members.map(ns);
+const COOKING = new Set(['smelting', 'blasting', 'smoking', 'campfire']);
+const profileStation = (p: ProfileRecipe): Station | null => p.station === 'crafting' ? 'crafting' : p.station === 'stonecutter' ? 'stonecutter' : p.station === 'smelting' ? 'smelting' : null;
+/** Ingredient of a profile recipe as catalogue input: one item, a profile tag or a one-of list (synthetic tag). */
+function profileInput(i: ProfileRecipe['inputs'][number]): string {
+  if (i.alternatives.length === 1) return i.alternatives[0]!;
+  const key = i.tag ? `profile_${i.tag.slice(1)}` : `oneof_${i.alternatives.map(a => a.replace(/^minecraft:/, '')).join('_or_')}`;
+  if (!TAG_DEFS[key]) {
+    const bare = i.alternatives.map(a => a.replace(/^minecraft:/, ''));
+    TAG_DEFS[key] = { label: i.tag ? `beliebig aus ${i.tag.slice(1)}` : bare.join(' oder '), members: bare, fallback: bare[0]! };
+  }
+  return `#${key}`;
+}
+const commonPrefix = (a: string, b: string): number => { let n = 0; while (n < a.length && a[n] === b[n]) n++; return n; };
+/** Best profile recipe of a station for an item the catalogue lacks: no dye/recolour recipes, no self-input, closest input name. */
+function bestProfileRecipe(itemId: string, station: Station): ProfileRecipe | null {
+  const out = ns(itemId);
+  const list = profileRecipesFor(out).filter(p => profileStation(p) === station && !p.file.startsWith('dye_') && p.inputs.every(i => !i.alternatives.includes(out)));
+  const score = (p: ProfileRecipe): number => Math.max(...p.inputs.map(i => Math.max(...i.alternatives.map(a => commonPrefix(a, out)))));
+  return list.sort((a, b) => score(b) - score(a) || (a.file < b.file ? -1 : 1))[0] ?? null;
+}
+{
+  // 1. Catalogue recipes: attach the profile recipe they follow (the test requires one for every station recipe).
+  for (let k = 0; k < recipes.length; k++) {
+    const r = recipes[k]!;
+    const m = matchProfileRecipe(r, catalogTag);
+    recipes[k] = { ...r, source: 'catalog', ...(m && { profileFile: m.file }), ...(m?.cookTicks !== undefined && { cookTicks: m.cookTicks }) };
+  }
+  // 2. Block items (and their inputs) without catalogue recipe or raw source take recipes from the profile.
+  const has = new Set(recipes.map(r => r.output));
+  const queue = [...new Set(factBlockIds().map(id => itemOf(id)).filter((i): i is string => !!i))].sort();
+  const isRaw = (id: string): boolean => RAW[id.replace(/^minecraft:/, '')] !== undefined || RAW_PATTERNS.some(([re]) => re.test(id.replace(/^minecraft:/, '')));
+  for (let q = 0; q < queue.length; q++) {
+    const item = queue[q]!;
+    if (has.has(item) || isRaw(item)) continue;
+    let crafted = false;
+    for (const station of ['crafting', 'stonecutter', 'smelting'] as const) {
+      // Smelting only when nothing can be crafted (avoids recycling recipes such as nuggets from tools).
+      if (station === 'smelting' && crafted) continue;
+      const p = bestProfileRecipe(item, station);
+      if (!p) continue;
+      crafted = true;
+      const inputs: Record<string, number> = {};
+      for (const i of p.inputs) { const key = profileInput(i); inputs[key] = (inputs[key] ?? 0) + i.count; }
+      recipes.push({ id: `${station}:${item.replace(/^minecraft:/, '')}`, output: item, count: p.count, station, source: 'profile', profileFile: p.file,
+        inputs: Object.entries(inputs).map(([id, n]) => ({ item: ns(id), count: n })), ...(p.cookTicks !== undefined && { cookTicks: p.cookTicks }),
+        note: `Rezept aus dem Profil ${JAVA_PROFILE_ID}` });
+      has.add(item);
+      for (const i of p.inputs) for (const a of i.alternatives.slice(0, 1)) if (!has.has(a)) queue.push(a);
+    }
+  }
+}
 
 /** Frozen catalogue (namespaced ids). */
 export const RECIPES: readonly Recipe[] = Object.freeze(recipes.map(r => Object.freeze(r)));
@@ -415,7 +508,7 @@ export function resolveRecipes(items: readonly { readonly itemId: string; readon
       demand.set(item, (demand.get(item) ?? 0) + count);
       return { item, count };
     });
-    steps.push({ recipe, itemId: id, operations, produced, needed: need, surplus: produced - need, inputs, buildItem: roots.has(id) });
+    steps.push({ recipe, itemId: id, operations, produced, needed: need, surplus: produced - need, inputs, buildItem: roots.has(id), alternatives: recipeAlternatives(id, recipe) });
   }
   steps.reverse();
 
@@ -428,13 +521,14 @@ export function resolveRecipes(items: readonly { readonly itemId: string; readon
   const surplus = steps.filter(s => s.surplus > 0).map(s => ({ item: s.itemId, count: s.surplus })).sort((a, b) => b.count - a.count || (a.item < b.item ? -1 : 1));
   const tagChoices: TagChoice[] = [...tagChoice.entries()].filter(([tag]) => tagUse.has(tag)).map(([tag, c]) => ({ tag, label: RECIPE_TAGS[tag]!.label, chosen: c.chosen, reason: c.reason, count: tagUse.get(tag)! }));
   const sum = (kind: BaseKind): number => baseLines.filter(l => l.kind === kind).reduce((s, l) => s + l.count, 0);
-  const fuel = { smelts: stations.smelting, coal: Math.ceil(stations.smelting / 8) };
+  const fuel = fuelBalance(steps.filter(s => s.recipe.station === 'smelting').reduce((t, s) => t + s.operations * (s.recipe.cookTicks ?? 200), 0), stations.smelting);
   const unknown = baseLines.filter(l => l.kind === 'unknown');
 
-  const notes = [`Rezepte aus ${RECIPE_CATALOG_VERSION} (Vanilla Java), nicht gegen eine exakte Spielversion geprüft; je Item genau ein Rezept, ${method === 'stonecutter' ? 'Steinsäge bevorzugt' : 'Werkbank bevorzugt'}.`,
+  const fromProfile = steps.filter(s => s.recipe.source === 'profile').length;
+  const notes = [`Rezepte gegen das Versionsprofil ${JAVA_PROFILE_ID} (offizieller Server) geprüft; je Item ein Rezept, ${method === 'stonecutter' ? 'Steinsäge bevorzugt' : 'Werkbank bevorzugt'}${fromProfile ? `; ${fromProfile} Schritte direkt aus dem Profil` : ''}. Weitere Rezepte des Spiels stehen als Alternativen am Schritt.`,
     'Überschüsse aus dem Aufrunden werden innerhalb des Baums geteilt und als Rest ausgewiesen.',
     'Werkzeuge (Axt, Schere, Spitzhacke mit Behutsamkeit) und Arbeitsblöcke sind nicht im Rohstoffbedarf enthalten.'];
-  if (fuel.smelts) notes.push(`${fuel.smelts} Schmelzvorgänge brauchen Brennstoff, z. B. ${fuel.coal} Kohle (8 Vorgänge je Kohle) – nicht in den Rohstoffen enthalten.`);
+  if (fuel.smelts) notes.push(`${fuel.smelts} Schmelzvorgänge brauchen Brennstoff, z. B. ${fuel.coal} Kohle (${smeltsPerFuel('coal')} Vorgänge je Kohle laut Profil)${fuel.options.length ? ` oder ${fuel.options.filter(o => o.itemId !== 'minecraft:coal').slice(0, 3).map(o => `${o.count} ${o.itemId.replace(/^minecraft:/, '')}`).join(' / ')}` : ''} – nicht in den Rohstoffen enthalten.`);
   if (stations.water) notes.push(`${stations.water} Vorgänge mit Wasser (Beton aushärten, Schlamm) – Wasser nicht gezählt.`);
   for (const t of tagChoices) notes.push(`${t.label}: ${t.chosen.replace(/^minecraft:/, '')} ${t.reason === 'tree' ? 'gewählt, weil diese Sorte schon im Bedarf vorkommt' : 'als Standard angenommen – jede andere Sorte geht ebenso'}.`);
   if (unknown.length) notes.push(`${unknown.length} Items ohne Rezept und ohne Rohstoffeintrag im Katalog: als Grundbedarf aufgeführt und markiert.`);
@@ -445,6 +539,24 @@ export function resolveRecipes(items: readonly { readonly itemId: string; readon
     totals: { raw: sum('raw'), stock: sum('stock'), unknown: sum('unknown'), slots: baseLines.reduce((s, l) => s + l.slots, 0) },
     notes, complete: unknown.length === 0,
   };
+}
+
+/** Profile recipes for an item other than the chosen one (dye/recolour recipes included – the game accepts them). */
+export function recipeAlternatives(itemId: string, chosen?: Recipe): readonly ProfileRecipe[] {
+  return profileRecipesFor(itemId).filter(p => p.file !== chosen?.profileFile && (p.station === 'crafting' || p.station === 'stonecutter' || COOKING.has(p.station)));
+}
+
+/** Fuels shown in the balance (common building fuels of the profile). */
+export const BALANCE_FUELS: readonly string[] = ['minecraft:coal', 'minecraft:charcoal', 'minecraft:coal_block', 'minecraft:dried_kelp_block', 'minecraft:blaze_rod', 'minecraft:lava_bucket', 'minecraft:oak_planks'];
+/** Fuel for `ticks` cooking ticks (`smelts` operations) with profile burn times; each fuel alone, rounded up. */
+export function fuelBalance(ticks: number, smelts: number): FuelBalance {
+  const options = BALANCE_FUELS.flatMap(itemId => {
+    const f = fuelOf(itemId);
+    if (!f || !ticks) return [];
+    const per = f.burnTicks * f.speed, count = Math.ceil(ticks / per);
+    return [{ itemId, count, smeltsEach: per / 200, spareSmelts: Math.round((count * per - ticks) / 200 * 10) / 10 }];
+  });
+  return { smelts, ticks, coal: options.find(o => o.itemId === 'minecraft:coal')?.count ?? 0, options };
 }
 
 /** Raw materials for the build items of a material report (unresolved states are not part of it). */

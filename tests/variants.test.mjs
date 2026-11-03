@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { createPayload, diffPayloads, diffAsPayload, stateRuleFor, transformPayload } from '../dist/voxel/src/index.js';
+import { createPayload, diffPayloads, diffAsPayload, stateRuleFor, transformPayload, blockEntityTypeOf } from '../dist/voxel/src/index.js';
 import { MATERIAL_SETS, materialOf, detectMaterials, swapMaterials, swapLabel, BUILDING_SPECS, computeMaterials } from '../dist/domain/src/index.js';
 
 const P = 'mc-java-26.3';
@@ -187,18 +187,25 @@ test('glass panes, concrete powder and glazed terracotta retain exact state and 
   assert.throws(()=>swapMaterials(bad,[{from:'beton_red',to:'beton_blue'}]),/Eigenschaften/);
 });
 
-test('material swap never reuses BlockEntity NBT for a changed cell', () => {
+test('material swap keeps BlockEntity NBT only when the block entity type stays and its content is relative (NBT-01)', () => {
   const base=payload([st('red_shulker_box',{facing:'north'}),st('stone')],[at(0,0,0,0),at(1,0,0,1)]);
   const p=createPayload({...base,blockEntities:[{position:[0,0,0],data:{type:'compound',value:{id:{type:'string',value:'minecraft:shulker_box'},Items:{type:'list',elementType:'compound',value:[]}}}}]});
   const before=JSON.stringify(p);
-  assert.throws(()=>swapMaterials(p,[{from:'farbe_red',to:'farbe_blue'}]),/NBT-Adapter/);
+  // Red and blue shulker boxes share the block entity type shulker_box; the inventory is relative to the block.
+  const blue=swapMaterials(p,[{from:'farbe_red',to:'farbe_blue'}]);
+  assert.equal(blue.replaced,1);
+  assert.equal(blue.payload.palette[blue.payload.cells[0].paletteIndex].id,'minecraft:blue_shulker_box');
+  assert.deepEqual(blue.payload.blockEntities,p.blockEntities);
   assert.equal(JSON.stringify(p),before);
+  // Every form pair of every material set keeps its block entity type, so no swap can change the meaning of NBT.
+  for(const set of [...MATERIAL_SETS,...SCOPED_MATERIAL_SETS]) for(const target of materialTargets(set)) for(const [form,id] of Object.entries(set.forms))
+    if(target.forms[form]) assert.equal(blockEntityTypeOf(`minecraft:${target.forms[form]}`),blockEntityTypeOf(`minecraft:${id}`),`${id} → ${target.forms[form]}`);
   assert.equal(swapMaterials(p,[{from:'farbe_red',to:'farbe_red'}]).replaced,0);
   assert.equal(swapMaterials(p,[{from:'stone',to:'cobblestone'}]).replaced,1,'unrelated entity remains untouched');
 });
 
 test('all scoped coloured forms use compatible schemas and produce catalogued build items', () => {
-  assert.equal(SCOPED_MATERIAL_SETS.length,50);
+  assert.equal(SCOPED_MATERIAL_SETS.length,58, '50 glass/concrete/terracotta + 8 copper (4 stages × wax)');
   for(const set of SCOPED_MATERIAL_SETS) for(const [form,id] of Object.entries(set.forms)) {
     const schema=stateRuleFor(`minecraft:${id}`)?.schema??{};
     const properties=Object.fromEntries(Object.entries(schema).map(([key,values])=>[key,values[0]]));

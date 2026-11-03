@@ -171,6 +171,7 @@ label.check{display:flex;align-items:center;gap:8px}fieldset{border:1px solid va
 .raw-stats{margin-bottom:12px}.raw-stats small{font-size:12px;color:var(--muted)}.raw-status{display:block;margin:12px 0}.raw-status.ok{border-color:#3f7a62}.raw-status.ok strong{color:var(--mint)}.raw-status.warning strong{color:#ffb38a}.raw-status ul{margin:6px 0 0;padding-left:18px}.badge.stock{background:#1d2f39;color:#a9c4d6;margin-right:8px}.raw-table .link-button{font-size:12px}
 .recipe-steps{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:8px;max-height:480px;overflow:auto;counter-reset:step}
 .recipe-steps li{display:grid;grid-template-columns:150px minmax(0,1fr) auto;gap:4px 12px;align-items:baseline;padding:7px 10px;border-bottom:1px solid #1a2a35;counter-increment:step}.recipe-steps li:last-child{border-bottom:0}
+.recipe-alternatives{font-size:12px;color:var(--muted);margin-top:2px}.recipe-alternatives summary{cursor:pointer}.recipe-alternatives .alt-line{display:block;padding-left:12px}
 .recipe-steps li.build-item .step-formula b{color:var(--mint)}.step-station{font-size:12px;color:var(--muted);white-space:nowrap}.step-station::before{content:counter(step) ". ";color:#5f7682}
 .step-formula{overflow-wrap:anywhere;color:#d5e1e5}.step-formula b{font-weight:550}.step-formula small{color:var(--muted)}.step-formula small.note{color:#e3c59a}.recipe-steps .link-button{font-size:12px}
 .raw-surplus{margin:12px 0 0;color:#cfe0e3;line-height:1.7}.raw-surplus strong{font-weight:550}

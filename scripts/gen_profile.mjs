@@ -152,6 +152,9 @@ export const PROFILE_COUNTS = ${JSON.stringify({ blocks: Object.keys(JSON.parse(
 /** Recipe files per type in the jar (kept or not). */
 export const PROFILE_RECIPE_TYPES: Readonly<Record<string, number>> = ${JSON.stringify(Object.fromEntries(Object.entries(typeCounts).sort()))};
 
+/** Block entity types of the profile (registry minecraft:block_entity_type), bare, sorted (NBT-01). */
+export const PROFILE_BLOCK_ENTITY_TYPES: readonly string[] = ${JSON.stringify(Object.keys(registries['minecraft:block_entity_type'].entries).map(bare).sort())};
+
 /** Every item id of the profile (registry minecraft:item), bare, sorted. */
 export const PROFILE_ITEMS = \`${items.join('\n')}\`;
 

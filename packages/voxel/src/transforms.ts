@@ -3,6 +3,7 @@ import type { Bounds, Transform, Vec3, VoxelPayload } from './types.js';
 import { adoptPayload, assertVec3, createPayload, isSealedPayload, sealTransportedPayload, stateKey, validatePayload } from './validation.js';
 import { checkTransform, transformBlockState, transformVector as vector } from './states.js';
 import { entityLabel, transformEntity } from './entities.js';
+import { transformBlockEntity } from './nbtTransforms.js';
 
 function point(v: Vec3, pivot: Vec3, t: Transform): Vec3 {
   const r = vector([v[0]-pivot[0], v[1]-pivot[1], v[2]-pivot[2]], t);
@@ -53,9 +54,23 @@ export function transformPayload(payload: VoxelPayload, t: Transform): PayloadTr
     if (!result.resolved) issues.push({ code: 'UNRESOLVED_BLOCK_STATE', path: `palette[${i}]`, message: unresolvedMessage(s.id, result) });
     return result.state;
   });
+  // NBT-01: each block entity follows the rule of its family (nbtTransforms.ts); the block at the cell names
+  // the type when the entry has no id. Unresolved entries keep their NBT and block the semantic approval.
+  let blockAt: Map<string, string> | null = null;
+  const blockIdAt = (p: Vec3): string | undefined => {
+    if (!blockAt) {
+      const wanted = new Set(payload.blockEntities.map(e => e.position.join(',')));
+      blockAt = new Map();
+      for (const c of payload.cells) if (c.kind === 'block' && wanted.has(c.position.join(','))) blockAt.set(c.position.join(','), payload.palette[c.paletteIndex]!.id);
+    }
+    return blockAt.get(p.join(','));
+  };
   const blockEntities = payload.blockEntities.map((e,i)=>{
-    if (!identity) issues.push({ code: 'UNRESOLVED_BLOCK_ENTITY', path: `blockEntities[${i}]`, message: 'Position der Zuordnung transformiert, NBT unverändert erhalten; semantischer Adapter fehlt.' });
-    return { ...e, position: transformCellPosition(e.position,payload.pivot,t) };
+    const to = transformCellPosition(e.position,payload.pivot,t);
+    if (identity) return { ...e, position: to };
+    const r = transformBlockEntity(e, to, t, blockIdAt(e.position));
+    if (!r.resolved) issues.push({ code: 'UNRESOLVED_BLOCK_ENTITY', path: `blockEntities[${i}]`, message: r.note ?? 'BlockEntity ohne geprüfte Transformation; NBT unverändert erhalten.' });
+    return r.entity;
   });
   const entities = payload.entities?.map((e,i)=>{
     if (identity) return e;

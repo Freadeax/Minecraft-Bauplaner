@@ -4509,3 +4509,42 @@ Mod 0.11.2 (Fabric, NeoForge, Paper) auf #/mod freigegeben.
 - `downloads/mod/bauplaner-bridge-neoforge-26.3-0.11.2.jar`
 - `downloads/mod/bauplaner-bridge-paper-0.11.2.jar`
 
+## 2026-11-03T22:26:37.867Z · progress
+
+**Aufgaben:** NBT-01, MAT-02, MAT-04
+
+NBT-01: BlockEntity-Familien für alle 49 Typen des Profils (relativ wie Minecraft-Strukturen = gelöst; Bienen-Blumenposition, Sculk-Ereignisse, Spawner-Pos, Befehle mit Koordinaten, Strukturblock beim Drehen, Endtor, Mod-Typen = ungelöst ohne NBT-Verlust; eigene x/y/z/Pos wandern mit). MAT-02: Katalog gegen 1696 Profilrezepte geprüft, Funde behoben (iron_chain statt chain, Quarzziegel 4, Holzkohle nur aus brennbaren Stämmen), Pappel als Holzfamilie, 147 fehlende Bauitems mit Profilrezept, Alternativen je Arbeitsschritt, Brennstoffbilanz aus cooking_fuel. MAT-04: Kupfermatrix aus Weathering-Klassen (15 Familien × 4 Stufen × Wachs), acht Kupfer-Variantensätze, Tausch behält Properties und Truhen-NBT, Rezepte aller Stufen. Prüfung: Node-Tests (789), Browser: Rohstoffe/Baustelle/Katalog.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| NBT-01 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme im Spiel: gedrehtes Bauteil mit Truhen/Schildern exportieren und in 26.3 laden (Testphase). Strukturblock-Adapter nur bei Bedarf. |
+| MAT-02 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme in der Testphase: Rohstoffliste eines großen Bauwerks mit dem Spiel vergleichen. |
+| MAT-04 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme: Kupfervariante eines Bauwerks im Planer erzeugen und im Spiel ansehen (Testphase). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/style.css`
+- `apps/web/src/views/project/RawMaterialsPanel.tsx`
+- `docs/architecture/MATERIALS.md`
+- `docs/architecture/NBT_TRANSFORMS.md`
+- `docs/architecture/SCHEM_VIEWS.md`
+- `docs/architecture/VOXEL_CONTRACT.md`
+- `packages/domain/src/copper.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/materialLab.ts`
+- `packages/domain/src/recipeProfile.ts`
+- `packages/domain/src/recipes.ts`
+- `packages/domain/src/variants.ts`
+- `packages/voxel/src/index.ts`
+- `packages/voxel/src/nbtTransforms.ts`
+- `packages/voxel/src/profileData.ts`
+- `packages/voxel/src/transforms.ts`
+- `scripts/gen_profile.mjs`
+- `tests/copper.test.mjs`
+- `tests/e2e/recipes.e2e.mjs`
+- `tests/nbt-transforms.test.mjs`
+- `tests/recipe-profile.test.mjs`
+- `tests/recipes.test.mjs`
+- `tests/variants.test.mjs`
+- `tests/voxel.test.mjs`
+

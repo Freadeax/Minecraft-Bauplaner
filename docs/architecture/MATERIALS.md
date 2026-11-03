@@ -82,4 +82,30 @@ Eingang sind die Bauitems des Materialberichts (gleicher Umfang: Projekt oder In
 
 Katalogprüfung (`assertRecipeCatalog`, Test): jedes Rezept gültig, jeder Tag bekannt, jede Zutat herstellbar oder Rohstoff, alle 734 Ausgaben azyklisch auflösbar mit beiden Methoden. Bilanz-Test: für jedes Item ist direkter Bedarf + Verbrauch aller Schritte = Bedarf des herstellenden Schritts bzw. Grundbedarf; Rundung minimal; Zutaten stehen vor ihren Verbrauchern. Alle Beispielbauteile und 16 Katalog-Gebäude lösen vollständig auf.
 
-Grenzen: keine Bindung an eine exakte Spielversion; nur ein Rezept je Item (Alternativen wie Moosblock statt Ranke als Hinweis); Werkzeuge, Brennstoff und Wasser nicht im Grundbedarf; „vorhanden“ wird nicht gespeichert; Oxidation als Zeitschritt ohne Dauer; seltene Items ohne Eintrag erscheinen als „kein Rezept“.
+Grenzen (Stand B1-R, siehe MAT-02 unten): nur ein Rezept je Item; Werkzeuge, Brennstoff und Wasser nicht im Grundbedarf; „vorhanden“ wird nicht gespeichert; Oxidation als Zeitschritt ohne Dauer; seltene Items ohne Eintrag erscheinen als „kein Rezept“.
+
+## Profilgebundene Rezepte (MAT-02) · 03.11.2026
+
+Katalog jetzt `vanilla-java-recipes-v2+java-26.3`. Jedes Werkbank-, Steinsägen- und Ofenrezept des eigenen Katalogs ist gegen die 1696 Rezepte des offiziellen 26.3-Servers geprüft (`packages/domain/src/recipeProfile.ts`, Herkunft in [VERSION_PROFILE](VERSION_PROFILE.md)) und trägt die Datei, der es folgt (`profileFile`). Der Abgleich hat 15 echte Fehler gefunden und behoben:
+
+- Die Kette heißt in 26.3 `iron_chain`; das alte `chain`-Item gibt es nicht mehr (12 Hängeschilder brauchten es).
+- Quarzziegel: 4 Quarzblöcke ergeben **4** Quarzziegel, nicht 1.
+- Holzkohle nur aus brennbaren Stämmen (`logs_that_burn`); Karmesin- und Wirrstämme ergeben keine.
+
+Bauitems, die der Katalog nicht kennt, nehmen ein Rezept aus dem Profil (`source: 'profile'`, Hinweis „Rezept aus dem Profil java-26.3“): Pappel (jetzt eigene Holzfamilie im Katalog), Beton- und Wollstufen/-treppen, Zinnober- und Schwefelfamilien, Harz, Kupferstangen/-ketten/-laternen/-truhen, Rohkupfer-/Rohgoldblock, Netheritblock und weitere (147 Items). Gewählt wird je Station ein Rezept ohne Umfärben und ohne Eigenzutat, bei mehreren das mit dem ähnlichsten Zutatnamen; ein Ofenrezept nur, wenn nichts herstellbar ist (keine Nuggets aus Werkzeugen).
+
+- **Alternativen:** Jeder Arbeitsschritt nennt die übrigen Rezepte des Spiels für dasselbe Item (aufklappbar „n Alternativen im Spiel“).
+- **Mehrblockobjekte:** Tür und Bett bleiben ein Item für zwei Zellen; 3 Türen je Vorgang, der Rest steht in der Restbilanz.
+- **Brennstoff:** Brennzeiten aus der Item-Komponente `cooking_fuel` des Profils. Bilanz in Ticks; 1 Kohle = 1600 Ticks = 8 Vorgänge, auch im Schmelzofen (halbe Brennzeit, doppelte Geschwindigkeit). Daneben derselbe Bedarf in Holzkohle, Kohleblock (80), getrocknetem Seetangblock (4001 Ticks ≈ 20), Lohenrute (12), Lavaeimer (100) und Eichenplanken (1,5) mit Restvorgängen.
+- Ohne Rezept bleiben nur Blöcke, die das Spiel nicht herstellen lässt (Kreativ-/Technikblöcke, befallener Stein, beschädigte Ambosse, Grundgestein …); der Test prüft, dass keines davon ein Profilrezept hätte.
+
+Prüfung: `tests/recipe-profile.test.mjs`, `tests/recipes.test.mjs`, `tests/e2e/recipes.e2e.mjs`.
+
+## Kupfer mit Oxidation und Wachs (MAT-04) · 03.11.2026
+
+Die Zustandsmatrix kommt aus dem Profil (`packages/domain/src/copper.ts`): jeder Block mit einer `Weathering*`-Spielklasse oxidiert. Eine Familie zählt nur, wenn alle vier Stufen (Kupfer, angelaufen, verwittert, oxidiert) und ihre vier gewachsten Gegenstücke existieren, die gewachsten nicht oxidieren und alle acht dieselben Eigenschaften haben. In 26.3 sind das 15 vollständige Familien: Block, geschnitten, Treppe, Stufe, gemeißelt, Gitter, Lampe, Tür, Falltür, Stangen, Kette, Truhe, Golemstatue, Laterne, Blitzableiter. Unvollständige Familien würden in `incomplete` stehen und nie angeboten.
+
+- **Materialvarianten:** acht Sätze „Kupfer/Angelaufen/Verwittert/Oxidiert“, je mit und ohne Wachs, Art „Kupfer“. Der Tausch behält jede Eigenschaft (Treppenform, Lampe an/aus, Truhenart). Kupfertruhen und Golemstatuen behalten ihr NBT, weil der BlockEntity-Typ gleich bleibt und sein Inhalt relativ ist (NBT-01).
+- **Rezepte:** jede Stufe entsteht aus der vorigen durch Oxidation (Zeitschritt), jede gewachste aus ihrer Stufe plus Honigwabe (gegen das Profil geprüft). Die Golemstatue entsteht nur aus einem vollständig oxidierten Kupfergolem.
+
+Prüfung: `tests/copper.test.mjs`, `tests/variants.test.mjs`.

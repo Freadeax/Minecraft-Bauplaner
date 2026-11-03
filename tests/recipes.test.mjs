@@ -47,7 +47,10 @@ test('hand-counted tree: stairs, torches, wall, beds and lanterns', () => {
   assert.equal(step(r, 'stone_brick_wall').recipe.station, 'stonecutter');
   assert.equal(step(r, 'stone').recipe.station, 'smelting');
   assert.deepEqual(r.surplus.map(s => [s.item.replace('minecraft:', ''), s.count]), [['iron_nugget', 3], ['stick', 2], ['torch', 1]]);
-  assert.deepEqual(r.fuel, { smelts: 33, coal: 5 });
+  assert.deepEqual({ smelts: r.fuel.smelts, coal: r.fuel.coal, ticks: r.fuel.ticks }, { smelts: 33, coal: 5, ticks: 6600 });
+  // Profile burn times (MAT-02): 33 smelts = 5 coal (7 spare), 1 coal block, 1 lava bucket, 22 planks (1.5 each).
+  const fuel = Object.fromEntries(r.fuel.options.map(o => [o.itemId.slice(10), [o.count, o.spareSmelts]]));
+  assert.deepEqual(fuel.coal, [5, 7]); assert.deepEqual(fuel.coal_block, [1, 47]); assert.deepEqual(fuel.lava_bucket, [1, 67]); assert.deepEqual(fuel.oak_planks, [22, 0]);
   assert.deepEqual(r.tagChoices.map(t => [t.tag, t.chosen, t.reason, t.count]),
     [['#coals', mc('coal'), 'fallback', 6], ['#planks', mc('spruce_planks'), 'tree', 10]]);
   assert.ok(step(r, 'torch').buildItem && !step(r, 'stick').buildItem);
@@ -105,7 +108,7 @@ test('raw status, stock and unknown items', () => {
   assert.deepEqual(unknown.base.map(b => [b.itemId, b.kind]), [[mc('sand'), 'raw'], ['othermod:gear', 'unknown'], [mc('chipped_anvil'), 'unknown']]);
   assert.equal(unknown.totals.unknown, 3);
   assert.equal(unknown.complete, false);
-  assert.deepEqual(unknown.fuel, { smelts: 9, coal: 2 });
+  assert.deepEqual({ smelts: unknown.fuel.smelts, coal: unknown.fuel.coal }, { smelts: 9, coal: 2 });
 });
 
 test('colours, concrete and water steps', () => {

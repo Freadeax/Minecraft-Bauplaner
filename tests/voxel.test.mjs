@@ -70,18 +70,26 @@ test('known orientations match concrete independent results', () => {
   const mirrored=transformPayload(createPayload(fixture),{...identity,mirrorX:true}).payload;
   assert.equal(mirrored.palette[2].properties.shape,'inner_right');
 });
-test('unknown state and NBT retain original data and block semantic approval', () => {
+test('unknown state keeps its data and blocks semantic approval; a barrel turns with its own position fields (NBT-01)', () => {
   const r=transformPayload(createPayload(fixture),rotation);
   assert.equal(r.semanticsResolved,false);
-  assert.deepEqual(r.issues.map(i=>i.code),['UNRESOLVED_BLOCK_STATE','UNRESOLVED_BLOCK_ENTITY']);
+  assert.deepEqual(r.issues.map(i=>i.code),['UNRESOLVED_BLOCK_STATE']);
   assert.deepEqual(r.payload.palette[3],fixture.palette[3]);
-  assert.deepEqual(r.payload.blockEntities[0].data,fixture.blockEntities[0].data);
   assert.deepEqual(r.payload.blockEntities[0].position,[8,64,-20]);
+  // Inventory content is relative to the block: unchanged; only the bookkeeping x/y/z follow the entry.
+  const { x, y, z, ...rest } = r.payload.blockEntities[0].data.value, { x: x0, y: y0, z: z0, ...rest0 } = fixture.blockEntities[0].data.value;
+  assert.deepEqual(rest, rest0);
+  assert.deepEqual([x.value, y.value, z.value], [8, 64, -20]);
   assert.equal(transformPayload(createPayload(fixture),identity).semanticsResolved,true);
 });
-test('translation also reports unresolved embedded NBT coordinates', () => {
+test('translation moves embedded own NBT coordinates; an unknown block entity type stays unresolved', () => {
   const r=transformPayload(createPayload(fixture),{...identity,position:[2,0,0]});
-  assert.deepEqual(r.issues.map(i=>i.code),['UNRESOLVED_BLOCK_ENTITY']);
+  assert.deepEqual(r.issues,[]);
+  assert.equal(r.payload.blockEntities[0].data.value.x.value,2);
+  const mod=structuredClone(fixture); mod.blockEntities[0].data.value.id={type:'string',value:'example:machine'};
+  const m=transformPayload(createPayload(mod),{...identity,position:[2,0,0]});
+  assert.deepEqual(m.issues.map(i=>i.code),['UNRESOLVED_BLOCK_ENTITY']);
+  assert.match(m.issues[0].message,/nicht im Profil/);
 });
 test('unexpected known-block properties and invalid values never get guessed', () => {
   for (const state of [

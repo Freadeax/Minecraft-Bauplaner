@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-03T22:11:54.563Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-03T22:26:37.867Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,10 +12,10 @@ Stand: 2026-11-03T22:11:54.563Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 12 |
+| ⏳ Offen | 9 |
 | 🚧 In Arbeit | 2 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 60 |
+| 🧩 Implementiert · Abnahme offen | 63 |
 | ✅ Im beschriebenen Umfang geprüft | 25 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -172,15 +172,15 @@ Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft).
 | [ARCH-02](#arch-02) | Planmodell | 🧩 Implementiert · Abnahme offen 4/5 | P0 | „Große Testphase vorbereiten und betreuen“ | Datencheck unter #/system mit deinen über Monate gewachsenen Browserdaten (S05). |
 | [FORMAT-01](#format-01) | Schem v3 an echten Referenzwerkzeugen abnehmen | 🧩 Implementiert · Abnahme offen 1/2 | P0 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [FORMAT-02](#format-02) | Litematic an echten Referenzdateien abnehmen | 🧩 Implementiert · Abnahme offen 3/4 | P0 | „Große Testphase vorbereiten und betreuen“ | Litematic-Export im Spiel mit Litematica laden (S02). |
-| [NBT-01](#nbt-01) | Semantische BlockEntity-Transformationen | ⏳ Offen 0/2 | P0 | „Liegengebliebene Datenpakete abarbeiten“ | — |
+| [NBT-01](#nbt-01) | Semantische BlockEntity-Transformationen | 🧩 Implementiert · Abnahme offen 2/2 | P0 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [PROFILE-01](#profile-01) | Ein verbindliches Java-Versionsprofil | 🧩 Implementiert · Abnahme offen 3/3 | P0 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3 | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Einen Bau mit Spielprüfung ohne Hinweise nachbauen und Verbindungen vergleichen (S07). |
 | [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Geänderte Gebäude (Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen (S06). |
 | [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen 1/3 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [ENTITY-01](#entity-01) | Gemälde, Rahmen, Rüstungsständer und Blockinhalte | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Export mit Gemälden, Rahmen und Rüstungsständern im Spiel laden (S06). |
-| [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | ⏳ Offen 0/2 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
+| [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [MAT-03](#mat-03) | Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen | 🧩 Implementiert · Abnahme offen 2/3 | P1 | **verwaist** · 1 verwaist | — |
-| [MAT-04](#mat-04) | Kupfer mit Oxidation und Wachsstatus | ⏳ Offen 0/2 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
+| [MAT-04](#mat-04) | Kupfer mit Oxidation und Wachsstatus | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 
 Abgeschlossen oder zurückgestellt: CORE-01 (geprüft), CORE-02 (geprüft), CORE-03 (geprüft), STORE-01 (geprüft), MAT-01 (geprüft), ARCH-01 (geprüft), STORE-02 (geprüft), GAME-01 (geprüft).
 
@@ -423,12 +423,12 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | ID | Arbeitspaket | Status | Schritte | Abhängigkeiten | Main | Pages-Quelle |
 |---|---|---|---:|---|---|---|
 | [PROFILE-01](#profile-01) | Ein verbindliches Java-Versionsprofil | 🧩 Implementiert · Abnahme offen | 3/3 | ARCH-01 | ausstehend | ausstehend |
-| [NBT-01](#nbt-01) | Semantische BlockEntity-Transformationen | ⏳ Offen | 0/2 | PROFILE-01 | ausstehend | ausstehend |
+| [NBT-01](#nbt-01) | Semantische BlockEntity-Transformationen | 🧩 Implementiert · Abnahme offen | 2/2 | PROFILE-01 | ausstehend | ausstehend |
 | [FORMAT-01](#format-01) | Schem v3 an echten Referenzwerkzeugen abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | PROFILE-01, NBT-01 | `84838f0` | `e232b26` |
 | [FORMAT-02](#format-02) | Litematic an echten Referenzdateien abnehmen | 🧩 Implementiert · Abnahme offen | 3/4 | PROFILE-01, NBT-01 | `84838f0` | `e232b26` |
-| [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | ⏳ Offen | 0/2 | PROFILE-01, MAT-01 | ausstehend | ausstehend |
+| [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | 🧩 Implementiert · Abnahme offen | 2/2 | PROFILE-01, MAT-01 | ausstehend | ausstehend |
 | [MAT-03](#mat-03) | Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen | 🧩 Implementiert · Abnahme offen | 2/3 | PROFILE-01, QA-01 | `84838f0` | `e232b26` |
-| [MAT-04](#mat-04) | Kupfer mit Oxidation und Wachsstatus | ⏳ Offen | 0/2 | PROFILE-01, MAT-03 | ausstehend | ausstehend |
+| [MAT-04](#mat-04) | Kupfer mit Oxidation und Wachsstatus | 🧩 Implementiert · Abnahme offen | 2/2 | PROFILE-01, MAT-03 | ausstehend | ausstehend |
 | [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen | 1/3 | CORE-02, NBT-01 | `84838f0` | `e232b26` |
 | [PERF-01](#perf-01) | Große Berechnungen als abbrechbare Worker-Aufträge | ✅ Im beschriebenen Umfang geprüft | 3/3 | ARCH-01 | `7dffd92` | `7dffd92` |
 | [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen | 2/3 | PERF-01 | `7dffd92` | `7dffd92` |
@@ -1003,20 +1003,20 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### NBT-01
 
-**Semantische BlockEntity-Transformationen** · ⏳ Offen · Priorität P0 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T21:37:46.206Z
+**Semantische BlockEntity-Transformationen** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T22:26:37.867Z
 
-- [ ] NBT-01-S01: Zu unterstützende NBT-Familien und Positions-/Ausrichtungsregeln festlegen.
-- [ ] NBT-01-S02: Adapter mit konkreten Richtungen und unbekannten Restdaten prüfen.
+- [x] NBT-01-S01: Zu unterstützende NBT-Familien und Positions-/Ausrichtungsregeln festlegen.
+- [x] NBT-01-S02: Adapter mit konkreten Richtungen und unbekannten Restdaten prüfen.
 
 **Abnahme:** Ungeklärte Transformation sperrt verlässlichen Export; keine stillen NBT-Verluste.
 
-**Nächste Aktion:** Zu unterstützende NBT-Familien und Positions-/Ausrichtungsregeln festlegen.
+**Nächste Aktion:** Abnahme im Spiel: gedrehtes Bauteil mit Truhen/Schildern exportieren und in 26.3 laden (Testphase). Strukturblock-Adapter nur bei Bedarf.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Node-Tests mit konkreten Richtungen; Spielabnahme offen.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/nbt-transforms.test.mjs](../tests/nbt-transforms.test.mjs) — 49 Profiltypen mit Familie, Drehungen/Spiegelungen, Weltpositionen, Befehle, Strukturblock, Mod-Typ, Positionsfelder.; [docs/architecture/NBT_TRANSFORMS.md](architecture/NBT_TRANSFORMS.md) — Familien und Regeln.
 
-**Dateiumfang:** `packages/voxel/`. **Abhängigkeiten:** PROFILE-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/voxel/src/nbtTransforms.ts`, `packages/voxel/src/transforms.ts`. **Abhängigkeiten:** PROFILE-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -1064,20 +1064,20 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAT-02
 
-**Versionierte Item-/Rezeptauflösung vervollständigen** · ⏳ Offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T21:37:46.206Z
+**Versionierte Item-/Rezeptauflösung vervollständigen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T22:26:37.867Z
 
-- [ ] MAT-02-S01: Vorhandene Regeln mit Profilreport abgleichen.
-- [ ] MAT-02-S02: Mehrblockobjekte, Rezeptalternativen, Rest-/Brennstoffbilanzen profilgenau prüfen.
+- [x] MAT-02-S01: Vorhandene Regeln mit Profilreport abgleichen.
+- [x] MAT-02-S02: Mehrblockobjekte, Rezeptalternativen, Rest-/Brennstoffbilanzen profilgenau prüfen.
 
 **Abnahme:** Blockzahl, Bauitems, Rohstoffe und Lagerbestand bleiben getrennt.
 
-**Nächste Aktion:** Vorhandene Regeln mit Profilreport abgleichen.
+**Nächste Aktion:** Abnahme in der Testphase: Rohstoffliste eines großen Bauwerks mit dem Spiel vergleichen.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Node-Tests gegen 1696 Profilrezepte; Browsertest Rohstoffe/Alternativen.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/recipe-profile.test.mjs](../tests/recipe-profile.test.mjs) — Jedes Stationsrezept = Profilrezept; Funde iron_chain, Quarzziegel 4, Holzkohle; Profil-Lückenfüller; Tür 3 je Vorgang mit Rest; Brennstoffbilanz.; [docs/architecture/MATERIALS.md](architecture/MATERIALS.md) — Abschnitt MAT-02.
 
-**Dateiumfang:** `packages/domain/src/materials.ts`, `packages/domain/src/recipes.ts`. **Abhängigkeiten:** PROFILE-01, MAT-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/recipes.ts`, `packages/domain/src/recipeProfile.ts`, `packages/domain/src/profileRecipes.ts`, `apps/web/src/views/project/RawMaterialsPanel.tsx`. **Abhängigkeiten:** PROFILE-01, MAT-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -1105,20 +1105,20 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAT-04
 
-**Kupfer mit Oxidation und Wachsstatus** · ⏳ Offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T21:37:46.206Z
+**Kupfer mit Oxidation und Wachsstatus** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T22:26:37.867Z
 
-- [ ] MAT-04-S01: Zustandsmatrix und Formfamilien mit Profilbeleg definieren.
-- [ ] MAT-04-S02: Tausch mit Properties, Wachs und Oxidation testen.
+- [x] MAT-04-S01: Zustandsmatrix und Formfamilien mit Profilbeleg definieren.
+- [x] MAT-04-S02: Tausch mit Properties, Wachs und Oxidation testen.
 
 **Abnahme:** Keine unvollständige Kupferzuordnung als kompatibel anbieten.
 
-**Nächste Aktion:** Zustandsmatrix und Formfamilien mit Profilbeleg definieren.
+**Nächste Aktion:** Abnahme: Kupfervariante eines Bauwerks im Planer erzeugen und im Spiel ansehen (Testphase).
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Node-Tests; Browser nur über bestehende Variantenansicht.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/copper.test.mjs](../tests/copper.test.mjs) — 15 vollständige Familien aus Weathering-Klassen, Tausch mit Properties und Truhen-NBT, Rezepte aller Stufen.
 
-**Dateiumfang:** `packages/domain/src/variants.ts`. **Abhängigkeiten:** PROFILE-01, MAT-03. **Alte IDs:** MAT-04.
+**Dateiumfang:** `packages/domain/src/copper.ts`, `packages/domain/src/variants.ts`, `packages/domain/src/recipes.ts`. **Abhängigkeiten:** PROFILE-01, MAT-03. **Alte IDs:** MAT-04.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

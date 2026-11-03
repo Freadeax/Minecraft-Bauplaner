@@ -1,11 +1,14 @@
 import { useMemo } from 'react';
 import { formatStacks, recipesForMaterials, recipesToCsv } from '../../../../../packages/domain/src/index.js';
-import type { BaseKind, MaterialReport, RecipeStep, Station } from '../../../../../packages/domain/src/index.js';
+import type { BaseKind, MaterialReport, ProfileRecipe, RecipeStep, Station } from '../../../../../packages/domain/src/index.js';
 import { download, formatNumber } from '../../app/ui';
 
 const stationLabel: Record<Station, string> = { crafting: 'Werkbank', stonecutter: 'Steinsäge', smelting: 'Ofen', tool: 'Werkzeug', water: 'Wasser' };
 const kindLabel: Record<BaseKind, string> = { raw: 'Rohstoff', stock: 'vorhanden', unknown: 'kein Rezept' };
 const short = (id: string): string => id.replace(/^minecraft:/, '');
+const profileStationLabel: Record<ProfileRecipe['station'], string> = { crafting: 'Werkbank', stonecutter: 'Steinsäge', smelting: 'Ofen', blasting: 'Schmelzofen', smoking: 'Räucherofen', campfire: 'Lagerfeuer', smithing: 'Schmiedetisch' };
+/** One profile recipe as text: "Steinsäge: 1 stone → 1 stone_bricks". */
+const altText = (r: ProfileRecipe): string => `${profileStationLabel[r.station]}: ${r.inputs.map(i => `${i.count} ${i.tag ? i.tag.slice(1) : i.alternatives.map(short).slice(0, 3).join('/') + (i.alternatives.length > 3 ? '/…' : '')}`).join(' + ')} → ${r.count}`;
 
 export interface RawMaterialsSettings {
   /** Items marked "vorhanden" (stored in the project's site plan, B14). */
@@ -38,7 +41,7 @@ export function RawMaterialsPanel({ report, fileStem, settings }: { report: Mate
       <div><dt>Rohstoffe</dt><dd>{formatNumber(recipes.totals.raw)}</dd></div>
       <div><dt>Inventarplätze Rohstoffe</dt><dd>{formatNumber(recipes.totals.slots)}</dd></div>
       {ops.map(s => <div key={s}><dt>{stationLabel[s]}-Vorgänge</dt><dd>{formatNumber(recipes.stations[s])}</dd></div>)}
-      {recipes.fuel.smelts > 0 && <div><dt>Brennstoff (Kohle)</dt><dd>{formatNumber(recipes.fuel.coal)} <small>nicht enthalten</small></dd></div>}
+      {recipes.fuel.smelts > 0 && <div title={recipes.fuel.options.map(o => `${formatNumber(o.count)} ${short(o.itemId)} (je ${o.smeltsEach} Vorgänge)`).join(' · ')}><dt>Brennstoff (Kohle)</dt><dd>{formatNumber(recipes.fuel.coal)} <small>nicht enthalten</small></dd></div>}
     </dl>
     <div className="table-wrap"><table className="materials-table raw-table">
       <thead><tr><th>Grundbedarf</th><th className="num">Menge</th><th className="num">Stacks</th><th>Herkunft</th></tr></thead>
@@ -64,7 +67,9 @@ function StepRow({ step, onStock }: { step: RecipeStep; onStock: () => void }) {
   return <li className={step.buildItem ? 'build-item' : undefined}>
     <span className="step-station">{stationLabel[r.station]} × {formatNumber(step.operations)}</span>
     <span className="step-formula">{step.inputs.map(i => `${formatNumber(i.count)} ${short(i.item)}`).join(' + ')} → <b>{formatNumber(step.produced)} {short(step.itemId)}</b>
-      {step.surplus > 0 && <small> (Rest {formatNumber(step.surplus)})</small>}{r.note && <small className="note"> · {r.note}</small>}</span>
+      {step.surplus > 0 && <small> (Rest {formatNumber(step.surplus)})</small>}{r.note && <small className="note"> · {r.note}</small>}
+      {step.alternatives.length > 0 && <details className="recipe-alternatives"><summary>{step.alternatives.length === 1 ? '1 Alternative' : `${step.alternatives.length} Alternativen`} im Spiel</summary>
+        {step.alternatives.slice(0, 8).map(a => <span key={a.file} className="alt-line">{altText(a)}</span>)}</details>}</span>
     <button className="link-button" onClick={onStock} title="Nicht herstellen, sondern als vorhanden zählen">vorhanden</button>
   </li>;
 }

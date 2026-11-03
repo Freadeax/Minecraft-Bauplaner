@@ -41,6 +41,10 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     assert.ok(await panel.locator('.raw-table tbody tr').count() >= 1);
     assert.ok(await panel.locator('.recipe-steps li').count() >= 1);
     assert.ok(await p.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), 'no horizontal page scroll');
+    // MAT-02: recipes are checked against the version profile; other game recipes open as alternatives.
+    assert.match(await panel.locator('.materials-notes').innerText(), /Versionsprofil java-26\.3/);
+    const alt = panel.locator('.recipe-alternatives').first();
+    if (await alt.count()) { await alt.locator('summary').click(); assert.match(await alt.locator('.alt-line').first().innerText(), /→ \d+$/); }
 
     // Marking the first intermediate as available removes its subtree.
     const steps = await panel.locator('.recipe-steps li').count();

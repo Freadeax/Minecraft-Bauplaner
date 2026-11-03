@@ -44,7 +44,7 @@ Behoben (Beobachtung aus P5-01): Der Viewer passt die Kamera neu ein, wenn eine 
 
 - Bilder ohne Texturen und ohne exakte Blockmodelle (Treppen, Zäune als Würfel bzw. Pfeil/Schraffur im Plan).
 - Diff vergleicht nur Blockzustände, keine BlockEntity-Inhalte; Verschiebungen werden nicht erkannt (Ausrichtung immer an der Minimum-Ecke).
-- Materialtausch kennt nur die gelisteten Sätze; Kupfer bleibt ohne vollständigen Zustands-/Profilnachweis offen. Glas, Beton und Terrakotta sind seit MAT-03 getrennt auswählbar.
+- Materialtausch kennt nur die gelisteten Sätze. Glas, Beton und Terrakotta sind seit MAT-03 getrennt auswählbar, Kupfer (Oxidationsstufe × Wachs) seit MAT-04 mit Profilnachweis ([MATERIALS](MATERIALS.md#kupfer-mit-oxidation-und-wachs-mat-04--03112026)).
 - Hauptbundle rund 725 kB (Warnschwelle 650 kB), Aufteilung offen.
 
 

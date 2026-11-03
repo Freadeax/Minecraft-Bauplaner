@@ -1,6 +1,8 @@
 import { createPayload, stateKey } from '../../voxel/src/validation.js';
 import { stateRuleFor } from '../../voxel/src/states.js';
 import type { BlockState, Cell, VoxelPayload } from '../../voxel/src/types.js';
+import { blockEntityTypeOf, nbtFamily } from '../../voxel/src/nbtTransforms.js';
+import { COPPER_STAGES, COPPER_STAGE_LABEL, copperMatrix } from './copper.js';
 
 /**
  * Materialvarianten (B12): a building in another wood, stone or colour by
@@ -10,7 +12,7 @@ import type { BlockState, Cell, VoxelPayload } from '../../voxel/src/types.js';
  * target set does not have (a wall in polished andesite, leaves of crimson)
  * is not invented: the block stays unchanged and is reported as unresolved.
  */
-export type MaterialKind = 'holz' | 'stein' | 'farbe' | 'glas' | 'beton' | 'terrakotta';
+export type MaterialKind = 'holz' | 'stein' | 'farbe' | 'glas' | 'beton' | 'terrakotta' | 'kupfer';
 export interface MaterialSet {
   readonly id: string;
   readonly label: string;
@@ -18,7 +20,7 @@ export interface MaterialSet {
   /** Form name → block id without namespace. */
   readonly forms: Readonly<Record<string, string>>;
 }
-export const MATERIAL_KIND_LABEL: Readonly<Record<MaterialKind, string>> = { holz: 'Holz', stein: 'Stein', farbe: 'Farbe', glas: 'Glas', beton: 'Beton', terrakotta: 'Terrakotta' };
+export const MATERIAL_KIND_LABEL: Readonly<Record<MaterialKind, string>> = { holz: 'Holz', stein: 'Stein', farbe: 'Farbe', glas: 'Glas', beton: 'Beton', terrakotta: 'Terrakotta', kupfer: 'Kupfer' };
 
 const WOOD_FORMS = ['planks', 'stairs', 'slab', 'fence', 'fence_gate', 'door', 'trapdoor', 'button', 'pressure_plate', 'sign', 'wall_sign', 'hanging_sign', 'wall_hanging_sign'] as const;
 function wood(key: string, label: string, opts: { log?: string; wood?: string; leaves?: boolean; sapling?: string | null } = {}): MaterialSet {
@@ -85,6 +87,11 @@ export const SCOPED_MATERIAL_SETS: readonly MaterialSet[] = [
   ...DYES.map(([id, label]): MaterialSet => ({ id: `beton_${id}`, label: `Beton · ${label}`, kind: 'beton', forms: { concrete: `${id}_concrete`, concrete_powder: `${id}_concrete_powder` } })),
   { id: 'terrakotta_natur', label: 'Terrakotta · Natur', kind: 'terrakotta', forms: { terracotta: 'terracotta' } },
   ...DYES.map(([id, label]): MaterialSet => ({ id: `terrakotta_${id}`, label: `Terrakotta · ${label}`, kind: 'terrakotta', forms: { terracotta: `${id}_terracotta`, glazed_terracotta: `${id}_glazed_terracotta` } })),
+  // MAT-04: oxidation stage × wax, families from the version profile (copper.ts); only complete families.
+  ...COPPER_STAGES.flatMap(stage => [false, true].map((waxed): MaterialSet => ({
+    id: `kupfer_${stage}${waxed ? '_gewachst' : ''}`, label: `${COPPER_STAGE_LABEL[stage]}${waxed ? ' · gewachst' : ''}`, kind: 'kupfer',
+    forms: Object.fromEntries(copperMatrix().families.map(f => [f.form, waxed ? f.waxed[stage] : f.ids[stage]])),
+  }))),
 ];
 const SCOPED_BY_ID = new Map(SCOPED_MATERIAL_SETS.map(s => [s.id, s]));
 const SCOPED_MEMBER = new Map<string, { set: MaterialSet; form: string }>();
@@ -173,7 +180,15 @@ export function swapMaterials(payload: VoxelPayload, swaps: readonly MaterialSwa
     }
     return { id: targetId, properties: state.properties };
   });
-  const changedPositions = new Set(payload.cells.filter(c => c.kind === 'block' && mapped[c.paletteIndex]).map(c => c.position.join(',')));
+  // NBT-01: a block entity may stay when source and target carry the same block entity type with content relative
+  // to the block (a copper chest stays a chest at every oxidation stage); everything else needs an adapter.
+  const nbtSafe = payload.palette.map((state, i) => {
+    const next = mapped[i];
+    if (!next) return true;
+    const a = blockEntityTypeOf(state.id), b = blockEntityTypeOf(next.id);
+    return a === b && (a === null || nbtFamily(a) === 'relative');
+  });
+  const changedPositions = new Set(payload.cells.filter(c => c.kind === 'block' && mapped[c.paletteIndex] && !nbtSafe[c.paletteIndex]).map(c => c.position.join(',')));
   if (payload.blockEntities.some(e => changedPositions.has(e.position.join(','))))
     throw new Error('Materialtausch an BlockEntity-Zellen benötigt einen geprüften NBT-Adapter; Original bleibt unverändert');
   const palette: BlockState[] = [], index = new Map<string, number>();
