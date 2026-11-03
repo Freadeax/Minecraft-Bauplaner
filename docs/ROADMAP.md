@@ -904,7 +904,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-05
 
-**Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Gesamtsystem auf Performance und Stabilität optimieren“ · Aktualisiert: 2026-11-03T19:57:31.636Z
+**Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Gesamtsystem auf Performance und Stabilität optimieren“ · Aktualisiert: 2026-11-03T20:21:00.399Z
 
 - [x] PERF-05-S01: Messbasis und priorisierter Befund (Ladezeiten, Pakete, CPU-Brennpunkte, Fehlerbehandlung) in PERFORMANCE_AUDIT.md; Messskript scripts/perf/measure_start.mjs.
 - [x] PERF-05-S02: Mitgelieferter Katalog als Datei beim Bauen (assets/catalog-<key>.json), Worker lädt sie bei fehlendem Katalogspeicher, Rückfall auf Erzeugen; Erststart 5,2 s → 1,4 s.
@@ -923,7 +923,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [docs/architecture/PERFORMANCE_AUDIT.md](architecture/PERFORMANCE_AUDIT.md) — Messungen vorher/nachher, umgesetzte und offene Befunde mit Priorität.; [tests/e2e/catalog-snapshot.e2e.mjs](../tests/e2e/catalog-snapshot.e2e.mjs) — Chromium: Erststart aus Datei, Neustart aus Speicher, gleicher Katalog wie selbst erzeugt, Rückfall bei fehlender/beschädigter/fremder Datei.; [tests/stable-math.test.mjs](../tests/stable-math.test.mjs) — Genauigkeit gegen Math, Sonderwerte, feste Referenzbits.; [tests/canonical-json.test.mjs](../tests/canonical-json.test.mjs) — 2000 Zufallswerte und Sonderfälle gleich der alten Implementierung.; [tests/e2e/thumb-store.e2e.mjs](../tests/e2e/thumb-store.e2e.mjs) — Chromium: Vorschaubilder nach Neustart aus dem Speicher (blob), alter Speicher entfernt, ohne Cache Storage normal gerendert.
 
-**Dateiumfang:** `docs/architecture/PERFORMANCE_AUDIT.md`, `packages/application/src/catalogSnapshot.ts`, `packages/voxel/src/stableMath.ts`, `packages/domain/src/hash.ts`, `scripts/build_catalog_snapshot.mjs`, `scripts/catalog_key.mjs`, `scripts/perf/measure_start.mjs`, `apps/web/src/app/lazyPage.tsx`, `apps/web/src/main.tsx`, `apps/web/src/jobs/libraryJob.ts`, `apps/web/src/jobs/library.ts`, `tests/e2e/catalog-snapshot.e2e.mjs`, `tests/stable-math.test.mjs`, `tests/canonical-json.test.mjs`, `apps/web/src/thumbnail/thumbStore.ts`, `apps/web/src/thumbnail/Thumb.tsx`, `tests/e2e/thumb-store.e2e.mjs`. **Abhängigkeiten:** PERF-04. **Alte IDs:** —.
+**Dateiumfang:** `docs/architecture/PERFORMANCE_AUDIT.md`, `packages/application/src/catalogSnapshot.ts`, `packages/voxel/src/stableMath.ts`, `packages/domain/src/hash.ts`, `scripts/build_catalog_snapshot.mjs`, `scripts/catalog_key.mjs`, `scripts/perf/measure_start.mjs`, `apps/web/src/app/lazyPage.tsx`, `apps/web/src/main.tsx`, `apps/web/src/jobs/libraryJob.ts`, `apps/web/src/jobs/library.ts`, `tests/e2e/catalog-snapshot.e2e.mjs`, `tests/stable-math.test.mjs`, `tests/canonical-json.test.mjs`, `apps/web/src/thumbnail/thumbStore.ts`, `apps/web/src/thumbnail/Thumb.tsx`, `tests/e2e/thumb-store.e2e.mjs`, `apps/web/src/views/map/useMapHistory.ts`. **Abhängigkeiten:** PERF-04. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

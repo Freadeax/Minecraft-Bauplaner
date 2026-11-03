@@ -4030,3 +4030,18 @@ Projekt auf Modrinth angelegt (uL1mPEKJ), 0.10.0 Fabric/NeoForge/Paper hochgelad
 - `mods/bauplaner-bridge/modrinth/project.json`
 - `scripts/modrinth_publish.mjs`
 
+## 2026-11-03T20:21:00.399Z · progress
+
+**Aufgaben:** PERF-05
+
+Wettlauf im Kartenverlauf behoben: Strg+Z direkt nach dem Löschen (mit Projektlage) ging verloren, weil der Schritt erst nach dem Speichern der Projektlage im Verlauf stand; Änderung, Rückgängig und Wiederholen laufen jetzt nacheinander. Nachgestellt mit CPU-Drosselung: alt rot, neu grün.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-05 | 🧩 Implementiert · Abnahme offen | 6/8 | O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/map/useMapHistory.ts`
+- `docs/TESTING.md`
+

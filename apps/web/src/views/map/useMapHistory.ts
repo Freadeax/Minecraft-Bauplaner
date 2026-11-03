@@ -38,6 +38,18 @@ export function useMapHistory({ repo, commitPlan, epoch, onSaved, onError }: {
 }): MapHistory {
   const undoStack = useRef<MapChange[]>([]), redoStack = useRef<MapChange[]>([]);
   const [, bump] = useState(0);
+  /**
+   * Changes, undo and redo run one after another (PERF-05). A change with project steps
+   * shows its plan part before the project is saved; an Strg+Z pressed in between used
+   * to find the undo stack still without that change and was silently lost. Now it waits
+   * for the running change and then undoes exactly it.
+   */
+  const busy = useRef<Promise<unknown>>(Promise.resolve());
+  const serial = useCallback(<T,>(task: () => Promise<T>): Promise<T> => {
+    const next = busy.current.then(task, task);
+    busy.current = next.catch(() => {});
+    return next;
+  }, []);
   useEffect(() => { undoStack.current = []; redoStack.current = []; bump(n => n + 1); }, [epoch]);
 
   /** Executes the steps; returns the inverse change (possibly partial) or null when nothing was saved. */
@@ -70,7 +82,7 @@ export function useMapHistory({ repo, commitPlan, epoch, onSaved, onError }: {
     return ordered.length ? { label: change.label, steps: ordered } : null;
   }, [repo, commitPlan, onSaved, onError]);
 
-  const run = useCallback(async (change: MapChange) => {
+  const run = useCallback((change: MapChange) => serial(async () => {
     if (!change.steps.length) return false;
     const inv = await execute(change);
     if (!inv) return false;
@@ -78,23 +90,23 @@ export function useMapHistory({ repo, commitPlan, epoch, onSaved, onError }: {
     redoStack.current = [];
     bump(n => n + 1);
     return true;
-  }, [execute]);
-  const undo = useCallback(async () => {
+  }), [execute, serial]);
+  const undo = useCallback(() => serial(async () => {
     const last = undoStack.current.at(-1); if (!last) return null;
     const inv = await execute(last); if (!inv) return null;
     undoStack.current = undoStack.current.slice(0, -1);
     redoStack.current = [...redoStack.current, inv];
     bump(n => n + 1);
     return last.label;
-  }, [execute]);
-  const redo = useCallback(async () => {
+  }), [execute, serial]);
+  const redo = useCallback(() => serial(async () => {
     const last = redoStack.current.at(-1); if (!last) return null;
     const inv = await execute(last); if (!inv) return null;
     redoStack.current = redoStack.current.slice(0, -1);
     undoStack.current = [...undoStack.current, inv];
     bump(n => n + 1);
     return last.label;
-  }, [execute]);
+  }), [execute, serial]);
 
   return { canUndo: undoStack.current.at(-1)?.label ?? null, canRedo: redoStack.current.at(-1)?.label ?? null, run, undo, redo };
 }

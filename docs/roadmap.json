@@ -2130,7 +2130,8 @@
         "tests/canonical-json.test.mjs",
         "apps/web/src/thumbnail/thumbStore.ts",
         "apps/web/src/thumbnail/Thumb.tsx",
-        "tests/e2e/thumb-store.e2e.mjs"
+        "tests/e2e/thumb-store.e2e.mjs",
+        "apps/web/src/views/map/useMapHistory.ts"
       ],
       "legacyIds": [],
       "steps": [
@@ -2213,7 +2214,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T19:57:31.636Z"
+      "updatedAt": "2026-11-03T20:21:00.399Z"
     },
     {
       "id": "VIEW-01",
@@ -12307,6 +12308,27 @@
           "done": 3,
           "total": 5,
           "next": "Modrinth-Prüfung abwarten (Status processing → approved); danach jede neue Mod-Version mit modrinth_publish.mjs release."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T20:21:00.399Z",
+      "kind": "progress",
+      "items": [
+        "PERF-05"
+      ],
+      "summary": "Wettlauf im Kartenverlauf behoben: Strg+Z direkt nach dem Löschen (mit Projektlage) ging verloren, weil der Schritt erst nach dem Speichern der Projektlage im Verlauf stand; Änderung, Rückgängig und Wiederholen laufen jetzt nacheinander. Nachgestellt mit CPU-Drosselung: alt rot, neu grün.",
+      "files": [
+        "apps/web/src/views/map/useMapHistory.ts",
+        "docs/TESTING.md"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-05",
+          "status": "implemented",
+          "done": 6,
+          "total": 8,
+          "next": "O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8)."
         }
       ]
     }
