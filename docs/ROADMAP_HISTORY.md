@@ -3636,3 +3636,18 @@ Teambau in der Mod 0.10.0: Teamstand vom Planer oder Paper-Plugin im Spiel (Absc
 - `tests/game-check.test.mjs`
 - `tests/team-link.test.mjs`
 
+## 2026-11-03T18:38:37.063Z · progress
+
+**Aufgaben:** SIZE-01
+
+Browsertest Weltkarte: aktuelle Mod im Simulator meldet große Pläne
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| SIZE-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05) mit einem großen Bau im Spiel. |
+
+**Geänderte Dateien:**
+
+- `node_modules`
+- `tests/e2e/map-depth.e2e.mjs`
+

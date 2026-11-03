@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T18:31:28.782Z",
+  "updatedAt": "2026-11-03T18:38:37.063Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -6096,7 +6096,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T16:46:52.767Z"
+      "updatedAt": "2026-11-03T18:38:37.063Z"
     },
     {
       "id": "COOP-01",
@@ -11389,6 +11389,27 @@
           "done": 2,
           "total": 3,
           "next": "Abnahme TEAMBAU-09 auf Philipps Server; Lagerkisten (COOP-04) hängen sich an TeamChannel.decorate/broadcastStore."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T18:38:37.063Z",
+      "kind": "progress",
+      "items": [
+        "SIZE-01"
+      ],
+      "summary": "Browsertest Weltkarte: aktuelle Mod im Simulator meldet große Pläne",
+      "files": [
+        "node_modules",
+        "tests/e2e/map-depth.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "SIZE-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05) mit einem großen Bau im Spiel."
         }
       ]
     }
