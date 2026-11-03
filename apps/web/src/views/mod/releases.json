@@ -279,6 +279,26 @@
       "releasedAt": "2026-11-03",
       "sourceCommit": "a0b22dd9f2b082bfb9f5cbc50d49be2be091d138",
       "tested": "Spieltest 26.3: Hologramm, Website-Verbindung mit direkt gesendetem Plan, Abschnittswahl, Baustand in Scheiben; JUnit mit 3,1 Mio. Blöcken (NeoForge)"
+    },
+    {
+      "file": "bauplaner-bridge-paper-0.9.0.jar",
+      "modVersion": "0.9.0",
+      "loader": "paper",
+      "minecraft": "26.3",
+      "loaderMin": "1.18",
+      "minecraftVersions": [
+        "1.18.2",
+        "1.20.6",
+        "1.21.4",
+        "1.21.11",
+        "26.3"
+      ],
+      "java": "17",
+      "bytes": 107782,
+      "sha256": "936deecd450637a2867e83c9265072a32ac1a94c8db3b8b9ef0bb0bf1c0a099e",
+      "releasedAt": "2026-11-03",
+      "sourceCommit": "bd58cf785d7b61eb74172c0ec578015cc839a40c",
+      "tested": "Teambau (COOP-02/04) auf echten Paper-Servern 1.18.2, 1.20.6, 1.21.4, 1.21.11 und 26.3 automatisch geprüft: Teambefehle mehrerer Spieler, Doppelübernahme, Rollen, Neustart, Lagerkiste mit Zählungen, Baunachweis; Ausfuhr ergibt im Planer denselben Stand. Brückenfunktionen wie 0.1.0. Aktionsleiste, Schutz und Zählen beim Bauen auf Philipps Server noch nicht abgenommen."
     }
   ]
 }

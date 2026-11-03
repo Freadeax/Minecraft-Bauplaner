@@ -3544,3 +3544,18 @@ COOP-04 Baunachweis und Lagerkisten: Ereignisse build.tally/member.tally/store.c
 - `tests/e2e/team.e2e.mjs`
 - `tests/team.test.mjs`
 
+## 2026-11-03T18:00:55.314Z · progress
+
+**Aufgaben:** COOP-02
+
+Plugin-Jar bauplaner-bridge-paper-0.9.0 mit Teammodul, Baunachweis und Lagerkisten auf der Download-Seite (#/mod, Server); Servertests Teambau auf fünf Paper-Versionen und Brücke 1.21.4 grün.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-02 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme auf Philipps Server. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `downloads/mod/bauplaner-bridge-paper-0.9.0.jar`
+

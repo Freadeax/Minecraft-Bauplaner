@@ -74,7 +74,7 @@ for (const viewport of [{ width: 1400, height: 900 }, { width: 390, height: 844 
     await p.getByLabel('Mod-Version').selectOption(newest.modVersion);
     assert.match(p.url(), new RegExp(`#/mod\\?minecraft=${newest.minecraft.replace('.', '\\.')}&loader=fabric&version=`));
     // Paper-Plugin: own choice, one .jar for several Minecraft versions, server guide instead of mod guide.
-    const paper = releases.find(r => r.loader === 'paper');
+    const paper = releases.filter(r => r.loader === 'paper').sort((x, y) => y.modVersion.localeCompare(x.modVersion, undefined, { numeric: true }))[0];
     if (paper) {
       await p.getByRole('button', { name: /Für einen Server/ }).click();
       assert.equal(await p.getByLabel('Server-Software').inputValue(), 'paper');

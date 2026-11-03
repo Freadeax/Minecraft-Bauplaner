@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T17:57:24.438Z",
+  "updatedAt": "2026-11-03T18:00:55.314Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -6233,7 +6233,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T17:57:24.438Z"
+      "updatedAt": "2026-11-03T18:00:55.314Z"
     },
     {
       "id": "COOP-03",
@@ -11241,6 +11241,27 @@
           "total": 4,
           "next": "Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung Lagerkisten im Thread „Server-Plugin mit geprüften Lagerkisten“."
         },
+        {
+          "id": "COOP-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme auf Philipps Server."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T18:00:55.314Z",
+      "kind": "progress",
+      "items": [
+        "COOP-02"
+      ],
+      "summary": "Plugin-Jar bauplaner-bridge-paper-0.9.0 mit Teammodul, Baunachweis und Lagerkisten auf der Download-Seite (#/mod, Server); Servertests Teambau auf fünf Paper-Versionen und Brücke 1.21.4 grün.",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "downloads/mod/bauplaner-bridge-paper-0.9.0.jar"
+      ],
+      "snapshot": [
         {
           "id": "COOP-02",
           "status": "implemented",
