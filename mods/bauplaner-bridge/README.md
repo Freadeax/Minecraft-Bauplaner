@@ -109,6 +109,8 @@ Konzept: [TEAMBAU](../../docs/architecture/TEAMBAU.md). Die Bauleitung lädt im 
 | `/bauplaner zeigen <nr>` | Umriss 30 s als Partikel, nur für dich |
 | `/bauplaner notiz <frage\|problem\|material\|info> <text>` · `notizen` | Notiz an deiner Position, Notizen in der Nähe |
 | `/bauplaner geliefert <item\|hand> [menge]` · `sammle <item> <menge>` | Lieferung melden (nimmt nichts aus dem Inventar), Sammelauftrag |
+| `/bauplaner beitrag [alle]` · `nachweis [an\|aus]` | Baunachweis: eigene gesetzte/abgebaute Blöcke und Lagerbuchungen, mit `alle` je Abschnitt; Zählung für sich ab- oder anschalten |
+| `/bauplaner lager` · `lager zaehlen` · Baumeister: `lager setzen <name>`, `lager entfernen <name>` | Lagerkisten des Teams: Bestand, Zählen auf Befehl; beim Schließen einer Lagerkiste wird automatisch gezählt (auch Shulkerinhalt) |
 | Baumeister: `zuweisen <nr> <spieler>`, `pruefen <nr> ok\|nacharbeit [notiz]` · Bauleitung: `rolle <spieler> <rolle>`, `team export`, `team wahl <name>` | |
 
 Jede Handlung landet als Ereignis in `team/<teamId>.events.jsonl`; `/bauplaner team export` schreibt den Stand, den der Planer einliest. Wer in einem Abschnitt steht, sieht ihn in der Aktionsleiste. `config.yml` → `team.schutz`: `hinweis` (Standard), `sperren` (Blockänderungen in fremden Abschnitten verhindern) oder `aus`. Rechte `bauplaner.team.use` (alle) und `bauplaner.team.leitung` (Operatoren). In der Konsole handelt `bauplaner team als <spieler> <befehl>` für einen Spieler. Servertest: `scripts/test_bridge_paper_team.sh`.

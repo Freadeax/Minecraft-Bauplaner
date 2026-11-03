@@ -14,7 +14,7 @@ java21=${BAUPLANER_JAVA21:-$(ls -d /usr/lib/jvm/java-21-openjdk-*/bin/java 2>/de
 java21=${java21:-java}
 if [ ${#versions[@]} -eq 0 ]; then versions=(1.18.2 1.21.11); [ -n "$java25" ] && versions+=(26.3); fi
 (cd mods/bauplaner-bridge && ./gradlew -q -PwithPaper :paper:build --console=plain)
-jar=$(ls mods/bauplaner-bridge/paper/build/libs/bauplaner-bridge-paper-*.jar | grep -v -- -sources | head -1)
+jar=mods/bauplaner-bridge/paper/build/libs/bauplaner-bridge-paper-$(cat mods/bauplaner-bridge/VERSION).jar
 for v in "${versions[@]}"; do
   case "$v" in 1.*) j=$java21 ;; *) j=${java25:?JDK 25 fehlt für Minecraft $v} ;; esac
   echo "Paper $v (Teambau) mit $("$j" -version 2>&1 | grep -m1 version)"

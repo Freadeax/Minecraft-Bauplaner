@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 81 Fälle in 10 Bereichen, davon 39 Kernfälle.
+Umfang: 83 Fälle in 10 Bereichen, davon 39 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -118,6 +118,8 @@ Mehrere Spieler an einem Projekt: Reiter „Team“ im Planer und Teambefehle de
 | TEAMBAU-04 | Gleichzeitig denselben Abschnitt nehmen | vertieft | 1. Beide Browser übernehmen denselben freien Abschnitt, ohne vorher auszutauschen.<br>2. Meldecodes in beide Richtungen einlesen. | In beiden Browsern gehört der Abschnitt derselben Person (wer zuerst war); oben erscheint ein Hinweis „… wollte übernehmen, war schon vergeben“. Nichts geht verloren. |
 | TEAMBAU-05 | Beiträge, Sammelaufträge, Notizen | vertieft | 1. Gebaute Blöcke und eine Lieferung melden, einen Sammelauftrag übernehmen, eine Notiz mit @Name schreiben.<br>2. Austauschen und „Statustext für Discord“ ansehen. | Mitgliederliste zählt Blöcke/Items; die erwähnte Person sieht die Notiz unter „Meine Aufgaben“; der Statustext listet Abschnitte, Sammelaufträge und offene Notizen. |
 | TEAMBAU-06 | Team auf dem Paper-Server | vertieft | 1. Projekt auf der Weltkarte platzieren, im Reiter „Team“ „Serverdatei herunterladen“.<br>2. Datei nach plugins/BauplanerBridge/team/ legen, im Spiel `/bauplaner team laden` (als OP).<br>3. Als Mitspieler `/bauplaner team`, `/bauplaner nehmen 2`, im Abschnitt stehen, `/bauplaner zeigen 2`, `/bauplaner fertig`, `/bauplaner notiz frage …`.<br>4. `/bauplaner team export` und die Datei im Planer unter „Einlesen“ wählen. | Im Spiel: Aktionsleiste „Abschnitt 2 · … · in Arbeit“, Partikelumriss, verständliche Antworten, Hinweis beim Bauen im fremden Abschnitt. Im Planer kommen die Meldungen mit „vom Server“ an. |
+| TEAMBAU-07 | Baunachweis auf dem Server | vertieft | 1. Mit zwei Spielern in Abschnitten des Teams Blöcke setzen und abbauen (einer innerhalb, einer außerhalb der Abschnitte).<br>2. `/bauplaner beitrag` und als Baumeister `/bauplaner beitrag alle`.<br>3. Ein Spieler: `/bauplaner nachweis aus`, dann wieder `beitrag alle`.<br>4. `/bauplaner team export` und im Planer einlesen, Bereich „Baunachweis & Lager“ ansehen. | Gezählt wird nur in Teamabschnitten; je Abschnitt stimmen die Anteile; nach „nachweis aus“ verschwinden die Zahlen dieses Spielers überall (auch frühere); der Planer zeigt dieselben Zahlen wie der Server. |
+| TEAMBAU-08 | Lagerkiste des Teams | vertieft | 1. Als Baumeister auf eine Kiste schauen: `/bauplaner lager setzen Hauptlager`.<br>2. Als anderer Spieler etwas hineinlegen und die Kiste schließen, später etwas herausnehmen (auch eine gefüllte Shulkerkiste einlegen).<br>3. `/bauplaner lager`; Ausfuhr im Planer einlesen, „Bestand ins Baustellen-Lager übernehmen“. | Beim Schließen meldet die Aktionsleiste „+64 stone“ bzw. „-32 …“; der Inhalt der Shulkerkiste wird mitgezählt; im Planer stehen Bestand, „ins Lager“ und „entnommen“ beim richtigen Spieler; das Lager im Reiter „Baustelle“ übernimmt die Mengen (Strg+Z möglich). |
 
 ## MOD · Mod: Installation und Hologramm (Mod)
 

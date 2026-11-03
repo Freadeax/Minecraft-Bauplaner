@@ -19,3 +19,8 @@ team:
   # Bauen in Abschnitten, die ein anderer übernommen hat: hinweis (Chatzeile), sperren (Blocksetzen/-abbauen verhindert;
   # Inhaber, Baumeister, Bauleitung und bauplaner.team.leitung ausgenommen) oder aus.
   schutz: hinweis
+  # Baunachweis (COOP-04): zählt gesetzte und abgebaute Blöcke von Teammitgliedern, nur innerhalb der Abschnitte des Teams.
+  # Jeder Spieler kann ihn mit /bauplaner nachweis aus für sich abschalten (blendet auch bisherige Zahlen aus).
+  nachweis: true
+  # Wie oft der Baunachweis ins Teamprotokoll geschrieben wird (Minuten; zusätzlich bei Ausfuhr, Neuladen und Serverstopp).
+  nachweis-minuten: 5

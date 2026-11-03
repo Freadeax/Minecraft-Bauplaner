@@ -782,6 +782,12 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `scripts/bridge_paperteam.mjs` auf echten Paper-Servern 1.18.2 (Build 388), 1.21.4 (Build 232) und 26.3 (Build 238, JDK 25): Baustag per Konsole für drei Spieler, Neustart, Ausfuhr; Planer-Faltung der Ausfuhr = Serverstand, keine Plugin-Warnungen.
 - Grenzen: Aktionsleiste, Partikelumriss und Schutz brauchen echte Spieler (TEAMBAU-06 auf Philipps Server); keine Mitspieler-Abnahme.
 
+## COOP-04 · Baunachweis und Lagerkisten · 03.11.2026 · Claude
+- `node --test tests/team.test.mjs`: 14/14 – neu: Baunachweis nur vom Server, Summen je Mitglied und Abschnitt, „aus“ blendet auch frühere Zahlen aus, nur für sich selbst; Lagerkisten nur durch Baumeister, Bestand aus letzter Zählung, Einlagern/Entnehmen als Differenz, keine Buchung bei erster Zählung, gekürzter Liste oder doppeltem Einlesen.
+- `node --test tests/e2e/team.e2e.mjs`: 2/2 (1400 und 390 px) – zusätzlich Serverausfuhr mit Nachweis und Lagerzählungen einlesen, Anteile je Abschnitt, Bestand ins Baustellen-Lager übernehmen, eigenen Nachweis aus- und anschalten.
+- `scripts/test_bridge_paper_team.sh` auf echten Paper-Servern 1.18.2 (388), 1.20.6 (151), 1.21.4 (232), 1.21.11 (132), 26.3 (238): echte Kiste per `setblock`/`item replace`, Lagerkiste setzen, Zählen mit +32/-64, `beitrag`/`beitrag alle`, `nachweis aus`; Planer-Faltung der Ausfuhr = Serverzustand. Die Testskripte nehmen jetzt die Jar der aktuellen VERSION (vorher konnte eine ältere Jar im build-Ordner gewählt werden).
+- Grenzen: Zählen beim Blocksetzen und beim Schließen einer Kiste braucht echte Spieler (TEAMBAU-07/08); kein Vergleich „richtig nach Plan“ im Plugin.
+
 ## PERF-04 · Erststart der Bibliothek, gemeinsamer Startwarter · 03.11.2026 · Claude
 
 - Ursache der 46 roten Browsertests auf main 2b83089: der erste Katalogaufbau (frischer Browser, kein Cache) dauerte seit Kolosseum und Großprojekten rund 12 s, die Tests warteten 10 s auf „Beispielprojekt „Burgmauer““.

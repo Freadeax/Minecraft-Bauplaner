@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T17:39:42.853Z",
+  "updatedAt": "2026-11-03T17:57:24.438Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -24,7 +24,8 @@
     "LIB-06",
     "SIZE-01",
     "COOP-01",
-    "COOP-02"
+    "COOP-02",
+    "COOP-04"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -6204,7 +6205,7 @@
         {
           "id": "COOP-02-S03",
           "title": "Plugin-Jar mit Teammodul auf der Download-Seite veröffentlichen.",
-          "done": false
+          "done": true
         },
         {
           "id": "COOP-02-S04",
@@ -6216,7 +6217,7 @@
         "Plugin verändert die Welt nie; Schutz verhindert höchstens Blockänderungen in fremden Abschnitten und ist abschaltbar.",
         "Ereignisse vom Server tragen die echte Spieleridentität und die Herkunft server."
       ],
-      "next": "Jar veröffentlichen; Abnahme auf Philipps Server.",
+      "next": "Abnahme auf Philipps Server.",
       "blockers": [],
       "evidence": [
         {
@@ -6232,7 +6233,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T16:20:13.104Z"
+      "updatedAt": "2026-11-03T17:57:24.438Z"
     },
     {
       "id": "COOP-03",
@@ -6281,10 +6282,10 @@
     },
     {
       "id": "COOP-04",
-      "title": "Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten am Weltplan-Punkt zählen, Lieferungen ins Lager übernehmen",
+      "title": "Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen",
       "phase": "P4",
       "priority": "P1",
-      "status": "planned",
+      "status": "implemented",
       "owner": "Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“)",
       "dependencies": [
         "COOP-02",
@@ -6292,36 +6293,56 @@
       ],
       "scope": [
         "mods/bauplaner-bridge/paper/",
-        "packages/domain/src/team.ts"
+        "packages/domain/src/team.ts",
+        "apps/web/src/views/project/TeamProof.tsx"
       ],
       "legacyIds": [],
       "steps": [
         {
           "id": "COOP-04-S01",
           "title": "Zähler je Spieler mit Datenschutzschalter.",
-          "done": false
+          "done": true
         },
         {
           "id": "COOP-04-S02",
           "title": "Lagerkisten lesen und Lieferungen buchen ohne Doppelzählung.",
+          "done": true
+        },
+        {
+          "id": "COOP-04-S03",
+          "title": "Bereich „Baunachweis & Lager“ im Reiter Team, Bestand ins Baustellen-Lager.",
+          "done": true
+        },
+        {
+          "id": "COOP-04-S04",
+          "title": "Abnahme mit echten Spielern auf Philipps Server (TEAMBAU-07/08).",
           "done": false
         }
       ],
       "acceptance": [
         "Selbstmeldung, Bestätigung und Spielnachweis bleiben getrennt sichtbar."
       ],
-      "next": "Nach COOP-02-Abnahme.",
+      "next": "Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung Lagerkisten im Thread „Server-Plugin mit geprüften Lagerkisten“.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "scripts/bridge_paperteam.mjs",
+          "note": "Echte Kiste, Zählungen, Baunachweis und Abschalten auf Paper 1.18.2 bis 26.3; Planer-Faltung = Server."
+        },
+        {
+          "path": "tests/team.test.mjs",
+          "note": "Faltung Baunachweis und Lagerkisten."
+        }
+      ],
       "verification": {
         "state": "pending",
-        "note": "Geplant."
+        "note": "Servertest auf fünf Paper-Versionen und Browsertest bestanden; Zählen beim Bauen und Schließen braucht echte Spieler."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T16:19:54.092Z"
+      "updatedAt": "2026-11-03T17:57:24.438Z"
     }
   ],
   "events": [
@@ -11181,6 +11202,51 @@
           "done": 6,
           "total": 7,
           "next": "Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); GPU-Upload großer Szenen bleibt im Hauptthread."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T17:57:24.438Z",
+      "kind": "progress",
+      "items": [
+        "COOP-04",
+        "COOP-02"
+      ],
+      "summary": "COOP-04 Baunachweis und Lagerkisten: Ereignisse build.tally/member.tally/store.chest/store.count (nur Server für Messwerte), Plugin zählt Blöcke in Teamabschnitten und Lagerkisten beim Schließen (auch Shulkerinhalt), Befehle lager/nachweis/beitrag, Bereich „Baunachweis & Lager“ mit Übernahme ins Baustellen-Lager. Servertest Paper 1.18.2–26.3 und Browsertest grün; Abnahme mit echten Spielern offen (TEAMBAU-07/08).",
+      "files": [
+        "apps/web/src/team.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/project/TeamProof.tsx",
+        "apps/web/src/views/project/TeamTab.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/TEAMBAU.md",
+        "docs/testing/TESTPLAN.md",
+        "mods/bauplaner-bridge/README.md",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java",
+        "mods/bauplaner-bridge/paper/src/main/resources/config.yml",
+        "packages/domain/src/team.ts",
+        "scripts/bridge_paperteam.mjs",
+        "scripts/test_bridge_paper.sh",
+        "scripts/test_bridge_paper_team.sh",
+        "tests/e2e/team.e2e.mjs",
+        "tests/team.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-04",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung Lagerkisten im Thread „Server-Plugin mit geprüften Lagerkisten“."
+        },
+        {
+          "id": "COOP-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme auf Philipps Server."
         }
       ]
     }

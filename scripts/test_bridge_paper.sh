@@ -19,7 +19,7 @@ java21=${BAUPLANER_JAVA21:-$(ls -d /usr/lib/jvm/java-21-openjdk-*/bin/java 2>/de
 java21=${java21:-java}
 
 (cd mods/bauplaner-bridge && ./gradlew -q -PwithPaper :paper:build --console=plain)
-jar=$(ls mods/bauplaner-bridge/paper/build/libs/bauplaner-bridge-paper-*.jar | grep -v -- -sources | head -1)
+jar=mods/bauplaner-bridge/paper/build/libs/bauplaner-bridge-paper-$(cat mods/bauplaner-bridge/VERSION).jar
 node scripts/bridge_gametest.mjs prepare "$work"
 for v in "${versions[@]}"; do
   case "$v" in 1.*) j=$java21 ;; *) j=${java25:?JDK 25 fehlt für Minecraft $v} ;; esac

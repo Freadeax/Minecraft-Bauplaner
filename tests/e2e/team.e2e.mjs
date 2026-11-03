@@ -6,6 +6,10 @@ import { spawn } from 'node:child_process';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { openSampleProject } from './start.mjs';
+import { readFileSync, writeFileSync, mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { readTeamPackage, teamEvent, TEAM_SERVER_FORMAT } from '../../dist/domain/src/index.js';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -116,6 +120,43 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await a.reload();
     await section(a, 'Fundament').getByText('bestätigt').waitFor();
     const [onlyTeam] = await Promise.all([a.waitForEvent('download'), a.getByRole('button', { name: 'Teampaket nur Teamstand' }).click()]);
+
+    // ---- COOP-04: the server plugin's export brings Baunachweis and storage chests (built here like the plugin writes it).
+    const pkg = await readTeamPackage(readFileSync(await onlyTeam.path(), 'utf8'));
+    const anna = pkg.team.events.find(e => e.kind === 'member.join' && e.name === 'Anna').member;
+    const fundament = pkg.team.events.find(e => e.kind === 'section.done').section;
+    const server = (by, body, at) => teamEvent(by, body, at, 'server');
+    const later = n => new Date(Date.parse(pkg.team.events.at(-1).at) + n * 1000).toISOString();
+    const items = list => list.map(([item, count]) => ({ item: `minecraft:${item}`, count }));
+    const exportFile = join(mkdtempSync(join(tmpdir(), 'team-')), 'Burg-server.export.json');
+    writeFileSync(exportFile, JSON.stringify({
+      format: TEAM_SERVER_FORMAT, formatVersion: 1, teamId: pkg.team.teamId, name: pkg.team.name, projectName: 'Burgmauer', founder: pkg.team.founder, createdAt: pkg.team.createdAt,
+      dimension: 'minecraft:overworld', sections: [], members: [], exportedAt: later(10),
+      events: [...pkg.team.events,
+        server(anna, { kind: 'build.tally', section: fundament, placed: 120, broken: 4, blocks: items([['cobblestone', 120]]), from: later(1), until: later(2) }, later(2)),
+        server(pkg.team.founder, { kind: 'build.tally', section: fundament, placed: 40, broken: 0, from: later(1), until: later(2) }, later(3)),
+        server(pkg.team.founder, { kind: 'store.chest', chest: 'lager_e2e', name: 'Hauptlager', pos: [10, 64, 20], dimension: 'minecraft:overworld' }, later(4)),
+        server(pkg.team.founder, { kind: 'store.count', chest: 'lager_e2e', items: items([['stone', 64]]) }, later(5)),
+        server(anna, { kind: 'store.count', chest: 'lager_e2e', items: items([['stone', 64], ['oak_log', 32]]) }, later(6)),
+      ],
+    }));
+    await a.locator('.team-exchange input[type=file]').setInputFiles(exportFile);
+    const pa = a.getByRole('region', { name: 'Vorschau Einlesen' });
+    await pa.getByText(/neue Ereignisse/).waitFor();
+    await pa.getByRole('button', { name: 'Übernehmen' }).click();
+    const proof = a.getByRole('region', { name: 'Baunachweis und Lager' });
+    const annaRow = proof.locator('.team-proof-members tr', { hasText: 'Anna' });
+    await annaRow.getByText('120', { exact: true }).waitFor();
+    await annaRow.getByText('32 oak_log').waitFor();
+    await proof.getByLabel('Anteile an Fundament').getByText('Anna 75 %').waitFor();
+    await proof.getByText('Hauptlager').waitFor();
+    await proof.getByLabel('Lagerbestand').getByText('32 × oak_log').waitFor();
+    await proof.getByRole('button', { name: 'Bestand ins Baustellen-Lager übernehmen' }).click();
+    await proof.getByRole('button', { name: 'Baustellen-Lager entspricht dem Bestand' }).waitFor();
+    await proof.getByRole('button', { name: 'Meinen Baunachweis abschalten' }).click();
+    await proof.locator('.team-proof-members tr', { hasText: 'Philipp' }).getByText('Nachweis aus').waitFor();
+    await proof.getByRole('button', { name: 'Meinen Baunachweis einschalten' }).click();
+    await proof.locator('.team-proof-members tr', { hasText: 'Philipp' }).getByText('40', { exact: true }).waitFor();
 
     // ---- Helfer reads the team-only package: confirmation and new role arrive, nothing of her own is lost.
     await b.getByRole('button', { name: 'Datei wählen …' }).click({ trial: true });

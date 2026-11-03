@@ -60,14 +60,24 @@ export type TeamEventBody =
   | { readonly kind: 'gather.claim'; readonly item: string; readonly count: number }
   | { readonly kind: 'note.add'; readonly noteId: string; readonly text: string; readonly tag: NoteTag; readonly section?: string; readonly pos?: readonly [number, number, number] }
   | { readonly kind: 'note.resolve'; readonly noteId: string; readonly text?: string }
-  | { readonly kind: 'plan.release'; readonly revisionId: string; readonly revisionNumber: number; readonly summary: string };
+  | { readonly kind: 'plan.release'; readonly revisionId: string; readonly revisionNumber: number; readonly summary: string }
+  /** Baunachweis (COOP-04): blocks a player placed/broke inside one section box, counted by the server plugin between from and until. */
+  | { readonly kind: 'build.tally'; readonly section: string; readonly placed: number; readonly broken: number; readonly blocks?: readonly ItemCount[]; readonly from: string; readonly until: string }
+  /** Switches one's own Baunachweis on or off; off also hides earlier numbers. */
+  | { readonly kind: 'member.tally'; readonly member: string; readonly on: boolean }
+  /** Registers (or with remove removes) a storage chest of the team (COOP-04). */
+  | { readonly kind: 'store.chest'; readonly chest: string; readonly name: string; readonly pos: readonly [number, number, number]; readonly dimension: string; readonly remove?: boolean }
+  /** Full content of a storage chest, read by the server plugin when someone closed it; `more` when lines were cut. */
+  | { readonly kind: 'store.count'; readonly chest: string; readonly items: readonly ItemCount[]; readonly more?: boolean };
 export type KnownTeamEvent = Base & TeamEventBody;
 /** Events of a newer planner version: kept and passed on, but without effect. */
 export type UnknownTeamEvent = Base & { readonly kind: string; readonly [key: string]: unknown };
 export type TeamEvent = KnownTeamEvent | UnknownTeamEvent;
 export type TeamEventKind = TeamEventBody['kind'];
 const KNOWN = new Set<string>(['member.join', 'member.role', 'member.player', 'section.claim', 'section.assign', 'section.release', 'section.done',
-  'section.verify', 'contribution', 'gather.claim', 'note.add', 'note.resolve', 'plan.release']);
+  'section.verify', 'contribution', 'gather.claim', 'note.add', 'note.resolve', 'plan.release', 'build.tally', 'member.tally', 'store.chest', 'store.count']);
+/** Kinds only the server plugin may write (origin server): they are measurements, not claims. */
+export const SERVER_ONLY_KINDS: ReadonlySet<string> = new Set(['build.tally', 'store.count']);
 export const isKnownEvent = (e: TeamEvent): e is KnownTeamEvent => KNOWN.has(e.kind);
 
 export interface TeamState {
@@ -104,6 +114,19 @@ const iso = (v: unknown, what: string) => { if (typeof v !== 'string' || !Number
 export const PLAYER_NAME = /^[.*]?[A-Za-z0-9_]{2,16}$/;
 const ITEM_ID = /^[a-z0-9_.-]+:[a-z0-9_./-]+$/;
 
+function itemLines(v: unknown, max: number, what: string, required = false) {
+  if (v === undefined && !required) return;
+  if (!Array.isArray(v) || v.length > max) fail(`${what}: höchstens ${max} Zeilen`);
+  const seen = new Set<string>();
+  for (const l of v as unknown[]) {
+    if (!isObj(l) || typeof l.item !== 'string' || !ITEM_ID.test(l.item)) fail(`${what}: Item ungültig`);
+    const item = (l as Record<string, unknown>).item as string;
+    if (seen.has(item)) fail(`${what}: ${item} doppelt`);
+    seen.add(item);
+    int((l as Record<string, unknown>).count, 1, 1e9, `${what}: Menge`);
+  }
+}
+
 export function checkTeamEvent(raw: unknown): TeamEvent {
   if (!isObj(raw)) return fail('Ereignis ist kein Objekt');
   text(raw.id, 64, 'Ereignis-ID'); iso(raw.at, 'Ereigniszeit'); text(raw.by, 64, 'Urheber'); text(raw.kind, 40, 'Ereignisart');
@@ -134,6 +157,24 @@ export function checkTeamEvent(raw: unknown): TeamEvent {
       if (raw.blocks === undefined && raw.items === undefined && raw.note === undefined) fail(`${where}: Beitrag ohne Inhalt`);
       optText(raw.note, 300, `${where}: Notiz`); break;
     }
+    case 'build.tally': {
+      text(raw.section, 64, `${where}: Abschnitt`); int(raw.placed, 0, 10_000_000, `${where}: gesetzt`); int(raw.broken, 0, 10_000_000, `${where}: abgebaut`);
+      iso(raw.from, `${where}: von`); iso(raw.until, `${where}: bis`);
+      if (raw.blocks !== undefined) itemLines(raw.blocks, 48, `${where}: Blockarten`);
+      break;
+    }
+    case 'member.tally': text(raw.member, 64, `${where}: Mitglied`); if (typeof raw.on !== 'boolean') fail(`${where}: an/aus fehlt`); break;
+    case 'store.chest': {
+      text(raw.chest, 64, `${where}: Kiste`); text(raw.name, 60, `${where}: Name`); text(raw.dimension, 80, `${where}: Dimension`);
+      if (!Array.isArray(raw.pos) || raw.pos.length !== 3) fail(`${where}: Position ungültig`);
+      for (const c of raw.pos as unknown[]) int(c, -30_000_000, 30_000_000, `${where}: Position`);
+      if (raw.remove !== undefined && raw.remove !== true) fail(`${where}: remove ist nur true`);
+      break;
+    }
+    case 'store.count':
+      text(raw.chest, 64, `${where}: Kiste`); itemLines(raw.items, 64, `${where}: Inhalt`, true);
+      if (raw.more !== undefined && raw.more !== true) fail(`${where}: more ist nur true`);
+      break;
     case 'gather.claim': if (typeof raw.item !== 'string' || !ITEM_ID.test(raw.item)) fail(`${where}: Item ungültig`); int(raw.count, 0, 1e9, `${where}: Menge`); break;
     case 'note.add': text(raw.noteId, 64, `${where}: Notiz-ID`); text(raw.text, 500, `${where}: Text`);
       if (!NOTE_TAGS.includes(raw.tag as NoteTag)) fail(`${where}: Notizart unbekannt`);
@@ -243,6 +284,14 @@ export interface TeamMember {
   readonly reportedSections: number;
   readonly confirmedSections: number;
   readonly lastActive?: string;
+  /** Baunachweis from the server plugin (COOP-04): blocks placed and broken inside section boxes. */
+  readonly placed: number;
+  readonly broken: number;
+  /** Booked into / taken out of team storage chests (difference of two counts), by item. */
+  readonly stored: Readonly<Record<string, number>>;
+  readonly taken: Readonly<Record<string, number>>;
+  /** false: the member switched the Baunachweis off; no numbers are shown. */
+  readonly tally: boolean;
 }
 export interface SectionTeamState {
   readonly sectionId: string;
@@ -254,6 +303,21 @@ export interface SectionTeamState {
   /** Section is not (any more) in the plan. */
   readonly orphan: boolean;
   readonly history: readonly { readonly at: string; readonly by: string; readonly text: string }[];
+  /** Baunachweis inside this section: placed blocks over all members, and per member. */
+  readonly placed: number;
+  readonly broken: number;
+  readonly builders: Readonly<Record<string, number>>;
+}
+export interface StoreChest {
+  readonly id: string;
+  readonly name: string;
+  readonly pos: readonly [number, number, number];
+  readonly dimension: string;
+  /** Last count; empty until the plugin read the chest. */
+  readonly items: Readonly<Record<string, number>>;
+  readonly countedAt?: string;
+  readonly countedBy?: string;
+  readonly partial: boolean;
 }
 export interface TeamNote {
   readonly id: string;
@@ -286,6 +350,14 @@ export interface TeamView {
   /** Effective, but worth a look (taken over, reported by someone else …). */
   readonly conflicts: readonly TeamConflict[];
   readonly unknownKinds: number;
+  /** Team storage chests (COOP-04), not removed ones. */
+  readonly stores: readonly StoreChest[];
+  /** Sum of the last counts of all chests. */
+  readonly stock: Readonly<Record<string, number>>;
+  /** Placed blocks by block id over all visible tallies (material really used). */
+  readonly placedBlocks: Readonly<Record<string, number>>;
+  /** Time span of the visible Baunachweis. */
+  readonly tallySpan: { readonly from: string; readonly until: string } | null;
 }
 
 export interface TeamContext {
@@ -301,6 +373,7 @@ const NEED: Readonly<Record<TeamEventKind, TeamRole>> = {
   'member.join': 'gast', 'member.role': 'leitung', 'member.player': 'gast', 'section.claim': 'helfer', 'section.assign': 'meister',
   'section.release': 'helfer', 'section.done': 'helfer', 'section.verify': 'meister', contribution: 'helfer', 'gather.claim': 'helfer',
   'note.add': 'gast', 'note.resolve': 'helfer', 'plan.release': 'leitung',
+  'build.tally': 'gast', 'member.tally': 'gast', 'store.chest': 'meister', 'store.count': 'gast',
 };
 export const canTeam = (role: TeamRole | undefined, action: TeamAction): boolean => RANK[role ?? 'gast'] >= RANK[NEED[action]];
 
@@ -325,6 +398,14 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
   const releases: PlanRelease[] = [];
   const rejected: TeamRejection[] = [], conflicts: TeamConflict[] = [];
   let unknownKinds = 0;
+  const tallyOff = new Set<string>();
+  const tallies: { by: string; section: string; placed: number; broken: number; blocks?: readonly ItemCount[]; from: string; until: string }[] = [];
+  type Chest = { name: string; pos: readonly [number, number, number]; dimension: string; items: Map<string, number>; countedAt?: string; countedBy?: string; partial: boolean; counted: boolean };
+  const chests = new Map<string, Chest>();
+  const stored = new Map<string, Map<string, number>>(), taken = new Map<string, Map<string, number>>();
+  const book = (m: Map<string, Map<string, number>>, who: string, item: string, n: number) => {
+    let x = m.get(who); if (!x) m.set(who, x = new Map()); x.set(item, (x.get(item) ?? 0) + n);
+  };
   const nameOf = (id: string) => names.get(id) ?? id;
   const roleOf = (id: string): TeamRole => roles.get(id) ?? (known.has(id) ? 'helfer' : 'gast');
   const reject = (event: TeamEvent, reason: string) => { rejected.push({ event, reason }); };
@@ -334,7 +415,8 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
     const role = roleOf(event.by);
     const self = (m: string) => m === event.by;
     // member.join and member.player may always be written for oneself.
-    const selfAllowed = (event.kind === 'member.join' || event.kind === 'member.player') && self(event.member);
+    const selfAllowed = (event.kind === 'member.join' || event.kind === 'member.player' || event.kind === 'member.tally') && self(event.member);
+    if (SERVER_ONLY_KINDS.has(event.kind) && event.origin !== 'server') { reject(event, `${eventLabel(event)} kommt nur vom Server-Plugin.`); continue; }
     if (!selfAllowed && !canTeam(role, event.kind)) {
       // Helpers may release their own section and resolve their own notes; handled below with their own rule.
       if (!(event.kind === 'note.resolve' && notes.get(event.noteId)?.by === event.by)) {
@@ -433,8 +515,57 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
       case 'plan.release':
         releases.push({ revisionId: event.revisionId, revisionNumber: event.revisionNumber, summary: event.summary, at: event.at, by: event.by });
         break;
+      case 'member.tally':
+        if (!self(event.member)) { reject(event, 'Den Baunachweis schaltet jeder nur für sich selbst.'); break; }
+        if (event.on) tallyOff.delete(event.member); else tallyOff.add(event.member);
+        break;
+      case 'build.tally':
+        tallies.push({ by: event.by, section: event.section, placed: event.placed, broken: event.broken, ...(event.blocks && { blocks: event.blocks }), from: event.from, until: event.until });
+        break;
+      case 'store.chest': {
+        const c = chests.get(event.chest);
+        if (event.remove) { if (!c) reject(event, 'Lagerkiste unbekannt.'); else chests.delete(event.chest); break; }
+        if (c) { c.name = event.name; c.pos = event.pos; c.dimension = event.dimension; break; }
+        chests.set(event.chest, { name: event.name, pos: event.pos, dimension: event.dimension, items: new Map(), partial: false, counted: false });
+        break;
+      }
+      case 'store.count': {
+        const c = chests.get(event.chest);
+        if (!c) { reject(event, 'Lagerkiste unbekannt oder entfernt.'); break; }
+        const next = new Map(event.items.map(l => [l.item, l.count]));
+        // Difference to the previous count is what this player put in or took out; never for the first count or cut lists.
+        if (c.counted && !c.partial && !event.more) {
+          for (const item of new Set([...c.items.keys(), ...next.keys()])) {
+            const d = (next.get(item) ?? 0) - (c.items.get(item) ?? 0);
+            if (d > 0) book(stored, event.by, item, d); else if (d < 0) book(taken, event.by, item, -d);
+          }
+        }
+        c.items = next; c.countedAt = event.at; c.countedBy = event.by; c.partial = !!event.more; c.counted = true;
+        break;
+      }
     }
   }
+
+  // Baunachweis: a member who switched it off is left out completely (also earlier numbers).
+  const placedBy = new Map<string, number>(), brokenBy = new Map<string, number>();
+  const sectionTally = new Map<string, { placed: number; broken: number; builders: Map<string, number> }>();
+  const placedBlocks: Record<string, number> = {};
+  let tallyFrom: string | null = null, tallyUntil: string | null = null;
+  for (const t of tallies) {
+    if (tallyOff.has(t.by)) continue;
+    placedBy.set(t.by, (placedBy.get(t.by) ?? 0) + t.placed); brokenBy.set(t.by, (brokenBy.get(t.by) ?? 0) + t.broken);
+    let st = sectionTally.get(t.section); if (!st) sectionTally.set(t.section, st = { placed: 0, broken: 0, builders: new Map() });
+    st.placed += t.placed; st.broken += t.broken;
+    if (t.placed) st.builders.set(t.by, (st.builders.get(t.by) ?? 0) + t.placed);
+    for (const l of t.blocks ?? []) placedBlocks[l.item] = (placedBlocks[l.item] ?? 0) + l.count;
+    if (!tallyFrom || t.from < tallyFrom) tallyFrom = t.from;
+    if (!tallyUntil || t.until > tallyUntil) tallyUntil = t.until;
+  }
+  const stock: Record<string, number> = {};
+  const stores: StoreChest[] = [...chests.entries()].map(([id, c]) => {
+    for (const [item, n] of c.items) stock[item] = (stock[item] ?? 0) + n;
+    return { id, name: c.name, pos: c.pos, dimension: c.dimension, items: Object.fromEntries(c.items), ...(c.countedAt && { countedAt: c.countedAt }), ...(c.countedBy && { countedBy: c.countedBy }), partial: c.partial };
+  }).sort((a, b) => a.name.localeCompare(b.name, 'de'));
 
   const ownerOf = new Map<string, string[]>();
   for (const [id, s] of sections) if (s.owner) { let l = ownerOf.get(s.owner); if (!l) ownerOf.set(s.owner, l = []); l.push(id); }
@@ -445,13 +576,15 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
     id, name: nameOf(id), role: roleOf(id), ...(players.has(id) && { player: players.get(id)! }), inProgram: inProgram.has(id),
     sections: (ownerOf.get(id) ?? []).sort(byOrder), blocks: blocks.get(id) ?? 0, items: Object.fromEntries(items.get(id) ?? []),
     reportedSections: counts(id, ['gemeldet', 'bestaetigt']), confirmedSections: counts(id, ['bestaetigt']), ...(lastActive.has(id) && { lastActive: lastActive.get(id)! }),
+    placed: placedBy.get(id) ?? 0, broken: brokenBy.get(id) ?? 0, stored: Object.fromEntries(stored.get(id) ?? []), taken: Object.fromEntries(taken.get(id) ?? []), tally: !tallyOff.has(id),
   })).sort((a, b) => RANK[b.role] - RANK[a.role] || a.name.localeCompare(b.name, 'de'));
 
   const allSectionIds = [...new Set([...ctx.sections.map(s => s.id), ...sections.keys()])].sort(byOrder);
   const sectionStates: SectionTeamState[] = allSectionIds.map(id => {
     const s = sections.get(id) ?? { status: 'frei' as const, owner: null, history: [] };
     return { sectionId: id, status: s.status, owner: s.owner, ...(s.doneBy && { doneBy: s.doneBy }), ...(s.verifiedBy && { verifiedBy: s.verifiedBy }),
-      ...(s.note && { note: s.note }), orphan: !sectionIds.has(id), history: s.history };
+      ...(s.note && { note: s.note }), orphan: !sectionIds.has(id), history: s.history,
+      placed: sectionTally.get(id)?.placed ?? 0, broken: sectionTally.get(id)?.broken ?? 0, builders: Object.fromEntries(sectionTally.get(id)?.builders ?? []) };
   });
   const memberByName = new Map<string, string>();
   for (const m of members) { memberByName.set(m.name.toLowerCase().replace(/\s+/g, ''), m.id); if (m.player) memberByName.set(m.player.toLowerCase(), m.id); }
@@ -466,7 +599,8 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
         text: `Planstände auseinander: ${nameOf(last.by)} hat Planstand ${last.revisionNumber} nach Planstand ${previous.revisionNumber} von ${nameOf(previous.by)} freigegeben.` });
   }
   return { members, sections: sectionStates, notes: noteList, gather: [...gather.values()].sort((a, b) => a.item.localeCompare(b.item) || a.member.localeCompare(b.member)),
-    delivered, release, releases, rejected, conflicts, unknownKinds };
+    delivered, release, releases, rejected, conflicts, unknownKinds, stores, stock, placedBlocks,
+    tallySpan: tallyFrom && tallyUntil ? { from: tallyFrom, until: tallyUntil } : null };
 }
 
 const sectionName = (ctx: TeamContext, id: string) => ctx.sections.find(s => s.id === id)?.name ?? 'entfernter Abschnitt';
@@ -487,6 +621,10 @@ export function eventLabel(e: TeamEvent): string {
     case 'note.add': return `Notiz (${NOTE_TAG_LABEL[e.tag]})`;
     case 'note.resolve': return 'Notiz erledigt';
     case 'plan.release': return `Planstand ${e.revisionNumber} freigegeben`;
+    case 'build.tally': return `Baunachweis: ${e.placed} gesetzt, ${e.broken} abgebaut`;
+    case 'member.tally': return e.on ? 'Baunachweis an' : 'Baunachweis aus';
+    case 'store.chest': return e.remove ? `Lagerkiste „${e.name}“ entfernt` : `Lagerkiste „${e.name}“`;
+    case 'store.count': return `Lager gezählt (${e.items.length} Sorten)`;
   }
 }
 

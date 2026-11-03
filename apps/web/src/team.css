@@ -55,3 +55,10 @@
 @media(max-width:1100px){.team-section-main{grid-template-columns:minmax(120px,1fr) 112px minmax(80px,1fr) auto}.team-section-main .team-bar{display:none}.team-head{grid-template-columns:1fr 1fr}.team-head>div:first-child{grid-column:1/-1}.team-columns,.team-exchange-grid{grid-template-columns:1fr}}
 @media(max-width:650px){.team-block{padding:12px}.team-head{grid-template-columns:1fr}.team-section-main{grid-template-columns:minmax(0,1fr) auto}.team-section-main .team-actions{grid-column:1/-1;margin-left:0;flex-wrap:wrap;justify-content:flex-start}.team-section-main .team-bar{grid-column:1/-1}
   .team-notes li{grid-template-columns:minmax(0,1fr)}.team-members th:nth-child(5),.team-members td:nth-child(5){display:none}}
+/* COOP-04 Baunachweis & Lager */
+.team-proof .team-table td small{color:var(--muted)}
+.team-proof-sections li{display:grid;grid-template-columns:minmax(110px,1fr) auto;gap:4px 12px}
+.team-share{grid-column:1/-1;display:flex;gap:2px;min-width:0;border-radius:6px;overflow:hidden}
+.team-share span{flex-basis:0;min-width:0;padding:2px 6px;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:color-mix(in srgb,var(--mint) 26%,var(--panel-2));border-right:1px solid var(--panel)}
+.team-share span:nth-child(2n){background:color-mix(in srgb,var(--mint) 12%,var(--panel-2))}
+@media (max-width:560px){.team-proof-members th:nth-child(5),.team-proof-members td:nth-child(5){display:none}}

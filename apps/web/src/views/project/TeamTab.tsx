@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react';
 import {
   appendEvents, authorize, canTeam, createTeam, describeEvent, freezeRevision, newId, NOTE_TAG_LABEL, NOTE_TAGS, PLAYER_NAME, SECTION_TEAM_STATUS_LABEL, siteOf, siteOperation,
-  teamContextOf, teamEvent, laterThan, TEAM_ROLE_LABEL, TEAM_ROLE_TEXT, TEAM_ROLES, teamView,
+  setStock, teamContextOf, teamEvent, laterThan, TEAM_ROLE_LABEL, TEAM_ROLE_TEXT, TEAM_ROLES, teamView,
 } from '../../../../../packages/domain/src/index.js';
 import type { NoteTag, SectionTeamState, SitePlan, TeamEventBody, TeamRole, TeamState, TeamView } from '../../../../../packages/domain/src/index.js';
 import { errorText, formatNumber } from '../../app/ui';
 import type { ProjectSession } from './session';
 import { TeamExchange } from './TeamExchange';
+import { TeamProof } from './TeamProof';
 import '../../team.css';
 
 const short = (id: string) => id.replace(/^minecraft:/, '');
@@ -29,7 +30,7 @@ export function TeamTab({ session }: { session: ProjectSession }) {
   if (!team) return <section className="team" aria-label="Team"><Found site={site} projectName={project.name} projectId={project.id} onFound={t => saveTeam(t, 'Team gegründet')} />
     <TeamExchange session={session} team={null} view={null} onMessage={setMessage} />{message && <p role="alert" className="notice warning">{message}</p>}</section>;
 
-  return <TeamPage session={session} site={site} team={team} message={message} setMessage={setMessage} saveTeam={saveTeam} />;
+  return <TeamPage session={session} site={site} team={team} message={message} setMessage={setMessage} saveTeam={saveTeam} saveSite={save} />;
 }
 
 function Found({ site, projectName, projectId, onFound }: { site: SitePlan; projectName: string; projectId: string; onFound(t: TeamState): void }) {
@@ -75,8 +76,8 @@ function Found({ site, projectName, projectId, onFound }: { site: SitePlan; proj
   </div>;
 }
 
-function TeamPage({ session, site, team, message, setMessage, saveTeam }: {
-  session: ProjectSession; site: SitePlan; team: TeamState; message: string; setMessage(m: string): void; saveTeam(t: TeamState, label: string): boolean;
+function TeamPage({ session, site, team, message, setMessage, saveTeam, saveSite }: {
+  session: ProjectSession; site: SitePlan; team: TeamState; message: string; setMessage(m: string): void; saveTeam(t: TeamState, label: string): boolean; saveSite(s: SitePlan, label: string): boolean;
 }) {
   const { project, computation } = session;
   const ctx = useMemo(() => teamContextOf(site), [site]);
@@ -84,6 +85,12 @@ function TeamPage({ session, site, team, message, setMessage, saveTeam }: {
   const me = team.self ? view.members.find(m => m.id === team.self) ?? null : null;
   const role: TeamRole = me?.role ?? 'gast';
   const progress = new Map((computation?.site.plan?.sections ?? []).map(s => [s.id, s.blocks ? s.blocksDone / s.blocks : 0]));
+  const sectionBlocks = new Map((computation?.site.plan?.sections ?? []).map(s => [s.id, s.blocks]));
+  const takeStock = (stock: Readonly<Record<string, number>>) => {
+    let next = site;
+    for (const [item, n] of Object.entries(stock)) next = setStock(next, item, n);
+    if (saveSite(next, 'Lagerbestand vom Server übernommen')) setMessage(`Bestand von ${Object.keys(stock).length} Sorten ins Lager der Baustelle übernommen (andere Einträge bleiben). Strg+Z macht es rückgängig.`);
+  };
   const names = useMemo(() => new Map(view.members.map(m => [m.id, m.name])), [view]);
   const nameOf = (id: string | null | undefined) => id ? names.get(id) ?? id : '–';
 
@@ -133,6 +140,7 @@ function TeamPage({ session, site, team, message, setMessage, saveTeam }: {
       <Members view={view} me={me?.id ?? null} role={role} act={act} />
       <Contribute view={view} ctx={ctx} me={me?.id ?? null} role={role} act={act} nameOf={nameOf} />
     </div>
+    <TeamProof view={view} sections={ctx.sections} me={me?.id ?? null} role={role} act={act} nameOf={nameOf} sectionBlocks={sectionBlocks} siteStock={site.stock} onTakeStock={takeStock} />
     <Notes view={view} ctx={ctx} me={me?.id ?? null} role={role} act={act} nameOf={nameOf} />
     <TeamExchange session={session} team={team} view={view} onMessage={setMessage} />
     <Log team={team} ctx={ctx} names={names} />

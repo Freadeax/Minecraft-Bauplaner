@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-03T17:39:42.853Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-03T17:57:24.438Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,10 +12,10 @@ Stand: 2026-11-03T17:39:42.853Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 17 |
+| ⏳ Offen | 16 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 50 |
+| 🧩 Implementiert · Abnahme offen | 51 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -42,7 +42,8 @@ Stand: 2026-11-03T17:39:42.853Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 - **LIB-06 · Bibliotheksbeiträge: eigene Bauwerke (Importe, Werkstatt, Generator) als festen Katalogeintrag für alle einreichen – Beitragspaket mit Prüfsumme und Rechtebestätigung, GitHub-Formular, Übernahme-Skript, Auslieferung wie mitgelieferte Gebäude** — 🧩 Implementiert · Abnahme offen, 5/7 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06) und erster echter Beitrag (S07).
 - **SIZE-01 · Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05) mit einem großen Bau im Spiel.
 - **COOP-01 · Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“** — 🧩 Implementiert · Abnahme offen, 3/5 Teilschritte. Nächster Schritt: PROJ-01-Anbindung (S04) nach dessen Merge; Abnahme durch Philipp mit Mitspielern.
-- **COOP-02 · Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll** — 🧩 Implementiert · Abnahme offen, 2/4 Teilschritte. Nächster Schritt: Jar veröffentlichen; Abnahme auf Philipps Server.
+- **COOP-02 · Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme auf Philipps Server.
+- **COOP-04 · Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung Lagerkisten im Thread „Server-Plugin mit geprüften Lagerkisten“.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -178,7 +179,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [GEN-03](#gen-03) | Kolosseum aus Philipps Bauplan: Arena-Generator, Bauset Antike und Großprojekt Kolosseum-Viertel | 🧩 Implementiert · Abnahme offen | 4/5 | GEN-02, GROSS-01 | ausstehend | ausstehend |
 | [SIZE-01](#size-01) | Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger | 🧩 Implementiert · Abnahme offen | 4/5 | PERF-04, ARCH-02, GFX-01, GAME-08 | ausstehend | ausstehend |
 | [COOP-01](#coop-01) | Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“ | 🧩 Implementiert · Abnahme offen | 3/5 | BUILD-06, BACKUP-02 | ausstehend | ausstehend |
-| [COOP-02](#coop-02) | Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll | 🧩 Implementiert · Abnahme offen | 2/4 | COOP-01, GAME-04 | ausstehend | ausstehend |
+| [COOP-02](#coop-02) | Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-01, GAME-04 | ausstehend | ausstehend |
 
 ## P4: Optionale Zusammenarbeit und Integrationen
 
@@ -203,7 +204,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [DEFER-01](#defer-01) | GitHub-Login, externes Materialrepo und Registry | ⏸ Zurückgestellt | 0/1 | — | ausstehend | ausstehend |
 | [DEFER-02](#defer-02) | Optionale Discord-Integration | ⏸ Zurückgestellt | 0/1 | AUTH-01 | ausstehend | ausstehend |
 | [COOP-03](#coop-03) | Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm | ⏳ Offen | 0/2 | COOP-02, GAME-08 | ausstehend | ausstehend |
-| [COOP-04](#coop-04) | Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten am Weltplan-Punkt zählen, Lieferungen ins Lager übernehmen | ⏳ Offen | 0/2 | COOP-02, LAGER-01 | ausstehend | ausstehend |
+| [COOP-04](#coop-04) | Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-02, LAGER-01 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
 
@@ -2064,16 +2065,16 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-02
 
-**Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Aktualisiert: 2026-11-03T16:20:13.104Z
+**Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Aktualisiert: 2026-11-03T17:57:24.438Z
 
 - [x] COOP-02-S01: TeamLog (Faltung wie team.ts) und TeamModule (Befehle, Aktionsleiste, Schutz, Partikel, Ausfuhr), Rechte und config.yml.
 - [x] COOP-02-S02: Echter Servertest Paper 1.18.2, 1.21.4 und 26.3: Planer-Faltung der Ausfuhr = Serverstand.
-- [ ] COOP-02-S03: Plugin-Jar mit Teammodul auf der Download-Seite veröffentlichen.
+- [x] COOP-02-S03: Plugin-Jar mit Teammodul auf der Download-Seite veröffentlichen.
 - [ ] COOP-02-S04: Abnahme auf Philipps Paper-Server mit Mitspielern (TEAMBAU-06).
 
 **Abnahme:** Plugin verändert die Welt nie; Schutz verhindert höchstens Blockänderungen in fremden Abschnitten und ist abschaltbar. Ereignisse vom Server tragen die echte Spieleridentität und die Herkunft server.
 
-**Nächste Aktion:** Jar veröffentlichen; Abnahme auf Philipps Server.
+**Nächste Aktion:** Abnahme auf Philipps Server.
 
 **Prüfstand:** Servertest mit Konsolenbefehlen auf drei Paper-Versionen bestanden; Aktionsleiste, Partikel und Schutz brauchen echte Spieler.
 
@@ -2104,20 +2105,22 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-04
 
-**Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten am Weltplan-Punkt zählen, Lieferungen ins Lager übernehmen** · ⏳ Offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Aktualisiert: 2026-11-03T16:19:54.092Z
+**Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Aktualisiert: 2026-11-03T17:57:24.438Z
 
-- [ ] COOP-04-S01: Zähler je Spieler mit Datenschutzschalter.
-- [ ] COOP-04-S02: Lagerkisten lesen und Lieferungen buchen ohne Doppelzählung.
+- [x] COOP-04-S01: Zähler je Spieler mit Datenschutzschalter.
+- [x] COOP-04-S02: Lagerkisten lesen und Lieferungen buchen ohne Doppelzählung.
+- [x] COOP-04-S03: Bereich „Baunachweis & Lager“ im Reiter Team, Bestand ins Baustellen-Lager.
+- [ ] COOP-04-S04: Abnahme mit echten Spielern auf Philipps Server (TEAMBAU-07/08).
 
 **Abnahme:** Selbstmeldung, Bestätigung und Spielnachweis bleiben getrennt sichtbar.
 
-**Nächste Aktion:** Nach COOP-02-Abnahme.
+**Nächste Aktion:** Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung Lagerkisten im Thread „Server-Plugin mit geprüften Lagerkisten“.
 
-**Prüfstand:** Geplant.
+**Prüfstand:** Servertest auf fünf Paper-Versionen und Browsertest bestanden; Zählen beim Bauen und Schließen braucht echte Spieler.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [scripts/bridge_paperteam.mjs](../scripts/bridge_paperteam.mjs) — Echte Kiste, Zählungen, Baunachweis und Abschalten auf Paper 1.18.2 bis 26.3; Planer-Faltung = Server.; [tests/team.test.mjs](../tests/team.test.mjs) — Faltung Baunachweis und Lagerkisten.
 
-**Dateiumfang:** `mods/bauplaner-bridge/paper/`, `packages/domain/src/team.ts`. **Abhängigkeiten:** COOP-02, LAGER-01. **Alte IDs:** —.
+**Dateiumfang:** `mods/bauplaner-bridge/paper/`, `packages/domain/src/team.ts`, `apps/web/src/views/project/TeamProof.tsx`. **Abhängigkeiten:** COOP-02, LAGER-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

@@ -3512,3 +3512,35 @@ Erststart der Bibliothek schneller (7,5 s → 4,7 s), gemeinsamer Startwarter f�
 - `tests/e2e/worldbuilder.e2e.mjs`
 - `tests/e2e/worldmap.e2e.mjs`
 
+## 2026-11-03T17:57:24.438Z · progress
+
+**Aufgaben:** COOP-04, COOP-02
+
+COOP-04 Baunachweis und Lagerkisten: Ereignisse build.tally/member.tally/store.chest/store.count (nur Server für Messwerte), Plugin zählt Blöcke in Teamabschnitten und Lagerkisten beim Schließen (auch Shulkerinhalt), Befehle lager/nachweis/beitrag, Bereich „Baunachweis & Lager“ mit Übernahme ins Baustellen-Lager. Servertest Paper 1.18.2–26.3 und Browsertest grün; Abnahme mit echten Spielern offen (TEAMBAU-07/08).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-04 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung Lagerkisten im Thread „Server-Plugin mit geprüften Lagerkisten“. |
+| COOP-02 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme auf Philipps Server. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/team.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/project/TeamProof.tsx`
+- `apps/web/src/views/project/TeamTab.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/TEAMBAU.md`
+- `docs/testing/TESTPLAN.md`
+- `mods/bauplaner-bridge/README.md`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`
+- `mods/bauplaner-bridge/paper/src/main/resources/config.yml`
+- `packages/domain/src/team.ts`
+- `scripts/bridge_paperteam.mjs`
+- `scripts/test_bridge_paper.sh`
+- `scripts/test_bridge_paper_team.sh`
+- `tests/e2e/team.e2e.mjs`
+- `tests/team.test.mjs`
+

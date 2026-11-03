@@ -135,7 +135,7 @@ Drei Quellen, getrennt ausgewiesen:
 
 1. **Selbstmeldung** (`contribution`, `section.done`) – sofort, ohne Server.
 2. **Bestätigung** (`section.verify`) – Bauleitung/Baumeister nach Sichtprüfung oder Baustand.
-3. **Spielnachweis** – das Plugin zählt `BlockPlaceEvent`/`BlockBreakEvent` je Spieler **nur innerhalb von Abschnittsboxen eines Teams** und vergleicht mit dem Plan (richtig/falsch gesetzt). Nur Zähler, keine Positionen je Spieler, ausschaltbar (`nachweis: aus`). Der Baustand-Scan (MAP-05) bleibt die Wahrheit für „was steht“, die Zählung beantwortet „wer hat es gesetzt“.
+3. **Spielnachweis** (`build.tally`, nur `origin: server`) – das Plugin zählt `BlockPlaceEvent`/`BlockBreakEvent` je Spieler **nur innerhalb von Abschnittsboxen eines Teams** (nach dem Schutz, also nur wirklich gesetzte Blöcke) und schreibt alle `team.nachweis-minuten` (Standard 5) sowie bei Ausfuhr, Neuladen und Stopp je Mitglied und Abschnitt ein Ereignis mit gesetzt, abgebaut und den häufigsten Blockarten. Nur Zähler, keine Positionen je Spieler. Server-weit ausschaltbar (`team.nachweis: false`), je Spieler mit `/bauplaner nachweis aus` (`member.tally`, nur für sich selbst; blendet auch frühere Zahlen aus). Ein Vergleich „richtig/falsch nach Plan“ braucht die Planblöcke auf dem Server und bleibt dem Baustand-Scan (MAP-05). Der Baustand-Scan (MAP-05) bleibt die Wahrheit für „was steht“, die Zählung beantwortet „wer hat es gesetzt“.
 
 Daraus: Fortschritt je Spieler, Beitragsliste („Anna 3 200 Blöcke, 12 Stacks geliefert“), Bautage je Spieler (BUILD-06). Keine Ranglisten-Pflicht – Ansicht „ohne Zahlen je Person“ für entspannte Server.
 
@@ -143,7 +143,9 @@ Daraus: Fortschritt je Spieler, Beitragsliste („Anna 3 200 Blöcke, 12 Stacks 
 
 - Der Sammelplan (SITE) wird teilbar: `gather.claim` = „ich besorge 640 Stein“. Der Planer zeigt je Rohstoff: Bedarf, Lager, unterwegs (übernommen, nicht geliefert), fehlt.
 - Lieferungen (`contribution.items`) erscheinen als „Gemeldete Lieferungen“ neben dem Lager. `site.stock` bleibt die Zahl der Bauleitung und wird nicht automatisch erhöht (keine doppelte Inventarquelle, LAGER-01); eine Übernahme per Klick mit Merker, was schon gebucht ist, folgt mit COOP-04.
-- COOP-04: Das Plugin kann die Kisten an einem Weltplan-Punkt der Art „Lager“ auf Befehl lesen (`/bp lager zaehlen`, nur geladene Chunks, nur Lesen) und als Aufnahme mit Zeitstempel melden.
+- COOP-04 (umgesetzt): Ein Baumeister erklärt eine Kiste, ein Fass oder eine Shulkerkiste zur **Lagerkiste des Teams** (`/bauplaner lager setzen <Name>` mit Blick auf die Kiste, `store.chest`). Beim Schließen liest das Plugin den Inhalt (Doppelkisten beide Hälften, Inhalt eingelegter Shulkerkisten mit) und schreibt bei Änderung eine Zählung (`store.count`, nur `origin: server`, höchstens 64 Sorten, sonst `more`). Der Bestand ist die letzte Zählung je Kiste; die **Differenz zur vorigen Zählung** wird dem Spieler als „ins Lager“ bzw. „entnommen“ gebucht. Die erste Zählung und gekürzte Listen buchen nichts, ein zweites Einlesen desselben Protokolls auch nicht (Vereinigung nach ID). `/bauplaner lager zaehlen` zählt alle Kisten auf Befehl, `/bauplaner lager` zeigt den Bestand.
+- Im Planer übernimmt Baumeister/Bauleitung den gezählten Bestand per Klick ins Lager der Baustelle (`site.stock`, rückgängig machbar); andere Einträge bleiben.
+- Vertiefung (Schutz der Kisten, lückenloses Klickprotokoll `store.move`, Prüfstatus `store.check`, Siegel, Bedarf im Spiel) übernimmt der Thread „Server-Plugin mit geprüften Lagerkisten“, Konzept `docs/architecture/LAGERKISTEN.md`.
 
 ## 10. Planversionen, Freigabe und Änderungen während des Baus
 
@@ -211,4 +213,10 @@ Tokens, Konten oder Cloud-Dienste werden für keine Stufe benötigt.
 
 **Prüfung:** `tests/team.test.mjs` (12 Fälle), `tests/e2e/team.e2e.mjs` (zwei getrennte Browser, 1400 und 390 px), Testfälle TEAMBAU-01…06 auf `#/testphase`.
 
-**Offen:** Aktionsleiste, Partikel und Schutz mit echten Spielern (Konsole kann sie nicht auslösen) → TEAMBAU-06 auf Philipps Server; COOP-03 (Mod), COOP-04 (Nachweis, Lagerkisten); „Verlauf verdichten“.
+**COOP-04 (Planer und Plugin, 03.11.2026)**
+- Neue Ereignisarten `build.tally`, `member.tally`, `store.chest`, `store.count` (§8, §9); `SERVER_ONLY_KINDS` lehnt Messwerte aus dem Planer ab. Faltung in `team.ts` und `TeamLog.java` gleich.
+- Plugin: Zähler in `TeamModule.java` (`count`, `flushTallies`), Lagerkisten (`store`, `recount`, `onClose`), Befehle `/bauplaner lager [setzen|entfernen|zaehlen]`, `/bauplaner nachweis [an|aus]`, `/bauplaner beitrag [alle]`; `config.yml` `team.nachweis`, `team.nachweis-minuten`.
+- Planer: Bereich „Baunachweis & Lager“ (`TeamProof.tsx`): je Mitglied gesetzt/abgebaut/ins Lager/entnommen, je Abschnitt Anteile, Verbautes, Lagerkisten, Bestand → Baustellen-Lager, eigener Nachweis an/aus.
+- Prüfung: `tests/team.test.mjs` (14), `tests/e2e/team.e2e.mjs` liest eine Serverausfuhr mit Nachweis und Lager, `scripts/bridge_paperteam.mjs` mit echter Kiste auf Paper 1.18.2, 1.20.6, 1.21.4, 1.21.11 und 26.3. Testfälle TEAMBAU-07/08.
+
+**Offen:** Aktionsleiste, Partikel und Schutz mit echten Spielern (Konsole kann sie nicht auslösen) → TEAMBAU-06 bis 08 auf Philipps Server; COOP-03 (Mod); Vertiefung Lagerkisten (eigener Thread); „Verlauf verdichten“.

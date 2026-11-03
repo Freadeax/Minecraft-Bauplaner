@@ -227,3 +227,62 @@ test('status text and descriptions', () => {
   assert.match(txt, /Frage: Wo kommt die Treppe hin\?/);
   assert.equal(describeEvent(team.events[1], ctx), 'Anna: Abschnitt übernommen „Fundament“');
 });
+
+// ---------------------------------------------------------------- COOP-04: Baunachweis und Lagerkisten
+const srv = (by, body, at = t()) => teamEvent(by, body, at, 'server');
+const tally = (by, section, placed, broken = 0, blocks) => srv(by, { kind: 'build.tally', section, placed, broken, ...(blocks && { blocks }), from: '2026-11-03T10:00:00Z', until: '2026-11-03T10:05:00Z' });
+
+test('Baunachweis: only from the server, summed per member and section, switched off hides all numbers', () => {
+  let team = appendEvents(base(), [
+    tally('bld_anna', 'sec_a', 300, 12, [{ item: 'minecraft:stone_bricks', count: 280 }, { item: 'minecraft:oak_planks', count: 20 }]),
+    tally('bld_ben', 'sec_a', 50),
+    tally('bld_anna', 'sec_b', 40, 0, [{ item: 'minecraft:stone_bricks', count: 40 }]),
+    ev('bld_ben', { kind: 'build.tally', section: 'sec_b', placed: 9999, broken: 0, from: '2026-11-03T10:00:00Z', until: '2026-11-03T10:05:00Z' }),
+  ]);
+  let v = teamView(team, ctx);
+  assert.equal(member(v, 'bld_anna').placed, 340); assert.equal(member(v, 'bld_anna').broken, 12);
+  assert.equal(member(v, 'bld_ben').placed, 50, 'a tally typed into a planner does not count');
+  assert.match(v.rejected[0].reason, /nur vom Server-Plugin/);
+  assert.equal(section(v, 'sec_a').placed, 350); assert.deepEqual(section(v, 'sec_a').builders, { bld_anna: 300, bld_ben: 50 });
+  assert.deepEqual(v.placedBlocks, { 'minecraft:stone_bricks': 320, 'minecraft:oak_planks': 20 });
+  assert.deepEqual(v.tallySpan, { from: '2026-11-03T10:00:00Z', until: '2026-11-03T10:05:00Z' });
+  // Ben switches it off: also earlier numbers disappear; Philipp cannot switch it for Ben.
+  team = appendEvents(team, [ev('bld_phil', { kind: 'member.tally', member: 'bld_anna', on: false }), ev('bld_ben', { kind: 'member.tally', member: 'bld_ben', on: false })]);
+  v = teamView(team, ctx);
+  assert.equal(member(v, 'bld_ben').placed, 0); assert.equal(member(v, 'bld_ben').tally, false);
+  assert.equal(member(v, 'bld_anna').tally, true);
+  assert.deepEqual(section(v, 'sec_a').builders, { bld_anna: 300 });
+  assert.ok(v.rejected.some(r => /nur für sich selbst/.test(r.reason)));
+  // And on again.
+  v = teamView(appendEvents(team, [ev('bld_ben', { kind: 'member.tally', member: 'bld_ben', on: true })]), ctx);
+  assert.equal(member(v, 'bld_ben').placed, 50);
+});
+
+test('Lagerkisten: Baumeister registers, counts give stock, differences are booked without double counting', () => {
+  const chest = { kind: 'store.chest', chest: 'lager1', name: 'Hauptlager', pos: [1000, -60, 1010], dimension: 'minecraft:overworld' };
+  const count = (by, items, more) => srv(by, { kind: 'store.count', chest: 'lager1', items, ...(more && { more }) });
+  let team = appendEvents(base(), [
+    ev('bld_anna', { ...chest, chest: 'lager_x' }), // Helfer may not register
+    ev('bld_phil', chest),
+    count('bld_anna', [{ item: 'minecraft:stone', count: 64 }]), // first count: initial stock, no booking
+    count('bld_anna', [{ item: 'minecraft:stone', count: 192 }, { item: 'minecraft:oak_log', count: 10 }]),
+    count('bld_ben', [{ item: 'minecraft:stone', count: 128 }, { item: 'minecraft:oak_log', count: 10 }]),
+    ev('bld_ben', { kind: 'store.count', chest: 'lager1', items: [] }),
+  ]);
+  let v = teamView(team, ctx);
+  assert.equal(v.stores.length, 1);
+  assert.deepEqual(v.stock, { 'minecraft:stone': 128, 'minecraft:oak_log': 10 });
+  assert.deepEqual(member(v, 'bld_anna').stored, { 'minecraft:stone': 128, 'minecraft:oak_log': 10 });
+  assert.deepEqual(member(v, 'bld_ben').taken, { 'minecraft:stone': 64 });
+  assert.equal(v.rejected.length, 2, 'Helfer registration and planner count rejected');
+  // Merging the same log twice books nothing twice.
+  const again = mergeTeam(team, team).team;
+  assert.deepEqual(teamView(again, ctx).members.find(m => m.id === 'bld_anna').stored, member(v, 'bld_anna').stored);
+  // A cut list is stock but never a booking; removed chests vanish from the stock.
+  team = appendEvents(team, [count('bld_ben', [{ item: 'minecraft:stone', count: 1 }], true), count('bld_ben', [{ item: 'minecraft:stone', count: 500 }])]);
+  v = teamView(team, ctx);
+  assert.equal(v.stores[0].partial, false); assert.deepEqual(member(v, 'bld_ben').stored, {});
+  v = teamView(appendEvents(team, [ev('bld_phil', { ...chest, remove: true }), count('bld_anna', [])]), ctx);
+  assert.deepEqual(v.stock, {}); assert.match(v.rejected.at(-1).reason, /Lagerkiste unbekannt/);
+  assert.throws(() => checkTeamEvent({ ...srv('bld_anna', { kind: 'store.count', chest: 'lager1', items: [] }), items: [{ item: 'minecraft:stone', count: 1 }, { item: 'minecraft:stone', count: 2 }] }), /doppelt/);
+});

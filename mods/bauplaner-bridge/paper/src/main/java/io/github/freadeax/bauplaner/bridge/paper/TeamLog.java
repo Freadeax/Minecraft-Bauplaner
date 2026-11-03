@@ -38,7 +38,10 @@ final class TeamLog {
         NEED.put("section.claim", "helfer"); NEED.put("section.assign", "meister"); NEED.put("section.release", "helfer");
         NEED.put("section.done", "helfer"); NEED.put("section.verify", "meister"); NEED.put("contribution", "helfer");
         NEED.put("gather.claim", "helfer"); NEED.put("note.add", "gast"); NEED.put("note.resolve", "helfer"); NEED.put("plan.release", "leitung");
+        NEED.put("build.tally", "gast"); NEED.put("member.tally", "gast"); NEED.put("store.chest", "meister"); NEED.put("store.count", "gast");
     }
+    /** Measurements only the server writes (origin server), as in team.ts SERVER_ONLY_KINDS. */
+    static final Set<String> SERVER_ONLY = Set.of("build.tally", "store.count");
     static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
     private static final SecureRandom RANDOM = new SecureRandom();
 
@@ -172,6 +175,22 @@ final class TeamLog {
         final Set<String> rejectedIds = new HashSet<>();
         String releaseSummary;
         int releaseNumber = -1;
+        /** Baunachweis (COOP-04), applied after the fold: members who switched it off are left out. */
+        final Set<String> tallyOff = new HashSet<>();
+        final List<JsonObject> tallies = new ArrayList<>();
+        final Map<String, Long> placed = new HashMap<>(), broken = new HashMap<>();
+        final Map<String, Long> sectionPlaced = new HashMap<>();
+        final Map<String, Map<String, Long>> sectionBuilders = new HashMap<>();
+        final Map<String, Long> placedBlocks = new TreeMap<>();
+        final Map<String, Chest> chests = new TreeMap<>();
+        final Map<String, Map<String, Long>> stored = new HashMap<>(), taken = new HashMap<>();
+
+        /** Sum of the last counts of all chests. */
+        Map<String, Long> stock() {
+            Map<String, Long> m = new TreeMap<>();
+            for (Chest c : chests.values()) c.items.forEach((k, n) -> m.merge(k, n, Long::sum));
+            return m;
+        }
 
         String role(String id) { return roles.getOrDefault(id, known.contains(id) ? "helfer" : "gast"); }
         String name(String id) { return names.getOrDefault(id, id); }
@@ -181,6 +200,13 @@ final class TeamLog {
             for (var e : players.entrySet()) if (e.getValue().equalsIgnoreCase(player)) return Optional.of(e.getKey());
             return Optional.empty();
         }
+    }
+
+    static final class Chest {
+        String name, dimension, countedBy, countedAt;
+        int x, y, z;
+        boolean partial, counted;
+        Map<String, Long> items = new TreeMap<>();
     }
 
     static int rank(String role) { return ROLES.indexOf(role); }
@@ -193,6 +219,15 @@ final class TeamLog {
         v.roles.put(founder, "leitung");
         for (Section s : sections) v.section(s.id);
         for (JsonObject e : events.values()) fold(v, e);
+        for (JsonObject t : v.tallies) {
+            String by = str(t, "by"), sec = str(t, "section");
+            if (v.tallyOff.contains(by)) continue;
+            long p = t.get("placed").getAsLong(), b = t.get("broken").getAsLong();
+            v.placed.merge(by, p, Long::sum); v.broken.merge(by, b, Long::sum);
+            v.sectionPlaced.merge(sec, p, Long::sum);
+            if (p > 0) v.sectionBuilders.computeIfAbsent(sec, k -> new HashMap<>()).merge(by, p, Long::sum);
+            for (JsonElement l : array(t, "blocks")) { JsonObject o = l.getAsJsonObject(); v.placedBlocks.merge(str(o, "item"), o.get("count").getAsLong(), Long::sum); }
+        }
         return v;
     }
 
@@ -202,7 +237,8 @@ final class TeamLog {
         String kind = str(e, "kind"), by = str(e, "by"), id = str(e, "id"), at = str(e, "at");
         if (!NEED.containsKey(kind)) return; // newer kind: kept, no effect
         String role = v.role(by);
-        boolean selfAllowed = (kind.equals("member.join") || kind.equals("member.player")) && by.equals(str(e, "member"));
+        boolean selfAllowed = (kind.equals("member.join") || kind.equals("member.player") || kind.equals("member.tally")) && by.equals(str(e, "member"));
+        if (SERVER_ONLY.contains(kind) && !"server".equals(str(e, "origin"))) { reject(v, id, "Dieser Eintrag kommt nur vom Server-Plugin."); return; }
         if (!selfAllowed && !can(role, kind)) {
             NoteState n = kind.equals("note.resolve") ? v.notes.get(str(e, "noteId")) : null;
             if (n == null || !n.by.equals(by)) { reject(v, id, v.name(by) + " ist " + ROLE_LABEL.get(role) + " und darf das nicht."); return; }
@@ -296,6 +332,36 @@ final class TeamLog {
                 n.resolvedBy = by;
             }
             case "plan.release" -> { v.releaseNumber = e.get("revisionNumber").getAsInt(); v.releaseSummary = str(e, "summary"); }
+            case "member.tally" -> {
+                if (!by.equals(str(e, "member"))) { reject(v, id, "Den Baunachweis schaltet jeder nur für sich selbst."); return; }
+                if (e.get("on").getAsBoolean()) v.tallyOff.remove(by); else v.tallyOff.add(by);
+            }
+            case "build.tally" -> v.tallies.add(e);
+            case "store.chest" -> {
+                String c = str(e, "chest");
+                Chest known = v.chests.get(c);
+                if (e.has("remove") && e.get("remove").getAsBoolean()) { if (known == null) reject(v, id, "Lagerkiste unbekannt."); else v.chests.remove(c); return; }
+                Chest ch = known != null ? known : new Chest();
+                JsonArray p = e.getAsJsonArray("pos");
+                ch.name = str(e, "name"); ch.dimension = str(e, "dimension"); ch.x = p.get(0).getAsInt(); ch.y = p.get(1).getAsInt(); ch.z = p.get(2).getAsInt();
+                v.chests.put(c, ch);
+            }
+            case "store.count" -> {
+                Chest ch = v.chests.get(str(e, "chest"));
+                if (ch == null) { reject(v, id, "Lagerkiste unbekannt oder entfernt."); return; }
+                Map<String, Long> next = new TreeMap<>();
+                for (JsonElement l : array(e, "items")) { JsonObject o = l.getAsJsonObject(); next.put(str(o, "item"), o.get("count").getAsLong()); }
+                boolean more = e.has("more") && e.get("more").getAsBoolean();
+                if (ch.counted && !ch.partial && !more) {
+                    Set<String> all = new HashSet<>(ch.items.keySet()); all.addAll(next.keySet());
+                    for (String item : all) {
+                        long d = next.getOrDefault(item, 0L) - ch.items.getOrDefault(item, 0L);
+                        if (d > 0) v.stored.computeIfAbsent(by, k -> new TreeMap<>()).merge(item, d, Long::sum);
+                        else if (d < 0) v.taken.computeIfAbsent(by, k -> new TreeMap<>()).merge(item, -d, Long::sum);
+                    }
+                }
+                ch.items = next; ch.partial = more; ch.counted = true; ch.countedBy = by; ch.countedAt = at;
+            }
             default -> { }
         }
     }

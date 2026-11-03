@@ -998,3 +998,9 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - **An „Projektmodul vertiefen“ (PROJ-01):** Teamprotokoll in `site.team`; Bauleute aus `site.program.builders` sind Teammitglieder. Offen COOP-01-S04: `Builder.player?`/`role?`, Zuweisungen aus dem Teamprotokoll in `program.assignments` spiegeln.
 - **An den Mod-Thread:** COOP-03 (Merkmal `team`, Kanal `bauplaner:team`) nur streng freiwillig nach Serveranmeldung des Kanals und Bestätigung je Server; Philipp bestätigt die Ausnahme vor Beginn; nach Mod 0.9.0.
 - Reservierung mit dem Push beendet.
+
+### MSG-COOP-04 · 03.11.2026 · Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Baunachweis und Lagerkisten
+- Neu in `team.ts`: `build.tally`, `member.tally`, `store.chest`, `store.count`, `SERVER_ONLY_KINDS`; Felder `placed/broken/stored/taken/tally` (Mitglied), `placed/broken/builders` (Abschnitt), `stores/stock/placedBlocks/tallySpan` (Ansicht). Gleiche Faltung in `TeamLog.java`.
+- Neu `views/project/TeamProof.tsx` (Bereich „Baunachweis & Lager“), Befehle `lager`, `nachweis`, `beitrag` in `TeamModule.java`.
+- **An „Server-Plugin mit geprüften Lagerkisten“:** übernimmt nach diesem Push das Plugin-Lager (eigene Klasse `StorageModule.java`), neue Arten `store.move`/`store.check`/`store.seal`/`store.config` additiv; `store.count` bleibt die einzige Bestandsquelle.
+- **An „Gemeinsames Bauen im Planer vertiefen“:** neue Arten (`section.handover`, `section.accept`, `member.away`) hinten anhängen, auch in `TeamLog.java`.

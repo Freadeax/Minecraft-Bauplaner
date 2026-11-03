@@ -33,6 +33,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -51,7 +54,7 @@ import org.bukkit.scheduler.BukkitTask;
  */
 final class TeamModule implements Listener {
     static final List<String> COMMANDS = List.of("team", "abschnitte", "nehmen", "abgeben", "fertig", "zeigen", "notiz", "notizen", "geliefert", "sammle",
-            "zuweisen", "pruefen", "rolle");
+            "zuweisen", "pruefen", "rolle", "lager", "nachweis", "beitrag");
     private static final String PREFIX = ChatColor.GOLD + "[Bauplaner] " + ChatColor.RESET;
 
     private final JavaPlugin plugin;
@@ -64,7 +67,15 @@ final class TeamModule implements Listener {
     private TeamLog.View cachedView;
     private TeamLog cachedFor;
     private int cachedSize = -1;
-    private BukkitTask barTask;
+    private BukkitTask barTask, tallyTask;
+    /** Baunachweis not yet written: team|member|section → counts (COOP-04). */
+    private final Map<String, Tally> pending = new TreeMap<>();
+    private static final class Tally {
+        final String teamId, member, section, from;
+        long placed, broken;
+        final Map<String, Long> blocks = new HashMap<>();
+        Tally(String teamId, String member, String section) { this.teamId = teamId; this.member = member; this.section = section; this.from = java.time.Instant.now().toString(); }
+    }
 
     TeamModule(JavaPlugin plugin, Path root) {
         this.plugin = plugin;
@@ -76,9 +87,40 @@ final class TeamModule implements Listener {
         load(null);
         Bukkit.getPluginManager().registerEvents(this, plugin);
         if (plugin.getConfig().getBoolean("team.anzeige", true)) barTask = Bukkit.getScheduler().runTaskTimer(plugin, this::actionBars, 40L, 20L);
+        long minutes = Math.max(1, plugin.getConfig().getLong("team.nachweis-minuten", 5));
+        tallyTask = Bukkit.getScheduler().runTaskTimer(plugin, this::flushTallies, minutes * 1200L, minutes * 1200L);
     }
 
-    void disable() { if (barTask != null) barTask.cancel(); }
+    void disable() {
+        if (barTask != null) barTask.cancel();
+        if (tallyTask != null) tallyTask.cancel();
+        flushTallies();
+    }
+
+    private boolean tallyEnabled() { return plugin.getConfig().getBoolean("team.nachweis", true); }
+
+    /** Writes the collected Baunachweis as build.tally events (one per member and section). */
+    private void flushTallies() {
+        if (pending.isEmpty()) return;
+        String until = java.time.Instant.now().toString();
+        for (Tally t : new ArrayList<>(pending.values())) {
+            TeamLog team = teams.get(t.teamId);
+            if (team == null || t.placed == 0 && t.broken == 0) continue;
+            JsonObject e = team.event(t.member, "build.tally");
+            e.addProperty("section", t.section); e.addProperty("placed", t.placed); e.addProperty("broken", t.broken);
+            List<Map.Entry<String, Long>> top = t.blocks.entrySet().stream().sorted(Map.Entry.<String, Long>comparingByValue().reversed()).limit(48).collect(Collectors.toList());
+            if (!top.isEmpty()) e.add("blocks", lines(top));
+            e.addProperty("from", t.from); e.addProperty("until", until.compareTo(t.from) > 0 ? until : t.from);
+            try { write(team, e); team.add(e); } catch (IOException ex) { plugin.getLogger().warning("Baunachweis nicht gespeichert: " + ex.getMessage()); continue; }
+        }
+        pending.clear();
+    }
+
+    private static JsonArray lines(List<Map.Entry<String, Long>> entries) {
+        JsonArray a = new JsonArray();
+        for (Map.Entry<String, Long> x : entries) { JsonObject o = new JsonObject(); o.addProperty("item", x.getKey()); o.addProperty("count", x.getValue()); a.add(o); }
+        return a;
+    }
 
     private static void say(CommandSender s, String text) { s.sendMessage(PREFIX + text); }
     private static boolean fail(CommandSender s, String text) { s.sendMessage(PREFIX + ChatColor.RED + text); return true; }
@@ -87,6 +129,7 @@ final class TeamModule implements Listener {
 
     /** (Re)reads every team file; returns a summary for the sender. */
     private String load(CommandSender s) {
+        flushTallies();
         teams.clear(); headerFiles.clear(); cachedFor = null;
         List<String> problems = new ArrayList<>();
         try (Stream<Path> files = Files.list(dir)) {
@@ -280,6 +323,9 @@ final class TeamModule implements Listener {
                 if (args.length > 2) e.addProperty("note", clip(String.join(" ", java.util.Arrays.copyOfRange(args, 2, args.length)), 300));
                 return submit(team, e, s, "Abschnitt " + sec.number() + (r.equals("ok") ? " bestätigt." : " braucht Nacharbeit."));
             });
+            case "lager" -> store(s, a, team, v, me, args, label);
+            case "nachweis" -> tallySwitch(s, a, team, v, args, label);
+            case "beitrag" -> contributionReport(s, a, team, args, label);
             case "rolle" -> {
                 if (args.length < 2) yield fail(s, "/" + label + " rolle <spieler> <bauleitung|baumeister|helfer|gast>");
                 String role = switch (args[1].toLowerCase(Locale.ROOT)) { case "bauleitung", "leitung" -> "leitung"; case "baumeister", "meister" -> "meister"; case "helfer" -> "helfer"; case "gast" -> "gast"; default -> null; };
@@ -343,6 +389,7 @@ final class TeamModule implements Listener {
     private boolean help(CommandSender s, String label) {
         say(s, "Team: /" + label + " team · abschnitte · nehmen <nr> · abgeben <nr> · fertig [<nr>] [notiz] · zeigen <nr>");
         say(s, "notiz <frage|problem|material|info> <text> · notizen · geliefert <item|hand> [menge] · sammle <item> <menge>");
+        say(s, "Lager: lager · lager zaehlen · nachweis [an|aus] · beitrag [alle] · Baumeister: lager setzen <name> · lager entfernen <name>");
         say(s, "Baumeister: zuweisen <nr> <spieler> · pruefen <nr> ok|nacharbeit [notiz] · Bauleitung: rolle <spieler> <rolle> · team laden · team export · team wahl <name>");
         return true;
     }
@@ -496,6 +543,7 @@ final class TeamModule implements Listener {
 
     private boolean export(CommandSender s, Actor a) {
         if (teams.isEmpty()) return fail(s, "Kein Team angelegt.");
+        flushTallies();
         TeamLog team = teamOf(a);
         String safe = team.name.replaceAll("[^A-Za-z0-9ÄÖÜäöüß_-]+", "-").replaceAll("^-+|-+$", "");
         Path out = dir.resolve((safe.isEmpty() ? "team" : safe) + "-server-" + LocalDate.now() + ".export.json");
@@ -520,6 +568,9 @@ final class TeamModule implements Listener {
             case "geliefert" -> args.length == 2 ? List.of("hand") : List.of();
             case "rolle" -> args.length == 2 ? Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()) : args.length == 3 ? List.of("bauleitung", "baumeister", "helfer", "gast") : List.of();
             case "team" -> args.length == 2 ? List.of("laden", "export", "wahl", "hilfe") : List.of();
+            case "lager" -> args.length == 2 ? List.of("zaehlen", "setzen", "entfernen") : List.of();
+            case "nachweis" -> args.length == 2 ? List.of("an", "aus") : List.of();
+            case "beitrag" -> args.length == 2 ? List.of("alle") : List.of();
             default -> List.of();
         };
     }
@@ -552,6 +603,218 @@ final class TeamModule implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBreak(BlockBreakEvent e) { guard(e.getPlayer(), e.getBlock().getLocation(), () -> e.setCancelled(true)); }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void countPlace(BlockPlaceEvent e) { count(e.getPlayer(), e.getBlock().getLocation(), e.getBlock().getType().getKey().toString(), true); }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void countBreak(BlockBreakEvent e) { count(e.getPlayer(), e.getBlock().getLocation(), null, false); }
+
+    /** Baunachweis: only team members, only inside section boxes, only when switched on (server and member). */
+    private void count(Player p, Location l, String block, boolean placed) {
+        if (teams.isEmpty() || !tallyEnabled()) return;
+        Hit hit = at(PaperCompat.dimension(l.getWorld()), l.getBlockX(), l.getBlockY(), l.getBlockZ());
+        if (hit == null) return;
+        Optional<String> me = memberOf(hit.team, new Actor(p, p.getName(), p.getUniqueId(), false));
+        if (me.isEmpty() || view(hit.team).tallyOff.contains(me.get())) return;
+        Tally t = pending.computeIfAbsent(hit.team.teamId + "|" + me.get() + "|" + hit.section.id(), k -> new Tally(hit.team.teamId, me.get(), hit.section.id()));
+        if (placed) { t.placed++; if (block != null) t.blocks.merge(block, 1L, Long::sum); } else t.broken++;
+    }
+
+    // ------------------------------------------------------------------ storage chests (COOP-04)
+
+    /** Block positions of an inventory: both halves of a double chest, else the container block. */
+    private static List<Location> positions(Inventory inv) {
+        List<Location> out = new ArrayList<>();
+        try {
+            InventoryHolder h = inv.getHolder();
+            if (h instanceof org.bukkit.block.DoubleChest dc) {
+                if (dc.getLeftSide() instanceof org.bukkit.block.BlockState l) out.add(l.getLocation());
+                if (dc.getRightSide() instanceof org.bukkit.block.BlockState r) out.add(r.getLocation());
+            } else if (h instanceof org.bukkit.block.BlockState b) out.add(b.getLocation());
+        } catch (Throwable ignored) { }
+        return out;
+    }
+
+    private record ChestRef(TeamLog team, String id, TeamLog.Chest chest) {}
+    private List<ChestRef> chestsAt(List<Location> where) {
+        List<ChestRef> out = new ArrayList<>();
+        for (TeamLog team : teams.values()) for (var c : view(team).chests.entrySet()) for (Location l : where) {
+            TeamLog.Chest ch = c.getValue();
+            if (l.getWorld() != null && PaperCompat.dimension(l.getWorld()).equals(ch.dimension) && l.getBlockX() == ch.x && l.getBlockY() == ch.y && l.getBlockZ() == ch.z) { out.add(new ChestRef(team, c.getKey(), ch)); break; }
+        }
+        return out;
+    }
+
+    /** Item id → count of an inventory, shulker box contents included. */
+    @SuppressWarnings("deprecation")
+    static Map<String, Long> contents(Inventory inv) {
+        Map<String, Long> m = new TreeMap<>();
+        for (ItemStack it : inv.getContents()) {
+            if (it == null || it.getType() == Material.AIR) continue;
+            m.merge(it.getType().getKey().toString(), (long) it.getAmount(), Long::sum);
+            try {
+                if (it.getItemMeta() instanceof org.bukkit.inventory.meta.BlockStateMeta bm && bm.hasBlockState() && bm.getBlockState() instanceof org.bukkit.block.ShulkerBox box)
+                    for (ItemStack in : box.getInventory().getContents()) if (in != null && in.getType() != Material.AIR) m.merge(in.getType().getKey().toString(), (long) in.getAmount(), Long::sum);
+            } catch (Throwable ignored) { }
+        }
+        return m;
+    }
+
+    /** Writes a store.count when the content differs from the last count; returns the text for the player. */
+    private String recount(ChestRef ref, String by, Inventory inv, CommandSender s) {
+        Map<String, Long> now = contents(inv);
+        if (ref.chest.counted && !ref.chest.partial && now.equals(ref.chest.items)) return null;
+        List<Map.Entry<String, Long>> sorted = now.entrySet().stream().sorted(Map.Entry.<String, Long>comparingByValue().reversed()).collect(Collectors.toList());
+        JsonObject e = ref.team.event(by, "store.count");
+        e.addProperty("chest", ref.id);
+        e.add("items", lines(sorted.subList(0, Math.min(64, sorted.size()))));
+        if (sorted.size() > 64) e.addProperty("more", true);
+        Map<String, Long> before = ref.chest.counted ? new TreeMap<>(ref.chest.items) : null;
+        if (!append(ref.team, e, s)) return null;
+        if (before == null) return "Lager „" + ref.chest.name + "“ erstmals gezählt: " + now.values().stream().mapToLong(Long::longValue).sum() + " Items.";
+        List<String> diff = new ArrayList<>();
+        java.util.Set<String> all = new java.util.TreeSet<>(before.keySet()); all.addAll(now.keySet());
+        for (String item : all) {
+            long d = now.getOrDefault(item, 0L) - before.getOrDefault(item, 0L);
+            if (d != 0) diff.add((d > 0 ? "+" : "") + d + " " + item.replace("minecraft:", ""));
+        }
+        return "Lager „" + ref.chest.name + "“: " + (diff.isEmpty() ? "unverändert" : String.join(", ", diff.subList(0, Math.min(6, diff.size()))) + (diff.size() > 6 ? " …" : "")) + ".";
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onClose(InventoryCloseEvent e) {
+        if (teams.isEmpty() || !(e.getPlayer() instanceof Player p)) return;
+        List<ChestRef> refs = chestsAt(positions(e.getInventory()));
+        if (refs.isEmpty()) return;
+        Inventory inv = e.getInventory();
+        for (ChestRef ref : refs) {
+            Optional<String> me = ensureMember(ref.team, new Actor(p, p.getName(), p.getUniqueId(), false));
+            String text = recount(ref, me.orElse(memberIdOf(p.getUniqueId())), inv, p);
+            if (text != null) PaperCompat.actionBar(p, text);
+        }
+    }
+
+    private Optional<Inventory> inventoryAt(TeamLog.Chest ch) {
+        for (org.bukkit.World w : Bukkit.getWorlds()) {
+            if (!PaperCompat.dimension(w).equals(ch.dimension)) continue;
+            if (w.getBlockAt(ch.x, ch.y, ch.z).getState() instanceof org.bukkit.block.Container c) return Optional.of(c.getInventory());
+        }
+        return Optional.empty();
+    }
+
+    private boolean store(CommandSender s, Actor a, TeamLog team, TeamLog.View v, Optional<String> me, String[] args, String label) {
+        String sub = args.length > 0 ? args[0].toLowerCase(Locale.ROOT) : "";
+        switch (sub) {
+            case "setzen" -> {
+                if (args.length < 2) return fail(s, "/" + label + " lager setzen <name>  (auf die Kiste schauen; Konsole: <name> <x> <y> <z>)");
+                Optional<String> m = ensureMember(team, a);
+                if (m.isEmpty()) return fail(s, "Du bist nicht im Team.");
+                if (!TeamLog.can(v.role(m.get()), "store.chest") && !s.hasPermission("bauplaner.team.leitung")) return fail(s, "Lagerkisten legt ein Baumeister oder die Bauleitung fest.");
+                String by = TeamLog.can(v.role(m.get()), "store.chest") ? m.get() : team.founder;
+                String name; int x, y, z; String dim;
+                if (s instanceof Player p) {
+                    org.bukkit.block.Block b = p.getTargetBlockExact(6);
+                    if (b == null || !(b.getState() instanceof org.bukkit.block.Container)) return fail(s, "Schau auf eine Kiste, ein Fass oder eine Shulkerkiste (höchstens 6 Blöcke entfernt).");
+                    name = clip(String.join(" ", java.util.Arrays.copyOfRange(args, 1, args.length)), 60);
+                    x = b.getX(); y = b.getY(); z = b.getZ(); dim = PaperCompat.dimension(b.getWorld());
+                } else {
+                    if (args.length < 5) return fail(s, "Konsole: /" + label + " lager setzen <name> <x> <y> <z>");
+                    try { x = Integer.parseInt(args[args.length - 3]); y = Integer.parseInt(args[args.length - 2]); z = Integer.parseInt(args[args.length - 1]); }
+                    catch (NumberFormatException ex) { return fail(s, "Koordinaten als ganze Zahlen."); }
+                    name = clip(String.join(" ", java.util.Arrays.copyOfRange(args, 1, args.length - 3)), 60);
+                    dim = Optional.ofNullable(TeamLog.str(team.header, "dimension")).orElse("minecraft:overworld");
+                }
+                if (name.isBlank()) return fail(s, "Name der Lagerkiste fehlt.");
+                final int fx = x, fy = y, fz = z; final String fd = dim;
+                String id = v.chests.entrySet().stream().filter(c -> c.getValue().x == fx && c.getValue().y == fy && c.getValue().z == fz && c.getValue().dimension.equals(fd)).map(Map.Entry::getKey).findFirst().orElse(TeamLog.newId("lager"));
+                JsonObject e = team.event(by, "store.chest");
+                e.addProperty("chest", id); e.addProperty("name", name);
+                JsonArray pos = new JsonArray(); pos.add(x); pos.add(y); pos.add(z); e.add("pos", pos); e.addProperty("dimension", dim);
+                if (!submit(team, e, s, "Lagerkiste „" + name + "“ bei " + x + " " + y + " " + z + " gehört jetzt zum Team. Beim Schließen zählt das Plugin den Inhalt.")) return true;
+                TeamLog.Chest ch = view(team).chests.get(id);
+                if (ch != null) inventoryAt(ch).ifPresent(inv -> { String t = recount(new ChestRef(team, id, ch), m.get(), inv, s); if (t != null) say(s, t); });
+                return true;
+            }
+            case "entfernen" -> {
+                if (args.length < 2) return fail(s, "/" + label + " lager entfernen <name>");
+                String name = String.join(" ", java.util.Arrays.copyOfRange(args, 1, args.length));
+                Optional<Map.Entry<String, TeamLog.Chest>> c = v.chests.entrySet().stream().filter(x -> x.getValue().name.equalsIgnoreCase(name)).findFirst();
+                if (c.isEmpty()) return fail(s, "Keine Lagerkiste „" + name + "“.");
+                String by = me.filter(m -> TeamLog.can(v.role(m), "store.chest")).orElse(s.hasPermission("bauplaner.team.leitung") ? team.founder : me.orElse(""));
+                if (by.isEmpty()) return fail(s, "Du bist nicht im Team.");
+                JsonObject e = team.event(by, "store.chest");
+                TeamLog.Chest ch = c.get().getValue();
+                e.addProperty("chest", c.get().getKey()); e.addProperty("name", ch.name);
+                JsonArray pos = new JsonArray(); pos.add(ch.x); pos.add(ch.y); pos.add(ch.z); e.add("pos", pos); e.addProperty("dimension", ch.dimension); e.addProperty("remove", true);
+                return submit(team, e, s, "Lagerkiste „" + ch.name + "“ entfernt (die Kiste im Spiel bleibt unverändert).");
+            }
+            case "zaehlen" -> {
+                if (v.chests.isEmpty()) return fail(s, "Das Team hat noch keine Lagerkiste. /" + label + " lager setzen <name>");
+                Optional<String> m = ensureMember(team, a);
+                String by = m.orElse(a.uuid == null ? team.founder : memberIdOf(a.uuid));
+                int changed = 0;
+                for (var c : v.chests.entrySet()) {
+                    Optional<Inventory> inv = inventoryAt(c.getValue());
+                    if (inv.isEmpty()) { fail(s, "„" + c.getValue().name + "“ ist keine Kiste mehr (" + c.getValue().x + " " + c.getValue().y + " " + c.getValue().z + ")."); continue; }
+                    String t = recount(new ChestRef(team, c.getKey(), c.getValue()), by, inv.get(), s);
+                    if (t != null) { say(s, t); changed++; }
+                }
+                if (changed == 0) say(s, "Alle Lagerkisten unverändert.");
+                return true;
+            }
+            default -> {
+                TeamLog.View now = view(team);
+                if (now.chests.isEmpty()) { say(s, "Noch keine Lagerkiste. Baumeister: auf eine Kiste schauen und /" + label + " lager setzen <name>."); return true; }
+                for (TeamLog.Chest ch : now.chests.values())
+                    say(s, ch.name + " (" + ch.x + " " + ch.y + " " + ch.z + "): " + ch.items.values().stream().mapToLong(Long::longValue).sum() + " Items" + (ch.countedAt == null ? ", noch nicht gezählt" : ""));
+                List<String> top = now.stock().entrySet().stream().sorted(Map.Entry.<String, Long>comparingByValue().reversed()).limit(10)
+                        .map(x -> x.getValue() + " " + x.getKey().replace("minecraft:", "")).collect(Collectors.toList());
+                if (!top.isEmpty()) say(s, "Bestand: " + String.join(", ", top));
+                return true;
+            }
+        }
+    }
+
+    private boolean tallySwitch(CommandSender s, Actor a, TeamLog team, TeamLog.View v, String[] args, String label) {
+        Optional<String> m = ensureMember(team, a);
+        if (m.isEmpty()) return fail(s, "Du bist nicht im Team.");
+        if (args.length == 0) {
+            boolean on = !v.tallyOff.contains(m.get());
+            say(s, "Baunachweis für dich: " + (on ? "an" : "aus") + (tallyEnabled() ? "" : " (auf diesem Server ganz abgeschaltet)") + ". Gezählt werden nur Blöcke in Abschnitten des Teams. /" + label + " nachweis " + (on ? "aus" : "an"));
+            return true;
+        }
+        String r = args[0].toLowerCase(Locale.ROOT);
+        if (!r.equals("an") && !r.equals("aus")) return fail(s, "/" + label + " nachweis an|aus");
+        if (r.equals("aus")) pending.keySet().removeIf(k -> k.startsWith(team.teamId + "|" + m.get() + "|"));
+        JsonObject e = team.event(m.get(), "member.tally"); e.addProperty("member", m.get()); e.addProperty("on", r.equals("an"));
+        return submit(team, e, s, r.equals("an") ? "Baunachweis an: deine Blöcke in Teamabschnitten werden gezählt." : "Baunachweis aus: es wird nichts mehr gezählt, bisherige Zahlen sind ausgeblendet.");
+    }
+
+    private boolean contributionReport(CommandSender s, Actor a, TeamLog team, String[] args, String label) {
+        flushTallies();
+        TeamLog.View v = view(team);
+        if (args.length > 0 && args[0].equalsIgnoreCase("alle")) {
+            List<Map.Entry<String, Long>> rank = v.placed.entrySet().stream().sorted(Map.Entry.<String, Long>comparingByValue().reversed()).collect(Collectors.toList());
+            if (rank.isEmpty()) { say(s, "Noch kein Baunachweis."); return true; }
+            for (var x : rank.subList(0, Math.min(10, rank.size()))) say(s, v.name(x.getKey()) + ": " + x.getValue() + " gesetzt, " + v.broken.getOrDefault(x.getKey(), 0L) + " abgebaut");
+            for (TeamLog.Section sec : team.ordered()) {
+                long n = v.sectionPlaced.getOrDefault(sec.id(), 0L);
+                if (n > 0) say(s, sec.number() + ". " + sec.name() + ": " + n + " Blöcke · " + v.sectionBuilders.getOrDefault(sec.id(), Map.of()).entrySet().stream()
+                        .sorted(Map.Entry.<String, Long>comparingByValue().reversed()).map(x -> v.name(x.getKey()) + " " + x.getValue()).collect(Collectors.joining(", ")));
+            }
+            return true;
+        }
+        Optional<String> m = memberOf(team, a);
+        if (m.isEmpty()) return fail(s, "Du bist nicht im Team.");
+        String id = m.get();
+        if (v.tallyOff.contains(id)) say(s, "Dein Baunachweis ist aus. /" + label + " nachweis an");
+        say(s, v.name(id) + ": " + v.placed.getOrDefault(id, 0L) + " Blöcke gesetzt, " + v.broken.getOrDefault(id, 0L) + " abgebaut.");
+        Map<String, Long> in = v.stored.getOrDefault(id, Map.of()), out = v.taken.getOrDefault(id, Map.of());
+        if (!in.isEmpty()) say(s, "Ins Lager: " + in.entrySet().stream().map(x -> x.getValue() + " " + x.getKey().replace("minecraft:", "")).collect(Collectors.joining(", ")));
+        if (!out.isEmpty()) say(s, "Entnommen: " + out.entrySet().stream().map(x -> x.getValue() + " " + x.getKey().replace("minecraft:", "")).collect(Collectors.joining(", ")));
+        return true;
+    }
 
     /** Protection: hint (default) or block changes in sections other members took over. */
     private void guard(Player p, Location l, Runnable cancel) {
