@@ -1026,3 +1026,12 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - **An alle Generator- und Bauset-Threads:** gespeicherte Geometrie mit `stableSin/stableCos/stableAtan2/stableHypot` aus `packages/voxel/src/stableMath.ts` statt `Math.*` rechnen. `Math.*` ist je Browser verschieden und hat das Kolosseum in Node und Chrome unterschiedlich gebaut. Ersetzt in `generators/arena.ts`, `build/sets/*`, `terrainDesign.ts`, `base.ts`, `editor/forms.ts`, ohne neue Version-IDs.
 - **Neue Seiten:** in `main.tsx` mit `lazyPage(() => import(...).then(m => m.X))` anmelden, nicht statisch importieren.
 - Nicht angefasst: `mods/`, `TeamTab`/`team.ts`/`ProjectsView.tsx`, Lagerkisten. Mod- und Plugin-Analyse folgt nach deren Merge (O-8).
+
+### MSG-COOP-06-01 · 03.11.2026 · Claude (Thread „Gemeinsames Bauen im Planer vertiefen“) · Teamplanung im Planer (COOP-06)
+- Auftrag Philipp (17:50): „mehrere Threads in die erweiterte Entwicklung von der Mod und dem Planen im Punkto gemeinsames Bauen, komplett strukturiert und in die Tiefe“. Dieser Thread: Planer. Konzept [TEAMBAU §4, §18](architecture/TEAMBAU.md), neue Aufgabe **COOP-05**.
+- Neu: `packages/domain/src/teamPlan.ts`, `views/project/TeamPlan.tsx`, `teamplan.css`, Tests `tests/teamPlan.test.mjs`, `tests/e2e/teamplan.e2e.mjs` (Port 4317), Testfälle TEAMBAU-21…24.
+- Kleine Eingriffe: `team.ts` (Arten `section.handover/accept/decline`, `member.away`, `issue.ack` hinten angehängt; Ansicht `offer`, `away`, `acknowledged`; Serverdatei `need`), `TeamTab.tsx` (Bereichsleiste, Hinweise mit Lösungen), `TeamExchange.tsx` (Bedarf in der Serverdatei), `index.ts`, `testplan.ts`.
+- **An den Plugin-Thread:** Regeln der neuen Arten in TEAMBAU §4 für `TeamLog.java`; `sections[].need`/`need` in der Serverdatei (Bau-Items, volle Menge, ≤ 256 Zeilen).
+- **An den Mod-Thread:** `teamLink.ts` und `TeamLive.tsx` (Mit Spiel abgleichen) sowie `SectionIds`/`TeamId` im .schem-Export baut der Mod-Thread; Einbinden in `TeamTab.tsx` als eine Zeile.
+- **An den Stufe-3-Thread (COOP-04):** Baunachweis, Lagerkisten und `TeamProof.tsx` bleiben dort; meine Arten stehen hinter seinen.
+- Reservierung mit dem Push beendet.

@@ -1,0 +1,54 @@
+/* COOP-06 · Teamplanung (views/project/TeamPlan) – Farben nur über Theme-Variablen */
+.team-areas{display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid var(--line);padding-bottom:6px}
+.team-areas button{border:1px solid transparent;border-radius:8px;padding:7px 14px;background:transparent;color:var(--muted);font-size:12.5px;font-weight:500}
+.team-areas button.active{background:var(--panel);border-color:var(--line);color:var(--text)}
+.team-badge{display:inline-block;margin-left:6px;min-width:16px;border-radius:8px;padding:0 5px;background:var(--panel-3);font-size:10px;text-align:center}
+.team-work{margin:0;padding-left:22px;display:grid;gap:4px}
+.team-work li{display:grid;grid-template-columns:minmax(120px,1.3fr) minmax(80px,1fr) minmax(150px,auto) 112px;gap:8px 12px;align-items:center;padding:3px 0}
+.team-work li.chosen>button{font-weight:600}.team-work li>button{justify-self:start;text-align:left}.team-work small{color:var(--muted)}
+.team-split{margin-top:12px;border-top:1px solid var(--line);padding-top:10px;display:grid;gap:8px}
+.team-split label{display:inline-flex;gap:6px;align-items:center}.team-split input[type=number]{width:64px;flex:0 0 auto}
+.team-split .team-list li small{color:var(--muted)}
+.team-chip-toggle{display:inline-flex;gap:5px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:4px 10px;background:var(--panel-2);font-size:11px;cursor:pointer}
+.team-chip-toggle.on{border-color:var(--mint)}.team-chip-toggle input{margin:0}
+.team-summary{margin:4px 0 10px;font-size:13px}
+.team-gantt{display:grid;gap:6px;margin:6px 0 10px}
+.team-lane{display:grid;grid-template-columns:minmax(90px,150px) minmax(0,1fr) 84px;gap:10px;align-items:center}
+.team-lane-name{overflow-wrap:anywhere}.team-lane-name small,.team-lane>small{color:var(--muted)}
+.team-lane-track{position:relative;height:22px;background:var(--panel-2);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.team-gbar{position:absolute;top:2px;bottom:2px;border-radius:4px;background:color-mix(in srgb,var(--panel-3) 50%,#3a8fd3);color:var(--text);font-size:10px;line-height:16px;padding:0 4px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-sizing:border-box;border-right:1px solid var(--panel)}
+.team-gbar.critical{background:color-mix(in srgb,var(--panel-3) 40%,var(--mint));font-weight:600}
+.team-gbar.free{background:repeating-linear-gradient(135deg,var(--panel-3) 0 6px,color-mix(in srgb,var(--panel-3) 70%,#d3a432) 6px 12px)}
+.team-hints{margin:6px 0;padding-left:18px;color:var(--muted);display:grid;gap:2px}
+.team-scroll{overflow-x:auto;max-width:100%}
+.team-mat td,.team-mat th{white-space:nowrap}.team-mat td.bad,.team-table td.bad{color:color-mix(in srgb,var(--text) 50%,#e0603a)}
+.team-table tr.warn td{background:color-mix(in srgb,var(--panel-2) 80%,#d3a432)}
+.team-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.team-card{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--panel-2);display:grid;gap:5px;align-content:start}
+.team-card small{color:var(--muted)}.team-card ul{margin:0;padding-left:16px;display:grid;gap:2px}.team-card button{justify-self:start;border:1px solid var(--line);border-radius:6px;padding:5px 9px;font-size:11px}
+.team-card .bad{color:color-mix(in srgb,var(--text) 50%,#e0603a)}
+.team-stack{position:relative;height:14px;border-radius:7px;background:var(--panel-3);overflow:hidden;margin:6px 0}
+.team-stack span{position:absolute;left:0;top:0;bottom:0;display:block}
+.team-stack .ticked{background:color-mix(in srgb,var(--panel-3) 50%,#3a8fd3)}
+.team-stack .reported{background:color-mix(in srgb,var(--panel-3) 40%,#d3a432);top:3px;bottom:3px}
+.team-stack .confirmed{background:var(--mint);top:5px;bottom:5px}
+.team-legend{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;margin:0 0 10px;font-size:11px}
+.team-legend span::before{content:'';display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.team-legend .ticked::before{background:color-mix(in srgb,var(--panel-3) 50%,#3a8fd3)}.team-legend .reported::before{background:color-mix(in srgb,var(--panel-3) 40%,#d3a432)}.team-legend .confirmed::before{background:var(--mint)}
+.team-legend small{flex-basis:100%}
+.team-board{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.team-col{background:var(--panel-2);border:1px solid var(--line);border-radius:10px;padding:8px;display:grid;gap:6px;align-content:start;min-width:0}
+.team-col h4{margin:0 0 2px;font-size:12px}.team-col h4 small{color:var(--muted)}
+.team-tile{border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--panel);display:grid;gap:3px;min-width:0}
+.team-tile strong{font-size:11.5px;overflow-wrap:anywhere}.team-tile small{color:var(--muted);font-size:10.5px}
+.team-tile.changed{border-color:#d3a432}
+.team-rights td:not(:first-child),.team-rights th:not(:first-child){text-align:center}
+.team-bar.wide{min-width:60px}
+.team-issues li{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;padding:3px 0}
+@media(max-width:1100px){.team-board{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:650px){.team-board{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.team-work li{grid-template-columns:minmax(0,1fr) auto}.team-work li .team-bar{grid-column:1/-1}
+  .team-lane{grid-template-columns:minmax(0,1fr) auto}.team-lane-track{grid-column:1/-1;grid-row:2}.team-areas button{padding:6px 9px;font-size:12px}}
+.team-split .team-inline select{flex:0 1 280px}.team-split .team-inline label{flex:0 0 auto}
+.team-mat button,.team-tile button,.team-list .team-actions button{border:1px solid var(--line);border-radius:6px;padding:4px 9px;font-size:11px}
+.team-mat td{vertical-align:middle;padding:4px 8px}

@@ -76,7 +76,13 @@ export type TeamEventBody =
   /** Server comparison of a count with the expected content; differences add up until a seal. */
   | { readonly kind: 'store.check'; readonly chest: string; readonly status: 'geprueft' | 'abweichend' | 'fehlt'; readonly sha256?: string; readonly diff?: readonly { readonly item: string; readonly delta: number }[] }
   /** Baumeister+ accepts the current content: open differences are closed. */
-  | { readonly kind: 'store.seal'; readonly chest: string; readonly sha256: string; readonly note?: string };
+  | { readonly kind: 'store.seal'; readonly chest: string; readonly sha256: string; readonly note?: string }
+  // COOP-06 (TEAMBAU §4, §18): handover with acceptance, absence, acknowledged hints
+  | { readonly kind: 'section.handover'; readonly section: string; readonly member: string; readonly note?: string }
+  | { readonly kind: 'section.accept'; readonly section: string }
+  | { readonly kind: 'section.decline'; readonly section: string }
+  | { readonly kind: 'member.away'; readonly member: string; readonly until?: string; readonly note?: string }
+  | { readonly kind: 'issue.ack'; readonly events: readonly string[] };
 export type StorePurpose = 'vorrat' | 'eingang' | 'ausgabe' | 'rest';
 export type StoreProtection = 'offen' | 'team' | 'abschnitt' | 'eingang' | 'gesperrt';
 export const STORE_PURPOSES: readonly StorePurpose[] = ['vorrat', 'eingang', 'ausgabe', 'rest'];
@@ -89,7 +95,8 @@ export type TeamEvent = KnownTeamEvent | UnknownTeamEvent;
 export type TeamEventKind = TeamEventBody['kind'];
 const KNOWN = new Set<string>(['member.join', 'member.role', 'member.player', 'section.claim', 'section.assign', 'section.release', 'section.done',
   'section.verify', 'contribution', 'gather.claim', 'note.add', 'note.resolve', 'plan.release', 'build.tally', 'member.tally', 'store.chest', 'store.count',
-  'store.config', 'store.move', 'store.check', 'store.seal']);
+  'store.config', 'store.move', 'store.check', 'store.seal',
+  'section.handover', 'section.accept', 'section.decline', 'member.away', 'issue.ack']);
 /** Kinds only the server plugin may write (origin server): they are measurements, not claims. */
 export const SERVER_ONLY_KINDS: ReadonlySet<string> = new Set(['build.tally', 'store.count', 'store.move', 'store.check']);
 export const isKnownEvent = (e: TeamEvent): e is KnownTeamEvent => KNOWN.has(e.kind);
@@ -233,6 +240,14 @@ export function checkTeamEvent(raw: unknown): TeamEvent {
     case 'note.resolve': text(raw.noteId, 64, `${where}: Notiz-ID`); optText(raw.text, 300, `${where}: Text`); break;
     case 'plan.release': text(raw.revisionId, 64, `${where}: Revision`); int(raw.revisionNumber, 0, 1e6, `${where}: Revisionsnummer`);
       text(raw.summary, 300, `${where}: Beschreibung`, 0); break;
+    case 'section.handover': text(raw.section, 64, `${where}: Abschnitt`); text(raw.member, 64, `${where}: Mitglied`); optText(raw.note, 300, `${where}: Notiz`); break;
+    case 'section.accept': case 'section.decline': text(raw.section, 64, `${where}: Abschnitt`); break;
+    case 'member.away': text(raw.member, 64, `${where}: Mitglied`); optText(raw.note, 120, `${where}: Notiz`);
+      if (raw.until !== undefined && (typeof raw.until !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(raw.until) || !Number.isFinite(Date.parse(raw.until)))) fail(`${where}: Datum ungültig`); break;
+    case 'issue.ack':
+      if (!Array.isArray(raw.events) || raw.events.length < 1 || raw.events.length > 200) fail(`${where}: Liste der Hinweise ungültig`);
+      for (const id of raw.events as unknown[]) text(id, 64, `${where}: Ereignis-ID`);
+      break;
     default: break; // newer kinds: kept as they are
   }
   return raw as unknown as TeamEvent;
@@ -340,6 +355,8 @@ export interface TeamMember {
   readonly taken: Readonly<Record<string, number>>;
   /** false: the member switched the Baunachweis off; no numbers are shown. */
   readonly tally: boolean;
+  /** Absent (member.away): until that day inclusive, or open-ended without `until`. */
+  readonly away?: { readonly until?: string; readonly note?: string };
 }
 export interface SectionTeamState {
   readonly sectionId: string;
@@ -350,6 +367,8 @@ export interface SectionTeamState {
   readonly note?: string;
   /** Section is not (any more) in the plan. */
   readonly orphan: boolean;
+  /** Open handover offer (section.handover) until accepted, declined or overtaken by another section event. */
+  readonly offer?: { readonly to: string; readonly by: string; readonly at: string; readonly note?: string };
   readonly history: readonly { readonly at: string; readonly by: string; readonly text: string }[];
   /** Baunachweis inside this section: placed blocks over all members, and per member. */
   readonly placed: number;
@@ -423,6 +442,8 @@ export interface TeamView {
   readonly placedBlocks: Readonly<Record<string, number>>;
   /** Time span of the visible Baunachweis. */
   readonly tallySpan: { readonly from: string; readonly until: string } | null;
+  /** Event ids of hints and rejections marked as done (issue.ack). */
+  readonly acknowledged: readonly string[];
 }
 
 export interface TeamContext {
@@ -440,6 +461,7 @@ const NEED: Readonly<Record<TeamEventKind, TeamRole>> = {
   'note.add': 'gast', 'note.resolve': 'helfer', 'plan.release': 'leitung',
   'build.tally': 'gast', 'member.tally': 'gast', 'store.chest': 'meister', 'store.count': 'gast',
   'store.config': 'meister', 'store.seal': 'meister', 'store.move': 'gast', 'store.check': 'gast',
+  'section.handover': 'helfer', 'section.accept': 'helfer', 'section.decline': 'helfer', 'member.away': 'gast', 'issue.ack': 'meister',
 };
 export const canTeam = (role: TeamRole | undefined, action: TeamAction): boolean => RANK[role ?? 'gast'] >= RANK[NEED[action]];
 
@@ -454,7 +476,8 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
   const players = new Map<string, string>(ctx.builders.filter(b => b.player).map(b => [b.id, b.player!]));
   const known = new Set<string>([...inProgram, team.founder]);
   const lastActive = new Map<string, string>();
-  type Mutable = { status: SectionTeamStatus; owner: string | null; doneBy?: string; verifiedBy?: string; note?: string; history: { at: string; by: string; text: string }[] };
+  type Mutable = { status: SectionTeamStatus; owner: string | null; doneBy?: string; verifiedBy?: string; note?: string; offer?: { to: string; by: string; at: string; note?: string };
+    history: { at: string; by: string; text: string }[] };
   const sections = new Map<string, Mutable>();
   const sec = (id: string): Mutable => { let s = sections.get(id); if (!s) sections.set(id, s = { status: 'frei', owner: null, history: [] }); return s; };
   const notes = new Map<string, { at: string; by: string; text: string; tag: NoteTag; section?: string; pos?: readonly [number, number, number]; resolved?: { at: string; by: string; text?: string } }>();
@@ -462,6 +485,8 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
   const blocks = new Map<string, number>(), items = new Map<string, Map<string, number>>();
   const delivered: Record<string, number> = {};
   const releases: PlanRelease[] = [];
+  const away = new Map<string, { until?: string; note?: string }>();
+  const acknowledged = new Set<string>();
   const rejected: TeamRejection[] = [], conflicts: TeamConflict[] = [];
   let unknownKinds = 0;
   const tallyOff = new Set<string>();
@@ -486,7 +511,7 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
     const role = roleOf(event.by);
     const self = (m: string) => m === event.by;
     // member.join and member.player may always be written for oneself.
-    const selfAllowed = (event.kind === 'member.join' || event.kind === 'member.player' || event.kind === 'member.tally') && self(event.member);
+    const selfAllowed = (event.kind === 'member.join' || event.kind === 'member.player' || event.kind === 'member.tally' || event.kind === 'member.away') && self(event.member);
     if (SERVER_ONLY_KINDS.has(event.kind) && event.origin !== 'server') { reject(event, `${eventLabel(event)} kommt nur vom Server-Plugin.`); continue; }
     if (!selfAllowed && !canTeam(role, event.kind)) {
       // Helpers may release their own section and resolve their own notes; handled below with their own rule.
@@ -519,7 +544,7 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
         if (s.owner === event.by) break;
         if (s.owner) { conflicts.push({ event, text: `${nameOf(event.by)} wollte „${sectionName(ctx, event.section)}“ übernehmen, der Abschnitt war schon an ${nameOf(s.owner)} vergeben.` }); break; }
         if (s.status === 'bestaetigt') { reject(event, `„${sectionName(ctx, event.section)}“ ist schon bestätigt.`); break; }
-        s.owner = event.by; s.status = 'vergeben'; delete s.doneBy; delete s.verifiedBy;
+        s.owner = event.by; s.status = 'vergeben'; delete s.doneBy; delete s.verifiedBy; delete s.offer;
         if (event.note) s.note = event.note;
         s.history.push({ at: event.at, by: event.by, text: 'übernommen' });
         break;
@@ -528,7 +553,7 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
         const s = sec(event.section);
         if (!known.has(event.member)) { reject(event, `Unbekanntes Mitglied ${event.member}.`); break; }
         if (s.owner && s.owner !== event.member) conflicts.push({ event, text: `${nameOf(event.by)} hat „${sectionName(ctx, event.section)}“ von ${nameOf(s.owner)} an ${nameOf(event.member)} umgewiesen.` });
-        s.owner = event.member;
+        s.owner = event.member; delete s.offer;
         if (s.status === 'frei') s.status = 'vergeben';
         s.history.push({ at: event.at, by: event.by, text: `zugewiesen an ${nameOf(event.member)}` });
         break;
@@ -537,7 +562,7 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
         const s = sec(event.section);
         if (s.owner !== event.by && !canTeam(role, 'section.assign')) { reject(event, `Nur ${s.owner ? nameOf(s.owner) : 'der Inhaber'} oder ein Baumeister kann „${sectionName(ctx, event.section)}“ abgeben.`); break; }
         if (s.status === 'bestaetigt') { reject(event, `„${sectionName(ctx, event.section)}“ ist bestätigt und kann nicht mehr abgegeben werden.`); break; }
-        s.owner = null; s.status = 'frei'; delete s.doneBy;
+        s.owner = null; s.status = 'frei'; delete s.doneBy; delete s.offer;
         s.history.push({ at: event.at, by: event.by, text: 'abgegeben' });
         break;
       }
@@ -545,7 +570,7 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
         const s = sec(event.section);
         if (s.owner && s.owner !== event.by) conflicts.push({ event, text: `${nameOf(event.by)} hat „${sectionName(ctx, event.section)}“ fertig gemeldet, Inhaber ist ${nameOf(s.owner)}.` });
         if (!s.owner) s.owner = event.by;
-        s.status = 'gemeldet'; s.doneBy = event.by; delete s.verifiedBy;
+        s.status = 'gemeldet'; s.doneBy = event.by; delete s.verifiedBy; delete s.offer;
         if (event.note) s.note = event.note;
         s.history.push({ at: event.at, by: event.by, text: 'fertig gemeldet' });
         break;
@@ -553,7 +578,7 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
       case 'section.verify': {
         const s = sec(event.section);
         if (s.status === 'frei') { reject(event, `„${sectionName(ctx, event.section)}“ ist frei, es gibt nichts zu prüfen.`); break; }
-        s.status = event.ok ? 'bestaetigt' : 'nacharbeit'; s.verifiedBy = event.by;
+        s.status = event.ok ? 'bestaetigt' : 'nacharbeit'; s.verifiedBy = event.by; delete s.offer;
         if (event.note) s.note = event.note;
         s.history.push({ at: event.at, by: event.by, text: event.ok ? 'bestätigt' : `Nacharbeit${event.note ? `: ${event.note}` : ''}` });
         break;
@@ -652,6 +677,43 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
         if (c.counted) c.expected = new Map(c.items);
         break;
       }
+      case 'section.handover': {
+        const s = sec(event.section), label = sectionName(ctx, event.section);
+        if (s.status === 'bestaetigt' || s.status === 'gemeldet') { reject(event, `„${label}“ ist ${s.status === 'bestaetigt' ? 'bestätigt' : 'fertig gemeldet'} und wird nicht mehr übergeben.`); break; }
+        if (s.owner !== event.by && !canTeam(role, 'section.assign')) { reject(event, `Nur ${s.owner ? nameOf(s.owner) : 'der Inhaber'} oder ein Baumeister kann „${label}“ übergeben.`); break; }
+        if (!known.has(event.member)) { reject(event, `Unbekanntes Mitglied ${event.member}.`); break; }
+        if (event.member === s.owner) { reject(event, `${nameOf(event.member)} hat „${label}“ schon.`); break; }
+        if (!canTeam(roleOf(event.member), 'section.claim')) { reject(event, `${nameOf(event.member)} ist ${TEAM_ROLE_LABEL[roleOf(event.member)]} und kann keine Abschnitte übernehmen.`); break; }
+        s.offer = { to: event.member, by: event.by, at: event.at, ...(event.note && { note: event.note }) };
+        s.history.push({ at: event.at, by: event.by, text: `Übergabe an ${nameOf(event.member)} angeboten${event.note ? `: ${event.note}` : ''}` });
+        break;
+      }
+      case 'section.accept': {
+        const s = sec(event.section), label = sectionName(ctx, event.section);
+        if (!s.offer || s.offer.to !== event.by) { reject(event, `Für ${nameOf(event.by)} liegt kein Übergabeangebot für „${label}“ vor.`); break; }
+        const from = s.owner;
+        s.owner = event.by; if (s.status === 'frei') s.status = 'vergeben';
+        if (s.offer.note) s.note = s.offer.note;
+        delete s.offer;
+        s.history.push({ at: event.at, by: event.by, text: `Übergabe angenommen${from ? ` (von ${nameOf(from)})` : ''}` });
+        break;
+      }
+      case 'section.decline': {
+        const s = sec(event.section), label = sectionName(ctx, event.section);
+        if (!s.offer) { reject(event, `Für „${label}“ gibt es kein offenes Übergabeangebot.`); break; }
+        if (![s.offer.to, s.offer.by, s.owner].includes(event.by) && !canTeam(role, 'section.assign')) { reject(event, 'Ein fremdes Übergabeangebot zieht ein Baumeister zurück.'); break; }
+        s.history.push({ at: event.at, by: event.by, text: event.by === s.offer.to ? 'Übergabe abgelehnt' : 'Übergabeangebot zurückgezogen' });
+        delete s.offer;
+        break;
+      }
+      case 'member.away':
+        if (!self(event.member) && role !== 'leitung') { reject(event, 'Abwesenheit trägt jeder selbst ein oder die Bauleitung.'); break; }
+        if (event.until || event.note) away.set(event.member, { ...(event.until && { until: event.until }), ...(event.note && { note: event.note }) });
+        else away.delete(event.member);
+        break;
+      case 'issue.ack':
+        for (const id of event.events) acknowledged.add(id);
+        break;
     }
   }
 
@@ -692,13 +754,14 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
     sections: (ownerOf.get(id) ?? []).sort(byOrder), blocks: blocks.get(id) ?? 0, items: Object.fromEntries(items.get(id) ?? []),
     reportedSections: counts(id, ['gemeldet', 'bestaetigt']), confirmedSections: counts(id, ['bestaetigt']), ...(lastActive.has(id) && { lastActive: lastActive.get(id)! }),
     placed: placedBy.get(id) ?? 0, broken: brokenBy.get(id) ?? 0, stored: Object.fromEntries(stored.get(id) ?? []), taken: Object.fromEntries(taken.get(id) ?? []), tally: !tallyOff.has(id),
+    ...(away.has(id) && { away: away.get(id)! }),
   })).sort((a, b) => RANK[b.role] - RANK[a.role] || a.name.localeCompare(b.name, 'de'));
 
   const allSectionIds = [...new Set([...ctx.sections.map(s => s.id), ...sections.keys()])].sort(byOrder);
   const sectionStates: SectionTeamState[] = allSectionIds.map(id => {
     const s = sections.get(id) ?? { status: 'frei' as const, owner: null, history: [] };
     return { sectionId: id, status: s.status, owner: s.owner, ...(s.doneBy && { doneBy: s.doneBy }), ...(s.verifiedBy && { verifiedBy: s.verifiedBy }),
-      ...(s.note && { note: s.note }), orphan: !sectionIds.has(id), history: s.history,
+      ...(s.note && { note: s.note }), orphan: !sectionIds.has(id), ...(s.offer && { offer: s.offer }), history: s.history,
       placed: sectionTally.get(id)?.placed ?? 0, broken: sectionTally.get(id)?.broken ?? 0, builders: Object.fromEntries(sectionTally.get(id)?.builders ?? []) };
   });
   const memberByName = new Map<string, string>();
@@ -715,7 +778,7 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
   }
   return { members, sections: sectionStates, notes: noteList, gather: [...gather.values()].sort((a, b) => a.item.localeCompare(b.item) || a.member.localeCompare(b.member)),
     delivered, release, releases, rejected, conflicts, unknownKinds, stores, stock, placedBlocks,
-    tallySpan: tallyFrom && tallyUntil ? { from: tallyFrom, until: tallyUntil } : null };
+    tallySpan: tallyFrom && tallyUntil ? { from: tallyFrom, until: tallyUntil } : null, acknowledged: [...acknowledged] };
 }
 
 const sectionName = (ctx: TeamContext, id: string) => ctx.sections.find(s => s.id === id)?.name ?? 'entfernter Abschnitt';
@@ -744,6 +807,11 @@ export function eventLabel(e: TeamEvent): string {
     case 'store.move': return e.via === 'trichter' ? 'Trichter bewegt Items' : 'Lagerbuchung';
     case 'store.check': return e.status === 'geprueft' ? 'Lager geprüft' : e.status === 'fehlt' ? 'Lagerkiste fehlt' : 'Lager weicht ab';
     case 'store.seal': return 'Lager gesiegelt';
+    case 'section.handover': return 'Übergabe angeboten';
+    case 'section.accept': return 'Übergabe angenommen';
+    case 'section.decline': return 'Übergabe abgelehnt oder zurückgezogen';
+    case 'member.away': return e.until || e.note ? `abwesend${e.until ? ` bis ${e.until}` : ''}` : 'wieder da';
+    case 'issue.ack': return `${e.events.length} Hinweis${e.events.length === 1 ? '' : 'e'} erledigt`;
   }
 }
 
@@ -755,6 +823,8 @@ export function describeEvent(e: TeamEvent, ctx: TeamContext, names: ReadonlyMap
   switch (e.kind) {
     case 'section.assign': return `${who}: Abschnitt${s} an ${names.get(e.member) ?? e.member} zugewiesen`;
     case 'member.role': return `${who}: ${names.get(e.member) ?? e.member} ist jetzt ${TEAM_ROLE_LABEL[e.role]}`;
+    case 'section.handover': return `${who}: Abschnitt${s} an ${names.get(e.member) ?? e.member} übergeben (wartet auf Annahme)${e.note ? ` – ${e.note}` : ''}`;
+    case 'member.away': return e.member === e.by ? `${who}: ${eventLabel(e)}${e.note ? ` (${e.note})` : ''}` : `${who}: ${names.get(e.member) ?? e.member} ${eventLabel(e)}`;
     case 'contribution': {
       const parts = [e.blocks ? `${e.blocks} Blöcke gebaut` : '', ...(e.items ?? []).map(l => `${l.count} × ${l.item.replace(/^minecraft:/, '')}`)].filter(Boolean);
       return `${who}:${s} ${parts.join(', ') || 'Beitrag'}${e.note ? ` – ${e.note}` : ''}`;
@@ -922,7 +992,11 @@ export interface TeamServerFile {
   /** Dimension of the world placement (Weltkarte). */
   readonly dimension: string;
   /** Sections in build order with world boxes (inclusive min/max), one per section and instance. */
-  readonly sections: readonly { readonly id: string; readonly name: string; readonly boxes: readonly (readonly [number, number, number, number, number, number])[] }[];
+  readonly sections: readonly { readonly id: string; readonly name: string; readonly boxes: readonly (readonly [number, number, number, number, number, number])[];
+    /** Full need of build items of the section (all steps, first-match rule), largest first (COOP-06, for the store comparison). */
+    readonly need?: readonly ItemCount[] }[];
+  /** Full need of build items of the whole project, largest first. */
+  readonly need?: readonly ItemCount[];
   /** Members with role at export time (the server folds the log itself; roles here are for reading). */
   readonly members: readonly { readonly id: string; readonly name: string; readonly player?: string; readonly role: TeamRole }[];
   readonly events: readonly TeamEvent[];
@@ -940,6 +1014,8 @@ export function teamServerFile(input: {
   team: TeamState; view: TeamView; projectName: string;
   sections: readonly { readonly id: string; readonly name: string; readonly members: readonly { readonly instanceId: string; readonly fromLayer?: number; readonly toLayer?: number }[] }[];
   steps: readonly StepBox[]; origin: readonly [number, number, number]; dimension: string;
+  /** Material need per section and in total (teamPlan.sectionNeeds). */
+  needs?: { readonly sections: ReadonlyMap<string, readonly ItemCount[]>; readonly total: readonly ItemCount[] };
 }): TeamServerFile {
   const { team, view, origin } = input;
   const boxes = new Map<string, Map<string, [number, number, number, number, number, number]>>();
@@ -956,7 +1032,9 @@ export function teamServerFile(input: {
   return {
     format: TEAM_SERVER_FORMAT, formatVersion: 1, teamId: team.teamId, name: team.name, projectName: input.projectName, founder: team.founder,
     createdAt: new Date().toISOString(), dimension: input.dimension,
-    sections: input.sections.map(s => ({ id: s.id, name: s.name, boxes: [...(boxes.get(s.id)?.values() ?? [])].map(move) })),
+    sections: input.sections.map(s => ({ id: s.id, name: s.name, boxes: [...(boxes.get(s.id)?.values() ?? [])].map(move),
+      ...(input.needs?.sections.get(s.id)?.length && { need: input.needs.sections.get(s.id)! }) })),
+    ...(input.needs?.total.length && { need: input.needs.total }),
     members: view.members.map(m => ({ id: m.id, name: m.name, ...(m.player && { player: m.player }), role: m.role })),
     events: team.events,
   };

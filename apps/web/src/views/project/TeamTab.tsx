@@ -9,6 +9,8 @@ import type { ProjectSession } from './session';
 import { TeamExchange } from './TeamExchange';
 import { TeamProof } from './TeamProof';
 import { TeamLive } from './TeamLive';
+import { TeamAreaNav, TeamIssues, TeamPlanning, TeamProgressArea, TeamRightsArea } from './TeamPlan';
+import type { TeamArea } from './TeamPlan';
 import '../../team.css';
 
 const short = (id: string) => id.replace(/^minecraft:/, '');
@@ -80,6 +82,7 @@ function Found({ site, projectName, projectId, onFound }: { site: SitePlan; proj
 function TeamPage({ session, site, team, message, setMessage, saveTeam, saveSite }: {
   session: ProjectSession; site: SitePlan; team: TeamState; message: string; setMessage(m: string): void; saveTeam(t: TeamState, label: string): boolean; saveSite(s: SitePlan, label: string): boolean;
 }) {
+  const [area, setArea] = useState<TeamArea>('bauen');
   const { project, computation } = session;
   const ctx = useMemo(() => teamContextOf(site), [site]);
   const view = useMemo(() => teamView(team, ctx), [team, ctx]);
@@ -120,6 +123,7 @@ function TeamPage({ session, site, team, message, setMessage, saveTeam, saveSite
     } catch (e) { setMessage(errorText(e)); }
   };
 
+  const planProps = { session, site, team, view, ctx, me, role, saveTeam, saveSite, setMessage };
   return <section className="team" aria-label="Team">
     <header className="team-head">
       <div><span className="panel-kicker">TEAM</span><h3>{team.name}</h3>
@@ -136,11 +140,12 @@ function TeamPage({ session, site, team, message, setMessage, saveTeam, saveSite
         }} />
     </header>
     {message && <div className="notice warning" role="alert">{message}<button onClick={() => setMessage('')}>OK</button></div>}
-    {(view.conflicts.length > 0 || view.rejected.length > 0) && <details className="team-block team-issues">
-      <summary>{view.conflicts.length} Hinweis{view.conflicts.length === 1 ? '' : 'e'} · {view.rejected.length} nicht übernommene Ereignis{view.rejected.length === 1 ? '' : 'se'}</summary>
-      <ul>{view.conflicts.map((c, i) => <li key={`c${i}`}>{c.text}</li>)}{view.rejected.map((r, i) => <li key={`r${i}`} className="bad">{r.reason}</li>)}</ul>
-      <small className="muted">Nichts wird gelöscht: abgelehnte Ereignisse bleiben im Protokoll, wirken aber nicht.</small></details>}
-
+    <TeamIssues {...planProps} />
+    <TeamAreaNav area={area} onArea={setArea} />
+    {area === 'planung' && <TeamPlanning {...planProps} />}
+    {area === 'fortschritt' && <TeamProgressArea {...planProps} />}
+    {area === 'rechte' && <TeamRightsArea {...planProps} />}
+    {area === 'bauen' && <>
     {me && <Mine view={view} me={me.id} ctx={ctx} progress={progress} projectId={project.id} act={act} />}
     <Sections view={view} ctx={ctx} progress={progress} me={me?.id ?? null} role={role} nameOf={nameOf} act={act} />
     <div className="team-columns">
@@ -152,6 +157,7 @@ function TeamPage({ session, site, team, message, setMessage, saveTeam, saveSite
     <TeamLive session={session} team={team} view={view} onMessage={setMessage} />
     <TeamExchange session={session} team={team} view={view} onMessage={setMessage} />
     <Log team={team} ctx={ctx} names={names} />
+    </>}
   </section>;
 }
 

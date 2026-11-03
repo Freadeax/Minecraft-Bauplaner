@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import {
   buildRestore, buildTeamPackage, createBackup, decodeReportCode, encodeReportCode, MAX_BACKUP_BYTES, mergeTeam, planRestore, readBackup, readTeamPackage, readTeamServerFile,
-  serializeBackup, siteOf, siteOperation, takeOverPlan, TEAM_PACKAGE_FORMAT, TEAM_SERVER_FORMAT, teamContextOf, teamPackageFileName, teamServerFile, teamServerFileName,
+  sectionNeeds, serializeBackup, siteOf, siteOperation, takeOverPlan, TEAM_PACKAGE_FORMAT, TEAM_SERVER_FORMAT, teamContextOf, teamPackageFileName, teamServerFile, teamServerFileName,
   teamStatusText, teamView, describeEvent,
 } from '../../../../../packages/domain/src/index.js';
 import type { Project, TeamEvent, TeamMerge, TeamState, TeamView } from '../../../../../packages/domain/src/index.js';
@@ -89,7 +89,9 @@ export function TeamExchange({ session, team, view, onMessage }: { session: Proj
     if (!project.world) { onMessage('Für die Serverdatei muss das Projekt auf der Weltkarte platziert sein (Ursprung und Dimension), sonst weiß der Server nicht, wo die Abschnitte liegen.'); return; }
     const guide = computation?.guide;
     if (!guide) { onMessage('Die Bauanleitung ist noch nicht berechnet.'); return; }
-    const file = teamServerFile({ team, view, projectName: project.name, sections: site.sections, steps: guide.steps, origin: project.world.origin as [number, number, number], dimension: project.world.dimension });
+    const needs = computation ? sectionNeeds(site, guide, computation.stepMaterials) : undefined;
+    const file = teamServerFile({ team, view, projectName: project.name, sections: site.sections, steps: guide.steps, origin: project.world.origin as [number, number, number], dimension: project.world.dimension,
+      ...(needs && { needs }) });
     const name = teamServerFileName(team);
     download(name, JSON.stringify(file, null, 1), 'application/json');
     onMessage(`Serverdatei „${name}“ erzeugt. Auf dem Server nach plugins/BauplanerBridge/team/ legen und /bauplaner team laden eingeben. Abschnitte ohne Bauteile haben keine Box.`);

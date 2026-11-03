@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T19:57:31.636Z",
+  "updatedAt": "2026-11-03T20:01:09.951Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -28,7 +28,8 @@
     "COOP-04",
     "PROJ-01",
     "COOP-05",
-    "PERF-05"
+    "PERF-05",
+    "COOP-06"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -6568,6 +6569,79 @@
       "updatedAt": "2026-11-03T19:05:43.334Z"
     },
     {
+      "id": "COOP-06",
+      "title": "Teamplanung im Planer: Arbeitspakete, Zuteilung, Zeitplan, Material je Spieler, Fortschritt mit Hinweisen, Konflikthilfe, Planstand-Vergleich, Übergabe und Abwesenheit",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Gemeinsames Bauen im Planer vertiefen“)",
+      "dependencies": [
+        "COOP-01"
+      ],
+      "scope": [
+        "packages/domain/src/teamPlan.ts",
+        "packages/domain/src/team.ts",
+        "apps/web/src/views/project/TeamPlan.tsx",
+        "apps/web/src/teamplan.css",
+        "tests/teamPlan.test.mjs",
+        "tests/e2e/teamplan.e2e.mjs"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "COOP-06-S01",
+          "title": "Domäne teamPlan.ts: Arbeitspakete teilen, Abhängigkeiten, Zuteilungsvorschlag, Zeitplan, Material je Spieler, Fortschritt/Achtung, Konflikthilfe, Planstand-Vergleich, Rechteübersicht.",
+          "done": true
+        },
+        {
+          "id": "COOP-06-S02",
+          "title": "Teamprotokoll: section.handover/accept/decline, member.away, issue.ack; Bedarf je Abschnitt in der Serverdatei.",
+          "done": true
+        },
+        {
+          "id": "COOP-06-S03",
+          "title": "Reiter Team: Bereiche Planung, Fortschritt, Rechte & Übergabe; Hinweise mit Ein-Klick-Lösung.",
+          "done": true
+        },
+        {
+          "id": "COOP-06-S04",
+          "title": "Plugin faltet die neuen Arten in TeamLog.java (Plugin-Thread).",
+          "done": false
+        },
+        {
+          "id": "COOP-06-S05",
+          "title": "Abnahme mit Mitspielern an einem großen Bau (TEAMBAU-21…24).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Teilen ändert die Abdeckung nicht und ist ein Rückgängig-Schritt; das erste Paket behält die Abschnitts-ID.",
+        "Übergabe wechselt den Inhaber erst nach Annahme; Faltung bleibt reihenfolgeunabhängig.",
+        "Zeitplan und Mengen sind als Planungshilfe gekennzeichnet."
+      ],
+      "next": "Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/teamPlan.test.mjs",
+          "note": "13 Fälle: Teilen, Zuteilung, Zeitplan, Material, Fortschritt, Konflikte, Vergleich, Übergabe, Abwesenheit, Serverdatei."
+        },
+        {
+          "path": "tests/e2e/teamplan.e2e.mjs",
+          "note": "Browser 1400/390 px: teilen, zuweisen, Zeitplan, Material, Fortschritt, Vergleich, Übergabe, Abwesenheit, Bauleitung übergeben."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Automatisch geprüft; Abnahme mit echten Mitspielern offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-03T20:01:09.951Z"
+    },
+    {
       "id": "PROJ-01",
       "title": "Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten",
       "phase": "P3",
@@ -12155,6 +12229,39 @@
           "done": 6,
           "total": 8,
           "next": "O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T20:01:09.951Z",
+      "kind": "progress",
+      "items": [
+        "COOP-06"
+      ],
+      "summary": "Teamplanung im Planer (Reiter Team: Planung, Fortschritt, Rechte & Übergabe) umgesetzt",
+      "files": [
+        "apps/web/src/teamplan.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/project/TeamExchange.tsx",
+        "apps/web/src/views/project/TeamPlan.tsx",
+        "apps/web/src/views/project/TeamTab.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/TEAMBAU.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/team.ts",
+        "packages/domain/src/teamPlan.ts",
+        "tests/e2e/teamplan.e2e.mjs",
+        "tests/teamPlan.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-06",
+          "status": "implemented",
+          "done": 3,
+          "total": 5,
+          "next": "Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern."
         }
       ]
     }

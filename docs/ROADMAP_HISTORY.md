@@ -3970,3 +3970,30 @@ Nachtrag: versehentlich eingecheckte Profildatei reload.cpuprofile entfernt, *.c
 - `.gitignore`
 - `reload.cpuprofile`
 
+## 2026-11-03T20:01:09.951Z · progress
+
+**Aufgaben:** COOP-06
+
+Teamplanung im Planer (Reiter Team: Planung, Fortschritt, Rechte & Übergabe) umgesetzt
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-06 | 🧩 Implementiert · Abnahme offen | 3/5 | Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/teamplan.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/project/TeamExchange.tsx`
+- `apps/web/src/views/project/TeamPlan.tsx`
+- `apps/web/src/views/project/TeamTab.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/TEAMBAU.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/team.ts`
+- `packages/domain/src/teamPlan.ts`
+- `tests/e2e/teamplan.e2e.mjs`
+- `tests/teamPlan.test.mjs`
+

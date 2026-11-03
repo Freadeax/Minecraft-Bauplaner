@@ -1,6 +1,6 @@
 # Teambau: mehrere Spieler bauen gemeinsam an einem Projekt (COOP)
 
-Stand: 03.11.2026 – **COOP-01 und COOP-02 umgesetzt** (siehe §17), COOP-03/04 geplant. Roadmap: **COOP-01** (Teamprotokoll und Teampaket im Planer), **COOP-02** (Paper-Plugin als Teamknoten), **COOP-03** (Live-Abgleich über die Mod), **COOP-04** (Baunachweis je Spieler und Gemeinschaftslager). Baut auf [SITE](SITE.md) (Bauabschnitte, Lager, Sammelplan), PROJ-01 „Planung“ (`site.program`: Bauleute, Meilensteine, Zuweisungen), [BUILD_RUN](BUILD_RUN.md) (Bauzettel, Bautage), [LIVE_LINK](LIVE_LINK.md) (Mod ↔ Website) und dem Paper-Plugin (GAME-04) auf. Ersetzt für den Spielbetrieb den Backend-Weg aus TEAM-01…03, der als spätere Option bestehen bleibt.
+Stand: 03.11.2026 – **COOP-01 bis COOP-06 umgesetzt** (siehe §17, §18). Roadmap: **COOP-01** (Teamprotokoll und Teampaket im Planer), **COOP-02** (Paper-Plugin als Teamknoten), **COOP-03** (Live-Abgleich über die Mod), **COOP-04** (Baunachweis je Spieler und Gemeinschaftslager). Baut auf [SITE](SITE.md) (Bauabschnitte, Lager, Sammelplan), PROJ-01 „Planung“ (`site.program`: Bauleute, Meilensteine, Zuweisungen), [BUILD_RUN](BUILD_RUN.md) (Bauzettel, Bautage), [LIVE_LINK](LIVE_LINK.md) (Mod ↔ Website) und dem Paper-Plugin (GAME-04) auf. Ersetzt für den Spielbetrieb den Backend-Weg aus TEAM-01…03, der als spätere Option bestehen bleibt.
 
 ## 1. Ausgangslage und Ziel
 
@@ -65,6 +65,21 @@ interface TeamEventBase { id: string; at: string; by: string /* builderId */; or
 | `note.add` | `noteId`, `text`, `section?`, `pos?`, `tag` (`frage`/`problem`/`material`/`info`) | Notiz am Bau |
 | `note.resolve` | `noteId`, `text?` | Notiz erledigt |
 | `plan.release` | `revisionId`, `revisionNumber`, `summary` | Planstand für alle freigeben |
+| `section.handover` (COOP-06) | `section`, `member`, `note?` | Übergabe anbieten; der Inhaber bleibt, bis angenommen wird |
+| `section.accept` (COOP-06) | `section` | Angebot annehmen: Inhaber wechselt, Notiz des Angebots wird Abschnittsnotiz |
+| `section.decline` (COOP-06) | `section` | Angebot ablehnen (Empfänger) oder zurückziehen (Anbieter, Inhaber, Baumeister+) |
+| `member.away` (COOP-06) | `member`, `until?` (`YYYY-MM-DD`, einschließlich), `note?` (≤ 120) | Abwesenheit; ohne `until` und `note` = wieder da |
+| `issue.ack` (COOP-06) | `events` (1–200 Ereignis-IDs) | Hinweise/abgelehnte Ereignisse als erledigt markieren (Baumeister+); ändert sonst nichts |
+
+**Regeln der COOP-06-Arten** (gleich in `team.ts` und – nachzuziehen – `TeamLog.java`; Rechteprüfung wie überall mit der Rolle zum Ereigniszeitpunkt):
+
+- `section.handover`: Mindestrolle Helfer. Nur der Inhaber oder Baumeister+. Abgelehnt, wenn der Abschnitt gemeldet oder bestätigt ist, das Ziel unbekannt ist, schon Inhaber ist oder nur Gast ist. Ein freier Abschnitt kann von Baumeister+ angeboten werden. Ein neues Angebot ersetzt ein offenes.
+- `section.accept`: nur das angebotene Mitglied, solange das Angebot offen ist (sonst abgelehnt „kein Übergabeangebot“). Wirkung: Inhaber = Annehmender, Status `frei` → `vergeben`, sonst unverändert; Angebot gelöscht.
+- `section.decline`: Empfänger, Anbieter, aktueller Inhaber oder Baumeister+; ohne offenes Angebot abgelehnt.
+- Jedes wirksame `section.claim`, `section.assign`, `section.release`, `section.done` und `section.verify` löscht ein offenes Angebot (es ist überholt).
+- `member.away`: Mindestrolle Gast, für sich selbst immer; für andere nur die Bauleitung.
+- `issue.ack`: Mindestrolle Baumeister. Die Ansicht führt die IDs als `acknowledged`; Konflikte und Ablehnungen bleiben im Protokoll und in der Faltung unverändert.
+- Ansicht: `SectionTeamState.offer = {to, by, at, note?}`, `TeamMember.away = {until?, note?}`, `TeamView.acknowledged`.
 
 **Abgeleiteter Zustand** (`teamView(team, site, project)`): je Abschnitt Inhaber, Status (`frei` → `vergeben` → `gemeldet` → `bestätigt` / `nacharbeit`), Verlauf; je Mitglied Rolle, Spielername, Abschnitte, Beiträge (Blöcke, Items), offene Notizen; aktueller Planstand; Lagerbuchungen als Summe je Item; Konfliktliste.
 
@@ -234,6 +249,7 @@ Tokens, Konten oder Cloud-Dienste werden für keine Stufe benötigt.
 | **COOP-02** | Teammodul im Paper-Plugin: Teamdatei, Befehle, Aktionsleiste, Hinweis/Sperre, Ausfuhr; Servertest | COOP-01, GAME-04 | Befehle auf echtem Paper-Server (Testskript), Ereignisse der Ausfuhr ergeben im Planer denselben Stand |
 | **COOP-03** | Merkmal `team` in Mod und Plugin-Kanal; Website „Mit Spiel abgleichen“ | COOP-02, GAME-08 | Spieltest: Freigabe hoch, Meldung im Spiel, Website holt sie |
 | **COOP-04** | Spielnachweis je Spieler, Lagerkisten zählen, Beitragsauswertung | COOP-02, LAGER-01 | Zähler stimmen mit gesetzten Blöcken im Servertest |
+| **COOP-06** | Teamplanung im Planer (§18): Arbeitspakete, Zuteilung, Zeitplan, Material je Spieler, Fortschritt mit Hinweisen, Konflikthilfe, Planstand-Vergleich, Übergabe, Abwesenheit, Rechteübersicht; Bedarf in der Serverdatei | COOP-01 | Browsertest (1400/390 px): teilen, zuweisen, Zeitplan, Material, Fortschritt, Vergleich, Übergabe annehmen, Abwesenheit, Bauleitung übergeben |
 
 ## 15. Schnittstellen
 
@@ -293,3 +309,24 @@ Tokens, Konten oder Cloud-Dienste werden für keine Stufe benötigt.
 - Teamkanal mit echtem Client gegen echten Paper-Server (Anmeldung des Kanals, Meldung, Quittung). Das prüft TEAMBAU-09.
 - Lagerkisten vertiefen (eigener Thread). Sie hängen sich über `TeamChannel.decorate` und `broadcastStore` an den Kanal.
 - „Verlauf verdichten“.
+
+## 18. Teamplanung im Planer (COOP-06, 03.11.2026)
+
+Ziel: Ein großer Bau (Burg, Stadt, Kolosseum) lässt sich mit mehreren Spielern **planen**, nicht nur verteilen. Der Reiter „Team“ hat dafür vier Bereiche: **Bauen** (Stufe 1, unverändert), **Planung**, **Fortschritt**, **Rechte & Übergabe**. Domäne: `packages/domain/src/teamPlan.ts` (rein); Oberfläche `views/project/TeamPlan.tsx`, `teamplan.css`.
+
+| Baustein | Regel |
+|---|---|
+| **Arbeitspakete** (`splitSection`) | Teilt einen Abschnitt in 2–16 Pakete, die ihn an derselben Stelle der Bauordnung ersetzen. *Nach Schichten*: Einheiten (Bauteil, Schicht) in Bauordnung, Schnitt dort, wo die laufende Summe der Arbeit (Blöcke + Abbau) dem Anteil k/N am nächsten ist; Pakete liegen übereinander und bauen aufeinander auf. *Nach Bauteilen*: ganze Bauteile, größte zuerst ins leichteste Paket (LPT); unabhängig, gleichzeitig baubar. *Automatisch*: Bauteile, wenn es mindestens so viele wie Pakete gibt. Das erste Paket behält die Abschnitts-ID (Inhaber, Verlauf, Abschnittsstände bleiben). Offene Schichtenden bleiben offen, die Abdeckung ist exakt dieselbe. Nur Bauleitung; gemeldete/bestätigte Abschnitte werden nicht geteilt; ein `site.set` (Strg+Z). Höchstens 64 Abschnitte. |
+| **Abhängigkeiten** (`sectionWork`) | Ein Abschnitt hängt von früheren Abschnitten ab, die Voraussetzungen seiner Schritte enthalten (Bauanleitung, `prerequisites`). Spätere Voraussetzungen werden gemeldet (Reihenfolge prüfen). |
+| **Zuteilungsvorschlag** (`suggestTeamAssignment`) | Nur freie Abschnitte mit offener Arbeit; Kandidaten = Helfer+, nicht abwesend, Auswahl „Wer baut mit“. Wer am wenigsten offene Arbeit hat, bekommt den nächsten Abschnitt in Bauordnung; baut ein Abschnitt auf einem Paket eines Mitglieds auf, bleibt er bei diesem, solange es höchstens eine halbe Paketlast mehr hat als der Leichteste. Übernahme schreibt `section.assign`-Ereignisse in einem Schritt (Baumeister+). |
+| **Zeitplan** (`teamSchedule`) | Je Mitglied eine Spur in Bauordnung, Tempo `site.pace.blocksPerSession` je Bautag; Start = max(Spur frei, Ende aller Voraussetzungs-Abschnitte). Freie Abschnitte so, als ob sie sofort jemand nähme (gestreift). Abwesende starten nach `until` (Tage × Bautage je Woche / 7). Gemeldet/bestätigt = fertig. Ausgabe: Ende in Bautagen und als Datum, „allein“, entscheidende Kette, Wartezeiten. Planungshilfe, keine Messung. |
+| **Material im Team** (`teamMaterials`) | Je Item: offener Bedarf (planSite: Lager in Bauordnung verbraucht), Lager, fehlt, wird gesammelt (`gather.claim`), gemeldet geliefert, ohne Sammler. Je Mitglied: Bedarf seiner Abschnitte, Plätze, Shulkerkisten, Packliste als Text. Lieferungen werden nicht automatisch Lager (LAGER-01). |
+| **Fortschritt** (`teamProgress`) | Brett nach Status; je Mitglied und gesamt drei getrennte Aussagen: abgehakt (Bauanleitung dieses Browsers), gemeldet, bestätigt. „Achtung“: Meldung wartet ≥ 2 Tage, Inhaber ≥ 7 Tage inaktiv, abwesender Inhaber, ganz abgehakt aber nicht gemeldet, gemeldet aber < 90 % abgehakt, Übergabe ≥ 2 Tage offen, Vorarbeit hat niemand übernommen, verwaiste Abschnitte, Planänderung seit Freigabe bei gemeldet/bestätigt – jeweils mit Knopf (Bestätigen, Nacharbeit, Fertig melden, Freigeben). |
+| **Planstand-Vergleich** (`releaseChanges`) | Schritte der freigegebenen Revision gegen den aktuellen Plan: gleiche Schritt-ID (Bauteil, Schicht, Phase), anderer `geometryHash` = geändert; dazu neu/entfallen, zugeordnet nach heutiger Abschnittsregel. Nie automatischer Statuswechsel (§10). |
+| **Konflikthilfe** (`teamIssues`) | Zu jedem Hinweis und jeder Ablehnung fertige Lösungen als normale Ereignisse: Doppelübernahme → „An X umweisen“ / „Bei Y lassen“; Umweisung → „Zurück an X“ (Inhaber vor dem Ereignis aus der Faltung bis dahin); fremde Meldung → „Prüfen und bestätigen“, „X als Inhaber eintragen“; abgelehnter Gast → „zum Helfer machen“, Abschnitt zuweisen; immer „erledigt“ (`issue.ack`). |
+| **Übergabe & Rechte** | Angebot/Annahme (§4), Abwesenheit, „Bauleitung übergeben“ (zwei `member.role`-Ereignisse in einem Schritt: neue Bauleitung, man selbst Baumeister) oder „zusätzlich Bauleitung“; Rechteübersicht aus `canTeam`. |
+| **Serverdatei** | `sections[].need` und `need` (volle Bau-Item-Mengen je Abschnitt bzw. Projekt aus `sectionNeeds`, höchstens 256 Zeilen, absteigend) für den Lagerabgleich des Plugins. |
+
+**Abstimmung:** Mod-Thread baut `teamLink.ts` und `TeamLive.tsx` („Mit Spiel abgleichen“) und ergänzt `SectionIds`/`TeamId` im .schem-Export; Plugin-Thread faltet die COOP-06-Arten in `TeamLog.java` (`/bp uebergeben`, `/bp annehmen`, `/bp abwesend`) und liest `need`; Stufe-3-Thread (COOP-04) besitzt Baunachweis und Lagerkisten.
+
+**Grenzen:** Teilung nur entlang Schichten und Bauteilen (Abschnittsmitglieder kennen keine Flächen). Zeitplan rechnet mit einem Tempo für alle. Abgehakt-Anteile stammen aus dem Browser, der die Ansicht zeigt.
