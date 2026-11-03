@@ -96,3 +96,19 @@ NeoForge/Forge: `client-26.3` nach `client-<version>` kopieren und dort `ClientH
 4. `/bauplaner scan` liest die ganze Planbox, auch wenn niemand in der Nähe ist; `scan geladen` nur geladene Chunks. Die Aufnahme aus `plugins/BauplanerBridge/scans/` herunterladen und im Tab „Bauen“ importieren.
 
 Rechte: `bauplaner.use` (alle), `bauplaner.nachladen` (Chunks nachladen) und `bauplaner.abbrechen.alle` (Operatoren). Einstellungen: `plugins/BauplanerBridge/config.yml` (Zeitbudget je Tick, Nachladen, Chunk-Grenze).
+
+### Gemeinsam bauen (Teambau, COOP-02)
+
+Konzept: [TEAMBAU](../../docs/architecture/TEAMBAU.md). Die Bauleitung lädt im Planer (Reiter „Team“) die **Serverdatei** herunter, legt sie nach `plugins/BauplanerBridge/team/` und gibt `/bauplaner team laden` ein. Mitspieler brauchen weder Planer noch Mod:
+
+| Befehl | Wirkung |
+|---|---|
+| `/bauplaner team` | Projekt, Planstand, eigene Abschnitte, freie Abschnitte, offene Notizen |
+| `/bauplaner abschnitte` | alle Abschnitte mit Status und Inhaber |
+| `/bauplaner nehmen <nr>` · `abgeben <nr>` · `fertig [<nr>] [notiz]` | Abschnitt übernehmen, zurückgeben, fertig melden (der erste Befehl tritt dem Team als Helfer bei) |
+| `/bauplaner zeigen <nr>` | Umriss 30 s als Partikel, nur für dich |
+| `/bauplaner notiz <frage\|problem\|material\|info> <text>` · `notizen` | Notiz an deiner Position, Notizen in der Nähe |
+| `/bauplaner geliefert <item\|hand> [menge]` · `sammle <item> <menge>` | Lieferung melden (nimmt nichts aus dem Inventar), Sammelauftrag |
+| Baumeister: `zuweisen <nr> <spieler>`, `pruefen <nr> ok\|nacharbeit [notiz]` · Bauleitung: `rolle <spieler> <rolle>`, `team export`, `team wahl <name>` | |
+
+Jede Handlung landet als Ereignis in `team/<teamId>.events.jsonl`; `/bauplaner team export` schreibt den Stand, den der Planer einliest. Wer in einem Abschnitt steht, sieht ihn in der Aktionsleiste. `config.yml` → `team.schutz`: `hinweis` (Standard), `sperren` (Blockänderungen in fremden Abschnitten verhindern) oder `aus`. Rechte `bauplaner.team.use` (alle) und `bauplaner.team.leitung` (Operatoren). In der Konsole handelt `bauplaner team als <spieler> <befehl>` für einen Spieler. Servertest: `scripts/test_bridge_paper_team.sh`.

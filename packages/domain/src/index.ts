@@ -126,3 +126,9 @@ export { GROSSPROJEKT_SCHEMA_VERSION, MIN_STREET_WIDTH, MAX_STREET_WIDTH, MAX_GP
   summarizeGrossprojekt, themeOfGrossprojekt, grossprojektAssetIds } from './grossprojekte.js';
 export type { QuartierKind, StreetStyle, GrossprojektUnit, Quartier, GrossprojektPhase, GrossprojektStreets, Grossprojekt, ProjectScale, GrossprojektChoices, NormalizedGpChoices, QuartierLayout, StreetLayout, GrossprojektLayout, GrossprojektPlan, GrossprojektSummary } from './grossprojekte.js';
 export { GROSSPROJEKTE, grossprojektById, grossprojekteForTheme } from './grossprojekte/index.js';
+export { TEAM_SCHEMA_VERSION, MAX_TEAM_EVENTS, TEAM_ROLES, TEAM_ROLE_LABEL, TEAM_ROLE_TEXT, NOTE_TAGS, NOTE_TAG_LABEL, PLAYER_NAME, isKnownEvent, checkTeamEvent, compareEvents, checkTeam,
+  createTeam, teamEvent, appendEvents, mergeTeam, SECTION_TEAM_STATUS_LABEL, canTeam, teamView, eventLabel, describeEvent, authorize, laterThan, teamAssignments,
+  REPORT_CODE_PREFIX, MAX_REPORT_CODE, encodeReportCode, decodeReportCode, TEAM_PACKAGE_FORMAT, TEAM_PACKAGE_VERSION, buildTeamPackage, teamPackageFileName, readTeamPackage,
+  teamStatusText, TEAM_SERVER_FORMAT, teamServerFile, teamServerFileName, readTeamServerFile, programBuilders, teamContextOf, takeOverPlan, joinedOnly } from './team.js';
+export type { TeamRole, NoteTag, ItemCount, TeamEventBody, KnownTeamEvent, UnknownTeamEvent, TeamEvent, TeamEventKind, TeamState, TeamMerge, SectionTeamStatus, TeamMember,
+  SectionTeamState, TeamNote, TeamRejection, TeamConflict, GatherClaim, PlanRelease, TeamView, TeamContext, TeamAction, TeamPackage, TeamServerFile } from './team.js';

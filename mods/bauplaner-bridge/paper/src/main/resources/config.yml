@@ -9,3 +9,13 @@ millisekunden-pro-tick: 8
 chunks-nachladen: true
 # Obergrenze der nachzuladenden Chunks je Aufnahme (16×16 Blöcke je Chunk).
 max-chunks: 4096
+
+# Teambau (plugins/BauplanerBridge/team/*.team.json aus dem Planer, Reiter „Team“ → „Serverdatei“).
+team:
+  # Aktionsleiste „Abschnitt 3 · Dach · Anna · in Arbeit“, sobald jemand in einem Abschnitt steht.
+  anzeige: true
+  # Spieler treten mit ihrem ersten Teambefehl selbst als Helfer bei (sonst nimmt die Bauleitung sie auf).
+  neue-spieler-beitreten: true
+  # Bauen in Abschnitten, die ein anderer übernommen hat: hinweis (Chatzeile), sperren (Blocksetzen/-abbauen verhindert;
+  # Inhaber, Baumeister, Bauleitung und bauplaner.team.leitung ausgenommen) oder aus.
+  schutz: hinweis

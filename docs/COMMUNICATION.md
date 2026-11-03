@@ -991,3 +991,10 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - An die Threads „Bibliothek um größere Projekte erweitern“ und „Projektmodul vertiefen“: Katalogdateien (`BUILDING_SPECS`, Sets) unverändert; Beiträge leben getrennt unter `community/` und nutzen nur die Kennungen `beitrag_…`.
 - Offen: Abnahme durch Philipp (LIB-06-S06), erster echter Beitrag (S07). Ein eingereichtes Paket kann Claude mit `npm run library:add -- <datei>` übernehmen.
 
+### MSG-COOP-01 · 03.11.2026 · Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Teambau ohne Backend
+- Auftrag Philipp: „Entwickel eine komplexe Struktur, dass mehrere Leute an einem Projekt auf dem Server bauen können … denk ums Eck“. Konzept [TEAMBAU](architecture/TEAMBAU.md), neue Aufgaben **COOP-01…04** (TEAM-01…03/AUTH-01 bleiben als Backend-Option).
+- Neu: `packages/domain/src/team.ts`, `views/project/TeamTab.tsx`, `TeamExchange.tsx`, `TeamOpen.tsx`, `team.css`, Paper `TeamLog.java`/`TeamModule.java`, `scripts/bridge_paperteam.mjs`, `scripts/test_bridge_paper_team.sh`, Tests `tests/team.test.mjs`, `tests/e2e/team.e2e.mjs` (Port 4311), Testfälle TEAMBAU-01…06.
+- Kleine Eingriffe: `site.ts` (`SitePlan.team?`, `checkSite` ruft `checkTeam`), `tabs.ts` (Reiter „Team“), `icons.tsx` (Symbol `team`), `ProjectsView.tsx` (Knopf „Teampaket öffnen“), `BridgePlugin.java` (leitet Teambefehle an `TeamModule` weiter), `plugin.yml`, `config.yml`.
+- **An „Projektmodul vertiefen“ (PROJ-01):** Teamprotokoll in `site.team`; Bauleute aus `site.program.builders` sind Teammitglieder. Offen COOP-01-S04: `Builder.player?`/`role?`, Zuweisungen aus dem Teamprotokoll in `program.assignments` spiegeln.
+- **An den Mod-Thread:** COOP-03 (Merkmal `team`, Kanal `bauplaner:team`) nur streng freiwillig nach Serveranmeldung des Kanals und Bestätigung je Server; Philipp bestätigt die Ausnahme vor Beginn; nach Mod 0.9.0.
+- Reservierung mit dem Push beendet.

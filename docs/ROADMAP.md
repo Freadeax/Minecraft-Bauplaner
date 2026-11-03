@@ -12,10 +12,10 @@ Stand: 2026-11-03T16:46:52.767Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 15 |
+| ⏳ Offen | 17 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 48 |
+| 🧩 Implementiert · Abnahme offen | 50 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -41,6 +41,8 @@ Stand: 2026-11-03T16:46:52.767Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 - **GROSS-01 · Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06); Großbauten-Set (S05).
 - **LIB-06 · Bibliotheksbeiträge: eigene Bauwerke (Importe, Werkstatt, Generator) als festen Katalogeintrag für alle einreichen – Beitragspaket mit Prüfsumme und Rechtebestätigung, GitHub-Formular, Übernahme-Skript, Auslieferung wie mitgelieferte Gebäude** — 🧩 Implementiert · Abnahme offen, 5/7 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06) und erster echter Beitrag (S07).
 - **SIZE-01 · Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05) mit einem großen Bau im Spiel.
+- **COOP-01 · Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“** — 🧩 Implementiert · Abnahme offen, 3/5 Teilschritte. Nächster Schritt: PROJ-01-Anbindung (S04) nach dessen Merge; Abnahme durch Philipp mit Mitspielern.
+- **COOP-02 · Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll** — 🧩 Implementiert · Abnahme offen, 2/4 Teilschritte. Nächster Schritt: Jar veröffentlichen; Abnahme auf Philipps Server.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -175,6 +177,8 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [QA-04](#qa-04) | Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage | 🧩 Implementiert · Abnahme offen | 4/6 | QA-01, STAB-01, GAME-07 | ausstehend | ausstehend |
 | [GEN-03](#gen-03) | Kolosseum aus Philipps Bauplan: Arena-Generator, Bauset Antike und Großprojekt Kolosseum-Viertel | 🧩 Implementiert · Abnahme offen | 4/5 | GEN-02, GROSS-01 | ausstehend | ausstehend |
 | [SIZE-01](#size-01) | Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger | 🧩 Implementiert · Abnahme offen | 4/5 | PERF-04, ARCH-02, GFX-01, GAME-08 | ausstehend | ausstehend |
+| [COOP-01](#coop-01) | Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“ | 🧩 Implementiert · Abnahme offen | 3/5 | BUILD-06, BACKUP-02 | ausstehend | ausstehend |
+| [COOP-02](#coop-02) | Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll | 🧩 Implementiert · Abnahme offen | 2/4 | COOP-01, GAME-04 | ausstehend | ausstehend |
 
 ## P4: Optionale Zusammenarbeit und Integrationen
 
@@ -198,6 +202,8 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [OPS-04](#ops-04) | Teamdienst betreiben und Wiederherstellung prüfen | ⏳ Offen | 0/2 | TEAM-02 | ausstehend | ausstehend |
 | [DEFER-01](#defer-01) | GitHub-Login, externes Materialrepo und Registry | ⏸ Zurückgestellt | 0/1 | — | ausstehend | ausstehend |
 | [DEFER-02](#defer-02) | Optionale Discord-Integration | ⏸ Zurückgestellt | 0/1 | AUTH-01 | ausstehend | ausstehend |
+| [COOP-03](#coop-03) | Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm | ⏳ Offen | 0/2 | COOP-02, GAME-08 | ausstehend | ausstehend |
+| [COOP-04](#coop-04) | Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten am Weltplan-Punkt zählen, Lieferungen ins Lager übernehmen | ⏳ Offen | 0/2 | COOP-02, LAGER-01 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
 
@@ -1551,14 +1557,14 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TEAM-01
 
-**Backendvertrag, Datenbank und Payloadspeicher** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Backendvertrag, Datenbank und Payloadspeicher** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-03T16:19:59.131Z
 
 - [ ] TEAM-01-S01: API, Betriebsmodell und Kostenrahmen dokumentieren.
 - [ ] TEAM-01-S02: PostgreSQL-Metadaten und dauerhaften Objektspeicher mit Integrität/Backup aufbauen.
 
 **Abnahme:** Pages bleibt statisches Frontend; kein Geheimnis im Client oder Repo.
 
-**Nächste Aktion:** API, Betriebsmodell und Kostenrahmen dokumentieren.
+**Nächste Aktion:** API, Betriebsmodell und Kostenrahmen dokumentieren. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option.
 
 **Prüfstand:** Abnahme noch nicht vollständig erbracht.
 
@@ -1570,14 +1576,14 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### AUTH-01
 
-**Konten, Rechte und Übernahme lokaler Projekte** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Konten, Rechte und Übernahme lokaler Projekte** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-03T16:19:59.131Z
 
 - [ ] AUTH-01-S01: Gast-/Kontovertrag und serverseitige Rechte definieren.
 - [ ] AUTH-01-S02: Freigaben, Rollen, Rechtewechsel und kontrollierten lokalen Import prüfen.
 
 **Abnahme:** Keine fremden Projektzugriffe; Gastmodus bleibt lokal nutzbar.
 
-**Nächste Aktion:** Gast-/Kontovertrag und serverseitige Rechte definieren.
+**Nächste Aktion:** Gast-/Kontovertrag und serverseitige Rechte definieren. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option.
 
 **Prüfstand:** Abnahme noch nicht vollständig erbracht.
 
@@ -1589,14 +1595,14 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TEAM-02
 
-**Geordnete Operationen, Reconnect und Team-Undo** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Geordnete Operationen, Reconnect und Team-Undo** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-03T16:19:59.131Z
 
 - [ ] TEAM-02-S01: Operation-ID, Revisionsprüfung und Wiederholung serverseitig umsetzen.
 - [ ] TEAM-02-S02: Konkurrierende Änderungen, Reconnect und geprüfte Gegenoperationen testen.
 
 **Abnahme:** Kein stiller Verlust und kein Überschreiben fremder Operationen.
 
-**Nächste Aktion:** Operation-ID, Revisionsprüfung und Wiederholung serverseitig umsetzen.
+**Nächste Aktion:** Operation-ID, Revisionsprüfung und Wiederholung serverseitig umsetzen. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option.
 
 **Prüfstand:** Abnahme noch nicht vollständig erbracht.
 
@@ -1608,14 +1614,14 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TEAM-03
 
-**Gemeinsame Aufgaben, Abschnitte und Sammelplanung** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-01T06:15:35+01:00
+**Gemeinsame Aufgaben, Abschnitte und Sammelplanung** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Aktualisiert: 2026-11-03T16:19:59.131Z
 
 - [ ] TEAM-03-S01: Zuständigkeiten und Lagerbuchungen versionieren.
 - [ ] TEAM-03-S02: Abschnitte und Sammelaufträge mehreren Spielern zuweisen.
 
 **Abnahme:** Planung, manuelle Bestätigung und Spielnachweis bleiben getrennt.
 
-**Nächste Aktion:** Zuständigkeiten und Lagerbuchungen versionieren.
+**Nächste Aktion:** Zuständigkeiten und Lagerbuchungen versionieren. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option.
 
 **Prüfstand:** Abnahme noch nicht vollständig erbracht.
 
@@ -2031,6 +2037,87 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/size-limits.test.mjs](../tests/size-limits.test.mjs) — Grenzen, Stufen, großer Schem-Import ohne Luft, SectionRuns, lineare Werkstattschritte, Rückgängig-Budget, Prüfung gegen alte/neue Mod.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/BigPlanTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/BigPlanTest.java) — 6,3 Mio. Box / 3,1 Mio. Blöcke laden und abgleichen, SectionRuns = SectionCells, Ablehnung zu großer Pläne.; [docs/architecture/SIZE_LIMITS.md](architecture/SIZE_LIMITS.md) — Grenzen vorher/jetzt, Messwerte, Umbau Website und Mod.
 
 **Dateiumfang:** `packages/voxel/src/sizeLimits.ts`, `packages/voxel/src/validation.ts`, `packages/formats/src/schem.ts`, `packages/formats/src/litematic.ts`, `packages/formats/src/worldExcerpt.ts`, `packages/formats/src/schemWrite.ts`, `packages/formats/src/litematicWrite.ts`, `packages/formats/src/scan.ts`, `packages/domain/src/editor/draft.ts`, `packages/domain/src/liveLink.ts`, `packages/application/src/revisionExport.ts`, `packages/application/src/scanPersistence.ts`, `apps/web/src/app/SizeNotice.tsx`, `apps/web/src/app/importLimits.ts`, `apps/web/src/jobs/importJob.ts`, `apps/web/src/editor/BlockEditor.tsx`, `apps/web/src/views/map/WorldMapView.tsx`, `apps/web/src/views/map/liveClient.ts`, `mods/bauplaner-bridge/`, `tests/size-limits.test.mjs`, `docs/architecture/SIZE_LIMITS.md`. **Abhängigkeiten:** PERF-04, ARCH-02, GFX-01, GAME-08. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### COOP-01
+
+**Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Aktualisiert: 2026-11-03T16:20:13.104Z
+
+- [x] COOP-01-S01: Konzept TEAMBAU.md: Rollen, Ereignismodell, Konfliktregeln, Austauschwege, Plugin, Mod, Nachweis, Lager, Freigabe, Einstieg, was nur Philipp tun kann.
+- [x] COOP-01-S02: Domäne team.ts: Ereignisse, Prüfung, Faltung mit Rechten, Zusammenführen, Meldecode, Teampaket, Statustext, Serverdatei, Planübernahme; site.team in checkSite.
+- [x] COOP-01-S03: Reiter „Team“ und „Teampaket öffnen“ mit Vorschau vor jedem Einlesen.
+- [ ] COOP-01-S04: Bauleute aus PROJ-01 mit Spielernamen verknüpfen und Zuweisungen in den Zeitplan spiegeln.
+- [ ] COOP-01-S05: Abnahme mit Mitspielern (TEAMBAU-01…05).
+
+**Abnahme:** Zwei Browser tauschen Pakete/Codes in beliebiger Reihenfolge und kommen zum selben Stand; doppelte Übernahme und fehlende Rechte werden gezeigt; nichts geht verloren. Kein Backend, keine Konten, kein automatischer Versand nach außen.
+
+**Nächste Aktion:** PROJ-01-Anbindung (S04) nach dessen Merge; Abnahme durch Philipp mit Mitspielern.
+
+**Prüfstand:** 12 Domänentests und Browsertest mit zwei getrennten Browsern (1400/390 px) grün; Abnahme mit echten Mitspielern offen.
+
+**Nachweise:** [tests/team.test.mjs](../tests/team.test.mjs) — Faltung, Rechte, Zusammenführen vertauschbar/idempotent, Meldecode, Teampaket, Statustext.; [tests/e2e/team.e2e.mjs](../tests/e2e/team.e2e.mjs) — Zwei Browser: Paket mit Plan, Meldecode, Doppelübernahme, Bestätigen, Neuladen, Rückgängig.
+
+**Dateiumfang:** `packages/domain/src/team.ts`, `packages/domain/src/site.ts`, `apps/web/src/views/project/TeamTab.tsx`, `apps/web/src/views/project/TeamExchange.tsx`, `apps/web/src/views/project/TeamOpen.tsx`, `apps/web/src/team.css`, `tests/team.test.mjs`, `tests/e2e/team.e2e.mjs`, `docs/architecture/TEAMBAU.md`. **Abhängigkeiten:** BUILD-06, BACKUP-02. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### COOP-02
+
+**Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Aktualisiert: 2026-11-03T16:20:13.104Z
+
+- [x] COOP-02-S01: TeamLog (Faltung wie team.ts) und TeamModule (Befehle, Aktionsleiste, Schutz, Partikel, Ausfuhr), Rechte und config.yml.
+- [x] COOP-02-S02: Echter Servertest Paper 1.18.2, 1.21.4 und 26.3: Planer-Faltung der Ausfuhr = Serverstand.
+- [ ] COOP-02-S03: Plugin-Jar mit Teammodul auf der Download-Seite veröffentlichen.
+- [ ] COOP-02-S04: Abnahme auf Philipps Paper-Server mit Mitspielern (TEAMBAU-06).
+
+**Abnahme:** Plugin verändert die Welt nie; Schutz verhindert höchstens Blockänderungen in fremden Abschnitten und ist abschaltbar. Ereignisse vom Server tragen die echte Spieleridentität und die Herkunft server.
+
+**Nächste Aktion:** Jar veröffentlichen; Abnahme auf Philipps Server.
+
+**Prüfstand:** Servertest mit Konsolenbefehlen auf drei Paper-Versionen bestanden; Aktionsleiste, Partikel und Schutz brauchen echte Spieler.
+
+**Nachweise:** [scripts/bridge_paperteam.mjs](../scripts/bridge_paperteam.mjs) — Baustag auf echtem Paper-Server, Neustart, Ausfuhr, Vergleich mit teamView.
+
+**Dateiumfang:** `mods/bauplaner-bridge/paper/`, `scripts/bridge_paperteam.mjs`, `scripts/test_bridge_paper_team.sh`. **Abhängigkeiten:** COOP-01, GAME-04. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### COOP-03
+
+**Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm** · ⏳ Offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Aktualisiert: 2026-11-03T16:19:54.092Z
+
+- [ ] COOP-03-S01: Vertrag mit dem Mod-Thread abstimmen (Vorschlag TEAMBAU.md §7).
+- [ ] COOP-03-S02: Mod, Plugin und Website umsetzen, Spieltest.
+
+**Abnahme:** Ohne Plugin meldet die Mod 404 team-plugin-fehlt; der Planer schreibt nie stellvertretend für andere.
+
+**Nächste Aktion:** Nach der Testphase mit dem Mod-Thread abstimmen.
+
+**Prüfstand:** Geplant.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `mods/`, `apps/web/src/views/project/TeamExchange.tsx`, `docs/architecture/LIVE_LINK.md`. **Abhängigkeiten:** COOP-02, GAME-08. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### COOP-04
+
+**Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten am Weltplan-Punkt zählen, Lieferungen ins Lager übernehmen** · ⏳ Offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Aktualisiert: 2026-11-03T16:19:54.092Z
+
+- [ ] COOP-04-S01: Zähler je Spieler mit Datenschutzschalter.
+- [ ] COOP-04-S02: Lagerkisten lesen und Lieferungen buchen ohne Doppelzählung.
+
+**Abnahme:** Selbstmeldung, Bestätigung und Spielnachweis bleiben getrennt sichtbar.
+
+**Nächste Aktion:** Nach COOP-02-Abnahme.
+
+**Prüfstand:** Geplant.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `mods/bauplaner-bridge/paper/`, `packages/domain/src/team.ts`. **Abhängigkeiten:** COOP-02, LAGER-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

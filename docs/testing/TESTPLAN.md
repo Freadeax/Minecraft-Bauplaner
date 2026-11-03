@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 75 Fälle in 9 Bereichen, davon 36 Kernfälle.
+Umfang: 81 Fälle in 10 Bereichen, davon 39 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -105,6 +105,19 @@ Prüft, ob die Seite richtig ausgeliefert ist und die gespeicherten Daten stimme
 |---|---|---|---|---|
 | SYS-01 | Systemcheck ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/system)) | kern | 1. Systemcheck öffnen, „Geladene Dateien prüfen“ und „Datencheck starten“. | Alle Dateien stimmen, Datencheck ohne Fehler (oder verständliche Befunde). |
 | SYS-02 | Fehler melden ausprobieren ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/testphase?melden)) | kern | 1. Unter „Testphase → Fehler melden“ einen Probebericht ausfüllen, kopieren und als Datei speichern (nicht abschicken). | Bericht enthält Build, Browser, Grafik und Protokoll, aber keine Projektdaten. |
+
+## TEAMBAU · Gemeinsam bauen (Team) (Planer)
+
+Mehrere Spieler an einem Projekt: Reiter „Team“ im Planer und Teambefehle des Paper-Plugins. Für den Austausch zwei Browser oder zwei Rechner nehmen (z. B. normales und privates Fenster).
+
+| ID | Fall | Stufe | Schritte | Erwartet |
+|---|---|---|---|---|
+| TEAMBAU-01 | Team gründen und Plan freigeben | kern | 1. Projekt mit Bauabschnitten öffnen (Reiter „Baustelle“ → Vorschlag „Fundament · Rohbau · Dach“).<br>2. Reiter „Team“: Name und Minecraft-Name eintragen, „Team gründen“.<br>3. „Aktuellen Plan freigeben“, kurze Beschreibung eingeben. | Du bist Bauleitung; oben steht „Planstand N gilt“; im Reiter „Export“ gibt es die neue Revision. |
+| TEAMBAU-02 | Mitspieler einladen | kern | 1. „Teampaket mit Plan“ herunterladen und im zweiten Browser auf der Startseite „Teampaket öffnen“.<br>2. Dort „Ich bin neu“ mit Namen und Minecraft-Namen, „Beitreten“. | Das Projekt erscheint mit allen Bauteilen und Abschnitten; der Mitspieler ist Helfer und sieht denselben Planstand. |
+| TEAMBAU-03 | Abschnitt übernehmen, melden, bestätigen | kern | 1. Im zweiten Browser einen freien Abschnitt „Übernehmen“, dann unter „Meine Aufgaben“ „Fertig melden“.<br>2. „Meldecode kopieren“ und den Code im ersten Browser unter „Einlesen“ einfügen, „Prüfen“, „Übernehmen“.<br>3. Im ersten Browser „✓ Bestätigen“. | Vorschau nennt die neuen Ereignisse; danach steht der Abschnitt auf „fertig gemeldet“ bzw. „bestätigt“ mit dem richtigen Namen. Strg+Z nimmt das Einlesen zurück. |
+| TEAMBAU-04 | Gleichzeitig denselben Abschnitt nehmen | vertieft | 1. Beide Browser übernehmen denselben freien Abschnitt, ohne vorher auszutauschen.<br>2. Meldecodes in beide Richtungen einlesen. | In beiden Browsern gehört der Abschnitt derselben Person (wer zuerst war); oben erscheint ein Hinweis „… wollte übernehmen, war schon vergeben“. Nichts geht verloren. |
+| TEAMBAU-05 | Beiträge, Sammelaufträge, Notizen | vertieft | 1. Gebaute Blöcke und eine Lieferung melden, einen Sammelauftrag übernehmen, eine Notiz mit @Name schreiben.<br>2. Austauschen und „Statustext für Discord“ ansehen. | Mitgliederliste zählt Blöcke/Items; die erwähnte Person sieht die Notiz unter „Meine Aufgaben“; der Statustext listet Abschnitte, Sammelaufträge und offene Notizen. |
+| TEAMBAU-06 | Team auf dem Paper-Server | vertieft | 1. Projekt auf der Weltkarte platzieren, im Reiter „Team“ „Serverdatei herunterladen“.<br>2. Datei nach plugins/BauplanerBridge/team/ legen, im Spiel `/bauplaner team laden` (als OP).<br>3. Als Mitspieler `/bauplaner team`, `/bauplaner nehmen 2`, im Abschnitt stehen, `/bauplaner zeigen 2`, `/bauplaner fertig`, `/bauplaner notiz frage …`.<br>4. `/bauplaner team export` und die Datei im Planer unter „Einlesen“ wählen. | Im Spiel: Aktionsleiste „Abschnitt 2 · … · in Arbeit“, Partikelumriss, verständliche Antworten, Hinweis beim Bauen im fremden Abschnitt. Im Planer kommen die Meldungen mit „vom Server“ an. |
 
 ## MOD · Mod: Installation und Hologramm (Mod)
 

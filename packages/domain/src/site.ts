@@ -12,6 +12,8 @@ import type { RecipeMethod } from './recipes.js';
 import { memberMatches, sectionOfStep } from './sectionMembership.js';
 import { checkSnapshots } from './sectionSnapshots.js';
 import { checkPace } from './buildRun.js';
+import { checkTeam } from './team.js';
+import type { TeamState } from './team.js';
 import type { PaceSetting } from './buildRun.js';
 import type { SectionSnapshot } from './sectionSnapshots.js';
 import { DomainError } from './types.js';
@@ -81,6 +83,8 @@ export interface SitePlan {
   readonly snapshots?: readonly SectionSnapshot[];
   /** Building pace for daily goals (BUILD-06, buildRun.ts); absent = DEFAULT_PACE. */
   readonly pace?: PaceSetting;
+  /** Teambau log (COOP-01, team.ts): who took, built, reported and delivered what. Absent = no team. */
+  readonly team?: TeamState;
 }
 
 export function emptySite(): SitePlan {
@@ -137,6 +141,7 @@ export function checkSite(raw: unknown): SitePlan {
   }
   if (raw.snapshots !== undefined) checkSnapshots(raw.snapshots);
   if (raw.pace !== undefined) checkPace(raw.pace);
+  if (raw.team !== undefined) checkTeam(raw.team);
   return raw as unknown as SitePlan;
 }
 

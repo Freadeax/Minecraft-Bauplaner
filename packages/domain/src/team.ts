@@ -1,0 +1,752 @@
+import { canonicalJson, newId, sha256Hex } from './hash.js';
+import { DomainError } from './types.js';
+
+/**
+ * Teambau (COOP-01, docs/architecture/TEAMBAU.md). Several players build one
+ * project without a backend. Everything that happens while building (take a
+ * section, report it done, deliver items, write a note, release a plan) is an
+ * immutable event in the team log `site.team`. Merging two logs is the union
+ * of their events by id, so merging is commutative, idempotent and loses
+ * nothing; the visible state is always derived by folding the events in the
+ * same deterministic order (`at`, then `id`). Rights are checked during the
+ * fold with the role the author had at that moment; events without the right
+ * stay in the log (nothing is deleted) but have no effect and are listed.
+ *
+ * Geometry is not part of the log: the plan has one authority (Bauleitung),
+ * which releases frozen revisions with `plan.release`.
+ */
+
+export const TEAM_SCHEMA_VERSION = 1;
+export const MAX_TEAM_EVENTS = 20_000;
+const MAX_EVENT_JSON = 4096;
+
+export type TeamRole = 'leitung' | 'meister' | 'helfer' | 'gast';
+export const TEAM_ROLES: readonly TeamRole[] = ['leitung', 'meister', 'helfer', 'gast'];
+export const TEAM_ROLE_LABEL: Readonly<Record<TeamRole, string>> = { leitung: 'Bauleitung', meister: 'Baumeister', helfer: 'Helfer', gast: 'Gast' };
+export const TEAM_ROLE_TEXT: Readonly<Record<TeamRole, string>> = {
+  leitung: 'darf alles: Plan freigeben, Rollen vergeben, zuweisen, bestätigen',
+  meister: 'darf Abschnitte zuweisen, Meldungen bestätigen und Notizen schließen',
+  helfer: 'darf freie Abschnitte übernehmen, melden, liefern und Notizen schreiben',
+  gast: 'darf ansehen und Notizen schreiben',
+};
+const RANK: Readonly<Record<TeamRole, number>> = { leitung: 3, meister: 2, helfer: 1, gast: 0 };
+
+export type NoteTag = 'frage' | 'problem' | 'material' | 'info';
+export const NOTE_TAGS: readonly NoteTag[] = ['frage', 'problem', 'material', 'info'];
+export const NOTE_TAG_LABEL: Readonly<Record<NoteTag, string>> = { frage: 'Frage', problem: 'Problem', material: 'Material fehlt', info: 'Info' };
+
+export interface ItemCount { readonly item: string; readonly count: number }
+
+interface Base {
+  /** Unique id; merging relies on it. */
+  readonly id: string;
+  /** ISO time of the author's device. */
+  readonly at: string;
+  /** Builder id of the author (site.program.builders or a member.join). */
+  readonly by: string;
+  /** Where the event was written: in a planner, or by the server plugin with the player's real identity (COOP-02). */
+  readonly origin: 'planer' | 'server';
+}
+export type TeamEventBody =
+  | { readonly kind: 'member.join'; readonly member: string; readonly name: string; readonly player?: string }
+  | { readonly kind: 'member.role'; readonly member: string; readonly role: TeamRole }
+  | { readonly kind: 'member.player'; readonly member: string; readonly player: string }
+  | { readonly kind: 'section.claim'; readonly section: string; readonly note?: string }
+  | { readonly kind: 'section.assign'; readonly section: string; readonly member: string }
+  | { readonly kind: 'section.release'; readonly section: string }
+  | { readonly kind: 'section.done'; readonly section: string; readonly note?: string }
+  | { readonly kind: 'section.verify'; readonly section: string; readonly ok: boolean; readonly note?: string }
+  | { readonly kind: 'contribution'; readonly section?: string; readonly blocks?: number; readonly items?: readonly ItemCount[]; readonly note?: string }
+  | { readonly kind: 'gather.claim'; readonly item: string; readonly count: number }
+  | { readonly kind: 'note.add'; readonly noteId: string; readonly text: string; readonly tag: NoteTag; readonly section?: string; readonly pos?: readonly [number, number, number] }
+  | { readonly kind: 'note.resolve'; readonly noteId: string; readonly text?: string }
+  | { readonly kind: 'plan.release'; readonly revisionId: string; readonly revisionNumber: number; readonly summary: string };
+export type KnownTeamEvent = Base & TeamEventBody;
+/** Events of a newer planner version: kept and passed on, but without effect. */
+export type UnknownTeamEvent = Base & { readonly kind: string; readonly [key: string]: unknown };
+export type TeamEvent = KnownTeamEvent | UnknownTeamEvent;
+export type TeamEventKind = TeamEventBody['kind'];
+const KNOWN = new Set<string>(['member.join', 'member.role', 'member.player', 'section.claim', 'section.assign', 'section.release', 'section.done',
+  'section.verify', 'contribution', 'gather.claim', 'note.add', 'note.resolve', 'plan.release']);
+export const isKnownEvent = (e: TeamEvent): e is KnownTeamEvent => KNOWN.has(e.kind);
+
+export interface TeamState {
+  readonly schemaVersion: 1;
+  /** Shared by every copy of the project in every browser and on the server. */
+  readonly teamId: string;
+  readonly name: string;
+  readonly createdAt: string;
+  /** Builder id of the founder: Bauleitung until a member.role event says otherwise. */
+  readonly founder: string;
+  /** "Ich bin" of this browser. Local only: never exported in a team package. */
+  readonly self?: string;
+  /** Minecraft server address for invitations (display only). */
+  readonly server?: string;
+  /** Ordered by (at, id), ids unique. Only appended or merged, never rewritten. */
+  readonly events: readonly TeamEvent[];
+}
+
+// ---------------------------------------------------------------- validation
+
+const fail = (message: string): never => { throw new DomainError('INVALID', `Team: ${message}`); };
+const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
+const text = (v: unknown, max: number, what: string, min = 1): string => {
+  if (typeof v !== 'string' || v.length < min || v.length > max || /[\x00-\x08\x0b\x0c\x0e-\x1f]/.test(v)) fail(`${what} ungültig`);
+  return v as string;
+};
+const optText = (v: unknown, max: number, what: string) => { if (v !== undefined) text(v, max, what, 0); };
+const int = (v: unknown, min: number, max: number, what: string): number => {
+  if (!Number.isSafeInteger(v) || (v as number) < min || (v as number) > max) fail(`${what} ungültig`);
+  return v as number;
+};
+const iso = (v: unknown, what: string) => { if (typeof v !== 'string' || !Number.isFinite(Date.parse(v)) || v.length > 40) fail(`${what} ist keine Zeit`); };
+/** Minecraft player names: 3–16 letters, digits, underscore (Bedrock prefixes like "." allowed). */
+export const PLAYER_NAME = /^[.*]?[A-Za-z0-9_]{2,16}$/;
+const ITEM_ID = /^[a-z0-9_.-]+:[a-z0-9_./-]+$/;
+
+export function checkTeamEvent(raw: unknown): TeamEvent {
+  if (!isObj(raw)) return fail('Ereignis ist kein Objekt');
+  text(raw.id, 64, 'Ereignis-ID'); iso(raw.at, 'Ereigniszeit'); text(raw.by, 64, 'Urheber'); text(raw.kind, 40, 'Ereignisart');
+  if (raw.origin !== 'planer' && raw.origin !== 'server') fail('Herkunft muss planer oder server sein');
+  if (JSON.stringify(raw).length > MAX_EVENT_JSON) fail(`Ereignis ${String(raw.id)} ist zu groß`);
+  const where = `Ereignis ${String(raw.id)}`;
+  switch (raw.kind) {
+    case 'member.join': text(raw.member, 64, `${where}: Mitglied`); text(raw.name, 60, `${where}: Name`);
+      if (raw.player !== undefined && (typeof raw.player !== 'string' || !PLAYER_NAME.test(raw.player))) fail(`${where}: Spielername ungültig`); break;
+    case 'member.role': text(raw.member, 64, `${where}: Mitglied`); if (!TEAM_ROLES.includes(raw.role as TeamRole)) fail(`${where}: Rolle unbekannt`); break;
+    case 'member.player': text(raw.member, 64, `${where}: Mitglied`);
+      if (typeof raw.player !== 'string' || !PLAYER_NAME.test(raw.player)) fail(`${where}: Spielername ungültig`); break;
+    case 'section.claim': case 'section.done': text(raw.section, 64, `${where}: Abschnitt`); optText(raw.note, 300, `${where}: Notiz`); break;
+    case 'section.assign': text(raw.section, 64, `${where}: Abschnitt`); text(raw.member, 64, `${where}: Mitglied`); break;
+    case 'section.release': text(raw.section, 64, `${where}: Abschnitt`); break;
+    case 'section.verify': text(raw.section, 64, `${where}: Abschnitt`); if (typeof raw.ok !== 'boolean') fail(`${where}: Prüfergebnis fehlt`);
+      optText(raw.note, 300, `${where}: Notiz`); break;
+    case 'contribution': {
+      if (raw.section !== undefined) text(raw.section, 64, `${where}: Abschnitt`);
+      if (raw.blocks !== undefined) int(raw.blocks, 0, 10_000_000, `${where}: Blöcke`);
+      if (raw.items !== undefined) {
+        if (!Array.isArray(raw.items) || raw.items.length > 64) fail(`${where}: Itemliste ungültig`);
+        for (const l of raw.items as unknown[]) {
+          if (!isObj(l) || typeof l.item !== 'string' || !ITEM_ID.test(l.item)) fail(`${where}: Item ungültig`);
+          int((l as Record<string, unknown>).count, 1, 1e9, `${where}: Menge`);
+        }
+      }
+      if (raw.blocks === undefined && raw.items === undefined && raw.note === undefined) fail(`${where}: Beitrag ohne Inhalt`);
+      optText(raw.note, 300, `${where}: Notiz`); break;
+    }
+    case 'gather.claim': if (typeof raw.item !== 'string' || !ITEM_ID.test(raw.item)) fail(`${where}: Item ungültig`); int(raw.count, 0, 1e9, `${where}: Menge`); break;
+    case 'note.add': text(raw.noteId, 64, `${where}: Notiz-ID`); text(raw.text, 500, `${where}: Text`);
+      if (!NOTE_TAGS.includes(raw.tag as NoteTag)) fail(`${where}: Notizart unbekannt`);
+      if (raw.section !== undefined) text(raw.section, 64, `${where}: Abschnitt`);
+      if (raw.pos !== undefined && (!Array.isArray(raw.pos) || raw.pos.length !== 3 || !raw.pos.every(n => Number.isSafeInteger(n) && Math.abs(n) <= 30_000_000)))
+        fail(`${where}: Position ungültig`);
+      break;
+    case 'note.resolve': text(raw.noteId, 64, `${where}: Notiz-ID`); optText(raw.text, 300, `${where}: Text`); break;
+    case 'plan.release': text(raw.revisionId, 64, `${where}: Revision`); int(raw.revisionNumber, 0, 1e6, `${where}: Revisionsnummer`);
+      text(raw.summary, 300, `${where}: Beschreibung`, 0); break;
+    default: break; // newer kinds: kept as they are
+  }
+  return raw as unknown as TeamEvent;
+}
+
+export const compareEvents = (a: { at: string; id: string }, b: { at: string; id: string }): number =>
+  a.at < b.at ? -1 : a.at > b.at ? 1 : a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
+
+export function checkTeam(raw: unknown): TeamState {
+  if (!isObj(raw)) return fail('kein Objekt');
+  if (raw.schemaVersion !== TEAM_SCHEMA_VERSION) fail(`unbekannte Schemaversion ${String(raw.schemaVersion)}`);
+  text(raw.teamId, 64, 'Team-ID'); text(raw.name, 120, 'Teamname'); iso(raw.createdAt, 'Erstellzeit'); text(raw.founder, 64, 'Gründer');
+  if (raw.self !== undefined) text(raw.self, 64, '„Ich bin“');
+  optText(raw.server, 120, 'Serveradresse');
+  if (!Array.isArray(raw.events) || raw.events.length > MAX_TEAM_EVENTS) fail(`höchstens ${MAX_TEAM_EVENTS} Ereignisse`);
+  const ids = new Set<string>();
+  let previous: TeamEvent | undefined;
+  for (const e of raw.events as unknown[]) {
+    const event = checkTeamEvent(e);
+    if (ids.has(event.id)) fail(`Ereignis-ID ${event.id} doppelt`);
+    ids.add(event.id);
+    if (previous && compareEvents(previous, event) > 0) fail('Ereignisse sind nicht geordnet');
+    previous = event;
+  }
+  return raw as unknown as TeamState;
+}
+
+// ---------------------------------------------------------------- building
+
+export function createTeam(input: { name: string; founder: string; server?: string; teamId?: string; at?: string }): TeamState {
+  const team: TeamState = {
+    schemaVersion: 1, teamId: input.teamId ?? newId('team'), name: input.name.trim().slice(0, 120) || 'Team', createdAt: input.at ?? new Date().toISOString(),
+    founder: input.founder, self: input.founder, ...(input.server?.trim() && { server: input.server.trim() }), events: [],
+  };
+  return checkTeam(team);
+}
+
+/** A new event by `by`. Does not check rights; {@link authorize} does. */
+export function teamEvent(by: string, body: TeamEventBody, at: string = new Date().toISOString(), origin: 'planer' | 'server' = 'planer'): KnownTeamEvent {
+  return checkTeamEvent({ id: newId('tev'), at, by, origin, ...body }) as KnownTeamEvent;
+}
+
+/** Appends events (sorted in, duplicates by id ignored). */
+export function appendEvents(team: TeamState, events: readonly TeamEvent[]): TeamState {
+  return mergeTeam(team, { ...team, events }).team;
+}
+
+export interface TeamMerge {
+  readonly team: TeamState;
+  /** Events that were new for the local log, in log order. */
+  readonly added: readonly TeamEvent[];
+  /** Events known already (same id). */
+  readonly known: number;
+  /** Same id but different content: the local one is kept, the other is reported. */
+  readonly clashes: readonly { readonly local: TeamEvent; readonly incoming: TeamEvent }[];
+}
+
+/**
+ * Union of two team logs. Order-independent and idempotent: merge(a, b) and
+ * merge(b, a) give the same events; merging again adds nothing. Local fields
+ * (self) stay; `server` is taken from the incoming log when missing locally.
+ */
+export function mergeTeam(local: TeamState, incoming: TeamState): TeamMerge {
+  if (local.teamId !== incoming.teamId) throw new DomainError('TEAM_MISMATCH', `Das Paket gehört zu einem anderen Team (${incoming.name}).`);
+  const byId = new Map(local.events.map(e => [e.id, e]));
+  const added: TeamEvent[] = [], clashes: { local: TeamEvent; incoming: TeamEvent }[] = [];
+  let known = 0;
+  for (const raw of incoming.events) {
+    const e = checkTeamEvent(raw), mine = byId.get(e.id);
+    if (!mine) { byId.set(e.id, e); added.push(e); continue; }
+    if (canonicalJson(mine) === canonicalJson(e)) known++; else clashes.push({ local: mine, incoming: e });
+  }
+  if (byId.size > MAX_TEAM_EVENTS) throw new DomainError('TEAM_FULL', `Das Teamprotokoll hätte mehr als ${MAX_TEAM_EVENTS} Ereignisse.`);
+  const events = [...byId.values()].sort(compareEvents);
+  // The founder is fixed at creation; a different founder means two teams were created with one id (should not happen).
+  const team: TeamState = { ...local, events, ...(local.server === undefined && incoming.server !== undefined && { server: incoming.server }) };
+  return { team, added: added.sort(compareEvents), known, clashes };
+}
+
+// ---------------------------------------------------------------- derived view
+
+export type SectionTeamStatus = 'frei' | 'vergeben' | 'gemeldet' | 'bestaetigt' | 'nacharbeit';
+export const SECTION_TEAM_STATUS_LABEL: Readonly<Record<SectionTeamStatus, string>> = {
+  frei: 'frei', vergeben: 'in Arbeit', gemeldet: 'fertig gemeldet', bestaetigt: 'bestätigt', nacharbeit: 'Nacharbeit',
+};
+
+export interface TeamMember {
+  readonly id: string;
+  readonly name: string;
+  readonly role: TeamRole;
+  readonly player?: string;
+  /** In site.program.builders (known to the plan) or only through a member.join. */
+  readonly inProgram: boolean;
+  readonly sections: readonly string[];
+  readonly blocks: number;
+  readonly items: Readonly<Record<string, number>>;
+  readonly reportedSections: number;
+  readonly confirmedSections: number;
+  readonly lastActive?: string;
+}
+export interface SectionTeamState {
+  readonly sectionId: string;
+  readonly status: SectionTeamStatus;
+  readonly owner: string | null;
+  readonly doneBy?: string;
+  readonly verifiedBy?: string;
+  readonly note?: string;
+  /** Section is not (any more) in the plan. */
+  readonly orphan: boolean;
+  readonly history: readonly { readonly at: string; readonly by: string; readonly text: string }[];
+}
+export interface TeamNote {
+  readonly id: string;
+  readonly at: string;
+  readonly by: string;
+  readonly text: string;
+  readonly tag: NoteTag;
+  readonly section?: string;
+  readonly pos?: readonly [number, number, number];
+  readonly resolved?: { readonly at: string; readonly by: string; readonly text?: string };
+  /** Builder ids mentioned with @Name. */
+  readonly mentions: readonly string[];
+}
+export interface TeamRejection { readonly event: TeamEvent; readonly reason: string }
+export interface TeamConflict { readonly event: TeamEvent; readonly text: string }
+export interface GatherClaim { readonly member: string; readonly item: string; readonly count: number; readonly at: string }
+export interface PlanRelease { readonly revisionId: string; readonly revisionNumber: number; readonly summary: string; readonly at: string; readonly by: string }
+
+export interface TeamView {
+  readonly members: readonly TeamMember[];
+  readonly sections: readonly SectionTeamState[];
+  readonly notes: readonly TeamNote[];
+  readonly gather: readonly GatherClaim[];
+  /** Delivered items over all members. */
+  readonly delivered: Readonly<Record<string, number>>;
+  readonly release: PlanRelease | null;
+  /** Releases by different leaders pointing to different revisions after each other. */
+  readonly releases: readonly PlanRelease[];
+  readonly rejected: readonly TeamRejection[];
+  /** Effective, but worth a look (taken over, reported by someone else …). */
+  readonly conflicts: readonly TeamConflict[];
+  readonly unknownKinds: number;
+}
+
+export interface TeamContext {
+  /** Plan sections in build order. */
+  readonly sections: readonly { readonly id: string; readonly name: string }[];
+  /** site.program.builders (PROJ-01). */
+  readonly builders: readonly { readonly id: string; readonly name: string }[];
+}
+
+export type TeamAction = TeamEventKind;
+/** Minimum role per event kind; some kinds have extra rules in the fold (own section, own note, self). */
+const NEED: Readonly<Record<TeamEventKind, TeamRole>> = {
+  'member.join': 'gast', 'member.role': 'leitung', 'member.player': 'gast', 'section.claim': 'helfer', 'section.assign': 'meister',
+  'section.release': 'helfer', 'section.done': 'helfer', 'section.verify': 'meister', contribution: 'helfer', 'gather.claim': 'helfer',
+  'note.add': 'gast', 'note.resolve': 'helfer', 'plan.release': 'leitung',
+};
+export const canTeam = (role: TeamRole | undefined, action: TeamAction): boolean => RANK[role ?? 'gast'] >= RANK[NEED[action]];
+
+const mentionRe = /@([A-Za-zÄÖÜäöüß0-9_.-]{2,40})/g;
+
+/** Folds the log into the visible state. Pure and deterministic. */
+export function teamView(team: TeamState, ctx: TeamContext): TeamView {
+  const sectionIds = new Set(ctx.sections.map(s => s.id));
+  const names = new Map<string, string>(ctx.builders.map(b => [b.id, b.name]));
+  const inProgram = new Set(ctx.builders.map(b => b.id));
+  const roles = new Map<string, TeamRole>([[team.founder, 'leitung']]);
+  const players = new Map<string, string>();
+  const known = new Set<string>([...inProgram, team.founder]);
+  const lastActive = new Map<string, string>();
+  type Mutable = { status: SectionTeamStatus; owner: string | null; doneBy?: string; verifiedBy?: string; note?: string; history: { at: string; by: string; text: string }[] };
+  const sections = new Map<string, Mutable>();
+  const sec = (id: string): Mutable => { let s = sections.get(id); if (!s) sections.set(id, s = { status: 'frei', owner: null, history: [] }); return s; };
+  const notes = new Map<string, { at: string; by: string; text: string; tag: NoteTag; section?: string; pos?: readonly [number, number, number]; resolved?: { at: string; by: string; text?: string } }>();
+  const gather = new Map<string, GatherClaim>();
+  const blocks = new Map<string, number>(), items = new Map<string, Map<string, number>>();
+  const delivered: Record<string, number> = {};
+  const releases: PlanRelease[] = [];
+  const rejected: TeamRejection[] = [], conflicts: TeamConflict[] = [];
+  let unknownKinds = 0;
+  const nameOf = (id: string) => names.get(id) ?? id;
+  const roleOf = (id: string): TeamRole => roles.get(id) ?? (known.has(id) ? 'helfer' : 'gast');
+  const reject = (event: TeamEvent, reason: string) => { rejected.push({ event, reason }); };
+
+  for (const event of team.events) {
+    if (!isKnownEvent(event)) { unknownKinds++; continue; }
+    const role = roleOf(event.by);
+    const self = (m: string) => m === event.by;
+    // member.join and member.player may always be written for oneself.
+    const selfAllowed = (event.kind === 'member.join' || event.kind === 'member.player') && self(event.member);
+    if (!selfAllowed && !canTeam(role, event.kind)) {
+      // Helpers may release their own section and resolve their own notes; handled below with their own rule.
+      if (!(event.kind === 'note.resolve' && notes.get(event.noteId)?.by === event.by)) {
+        reject(event, `${nameOf(event.by)} ist ${TEAM_ROLE_LABEL[role]} und darf das nicht (${eventLabel(event)}).`);
+        continue;
+      }
+    }
+    lastActive.set(event.by, event.at);
+    switch (event.kind) {
+      case 'member.join':
+        if (!self(event.member) && role !== 'leitung') { reject(event, `Nur die Bauleitung kann andere aufnehmen.`); break; }
+        known.add(event.member);
+        if (!names.has(event.member)) names.set(event.member, event.name);
+        if (event.player) players.set(event.member, event.player);
+        break;
+      case 'member.role': {
+        if (!known.has(event.member)) { reject(event, `Unbekanntes Mitglied ${event.member}.`); break; }
+        const leaders = [...known].filter(id => roleOf(id) === 'leitung');
+        if (roleOf(event.member) === 'leitung' && event.role !== 'leitung' && leaders.length <= 1) { reject(event, 'Es muss mindestens eine Bauleitung bleiben.'); break; }
+        roles.set(event.member, event.role);
+        break;
+      }
+      case 'member.player':
+        if (!self(event.member) && role !== 'leitung') { reject(event, 'Den Spielernamen setzt jeder selbst oder die Bauleitung.'); break; }
+        players.set(event.member, event.player);
+        break;
+      case 'section.claim': {
+        const s = sec(event.section);
+        if (s.owner === event.by) break;
+        if (s.owner) { conflicts.push({ event, text: `${nameOf(event.by)} wollte „${sectionName(ctx, event.section)}“ übernehmen, der Abschnitt war schon an ${nameOf(s.owner)} vergeben.` }); break; }
+        if (s.status === 'bestaetigt') { reject(event, `„${sectionName(ctx, event.section)}“ ist schon bestätigt.`); break; }
+        s.owner = event.by; s.status = 'vergeben'; delete s.doneBy; delete s.verifiedBy;
+        if (event.note) s.note = event.note;
+        s.history.push({ at: event.at, by: event.by, text: 'übernommen' });
+        break;
+      }
+      case 'section.assign': {
+        const s = sec(event.section);
+        if (!known.has(event.member)) { reject(event, `Unbekanntes Mitglied ${event.member}.`); break; }
+        if (s.owner && s.owner !== event.member) conflicts.push({ event, text: `${nameOf(event.by)} hat „${sectionName(ctx, event.section)}“ von ${nameOf(s.owner)} an ${nameOf(event.member)} umgewiesen.` });
+        s.owner = event.member;
+        if (s.status === 'frei') s.status = 'vergeben';
+        s.history.push({ at: event.at, by: event.by, text: `zugewiesen an ${nameOf(event.member)}` });
+        break;
+      }
+      case 'section.release': {
+        const s = sec(event.section);
+        if (s.owner !== event.by && !canTeam(role, 'section.assign')) { reject(event, `Nur ${s.owner ? nameOf(s.owner) : 'der Inhaber'} oder ein Baumeister kann „${sectionName(ctx, event.section)}“ abgeben.`); break; }
+        if (s.status === 'bestaetigt') { reject(event, `„${sectionName(ctx, event.section)}“ ist bestätigt und kann nicht mehr abgegeben werden.`); break; }
+        s.owner = null; s.status = 'frei'; delete s.doneBy;
+        s.history.push({ at: event.at, by: event.by, text: 'abgegeben' });
+        break;
+      }
+      case 'section.done': {
+        const s = sec(event.section);
+        if (s.owner && s.owner !== event.by) conflicts.push({ event, text: `${nameOf(event.by)} hat „${sectionName(ctx, event.section)}“ fertig gemeldet, Inhaber ist ${nameOf(s.owner)}.` });
+        if (!s.owner) s.owner = event.by;
+        s.status = 'gemeldet'; s.doneBy = event.by; delete s.verifiedBy;
+        if (event.note) s.note = event.note;
+        s.history.push({ at: event.at, by: event.by, text: 'fertig gemeldet' });
+        break;
+      }
+      case 'section.verify': {
+        const s = sec(event.section);
+        if (s.status === 'frei') { reject(event, `„${sectionName(ctx, event.section)}“ ist frei, es gibt nichts zu prüfen.`); break; }
+        s.status = event.ok ? 'bestaetigt' : 'nacharbeit'; s.verifiedBy = event.by;
+        if (event.note) s.note = event.note;
+        s.history.push({ at: event.at, by: event.by, text: event.ok ? 'bestätigt' : `Nacharbeit${event.note ? `: ${event.note}` : ''}` });
+        break;
+      }
+      case 'contribution': {
+        if (event.blocks) blocks.set(event.by, (blocks.get(event.by) ?? 0) + event.blocks);
+        for (const l of event.items ?? []) {
+          let m = items.get(event.by); if (!m) items.set(event.by, m = new Map());
+          m.set(l.item, (m.get(l.item) ?? 0) + l.count);
+          delivered[l.item] = (delivered[l.item] ?? 0) + l.count;
+        }
+        break;
+      }
+      case 'gather.claim': {
+        const key = `${event.by} ${event.item}`;
+        if (event.count === 0) gather.delete(key); else gather.set(key, { member: event.by, item: event.item, count: event.count, at: event.at });
+        break;
+      }
+      case 'note.add':
+        if (notes.has(event.noteId)) { reject(event, 'Notiz-ID doppelt.'); break; }
+        notes.set(event.noteId, { at: event.at, by: event.by, text: event.text, tag: event.tag, ...(event.section && { section: event.section }), ...(event.pos && { pos: event.pos }) });
+        break;
+      case 'note.resolve': {
+        const n = notes.get(event.noteId);
+        if (!n) { reject(event, 'Notiz unbekannt.'); break; }
+        if (n.by !== event.by && !canTeam(role, 'section.verify')) { reject(event, 'Fremde Notizen schließt ein Baumeister.'); break; }
+        n.resolved = { at: event.at, by: event.by, ...(event.text && { text: event.text }) };
+        break;
+      }
+      case 'plan.release':
+        releases.push({ revisionId: event.revisionId, revisionNumber: event.revisionNumber, summary: event.summary, at: event.at, by: event.by });
+        break;
+    }
+  }
+
+  const ownerOf = new Map<string, string[]>();
+  for (const [id, s] of sections) if (s.owner) { let l = ownerOf.get(s.owner); if (!l) ownerOf.set(s.owner, l = []); l.push(id); }
+  const order = new Map(ctx.sections.map((s, i) => [s.id, i]));
+  const byOrder = (a: string, b: string) => (order.get(a) ?? 1e9) - (order.get(b) ?? 1e9) || (a < b ? -1 : 1);
+  const counts = (id: string, st: SectionTeamStatus[]) => [...sections.values()].filter(s => (s.doneBy === id || s.owner === id) && st.includes(s.status)).length;
+  const members: TeamMember[] = [...known].map(id => ({
+    id, name: nameOf(id), role: roleOf(id), ...(players.has(id) && { player: players.get(id)! }), inProgram: inProgram.has(id),
+    sections: (ownerOf.get(id) ?? []).sort(byOrder), blocks: blocks.get(id) ?? 0, items: Object.fromEntries(items.get(id) ?? []),
+    reportedSections: counts(id, ['gemeldet', 'bestaetigt']), confirmedSections: counts(id, ['bestaetigt']), ...(lastActive.has(id) && { lastActive: lastActive.get(id)! }),
+  })).sort((a, b) => RANK[b.role] - RANK[a.role] || a.name.localeCompare(b.name, 'de'));
+
+  const allSectionIds = [...new Set([...ctx.sections.map(s => s.id), ...sections.keys()])].sort(byOrder);
+  const sectionStates: SectionTeamState[] = allSectionIds.map(id => {
+    const s = sections.get(id) ?? { status: 'frei' as const, owner: null, history: [] };
+    return { sectionId: id, status: s.status, owner: s.owner, ...(s.doneBy && { doneBy: s.doneBy }), ...(s.verifiedBy && { verifiedBy: s.verifiedBy }),
+      ...(s.note && { note: s.note }), orphan: !sectionIds.has(id), history: s.history };
+  });
+  const memberByName = new Map<string, string>();
+  for (const m of members) { memberByName.set(m.name.toLowerCase().replace(/\s+/g, ''), m.id); if (m.player) memberByName.set(m.player.toLowerCase(), m.id); }
+  const noteList: TeamNote[] = [...notes.entries()].map(([id, n]) => ({
+    id, ...n, mentions: [...new Set([...n.text.matchAll(mentionRe)].map(m => memberByName.get(m[1]!.toLowerCase())).filter((x): x is string => !!x))],
+  })).sort((a, b) => (a.resolved ? 1 : 0) - (b.resolved ? 1 : 0) || compareEvents({ at: b.at, id: b.id }, { at: a.at, id: a.id }));
+  const release = releases.at(-1) ?? null;
+  if (releases.length > 1) {
+    const last = releases.at(-1)!, previous = releases.at(-2)!;
+    if (last.by !== previous.by && last.revisionNumber < previous.revisionNumber)
+      conflicts.push({ event: team.events.find(e => e.kind === 'plan.release' && (e as KnownTeamEvent & { revisionId: string }).revisionId === last.revisionId)!,
+        text: `Planstände auseinander: ${nameOf(last.by)} hat Planstand ${last.revisionNumber} nach Planstand ${previous.revisionNumber} von ${nameOf(previous.by)} freigegeben.` });
+  }
+  return { members, sections: sectionStates, notes: noteList, gather: [...gather.values()].sort((a, b) => a.item.localeCompare(b.item) || a.member.localeCompare(b.member)),
+    delivered, release, releases, rejected, conflicts, unknownKinds };
+}
+
+const sectionName = (ctx: TeamContext, id: string) => ctx.sections.find(s => s.id === id)?.name ?? 'entfernter Abschnitt';
+
+export function eventLabel(e: TeamEvent): string {
+  if (!isKnownEvent(e)) return `unbekannte Art ${e.kind}`;
+  switch (e.kind) {
+    case 'member.join': return `beigetreten: ${e.name}`;
+    case 'member.role': return `Rolle ${TEAM_ROLE_LABEL[e.role]}`;
+    case 'member.player': return `Spielername ${e.player}`;
+    case 'section.claim': return 'Abschnitt übernommen';
+    case 'section.assign': return 'Abschnitt zugewiesen';
+    case 'section.release': return 'Abschnitt abgegeben';
+    case 'section.done': return 'fertig gemeldet';
+    case 'section.verify': return e.ok ? 'bestätigt' : 'Nacharbeit verlangt';
+    case 'contribution': return 'Beitrag';
+    case 'gather.claim': return e.count ? `sammelt ${e.count} ${e.item}` : `Sammelauftrag ${e.item} zurückgegeben`;
+    case 'note.add': return `Notiz (${NOTE_TAG_LABEL[e.tag]})`;
+    case 'note.resolve': return 'Notiz erledigt';
+    case 'plan.release': return `Planstand ${e.revisionNumber} freigegeben`;
+  }
+}
+
+/** Human readable line for an event, with names. */
+export function describeEvent(e: TeamEvent, ctx: TeamContext, names: ReadonlyMap<string, string> = new Map(ctx.builders.map(b => [b.id, b.name]))): string {
+  const who = names.get(e.by) ?? e.by;
+  if (!isKnownEvent(e)) return `${who}: ${eventLabel(e)}`;
+  const s = 'section' in e && typeof e.section === 'string' ? ` „${sectionName(ctx, e.section)}“` : '';
+  switch (e.kind) {
+    case 'section.assign': return `${who}: Abschnitt${s} an ${names.get(e.member) ?? e.member} zugewiesen`;
+    case 'member.role': return `${who}: ${names.get(e.member) ?? e.member} ist jetzt ${TEAM_ROLE_LABEL[e.role]}`;
+    case 'contribution': {
+      const parts = [e.blocks ? `${e.blocks} Blöcke gebaut` : '', ...(e.items ?? []).map(l => `${l.count} × ${l.item.replace(/^minecraft:/, '')}`)].filter(Boolean);
+      return `${who}:${s} ${parts.join(', ') || 'Beitrag'}${e.note ? ` – ${e.note}` : ''}`;
+    }
+    case 'note.add': return `${who}: ${NOTE_TAG_LABEL[e.tag]}${s} – ${e.text}`;
+    default: return `${who}: ${eventLabel(e)}${s}${'note' in e && e.note ? ` – ${e.note}` : ''}`;
+  }
+}
+
+/** Checks whether `by` may write this event now (same rules as the fold). */
+export function authorize(team: TeamState, ctx: TeamContext, by: string, body: TeamEventBody): { ok: true } | { ok: false; reason: string } {
+  const probe = teamEvent(by, body, laterThan(team));
+  const view = teamView({ ...team, events: [...team.events, probe] }, ctx);
+  const r = view.rejected.find(x => x.event.id === probe.id);
+  if (r) return { ok: false, reason: r.reason };
+  const c = view.conflicts.find(x => x.event.id === probe.id);
+  if (c && body.kind === 'section.claim') return { ok: false, reason: c.text };
+  return { ok: true };
+}
+
+/** Time for a new event: now, but never before the last event (device clocks may lag). */
+export function laterThan(team: TeamState, now: string = new Date().toISOString()): string {
+  const last = team.events.at(-1)?.at;
+  if (!last || now > last) return now;
+  return new Date(Date.parse(last) + 1).toISOString();
+}
+
+// ---------------------------------------------------------------- PROJ-01 assignments
+
+/**
+ * Owners from the team log for the schedule (site.program.assignments). Only
+ * sections the team log touched are returned; others keep their planned
+ * assignment.
+ */
+export function teamAssignments(view: TeamView): Record<string, string[]> {
+  const out: Record<string, string[]> = {};
+  for (const s of view.sections) if (!s.orphan && (s.owner || s.history.length)) out[s.sectionId] = s.owner ? [s.owner] : [];
+  return out;
+}
+
+// ---------------------------------------------------------------- report code (Meldecode)
+
+export const REPORT_CODE_PREFIX = 'BPT1';
+export const MAX_REPORT_CODE = 16_384;
+
+async function gzip(bytes: Uint8Array): Promise<Uint8Array> {
+  const stream = new Blob([bytes as Uint8Array<ArrayBuffer>]).stream().pipeThrough(new CompressionStream('gzip'));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+async function gunzip(bytes: Uint8Array): Promise<Uint8Array> {
+  const stream = new Blob([bytes as Uint8Array<ArrayBuffer>]).stream().pipeThrough(new DecompressionStream('gzip'));
+  return new Uint8Array(await new Response(stream).arrayBuffer());
+}
+const b64url = (bytes: Uint8Array) => {
+  let s = ''; for (const b of bytes) s += String.fromCharCode(b);
+  return btoa(s).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+};
+const fromB64url = (t: string) => {
+  const s = atob(t.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((t.length + 3) % 4));
+  return Uint8Array.from(s, c => c.charCodeAt(0));
+};
+const teamTag = (teamId: string) => teamId.replace(/^team_/, '').slice(0, 8);
+
+/** A one-line code with the given events for chat messages: `BPT1:<team>:<data>:<check>`. */
+export async function encodeReportCode(team: TeamState, events: readonly TeamEvent[]): Promise<string> {
+  const json = canonicalJson({ t: team.teamId, e: events });
+  const data = b64url(await gzip(new TextEncoder().encode(json)));
+  const check = (await sha256Hex(data)).slice(0, 8);
+  const code = `${REPORT_CODE_PREFIX}:${teamTag(team.teamId)}:${data}:${check}`;
+  if (code.length > MAX_REPORT_CODE) throw new DomainError('TOO_LONG', `Zu viele Ereignisse für einen Meldecode (${code.length} Zeichen). Bitte ein Teampaket schicken.`);
+  return code;
+}
+
+export async function decodeReportCode(code: string): Promise<{ teamId: string; events: TeamEvent[] }> {
+  const clean = code.trim().replace(/\s+/g, '');
+  const m = /^BPT1:([A-Za-z0-9]{1,8}):([A-Za-z0-9_-]+):([a-f0-9]{8})$/.exec(clean);
+  if (!m) throw new DomainError('CODE', 'Das ist kein Meldecode (er beginnt mit „BPT1:“ und hat vier Teile).');
+  if ((await sha256Hex(m[2]!)).slice(0, 8) !== m[3]) throw new DomainError('CODE', 'Der Meldecode ist unvollständig oder verändert (Prüfsumme passt nicht). Bitte ganz kopieren.');
+  let parsed: unknown;
+  try { parsed = JSON.parse(new TextDecoder().decode(await gunzip(fromB64url(m[2]!)))); }
+  catch { throw new DomainError('CODE', 'Der Meldecode lässt sich nicht entpacken.'); }
+  if (!isObj(parsed) || typeof parsed.t !== 'string' || !Array.isArray(parsed.e)) throw new DomainError('CODE', 'Der Meldecode hat keinen gültigen Inhalt.');
+  if (teamTag(parsed.t) !== m[1]) throw new DomainError('CODE', 'Der Meldecode ist beschädigt (Teamkennung passt nicht).');
+  return { teamId: parsed.t, events: (parsed.e as unknown[]).map(checkTeamEvent).sort(compareEvents) };
+}
+
+// ---------------------------------------------------------------- team package
+
+export const TEAM_PACKAGE_FORMAT = 'minecraft-bauplaner-team';
+export const TEAM_PACKAGE_VERSION = 1;
+
+export interface TeamPackage {
+  readonly format: typeof TEAM_PACKAGE_FORMAT;
+  readonly formatVersion: 1;
+  readonly createdAt: string;
+  /** Team without `self`. */
+  readonly team: Omit<TeamState, 'self'>;
+  /** Who exported it. */
+  readonly from: { readonly member: string; readonly name: string };
+  /** Serialized project backup (backup.ts), present when the plan travels along. */
+  readonly backup?: string;
+  /** A helper's own changed copy for the Bauleitung to compare (§10). */
+  readonly proposal?: boolean;
+  /** SHA-256 over the canonical JSON of team and backup. */
+  readonly contentSha256: string;
+}
+
+const packageHash = (team: unknown, backup: string | undefined) => sha256Hex(canonicalJson({ team, ...(backup !== undefined && { backup }) }));
+
+export async function buildTeamPackage(team: TeamState, from: { member: string; name: string }, backup?: string, proposal = false): Promise<TeamPackage> {
+  const { self: _self, ...shared } = team;
+  return { format: TEAM_PACKAGE_FORMAT, formatVersion: 1, createdAt: new Date().toISOString(), team: shared, from, ...(backup !== undefined && { backup }),
+    ...(proposal && { proposal: true }), contentSha256: await packageHash(shared, backup) };
+}
+
+export const teamPackageFileName = (team: Pick<TeamState, 'name'>, date = new Date()) =>
+  `${team.name.replace(/[^A-Za-z0-9ÄÖÜäöüß_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60) || 'team'}-${date.toISOString().slice(0, 10)}.bauteam.json`;
+
+export async function readTeamPackage(textValue: string): Promise<TeamPackage> {
+  let raw: unknown;
+  try { raw = JSON.parse(textValue); } catch { throw new DomainError('TEAM_PACKAGE', 'Die Datei ist kein gültiges JSON (abgeschnitten?).'); }
+  if (!isObj(raw) || raw.format !== TEAM_PACKAGE_FORMAT) throw new DomainError('TEAM_PACKAGE', 'Das ist kein Teampaket des Bauplaners.');
+  if (typeof raw.formatVersion !== 'number' || raw.formatVersion > TEAM_PACKAGE_VERSION) throw new DomainError('TEAM_PACKAGE', 'Das Teampaket stammt aus einer neueren Planer-Version. Bitte die Seite neu laden.');
+  if (raw.formatVersion !== 1) throw new DomainError('TEAM_PACKAGE', 'Unbekannte Teampaket-Version.');
+  const team = checkTeam({ ...(isObj(raw.team) ? raw.team : {}) });
+  if (!isObj(raw.from)) throw new DomainError('TEAM_PACKAGE', 'Absender fehlt.');
+  if (raw.backup !== undefined && typeof raw.backup !== 'string') throw new DomainError('TEAM_PACKAGE', 'Projektteil ungültig.');
+  if (await packageHash(raw.team, raw.backup as string | undefined) !== raw.contentSha256) throw new DomainError('TEAM_PACKAGE', 'Das Teampaket ist beschädigt oder verändert (Prüfsumme passt nicht).');
+  return { ...(raw as unknown as TeamPackage), team };
+}
+
+// ---------------------------------------------------------------- status text
+
+export function teamStatusText(input: { projectName: string; team: TeamState; view: TeamView; ctx: TeamContext; progressBySection?: ReadonlyMap<string, number>; date?: Date }): string {
+  const { view, ctx } = input, names = new Map(view.members.map(m => [m.id, m.player ? `${m.name} (${m.player})` : m.name]));
+  const d = input.date ?? new Date();
+  const lines = [`**${input.projectName}** · Stand ${d.toLocaleDateString('de-DE')}${input.team.server ? ` · Server ${input.team.server}` : ''}`];
+  if (view.release) lines.push(`Planstand ${view.release.revisionNumber} gilt${view.release.summary ? ` (${view.release.summary})` : ''}.`);
+  lines.push('', 'Abschnitte:');
+  ctx.sections.forEach((s, i) => {
+    const st = view.sections.find(x => x.sectionId === s.id);
+    const p = input.progressBySection?.get(s.id);
+    lines.push(`${i + 1}. ${s.name} – ${SECTION_TEAM_STATUS_LABEL[st?.status ?? 'frei']}${st?.owner ? ` · ${names.get(st.owner) ?? st.owner}` : ''}${p !== undefined ? ` · ${Math.round(p * 100)} %` : ''}`);
+  });
+  const free = view.sections.filter(s => !s.orphan && s.status === 'frei').length;
+  if (free) lines.push(`→ ${free} Abschnitt${free === 1 ? '' : 'e'} frei – wer will?`);
+  if (view.gather.length) { lines.push('', 'Sammelaufträge:'); for (const g of view.gather) lines.push(`- ${names.get(g.member) ?? g.member}: ${g.count} × ${g.item.replace(/^minecraft:/, '')}`); }
+  const open = view.notes.filter(n => !n.resolved);
+  if (open.length) { lines.push('', 'Offene Notizen:'); for (const n of open.slice(0, 10)) lines.push(`- ${NOTE_TAG_LABEL[n.tag]}: ${n.text} (${names.get(n.by) ?? n.by})`); }
+  return lines.join('\n');
+}
+
+// ---------------------------------------------------------------- server file (COOP-02)
+
+export const TEAM_SERVER_FORMAT = 'minecraft-bauplaner-team-server';
+
+export interface TeamServerFile {
+  readonly format: typeof TEAM_SERVER_FORMAT;
+  readonly formatVersion: 1;
+  readonly teamId: string;
+  readonly name: string;
+  readonly projectName: string;
+  readonly founder: string;
+  readonly createdAt: string;
+  /** Dimension of the world placement (Weltkarte). */
+  readonly dimension: string;
+  /** Sections in build order with world boxes (inclusive min/max), one per section and instance. */
+  readonly sections: readonly { readonly id: string; readonly name: string; readonly boxes: readonly (readonly [number, number, number, number, number, number])[] }[];
+  /** Members with role at export time (the server folds the log itself; roles here are for reading). */
+  readonly members: readonly { readonly id: string; readonly name: string; readonly player?: string; readonly role: TeamRole }[];
+  readonly events: readonly TeamEvent[];
+  readonly exportedAt?: string;
+}
+
+interface StepBox { readonly instanceId: string; readonly layer: number; readonly bounds: { readonly min: readonly number[]; readonly maxExclusive: readonly number[] } }
+
+/**
+ * The file the Paper plugin reads (plugins/BauplanerBridge/team/*.team.json). Section boxes come from
+ * the guide steps of each section (first-match rule of site.ts) moved by the world origin, so the
+ * server knows where a section is without the plan geometry.
+ */
+export function teamServerFile(input: {
+  team: TeamState; view: TeamView; projectName: string;
+  sections: readonly { readonly id: string; readonly name: string; readonly members: readonly { readonly instanceId: string; readonly fromLayer?: number; readonly toLayer?: number }[] }[];
+  steps: readonly StepBox[]; origin: readonly [number, number, number]; dimension: string;
+}): TeamServerFile {
+  const { team, view, origin } = input;
+  const boxes = new Map<string, Map<string, [number, number, number, number, number, number]>>();
+  for (const step of input.steps) {
+    const section = input.sections.find(s => s.members.some(m => m.instanceId === step.instanceId && step.layer >= (m.fromLayer ?? 0) && step.layer <= (m.toLayer ?? Infinity)));
+    if (!section) continue;
+    let byInstance = boxes.get(section.id); if (!byInstance) boxes.set(section.id, byInstance = new Map());
+    const [x0, y0, z0] = step.bounds.min as [number, number, number], [x1, y1, z1] = step.bounds.maxExclusive.map(v => v - 1) as [number, number, number];
+    const b = byInstance.get(step.instanceId);
+    if (!b) byInstance.set(step.instanceId, [x0, y0, z0, x1, y1, z1]);
+    else { b[0] = Math.min(b[0], x0); b[1] = Math.min(b[1], y0); b[2] = Math.min(b[2], z0); b[3] = Math.max(b[3], x1); b[4] = Math.max(b[4], y1); b[5] = Math.max(b[5], z1); }
+  }
+  const move = (b: readonly number[]) => [b[0]! + origin[0], b[1]! + origin[1], b[2]! + origin[2], b[3]! + origin[0], b[4]! + origin[1], b[5]! + origin[2]] as const;
+  return {
+    format: TEAM_SERVER_FORMAT, formatVersion: 1, teamId: team.teamId, name: team.name, projectName: input.projectName, founder: team.founder,
+    createdAt: new Date().toISOString(), dimension: input.dimension,
+    sections: input.sections.map(s => ({ id: s.id, name: s.name, boxes: [...(boxes.get(s.id)?.values() ?? [])].map(move) })),
+    members: view.members.map(m => ({ id: m.id, name: m.name, ...(m.player && { player: m.player }), role: m.role })),
+    events: team.events,
+  };
+}
+
+export const teamServerFileName = (team: Pick<TeamState, 'name' | 'teamId'>) =>
+  `${team.name.replace(/[^A-Za-z0-9ÄÖÜäöüß_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'team'}-${team.teamId.replace(/^team_/, '').slice(0, 8)}.team.json`;
+
+/** Reads a server file or a server export (events only matter for the planner). */
+export function readTeamServerFile(textValue: string): { teamId: string; name: string; events: TeamEvent[]; exportedAt?: string } {
+  let raw: unknown;
+  try { raw = JSON.parse(textValue); } catch { throw new DomainError('TEAM_PACKAGE', 'Die Datei ist kein gültiges JSON (abgeschnitten?).'); }
+  if (!isObj(raw) || raw.format !== TEAM_SERVER_FORMAT) throw new DomainError('TEAM_PACKAGE', 'Das ist keine Server-Teamdatei.');
+  if (raw.formatVersion !== 1) throw new DomainError('TEAM_PACKAGE', 'Unbekannte Version der Server-Teamdatei.');
+  const teamId = text(raw.teamId, 64, 'Team-ID'), name = text(raw.name, 120, 'Teamname');
+  if (!Array.isArray(raw.events) || raw.events.length > MAX_TEAM_EVENTS) throw new DomainError('TEAM_PACKAGE', 'Ereignisliste ungültig.');
+  const ids = new Set<string>();
+  const events = (raw.events as unknown[]).map(checkTeamEvent).filter(e => !ids.has(e.id) && (ids.add(e.id), true)).sort(compareEvents);
+  return { teamId, name, events, ...(typeof raw.exportedAt === 'string' && { exportedAt: raw.exportedAt }) };
+}
+
+// ---------------------------------------------------------------- project integration
+
+/** Plan builders (PROJ-01 `site.program.builders`), empty without a program. */
+export function programBuilders(site: unknown): { id: string; name: string }[] {
+  const program = isObj(site) && isObj(site.program) ? site.program : null;
+  return program && Array.isArray(program.builders) ? (program.builders as unknown[]).filter(isObj).map(b => ({ id: String(b.id), name: String(b.name) })) : [];
+}
+
+/** Context of the fold for a site plan: its sections and builders. */
+export function teamContextOf(site: { readonly sections: readonly { readonly id: string; readonly name: string }[] }): TeamContext {
+  return { sections: site.sections.map(s => ({ id: s.id, name: s.name })), builders: programBuilders(site) };
+}
+
+/**
+ * Takes over a released plan from the Bauleitung: geometry, sections, program and placement come from
+ * the incoming project; this project keeps its id, storage revision and the merged team log with its
+ * own "Ich bin"; ticks of both are kept (a step ticked anywhere stays ticked).
+ */
+export function takeOverPlan<P extends { readonly id: string; readonly revision: number; readonly createdAt: string; readonly progress: Readonly<Record<string, unknown>>; readonly site?: { readonly team?: TeamState } }>(
+  local: P, incoming: P, team: TeamState): P {
+  const self = local.site?.team?.self;
+  const site = incoming.site ? { ...incoming.site, team: { ...team, ...(self !== undefined ? { self } : {}) } } : undefined;
+  if (site && self === undefined) delete (site.team as { self?: string }).self;
+  return { ...incoming, id: local.id, revision: local.revision, createdAt: local.createdAt,
+    progress: { ...incoming.progress, ...local.progress }, ...(site && { site }) };
+}
+
+/** Members a merge would add to the plan's builder list (joined through the team log only). */
+export function joinedOnly(view: TeamView): TeamMember[] { return view.members.filter(m => !m.inProgram); }

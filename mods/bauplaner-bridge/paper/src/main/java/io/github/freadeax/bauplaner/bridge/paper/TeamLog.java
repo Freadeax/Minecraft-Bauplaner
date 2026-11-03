@@ -1,0 +1,328 @@
+package io.github.freadeax.bauplaner.bridge.paper;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import java.security.SecureRandom;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
+
+/**
+ * Server copy of a team (COOP-02, docs/architecture/TEAMBAU.md): the header the planner exports
+ * ({@code minecraft-bauplaner-team-server}: sections with world boxes, members, the team log) plus the
+ * events written on this server. The fold follows {@code packages/domain/src/team.ts} rule by rule, so
+ * the planner and the server always show the same state for the same events. Pure Java, no Bukkit.
+ */
+final class TeamLog {
+    static final String FORMAT = "minecraft-bauplaner-team-server";
+    static final List<String> ROLES = List.of("gast", "helfer", "meister", "leitung");
+    static final Map<String, String> ROLE_LABEL = Map.of("leitung", "Bauleitung", "meister", "Baumeister", "helfer", "Helfer", "gast", "Gast");
+    static final Map<String, String> STATUS_LABEL = Map.of("frei", "frei", "vergeben", "in Arbeit", "gemeldet", "fertig gemeldet", "bestaetigt", "bestätigt", "nacharbeit", "Nacharbeit");
+    static final List<String> NOTE_TAGS = List.of("frage", "problem", "material", "info");
+    private static final Map<String, String> NEED = new HashMap<>();
+    static {
+        NEED.put("member.join", "gast"); NEED.put("member.role", "leitung"); NEED.put("member.player", "gast");
+        NEED.put("section.claim", "helfer"); NEED.put("section.assign", "meister"); NEED.put("section.release", "helfer");
+        NEED.put("section.done", "helfer"); NEED.put("section.verify", "meister"); NEED.put("contribution", "helfer");
+        NEED.put("gather.claim", "helfer"); NEED.put("note.add", "gast"); NEED.put("note.resolve", "helfer"); NEED.put("plan.release", "leitung");
+    }
+    static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
+    private static final SecureRandom RANDOM = new SecureRandom();
+
+    record Box(String dimension, int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+        boolean contains(String dim, int x, int y, int z) {
+            return dimension.equals(dim) && x >= minX && x <= maxX && y >= minY && y <= maxY && z >= minZ && z <= maxZ;
+        }
+    }
+    record Section(String id, String name, int number, List<Box> boxes) {}
+    record Member(String id, String name, String player) {}
+
+    final String teamId, name, projectName, founder;
+    final JsonObject header;
+    final List<Section> sections = new ArrayList<>();
+    final List<Member> headerMembers = new ArrayList<>();
+    /** All events (header log and server events), unique by id, sorted by (at, id). */
+    private final TreeMap<String, JsonObject> events = new TreeMap<>();
+    private final Map<String, String> sortKey = new HashMap<>();
+
+    TeamLog(JsonObject header) {
+        this.header = header;
+        if (!FORMAT.equals(str(header, "format"))) throw new IllegalArgumentException("Keine Server-Teamdatei des Bauplaners (format " + FORMAT + " erwartet).");
+        if (!header.has("formatVersion") || header.get("formatVersion").getAsInt() != 1) throw new IllegalArgumentException("Unbekannte Version der Teamdatei – bitte das Plugin aktualisieren.");
+        teamId = req(header, "teamId"); name = req(header, "name"); founder = req(header, "founder");
+        projectName = Optional.ofNullable(str(header, "projectName")).orElse(name);
+        String dim = Optional.ofNullable(str(header, "dimension")).orElse("minecraft:overworld");
+        int n = 0;
+        for (JsonElement e : array(header, "sections")) {
+            JsonObject s = e.getAsJsonObject();
+            List<Box> boxes = new ArrayList<>();
+            for (JsonElement b : array(s, "boxes")) {
+                JsonArray a = b.getAsJsonArray();
+                if (a.size() != 6) throw new IllegalArgumentException("Abschnittsbox braucht sechs Zahlen.");
+                boxes.add(new Box(dim, a.get(0).getAsInt(), a.get(1).getAsInt(), a.get(2).getAsInt(), a.get(3).getAsInt(), a.get(4).getAsInt(), a.get(5).getAsInt()));
+            }
+            sections.add(new Section(req(s, "id"), req(s, "name"), ++n, boxes));
+        }
+        for (JsonElement e : array(header, "members")) {
+            JsonObject m = e.getAsJsonObject();
+            headerMembers.add(new Member(req(m, "id"), req(m, "name"), str(m, "player")));
+        }
+        for (JsonElement e : array(header, "events")) add(e.getAsJsonObject());
+    }
+
+    static TeamLog parse(String json) { return new TeamLog(JsonParser.parseString(json).getAsJsonObject()); }
+
+    /** Adds an event; false if its id is known already. */
+    boolean add(JsonObject event) {
+        String id = req(event, "id"), at = req(event, "at");
+        req(event, "by"); req(event, "kind");
+        if (sortKey.containsKey(id)) return false;
+        String key = at + "\u0000" + id;
+        sortKey.put(id, key);
+        events.put(key, event);
+        return true;
+    }
+
+    List<JsonObject> events() { return new ArrayList<>(events.values()); }
+    int size() { return events.size(); }
+
+    /** Time for a new event: now, never before the last one (keeps the order of the planner). */
+    String nextTime() {
+        String now = Instant.now().toString();
+        if (events.isEmpty()) return now;
+        String last = str(events.lastEntry().getValue(), "at");
+        if (now.compareTo(last) > 0) return now;
+        return Instant.parse(last).plusMillis(1).toString();
+    }
+
+    static String newId(String prefix) {
+        byte[] b = new byte[10];
+        RANDOM.nextBytes(b);
+        StringBuilder s = new StringBuilder(prefix).append('_');
+        for (byte x : b) s.append(String.format("%02x", x));
+        return s.toString();
+    }
+
+    JsonObject event(String by, String kind) {
+        JsonObject e = new JsonObject();
+        e.addProperty("id", newId("srv"));
+        e.addProperty("at", nextTime());
+        e.addProperty("by", by);
+        e.addProperty("origin", "server");
+        e.addProperty("kind", kind);
+        return e;
+    }
+
+    /** Export: header with the merged log, readable by the planner like the file it came from. */
+    String exportJson() {
+        JsonObject out = header.deepCopy();
+        JsonArray list = new JsonArray();
+        for (JsonObject e : events.values()) list.add(e);
+        out.add("events", list);
+        out.addProperty("exportedAt", Instant.now().toString());
+        return GSON.toJson(out);
+    }
+
+    Optional<Section> section(String ref) {
+        String r = ref.trim();
+        try {
+            int n = Integer.parseInt(r);
+            return sections.stream().filter(s -> s.number == n).findFirst();
+        } catch (NumberFormatException e) {
+            String l = r.toLowerCase(Locale.ROOT);
+            return sections.stream().filter(s -> s.id.equals(r) || s.name.toLowerCase(Locale.ROOT).equals(l)).findFirst()
+                    .or(() -> sections.stream().filter(s -> s.name.toLowerCase(Locale.ROOT).startsWith(l)).findFirst());
+        }
+    }
+
+    // ------------------------------------------------------------------ fold
+
+    static final class SectionState {
+        String status = "frei", owner, doneBy, verifiedBy, note;
+        final List<String> history = new ArrayList<>();
+    }
+    static final class NoteState {
+        String id, by, text, tag, section, at, resolvedBy;
+        int[] pos;
+    }
+    static final class View {
+        final Map<String, String> names = new LinkedHashMap<>(), roles = new HashMap<>(), players = new HashMap<>();
+        final Set<String> known = new HashSet<>();
+        final Map<String, SectionState> sections = new LinkedHashMap<>();
+        final Map<String, NoteState> notes = new LinkedHashMap<>();
+        final Map<String, Integer> blocks = new HashMap<>();
+        final Map<String, Long> delivered = new TreeMap<>();
+        final Map<String, Long> gather = new TreeMap<>();
+        final List<String> rejected = new ArrayList<>(), conflicts = new ArrayList<>();
+        /** Outcome of single events (id → rejection or conflict text) for answers to commands. */
+        final Map<String, String> problems = new HashMap<>();
+        final Set<String> rejectedIds = new HashSet<>();
+        String releaseSummary;
+        int releaseNumber = -1;
+
+        String role(String id) { return roles.getOrDefault(id, known.contains(id) ? "helfer" : "gast"); }
+        String name(String id) { return names.getOrDefault(id, id); }
+        SectionState section(String id) { return sections.computeIfAbsent(id, k -> new SectionState()); }
+        /** Member id of a player name (case-insensitive), via linked player names and names. */
+        Optional<String> memberOfPlayer(String player) {
+            for (var e : players.entrySet()) if (e.getValue().equalsIgnoreCase(player)) return Optional.of(e.getKey());
+            return Optional.empty();
+        }
+    }
+
+    static int rank(String role) { return ROLES.indexOf(role); }
+    static boolean can(String role, String kind) { return NEED.containsKey(kind) && rank(role) >= rank(NEED.get(kind)); }
+
+    View view() {
+        View v = new View();
+        for (Member m : headerMembers) { v.names.put(m.id, m.name); v.known.add(m.id); if (m.player != null) v.players.put(m.id, m.player); }
+        v.known.add(founder);
+        v.roles.put(founder, "leitung");
+        for (Section s : sections) v.section(s.id);
+        for (JsonObject e : events.values()) fold(v, e);
+        return v;
+    }
+
+    private String sectionName(String id) { return sections.stream().filter(s -> s.id.equals(id)).map(Section::name).findFirst().orElse("entfernter Abschnitt"); }
+
+    private void fold(View v, JsonObject e) {
+        String kind = str(e, "kind"), by = str(e, "by"), id = str(e, "id"), at = str(e, "at");
+        if (!NEED.containsKey(kind)) return; // newer kind: kept, no effect
+        String role = v.role(by);
+        boolean selfAllowed = (kind.equals("member.join") || kind.equals("member.player")) && by.equals(str(e, "member"));
+        if (!selfAllowed && !can(role, kind)) {
+            NoteState n = kind.equals("note.resolve") ? v.notes.get(str(e, "noteId")) : null;
+            if (n == null || !n.by.equals(by)) { reject(v, id, v.name(by) + " ist " + ROLE_LABEL.get(role) + " und darf das nicht."); return; }
+        }
+        String sec = str(e, "section");
+        switch (kind) {
+            case "member.join" -> {
+                String m = str(e, "member");
+                if (!by.equals(m) && !role.equals("leitung")) { reject(v, id, "Nur die Bauleitung kann andere aufnehmen."); return; }
+                v.known.add(m);
+                v.names.putIfAbsent(m, str(e, "name"));
+                if (str(e, "player") != null) v.players.put(m, str(e, "player"));
+            }
+            case "member.role" -> {
+                String m = str(e, "member"), r = str(e, "role");
+                if (!v.known.contains(m)) { reject(v, id, "Unbekanntes Mitglied."); return; }
+                long leaders = v.known.stream().filter(x -> v.role(x).equals("leitung")).count();
+                if (v.role(m).equals("leitung") && !"leitung".equals(r) && leaders <= 1) { reject(v, id, "Es muss mindestens eine Bauleitung bleiben."); return; }
+                v.roles.put(m, r);
+            }
+            case "member.player" -> {
+                String m = str(e, "member");
+                if (!by.equals(m) && !role.equals("leitung")) { reject(v, id, "Den Spielernamen setzt jeder selbst oder die Bauleitung."); return; }
+                v.players.put(m, str(e, "player"));
+            }
+            case "section.claim" -> {
+                SectionState s = v.section(sec);
+                if (by.equals(s.owner)) return;
+                if (s.owner != null) { conflict(v, id, v.name(by) + " wollte „" + sectionName(sec) + "“ übernehmen, der Abschnitt war schon an " + v.name(s.owner) + " vergeben."); return; }
+                if (s.status.equals("bestaetigt")) { reject(v, id, "„" + sectionName(sec) + "“ ist schon bestätigt."); return; }
+                s.owner = by; s.status = "vergeben"; s.doneBy = null; s.verifiedBy = null;
+                if (str(e, "note") != null) s.note = str(e, "note");
+                s.history.add(at + " " + v.name(by) + ": übernommen");
+            }
+            case "section.assign" -> {
+                SectionState s = v.section(sec);
+                String m = str(e, "member");
+                if (!v.known.contains(m)) { reject(v, id, "Unbekanntes Mitglied."); return; }
+                if (s.owner != null && !s.owner.equals(m)) conflict(v, id, v.name(by) + " hat „" + sectionName(sec) + "“ von " + v.name(s.owner) + " an " + v.name(m) + " umgewiesen.");
+                s.owner = m;
+                if (s.status.equals("frei")) s.status = "vergeben";
+                s.history.add(at + " " + v.name(by) + ": zugewiesen an " + v.name(m));
+            }
+            case "section.release" -> {
+                SectionState s = v.section(sec);
+                if (!by.equals(s.owner) && !can(role, "section.assign")) { reject(v, id, "Nur " + (s.owner == null ? "der Inhaber" : v.name(s.owner)) + " oder ein Baumeister kann „" + sectionName(sec) + "“ abgeben."); return; }
+                if (s.status.equals("bestaetigt")) { reject(v, id, "„" + sectionName(sec) + "“ ist bestätigt und kann nicht mehr abgegeben werden."); return; }
+                s.owner = null; s.status = "frei"; s.doneBy = null;
+                s.history.add(at + " " + v.name(by) + ": abgegeben");
+            }
+            case "section.done" -> {
+                SectionState s = v.section(sec);
+                if (s.owner != null && !s.owner.equals(by)) conflict(v, id, v.name(by) + " hat „" + sectionName(sec) + "“ fertig gemeldet, Inhaber ist " + v.name(s.owner) + ".");
+                if (s.owner == null) s.owner = by;
+                s.status = "gemeldet"; s.doneBy = by; s.verifiedBy = null;
+                if (str(e, "note") != null) s.note = str(e, "note");
+                s.history.add(at + " " + v.name(by) + ": fertig gemeldet");
+            }
+            case "section.verify" -> {
+                SectionState s = v.section(sec);
+                if (s.status.equals("frei")) { reject(v, id, "„" + sectionName(sec) + "“ ist frei, es gibt nichts zu prüfen."); return; }
+                boolean ok = e.get("ok").getAsBoolean();
+                s.status = ok ? "bestaetigt" : "nacharbeit"; s.verifiedBy = by;
+                if (str(e, "note") != null) s.note = str(e, "note");
+                s.history.add(at + " " + v.name(by) + ": " + (ok ? "bestätigt" : "Nacharbeit"));
+            }
+            case "contribution" -> {
+                if (e.has("blocks")) v.blocks.merge(by, e.get("blocks").getAsInt(), Integer::sum);
+                if (e.has("items")) for (JsonElement l : e.getAsJsonArray("items")) {
+                    JsonObject o = l.getAsJsonObject();
+                    v.delivered.merge(str(o, "item"), o.get("count").getAsLong(), Long::sum);
+                }
+            }
+            case "gather.claim" -> {
+                String key = by + " " + str(e, "item");
+                long count = e.get("count").getAsLong();
+                if (count == 0) v.gather.remove(key); else v.gather.put(key, count);
+            }
+            case "note.add" -> {
+                String nid = str(e, "noteId");
+                if (v.notes.containsKey(nid)) { reject(v, id, "Notiz-ID doppelt."); return; }
+                NoteState n = new NoteState();
+                n.id = nid; n.by = by; n.text = str(e, "text"); n.tag = str(e, "tag"); n.section = sec; n.at = at;
+                if (e.has("pos")) { JsonArray p = e.getAsJsonArray("pos"); n.pos = new int[] { p.get(0).getAsInt(), p.get(1).getAsInt(), p.get(2).getAsInt() }; }
+                v.notes.put(nid, n);
+            }
+            case "note.resolve" -> {
+                NoteState n = v.notes.get(str(e, "noteId"));
+                if (n == null) { reject(v, id, "Notiz unbekannt."); return; }
+                if (!n.by.equals(by) && !can(role, "section.verify")) { reject(v, id, "Fremde Notizen schließt ein Baumeister."); return; }
+                n.resolvedBy = by;
+            }
+            case "plan.release" -> { v.releaseNumber = e.get("revisionNumber").getAsInt(); v.releaseSummary = str(e, "summary"); }
+            default -> { }
+        }
+    }
+
+    private static void reject(View v, String id, String text) { v.rejected.add(text); v.problems.put(id, text); v.rejectedIds.add(id); }
+    private static void conflict(View v, String id, String text) { v.conflicts.add(text); v.problems.put(id, text); }
+
+    /** Sections sorted by distance-free plan order, for listing. */
+    List<Section> ordered() {
+        List<Section> l = new ArrayList<>(sections);
+        l.sort(Comparator.comparingInt(Section::number));
+        return l;
+    }
+
+    // ------------------------------------------------------------------ json helpers
+
+    static String str(JsonObject o, String key) {
+        JsonElement e = o.get(key);
+        return e == null || e.isJsonNull() ? null : e.getAsString();
+    }
+    static String req(JsonObject o, String key) {
+        String s = str(o, key);
+        if (s == null || s.isEmpty()) throw new IllegalArgumentException("Feld „" + key + "“ fehlt.");
+        return s;
+    }
+    static JsonArray array(JsonObject o, String key) {
+        JsonElement e = o.get(key);
+        return e != null && e.isJsonArray() ? e.getAsJsonArray() : new JsonArray();
+    }
+}

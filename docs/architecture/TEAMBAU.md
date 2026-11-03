@@ -1,0 +1,214 @@
+# Teambau: mehrere Spieler bauen gemeinsam an einem Projekt (COOP)
+
+Stand: 03.11.2026 – **COOP-01 und COOP-02 umgesetzt** (siehe §17), COOP-03/04 geplant. Roadmap: **COOP-01** (Teamprotokoll und Teampaket im Planer), **COOP-02** (Paper-Plugin als Teamknoten), **COOP-03** (Live-Abgleich über die Mod), **COOP-04** (Baunachweis je Spieler und Gemeinschaftslager). Baut auf [SITE](SITE.md) (Bauabschnitte, Lager, Sammelplan), PROJ-01 „Planung“ (`site.program`: Bauleute, Meilensteine, Zuweisungen), [BUILD_RUN](BUILD_RUN.md) (Bauzettel, Bautage), [LIVE_LINK](LIVE_LINK.md) (Mod ↔ Website) und dem Paper-Plugin (GAME-04) auf. Ersetzt für den Spielbetrieb den Backend-Weg aus TEAM-01…03, der als spätere Option bestehen bleibt.
+
+## 1. Ausgangslage und Ziel
+
+Philipp baut mit anderen auf seinem Paper-Server. Heute kann genau ein Browser ein Projekt planen; Bauleute aus PROJ-01 sind nur Namen in diesem einen Browser. Für gemeinsames Bauen fehlt:
+
+1. **Ein gemeinsamer Stand** – wer hat welchen Abschnitt, was ist fertig, was fehlt – ohne eigenen Server, Konten oder Geheimnisse (Planer = statische GitHub-Pages-Seite, Daten lokal in IndexedDB).
+2. **Klare Zuständigkeiten** – Rollen, Vergabe, Reservierung, Übergabe, damit nicht zwei Leute dieselbe Wand bauen und niemand den Plan versehentlich umwirft.
+3. **Ein Weg für Mitspieler ohne Planer** – viele wollen nur bauen. Sie sollen im Spiel sehen, was ihr Auftrag ist, und „fertig“ melden können.
+4. **Nachvollziehbarkeit** – wer hat was gebaut, geliefert, geändert; welche Planfassung gilt.
+
+Leitsatz: **Der Plan hat eine Hoheit, der Baustand hat viele Hände.** Geometrie (Bauteile, Lage, Verbindungen) ändert nur die Bauleitung. Alles, was beim Bauen passiert (übernehmen, melden, liefern, Notiz), schreibt jeder als unveränderliches Ereignis in ein gemeinsames Teamprotokoll, das sich beliebig oft und in beliebiger Reihenfolge zusammenführen lässt.
+
+## 2. Grundentscheidungen
+
+| Entscheidung | Begründung |
+|---|---|
+| **Kein Backend.** Der einzige immer laufende gemeinsame Ort ist der Minecraft-Server selbst. | Pages bleibt statisch (AGENTS: keine produktive externe Infrastruktur voraussetzen). Der Paper-Server läuft ohnehin, kennt jeden Spieler sicher (UUID, online-mode) und hat Rechte (Permissions). |
+| **Identität = Minecraft-Spieler.** Teammitglied = Bauleute-Eintrag aus PROJ-01 + optional `player` (Spielername, später UUID vom Server). | Keine Konten. Der Server bestätigt Namen; im reinen Dateiaustausch ist der Name eine Angabe (ausdrücklich so angezeigt). |
+| **Teamprotokoll statt Datensatz-Abgleich.** Jede Teamhandlung ist ein Ereignis mit eindeutiger ID. Zusammenführen = Vereinigung der Ereignismengen; der Zustand wird daraus berechnet. | Vereinigung ist vertauschbar, wiederholbar und idempotent: zwei Browser, ein Server und ein Paket aus dem Discord ergeben immer denselben Stand, egal in welcher Reihenfolge. Kein „letzter gewinnt“, kein stiller Verlust. |
+| **Plan-Hoheit bei der Bauleitung.** Geometrie reist nur als freigegebener Planstand (eingefrorene Revision) von der Bauleitung zu allen. Vorschläge anderer kommen als Änderungsvorschlag, den die Bauleitung mit dem vorhandenen Vergleich (Bauversionen/Diff) prüft. | Geometrie-Zusammenführung zweier frei bearbeiteter Pläne ist fehleranfällig (Überschneidungen, Verbindungen, Schrittnummern). Mit einer Hoheit entsteht nie ein unklarer Plan. |
+| **Planung, Selbstmeldung und Spielnachweis bleiben getrennt** (Abnahme TEAM-03). | „Anna meldet fertig“, „Bauleitung bestätigt“ und „Plugin/Mod hat 1 204 richtige Blöcke gezählt“ sind drei verschiedene Aussagen und werden nie vermischt. |
+| **Keine Weltveränderung.** Plugin und Mod setzen und entfernen keine Blöcke. Anzeigen für Spieler ohne Mod sind nicht gespeicherte Hinweise (Aktionsleiste, Bossleiste, Partikel). | AGENTS-Regel; Schutz vor Schäden auf einem gemeinsamen Server. |
+
+## 3. Rollen und Rechte
+
+| Rolle | Darf | Typisch |
+|---|---|---|
+| **Bauleitung** | alles: Plan ändern und freigeben, Rollen vergeben, Abschnitte zuweisen, Meldungen bestätigen/zurückweisen, Mitglieder entfernen | Philipp |
+| **Baumeister** | Abschnitte zuweisen und übernehmen, Meldungen anderer bestätigen, Notizen schließen, Sammelaufträge verteilen | erfahrene Mitbauer |
+| **Helfer** | freie Abschnitte übernehmen und zurückgeben, eigene Arbeit melden, liefern, Notizen schreiben | Standard für neue Mitspieler |
+| **Gast** | ansehen, Notizen schreiben | Besucher, Zuschauer |
+
+- Rechte prüft der Planer bei jedem Ereignis (`canTeam(role, action)`); ein nicht erlaubtes Ereignis wird beim Zusammenführen **sichtbar abgelehnt** (Liste „nicht übernommen, weil…“), nicht still verworfen.
+- Rollenwechsel ist selbst ein Ereignis, das nur die Bauleitung (oder bei leerem Team der Ersteller) schreiben darf. Es muss immer mindestens eine Bauleitung geben.
+- **Grenze ohne Server:** Ein Teampaket aus einer Datei kann jemand von Hand fälschen. Im Dateiaustausch sind Rechte deshalb eine Ordnungshilfe; verbindlich sind sie dort, wo der Server sie prüft (COOP-02: Plugin schreibt die Ereignisse mit der echten UUID des Spielers, Rechte über Rollen in der Teamdatei + Permissions). Die Oberfläche zeigt die Herkunft jedes Ereignisses („aus Datei“, „vom Server bestätigt“).
+
+## 4. Datenmodell `site.team` (COOP-01)
+
+Liegt in `project.site.team` neben `site.program` (PROJ-01) und reist dadurch mit Rückgängig (`site.set`), Sicherung, Datencheck und Abschnittsständen mit. Kein IDB-Schemasprung; `checkSite` ruft `checkTeam` auf. Domäne: `packages/domain/src/team.ts` (rein, ohne Oberfläche).
+
+```ts
+interface TeamState {
+  schemaVersion: 1;
+  teamId: string;                // gemeinsam für alle Kopien eines Projekts (bleibt bei Kopie im Browser gleich)
+  self?: string;                 // „Ich bin“ – Builder-ID dieses Browsers, reist nicht im Teampaket
+  events: TeamEvent[];           // nur anhängen, nach (at, id) sortiert, IDs eindeutig
+}
+interface TeamEventBase { id: string; at: string; by: string /* builderId */; origin: 'planer' | 'datei' | 'server'; }
+```
+
+| Ereignis `kind` | Inhalt | Wirkung |
+|---|---|---|
+| `member.role` | `member`, `role` | Rolle setzen (Bauleitung) |
+| `member.player` | `member`, `player` | Spielername verknüpfen (selbst oder Bauleitung) |
+| `section.claim` | `section`, `note?` | Abschnitt übernehmen (reservieren) |
+| `section.assign` | `section`, `member` | Abschnitt jemandem zuweisen (Baumeister+) – schreibt zugleich die PROJ-01-Zuweisung |
+| `section.release` | `section` | Abschnitt zurückgeben |
+| `section.done` | `section`, `note?` | Fertig gemeldet (Selbstmeldung) |
+| `section.verify` | `section`, `ok`, `note?` | Bauleitung/Baumeister bestätigt oder weist zurück (→ Nacharbeit) |
+| `contribution` | `section?`, `blocks?`, `items?: {item, count}[]`, `note?` | „Ich habe gebaut/geliefert“ – Beitragsbuch, Lagerbuchung |
+| `gather.claim` | `item`, `count` | Sammelauftrag übernehmen |
+| `note.add` | `noteId`, `text`, `section?`, `pos?`, `tag` (`frage`/`problem`/`material`/`info`) | Notiz am Bau |
+| `note.resolve` | `noteId`, `text?` | Notiz erledigt |
+| `plan.release` | `revisionId`, `revisionNumber`, `summary` | Planstand für alle freigeben |
+
+**Abgeleiteter Zustand** (`teamView(team, site, project)`): je Abschnitt Inhaber, Status (`frei` → `vergeben` → `gemeldet` → `bestätigt` / `nacharbeit`), Verlauf; je Mitglied Rolle, Spielername, Abschnitte, Beiträge (Blöcke, Items), offene Notizen; aktueller Planstand; Lagerbuchungen als Summe je Item; Konfliktliste.
+
+**Konfliktregeln** (deterministisch, auf jedem Gerät gleich):
+
+- Ereignisse sind nach `(at, id)` geordnet. Uhrzeiten verschiedener Geräte können abweichen; die Reihenfolge ist trotzdem für alle gleich, weil die ID entscheidet, wenn Zeiten gleich sind.
+- **Doppelte Übernahme:** Übernehmen zwei denselben freien Abschnitt, gilt die frühere; die spätere erscheint als Konflikt „Abschnitt war schon vergeben an …“ und hat keine Wirkung. Eine Zuweisung durch Baumeister/Bauleitung schlägt eine eigene Übernahme (bewusste Entscheidung), wird aber ebenfalls angezeigt.
+- **Meldung ohne Inhaberschaft** (z. B. jemand meldet einen fremden Abschnitt fertig): wird übernommen, aber markiert („gemeldet von …, Inhaber …“).
+- **Rechte:** Ereignisse, für die die Rolle des Urhebers zum Zeitpunkt des Ereignisses nicht reicht, werden abgelehnt und gelistet.
+- **Unbekannte Abschnitte** (in der Datei, aber im eigenen Plan gelöscht): bleiben im Protokoll, erscheinen als „verwaist“; nach neuem Planstand passen sie wieder.
+- **Unbekannte Ereignisarten** aus neueren Planer-Versionen bleiben erhalten (werden mitgeführt und weitergegeben), haben aber keine Wirkung – ältere Versionen zerstören nichts.
+- **Zwei Bauleitungen geben unterschiedliche Planstände frei:** der Planer zeigt „Planstände auseinander“ mit beiden Revisionen und dem Vergleich; es gilt die zuletzt freigegebene, bis eine Bauleitung entscheidet.
+
+## 5. Austauschwege
+
+Alle Wege tragen dasselbe Teamprotokoll. Stufe für Stufe kommt ein bequemerer Weg dazu; die einfacheren bleiben.
+
+| Weg | Stufe | Was reist | Für wen |
+|---|---|---|---|
+| **Teampaket** `*.bauteam.json` | COOP-01 | Projekt-Sicherung (Format 1–3) + Teamprotokoll + Einladung (Server, Rolle) | Bauleitung → alle; alle → Bauleitung |
+| **Meldecode** `BPT1:…` (kurzer Text) | COOP-01 | nur die eigenen neuen Ereignisse, komprimiert, mit Prüfsumme | Helfer → Bauleitung über Discord/Chat, ohne Datei |
+| **Statustext** | COOP-01 | lesbarer Tagesbericht (Abschnitte, Wer, Fehlt, Notizen) | zum Einfügen in Discord – der Planer sendet nichts selbst |
+| **Server-Teamdatei** (Paper-Plugin) | COOP-02 | Ereignisse der Spieler im Spiel (`/bp nehmen`, `/bp fertig`, …) mit echter UUID | alle Spieler, auch ohne Planer/Mod |
+| **Live über Mod** | COOP-03 | Website ↔ Mod (127.0.0.1) ↔ Plugin-Kanal `bauplaner:team`: Freigabe hochladen, Ereignisse holen | Bauleitung und Planer-Nutzer mit Mod |
+
+### Teampaket (COOP-01)
+
+- **Exportieren** (Bauleitung): enthält die eingefrorene freigegebene Revision mit allen benötigten Bauteilversionen (wie die Projektsicherung), Abschnitte, Programm, Teamprotokoll. Ohne `self`, ohne lokale Ansichtseinstellungen.
+- **Einlesen** zeigt vor dem Schreiben eine Vorschau: neue Ereignisse je Person, Konflikte, abgelehnte Ereignisse, ob ein neuer Planstand kommt und was er ändert (Blöcke/Abschnitte, betroffene schon gebaute Abschnitte → „Nacharbeit prüfen“). Dann:
+  - Projekt **fehlt** im Browser → wird angelegt (gleiche `teamId`, „Ich bin …“ wählen).
+  - Projekt **vorhanden** (gleiche `teamId`) → Teamprotokoll wird vereinigt; Geometrie wird **nur** ersetzt, wenn das Paket einen neueren freigegebenen Planstand der Bauleitung trägt und der Nutzer zustimmt. Eigene, nicht freigegebene Geometrie-Änderungen eines Helfers werden nie überschrieben, ohne dass die Vorschau sie nennt (Wahl: übernehmen / als Kopie behalten).
+  - Alles ist **ein** rückgängig machbarer Schritt.
+- Datei = Klartext-JSON mit `contentSha256`; Fehler (zerschnitten, falsches Projekt, neuere Version) werden verständlich gemeldet.
+
+### Meldecode (COOP-01)
+
+Viele Helfer wollen nur „Abschnitt 3 fertig, 2 Stacks Stein geliefert“ melden. Der Meldecode packt die Ereignisse seit dem letzten Paket (gzip + base64url, Präfix `BPT1:`, Team-ID-Kürzel, Prüfsumme) in eine Zeile für den Chat. Die Bauleitung fügt ihn ein; Duplikate stören nicht (Ereignis-IDs). Grenze: 16 KB.
+
+## 6. Paper-Plugin als Teamknoten (COOP-02)
+
+Das vorhandene Plugin (GAME-04) bekommt ein Teammodul. Es ist der einzige Ort, an dem Rechte **verbindlich** sind und Ereignisse eine echte Spieleridentität haben.
+
+- **Daten:** `plugins/BauplanerBridge/team/<teamId>.json` (Planstand-Kopf: Abschnitte mit Boxen in Weltkoordinaten, Mitglieder mit Rolle/UUID) und `<teamId>.events.jsonl` (nur anhängen). Die Bauleitung legt das Team an, indem sie das Teampaket als `team/<teamId>.bauteam.json` hochlädt oder (COOP-03) aus dem Planer sendet.
+- **Befehle ohne Mod und ohne Planer** (deutsch, mit Tab-Ergänzung):
+  - `/bp team` – Projekt, Planstand, meine Abschnitte, nächste freie Abschnitte, offene Notizen in der Nähe
+  - `/bp abschnitte` – Liste mit Status und Inhaber; `/bp nehmen <nr>`, `/bp abgeben <nr>`, `/bp fertig [<nr>] [notiz]`
+  - `/bp zeigen <nr>` – Umriss des Abschnitts 30 s als Partikel (nur für den Fragenden)
+  - `/bp notiz <frage|problem|material|info> <text>` – Notiz an der eigenen Position; `/bp notizen` in 32 Blöcken Umkreis
+  - `/bp geliefert <item> <menge>` oder mit dem Gegenstand in der Hand
+  - Baumeister+: `/bp zuweisen <nr> <spieler>`, `/bp pruefen <nr> ok|nacharbeit [notiz]`; Bauleitung: `/bp rolle <spieler> <rolle>`
+- **Anzeige für alle:** Betritt ein Spieler die Box eines Abschnitts, zeigt die Aktionsleiste „Abschnitt 3 · Dach · Anna · gemeldet“. Optional Bossleiste mit Projektfortschritt. Nichts davon wird in der Welt gespeichert.
+- **Schutz statt Sperre:** Standard ist „Hinweis“: setzt jemand Blöcke im Abschnitt eines anderen, bekommt er einmal je Minute einen Hinweis. Der Server-Betreiber kann in `config.yml` `schutz: sperren` wählen (Blocksetzen/-abbauen in fremden vergebenen Abschnitten wird verhindert, Bauleitung/OP ausgenommen). Das ist Weltschutz, keine Weltveränderung. Für harten Regionsschutz bleibt das Schutz-Plugin des Servers zuständig; der Planer kann die Abschnittsboxen als Liste (CSV mit Koordinaten) ausgeben.
+- **Rechte:** Paper-Permissions `bauplaner.team.use` (Standard true), `bauplaner.team.leitung` (Standard op). Rolle aus der Teamdatei und Permission müssen beide passen.
+- **Ausfuhr:** `/bp team export` schreibt `team/<teamId>.events.jsonl`; der Planer liest die Datei wie ein Teampaket (Herkunft „server“).
+
+## 7. Live-Abgleich über die Mod (COOP-03)
+
+Für Planer-Nutzer mit Mod entfällt jeder Dateiversand:
+
+- Neues Merkmal `team` in `hello.features` (Live-Protokoll, abgestimmt mit dem Mod-Thread). Website → Mod: `POST /v1/team/push` (Planstand-Kopf + neue Ereignisse), `GET /v1/team/pull?since=<id>`. Die Mod reicht beides über den Plugin-Kanal `bauplaner:team` (Custom Payload, eine Nachricht ≤ 1 MB, in Stücken) an das Plugin weiter und gibt die Antwort zurück. Ohne Plugin auf dem Server antwortet die Mod mit 404 `team-plugin-fehlt`.
+- Das Plugin prüft Rechte mit der UUID der Verbindung; der Planer schreibt nie stellvertretend für andere.
+- **Regel „keine zusätzlichen Pakete an den Server“ (Philipp, Client-Mod):** Der Kanal `bauplaner:team` ist streng freiwillig. Die Mod sendet darauf nur, wenn (1) der Server den Kanal selbst angemeldet hat (`minecraft:register` durch das Paper-Plugin) und (2) der Spieler es je Server einmal bestätigt hat (`/bauplaner team erlauben`). Sonst sendet sie nie etwas. Diese Ausnahme von Philipps Regel bestätigt Philipp vor Beginn von COOP-03 (abgestimmt mit dem Mod-Thread, 03.11.2026). Mod-Version: nach 0.9.0 (reserviert für „Volumenlimit für große Builds aufheben“).
+- Die Mod zeigt im Hologramm Abschnitte in der Farbe ihres Inhabers und den eigenen Auftrag hervorgehoben; `/bauplaner abschnitt mein` wählt den eigenen.
+
+## 8. Wer hat was gebaut (COOP-04)
+
+Drei Quellen, getrennt ausgewiesen:
+
+1. **Selbstmeldung** (`contribution`, `section.done`) – sofort, ohne Server.
+2. **Bestätigung** (`section.verify`) – Bauleitung/Baumeister nach Sichtprüfung oder Baustand.
+3. **Spielnachweis** – das Plugin zählt `BlockPlaceEvent`/`BlockBreakEvent` je Spieler **nur innerhalb von Abschnittsboxen eines Teams** und vergleicht mit dem Plan (richtig/falsch gesetzt). Nur Zähler, keine Positionen je Spieler, ausschaltbar (`nachweis: aus`). Der Baustand-Scan (MAP-05) bleibt die Wahrheit für „was steht“, die Zählung beantwortet „wer hat es gesetzt“.
+
+Daraus: Fortschritt je Spieler, Beitragsliste („Anna 3 200 Blöcke, 12 Stacks geliefert“), Bautage je Spieler (BUILD-06). Keine Ranglisten-Pflicht – Ansicht „ohne Zahlen je Person“ für entspannte Server.
+
+## 9. Gemeinschaftslager und Sammelaufträge
+
+- Der Sammelplan (SITE) wird teilbar: `gather.claim` = „ich besorge 640 Stein“. Der Planer zeigt je Rohstoff: Bedarf, Lager, unterwegs (übernommen, nicht geliefert), fehlt.
+- Lieferungen (`contribution.items`) erscheinen als „Gemeldete Lieferungen“ neben dem Lager. `site.stock` bleibt die Zahl der Bauleitung und wird nicht automatisch erhöht (keine doppelte Inventarquelle, LAGER-01); eine Übernahme per Klick mit Merker, was schon gebucht ist, folgt mit COOP-04.
+- COOP-04: Das Plugin kann die Kisten an einem Weltplan-Punkt der Art „Lager“ auf Befehl lesen (`/bp lager zaehlen`, nur geladene Chunks, nur Lesen) und als Aufnahme mit Zeitstempel melden.
+
+## 10. Planversionen, Freigabe und Änderungen während des Baus
+
+- **Freigabe:** Bauleitung friert eine Revision ein und schreibt `plan.release`. Alle bauen gegen diese Revision; der Planer zeigt sie als „Baustand für alle: Planstand 4 vom 03.11.“.
+- **Änderung nach Freigabe:** Der Planer vergleicht neue gegen alte Freigabe (vorhandener Diff aus B12) je Abschnitt: „Abschnitt 2: 120 Blöcke anders“. Bereits gemeldete/bestätigte Abschnitte mit Änderungen bekommen automatisch den Hinweis „Nacharbeit prüfen“ (kein automatischer Statuswechsel – die Bauleitung entscheidet).
+- **Änderungsvorschlag eines Helfers:** Helfer ändert eine Kopie, exportiert sie als Vorschlag (Teampaket mit `proposal: true`); die Bauleitung öffnet ihn im Vergleich und übernimmt Teile oder alles.
+
+## 11. Kommunikation am Bau
+
+- Notizen mit Ort (Abschnitt und/oder Koordinate) und Art; sichtbar im Reiter „Team“, auf der Weltkarte als Punkt „Notiz“ (Weltplan-Schema 2 hat die Art schon) und im Spiel (Plugin `/bp notizen`, Mod als Markierung).
+- `@Name` in Notizen hebt sie bei der genannten Person hervor („für mich“).
+- Kein automatischer Versand nach außen (AGENTS). Statustext und Meldecode werden vom Nutzer selbst kopiert.
+
+## 12. Einstieg für Mitspieler
+
+- **Einladung** im Reiter „Team“: kurzer Text mit Servername, Projekt, Rolle und drei Wegen: (a) nur spielen – Plugin-Befehle, Bauzettel als Druck/Handy-Link; (b) mit Mod – Downloadlink `#/mod`, `/bauplaner verbinden`; (c) mit Planer – Teampaket öffnen, „Ich bin …“ wählen.
+- **„Meine Aufgaben“** als erste Ansicht im Reiter Team, sobald „Ich bin“ gesetzt ist: meine Abschnitte mit Bauzettel, meine Sammelaufträge, Notizen für mich, Knopf „Fertig melden“ und „Meldecode kopieren“.
+- Sprache ohne Fachbegriffe; jede Rolle bekommt einen Satz, was sie darf.
+
+## 13. Was nur Philipp tun kann
+
+1. Plugin-Jar (ab COOP-02) in `plugins/` seines Paper-Servers legen und den Server neu starten.
+2. Sich selbst `bauplaner.team.leitung` geben (oder als OP) und anderen ggf. Baumeister-Rollen.
+3. Entscheiden, ob `schutz: sperren` und `nachweis` auf seinem Server gelten sollen (Datenschutz gegenüber Mitspielern: Zähler je Spieler).
+4. Teampakete/Meldecodes mit Mitspielern über Discord teilen (der Planer versendet nichts).
+5. Abnahme mit echten Mitspielern auf `server.lmnt-gaming.net`.
+
+Tokens, Konten oder Cloud-Dienste werden für keine Stufe benötigt.
+
+## 14. Stufenplan
+
+| ID | Inhalt | Abhängig | Abnahme |
+|---|---|---|---|
+| **COOP-01** | `team.ts` (Ereignisse, Rechte, Zusammenführen, Ansicht, Prüfung), Bauleute mit `player`/`role`/`color`, Reiter „Team“ (Mitglieder, Abschnitte vergeben/übernehmen/melden/bestätigen, Beiträge, Sammelaufträge, Notizen, Freigabe), Teampaket, Meldecode, Statustext, Testfälle TEAM-01…05 | PROJ-01 | Zwei getrennte Browser tauschen Pakete/Codes in beliebiger Reihenfolge und kommen zum selben Stand; doppelte Übernahme und fehlende Rechte werden gezeigt; nichts geht verloren; Rückgängig für jeden Import |
+| **COOP-02** | Teammodul im Paper-Plugin: Teamdatei, Befehle, Aktionsleiste, Hinweis/Sperre, Ausfuhr; Servertest | COOP-01, GAME-04 | Befehle auf echtem Paper-Server (Testskript), Ereignisse der Ausfuhr ergeben im Planer denselben Stand |
+| **COOP-03** | Merkmal `team` in Mod und Plugin-Kanal; Website „Mit Server abgleichen“ | COOP-02, GAME-08 | Spieltest: Freigabe hoch, Meldung im Spiel, Website holt sie |
+| **COOP-04** | Spielnachweis je Spieler, Lagerkisten zählen, Beitragsauswertung | COOP-02, LAGER-01 | Zähler stimmen mit gesetzten Blöcken im Servertest |
+
+## 15. Schnittstellen
+
+- **PROJ-01 (Thread „Projektmodul vertiefen“):** `Builder` bekommt optional `player`, `role`, `color` (geprüft in `checkProgram`, Patch in `updateBuilder`). `section.assign` schreibt zugleich `program.assignments` (eine Quelle für „wer baut was“ im Zeitplan). Teamprotokoll in `site.team`, geprüft in `checkSite`.
+- **Mod-Thread (GAME-07/08):** COOP-03 braucht das Merkmal `team` und den Plugin-Kanal; Vorschlag oben, Abstimmung vor Umsetzung.
+- **Paper-Thread (GAME-04):** COOP-02 erweitert `BridgePlugin` um ein eigenes `TeamModule` (eigene Klasse, eigene Befehle), Servertest wie `scripts/test_bridge_paper.sh`.
+- **Testphase (QA-04):** neue Fälle im Bereich „Team“.
+- **TEAM-01…03 / AUTH-01:** bleiben als Backend-Option zurückgestellt. Das Ereignismodell ist so gebaut, dass ein späterer Dienst dieselben Ereignisse speichern könnte (ID, Zeit, Urheber, Herkunft).
+
+## 16. Grenzen
+
+- Ohne Server-Plugin sind Rechte und Namen Angaben, keine Beweise.
+- Uhrzeiten der Geräte können abweichen; die Reihenfolge ist für alle gleich, entspricht bei verstellten Uhren aber nicht immer der wirklichen.
+- Gleichzeitiges Bearbeiten der Geometrie durch mehrere Personen wird bewusst nicht unterstützt (Plan-Hoheit).
+- Das Teamprotokoll wächst; die Prüfung erlaubt höchstens 20 000 Ereignisse. „Verlauf verdichten“ (Zustand als ein Ereignis der Bauleitung) ist vorgesehen, aber noch nicht gebaut.
+
+## 17. Umsetzungsstand (03.11.2026)
+
+**COOP-01 (Planer)**
+- Domäne `packages/domain/src/team.ts`: Ereignisse und Prüfung (`checkTeamEvent`, `checkTeam`, höchstens 20 000 Ereignisse, 4 KB je Ereignis), Faltung `teamView` mit Rechten zum Ereigniszeitpunkt, `mergeTeam` (Vereinigung, `clashes` bei gleicher ID mit anderem Inhalt), `authorize`, `laterThan` (nie vor dem letzten Ereignis), Meldecode `encodeReportCode`/`decodeReportCode` (gzip, base64url, Prüfsumme), Teampaket `buildTeamPackage`/`readTeamPackage` (SHA-256), Statustext, Serverdatei `teamServerFile`/`readTeamServerFile`, Planübernahme `takeOverPlan`. `site.team` wird von `checkSite` geprüft.
+- Mitglieder: Gründer ist Bauleitung; Bauleute aus `site.program` (PROJ-01) und per `member.join` Beigetretene sind Helfer, Unbekannte Gäste.
+- Oberfläche: Reiter **„Team“** (`views/project/TeamTab.tsx`, `TeamExchange.tsx`, `team.css`): Gründen, „Ich bin“, Planfreigabe (friert eine Revision ein), Meine Aufgaben, Abschnitte (übernehmen, zuweisen, bestätigen, Nacharbeit, Verlauf), Mitglieder mit Rollen und Spielernamen, Beiträge und Sammelaufträge, Notizen mit @Name, Teamprotokoll, Austausch (Teampaket mit Plan / nur Teamstand, Meldecode, Statustext, Einladung, Serverdatei, Einlesen mit Vorschau). Startseite: **„Teampaket öffnen“** (`TeamOpen.tsx`) legt das Projekt für neue Mitspieler an; ein vorhandenes Teamprojekt wird nie ersetzt.
+- Einlesen ohne neuen Planstand ist ein `site.set` (Strg+Z). Mit neuem Planstand wird vorher eine Kopie „<Name> (vor Planstand N)“ gespeichert; Haken beider Seiten bleiben.
+
+**COOP-02 (Paper-Plugin)**
+- `mods/bauplaner-bridge/paper/…/TeamLog.java` (Faltung Regel für Regel wie `team.ts`, Gson) und `TeamModule.java` (Befehle, Aktionsleiste, Schutz `hinweis|sperren|aus`, Partikelumriss, Ausfuhr). Konsole: `/bauplaner team als <spieler> <befehl>` für Server-Admins. Neue Rechte `bauplaner.team.use`, `bauplaner.team.leitung`; `config.yml` Abschnitt `team`.
+- Echter Servertest `scripts/test_bridge_paper_team.sh` (`scripts/bridge_paperteam.mjs`): Baustag mit Doppelübernahme, Beitritt, abgelehnter Prüfung, Rollenwechsel, Lieferung, Notiz, Neustart, Ausfuhr; die Planer-Faltung der Ausfuhr muss den Serverstand ergeben. Bestanden auf Paper 1.18.2, 1.21.4 und 26.3 (03.11.2026).
+
+**Prüfung:** `tests/team.test.mjs` (12 Fälle), `tests/e2e/team.e2e.mjs` (zwei getrennte Browser, 1400 und 390 px), Testfälle TEAMBAU-01…06 auf `#/testphase`.
+
+**Offen:** Aktionsleiste, Partikel und Schutz mit echten Spielern (Konsole kann sie nicht auslösen) → TEAMBAU-06 auf Philipps Server; COOP-03 (Mod), COOP-04 (Nachweis, Lagerkisten); „Verlauf verdichten“.

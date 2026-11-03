@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { TeamOpen } from './project/TeamOpen';
 import { applyOperation, applyWorldPlanOp, backupFileName, buildRestore, createBackup, createEnsembleProject, createProject, findUpdates, latestReleaseId, latestVersions, summarizeUpdates, MAX_BACKUP_BYTES, missingMembers, newInstance, planRestore, readBackup, resolveProject, serializeBackup, ENSEMBLES } from '../../../../packages/domain/src/index.js';
 import type { Ensemble, Instance, Project, ProjectChoice, RestorePlan } from '../../../../packages/domain/src/index.js';
 import { useApp } from '../app/context';
@@ -150,6 +151,7 @@ export function ProjectsView() {
         <label>Name<input id="projekt-name" value={name} maxLength={120} onChange={e => setName(e.target.value)} placeholder="z. B. Hafenviertel" /></label>
         <button className="primary" type="submit">＋ Leeres Projekt anlegen</button>
         <button className="secondary" type="button" onClick={createSample}>Beispielprojekt „Burgmauer“</button>
+        <TeamOpen onMessage={setMessage} onDone={() => void load()} />
         <a className="text-button" href="#/betrachter">Nur eine Datei ansehen →</a>
       </form>
       {projects === null ? <p className="muted">Projekte werden geladen …</p> : projects.map(p => <article className="card project-card" key={p.id}>

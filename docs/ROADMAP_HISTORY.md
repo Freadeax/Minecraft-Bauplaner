@@ -3392,3 +3392,77 @@ Mod 0.9.0 für Fabric und NeoForge auf #/mod freigegeben (Spieltests Fabric, Neo
 - `downloads/mod/bauplaner-bridge-fabric-26.3-0.9.0.jar`
 - `downloads/mod/bauplaner-bridge-neoforge-26.3-0.9.0.jar`
 
+## 2026-11-03T16:19:48.921Z · progress
+
+**Aufgaben:** COOP-01, COOP-02
+
+Teambau ohne Backend: Teamprotokoll (team.ts), Reiter Team, Teampaket/Meldecode/Serverdatei, Paper-Teammodul; 12 Domänentests, Browsertest mit zwei Browsern, Servertest Paper 1.18.2/1.21.4/26.3. Grenze: Aktionsleiste/Schutz/Partikel ohne echte Spieler ungeprüft.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-01 | 🧩 Implementiert · Abnahme offen | 3/5 | PROJ-01-Anbindung (S04) nach dessen Merge; Abnahme durch Philipp mit Mitspielern. |
+| COOP-02 | 🧩 Implementiert · Abnahme offen | 2/4 | Jar veröffentlichen; Abnahme auf Philipps Server. |
+
+## 2026-11-03T16:19:54.092Z · progress
+
+**Aufgaben:** COOP-03, COOP-04
+
+Geplant: Live-Abgleich über die Mod (nur freiwillig nach Serveranmeldung des Kanals und Bestätigung) und Baunachweis/Lagerkisten; Vorschlag in TEAMBAU.md.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-03 | ⏳ Offen | 0/2 | Nach der Testphase mit dem Mod-Thread abstimmen. |
+| COOP-04 | ⏳ Offen | 0/2 | Nach COOP-02-Abnahme. |
+
+## 2026-11-03T16:19:59.131Z · progress
+
+**Aufgaben:** TEAM-01, TEAM-02, TEAM-03, AUTH-01
+
+Nächste Aktion ergänzt: für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04; Backend bleibt Option.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| TEAM-01 | ⏳ Offen | 0/2 | API, Betriebsmodell und Kostenrahmen dokumentieren. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option. |
+| TEAM-02 | ⏳ Offen | 0/2 | Operation-ID, Revisionsprüfung und Wiederholung serverseitig umsetzen. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option. |
+| TEAM-03 | ⏳ Offen | 0/2 | Zuständigkeiten und Lagerbuchungen versionieren. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option. |
+| AUTH-01 | ⏳ Offen | 0/2 | Gast-/Kontovertrag und serverseitige Rechte definieren. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option. |
+
+## 2026-11-03T16:20:13.104Z · progress
+
+**Aufgaben:** COOP-01, COOP-02
+
+Dateizuordnung Teambau (Domäne, Reiter Team, Paper-Teammodul, Tests, Doku).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-01 | 🧩 Implementiert · Abnahme offen | 3/5 | PROJ-01-Anbindung (S04) nach dessen Merge; Abnahme durch Philipp mit Mitspielern. |
+| COOP-02 | 🧩 Implementiert · Abnahme offen | 2/4 | Jar veröffentlichen; Abnahme auf Philipps Server. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/icons.tsx`
+- `apps/web/src/team.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/ProjectsView.tsx`
+- `apps/web/src/views/project/TeamExchange.tsx`
+- `apps/web/src/views/project/TeamOpen.tsx`
+- `apps/web/src/views/project/TeamTab.tsx`
+- `apps/web/src/views/project/tabs.ts`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/TEAMBAU.md`
+- `docs/testing/TESTPLAN.md`
+- `mods/bauplaner-bridge/README.md`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/BridgePlugin.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`
+- `mods/bauplaner-bridge/paper/src/main/resources/config.yml`
+- `mods/bauplaner-bridge/paper/src/main/resources/plugin.yml`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/site.ts`
+- `packages/domain/src/team.ts`
+- `scripts/bridge_paperteam.mjs`
+- `scripts/test_bridge_paper_team.sh`
+- `tests/e2e/team.e2e.mjs`
+- `tests/team.test.mjs`
+

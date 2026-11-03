@@ -22,6 +22,7 @@ const PATHS = {
   plus: 'M12 5v14M5 12h14',
   page: 'M6 3h9l4 4v14H6zM14 3v5h5',
   game: 'M6 8h12a4 4 0 0 1 4 4v1a4 4 0 0 1-7 2.6h-6A4 4 0 0 1 2 13v-1a4 4 0 0 1 4-4zM7 11v3M5.5 12.5h3M15.5 11.5h.01M18 13.5h.01',
+  team: 'M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 6.5M18 14.5a6.5 6.5 0 0 1 3.5 5.5',
   update: 'M20 11a8 8 0 0 0-14.6-4.5M4 3.5v3.5h3.5M4 13a8 8 0 0 0 14.6 4.5M20 20.5V17h-3.5',
 } as const;
 
@@ -34,6 +35,6 @@ export function Icon({ name, size = 18 }: { name: IconName; size?: number }) {
 
 /** Symbol je Projektbereich (tabs.ts); unbekannte Bereiche bekommen ein neutrales Blatt. */
 export function tabIcon(id: string): IconName {
-  const known: Record<string, IconName> = { editor: 'editor', bauen: 'build', export: 'export', material: 'material', baustelle: 'site', karte: 'map', bloecke: 'building', gelaende: 'terrain', landschaft: 'terrain', updates: 'update' };
+  const known: Record<string, IconName> = { editor: 'editor', bauen: 'build', export: 'export', material: 'material', baustelle: 'site', karte: 'map', bloecke: 'building', gelaende: 'terrain', landschaft: 'terrain', updates: 'update', team: 'team' };
   return known[id] ?? 'page';
 }

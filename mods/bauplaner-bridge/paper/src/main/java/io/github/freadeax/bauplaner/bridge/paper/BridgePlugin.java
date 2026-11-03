@@ -47,6 +47,7 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
     private final Map<String, Plan> selected = new HashMap<>();
     private ServerScan scan;
     private BukkitTask task;
+    private TeamModule team;
 
     @Override
     public void onEnable() {
@@ -58,6 +59,8 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
         } catch (IOException e) {
             getLogger().warning("Ordner nicht anlegbar: " + e.getMessage());
         }
+        team = new TeamModule(this, root);
+        team.enable();
         var command = getCommand("bauplaner");
         if (command != null) { command.setExecutor(this); command.setTabCompleter(this); }
         getLogger().info("Bereit: Minecraft " + PaperCompat.gameVersion() + ", DataVersion " + PaperCompat.dataVersion()
@@ -67,6 +70,7 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
     @Override
     public void onDisable() {
         stopScan();
+        if (team != null) team.disable();
     }
 
     // ---------------------------------------------------------------- messages
@@ -81,6 +85,7 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
     public boolean onCommand(CommandSender s, Command command, String label, String[] args) {
         String sub = args.length == 0 ? "hilfe" : args[0].toLowerCase(Locale.ROOT);
         String[] rest = Arrays.copyOfRange(args, Math.min(1, args.length), args.length);
+        if (team.command(s, label, sub, rest)) return true;
         switch (sub) {
             case "plaene": return listPlans(s);
             case "plan": return rest.length == 0 ? fail(s, "/" + label + " plan <datei>") : loadPlan(s, String.join(" ", rest));
@@ -94,8 +99,9 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
 
     @Override
     public List<String> onTabComplete(CommandSender s, Command command, String label, String[] args) {
-        if (args.length == 1) return startsWith(SUBCOMMANDS.stream(), args[0]);
+        if (args.length == 1) return startsWith(Stream.concat(SUBCOMMANDS.stream(), TeamModule.COMMANDS.stream()), args[0]);
         String sub = args[0].toLowerCase(Locale.ROOT);
+        if (TeamModule.COMMANDS.contains(sub)) return startsWith(team.complete(sub, args).stream(), args[args.length - 1]);
         if (sub.equals("plan") && args.length == 2) return startsWith(planFiles(), args[1]);
         if (sub.equals("scan") && args.length == 2) return startsWith(Stream.of("geladen"), args[1]);
         if (sub.equals("anker")) {
@@ -116,6 +122,7 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
         say(s, "2) /" + label + " plan <datei>  3) /" + label + " anker hier (angeschauter Block = Projektursprung 0/0/0) oder /" + label + " anker <x> <y> <z> [welt]");
         say(s, "4) /" + label + " scan  (oder „scan geladen“: nur geladene Chunks). Die Aufnahme landet in plugins/BauplanerBridge/scans/ und wird im Tab „Bauen“ importiert.");
         say(s, "Weitere Befehle: plaene, status, abbrechen. Das Plugin verändert die Welt nie.");
+        say(s, "Gemeinsam bauen: /" + label + " team (Abschnitte nehmen, fertig melden, Notizen) – /" + label + " team hilfe.");
         return true;
     }
 

@@ -22,7 +22,9 @@
     "MAP-06",
     "GROSS-01",
     "LIB-06",
-    "SIZE-01"
+    "SIZE-01",
+    "COOP-01",
+    "COOP-02"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -4513,7 +4515,7 @@
       "acceptance": [
         "Pages bleibt statisches Frontend; kein Geheimnis im Client oder Repo."
       ],
-      "next": "API, Betriebsmodell und Kostenrahmen dokumentieren.",
+      "next": "API, Betriebsmodell und Kostenrahmen dokumentieren. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option.",
       "blockers": [],
       "evidence": [],
       "verification": {
@@ -4524,7 +4526,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T16:19:59.131Z"
     },
     {
       "id": "AUTH-01",
@@ -4556,7 +4558,7 @@
       "acceptance": [
         "Keine fremden Projektzugriffe; Gastmodus bleibt lokal nutzbar."
       ],
-      "next": "Gast-/Kontovertrag und serverseitige Rechte definieren.",
+      "next": "Gast-/Kontovertrag und serverseitige Rechte definieren. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option.",
       "blockers": [],
       "evidence": [],
       "verification": {
@@ -4567,7 +4569,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T16:19:59.131Z"
     },
     {
       "id": "TEAM-02",
@@ -4602,7 +4604,7 @@
       "acceptance": [
         "Kein stiller Verlust und kein Überschreiben fremder Operationen."
       ],
-      "next": "Operation-ID, Revisionsprüfung und Wiederholung serverseitig umsetzen.",
+      "next": "Operation-ID, Revisionsprüfung und Wiederholung serverseitig umsetzen. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option.",
       "blockers": [],
       "evidence": [],
       "verification": {
@@ -4613,7 +4615,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T16:19:59.131Z"
     },
     {
       "id": "TEAM-03",
@@ -4646,7 +4648,7 @@
       "acceptance": [
         "Planung, manuelle Bestätigung und Spielnachweis bleiben getrennt."
       ],
-      "next": "Zuständigkeiten und Lagerbuchungen versionieren.",
+      "next": "Zuständigkeiten und Lagerbuchungen versionieren. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option.",
       "blockers": [],
       "evidence": [],
       "verification": {
@@ -4657,7 +4659,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-01T06:15:35+01:00"
+      "updatedAt": "2026-11-03T16:19:59.131Z"
     },
     {
       "id": "GAME-04",
@@ -6094,6 +6096,232 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-03T16:46:52.767Z"
+    },
+    {
+      "id": "COOP-01",
+      "title": "Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“)",
+      "dependencies": [
+        "BUILD-06",
+        "BACKUP-02"
+      ],
+      "scope": [
+        "packages/domain/src/team.ts",
+        "packages/domain/src/site.ts",
+        "apps/web/src/views/project/TeamTab.tsx",
+        "apps/web/src/views/project/TeamExchange.tsx",
+        "apps/web/src/views/project/TeamOpen.tsx",
+        "apps/web/src/team.css",
+        "tests/team.test.mjs",
+        "tests/e2e/team.e2e.mjs",
+        "docs/architecture/TEAMBAU.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "COOP-01-S01",
+          "title": "Konzept TEAMBAU.md: Rollen, Ereignismodell, Konfliktregeln, Austauschwege, Plugin, Mod, Nachweis, Lager, Freigabe, Einstieg, was nur Philipp tun kann.",
+          "done": true
+        },
+        {
+          "id": "COOP-01-S02",
+          "title": "Domäne team.ts: Ereignisse, Prüfung, Faltung mit Rechten, Zusammenführen, Meldecode, Teampaket, Statustext, Serverdatei, Planübernahme; site.team in checkSite.",
+          "done": true
+        },
+        {
+          "id": "COOP-01-S03",
+          "title": "Reiter „Team“ und „Teampaket öffnen“ mit Vorschau vor jedem Einlesen.",
+          "done": true
+        },
+        {
+          "id": "COOP-01-S04",
+          "title": "Bauleute aus PROJ-01 mit Spielernamen verknüpfen und Zuweisungen in den Zeitplan spiegeln.",
+          "done": false
+        },
+        {
+          "id": "COOP-01-S05",
+          "title": "Abnahme mit Mitspielern (TEAMBAU-01…05).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Zwei Browser tauschen Pakete/Codes in beliebiger Reihenfolge und kommen zum selben Stand; doppelte Übernahme und fehlende Rechte werden gezeigt; nichts geht verloren.",
+        "Kein Backend, keine Konten, kein automatischer Versand nach außen."
+      ],
+      "next": "PROJ-01-Anbindung (S04) nach dessen Merge; Abnahme durch Philipp mit Mitspielern.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/team.test.mjs",
+          "note": "Faltung, Rechte, Zusammenführen vertauschbar/idempotent, Meldecode, Teampaket, Statustext."
+        },
+        {
+          "path": "tests/e2e/team.e2e.mjs",
+          "note": "Zwei Browser: Paket mit Plan, Meldecode, Doppelübernahme, Bestätigen, Neuladen, Rückgängig."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "12 Domänentests und Browsertest mit zwei getrennten Browsern (1400/390 px) grün; Abnahme mit echten Mitspielern offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-03T16:20:13.104Z"
+    },
+    {
+      "id": "COOP-02",
+      "title": "Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“)",
+      "dependencies": [
+        "COOP-01",
+        "GAME-04"
+      ],
+      "scope": [
+        "mods/bauplaner-bridge/paper/",
+        "scripts/bridge_paperteam.mjs",
+        "scripts/test_bridge_paper_team.sh"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "COOP-02-S01",
+          "title": "TeamLog (Faltung wie team.ts) und TeamModule (Befehle, Aktionsleiste, Schutz, Partikel, Ausfuhr), Rechte und config.yml.",
+          "done": true
+        },
+        {
+          "id": "COOP-02-S02",
+          "title": "Echter Servertest Paper 1.18.2, 1.21.4 und 26.3: Planer-Faltung der Ausfuhr = Serverstand.",
+          "done": true
+        },
+        {
+          "id": "COOP-02-S03",
+          "title": "Plugin-Jar mit Teammodul auf der Download-Seite veröffentlichen.",
+          "done": false
+        },
+        {
+          "id": "COOP-02-S04",
+          "title": "Abnahme auf Philipps Paper-Server mit Mitspielern (TEAMBAU-06).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Plugin verändert die Welt nie; Schutz verhindert höchstens Blockänderungen in fremden Abschnitten und ist abschaltbar.",
+        "Ereignisse vom Server tragen die echte Spieleridentität und die Herkunft server."
+      ],
+      "next": "Jar veröffentlichen; Abnahme auf Philipps Server.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "scripts/bridge_paperteam.mjs",
+          "note": "Baustag auf echtem Paper-Server, Neustart, Ausfuhr, Vergleich mit teamView."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Servertest mit Konsolenbefehlen auf drei Paper-Versionen bestanden; Aktionsleiste, Partikel und Schutz brauchen echte Spieler."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-03T16:20:13.104Z"
+    },
+    {
+      "id": "COOP-03",
+      "title": "Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm",
+      "phase": "P4",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“)",
+      "dependencies": [
+        "COOP-02",
+        "GAME-08"
+      ],
+      "scope": [
+        "mods/",
+        "apps/web/src/views/project/TeamExchange.tsx",
+        "docs/architecture/LIVE_LINK.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "COOP-03-S01",
+          "title": "Vertrag mit dem Mod-Thread abstimmen (Vorschlag TEAMBAU.md §7).",
+          "done": false
+        },
+        {
+          "id": "COOP-03-S02",
+          "title": "Mod, Plugin und Website umsetzen, Spieltest.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Ohne Plugin meldet die Mod 404 team-plugin-fehlt; der Planer schreibt nie stellvertretend für andere."
+      ],
+      "next": "Nach der Testphase mit dem Mod-Thread abstimmen.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Geplant."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-03T16:19:54.092Z"
+    },
+    {
+      "id": "COOP-04",
+      "title": "Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten am Weltplan-Punkt zählen, Lieferungen ins Lager übernehmen",
+      "phase": "P4",
+      "priority": "P1",
+      "status": "planned",
+      "owner": "Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“)",
+      "dependencies": [
+        "COOP-02",
+        "LAGER-01"
+      ],
+      "scope": [
+        "mods/bauplaner-bridge/paper/",
+        "packages/domain/src/team.ts"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "COOP-04-S01",
+          "title": "Zähler je Spieler mit Datenschutzschalter.",
+          "done": false
+        },
+        {
+          "id": "COOP-04-S02",
+          "title": "Lagerkisten lesen und Lieferungen buchen ohne Doppelzählung.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Selbstmeldung, Bestätigung und Spielnachweis bleiben getrennt sichtbar."
+      ],
+      "next": "Nach COOP-02-Abnahme.",
+      "blockers": [],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Geplant."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-03T16:19:54.092Z"
     }
   ],
   "events": [
@@ -10755,6 +10983,152 @@
           "done": 4,
           "total": 5,
           "next": "Abnahme durch Philipp (S05) mit einem großen Bau im Spiel."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T16:19:48.921Z",
+      "kind": "progress",
+      "items": [
+        "COOP-01",
+        "COOP-02"
+      ],
+      "summary": "Teambau ohne Backend: Teamprotokoll (team.ts), Reiter Team, Teampaket/Meldecode/Serverdatei, Paper-Teammodul; 12 Domänentests, Browsertest mit zwei Browsern, Servertest Paper 1.18.2/1.21.4/26.3. Grenze: Aktionsleiste/Schutz/Partikel ohne echte Spieler ungeprüft.",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "COOP-01",
+          "status": "implemented",
+          "done": 3,
+          "total": 5,
+          "next": "PROJ-01-Anbindung (S04) nach dessen Merge; Abnahme durch Philipp mit Mitspielern."
+        },
+        {
+          "id": "COOP-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 4,
+          "next": "Jar veröffentlichen; Abnahme auf Philipps Server."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T16:19:54.092Z",
+      "kind": "progress",
+      "items": [
+        "COOP-03",
+        "COOP-04"
+      ],
+      "summary": "Geplant: Live-Abgleich über die Mod (nur freiwillig nach Serveranmeldung des Kanals und Bestätigung) und Baunachweis/Lagerkisten; Vorschlag in TEAMBAU.md.",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "COOP-03",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Nach der Testphase mit dem Mod-Thread abstimmen."
+        },
+        {
+          "id": "COOP-04",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Nach COOP-02-Abnahme."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T16:19:59.131Z",
+      "kind": "progress",
+      "items": [
+        "TEAM-01",
+        "TEAM-02",
+        "TEAM-03",
+        "AUTH-01"
+      ],
+      "summary": "Nächste Aktion ergänzt: für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04; Backend bleibt Option.",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "TEAM-01",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "API, Betriebsmodell und Kostenrahmen dokumentieren. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option."
+        },
+        {
+          "id": "TEAM-02",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Operation-ID, Revisionsprüfung und Wiederholung serverseitig umsetzen. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option."
+        },
+        {
+          "id": "TEAM-03",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Zuständigkeiten und Lagerbuchungen versionieren. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option."
+        },
+        {
+          "id": "AUTH-01",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Gast-/Kontovertrag und serverseitige Rechte definieren. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T16:20:13.104Z",
+      "kind": "progress",
+      "items": [
+        "COOP-01",
+        "COOP-02"
+      ],
+      "summary": "Dateizuordnung Teambau (Domäne, Reiter Team, Paper-Teammodul, Tests, Doku).",
+      "files": [
+        "apps/web/src/app/icons.tsx",
+        "apps/web/src/team.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/ProjectsView.tsx",
+        "apps/web/src/views/project/TeamExchange.tsx",
+        "apps/web/src/views/project/TeamOpen.tsx",
+        "apps/web/src/views/project/TeamTab.tsx",
+        "apps/web/src/views/project/tabs.ts",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/TEAMBAU.md",
+        "docs/testing/TESTPLAN.md",
+        "mods/bauplaner-bridge/README.md",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/BridgePlugin.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java",
+        "mods/bauplaner-bridge/paper/src/main/resources/config.yml",
+        "mods/bauplaner-bridge/paper/src/main/resources/plugin.yml",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/site.ts",
+        "packages/domain/src/team.ts",
+        "scripts/bridge_paperteam.mjs",
+        "scripts/test_bridge_paper_team.sh",
+        "tests/e2e/team.e2e.mjs",
+        "tests/team.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-01",
+          "status": "implemented",
+          "done": 3,
+          "total": 5,
+          "next": "PROJ-01-Anbindung (S04) nach dessen Merge; Abnahme durch Philipp mit Mitspielern."
+        },
+        {
+          "id": "COOP-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 4,
+          "next": "Jar veröffentlichen; Abnahme auf Philipps Server."
         }
       ]
     }

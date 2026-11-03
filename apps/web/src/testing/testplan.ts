@@ -125,6 +125,18 @@ export const TEST_AREAS: readonly TestArea[] = [
     ],
   },
   {
+    id: 'TEAMBAU', kind: 'planer', title: 'Gemeinsam bauen (Team)',
+    intro: 'Mehrere Spieler an einem Projekt: Reiter „Team“ im Planer und Teambefehle des Paper-Plugins. Für den Austausch zwei Browser oder zwei Rechner nehmen (z. B. normales und privates Fenster).',
+    cases: [
+      k('TEAMBAU-01', 'Team gründen und Plan freigeben', ['Projekt mit Bauabschnitten öffnen (Reiter „Baustelle“ → Vorschlag „Fundament · Rohbau · Dach“).', 'Reiter „Team“: Name und Minecraft-Name eintragen, „Team gründen“.', '„Aktuellen Plan freigeben“, kurze Beschreibung eingeben.'], 'Du bist Bauleitung; oben steht „Planstand N gilt“; im Reiter „Export“ gibt es die neue Revision.'),
+      k('TEAMBAU-02', 'Mitspieler einladen', ['„Teampaket mit Plan“ herunterladen und im zweiten Browser auf der Startseite „Teampaket öffnen“.', 'Dort „Ich bin neu“ mit Namen und Minecraft-Namen, „Beitreten“.'], 'Das Projekt erscheint mit allen Bauteilen und Abschnitten; der Mitspieler ist Helfer und sieht denselben Planstand.'),
+      k('TEAMBAU-03', 'Abschnitt übernehmen, melden, bestätigen', ['Im zweiten Browser einen freien Abschnitt „Übernehmen“, dann unter „Meine Aufgaben“ „Fertig melden“.', '„Meldecode kopieren“ und den Code im ersten Browser unter „Einlesen“ einfügen, „Prüfen“, „Übernehmen“.', 'Im ersten Browser „✓ Bestätigen“.'], 'Vorschau nennt die neuen Ereignisse; danach steht der Abschnitt auf „fertig gemeldet“ bzw. „bestätigt“ mit dem richtigen Namen. Strg+Z nimmt das Einlesen zurück.'),
+      v('TEAMBAU-04', 'Gleichzeitig denselben Abschnitt nehmen', ['Beide Browser übernehmen denselben freien Abschnitt, ohne vorher auszutauschen.', 'Meldecodes in beide Richtungen einlesen.'], 'In beiden Browsern gehört der Abschnitt derselben Person (wer zuerst war); oben erscheint ein Hinweis „… wollte übernehmen, war schon vergeben“. Nichts geht verloren.'),
+      v('TEAMBAU-05', 'Beiträge, Sammelaufträge, Notizen', ['Gebaute Blöcke und eine Lieferung melden, einen Sammelauftrag übernehmen, eine Notiz mit @Name schreiben.', 'Austauschen und „Statustext für Discord“ ansehen.'], 'Mitgliederliste zählt Blöcke/Items; die erwähnte Person sieht die Notiz unter „Meine Aufgaben“; der Statustext listet Abschnitte, Sammelaufträge und offene Notizen.'),
+      v('TEAMBAU-06', 'Team auf dem Paper-Server', ['Projekt auf der Weltkarte platzieren, im Reiter „Team“ „Serverdatei herunterladen“.', 'Datei nach plugins/BauplanerBridge/team/ legen, im Spiel `/bauplaner team laden` (als OP).', 'Als Mitspieler `/bauplaner team`, `/bauplaner nehmen 2`, im Abschnitt stehen, `/bauplaner zeigen 2`, `/bauplaner fertig`, `/bauplaner notiz frage …`.', '`/bauplaner team export` und die Datei im Planer unter „Einlesen“ wählen.'], 'Im Spiel: Aktionsleiste „Abschnitt 2 · … · in Arbeit“, Partikelumriss, verständliche Antworten, Hinweis beim Bauen im fremden Abschnitt. Im Planer kommen die Meldungen mit „vom Server“ an.'),
+    ],
+  },
+  {
     id: 'MOD', kind: 'mod', title: 'Mod: Installation und Hologramm',
     intro: 'Die Bauplaner-Mod im Spiel (Fabric oder NeoForge, Minecraft 26.3). Nur Client – auf dem Server muss nichts installiert werden. Bei jedem Fehler im Spiel `/bauplaner diagnose` eingeben und den Bericht anhängen.',
     cases: [

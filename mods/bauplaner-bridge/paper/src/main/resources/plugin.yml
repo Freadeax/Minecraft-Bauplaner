@@ -8,7 +8,7 @@ website: https://freadeax.github.io/Minecraft-Bauplaner/#/mod
 commands:
   bauplaner:
     description: Bauplan laden, Anker setzen und den Baufortschritt aufnehmen.
-    usage: /bauplaner [plaene|plan|anker|scan|abbrechen|status]
+    usage: /bauplaner [plaene|plan|anker|scan|abbrechen|status|team|abschnitte|nehmen|abgeben|fertig|zeigen|notiz|notizen|geliefert|sammle|zuweisen|pruefen|rolle]
     aliases: [bp]
     permission: bauplaner.use
 permissions:
@@ -20,4 +20,10 @@ permissions:
     default: op
   bauplaner.abbrechen.alle:
     description: Aufnahmen anderer Spieler abbrechen.
+    default: op
+  bauplaner.team.use:
+    description: Teambau – Abschnitte nehmen, fertig melden, Notizen und Lieferungen; was jemand darf, sagt zusätzlich seine Rolle im Team.
+    default: true
+  bauplaner.team.leitung:
+    description: Teamdateien laden und ausführen, Rollen vergeben, vom Schutz ausgenommen.
     default: op
