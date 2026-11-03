@@ -3249,3 +3249,24 @@ Kolosseum aus Philipps ChatGPT-Bauplan: Generator Arena (Vorlage Kolosseum 81 ×
 - `tests/e2e/grossprojekte.e2e.mjs`
 - `tests/generators.test.mjs`
 
+## 2026-11-03T16:15:14.846Z · progress
+
+**Aufgaben:** GROSS-01
+
+Großbauten-Set (S05): sechs Wahrzeichen bis 45 × 41 Blöcke (Rathaus mit Turm, Schloss, Kuppelbasilika, Arena, Großer Marktplatz, Stadttor), Hauptstadt um Residenz und Großen Markt erweitert
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GROSS-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme durch Philipp (S06); Großbauten-Set (S05). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/GROSSPROJEKTE.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/build/sets/grossbauten.ts`
+- `packages/domain/src/build/sets/index.ts`
+- `packages/domain/src/grossprojekte/hauptstadt.ts`
+

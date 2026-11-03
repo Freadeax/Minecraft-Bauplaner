@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T15:52:52.715Z",
+  "updatedAt": "2026-11-03T16:15:14.846Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -5460,7 +5460,9 @@
         "apps/web/src/app/router.ts",
         "tests/grossprojekte.test.mjs",
         "tests/e2e/grossprojekte.e2e.mjs",
-        "docs/architecture/GROSSPROJEKTE.md"
+        "docs/architecture/GROSSPROJEKTE.md",
+        "packages/domain/src/build/sets/grossbauten.ts",
+        "packages/domain/src/build/sets/index.ts"
       ],
       "legacyIds": [],
       "steps": [
@@ -5486,8 +5488,8 @@
         },
         {
           "id": "GROSS-01-S05",
-          "title": "Großbauten-Set: große Einzelgebäude (Größenklasse L) für Wahrzeichen in Großprojekten.",
-          "done": false
+          "title": "Großbauten-Set: sechs große Einzelgebäude (Rathaus mit Turm, Schloss mit Innenhof, Kuppelbasilika, Arena, Großer Marktplatz, Stadttor) bis 45 × 41 Blöcke; Hauptstadt um Residenz und Großen Markt erweitert.",
+          "done": true
         },
         {
           "id": "GROSS-01-S06",
@@ -5524,7 +5526,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T15:28:11.884185Z"
+      "updatedAt": "2026-11-03T16:15:14.846Z"
     },
     {
       "id": "MAP-05",
@@ -10386,6 +10388,33 @@
           "done": 4,
           "total": 5,
           "next": "Philipp baut das Kolosseum im Spiel nach (BIB-14); danach Feinschliff (Statuen in den Attika-Fenstern, Treppen im Hypogäum)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T16:15:14.846Z",
+      "kind": "progress",
+      "items": [
+        "GROSS-01"
+      ],
+      "summary": "Großbauten-Set (S05): sechs Wahrzeichen bis 45 × 41 Blöcke (Rathaus mit Turm, Schloss, Kuppelbasilika, Arena, Großer Marktplatz, Stadttor), Hauptstadt um Residenz und Großen Markt erweitert",
+      "files": [
+        "apps/web/src/testing/testplan.ts",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/GROSSPROJEKTE.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/build/sets/grossbauten.ts",
+        "packages/domain/src/build/sets/index.ts",
+        "packages/domain/src/grossprojekte/hauptstadt.ts"
+      ],
+      "snapshot": [
+        {
+          "id": "GROSS-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme durch Philipp (S06); Großbauten-Set (S05)."
         }
       ]
     }

@@ -752,3 +752,10 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Sichtprüfung über Draufsicht, Abwicklung der Fassade, Schnitte und Ebenen des Kolosseums (Bögen gleichmäßig, Ränge begehbar, Umgang, Durchgänge, Hypogäum) und der Einzelbauten.
 - Browser (Chromium, vorinstalliertes Headless-Shell 1243 für Playwright 1.64.1 verlinkt): `catalog`, `generators` (15 Karten), `grossprojekte` (11 Karten) 6/6; Seite „Kolosseum-Viertel“ (51 296 Blöcke) und Generator „Arena“ (27 819 Blöcke) ohne Konsolenfehler geladen.
 - Grenzen: nicht im Spiel abgenommen (GEN-03-S05, Testfall BIB-14); ganze Browser-Suite nicht erneut gelaufen.
+
+## GROSS-01-S05 · Großbauten-Set · 03.11.2026 · Claude
+
+- Blocklogik je Gebäude (Zustandsregeln, Drehen/Spiegeln, `checkPlacement` mit eigenem Raum): alle sechs Großbauten ohne Befund.
+- `node --test` Katalog, Katalog-Spiel, Bauwelten, Blocklogik, Zustände, Varianten, Bibliotheksstart: 66/66 bestanden. `tests/grossprojekte.test.mjs`: 11/11 bestanden, auch die erweiterte Hauptstadt ohne Konflikt.
+- Sichtprüfung im Browser (3D-Ansicht Iso/Nord/Süd) für alle sechs Gebäude; danach Rathausturm über das Dach gehoben und die Arena mit dünner Bogenmauer und Umgang neu aufgebaut.
+- Grenzen: Abnahme im Spiel offen (BIB-13); Arena und Basilika sind antik und stecken noch in keinem Großprojekt.

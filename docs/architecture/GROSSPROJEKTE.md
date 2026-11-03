@@ -40,6 +40,21 @@ Mit Voxelkonflikten ist die Übernahme nur nach ausdrücklicher Bestätigung mö
 
 Eine Datei `packages/domain/src/grossprojekte/<slug>.ts` mit einer `const` vom Typ `Grossprojekt` (Helfer `s`, `e`, `a`, `q`, `ph` aus `helpers.ts`) und eine Zeile in `grossprojekte/index.ts`. Die Tests prüfen automatisch: Struktur, vorhandene Bauteile, keine Voxelkonflikte und Abstände im Standardlayout, zusammenhängendes Straßennetz, jedes Quartier in einer Phase.
 
+## Großbauten (S05)
+
+Das Set `packages/domain/src/build/sets/grossbauten.ts` liefert die Wahrzeichen, für die Großprojekte einen Platz brauchen. Bis dahin war kein Katalog-Gebäude größer als 25 × 25 Blöcke.
+
+| Gebäude | Größe (B × H × T) | Inhalt |
+| --- | --- | --- |
+| Großes Rathaus mit Turm (`bld_gross_rathaus`) | 35 × 50 × 27 | U-Form um einen Vorhof, Bürgerhalle, Ratssaal, Archiv, Uhr- und Glockenturm |
+| Schloss mit Innenhof (`bld_gross_schloss`) | 41 × 26 × 41 | Vier Flügel, Hofgarten mit Brunnen, Ecktürme mit Kupferkuppeln, Thronsaal, Küche, Bibliothek |
+| Kuppelbasilika (`bld_gross_basilika`) | 31 × 29 × 43 | Kreuzgrundriss, Säulenportikus, Tambour mit Kuppel, Säulenreihen, Altar |
+| Arena (`bld_gross_arena`) | 45 × 15 × 35 | Ovale Bogenmauer, Umgang in zwei Geschossen, Sitzreihen, vier Tore, Ehrenloge |
+| Großer Marktplatz (`bld_gross_marktplatz`) | 33 × 8 × 33 | Brunnen, acht Stände mit Waren, Linden, Marktkreuz |
+| Stadttor mit Mauer (`bld_gross_stadttor`) | 37 × 29 × 15 | Torhaus mit Fallgitter, Rundtürme, Wehrgang, offene Mauerenden zum Anbauen |
+
+Alle sechs bestehen die Blocklogik-Prüfung (Halt, Verbindungen, Zustände, Drehen und Spiegeln). Die Hauptstadt nutzt sie in den Quartieren „Residenz“ und „Großer Markt“ (Phase 5).
+
 ## Prüfung
 
 - `tests/grossprojekte.test.mjs`: Kuratierung aller Projekte, Standardlayouts ohne Voxelkonflikte und Abstandsbefunde (exportierbar, Quartiere in ihren Rasterfeldern, nichts auf der Straße), Straßennetz zusammenhängend mit Laternen neben der Fahrbahn, Stilpaletten, Determinismus, Straßenbreite/aus/Laternen, eingebettete Ensembles (kuratierte Lage) und Anlagen (Wegmodule verbunden), Wahl (ab, Tausch, Drehung, Türen, Fehler), Datenprüfung, freie Bauplätze, Übernahme (Straßen zuerst, Phasen, frische IDs, Netz-Bauteil), Einfügen mit Rückgängig und Veraltungsprüfung, Größenklassen.

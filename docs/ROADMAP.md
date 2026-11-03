@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-03T15:52:52.715Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-03T16:15:14.846Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -38,7 +38,7 @@ Stand: 2026-11-03T15:52:52.715Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 - **EDIT-05 · Auswahl- und Formwerkzeuge aus Editor-Mods: Zauberauswahl, Auswahl wachsen/schrumpfen/einpassen, Stapeln, Extrudieren, Ellipsoid/Torus/Spirale, Entities ziehen mit** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: EDIT-05-S07: Abnahme durch Philipp in der Werkstatt (Zauberstab, Stapeln, Extrudieren, Wendel) und Spielprüfung gestapelter/gedrehter Bauteile mit Ausstattung.
 - **MAP-05 · Planung auf der Live-Karte vertiefen: Baustand aus dem Spiel (Mod 0.7.1, GET /v1/scan), Ebenen und Abweichungen auf der Karte, bestätigte Schritte abhaken, Bauabschnitte wählen, Weltplan automatisch abgleichen, Hologramm und BlueMap aus dem Kontextmenü** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05); denkbar: gedrehte Projektlagen auf der Weltkarte, damit gedrehte Hologramme übernommen werden können.
 - **MAP-06 · Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players)** — 🧩 Implementiert · Abnahme offen, 7/8 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S08); Mod-Umsetzung GAME-08; denkbar für Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (Zeitstempel je Eintrag).
-- **GROSS-01 · Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt** — 🧩 Implementiert · Abnahme offen, 4/6 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06); Großbauten-Set (S05).
+- **GROSS-01 · Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt** — 🧩 Implementiert · Abnahme offen, 5/6 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06); Großbauten-Set (S05).
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -166,7 +166,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [LIB-05](#lib-05) | Bibliothek im Stil der Vorlagen: Gestaltungsregeln, Baukasten, neu gezeichnete Gebäude und Generatoren | 🧩 Implementiert · Abnahme offen | 7/8 | LIB-04, BLOCK-02, GEN-02 | ausstehend | ausstehend |
 | [BASE-01](#base-01) | Basisplaner: ganze Survival-Basis aus Funktionszonen (Platz, Lager, Schmiede, Verzauberung, XP-Farm, Küche, Halle, Felder, Tierfarm, Hafen, Händler), Wegenetz mit Laternen, Wasserseite, Spielprüfungen je Zone, Bauphasen | 🧩 Implementiert · Abnahme offen | 5/6 | BUILD-05, TERRAIN-01, BLOCK-02 | ausstehend | ausstehend |
 | [SPLIT-01](#split-01) | Gebäude aus großen Modellen herauslösen: Gebäude, Felder, Gehege und Wegenetz erkennen, einzeln oder zusammen als Bauteile speichern, als Projekt an alter Stelle aufteilen | 🧩 Implementiert · Abnahme offen | 4/5 | LIB-04, WORLD-IMPORT-01, PERF-04 | ausstehend | ausstehend |
-| [GROSS-01](#gross-01) | Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt | 🧩 Implementiert · Abnahme offen | 4/6 | BUILD-05, BASE-01, LIB-05 | ausstehend | ausstehend |
+| [GROSS-01](#gross-01) | Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt | 🧩 Implementiert · Abnahme offen | 5/6 | BUILD-05, BASE-01, LIB-05 | ausstehend | ausstehend |
 | [MAP-05](#map-05) | Planung auf der Live-Karte vertiefen: Baustand aus dem Spiel (Mod 0.7.1, GET /v1/scan), Ebenen und Abweichungen auf der Karte, bestätigte Schritte abhaken, Bauabschnitte wählen, Weltplan automatisch abgleichen, Hologramm und BlueMap aus dem Kontextmenü | 🧩 Implementiert · Abnahme offen | 4/5 | MAP-03, MAP-04, GAME-07, GAME-01 | ausstehend | ausstehend |
 | [MAP-06](#map-06) | Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players) | 🧩 Implementiert · Abnahme offen | 7/8 | MAP-04, MAP-05, GAME-07 | ausstehend | ausstehend |
 | [QA-04](#qa-04) | Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage | 🧩 Implementiert · Abnahme offen | 4/6 | QA-01, STAB-01, GAME-07 | ausstehend | ausstehend |
@@ -1871,13 +1871,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GROSS-01
 
-**Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Bibliothek um größere Projekte erweitern“) · Aktualisiert: 2026-11-03T15:28:11.884185Z
+**Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Bibliothek um größere Projekte erweitern“) · Aktualisiert: 2026-11-03T16:15:14.846Z
 
 - [x] GROSS-01-S01: Lückenanalyse der Größenstufen (Gebäude ≤ 25 × 25, Ensembles, Anlagen, Basisplaner) und Datenmodell Großprojekt (Quartiere, Einheiten slot/ensemble/anlage, Phasen, Straßen), abgestimmt mit Projektmodul- und ChatGPT-Projekt-Thread.
 - [x] GROSS-01-S02: Engine: deterministisches Rasterlayout aus echten Grundflächen, Türen zur Straße, Straßennetz als eigenes Bauteil (vier Stile, Laternen, Ring, Aussparung in Quartieren über mehrere Zellen), AnlagePlan-kompatible Vorschau, Übernahme mit Abschnitten je Phase.
 - [x] GROSS-01-S03: Zehn kuratierte Großprojekte (27–62 Gebäude) für neun Bauwelten, darunter eines aus zwei ganzen Anlagen; alle ohne Voxelkonflikt.
 - [x] GROSS-01-S04: Oberfläche #/bibliothek/grossprojekte: Übersicht mit Lageplan-Vorschau, Planer mit 3D-Ansicht, Lageplan, Prüfung, Quartiere je Phase (ab, Tausch, Drehung), Straßenwahl, Übernahme, 3D-Export.
-- [ ] GROSS-01-S05: Großbauten-Set: große Einzelgebäude (Größenklasse L) für Wahrzeichen in Großprojekten.
+- [x] GROSS-01-S05: Großbauten-Set: sechs große Einzelgebäude (Rathaus mit Turm, Schloss mit Innenhof, Kuppelbasilika, Arena, Großer Marktplatz, Stadttor) bis 45 × 41 Blöcke; Hauptstadt um Residenz und Großen Markt erweitert.
 - [ ] GROSS-01-S06: Abnahme durch Philipp in der Testphase (BIB-13); danach Geländeanpassung im Planer, Wasserkanten, eigene Großprojekte aus Sammlungen.
 
 **Abnahme:** Alle mitgelieferten Großprojekte planen ohne Voxelkonflikt und Abstandsbefund; das Straßennetz ist zusammenhängend, Laternen stehen neben der Fahrbahn. Übernahme liefert Abschnitte „Straßen & Plätze“ und „Phase N“ mit Zwecken; Einfügen ist ein Rückgängig-Schritt; nichts wird ohne Knopfdruck gespeichert. Eigene Großprojekte brauchen nur eine Datei und eine Registry-Zeile.
@@ -1888,7 +1888,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/grossprojekte.test.mjs](../tests/grossprojekte.test.mjs) — Kuratierung, Layouts ohne Konflikte, Straßennetz, Wahl, Datenprüfung, Übernahme, Einfügen mit Rückgängig.; [tests/e2e/grossprojekte.e2e.mjs](../tests/e2e/grossprojekte.e2e.mjs) — Chromium: Übersicht, Planer, Quartier ab, Straßen, Tausch/Drehung, Übernahme mit Netz-Bauteil, Einfügen, 390 px.; [docs/architecture/GROSSPROJEKTE.md](architecture/GROSSPROJEKTE.md) — Daten, Layout, Vorschau/Übernahme, eigene Projekte, Grenzen.
 
-**Dateiumfang:** `packages/domain/src/grossprojekte.ts`, `packages/domain/src/grossprojekte/`, `apps/web/src/views/library/GrossprojektePage.tsx`, `apps/web/src/views/library/grossprojekte.css`, `apps/web/src/views/LibraryView.tsx`, `apps/web/src/app/router.ts`, `tests/grossprojekte.test.mjs`, `tests/e2e/grossprojekte.e2e.mjs`, `docs/architecture/GROSSPROJEKTE.md`. **Abhängigkeiten:** BUILD-05, BASE-01, LIB-05. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/grossprojekte.ts`, `packages/domain/src/grossprojekte/`, `apps/web/src/views/library/GrossprojektePage.tsx`, `apps/web/src/views/library/grossprojekte.css`, `apps/web/src/views/LibraryView.tsx`, `apps/web/src/app/router.ts`, `tests/grossprojekte.test.mjs`, `tests/e2e/grossprojekte.e2e.mjs`, `docs/architecture/GROSSPROJEKTE.md`, `packages/domain/src/build/sets/grossbauten.ts`, `packages/domain/src/build/sets/index.ts`. **Abhängigkeiten:** BUILD-05, BASE-01, LIB-05. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

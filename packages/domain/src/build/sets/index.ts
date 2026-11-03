@@ -24,6 +24,7 @@ import { UNTERGRUND_SPECS } from './untergrund.js';
 import { DIMENSIONEN_SPECS } from './dimensionen.js';
 import { MEISTER_SPECS } from './meister.js';
 import { ANTIKE_SPECS } from './antike.js';
+import { GROSSBAUTEN_SPECS } from './grossbauten.js';
 import { withMaterialFamilies } from './varianten.js';
 import { refinedSpec } from '../refine.js';
 
@@ -54,4 +55,5 @@ export const ALL_SET_SPECS: readonly BuildingSpec[] = withMaterialFamilies([
   ...DIMENSIONEN_SPECS,
   ...MEISTER_SPECS,
   ...ANTIKE_SPECS,
+  ...GROSSBAUTEN_SPECS,
 ].map(refinedSpec));
