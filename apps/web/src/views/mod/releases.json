@@ -326,6 +326,26 @@
       "releasedAt": "2026-11-03",
       "sourceCommit": "aa96ffd8c1d0e5006f7cc2bc3e71e93e6244243a",
       "tested": "Spieltest 26.3 (NeoForge): Hologramm, Website-Verbindung, Baustand; Teambau mit eigenem Client-Handler für den Teamkanal (nur nach /bauplaner team erlauben)"
+    },
+    {
+      "file": "bauplaner-bridge-paper-0.10.0.jar",
+      "modVersion": "0.10.0",
+      "loader": "paper",
+      "minecraft": "26.3",
+      "loaderMin": "1.18",
+      "minecraftVersions": [
+        "1.18.2",
+        "1.20.6",
+        "1.21.4",
+        "1.21.11",
+        "26.3"
+      ],
+      "java": "17",
+      "bytes": 182679,
+      "sha256": "831cf42f15429a82eb4efc3424c93f1b7d893811050c69068fb4a6ce6a74f678",
+      "releasedAt": "2026-11-03",
+      "sourceCommit": "6b0414037f0ca748f445594579519ca436f98eb2",
+      "tested": "Echter Paper-Server 1.18.2, 1.21.4 und 26.3: Lagerkisten (scripts/test_bridge_paper_lager.sh) und Teambau (scripts/test_bridge_paper_team.sh) grün; Inventarklicks und Schutz brauchen echte Spieler (LAGER-02…06)."
     }
   ]
 }
