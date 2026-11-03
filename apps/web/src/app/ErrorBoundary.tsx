@@ -3,7 +3,12 @@ import type { ErrorInfo, ReactNode } from 'react';
 import { errorReport, logError } from './errorLog';
 import type { LoggedError } from './errorLog';
 
-interface State { readonly error: LoggedError | null; readonly copied: boolean }
+/**
+ * `failed` is set during render (getDerivedStateFromError), so the fallback replaces the
+ * crashed page in the same pass; React 19 otherwise passes the error on to the root and
+ * blanks the whole app. `error` is the logged entry for the report, set in componentDidCatch.
+ */
+interface State { readonly failed: string | null; readonly error: LoggedError | null; readonly copied: boolean }
 
 /**
  * Catches a crashing page (S-01) so one broken view never blanks the whole
@@ -17,13 +22,13 @@ interface Props {
 }
 
 export class ErrorBoundary extends Component<Props, State> {
-  state: State = { error: null, copied: false };
+  state: State = { failed: null, error: null, copied: false };
 
   componentDidUpdate(prev: Props): void {
-    if (prev.resetKey !== this.props.resetKey && this.state.error) this.setState({ error: null, copied: false });
+    if (prev.resetKey !== this.props.resetKey && this.state.failed !== null) this.setState({ failed: null, error: null, copied: false });
   }
 
-  static getDerivedStateFromError(): Partial<State> { return {}; }
+  static getDerivedStateFromError(error: unknown): Partial<State> { return { failed: error instanceof Error ? error.message : String(error) }; }
 
   componentDidCatch(error: Error, info: ErrorInfo): void {
     const detail = [error.stack?.split('\n').slice(0, 6).join('\n'), info.componentStack?.trim().split('\n').slice(0, 6).join('\n')].filter(Boolean).join('\n');
@@ -37,14 +42,14 @@ export class ErrorBoundary extends Component<Props, State> {
   };
 
   render(): ReactNode {
-    const { error, copied } = this.state;
-    if (!error) return this.props.children;
+    const { failed, error, copied } = this.state;
+    if (failed === null) return this.props.children;
     return <div className="page"><section className="notice warning crash" role="alert">
       <strong>Diese Seite ist auf einen Fehler gestoßen.</strong>
       <p>Deine gespeicherten Projekte und Bauteile sind nicht betroffen – Speichervorgänge laufen vollständig oder gar nicht.</p>
-      <p className="crash-message"><code>{error.message}</code></p>
+      <p className="crash-message"><code>{error?.message ?? failed}</code></p>
       <div className="crash-actions">
-        <button className="primary" onClick={() => this.setState({ error: null, copied: false })}>Erneut versuchen</button>
+        <button className="primary" onClick={() => this.setState({ failed: null, error: null, copied: false })}>Erneut versuchen</button>
         <button onClick={() => location.reload()}>Seite neu laden</button>
         <a className="button" href="#/">Zur Projektzentrale</a>
         <button onClick={() => void this.copy()}>{copied ? 'Bericht kopiert ✓' : 'Fehlerbericht kopieren'}</button>

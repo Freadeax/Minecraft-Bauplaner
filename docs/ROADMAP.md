@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-03T21:12:09.599Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-03T21:19:45.021Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,11 +12,11 @@ Stand: 2026-11-03T21:12:09.599Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 16 |
+| ⏳ Offen | 13 |
 | 🚧 In Arbeit | 2 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 57 |
-| ✅ Im beschriebenen Umfang geprüft | 23 |
+| 🧩 Implementiert · Abnahme offen | 58 |
+| ✅ Im beschriebenen Umfang geprüft | 25 |
 | ⏸ Zurückgestellt | 2 |
 
 ## Überblick nach Bereichen
@@ -31,11 +31,11 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 6 | 1 | 6 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 7 | 0 | 6 | 0 |
-| [Paper-Plugin (Server)](#bereich-plugin) | 2 | 1 | 1 | 0 |
+| [Paper-Plugin (Server)](#bereich-plugin) | 2 | 0 | 2 | 0 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
-| [Performance und Stabilität](#bereich-perf) | 5 | 4 | 1 | 1 |
+| [Performance und Stabilität](#bereich-perf) | 4 | 2 | 1 | 2 |
 | [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 12 | 8 | 5 | 8 |
-| [Testphase, Qualität und Betrieb](#bereich-qa) | 3 | 2 | 3 | 7 |
+| [Testphase, Qualität und Betrieb](#bereich-qa) | 2 | 1 | 2 | 8 |
 | [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 6 | 0 | 0 | 0 |
 
 <a id="bereich-planer"></a>
@@ -139,7 +139,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
 | [GAME-04](#game-04) | Paper-Plugin der Bauplaner-Brücke (serverseitig, mehrere Minecraft-Versionen) | 🚧 In Arbeit 3/4 | P1 | „Server-Plugin mit geprüften Lagerkisten“ | Plugin-Abnahme auf deinem Paper-Server (S04). |
-| [LAGER-01](#lager-01) | Optionale Truhen-/Lagerintegration | ⏳ Offen 0/2 | P1 | **verwaist** · 1 verwaist | — |
+| [LAGER-01](#lager-01) | Optionale Truhen-/Lagerintegration | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Server-Plugin mit geprüften Lagerkisten“ | Geprüfte Lagerkisten auf dem Paper-Server einrichten und den Bestand im Planer übernehmen (LAGERKISTEN.md). |
 
 <a id="bereich-modrinth"></a>
 
@@ -156,12 +156,11 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
 | [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen 2/3 | P1 | **verwaist** · 1 verwaist | — |
-| [PERF-03](#perf-03) | Bundle, große Views und Vorschaucache | ⏳ Offen 0/3 | P1 | **verwaist** · 1 verwaist | — |
+| [PERF-03](#perf-03) | Bundle, große Views und Vorschaucache | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ | — |
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Olympus auf deinem Rechner, dazu Firefox/Safari (S06). |
 | [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert | 🧩 Implementiert · Abnahme offen 6/8 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ | — |
-| [STAB-01](#stab-01) | Absturzschutz, Datencheck und Fehlerberichte abnehmen | 🧩 Implementiert · Abnahme offen 1/2 | P1 | **verwaist** · 1 verwaist | — |
 
-Abgeschlossen oder zurückgestellt: PERF-01 (geprüft).
+Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft).
 
 <a id="bereich-kern"></a>
 
@@ -190,11 +189,10 @@ Abgeschlossen oder zurückgestellt: CORE-01 (geprüft), CORE-02 (geprüft), CORE
 
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
-| [LICENSE-01](#license-01) | Projektlizenz und öffentliche Inhalte klären | ⏳ Offen 0/2 | P0 | **verwaist** · 1 verwaist | Lizenz für das ganze Repository bestätigen (Modrinth nutzt bereits MIT). |
 | [QA-04](#qa-04) | Große Testphase | 🧩 Implementiert · Abnahme offen 4/6 | P0 | „Große Testphase vorbereiten und betreuen“ | Testphase mit weiteren Testern: erst die Kernfälle auf #/testphase. |
 | [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | ⏳ Offen 0/2 | P1 | **verwaist** · 1 verwaist | Safari/iPhone, Touch und echte GPU – nur auf deinen Geräten möglich. |
 
-Abgeschlossen oder zurückgestellt: OPS-01 (geprüft), PLAN-01 (geprüft), DOC-01 (geprüft), QA-01 (geprüft), QA-03 (geprüft), OPS-02 (geprüft), OPS-03 (geprüft).
+Abgeschlossen oder zurückgestellt: OPS-01 (geprüft), PLAN-01 (geprüft), DOC-01 (geprüft), QA-01 (geprüft), QA-03 (geprüft), OPS-02 (geprüft), OPS-03 (geprüft), LICENSE-01 (geprüft).
 
 <a id="bereich-spaeter"></a>
 
@@ -224,6 +222,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **GAME-08** · Mitspieler-Pfeile auf der Live-Karte mit einem zweiten Spieler.
 - **GAME-03** · Zusammen mit MAP-03-S06.
 - **GAME-04** · Plugin-Abnahme auf deinem Paper-Server (S04).
+- **LAGER-01** · Geprüfte Lagerkisten auf dem Paper-Server einrichten und den Bestand im Planer übernehmen (LAGERKISTEN.md).
 - **MAP-05** · „Baustand holen“ mit der Mod auf server.lmnt-gaming.net (S05).
 - **QA-04** · Testphase mit weiteren Testern: erst die Kernfälle auf #/testphase.
 - **COOP-01** · Mit Mitspielern TEAMBAU-01…05.
@@ -286,7 +285,6 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 
 ### Entscheiden oder Rückfrage beantworten
 
-- **LICENSE-01** · Lizenz für das ganze Repository bestätigen (Modrinth nutzt bereits MIT).
 - **SIZE-01** · Im Thread beschreiben, was beim Senden falsch ankommt.
 - **COOP-01** · Weg für den Live-Abgleich ohne Herunter- und Hochladen wählen (Rückfrage im Thread).
 
@@ -297,7 +295,6 @@ Arbeit, für die gerade kein laufender Thread zuständig ist. Zum Verteilen: Thr
 | ID | Bereich | Prio | Status | Offen ohne Bearbeiter |
 |---|---|---|---|---|
 | [FORMAT-01](#format-01) | Kern, Minecraft-Daten und Dateiformate | P0 | 🧩 Implementiert · Abnahme offen | S02 Abgleich mit echten WorldEdit-Dateien. Philipp nutzt kein WorldEdit: mit öffentlichen .schem-Referenzdateien prüfen oder zurückstellen. |
-| [LICENSE-01](#license-01) | Testphase, Qualität und Betrieb | P0 | ⏳ Offen | Eigene und fremde Bestandteile inventarisieren; Herkunft öffentlicher Assets prüfen. |
 | [NBT-01](#nbt-01) | Kern, Minecraft-Daten und Dateiformate | P0 | ⏳ Offen | Komplett offen (Codex-Vorschlag ohne Umsetzung): NBT-Familien und Ausrichtungsregeln für BlockEntities festlegen und prüfen. |
 | [PROFILE-01](#profile-01) | Kern, Minecraft-Daten und Dateiformate | P0 | ⏳ Offen | Komplett offen. War Codex vorgeschlagen, seit 01.11. keine Codex-Commits. Blockiert VIEW-02-S06, MAT-02, MAT-04 und die Registerlücken in EDIT-02. Die Berichtsfakten aus BLOCK-01 (blockFacts.ts) lassen sich übernehmen. |
 | [BASE-01](#base-01) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Küstenlinie aus der Geländeaufnahme, Wegstufen als Treppen, Brücken. |
@@ -310,7 +307,6 @@ Arbeit, für die gerade kein laufender Thread zuständig ist. Zum Verteilen: Thr
 | [GEN-03](#gen-03) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Feinschliff Kolosseum: Statuen in den Attika-Fenstern, Treppen im Hypogäum. |
 | [GFX-01](#gfx-01) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Biomfarben und leuchtende Blockentities (angekündigte Folgestufe). |
 | [GROSS-01](#gross-01) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Geländeanpassung und Wasserkanten für Großprojekte, eigene Großprojekte aus Sammlungen. |
-| [LAGER-01](#lager-01) | Paper-Plugin | P1 | ⏳ Offen | Weitgehend durch COOP-04/05 abgedeckt: zusammenführen oder schließen. |
 | [MAP-02](#map-02) | Planer | P1 | ⏳ Offen | Komplett offen: gespeicherte Kartenziele und Provideradapter (BlueMap, Dynmap, Squaremap) mit eigenen Markerdateien. |
 | [MAP-04](#map-04) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Benannte Gruppen und Sperren mit Schemaerweiterung, abgestimmt mit der Mod (siehe GAME-07-S07). |
 | [MAP-05](#map-05) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Gedrehte Projektlagen auf der Weltkarte, damit gedrehte Hologramme übernommen werden. |
@@ -318,12 +314,10 @@ Arbeit, für die gerade kein laufender Thread zuständig ist. Zum Verteilen: Thr
 | [MAT-03](#mat-03) | Kern, Minecraft-Daten und Dateiformate | P1 | 🧩 Implementiert · Abnahme offen | S03 Glas-/Beton-/Terrakottavarianten in Profil und Oberfläche prüfen – im Cloud-Browser machbar. |
 | [MAT-04](#mat-04) | Kern, Minecraft-Daten und Dateiformate | P1 | ⏳ Offen | Komplett offen: Kupfer mit Oxidation und Wachs. |
 | [PERF-02](#perf-02) | Performance und Stabilität | P1 | 🧩 Implementiert · Abnahme offen | S03 Chunk-/Übertragungsstrategie und selektive Neuberechnung (Codex-Vorschlag ohne Umsetzung; mit PERF-05-S08 abstimmen). |
-| [PERF-03](#perf-03) | Performance und Stabilität | P1 | ⏳ Offen | Teilweise durch PERF-05 erledigt (Seiten bei Bedarf geladen, Vorschaubilder dauerhaft gespeichert): Schritte abgleichen und schließen. |
 | [PERF-04](#perf-04) | Performance und Stabilität | P1 | 🧩 Implementiert · Abnahme offen | GPU-Upload großer Szenen in Stücken. |
 | [PROJ-01](#proj-01) | Projektmodul | P1 | 🧩 Implementiert · Abnahme offen | Abhängigkeiten zwischen Projekten auf der Weltkarte; Bauleute aus dem Spiel; Lagerbuchungen je Bauleute. |
 | [QA-02](#qa-02) | Testphase, Qualität und Betrieb | P1 | ⏳ Offen | S01 Geräte- und Browsermatrix mit reproduzierbaren Aufgaben vorbereiten. |
 | [SPLIT-01](#split-01) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Unterirdische Räume und Brückenverbindungen erkennen. |
-| [STAB-01](#stab-01) | Performance und Stabilität | P1 | 🧩 Implementiert · Abnahme offen | S02 echten Renderingfehler auslösen und Wiederaufnahme prüfen – im Cloud-Browser machbar. |
 | [TERRAIN-02](#terrain-02) | Planer | P1 | 🧩 Implementiert · Abnahme offen | S07 Wegstufen als Treppen an Höhenwechseln (auch BASE-01). |
 | [VIEW-02](#view-02) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Registerdaten an PROFILE-01 binden, sobald es existiert. |
 | [MODEL-01](#model-01) | Planer | P2 | 🧩 Implementiert · Abnahme offen | S06 Flächen der Druckhülle ohne T-Stöße zusammenfassen – Thread „Bauten als 3D-Modell exportieren“ ist beendet. |
@@ -340,7 +334,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 | IN-04 | Client-Mod in mehreren Minecraft-Versionen und Launchern; bisher gibt es Fabric/NeoForge nur für 26.3 (Paper-Plugin läuft 1.18.2–26.3). | Philipp, 2026-10-27 | Client-Mod | zugeteilt | „Teambau und Befehle in der Mod ausbauen“ | GAME-02, GAME-05, GAME-11 |
 | IN-05 | Reale Orte aus Kartendaten (OSM) – zurückgestellt, bis die Lizenzfrage geklärt ist. | Koordinator, 2026-11-02 | Planer | zurückgestellt | — | LICENSE-01 |
 | IN-06 | Seit 01.11. keine Codex-Commits auf main; die vorgeschlagenen Codex-Pakete (PROFILE-01, NBT-01, MAT-02/04, DIFF-01, PERF-02/03, FORMAT-01, QA-02) haben dadurch keinen Bearbeiter. | Koordinator, 2026-11-01 | Kern, Minecraft-Daten und Dateiformate | verwaist | **verwaist** | PROFILE-01, NBT-01, MAT-02, MAT-04, DIFF-01, PERF-02, PERF-03, FORMAT-01, QA-02 |
-| IN-07 | Alte Issues #2 (B16), #3 (B17) und #4 (S4) sind noch offen, obwohl VIEW-02, LIB-02/03 und STORE-02 auf main liegen: prüfen und schließen. | GitHub, 2026-10-31 | Testphase, Qualität und Betrieb | verwaist | **verwaist** | VIEW-02, LIB-02, LIB-03, STORE-02 |
+| IN-07 | Alte Issues #2 (B16), #3 (B17) und #4 (S4) sind noch offen, obwohl VIEW-02, LIB-02/03 und STORE-02 auf main liegen: prüfen und schließen. | GitHub, 2026-10-31 | Testphase, Qualität und Betrieb | übernommen | „Offene Punkte prüfen und Roadmap neu ordnen“ | VIEW-02, LIB-02, LIB-03, STORE-02 |
 
 ## Aktiver Arbeitsblock
 
@@ -414,10 +408,10 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [QA-01](#qa-01) | Aktuelle Browserregression für alle Hauptabläufe | ✅ Im beschriebenen Umfang geprüft | 2/2 | ARCH-01 | `b5eb5b9` | `b5eb5b9` |
 | [QA-03](#qa-03) | Wacklige Browsertests stabilisieren (Schnellsuche, Systemcheck, Editor- und Snap-Ziehtests) | ✅ Im beschriebenen Umfang geprüft | 7/7 | QA-01 | ausstehend | ausstehend |
 | [UI-01](#ui-01) | Neue Themen, Bauwelten und Materiallabor abnehmen | ✅ Im beschriebenen Umfang geprüft | 3/3 | QA-01 | `84838f0` | `e232b26` |
-| [STAB-01](#stab-01) | Absturzschutz, Datencheck und Fehlerberichte abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | QA-01 | `84838f0` | `e232b26` |
+| [STAB-01](#stab-01) | Absturzschutz, Datencheck und Fehlerberichte abnehmen | ✅ Im beschriebenen Umfang geprüft | 2/2 | QA-01 | `84838f0` | `e232b26` |
 | [OPS-02](#ops-02) | Deployment-Rückkehr und Wiederherstellungsprobe | ✅ Im beschriebenen Umfang geprüft | 2/2 | OPS-01, PLAN-01 | ausstehend | ausstehend |
 | [OPS-03](#ops-03) | Alte vollständig integrierte Branches bereinigen | ✅ Im beschriebenen Umfang geprüft | 2/2 | OPS-01 | `b5eb5b9` | `b5eb5b9` |
-| [LICENSE-01](#license-01) | Projektlizenz und öffentliche Inhalte klären | ⏳ Offen | 0/2 | — | ausstehend | ausstehend |
+| [LICENSE-01](#license-01) | Projektlizenz und öffentliche Inhalte klären | ✅ Im beschriebenen Umfang geprüft | 2/2 | — | ausstehend | ausstehend |
 | [GAME-01](#game-01) | Spielaufnahmen und Soll/Ist-Vergleich | ✅ Im beschriebenen Umfang geprüft | 1/1 | CORE-02, BUILD-01 | `b5eb5b9` | `b5eb5b9` |
 
 ## P2: Minecraft-Datentreue und Berechnungen vervollständigen
@@ -443,7 +437,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen | 1/3 | CORE-02, NBT-01 | `84838f0` | `e232b26` |
 | [PERF-01](#perf-01) | Große Berechnungen als abbrechbare Worker-Aufträge | ✅ Im beschriebenen Umfang geprüft | 3/3 | ARCH-01 | `7dffd92` | `7dffd92` |
 | [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen | 2/3 | PERF-01 | `7dffd92` | `7dffd92` |
-| [PERF-03](#perf-03) | Bundle, große Views und Vorschaucache | ⏳ Offen | 0/3 | ARCH-01, QA-01 | ausstehend | ausstehend |
+| [PERF-03](#perf-03) | Bundle, große Views und Vorschaucache | 🧩 Implementiert · Abnahme offen | 3/3 | ARCH-01, QA-01 | ausstehend | ausstehend |
 | [VIEW-01](#view-01) | Vorhandenen Viewer vollständig abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | QA-01 | `84838f0` | `e232b26` |
 | [ENTITY-01](#entity-01) | Gemälde, Rahmen, Rüstungsständer und Blockinhalte | 🧩 Implementiert · Abnahme offen | 5/6 | FORMAT-02 | ausstehend | ausstehend |
 
@@ -530,7 +524,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [TEAM-02](#team-02) | Geordnete Operationen, Reconnect und Team-Undo | ⏳ Offen | 0/2 | AUTH-01, UPDATE-01 | ausstehend | ausstehend |
 | [TEAM-03](#team-03) | Gemeinsame Aufgaben, Abschnitte und Sammelplanung | ⏳ Offen | 0/2 | TEAM-02, BUILD-01 | ausstehend | ausstehend |
 | [GAME-06](#game-06) | Sichere Serveranbindung (Webhooks) für Server-Plugins | ⏳ Offen | 0/1 | TEAM-02, GAME-04 | ausstehend | ausstehend |
-| [LAGER-01](#lager-01) | Optionale Truhen-/Lagerintegration | ⏳ Offen | 0/2 | TEAM-03, GAME-04 | ausstehend | ausstehend |
+| [LAGER-01](#lager-01) | Optionale Truhen-/Lagerintegration | 🧩 Implementiert · Abnahme offen | 2/2 | GAME-04 | ausstehend | ausstehend |
 | [OPS-04](#ops-04) | Teamdienst betreiben und Wiederherstellung prüfen | ⏳ Offen | 0/2 | TEAM-02 | ausstehend | ausstehend |
 | [DEFER-01](#defer-01) | GitHub-Login, externes Materialrepo und Registry | ⏸ Zurückgestellt | 0/1 | — | ausstehend | ausstehend |
 | [DEFER-02](#defer-02) | Optionale Discord-Integration | ⏸ Zurückgestellt | 0/1 | AUTH-01 | ausstehend | ausstehend |
@@ -919,22 +913,20 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### STAB-01
 
-**Absturzschutz, Datencheck und Fehlerberichte abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: **verwaist** · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Absturzschutz, Datencheck und Fehlerberichte abnehmen** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: „Offene Punkte prüfen und Roadmap neu ordnen“ · Aktualisiert: 2026-11-03T21:19:45.021Z
 
 - [x] STAB-01-S01: Datencheck, Auslieferungsprüfung und Sitzungserrorlog mit Tests vorhanden.
-- [ ] STAB-01-S02: Echten Renderingfehler auslösen und Wiederaufnahme im Browser prüfen.
+- [x] STAB-01-S02: Echten Renderingfehler auslösen und Wiederaufnahme im Browser prüfen.
 
 **Abnahme:** Fehlerhafte Datensätze verursachen keinen stillen Reparatureingriff.
 
-**Nächste Aktion:** Echten Renderingfehler auslösen und Wiederaufnahme im Browser prüfen.
+**Nächste Aktion:** Erledigt.
 
-**Verwaist (ohne Bearbeiter):** S02 echten Renderingfehler auslösen und Wiederaufnahme prüfen – im Cloud-Browser machbar.
+**Prüfstand:** Renderingfehler im Browser ausgelöst; React-19-Lücke in der Fehlergrenze gefunden und behoben.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Nachweise:** [tests/integrity.test.mjs](../tests/integrity.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/stability.test.mjs](../tests/stability.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/e2e/render-crash.e2e.mjs](../tests/e2e/render-crash.e2e.mjs) — S02: nicht ladbarer Seitenbaustein im Browser; ein Neuladen, dann Fehlergrenze statt leerer App, Projekte bleiben, Wiederaufnahme nach „Seite neu laden“. Ohne die ErrorBoundary-Korrektur rot.
 
-**Nachweise:** [tests/integrity.test.mjs](../tests/integrity.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/stability.test.mjs](../tests/stability.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
-
-**Dateiumfang:** `apps/web/src/app/ErrorBoundary.tsx`, `packages/domain/src/integrity.ts`. **Abhängigkeiten:** QA-01. **Alte IDs:** S1, S3.
+**Dateiumfang:** `apps/web/src/app/ErrorBoundary.tsx`, `packages/domain/src/integrity.ts`, `tests/e2e/render-crash.e2e.mjs`. **Abhängigkeiten:** QA-01. **Alte IDs:** S1, S3.
 
 **Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
 
@@ -978,24 +970,20 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LICENSE-01
 
-**Projektlizenz und öffentliche Inhalte klären** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: **verwaist** · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Projektlizenz und öffentliche Inhalte klären** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: „Offene Punkte prüfen und Roadmap neu ordnen“ · Aktualisiert: 2026-11-03T21:19:45.021Z
 
-- [ ] LICENSE-01-S01: Eigene und fremde Bestandteile inventarisieren.
-- [ ] LICENSE-01-S02: Lizenzentscheidung dokumentieren; Herkunft und Nutzungsrechte für öffentliche Assets prüfen.
+- [x] LICENSE-01-S01: Eigene und fremde Bestandteile inventarisieren.
+- [x] LICENSE-01-S02: Lizenzentscheidung dokumentieren; Herkunft und Nutzungsrechte für öffentliche Assets prüfen.
 
 **Abnahme:** Keine ungeklärten fremden Texturen oder Bauwerke veröffentlichen.
 
-**Nächste Aktion:** Eigene und fremde Bestandteile inventarisieren.
+**Nächste Aktion:** Erledigt. Neue fremde Inhalte nach den Regeln in LICENSING.md prüfen.
 
-**Nur Philipp:** Entscheiden oder Rückfrage beantworten: Lizenz für das ganze Repository bestätigen (Modrinth nutzt bereits MIT).
+**Prüfstand:** Keine fremden Texturen oder Bauwerke im Repository; Texturen nur aus Nutzerquellen, Uploads und minemev-Bauten nicht ausgeliefert.
 
-**Verwaist (ohne Bearbeiter):** Eigene und fremde Bestandteile inventarisieren; Herkunft öffentlicher Assets prüfen.
+**Nachweise:** [LICENSE](../LICENSE) — MIT für das ganze Repository, wie bereits für die Mod auf Modrinth.; [docs/LICENSING.md](LICENSING.md) — Bestandsaufnahme eigener und fremder Bestandteile; Regeln für Texturen, Bauwerke, Beiträge, Abhängigkeiten und Kartendaten.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
-
-**Nachweise:** noch ausstehend
-
-**Dateiumfang:** `README.md`, `THIRD_PARTY_NOTICES.txt`. **Abhängigkeiten:** keine. **Alte IDs:** —.
+**Dateiumfang:** `README.md`, `THIRD_PARTY_NOTICES.txt`, `LICENSE`, `docs/LICENSING.md`, `package.json`, `package-lock.json`. **Abhängigkeiten:** keine. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -1215,23 +1203,21 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-03
 
-**Bundle, große Views und Vorschaucache** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: **verwaist** · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Bundle, große Views und Vorschaucache** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: „Gesamtsystem auf Performance und Stabilität optimieren“ · Aktualisiert: 2026-11-03T21:19:45.021Z
 
-- [ ] PERF-03-S01: Bundleanteile und UI-Verantwortungen messen.
-- [ ] PERF-03-S02: Views entlang Anwendungsfällen teilen und lazy laden.
-- [ ] PERF-03-S03: Versionierten Vorschaucache mit Quota-/Invalidierungsregeln ergänzen.
+- [x] PERF-03-S01: Bundleanteile und UI-Verantwortungen messen.
+- [x] PERF-03-S02: Views entlang Anwendungsfällen teilen und lazy laden.
+- [x] PERF-03-S03: Versionierten Vorschaucache mit Quota-/Invalidierungsregeln ergänzen.
 
 **Abnahme:** Gemessene Verbesserung statt bloßer Dateiaufteilung; keine verlorenen Filterzustände.
 
-**Nächste Aktion:** Bundleanteile und UI-Verantwortungen messen.
+**Nächste Aktion:** Filterzustände der Bibliothek beim Seitenwechsel im Browser prüfen.
 
-**Verwaist (ohne Bearbeiter):** Teilweise durch PERF-05 erledigt (Seiten bei Bedarf geladen, Vorschaubilder dauerhaft gespeichert): Schritte abgleichen und schließen.
+**Prüfstand:** Schritte durch PERF-05 erledigt; „keine verlorenen Filterzustände“ beim Seitenwechsel ist nicht gesondert geprüft.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Nachweise:** [docs/architecture/PERFORMANCE_AUDIT.md](architecture/PERFORMANCE_AUDIT.md) — S01: Startpaket gemessen, 1,33 MB auf 0,72 MB (PERF-05).; [apps/web/src/app/lazyPage.tsx](../apps/web/src/app/lazyPage.tsx) — S02: Seiten werden bei Bedarf geladen, Vorladen im Leerlauf.; [tests/e2e/thumb-store.e2e.mjs](../tests/e2e/thumb-store.e2e.mjs) — S03: Vorschaubilder je Render-Revision im Cache Storage, alte Stände gelöscht, Schreibfehler ohne Abbruch.; [tests/e2e/catalog-snapshot.e2e.mjs](../tests/e2e/catalog-snapshot.e2e.mjs) — Katalog-Cache beim Start.
 
-**Nachweise:** noch ausstehend
-
-**Dateiumfang:** `apps/web/src/views/LibraryView.tsx`, `apps/web/src/views/project/`, `vite.config.mjs`. **Abhängigkeiten:** ARCH-01, QA-01. **Alte IDs:** —.
+**Dateiumfang:** `apps/web/src/views/LibraryView.tsx`, `apps/web/src/views/project/`, `vite.config.mjs`, `apps/web/src/app/lazyPage.tsx`, `apps/web/src/thumbnail/thumbStore.ts`, `docs/architecture/PERFORMANCE_AUDIT.md`. **Abhängigkeiten:** ARCH-01, QA-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -2166,22 +2152,22 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LAGER-01
 
-**Optionale Truhen-/Lagerintegration** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: **verwaist** · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Optionale Truhen-/Lagerintegration** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: „Server-Plugin mit geprüften Lagerkisten“ · Aktualisiert: 2026-11-03T21:19:45.021Z
 
-- [ ] LAGER-01-S01: Inventar-/NBT-Rechte und Herkunft der Aufnahme festlegen.
-- [ ] LAGER-01-S02: Bestand mit Zeitpunkt, Konflikten und ausdrücklicher Übernahme anzeigen.
+- [x] LAGER-01-S01: Inventar-/NBT-Rechte und Herkunft der Aufnahme festlegen.
+- [x] LAGER-01-S02: Bestand mit Zeitpunkt, Konflikten und ausdrücklicher Übernahme anzeigen.
 
 **Abnahme:** Keine doppelte Inventarquelle; Aufnahmezeit und ungeprüfte Werte sichtbar.
 
-**Nächste Aktion:** Inventar-/NBT-Rechte und Herkunft der Aufnahme festlegen.
+**Nächste Aktion:** Abnahme auf dem Paper-Server (Thread „Server-Plugin mit geprüften Lagerkisten“).
 
-**Verwaist (ohne Bearbeiter):** Weitgehend durch COOP-04/05 abgedeckt: zusammenführen oder schließen.
+**Nur Philipp:** Auf deinem Server mit Mitspielern: Geprüfte Lagerkisten auf dem Paper-Server einrichten und den Bestand im Planer übernehmen (LAGERKISTEN.md).
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Im Code durch COOP-04/05 umgesetzt; Abnahme auf Philipps Paper-Server offen. TEAM-03 als Abhängigkeit entfallen, weil die Lagerkisten über das Teammodul laufen.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [docs/architecture/LAGERKISTEN.md](architecture/LAGERKISTEN.md) — S01: Rechte (nur geprüfte Kisten, Freigabe durch Bauleitung) und Herkunft je Bestand festgelegt (COOP-04/05).; [tests/lager.test.mjs](../tests/lager.test.mjs) — S02: Bestand mit Zeitpunkt, Abweichungen und ausdrücklicher Übernahme ins Baustellen-Lager.
 
-**Dateiumfang:** `packages/domain/src/site.ts`, `mods/`. **Abhängigkeiten:** TEAM-03, GAME-04. **Alte IDs:** P6-02.
+**Dateiumfang:** `packages/domain/src/site.ts`, `mods/`, `docs/architecture/LAGERKISTEN.md`, `mods/bauplaner-bridge/paper/`. **Abhängigkeiten:** GAME-04. **Alte IDs:** P6-02.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

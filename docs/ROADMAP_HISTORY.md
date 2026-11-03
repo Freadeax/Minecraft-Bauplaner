@@ -4340,3 +4340,28 @@ Mod 0.11.1 (Fabric, NeoForge) auf #/mod freigegeben.
 - `downloads/mod/bauplaner-bridge-fabric-26.3-0.11.1.jar`
 - `downloads/mod/bauplaner-bridge-neoforge-26.3-0.11.1.jar`
 
+## 2026-11-03T21:19:45.021Z · progress
+
+**Aufgaben:** LAGER-01, PERF-03, LICENSE-01, STAB-01
+
+Aufräumen: STAB-01-S02 Renderingfehler im Browser geprüft und ErrorBoundary für React 19 korrigiert; LICENSE-01 mit MIT erledigt; LAGER-01 mit COOP-04/05 und PERF-03 mit PERF-05 abgeglichen; Issues #2–#4 geschlossen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LAGER-01 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme auf dem Paper-Server (Thread „Server-Plugin mit geprüften Lagerkisten“). |
+| PERF-03 | 🧩 Implementiert · Abnahme offen | 3/3 | Filterzustände der Bibliothek beim Seitenwechsel im Browser prüfen. |
+| LICENSE-01 | ✅ Im beschriebenen Umfang geprüft | 2/2 | Erledigt. Neue fremde Inhalte nach den Regeln in LICENSING.md prüfen. |
+| STAB-01 | ✅ Im beschriebenen Umfang geprüft | 2/2 | Erledigt. |
+
+**Geänderte Dateien:**
+
+- `LICENSE`
+- `README.md`
+- `apps/web/src/app/ErrorBoundary.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/LICENSING.md`
+- `docs/TESTING.md`
+- `package-lock.json`
+- `package.json`
+- `tests/e2e/render-crash.e2e.mjs`
+

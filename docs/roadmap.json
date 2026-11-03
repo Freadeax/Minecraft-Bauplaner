@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T21:12:09.599Z",
+  "updatedAt": "2026-11-03T21:19:45.021Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -1274,14 +1274,15 @@
       "title": "Absturzschutz, Datencheck und Fehlerberichte abnehmen",
       "phase": "P1",
       "priority": "P1",
-      "status": "implemented",
+      "status": "verified",
       "owner": "nicht zugewiesen",
       "dependencies": [
         "QA-01"
       ],
       "scope": [
         "apps/web/src/app/ErrorBoundary.tsx",
-        "packages/domain/src/integrity.ts"
+        "packages/domain/src/integrity.ts",
+        "tests/e2e/render-crash.e2e.mjs"
       ],
       "legacyIds": [
         "S1",
@@ -1296,13 +1297,13 @@
         {
           "id": "STAB-01-S02",
           "title": "Echten Renderingfehler auslösen und Wiederaufnahme im Browser prüfen.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Fehlerhafte Datensätze verursachen keinen stillen Reparatureingriff."
       ],
-      "next": "Echten Renderingfehler auslösen und Wiederaufnahme im Browser prüfen.",
+      "next": "Erledigt.",
       "blockers": [],
       "evidence": [
         {
@@ -1312,23 +1313,25 @@
         {
           "path": "tests/stability.test.mjs",
           "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        },
+        {
+          "path": "tests/e2e/render-crash.e2e.mjs",
+          "note": "S02: nicht ladbarer Seitenbaustein im Browser; ein Neuladen, dann Fehlergrenze statt leerer App, Projekte bleiben, Wiederaufnahme nach „Seite neu laden“. Ohne die ErrorBoundary-Korrektur rot."
         }
       ],
       "verification": {
-        "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "state": "passed",
+        "note": "Renderingfehler im Browser ausgelöst; React-19-Lücke in der Fehlergrenze gefunden und behoben."
       },
       "delivery": {
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T21:19:45.021Z",
       "area": "PERF",
-      "thread": null,
+      "thread": "Offene Punkte prüfen und Roadmap neu ordnen",
       "philipp": [],
-      "orphans": [
-        "S02 echten Renderingfehler auslösen und Wiederaufnahme prüfen – im Cloud-Browser machbar."
-      ]
+      "orphans": []
     },
     {
       "id": "OPS-02",
@@ -1447,52 +1450,58 @@
       "title": "Projektlizenz und öffentliche Inhalte klären",
       "phase": "P1",
       "priority": "P0",
-      "status": "planned",
+      "status": "verified",
       "owner": "nicht zugewiesen",
       "dependencies": [],
       "scope": [
         "README.md",
-        "THIRD_PARTY_NOTICES.txt"
+        "THIRD_PARTY_NOTICES.txt",
+        "LICENSE",
+        "docs/LICENSING.md",
+        "package.json",
+        "package-lock.json"
       ],
       "legacyIds": [],
       "steps": [
         {
           "id": "LICENSE-01-S01",
           "title": "Eigene und fremde Bestandteile inventarisieren.",
-          "done": false
+          "done": true
         },
         {
           "id": "LICENSE-01-S02",
           "title": "Lizenzentscheidung dokumentieren; Herkunft und Nutzungsrechte für öffentliche Assets prüfen.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Keine ungeklärten fremden Texturen oder Bauwerke veröffentlichen."
       ],
-      "next": "Eigene und fremde Bestandteile inventarisieren.",
+      "next": "Erledigt. Neue fremde Inhalte nach den Regeln in LICENSING.md prüfen.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "LICENSE",
+          "note": "MIT für das ganze Repository, wie bereits für die Mod auf Modrinth."
+        },
+        {
+          "path": "docs/LICENSING.md",
+          "note": "Bestandsaufnahme eigener und fremder Bestandteile; Regeln für Texturen, Bauwerke, Beiträge, Abhängigkeiten und Kartendaten."
+        }
+      ],
       "verification": {
-        "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "state": "passed",
+        "note": "Keine fremden Texturen oder Bauwerke im Repository; Texturen nur aus Nutzerquellen, Uploads und minemev-Bauten nicht ausgeliefert."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T21:19:45.021Z",
       "area": "QA",
-      "thread": null,
-      "philipp": [
-        {
-          "kind": "entscheidung",
-          "text": "Lizenz für das ganze Repository bestätigen (Modrinth nutzt bereits MIT)."
-        }
-      ],
-      "orphans": [
-        "Eigene und fremde Bestandteile inventarisieren; Herkunft öffentlicher Assets prüfen."
-      ]
+      "thread": "Offene Punkte prüfen und Roadmap neu ordnen",
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "PROFILE-01",
@@ -2120,7 +2129,7 @@
       "title": "Bundle, große Views und Vorschaucache",
       "phase": "P2",
       "priority": "P1",
-      "status": "planned",
+      "status": "implemented",
       "owner": "nicht zugewiesen",
       "dependencies": [
         "ARCH-01",
@@ -2129,47 +2138,65 @@
       "scope": [
         "apps/web/src/views/LibraryView.tsx",
         "apps/web/src/views/project/",
-        "vite.config.mjs"
+        "vite.config.mjs",
+        "apps/web/src/app/lazyPage.tsx",
+        "apps/web/src/thumbnail/thumbStore.ts",
+        "docs/architecture/PERFORMANCE_AUDIT.md"
       ],
       "legacyIds": [],
       "steps": [
         {
           "id": "PERF-03-S01",
           "title": "Bundleanteile und UI-Verantwortungen messen.",
-          "done": false
+          "done": true
         },
         {
           "id": "PERF-03-S02",
           "title": "Views entlang Anwendungsfällen teilen und lazy laden.",
-          "done": false
+          "done": true
         },
         {
           "id": "PERF-03-S03",
           "title": "Versionierten Vorschaucache mit Quota-/Invalidierungsregeln ergänzen.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Gemessene Verbesserung statt bloßer Dateiaufteilung; keine verlorenen Filterzustände."
       ],
-      "next": "Bundleanteile und UI-Verantwortungen messen.",
+      "next": "Filterzustände der Bibliothek beim Seitenwechsel im Browser prüfen.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "docs/architecture/PERFORMANCE_AUDIT.md",
+          "note": "S01: Startpaket gemessen, 1,33 MB auf 0,72 MB (PERF-05)."
+        },
+        {
+          "path": "apps/web/src/app/lazyPage.tsx",
+          "note": "S02: Seiten werden bei Bedarf geladen, Vorladen im Leerlauf."
+        },
+        {
+          "path": "tests/e2e/thumb-store.e2e.mjs",
+          "note": "S03: Vorschaubilder je Render-Revision im Cache Storage, alte Stände gelöscht, Schreibfehler ohne Abbruch."
+        },
+        {
+          "path": "tests/e2e/catalog-snapshot.e2e.mjs",
+          "note": "Katalog-Cache beim Start."
+        }
+      ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "note": "Schritte durch PERF-05 erledigt; „keine verlorenen Filterzustände“ beim Seitenwechsel ist nicht gesondert geprüft."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T21:19:45.021Z",
       "area": "PERF",
-      "thread": null,
+      "thread": "Gesamtsystem auf Performance und Stabilität optimieren",
       "philipp": [],
-      "orphans": [
-        "Teilweise durch PERF-05 erledigt (Seiten bei Bedarf geladen, Vorschaubilder dauerhaft gespeichert): Schritte abgleichen und schließen."
-      ]
+      "orphans": []
     },
     {
       "id": "PERF-04",
@@ -5495,15 +5522,16 @@
       "title": "Optionale Truhen-/Lagerintegration",
       "phase": "P4",
       "priority": "P1",
-      "status": "planned",
+      "status": "implemented",
       "owner": "nicht zugewiesen",
       "dependencies": [
-        "TEAM-03",
         "GAME-04"
       ],
       "scope": [
         "packages/domain/src/site.ts",
-        "mods/"
+        "mods/",
+        "docs/architecture/LAGERKISTEN.md",
+        "mods/bauplaner-bridge/paper/"
       ],
       "legacyIds": [
         "P6-02"
@@ -5512,35 +5540,47 @@
         {
           "id": "LAGER-01-S01",
           "title": "Inventar-/NBT-Rechte und Herkunft der Aufnahme festlegen.",
-          "done": false
+          "done": true
         },
         {
           "id": "LAGER-01-S02",
           "title": "Bestand mit Zeitpunkt, Konflikten und ausdrücklicher Übernahme anzeigen.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Keine doppelte Inventarquelle; Aufnahmezeit und ungeprüfte Werte sichtbar."
       ],
-      "next": "Inventar-/NBT-Rechte und Herkunft der Aufnahme festlegen.",
+      "next": "Abnahme auf dem Paper-Server (Thread „Server-Plugin mit geprüften Lagerkisten“).",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "docs/architecture/LAGERKISTEN.md",
+          "note": "S01: Rechte (nur geprüfte Kisten, Freigabe durch Bauleitung) und Herkunft je Bestand festgelegt (COOP-04/05)."
+        },
+        {
+          "path": "tests/lager.test.mjs",
+          "note": "S02: Bestand mit Zeitpunkt, Abweichungen und ausdrücklicher Übernahme ins Baustellen-Lager."
+        }
+      ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "note": "Im Code durch COOP-04/05 umgesetzt; Abnahme auf Philipps Paper-Server offen. TEAM-03 als Abhängigkeit entfallen, weil die Lagerkisten über das Teammodul laufen."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T21:19:45.021Z",
       "area": "PLUGIN",
-      "thread": null,
-      "philipp": [],
-      "orphans": [
-        "Weitgehend durch COOP-04/05 abgedeckt: zusammenführen oder schließen."
-      ]
+      "thread": "Server-Plugin mit geprüften Lagerkisten",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "Geprüfte Lagerkisten auf dem Paper-Server einrichten und den Bestand im Planer übernehmen (LAGERKISTEN.md)."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "OPS-04",
@@ -14275,6 +14315,58 @@
           "next": "Philipp testet 0.7.0 auf server.lmnt-gaming.net (Bauabschnitte aus seinem Projekt, Röntgensicht mit Shader); danach Stufe 6."
         }
       ]
+    },
+    {
+      "at": "2026-11-03T21:19:45.021Z",
+      "kind": "progress",
+      "items": [
+        "LAGER-01",
+        "PERF-03",
+        "LICENSE-01",
+        "STAB-01"
+      ],
+      "summary": "Aufräumen: STAB-01-S02 Renderingfehler im Browser geprüft und ErrorBoundary für React 19 korrigiert; LICENSE-01 mit MIT erledigt; LAGER-01 mit COOP-04/05 und PERF-03 mit PERF-05 abgeglichen; Issues #2–#4 geschlossen.",
+      "files": [
+        "LICENSE",
+        "README.md",
+        "apps/web/src/app/ErrorBoundary.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/LICENSING.md",
+        "docs/TESTING.md",
+        "package-lock.json",
+        "package.json",
+        "tests/e2e/render-crash.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "LAGER-01",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme auf dem Paper-Server (Thread „Server-Plugin mit geprüften Lagerkisten“)."
+        },
+        {
+          "id": "PERF-03",
+          "status": "implemented",
+          "done": 3,
+          "total": 3,
+          "next": "Filterzustände der Bibliothek beim Seitenwechsel im Browser prüfen."
+        },
+        {
+          "id": "LICENSE-01",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Erledigt. Neue fremde Inhalte nach den Regeln in LICENSING.md prüfen."
+        },
+        {
+          "id": "STAB-01",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Erledigt."
+        }
+      ]
     }
   ],
   "areas": [
@@ -14416,14 +14508,14 @@
       "source": "GitHub",
       "title": "Alte Issues #2 (B16), #3 (B17) und #4 (S4) sind noch offen, obwohl VIEW-02, LIB-02/03 und STORE-02 auf main liegen: prüfen und schließen.",
       "area": "QA",
-      "thread": null,
+      "thread": "Offene Punkte prüfen und Roadmap neu ordnen",
       "items": [
         "VIEW-02",
         "LIB-02",
         "LIB-03",
         "STORE-02"
       ],
-      "state": "verwaist"
+      "state": "übernommen"
     }
   ],
   "intakeRule": "Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur anhängen). Ein Eingang ist erledigt, sobald er als Aufgabe in items steht oder ausdrücklich verworfen ist."

@@ -79,6 +79,10 @@ Die Darstellung nutzt eigene synthetische Gebäude und farbige Blockwürfel ohne
 
 Ohne WebGL steht eine gekennzeichnete isometrische Canvas-Ersatzansicht bereit. Browserprüfungen: `npm run build && npm run test:e2e`; Playwright ist exakt im Lockfile fixiert, Chromium über `npm run setup:browser` installieren. Echte GPU-/iPhone- und Referenzwerkzeugtests bleiben gesondert offen.
 
+## Lizenz
+
+MIT, siehe [LICENSE](LICENSE). Herkunft aller Inhalte, Fremdbestandteile und Regeln für neue Inhalte: [docs/LICENSING.md](docs/LICENSING.md). Texturen werden nicht mitgeliefert; sie kommen nur aus Quellen des Nutzers.
+
 ## Aufgaben und Fortschritt pflegen
 
 Vor jedem Arbeitsblock Aufgabe in `docs/roadmap.json` und COMMUNICATION anmelden. Teilschritte, Nachweise und nächste Aktion nachführen; `npm run roadmap:record -- ARCH-01 "Konkretes Ergebnis und Prüfgrenzen"` hängt Dateizuordnung und Aufgabenstand an. `npm run check:roadmap-change -- <vorheriger-main>` ist vor jedem Quell-Merge/Push verpflichtend. `npm run setup:hooks` aktiviert den lokalen Pre-Push-Check. Die JSON-Datei erzeugt Roadmap und Historie; keine zweite Statusliste pflegen. Details und Grenzen der lokalen Durchsetzung stehen in der Roadmap.
