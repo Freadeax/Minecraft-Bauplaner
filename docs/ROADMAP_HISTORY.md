@@ -3787,3 +3787,17 @@ Paper-Plugin 0.10.0: geprüfte, markierte Lagerkisten (Abschnitt, Zweck, Schutzs
 - `scripts/test_bridge_paper_lager.sh`
 - `tests/lager.test.mjs`
 
+## 2026-11-03T19:05:43.334Z · progress
+
+**Aufgaben:** COOP-05
+
+Quellcommit der Paper-Jar 0.10.0 nach dem Rebase nachgetragen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-05 | 🧩 Implementiert · Abnahme offen | 3/5 | Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+

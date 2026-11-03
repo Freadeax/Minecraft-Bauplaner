@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T19:04:30.091Z",
+  "updatedAt": "2026-11-03T19:05:43.334Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -6451,7 +6451,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T19:04:30.091Z"
+      "updatedAt": "2026-11-03T19:05:43.334Z"
     },
     {
       "id": "PROJ-01",
@@ -11737,6 +11737,26 @@
           "total": 4,
           "next": "Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung in COOP-05 (geprüfte Lagerkisten, docs/architecture/LAGERKISTEN.md)."
         },
+        {
+          "id": "COOP-05",
+          "status": "implemented",
+          "done": 3,
+          "total": 5,
+          "next": "Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T19:05:43.334Z",
+      "kind": "progress",
+      "items": [
+        "COOP-05"
+      ],
+      "summary": "Quellcommit der Paper-Jar 0.10.0 nach dem Rebase nachgetragen.",
+      "files": [
+        "apps/web/src/views/mod/releases.json"
+      ],
+      "snapshot": [
         {
           "id": "COOP-05",
           "status": "implemented",
