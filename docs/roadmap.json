@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T16:33:52.289Z",
+  "updatedAt": "2026-11-03T16:46:52.767Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -6093,7 +6093,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T16:33:52.289Z"
+      "updatedAt": "2026-11-03T16:46:52.767Z"
     }
   ],
   "events": [
@@ -10724,6 +10724,29 @@
         "tests/game-check.test.mjs",
         "tests/schem.test.mjs",
         "tests/size-limits.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "SIZE-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05) mit einem großen Bau im Spiel."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T16:46:52.767Z",
+      "kind": "progress",
+      "items": [
+        "SIZE-01"
+      ],
+      "summary": "Mod 0.9.0 für Fabric und NeoForge auf #/mod freigegeben (Spieltests Fabric, NeoForge, Modpack mit Shader)",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "docs/TESTING.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.9.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.9.0.jar"
       ],
       "snapshot": [
         {

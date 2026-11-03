@@ -3375,3 +3375,20 @@ Größengrenzen zentral (4 Mio. Zellen, 16,7 Mio. Box), Import ohne Kopie, Werks
 - `tests/schem.test.mjs`
 - `tests/size-limits.test.mjs`
 
+## 2026-11-03T16:46:52.767Z · progress
+
+**Aufgaben:** SIZE-01
+
+Mod 0.9.0 für Fabric und NeoForge auf #/mod freigegeben (Spieltests Fabric, NeoForge, Modpack mit Shader)
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| SIZE-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05) mit einem großen Bau im Spiel. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `docs/TESTING.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.9.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.9.0.jar`
+

@@ -252,6 +252,33 @@
       "releasedAt": "2026-11-02",
       "sourceCommit": "8ce80fcbc3e9a2e0d9880704b566a33acff374c1",
       "tested": "Live-Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten der Weltkarte im Spiel, Mitspieler für die Live-Karte (/bauplaner ebenen)"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.9.0.jar",
+      "modVersion": "0.9.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 254974,
+      "sha256": "503506429ffd5118359440a76729df1841d6e01c81fc623388ce6a03840342c2",
+      "releasedAt": "2026-11-03",
+      "sourceCommit": "a0b22dd9f2b082bfb9f5cbc50d49be2be091d138",
+      "tested": "Spieltest 26.3: Hologramm, Website-Verbindung mit direkt gesendetem Plan, Abschnittswahl, Baustand in Scheiben; JUnit mit 3,1 Mio. Blöcken (Fabric, auch mit Philipps Modpack + Complementary-Shader)"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.9.0.jar",
+      "modVersion": "0.9.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 252235,
+      "sha256": "e8d03f9fff51035d0c21e965c86ccb57246da17eb14c996b846a89300e28171b",
+      "releasedAt": "2026-11-03",
+      "sourceCommit": "a0b22dd9f2b082bfb9f5cbc50d49be2be091d138",
+      "tested": "Spieltest 26.3: Hologramm, Website-Verbindung mit direkt gesendetem Plan, Abschnittswahl, Baustand in Scheiben; JUnit mit 3,1 Mio. Blöcken (NeoForge)"
     }
   ]
 }
