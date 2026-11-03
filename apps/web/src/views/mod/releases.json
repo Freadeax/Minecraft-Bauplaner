@@ -346,6 +346,33 @@
       "releasedAt": "2026-11-03",
       "sourceCommit": "6edee72432cd07c53d05bf1dab3ecca10cbd3bb9",
       "tested": "Echter Paper-Server 1.18.2, 1.21.4 und 26.3: Lagerkisten (scripts/test_bridge_paper_lager.sh) und Teambau (scripts/test_bridge_paper_team.sh) grün; Inventarklicks und Schutz brauchen echte Spieler (LAGER-02…06)."
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.11.0.jar",
+      "modVersion": "0.11.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 376221,
+      "sha256": "1268598dda390045dbcbb152f5255d585f11b181f71bc12379a371c0610b4ac5",
+      "releasedAt": "2026-11-03",
+      "sourceCommit": "3e96804899c3ef268d4c59b6bce0de6ef3951b10",
+      "tested": "Echter Fabric-Client 26.3: Hologramm, Platzierhilfe, Website-Verbindung, Teambau und Befehlsseite (Klicks auf Reiter, Übersicht, Abschnitt zeigen 2, Antworten auf der Seite) bestanden"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.11.0.jar",
+      "modVersion": "0.11.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 373071,
+      "sha256": "e675e07e5f4c7ee548b4fcb57b0784956813ed33edbae0ae62c54dabfb349c85",
+      "releasedAt": "2026-11-03",
+      "sourceCommit": "3e96804899c3ef268d4c59b6bce0de6ef3951b10",
+      "tested": "Echter NeoForge-Client 26.3: Hologramm, Platzierhilfe, Website-Verbindung, Teambau und Befehlsseite (/bauplaner befehle, Antwort auf der Seite) bestanden"
     }
   ]
 }
