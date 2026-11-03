@@ -8,8 +8,8 @@ import type { JobContext } from './protocol';
  * payload. The per-cell diff list itself stays here; the page gets the union
  * as cell columns and the change kind per union cell as one byte.
  */
-export const DIFF_KINDS: readonly DiffKind[] = ['same', 'added', 'removed', 'material', 'state'];
-export interface DiffJobInput { readonly a: PayloadTransport; readonly b: PayloadTransport; readonly profileId: string }
+export const DIFF_KINDS: readonly DiffKind[] = ['same', 'added', 'removed', 'material', 'state', 'content'];
+export interface DiffJobInput { readonly a: PayloadTransport; readonly b: PayloadTransport; readonly profileId: string; readonly align?: 'auto' | 'fixed' }
 export interface DiffJobOutput {
   readonly summary: Omit<PayloadDiff, 'cells'>;
   readonly union: PayloadTransport;
@@ -29,7 +29,7 @@ export async function diffJob(input: DiffJobInput, ctx: JobContext): Promise<Dif
   ctx.progress('Stände übernehmen', 0.05);
   const a = receivePayload(input.a), b = receivePayload(input.b);
   ctx.progress('Unterschiede berechnen', 0.3);
-  const diff = diffPayloads(a, b);
+  const diff = diffPayloads(a, b, { align: input.align ?? 'auto' });
   ctx.progress('Vergleichsansicht zusammensetzen', 0.7);
   const union = diffAsPayload(diff, input.profileId);
   const kinds = Uint8Array.from(union.kinds, k => DIFF_KINDS.indexOf(k));

@@ -88,11 +88,15 @@
 .diff-pick label { display: grid; gap: 4px; font-size: 12px; color: var(--muted); }
 .diff-pick .icon-button { height: 38px; width: 38px; }
 .diff-view { display: grid; gap: 10px; }
-.diff-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 0; }
+.diff-stats { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px; margin: 0; }
 .diff-stats div { border: 1px solid var(--line-2); border-radius: 10px; padding: 8px 10px; background: var(--panel-2); min-width: 0; }
 .diff-stats dt { font-size: 11.5px; color: var(--muted); display: flex; align-items: center; gap: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .diff-stats dt i { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; }
 .diff-stats dd { margin: 2px 0 0; font-size: 18px; font-weight: 600; }
+.diff-view .diff-shift { margin: 0; display: block; padding: 12px 14px; }
+.diff-shift p { margin: 0 0 4px; }
+.diff-followups { margin: 0; padding-left: 18px; font-size: 12.5px; color: var(--muted); display: grid; gap: 3px; }
+@media (max-width: 720px) { .diff-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .diff-bar { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: 13px; }
 .diff-bar .seg button { padding: 7px 12px; font-size: 13px; }
 .diff-stage { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #0f1d27; }

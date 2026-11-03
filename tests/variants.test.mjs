@@ -16,7 +16,7 @@ test('diff: hand-counted added, removed, material and state changes', () => {
   // Same structure shifted by +10 in x: alignment at bounds minimum, so nothing counts as moved.
   const b = payload([st('stone'), st('spruce_planks'), stairsE], [at(10, 0, 0, 0), at(11, 0, 0, 1), at(12, 0, 0, 2), at(10, 2, 0, 0)], [3, 3, 3], [10, 0, 0]);
   const d = diffPayloads(a, b);
-  assert.deepEqual(d.counts, { same: 1, added: 1, removed: 1, material: 1, state: 1 });
+  assert.deepEqual(d.counts, { same: 1, added: 1, removed: 1, material: 1, state: 1, content: 0 });
   assert.equal(d.blocksBefore, 4); assert.equal(d.blocksAfter, 4);
   assert.deepEqual(d.blocks.map(x => [x.id, x.before, x.after]), [['minecraft:oak_planks', 1, 0], ['minecraft:spruce_planks', 0, 1]]);
   assert.deepEqual(d.cells.map(c => `${c.position.join(',')}:${c.kind}`), ['0,0,0:same', '1,0,0:material', '2,0,0:state', '0,1,0:removed', '0,2,0:added']);
@@ -28,7 +28,7 @@ test('diff: hand-counted added, removed, material and state changes', () => {
 
 test('diff: identical payloads and a rotated copy', () => {
   const a = payload([st('stone'), st('oak_log', { axis: 'x' })], [at(0, 0, 0, 0), at(1, 0, 0, 1), at(2, 0, 0, 1)], [3, 1, 1]);
-  assert.deepEqual(diffPayloads(a, a).counts, { same: 3, added: 0, removed: 0, material: 0, state: 0 });
+  assert.deepEqual(diffPayloads(a, a).counts, { same: 3, added: 0, removed: 0, material: 0, state: 0, content: 0 });
   const r = transformPayload(a, { position: [0, 0, 0], quarterTurns: 1, mirrorX: false }).payload;
   const d = diffPayloads(a, r);
   assert.equal(d.counts.same + d.counts.state + d.counts.material + d.counts.removed, 3);

@@ -4548,3 +4548,26 @@ NBT-01: BlockEntity-Familien für alle 49 Typen des Profils (relativ wie Minecra
 - `tests/variants.test.mjs`
 - `tests/voxel.test.mjs`
 
+## 2026-11-03T22:26:42.450Z · progress
+
+**Aufgaben:** DIFF-01
+
+DIFF-01: Vergleich erkennt eine Verschiebung des ganzen Stands (Eck-Ausrichtungen + Stimmen seltener Zustände, Materialtausch wird nie als Verschiebung gedeutet; Hinweis mit Schalter ohne Ausgleich), neue Art „anderer Inhalt“ für BlockEntity-Änderungen (Kisteninhalt, Schild, Banner, Name; eigene Positionsfelder zählen nicht), Zustandsänderungen aus Nachbarn als abgeleitet markiert, betroffene Ebenen für Bauschritte. Updates vergleichen weiter fest am Pivot. Prüfung: Node-Tests (794).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| DIFF-01 | 🧩 Implementiert · Abnahme offen | 3/3 | Abnahme in der Testphase: zwei Stände eines verschobenen Bauwerks vergleichen. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/jobs/diffJob.ts`
+- `apps/web/src/schem.css`
+- `apps/web/src/schem/DiffView.tsx`
+- `apps/web/src/views/project/UpdatesTab.tsx`
+- `docs/architecture/SCHEM_VIEWS.md`
+- `packages/domain/src/updates.ts`
+- `packages/voxel/src/diff.ts`
+- `packages/voxel/src/index.ts`
+- `tests/diff-shift.test.mjs`
+- `tests/variants.test.mjs`
+

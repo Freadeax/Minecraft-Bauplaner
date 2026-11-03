@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T22:26:37.867Z",
+  "updatedAt": "2026-11-03T22:26:42.450Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -1963,7 +1963,9 @@
       ],
       "scope": [
         "packages/voxel/src/diff.ts",
-        "apps/web/src/schem/DiffView.tsx"
+        "apps/web/src/schem/DiffView.tsx",
+        "apps/web/src/jobs/diffJob.ts",
+        "packages/domain/src/updates.ts"
       ],
       "legacyIds": [
         "P5-03"
@@ -1977,34 +1979,42 @@
         {
           "id": "DIFF-01-S02",
           "title": "Verschiebung von echten Geometrieänderungen unterscheiden.",
-          "done": false
+          "done": true
         },
         {
           "id": "DIFF-01-S03",
           "title": "NBT-Änderungen und Folgen für Verbindungen/Schritte anzeigen.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Diff ist deterministisch und verändert keine Version."
       ],
-      "next": "Verschiebung von echten Geometrieänderungen unterscheiden.",
+      "next": "Abnahme in der Testphase: zwei Stände eines verschobenen Bauwerks vergleichen.",
       "blockers": [],
       "evidence": [
         {
           "path": "tests/variants.test.mjs",
           "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        },
+        {
+          "path": "tests/diff-shift.test.mjs",
+          "note": "Reine Verschiebung = 0 Änderungen, Verschiebung plus Anbau, Materialtausch und Anbau nicht als Verschiebung, Kisteninhalt als Inhaltsänderung, Zaunverbindung abgeleitet vs. gedrehte Treppe, deterministisch und ohne Veränderung der Eingaben."
+        },
+        {
+          "path": "docs/architecture/SCHEM_VIEWS.md",
+          "note": "Abschnitte Verschiebung erkennen / Inhalte und Folgen."
         }
       ],
       "verification": {
-        "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "state": "passed",
+        "note": "Node-Tests; Browsertests Bauversionen, Update-Vorschau, Hintergrundvergleich."
       },
       "delivery": {
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-03T21:37:46.206Z",
+      "updatedAt": "2026-11-03T22:26:42.450Z",
       "area": "KERN",
       "thread": "Liegengebliebene Datenpakete abarbeiten",
       "philipp": [],
@@ -14815,6 +14825,35 @@
           "done": 2,
           "total": 2,
           "next": "Abnahme: Kupfervariante eines Bauwerks im Planer erzeugen und im Spiel ansehen (Testphase)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T22:26:42.450Z",
+      "kind": "progress",
+      "items": [
+        "DIFF-01"
+      ],
+      "summary": "DIFF-01: Vergleich erkennt eine Verschiebung des ganzen Stands (Eck-Ausrichtungen + Stimmen seltener Zustände, Materialtausch wird nie als Verschiebung gedeutet; Hinweis mit Schalter ohne Ausgleich), neue Art „anderer Inhalt“ für BlockEntity-Änderungen (Kisteninhalt, Schild, Banner, Name; eigene Positionsfelder zählen nicht), Zustandsänderungen aus Nachbarn als abgeleitet markiert, betroffene Ebenen für Bauschritte. Updates vergleichen weiter fest am Pivot. Prüfung: Node-Tests (794).",
+      "files": [
+        "apps/web/src/jobs/diffJob.ts",
+        "apps/web/src/schem.css",
+        "apps/web/src/schem/DiffView.tsx",
+        "apps/web/src/views/project/UpdatesTab.tsx",
+        "docs/architecture/SCHEM_VIEWS.md",
+        "packages/domain/src/updates.ts",
+        "packages/voxel/src/diff.ts",
+        "packages/voxel/src/index.ts",
+        "tests/diff-shift.test.mjs",
+        "tests/variants.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "DIFF-01",
+          "status": "implemented",
+          "done": 3,
+          "total": 3,
+          "next": "Abnahme in der Testphase: zwei Stände eines verschobenen Bauwerks vergleichen."
         }
       ]
     }

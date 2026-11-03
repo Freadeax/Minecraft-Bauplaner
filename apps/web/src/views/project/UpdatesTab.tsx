@@ -7,6 +7,7 @@ import type { AssetVersion, InstanceUpdateInfo, PatchPolicy, PreparedUpdate, Pro
 import { useApp } from '../../app/context';
 import { errorText, formatNumber } from '../../app/ui';
 import { DiffView } from '../../schem/DiffView';
+import { changedCells } from '../../../../../packages/voxel/src/index.js';
 import { isResolved } from './session';
 import type { ProjectSession } from './session';
 import { prepareUpdateInBackground } from '../../jobs/updates';
@@ -201,7 +202,7 @@ function UpdatePlanView({ prepared, stale, busy, onApply, onCancel, onRefresh, p
   const { plan } = prepared.result;
   const one = plan.instances[Math.min(index, plan.instances.length - 1)]!;
   const [a, b] = pivotAligned(one.from.payload, one.to.payload);
-  const changed = (p: typeof one) => p.geometry.counts.added + p.geometry.counts.removed + p.geometry.counts.material + p.geometry.counts.state;
+  const changed = (p: typeof one) => changedCells(p.geometry);
   return <section className="update-plan" aria-label="Folgen des Updates">
     <h3>Folgen vor dem Übernehmen</h3>
     {stale && <div className="notice warning" role="alert"><p>Das Projekt wurde seitdem geändert.</p><button type="button" onClick={onRefresh}>Neu berechnen</button></div>}

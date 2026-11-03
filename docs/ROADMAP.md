@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-03T22:26:37.867Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-03T22:26:42.450Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -176,7 +176,7 @@ Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft).
 | [PROFILE-01](#profile-01) | Ein verbindliches Java-Versionsprofil | 🧩 Implementiert · Abnahme offen 3/3 | P0 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3 | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Einen Bau mit Spielprüfung ohne Hinweise nachbauen und Verbindungen vergleichen (S07). |
 | [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Geänderte Gebäude (Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen (S06). |
-| [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen 1/3 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
+| [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [ENTITY-01](#entity-01) | Gemälde, Rahmen, Rüstungsständer und Blockinhalte | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Export mit Gemälden, Rahmen und Rüstungsständern im Spiel laden (S06). |
 | [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [MAT-03](#mat-03) | Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen | 🧩 Implementiert · Abnahme offen 2/3 | P1 | **verwaist** · 1 verwaist | — |
@@ -429,7 +429,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | 🧩 Implementiert · Abnahme offen | 2/2 | PROFILE-01, MAT-01 | ausstehend | ausstehend |
 | [MAT-03](#mat-03) | Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen | 🧩 Implementiert · Abnahme offen | 2/3 | PROFILE-01, QA-01 | `84838f0` | `e232b26` |
 | [MAT-04](#mat-04) | Kupfer mit Oxidation und Wachsstatus | 🧩 Implementiert · Abnahme offen | 2/2 | PROFILE-01, MAT-03 | ausstehend | ausstehend |
-| [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen | 1/3 | CORE-02, NBT-01 | `84838f0` | `e232b26` |
+| [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen | 3/3 | CORE-02, NBT-01 | `84838f0` | `e232b26` |
 | [PERF-01](#perf-01) | Große Berechnungen als abbrechbare Worker-Aufträge | ✅ Im beschriebenen Umfang geprüft | 3/3 | ARCH-01 | `7dffd92` | `7dffd92` |
 | [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen | 2/3 | PERF-01 | `7dffd92` | `7dffd92` |
 | [PERF-03](#perf-03) | Bundle, große Views und Vorschaucache | 🧩 Implementiert · Abnahme offen | 3/3 | ARCH-01, QA-01 | ausstehend | ausstehend |
@@ -1124,21 +1124,21 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### DIFF-01
 
-**Verschiebungserkennung und BlockEntity-Diff** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T21:37:46.206Z
+**Verschiebungserkennung und BlockEntity-Diff** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T22:26:42.450Z
 
 - [x] DIFF-01-S01: Basisvergleich A/B für Geometrie und Materialien vorhanden.
-- [ ] DIFF-01-S02: Verschiebung von echten Geometrieänderungen unterscheiden.
-- [ ] DIFF-01-S03: NBT-Änderungen und Folgen für Verbindungen/Schritte anzeigen.
+- [x] DIFF-01-S02: Verschiebung von echten Geometrieänderungen unterscheiden.
+- [x] DIFF-01-S03: NBT-Änderungen und Folgen für Verbindungen/Schritte anzeigen.
 
 **Abnahme:** Diff ist deterministisch und verändert keine Version.
 
-**Nächste Aktion:** Verschiebung von echten Geometrieänderungen unterscheiden.
+**Nächste Aktion:** Abnahme in der Testphase: zwei Stände eines verschobenen Bauwerks vergleichen.
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Node-Tests; Browsertests Bauversionen, Update-Vorschau, Hintergrundvergleich.
 
-**Nachweise:** [tests/variants.test.mjs](../tests/variants.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
+**Nachweise:** [tests/variants.test.mjs](../tests/variants.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/diff-shift.test.mjs](../tests/diff-shift.test.mjs) — Reine Verschiebung = 0 Änderungen, Verschiebung plus Anbau, Materialtausch und Anbau nicht als Verschiebung, Kisteninhalt als Inhaltsänderung, Zaunverbindung abgeleitet vs. gedrehte Treppe, deterministisch und ohne Veränderung der Eingaben.; [docs/architecture/SCHEM_VIEWS.md](architecture/SCHEM_VIEWS.md) — Abschnitte Verschiebung erkennen / Inhalte und Folgen.
 
-**Dateiumfang:** `packages/voxel/src/diff.ts`, `apps/web/src/schem/DiffView.tsx`. **Abhängigkeiten:** CORE-02, NBT-01. **Alte IDs:** P5-03.
+**Dateiumfang:** `packages/voxel/src/diff.ts`, `apps/web/src/schem/DiffView.tsx`, `apps/web/src/jobs/diffJob.ts`, `packages/domain/src/updates.ts`. **Abhängigkeiten:** CORE-02, NBT-01. **Alte IDs:** P5-03.
 
 **Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
 

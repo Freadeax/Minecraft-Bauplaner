@@ -20,6 +20,8 @@ Auf der Detailseite steht der Abschnitt „Bauversionen“ (`views/library/Versi
 
 - **Varianten** der Familie bzw. aus derselben Basis als Bildkarten.
 - **Vergleich Stand A ↔ Stand B:** aktuelle Fassung, jede Variante und ältere Versionen eigener Bauteile. `diffPayloads` (`packages/voxel/src/diff.ts`) richtet beide Strukturen an ihrer Minimum-Ecke aus und ordnet jede Zelle als gleich, neu, entfernt, anderes Material oder anderer Zustand (gleiche ID, andere Properties) ein; dazu die Blockmengen, die sich ändern. Darstellung als drei Bilder (A, B, Unterschiede eingefärbt), als 3D oder als Ebenenplan; Unveränderte lassen sich ausblenden.
+- **Verschiebung erkennen (DIFF-01-S02):** nach der Ausrichtung an der Minimum-Ecke sucht `diffPayloads` eine Verschiebung des ganzen Stands B, die den Unterschied klar besser erklärt. Kandidaten sind die acht Eck-Ausrichtungen der belegten Ausdehnung und Versätze, für die seltene Blockzustände (höchstens 8 je Seite, höchstens 4096 Paare) stimmen. Bewertet wird jede Zelle, die auf beiden Seiten belegt ist (1 Punkt), mit gleichem Zustand doppelt – ein Materialtausch bleibt so Materialtausch und wird nie als Verschiebung gedeutet. Eine Verschiebung gilt erst ab 5 % der kleineren Seite Vorsprung vor der festen Ausrichtung, unter 8 Blöcken gar nicht. Ergebnis `shift`: Versatz, angewendet ja/nein, „nur verschoben“ und wie viele Zellen ohne Ausgleich anders wären. Die Ansicht zeigt das als Hinweis mit Schalter „Ohne Verschiebungsausgleich vergleichen“. Updates (`diffVersions`) vergleichen weiter fest am Pivot, weil eine verschobene Version in der Welt wirklich woanders landet.
+- **Inhalte und Folgen (DIFF-01-S03):** gleiche Blockzustände mit anderer BlockEntity (Kisteninhalt, Schildtext, Banner, Name, sonstige Daten) zählen als „anderer Inhalt“; eigene Positionsfelder (`x/y/z`, `Pos`) zählen nicht, damit eine verschobene Kiste gleich bleibt. Zustandsänderungen, die nur aus den Nachbarn folgen (Zaun-/Mauer-/Scheibenverbindungen, Treppenecken, Tor in Mauer, verschneit, Pilzseiten; Regeln aus BLOCK-01 `connectFamily`), heißen „folgt aus Nachbarn“ – das Spiel setzt sie selbst. `followUps.layers` nennt die Ebenen mit echten Änderungen, deren Bauschritte man ansehen sollte.
 - **Materialvariante erzeugen:** `swapMaterials` (`packages/domain/src/variants.ts`) tauscht ganze Materialsätze gleichzeitig (12 Holzarten, 25 Steinsätze mit Block/Treppe/Stufe/Mauer, 16 Farben mit Wolle bis Shulkerkiste). Properties bleiben erhalten, nur gleichartige Sätze sind tauschbar. Fehlt im Ziel eine Form (z. B. keine Mauer aus poliertem Andesit), bleibt der Block und wird als „nicht getauscht“ gemeldet. Ergebnis wird als neues Bauteil (Herkunft „abgeleitet von …“, Quellformat `variant`, Tag `basis:<assetId>`) oder bei eigenen Bauteilen als neue Version gespeichert.
 
 `variantGroup` (`catalog.ts`) fasst Familienmitglieder und über `basis:` abgeleitete Bauteile transitiv zusammen; `basis:`-Tags zählen wie `familie:` nicht als normale Schlagwörter.
@@ -37,13 +39,13 @@ Behoben (Beobachtung aus P5-01): Der Viewer passt die Kamera neu ein, wenn eine 
 
 ## Prüfung
 
-- Node: `tests/variants.test.mjs` (Diff handgezählt, Materialsätze, Tausch mit Eigenschaften/Paletten-Zusammenführung/Ungelöstem, alle Gebäude in drei Holzarten, Familien nur Materialtausch, 15 Bücherregale, Variantengruppen), `tests/schem-views.test.mjs` (Blickwinkel, Schnitt, Ebenenhilfen, Dateinamen).
+- Node: `tests/diff-shift.test.mjs` (DIFF-01: reine Verschiebung, Verschiebung plus Anbau, Materialtausch/Anbau ohne Fehldeutung, Kisteninhalt, Verbindungen als abgeleitet), `tests/variants.test.mjs` (Diff handgezählt, Materialsätze, Tausch mit Eigenschaften/Paletten-Zusammenführung/Ungelöstem, alle Gebäude in drei Holzarten, Familien nur Materialtausch, 15 Bücherregale, Variantengruppen), `tests/schem-views.test.mjs` (Blickwinkel, Schnitt, Ebenenhilfen, Dateinamen).
 - Browser: `tests/e2e/schem.e2e.mjs` (Reiter, Bilder, Schnitt und Download, Ebenen mit Legende und Zeigen, 1400 px und 390 px ohne waagerechtes Scrollen; Varianten vergleichen, Materialvariante speichern und als Version v2.0; URL-Filter, Stöbern, Blickrichtung, Betrachter mit Bauplan).
 
 ## Grenzen
 
 - Bilder ohne Texturen und ohne exakte Blockmodelle (Treppen, Zäune als Würfel bzw. Pfeil/Schraffur im Plan).
-- Diff vergleicht nur Blockzustände, keine BlockEntity-Inhalte; Verschiebungen werden nicht erkannt (Ausrichtung immer an der Minimum-Ecke).
+- Diff erkennt eine Verschiebung des ganzen Bauwerks, keine Verschiebung einzelner Teile und keine Drehung; freie Entities (Gemälde, Rahmen) zählen nicht mit.
 - Materialtausch kennt nur die gelisteten Sätze. Glas, Beton und Terrakotta sind seit MAT-03 getrennt auswählbar, Kupfer (Oxidationsstufe × Wachs) seit MAT-04 mit Profilnachweis ([MATERIALS](MATERIALS.md#kupfer-mit-oxidation-und-wachs-mat-04--03112026)).
 - Hauptbundle rund 725 kB (Warnschwelle 650 kB), Aufteilung offen.
 

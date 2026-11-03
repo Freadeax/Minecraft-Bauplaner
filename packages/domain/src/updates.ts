@@ -223,10 +223,11 @@ export const localLabel = (target: Pick<AssetVersion, 'label'>): string => `${ta
 /**
  * Cell diff of two versions aligned at their pivots (the placement point), not
  * at their minimum corner: an extension on the west side is then reported as
- * added cells instead of shifting the whole building.
+ * added cells instead of shifting the whole building. No shift detection
+ * (DIFF-01): a version moved against its pivot really lands elsewhere in the world.
  */
 export function diffVersions(a: VoxelPayload, b: VoxelPayload): PayloadDiff {
-  return diffPayloads(...pivotAligned(a, b));
+  return diffPayloads(...pivotAligned(a, b), { align: 'fixed' });
 }
 
 /** Both payloads with bounds widened to the same box around their pivots (cells unchanged), for pivot-aligned comparisons and previews. */
