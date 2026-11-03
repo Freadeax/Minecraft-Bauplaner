@@ -796,6 +796,10 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `node --test tests/e2e/teamplan.e2e.mjs`: 2/2 bestanden (1400 und 390 px): Team gründen, Freigabe, zweites Mitglied, Rohbau in 2 Schichtpakete teilen, 4 Zuweisungen übernehmen, Zeitplan mit zwei Spuren, Material und Packlisten, Brett mit 4 Abschnitten „in Arbeit“, Vergleich mit Planstand 1, Übergabe anbieten und annehmen, Abwesenheit (erscheint unter „Achtung“), Bauleitung übergeben; keine Konsolenfehler.
 - Grenzen: keine Abnahme mit echten Mitspielern; Plugin faltet die neuen Arten noch nicht (Plugin-Thread).
 
+## GAME-10 · Mod 0.11.2: Team-Raum-Befehle · 03.11.2026 · Claude
+- Katalog um `/bp team raum` und `team trennen` ergänzt; `team verbinden <link>` bewusst ohne Knopf (Link enthält den Serverschlüssel, nur Serverkonsole). `CommandCatalogTest` liest jetzt auch die `team`-Unterbefehle aus der Tab-Vervollständigung des Plugins.
+- Paper-Jar ab main cb02624 (RoomLink). Paper-26.3-Teamtest, echte Spieltests Fabric und NeoForge 26.3 bestanden.
+
 ## GAME-07 · Mod 0.11.1: structure_void ist kein Planblock · 03.11.2026 · Claude
 - Fund aus dem Volumenlimit-Thread (`scripts/bridge_sendcheck.mjs`): Exporte mit „Strukturleere“ füllten in der Mod die ganze leere Box mit Blöcken. `PlanModel` überspringt `minecraft:structure_void` jetzt wie Luft (JUnit `structureVoidIsNotAPlannedBlock`).
 - `scripts/test_bridge.sh` mit Sendeprüfung aller Großprojekte grün. Echte Spieltests Fabric und NeoForge 26.3 mit 0.11.1 bestanden.

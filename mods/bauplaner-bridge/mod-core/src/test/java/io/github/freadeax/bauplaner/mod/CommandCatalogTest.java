@@ -52,6 +52,14 @@ class CommandCatalogTest {
             if (c.equals("lager")) continue;
             assertTrue(CommandCatalog.all().stream().anyMatch(e -> e.side() == Side.SERVER && (e.path().equals(c) || e.path().startsWith(c + " "))), "Knopf für /bp " + c);
         }
+        // „team“ subcommands from the tab completion; verbinden on purpose only in the console (link carries the server key).
+        var sub = java.util.regex.Pattern.compile("case \"team\" -> args.length == 2 \\? List.of\\(([^)]*)\\)").matcher(java.nio.file.Files.readString(paper.resolve("TeamModule.java")));
+        assertTrue(sub.find(), "team-Unterbefehle");
+        for (var r : java.util.regex.Pattern.compile("\"([a-z]+)\"").matcher(sub.group(1)).results().toList()) {
+            String c = r.group(1);
+            if (c.equals("verbinden")) continue;
+            assertTrue(CommandCatalog.all().stream().anyMatch(e -> e.side() == Side.SERVER && e.path().equals("team " + c)), "Knopf für /bp team " + c);
+        }
         for (String c : storage) {
             if (aliases.contains(c)) continue;
             assertTrue(CommandCatalog.all().stream().anyMatch(e -> e.side() == Side.SERVER && e.path().equals("lager " + c)), "Knopf für /bp lager " + c);

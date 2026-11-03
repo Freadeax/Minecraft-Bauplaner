@@ -4474,3 +4474,21 @@ Paper-Plugin im Team-Raum: RoomLink (verbinden/trennen/raum, Planstand aus dem R
 - `scripts/bridge_paperroom.mjs`
 - `scripts/test_bridge_paper_room.sh`
 
+## 2026-11-03T22:11:54.050Z · progress
+
+**Aufgaben:** GAME-10
+
+Mod 0.11.2: Team-Raum-Befehle (raum, trennen) auf der Befehlsseite, Test liest team-Unterbefehle aus dem Plugin; Paper-Jar mit RoomLink.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-10 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme MOD-16 auf Philipps Server mit Paper-Plugin. |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java`
+

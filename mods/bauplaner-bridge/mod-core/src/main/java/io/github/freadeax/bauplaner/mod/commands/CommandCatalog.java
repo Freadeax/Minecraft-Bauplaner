@@ -200,6 +200,8 @@ public final class CommandCatalog {
         s(m, SERVER_TEAM, "bp.team.wahl", "Team wählen", "team wahl", "Bei mehreren Teams: welches für dich gilt.", Need.PLUGIN, Arg.of("team", Kind.TEXT));
         s(m, SERVER_TEAM, "bp.team.export", "Ausfuhr schreiben", "team export", "Teamprotokoll für den Planer schreiben.", Need.LEAD);
         s(m, SERVER_TEAM, "bp.team.laden", "Teamdateien neu laden", "team laden", "Nach dem Hochladen einer Serverdatei.", Need.LEAD);
+        s(m, SERVER_TEAM, "bp.team.raum", "Team-Raum (Status)", "team raum", "Live-Verbindung des Servers zum Team-Raum. Verbinden mit dem Link nur in der Serverkonsole: /bp team verbinden <link> – der Link enthält den Serverschlüssel.", Need.PLUGIN);
+        s(m, SERVER_TEAM, "bp.team.trennen", "Team-Raum trennen", "team trennen", "Server vom Team-Raum trennen (Bauleitung).", Need.LEAD);
         s(m, SERVER_TEAM, "bp.team.hilfe", "Hilfe (Server)", "team hilfe", "Alle Teambefehle des Servers.", Need.PLUGIN);
         // Storage chests (plugin)
         s(m, STORAGE, "bp.lager.liste", "Lagerkisten", "lager liste", "Alle Lagerkisten mit Prüfstand.", Need.PLUGIN);

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T21:58:17.986Z",
+  "updatedAt": "2026-11-03T22:11:54.050Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -7643,7 +7643,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-03T22:11:54.050Z",
       "area": "MOD",
       "thread": "Teambau und Befehle in der Mod ausbauen",
       "philipp": [
@@ -14681,6 +14681,30 @@
           "done": 5,
           "total": 6,
           "next": "Plugin-Thread: RoomLink gegen team-room v1; Philipp: Cloudflare-Konto, wrangler deploy, Spieltest."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T22:11:54.050Z",
+      "kind": "progress",
+      "items": [
+        "GAME-10"
+      ],
+      "summary": "Mod 0.11.2: Team-Raum-Befehle (raum, trennen) auf der Befehlsseite, Test liest team-Unterbefehle aus dem Plugin; Paper-Jar mit RoomLink.",
+      "files": [
+        "docs/TESTING.md",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-10",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme MOD-16 auf Philipps Server mit Paper-Plugin."
         }
       ]
     }

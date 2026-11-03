@@ -2,6 +2,14 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.11.2 – 2026-11-03
+
+- Paper plugin: live connection to a team room (`/bp team verbinden <link>` in the server console, `/bp team raum`, `/bp team trennen`).
+- Mod: the commands page shows “Team room (status)” and “Disconnect team room”.
+
+- Paper-Plugin: Live-Verbindung zu einem Team-Raum (`/bp team verbinden <link>` in der Serverkonsole, `/bp team raum`, `/bp team trennen`).
+- Mod: Befehlsseite mit „Team-Raum (Status)“ und „Team-Raum trennen“.
+
 ## 0.11.1 – 2026-11-03
 
 - Plans exported with “structure void” for empty space are shown correctly: those cells are no longer treated as blocks to build.
