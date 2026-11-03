@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-03T18:41:55.872Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-03T18:44:29.660Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-03T18:41:55.872Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 15 |
 | 🚧 In Arbeit | 1 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 52 |
+| 🧩 Implementiert · Abnahme offen | 53 |
 | ✅ Im beschriebenen Umfang geprüft | 23 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -44,6 +44,7 @@ Stand: 2026-11-03T18:41:55.872Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 - **COOP-01 · Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“** — 🧩 Implementiert · Abnahme offen, 3/5 Teilschritte. Nächster Schritt: PROJ-01-Anbindung (S04) nach dessen Merge; Abnahme durch Philipp mit Mitspielern.
 - **COOP-02 · Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme auf Philipps Server.
 - **COOP-04 · Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung Lagerkisten im Thread „Server-Plugin mit geprüften Lagerkisten“.
+- **PROJ-01 · Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -180,6 +181,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [SIZE-01](#size-01) | Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger | 🧩 Implementiert · Abnahme offen | 4/5 | PERF-04, ARCH-02, GFX-01, GAME-08 | ausstehend | ausstehend |
 | [COOP-01](#coop-01) | Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“ | 🧩 Implementiert · Abnahme offen | 3/5 | BUILD-06, BACKUP-02 | ausstehend | ausstehend |
 | [COOP-02](#coop-02) | Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-01, GAME-04 | ausstehend | ausstehend |
+| [PROJ-01](#proj-01) | Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten | 🧩 Implementiert · Abnahme offen | 4/5 | BUILD-01, BUILD-06, BACKUP-02 | ausstehend | ausstehend |
 
 ## P4: Optionale Zusammenarbeit und Integrationen
 
@@ -2122,6 +2124,28 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [scripts/bridge_paperteam.mjs](../scripts/bridge_paperteam.mjs) — Echte Kiste, Zählungen, Baunachweis und Abschalten auf Paper 1.18.2 bis 26.3; Planer-Faltung = Server.; [tests/team.test.mjs](../tests/team.test.mjs) — Faltung Baunachweis und Lagerkisten.
 
 **Dateiumfang:** `mods/bauplaner-bridge/paper/`, `packages/domain/src/team.ts`, `apps/web/src/views/project/TeamProof.tsx`. **Abhängigkeiten:** COOP-02, LAGER-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### PROJ-01
+
+**Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projektmodul vertiefen“) · Aktualisiert: 2026-11-03T18:44:29.660Z
+
+- [x] PROJ-01-S01: Datensatz project.site.program (Bauleute, Meilensteine, Abhängigkeiten azyklisch, Zuweisungen, Start, Bautage je Woche) mit Prüfung, Rückgängig über site.set, Sicherung und Datencheck.
+- [x] PROJ-01-S02: Zeitplan: Spur je Bauleute, gemeinsames Tempo bei geteilten Abschnitten, Abhängigkeiten, kritischer Pfad, Kalender mit Bautagen je Woche, Meilensteinstatus und Bedarf je Meilenstein/Bauleute.
+- [x] PROJ-01-S03: Vorschläge: Abhängigkeiten aus Schrittvoraussetzungen und Anschlüssen; Programmvorlagen Phasen/Reihenfolge/Etappen aus den Bauabschnitten.
+- [x] PROJ-01-S04: Reiter „Planung“ (Balkenplan, Meilensteine, Abhängigkeiten, Bauleute mit Zuweisungsmatrix und Bauzettel, Einstellungen, Bauprogramm als Text) und Meilenstein-Chip in der Projektzentrale.
+- [ ] PROJ-01-S05: Abnahme durch Philipp in der Testphase (PROJ-09…11); Folgeideen: Abhängigkeiten zwischen Projekten auf der Weltkarte, Bauleute aus dem Spiel (Mitspieler), Lagerbuchungen je Bauleute (TEAM-03).
+
+**Abnahme:** Abhängigkeiten sind azyklisch; ein Kreis wird mit lesbarer Meldung abgelehnt; entfernte Abschnitte verschwinden aus Meilensteinen, Abhängigkeiten und Zuweisungen. Zeitplan rechnet nur mit Restbedarf der nicht abgehakten Schritte und dem Bautempo; abgehakte Abschnitte brauchen keine Bautage; Daten sind als Projektion gekennzeichnet. Keine zweite Geometrie-, Schritt- oder Materiallogik: Bedarf je Meilenstein ist die Summe der Abschnittspläne der Baustelle.
+
+**Nächste Aktion:** Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel.
+
+**Prüfstand:** Einheits- und Browsertests grün; Abnahme durch Philipp offen (S05).
+
+**Nachweise:** [tests/program.test.mjs](../tests/program.test.mjs) — 9 Fälle: Prüfung (Kreise, Daten, Bauleute), Bearbeiten/Rückgängig/Bereinigen, Befunde, Vorschläge aus Geometrie und Anschlüssen, Vorlagen Phasen/Kette/Etappen, Kalender, Zeitplan mit Spuren/kritischem Pfad/Meilensteinen/Texten, Sicherung, Großprojekt aus der Bibliothek (GROSS-01) mit Phasen-Meilensteinen.; [tests/e2e/program.e2e.mjs](../tests/e2e/program.e2e.mjs) — Chromium 1400/390 px: Vorschläge übernehmen, Kreis abgelehnt, Meilenstein mit Abschnitten und Status, zwei Bauleute mit Zuweisung, Bauzettel, Startdatum, Textdatei, Neuladen, Projektkarte.; [docs/architecture/PROGRAM.md](architecture/PROGRAM.md) — Datenmodell, Zeitplanregeln, Vorschläge, Oberfläche, Grenzen.
+
+**Dateiumfang:** `packages/domain/src/program.ts`, `packages/domain/src/site.ts`, `apps/web/src/views/project/PlanningTab.tsx`, `apps/web/src/planning.css`, `apps/web/src/views/ProjectsView.tsx`, `tests/program.test.mjs`, `tests/e2e/program.e2e.mjs`, `docs/architecture/PROGRAM.md`. **Abhängigkeiten:** BUILD-01, BUILD-06, BACKUP-02. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

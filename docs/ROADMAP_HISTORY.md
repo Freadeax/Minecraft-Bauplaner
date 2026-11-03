@@ -3681,3 +3681,13 @@ Weltkarten-Browsertest: simulierte aktuelle Mod meldet auch das Merkmal team (Mo
 
 - `tests/e2e/map-depth.e2e.mjs`
 
+## 2026-11-03T18:44:29.660Z · progress
+
+**Aufgaben:** PROJ-01
+
+Rebase auf main 2e0c984 (COOP-03/04, Mod 0.10.0); Browsersuite 137/138, einziger roter Test map-depth war fremd und ist auf main behoben
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PROJ-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel. |
+

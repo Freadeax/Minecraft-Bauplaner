@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T18:41:55.872Z",
+  "updatedAt": "2026-11-03T18:44:29.660Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -25,7 +25,8 @@
     "SIZE-01",
     "COOP-01",
     "COOP-02",
-    "COOP-04"
+    "COOP-04",
+    "PROJ-01"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -6375,6 +6376,87 @@
         "pagesSource": null
       },
       "updatedAt": "2026-11-03T17:57:24.438Z"
+    },
+    {
+      "id": "PROJ-01",
+      "title": "Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Projektmodul vertiefen“)",
+      "dependencies": [
+        "BUILD-01",
+        "BUILD-06",
+        "BACKUP-02"
+      ],
+      "scope": [
+        "packages/domain/src/program.ts",
+        "packages/domain/src/site.ts",
+        "apps/web/src/views/project/PlanningTab.tsx",
+        "apps/web/src/planning.css",
+        "apps/web/src/views/ProjectsView.tsx",
+        "tests/program.test.mjs",
+        "tests/e2e/program.e2e.mjs",
+        "docs/architecture/PROGRAM.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "PROJ-01-S01",
+          "title": "Datensatz project.site.program (Bauleute, Meilensteine, Abhängigkeiten azyklisch, Zuweisungen, Start, Bautage je Woche) mit Prüfung, Rückgängig über site.set, Sicherung und Datencheck.",
+          "done": true
+        },
+        {
+          "id": "PROJ-01-S02",
+          "title": "Zeitplan: Spur je Bauleute, gemeinsames Tempo bei geteilten Abschnitten, Abhängigkeiten, kritischer Pfad, Kalender mit Bautagen je Woche, Meilensteinstatus und Bedarf je Meilenstein/Bauleute.",
+          "done": true
+        },
+        {
+          "id": "PROJ-01-S03",
+          "title": "Vorschläge: Abhängigkeiten aus Schrittvoraussetzungen und Anschlüssen; Programmvorlagen Phasen/Reihenfolge/Etappen aus den Bauabschnitten.",
+          "done": true
+        },
+        {
+          "id": "PROJ-01-S04",
+          "title": "Reiter „Planung“ (Balkenplan, Meilensteine, Abhängigkeiten, Bauleute mit Zuweisungsmatrix und Bauzettel, Einstellungen, Bauprogramm als Text) und Meilenstein-Chip in der Projektzentrale.",
+          "done": true
+        },
+        {
+          "id": "PROJ-01-S05",
+          "title": "Abnahme durch Philipp in der Testphase (PROJ-09…11); Folgeideen: Abhängigkeiten zwischen Projekten auf der Weltkarte, Bauleute aus dem Spiel (Mitspieler), Lagerbuchungen je Bauleute (TEAM-03).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Abhängigkeiten sind azyklisch; ein Kreis wird mit lesbarer Meldung abgelehnt; entfernte Abschnitte verschwinden aus Meilensteinen, Abhängigkeiten und Zuweisungen.",
+        "Zeitplan rechnet nur mit Restbedarf der nicht abgehakten Schritte und dem Bautempo; abgehakte Abschnitte brauchen keine Bautage; Daten sind als Projektion gekennzeichnet.",
+        "Keine zweite Geometrie-, Schritt- oder Materiallogik: Bedarf je Meilenstein ist die Summe der Abschnittspläne der Baustelle."
+      ],
+      "next": "Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/program.test.mjs",
+          "note": "9 Fälle: Prüfung (Kreise, Daten, Bauleute), Bearbeiten/Rückgängig/Bereinigen, Befunde, Vorschläge aus Geometrie und Anschlüssen, Vorlagen Phasen/Kette/Etappen, Kalender, Zeitplan mit Spuren/kritischem Pfad/Meilensteinen/Texten, Sicherung, Großprojekt aus der Bibliothek (GROSS-01) mit Phasen-Meilensteinen."
+        },
+        {
+          "path": "tests/e2e/program.e2e.mjs",
+          "note": "Chromium 1400/390 px: Vorschläge übernehmen, Kreis abgelehnt, Meilenstein mit Abschnitten und Status, zwei Bauleute mit Zuweisung, Bauzettel, Startdatum, Textdatei, Neuladen, Projektkarte."
+        },
+        {
+          "path": "docs/architecture/PROGRAM.md",
+          "note": "Datenmodell, Zeitplanregeln, Vorschläge, Oberfläche, Grenzen."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Einheits- und Browsertests grün; Abnahme durch Philipp offen (S05)."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-03T18:44:29.660Z"
     }
   ],
   "events": [
@@ -11452,6 +11534,24 @@
           "done": 2,
           "total": 3,
           "next": "Abnahme TEAMBAU-09 auf Philipps Server mit Mod 0.10.0 und Paper-Plugin mit Teamkanal; Lagerkisten (COOP-04) über TeamChannel.decorate/broadcastStore."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T18:44:29.660Z",
+      "kind": "progress",
+      "items": [
+        "PROJ-01"
+      ],
+      "summary": "Rebase auf main 2e0c984 (COOP-03/04, Mod 0.10.0); Browsersuite 137/138, einziger roter Test map-depth war fremd und ist auf main behoben",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "PROJ-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel."
         }
       ]
     }

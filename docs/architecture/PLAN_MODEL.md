@@ -11,6 +11,7 @@ Ziel: Bibliothek, Werkstatt, Baustelle, Welt und Mod wachsen auf **einer** Grund
 | Projekt `Project` | `projects` | `id`, `revision` (CAS) | `schemaVersion` 1 + optionale Teilschemata | alle Projektreiter |
 | · Baustelle `project.site` | im Projekt | – | `SITE_SCHEMA_VERSION` 1 | Baustelle, Bauführung |
 | · Abschnittsstände `site.snapshots` | im Projekt | `id` | über `checkSite` | Sicherungen (BACKUP-02) |
+| · Projektplan `site.program` | im Projekt | `id` je Bauleute/Meilenstein, Abschnitts-IDs | `PROGRAM_SCHEMA_VERSION` 1 über `checkSite` | Planung (PROJ-01, [PROGRAM](PROGRAM.md)) – nur Verweise innerhalb des Projekts, keine neue Graphrolle |
 | · Weltlage `project.world` | im Projekt | – | `WORLD_SCHEMA_VERSION` 1 | Weltkarte, Bauführung, Mod-Anker |
 | · Updates `project.updates` | im Projekt | – | `UPDATES_SCHEMA_VERSION` 1 | Updates (UPDATE-01) |
 | · Aufnahmen `scanHistory`, Gelände `terrain` | Verweis, Bytes in `originals` | SHA-256 | Gelände `SURVEY_SCHEMA_VERSION` | Spielabgleich, Gelände |

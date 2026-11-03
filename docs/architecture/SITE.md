@@ -50,3 +50,7 @@ Bauabschnitte lassen sich einfrieren; `project.site.snapshots` hält Stände mit
 ## Bautempo (BUILD-06)
 
 Optionales Feld `pace` (`blocksPerSession`, `boxesPerSession`) für Bautage und Shulker-Packlisten; `SITE_SCHEMA_VERSION` bleibt 1, ältere Pläne nutzen den Standard. Details: [BUILD_RUN](BUILD_RUN.md).
+
+## Projektplanung (PROJ-01)
+
+Optionales Feld `program` (Bauleute, Meilensteine, Abhängigkeiten zwischen Abschnitten, Zuweisungen, Startdatum, Bautage je Woche); `SITE_SCHEMA_VERSION` bleibt 1, `checkSite` prüft es mit, `removeSection` bereinigt Verweise. Details: [PROGRAM](PROGRAM.md).

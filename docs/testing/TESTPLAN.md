@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 84 Fälle in 10 Bereichen, davon 39 Kernfälle.
+Umfang: 87 Fälle in 10 Bereichen, davon 40 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -57,6 +57,9 @@ Das Herzstück: Bauteile anordnen, Material planen, Bauanleitung und Export.
 | PROJ-06 | Blöcke, Gelände, Landschaft | vertieft | 1. Tab „Blöcke“: Blöcke ansehen/ersetzen.<br>2. Tab „Gelände“ und „Landschaft“: Gelände formen, bemalen, Wasser/Wege. | Änderungen sichtbar in 3D; Rückgängig funktioniert. |
 | PROJ-07 | Updates von Bauteilen | vertieft | 1. Ein verwendetes Bauteil in der Werkstatt ändern.<br>2. Im Projekt Tab „Updates“ öffnen und die Vorschau ansehen. | Unterschiede werden gezeigt; Übernehmen ändert nur, was angezeigt wurde. |
 | PROJ-08 | Großes Projekt | vertieft | 1. Ein Projekt mit vielen Gebäuden (z. B. Ensemble Burg) öffnen und durch alle Tabs gehen. | Seite bleibt bedienbar; lange Berechnungen zeigen Fortschritt statt einzufrieren. |
+| PROJ-09 | Projektplanung: Meilensteine und Abhängigkeiten | kern | 1. Tab „Baustelle“: Vorschlag „Fundament · Rohbau · Dach“ übernehmen.<br>2. Tab „Planung“: Vorschläge aus Geometrie übernehmen, einen Meilenstein mit Termin anlegen und Abschnitte zuordnen.<br>3. Versuchen, eine Abhängigkeit „Fundament erst nach Dach“ anzulegen.<br>4. Neu laden (F5). | Zeitplan zeigt Balken je Abschnitt und wartende Abschnitte; der Meilenstein zeigt im Plan/verspätet und voraussichtliches Datum; der Kreis wird mit Meldung abgelehnt; alles bleibt nach dem Neuladen. Die Projektkarte zeigt den nächsten Meilenstein. |
+| PROJ-10 | Mehrere Bauleute und Bauzettel | vertieft | 1. Tab „Planung“: zwei Bauleute mit verschiedenem Tempo anlegen, Abschnitte zuweisen (einen Abschnitt beiden).<br>2. Startdatum setzen, 5 Bautage je Woche wählen.<br>3. „Bauzettel kopieren“ und „Bauprogramm als Text“ ausführen. | Zeitplan zeigt je Bauleute eine Spur, gemeinsame Abschnitte sind kürzer; Daten überspringen das Wochenende; Bauzettel nennt die eigenen Abschnitte mit fehlenden Items und Sammelzeit. |
+| PROJ-11 | Großprojekt mit Phasen planen | vertieft | 1. Ein Projekt aus Basisplaner oder Anlage anlegen (Abschnitte „Phase 1 …“).<br>2. Tab „Planung“ → „Meilensteine aus Abschnittsnamen“. | Je Phase ein Meilenstein, Wege/Platz als „Erschließung“ zuerst; jede Phase wartet auf die vorige; kritischer Pfad läuft durch alle Phasen. |
 
 ## WERK · Werkstatt (Blockeditor) (Planer)
 

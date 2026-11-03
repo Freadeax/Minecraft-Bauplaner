@@ -9,6 +9,7 @@ import { TerrainTab } from './TerrainTab';
 import { LandscapeTab } from './LandscapeTab';
 import { UpdatesTab } from './UpdatesTab';
 import { TeamTab } from './TeamTab';
+import { PlanningTab } from './PlanningTab';
 import type { ProjectSession } from './session';
 
 /**
@@ -28,6 +29,7 @@ export const projectTabs: readonly ProjectTab[] = [
   { id: 'export', label: 'Export', component: ExportTab },
   { id: 'material', label: 'Material', component: MaterialsTab },
   { id: 'baustelle', label: 'Baustelle', component: SiteTab },
+  { id: 'planung', label: 'Planung', component: PlanningTab },
   { id: 'bloecke', label: 'Blöcke', component: BlocksTab },
   { id: 'gelaende', label: 'Gelände', component: TerrainTab },
   { id: 'landschaft', label: 'Landschaft', component: LandscapeTab },

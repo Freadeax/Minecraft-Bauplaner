@@ -14,6 +14,8 @@ import { checkSnapshots } from './sectionSnapshots.js';
 import { checkPace } from './buildRun.js';
 import { checkTeam } from './team.js';
 import type { TeamState } from './team.js';
+import { checkProgram, pruneProgram } from './program.js';
+import type { BuildProgram } from './program.js';
 import type { PaceSetting } from './buildRun.js';
 import type { SectionSnapshot } from './sectionSnapshots.js';
 import { DomainError } from './types.js';
@@ -85,6 +87,8 @@ export interface SitePlan {
   readonly pace?: PaceSetting;
   /** Teambau log (COOP-01, team.ts): who took, built, reported and delivered what. Absent = no team. */
   readonly team?: TeamState;
+  /** Milestones, dependencies, builders and schedule settings (PROJ-01, program.ts); absent = none. */
+  readonly program?: BuildProgram;
 }
 
 export function emptySite(): SitePlan {
@@ -142,6 +146,7 @@ export function checkSite(raw: unknown): SitePlan {
   if (raw.snapshots !== undefined) checkSnapshots(raw.snapshots);
   if (raw.pace !== undefined) checkPace(raw.pace);
   if (raw.team !== undefined) checkTeam(raw.team);
+  if (raw.program !== undefined) checkProgram(raw.program);
   return raw as unknown as SitePlan;
 }
 
@@ -165,8 +170,10 @@ export function updateSection(site: SitePlan, id: string, patch: { name?: string
     return next;
   }) };
 }
+/** Removes a section and every program reference to it (milestones, dependencies, assignments). */
 export function removeSection(site: SitePlan, id: string): SitePlan {
-  return { ...site, sections: site.sections.filter(s => s.id !== id) };
+  const sections = site.sections.filter(s => s.id !== id);
+  return { ...site, sections, ...(site.program && { program: pruneProgram(site.program, new Set(sections.map(s => s.id))) }) };
 }
 /** Moves a section one place earlier (-1) or later (+1) in the build order. */
 export function moveSection(site: SitePlan, id: string, delta: -1 | 1): SitePlan {

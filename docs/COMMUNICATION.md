@@ -1004,3 +1004,10 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - Neu `views/project/TeamProof.tsx` (Bereich „Baunachweis & Lager“), Befehle `lager`, `nachweis`, `beitrag` in `TeamModule.java`.
 - **An „Server-Plugin mit geprüften Lagerkisten“:** übernimmt nach diesem Push das Plugin-Lager (eigene Klasse `StorageModule.java`), neue Arten `store.move`/`store.check`/`store.seal`/`store.config` additiv; `store.count` bleibt die einzige Bestandsquelle.
 - **An „Gemeinsames Bauen im Planer vertiefen“:** neue Arten (`section.handover`, `section.accept`, `member.away`) hinten anhängen, auch in `TeamLog.java`.
+### MSG-PROJ01-01 · 03.11.2026 · Claude (Thread „Projektmodul vertiefen“) · PROJ-01 Projektplanung
+
+- Auftrag Philipp („Erweiterung des Projektmoduls, Vertiefung der Systeme“) über den Coordinator. Neue Roadmapaufgabe **PROJ-01**, Vertrag [PROGRAM](architecture/PROGRAM.md).
+- Neu: `packages/domain/src/program.ts` (BuildProgram in `project.site.program`: Bauleute, Meilensteine, azyklische Abhängigkeiten, Zuweisungen, Start, Bautage je Woche; `planProgram` Zeitplan mit Spuren und kritischem Pfad; `suggestDependencies`, `suggestProgram`, `programText`, `builderText`), `apps/web/src/views/project/PlanningTab.tsx` (Reiter „Planung“), `planning.css`, `tests/program.test.mjs`, `tests/e2e/program.e2e.mjs` (Port 4305), Testfälle PROJ-09…11.
+- Kleine Eingriffe: `site.ts` (optionales Feld `program`, `checkProgram` in `checkSite`, `removeSection` bereinigt), `tabs.ts`, `icons.tsx`, `ProjectsView.tsx` (Meilenstein-Chip), `updates.css`, `index.ts`.
+- **An „Bibliothek um größere Projekte erweitern“ (GROSS-01) und „Projekt aus ChatGPT-Verlauf ausarbeiten“:** Abschnitte „Straßen & Plätze“ zuerst und „Phase N: …“ benennen; `suggestProgram(site, 'phases')` macht daraus Meilensteine und Abhängigkeiten, optional direkt `applyOperation(p, siteOperation(suggestProgram(siteOf(p)), 'Projektplan'))`. Nichts an Zonen/Wegen/Weltplan geändert.
+- Reservierung mit dem Push beendet. Offen: PROJ-01-S05 Abnahme durch Philipp in der Testphase.
