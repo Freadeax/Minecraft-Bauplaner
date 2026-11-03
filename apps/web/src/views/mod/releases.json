@@ -393,6 +393,33 @@
       "releasedAt": "2026-11-03",
       "sourceCommit": "bf3828407c36961ae235c3051ce2b2f591b7b537",
       "tested": "Echte Paper-Server 1.18.2, 1.21.4 und 26.3 (Teambau mit Übergabe, Abwesenheit, Lagerkisten; Thread Server-Plugin) und erneut 26.3 Build 238 Teambau mit dieser Jar bestanden"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.11.1.jar",
+      "modVersion": "0.11.1",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 376701,
+      "sha256": "88660cde15945f257635cd94890decefa89e0a0dd3b060672127d0293d239402",
+      "releasedAt": "2026-11-03",
+      "sourceCommit": "8e28aaf5af630d300eedf4d84744fe8be43126ef",
+      "tested": "Echter Fabric-Client 26.3: Hologramm, Platzierhilfe, Website-Verbindung, Teambau, Befehlsseite bestanden; Sendeprüfung aller Großprojekte (structure_void) grün"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.11.1.jar",
+      "modVersion": "0.11.1",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 373551,
+      "sha256": "e05f47e54e7b1b0a95d7f48dcbd2b7bee4bb0b1fc5b6042e427351a97d9efffd",
+      "releasedAt": "2026-11-03",
+      "sourceCommit": "8e28aaf5af630d300eedf4d84744fe8be43126ef",
+      "tested": "Echter NeoForge-Client 26.3: Hologramm, Platzierhilfe, Website-Verbindung, Teambau, Befehlsseite bestanden; Sendeprüfung aller Großprojekte (structure_void) grün"
     }
   ]
 }

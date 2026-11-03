@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T21:12:09.080Z",
+  "updatedAt": "2026-11-03T21:12:09.599Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -4749,7 +4749,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T21:12:09.080Z",
+      "updatedAt": "2026-11-03T21:12:09.599Z",
       "area": "MOD",
       "thread": "Teambau und Befehle in der Mod ausbauen",
       "philipp": [
@@ -14243,6 +14243,28 @@
         "mods/bauplaner-bridge/VERSION",
         "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlanModel.java",
         "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-07",
+          "status": "implemented",
+          "done": 8,
+          "total": 10,
+          "next": "Philipp testet 0.7.0 auf server.lmnt-gaming.net (Bauabschnitte aus seinem Projekt, Röntgensicht mit Shader); danach Stufe 6."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T21:12:09.599Z",
+      "kind": "progress",
+      "items": [
+        "GAME-07"
+      ],
+      "summary": "Mod 0.11.1 (Fabric, NeoForge) auf #/mod freigegeben.",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.11.1.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.11.1.jar"
       ],
       "snapshot": [
         {

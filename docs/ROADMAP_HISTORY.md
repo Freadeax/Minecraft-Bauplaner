@@ -4324,3 +4324,19 @@ Mod 0.11.1: PlanModel überspringt structure_void wie Luft (Fund der Sendeprüfu
 - `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlanModel.java`
 - `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java`
 
+## 2026-11-03T21:12:09.599Z · progress
+
+**Aufgaben:** GAME-07
+
+Mod 0.11.1 (Fabric, NeoForge) auf #/mod freigegeben.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-07 | 🧩 Implementiert · Abnahme offen | 8/10 | Philipp testet 0.7.0 auf server.lmnt-gaming.net (Bauabschnitte aus seinem Projekt, Röntgensicht mit Shader); danach Stufe 6. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.11.1.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.11.1.jar`
+
