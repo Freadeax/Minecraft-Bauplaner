@@ -3691,3 +3691,36 @@ Rebase auf main 2e0c984 (COOP-03/04, Mod 0.10.0); Browsersuite 137/138, einziger
 |---|---|---:|---|
 | PROJ-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel. |
 
+## 2026-11-03T18:54:07.036Z · progress
+
+**Aufgaben:** PROJ-01
+
+Dateizuordnung für den PROJ-01-Commit 43fb192 nachgetragen (beim Auflösen der Roadmap-Konflikte verloren); keine Codeänderung.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PROJ-01 | 🧩 Implementiert · Abnahme offen | 0/5 | Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/icons.tsx`
+- `apps/web/src/planning.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/ProjectsView.tsx`
+- `apps/web/src/views/project/PlanningTab.tsx`
+- `apps/web/src/views/project/tabs.ts`
+- `apps/web/src/views/project/updates.css`
+- `docs/BLOCKS.md`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/PLAN_MODEL.md`
+- `docs/architecture/PROGRAM.md`
+- `docs/architecture/SITE.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/program.ts`
+- `packages/domain/src/site.ts`
+- `tests/e2e/program.e2e.mjs`
+- `tests/program.test.mjs`
+

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T18:44:29.660Z",
+  "updatedAt": "2026-11-03T18:54:07.036Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -6456,7 +6456,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T18:44:29.660Z"
+      "updatedAt": "2026-11-03T18:54:07.036Z"
     }
   ],
   "events": [
@@ -11550,6 +11550,45 @@
           "id": "PROJ-01",
           "status": "implemented",
           "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T18:54:07.036Z",
+      "kind": "progress",
+      "items": [
+        "PROJ-01"
+      ],
+      "summary": "Dateizuordnung für den PROJ-01-Commit 43fb192 nachgetragen (beim Auflösen der Roadmap-Konflikte verloren); keine Codeänderung.",
+      "files": [
+        "apps/web/src/app/icons.tsx",
+        "apps/web/src/planning.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/ProjectsView.tsx",
+        "apps/web/src/views/project/PlanningTab.tsx",
+        "apps/web/src/views/project/tabs.ts",
+        "apps/web/src/views/project/updates.css",
+        "docs/BLOCKS.md",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/PLAN_MODEL.md",
+        "docs/architecture/PROGRAM.md",
+        "docs/architecture/SITE.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/program.ts",
+        "packages/domain/src/site.ts",
+        "tests/e2e/program.e2e.mjs",
+        "tests/program.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PROJ-01",
+          "status": "implemented",
+          "done": 0,
           "total": 5,
           "next": "Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel."
         }
