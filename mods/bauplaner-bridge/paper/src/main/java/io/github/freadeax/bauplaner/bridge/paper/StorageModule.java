@@ -102,11 +102,56 @@ final class StorageModule implements Listener {
     void enable() {
         Bukkit.getPluginManager().registerEvents(this, plugin);
         hopperTask = Bukkit.getScheduler().runTaskTimer(plugin, this::flushHoppers, 20L, 20L);
+        // Stores and per section need for players with the mod (team channel, COOP-03).
+        TeamChannel.decorate = (team, state) -> {
+            TeamLog.View v = teams.view(team);
+            JsonArray list = new JsonArray();
+            for (StoreIndex.Store st : v.stores.stores.values()) if (!st.removed) list.add(storeJson(st));
+            state.add("stores", list);
+            if (state.has("sections") && state.get("sections").isJsonArray())
+                for (var el : state.getAsJsonArray("sections")) {
+                    JsonObject sec = el.getAsJsonObject();
+                    if (!sec.has("id")) continue;
+                    String id = sec.get("id").getAsString();
+                    TreeMap<String, Long> need = need(team, id);
+                    if (need.isEmpty()) continue;
+                    TreeMap<String, Long> have = stock(v, id);
+                    JsonArray lines = new JsonArray();
+                    need.entrySet().stream().sorted(Map.Entry.<String, Long>comparingByValue().reversed()).limit(StoreLedger.MAX_LINES).forEach(n -> {
+                        JsonObject l = new JsonObject(); l.addProperty("item", n.getKey()); l.addProperty("count", n.getValue()); l.addProperty("stored", Math.min(n.getValue(), have.getOrDefault(n.getKey(), 0L))); lines.add(l);
+                    });
+                    sec.add("need", lines);
+                }
+        };
         // Stores in chunks that are loaded at start (spawn chunks) are checked once the worlds are ready.
         Bukkit.getScheduler().runTaskLater(plugin, () -> checkLoaded(null), 100L);
     }
 
+    /** A store as the mod reads it (state.stores, broadcast "store"). */
+    static JsonObject storeJson(StoreIndex.Store st) {
+        JsonObject j = new JsonObject();
+        j.addProperty("id", st.id); j.addProperty("name", st.name); j.addProperty("dimension", st.dimension);
+        j.add("pos", xyz(st.pos));
+        if (st.pos2 != null) j.add("pos2", xyz(st.pos2));
+        if (st.section != null) j.addProperty("section", st.section);
+        j.addProperty("purpose", st.purpose);
+        j.addProperty("status", st.deviating() && !"fehlt".equals(st.status) ? "abweichend" : st.status);
+        if (st.checkedAt != null) j.addProperty("checkedAt", st.checkedAt);
+        TreeMap<String, Long> items = st.items == null ? new TreeMap<>() : st.items;
+        j.add("items", StoreLedger.json(items));
+        if (StoreLedger.truncated(items) || st.partial) j.addProperty("more", true);
+        return j;
+    }
+
+    /** Sends the current state of one store to players with the mod (no-op without the team channel). */
+    private void broadcast(TeamLog team, String storeId) {
+        if (!(plugin instanceof BridgePlugin bp) || bp.teamChannel() == null) return;
+        StoreIndex.Store st = teams.view(team).stores.get(storeId);
+        if (st != null) bp.teamChannel().broadcastStore(team, storeJson(st));
+    }
+
     void disable() {
+        TeamChannel.decorate = (t, s) -> { };
         for (UUID id : new ArrayList<>(sessions.keySet())) closeSession(id);
         flushHoppers();
         if (hopperTask != null) hopperTask.cancel();
@@ -197,6 +242,7 @@ final class StorageModule implements Listener {
                 JsonObject e = team.event(team.founder, "store.check");
                 e.addProperty("chest", s.id); e.addProperty("status", "fehlt");
                 teams.append(team, e, to != null ? to : Bukkit.getConsoleSender());
+                broadcast(team, s.id);
                 alert(team, "Lager „" + s.name + "“ bei " + s.pos[0] + " " + s.pos[1] + " " + s.pos[2] + " ist keine Kiste mehr.");
             }
             if (to != null) say(to, "„" + s.name + "“: an der Stelle steht keine Kiste mehr.");
@@ -214,7 +260,9 @@ final class StorageModule implements Listener {
         }
         Inventory inv = StoreWorld.inventory(b);
         TreeMap<String, Long> actual = StoreWorld.contents(inv, null);
+        int before = team.size();
         writeCheck(team, s, actual, report, to, by);
+        if (team.size() != before) broadcast(team, s.id);
     }
 
     private void writeCheck(TeamLog team, StoreIndex.Store s, TreeMap<String, Long> actual, boolean report, CommandSender to, String by) {
