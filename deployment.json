@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "3346a823e5a5cef9d3aa40455728aede64e9f603",
-  "builtAt": "2026-11-03T20:45:22.112Z",
+  "sourceCommit": "be9296da2634ec83972f772ea97e63292d624bfb",
+  "builtAt": "2026-11-03T20:58:57.429Z",
   "node": "v22.23.4",
   "files": [
     {
@@ -27,7 +27,7 @@
     {
       "path": "assets/catalog-9c0fcf2dce11b21a07b278002d012dd9.json",
       "bytes": 3282557,
-      "sha256": "517090e1c0e8871092df24986f7314c2f60ee4a76a18c1af738c6b66a047ef7e"
+      "sha256": "7df6d07e072d8177e19f72acfcac71053521f22bf325410dbee1790ef24aa40c"
     },
     {
       "path": "assets/cellColumns-eA567Lgn.js",
