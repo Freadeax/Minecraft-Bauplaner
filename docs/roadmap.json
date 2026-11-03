@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T22:11:54.050Z",
+  "updatedAt": "2026-11-03T22:11:54.563Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -7643,7 +7643,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T22:11:54.050Z",
+      "updatedAt": "2026-11-03T22:11:54.563Z",
       "area": "MOD",
       "thread": "Teambau und Befehle in der Mod ausbauen",
       "philipp": [
@@ -14697,6 +14697,29 @@
         "mods/bauplaner-bridge/VERSION",
         "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java",
         "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-10",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme MOD-16 auf Philipps Server mit Paper-Plugin."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-03T22:11:54.563Z",
+      "kind": "progress",
+      "items": [
+        "GAME-10"
+      ],
+      "summary": "Mod 0.11.2 (Fabric, NeoForge, Paper) auf #/mod freigegeben.",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.11.2.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.11.2.jar",
+        "downloads/mod/bauplaner-bridge-paper-0.11.2.jar"
       ],
       "snapshot": [
         {

@@ -420,6 +420,53 @@
       "releasedAt": "2026-11-03",
       "sourceCommit": "8e28aaf5af630d300eedf4d84744fe8be43126ef",
       "tested": "Echter NeoForge-Client 26.3: Hologramm, Platzierhilfe, Website-Verbindung, Teambau, Befehlsseite bestanden; Sendeprüfung aller Großprojekte (structure_void) grün"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.11.2.jar",
+      "modVersion": "0.11.2",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 376894,
+      "sha256": "801f20b8a17a0bfbe70fb699c3e1c0fc8251a6ccf51a22c83b29b31e66d07c2d",
+      "releasedAt": "2026-11-03",
+      "sourceCommit": "ea63bc4aad227fce710fa1fad92c675e44f741d9",
+      "tested": "Echter Client 26.3 (fabric-26.3): Hologramm, Platzierhilfe, Website-Verbindung, Teambau, Befehlsseite bestanden"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.11.2.jar",
+      "modVersion": "0.11.2",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 373745,
+      "sha256": "688aca9e444e3adfcef1b77d86fedf732bba98b77d5a8a54b5099ccdaf1ca904",
+      "releasedAt": "2026-11-03",
+      "sourceCommit": "ea63bc4aad227fce710fa1fad92c675e44f741d9",
+      "tested": "Echter Client 26.3 (neoforge-26.3): Hologramm, Platzierhilfe, Website-Verbindung, Teambau, Befehlsseite bestanden"
+    },
+    {
+      "file": "bauplaner-bridge-paper-0.11.2.jar",
+      "modVersion": "0.11.2",
+      "loader": "paper",
+      "minecraft": "26.3",
+      "loaderMin": "1.18",
+      "minecraftVersions": [
+        "1.18.2",
+        "1.20.6",
+        "1.21.4",
+        "1.21.11",
+        "26.3"
+      ],
+      "java": "17",
+      "bytes": 207873,
+      "sha256": "971e330f2563c7485fbd5b6b5d0eec0723617249fef6c57ba47e702af6b335a9",
+      "releasedAt": "2026-11-03",
+      "sourceCommit": "ea63bc4aad227fce710fa1fad92c675e44f741d9",
+      "tested": "Paper 26.3 Build 238 Teambau-Test mit dieser Jar bestanden; Team-Raum (RoomLink) vom Plugin-Thread geprüft"
     }
   ]
 }

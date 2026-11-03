@@ -4492,3 +4492,20 @@ Mod 0.11.2: Team-Raum-Befehle (raum, trennen) auf der Befehlsseite, Test liest t
 - `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
 - `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java`
 
+## 2026-11-03T22:11:54.563Z · progress
+
+**Aufgaben:** GAME-10
+
+Mod 0.11.2 (Fabric, NeoForge, Paper) auf #/mod freigegeben.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-10 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme MOD-16 auf Philipps Server mit Paper-Plugin. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.11.2.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.11.2.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.11.2.jar`
+
