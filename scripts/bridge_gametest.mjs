@@ -177,6 +177,19 @@ async function live(file, loader, plan, logFile) {
     assert.equal(readServerInfo(raw.server.body).way, 'none', 'Einzelspieler: kein Server');
     assert.equal(raw.promptLeft, false, 'Frage nach dem Klick verschwunden');
   }
+  // LINK-07: the mod talks to the team room itself (no server, no plugin) – live, own claim arrives in the room.
+  if (raw.roomSet) {
+    assert.equal(raw.roomSet.status, 200, JSON.stringify(raw.roomSet.body));
+    assert.equal(raw.roomLive.body.status, 'live', JSON.stringify(raw.roomLive.body));
+    assert.equal(raw.roomLive.body.sections, 2);
+    assert.equal(raw.roomLive.body.me, 'mem_tom');
+    assert.ok(!('key' in raw.roomLive.body), 'Schlüssel nie in der Antwort');
+    assert.equal(raw.roomAfter.body.waiting, 0, `Meldung vom Raum bestätigt: ${JSON.stringify(raw.roomAfter.body)}`);
+    assert.equal(raw.roomAfter.body.sectionStates.find(x => x.id === 'sec_mauer')?.owner, 'mem_tom', 'im Spiel als eigener Abschnitt sichtbar');
+    const room = JSON.parse(readFileSync(join(dir, 'room.json'), 'utf8'));
+    const events = await (await fetch(`${room.url}/v1/rooms/${room.room}/events?after=`, { headers: { Authorization: `Bearer ${room.adminKey}` } })).json();
+    assert.ok(events.events.some(e => e.kind === 'section.claim' && e.by === 'mem_tom' && e.section === 'sec_mauer'), JSON.stringify(events.events));
+  }
   assert.equal(raw.marks.status, 200);
   assert.equal(raw.marks.body.marks, 4, 'Punkt, Bauplatz, Zone und Gefahr-Punkt angenommen');
   // Protocol 2 (GAME-08): hello announces it, players route answers, layers are listed in the chat.

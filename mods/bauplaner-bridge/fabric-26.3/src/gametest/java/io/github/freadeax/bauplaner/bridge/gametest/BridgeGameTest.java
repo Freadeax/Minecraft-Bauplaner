@@ -352,6 +352,25 @@ public final class BridgeGameTest implements FabricClientGameTest {
         out.append(",\"server\":").append(request(context, http, base + "/v1/server", "GET", null, tk.group(1), "https://freadeax.github.io"));
         boolean promptLeft = context.computeOnClient(mc -> has(mc, "Planer zulassen"));
         out.append(",\"promptLeft\":").append(promptLeft);
+        // LINK-07: team room without a server file – the planner hands the room to the mod, the mod goes live
+        // with the room on its own and sends „Abschnitt nehmen“ there (room.json from scripts/bridge_room_prepare.mjs).
+        Path roomFile = io.resolve("room.json");
+        if (Files.isRegularFile(roomFile)) {
+            String roomJson = Files.readString(roomFile).replaceAll(",\"adminKey\":\"[^\"]*\"", "");
+            out.append(",\"roomSet\":").append(request(context, http, base + "/v1/room", "POST", roomJson, tk.group(1), "https://freadeax.github.io"));
+            String roomState = "";
+            for (int i = 0; i < 60; i++) {
+                context.waitTicks(10);
+                roomState = request(context, http, base + "/v1/room", "GET", null, tk.group(1), "https://freadeax.github.io");
+                if (roomState.contains("\"status\":\"live\"") && roomState.contains("\"sections\":2")) break;
+            }
+            out.append(",\"roomLive\":").append(roomState);
+            context.setScreen(() -> null);
+            context.waitTicks(2);
+            chat(context, "/bauplaner team nehmen 2");
+            context.waitTicks(40);
+            out.append(",\"roomAfter\":").append(request(context, http, base + "/v1/room", "GET", null, tk.group(1), "https://freadeax.github.io"));
+        }
         context.setScreen(() -> null);
         context.waitTicks(2);
         // MAP-05 Baustand: hologram back onto the built plan, then the whole box as recording (one wrong, one missing block).

@@ -19,6 +19,8 @@ cleanup() { [ -n "$weston_pid" ] && kill "$weston_pid" 2>/dev/null; [ -n "${BAUP
 trap cleanup EXIT
 
 node scripts/bridge_gametest.mjs prepare "$work"
+# Optional BAUPLANER_ROOM=<running team room, e.g. http://127.0.0.1:8787 from npx wrangler dev>: LINK-07 step (mod ↔ room without a server file).
+[ -n "${BAUPLANER_ROOM:-}" ] && node scripts/bridge_room_prepare.mjs "$work" "$BAUPLANER_ROOM"
 if [ -z "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]; then
   command -v weston >/dev/null || { echo "Kein Bildschirm und kein weston: sudo apt-get install weston" >&2; exit 2; }
   export XDG_RUNTIME_DIR="$work/xdg" WAYLAND_DISPLAY=bauplaner-test SDL_VIDEO_DRIVER=wayland

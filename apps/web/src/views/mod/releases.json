@@ -561,6 +561,33 @@
       "releasedAt": "2026-11-04",
       "sourceCommit": "b503bf3be49f68ea4961b68c06dc0e6764c3a44d",
       "tested": "Paper 1.21.11 und 26.3: /bp scan (Spieltest) und Lagerkisten inkl. Ertragskisten; Paper 1.21.11: Server ohne Befehle inkl. Aufnahme per Klick (test_bridge_paper_link.sh); Browser gegen echten Team-Raum"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.14.0.jar",
+      "modVersion": "0.14.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 471289,
+      "sha256": "33f3837a830ad092a885a8f392843874b933b654e2f6468d35e51a270079db71",
+      "releasedAt": "2026-11-04",
+      "sourceCommit": "edfb90961051b06f0ea8a2b5551217e7bb53d160",
+      "tested": "Minecraft 26.3 Fabric: Spieltest inkl. Team-Raum ohne Server (BAUPLANER_ROOM, wrangler dev); NeoForge gebaut, gemeinsamer mod-core (RoomClientTest gegen echten Raum)"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.14.0.jar",
+      "modVersion": "0.14.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 467578,
+      "sha256": "3c0428abe0b2fb3d2bd7fdffa30593b87f389712c62aa68d3a2b19a7b4108c97",
+      "releasedAt": "2026-11-04",
+      "sourceCommit": "edfb90961051b06f0ea8a2b5551217e7bb53d160",
+      "tested": "Minecraft 26.3 NeoForge: Spieltest bestanden; Team-Raum über gemeinsamen mod-core (RoomClientTest gegen echten Raum, Fabric-Spieltest mit Raum ohne Server)"
     }
   ]
 }

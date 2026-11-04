@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-04T10:03:44.722Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-04T12:34:12.347Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -13,7 +13,7 @@ Stand: 2026-11-04T10:03:44.722Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | Status | Pakete |
 |---|---:|
 | ⏳ Offen | 8 |
-| 🚧 In Arbeit | 3 |
+| 🚧 In Arbeit | 4 |
 | ⛔ Blockiert | 0 |
 | 🧩 Implementiert · Abnahme offen | 77 |
 | ✅ Im beschriebenen Umfang geprüft | 25 |
@@ -30,7 +30,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 9 | 2 | 6 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 11 | 1 | 11 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
-| [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 8 | 0 | 7 | 0 |
+| [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 9 | 0 | 7 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 3 | 0 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 1 | 0 | 0 |
 | [Performance und Stabilität](#bereich-perf) | 4 | 1 | 1 | 2 |
@@ -140,6 +140,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [GAME-05](#game-05) | NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Teambau und Befehle in der Mod ausbauen“ | Forge-Testversion auf einem Rechner mit Bildschirm starten (S03). |
 | [GAME-07](#game-07) | Bauplaner-Mod 2.0 | 🧩 Implementiert · Abnahme offen 9/11 | P1 | „Teambau und Befehle in der Mod ausbauen“ | Hologramm, Abschnitte und Röntgensicht auf server.lmnt-gaming.net (S05). |
 | [LINK-03](#link-03) | Mod | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Anbindung von Planer, Mod und Server neu denken“ | Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“. |
+| [LINK-07](#link-07) | Ohne Server-Datei | 🚧 In Arbeit 3/6 | P1 | „Anbindung von Planer, Mod und Server neu denken“ | — |
 | [GAME-08](#game-08) | Bauplaner-Mod Protokoll 2 | 🧩 Implementiert · Abnahme offen 5/5 | P2 | „Teambau und Befehle in der Mod ausbauen“ | Mitspieler-Pfeile auf der Live-Karte mit einem zweiten Spieler. |
 | [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0 | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Teambau und Befehle in der Mod ausbauen“ | Befehlsseite im J-Menü zusammen mit dem Plugin auf deinem Server (MOD-16). |
 | [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher | ⏳ Offen 0/4 | P2 | „Teambau und Befehle in der Mod ausbauen“ | — |
@@ -398,6 +399,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **PROD-05 · Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen.
 - **COOP-09 · Team live im Alltag: Status und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme mit Mitspielern (TEAMBAU-25).
 - **PROJ-02 · Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05, PROJ-16…18).
+- **LINK-07 · Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten** — 🚧 In Arbeit, 3/6 Teilschritte. Nächster Schritt: Positionen und Aufnahmen über den Raum; Release 0.14.0; Abnahme LINK-07.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -581,6 +583,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [LINK-05](#link-05) | Zweiter Weg über den Team-Raum: Steuernachrichten ohne Mod (iPad), weiteres Gerät per Link freigeben | 🧩 Implementiert · Abnahme offen | 5/5 | LINK-04, COOP-07 | ausstehend | ausstehend |
 | [LINK-06](#link-06) | Weitere Steuerung ohne Befehle: Plan mit Anker von der Weltkarte auf den Server und Serveraufnahme per Klick zurück in den Planer | 🧩 Implementiert · Abnahme offen | 2/2 | LINK-05 | ausstehend | ausstehend |
 | [COOP-09](#coop-09) | Team live im Alltag: Status und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-07 | ausstehend | ausstehend |
+| [LINK-07](#link-07) | Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten | 🚧 In Arbeit | 3/6 | LINK-06, COOP-07 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
 
@@ -3155,6 +3158,29 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/program-depth.test.mjs](../tests/program-depth.test.mjs) — 6 Fälle: Bautage zwischen Daten, Anteil der Bautage, Start in der Vergangenheit, Basisplan mit Verzug/Bereinigung/Sicherung, Material abwarten gegen Produktion, Altbestand.; [tests/e2e/program-depth.e2e.mjs](../tests/e2e/program-depth.e2e.mjs) — Chromium 1400/390 px: Basisplan ± 0 → +N Bautage, Anteil 25 %, Material-Karte mit Link zur Produktion, Neuladen, Verwerfen, kein Querscrollen.; [docs/architecture/PROGRAM.md](architecture/PROGRAM.md) — Abschnitt „Vertiefung PROJ-02“.
 
 **Dateiumfang:** `packages/domain/src/program.ts`, `packages/domain/src/programMaterial.ts`, `apps/web/src/views/project/PlanningTab.tsx`, `apps/web/src/views/project/ProductionTab.tsx`, `apps/web/src/planning.css`, `tests/program-depth.test.mjs`, `tests/e2e/program-depth.e2e.mjs`, `docs/architecture/PROGRAM.md`. **Abhängigkeiten:** PROJ-01, PROD-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### LINK-07
+
+**Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Anbindung von Planer, Mod und Server neu denken“ · Aktualisiert: 2026-11-04T12:34:12.347Z
+
+- [x] LINK-07-S01: RoomClient in mod-core: Kopf + Ereignisse aus dem Raum, Faltung mit dem TeamLog des Plugins, eigene Aktionen per append, Anwesenheit, Wiederverbinden.
+- [x] LINK-07-S02: Planer „Mein Spiel verbinden“/„Spiel trennen“ (POST /v1/room, Feature room).
+- [x] LINK-07-S03: Echter Spieltest Fabric 26.3 gegen einen laufenden Raum ohne Server.
+- [ ] LINK-07-S04: Mitspieler-Positionen auf der Live-Karte über den Raum (Raum-Anwesenheit mit Position, Deploy durch Team-Thread).
+- [ ] LINK-07-S05: Aufnahmen aus der Mod und gesehene Kisteninhalte in den Raum.
+- [ ] LINK-07-S06: Release Mod 0.14.0 (Modrinth über den Thread „Mod auf Modrinth veröffentlichen“) und Abnahme LINK-07.
+
+**Abnahme:** Teambau funktioniert auf einem Server ganz ohne Bauplaner-Datei. Was nur mit Server-Code geht, ist klar benannt; das Plugin bleibt freiwillig.
+
+**Nächste Aktion:** Positionen und Aufnahmen über den Raum; Release 0.14.0; Abnahme LINK-07.
+
+**Prüfstand:** Kern automatisch und im echten Spiel geprüft; Positionen/Aufnahmen über den Raum und Abnahme offen.
+
+**Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java) — Mit BAUPLANER_ROOM gegen wrangler dev: live, Abschnitt aus dem Spiel im Raum, Notiz aus dem Planer im Spiel (04.11.2026).; [scripts/test_bridge_ingame.sh](../scripts/test_bridge_ingame.sh) — Minecraft 26.3 Fabric mit BAUPLANER_ROOM: live mit dem Raum, /bauplaner team nehmen 2 kommt im Raum an, ohne Server (04.11.2026).; [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — „Mein Spiel verbinden“ übergibt nur den Mitgliedsschlüssel (1400/390 px).
+
+**Dateiumfang:** `apps/web/src/testing/testplan.ts`, `apps/web/src/views/map/liveClient.ts`, `apps/web/src/views/mod/serverClient.ts`, `apps/web/src/views/project/TeamRoom.tsx`, `docs/architecture/AUTO_LINK.md`, `docs/testing/TESTPLAN.md`, `mods/bauplaner-bridge/CHANGELOG.md`, `mods/bauplaner-bridge/VERSION`, `mods/bauplaner-bridge/fabric-26.3/build.gradle`, `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`, `mods/bauplaner-bridge/mod-core/build.gradle`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomState.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamState.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamSync.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java`, `mods/bauplaner-bridge/neoforge-26.3/build.gradle`, `scripts/bridge_gametest.mjs`, `scripts/bridge_room_prepare.mjs`, `scripts/test_bridge_ingame.sh`, `tests/e2e/modSimulator.mjs`, `tests/e2e/team-room.e2e.mjs`. **Abhängigkeiten:** LINK-06, COOP-07. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

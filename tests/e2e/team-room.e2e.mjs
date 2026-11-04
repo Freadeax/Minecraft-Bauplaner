@@ -10,6 +10,7 @@ import assert from 'node:assert/strict';
 import { openSampleProject } from './start.mjs';
 import { RoomCore, MemoryStore, RoomError, cleanPresence, randomKey } from '../../services/team-room/src/core.js';
 import { teamEvent } from '../../dist/domain/src/index.js';
+import { startModSimulator } from './modSimulator.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -17,7 +18,8 @@ const PORT = 4318, BASE = `http://127.0.0.1:${PORT}/Minecraft-Bauplaner/`;
 // TEAM_ROOM_URL=https://bauplaner-team.team-room.workers.dev runs the same check against the real deployed service.
 const REAL = process.env.TEAM_ROOM_URL?.replace(/\/+$/, '');
 const ROOM = REAL ?? 'https://raum.test';
-let server, browser;
+let server, browser, mod;
+const MOD_PORT = 47741, MOD_TOKEN = 'simteamroom0123456789abcdefghij';
 
 before(async () => {
   server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', 'preview', '--host', '127.0.0.1', '--port', String(PORT), '--strictPort'], { stdio: 'ignore' });
@@ -25,9 +27,11 @@ before(async () => {
     try { if ((await fetch(BASE)).ok) break; } catch {}
     await new Promise(r => setTimeout(r, 200));
   }
+  mod = await startModSimulator(MOD_PORT, { protocol: 2, features: ['scan', 'marks2', 'players', 'bigplans', 'team', 'pairask', 'server', 'marks3', 'room'] });
+  mod.state.tokens.add(MOD_TOKEN);
   browser = await chromium.launch();
 });
-after(async () => { await browser?.close(); server?.kill(); });
+after(async () => { await browser?.close(); await mod?.close(); server?.kill(); });
 
 /** The worker's routes (services/team-room/src/index.js) on top of RoomCore, for Playwright routing. */
 function fakeRooms() {
@@ -180,6 +184,15 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await b.getByPlaceholder('Ich bin neu: Name').fill('Anna');
     await b.getByRole('button', { name: 'Beitreten' }).click();
     await section(b, 'Fundament').getByRole('button', { name: 'Übernehmen' }).click();
+
+    // ---- LINK-07: Anna connects her Minecraft with the room – the mod talks to the room itself, no server file.
+    mod.state.room = null;
+    await b.evaluate(([port, token]) => localStorage.setItem('bauplaner.spielverbindung', JSON.stringify({ port, token, auto: false })), [MOD_PORT, MOD_TOKEN]);
+    await liveBlock(b).getByRole('button', { name: 'Mein Spiel verbinden' }).click();
+    await b.getByText('Spiel mit dem Team-Raum verbunden.').first().waitFor();
+    const handed = mod.state.room;
+    assert.equal(handed.url, ROOM); assert.equal(handed.room, roomId); assert.equal(handed.key, q.get('k'), 'Mitgliedsschlüssel, nie der Admin- oder Serverschlüssel');
+    assert.equal(handed.memberName, 'Anna'); assert.match(handed.member, /^bld_/);
 
     // ---- Bauleitung sees it live, without reading anything in.
     await section(a, 'Fundament').locator('.team-owner', { hasText: 'Anna' }).waitFor();

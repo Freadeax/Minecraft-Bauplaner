@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 130 Fälle in 13 Bereichen, davon 58 Kernfälle.
+Umfang: 131 Fälle in 13 Bereichen, davon 59 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -225,6 +225,7 @@ Planer, Mod und Paper-Plugin verbinden sich per Klick; der Server wird aus dem P
 | LINK-03 | Team und Team-Raum per Knopf ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/mod)) | vertieft | 1. Im Projekt Reiter „Team“ → „Planstand auf den Server legen“.<br>2. Unter „Team live“ → „Server mit dem Raum verbinden“. | Beides ohne Datei und ohne Befehl; #/mod zeigt Team und Raum beim Server. |
 | LINK-05 | Plan von der Weltkarte auf den Server ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/karte)) | vertieft | 1. Gekoppelt (Mod auf dem Server oder Team-Raum): Weltkarte → Projekt wählen → „⇪ Auf den Server legen“.<br>2. Auf dem Server /bp plaene ansehen (nur zur Kontrolle). | Meldung „Plan … liegt auf dem Server … Anker …“; der Plan steht in plugins/BauplanerBridge/plans, ohne Datei kopiert zu haben. |
 | LINK-06 | Baustand per Klick vom Server holen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | vertieft | 1. Plan vorher mit „⇪ Auf den Server legen“ hochgeladen (LINK-05).<br>2. Im Projekt Reiter „Bauen“ → „⇩ Auf dem Server aufnehmen“.<br>3. Danach „Aufnahme im Projekt speichern“. | Fortschritt in Prozent, dann „Aufnahme von … geladen“ mit den Zählern (fehlt, falscher Block …) – ohne /bp scan und ohne Datei herunterzuladen. Plugin 0.13.0 nötig. |
+| LINK-07 | Teambau ohne Server-Datei ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Server ohne Bauplaner-Plugin. Im Planer Reiter „Team“ → „Team live“ (live geschaltet), „Ich bin“ gewählt.<br>2. Minecraft mit Mod 0.14.0 läuft: „Mein Spiel verbinden“.<br>3. Im Spiel /bauplaner team nehmen <nr> (oder J → Befehle).<br>4. Im Planer auf die Abschnittsliste schauen. | Im Spiel „Team live über den Team-Raum“; der Abschnitt steht im Planer innerhalb von Sekunden als „in Arbeit“ – ohne Datei und ohne Plugin auf dem Server. J → „Befehle & Status“ zeigt „Team-Raum: live“. |
 | LINK-04 | Vom iPad ohne Mod steuern ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/mod)) | vertieft | 1. Am PC (#/mod, gekoppelt, Server mit Raum verbunden): „Weiteres Gerät freigeben (z. B. iPad)“ → Link erstellen.<br>2. Link auf dem iPad öffnen, eine Einstellung ändern.<br>3. Am PC das iPad wieder „entfernen“. | iPad zeigt „über den Team-Raum“ und ändert die Einstellung; nach dem Entfernen meldet es „nicht (mehr) gekoppelt“. |
 
 ## Abnahme je Roadmap-Paket
@@ -279,6 +280,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | LINK-04 | LINK-01, LINK-02, LINK-03 |
 | LINK-05 | LINK-04 |
 | LINK-06 | LINK-05, LINK-06 |
+| LINK-07 | LINK-07 |
 | MAP-01 | KARTE-01 |
 | MAP-03 | LIVE-01, LIVE-03, LIVE-04 |
 | MAP-04 | KARTE-02, KARTE-03 |

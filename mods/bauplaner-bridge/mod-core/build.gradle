@@ -11,9 +11,26 @@ repositories { mavenCentral() }
 
 dependencies {
     api project(':core')
+    // Gson bringt Minecraft selbst mit (Fabric, NeoForge); hier nur zum Übersetzen und Testen.
+    compileOnly 'com.google.code.gson:gson:2.11.0'
+    testImplementation 'com.google.code.gson:gson:2.11.0'
     testImplementation 'org.junit.jupiter:junit-jupiter:5.14.4'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.14.4'
 }
+
+// Team-Raum ohne Server-Datei (LINK-07): die Mod faltet das Teamprotokoll mit derselben Logik wie das Paper-Plugin.
+// TeamLog, StoreIndex und StoreLedger werden aus dem Plugin übernommen (nur das Paket wird umbenannt), damit beide nie auseinanderlaufen.
+def teamLog = tasks.register('teamLogSources', Sync) {
+    from('../paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper') {
+        include 'TeamLog.java', 'StoreIndex.java', 'StoreLedger.java'
+        filter { String line -> line.replace('package io.github.freadeax.bauplaner.bridge.paper;', 'package io.github.freadeax.bauplaner.mod.room;') }
+    }
+    into layout.buildDirectory.dir('generated/teamlog/io/github/freadeax/bauplaner/mod/room')
+}
+def teamLogRoot = layout.buildDirectory.dir('generated/teamlog')
+sourceSets.main.java.srcDir(files(teamLogRoot).builtBy(teamLog))
+ext.teamLogRoot = teamLogRoot
+ext.teamLogTask = teamLog
 
 java {
     toolchain { languageVersion = JavaLanguageVersion.of(21) }

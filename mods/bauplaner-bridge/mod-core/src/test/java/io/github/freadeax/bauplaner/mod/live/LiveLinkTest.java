@@ -106,7 +106,7 @@ class LiveLinkTest {
     void baustandIsAFileWithItsNameExposedToTheSite() {
         var s = server(List.of());
         var hello = Json.obj(Json.parse(s.handle(req("GET", "/v1/hello", SITE, null, null)).text()), "hello");
-        assertEquals(List.of("scan", "marks2", "players", "bigplans", "team", "pairask", "server", "marks3"), hello.get("features"));
+        assertEquals(List.of("scan", "marks2", "players", "bigplans", "team", "pairask", "server", "marks3", "room"), hello.get("features"));
         assertEquals(401, s.handle(req("GET", "/v1/scan", SITE, null, null)).status());
         String token = pair(s);
         var r = s.handle(req("GET", "/v1/scan", SITE, token, null));
@@ -196,10 +196,10 @@ class LiveLinkTest {
         assertEquals(400, s.handle(req("POST", "/v1/marks", SITE, token, "{\"dimension\":\"minecraft:overworld\",\"items\":[{\"kind\":\"point\",\"name\":\"x\",\"dimension\":\"minecraft:overworld\",\"type\":\"ziel\",\"x\":1,\"y\":64,\"z\":2,\"color\":\"rot\"}]}")).status(), "Farbe nicht #rrggbb");
         assertEquals(200, s.handle(req("GET", "/v1/players", SITE, token, null)).status());
         assertTrue(new String(s.handle(req("GET", "/v1/hello", SITE, null, null)).body(), StandardCharsets.UTF_8).contains("\"protocol\":2"));
-        assertTrue(new String(s.handle(req("GET", "/v1/hello", SITE, null, null)).body(), StandardCharsets.UTF_8).contains("\"features\":[\"scan\",\"marks2\",\"players\",\"bigplans\",\"team\",\"pairask\",\"server\",\"marks3\"]"));
+        assertTrue(new String(s.handle(req("GET", "/v1/hello", SITE, null, null)).body(), StandardCharsets.UTF_8).contains("\"features\":[\"scan\",\"marks2\",\"players\",\"bigplans\",\"team\",\"pairask\",\"server\",\"marks3\",\"room\"]"));
         assertEquals(404, s.handle(req("GET", "/v1/welt-aendern", SITE, token, null)).status());
         // COOP-03: team routes need the key like every other route.
-        for (String[] r : new String[][] { { "GET", "/v1/team" }, { "POST", "/v1/team" }, { "POST", "/v1/team/ack" }, { "POST", "/v1/team/push" }, { "GET", "/v1/team/pull" }, { "GET", "/v1/server" }, { "POST", "/v1/server/claim" }, { "POST", "/v1/server/control" } })
+        for (String[] r : new String[][] { { "GET", "/v1/team" }, { "POST", "/v1/team" }, { "POST", "/v1/team/ack" }, { "POST", "/v1/team/push" }, { "GET", "/v1/team/pull" }, { "GET", "/v1/server" }, { "POST", "/v1/server/claim" }, { "POST", "/v1/server/control" }, { "GET", "/v1/room" }, { "POST", "/v1/room" } })
             assertEquals(401, s.handle(req(r[0], r[1], SITE, null, "{}")).status(), r[1] + " ohne Schlüssel");
         assertEquals(List.of("status", "chunks 2", "plan a.schem 3", "placement 5.0", "marks 1", "marks 2", "players"), calls);
         assertEquals(200, s.handle(req("POST", "/v1/unpair", SITE, token, null)).status());

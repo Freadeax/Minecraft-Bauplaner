@@ -19,7 +19,7 @@ public record TeamState(Source source, String teamId, String name, String dimens
         List<Section> sections, List<Member> members, List<Note> notes, List<Store> stores, String at) {
 
     public enum Source {
-        PLANER("Planer"), SERVER("Server");
+        PLANER("Planer"), SERVER("Server"), ROOM("Team-Raum");
         public final String label;
         Source(String label) { this.label = label; }
     }

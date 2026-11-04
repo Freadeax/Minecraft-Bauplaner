@@ -290,3 +290,30 @@ export async function latestServerRecording(projectId: string, onProgress: (text
   const bytes = await fetchScan(send, scan.file, onProgress, cancelled);
   return { fileName: scan.file, bytes, server: target.pairing.name, via: target.via, summary: '' };
 }
+
+// ------------------------------------------------------------------ LINK-07: game ↔ team room without a server file
+
+/**
+ * Connects the Minecraft game on this computer with a team room: from then on the mod gets the team state from
+ * the room and sends the player's own actions there – no plugin and no file on the server.
+ */
+export async function gameToRoom(room: ServerRoom, member: { id: string; name?: string }, teamName: string): Promise<string> {
+  const link = await gameLink();
+  if (!liveCan(link.hello, 'room')) throw new LiveError(`Die Mod ${link.hello.mod.version} kann noch nicht direkt mit dem Team-Raum sprechen – Mod 0.14.0 oder neuer installieren.`, 426);
+  return liveApi.roomSet(link.port, link.token, { url: room.url, room: room.room, key: room.key, member: member.id, ...(member.name && { memberName: member.name }), teamName, device: 'Minecraft' });
+}
+
+/** What the game says about its team room (null when no game or no such mod). */
+export async function gameRoomState(): Promise<Record<string, unknown> | null> {
+  try {
+    const link = await gameLink();
+    if (!liveCan(link.hello, 'room')) return null;
+    return await liveApi.room(link.port, link.token);
+  } catch { return null; }
+}
+
+/** Disconnects the game from its team room. */
+export async function gameLeaveRoom(): Promise<string> {
+  const link = await gameLink();
+  return liveApi.roomSet(link.port, link.token, { off: true });
+}

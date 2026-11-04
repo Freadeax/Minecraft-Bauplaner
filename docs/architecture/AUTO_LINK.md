@@ -81,3 +81,29 @@ iPad ohne Mod ─── POST /v1/rooms/<raum>/control ──▶ Team-Raum ──
 - Browser: `tests/e2e/server-link.e2e.mjs` gegen den Mod-Simulator mit Plugin-Ersatz (PC 1400/390 px, iPad 820 px über einen Raum-Ersatz, dort auch Plan von der Weltkarte auf den Server und die Aufnahme per Klick in Teilen zurück). Mit `TEAM_ROOM_URL=https://bauplaner-team.team-room.workers.dev` läuft der iPad-Teil über den echten Team-Raum; ein WebSocket mit Serverschlüssel spielt das Plugin.
 - Echter Server: `scripts/test_bridge_paper_link.sh` – Paper 1.21.11, ein Protokoll-Client (`minecraft-protocol`) spricht den Teamkanal wie die Mod: Selbsteinrichtung, Nicht-OP abgewiesen, Kopplung, Einstellungen, Team, Plan mit Anker, Aufnahme per Klick (Datei byte-gleich in Teilen geholt, fremde Pfade abgewiesen), Wiederholung/falsche Unterschrift/fremder Server abgewiesen, Neustart, Gerät entfernen; mit `BAUPLANER_ROOM` zusätzlich Steuerung über einen echten Team-Raum (`npx wrangler dev`).
 - Spiel: `scripts/test_bridge_ingame.sh` klickt im echten Minecraft 26.3 „Planer zulassen“ mit der Maus.
+
+## 9. Ohne Server-Datei: Mod ↔ Team-Raum direkt (LINK-07)
+
+Anlass: Philipp, 04.11.2026 12:12: „Überarbeiten des Systems, dass man keine extra Datei auf den Server laden muss! Es muss eine saubere Kommunikation in allen Richtungen zwischen Client, Server und Planer gebaut werden.“
+
+```
+Planer (PC/iPad) ⇄ Team-Raum (Cloud) ⇄ Mod von Spieler A, B, C …      Minecraft-Server: unverändert, kein Plugin
+```
+
+- **Planer → Mod:** Reiter „Team“ → „Team live“ → **„Mein Spiel verbinden“** schickt `POST /v1/room {url, room, key (Mitgliedsschlüssel), member, memberName, teamName}` an die Mod auf diesem Rechner (Feature `room`, ab Mod 0.14.0). „Spiel trennen“ schickt `{off:true}`. Die Mod speichert den Raum in `bauplaner/team/raum.json` (nur auf diesem Rechner); `GET /v1/room` nennt ihn nie mit Schlüssel.
+- **Mod ⇄ Raum:** `RoomClient` (mod-core) holt den Kopf (`GET …/header`), öffnet `…/live` (WebSocket, `hello` mit `where: "spiel"`), faltet die Ereignisse mit **demselben `TeamLog` wie das Plugin** (beim Bauen aus `paper/…/TeamLog.java`, `StoreIndex.java`, `StoreLedger.java` übernommen, nur das Paket heißt `mod.room`) und zeigt den Stand wie bisher (Rahmen, HUD, Befehle). Eigene Teamaktionen (`/bauplaner team nehmen …`, fertig melden, Notizen) gehen als Ereignis des Mitglieds (`origin: "planer"`) per `append` in den Raum; erst `appended` (angenommen/bekannt) leert den Ausgangskorb, abgelehnte erscheinen im Chat. Anwesenheit: Abschnitt, in dem der Spieler steht. Neu verbinden mit 2…60 s Abstand; 4401/4403 (Schlüssel erneuert) → nicht mehr versuchen, Hinweis im Chat.
+- **Vorrang:** Server-Plugin live (freiwillig) → Team-Raum → Stand aus dem Planer. Mit Plugin bleibt alles wie in §2–§6.
+- **Regel „nichts an den Server“ bleibt:** Die Mod schickt dem Minecraft-Server weiterhin nichts ohne die Teambau-Erlaubnis je Server; der Team-Raum ist ein anderer Ort, den der Spieler im Planer selbst verbunden hat.
+
+| Funktion | Ohne Plugin | Nur mit Plugin |
+|---|---|---|
+| Plan, Hologramm, Packliste, Gerüst, Markierungen | ja | – |
+| Team: Abschnitte nehmen, melden, Notizen, Rollen | ja (Raum) | – |
+| Anwesenheit „im Spiel“ mit Abschnitt | ja (Raum) | – |
+| Baustand/Aufnahme | im Umkreis des Spielers (Mod) | ferne, nicht geladene Chunks |
+| Abschnittsschutz (Bauen verhindern) | nur Hinweis | erzwingen |
+| Lagerkisten, Ertragskisten, Baunachweis | – | geprüft (Servermessung, `origin: "server"`) |
+
+Nächste Stufe (offen): Mitspieler-Positionen auf der Live-Karte über den Raum (Anwesenheit mit Position), Aufnahmen aus der Mod in den Raum, Kisteninhalt beim Öffnen melden („gesehen“, ungeprüft).
+
+Tests: `RoomClientTest` (Faltung, Raumprüfung, Speichern; mit `BAUPLANER_ROOM` gegen einen laufenden Raum: Tom nimmt einen Abschnitt im „Spiel“, Lea schreibt eine Notiz im Planer), `tests/e2e/team-room.e2e.mjs` („Mein Spiel verbinden“ übergibt nur den Mitgliedsschlüssel), `scripts/test_bridge_ingame.sh` mit `BAUPLANER_ROOM` (echtes Minecraft 26.3: live mit dem Raum, `/bauplaner team nehmen 2` kommt im Raum an – ohne Server).

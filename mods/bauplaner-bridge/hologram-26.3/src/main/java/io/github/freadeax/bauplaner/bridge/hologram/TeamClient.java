@@ -63,8 +63,10 @@ public final class TeamClient {
 
     public TeamClient(Path root, Hologram hologram, String version) {
         this.hologram = hologram;
-        this.sync = new TeamSync(root.resolve("team"), version, System::currentTimeMillis,
-                text -> { Minecraft mc = Minecraft.getInstance(); mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] " + text))); });
+        java.util.function.Consumer<String> say = text -> { Minecraft mc = Minecraft.getInstance(); mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] " + text))); };
+        this.sync = new TeamSync(root.resolve("team"), version, System::currentTimeMillis, say);
+        // LINK-07: team room without a server file – the room comes from the planner („Mein Spiel verbinden“).
+        this.sync.room(new io.github.freadeax.bauplaner.mod.room.RoomClient(root.resolve("team").resolve("raum.json"), say));
     }
 
     public TeamSync sync() { return sync; }
@@ -96,6 +98,11 @@ public final class TeamClient {
         if (++ticks % 20 != 0 || mc.player == null) return;
         sync.tick();
         TeamState t = shown;
+        var room = sync.room();
+        if (room != null && room.live() && t != null && t.source() == TeamState.Source.ROOM && mc.level != null) {
+            TeamState.Section at = sectionAt(t, teamPlan(t), McCompat.dimension(mc.level), mc.player.getBlockX(), mc.player.getBlockY(), mc.player.getBlockZ());
+            room.section(at == null ? null : at.id());
+        }
         TeamPlan tp = teamPlan(t);
         // Keep the hologram focus in step with the team (someone takes over a free section, I get one assigned …).
         if (focus != null) {
@@ -258,8 +265,10 @@ public final class TeamClient {
         List<String[]> out = new ArrayList<>();
         TeamPlan tp = teamPlan(t);
         int waiting = sync.outbox().pending(t.teamId()).size();
-        String where = t.source() == TeamState.Source.SERVER ? "live" : sync.link() == TeamSync.Link.ASK ? "Planer · Server-Plugin da" : "aus dem Planer";
-        out.add(row("Team „" + t.name() + "“ · " + where + (waiting > 0 ? " · " + waiting + " wartet" : ""), t.source() == TeamState.Source.SERVER ? 0xFF6BE07B : 0xFFFFFFFF));
+        boolean live = t.source() == TeamState.Source.SERVER || t.source() == TeamState.Source.ROOM && sync.room().live();
+        String where = t.source() == TeamState.Source.SERVER ? "live" : t.source() == TeamState.Source.ROOM ? (sync.room().live() ? "live über den Team-Raum" : "Team-Raum getrennt")
+                : sync.link() == TeamSync.Link.ASK ? "Planer · Server-Plugin da" : "aus dem Planer";
+        out.add(row("Team „" + t.name() + "“ · " + where + (waiting > 0 ? " · " + waiting + " wartet" : ""), live ? 0xFF6BE07B : 0xFFFFFFFF));
         TeamState.Section here = sectionAt(t, tp, McCompat.dimension(mc.level), px, py, pz);
         if (here != null) {
             String owner = here.owner() == null ? "frei – /bauplaner team nehmen " + here.nr() : t.nameOf(here.owner());
@@ -268,7 +277,7 @@ public final class TeamClient {
         }
         List<TeamState.Section> mine = t.mine();
         if (mine.isEmpty()) {
-            if (t.me() == null) out.add(row(t.source() == TeamState.Source.SERVER ? "Du bist noch nicht im Team – /bauplaner team nehmen <nr>" : "Im Planer „Ich bin“ wählen", 0xFFB0B0B0));
+            if (t.me() == null) out.add(row(t.source() != TeamState.Source.PLANER ? "Du bist noch nicht im Team – /bauplaner team nehmen <nr>" : "Im Planer „Ich bin“ wählen", 0xFFB0B0B0));
             else if (t.count("frei") > 0) out.add(row("Kein Auftrag · " + t.count("frei") + " frei – /bauplaner team frei", 0xFFB0B0B0));
         } else {
             TeamState.Section s = mine.get(0);
@@ -304,9 +313,16 @@ public final class TeamClient {
         Minecraft mc = Minecraft.getInstance();
         List<String[]> out = new ArrayList<>();
         TeamState t = shown;
-        out.add(row("Teamkanal: " + sync.link().label + (sync.allowed() ? " · erlaubt" : ""), sync.link() == TeamSync.Link.LIVE ? 0xFF6BE07B : 0xFFB0B0B0));
+        var room = sync.room();
+        if (room != null && room.config() != null) {
+            var c = room.config();
+            out.add(row("Team-Raum: " + room.status().label + (c.teamName() != null ? " · " + c.teamName() : "") + (room.live() ? " · " + room.presence().size() + " da" : ""),
+                    room.live() ? 0xFF6BE07B : 0xFFFFB040));
+            if (!room.live() && room.lastError() != null) out.add(row("  " + room.lastError(), 0xFFB0B0B0));
+        } else out.add(row("Team-Raum: keiner – im Planer unter „Team live“ „Mein Spiel verbinden“ (keine Server-Datei nötig)", 0xFFB0B0B0));
+        out.add(row("Server-Plugin (freiwillig): " + sync.link().label + (sync.allowed() ? " · erlaubt" : ""), sync.link() == TeamSync.Link.LIVE ? 0xFF6BE07B : 0xFFB0B0B0));
         if (t == null || mc.player == null || mc.level == null) {
-            out.add(row("Kein Teamstand – im Planer Reiter „Team“ „Mit Spiel abgleichen“", 0xFFB0B0B0));
+            out.add(row("Kein Teamstand – im Planer unter „Team live“ „Mein Spiel verbinden“", 0xFFB0B0B0));
         } else {
             out.addAll(rows(t, mc, mc.player.getBlockX(), mc.player.getBlockY(), mc.player.getBlockZ()));
             String role = t.me() == null ? null : t.roleOf(t.me());

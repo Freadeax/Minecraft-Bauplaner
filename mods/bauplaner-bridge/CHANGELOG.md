@@ -2,6 +2,18 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.14.0 – 2026-11-04
+
+**Team building without any server file / Teambau ohne Server-Datei**
+
+- The mod now talks to the team room itself: section owners, reports, notes and roles come live into the game, and your own “take section”, “report done” and notes go straight to the room – the Minecraft server needs no plugin and no file.
+- Connect from the planner with one click (“Team live” → “Connect my game”); disconnect there as well. The room is kept on this computer only; the mod still sends nothing to the Minecraft server unless you allow the team channel there.
+- J → “Commands & status” shows the team room (live, who is there). The Paper plugin stays optional for enforced section protection and checked storage chests.
+
+- Die Mod spricht jetzt selbst mit dem Team-Raum: Abschnitte, Meldungen, Notizen und Rollen kommen live ins Spiel, und dein „Abschnitt nehmen“, „fertig melden“ und Notizen gehen direkt in den Raum – der Minecraft-Server braucht kein Plugin und keine Datei.
+- Verbinden im Planer mit einem Klick („Team live“ → „Mein Spiel verbinden“), dort auch trennen. Der Raum bleibt nur auf diesem Rechner gespeichert; an den Minecraft-Server schickt die Mod weiter nichts ohne Teambau-Erlaubnis.
+- J → „Befehle & Status“ zeigt den Team-Raum (live, wer da ist). Das Paper-Plugin bleibt freiwillig für erzwungenen Abschnittsschutz und geprüfte Lagerkisten.
+
 ## 0.13.0 – 2026-11-04
 
 **Packing list, scaffold hints, marks for the world map / Packliste, Gerüst, Markierungen für die Weltkarte**

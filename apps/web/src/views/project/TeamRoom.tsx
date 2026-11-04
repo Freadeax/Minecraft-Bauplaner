@@ -6,7 +6,7 @@ import { errorText } from '../../app/ui';
 import { createRoom, getPlan, putHeader, putPlan, readRoomUrl, rotateKey, saveRoomUrl, useRoomConnection } from './roomClient';
 import type { ProjectSession } from './session';
 import { roomHeader, takePlan, teamPackageText } from './teamTransfer';
-import { control, currentPairedServer, rememberRoom } from '../mod/serverClient';
+import { control, currentPairedServer, gameLeaveRoom, gameToRoom, rememberRoom } from '../mod/serverClient';
 
 const UPLOADED_KEY = (room: string) => `bauplaner.teamraum.plan.${room}`;
 const read = (k: string) => { try { return localStorage.getItem(k) ?? ''; } catch { return ''; } };
@@ -126,6 +126,9 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
       <p>Die Bauleitung hat einen neuen Plan freigegeben. Dein bisheriger Stand bleibt als Kopie erhalten.</p>
       <button className="primary" disabled={busy || !planReady} onClick={() => void takeOver()}>{planReady ? 'Planstand übernehmen' : 'Planstand kommt gleich …'}</button></div>}
     <div className="team-buttons">
+      <button className="primary" disabled={busy || !me} title={me ? 'Die Bauplaner-Mod in deinem Minecraft spricht dann selbst mit diesem Raum: Abschnitte, Meldungen und Notizen live im Spiel – ohne Plugin und ohne Datei auf dem Server.' : 'Zuerst oben „Ich bin“ wählen.'}
+        onClick={() => void run(async () => { onMessage(await gameToRoom({ url: live.url, room: live.room, key: live.key }, { id: me!.id, name: me!.name }, team.name)); })}>Mein Spiel verbinden</button>
+      <button disabled={busy} className="secondary" title="Die Mod in deinem Minecraft trennt sich vom Team-Raum." onClick={() => void run(async () => { onMessage(await gameLeaveRoom()); })}>Spiel trennen</button>
       <button disabled={busy} onClick={() => setShown(shown === 'invite' ? '' : 'invite')}>Einladungslink</button>
       {server && <button disabled={busy} title="Der gekoppelte Server verbindet sich selbst mit diesem Raum (LINK-04). Ohne Kopplung: Link für den Server." onClick={() => void run(async () => {
         const paired = await currentPairedServer();

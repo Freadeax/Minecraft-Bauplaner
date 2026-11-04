@@ -77,6 +77,12 @@ public final class TeamSync {
     /** Rejected own actions with the reason, for the HUD/chat (newest last, at most 20). */
     private final List<String> rejections = new ArrayList<>();
     private int stateCount;
+    /** LINK-07: team room without a server plugin (null when the mod has none). */
+    private io.github.freadeax.bauplaner.mod.room.RoomClient room;
+    private Map<String, Object> roomMap;
+    private TeamState roomState;
+    /** Own actions sent to the room and not yet answered: id → send time. */
+    private final Map<String, Long> roomFlight = new ConcurrentHashMap<>();
 
     /**
      * @param dir {@code <game dir>/bauplaner/team}
@@ -89,6 +95,42 @@ public final class TeamSync {
         this.notify = notify;
         try (Reader r = Files.newBufferedReader(dir.resolve("erlaubt.properties"), StandardCharsets.UTF_8)) { allowed.load(r); } catch (IOException ignored) { }
         outbox = new TeamOutbox(null);
+    }
+
+    // ------------------------------------------------------------------ team room (LINK-07)
+
+    /** Connects the team room: its answers empty the outbox, rejections are shown like the plugin's. */
+    public void room(io.github.freadeax.bauplaner.mod.room.RoomClient r) {
+        room = r;
+        r.listen(ids -> { synchronized (this) { ids.forEach(roomFlight::remove); outbox.remove(ids); } },
+                (id, why) -> { synchronized (this) {
+                    if (id != null) { roomFlight.remove(id); outbox.remove(List.of(id)); }
+                    if (why != null) { synchronized (rejections) { rejections.add(why); if (rejections.size() > 20) rejections.remove(0); } notify.accept("Nicht übernommen: " + why); }
+                } },
+                () -> { });
+        r.connect();
+    }
+
+    public io.github.freadeax.bauplaner.mod.room.RoomClient room() { return room; }
+
+    /** The room's folded state, parsed once per change. */
+    public synchronized TeamState roomState() {
+        if (room == null) return null;
+        Map<String, Object> m = room.state();
+        if (m == null) { roomMap = null; roomState = null; return null; }
+        if (m != roomMap) {
+            try { roomState = TeamState.parse(m, TeamState.Source.ROOM); } catch (RuntimeException e) { roomState = null; lastError = "Team-Raum: " + e.getMessage(); }
+            roomMap = m;
+        }
+        return roomState;
+    }
+
+    private boolean roomLive() { return room != null && room.live() && link != Link.LIVE; }
+
+    private void sendToRoom(TeamOutbox.Action a) {
+        var c = room.config();
+        if (c == null) return;
+        if (room.append(a.id(), List.of(a.asEvent(c.member())))) roomFlight.put(a.id(), clock.getAsLong());
     }
 
     // ------------------------------------------------------------------ connection
@@ -116,6 +158,14 @@ public final class TeamSync {
 
     /** Called every second or so: notices a late channel announcement and resends unanswered actions. */
     public synchronized void tick() {
+        if (roomLive()) {
+            long now = clock.getAsLong();
+            String team = roomState() == null ? null : roomState.teamId();
+            if (team != null) for (TeamOutbox.Action a : outbox.pending(team)) {
+                Long sent = roomFlight.get(a.id());
+                if (sent == null || now - sent > 15_000) sendToRoom(a);
+            }
+        }
         if (transport == null) return;
         check();
         if (link == Link.LIVE) {
@@ -228,7 +278,8 @@ public final class TeamSync {
 
     /** The state the game shows: the server's when live, else the planner's; own waiting actions overlaid. */
     public TeamState state() {
-        TeamState base = fromServer != null ? fromServer : fromPlaner;
+        TeamState fromRoom = roomState();
+        TeamState base = fromServer != null ? fromServer : fromRoom != null ? fromRoom : fromPlaner;
         if (base == null) return null;
         TeamState withMe = base.me() != null || fromPlaner == null || !fromPlaner.teamId().equals(base.teamId()) ? base
                 : new TeamState(base.source(), base.teamId(), base.name(), base.dimension(), base.revision(), base.revisionSummary(), fromPlaner.me(),
@@ -254,12 +305,14 @@ public final class TeamSync {
      */
     public synchronized String act(String kind, Map<String, Object> body, String what) {
         TeamState s = state();
-        if (s == null) return "Kein Teamstand: im Planer im Reiter „Team“ „Mit Spiel abgleichen“ wählen, oder auf einem Server mit Bauplaner-Plugin spielen.";
+        if (s == null) return "Kein Teamstand: im Planer unter „Team live“ „Mein Spiel verbinden“ klicken (ohne Server-Datei) oder im Reiter „Team“ „Mit Spiel abgleichen“.";
         if (s.source() == TeamState.Source.PLANER && s.me() == null)
             return "Im Planer ist „Ich bin“ nicht gesetzt – die Mod weiß nicht, in wessen Namen sie meldet.";
         TeamOutbox.Action a;
         try { a = outbox.add(s.teamId(), kind, body); } catch (RuntimeException e) { return e.getMessage(); }
         if (link == Link.LIVE) { sendAction(a); return what + " – an den Server geschickt."; }
+        if (s.source() == TeamState.Source.ROOM && roomLive()) { sendToRoom(a); return what + " – an den Team-Raum geschickt."; }
+        if (s.source() == TeamState.Source.ROOM) return what + " – wartet (" + outbox.pending().size() + "), bis der Team-Raum wieder erreichbar ist.";
         String way = link == Link.ASK ? " Der Server hat das Plugin: J → „Teambau erlauben“ schickt es sofort."
                 : link == Link.OFF ? "" : link == Link.WAITING ? " Wird geschickt, sobald der Server antwortet." : "";
         return what + " – wartet im Ausgangskorb (" + outbox.pending().size() + "), bis Planer oder Server es abholen." + way;

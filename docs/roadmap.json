@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T10:03:44.722Z",
+  "updatedAt": "2026-11-04T12:34:12.347Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -42,7 +42,8 @@
     "COOP-08",
     "PROD-05",
     "COOP-09",
-    "PROJ-02"
+    "PROJ-02",
+    "LINK-07"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -9107,6 +9108,112 @@
       "orphans": [
         "Abwesenheiten je Bauleute nach Datum; Basisplan-Verlauf mit mehreren Ständen; Abhängigkeiten zwischen Projekten auf der Weltkarte."
       ]
+    },
+    {
+      "phase": "P4",
+      "priority": "P1",
+      "owner": "Claude (Thread „Anbindung von Planer, Mod und Server neu denken“)",
+      "legacyIds": [],
+      "blockers": [],
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-04T12:34:12.347Z",
+      "area": "MOD",
+      "thread": "Anbindung von Planer, Mod und Server neu denken",
+      "orphans": [],
+      "id": "LINK-07",
+      "title": "Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten",
+      "status": "in_progress",
+      "dependencies": [
+        "LINK-06",
+        "COOP-07"
+      ],
+      "scope": [
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/map/liveClient.ts",
+        "apps/web/src/views/mod/serverClient.ts",
+        "apps/web/src/views/project/TeamRoom.tsx",
+        "docs/architecture/AUTO_LINK.md",
+        "docs/testing/TESTPLAN.md",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/build.gradle",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java",
+        "mods/bauplaner-bridge/mod-core/build.gradle",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomState.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamState.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamSync.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java",
+        "mods/bauplaner-bridge/neoforge-26.3/build.gradle",
+        "scripts/bridge_gametest.mjs",
+        "scripts/bridge_room_prepare.mjs",
+        "scripts/test_bridge_ingame.sh",
+        "tests/e2e/modSimulator.mjs",
+        "tests/e2e/team-room.e2e.mjs"
+      ],
+      "steps": [
+        {
+          "id": "LINK-07-S01",
+          "title": "RoomClient in mod-core: Kopf + Ereignisse aus dem Raum, Faltung mit dem TeamLog des Plugins, eigene Aktionen per append, Anwesenheit, Wiederverbinden.",
+          "done": true
+        },
+        {
+          "id": "LINK-07-S02",
+          "title": "Planer „Mein Spiel verbinden“/„Spiel trennen“ (POST /v1/room, Feature room).",
+          "done": true
+        },
+        {
+          "id": "LINK-07-S03",
+          "title": "Echter Spieltest Fabric 26.3 gegen einen laufenden Raum ohne Server.",
+          "done": true
+        },
+        {
+          "id": "LINK-07-S04",
+          "title": "Mitspieler-Positionen auf der Live-Karte über den Raum (Raum-Anwesenheit mit Position, Deploy durch Team-Thread).",
+          "done": false
+        },
+        {
+          "id": "LINK-07-S05",
+          "title": "Aufnahmen aus der Mod und gesehene Kisteninhalte in den Raum.",
+          "done": false
+        },
+        {
+          "id": "LINK-07-S06",
+          "title": "Release Mod 0.14.0 (Modrinth über den Thread „Mod auf Modrinth veröffentlichen“) und Abnahme LINK-07.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Teambau funktioniert auf einem Server ganz ohne Bauplaner-Datei.",
+        "Was nur mit Server-Code geht, ist klar benannt; das Plugin bleibt freiwillig."
+      ],
+      "evidence": [
+        {
+          "path": "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java",
+          "note": "Mit BAUPLANER_ROOM gegen wrangler dev: live, Abschnitt aus dem Spiel im Raum, Notiz aus dem Planer im Spiel (04.11.2026)."
+        },
+        {
+          "path": "scripts/test_bridge_ingame.sh",
+          "note": "Minecraft 26.3 Fabric mit BAUPLANER_ROOM: live mit dem Raum, /bauplaner team nehmen 2 kommt im Raum an, ohne Server (04.11.2026)."
+        },
+        {
+          "path": "tests/e2e/team-room.e2e.mjs",
+          "note": "„Mein Spiel verbinden“ übergibt nur den Mitgliedsschlüssel (1400/390 px)."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Kern automatisch und im echten Spiel geprüft; Positionen/Aufnahmen über den Raum und Abnahme offen."
+      },
+      "next": "Positionen und Aufnahmen über den Raum; Release 0.14.0; Abnahme LINK-07.",
+      "philipp": []
     }
   ],
   "events": [
@@ -16995,6 +17102,54 @@
           "done": 5,
           "total": 5,
           "next": "Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T12:34:12.347Z",
+      "kind": "progress",
+      "items": [
+        "LINK-07"
+      ],
+      "summary": "Ohne Server-Datei: Mod 0.14.0 spricht direkt mit dem Team-Raum (Teamstand mit dem TeamLog des Plugins, eigene Meldungen, Anwesenheit), Planer „Mein Spiel verbinden“/„Spiel trennen“; echter Fabric-Spieltest ohne Server",
+      "files": [
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/map/liveClient.ts",
+        "apps/web/src/views/mod/releases.json",
+        "apps/web/src/views/mod/serverClient.ts",
+        "apps/web/src/views/project/TeamRoom.tsx",
+        "docs/architecture/AUTO_LINK.md",
+        "docs/testing/TESTPLAN.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.14.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.14.0.jar",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/build.gradle",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java",
+        "mods/bauplaner-bridge/mod-core/build.gradle",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomState.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamState.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamSync.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java",
+        "mods/bauplaner-bridge/neoforge-26.3/build.gradle",
+        "scripts/bridge_gametest.mjs",
+        "scripts/bridge_room_prepare.mjs",
+        "scripts/test_bridge_ingame.sh",
+        "tests/e2e/modSimulator.mjs",
+        "tests/e2e/team-room.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "LINK-07",
+          "status": "in_progress",
+          "done": 3,
+          "total": 6,
+          "next": "Positionen und Aufnahmen über den Raum; Release 0.14.0; Abnahme LINK-07."
         }
       ]
     }

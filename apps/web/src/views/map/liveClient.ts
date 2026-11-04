@@ -96,6 +96,16 @@ export const liveApi = {
     const r = await call(port, '/v1/server/control', { method: 'POST', token, body: JSON.stringify(message), headers: { 'Content-Type': 'application/json' }, timeoutMs: 35000 });
     return r && typeof r === 'object' ? r as Record<string, unknown> : {};
   },
+  /** LINK-07 (feature `room`): the team room the game uses without a server file (never the key). */
+  room: async (port: number, token: string): Promise<Record<string, unknown>> => {
+    const r = await call(port, '/v1/room', { token, timeoutMs: 4000 });
+    return r && typeof r === 'object' ? r as Record<string, unknown> : {};
+  },
+  /** Connects the game with a team room ({url, room, key, member, …}) or disconnects it ({off: true}). */
+  roomSet: async (port: number, token: string, body: Readonly<Record<string, unknown>>): Promise<string> => {
+    const r = await call(port, '/v1/room', { method: 'POST', token, body: JSON.stringify(body), headers: { 'Content-Type': 'application/json' }, timeoutMs: 8000 }) as { text?: unknown } | null;
+    return typeof r?.text === 'string' ? r.text : 'Erledigt.';
+  },
   pair: async (port: number, code: string): Promise<string> =>
     readLivePairing(await call(port, '/v1/pair', { method: 'POST', body: JSON.stringify({ code }), headers: { 'Content-Type': 'application/json' } })),
   status: async (port: number, token: string): Promise<LiveStatus> => readLiveStatus(await call(port, '/v1/status', { token, timeoutMs: 4000 })),

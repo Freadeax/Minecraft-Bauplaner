@@ -495,6 +495,50 @@ public final class LiveLink implements LiveLinkServer.Handler {
         return Json.write(out);
     }
 
+    /** GET /v1/room (LINK-07): the team room the mod uses without a server file; never the key. */
+    @Override
+    public String roomGet() {
+        TeamClient t = needTeam();
+        var room = t.sync().room();
+        Map<String, Object> out = new LinkedHashMap<>();
+        if (room == null || room.config() == null) { out.put("connected", false); out.put("status", "off"); return Json.write(out); }
+        out.put("connected", true);
+        out.putAll(room.config().publicFields());
+        out.put("status", room.status().name().toLowerCase(java.util.Locale.ROOT));
+        out.put("statusText", room.status().label);
+        out.put("events", room.events());
+        List<Object> here = new ArrayList<>();
+        for (var p : room.presence()) { Map<String, Object> m = new LinkedHashMap<>(); m.put("member", p.member()); m.put("where", p.where()); if (p.section() != null) m.put("section", p.section()); here.add(m); }
+        out.put("presence", here);
+        var st = t.sync().roomState();
+        if (st != null) {
+            out.put("teamId", st.teamId()); out.put("sections", st.sections().size()); out.put("me", st.me());
+            out.put("waiting", t.sync().outbox().pending(st.teamId()).size());
+            List<Object> owners = new ArrayList<>();
+            for (var sec : st.sections()) { Map<String, Object> m = new LinkedHashMap<>(); m.put("id", sec.id()); m.put("status", sec.status()); if (sec.owner() != null) m.put("owner", sec.owner()); owners.add(m); }
+            out.put("sectionStates", owners);
+        }
+        if (room.lastError() != null) out.put("lastError", room.lastError());
+        return Json.write(out);
+    }
+
+    /** POST /v1/room {url, room, key, member, …} or {off:true}: the planner connects (or disconnects) this game with a team room. */
+    @Override
+    public String roomPost(Map<String, Object> body) throws Exception {
+        TeamClient t = needTeam();
+        var room = t.sync().room();
+        if (room == null) throw new LiveLinkServer.HttpError(404, "Diese Mod kennt keinen Team-Raum.");
+        if (Boolean.TRUE.equals(body.get("off"))) { room.forget(); return Json.write(Map.of("ok", true, "text", "Team-Raum getrennt. Die Mod spricht mit keinem Raum mehr.")); }
+        io.github.freadeax.bauplaner.mod.room.RoomClient.Config c;
+        try { c = io.github.freadeax.bauplaner.mod.room.RoomClient.parse(body); }
+        catch (RuntimeException e) { throw new LiveLinkServer.HttpError(400, e.getMessage()); }
+        room.use(c);
+        Minecraft mc = Minecraft.getInstance();
+        mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] Der Planer hat dein Spiel mit dem Team-Raum" + (c.teamName() != null ? " „" + c.teamName() + "“" : "")
+                + " verbunden – Teambau ohne Server-Datei. Trennen: im Planer unter „Team live“ → „Spiel trennen“.")));
+        return Json.write(Map.of("ok", true, "text", "Spiel mit dem Team-Raum verbunden."));
+    }
+
     /** POST /v1/team: the planner's team view (format team-link 1). */
     @Override
     public String teamPost(Map<String, Object> body) {

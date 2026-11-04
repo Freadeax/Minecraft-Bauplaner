@@ -10,6 +10,8 @@ group = 'io.github.freadeax.bauplaner'
 
 sourceSets.main.java.srcDir '../core/src/main/java'
 sourceSets.main.java.srcDir '../mod-core/src/main/java'
+evaluationDependsOn(':mod-core')
+sourceSets.main.java.srcDir(files(project(':mod-core').teamLogRoot).builtBy(project(':mod-core').teamLogTask))
 sourceSets.main.java.srcDir '../hologram-26.3/src/main/java'
 sourceSets.main.resources.srcDir '../hologram-26.3/src/main/resources'
 

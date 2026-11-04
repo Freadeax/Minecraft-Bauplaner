@@ -5168,3 +5168,45 @@ Server-Zuordnung von Ertragskisten (store.config.farm, COOP-08) gilt ohne Verkn�
 - `packages/domain/src/productionPlan.ts`
 - `tests/production.test.mjs`
 
+## 2026-11-04T12:34:12.347Z · progress
+
+**Aufgaben:** LINK-07
+
+Ohne Server-Datei: Mod 0.14.0 spricht direkt mit dem Team-Raum (Teamstand mit dem TeamLog des Plugins, eigene Meldungen, Anwesenheit), Planer „Mein Spiel verbinden“/„Spiel trennen“; echter Fabric-Spieltest ohne Server
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LINK-07 | 🚧 In Arbeit | 3/6 | Positionen und Aufnahmen über den Raum; Release 0.14.0; Abnahme LINK-07. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/map/liveClient.ts`
+- `apps/web/src/views/mod/releases.json`
+- `apps/web/src/views/mod/serverClient.ts`
+- `apps/web/src/views/project/TeamRoom.tsx`
+- `docs/architecture/AUTO_LINK.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.14.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.14.0.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/fabric-26.3/build.gradle`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`
+- `mods/bauplaner-bridge/mod-core/build.gradle`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomState.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamState.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamSync.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java`
+- `mods/bauplaner-bridge/neoforge-26.3/build.gradle`
+- `scripts/bridge_gametest.mjs`
+- `scripts/bridge_room_prepare.mjs`
+- `scripts/test_bridge_ingame.sh`
+- `tests/e2e/modSimulator.mjs`
+- `tests/e2e/team-room.e2e.mjs`
+

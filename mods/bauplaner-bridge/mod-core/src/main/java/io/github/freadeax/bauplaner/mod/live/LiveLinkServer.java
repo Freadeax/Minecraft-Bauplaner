@@ -100,13 +100,20 @@ public final class LiveLinkServer implements AutoCloseable {
         default String serverInfo() throws Exception { throw new HttpError(404, "Diese Mod kennt keine Server-Kopplung."); }
         default String serverClaim(Map<String, Object> body) throws Exception { throw new HttpError(404, "Diese Mod kennt keine Server-Kopplung."); }
         default String serverControl(Map<String, Object> body) throws Exception { throw new HttpError(404, "Diese Mod kennt keine Server-Kopplung."); }
+        /**
+         * Team room without a server file (LINK-07, since 0.14.0). GET /v1/room: connected room (without key),
+         * status, who is there; POST /v1/room {url, room, key, member, memberName?, teamName?}: use this room
+         * from now on; POST /v1/room {off:true}: forget it.
+         */
+        default String roomGet() throws Exception { throw new HttpError(404, "Diese Mod kennt keinen Team-Raum."); }
+        default String roomPost(Map<String, Object> body) throws Exception { throw new HttpError(404, "Diese Mod kennt keinen Team-Raum."); }
     }
 
     /** A file answer: name for the website, bytes as sent. */
     public record Binary(String fileName, byte[] bytes) {}
 
     /** What this mod can do beyond protocol 1; the website enables buttons by it. */
-    public static final List<String> FEATURES = List.of("scan", "marks2", "players", "bigplans", "team", "pairask", "server", "marks3");
+    public static final List<String> FEATURES = List.of("scan", "marks2", "players", "bigplans", "team", "pairask", "server", "marks3", "room");
 
     public record Info(String version, String loader, String minecraft) {}
 
@@ -391,6 +398,8 @@ public final class LiveLinkServer implements AutoCloseable {
                 case "POST /v1/team/ack": return ok(h, handler.teamAck(Json.obj(Json.parse(text(r, 65_536)), "Quittung")));
                 case "POST /v1/team/push": return ok(h, handler.teamPush(Json.obj(Json.parse(text(r, TEAM_PUSH_BYTES)), "Teamdatei")));
                 case "GET /v1/team/pull": return ok(h, handler.teamPull(r.query()));
+                case "GET /v1/room": return ok(h, handler.roomGet());
+                case "POST /v1/room": return ok(h, handler.roomPost(Json.obj(Json.parse(text(r, 4096)), "Team-Raum")));
                 case "GET /v1/server": return ok(h, handler.serverInfo());
                 case "POST /v1/server/claim": return ok(h, handler.serverClaim(r.body().length == 0 ? Map.of() : Json.obj(Json.parse(text(r, 4096)), "Kopplung")));
                 case "POST /v1/server/control": return ok(h, handler.serverControl(Json.obj(Json.parse(text(r, TEAM_PUSH_BYTES)), "Steuernachricht")));

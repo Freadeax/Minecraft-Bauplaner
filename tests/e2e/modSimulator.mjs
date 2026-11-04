@@ -255,6 +255,16 @@ export function startModSimulator(port, options = {}) {
         const since = url.searchParams.get('since'), i = since ? state.teamServerEvents.findIndex(e => e.id === since) + 1 : 0;
         return send(200, { teamId: url.searchParams.get('teamId'), name: 'Server', events: state.teamServerEvents.slice(i), more: false, total: state.teamServerEvents.length });
       }
+      // LINK-07: team room without a server file (RoomClient in mod-core); the key is never answered back.
+      if (url.pathname === '/v1/room' && !state.features.includes('room')) return send(404, { error: 'Unbekannte Adresse.' });
+      if (route === 'GET /v1/room') return send(200, state.room ? { connected: true, url: state.room.url, room: state.room.room, member: state.room.member, status: 'live', statusText: 'live über den Team-Raum' } : { connected: false, status: 'off' });
+      if (route === 'POST /v1/room') {
+        const b = JSON.parse(body.toString());
+        if (b.off) { state.room = null; return send(200, { ok: true, text: 'Team-Raum getrennt. Die Mod spricht mit keinem Raum mehr.' }); }
+        if (!/^https:\/\//.test(b.url) || !b.room || !b.key || !b.member) return send(400, { error: 'Der Team-Raum muss über https erreichbar sein.' });
+        state.room = b;
+        return send(200, { ok: true, text: 'Spiel mit dem Team-Raum verbunden.' });
+      }
       if (url.pathname.startsWith('/v1/server') && !state.features.includes('server')) return send(404, { error: 'Unbekannte Adresse.' });
       if (route === 'GET /v1/server') {
         const out = { link: state.teamLink, linkText: state.teamLink, allowed: state.teamLink === 'live' };
