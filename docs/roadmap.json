@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T09:38:35.990Z",
+  "updatedAt": "2026-11-04T10:03:44.722Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -8443,7 +8443,7 @@
           "note": "Abschnitt Sammeltruhen aus dem Team-Lager."
         }
       ],
-      "updatedAt": "2026-11-04T09:16:18.610Z"
+      "updatedAt": "2026-11-04T10:03:44.722Z"
     },
     {
       "phase": "P4",
@@ -16972,6 +16972,29 @@
           "done": 2,
           "total": 2,
           "next": "Abnahme durch Philipp (Testplan LINK-05, LINK-06; Paper-Plugin 0.13.0 auf dem Server)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T10:03:44.722Z",
+      "kind": "progress",
+      "items": [
+        "PROD-05"
+      ],
+      "summary": "Server-Zuordnung von Ertragskisten (store.config.farm, COOP-08) gilt ohne Verknüpfung, Vorschlag zuerst, nie für fremde Farmen.",
+      "files": [
+        "apps/web/src/views/project/ProductionTab.tsx",
+        "docs/architecture/PRODUCTION.md",
+        "packages/domain/src/productionPlan.ts",
+        "tests/production.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PROD-05",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen."
         }
       ]
     }

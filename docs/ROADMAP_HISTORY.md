@@ -5151,3 +5151,20 @@ Serveraufnahme per Klick: Steueraktion scan (list/start/fetch/cancel) im Paper-P
 - `tests/e2e/modSimulator.mjs`
 - `tests/e2e/server-link.e2e.mjs`
 
+## 2026-11-04T10:03:44.722Z · progress
+
+**Aufgaben:** PROD-05
+
+Server-Zuordnung von Ertragskisten (store.config.farm, COOP-08) gilt ohne Verknüpfung, Vorschlag zuerst, nie für fremde Farmen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PROD-05 | 🧩 Implementiert · Abnahme offen | 5/5 | Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/project/ProductionTab.tsx`
+- `docs/architecture/PRODUCTION.md`
+- `packages/domain/src/productionPlan.ts`
+- `tests/production.test.mjs`
+

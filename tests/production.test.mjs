@@ -297,4 +297,21 @@ test('PROD-05: farm output from team storage chests – server yield reports, ho
   // A removed chest is reported.
   const gone = { ...team, events: [...events, ev('rm', iso(9_999_999), { kind: 'store.chest', chest: 'kiste-rohr', name: 'Rohrtruhe', pos: [10, 64, 10], dimension: 'minecraft:overworld', remove: true })] };
   assert.ok(farmStatuses(productionOf(site), gone).find(f => f.farm.id === 'rohr').issues.some(i => /gibt es im Team-Lager nicht mehr/.test(i)));
+
+  // COOP-08: a yield store the server assigned to a farm (store.config.farm) is suggested first and used without linking;
+  // its reports without a farm field still count; a chest assigned to another farm is never suggested.
+  const assigned = { ...team, events: [...events,
+    ev('k1', iso(0), { kind: 'store.config', chest: 'kiste-eisen', purpose: 'ertrag', farm: 'eisen' }),
+    ev('y4', iso(3_600_000), { kind: 'store.yield', chest: 'kiste-eisen', items: [{ item: 'minecraft:iron_ingot', count: 200 }], from: iso(0), until: iso(3_600_000), minutes: 60 }),
+  ] };
+  assert.equal(teamChests(assigned).find(c => c.id === 'kiste-eisen').farm, 'eisen');
+  let fresh = addFarm(emptySite(), { type: 'eisen', state: 'laeuft', at: ow(12, 64, 12) }, 'eisen');
+  fresh = addFarm(fresh, { type: 'eisen', state: 'laeuft' }, 'eisen2');
+  assert.deepEqual(suggestChests(productionOf(fresh), assigned).map(s => [s.farmId, s.chest.id, s.why]), [['eisen', 'kiste-eisen', 'auf dem Server dieser Farm zugeordnet']]);
+  st = farmStatuses(productionOf(fresh), assigned).find(f => f.farm.id === 'eisen');
+  assert.equal(st.rates[0].source, 'Lagerkiste'); assert.equal(st.rates[0].perHour, 200);
+  assert.equal(farmStatuses(productionOf(fresh), assigned).find(f => f.farm.id === 'eisen2').rates[0].source, 'Richtwert');
+  // Unassigning ("" = none) removes the link.
+  const unassigned = { ...assigned, events: [...assigned.events, ev('k2', iso(4_000_000), { kind: 'store.config', chest: 'kiste-eisen', farm: '' })] };
+  assert.equal(teamChests(unassigned).find(c => c.id === 'kiste-eisen').farm, undefined);
 });

@@ -178,16 +178,22 @@ function measured(p: ProductionPlan, farmId: string, itemId: string): { count: n
 export const CHEST_GAP_MINUTES = 5;
 const MINUTE = 60_000;
 
-export interface TeamChest { readonly id: string; readonly name: string; readonly pos: readonly [number, number, number]; readonly dimension: string; readonly hopperIn: Readonly<Record<string, number>> }
+export interface TeamChest { readonly id: string; readonly name: string; readonly pos: readonly [number, number, number]; readonly dimension: string; readonly hopperIn: Readonly<Record<string, number>>;
+  /** Farm id the server assigned to this yield store (store.config.farm, COOP-08). */
+  readonly farm?: string }
 
 /** Team storage chests (not removed) with everything hoppers put in (store.move via trichter, store.yield), from the team log. */
 export function teamChests(team: TeamState | undefined): TeamChest[] {
   if (!team) return [];
-  const chests = new Map<string, { name: string; pos: readonly [number, number, number]; dimension: string; hopperIn: Record<string, number> }>();
+  const chests = new Map<string, { name: string; pos: readonly [number, number, number]; dimension: string; hopperIn: Record<string, number>; farm?: string }>();
   for (const e of team.events) {
     if (!isKnownEvent(e)) continue;
-    if (e.kind === 'store.chest') { if (e.remove) chests.delete(e.chest); else chests.set(e.chest, { name: e.name, pos: e.pos, dimension: e.dimension, hopperIn: chests.get(e.chest)?.hopperIn ?? {} }); }
-    else if (e.kind === 'store.config' && e.name?.trim()) { const c = chests.get(e.chest); if (c) c.name = e.name; }
+    if (e.kind === 'store.chest') { if (e.remove) chests.delete(e.chest); else { const old = chests.get(e.chest); chests.set(e.chest, { name: e.name, pos: e.pos, dimension: e.dimension, hopperIn: old?.hopperIn ?? {}, ...(old?.farm && { farm: old.farm }) }); } }
+    else if (e.kind === 'store.config') {
+      const c = chests.get(e.chest);
+      if (c && e.name?.trim()) c.name = e.name;
+      if (c && e.farm !== undefined) { if (e.farm) c.farm = e.farm; else delete c.farm; }
+    }
     else if (e.kind === 'store.move' && e.via === 'trichter') { const c = chests.get(e.chest); if (c) for (const l of e.in ?? []) c.hopperIn[l.item] = (c.hopperIn[l.item] ?? 0) + l.count; }
   }
   // The plugin's yield reports (store.yield) count as hopper intake too.
@@ -266,7 +272,8 @@ export function suggestChests(production: ProductionPlan, team: TeamState | unde
     if (!t) continue;
     let best: ChestSuggestion | null = null;
     for (const c of chests) {
-      if (taken.has(c.id)) continue;
+      if (taken.has(c.id) || (c.farm && c.farm !== f.id)) continue;
+      if (c.farm === f.id) { best = { farmId: f.id, chest: c, why: 'auf dem Server dieser Farm zugeordnet', score: 100 }; break; }
       const own = t.outputs.filter(o => (c.hopperIn[o.item] ?? 0) > 0).map(o => o.item.replace(/^minecraft:/, ''));
       const near = f.at && dimensionOf(c.dimension) === f.at.dimension ? Math.hypot(c.pos[0] - f.at.x, c.pos[1] - f.at.y, c.pos[2] - f.at.z) : Infinity;
       const score = own.length * 10 + (near <= 32 ? 5 : 0);
@@ -286,10 +293,13 @@ export function farmStatuses(production: ProductionPlan, team?: TeamState): Farm
     const afk = f.at && p.afk ? inRange(t, f.at, p.afk, p.simulationDistance) : null;
     return { hours: p.gatherHoursPerDay + (afk && !afk.ok ? 0 : p.afkHoursPerDay), afk };
   };
+  const serverChest = new Map(teamChests(team).filter(c => c.farm).map(c => [c.farm!, c.id]));
   const base = p.farms.map(f => {
     const t = farmType(f.type)!, { hours, afk } = loaded(f, t), running = f.state === 'laeuft';
-    const linked = f.chest ? chestYield(team, f.chest, f.id) : chestYield(team, null, f.id);
-    const fromChest = f.chest || linked.bookings ? linked : null, useChest = !!fromChest && fromChest.hours >= 1;
+    // A chest linked here, else the yield store the server assigned to this farm (store.config.farm).
+    const chestId = f.chest ?? serverChest.get(f.id) ?? null;
+    const linked = chestYield(team, chestId, f.id);
+    const fromChest = chestId || linked.bookings ? linked : null, useChest = !!fromChest && fromChest.hours >= 1;
     const rates: FarmRate[] = t.outputs.map(o => {
       const m = measured(p, f.id, o.item), useMeasured = m.hours >= 1;
       const perHour = useChest ? round1((fromChest!.items[o.item] ?? 0) / fromChest!.hours) : useMeasured ? round1(m.count / m.hours) : o.perHour * f.units;

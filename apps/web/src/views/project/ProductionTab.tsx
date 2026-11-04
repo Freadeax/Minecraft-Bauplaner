@@ -380,10 +380,11 @@ function Jobs({ assignments, projectId }: { assignments: readonly GatherAssignme
 function ChestLink({ f, site, save }: { f: FarmStatus; site: SitePlan; save: Save }) {
   const chests = teamChests(site.team);
   const y = f.chest;
+  const assigned = f.farm.chest ? undefined : chests.find(c => c.farm === f.farm.id);
   if (!chests.length && !y) return <p className="muted"><strong>Sammeltruhe:</strong> Markiert ihr die Truhe dieser Farm auf dem Server als Team-Lager (Reiter „Team“, Paper-Plugin), misst der Planer die echte Rate aus den Einlagen.</p>;
   return <div className="prod-place-row"><strong>Sammeltruhe</strong>
     <select value={f.farm.chest ?? ''} aria-label={`Sammeltruhe von ${f.farm.name}`} onChange={e => save(() => updateFarm(site, f.farm.id, { chest: e.target.value || null }), e.target.value ? `„${f.farm.name}“ mit Lagerkiste verknüpft` : `Lagerkiste von „${f.farm.name}“ gelöst`)}>
-      <option value="">keine</option>{chests.map(c => <option key={c.id} value={c.id}>{c.name} ({c.pos.join(' ')})</option>)}
+      <option value="">{assigned ? `vom Server zugeordnet: ${assigned.name}` : 'keine'}</option>{chests.map(c => <option key={c.id} value={c.id}>{c.name} ({c.pos.join(' ')})</option>)}
     </select>
     {y && <small className="muted">{y.bookings ? `${y.basis === 'server' ? `${y.bookings} Ertragsmeldungen des Servers` : `${y.bookings} Trichterbuchungen`} · ${num(y.hours)} h Laufzeit · ${Object.entries(y.items).map(([i, n]) => `${formatNumber(n)} ${short(i)}`).join(', ') || 'noch nichts eingelegt'}` : 'noch keine Einlagen gemeldet'}{y.basis === 'trichter' && y.bookings ? ' (Laufzeit aus den Buchungen geschätzt)' : ''}</small>}
   </div>;
