@@ -4876,3 +4876,17 @@ Ertragskisten: Zweck ertrag mit Farm, Plugin misst Einlagen von Trichtern und Sp
 - `scripts/bridge_paperlager.mjs`
 - `tests/lager.test.mjs`
 
+## 2026-11-04T09:10:54.815Z · progress
+
+**Aufgaben:** COOP-08
+
+Testplan nach Rebase neu gerendert.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-08 | 🧩 Implementiert · Abnahme offen | 2/4 | PROD-05 liest TeamView.yields bzw. store.yield; Abnahme LAGER-10 auf Philipps Server. |
+
+**Geänderte Dateien:**
+
+- `docs/testing/TESTPLAN.md`
+
