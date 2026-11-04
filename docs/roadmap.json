@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T12:34:12.347Z",
+  "updatedAt": "2026-11-04T12:47:26.654Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -10,22 +10,21 @@
     "MAT-02",
     "MAT-04",
     "DIFF-01",
-    "PERF-02",
-    "PERF-03",
-    "PERF-05",
+    "GAME-02",
     "GAME-07",
     "GAME-08",
-    "GAME-04",
+    "GAME-03",
     "GAME-05",
-    "LAGER-01",
+    "LIB-06",
     "GROSS-01",
+    "MAP-06",
+    "SIZE-01",
     "COOP-01",
     "COOP-02",
     "COOP-03",
     "COOP-04",
-    "COOP-05",
-    "COOP-06",
     "PROJ-01",
+    "GAME-09",
     "GAME-10",
     "GAME-11",
     "COOP-07",
@@ -33,14 +32,13 @@
     "PROD-02",
     "PROD-03",
     "PROD-04",
+    "PROD-05",
     "LINK-01",
     "LINK-02",
     "LINK-03",
     "LINK-04",
     "LINK-05",
     "LINK-06",
-    "COOP-08",
-    "PROD-05",
     "COOP-09",
     "PROJ-02",
     "LINK-07"
@@ -2292,11 +2290,13 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T21:19:45.021Z",
+      "updatedAt": "2026-11-04T12:47:26.654Z",
       "area": "PERF",
       "thread": "Gesamtsystem auf Performance und Stabilität optimieren",
       "philipp": [],
-      "orphans": []
+      "orphans": [
+        "Filterzustände der Bibliothek beim Seitenwechsel im Browser prüfen – im Cloud-Browser machbar, Performance-Thread beendet."
+      ]
     },
     {
       "id": "PERF-04",
@@ -2537,11 +2537,13 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T23:02:57.928Z",
+      "updatedAt": "2026-11-04T12:47:26.654Z",
       "area": "PERF",
       "thread": "Gesamtsystem auf Performance und Stabilität optimieren",
       "philipp": [],
-      "orphans": []
+      "orphans": [
+        "S07 Analyse von Mod und Paper-Plugin (O-8), große Dateien aufteilen – Thread „Gesamtsystem auf Performance und Stabilität optimieren“ ist beendet."
+      ]
     },
     {
       "id": "VIEW-01",
@@ -7426,7 +7428,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T21:33:16.961Z",
+      "updatedAt": "2026-11-04T12:47:26.654Z",
       "area": "TEAM",
       "thread": "Server-Plugin mit geprüften Lagerkisten",
       "philipp": [
@@ -7435,7 +7437,9 @@
           "text": "LAGER-01…09 mit echten Spielern."
         }
       ],
-      "orphans": []
+      "orphans": [
+        "S04 Lagerstände über den Team-Raum an die Mod (passt zu LINK-07 „gesehene Kisteninhalte in den Raum“) – Plugin-Thread beendet."
+      ]
     },
     {
       "id": "COOP-06",
@@ -7684,13 +7688,11 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T08:42:48.661Z",
+      "updatedAt": "2026-11-04T12:47:26.654Z",
       "area": "MODRINTH",
       "thread": "Mod auf Modrinth veröffentlichen",
       "philipp": [],
-      "orphans": [
-        "S04/S05: Modrinth-Freigabe prüfen und die Versionen seit 0.10.0 (zuletzt 0.12.0 für Fabric, NeoForge, Paper) mit scripts/modrinth_publish.mjs hochladen – Thread „Mod auf Modrinth veröffentlichen“ ist beendet."
-      ]
+      "orphans": []
     },
     {
       "id": "GAME-10",
@@ -8022,7 +8024,7 @@
       "acceptance": [
         "Ertragskiste (Zweck ertrag, Farm) misst Trichter- und Spielereinlagen und geladene Minuten; store.yield alle 30 min und beim Herunterfahren; Planer-Faltung yields gleich Plugin; Trichterbuchungen je Minute gebündelt; echte Paper-Server 1.18.2, 1.21.4, 26.3."
       ],
-      "next": "PROD-05 liest TeamView.yields bzw. store.yield; Abnahme LAGER-10 auf Philipps Server.",
+      "next": "S03 zur Hälfte durch PROD-05 erledigt (Reiter Produktion nutzt store.yield als gemessene Rate); offen: Ertragskisten im Reiter Team anzeigen; Abnahme LAGER-10.",
       "blockers": [],
       "evidence": [
         {
@@ -8046,7 +8048,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T09:10:54.815Z",
+      "updatedAt": "2026-11-04T12:47:26.654Z",
       "area": "TEAM",
       "thread": "Server-Plugin mit geprüften Lagerkisten",
       "philipp": [
@@ -8055,7 +8057,9 @@
           "text": "LAGER-01…09 mit echten Spielern."
         }
       ],
-      "orphans": []
+      "orphans": [
+        "S03 Ertragskisten im Reiter Team anzeigen – Thread „Server-Plugin mit geprüften Lagerkisten“ ist beendet."
+      ]
     },
     {
       "phase": "P3",
@@ -8456,9 +8460,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T02:19:40.131Z",
+      "updatedAt": "2026-11-04T12:47:26.654Z",
       "area": "PLUGIN",
-      "thread": "Anbindung von Planer, Mod und Server neu denken",
+      "thread": "Verbindung ohne Server-Datei neu bauen",
       "orphans": [],
       "id": "LINK-01",
       "title": "Plugin richtet sich selbst ein und lässt sich per Klick koppeln (link.json, Server-ID, Kopplung nur OP/Bauleitung über den Teamkanal)",
@@ -8533,9 +8537,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T02:19:40.131Z",
+      "updatedAt": "2026-11-04T12:47:26.654Z",
       "area": "PLUGIN",
-      "thread": "Anbindung von Planer, Mod und Server neu denken",
+      "thread": "Verbindung ohne Server-Datei neu bauen",
       "orphans": [],
       "id": "LINK-02",
       "title": "Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte)",
@@ -8605,9 +8609,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T02:19:47.540Z",
+      "updatedAt": "2026-11-04T12:47:26.654Z",
       "area": "MOD",
-      "thread": "Anbindung von Planer, Mod und Server neu denken",
+      "thread": "Verbindung ohne Server-Datei neu bauen",
       "orphans": [],
       "id": "LINK-03",
       "title": "Mod: Live-Dienst startet selbst, Planer per Klick im Spiel zulassen, Teamfreigabe als Knopf, Server-Wege weiterreichen (Mod 0.12.0)",
@@ -8695,9 +8699,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T02:26:45.477Z",
+      "updatedAt": "2026-11-04T12:47:26.654Z",
       "area": "TEAM",
-      "thread": "Anbindung von Planer, Mod und Server neu denken",
+      "thread": "Verbindung ohne Server-Datei neu bauen",
       "orphans": [],
       "id": "LINK-04",
       "title": "Planer: Bereich „Spiel und Server verbinden – ohne Befehle“ (#/mod), Server koppeln und einstellen, Team und Raum per Knopf",
@@ -8774,9 +8778,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T08:50:13.176Z",
+      "updatedAt": "2026-11-04T12:47:26.654Z",
       "area": "TEAM",
-      "thread": "Anbindung von Planer, Mod und Server neu denken",
+      "thread": "Verbindung ohne Server-Datei neu bauen",
       "orphans": [],
       "id": "LINK-05",
       "title": "Zweiter Weg über den Team-Raum: Steuernachrichten ohne Mod (iPad), weiteres Gerät per Link freigeben",
@@ -8865,9 +8869,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T09:38:35.990Z",
+      "updatedAt": "2026-11-04T12:47:26.654Z",
       "area": "PLUGIN",
-      "thread": "Anbindung von Planer, Mod und Server neu denken",
+      "thread": "Verbindung ohne Server-Datei neu bauen",
       "orphans": [],
       "id": "LINK-06",
       "title": "Weitere Steuerung ohne Befehle: Plan mit Anker von der Weltkarte auf den Server und Serveraufnahme per Klick zurück in den Planer",
@@ -9119,9 +9123,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T12:34:12.347Z",
+      "updatedAt": "2026-11-04T12:47:26.654Z",
       "area": "MOD",
-      "thread": "Anbindung von Planer, Mod und Server neu denken",
+      "thread": "Verbindung ohne Server-Datei neu bauen",
       "orphans": [],
       "id": "LINK-07",
       "title": "Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten",
@@ -17144,6 +17148,112 @@
         "tests/e2e/team-room.e2e.mjs"
       ],
       "snapshot": [
+        {
+          "id": "LINK-07",
+          "status": "in_progress",
+          "done": 3,
+          "total": 6,
+          "next": "Positionen und Aufnahmen über den Raum; Release 0.14.0; Abnahme LINK-07."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T12:47:26.654Z",
+      "kind": "progress",
+      "items": [
+        "COOP-08",
+        "COOP-05",
+        "PERF-05",
+        "PERF-03",
+        "GAME-09",
+        "LINK-01",
+        "LINK-02",
+        "LINK-03",
+        "LINK-04",
+        "LINK-05",
+        "LINK-06",
+        "LINK-07"
+      ],
+      "summary": "Roadmap-Abgleich 04.11. mittags: LINK an den umbenannten Thread, Modrinth wieder aktiv, Reste von Plugin- und Performance-Thread als verwaist, COOP-08-S03 teils durch PROD-05 erledigt, aktiver Arbeitsblock auf offene Threads.",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "COOP-08",
+          "status": "implemented",
+          "done": 2,
+          "total": 4,
+          "next": "S03 zur Hälfte durch PROD-05 erledigt (Reiter Produktion nutzt store.yield als gemessene Rate); offen: Ertragskisten im Reiter Team anzeigen; Abnahme LAGER-10."
+        },
+        {
+          "id": "COOP-05",
+          "status": "implemented",
+          "done": 3,
+          "total": 5,
+          "next": "Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server."
+        },
+        {
+          "id": "PERF-05",
+          "status": "implemented",
+          "done": 8,
+          "total": 9,
+          "next": "O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8)."
+        },
+        {
+          "id": "PERF-03",
+          "status": "implemented",
+          "done": 3,
+          "total": 3,
+          "next": "Filterzustände der Bibliothek beim Seitenwechsel im Browser prüfen."
+        },
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 3,
+          "total": 5,
+          "next": "Modrinth-Prüfung abwarten (Status processing → approved); danach jede neue Mod-Version mit modrinth_publish.mjs release."
+        },
+        {
+          "id": "LINK-01",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme LINK-01 auf Philipps Server."
+        },
+        {
+          "id": "LINK-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Plan-Upload aus dem Planer; Abnahme LINK-02."
+        },
+        {
+          "id": "LINK-03",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme LIVE-01 in Philipps Modpack."
+        },
+        {
+          "id": "LINK-04",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme durch Philipp."
+        },
+        {
+          "id": "LINK-05",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Abnahme vom iPad (Testplan LINK-04)."
+        },
+        {
+          "id": "LINK-06",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme durch Philipp (Testplan LINK-05, LINK-06; Paper-Plugin 0.13.0 auf dem Server)."
+        },
         {
           "id": "LINK-07",
           "status": "in_progress",

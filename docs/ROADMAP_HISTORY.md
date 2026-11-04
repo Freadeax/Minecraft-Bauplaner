@@ -5210,3 +5210,24 @@ Ohne Server-Datei: Mod 0.14.0 spricht direkt mit dem Team-Raum (Teamstand mit de
 - `tests/e2e/modSimulator.mjs`
 - `tests/e2e/team-room.e2e.mjs`
 
+## 2026-11-04T12:47:26.654Z · progress
+
+**Aufgaben:** COOP-08, COOP-05, PERF-05, PERF-03, GAME-09, LINK-01, LINK-02, LINK-03, LINK-04, LINK-05, LINK-06, LINK-07
+
+Roadmap-Abgleich 04.11. mittags: LINK an den umbenannten Thread, Modrinth wieder aktiv, Reste von Plugin- und Performance-Thread als verwaist, COOP-08-S03 teils durch PROD-05 erledigt, aktiver Arbeitsblock auf offene Threads.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-08 | 🧩 Implementiert · Abnahme offen | 2/4 | S03 zur Hälfte durch PROD-05 erledigt (Reiter Produktion nutzt store.yield als gemessene Rate); offen: Ertragskisten im Reiter Team anzeigen; Abnahme LAGER-10. |
+| COOP-05 | 🧩 Implementiert · Abnahme offen | 3/5 | Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server. |
+| PERF-05 | 🧩 Implementiert · Abnahme offen | 8/9 | O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8). |
+| PERF-03 | 🧩 Implementiert · Abnahme offen | 3/3 | Filterzustände der Bibliothek beim Seitenwechsel im Browser prüfen. |
+| GAME-09 | 🚧 In Arbeit | 3/5 | Modrinth-Prüfung abwarten (Status processing → approved); danach jede neue Mod-Version mit modrinth_publish.mjs release. |
+| LINK-01 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LINK-01 auf Philipps Server. |
+| LINK-02 | 🧩 Implementiert · Abnahme offen | 3/4 | Plan-Upload aus dem Planer; Abnahme LINK-02. |
+| LINK-03 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme LIVE-01 in Philipps Modpack. |
+| LINK-04 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme durch Philipp. |
+| LINK-05 | 🧩 Implementiert · Abnahme offen | 5/5 | Abnahme vom iPad (Testplan LINK-04). |
+| LINK-06 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme durch Philipp (Testplan LINK-05, LINK-06; Paper-Plugin 0.13.0 auf dem Server). |
+| LINK-07 | 🚧 In Arbeit | 3/6 | Positionen und Aufnahmen über den Raum; Release 0.14.0; Abnahme LINK-07. |
+
