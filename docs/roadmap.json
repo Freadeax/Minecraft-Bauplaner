@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T09:25:02.358Z",
+  "updatedAt": "2026-11-04T09:25:54.830Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -6788,7 +6788,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T08:42:48.661Z",
+      "updatedAt": "2026-11-04T09:25:54.830Z",
       "area": "QA",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -16652,6 +16652,31 @@
           "done": 5,
           "total": 5,
           "next": "Philipp prüft Protokoll 3 im echten Spiel (TESTPLAN MOD-17); Forge und Paper ohne Live-Verbindung."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T09:25:54.830Z",
+      "kind": "progress",
+      "items": [
+        "QA-04"
+      ],
+      "summary": "Abnahme je Paket: ACCEPTANCE in testplan.ts ordnet jedem implementierten Roadmap-Paket Testfälle zu (check:testplan erzwingt es); neue Fälle BIB-17/18, PROJ-14/15, DATEI-06–08, SYS-03, PROJ-12 mit Öfen; Teststand Mod/Plugin 0.12.0",
+      "files": [
+        "apps/web/src/testing/TestphaseView.tsx",
+        "apps/web/src/testing/testplan.ts",
+        "docs/architecture/TESTPHASE.md",
+        "docs/testing/TESTPLAN.md",
+        "scripts/render_testplan.mjs",
+        "tests/testphase.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "QA-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist."
         }
       ]
     }

@@ -101,3 +101,16 @@ test('Route #/testphase mit Parametern', () => {
   assert.equal(href({ view: 'testphase', search: 'melden' }), '#/testphase?melden');
   assert.equal(parseRoute('#/testphase/x').view, 'not-found');
 });
+
+test('Abnahme je Paket: jedes implementierte Roadmap-Paket hat bekannte Testfälle', async () => {
+  const { ACCEPTANCE, ALL_CASES, packagesOf } = await import('../apps/web/src/testing/testplan.ts');
+  const { readFileSync } = await import('node:fs');
+  const roadmap = JSON.parse(readFileSync(new URL('../docs/roadmap.json', import.meta.url), 'utf8'));
+  const known = new Set(ALL_CASES.map(c => c.id));
+  for (const item of roadmap.items.filter(i => i.status === 'implemented')) {
+    assert.ok(ACCEPTANCE[item.id]?.length, `${item.id} ohne Testfälle`);
+    for (const c of ACCEPTANCE[item.id]) assert.ok(known.has(c), `${item.id}: ${c} unbekannt`);
+  }
+  assert.deepEqual(packagesOf('DATEI-07'), ['NBT-01', 'ENTITY-01']);
+  assert.equal(new Set(ALL_CASES.map(c => c.id)).size, ALL_CASES.length, 'Fall-IDs eindeutig');
+});

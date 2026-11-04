@@ -67,6 +67,8 @@ export const TEST_AREAS: readonly TestArea[] = [
       v('BIB-12', 'Neue Gebäude im Spiel bauen', ['Zwei bis drei neue Bibliotheksgebäude (z. B. ein Meisterstück, eine Untergrundhalle, ein Interieur) als .schem exportieren und im Spiel (Litematica oder Mod-Hologramm) aufstellen.'], 'Nichts schwebt, Türen/Treppen/Laternen stehen richtig, Innenräume sind begehbar und eingerichtet. (Abnahme LIB-05-S08)', '#/bibliothek'),
       k('BIB-15', 'Eigenes Bauwerk in die Bibliothek einreichen', ['Eine eigene .litematic oder .schem importieren und als Bauteil speichern (oder ein Werkstatt-/Generatorbauteil nehmen).', 'Gebäudeblatt → „⇪ In Bibliothek einreichen“ → „Beitrag vorbereiten …“.', 'Name, Kategorie, Autor ausfüllen, Rechte bestätigen, „↓ Beitragspaket erstellen“.', 'Den Link „Formular ‚Bibliotheksbeitrag‘ auf GitHub öffnen“ ansehen (nicht absenden, wenn nur getestet wird).'], 'Eine Datei „beitrag_….bauplaner-beitrag.json“ wird heruntergeladen; das Formular ist mit Name, Kennung und Autor vorausgefüllt; ohne Rechtebestätigung entsteht keine Datei; auf dem Handy ragt nichts seitlich heraus. (Abnahme LIB-06-S06)', '#/bibliothek'),
       v('BIB-16', 'Eingereichtes Bauwerk ist fest in der Bibliothek', ['Nach der Übernahme eines Beitrags und dem Update der Seite: Bibliothek öffnen, nach „beitrag“ suchen.', 'Den Beitrag öffnen, in ein Projekt übernehmen und als .litematic exportieren.', 'In einem zweiten Browser (oder privaten Fenster) prüfen, dass er auch dort erscheint.'], 'Der Beitrag steht mit „Bibliotheksbeitrag von …“, Bautipps und genau den eingereichten Blöcken in der Bibliothek, auch in einem frischen Browser; Export und Material funktionieren wie bei jedem Gebäude. (Abnahme LIB-06-S07)', '#/bibliothek?q=beitrag'),
+      v('BIB-17', 'Zwei Stände eines Bauwerks vergleichen', ['Ein eigenes Bauteil in der Werkstatt öffnen, alles markieren und um ein paar Blöcke verschieben, eine Truhe oder ein Schild ändern, als neue Version speichern.', 'In der Bibliothek beim Bauteil unter „Bauversionen & Varianten“ die ältere mit der neuen Version vergleichen.'], 'Der Vergleich meldet „ist verschoben“ mit dem richtigen Versatz statt aller Blöcke als geändert; die geänderte Truhe bzw. das Schild steht als Inhaltsänderung da. (Abnahme DIFF-01)'),
+      v('BIB-18', 'Filter bleiben beim Seitenwechsel', ['Bibliothek filtern (Kategorie, Größe, Suchwort), auf Seite 2 blättern.', 'Ein Gebäude öffnen und mit „Zurück“ des Browsers zurückgehen.'], 'Filter, Suchwort und Seite sind wie vorher; Vorschaubilder erscheinen ohne langes Nachladen. (Abnahme PERF-03)', '#/bibliothek'),
     ],
   },
   {
@@ -84,8 +86,10 @@ export const TEST_AREAS: readonly TestArea[] = [
       k('PROJ-09', 'Projektplanung: Meilensteine und Abhängigkeiten', ['Tab „Baustelle“: Vorschlag „Fundament · Rohbau · Dach“ übernehmen.', 'Tab „Planung“: Vorschläge aus Geometrie übernehmen, einen Meilenstein mit Termin anlegen und Abschnitte zuordnen.', 'Versuchen, eine Abhängigkeit „Fundament erst nach Dach“ anzulegen.', 'Neu laden (F5).'], 'Zeitplan zeigt Balken je Abschnitt und wartende Abschnitte; der Meilenstein zeigt im Plan/verspätet und voraussichtliches Datum; der Kreis wird mit Meldung abgelehnt; alles bleibt nach dem Neuladen. Die Projektkarte zeigt den nächsten Meilenstein.'),
       v('PROJ-10', 'Mehrere Bauleute und Bauzettel', ['Tab „Planung“: zwei Bauleute mit verschiedenem Tempo anlegen, Abschnitte zuweisen (einen Abschnitt beiden).', 'Startdatum setzen, 5 Bautage je Woche wählen.', '„Bauzettel kopieren“ und „Bauprogramm als Text“ ausführen.'], 'Zeitplan zeigt je Bauleute eine Spur, gemeinsame Abschnitte sind kürzer; Daten überspringen das Wochenende; Bauzettel nennt die eigenen Abschnitte mit fehlenden Items und Sammelzeit.'),
       v('PROJ-11', 'Großprojekt mit Phasen planen', ['Ein Projekt aus Basisplaner oder Anlage anlegen (Abschnitte „Phase 1 …“).', 'Tab „Planung“ → „Meilensteine aus Abschnittsnamen“.'], 'Je Phase ein Meilenstein, Wege/Platz als „Erschließung“ zuerst; jede Phase wartet auf die vorige; kritischer Pfad läuft durch alle Phasen.'),
-      k('PROJ-12', 'Produktion: Farmen und Ernten', ['Tab „Produktion“: Bruchsteingenerator anlegen, auf „läuft“ stellen.', '„Ernte & Details“: eine echte Ernte mit Menge und Arbeitszeit eintragen.', 'Tab „Baustelle“ öffnen, dann neu laden (F5).'], 'Die Deckung zeigt Bruchstein „mit Farm“; nach der Ernte steht „gemessen“ an der Rate, die Menge steht im Baustellen-Lager und der Restbedarf sinkt; alles bleibt nach dem Neuladen.'),
+      k('PROJ-12', 'Produktion: Farmen und Ernten', ['Tab „Produktion“: Bruchsteingenerator anlegen, auf „läuft“ stellen.', '„Ernte & Details“: eine echte Ernte mit Menge und Arbeitszeit eintragen.', 'Tab „Baustelle“ öffnen, dann neu laden (F5).', 'Zurück im Tab „Produktion“ unter „Öfen und Brennstoff“ die Ofenzahl je Zielzeit und den Brennstoff ansehen.'], 'Die Deckung zeigt Bruchstein „mit Farm“; nach der Ernte steht „gemessen“ an der Rate, die Menge steht im Baustellen-Lager und der Restbedarf sinkt; alles bleibt nach dem Neuladen. Öfen und Brennstoff passen zu den fehlenden Schmelzitems (10 s je Vorgang).'),
       v('PROJ-13', 'Produktion: Engpässe, Zeitplan, AFK-Platz', ['Projekt mit Abschnitten und Planung (Bauleute, Startdatum) öffnen, Tab „Produktion“.', 'Sammelzeit je Tag verkleinern; eine vorgeschlagene Farm „Als geplant anlegen“ und auf „läuft“ stellen.', 'Zwei automatischen Farmen einen Ort geben (oder Farmpunkte der Weltkarte übernehmen) und den AFK-Vorschlag übernehmen.'], 'Engpass und „Material da nach“ ändern sich nachvollziehbar; Abschnitte mit Material nach Baubeginn sind markiert; Sammelaufträge verteilen die Handarbeit auf die Bauleute; der AFK-Platz nennt erreichte und verfehlte Farmen mit Grund.'),
+      v('PROJ-14', 'Materialvarianten: Glas, Beton, Terrakotta, Kupfer', ['Ein Gebäude mit Glas, Beton, Terrakotta oder Kupfer öffnen (Bibliothek, Detailseite).', 'Unter „Bauversionen & Varianten → Materialvariante erzeugen“ eine Farbe bzw. bei Kupfer eine Oxidationsstufe und „gewachst“ wählen und speichern.', 'Variante in ein Projekt legen, als .litematic exportieren und im Spiel ansehen.'], 'Nur das Material wechselt, Form und Ausrichtung bleiben; Kupfer zeigt die gewählte Stufe und bleibt gewachst im Spiel unverändert; Materialliste nennt die neuen Blöcke. (Abnahme MAT-03, MAT-04)'),
+      v('PROJ-15', 'Rohstoffliste gegen das Spiel prüfen', ['Ein großes Projekt öffnen, Tab „Material“ → „Rohstoffe und Rezepte“.', 'Drei bis fünf Rezepte (z. B. Treppen, Platten, Glasscheiben, Laternen) mit dem Rezeptbuch bzw. REI im Spiel vergleichen.'], 'Mengen und Zutaten stimmen mit Minecraft 26.3 überein (z. B. 6 Platten aus 3 Blöcken, 4 Treppen aus 6 Blöcken); Abweichungen bitte mit Rezeptname melden. (Abnahme MAT-02)'),
     ],
   },
   {
@@ -110,6 +114,9 @@ export const TEST_AREAS: readonly TestArea[] = [
       v('DATEI-03', 'Große Datei', ['Eine große Datei (über 200 000 Blöcke) importieren, einmal abbrechen, dann ganz laden.'], 'Fortschritt und Abbrechen funktionieren, Seite bleibt bedienbar.', '#/bibliothek'),
       v('DATEI-04', 'Licht, Nacht, Schatten', ['Im 3D-Betrachter Licht/Nacht/Sonne umschalten, Spawnprüfung ansehen.'], 'Dunkle Stellen werden als Spawnflächen markiert, Ansicht bleibt flüssig.'),
       k('DATEI-05', 'Große Datei (SIZE-01)', ['Eine große .schem oder .litematic öffnen (über 250 000 Zellen Box, gern über 1 Mio. Blöcke, bis 64 MB).', 'Als Bauteil übernehmen und in ein Projekt legen.'], 'Import läuft mit Fortschritt durch, ohne „Bauvolumen überschreitet“; der Bericht sagt, dass nur Blöcke übernommen sind und die Luft unausgewählt bleibt. Über 4 Mio. Blöcke oder 16,7 Mio. Zellen Box: klare Meldung mit dem Rat, die Datei zu teilen.', '#/'),
+      v('DATEI-06', 'Ältere Datei: Profilprüfung', ['Eine ältere .schem oder .litematic (z. B. aus 1.20 oder 1.21) importieren.', 'Detailseite öffnen, unter „Bauen & Technik“ die Zeile „Profilprüfung“ ansehen.'], 'Die Zeile nennt die Datenversion und ob die Datei zu Java 26.3 passt; unbekannte oder umbenannte Blöcke stehen in der aufklappbaren Liste. (Abnahme PROFILE-01)'),
+      v('DATEI-07', 'Gedrehtes Bauteil mit Truhen, Schildern, Gemälden', ['Ein Bauteil mit gefüllter Truhe, beschriftetem Schild und Gemälde/Rahmen in ein Projekt legen und um 90° drehen (oder spiegeln).', 'Als .schem und .litematic exportieren und im Spiel mit WorldEdit bzw. Litematica einfügen.'], 'Truhe behält ihren Inhalt, Schildtext steht auf der richtigen Seite, Doppeltruhen und Gemälde zeigen in die gedrehte Richtung. (Abnahme NBT-01, ENTITY-01)'),
+      v('DATEI-08', 'Datei aus WorldEdit und Litematica', ['Im Spiel mit WorldEdit (//copy, //schem save) und mit Litematica je ein Bauwerk speichern.', 'Beide Dateien im Planer öffnen, als Bauteil übernehmen und wieder exportieren; die Exporte im Spiel laden.', 'Die Originaldatei gern an Philipp schicken (ohne private Welt), damit sie mit dem Prüfwerkzeug verglichen wird.'], 'Beide Dateien öffnen mit allen Blöcken, Zuständen und Inhalten; die Exporte sitzen im Spiel an derselben Stelle (Offset) wie das Original. (Abnahme FORMAT-01, FORMAT-02)'),
     ],
   },
   {
@@ -130,6 +137,7 @@ export const TEST_AREAS: readonly TestArea[] = [
     cases: [
       k('SYS-01', 'Systemcheck', ['Systemcheck öffnen, „Geladene Dateien prüfen“ und „Datencheck starten“.'], 'Alle Dateien stimmen, Datencheck ohne Fehler (oder verständliche Befunde).', '#/system'),
       k('SYS-02', 'Fehler melden ausprobieren', ['Unter „Testphase → Fehler melden“ einen Probebericht ausfüllen, kopieren und als Datei speichern (nicht abschicken).'], 'Bericht enthält Build, Browser, Grafik und Protokoll, aber keine Projektdaten.', '#/testphase?melden'),
+      v('SYS-03', 'Alte Browserdaten übernehmen', ['Auf einem Gerät, auf dem der Planer schon länger benutzt wird, die Seite neu laden.', '#/system → „Datencheck“ ausführen; ein altes Projekt und ein eigenes Bauteil öffnen.'], 'Alle Projekte, eigenen Bauteile, Sammlungen und Sicherungen sind da; der Datencheck meldet keine Fehler. (Abnahme ARCH-02-S05)', '#/system'),
     ],
   },
   {
@@ -162,6 +170,7 @@ export const TEST_AREAS: readonly TestArea[] = [
       v('TEAMBAU-23', 'Fortschritt, Achtung und Planänderung', ['„Fortschritt“ öffnen, einen Abschnitt im zweiten Browser fertig melden und austauschen.', 'Plan im Editor ändern, „Mit Planstand N vergleichen“.'], 'Brett nach Status, je Mitglied abgehakt/gemeldet/bestätigt getrennt; unter „Achtung“ erscheinen gemeldete Abschnitte mit Haken-Lücke oder Planänderung mit Knopf „Bestätigen“ bzw. „Nacharbeit verlangen“.'),
       k('TEAMBAU-24', 'Übergabe, Abwesenheit, Bauleitung übergeben', ['„Rechte & Übergabe“: eigenen Abschnitt „übergeben an …“ wählen; im anderen Browser nach Austausch „Annehmen“.', 'Abwesenheit mit Datum eintragen und austauschen.', 'Als Bauleitung „Bauleitung übergeben“.'], 'Bis zur Annahme bleibt der Abschnitt beim alten Inhaber; danach wechselt er mit Notiz. Abwesende erscheinen unter „Achtung“ und im Zeitplan erst nach Rückkehr. Nach der Übergabe ist man Baumeister; es bleibt immer eine Bauleitung.'),
       k('TEAMBAU-25', 'Team live ohne Dateien', ['Einmal den Team-Raum einrichten (services/team-room/README.md: Cloudflare-Konto, `npx wrangler deploy`).', 'Reiter „Team“ → „Team live“: Adresse eintragen, „Live schalten“, Einladungslink an einen Mitspieler schicken.', 'Mitspieler öffnet den Link auf seinem Rechner oder Handy, „Beitreten und Plan laden“, wählt „Ich bin“ und übernimmt einen Abschnitt.', 'Bauleitung gibt einen neuen Planstand frei; Mitspieler klickt „Planstand übernehmen“. Danach WLAN kurz aus, eine Notiz schreiben, WLAN wieder an.', 'Server: `/bauplaner team verbinden <Link für den Server>`, ein paar Blöcke setzen.'], 'Ohne jede Datei sieht jeder die Schritte der anderen nach wenigen Sekunden; unter „Gerade da“ stehen beide (und der Server); der neue Planstand kommt mit einem Klick an, der alte bleibt als Kopie; offline zeigt der Status „offline · 1 warten“ und holt die Notiz nach dem Verbinden nach; Messungen des Servers erscheinen im Baunachweis.', '#/'),
+      v('TEAMBAU-26', 'Team live im Alltag: Meldungen, Anwesenheit, Einladung erneuern', ['Team live wie in TEAMBAU-25, zwei Rechner (oder Rechner und Handy).', 'Mitspieler übernimmt einen Abschnitt und meldet ihn; Bauleitung ist dabei in einem anderen Reiter (z. B. „Material“).', 'Mitspieler lädt die Seite neu (Nachholen).', 'Bauleitung: „Einladung erneuern“; ein dritter Browser versucht es mit dem alten Link.'], 'Die Meldung erscheint bei der Bauleitung in jedem Reiter, mit Name und Abschnitt in der Anwesenheit; nach dem Neuladen kommen keine alten Meldungen erneut; mit dem alten Link kommt niemand mehr in den Raum, abgelehnte Meldungen sind sichtbar. (Abnahme COOP-09)'),
     ],
   },
   {
@@ -232,6 +241,35 @@ export const TEST_AREAS: readonly TestArea[] = [
 ];
 
 export const ALL_CASES: readonly TestCase[] = TEST_AREAS.flatMap(a => a.cases);
+
+/**
+ * Abnahme je Roadmap-Paket: welche Testfälle die offene Abnahme eines implementierten Pakets abdecken.
+ * `npm run check:testplan` verlangt für jedes Paket mit Status „implemented“ einen Eintrag mit bekannten Fällen.
+ */
+export const ACCEPTANCE: Readonly<Record<string, readonly string[]>> = {
+  'ARCH-02': ['SYS-03', 'START-03'], 'PROFILE-01': ['DATEI-06'], 'NBT-01': ['DATEI-07'], 'FORMAT-01': ['DATEI-08', 'PROJ-04'], 'FORMAT-02': ['DATEI-08', 'PROJ-04'],
+  'MAT-02': ['PROJ-15', 'PROJ-02'], 'MAT-03': ['PROJ-14'], 'MAT-04': ['PROJ-14'], 'DIFF-01': ['BIB-17', 'PROJ-07'],
+  'PERF-02': ['PROJ-08', 'DATEI-05'], 'PERF-03': ['BIB-18', 'BIB-01'], 'PERF-04': ['DATEI-03', 'PROJ-05', 'PROJ-08'], 'PERF-05': ['START-01', 'PROJ-08', 'WERK-07'],
+  'VIEW-01': ['DATEI-01', 'GERAET-04'], 'VIEW-02': ['START-06', 'DATEI-01'], 'BLOCK-01': ['WERK-06', 'PROJ-04'], 'BLOCK-02': ['BIB-12', 'WERK-06'],
+  'GFX-01': ['DATEI-04', 'GERAET-05'], 'MODEL-01': ['PROJ-05'],
+  'EDIT-01': ['WERK-03'], 'EDIT-02': ['WERK-01'], 'EDIT-03': ['WERK-02', 'WERK-05'], 'EDIT-04': ['WERK-04'], 'EDIT-05': ['WERK-03'],
+  'UPDATE-01': ['PROJ-07'], 'LIB-02': ['BIB-07'], 'LIB-03': ['BIB-08'], 'TERRAIN-01': ['KARTE-04', 'PROJ-06'], 'TERRAIN-02': ['PROJ-06'],
+  'BUILD-06': ['PROJ-03', 'GERAET-06'], 'GEN-02': ['BIB-06', 'BIB-12'], 'MAP-01': ['KARTE-01'], 'MAP-03': ['LIVE-01', 'LIVE-03', 'LIVE-04'], 'MAP-04': ['KARTE-02', 'KARTE-03'],
+  'GAME-02': ['MOD-01', 'MOD-02'], 'GAME-07': ['MOD-02', 'MOD-06', 'MOD-07', 'MOD-08', 'MOD-12'], 'GAME-08': ['LIVE-08', 'KARTE-05'], 'GAME-03': ['LIVE-01', 'LIVE-02'],
+  'WORLD-IMPORT-01': ['KARTE-04'], 'BACKUP-02': ['START-03', 'START-04'], 'GAME-05': ['MOD-01'], 'LAGER-01': ['LAGER-01', 'TEAMBAU-08'], 'LIB-04': ['BIB-05', 'BIB-12'],
+  'ENTITY-01': ['DATEI-07'], 'LIB-05': ['BIB-12'], 'LIB-06': ['BIB-15', 'BIB-16'], 'BASE-01': ['BIB-10'], 'SPLIT-01': ['BIB-11'], 'GROSS-01': ['BIB-13', 'PROJ-11'],
+  'MAP-05': ['LIVE-04', 'LIVE-05'], 'MAP-06': ['KARTE-05', 'KARTE-06', 'LIVE-08'], 'QA-04': ['SYS-01', 'SYS-02', 'LIVE-06'], 'GEN-03': ['BIB-14'],
+  'SIZE-01': ['DATEI-05', 'WERK-07', 'MOD-15', 'LIVE-09'], 'COOP-01': ['TEAMBAU-01', 'TEAMBAU-02', 'TEAMBAU-03', 'TEAMBAU-04', 'TEAMBAU-05'], 'COOP-02': ['TEAMBAU-06'],
+  'COOP-03': ['TEAMBAU-09'], 'COOP-04': ['TEAMBAU-07', 'TEAMBAU-08'], 'COOP-05': ['LAGER-01', 'LAGER-02', 'LAGER-03', 'LAGER-04', 'LAGER-05', 'LAGER-06', 'LAGER-07', 'LAGER-08', 'LAGER-09'],
+  'COOP-06': ['TEAMBAU-21', 'TEAMBAU-22', 'TEAMBAU-23', 'TEAMBAU-24'], 'PROJ-01': ['PROJ-09', 'PROJ-10'], 'GAME-10': ['MOD-16'], 'COOP-07': ['TEAMBAU-25'], 'COOP-09': ['TEAMBAU-26', 'TEAMBAU-25'],
+  'PROD-01': ['PROJ-12'], 'PROD-02': ['PROJ-13'], 'PROD-03': ['PROJ-12', 'PROJ-13'], 'PROD-04': ['PROJ-13'], 'PROD-05': ['LAGER-10', 'PROJ-12'],
+  'LINK-01': ['LINK-01'], 'LINK-02': ['LINK-02'], 'LINK-03': ['LIVE-01', 'LINK-01'], 'LINK-04': ['LINK-01', 'LINK-02', 'LINK-03'], 'LINK-05': ['LINK-04'], 'COOP-08': ['LAGER-10', 'PROJ-12'],
+};
+
+/** Roadmap-Pakete, deren Abnahme ein Testfall abdeckt (Anzeige auf #/testphase). */
+export function packagesOf(caseId: string): string[] {
+  return Object.entries(ACCEPTANCE).filter(([, cases]) => cases.includes(caseId)).map(([pkg]) => pkg);
+}
 
 export function areaOf(caseId: string): TestArea | undefined {
   return TEST_AREAS.find(a => a.cases.some(c => c.id === caseId));

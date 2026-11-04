@@ -7,7 +7,7 @@ import type { BugInput, Environment } from '../app/diagnostics';
 import { loggedErrors, onErrorLogged } from '../app/errorLog';
 import { useDocumentTitle } from '../app/Shell';
 import { download, REPO_URL } from '../app/ui';
-import { ALL_CASES, AREA_KIND_LABEL, areaOf, TEST_AREAS } from './testplan';
+import { ALL_CASES, AREA_KIND_LABEL, areaOf, packagesOf, TEST_AREAS } from './testplan';
 import type { TestArea, TestCase } from './testplan';
 import { loadProtocol, protocolMarkdown, saveProtocol, setResult, summarize } from './protocol';
 import type { CaseResult, Protocol } from './protocol';
@@ -104,6 +104,7 @@ function CaseRow({ c, protocol, onResult, onReport }: { c: TestCase; protocol: P
     {(open || entry?.result === 'fehler') && <div className="tp-case-body">
       <ol>{c.steps.map((s, i) => <li key={i}>{s}</li>)}</ol>
       <p><b>Erwartet:</b> {c.expect}{c.start && <> · <a href={c.start}>Hier starten</a></>}</p>
+      {packagesOf(c.id).length > 0 && <p className="muted tp-packages" data-testid="tp-packages">Abnahme für: {packagesOf(c.id).join(', ')}</p>}
       <label className="tp-note">Notiz<input value={entry?.note ?? ''} onChange={e => onResult(c.id, entry?.result ?? null, e.target.value)} placeholder="Was war anders? Gerät, Datei, Besonderheit" /></label>
       {entry?.result === 'fehler' && <button type="button" className="tp-report-link" onClick={() => onReport(c.id)}>Fehler zu {c.id} melden</button>}
     </div>}

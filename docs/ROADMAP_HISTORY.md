@@ -5011,3 +5011,22 @@ Mod 0.13.0 für Fabric und NeoForge 26.3 auf #/mod bereitgestellt (release_mod, 
 - `downloads/mod/bauplaner-bridge-fabric-26.3-0.13.0.jar`
 - `downloads/mod/bauplaner-bridge-neoforge-26.3-0.13.0.jar`
 
+## 2026-11-04T09:25:54.830Z · progress
+
+**Aufgaben:** QA-04
+
+Abnahme je Paket: ACCEPTANCE in testplan.ts ordnet jedem implementierten Roadmap-Paket Testfälle zu (check:testplan erzwingt es); neue Fälle BIB-17/18, PROJ-14/15, DATEI-06–08, SYS-03, PROJ-12 mit Öfen; Teststand Mod/Plugin 0.12.0
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| QA-04 | 🧩 Implementiert · Abnahme offen | 4/6 | Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/TestphaseView.tsx`
+- `apps/web/src/testing/testplan.ts`
+- `docs/architecture/TESTPHASE.md`
+- `docs/testing/TESTPLAN.md`
+- `scripts/render_testplan.mjs`
+- `tests/testphase.test.mjs`
+
