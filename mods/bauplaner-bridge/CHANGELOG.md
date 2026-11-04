@@ -10,11 +10,15 @@ Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/modrinth_publish.m
 - `/bauplaner geruest`: open blocks with nothing to place them against (floating parts) and falling blocks (sand, gravel, concrete powder) without support; the pointer jumps to the nearest.
 - `/bauplaner markieren <type> [name]` sets a point where you stand; the planner's world map takes it into the world plan with one click (“Take into world plan”). `/bauplaner markierungen` lists waiting points. Website connection only, nothing goes to the server.
 - All three are on the commands page (J → “Commands & status”).
+- Paper plugin: the planner starts the capture of the build state on the server and fetches the file itself (“Record on the server” in the “Build” tab) – no `/bp scan`, no copying files from the server folder. Works through the mod and through the team room; the world is never changed. Only files in the captures folder can be fetched.
+- Paper plugin: yield chests – a farm's collecting chest measures items and running time (only while its chunk is loaded) for the planner's yield book; hopper moves are bundled (at most one booking per minute).
 
 - `/bauplaner packliste`: was du für den gezeigten Teil des Plans noch holen musst, abzüglich dessen, was du trägst, in Stapeln und Shulkerkisten, und welche Team-Lagerkiste es hat (nächste zuerst).
 - `/bauplaner geruest`: offene Blöcke ohne Halt zum Ansetzen (schwebende Teile) und fallende Blöcke (Sand, Kies, Trockenbeton) ohne Block darunter; der Zeiger springt zum nächsten.
 - `/bauplaner markieren <art> [name]` setzt einen Punkt, wo du stehst; die Weltkarte des Planers übernimmt ihn mit einem Klick („In den Weltplan übernehmen“). `/bauplaner markierungen` listet die wartenden. Nur über die Website-Verbindung, nichts geht an den Server.
 - Alle drei stehen auf der Befehlsseite (J → „Befehle & Status“).
+- Paper-Plugin: Der Planer startet die Aufnahme des Baustands auf dem Server und holt die Datei selbst („Auf dem Server aufnehmen“ im Reiter „Bauen“) – kein `/bp scan`, kein Kopieren aus dem Serverordner. Geht über die Mod und über den Team-Raum; die Welt wird nie verändert. Abholbar sind nur Dateien aus dem Aufnahmeordner.
+- Paper-Plugin: Ertragskisten – die Sammeltruhe einer Farm misst Ertrag und Laufzeit (nur bei geladenem Chunk) für das Ertragsbuch im Planer; Trichterbewegungen werden gebündelt (höchstens eine Buchung pro Minute).
 
 ## 0.12.0 – 2026-11-04
 

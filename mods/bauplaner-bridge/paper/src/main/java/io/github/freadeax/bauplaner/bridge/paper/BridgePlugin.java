@@ -258,29 +258,85 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
     private boolean startScan(CommandSender s, boolean loadedOnly) {
         Plan plan = selected.get(key(s));
         if (plan == null) return fail(s, "Zuerst /bauplaner plan <datei>.");
+        if (storedAnchor(plan).isEmpty()) return fail(s, "Zuerst /bauplaner anker hier (oder anker <x> <y> <z>).");
+        List<String> notes = new ArrayList<>();
+        String problem = beginScan(plan, key(s), s.getName(), loadedOnly, s.hasPermission("bauplaner.nachladen"), notes);
+        if (problem != null) return fail(s, problem);
+        notes.forEach(n -> say(s, n));
+        return true;
+    }
+
+    /**
+     * Starts a recording of {@code plan} at its stored anchor (command and planner, LINK-06).
+     * Returns an error text or null; {@code notes} receives what the starter should know.
+     */
+    private String beginScan(Plan plan, String ownerKey, String ownerName, boolean loadedOnly, boolean mayLoad, List<String> notes) {
         var entry = storedAnchor(plan);
-        if (entry.isEmpty()) return fail(s, "Zuerst /bauplaner anker hier (oder anker <x> <y> <z>).");
-        if (scan != null) return fail(s, "Es läuft bereits eine Aufnahme (" + scan.plan.fileName() + " von " + scan.ownerName + ", " + scan.percent() + " %). Bitte warten.");
+        if (entry.isEmpty()) return "Für diesen Plan ist kein Anker gespeichert.";
+        if (scan != null) return "Es läuft bereits eine Aufnahme (" + scan.plan.fileName() + " von " + scan.ownerName + ", " + scan.percent() + " %). Bitte warten.";
         World world = PaperCompat.findWorld(entry.get().dimension());
-        if (world == null) return fail(s, "Die Welt des Ankers (" + entry.get().dimension() + ") ist nicht geladen.");
-        boolean load = !loadedOnly && getConfig().getBoolean("chunks-nachladen", true) && s.hasPermission("bauplaner.nachladen");
+        if (world == null) return "Die Welt des Ankers (" + entry.get().dimension() + ") ist nicht geladen.";
+        boolean load = !loadedOnly && getConfig().getBoolean("chunks-nachladen", true) && mayLoad;
         int[] anchor = entry.get().anchor();
         int[] m = plan.projectMin();
         long chunkCount = ServerScan.chunkCount(plan, new int[] { anchor[0] + m[0], anchor[1] + m[1], anchor[2] + m[2] });
         int maxChunks = getConfig().getInt("max-chunks", 4096);
         if (load && chunkCount > maxChunks) {
-            say(s, ChatColor.YELLOW + "Die Planbox umfasst " + chunkCount + " Chunks (Grenze max-chunks " + maxChunks + "); es werden nur geladene Chunks gelesen.");
+            notes.add(ChatColor.YELLOW + "Die Planbox umfasst " + chunkCount + " Chunks (Grenze max-chunks " + maxChunks + "); es werden nur geladene Chunks gelesen.");
             load = false;
         }
         String dim = PaperCompat.dimension(world);
         ScanJob job = new ScanJob(plan, anchor, PaperCompat.serverBlocks(world), PaperCompat.dataVersion(),
                 new ScanJob.Info(PaperCompat.gameVersion(), PaperCompat.pluginVersion(this), PaperCompat.loader(), dim, "server"));
-        scan = new ServerScan(this, key(s), s.getName(), world, plan, job, load);
-        say(s, "Aufnahme gestartet: " + plan.volume() + " Zellen in " + chunkCount + " Chunks"
+        scan = new ServerScan(this, ownerKey, ownerName, world, plan, job, load);
+        notes.add(0, "Aufnahme gestartet: " + plan.volume() + " Zellen in " + chunkCount + " Chunks"
                 + (load ? "; nicht geladene, aber vorhandene Chunks werden nachgeladen." : "; nur bereits geladene Chunks werden gelesen."));
-        if (!load && !loadedOnly && !s.hasPermission("bauplaner.nachladen")) say(s, "Zum Nachladen fehlt das Recht bauplaner.nachladen.");
+        if (!load && !loadedOnly && !mayLoad) notes.add("Zum Nachladen fehlt das Recht bauplaner.nachladen.");
         long budget = Math.max(1, Math.min(50, getConfig().getInt("millisekunden-pro-tick", 8))) * 1_000_000L;
         task = Bukkit.getScheduler().runTaskTimer(this, () -> tick(budget), 1L, 1L);
+        return null;
+    }
+
+    // ---------------------------------------------------------------- planner (LINK-06, control op "scan")
+
+    /** Result of the last finished or failed recording, for the planner. */
+    record ScanResult(String plan, String file, String error, String summary, long at) {}
+    private volatile ScanResult lastScan;
+    /** Plan whose finished recording is being written right now (between the scan and {@link #lastScan}). */
+    private volatile String writing;
+
+    String writingPlan() { return writing; }
+
+    ScanResult lastScan() { return lastScan; }
+    ServerScan currentScan() { return scan; }
+
+    /** A plan in plugins/BauplanerBridge/plans/ by file name; empty if missing, unsafe or unreadable. */
+    Optional<Plan> readPlan(String name) {
+        Path dir = root.resolve("plans");
+        Path file = dir.resolve(name == null ? "" : name).normalize();
+        if (!file.startsWith(dir) || !file.getFileName().toString().endsWith(".schem") || !Files.isRegularFile(file)) return Optional.empty();
+        try {
+            return Optional.of(Plan.read(file));
+        } catch (IOException | RuntimeException e) {
+            return Optional.empty();
+        }
+    }
+
+    Optional<AnchorStore.Entry> anchorOf(Plan plan) { return storedAnchor(plan); }
+
+    /** Starts a recording for the planner; error text or null. Chunks are only loaded when the config allows it. */
+    String startFromPlanner(Plan plan, boolean loadedOnly, String via, List<String> notes) {
+        return beginScan(plan, "planer", "Planer (" + via + ")", loadedOnly, true, notes);
+    }
+
+    /** Cancels the running recording for the planner; false if none ran. */
+    boolean cancelFromPlanner() {
+        if (scan == null) return false;
+        CommandSender owner = owner(scan);
+        String plan = scan.plan.fileName();
+        stopScan();
+        lastScan = new ScanResult(plan, null, "Aufnahme abgebrochen.", "", System.currentTimeMillis());
+        if (owner != null) say(owner, "Die Aufnahme wurde aus dem Planer abgebrochen.");
         return true;
     }
 
@@ -295,6 +351,7 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
             if (!done) return;
         } catch (RuntimeException e) {
             stopScan();
+            lastScan = new ScanResult(current.plan.fileName(), null, "Aufnahme fehlgeschlagen: " + e.getMessage(), "", System.currentTimeMillis());
             if (owner != null) fail(owner, "Aufnahme fehlgeschlagen: " + e.getMessage());
             getLogger().warning("Aufnahme fehlgeschlagen: " + e);
             return;
@@ -305,6 +362,7 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
         try {
             bytes = current.job.toFile(now);
         } catch (RuntimeException e) {
+            lastScan = new ScanResult(current.plan.fileName(), null, "Aufnahme nicht schreibbar: " + e.getMessage(), "", System.currentTimeMillis());
             if (owner != null) fail(owner, "Aufnahme nicht schreibbar: " + e.getMessage());
             return;
         }
@@ -312,17 +370,23 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
         String summary = (current.job.unloaded() > 0 ? " " + current.job.unloaded() + " Zellen lagen in nicht geladenen oder nie erzeugten Chunks (gelten als „nicht aufgenommen“)." : "")
                 + (current.loadedByScan() > 0 ? " " + current.loadedByScan() + " Chunks wurden dafür nachgeladen." : "");
         // Writing can take a moment for large boxes; keep it off the main thread.
+        writing = current.plan.fileName();
         Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
             String result;
+            ScanResult record;
             try {
                 Files.createDirectories(out.getParent());
                 Path tmp = out.resolveSibling(out.getFileName() + ".tmp");
                 Files.write(tmp, bytes);
                 Files.move(tmp, out, StandardCopyOption.ATOMIC_MOVE);
-                result = "Aufnahme gespeichert: plugins/BauplanerBridge/scans/" + out.getFileName() + "." + summary + " Jetzt im Tab „Bauen“ mit „Spielaufnahme importieren“ öffnen.";
+                result = "Aufnahme gespeichert: plugins/BauplanerBridge/scans/" + out.getFileName() + "." + summary + " Im Planer unter „Bauen“ mit „Vom Server holen“ öffnen.";
+                record = new ScanResult(current.plan.fileName(), out.getFileName().toString(), null, summary.trim(), System.currentTimeMillis());
             } catch (IOException e) {
                 result = ChatColor.RED + "Aufnahme nicht gespeichert: " + e.getMessage();
+                record = new ScanResult(current.plan.fileName(), null, "Aufnahme nicht gespeichert: " + e.getMessage(), "", System.currentTimeMillis());
             }
+            lastScan = record;
+            writing = null;
             String message = result;
             getLogger().info(ChatColor.stripColor(message));
             Bukkit.getScheduler().runTask(this, () -> {
@@ -351,6 +415,7 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
         if (!scan.owner.equals(key(s)) && !s.hasPermission("bauplaner.abbrechen.alle"))
             return fail(s, "Die laufende Aufnahme gehört " + scan.ownerName + ".");
         CommandSender owner = owner(scan);
+        lastScan = new ScanResult(scan.plan.fileName(), null, "Aufnahme von " + s.getName() + " abgebrochen.", "", System.currentTimeMillis());
         stopScan();
         say(s, "Aufnahme abgebrochen, keine Datei geschrieben.");
         if (owner != null && owner != s) say(owner, "Deine Aufnahme wurde von " + s.getName() + " abgebrochen.");

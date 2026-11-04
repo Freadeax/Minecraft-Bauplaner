@@ -66,6 +66,48 @@ export function startModSimulator(port, options = {}) {
   const pluginStatus = () => ({ serverId: plugin.serverId, name: plugin.name, plugin: '0.12.0-sim', minecraft: '26.3', protocol: 1,
     owners: plugin.owners.map(o => ({ id: o.id, name: o.name, seq: o.seq, created: '', by: 'Philipp' })), settings: plugin.settings, schema: plugin.schema,
     teams: plugin.teams, rooms: plugin.rooms, plans: (plugin.plans ?? []).map(x => x.name), worlds: ['minecraft:overworld'], online: 1 });
+  /** Plan facts as Plan.parse reads them (name from Metadata.Name, project and revision from Metadata.Bauplaner). */
+  const planFacts = x => {
+    const sch = readNbt(new Uint8Array(gunzipSync(x.data))).tag.value.Schematic.value, md = sch.Metadata.value, bp = md.Bauplaner.value;
+    return { file: x.name, name: md.Name?.value ?? x.name, projectId: bp.ProjectId?.value, revision: bp.RevisionNumber?.value ?? 0, cells: sch.Width.value * sch.Height.value * sch.Length.value,
+      ...(x.anchor && { anchor: x.anchor, dimension: x.dimension ?? 'minecraft:overworld' }) };
+  };
+  plugin.scans = [];
+  /** ServerLink.scan: list/start/cancel/fetch; a started recording runs over a few list calls like the real tick loop. */
+  const pluginScan = b => {
+    const list = () => {
+      const r = plugin.running;
+      if (r && ++r.polls >= 3) {
+        plugin.running = null;
+        const f = planFacts(r.plan);
+        const base = (f.name.replace(/ · Revision \d+$/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'projekt').slice(0, 40);
+        const file = `${base}_r${f.revision}_${new Date().toISOString().slice(0, 19).replace(/[-:]/g, '').replace('T', '-')}.schem`;
+        const data = Buffer.from(scanFromPlan(r.plan.data, r.plan.anchor));
+        plugin.scans.unshift({ file, data, at: new Date().toISOString() });
+        plugin.lastScan = { plan: r.plan.name, file, summary: '', at: new Date().toISOString() };
+      }
+      const now = plugin.running;
+      return { ok: true, plans: (plugin.plans ?? []).filter(x => x.data).map(planFacts), scans: plugin.scans.map(x => ({ file: x.file, bytes: x.data.length, at: x.at })),
+        ...(now && { running: { plan: now.plan.name, percent: 30 * now.polls + 10, by: 'Planer (sim)', phase: 'lesen' } }),
+        ...(plugin.lastScan && { last: plugin.lastScan }), partBytes: 384 * 1024 };
+    };
+    if (b.do === 'start') {
+      const plan = (plugin.plans ?? []).find(x => x.name === b.plan && x.data);
+      if (!plan) return { error: 'Den Plan gibt es auf dem Server nicht (zuerst „Auf den Server legen“).' };
+      if (!plan.anchor) return { error: 'Für diesen Plan ist kein Anker gespeichert.' };
+      if (plugin.running) return { error: 'Es läuft bereits eine Aufnahme.' };
+      plugin.running = { plan, polls: 0 };
+      return { ...list(), text: 'Aufnahme gestartet: nur bereits geladene Chunks werden gelesen.' };
+    }
+    if (b.do === 'cancel') { const had = !!plugin.running; if (had) plugin.lastScan = { plan: plugin.running.plan.name, error: 'Aufnahme abgebrochen.', at: new Date().toISOString() }; plugin.running = null; return { ...list(), text: had ? 'Aufnahme abgebrochen.' : 'Es lief keine Aufnahme.' }; }
+    if (b.do === 'fetch') {
+      const f = plugin.scans.find(x => x.file === b.file);
+      if (!f) return { error: 'Diese Aufnahme gibt es auf dem Server nicht.' };
+      const offset = Number(b.offset ?? 0), part = f.data.subarray(offset, offset + (options.scanPart ?? 384 * 1024));
+      return { ok: true, file: f.file, size: f.data.length, offset, data: part.toString('base64') };
+    }
+    return list();
+  };
   /** Same checks as LinkCore.verify + ServerLink.control in the plugin. */
   const pluginControl = m => {
     const o = plugin.owners.find(x => x.id === m.owner);
@@ -90,9 +132,10 @@ export function startModSimulator(port, options = {}) {
     if (b.op === 'plan') {
       const bytes = Buffer.from(String(b.data ?? ''), 'base64');
       if (!bytes.length) return { error: 'Plan fehlt.' };
-      plugin.plans = [...(plugin.plans ?? []).filter(x => x.name !== b.name), { name: b.name, magic: bytes.subarray(0, 2).toString('hex'), bytes: bytes.length, dimension: b.dimension ?? null, anchor: b.anchor ?? null }];
+      plugin.plans = [...(plugin.plans ?? []).filter(x => x.name !== b.name), { name: b.name, magic: bytes.subarray(0, 2).toString('hex'), bytes: bytes.length, dimension: b.dimension ?? null, anchor: b.anchor ?? null, data: bytes }];
       return { ok: true, file: b.name, text: `Plan „${b.name.replace(/\.schem$/, '')}“ liegt auf dem Server.${b.anchor ? ` Anker ${b.anchor.join(' ')} (${b.dimension}).` : ''}` };
     }
+    if (b.op === 'scan') return pluginScan(b);
     if (b.op === 'invite') { const n = { id: `own_${b64url(randomBytes(6))}`, name: b.name, key: b64url(randomBytes(32)), seq: 0 }; plugin.owners.push(n); return { ok: true, serverId: plugin.serverId, name: plugin.name, owner: n.id, key: n.key, text: `Weiteres Gerät „${b.name}“ freigegeben.` }; }
     if (b.op === 'forget') { plugin.owners = plugin.owners.filter(x => x.id !== b.owner); return { ...pluginStatus(), ok: true, text: 'Gerät entfernt.' }; }
     return { error: 'Unbekannte Steueraktion.' };

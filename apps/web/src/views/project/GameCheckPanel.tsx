@@ -7,6 +7,8 @@ import { download, errorText, formatNumber } from '../../app/ui';
 import { useApp } from '../../app/context';
 import { loadProjectScanOriginal, saveProjectScan } from '../../app/scanPersistence';
 import { MODEL_MAX_FILE_BYTES } from '../../../../../packages/voxel/src/sizeLimits.js';
+import { hasServerPairing, latestServerRecording, recordOnServer } from '../mod/serverClient';
+import type { ServerRecording } from '../mod/serverClient';
 
 export type LoadedScan = WorldScan & { readonly sourceSha256: string; readonly fileName: string };
 const MAX_SCAN_BYTES = MODEL_MAX_FILE_BYTES;
@@ -60,6 +62,8 @@ export function GameCheckPanel(p: Props) {
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
   const [original, setOriginal] = useState<{ hash: string; bytes: Uint8Array } | null>(null);
+  const [serverStep, setServerStep] = useState('');
+  const serverCancel = useRef(false);
   const latest = useRef(p); latest.current = p;
   const projectId = p.project.id;
   const requestId = useRef(0);
@@ -101,6 +105,20 @@ export function GameCheckPanel(p: Props) {
     } catch (e) { if (request === requestId.current) setError(errorText(e)); }
     finally { if (request === requestId.current) setBusy(false); }
   };
+  /** LINK-06: recording from the paired server by click (instead of `/bp scan` and copying the file). */
+  const fromServer = async (fresh: boolean) => {
+    serverCancel.current = false;
+    setError(''); setNotice(''); setServerStep(fresh ? 'Aufnahme auf dem Server wird gestartet …' : 'Letzte Aufnahme wird gesucht …');
+    try {
+      const id = latest.current.project.id;
+      const r: ServerRecording = fresh ? await recordOnServer(id, setServerStep, () => serverCancel.current) : await latestServerRecording(id, setServerStep, () => serverCancel.current);
+      if (latest.current.project.id !== id) return;
+      setServerStep('');
+      await load(new File([r.bytes as Uint8Array<ArrayBuffer>], r.fileName));
+      setNotice(`Aufnahme von „${r.server}“${r.via === 'room' ? ' (über den Team-Raum)' : ''} geladen: ${r.fileName}.${r.summary ? ` ${r.summary}` : ''} Zum Behalten „Aufnahme im Projekt speichern“.`);
+    } catch (e) { setError(errorText(e)); }
+    finally { setServerStep(''); }
+  };
   const save = async () => {
     if (!p.scan || !original || original.hash !== p.scan.sourceSha256 || !p.alignment || !p.canSave || p.targetError) return;
     setBusy(true); setError('');
@@ -130,13 +148,19 @@ export function GameCheckPanel(p: Props) {
         {t ? <>
           <div className="build-bar game" role="progressbar" aria-label="Gesetzte Blöcke laut Spielaufnahme" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}><span style={{ width: `${pct}%` }} /></div>
           <small>{formatNumber(t.blocksOk)} von {formatNumber(t.blocks)} Blöcken korrekt ({pct} %)</small>
-        </> : <small>Noch keine Aufnahme. Die <a href="#/mod">Bauplaner-Mod</a> schreibt sie mit <code>/bauplaner scan</code> in den Ordner <code>bauplaner/scans</code> des Spielordners.</small>}
+        </> : <small>Noch keine Aufnahme. {hasServerPairing() ? 'Mit „Auf dem Server aufnehmen“ liest der gekoppelte Server den Bau per Klick.' : <>Mit einem auf der Seite <a href="#/mod">„Spiel“</a> gekoppelten Server geht die Aufnahme per Klick; sonst schreibt die Mod sie mit <code>/bauplaner scan</code> in den Ordner <code>bauplaner/scans</code>.</>}</small>}
       </div>
       <label className="file-button">{busy ? 'Liest …' : p.scan ? 'Neue Aufnahme importieren' : 'Spielaufnahme importieren (.schem)'}
         <input type="file" accept=".schem,application/octet-stream" disabled={busy} onChange={e => { void load(e.target.files?.[0]); e.target.value = ''; }} />
       </label>
       {p.scan && <button className="file-button" disabled={busy} onClick={p.onClear}>Aufnahme ausblenden</button>}
     </div>
+    {hasServerPairing() && <div className="button-row game-server-scan">
+      <button className="primary" disabled={busy || !!serverStep} onClick={() => void fromServer(true)}
+        title="Der gekoppelte Server liest die Planbox am gespeicherten Anker und schickt die Aufnahme hierher – ohne Befehl und ohne Datei kopieren. Die Welt wird nicht verändert.">⇩ Auf dem Server aufnehmen</button>
+      <button disabled={busy || !!serverStep} onClick={() => void fromServer(false)} title="Holt die neueste Aufnahme dieses Projekts, die schon auf dem Server liegt.">Letzte Aufnahme vom Server holen</button>
+      {serverStep && <><span className="muted" role="status">{serverStep}</span><button className="link-button" onClick={() => { serverCancel.current = true; }}>Abbrechen</button></>}
+    </div>}
     {history.length > 0 && <label>Gespeicherte Spielaufnahmen ({history.length})<select aria-label="Gespeicherte Spielaufnahme" disabled={busy} value={stored ? p.scan!.sourceSha256 : ''}
       onChange={e => { void chooseStored(e.target.value); }}><option value="">Aufnahme wählen …</option>{[...history].reverse().map(s => <option key={s.sha256} value={s.sha256}>{s.fileName} · importiert {new Date(s.importedAt).toLocaleString('de-DE')}</option>)}</select></label>}
     {notice && <p className="notice" role="status">{notice}</p>}

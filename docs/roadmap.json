@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T09:33:11.151Z",
+  "updatedAt": "2026-11-04T09:38:35.990Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -8864,24 +8864,32 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T08:50:13.176Z",
+      "updatedAt": "2026-11-04T09:38:35.990Z",
       "area": "PLUGIN",
       "thread": "Anbindung von Planer, Mod und Server neu denken",
       "orphans": [],
       "id": "LINK-06",
-      "title": "Weitere Steuerung ohne Befehle: Plan mit Anker von der Weltkarte auf den Server (umgesetzt), Serveraufnahme (scan) per Steuernachricht (offen)",
-      "status": "in_progress",
+      "title": "Weitere Steuerung ohne Befehle: Plan mit Anker von der Weltkarte auf den Server und Serveraufnahme per Klick zurück in den Planer",
+      "status": "implemented",
       "dependencies": [
         "LINK-05"
       ],
       "scope": [
         "apps/web/src/testing/testplan.ts",
         "apps/web/src/views/map/WorldMapView.tsx",
+        "apps/web/src/views/mod/ModView.tsx",
         "apps/web/src/views/mod/ServerPanel.tsx",
+        "apps/web/src/views/mod/releases.json",
         "apps/web/src/views/mod/serverClient.ts",
+        "apps/web/src/views/project/GameCheckPanel.tsx",
         "docs/TESTING.md",
         "docs/architecture/AUTO_LINK.md",
+        "docs/testing/TESTPLAN.md",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/BridgePlugin.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/LinkCore.java",
         "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java",
+        "packages/domain/src/serverControl.ts",
         "scripts/bridge_paperlink.mjs",
         "scripts/test_bridge_paper_link.sh",
         "tests/e2e/modSimulator.mjs",
@@ -8895,8 +8903,8 @@
         },
         {
           "id": "LINK-06-S02",
-          "title": "Serveraufnahme als Steueraktion.",
-          "done": false
+          "title": "Serveraufnahme als Steueraktion scan (list/start/fetch/cancel), Reiter „Bauen“ → „⇩ Auf dem Server aufnehmen“, Paper-Plugin 0.13.0.",
+          "done": true
         }
       ],
       "acceptance": [
@@ -8910,13 +8918,25 @@
         {
           "path": "tests/e2e/server-link.e2e.mjs",
           "note": "iPad 820 px: Weltkarte → „Auf den Server legen“ über den Raum; mit TEAM_ROOM_URL gegen den echten Dienst grün."
+        },
+        {
+          "path": "scripts/test_bridge_paper_link.sh",
+          "note": "Paper 1.21.11 (04.11.2026): Aufnahme per Steuernachricht scan gestartet, Fortschritt abgefragt, Datei byte-gleich in Teilen geholt; fremde Pfade und unbekannte Pläne abgewiesen."
+        },
+        {
+          "path": "tests/e2e/server-link.e2e.mjs",
+          "note": "iPad 820 px: Reiter „Bauen“ → „Auf dem Server aufnehmen“ über den Raum, in Teilen geholt, gespeichert, „Letzte Aufnahme holen“; auch mit TEAM_ROOM_URL gegen den echten Dienst grün."
+        },
+        {
+          "path": "scripts/test_bridge_paper.sh",
+          "note": "Paper 1.21.11 und 26.3: /bp scan nach dem Umbau unverändert (Spieltest bestanden); Lagerkisten-Test 1.21.11/26.3 mit Ertragskisten grün."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "Plan-Upload automatisch und gegen echten Paper + Team-Raum geprüft; Serveraufnahme offen."
+        "note": "Automatisch, gegen echten Paper-Server und echten Team-Raum geprüft; Abnahme Testplan LINK-06 offen."
       },
-      "next": "Serveraufnahme (scan) als Steueraktion; Abnahme LINK-05 (Testplan).",
+      "next": "Abnahme durch Philipp (Testplan LINK-05, LINK-06; Paper-Plugin 0.13.0 auf dem Server).",
       "philipp": []
     },
     {
@@ -16917,6 +16937,41 @@
           "done": 4,
           "total": 5,
           "next": "Abnahme durch Philipp (S05, PROJ-16…18)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T09:38:35.990Z",
+      "kind": "progress",
+      "items": [
+        "LINK-06"
+      ],
+      "summary": "Serveraufnahme per Klick: Steueraktion scan (list/start/fetch/cancel) im Paper-Plugin 0.13.0, Planer Reiter „Bauen“ → „Auf dem Server aufnehmen“/„Letzte Aufnahme holen“ über Mod oder Team-Raum; Ertragskisten (COOP-08) im selben Plugin-Release",
+      "files": [
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/mod/ModView.tsx",
+        "apps/web/src/views/mod/releases.json",
+        "apps/web/src/views/mod/serverClient.ts",
+        "apps/web/src/views/project/GameCheckPanel.tsx",
+        "docs/architecture/AUTO_LINK.md",
+        "docs/testing/TESTPLAN.md",
+        "downloads/mod/bauplaner-bridge-paper-0.13.0.jar",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/BridgePlugin.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/LinkCore.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java",
+        "packages/domain/src/serverControl.ts",
+        "scripts/bridge_paperlink.mjs",
+        "tests/e2e/modSimulator.mjs",
+        "tests/e2e/server-link.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "LINK-06",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme durch Philipp (Testplan LINK-05, LINK-06; Paper-Plugin 0.13.0 auf dem Server)."
         }
       ]
     }

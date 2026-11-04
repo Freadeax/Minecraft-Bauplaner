@@ -238,6 +238,7 @@ export const TEST_AREAS: readonly TestArea[] = [
       k('LINK-02', 'Server-Einstellungen aus dem Planer', ['Gekoppelt: „Bauen in fremden Abschnitten“ auf „sperren“, „Übernehmen“.', 'Im Spiel in einem fremden Abschnitt einen Block setzen.'], 'Meldung „1 Einstellung übernommen“; das Setzen wird verhindert. config.yml des Plugins zeigt den neuen Wert.', '#/mod'),
       v('LINK-03', 'Team und Team-Raum per Knopf', ['Im Projekt Reiter „Team“ → „Planstand auf den Server legen“.', 'Unter „Team live“ → „Server mit dem Raum verbinden“.'], 'Beides ohne Datei und ohne Befehl; #/mod zeigt Team und Raum beim Server.', '#/mod'),
       v('LINK-05', 'Plan von der Weltkarte auf den Server', ['Gekoppelt (Mod auf dem Server oder Team-Raum): Weltkarte → Projekt wählen → „⇪ Auf den Server legen“.', 'Auf dem Server /bp plaene ansehen (nur zur Kontrolle).'], 'Meldung „Plan … liegt auf dem Server … Anker …“; der Plan steht in plugins/BauplanerBridge/plans, ohne Datei kopiert zu haben.', '#/karte'),
+      v('LINK-06', 'Baustand per Klick vom Server holen', ['Plan vorher mit „⇪ Auf den Server legen“ hochgeladen (LINK-05).', 'Im Projekt Reiter „Bauen“ → „⇩ Auf dem Server aufnehmen“.', 'Danach „Aufnahme im Projekt speichern“.'], 'Fortschritt in Prozent, dann „Aufnahme von … geladen“ mit den Zählern (fehlt, falscher Block …) – ohne /bp scan und ohne Datei herunterzuladen. Plugin 0.13.0 nötig.', '#/'),
       v('LINK-04', 'Vom iPad ohne Mod steuern', ['Am PC (#/mod, gekoppelt, Server mit Raum verbunden): „Weiteres Gerät freigeben (z. B. iPad)“ → Link erstellen.', 'Link auf dem iPad öffnen, eine Einstellung ändern.', 'Am PC das iPad wieder „entfernen“.'], 'iPad zeigt „über den Team-Raum“ und ändert die Einstellung; nach dem Entfernen meldet es „nicht (mehr) gekoppelt“.', '#/mod'),
     ],
   },
@@ -266,7 +267,7 @@ export const ACCEPTANCE: Readonly<Record<string, readonly string[]>> = {
   'COOP-03': ['TEAMBAU-09'], 'COOP-04': ['TEAMBAU-07', 'TEAMBAU-08'], 'COOP-05': ['LAGER-01', 'LAGER-02', 'LAGER-03', 'LAGER-04', 'LAGER-05', 'LAGER-06', 'LAGER-07', 'LAGER-08', 'LAGER-09'],
   'COOP-06': ['TEAMBAU-21', 'TEAMBAU-22', 'TEAMBAU-23', 'TEAMBAU-24'], 'PROJ-01': ['PROJ-09', 'PROJ-10', 'PROJ-11'], 'PROJ-02': ['PROJ-16', 'PROJ-17', 'PROJ-18'], 'GAME-10': ['MOD-16'], 'COOP-07': ['TEAMBAU-25'], 'COOP-09': ['TEAMBAU-26', 'TEAMBAU-25'],
   'PROD-01': ['PROJ-12'], 'PROD-02': ['PROJ-13'], 'PROD-03': ['PROJ-12', 'PROJ-13'], 'PROD-04': ['PROJ-13'], 'PROD-05': ['LAGER-10', 'PROJ-12'],
-  'LINK-01': ['LINK-01'], 'LINK-02': ['LINK-02'], 'LINK-03': ['LIVE-01', 'LINK-01'], 'LINK-04': ['LINK-01', 'LINK-02', 'LINK-03'], 'LINK-05': ['LINK-04'], 'COOP-08': ['LAGER-10', 'PROJ-12'],
+  'LINK-01': ['LINK-01'], 'LINK-02': ['LINK-02'], 'LINK-03': ['LIVE-01', 'LINK-01'], 'LINK-04': ['LINK-01', 'LINK-02', 'LINK-03'], 'LINK-05': ['LINK-04'], 'LINK-06': ['LINK-05', 'LINK-06'], 'COOP-08': ['LAGER-10', 'PROJ-12'],
 };
 
 /** Roadmap-Pakete, deren Abnahme ein Testfall abdeckt (Anzeige auf #/testphase). */

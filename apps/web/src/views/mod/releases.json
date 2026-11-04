@@ -541,6 +541,26 @@
       "releasedAt": "2026-11-04",
       "sourceCommit": "19732d6d862d317d4508ed33e8d948296392285d",
       "tested": "Spieltest neoforge-26.3 26.3 (Packliste, Gerüst, Markieren), JUnit, Browser map-depth"
+    },
+    {
+      "file": "bauplaner-bridge-paper-0.13.0.jar",
+      "modVersion": "0.13.0",
+      "loader": "paper",
+      "minecraft": "26.3",
+      "loaderMin": "1.18",
+      "minecraftVersions": [
+        "1.18.2",
+        "1.20.6",
+        "1.21.4",
+        "1.21.11",
+        "26.3"
+      ],
+      "java": "17",
+      "bytes": 246968,
+      "sha256": "bb1a1e5ca14d59d911a09c434b29916a0575cc526cac894c34b27827364fcdb0",
+      "releasedAt": "2026-11-04",
+      "sourceCommit": "b503bf3be49f68ea4961b68c06dc0e6764c3a44d",
+      "tested": "Paper 1.21.11 und 26.3: /bp scan (Spieltest) und Lagerkisten inkl. Ertragskisten; Paper 1.21.11: Server ohne Befehle inkl. Aufnahme per Klick (test_bridge_paper_link.sh); Browser gegen echten Team-Raum"
     }
   ]
 }

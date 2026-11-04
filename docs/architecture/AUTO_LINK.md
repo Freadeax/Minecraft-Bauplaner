@@ -1,6 +1,6 @@
 # Server ohne Befehle (LINK-01 … LINK-06)
 
-Stand 04.11.2026, Mod/Plugin 0.12.0. Anlass: Philipp, 04.11.2026: „Ich will keine Commands auf der Serverseite eingeben müssen! Denk das System weiter um!“
+Stand 04.11.2026, Mod/Plugin 0.12.0, Aufnahme per Klick ab Plugin 0.13.0. Anlass: Philipp, 04.11.2026: „Ich will keine Commands auf der Serverseite eingeben müssen! Denk das System weiter um!“
 
 Prinzip für alle drei Verbindungen (Planer ↔ Mod, Mod ↔ Plugin, Planer ↔ Plugin): **erkennen, einmal klicken, selbst einrichten.** Befehle bleiben als Ausweg, sind aber nirgends mehr der Hauptweg.
 
@@ -33,7 +33,7 @@ iPad ohne Mod ─── POST /v1/rooms/<raum>/control ──▶ Team-Raum ──
 - Format `{owner, seq, body, sig}`; `body` ist der exakte JSON-Text mit `server` (Server-ID) und `op`.
 - `sig = base64url(HMAC-SHA-256(key, owner + "\n" + seq + "\n" + body))` – `LinkCore.sign` und `packages/domain/src/serverControl.ts` (`signControl`) rechnen gleich; gemeinsamer Prüfvektor in beiden Tests.
 - `seq` muss je Gerät streng steigen (der Planer nimmt Millisekunden), die letzte Nummer liegt in `link.json`: eine aufgezeichnete Nachricht wirkt nie zweimal, auch nicht nach einem Neustart.
-- Operationen: `status`, `config` (nur die Liste in `LinkCore.SETTINGS`, alles oder nichts; `team.kanal` ist absichtlich nicht fernsteuerbar), `team` (Teamdatei), `room` (Team-Raum verbinden/trennen), `plan` (.schem bis 4 MB, optional Anker), `rename`, `invite` (weiteres Gerät), `forget` (Gerät entfernen).
+- Operationen: `status`, `config` (nur die Liste in `LinkCore.SETTINGS`, alles oder nichts; `team.kanal` ist absichtlich nicht fernsteuerbar), `team` (Teamdatei), `room` (Team-Raum verbinden/trennen), `plan` (.schem bis 4 MB, optional Anker), `scan` (Aufnahme, siehe §5), `rename`, `invite` (weiteres Gerät), `forget` (Gerät entfernen).
 - Steuernachrichten setzen nie Blöcke und führen nie Serverbefehle aus.
 
 ## 4. Mod (LINK-03)
@@ -48,6 +48,12 @@ iPad ohne Mod ─── POST /v1/rooms/<raum>/control ──▶ Team-Raum ──
 - Seite **Spiel** (`#/mod`), Bereich „Spiel und Server verbinden – ohne Befehle“ (`ServerPanel.tsx`, `serverClient.ts`): drei Schritte Spiel → Server → Kopplung, danach das Einstellungsformular aus dem Schema des Plugins, Teams, Raum, Pläne, gekoppelte Geräte (trennen/entfernen), Umbenennen.
 - Gerätekopplungen in `localStorage` `bauplaner.server.kopplungen` (wie der Mod-Schlüssel nur in diesem Browser). Die benutzte Nummer wird vor dem Senden gespeichert und mit dem gespeicherten Stand zusammengeführt (der gemerkte Raum bleibt).
 - **Weltkarte** (LINK-06): „⇪ Auf den Server legen“ beim gewählten Projekt exportiert die Revision und schickt sie als Steuernachricht `plan` mit Anker (Kartenlage) an den gekoppelten Server – über die Mod, wenn Minecraft auf dem Server läuft (bis 4 MB), sonst über den Team-Raum (bis 700 KB). Das Plugin prüft die Datei (`Plan.read`) und legt nur lesbare Pläne ab (`serverClient.planToServer`).
+- **Aufnahme per Klick** (LINK-06 S02, statt `/bp scan`): Reiter „Bauen“ → „⇩ Auf dem Server aufnehmen“. Steuernachricht `scan` mit `do`:
+  - `list` – Pläne (Datei, Name, Projekt-ID, Revision, Anker), die 20 neuesten Aufnahmen, laufende Aufnahme (`running`: Prozent, Phase) und das letzte Ergebnis (`last`: Datei oder Fehler).
+  - `start {plan, loaded?}` – startet die Aufnahme am gespeicherten Anker wie `/bp scan` (Chunks nachladen nach `chunks-nachladen`/`max-chunks`, höchstens eine Aufnahme gleichzeitig).
+  - `fetch {file, offset}` – ein Teil der Aufnahme (384 KB roh, Base64) aus `scans/`; nur Dateinamen direkt in diesem Ordner.
+  - `cancel` – bricht ab, schreibt nichts.
+  Der Planer wählt den neuesten Plan des Projekts mit Anker (`serverPlanFor`), fragt den Fortschritt ab, holt die Datei in Teilen und lädt sie wie eine importierte Aufnahme (`recordOnServer`). „Letzte Aufnahme vom Server holen“ nimmt die neueste Datei mit dem Namensanfang des Plans (`scanPrefix` = `ScanJob.fileName`). Über die Mod und über den Team-Raum gleich; die Welt wird nie verändert. Plugin 0.12.0 meldet „Unbekannte Steueraktion“, der Planer sagt dann „Plugin 0.13.0 nötig“.
 - Reiter „Team“: „Planstand auf den Server legen“ geht über die Steuernachricht `team`, wenn der Server gekoppelt ist. „Team live“: „Server mit dem Raum verbinden“ (`room`) und merkt den Raum bei der Kopplung.
 
 ## 6. Zweiter Weg über den Team-Raum (LINK-05)
@@ -72,6 +78,6 @@ iPad ohne Mod ─── POST /v1/rooms/<raum>/control ──▶ Team-Raum ──
 ## 8. Tests
 
 - `LinkCoreTest` (Paper), `LiveLinkTest` (Mod-Kern), `tests/server-link.test.mjs` (Planer, gemeinsamer Vektor, Freigabe-Link), `tests/team-room.test.mjs` (Raum-Weiterleitung).
-- Browser: `tests/e2e/server-link.e2e.mjs` gegen den Mod-Simulator mit Plugin-Ersatz (PC 1400/390 px, iPad 820 px über einen Raum-Ersatz, dort auch Plan von der Weltkarte auf den Server). Mit `TEAM_ROOM_URL=https://bauplaner-team.team-room.workers.dev` läuft der iPad-Teil über den echten Team-Raum; ein WebSocket mit Serverschlüssel spielt das Plugin.
-- Echter Server: `scripts/test_bridge_paper_link.sh` – Paper 1.21.11, ein Protokoll-Client (`minecraft-protocol`) spricht den Teamkanal wie die Mod: Selbsteinrichtung, Nicht-OP abgewiesen, Kopplung, Einstellungen, Team, Wiederholung/falsche Unterschrift/fremder Server abgewiesen, Neustart, Gerät entfernen; mit `BAUPLANER_ROOM` zusätzlich Steuerung über einen echten Team-Raum (`npx wrangler dev`).
+- Browser: `tests/e2e/server-link.e2e.mjs` gegen den Mod-Simulator mit Plugin-Ersatz (PC 1400/390 px, iPad 820 px über einen Raum-Ersatz, dort auch Plan von der Weltkarte auf den Server und die Aufnahme per Klick in Teilen zurück). Mit `TEAM_ROOM_URL=https://bauplaner-team.team-room.workers.dev` läuft der iPad-Teil über den echten Team-Raum; ein WebSocket mit Serverschlüssel spielt das Plugin.
+- Echter Server: `scripts/test_bridge_paper_link.sh` – Paper 1.21.11, ein Protokoll-Client (`minecraft-protocol`) spricht den Teamkanal wie die Mod: Selbsteinrichtung, Nicht-OP abgewiesen, Kopplung, Einstellungen, Team, Plan mit Anker, Aufnahme per Klick (Datei byte-gleich in Teilen geholt, fremde Pfade abgewiesen), Wiederholung/falsche Unterschrift/fremder Server abgewiesen, Neustart, Gerät entfernen; mit `BAUPLANER_ROOM` zusätzlich Steuerung über einen echten Team-Raum (`npx wrangler dev`).
 - Spiel: `scripts/test_bridge_ingame.sh` klickt im echten Minecraft 26.3 „Planer zulassen“ mit der Maus.

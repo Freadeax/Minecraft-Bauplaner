@@ -151,6 +151,7 @@ final class ServerLink implements Listener {
                 case "team" -> CompletableFuture.completedFuture(team(b.get("file"), c.owner()));
                 case "room" -> room(b);
                 case "plan" -> CompletableFuture.completedFuture(plan(b));
+                case "scan" -> onMain(() -> scan(b, via));
                 case "rename" -> CompletableFuture.completedFuture(rename(LinkCore.str(b, "name")));
                 case "invite" -> CompletableFuture.completedFuture(invite(LinkCore.str(b, "name"), c.owner()));
                 case "forget" -> CompletableFuture.completedFuture(forget(LinkCore.str(b, "owner"), c.owner()));
@@ -295,6 +296,141 @@ final class ServerLink implements Listener {
         a.addProperty("text", text);
         plugin.getLogger().info(text);
         return a;
+    }
+
+    /** Runs {@code work} on the server thread (world access, scheduler). */
+    private CompletableFuture<JsonObject> onMain(java.util.function.Supplier<JsonObject> work) {
+        if (Bukkit.isPrimaryThread()) return CompletableFuture.completedFuture(work.get());
+        CompletableFuture<JsonObject> out = new CompletableFuture<>();
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            try { out.complete(work.get()); } catch (RuntimeException e) { out.complete(error(e.getMessage())); }
+        });
+        return out;
+    }
+
+    /** Raw bytes of one recording per {@code scan fetch} answer (base64 in the answer is a third larger). */
+    static final int SCAN_PART = 384 * 1024;
+    static final int SCAN_LIST = 20;
+    static final int PLAN_LIST = 40;
+
+    /**
+     * LINK-06: recording of the build state, started from the planner instead of {@code /bp scan}.
+     * {@code do}: {@code list} (plans with anchor, recordings, running/last), {@code start {plan, loaded?}},
+     * {@code cancel}, {@code fetch {file, offset}} (one part of a recording as base64). Never changes the world.
+     */
+    JsonObject scan(JsonObject b, String via) {
+        String what = LinkCore.str(b, "do");
+        if (what == null) what = "list";
+        switch (what) {
+            case "start" -> {
+                var plan = plugin.readPlan(LinkCore.str(b, "plan"));
+                if (plan.isEmpty()) return error("Den Plan gibt es auf dem Server nicht (zuerst „Auf den Server legen“).");
+                java.util.List<String> notes = new java.util.ArrayList<>();
+                boolean loaded = b.has("loaded") && b.get("loaded").isJsonPrimitive() && b.get("loaded").getAsBoolean();
+                String problem = plugin.startFromPlanner(plan.get(), loaded, via, notes);
+                if (problem != null) return error(problem);
+                plugin.getLogger().info("Aufnahme aus dem Planer (" + via + "): " + plan.get().fileName());
+                JsonObject a = scanList();
+                a.addProperty("text", ChatColor.stripColor(String.join(" ", notes)));
+                return a;
+            }
+            case "cancel" -> {
+                String text = plugin.cancelFromPlanner() ? "Aufnahme abgebrochen." : "Es lief keine Aufnahme.";
+                JsonObject a = scanList();
+                a.addProperty("text", text);
+                return a;
+            }
+            case "fetch" -> { return scanFetch(LinkCore.str(b, "file"), b.has("offset") && b.get("offset").isJsonPrimitive() ? b.get("offset").getAsLong() : 0); }
+            case "list" -> { return scanList(); }
+            default -> { return error("Unbekannte Aufnahme-Aktion: " + what); }
+        }
+    }
+
+    JsonObject scanList() {
+        JsonObject a = new JsonObject();
+        a.addProperty("ok", true);
+        JsonArray plans = new JsonArray();
+        for (String name : plugin.planNames().stream().limit(PLAN_LIST).toList()) {
+            var plan = plugin.readPlan(name);
+            if (plan.isEmpty()) continue;
+            Plan p = plan.get();
+            JsonObject o = new JsonObject();
+            o.addProperty("file", name);
+            o.addProperty("name", p.name());
+            if (p.projectId() != null) o.addProperty("projectId", p.projectId());
+            o.addProperty("revision", p.revisionNumber());
+            o.addProperty("cells", p.volume());
+            plugin.anchorOf(p).ifPresent(e -> {
+                JsonArray pos = new JsonArray();
+                for (int v : e.anchor()) pos.add(v);
+                o.add("anchor", pos);
+                o.addProperty("dimension", e.dimension());
+            });
+            plans.add(o);
+        }
+        a.add("plans", plans);
+        JsonArray scans = new JsonArray();
+        Path dir = plugin.root().resolve("scans");
+        try (var files = Files.list(dir)) {
+            files.filter(f -> f.getFileName().toString().endsWith(".schem") && Files.isRegularFile(f))
+                    .sorted((x, y) -> Long.compare(modified(y), modified(x))).limit(SCAN_LIST).forEach(f -> {
+                        JsonObject o = new JsonObject();
+                        o.addProperty("file", f.getFileName().toString());
+                        try { o.addProperty("bytes", Files.size(f)); } catch (IOException ignored) { }
+                        o.addProperty("at", Instant.ofEpochMilli(modified(f)).toString());
+                        scans.add(o);
+                    });
+        } catch (IOException ignored) { }
+        a.add("scans", scans);
+        ServerScan run = plugin.currentScan();
+        String writing = plugin.writingPlan();
+        if (run != null || writing != null) {
+            JsonObject r = new JsonObject();
+            r.addProperty("plan", run != null ? run.plan.fileName() : writing);
+            r.addProperty("percent", run != null ? run.percent() : 100);
+            r.addProperty("by", run != null ? run.ownerName : "");
+            r.addProperty("phase", run == null ? "schreiben" : run.preparing() ? "chunks" : "lesen");
+            a.add("running", r);
+        }
+        BridgePlugin.ScanResult last = plugin.lastScan();
+        if (last != null) {
+            JsonObject l = new JsonObject();
+            l.addProperty("plan", last.plan());
+            if (last.file() != null) l.addProperty("file", last.file());
+            if (last.error() != null) l.addProperty("error", last.error());
+            if (!last.summary().isEmpty()) l.addProperty("summary", last.summary());
+            l.addProperty("at", Instant.ofEpochMilli(last.at()).toString());
+            a.add("last", l);
+        }
+        a.addProperty("partBytes", SCAN_PART);
+        return a;
+    }
+
+    private static long modified(Path f) {
+        try { return Files.getLastModifiedTime(f).toMillis(); } catch (IOException e) { return 0; }
+    }
+
+    JsonObject scanFetch(String name, long offset) {
+        Path dir = plugin.root().resolve("scans");
+        Path file = dir.resolve(name == null ? "" : name).normalize();
+        if (name == null || !file.startsWith(dir) || !file.getParent().equals(dir) || !name.endsWith(".schem") || !Files.isRegularFile(file))
+            return error("Diese Aufnahme gibt es auf dem Server nicht.");
+        try (var ch = java.nio.channels.FileChannel.open(file)) {
+            long size = ch.size();
+            if (offset < 0 || offset > size) return error("Ungültige Stelle in der Aufnahme.");
+            int n = (int) Math.min(SCAN_PART, size - offset);
+            java.nio.ByteBuffer buf = java.nio.ByteBuffer.allocate(n);
+            while (buf.hasRemaining() && ch.read(buf, offset + buf.position()) > 0) { }
+            JsonObject a = new JsonObject();
+            a.addProperty("ok", true);
+            a.addProperty("file", file.getFileName().toString());
+            a.addProperty("size", size);
+            a.addProperty("offset", offset);
+            a.addProperty("data", Base64.getEncoder().encodeToString(java.util.Arrays.copyOf(buf.array(), buf.position())));
+            return a;
+        } catch (IOException e) {
+            return error("Aufnahme nicht lesbar: " + e.getMessage());
+        }
     }
 
     JsonObject rename(String name) {

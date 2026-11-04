@@ -11,6 +11,7 @@ import { createRequire } from 'node:module';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import assert from 'node:assert/strict';
+import { gunzipSync } from 'node:zlib';
 import { createTeam, teamEvent, appendEvents, teamView, teamServerFile } from '../dist/domain/src/index.js';
 
 const [work, pluginJar, version, java, protocolDir, roomArg] = process.argv.slice(2);
@@ -188,7 +189,39 @@ try {
     const bad = await boss.ask('link.ctl', signed(pair, 'plan', { name: 'kaputt.schem', data: Buffer.from('kein plan').toString('base64') }));
     assert.match(bad.error, /Plan nicht lesbar/);
     assert.ok(!existsSync(join(data_dir(), 'plans', 'kaputt.schem')), 'kaputter Plan nicht abgelegt');
-    planWay = ', Plan mit Anker aus dem Planer (kaputter Plan abgewiesen)';
+    // LINK-06 S02: recording by click instead of /bp scan, fetched in parts; the world is never changed.
+    const listed = await boss.ask('link.ctl', signed(pair, 'scan', { do: 'list' }));
+    assert.ok(!listed.error, listed.error);
+    const entry = listed.plans.find(x => x.file === 'burg-rev3.schem');
+    assert.ok(entry && entry.projectId && entry.revision >= 1, JSON.stringify(listed.plans));
+    assert.deepEqual(entry.anchor, [40, -60, 8]);
+    assert.match((await boss.ask('link.ctl', signed(pair, 'scan', { do: 'start', plan: 'fehlt.schem' }))).error, /gibt es auf dem Server nicht/);
+    assert.match((await boss.ask('link.ctl', signed(pair, 'scan', { do: 'start', plan: '../link.json' }))).error, /gibt es auf dem Server nicht/);
+    const started = await boss.ask('link.ctl', signed(pair, 'scan', { do: 'start', plan: 'burg-rev3.schem' }));
+    assert.ok(!started.error, started.error);
+    assert.match(started.text, /Aufnahme gestartet/);
+    assert.match((await boss.ask('link.ctl', signed(pair, 'scan', { do: 'start', plan: 'burg-rev3.schem' }))).error ?? 'schon fertig', /läuft bereits|schon fertig/);
+    let state = started;
+    for (let i = 0; i < 120 && (state.running || !state.last); i++) {
+      await new Promise(r => setTimeout(r, 250));
+      state = await boss.ask('link.ctl', signed(pair, 'scan', { do: 'list' }));
+    }
+    assert.ok(!state.running && state.last?.file, JSON.stringify(state));
+    assert.equal(state.last.plan, 'burg-rev3.schem');
+    assert.ok(state.scans.some(x => x.file === state.last.file), 'Aufnahme in der Liste');
+    const parts = [];
+    for (let offset = 0, size = Infinity; offset < size;) {
+      const a = await boss.ask('link.ctl', signed(pair, 'scan', { do: 'fetch', file: state.last.file, offset }));
+      assert.ok(!a.error, a.error);
+      const b = Buffer.from(a.data, 'base64'); parts.push(b); offset += b.length; size = a.size;
+    }
+    const rec = Buffer.concat(parts);
+    assert.deepEqual(rec, readFileSync(join(data_dir(), 'scans', state.last.file)), 'gleiche Bytes wie die Datei auf dem Server');
+    assert.ok(gunzipSync(rec).includes(Buffer.from('ScanVersion')), 'eine Spielaufnahme');
+    assert.match((await boss.ask('link.ctl', signed(pair, 'scan', { do: 'fetch', file: '../link.json' }))).error, /gibt es auf dem Server nicht/);
+    assert.match((await boss.ask('link.ctl', signed(pair, 'scan', { do: 'cancel' }))).text, /lief keine Aufnahme/);
+    await waitFor(/Aufnahme aus dem Planer \(Bauleiterin\): burg-rev3\.schem/, 5);
+    planWay = `, Plan mit Anker aus dem Planer (kaputter Plan abgewiesen), Aufnahme per Klick (${rec.length} Bytes in ${parts.length} Teil(en))`;
   }
   const renamed = await boss.ask('link.ctl', signed(pair, 'rename', { name: 'LMNT Burgserver' }));
   assert.equal(renamed.name, 'LMNT Burgserver');

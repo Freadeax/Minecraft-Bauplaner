@@ -64,7 +64,7 @@ before(async () => {
     try { if ((await fetch(BASE)).ok) break; } catch {}
     await new Promise(r => setTimeout(r, 200));
   }
-  mod = await startModSimulator(MOD_PORT, { protocol: 2, features: ['scan', 'marks2', 'players', 'bigplans', 'team', 'pairask', 'server'] });
+  mod = await startModSimulator(MOD_PORT, { protocol: 2, features: ['scan', 'marks2', 'players', 'bigplans', 'team', 'pairask', 'server'], scanPart: 256 });
   if (REAL) {
     const created = await (await fetch(`${REAL}/v1/rooms`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ teamId: 'team_linktest', name: 'LINK-Browsertest' }) })).json();
     ROOM = { url: REAL, room: created.room, key: created.memberKey };
@@ -177,6 +177,7 @@ test('iPad ohne Mod: Freigabe-Link öffnen, Server über den Team-Raum einstelle
   await p.goto(`${BASE}#/`);
   await openSampleProject(p);
   await p.waitForURL(/#\/projekt\//);
+  const projectUrl = p.url();
   await p.goto(`${BASE}#/karte`);
   await p.locator('.map-page[data-map-state=ready]').waitFor({ timeout: 30_000 });
   await p.getByRole('button', { name: 'Platzieren' }).first().click();
@@ -187,6 +188,22 @@ test('iPad ohne Mod: Freigabe-Link öffnen, Server über den Team-Raum einstelle
   const plan = mod.state.plugin.plans.at(-1);
   assert.equal(plan.magic, '1f8b', 'gzip-komprimierte .schem');
   assert.equal(plan.anchor.length, 3);
+
+  // LINK-06 S02: the server records the build at that anchor by click (no /bp scan, no file copy), in parts.
+  await p.goto(projectUrl);
+  await p.getByRole('link', { name: 'Bauen' }).click();
+  await p.waitForURL(/\/bauen$/);
+  await p.getByText('Mit „Auf dem Server aufnehmen“ liest der gekoppelte Server den Bau per Klick.').waitFor();
+  await p.getByRole('button', { name: '⇩ Auf dem Server aufnehmen' }).click();
+  await p.getByRole('status').filter({ hasText: /Aufnahme von „LMNT Testserver“ \(über den Team-Raum\) geladen: burgmauer-beispiel_r\d+_\d{8}-\d{6}\.schem\./ }).waitFor({ timeout: 30_000 });
+  await p.locator('.game-counts').getByText(/fehlt/).first().waitFor();
+  const scanOps = mod.state.plugin.controls.filter(c => c.op === 'scan').map(c => c.do);
+  assert.deepEqual([...new Set(scanOps)].sort(), ['fetch', 'list', 'start']);
+  assert.ok(scanOps.filter(x => x === 'fetch').length >= 2, `in Teilen geholt (${scanOps.filter(x => x === 'fetch').length})`);
+  await p.getByRole('button', { name: 'Aufnahme im Projekt speichern' }).click();
+  await p.getByRole('status').filter({ hasText: 'Aufnahme mit Original und Verlauf lokal gespeichert.' }).waitFor();
+  await p.getByRole('button', { name: 'Letzte Aufnahme vom Server holen' }).click();
+  await p.getByRole('status').filter({ hasText: /Aufnahme von „LMNT Testserver“ \(über den Team-Raum\) geladen/ }).waitFor();
   await p.goto(`${BASE}#/mod`);
 
   // Server offline: a clear message instead of a hang.

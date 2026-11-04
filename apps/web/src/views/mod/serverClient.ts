@@ -1,6 +1,7 @@
 import { controlMessage, liveCan, readServerRoom } from '../../../../../packages/domain/src/index.js';
 import type { LiveHello, ServerInfo, ServerOp, ServerPairing, ServerRoom } from '../../../../../packages/domain/src/index.js';
 import { LiveError, deviceName, liveApi, readLiveSettings, writeLiveToken } from '../map/liveClient';
+import { MODEL_MAX_FILE_BYTES } from '../../../../../packages/voxel/src/sizeLimits.js';
 
 /**
  * Server link of this browser (LINK-04, docs/architecture/AUTO_LINK.md). The owner key of each paired server
@@ -180,3 +181,112 @@ export async function planToServer(fileName: string, bytes: Uint8Array, placemen
 
 /** Whether this browser is paired with any server (to offer server actions at all). */
 export const hasServerPairing = (): boolean => Object.keys(readPairings()).length > 0;
+
+// ------------------------------------------------------------------ LINK-06 S02: recording from the server
+
+export interface ServerPlanInfo { readonly file: string; readonly name: string; readonly projectId?: string; readonly revision: number; readonly cells: number; readonly anchor?: readonly [number, number, number]; readonly dimension?: string }
+export interface ServerScanFile { readonly file: string; readonly bytes?: number; readonly at: string }
+export interface ServerScanState {
+  readonly plans: readonly ServerPlanInfo[];
+  readonly scans: readonly ServerScanFile[];
+  readonly running?: { readonly plan: string; readonly percent: number; readonly by: string; readonly phase: 'chunks' | 'lesen' | 'schreiben' };
+  readonly last?: { readonly plan: string; readonly file?: string; readonly error?: string; readonly summary?: string; readonly at: string };
+  readonly text?: string;
+}
+export interface ServerRecording { readonly fileName: string; readonly bytes: Uint8Array; readonly server: string; readonly via: 'mod' | 'room'; readonly summary: string }
+
+const fromBase64 = (s: string): Uint8Array => { const bin = atob(s); const out = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i); return out; };
+const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+type Send = (op: ServerOp, fields?: Readonly<Record<string, unknown>>) => Promise<Record<string, unknown>>;
+
+/** File name prefix of the plugin's recordings of a plan (ScanJob.fileName without the time). */
+export function scanPrefix(plan: Pick<ServerPlanInfo, 'name' | 'revision'>): string {
+  let base = plan.name.replace(/ · Revision \d+$/, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  if (!base) base = 'projekt';
+  return `${base.slice(0, 40)}_r${plan.revision}_`;
+}
+
+/** The newest plan of a project on the server that has an anchor (the world map stores both). */
+export function serverPlanFor(state: ServerScanState, projectId: string): ServerPlanInfo | null {
+  return [...state.plans].filter(p => p.projectId === projectId && p.anchor).sort((a, b) => b.revision - a.revision)[0] ?? null;
+}
+
+async function needServer() {
+  const target = await reachableServer();
+  if (!target) throw new LiveError('Kein gekoppelter Server erreichbar. Auf der Seite „Spiel“ den Server koppeln (Minecraft mit Mod auf dem Server) oder ihn mit dem Team-Raum verbinden.', 409);
+  const send: Send = async (op, fields) => {
+    try { return await target.send(op, fields); }
+    catch (e) {
+      // Plugin 0.12.0 knows no recording by click yet.
+      if (e instanceof LiveError && /^Unbekannte Steueraktion/.test(e.message)) throw new LiveError(`Das Bauplaner-Plugin auf „${target.pairing.name}“ ist zu alt für Aufnahmen per Klick – Plugin 0.13.0 oder neuer installieren.`, 426);
+      throw e;
+    }
+  };
+  return { ...target, send };
+}
+
+async function fetchScan(send: Send, file: string, onProgress: (text: string) => void, cancelled: () => boolean): Promise<Uint8Array> {
+  const parts: Uint8Array[] = [];
+  let offset = 0, size = Infinity;
+  while (offset < size) {
+    if (cancelled()) throw new LiveError('Abgebrochen.', 499);
+    const a = await send('scan', { do: 'fetch', file, offset });
+    const data = fromBase64(String(a.data ?? ''));
+    size = Number(a.size);
+    if (!Number.isFinite(size) || size > MODEL_MAX_FILE_BYTES) throw new LiveError('Die Aufnahme auf dem Server ist zu groß für den Planer.', 413);
+    if (!data.length && offset < size) throw new LiveError('Der Server hat einen leeren Teil geschickt.', 502);
+    parts.push(data); offset += data.length;
+    onProgress(`Aufnahme wird geholt … ${Math.floor(offset / Math.max(1, size) * 100)} %`);
+  }
+  const out = new Uint8Array(offset);
+  let at = 0;
+  for (const p of parts) { out.set(p, at); at += p.length; }
+  return out;
+}
+
+/** What the paired server has: plans with anchor, recordings, a running recording. */
+export async function serverScans(): Promise<{ state: ServerScanState; server: string; via: 'mod' | 'room' }> {
+  const target = await needServer();
+  return { state: await target.send('scan', { do: 'list' }) as unknown as ServerScanState, server: target.pairing.name, via: target.via };
+}
+
+/**
+ * Records the build state of a project on the paired server (instead of `/bp scan`) and fetches the file.
+ * The plan with its anchor must be on the server (world map „Auf den Server legen“). Never changes the world.
+ */
+export async function recordOnServer(projectId: string, onProgress: (text: string) => void, cancelled: () => boolean = () => false): Promise<ServerRecording> {
+  const target = await needServer();
+  const send = target.send;
+  const list = await send('scan', { do: 'list' }) as unknown as ServerScanState;
+  const plan = serverPlanFor(list, projectId);
+  if (!plan) throw new LiveError(`Auf „${target.pairing.name}“ liegt noch kein Plan dieses Projekts mit Anker. Auf der Weltkarte zuerst „⇪ Auf den Server legen“.`, 404);
+  const before = list.last?.at;
+  const started = await send('scan', { do: 'start', plan: plan.file }) as unknown as ServerScanState;
+  onProgress(started.text ?? 'Aufnahme gestartet …');
+  const deadline = Date.now() + 15 * 60_000;
+  for (;;) {
+    await sleep(target.via === 'room' ? 1500 : 800);
+    if (cancelled()) { await send('scan', { do: 'cancel' }).catch(() => undefined); throw new LiveError('Aufnahme abgebrochen.', 499); }
+    if (Date.now() > deadline) throw new LiveError('Die Aufnahme dauert ungewöhnlich lange. Später mit „Letzte Aufnahme holen“ abholen.', 504);
+    const s = await send('scan', { do: 'list' }) as unknown as ServerScanState;
+    if (s.running) { onProgress(`Server liest den Bau … ${s.running.percent} %${s.running.phase === 'chunks' ? ' (Chunks vorbereiten)' : s.running.phase === 'schreiben' ? ' (Datei schreiben)' : ''}`); continue; }
+    const last = s.last;
+    if (!last || last.at === before || last.plan !== plan.file) throw new LiveError('Die Aufnahme ist auf dem Server verschwunden (abgebrochen oder Server neu gestartet).', 410);
+    if (last.error || !last.file) throw new LiveError(last.error ?? 'Aufnahme fehlgeschlagen.', 500);
+    const bytes = await fetchScan(send, last.file, onProgress, cancelled);
+    return { fileName: last.file, bytes, server: target.pairing.name, via: target.via, summary: last.summary ?? '' };
+  }
+}
+
+/** Fetches the newest recording of a project that is already on the server. */
+export async function latestServerRecording(projectId: string, onProgress: (text: string) => void, cancelled: () => boolean = () => false): Promise<ServerRecording> {
+  const target = await needServer();
+  const send = target.send;
+  const list = await send('scan', { do: 'list' }) as unknown as ServerScanState;
+  const plans = list.plans.filter(p => p.projectId === projectId);
+  const prefixes = plans.map(scanPrefix);
+  const scan = list.scans.find(s => prefixes.some(p => s.file.startsWith(p)));
+  if (!scan) throw new LiveError(`Auf „${target.pairing.name}“ gibt es noch keine Aufnahme dieses Projekts.`, 404);
+  const bytes = await fetchScan(send, scan.file, onProgress, cancelled);
+  return { fileName: scan.file, bytes, server: target.pairing.name, via: target.via, summary: '' };
+}

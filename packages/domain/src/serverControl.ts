@@ -12,7 +12,7 @@ const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object
 const fail = (m: string): never => { throw new Error(`Server-Kopplung: ${m}`); };
 const text = (v: unknown, what: string, max: number): string => typeof v === 'string' && v.length <= max ? v : fail(`${what} fehlt oder ist zu lang`);
 
-export const SERVER_OPS = ['status', 'config', 'team', 'room', 'plan', 'rename', 'invite', 'forget'] as const;
+export const SERVER_OPS = ['status', 'config', 'team', 'room', 'plan', 'scan', 'rename', 'invite', 'forget'] as const;
 export type ServerOp = typeof SERVER_OPS[number];
 
 /** What the mod says about the way to the server (GET /v1/server). */

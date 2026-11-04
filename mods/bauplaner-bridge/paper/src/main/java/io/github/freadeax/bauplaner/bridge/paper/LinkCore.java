@@ -154,7 +154,7 @@ final class LinkCore {
     }
 
     /** Operations the planner can send (AUTO_LINK.md §5). */
-    static final Set<String> OPS = Set.of("status", "config", "team", "room", "plan", "rename", "invite", "forget");
+    static final Set<String> OPS = Set.of("status", "config", "team", "room", "plan", "scan", "rename", "invite", "forget");
 
     // ------------------------------------------------------------------ settings
 

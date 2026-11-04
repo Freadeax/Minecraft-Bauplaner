@@ -5122,3 +5122,32 @@ Zeitplan ab heute, Material abwarten aus der Produktion, Basisplan mit Verzug, A
 - `tests/e2e/program-depth.e2e.mjs`
 - `tests/program-depth.test.mjs`
 
+## 2026-11-04T09:38:35.990Z · progress
+
+**Aufgaben:** LINK-06
+
+Serveraufnahme per Klick: Steueraktion scan (list/start/fetch/cancel) im Paper-Plugin 0.13.0, Planer Reiter „Bauen“ → „Auf dem Server aufnehmen“/„Letzte Aufnahme holen“ über Mod oder Team-Raum; Ertragskisten (COOP-08) im selben Plugin-Release
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LINK-06 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme durch Philipp (Testplan LINK-05, LINK-06; Paper-Plugin 0.13.0 auf dem Server). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/mod/ModView.tsx`
+- `apps/web/src/views/mod/releases.json`
+- `apps/web/src/views/mod/serverClient.ts`
+- `apps/web/src/views/project/GameCheckPanel.tsx`
+- `docs/architecture/AUTO_LINK.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-paper-0.13.0.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/BridgePlugin.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/LinkCore.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java`
+- `packages/domain/src/serverControl.ts`
+- `scripts/bridge_paperlink.mjs`
+- `tests/e2e/modSimulator.mjs`
+- `tests/e2e/server-link.e2e.mjs`
+
