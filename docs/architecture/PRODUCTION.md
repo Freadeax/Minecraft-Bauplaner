@@ -74,7 +74,7 @@ Das **Produktionsblatt** (`productionText`) fasst alles als Text zusammen (Downl
 - Raten schwanken je Bauweise, Biom, Höhe und Server stark – deshalb Ertragsbuch.
 - Die Rechnung nimmt an, dass der Spieler während der Sammelzeit in der Nähe der automatischen Farmen ist.
 - Handel und Tausch sind als Richtwert mit Verbrauch modelliert, nicht als vollständige Handelsbäume.
-- Die Sammeltruhen-Rate braucht ein Teampaket bzw. Server-Export mit den Lagerereignissen; `store.yield` schreibt erst ein Plugin mit Zweck „ertrag“ (Lagerkisten-Thread), bis dahin gilt die Schätzung aus Trichterbuchungen.
+- Die Sammeltruhen-Rate braucht ein Teampaket bzw. Server-Export mit den Lagerereignissen. `store.yield` schreibt das Plugin seit COOP-08 für Kisten mit Zweck „ertrag“ (`/bp lager farm`, alle 30 min und beim Herunterfahren); ältere Plugins liefern nur Trichterbuchungen (seit COOP-08 je Minute gebündelt) und damit eine geschätzte Laufzeit.
 - Spätere Ideen: Farm-Ertrag aus der Mod (Zählung an der Sammeltruhe ohne Server); Produktionsketten mehrerer Projekte auf der Weltkarte.
 
 ## Prüfung

@@ -920,9 +920,9 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 ### 04.11.2026 – Sammeltruhen aus dem Team-Lager (PROD-05)
 
 - Grundlage: main d69bb49 plus PROD-05 (Thread „Produktion und Anbindung im Planer ausbauen“).
-- `npm run check`: bestanden, 824 Node-Tests; `npm run test:e2e`: 155/155 bestanden. Neu: PROD-05-Fall in `tests/production.test.mjs` (Trichter-Rückfall mit Lückenregel, Vorschläge, Serverberichte `store.yield`, entfernte Truhe, keine Lagerbuchung).
+- `npm run check`: bestanden, 825 Node-Tests nach Rebase auf COOP-08; `npm run test:e2e`: 155/155 bestanden (vor Rebase), danach production + team erneut grün. Neu: PROD-05-Fall in `tests/production.test.mjs` (Trichter-Rückfall mit Lückenregel, Vorschläge, Serverberichte `store.yield`, entfernte Truhe, keine Lagerbuchung).
 - `tests/e2e/production.e2e.mjs`: neuer Fall bei 1400 px – Team gründen, Server-Export mit Lagerkiste und zwei Ertragsmeldungen einlesen, Vorschlag „Als Sammeltruhe verknüpfen“, Rate 300 Eisen/h aus 450 Barren in 90 min, kein Eintrag im Ertragsbuch.
-- Grenzen: `store.yield` schreibt das Plugin noch nicht (Lagerkisten-Thread); Test im Spiel offen.
+- Grenzen: Vertrag `store.yield` deckt sich mit COOP-08 (Plugin), aber noch kein Durchlauf mit echtem Server-Export; Test im Spiel offen.
 
 ## LINK-01 … LINK-05 · Server ohne Befehle · 04.11.2026 · Claude
 

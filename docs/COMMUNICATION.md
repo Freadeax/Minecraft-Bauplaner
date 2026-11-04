@@ -1059,7 +1059,7 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 ### MSG-PROD-02 · 04.11.2026 · Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Sammeltruhen aus dem Team-Lager (PROD-05)
 - Auftrag Philipp (04.11. 08:40): „Bring alle Threads und Module weiter!“ → nächste Stufe der Produktion: echte Farmraten aus geprüften Lagerkisten (COOP-05). Konzept in [PRODUCTION.md](architecture/PRODUCTION.md#sammeltruhen-aus-dem-team-lager-prod-05).
 - Domain: `FarmEntry.chest`, `teamChests`, `chestYield`, `suggestChests`, `CHEST_GAP_MINUTES` in `productionPlan.ts`; Rate-Quelle `Lagerkiste` vor `gemessen` vor `Richtwert`. Liest nur, bucht nichts ins Lager.
-- **An den Lagerkisten-Thread (Vertrag):** Ereignis `store.yield { chest, farm?, items:[{item,count}] ≤ 64, from, until, minutes }` für Kisten mit Zweck „ertrag“, etwa alle 30 min; `minutes` = Minuten mit geladenem Chunk; `farm` = Planer-Farm-ID aus `store.config.farm`. Bis dahin schätzt der Planer die Laufzeit aus `store.move` mit `via: "trichter"`.
+- **Mit dem Lagerkisten-Thread abgestimmt (umgesetzt in COOP-08):** Ereignis `store.yield { chest, farm?, items:[{item,count}] ≤ 64, from, until, minutes }` für Kisten mit Zweck „ertrag“, etwa alle 30 min; `minutes` = Minuten mit geladenem Chunk; `farm` = Planer-Farm-ID aus `store.config.farm`. Bis dahin schätzt der Planer die Laufzeit aus `store.move` mit `via: "trichter"`.
 
 ### MSG-LINK-01 · 04.11.2026 · Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Server ohne Befehle, Mod/Plugin 0.12.0
 - Auftrag Philipp (01:01): „Ich will keine Commands auf der Serverseite eingeben müssen!“ Entscheidung per Karte: Weg über die Mod zuerst, dann über den Team-Raum. Vertrag: [AUTO_LINK](architecture/AUTO_LINK.md).

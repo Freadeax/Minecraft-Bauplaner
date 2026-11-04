@@ -4913,3 +4913,19 @@ Bibliothek Runde 2 (S07): Großbauten Klosteranlage und Universität, Großproje
 - `packages/domain/src/grossprojekte/residenzstadt.ts`
 - `tests/e2e/grossprojekte.e2e.mjs`
 
+## 2026-11-04T09:16:18.610Z · progress
+
+**Aufgaben:** PROD-05
+
+Sammeltruhen aus dem Team-Lager: Farm mit Lagerkiste verknüpfen, echte Rate aus store.yield (COOP-08) oder Trichterbuchungen, Vorschläge, keine Doppelbuchung. npm run check grün (825), Browser-Suite 155/155.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PROD-05 | 🧩 Implementiert · Abnahme offen | 5/5 | Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen. |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/PRODUCTION.md`
+
