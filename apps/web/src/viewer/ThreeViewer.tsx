@@ -13,7 +13,7 @@ import type { ViewName } from './camera';
 import { SPEED_STEPS } from './flight';
 import { GraphicsMenu } from './GraphicsMenu';
 import { SceneController } from './sceneController';
-import type { MeshStats, ViewerState } from './sceneController';
+import type { MeshStats, PickHit, PointerMods, ViewerState } from './sceneController';
 import type { ViewerProps } from './types';
 import { buildSectionMeshInBackground, meshInBackground } from './backgroundMesh';
 import { isAbort } from '../jobs/client';
@@ -26,7 +26,7 @@ const PAD: readonly (readonly [code: string, label: string, name: string])[] = [
 ];
 const fmt = (n: number) => n.toLocaleString('de-DE');
 
-export default function ThreeViewer({ payload, cells, onSelect, markFor, focus = null, drag = null, ghost = null, frameRequest = null, entities, onSelectEntity }: ViewerProps) {
+export default function ThreeViewer({ payload, cells, onSelect, markFor, focus = null, drag = null, ghost = null, frameRequest = null, entities, onSelectEntity, build = null, preview = null }: ViewerProps) {
   const kit = useRenderKit();
   const graphics = useGraphics();
   const host = useRef<HTMLDivElement>(null), canvasHost = useRef<HTMLDivElement>(null);
@@ -42,10 +42,10 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
   const markScene = useMemo(() => markFor && scene.count ? (c: Cell) => scene.entityOf(c) ? null : markFor(c) : markFor, [markFor, scene]);
   const pickEntity = useRef(onSelectEntity); pickEntity.current = onSelectEntity;
   const select = useRef(onSelect);
-  select.current = (cell: Cell | null) => {
+  select.current = (cell: Cell | null, hit?: PickHit | null, mods?: PointerMods) => {
     const e = cell ? sceneRef.current.entityOf(cell) : undefined;
     if (e) { onSelect(null); pickEntity.current?.(e); return; }
-    pickEntity.current?.(null); onSelect(cell);
+    pickEntity.current?.(null); onSelect(cell, hit, mods);
   };
   const [software, setSoftware] = useState(false);
   const [lost, setLost] = useState(false);
@@ -59,7 +59,7 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
     const el = canvasHost.current; if (!el) return;
     try {
       const c = new SceneController(el, {
-        pick: cell => { c.mark(cell); select.current(cell); },
+        pick: (cell, hit, mods) => { c.mark(cell); select.current(cell, hit, mods); },
         hover: setHover, state: setState, lost: () => setLost(true),
       });
       controller.current = c; setSoftware(false);
@@ -118,7 +118,10 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
   useEffect(() => { controller.current?.setFocusTarget(focus); }, [focus]);
   useEffect(() => { if (frameRequest) { controller.current?.focus(frameRequest.bounds); fallback.current?.focus(frameRequest.bounds); } }, [frameRequest]);
   useEffect(() => { controller.current?.setDragHandler(drag); }, [drag]);
-  useEffect(() => { controller.current?.setGhost(ghost?.bounds ?? null, ghost?.tone); }, [ghost]);
+  useEffect(() => { controller.current?.setGhost(ghost?.bounds ?? null, ghost?.tone); }, [ghost, stats]);
+  useEffect(() => { controller.current?.setBuildHandler(build); }, [build]);
+  // After a geometry change too: the origin of the scene may have moved.
+  useEffect(() => { controller.current?.setPreview(preview); }, [preview, stats]);
   // A new structure (other payload) clears the block marker.
   useEffect(() => { controller.current?.mark(null); setHover(null); }, [payload]);
 

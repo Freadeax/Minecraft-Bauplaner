@@ -35,6 +35,26 @@ export interface DragHandler {
   end(delta: Vec3 | null): void;
 }
 export type GhostTone = 'free' | 'snap' | 'conflict';
+/** A block face under the pointer: the cell, the axis direction of the face and the free cell in front of it. */
+export interface PickHit { readonly cell: Cell; readonly normal: Vec3; readonly adjacent: Vec3 }
+export interface PointerMods { readonly shift: boolean; readonly alt: boolean; readonly ctrl: boolean }
+/**
+ * Building directly in the 3D view (EDIT-06). A press on a block face asks `canStart`; when it agrees the
+ * gesture belongs to the handler (no orbit): `move` reports the face under the pointer (lazy, a ray test
+ * against the blocks) and the cells on the plane of the start face, both in the layer of the hit cell and
+ * the layer in front of it; `end` closes it (cancelled by Escape, a second finger or pointer cancel).
+ * `hover` follows the mouse outside gestures, for the outline of the cell a click would change.
+ */
+export interface BuildHandler {
+  canStart(hit: PickHit, mods: PointerMods): boolean;
+  start(hit: PickHit, mods: PointerMods): void;
+  move(at: { readonly hit: () => PickHit | null; readonly plane: { readonly cell: Vec3; readonly adjacent: Vec3 } | null }): void;
+  end(cancelled: boolean): void;
+  hover(hit: PickHit | null): void;
+}
+/** Planned cells drawn as translucent boxes over the blocks (shape preview, cells to remove). */
+export interface PreviewCells { readonly positions: readonly Vec3[]; readonly colors?: readonly string[]; readonly color: string; readonly erase?: boolean }
+const PREVIEW_MAX = 30_000;
 const GHOST_COLOR: Record<GhostTone, number> = { free: 0xffffff, snap: 0x5ff0b0, conflict: 0xff6b6b };
 
 export interface MeshStats {
@@ -57,7 +77,7 @@ export interface CellsPlan {
 }
 
 export interface ControllerEvents {
-  pick(cell: Cell | null): void;
+  pick(cell: Cell | null, hit?: PickHit | null, mods?: PointerMods): void;
   hover(cell: Cell | null): void;
   state(state: ViewerState): void;
   lost(): void;
@@ -122,6 +142,9 @@ export class SceneController {
   private readonly raycaster = new THREE.Raycaster();
   private dragHandler: DragHandler | null = null;
   private grab: { id: number; plane: THREE.Plane; start: [number, number]; delta: Vec3 } | null = null;
+  private buildHandler: BuildHandler | null = null;
+  private building: { id: number; plane: THREE.Plane; normal: Vec3 } | null = null;
+  private preview: THREE.InstancedMesh | null = null;
   private readonly ghost: THREE.LineSegments;
   private readonly disposers: (() => void)[] = [];
   private uploadStarted = 0;
@@ -146,15 +169,15 @@ export class SceneController {
       target.addEventListener(type, fn as EventListener, options); this.disposers.push(() => target.removeEventListener(type, fn as EventListener, options));
     };
     // Grabbing runs in the capture phase on the host, before OrbitControls and the canvas handlers see the pointer.
-    on(host, 'pointerdown', e => { this.autoFrame = false; this.grabStart(e); }, { capture: true });
-    on(host, 'pointermove', e => this.grabMove(e), { capture: true });
-    on(host, 'pointerup', e => this.grabEnd(e, false), { capture: true });
-    on(host, 'pointercancel', e => this.grabEnd(e, true), { capture: true });
+    on(host, 'pointerdown', e => { this.autoFrame = false; this.grabStart(e); if (!this.grab) this.buildStart(e); }, { capture: true });
+    on(host, 'pointermove', e => { this.grabMove(e); this.buildMove(e); }, { capture: true });
+    on(host, 'pointerup', e => { this.grabEnd(e, false); this.buildEnd(e, false); }, { capture: true });
+    on(host, 'pointercancel', e => { this.grabEnd(e, true); this.buildEnd(e, true); }, { capture: true });
     on(canvas, 'pointerdown', e => this.pointerDown(e));
     on(canvas, 'pointermove', e => this.pointerMove(e));
     on(canvas, 'pointerup', e => this.pointerUp(e));
     on(canvas, 'pointercancel', e => { this.pointers.delete(e.pointerId); this.dragging = null; });
-    on(canvas, 'pointerleave', () => { this.hoverQueued = null; this.events.hover(null); });
+    on(canvas, 'pointerleave', () => { this.hoverQueued = null; this.events.hover(null); this.buildHandler?.hover(null); });
     on(canvas, 'wheel', e => this.wheel(e), { passive: false });
     const lost = (e: Event) => { e.preventDefault(); this.events.lost(); };
     canvas.addEventListener('webglcontextlost', lost); this.disposers.push(() => canvas.removeEventListener('webglcontextlost', lost));
@@ -333,6 +356,46 @@ export class SceneController {
     if (!handler && this.grab) { const h = this.dragHandler; this.grab = null; h?.end(null); }
     this.dragHandler = handler;
   }
+  /**
+   * Enables building on block faces (EDIT-06); null restores plain orbit/pick behaviour. While enabled the
+   * right mouse button orbits and the middle one pans, so a left drag on blocks can build.
+   */
+  setBuildHandler(handler: BuildHandler | null): void {
+    if (!handler && this.building) { const h = this.buildHandler; this.building = null; delete this.host.dataset.building; h?.end(true); }
+    if (!handler) this.buildHandler?.hover(null);
+    this.buildHandler = handler;
+    this.applyMouseButtons(this.controls);
+    this.host.dataset.build = handler ? 'on' : 'off';
+  }
+  /** Translucent boxes for planned cells (null hides them); at most 30 000 are drawn. */
+  setPreview(preview: PreviewCells | null): void {
+    const n = preview ? Math.min(preview.positions.length, PREVIEW_MAX) : 0;
+    if (!preview || !n || !this.origin) {
+      if (this.preview) this.preview.count = 0;
+      this.host.dataset.preview = '0';
+      this.requestRender(); return;
+    }
+    if (!this.preview || this.preview.instanceMatrix.count < n) {
+      if (this.preview) { this.scene.remove(this.preview); this.preview.geometry.dispose(); (this.preview.material as THREE.Material).dispose(); }
+      const capacity = Math.min(PREVIEW_MAX, Math.max(256, 2 ** Math.ceil(Math.log2(n))));
+      this.preview = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.45, depthWrite: false }), capacity);
+      this.preview.renderOrder = 1; this.preview.frustumCulled = false;
+      this.scene.add(this.preview);
+    }
+    const m = new THREE.Matrix4(), color = new THREE.Color(), size = preview.erase ? 1.04 : 0.92;
+    (this.preview.material as THREE.MeshBasicMaterial).opacity = preview.erase ? 0.55 : 0.45;
+    for (let i = 0; i < n; i++) {
+      const p = this.local(preview.positions[i]!, 0.5);
+      m.makeScale(size, size, size).setPosition(p[0], p[1], p[2]);
+      this.preview.setMatrixAt(i, m);
+      this.preview.setColorAt(i, color.set(preview.colors?.[i] ?? preview.color));
+    }
+    this.preview.count = n;
+    this.preview.instanceMatrix.needsUpdate = true;
+    if (this.preview.instanceColor) this.preview.instanceColor.needsUpdate = true;
+    this.host.dataset.preview = String(n);
+    this.requestRender();
+  }
   /** Outline box of a planned placement (drag preview); null hides it. */
   setGhost(bounds: Bounds | null, tone: GhostTone = 'free'): void {
     if (!bounds || !this.origin) this.ghost.visible = false;
@@ -358,6 +421,7 @@ export class SceneController {
     this.mesh?.dispose(); this.materials?.dispose(); this.shadow.dispose(); this.setSpawn(null);
     this.marker.geometry.dispose(); (this.marker.material as THREE.Material).dispose();
     this.ghost.geometry.dispose(); (this.ghost.material as THREE.Material).dispose();
+    if (this.preview) { this.preview.geometry.dispose(); (this.preview.material as THREE.Material).dispose(); }
     if (this.grid) { this.grid.geometry.dispose(); (this.grid.material as THREE.Material).dispose(); }
     this.renderer.dispose(); this.renderer.domElement.remove();
   }
@@ -376,7 +440,15 @@ export class SceneController {
     c.minDistance = 1; c.maxDistance = 20000; c.minZoom = 0.02; c.maxZoom = 200;
     c.addEventListener('change', () => this.requestRender());
     c.addEventListener('start', () => { if (this.stateValue.view) this.update({ view: null }); });
+    this.applyMouseButtons(c);
     return c;
+  }
+
+  /** Building (EDIT-06) keeps the left button for blocks: right orbits, middle pans; otherwise the defaults. */
+  private applyMouseButtons(c: OrbitControls): void {
+    c.mouseButtons = this.buildHandler
+      ? { LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.PAN, RIGHT: THREE.MOUSE.ROTATE }
+      : { LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.DOLLY, RIGHT: THREE.MOUSE.PAN };
   }
 
   private local(p: Vec3, add = 0): [number, number, number] {
@@ -482,7 +554,69 @@ export class SceneController {
     this.host.dataset.camera = this.local([0, 0, 0]).map((o, i) => (c.getComponent(i) - o).toFixed(1)).join(',');
     this.last = again ? time : 0;
     if (again) this.requestRender();
-    if (this.hoverQueued) { const e = this.hoverQueued; this.hoverQueued = null; this.events.hover(this.pickAt(e)); }
+    if (this.hoverQueued) {
+      const e = this.hoverQueued; this.hoverQueued = null;
+      const hit = this.pickHitAt(e);
+      this.events.hover(hit?.cell ?? null);
+      if (!this.building) this.buildHandler?.hover(hit);
+    }
+  }
+
+  /** Block face under the pointer with the free cell in front of it (EDIT-06). */
+  private pickHitAt(e: PointerEvent | MouseEvent): PickHit | null {
+    if (!this.mesh) return null;
+    this.rayAt(e);
+    const hit = this.mesh.pickFace(this.raycaster);
+    if (!hit) return null;
+    if (!this.cellIndex) { this.cellIndex = new Map(); for (const c of this.cells) this.cellIndex.set(c.position.join(','), c); }
+    const cell = this.cellIndex.get(hit.cell.position.join(','));
+    if (!cell) return null;
+    const p = cell.position, n = hit.normal;
+    return { cell, normal: n, adjacent: [p[0] + n[0], p[1] + n[1], p[2] + n[2]] };
+  }
+
+  private mods(e: PointerEvent): PointerMods { return { shift: e.shiftKey, alt: e.altKey, ctrl: e.ctrlKey || e.metaKey }; }
+
+  private buildStart(e: PointerEvent): void {
+    if (this.building) { // a second finger cancels the gesture
+      const h = this.buildHandler; this.building = null; delete this.host.dataset.building; h?.end(true); return;
+    }
+    if (!this.buildHandler || this.stateValue.mode === 'flight' || e.button > 0) return;
+    const hit = this.pickHitAt(e);
+    const mods = this.mods(e);
+    if (!hit || !this.buildHandler.canStart(hit, mods)) return;
+    // Plane of the hit face: dragging moves along it (top face ⇒ horizontal, side face ⇒ a wall).
+    const n = hit.normal, face = this.local(hit.cell.position, 0.5).map((v, i) => v + n[i]! * 0.5);
+    const normal = new THREE.Vector3(n[0], n[1], n[2]);
+    const plane = new THREE.Plane().setFromNormalAndCoplanarPoint(normal, new THREE.Vector3(face[0], face[1], face[2]));
+    e.stopPropagation(); e.preventDefault();
+    this.host.focus({ preventScroll: true });
+    this.host.setPointerCapture(e.pointerId);
+    this.building = { id: e.pointerId, plane, normal: n };
+    this.host.dataset.building = 'true';
+    this.buildHandler.hover(null);
+    this.marker.visible = false;
+    this.buildHandler.start(hit, mods);
+  }
+
+  private buildMove(e: PointerEvent): void {
+    const b = this.building; if (!b || b.id !== e.pointerId) return;
+    e.stopPropagation();
+    this.rayAt(e);
+    const point = this.raycaster.ray.intersectPlane(b.plane, new THREE.Vector3());
+    const o = this.origin ?? [0, 0, 0], n = b.normal;
+    const cellAt = (shift: number): Vec3 => [0, 1, 2].map(i => Math.floor((point!.getComponent(i) + o[i]!) + n[i]! * shift)) as unknown as Vec3;
+    const plane = point ? { cell: cellAt(-0.5), adjacent: cellAt(0.5) } : null;
+    let cached: PickHit | null | undefined;
+    this.buildHandler?.move({ hit: () => cached === undefined ? (cached = this.pickHitAt(e)) : cached, plane });
+  }
+
+  private buildEnd(e: PointerEvent, cancelled: boolean): void {
+    const b = this.building; if (!b || b.id !== e.pointerId) return;
+    e.stopPropagation();
+    this.building = null; delete this.host.dataset.building;
+    if (this.host.hasPointerCapture(e.pointerId)) this.host.releasePointerCapture(e.pointerId);
+    this.buildHandler?.end(cancelled);
   }
 
   /** Upload state for the toolbar and tests: sections waiting, frames used, time until complete. */
@@ -508,7 +642,7 @@ export class SceneController {
     return this.cellIndex.get(hit.position.join(',')) ?? null;
   }
 
-  private rayAt(e: PointerEvent): void {
+  private rayAt(e: PointerEvent | MouseEvent): void {
     const rect = this.renderer.domElement.getBoundingClientRect();
     this.raycaster.setFromCamera(new THREE.Vector2((e.clientX - rect.left) / rect.width * 2 - 1, -(e.clientY - rect.top) / rect.height * 2 + 1), this.camera);
   }
@@ -583,7 +717,8 @@ export class SceneController {
     this.pointers.delete(e.pointerId);
     const d = this.dragging; if (d?.id === e.pointerId) this.dragging = null;
     if (!d || d.id !== e.pointerId || d.moved) return;
-    this.events.pick(this.pickAt(e));
+    const hit = this.pickHitAt(e);
+    this.events.pick(hit?.cell ?? null, hit, this.mods(e));
   }
 
   private wheel(e: WheelEvent): void {
@@ -604,6 +739,7 @@ export class SceneController {
     }
     if (e.code === 'Escape' && flying) { e.preventDefault(); this.setFlight(false); return; }
     if (e.code === 'Escape' && this.grab) { e.preventDefault(); const h = this.dragHandler; this.grab = null; delete this.host.dataset.dragging; h?.end(null); return; }
+    if (e.code === 'Escape' && this.building) { e.preventDefault(); const h = this.buildHandler; this.building = null; delete this.host.dataset.building; h?.end(true); return; }
     // Buttons are handled by the toolbar; keyboard shortcuts only when the scene itself is focused.
     if ((e.target as HTMLElement | null)?.closest('button')) return;
     const view = VIEWS.find(v => v.key === e.key);

@@ -329,14 +329,28 @@ export class BlockObject {
     return box.isEmpty() ? null : box.getBoundingSphere(new THREE.Sphere());
   }
 
-  pick(raycaster: THREE.Raycaster): Cell | null {
+  pick(raycaster: THREE.Raycaster): Cell | null { return this.pickFace(raycaster)?.cell ?? null; }
+
+  /**
+   * Cell under the ray and the axis direction of the face that was hit (EDIT-06: building on faces).
+   * Sloped or inset faces (stairs, slabs) are rounded to their dominant axis; a face seen from behind
+   * points back towards the viewer.
+   */
+  pickFace(raycaster: THREE.Raycaster): { cell: Cell; normal: [number, number, number] } | null {
     const meshes: THREE.Object3D[] = [];
     for (const p of this.parts.values()) { if (p.solid) meshes.push(p.solid); if (p.translucent) meshes.push(p.translucent); }
     const hit = raycaster.intersectObjects(meshes, false)[0];
     if (!hit || hit.faceIndex == null) return null;
     const section = hit.object.userData.section as MeshSection;
     const layer = hit.object === this.parts.get(section.key)?.solid ? section.solid : section.translucent;
-    return section.cells[layer.quadCells[hit.faceIndex >> 1]!] ?? null;
+    const cell = section.cells[layer.quadCells[hit.faceIndex >> 1]!];
+    if (!cell) return null;
+    const n = hit.face?.normal.clone() ?? new THREE.Vector3(0, 1, 0);
+    if (n.dot(raycaster.ray.direction) > 0) n.negate();
+    const a = [Math.abs(n.x), Math.abs(n.y), Math.abs(n.z)], axis = a[0]! >= a[1]! && a[0]! >= a[2]! ? 0 : a[1]! >= a[2]! ? 1 : 2;
+    const normal: [number, number, number] = [0, 0, 0];
+    normal[axis] = (axis === 0 ? n.x : axis === 1 ? n.y : n.z) < 0 ? -1 : 1;
+    return { cell, normal };
   }
 
   private disposePart(p: SectionObject): void {

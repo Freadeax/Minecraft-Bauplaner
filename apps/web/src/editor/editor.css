@@ -114,3 +114,13 @@ span.color-chip{cursor:default;width:16px;height:14px}
 .region-group{border:1px solid var(--line,#26363d);border-radius:6px;padding:6px 8px 8px;margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
 .region-group legend{font:600 11px/1 var(--font-ui,inherit);letter-spacing:.06em;text-transform:uppercase;color:var(--muted,#8aa0a8);padding:0 4px}
 .region-tool{display:flex;flex-direction:column;gap:6px}
+
+/* EDIT-06: block contents (containers, signs) in the chosen-block panel */
+.content-editor { display: grid; gap: 6px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--line, rgba(127, 127, 127, .25)); }
+.content-editor .content-slots { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; max-height: 260px; overflow: auto; }
+.content-editor .content-slots li { display: grid; grid-template-columns: minmax(70px, auto) minmax(0, 1fr) 56px auto; gap: 4px; align-items: center; }
+.content-editor .content-slots input, .content-editor .content-slots select { min-width: 0; }
+.content-editor .sign-lines { display: grid; gap: 3px; margin: 0; padding: 4px 6px 6px; border: 1px solid var(--line, rgba(127, 127, 127, .25)); border-radius: 6px; }
+.content-editor .sign-lines input { font-family: inherit; text-align: center; }
+.content-editor .content-problem { color: var(--danger, #d35f5f); margin: 0; }
+.editor-3d .scene[data-build='on'], .editor-3d .canvas-host[data-build='on'] { cursor: crosshair; }

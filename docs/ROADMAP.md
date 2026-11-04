@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-04T13:25:59.610Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-04T13:41:53.533Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-04T13:25:59.610Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 8 |
 | 🚧 In Arbeit | 4 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 78 |
+| 🧩 Implementiert · Abnahme offen | 79 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -25,7 +25,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 
 | Bereich | Offen | Verwaist | Nur Philipp | Geprüft |
 |---|---:|---:|---:|---:|
-| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 21 | 7 | 20 | 2 |
+| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 22 | 5 | 21 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 4 | 10 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 9 | 2 | 6 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 11 | 3 | 11 | 0 |
@@ -34,7 +34,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 3 | 0 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
 | [Performance und Stabilität](#bereich-perf) | 3 | 2 | 1 | 3 |
-| [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 12 | 2 | 6 | 8 |
+| [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 12 | 1 | 6 | 8 |
 | [Testphase, Qualität und Betrieb](#bereich-qa) | 2 | 1 | 2 | 8 |
 | [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 6 | 0 | 0 | 0 |
 
@@ -45,11 +45,12 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
 | [BACKUP-02](#backup-02) | Sicherungserinnerung und Abschnittsrevisionen | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Sicherungs-Download in Safari; Rückmeldung, ob 7 Tage für die Erinnerung passen. |
-| [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Mehrfachauswahl auf echten Geräten (QA-02). |
-| [EDIT-02](#edit-02) | Blockeditor | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Gesetzte und gedrehte Zustände im Spiel prüfen. |
+| [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Mehrfachauswahl auf echten Geräten (QA-02). |
+| [EDIT-02](#edit-02) | Blockeditor | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Gesetzte und gedrehte Zustände im Spiel prüfen. |
 | [EDIT-03](#edit-03) | Werkstatt vertiefen | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Schablonen-Zustände (Tür, Treppe, Laterne) im Spiel prüfen. |
 | [EDIT-04](#edit-04) | Kreativwerkzeuge aus dem Planer-Vergleich | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ · 2 verwaist | Gespiegelte und gedrehte Zustände (Türen, Truhen, Schienen) im Spiel (S07). |
 | [EDIT-05](#edit-05) | Auswahl- und Formwerkzeuge aus Editor-Mods | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Zauberstab, Stapeln, Extrudieren und Wendel in der Werkstatt abnehmen (S07).<br>Gestapelte und gedrehte Bauteile mit Ausstattung im Spiel. |
+| [EDIT-06](#edit-06) | Direkt im 3D-Bild bauen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Direkt im 3D-Bild bauen“ | Im 3D-Bild bauen auf PC und iPad (WERK-08).<br>Truhe und Schild mit Inhalt im Spiel laden (WERK-09). |
 | [GFX-01](#gfx-01) | Grafik vertiefen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Licht und Schatten auf echten GPUs, Firefox/Safari und Handy (S06). |
 | [GFX-02](#gfx-02) | Darstellung und Leistung, Runde 2 | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Darstellung und Leistung weiter verbessern“ | Biom, Leuchtfeuer-Strahl und flüssiges Laden großer Modelle auf dem eigenen Rechner ansehen (S04). |
 | [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Weltkarte auf echter GPU und mit Touch (QA-02). |
@@ -193,7 +194,7 @@ Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft), PERF
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3 | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Einen Bau mit Spielprüfung ohne Hinweise nachbauen und Verbindungen vergleichen (S07). |
 | [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Geänderte Gebäude (Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen (S06). |
 | [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
-| [ENTITY-01](#entity-01) | Gemälde, Rahmen, Rüstungsständer und Blockinhalte | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Export mit Gemälden, Rahmen und Rüstungsständern im Spiel laden (S06). |
+| [ENTITY-01](#entity-01) | Gemälde, Rahmen, Rüstungsständer und Blockinhalte | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Export mit Gemälden, Rahmen und Rüstungsständern im Spiel laden (S06). |
 | [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [MAT-03](#mat-03) | Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen | 🧩 Implementiert · Abnahme offen 2/3 | P1 | **verwaist** · 1 verwaist | — |
 | [MAT-04](#mat-04) | Kupfer mit Oxidation und Wachsstatus | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
@@ -274,6 +275,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **GEN-03** · Kolosseum exportieren und im Spiel aufstellen (BIB-14).
 - **SIZE-01** · Großen Bau (Olympus) ins Spiel senden und prüfen (DATEI-05, MOD-11, MOD-15, LIVE-09).
 - **LINK-03** · Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“.
+- **EDIT-06** · Truhe und Schild mit Inhalt im Spiel laden (WERK-09).
 
 ### Auf echten Geräten und Browsern
 
@@ -290,6 +292,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **MAP-04** · Langdruck-Menü auf echtem Touch-Gerät (S06).
 - **BACKUP-02** · Sicherungs-Download in Safari; Rückmeldung, ob 7 Tage für die Erinnerung passen.
 - **LINK-05** · Am PC „Weiteres Gerät freigeben“, Link auf dem iPad öffnen, eine Einstellung ändern.
+- **EDIT-06** · Im 3D-Bild bauen auf PC und iPad (WERK-08).
 
 ### Dateien oder Welt liefern
 
@@ -328,10 +331,7 @@ Arbeit, für die gerade kein laufender Thread zuständig ist. Zum Verteilen: Thr
 | [BASE-01](#base-01) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Küstenlinie aus der Geländeaufnahme, Wegstufen als Treppen, Brücken. |
 | [COOP-01](#coop-01) | Teambau live | P1 | 🧩 Implementiert · Abnahme offen | „Verlauf verdichten“ für große Teamprotokolle (TEAMBAU §16) – vorgesehen, nicht gebaut. |
 | [COOP-05](#coop-05) | Teambau live | P1 | 🧩 Implementiert · Abnahme offen | S04 Lagerstände über den Team-Raum an die Mod (passt zu LINK-07 „gesehene Kisteninhalte in den Raum“) – Plugin-Thread beendet. |
-| [EDIT-01](#edit-01) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Gruppenziehen direkt im 3D-Bild. |
-| [EDIT-02](#edit-02) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Picking direkt an 3D-Blockflächen (gilt auch für EDIT-03). |
 | [EDIT-04](#edit-04) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Gelände-Werkzeuge auf dem Projektgelände (als eigener Thread angekündigt, nie gestartet).<br>Symmetrie und Kurven auch in der Mod. |
-| [ENTITY-01](#entity-01) | Kern, Minecraft-Daten und Dateiformate | P1 | 🧩 Implementiert · Abnahme offen | Truhen- und Schildinhalte in der Werkstatt bearbeiten (Folgeidee aus der nächsten Aktion). |
 | [GEN-03](#gen-03) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Feinschliff Kolosseum: Statuen in den Attika-Fenstern, Treppen im Hypogäum. |
 | [GROSS-01](#gross-01) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Geländeanpassung und Wasserkanten für Großprojekte, eigene Großprojekte aus Sammlungen. |
 | [MAP-02](#map-02) | Planer | P1 | ⏳ Offen | Komplett offen: gespeicherte Kartenziele und Provideradapter (BlueMap, Dynmap, Squaremap) mit eigenen Markerdateien. |
@@ -403,6 +403,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **LINK-07 · Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten** — 🚧 In Arbeit, 3/6 Teilschritte. Nächster Schritt: Positionen und Aufnahmen über den Raum; Release 0.14.0; Abnahme LINK-07.
 - **TERRAIN-03 · Gelände und Wege im Projekt: Aufschütten, Abtragen, Rampe, Wegstufen als Treppen, Brücken mit Geländer, Weg aus der Weltkarte** — 🧩 Implementiert · Abnahme offen, 5/7 Teilschritte. Nächster Schritt: Abnahme PROJ-19 im Spiel; danach Basisplaner auf Gelände (S06).
 - **GFX-02 · Darstellung und Leistung, Runde 2: Biomfarben, leuchtende Blockentities (Leuchtfeuer-Strahl, Endportal, Magma), GPU-Upload großer Szenen in Stücken** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme auf echten GPUs, Firefox/Safari und Abgleich mit Spielbildern (S04, zusammen mit GFX-01-S06).
+- **EDIT-06 · Direkt im 3D-Bild bauen: Blöcke an Flächen setzen/abbauen, Formen und Gruppen im 3D aufziehen und ziehen, Truhen- und Schildinhalte bearbeiten** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: EDIT-06-S05: Philipp prüft das Bauen im 3D-Bild auf PC und iPad (WERK-08) und lädt eine Truhe/ein Schild mit Inhalt im Spiel (WERK-09).
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -550,6 +551,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [PROD-03](#prod-03) | Verarbeitung und Logistik: Öfen für eine Zielzeit, Brennstoff je Sorte und netto aus Brennstofffarmen (Seetang, Bambus, Lava), Lagerplatz/Shulker/Fahrten je Abschnitt, Trichterdurchsatz und „Truhe voll nach“ je Farm, Sortier-Module | 🧩 Implementiert · Abnahme offen | 3/3 | PROD-01 | ausstehend | ausstehend |
 | [PROD-04](#prod-04) | Anbindung der Produktion: Farmen aus Projekt-Bauteilen mit Baufortschritt, Farmpunkte der Weltkarte übernehmen und eintragen, bester AFK-Platz nach Simulationsdistanz, Materialbereitschaft gegen Zeitplan der Planung, Sammelaufträge je Bauleute (TEAM-03-S02), Produktionsblatt als Text | 🧩 Implementiert · Abnahme offen | 4/5 | PROD-02, MAP-06, PROJ-01 | ausstehend | ausstehend |
 | [PROJ-02](#proj-02) | Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute | 🧩 Implementiert · Abnahme offen | 4/5 | PROJ-01, PROD-01 | ausstehend | ausstehend |
+| [EDIT-06](#edit-06) | Direkt im 3D-Bild bauen: Blöcke an Flächen setzen/abbauen, Formen und Gruppen im 3D aufziehen und ziehen, Truhen- und Schildinhalte bearbeiten | 🧩 Implementiert · Abnahme offen | 4/5 | EDIT-01, EDIT-02, EDIT-03, EDIT-05, ENTITY-01 | ausstehend | ausstehend |
 
 ## P4: Optionale Zusammenarbeit und Integrationen
 
@@ -1498,18 +1500,16 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### EDIT-01
 
-**Mehrfachauswahl und sichtbare Freiraumhüllen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Vollständigen Block-Builder bauen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Mehrfachauswahl und sichtbare Freiraumhüllen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Vollständigen Block-Builder bauen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-04T13:41:53.533Z
 
 - [x] EDIT-01-S01: Auswahlvertrag und atomare Gruppenoperationen definieren.
 - [x] EDIT-01-S02: Freiraum-/Konflikthüllen und Undo/Redo ergänzen.
 
 **Abnahme:** Keine zweite Transformationslogik; Gruppenaktionen vollständig oder gar nicht.
 
-**Nächste Aktion:** Geräteprüfung (QA-02); Gruppenziehen direkt im 3D-Bild als Folgeschritt.
+**Nächste Aktion:** Geräteprüfung (QA-02). Gruppenziehen im 3D-Bild ist mit EDIT-06 erledigt.
 
 **Nur Philipp:** Auf echten Geräten und Browsern: Mehrfachauswahl auf echten Geräten (QA-02).
-
-**Verwaist (ohne Bearbeiter):** Gruppenziehen direkt im 3D-Bild.
 
 **Prüfstand:** Unit- und Chromium-Prüfung bestanden; Spielprüfung, Firefox/Safari und Geräte offen.
 
@@ -1521,7 +1521,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### EDIT-02
 
-**Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Vollständigen Block-Builder bauen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T21:37:46.206Z
+**Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Vollständigen Block-Builder bauen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-04T13:41:53.533Z
 
 - [x] EDIT-02-S01: Entwurfsvertrag mit invertierbaren Zelländerungen, Undo/Redo und Speichern als neue AssetVersion.
 - [x] EDIT-02-S02: Werkzeuge: Setzen, Abbauen, Pipette, Ersetzen, Quader/Hohlkörper/Wände, Kugel, Zylinder, Linie, Fläche füllen, Drehen, Kopieren/Einfügen/Verschieben.
@@ -1531,11 +1531,9 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Gespeicherte Versionen bleiben unverändert; jede Bearbeitung erzeugt eine neue Version, Projekte wechseln nur per invertierbarer Operation. Keine zweite Koordinaten- oder Drehlogik; Zustände ohne Regel bleiben sichtbar ungelöst. Gleiche Eingaben ergeben die gleiche Version (deterministische Palette).
 
-**Nächste Aktion:** Picking an 3D-Blockflächen; Spielprüfung. Registerlücken sind seit PROFILE-01 geschlossen.
+**Nächste Aktion:** Spielprüfung. Picking an 3D-Blockflächen ist mit EDIT-06 erledigt.
 
 **Nur Philipp:** Im Spiel an deinem PC: Gesetzte und gedrehte Zustände im Spiel prüfen.
-
-**Verwaist (ohne Bearbeiter):** Picking direkt an 3D-Blockflächen (gilt auch für EDIT-03).
 
 **Prüfstand:** Unit- und Chromium-Prüfung bestanden; Spielprüfung, Firefox/Safari und Geräte offen.
 
@@ -1547,7 +1545,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### EDIT-03
 
-**Werkstatt vertiefen: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Ebenenübersicht und Tastenkürzel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Werkstatt zum Bauen ausbauen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Werkstatt vertiefen: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Ebenenübersicht und Tastenkürzel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Werkstatt zum Bauen ausbauen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-04T13:41:53.533Z
 
 - [x] EDIT-03-S01: Muster-Pinsel (Mischung mit Gewichten und Lücken, Verlauf entlang Achse oder radial, Schachbrett, Streifen) deterministisch für Setzen, Formen, Füllen, Auswahlfüllung und Ersetzen; Vorlagen.
 - [x] EDIT-03-S02: Formen Bogen (rund, spitz, flach; Pfosten, Tiefe, Wand mit Öffnung), Pyramide/Walmdach, Kegel, Mauerzug aus der Linie.
@@ -1557,7 +1555,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Gleiche Eingaben (inkl. Musterwürfelwert) ergeben dieselben Zellen und dieselbe Version. Keine zweite Koordinaten- oder Drehregel; Schablonen drehen über transformClipboard. Eigene Schablonen liegen als normale Bauteile in Speicher und Sicherung.
 
-**Nächste Aktion:** Picking an 3D-Blockflächen; Spielprüfung der Schablonen-Zustände (Tür, Treppe, Laterne).
+**Nächste Aktion:** Spielprüfung der Schablonen-Zustände (Tür, Treppe, Laterne). Picking an 3D-Blockflächen ist mit EDIT-06 erledigt.
 
 **Nur Philipp:** Im Spiel an deinem PC: Schablonen-Zustände (Tür, Treppe, Laterne) im Spiel prüfen.
 
@@ -2345,7 +2343,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### ENTITY-01
 
-**Gemälde, Rahmen, Rüstungsständer und Blockinhalte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemälde, Rahmen und Rüstungsständer darstellen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Gemälde, Rahmen, Rüstungsständer und Blockinhalte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemälde, Rahmen und Rüstungsständer darstellen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-04T13:41:53.533Z
 
 - [x] ENTITY-01-S01: Datenmodell freie Entities (optional in der Nutzlast), Geometrie hängender Entities, Drehen/Spiegeln, Validierung.
 - [x] ENTITY-01-S02: Litematic- und Schem-Import/-Export der Entities mit Bericht.
@@ -2356,11 +2354,9 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Echte Litematica-Dateien behalten Gemälde/Rahmen/Rüstungsständer an der richtigen Stelle; Roundtrip Litematic und Schem verlustfrei; alte Nutzlasten unverändert; keine Mojang-Texturen.
 
-**Nächste Aktion:** Export mit Entities im Spiel prüfen; Entities bei Auswahl-Verschieben in der Werkstatt mitnehmen; Truhen-/Schildinhalte bearbeiten.
+**Nächste Aktion:** Export mit Entities im Spiel prüfen (S06). Truhen-/Schildinhalte bearbeiten ist mit EDIT-06 erledigt.
 
 **Nur Philipp:** Im Spiel an deinem PC: Export mit Gemälden, Rahmen und Rüstungsständern im Spiel laden (S06).
-
-**Verwaist (ohne Bearbeiter):** Truhen- und Schildinhalte in der Werkstatt bearbeiten (Folgeidee aus der nächsten Aktion).
 
 **Prüfstand:** Unit- und Browsertests grün; Laden im Spiel offen.
 
@@ -3235,6 +3231,30 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java) — Mit BAUPLANER_ROOM gegen wrangler dev: live, Abschnitt aus dem Spiel im Raum, Notiz aus dem Planer im Spiel (04.11.2026).; [scripts/test_bridge_ingame.sh](../scripts/test_bridge_ingame.sh) — Minecraft 26.3 Fabric mit BAUPLANER_ROOM: live mit dem Raum, /bauplaner team nehmen 2 kommt im Raum an, ohne Server (04.11.2026).; [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — „Mein Spiel verbinden“ übergibt nur den Mitgliedsschlüssel (1400/390 px).
 
 **Dateiumfang:** `apps/web/src/testing/testplan.ts`, `apps/web/src/views/map/liveClient.ts`, `apps/web/src/views/mod/serverClient.ts`, `apps/web/src/views/project/TeamRoom.tsx`, `docs/architecture/AUTO_LINK.md`, `docs/testing/TESTPLAN.md`, `mods/bauplaner-bridge/CHANGELOG.md`, `mods/bauplaner-bridge/VERSION`, `mods/bauplaner-bridge/fabric-26.3/build.gradle`, `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`, `mods/bauplaner-bridge/mod-core/build.gradle`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomState.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamState.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamSync.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java`, `mods/bauplaner-bridge/neoforge-26.3/build.gradle`, `scripts/bridge_gametest.mjs`, `scripts/bridge_room_prepare.mjs`, `scripts/test_bridge_ingame.sh`, `tests/e2e/modSimulator.mjs`, `tests/e2e/team-room.e2e.mjs`. **Abhängigkeiten:** LINK-06, COOP-07. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### EDIT-06
+
+**Direkt im 3D-Bild bauen: Blöcke an Flächen setzen/abbauen, Formen und Gruppen im 3D aufziehen und ziehen, Truhen- und Schildinhalte bearbeiten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Direkt im 3D-Bild bauen“) · Zuständiger Thread: „Direkt im 3D-Bild bauen“ · Aktualisiert: 2026-11-04T13:41:53.533Z
+
+- [x] EDIT-06-S01: Picking an 3D-Blockflächen (Zelle, Flächenrichtung, Zelle davor) und Bau-Geste im 3D-Bild mit Vorschau; Setzen/Abbauen per Klick und Ziehen.
+- [x] EDIT-06-S02: Formen und Auswahl im 3D aufziehen (Oberseite waagrecht, Seitenfläche als Wand), Gruppe mit dem Auswahl-Werkzeug im 3D-Bild verschieben.
+- [x] EDIT-06-S03: Truhen-, Behälter- und Schildinhalte in der Werkstatt bearbeiten (26.3-Format, unbekannte NBT bleibt, Profilprüfung der Gegenstände).
+- [x] EDIT-06-S04: Unit- und Browserprüfung, Testplan WERK-08/WERK-09, Doku.
+- [ ] EDIT-06-S05: Abnahme durch Philipp: iPad/Touch (WERK-08) und Inhalte im Spiel (WERK-09).
+
+**Abnahme:** Jede 3D-Bauaktion ist ein Rückgängig-Schritt und nutzt dieselben Werkzeuge wie das Ebenenraster (keine zweite Formlogik). Inhaltsänderungen ersetzen nur die BlockEntity der Zelle; unbekannte Felder bleiben erhalten.
+
+**Nächste Aktion:** EDIT-06-S05: Philipp prüft das Bauen im 3D-Bild auf PC und iPad (WERK-08) und lädt eine Truhe/ein Schild mit Inhalt im Spiel (WERK-09).
+
+**Nur Philipp:** Auf echten Geräten und Browsern: Im 3D-Bild bauen auf PC und iPad (WERK-08). Im Spiel an deinem PC: Truhe und Schild mit Inhalt im Spiel laden (WERK-09).
+
+**Prüfstand:** Unit- und Chromium-Prüfung bestanden; iPad/Touch und Spielprüfung offen.
+
+**Nachweise:** [tests/block-content-edit.test.mjs](../tests/block-content-edit.test.mjs) — Behälter/Schilder lesen und schreiben, Erhalt unbekannter Felder, Sponge-Hülle, Prüfungen, Rückgängig im Entwurf.; [tests/e2e/workshop-build3d.e2e.mjs](../tests/e2e/workshop-build3d.e2e.mjs) — Chromium 1400 px: Setzen/Abbauen im 3D, Boden und Wand aufziehen, Gruppe wählen und ziehen, Bauen aus; Truhe und Schild bearbeiten, Rückgängig, Steckbrief.; [docs/architecture/BLOCK_EDITOR.md](architecture/BLOCK_EDITOR.md) — Abschnitt EDIT-06.
+
+**Dateiumfang:** `apps/web/src/blockmodels/threeMesh.ts`, `apps/web/src/viewer/sceneController.ts`, `apps/web/src/viewer/ThreeViewer.tsx`, `apps/web/src/viewer/types.ts`, `apps/web/src/editor/BlockEditor.tsx`, `apps/web/src/editor/ContentEditor.tsx`, `apps/web/src/editor/editor.css`, `packages/voxel/src/blockContentEdit.ts`, `packages/voxel/src/index.ts`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `docs/architecture/BLOCK_EDITOR.md`, `tests/block-content-edit.test.mjs`, `tests/e2e/workshop-build3d.e2e.mjs`. **Abhängigkeiten:** EDIT-01, EDIT-02, EDIT-03, EDIT-05, ENTITY-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

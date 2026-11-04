@@ -11,7 +11,8 @@ import type { BlockState, Cell, Vec3, VoxelPayload } from '../../../../packages/
 import { formatNumber } from '../app/ui';
 import { SizeNotice } from '../app/SizeNotice';
 import { Viewer } from '../Viewer';
-import type { Mark } from '../viewer/types';
+import type { BuildHandler, DragHandler, Mark, PickHit, PointerMods, PreviewCells } from '../viewer/types';
+import { ContentEditor } from './ContentEditor';
 import { BlockPalette, StateFields, brushColor, brushLabel, stateText } from './BlockPalette';
 import { LayerGrid } from './LayerGrid';
 import { INITIAL_PATTERN, PatternPanel, patternActive, toPattern } from './PatternPanel';
@@ -53,6 +54,12 @@ const TOOLS: readonly (readonly [Tool, string, string, string, string])[] = [
   ['wendel', '🌀', 'Wendel', 'Vom Mittelpunkt aus aufziehen: Wendeltreppe oder Spiralrampe für Türme', 'H'],
 ];
 const BRUSH_TOOLS: ReadonlySet<Tool> = new Set(['stift', 'fuellen', 'linie', 'quader', 'zylinder', 'kugel', 'bogen', 'pyramide', 'kegel', 'kurve', 'ellipsoid', 'torus', 'wendel']);
+/** Tools that build by pressing and dragging on block faces in the 3D view (EDIT-06); the others act on a click. */
+const GESTURE_TOOLS: ReadonlySet<Tool> = new Set(['stift', 'abbauen', 'auswahl', 'linie', 'quader', 'zylinder', 'kugel', 'bogen', 'pyramide', 'kegel', 'ellipsoid', 'torus', 'wendel']);
+/** Tools whose cells start in front of the clicked face (on top of a floor, next to a wall). */
+const FACE_TOOLS: ReadonlySet<Tool> = new Set([...GESTURE_TOOLS, 'einfuegen', 'kurve'].filter(t => t !== 'abbauen' && t !== 'auswahl') as Tool[]);
+const BUILD3D_KEY = 'bauplaner.werkstatt.bauen3d.v1';
+const readBuild3d = () => { try { return localStorage.getItem(BUILD3D_KEY) !== 'off'; } catch { return true; } };
 /** Shortcut list for the help panel (also the documentation of the keys). */
 const SHORTCUTS: readonly (readonly [string, string])[] = [
   ['1–9 · Buchstabe im Werkzeug', 'Werkzeug wählen (B Setzen, E Abbauen, I Pipette, F Füllen, L Linie, Q Quader, K Kugel, O Bogen …)'],
@@ -64,6 +71,9 @@ const SHORTCUTS: readonly (readonly [string, string])[] = [
   ['Pfeiltasten · Shift+↑/↓', 'Auswahl samt Inhalt verschieben (Norden/Süden/Westen/Osten · oben/unten)'],
   ['R · M', 'Zwischenablage (beim Einfügen) oder Auswahl drehen · spiegeln'],
   ['G', '3D nur bis zur aktuellen Ebene (Schnitt) an/aus'],
+  ['3D: Klick · Ziehen auf Blöcken', 'Im 3D bauen: Setzen auf die angeklickte Fläche, Abbauen, Formen und Auswahl aufziehen (Wand an Seitenflächen)'],
+  ['3D: Rechte Maustaste · Mitte · Ziehen ins Leere', 'Im 3D bauen: drehen · verschieben · drehen'],
+  ['3D: Auswahl-Werkzeug, Auswahl ziehen', 'Ausgewählte Gruppe samt Inhalt im 3D-Bild verschieben'],
   ['U · Enter · Rücktaste', 'Kurve: Punkte klicken · Kurve setzen · letzten Punkt entfernen'],
   ['W · Shift+Klick · Alt+Klick', 'Zauberstab (Zauberauswahl) · hinzufügen · wegnehmen'],
   ['J · T · H', 'Ellipsoid · Torus · Wendel(treppe)'],
@@ -134,12 +144,17 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
   const [clip, setClip] = useState<Clipboard | null>(null);
   const [picked, setPicked] = useState<Vec3 | null>(null);
   const [message, setMessage] = useState('');
-  const [stroke, setStroke] = useState<{ start: Vec3; cells: Map<string, Vec3>; current: Vec3; selecting: boolean } | null>(null);
+  const [stroke, setStroke] = useState<{ start: Vec3; cells: Map<string, Vec3>; current: Vec3; selecting: boolean; from3d?: boolean } | null>(null);
   // Pointer moves are continuous events: React may not have rendered the last move when the next move or the
   // button release arrives. The ref always holds the newest stroke, so no cell of a fast drag gets lost.
   const strokeRef = useRef<typeof stroke>(null);
   const setLiveStroke = (next: typeof stroke) => { strokeRef.current = next; setStroke(next); };
   const [show3d, setShow3d] = useState(true);
+  /** EDIT-06: build directly on block faces in the 3D view (remembered per browser). */
+  const [build3d, setBuild3dRaw] = useState(readBuild3d);
+  const setBuild3d = (on: boolean) => { setBuild3dRaw(on); try { localStorage.setItem(BUILD3D_KEY, on ? 'on' : 'off'); } catch { /* private mode */ } };
+  const [hover3d, setHover3d] = useState<PickHit | null>(null);
+  const [moveDelta, setMoveDelta] = useState<Vec3 | null>(null);
   const [cut3d, setCut3d] = useState(false);
   const [pattern, setPattern] = useState<PatternState>(INITIAL_PATTERN);
   const [arch, setArch] = useState<{ style: ArchStyle; rise: number; thickness: number; depth: number; legs: number; wall: boolean }>({ style: 'round', rise: 4, thickness: 1, depth: 1, legs: 2, wall: false });
@@ -195,13 +210,14 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
       switch (tool) {
         case 'stift': case 'abbauen': return setCells(s.cells.values(), v, tool === 'abbauen' ? 'Abbauen' : 'Setzen');
         case 'linie': return line.height > 1 || line.thickness > 1 ? wallLineEdit(a, b, line.height, v, { thickness: line.thickness }) : lineEdit(a, b, v);
-        case 'quader': return boxEdit({ a, b: [b[0], a[1] + height - 1, b[2]] }, shape, v);
+        // Dragged along a side face in 3D: the box spans the drag (a wall); otherwise the height setting counts.
+        case 'quader': return boxEdit({ a, b: s.from3d && b[1] !== a[1] ? b : [b[0], a[1] + height - 1, b[2]] }, shape, v);
         case 'zylinder': return cylinderEdit(a, r, height, v, { hollow });
         case 'kugel': return sphereEdit(a, r, v, { hollow, ...(dome && { half: 'upper' as const }) });
         case 'bogen': return archEdit(a, b, v, arch);
         case 'pyramide': return pyramidEdit(a, b, v, { hollow, step: pyramid.step, maxHeight: pyramid.maxHeight });
         case 'kegel': return coneEdit(a, r, coneHeight, v, { hollow });
-        case 'ellipsoid': return ellipsoidEdit({ a, b: [b[0], a[1] + height - 1, b[2]] }, v, { hollow, dome });
+        case 'ellipsoid': return ellipsoidEdit({ a, b: s.from3d && b[1] !== a[1] ? b : [b[0], a[1] + height - 1, b[2]] }, v, { hollow, dome });
         case 'torus': return torusEdit(a, r, torus.minor, v, { axis: torus.axis, hollow, half: torus.half });
         case 'wendel': { const h = helixEdit(a, r, v, helix); walkRef.current = h.walkable; return h; }
         default: return null;
@@ -231,6 +247,26 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
   }, [stroke, shapeEdit, tool, clip, hover, sym, curvePts, curve, paint, brush, magic, draft]);
   const preview = useMemo(() => previewEdit ? previewEdit.changes.slice(0, PREVIEW_LIMIT).map(c => c.position) : [], [previewEdit]);
   const previewColors = useMemo(() => previewEdit && (usePattern || tool === 'einfuegen' || symOn) ? previewEdit.changes.slice(0, PREVIEW_LIMIT).map(c => brushColor(c.value)) : undefined, [previewEdit, usePattern, tool]);
+  /** What the 3D view shows of the planned change: the drag preview, else the cell a click would change. */
+  const preview3d = useMemo((): PreviewCells | null => {
+    if (!build3d) return null;
+    if (stroke?.from3d) {
+      if (stroke.selecting || !previewEdit) return null;
+      return { positions: preview, ...(previewColors && { colors: previewColors }), color: brushColor(toolValue(tool)), erase: tool === 'abbauen' };
+    }
+    if (stroke || !hover3d) return null;
+    if (tool === 'abbauen') return { positions: [hover3d.cell.position], color: '#d35f5f', erase: true };
+    if (tool === 'einfuegen' && clip) { try { const e = sym(pasteEdit(clip, hover3d.adjacent)); return { positions: e.changes.slice(0, PREVIEW_LIMIT).map(c => c.position), colors: e.changes.slice(0, PREVIEW_LIMIT).map(c => brushColor(c.value)), color: '#ffffff' }; } catch { return null; } }
+    if (GESTURE_TOOLS.has(tool) && tool !== 'auswahl') return { positions: [hover3d.adjacent], color: brushColor(brush) };
+    return null;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [build3d, stroke, previewEdit, preview, previewColors, hover3d, tool, brush, clip, sym]);
+  /** Outline: the box being selected in 3D, or the selection moved by the grab offset. */
+  const ghost3d = useMemo(() => {
+    if (stroke?.from3d && stroke.selecting) return { bounds: boxBounds({ a: stroke.start, b: stroke.current }), tone: 'snap' as const };
+    if (moveDelta && selection) return { bounds: { min: selection.min.map((n, i) => n + moveDelta[i]!) as unknown as Vec3, maxExclusive: selection.maxExclusive.map((n, i) => n + moveDelta[i]!) as unknown as Vec3 }, tone: 'snap' as const };
+    return null;
+  }, [stroke, moveDelta, selection]);
   /** Size of the shape being drawn, for the grid HUD. */
   const previewInfo = useMemo(() => {
     if (!previewEdit?.changes.length) return '';
@@ -323,9 +359,92 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
     return p.every((n, i) => n >= s.min[i]! && n < s.maxExclusive[i]!) ? { color: '#5be3b5', amount: 0.35 } : null;
   }, [selection, mask]);
   const cells3d = useMemo(() => cut3d && payload ? payload.cells.filter(c => c.position[1] <= y) : null, [cut3d, payload, y]);
-  const onSelect3d = useCallback((c: Cell | null) => { if (!c) return; setY(c.position[1]); setPicked(c.position); onCell(c.position, true); },
+  const onSelect3d = useCallback((c: Cell | null, hit?: PickHit | null, mods?: PointerMods) => {
+    if (!c) return;
+    if (tool === 'zauberstab' && mods && (mods.shift || mods.alt)) { magicPick(c.position, mods.shift, mods.alt); return; }
+    // Paste and curve points go in front of the clicked face, everything else acts on the clicked block.
+    const p = hit && build3d && FACE_TOOLS.has(tool) ? hit.adjacent : c.position;
+    setY(p[1]); setPicked(c.position); onCell(p, true);
+  },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [tool, draft, brush, clip, selection]);
+    [tool, draft, brush, clip, selection, mask, magic, build3d, curvePts]);
+
+  // ---------------------------------------------------------------- EDIT-06: building in the 3D view
+  /** Latest handler body; the object handed to the viewer stays the same so the scene never re-registers. */
+  const build3dRef = useRef<BuildHandler | null>(null);
+  build3dRef.current = {
+    canStart: (_hit, mods) => mods.shift || GESTURE_TOOLS.has(tool),
+    start: (hit, mods) => {
+      const selecting = tool === 'auswahl' || mods.shift;
+      const at: Vec3 = selecting || tool === 'abbauen' ? hit.cell.position : hit.adjacent;
+      setHover3d(null);
+      setLiveStroke({ start: at, current: at, cells: new Map([[at.join(','), at]]), selecting, from3d: true });
+    },
+    move: ({ hit, plane }) => {
+      const s = strokeRef.current; if (!s?.from3d) return;
+      let current = s.current, cells = s.cells;
+      if (!s.selecting && (tool === 'stift' || tool === 'abbauen')) {
+        // Painting follows the faces under the pointer; short jumps on one plane are joined by a line.
+        const h = hit(); if (!h) return;
+        const p: Vec3 = tool === 'abbauen' ? h.cell.position : h.adjacent;
+        if (p.join(',') === current.join(',')) return;
+        cells = new Map(cells);
+        const gap = Math.max(...p.map((v, i) => Math.abs(v - current[i]!)));
+        const flat = p.some((v, i) => v === current[i]);
+        if (gap > 1 && gap <= 8 && flat && tool === 'stift') for (const c of lineEdit(current, p, null).changes) cells.set(c.position.join(','), c.position);
+        cells.set(p.join(','), p);
+        current = p;
+      } else {
+        if (!plane) return;
+        const p = s.selecting ? plane.cell : plane.adjacent;
+        if (p.join(',') === current.join(',')) return;
+        current = p;
+      }
+      setLiveStroke({ ...s, current, cells });
+    },
+    end: cancelled => {
+      const s = strokeRef.current; setLiveStroke(null);
+      if (!s?.from3d || cancelled) { if (cancelled) setMessage('Abgebrochen.'); return; }
+      if (s.selecting) {
+        const b = boxBounds({ a: s.start, b: s.current });
+        selectBox(b); setY(s.start[1]);
+        setMessage(`Auswahl im 3D-Bild: ${b.maxExclusive.map((n, i) => n - b.min[i]!).join(' × ')} Zellen. Mit dem Auswahl-Werkzeug lässt sich die Gruppe im 3D-Bild verschieben.`);
+        return;
+      }
+      const e = shapeEdit(s);
+      if (e && run(e, tool === 'wendel' && !walkRef.current ? `${e.label}: ${formatNumber(e.changes.length)} Zellen – zu steil zum Begehen; Steigung verringern oder Breite erhöhen.` : symNote())) {
+        setY(s.start[1]);
+        if (s.cells.size === 1 && tool === 'stift') setPicked(s.start);
+      }
+    },
+    hover: setHover3d,
+  };
+  const build3dHandler = useMemo<BuildHandler>(() => ({
+    canStart: (h, m) => build3dRef.current?.canStart(h, m) ?? false,
+    start: (h, m) => build3dRef.current?.start(h, m),
+    move: a => build3dRef.current?.move(a),
+    end: c => build3dRef.current?.end(c),
+    hover: h => build3dRef.current?.hover(h),
+  }), []);
+  /** Group move: with the selection tool, a selected block can be grabbed and the group dragged in 3D. */
+  const moveRef = useRef<DragHandler | null>(null);
+  moveRef.current = {
+    canGrab: c => {
+      if (tool !== 'auswahl' || !selection) return false;
+      const p = c.position;
+      return mask ? mask.has(posKey(p)) : p.every((n, i) => n >= selection.min[i]! && n < selection.maxExclusive[i]!);
+    },
+    move: d => setMoveDelta(d),
+    end: d => {
+      setMoveDelta(null);
+      if (d && (d[0] || d[1] || d[2])) transformSelection(null, d);
+    },
+  };
+  const moveHandler = useMemo<DragHandler>(() => ({
+    canGrab: c => moveRef.current?.canGrab(c) ?? false,
+    move: d => moveRef.current?.move(d),
+    end: d => moveRef.current?.end(d),
+  }), []);
 
   const selBox = selection ? toBox(selection) : null;
   /** Selection operations: on a cell selection only its cells change. */
@@ -494,6 +613,7 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
           <span className="spacer" />
           <label className="check"><input type="checkbox" checked={show3d} onChange={e => setShow3d(e.target.checked)} /> 3D-Vorschau</label>
           {show3d && <label className="check" title="Zeigt im 3D-Bild nur die Ebenen bis zur aktuellen (G)"><input type="checkbox" checked={cut3d} onChange={e => setCut3d(e.target.checked)} /> 3D bis Ebene</label>}
+          {show3d && <label className="check" title="Blöcke direkt an den Flächen im 3D-Bild setzen, abbauen, Formen und Auswahl aufziehen"><input type="checkbox" data-testid="build3d" checked={build3d} onChange={e => setBuild3d(e.target.checked)} /> Im 3D bauen</label>}
           <button onClick={() => setHelp(h => !h)} aria-expanded={help} title="Tastenkürzel (?)">⌨ Tasten</button>
         </div>
         {extent && <LayerStrip layers={layers} min={extent.min[1]} max={extent.max[1]} y={y} onY={setY} />}
@@ -507,9 +627,13 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
             } : undefined} />
           {show3d && <div className="editor-3d">
             {payload ? <Viewer payload={payload} cells={cells3d ?? payload.cells} onSelect={onSelect3d} markFor={markFor}
-              focus={selection ? { min: selection.min, maxExclusive: selection.maxExclusive } : null} />
+              focus={selection ? { min: selection.min, maxExclusive: selection.maxExclusive } : null}
+              build={build3d ? build3dHandler : null} preview={preview3d} ghost={ghost3d}
+              drag={build3d && tool === 'auswahl' && selection ? moveHandler : null} />
               : <div className="scene empty-3d"><p className="muted">Noch keine Blöcke. Wähle links einen Block und klicke in die Ebene.</p></div>}
-            <p className="muted small">Klick in 3D wählt Ebene und Block; mit „Abbauen“, „Pipette“ oder „Drehen“ wirkt das Werkzeug direkt.</p>
+            <p className="muted small build3d-hint">{build3d
+              ? <>Im 3D bauen: Klick oder Ziehen auf Blöcken setzt auf die Fläche, „Abbauen“ entfernt, Formen und Auswahl lassen sich aufziehen (an Seitenflächen als Wand). Drehen mit der rechten Maustaste oder Ziehen ins Leere.</>
+              : <>Klick in 3D wählt Ebene und Block; mit „Abbauen“, „Pipette“ oder „Drehen“ wirkt das Werkzeug direkt.</>}</p>
           </div>}
         </div>
       </section>
@@ -586,6 +710,7 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
                 <button onClick={() => { const r = rotateCellEdit(draft, picked, { quarterTurns: 0, mirrorX: true }); if (r.resolved) run(r.edit, 'Gespiegelt'); else setMessage(r.message); }}>Spiegeln</button>
                 <button onClick={() => setBrushRaw({ kind: 'block', state: pickedValue.state })}>Als Pinsel</button>
               </div>
+              <ContentEditor key={`${picked.join(',')}|${model.history.undo.length}|${model.history.redo.length}`} position={picked} state={pickedValue.state} entity={pickedValue.entity} run={run} />
             </>}
             <div className="neighbour-pad" role="group" aria-label="Pinsel daneben setzen">
               <span className="muted">Pinsel daneben setzen</span>

@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 133 Fälle in 13 Bereichen, davon 59 Kernfälle.
+Umfang: 135 Fälle in 13 Bereichen, davon 60 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -83,6 +83,8 @@ Eigene Bauteile Block für Block bauen.
 | WERK-04 | Kreativwerkzeuge ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/werkstatt/neu)) | vertieft | 1. Symmetrie, Kurven, Naturwerkzeuge (Baum, Fels), Farbpaletten, Bild → Blöcke. | Ergebnisse sehen wie in der Vorschau aus; Bild → Blöcke nimmt passende Farben. |
 | WERK-05 | Tastenkürzel und Rückgängig ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/werkstatt/neu)) | kern | 1. Tastenkürzel-Übersicht öffnen, einige Kürzel testen.<br>2. Viele Schritte rückgängig machen und wiederholen. | Kürzel tun, was angezeigt wird; kein Schritt geht verloren. |
 | WERK-07 | Großes Modell bearbeiten (SIZE-01) ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/werkstatt/neu)) | vertieft | 1. Ein großes Bauteil (über 500 000 Zellen, z. B. aus DATEI-05) in der Werkstatt öffnen.<br>2. Einen großen Bereich füllen (mehrere 100 000 Zellen), rückgängig machen, wiederholen, speichern. | Hinweis „Großes Modell“ bzw. „Sehr großes Modell“ unter der Werkzeugleiste, aber keine Sperre; Füllen und Rückgängig dauern Sekunden, nicht Minuten; gespeichert ist alles. |
+| WERK-08 | Direkt im 3D-Bild bauen (EDIT-06) ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/werkstatt/neu)) | kern | 1. Werkstatt → neues Bauteil, einen Block setzen; „Im 3D bauen“ ist an.<br>2. Im 3D-Bild auf Blockflächen klicken (Setzen), mit „Abbauen“ entfernen, mit Quader auf einer Oberseite einen Boden und an einer Seitenfläche eine Wand aufziehen.<br>3. Shift+Ziehen wählt eine Gruppe; mit dem Auswahl-Werkzeug die Gruppe im 3D-Bild verschieben.<br>4. Rechte Maustaste dreht die Ansicht; auf dem iPad mit einem Finger bauen, mit zwei Fingern zoomen. | Blöcke landen vor der angeklickten Fläche, die Vorschau zeigt vorher, was entsteht; Wände stehen senkrecht; die Gruppe zieht samt Inhalt mit und ein Rückgängig stellt sie zurück. |
+| WERK-09 | Truhen- und Schildinhalte im Spiel (EDIT-06) ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/werkstatt/neu)) | vertieft | 1. Eine Truhe mit Gegenständen und Namen und ein Schild mit Text auf beiden Seiten in der Werkstatt anlegen, speichern.<br>2. Als .litematic oder .schem exportieren und im Spiel aufstellen. | Die Truhe enthält im Spiel dieselben Gegenstände auf denselben Plätzen und trägt den Namen; das Schild zeigt beide Seiten, Farbe und Leuchten wie geplant. |
 | WERK-06 | Gestapelte und gedrehte Bauteile im Spiel ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/werkstatt/neu)) | vertieft | 1. Ein Bauteil mit Ausstattung (Gemälde, Rahmen) stapeln, extrudieren und drehen, speichern.<br>2. Als .schem exportieren und im Spiel aufstellen. | Ausstattung hängt im Spiel an derselben Wand wie in der Werkstatt; gestapelte Teile sitzen lückenlos. (Abnahme EDIT-05-S07) |
 
 ## DATEI · Betrachter und Import (Planer)
@@ -277,7 +279,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | VIEW-02 | START-06, DATEI-01 |
 | WORLD-IMPORT-01 | KARTE-04 |
 
-### Mit Minecraft (Mod oder Spiel) (32 Pakete)
+### Mit Minecraft (Mod oder Spiel) (33 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -287,6 +289,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | COOP-03 | TEAMBAU-09 |
 | COOP-07 | TEAMBAU-25, LINK-07 |
 | COOP-09 | TEAMBAU-26, TEAMBAU-25 |
+| EDIT-06 | WERK-08, WERK-09 |
 | ENTITY-01 | DATEI-07 |
 | FORMAT-01 | DATEI-08, PROJ-04 |
 | FORMAT-02 | DATEI-08, PROJ-04 |

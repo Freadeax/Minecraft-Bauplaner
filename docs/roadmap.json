@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T13:25:59.610Z",
+  "updatedAt": "2026-11-04T13:41:53.533Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -43,7 +43,8 @@
     "PROJ-02",
     "LINK-07",
     "TERRAIN-03",
-    "GFX-02"
+    "GFX-02",
+    "EDIT-06"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -3212,7 +3213,7 @@
       "acceptance": [
         "Keine zweite Transformationslogik; Gruppenaktionen vollständig oder gar nicht."
       ],
-      "next": "Geräteprüfung (QA-02); Gruppenziehen direkt im 3D-Bild als Folgeschritt.",
+      "next": "Geräteprüfung (QA-02). Gruppenziehen im 3D-Bild ist mit EDIT-06 erledigt.",
       "blockers": [],
       "evidence": [
         {
@@ -3236,7 +3237,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-04T13:41:53.533Z",
       "area": "PLANER",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -3245,9 +3246,7 @@
           "text": "Mehrfachauswahl auf echten Geräten (QA-02)."
         }
       ],
-      "orphans": [
-        "Gruppenziehen direkt im 3D-Bild."
-      ]
+      "orphans": []
     },
     {
       "id": "EDIT-02",
@@ -3301,7 +3300,7 @@
         "Keine zweite Koordinaten- oder Drehlogik; Zustände ohne Regel bleiben sichtbar ungelöst.",
         "Gleiche Eingaben ergeben die gleiche Version (deterministische Palette)."
       ],
-      "next": "Picking an 3D-Blockflächen; Spielprüfung. Registerlücken sind seit PROFILE-01 geschlossen.",
+      "next": "Spielprüfung. Picking an 3D-Blockflächen ist mit EDIT-06 erledigt.",
       "blockers": [],
       "evidence": [
         {
@@ -3325,7 +3324,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T21:37:46.206Z",
+      "updatedAt": "2026-11-04T13:41:53.533Z",
       "area": "PLANER",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -3334,9 +3333,7 @@
           "text": "Gesetzte und gedrehte Zustände im Spiel prüfen."
         }
       ],
-      "orphans": [
-        "Picking direkt an 3D-Blockflächen (gilt auch für EDIT-03)."
-      ]
+      "orphans": []
     },
     {
       "id": "EDIT-03",
@@ -3390,7 +3387,7 @@
         "Keine zweite Koordinaten- oder Drehregel; Schablonen drehen über transformClipboard.",
         "Eigene Schablonen liegen als normale Bauteile in Speicher und Sicherung."
       ],
-      "next": "Picking an 3D-Blockflächen; Spielprüfung der Schablonen-Zustände (Tür, Treppe, Laterne).",
+      "next": "Spielprüfung der Schablonen-Zustände (Tür, Treppe, Laterne). Picking an 3D-Blockflächen ist mit EDIT-06 erledigt.",
       "blockers": [],
       "evidence": [
         {
@@ -3414,7 +3411,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-04T13:41:53.533Z",
       "area": "PLANER",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -6163,7 +6160,7 @@
       "acceptance": [
         "Echte Litematica-Dateien behalten Gemälde/Rahmen/Rüstungsständer an der richtigen Stelle; Roundtrip Litematic und Schem verlustfrei; alte Nutzlasten unverändert; keine Mojang-Texturen."
       ],
-      "next": "Export mit Entities im Spiel prüfen; Entities bei Auswahl-Verschieben in der Werkstatt mitnehmen; Truhen-/Schildinhalte bearbeiten.",
+      "next": "Export mit Entities im Spiel prüfen (S06). Truhen-/Schildinhalte bearbeiten ist mit EDIT-06 erledigt.",
       "blockers": [],
       "evidence": [
         {
@@ -6187,7 +6184,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-04T13:41:53.533Z",
       "area": "KERN",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -6196,9 +6193,7 @@
           "text": "Export mit Gemälden, Rahmen und Rüstungsständern im Spiel laden (S06)."
         }
       ],
-      "orphans": [
-        "Truhen- und Schildinhalte in der Werkstatt bearbeiten (Folgeidee aus der nächsten Aktion)."
-      ]
+      "orphans": []
     },
     {
       "id": "LIB-05",
@@ -9416,6 +9411,107 @@
       },
       "next": "Positionen und Aufnahmen über den Raum; Release 0.14.0; Abnahme LINK-07.",
       "philipp": []
+    },
+    {
+      "id": "EDIT-06",
+      "title": "Direkt im 3D-Bild bauen: Blöcke an Flächen setzen/abbauen, Formen und Gruppen im 3D aufziehen und ziehen, Truhen- und Schildinhalte bearbeiten",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Direkt im 3D-Bild bauen“)",
+      "dependencies": [
+        "EDIT-01",
+        "EDIT-02",
+        "EDIT-03",
+        "EDIT-05",
+        "ENTITY-01"
+      ],
+      "scope": [
+        "apps/web/src/blockmodels/threeMesh.ts",
+        "apps/web/src/viewer/sceneController.ts",
+        "apps/web/src/viewer/ThreeViewer.tsx",
+        "apps/web/src/viewer/types.ts",
+        "apps/web/src/editor/BlockEditor.tsx",
+        "apps/web/src/editor/ContentEditor.tsx",
+        "apps/web/src/editor/editor.css",
+        "packages/voxel/src/blockContentEdit.ts",
+        "packages/voxel/src/index.ts",
+        "apps/web/src/testing/testplan.ts",
+        "docs/testing/TESTPLAN.md",
+        "docs/architecture/BLOCK_EDITOR.md",
+        "tests/block-content-edit.test.mjs",
+        "tests/e2e/workshop-build3d.e2e.mjs"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "EDIT-06-S01",
+          "title": "Picking an 3D-Blockflächen (Zelle, Flächenrichtung, Zelle davor) und Bau-Geste im 3D-Bild mit Vorschau; Setzen/Abbauen per Klick und Ziehen.",
+          "done": true
+        },
+        {
+          "id": "EDIT-06-S02",
+          "title": "Formen und Auswahl im 3D aufziehen (Oberseite waagrecht, Seitenfläche als Wand), Gruppe mit dem Auswahl-Werkzeug im 3D-Bild verschieben.",
+          "done": true
+        },
+        {
+          "id": "EDIT-06-S03",
+          "title": "Truhen-, Behälter- und Schildinhalte in der Werkstatt bearbeiten (26.3-Format, unbekannte NBT bleibt, Profilprüfung der Gegenstände).",
+          "done": true
+        },
+        {
+          "id": "EDIT-06-S04",
+          "title": "Unit- und Browserprüfung, Testplan WERK-08/WERK-09, Doku.",
+          "done": true
+        },
+        {
+          "id": "EDIT-06-S05",
+          "title": "Abnahme durch Philipp: iPad/Touch (WERK-08) und Inhalte im Spiel (WERK-09).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Jede 3D-Bauaktion ist ein Rückgängig-Schritt und nutzt dieselben Werkzeuge wie das Ebenenraster (keine zweite Formlogik).",
+        "Inhaltsänderungen ersetzen nur die BlockEntity der Zelle; unbekannte Felder bleiben erhalten."
+      ],
+      "next": "EDIT-06-S05: Philipp prüft das Bauen im 3D-Bild auf PC und iPad (WERK-08) und lädt eine Truhe/ein Schild mit Inhalt im Spiel (WERK-09).",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/block-content-edit.test.mjs",
+          "note": "Behälter/Schilder lesen und schreiben, Erhalt unbekannter Felder, Sponge-Hülle, Prüfungen, Rückgängig im Entwurf."
+        },
+        {
+          "path": "tests/e2e/workshop-build3d.e2e.mjs",
+          "note": "Chromium 1400 px: Setzen/Abbauen im 3D, Boden und Wand aufziehen, Gruppe wählen und ziehen, Bauen aus; Truhe und Schild bearbeiten, Rückgängig, Steckbrief."
+        },
+        {
+          "path": "docs/architecture/BLOCK_EDITOR.md",
+          "note": "Abschnitt EDIT-06."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Unit- und Chromium-Prüfung bestanden; iPad/Touch und Spielprüfung offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-04T13:41:53.533Z",
+      "area": "PLANER",
+      "thread": "Direkt im 3D-Bild bauen",
+      "philipp": [
+        {
+          "kind": "geraet",
+          "text": "Im 3D-Bild bauen auf PC und iPad (WERK-08)."
+        },
+        {
+          "kind": "spiel",
+          "text": "Truhe und Schild mit Inhalt im Spiel laden (WERK-09)."
+        }
+      ],
+      "orphans": []
     }
   ],
   "events": [
@@ -17620,6 +17716,71 @@
           "done": 3,
           "total": 4,
           "next": "Abnahme auf echten GPUs, Firefox/Safari und Abgleich mit Spielbildern (S04, zusammen mit GFX-01-S06)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T13:41:53.533Z",
+      "kind": "progress",
+      "items": [
+        "EDIT-06",
+        "EDIT-01",
+        "EDIT-02",
+        "EDIT-03",
+        "ENTITY-01"
+      ],
+      "summary": "Direkt im 3D-Bild bauen: Flächen-Picking, Setzen/Abbauen/Formen/Auswahl per Klick und Ziehen im 3D-Bild mit Vorschau, Wände an Seitenflächen, Gruppe im 3D ziehen; Truhen-, Behälter- und Schildinhalte in der Werkstatt bearbeiten. Unit- und alle Chromium-Tests grün; iPad und Spielprüfung offen.",
+      "files": [
+        "apps/web/src/blockmodels/threeMesh.ts",
+        "apps/web/src/editor/BlockEditor.tsx",
+        "apps/web/src/editor/ContentEditor.tsx",
+        "apps/web/src/editor/editor.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/viewer/ThreeViewer.tsx",
+        "apps/web/src/viewer/sceneController.ts",
+        "apps/web/src/viewer/types.ts",
+        "docs/architecture/BLOCK_EDITOR.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/voxel/src/blockContentEdit.ts",
+        "packages/voxel/src/index.ts",
+        "tests/block-content-edit.test.mjs",
+        "tests/e2e/workshop-build3d.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "EDIT-06",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "EDIT-06-S05: Philipp prüft das Bauen im 3D-Bild auf PC und iPad (WERK-08) und lädt eine Truhe/ein Schild mit Inhalt im Spiel (WERK-09)."
+        },
+        {
+          "id": "EDIT-01",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Geräteprüfung (QA-02). Gruppenziehen im 3D-Bild ist mit EDIT-06 erledigt."
+        },
+        {
+          "id": "EDIT-02",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Spielprüfung. Picking an 3D-Blockflächen ist mit EDIT-06 erledigt."
+        },
+        {
+          "id": "EDIT-03",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Spielprüfung der Schablonen-Zustände (Tür, Treppe, Laterne). Picking an 3D-Blockflächen ist mit EDIT-06 erledigt."
+        },
+        {
+          "id": "ENTITY-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Export mit Entities im Spiel prüfen (S06). Truhen-/Schildinhalte bearbeiten ist mit EDIT-06 erledigt."
         }
       ]
     }

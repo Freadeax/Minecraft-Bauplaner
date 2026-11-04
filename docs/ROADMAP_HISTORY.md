@@ -5341,3 +5341,34 @@ Testfall DATEI-09 (Biom, Leuchtfeuer, große Szene) im Testplan für GFX-02.
 - `tests/e2e/library-filters.e2e.mjs`
 - `tests/graphics2.test.mjs`
 
+## 2026-11-04T13:41:53.533Z · progress
+
+**Aufgaben:** EDIT-06, EDIT-01, EDIT-02, EDIT-03, ENTITY-01
+
+Direkt im 3D-Bild bauen: Flächen-Picking, Setzen/Abbauen/Formen/Auswahl per Klick und Ziehen im 3D-Bild mit Vorschau, Wände an Seitenflächen, Gruppe im 3D ziehen; Truhen-, Behälter- und Schildinhalte in der Werkstatt bearbeiten. Unit- und alle Chromium-Tests grün; iPad und Spielprüfung offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| EDIT-06 | 🧩 Implementiert · Abnahme offen | 4/5 | EDIT-06-S05: Philipp prüft das Bauen im 3D-Bild auf PC und iPad (WERK-08) und lädt eine Truhe/ein Schild mit Inhalt im Spiel (WERK-09). |
+| EDIT-01 | 🧩 Implementiert · Abnahme offen | 2/2 | Geräteprüfung (QA-02). Gruppenziehen im 3D-Bild ist mit EDIT-06 erledigt. |
+| EDIT-02 | 🧩 Implementiert · Abnahme offen | 5/5 | Spielprüfung. Picking an 3D-Blockflächen ist mit EDIT-06 erledigt. |
+| EDIT-03 | 🧩 Implementiert · Abnahme offen | 5/5 | Spielprüfung der Schablonen-Zustände (Tür, Treppe, Laterne). Picking an 3D-Blockflächen ist mit EDIT-06 erledigt. |
+| ENTITY-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Export mit Entities im Spiel prüfen (S06). Truhen-/Schildinhalte bearbeiten ist mit EDIT-06 erledigt. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/blockmodels/threeMesh.ts`
+- `apps/web/src/editor/BlockEditor.tsx`
+- `apps/web/src/editor/ContentEditor.tsx`
+- `apps/web/src/editor/editor.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/viewer/ThreeViewer.tsx`
+- `apps/web/src/viewer/sceneController.ts`
+- `apps/web/src/viewer/types.ts`
+- `docs/architecture/BLOCK_EDITOR.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/voxel/src/blockContentEdit.ts`
+- `packages/voxel/src/index.ts`
+- `tests/block-content-edit.test.mjs`
+- `tests/e2e/workshop-build3d.e2e.mjs`
+

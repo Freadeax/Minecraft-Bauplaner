@@ -24,3 +24,5 @@ export { JAVA_PROFILE, JAVA_PROFILE_ID, assertProfileConsistent, isProfileItem, 
 export type { VersionProfile, FuelFacts, ProfileStatus, ProfileStateIssue, ProfileCheck } from './profile.js';
 export { nbtFamily, profileNbtFamilies, blockEntityTypeOf, blockEntityType, transformBlockEntity, turnStructureBlock, commandCoordinates, NBT_FAMILY_LABEL } from './nbtTransforms.js';
 export type { NbtFamily, BlockEntityTransformResult } from './nbtTransforms.js';
+export { CONTAINER_SLOTS, MAX_STACK, SIGN_LINES, SIGN_COLORS, editableContent, slotLabel, readContainer, checkContainer, withContainer, readSign, checkSign, withSign } from './blockContentEdit.js';
+export type { ContentKind, SlotItem, ContainerEdit, SignEdit } from './blockContentEdit.js';
