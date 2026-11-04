@@ -5,7 +5,9 @@ import { confirm, ingest, nextBatch, retryDelay, trackOutbox } from '../../../..
 import type { AppendAnswer, Batch, FeedAnswer, RoomTeam, TeamLive } from '../../../../../packages/domain/src/index.js';
 
 const URL_KEY = 'bauplaner.teamraum.adresse';
-export const readRoomUrl = (): string => { try { return localStorage.getItem(URL_KEY) ?? ''; } catch { return ''; } };
+/** Team-Raum of the project (Cloudflare worker bauplaner-team, services/team-room); own rooms can be entered instead. */
+export const DEFAULT_ROOM_URL = 'https://bauplaner-team.team-room.workers.dev';
+export const readRoomUrl = (): string => { try { return localStorage.getItem(URL_KEY) || DEFAULT_ROOM_URL; } catch { return DEFAULT_ROOM_URL; } };
 export const saveRoomUrl = (url: string) => { try { localStorage.setItem(URL_KEY, url.trim().replace(/\/+$/, '')); } catch { /* private mode */ } };
 
 export class RoomError extends Error { constructor(readonly status: number, readonly code: string, message: string) { super(message); } }
@@ -54,7 +56,7 @@ export interface Presence { readonly member: string; readonly device: string; re
 export interface RoomConnection {
   readonly connected: boolean; readonly presence: readonly Presence[]; readonly error: string;
   /** Plan snapshot announced in the room header (sha), re-read on every header push. */
-  readonly planSha: string; readonly planNumber?: number;
+  readonly planSha: string; readonly planNumber?: number; readonly planRevision?: string;
   /** Tells the others where I am (the Team tab passes my current section). */
   announce(section?: string): void;
 }
@@ -73,7 +75,7 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
   const saveRef = useRef(save); saveRef.current = save;
   const ws = useRef<WebSocket | null>(null);
   const sending = useRef<string | null>(null);
-  const [plan, setPlan] = useState<{ sha: string; number?: number }>({ sha: '' });
+  const [plan, setPlan] = useState<{ sha: string; number?: number; revision?: string }>({ sha: '' });
   const live = team?.live;
   const roomKey = live ? `${live.url}|${live.room}|${live.key}` : '';
 
@@ -91,7 +93,8 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
 
   const readHeader = () => {
     const t = latest.current; if (!t?.live) return;
-    void getHeader<{ plan?: { sha: string; revisionNumber?: number } }>(t.live).then(h => setPlan({ sha: h.plan?.sha ?? '', ...(h.plan?.revisionNumber !== undefined && { number: h.plan.revisionNumber }) }))
+    void getHeader<{ plan?: { sha: string; revisionNumber?: number; revisionId?: string } }>(t.live).then(h => setPlan({ sha: h.plan?.sha ?? '',
+      ...(h.plan?.revisionNumber !== undefined && { number: h.plan.revisionNumber }), ...(h.plan?.revisionId && { revision: h.plan.revisionId }) }))
       .catch(() => setPlan({ sha: '' }));
   };
   const flush = () => {
@@ -157,7 +160,7 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
     const socket = ws.current;
     if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify({ type: 'presence', where: 'planer', ...(section && { section }) }));
   };
-  return { connected, presence, error, planSha: plan.sha, ...(plan.number !== undefined && { planNumber: plan.number }), announce };
+  return { connected, presence, error, planSha: plan.sha, ...(plan.number !== undefined && { planNumber: plan.number }), ...(plan.revision && { planRevision: plan.revision }), announce };
 }
 
 /** The connection of the open project (mounted once in ProjectView, so live works in every tab). */

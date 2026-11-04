@@ -4631,3 +4631,21 @@ PERF-02-S03 selektive Neuberechnung (computeGeometry/computeSite, sameGeometry v
 - `tests/owner-wire.test.mjs`
 - `tests/selective-recompute.test.mjs`
 
+## 2026-11-04T01:15:21.000Z · progress
+
+**Aufgaben:** COOP-07
+
+Team-Raum ausgerollt unter https://bauplaner-team.team-room.workers.dev und im Planer voreingestellt; Planbereitschaft erst mit dem Planstand der Freigabe; Planer (zwei Browser) und Paper-Plugin gegen den echten Dienst geprüft.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-07 | 🧩 Implementiert · Abnahme offen | 6/7 | Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl im Thread „Anbindung von Planer, Mod und Server neu denken“ (LINK-05). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/project/roomClient.ts`
+- `apps/web/src/views/project/TeamRoom.tsx`
+- `tests/e2e/team-room.e2e.mjs`
+- `docs/architecture/TEAM_LIVE.md`
+- `services/team-room/README.md`
+

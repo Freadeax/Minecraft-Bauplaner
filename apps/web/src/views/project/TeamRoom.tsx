@@ -71,8 +71,10 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
 
   // Helpers: the release came live, the matching plan is in the room – take it over with one click.
   const planMissing = !!releaseId && !session.project.revisions.some(r => r.id === releaseId);
+  // The room may still hold the previous snapshot for a moment: only the snapshot of this release counts.
+  const planReady = !!room.planSha && room.planRevision === releaseId;
   const takeOver = () => run(async () => {
-    if (!live || !room.planSha) throw new Error('Im Team-Raum liegt noch kein Planstand.');
+    if (!live || !planReady) throw new Error('Der Planstand dieser Freigabe liegt noch nicht im Team-Raum.');
     const pkg = await readTeamPackage(await getPlan(live, room.planSha));
     if (!pkg.backup) throw new Error('Der Planstand im Team-Raum enthält keinen Plan.');
     const p = (await readBackup(pkg.backup)).projects[0];
@@ -87,7 +89,7 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
     {leads ? <>
       <div className="team-inline"><label className="grow">Adresse des Team-Raums<input value={url} placeholder="https://bauplaner-team.….workers.dev" onChange={e => setUrl(e.target.value)} aria-label="Adresse des Team-Raums" /></label>
         <button className="primary" disabled={busy || !url.trim()} onClick={() => void goOnline()}>Live schalten</button></div>
-      <small className="muted">Den Team-Raum richtest du einmal ein (kostenloses Cloudflare-Konto, Anleitung in services/team-room/README.md). Die Adresse merkt sich dieser Browser.</small>
+      <small className="muted">Voreingestellt ist der Team-Raum des Bauplaners. Einen eigenen kannst du einrichten (services/team-room/README.md) und hier eintragen; die Adresse merkt sich dieser Browser.</small>
     </> : <p className="muted">Die Bauleitung schaltet das Team live und schickt dir einen Einladungslink. Bis dahin geht der Austausch über Teampaket und Meldecode unten.</p>}
   </div>;
 
@@ -106,7 +108,7 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
       : <p className="muted">{room.connected ? 'Nur du.' : 'Keine Verbindung.'}</p>}
     {planMissing && <div className="notice" role="status"><strong>Neuer Planstand {view.release?.revisionNumber} freigegeben</strong>
       <p>Die Bauleitung hat einen neuen Plan freigegeben. Dein bisheriger Stand bleibt als Kopie erhalten.</p>
-      <button className="primary" disabled={busy || !room.planSha} onClick={() => void takeOver()}>{room.planSha ? 'Planstand übernehmen' : 'Planstand wird geladen …'}</button></div>}
+      <button className="primary" disabled={busy || !planReady} onClick={() => void takeOver()}>{planReady ? 'Planstand übernehmen' : 'Planstand kommt gleich …'}</button></div>}
     <div className="team-buttons">
       <button disabled={busy} onClick={() => setShown(shown === 'invite' ? '' : 'invite')}>Einladungslink</button>
       {server && <button disabled={busy} onClick={() => setShown(shown === 'server' ? '' : 'server')}>Link für den Server</button>}

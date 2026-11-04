@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-03T23:02:57.928Z",
+  "updatedAt": "2026-11-04T01:15:21.000Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -7851,8 +7851,13 @@
           "done": true
         },
         {
+          "id": "COOP-07-S07",
+          "title": "Team-Raum ausgerollt (https://bauplaner-team.team-room.workers.dev), im Planer voreingestellt; Planer und Paper-Plugin gegen den echten Dienst geprüft.",
+          "done": true
+        },
+        {
           "id": "COOP-07-S06",
-          "title": "Deploy des Raumdienstes durch Philipp und Spieltest mit Mitspielern (TEAMBAU-09).",
+          "title": "Spieltest mit Mitspielern über den echten Team-Raum (TEAMBAU-25).",
           "done": false
         }
       ],
@@ -7862,7 +7867,7 @@
         "Ereignisse mit Herkunft server nimmt der Raum nur mit dem Serverschlüssel an.",
         "Offline weiterarbeiten; beim nächsten Verbinden gleichen alle auf denselben Stand ab."
       ],
-      "next": "Plugin-Thread: RoomLink gegen team-room v1; Philipp: Cloudflare-Konto, wrangler deploy, Spieltest.",
+      "next": "Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl im Thread „Anbindung von Planer, Mod und Server neu denken“ (LINK-05).",
       "blockers": [],
       "evidence": [
         {
@@ -7876,6 +7881,14 @@
         {
           "path": "scripts/team_room_smoke.mjs",
           "note": "Gegen wrangler dev (Worker + Durable Object) bestanden, 03.11.2026."
+        },
+        {
+          "path": "tests/e2e/team-room.e2e.mjs",
+          "note": "Mit TEAM_ROOM_URL gegen den echten Dienst: zwei Browser 1400/390 px grün (04.11.2026)."
+        },
+        {
+          "path": "scripts/test_bridge_paper_room.sh",
+          "note": "Paper 26.3 mit RoomLink gegen den echten Dienst: 10 Ereignisse, 6 vom Server, Faltung gleich (04.11.2026)."
         }
       ],
       "verification": {
@@ -7886,14 +7899,10 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T21:58:17.986Z",
+      "updatedAt": "2026-11-04T01:15:21.000Z",
       "area": "TEAM",
       "thread": "Gemeinsames Bauen mehrerer Spieler ermöglichen",
       "philipp": [
-        {
-          "kind": "geraet",
-          "text": "Cloudflare-Konto anlegen, in services/team-room npx wrangler login und npx wrangler deploy; Adresse im Reiter Team bei „Live schalten“ eintragen."
-        },
         {
           "kind": "server",
           "text": "TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat)."
@@ -14974,6 +14983,30 @@
           "done": 7,
           "total": 8,
           "next": "O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T01:15:21.000Z",
+      "kind": "progress",
+      "items": [
+        "COOP-07"
+      ],
+      "summary": "Team-Raum ausgerollt unter https://bauplaner-team.team-room.workers.dev und im Planer voreingestellt; Planbereitschaft erst mit dem Planstand der Freigabe; Planer (zwei Browser) und Paper-Plugin gegen den echten Dienst geprüft.",
+      "files": [
+        "apps/web/src/views/project/roomClient.ts",
+        "apps/web/src/views/project/TeamRoom.tsx",
+        "tests/e2e/team-room.e2e.mjs",
+        "docs/architecture/TEAM_LIVE.md",
+        "services/team-room/README.md"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-07",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl im Thread „Anbindung von Planer, Mod und Server neu denken“ (LINK-05)."
         }
       ]
     }

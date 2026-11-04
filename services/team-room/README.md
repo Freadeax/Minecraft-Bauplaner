@@ -4,7 +4,19 @@ Kleiner Dienst, über den Planer und Paper-Plugin eines Teams live synchron blei
 (Konzept und Protokoll: `docs/architecture/TEAM_LIVE.md`). Ein Raum je Team, als Cloudflare Durable Object
 mit SQLite. Läuft im kostenlosen Workers-Tarif.
 
-## Einrichten (einmal, durch die Bauleitung)
+## Betrieb
+
+Läuft unter **https://bauplaner-team.team-room.workers.dev** (im Planer voreingestellt). Neu ausrollen aus der
+Cloud-Umgebung (dort liegen `CLOUDFLARE_API_TOKEN` und `CLOUDFLARE_ACCOUNT_ID`):
+
+```
+cd services/team-room && npx wrangler deploy
+node scripts/team_room_smoke.mjs https://bauplaner-team.team-room.workers.dev
+```
+
+Protokolländerungen nur abwärtsverträglich (Planer und Paper-Plugin `RoomLink` sprechen v1).
+
+## Eigenen Raum einrichten (optional)
 
 1. Kostenloses Konto auf https://dash.cloudflare.com anlegen.
 2. Im Repository:

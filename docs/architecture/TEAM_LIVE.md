@@ -78,7 +78,7 @@ Ein Raum gehört zu genau einem Team (`teamId`). Alle Antworten sind JSON. Grenz
 ## 9. Was nur Philipp tun kann
 
 - Die Variante wählen.
-- Bei A: Cloudflare-Konto anlegen, einmal `npx wrangler login` und `npx wrangler deploy` in `services/team-room` ausführen (Anleitung `services/team-room/README.md`). Dann die Adresse (z. B. `https://bauplaner-team.<name>.workers.dev`) im Reiter „Team“ bei „Live schalten“ eintragen. Claude hat keinen Zugang zu fremden Konten und deployt nicht selbst.
+- Erledigt (04.11.2026): Cloudflare-Zugang in der Cloud-Umgebung hinterlegt; Claude deployt den Dienst damit (§10).
 - Auf dem Server `/bauplaner team verbinden <Server-Link>` eingeben.
 - Der Live-Test mit Mitspielern.
 
@@ -89,4 +89,6 @@ Ein Raum gehört zu genau einem Team (`teamId`). Alle Antworten sind JSON. Grenz
 - Planer: Die Verbindung hängt am geöffneten Projekt (`ProjectView` → `useTeamRoom` in `views/project/roomClient.ts`), also in jedem Reiter. Eingehende Ereignisse werden ohne Rückgängig-Schritt gespeichert. Reiter „Team“ → Bereich **„Team live“** (`TeamRoom.tsx`): Live schalten, Einladungslink, Link für den Server, Plan in den Raum stellen (bei jeder Freigabe automatisch), „Planstand übernehmen“ für die anderen (vorheriger Stand bleibt als Kopie), Anwesenheit, Status (live / sendet / offline mit wartenden Aktionen), Live trennen. Seite `#/team/beitreten` (`TeamJoinView.tsx`) lädt Plan und Protokoll aus dem Raum, ohne Datei.
 - Prüfung: `tests/team-room.test.mjs` (Raum, zwei Browser und Server ohne Datei, verlorene Antworten, Seiten), `tests/e2e/team-room.e2e.mjs` (zwei echte Browser über den Raumkern hinter Playwright-Routing, 1400 und 390 px), `scripts/team_room_smoke.mjs <url>` gegen `wrangler dev` oder den echten Dienst.
 - Rückgängig: Ein schon gesendetes Ereignis lässt sich nicht zurückholen (das Protokoll ist nur anhängend); Strg+Z nimmt es lokal zurück, beim nächsten Abgleich kommt es aus dem Raum wieder. Korrekturen laufen wie bisher über Gegenereignisse (freigeben, Nacharbeit).
-- Offen: Uplink im Paper-Plugin (Plugin-Thread, `RoomLink.java`), Deploy durch Philipp, Spieltest TEAMBAU-09.
+- Paper-Plugin: `RoomLink.java` (Plugin-Thread, COOP-07-S05), `/bauplaner team verbinden <Server-Link>`; Test `scripts/test_bridge_paper_room.sh` (BAUPLANER_ROOM).
+- **Betrieb (04.11.2026):** Der Dienst läuft unter `https://bauplaner-team.team-room.workers.dev` (Worker `bauplaner-team`, Cloudflare-Konto des Projekts, Deploy mit `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ACCOUNT_ID` aus der Cloud-Umgebung: `cd services/team-room && npx wrangler deploy`). Der Planer schlägt diese Adresse vor (`DEFAULT_ROOM_URL` in `roomClient.ts`); eigene Räume bleiben eintragbar. Geprüft gegen den echten Dienst: Rauchtest, `TEAM_ROOM_URL=… node --test tests/e2e/team-room.e2e.mjs` (zwei Browser, 1400/390 px) und Paper 26.3 mit RoomLink.
+- Offen: Spieltest mit Mitspielern (TEAMBAU-25).

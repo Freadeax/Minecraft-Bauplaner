@@ -14,7 +14,9 @@ import { teamEvent } from '../../dist/domain/src/index.js';
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 const PORT = 4318, BASE = `http://127.0.0.1:${PORT}/Minecraft-Bauplaner/`;
-const ROOM = 'https://raum.test';
+// TEAM_ROOM_URL=https://bauplaner-team.team-room.workers.dev runs the same check against the real deployed service.
+const REAL = process.env.TEAM_ROOM_URL?.replace(/\/+$/, '');
+const ROOM = REAL ?? 'https://raum.test';
 let server, browser;
 
 before(async () => {
@@ -92,10 +94,29 @@ function fakeRooms() {
 }
 
 const fake = fakeRooms();
+/** Room access for the assertions: the fake core, or HTTP against the real service. */
+function remote(id, memberKey, serverKey) {
+  if (!REAL) {
+    const core = fake.rooms.get(id);
+    return {
+      header: async () => core.getHeader(),
+      events: async () => core.since('').events,
+      append: async (role, batch) => { const { added, ...out } = core.append(batch, role); if (added.length) fake.broadcast(id, { type: 'events', events: added, cursor: out.cursor }); return out; },
+    };
+  }
+  const call = async (path, key, init = {}) => (await fetch(`${REAL}/v1/rooms/${id}${path}`, { ...init, headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' } })).json();
+  return {
+    header: () => call('/header', memberKey),
+    events: async () => { let all = [], cursor = '', page; do { page = await call(`/events?after=${cursor}`, memberKey); all = all.concat(page.events); cursor = page.cursor; } while (page.more); return all; },
+    append: (role, batch) => call('/events', role === 'server' ? serverKey : memberKey, { method: 'POST', body: JSON.stringify(batch) }),
+  };
+}
 async function page(viewport) {
   const context = await browser.newContext({ viewport });
-  await context.route(`${ROOM}/**`, fake.http);
-  await context.routeWebSocket(/^wss:\/\/raum\.test\//, fake.live);
+  if (!REAL) {
+    await context.route(`${ROOM}/**`, fake.http);
+    await context.routeWebSocket(/^wss:\/\/raum\.test\//, fake.live);
+  }
   const p = await context.newPage();
   p.setDefaultTimeout(15_000);
   const errors = [], answers = [];
@@ -126,18 +147,20 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     A.answers.push('Erster Stand');
     await a.getByRole('button', { name: 'Aktuellen Plan freigeben' }).click();
     await a.getByText('Planstand 1 gilt').waitFor();
+    assert.equal(await liveBlock(a).getByLabel('Adresse des Team-Raums').inputValue(), 'https://bauplaner-team.team-room.workers.dev', 'the project room is preset');
     await liveBlock(a).getByLabel('Adresse des Team-Raums').fill(ROOM);
     await liveBlock(a).getByRole('button', { name: 'Live schalten' }).click();
     await liveBlock(a).locator('[data-state=live]').waitFor();
     const link = await liveBlock(a).getByLabel('Einladungslink').inputValue();
-    assert.match(link, /#\/team\/beitreten\?raum=https%3A%2F%2Fraum\.test&id=r_[\w-]+&k=[\w-]+$/);
+    assert.match(link, new RegExp(`#/team/beitreten\\?raum=${encodeURIComponent(ROOM).replace(/\./g, '\\.')}&id=r_[\\w-]+&k=[\\w-]+$`));
     await liveBlock(a).getByRole('button', { name: 'Link für den Server' }).click();
     const serverLink = await liveBlock(a).getByLabel('Link für den Server').inputValue();
     assert.match(serverLink, /&s=[\w-]+$/);
-    const roomId = new URLSearchParams(link.split('?')[1]).get('id');
-    const core = fake.rooms.get(roomId);
-    assert.ok(core.getHeader().plan.sha, 'plan snapshot in the room');
-    assert.equal(core.getHeader().sections.length, 3, 'header carries the sections for the plugin');
+    const q = new URLSearchParams(link.split('?')[1]), roomId = q.get('id');
+    const room = remote(roomId, q.get('k'), new URLSearchParams(serverLink.split('?')[1]).get('s'));
+    const header = await room.header();
+    assert.ok(header.plan.sha, 'plan snapshot in the room');
+    assert.equal(header.sections.length, 3, 'header carries the sections for the plugin');
 
     // ---- Helper: opens the link, nothing else.
     await b.goto(link);
@@ -158,13 +181,13 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await section(b, 'Dach').locator('.team-owner', { hasText: 'Philipp' }).waitFor();
 
     // ---- Server measures (plugin with server key); a helper key cannot fake it.
-    const anna = core.since('').events.find(e => e.kind === 'member.join' && e.name === 'Anna').member;
-    const fundament = core.since('').events.find(e => e.kind === 'section.claim' && e.by === anna).section;
+    const logged = await room.events();
+    const anna = logged.find(e => e.kind === 'member.join' && e.name === 'Anna').member;
+    const fundament = logged.find(e => e.kind === 'section.claim' && e.by === anna).section;
     const now = new Date().toISOString();
     const tally = teamEvent(anna, { kind: 'build.tally', section: fundament, placed: 77, broken: 0, from: now, until: now }, now, 'server');
-    assert.equal(core.append({ batch: 'fake', events: [tally] }, 'member').rejected.length, 1);
-    const { added, ...out } = core.append({ batch: 'srv', events: [tally] }, 'server');
-    fake.broadcast(roomId, { type: 'events', events: added, cursor: out.cursor });
+    assert.equal((await room.append('member', { batch: `b_fake${Date.now()}`, events: [tally] })).rejected.length, 1);
+    assert.deepEqual((await room.append('server', { batch: `b_srv${Date.now()}`, events: [tally] })).accepted, [tally.id]);
     await a.getByRole('region', { name: 'Baunachweis und Lager' }).getByText('77').first().waitFor();
     await b.getByRole('region', { name: 'Baunachweis und Lager' }).getByText('77').first().waitFor();
 
@@ -184,11 +207,11 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await b.reload();
     await liveBlock(b).locator('[data-state=live]').waitFor();
     await a.waitForTimeout(500);
-    assert.equal(core.store.count(), core.since('').events.length);
+    const total = (await room.events()).length;
     const countA = Number((await a.locator('.team-head small').first().innerText()).match(/(\d+) Ereignisse/)[1]);
     const countB = Number((await b.locator('.team-head small').first().innerText()).match(/(\d+) Ereignisse/)[1]);
     assert.equal(countA, countB, 'both browsers hold the same log');
-    assert.equal(countA, core.store.count(), 'room holds the same log');
+    assert.equal(countA, total, 'room holds the same log');
     assert.deepEqual(A.errors, []); assert.deepEqual(B.errors, []);
   });
 }
