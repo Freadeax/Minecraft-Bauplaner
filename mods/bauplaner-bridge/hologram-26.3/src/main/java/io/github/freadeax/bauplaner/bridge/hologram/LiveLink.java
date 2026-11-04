@@ -457,7 +457,48 @@ public final class LiveLink implements LiveLinkServer.Handler {
     private TeamClient team;
 
     /** Set once by {@link HologramClient}; the team endpoints answer 404 without it. */
-    void team(TeamClient team) { this.team = team; }
+    void team(TeamClient team) {
+        this.team = team;
+        team.recorder(this::recordToRoom);
+        var room = team.sync().room();
+        // LINK-07: „Aufnahme anfordern“ in the planner – the game records its loaded chunks and puts the file into the room.
+        if (room != null) room.onAsk(ask -> {
+            var plan = hologram.plan();
+            if (!hologram.active() || plan == null) return;
+            if (ask.projectId() != null && !ask.projectId().equals(plan.identity().projectId())) return;
+            java.util.concurrent.CompletableFuture.runAsync(() -> recordToRoom(ask.from() == null ? "der Planer" : "ein Mitspieler"));
+        });
+    }
+
+    private volatile boolean recording;
+
+    /**
+     * Records the placed plan (same as GET /v1/scan) and uploads it into the team room. Runs off the game thread;
+     * returns the chat text. Also used by {@code /bauplaner team aufnahme}.
+     */
+    String recordToRoom(String askedBy) {
+        var room = team == null ? null : team.sync().room();
+        Minecraft mc = Minecraft.getInstance();
+        java.util.function.Consumer<String> say = text -> mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] " + text)));
+        if (room == null || !room.live()) { say.accept("Aufnahme: kein Team-Raum verbunden."); return "kein Raum"; }
+        if (recording) return "läuft schon";
+        recording = true;
+        try {
+            var plan = hologram.plan();
+            LiveLinkServer.Binary b = scan();
+            room.uploadScan(b.fileName(), b.bytes(), plan == null ? null : plan.identity().projectId(), plan == null ? null : plan.identity().revisionNumber());
+            say.accept("Baustand aufgenommen und in den Team-Raum gelegt" + (askedBy == null ? "" : " (angefordert von " + askedBy + ")") + ". Im Planer unter „Mit Spiel abgleichen“ holen.");
+            return "ok";
+        } catch (LiveLinkServer.HttpError e) {
+            say.accept("Aufnahme nicht möglich: " + e.getMessage());
+            return e.getMessage();
+        } catch (Exception e) {
+            say.accept("Aufnahme fehlgeschlagen: " + e.getMessage());
+            return String.valueOf(e.getMessage());
+        } finally {
+            recording = false;
+        }
+    }
 
     private TeamClient needTeam() {
         if (team == null) throw new LiveLinkServer.HttpError(404, "Teambau ist in dieser Mod aus.");

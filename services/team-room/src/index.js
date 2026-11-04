@@ -132,6 +132,19 @@ export class TeamRoom extends DurableObject {
         await this.core.auth(bearer(request));
         return new Response(this.core.getPlan(sha), { status: 200, headers: { 'Content-Type': 'application/gzip' } });
       }
+      // LINK-07: recordings from the players' mods (no server file needed).
+      if (path === 'scans' && request.method === 'GET') { await this.core.auth(bearer(request)); return json({ scans: this.core.scans() }, 200); }
+      if (path.startsWith('scans/')) {
+        const id = path.slice(6);
+        if (request.method === 'PUT') {
+          await this.core.auth(bearer(request));
+          const meta = await this.core.putScan(id, await request.arrayBuffer(), { file: url.searchParams.get('file'), projectId: url.searchParams.get('project'), revision: url.searchParams.get('revision'), by: url.searchParams.get('by') });
+          this.broadcast({ type: 'scan', scan: meta });
+          return json(meta, 200);
+        }
+        await this.core.auth(bearer(request));
+        return new Response(this.core.getScan(id), { status: 200, headers: { 'Content-Type': 'application/octet-stream' } });
+      }
       if (path === 'rotate' && request.method === 'POST') {
         await this.core.auth(bearer(request), 'admin');
         const who = url.searchParams.get('wer') === 'server' ? 'server' : 'member';
@@ -171,6 +184,18 @@ export class TeamRoom extends DurableObject {
       }
       if (msg.type === 'presence') { ws.serializeAttachment({ ...att, presence: cleanPresence({ ...att.presence, ...msg, member: att.presence.member, device: att.presence.device }) }); this.sendPresence(); return; }
       if (msg.type === 'ping') return ws.send(JSON.stringify({ type: 'pong' }));
+      // LINK-07: the planner asks the games for a fresh recording of a project; only passed on, never stored.
+      if (msg.type === 'ask' && msg.what === 'scan') {
+        const out = JSON.stringify({ type: 'ask', what: 'scan', from: att.presence?.member ?? '?', ...(typeof msg.projectId === 'string' && { projectId: msg.projectId.slice(0, 64) }), ...(typeof msg.id === 'string' && { id: msg.id.slice(0, 64) }) });
+        // One ask per socket every 10 s: each ask makes the games read their chunks.
+        const now = Date.now();
+        if (now - (att.askedAt ?? 0) < 10_000) return ws.send(JSON.stringify({ type: 'asked', games: 0, error: 'zu-oft', message: 'Bitte 10 Sekunden zwischen zwei Anforderungen warten.' }));
+        ws.serializeAttachment({ ...att, askedAt: now });
+        let games = 0;
+        for (const other of this.ctx.getWebSockets()) { const a = other.deserializeAttachment(); if (other !== ws && a?.authed && a.presence?.where === 'spiel') { try { other.send(out); games++; } catch { /* closed */ } } }
+        ws.send(JSON.stringify({ type: 'asked', games }));
+        return;
+      }
       if (msg.type === 'control.answer' && att.role === 'server') { this.relay.answer(String(msg.id ?? ''), msg.answer); return; }
     } catch (e) {
       ws.send(JSON.stringify({ type: 'error', error: e.code ?? 'fehler', message: e.message }));

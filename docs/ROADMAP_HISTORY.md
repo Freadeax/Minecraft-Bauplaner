@@ -5372,3 +5372,40 @@ Direkt im 3D-Bild bauen: Flächen-Picking, Setzen/Abbauen/Formen/Auswahl per Kli
 - `tests/block-content-edit.test.mjs`
 - `tests/e2e/workshop-build3d.e2e.mjs`
 
+## 2026-11-04T14:22:09.121Z · progress
+
+**Aufgaben:** LINK-07
+
+LINK-07 Stufe 2 / Mod 0.15.0: Mitspieler-Positionen über den Team-Raum (Gerade da), Aufnahme per Klick über den Raum (Aufnahme im Spiel anfordern, /bauplaner team aufnahme), section.seen/store.seen aus der Mod, Lagerkisten aus dem Raum; Raum: Aufnahmen-Speicher, Position, ask/asked
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LINK-07 | 🚧 In Arbeit | 5/6 | Team-Thread deployt den Raum (Aufnahmen, Positionen); Modrinth 0.15.0; Abnahme LINK-07/LINK-08 durch Philipp. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/mod/releases.json`
+- `apps/web/src/views/project/GameCheckPanel.tsx`
+- `apps/web/src/views/project/TeamRoom.tsx`
+- `apps/web/src/views/project/roomClient.ts`
+- `docs/architecture/AUTO_LINK.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.15.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.15.0.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/McCompat.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomState.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java`
+- `scripts/bridge_gametest.mjs`
+- `services/team-room/src/core.js`
+- `services/team-room/src/index.js`
+- `tests/e2e/team-room.e2e.mjs`
+- `tests/team-room.test.mjs`
+

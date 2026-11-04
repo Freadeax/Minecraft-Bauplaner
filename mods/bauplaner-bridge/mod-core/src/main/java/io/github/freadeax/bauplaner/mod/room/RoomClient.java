@@ -59,7 +59,10 @@ public final class RoomClient {
     }
 
     /** A member seen in the room right now (planner, game, server). */
-    public record Presence(String member, String where, String section) {}
+    public record Presence(String member, String where, String section, String player, int[] pos, String dim) {}
+
+    /** A request from the planner for a fresh recording (projectId null: whatever plan is placed). */
+    public record Ask(String from, String projectId, String id) {}
 
     private static final int MAX_FRAME = 4 * 1024 * 1024;
 
@@ -86,6 +89,11 @@ public final class RoomClient {
     private Consumer<List<String>> onAck = ids -> { };
     private BiConsumer<String, String> onReject = (id, why) -> { };
     private Runnable onChange = () -> { };
+    private Consumer<Ask> onAsk = a -> { };
+    private String player;
+    private int[] lastPos;
+    private String lastDim;
+    private long lastPosAt;
 
     /** @param file {@code bauplaner/team/raum.json} (null: nothing is stored, for tests) */
     public RoomClient(Path file, Consumer<String> notify) {
@@ -98,6 +106,9 @@ public final class RoomClient {
     }
 
     public void listen(Consumer<List<String>> ack, BiConsumer<String, String> reject, Runnable change) { onAck = ack; onReject = reject; onChange = change; }
+
+    /** Requests for a recording from the planer („Aufnahme anfordern“), called on the room thread. */
+    public void onAsk(Consumer<Ask> handler) { onAsk = handler; }
 
     // ------------------------------------------------------------------ config
 
@@ -168,6 +179,8 @@ public final class RoomClient {
                 hello.put("type", "hello"); hello.put("key", c.key()); hello.put("member", c.member()); hello.put("device", c.device());
                 hello.put("where", "spiel"); hello.put("after", cursor);
                 if (section != null) hello.put("section", section);
+                if (player != null) hello.put("player", player);
+                if (lastPos != null) hello.put("pos", posMap(lastPos, lastDim, null));
                 send(hello);
                 ping = timer.scheduleAtFixedRate(() -> { synchronized (this) { if (ws != null) send(Map.of("type", "ping")); } }, 30, 30, TimeUnit.SECONDS);
             }
@@ -283,7 +296,12 @@ public final class RoomClient {
                 for (JsonElement e : TeamLog.array(m, "members")) {
                     if (!e.isJsonObject() || list.size() >= 200) continue;
                     JsonObject p = e.getAsJsonObject();
-                    list.add(new Presence(TeamLog.str(p, "member"), TeamLog.str(p, "where"), TeamLog.str(p, "section")));
+                    int[] pos = null; String dim = null;
+                    if (p.has("pos") && p.get("pos").isJsonObject()) {
+                        JsonObject q = p.getAsJsonObject("pos");
+                        try { pos = new int[] { q.get("x").getAsInt(), q.get("y").getAsInt(), q.get("z").getAsInt() }; dim = TeamLog.str(q, "dim"); } catch (RuntimeException ignored) { pos = null; }
+                    }
+                    list.add(new Presence(TeamLog.str(p, "member"), TeamLog.str(p, "where"), TeamLog.str(p, "section"), TeamLog.str(p, "player"), pos, dim));
                 }
                 presence = List.copyOf(list);
             }
@@ -295,6 +313,12 @@ public final class RoomClient {
                 for (JsonElement e : TeamLog.array(m, "rejected")) {
                     JsonObject r = e.getAsJsonObject();
                     onReject.accept(TeamLog.str(r, "id"), TeamLog.str(r, "reason"));
+                }
+            }
+            case "ask" -> {
+                if ("scan".equals(TeamLog.str(m, "what"))) {
+                    Ask a = new Ask(TeamLog.str(m, "from"), TeamLog.str(m, "projectId"), TeamLog.str(m, "id"));
+                    try { onAsk.accept(a); } catch (RuntimeException e) { lastError = "Aufnahme anfordern: " + e.getMessage(); }
                 }
             }
             case "error" -> lastError = "Team-Raum: " + java.util.Optional.ofNullable(TeamLog.str(m, "message")).orElse(TeamLog.str(m, "error"));
@@ -354,6 +378,70 @@ public final class RoomClient {
         m.put("type", "presence"); m.put("where", "spiel");
         if (id != null) m.put("section", id);
         send(m);
+    }
+
+    /** Minecraft name of the player (shown next to the position on the live map). */
+    public synchronized void player(String name) { if (name != null && name.matches("[A-Za-z0-9_]{1,16}")) player = name; }
+
+    private static Map<String, Object> posMap(int[] p, String dim, Double yaw) {
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("x", p[0]); m.put("y", p[1]); m.put("z", p[2]); m.put("dim", dim == null ? "minecraft:overworld" : dim);
+        if (yaw != null) m.put("yaw", Math.round(yaw));
+        return m;
+    }
+
+    /**
+     * Position for the live map of the team (LINK-07): sent at most every 2 s and only after moving at least
+     * two blocks or changing the dimension; nothing while not live.
+     */
+    public synchronized boolean position(int x, int y, int z, String dim, double yaw, long now) {
+        if (status != Status.LIVE || ws == null) { lastPos = new int[] { x, y, z }; lastDim = dim; return false; }
+        boolean moved = lastPos == null || !java.util.Objects.equals(dim, lastDim) || Math.abs(x - lastPos[0]) + Math.abs(y - lastPos[1]) + Math.abs(z - lastPos[2]) >= 2;
+        if (!moved || now - lastPosAt < 2000) return false;
+        lastPos = new int[] { x, y, z }; lastDim = dim; lastPosAt = now;
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("type", "presence"); m.put("where", "spiel");
+        if (section != null) m.put("section", section);
+        if (player != null) m.put("player", player);
+        m.put("pos", posMap(lastPos, dim, yaw));
+        send(m);
+        return true;
+    }
+
+    /**
+     * Uploads a recording of the player's loaded chunks into the room (LINK-07; PUT …/scans/{id}). Runs on the
+     * caller's thread; returns the room's description of the file.
+     */
+    public Map<String, Object> uploadScan(String fileName, byte[] bytes, String projectId, Integer revision) throws IOException, InterruptedException {
+        Config c;
+        synchronized (this) { c = config; }
+        if (c == null) throw new IllegalStateException("Kein Team-Raum verbunden.");
+        String id = "scan_" + Long.toString(System.currentTimeMillis(), 36) + Integer.toString((int) (Math.random() * 46656), 36);
+        StringBuilder q = new StringBuilder("?file=").append(java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8)).append("&by=").append(java.net.URLEncoder.encode(c.member(), StandardCharsets.UTF_8));
+        if (projectId != null) q.append("&project=").append(java.net.URLEncoder.encode(projectId, StandardCharsets.UTF_8));
+        if (revision != null) q.append("&revision=").append(revision);
+        HttpRequest req = HttpRequest.newBuilder(URI.create(c.url() + "/v1/rooms/" + c.room() + "/scans/" + id + q)).timeout(Duration.ofSeconds(60))
+                .header("Authorization", "Bearer " + c.key()).header("Content-Type", "application/octet-stream").PUT(HttpRequest.BodyPublishers.ofByteArray(bytes)).build();
+        HttpResponse<String> res = http.send(req, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        if (res.statusCode() != 200) {
+            String why;
+            try { why = TeamLog.str(JsonParser.parseString(res.body()).getAsJsonObject(), "message"); } catch (RuntimeException e) { why = null; }
+            throw new IOException(why != null ? why : "Team-Raum antwortet " + res.statusCode());
+        }
+        return Json.obj(Json.parse(res.body()), "Aufnahme");
+    }
+
+    /**
+     * Sends a report the game measured itself (section.seen, store.seen; unverified, origin planer) straight to the
+     * room – no outbox: a newer report replaces it anyway. False when not live or no member.
+     */
+    public synchronized boolean report(String kind, Map<String, Object> body) {
+        if (status != Status.LIVE || ws == null || config == null) return false;
+        Map<String, Object> e = new LinkedHashMap<>();
+        String id = "tev_" + Long.toString(System.currentTimeMillis(), 36) + Integer.toString((int) (Math.random() * 1_679_616), 36);
+        e.put("id", id); e.put("at", io.github.freadeax.bauplaner.mod.team.TeamWire.time(java.time.Instant.now())); e.put("by", config.member()); e.put("origin", "planer"); e.put("kind", kind);
+        e.putAll(body);
+        return append("b_" + id, List.of(e));
     }
 
     /** Stops everything (game closes). */

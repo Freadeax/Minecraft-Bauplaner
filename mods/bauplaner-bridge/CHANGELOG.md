@@ -2,6 +2,20 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.15.0 – 2026-11-04
+
+**Team mode in the game, even less server / Teammodus im Spiel, noch weniger Server**
+
+- Positions: while your game is connected to the team room, the others see where you are (player name and block position, at most every 2 seconds and only after moving) – in the planner under “Who's here”. Nothing goes to the Minecraft server.
+- Recording through the room: in the planner (“Build” tab) “Request recording from the game” – the game that has the plan placed reads its loaded chunks and puts the file into the team room; the planner loads it right away. Or in the game: `/bauplaner team aufnahme`. No plugin, no copying files.
+- The game reports what the hologram measures per section (placed, total, wrong, what is missing) at most every 30 seconds and only on change, and the content of marked team chests when you open and close them. These reports are marked as unverified; the plugin's checked chests stay the proof.
+- Marked team chests come from the room now as well, so `/bauplaner team lager` and the packing list know them without the plugin.
+
+- Positionen: Solange dein Spiel mit dem Team-Raum verbunden ist, sehen die anderen, wo du bist (Spielername und Blockposition, höchstens alle 2 Sekunden und nur nach Bewegung) – im Planer unter „Gerade da“. An den Minecraft-Server geht nichts.
+- Aufnahme über den Raum: im Planer (Reiter „Bauen“) „Aufnahme im Spiel anfordern“ – das Spiel mit dem platzierten Plan liest seine geladenen Chunks und legt die Datei in den Team-Raum; der Planer lädt sie sofort. Oder im Spiel `/bauplaner team aufnahme`. Kein Plugin, kein Dateienkopieren.
+- Das Spiel meldet, was das Hologramm je Abschnitt misst (gesetzt, gesamt, falsch, was fehlt), höchstens alle 30 Sekunden und nur bei Änderung, und den Inhalt markierter Team-Kisten beim Öffnen und Schließen. Diese Meldungen sind als ungeprüft gekennzeichnet; die geprüften Kisten des Plugins bleiben der Nachweis.
+- Markierte Team-Kisten kommen jetzt auch aus dem Raum, damit `/bauplaner team lager` und die Packliste sie ohne Plugin kennen.
+
 ## 0.14.0 – 2026-11-04
 
 **Team building without any server file / Teambau ohne Server-Datei**

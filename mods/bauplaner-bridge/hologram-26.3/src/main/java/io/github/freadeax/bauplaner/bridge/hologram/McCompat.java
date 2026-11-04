@@ -79,6 +79,23 @@ public final class McCompat {
         return mc.player.blockPosition().below();
     }
 
+    /**
+     * Items of the open container screen without the player's own inventory (chest, barrel, shulker …), as item id →
+     * count; null when no container is open. Read from what the server already sent to the client.
+     */
+    public static java.util.Map<String, Integer> openContainer(Minecraft mc) {
+        if (!(mc.gui.screen() instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?> screen) || mc.player == null) return null;
+        if (screen instanceof net.minecraft.client.gui.screens.inventory.InventoryScreen) return null;
+        var out = new java.util.TreeMap<String, Integer>();
+        for (var slot : screen.getMenu().slots) {
+            if (slot.container instanceof net.minecraft.world.entity.player.Inventory) continue;
+            var stack = slot.getItem();
+            if (stack.isEmpty()) continue;
+            out.merge(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem()).toString(), stack.getCount(), Integer::sum);
+        }
+        return out;
+    }
+
     private static long shadersCheckedAt;
     private static boolean shaders;
 

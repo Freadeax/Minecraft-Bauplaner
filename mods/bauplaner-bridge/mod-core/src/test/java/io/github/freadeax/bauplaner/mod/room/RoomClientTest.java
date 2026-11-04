@@ -117,8 +117,56 @@ class RoomClientTest {
         post(http, base, room, admin, "{\"batch\":\"b2\",\"events\":[" + event("tev_note", "2026-11-04T10:05:00.000Z", "mem_lea", "note.add", ",\"noteId\":\"note_1\",\"tag\":\"info\",\"text\":\"Steine liegen am Tor\"") + "]}");
         for (int i = 0; i < 50 && sync.state().notes().isEmpty(); i++) Thread.sleep(100);
         assertEquals("Steine liegen am Tor", sync.state().notes().get(0).text());
+
+        // Position for the live map: the planner's socket sees Tom with player name and block position.
+        java.util.concurrent.LinkedBlockingQueue<String> planner = new java.util.concurrent.LinkedBlockingQueue<>();
+        var ws = http.newWebSocketBuilder().buildAsync(URI.create(base.replaceFirst("^http", "ws") + "/v1/rooms/" + room + "/live"), new java.net.http.WebSocket.Listener() {
+            final StringBuilder buf = new StringBuilder();
+            @Override public java.util.concurrent.CompletionStage<?> onText(java.net.http.WebSocket w, CharSequence d, boolean last) {
+                buf.append(d); if (last) { planner.add(buf.toString()); buf.setLength(0); } w.request(1); return null;
+            }
+        }).get();
+        ws.sendText("{\"type\":\"hello\",\"key\":\"" + admin + "\",\"member\":\"mem_lea\",\"device\":\"planer-test\",\"where\":\"planer\"}", true).get();
+        client.player("TomBaut");
+        assertTrue(client.position(12, 64, 3, "minecraft:overworld", 90, System.currentTimeMillis() + 10_000));
+        assertTrue(!client.position(12, 64, 4, "minecraft:overworld", 90, System.currentTimeMillis() + 10_500), "kaum bewegt, zu früh");
+        String seen = null;
+        for (int i = 0; i < 50 && seen == null; i++) { String m = planner.poll(200, java.util.concurrent.TimeUnit.MILLISECONDS); if (m != null && m.contains("\"TomBaut\"") && m.contains("\"x\":12")) seen = m; }
+        assertNotNull(seen, "Position kam beim Planer an");
+
+        // The planner asks for a recording: the game gets the ask and uploads the file into the room.
+        java.util.concurrent.LinkedBlockingQueue<RoomClient.Ask> asks = new java.util.concurrent.LinkedBlockingQueue<>();
+        client.onAsk(asks::add);
+        ws.sendText("{\"type\":\"ask\",\"what\":\"scan\",\"projectId\":\"prj_burg\"}", true).get();
+        RoomClient.Ask ask = asks.poll(5, java.util.concurrent.TimeUnit.SECONDS);
+        assertNotNull(ask, "Anforderung kam im Spiel an");
+        assertEquals("prj_burg", ask.projectId());
+        byte[] gz = gzip("Baustand".getBytes());
+        Map<String, Object> up = client.uploadScan("burg-baustand.litematic", gz, "prj_burg", 3);
+        assertEquals("prj_burg", up.get("projectId"));
+        String list = http.send(HttpRequest.newBuilder(URI.create(base + "/v1/rooms/" + room + "/scans")).header("Authorization", "Bearer " + admin).build(), HttpResponse.BodyHandlers.ofString()).body();
+        assertTrue(list.contains("burg-baustand.litematic"), list);
+        var file = http.send(HttpRequest.newBuilder(URI.create(base + "/v1/rooms/" + room + "/scans/" + up.get("id"))).header("Authorization", "Bearer " + admin).build(), HttpResponse.BodyHandlers.ofByteArray());
+        assertEquals(200, file.statusCode());
+        assertTrue(java.util.Arrays.equals(gz, file.body()), "Datei unverändert");
+
+        // What the game measured goes straight into the log (unverified, by Tom).
+        assertTrue(client.report("section.seen", new java.util.LinkedHashMap<>(Map.of("section", "sec_b", "placed", 40, "total", 120))));
+        String log = "";
+        for (int i = 0; i < 50 && !log.contains("section.seen"); i++) {
+            Thread.sleep(100);
+            log = http.send(HttpRequest.newBuilder(URI.create(base + "/v1/rooms/" + room + "/events?after=")).header("Authorization", "Bearer " + admin).build(), HttpResponse.BodyHandlers.ofString()).body();
+        }
+        assertTrue(log.contains("\"section.seen\"") && log.contains("\"placed\":40"), log);
+        ws.abort();
         client.forget();
         client.close();
+    }
+
+    private static byte[] gzip(byte[] raw) throws Exception {
+        var out = new java.io.ByteArrayOutputStream();
+        try (var z = new java.util.zip.GZIPOutputStream(out)) { z.write(raw); }
+        return out.toByteArray();
     }
 
     private static String ownerB(TeamSync sync) {

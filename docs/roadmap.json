@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T13:41:53.533Z",
+  "updatedAt": "2026-11-04T14:22:09.121Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -9316,7 +9316,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T12:47:26.654Z",
+      "updatedAt": "2026-11-04T14:22:09.121Z",
       "area": "MOD",
       "thread": "Verbindung ohne Server-Datei neu bauen",
       "orphans": [],
@@ -9330,17 +9330,24 @@
       "scope": [
         "apps/web/src/testing/testplan.ts",
         "apps/web/src/views/map/liveClient.ts",
+        "apps/web/src/views/mod/releases.json",
         "apps/web/src/views/mod/serverClient.ts",
+        "apps/web/src/views/project/GameCheckPanel.tsx",
         "apps/web/src/views/project/TeamRoom.tsx",
+        "apps/web/src/views/project/roomClient.ts",
         "docs/architecture/AUTO_LINK.md",
         "docs/testing/TESTPLAN.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.15.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.15.0.jar",
         "mods/bauplaner-bridge/CHANGELOG.md",
         "mods/bauplaner-bridge/VERSION",
         "mods/bauplaner-bridge/fabric-26.3/build.gradle",
         "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
         "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/McCompat.java",
         "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java",
         "mods/bauplaner-bridge/mod-core/build.gradle",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java",
         "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
         "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java",
         "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomState.java",
@@ -9352,8 +9359,11 @@
         "scripts/bridge_gametest.mjs",
         "scripts/bridge_room_prepare.mjs",
         "scripts/test_bridge_ingame.sh",
+        "services/team-room/src/core.js",
+        "services/team-room/src/index.js",
         "tests/e2e/modSimulator.mjs",
-        "tests/e2e/team-room.e2e.mjs"
+        "tests/e2e/team-room.e2e.mjs",
+        "tests/team-room.test.mjs"
       ],
       "steps": [
         {
@@ -9373,17 +9383,17 @@
         },
         {
           "id": "LINK-07-S04",
-          "title": "Mitspieler-Positionen auf der Live-Karte über den Raum (Raum-Anwesenheit mit Position, Deploy durch Team-Thread).",
-          "done": false
+          "title": "Mitspieler-Positionen über den Raum: Anwesenheit mit Spielername und Position (alle 2 s nach Bewegung), im Planer unter „Gerade da“ (Mod 0.15.0).",
+          "done": true
         },
         {
           "id": "LINK-07-S05",
-          "title": "Aufnahmen aus der Mod und gesehene Kisteninhalte in den Raum.",
-          "done": false
+          "title": "Aufnahme per Klick über den Raum („Aufnahme im Spiel anfordern“, /bauplaner team aufnahme, PUT …/scans), section.seen und store.seen aus der Mod, Lagerkisten aus dem Raum (Mod 0.15.0).",
+          "done": true
         },
         {
           "id": "LINK-07-S06",
-          "title": "Release Mod 0.14.0 (Modrinth über den Thread „Mod auf Modrinth veröffentlichen“) und Abnahme LINK-07.",
+          "title": "Release Mod 0.14.0/0.15.0 (Modrinth über den Thread „Mod auf Modrinth veröffentlichen“), Raum-Deploy durch den Team-Thread und Abnahme LINK-07/LINK-08.",
           "done": false
         }
       ],
@@ -9403,13 +9413,25 @@
         {
           "path": "tests/e2e/team-room.e2e.mjs",
           "note": "„Mein Spiel verbinden“ übergibt nur den Mitgliedsschlüssel (1400/390 px)."
+        },
+        {
+          "path": "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java",
+          "note": "0.15.0 gegen wrangler dev: Position kommt beim Planer an, Anforderung erreicht das Spiel, Aufnahme hochgeladen und byte-gleich geholt, section.seen im Protokoll (04.11.2026)."
+        },
+        {
+          "path": "tests/e2e/team-room.e2e.mjs",
+          "note": "Position unter „Gerade da“, „Aufnahme im Spiel anfordern“ lädt die Aufnahme aus dem Raum (1400 px und 390 px)."
+        },
+        {
+          "path": "tests/team-room.test.mjs",
+          "note": "Raum: Aufnahmen (gzip-Prüfung, 8 MB, neueste 12), Position nur bei where spiel."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "Kern automatisch und im echten Spiel geprüft; Positionen/Aufnahmen über den Raum und Abnahme offen."
+        "note": "Automatisch, gegen einen laufenden Raum und im echten Minecraft 26.3 geprüft; Raum-Deploy und Abnahme LINK-07/LINK-08 offen."
       },
-      "next": "Positionen und Aufnahmen über den Raum; Release 0.14.0; Abnahme LINK-07.",
+      "next": "Team-Thread deployt den Raum (Aufnahmen, Positionen); Modrinth 0.15.0; Abnahme LINK-07/LINK-08 durch Philipp.",
       "philipp": []
     },
     {
@@ -17781,6 +17803,49 @@
           "done": 5,
           "total": 6,
           "next": "Export mit Entities im Spiel prüfen (S06). Truhen-/Schildinhalte bearbeiten ist mit EDIT-06 erledigt."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T14:22:09.121Z",
+      "kind": "progress",
+      "items": [
+        "LINK-07"
+      ],
+      "summary": "LINK-07 Stufe 2 / Mod 0.15.0: Mitspieler-Positionen über den Team-Raum (Gerade da), Aufnahme per Klick über den Raum (Aufnahme im Spiel anfordern, /bauplaner team aufnahme), section.seen/store.seen aus der Mod, Lagerkisten aus dem Raum; Raum: Aufnahmen-Speicher, Position, ask/asked",
+      "files": [
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/mod/releases.json",
+        "apps/web/src/views/project/GameCheckPanel.tsx",
+        "apps/web/src/views/project/TeamRoom.tsx",
+        "apps/web/src/views/project/roomClient.ts",
+        "docs/architecture/AUTO_LINK.md",
+        "docs/testing/TESTPLAN.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.15.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.15.0.jar",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/McCompat.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomState.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java",
+        "scripts/bridge_gametest.mjs",
+        "services/team-room/src/core.js",
+        "services/team-room/src/index.js",
+        "tests/e2e/team-room.e2e.mjs",
+        "tests/team-room.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "LINK-07",
+          "status": "in_progress",
+          "done": 5,
+          "total": 6,
+          "next": "Team-Thread deployt den Raum (Aufnahmen, Positionen); Modrinth 0.15.0; Abnahme LINK-07/LINK-08 durch Philipp."
         }
       ]
     }

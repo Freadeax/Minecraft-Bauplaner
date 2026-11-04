@@ -174,6 +174,7 @@ public final class CommandCatalog {
         c(m, TEAM, "team.pruefen", "Prüfen", "team pruefen", "Abschnitt bestätigen oder Nacharbeit (Baumeister).", Need.TEAM, Arg.of("abschnitt", Kind.SECTION), Arg.choice("ergebnis", "ok", "nacharbeit"));
         c(m, TEAM, "team.zuweisen", "Zuweisen", "team zuweisen", "Abschnitt einem Spieler geben (Baumeister).", Need.TEAM, Arg.of("abschnitt", Kind.SECTION), Arg.of("spieler", Kind.PLAYER));
         c(m, TEAM, "team.lager", "Lagerkisten", "team lager", "Lagerkisten vom Server mit Prüfstand.", Need.TEAM);
+        c(m, TEAM, "team.aufnahme", "Baustand in den Team-Raum", "team aufnahme", "Baustand des platzierten Plans aufnehmen und in den Team-Raum legen; der Planer holt ihn unter „Mit Spiel abgleichen“.", Need.TEAM);
         c(m, TEAM, "team.korb", "Ausgangskorb", "team korb", "Meldungen, die noch auf Planer oder Server warten.", Need.NONE);
         c(m, TEAM, "team.rahmen", "Rahmen an/aus", "team rahmen", "Abschnittsrahmen im Spiel.", Need.NONE);
         c(m, TEAM, "team.anzeige", "Anzeige an/aus", "team anzeige", "Teamfeld rechts unten.", Need.NONE);

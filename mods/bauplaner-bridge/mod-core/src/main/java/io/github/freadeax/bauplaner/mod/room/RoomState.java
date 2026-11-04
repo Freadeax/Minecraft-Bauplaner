@@ -72,6 +72,26 @@ final class RoomState {
             notes.add(j);
         }
         s.add("notes", notes);
+        // Marked chests (store.chest) – without a plugin nobody counts them; the game reports what it sees (store.seen).
+        JsonArray stores = new JsonArray();
+        for (var e : v.chests.entrySet()) {
+            if (stores.size() >= 200) break;
+            TeamLog.Chest c = e.getValue();
+            JsonObject j = new JsonObject();
+            j.addProperty("id", e.getKey());
+            j.addProperty("name", c.name == null ? "Lager" : c.name.length() > 60 ? c.name.substring(0, 60) : c.name);
+            if (c.dimension != null) j.addProperty("dimension", c.dimension);
+            JsonArray a = new JsonArray(); a.add(c.x); a.add(c.y); a.add(c.z); j.add("pos", a);
+            JsonArray items = new JsonArray();
+            for (var it : c.items.entrySet()) {
+                if (items.size() >= 64) break;
+                JsonObject i = new JsonObject(); i.addProperty("item", it.getKey()); i.addProperty("count", Math.min(it.getValue(), 1_000_000_000L)); items.add(i);
+            }
+            j.add("items", items);
+            if (c.items.size() > 64) j.addProperty("more", true);
+            stores.add(j);
+        }
+        s.add("stores", stores);
         s.addProperty("at", java.time.Instant.now().toString());
         return Json.obj(Json.parse(TeamLog.GSON.toJson(s)), "Teamstand");
     }

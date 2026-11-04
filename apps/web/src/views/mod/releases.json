@@ -588,6 +588,33 @@
       "releasedAt": "2026-11-04",
       "sourceCommit": "edfb90961051b06f0ea8a2b5551217e7bb53d160",
       "tested": "Minecraft 26.3 NeoForge: Spieltest bestanden; Team-Raum über gemeinsamen mod-core (RoomClientTest gegen echten Raum, Fabric-Spieltest mit Raum ohne Server)"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.15.0.jar",
+      "modVersion": "0.15.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 480484,
+      "sha256": "2e1741c4cafa61e08fad8db60915d12fc35748181451dab023195abc301b9631",
+      "releasedAt": "2026-11-04",
+      "sourceCommit": "b52148dc3b253e6e894590703002285672d98154",
+      "tested": "Minecraft 26.3 Fabric Spieltest mit Team-Raum: live, Abschnitt nehmen, /bauplaner team aufnahme legt Aufnahme in den Raum (04.11.2026)"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.15.0.jar",
+      "modVersion": "0.15.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 476758,
+      "sha256": "8c7762eca499b36c10aacf582c77073d836a155b02f8ac3e83dcfb01da369dd3",
+      "releasedAt": "2026-11-04",
+      "sourceCommit": "b52148dc3b253e6e894590703002285672d98154",
+      "tested": "Minecraft 26.3 NeoForge Spieltest bestanden (04.11.2026)"
     }
   ]
 }

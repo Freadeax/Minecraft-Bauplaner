@@ -189,6 +189,15 @@ async function live(file, loader, plan, logFile) {
     const room = JSON.parse(readFileSync(join(dir, 'room.json'), 'utf8'));
     const events = await (await fetch(`${room.url}/v1/rooms/${room.room}/events?after=`, { headers: { Authorization: `Bearer ${room.adminKey}` } })).json();
     assert.ok(events.events.some(e => e.kind === 'section.claim' && e.by === 'mem_tom' && e.section === 'sec_mauer'), JSON.stringify(events.events));
+    // /bauplaner team aufnahme: the recording lies in the room, readable like a file from the scans folder.
+    const scans = (await (await fetch(`${room.url}/v1/rooms/${room.room}/scans`, { headers: { Authorization: `Bearer ${room.adminKey}` } })).json()).scans;
+    assert.equal(scans.length, 1, `Aufnahme im Raum: ${JSON.stringify(scans)}`);
+    assert.equal(scans[0].by, 'mem_tom');
+    const file = new Uint8Array(await (await fetch(`${room.url}/v1/rooms/${room.room}/scans/${scans[0].id}`, { headers: { Authorization: `Bearer ${room.adminKey}` } })).arrayBuffer());
+    const fromRoom = await readWorldScan(file.buffer);
+    assert.ok(fromRoom.size.every(n => n > 0), 'Aufnahme aus dem Raum ist lesbar');
+    const seen = events.events.filter(e => e.kind === 'section.seen');
+    console.log(`Raum: Aufnahme ${scans[0].file} (${scans[0].bytes} B), section.seen ${seen.length}`);
   }
   assert.equal(raw.marks.status, 200);
   assert.equal(raw.marks.body.marks, 4, 'Punkt, Bauplatz, Zone und Gefahr-Punkt angenommen');

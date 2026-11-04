@@ -120,7 +120,8 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
     {status.state === 'offline' && <p className="muted">Ohne Verbindung arbeitest du normal weiter; alles wird beim nächsten Verbinden nachgeholt{status.lastContact ? ` (zuletzt verbunden ${new Date(status.lastContact).toLocaleString('de-DE')})` : ''}.</p>}
     <h4>Gerade da</h4>
     {room.presence.length ? <ul className="team-presence" aria-label="Gerade da">{room.presence.map(p =>
-      <li key={p.device}><strong>{p.member === 'server' ? 'Server' : names.get(p.member) ?? 'Unbekannt'}</strong> {WHERE[p.where]}{p.section ? ` · ${teamContextOf(siteOf(session.project)).sections.find(s => s.id === p.section)?.name ?? ''}` : ''}{p.device === live.device ? ' (du)' : ''}</li>)}</ul>
+      <li key={p.device}><strong>{p.member === 'server' ? 'Server' : names.get(p.member) ?? 'Unbekannt'}</strong> {WHERE[p.where]}{p.section ? ` · ${teamContextOf(siteOf(session.project)).sections.find(s => s.id === p.section)?.name ?? ''}` : ''}{p.device === live.device ? ' (du)' : ''}
+        {p.where === 'spiel' && p.pos && <span className="muted" data-testid="presence-pos"> · {p.player ? `${p.player} ` : ''}bei {p.pos.x} {p.pos.y} {p.pos.z}{p.pos.dim !== 'minecraft:overworld' ? ` (${p.pos.dim.replace('minecraft:', '')})` : ''}</span>}</li>)}</ul>
       : <p className="muted">{room.connected ? 'Nur du.' : 'Keine Verbindung.'}</p>}
     {planMissing && <div className="notice" role="status"><strong>Neuer Planstand {view.release?.revisionNumber} freigegeben</strong>
       <p>Die Bauleitung hat einen neuen Plan freigegeben. Dein bisheriger Stand bleibt als Kopie erhalten.</p>

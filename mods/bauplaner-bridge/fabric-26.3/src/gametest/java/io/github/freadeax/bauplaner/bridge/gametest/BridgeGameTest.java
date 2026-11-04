@@ -378,6 +378,13 @@ public final class BridgeGameTest implements FabricClientGameTest {
         out.append(",\"back\":").append(request(context, http, base + "/v1/placement", "POST", back, token, "https://freadeax.github.io"));
         context.waitTicks(10);
         out.append(",\"scan\":").append(download(context, http, base + "/v1/scan", token, io.resolve("live-scan.schem")));
+        if (Files.isRegularFile(roomFile)) {
+            // LINK-07: the game records the placed plan itself and puts the file into the team room (no plugin).
+            context.setScreen(() -> null);
+            context.waitTicks(2);
+            chat(context, "/bauplaner team aufnahme");
+            context.waitTicks(100);
+        }
         // Turned once on empty ground: the recording must still be in plan coordinates (everything missing).
         String turned = "{\"dimension\":\"minecraft:overworld\",\"x\":" + (anchor[0] + 20) + ",\"y\":" + anchor[1] + ",\"z\":" + (anchor[2] + 20) + ",\"turns\":1,\"mirror\":false}";
         out.append(",\"turned\":").append(request(context, http, base + "/v1/placement", "POST", turned, token, "https://freadeax.github.io"));

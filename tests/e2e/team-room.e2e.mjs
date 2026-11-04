@@ -10,6 +10,8 @@ import assert from 'node:assert/strict';
 import { openSampleProject } from './start.mjs';
 import { RoomCore, MemoryStore, RoomError, cleanPresence, randomKey } from '../../services/team-room/src/core.js';
 import { teamEvent } from '../../dist/domain/src/index.js';
+import { writeNbt } from '../../dist/formats/src/index.js';
+import { gzipSync } from 'node:zlib';
 import { startModSimulator } from './modSimulator.mjs';
 
 const require = createRequire(import.meta.url);
@@ -66,6 +68,14 @@ function fakeRooms() {
       if (rest === 'header') { await core.auth(key); return json(core.getHeader()); }
       if (rest.startsWith('plan/') && req.method() === 'PUT') { await core.auth(key, 'admin'); await core.putPlan(rest.slice(5), new Uint8Array(req.postDataBuffer())); return json({ ok: true }); }
       if (rest.startsWith('plan/')) { await core.auth(key); return route.fulfill({ status: 200, headers: { ...cors, 'Content-Type': 'application/gzip' }, body: Buffer.from(core.getPlan(rest.slice(5))) }); }
+      if (rest === 'scans') { await core.auth(key); return json({ scans: core.scans() }); }
+      if (rest.startsWith('scans/') && req.method() === 'PUT') {
+        await core.auth(key);
+        const meta = await core.putScan(rest.slice(6), new Uint8Array(req.postDataBuffer()), { file: url.searchParams.get('file'), projectId: url.searchParams.get('project'), revision: url.searchParams.get('revision'), by: url.searchParams.get('by') });
+        broadcast(parts[2], { type: 'scan', scan: meta });
+        return json(meta);
+      }
+      if (rest.startsWith('scans/')) { await core.auth(key); return route.fulfill({ status: 200, headers: { ...cors, 'Content-Type': 'application/octet-stream' }, body: Buffer.from(core.getScan(rest.slice(6))) }); }
       if (rest === 'rotate' && req.method() === 'POST') {
         await core.auth(key, 'admin');
         const who = url.searchParams.get('wer') === 'server' ? 'server' : 'member', out = await core.rotate(who);
@@ -96,12 +106,39 @@ function fakeRooms() {
           ws.send(JSON.stringify({ type: 'appended', ...out }));
           if (added.length) broadcast(id, { type: 'events', events: added, cursor: out.cursor });
         } else if (msg.type === 'presence' && s.authed) { s.presence = cleanPresence({ ...s.presence, ...msg, member: s.presence.member, device: s.presence.device }); presence(id); }
+        else if (msg.type === 'ask' && msg.what === 'scan' && s.authed) {
+          let games = 0;
+          for (const o of sockets) if (o !== s && o.room === id && o.authed && o.presence?.where === 'spiel') { o.ws.send(JSON.stringify({ type: 'ask', what: 'scan', from: s.presence.member, ...(msg.projectId && { projectId: msg.projectId }) })); games++; }
+          ws.send(JSON.stringify({ type: 'asked', games }));
+        }
       } catch (e) { ws.send(JSON.stringify({ type: 'error', error: e.code ?? 'fehler', message: e.message })); if (e.status === 401) ws.close({ code: 4401 }); }
     });
     ws.onClose(() => { sockets.delete(s); presence(id); });
   };
-  return { rooms, http, live, broadcast };
+  /**
+   * A player's game in the room (LINK-07, the mod's RoomClient): presence with position, and on „Aufnahme anfordern“
+   * it records and puts the file into the room – what the real mod does with its loaded chunks.
+   */
+  const game = async (id, key, member, player, pos, scanBytes) => {
+    const core = rooms.get(id), asks = [];
+    const s = { room: id, authed: true, role: await core.auth(key), presence: cleanPresence({ member, device: 'dev_spiel0001', where: 'spiel', player, pos }), ws: { send: async raw => {
+      const msg = JSON.parse(raw);
+      if (msg.type !== 'ask') return;
+      asks.push(msg);
+      const meta = await core.putScan(`scan_${randomKey(8)}`, scanBytes, { file: 'anna-baustand.schem', projectId: msg.projectId, by: member });
+      broadcast(id, { type: 'scan', scan: meta });
+    }, close: () => {} } };
+    sockets.add(s); presence(id);
+    return { asks, leave: () => { sockets.delete(s); presence(id); } };
+  };
+  return { rooms, http, live, broadcast, game };
 }
+
+/** Smallest valid recording (Sponge v3, one stone block, no plan metadata). */
+const tinyScan = () => new Uint8Array(gzipSync(writeNbt({ name: '', tag: { type: 'compound', value: { Schematic: { type: 'compound', value: {
+  Version: { type: 'int', value: 3 }, DataVersion: { type: 'int', value: 4189 }, Width: { type: 'short', value: 1 }, Height: { type: 'short', value: 1 }, Length: { type: 'short', value: 1 },
+  Blocks: { type: 'compound', value: { Palette: { type: 'compound', value: { 'minecraft:stone': { type: 'int', value: 0 } } }, Data: { type: 'byteArray', value: [0] } } },
+} } } } })));
 
 const fake = fakeRooms();
 /** Room access for the assertions: the fake core, or HTTP against the real service. */
@@ -202,6 +239,19 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await liveBlock(a).getByRole('list', { name: 'Gerade da' }).getByText(/Fundament/).waitFor();
     await a.getByRole('region', { name: 'Mitglieder' }).getByText('Anna').first().waitFor();
     await liveBlock(a).getByRole('list', { name: 'Gerade da' }).getByText('Anna').waitFor();
+    if (!REAL) {
+      // ---- LINK-07: Anna's game in the room – position for the others, recording by click, no server plugin.
+      const anna = await fake.game(roomId, q.get('k'), handed.member, 'AnnaMC', { x: 12, y: 64, z: -3, dim: 'minecraft:overworld' }, tinyScan());
+      await liveBlock(a).getByTestId('presence-pos').filter({ hasText: 'AnnaMC bei 12 64 -3' }).waitFor();
+      await a.getByRole('navigation', { name: 'Projektbereiche' }).getByRole('link', { name: 'Bauen' }).click();
+      await a.getByTestId('room-scans').getByText('Ein Spiel im Team-Raum').waitFor();
+      await a.getByRole('button', { name: '⇩ Aufnahme im Spiel anfordern' }).click();
+      await a.getByRole('status').filter({ hasText: /Aufnahme aus dem Team-Raum geladen: anna-baustand\.schem/ }).waitFor();
+      assert.equal(anna.asks.length, 1); assert.match(anna.asks[0].projectId, /^prj_|^[\w-]+$/);
+      await a.getByLabel('Aufnahme im Team-Raum').waitFor();
+      anna.leave();
+      await teamTab(a);
+    }
     // In another tab: the chip and the news stay.
     await a.getByRole('navigation', { name: 'Projektbereiche' }).getByRole('link', { name: 'Baustelle' }).click();
     await a.locator('.project-head [data-team-live=live]').waitFor();

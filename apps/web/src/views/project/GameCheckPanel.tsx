@@ -9,6 +9,8 @@ import { loadProjectScanOriginal, saveProjectScan } from '../../app/scanPersiste
 import { MODEL_MAX_FILE_BYTES } from '../../../../../packages/voxel/src/sizeLimits.js';
 import { hasServerPairing, latestServerRecording, recordOnServer } from '../mod/serverClient';
 import type { ServerRecording } from '../mod/serverClient';
+import { useRoomConnection } from './roomClient';
+import type { RoomScan } from './roomClient';
 
 export type LoadedScan = WorldScan & { readonly sourceSha256: string; readonly fileName: string };
 const MAX_SCAN_BYTES = MODEL_MAX_FILE_BYTES;
@@ -119,6 +121,40 @@ export function GameCheckPanel(p: Props) {
     } catch (e) { setError(errorText(e)); }
     finally { setServerStep(''); }
   };
+  /** LINK-07: recordings the players' games put into the team room – no server, no plugin. */
+  const room = useRoomConnection();
+  const games = room.presence.filter(x => x.where === 'spiel');
+  const roomScans = room.scans.filter(sc => !sc.projectId || sc.projectId === p.project.id);
+  const [waitingSince, setWaitingSince] = useState(0);
+  const fromRoom = async (sc: RoomScan) => {
+    setError(''); setNotice(''); setServerStep(`Aufnahme „${sc.file}“ wird aus dem Team-Raum geholt …`);
+    try {
+      const id = latest.current.project.id;
+      const bytes = await room.fetchScan(sc.id);
+      if (latest.current.project.id !== id) return;
+      setServerStep('');
+      await load(new File([bytes as Uint8Array<ArrayBuffer>], sc.file));
+      setNotice(`Aufnahme aus dem Team-Raum geladen: ${sc.file}, aufgenommen ${new Date(sc.at).toLocaleString('de-DE')}. Zum Behalten „Aufnahme im Projekt speichern“.`);
+    } catch (e) { setError(errorText(e)); }
+    finally { setServerStep(''); }
+  };
+  const askGames = () => {
+    setError(''); setNotice('');
+    if (room.askScan(p.project.id)) setWaitingSince(Date.now());
+  };
+  // The recording we asked for arrives: load it right away.
+  const newest = roomScans[0];
+  useEffect(() => {
+    if (!waitingSince || !newest || Date.parse(newest.at) < waitingSince - 5_000) return;
+    setWaitingSince(0);
+    void fromRoom(newest);
+  }, [newest?.id, waitingSince]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!waitingSince || !room.asked || room.asked.at < waitingSince) return;
+    if (room.asked.games === 0) { setWaitingSince(0); setError(room.asked.message ?? 'Gerade ist kein Spiel mit dem Team-Raum verbunden. Im Spiel „Mein Spiel verbinden“ nutzen (Reiter „Team“).'); }
+    else setNotice(`Anforderung an ${room.asked.games === 1 ? 'ein Spiel' : `${room.asked.games} Spiele`} geschickt. Wer den Plan platziert hat, nimmt den Baustand auf – das dauert ein paar Sekunden.`);
+  }, [room.asked?.at]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (!waitingSince) return; const t = setTimeout(() => { setWaitingSince(0); setNotice(''); setError('Keine Aufnahme gekommen. Im Spiel muss der Plan platziert sein (Hologramm), dann klappt es – oder dort /bauplaner team aufnahme eingeben.'); }, 90_000); return () => clearTimeout(t); }, [waitingSince]);
   const save = async () => {
     if (!p.scan || !original || original.hash !== p.scan.sourceSha256 || !p.alignment || !p.canSave || p.targetError) return;
     setBusy(true); setError('');
@@ -160,6 +196,15 @@ export function GameCheckPanel(p: Props) {
         title="Der gekoppelte Server liest die Planbox am gespeicherten Anker und schickt die Aufnahme hierher – ohne Befehl und ohne Datei kopieren. Die Welt wird nicht verändert.">⇩ Auf dem Server aufnehmen</button>
       <button disabled={busy || !!serverStep} onClick={() => void fromServer(false)} title="Holt die neueste Aufnahme dieses Projekts, die schon auf dem Server liegt.">Letzte Aufnahme vom Server holen</button>
       {serverStep && <><span className="muted" role="status">{serverStep}</span><button className="link-button" onClick={() => { serverCancel.current = true; }}>Abbrechen</button></>}
+    </div>}
+    {room.connected && <div className="button-row game-room-scan" data-testid="room-scans">
+      <button className={hasServerPairing() ? '' : 'primary'} disabled={busy || !!serverStep || !games.length || !!waitingSince} onClick={askGames}
+        title="Die Spiele im Team-Raum lesen den platzierten Plan aus ihren geladenen Chunks und legen die Aufnahme in den Raum – ganz ohne Server-Plugin.">
+        {waitingSince ? 'Warte auf Aufnahme …' : '⇩ Aufnahme im Spiel anfordern'}</button>
+      <span className="muted">{games.length ? `${games.length === 1 ? 'Ein Spiel' : `${games.length} Spiele`} im Team-Raum` : 'Kein Spiel im Team-Raum verbunden'}</span>
+      {roomScans.length > 0 && <label>Aufnahmen im Team-Raum ({roomScans.length})<select aria-label="Aufnahme im Team-Raum" disabled={busy || !!serverStep} value=""
+        onChange={e => { const sc = roomScans.find(x => x.id === e.target.value); if (sc) void fromRoom(sc); }}><option value="">Aufnahme holen …</option>
+        {roomScans.map(sc => <option key={sc.id} value={sc.id}>{sc.file} · {new Date(sc.at).toLocaleString('de-DE')}{sc.revision !== undefined ? ` · Planstand ${sc.revision}` : ''}</option>)}</select></label>}
     </div>}
     {history.length > 0 && <label>Gespeicherte Spielaufnahmen ({history.length})<select aria-label="Gespeicherte Spielaufnahme" disabled={busy} value={stored ? p.scan!.sourceSha256 : ''}
       onChange={e => { void chooseStored(e.target.value); }}><option value="">Aufnahme wählen …</option>{[...history].reverse().map(s => <option key={s.sha256} value={s.sha256}>{s.fileName} · importiert {new Date(s.importedAt).toLocaleString('de-DE')}</option>)}</select></label>}

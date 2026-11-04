@@ -5,7 +5,7 @@
 
 export const PROTOCOL = 'team-room';
 export const VERSION = 1;
-export const LIMITS = Object.freeze({ events: 20_000, eventBytes: 4096, batch: 200, page: 500, planBytes: 25 * 1024 * 1024, planChunk: 1024 * 1024, batchesKept: 2000 });
+export const LIMITS = Object.freeze({ events: 20_000, eventBytes: 4096, batch: 200, page: 500, planBytes: 25 * 1024 * 1024, planChunk: 1024 * 1024, batchesKept: 2000, scanBytes: 8 * 1024 * 1024, scansKept: 12 });
 
 const ID = /^[A-Za-z0-9_.:-]{1,64}$/;
 const KIND = /^[a-z][a-z0-9.]{1,39}$/;
@@ -171,6 +171,40 @@ export class RoomCore {
     return out;
   }
 
+  /**
+   * LINK-07: a recording made by a player's mod (loaded chunks around the player, no server involved). Any room
+   * key may store one; the room keeps the newest twelve. The meta is what the planner lists, the bytes stay as sent.
+   */
+  async putScan(id, bytes, { file, projectId, revision, by }) {
+    if (!/^[A-Za-z0-9_-]{6,64}$/.test(id)) throw new RoomError(400, 'aufnahme-id', 'Aufnahme-ID ungültig.');
+    if (!bytes.byteLength || bytes.byteLength > LIMITS.scanBytes) throw new RoomError(413, 'aufnahme-groesse', 'Aufnahme fehlt oder ist größer als 8 MB.');
+    const head = new Uint8Array(bytes.slice(0, 2));
+    if (head[0] !== 0x1f || head[1] !== 0x8b) throw new RoomError(400, 'aufnahme-format', 'Die Aufnahme ist keine gzip-komprimierte .schem-Datei.');
+    const clean = (v, n) => typeof v === 'string' && v ? v.slice(0, n) : undefined;
+    const meta = { id, file: (clean(file, 120) ?? `${id}.schem`).replace(/[^A-Za-z0-9._-]+/g, '-'), bytes: bytes.byteLength, at: new Date().toISOString(),
+      ...(clean(projectId, 64) && { projectId: clean(projectId, 64) }), ...(Number.isSafeInteger(Number(revision)) && revision !== undefined && revision !== null && revision !== '' && { revision: Number(revision) }),
+      ...(clean(by, 64) && { by: clean(by, 64) }), sha256: await sha256(new Uint8Array(bytes)) };
+    const chunks = [];
+    for (let i = 0; i < bytes.byteLength; i += LIMITS.planChunk) chunks.push(bytes.slice(i, i + LIMITS.planChunk));
+    this.store.putPlan(`scan:${id}`, chunks);
+    const list = (this.store.getMeta('scans') ?? []).filter(s => s.id !== id).concat(meta);
+    while (list.length > LIMITS.scansKept) this.store.deletePlan(`scan:${list.shift().id}`);
+    this.store.setMeta('scans', list);
+    return meta;
+  }
+  scans() { return [...(this.store.getMeta('scans') ?? [])].reverse(); }
+  getScan(id) {
+    if (!(this.store.getMeta('scans') ?? []).some(s => s.id === id)) throw new RoomError(404, 'aufnahme-fehlt', 'Diese Aufnahme hat der Raum nicht (mehr).');
+    return this.getPlanChunks(`scan:${id}`);
+  }
+  getPlanChunks(key) {
+    const chunks = this.store.getPlan(key);
+    if (!chunks) throw new RoomError(404, 'aufnahme-fehlt', 'Diese Aufnahme hat der Raum nicht (mehr).');
+    const total = chunks.reduce((n, c) => n + c.byteLength, 0), out = new Uint8Array(total);
+    let o = 0; for (const c of chunks) { out.set(new Uint8Array(c), o); o += c.byteLength; }
+    return out;
+  }
+
   /** New invitation key (who = 'member') or new server key (who = 'server'); old connections with it are closed by the caller. */
   async rotate(who = 'member') {
     const r = this.store.getMeta('room'), key = randomKey();
@@ -224,5 +258,17 @@ export class ControlRelay {
 export function cleanPresence(p, now = new Date().toISOString()) {
   const where = ['planer', 'spiel', 'server'].includes(p?.where) ? p.where : 'planer';
   return { member: typeof p?.member === 'string' ? p.member.slice(0, 64) : '?', device: typeof p?.device === 'string' ? p.device.slice(0, 64) : '?', where,
-    ...(typeof p?.section === 'string' && { section: p.section.slice(0, 64) }), since: typeof p?.since === 'string' ? p.since.slice(0, 40) : now };
+    ...(typeof p?.section === 'string' && { section: p.section.slice(0, 64) }), since: typeof p?.since === 'string' ? p.since.slice(0, 40) : now,
+    ...(where === 'spiel' && cleanPos(p?.pos) && { pos: cleanPos(p.pos) }),
+    ...(where === 'spiel' && typeof p?.player === 'string' && /^[A-Za-z0-9_]{1,16}$/.test(p.player) && { player: p.player }) };
+}
+
+/** LINK-07: position of a player in the game for the live map ({x, y, z, dim, yaw?}); null when not usable. */
+export function cleanPos(pos) {
+  if (!pos || typeof pos !== 'object') return null;
+  const n = v => Number.isFinite(v) && Math.abs(v) <= 30_000_000 ? Math.round(v) : null;
+  const x = n(pos.x), y = n(pos.y), z = n(pos.z);
+  if (x === null || y === null || z === null || Math.abs(y) > 4096) return null;
+  const dim = typeof pos.dim === 'string' && /^[a-z0-9_.-]+:[a-z0-9_./-]+$/.test(pos.dim) && pos.dim.length <= 64 ? pos.dim : 'minecraft:overworld';
+  return { x, y, z, dim, ...(Number.isFinite(pos.yaw) && { yaw: Math.round(((pos.yaw % 360) + 360) % 360) }), at: new Date().toISOString() };
 }

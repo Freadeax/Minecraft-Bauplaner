@@ -91,17 +91,109 @@ public final class TeamClient {
 
     private void refresh() { shown = sync.state(); }
 
+    // ------------------------------------------------------------------ reports to the team room (LINK-07)
+
+    /** Last section.seen per section: "placed/total/wrong" and when it was sent. */
+    private final java.util.Map<String, String> seenSent = new java.util.HashMap<>();
+    private final java.util.Map<String, Long> seenAt = new java.util.HashMap<>();
+    private static final long SEEN_EVERY = 30_000;
+    private long seenRun;
+
+    /**
+     * section.seen: what the hologram measures for each section of the placed plan – at most every 30 s per
+     * section and only when it changed. Unverified (origin planer); the plugin's tally stays the proof.
+     */
+    private void reportSections(TeamState t, TeamPlan tp, io.github.freadeax.bauplaner.mod.room.RoomClient room) {
+        LiveCheck check = hologram.check();
+        if (tp == null || check == null || !hologram.active() || t.me() == null) return;
+        long now = System.currentTimeMillis();
+        if (now - seenRun < 10_000) return; // counting per section walks the plan: every 10 s is plenty
+        seenRun = now;
+        for (TeamState.Section s : t.sections()) {
+            int k = tp.number(s.id());
+            if (k == 0) continue;
+            int[] p = TeamPlan.progress(check, k);
+            int[] counts = check.count(new io.github.freadeax.bauplaner.mod.Filter(Integer.MIN_VALUE, Integer.MAX_VALUE, k));
+            if (counts[Verdict.UNKNOWN.ordinal()] > 0 && p[0] == 0) continue; // not loaded yet: nothing measured
+            int wrong = counts[Verdict.WRONG.ordinal()];
+            String sig = p[0] + "/" + p[1] + "/" + wrong;
+            if (sig.equals(seenSent.get(s.id())) || now - seenAt.getOrDefault(s.id(), 0L) < SEEN_EVERY) continue;
+            java.util.Map<String, Object> body = new java.util.LinkedHashMap<>();
+            body.put("section", s.id()); body.put("placed", p[0]); body.put("total", p[1]);
+            if (wrong > 0) body.put("wrong", wrong);
+            List<java.util.Map<String, Object>> missing = new ArrayList<>();
+            for (var l : io.github.freadeax.bauplaner.mod.Materials.of(check, new io.github.freadeax.bauplaner.mod.Filter(Integer.MIN_VALUE, Integer.MAX_VALUE, k))) {
+                if (missing.size() >= 24 || l.open() <= 0) break;
+                missing.add(java.util.Map.of("item", l.id(), "count", l.open()));
+            }
+            if (!missing.isEmpty()) body.put("missing", missing);
+            if (room.report("section.seen", body)) { seenSent.put(s.id(), sig); seenAt.put(s.id(), now); }
+        }
+    }
+
+    /** Store chest the open container belongs to (looked at when the screen opened), and its last content. */
+    private String chestOpen;
+    private java.util.Map<String, Integer> chestItems;
+    private boolean screenWas;
+
+    /** store.seen: content of a known team chest when it is opened and again when it is closed. */
+    private void watchChest(Minecraft mc) {
+        boolean open = mc.gui.screen() instanceof net.minecraft.client.gui.screens.inventory.AbstractContainerScreen<?>;
+        if (open && !screenWas) {
+            chestOpen = null;
+            TeamState t = shown;
+            var room = sync.room();
+            if (t != null && room != null && room.live() && mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult hit && hit.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK) {
+                var pos = hit.getBlockPos();
+                String dim = McCompat.dimension(mc.level);
+                for (TeamState.Store s : t.stores()) {
+                    if (!s.dimension().equals(dim)) continue;
+                    int[] a = s.pos(), b = s.pos2() == null ? s.pos() : s.pos2();
+                    if (pos.getX() >= Math.min(a[0], b[0]) && pos.getX() <= Math.max(a[0], b[0]) && pos.getY() >= Math.min(a[1], b[1]) && pos.getY() <= Math.max(a[1], b[1])
+                            && pos.getZ() >= Math.min(a[2], b[2]) && pos.getZ() <= Math.max(a[2], b[2])) { chestOpen = s.id(); break; }
+                }
+            }
+            chestItems = null;
+        }
+        if (open && chestOpen != null) {
+            var now = McCompat.openContainer(mc);
+            // Content arrives a tick after the screen: report the first non-empty view (or empty after a second).
+            if (now != null && chestItems == null && (!now.isEmpty() || ticks % 20 == 19)) { chestItems = now; reportChest(chestOpen, now); }
+            else if (now != null) chestItems = now;
+        }
+        if (!open && screenWas && chestOpen != null && chestItems != null) reportChest(chestOpen, chestItems);
+        if (!open) chestOpen = null;
+        screenWas = open;
+    }
+
+    private void reportChest(String chest, java.util.Map<String, Integer> items) {
+        var room = sync.room();
+        if (room == null) return;
+        List<java.util.Map<String, Object>> list = new ArrayList<>();
+        for (var e : items.entrySet()) { if (list.size() >= 64) break; list.add(java.util.Map.of("item", e.getKey(), "count", e.getValue())); }
+        java.util.Map<String, Object> body = new java.util.LinkedHashMap<>();
+        body.put("chest", chest); body.put("items", list);
+        if (items.size() > 64) body.put("more", true);
+        room.report("store.seen", body);
+    }
+
     // ------------------------------------------------------------------ tick
 
     public void tick(Minecraft mc) {
         refresh();
+        if (mc.player != null && mc.level != null) watchChest(mc);
+        var room = sync.room();
+        if (room != null && room.live() && mc.player != null && mc.level != null) {
+            room.player(mc.player.getGameProfile().name());
+            room.position(mc.player.getBlockX(), mc.player.getBlockY(), mc.player.getBlockZ(), McCompat.dimension(mc.level), mc.player.getYRot(), System.currentTimeMillis());
+        }
         if (++ticks % 20 != 0 || mc.player == null) return;
         sync.tick();
         TeamState t = shown;
-        var room = sync.room();
         if (room != null && room.live() && t != null && t.source() == TeamState.Source.ROOM && mc.level != null) {
             TeamState.Section at = sectionAt(t, teamPlan(t), McCompat.dimension(mc.level), mc.player.getBlockX(), mc.player.getBlockY(), mc.player.getBlockZ());
             room.section(at == null ? null : at.id());
+            reportSections(t, teamPlan(t), room);
         }
         TeamPlan tp = teamPlan(t);
         // Keep the hologram focus in step with the team (someone takes over a free section, I get one assigned …).
@@ -390,12 +482,27 @@ public final class TeamClient {
                 .then(TeamClient.<S>literal("sammle").then(TeamClient.<S, String>argument("item", StringArgumentType.word()).then(TeamClient.<S, Integer>argument("menge", IntegerArgumentType.integer(1, 1_000_000))
                         .executes(c -> gather(StringArgumentType.getString(c, "item"), IntegerArgumentType.getInteger(c, "menge"))))))
                 .then(TeamClient.<S>literal("lager").executes(c -> stores()))
+                .then(TeamClient.<S>literal("aufnahme").executes(c -> recordToRoom()))
                 .then(TeamClient.<S>literal("erlauben").executes(c -> said(sync.allow(true))))
                 .then(TeamClient.<S>literal("verbieten").executes(c -> said(sync.allow(false))))
                 .then(TeamClient.<S>literal("status").executes(c -> status()))
                 .then(TeamClient.<S>literal("korb").executes(c -> outbox(false)).then(TeamClient.<S>literal("leeren").executes(c -> outbox(true))))
                 .then(TeamClient.<S>literal("rahmen").executes(c -> { frames = !frames; return said(frames ? "Abschnittsrahmen an." : "Abschnittsrahmen aus."); }))
                 .then(TeamClient.<S>literal("anzeige").executes(c -> { panel = !panel; return said(panel ? "Teamanzeige an." : "Teamanzeige aus."); }));
+    }
+
+    /** Records the placed plan and puts it into the team room (set by LiveLink, LINK-07). */
+    private java.util.function.Function<String, String> recorder;
+
+    void recorder(java.util.function.Function<String, String> r) { recorder = r; }
+
+    private int recordToRoom() {
+        var room = sync.room();
+        if (room == null || !room.live()) return said("Kein Team-Raum verbunden. Im Planer (Reiter „Team“ → Team-Raum) „Mein Spiel verbinden“ wählen.");
+        if (!hologram.active() || recorder == null) return said("Erst einen Plan im Spiel platzieren, dann aufnehmen.");
+        say("Nehme den Baustand auf …");
+        java.util.concurrent.CompletableFuture.runAsync(() -> recorder.apply(null));
+        return 1;
     }
 
     private TeamState need() {

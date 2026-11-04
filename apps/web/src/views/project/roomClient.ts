@@ -54,7 +54,13 @@ export async function getPlan(live: Pick<TeamLive, 'url' | 'room' | 'key'>, sha:
   return await new Response(new Blob([gz as BlobPart]).stream().pipeThrough(new DecompressionStream('gzip'))).text();
 }
 
-export interface Presence { readonly member: string; readonly device: string; readonly where: 'planer' | 'spiel' | 'server'; readonly section?: string; readonly since: string }
+/** Block position a game reports for the live map (LINK-07). */
+export interface RoomPos { readonly x: number; readonly y: number; readonly z: number; readonly dim: string; readonly yaw?: number; readonly at: string }
+export interface Presence { readonly member: string; readonly device: string; readonly where: 'planer' | 'spiel' | 'server'; readonly section?: string; readonly since: string; readonly player?: string; readonly pos?: RoomPos }
+/** A recording a game put into the room (LINK-07, „Aufnahme anfordern“ or /bauplaner team aufnahme). */
+export interface RoomScan { readonly id: string; readonly file: string; readonly bytes: number; readonly at: string; readonly projectId?: string; readonly revision?: number; readonly by?: string; readonly sha256: string }
+export const getScans = (live: Pick<TeamLive, 'url' | 'room' | 'key'>) => call<{ scans: RoomScan[] }>(live.url, `/v1/rooms/${live.room}/scans`, { key: live.key }).then(r => r.scans);
+export const getScan = (live: Pick<TeamLive, 'url' | 'room' | 'key'>, id: string) => call<Uint8Array>(live.url, `/v1/rooms/${live.room}/scans/${encodeURIComponent(id)}`, { key: live.key });
 export interface RoomConnection {
   readonly connected: boolean; readonly presence: readonly Presence[]; readonly error: string;
   /** Plan snapshot announced in the room header (sha), re-read on every header push. */
@@ -65,8 +71,15 @@ export interface RoomConnection {
   /** Own events the room refused (form, size, server-only), with the reason. */
   readonly rejected: readonly { readonly id: string; readonly reason: string }[];
   clearRejected(): void;
+  /** Recordings in the room, newest first (LINK-07). */
+  readonly scans: readonly RoomScan[];
+  /** Asks the connected games for a fresh recording; the answer (how many games got it) comes as `asked`. */
+  askScan(projectId?: string): boolean;
+  readonly asked?: { readonly games: number; readonly message?: string; readonly at: number };
+  fetchScan(id: string): Promise<Uint8Array>;
 }
-export const NO_ROOM: RoomConnection = { connected: false, presence: [], error: '', planSha: '', news: [], dismiss: () => undefined, rejected: [], clearRejected: () => undefined };
+export const NO_ROOM: RoomConnection = { connected: false, presence: [], error: '', planSha: '', news: [], dismiss: () => undefined, rejected: [], clearRejected: () => undefined,
+  scans: [], askScan: () => false, fetchScan: () => Promise.reject(new Error('Kein Team-Raum verbunden.')) };
 
 /**
  * Keeps a live team in sync while the tab is open: WebSocket with the room (push of new events and
@@ -88,6 +101,8 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
   };
   const noteRejected = (r: AppendAnswer['rejected']) => { if (r.length) setRejected(x => [...x, ...r].slice(-50)); };
   const [presence, setPresence] = useState<readonly Presence[]>([]);
+  const [scans, setScans] = useState<readonly RoomScan[]>([]);
+  const [asked, setAsked] = useState<RoomConnection['asked']>();
   const [error, setError] = useState('');
   const latest = useRef(team); latest.current = team;
   const saveRef = useRef(save); saveRef.current = save;
@@ -155,7 +170,9 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
         let d: { type: string } & Record<string, unknown>;
         try { d = JSON.parse(String(m.data)); } catch { return; }
         const cur = latest.current; if (!cur?.live) return;
-        if (d.type === 'welcome') { setConnected(true); setError(''); failures = 0; caughtUp.current = false; flush(); if (d.header) readHeader(); }
+        if (d.type === 'welcome') { setConnected(true); setError(''); failures = 0; caughtUp.current = false; flush(); if (d.header) readHeader(); void getScans(cur.live).then(setScans).catch(() => undefined); }
+        else if (d.type === 'scan' && d.scan && typeof d.scan === 'object') { const sc = d.scan as RoomScan; setScans(l => [sc, ...l.filter(x => x.id !== sc.id)].slice(0, 12)); }
+        else if (d.type === 'asked') setAsked({ games: Number(d.games) || 0, ...(typeof d.message === 'string' && { message: d.message }), at: Date.now() });
         else if (d.type === 'header' || d.type === 'plan') readHeader();
         else if (d.type === 'events') {
           const feed = d as unknown as FeedAnswer, r = ingest(cur, feed);
@@ -187,8 +204,15 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
     if (connected && socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify({ type: 'presence', where: 'planer', ...(section ? { section } : { section: '' }) }));
   }, [section, connected]);
   const dismiss = (key?: string) => setNews(n => key ? n.filter(x => x.key !== key) : []);
+  const askScan = (projectId?: string) => {
+    const socket = ws.current;
+    if (!connected || socket?.readyState !== WebSocket.OPEN) return false;
+    socket.send(JSON.stringify({ type: 'ask', what: 'scan', ...(projectId && { projectId }) }));
+    return true;
+  };
+  const fetchScan = (id: string) => { const t = latest.current; return t?.live ? getScan(t.live, id) : Promise.reject(new Error('Kein Team-Raum verbunden.')); };
   return { connected, presence, error, planSha: plan.sha, ...(plan.number !== undefined && { planNumber: plan.number }), ...(plan.revision && { planRevision: plan.revision }),
-    news, dismiss, rejected, clearRejected: () => setRejected([]) };
+    news, dismiss, rejected, clearRejected: () => setRejected([]), scans, askScan, ...(asked && { asked }), fetchScan };
 }
 
 /** The connection of the open project (mounted once in ProjectView, so live works in every tab). */

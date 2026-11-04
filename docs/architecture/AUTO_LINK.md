@@ -99,11 +99,18 @@ Planer (PC/iPad) ⇄ Team-Raum (Cloud) ⇄ Mod von Spieler A, B, C …      Mine
 |---|---|---|
 | Plan, Hologramm, Packliste, Gerüst, Markierungen | ja | – |
 | Team: Abschnitte nehmen, melden, Notizen, Rollen | ja (Raum) | – |
-| Anwesenheit „im Spiel“ mit Abschnitt | ja (Raum) | – |
-| Baustand/Aufnahme | im Umkreis des Spielers (Mod) | ferne, nicht geladene Chunks |
+| Anwesenheit „im Spiel“ mit Abschnitt, Spielername und Position | ja (Raum, ab 0.15.0) | – |
+| Baustand/Aufnahme | im Umkreis des Spielers (Mod), per Klick über den Raum (0.15.0) | ferne, nicht geladene Chunks |
+| Fortschritt je Abschnitt | gemessen vom Hologramm (`section.seen`, ungeprüft) | Baunachweis (`build.tally`) |
 | Abschnittsschutz (Bauen verhindern) | nur Hinweis | erzwingen |
-| Lagerkisten, Ertragskisten, Baunachweis | – | geprüft (Servermessung, `origin: "server"`) |
+| Lagerkisten | gesehener Inhalt beim Öffnen (`store.seen`, ungeprüft) | geprüft (Servermessung, `origin: "server"`) |
+| Ertragskisten, Baunachweis | – | geprüft |
 
-Nächste Stufe (offen): Mitspieler-Positionen auf der Live-Karte über den Raum (Anwesenheit mit Position), Aufnahmen aus der Mod in den Raum, Kisteninhalt beim Öffnen melden („gesehen“, ungeprüft).
+### 9.1 Positionen, Aufnahmen und Meldungen über den Raum (Mod 0.15.0)
 
-Tests: `RoomClientTest` (Faltung, Raumprüfung, Speichern; mit `BAUPLANER_ROOM` gegen einen laufenden Raum: Tom nimmt einen Abschnitt im „Spiel“, Lea schreibt eine Notiz im Planer), `tests/e2e/team-room.e2e.mjs` („Mein Spiel verbinden“ übergibt nur den Mitgliedsschlüssel), `scripts/test_bridge_ingame.sh` mit `BAUPLANER_ROOM` (echtes Minecraft 26.3: live mit dem Raum, `/bauplaner team nehmen 2` kommt im Raum an – ohne Server).
+- **Position:** `presence {where:"spiel", player, pos:{x,y,z,dim,yaw}}` – höchstens alle 2 s und nur nach mindestens 2 Blöcken Bewegung oder Dimensionswechsel; der Raum nimmt `pos`/`player` nur bei `where:"spiel"` an (`cleanPos`, Name `[A-Za-z0-9_]{1,16}`) und verteilt sie mit der Anwesenheit. Der Planer zeigt sie unter „Gerade da“ (`AnnaMC bei 12 64 -3`).
+- **Aufnahme anfordern:** Planer (Reiter „Bauen“) schickt `{type:"ask", what:"scan", projectId}`; der Raum reicht sie an alle Sockets mit `where:"spiel"` weiter (höchstens eine Anforderung je Socket in 10 s) und antwortet `{type:"asked", games}`. Ein Spiel mit platziertem Plan desselben Projekts liest die Planbox in Scheiben (wie `GET /v1/scan`, außerhalb des Spiel-Threads) und lädt die Datei mit `PUT /v1/rooms/{raum}/scans/{id}?file&project&revision&by` hoch (gzip-Prüfung, höchstens 8 MB, die neuesten 12 bleiben). Der Raum meldet `{type:"scan", scan}`; der Planer lädt die angeforderte Aufnahme sofort und listet ältere unter „Aufnahmen im Team-Raum“. Im Spiel geht dasselbe mit `/bauplaner team aufnahme`.
+- **Meldungen aus dem Spiel** (direkt, ohne Ausgangskorb, `origin:"planer"`, Recht `helfer`): `section.seen {section, placed, total, wrong?, missing?[≤24]}` höchstens alle 30 s je Abschnitt und nur bei Änderung; `store.seen {chest, items[≤64], more?}` beim Öffnen und Schließen einer bekannten Kiste (`store.chest`), gelesen nur aus dem, was der Server dem Client ohnehin zeigt (ohne Spielerinventar). Die Faltung im Planer/Plugin gehört dem Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“.
+- Die Lagerkisten (`store.chest`) faltet die Mod jetzt auch aus dem Raum, damit Packliste und `/bauplaner team lager` sie ohne Plugin kennen.
+
+Tests: `RoomClientTest` (Faltung, Raumprüfung, Speichern; mit `BAUPLANER_ROOM` gegen einen laufenden Raum: Tom nimmt einen Abschnitt im „Spiel“, Lea schreibt eine Notiz im Planer), `tests/e2e/team-room.e2e.mjs` („Mein Spiel verbinden“ übergibt nur den Mitgliedsschlüssel), `scripts/test_bridge_ingame.sh` mit `BAUPLANER_ROOM` (echtes Minecraft 26.3: live mit dem Raum, `/bauplaner team nehmen 2` kommt im Raum an, `/bauplaner team aufnahme` legt eine lesbare Aufnahme in den Raum – ohne Server). 0.15.0: `RoomClientTest` live zusätzlich Position beim Planer, Anforderung → Hochladen → Holen, `section.seen` im Protokoll; der Browsertest zeigt die Position unter „Gerade da“ und lädt die angeforderte Aufnahme.

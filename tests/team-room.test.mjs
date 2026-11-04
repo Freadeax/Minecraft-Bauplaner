@@ -2,7 +2,7 @@
 // two browsers and a server go live through one room without any file (docs/architecture/TEAM_LIVE.md).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { RoomCore, MemoryStore, RoomError, checkEventShape, LIMITS, checkControl, ControlRelay, CONTROL } from '../services/team-room/src/core.js';
+import { RoomCore, MemoryStore, RoomError, checkEventShape, LIMITS, checkControl, ControlRelay, CONTROL, cleanPresence, cleanPos } from '../services/team-room/src/core.js';
 import {
   createTeam, teamEvent, teamView, goLive, joinLive, appendLocal, nextBatch, confirm, ingest, roomStatus, inviteLink, serverLink, readInvite, shareable, checkLive, retryDelay, buildTeamPackage,
 } from '../dist/domain/src/index.js';
@@ -135,4 +135,28 @@ test('room: control messages for the server (LINK-05) – form check, relay with
   const many = Array.from({ length: CONTROL.pending }, () => relay.ask(() => {}, ok).catch(() => {}));
   assert.throws(() => relay.ask(() => {}, ok), e => e.status === 429);
   await Promise.all(many);
+});
+
+test('room: without a server file (LINK-07) – player positions in the presence, recordings from the mods', async () => {
+  const p = cleanPresence({ member: 'mem_tom', device: 'Minecraft', where: 'spiel', player: 'TomBaut', pos: { x: 10.6, y: 64, z: -3.2, dim: 'minecraft:overworld', yaw: -90 } });
+  assert.deepEqual({ ...p.pos, at: undefined }, { x: 11, y: 64, z: -3, dim: 'minecraft:overworld', yaw: 270, at: undefined });
+  assert.equal(p.player, 'TomBaut');
+  assert.equal(cleanPresence({ member: 'mem_lea', where: 'planer', pos: { x: 1, y: 2, z: 3 } }).pos, undefined, 'Position nur aus dem Spiel');
+  assert.equal(cleanPos({ x: 1e9, y: 0, z: 0 }), null);
+  assert.equal(cleanPos({ x: 1, y: 2, z: 3, dim: 'böse' }).dim, 'minecraft:overworld');
+  assert.equal(cleanPresence({ where: 'spiel', player: 'kein name!' }).player, undefined);
+
+  const core = new RoomCore(new MemoryStore());
+  await core.create({ room: 'r_scans01', teamId: 'team_a', name: 'A' });
+  const gz = n => { const b = new Uint8Array(n); b[0] = 0x1f; b[1] = 0x8b; return b.buffer; };
+  const meta = await core.putScan('scan_000001', gz(1000), { file: 'burg_r3 (1).schem', projectId: 'prj_1', revision: '3', by: 'mem_tom' });
+  assert.equal(meta.file, 'burg_r3-1-.schem'); assert.equal(meta.revision, 3); assert.equal(meta.projectId, 'prj_1'); assert.equal(meta.bytes, 1000);
+  assert.equal(core.getScan('scan_000001').byteLength, 1000);
+  await assert.rejects(core.putScan('scan_000002', new Uint8Array([1, 2, 3]).buffer, {}), e => e.code === 'aufnahme-format');
+  await assert.rejects(core.putScan('../x', gz(10), {}), e => e.code === 'aufnahme-id');
+  await assert.rejects(core.putScan('scan_000003', gz(LIMITS.scanBytes + 1), {}), e => e.code === 'aufnahme-groesse');
+  for (let i = 0; i < LIMITS.scansKept + 2; i++) await core.putScan(`scan_more${String(i).padStart(3, '0')}`, gz(10), {});
+  assert.equal(core.scans().length, LIMITS.scansKept, 'die neuesten bleiben');
+  assert.equal(core.scans()[0].id, `scan_more${String(LIMITS.scansKept + 1).padStart(3, '0')}`, 'neueste zuerst');
+  assert.throws(() => core.getScan('scan_000001'), e => e.code === 'aufnahme-fehlt', 'älteste verdrängt');
 });
