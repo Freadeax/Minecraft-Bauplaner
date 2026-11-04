@@ -514,6 +514,33 @@
       "releasedAt": "2026-11-04",
       "sourceCommit": "c726b8592f86fd7628692b075d11ec90e1dc84ef",
       "tested": "Paper 1.21.11 Build 132: Server ohne Befehle (Kopplung, Steuernachrichten, Team-Raum) und Teambau/Lager/Raum-Tests bestanden; Paper 26.3 Teambau-Test bestanden"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.13.0.jar",
+      "modVersion": "0.13.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 409658,
+      "sha256": "f7452c9e7a581245336d30281a4126ef50bcd429f81eff3bed9e862a5fb3e947",
+      "releasedAt": "2026-11-04",
+      "sourceCommit": "19732d6d862d317d4508ed33e8d948296392285d",
+      "tested": "Spieltest fabric-26.3 26.3 (Packliste, Gerüst, Markieren), JUnit, Browser map-depth"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.13.0.jar",
+      "modVersion": "0.13.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 406316,
+      "sha256": "266e4479c798c638e1b71f5da2d417a524f8663a9a07fef7c265261d651cdfd5",
+      "releasedAt": "2026-11-04",
+      "sourceCommit": "19732d6d862d317d4508ed33e8d948296392285d",
+      "tested": "Spieltest neoforge-26.3 26.3 (Packliste, Gerüst, Markieren), JUnit, Browser map-depth"
     }
   ]
 }

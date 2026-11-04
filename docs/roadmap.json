@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T09:25:01.963Z",
+  "updatedAt": "2026-11-04T09:25:02.358Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -4856,7 +4856,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T09:25:01.963Z",
+      "updatedAt": "2026-11-04T09:25:02.358Z",
       "area": "MOD",
       "thread": "Teambau und Befehle in der Mod ausbauen",
       "philipp": [
@@ -4953,7 +4953,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T09:25:01.963Z",
+      "updatedAt": "2026-11-04T09:25:02.358Z",
       "area": "MOD",
       "thread": "Teambau und Befehle in der Mod ausbauen",
       "philipp": [
@@ -16607,6 +16607,36 @@
         "tests/e2e/map-depth.e2e.mjs",
         "tests/e2e/modSimulator.mjs",
         "tests/livelink.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-07",
+          "status": "implemented",
+          "done": 9,
+          "total": 11,
+          "next": "Philipp prüft Packliste und Gerüst (0.13.0, TESTPLAN MOD-17) im echten Spiel; danach Stufe 6b (Gruppen/Sperren aus dem Weltbuilder)."
+        },
+        {
+          "id": "GAME-08",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Philipp prüft Protokoll 3 im echten Spiel (TESTPLAN MOD-17); Forge und Paper ohne Live-Verbindung."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T09:25:02.358Z",
+      "kind": "progress",
+      "items": [
+        "GAME-07",
+        "GAME-08"
+      ],
+      "summary": "Mod 0.13.0 für Fabric und NeoForge 26.3 auf #/mod bereitgestellt (release_mod, Spieltests bestanden).",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.13.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.13.0.jar"
       ],
       "snapshot": [
         {

@@ -4994,3 +4994,20 @@ Mod 0.13.0: Stufe 6 (/bauplaner packliste mit Stapeln, Shulkerkisten und nächst
 - `tests/e2e/modSimulator.mjs`
 - `tests/livelink.test.mjs`
 
+## 2026-11-04T09:25:02.358Z · progress
+
+**Aufgaben:** GAME-07, GAME-08
+
+Mod 0.13.0 für Fabric und NeoForge 26.3 auf #/mod bereitgestellt (release_mod, Spieltests bestanden).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-07 | 🧩 Implementiert · Abnahme offen | 9/11 | Philipp prüft Packliste und Gerüst (0.13.0, TESTPLAN MOD-17) im echten Spiel; danach Stufe 6b (Gruppen/Sperren aus dem Weltbuilder). |
+| GAME-08 | 🧩 Implementiert · Abnahme offen | 5/5 | Philipp prüft Protokoll 3 im echten Spiel (TESTPLAN MOD-17); Forge und Paper ohne Live-Verbindung. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.13.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.13.0.jar`
+
