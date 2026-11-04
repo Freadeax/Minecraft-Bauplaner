@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T09:25:54.830Z",
+  "updatedAt": "2026-11-04T09:26:50.360Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -6788,7 +6788,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T09:25:54.830Z",
+      "updatedAt": "2026-11-04T09:26:50.360Z",
       "area": "QA",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -16669,6 +16669,26 @@
         "docs/testing/TESTPLAN.md",
         "scripts/render_testplan.mjs",
         "tests/testphase.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "QA-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T09:26:50.360Z",
+      "kind": "progress",
+      "items": [
+        "QA-04"
+      ],
+      "summary": "Nachtrag zum Commit 96c8c4c (trägt versehentlich die Überschrift von COOP-09, Inhalt ist QA-04: Abnahme je Roadmap-Paket, neue Fälle inkl. TEAMBAU-26 für COOP-09, PROD-05→LAGER-10); Teststand Mod 0.13.0 / Plugin 0.12.0",
+      "files": [
+        "docs/architecture/TESTPHASE.md"
       ],
       "snapshot": [
         {

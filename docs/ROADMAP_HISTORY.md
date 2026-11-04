@@ -5030,3 +5030,17 @@ Abnahme je Paket: ACCEPTANCE in testplan.ts ordnet jedem implementierten Roadmap
 - `scripts/render_testplan.mjs`
 - `tests/testphase.test.mjs`
 
+## 2026-11-04T09:26:50.360Z · progress
+
+**Aufgaben:** QA-04
+
+Nachtrag zum Commit 96c8c4c (trägt versehentlich die Überschrift von COOP-09, Inhalt ist QA-04: Abnahme je Roadmap-Paket, neue Fälle inkl. TEAMBAU-26 für COOP-09, PROD-05→LAGER-10); Teststand Mod 0.13.0 / Plugin 0.12.0
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| QA-04 | 🧩 Implementiert · Abnahme offen | 4/6 | Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist. |
+
+**Geänderte Dateien:**
+
+- `docs/architecture/TESTPHASE.md`
+
