@@ -60,7 +60,8 @@ export function SiteTab({ session }: { session: ProjectSession }) {
       </div>
       <div className="site-kpi"><span className="panel-kicker">MATERIAL IM LAGER</span><strong>{pct(t.itemsCovered, t.itemsNeeded)} %</strong>
         <Bar value={pct(t.itemsCovered, t.itemsNeeded)} label="Restbedarf aus dem Lager gedeckt" /><small>{formatNumber(t.itemsCovered)} von {formatNumber(t.itemsNeeded)} Bauitems für offene Schritte</small></div>
-      <div className="site-kpi"><span className="panel-kicker">NOCH SAMMELN</span><strong>{hoursText(t.gatherHours)}</strong><small>Richtwert für einen Spieler</small></div>
+      <div className="site-kpi"><span className="panel-kicker">NOCH SAMMELN</span><strong>{hoursText(t.gatherHours)}</strong><small>Richtwert für einen Spieler ohne Farmen</small>
+        <a className="link-button" href={`#/projekt/${project.id}/produktion`}>Farmen & Engpässe →</a></div>
       <div className="site-kpi"><span className="panel-kicker">JETZT DRAN</span><strong className="site-current">{current ? current.name : '✓ Fertig'}</strong>
         <small>{current ? `${current.ready.length} Schritte bereit · ${current.open + current.review} offen` : 'Alle Schritte abgehakt'}</small>
         {current && <a className="link-button" href={`#/projekt/${project.id}/bauen`}>Zur Bauanleitung →</a>}</div>

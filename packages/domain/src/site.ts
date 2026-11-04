@@ -16,6 +16,8 @@ import { checkTeam } from './team.js';
 import type { TeamState } from './team.js';
 import { checkProgram, pruneProgram } from './program.js';
 import type { BuildProgram } from './program.js';
+import { checkProduction, pruneProduction } from './production.js';
+import type { ProductionPlan } from './production.js';
 import type { PaceSetting } from './buildRun.js';
 import type { SectionSnapshot } from './sectionSnapshots.js';
 import { DomainError } from './types.js';
@@ -89,6 +91,8 @@ export interface SitePlan {
   readonly team?: TeamState;
   /** Milestones, dependencies, builders and schedule settings (PROJ-01, program.ts); absent = none. */
   readonly program?: BuildProgram;
+  /** Farms, harvest log and time budget (PROD-01, production.ts); absent = none. */
+  readonly production?: ProductionPlan;
 }
 
 export function emptySite(): SitePlan {
@@ -147,6 +151,7 @@ export function checkSite(raw: unknown): SitePlan {
   if (raw.pace !== undefined) checkPace(raw.pace);
   if (raw.team !== undefined) checkTeam(raw.team);
   if (raw.program !== undefined) checkProgram(raw.program);
+  if (raw.production !== undefined) checkProduction(raw.production);
   return raw as unknown as SitePlan;
 }
 
@@ -213,6 +218,7 @@ export function pruneSite(site: SitePlan, project: Pick<Project, 'instances'>): 
     ...site,
     sections: site.sections.map(s => ({ ...s, members: s.members.filter(m => ids.has(m.instanceId)) })),
     reservations: { ...site.reservations, overrides: Object.fromEntries(Object.entries(site.reservations.overrides).filter(([k]) => ids.has(k.split('/')[0]!))) },
+    ...(site.production && { production: pruneProduction(site.production, ids) }),
   };
 }
 
@@ -391,6 +397,9 @@ export interface SectionPlan {
   readonly unplannable: number;
   readonly unresolvedCells: number;
   readonly complete: boolean;
+  /** Smelting operations and their cooking ticks for the missing build items (PROD-03); fuel is not part of `gather` unless coal. */
+  readonly smelts: number;
+  readonly cookTicks: number;
 }
 
 export interface SiteOverview {
@@ -457,6 +466,7 @@ export function planSite(site: SitePlan, guide: Guide, progress: GuideProgress, 
       gatherHours: round1(gather.reduce((h, g) => h + (g.hours ?? 0), 0)), unplannable: gather.filter(g => g.missing > 0 && g.hours === null).length,
       unresolvedCells: report?.unresolved.reduce((n, u) => n + u.count, 0) ?? 0,
       complete: m.steps.length > 0 && done === m.steps.length,
+      smelts: recipes?.fuel.smelts ?? 0, cookTicks: recipes?.fuel.ticks ?? 0,
     };
   });
 

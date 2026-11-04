@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 108 Fälle in 12 Bereichen, davon 53 Kernfälle.
+Umfang: 110 Fälle in 12 Bereichen, davon 54 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -60,6 +60,8 @@ Das Herzstück: Bauteile anordnen, Material planen, Bauanleitung und Export.
 | PROJ-09 | Projektplanung: Meilensteine und Abhängigkeiten | kern | 1. Tab „Baustelle“: Vorschlag „Fundament · Rohbau · Dach“ übernehmen.<br>2. Tab „Planung“: Vorschläge aus Geometrie übernehmen, einen Meilenstein mit Termin anlegen und Abschnitte zuordnen.<br>3. Versuchen, eine Abhängigkeit „Fundament erst nach Dach“ anzulegen.<br>4. Neu laden (F5). | Zeitplan zeigt Balken je Abschnitt und wartende Abschnitte; der Meilenstein zeigt im Plan/verspätet und voraussichtliches Datum; der Kreis wird mit Meldung abgelehnt; alles bleibt nach dem Neuladen. Die Projektkarte zeigt den nächsten Meilenstein. |
 | PROJ-10 | Mehrere Bauleute und Bauzettel | vertieft | 1. Tab „Planung“: zwei Bauleute mit verschiedenem Tempo anlegen, Abschnitte zuweisen (einen Abschnitt beiden).<br>2. Startdatum setzen, 5 Bautage je Woche wählen.<br>3. „Bauzettel kopieren“ und „Bauprogramm als Text“ ausführen. | Zeitplan zeigt je Bauleute eine Spur, gemeinsame Abschnitte sind kürzer; Daten überspringen das Wochenende; Bauzettel nennt die eigenen Abschnitte mit fehlenden Items und Sammelzeit. |
 | PROJ-11 | Großprojekt mit Phasen planen | vertieft | 1. Ein Projekt aus Basisplaner oder Anlage anlegen (Abschnitte „Phase 1 …“).<br>2. Tab „Planung“ → „Meilensteine aus Abschnittsnamen“. | Je Phase ein Meilenstein, Wege/Platz als „Erschließung“ zuerst; jede Phase wartet auf die vorige; kritischer Pfad läuft durch alle Phasen. |
+| PROJ-12 | Produktion: Farmen und Ernten | kern | 1. Tab „Produktion“: Bruchsteingenerator anlegen, auf „läuft“ stellen.<br>2. „Ernte & Details“: eine echte Ernte mit Menge und Arbeitszeit eintragen.<br>3. Tab „Baustelle“ öffnen, dann neu laden (F5). | Die Deckung zeigt Bruchstein „mit Farm“; nach der Ernte steht „gemessen“ an der Rate, die Menge steht im Baustellen-Lager und der Restbedarf sinkt; alles bleibt nach dem Neuladen. |
+| PROJ-13 | Produktion: Engpässe, Zeitplan, AFK-Platz | vertieft | 1. Projekt mit Abschnitten und Planung (Bauleute, Startdatum) öffnen, Tab „Produktion“.<br>2. Sammelzeit je Tag verkleinern; eine vorgeschlagene Farm „Als geplant anlegen“ und auf „läuft“ stellen.<br>3. Zwei automatischen Farmen einen Ort geben (oder Farmpunkte der Weltkarte übernehmen) und den AFK-Vorschlag übernehmen. | Engpass und „Material da nach“ ändern sich nachvollziehbar; Abschnitte mit Material nach Baubeginn sind markiert; Sammelaufträge verteilen die Handarbeit auf die Bauleute; der AFK-Platz nennt erreichte und verfehlte Farmen mit Grund. |
 
 ## WERK · Werkstatt (Blockeditor) (Planer)
 

@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-04T01:15:21.000Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-04T01:49:58.384Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-04T01:15:21.000Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 8 |
 | 🚧 In Arbeit | 3 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 63 |
+| 🧩 Implementiert · Abnahme offen | 67 |
 | ✅ Im beschriebenen Umfang geprüft | 25 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -27,7 +27,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 |---|---:|---:|---:|---:|
 | [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 19 | 9 | 18 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 4 | 10 | 4 |
-| [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 3 | 1 | 3 | 1 |
+| [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 7 | 1 | 5 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 7 | 1 | 7 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 7 | 0 | 6 | 0 |
@@ -94,6 +94,10 @@ Abgeschlossen oder zurückgestellt: LIB-01 (geprüft), GEN-01 (geprüft), WORLD-
 | [BUILD-06](#build-06) | Bauführung im Spiel | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Bauführung mit Mod-Aufnahme auf deinem Server; Druck- und Handyansicht. |
 | [PROJ-01](#proj-01) | Projektplanung für große Projekte | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Projektmodul vertiefen“ · 1 verwaist | Reiter „Planung“ abnehmen (PROJ-09…11). |
 | [UPDATE-01](#update-01) | Kontrollierte Versionsupdates mit lokalen Overrides | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Versionsupdates auf echten Geräten (QA-02). |
+| [PROD-01](#prod-01) | Produktionsdaten | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Große Testphase vorbereiten und betreuen“ | Reiter „Produktion“ abnehmen (PROJ-12). |
+| [PROD-02](#prod-02) | Deckung und Engpässe | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Große Testphase vorbereiten und betreuen“ | Engpässe und Zeitplanvergleich prüfen (PROJ-13). |
+| [PROD-03](#prod-03) | Verarbeitung und Logistik | 🧩 Implementiert · Abnahme offen 3/3 | P2 | „Große Testphase vorbereiten und betreuen“ | — |
+| [PROD-04](#prod-04) | Anbindung der Produktion | 🧩 Implementiert · Abnahme offen 4/5 | P2 | „Große Testphase vorbereiten und betreuen“ | — |
 
 Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 
@@ -285,6 +289,8 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **LIB-02** · Rückmeldung zur Bedienung der Sammlungen.
 - **LIB-03** · Eigene Ensembles und Generatorvorlagen ausprobieren.
 - **PROJ-01** · Reiter „Planung“ abnehmen (PROJ-09…11).
+- **PROD-01** · Reiter „Produktion“ abnehmen (PROJ-12).
+- **PROD-02** · Engpässe und Zeitplanvergleich prüfen (PROJ-13).
 
 ### Entscheiden oder Rückfrage beantworten
 
@@ -500,6 +506,10 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [COOP-06](#coop-06) | Teamplanung im Planer: Arbeitspakete, Zuteilung, Zeitplan, Material je Spieler, Fortschritt mit Hinweisen, Konflikthilfe, Planstand-Vergleich, Übergabe und Abwesenheit | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-01 | ausstehend | ausstehend |
 | [PROJ-01](#proj-01) | Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten | 🧩 Implementiert · Abnahme offen | 4/5 | BUILD-01, BUILD-06, BACKUP-02 | ausstehend | ausstehend |
 | [GAME-09](#game-09) | Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch | 🚧 In Arbeit | 3/5 | GAME-07, GAME-04 | ausstehend | ausstehend |
+| [PROD-01](#prod-01) | Produktionsdaten: Katalog von 34 Farmarten mit Richtwerten je Einheit, Bedingungen, Reichweite, Verbrauch und Bauplan; Farmliste je Projekt (Anzahl, Zustand, Ort, Bauteil, Kartenpunkt) und Ertragsbuch, das ins Baustellen-Lager bucht und gemessene Raten liefert | 🧩 Implementiert · Abnahme offen | 3/4 | BUILD-01 | ausstehend | ausstehend |
+| [PROD-02](#prod-02) | Deckung und Engpässe: Restbedarf des Sammelplans gegen laufende Farmen und Handarbeit (gemeinsame Warteschlange, gieriger Ausgleich), Engpass, Materialbereitschaft je Abschnitt in Spieltagen, „Lohnt sich eine Farm?“ mit Amortisation aus Bauplan-Kosten | 🧩 Implementiert · Abnahme offen | 3/4 | PROD-01, PROJ-01 | ausstehend | ausstehend |
+| [PROD-03](#prod-03) | Verarbeitung und Logistik: Öfen für eine Zielzeit, Brennstoff je Sorte und netto aus Brennstofffarmen (Seetang, Bambus, Lava), Lagerplatz/Shulker/Fahrten je Abschnitt, Trichterdurchsatz und „Truhe voll nach“ je Farm, Sortier-Module | 🧩 Implementiert · Abnahme offen | 3/3 | PROD-01 | ausstehend | ausstehend |
+| [PROD-04](#prod-04) | Anbindung der Produktion: Farmen aus Projekt-Bauteilen mit Baufortschritt, Farmpunkte der Weltkarte übernehmen und eintragen, bester AFK-Platz nach Simulationsdistanz, Materialbereitschaft gegen Zeitplan der Planung, Sammelaufträge je Bauleute (TEAM-03-S02), Produktionsblatt als Text | 🧩 Implementiert · Abnahme offen | 4/5 | PROD-02, MAP-06, PROJ-01 | ausstehend | ausstehend |
 
 ## P4: Optionale Zusammenarbeit und Integrationen
 
@@ -2777,6 +2787,94 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/team-room.test.mjs](../tests/team-room.test.mjs) — Raum, zwei Browser und Server ohne Datei, Serverschlüssel, verlorene Antworten, Seiten.; [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — Zwei Browser 1400/390 px über den Raumkern: Live schalten, Beitreten per Link, Schritte live, Servermessung, neuer Planstand übernommen, Neuladen.; [scripts/team_room_smoke.mjs](../scripts/team_room_smoke.mjs) — Gegen wrangler dev (Worker + Durable Object) bestanden, 03.11.2026.; [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — Mit TEAM_ROOM_URL gegen den echten Dienst: zwei Browser 1400/390 px grün (04.11.2026).; [scripts/test_bridge_paper_room.sh](../scripts/test_bridge_paper_room.sh) — Paper 26.3 mit RoomLink gegen den echten Dienst: 10 Ereignisse, 6 vom Server, Faltung gleich (04.11.2026).
 
 **Dateiumfang:** `packages/domain/src/teamSync.ts`, `packages/domain/src/team.ts`, `services/team-room/src/core.js`, `services/team-room/src/index.js`, `services/team-room/wrangler.toml`, `services/team-room/README.md`, `apps/web/src/views/project/roomClient.ts`, `apps/web/src/views/project/TeamRoom.tsx`, `apps/web/src/views/project/TeamJoinView.tsx`, `apps/web/src/views/project/teamTransfer.ts`, `apps/web/src/views/project/TeamOpen.tsx`, `apps/web/src/views/project/TeamExchange.tsx`, `apps/web/src/views/project/ProjectView.tsx`, `apps/web/src/views/project/TeamTab.tsx`, `apps/web/src/app/router.ts`, `apps/web/src/main.tsx`, `apps/web/src/team.css`, `docs/architecture/TEAM_LIVE.md`, `tests/team-room.test.mjs`, `tests/e2e/team-room.e2e.mjs`, `scripts/team_room_smoke.mjs`, `apps/web/src/testing/testplan.ts`, `docs/architecture/TEAMBAU.md`, `docs/testing/TESTPLAN.md`, `packages/domain/src/index.ts`, `services/team-room/.gitignore`, `tests/router.test.mjs`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`, `scripts/bridge_paperroom.mjs`, `scripts/test_bridge_paper_room.sh`. **Abhängigkeiten:** COOP-01, COOP-04. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### PROD-01
+
+**Produktionsdaten: Katalog von 34 Farmarten mit Richtwerten je Einheit, Bedingungen, Reichweite, Verbrauch und Bauplan; Farmliste je Projekt (Anzahl, Zustand, Ort, Bauteil, Kartenpunkt) und Ertragsbuch, das ins Baustellen-Lager bucht und gemessene Raten liefert** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-04T01:49:58.384Z
+
+- [x] PROD-01-S01: Farmarten mit Raten, covers, inputs, Bauplan/Aufwand, Reichweitenart.
+- [x] PROD-01-S02: Datensatz site.production mit Prüfung, Rückgängig über site.set, Sicherung, Bereinigung.
+- [x] PROD-01-S03: Ertragsbuch: Ernte bucht ins Lager, gemessene Rate ab 1 h ersetzt den Richtwert.
+- [ ] PROD-01-S04: Abnahme durch Philipp (PROJ-12).
+
+**Abnahme:** Ernte und Lagerbuchung sind ein Rückgängig-Schritt. Jede Farmart nennt Grundlage und Bedingungen; Raten sind als Richtwert oder gemessen gekennzeichnet.
+
+**Nächste Aktion:** Abnahme PROJ-12; später Erträge aus geprüften Lagerkisten (COOP-05) ins Ertragsbuch.
+
+**Nur Philipp:** Im Planer abnehmen: Reiter „Produktion“ abnehmen (PROJ-12).
+
+**Prüfstand:** Einheits- und Browsertests grün; Abnahme durch Philipp in der Testphase offen (PROJ-12/13).
+
+**Nachweise:** [tests/production.test.mjs](../tests/production.test.mjs) — 10 Fälle: Katalog, Datensatz/Rückgängig/Sicherung, Ertragsbuch, Reichweiten/AFK, Deckung/Engpass/Bereitschaft, Vorschläge, Öfen/Lager/Logistik, Verbrauch, Anbindung, Integration mit planSite.; [tests/e2e/production.e2e.mjs](../tests/e2e/production.e2e.mjs) — Reiter „Produktion“ in Chromium (1400/390 px): Farm, Ernte ins Lager, gemessene Rate, Ort, AFK-Platz, Neuladen, kein Querscrollen.; [docs/architecture/PRODUCTION.md](architecture/PRODUCTION.md) — Grundsätze, Datensatz, Farmarten, Auswertung, Anbindung, Grenzen.
+
+**Dateiumfang:** `packages/domain/src/production.ts`, `packages/domain/src/site.ts`, `tests/production.test.mjs`, `docs/architecture/PRODUCTION.md`. **Abhängigkeiten:** BUILD-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### PROD-02
+
+**Deckung und Engpässe: Restbedarf des Sammelplans gegen laufende Farmen und Handarbeit (gemeinsame Warteschlange, gieriger Ausgleich), Engpass, Materialbereitschaft je Abschnitt in Spieltagen, „Lohnt sich eine Farm?“ mit Amortisation aus Bauplan-Kosten** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-04T01:49:58.384Z
+
+- [x] PROD-02-S01: Deckung je Rohstoff mit Weg Farm/Hand/offen und Engpass.
+- [x] PROD-02-S02: Bereitschaft je Abschnitt kumulativ in Bau-Reihenfolge, Vergleich mit Baubeginn aus planProgram.
+- [x] PROD-02-S03: Vorschläge je Farmart über alle abgedeckten Items, Einheiten für 7 Tage, Urteil.
+- [ ] PROD-02-S04: Abnahme durch Philipp (PROJ-13).
+
+**Abnahme:** Bedarf ist genau „Noch sammeln“ der Baustelle, keine zweite Materiallogik. Abschnitte mit Material nach Baubeginn sind markiert.
+
+**Nächste Aktion:** Abnahme PROJ-13.
+
+**Nur Philipp:** Im Planer abnehmen: Engpässe und Zeitplanvergleich prüfen (PROJ-13).
+
+**Prüfstand:** Einheits- und Browsertests grün; Abnahme durch Philipp in der Testphase offen (PROJ-12/13).
+
+**Nachweise:** [tests/production.test.mjs](../tests/production.test.mjs) — 10 Fälle: Katalog, Datensatz/Rückgängig/Sicherung, Ertragsbuch, Reichweiten/AFK, Deckung/Engpass/Bereitschaft, Vorschläge, Öfen/Lager/Logistik, Verbrauch, Anbindung, Integration mit planSite.; [tests/e2e/production.e2e.mjs](../tests/e2e/production.e2e.mjs) — Reiter „Produktion“ in Chromium (1400/390 px): Farm, Ernte ins Lager, gemessene Rate, Ort, AFK-Platz, Neuladen, kein Querscrollen.; [docs/architecture/PRODUCTION.md](architecture/PRODUCTION.md) — Grundsätze, Datensatz, Farmarten, Auswertung, Anbindung, Grenzen.
+
+**Dateiumfang:** `packages/domain/src/productionPlan.ts`, `apps/web/src/views/project/ProductionTab.tsx`, `apps/web/src/production.css`, `tests/production.test.mjs`. **Abhängigkeiten:** PROD-01, PROJ-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### PROD-03
+
+**Verarbeitung und Logistik: Öfen für eine Zielzeit, Brennstoff je Sorte und netto aus Brennstofffarmen (Seetang, Bambus, Lava), Lagerplatz/Shulker/Fahrten je Abschnitt, Trichterdurchsatz und „Truhe voll nach“ je Farm, Sortier-Module** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-04T01:49:58.384Z
+
+- [x] PROD-03-S01: SectionPlan.smelts/cookTicks aus dem Rezeptbaum.
+- [x] PROD-03-S02: Ofen- und Brennstoffplan inkl. Netto-Seetang.
+- [x] PROD-03-S03: Lager je Abschnitt und Logistik je automatischer Farm.
+
+**Abnahme:** Brennstoff aus Farmen ist netto gerechnet. Farm-Logistik warnt, wenn die Doppeltruhe innerhalb eines Spieltags voll ist.
+
+**Nächste Aktion:** Später: Ofenstraße aus dem Katalog direkt vorschlagen und in die Planung legen.
+
+**Prüfstand:** Einheits- und Browsertests grün; Abnahme durch Philipp in der Testphase offen (PROJ-12/13).
+
+**Nachweise:** [tests/production.test.mjs](../tests/production.test.mjs) — 10 Fälle: Katalog, Datensatz/Rückgängig/Sicherung, Ertragsbuch, Reichweiten/AFK, Deckung/Engpass/Bereitschaft, Vorschläge, Öfen/Lager/Logistik, Verbrauch, Anbindung, Integration mit planSite.; [tests/e2e/production.e2e.mjs](../tests/e2e/production.e2e.mjs) — Reiter „Produktion“ in Chromium (1400/390 px): Farm, Ernte ins Lager, gemessene Rate, Ort, AFK-Platz, Neuladen, kein Querscrollen.; [docs/architecture/PRODUCTION.md](architecture/PRODUCTION.md) — Grundsätze, Datensatz, Farmarten, Auswertung, Anbindung, Grenzen.
+
+**Dateiumfang:** `packages/domain/src/productionPlan.ts`, `packages/domain/src/site.ts`, `apps/web/src/views/project/ProductionTab.tsx`. **Abhängigkeiten:** PROD-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### PROD-04
+
+**Anbindung der Produktion: Farmen aus Projekt-Bauteilen mit Baufortschritt, Farmpunkte der Weltkarte übernehmen und eintragen, bester AFK-Platz nach Simulationsdistanz, Materialbereitschaft gegen Zeitplan der Planung, Sammelaufträge je Bauleute (TEAM-03-S02), Produktionsblatt als Text** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-04T01:49:58.384Z
+
+- [x] PROD-04-S01: detectFarms aus Katalog-Bauteilen und Anleitungsfortschritt.
+- [x] PROD-04-S02: Weltkarte: farmsOnMap mit guessFarmType, Punkte eintragen, Bauplatz als Standardort.
+- [x] PROD-04-S03: AFK: inRange je Reichweitenart, bestAfkSpot.
+- [x] PROD-04-S04: splitGathering (LPT, Nether/End als Tour) und productionText.
+- [ ] PROD-04-S05: Abnahme durch Philipp mit Mitspielern (PROJ-13).
+
+**Abnahme:** AFK-Platz nennt erreichte und verfehlte Farmen mit Grund. Sammelaufträge verteilen nur Handarbeit.
+
+**Nächste Aktion:** Abnahme PROJ-13; danach Farmerträge aus Mod/Plugin.
+
+**Prüfstand:** Einheits- und Browsertests grün; Abnahme durch Philipp in der Testphase offen (PROJ-12/13).
+
+**Nachweise:** [tests/production.test.mjs](../tests/production.test.mjs) — 10 Fälle: Katalog, Datensatz/Rückgängig/Sicherung, Ertragsbuch, Reichweiten/AFK, Deckung/Engpass/Bereitschaft, Vorschläge, Öfen/Lager/Logistik, Verbrauch, Anbindung, Integration mit planSite.; [tests/e2e/production.e2e.mjs](../tests/e2e/production.e2e.mjs) — Reiter „Produktion“ in Chromium (1400/390 px): Farm, Ernte ins Lager, gemessene Rate, Ort, AFK-Platz, Neuladen, kein Querscrollen.; [docs/architecture/PRODUCTION.md](architecture/PRODUCTION.md) — Grundsätze, Datensatz, Farmarten, Auswertung, Anbindung, Grenzen.
+
+**Dateiumfang:** `packages/domain/src/productionPlan.ts`, `apps/web/src/views/project/ProductionTab.tsx`, `apps/web/src/views/project/SiteTab.tsx`, `apps/web/src/views/project/tabs.ts`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `tests/e2e/production.e2e.mjs`. **Abhängigkeiten:** PROD-02, MAP-06, PROJ-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

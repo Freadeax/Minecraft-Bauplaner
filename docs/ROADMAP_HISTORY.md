@@ -4649,3 +4649,34 @@ Team-Raum ausgerollt unter https://bauplaner-team.team-room.workers.dev und im P
 - `docs/architecture/TEAM_LIVE.md`
 - `services/team-room/README.md`
 
+## 2026-11-04T01:49:58.384Z · progress
+
+**Aufgaben:** PROD-01, PROD-02, PROD-03, PROD-04
+
+Reiter Produktion: 34 Farmarten, Farmliste und Ertragsbuch (bucht ins Lager, gemessene Raten), Deckung/Engpass, Materialbereitschaft je Abschnitt gegen Zeitplan, Lohnt-sich-Vorschläge mit Amortisation, Öfen/Brennstoff netto, Lager/Logistik, AFK-Platz, Farmen aus Projekt und Weltkarte, Sammelaufträge je Bauleute. npm run check grün (818), Browser-Suite 151/151; Abnahme PROJ-12/13 offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PROD-01 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme PROJ-12; später Erträge aus geprüften Lagerkisten (COOP-05) ins Ertragsbuch. |
+| PROD-02 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme PROJ-13. |
+| PROD-03 | 🧩 Implementiert · Abnahme offen | 3/3 | Später: Ofenstraße aus dem Katalog direkt vorschlagen und in die Planung legen. |
+| PROD-04 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme PROJ-13; danach Farmerträge aus Mod/Plugin. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/production.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/project/ProductionTab.tsx`
+- `apps/web/src/views/project/SiteTab.tsx`
+- `apps/web/src/views/project/tabs.ts`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/PRODUCTION.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/production.ts`
+- `packages/domain/src/productionPlan.ts`
+- `packages/domain/src/site.ts`
+- `tests/e2e/production.e2e.mjs`
+- `tests/production.test.mjs`
+

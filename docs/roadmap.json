@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T01:15:21.000Z",
+  "updatedAt": "2026-11-04T01:49:58.384Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -7909,6 +7909,313 @@
         }
       ],
       "orphans": []
+    },
+    {
+      "phase": "P3",
+      "priority": "P2",
+      "status": "implemented",
+      "owner": "Claude (Thread „Produktion und Anbindung im Planer ausbauen“)",
+      "legacyIds": [],
+      "blockers": [],
+      "verification": {
+        "state": "pending",
+        "note": "Einheits- und Browsertests grün; Abnahme durch Philipp in der Testphase offen (PROJ-12/13)."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-04T01:49:58.384Z",
+      "area": "PROJEKT",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "planer",
+          "text": "Reiter „Produktion“ abnehmen (PROJ-12)."
+        }
+      ],
+      "orphans": [],
+      "id": "PROD-01",
+      "title": "Produktionsdaten: Katalog von 34 Farmarten mit Richtwerten je Einheit, Bedingungen, Reichweite, Verbrauch und Bauplan; Farmliste je Projekt (Anzahl, Zustand, Ort, Bauteil, Kartenpunkt) und Ertragsbuch, das ins Baustellen-Lager bucht und gemessene Raten liefert",
+      "dependencies": [
+        "BUILD-01"
+      ],
+      "scope": [
+        "packages/domain/src/production.ts",
+        "packages/domain/src/site.ts",
+        "tests/production.test.mjs",
+        "docs/architecture/PRODUCTION.md"
+      ],
+      "steps": [
+        {
+          "id": "PROD-01-S01",
+          "title": "Farmarten mit Raten, covers, inputs, Bauplan/Aufwand, Reichweitenart.",
+          "done": true
+        },
+        {
+          "id": "PROD-01-S02",
+          "title": "Datensatz site.production mit Prüfung, Rückgängig über site.set, Sicherung, Bereinigung.",
+          "done": true
+        },
+        {
+          "id": "PROD-01-S03",
+          "title": "Ertragsbuch: Ernte bucht ins Lager, gemessene Rate ab 1 h ersetzt den Richtwert.",
+          "done": true
+        },
+        {
+          "id": "PROD-01-S04",
+          "title": "Abnahme durch Philipp (PROJ-12).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Ernte und Lagerbuchung sind ein Rückgängig-Schritt.",
+        "Jede Farmart nennt Grundlage und Bedingungen; Raten sind als Richtwert oder gemessen gekennzeichnet."
+      ],
+      "next": "Abnahme PROJ-12; später Erträge aus geprüften Lagerkisten (COOP-05) ins Ertragsbuch.",
+      "evidence": [
+        {
+          "path": "tests/production.test.mjs",
+          "note": "10 Fälle: Katalog, Datensatz/Rückgängig/Sicherung, Ertragsbuch, Reichweiten/AFK, Deckung/Engpass/Bereitschaft, Vorschläge, Öfen/Lager/Logistik, Verbrauch, Anbindung, Integration mit planSite."
+        },
+        {
+          "path": "tests/e2e/production.e2e.mjs",
+          "note": "Reiter „Produktion“ in Chromium (1400/390 px): Farm, Ernte ins Lager, gemessene Rate, Ort, AFK-Platz, Neuladen, kein Querscrollen."
+        },
+        {
+          "path": "docs/architecture/PRODUCTION.md",
+          "note": "Grundsätze, Datensatz, Farmarten, Auswertung, Anbindung, Grenzen."
+        }
+      ]
+    },
+    {
+      "phase": "P3",
+      "priority": "P2",
+      "status": "implemented",
+      "owner": "Claude (Thread „Produktion und Anbindung im Planer ausbauen“)",
+      "legacyIds": [],
+      "blockers": [],
+      "verification": {
+        "state": "pending",
+        "note": "Einheits- und Browsertests grün; Abnahme durch Philipp in der Testphase offen (PROJ-12/13)."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-04T01:49:58.384Z",
+      "area": "PROJEKT",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [
+        {
+          "kind": "planer",
+          "text": "Engpässe und Zeitplanvergleich prüfen (PROJ-13)."
+        }
+      ],
+      "orphans": [],
+      "id": "PROD-02",
+      "title": "Deckung und Engpässe: Restbedarf des Sammelplans gegen laufende Farmen und Handarbeit (gemeinsame Warteschlange, gieriger Ausgleich), Engpass, Materialbereitschaft je Abschnitt in Spieltagen, „Lohnt sich eine Farm?“ mit Amortisation aus Bauplan-Kosten",
+      "dependencies": [
+        "PROD-01",
+        "PROJ-01"
+      ],
+      "scope": [
+        "packages/domain/src/productionPlan.ts",
+        "apps/web/src/views/project/ProductionTab.tsx",
+        "apps/web/src/production.css",
+        "tests/production.test.mjs"
+      ],
+      "steps": [
+        {
+          "id": "PROD-02-S01",
+          "title": "Deckung je Rohstoff mit Weg Farm/Hand/offen und Engpass.",
+          "done": true
+        },
+        {
+          "id": "PROD-02-S02",
+          "title": "Bereitschaft je Abschnitt kumulativ in Bau-Reihenfolge, Vergleich mit Baubeginn aus planProgram.",
+          "done": true
+        },
+        {
+          "id": "PROD-02-S03",
+          "title": "Vorschläge je Farmart über alle abgedeckten Items, Einheiten für 7 Tage, Urteil.",
+          "done": true
+        },
+        {
+          "id": "PROD-02-S04",
+          "title": "Abnahme durch Philipp (PROJ-13).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Bedarf ist genau „Noch sammeln“ der Baustelle, keine zweite Materiallogik.",
+        "Abschnitte mit Material nach Baubeginn sind markiert."
+      ],
+      "next": "Abnahme PROJ-13.",
+      "evidence": [
+        {
+          "path": "tests/production.test.mjs",
+          "note": "10 Fälle: Katalog, Datensatz/Rückgängig/Sicherung, Ertragsbuch, Reichweiten/AFK, Deckung/Engpass/Bereitschaft, Vorschläge, Öfen/Lager/Logistik, Verbrauch, Anbindung, Integration mit planSite."
+        },
+        {
+          "path": "tests/e2e/production.e2e.mjs",
+          "note": "Reiter „Produktion“ in Chromium (1400/390 px): Farm, Ernte ins Lager, gemessene Rate, Ort, AFK-Platz, Neuladen, kein Querscrollen."
+        },
+        {
+          "path": "docs/architecture/PRODUCTION.md",
+          "note": "Grundsätze, Datensatz, Farmarten, Auswertung, Anbindung, Grenzen."
+        }
+      ]
+    },
+    {
+      "phase": "P3",
+      "priority": "P2",
+      "status": "implemented",
+      "owner": "Claude (Thread „Produktion und Anbindung im Planer ausbauen“)",
+      "legacyIds": [],
+      "blockers": [],
+      "verification": {
+        "state": "pending",
+        "note": "Einheits- und Browsertests grün; Abnahme durch Philipp in der Testphase offen (PROJ-12/13)."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-04T01:49:58.384Z",
+      "area": "PROJEKT",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [],
+      "orphans": [],
+      "id": "PROD-03",
+      "title": "Verarbeitung und Logistik: Öfen für eine Zielzeit, Brennstoff je Sorte und netto aus Brennstofffarmen (Seetang, Bambus, Lava), Lagerplatz/Shulker/Fahrten je Abschnitt, Trichterdurchsatz und „Truhe voll nach“ je Farm, Sortier-Module",
+      "dependencies": [
+        "PROD-01"
+      ],
+      "scope": [
+        "packages/domain/src/productionPlan.ts",
+        "packages/domain/src/site.ts",
+        "apps/web/src/views/project/ProductionTab.tsx"
+      ],
+      "steps": [
+        {
+          "id": "PROD-03-S01",
+          "title": "SectionPlan.smelts/cookTicks aus dem Rezeptbaum.",
+          "done": true
+        },
+        {
+          "id": "PROD-03-S02",
+          "title": "Ofen- und Brennstoffplan inkl. Netto-Seetang.",
+          "done": true
+        },
+        {
+          "id": "PROD-03-S03",
+          "title": "Lager je Abschnitt und Logistik je automatischer Farm.",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "Brennstoff aus Farmen ist netto gerechnet.",
+        "Farm-Logistik warnt, wenn die Doppeltruhe innerhalb eines Spieltags voll ist."
+      ],
+      "next": "Später: Ofenstraße aus dem Katalog direkt vorschlagen und in die Planung legen.",
+      "evidence": [
+        {
+          "path": "tests/production.test.mjs",
+          "note": "10 Fälle: Katalog, Datensatz/Rückgängig/Sicherung, Ertragsbuch, Reichweiten/AFK, Deckung/Engpass/Bereitschaft, Vorschläge, Öfen/Lager/Logistik, Verbrauch, Anbindung, Integration mit planSite."
+        },
+        {
+          "path": "tests/e2e/production.e2e.mjs",
+          "note": "Reiter „Produktion“ in Chromium (1400/390 px): Farm, Ernte ins Lager, gemessene Rate, Ort, AFK-Platz, Neuladen, kein Querscrollen."
+        },
+        {
+          "path": "docs/architecture/PRODUCTION.md",
+          "note": "Grundsätze, Datensatz, Farmarten, Auswertung, Anbindung, Grenzen."
+        }
+      ]
+    },
+    {
+      "phase": "P3",
+      "priority": "P2",
+      "status": "implemented",
+      "owner": "Claude (Thread „Produktion und Anbindung im Planer ausbauen“)",
+      "legacyIds": [],
+      "blockers": [],
+      "verification": {
+        "state": "pending",
+        "note": "Einheits- und Browsertests grün; Abnahme durch Philipp in der Testphase offen (PROJ-12/13)."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-04T01:49:58.384Z",
+      "area": "PROJEKT",
+      "thread": "Große Testphase vorbereiten und betreuen",
+      "philipp": [],
+      "orphans": [],
+      "id": "PROD-04",
+      "title": "Anbindung der Produktion: Farmen aus Projekt-Bauteilen mit Baufortschritt, Farmpunkte der Weltkarte übernehmen und eintragen, bester AFK-Platz nach Simulationsdistanz, Materialbereitschaft gegen Zeitplan der Planung, Sammelaufträge je Bauleute (TEAM-03-S02), Produktionsblatt als Text",
+      "dependencies": [
+        "PROD-02",
+        "MAP-06",
+        "PROJ-01"
+      ],
+      "scope": [
+        "packages/domain/src/productionPlan.ts",
+        "apps/web/src/views/project/ProductionTab.tsx",
+        "apps/web/src/views/project/SiteTab.tsx",
+        "apps/web/src/views/project/tabs.ts",
+        "apps/web/src/testing/testplan.ts",
+        "docs/testing/TESTPLAN.md",
+        "tests/e2e/production.e2e.mjs"
+      ],
+      "steps": [
+        {
+          "id": "PROD-04-S01",
+          "title": "detectFarms aus Katalog-Bauteilen und Anleitungsfortschritt.",
+          "done": true
+        },
+        {
+          "id": "PROD-04-S02",
+          "title": "Weltkarte: farmsOnMap mit guessFarmType, Punkte eintragen, Bauplatz als Standardort.",
+          "done": true
+        },
+        {
+          "id": "PROD-04-S03",
+          "title": "AFK: inRange je Reichweitenart, bestAfkSpot.",
+          "done": true
+        },
+        {
+          "id": "PROD-04-S04",
+          "title": "splitGathering (LPT, Nether/End als Tour) und productionText.",
+          "done": true
+        },
+        {
+          "id": "PROD-04-S05",
+          "title": "Abnahme durch Philipp mit Mitspielern (PROJ-13).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "AFK-Platz nennt erreichte und verfehlte Farmen mit Grund.",
+        "Sammelaufträge verteilen nur Handarbeit."
+      ],
+      "next": "Abnahme PROJ-13; danach Farmerträge aus Mod/Plugin.",
+      "evidence": [
+        {
+          "path": "tests/production.test.mjs",
+          "note": "10 Fälle: Katalog, Datensatz/Rückgängig/Sicherung, Ertragsbuch, Reichweiten/AFK, Deckung/Engpass/Bereitschaft, Vorschläge, Öfen/Lager/Logistik, Verbrauch, Anbindung, Integration mit planSite."
+        },
+        {
+          "path": "tests/e2e/production.e2e.mjs",
+          "note": "Reiter „Produktion“ in Chromium (1400/390 px): Farm, Ernte ins Lager, gemessene Rate, Ort, AFK-Platz, Neuladen, kein Querscrollen."
+        },
+        {
+          "path": "docs/architecture/PRODUCTION.md",
+          "note": "Grundsätze, Datensatz, Farmarten, Auswertung, Anbindung, Grenzen."
+        }
+      ]
     }
   ],
   "events": [
@@ -15007,6 +15314,64 @@
           "done": 6,
           "total": 7,
           "next": "Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl im Thread „Anbindung von Planer, Mod und Server neu denken“ (LINK-05)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T01:49:58.384Z",
+      "kind": "progress",
+      "items": [
+        "PROD-01",
+        "PROD-02",
+        "PROD-03",
+        "PROD-04"
+      ],
+      "summary": "Reiter Produktion: 34 Farmarten, Farmliste und Ertragsbuch (bucht ins Lager, gemessene Raten), Deckung/Engpass, Materialbereitschaft je Abschnitt gegen Zeitplan, Lohnt-sich-Vorschläge mit Amortisation, Öfen/Brennstoff netto, Lager/Logistik, AFK-Platz, Farmen aus Projekt und Weltkarte, Sammelaufträge je Bauleute. npm run check grün (818), Browser-Suite 151/151; Abnahme PROJ-12/13 offen.",
+      "files": [
+        "apps/web/src/production.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/project/ProductionTab.tsx",
+        "apps/web/src/views/project/SiteTab.tsx",
+        "apps/web/src/views/project/tabs.ts",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/PRODUCTION.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/production.ts",
+        "packages/domain/src/productionPlan.ts",
+        "packages/domain/src/site.ts",
+        "tests/e2e/production.e2e.mjs",
+        "tests/production.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PROD-01",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme PROJ-12; später Erträge aus geprüften Lagerkisten (COOP-05) ins Ertragsbuch."
+        },
+        {
+          "id": "PROD-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme PROJ-13."
+        },
+        {
+          "id": "PROD-03",
+          "status": "implemented",
+          "done": 3,
+          "total": 3,
+          "next": "Später: Ofenstraße aus dem Katalog direkt vorschlagen und in die Planung legen."
+        },
+        {
+          "id": "PROD-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme PROJ-13; danach Farmerträge aus Mod/Plugin."
         }
       ]
     }

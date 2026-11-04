@@ -908,3 +908,11 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - FORMAT-01-S02: `tests/schem-roundtrip.test.mjs` prüft `scripts/check_schem_roundtrip.mjs` mit einer Datei im WorldEdit-Aufbau (absoluter Offset, WEOffset, ungeordnete Properties, BlockEntity mit Data, Rüstungsständer): semantisch gleich, beide Dateien vom Python-Verifier als gültig erkannt, WEOffset-Änderung als Hinweis.
 - QA-02-S01: Gerätematrix `docs/testing/GERAETEMATRIX.md`, Testplanbereich GERAET-01 … 06 (`npm run check:testplan`).
 - Grenzen: keine echte WorldEdit-Datei (WorldEdit/Paper als Fremdcode in der Cloud nicht erlaubt; Philipp lädt eine hoch); keine echten Geräte – alle Matrixzellen „offen“; Verschiebung nur für das ganze Bauwerk, nicht für Teile oder Drehungen.
+
+### 04.11.2026 – Produktion (PROD-01…04)
+
+- Grundlage: main 823cbb6 plus Reiter „Produktion“ (production.ts, productionPlan.ts, ProductionTab.tsx), Thread „Produktion und Anbindung im Planer ausbauen“.
+- `npm run check`: bestanden (Architektur, Roadmap, Typprüfung, Build, 818 Node-Tests inkl. 10 neue in `tests/production.test.mjs`, Doku, Testplan, Bibliothek).
+- `npm run test:e2e` (Chromium 1243 über PLAYWRIGHT_BROWSERS_PATH-Symlinks): 151/151 bestanden, darunter `tests/e2e/production.e2e.mjs` bei 1400 und 390 px (Farm anlegen, Ernte bucht ins Lager, gemessene Rate, Ort/AFK-Platz, Neuladen, kein Querscrollen, keine Konsolenfehler).
+- Sichtprüfung per Screenshot im hellen Thema (1400/390 px); Farbwerte über Theme-Tokens.
+- Grenzen: Farmraten sind Richtwerte; keine Messung im echten Spiel. Abnahme PROJ-12/13 durch Philipp offen.
