@@ -38,6 +38,10 @@ lager:
   schutz-standard: team
   # Trichter und Trichterloren: einlegen (dürfen füllen, nicht leeren), beides oder aus.
   trichter: einlegen
+  # Trichterbuchungen je Lager höchstens alle so viele Sekunden (gebündelt, hält das Teamprotokoll klein).
+  trichter-buendeln-sekunden: 60
+  # Ertragskisten (Zweck ertrag, Sammeltruhe einer Farm): alle so viele Minuten einen Ertrag mit Laufzeit melden (mindestens 5).
+  ertrag-minuten: 30
   # Explosionen (Creeper, TNT, Betten) zerstören markierte Lager nicht.
   explosionsschutz: true
   # Lager prüfen, sobald ihr Chunk geladen wird (höchstens einmal je Minute und Lager).

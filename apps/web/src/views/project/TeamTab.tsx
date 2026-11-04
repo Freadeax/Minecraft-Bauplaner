@@ -153,7 +153,7 @@ function TeamPage({ session, site, team, message, setMessage, saveTeam, saveSite
       <Members view={view} me={me?.id ?? null} role={role} act={act} onToProgram={toProgram} projectId={project.id} />
       <Contribute view={view} ctx={ctx} me={me?.id ?? null} role={role} act={act} nameOf={nameOf} />
     </div>
-    <TeamProof view={view} sections={ctx.sections} me={me?.id ?? null} role={role} act={act} nameOf={nameOf} sectionBlocks={sectionBlocks} siteStock={site.stock} onTakeStock={takeStock} />
+    <TeamProof view={view} sections={ctx.sections} me={me?.id ?? null} role={role} act={act} nameOf={nameOf} sectionBlocks={sectionBlocks} siteStock={site.stock} onTakeStock={takeStock} {...(site.production && { farms: site.production.farms })} />
     <Notes view={view} ctx={ctx} me={me?.id ?? null} role={role} act={act} nameOf={nameOf} />
     <TeamRoom session={session} team={team} view={view} onMessage={setMessage} />
     <TeamLive session={session} team={team} view={view} onMessage={setMessage} />

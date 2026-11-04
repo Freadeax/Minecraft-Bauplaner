@@ -71,7 +71,7 @@ final class StorageModule implements Listener {
     }
 
     static final List<String> SUBCOMMANDS = List.of("markieren", "entmarkieren", "info", "liste", "pruefen", "siegeln", "name", "abschnitt", "zweck", "schutz",
-            "verlauf", "wer", "bedarf", "zeigen", "hilfe", "setzen", "entfernen", "zaehlen");
+            "verlauf", "wer", "bedarf", "zeigen", "hilfe", "farm", "setzen", "entfernen", "zaehlen");
     private static final String PREFIX = ChatColor.GOLD + "[Bauplaner] " + ChatColor.RESET;
 
     private final JavaPlugin plugin;
@@ -92,7 +92,18 @@ final class StorageModule implements Listener {
     /** Runtime time of the last check per store (checks without change are not written to the log). */
     private final Map<String, Long> lastChecked = new HashMap<>();
     private final Map<UUID, Long> lastHint = new HashMap<>();
-    private BukkitTask hopperTask;
+    private BukkitTask hopperTask, yieldTask;
+    /** Last hopper booking per store: hopper moves are bundled to one store.move per store and minute (lager.trichter-buendeln-sekunden). */
+    private final Map<String, Long> hopperBooked = new HashMap<>();
+    /** COOP-08: what went into yield stores (purpose ertrag) since the last store.yield, and loaded minutes. */
+    private static final class Yield {
+        final String teamId, from = java.time.Instant.now().toString();
+        final TreeMap<String, Long> items = new TreeMap<>();
+        long minutes;
+        Yield(String teamId) { this.teamId = teamId; }
+    }
+    private final Map<String, Yield> yields = new LinkedHashMap<>();
+    private long yieldTicks;
 
     StorageModule(JavaPlugin plugin, TeamAccess teams) {
         this.plugin = plugin;
@@ -101,7 +112,8 @@ final class StorageModule implements Listener {
 
     void enable() {
         Bukkit.getPluginManager().registerEvents(this, plugin);
-        hopperTask = Bukkit.getScheduler().runTaskTimer(plugin, this::flushHoppers, 20L, 20L);
+        hopperTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> flushHoppers(false), 20L, 20L);
+        yieldTask = Bukkit.getScheduler().runTaskTimer(plugin, this::yieldMinute, 1200L, 1200L);
         // Stores and per section need for players with the mod (team channel, COOP-03).
         TeamChannel.decorate = (team, state) -> {
             TeamLog.View v = teams.view(team);
@@ -135,6 +147,7 @@ final class StorageModule implements Listener {
         if (st.pos2 != null) j.add("pos2", xyz(st.pos2));
         if (st.section != null) j.addProperty("section", st.section);
         j.addProperty("purpose", st.purpose);
+        if (st.farm != null) j.addProperty("farm", st.farm);
         j.addProperty("status", st.deviating() && !"fehlt".equals(st.status) ? "abweichend" : st.status);
         if (st.checkedAt != null) j.addProperty("checkedAt", st.checkedAt);
         TreeMap<String, Long> items = st.items == null ? new TreeMap<>() : st.items;
@@ -153,8 +166,10 @@ final class StorageModule implements Listener {
     void disable() {
         TeamChannel.decorate = (t, s) -> { };
         for (UUID id : new ArrayList<>(sessions.keySet())) closeSession(id);
-        flushHoppers();
+        flushHoppers(true);
+        writeYields();
         if (hopperTask != null) hopperTask.cancel();
+        if (yieldTask != null) yieldTask.cancel();
     }
 
     private static void say(CommandSender s, String text) { s.sendMessage(PREFIX + text); }
@@ -234,6 +249,9 @@ final class StorageModule implements Listener {
 
     /** As above; {@code by} is the member a count is booked to (stored/taken of COOP-04 come from count differences). */
     private void check(TeamLog team, StoreIndex.Store s, boolean report, CommandSender to, String by) {
+        // Hopper moves not yet booked (bundled) must be booked first, or they would look like a deviation.
+        if (s != null && hopperDirty.containsKey(s.id)) { flushHopper(s.id, hopperDirty.remove(s.id), false); s = teams.view(team).stores.get(s.id); }
+        if (s == null) return;
         Block b = block(s);
         if (b == null) { if (to != null) say(to, "„" + s.name + "“: Chunk nicht geladen, nicht geprüft."); return; }
         lastChecked.put(s.id, System.currentTimeMillis());
@@ -369,6 +387,7 @@ final class StorageModule implements Listener {
             e.addProperty("via", "spieler");
             if (m.isEmpty()) e.addProperty("player", name);
             teams.append(team, e, Bukkit.getConsoleSender());
+            addYield(team, s, in);
             if (p != null) say(p, "Gebucht im Lager „" + s.name + "“: " + StoreLedger.diffText(ses.net, 6) + ".");
         }
         // Nobody else looks into the store: count and compare once.
@@ -376,11 +395,21 @@ final class StorageModule implements Listener {
         if (!others) check(team, teams.view(team).stores.get(s.id), false, null);
     }
 
-    private void flushHoppers() {
+    private long bundleMillis() { return Math.max(0, plugin.getConfig().getLong("lager.trichter-buendeln-sekunden", 60)) * 1000L; }
+
+    /** Books pending hopper moves; without {@code force} at most once per store and bundle time. */
+    private void flushHoppers(boolean force) {
         if (hopperDirty.isEmpty()) return;
-        Map<String, TeamLog> dirty = new LinkedHashMap<>(hopperDirty);
-        hopperDirty.clear();
-        dirty.forEach((id, team) -> {
+        long now = System.currentTimeMillis(), bundle = bundleMillis();
+        for (Map.Entry<String, TeamLog> d : new ArrayList<>(hopperDirty.entrySet())) {
+            if (!force && now - hopperBooked.getOrDefault(d.getKey(), 0L) < bundle) continue;
+            hopperDirty.remove(d.getKey());
+            flushHopper(d.getKey(), d.getValue(), true);
+        }
+    }
+
+    private void flushHopper(String id, TeamLog team, boolean thenCheck) {
+        {
             StoreIndex.Store s = teams.view(team).stores.get(id);
             if (s == null || s.removed) return;
             Block b = block(s);
@@ -402,9 +431,70 @@ final class StorageModule implements Listener {
                 if (!out.isEmpty()) e.add("out", StoreLedger.json(out));
                 e.addProperty("via", "trichter");
                 teams.append(team, e, Bukkit.getConsoleSender());
+                hopperBooked.put(id, System.currentTimeMillis());
+                addYield(team, s, in);
             }
-            if (sessions.values().stream().noneMatch(x -> x.storeId.equals(id))) check(team, teams.view(team).stores.get(id), false, null);
-        });
+            if (thenCheck && sessions.values().stream().noneMatch(x -> x.storeId.equals(id))) check(team, teams.view(team).stores.get(id), false, null);
+        }
+    }
+
+    // ------------------------------------------------------------------ yield stores (COOP-08)
+
+    private void addYield(TeamLog team, StoreIndex.Store s, Map<String, Long> in) {
+        if (s == null || !"ertrag".equals(s.purpose) || in.isEmpty()) return;
+        Yield y = yields.computeIfAbsent(s.id, k -> new Yield(team.teamId));
+        in.forEach((k, v) -> StoreLedger.add(y.items, k, v));
+    }
+
+    private int yieldMinutes() { return (int) Math.max(5, plugin.getConfig().getLong("lager.ertrag-minuten", 30)); }
+
+    /** Every minute: a yield store whose chunk is loaded ran for a minute; every lager.ertrag-minuten a store.yield. */
+    private void yieldMinute() {
+        for (TeamLog team : teams.teams())
+            for (StoreIndex.Store s : teams.view(team).stores.stores.values()) {
+                if (s.removed || !"ertrag".equals(s.purpose) || s.pos == null) continue;
+                World w = PaperCompat.findWorld(s.dimension);
+                if (w == null || !w.isChunkLoaded(s.pos[0] >> 4, s.pos[2] >> 4)) continue;
+                yields.computeIfAbsent(s.id, k -> new Yield(team.teamId)).minutes++;
+            }
+        if (++yieldTicks >= yieldMinutes()) { yieldTicks = 0; writeYields(); }
+    }
+
+    /** Writes one store.yield per yield store with something measured. */
+    private void writeYields() {
+        flushHoppers(true);
+        String until = java.time.Instant.now().toString();
+        for (Map.Entry<String, Yield> en : new ArrayList<>(yields.entrySet())) {
+            Yield y = en.getValue();
+            TeamLog team = teams.teams().stream().filter(t -> t.teamId.equals(y.teamId)).findFirst().orElse(null);
+            StoreIndex.Store s = team == null ? null : teams.view(team).stores.get(en.getKey());
+            if (s == null || s.removed || y.items.isEmpty() && y.minutes == 0) continue;
+            JsonObject e = team.event(team.founder, "store.yield");
+            e.addProperty("chest", s.id);
+            if (s.farm != null) e.addProperty("farm", s.farm);
+            e.add("items", StoreLedger.json(y.items));
+            e.addProperty("from", y.from); e.addProperty("until", until.compareTo(y.from) > 0 ? until : y.from);
+            e.addProperty("minutes", y.minutes);
+            teams.append(team, e, Bukkit.getConsoleSender());
+        }
+        yields.clear();
+    }
+
+    /** Farms of the team file ({@code farms: [{id, name}]}): {id, name}. */
+    static List<String[]> farms(TeamLog team) {
+        List<String[]> out = new ArrayList<>();
+        if (team.header.has("farms") && team.header.get("farms").isJsonArray())
+            for (var el : team.header.getAsJsonArray("farms")) {
+                if (!el.isJsonObject()) continue;
+                JsonObject f = el.getAsJsonObject();
+                String id = TeamLog.str(f, "id"), name = TeamLog.str(f, "name");
+                if (id != null) out.add(new String[] { id, name == null ? id : name });
+            }
+        return out;
+    }
+
+    private static String farmName(TeamLog team, String id) {
+        return farms(team).stream().filter(f -> f[0].equals(id)).map(f -> f[1]).findFirst().orElse(id);
     }
 
     private UUID sessionOwner(Session ses) {
@@ -737,6 +827,12 @@ final class StorageModule implements Listener {
                         + " (" + StoreLedger.describe(st.protectionOr(defaultProtection())) + ")");
                 if (st.items != null) say(s, StoreLedger.total(st.items) + " Items: " + StoreLedger.diffText(st.items, 8).replace("+", "") + (st.partial ? " (gekürzt)" : ""));
                 if (!st.deviation.isEmpty()) say(s, ChatColor.RED + "Offene Abweichung: " + StoreLedger.diffText(st.deviation, 8));
+                if ("ertrag".equals(st.purpose)) {
+                    Yield y = yields.get(st.id);
+                    long minutes = st.yieldMinutes + (y == null ? 0 : y.minutes), total = StoreLedger.total(st.yieldIn) + (y == null ? 0 : StoreLedger.total(y.items));
+                    say(s, "Ertragskiste" + (st.farm != null ? " der Farm „" + farmName(team, st.farm) + "“" : "") + ": " + total + " Items in " + minutes + " min geladen"
+                            + (minutes >= 10 ? " · " + Math.round(total * 60.0 / minutes) + " je Stunde" : ""));
+                }
                 if (st.sealedBy != null) say(s, "Zuletzt gesiegelt von " + v.name(st.sealedBy) + " (" + st.sealedAt + ").");
                 needLine(team, st).ifPresent(line -> say(s, line));
                 return true;
@@ -756,7 +852,7 @@ final class StorageModule implements Listener {
                 e.addProperty("chest", st.id); e.addProperty("name", st.name); e.add("pos", xyz(st.pos)); e.addProperty("dimension", st.dimension); e.addProperty("remove", true);
                 return teams.submit(team, e, s, "Markierung von „" + st.name + "“ aufgehoben; die Kiste ist wieder eine normale Kiste. Der Verlauf bleibt im Teamprotokoll.");
             }
-            case "name", "abschnitt", "zweck", "schutz" -> {
+            case "name", "abschnitt", "zweck", "schutz", "farm" -> {
                 if (!manager) return fail(s, "Das dürfen Baumeister und die Bauleitung.");
                 if (text.isEmpty()) return fail(s, "/" + label + " lager " + sub + " <wert>");
                 JsonObject e = team.event(by, "store.config");
@@ -772,9 +868,20 @@ final class StorageModule implements Listener {
                             e.addProperty("section", sec.get().id()); ok = "Lager gehört jetzt zu Abschnitt " + sec.get().number() + " " + sec.get().name() + ".";
                         }
                     }
+                    case "farm" -> {
+                        if (text.equalsIgnoreCase("keine") || text.equals("-")) { e.addProperty("farm", ""); ok = "Keine Farm mehr verknüpft."; }
+                        else {
+                            String want = text.replace('_', ' ');
+                            Optional<String[]> f = farms(team).stream().filter(x -> x[0].equals(text) || x[1].equalsIgnoreCase(want)).findFirst();
+                            if (f.isEmpty()) return fail(s, "Farm „" + text + "“ steht nicht in der Teamdatei (Planer: Reiter „Produktion“, dann Planstand neu an den Server).");
+                            e.addProperty("farm", f.get()[0]);
+                            if (!"ertrag".equals(st.purpose)) e.addProperty("purpose", "ertrag");
+                            ok = "Ertragskiste der Farm „" + f.get()[1] + "“: alles, was hineinkommt, zählt als Ertrag.";
+                        }
+                    }
                     case "zweck" -> {
                         Optional<String> p = StoreLedger.purpose(text);
-                        if (p.isEmpty()) return fail(s, "Zweck vorrat, eingang, ausgabe oder rest.");
+                        if (p.isEmpty()) return fail(s, "Zweck vorrat, eingang, ausgabe, rest oder ertrag.");
                         e.addProperty("purpose", p.get()); ok = "Zweck: " + p.get() + ".";
                         if (p.get().equals("eingang") && st.protection == null) e.addProperty("protection", "eingang");
                     }
@@ -877,19 +984,24 @@ final class StorageModule implements Listener {
 
     private boolean help(CommandSender s, String label) {
         say(s, "Lager: /" + label + " lager markieren [name] · info · liste · pruefen [alle] · bedarf [nr|projekt] · verlauf [n] · wer <item> · zeigen");
-        say(s, "Baumeister: siegeln [notiz] · name <name> · abschnitt <nr|projekt> · zweck <vorrat|eingang|ausgabe|rest> · schutz <offen|team|abschnitt|eingang|gesperrt> · entmarkieren");
+        say(s, "Baumeister: siegeln [notiz] · name <name> · abschnitt <nr|projekt> · zweck <vorrat|eingang|ausgabe|rest|ertrag> · farm <name|keine> · schutz <offen|team|abschnitt|eingang|gesperrt> · entmarkieren");
         say(s, "Das Plugin zählt beim Schließen, bucht Ein- und Ausgaben je Spieler und meldet Abweichungen. Es verändert nie Kisteninhalte.");
         return true;
     }
 
     List<String> complete(String[] args) {
         // args[0] = "lager"
-        if (args.length == 2) return SUBCOMMANDS.subList(0, 15);
+        if (args.length == 2) return SUBCOMMANDS.subList(0, 16);
         String sub = args[1].toLowerCase(Locale.ROOT);
         if (args.length == 3) return switch (sub) {
             case "zweck" -> StoreLedger.PURPOSES;
             case "schutz" -> StoreLedger.PROTECTIONS;
             case "pruefen" -> List.of("alle");
+            case "farm" -> {
+                List<String> out = new ArrayList<>(List.of("keine"));
+                if (!teams.teams().isEmpty()) farms(teams.teams().iterator().next()).forEach(x -> out.add(x[1].replace(' ', '_')));
+                yield out;
+            }
             case "abschnitt", "bedarf" -> {
                 List<String> out = new ArrayList<>(List.of("projekt"));
                 if (!teams.teams().isEmpty()) teams.teams().iterator().next().ordered().forEach(sec -> out.add(String.valueOf(sec.number())));

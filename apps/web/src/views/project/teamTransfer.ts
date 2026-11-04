@@ -1,7 +1,7 @@
 // Plan transfer for the team (COOP-01/07): one way to pack the plan of the Bauleitung and one way to take
 // it over, shared by the file exchange (TeamExchange) and the Team-Raum (TeamRoom, docs/architecture/TEAM_LIVE.md §6).
 import {
-  buildRestore, buildTeamPackage, createBackup, planRestore, readBackup, sectionNeeds, serializeBackup, siteOf, takeOverPlan, teamContextOf, teamServerFile, teamView,
+  buildRestore, buildTeamPackage, createBackup, planRestore, readBackup, sectionNeeds, serializeBackup, siteOf, takeOverPlan, teamContextOf, teamServerFile, teamView, serverFarms, productionOf
 } from '../../../../../packages/domain/src/index.js';
 import type { Project, TeamServerFile, TeamState } from '../../../../../packages/domain/src/index.js';
 import type { Repository } from '../../../../../packages/application/src/repository.js';
@@ -53,6 +53,6 @@ export function roomHeader(session: ProjectSession, team: TeamState, plan?: Room
   const guide = computation?.guide;
   const needs = computation && guide ? sectionNeeds(site, guide, computation.stepMaterials) : undefined;
   const file = teamServerFile({ team, view, projectName: project.name, sections: site.sections, steps: guide?.steps ?? [], origin: (project.world?.origin ?? [0, 0, 0]) as [number, number, number],
-    dimension: project.world?.dimension ?? 'minecraft:overworld', ...(needs && { needs }) });
+    dimension: project.world?.dimension ?? 'minecraft:overworld', ...(needs && { needs }), farms: serverFarms(productionOf(site)) });
   return { ...file, events: [], ...(plan && { plan }) };
 }

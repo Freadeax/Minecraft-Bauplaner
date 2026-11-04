@@ -44,9 +44,10 @@ final class TeamLog {
         // Handover with acceptance, absence, acknowledged hints (COOP-06, TEAMBAU §4).
         NEED.put("section.handover", "helfer"); NEED.put("section.accept", "helfer"); NEED.put("section.decline", "helfer");
         NEED.put("member.away", "gast"); NEED.put("issue.ack", "meister");
+        NEED.put("store.yield", "gast"); // COOP-08 yield stores
     }
     /** Measurements only the server writes (origin server), as in team.ts SERVER_ONLY_KINDS. */
-    static final Set<String> SERVER_ONLY = Set.of("build.tally", "store.count", "store.move", "store.check");
+    static final Set<String> SERVER_ONLY = Set.of("build.tally", "store.count", "store.move", "store.check", "store.yield");
     static final Gson GSON = new GsonBuilder().disableHtmlEscaping().create();
     private static final SecureRandom RANDOM = new SecureRandom();
 
@@ -413,7 +414,7 @@ final class TeamLog {
                 if (until != null || note != null) v.away.put(m, new Away(until, note)); else v.away.remove(m);
             }
             case "issue.ack" -> { for (JsonElement x : array(e, "events")) v.acknowledged.add(x.getAsString()); }
-            case "store.config", "store.move", "store.check", "store.seal" -> {
+            case "store.config", "store.move", "store.check", "store.seal", "store.yield" -> {
                 if (!v.chests.containsKey(str(e, "chest"))) { reject(v, id, "Lagerkiste unbekannt oder entfernt."); return; }
             }
             default -> { }

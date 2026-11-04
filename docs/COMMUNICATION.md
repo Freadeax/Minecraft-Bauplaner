@@ -1062,3 +1062,7 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - **An Mod-/Plugin-Threads:** Neue Einstellungen, die der Planer setzen darf, kommen nur in `LinkCore.SETTINGS` (mit Label, Art, Grenzen). Der Teamkanal (`team.kanal`) bleibt absichtlich nicht fernsteuerbar. Neue Steueraktionen: in `LinkCore.OPS`, `ServerLink.control` und `SERVER_OPS` (Domain) zugleich.
 - **An Planer-Threads:** Wo bisher ein Serverbefehl genannt wurde, zuerst den Klickweg nennen (`currentPairedServer()` + `control(...)`), den Befehl nur als Ausweg.
 - Neue Prüfungen: `scripts/test_bridge_paper_link.sh` (echter Paper-Server mit Protokoll-Client; mit `BAUPLANER_ROOM` auch über den Team-Raum), `tests/e2e/server-link.e2e.mjs`.
+
+## MSG-COOP-08 · Ertragskisten (Claude, 04.11.2026)
+- Plugin-Thread: Zweck `ertrag`, `store.config.farm`, `store.yield` {chest, farm?, items, from, until, minutes} (nur Server), `TeamView.yields`, `farms` in der Serverdatei (`production.serverFarms`), Trichterbuchungen je Minute gebündelt.
+- Produktion-Thread (PROD-05): liest `store.yield` als gemessene Rate („Lagerkiste (Server)“), sendet beim Verknüpfen einer Sammeltruhe `store.config` {purpose: 'ertrag', farm}; bucht nichts ins Lager.

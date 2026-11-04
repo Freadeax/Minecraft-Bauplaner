@@ -931,3 +931,8 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `TEAM_ROOM_URL=https://bauplaner-team.team-room.workers.dev node --test tests/e2e/server-link.e2e.mjs`: 3/3 grün – iPad 820 px über den echten Dienst (Freigabe-Link, Einstellung, Plan von der Weltkarte mit Anker, Server offline klar gemeldet); ein WebSocket mit Serverschlüssel spielt das Plugin.
 - `BAUPLANER_ROOM=https://bauplaner-team.team-room.workers.dev scripts/test_bridge_paper_link.sh`: Paper 1.21.11 – zusätzlich Plan mit Anker per Steuernachricht abgelegt, kaputter Plan abgewiesen und nicht abgelegt; Steuerung über den echten Raum.
 - Grenzen: Serveraufnahme per Steuernachricht noch offen (LINK-06-S02); Planlimit über den Raum 700 KB, über die Mod 4 MB.
+## COOP-08 · Ertragskisten für das Ertragsbuch · 04.11.2026 · Claude
+- `node --test tests/lager.test.mjs`: neu Ertragskiste (Zweck ertrag, Farm, store.yield nur vom Server, unbekannte Kiste abgelehnt, Summe und Meldungen, Farm der Kiste als Rückfall, Prüfung von Datum/Minuten).
+- `scripts/test_bridge_paper_lager.sh` auf echten Paper-Servern 1.18.2 (388), 1.21.4 (232), 26.3 (240): Kürbistruhe markiert, `lager farm … Kürbisfarm` (Farm aus `farms` der Serverdatei), Trichter legt 6 Kürbisse ein, `info` zeigt „6 Items in N min geladen“, beim Herunterfahren ein `store.yield`; Planer-Faltung: Zweck ertrag, Farm, yieldIn, eine Meldung, höchstens 2 Trichterbuchungen (gebündelt). Alle bisherigen Lagerschritte weiter grün; `test_bridge_paper_team.sh 26.3` grün.
+- Gradle `:paper:build`, `:mod-core:test` (Befehlskatalog mit `lager farm`, Zweck ertrag) grün.
+- Grenzen: Laufzeit über eine echte Farm und Spielereinlagen von Hand nur auf Philipps Server (LAGER-10); die Rate im Reiter „Produktion“ baut PROD-05.

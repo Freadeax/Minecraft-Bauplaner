@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-04T09:00:40.731Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-04T08:57:48.489Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-04T09:00:40.731Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 8 |
 | 🚧 In Arbeit | 4 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 72 |
+| 🧩 Implementiert · Abnahme offen | 73 |
 | ✅ Im beschriebenen Umfang geprüft | 25 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -28,7 +28,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 19 | 9 | 18 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 4 | 10 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 7 | 1 | 5 | 1 |
-| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 9 | 1 | 9 | 0 |
+| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 10 | 1 | 10 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 8 | 0 | 7 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 3 | 0 |
@@ -116,6 +116,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [COOP-07](#coop-07) | Team live ohne Dateien | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat). |
 | [LINK-04](#link-04) | Planer | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Anbindung von Planer, Mod und Server neu denken“ | Testplan-Bereich LINK durchgehen. |
 | [LINK-05](#link-05) | Zweiter Weg über den Team-Raum | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Anbindung von Planer, Mod und Server neu denken“ | Am PC „Weiteres Gerät freigeben“, Link auf dem iPad öffnen, eine Einstellung ändern. |
+| [COOP-08](#coop-08) | Ertragskisten | 🧩 Implementiert · Abnahme offen 2/4 | P2 | „Server-Plugin mit geprüften Lagerkisten“ | LAGER-01…09 mit echten Spielern. |
 
 <a id="bereich-groesse"></a>
 
@@ -244,6 +245,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **COOP-06** · TEAMBAU-21…24 mit Mitspielern an einem großen Bau.
 - **GAME-10** · Befehlsseite im J-Menü zusammen mit dem Plugin auf deinem Server (MOD-16).
 - **COOP-07** · TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat).
+- **COOP-08** · LAGER-01…09 mit echten Spielern.
 - **LINK-01** · Plugin 0.12.0 einspielen, als OP mit Mod beitreten, J → „Teambau erlauben“, im Planer #/mod „Server koppeln“.
 
 ### Im Spiel an deinem PC
@@ -386,6 +388,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **LINK-04 · Planer: Bereich „Spiel und Server verbinden – ohne Befehle“ (#/mod), Server koppeln und einstellen, Team und Raum per Knopf** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme durch Philipp.
 - **LINK-05 · Zweiter Weg über den Team-Raum: Steuernachrichten ohne Mod (iPad), weiteres Gerät per Link freigeben** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Abnahme vom iPad (Testplan LINK-04).
 - **LINK-06 · Weitere Steuerung ohne Befehle: Plan mit Anker von der Weltkarte auf den Server (umgesetzt), Serveraufnahme (scan) per Steuernachricht (offen)** — 🚧 In Arbeit, 1/2 Teilschritte. Nächster Schritt: Serveraufnahme (scan) als Steueraktion; Abnahme LINK-05 (Testplan).
+- **COOP-08 · Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion)** — 🧩 Implementiert · Abnahme offen, 2/4 Teilschritte. Nächster Schritt: PROD-05 liest TeamView.yields bzw. store.yield; Abnahme LAGER-10 auf Philipps Server.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -559,6 +562,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-03, COOP-05, GAME-07 | ausstehend | ausstehend |
 | [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher | ⏳ Offen | 0/4 | GAME-07, GAME-10 | ausstehend | ausstehend |
 | [COOP-07](#coop-07) | Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel | 🧩 Implementiert · Abnahme offen | 6/7 | COOP-01, COOP-04 | ausstehend | ausstehend |
+| [COOP-08](#coop-08) | Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion) | 🧩 Implementiert · Abnahme offen | 2/4 | COOP-05, PROD-01 | ausstehend | ausstehend |
 | [LINK-01](#link-01) | Plugin richtet sich selbst ein und lässt sich per Klick koppeln (link.json, Server-ID, Kopplung nur OP/Bauleitung über den Teamkanal) | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-02 | ausstehend | ausstehend |
 | [LINK-02](#link-02) | Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte) | 🧩 Implementiert · Abnahme offen | 3/4 | LINK-01 | ausstehend | ausstehend |
 | [LINK-03](#link-03) | Mod: Live-Dienst startet selbst, Planer per Klick im Spiel zulassen, Teamfreigabe als Knopf, Server-Wege weiterreichen (Mod 0.12.0) | 🧩 Implementiert · Abnahme offen | 4/5 | GAME-08, COOP-03 | ausstehend | ausstehend |
@@ -2817,6 +2821,29 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/team-room.test.mjs](../tests/team-room.test.mjs) — Raum, zwei Browser und Server ohne Datei, Serverschlüssel, verlorene Antworten, Seiten.; [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — Zwei Browser 1400/390 px über den Raumkern: Live schalten, Beitreten per Link, Schritte live, Servermessung, neuer Planstand übernommen, Neuladen.; [scripts/team_room_smoke.mjs](../scripts/team_room_smoke.mjs) — Gegen wrangler dev (Worker + Durable Object) bestanden, 03.11.2026.; [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — Mit TEAM_ROOM_URL gegen den echten Dienst: zwei Browser 1400/390 px grün (04.11.2026).; [scripts/test_bridge_paper_room.sh](../scripts/test_bridge_paper_room.sh) — Paper 26.3 mit RoomLink gegen den echten Dienst: 10 Ereignisse, 6 vom Server, Faltung gleich (04.11.2026).
 
 **Dateiumfang:** `packages/domain/src/teamSync.ts`, `packages/domain/src/team.ts`, `services/team-room/src/core.js`, `services/team-room/src/index.js`, `services/team-room/wrangler.toml`, `services/team-room/README.md`, `apps/web/src/views/project/roomClient.ts`, `apps/web/src/views/project/TeamRoom.tsx`, `apps/web/src/views/project/TeamJoinView.tsx`, `apps/web/src/views/project/teamTransfer.ts`, `apps/web/src/views/project/TeamOpen.tsx`, `apps/web/src/views/project/TeamExchange.tsx`, `apps/web/src/views/project/ProjectView.tsx`, `apps/web/src/views/project/TeamTab.tsx`, `apps/web/src/app/router.ts`, `apps/web/src/main.tsx`, `apps/web/src/team.css`, `docs/architecture/TEAM_LIVE.md`, `tests/team-room.test.mjs`, `tests/e2e/team-room.e2e.mjs`, `scripts/team_room_smoke.mjs`, `apps/web/src/testing/testplan.ts`, `docs/architecture/TEAMBAU.md`, `docs/testing/TESTPLAN.md`, `packages/domain/src/index.ts`, `services/team-room/.gitignore`, `tests/router.test.mjs`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`, `scripts/bridge_paperroom.mjs`, `scripts/test_bridge_paper_room.sh`. **Abhängigkeiten:** COOP-01, COOP-04. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### COOP-08
+
+**Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion)** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Server-Plugin mit geprüften Lagerkisten“) · Zuständiger Thread: „Server-Plugin mit geprüften Lagerkisten“ · Aktualisiert: 2026-11-04T08:57:48.489Z
+
+- [x] COOP-08-S01: Zweck ertrag, store.config.farm, store.yield (nur Server) in team.ts und TeamLog/StoreIndex; farms in der Serverdatei (production.serverFarms).
+- [x] COOP-08-S02: Plugin misst Ertrag und Laufzeit, /bauplaner lager farm, Info mit Rate; Trichterbuchungen gebündelt (lager.trichter-buendeln-sekunden).
+- [ ] COOP-08-S03: Planer zeigt Ertragskisten im Reiter Team; Reiter Produktion nutzt yields als gemessene Rate (Thread PROD-05).
+- [ ] COOP-08-S04: Abnahme mit einer echten Farm auf Philipps Server (LAGER-10).
+
+**Abnahme:** Ertragskiste (Zweck ertrag, Farm) misst Trichter- und Spielereinlagen und geladene Minuten; store.yield alle 30 min und beim Herunterfahren; Planer-Faltung yields gleich Plugin; Trichterbuchungen je Minute gebündelt; echte Paper-Server 1.18.2, 1.21.4, 26.3.
+
+**Nächste Aktion:** PROD-05 liest TeamView.yields bzw. store.yield; Abnahme LAGER-10 auf Philipps Server.
+
+**Nur Philipp:** Auf deinem Server mit Mitspielern: LAGER-01…09 mit echten Spielern.
+
+**Prüfstand:** Servertests und Unit-Tests bestanden; Inventarklicks, Schutz und Buchungen beim Schließen brauchen echte Spieler (LAGER-02…06).
+
+**Nachweise:** [scripts/bridge_paperlager.mjs](../scripts/bridge_paperlager.mjs) — Echter Server 1.18.2, 1.21.4, 26.3: Abweichung, Siegel, Trichter, TNT, Doppelkiste, fehlende Kiste, Bedarf, Sammelauftrag, Neustart; Planer-Faltung = Server.; [tests/lager.test.mjs](../tests/lager.test.mjs) — Faltung, Rechte, Herkunft und Prüfung der neuen Arten.; [mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndexTest.java](../mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndexTest.java) — Unit-Tests der Rechte-Matrix, Differenzen, Prüfsumme und Faltung (StoreIndex).
+
+**Dateiumfang:** `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageModule.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndex.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreLedger.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`, `mods/bauplaner-bridge/paper/src/main/resources/config.yml`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`, `packages/domain/src/team.ts`, `packages/domain/src/production.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/TeamProof.tsx`, `apps/web/src/views/project/TeamTab.tsx`, `apps/web/src/views/project/TeamLive.tsx`, `apps/web/src/views/project/teamTransfer.ts`, `apps/web/src/views/project/TeamExchange.tsx`, `apps/web/src/team.css`, `apps/web/src/testing/testplan.ts`, `docs/architecture/LAGERKISTEN.md`, `docs/testing/TESTPLAN.md`, `tests/lager.test.mjs`, `scripts/bridge_paperlager.mjs`. **Abhängigkeiten:** COOP-05, PROD-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

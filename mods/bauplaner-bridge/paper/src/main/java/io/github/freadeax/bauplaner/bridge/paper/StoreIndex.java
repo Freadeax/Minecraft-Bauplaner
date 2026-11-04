@@ -33,6 +33,10 @@ final class StoreIndex {
         String name, dimension;
         int[] pos, pos2;
         String section, purpose = "vorrat", protection;
+        /** COOP-08: farm of a yield store, measured yield and loaded minutes (store.yield). */
+        String farm;
+        final TreeMap<String, Long> yieldIn = new TreeMap<>();
+        long yieldMinutes;
         boolean removed;
         /** Last counted content and when; null before the first count. */
         TreeMap<String, Long> items;
@@ -109,6 +113,11 @@ final class StoreIndex {
                 if (e.has("protection")) { String p = str(e, "protection"); s.protection = StoreLedger.PROTECTIONS.contains(p) ? p : null; }
                 if (e.has("pos2")) s.pos2 = xyz(e, "pos2");
                 if (e.has("name") && str(e, "name") != null && !str(e, "name").isBlank()) s.name = str(e, "name");
+                if (e.has("farm")) { String f = str(e, "farm"); s.farm = f == null || f.isEmpty() ? null : f; }
+            }
+            case "store.yield" -> {
+                StoreLedger.read(e.getAsJsonArray("items"), "count").forEach((k, v) -> StoreLedger.add(s.yieldIn, k, v));
+                if (e.has("minutes")) s.yieldMinutes += e.get("minutes").getAsLong();
             }
             case "store.count" -> {
                 s.items = StoreLedger.read(e.getAsJsonArray("items"), "count");

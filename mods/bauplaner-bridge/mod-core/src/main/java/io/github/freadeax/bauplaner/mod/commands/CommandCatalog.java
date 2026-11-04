@@ -217,7 +217,8 @@ public final class CommandCatalog {
         s(m, STORAGE, "bp.lager.siegeln", "Siegeln", "lager siegeln", "Jetzigen Inhalt als geprüft bestätigen (Baumeister).", Need.CHEST, Arg.opt("notiz", Kind.TEXT));
         s(m, STORAGE, "bp.lager.name", "Umbenennen", "lager name", "Neuer Name der angeschauten Kiste.", Need.CHEST, Arg.of("name", Kind.TEXT));
         s(m, STORAGE, "bp.lager.abschnitt", "Abschnitt zuordnen", "lager abschnitt", "Kiste gehört zu diesem Abschnitt.", Need.CHEST, Arg.of("abschnitt", Kind.SECTION));
-        s(m, STORAGE, "bp.lager.zweck", "Zweck", "lager zweck", "Vorrat, Eingang, Ausgabe oder Rest.", Need.CHEST, Arg.choice("zweck", "vorrat", "eingang", "ausgabe", "rest"));
+        s(m, STORAGE, "bp.lager.zweck", "Zweck", "lager zweck", "Vorrat, Eingang, Ausgabe, Rest oder Ertrag (Sammeltruhe einer Farm).", Need.CHEST, Arg.choice("zweck", "vorrat", "eingang", "ausgabe", "rest", "ertrag"));
+        s(m, STORAGE, "bp.lager.farm", "Farm verknüpfen", "lager farm", "Angeschaute Kiste als Ertragskiste einer Farm aus dem Planer (Baumeister).", Need.CHEST, Arg.of("farm", Kind.WORD));
         s(m, STORAGE, "bp.lager.schutz", "Schutz", "lager schutz", "Wer etwas herausnehmen darf.", Need.CHEST, Arg.choice("stufe", "offen", "team", "abschnitt", "eingang", "gesperrt"));
         s(m, STORAGE, "bp.lager.hilfe", "Hilfe Lager", "lager hilfe", "Alle Lagerbefehle des Servers.", Need.PLUGIN);
         // Build record per player (plugin)

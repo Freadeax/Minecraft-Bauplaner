@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T09:00:40.731Z",
+  "updatedAt": "2026-11-04T08:57:48.489Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -38,7 +38,8 @@
     "LINK-03",
     "LINK-04",
     "LINK-05",
-    "LINK-06"
+    "LINK-06",
+    "COOP-08"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -7919,6 +7920,100 @@
         {
           "kind": "server",
           "text": "TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat)."
+        }
+      ],
+      "orphans": []
+    },
+    {
+      "id": "COOP-08",
+      "title": "Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion)",
+      "phase": "P4",
+      "priority": "P2",
+      "status": "implemented",
+      "owner": "Claude (Thread „Server-Plugin mit geprüften Lagerkisten“)",
+      "dependencies": [
+        "COOP-05",
+        "PROD-01"
+      ],
+      "scope": [
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageModule.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndex.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreLedger.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java",
+        "mods/bauplaner-bridge/paper/src/main/resources/config.yml",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java",
+        "packages/domain/src/team.ts",
+        "packages/domain/src/production.ts",
+        "packages/domain/src/index.ts",
+        "apps/web/src/views/project/TeamProof.tsx",
+        "apps/web/src/views/project/TeamTab.tsx",
+        "apps/web/src/views/project/TeamLive.tsx",
+        "apps/web/src/views/project/teamTransfer.ts",
+        "apps/web/src/views/project/TeamExchange.tsx",
+        "apps/web/src/team.css",
+        "apps/web/src/testing/testplan.ts",
+        "docs/architecture/LAGERKISTEN.md",
+        "docs/testing/TESTPLAN.md",
+        "tests/lager.test.mjs",
+        "scripts/bridge_paperlager.mjs"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "COOP-08-S01",
+          "title": "Zweck ertrag, store.config.farm, store.yield (nur Server) in team.ts und TeamLog/StoreIndex; farms in der Serverdatei (production.serverFarms).",
+          "done": true
+        },
+        {
+          "id": "COOP-08-S02",
+          "title": "Plugin misst Ertrag und Laufzeit, /bauplaner lager farm, Info mit Rate; Trichterbuchungen gebündelt (lager.trichter-buendeln-sekunden).",
+          "done": true
+        },
+        {
+          "id": "COOP-08-S03",
+          "title": "Planer zeigt Ertragskisten im Reiter Team; Reiter Produktion nutzt yields als gemessene Rate (Thread PROD-05).",
+          "done": false
+        },
+        {
+          "id": "COOP-08-S04",
+          "title": "Abnahme mit einer echten Farm auf Philipps Server (LAGER-10).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Ertragskiste (Zweck ertrag, Farm) misst Trichter- und Spielereinlagen und geladene Minuten; store.yield alle 30 min und beim Herunterfahren; Planer-Faltung yields gleich Plugin; Trichterbuchungen je Minute gebündelt; echte Paper-Server 1.18.2, 1.21.4, 26.3."
+      ],
+      "next": "PROD-05 liest TeamView.yields bzw. store.yield; Abnahme LAGER-10 auf Philipps Server.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "scripts/bridge_paperlager.mjs",
+          "note": "Echter Server 1.18.2, 1.21.4, 26.3: Abweichung, Siegel, Trichter, TNT, Doppelkiste, fehlende Kiste, Bedarf, Sammelauftrag, Neustart; Planer-Faltung = Server."
+        },
+        {
+          "path": "tests/lager.test.mjs",
+          "note": "Faltung, Rechte, Herkunft und Prüfung der neuen Arten."
+        },
+        {
+          "path": "mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndexTest.java",
+          "note": "Unit-Tests der Rechte-Matrix, Differenzen, Prüfsumme und Faltung (StoreIndex)."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Servertests und Unit-Tests bestanden; Inventarklicks, Schutz und Buchungen beim Schließen brauchen echte Spieler (LAGER-02…06)."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-04T08:57:48.489Z",
+      "area": "TEAM",
+      "thread": "Server-Plugin mit geprüften Lagerkisten",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "LAGER-01…09 mit echten Spielern."
         }
       ],
       "orphans": []
@@ -16159,6 +16254,47 @@
           "done": 0,
           "total": 4,
           "next": "Entschieden (Philipp 04.11.): Fabric 26.3 (sein Modpack mit REI) hat Vorrang, danach jeweils die neueste Minecraft-Version nachziehen; keine Matrix älterer Versionen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T08:57:48.489Z",
+      "kind": "progress",
+      "items": [
+        "COOP-08"
+      ],
+      "summary": "Ertragskisten: Zweck ertrag mit Farm, Plugin misst Einlagen von Trichtern und Spielern und geladene Minuten, store.yield alle 30 min und beim Herunterfahren, TeamView.yields, farms in der Serverdatei, Trichterbuchungen je Minute gebündelt; echte Paper-Server 1.18.2, 1.21.4, 26.3 grün.",
+      "files": [
+        "apps/web/src/team.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/project/TeamExchange.tsx",
+        "apps/web/src/views/project/TeamLive.tsx",
+        "apps/web/src/views/project/TeamProof.tsx",
+        "apps/web/src/views/project/TeamTab.tsx",
+        "apps/web/src/views/project/teamTransfer.ts",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/LAGERKISTEN.md",
+        "docs/testing/TESTPLAN.md",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageModule.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndex.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreLedger.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java",
+        "mods/bauplaner-bridge/paper/src/main/resources/config.yml",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/production.ts",
+        "packages/domain/src/team.ts",
+        "scripts/bridge_paperlager.mjs",
+        "tests/lager.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-08",
+          "status": "implemented",
+          "done": 2,
+          "total": 4,
+          "next": "PROD-05 liest TeamView.yields bzw. store.yield; Abnahme LAGER-10 auf Philipps Server."
         }
       ]
     }

@@ -71,3 +71,25 @@ test('validation of the new kinds; a missing chest and its removal', () => {
   assert.equal(teamView(gone, ctx).stores.length, 0);
   assert.equal(eventLabel({ kind: 'store.seal', chest: 'c1', sha256: sha }), 'Lager gesiegelt');
 });
+
+test('yield store: purpose ertrag, farm link, store.yield only from the server, per period and in total (COOP-08)', () => {
+  const team = appendEvents(base(), [
+    ev('bld_phil', { kind: 'store.chest', chest: 'c1', name: 'Kürbistruhe', pos: [10, 64, -3], dimension: 'minecraft:overworld' }),
+    ev('bld_phil', { kind: 'store.config', chest: 'c1', purpose: 'ertrag', farm: 'farm_k' }),
+    srv('bld_phil', { kind: 'store.yield', chest: 'c1', farm: 'farm_k', items: [{ item: 'minecraft:pumpkin', count: 30 }], from: '2026-11-03T10:00:00.000Z', until: '2026-11-03T10:30:00.000Z', minutes: 30 }),
+    srv('bld_phil', { kind: 'store.yield', chest: 'c1', items: [{ item: 'minecraft:pumpkin', count: 12 }], from: '2026-11-03T10:30:00.000Z', until: '2026-11-03T11:00:00.000Z', minutes: 12 }),
+    ev('bld_phil', { kind: 'store.yield', chest: 'c1', items: [{ item: 'minecraft:pumpkin', count: 999 }], from: '2026-11-03T11:00:00.000Z', until: '2026-11-03T11:30:00.000Z', minutes: 30 }),
+    srv('bld_phil', { kind: 'store.yield', chest: 'nope', items: [], from: '2026-11-03T11:00:00.000Z', until: '2026-11-03T11:30:00.000Z', minutes: 30 }),
+  ]);
+  const v = teamView(team, ctx);
+  assert.equal(v.rejected.length, 2, 'planner-written yield and unknown chest are rejected');
+  const c = store(v);
+  assert.equal(c.purpose, 'ertrag'); assert.equal(c.farm, 'farm_k');
+  assert.deepEqual(c.yieldIn, { 'minecraft:pumpkin': 42 }); assert.equal(c.yieldMinutes, 42);
+  assert.deepEqual(v.yields.map(y => [y.farm, y.items['minecraft:pumpkin'], y.minutes, y.chestName]), [['farm_k', 30, 30, 'Kürbistruhe'], ['farm_k', 12, 12, 'Kürbistruhe']], 'farm of the store when the event names none');
+  const unlinked = teamView(appendEvents(team, [ev('bld_phil', { kind: 'store.config', chest: 'c1', farm: '' })]), ctx);
+  assert.equal(store(unlinked).farm, undefined);
+  assert.throws(() => checkTeamEvent({ ...srv('bld_phil', { kind: 'store.yield', chest: 'c1', items: [], from: 'x', until: 'y', minutes: 1 }) }));
+  assert.throws(() => checkTeamEvent({ ...srv('bld_phil', { kind: 'store.yield', chest: 'c1', items: [], from: '2026-11-03T10:00:00.000Z', until: '2026-11-03T10:30:00.000Z', minutes: -1 }) }));
+  assert.match(eventLabel(team.events[2]), /Ertrag gemessen \(30 Items in 30 min\)/);
+});

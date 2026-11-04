@@ -25,7 +25,7 @@ final class StoreLedger {
     /** Protection levels of a store, weakest first. */
     static final List<String> PROTECTIONS = List.of("offen", "team", "abschnitt", "eingang", "gesperrt");
     /** What a store is for; {@code eingang} also selects the protection {@code eingang} when marking. */
-    static final List<String> PURPOSES = List.of("vorrat", "eingang", "ausgabe", "rest");
+    static final List<String> PURPOSES = List.of("vorrat", "eingang", "ausgabe", "rest", "ertrag");
     /** Hopper rule: hoppers may fill a store ({@code einlegen}), also empty it ({@code beides}) or neither ({@code aus}). */
     static final List<String> HOPPER_MODES = List.of("einlegen", "beides", "aus");
     /** Most item lines per event, like {@code store.count} (team.ts). */

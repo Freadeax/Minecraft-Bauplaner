@@ -255,6 +255,10 @@ export function emptyProduction(): ProductionPlan {
   return { schemaVersion: 1, farms: [], log: [], gatherHoursPerDay: DEFAULT_GATHER_HOURS_PER_DAY, afkHoursPerDay: DEFAULT_AFK_HOURS_PER_DAY, simulationDistance: DEFAULT_SIMULATION_DISTANCE };
 }
 export const productionOf = (site: Pick<SitePlan, 'production'>): ProductionPlan => site.production ?? emptyProduction();
+/** Farms for the Paper plugin's team file (COOP-08): id, name and output items, so a yield store can name its farm. */
+export function serverFarms(production: ProductionPlan): { id: string; name: string; items: string[] }[] {
+  return production.farms.slice(0, 200).map(f => ({ id: f.id, name: f.name.slice(0, 60), items: (farmType(f.type)?.outputs ?? []).map(o => o.item).slice(0, 16) }));
+}
 
 const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 const fail = (message: string): never => { throw new DomainError('SITE', `Produktion: ${message}`); };

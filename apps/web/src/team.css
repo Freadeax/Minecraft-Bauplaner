@@ -82,3 +82,4 @@
 .team-presence{list-style:none;margin:0 0 8px;padding:0;display:flex;flex-wrap:wrap;gap:6px}
 .team-presence li{border:1px solid var(--line);border-radius:12px;padding:3px 9px;background:var(--panel-2);font-size:11px}
 .team-room label.grow{display:flex;flex-direction:column;gap:4px;font-size:11px;flex:3 1 260px}
+.team-store-yield { margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--muted); }

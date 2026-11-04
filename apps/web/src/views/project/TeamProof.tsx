@@ -12,7 +12,7 @@ const STATUS: Record<StoreChest['status'], string> = { geprueft: 'geprüft', abw
 const PROTECTION: Record<string, string> = { offen: 'offen für alle', team: 'Team', abschnitt: 'nur Abschnitt', eingang: 'Eingang (nur einlegen)', gesperrt: 'gesperrt' };
 
 /** One checked store (COOP-05): status, content, open difference, bookings per member. */
-function StoreRow({ c, sections, nameOf }: { c: StoreChest; sections: readonly { readonly id: string; readonly name: string }[]; nameOf(id?: string | null): string }) {
+function StoreRow({ c, sections, nameOf, farmName }: { c: StoreChest; sections: readonly { readonly id: string; readonly name: string }[]; nameOf(id?: string | null): string; farmName?: (id: string) => string | undefined }) {
   const section = c.section ? sections.find(x => x.id === c.section)?.name ?? 'entfernter Abschnitt' : 'ganzes Projekt';
   const movers = [...new Set([...Object.keys(c.movedIn), ...Object.keys(c.movedOut)])];
   const hopper = Object.keys(c.hopperIn).length || Object.keys(c.hopperOut).length;
@@ -24,6 +24,8 @@ function StoreRow({ c, sections, nameOf }: { c: StoreChest; sections: readonly {
       {c.checkedAt ? ` · geprüft ${when(c.checkedAt)}` : ''}{c.sealedBy ? ` · gesiegelt ${when(c.sealedAt)} von ${nameOf(c.sealedBy)}` : ''}</small>
     {Object.keys(c.deviation).length > 0 && <p className="team-store-deviation">Ohne Buchung verändert: {signed(c.deviation, 8)}. Ein Baumeister prüft die Kiste und bestätigt im Spiel mit <code>/bauplaner lager siegeln</code>.</p>}
     {c.status === 'fehlt' && <p className="team-store-deviation">An der Stelle steht keine Kiste mehr. Im Spiel neu aufstellen oder mit <code>/bauplaner lager entmarkieren</code> aufheben.</p>}
+    {c.purpose === 'ertrag' && <p className="team-store-yield">Ertragskiste{c.farm ? ` · Farm ${farmName?.(c.farm) ?? c.farm}` : ''}: {formatNumber(Object.values(c.yieldIn).reduce((n, x) => n + x, 0))} Items in {formatNumber(c.yieldMinutes)} min Laufzeit
+      {c.yieldMinutes >= 10 && ` · ${formatNumber(Math.round(Object.values(c.yieldIn).reduce((n, x) => n + x, 0) * 60 / c.yieldMinutes))} je Stunde`}</p>}
     {(movers.length > 0 || hopper > 0) && <ul className="team-store-moves" aria-label={`Buchungen in ${c.name}`}>
       {movers.map(m => <li key={m}><span>{nameOf(m)}</span><span>{top(c.movedIn[m] ?? {}, 3).map(([i, n]) => `+${formatNumber(n)} ${short(i)}`).join(', ')}{c.movedIn[m] && c.movedOut[m] ? ' · ' : ''}{top(c.movedOut[m] ?? {}, 3).map(([i, n]) => `−${formatNumber(n)} ${short(i)}`).join(', ')}</span></li>)}
       {hopper > 0 && <li><span>Trichter</span><span>{top(c.hopperIn, 3).map(([i, n]) => `+${formatNumber(n)} ${short(i)}`).join(', ')}{top(c.hopperOut, 3).map(([i, n]) => ` −${formatNumber(n)} ${short(i)}`).join(',')}</span></li>}
@@ -36,7 +38,7 @@ function StoreRow({ c, sections, nameOf }: { c: StoreChest; sections: readonly {
  * plugin – blocks per player and section, storage chests and what each player put in or took out.
  * Read-only except one's own on/off switch and taking the counted stock into the site storage.
  */
-export function TeamProof({ view, sections, me, role, act, nameOf, sectionBlocks, siteStock, onTakeStock }: {
+export function TeamProof({ view, sections, me, role, act, nameOf, sectionBlocks, siteStock, onTakeStock, farms }: {
   view: TeamView;
   sections: readonly { readonly id: string; readonly name: string }[];
   me: string | null;
@@ -46,6 +48,8 @@ export function TeamProof({ view, sections, me, role, act, nameOf, sectionBlocks
   /** Blocks of each section in the plan (for "x of y"). */
   sectionBlocks: ReadonlyMap<string, number>;
   siteStock: Readonly<Record<string, number>>;
+  /** Farms of the project (Produktion), to name the farm of a yield store. */
+  farms?: readonly { readonly id: string; readonly name: string }[];
   onTakeStock(stock: Readonly<Record<string, number>>): void;
 }) {
   const builders = view.members.filter(m => m.placed || m.broken || total(m.stored) || total(m.taken) || !m.tally);
@@ -82,7 +86,7 @@ export function TeamProof({ view, sections, me, role, act, nameOf, sectionBlocks
     {view.stores.length > 0 && <><h4>Lagerkisten</h4>
       {(() => { const bad = view.stores.filter(c => c.status === 'abweichend' || c.status === 'fehlt').length;
         return <p className={bad ? 'team-store-summary bad' : 'team-store-summary'}>{view.stores.length} Lager · {view.stores.filter(c => c.status === 'geprueft').length} geprüft{bad ? ` · ${bad} mit Abweichung oder fehlender Kiste` : ''}</p>; })()}
-      <ul className="team-list team-stores">{view.stores.map(c => <StoreRow key={c.id} c={c} sections={sections} nameOf={nameOf} />)}</ul>
+      <ul className="team-list team-stores">{view.stores.map(c => <StoreRow key={c.id} c={c} sections={sections} nameOf={nameOf} farmName={id => farms?.find(f => f.id === id)?.name} />)}</ul>
       {stock.length > 0 && <><p className="team-chips static" aria-label="Lagerbestand">{stock.map(([i, n]) => <span key={i}>{formatNumber(n)} × {short(i)}</span>)}</p>
         {canTeam(role, 'section.verify') ? <button className="secondary" disabled={!differs} onClick={() => onTakeStock(view.stock)}>
           {differs ? 'Bestand ins Baustellen-Lager übernehmen' : 'Baustellen-Lager entspricht dem Bestand'}</button>

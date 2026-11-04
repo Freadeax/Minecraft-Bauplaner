@@ -4841,3 +4841,38 @@ Versionsentscheidung Philipp: Fabric 26.3 zuerst, dann die jeweils neueste Versi
 |---|---|---:|---|
 | GAME-11 | ⏳ Offen | 0/4 | Entschieden (Philipp 04.11.): Fabric 26.3 (sein Modpack mit REI) hat Vorrang, danach jeweils die neueste Minecraft-Version nachziehen; keine Matrix älterer Versionen. |
 
+## 2026-11-04T08:57:48.489Z · progress
+
+**Aufgaben:** COOP-08
+
+Ertragskisten: Zweck ertrag mit Farm, Plugin misst Einlagen von Trichtern und Spielern und geladene Minuten, store.yield alle 30 min und beim Herunterfahren, TeamView.yields, farms in der Serverdatei, Trichterbuchungen je Minute gebündelt; echte Paper-Server 1.18.2, 1.21.4, 26.3 grün.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-08 | 🧩 Implementiert · Abnahme offen | 2/4 | PROD-05 liest TeamView.yields bzw. store.yield; Abnahme LAGER-10 auf Philipps Server. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/team.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/project/TeamExchange.tsx`
+- `apps/web/src/views/project/TeamLive.tsx`
+- `apps/web/src/views/project/TeamProof.tsx`
+- `apps/web/src/views/project/TeamTab.tsx`
+- `apps/web/src/views/project/teamTransfer.ts`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/LAGERKISTEN.md`
+- `docs/testing/TESTPLAN.md`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageModule.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndex.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreLedger.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`
+- `mods/bauplaner-bridge/paper/src/main/resources/config.yml`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/production.ts`
+- `packages/domain/src/team.ts`
+- `scripts/bridge_paperlager.mjs`
+- `tests/lager.test.mjs`
+

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  describeEvent, LIVE_FEATURE_TEAM, liveCan, mergeTeam, siteOf, siteOperation, teamContextOf, teamLinkProblem, teamLinkState, teamLinkText, teamServerFile, teamView,
+  describeEvent, LIVE_FEATURE_TEAM, liveCan, mergeTeam, siteOf, siteOperation, teamContextOf, teamLinkProblem, teamLinkState, teamLinkText, teamServerFile, teamView, serverFarms, productionOf
 } from '../../../../../packages/domain/src/index.js';
 import type { LiveHello, LiveTeam, TeamEvent, TeamMerge, TeamState, TeamView } from '../../../../../packages/domain/src/index.js';
 import { errorText } from '../../app/ui';
@@ -125,7 +125,7 @@ export function TeamLive({ session, team, view, onMessage }: { session: ProjectS
     if (!project.world) throw new Error('Für den Server muss das Projekt auf der Weltkarte platziert sein (Ursprung und Dimension).');
     const guide = computation?.guide;
     if (!guide) throw new Error('Die Bauanleitung ist noch nicht berechnet.');
-    const file = teamServerFile({ team, view, projectName: project.name, sections: site.sections, steps: guide.steps, origin: project.world.origin as [number, number, number], dimension: project.world.dimension });
+    const file = teamServerFile({ team, view, projectName: project.name, sections: site.sections, steps: guide.steps, origin: project.world.origin as [number, number, number], dimension: project.world.dimension, farms: serverFarms(productionOf(site)) });
     // LINK-04: a server paired with this browser takes the plan as a signed control message (no leader role
     // in the plugin's team needed, nothing typed); otherwise the older push via the mod (plugin checks the role).
     const paired = await currentPairedServer();

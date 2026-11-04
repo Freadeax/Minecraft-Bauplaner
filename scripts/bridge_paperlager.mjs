@@ -23,7 +23,10 @@ let team = createTeam({ name: 'Lager am See', founder: 'bld_phil', server: 'loca
 team = appendEvents(team, [teamEvent('bld_ben', { kind: 'member.player', member: 'bld_ben', player: 'Ben_MC' })]);
 const file = teamServerFile({ team, view: teamView(team, ctx), projectName: 'Lager', origin: [1000, -60, 1000], dimension: 'minecraft:overworld',
   sections: [{ id: 'sec_fund', name: 'Fundament', members: [{ instanceId: 'i1', toLayer: 1 }] }, { id: 'sec_roh', name: 'Rohbau', members: [{ instanceId: 'i1', fromLayer: 2 }] }],
-  steps: Array.from({ length: 6 }, (_, layer) => ({ instanceId: 'i1', layer, bounds: { min: [0, layer, 0], maxExclusive: [16, layer + 1, 16] } })) });
+  steps: Array.from({ length: 6 }, (_, layer) => ({ instanceId: 'i1', layer, bounds: { min: [0, layer, 0], maxExclusive: [16, layer + 1, 16] } })),
+  // COOP-08: farms of the project (production.serverFarms) for yield stores.
+  farms: [{ id: 'farm_kuerbis', name: 'Kürbisfarm', items: ['minecraft:pumpkin'] }] });
+assert.deepEqual(file.farms, [{ id: 'farm_kuerbis', name: 'Kürbisfarm', items: ['minecraft:pumpkin'] }]);
 // Material need as the planner writes it (sections[].need, need for the whole project).
 file.sections[0].need ??= [{ item: 'minecraft:stone', count: 100 }, { item: 'minecraft:oak_log', count: 5 }];
 file.need ??= [{ item: 'minecraft:stone', count: 300 }, { item: 'minecraft:oak_log', count: 20 }, { item: 'minecraft:glass', count: 10 }];
@@ -115,6 +118,17 @@ try {
   await run(`bauplaner lager verlauf ${at()}`, /Trichter: \+\d oak_log/);
   await run(`bauplaner lager wer oak_log ${at()}`, /Trichter: \+5 \/ −0/);
 
+  // COOP-08: yield store of a farm – everything a hopper puts in counts as yield, hopper moves are bundled.
+  const F = X + 14;
+  await run(`setblock ${F} ${Y} ${Z} minecraft:chest`, /Changed the block|Block geändert/i);
+  await run(`bauplaner lager markieren ${at(F)} Kürbistruhe`, /erstmals gezählt/);
+  await run(`bauplaner lager farm ${at(F)} Kürbisfarm`, /Ertragskiste der Farm „Kürbisfarm“/);
+  await run(`setblock ${F} ${Y + 1} ${Z} minecraft:hopper[facing=down]`, /Changed the block|Block geändert/i);
+  await run(`item replace block ${F} ${Y + 1} ${Z} container.0 with minecraft:pumpkin 6`, /Replaced|ersetzt/i);
+  await new Promise(r => setTimeout(r, 6000));
+  await run(`bauplaner lager pruefen ${at(F)}`, /Kürbistruhe“: [^\n]*geprüft/);
+  await run(`bauplaner lager info ${at(F)}`, /Ertragskiste der Farm „Kürbisfarm“: 6 Items in \d+ min geladen/);
+
   // TNT next to the store: the store survives.
   await run(`summon minecraft:tnt ${X + 1} ${Y} ${Z} {Fuse:1s,fuse:1}`, /Summoned|beschworen/i);
   await new Promise(r => setTimeout(r, 3000));
@@ -181,6 +195,14 @@ try {
     assert.deepEqual(byName('Stein Nord').hopperIn, { 'minecraft:oak_log': 5 });
     assert.deepEqual(byName('Stein Nord').deviation, {}, 'gesiegelt');
     assert.deepEqual(byName('Doppelkiste').deviation, { 'minecraft:glass': 7 });
+    const farm = byName('Kürbistruhe');
+    assert.equal(farm.purpose, 'ertrag'); assert.equal(farm.farm, 'farm_kuerbis'); assert.equal(farm.status, 'geprueft');
+    assert.deepEqual(farm.yieldIn, { 'minecraft:pumpkin': 6 }, 'Ertrag beim Herunterfahren geschrieben');
+    const y = view.yields.filter(x => x.chest === farm.id);
+    assert.equal(y.length, 1); assert.equal(y[0].farm, 'farm_kuerbis'); assert.deepEqual(y[0].items, { 'minecraft:pumpkin': 6 });
+    assert.ok(y[0].minutes >= 0 && y[0].until >= y[0].from);
+    const hopperMoves = back.events.filter(e => e.kind === 'store.move' && e.chest === farm.id && e.via === 'trichter');
+    assert.ok(hopperMoves.length <= 2, `Trichterbuchungen gebündelt (${hopperMoves.length})`);
   }
   const problems = log.split('\n').filter(l => /bauplaner/i.test(l) && /(WARN|ERROR|Exception)/i.test(l));
   assert.deepEqual(problems, [], 'keine Warnungen oder Fehler des Plugins im Serverprotokoll');

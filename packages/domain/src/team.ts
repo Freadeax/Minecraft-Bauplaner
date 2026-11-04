@@ -70,7 +70,7 @@ export type TeamEventBody =
   /** Full content of a storage chest, read by the server plugin when someone closed it; `more` when lines were cut. */
   | { readonly kind: 'store.count'; readonly chest: string; readonly items: readonly ItemCount[]; readonly more?: boolean }
   /** Checked storage chests (COOP-05, docs/architecture/LAGERKISTEN.md): section ('' = whole project), purpose, protection, second half of a double chest (null = none). */
-  | { readonly kind: 'store.config'; readonly chest: string; readonly section?: string; readonly purpose?: StorePurpose; readonly protection?: StoreProtection; readonly pos2?: readonly [number, number, number] | null; readonly name?: string }
+  | { readonly kind: 'store.config'; readonly chest: string; readonly section?: string; readonly purpose?: StorePurpose; readonly protection?: StoreProtection; readonly pos2?: readonly [number, number, number] | null; readonly name?: string; readonly farm?: string }
   /** What one player (or a hopper) put in / took out, net per opening; moves the expected content, never booked again as stored/taken. */
   | { readonly kind: 'store.move'; readonly chest: string; readonly in?: readonly ItemCount[]; readonly out?: readonly ItemCount[]; readonly via: 'spieler' | 'trichter' | 'abbau'; readonly player?: string }
   /** Server comparison of a count with the expected content; differences add up until a seal. */
@@ -82,10 +82,12 @@ export type TeamEventBody =
   | { readonly kind: 'section.accept'; readonly section: string }
   | { readonly kind: 'section.decline'; readonly section: string }
   | { readonly kind: 'member.away'; readonly member: string; readonly until?: string; readonly note?: string }
-  | { readonly kind: 'issue.ack'; readonly events: readonly string[] };
-export type StorePurpose = 'vorrat' | 'eingang' | 'ausgabe' | 'rest';
+  | { readonly kind: 'issue.ack'; readonly events: readonly string[] }
+  /** COOP-08 (LAGERKISTEN §13): what hoppers and players put into a yield store (purpose ertrag) between from and until, minutes = time the store's chunk was loaded. Server only. */
+  | { readonly kind: 'store.yield'; readonly chest: string; readonly farm?: string; readonly items: readonly ItemCount[]; readonly from: string; readonly until: string; readonly minutes: number };
+export type StorePurpose = 'vorrat' | 'eingang' | 'ausgabe' | 'rest' | 'ertrag';
 export type StoreProtection = 'offen' | 'team' | 'abschnitt' | 'eingang' | 'gesperrt';
-export const STORE_PURPOSES: readonly StorePurpose[] = ['vorrat', 'eingang', 'ausgabe', 'rest'];
+export const STORE_PURPOSES: readonly StorePurpose[] = ['vorrat', 'eingang', 'ausgabe', 'rest', 'ertrag'];
 export const STORE_PROTECTIONS: readonly StoreProtection[] = ['offen', 'team', 'abschnitt', 'eingang', 'gesperrt'];
 export type StoreStatus = 'ungeprueft' | 'geprueft' | 'abweichend' | 'fehlt';
 export type KnownTeamEvent = Base & TeamEventBody;
@@ -96,9 +98,9 @@ export type TeamEventKind = TeamEventBody['kind'];
 const KNOWN = new Set<string>(['member.join', 'member.role', 'member.player', 'section.claim', 'section.assign', 'section.release', 'section.done',
   'section.verify', 'contribution', 'gather.claim', 'note.add', 'note.resolve', 'plan.release', 'build.tally', 'member.tally', 'store.chest', 'store.count',
   'store.config', 'store.move', 'store.check', 'store.seal',
-  'section.handover', 'section.accept', 'section.decline', 'member.away', 'issue.ack']);
+  'section.handover', 'section.accept', 'section.decline', 'member.away', 'issue.ack', 'store.yield']);
 /** Kinds only the server plugin may write (origin server): they are measurements, not claims. */
-export const SERVER_ONLY_KINDS: ReadonlySet<string> = new Set(['build.tally', 'store.count', 'store.move', 'store.check']);
+export const SERVER_ONLY_KINDS: ReadonlySet<string> = new Set(['build.tally', 'store.count', 'store.move', 'store.check', 'store.yield']);
 export const isKnownEvent = (e: TeamEvent): e is KnownTeamEvent => KNOWN.has(e.kind);
 
 export interface TeamState {
@@ -206,8 +208,13 @@ export function checkTeamEvent(raw: unknown): TeamEvent {
         for (const c of raw.pos2 as unknown[]) int(c, -30_000_000, 30_000_000, `${where}: zweite Position`);
       }
       if (raw.name !== undefined) text(raw.name, 60, `${where}: Name`);
+      if (raw.farm !== undefined) text(raw.farm, 64, `${where}: Farm`, 0);
       break;
     }
+    case 'store.yield':
+      text(raw.chest, 64, `${where}: Kiste`); if (raw.farm !== undefined) text(raw.farm, 64, `${where}: Farm`);
+      itemLines(raw.items, 64, `${where}: Ertrag`, true); iso(raw.from, `${where}: von`); iso(raw.until, `${where}: bis`);
+      int(raw.minutes, 0, 1_000_000, `${where}: Minuten`); break;
     case 'store.move':
       text(raw.chest, 64, `${where}: Kiste`); itemLines(raw.in, 64, `${where}: eingelegt`); itemLines(raw.out, 64, `${where}: entnommen`);
       if (raw.via !== 'spieler' && raw.via !== 'trichter' && raw.via !== 'abbau') fail(`${where}: Weg unbekannt`);
@@ -402,6 +409,22 @@ export interface StoreChest {
   readonly movedOut: Readonly<Record<string, Readonly<Record<string, number>>>>;
   readonly hopperIn: Readonly<Record<string, number>>;
   readonly hopperOut: Readonly<Record<string, number>>;
+  /** COOP-08: farm (site.production farm id) of a yield store, measured yield and loaded minutes over all store.yield. */
+  readonly farm?: string;
+  readonly yieldIn: Readonly<Record<string, number>>;
+  readonly yieldMinutes: number;
+}
+/** One measured yield period of a yield store (store.yield), for the Ertragsbuch (Produktion). */
+export interface StoreYield {
+  readonly eventId: string;
+  readonly chest: string;
+  readonly chestName: string;
+  readonly farm?: string;
+  readonly items: Readonly<Record<string, number>>;
+  /** Minutes the chunk of the store was loaded (the farm really ran). */
+  readonly minutes: number;
+  readonly from: string;
+  readonly until: string;
 }
 export interface TeamNote {
   readonly id: string;
@@ -444,6 +467,8 @@ export interface TeamView {
   readonly tallySpan: { readonly from: string; readonly until: string } | null;
   /** Event ids of hints and rejections marked as done (issue.ack). */
   readonly acknowledged: readonly string[];
+  /** Measured yield periods of yield stores, oldest first (COOP-08). */
+  readonly yields: readonly StoreYield[];
 }
 
 export interface TeamContext {
@@ -460,7 +485,7 @@ const NEED: Readonly<Record<TeamEventKind, TeamRole>> = {
   'section.release': 'helfer', 'section.done': 'helfer', 'section.verify': 'meister', contribution: 'helfer', 'gather.claim': 'helfer',
   'note.add': 'gast', 'note.resolve': 'helfer', 'plan.release': 'leitung',
   'build.tally': 'gast', 'member.tally': 'gast', 'store.chest': 'meister', 'store.count': 'gast',
-  'store.config': 'meister', 'store.seal': 'meister', 'store.move': 'gast', 'store.check': 'gast',
+  'store.config': 'meister', 'store.seal': 'meister', 'store.move': 'gast', 'store.check': 'gast', 'store.yield': 'gast',
   'section.handover': 'helfer', 'section.accept': 'helfer', 'section.decline': 'helfer', 'member.away': 'gast', 'issue.ack': 'meister',
 };
 export const canTeam = (role: TeamRole | undefined, action: TeamAction): boolean => RANK[role ?? 'gast'] >= RANK[NEED[action]];
@@ -495,7 +520,10 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
     // COOP-05, same rules as StoreIndex.java
     section?: string; purpose: StorePurpose; protection?: StoreProtection; pos2?: readonly [number, number, number]; expected: Map<string, number> | null;
     status: StoreStatus; checkedAt?: string; deviation: Map<string, number>; sealedBy?: string; sealedAt?: string;
-    movedIn: Map<string, Map<string, number>>; movedOut: Map<string, Map<string, number>> };
+    movedIn: Map<string, Map<string, number>>; movedOut: Map<string, Map<string, number>>;
+    // COOP-08: farm link and measured yield
+    farm?: string; yieldIn: Map<string, number>; yieldMinutes: number };
+  const yields: StoreYield[] = [];
   const addTo = (m: Map<string, number>, item: string, n: number) => { const v = (m.get(item) ?? 0) + n; if (v === 0) m.delete(item); else m.set(item, v); };
   const chests = new Map<string, Chest>();
   const stored = new Map<string, Map<string, number>>(), taken = new Map<string, Map<string, number>>();
@@ -623,7 +651,7 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
         if (event.remove) { if (!c) reject(event, 'Lagerkiste unbekannt.'); else chests.delete(event.chest); break; }
         if (c) { c.name = event.name; c.pos = event.pos; c.dimension = event.dimension; break; }
         chests.set(event.chest, { name: event.name, pos: event.pos, dimension: event.dimension, items: new Map(), partial: false, counted: false,
-          purpose: 'vorrat', expected: null, status: 'ungeprueft', deviation: new Map(), movedIn: new Map(), movedOut: new Map() });
+          purpose: 'vorrat', expected: null, status: 'ungeprueft', deviation: new Map(), movedIn: new Map(), movedOut: new Map(), yieldIn: new Map(), yieldMinutes: 0 });
         break;
       }
       case 'store.count': {
@@ -649,6 +677,17 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
         if (event.protection) c.protection = event.protection;
         if (event.pos2 !== undefined) { if (event.pos2) c.pos2 = event.pos2; else delete c.pos2; }
         if (event.name?.trim()) c.name = event.name;
+        if (event.farm !== undefined) { if (event.farm) c.farm = event.farm; else delete c.farm; }
+        break;
+      }
+      case 'store.yield': {
+        const c = chests.get(event.chest);
+        if (!c) { reject(event, 'Lagerkiste unbekannt oder entfernt.'); break; }
+        for (const l of event.items) addTo(c.yieldIn, l.item, l.count);
+        c.yieldMinutes += event.minutes;
+        const farm = event.farm ?? c.farm;
+        yields.push({ eventId: event.id, chest: event.chest, chestName: c.name, ...(farm && { farm }), items: Object.fromEntries(event.items.map(l => [l.item, l.count])),
+          minutes: event.minutes, from: event.from, until: event.until });
         break;
       }
       case 'store.move': {
@@ -741,7 +780,8 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
       status: c.status, ...(c.checkedAt && { checkedAt: c.checkedAt }), deviation: Object.fromEntries(c.deviation),
       ...(c.sealedBy && { sealedBy: c.sealedBy, sealedAt: c.sealedAt }),
       movedIn: rec(c.movedIn, false), movedOut: rec(c.movedOut, false),
-      hopperIn: Object.fromEntries(c.movedIn.get('trichter') ?? []), hopperOut: Object.fromEntries(c.movedOut.get('trichter') ?? []) };
+      hopperIn: Object.fromEntries(c.movedIn.get('trichter') ?? []), hopperOut: Object.fromEntries(c.movedOut.get('trichter') ?? []),
+      ...(c.farm && { farm: c.farm }), yieldIn: Object.fromEntries(c.yieldIn), yieldMinutes: c.yieldMinutes };
   }).sort((a, b) => a.name.localeCompare(b.name, 'de'));
 
   const ownerOf = new Map<string, string[]>();
@@ -778,7 +818,7 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
   }
   return { members, sections: sectionStates, notes: noteList, gather: [...gather.values()].sort((a, b) => a.item.localeCompare(b.item) || a.member.localeCompare(b.member)),
     delivered, release, releases, rejected, conflicts, unknownKinds, stores, stock, placedBlocks,
-    tallySpan: tallyFrom && tallyUntil ? { from: tallyFrom, until: tallyUntil } : null, acknowledged: [...acknowledged] };
+    tallySpan: tallyFrom && tallyUntil ? { from: tallyFrom, until: tallyUntil } : null, acknowledged: [...acknowledged], yields };
 }
 
 const sectionName = (ctx: TeamContext, id: string) => ctx.sections.find(s => s.id === id)?.name ?? 'entfernter Abschnitt';
@@ -807,6 +847,7 @@ export function eventLabel(e: TeamEvent): string {
     case 'store.move': return e.via === 'trichter' ? 'Trichter bewegt Items' : 'Lagerbuchung';
     case 'store.check': return e.status === 'geprueft' ? 'Lager geprüft' : e.status === 'fehlt' ? 'Lagerkiste fehlt' : 'Lager weicht ab';
     case 'store.seal': return 'Lager gesiegelt';
+    case 'store.yield': return `Ertrag gemessen (${e.items.reduce((n, l) => n + l.count, 0)} Items in ${e.minutes} min)`;
     case 'section.handover': return 'Übergabe angeboten';
     case 'section.accept': return 'Übergabe angenommen';
     case 'section.decline': return 'Übergabe abgelehnt oder zurückgezogen';
@@ -998,6 +1039,8 @@ export interface TeamServerFile {
     readonly need?: readonly ItemCount[] }[];
   /** Full need of build items of the whole project, largest first. */
   readonly need?: readonly ItemCount[];
+  /** COOP-08: farms of the project for yield stores (purpose ertrag). */
+  readonly farms?: readonly { readonly id: string; readonly name: string; readonly items: readonly string[] }[];
   /** Members with role at export time (the server folds the log itself; roles here are for reading). */
   readonly members: readonly { readonly id: string; readonly name: string; readonly player?: string; readonly role: TeamRole }[];
   readonly events: readonly TeamEvent[];
@@ -1017,6 +1060,8 @@ export function teamServerFile(input: {
   steps: readonly StepBox[]; origin: readonly [number, number, number]; dimension: string;
   /** Material need per section and in total (teamPlan.sectionNeeds). */
   needs?: { readonly sections: ReadonlyMap<string, readonly ItemCount[]>; readonly total: readonly ItemCount[] };
+  /** Farms of the project (production.serverFarms), so yield stores on the server can name their farm (COOP-08). */
+  farms?: readonly { readonly id: string; readonly name: string; readonly items: readonly string[] }[];
 }): TeamServerFile {
   const { team, view, origin } = input;
   const boxes = new Map<string, Map<string, [number, number, number, number, number, number]>>();
@@ -1036,6 +1081,7 @@ export function teamServerFile(input: {
     sections: input.sections.map(s => ({ id: s.id, name: s.name, boxes: [...(boxes.get(s.id)?.values() ?? [])].map(move),
       ...(input.needs?.sections.get(s.id)?.length && { need: input.needs.sections.get(s.id)! }) })),
     ...(input.needs?.total.length && { need: input.needs.total }),
+    ...(input.farms?.length && { farms: input.farms }),
     members: view.members.map(m => ({ id: m.id, name: m.name, ...(m.player && { player: m.player }), role: m.role })),
     events: team.events,
   };
