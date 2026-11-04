@@ -4790,3 +4790,20 @@ Nachtrag: Selbstverweis „Mod herunterladen“ im Server-Bereich entfernt (Down
 
 - `docs/TESTING.md`
 
+## 2026-11-04T08:42:48.661Z · progress
+
+**Aufgaben:** PROD-01, PROD-02, PROD-03, PROD-04, COOP-06, GAME-09, GAME-11, QA-04
+
+Roadmap-Abgleich 04.11.: Produktion an den Produktions-Thread, COOP-06 an den Plugin-Thread, Modrinth-Freigabe/-Versionen und Testphase-Betreuung als verwaist, Versionsmatrix als Philipps Entscheidung, aktiver Arbeitsblock auf die laufenden Threads.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PROD-01 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme PROJ-12; später Erträge aus geprüften Lagerkisten (COOP-05) ins Ertragsbuch. |
+| PROD-02 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme PROJ-13. |
+| PROD-03 | 🧩 Implementiert · Abnahme offen | 3/3 | Später: Ofenstraße aus dem Katalog direkt vorschlagen und in die Planung legen. |
+| PROD-04 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme PROJ-13; danach Farmerträge aus Mod/Plugin. |
+| COOP-06 | 🧩 Implementiert · Abnahme offen | 4/5 | Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern. |
+| GAME-09 | 🚧 In Arbeit | 3/5 | Modrinth-Prüfung abwarten (Status processing → approved); danach jede neue Mod-Version mit modrinth_publish.mjs release. |
+| GAME-11 | ⏳ Offen | 0/4 | Versionsmatrix mit Philipp abstimmen (welche Versionen braucht er wirklich?). |
+| QA-04 | 🧩 Implementiert · Abnahme offen | 4/6 | Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist. |
+

@@ -1,36 +1,44 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T02:26:45.477Z",
+  "updatedAt": "2026-11-04T08:42:48.661Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
+    "QA-02",
+    "PROFILE-01",
+    "NBT-01",
+    "FORMAT-01",
+    "MAT-02",
+    "MAT-04",
+    "DIFF-01",
     "PERF-02",
-    "MAP-01",
-    "EDIT-01",
-    "EDIT-02",
+    "PERF-03",
+    "PERF-05",
+    "GAME-07",
+    "GAME-08",
+    "GAME-04",
     "GAME-05",
-    "EDIT-03",
-    "GFX-01",
-    "MODEL-01",
-    "MAP-03",
-    "EDIT-04",
-    "ENTITY-01",
-    "MAP-04",
-    "PERF-04",
-    "LIB-05",
-    "EDIT-05",
-    "MAP-05",
-    "MAP-06",
+    "LAGER-01",
     "GROSS-01",
-    "LIB-06",
-    "SIZE-01",
     "COOP-01",
     "COOP-02",
+    "COOP-03",
     "COOP-04",
-    "PROJ-01",
     "COOP-05",
-    "PERF-05",
     "COOP-06",
-    "COOP-07"
+    "PROJ-01",
+    "GAME-10",
+    "GAME-11",
+    "COOP-07",
+    "PROD-01",
+    "PROD-02",
+    "PROD-03",
+    "PROD-04",
+    "LINK-01",
+    "LINK-02",
+    "LINK-03",
+    "LINK-04",
+    "LINK-05",
+    "LINK-06"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -6767,7 +6775,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-04T08:42:48.661Z",
       "area": "QA",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -6776,7 +6784,9 @@
           "text": "Testphase mit weiteren Testern: erst die Kernfälle auf #/testphase."
         }
       ],
-      "orphans": []
+      "orphans": [
+        "Der Thread „Große Testphase vorbereiten und betreuen“ ist beendet; die rund 30 Pakete, bei denen nur Philipps Abnahme fehlt, haben keinen aktiven Thread für Diagnose und Fehlerbehebung."
+      ]
     },
     {
       "id": "GEN-03",
@@ -7460,9 +7470,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-04T08:42:48.661Z",
       "area": "TEAM",
-      "thread": "Gemeinsames Bauen im Planer vertiefen",
+      "thread": "Server-Plugin mit geprüften Lagerkisten",
       "philipp": [
         {
           "kind": "server",
@@ -7634,11 +7644,13 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-04T08:42:48.661Z",
       "area": "MODRINTH",
       "thread": "Mod auf Modrinth veröffentlichen",
       "philipp": [],
-      "orphans": []
+      "orphans": [
+        "S04/S05: Modrinth-Freigabe prüfen und die Versionen seit 0.10.0 (zuletzt 0.12.0 für Fabric, NeoForge, Paper) mit scripts/modrinth_publish.mjs hochladen – Thread „Mod auf Modrinth veröffentlichen“ ist beendet."
+      ]
     },
     {
       "id": "GAME-10",
@@ -7775,10 +7787,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:57:38.742Z",
+      "updatedAt": "2026-11-04T08:42:48.661Z",
       "area": "MOD",
       "thread": "Teambau und Befehle in der Mod ausbauen",
-      "orphans": []
+      "orphans": [],
+      "philipp": [
+        {
+          "kind": "entscheidung",
+          "text": "Festlegen, welche Minecraft-Versionen und Launcher die Client-Mod wirklich braucht (Versionsmatrix)."
+        }
+      ]
     },
     {
       "id": "COOP-07",
@@ -7925,9 +7943,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T01:49:58.384Z",
+      "updatedAt": "2026-11-04T08:42:48.661Z",
       "area": "PROJEKT",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Produktion und Anbindung im Planer ausbauen",
       "philipp": [
         {
           "kind": "planer",
@@ -8003,9 +8021,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T01:49:58.384Z",
+      "updatedAt": "2026-11-04T08:42:48.661Z",
       "area": "PROJEKT",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Produktion und Anbindung im Planer ausbauen",
       "philipp": [
         {
           "kind": "planer",
@@ -8082,9 +8100,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T01:49:58.384Z",
+      "updatedAt": "2026-11-04T08:42:48.661Z",
       "area": "PROJEKT",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Produktion und Anbindung im Planer ausbauen",
       "philipp": [],
       "orphans": [],
       "id": "PROD-03",
@@ -8149,9 +8167,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T01:49:58.384Z",
+      "updatedAt": "2026-11-04T08:42:48.661Z",
       "area": "PROJEKT",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Produktion und Anbindung im Planer ausbauen",
       "philipp": [],
       "orphans": [],
       "id": "PROD-04",
@@ -15997,6 +16015,80 @@
           "next": "Abnahme durch Philipp."
         }
       ]
+    },
+    {
+      "at": "2026-11-04T08:42:48.661Z",
+      "kind": "progress",
+      "items": [
+        "PROD-01",
+        "PROD-02",
+        "PROD-03",
+        "PROD-04",
+        "COOP-06",
+        "GAME-09",
+        "GAME-11",
+        "QA-04"
+      ],
+      "summary": "Roadmap-Abgleich 04.11.: Produktion an den Produktions-Thread, COOP-06 an den Plugin-Thread, Modrinth-Freigabe/-Versionen und Testphase-Betreuung als verwaist, Versionsmatrix als Philipps Entscheidung, aktiver Arbeitsblock auf die laufenden Threads.",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "PROD-01",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme PROJ-12; später Erträge aus geprüften Lagerkisten (COOP-05) ins Ertragsbuch."
+        },
+        {
+          "id": "PROD-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme PROJ-13."
+        },
+        {
+          "id": "PROD-03",
+          "status": "implemented",
+          "done": 3,
+          "total": 3,
+          "next": "Später: Ofenstraße aus dem Katalog direkt vorschlagen und in die Planung legen."
+        },
+        {
+          "id": "PROD-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme PROJ-13; danach Farmerträge aus Mod/Plugin."
+        },
+        {
+          "id": "COOP-06",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern."
+        },
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 3,
+          "total": 5,
+          "next": "Modrinth-Prüfung abwarten (Status processing → approved); danach jede neue Mod-Version mit modrinth_publish.mjs release."
+        },
+        {
+          "id": "GAME-11",
+          "status": "planned",
+          "done": 0,
+          "total": 4,
+          "next": "Versionsmatrix mit Philipp abstimmen (welche Versionen braucht er wirklich?)."
+        },
+        {
+          "id": "QA-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist."
+        }
+      ]
     }
   ],
   "areas": [
@@ -16131,7 +16223,7 @@
         "FORMAT-01",
         "QA-02"
       ],
-      "state": "zugeteilt"
+      "state": "übernommen"
     },
     {
       "id": "IN-07",
