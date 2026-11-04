@@ -1,7 +1,7 @@
 import { checkColumns } from '../../../../packages/voxel/src/index.js';
 import type { BlockState, Cell, CellColumns, Vec3 } from '../../../../packages/voxel/src/index.js';
 import { buildSectionMesh } from '../blockmodels/mesh.ts';
-import type { Mark, MeshLayer, MeshSection, SpawnMap } from '../blockmodels/mesh.ts';
+import type { BeaconCount, Mark, MeshLayer, MeshSection, SpawnMap } from '../blockmodels/mesh.ts';
 import { rendererFromSnapshot } from '../blockmodels/snapshot.ts';
 import type { RenderSnapshot } from '../blockmodels/snapshot.ts';
 import type { JobContext } from './protocol';
@@ -32,10 +32,11 @@ export interface MeshJobOutput {
   readonly naiveQuads: number;
   readonly spawn: SpawnMap | null;
   readonly lit: boolean;
+  readonly beacons: BeaconCount;
   readonly reused: number;
 }
 
-const layerBuffers = (l: MeshLayer): ArrayBuffer[] => [l.positions, l.uvs, l.colors, l.marks, l.light, l.indices, l.quadCells].map(a => a.buffer as ArrayBuffer);
+const layerBuffers = (l: MeshLayer): ArrayBuffer[] => [l.positions, l.uvs, l.colors, l.marks, l.light, l.tints, l.indices, l.quadCells].map(a => a.buffer as ArrayBuffer);
 
 export async function meshJob(input: MeshJobInput, ctx: JobContext): Promise<MeshJobOutput> {
   checkColumns(input.columns);
@@ -64,5 +65,5 @@ export async function meshJob(input: MeshJobInput, ctx: JobContext): Promise<Mes
     ctx.transfer([...layerBuffers(s.solid), ...layerBuffers(s.translucent)]);
   }
   if (mesh.spawn) ctx.transfer([mesh.spawn.positions.buffer as ArrayBuffer, mesh.spawn.when.buffer as ArrayBuffer]);
-  return { order: mesh.sections.map(s => s.key), built, quads: mesh.quads, blocks: mesh.blocks, naiveQuads: mesh.naiveQuads, spawn: mesh.spawn, lit: mesh.lit, reused: mesh.reused };
+  return { order: mesh.sections.map(s => s.key), built, quads: mesh.quads, blocks: mesh.blocks, naiveQuads: mesh.naiveQuads, spawn: mesh.spawn, lit: mesh.lit, beacons: mesh.beacons, reused: mesh.reused };
 }

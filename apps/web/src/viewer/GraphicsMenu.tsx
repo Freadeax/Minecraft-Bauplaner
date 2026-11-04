@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { BIOMES } from '../blockmodels/biomes';
 import { LIGHT_MODES, setGraphics, useGraphics } from '../blockmodels/graphics';
 import type { MeshStats } from './sceneController';
 
@@ -46,8 +47,13 @@ export function GraphicsMenu({ stats }: { stats: MeshStats | null }) {
       {g.spawn && stats && <p className="gfx-note" role="status">{stats.spawnDay === null ? 'Für dieses Modell wird kein Licht berechnet (zu groß).'
         : stats.spawnDay + (stats.spawnNight ?? 0) === 0 ? 'Keine Spawnflächen: überall Blocklicht oder kein Platz.'
           : <><b className="spawn-day">{fmt(stats.spawnDay)}</b> Flächen auch tagsüber, <b className="spawn-night">{fmt(stats.spawnNight ?? 0)}</b> nur nachts. Fackeln, Laternen oder Halbstufen setzen.</>}</p>}
+      <label className="gfx-row" title="Färbt Gras, Laub, Ranken und Wasser wie im gewählten Biom. Fichten- und Birkenlaub bleiben wie im Spiel gleich. Vorschaubilder nutzen immer die Ebene.">Biom
+        <select value={g.biome} aria-label="Biom für Gras-, Laub- und Wasserfarben" onChange={e => setGraphics({ biome: e.target.value })}>
+          {BIOMES.map(b => <option key={b.id} value={b.id}>{b.label}</option>)}</select></label>
       <label className="gfx-row">Qualität <select value={g.quality} onChange={e => setGraphics({ quality: e.target.value as typeof g.quality })}>
         <option value="auto">Automatisch</option><option value="high">Hoch (scharf)</option><option value="low">Sparsam (Akku)</option></select></label>
+      {stats && stats.beacons.total > 0 && <p className="gfx-note" role="status" data-beacons={`${stats.beacons.active}/${stats.beacons.total}`}>
+        Leuchtfeuer: <b>{fmt(stats.beacons.active)}</b> von {fmt(stats.beacons.total)} leuchten{stats.beacons.active < stats.beacons.total ? ' – den anderen fehlt die Pyramide (3×3 Eisen, Gold, Diamant, Smaragd oder Netherit darunter) oder ein fester Block versperrt den Himmel.' : '.'}</p>}
       {stats && <p className="gfx-note">{fmt(stats.sections)} Abschnitte à 32³{stats.reused ? `, ${fmt(stats.reused)} unverändert übernommen` : ''} · zuletzt {stats.buildMs.toFixed(0)} ms</p>}
     </div>}
   </div>;

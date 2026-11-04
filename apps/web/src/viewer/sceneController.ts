@@ -5,8 +5,9 @@ import type { RenderKit } from '../blockmodels/assets';
 import { sunDirection } from '../blockmodels/graphics';
 import type { GraphicsSettings } from '../blockmodels/graphics';
 import { buildSectionMesh } from '../blockmodels/mesh';
-import type { Mark, MeshSection, SectionMesh, SpawnMap } from '../blockmodels/mesh';
-import { BlockObject, MODE_INDEX, SunShadow, blockMaterials, lookUniforms, spawnOverlay } from '../blockmodels/threeMesh';
+import type { BeaconCount, Mark, MeshSection, SectionMesh, SpawnMap } from '../blockmodels/mesh';
+import { BlockObject, MODE_INDEX, SunShadow, blockMaterials, lookUniforms, setBiomeFactors, spawnOverlay } from '../blockmodels/threeMesh';
+import { biomeFactors } from '../blockmodels/biomes';
 import type { BlockMaterials } from '../blockmodels/threeMesh';
 import { FOCUS_MIN_RADIUS, VIEWS, boundsCentre, boundsRadius, frameBounds, orthoZoom } from './camera';
 import type { ViewName } from './camera';
@@ -42,6 +43,8 @@ export interface MeshStats {
   readonly sections: number; readonly reused: number;
   /** Floor cells where monsters could spawn (also by day / only at night); null without light. */
   readonly spawnDay: number | null; readonly spawnNight: number | null;
+  /** Beacons and how many of them shine (GFX-02). */
+  readonly beacons: BeaconCount;
 }
 
 /** What a geometry change needs before its mesh is built (see SceneController.planCells). */
@@ -121,6 +124,7 @@ export class SceneController {
   private grab: { id: number; plane: THREE.Plane; start: [number, number]; delta: Vec3 } | null = null;
   private readonly ghost: THREE.LineSegments;
   private readonly disposers: (() => void)[] = [];
+  private uploadStarted = 0;
 
   constructor(private readonly host: HTMLElement, private readonly events: ControllerEvents) {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -203,8 +207,10 @@ export class SceneController {
       this.mesh?.setMaterials(this.materials);
     }
     this.sections = built.sections;
-    if (!this.mesh) { this.mesh = new BlockObject(built.sections, cells, this.materials!); this.scene.add(this.mesh.group); }
+    if (!this.mesh) { this.mesh = new BlockObject(built.sections, cells, this.materials!, { progressive: true }); this.scene.add(this.mesh.group); }
     else this.mesh.update(built.sections);
+    this.uploadStarted = performance.now();
+    this.markUpload();
     this.cells = cells; this.cellIndex = null;
     this.setSpawn(built.spawn);
     this.shadowDirty = true;
@@ -216,7 +222,7 @@ export class SceneController {
     let day: number | null = null, night: number | null = null;
     if (built.spawn) { day = 0; night = 0; for (const w of built.spawn.when) if (w === 1) day++; else night++; }
     return { blocks: built.blocks, quads: built.quads, naiveQuads: built.naiveQuads, buildMs: performance.now() - started,
-      sections: built.sections.length, reused: built.reused, spawnDay: day, spawnNight: night };
+      sections: built.sections.length, reused: built.reused, spawnDay: day, spawnNight: night, beacons: built.beacons };
   }
 
   /** Applies light mode, occlusion, sun and spawn marks; never rebuilds geometry. */
@@ -227,6 +233,8 @@ export class SceneController {
     this.look.aoStrength.value = g.ao ? 1 : 0;
     this.look.sunDir.value.set(...sunDirection(g.hour));
     this.look.shadowOn.value = g.mode === 'sun' && g.shadows ? 1 : 0;
+    if (!before || before.biome !== g.biome) setBiomeFactors(this.look, biomeFactors(g.biome));
+    this.host.dataset.biome = g.biome;
     if (!before || before.hour !== g.hour || before.shadows !== g.shadows || before.mode !== g.mode) this.shadowDirty = true;
     if (!before || before.quality !== g.quality) {
       this.renderer.setPixelRatio(g.quality === 'low' ? 1 : Math.min(window.devicePixelRatio, g.quality === 'high' ? 3 : 2));
@@ -450,6 +458,15 @@ export class SceneController {
       p.set(...next);
       again = this.keys.size > 0;
     } else again = this.controls.update();
+    let uploading = false;
+    if (this.mesh?.pending && this.origin) {
+      // Large scenes reach the GPU in pieces, nearest sections first (GFX-02).
+      const c = this.camera.position;
+      this.mesh.uploadStep([c.x + this.origin[0], c.y + this.origin[1], c.z + this.origin[2]]);
+      uploading = true;
+      if (!this.mesh.pending) this.shadowDirty = true;
+      this.markUpload();
+    }
     if (this.mesh && this.materials) {
       if (this.shadowDirty && this.look.shadowOn.value > 0.5) { this.shadow.render(this.renderer, this.scene, this.mesh, this.materials); this.shadowDirty = false; }
       // Glass and water back to front; very large translucent sets only once the camera rests.
@@ -457,13 +474,26 @@ export class SceneController {
       else if (this.mesh.translucentQuads) this.moving = true;
       if (!again && this.moving) { this.moving = false; this.mesh.sortTranslucent(this.camera.position); }
     }
+    const renderStart = performance.now();
     this.renderer.render(this.scene, this.camera);
+    if (uploading) { this.mesh!.reportFrame(performance.now() - renderStart); again = true; }
     const c = this.camera.position;
     // Rounded camera position in world coordinates; read by browser tests and handy when debugging.
     this.host.dataset.camera = this.local([0, 0, 0]).map((o, i) => (c.getComponent(i) - o).toFixed(1)).join(',');
     this.last = again ? time : 0;
     if (again) this.requestRender();
     if (this.hoverQueued) { const e = this.hoverQueued; this.hoverQueued = null; this.events.hover(this.pickAt(e)); }
+  }
+
+  /** Upload state for the toolbar and tests: sections waiting, frames used, time until complete. */
+  private markUpload(): void {
+    const m = this.mesh;
+    if (!m) return;
+    this.host.dataset.upload = String(m.pending);
+    if (!m.pending) {
+      this.host.dataset.uploadFrames = String(m.uploadFrames);
+      this.host.dataset.uploadMs = (performance.now() - this.uploadStarted).toFixed(0);
+    }
   }
 
   private pickAt(e: PointerEvent | MouseEvent): Cell | null {

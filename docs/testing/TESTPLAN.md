@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 132 Fälle in 13 Bereichen, davon 59 Kernfälle.
+Umfang: 133 Fälle in 13 Bereichen, davon 59 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -99,6 +99,7 @@ Fremde .schem- und .litematic-Dateien öffnen und als Bauteil übernehmen.
 | DATEI-06 | Ältere Datei: Profilprüfung | vertieft | 1. Eine ältere .schem oder .litematic (z. B. aus 1.20 oder 1.21) importieren.<br>2. Detailseite öffnen, unter „Bauen & Technik“ die Zeile „Profilprüfung“ ansehen. | Die Zeile nennt die Datenversion und ob die Datei zu Java 26.3 passt; unbekannte oder umbenannte Blöcke stehen in der aufklappbaren Liste. (Abnahme PROFILE-01) |
 | DATEI-07 | Gedrehtes Bauteil mit Truhen, Schildern, Gemälden | vertieft | 1. Ein Bauteil mit gefüllter Truhe, beschriftetem Schild und Gemälde/Rahmen in ein Projekt legen und um 90° drehen (oder spiegeln).<br>2. Als .schem und .litematic exportieren und im Spiel mit WorldEdit bzw. Litematica einfügen. | Truhe behält ihren Inhalt, Schildtext steht auf der richtigen Seite, Doppeltruhen und Gemälde zeigen in die gedrehte Richtung. (Abnahme NBT-01, ENTITY-01) |
 | DATEI-08 | Datei aus WorldEdit und Litematica | vertieft | 1. Im Spiel mit WorldEdit (//copy, //schem save) und mit Litematica je ein Bauwerk speichern.<br>2. Beide Dateien im Planer öffnen, als Bauteil übernehmen und wieder exportieren; die Exporte im Spiel laden.<br>3. Die Originaldatei gern an Philipp schicken (ohne private Welt), damit sie mit dem Prüfwerkzeug verglichen wird. | Beide Dateien öffnen mit allen Blöcken, Zuständen und Inhalten; die Exporte sitzen im Spiel an derselben Stelle (Offset) wie das Original. (Abnahme FORMAT-01, FORMAT-02) |
+| DATEI-09 | Biom, Leuchtfeuer, große Szene (GFX-02) | vertieft | 1. Im 3D-Betrachter unter „☀ Tag“ das Biom wechseln (z. B. Sumpf, Kirschblütenhain).<br>2. Ein Leuchtfeuer auf eine 3×3-Pyramide aus Eisenblöcken setzen, gefärbtes Glas darüber, einmal einen Stein darüber.<br>3. Eine große Datei (über 500 000 Blöcke) öffnen und beim Laden schon drehen. | Gras, Laub und Wasser färben sich sofort ohne Neuberechnung; der Strahl leuchtet in der Glasfarbe und verschwindet unter dem Stein; nahe Teile erscheinen zuerst, die Ansicht bleibt bedienbar. |
 
 ## KARTE · Weltkarte, Weltbuilder und Weltimport (Planer)
 
@@ -233,7 +234,7 @@ Planer, Mod und Paper-Plugin verbinden sich per Klick; der Server wird aus dem P
 
 Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan.ts), geordnet nach dem Ort, den die Abnahme braucht. Ein Paket gilt als abgenommen, wenn alle genannten Fälle ✓ sind; Ob ein Paket noch auf Abnahme wartet, steht in `docs/ROADMAP.md`.
 
-### Nur im Browser (37 Pakete)
+### Nur im Browser (38 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -249,6 +250,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | EDIT-04 | WERK-04 |
 | EDIT-05 | WERK-03 |
 | GFX-01 | DATEI-04, GERAET-05 |
+| GFX-02 | DATEI-09, GERAET-05 |
 | GROSS-01 | BIB-13, PROJ-11 |
 | LIB-02 | BIB-07 |
 | LIB-03 | BIB-08 |

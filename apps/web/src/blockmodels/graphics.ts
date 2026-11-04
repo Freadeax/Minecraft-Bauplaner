@@ -1,9 +1,11 @@
 import { useSyncExternalStore } from 'react';
+import { BIOMES, DEFAULT_BIOME } from './biomes.ts';
 
 /**
  * Graphics settings of the block view (GFX-01), one set for the whole app and
  * remembered in this browser: light mode, ambient occlusion, sun time with
- * shadows, the monster spawn check and render quality. All 3D views follow
+ * shadows, the monster spawn check, render quality and (GFX-02) the biome
+ * that colours grass, leaves and water. All 3D views follow
  * changes immediately; still images use the fixed look `STILL_LOOK` so
  * catalogue pictures stay comparable.
  */
@@ -22,6 +24,8 @@ export interface GraphicsSettings {
   readonly spawn: boolean;
   /** 'low' renders at device pixel ratio 1 without antialias-heavy shadow maps. */
   readonly quality: Quality;
+  /** Biome id (biomes.ts) for grass, foliage and water colours; still images always use plains. */
+  readonly biome: string;
 }
 
 export const LIGHT_MODES: readonly { readonly id: LightMode; readonly label: string; readonly title: string }[] = [
@@ -31,7 +35,7 @@ export const LIGHT_MODES: readonly { readonly id: LightMode; readonly label: str
   { id: 'flat', label: 'Flach', title: 'Gleichmäßig hell: nur feste Flächenhelligkeit und Eckschatten, gut zum Bauen' },
 ];
 
-export const DEFAULT_GRAPHICS: GraphicsSettings = { mode: 'day', ao: true, shadows: true, hour: 10, spawn: false, quality: 'auto' };
+export const DEFAULT_GRAPHICS: GraphicsSettings = { mode: 'day', ao: true, shadows: true, hour: 10, spawn: false, quality: 'auto', biome: DEFAULT_BIOME };
 /** Look of catalogue images, galleries and layer plans. */
 export const STILL_LOOK = 'gfx1-day-ao';
 
@@ -49,6 +53,7 @@ export function parseGraphics(raw: unknown): GraphicsSettings {
     hour,
     spawn: typeof o.spawn === 'boolean' ? o.spawn : DEFAULT_GRAPHICS.spawn,
     quality: o.quality === 'high' || o.quality === 'low' || o.quality === 'auto' ? o.quality : DEFAULT_GRAPHICS.quality,
+    biome: typeof o.biome === 'string' && BIOMES.some(b => b.id === o.biome) ? o.biome : DEFAULT_GRAPHICS.biome,
   };
 }
 

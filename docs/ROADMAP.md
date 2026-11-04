@@ -16,7 +16,7 @@ Stand: 2026-11-04T13:25:59.610Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | 🚧 In Arbeit | 4 |
 | ⛔ Blockiert | 0 |
 | 🧩 Implementiert · Abnahme offen | 78 |
-| ✅ Im beschriebenen Umfang geprüft | 25 |
+| ✅ Im beschriebenen Umfang geprüft | 26 |
 | ⏸ Zurückgestellt | 2 |
 
 ## Überblick nach Bereichen
@@ -25,7 +25,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 
 | Bereich | Offen | Verwaist | Nur Philipp | Geprüft |
 |---|---:|---:|---:|---:|
-| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 20 | 8 | 19 | 2 |
+| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 21 | 7 | 20 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 4 | 10 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 9 | 2 | 6 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 11 | 3 | 11 | 0 |
@@ -33,7 +33,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 9 | 0 | 7 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 3 | 0 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
-| [Performance und Stabilität](#bereich-perf) | 4 | 3 | 1 | 2 |
+| [Performance und Stabilität](#bereich-perf) | 3 | 2 | 1 | 3 |
 | [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 12 | 2 | 6 | 8 |
 | [Testphase, Qualität und Betrieb](#bereich-qa) | 2 | 1 | 2 | 8 |
 | [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 6 | 0 | 0 | 0 |
@@ -50,7 +50,8 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [EDIT-03](#edit-03) | Werkstatt vertiefen | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Schablonen-Zustände (Tür, Treppe, Laterne) im Spiel prüfen. |
 | [EDIT-04](#edit-04) | Kreativwerkzeuge aus dem Planer-Vergleich | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ · 2 verwaist | Gespiegelte und gedrehte Zustände (Türen, Truhen, Schienen) im Spiel (S07). |
 | [EDIT-05](#edit-05) | Auswahl- und Formwerkzeuge aus Editor-Mods | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Zauberstab, Stapeln, Extrudieren und Wendel in der Werkstatt abnehmen (S07).<br>Gestapelte und gedrehte Bauteile mit Ausstattung im Spiel. |
-| [GFX-01](#gfx-01) | Grafik vertiefen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Licht und Schatten auf echten GPUs, Firefox/Safari und Handy (S06). |
+| [GFX-01](#gfx-01) | Grafik vertiefen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Licht und Schatten auf echten GPUs, Firefox/Safari und Handy (S06). |
+| [GFX-02](#gfx-02) | Darstellung und Leistung, Runde 2 | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Darstellung und Leistung weiter verbessern“ | Biom, Leuchtfeuer-Strahl und flüssiges Laden großer Modelle auf dem eigenen Rechner ansehen (S04). |
 | [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Weltkarte auf echter GPU und mit Touch (QA-02). |
 | [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter | ⏳ Offen 0/2 | P1 | **verwaist** · 1 verwaist | — |
 | [MAP-03](#map-03) | Live-Karte mit Spielanbindung | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Kopplung und Senden auf dem LMNT-Server mit Browserfreigabe „lokales Netzwerk“ (S06). |
@@ -173,11 +174,10 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
 | [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ | — |
-| [PERF-03](#perf-03) | Bundle, große Views und Vorschaucache | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ · 1 verwaist | — |
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Olympus auf deinem Rechner, dazu Firefox/Safari (S06). |
 | [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert | 🧩 Implementiert · Abnahme offen 8/9 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ · 1 verwaist | — |
 
-Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft).
+Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft), PERF-03 (geprüft).
 
 <a id="bereich-kern"></a>
 
@@ -283,6 +283,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **VIEW-01** · Ansicht auf echter GPU und mit Touch prüfen, negative Koordinaten, alle Schnittachsen (S02).
 - **VIEW-02** · Mojang-Download und Blockformen in Firefox/Safari und auf echten Geräten (S06).
 - **GFX-01** · Licht und Schatten auf echten GPUs, Firefox/Safari und Handy (S06).
+- **GFX-02** · Biom, Leuchtfeuer-Strahl und flüssiges Laden großer Modelle auf dem eigenen Rechner ansehen (S04).
 - **EDIT-01** · Mehrfachauswahl auf echten Geräten (QA-02).
 - **UPDATE-01** · Versionsupdates auf echten Geräten (QA-02).
 - **MAP-01** · Weltkarte auf echter GPU und mit Touch (QA-02).
@@ -332,13 +333,11 @@ Arbeit, für die gerade kein laufender Thread zuständig ist. Zum Verteilen: Thr
 | [EDIT-04](#edit-04) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Gelände-Werkzeuge auf dem Projektgelände (als eigener Thread angekündigt, nie gestartet).<br>Symmetrie und Kurven auch in der Mod. |
 | [ENTITY-01](#entity-01) | Kern, Minecraft-Daten und Dateiformate | P1 | 🧩 Implementiert · Abnahme offen | Truhen- und Schildinhalte in der Werkstatt bearbeiten (Folgeidee aus der nächsten Aktion). |
 | [GEN-03](#gen-03) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Feinschliff Kolosseum: Statuen in den Attika-Fenstern, Treppen im Hypogäum. |
-| [GFX-01](#gfx-01) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Biomfarben und leuchtende Blockentities (angekündigte Folgestufe). |
 | [GROSS-01](#gross-01) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Geländeanpassung und Wasserkanten für Großprojekte, eigene Großprojekte aus Sammlungen. |
 | [MAP-02](#map-02) | Planer | P1 | ⏳ Offen | Komplett offen: gespeicherte Kartenziele und Provideradapter (BlueMap, Dynmap, Squaremap) mit eigenen Markerdateien. |
 | [MAP-04](#map-04) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Benannte Gruppen und Sperren mit Schemaerweiterung, abgestimmt mit der Mod (siehe GAME-07-S07). |
 | [MAP-05](#map-05) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Gedrehte Projektlagen auf der Weltkarte, damit gedrehte Hologramme übernommen werden. |
 | [MAT-03](#mat-03) | Kern, Minecraft-Daten und Dateiformate | P1 | 🧩 Implementiert · Abnahme offen | S03 Glas-/Beton-/Terrakottavarianten in Profil und Oberfläche prüfen – im Cloud-Browser machbar. |
-| [PERF-03](#perf-03) | Performance und Stabilität | P1 | 🧩 Implementiert · Abnahme offen | Filterzustände der Bibliothek beim Seitenwechsel im Browser prüfen – im Cloud-Browser machbar, Performance-Thread beendet. |
 | [PERF-04](#perf-04) | Performance und Stabilität | P1 | 🧩 Implementiert · Abnahme offen | GPU-Upload großer Szenen in Stücken. |
 | [PERF-05](#perf-05) | Performance und Stabilität | P1 | 🧩 Implementiert · Abnahme offen | S07 Analyse von Mod und Paper-Plugin (O-8), große Dateien aufteilen – Thread „Gesamtsystem auf Performance und Stabilität optimieren“ ist beendet. |
 | [PROJ-01](#proj-01) | Projektmodul | P1 | 🧩 Implementiert · Abnahme offen | Abhängigkeiten zwischen Projekten auf der Weltkarte; Bauleute aus dem Spiel; Lagerbuchungen je Bauleute. |
@@ -403,6 +402,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **PROJ-02 · Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05, PROJ-16…18).
 - **LINK-07 · Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten** — 🚧 In Arbeit, 3/6 Teilschritte. Nächster Schritt: Positionen und Aufnahmen über den Raum; Release 0.14.0; Abnahme LINK-07.
 - **TERRAIN-03 · Gelände und Wege im Projekt: Aufschütten, Abtragen, Rampe, Wegstufen als Treppen, Brücken mit Geländer, Weg aus der Weltkarte** — 🧩 Implementiert · Abnahme offen, 5/7 Teilschritte. Nächster Schritt: Abnahme PROJ-19 im Spiel; danach Basisplaner auf Gelände (S06).
+- **GFX-02 · Darstellung und Leistung, Runde 2: Biomfarben, leuchtende Blockentities (Leuchtfeuer-Strahl, Endportal, Magma), GPU-Upload großer Szenen in Stücken** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme auf echten GPUs, Firefox/Safari und Abgleich mit Spielbildern (S04, zusammen mit GFX-01-S06).
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -475,7 +475,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen | 3/3 | CORE-02, NBT-01 | `84838f0` | `e232b26` |
 | [PERF-01](#perf-01) | Große Berechnungen als abbrechbare Worker-Aufträge | ✅ Im beschriebenen Umfang geprüft | 3/3 | ARCH-01 | `7dffd92` | `7dffd92` |
 | [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen | 3/3 | PERF-01 | `7dffd92` | `7dffd92` |
-| [PERF-03](#perf-03) | Bundle, große Views und Vorschaucache | 🧩 Implementiert · Abnahme offen | 3/3 | ARCH-01, QA-01 | ausstehend | ausstehend |
+| [PERF-03](#perf-03) | Bundle, große Views und Vorschaucache | ✅ Im beschriebenen Umfang geprüft | 3/3 | ARCH-01, QA-01 | ausstehend | ausstehend |
 | [VIEW-01](#view-01) | Vorhandenen Viewer vollständig abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | QA-01 | `84838f0` | `e232b26` |
 | [ENTITY-01](#entity-01) | Gemälde, Rahmen, Rüstungsständer und Blockinhalte | 🧩 Implementiert · Abnahme offen | 5/6 | FORMAT-02 | ausstehend | ausstehend |
 
@@ -500,6 +500,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material | 🧩 Implementiert · Abnahme offen | 6/7 | VIEW-02, BUILD-01, MAT-01 | ausstehend | ausstehend |
 | [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel | 🧩 Implementiert · Abnahme offen | 5/6 | BLOCK-01, LIB-04, UPDATE-01 | ausstehend | ausstehend |
 | [GFX-01](#gfx-01) | Grafik vertiefen: Minecraft-Licht, Eckschatten, Sonne mit Schatten, Nacht, Spawnprüfung, sortiertes Glas und 32³-Abschnitte für große Modelle | 🧩 Implementiert · Abnahme offen | 5/6 | VIEW-02 | ausstehend | ausstehend |
+| [GFX-02](#gfx-02) | Darstellung und Leistung, Runde 2: Biomfarben, leuchtende Blockentities (Leuchtfeuer-Strahl, Endportal, Magma), GPU-Upload großer Szenen in Stücken | 🧩 Implementiert · Abnahme offen | 3/4 | GFX-01, VIEW-02, PERF-04 | ausstehend | ausstehend |
 | [MODEL-01](#model-01) | 3D-Export: Bauteile, Projekte und Anlagen als OBJ/MTL, glTF/GLB, STL und 3MF (Ansichtsmodell mit Blockformen/Texturen, wasserdichte Druckhülle mit Maßstab, Füllen, Aushöhlen, Farben) | 🧩 Implementiert · Abnahme offen | 4/6 | VIEW-02, GFX-01 | ausstehend | ausstehend |
 | [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-02, VIEW-01 | ausstehend | ausstehend |
 | [EDIT-02](#edit-02) | Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen | 🧩 Implementiert · Abnahme offen | 5/5 | VIEW-01, STORE-02 | ausstehend | ausstehend |
@@ -1249,7 +1250,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-03
 
-**Bundle, große Views und Vorschaucache** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: „Gesamtsystem auf Performance und Stabilität optimieren“ · Aktualisiert: 2026-11-04T12:47:26.654Z
+**Bundle, große Views und Vorschaucache** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: „Gesamtsystem auf Performance und Stabilität optimieren“ · Aktualisiert: 2026-11-04T13:24:32.693Z
 
 - [x] PERF-03-S01: Bundleanteile und UI-Verantwortungen messen.
 - [x] PERF-03-S02: Views entlang Anwendungsfällen teilen und lazy laden.
@@ -1257,13 +1258,11 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Gemessene Verbesserung statt bloßer Dateiaufteilung; keine verlorenen Filterzustände.
 
-**Nächste Aktion:** Filterzustände der Bibliothek beim Seitenwechsel im Browser prüfen.
+**Nächste Aktion:** Erledigt; weitere Bundle-Arbeit läuft unter PERF-05 (O-5, gezielte Unterpfade).
 
-**Verwaist (ohne Bearbeiter):** Filterzustände der Bibliothek beim Seitenwechsel im Browser prüfen – im Cloud-Browser machbar, Performance-Thread beendet.
+**Prüfstand:** Filterzustände im Browser geprüft (tests/e2e/library-filters.e2e.mjs): Suche, Liste und Treffer bleiben über Detailseite, Weltkarte, Neuladen und geteilten Link erhalten.
 
-**Prüfstand:** Schritte durch PERF-05 erledigt; „keine verlorenen Filterzustände“ beim Seitenwechsel ist nicht gesondert geprüft.
-
-**Nachweise:** [docs/architecture/PERFORMANCE_AUDIT.md](architecture/PERFORMANCE_AUDIT.md) — S01: Startpaket gemessen, 1,33 MB auf 0,72 MB (PERF-05).; [apps/web/src/app/lazyPage.tsx](../apps/web/src/app/lazyPage.tsx) — S02: Seiten werden bei Bedarf geladen, Vorladen im Leerlauf.; [tests/e2e/thumb-store.e2e.mjs](../tests/e2e/thumb-store.e2e.mjs) — S03: Vorschaubilder je Render-Revision im Cache Storage, alte Stände gelöscht, Schreibfehler ohne Abbruch.; [tests/e2e/catalog-snapshot.e2e.mjs](../tests/e2e/catalog-snapshot.e2e.mjs) — Katalog-Cache beim Start.
+**Nachweise:** [docs/architecture/PERFORMANCE_AUDIT.md](architecture/PERFORMANCE_AUDIT.md) — S01: Startpaket gemessen, 1,33 MB auf 0,72 MB (PERF-05).; [apps/web/src/app/lazyPage.tsx](../apps/web/src/app/lazyPage.tsx) — S02: Seiten werden bei Bedarf geladen, Vorladen im Leerlauf.; [tests/e2e/thumb-store.e2e.mjs](../tests/e2e/thumb-store.e2e.mjs) — S03: Vorschaubilder je Render-Revision im Cache Storage, alte Stände gelöscht, Schreibfehler ohne Abbruch.; [tests/e2e/catalog-snapshot.e2e.mjs](../tests/e2e/catalog-snapshot.e2e.mjs) — Katalog-Cache beim Start.; [tests/e2e/library-filters.e2e.mjs](../tests/e2e/library-filters.e2e.mjs) — Akzeptanz „keine verlorenen Filterzustände“ beim Seitenwechsel bestätigt (GFX-02-Thread, 04.11.2026).
 
 **Dateiumfang:** `apps/web/src/views/LibraryView.tsx`, `apps/web/src/views/project/`, `vite.config.mjs`, `apps/web/src/app/lazyPage.tsx`, `apps/web/src/thumbnail/thumbStore.ts`, `docs/architecture/PERFORMANCE_AUDIT.md`. **Abhängigkeiten:** ARCH-01, QA-01. **Alte IDs:** —.
 
@@ -1271,19 +1270,19 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-04
 
-**Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Große Modelle flüssig berechnen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Große Modelle flüssig berechnen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-04T13:24:32.693Z
 
 - [x] PERF-04-S01: Gemeinsame Auftragsschicht: ein Worker je Auftrag, Fortschritt, Abbrechen per terminate, Zeitlimit, Rückfall ohne Worker; Zellen als übertragbare Spalten.
 - [x] PERF-04-S02: Litematic-Import und Speichern großer Versionen (Prüfsumme, ID, Packen, Kennwerte) im Worker; versiegelte Payloads ohne erneute Kopie.
 - [x] PERF-04-S03: 3D-Ansicht und Standbilder mit Licht ab 120 000 Zellen im Worker (Renderer-Schnappschuss, byte-gleiches Netz); 3D-Export im Worker mit Schrittanzeige.
 - [x] PERF-04-S04: Versionsvergleich und Update-Vorschau großer Stände im Worker.
 - [x] PERF-04-S05: Bibliotheksstart im Hintergrund: mitgelieferten Katalog erzeugen, Auslieferung planen und Katalogkennwerte aller Versionen im Worker; Seite schreibt nur den Plan und entpackt in Scheiben, Fortschritt auf dem Startbildschirm, Rückfall ohne Worker.
-- [ ] PERF-04-S06: Abnahme auf echten Geräten (Philipps Rechner mit Olympus), Firefox/Safari; GPU-Upload großer Szenen in Stücken.
+- [ ] PERF-04-S06: Abnahme auf echten Geräten (Philipps Rechner mit Olympus), Firefox/Safari; GPU-Upload großer Szenen in Stücken (seit GFX-02-S03 umgesetzt, Abnahme auf echter GPU offen).
 - [x] PERF-04-S07: Katalogspeicher je App-Version: Kennung aus dem Kerncode beim Bauen, gebauter Katalog und Kennwerte im meta-Speicher; Neuladen bis zum Katalog ~5 s → ~1 s.
 
 **Abnahme:** Ergebnisse (Prüfsumme, Version-ID, gepackte Zellen, 3D-Netz, Exportdatei) sind gleich wie auf dem direkten Weg. Abbrechen beendet die Berechnung sofort; nichts wird gespeichert oder heruntergeladen. Ein 927 000-Block-Litematic blockiert die Seite beim Speichern nicht mehr in langen Stücken (vorher bis 17 s). Der Start blockiert die Seite nicht mehr in langen Stücken (vorher bei jedem Start 3–4 s am Stück); die Bibliothek ist danach dieselbe wie auf dem direkten Weg.
 
-**Nächste Aktion:** Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); GPU-Upload großer Szenen bleibt im Hauptthread.
+**Nächste Aktion:** Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); der GPU-Upload großer Szenen läuft seit GFX-02-S03 in Stücken.
 
 **Nur Philipp:** Auf echten Geräten und Browsern: Olympus auf deinem Rechner, dazu Firefox/Safari (S06).
 
@@ -1424,7 +1423,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GFX-01
 
-**Grafik vertiefen: Minecraft-Licht, Eckschatten, Sonne mit Schatten, Nacht, Spawnprüfung, sortiertes Glas und 32³-Abschnitte für große Modelle** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Grafik der Blockdarstellung vertiefen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Grafik vertiefen: Minecraft-Licht, Eckschatten, Sonne mit Schatten, Nacht, Spawnprüfung, sortiertes Glas und 32³-Abschnitte für große Modelle** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Grafik der Blockdarstellung vertiefen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-04T13:24:32.693Z
 
 - [x] GFX-01-S01: Licht wie im Spiel: Leuchtwerte je Blockzustand, Himmels- und Blocklicht mit Dämpfung, weiches Licht und Eckschatten je Eckpunkt.
 - [x] GFX-01-S02: Lichtmodi Tag/Sonne/Nacht/Flach im Shader ohne Neuaufbau; Sonnenschatten nach Uhrzeit; Menü „Licht“ mit Speicherung im Browser.
@@ -1435,17 +1434,38 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Lichtwechsel baut keine Geometrie neu. Inkrementeller Aufbau ergibt dieselben Abschnitte wie ein vollständiger. Keine fremden Texturen; Licht nur aus eigenen Regeln und geladenen Quellen.
 
-**Nächste Aktion:** Prüfung auf echten Geräten und Browsern; danach Biomfarben und leuchtende Blockentities.
+**Nächste Aktion:** Prüfung auf echten Geräten und Browsern (S06); Biomfarben und leuchtende Blockentities als GFX-02.
 
 **Nur Philipp:** Auf echten Geräten und Browsern: Licht und Schatten auf echten GPUs, Firefox/Safari und Handy (S06).
-
-**Verwaist (ohne Bearbeiter):** Biomfarben und leuchtende Blockentities (angekündigte Folgestufe).
 
 **Prüfstand:** Node- und Chromium-Prüfung (Software-WebGL) bestanden; echte GPUs, Firefox/Safari und Geräte offen.
 
 **Nachweise:** [tests/graphics.test.mjs](../tests/graphics.test.mjs) — Leuchtwerte, Ausbreitung, AO, Licht je Eckpunkt, Spawnflächen, Abschnitte inkrementell = neu, Sortierung, Einstellungen.; [tests/e2e/graphics.e2e.mjs](../tests/e2e/graphics.e2e.mjs) — Chromium: Lichtmodi mit Helligkeitsvergleich, Schatten, Spawnprüfung, Speicherung, Abschnitte und Picking.; [docs/architecture/GRAPHICS.md](architecture/GRAPHICS.md) — Regeln, Messwerte, Grenzen.
 
 **Dateiumfang:** `apps/web/src/blockmodels/light.ts`, `apps/web/src/blockmodels/graphics.ts`, `apps/web/src/blockmodels/mesh.ts`, `apps/web/src/blockmodels/threeMesh.ts`, `apps/web/src/blockmodels/blocks.css`, `apps/web/src/viewer/`, `apps/web/src/thumbnail/`, `tests/graphics.test.mjs`, `tests/e2e/graphics.e2e.mjs`, `docs/architecture/GRAPHICS.md`. **Abhängigkeiten:** VIEW-02. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### GFX-02
+
+**Darstellung und Leistung, Runde 2: Biomfarben, leuchtende Blockentities (Leuchtfeuer-Strahl, Endportal, Magma), GPU-Upload großer Szenen in Stücken** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Darstellung und Leistung weiter verbessern“ · Zuständiger Thread: „Darstellung und Leistung weiter verbessern“ · Aktualisiert: 2026-11-04T13:31:43.280Z
+
+- [x] GFX-02-S01: Biomfarben für Gras, Laub und Wasser (Ebene, Wald, Dschungel, Taiga, Savanne, Sumpf, Kirschhain …) im Grafikmenü, umschaltbar im Shader ohne Neuaufbau; Standbilder bleiben Ebene.
+- [x] GFX-02-S02: Leuchtende Blockentities: Leuchtfeuer-Strahl mit Pyramidenprüfung, Glasfarben und Sperre durch feste Blöcke; Endportal/Endtransitportal und Magma/aktive Sculk-Sensoren voll hell wie im Spiel.
+- [x] GFX-02-S03: Große Szenen in Stücken auf die GPU: Abschnitte nahe der Kamera zuerst, Datenmenge je Bild nach Bildzeit geregelt, alte Abschnitte bleiben bis zum Ersatz sichtbar.
+- [ ] GFX-02-S04: Echte GPUs, Firefox/Safari und Spielbildabgleich der neuen Darstellung (mit GFX-01-S06).
+
+**Abnahme:** Biomwechsel baut keine Geometrie neu; Standbilder und 3D-Export bleiben unverändert. Inkrementeller Aufbau mit Leuchtfeuer ergibt dieselben Abschnitte wie ein vollständiger. Kleine Modelle erscheinen weiter in einem Bild; große bleiben während des Hochladens bedienbar.
+
+**Nächste Aktion:** Abnahme auf echten GPUs, Firefox/Safari und Abgleich mit Spielbildern (S04, zusammen mit GFX-01-S06).
+
+**Nur Philipp:** Auf echten Geräten und Browsern: Biom, Leuchtfeuer-Strahl und flüssiges Laden großer Modelle auf dem eigenen Rechner ansehen (S04).
+
+**Prüfstand:** Node- und Chromium-Prüfung (Software-WebGL) bestanden; echte GPUs, Firefox/Safari und Spielbildabgleich offen.
+
+**Nachweise:** [tests/graphics2.test.mjs](../tests/graphics2.test.mjs) — Biomfaktoren, Farbklassen je Fläche, Leuchten, Leuchtfeuer (Pyramide, Glas, Sperre, Grundgestein), Abschnitt neu bei Dach weit oben, inkrementell = neu, Upload-Reihenfolge und Budget.; [tests/e2e/graphics2.e2e.mjs](../tests/e2e/graphics2.e2e.mjs) — Chromium: Biomwechsel ohne Neuaufbau mit Farbvergleich, Leuchtfeuer 1 von 2, 150 000 Blöcke in mehreren Bildern hochgeladen, Auswahl danach.; [docs/architecture/GRAPHICS.md](architecture/GRAPHICS.md) — Abschnitt Runde 2 (GFX-02): Regeln, Prüfattribute, Grenzen.
+
+**Dateiumfang:** `apps/web/src/blockmodels/beacon.ts`, `apps/web/src/blockmodels/biomes.ts`, `apps/web/src/blockmodels/graphics.ts`, `apps/web/src/blockmodels/light.ts`, `apps/web/src/blockmodels/mesh.ts`, `apps/web/src/blockmodels/snapshot.ts`, `apps/web/src/blockmodels/threeMesh.ts`, `apps/web/src/blockmodels/tint.ts`, `apps/web/src/jobs/meshJob.ts`, `apps/web/src/testing/testplan.ts`, `apps/web/src/viewer/`, `apps/web/src/viewer/backgroundMesh.ts`, `docs/architecture/GRAPHICS.md`, `docs/testing/TESTPLAN.md`, `tests/e2e/graphics.e2e.mjs`, `tests/e2e/graphics2.e2e.mjs`, `tests/graphics.test.mjs`, `tests/graphics2.test.mjs`. **Abhängigkeiten:** GFX-01, VIEW-02, PERF-04. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

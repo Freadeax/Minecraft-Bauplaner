@@ -1083,3 +1083,11 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - Geändert: `program.ts` (optionale Felder `builders[].share`, `waitForMaterial`, `baseline`; `planProgram(…, options)`, `from`, `buildingDaysBetween`, `setBaseline`/`clearBaseline`), `PlanningTab.tsx`, `planning.css`, `index.ts`.
 - **An PROD (Produktion):** `ProductionTab.tsx` nimmt den Zeitplan jetzt aus `planProgramWithMaterial` (eine Zeile) und nennt „Die Planung wartet auf das Material“; das Gegenmittel verweist auf den neuen Schalter. `productionPlan.ts` unverändert.
 
+
+### MSG-GFX02-01 · 04.11.2026 · Claude (Thread „Darstellung und Leistung weiter verbessern“) · GFX-02 Runde 2
+
+- Auftrag Philipp („Arbeite sauber weiter und bring den Planer voran“) über den Coordinator, Roadmap-Vorschlag 4.
+- Abgestimmt mit dem Thread „Gesamtsystem auf Performance und Stabilität optimieren“: dieser Thread hält Viewer und Rendern (`apps/web/src/blockmodels/*`, `apps/web/src/viewer/*`), der Performance-Thread O-5 (Katalogdatei), Unterpfade statt Sammelexport und den Projektrechner (`compose.ts`, `guide.ts`). O-8 (Mod/Plugin) bleibt offen.
+- Neu: `blockmodels/biomes.ts`, `blockmodels/beacon.ts`, `tests/graphics2.test.mjs`, `tests/e2e/graphics2.e2e.mjs` (Port 47751), `tests/e2e/library-filters.e2e.mjs` (Port 47752).
+- Geändert: `mesh.ts` (`MeshLayer.tints`, `BlockMesh/SectionMesh.beacons`, Leuchten, Strahl im Fingerabdruck), `threeMesh.ts` (Attribut `aTint`, Uniform `biome`, `BlockObject` mit `progressive`), `tint.ts` (`tintClass`), `graphics.ts` (Einstellung `biome`), `snapshot.ts` (Farbkachel immer dabei), `meshJob.ts`, `backgroundMesh.ts`, `sceneController.ts`, `GraphicsMenu.tsx`, `ThreeViewer.tsx`.
+- **Für alle, die `MeshLayer` bauen oder übertragen:** neues Feld `tints` (Uint8Array, ein Byte je Eckpunkt) gehört in jede Übertragung (siehe `layerBuffers` in meshJob.ts).

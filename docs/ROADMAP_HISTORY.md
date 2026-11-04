@@ -5274,3 +5274,70 @@ Gelände und Wege: Aufschütten/Abtragen/Rampe, Wegstufen als Treppen oder Halbs
 - `tests/e2e/landscape.e2e.mjs`
 - `tests/terrain-paths.test.mjs`
 
+## 2026-11-04T13:24:32.693Z · progress
+
+**Aufgaben:** GFX-02, GFX-01, PERF-04, PERF-03
+
+GFX-02 Runde 2: Biomfarben im Shader ohne Neuaufbau (17 Biome), Leuchtfeuer-Strahl mit Pyramide/Glasfarben/Sperre, Magma/Endportal voll hell, große Szenen in Stücken auf die GPU; PERF-03 Filterzustände im Browser geprüft. check grün (847), test:e2e 160/160; echte GPUs, Firefox/Safari offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GFX-02 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme auf echten GPUs, Firefox/Safari und Abgleich mit Spielbildern (S04, zusammen mit GFX-01-S06). |
+| GFX-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Prüfung auf echten Geräten und Browsern (S06); Biomfarben und leuchtende Blockentities als GFX-02. |
+| PERF-04 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); der GPU-Upload großer Szenen läuft seit GFX-02-S03 in Stücken. |
+| PERF-03 | ✅ Im beschriebenen Umfang geprüft | 3/3 | Erledigt; weitere Bundle-Arbeit läuft unter PERF-05 (O-5, gezielte Unterpfade). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/blockmodels/beacon.ts`
+- `apps/web/src/blockmodels/biomes.ts`
+- `apps/web/src/blockmodels/graphics.ts`
+- `apps/web/src/blockmodels/mesh.ts`
+- `apps/web/src/blockmodels/snapshot.ts`
+- `apps/web/src/blockmodels/threeMesh.ts`
+- `apps/web/src/blockmodels/tint.ts`
+- `apps/web/src/jobs/meshJob.ts`
+- `apps/web/src/viewer/GraphicsMenu.tsx`
+- `apps/web/src/viewer/ThreeViewer.tsx`
+- `apps/web/src/viewer/backgroundMesh.ts`
+- `apps/web/src/viewer/sceneController.ts`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/GRAPHICS.md`
+- `tests/e2e/graphics2.e2e.mjs`
+- `tests/e2e/library-filters.e2e.mjs`
+- `tests/graphics2.test.mjs`
+
+## 2026-11-04T13:31:43.280Z · progress
+
+**Aufgaben:** GFX-02
+
+Testfall DATEI-09 (Biom, Leuchtfeuer, große Szene) im Testplan für GFX-02.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GFX-02 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme auf echten GPUs, Firefox/Safari und Abgleich mit Spielbildern (S04, zusammen mit GFX-01-S06). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/blockmodels/beacon.ts`
+- `apps/web/src/blockmodels/biomes.ts`
+- `apps/web/src/blockmodels/graphics.ts`
+- `apps/web/src/blockmodels/mesh.ts`
+- `apps/web/src/blockmodels/snapshot.ts`
+- `apps/web/src/blockmodels/threeMesh.ts`
+- `apps/web/src/blockmodels/tint.ts`
+- `apps/web/src/jobs/meshJob.ts`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/viewer/GraphicsMenu.tsx`
+- `apps/web/src/viewer/ThreeViewer.tsx`
+- `apps/web/src/viewer/backgroundMesh.ts`
+- `apps/web/src/viewer/sceneController.ts`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/GRAPHICS.md`
+- `docs/testing/TESTPLAN.md`
+- `tests/e2e/graphics2.e2e.mjs`
+- `tests/e2e/library-filters.e2e.mjs`
+- `tests/graphics2.test.mjs`
+

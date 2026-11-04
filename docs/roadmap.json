@@ -42,7 +42,8 @@
     "COOP-09",
     "PROJ-02",
     "LINK-07",
-    "TERRAIN-03"
+    "TERRAIN-03",
+    "GFX-02"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -2228,7 +2229,7 @@
       "title": "Bundle, große Views und Vorschaucache",
       "phase": "P2",
       "priority": "P1",
-      "status": "implemented",
+      "status": "verified",
       "owner": "nicht zugewiesen",
       "dependencies": [
         "ARCH-01",
@@ -2263,7 +2264,7 @@
       "acceptance": [
         "Gemessene Verbesserung statt bloßer Dateiaufteilung; keine verlorenen Filterzustände."
       ],
-      "next": "Filterzustände der Bibliothek beim Seitenwechsel im Browser prüfen.",
+      "next": "Erledigt; weitere Bundle-Arbeit läuft unter PERF-05 (O-5, gezielte Unterpfade).",
       "blockers": [],
       "evidence": [
         {
@@ -2281,23 +2282,25 @@
         {
           "path": "tests/e2e/catalog-snapshot.e2e.mjs",
           "note": "Katalog-Cache beim Start."
+        },
+        {
+          "path": "tests/e2e/library-filters.e2e.mjs",
+          "note": "Akzeptanz „keine verlorenen Filterzustände“ beim Seitenwechsel bestätigt (GFX-02-Thread, 04.11.2026)."
         }
       ],
       "verification": {
-        "state": "pending",
-        "note": "Schritte durch PERF-05 erledigt; „keine verlorenen Filterzustände“ beim Seitenwechsel ist nicht gesondert geprüft."
+        "state": "passed",
+        "note": "Filterzustände im Browser geprüft (tests/e2e/library-filters.e2e.mjs): Suche, Liste und Treffer bleiben über Detailseite, Weltkarte, Neuladen und geteilten Link erhalten."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T12:47:26.654Z",
+      "updatedAt": "2026-11-04T13:24:32.693Z",
       "area": "PERF",
       "thread": "Gesamtsystem auf Performance und Stabilität optimieren",
       "philipp": [],
-      "orphans": [
-        "Filterzustände der Bibliothek beim Seitenwechsel im Browser prüfen – im Cloud-Browser machbar, Performance-Thread beendet."
-      ]
+      "orphans": []
     },
     {
       "id": "PERF-04",
@@ -2362,7 +2365,7 @@
         },
         {
           "id": "PERF-04-S06",
-          "title": "Abnahme auf echten Geräten (Philipps Rechner mit Olympus), Firefox/Safari; GPU-Upload großer Szenen in Stücken.",
+          "title": "Abnahme auf echten Geräten (Philipps Rechner mit Olympus), Firefox/Safari; GPU-Upload großer Szenen in Stücken (seit GFX-02-S03 umgesetzt, Abnahme auf echter GPU offen).",
           "done": false
         },
         {
@@ -2377,7 +2380,7 @@
         "Ein 927 000-Block-Litematic blockiert die Seite beim Speichern nicht mehr in langen Stücken (vorher bis 17 s).",
         "Der Start blockiert die Seite nicht mehr in langen Stücken (vorher bei jedem Start 3–4 s am Stück); die Bibliothek ist danach dieselbe wie auf dem direkten Weg."
       ],
-      "next": "Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); GPU-Upload großer Szenen bleibt im Hauptthread.",
+      "next": "Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); der GPU-Upload großer Szenen läuft seit GFX-02-S03 in Stücken.",
       "blockers": [],
       "evidence": [
         {
@@ -2409,7 +2412,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-04T13:24:32.693Z",
       "area": "PERF",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -2950,7 +2953,7 @@
         "Inkrementeller Aufbau ergibt dieselben Abschnitte wie ein vollständiger.",
         "Keine fremden Texturen; Licht nur aus eigenen Regeln und geladenen Quellen."
       ],
-      "next": "Prüfung auf echten Geräten und Browsern; danach Biomfarben und leuchtende Blockentities.",
+      "next": "Prüfung auf echten Geräten und Browsern (S06); Biomfarben und leuchtende Blockentities als GFX-02.",
       "blockers": [],
       "evidence": [
         {
@@ -2974,7 +2977,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-04T13:24:32.693Z",
       "area": "PLANER",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -2983,9 +2986,102 @@
           "text": "Licht und Schatten auf echten GPUs, Firefox/Safari und Handy (S06)."
         }
       ],
-      "orphans": [
-        "Biomfarben und leuchtende Blockentities (angekündigte Folgestufe)."
-      ]
+      "orphans": []
+    },
+    {
+      "id": "GFX-02",
+      "title": "Darstellung und Leistung, Runde 2: Biomfarben, leuchtende Blockentities (Leuchtfeuer-Strahl, Endportal, Magma), GPU-Upload großer Szenen in Stücken",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude-Thread „Darstellung und Leistung weiter verbessern“",
+      "dependencies": [
+        "GFX-01",
+        "VIEW-02",
+        "PERF-04"
+      ],
+      "scope": [
+        "apps/web/src/blockmodels/beacon.ts",
+        "apps/web/src/blockmodels/biomes.ts",
+        "apps/web/src/blockmodels/graphics.ts",
+        "apps/web/src/blockmodels/light.ts",
+        "apps/web/src/blockmodels/mesh.ts",
+        "apps/web/src/blockmodels/snapshot.ts",
+        "apps/web/src/blockmodels/threeMesh.ts",
+        "apps/web/src/blockmodels/tint.ts",
+        "apps/web/src/jobs/meshJob.ts",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/viewer/",
+        "apps/web/src/viewer/backgroundMesh.ts",
+        "docs/architecture/GRAPHICS.md",
+        "docs/testing/TESTPLAN.md",
+        "tests/e2e/graphics.e2e.mjs",
+        "tests/e2e/graphics2.e2e.mjs",
+        "tests/graphics.test.mjs",
+        "tests/graphics2.test.mjs"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "GFX-02-S01",
+          "title": "Biomfarben für Gras, Laub und Wasser (Ebene, Wald, Dschungel, Taiga, Savanne, Sumpf, Kirschhain …) im Grafikmenü, umschaltbar im Shader ohne Neuaufbau; Standbilder bleiben Ebene.",
+          "done": true
+        },
+        {
+          "id": "GFX-02-S02",
+          "title": "Leuchtende Blockentities: Leuchtfeuer-Strahl mit Pyramidenprüfung, Glasfarben und Sperre durch feste Blöcke; Endportal/Endtransitportal und Magma/aktive Sculk-Sensoren voll hell wie im Spiel.",
+          "done": true
+        },
+        {
+          "id": "GFX-02-S03",
+          "title": "Große Szenen in Stücken auf die GPU: Abschnitte nahe der Kamera zuerst, Datenmenge je Bild nach Bildzeit geregelt, alte Abschnitte bleiben bis zum Ersatz sichtbar.",
+          "done": true
+        },
+        {
+          "id": "GFX-02-S04",
+          "title": "Echte GPUs, Firefox/Safari und Spielbildabgleich der neuen Darstellung (mit GFX-01-S06).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Biomwechsel baut keine Geometrie neu; Standbilder und 3D-Export bleiben unverändert.",
+        "Inkrementeller Aufbau mit Leuchtfeuer ergibt dieselben Abschnitte wie ein vollständiger.",
+        "Kleine Modelle erscheinen weiter in einem Bild; große bleiben während des Hochladens bedienbar."
+      ],
+      "next": "Abnahme auf echten GPUs, Firefox/Safari und Abgleich mit Spielbildern (S04, zusammen mit GFX-01-S06).",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/graphics2.test.mjs",
+          "note": "Biomfaktoren, Farbklassen je Fläche, Leuchten, Leuchtfeuer (Pyramide, Glas, Sperre, Grundgestein), Abschnitt neu bei Dach weit oben, inkrementell = neu, Upload-Reihenfolge und Budget."
+        },
+        {
+          "path": "tests/e2e/graphics2.e2e.mjs",
+          "note": "Chromium: Biomwechsel ohne Neuaufbau mit Farbvergleich, Leuchtfeuer 1 von 2, 150 000 Blöcke in mehreren Bildern hochgeladen, Auswahl danach."
+        },
+        {
+          "path": "docs/architecture/GRAPHICS.md",
+          "note": "Abschnitt Runde 2 (GFX-02): Regeln, Prüfattribute, Grenzen."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Node- und Chromium-Prüfung (Software-WebGL) bestanden; echte GPUs, Firefox/Safari und Spielbildabgleich offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-04T13:31:43.280Z",
+      "area": "PLANER",
+      "thread": "Darstellung und Leistung weiter verbessern",
+      "philipp": [
+        {
+          "kind": "geraet",
+          "text": "Biom, Leuchtfeuer-Strahl und flüssiges Laden großer Modelle auf dem eigenen Rechner ansehen (S04)."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "MODEL-01",
@@ -17424,6 +17520,106 @@
           "done": 6,
           "total": 7,
           "next": "Abnahme mit eigener Welt (S05); Wegstufen und Brücken siehe TERRAIN-03."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T13:24:32.693Z",
+      "kind": "progress",
+      "items": [
+        "GFX-02",
+        "GFX-01",
+        "PERF-04",
+        "PERF-03"
+      ],
+      "summary": "GFX-02 Runde 2: Biomfarben im Shader ohne Neuaufbau (17 Biome), Leuchtfeuer-Strahl mit Pyramide/Glasfarben/Sperre, Magma/Endportal voll hell, große Szenen in Stücken auf die GPU; PERF-03 Filterzustände im Browser geprüft. check grün (847), test:e2e 160/160; echte GPUs, Firefox/Safari offen.",
+      "files": [
+        "apps/web/src/blockmodels/beacon.ts",
+        "apps/web/src/blockmodels/biomes.ts",
+        "apps/web/src/blockmodels/graphics.ts",
+        "apps/web/src/blockmodels/mesh.ts",
+        "apps/web/src/blockmodels/snapshot.ts",
+        "apps/web/src/blockmodels/threeMesh.ts",
+        "apps/web/src/blockmodels/tint.ts",
+        "apps/web/src/jobs/meshJob.ts",
+        "apps/web/src/viewer/GraphicsMenu.tsx",
+        "apps/web/src/viewer/ThreeViewer.tsx",
+        "apps/web/src/viewer/backgroundMesh.ts",
+        "apps/web/src/viewer/sceneController.ts",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/GRAPHICS.md",
+        "tests/e2e/graphics2.e2e.mjs",
+        "tests/e2e/library-filters.e2e.mjs",
+        "tests/graphics2.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GFX-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme auf echten GPUs, Firefox/Safari und Abgleich mit Spielbildern (S04, zusammen mit GFX-01-S06)."
+        },
+        {
+          "id": "GFX-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Prüfung auf echten Geräten und Browsern (S06); Biomfarben und leuchtende Blockentities als GFX-02."
+        },
+        {
+          "id": "PERF-04",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); der GPU-Upload großer Szenen läuft seit GFX-02-S03 in Stücken."
+        },
+        {
+          "id": "PERF-03",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Erledigt; weitere Bundle-Arbeit läuft unter PERF-05 (O-5, gezielte Unterpfade)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T13:31:43.280Z",
+      "kind": "progress",
+      "items": [
+        "GFX-02"
+      ],
+      "summary": "Testfall DATEI-09 (Biom, Leuchtfeuer, große Szene) im Testplan für GFX-02.",
+      "files": [
+        "apps/web/src/blockmodels/beacon.ts",
+        "apps/web/src/blockmodels/biomes.ts",
+        "apps/web/src/blockmodels/graphics.ts",
+        "apps/web/src/blockmodels/mesh.ts",
+        "apps/web/src/blockmodels/snapshot.ts",
+        "apps/web/src/blockmodels/threeMesh.ts",
+        "apps/web/src/blockmodels/tint.ts",
+        "apps/web/src/jobs/meshJob.ts",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/viewer/GraphicsMenu.tsx",
+        "apps/web/src/viewer/ThreeViewer.tsx",
+        "apps/web/src/viewer/backgroundMesh.ts",
+        "apps/web/src/viewer/sceneController.ts",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/GRAPHICS.md",
+        "docs/testing/TESTPLAN.md",
+        "tests/e2e/graphics2.e2e.mjs",
+        "tests/e2e/library-filters.e2e.mjs",
+        "tests/graphics2.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GFX-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme auf echten GPUs, Firefox/Safari und Abgleich mit Spielbildern (S04, zusammen mit GFX-01-S06)."
         }
       ]
     }

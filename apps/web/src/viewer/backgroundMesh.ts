@@ -55,5 +55,5 @@ export async function buildSectionMeshInBackground(cells: readonly Cell[], palet
     if (!p) throw new Error('Ansicht: wiederverwendeter Abschnitt fehlt.');
     return p;
   });
-  return { sections, quads: out.quads, blocks: out.blocks, naiveQuads: out.naiveQuads, spawn: out.spawn, lit: out.lit, reused: out.reused, built: out.built.length };
+  return { sections, quads: out.quads, blocks: out.blocks, naiveQuads: out.naiveQuads, spawn: out.spawn, lit: out.lit, beacons: out.beacons, reused: out.reused, built: out.built.length };
 }

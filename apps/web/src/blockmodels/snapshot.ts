@@ -24,7 +24,9 @@ const keyOf = (s: BlockState) => `${s.id}[${Object.keys(s.properties).sort().map
 const AIR: BlockState = { id: 'minecraft:air', properties: {} };
 
 export function snapshotRenderer(renderer: BlockRenderer, sprites: SpriteLookup, palette: readonly BlockState[]): RenderSnapshot {
-  const blocks: BakedBlock[] = [], tints: (string | null)[][] = [], used = new Map<string, SpriteSlot>();
+  const blocks: BakedBlock[] = [], tints: (string | null)[][] = [];
+  // The neutral colour tile is always there: beacon beams (GFX-02) use it even when no block does.
+  const used = new Map<string, SpriteSlot>([['#', sprites('#')]]);
   const states = [...palette, AIR];
   for (const state of states) {
     const block = renderer.block(state);

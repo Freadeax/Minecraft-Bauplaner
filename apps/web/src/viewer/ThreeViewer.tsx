@@ -135,7 +135,7 @@ export default function ThreeViewer({ payload, cells, onSelect, markFor, focus =
   return <div className={`scene${flying ? ' flying' : ''}`} ref={host}>
     <div className="canvas-host" ref={canvasHost} tabIndex={0} aria-label="3D-Ansicht (fokussierbar für Tastatursteuerung)"
       data-mode={software ? 'software' : state.mode} data-projection={state.projection} data-view={state.view ?? ''}
-      data-faces={stats?.quads ?? ''} data-spawn-day={stats?.spawnDay ?? ''} data-spawn-night={stats?.spawnNight ?? ''} data-blocks={stats ? stats.blocks - scene.count : ''} data-entities={scene.count} data-build-ms={stats ? stats.buildMs.toFixed(1) : ''} data-mesh={busy ? 'pending' : stats ? 'ready' : ''} />
+      data-faces={stats?.quads ?? ''} data-spawn-day={stats?.spawnDay ?? ''} data-spawn-night={stats?.spawnNight ?? ''} data-beacons={stats ? `${stats.beacons.active}/${stats.beacons.total}` : ''} data-blocks={stats ? stats.blocks - scene.count : ''} data-entities={scene.count} data-build-ms={stats ? stats.buildMs.toFixed(1) : ''} data-mesh={busy ? 'pending' : stats ? 'ready' : ''} />
     <div className="viewer-tools" role="toolbar" aria-label="Ansicht">
       <div className="seg" role="group" aria-label="Blickrichtung">
         {VIEWS.map(v => <button key={v.id} title={`${v.title} (${v.key})`} aria-label={v.title} aria-pressed={state.view === v.id && !flying} onClick={() => setView(v.id)}>{v.label}</button>)}

@@ -1,5 +1,9 @@
 import type { BlockState, Cell, Vec3 } from '../../../../packages/voxel/src/index.js';
+import { fullBright, isBeacon, traceBeam } from './beacon.ts';
+import type { Beam } from './beacon.ts';
 import { dampening, emission, propagateLight, spawnFloorExcluded, spawnPassable } from './light.ts';
+import { box } from './shapes.ts';
+import { tintClass } from './tint.ts';
 import type { BakedBlock, BakedQuad, FaceName } from './model.ts';
 import { FACE_NAMES, FACE_VECTORS, OPPOSITE, coversFace } from './model.ts';
 
@@ -15,6 +19,11 @@ import { FACE_NAMES, FACE_VECTORS, OPPOSITE, coversFace } from './model.ts';
  * value so the shader can switch between looks, and the floor cells where
  * monsters could spawn. `buildSectionMesh` cuts the mesh into 32³ sections
  * and reuses every section whose content, marks and light did not change.
+ *
+ * GFX-02: every vertex names its biome colour class (`tints`, the shader
+ * swaps the baked plains colour for the chosen biome), light sources glow
+ * with at least their own level, emissive blocks (magma, end portal …) are
+ * full-bright, and active beacons get their beam as a full-bright column.
  * A view artefact only – materials and export never read it.
  */
 export type Layer = 0 | 1 | 2;
@@ -48,6 +57,8 @@ export interface MeshLayer {
   readonly marks: Float32Array;
   /** Per vertex: fixed face brightness, ambient occlusion, block light, sky light (all 0..1). */
   readonly light: Float32Array;
+  /** Per vertex: biome colour class 0 none, 1 grass, 2 foliage, 3 water (GFX-02). */
+  readonly tints: Uint8Array;
   readonly indices: Uint32Array;
   /** Quad → index into the input cell list of the build that made the layer (triangle t belongs to quad t >> 1). */
   readonly quadCells: Int32Array;
@@ -67,7 +78,11 @@ export interface BlockMesh {
   readonly spawn: SpawnMap | null;
   /** True when sky and block light were propagated. */
   readonly lit: boolean;
+  /** Beacons in the model and how many of them shine (pyramid complete, sky free). */
+  readonly beacons: BeaconCount;
 }
+/** Beacons in the model and how many of them shine (GFX-02). */
+export interface BeaconCount { readonly total: number; readonly active: number }
 
 export interface MeshSection {
   /** Section coordinates (world position / SECTION, floored) joined with commas. */
@@ -88,6 +103,7 @@ export interface SectionMesh {
   readonly naiveQuads: number;
   readonly spawn: SpawnMap | null;
   readonly lit: boolean;
+  readonly beacons: BeaconCount;
   /** Sections taken over unchanged from `previous`, and sections built anew. */
   readonly reused: number;
   readonly built: number;
@@ -120,6 +136,8 @@ export function hexRgb(hex: string): [number, number, number] {
 
 interface PreparedQuad {
   readonly q: BakedQuad; readonly slot: SpriteSlot; readonly rgb: readonly [number, number, number]; readonly layer: Layer;
+  /** Biome colour class (GFX-02). */
+  readonly tint: number;
   readonly shade: number;
   /** Normal axis 0..2 of an axis-aligned quad, −1 otherwise. */
   readonly axis: number;
@@ -138,6 +156,8 @@ interface Prepared {
   readonly quads: readonly PreparedQuad[]; readonly occludes: number; readonly full: number; readonly id: string;
   readonly opaque: boolean; readonly aoOccluder: boolean; readonly damp: number; readonly emit: number;
   readonly floor: boolean; readonly passable: boolean;
+  /** Lowest block light of its own faces: own emission, 1 for full-bright blocks (GFX-02). */
+  readonly glow: number;
 }
 
 /** Growing typed buffers per layer; plain number arrays were the bottleneck for 10⁶ quads. */
@@ -145,12 +165,12 @@ class LayerBuilder {
   private cap = 64; private n = 0;
   private positions = new Float32Array(this.cap * 12); private uvs = new Float32Array(this.cap * 8);
   private colors = new Float32Array(this.cap * 12); private marks = new Float32Array(this.cap * 16);
-  private light = new Float32Array(this.cap * 16); private cells = new Int32Array(this.cap);
+  private light = new Float32Array(this.cap * 16); private tints = new Uint8Array(this.cap * 4); private cells = new Int32Array(this.cap);
   private grow(): void {
     this.cap *= 2;
-    const more = <T extends Float32Array | Int32Array>(a: T, per: number): T => { const b = new (a.constructor as new (n: number) => T)(this.cap * per); b.set(a); return b; };
+    const more = <T extends Float32Array | Int32Array | Uint8Array>(a: T, per: number): T => { const b = new (a.constructor as new (n: number) => T)(this.cap * per); b.set(a); return b; };
     this.positions = more(this.positions, 12); this.uvs = more(this.uvs, 8); this.colors = more(this.colors, 12);
-    this.marks = more(this.marks, 16); this.light = more(this.light, 16); this.cells = more(this.cells, 1);
+    this.marks = more(this.marks, 16); this.light = more(this.light, 16); this.tints = more(this.tints, 4); this.cells = more(this.cells, 1);
   }
   /** `vl` holds 4 × (shade, ao, block, sky); `rot` starts the corner order at another vertex (flipped diagonal). */
   add(p: PreparedQuad, ox: number, oy: number, oz: number, mark: readonly [number, number, number, number], cell: number, vl: Float32Array, rot: number): void {
@@ -166,6 +186,7 @@ class LayerBuilder {
       this.colors[i3] = rgb[0]; this.colors[i3 + 1] = rgb[1]; this.colors[i3 + 2] = rgb[2];
       this.marks[i4] = mark[0]; this.marks[i4 + 1] = mark[1]; this.marks[i4 + 2] = mark[2]; this.marks[i4 + 3] = mark[3];
       this.light[i4] = vl[k * 4]!; this.light[i4 + 1] = vl[k * 4 + 1]!; this.light[i4 + 2] = vl[k * 4 + 2]!; this.light[i4 + 3] = vl[k * 4 + 3]!;
+      this.tints[n * 4 + j] = p.tint;
     }
     this.cells[n] = cell;
     this.n++;
@@ -177,14 +198,19 @@ class LayerBuilder {
       indices[o] = b; indices[o + 1] = b + 1; indices[o + 2] = b + 2; indices[o + 3] = b; indices[o + 4] = b + 2; indices[o + 5] = b + 3;
     }
     return { positions: this.positions.slice(0, quads * 12), uvs: this.uvs.slice(0, quads * 8), colors: this.colors.slice(0, quads * 12),
-      marks: this.marks.slice(0, quads * 16), light: this.light.slice(0, quads * 16), indices, quadCells: this.cells.slice(0, quads), quads };
+      marks: this.marks.slice(0, quads * 16), light: this.light.slice(0, quads * 16), tints: this.tints.slice(0, quads * 4), indices, quadCells: this.cells.slice(0, quads), quads };
   }
 }
 
 const NO_MARK = [0, 0, 0, 0] as const;
 const EPS = 1e-4;
+/** Beacon beams reach this many blocks above the highest block of the model. */
+export const BEAM_ABOVE = 32;
+const FULL_BRIGHT = new Float32Array([1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]);
+const BEAM_PAINT = { top: '#', side: '#', bottom: '#', translucent: true };
+const beamSignature = (b: Beam) => b.active ? b.segments.map(s => `${s.from}-${s.to}:${s.rgb.map(v => v.toFixed(3)).join('/')}`).join(';') : `off${b.level}`;
 
-function prepareQuad(q: BakedQuad, slot: SpriteSlot, layer: Layer, rgb: readonly [number, number, number]): PreparedQuad {
+function prepareQuad(q: BakedQuad, slot: SpriteSlot, layer: Layer, rgb: readonly [number, number, number], tint = 0): PreparedQuad {
   const p = q.pos;
   const ax = p[3]! - p[0]!, ay = p[4]! - p[1]!, az = p[5]! - p[2]!, bx = p[6]! - p[0]!, by = p[7]! - p[1]!, bz = p[8]! - p[2]!;
   const nx = ay * bz - az * by, ny = az * bx - ax * bz, nz = ax * by - ay * bx, len = Math.hypot(nx, ny, nz) || 1;
@@ -194,7 +220,7 @@ function prepareQuad(q: BakedQuad, slot: SpriteSlot, layer: Layer, rgb: readonly
   const shade = q.shade ? BRIGHTNESS[q.shade] : 1;
   const edge = new Int8Array(8);
   const cullBit = q.cull ? 1 << FACE_NAMES.indexOf(q.cull) : 0, oppositeBit = q.cull ? 1 << FACE_NAMES.indexOf(OPPOSITE[q.cull]) : 0;
-  if (axis < 0) return { q, slot, layer, rgb, shade, axis, sign: 0, boundary: false, edge, tangents: [0, 0], cullBit, oppositeBit };
+  if (axis < 0) return { q, slot, layer, rgb, tint, shade, axis, sign: 0, boundary: false, edge, tangents: [0, 0], cullBit, oppositeBit };
   // Corners are counter-clockwise seen from the front, so the normal points out of the face.
   const sign = n[axis]! > 0 ? 1 : -1, plane = p[axis]!;
   const boundary = sign > 0 ? plane > 1 - EPS : plane < EPS;
@@ -204,7 +230,7 @@ function prepareQuad(q: BakedQuad, slot: SpriteSlot, layer: Layer, rgb: readonly
     edge[k * 2] = a < EPS ? -1 : a > 1 - EPS ? 1 : 0;
     edge[k * 2 + 1] = b < EPS ? -1 : b > 1 - EPS ? 1 : 0;
   }
-  return { q, slot, layer, rgb, shade, axis, sign, boundary, edge, tangents: [t1, t2], cullBit, oppositeBit };
+  return { q, slot, layer, rgb, tint, shade, axis, sign, boundary, edge, tangents: [t1, t2], cullBit, oppositeBit };
 }
 
 const mix32 = (h: number) => { h ^= h >>> 16; h = Math.imul(h, 0x7feb352d); h ^= h >>> 15; h = Math.imul(h, 0x846ca68b); return (h ^ (h >>> 16)) >>> 0; };
@@ -218,6 +244,9 @@ interface Core {
   readonly at: (x: number, y: number, z: number) => number;
   readonly blocks: number; readonly spawn: SpawnMap | null;
   readonly marks: (readonly [number, number, number, number])[];
+  /** Beam per beacon cell index (GFX-02). */
+  readonly beams: ReadonlyMap<number, Beam>;
+  readonly beacons: BeaconCount;
   /** Emits the quads of one cell into the layers. */
   emit(index: number, solid: LayerBuilder, translucent: LayerBuilder): void;
 }
@@ -240,7 +269,9 @@ function core(cells: readonly Cell[], palette: readonly BlockState[], renderer: 
       const base = colour ? hexRgb(q.sprite) : [1, 1, 1] as const, t = tint ? hexRgb(tint) : [1, 1, 1] as const;
       const layer: Layer = q.translucent ? 2 : slot.layer;
       if (layer === 2) translucentAny = true;
-      quads.push(prepareQuad(q, slot, layer, [base[0] * t[0], base[1] * t[1], base[2] * t[2]]));
+      // Biome class: real tintindex faces with a tint, or own shapes whose average colour holds the plains tint.
+      const biome = tint ? tintClass(state.id, q.tint) : colour && !renderer.textured ? tintClass(state.id, -1, q.shade ?? null) : 0;
+      quads.push(prepareQuad(q, slot, layer, [base[0] * t[0], base[1] * t[1], base[2] * t[2]], biome));
       if (q.cull) {
         const bit = 1 << FACE_NAMES.indexOf(q.cull);
         if (coversFace(q, q.cull)) { full |= bit; if (layer === 0) occludes |= bit; }
@@ -254,6 +285,7 @@ function core(cells: readonly Cell[], palette: readonly BlockState[], renderer: 
       damp: opaque ? 15 : dampening(id), emit: emission(id, state.properties),
       floor: (occludes & (1 << FACE_NAMES.indexOf('up'))) !== 0 && !spawnFloorExcluded(id),
       passable: !block.quads.length || spawnPassable(id, state.properties),
+      glow: fullBright(id, state.properties) ? 1 : emission(id, state.properties) / 15,
     };
     preparedByIndex.set(index, hit);
     return hit;
@@ -298,6 +330,27 @@ function core(cells: readonly Cell[], palette: readonly BlockState[], renderer: 
       pos.push(c.position[0], c.position[1] + 1, c.position[2]); when.push(sky[a]! <= 7 ? 1 : 2);
     }
     spawn = { positions: Int32Array.from(pos), when: Uint8Array.from(when), count: when.length };
+  }
+
+  // Beacon beams (GFX-02): pyramid below, glass colours and opaque blocks above, traced over the grid.
+  const beams = new Map<number, Beam>();
+  let beaconsActive = 0;
+  if (blocks) {
+    const inGrid = (x: number, y: number, z: number) => x >= lo[0]! - M && y >= lo[1]! - M && z >= lo[2]! - M && x < lo[0]! - M + sx && y < lo[1]! - M + sy && z < lo[2]! - M + sz;
+    const blockAt = (x: number, y: number, z: number) => {
+      if (!inGrid(x, y, z)) return null;
+      const v = grid[at(x, y, z)]!;
+      if (!v) return null;
+      const p = prepare(v - 1);
+      return { id: p.id, opaque: p.opaque };
+    };
+    const top = hi[1]! + 1 + BEAM_ABOVE;
+    cells.forEach((c, i) => {
+      if (c.kind !== 'block' || !isBeacon(palette[c.paletteIndex]?.id ?? '')) return;
+      const beam = traceBeam(c.position[0], c.position[1], c.position[2], top, blockAt);
+      beams.set(i, beam);
+      if (beam.active) beaconsActive++;
+    });
   }
 
   const marks = cells.map(c => {
@@ -363,10 +416,20 @@ function core(cells: readonly Cell[], palette: readonly BlockState[], renderer: 
         const w2 = vl[9]! * (1 + Math.max(vl[11]!, vl[10]!)), w3 = vl[13]! * (1 + Math.max(vl[15]!, vl[14]!));
         if (w0 + w2 < w1 + w3) rot = 1;
       }
+      // Light sources glow with at least their own level, emissive blocks at full brightness (GFX-02).
+      if (own.glow > 0) for (let k = 0; k < 4; k++) if (vl[k * 4 + 2]! < own.glow) vl[k * 4 + 2] = own.glow;
       (p.layer === 2 ? translucent : solid).add(p, ox, oy, oz, mark, index, vl, rot);
     }
+    const beam = beams.get(index);
+    if (beam?.active) {
+      const slot = sprites('#');
+      for (const seg of beam.segments) for (const q of box([4.8, (seg.from - y) * 16, 4.8], [11.2, (seg.to - y) * 16, 11.2], BEAM_PAINT, ['north', 'south', 'west', 'east'])) {
+        translucent.add(prepareQuad(q, slot, 2, seg.rgb), ox, oy, oz, mark, index, FULL_BRIGHT, 0);
+      }
+    }
   };
-  return { prepared: v => v ? prepare(v - 1) : null, grid, sky, block, sx, sy, sz, lo, at, blocks, spawn, marks, emit: emitCell };
+  return { prepared: v => v ? prepare(v - 1) : null, grid, sky, block, sx, sy, sz, lo, at, blocks, spawn, marks, beams,
+    beacons: { total: beams.size, active: beaconsActive }, emit: emitCell };
 }
 
 /** One mesh for all cells (still images, tests). */
@@ -376,7 +439,7 @@ export function buildBlockMesh(cells: readonly Cell[], palette: readonly BlockSt
   const solid = new LayerBuilder(), translucent = new LayerBuilder();
   for (let i = 0; i < cells.length; i++) c.emit(i, solid, translucent);
   const s = solid.done(), t = translucent.done();
-  return { solid: s, translucent: t, quads: s.quads + t.quads, blocks: c.blocks, naiveQuads: c.blocks * 6, spawn: c.spawn, lit: c.sky !== null };
+  return { solid: s, translucent: t, quads: s.quads + t.quads, blocks: c.blocks, naiveQuads: c.blocks * 6, spawn: c.spawn, lit: c.sky !== null, beacons: c.beacons };
 }
 
 /**
@@ -410,7 +473,10 @@ export function buildSectionMesh(cells: readonly Cell[], palette: readonly Block
     const m = c.marks[index]!;
     let mh = 0;
     if (m !== NO_MARK) { const k = m.join(','); mh = markHash.get(k) ?? fnv(k); markHash.set(k, mh); }
-    const h = mix32(mix32(mix32(Math.imul(x, 73856093) ^ Math.imul(y, 19349663) ^ Math.imul(z, 83492791)) + stateHash[cell.paletteIndex]!) + mh);
+    let h = mix32(mix32(mix32(Math.imul(x, 73856093) ^ Math.imul(y, 19349663) ^ Math.imul(z, 83492791)) + stateHash[cell.paletteIndex]!) + mh);
+    // A beam depends on blocks far above and below the beacon: its outcome is part of the beacon's fingerprint.
+    const beam = c.beams.get(index);
+    if (beam) h = mix32(h + fnv(beamSignature(beam)));
     const bx = sec(x), by = sec(y), bz = sec(z);
     touch(`${bx},${by},${bz}`, h, bx, by, bz).members.push(index);
     // Cells near a section border shape the neighbour's faces as well (culling, occlusion).
@@ -462,5 +528,5 @@ export function buildSectionMesh(cells: readonly Cell[], palette: readonly Block
     sections.push({ key, solid: s, translucent: t, hash, min: a.min, cells });
     built++; quads += s.quads + t.quads;
   }
-  return { sections, quads, blocks: c.blocks, naiveQuads: c.blocks * 6, spawn: c.spawn, lit: c.sky !== null, reused, built };
+  return { sections, quads, blocks: c.blocks, naiveQuads: c.blocks * 6, spawn: c.spawn, lit: c.sky !== null, beacons: c.beacons, reused, built };
 }

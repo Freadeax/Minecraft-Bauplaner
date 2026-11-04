@@ -16,19 +16,24 @@ import type { BlockMesh, MeshLayer, MeshSection, SpawnMap } from './mesh.ts';
  * - day:   Minecraft daylight – interiors without sky light get darker,
  * - sun:   directional sunlight with a shadow map, sky ambient and torches,
  * - night: moonlight from the sky and warm block light from torches etc.
- * Switching the look never rebuilds geometry.
+ * Switching the look never rebuilds geometry. The same holds for the biome
+ * (GFX-02): faces carry their colour class and the vertex shader swaps the
+ * baked plains colour for the biome's grass, foliage or water colour.
  */
 const VERTEX = /* glsl */`
 attribute vec3 aColor;
 attribute vec4 aMark;
 attribute vec4 aLight;
+attribute float aTint;
+uniform vec3 biome[4];
 varying vec2 vUv;
 varying vec3 vColor;
 varying vec4 vMark;
 varying vec4 vLight;
 varying vec3 vPos;
 void main() {
-  vUv = uv; vColor = aColor; vMark = aMark; vLight = aLight; vPos = position;
+  vec3 f = aTint < 0.5 ? biome[0] : aTint < 1.5 ? biome[1] : aTint < 2.5 ? biome[2] : biome[3];
+  vUv = uv; vColor = aColor * f; vMark = aMark; vLight = aLight; vPos = position;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }`;
 const FRAGMENT = /* glsl */`
@@ -117,10 +122,17 @@ export interface LookUniforms {
   readonly shadowMatrix: { value: THREE.Matrix4 };
   readonly shadowTexel: { value: number };
   readonly normalBias: { value: number };
+  /** Factors per biome colour class (none, grass, foliage, water) on the baked plains colours. */
+  readonly biome: { value: THREE.Vector3[] };
 }
 export function lookUniforms(): LookUniforms {
   return { mode: { value: 1 }, aoStrength: { value: 1 }, sunDir: { value: new THREE.Vector3(0.4, 0.8, 0.45).normalize() }, shadowOn: { value: 0 },
-    shadowMap: { value: null }, shadowMatrix: { value: new THREE.Matrix4() }, shadowTexel: { value: 1 / 2048 }, normalBias: { value: 0.05 } };
+    shadowMap: { value: null }, shadowMatrix: { value: new THREE.Matrix4() }, shadowTexel: { value: 1 / 2048 }, normalBias: { value: 0.05 },
+    biome: { value: [0, 1, 2, 3].map(() => new THREE.Vector3(1, 1, 1)) } };
+}
+/** Sets the biome factors (biomes.ts `biomeFactors`) on look uniforms. */
+export function setBiomeFactors(look: LookUniforms, factors: Float32Array): void {
+  look.biome.value.forEach((v, i) => v.set(factors[i * 3]!, factors[i * 3 + 1]!, factors[i * 3 + 2]!));
 }
 
 export interface BlockMaterials {
@@ -144,7 +156,7 @@ export function blockMaterials(kit: RenderKit, look: LookUniforms = lookUniforms
     transparent: translucent, depthWrite: !translucent,
   });
   const solid = make(false), translucent = make(true);
-  const depth = new THREE.ShaderMaterial({ vertexShader: VERTEX, fragmentShader: DEPTH_FRAGMENT, uniforms: { map: { value: texture } } });
+  const depth = new THREE.ShaderMaterial({ vertexShader: VERTEX, fragmentShader: DEPTH_FRAGMENT, uniforms: { map: { value: texture }, biome: look.biome } });
   return { solid, translucent, depth, texture, look, key: kit.key, dispose() { solid.dispose(); translucent.dispose(); depth.dispose(); texture.dispose(); } };
 }
 
@@ -155,6 +167,7 @@ function geometry(layer: MeshLayer): THREE.BufferGeometry {
   g.setAttribute('aColor', new THREE.BufferAttribute(layer.colors, 3));
   g.setAttribute('aMark', new THREE.BufferAttribute(layer.marks, 4));
   g.setAttribute('aLight', new THREE.BufferAttribute(layer.light, 4));
+  g.setAttribute('aTint', new THREE.BufferAttribute(layer.tints, 1));
   g.setIndex(new THREE.BufferAttribute(layer.indices.slice(), 1));
   g.computeBoundingSphere(); g.computeBoundingBox();
   return g;
@@ -183,39 +196,101 @@ export const SHADOW_LAYER = 1;
 
 interface SectionObject { readonly section: MeshSection; readonly solid: THREE.Mesh | null; readonly translucent: THREE.Mesh | null }
 
+const layerBytes = (l: MeshLayer) => l.positions.byteLength + l.uvs.byteLength + l.colors.byteLength + l.marks.byteLength + l.light.byteLength + l.tints.byteLength + l.indices.byteLength;
+/** Vertex and index bytes a section sends to the GPU. */
+export const sectionBytes = (s: MeshSection): number => layerBytes(s.solid) + layerBytes(s.translucent);
+
+/** GPU upload per frame (GFX-02): start, bounds, and the frame times that make it grow or shrink. */
+export const UPLOAD = { start: 16 << 20, min: 2 << 20, max: 256 << 20, fastMs: 14, slowMs: 40 } as const;
+
 /**
  * All sections of a block mesh as one object. `update` swaps in a new section
  * list and keeps the GPU buffers of every section that was reused unchanged.
  * `pick` maps a ray hit back to the cell that made the quad.
+ *
+ * Progressive upload (GFX-02, `progressive: true` in the 3D viewer): when the
+ * new sections hold more data than one frame may upload, they wait in a queue
+ * and `uploadStep` installs the ones nearest to the camera first, within a
+ * byte budget that follows the measured frame time. Until its replacement is
+ * installed, the previous mesh of a section stays visible, so edits never
+ * leave holes; sections that no longer exist disappear at once. Still images
+ * upload everything immediately.
  */
 export class BlockObject {
   readonly group = new THREE.Group();
   private parts = new Map<string, SectionObject>();
   private materials: BlockMaterials;
   private sortedAt: string | null = null;
+  private queue: MeshSection[] = [];
+  private budget: number = UPLOAD.start;
+  private readonly progressive: boolean;
+  /** Frames the last update needed to reach the GPU completely (1 = at once). */
+  uploadFrames = 0;
 
-  constructor(sections: readonly MeshSection[] | BlockMesh, cells: readonly Cell[], materials: BlockMaterials) {
+  constructor(sections: readonly MeshSection[] | BlockMesh, cells: readonly Cell[], materials: BlockMaterials, options: { readonly progressive?: boolean } = {}) {
     this.materials = materials;
+    this.progressive = options.progressive === true;
     this.update('solid' in sections ? [{ key: 'all', solid: sections.solid, translucent: sections.translucent, hash: '', min: [0, 0, 0], cells }] : sections);
   }
 
+  /** Sections still waiting for the GPU. */
+  get pending(): number { return this.queue.length; }
+
   /** Replaces the sections; returns how many GPU buffers were kept. */
   update(sections: readonly MeshSection[]): number {
-    const next = new Map<string, SectionObject>();
-    let kept = 0;
+    const wanted = new Set(sections.map(s => s.key));
+    for (const [key, p] of this.parts) if (!wanted.has(key)) { this.disposePart(p); this.parts.delete(key); }
+    this.queue = [];
+    let kept = 0, bytes = 0;
     for (const s of sections) {
+      if (this.parts.get(s.key)?.section === s) { kept++; continue; }
+      this.queue.push(s); bytes += sectionBytes(s);
+    }
+    this.uploadFrames = this.queue.length ? 0 : 1;
+    if (!this.progressive || bytes <= this.budget) this.install(this.queue.length);
+    this.sortedAt = null;
+    return kept;
+  }
+
+  /**
+   * Installs queued sections nearest to `eye` (world coordinates) within the
+   * byte budget of one frame, at least one. Returns how many are still waiting.
+   */
+  uploadStep(eye: readonly [number, number, number]): number {
+    if (!this.queue.length) return 0;
+    const d = (s: MeshSection) => {
+      const h = 16, dx = s.min[0] + h - eye[0], dy = s.min[1] + h - eye[1], dz = s.min[2] + h - eye[2];
+      return dx * dx + dy * dy + dz * dz;
+    };
+    this.queue.sort((a, b) => d(a) - d(b));
+    let n = 0, bytes = 0;
+    while (n < this.queue.length && (n === 0 || bytes + sectionBytes(this.queue[n]!) <= this.budget)) bytes += sectionBytes(this.queue[n++]!);
+    this.install(n);
+    return this.queue.length;
+  }
+
+  /** Frame time (ms) of the last frame that uploaded: the budget grows on fast frames and halves on slow ones. */
+  reportFrame(ms: number): void {
+    if (ms < UPLOAD.fastMs) this.budget = Math.min(UPLOAD.max, this.budget * 1.5);
+    else if (ms > UPLOAD.slowMs) this.budget = Math.max(UPLOAD.min, this.budget / 2);
+  }
+
+  /** Current upload budget per frame in bytes. */
+  get uploadBudget(): number { return this.budget; }
+
+  private install(n: number): void {
+    const batch = this.queue.splice(0, n);
+    if (!batch.length) return;
+    this.uploadFrames++;
+    for (const s of batch) {
       const before = this.parts.get(s.key);
-      if (before && before.section === s) { next.set(s.key, before); this.parts.delete(s.key); kept++; continue; }
+      if (before) this.disposePart(before);
       const solid = s.solid.quads ? new THREE.Mesh(geometry(s.solid), this.materials.solid) : null;
       const translucent = s.translucent.quads ? new THREE.Mesh(geometry(s.translucent), this.materials.translucent) : null;
       if (solid) { solid.layers.enable(SHADOW_LAYER); solid.userData.section = s; this.group.add(solid); }
-      if (translucent) { translucent.renderOrder = 1; translucent.userData.section = s; this.group.add(translucent); }
-      next.set(s.key, { section: s, solid, translucent });
+      if (translucent) { translucent.renderOrder = 1; translucent.userData.section = s; this.group.add(translucent); this.sortedAt = null; }
+      this.parts.set(s.key, { section: s, solid, translucent });
     }
-    for (const old of this.parts.values()) this.disposePart(old);
-    this.parts = next;
-    this.sortedAt = null;
-    return kept;
   }
 
   setMaterials(materials: BlockMaterials): void {
@@ -268,7 +343,7 @@ export class BlockObject {
     for (const m of [p.solid, p.translucent]) if (m) { this.group.remove(m); m.geometry.dispose(); }
   }
 
-  dispose(): void { for (const p of this.parts.values()) this.disposePart(p); this.parts.clear(); }
+  dispose(): void { for (const p of this.parts.values()) this.disposePart(p); this.parts.clear(); this.queue = []; }
 }
 
 /**
