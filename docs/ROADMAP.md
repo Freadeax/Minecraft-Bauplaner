@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-04T14:30:00.000Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-04T22:02:23.142Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -167,7 +167,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
-| [GAME-09](#game-09) | Bauplaner-Brücke auf Modrinth | 🚧 In Arbeit 3/5 | P2 | „Mod auf Modrinth veröffentlichen“ | — |
+| [GAME-09](#game-09) | Bauplaner-Brücke auf Modrinth | 🚧 In Arbeit 4/5 | P2 | „Mod auf Modrinth veröffentlichen“ | — |
 
 <a id="bereich-perf"></a>
 
@@ -385,7 +385,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **COOP-03 · Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm** — 🧩 Implementiert · Abnahme offen, 2/3 Teilschritte. Nächster Schritt: Abnahme TEAMBAU-09 auf Philipps Server mit Mod 0.10.0 und Paper-Plugin mit Teamkanal; Lagerkisten (COOP-04) über TeamChannel.decorate/broadcastStore.
 - **COOP-04 · Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung in COOP-05 (geprüfte Lagerkisten, docs/architecture/LAGERKISTEN.md).
 - **PROJ-01 · Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel.
-- **GAME-09 · Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** — 🚧 In Arbeit, 3/5 Teilschritte. Nächster Schritt: Modrinth-Prüfung abwarten (Status processing → approved); danach jede neue Mod-Version mit modrinth_publish.mjs release.
+- **GAME-09 · Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** — 🚧 In Arbeit, 4/5 Teilschritte. Nächster Schritt: Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind.
 - **GAME-10 · Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme MOD-16 auf Philipps Server mit Paper-Plugin.
 - **GAME-11 · Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** — ⏳ Offen, 0/4 Teilschritte. Nächster Schritt: Entschieden (Philipp 04.11.): Fabric 26.3 (sein Modpack mit REI) hat Vorrang, danach jeweils die neueste Minecraft-Version nachziehen; keine Matrix älterer Versionen.
 - **COOP-07 · Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl umgesetzt (LINK-05).
@@ -547,7 +547,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [COOP-02](#coop-02) | Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-01, GAME-04 | ausstehend | ausstehend |
 | [COOP-06](#coop-06) | Teamplanung im Planer: Arbeitspakete, Zuteilung, Zeitplan, Material je Spieler, Fortschritt mit Hinweisen, Konflikthilfe, Planstand-Vergleich, Übergabe und Abwesenheit | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-01 | ausstehend | ausstehend |
 | [PROJ-01](#proj-01) | Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten | 🧩 Implementiert · Abnahme offen | 4/5 | BUILD-01, BUILD-06, BACKUP-02 | ausstehend | ausstehend |
-| [GAME-09](#game-09) | Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch | 🚧 In Arbeit | 3/5 | GAME-07, GAME-04 | ausstehend | ausstehend |
+| [GAME-09](#game-09) | Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch | 🚧 In Arbeit | 4/5 | GAME-07, GAME-04 | ausstehend | ausstehend |
 | [PROD-01](#prod-01) | Produktionsdaten: Katalog von 34 Farmarten mit Richtwerten je Einheit, Bedingungen, Reichweite, Verbrauch und Bauplan; Farmliste je Projekt (Anzahl, Zustand, Ort, Bauteil, Kartenpunkt) und Ertragsbuch, das ins Baustellen-Lager bucht und gemessene Raten liefert | 🧩 Implementiert · Abnahme offen | 3/4 | BUILD-01 | ausstehend | ausstehend |
 | [PROD-02](#prod-02) | Deckung und Engpässe: Restbedarf des Sammelplans gegen laufende Farmen und Handarbeit (gemeinsame Warteschlange, gieriger Ausgleich), Engpass, Materialbereitschaft je Abschnitt in Spieltagen, „Lohnt sich eine Farm?“ mit Amortisation aus Bauplan-Kosten | 🧩 Implementiert · Abnahme offen | 3/4 | PROD-01, PROJ-01 | ausstehend | ausstehend |
 | [PROD-03](#prod-03) | Verarbeitung und Logistik: Öfen für eine Zielzeit, Brennstoff je Sorte und netto aus Brennstofffarmen (Seetang, Bambus, Lava), Lagerplatz/Shulker/Fahrten je Abschnitt, Trichterdurchsatz und „Truhe voll nach“ je Farm, Sortier-Module | 🧩 Implementiert · Abnahme offen | 3/3 | PROD-01 | ausstehend | ausstehend |
@@ -2805,17 +2805,17 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-09
 
-**Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** · 🚧 In Arbeit · Priorität P2 · Verantwortlich: Claude (Thread „Mod auf Modrinth veröffentlichen“) · Zuständiger Thread: „Mod auf Modrinth veröffentlichen“ · Aktualisiert: 2026-11-04T12:47:26.654Z
+**Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** · 🚧 In Arbeit · Priorität P2 · Verantwortlich: Claude (Thread „Mod auf Modrinth veröffentlichen“) · Zuständiger Thread: „Mod auf Modrinth veröffentlichen“ · Aktualisiert: 2026-11-04T22:02:23.142Z
 
 - [x] GAME-09-S01: Projektdaten: project.json (Slug, Titel, Kurztext, Kategorien, Seiten, Lizenz, Links, Loader, Abhängigkeit Fabric API), DESCRIPTION.md Englisch + Deutsch, Icon 512 px, 6 Bilder aus den Spieltests.
 - [x] GAME-09-S02: scripts/modrinth_publish.mjs check|plan|create|sync|release: Dateien aus releases.json mit SHA-256-Vergleich, Änderungsliste aus CHANGELOG.md je Version, Token nur aus MODRINTH_TOKEN; Offline-Prüfung in npm test, Ablauf gegen nachgebaute API geprüft.
 - [x] GAME-09-S03: Philipp bestätigt Name, Beschreibung, Sichtbarkeit öffentlich (03.11.2026) und Lizenz MIT; MODRINTH_TOKEN in der Cloud-Umgebung (keine Actions).
 - [ ] GAME-09-S04: Projekt angelegt (create, Modrinth-ID uL1mPEKJ), 0.10.0 für Fabric, NeoForge (client_only) und Paper (server_only) hochgeladen, 03.11.2026 zur Prüfung eingereicht; offen: Freigabe durch Modrinth.
-- [ ] GAME-09-S05: Jede neue Mod-Version: nach release_mod.mjs und Abschnitt in CHANGELOG.md `node scripts/modrinth_publish.mjs release`.
+- [x] GAME-09-S05: Jede neue Mod-Version: nach release_mod.mjs und Abschnitt in CHANGELOG.md `node scripts/modrinth_publish.mjs release` (Daueranweisung Philipp 04.11.2026; bisher 0.10.0–0.15.0 hochgeladen, 21 Dateien, Stand 04.11.2026 22:05).
 
 **Abnahme:** Das Projekt ist auf Modrinth sichtbar und im Modrinth-Launcher für Fabric und NeoForge 26.3 installierbar; Fabric zieht die Fabric API mit. Nur auf der Website geprüfte .jar (gleiche SHA-256) werden hochgeladen; Forge bleibt draußen, bis es im Spiel geprüft ist. Kein Token im Repo, in Logs oder im Chat.
 
-**Nächste Aktion:** Modrinth-Prüfung abwarten (Status processing → approved); danach jede neue Mod-Version mit modrinth_publish.mjs release.
+**Nächste Aktion:** Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind.
 
 **Prüfstand:** Echte API: Projekt, 6 Bilder, 3 Versionen und Einreichung erfolgreich; kein „Claude“ im Livetext (geprüft 03.11.2026). Freigabe durch Modrinth offen.
 

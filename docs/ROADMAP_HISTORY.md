@@ -5432,3 +5432,13 @@ COOP-10 Client zuerst: section.seen/store.seen (Mod meldet Baustand und Kistenin
 - `apps/web/src/testing/testplan.ts`
 - `docs/testing/TESTPLAN.md`
 
+## 2026-11-04T22:02:23.142Z · progress
+
+**Aufgaben:** GAME-09
+
+Modrinth-Stand: 0.10.0 bis 0.15.0 (Fabric, NeoForge, Paper bis 0.13.0) hochgeladen, 21 Dateien, kein KI-Werkzeugname; Projekt weiter in der Modrinth-Prüfung
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
+

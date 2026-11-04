@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T14:30:00.000Z",
+  "updatedAt": "2026-11-04T22:02:23.142Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -7856,8 +7856,8 @@
         },
         {
           "id": "GAME-09-S05",
-          "title": "Jede neue Mod-Version: nach release_mod.mjs und Abschnitt in CHANGELOG.md `node scripts/modrinth_publish.mjs release`.",
-          "done": false
+          "title": "Jede neue Mod-Version: nach release_mod.mjs und Abschnitt in CHANGELOG.md `node scripts/modrinth_publish.mjs release` (Daueranweisung Philipp 04.11.2026; bisher 0.10.0–0.15.0 hochgeladen, 21 Dateien, Stand 04.11.2026 22:05).",
+          "done": true
         }
       ],
       "acceptance": [
@@ -7865,7 +7865,7 @@
         "Nur auf der Website geprüfte .jar (gleiche SHA-256) werden hochgeladen; Forge bleibt draußen, bis es im Spiel geprüft ist.",
         "Kein Token im Repo, in Logs oder im Chat."
       ],
-      "next": "Modrinth-Prüfung abwarten (Status processing → approved); danach jede neue Mod-Version mit modrinth_publish.mjs release.",
+      "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind.",
       "blockers": [],
       "evidence": [
         {
@@ -7881,7 +7881,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T12:47:26.654Z",
+      "updatedAt": "2026-11-04T22:02:23.142Z",
       "area": "MODRINTH",
       "thread": "Mod auf Modrinth veröffentlichen",
       "philipp": [],
@@ -17961,6 +17961,24 @@
           "done": 3,
           "total": 5,
           "next": "Mod meldet section.seen/store.seen (Anbindungs-Thread), dann Abnahme TEAMBAU-25."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T22:02:23.142Z",
+      "kind": "progress",
+      "items": [
+        "GAME-09"
+      ],
+      "summary": "Modrinth-Stand: 0.10.0 bis 0.15.0 (Fabric, NeoForge, Paper bis 0.13.0) hochgeladen, 21 Dateien, kein KI-Werkzeugname; Projekt weiter in der Modrinth-Prüfung",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 4,
+          "total": 5,
+          "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind."
         }
       ]
     }
