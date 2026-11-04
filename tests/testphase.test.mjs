@@ -114,3 +114,14 @@ test('Abnahme je Paket: jedes implementierte Roadmap-Paket hat bekannte Testfäl
   assert.deepEqual(packagesOf('DATEI-07'), ['NBT-01', 'ENTITY-01']);
   assert.equal(new Set(ALL_CASES.map(c => c.id)).size, ALL_CASES.length, 'Fall-IDs eindeutig');
 });
+
+test('Abnahme nach Ort: Server-Fälle, Spielfälle und reine Browserfälle', async () => {
+  const { ALL_CASES, placeOf, packagePlace } = await import('../apps/web/src/testing/testplan.ts');
+  const byId = id => ALL_CASES.find(c => c.id === id);
+  assert.equal(placeOf(byId('LAGER-01')), 'server');
+  assert.equal(placeOf(byId('MOD-02')), 'spiel');
+  assert.equal(placeOf(byId('BIB-01')), 'planer');
+  assert.equal(placeOf(byId('LINK-07')), 'spiel', 'ohne Plugin ist kein Server nötig');
+  assert.equal(packagePlace('COOP-05'), 'server');
+  assert.equal(packagePlace('EDIT-02'), 'planer');
+});

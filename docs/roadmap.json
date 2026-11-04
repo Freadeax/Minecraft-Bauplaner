@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T12:47:26.654Z",
+  "updatedAt": "2026-11-04T12:52:53.984Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -6817,7 +6817,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T09:26:50.360Z",
+      "updatedAt": "2026-11-04T12:52:53.984Z",
       "area": "QA",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -17260,6 +17260,30 @@
           "done": 3,
           "total": 6,
           "next": "Positionen und Aufnahmen über den Raum; Release 0.14.0; Abnahme LINK-07."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T12:52:53.984Z",
+      "kind": "progress",
+      "items": [
+        "QA-04"
+      ],
+      "summary": "Testplan auf Mod 0.14.0 (TEAMBAU-25/09 ohne Server-Datei, Team-Raum vorausgefüllt, COOP-07 auch LINK-07); Abnahme je Paket nach Ort geordnet (placeOf/packagePlace: Browser, Minecraft, Paper-Server)",
+      "files": [
+        "apps/web/src/testing/testplan.ts",
+        "docs/architecture/TESTPHASE.md",
+        "docs/testing/TESTPLAN.md",
+        "scripts/render_testplan.mjs",
+        "tests/testphase.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "QA-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist."
         }
       ]
     }

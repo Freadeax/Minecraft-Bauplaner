@@ -5231,3 +5231,21 @@ Roadmap-Abgleich 04.11. mittags: LINK an den umbenannten Thread, Modrinth wieder
 | LINK-06 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme durch Philipp (Testplan LINK-05, LINK-06; Paper-Plugin 0.13.0 auf dem Server). |
 | LINK-07 | 🚧 In Arbeit | 3/6 | Positionen und Aufnahmen über den Raum; Release 0.14.0; Abnahme LINK-07. |
 
+## 2026-11-04T12:52:53.984Z · progress
+
+**Aufgaben:** QA-04
+
+Testplan auf Mod 0.14.0 (TEAMBAU-25/09 ohne Server-Datei, Team-Raum vorausgefüllt, COOP-07 auch LINK-07); Abnahme je Paket nach Ort geordnet (placeOf/packagePlace: Browser, Minecraft, Paper-Server)
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| QA-04 | 🧩 Implementiert · Abnahme offen | 4/6 | Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `docs/architecture/TESTPHASE.md`
+- `docs/testing/TESTPLAN.md`
+- `scripts/render_testplan.mjs`
+- `tests/testphase.test.mjs`
+

@@ -149,12 +149,12 @@ Mehrere Spieler an einem Projekt: Reiter „Team“ im Planer und Teambefehle de
 | TEAMBAU-06 | Team auf dem Paper-Server | vertieft | 1. Projekt auf der Weltkarte platzieren, im Reiter „Team“ „Serverdatei herunterladen“.<br>2. Datei nach plugins/BauplanerBridge/team/ legen, im Spiel `/bauplaner team laden` (als OP).<br>3. Als Mitspieler `/bauplaner team`, `/bauplaner nehmen 2`, im Abschnitt stehen, `/bauplaner zeigen 2`, `/bauplaner fertig`, `/bauplaner notiz frage …`.<br>4. `/bauplaner team export` und die Datei im Planer unter „Einlesen“ wählen. | Im Spiel: Aktionsleiste „Abschnitt 2 · … · in Arbeit“, Partikelumriss, verständliche Antworten, Hinweis beim Bauen im fremden Abschnitt. Im Planer kommen die Meldungen mit „vom Server“ an. |
 | TEAMBAU-07 | Baunachweis auf dem Server | vertieft | 1. Mit zwei Spielern in Abschnitten des Teams Blöcke setzen und abbauen (einer innerhalb, einer außerhalb der Abschnitte).<br>2. `/bauplaner beitrag` und als Baumeister `/bauplaner beitrag alle`.<br>3. Ein Spieler: `/bauplaner nachweis aus`, dann wieder `beitrag alle`.<br>4. `/bauplaner team export` und im Planer einlesen, Bereich „Baunachweis & Lager“ ansehen. | Gezählt wird nur in Teamabschnitten; je Abschnitt stimmen die Anteile; nach „nachweis aus“ verschwinden die Zahlen dieses Spielers überall (auch frühere); der Planer zeigt dieselben Zahlen wie der Server. |
 | TEAMBAU-08 | Lagerkiste des Teams | vertieft | 1. Als Baumeister auf eine Kiste schauen: `/bauplaner lager setzen Hauptlager`.<br>2. Als anderer Spieler etwas hineinlegen und die Kiste schließen, später etwas herausnehmen (auch eine gefüllte Shulkerkiste einlegen).<br>3. `/bauplaner lager`; Ausfuhr im Planer einlesen, „Bestand ins Baustellen-Lager übernehmen“. | Beim Schließen meldet die Aktionsleiste „+64 stone“ bzw. „-32 …“; der Inhalt der Shulkerkiste wird mitgezählt; im Planer stehen Bestand, „ins Lager“ und „entnommen“ beim richtigen Spieler; das Lager im Reiter „Baustelle“ übernimmt die Mengen (Strg+Z möglich). |
-| TEAMBAU-09 | Teambau im Spiel mit der Mod 0.10.0 | vertieft | 1. Mod 0.10.0 installieren, im Planer Reiter „Team“ „Ich bin“ wählen, im Menü „Spiel“ koppeln, Plan ins Spiel schicken.<br>2. Im Reiter „Team“ unter „Mit Spiel abgleichen“ „Jetzt abgleichen“.<br>3. Im Spiel `/bauplaner team abschnitte`, `/bauplaner team nehmen 2`, `/bauplaner team mein`, `/bauplaner team material`, `/bauplaner team notiz frage Treppe?`.<br>4. Auf dem Server mit Plugin: `/bauplaner team erlauben`, dann `/bauplaner team status`; im Planer „Meldungen vom Server holen“. | Abschnitte erscheinen als Rahmen in der Farbe ihres Inhabers, das HUD zeigt „Mein Auftrag … %“; nur der eigene Abschnitt ist eingeblendet. Beim nächsten Abgleich zeigt die Website die Meldungen aus dem Spiel zur Übernahme. Ohne `erlauben` sendet die Mod nichts an den Server (Status „Plugin da – /bauplaner team erlauben“); mit Erlaubnis steht „live“ und Meldungen anderer Spieler kommen an. |
+| TEAMBAU-09 | Teambau im Spiel über den Plugin-Kanal (ab Mod 0.10.0) | vertieft | 1. Mod ab 0.10.0 installieren (aktuell 0.14.0; ohne Plugin auf dem Server stattdessen LINK-07), im Planer Reiter „Team“ „Ich bin“ wählen, im Menü „Spiel“ koppeln, Plan ins Spiel schicken.<br>2. Im Reiter „Team“ unter „Mit Spiel abgleichen“ „Jetzt abgleichen“.<br>3. Im Spiel `/bauplaner team abschnitte`, `/bauplaner team nehmen 2`, `/bauplaner team mein`, `/bauplaner team material`, `/bauplaner team notiz frage Treppe?`.<br>4. Auf dem Server mit Plugin: `/bauplaner team erlauben`, dann `/bauplaner team status`; im Planer „Meldungen vom Server holen“. | Abschnitte erscheinen als Rahmen in der Farbe ihres Inhabers, das HUD zeigt „Mein Auftrag … %“; nur der eigene Abschnitt ist eingeblendet. Beim nächsten Abgleich zeigt die Website die Meldungen aus dem Spiel zur Übernahme. Ohne `erlauben` sendet die Mod nichts an den Server (Status „Plugin da – /bauplaner team erlauben“); mit Erlaubnis steht „live“ und Meldungen anderer Spieler kommen an. |
 | TEAMBAU-21 | Großen Abschnitt in Arbeitspakete teilen und verteilen | kern | 1. Reiter „Team“ → „Planung“: unter „Arbeitspakete“ den größten Abschnitt wählen, „Teilen in 3 Pakete“, Art „automatisch“.<br>2. Vorschau prüfen, „In 3 Pakete teilen“.<br>3. Unter „Zuteilung“ die Mitspieler anhaken und „Zuweisungen übernehmen“. | Drei Pakete „… · Teil 1/3“ ersetzen den Abschnitt an derselben Stelle (Strg+Z nimmt es zurück); der Vorschlag verteilt nach offener Arbeit, Pakete übereinander bleiben möglichst bei einer Person; Abwesende bekommen nichts. |
 | TEAMBAU-22 | Zeitplan und Material je Spieler | vertieft | 1. „Planung“ → „Zeitplan“: Bautage je Woche einstellen.<br>2. „Material im Team“: bei einem Item „Ich sammle“, bei einem Mitglied „Packliste kopieren“. | Balken je Mitglied, Wartezeiten auf Vorarbeit und die entscheidende Kette sind sichtbar; „Fertig in … Bautagen“ ist kleiner als „allein“. Das Item zählt danach unter „wird gesammelt“; die Packliste nennt Stacks und Shulkerkisten. |
 | TEAMBAU-23 | Fortschritt, Achtung und Planänderung | vertieft | 1. „Fortschritt“ öffnen, einen Abschnitt im zweiten Browser fertig melden und austauschen.<br>2. Plan im Editor ändern, „Mit Planstand N vergleichen“. | Brett nach Status, je Mitglied abgehakt/gemeldet/bestätigt getrennt; unter „Achtung“ erscheinen gemeldete Abschnitte mit Haken-Lücke oder Planänderung mit Knopf „Bestätigen“ bzw. „Nacharbeit verlangen“. |
 | TEAMBAU-24 | Übergabe, Abwesenheit, Bauleitung übergeben | kern | 1. „Rechte & Übergabe“: eigenen Abschnitt „übergeben an …“ wählen; im anderen Browser nach Austausch „Annehmen“.<br>2. Abwesenheit mit Datum eintragen und austauschen.<br>3. Als Bauleitung „Bauleitung übergeben“. | Bis zur Annahme bleibt der Abschnitt beim alten Inhaber; danach wechselt er mit Notiz. Abwesende erscheinen unter „Achtung“ und im Zeitplan erst nach Rückkehr. Nach der Übergabe ist man Baumeister; es bleibt immer eine Bauleitung. |
-| TEAMBAU-25 | Team live ohne Dateien ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Einmal den Team-Raum einrichten (services/team-room/README.md: Cloudflare-Konto, `npx wrangler deploy`).<br>2. Reiter „Team“ → „Team live“: Adresse eintragen, „Live schalten“, Einladungslink an einen Mitspieler schicken.<br>3. Mitspieler öffnet den Link auf seinem Rechner oder Handy, „Beitreten und Plan laden“, wählt „Ich bin“ und übernimmt einen Abschnitt.<br>4. Bauleitung gibt einen neuen Planstand frei; Mitspieler klickt „Planstand übernehmen“. Danach WLAN kurz aus, eine Notiz schreiben, WLAN wieder an.<br>5. Server: `/bauplaner team verbinden <Link für den Server>`, ein paar Blöcke setzen. | Ohne jede Datei sieht jeder die Schritte der anderen nach wenigen Sekunden; unter „Gerade da“ stehen beide (und der Server); der neue Planstand kommt mit einem Klick an, der alte bleibt als Kopie; offline zeigt der Status „offline · 1 warten“ und holt die Notiz nach dem Verbinden nach; Messungen des Servers erscheinen im Baunachweis. |
+| TEAMBAU-25 | Team live ohne Dateien ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Reiter „Team“ → „Team live“: Die Adresse des Team-Raums ist vorausgefüllt (https://bauplaner-team.team-room.workers.dev). „Live schalten“, Einladungslink an einen Mitspieler schicken.<br>2. Mitspieler öffnet den Link auf seinem Rechner oder Handy, „Beitreten und Plan laden“, wählt „Ich bin“ und übernimmt einen Abschnitt.<br>3. Bauleitung gibt einen neuen Planstand frei; Mitspieler klickt „Planstand übernehmen“. Danach WLAN kurz aus, eine Notiz schreiben, WLAN wieder an.<br>4. Spiel dazu: mit Mod 0.14.0 im Planer „Mein Spiel verbinden“ (ohne Plugin, siehe LINK-07) oder auf einem Server mit Plugin `/bauplaner team verbinden <Link für den Server>`; ein paar Blöcke setzen. | Ohne jede Datei sieht jeder die Schritte der anderen nach wenigen Sekunden; unter „Gerade da“ stehen beide (und der Server); der neue Planstand kommt mit einem Klick an, der alte bleibt als Kopie; offline zeigt der Status „offline · 1 warten“ und holt die Notiz nach dem Verbinden nach; Messungen des Servers (mit Plugin) erscheinen im Baunachweis; ohne Plugin kommen Abschnittsschritte aus dem Spiel über die Mod an. |
 | TEAMBAU-26 | Team live im Alltag: Meldungen, Anwesenheit, Einladung erneuern | vertieft | 1. Team live wie in TEAMBAU-25, zwei Rechner (oder Rechner und Handy).<br>2. Mitspieler übernimmt einen Abschnitt und meldet ihn; Bauleitung ist dabei in einem anderen Reiter (z. B. „Material“).<br>3. Mitspieler lädt die Seite neu (Nachholen).<br>4. Bauleitung: „Einladung erneuern“; ein dritter Browser versucht es mit dem alten Link. | Die Meldung erscheint bei der Bauleitung in jedem Reiter, mit Name und Abschnitt in der Anwesenheit; nach dem Neuladen kommen keine alten Meldungen erneut; mit dem alten Link kommt niemand mehr in den Raum, abgelehnte Meldungen sind sichtbar. (Abnahme COOP-09) |
 
 ## LAGER · Server: geprüfte Lagerkisten (Server)
@@ -230,31 +230,60 @@ Planer, Mod und Paper-Plugin verbinden sich per Klick; der Server wird aus dem P
 
 ## Abnahme je Roadmap-Paket
 
-Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan.ts). Ein Paket gilt als abgenommen, wenn alle genannten Fälle ✓ sind; Stand der Pakete in `docs/ROADMAP.md`.
+Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan.ts), geordnet nach dem Ort, den die Abnahme braucht. Ein Paket gilt als abgenommen, wenn alle genannten Fälle ✓ sind; Ob ein Paket noch auf Abnahme wartet, steht in `docs/ROADMAP.md`.
+
+### Nur im Browser (37 Pakete)
 
 | Paket | Testfälle |
 |---|---|
 | ARCH-02 | SYS-03, START-03 |
 | BACKUP-02 | START-03, START-04 |
 | BASE-01 | BIB-10 |
-| BLOCK-01 | WERK-06, PROJ-04 |
-| BLOCK-02 | BIB-12, WERK-06 |
 | BUILD-06 | PROJ-03, GERAET-06 |
-| COOP-01 | TEAMBAU-01, TEAMBAU-02, TEAMBAU-03, TEAMBAU-04, TEAMBAU-05 |
-| COOP-02 | TEAMBAU-06 |
-| COOP-03 | TEAMBAU-09 |
-| COOP-04 | TEAMBAU-07, TEAMBAU-08 |
-| COOP-05 | LAGER-01, LAGER-02, LAGER-03, LAGER-04, LAGER-05, LAGER-06, LAGER-07, LAGER-08, LAGER-09 |
 | COOP-06 | TEAMBAU-21, TEAMBAU-22, TEAMBAU-23, TEAMBAU-24 |
-| COOP-07 | TEAMBAU-25 |
-| COOP-08 | LAGER-10, PROJ-12 |
-| COOP-09 | TEAMBAU-26, TEAMBAU-25 |
 | DIFF-01 | BIB-17, PROJ-07 |
 | EDIT-01 | WERK-03 |
 | EDIT-02 | WERK-01 |
 | EDIT-03 | WERK-02, WERK-05 |
 | EDIT-04 | WERK-04 |
 | EDIT-05 | WERK-03 |
+| GFX-01 | DATEI-04, GERAET-05 |
+| GROSS-01 | BIB-13, PROJ-11 |
+| LIB-02 | BIB-07 |
+| LIB-03 | BIB-08 |
+| LIB-06 | BIB-15, BIB-16 |
+| MAP-01 | KARTE-01 |
+| MAP-04 | KARTE-02, KARTE-03 |
+| MODEL-01 | PROJ-05 |
+| PERF-02 | PROJ-08, DATEI-05 |
+| PERF-03 | BIB-18, BIB-01 |
+| PERF-04 | DATEI-03, PROJ-05, PROJ-08 |
+| PERF-05 | START-01, PROJ-08, WERK-07 |
+| PROD-01 | PROJ-12 |
+| PROD-02 | PROJ-13 |
+| PROD-03 | PROJ-12, PROJ-13 |
+| PROD-04 | PROJ-13 |
+| PROFILE-01 | DATEI-06 |
+| PROJ-01 | PROJ-09, PROJ-10, PROJ-11 |
+| PROJ-02 | PROJ-16, PROJ-17, PROJ-18 |
+| SPLIT-01 | BIB-11 |
+| TERRAIN-01 | KARTE-04, PROJ-06 |
+| TERRAIN-02 | PROJ-06 |
+| UPDATE-01 | PROJ-07 |
+| VIEW-01 | DATEI-01, GERAET-04 |
+| VIEW-02 | START-06, DATEI-01 |
+| WORLD-IMPORT-01 | KARTE-04 |
+
+### Mit Minecraft (Mod oder Spiel) (31 Pakete)
+
+| Paket | Testfälle |
+|---|---|
+| BLOCK-01 | WERK-06, PROJ-04 |
+| BLOCK-02 | BIB-12, WERK-06 |
+| COOP-01 | TEAMBAU-01, TEAMBAU-02, TEAMBAU-03, TEAMBAU-04, TEAMBAU-05 |
+| COOP-03 | TEAMBAU-09 |
+| COOP-07 | TEAMBAU-25, LINK-07 |
+| COOP-09 | TEAMBAU-26, TEAMBAU-25 |
 | ENTITY-01 | DATEI-07 |
 | FORMAT-01 | DATEI-08, PROJ-04 |
 | FORMAT-02 | DATEI-08, PROJ-04 |
@@ -266,49 +295,32 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | GAME-10 | MOD-16 |
 | GEN-02 | BIB-06, BIB-12 |
 | GEN-03 | BIB-14 |
-| GFX-01 | DATEI-04, GERAET-05 |
-| GROSS-01 | BIB-13, PROJ-11 |
-| LAGER-01 | LAGER-01, TEAMBAU-08 |
-| LIB-02 | BIB-07 |
-| LIB-03 | BIB-08 |
 | LIB-04 | BIB-05, BIB-12 |
 | LIB-05 | BIB-12 |
-| LIB-06 | BIB-15, BIB-16 |
-| LINK-01 | LINK-01 |
 | LINK-02 | LINK-02 |
-| LINK-03 | LIVE-01, LINK-01 |
-| LINK-04 | LINK-01, LINK-02, LINK-03 |
 | LINK-05 | LINK-04 |
-| LINK-06 | LINK-05, LINK-06 |
 | LINK-07 | LINK-07 |
-| MAP-01 | KARTE-01 |
 | MAP-03 | LIVE-01, LIVE-03, LIVE-04 |
-| MAP-04 | KARTE-02, KARTE-03 |
 | MAP-05 | LIVE-04, LIVE-05 |
 | MAP-06 | KARTE-05, KARTE-06, LIVE-08 |
 | MAT-02 | PROJ-15, PROJ-02 |
 | MAT-03 | PROJ-14 |
 | MAT-04 | PROJ-14 |
-| MODEL-01 | PROJ-05 |
 | NBT-01 | DATEI-07 |
-| PERF-02 | PROJ-08, DATEI-05 |
-| PERF-03 | BIB-18, BIB-01 |
-| PERF-04 | DATEI-03, PROJ-05, PROJ-08 |
-| PERF-05 | START-01, PROJ-08, WERK-07 |
-| PROD-01 | PROJ-12 |
-| PROD-02 | PROJ-13 |
-| PROD-03 | PROJ-12, PROJ-13 |
-| PROD-04 | PROJ-13 |
-| PROD-05 | LAGER-10, PROJ-12 |
-| PROFILE-01 | DATEI-06 |
-| PROJ-01 | PROJ-09, PROJ-10, PROJ-11 |
-| PROJ-02 | PROJ-16, PROJ-17, PROJ-18 |
 | QA-04 | SYS-01, SYS-02, LIVE-06 |
 | SIZE-01 | DATEI-05, WERK-07, MOD-15, LIVE-09 |
-| SPLIT-01 | BIB-11 |
-| TERRAIN-01 | KARTE-04, PROJ-06 |
-| TERRAIN-02 | PROJ-06 |
-| UPDATE-01 | PROJ-07 |
-| VIEW-01 | DATEI-01, GERAET-04 |
-| VIEW-02 | START-06, DATEI-01 |
-| WORLD-IMPORT-01 | KARTE-04 |
+
+### Mit Paper-Server und Plugin (10 Pakete)
+
+| Paket | Testfälle |
+|---|---|
+| COOP-02 | TEAMBAU-06 |
+| COOP-04 | TEAMBAU-07, TEAMBAU-08 |
+| COOP-05 | LAGER-01, LAGER-02, LAGER-03, LAGER-04, LAGER-05, LAGER-06, LAGER-07, LAGER-08, LAGER-09 |
+| COOP-08 | LAGER-10, PROJ-12 |
+| LAGER-01 | LAGER-01, TEAMBAU-08 |
+| LINK-01 | LINK-01 |
+| LINK-03 | LIVE-01, LINK-01 |
+| LINK-04 | LINK-01, LINK-02, LINK-03 |
+| LINK-06 | LINK-05, LINK-06 |
+| PROD-05 | LAGER-10, PROJ-12 |
