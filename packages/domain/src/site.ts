@@ -7,8 +7,9 @@ import { newId } from './hash.js';
 import { materialsForParts, stackSizeOf, worldBlockAt } from './materials.js';
 import type { ItemLine, MaterialReport } from './materials.js';
 import type { Operation } from './project.js';
-import { rawSource, resolveRecipes } from './recipes.js';
-import type { RecipeMethod } from './recipes.js';
+import { RECIPE_TAGS, rawSource, resolveRecipes } from './recipes.js';
+import type { RecipeMethod, RecipeOptions, RecipePrefs } from './recipes.js';
+import { fuelOf } from '../../voxel/src/profile.js';
 import { memberMatches, sectionOfStep } from './sectionMembership.js';
 import { checkSnapshots } from './sectionSnapshots.js';
 import { checkPace } from './buildRun.js';
@@ -93,7 +94,24 @@ export interface SitePlan {
   readonly program?: BuildProgram;
   /** Farms, harvest log and time budget (PROD-01, production.ts); absent = none. */
   readonly production?: ProductionPlan;
+  /** Chosen tag members and fuel for the raw-material tree (MAT-02-S03, recipes.ts); absent = automatic. */
+  readonly recipePrefs?: RecipePrefs;
 }
+
+/** Site plan with changed recipe choices; empty choices are dropped (automatic again). */
+export function setRecipePrefs(site: SitePlan, change: { readonly tag?: string; readonly item?: string | null; readonly fuel?: string | null; readonly fuelInBase?: boolean }): SitePlan {
+  const cur = site.recipePrefs ?? {};
+  const tags: Record<string, string> = { ...(cur.tags ?? {}) };
+  if (change.tag !== undefined) { if (change.item) tags[change.tag] = ns(change.item); else delete tags[change.tag]; }
+  const fuel = change.fuel === undefined ? cur.fuel : change.fuel ?? undefined;
+  const fuelInBase = change.fuelInBase ?? cur.fuelInBase;
+  const next: RecipePrefs = { ...(Object.keys(tags).length && { tags }), ...(fuel && { fuel: ns(fuel) }), ...(fuelInBase && { fuelInBase: true }) };
+  const { recipePrefs: _old, ...rest } = site;
+  return Object.keys(next).length ? { ...rest, recipePrefs: next } : rest;
+}
+
+/** Recipe options of a site plan: route, items marked „vorhanden“ and the player's choices. */
+export const recipeOptionsOf = (site: SitePlan): RecipeOptions => ({ method: site.recipeMethod, stock: site.resolvedStock, ...(site.recipePrefs && { prefs: site.recipePrefs }) });
 
 export function emptySite(): SitePlan {
   return { schemaVersion: 1, sections: [], stock: {}, resolvedStock: [], recipeMethod: 'stonecutter', reservations: { defaultDepth: DEFAULT_RESERVATION_DEPTH, overrides: {} } };
@@ -152,6 +170,19 @@ export function checkSite(raw: unknown): SitePlan {
   if (raw.team !== undefined) checkTeam(raw.team);
   if (raw.program !== undefined) checkProgram(raw.program);
   if (raw.production !== undefined) checkProduction(raw.production);
+  if (raw.recipePrefs !== undefined) {
+    const p = raw.recipePrefs;
+    if (!isObj(p)) return fail('Rezeptwahl ungültig');
+    if (p.tags !== undefined) {
+      if (!isObj(p.tags) || Object.keys(p.tags).length > 64) fail('Rezeptwahl: höchstens 64 Tags');
+      for (const [tag, id] of Object.entries(p.tags as Record<string, unknown>)) {
+        const def = RECIPE_TAGS[tag.startsWith('#') ? tag : `#${tag}`];
+        if (!def || typeof id !== 'string' || !def.members.includes(ns(id))) fail(`Rezeptwahl: ${String(id)} gehört nicht zu ${tag}`);
+      }
+    }
+    if (p.fuel !== undefined && (typeof p.fuel !== 'string' || !fuelOf(p.fuel))) fail(`Rezeptwahl: ${String(p.fuel)} ist kein Brennstoff`);
+    if (p.fuelInBase !== undefined && typeof p.fuelInBase !== 'boolean') fail('Rezeptwahl: Brennstoff in Rohstoffen muss ja/nein sein');
+  }
   return raw as unknown as SitePlan;
 }
 
@@ -446,7 +477,7 @@ export function planSite(site: SitePlan, guide: Guide, progress: GuideProgress, 
       return { itemId: l.itemId, need: l.count, fromStock, missing: l.count - fromStock, assumed: l.confidence === 'assumed' };
     });
     const missingItems = items.filter(i => i.missing > 0).map(i => ({ itemId: i.itemId, count: i.missing }));
-    const recipes = missingItems.length ? resolveRecipes(missingItems, { method: site.recipeMethod, stock: resolved }) : null;
+    const recipes = missingItems.length ? resolveRecipes(missingItems, { ...recipeOptionsOf(site), stock: resolved }) : null;
     const raw = new Map<string, { need: number; kind: GatherLine['kind'] }>();
     for (const b of recipes?.base ?? []) raw.set(b.itemId, { need: b.count, kind: b.kind === 'stock' ? 'resolved' : b.kind });
     if (recipes?.fuel.coal) {

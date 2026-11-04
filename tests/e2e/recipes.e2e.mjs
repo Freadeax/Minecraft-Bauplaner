@@ -46,6 +46,28 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     const alt = panel.locator('.recipe-alternatives').first();
     if (await alt.count()) { await alt.locator('summary').click(); assert.match(await alt.locator('.alt-line').first().innerText(), /→ \d+$/); }
 
+    // MAT-02-S03: sort per tag and fuel are chosen here and stored in the project.
+    const fuel = panel.getByLabel('Brennstoff', { exact: true });
+    assert.equal(await fuel.count(), 1, 'the sample project smelts something');
+    {
+      await fuel.selectOption('minecraft:charcoal');
+      await panel.locator('.raw-stats dt', { hasText: 'Brennstoff (charcoal)' }).waitFor();
+      await panel.getByLabel('Brennstoff in die Rohstoffe aufnehmen').check();
+      await panel.locator('.raw-stats dd', { hasText: 'in Rohstoffen' }).waitFor();
+      assert.match(await panel.locator('.materials-notes').innerText(), /der Brennstoff ist in den Rohstoffen enthalten/);
+      await panel.getByLabel('Brennstoff in die Rohstoffe aufnehmen').uncheck();
+      await fuel.selectOption('minecraft:coal');
+      await panel.locator('.raw-stats dt', { hasText: 'Brennstoff (coal)' }).waitFor();
+    }
+    const sort = panel.locator('.recipe-choices select[aria-label^="Sorte für"]').first();
+    assert.equal(await sort.count(), 1, 'the sample project uses a recipe tag');
+    {
+      const option = await sort.locator('option').nth(2).getAttribute('value');
+      await sort.selectOption(option);
+      assert.match(await panel.locator('.materials-notes').innerText(), new RegExp(`${option.replace('minecraft:', '')} von dir gewählt`));
+      await sort.selectOption('');
+    }
+
     // Marking the first intermediate as available removes its subtree.
     const steps = await panel.locator('.recipe-steps li').count();
     await panel.locator('.recipe-steps li').first().getByRole('button', { name: 'vorhanden' }).click();

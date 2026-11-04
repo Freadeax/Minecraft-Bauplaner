@@ -154,6 +154,41 @@ function moveOwnFields(data: NbtTag, from: Vec3, to: Vec3): NbtTag {
   return u.tile === u.outer ? { type: 'compound', value: shift(u.tile) } : u.wrap(shift(u.tile), outer);
 }
 
+const ROTATIONS = ['NONE', 'CLOCKWISE_90', 'CLOCKWISE_180', 'COUNTERCLOCKWISE_90'] as const;
+/** One clockwise quarter turn of an offset like Minecraft's Rotation.CLOCKWISE_90: (x, z) → (−z, x). */
+const turnOffset = (v: readonly [number, number, number], turns: number): [number, number, number] => {
+  let [x, y, z] = v;
+  for (let i = 0; i < turns; i++) [x, z] = [-z, x];
+  return [x === 0 ? 0 : x, y, z === 0 ? 0 : z];
+};
+/**
+ * Structure block under clockwise quarter turns (NBT-01-S03), the way the turned world needs it:
+ * SAVE – the region posX/Y/Z + sizeX/Y/Z is the bounding box of the turned cells (new minimum corner, X/Z sizes swapped);
+ * LOAD – the anchor offset turns with the block and `rotation` gains the same quarter turns, so the loaded structure
+ * lands exactly where the turned original would. CORNER/DATA have no geometry. Null when fields are missing or unknown.
+ */
+export function turnStructureBlock(tile: Compound, turns: number): Compound | null {
+  const n = ((turns % 4) + 4) % 4;
+  const pos = ['posX', 'posY', 'posZ'].map(k => intNum(tile[k])), size = ['sizeX', 'sizeY', 'sizeZ'].map(k => intNum(tile[k]));
+  const mode = (text(tile.mode) ?? 'DATA').toUpperCase();
+  if (mode === 'CORNER' || mode === 'DATA' || n === 0) return tile;
+  if (pos.some(v => v === null)) return null;
+  const p = pos as [number, number, number];
+  const int = (value: number): NbtTag => ({ type: 'int', value });
+  if (mode === 'LOAD') {
+    const r = ROTATIONS.indexOf((text(tile.rotation) ?? 'NONE') as typeof ROTATIONS[number]);
+    if (r < 0) return null;
+    const q = turnOffset(p, n);
+    return { ...tile, posX: int(q[0]), posY: int(q[1]), posZ: int(q[2]), rotation: { type: 'string', value: ROTATIONS[(r + n) % 4]! } };
+  }
+  if (mode !== 'SAVE' || size.some(v => v === null || v! < 0)) return null;
+  const sz = size as [number, number, number];
+  if (sz.some(v => v === 0)) { const q = turnOffset(p, n); return { ...tile, posX: int(q[0]), posY: int(q[1]), posZ: int(q[2]) }; }
+  const a = turnOffset(p, n), b = turnOffset([p[0] + sz[0] - 1, p[1] + sz[1] - 1, p[2] + sz[2] - 1], n);
+  const lo = [0, 1, 2].map(i => Math.min(a[i]!, b[i]!)), hi = [0, 1, 2].map(i => Math.max(a[i]!, b[i]!));
+  return { ...tile, posX: int(lo[0]!), posY: int(lo[1]!), posZ: int(lo[2]!), sizeX: int(hi[0]! - lo[0]! + 1), sizeY: int(hi[1]! - lo[1]! + 1), sizeZ: int(hi[2]! - lo[2]! + 1) };
+}
+
 /**
  * Transforms one block entity: `position` is the cell's old position, `to` its new one (already computed with
  * the cell rule), `blockId` the block at the cell (fallback for entries without id).
@@ -183,6 +218,10 @@ export function transformBlockEntity(entity: BlockEntity, to: Vec3, t: Transform
       return out(true);
     }
     case 'geometry':
+      if (turned && !t.mirrorX && type === 'minecraft:structure_block') {
+        const u = unwrap(data), next = u ? turnStructureBlock(u.tile, t.quarterTurns) : null;
+        if (u && next) return { entity: { position: to, data: u.tile === u.outer ? { type: 'compound', value: next } : u.wrap(next) }, resolved: true, family, type };
+      }
       return turned ? out(false, `${name}: eigener Bereich (Versatz, Größe, Drehung) – Drehen/Spiegeln ohne geprüften Adapter; NBT unverändert erhalten.`) : out(true);
     case 'absolute': return out(false, `${name}: enthält eine Weltposition (Ausgang/Ziel); unverändert erhalten.`);
     default: return out(false, `${name}: BlockEntity-Typ nicht im Profil java-26.3; NBT unverändert erhalten.`);

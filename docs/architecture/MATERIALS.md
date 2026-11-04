@@ -101,6 +101,14 @@ Bauitems, die der Katalog nicht kennt, nehmen ein Rezept aus dem Profil (`source
 
 Prüfung: `tests/recipe-profile.test.mjs`, `tests/recipes.test.mjs`, `tests/e2e/recipes.e2e.mjs`.
 
+## Sorten und Brennstoff wählen (MAT-02-S03) · 04.11.2026
+
+In „Rohstoffe und Rezepte“ steht für jeden Rezept-Tag im Baum (z. B. „beliebige Planken“ für Stöcke, Truhen, Leitern) eine Auswahl „automatisch (…)“ oder eine bestimmte Sorte. Dazu kommen der geplante Brennstoff (Kohle, Holzkohle, Kohleblock, getrockneter Seetangblock, Lohenrute, Lavaeimer, Eichenplanken) und „Brennstoff in die Rohstoffe aufnehmen“. Alles liegt im Baustellenplan des Projekts (`site.recipePrefs`, geprüft in `checkSite`), ist rückgängig machbar, kommt mit in Sicherungen und gilt auch für den Sammelplan der Bauabschnitte (`recipeOptionsOf`).
+
+- Eine gewählte Sorte, die nicht zum Tag gehört, wird ignoriert (Status „automatisch“). Hinweis in den Notizen: „… von dir gewählt“.
+- Brennstoff in den Rohstoffen: Muss der Brennstoff selbst geschmolzen werden (Holzkohle, Seetang), braucht er wieder Brennstoff. Die Rechnung läuft deshalb bis zum festen Punkt, z. B. 640 Schmelzvorgänge mit Holzkohle = 92 Holzkohle (640 + 92 Vorgänge ÷ 8). Ein Brennstoff ohne Quelle im Katalog (Lavaeimer) wird angezeigt, aber nicht aufgenommen.
+- Prüfung: `tests/recipe-prefs.test.mjs`, Browser `tests/e2e/recipes.e2e.mjs` (Brennstoff wählen, in Rohstoffe aufnehmen, Sorte wählen).
+
 ## Kupfer mit Oxidation und Wachs (MAT-04) · 03.11.2026
 
 Die Zustandsmatrix kommt aus dem Profil (`packages/domain/src/copper.ts`): jeder Block mit einer `Weathering*`-Spielklasse oxidiert. Eine Familie zählt nur, wenn alle vier Stufen (Kupfer, angelaufen, verwittert, oxidiert) und ihre vier gewachsten Gegenstücke existieren, die gewachsten nicht oxidieren und alle acht dieselben Eigenschaften haben. In 26.3 sind das 15 vollständige Familien: Block, geschnitten, Treppe, Stufe, gemeißelt, Gitter, Lampe, Tür, Falltür, Stangen, Kette, Truhe, Golemstatue, Laterne, Blitzableiter. Unvollständige Familien würden in `incomplete` stehen und nie angeboten.

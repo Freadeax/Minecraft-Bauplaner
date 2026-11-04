@@ -85,7 +85,8 @@ export interface RecipeStep {
   /** Other recipes of the version profile for the same item (alternatives the game accepts). */
   readonly alternatives: readonly ProfileRecipe[];
 }
-export interface TagChoice { readonly tag: string; readonly label: string; readonly chosen: string; readonly reason: 'tree' | 'fallback'; readonly count: number }
+/** reason: 'chosen' = set by the player (RecipePrefs.tags), 'tree' = this sort already occurs in the demand, 'fallback' = default. */
+export interface TagChoice { readonly tag: string; readonly label: string; readonly chosen: string; readonly reason: 'chosen' | 'tree' | 'fallback'; readonly count: number; readonly members: readonly string[] }
 export interface RecipeReport {
   readonly catalogVersion: string;
   readonly method: RecipeMethod;
@@ -112,11 +113,27 @@ export interface FuelBalance {
   readonly coal: number;
   /** The same demand in other fuels of the profile, each alone, with what remains unburnt. */
   readonly options: readonly { readonly itemId: string; readonly count: number; readonly smeltsEach: number; readonly spareSmelts: number }[];
+  /** The fuel the player plans with (RecipePrefs.fuel, default coal) and how many of it. */
+  readonly chosen: { readonly itemId: string; readonly count: number };
+  /** True when the chosen fuel is part of `base` (RecipePrefs.fuelInBase); its own smelting is included. */
+  readonly inBase: boolean;
+}
+/**
+ * Player choices for the raw-material tree (MAT-02-S03), stored per project in the site plan:
+ * which member a recipe tag takes (e.g. `#planks` → spruce_planks for sticks and chests), which fuel
+ * is planned and whether that fuel is gathered with the raw materials.
+ */
+export interface RecipePrefs {
+  /** Tag (`#planks`) → member item id. */
+  readonly tags?: Readonly<Record<string, string>>;
+  readonly fuel?: string;
+  readonly fuelInBase?: boolean;
 }
 export interface RecipeOptions {
   readonly method?: RecipeMethod;
   /** Items treated as available (not expanded further). Ids with or without namespace. */
   readonly stock?: Iterable<string>;
+  readonly prefs?: RecipePrefs;
 }
 
 // ---------------------------------------------------------------------------
@@ -446,13 +463,35 @@ const nsSet = (ids: Iterable<string> | undefined): Set<string> => new Set([...(i
  * (typically `MaterialReport.items`); counts of the same id are added up.
  */
 export function resolveRecipes(items: readonly { readonly itemId: string; readonly count: number }[], options: RecipeOptions = {}): RecipeReport {
+  const prefs = options.prefs ?? {};
+  const fuel = ns(prefs.fuel && fuelOf(prefs.fuel) ? prefs.fuel : 'coal');
+  // Fuels without a recipe or raw source (lava bucket) cannot be gathered from the tree: shown, not added.
+  if (!prefs.fuelInBase || (rawSource(fuel) === undefined && !chooseRecipe(fuel, options.method))) return resolveOnce(items, options, fuel, 0);
+  // Fuel with the raw materials: smelting the fuel itself (charcoal, kelp blocks) needs fuel too – iterate to a fixed point.
+  let extra = 0, report = resolveOnce(items, options, fuel, 0);
+  for (let round = 0; round < 8; round++) {
+    const need = fuelCount(fuel, report.fuel.ticks);
+    if (need <= extra) break;
+    extra = need;
+    report = resolveOnce([...items, { itemId: fuel, count: extra }], options, fuel, extra);
+  }
+  return report;
+}
+
+const fuelCount = (fuel: string, ticks: number): number => {
+  const f = fuelOf(fuel);
+  return f && ticks ? Math.ceil(ticks / (f.burnTicks * f.speed)) : 0;
+};
+
+function resolveOnce(items: readonly { readonly itemId: string; readonly count: number }[], options: RecipeOptions, fuelId: string, fuelInBase: number): RecipeReport {
   const method = options.method ?? 'stonecutter', stock = nsSet(options.stock);
+  const chosenTags = new Map(Object.entries(options.prefs?.tags ?? {}).map(([t, id]) => [t.startsWith('#') ? t : `#${t}`, ns(id)]));
   const roots = new Map<string, number>();
   for (const l of items) if (l.count > 0) roots.set(ns(l.itemId), (roots.get(ns(l.itemId)) ?? 0) + l.count);
   const rootOrder = [...roots.entries()].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1)).map(([id]) => id);
 
   // 1. Tag choices: explore the tree; a tag takes the first member met in discovery order.
-  const tagChoice = new Map<string, { chosen: string; reason: 'tree' | 'fallback' }>();
+  const tagChoice = new Map<string, { chosen: string; reason: 'chosen' | 'tree' | 'fallback' }>();
   const inputsOf = (id: string): Ingredient[] => {
     const r = chooseRecipe(id, method, stock);
     return r ? r.inputs.map(i => i.item.startsWith('#') ? { item: tagChoice.get(i.item)?.chosen ?? i.item, count: i.count } : i) : [];
@@ -470,8 +509,8 @@ export function resolveRecipes(items: readonly { readonly itemId: string; readon
     for (const tag of pendingTags) {
       const def = RECIPE_TAGS[tag];
       if (!def) throw new DomainError('recipe-tag', `Unbekannter Rezept-Tag ${tag}`);
-      const found = seen.find(id => def.members.includes(id));
-      tagChoice.set(tag, found ? { chosen: found, reason: 'tree' } : { chosen: def.fallback, reason: 'fallback' });
+      const pick = chosenTags.get(tag), found = seen.find(id => def.members.includes(id));
+      tagChoice.set(tag, pick && def.members.includes(pick) ? { chosen: pick, reason: 'chosen' } : found ? { chosen: found, reason: 'tree' } : { chosen: def.fallback, reason: 'fallback' });
     }
   }
 
@@ -519,18 +558,20 @@ export function resolveRecipes(items: readonly { readonly itemId: string; readon
   const stations: Record<Station, number> = { crafting: 0, stonecutter: 0, smelting: 0, tool: 0, water: 0 };
   for (const s of steps) stations[s.recipe.station] += s.operations;
   const surplus = steps.filter(s => s.surplus > 0).map(s => ({ item: s.itemId, count: s.surplus })).sort((a, b) => b.count - a.count || (a.item < b.item ? -1 : 1));
-  const tagChoices: TagChoice[] = [...tagChoice.entries()].filter(([tag]) => tagUse.has(tag)).map(([tag, c]) => ({ tag, label: RECIPE_TAGS[tag]!.label, chosen: c.chosen, reason: c.reason, count: tagUse.get(tag)! }));
+  const tagChoices: TagChoice[] = [...tagChoice.entries()].filter(([tag]) => tagUse.has(tag)).map(([tag, c]) => ({ tag, label: RECIPE_TAGS[tag]!.label, chosen: c.chosen, reason: c.reason, count: tagUse.get(tag)!, members: RECIPE_TAGS[tag]!.members }));
   const sum = (kind: BaseKind): number => baseLines.filter(l => l.kind === kind).reduce((s, l) => s + l.count, 0);
-  const fuel = fuelBalance(steps.filter(s => s.recipe.station === 'smelting').reduce((t, s) => t + s.operations * (s.recipe.cookTicks ?? 200), 0), stations.smelting);
+  const fuel = fuelBalance(steps.filter(s => s.recipe.station === 'smelting').reduce((t, s) => t + s.operations * (s.recipe.cookTicks ?? 200), 0), stations.smelting, fuelId, fuelInBase > 0);
   const unknown = baseLines.filter(l => l.kind === 'unknown');
 
   const fromProfile = steps.filter(s => s.recipe.source === 'profile').length;
   const notes = [`Rezepte gegen das Versionsprofil ${JAVA_PROFILE_ID} (offizieller Server) geprüft; je Item ein Rezept, ${method === 'stonecutter' ? 'Steinsäge bevorzugt' : 'Werkbank bevorzugt'}${fromProfile ? `; ${fromProfile} Schritte direkt aus dem Profil` : ''}. Weitere Rezepte des Spiels stehen als Alternativen am Schritt.`,
     'Überschüsse aus dem Aufrunden werden innerhalb des Baums geteilt und als Rest ausgewiesen.',
     'Werkzeuge (Axt, Schere, Spitzhacke mit Behutsamkeit) und Arbeitsblöcke sind nicht im Rohstoffbedarf enthalten.'];
-  if (fuel.smelts) notes.push(`${fuel.smelts} Schmelzvorgänge brauchen Brennstoff, z. B. ${fuel.coal} Kohle (${smeltsPerFuel('coal')} Vorgänge je Kohle laut Profil)${fuel.options.length ? ` oder ${fuel.options.filter(o => o.itemId !== 'minecraft:coal').slice(0, 3).map(o => `${o.count} ${o.itemId.replace(/^minecraft:/, '')}`).join(' / ')}` : ''} – nicht in den Rohstoffen enthalten.`);
+  const isCoal = fuel.chosen.itemId === 'minecraft:coal', fuelName = isCoal ? 'Kohle' : fuel.chosen.itemId.replace(/^minecraft:/, ''), per = isCoal ? 'je Kohle' : 'je Stück';
+  if (fuel.smelts && fuel.inBase) notes.push(`${fuel.smelts} Schmelzvorgänge mit ${fuel.chosen.count} ${fuelName} (${smeltsPerFuel(fuel.chosen.itemId)} Vorgänge ${per} laut Profil) – der Brennstoff ist in den Rohstoffen enthalten, ${fuelInBase} Stück samt seiner eigenen Herstellung.`);
+  else if (fuel.smelts) notes.push(`${fuel.smelts} Schmelzvorgänge brauchen Brennstoff: ${fuel.chosen.count} ${fuelName} (${smeltsPerFuel(fuel.chosen.itemId)} Vorgänge ${per} laut Profil)${fuel.options.length ? `, oder ${fuel.options.filter(o => o.itemId !== fuel.chosen.itemId).slice(0, 3).map(o => `${o.count} ${o.itemId.replace(/^minecraft:/, '')}`).join(' / ')}` : ''} – nicht in den Rohstoffen enthalten.`);
   if (stations.water) notes.push(`${stations.water} Vorgänge mit Wasser (Beton aushärten, Schlamm) – Wasser nicht gezählt.`);
-  for (const t of tagChoices) notes.push(`${t.label}: ${t.chosen.replace(/^minecraft:/, '')} ${t.reason === 'tree' ? 'gewählt, weil diese Sorte schon im Bedarf vorkommt' : 'als Standard angenommen – jede andere Sorte geht ebenso'}.`);
+  for (const t of tagChoices) notes.push(`${t.label}: ${t.chosen.replace(/^minecraft:/, '')} ${t.reason === 'chosen' ? 'von dir gewählt' : t.reason === 'tree' ? 'gewählt, weil diese Sorte schon im Bedarf vorkommt' : 'als Standard angenommen – jede andere Sorte geht ebenso'}.`);
   if (unknown.length) notes.push(`${unknown.length} Items ohne Rezept und ohne Rohstoffeintrag im Katalog: als Grundbedarf aufgeführt und markiert.`);
   if (stock.size) notes.push(`${stock.size} Items als vorhanden markiert und nicht weiter aufgelöst.`);
 
@@ -549,14 +590,15 @@ export function recipeAlternatives(itemId: string, chosen?: Recipe): readonly Pr
 /** Fuels shown in the balance (common building fuels of the profile). */
 export const BALANCE_FUELS: readonly string[] = ['minecraft:coal', 'minecraft:charcoal', 'minecraft:coal_block', 'minecraft:dried_kelp_block', 'minecraft:blaze_rod', 'minecraft:lava_bucket', 'minecraft:oak_planks'];
 /** Fuel for `ticks` cooking ticks (`smelts` operations) with profile burn times; each fuel alone, rounded up. */
-export function fuelBalance(ticks: number, smelts: number): FuelBalance {
+export function fuelBalance(ticks: number, smelts: number, chosen = 'minecraft:coal', inBase = false): FuelBalance {
   const options = BALANCE_FUELS.flatMap(itemId => {
     const f = fuelOf(itemId);
     if (!f || !ticks) return [];
     const per = f.burnTicks * f.speed, count = Math.ceil(ticks / per);
     return [{ itemId, count, smeltsEach: per / 200, spareSmelts: Math.round((count * per - ticks) / 200 * 10) / 10 }];
   });
-  return { smelts, ticks, coal: options.find(o => o.itemId === 'minecraft:coal')?.count ?? 0, options };
+  const id = ns(fuelOf(chosen) ? chosen : 'coal');
+  return { smelts, ticks, coal: options.find(o => o.itemId === 'minecraft:coal')?.count ?? 0, options, chosen: { itemId: id, count: fuelCount(id, ticks) }, inBase: inBase && ticks > 0 };
 }
 
 /** Raw materials for the build items of a material report (unresolved states are not part of it). */

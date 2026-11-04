@@ -5044,3 +5044,31 @@ Nachtrag zum Commit 96c8c4c (trägt versehentlich die Überschrift von COOP-09, 
 
 - `docs/architecture/TESTPHASE.md`
 
+## 2026-11-04T09:28:40.230Z · progress
+
+**Aufgaben:** NBT-01, MAT-02
+
+MAT-02-S03: Sorte je Rezept-Tag (z. B. Planken für Stöcke/Truhen) und Brennstoff im Rohstoffpanel wählbar, im Baustellenplan gespeichert und für den Sammelplan genutzt; Brennstoff auf Wunsch in den Rohstoffen mit festem Punkt (Holzkohle braucht selbst Brennstoff). NBT-01-S03: Strukturblock-Adapter (SAVE-Bereich, LOAD-Anker und Drehung) beim Drehen, Spiegeln bleibt ungelöst; Strukturblock-Zustand ausrichtungsfrei. Prüfung: Node-Tests, volle Browser-Suite 154 grün.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| NBT-01 | 🧩 Implementiert · Abnahme offen | 3/3 | Abnahme im Spiel: gedrehtes Bauteil mit Truhen, Schildern und einem Strukturblock exportieren und in 26.3 laden (Testphase). |
+| MAT-02 | 🧩 Implementiert · Abnahme offen | 3/3 | Abnahme in der Testphase: Rohstoffliste eines großen Bauwerks mit gewählter Holzart und Brennstoff mit dem Spiel vergleichen. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/style.css`
+- `apps/web/src/views/project/MaterialsTab.tsx`
+- `apps/web/src/views/project/RawMaterialsPanel.tsx`
+- `docs/architecture/MATERIALS.md`
+- `docs/architecture/NBT_TRANSFORMS.md`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/recipes.ts`
+- `packages/domain/src/site.ts`
+- `packages/voxel/src/index.ts`
+- `packages/voxel/src/nbtTransforms.ts`
+- `packages/voxel/src/states.ts`
+- `tests/e2e/recipes.e2e.mjs`
+- `tests/nbt-transforms.test.mjs`
+- `tests/recipe-prefs.test.mjs`
+

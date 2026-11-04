@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import { formatStacks, recipesForMaterials, recipesToCsv } from '../../../../../packages/domain/src/index.js';
-import type { BaseKind, MaterialReport, ProfileRecipe, RecipeStep, Station } from '../../../../../packages/domain/src/index.js';
+import { BALANCE_FUELS, formatStacks, recipesForMaterials, recipesToCsv } from '../../../../../packages/domain/src/index.js';
+import type { BaseKind, MaterialReport, ProfileRecipe, RecipePrefs, RecipeStep, Station } from '../../../../../packages/domain/src/index.js';
 import { download, formatNumber } from '../../app/ui';
 
 const stationLabel: Record<Station, string> = { crafting: 'Werkbank', stonecutter: 'Steinsäge', smelting: 'Ofen', tool: 'Werkzeug', water: 'Wasser' };
@@ -17,12 +17,17 @@ export interface RawMaterialsSettings {
   onToggle(itemId: string): void;
   onReset(): void;
   onCutter(cutter: boolean): void;
+  /** Chosen tag members and fuel (MAT-02-S03), stored in the site plan. */
+  readonly prefs?: RecipePrefs;
+  onTag?(tag: string, item: string | null): void;
+  onFuel?(fuel: string | null, inBase: boolean): void;
 }
 
 /** Raw materials and crafting steps for the build items of a material report (domain `recipes.ts`). */
 export function RawMaterialsPanel({ report, fileStem, settings }: { report: MaterialReport; fileStem: string; settings: RawMaterialsSettings }) {
   const { stock, cutter, onToggle: toggle } = settings;
-  const recipes = useMemo(() => recipesForMaterials(report, { method: cutter ? 'stonecutter' : 'crafting', stock }), [report, cutter, stock]);
+  const prefs = settings.prefs;
+  const recipes = useMemo(() => recipesForMaterials(report, { method: cutter ? 'stonecutter' : 'crafting', stock, ...(prefs && { prefs }) }), [report, cutter, stock, prefs]);
   if (!report.items.length) return null;
   const ops = (Object.keys(stationLabel) as Station[]).filter(s => recipes.stations[s] > 0);
 
@@ -41,7 +46,7 @@ export function RawMaterialsPanel({ report, fileStem, settings }: { report: Mate
       <div><dt>Rohstoffe</dt><dd>{formatNumber(recipes.totals.raw)}</dd></div>
       <div><dt>Inventarplätze Rohstoffe</dt><dd>{formatNumber(recipes.totals.slots)}</dd></div>
       {ops.map(s => <div key={s}><dt>{stationLabel[s]}-Vorgänge</dt><dd>{formatNumber(recipes.stations[s])}</dd></div>)}
-      {recipes.fuel.smelts > 0 && <div title={recipes.fuel.options.map(o => `${formatNumber(o.count)} ${short(o.itemId)} (je ${o.smeltsEach} Vorgänge)`).join(' · ')}><dt>Brennstoff (Kohle)</dt><dd>{formatNumber(recipes.fuel.coal)} <small>nicht enthalten</small></dd></div>}
+      {recipes.fuel.smelts > 0 && <div title={recipes.fuel.options.map(o => `${formatNumber(o.count)} ${short(o.itemId)} (je ${o.smeltsEach} Vorgänge)`).join(' · ')}><dt>Brennstoff ({short(recipes.fuel.chosen.itemId)})</dt><dd>{formatNumber(recipes.fuel.chosen.count)} <small>{recipes.fuel.inBase ? 'in Rohstoffen' : 'nicht enthalten'}</small></dd></div>}
     </dl>
     <div className="table-wrap"><table className="materials-table raw-table">
       <thead><tr><th>Grundbedarf</th><th className="num">Menge</th><th className="num">Stacks</th><th>Herkunft</th></tr></thead>
@@ -53,6 +58,20 @@ export function RawMaterialsPanel({ report, fileStem, settings }: { report: Mate
           <button className="link-button" onClick={() => toggle(b.itemId)}>wieder auflösen</button>}</>}</td>
       </tr>)}</tbody>
     </table></div>
+    {(recipes.tagChoices.length > 0 || recipes.fuel.smelts > 0) && (settings.onTag || settings.onFuel) && <div className="recipe-choices" role="group" aria-label="Sorten und Brennstoff wählen">
+      {settings.onTag && recipes.tagChoices.map(t => <label key={t.tag}>{t.label} <small>({formatNumber(t.count)}×)</small>
+        <select value={t.reason === 'chosen' ? t.chosen : ''} onChange={e => settings.onTag!(t.tag, e.target.value || null)} aria-label={`Sorte für ${t.label}`}>
+          <option value="">automatisch ({short(t.chosen)})</option>
+          {t.members.map(m => <option key={m} value={m}>{short(m)}</option>)}
+        </select></label>)}
+      {settings.onFuel && recipes.fuel.smelts > 0 && <>
+        <label>Brennstoff
+          <select value={recipes.fuel.chosen.itemId} onChange={e => settings.onFuel!(e.target.value === 'minecraft:coal' ? null : e.target.value, !!prefs?.fuelInBase)} aria-label="Brennstoff">
+            {BALANCE_FUELS.map(f => <option key={f} value={f}>{short(f)}</option>)}
+          </select></label>
+        <label className="raw-toggle"><input type="checkbox" checked={!!prefs?.fuelInBase} onChange={e => settings.onFuel!(prefs?.fuel ?? null, e.target.checked)} /> Brennstoff in die Rohstoffe aufnehmen</label>
+      </>}
+    </div>}
     {recipes.steps.length > 0 && <>
       <h3 className="materials-title">Arbeitsschritte <small>Reihenfolge: Zutaten zuerst · {recipes.steps.length} Schritte</small></h3>
       <ol className="recipe-steps">{recipes.steps.map(s => <StepRow key={s.recipe.id} step={s} onStock={() => toggle(s.itemId)} />)}</ol>

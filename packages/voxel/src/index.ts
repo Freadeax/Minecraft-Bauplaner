@@ -22,5 +22,5 @@ export { stableAtan, stableAtan2, stableCos, stableHypot, stableSin } from './st
 export { JAVA_PROFILE, JAVA_PROFILE_ID, assertProfileConsistent, isProfileItem, profileItemIds, profileItemTag, profileItemTagNames, fuelOf, profileFuels, smeltsPerFuel,
   checkProfileStates, checkPayloadProfile, dataVersionOfProfileId } from './profile.js';
 export type { VersionProfile, FuelFacts, ProfileStatus, ProfileStateIssue, ProfileCheck } from './profile.js';
-export { nbtFamily, profileNbtFamilies, blockEntityTypeOf, blockEntityType, transformBlockEntity, commandCoordinates, NBT_FAMILY_LABEL } from './nbtTransforms.js';
+export { nbtFamily, profileNbtFamilies, blockEntityTypeOf, blockEntityType, transformBlockEntity, turnStructureBlock, commandCoordinates, NBT_FAMILY_LABEL } from './nbtTransforms.js';
 export type { NbtFamily, BlockEntityTransformResult } from './nbtTransforms.js';

@@ -7,7 +7,7 @@ Wird ein Bauteil verschoben, gedreht oder gespiegelt, entscheidet `packages/voxe
 | relativ | Truhen (auch Kupfer), Fässer, Shulkerkisten, Öfen, Trichter, Spender, Schilder, Hängeschilder, Banner, Köpfe, Regale, Bücherregal, Krug, Lesepult, Plattenspieler, Lagerfeuer, Leuchtfeuer, Glocke, Braustand, Werkbank-Crafter, Komparator, Tageslichtsensor, Kupfergolem-Statue, Tresor, Jigsaw … | Inhalt bezieht sich auf den Block selbst. Minecraft lässt solches NBT beim Platzieren gedrehter oder gespiegelter Strukturen unverändert (StructureTemplate), Litematica ebenso; der Planer auch. **Gelöst.** |
 | bedingt | Bienenstock/-nest, Sculk-Sensor (auch kalibriert), Sculk-Kreischer, Sculk-Katalysator, Spawner, Prüfungsspawner | Relativ, solange kein Feld eine Weltposition hält (`bees[].flower_pos`, `listener.event`, `cursors[].pos`, `Pos` in Spawn-Daten). Sonst bei jeder Änderung **ungelöst**. |
 | Befehl | Befehlsblöcke (alle drei) | Relative Koordinaten (`~`, `^`) überstehen Verschieben, aber nicht Drehen/Spiegeln; drei Zahlen hintereinander gelten als feste Koordinaten und sind bei jeder Änderung ungelöst. Befehle ohne Koordinaten sind gelöst. |
-| eigener Bereich | Strukturblock, Testinstanz, bewegter Kolben | Versatz und Größe beziehen sich auf den Block: Verschieben gelöst, Drehen/Spiegeln ohne geprüften Adapter **ungelöst**. |
+| eigener Bereich | Strukturblock, Testinstanz, bewegter Kolben | Versatz und Größe beziehen sich auf den Block: Verschieben gelöst. Strukturblock beim Drehen **gelöst** über den Adapter (NBT-01-S03, unten); Spiegeln sowie Testinstanz und bewegter Kolben beim Drehen **ungelöst**. |
 | Weltposition | Endtor (`exit_portal`) | Bei jeder Änderung ungelöst. |
 | unbekannt | Typen außerhalb des Profils, Mod-Typen, Einträge ohne Typ und ohne Block | Bei jeder Änderung ungelöst. |
 
@@ -20,3 +20,14 @@ Weitere Regeln:
 - Gespiegelte Scherben, Bücher und Regalinhalte bleiben in ihrer Reihenfolge – so verhält sich Minecraft selbst. Wer ein gespiegeltes Bild der Bücher braucht, muss sie im Spiel umstellen.
 
 Prüfung: `tests/nbt-transforms.test.mjs` (alle Profiltypen mit Familie, vier Vierteldrehungen und doppelte Spiegelung einer Truhe mit Restdaten, konkrete Richtung, Scherben/Schild/Banner/Bücherregal unter sechs Transformationen, Bienen mit und ohne Blumenposition, Endtor, Befehle, Strukturblock, Mod-Typ, Sponge-`Pos` und flache `x/y/z`, Eintrag ohne Typ) und `tests/voxel.test.mjs`.
+
+## Strukturblock-Adapter (NBT-01-S03) · 04.11.2026
+
+`turnStructureBlock(tile, turns)` dreht einen Strukturblock wie Minecrafts `Rotation.CLOCKWISE_90` (Versatz (x, z) → (−z, x)):
+
+- **SAVE:** Der Speicherbereich `posX/Y/Z` + `sizeX/Y/Z` wird zur Hülle der gedrehten Zellen: neue Minimum-Ecke, X- und Z-Größe getauscht. Gespeichert wird danach genau der gedrehte Bau.
+- **LOAD:** Der Ankerversatz dreht mit, `rotation` bekommt dieselben Vierteldrehungen dazu (`NONE → CLOCKWISE_90 → CLOCKWISE_180 → COUNTERCLOCKWISE_90`). Die geladene Struktur landet damit genau dort, wo sie neben dem ungedrehten Block gelandet wäre, nur mitgedreht.
+- **CORNER/DATA:** keine Geometrie, unverändert.
+- Fehlende Felder oder eine unbekannte `rotation` → ungelöst, NBT unverändert. Spiegeln bleibt ungelöst, weil sich `mirror` mit der vorhandenen Drehung nicht ohne Spielprüfung zusammensetzen lässt.
+
+Der Blockzustand `structure_block[mode=…]` ist ausrichtungsfrei (eigene Regel in `states.ts`). Prüfung: `tests/nbt-transforms.test.mjs` (handgerechnete Bereiche für SAVE, LOAD mit Drehungsfolge, vier Drehungen = Ausgangszustand, unbekannte Drehung, gespiegelt ungelöst).

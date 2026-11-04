@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T09:26:50.360Z",
+  "updatedAt": "2026-11-04T09:28:40.230Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -1615,12 +1615,17 @@
           "id": "NBT-01-S02",
           "title": "Adapter mit konkreten Richtungen und unbekannten Restdaten prüfen.",
           "done": true
+        },
+        {
+          "id": "NBT-01-S03",
+          "title": "Strukturblock-Adapter: SAVE-Bereich und LOAD-Anker/Drehung drehen mit, Spiegeln bleibt ungelöst.",
+          "done": true
         }
       ],
       "acceptance": [
         "Ungeklärte Transformation sperrt verlässlichen Export; keine stillen NBT-Verluste."
       ],
-      "next": "Abnahme im Spiel: gedrehtes Bauteil mit Truhen/Schildern exportieren und in 26.3 laden (Testphase). Strukturblock-Adapter nur bei Bedarf.",
+      "next": "Abnahme im Spiel: gedrehtes Bauteil mit Truhen, Schildern und einem Strukturblock exportieren und in 26.3 laden (Testphase).",
       "blockers": [],
       "evidence": [
         {
@@ -1630,6 +1635,10 @@
         {
           "path": "docs/architecture/NBT_TRANSFORMS.md",
           "note": "Familien und Regeln."
+        },
+        {
+          "path": "tests/nbt-transforms.test.mjs",
+          "note": "NBT-01-S03: handgerechnete SAVE-Bereiche, LOAD-Anker und Drehungsfolge, vier Drehungen = Ausgangszustand."
         }
       ],
       "verification": {
@@ -1640,7 +1649,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T22:26:37.867Z",
+      "updatedAt": "2026-11-04T09:28:40.230Z",
       "area": "KERN",
       "thread": "Liegengebliebene Datenpakete abarbeiten",
       "philipp": [],
@@ -1827,7 +1836,9 @@
         "packages/domain/src/recipes.ts",
         "packages/domain/src/recipeProfile.ts",
         "packages/domain/src/profileRecipes.ts",
-        "apps/web/src/views/project/RawMaterialsPanel.tsx"
+        "apps/web/src/views/project/RawMaterialsPanel.tsx",
+        "apps/web/src/views/project/MaterialsTab.tsx",
+        "packages/domain/src/site.ts"
       ],
       "legacyIds": [],
       "steps": [
@@ -1840,12 +1851,17 @@
           "id": "MAT-02-S02",
           "title": "Mehrblockobjekte, Rezeptalternativen, Rest-/Brennstoffbilanzen profilgenau prüfen.",
           "done": true
+        },
+        {
+          "id": "MAT-02-S03",
+          "title": "Sorte je Rezept-Tag und Brennstoff wählbar (im Projekt gespeichert), Brennstoff auf Wunsch in den Rohstoffen mit eigenem Bedarf.",
+          "done": true
         }
       ],
       "acceptance": [
         "Blockzahl, Bauitems, Rohstoffe und Lagerbestand bleiben getrennt."
       ],
-      "next": "Abnahme in der Testphase: Rohstoffliste eines großen Bauwerks mit dem Spiel vergleichen.",
+      "next": "Abnahme in der Testphase: Rohstoffliste eines großen Bauwerks mit gewählter Holzart und Brennstoff mit dem Spiel vergleichen.",
       "blockers": [],
       "evidence": [
         {
@@ -1855,6 +1871,10 @@
         {
           "path": "docs/architecture/MATERIALS.md",
           "note": "Abschnitt MAT-02."
+        },
+        {
+          "path": "tests/recipe-prefs.test.mjs",
+          "note": "Gewählte Plankensorte, Brennstoffwahl, Holzkohle mit festem Punkt (92 für 640 Vorgänge), Lavaeimer nicht aufgenommen, Prüfung im Baustellenplan."
         }
       ],
       "verification": {
@@ -1865,7 +1885,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T22:26:37.867Z",
+      "updatedAt": "2026-11-04T09:28:40.230Z",
       "area": "KERN",
       "thread": "Liegengebliebene Datenpakete abarbeiten",
       "philipp": [],
@@ -16697,6 +16717,47 @@
           "done": 4,
           "total": 6,
           "next": "Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T09:28:40.230Z",
+      "kind": "progress",
+      "items": [
+        "NBT-01",
+        "MAT-02"
+      ],
+      "summary": "MAT-02-S03: Sorte je Rezept-Tag (z. B. Planken für Stöcke/Truhen) und Brennstoff im Rohstoffpanel wählbar, im Baustellenplan gespeichert und für den Sammelplan genutzt; Brennstoff auf Wunsch in den Rohstoffen mit festem Punkt (Holzkohle braucht selbst Brennstoff). NBT-01-S03: Strukturblock-Adapter (SAVE-Bereich, LOAD-Anker und Drehung) beim Drehen, Spiegeln bleibt ungelöst; Strukturblock-Zustand ausrichtungsfrei. Prüfung: Node-Tests, volle Browser-Suite 154 grün.",
+      "files": [
+        "apps/web/src/style.css",
+        "apps/web/src/views/project/MaterialsTab.tsx",
+        "apps/web/src/views/project/RawMaterialsPanel.tsx",
+        "docs/architecture/MATERIALS.md",
+        "docs/architecture/NBT_TRANSFORMS.md",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/recipes.ts",
+        "packages/domain/src/site.ts",
+        "packages/voxel/src/index.ts",
+        "packages/voxel/src/nbtTransforms.ts",
+        "packages/voxel/src/states.ts",
+        "tests/e2e/recipes.e2e.mjs",
+        "tests/nbt-transforms.test.mjs",
+        "tests/recipe-prefs.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "NBT-01",
+          "status": "implemented",
+          "done": 3,
+          "total": 3,
+          "next": "Abnahme im Spiel: gedrehtes Bauteil mit Truhen, Schildern und einem Strukturblock exportieren und in 26.3 laden (Testphase)."
+        },
+        {
+          "id": "MAT-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 3,
+          "next": "Abnahme in der Testphase: Rohstoffliste eines großen Bauwerks mit gewählter Holzart und Brennstoff mit dem Spiel vergleichen."
         }
       ]
     }

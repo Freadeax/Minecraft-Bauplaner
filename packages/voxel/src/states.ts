@@ -254,6 +254,7 @@ const RULES: readonly StateRule[] = [
   { family: 'ausrichtungsfrei: Flüssigkeiten', ids: ids('water','lava'), schema: { level: range(0,15) }, apply: same },
   { family: 'ausrichtungsfrei: Schnee', ids: ids('snow'), schema: { layers: range(1,8) }, apply: same },
   { family: 'ausrichtungsfrei: bedeckbarer Boden', ids: ids('grass_block','podzol','mycelium'), schema: { snowy: BOOL }, apply: same },
+  { family: 'ausrichtungsfrei: Strukturblock (Bereich dreht über NBT-01-S03)', ids: ids('structure_block'), schema: { mode: ['save','load','corner','data'] }, apply: same },
   { family: 'ausrichtungsfrei: Ackerboden', ids: ids('farmland'), schema: { moisture: range(0,7) }, apply: same },
   { family: 'ausrichtungsfrei: Feldfrüchte', ids: ids('wheat','carrots','potatoes'), schema: { age: range(0,7) }, apply: same },
   { family: 'ausrichtungsfrei: Rote Bete, Netherwarze', ids: ids('beetroots','nether_wart'), schema: { age: range(0,3) }, apply: same },

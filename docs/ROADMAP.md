@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-04T09:26:50.360Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-04T09:28:40.230Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -185,13 +185,13 @@ Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft).
 | [ARCH-02](#arch-02) | Planmodell | 🧩 Implementiert · Abnahme offen 4/5 | P0 | „Große Testphase vorbereiten und betreuen“ | Datencheck unter #/system mit deinen über Monate gewachsenen Browserdaten (S05). |
 | [FORMAT-01](#format-01) | Schem v3 an echten Referenzwerkzeugen abnehmen | 🧩 Implementiert · Abnahme offen 1/2 | P0 | „Liegengebliebene Datenpakete abarbeiten“ | Auf deinem Paper-Server mit WorldEdit ein kleines Gebäude mit Kiste/Schild auswählen, //copy, //schem save bauplaner-test und die Datei aus plugins/WorldEdit/schematics hier hochladen (FORMAT-01-S02). |
 | [FORMAT-02](#format-02) | Litematic an echten Referenzdateien abnehmen | 🧩 Implementiert · Abnahme offen 3/4 | P0 | „Große Testphase vorbereiten und betreuen“ | Litematic-Export im Spiel mit Litematica laden (S02). |
-| [NBT-01](#nbt-01) | Semantische BlockEntity-Transformationen | 🧩 Implementiert · Abnahme offen 2/2 | P0 | „Liegengebliebene Datenpakete abarbeiten“ | — |
+| [NBT-01](#nbt-01) | Semantische BlockEntity-Transformationen | 🧩 Implementiert · Abnahme offen 3/3 | P0 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [PROFILE-01](#profile-01) | Ein verbindliches Java-Versionsprofil | 🧩 Implementiert · Abnahme offen 3/3 | P0 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3 | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Einen Bau mit Spielprüfung ohne Hinweise nachbauen und Verbindungen vergleichen (S07). |
 | [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Geänderte Gebäude (Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen (S06). |
 | [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [ENTITY-01](#entity-01) | Gemälde, Rahmen, Rüstungsständer und Blockinhalte | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Export mit Gemälden, Rahmen und Rüstungsständern im Spiel laden (S06). |
-| [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
+| [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [MAT-03](#mat-03) | Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen | 🧩 Implementiert · Abnahme offen 2/3 | P1 | **verwaist** · 1 verwaist | — |
 | [MAT-04](#mat-04) | Kupfer mit Oxidation und Wachsstatus | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 
@@ -357,9 +357,9 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 
 - **QA-02 · Echte GPU-, Safari- und iPhone-Abnahme** — 🚧 In Arbeit, 1/2 Teilschritte. Nächster Schritt: Protokolle der Tester in docs/testing/GERAETEMATRIX.md eintragen und Befunde beheben.
 - **PROFILE-01 · Ein verbindliches Java-Versionsprofil** — 🧩 Implementiert · Abnahme offen, 3/3 Teilschritte. Nächster Schritt: Abnahme: Profilprüfung im Gebäudeblatt an einer echten älteren Schem-/Litematic-Datei ansehen (Testphase).
-- **NBT-01 · Semantische BlockEntity-Transformationen** — 🧩 Implementiert · Abnahme offen, 2/2 Teilschritte. Nächster Schritt: Abnahme im Spiel: gedrehtes Bauteil mit Truhen/Schildern exportieren und in 26.3 laden (Testphase). Strukturblock-Adapter nur bei Bedarf.
+- **NBT-01 · Semantische BlockEntity-Transformationen** — 🧩 Implementiert · Abnahme offen, 3/3 Teilschritte. Nächster Schritt: Abnahme im Spiel: gedrehtes Bauteil mit Truhen, Schildern und einem Strukturblock exportieren und in 26.3 laden (Testphase).
 - **FORMAT-01 · Schem v3 an echten Referenzwerkzeugen abnehmen** — 🧩 Implementiert · Abnahme offen, 1/2 Teilschritte. Nächster Schritt: Hochgeladene WorldEdit-Datei mit npm run format:check-schem prüfen; Befunde beheben.
-- **MAT-02 · Versionierte Item-/Rezeptauflösung vervollständigen** — 🧩 Implementiert · Abnahme offen, 2/2 Teilschritte. Nächster Schritt: Abnahme in der Testphase: Rohstoffliste eines großen Bauwerks mit dem Spiel vergleichen.
+- **MAT-02 · Versionierte Item-/Rezeptauflösung vervollständigen** — 🧩 Implementiert · Abnahme offen, 3/3 Teilschritte. Nächster Schritt: Abnahme in der Testphase: Rohstoffliste eines großen Bauwerks mit gewählter Holzart und Brennstoff mit dem Spiel vergleichen.
 - **MAT-04 · Kupfer mit Oxidation und Wachsstatus** — 🧩 Implementiert · Abnahme offen, 2/2 Teilschritte. Nächster Schritt: Abnahme: Kupfervariante eines Bauwerks im Planer erzeugen und im Spiel ansehen (Testphase).
 - **DIFF-01 · Verschiebungserkennung und BlockEntity-Diff** — 🧩 Implementiert · Abnahme offen, 3/3 Teilschritte. Nächster Schritt: Abnahme in der Testphase: zwei Stände eines verschobenen Bauwerks vergleichen.
 - **PERF-02 · Zellindizes, Chunkdaten und selektive Neuberechnung** — 🧩 Implementiert · Abnahme offen, 3/3 Teilschritte. Nächster Schritt: PERF-02-S03 zusammen mit PERF-05-S08 (Zellen erst bei Bedarf entpacken) im Performance-Thread umsetzen; beide ändern compose/Entpacken. Übergabe abgestimmt am 03.11.2026.
@@ -457,10 +457,10 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | ID | Arbeitspaket | Status | Schritte | Abhängigkeiten | Main | Pages-Quelle |
 |---|---|---|---:|---|---|---|
 | [PROFILE-01](#profile-01) | Ein verbindliches Java-Versionsprofil | 🧩 Implementiert · Abnahme offen | 3/3 | ARCH-01 | ausstehend | ausstehend |
-| [NBT-01](#nbt-01) | Semantische BlockEntity-Transformationen | 🧩 Implementiert · Abnahme offen | 2/2 | PROFILE-01 | ausstehend | ausstehend |
+| [NBT-01](#nbt-01) | Semantische BlockEntity-Transformationen | 🧩 Implementiert · Abnahme offen | 3/3 | PROFILE-01 | ausstehend | ausstehend |
 | [FORMAT-01](#format-01) | Schem v3 an echten Referenzwerkzeugen abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | PROFILE-01, NBT-01 | `84838f0` | `e232b26` |
 | [FORMAT-02](#format-02) | Litematic an echten Referenzdateien abnehmen | 🧩 Implementiert · Abnahme offen | 3/4 | PROFILE-01, NBT-01 | `84838f0` | `e232b26` |
-| [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | 🧩 Implementiert · Abnahme offen | 2/2 | PROFILE-01, MAT-01 | ausstehend | ausstehend |
+| [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | 🧩 Implementiert · Abnahme offen | 3/3 | PROFILE-01, MAT-01 | ausstehend | ausstehend |
 | [MAT-03](#mat-03) | Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen | 🧩 Implementiert · Abnahme offen | 2/3 | PROFILE-01, QA-01 | `84838f0` | `e232b26` |
 | [MAT-04](#mat-04) | Kupfer mit Oxidation und Wachsstatus | 🧩 Implementiert · Abnahme offen | 2/2 | PROFILE-01, MAT-03 | ausstehend | ausstehend |
 | [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen | 3/3 | CORE-02, NBT-01 | `84838f0` | `e232b26` |
@@ -1050,18 +1050,19 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### NBT-01
 
-**Semantische BlockEntity-Transformationen** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T22:26:37.867Z
+**Semantische BlockEntity-Transformationen** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-04T09:28:40.230Z
 
 - [x] NBT-01-S01: Zu unterstützende NBT-Familien und Positions-/Ausrichtungsregeln festlegen.
 - [x] NBT-01-S02: Adapter mit konkreten Richtungen und unbekannten Restdaten prüfen.
+- [x] NBT-01-S03: Strukturblock-Adapter: SAVE-Bereich und LOAD-Anker/Drehung drehen mit, Spiegeln bleibt ungelöst.
 
 **Abnahme:** Ungeklärte Transformation sperrt verlässlichen Export; keine stillen NBT-Verluste.
 
-**Nächste Aktion:** Abnahme im Spiel: gedrehtes Bauteil mit Truhen/Schildern exportieren und in 26.3 laden (Testphase). Strukturblock-Adapter nur bei Bedarf.
+**Nächste Aktion:** Abnahme im Spiel: gedrehtes Bauteil mit Truhen, Schildern und einem Strukturblock exportieren und in 26.3 laden (Testphase).
 
 **Prüfstand:** Node-Tests mit konkreten Richtungen; Spielabnahme offen.
 
-**Nachweise:** [tests/nbt-transforms.test.mjs](../tests/nbt-transforms.test.mjs) — 49 Profiltypen mit Familie, Drehungen/Spiegelungen, Weltpositionen, Befehle, Strukturblock, Mod-Typ, Positionsfelder.; [docs/architecture/NBT_TRANSFORMS.md](architecture/NBT_TRANSFORMS.md) — Familien und Regeln.
+**Nachweise:** [tests/nbt-transforms.test.mjs](../tests/nbt-transforms.test.mjs) — 49 Profiltypen mit Familie, Drehungen/Spiegelungen, Weltpositionen, Befehle, Strukturblock, Mod-Typ, Positionsfelder.; [docs/architecture/NBT_TRANSFORMS.md](architecture/NBT_TRANSFORMS.md) — Familien und Regeln.; [tests/nbt-transforms.test.mjs](../tests/nbt-transforms.test.mjs) — NBT-01-S03: handgerechnete SAVE-Bereiche, LOAD-Anker und Drehungsfolge, vier Drehungen = Ausgangszustand.
 
 **Dateiumfang:** `packages/voxel/src/nbtTransforms.ts`, `packages/voxel/src/transforms.ts`. **Abhängigkeiten:** PROFILE-01. **Alte IDs:** —.
 
@@ -1115,20 +1116,21 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAT-02
 
-**Versionierte Item-/Rezeptauflösung vervollständigen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T22:26:37.867Z
+**Versionierte Item-/Rezeptauflösung vervollständigen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-04T09:28:40.230Z
 
 - [x] MAT-02-S01: Vorhandene Regeln mit Profilreport abgleichen.
 - [x] MAT-02-S02: Mehrblockobjekte, Rezeptalternativen, Rest-/Brennstoffbilanzen profilgenau prüfen.
+- [x] MAT-02-S03: Sorte je Rezept-Tag und Brennstoff wählbar (im Projekt gespeichert), Brennstoff auf Wunsch in den Rohstoffen mit eigenem Bedarf.
 
 **Abnahme:** Blockzahl, Bauitems, Rohstoffe und Lagerbestand bleiben getrennt.
 
-**Nächste Aktion:** Abnahme in der Testphase: Rohstoffliste eines großen Bauwerks mit dem Spiel vergleichen.
+**Nächste Aktion:** Abnahme in der Testphase: Rohstoffliste eines großen Bauwerks mit gewählter Holzart und Brennstoff mit dem Spiel vergleichen.
 
 **Prüfstand:** Node-Tests gegen 1696 Profilrezepte; Browsertest Rohstoffe/Alternativen.
 
-**Nachweise:** [tests/recipe-profile.test.mjs](../tests/recipe-profile.test.mjs) — Jedes Stationsrezept = Profilrezept; Funde iron_chain, Quarzziegel 4, Holzkohle; Profil-Lückenfüller; Tür 3 je Vorgang mit Rest; Brennstoffbilanz.; [docs/architecture/MATERIALS.md](architecture/MATERIALS.md) — Abschnitt MAT-02.
+**Nachweise:** [tests/recipe-profile.test.mjs](../tests/recipe-profile.test.mjs) — Jedes Stationsrezept = Profilrezept; Funde iron_chain, Quarzziegel 4, Holzkohle; Profil-Lückenfüller; Tür 3 je Vorgang mit Rest; Brennstoffbilanz.; [docs/architecture/MATERIALS.md](architecture/MATERIALS.md) — Abschnitt MAT-02.; [tests/recipe-prefs.test.mjs](../tests/recipe-prefs.test.mjs) — Gewählte Plankensorte, Brennstoffwahl, Holzkohle mit festem Punkt (92 für 640 Vorgänge), Lavaeimer nicht aufgenommen, Prüfung im Baustellenplan.
 
-**Dateiumfang:** `packages/domain/src/recipes.ts`, `packages/domain/src/recipeProfile.ts`, `packages/domain/src/profileRecipes.ts`, `apps/web/src/views/project/RawMaterialsPanel.tsx`. **Abhängigkeiten:** PROFILE-01, MAT-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/recipes.ts`, `packages/domain/src/recipeProfile.ts`, `packages/domain/src/profileRecipes.ts`, `apps/web/src/views/project/RawMaterialsPanel.tsx`, `apps/web/src/views/project/MaterialsTab.tsx`, `packages/domain/src/site.ts`. **Abhängigkeiten:** PROFILE-01, MAT-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

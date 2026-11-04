@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createPayload, transformPayload, nbtFamily, profileNbtFamilies, blockEntityTypeOf, factBlockIds, transformBlockEntity, commandCoordinates } from '../dist/voxel/src/index.js';
+import { createPayload, transformPayload, nbtFamily, profileNbtFamilies, blockEntityTypeOf, factBlockIds, transformBlockEntity, turnStructureBlock, commandCoordinates } from '../dist/voxel/src/index.js';
 
 const s = value => ({ type: 'string', value }), i = value => ({ type: 'int', value }), c = value => ({ type: 'compound', value });
 const L = (value, elementType = 'compound') => ({ type: 'list', elementType, value });
@@ -81,7 +81,13 @@ test('NBT-01: world positions, commands and own boxes block the approval without
   const structure = c({ id: s('minecraft:structure_block'), mode: s('SAVE'), posX: i(1), posY: i(0), posZ: i(0), sizeX: i(5), sizeY: i(4), sizeZ: i(3), rotation: s('NONE'), mirror: s('NONE') });
   const sb = mc('structure_block', { mode: 'save' });
   assert.equal(transformPayload(single(sb, structure), T(0, false, [9, 0, 9])).semanticsResolved, true, 'offset is relative to the block');
-  assert.equal(transformPayload(single(sb, structure), T(1)).semanticsResolved, false);
+  // NBT-01-S03: turning is resolved by the structure block adapter, mirroring stays unresolved.
+  const turned = transformPayload(single(sb, structure), T(1));
+  assert.equal(turned.semanticsResolved, true);
+  const tile = turned.payload.blockEntities[0].data.value;
+  // Region x 1..5, z 0..2 turned clockwise ((x,z) → (−z,x)): x −2..0, z 1..5.
+  assert.deepEqual(['posX', 'posY', 'posZ', 'sizeX', 'sizeY', 'sizeZ'].map(k => tile[k].value), [-2, 0, 1, 3, 4, 5]);
+  assert.equal(transformPayload(single(sb, structure), T(1, true)).semanticsResolved, false);
 
   const mod = c({ id: s('create:mechanical_press'), Speed: i(16) });
   const rm = transformPayload(single({ id: 'create:mechanical_press', properties: { facing: 'north' } }, mod), T(1));
@@ -101,4 +107,19 @@ test('NBT-01: Sponge entries move their Pos, flat entries their x/y/z; entries w
   assert.deepEqual([f.entity.data.value.x.value, f.entity.data.value.y.value, f.entity.data.value.z.value], [103, 64, 7], 'offset to the world kept');
   const none = transformBlockEntity({ position: [1, 0, 0], data: c({ Items: L([]) }) }, [0, 0, 1], T(1));
   assert.equal(none.resolved, false);
+});
+
+test('NBT-01-S03: structure block adapter – SAVE region, LOAD anchor and rotation, four turns are identity', () => {
+  const save = { mode: s('SAVE'), posX: i(1), posY: i(0), posZ: i(2), sizeX: i(3), sizeY: i(4), sizeZ: i(2) };
+  const r1 = turnStructureBlock(save, 1);
+  // Cells x 1..3, z 2..3 → (−z, x): x −3..−2, z 1..3.
+  assert.deepEqual([r1.posX.value, r1.posZ.value, r1.sizeX.value, r1.sizeY.value, r1.sizeZ.value], [-3, 1, 2, 4, 3]);
+  let r = save; for (let k = 0; k < 4; k++) r = turnStructureBlock(r, 1);
+  assert.deepEqual(r, { ...save, posX: i(1), posY: i(0), posZ: i(2), sizeX: i(3), sizeY: i(4), sizeZ: i(2) });
+  const load = { mode: s('LOAD'), posX: i(1), posY: i(-1), posZ: i(2), rotation: s('COUNTERCLOCKWISE_90') };
+  const l1 = turnStructureBlock(load, 1);
+  assert.deepEqual([l1.posX.value, l1.posY.value, l1.posZ.value, l1.rotation.value], [-2, -1, 1, 'NONE']);
+  assert.equal(turnStructureBlock(load, 2).rotation.value, 'CLOCKWISE_90');
+  assert.equal(turnStructureBlock({ mode: s('CORNER') }, 1).mode.value, 'CORNER');
+  assert.equal(turnStructureBlock({ mode: s('LOAD'), posX: i(0), posY: i(0), posZ: i(0), rotation: s('SIDEWAYS') }, 1), null);
 });

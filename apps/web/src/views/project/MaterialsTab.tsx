@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { formatStacks, materialsToCsv, siteOf, siteOperation, toggleResolvedStock } from '../../../../../packages/domain/src/index.js';
+import { formatStacks, materialsToCsv, setRecipePrefs, siteOf, siteOperation, toggleResolvedStock } from '../../../../../packages/domain/src/index.js';
 import type { ItemLine, MaterialReport, UnresolvedReason } from '../../../../../packages/domain/src/index.js';
 import { download, formatNumber } from '../../app/ui';
 import { isResolved } from './session';
@@ -33,6 +33,9 @@ export function MaterialsTab({ session }: { session: ProjectSession }) {
     onToggle: id => session.execute(siteOperation(toggleResolvedStock(site, id), `${id.replace(/^minecraft:/, '')}: vorhanden umgeschaltet`)),
     onReset: () => session.execute(siteOperation({ ...site, resolvedStock: [] }, 'Markierungen „vorhanden“ zurückgesetzt')),
     onCutter: cutter => session.execute(siteOperation({ ...site, recipeMethod: cutter ? 'stonecutter' : 'crafting' }, cutter ? 'Steinsäge bevorzugen' : 'Werkbank bevorzugen')),
+    ...(site.recipePrefs && { prefs: site.recipePrefs }),
+    onTag: (tag, item) => session.execute(siteOperation(setRecipePrefs(site, { tag, item }), item ? `${tag.slice(1)}: ${item.replace(/^minecraft:/, '')} gewählt` : `${tag.slice(1)}: automatisch`)),
+    onFuel: (fuel, fuelInBase) => session.execute(siteOperation(setRecipePrefs(site, { fuel, fuelInBase }), fuelInBase ? 'Brennstoff in Rohstoffe aufgenommen' : `Brennstoff: ${(fuel ?? 'coal').replace(/^minecraft:/, '')}`)),
   };
   if (session.computationState !== 'ready') return <section className="materials" aria-label="Materialbedarf"><p role="status">{session.computationState === 'pending' ? 'Material wird neu berechnet.' : session.computationState === 'cancelled' ? 'Materialberechnung abgebrochen.' : 'Materialberechnung nicht verfügbar.'}</p></section>;
   if (!isResolved(resolution)) return <section className="materials report danger-report" role="alert"><h3>Material kann nicht berechnet werden</h3><p>{resolution.error}</p></section>;
