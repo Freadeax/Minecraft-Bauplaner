@@ -132,7 +132,7 @@ export { GROSSPROJEKTE, grossprojektById, grossprojekteForTheme } from './grossp
 export { TEAM_SCHEMA_VERSION, MAX_TEAM_EVENTS, TEAM_ROLES, TEAM_ROLE_LABEL, TEAM_ROLE_TEXT, NOTE_TAGS, NOTE_TAG_LABEL, PLAYER_NAME, isKnownEvent, checkTeamEvent, compareEvents, checkTeam,
   createTeam, teamEvent, appendEvents, mergeTeam, SECTION_TEAM_STATUS_LABEL, canTeam, teamView, eventLabel, describeEvent, authorize, laterThan, teamAssignments,
   REPORT_CODE_PREFIX, MAX_REPORT_CODE, encodeReportCode, decodeReportCode, TEAM_PACKAGE_FORMAT, TEAM_PACKAGE_VERSION, buildTeamPackage, teamPackageFileName, readTeamPackage,
-  teamStatusText, TEAM_SERVER_FORMAT, teamServerFile, teamServerFileName, readTeamServerFile, programBuilders, teamContextOf, takeOverPlan, joinedOnly, STORE_PURPOSES, STORE_PROTECTIONS, teamIntoProgram, SERVER_ONLY_KINDS } from './team.js';
+  teamStatusText, TEAM_SERVER_FORMAT, teamServerFile, teamServerFileName, readTeamServerFile, programBuilders, teamContextOf, takeOverPlan, joinedOnly, STORE_PURPOSES, STORE_PROTECTIONS, teamIntoProgram, SERVER_ONLY_KINDS, whereInPlan } from './team.js';
 export { LIVE_FEATURE_TEAM, teamLinkState, TEAM_LINK_WAY_TEXT, readLiveTeam, readLiveTeamPull, teamLinkProblem, teamLinkText } from './teamLink.js';
 export type { TeamLinkState, TeamLinkSection, TeamLinkMember, TeamLinkNote, TeamLinkWay, LiveTeam, LiveTeamPull } from './teamLink.js';
 export { ROOM_PROTOCOL, ROOM_PROTOCOL_VERSION, MAX_BATCH, checkLive, shareable, goLive, joinLive, leaveLive, appendLocal, trackOutbox, nextBatch, confirm, ingest, roomStatus, retryDelay, inviteLink, serverLink, readInvite } from './teamSync.js';

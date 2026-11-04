@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { goLive, inviteLink, leaveLive, readBackup, readTeamPackage, roomStatus, serverLink, siteOf, teamContextOf, teamView } from '../../../../../packages/domain/src/index.js';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { goLive, inviteLink, leaveLive, readBackup, readTeamPackage, roomStatus, serverLink, siteOf, teamContextOf, teamView, whereInPlan } from '../../../../../packages/domain/src/index.js';
 import type { RoomTeam, TeamState, TeamView } from '../../../../../packages/domain/src/index.js';
 import { useApp } from '../../app/context';
 import { errorText } from '../../app/ui';
@@ -33,6 +33,10 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
   const [shown, setShown] = useState<'' | 'invite' | 'server'>('');
   const run = async (work: () => Promise<void>) => { setBusy(true); try { await work(); } catch (e) { onMessage(errorText(e)); } finally { setBusy(false); } };
   const names = new Map(view.members.map(m => [m.id, m.name]));
+  // COOP-10: section boxes in world coordinates (as the plugin gets them), only while someone reports a position.
+  const anyPos = room.presence.some(p => p.where === 'spiel' && p.pos);
+  const boxes = useMemo(() => { if (!anyPos) return null; try { return roomHeader(session, team); } catch { return null; } },
+    [anyPos, session.project, session.computation, team]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const saveLive = (next: RoomTeam) => { const p = session.project, site = siteOf(p); session.replace({ ...p, site: { ...site, team: next as TeamState } }); };
 
@@ -110,6 +114,14 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
   </div>;
 
   const status = roomStatus(team as RoomTeam, room.connected);
+  const sectionNames = teamContextOf(siteOf(session.project)).sections;
+  const standsIn = (p: { pos?: { x: number; y: number; z: number; dim: string } }) => {
+    if (!p.pos || !boxes) return '';
+    const w = whereInPlan(boxes.sections, boxes.dimension, p.pos);
+    if (!w) return ' · nicht auf der Baustelle';
+    const name = sectionNames.find(s => s.id === w.section)?.name ?? 'Abschnitt';
+    return w.inside ? ` · steht in „${name}“` : w.distance <= 64 ? ` · ${w.distance} Blöcke von „${name}“` : ' · weit weg von der Baustelle';
+  };
   const label = status.state === 'live' ? 'live' : status.state === 'waiting' ? `sendet ${status.pending} …` : status.state === 'offline' ? `offline${status.pending ? ` · ${status.pending} warten` : ''}` : 'aus';
   const invite = inviteLink(pageBase(), live);
   const server = live.serverKey ? serverLink(pageBase(), live, live.serverKey) : '';
@@ -121,7 +133,8 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
     <h4>Gerade da</h4>
     {room.presence.length ? <ul className="team-presence" aria-label="Gerade da">{room.presence.map(p =>
       <li key={p.device}><strong>{p.member === 'server' ? 'Server' : names.get(p.member) ?? 'Unbekannt'}</strong> {WHERE[p.where]}{p.section ? ` · ${teamContextOf(siteOf(session.project)).sections.find(s => s.id === p.section)?.name ?? ''}` : ''}{p.device === live.device ? ' (du)' : ''}
-        {p.where === 'spiel' && p.pos && <span className="muted" data-testid="presence-pos"> · {p.player ? `${p.player} ` : ''}bei {p.pos.x} {p.pos.y} {p.pos.z}{p.pos.dim !== 'minecraft:overworld' ? ` (${p.pos.dim.replace('minecraft:', '')})` : ''}</span>}</li>)}</ul>
+        {p.where === 'spiel' && p.pos && <span className="muted" data-testid="presence-pos"> · {p.player ? `${p.player} ` : ''}bei {p.pos.x} {p.pos.y} {p.pos.z}{p.pos.dim !== 'minecraft:overworld' ? ` (${p.pos.dim.replace('minecraft:', '')})` : ''}</span>}
+        {p.where === 'spiel' && p.pos && <span className="muted" data-testid="presence-where">{standsIn(p)}</span>}</li>)}</ul>
       : <p className="muted">{room.connected ? 'Nur du.' : 'Keine Verbindung.'}</p>}
     {planMissing && <div className="notice" role="status"><strong>Neuer Planstand {view.release?.revisionNumber} freigegeben</strong>
       <p>Die Bauleitung hat einen neuen Plan freigegeben. Dein bisheriger Stand bleibt als Kopie erhalten.</p>

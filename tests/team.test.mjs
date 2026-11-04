@@ -337,3 +337,13 @@ test('Client zuerst (COOP-10): Baustand und Kisteninhalt laut Spiel, ungeprüft 
   assert.throws(() => checkTeamEvent(ev('bld_ben', { kind: 'store.seen', chest: 'lager2', items: [], more: false })), /more/);
   assert.ok(canTeam('helfer', 'section.seen') && !canTeam('gast', 'store.seen'));
 });
+
+test('Wo steht wer (COOP-10): Abschnitt aus Position und Weltboxen', async () => {
+  const { whereInPlan } = await import('../dist/domain/src/index.js');
+  const sections = [{ id: 'sec_a', name: 'Fundament', boxes: [[0, 60, 0, 19, 63, 19]] }, { id: 'sec_b', name: 'Turm', boxes: [[5, 60, 5, 8, 90, 8]] }];
+  assert.deepEqual(whereInPlan(sections, 'minecraft:overworld', { x: 10, y: 62, z: 10 }), { section: 'sec_a', inside: true, distance: 0 });
+  assert.deepEqual(whereInPlan(sections, 'minecraft:overworld', { x: 6, y: 62, z: 6 }), { section: 'sec_b', inside: true, distance: 0 }, 'smaller box wins');
+  assert.deepEqual(whereInPlan(sections, 'minecraft:overworld', { x: 30, y: 62, z: 10 }), { section: 'sec_a', inside: false, distance: 11 });
+  assert.equal(whereInPlan(sections, 'minecraft:overworld', { x: 10, y: 62, z: 10, dim: 'minecraft:the_nether' }), null);
+  assert.equal(whereInPlan([], 'minecraft:overworld', { x: 0, y: 0, z: 0 }), null);
+});

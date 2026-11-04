@@ -1201,3 +1201,20 @@ export function takeOverPlan<P extends { readonly id: string; readonly revision:
 
 /** Members a merge would add to the plan's builder list (joined through the team log only). */
 export function joinedOnly(view: TeamView): TeamMember[] { return view.members.filter(m => !m.inProgram); }
+
+/**
+ * COOP-10: where a player stands relative to the plan, from the world boxes of the server file (teamServerFile).
+ * Returns the section that contains the position (smallest box wins when boxes overlap) or, outside all, the
+ * nearest section with its distance in blocks; null without boxes or in another dimension.
+ */
+export function whereInPlan(sections: TeamServerFile['sections'], dimension: string, pos: { readonly x: number; readonly y: number; readonly z: number; readonly dim?: string }):
+  { readonly section: string; readonly inside: boolean; readonly distance: number } | null {
+  if ((pos.dim ?? 'minecraft:overworld') !== dimension) return null;
+  let best: { section: string; inside: boolean; distance: number; volume: number } | null = null;
+  for (const s of sections) for (const b of s.boxes) {
+    const d = Math.hypot(Math.max(b[0] - pos.x, 0, pos.x - b[3]), Math.max(b[1] - pos.y, 0, pos.y - b[4]), Math.max(b[2] - pos.z, 0, pos.z - b[5]));
+    const volume = (b[3] - b[0] + 1) * (b[4] - b[1] + 1) * (b[5] - b[2] + 1);
+    if (!best || d < best.distance || (d === best.distance && volume < best.volume)) best = { section: s.id, inside: d === 0, distance: Math.round(d), volume };
+  }
+  return best && { section: best.section, inside: best.inside, distance: best.distance };
+}

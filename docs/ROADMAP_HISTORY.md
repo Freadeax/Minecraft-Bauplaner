@@ -5442,3 +5442,22 @@ Modrinth-Stand: 0.10.0 bis 0.15.0 (Fabric, NeoForge, Paper bis 0.13.0) hochgelad
 |---|---|---:|---|
 | GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
 
+## 2026-11-04T22:20:00.000Z · progress
+
+**Aufgaben:** COOP-10
+
+COOP-10: Team-Raum mit Positionen/Aufnahmen ausgerollt (Philipps Karte, Version 8318d1eb, echter Dienst grün); „Gerade da“ zeigt Abschnitt bzw. Abstand aus der Spielposition (whereInPlan).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-10 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme mit Mitspielern ohne Plugin (TEAMBAU-27, TEAMBAU-25). |
+
+**Geänderte Dateien:**
+
+- `packages/domain/src/team.ts`
+- `packages/domain/src/index.ts`
+- `apps/web/src/views/project/TeamRoom.tsx`
+- `tests/team.test.mjs`
+- `tests/e2e/team-room.e2e.mjs`
+- `docs/architecture/TEAM_LIVE.md`
+

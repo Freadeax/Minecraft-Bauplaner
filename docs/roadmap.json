@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T22:02:23.142Z",
+  "updatedAt": "2026-11-04T22:20:00.000Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -9236,7 +9236,8 @@
         "tests/e2e/team-room.e2e.mjs",
         "docs/architecture/TEAM_LIVE.md",
         "apps/web/src/testing/testplan.ts",
-        "docs/testing/TESTPLAN.md"
+        "docs/testing/TESTPLAN.md",
+        "apps/web/src/views/project/TeamRoom.tsx"
       ],
       "legacyIds": [],
       "steps": [
@@ -9256,9 +9257,14 @@
           "done": true
         },
         {
+          "id": "COOP-10-S06",
+          "title": "„Gerade da“ zeigt, in welchem Abschnitt ein Mitspieler im Spiel steht oder wie weit er weg ist.",
+          "done": true
+        },
+        {
           "id": "COOP-10-S04",
-          "title": "Mod meldet beides selbst (Thread „Anbindung von Planer, Mod und Server neu denken“).",
-          "done": false
+          "title": "Mod meldet beides selbst (Thread „Anbindung von Planer, Mod und Server neu denken“). Mod 0.15.0 meldet beides (9d20e54), Team-Raum ausgerollt (Version 8318d1eb).",
+          "done": true
         },
         {
           "id": "COOP-10-S05",
@@ -9270,7 +9276,7 @@
         "Eine Meldung des Mods ändert nie die Servermessung (build.tally, store.count).",
         "Gäste können keinen Baustand melden; unbekannte Kisten werden abgelehnt."
       ],
-      "next": "Mod meldet section.seen/store.seen (Anbindungs-Thread), dann Abnahme TEAMBAU-25.",
+      "next": "Abnahme mit Mitspielern ohne Plugin (TEAMBAU-27, TEAMBAU-25).",
       "blockers": [],
       "evidence": [
         {
@@ -9290,13 +9296,13 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T14:30:00.000Z",
+      "updatedAt": "2026-11-04T22:20:00.000Z",
       "area": "TEAM",
       "thread": "Gemeinsames Bauen mehrerer Spieler ermöglichen",
       "philipp": [
         {
           "kind": "server",
-          "text": "TEAMBAU-25 mit Mitspielern, sobald der Mod Baustand und Kisten meldet."
+          "text": "TEAMBAU-27 mit Mitspielern: Mod 0.15.0, Team live, ohne Plugin bauen und Kiste öffnen."
         }
       ],
       "orphans": []
@@ -17979,6 +17985,31 @@
           "done": 4,
           "total": 5,
           "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T22:20:00.000Z",
+      "kind": "progress",
+      "items": [
+        "COOP-10"
+      ],
+      "summary": "COOP-10: Team-Raum mit Positionen/Aufnahmen ausgerollt (Philipps Karte, Version 8318d1eb, echter Dienst grün); „Gerade da“ zeigt Abschnitt bzw. Abstand aus der Spielposition (whereInPlan).",
+      "files": [
+        "packages/domain/src/team.ts",
+        "packages/domain/src/index.ts",
+        "apps/web/src/views/project/TeamRoom.tsx",
+        "tests/team.test.mjs",
+        "tests/e2e/team-room.e2e.mjs",
+        "docs/architecture/TEAM_LIVE.md"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-10",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme mit Mitspielern ohne Plugin (TEAMBAU-27, TEAMBAU-25)."
         }
       ]
     }

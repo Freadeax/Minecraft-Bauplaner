@@ -243,6 +243,9 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
       // ---- LINK-07: Anna's game in the room – position for the others, recording by click, no server plugin.
       const anna = await fake.game(roomId, q.get('k'), handed.member, 'AnnaMC', { x: 12, y: 64, z: -3, dim: 'minecraft:overworld' }, tinyScan());
       await liveBlock(a).getByTestId('presence-pos').filter({ hasText: 'AnnaMC bei 12 64 -3' }).waitFor();
+      // COOP-10: where she stands relative to the sections.
+      const where = liveBlock(a).getByTestId('presence-where').filter({ hasText: /steht in „|Blöcke von „|weit weg|nicht auf der Baustelle/ });
+      await where.waitFor(); console.log('# presence-where:', await where.textContent());
       await a.getByRole('navigation', { name: 'Projektbereiche' }).getByRole('link', { name: 'Bauen' }).click();
       await a.getByTestId('room-scans').getByText('Ein Spiel im Team-Raum').waitFor();
       await a.getByRole('button', { name: '⇩ Aufnahme im Spiel anfordern' }).click();
