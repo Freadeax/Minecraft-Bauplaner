@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T02:19:40.131Z",
+  "updatedAt": "2026-11-04T02:20:00.609Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -7899,7 +7899,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T01:15:21.000Z",
+      "updatedAt": "2026-11-04T02:20:00.609Z",
       "area": "TEAM",
       "thread": "Gemeinsames Bauen mehrerer Spieler ermöglichen",
       "philipp": [
@@ -8376,7 +8376,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T02:19:40.131Z",
+      "updatedAt": "2026-11-04T02:19:47.540Z",
       "area": "MOD",
       "thread": "Anbindung von Planer, Mod und Server neu denken",
       "orphans": [],
@@ -15934,6 +15934,47 @@
           "done": 0,
           "total": 2,
           "next": "Nach Abnahme von LINK-01…05."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T02:19:47.540Z",
+      "kind": "progress",
+      "items": [
+        "LINK-03"
+      ],
+      "summary": "Mod 0.12.0 (Fabric, NeoForge, Paper) auf #/mod freigegeben; NeoForge 26.3 Spieltest bestanden (Port-Neustart beim bereits laufenden Dienst behoben).",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.12.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.12.0.jar",
+        "downloads/mod/bauplaner-bridge-paper-0.12.0.jar"
+      ],
+      "snapshot": [
+        {
+          "id": "LINK-03",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme LIVE-01 in Philipps Modpack."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T02:20:00.609Z",
+      "kind": "progress",
+      "items": [
+        "COOP-07"
+      ],
+      "summary": "Nächste Aktion nachgetragen: Steuerkanal und Kopplung ohne Befehl sind mit LINK-05 umgesetzt.",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "COOP-07",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl umgesetzt (LINK-05)."
         }
       ]
     }

@@ -467,6 +467,53 @@
       "releasedAt": "2026-11-03",
       "sourceCommit": "ea63bc4aad227fce710fa1fad92c675e44f741d9",
       "tested": "Paper 26.3 Build 238 Teambau-Test mit dieser Jar bestanden; Team-Raum (RoomLink) vom Plugin-Thread geprüft"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.12.0.jar",
+      "modVersion": "0.12.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 387260,
+      "sha256": "4d2bb3999950b984745d1290c30dea982823dc48d0ff43b92a5769e89c94c2a0",
+      "releasedAt": "2026-11-04",
+      "sourceCommit": "c726b8592f86fd7628692b075d11ec90e1dc84ef",
+      "tested": "Fabric 26.3 Spieltest mit dieser Version bestanden (Planer zulassen per Mausklick, Hologramm, Website-Verbindung)"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.12.0.jar",
+      "modVersion": "0.12.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 384046,
+      "sha256": "213a94f119a0af2bbd91a47789c93be3075b5472655e74df814233a2046a3cdd",
+      "releasedAt": "2026-11-04",
+      "sourceCommit": "c726b8592f86fd7628692b075d11ec90e1dc84ef",
+      "tested": "NeoForge 26.3 Spieltest mit dieser Version bestanden"
+    },
+    {
+      "file": "bauplaner-bridge-paper-0.12.0.jar",
+      "modVersion": "0.12.0",
+      "loader": "paper",
+      "minecraft": "26.3",
+      "loaderMin": "1.18",
+      "minecraftVersions": [
+        "1.18.2",
+        "1.20.6",
+        "1.21.4",
+        "1.21.11",
+        "26.3"
+      ],
+      "java": "17",
+      "bytes": 235952,
+      "sha256": "9b1a76f35f93772aa868f6bb037f5afec466c0c0f2f5ccd05d991f33308a13b1",
+      "releasedAt": "2026-11-04",
+      "sourceCommit": "c726b8592f86fd7628692b075d11ec90e1dc84ef",
+      "tested": "Paper 1.21.11 Build 132: Server ohne Befehle (Kopplung, Steuernachrichten, Team-Raum) und Teambau/Lager/Raum-Tests bestanden; Paper 26.3 Teambau-Test bestanden"
     }
   ]
 }

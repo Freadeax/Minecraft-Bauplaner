@@ -4749,3 +4749,30 @@ Server ohne Befehle (Mod/Plugin 0.12.0): Plugin richtet sich selbst ein, Kopplun
 - `tests/server-link.test.mjs`
 - `tests/team-room.test.mjs`
 
+## 2026-11-04T02:19:47.540Z · progress
+
+**Aufgaben:** LINK-03
+
+Mod 0.12.0 (Fabric, NeoForge, Paper) auf #/mod freigegeben; NeoForge 26.3 Spieltest bestanden (Port-Neustart beim bereits laufenden Dienst behoben).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LINK-03 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme LIVE-01 in Philipps Modpack. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.12.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.12.0.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.12.0.jar`
+
+## 2026-11-04T02:20:00.609Z · progress
+
+**Aufgaben:** COOP-07
+
+Nächste Aktion nachgetragen: Steuerkanal und Kopplung ohne Befehl sind mit LINK-05 umgesetzt.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-07 | 🧩 Implementiert · Abnahme offen | 6/7 | Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl umgesetzt (LINK-05). |
+

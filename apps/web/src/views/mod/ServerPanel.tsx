@@ -191,7 +191,7 @@ export function ServerPanel({ search }: { search?: string | undefined } = {}) {
       <li data-done={view.kind === 'game'}>
         <b>Spiel</b>{' '}
         {view.kind === 'loading' && <span className="muted">suche die Mod …</span>}
-        {view.kind === 'no-mod' && <span className="muted">Minecraft mit der Bauplaner-Mod läuft gerade nicht auf diesem PC (oder der Browser blockiert den Zugriff auf Geräte im lokalen Netzwerk). <a href="#/mod">Mod herunterladen</a></span>}
+        {view.kind === 'no-mod' && <span className="muted">Minecraft mit der Bauplaner-Mod läuft gerade nicht auf diesem PC (oder der Browser blockiert den Zugriff auf Geräte im lokalen Netzwerk). Die Mod gibt es oben auf dieser Seite.</span>}
         {view.kind === 'old-mod' && <span className="warn-text">{view.text}</span>}
         {view.kind === 'unpaired' && <><span>Mod gefunden. </span><button className="primary" disabled={busy} onClick={() => void connectGame()}>Mit dem Spiel verbinden</button></>}
         {view.kind === 'asking' && <b className="warn-text" role="status">Jetzt im Spiel J drücken und „Planer zulassen“ klicken.</b>}
