@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-04T08:50:13.176Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-04T09:00:40.731Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -30,7 +30,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 7 | 1 | 5 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 9 | 1 | 9 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
-| [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 8 | 0 | 8 | 0 |
+| [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 8 | 0 | 7 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 3 | 0 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 1 | 0 | 0 |
 | [Performance und Stabilität](#bereich-perf) | 4 | 1 | 1 | 2 |
@@ -138,7 +138,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [LINK-03](#link-03) | Mod | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Anbindung von Planer, Mod und Server neu denken“ | Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“. |
 | [GAME-08](#game-08) | Bauplaner-Mod Protokoll 2 | 🧩 Implementiert · Abnahme offen 4/5 | P2 | „Teambau und Befehle in der Mod ausbauen“ | Mitspieler-Pfeile auf der Live-Karte mit einem zweiten Spieler. |
 | [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0 | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Teambau und Befehle in der Mod ausbauen“ | Befehlsseite im J-Menü zusammen mit dem Plugin auf deinem Server (MOD-16). |
-| [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher | ⏳ Offen 0/4 | P2 | „Teambau und Befehle in der Mod ausbauen“ | Festlegen, welche Minecraft-Versionen und Launcher die Client-Mod wirklich braucht (Versionsmatrix). |
+| [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher | ⏳ Offen 0/4 | P2 | „Teambau und Befehle in der Mod ausbauen“ | — |
 
 <a id="bereich-plugin"></a>
 
@@ -306,7 +306,6 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 
 - **SIZE-01** · Im Thread beschreiben, was beim Senden falsch ankommt.
 - **COOP-01** · Weg für den Live-Abgleich ohne Herunter- und Hochladen wählen (Rückfrage im Thread).
-- **GAME-11** · Festlegen, welche Minecraft-Versionen und Launcher die Client-Mod wirklich braucht (Versionsmatrix).
 
 ## Verwaiste Punkte
 
@@ -344,7 +343,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 | IN-01 | Plan kommt nicht richtig vom Planer ins Spiel; das große Bauprojekt läuft weiter nicht sauber. | Philipp, 2026-11-03 | Volumenlimit und Übertragung großer Pläne | zugeteilt | „Volumenlimit für große Builds aufheben“ | SIZE-01 |
 | IN-02 | Teambau live statt Teampaket herunter- und hochladen; einfacher und komplexer überarbeiten. | Philipp, 2026-11-03 | Teambau live | übernommen | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | COOP-01, COOP-07 |
 | IN-03 | Befehle und Status von Mod und Plugin im J-Menü per Klick – als GAME-10 übernommen (Mod 0.11.0). | Philipp, 2026-11-03 | Client-Mod | übernommen | „Teambau und Befehle in der Mod ausbauen“ | GAME-10 |
-| IN-04 | Client-Mod in mehreren Minecraft-Versionen und Launchern; bisher gibt es Fabric/NeoForge nur für 26.3 (Paper-Plugin läuft 1.18.2–26.3). | Philipp, 2026-10-27 | Client-Mod | zugeteilt | „Teambau und Befehle in der Mod ausbauen“ | GAME-02, GAME-05, GAME-11 |
+| IN-04 | Client-Mod in mehreren Minecraft-Versionen und Launchern; bisher gibt es Fabric/NeoForge nur für 26.3 (Paper-Plugin läuft 1.18.2–26.3). Entscheidung Philipp 04.11.: neueste Version und vor allem die gespielte (Fabric 26.3). | Philipp, 2026-10-27 | Client-Mod | zugeteilt | „Teambau und Befehle in der Mod ausbauen“ | GAME-02, GAME-05, GAME-11 |
 | IN-05 | Reale Orte aus Kartendaten (OSM) – zurückgestellt, bis die Lizenzfrage geklärt ist. | Koordinator, 2026-11-02 | Planer | zurückgestellt | — | LICENSE-01 |
 | IN-06 | Seit 01.11. keine Codex-Commits auf main; die vorgeschlagenen Codex-Pakete (PROFILE-01, NBT-01, MAT-02/04, DIFF-01, PERF-02/03, FORMAT-01, QA-02) haben dadurch keinen Bearbeiter. | Koordinator, 2026-11-01 | Kern, Minecraft-Daten und Dateiformate | übernommen | „Liegengebliebene Datenpakete abarbeiten“ | PROFILE-01, NBT-01, MAT-02, MAT-04, DIFF-01, PERF-02, PERF-03, FORMAT-01, QA-02 |
 | IN-07 | Alte Issues #2 (B16), #3 (B17) und #4 (S4) sind noch offen, obwohl VIEW-02, LIB-02/03 und STORE-02 auf main liegen: prüfen und schließen. | GitHub, 2026-10-31 | Testphase, Qualität und Betrieb | übernommen | „Offene Punkte prüfen und Roadmap neu ordnen“ | VIEW-02, LIB-02, LIB-03, STORE-02 |
@@ -375,7 +374,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **COOP-06 · Teamplanung im Planer: Arbeitspakete, Zuteilung, Zeitplan, Material je Spieler, Fortschritt mit Hinweisen, Konflikthilfe, Planstand-Vergleich, Übergabe und Abwesenheit** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern.
 - **PROJ-01 · Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel.
 - **GAME-10 · Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme MOD-16 auf Philipps Server mit Paper-Plugin.
-- **GAME-11 · Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** — ⏳ Offen, 0/4 Teilschritte. Nächster Schritt: Versionsmatrix mit Philipp abstimmen (welche Versionen braucht er wirklich?).
+- **GAME-11 · Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** — ⏳ Offen, 0/4 Teilschritte. Nächster Schritt: Entschieden (Philipp 04.11.): Fabric 26.3 (sein Modpack mit REI) hat Vorrang, danach jeweils die neueste Minecraft-Version nachziehen; keine Matrix älterer Versionen.
 - **COOP-07 · Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl umgesetzt (LINK-05).
 - **PROD-01 · Produktionsdaten: Katalog von 34 Farmarten mit Richtwerten je Einheit, Bedingungen, Reichweite, Verbrauch und Bauplan; Farmliste je Projekt (Anzahl, Zustand, Ort, Bauteil, Kartenpunkt) und Ertragsbuch, das ins Baustellen-Lager bucht und gemessene Raten liefert** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme PROJ-12; später Erträge aus geprüften Lagerkisten (COOP-05) ins Ertragsbuch.
 - **PROD-02 · Deckung und Engpässe: Restbedarf des Sammelplans gegen laufende Farmen und Handarbeit (gemeinsame Warteschlange, gieriger Ausgleich), Engpass, Materialbereitschaft je Abschnitt in Spieltagen, „Lohnt sich eine Farm?“ mit Amortisation aus Bauplan-Kosten** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme PROJ-13.
@@ -2776,7 +2775,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-11
 
-**Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** · ⏳ Offen · Priorität P2 · Verantwortlich: Claude (Thread „Teambau und Befehle in der Mod ausbauen“) · Zuständiger Thread: „Teambau und Befehle in der Mod ausbauen“ · Aktualisiert: 2026-11-04T08:42:48.661Z
+**Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** · ⏳ Offen · Priorität P2 · Verantwortlich: Claude (Thread „Teambau und Befehle in der Mod ausbauen“) · Zuständiger Thread: „Teambau und Befehle in der Mod ausbauen“ · Aktualisiert: 2026-11-04T09:00:40.731Z
 
 - [ ] GAME-11-S01: Versionsmatrix festlegen: welche Minecraft-Versionen und Loader (Philipps Server, verbreitete Modpacks), was der Kern schon versionsneutral abdeckt.
 - [ ] GAME-11-S02: Zweite Minecraft-Version (Fabric und NeoForge) als eigener Adapter über mod-core und eine Versionsfassade, ohne 26.3 zu verändern.
@@ -2785,9 +2784,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Die Mod läuft in mindestens einer weiteren Minecraft-Version mit Hologramm, Platzierhilfe, Website-Verbindung, Teambau und Befehlsseite. #/mod und Modrinth bieten je Version und Loader die passende Datei an.
 
-**Nächste Aktion:** Versionsmatrix mit Philipp abstimmen (welche Versionen braucht er wirklich?).
-
-**Nur Philipp:** Entscheiden oder Rückfrage beantworten: Festlegen, welche Minecraft-Versionen und Launcher die Client-Mod wirklich braucht (Versionsmatrix).
+**Nächste Aktion:** Entschieden (Philipp 04.11.): Fabric 26.3 (sein Modpack mit REI) hat Vorrang, danach jeweils die neueste Minecraft-Version nachziehen; keine Matrix älterer Versionen.
 
 **Prüfstand:** Noch nicht begonnen.
 

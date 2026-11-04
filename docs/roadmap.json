@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T08:50:13.176Z",
+  "updatedAt": "2026-11-04T09:00:40.731Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -7776,7 +7776,7 @@
         "Die Mod läuft in mindestens einer weiteren Minecraft-Version mit Hologramm, Platzierhilfe, Website-Verbindung, Teambau und Befehlsseite.",
         "#/mod und Modrinth bieten je Version und Loader die passende Datei an."
       ],
-      "next": "Versionsmatrix mit Philipp abstimmen (welche Versionen braucht er wirklich?).",
+      "next": "Entschieden (Philipp 04.11.): Fabric 26.3 (sein Modpack mit REI) hat Vorrang, danach jeweils die neueste Minecraft-Version nachziehen; keine Matrix älterer Versionen.",
       "blockers": [],
       "evidence": [],
       "verification": {
@@ -7787,16 +7787,11 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T08:42:48.661Z",
+      "updatedAt": "2026-11-04T09:00:40.731Z",
       "area": "MOD",
       "thread": "Teambau und Befehle in der Mod ausbauen",
       "orphans": [],
-      "philipp": [
-        {
-          "kind": "entscheidung",
-          "text": "Festlegen, welche Minecraft-Versionen und Launcher die Client-Mod wirklich braucht (Versionsmatrix)."
-        }
-      ]
+      "philipp": []
     },
     {
       "id": "COOP-07",
@@ -16148,6 +16143,24 @@
           "next": "Serveraufnahme (scan) als Steueraktion; Abnahme LINK-05 (Testplan)."
         }
       ]
+    },
+    {
+      "at": "2026-11-04T09:00:40.731Z",
+      "kind": "progress",
+      "items": [
+        "GAME-11"
+      ],
+      "summary": "Versionsentscheidung Philipp: Fabric 26.3 zuerst, dann die jeweils neueste Version; keine Matrix älterer Versionen.",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "GAME-11",
+          "status": "planned",
+          "done": 0,
+          "total": 4,
+          "next": "Entschieden (Philipp 04.11.): Fabric 26.3 (sein Modpack mit REI) hat Vorrang, danach jeweils die neueste Minecraft-Version nachziehen; keine Matrix älterer Versionen."
+        }
+      ]
     }
   ],
   "areas": [
@@ -16242,7 +16255,7 @@
       "id": "IN-04",
       "at": "2026-10-27T12:41:26Z",
       "source": "Philipp",
-      "title": "Client-Mod in mehreren Minecraft-Versionen und Launchern; bisher gibt es Fabric/NeoForge nur für 26.3 (Paper-Plugin läuft 1.18.2–26.3).",
+      "title": "Client-Mod in mehreren Minecraft-Versionen und Launchern; bisher gibt es Fabric/NeoForge nur für 26.3 (Paper-Plugin läuft 1.18.2–26.3). Entscheidung Philipp 04.11.: neueste Version und vor allem die gespielte (Fabric 26.3).",
       "area": "MOD",
       "thread": "Teambau und Befehle in der Mod ausbauen",
       "items": [

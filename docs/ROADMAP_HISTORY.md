@@ -4831,3 +4831,13 @@ iPad-Weg gegen den echten Team-Raum geprüft (Browsertest mit TEAM_ROOM_URL); LI
 - `tests/e2e/modSimulator.mjs`
 - `tests/e2e/server-link.e2e.mjs`
 
+## 2026-11-04T09:00:40.731Z · progress
+
+**Aufgaben:** GAME-11
+
+Versionsentscheidung Philipp: Fabric 26.3 zuerst, dann die jeweils neueste Version; keine Matrix älterer Versionen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-11 | ⏳ Offen | 0/4 | Entschieden (Philipp 04.11.): Fabric 26.3 (sein Modpack mit REI) hat Vorrang, danach jeweils die neueste Minecraft-Version nachziehen; keine Matrix älterer Versionen. |
+
