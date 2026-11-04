@@ -153,3 +153,5 @@ export { HOPPER_ITEMS_PER_HOUR, BUILD_BLOCKS_PER_HOUR, MIN_SAVED_HOURS, SUGGESTI
 export type { RangeCheck, AfkSpot, FarmRate, FarmStatus, FarmLogistics, CoverWay, CoverageLine as ProductionCoverageLine, SectionReadiness, FarmCost, Verdict, FarmSuggestion, FurnacePlan, StorageLine, ProductionReport, ProductionInput, DetectedFarm, MapFarm, GatherJob, GatherAssignment, TeamChest, ChestYield, ChestSuggestion } from './productionPlan.js';
 export { SERVER_OPS, SERVER_WAY_TEXT, readServerInfo, readServerClaim, readServerStatus, nextSeq, controlBody, signControl, controlMessage, settingsProblem, readServerRoom, deviceInviteLink, readDeviceInvite } from './serverControl.js';
 export type { ServerOp, ServerWay, ServerIdentity, ServerInfo, ServerPairing, ServerSetting, ServerStatus, ControlMessage, ServerRoom } from './serverControl.js';
+export { SCAN_ROUTE_LABEL, planScanRoutes, scanRouteSummary } from './scanRoutes.js';
+export type { ScanRouteId, ScanRouteInput, ScanRoute } from './scanRoutes.js';

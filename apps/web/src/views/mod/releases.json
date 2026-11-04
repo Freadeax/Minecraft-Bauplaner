@@ -615,6 +615,33 @@
       "releasedAt": "2026-11-04",
       "sourceCommit": "b52148dc3b253e6e894590703002285672d98154",
       "tested": "Minecraft 26.3 NeoForge Spieltest bestanden (04.11.2026)"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.16.0.jar",
+      "modVersion": "0.16.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 486278,
+      "sha256": "cccba88f57ccbb75b39d75cc10b325da633ec8201ab54f877cd2c0e0f388fa3e",
+      "releasedAt": "2026-11-04",
+      "sourceCommit": "73f9f560ff7ff284bb9810f509af78c2b27d138e",
+      "tested": "Spieltest Minecraft 26.3 Fabric mit echtem Team-Raum (04.11.2026): Hologramm, Website-Verbindung, Aufnahme in den Raum; RoomFallbackTest (HTTP ohne WebSocket, Neustart offline)"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.16.0.jar",
+      "modVersion": "0.16.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 482553,
+      "sha256": "df3a9f6b126372deadead87afb2a03c33940e8a52a658fac6045d9263d2aa735",
+      "releasedAt": "2026-11-04",
+      "sourceCommit": "73f9f560ff7ff284bb9810f509af78c2b27d138e",
+      "tested": "Spieltest Minecraft 26.3 NeoForge (04.11.2026): Hologramm, Website-Verbindung, Baustand"
     }
   ]
 }

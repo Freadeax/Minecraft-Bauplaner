@@ -143,7 +143,7 @@ public final class TeamClient {
             chestOpen = null;
             TeamState t = shown;
             var room = sync.room();
-            if (t != null && room != null && room.live() && mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult hit && hit.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK) {
+            if (t != null && room != null && room.config() != null && mc.hitResult instanceof net.minecraft.world.phys.BlockHitResult hit && hit.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK) {
                 var pos = hit.getBlockPos();
                 String dim = McCompat.dimension(mc.level);
                 for (TeamState.Store s : t.stores()) {
@@ -190,9 +190,13 @@ public final class TeamClient {
         if (++ticks % 20 != 0 || mc.player == null) return;
         sync.tick();
         TeamState t = shown;
-        if (room != null && room.live() && t != null && t.source() == TeamState.Source.ROOM && mc.level != null) {
-            TeamState.Section at = sectionAt(t, teamPlan(t), McCompat.dimension(mc.level), mc.player.getBlockX(), mc.player.getBlockY(), mc.player.getBlockZ());
-            room.section(at == null ? null : at.id());
+        // FALLBACK-01: measurements are also taken while the room is away (shown state from raum-stand.json); the
+        // room client keeps the newest per section and sends it on reconnect.
+        if (room != null && room.config() != null && t != null && t.source() == TeamState.Source.ROOM && mc.level != null) {
+            if (room.live()) {
+                TeamState.Section at = sectionAt(t, teamPlan(t), McCompat.dimension(mc.level), mc.player.getBlockX(), mc.player.getBlockY(), mc.player.getBlockZ());
+                room.section(at == null ? null : at.id());
+            }
             reportSections(t, teamPlan(t), room);
         }
         TeamPlan tp = teamPlan(t);
@@ -408,7 +412,7 @@ public final class TeamClient {
         var room = sync.room();
         if (room != null && room.config() != null) {
             var c = room.config();
-            out.add(row("Team-Raum: " + room.status().label + (c.teamName() != null ? " · " + c.teamName() : "") + (room.live() ? " · " + room.presence().size() + " da" : ""),
+            out.add(row("Team-Raum: " + room.statusText() + (c.teamName() != null ? " · " + c.teamName() : "") + (room.live() ? " · " + room.presence().size() + " da" : ""),
                     room.live() ? 0xFF6BE07B : 0xFFFFB040));
             if (!room.live() && room.lastError() != null) out.add(row("  " + room.lastError(), 0xFFB0B0B0));
         } else out.add(row("Team-Raum: keiner – im Planer unter „Team live“ „Mein Spiel verbinden“ (keine Server-Datei nötig)", 0xFFB0B0B0));

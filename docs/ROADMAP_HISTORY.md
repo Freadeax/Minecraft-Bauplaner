@@ -5461,3 +5461,36 @@ COOP-10: Team-Raum mit Positionen/Aufnahmen ausgerollt (Philipps Karte, Version 
 - `tests/e2e/team-room.e2e.mjs`
 - `docs/architecture/TEAM_LIVE.md`
 
+## 2026-11-04T22:23:54.313Z · progress
+
+**Aufgaben:** FALLBACK-01
+
+FALLBACK-01: Mod 0.16.0 (Teamstand offline in raum-stand.json, HTTP statt WebSocket, offline gemerkte Messungen) und Planer „Baustand holen (bester Weg)“; RoomFallbackTest, RoomClientTest gegen echten Raum, Unit + Browser grün, Spieltest Fabric (mit Team-Raum) und NeoForge bestanden.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| FALLBACK-01 | 🚧 In Arbeit | 4/5 | Spieltest Mod 0.16.0, Release über den Modrinth-Thread, Abnahme LINK-09 durch Philipp. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/mod/releases.json`
+- `apps/web/src/views/project/GameCheckPanel.tsx`
+- `docs/architecture/AUTO_LINK.md`
+- `docs/architecture/FALLBACKS.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.16.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.16.0.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/scanRoutes.ts`
+- `tests/e2e/game-progress.e2e.mjs`
+- `tests/scan-routes.test.mjs`
+

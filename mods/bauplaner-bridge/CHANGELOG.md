@@ -2,6 +2,20 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.16.0 – 2026-11-04
+
+**Fallbacks: team mode keeps working when the connection does not / Ausweichwege: Teammodus läuft weiter, wenn die Verbindung nicht will**
+
+- The game keeps the team state from the team room on this computer. After a restart without internet you still see sections, owners and notes (“shows the state of …”); on reconnect only the new part is fetched.
+- If the network blocks WebSockets (proxy, firewall) but the room is reachable, the mod switches to plain HTTP polling by itself – everything keeps working with a few seconds delay; every few minutes it tries the WebSocket again.
+- What the hologram measures per section and what you see in team chests is no longer lost while offline: the newest measurement per section/chest waits and is sent on reconnect, with the time it was measured.
+- J → “Commands & status” shows how the mod is connected and how many reports are waiting. The planner’s new “Fetch build state (best way)” uses your game on this PC first, then the games in the team room, then the optional server plugin.
+
+- Das Spiel behält den Teamstand aus dem Team-Raum auf diesem Rechner. Nach einem Neustart ohne Internet siehst du Abschnitte, Zuständige und Notizen weiter („zeigt den Stand von …“); beim Wiederverbinden kommt nur das Neue.
+- Sperrt das Netz WebSockets (Proxy, Firewall), ist der Raum aber erreichbar, wechselt die Mod von selbst auf einfache HTTP-Abfragen – alles läuft weiter, nur ein paar Sekunden verzögert; alle paar Minuten versucht sie den WebSocket erneut.
+- Was das Hologramm je Abschnitt misst und was du in Team-Kisten siehst, geht offline nicht mehr verloren: Die neueste Messung je Abschnitt/Kiste wartet und geht beim Wiederverbinden raus, mit dem Zeitpunkt der Messung.
+- J → „Befehle & Status“ zeigt, wie die Mod verbunden ist und wie viele Meldungen warten. Im Planer nimmt „Baustand holen (bester Weg)“ zuerst dein Spiel auf diesem PC, dann die Spiele im Team-Raum, dann das freiwillige Server-Plugin.
+
 ## 0.15.0 – 2026-11-04
 
 **Team mode in the game, even less server / Teammodus im Spiel, noch weniger Server**

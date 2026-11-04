@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 137 Fälle in 13 Bereichen, davon 61 Kernfälle.
+Umfang: 138 Fälle in 13 Bereichen, davon 62 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -232,6 +232,7 @@ Planer, Mod und Paper-Plugin verbinden sich per Klick; der Server wird aus dem P
 | LINK-06 | Baustand per Klick vom Server holen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | vertieft | 1. Plan vorher mit „⇪ Auf den Server legen“ hochgeladen (LINK-05).<br>2. Im Projekt Reiter „Bauen“ → „⇩ Auf dem Server aufnehmen“.<br>3. Danach „Aufnahme im Projekt speichern“. | Fortschritt in Prozent, dann „Aufnahme von … geladen“ mit den Zählern (fehlt, falscher Block …) – ohne /bp scan und ohne Datei herunterzuladen. Plugin 0.13.0 nötig. |
 | LINK-07 | Teambau ohne Server-Datei ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Server ohne Bauplaner-Plugin. Im Planer Reiter „Team“ → „Team live“ (live geschaltet), „Ich bin“ gewählt.<br>2. Minecraft mit Mod 0.14.0 oder neuer läuft: „Mein Spiel verbinden“.<br>3. Im Spiel /bauplaner team nehmen <nr> (oder J → Befehle).<br>4. Im Planer auf die Abschnittsliste schauen. | Im Spiel „Team live über den Team-Raum“; der Abschnitt steht im Planer innerhalb von Sekunden als „in Arbeit“ – ohne Datei und ohne Plugin auf dem Server. J → „Befehle & Status“ zeigt „Team-Raum: live“. |
 | LINK-08 | Positionen und Aufnahme über den Team-Raum ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Wie LINK-07: Server ohne Plugin, Team live, Mod 0.15.0 mit „Mein Spiel verbinden“, Plan im Spiel platziert.<br>2. Im Spiel ein paar Schritte gehen; im Planer Reiter „Team“ → „Gerade da“ ansehen.<br>3. Im Planer Reiter „Bauen“ → „⇩ Aufnahme im Spiel anfordern“.<br>4. Im Spiel eine im Planer markierte Lagerkiste öffnen und schließen. | Unter „Gerade da“ steht dein Spielername mit Blockposition und wandert mit; die Aufnahme ist nach wenigen Sekunden geladen („Aufnahme aus dem Team-Raum geladen …“) und steht unter „Aufnahmen im Team-Raum“; im Spiel kommt eine Chatzeile „Baustand aufgenommen …“. Ohne Plugin und ohne Datei auf dem Server. |
+| LINK-09 | Ausweichwege: Team-Raum weg, WebSocket gesperrt, Baustand über den besten Weg ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Mod 0.16.0, Team live, „Mein Spiel verbinden“, Plan im Spiel platziert.<br>2. Minecraft beenden, WLAN/Internet trennen, Minecraft neu starten und J → „Befehle & Status“ öffnen.<br>3. Ohne Internet einen Abschnitt bauen (Hologramm misst), dann Internet wieder verbinden.<br>4. Im Planer Reiter „Bauen“ → „⟳ Baustand holen (bester Weg)“. | Ohne Internet zeigt die Mod den Teamstand weiter („zeigt den Stand von …“, „1 Meldung wartet“); nach dem Wiederverbinden meldet der Chat „gemerkte Messung … nachgereicht“ und der Planer zeigt den Abschnitt „laut Spiel“. Der Planer holt den Baustand über „dein Spiel auf diesem PC“ und nennt den Weg; ohne Mod nimmt er den Team-Raum oder den Server und sagt, warum. |
 | LINK-04 | Vom iPad ohne Mod steuern ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/mod)) | vertieft | 1. Am PC (#/mod, gekoppelt, Server mit Raum verbunden): „Weiteres Gerät freigeben (z. B. iPad)“ → Link erstellen.<br>2. Link auf dem iPad öffnen, eine Einstellung ändern.<br>3. Am PC das iPad wieder „entfernen“. | iPad zeigt „über den Team-Raum“ und ändert die Einstellung; nach dem Entfernen meldet es „nicht (mehr) gekoppelt“. |
 
 ## Abnahme je Roadmap-Paket
@@ -281,7 +282,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | VIEW-02 | START-06, DATEI-01 |
 | WORLD-IMPORT-01 | KARTE-04 |
 
-### Mit Minecraft (Mod oder Spiel) (34 Pakete)
+### Mit Minecraft (Mod oder Spiel) (35 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -294,6 +295,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | COOP-10 | TEAMBAU-27, TEAMBAU-25 |
 | EDIT-06 | WERK-08, WERK-09 |
 | ENTITY-01 | DATEI-07 |
+| FALLBACK-01 | LINK-09 |
 | FORMAT-01 | DATEI-08, PROJ-04 |
 | FORMAT-02 | DATEI-08, PROJ-04 |
 | GAME-02 | MOD-01, MOD-02 |

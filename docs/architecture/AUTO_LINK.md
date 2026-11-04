@@ -114,3 +114,7 @@ Planer (PC/iPad) ⇄ Team-Raum (Cloud) ⇄ Mod von Spieler A, B, C …      Mine
 - Die Lagerkisten (`store.chest`) faltet die Mod jetzt auch aus dem Raum, damit Packliste und `/bauplaner team lager` sie ohne Plugin kennen.
 
 Tests: `RoomClientTest` (Faltung, Raumprüfung, Speichern; mit `BAUPLANER_ROOM` gegen einen laufenden Raum: Tom nimmt einen Abschnitt im „Spiel“, Lea schreibt eine Notiz im Planer), `tests/e2e/team-room.e2e.mjs` („Mein Spiel verbinden“ übergibt nur den Mitgliedsschlüssel), `scripts/test_bridge_ingame.sh` mit `BAUPLANER_ROOM` (echtes Minecraft 26.3: live mit dem Raum, `/bauplaner team nehmen 2` kommt im Raum an, `/bauplaner team aufnahme` legt eine lesbare Aufnahme in den Raum – ohne Server). 0.15.0: `RoomClientTest` live zusätzlich Position beim Planer, Anforderung → Hochladen → Holen, `section.seen` im Protokoll; der Browsertest zeigt die Position unter „Gerade da“ und lädt die angeforderte Aufnahme.
+
+### 9.2 Ausweichwege (Mod 0.16.0, FALLBACK-01)
+
+Raum offline, WebSocket gesperrt, Neustart ohne Internet: Die Mod speichert den Teamstand (`raum-stand.json`), gleicht ohne WebSocket über HTTP ab und merkt Messungen bis zum nächsten Kontakt. Der Planer holt den Baustand über den besten verfügbaren Weg (eigenes Spiel → Team-Raum → Server-Plugin → Datei). Alles dazu in [FALLBACKS](FALLBACKS.md).

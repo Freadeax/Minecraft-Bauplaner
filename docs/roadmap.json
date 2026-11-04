@@ -9626,6 +9626,106 @@
         }
       ],
       "orphans": []
+    },
+    {
+      "phase": "P4",
+      "priority": "P1",
+      "owner": "Claude (Thread „Mod, Server und Client mit Fallbacks ausbauen“)",
+      "legacyIds": [],
+      "blockers": [],
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-04T22:23:54.313Z",
+      "area": "MOD",
+      "thread": "Mod, Server und Client mit Fallbacks ausbauen",
+      "orphans": [],
+      "id": "FALLBACK-01",
+      "title": "Ausweichwege über alle Verbindungen: Teamstand offline in der Mod, HTTP statt WebSocket, offline gemerkte Messungen, Baustand über den besten Weg (Spiel → Team-Raum → Server → Datei)",
+      "status": "in_progress",
+      "dependencies": [
+        "LINK-07",
+        "COOP-10"
+      ],
+      "scope": [
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/mod/releases.json",
+        "apps/web/src/views/project/GameCheckPanel.tsx",
+        "docs/architecture/AUTO_LINK.md",
+        "docs/architecture/FALLBACKS.md",
+        "docs/testing/TESTPLAN.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.16.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.16.0.jar",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/scanRoutes.ts",
+        "tests/e2e/game-progress.e2e.mjs",
+        "tests/scan-routes.test.mjs"
+      ],
+      "steps": [
+        {
+          "id": "FALLBACK-01-S01",
+          "title": "Mod: Teamstand aus dem Raum in bauplaner/team/raum-stand.json (Kopf, Ereignisse, Cursor); nach Neustart offline sichtbar, beim Wiederverbinden nur der Rest.",
+          "done": true
+        },
+        {
+          "id": "FALLBACK-01-S02",
+          "title": "Mod: HTTP-Ausweg (GET/POST …/events) nach zwei WebSocket-Fehlschlägen bei erreichbarem Raum, alle 5 min neuer WebSocket-Versuch.",
+          "done": true
+        },
+        {
+          "id": "FALLBACK-01-S03",
+          "title": "Mod: section.seen/store.seen offline je Abschnitt/Kiste gemerkt (Zeit der Messung), beim Wiederverbinden nachgereicht.",
+          "done": true
+        },
+        {
+          "id": "FALLBACK-01-S04",
+          "title": "Planer: „Baustand holen (bester Weg)“ – eigenes Spiel → Team-Raum → Server-Plugin, jeder Fehlschlag mit Grund, Datei als letzter Ausweg.",
+          "done": true
+        },
+        {
+          "id": "FALLBACK-01-S05",
+          "title": "Spieltest Mod 0.16.0, Release (Modrinth-Thread), Abnahme LINK-09.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Fällt ein Weg aus (Raum offline, WebSocket gesperrt, Plugin fehlt), arbeitet Mod oder Planer über den nächsten weiter und sagt, welcher Weg gerade gilt.",
+        "Nichts geht verloren: eigene Aktionen und Messungen warten und gehen beim nächsten Kontakt raus."
+      ],
+      "evidence": [
+        {
+          "path": "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java",
+          "note": "Raum-Ersatz ohne WebSocket: HTTP-Abfrage, Aktion/Notiz/Messung; Neustart ohne Netz mit gespeichertem Stand, Nachreichen, Cursor (04.11.2026)."
+        },
+        {
+          "path": "tests/e2e/game-progress.e2e.mjs",
+          "note": "„Baustand holen (bester Weg)“ über das eigene Spiel; anderer Plan → alle Gründe und Datei-Ausweg (04.11.2026)."
+        },
+        {
+          "path": "scripts/test_bridge_ingame.sh",
+          "note": "Minecraft 26.3 Fabric (mit BAUPLANER_ROOM gegen den echten Team-Raum) und NeoForge bestanden mit Mod 0.16.0 (04.11.2026)."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Mod-Kern gegen Raum-Ersatz ohne WebSocket und gegen den echten Team-Raum, Planer im Browser gegen den Mod-Simulator geprüft; Spieltest und Abnahme LINK-09 offen."
+      },
+      "next": "Spieltest Mod 0.16.0, Release über den Modrinth-Thread, Abnahme LINK-09 durch Philipp.",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Abnahme LINK-09: mit Team live kurz das Internet trennen, Minecraft neu starten, Teamstand und „Baustand holen (bester Weg)“ prüfen."
+        }
+      ]
     }
   ],
   "events": [
@@ -18010,6 +18110,45 @@
           "done": 5,
           "total": 6,
           "next": "Abnahme mit Mitspielern ohne Plugin (TEAMBAU-27, TEAMBAU-25)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T22:23:54.313Z",
+      "kind": "progress",
+      "items": [
+        "FALLBACK-01"
+      ],
+      "summary": "FALLBACK-01: Mod 0.16.0 (Teamstand offline in raum-stand.json, HTTP statt WebSocket, offline gemerkte Messungen) und Planer „Baustand holen (bester Weg)“; RoomFallbackTest, RoomClientTest gegen echten Raum, Unit + Browser grün, Spieltest Fabric (mit Team-Raum) und NeoForge bestanden.",
+      "files": [
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/mod/releases.json",
+        "apps/web/src/views/project/GameCheckPanel.tsx",
+        "docs/architecture/AUTO_LINK.md",
+        "docs/architecture/FALLBACKS.md",
+        "docs/testing/TESTPLAN.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.16.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.16.0.jar",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/scanRoutes.ts",
+        "tests/e2e/game-progress.e2e.mjs",
+        "tests/scan-routes.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "FALLBACK-01",
+          "status": "in_progress",
+          "done": 4,
+          "total": 5,
+          "next": "Spieltest Mod 0.16.0, Release über den Modrinth-Thread, Abnahme LINK-09 durch Philipp."
         }
       ]
     }

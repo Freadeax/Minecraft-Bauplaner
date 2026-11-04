@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { WorldScan } from '../../../../../packages/formats/src/index.js';
-import { GAME_STATUS_LABEL, VERDICT_LABEL } from '../../../../../packages/domain/src/index.js';
-import type { CellVerdict, GameCheck, GameStepStatus, GuideStep, Project, ProjectScanReference } from '../../../../../packages/domain/src/index.js';
+import { GAME_STATUS_LABEL, VERDICT_LABEL, planScanRoutes, scanRouteSummary } from '../../../../../packages/domain/src/index.js';
+import type { CellVerdict, GameCheck, GameStepStatus, GuideStep, Project, ProjectScanReference, ScanRouteId } from '../../../../../packages/domain/src/index.js';
 import type { Vec3 } from '../../../../../packages/voxel/src/index.js';
 import { download, errorText, formatNumber } from '../../app/ui';
 import { useApp } from '../../app/context';
@@ -10,6 +10,7 @@ import { MODEL_MAX_FILE_BYTES } from '../../../../../packages/voxel/src/sizeLimi
 import { hasServerPairing, latestServerRecording, recordOnServer } from '../mod/serverClient';
 import type { ServerRecording } from '../mod/serverClient';
 import { useRoomConnection } from './roomClient';
+import { liveApi, readLiveSettings } from '../map/liveClient';
 import type { RoomScan } from './roomClient';
 
 export type LoadedScan = WorldScan & { readonly sourceSha256: string; readonly fileName: string };
@@ -107,54 +108,124 @@ export function GameCheckPanel(p: Props) {
     } catch (e) { if (request === requestId.current) setError(errorText(e)); }
     finally { if (request === requestId.current) setBusy(false); }
   };
-  /** LINK-06: recording from the paired server by click (instead of `/bp scan` and copying the file). */
-  const fromServer = async (fresh: boolean) => {
+  /** LINK-06: recording from the paired server by click (instead of `/bp scan` and copying the file); throws. */
+  const serverRecording = async (fresh: boolean): Promise<string> => {
     serverCancel.current = false;
-    setError(''); setNotice(''); setServerStep(fresh ? 'Aufnahme auf dem Server wird gestartet …' : 'Letzte Aufnahme wird gesucht …');
-    try {
-      const id = latest.current.project.id;
-      const r: ServerRecording = fresh ? await recordOnServer(id, setServerStep, () => serverCancel.current) : await latestServerRecording(id, setServerStep, () => serverCancel.current);
-      if (latest.current.project.id !== id) return;
-      setServerStep('');
-      await load(new File([r.bytes as Uint8Array<ArrayBuffer>], r.fileName));
-      setNotice(`Aufnahme von „${r.server}“${r.via === 'room' ? ' (über den Team-Raum)' : ''} geladen: ${r.fileName}.${r.summary ? ` ${r.summary}` : ''} Zum Behalten „Aufnahme im Projekt speichern“.`);
-    } catch (e) { setError(errorText(e)); }
+    setServerStep(fresh ? 'Aufnahme auf dem Server wird gestartet …' : 'Letzte Aufnahme wird gesucht …');
+    const id = latest.current.project.id;
+    const r: ServerRecording = fresh ? await recordOnServer(id, setServerStep, () => serverCancel.current) : await latestServerRecording(id, setServerStep, () => serverCancel.current);
+    if (latest.current.project.id !== id) return '';
+    setServerStep('');
+    await loadOrThrow(new File([r.bytes as Uint8Array<ArrayBuffer>], r.fileName));
+    return `Aufnahme von „${r.server}“${r.via === 'room' ? ' (über den Team-Raum)' : ''} geladen: ${r.fileName}.${r.summary ? ` ${r.summary}` : ''}`;
+  };
+  const fromServer = async (fresh: boolean) => {
+    setError(''); setNotice('');
+    try { const text = await serverRecording(fresh); if (text) setNotice(`${text} Zum Behalten „Aufnahme im Projekt speichern“.`); }
+    catch (e) { setError(errorText(e)); }
     finally { setServerStep(''); }
+  };
+  /** Like {@link load}, but failures reach the caller (fallback chain). */
+  const loadOrThrow = async (file: File) => {
+    const request = ++requestId.current;
+    setBusy(true);
+    try {
+      if (file.size > MAX_SCAN_BYTES) throw new Error(`Die Aufnahme ist zu groß (maximal ${MAX_SCAN_BYTES / 1_000_000} MB).`);
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      const scan = await readScan(file);
+      if (request !== requestId.current) return;
+      setOriginal({ hash: scan.sourceSha256, bytes }); latest.current.onLoad(scan);
+    } finally { if (request === requestId.current) setBusy(false); }
+  };
+  /** FALLBACK-01: Baustand straight from the game on this computer (GET /v1/scan, no server, no internet); throws. */
+  const modRecording = async (): Promise<string> => {
+    const live = readLiveSettings();
+    if (!live.token) throw new Error('nicht mit dem Planer verbunden');
+    setServerStep('Frage dein Spiel auf diesem PC …');
+    const hello = await liveApi.hello(live.port);
+    const status = await liveApi.status(live.port, live.token);
+    const id = latest.current.project.id;
+    const route = planScanRoutes({ projectId: id, mod: { paired: true, features: hello.features, hologramProjectId: status.hologram?.projectId ?? null }, room: { connected: false, games: 0 }, server: { paired: false } })[0];
+    if (!route?.available) throw new Error(route?.why ?? 'nicht möglich');
+    setServerStep('Dein Spiel liest die Planbox …');
+    const file = await liveApi.scan(live.port, live.token);
+    if (latest.current.project.id !== id) return '';
+    await loadOrThrow(new File([file.bytes as Uint8Array<ArrayBuffer>], file.fileName));
+    return `Baustand aus deinem Spiel geladen: ${file.fileName}.`;
   };
   /** LINK-07: recordings the players' games put into the team room – no server, no plugin. */
   const room = useRoomConnection();
   const games = room.presence.filter(x => x.where === 'spiel');
   const roomScans = room.scans.filter(sc => !sc.projectId || sc.projectId === p.project.id);
   const [waitingSince, setWaitingSince] = useState(0);
+  const roomRecording = async (sc: RoomScan): Promise<string> => {
+    setServerStep(`Aufnahme „${sc.file}“ wird aus dem Team-Raum geholt …`);
+    const id = latest.current.project.id;
+    const bytes = await room.fetchScan(sc.id);
+    if (latest.current.project.id !== id) return '';
+    setServerStep('');
+    await loadOrThrow(new File([bytes as Uint8Array<ArrayBuffer>], sc.file));
+    return `Aufnahme aus dem Team-Raum geladen: ${sc.file}, aufgenommen ${new Date(sc.at).toLocaleString('de-DE')}.`;
+  };
   const fromRoom = async (sc: RoomScan) => {
-    setError(''); setNotice(''); setServerStep(`Aufnahme „${sc.file}“ wird aus dem Team-Raum geholt …`);
-    try {
-      const id = latest.current.project.id;
-      const bytes = await room.fetchScan(sc.id);
-      if (latest.current.project.id !== id) return;
-      setServerStep('');
-      await load(new File([bytes as Uint8Array<ArrayBuffer>], sc.file));
-      setNotice(`Aufnahme aus dem Team-Raum geladen: ${sc.file}, aufgenommen ${new Date(sc.at).toLocaleString('de-DE')}. Zum Behalten „Aufnahme im Projekt speichern“.`);
-    } catch (e) { setError(errorText(e)); }
+    setError(''); setNotice('');
+    try { const text = await roomRecording(sc); if (text) setNotice(`${text} Zum Behalten „Aufnahme im Projekt speichern“.`); }
+    catch (e) { setError(errorText(e)); }
     finally { setServerStep(''); }
+  };
+  /** Asks the games in the room for a fresh recording; resolves with the scan that arrives (or fails). */
+  const roomWait = useRef<{ resolve(sc: RoomScan): void; reject(e: Error): void } | null>(null);
+  const askRoom = (): Promise<RoomScan> => new Promise((resolve, reject) => {
+    if (!room.askScan(p.project.id)) { reject(new Error('Team-Raum gerade nicht verbunden')); return; }
+    roomWait.current = { resolve, reject };
+    setWaitingSince(Date.now());
+  });
+  const endWait = (outcome: RoomScan | Error) => {
+    const w = roomWait.current;
+    roomWait.current = null; setWaitingSince(0);
+    if (w) { if (outcome instanceof Error) w.reject(outcome); else w.resolve(outcome); }
   };
   const askGames = () => {
     setError(''); setNotice('');
-    if (room.askScan(p.project.id)) setWaitingSince(Date.now());
+    askRoom().then(sc => fromRoom(sc), e => { setNotice(''); setError(errorText(e)); });
   };
   // The recording we asked for arrives: load it right away.
   const newest = roomScans[0];
   useEffect(() => {
     if (!waitingSince || !newest || Date.parse(newest.at) < waitingSince - 5_000) return;
-    setWaitingSince(0);
-    void fromRoom(newest);
+    endWait(newest);
   }, [newest?.id, waitingSince]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!waitingSince || !room.asked || room.asked.at < waitingSince) return;
-    if (room.asked.games === 0) { setWaitingSince(0); setError(room.asked.message ?? 'Gerade ist kein Spiel mit dem Team-Raum verbunden. Im Spiel „Mein Spiel verbinden“ nutzen (Reiter „Team“).'); }
+    if (room.asked.games === 0) endWait(new Error(room.asked.message ?? 'Gerade ist kein Spiel mit dem Team-Raum verbunden. Im Spiel „Mein Spiel verbinden“ nutzen (Reiter „Team“).'));
     else setNotice(`Anforderung an ${room.asked.games === 1 ? 'ein Spiel' : `${room.asked.games} Spiele`} geschickt. Wer den Plan platziert hat, nimmt den Baustand auf – das dauert ein paar Sekunden.`);
   }, [room.asked?.at]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (!waitingSince) return; const t = setTimeout(() => { setWaitingSince(0); setNotice(''); setError('Keine Aufnahme gekommen. Im Spiel muss der Plan platziert sein (Hologramm), dann klappt es – oder dort /bauplaner team aufnahme eingeben.'); }, 90_000); return () => clearTimeout(t); }, [waitingSince]);
+  useEffect(() => { if (!waitingSince) return; const t = setTimeout(() => endWait(new Error('Keine Aufnahme gekommen. Im Spiel muss der Plan platziert sein (Hologramm), dann klappt es – oder dort /bauplaner team aufnahme eingeben.')), 90_000); return () => clearTimeout(t); }, [waitingSince]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => { roomWait.current = null; }, []);
+
+  /**
+   * FALLBACK-01 „Baustand holen“: tries the ways in the order of {@link planScanRoutes} (own game → team room →
+   * server plugin); a failing way hands over to the next one, the summary says which one worked.
+   */
+  const modPaired = !!readLiveSettings().token;
+  const routes = planScanRoutes({ projectId: p.project.id, mod: { paired: modPaired }, room: { connected: room.connected, games: games.length }, server: { paired: hasServerPairing() } });
+  const [chain, setChain] = useState(false);
+  const fetchBest = async () => {
+    setError(''); setNotice(''); setChain(true);
+    const failures: { id: ScanRouteId; why: string }[] = [];
+    try {
+      for (const r of routes) {
+        if (!r.available) { failures.push({ id: r.id, why: r.why ?? 'nicht möglich' }); continue; }
+        try {
+          const text = r.id === 'mod' ? await modRecording() : r.id === 'room' ? await roomRecording(await askRoom()) : await serverRecording(true);
+          if (!text) return;
+          setNotice(`${text} ${scanRouteSummary(r.id, failures)} Zum Behalten „Aufnahme im Projekt speichern“.`);
+          return;
+        } catch (e) { failures.push({ id: r.id, why: errorText(e) }); }
+      }
+      setError(scanRouteSummary(null, failures));
+    } finally { setServerStep(''); setChain(false); }
+  };
   const save = async () => {
     if (!p.scan || !original || original.hash !== p.scan.sourceSha256 || !p.alignment || !p.canSave || p.targetError) return;
     setBusy(true); setError('');
@@ -191,14 +262,21 @@ export function GameCheckPanel(p: Props) {
       </label>
       {p.scan && <button className="file-button" disabled={busy} onClick={p.onClear}>Aufnahme ausblenden</button>}
     </div>
+    {routes.some(r => r.available) && <div className="button-row game-best-scan" data-testid="scan-routes">
+      <button className="primary" disabled={busy || !!serverStep || chain || !!waitingSince} onClick={() => void fetchBest()}
+        title="Versucht der Reihe nach: dein Spiel auf diesem PC, die Spiele im Team-Raum, das Server-Plugin. Klappt ein Weg nicht, nimmt der Planer den nächsten.">
+        {chain ? 'Holt Baustand …' : '⟳ Baustand holen (bester Weg)'}</button>
+      <span className="muted scan-route-list">{routes.map(r => <span key={r.id} className={r.available ? 'route-ok' : 'route-off'} title={r.available ? r.reach : r.why}>{r.available ? '✓' : '–'} {r.label}</span>)}</span>
+      {chain && serverStep && <span className="muted" role="status">{serverStep}</span>}
+    </div>}
     {hasServerPairing() && <div className="button-row game-server-scan">
-      <button className="primary" disabled={busy || !!serverStep} onClick={() => void fromServer(true)}
+      <button disabled={busy || !!serverStep} onClick={() => void fromServer(true)}
         title="Der gekoppelte Server liest die Planbox am gespeicherten Anker und schickt die Aufnahme hierher – ohne Befehl und ohne Datei kopieren. Die Welt wird nicht verändert.">⇩ Auf dem Server aufnehmen</button>
       <button disabled={busy || !!serverStep} onClick={() => void fromServer(false)} title="Holt die neueste Aufnahme dieses Projekts, die schon auf dem Server liegt.">Letzte Aufnahme vom Server holen</button>
       {serverStep && <><span className="muted" role="status">{serverStep}</span><button className="link-button" onClick={() => { serverCancel.current = true; }}>Abbrechen</button></>}
     </div>}
     {room.connected && <div className="button-row game-room-scan" data-testid="room-scans">
-      <button className={hasServerPairing() ? '' : 'primary'} disabled={busy || !!serverStep || !games.length || !!waitingSince} onClick={askGames}
+      <button disabled={busy || !!serverStep || !games.length || !!waitingSince} onClick={askGames}
         title="Die Spiele im Team-Raum lesen den platzierten Plan aus ihren geladenen Chunks und legen die Aufnahme in den Raum – ganz ohne Server-Plugin.">
         {waitingSince ? 'Warte auf Aufnahme …' : '⇩ Aufnahme im Spiel anfordern'}</button>
       <span className="muted">{games.length ? `${games.length === 1 ? 'Ein Spiel' : `${games.length} Spiele`} im Team-Raum` : 'Kein Spiel im Team-Raum verbunden'}</span>

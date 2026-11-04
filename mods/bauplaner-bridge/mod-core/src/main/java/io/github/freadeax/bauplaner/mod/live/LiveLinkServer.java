@@ -113,7 +113,7 @@ public final class LiveLinkServer implements AutoCloseable {
     public record Binary(String fileName, byte[] bytes) {}
 
     /** What this mod can do beyond protocol 1; the website enables buttons by it. */
-    public static final List<String> FEATURES = List.of("scan", "marks2", "players", "bigplans", "team", "pairask", "server", "marks3", "room");
+    public static final List<String> FEATURES = List.of("scan", "marks2", "players", "bigplans", "team", "pairask", "server", "marks3", "room", "roomfallback");
 
     public record Info(String version, String loader, String minecraft) {}
 

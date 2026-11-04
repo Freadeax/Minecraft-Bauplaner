@@ -136,6 +136,21 @@ test('Baustand aus dem Spiel: holen, Ebenen, Abweichungen auf der Karte, abhaken
   await p.goto(`${BASE}#/projekt/${encodeURIComponent(projectId)}/bauen`);
   await p.getByText(/burgmauer_r1_20261102-180000\.schem · Revision \d+/).waitFor({ timeout: 20_000 });
   await p.getByText('1 falscher Block', { exact: true }).waitFor();
+
+  // FALLBACK-01: „Baustand holen (bester Weg)“ in the Bauen tab – the own game first, no server, no room.
+  const routes = p.getByTestId('scan-routes');
+  await routes.getByText('✓ dein Spiel auf diesem PC').waitFor();
+  await routes.getByText('– Spiele im Team-Raum').waitFor();
+  await routes.getByRole('button', { name: '⟳ Baustand holen (bester Weg)' }).click();
+  await p.getByRole('status').filter({ hasText: 'Baustand über dein Spiel auf diesem PC geholt' }).waitFor({ timeout: 30_000 });
+  // Another plan in the game and no other way: the planner says why each way failed and names the file as way out.
+  mod.state.hologram = { ...mod.state.hologram, projectId: 'prj_anderer_plan' };
+  await routes.getByRole('button', { name: '⟳ Baustand holen (bester Weg)' }).click();
+  const fail = p.getByRole('alert').filter({ hasText: 'Kein Weg hat geklappt' });
+  await fail.waitFor();
+  assert.match(await fail.innerText(), /dein Spiel auf diesem PC: im Spiel ist ein anderer Plan platziert/);
+  assert.match(await fail.innerText(), /Server-Plugin: kein Server gekoppelt/);
+  assert.match(await fail.innerText(), /importieren/);
   assert.deepEqual(errors, []);
   await context.close();
 });

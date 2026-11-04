@@ -13,7 +13,7 @@ Stand: 2026-11-04T22:20:00.000Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | Status | Pakete |
 |---|---:|
 | ⏳ Offen | 8 |
-| 🚧 In Arbeit | 4 |
+| 🚧 In Arbeit | 5 |
 | ⛔ Blockiert | 0 |
 | 🧩 Implementiert · Abnahme offen | 80 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
@@ -30,7 +30,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 9 | 2 | 6 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 12 | 3 | 12 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
-| [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 9 | 0 | 7 | 0 |
+| [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 10 | 0 | 8 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 3 | 0 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
 | [Performance und Stabilität](#bereich-perf) | 3 | 2 | 1 | 3 |
@@ -139,6 +139,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
+| [FALLBACK-01](#fallback-01) | Ausweichwege über alle Verbindungen | 🚧 In Arbeit 4/5 | P1 | „Mod, Server und Client mit Fallbacks ausbauen“ | Abnahme LINK-09: mit Team live kurz das Internet trennen, Minecraft neu starten, Teamstand und „Baustand holen (bester Weg)“ prüfen. |
 | [GAME-02](#game-02) | Fabric-Brücke kompilieren und im Spiel abnehmen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Bauplaner-Mod von Grund auf neu entwickeln“ | Mehrspieler-Abnahme auf server.lmnt-gaming.net (S04). |
 | [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Bauplaner-Mod von Grund auf neu entwickeln“ | Zusammen mit MAP-03-S06. |
 | [GAME-05](#game-05) | NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Teambau und Befehle in der Mod ausbauen“ | Forge-Testversion auf einem Rechner mit Bildschirm starten (S03). |
@@ -278,6 +279,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **SIZE-01** · Großen Bau (Olympus) ins Spiel senden und prüfen (DATEI-05, MOD-11, MOD-15, LIVE-09).
 - **LINK-03** · Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“.
 - **EDIT-06** · Truhe und Schild mit Inhalt im Spiel laden (WERK-09).
+- **FALLBACK-01** · Abnahme LINK-09: mit Team live kurz das Internet trennen, Minecraft neu starten, Teamstand und „Baustand holen (bester Weg)“ prüfen.
 
 ### Auf echten Geräten und Browsern
 
@@ -594,6 +596,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [COOP-09](#coop-09) | Team live im Alltag: Status und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-07 | ausstehend | ausstehend |
 | [COOP-10](#coop-10) | Client zuerst: Baustand und Kisteninhalt laut Spiel (section.seen, store.seen) im Teamstand, ungeprüft getrennt von Servermessungen | 🧩 Implementiert · Abnahme offen | 5/6 | COOP-07, COOP-09 | ausstehend | ausstehend |
 | [LINK-07](#link-07) | Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten | 🚧 In Arbeit | 5/6 | LINK-06, COOP-07 | ausstehend | ausstehend |
+| [FALLBACK-01](#fallback-01) | Ausweichwege über alle Verbindungen: Teamstand offline in der Mod, HTTP statt WebSocket, offline gemerkte Messungen, Baustand über den besten Weg (Spiel → Team-Raum → Server → Datei) | 🚧 In Arbeit | 4/5 | LINK-07, COOP-10 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
 
@@ -3283,6 +3286,30 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/block-content-edit.test.mjs](../tests/block-content-edit.test.mjs) — Behälter/Schilder lesen und schreiben, Erhalt unbekannter Felder, Sponge-Hülle, Prüfungen, Rückgängig im Entwurf.; [tests/e2e/workshop-build3d.e2e.mjs](../tests/e2e/workshop-build3d.e2e.mjs) — Chromium 1400 px: Setzen/Abbauen im 3D, Boden und Wand aufziehen, Gruppe wählen und ziehen, Bauen aus; Truhe und Schild bearbeiten, Rückgängig, Steckbrief.; [docs/architecture/BLOCK_EDITOR.md](architecture/BLOCK_EDITOR.md) — Abschnitt EDIT-06.
 
 **Dateiumfang:** `apps/web/src/blockmodels/threeMesh.ts`, `apps/web/src/viewer/sceneController.ts`, `apps/web/src/viewer/ThreeViewer.tsx`, `apps/web/src/viewer/types.ts`, `apps/web/src/editor/BlockEditor.tsx`, `apps/web/src/editor/ContentEditor.tsx`, `apps/web/src/editor/editor.css`, `packages/voxel/src/blockContentEdit.ts`, `packages/voxel/src/index.ts`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `docs/architecture/BLOCK_EDITOR.md`, `tests/block-content-edit.test.mjs`, `tests/e2e/workshop-build3d.e2e.mjs`. **Abhängigkeiten:** EDIT-01, EDIT-02, EDIT-03, EDIT-05, ENTITY-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### FALLBACK-01
+
+**Ausweichwege über alle Verbindungen: Teamstand offline in der Mod, HTTP statt WebSocket, offline gemerkte Messungen, Baustand über den besten Weg (Spiel → Team-Raum → Server → Datei)** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread „Mod, Server und Client mit Fallbacks ausbauen“) · Zuständiger Thread: „Mod, Server und Client mit Fallbacks ausbauen“ · Aktualisiert: 2026-11-04T22:23:54.313Z
+
+- [x] FALLBACK-01-S01: Mod: Teamstand aus dem Raum in bauplaner/team/raum-stand.json (Kopf, Ereignisse, Cursor); nach Neustart offline sichtbar, beim Wiederverbinden nur der Rest.
+- [x] FALLBACK-01-S02: Mod: HTTP-Ausweg (GET/POST …/events) nach zwei WebSocket-Fehlschlägen bei erreichbarem Raum, alle 5 min neuer WebSocket-Versuch.
+- [x] FALLBACK-01-S03: Mod: section.seen/store.seen offline je Abschnitt/Kiste gemerkt (Zeit der Messung), beim Wiederverbinden nachgereicht.
+- [x] FALLBACK-01-S04: Planer: „Baustand holen (bester Weg)“ – eigenes Spiel → Team-Raum → Server-Plugin, jeder Fehlschlag mit Grund, Datei als letzter Ausweg.
+- [ ] FALLBACK-01-S05: Spieltest Mod 0.16.0, Release (Modrinth-Thread), Abnahme LINK-09.
+
+**Abnahme:** Fällt ein Weg aus (Raum offline, WebSocket gesperrt, Plugin fehlt), arbeitet Mod oder Planer über den nächsten weiter und sagt, welcher Weg gerade gilt. Nichts geht verloren: eigene Aktionen und Messungen warten und gehen beim nächsten Kontakt raus.
+
+**Nächste Aktion:** Spieltest Mod 0.16.0, Release über den Modrinth-Thread, Abnahme LINK-09 durch Philipp.
+
+**Nur Philipp:** Im Spiel an deinem PC: Abnahme LINK-09: mit Team live kurz das Internet trennen, Minecraft neu starten, Teamstand und „Baustand holen (bester Weg)“ prüfen.
+
+**Prüfstand:** Mod-Kern gegen Raum-Ersatz ohne WebSocket und gegen den echten Team-Raum, Planer im Browser gegen den Mod-Simulator geprüft; Spieltest und Abnahme LINK-09 offen.
+
+**Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java) — Raum-Ersatz ohne WebSocket: HTTP-Abfrage, Aktion/Notiz/Messung; Neustart ohne Netz mit gespeichertem Stand, Nachreichen, Cursor (04.11.2026).; [tests/e2e/game-progress.e2e.mjs](../tests/e2e/game-progress.e2e.mjs) — „Baustand holen (bester Weg)“ über das eigene Spiel; anderer Plan → alle Gründe und Datei-Ausweg (04.11.2026).; [scripts/test_bridge_ingame.sh](../scripts/test_bridge_ingame.sh) — Minecraft 26.3 Fabric (mit BAUPLANER_ROOM gegen den echten Team-Raum) und NeoForge bestanden mit Mod 0.16.0 (04.11.2026).
+
+**Dateiumfang:** `apps/web/src/testing/testplan.ts`, `apps/web/src/views/mod/releases.json`, `apps/web/src/views/project/GameCheckPanel.tsx`, `docs/architecture/AUTO_LINK.md`, `docs/architecture/FALLBACKS.md`, `docs/testing/TESTPLAN.md`, `downloads/mod/bauplaner-bridge-fabric-26.3-0.16.0.jar`, `downloads/mod/bauplaner-bridge-neoforge-26.3-0.16.0.jar`, `mods/bauplaner-bridge/CHANGELOG.md`, `mods/bauplaner-bridge/VERSION`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java`, `packages/domain/src/index.ts`, `packages/domain/src/scanRoutes.ts`, `tests/e2e/game-progress.e2e.mjs`, `tests/scan-routes.test.mjs`. **Abhängigkeiten:** LINK-07, COOP-10. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

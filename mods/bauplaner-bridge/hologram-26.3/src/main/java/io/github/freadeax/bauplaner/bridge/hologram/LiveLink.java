@@ -546,7 +546,11 @@ public final class LiveLink implements LiveLinkServer.Handler {
         out.put("connected", true);
         out.putAll(room.config().publicFields());
         out.put("status", room.status().name().toLowerCase(java.util.Locale.ROOT));
-        out.put("statusText", room.status().label);
+        out.put("statusText", room.statusText());
+        // FALLBACK-01: how the mod talks to the room right now and how old the shown state is.
+        out.put("mode", room.mode());
+        if (room.syncedAt() > 0) out.put("syncedAt", java.time.Instant.ofEpochMilli(room.syncedAt()).toString());
+        out.put("pendingReports", room.pendingReports());
         out.put("events", room.events());
         List<Object> here = new ArrayList<>();
         for (var p : room.presence()) { Map<String, Object> m = new LinkedHashMap<>(); m.put("member", p.member()); m.put("where", p.where()); if (p.section() != null) m.put("section", p.section()); here.add(m); }

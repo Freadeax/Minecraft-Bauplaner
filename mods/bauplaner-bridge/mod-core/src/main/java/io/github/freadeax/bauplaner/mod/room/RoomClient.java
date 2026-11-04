@@ -53,6 +53,8 @@ public final class RoomClient {
     /** What the player sees. */
     public enum Status {
         OFF("kein Team-Raum"), CONNECTING("verbinde mit dem Team-Raum …"), LIVE("live über den Team-Raum"),
+        /** FALLBACK-01: the WebSocket is blocked (proxy, firewall), plain HTTP works – poll and post. */
+        POLL("live über HTTP (WebSocket gesperrt) – Abgleich alle paar Sekunden"),
         RETRY("Team-Raum nicht erreichbar – neuer Versuch"), REFUSED("Team-Raum lehnt den Schlüssel ab – im Planer neu verbinden");
         public final String label;
         Status(String label) { this.label = label; }
@@ -65,8 +67,20 @@ public final class RoomClient {
     public record Ask(String from, String projectId, String id) {}
 
     private static final int MAX_FRAME = 4 * 1024 * 1024;
+    /** FALLBACK-01: the stored room state is skipped above this size (the room then sends everything again). */
+    static final int MAX_CACHE = 24 * 1024 * 1024;
+    /** At most this many unsent own measurements (section.seen/store.seen) wait while the room is away. */
+    static final int MAX_REPORTS = 64;
+    /** Older waiting measurements are dropped: nobody needs a chest content from yesterday. */
+    static final long REPORT_TTL_MS = 24L * 3600 * 1000;
+    /** WebSocket failures (while HTTP works) before the mod switches to polling. */
+    static final int WS_FAILS_FOR_POLL = 2;
+    /** Poll pause in normal operation, shortly after an own append and between WebSocket probes. */
+    static long pollEveryMs = 5_000, pollSoonMs = 1_000, probeEveryMs = 5 * 60_000, welcomeTimeoutMs = 15_000;
 
     private final Path file;
+    /** {@code raum-stand.json} next to {@code raum.json}: header, events and cursor of the last contact. */
+    private final Path cacheFile;
     private final Consumer<String> notify;
     private final ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor(r -> { Thread t = new Thread(r, "Bauplaner-Team-Raum"); t.setDaemon(true); return t; });
     private final HttpClient http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
@@ -74,8 +88,17 @@ public final class RoomClient {
     private volatile Status status = Status.OFF;
     private volatile String lastError;
     private WebSocket ws;
-    private ScheduledFuture<?> retry, ping;
+    private ScheduledFuture<?> retry, ping, poll, save, welcomeWait;
     private int attempts;
+    /** FALLBACK-01: polling instead of a WebSocket; WebSocket failures in a row while HTTP worked. */
+    private boolean polling;
+    private int wsFails;
+    private long headerGen = -1, welcomedGen = -1, probeAt, lastAppendAt;
+    /** When the shown state was last confirmed by the room (ms, 0 = never); from the stored state after a restart. */
+    private volatile long syncedAt;
+    private final java.util.Set<String> eventIds = new java.util.HashSet<>();
+    /** Own measurements that could not go out yet, newest per section/chest. */
+    private final LinkedHashMap<String, Map<String, Object>> reports = new LinkedHashMap<>();
     private long generation;
     private JsonObject header;
     private final List<JsonObject> events = new ArrayList<>();
@@ -98,11 +121,13 @@ public final class RoomClient {
     /** @param file {@code bauplaner/team/raum.json} (null: nothing is stored, for tests) */
     public RoomClient(Path file, Consumer<String> notify) {
         this.file = file;
+        this.cacheFile = file == null ? null : file.resolveSibling("raum-stand.json");
         this.notify = notify;
         if (file != null && Files.isRegularFile(file)) {
             try { config = parse(Json.obj(Json.parse(Files.readString(file, StandardCharsets.UTF_8)), "Team-Raum")); }
             catch (IOException | RuntimeException e) { lastError = "raum.json nicht lesbar: " + e.getMessage(); }
         }
+        if (config != null) loadCache();
     }
 
     public void listen(Consumer<List<String>> ack, BiConsumer<String, String> reject, Runnable change) { onAck = ack; onReject = reject; onChange = change; }
@@ -132,6 +157,7 @@ public final class RoomClient {
 
     /** Uses this room from now on (stored) and connects. */
     public synchronized void use(Config c) throws IOException {
+        boolean same = config != null && config.url().equals(c.url()) && config.room().equals(c.room()) && config.member().equals(c.member());
         config = c;
         if (file != null) {
             Files.createDirectories(file.getParent());
@@ -141,7 +167,10 @@ public final class RoomClient {
             Files.writeString(tmp, Json.write(m), StandardCharsets.UTF_8);
             Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
         }
-        reset();
+        // Same room again (new key, other name): keep what is known, the room only sends the rest.
+        stop();
+        if (!same) reset();
+        if (status == Status.REFUSED) status = Status.OFF;
         connect();
     }
 
@@ -154,7 +183,11 @@ public final class RoomClient {
         status = Status.OFF;
     }
 
-    private void reset() { header = null; events.clear(); cursor = ""; log = null; state = null; dirty = true; presence = List.of(); }
+    private void reset() {
+        header = null; events.clear(); eventIds.clear(); cursor = ""; log = null; state = null; dirty = true; presence = List.of();
+        reports.clear(); syncedAt = 0; polling = false; wsFails = 0;
+        if (cacheFile != null) { try { Files.deleteIfExists(cacheFile); } catch (IOException ignored) { } }
+    }
 
     // ------------------------------------------------------------------ connection
 
@@ -166,15 +199,19 @@ public final class RoomClient {
         status = Status.CONNECTING;
         Config c = config;
         fetchHeader(c).thenCompose(h -> {
-            synchronized (this) { if (gen != generation) return CompletableFuture.completedFuture(null); setHeader(h); }
+            synchronized (this) { if (gen != generation) return CompletableFuture.completedFuture(null); setHeader(h); headerGen = gen; }
             String wsUrl = c.url().replaceFirst("^http", "ws") + "/v1/rooms/" + c.room() + "/live";
             return http.newWebSocketBuilder().connectTimeout(Duration.ofSeconds(10)).buildAsync(URI.create(wsUrl), new Listener(gen));
         }).whenComplete((socket, ex) -> {
             synchronized (this) {
                 if (gen != generation) { if (socket != null) socket.abort(); return; }
-                if (ex != null) { failed(reason(ex), unwrap(ex) instanceof Refused); return; }
+                if (ex != null) { failed(reason(ex), unwrap(ex) instanceof Refused, headerGen == gen); return; }
                 if (socket == null) return;
                 ws = socket;
+                // A proxy may accept the upgrade and then swallow everything: no welcome in time counts as a WebSocket failure.
+                welcomeWait = timer.schedule(() -> { synchronized (this) {
+                    if (gen == generation && welcomedGen != gen && ws != null) { WebSocket w = ws; ws = null; w.abort(); failed("keine Antwort über den WebSocket", false, true); }
+                } }, welcomeTimeoutMs, TimeUnit.MILLISECONDS);
                 Map<String, Object> hello = new LinkedHashMap<>();
                 hello.put("type", "hello"); hello.put("key", c.key()); hello.put("member", c.member()); hello.put("device", c.device());
                 hello.put("where", "spiel"); hello.put("after", cursor);
@@ -202,25 +239,37 @@ public final class RoomClient {
         });
     }
 
-    private void setHeader(JsonObject h) { header = h; log = null; dirty = true; }
+    private void setHeader(JsonObject h) { header = h; log = null; dirty = true; scheduleSave(); }
 
     private void stop() {
         generation++;
         if (retry != null) { retry.cancel(false); retry = null; }
         if (ping != null) { ping.cancel(false); ping = null; }
+        if (poll != null) { poll.cancel(false); poll = null; }
+        if (welcomeWait != null) { welcomeWait.cancel(false); welcomeWait = null; }
         if (ws != null) { try { ws.sendClose(WebSocket.NORMAL_CLOSURE, "aus"); } catch (RuntimeException ignored) { } ws = null; }
     }
 
-    private void failed(String why, boolean refused) {
+    /**
+     * @param wsStage the room answered over HTTP (header) but the WebSocket failed: after
+     *        {@link #WS_FAILS_FOR_POLL} such failures (or while already polling) the mod polls over HTTP instead.
+     */
+    private void failed(String why, boolean refused, boolean wsStage) {
         if (ping != null) { ping.cancel(false); ping = null; }
+        if (poll != null) { poll.cancel(false); poll = null; }
+        if (welcomeWait != null) { welcomeWait.cancel(false); welcomeWait = null; }
         ws = null;
         lastError = why;
         presence = List.of();
-        if (refused) { status = Status.REFUSED; notify.accept("Team-Raum: " + why + ". Im Planer unter „Team live“ das Spiel neu verbinden."); onChange.run(); return; }
-        boolean wasLive = status == Status.LIVE;
+        if (refused) { status = Status.REFUSED; polling = false; notify.accept("Team-Raum: " + why + ". Im Planer unter „Team live“ das Spiel neu verbinden."); onChange.run(); return; }
+        if (wsStage) wsFails++;
+        if (wsStage && (polling || wsFails >= WS_FAILS_FOR_POLL)) { startPolling(); return; }
+        boolean wasLive = status == Status.LIVE || status == Status.POLL;
         status = Status.RETRY;
         if (wasLive) notify.accept("Verbindung zum Team-Raum verloren – die Mod versucht es weiter. Eigene Meldungen warten so lange.");
-        long wait = Math.min(60, 2L << Math.min(attempts++, 5));
+        // The room answered but the WebSocket did not: try once more soon, then poll (see above).
+        long wait = wsStage ? 1 : Math.min(60, 2L << Math.min(attempts, 5));
+        attempts++;
         long gen = generation;
         retry = timer.schedule(() -> { synchronized (this) { if (gen == generation && config != null) connect(); } }, wait, TimeUnit.SECONDS);
         onChange.run();
@@ -253,12 +302,12 @@ public final class RoomClient {
         }
 
         @Override public CompletionStage<?> onClose(WebSocket w, int code, String why) {
-            synchronized (RoomClient.this) { if (gen == generation) failed(code == 4401 || code == 4403 ? "Schlüssel ungültig oder erneuert" : "getrennt (" + code + ")", code == 4401 || code == 4403); }
+            synchronized (RoomClient.this) { if (gen == generation) failed(code == 4401 || code == 4403 ? "Schlüssel ungültig oder erneuert" : "getrennt (" + code + ")", code == 4401 || code == 4403, welcomedGen != gen); }
             return null;
         }
 
         @Override public void onError(WebSocket w, Throwable error) {
-            synchronized (RoomClient.this) { if (gen == generation) failed(reason(error), false); }
+            synchronized (RoomClient.this) { if (gen == generation) failed(reason(error), false, welcomedGen != gen); }
         }
     }
 
@@ -271,21 +320,16 @@ public final class RoomClient {
         switch (type) {
             case "welcome" -> {
                 boolean first = status != Status.LIVE;
-                status = Status.LIVE; attempts = 0; lastError = null;
-                if (first) notify.accept("Team live über den Team-Raum" + (config.teamName() != null ? " „" + config.teamName() + "“" : "") + " – ohne Server-Datei.");
+                boolean fromPoll = status == Status.POLL || polling;
+                welcomedGen = gen;
+                if (welcomeWait != null) { welcomeWait.cancel(false); welcomeWait = null; }
+                status = Status.LIVE; attempts = 0; wsFails = 0; polling = false; lastError = null; syncedAt = System.currentTimeMillis();
+                if (first) notify.accept(fromPoll ? "Team-Raum wieder über den WebSocket verbunden."
+                        : "Team live über den Team-Raum" + (config.teamName() != null ? " „" + config.teamName() + "“" : "") + " – ohne Server-Datei.");
+                flushReports();
                 onChange.run();
             }
-            case "events" -> {
-                for (JsonElement e : TeamLog.array(m, "events")) {
-                    if (!e.isJsonObject()) continue;
-                    events.add(e.getAsJsonObject());
-                    if (log != null) { try { log.add(e.getAsJsonObject()); } catch (RuntimeException ignored) { } }
-                }
-                String c = TeamLog.str(m, "cursor");
-                if (c != null) cursor = c;
-                dirty = true;
-                onChange.run();
-            }
+            case "events" -> { ingest(m); onChange.run(); }
             case "header" -> {
                 Config c = config;
                 long g = generation;
@@ -305,16 +349,7 @@ public final class RoomClient {
                 }
                 presence = List.copyOf(list);
             }
-            case "appended" -> {
-                List<String> ok = new ArrayList<>();
-                for (JsonElement e : TeamLog.array(m, "accepted")) ok.add(e.getAsString());
-                for (JsonElement e : TeamLog.array(m, "known")) ok.add(e.getAsString());
-                if (!ok.isEmpty()) onAck.accept(ok);
-                for (JsonElement e : TeamLog.array(m, "rejected")) {
-                    JsonObject r = e.getAsJsonObject();
-                    onReject.accept(TeamLog.str(r, "id"), TeamLog.str(r, "reason"));
-                }
-            }
+            case "appended" -> answered(m);
             case "ask" -> {
                 if ("scan".equals(TeamLog.str(m, "what"))) {
                     Ask a = new Ask(TeamLog.str(m, "from"), TeamLog.str(m, "projectId"), TeamLog.str(m, "id"));
@@ -359,11 +394,33 @@ public final class RoomClient {
     }
 
     /** Whether own team actions can go to the room right now. */
-    public boolean live() { return status == Status.LIVE; }
+    public boolean live() { return status == Status.LIVE || status == Status.POLL; }
+
+    /** Status line for HUD and planner: with the age of the shown state while the room is away. */
+    public String statusText() {
+        String s = status.label;
+        long at = syncedAt;
+        if (!live() && config != null && header != null && at > 0)
+            s += " · zeigt den Stand von " + java.time.format.DateTimeFormatter.ofPattern("dd.MM. HH:mm").format(java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(at), java.time.ZoneId.systemDefault()));
+        int n = pendingReports();
+        if (n > 0) s += " · " + n + (n == 1 ? " Meldung wartet" : " Meldungen warten");
+        return s;
+    }
+
+    /** ws, http (polling) or off. */
+    public String mode() { return status == Status.LIVE ? "ws" : status == Status.POLL ? "http" : "off"; }
+
+    /** When the room last confirmed the shown state (ms since 1970, 0 = never). */
+    public long syncedAt() { return syncedAt; }
+
+    /** Own measurements waiting for the room. */
+    public synchronized int pendingReports() { return reports.size(); }
 
     /** Sends own team events (already in event form with {@code by}); false when not live. */
     public synchronized boolean append(String batch, List<Map<String, Object>> list) {
-        if (status != Status.LIVE || ws == null || list.isEmpty()) return false;
+        if (list.isEmpty()) return false;
+        if (status == Status.POLL) { appendHttp(batch, list); return true; }
+        if (status != Status.LIVE || ws == null) return false;
         Map<String, Object> m = new LinkedHashMap<>();
         m.put("type", "append"); m.put("batch", batch); m.put("events", new ArrayList<Object>(list));
         send(m);
@@ -436,14 +493,189 @@ public final class RoomClient {
      * room – no outbox: a newer report replaces it anyway. False when not live or no member.
      */
     public synchronized boolean report(String kind, Map<String, Object> body) {
-        if (status != Status.LIVE || ws == null || config == null) return false;
+        if (config == null) return false;
         Map<String, Object> e = new LinkedHashMap<>();
         String id = "tev_" + Long.toString(System.currentTimeMillis(), 36) + Integer.toString((int) (Math.random() * 1_679_616), 36);
+        // at = time of the measurement, also when it goes out later: the fold keeps the latest per section/chest.
         e.put("id", id); e.put("at", io.github.freadeax.bauplaner.mod.team.TeamWire.time(java.time.Instant.now())); e.put("by", config.member()); e.put("origin", "planer"); e.put("kind", kind);
         e.putAll(body);
-        return append("b_" + id, List.of(e));
+        String key = kind + ":" + (body.get("section") instanceof String s ? s : body.get("chest") instanceof String s ? s : "");
+        reports.remove(key);
+        if (live() && append("b_" + id, List.of(e))) { scheduleSave(); return true; }
+        // FALLBACK-01: room away – keep the newest measurement per section/chest and send it on reconnect.
+        reports.put(key, e);
+        while (reports.size() > MAX_REPORTS) reports.remove(reports.keySet().iterator().next());
+        scheduleSave();
+        return true;
+    }
+
+    private void flushReports() {
+        if (reports.isEmpty() || !live()) return;
+        long now = System.currentTimeMillis();
+        List<Map<String, Object>> out = new ArrayList<>();
+        for (Map<String, Object> e : reports.values()) {
+            try { if (now - java.time.Instant.parse((String) e.get("at")).toEpochMilli() > REPORT_TTL_MS) continue; } catch (RuntimeException ignored) { continue; }
+            out.add(e);
+        }
+        reports.clear();
+        for (Map<String, Object> e : out) append("b_" + e.get("id"), List.of(e));
+        if (!out.isEmpty()) notify.accept("Team-Raum: " + out.size() + (out.size() == 1 ? " gemerkte Messung" : " gemerkte Messungen") + " aus der Offline-Zeit nachgereicht.");
+        scheduleSave();
+    }
+
+    // ------------------------------------------------------------------ FALLBACK-01: events, polling, stored state
+
+    /** Takes a page of events (WebSocket push or HTTP poll); {@code reset}: the room no longer knows our cursor. */
+    private void ingest(JsonObject m) {
+        if (m.has("reset") && m.get("reset").isJsonPrimitive() && m.get("reset").getAsBoolean()) { events.clear(); eventIds.clear(); log = null; }
+        for (JsonElement e : TeamLog.array(m, "events")) {
+            if (!e.isJsonObject()) continue;
+            String id = TeamLog.str(e.getAsJsonObject(), "id");
+            if (id != null && !eventIds.add(id)) continue;
+            events.add(e.getAsJsonObject());
+            if (log != null) { try { log.add(e.getAsJsonObject()); } catch (RuntimeException ignored) { } }
+        }
+        String c = TeamLog.str(m, "cursor");
+        if (c != null) cursor = c;
+        dirty = true;
+        syncedAt = System.currentTimeMillis();
+        scheduleSave();
+    }
+
+    private void startPolling() {
+        boolean first = !polling;
+        polling = true;
+        status = Status.POLL;
+        attempts = 0;
+        lastError = "WebSocket nicht möglich – Abgleich über HTTP";
+        probeAt = System.currentTimeMillis() + probeEveryMs;
+        if (first) notify.accept("Team-Raum: WebSocket gesperrt (Netz oder Proxy?) – die Mod gleicht jetzt über HTTP ab. Alles geht weiter, nur mit ein paar Sekunden Verzögerung.");
+        flushReports();
+        schedulePoll(0);
+        onChange.run();
+    }
+
+    private void schedulePoll(long ms) {
+        if (poll != null) poll.cancel(false);
+        long gen = generation;
+        poll = timer.schedule(() -> pollOnce(gen), ms, TimeUnit.MILLISECONDS);
+    }
+
+    private void pollOnce(long gen) {
+        Config c;
+        String after;
+        synchronized (this) {
+            if (gen != generation || status != Status.POLL || config == null) return;
+            if (System.currentTimeMillis() >= probeAt) { connect(); return; } // try the WebSocket again now and then
+            c = config; after = cursor;
+        }
+        HttpRequest req = HttpRequest.newBuilder(URI.create(c.url() + "/v1/rooms/" + c.room() + "/events?limit=500&after=" + java.net.URLEncoder.encode(after, StandardCharsets.UTF_8)))
+                .timeout(Duration.ofSeconds(20)).header("Authorization", "Bearer " + c.key()).header("Accept", "application/json").GET().build();
+        http.sendAsync(req, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)).whenComplete((res, ex) -> {
+            synchronized (this) {
+                if (gen != generation || status != Status.POLL) return;
+                if (ex != null) { failed("HTTP: " + reason(ex), false, false); return; }
+                if (res.statusCode() == 401 || res.statusCode() == 403) { failed("Schlüssel ungültig oder erneuert (" + res.statusCode() + ")", true, false); return; }
+                if (res.statusCode() != 200) { failed("Team-Raum antwortet " + res.statusCode(), false, false); return; }
+                boolean more;
+                try {
+                    JsonObject m = JsonParser.parseString(res.body()).getAsJsonObject();
+                    int before = events.size();
+                    ingest(m);
+                    more = m.has("more") && m.get("more").getAsBoolean();
+                    if (events.size() != before || m.has("reset")) onChange.run();
+                } catch (RuntimeException e) { failed("Antwort nicht lesbar: " + e.getMessage(), false, false); return; }
+                lastError = "WebSocket nicht möglich – Abgleich über HTTP";
+                schedulePoll(more ? 0 : System.currentTimeMillis() - lastAppendAt < 10_000 ? pollSoonMs : pollEveryMs);
+            }
+        });
+    }
+
+    /** POST …/events while polling; the answer is handled like {@code appended}. */
+    private void appendHttp(String batch, List<Map<String, Object>> list) {
+        Config c = config;
+        long gen = generation;
+        lastAppendAt = System.currentTimeMillis();
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("batch", batch); body.put("events", new ArrayList<Object>(list));
+        HttpRequest req = HttpRequest.newBuilder(URI.create(c.url() + "/v1/rooms/" + c.room() + "/events")).timeout(Duration.ofSeconds(20))
+                .header("Authorization", "Bearer " + c.key()).header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(Json.write(body), StandardCharsets.UTF_8)).build();
+        http.sendAsync(req, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8)).whenComplete((res, ex) -> {
+            // Lost answers are fine: the outbox resends with the same ids and the room answers "known".
+            if (ex != null || res.statusCode() != 200) return;
+            JsonObject m;
+            try { m = JsonParser.parseString(res.body()).getAsJsonObject(); } catch (RuntimeException e) { return; }
+            answered(m);
+            synchronized (this) { if (gen == generation && status == Status.POLL) schedulePoll(pollSoonMs); }
+        });
+    }
+
+    private void answered(JsonObject m) {
+        List<String> ok = new ArrayList<>();
+        for (JsonElement e : TeamLog.array(m, "accepted")) ok.add(e.getAsString());
+        for (JsonElement e : TeamLog.array(m, "known")) ok.add(e.getAsString());
+        if (!ok.isEmpty()) onAck.accept(ok);
+        for (JsonElement e : TeamLog.array(m, "rejected")) {
+            JsonObject r = e.getAsJsonObject();
+            onReject.accept(TeamLog.str(r, "id"), TeamLog.str(r, "reason"));
+        }
+    }
+
+    private void scheduleSave() {
+        if (cacheFile == null || save != null || config == null) return;
+        save = timer.schedule(() -> { synchronized (this) { save = null; saveNow(); } }, 3, TimeUnit.SECONDS);
+    }
+
+    /** Writes header, events, cursor and waiting measurements (atomic); test hook. */
+    synchronized void saveNow() {
+        if (cacheFile == null || config == null || header == null) return;
+        JsonObject o = new JsonObject();
+        o.addProperty("format", "bauplaner-raum-stand"); o.addProperty("version", 1);
+        o.addProperty("url", config.url()); o.addProperty("room", config.room()); o.addProperty("member", config.member());
+        o.addProperty("cursor", cursor); o.addProperty("syncedAt", syncedAt);
+        o.add("header", header);
+        JsonArray ev = new JsonArray(); for (JsonObject e : events) ev.add(e); o.add("events", ev);
+        JsonArray rp = new JsonArray(); for (Map<String, Object> e : reports.values()) rp.add(JsonParser.parseString(Json.write(e))); o.add("reports", rp);
+        String text = o.toString();
+        if (text.length() > MAX_CACHE) { try { Files.deleteIfExists(cacheFile); } catch (IOException ignored) { } return; }
+        try {
+            Files.createDirectories(cacheFile.getParent());
+            Path tmp = cacheFile.resolveSibling(cacheFile.getFileName() + ".tmp");
+            Files.writeString(tmp, text, StandardCharsets.UTF_8);
+            Files.move(tmp, cacheFile, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        } catch (IOException e) { lastError = "Teamstand nicht gespeichert: " + e.getMessage(); }
+    }
+
+    private void loadCache() {
+        if (cacheFile == null || !Files.isRegularFile(cacheFile)) return;
+        try {
+            JsonObject o = JsonParser.parseString(Files.readString(cacheFile, StandardCharsets.UTF_8)).getAsJsonObject();
+            if (!config.url().equals(TeamLog.str(o, "url")) || !config.room().equals(TeamLog.str(o, "room")) || !config.member().equals(TeamLog.str(o, "member"))) return;
+            JsonObject h = o.getAsJsonObject("header");
+            new TeamLog(h); // same checks as a fresh header
+            header = h;
+            for (JsonElement e : TeamLog.array(o, "events")) {
+                if (!e.isJsonObject()) continue;
+                String id = TeamLog.str(e.getAsJsonObject(), "id");
+                if (id != null && !eventIds.add(id)) continue;
+                events.add(e.getAsJsonObject());
+            }
+            String c = TeamLog.str(o, "cursor");
+            cursor = c == null ? "" : c;
+            syncedAt = o.has("syncedAt") ? o.get("syncedAt").getAsLong() : 0;
+            for (JsonElement e : TeamLog.array(o, "reports")) {
+                if (!e.isJsonObject()) continue;
+                Map<String, Object> m = Json.obj(Json.parse(e.toString()), "Meldung");
+                String kind = m.get("kind") instanceof String s ? s : "";
+                reports.put(kind + ":" + (m.get("section") instanceof String s ? s : m.get("chest") instanceof String s ? s : ""), m);
+            }
+            dirty = true;
+        } catch (IOException | RuntimeException e) {
+            header = null; events.clear(); eventIds.clear(); cursor = ""; reports.clear();
+            lastError = "Gespeicherter Teamstand nicht lesbar – kommt beim nächsten Kontakt neu: " + e.getMessage();
+        }
     }
 
     /** Stops everything (game closes). */
-    public synchronized void close() { stop(); timer.shutdownNow(); }
+    public synchronized void close() { if (save != null) { save.cancel(false); save = null; saveNow(); } stop(); timer.shutdownNow(); }
 }
