@@ -36,6 +36,8 @@ export interface Builder {
   readonly note?: string;
   /** Minecraft name (Teambau, COOP-01): links the builder to the player on the server. */
   readonly player?: string;
+  /** Share of the building days this builder takes part in, 10–100 % (PROJ-02); absent = 100. */
+  readonly share?: number;
 }
 
 export interface Milestone {
@@ -66,6 +68,22 @@ export interface BuildProgram {
   readonly start?: string;
   /** Building days per week (1–7); n < 7 uses the first n weekdays Monday…Sunday. Absent = 7. */
   readonly sessionsPerWeek?: number;
+  /** PROJ-02: a section starts only when its material is there (readiness from Produktion). */
+  readonly waitForMaterial?: true;
+  /** PROJ-02: frozen schedule to compare the current projection with (needs a start date). */
+  readonly baseline?: Baseline;
+}
+
+/** Frozen dates of a schedule (PROJ-02). Dates only, so it stays comparable when the plan is recomputed from today. */
+export interface Baseline {
+  /** Day the baseline was taken. */
+  readonly at: string;
+  /** Last building day of the whole plan; absent = everything was done. */
+  readonly end?: string;
+  /** Section id → first and last building day. Done sections are not recorded. */
+  readonly sections: Readonly<Record<string, { readonly start: string; readonly end: string }>>;
+  /** Milestone id → last building day. */
+  readonly milestones: Readonly<Record<string, string>>;
 }
 
 export function emptyProgram(): BuildProgram {
@@ -130,6 +148,7 @@ export function checkProgram(raw: unknown): BuildProgram {
     if (b.blocksPerSession !== undefined && (!Number.isInteger(b.blocksPerSession) || (b.blocksPerSession as number) < 16 || (b.blocksPerSession as number) > 100_000)) fail(`Bautempo von „${name}“ muss eine ganze Zahl von 16 bis 100000 sein`);
     if (b.note !== undefined && (typeof b.note !== 'string' || b.note.length > 300)) fail(`Notiz von „${name}“ zu lang`);
     if (b.player !== undefined && (typeof b.player !== 'string' || !/^[.*]?[A-Za-z0-9_]{2,16}$/.test(b.player))) fail(`Minecraft-Name von „${name}“ ungültig`);
+    if (b.share !== undefined && (!Number.isInteger(b.share) || (b.share as number) < 10 || (b.share as number) > 99)) fail(`Anteil der Bautage von „${name}“ muss 10 bis 99 % sein`);
   }
   if (!Array.isArray(raw.milestones) || raw.milestones.length > MAX_MILESTONES) fail(`höchstens ${MAX_MILESTONES} Meilensteine`);
   const milestoneIds = new Set<string>();
@@ -162,7 +181,24 @@ export function checkProgram(raw: unknown): BuildProgram {
   }
   if (raw.start !== undefined) checkDate(raw.start, 'Startdatum');
   if (raw.sessionsPerWeek !== undefined && (!Number.isInteger(raw.sessionsPerWeek) || (raw.sessionsPerWeek as number) < 1 || (raw.sessionsPerWeek as number) > 7)) fail('Bautage je Woche müssen 1 bis 7 sein');
+  if (raw.waitForMaterial !== undefined && raw.waitForMaterial !== true) fail('„Auf Material warten“ ist ungültig');
+  if (raw.baseline !== undefined) checkBaseline(raw.baseline);
   return raw as unknown as BuildProgram;
+}
+
+const MAX_BASELINE_ENTRIES = 4096;
+function checkBaseline(raw: unknown): void {
+  if (!isObj(raw)) return void fail('Basisplan ist kein Objekt');
+  checkDate(raw.at, 'Datum des Basisplans');
+  if (raw.end !== undefined) checkDate(raw.end, 'Ende des Basisplans');
+  if (!isObj(raw.sections) || Object.keys(raw.sections).length > MAX_BASELINE_ENTRIES) fail('Basisplan: Abschnitte ungültig');
+  for (const v of Object.values(raw.sections as Record<string, unknown>)) {
+    if (!isObj(v)) return void fail('Basisplan: Abschnitt ungültig');
+    const a = parseDay(checkDate(v.start, 'Basisplan: Abschnittsbeginn')), b = parseDay(checkDate(v.end, 'Basisplan: Abschnittsende'));
+    if (a! > b!) fail('Basisplan: Abschnitt endet vor seinem Beginn');
+  }
+  if (!isObj(raw.milestones) || Object.keys(raw.milestones).length > MAX_MILESTONES) fail('Basisplan: Meilensteine ungültig');
+  for (const v of Object.values(raw.milestones as Record<string, unknown>)) checkDate(v, 'Basisplan: Meilensteintermin');
 }
 
 // ---------------------------------------------------------------------------
@@ -182,7 +218,7 @@ const edit = (site: SitePlan, f: (p: BuildProgram) => BuildProgram): SitePlan =>
 export function addBuilder(site: SitePlan, name: string, blocksPerSession?: number, id = newId('bld')): SitePlan {
   return edit(site, p => ({ ...p, builders: [...p.builders, { id, name: name.trim(), ...(blocksPerSession !== undefined && { blocksPerSession }) }] }));
 }
-export function updateBuilder(site: SitePlan, id: string, patch: { name?: string; blocksPerSession?: number | null; note?: string; player?: string | null }): SitePlan {
+export function updateBuilder(site: SitePlan, id: string, patch: { name?: string; blocksPerSession?: number | null; note?: string; player?: string | null; share?: number | null }): SitePlan {
   return edit(site, p => {
     if (!p.builders.some(b => b.id === id)) fail(`Bauleute-Eintrag ${id} existiert nicht`);
     return { ...p, builders: p.builders.map(b => {
@@ -191,6 +227,11 @@ export function updateBuilder(site: SitePlan, id: string, patch: { name?: string
       if (patch.blocksPerSession !== undefined) { if (patch.blocksPerSession === null) delete next.blocksPerSession; else next.blocksPerSession = patch.blocksPerSession; }
       if (patch.note !== undefined) { if (patch.note.trim()) next.note = patch.note.trim(); else delete next.note; }
       if (patch.player !== undefined) { if (patch.player?.trim()) next.player = patch.player.trim(); else delete next.player; }
+      if (patch.share !== undefined) {
+        if (patch.share === null || patch.share >= 100) delete next.share;
+        else if (!Number.isInteger(patch.share) || patch.share < 10) fail('Anteil der Bautage muss 10 bis 100 % sein');
+        else next.share = patch.share;
+      }
       return next;
     }) };
   });
@@ -253,9 +294,10 @@ export function addDependency(site: SitePlan, before: string, after: string, not
 export function removeDependency(site: SitePlan, before: string, after: string): SitePlan {
   return edit(site, p => ({ ...p, dependencies: p.dependencies.filter(d => !(d.before === before && d.after === after)) }));
 }
-export function setProgramSettings(site: SitePlan, patch: { start?: string | null; sessionsPerWeek?: number | null }): SitePlan {
+export function setProgramSettings(site: SitePlan, patch: { start?: string | null; sessionsPerWeek?: number | null; waitForMaterial?: boolean }): SitePlan {
   return edit(site, p => {
     const next: { -readonly [K in keyof BuildProgram]: BuildProgram[K] } = { ...p };
+    if (patch.waitForMaterial !== undefined) { if (patch.waitForMaterial) next.waitForMaterial = true; else delete next.waitForMaterial; }
     if (patch.start !== undefined) { if (patch.start) next.start = checkDate(patch.start, 'Startdatum'); else delete next.start; }
     if (patch.sessionsPerWeek !== undefined) { if (patch.sessionsPerWeek === null || patch.sessionsPerWeek === DEFAULT_SESSIONS_PER_WEEK) delete next.sessionsPerWeek; else next.sessionsPerWeek = patch.sessionsPerWeek; }
     return next;
@@ -268,7 +310,25 @@ export function pruneProgram(program: BuildProgram, sectionIds: ReadonlySet<stri
     milestones: program.milestones.map(m => ({ ...m, sectionIds: m.sectionIds.filter(id => sectionIds.has(id)) })),
     dependencies: program.dependencies.filter(d => sectionIds.has(d.before) && sectionIds.has(d.after)),
     assignments: Object.fromEntries(Object.entries(program.assignments).filter(([id]) => sectionIds.has(id))),
+    ...(program.baseline && { baseline: { ...program.baseline, sections: Object.fromEntries(Object.entries(program.baseline.sections).filter(([id]) => sectionIds.has(id))) } }),
   };
+}
+
+/**
+ * Freezes the dates of a computed plan as baseline (PROJ-02). Needs a start
+ * date, because only dates stay comparable when later plans start from today.
+ */
+export function setBaseline(site: SitePlan, plan: ProgramPlan, today: string): SitePlan {
+  if (!plan.start) fail('ein Basisplan braucht ein Startdatum (Einstellungen)');
+  checkDate(today, 'Datum');
+  const sections: Record<string, { start: string; end: string }> = {};
+  for (const s of plan.sections) if (s.sessions > 0 && s.startDate && s.endDate) sections[s.id] = { start: s.startDate, end: s.endDate };
+  const milestones: Record<string, string> = {};
+  for (const m of plan.milestones) if (m.status !== 'done' && m.endDate) milestones[m.id] = m.endDate;
+  return edit(site, p => ({ ...p, baseline: { at: today, ...(plan.endDate && { end: plan.endDate }), sections, milestones } }));
+}
+export function clearBaseline(site: SitePlan): SitePlan {
+  return edit(site, p => { if (!p.baseline) return p; const { baseline: _b, ...rest } = p; void _b; return rest; });
 }
 
 // ---------------------------------------------------------------------------
@@ -417,6 +477,13 @@ export interface ScheduledSection {
   /** No slack: a delay here delays the whole project. */
   readonly critical: boolean;
   readonly milestoneIds: readonly string[];
+  /** PROJ-02, only when the plan waits for material: building day from which the material is there (null = items without rate). */
+  readonly materialDay?: number | null;
+  /** Building days the start moved because the material was not there yet. */
+  readonly materialWait?: number;
+  /** PROJ-02: position in the baseline (building-day indices of this plan, may be negative) and the slip of the end in building days. */
+  readonly baseline?: { readonly start: number; readonly end: number };
+  readonly slip?: number;
 }
 
 export interface BuilderLoad {
@@ -455,6 +522,9 @@ export interface MilestoneState {
   readonly itemsNeeded: number;
   readonly itemsMissing: number;
   readonly gatherHours: number;
+  /** PROJ-02: end in the baseline and slip against it in building days (positive = later). */
+  readonly baselineEnd?: string;
+  readonly slip?: number;
 }
 
 export interface ProgramPlan {
@@ -466,8 +536,36 @@ export interface ProgramPlan {
   readonly endDate: string | null;
   readonly criticalPath: readonly string[];
   readonly start: string | null;
+  /** First building day of the remaining work: the start date, or the next building day from today once the start lies in the past. */
+  readonly from: string | null;
   readonly sessionsPerWeek: number;
   readonly notes: readonly string[];
+  /** PROJ-02: sections start only when their material is there. */
+  readonly waitForMaterial: boolean;
+  /** Sections whose material contains items without rate (cannot wait for them). */
+  readonly materialUnknown: readonly string[];
+  /** PROJ-02: comparison with the frozen baseline. */
+  readonly baseline: { readonly at: string; readonly end: string | null; readonly slip: number | null } | null;
+}
+
+/** Options of planProgram that come from other modules. */
+export interface ProgramOptions {
+  /** Section id → play days from today until its material is there (Produktion, `analyzeProduction().sections[].readyDay`). Used when the program waits for material. */
+  readonly materialDays?: ReadonlyMap<string, number | null>;
+}
+
+const allowedWeekdays = (sessionsPerWeek: number): Set<number> => new Set([1, 2, 3, 4, 5, 6, 0].slice(0, Math.max(1, Math.min(7, sessionsPerWeek))));
+const weekday = (day: number): number => (((day + 4) % 7) + 7) % 7; // epoch day 0 = Thursday (4)
+const MAX_SPAN_DAYS = 20 * 366;
+
+/** Signed number of building days from `from` to `to` (`to` − `from`, counting [from, to)); null for invalid dates or spans over 20 years. */
+export function buildingDaysBetween(from: string, to: string, sessionsPerWeek: number): number | null {
+  const a = parseDay(from), b = parseDay(to);
+  if (a === null || b === null || Math.abs(b - a) > MAX_SPAN_DAYS) return null;
+  const allowed = allowedWeekdays(sessionsPerWeek), lo = Math.min(a, b), hi = Math.max(a, b);
+  let n = 0;
+  for (let d = lo; d < hi; d++) if (allowed.has(weekday(d))) n++;
+  return b >= a ? n : -n;
 }
 
 export const UNASSIGNED = '';
@@ -478,13 +576,13 @@ export function sessionCalendar(start: string | undefined, sessionsPerWeek: numb
   const day0 = parseDay(start);
   if (day0 === null) return () => null;
   // Monday … Sunday; the first n weekdays are building days.
-  const allowed = new Set([1, 2, 3, 4, 5, 6, 0].slice(0, Math.max(1, Math.min(7, sessionsPerWeek))));
+  const allowed = allowedWeekdays(sessionsPerWeek);
   const cache: number[] = [];
   return (session: number): string => {
     if (session < 0) session = 0;
     let day = cache.length ? cache[cache.length - 1]! + 1 : day0;
     while (cache.length <= session) {
-      if (allowed.has((((day + 4) % 7) + 7) % 7)) cache.push(day); // epoch day 0 = Thursday (4)
+      if (allowed.has(weekday(day))) cache.push(day);
       day++;
     }
     return dayText(cache[session]!);
@@ -518,8 +616,9 @@ export function sectionOrder(site: SitePlan): string[] {
  * edges. Dates follow the start date and the building days per week; they are
  * projections from the pace settings, never measurements.
  */
-export function planProgram(site: SitePlan, overview: SiteOverview, pace: PaceSetting, today?: string): ProgramPlan {
+export function planProgram(site: SitePlan, overview: SiteOverview, pace: PaceSetting, today?: string, options: ProgramOptions = {}): ProgramPlan {
   const program = programOf(site), plans = new Map(overview.sections.map(s => [s.id, s]));
+  const material = program.waitForMaterial ? options.materialDays ?? null : null;
   const sectionIds = new Set(site.sections.map(s => s.id));
   const order = sectionOrder(site);
   const deps = new Map<string, string[]>(), succ = new Map<string, string[]>();
@@ -528,7 +627,8 @@ export function planProgram(site: SitePlan, overview: SiteOverview, pace: PaceSe
     (deps.get(d.after) ?? (deps.set(d.after, []), deps.get(d.after)!)).push(d.before);
     (succ.get(d.before) ?? (succ.set(d.before, []), succ.get(d.before)!)).push(d.after);
   }
-  const rateOf = (b: Builder): number => b.blocksPerSession ?? pace.blocksPerSession;
+  // A builder who takes part in only part of the building days builds proportionally less per day (PROJ-02).
+  const rateOf = (b: Builder): number => Math.max(1, Math.round((b.blocksPerSession ?? pace.blocksPerSession) * (b.share ?? 100) / 100));
   const builderById = new Map(program.builders.map(b => [b.id, b]));
   const free = new Map<string, number>([[UNASSIGNED, 0], ...program.builders.map((b): [string, number] => [b.id, 0])]);
   const laneLast = new Map<string, string>();
@@ -551,7 +651,11 @@ export function planProgram(site: SitePlan, overview: SiteOverview, pace: PaceSe
     }
     const sessions = Math.max(1, Math.ceil(openWork / rate));
     const earliest = Math.max(0, ...(deps.get(id) ?? []).map(d => scheduled.get(d)!.end));
-    const start = Math.max(earliest, ...lanes.map(l => free.get(l)!)), end = start + sessions;
+    const withoutMaterial = Math.max(earliest, ...lanes.map(l => free.get(l)!));
+    // Material ready after x play days → the section can start on building day ceil(x) (one play day = one building day).
+    const raw = material ? material.get(id) : undefined;
+    const materialDay = raw === undefined ? undefined : raw === null ? null : Math.ceil(raw - 0.05);
+    const start = Math.max(withoutMaterial, materialDay ?? 0), end = start + sessions;
     for (const l of lanes) {
       free.set(l, end);
       const prev = laneLast.get(l);
@@ -559,7 +663,8 @@ export function planProgram(site: SitePlan, overview: SiteOverview, pace: PaceSe
       laneLast.set(l, id);
     }
     const state: SectionState = waitingFor.length ? 'blocked' : blocksDone > 0 || (p?.done ?? 0) > 0 ? 'open' : 'ready';
-    scheduled.set(id, { id, name, builderIds, blocks, blocksDone, openWork, sessions, start, end, waitingFor, state });
+    scheduled.set(id, { id, name, builderIds, blocks, blocksDone, openWork, sessions, start, end, waitingFor, state,
+      ...(materialDay !== undefined && { materialDay, materialWait: start - withoutMaterial }) });
   }
   const total = Math.max(0, ...[...scheduled.values()].map(s => s.end));
   // Latest start without delaying the end, backwards over dependency and lane successors.
@@ -570,11 +675,20 @@ export function planProgram(site: SitePlan, overview: SiteOverview, pace: PaceSe
     const ls = followers.length ? Math.min(...followers.map(f => latest.get(f.id)!)) - s.sessions : total - s.sessions;
     latest.set(id, ls);
   }
-  const calendar = sessionCalendar(program.start, program.sessionsPerWeek ?? DEFAULT_SESSIONS_PER_WEEK);
+  const perWeek = program.sessionsPerWeek ?? DEFAULT_SESSIONS_PER_WEEK;
+  // Remaining work starts at the start date, or today once the start date lies in the past.
+  const startDay = parseDay(program.start), todayDay0 = parseDay(today);
+  const fromDate = program.start ? (startDay !== null && todayDay0 !== null && todayDay0 > startDay ? today! : program.start) : undefined;
+  const calendar = sessionCalendar(fromDate, perWeek);
+  const from = calendar(0);
   const dateOfEnd = (end: number): string | null => end > 0 ? calendar(end - 1) : null;
+  const index = (date: string): number | null => from ? buildingDaysBetween(from, date, perWeek) : null;
+  const base = from ? program.baseline : undefined;
   const sections: ScheduledSection[] = order.map(id => {
-    const s = scheduled.get(id)!;
-    return { ...s, critical: s.sessions > 0 && latest.get(id)! <= s.start, startDate: s.sessions ? calendar(s.start) : null, endDate: s.sessions ? dateOfEnd(s.end) : null, milestoneIds: milestoneOf.get(id) ?? [] };
+    const s = scheduled.get(id)!, endDate = s.sessions ? dateOfEnd(s.end) : null, b = base?.sections[id];
+    const bStart = b ? index(b.start) : null, bEnd = b ? index(b.end) : null, slip = b && endDate ? buildingDaysBetween(b.end, endDate, perWeek) : null;
+    return { ...s, critical: s.sessions > 0 && latest.get(id)! <= s.start, startDate: s.sessions ? calendar(s.start) : null, endDate, milestoneIds: milestoneOf.get(id) ?? [],
+      ...(bStart !== null && bEnd !== null && { baseline: { start: bStart, end: bEnd + 1 } }), ...(slip !== null && s.sessions > 0 && { slip }) };
   });
   const criticalPath = sections.filter(s => s.critical).map(s => s.id);
 
@@ -605,13 +719,29 @@ export function planProgram(site: SitePlan, overview: SiteOverview, pace: PaceSe
     return { id: m.id, name: m.name, ...(m.note !== undefined && { note: m.note }), ...(m.due !== undefined && { due: m.due }), sectionIds: m.sectionIds,
       blocks: own.reduce((n, s) => n + s.blocks, 0), blocksDone: own.reduce((n, s) => n + s.blocksDone, 0),
       steps: plansOwn.reduce((n, p) => n + p.steps.length, 0), done: plansOwn.reduce((n, p) => n + p.done, 0), end, endDate, status,
-      itemsNeeded: items.reduce((n, i) => n + i.need, 0), itemsMissing: items.reduce((n, i) => n + i.missing, 0), gatherHours: round1(plansOwn.reduce((h, p) => h + (p.complete ? 0 : p.gatherHours), 0)) };
+      itemsNeeded: items.reduce((n, i) => n + i.need, 0), itemsMissing: items.reduce((n, i) => n + i.missing, 0), gatherHours: round1(plansOwn.reduce((h, p) => h + (p.complete ? 0 : p.gatherHours), 0)),
+      ...baselineOf(base?.milestones[m.id], complete ? null : endDate, perWeek) };
   });
   const notes = ['Bautage sind Projektionen aus dem Bautempo (Blöcke je Bautag) und dem Restbedarf der Abschnitte – Annahmen, keine Messung.'];
   if (!program.start) notes.push('Ohne Startdatum zählt der Zeitplan nur Bautage; ein Datum im Abschnitt „Einstellungen“ ergibt Kalendertage.');
   if (sections.some(s => s.builderIds.length === 0 && s.sessions > 0) && program.builders.length) notes.push('Nicht zugewiesene Abschnitte laufen nacheinander in einer eigenen Spur mit dem Projekt-Bautempo.');
-  return { sections, builders, milestones, sessions: total, endDate: dateOfEnd(total), criticalPath, start: program.start ?? null, sessionsPerWeek: program.sessionsPerWeek ?? DEFAULT_SESSIONS_PER_WEEK, notes };
+  if (fromDate && fromDate !== program.start) notes.push('Das Startdatum liegt in der Vergangenheit: die offene Arbeit beginnt am nächsten Bautag ab heute.');
+  if (program.builders.some(b => b.share !== undefined)) notes.push('Bauleute mit Anteil unter 100 % bauen anteilig weniger je Bautag (Tempo × Anteil).');
+  const materialUnknown = material ? sections.filter(s => s.sessions > 0 && s.materialDay === null).map(s => s.id) : [];
+  if (program.waitForMaterial && !material) notes.push('„Auf Material warten“ ist an, aber ohne Produktionsauswertung – der Zeitplan rechnet ohne Material.');
+  if (material) notes.push('Abschnitte beginnen erst, wenn ihr Material beisammen ist (Deckung aus dem Reiter „Produktion“: Farmen, Sammelzeit je Tag); ein Spieltag zählt als ein Bautag.');
+  if (materialUnknown.length) notes.push(`${materialUnknown.length} Abschnitt${materialUnknown.length === 1 ? ' enthält' : 'e enthalten'} Items ohne Sammel-Richtwert – dort kann der Plan nicht auf Material warten.`);
+  const endDate = dateOfEnd(total);
+  const baseline = base ? { at: base.at, end: base.end ?? null, slip: base.end && endDate ? buildingDaysBetween(base.end, endDate, perWeek) : null } : null;
+  return { sections, builders, milestones, sessions: total, endDate, criticalPath, start: program.start ?? null, from, sessionsPerWeek: perWeek, notes,
+    waitForMaterial: !!material, materialUnknown, baseline };
 }
+
+const baselineOf = (baseEnd: string | undefined, endDate: string | null, perWeek: number): { baselineEnd?: string; slip?: number } => {
+  if (!baseEnd) return {};
+  const slip = endDate ? buildingDaysBetween(baseEnd, endDate, perWeek) : null;
+  return { baselineEnd: baseEnd, ...(slip !== null && { slip }) };
+};
 
 // ---------------------------------------------------------------------------
 // Text output

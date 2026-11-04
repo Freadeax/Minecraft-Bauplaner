@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import {
   addFarm, analyzeProduction, COVER_WAY_LABEL, detectFarms, FARM_GROUPS, FARM_MODE_LABEL, FARM_RANGE_LABEL, FARM_STATE_LABEL, FARM_TYPES, farmCostOf, farmsOnMap, farmType,
-  logHarvest, MAX_UNITS, newWorldItemId, paceOf, planProgram, productionOf, productionText, programOf, removeFarm, removeHarvest, setProductionSettings, siteOf, siteOperation,
+  logHarvest, MAX_UNITS, newWorldItemId, paceOf, planProgramWithMaterial, productionOf, productionText, programOf, removeFarm, removeHarvest, setProductionSettings, siteOf, siteOperation,
   splitGathering, updateFarm, worldDimensionOf, teamChests, suggestChests, SUGGESTION_TARGET_DAYS, MIN_SAVED_HOURS,
 } from '../../../../../packages/domain/src/index.js';
 import type {
@@ -43,7 +43,8 @@ export function ProductionTab({ session }: { session: ProjectSession }) {
   const save: Save = (next, label) => { try { setMessage(session.execute(siteOperation(typeof next === 'function' ? next() : next, label))); } catch (e) { setMessage(errorText(e)); } };
   const overview = computation?.site.plan ?? null, guide = computation?.guide ?? null, progress = computation?.site.progress ?? null;
 
-  const schedule = useMemo(() => overview && site.sections.length ? planProgram(site, overview, paceOf(site), today()).sections : undefined, [site, overview]);
+  // Same schedule as the planning tab: it waits for material when the program says so (PROJ-02).
+  const schedule = useMemo(() => overview && site.sections.length ? planProgramWithMaterial(site, overview, paceOf(site), today()).plan.sections : undefined, [site, overview]);
   // Build cost of the catalogue farm buildings (latest version of each), computed once per library state.
   const farmCosts = useMemo(() => {
     const costs = new Map<string, FarmCost>();
@@ -90,7 +91,7 @@ export function ProductionTab({ session }: { session: ProjectSession }) {
       <div className="site-kpi"><span className="panel-kicker">HANDARBEIT</span><strong>{hoursText(t.handHours)}</strong><small>{t.handDays === null ? 'Sammelzeit je Tag ist 0' : `${daysText(t.handDays)} bei ${num(production.gatherHoursPerDay)} h/Tag`}</small></div>
       <div className="site-kpi"><span className="panel-kicker">FARMEN</span><strong>{t.running} / {production.farms.length}</strong><small>{t.running ? `${formatNumber(t.farmPerDay)} Items je Spieltag` : 'Keine Farm läuft'}</small></div>
       <div className="site-kpi"><span className="panel-kicker">BAUBEGINN GEFÄHRDET</span><strong className={t.late ? 'bad' : undefined}>{t.late || '–'}</strong>
-        <small>{schedule ? (t.late ? 'Abschnitte, deren Material nach dem geplanten Baubeginn fertig wird' : 'Material rechtzeitig laut Planung') : 'Ohne Bauabschnitte kein Zeitplan'}</small></div>
+        <small>{schedule ? (t.late ? 'Abschnitte, deren Material nach dem geplanten Baubeginn fertig wird' : programOf(site).waitForMaterial ? 'Die Planung wartet auf das Material' : 'Material rechtzeitig laut Planung') : 'Ohne Bauabschnitte kein Zeitplan'}</small></div>
     </header>
     {message && <div className="notice warning" role="alert">{message}<button onClick={() => setMessage('')}>OK</button></div>}
     <Settings production={production} site={site} save={save} />
@@ -287,7 +288,7 @@ function Readiness({ report, projectId, hasProgram }: { report: ProductionReport
         {withStart && <td className="num">{s.start === null ? '–' : s.startDate ?? `Bautag ${s.start + 1}`}{s.late && <small className="bad">Material zu spät</small>}</td>}
       </tr>)}</tbody>
     </table></div>
-    {report.totals.late > 0 && <p className="muted">Gegenmittel: Farm vergrößern oder zusätzliche Farm (unten), mehr Sammelzeit je Tag, oder in der <a href={`#/projekt/${projectId}/planung`}>Planung</a> den Abschnitt später legen{hasProgram ? '' : ' (dort zuerst Bauleute/Startdatum festlegen)'}.</p>}
+    {report.totals.late > 0 && <p className="muted">Gegenmittel: Farm vergrößern oder zusätzliche Farm (unten), mehr Sammelzeit je Tag, oder in der <a href={`#/projekt/${projectId}/planung`}>Planung</a> „Abschnitte erst beginnen, wenn ihr Material da ist“ einschalten{hasProgram ? '' : ' (dort zuerst Bauleute/Startdatum festlegen)'}.</p>}
   </section>;
 }
 

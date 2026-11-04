@@ -845,6 +845,12 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Sichtprüfung: Reiter „Planung“ im hellen Thema bei 1400 px (Theme-Tokens, keine festen Farben).
 - Grenzen: nur Chromium im Container; keine Abnahme durch Philipp (PROJ-01-S05).
 
+## PROJ-02 · Projektplanung vertieft (ab heute, Material abwarten, Basisplan, Anteil) · 04.11.2026 · Claude
+- `tests/program-depth.test.mjs` 6/6: Bautage zwischen Daten (7/5 je Woche, Vorzeichen, Grenze 20 Jahre), Anteil der Bautage (Prüfung, Rückgängig, halbes Tempo), Startdatum in der Vergangenheit (Beginn am nächsten Montag bei 5 Bautagen), Basisplan (braucht Startdatum, ± 0, langsamer → Verzug für Plan/Abschnitt/Meilenstein, später angefangen → +3, Bereinigung beim Entfernen, Sicherung, Verwerfen, kaputter Basisplan abgelehnt), Material abwarten (aus Produktion, Beginn ≥ Bereitschaft, Plan länger, Produktion meldet danach nichts zu spät, ausgeschaltet identisch), Altbestand unverändert.
+- `tests/e2e/program-depth.e2e.mjs` 2/2 (Chromium 1400/390 px, Port 4337) und `program.e2e.mjs` 2/2.
+- Sichtprüfung bei 1400 px: Karten „Basisplan“ und „Material · aus Produktion“, Basisplan-Linie und schraffiertes Materialwarten im Balkenplan.
+- Grenzen: nur Chromium im Container; keine Abnahme durch Philipp (PROJ-02-S05).
+
 ## COOP-05 · Geprüfte Lagerkisten im Paper-Plugin 0.10.0 · 03.11.2026 · Claude
 - `npm run check`: 741 bestanden, 0 fehlgeschlagen. Neu: `tests/lager.test.mjs` (Planer-Faltung von `store.config/move/check/seal`, Abweichung bleibt bis zum Siegel, Bewegungen sind nur Zuordnung, nur Server darf `store.move/check`).
 - Gradle `:paper:test`: `StoreLedgerTest` (Rechtematrix aller Schutzstufen, Prüfsumme, Mengen, Trichterregeln) und `StoreIndexTest` (Sollstand = letzte Zählung + Bewegungen, Abweichung summiert, Siegel, Doppelkiste) grün.

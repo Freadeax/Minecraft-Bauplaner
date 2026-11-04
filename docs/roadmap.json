@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T09:28:40.230Z",
+  "updatedAt": "2026-11-04T09:33:11.151Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -41,7 +41,8 @@
     "LINK-06",
     "COOP-08",
     "PROD-05",
-    "COOP-09"
+    "COOP-09",
+    "PROJ-02"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -8995,6 +8996,97 @@
         }
       ],
       "orphans": []
+    },
+    {
+      "id": "PROJ-02",
+      "title": "Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Projektmodul vertiefen“)",
+      "dependencies": [
+        "PROJ-01",
+        "PROD-01"
+      ],
+      "scope": [
+        "packages/domain/src/program.ts",
+        "packages/domain/src/programMaterial.ts",
+        "apps/web/src/views/project/PlanningTab.tsx",
+        "apps/web/src/views/project/ProductionTab.tsx",
+        "apps/web/src/planning.css",
+        "tests/program-depth.test.mjs",
+        "tests/e2e/program-depth.e2e.mjs",
+        "docs/architecture/PROGRAM.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "PROJ-02-S01",
+          "title": "Zeitplan ab heute bei Startdatum in der Vergangenheit; Bautage zwischen Daten nach Bautagen je Woche (buildingDaysBetween).",
+          "done": true
+        },
+        {
+          "id": "PROJ-02-S02",
+          "title": "Planung ↔ Produktion: waitForMaterial, planProgramWithMaterial (Bereitschaft → frühester Beginn, materialWait), Produktion vergleicht mit demselben Zeitplan.",
+          "done": true
+        },
+        {
+          "id": "PROJ-02-S03",
+          "title": "Basisplan (setBaseline/clearBaseline, nur Daten) mit Verzug für Plan, Abschnitte und Meilensteine; Bereinigung beim Entfernen; Sicherung.",
+          "done": true
+        },
+        {
+          "id": "PROJ-02-S04",
+          "title": "Anteil der Bautage je Bauleute (10–100 %); Oberfläche: Karten Basisplan/Material, Basisplan-Linie und Materialwarten im Balkenplan, Einstellungen.",
+          "done": true
+        },
+        {
+          "id": "PROJ-02-S05",
+          "title": "Abnahme durch Philipp in der Testphase (PROJ-16…18).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Ohne neue Felder bleibt jeder Plan unverändert (Altbestand).",
+        "Kein Kreis zwischen Planung und Produktion: Bereitschaft hängt nicht vom Zeitplan ab; mit Materialwarten meldet die Produktion keinen zu späten Baubeginn.",
+        "Basisplan speichert nur Daten und bleibt vergleichbar, wenn der Plan ab heute neu rechnet; Verzug in Bautagen nach Bautagen je Woche."
+      ],
+      "next": "Abnahme durch Philipp (S05, PROJ-16…18).",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/program-depth.test.mjs",
+          "note": "6 Fälle: Bautage zwischen Daten, Anteil der Bautage, Start in der Vergangenheit, Basisplan mit Verzug/Bereinigung/Sicherung, Material abwarten gegen Produktion, Altbestand."
+        },
+        {
+          "path": "tests/e2e/program-depth.e2e.mjs",
+          "note": "Chromium 1400/390 px: Basisplan ± 0 → +N Bautage, Anteil 25 %, Material-Karte mit Link zur Produktion, Neuladen, Verwerfen, kein Querscrollen."
+        },
+        {
+          "path": "docs/architecture/PROGRAM.md",
+          "note": "Abschnitt „Vertiefung PROJ-02“."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Einheits- und Browsertests grün; Abnahme durch Philipp offen (S05)."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-04T09:33:11.151Z",
+      "area": "PROJEKT",
+      "thread": "Projektmodul vertiefen",
+      "philipp": [
+        {
+          "kind": "planer",
+          "text": "Basisplan, Material abwarten und Anteil der Bautage im Reiter „Planung“ abnehmen (PROJ-16…18)."
+        }
+      ],
+      "orphans": [
+        "Abwesenheiten je Bauleute nach Datum; Basisplan-Verlauf mit mehreren Ständen; Abhängigkeiten zwischen Projekten auf der Weltkarte."
+      ]
     }
   ],
   "events": [
@@ -16791,6 +16883,40 @@
           "done": 8,
           "total": 9,
           "next": "O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T09:33:11.151Z",
+      "kind": "progress",
+      "items": [
+        "PROJ-02"
+      ],
+      "summary": "Zeitplan ab heute, Material abwarten aus der Produktion, Basisplan mit Verzug, Anteil der Bautage; program-depth 6/6, Browsersuite 156/156; Rebase auf main 6a41af4",
+      "files": [
+        "apps/web/src/planning.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/project/PlanningTab.tsx",
+        "apps/web/src/views/project/ProductionTab.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/STATUS.md",
+        "docs/TESTING.md",
+        "docs/architecture/PRODUCTION.md",
+        "docs/architecture/PROGRAM.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/program.ts",
+        "packages/domain/src/programMaterial.ts",
+        "tests/e2e/program-depth.e2e.mjs",
+        "tests/program-depth.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PROJ-02",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05, PROJ-16…18)."
         }
       ]
     }

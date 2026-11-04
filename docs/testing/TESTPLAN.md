@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 126 Fälle in 13 Bereichen, davon 57 Kernfälle.
+Umfang: 129 Fälle in 13 Bereichen, davon 58 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -66,6 +66,9 @@ Das Herzstück: Bauteile anordnen, Material planen, Bauanleitung und Export.
 | PROJ-13 | Produktion: Engpässe, Zeitplan, AFK-Platz | vertieft | 1. Projekt mit Abschnitten und Planung (Bauleute, Startdatum) öffnen, Tab „Produktion“.<br>2. Sammelzeit je Tag verkleinern; eine vorgeschlagene Farm „Als geplant anlegen“ und auf „läuft“ stellen.<br>3. Zwei automatischen Farmen einen Ort geben (oder Farmpunkte der Weltkarte übernehmen) und den AFK-Vorschlag übernehmen. | Engpass und „Material da nach“ ändern sich nachvollziehbar; Abschnitte mit Material nach Baubeginn sind markiert; Sammelaufträge verteilen die Handarbeit auf die Bauleute; der AFK-Platz nennt erreichte und verfehlte Farmen mit Grund. |
 | PROJ-14 | Materialvarianten: Glas, Beton, Terrakotta, Kupfer | vertieft | 1. Ein Gebäude mit Glas, Beton, Terrakotta oder Kupfer öffnen (Bibliothek, Detailseite).<br>2. Unter „Bauversionen & Varianten → Materialvariante erzeugen“ eine Farbe bzw. bei Kupfer eine Oxidationsstufe und „gewachst“ wählen und speichern.<br>3. Variante in ein Projekt legen, als .litematic exportieren und im Spiel ansehen. | Nur das Material wechselt, Form und Ausrichtung bleiben; Kupfer zeigt die gewählte Stufe und bleibt gewachst im Spiel unverändert; Materialliste nennt die neuen Blöcke. (Abnahme MAT-03, MAT-04) |
 | PROJ-15 | Rohstoffliste gegen das Spiel prüfen | vertieft | 1. Ein großes Projekt öffnen, Tab „Material“ → „Rohstoffe und Rezepte“.<br>2. Drei bis fünf Rezepte (z. B. Treppen, Platten, Glasscheiben, Laternen) mit dem Rezeptbuch bzw. REI im Spiel vergleichen. | Mengen und Zutaten stimmen mit Minecraft 26.3 überein (z. B. 6 Platten aus 3 Blöcken, 4 Treppen aus 6 Blöcken); Abweichungen bitte mit Rezeptname melden. (Abnahme MAT-02) |
+| PROJ-16 | Planung: Basisplan und Verzug | kern | 1. Projekt mit Bauabschnitten, Tab „Planung“: Startdatum setzen, „Basisplan festhalten“.<br>2. Bauleute anlegen, alle Abschnitte zuweisen und „dabei an 25 % der Bautage“ wählen.<br>3. Neu laden (F5), dann „Basisplan verwerfen“. | Nach dem Festhalten steht „± 0“; mit 25 % zeigt die Karte „+N Bautage“, Meilensteine nennen „später als im Basisplan“ und im Zeitplan liegt unter den Balken eine Linie für den Basisplan; alles bleibt nach dem Neuladen; Verwerfen entfernt den Vergleich. |
+| PROJ-17 | Planung wartet auf Material aus der Produktion | vertieft | 1. Projekt mit Abschnitten, Tab „Produktion“: Sammelzeit je Tag klein stellen (z. B. 0,5 h).<br>2. Tab „Planung“ → Einstellungen: „Abschnitte erst beginnen, wenn ihr Material da ist“ einschalten.<br>3. Im Tab „Produktion“ eine Farm auf „läuft“ stellen und zurück zur Planung. | Abschnitte, deren Material noch fehlt, beginnen später (schraffierter Teil vor dem Balken); die Karte „Material · aus Produktion“ nennt die Wartezeit; im Tab „Produktion“ steht „Die Planung wartet auf das Material“ statt „Material zu spät“; eine laufende Farm verkürzt die Wartezeit. |
+| PROJ-18 | Startdatum in der Vergangenheit | vertieft | 1. In der Planung ein Startdatum vor zwei Wochen setzen, ein Abschnitt ist noch offen. | Die offene Arbeit beginnt am nächsten Bautag ab heute (nicht in der Vergangenheit); ein Hinweis unter dem Plan sagt das; Daten überspringen freie Wochentage. |
 
 ## WERK · Werkstatt (Blockeditor) (Planer)
 
@@ -294,7 +297,8 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | PROD-04 | PROJ-13 |
 | PROD-05 | LAGER-10, PROJ-12 |
 | PROFILE-01 | DATEI-06 |
-| PROJ-01 | PROJ-09, PROJ-10 |
+| PROJ-01 | PROJ-09, PROJ-10, PROJ-11 |
+| PROJ-02 | PROJ-16, PROJ-17, PROJ-18 |
 | QA-04 | SYS-01, SYS-02, LIVE-06 |
 | SIZE-01 | DATEI-05, WERK-07, MOD-15, LIVE-09 |
 | SPLIT-01 | BIB-11 |

@@ -1076,3 +1076,10 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 ## MSG-COOP-08 · Ertragskisten (Claude, 04.11.2026)
 - Plugin-Thread: Zweck `ertrag`, `store.config.farm`, `store.yield` {chest, farm?, items, from, until, minutes} (nur Server), `TeamView.yields`, `farms` in der Serverdatei (`production.serverFarms`), Trichterbuchungen je Minute gebündelt.
 - Produktion-Thread (PROD-05): liest `store.yield` als gemessene Rate („Lagerkiste (Server)“), sendet beim Verknüpfen einer Sammeltruhe `store.config` {purpose: 'ertrag', farm}; bucht nichts ins Lager.
+### MSG-PROJ02-01 · 04.11.2026 · Claude (Thread „Projektmodul vertiefen“) · PROJ-02 Planung vertieft
+
+- Auftrag Philipp („Bring alle Threads und Module weiter“) über den Coordinator, mit Verknüpfung zum Reiter „Produktion“.
+- Neu: `packages/domain/src/programMaterial.ts` (`planProgramWithMaterial`, `materialDaysOf`), `tests/program-depth.test.mjs`, `tests/e2e/program-depth.e2e.mjs` (Port 4337), Testfälle PROJ-16…18.
+- Geändert: `program.ts` (optionale Felder `builders[].share`, `waitForMaterial`, `baseline`; `planProgram(…, options)`, `from`, `buildingDaysBetween`, `setBaseline`/`clearBaseline`), `PlanningTab.tsx`, `planning.css`, `index.ts`.
+- **An PROD (Produktion):** `ProductionTab.tsx` nimmt den Zeitplan jetzt aus `planProgramWithMaterial` (eine Zeile) und nennt „Die Planung wartet auf das Material“; das Gegenmittel verweist auf den neuen Schalter. `productionPlan.ts` unverändert.
+

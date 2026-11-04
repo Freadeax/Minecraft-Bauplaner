@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-04T09:28:40.230Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-04T09:33:11.151Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-04T09:28:40.230Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 8 |
 | 🚧 In Arbeit | 4 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 75 |
+| 🧩 Implementiert · Abnahme offen | 76 |
 | ✅ Im beschriebenen Umfang geprüft | 25 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -27,7 +27,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 |---|---:|---:|---:|---:|
 | [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 19 | 9 | 18 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 4 | 10 | 4 |
-| [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 8 | 1 | 5 | 1 |
+| [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 9 | 2 | 6 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 11 | 1 | 11 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 8 | 0 | 7 | 0 |
@@ -93,6 +93,7 @@ Abgeschlossen oder zurückgestellt: LIB-01 (geprüft), GEN-01 (geprüft), WORLD-
 |---|---|---|---|---|---|
 | [BUILD-06](#build-06) | Bauführung im Spiel | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Bauführung mit Mod-Aufnahme auf deinem Server; Druck- und Handyansicht. |
 | [PROJ-01](#proj-01) | Projektplanung für große Projekte | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Projektmodul vertiefen“ · 1 verwaist | Reiter „Planung“ abnehmen (PROJ-09…11). |
+| [PROJ-02](#proj-02) | Projektplanung vertieft | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Projektmodul vertiefen“ · 1 verwaist | Basisplan, Material abwarten und Anteil der Bautage im Reiter „Planung“ abnehmen (PROJ-16…18). |
 | [UPDATE-01](#update-01) | Kontrollierte Versionsupdates mit lokalen Overrides | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Versionsupdates auf echten Geräten (QA-02). |
 | [PROD-01](#prod-01) | Produktionsdaten | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Produktion und Anbindung im Planer ausbauen“ | Reiter „Produktion“ abnehmen (PROJ-12). |
 | [PROD-02](#prod-02) | Deckung und Engpässe | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Produktion und Anbindung im Planer ausbauen“ | Engpässe und Zeitplanvergleich prüfen (PROJ-13). |
@@ -306,6 +307,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **PROD-01** · Reiter „Produktion“ abnehmen (PROJ-12).
 - **PROD-02** · Engpässe und Zeitplanvergleich prüfen (PROJ-13).
 - **LINK-04** · Testplan-Bereich LINK durchgehen.
+- **PROJ-02** · Basisplan, Material abwarten und Anteil der Bautage im Reiter „Planung“ abnehmen (PROJ-16…18).
 
 ### Entscheiden oder Rückfrage beantworten
 
@@ -334,6 +336,7 @@ Arbeit, für die gerade kein laufender Thread zuständig ist. Zum Verteilen: Thr
 | [MAT-03](#mat-03) | Kern, Minecraft-Daten und Dateiformate | P1 | 🧩 Implementiert · Abnahme offen | S03 Glas-/Beton-/Terrakottavarianten in Profil und Oberfläche prüfen – im Cloud-Browser machbar. |
 | [PERF-04](#perf-04) | Performance und Stabilität | P1 | 🧩 Implementiert · Abnahme offen | GPU-Upload großer Szenen in Stücken. |
 | [PROJ-01](#proj-01) | Projektmodul | P1 | 🧩 Implementiert · Abnahme offen | Abhängigkeiten zwischen Projekten auf der Weltkarte; Bauleute aus dem Spiel; Lagerbuchungen je Bauleute. |
+| [PROJ-02](#proj-02) | Projektmodul | P1 | 🧩 Implementiert · Abnahme offen | Abwesenheiten je Bauleute nach Datum; Basisplan-Verlauf mit mehreren Ständen; Abhängigkeiten zwischen Projekten auf der Weltkarte. |
 | [SPLIT-01](#split-01) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Unterirdische Räume und Brückenverbindungen erkennen. |
 | [TERRAIN-02](#terrain-02) | Planer | P1 | 🧩 Implementiert · Abnahme offen | S07 Wegstufen als Treppen an Höhenwechseln (auch BASE-01). |
 | [GAME-09](#game-09) | Modrinth-Veröffentlichung | P2 | 🚧 In Arbeit | S04/S05: Modrinth-Freigabe prüfen und die Versionen seit 0.10.0 (zuletzt 0.12.0 für Fabric, NeoForge, Paper) mit scripts/modrinth_publish.mjs hochladen – Thread „Mod auf Modrinth veröffentlichen“ ist beendet. |
@@ -394,6 +397,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **COOP-08 · Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion)** — 🧩 Implementiert · Abnahme offen, 2/4 Teilschritte. Nächster Schritt: PROD-05 liest TeamView.yields bzw. store.yield; Abnahme LAGER-10 auf Philipps Server.
 - **PROD-05 · Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen.
 - **COOP-09 · Team live im Alltag: Status und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme mit Mitspielern (TEAMBAU-25).
+- **PROJ-02 · Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05, PROJ-16…18).
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -538,6 +542,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [PROD-02](#prod-02) | Deckung und Engpässe: Restbedarf des Sammelplans gegen laufende Farmen und Handarbeit (gemeinsame Warteschlange, gieriger Ausgleich), Engpass, Materialbereitschaft je Abschnitt in Spieltagen, „Lohnt sich eine Farm?“ mit Amortisation aus Bauplan-Kosten | 🧩 Implementiert · Abnahme offen | 3/4 | PROD-01, PROJ-01 | ausstehend | ausstehend |
 | [PROD-03](#prod-03) | Verarbeitung und Logistik: Öfen für eine Zielzeit, Brennstoff je Sorte und netto aus Brennstofffarmen (Seetang, Bambus, Lava), Lagerplatz/Shulker/Fahrten je Abschnitt, Trichterdurchsatz und „Truhe voll nach“ je Farm, Sortier-Module | 🧩 Implementiert · Abnahme offen | 3/3 | PROD-01 | ausstehend | ausstehend |
 | [PROD-04](#prod-04) | Anbindung der Produktion: Farmen aus Projekt-Bauteilen mit Baufortschritt, Farmpunkte der Weltkarte übernehmen und eintragen, bester AFK-Platz nach Simulationsdistanz, Materialbereitschaft gegen Zeitplan der Planung, Sammelaufträge je Bauleute (TEAM-03-S02), Produktionsblatt als Text | 🧩 Implementiert · Abnahme offen | 4/5 | PROD-02, MAP-06, PROJ-01 | ausstehend | ausstehend |
+| [PROJ-02](#proj-02) | Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute | 🧩 Implementiert · Abnahme offen | 4/5 | PROJ-01, PROD-01 | ausstehend | ausstehend |
 
 ## P4: Optionale Zusammenarbeit und Integrationen
 
@@ -3124,6 +3129,32 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — Meldung, Chip in anderem Reiter, Anwesenheit mit Abschnitt, Einladung erneuern mit Aussperren und Wiederbeitritt; 1400/390 px, auch gegen den echten Dienst (04.11.2026).
 
 **Dateiumfang:** `apps/web/src/views/project/TeamLiveBar.tsx`, `apps/web/src/views/project/roomClient.ts`, `apps/web/src/views/project/TeamRoom.tsx`, `apps/web/src/views/project/ProjectView.tsx`, `apps/web/src/team.css`, `tests/e2e/team-room.e2e.mjs`, `docs/architecture/TEAM_LIVE.md`. **Abhängigkeiten:** COOP-07. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### PROJ-02
+
+**Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projektmodul vertiefen“) · Zuständiger Thread: „Projektmodul vertiefen“ · Aktualisiert: 2026-11-04T09:33:11.151Z
+
+- [x] PROJ-02-S01: Zeitplan ab heute bei Startdatum in der Vergangenheit; Bautage zwischen Daten nach Bautagen je Woche (buildingDaysBetween).
+- [x] PROJ-02-S02: Planung ↔ Produktion: waitForMaterial, planProgramWithMaterial (Bereitschaft → frühester Beginn, materialWait), Produktion vergleicht mit demselben Zeitplan.
+- [x] PROJ-02-S03: Basisplan (setBaseline/clearBaseline, nur Daten) mit Verzug für Plan, Abschnitte und Meilensteine; Bereinigung beim Entfernen; Sicherung.
+- [x] PROJ-02-S04: Anteil der Bautage je Bauleute (10–100 %); Oberfläche: Karten Basisplan/Material, Basisplan-Linie und Materialwarten im Balkenplan, Einstellungen.
+- [ ] PROJ-02-S05: Abnahme durch Philipp in der Testphase (PROJ-16…18).
+
+**Abnahme:** Ohne neue Felder bleibt jeder Plan unverändert (Altbestand). Kein Kreis zwischen Planung und Produktion: Bereitschaft hängt nicht vom Zeitplan ab; mit Materialwarten meldet die Produktion keinen zu späten Baubeginn. Basisplan speichert nur Daten und bleibt vergleichbar, wenn der Plan ab heute neu rechnet; Verzug in Bautagen nach Bautagen je Woche.
+
+**Nächste Aktion:** Abnahme durch Philipp (S05, PROJ-16…18).
+
+**Nur Philipp:** Im Planer abnehmen: Basisplan, Material abwarten und Anteil der Bautage im Reiter „Planung“ abnehmen (PROJ-16…18).
+
+**Verwaist (ohne Bearbeiter):** Abwesenheiten je Bauleute nach Datum; Basisplan-Verlauf mit mehreren Ständen; Abhängigkeiten zwischen Projekten auf der Weltkarte.
+
+**Prüfstand:** Einheits- und Browsertests grün; Abnahme durch Philipp offen (S05).
+
+**Nachweise:** [tests/program-depth.test.mjs](../tests/program-depth.test.mjs) — 6 Fälle: Bautage zwischen Daten, Anteil der Bautage, Start in der Vergangenheit, Basisplan mit Verzug/Bereinigung/Sicherung, Material abwarten gegen Produktion, Altbestand.; [tests/e2e/program-depth.e2e.mjs](../tests/e2e/program-depth.e2e.mjs) — Chromium 1400/390 px: Basisplan ± 0 → +N Bautage, Anteil 25 %, Material-Karte mit Link zur Produktion, Neuladen, Verwerfen, kein Querscrollen.; [docs/architecture/PROGRAM.md](architecture/PROGRAM.md) — Abschnitt „Vertiefung PROJ-02“.
+
+**Dateiumfang:** `packages/domain/src/program.ts`, `packages/domain/src/programMaterial.ts`, `apps/web/src/views/project/PlanningTab.tsx`, `apps/web/src/views/project/ProductionTab.tsx`, `apps/web/src/planning.css`, `tests/program-depth.test.mjs`, `tests/e2e/program-depth.e2e.mjs`, `docs/architecture/PROGRAM.md`. **Abhängigkeiten:** PROJ-01, PROD-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

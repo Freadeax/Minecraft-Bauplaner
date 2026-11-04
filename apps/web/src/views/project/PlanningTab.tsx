@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
 import {
-  addBuilder, addDependency, addMilestone, assignSection, builderText, moveMilestone, MILESTONE_STATUS_LABEL, paceOf, planProgram, programIssues, programOf,
+  addBuilder, addDependency, addMilestone, assignSection, builderText, clearBaseline, moveMilestone, MILESTONE_STATUS_LABEL, paceOf, planProgramWithMaterial, programIssues, programOf, setBaseline,
   PROGRAM_PRESET_LABEL, programText, removeBuilder, removeDependency, removeMilestone, SECTION_STATE_LABEL, setProgramSettings, siteOf, siteOperation,
   suggestDependencies, suggestProgram, updateBuilder, updateMilestone, UNASSIGNED,
 } from '../../../../../packages/domain/src/index.js';
-import type { BuilderLoad, DependencySuggestion, ProgramPlan, ProgramPreset, ScheduledSection, SitePlan } from '../../../../../packages/domain/src/index.js';
+import type { BuilderLoad, DependencySuggestion, ProductionReport, ProgramPlan, ProgramPreset, ScheduledSection, SitePlan } from '../../../../../packages/domain/src/index.js';
 import { download, errorText, formatNumber } from '../../app/ui';
 import { isResolved } from './session';
 import type { ProjectSession } from './session';
@@ -15,6 +15,7 @@ const deDate = (iso: string | null | undefined): string => iso ? `${iso.slice(8,
 const days = (n: number): string => `${n} Bautag${n === 1 ? '' : 'e'}`;
 const today = (): string => new Date().toISOString().slice(0, 10);
 const fileStem = (name: string): string => name.replace(/[^\p{L}\p{N}_-]+/gu, '_');
+const slipText = (n: number | null | undefined): string => n === null || n === undefined ? '' : n === 0 ? 'wie im Basisplan' : n > 0 ? `${days(n)} später als im Basisplan` : `${days(-n)} früher als im Basisplan`;
 const whenText = (s: Pick<ScheduledSection, 'sessions' | 'start' | 'end' | 'startDate' | 'endDate'>): string =>
   s.sessions === 0 ? 'fertig' : s.startDate ? `${deDate(s.startDate)} – ${deDate(s.endDate)}` : `Bautag ${s.start + 1}–${s.end}`;
 
@@ -33,7 +34,8 @@ export function PlanningTab({ session }: { session: ProjectSession }) {
   const [message, setMessage] = useState('');
   const save: Save = (next, label) => { try { setMessage(session.execute(siteOperation(typeof next === 'function' ? next() : next, label))); } catch (e) { setMessage(errorText(e)); } };
   const overview = computation?.site.plan ?? null, guide = computation?.guide ?? null;
-  const plan = useMemo(() => overview ? planProgram(site, overview, paceOf(site), today()) : null, [site, overview]);
+  const scheduled = useMemo(() => overview ? planProgramWithMaterial(site, overview, paceOf(site), today()) : null, [site, overview]);
+  const plan = scheduled?.plan ?? null, readiness = scheduled?.readiness ?? null;
   const suggestions = useMemo(() => guide ? suggestDependencies(site, project, guide) : [], [site, project, guide]);
   const issues = useMemo(() => programIssues(site), [site]);
 
@@ -49,13 +51,17 @@ export function PlanningTab({ session }: { session: ProjectSession }) {
     <header className="prog-overview" aria-label="Planungsübersicht">
       <div className="site-kpi wide"><span className="panel-kicker">VORAUSSICHTLICHE DAUER · PROJEKTION</span>
         <strong>{plan.sessions === 0 ? '✓ Fertig' : plan.endDate ? `bis ${deDate(plan.endDate)}` : days(plan.sessions)}</strong>
-        <small>{plan.sessions > 0 && plan.endDate ? `${days(plan.sessions)} ab ${deDate(plan.start)} · ${plan.sessionsPerWeek} Bautage je Woche` : plan.sessions > 0 ? 'Ohne Startdatum nur Bautage; Datum unter „Einstellungen“' : 'Alle Abschnitte abgehakt'} · {formatNumber(overview.totals.blocksDone)} von {formatNumber(overview.totals.blocks)} Blöcken</small></div>
+        <small>{plan.sessions > 0 && plan.endDate ? `${days(plan.sessions)} ab ${deDate(plan.from)} · ${plan.sessionsPerWeek} Bautage je Woche` : plan.sessions > 0 ? 'Ohne Startdatum nur Bautage; Datum unter „Einstellungen“' : 'Alle Abschnitte abgehakt'} · {formatNumber(overview.totals.blocksDone)} von {formatNumber(overview.totals.blocks)} Blöcken</small></div>
       <div className="site-kpi"><span className="panel-kicker">NÄCHSTER MEILENSTEIN</span><strong className="site-current">{next ? next.name : plan.milestones.length ? '✓ Alle erreicht' : '–'}</strong>
         <small>{next ? `${MILESTONE_STATUS_LABEL[next.status]}${next.due ? ` · bis ${deDate(next.due)}` : ''}${next.endDate ? ` · voraussichtlich ${deDate(next.endDate)}` : next.end ? ` · Bautag ${next.end}` : ''}` : 'Meilensteine unten anlegen'}</small></div>
       <div className="site-kpi"><span className="panel-kicker">BAULEUTE</span><strong>{plan.builders.length || '–'}</strong>
         <small>{plan.builders.length ? plan.builders.map(b => `${b.name} ${days(b.sessions)}`).join(' · ') : 'Ein Spieler mit Projekt-Bautempo'}</small></div>
       <div className="site-kpi"><span className="panel-kicker">KRITISCHER PFAD</span><strong>{plan.criticalPath.length}</strong>
         <small>{plan.criticalPath.length ? `Abschnitte ohne Puffer: ${plan.criticalPath.map(id => name.get(id)).join(', ')}` : 'Nichts offen'}</small></div>
+      {plan.baseline && <div className="site-kpi prog-slip-kpi"><span className="panel-kicker">BASISPLAN VOM {deDate(plan.baseline.at)}</span>
+        <strong className={plan.baseline.slip && plan.baseline.slip > 0 ? 'warn-text' : ''}>{plan.baseline.slip === null ? (plan.sessions === 0 ? '✓ Fertig' : '–') : plan.baseline.slip === 0 ? '± 0' : `${plan.baseline.slip > 0 ? '+' : '−'}${days(Math.abs(plan.baseline.slip))}`}</strong>
+        <small>{plan.baseline.end ? `Ende geplant ${deDate(plan.baseline.end)}${plan.endDate ? `, jetzt ${deDate(plan.endDate)}` : ''}` : 'Basisplan ohne offenes Ende'}</small></div>}
+      {readiness && <MaterialKpi readiness={readiness} plan={plan} projectId={project.id} />}
     </header>
     {message && <div className="notice warning" role="alert">{message}<button onClick={() => setMessage('')}>OK</button></div>}
     {issues.length > 0 && <div className="notice warning" role="status"><strong>Plan prüfen</strong><ul>{issues.map(i => <li key={i.message}>{i.message}</li>)}</ul></div>}
@@ -65,13 +71,27 @@ export function PlanningTab({ session }: { session: ProjectSession }) {
     <Dependencies site={site} plan={plan} suggestions={suggestions} save={save} />
     <Builders plan={plan} site={site} save={save} title={title} />
     <section className="site-block prog-settings" aria-label="Einstellungen">
-      <div className="site-head"><h3>Einstellungen <small>Startdatum und Bautage je Woche</small></h3>
+      <div className="site-head"><h3>Einstellungen <small>Startdatum, Bautage je Woche, Material und Basisplan</small></h3>
         <button onClick={() => download(`Bauprogramm_${fileStem(title)}.txt`, programText(plan, site, title), 'text/plain')}>Bauprogramm als Text</button></div>
       <div className="prog-settings-row">
         <label>Erster Bautag<input type="date" value={program.start ?? ''} aria-label="Startdatum" onChange={e => save(setProgramSettings(site, { start: e.target.value || null }), e.target.value ? `Start ${deDate(e.target.value)}` : 'Startdatum entfernt')} /></label>
         <label>Bautage je Woche<select value={program.sessionsPerWeek ?? 7} aria-label="Bautage je Woche" onChange={e => save(setProgramSettings(site, { sessionsPerWeek: Number(e.target.value) }), `${e.target.value} Bautage je Woche`)}>
           {[1, 2, 3, 4, 5, 6, 7].map(n => <option key={n} value={n}>{n}{n < 7 ? ` (${['Mo', 'Mo–Di', 'Mo–Mi', 'Mo–Do', 'Mo–Fr', 'Mo–Sa'][n - 1]})` : ' (jeden Tag)'}</option>)}</select></label>
         <small className="muted">Projekt-Bautempo ({paceOf(site).blocksPerSession} Blöcke je Bautag) stellst du im Reiter „Bauen“ ein; Bauleute können ein eigenes Tempo haben.</small>
+      </div>
+      <div className="prog-settings-row">
+        <label className="raw-toggle prog-check"><input type="checkbox" checked={!!program.waitForMaterial} aria-label="Auf Material warten"
+          onChange={e => save(setProgramSettings(site, { waitForMaterial: e.target.checked }), e.target.checked ? 'Planung wartet auf Material' : 'Planung ohne Material')} />
+          Abschnitte erst beginnen, wenn ihr Material da ist</label>
+        <small className="muted">Rechnet mit Farmen und Sammelzeit aus dem Reiter <a href={`#/projekt/${project.id}/produktion`}>Produktion</a>; ein Spieltag zählt als ein Bautag.</small>
+      </div>
+      <div className="prog-settings-row">
+        {program.baseline
+          ? <><span>Basisplan vom <strong>{deDate(program.baseline.at)}</strong>{program.baseline.end ? ` · Ende ${deDate(program.baseline.end)}` : ''}</span>
+            <button onClick={() => save(setBaseline(site, plan, today()), 'Basisplan neu festgehalten')}>Neu festhalten</button>
+            <button onClick={() => save(clearBaseline(site), 'Basisplan verworfen')}>Basisplan verwerfen</button></>
+          : <button onClick={() => save(() => setBaseline(site, plan, today()), 'Basisplan festgehalten')} disabled={!program.start || plan.sessions === 0}>Basisplan festhalten</button>}
+        <small className="muted">{program.start ? 'Hält die heutigen Termine fest; danach zeigt der Plan, wie weit jeder Abschnitt und Meilenstein davon abweicht.' : 'Ein Basisplan braucht ein Startdatum.'}</small>
       </div>
     </section>
     <ul className="materials-notes">{plan.notes.map(n => <li key={n}>{n}</li>)}</ul>
@@ -80,12 +100,12 @@ export function PlanningTab({ session }: { session: ProjectSession }) {
 
 /** Schedule as bars over building days: one row per section, grouped by lane (builder). */
 function Timeline({ plan }: { plan: ProgramPlan }) {
-  const total = Math.max(1, plan.sessions);
+  const total = Math.max(1, plan.sessions, ...plan.sections.map(s => s.baseline?.end ?? 0));
   const lanes = [...plan.builders.map(b => ({ id: b.id, name: b.name })), ...(plan.sections.some(s => s.builderIds.length === 0) ? [{ id: UNASSIGNED, name: plan.builders.length ? 'Nicht zugewiesen' : 'Bau-Reihenfolge' }] : [])];
   const ticks = total <= 14 ? [...Array(total).keys()] : [...Array(Math.min(12, total)).keys()].map(i => Math.round(i * total / Math.min(12, total)));
   const cal = (i: number): string => plan.start ? deDate(plan.sections.flatMap(s => s.startDate && s.start === i ? [s.startDate] : [])[0] ?? null) || `Tag ${i + 1}` : `Tag ${i + 1}`;
   return <section className="site-block prog-timeline" aria-label="Zeitplan">
-    <div className="site-head"><h3>Zeitplan <small>Balken = Bautage je Abschnitt · rot umrandet = kritischer Pfad · ◆ Meilenstein</small></h3></div>
+    <div className="site-head"><h3>Zeitplan <small>Balken = Bautage je Abschnitt · rot umrandet = kritischer Pfad · ◆ Meilenstein{plan.waitForMaterial ? ' · schraffiert = wartet auf Material' : ''}{plan.baseline ? ' · Linie = Basisplan' : ''}</small></h3></div>
     {plan.sessions === 0 ? <p className="muted">Alle Abschnitte sind abgehakt.</p> : <div className="prog-gantt" role="table" aria-label="Balkenplan">
       <div className="prog-axis" role="row"><span className="prog-lane-label" /><div className="prog-track">{ticks.map(i => <span key={i} className="prog-tick" style={{ left: `${i / total * 100}%` }}>{cal(i)}</span>)}</div></div>
       {lanes.map(lane => {
@@ -94,8 +114,10 @@ function Timeline({ plan }: { plan: ProgramPlan }) {
         return rows.map((s, i) => <div key={`${lane.id}/${s.id}`} className="prog-row" role="row">
           <span className="prog-lane-label">{i === 0 ? lane.name : ''}</span>
           <div className="prog-track">
+            {s.baseline && s.baseline.end > 0 && <span className="prog-baseline" style={{ left: `${Math.max(0, s.baseline.start) / total * 100}%`, width: `${Math.max(1, s.baseline.end - Math.max(0, s.baseline.start)) / total * 100}%` }} title={`Basisplan: ${s.name}${s.slip !== undefined ? ` · ${slipText(s.slip)}` : ''}`} />}
+            {!!s.materialWait && <span className="prog-wait" style={{ left: `${(s.start - s.materialWait) / total * 100}%`, width: `${s.materialWait / total * 100}%` }} title={`${s.name} wartet ${days(s.materialWait)} auf Material`} aria-label={`${s.name} wartet auf Material`} />}
             <span className={`prog-bar${s.critical ? ' critical' : ''}${s.state === 'blocked' ? ' blocked' : ''}`} style={{ left: `${s.start / total * 100}%`, width: `${Math.max(1.5, s.sessions / total * 100)}%` }}
-              title={`${s.name}: ${whenText(s)} · ${days(s.sessions)} · ${SECTION_STATE_LABEL[s.state]}${s.waitingFor.length ? ` · wartet auf ${s.waitingFor.length} Abschnitt(e)` : ''}`}>
+              title={`${s.name}: ${whenText(s)} · ${days(s.sessions)} · ${SECTION_STATE_LABEL[s.state]}${s.waitingFor.length ? ` · wartet auf ${s.waitingFor.length} Abschnitt(e)` : ''}${s.materialWait ? ` · ${days(s.materialWait)} auf Material warten` : ''}${s.slip !== undefined ? ` · ${slipText(s.slip)}` : ''}`}>
               <span className="prog-bar-text">{s.name}</span></span>
             {plan.milestones.filter(m => m.status !== 'done' && m.end === s.end && m.sectionIds.includes(s.id) && m.sectionIds.every(id => plan.sections.find(x => x.id === id)!.end <= s.end)).slice(0, 1)
               .map(m => <span key={m.id} className={`prog-milestone ${m.status}`} style={{ left: `${m.end / total * 100}%` }} title={`Meilenstein ${m.name}: ${MILESTONE_STATUS_LABEL[m.status]}`}>◆</span>)}
@@ -132,7 +154,8 @@ function Milestones({ plan, site, save }: { plan: ProgramPlan; site: SitePlan; s
           <span className="site-no">{m.status === 'done' ? '✓' : index + 1}</span>
           <span className="site-section-text"><strong>{m.name} <span className={`badge ms-${m.status}`}>{MILESTONE_STATUS_LABEL[m.status]}</span></strong>
             <small>{m.sectionIds.length ? m.sectionIds.map(id => site.sections.find(s => s.id === id)?.name ?? '?').join(', ') : 'keine Abschnitte'}{m.note && ` · ${m.note}`}</small>
-            <small>{m.due ? `Termin ${deDate(m.due)}` : 'kein Termin'}{m.status !== 'done' && (m.endDate ? ` · voraussichtlich ${deDate(m.endDate)}` : m.end ? ` · voraussichtlich Bautag ${m.end}` : '')} · {m.done} / {m.steps} Schritte{m.itemsMissing ? ` · ${formatNumber(m.itemsMissing)} Bauitems fehlen` : ''}{m.gatherHours ? ` · ${m.gatherHours} h sammeln` : ''}</small></span>
+            <small>{m.due ? `Termin ${deDate(m.due)}` : 'kein Termin'}{m.status !== 'done' && (m.endDate ? ` · voraussichtlich ${deDate(m.endDate)}` : m.end ? ` · voraussichtlich Bautag ${m.end}` : '')} · {m.done} / {m.steps} Schritte{m.itemsMissing ? ` · ${formatNumber(m.itemsMissing)} Bauitems fehlen` : ''}{m.gatherHours ? ` · ${m.gatherHours} h sammeln` : ''}</small>
+            {m.baselineEnd && m.status !== 'done' && <small className={m.slip && m.slip > 0 ? 'warn-text' : ''}>Basisplan {deDate(m.baselineEnd)}{m.slip !== undefined ? ` · ${slipText(m.slip)}` : ''}</small>}</span>
           <span className="site-section-meta"><div className="site-bar" role="progressbar" aria-label={`Fortschritt ${m.name}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct(m.blocksDone, m.blocks)}><span style={{ width: `${pct(m.blocksDone, m.blocks)}%` }} /></div><small>{pct(m.blocksDone, m.blocks)} % der Blöcke</small></span>
         </div>
         <div className="site-section-tools">
@@ -213,6 +236,9 @@ function Builders({ plan, site, save, title }: { plan: ProgramPlan; site: SitePl
           <label className="site-depth">Tempo <input type="number" className="site-stock" min={16} max={100000} defaultValue={b.blocksPerSession} key={`${b.id}:${b.blocksPerSession}`} aria-label={`Blöcke je Bautag von ${b.name}`}
             onBlur={e => { const n = Math.floor(Number(e.target.value)); if (n !== b.blocksPerSession) save(updateBuilder(site, b.id, { blocksPerSession: n >= 16 ? n : null }), `Bautempo von „${b.name}“`); }}
             onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }} /> Blöcke/Tag</label>
+          <label className="site-depth">dabei an <select value={program.builders.find(x => x.id === b.id)?.share ?? 100} aria-label={`Anteil der Bautage von ${b.name}`}
+            onChange={e => save(updateBuilder(site, b.id, { share: Number(e.target.value) }), `„${b.name}“ an ${e.target.value} % der Bautage`)}>
+            {[100, 75, 50, 25, 10].map(n => <option key={n} value={n}>{n} %</option>)}</select> der Bautage</label>
           <button onClick={() => void sheet(b)}>{copied === b.id ? 'Kopiert ✓' : 'Bauzettel kopieren'}</button>
           <button onClick={() => save(removeBuilder(site, b.id), `„${b.name}“ entfernt`)} aria-label={`${b.name} entfernen`}>✕</button></div>
         <small>{b.sectionIds.length} Abschnitt{b.sectionIds.length === 1 ? '' : 'e'} · {days(b.sessions)} · {formatNumber(b.blocksDone)} / {formatNumber(b.blocks)} Blöcke{b.nextId ? ` · als Nächstes „${site.sections.find(s => s.id === b.nextId)?.name}“` : ''}{b.gatherHours ? ` · ${b.gatherHours} h sammeln` : ''}{b.items.length ? ` · ${b.items.length} Items fehlen` : ''}</small>
@@ -226,3 +252,12 @@ function Builders({ plan, site, save, title }: { plan: ProgramPlan; site: SitePl
   </section>;
 }
 
+
+/** Material readiness from Produktion when the plan waits for it (PROJ-02). */
+function MaterialKpi({ readiness, plan, projectId }: { readiness: ProductionReport; plan: ProgramPlan; projectId: string }) {
+  const waiting = plan.sections.filter(s => (s.materialWait ?? 0) > 0), t = readiness.totals;
+  return <div className="site-kpi prog-material-kpi"><span className="panel-kicker">MATERIAL · AUS PRODUKTION</span>
+    <strong>{t.readyDays === null ? 'offen' : t.readyDays === 0 ? '✓ beisammen' : `in ${formatNumber(t.readyDays)} Spieltagen`}</strong>
+    <small>{waiting.length ? `${waiting.length} Abschnitt${waiting.length === 1 ? ' wartet' : 'e warten'} zusammen ${days(waiting.reduce((n, s) => n + (s.materialWait ?? 0), 0))}` : 'Kein Abschnitt wartet auf Material'}
+      {plan.materialUnknown.length ? ` · ${plan.materialUnknown.length} ohne Richtwert` : ''} · <a href={`#/projekt/${projectId}/produktion`}>Farmen & Engpässe</a></small></div>;
+}

@@ -5094,3 +5094,31 @@ S09 Startpaket (O-3): Reiternamen ohne Komponenten in tabNames.ts, Projektreiter
 - `docs/architecture/PERFORMANCE_AUDIT.md`
 - `vite.config.mjs`
 
+## 2026-11-04T09:33:11.151Z · progress
+
+**Aufgaben:** PROJ-02
+
+Zeitplan ab heute, Material abwarten aus der Produktion, Basisplan mit Verzug, Anteil der Bautage; program-depth 6/6, Browsersuite 156/156; Rebase auf main 6a41af4
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PROJ-02 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05, PROJ-16…18). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/planning.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/project/PlanningTab.tsx`
+- `apps/web/src/views/project/ProductionTab.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/PRODUCTION.md`
+- `docs/architecture/PROGRAM.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/program.ts`
+- `packages/domain/src/programMaterial.ts`
+- `tests/e2e/program-depth.e2e.mjs`
+- `tests/program-depth.test.mjs`
+

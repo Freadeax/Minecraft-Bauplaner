@@ -52,6 +52,26 @@ Alle Farben kommen aus den Theme-Tokens (hell/dunkel). Bei 390 px bricht der Bal
 - `tests/program.test.mjs`: Prüfung (Schema, Kreise mit Pfad, Selbstbezug, Doppel, unbekannte Bauleute, Datumsformat, Bautage je Woche, Bautempo), Bearbeiten (rein, Rückgängig, Bereinigen beim Entfernen eines Abschnitts), Befunde, Vorschläge aus Geometrie und Anschlüssen (alle zusammen gültig, Gegenrichtung blockiert), Vorlagen (Phasen mit Erschließung, Kette, Etappen, Rückfall), Kalender (7/5/2 Tage je Woche), Zeitplan (parallele Spuren, geteilter Abschnitt, Warten auf Voraussetzung, kritischer Pfad, Daten, Meilensteinstatus ok/late/open/done, Bauleute-Bedarf, Texte, Abhaken gibt frei, ohne Bauleute eine Spur, deterministisch), Sicherung.
 - `tests/e2e/program.e2e.mjs` (1400 px und 390 px, Port 4305): Hinweis ohne Abschnitte, Vorschläge übernehmen (wartende Balken), Kreis abgelehnt, Meilenstein mit Termin in der Vergangenheit (verspätet) und Abschnittsauswahl, zwei Bauleute mit Zuweisungsmatrix und Spuren, Bauzettel, Startdatum mit 5 Bautagen je Woche, Textdatei, Neuladen, Meilenstein-Chip auf der Projektkarte, kein horizontales Scrollen.
 
+## Vertiefung PROJ-02 (04.11.2026)
+
+Vier Erweiterungen, alle optional im selben Datensatz `project.site.program` (Schema bleibt 1, ältere Projekte unverändert):
+
+| Feld | Bedeutung |
+|---|---|
+| `builders[].share` | Anteil der Bautage, an denen die Person dabei ist (10–99 %, fehlt = 100 %). Tempo im Plan = Tempo × Anteil. |
+| `waitForMaterial: true` | Abschnitte beginnen erst, wenn ihr Material da ist (Planung ↔ Produktion). |
+| `baseline` | Basisplan: `at` (Tag), `end` (letzter Bautag), `sections` (id → erster/letzter Bautag als Datum), `milestones` (id → Datum). Nur Daten, damit der Vergleich gilt, wenn der Plan ab heute neu rechnet. |
+
+**Zeitplan ab heute.** Liegt das Startdatum in der Vergangenheit, beginnt die offene Arbeit am nächsten Bautag ab heute (`ProgramPlan.from`); vorher lag offene Arbeit auf vergangenen Tagen. Ein Hinweis unter dem Plan sagt das.
+
+**Material abwarten.** `planProgramWithMaterial(site, overview, pace, today)` (`programMaterial.ts`) rechnet zuerst die Materialbereitschaft der Produktion (`analyzeProduction` ohne Zeitplan: Farmen, gemessene Raten, Sammelzeit je Spieltag, in Bau-Reihenfolge ab heute) und gibt sie als `materialDays` an `planProgram`. Ein Abschnitt beginnt frühestens am Bautag ⌈Bereitschaft⌉ (ein Spieltag = ein Bautag); `ScheduledSection.materialDay` und `materialWait` (um wie viele Bautage der Beginn wegen Material rückt) zeigen das. Abschnitte mit Items ohne Sammel-Richtwert (`materialUnknown`) können nicht warten. Es gibt keinen Kreis: die Bereitschaft hängt nicht vom Zeitplan ab, der Vergleich „Material zu spät“ im Reiter Produktion nutzt denselben wartenden Zeitplan und ist dann leer („Die Planung wartet auf das Material“).
+
+**Basisplan.** `setBaseline(site, plan, today)` hält die Termine eines berechneten Plans fest (braucht ein Startdatum), `clearBaseline` verwirft ihn; beides ist ein Rückgängig-Schritt. `planProgram` liefert `baseline.slip` (Bautage zwischen geplantem und jetzigem Ende, `buildingDaysBetween` mit den Bautagen je Woche), je Abschnitt `baseline` (Lage im jetzigen Balkenplan, auch negativ) und `slip`, je Meilenstein `baselineEnd` und `slip`. `removeSection` bereinigt den Basisplan mit.
+
+**Oberfläche.** Kopf: Karte „Basisplan vom …“ (± 0 / +N Bautage, geplantes und jetziges Ende) und „Material · aus Produktion“ (Bereitschaft, wartende Abschnitte, Link „Farmen & Engpässe“). Zeitplan: graue Linie = Basisplan, schraffiert = wartet auf Material. Meilensteine: „Basisplan TT.MM. · N Bautage später“. Bauleute: „dabei an 100/75/50/25/10 % der Bautage“. Einstellungen: Schalter „Abschnitte erst beginnen, wenn ihr Material da ist“ und „Basisplan festhalten / neu festhalten / verwerfen“.
+
+**Prüfung.** `tests/program-depth.test.mjs` (Bautage zwischen Daten, Anteil, Start in der Vergangenheit, Basisplan mit Verzug/Bereinigung/Sicherung, Material abwarten gegen Produktion, Altbestand), `tests/e2e/program-depth.e2e.mjs` (1400/390 px, Port 4337), Testphase PROJ-16…18.
+
 ## Grenzen
 
 - Bautage sind Projektionen aus Bautempo und Restbedarf – keine Messung, keine Sammel- oder Laufzeiten. Ein Abschnitt ist die kleinste Planungseinheit; ein großer Abschnitt mit einer Person bleibt lang.

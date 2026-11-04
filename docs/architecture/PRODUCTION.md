@@ -61,7 +61,7 @@ Farmen füllen über Trichter meist eine feste Truhe. Ist diese Truhe auf dem Se
 |---|---|---|
 | Projekt/Editor | → Produktion | Bauteile aus Katalog-Farmen (`detectFarms`) mit Baufortschritt der Anleitung; Übernehmen mit passendem Zustand, „fertig abgehakt → läuft?“ |
 | Baustelle (B14) | ↔ | Bedarf = Sammelplan; Ernten landen im Lager; Link „Farmen & Engpässe“ im Baustellen-Kopf |
-| Planung (PROJ-01) | → Produktion | Baubeginn je Abschnitt; Warnung „Material zu spät“ mit Gegenmitteln |
+| Planung (PROJ-01/02) | ↔ | Baubeginn je Abschnitt; Warnung „Material zu spät“ mit Gegenmitteln. Mit „Auf Material warten“ (PROJ-02) beginnt die Planung Abschnitte erst bei Materialbereitschaft und Produktion vergleicht mit diesem Zeitplan |
 | Team / Bauleute | → Produktion | `splitGathering`: Handarbeit nach LPT auf die Bauleute, Nether- und End-Items als eine Tour (TEAM-03-S02) |
 | Weltkarte (MAP-03/06) | ↔ | Farmpunkte (Typ „Farm“) übernehmen mit erkannter Art (`guessFarmType`); Farmen und AFK-Platz als Punkt eintragen; Bauplatz des Projekts als Standardort |
 | Bibliothek | → | Baukosten der Farm-Baupläne (`farmCostOf`), Links „Bauplan“ |
