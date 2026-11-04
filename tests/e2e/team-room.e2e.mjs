@@ -228,6 +228,12 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await liveBlock(b).getByRole('button', { name: 'Mein Spiel verbinden' }).click();
     await b.getByText('Spiel mit dem Team-Raum verbunden.').first().waitFor();
     const handed = mod.state.room;
+    // FALLBACK-01 status of my own game, shown next to the button.
+    await liveBlock(b).getByTestId('game-room').filter({ hasText: 'Mein Spiel: live' }).waitFor();
+    mod.state.room = { ...mod.state.room, mode: 'http', pendingReports: 2 };
+    await liveBlock(b).getByTestId('game-room').getByRole('button', { name: 'Neu prüfen' }).click();
+    await liveBlock(b).getByTestId('game-room').filter({ hasText: 'über HTTP (Ausweichweg) · 2 Meldungen warten' }).waitFor();
+    mod.state.room = { ...mod.state.room, mode: 'ws', pendingReports: 0 };
     assert.equal(handed.url, ROOM); assert.equal(handed.room, roomId); assert.equal(handed.key, q.get('k'), 'Mitgliedsschlüssel, nie der Admin- oder Serverschlüssel');
     assert.equal(handed.memberName, 'Anna'); assert.match(handed.member, /^bld_/);
 

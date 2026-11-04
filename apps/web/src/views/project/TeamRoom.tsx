@@ -6,7 +6,7 @@ import { errorText } from '../../app/ui';
 import { createRoom, getPlan, putHeader, putPlan, readRoomUrl, rotateKey, saveRoomUrl, useRoomConnection } from './roomClient';
 import type { ProjectSession } from './session';
 import { roomHeader, takePlan, teamPackageText } from './teamTransfer';
-import { control, currentPairedServer, gameLeaveRoom, gameToRoom, rememberRoom } from '../mod/serverClient';
+import { control, currentPairedServer, gameLeaveRoom, gameRoomState, gameToRoom, rememberRoom } from '../mod/serverClient';
 
 const UPLOADED_KEY = (room: string) => `bauplaner.teamraum.plan.${room}`;
 const read = (k: string) => { try { return localStorage.getItem(k) ?? ''; } catch { return ''; } };
@@ -33,6 +33,10 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
   const [shown, setShown] = useState<'' | 'invite' | 'server'>('');
   const run = async (work: () => Promise<void>) => { setBusy(true); try { await work(); } catch (e) { onMessage(errorText(e)); } finally { setBusy(false); } };
   const names = new Map(view.members.map(m => [m.id, m.name]));
+  // COOP-10 + FALLBACK-01: what my own game says about its team room (asked once, after each connect/disconnect).
+  const [game, setGame] = useState<Record<string, unknown> | null>(null);
+  const askGame = () => { void gameRoomState().then(setGame); };
+  useEffect(() => { if (live) askGame(); }, [live?.room]); // eslint-disable-line react-hooks/exhaustive-deps
   // COOP-10: section boxes in world coordinates (as the plugin gets them), only while someone reports a position.
   const anyPos = room.presence.some(p => p.where === 'spiel' && p.pos);
   const boxes = useMemo(() => { if (!anyPos) return null; try { return roomHeader(session, team); } catch { return null; } },
@@ -139,10 +143,11 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
     {planMissing && <div className="notice" role="status"><strong>Neuer Planstand {view.release?.revisionNumber} freigegeben</strong>
       <p>Die Bauleitung hat einen neuen Plan freigegeben. Dein bisheriger Stand bleibt als Kopie erhalten.</p>
       <button className="primary" disabled={busy || !planReady} onClick={() => void takeOver()}>{planReady ? 'Planstand übernehmen' : 'Planstand kommt gleich …'}</button></div>}
+    {game && <p className={`team-game-room ${gameLine(game, live.room).warn ? 'warn' : ''}`} data-testid="game-room" role="status">{gameLine(game, live.room).text} <button className="link-button" onClick={askGame}>Neu prüfen</button></p>}
     <div className="team-buttons">
       <button className="primary" disabled={busy || !me} title={me ? 'Die Bauplaner-Mod in deinem Minecraft spricht dann selbst mit diesem Raum: Abschnitte, Meldungen und Notizen live im Spiel – ohne Plugin und ohne Datei auf dem Server.' : 'Zuerst oben „Ich bin“ wählen.'}
-        onClick={() => void run(async () => { onMessage(await gameToRoom({ url: live.url, room: live.room, key: live.key }, { id: me!.id, name: me!.name }, team.name)); })}>Mein Spiel verbinden</button>
-      <button disabled={busy} className="secondary" title="Die Mod in deinem Minecraft trennt sich vom Team-Raum." onClick={() => void run(async () => { onMessage(await gameLeaveRoom()); })}>Spiel trennen</button>
+        onClick={() => void run(async () => { onMessage(await gameToRoom({ url: live.url, room: live.room, key: live.key }, { id: me!.id, name: me!.name }, team.name)); askGame(); })}>Mein Spiel verbinden</button>
+      <button disabled={busy} className="secondary" title="Die Mod in deinem Minecraft trennt sich vom Team-Raum." onClick={() => void run(async () => { onMessage(await gameLeaveRoom()); askGame(); })}>Spiel trennen</button>
       <button disabled={busy} onClick={() => setShown(shown === 'invite' ? '' : 'invite')}>Einladungslink</button>
       {server && <button disabled={busy} title="Der gekoppelte Server verbindet sich selbst mit diesem Raum (LINK-04). Ohne Kopplung: Link für den Server." onClick={() => void run(async () => {
         const paired = await currentPairedServer();
@@ -165,4 +170,16 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
       <button onClick={() => void copyText(shown === 'invite' ? invite : server).then(ok => onMessage(ok ? 'Link kopiert.' : 'Kopieren nicht möglich – bitte den Link markieren und kopieren.'))}>Kopieren</button>
     </div>}
   </div>;
+}
+
+const MODE: Record<string, string> = { ws: 'live', http: 'über HTTP (Ausweichweg)', off: 'ohne Verbindung' };
+/** One line about my game's team room (FALLBACK-01 fields; older mods send only status/statusText). */
+export function gameLine(g: Record<string, unknown>, room: string): { text: string; warn: boolean } {
+  if (!g.connected) return { text: 'Mein Spiel: mit keinem Team-Raum verbunden.', warn: false };
+  if (typeof g.room === 'string' && g.room !== room) return { text: 'Mein Spiel ist mit einem anderen Team-Raum verbunden. „Mein Spiel verbinden“ stellt es auf diesen um.', warn: true };
+  const mode = typeof g.mode === 'string' ? MODE[g.mode] ?? g.mode : typeof g.statusText === 'string' ? g.statusText : 'verbunden';
+  const age = typeof g.syncedAt === 'string' ? Math.round((Date.now() - Date.parse(g.syncedAt)) / 60_000) : NaN;
+  const pending = typeof g.pendingReports === 'number' ? g.pendingReports : 0;
+  return { text: `Mein Spiel: ${mode}${Number.isFinite(age) && age >= 1 ? ` · Stand vor ${age} min` : ''}${pending ? ` · ${pending} Meldung${pending === 1 ? '' : 'en'} warten` : ''}.`,
+    warn: g.mode === 'off' || pending > 0 };
 }

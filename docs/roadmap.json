@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T22:20:00.000Z",
+  "updatedAt": "2026-11-04T22:55:00.000Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -9237,7 +9237,8 @@
         "docs/architecture/TEAM_LIVE.md",
         "apps/web/src/testing/testplan.ts",
         "docs/testing/TESTPLAN.md",
-        "apps/web/src/views/project/TeamRoom.tsx"
+        "apps/web/src/views/project/TeamRoom.tsx",
+        "tests/e2e/modSimulator.mjs"
       ],
       "legacyIds": [],
       "steps": [
@@ -9259,6 +9260,11 @@
         {
           "id": "COOP-10-S06",
           "title": "„Gerade da“ zeigt, in welchem Abschnitt ein Mitspieler im Spiel steht oder wie weit er weg ist.",
+          "done": true
+        },
+        {
+          "id": "COOP-10-S07",
+          "title": "Team live zeigt den Stand der eigenen Mod (live, über HTTP, wartende Meldungen, anderer Raum).",
           "done": true
         },
         {
@@ -9296,7 +9302,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T22:20:00.000Z",
+      "updatedAt": "2026-11-04T22:55:00.000Z",
       "area": "TEAM",
       "thread": "Gemeinsames Bauen mehrerer Spieler ermöglichen",
       "philipp": [
@@ -18149,6 +18155,30 @@
           "done": 4,
           "total": 5,
           "next": "Spieltest Mod 0.16.0, Release über den Modrinth-Thread, Abnahme LINK-09 durch Philipp."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T22:55:00.000Z",
+      "kind": "progress",
+      "items": [
+        "COOP-10"
+      ],
+      "summary": "COOP-10: Zeile „Mein Spiel“ unter Team live mit den FALLBACK-01-Feldern der Mod (Modus, Alter, wartende Meldungen, anderer Raum).",
+      "files": [
+        "apps/web/src/views/project/TeamRoom.tsx",
+        "apps/web/src/team.css",
+        "tests/e2e/team-room.e2e.mjs",
+        "tests/e2e/modSimulator.mjs",
+        "docs/architecture/TEAM_LIVE.md"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-10",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Abnahme mit Mitspielern ohne Plugin (TEAMBAU-27, TEAMBAU-25)."
         }
       ]
     }

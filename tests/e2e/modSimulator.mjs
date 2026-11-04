@@ -257,7 +257,7 @@ export function startModSimulator(port, options = {}) {
       }
       // LINK-07: team room without a server file (RoomClient in mod-core); the key is never answered back.
       if (url.pathname === '/v1/room' && !state.features.includes('room')) return send(404, { error: 'Unbekannte Adresse.' });
-      if (route === 'GET /v1/room') return send(200, state.room ? { connected: true, url: state.room.url, room: state.room.room, member: state.room.member, status: 'live', statusText: 'live über den Team-Raum' } : { connected: false, status: 'off' });
+      if (route === 'GET /v1/room') return send(200, state.room ? { connected: true, url: state.room.url, room: state.room.room, member: state.room.member, status: 'live', statusText: state.room.statusText ?? 'live über den Team-Raum', mode: state.room.mode ?? 'ws', syncedAt: state.room.syncedAt ?? new Date().toISOString(), pendingReports: state.room.pendingReports ?? 0 } : { connected: false, status: 'off' });
       if (route === 'POST /v1/room') {
         const b = JSON.parse(body.toString());
         if (b.off) { state.room = null; return send(200, { ok: true, text: 'Team-Raum getrennt. Die Mod spricht mit keinem Raum mehr.' }); }

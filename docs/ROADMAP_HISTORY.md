@@ -5494,3 +5494,21 @@ FALLBACK-01: Mod 0.16.0 (Teamstand offline in raum-stand.json, HTTP statt WebSoc
 - `tests/e2e/game-progress.e2e.mjs`
 - `tests/scan-routes.test.mjs`
 
+## 2026-11-04T22:55:00.000Z · progress
+
+**Aufgaben:** COOP-10
+
+COOP-10: Zeile „Mein Spiel“ unter Team live mit den FALLBACK-01-Feldern der Mod (Modus, Alter, wartende Meldungen, anderer Raum).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-10 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme mit Mitspielern ohne Plugin (TEAMBAU-27, TEAMBAU-25). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/project/TeamRoom.tsx`
+- `apps/web/src/team.css`
+- `tests/e2e/team-room.e2e.mjs`
+- `tests/e2e/modSimulator.mjs`
+- `docs/architecture/TEAM_LIVE.md`
+

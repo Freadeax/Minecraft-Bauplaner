@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-04T22:20:00.000Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-04T22:55:00.000Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -120,7 +120,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [COOP-06](#coop-06) | Teamplanung im Planer | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Server-Plugin mit geprüften Lagerkisten“ | TEAMBAU-21…24 mit Mitspielern an einem großen Bau. |
 | [COOP-07](#coop-07) | Team live ohne Dateien | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat). |
 | [COOP-09](#coop-09) | Team live im Alltag | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat). |
-| [COOP-10](#coop-10) | Client zuerst | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | TEAMBAU-27 mit Mitspielern: Mod 0.15.0, Team live, ohne Plugin bauen und Kiste öffnen. |
+| [COOP-10](#coop-10) | Client zuerst | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | TEAMBAU-27 mit Mitspielern: Mod 0.15.0, Team live, ohne Plugin bauen und Kiste öffnen. |
 | [LINK-04](#link-04) | Planer | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Verbindung ohne Server-Datei neu bauen“ | Testplan-Bereich LINK durchgehen. |
 | [LINK-05](#link-05) | Zweiter Weg über den Team-Raum | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Verbindung ohne Server-Datei neu bauen“ | Am PC „Weiteres Gerät freigeben“, Link auf dem iPad öffnen, eine Einstellung ändern. |
 | [COOP-08](#coop-08) | Ertragskisten | 🧩 Implementiert · Abnahme offen 2/4 | P2 | „Server-Plugin mit geprüften Lagerkisten“ · 1 verwaist | LAGER-01…09 mit echten Spielern. |
@@ -594,7 +594,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [LINK-05](#link-05) | Zweiter Weg über den Team-Raum: Steuernachrichten ohne Mod (iPad), weiteres Gerät per Link freigeben | 🧩 Implementiert · Abnahme offen | 5/5 | LINK-04, COOP-07 | ausstehend | ausstehend |
 | [LINK-06](#link-06) | Weitere Steuerung ohne Befehle: Plan mit Anker von der Weltkarte auf den Server und Serveraufnahme per Klick zurück in den Planer | 🧩 Implementiert · Abnahme offen | 2/2 | LINK-05 | ausstehend | ausstehend |
 | [COOP-09](#coop-09) | Team live im Alltag: Status und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-07 | ausstehend | ausstehend |
-| [COOP-10](#coop-10) | Client zuerst: Baustand und Kisteninhalt laut Spiel (section.seen, store.seen) im Teamstand, ungeprüft getrennt von Servermessungen | 🧩 Implementiert · Abnahme offen | 5/6 | COOP-07, COOP-09 | ausstehend | ausstehend |
+| [COOP-10](#coop-10) | Client zuerst: Baustand und Kisteninhalt laut Spiel (section.seen, store.seen) im Teamstand, ungeprüft getrennt von Servermessungen | 🧩 Implementiert · Abnahme offen | 6/7 | COOP-07, COOP-09 | ausstehend | ausstehend |
 | [LINK-07](#link-07) | Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten | 🚧 In Arbeit | 5/6 | LINK-06, COOP-07 | ausstehend | ausstehend |
 | [FALLBACK-01](#fallback-01) | Ausweichwege über alle Verbindungen: Teamstand offline in der Mod, HTTP statt WebSocket, offline gemerkte Messungen, Baustand über den besten Weg (Spiel → Team-Raum → Server → Datei) | 🚧 In Arbeit | 4/5 | LINK-07, COOP-10 | ausstehend | ausstehend |
 
@@ -3193,12 +3193,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-10
 
-**Client zuerst: Baustand und Kisteninhalt laut Spiel (section.seen, store.seen) im Teamstand, ungeprüft getrennt von Servermessungen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Aktualisiert: 2026-11-04T22:20:00.000Z
+**Client zuerst: Baustand und Kisteninhalt laut Spiel (section.seen, store.seen) im Teamstand, ungeprüft getrennt von Servermessungen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Aktualisiert: 2026-11-04T22:55:00.000Z
 
 - [x] COOP-10-S01: Ereignisse section.seen und store.seen mit Prüfung und Recht Helfer (team.ts, TeamLog.java).
 - [x] COOP-10-S02: Faltung: neuester Stand je Abschnitt, gesehener Kisteninhalt, Bestand laut Spiel nur ohne Serverzählung.
 - [x] COOP-10-S03: Planer zeigt „laut Spiel … ungeprüft“ je Abschnitt und Kiste.
 - [x] COOP-10-S06: „Gerade da“ zeigt, in welchem Abschnitt ein Mitspieler im Spiel steht oder wie weit er weg ist.
+- [x] COOP-10-S07: Team live zeigt den Stand der eigenen Mod (live, über HTTP, wartende Meldungen, anderer Raum).
 - [x] COOP-10-S04: Mod meldet beides selbst (Thread „Anbindung von Planer, Mod und Server neu denken“). Mod 0.15.0 meldet beides (9d20e54), Team-Raum ausgerollt (Version 8318d1eb).
 - [ ] COOP-10-S05: Abnahme mit Mitspielern ohne Plugin (TEAMBAU-25).
 
@@ -3212,7 +3213,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/team.test.mjs](../tests/team.test.mjs) — Client zuerst: Faltung, Rechte, Serverzählung gewinnt.; [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — Mod-Meldung mit Mitgliedsschlüssel erscheint in beiden Browsern als ungeprüft.
 
-**Dateiumfang:** `packages/domain/src/team.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/TeamProof.tsx`, `apps/web/src/team.css`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`, `tests/team.test.mjs`, `tests/e2e/team-room.e2e.mjs`, `docs/architecture/TEAM_LIVE.md`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `apps/web/src/views/project/TeamRoom.tsx`. **Abhängigkeiten:** COOP-07, COOP-09. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/team.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/TeamProof.tsx`, `apps/web/src/team.css`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`, `tests/team.test.mjs`, `tests/e2e/team-room.e2e.mjs`, `docs/architecture/TEAM_LIVE.md`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `apps/web/src/views/project/TeamRoom.tsx`, `tests/e2e/modSimulator.mjs`. **Abhängigkeiten:** COOP-07, COOP-09. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

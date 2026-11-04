@@ -93,3 +93,5 @@
 .team-news-item{display:flex;gap:8px;align-items:flex-start;justify-content:space-between;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--mint);border-radius:9px;padding:8px 10px;font-size:12px;box-shadow:0 6px 18px rgba(0,0,0,.18)}
 .team-news-item.warning{border-left-color:var(--warn,#c80)}
 .team-news-item a{color:var(--text);text-decoration:none}
+.team-game-room { margin: 0.4rem 0; font-size: 0.9rem; color: var(--muted); }
+.team-game-room.warn { color: var(--warning, #b45309); }
