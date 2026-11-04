@@ -5,7 +5,7 @@ import { Icon, tabIcon } from './icons';
 import type { IconName } from './icons';
 import { mainNav } from './nav';
 import { parseRoute } from './router';
-import { projectTabs } from '../views/project/tabs';
+import { projectTabNames } from '../views/project/tabNames';
 
 /** Öffnet die Schnellsuche von außerhalb (Kopfzeile, untere Leiste). */
 export const PALETTE_EVENT = 'bauplaner:schnellsuche';
@@ -84,7 +84,7 @@ export function CommandPalette() {
     const current = route.view === 'project' ? projects.find(p => p.id === route.projectId) : undefined;
     const all: Entry[] = [
       ...PAGES.map(p => ({ ...p, key: `seite:${p.href}`, group: 'Seiten' })),
-      ...(route.view === 'project' ? projectTabs.map(t => ({
+      ...(route.view === 'project' ? projectTabNames.map(t => ({
         key: `bereich:${t.id}`, group: 'Dieses Projekt', label: t.label, hint: current?.name ?? 'Projektbereich', icon: tabIcon(t.id),
         href: `#/projekt/${encodeURIComponent(route.projectId)}${t.id === 'editor' ? '' : `/${t.id}`}`,
       })) : []),

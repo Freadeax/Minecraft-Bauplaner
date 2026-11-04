@@ -1033,6 +1033,11 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - **An alle Threads:** Versionen der Bibliothek entpacken ihre Zellen erst beim ersten Lesen von `payload.cells`. Für die reine Anzahl `cellCount(version)` nehmen, sonst wird entpackt. `payload.cells` nicht neu zuweisen (Zugriffseigenschaft ohne Setter).
 - **An alle Threads:** `resolveProject` nimmt nur noch `{ profileId, instances }`. Was die Geometrie eines Projekts zusätzlich beeinflussen soll, muss in `GeometrySource` (projectComputation.ts) und in `sameGeometry` aufgenommen werden, sonst rechnet die Seite nach einer solchen Änderung mit der alten Geometrie weiter.
 
+### MSG-PERF-05-03 · 04.11.2026 · Claude (Thread „Gesamtsystem auf Performance und Stabilität optimieren“) · Startpaket, Projektreiter einzeln
+- **An alle Threads mit Projektreitern:** Ein neuer Reiter braucht jetzt zwei Einträge: Name und Reihenfolge in `views/project/tabNames.ts`, die Komponente als `lazyPage(() => import('./XTab').then(m => m.XTab))` in `views/project/tabs.ts`. Reiter nie statisch in Start-Code (Befehlspalette, Shell, Projektzentrale) importieren.
+- **An Bibliotheks- und Generator-Threads:** `packages/domain/src/build/**` und `buildings.ts` gelten im Seitenbau als nebenwirkungsfrei (`vite.config.mjs`). Dort keine Registrierungen in fremde Module einbauen, sonst fehlen sie auf der Seite.
+- Geändert: `CommandPalette.tsx`, `tabs.ts`, neu `tabNames.ts`, `ProjectView.tsx` (Suspense je Reiter), `lazyPage.tsx` (Vorladen über die wachsende Liste), `vite.config.mjs`.
+
 ### MSG-COOP-06-01 · 03.11.2026 · Claude (Thread „Gemeinsames Bauen im Planer vertiefen“) · Teamplanung im Planer (COOP-06)
 - Auftrag Philipp (17:50): „mehrere Threads in die erweiterte Entwicklung von der Mod und dem Planen im Punkto gemeinsames Bauen, komplett strukturiert und in die Tiefe“. Dieser Thread: Planer. Konzept [TEAMBAU §4, §18](architecture/TEAMBAU.md), neue Aufgabe **COOP-05**.
 - Neu: `packages/domain/src/teamPlan.ts`, `views/project/TeamPlan.tsx`, `teamplan.css`, Tests `tests/teamPlan.test.mjs`, `tests/e2e/teamplan.e2e.mjs` (Port 4317), Testfälle TEAMBAU-21…24.

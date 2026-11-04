@@ -172,7 +172,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ | — |
 | [PERF-03](#perf-03) | Bundle, große Views und Vorschaucache | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ | — |
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Olympus auf deinem Rechner, dazu Firefox/Safari (S06). |
-| [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ | — |
+| [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert | 🧩 Implementiert · Abnahme offen 8/9 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ | — |
 
 Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft).
 
@@ -364,7 +364,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **DIFF-01 · Verschiebungserkennung und BlockEntity-Diff** — 🧩 Implementiert · Abnahme offen, 3/3 Teilschritte. Nächster Schritt: Abnahme in der Testphase: zwei Stände eines verschobenen Bauwerks vergleichen.
 - **PERF-02 · Zellindizes, Chunkdaten und selektive Neuberechnung** — 🧩 Implementiert · Abnahme offen, 3/3 Teilschritte. Nächster Schritt: PERF-02-S03 zusammen mit PERF-05-S08 (Zellen erst bei Bedarf entpacken) im Performance-Thread umsetzen; beide ändern compose/Entpacken. Übergabe abgestimmt am 03.11.2026.
 - **PERF-03 · Bundle, große Views und Vorschaucache** — 🧩 Implementiert · Abnahme offen, 3/3 Teilschritte. Nächster Schritt: Filterzustände der Bibliothek beim Seitenwechsel im Browser prüfen.
-- **PERF-05 · Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund** — 🧩 Implementiert · Abnahme offen, 7/8 Teilschritte. Nächster Schritt: O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8).
+- **PERF-05 · Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund** — 🧩 Implementiert · Abnahme offen, 8/9 Teilschritte. Nächster Schritt: O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8).
 - **GAME-07 · Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server)** — 🧩 Implementiert · Abnahme offen, 9/11 Teilschritte. Nächster Schritt: Philipp prüft Packliste und Gerüst (0.13.0, TESTPLAN MOD-17) im echten Spiel; danach Stufe 6b (Gruppen/Sperren aus dem Weltbuilder).
 - **GAME-08 · Bauplaner-Mod Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten im Spiel (marks2), Mitspieler für die Karte (GET /v1/players), hello.protocol 2** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Philipp prüft Protokoll 3 im echten Spiel (TESTPLAN MOD-17); Forge und Paper ohne Live-Verbindung.
 - **GAME-04 · Paper-Plugin der Bauplaner-Brücke (serverseitig, mehrere Minecraft-Versionen)** — 🚧 In Arbeit, 3/4 Teilschritte. Nächster Schritt: Abnahme auf Philipps eigenem Paper-Server (GAME-04-S04).
@@ -486,7 +486,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | 🚧 In Arbeit | 1/2 | QA-01, VIEW-02 | ausstehend | ausstehend |
 | [UI-02](#ui-02) | App-Hülle, Navigation und Handyoberfläche überarbeiten | ✅ Im beschriebenen Umfang geprüft | 4/4 | UI-01, QA-01 | ausstehend | ausstehend |
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart | 🧩 Implementiert · Abnahme offen | 6/7 | PERF-01, MODEL-01, ARCH-02 | ausstehend | ausstehend |
-| [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund | 🧩 Implementiert · Abnahme offen | 7/8 | PERF-04 | ausstehend | ausstehend |
+| [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund | 🧩 Implementiert · Abnahme offen | 8/9 | PERF-04 | ausstehend | ausstehend |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen | 5/6 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material | 🧩 Implementiert · Abnahme offen | 6/7 | VIEW-02, BUILD-01, MAT-01 | ausstehend | ausstehend |
 | [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel | 🧩 Implementiert · Abnahme offen | 5/6 | BLOCK-01, LIB-04, UPDATE-01 | ausstehend | ausstehend |
@@ -1295,6 +1295,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 - [x] PERF-05-S06: Dauerhafter Vorschaubildcache (O-1): Cache Storage je Render-Revision, Neustart ohne erneutes Rendern.
 - [ ] PERF-05-S07: Analyse Mod und Paper-Plugin nach Merge der Teambau-Threads (O-8); Aufteilen großer Dateien nach Merge des jeweiligen Threads (O-6).
 - [x] PERF-05-S08: Zellen erst bei Bedarf entpacken statt alle Versionen beim Start (O-2).
+- [x] PERF-05-S09: Startpaket verkleinern (O-3): Projektreiter und Gebäudesets aus dem Start, Reiter einzeln nachladen.
 
 **Abnahme:** Katalog aus der Datei ist Asset für Asset und Version für Version gleich dem im Browser erzeugten. Fehlende, beschädigte oder fremde Katalogdatei führt zum Erzeugen wie bisher, ohne Fehler. Hash- und ID-Ausgabe unverändert; kein mitgeliefertes Gebäude bekommt eine neue Version-ID gegenüber Node. Alle Kern- und Browsertests grün.
 

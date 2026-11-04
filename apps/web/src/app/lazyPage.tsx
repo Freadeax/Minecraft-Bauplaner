@@ -52,8 +52,9 @@ export function lazyPage<C extends ComponentType<any>>(load: () => Promise<C>): 
  * visit itself loads again and handles errors.
  */
 export function preloadPages(): void {
-  const queue = [...loaders];
+  // Walks the live list: loaders registered by a page loaded here (its project tabs) are loaded too.
+  let at = 0;
   const idle = (fn: () => void) => ('requestIdleCallback' in window ? window.requestIdleCallback(fn, { timeout: 2000 }) : setTimeout(fn, 200));
-  const next = () => { const load = queue.shift(); if (load) void load().catch(() => {}).finally(() => idle(next)); };
+  const next = () => { const load = loaders[at++]; if (load) void load().catch(() => {}).finally(() => idle(next)); };
   idle(next);
 }

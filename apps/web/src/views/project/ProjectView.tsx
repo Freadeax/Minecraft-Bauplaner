@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { Suspense, useEffect, useMemo, useRef } from 'react';
 import { href } from '../../app/router';
 import { projectTabs } from './tabs';
 import { useProjectSession } from './session';
@@ -67,7 +67,7 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
       <strong>{session.saveState === 'conflict' ? 'Gespeicherter Stand wurde zwischenzeitlich geändert.' : 'Speichern fehlgeschlagen.'}</strong>
       <p>{session.saveError} Deine letzte Änderung ist nur in diesem Tab sichtbar und nicht gespeichert.</p>
       <button onClick={() => void session.reload()}>Gespeicherten Stand laden</button></div>}
-    {active ? <active.component session={session} /> : <div className="notice" role="alert">Unbekannter Projektbereich „{tab}“.</div>}
+    {active ? <Suspense key={active.id} fallback={<div className="loading" role="status" data-page-loading="">Bereich wird geladen …</div>}><active.component session={session} /></Suspense> : <div className="notice" role="alert">Unbekannter Projektbereich „{tab}“.</div>}
     <TeamNews project={session.project} />
   </div></TeamRoomContext.Provider>;
 }

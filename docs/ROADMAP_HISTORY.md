@@ -5072,3 +5072,25 @@ MAT-02-S03: Sorte je Rezept-Tag (z. B. Planken für Stöcke/Truhen) und Brennsto
 - `tests/nbt-transforms.test.mjs`
 - `tests/recipe-prefs.test.mjs`
 
+## 2026-11-04T09:09:15.288Z · progress
+
+**Aufgaben:** PERF-05
+
+S09 Startpaket (O-3): Reiternamen ohne Komponenten in tabNames.ts, Projektreiter einzeln per lazyPage mit eigenem Suspense, Gebäudesets im Seitenbau nebenwirkungsfrei. Start-JS 2,0 → 1,56 MB (587 → 458 kB gzip), Einstieg 847 → 276 kB, Projektseite 335 → 10 kB, Erststart 1,43 → 1,09 s. npm run check grün, Browser-Suite 153/154 (project-computation 1400px einmal Element abgelöst, danach 6/6 grün auch unter CPU-Last).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-05 | 🧩 Implementiert · Abnahme offen | 8/9 | O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/CommandPalette.tsx`
+- `apps/web/src/app/lazyPage.tsx`
+- `apps/web/src/views/project/ProjectView.tsx`
+- `apps/web/src/views/project/tabNames.ts`
+- `apps/web/src/views/project/tabs.ts`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/PERFORMANCE_AUDIT.md`
+- `vite.config.mjs`
+

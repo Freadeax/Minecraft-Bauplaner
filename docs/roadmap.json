@@ -2490,6 +2490,11 @@
           "id": "PERF-05-S08",
           "title": "Zellen erst bei Bedarf entpacken statt alle Versionen beim Start (O-2).",
           "done": true
+        },
+        {
+          "id": "PERF-05-S09",
+          "title": "Startpaket verkleinern (O-3): Projektreiter und Gebäudesets aus dem Start, Reiter einzeln nachladen.",
+          "done": true
         }
       ],
       "acceptance": [
@@ -16758,6 +16763,34 @@
           "done": 3,
           "total": 3,
           "next": "Abnahme in der Testphase: Rohstoffliste eines großen Bauwerks mit gewählter Holzart und Brennstoff mit dem Spiel vergleichen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T09:09:15.288Z",
+      "kind": "progress",
+      "items": [
+        "PERF-05"
+      ],
+      "summary": "S09 Startpaket (O-3): Reiternamen ohne Komponenten in tabNames.ts, Projektreiter einzeln per lazyPage mit eigenem Suspense, Gebäudesets im Seitenbau nebenwirkungsfrei. Start-JS 2,0 → 1,56 MB (587 → 458 kB gzip), Einstieg 847 → 276 kB, Projektseite 335 → 10 kB, Erststart 1,43 → 1,09 s. npm run check grün, Browser-Suite 153/154 (project-computation 1400px einmal Element abgelöst, danach 6/6 grün auch unter CPU-Last).",
+      "files": [
+        "apps/web/src/app/CommandPalette.tsx",
+        "apps/web/src/app/lazyPage.tsx",
+        "apps/web/src/views/project/ProjectView.tsx",
+        "apps/web/src/views/project/tabNames.ts",
+        "apps/web/src/views/project/tabs.ts",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/PERFORMANCE_AUDIT.md",
+        "vite.config.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-05",
+          "status": "implemented",
+          "done": 8,
+          "total": 9,
+          "next": "O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8)."
         }
       ]
     }

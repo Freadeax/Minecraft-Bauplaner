@@ -1,40 +1,36 @@
 import type { ComponentType } from 'react';
-import { EditorTab } from './EditorTab';
-import { BuildTab } from './BuildTab';
-import { ExportTab } from './ExportTab';
-import { MaterialsTab } from './MaterialsTab';
-import { SiteTab } from './SiteTab';
-import { BlocksTab } from './BlocksTab';
-import { TerrainTab } from './TerrainTab';
-import { LandscapeTab } from './LandscapeTab';
-import { UpdatesTab } from './UpdatesTab';
-import { TeamTab } from './TeamTab';
-import { PlanningTab } from './PlanningTab';
-import { ProductionTab } from './ProductionTab';
+import { lazyPage } from '../../app/lazyPage';
 import type { ProjectSession } from './session';
+
+import { projectTabNames } from './tabNames';
+import type { ProjectTabId } from './tabNames';
 
 /**
  * Registry of project sub-pages (#/projekt/<id>/<id>). Each feature block adds
- * exactly one entry here and keeps its UI in its own file, so parallel work
- * does not edit the same components.
+ * exactly one entry here (component) and one in tabNames.ts (id, label, order),
+ * and keeps its UI in its own file, so parallel work does not edit the same components.
  */
 export interface ProjectTab {
   readonly id: string;
   readonly label: string;
-  readonly component: ComponentType<{ session: ProjectSession }>;
+  readonly component: TabComponent;
 }
 
-export const projectTabs: readonly ProjectTab[] = [
-  { id: 'editor', label: 'Editor', component: EditorTab },
-  { id: 'bauen', label: 'Bauen', component: BuildTab },
-  { id: 'export', label: 'Export', component: ExportTab },
-  { id: 'material', label: 'Material', component: MaterialsTab },
-  { id: 'baustelle', label: 'Baustelle', component: SiteTab },
-  { id: 'planung', label: 'Planung', component: PlanningTab },
-  { id: 'produktion', label: 'Produktion', component: ProductionTab },
-  { id: 'bloecke', label: 'Blöcke', component: BlocksTab },
-  { id: 'gelaende', label: 'Gelände', component: TerrainTab },
-  { id: 'landschaft', label: 'Landschaft', component: LandscapeTab },
-  { id: 'updates', label: 'Updates', component: UpdatesTab },
-  { id: 'team', label: 'Team', component: TeamTab },
-];
+type TabComponent = ComponentType<{ session: ProjectSession }>;
+/** Each tab is its own chunk, loaded when it is first opened or ahead in idle time (PERF-05, O-3). */
+const components: Record<ProjectTabId, TabComponent> = {
+  editor: lazyPage(() => import('./EditorTab').then(m => m.EditorTab)),
+  bauen: lazyPage(() => import('./BuildTab').then(m => m.BuildTab)),
+  export: lazyPage(() => import('./ExportTab').then(m => m.ExportTab)),
+  material: lazyPage(() => import('./MaterialsTab').then(m => m.MaterialsTab)),
+  baustelle: lazyPage(() => import('./SiteTab').then(m => m.SiteTab)),
+  planung: lazyPage(() => import('./PlanningTab').then(m => m.PlanningTab)),
+  produktion: lazyPage(() => import('./ProductionTab').then(m => m.ProductionTab)),
+  bloecke: lazyPage(() => import('./BlocksTab').then(m => m.BlocksTab)),
+  gelaende: lazyPage(() => import('./TerrainTab').then(m => m.TerrainTab)),
+  landschaft: lazyPage(() => import('./LandscapeTab').then(m => m.LandscapeTab)),
+  updates: lazyPage(() => import('./UpdatesTab').then(m => m.UpdatesTab)),
+  team: lazyPage(() => import('./TeamTab').then(m => m.TeamTab)),
+};
+
+export const projectTabs: readonly ProjectTab[] = projectTabNames.map(t => ({ ...t, component: components[t.id] }));
