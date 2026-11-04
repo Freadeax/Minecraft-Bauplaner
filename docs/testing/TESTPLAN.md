@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 136 Fälle in 13 Bereichen, davon 61 Kernfälle.
+Umfang: 137 Fälle in 13 Bereichen, davon 61 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -160,6 +160,7 @@ Mehrere Spieler an einem Projekt: Reiter „Team“ im Planer und Teambefehle de
 | TEAMBAU-24 | Übergabe, Abwesenheit, Bauleitung übergeben | kern | 1. „Rechte & Übergabe“: eigenen Abschnitt „übergeben an …“ wählen; im anderen Browser nach Austausch „Annehmen“.<br>2. Abwesenheit mit Datum eintragen und austauschen.<br>3. Als Bauleitung „Bauleitung übergeben“. | Bis zur Annahme bleibt der Abschnitt beim alten Inhaber; danach wechselt er mit Notiz. Abwesende erscheinen unter „Achtung“ und im Zeitplan erst nach Rückkehr. Nach der Übergabe ist man Baumeister; es bleibt immer eine Bauleitung. |
 | TEAMBAU-25 | Team live ohne Dateien ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Reiter „Team“ → „Team live“: Die Adresse des Team-Raums ist vorausgefüllt (https://bauplaner-team.team-room.workers.dev). „Live schalten“, Einladungslink an einen Mitspieler schicken.<br>2. Mitspieler öffnet den Link auf seinem Rechner oder Handy, „Beitreten und Plan laden“, wählt „Ich bin“ und übernimmt einen Abschnitt.<br>3. Bauleitung gibt einen neuen Planstand frei; Mitspieler klickt „Planstand übernehmen“. Danach WLAN kurz aus, eine Notiz schreiben, WLAN wieder an.<br>4. Spiel dazu: mit Mod 0.14.0 im Planer „Mein Spiel verbinden“ (ohne Plugin, siehe LINK-07) oder auf einem Server mit Plugin `/bauplaner team verbinden <Link für den Server>`; ein paar Blöcke setzen. | Ohne jede Datei sieht jeder die Schritte der anderen nach wenigen Sekunden; unter „Gerade da“ stehen beide (und der Server); der neue Planstand kommt mit einem Klick an, der alte bleibt als Kopie; offline zeigt der Status „offline · 1 warten“ und holt die Notiz nach dem Verbinden nach; Messungen des Servers (mit Plugin) erscheinen im Baunachweis; ohne Plugin kommen Abschnittsschritte aus dem Spiel über die Mod an. |
 | TEAMBAU-26 | Team live im Alltag: Meldungen, Anwesenheit, Einladung erneuern | vertieft | 1. Team live wie in TEAMBAU-25, zwei Rechner (oder Rechner und Handy).<br>2. Mitspieler übernimmt einen Abschnitt und meldet ihn; Bauleitung ist dabei in einem anderen Reiter (z. B. „Material“).<br>3. Mitspieler lädt die Seite neu (Nachholen).<br>4. Bauleitung: „Einladung erneuern“; ein dritter Browser versucht es mit dem alten Link. | Die Meldung erscheint bei der Bauleitung in jedem Reiter, mit Name und Abschnitt in der Anwesenheit; nach dem Neuladen kommen keine alten Meldungen erneut; mit dem alten Link kommt niemand mehr in den Raum, abgelehnte Meldungen sind sichtbar. (Abnahme COOP-09) |
+| TEAMBAU-27 | Baustand laut Spiel ohne Plugin | vertieft | 1. Team live mit Mod ab 0.15.0, Server ohne Bauplaner-Plugin.<br>2. Mitspieler baut im eigenen Abschnitt ein paar Minuten und öffnet und schließt eine markierte Teamkiste.<br>3. Bauleitung öffnet Reiter „Team“ → „Baunachweis & Lager“. | Beim Abschnitt steht „laut Spiel … % … ungeprüft“ mit fehlenden Blöcken, bei der Kiste der gesehene Inhalt; die geprüften Serverzahlen bleiben davon unberührt. (Abnahme COOP-10) |
 
 ## LAGER · Server: geprüfte Lagerkisten (Server)
 
@@ -280,7 +281,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | VIEW-02 | START-06, DATEI-01 |
 | WORLD-IMPORT-01 | KARTE-04 |
 
-### Mit Minecraft (Mod oder Spiel) (33 Pakete)
+### Mit Minecraft (Mod oder Spiel) (34 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -290,6 +291,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | COOP-03 | TEAMBAU-09 |
 | COOP-07 | TEAMBAU-25, LINK-07 |
 | COOP-09 | TEAMBAU-26, TEAMBAU-25 |
+| COOP-10 | TEAMBAU-27, TEAMBAU-25 |
 | EDIT-06 | WERK-08, WERK-09 |
 | ENTITY-01 | DATEI-07 |
 | FORMAT-01 | DATEI-08, PROJ-04 |

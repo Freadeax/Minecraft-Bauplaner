@@ -5409,3 +5409,26 @@ LINK-07 Stufe 2 / Mod 0.15.0: Mitspieler-Positionen über den Team-Raum (Gerade 
 - `tests/e2e/team-room.e2e.mjs`
 - `tests/team-room.test.mjs`
 
+## 2026-11-04T14:30:00.000Z · progress
+
+**Aufgaben:** COOP-10
+
+COOP-10 Client zuerst: section.seen/store.seen (Mod meldet Baustand und Kisteninhalt mit Mitgliedsschlüssel) in Teamfaltung, Paper-TeamLog und Planer, ungeprüft getrennt von Servermessungen; Unit + Browser grün.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-10 | 🧩 Implementiert · Abnahme offen | 3/5 | Mod meldet section.seen/store.seen (Anbindungs-Thread), dann Abnahme TEAMBAU-25. |
+
+**Geänderte Dateien:**
+
+- `packages/domain/src/team.ts`
+- `packages/domain/src/index.ts`
+- `apps/web/src/views/project/TeamProof.tsx`
+- `apps/web/src/team.css`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`
+- `tests/team.test.mjs`
+- `tests/e2e/team-room.e2e.mjs`
+- `docs/architecture/TEAM_LIVE.md`
+- `apps/web/src/testing/testplan.ts`
+- `docs/testing/TESTPLAN.md`
+

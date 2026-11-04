@@ -67,6 +67,10 @@ export type TeamEventBody =
   | { readonly kind: 'member.tally'; readonly member: string; readonly on: boolean }
   /** Registers (or with remove removes) a storage chest of the team (COOP-04). */
   | { readonly kind: 'store.chest'; readonly chest: string; readonly name: string; readonly pos: readonly [number, number, number]; readonly dimension: string; readonly remove?: boolean }
+  /** COOP-10 (client first): build state of a section as the player's mod counts it in range – unverified, by the member. */
+  | { readonly kind: 'section.seen'; readonly section: string; readonly placed: number; readonly total: number; readonly wrong?: number; readonly missing?: readonly ItemCount[] }
+  /** COOP-10: content of a known team chest as the player's mod saw it when opening/closing – unverified (store.count is the server's). */
+  | { readonly kind: 'store.seen'; readonly chest: string; readonly items: readonly ItemCount[]; readonly more?: boolean }
   /** Full content of a storage chest, read by the server plugin when someone closed it; `more` when lines were cut. */
   | { readonly kind: 'store.count'; readonly chest: string; readonly items: readonly ItemCount[]; readonly more?: boolean }
   /** Checked storage chests (COOP-05, docs/architecture/LAGERKISTEN.md): section ('' = whole project), purpose, protection, second half of a double chest (null = none). */
@@ -98,7 +102,7 @@ export type TeamEventKind = TeamEventBody['kind'];
 const KNOWN = new Set<string>(['member.join', 'member.role', 'member.player', 'section.claim', 'section.assign', 'section.release', 'section.done',
   'section.verify', 'contribution', 'gather.claim', 'note.add', 'note.resolve', 'plan.release', 'build.tally', 'member.tally', 'store.chest', 'store.count',
   'store.config', 'store.move', 'store.check', 'store.seal',
-  'section.handover', 'section.accept', 'section.decline', 'member.away', 'issue.ack', 'store.yield']);
+  'section.handover', 'section.accept', 'section.decline', 'member.away', 'issue.ack', 'store.yield', 'section.seen', 'store.seen']);
 /** Kinds only the server plugin may write (origin server): they are measurements, not claims. */
 export const SERVER_ONLY_KINDS: ReadonlySet<string> = new Set(['build.tally', 'store.count', 'store.move', 'store.check', 'store.yield']);
 export const isKnownEvent = (e: TeamEvent): e is KnownTeamEvent => KNOWN.has(e.kind);
@@ -211,6 +215,16 @@ export function checkTeamEvent(raw: unknown): TeamEvent {
       if (raw.farm !== undefined) text(raw.farm, 64, `${where}: Farm`, 0);
       break;
     }
+    case 'section.seen':
+      text(raw.section, 64, `${where}: Abschnitt`); int(raw.total, 0, 50_000_000, `${where}: Blöcke im Plan`); int(raw.placed, 0, 50_000_000, `${where}: richtig gesetzt`);
+      if ((raw.placed as number) > (raw.total as number)) fail(`${where}: mehr gesetzt als geplant`);
+      if (raw.wrong !== undefined) int(raw.wrong, 0, 50_000_000, `${where}: falsch`);
+      if (raw.missing !== undefined) itemLines(raw.missing, 24, `${where}: fehlt`);
+      break;
+    case 'store.seen':
+      text(raw.chest, 64, `${where}: Kiste`); itemLines(raw.items, 64, `${where}: Inhalt`, true);
+      if (raw.more !== undefined && raw.more !== true) fail(`${where}: more ist nur true`);
+      break;
     case 'store.yield':
       text(raw.chest, 64, `${where}: Kiste`); if (raw.farm !== undefined) text(raw.farm, 64, `${where}: Farm`);
       itemLines(raw.items, 64, `${where}: Ertrag`, true); iso(raw.from, `${where}: von`); iso(raw.until, `${where}: bis`);
@@ -381,7 +395,10 @@ export interface SectionTeamState {
   readonly placed: number;
   readonly broken: number;
   readonly builders: Readonly<Record<string, number>>;
+  /** COOP-10: newest build state reported by a player's mod (section.seen) – unverified. */
+  readonly seen?: SectionSeen;
 }
+export interface SectionSeen { readonly by: string; readonly at: string; readonly placed: number; readonly total: number; readonly wrong: number; readonly missing: readonly ItemCount[] }
 export interface StoreChest {
   readonly id: string;
   readonly name: string;
@@ -413,6 +430,8 @@ export interface StoreChest {
   readonly farm?: string;
   readonly yieldIn: Readonly<Record<string, number>>;
   readonly yieldMinutes: number;
+  /** COOP-10: content seen in the game by a player's mod (store.seen) – unverified, newest. */
+  readonly seen?: { readonly by: string; readonly at: string; readonly items: Readonly<Record<string, number>>; readonly partial: boolean };
 }
 /** One measured yield period of a yield store (store.yield), for the Ertragsbuch (Produktion). */
 export interface StoreYield {
@@ -459,6 +478,8 @@ export interface TeamView {
   readonly unknownKinds: number;
   /** Team storage chests (COOP-04), not removed ones. */
   readonly stores: readonly StoreChest[];
+  /** COOP-10: stock of chests without a server count, from what players' mods saw (unverified). */
+  readonly stockSeen: Readonly<Record<string, number>>;
   /** Sum of the last counts of all chests. */
   readonly stock: Readonly<Record<string, number>>;
   /** Placed blocks by block id over all visible tallies (material really used). */
@@ -487,6 +508,7 @@ const NEED: Readonly<Record<TeamEventKind, TeamRole>> = {
   'build.tally': 'gast', 'member.tally': 'gast', 'store.chest': 'meister', 'store.count': 'gast',
   'store.config': 'meister', 'store.seal': 'meister', 'store.move': 'gast', 'store.check': 'gast', 'store.yield': 'gast',
   'section.handover': 'helfer', 'section.accept': 'helfer', 'section.decline': 'helfer', 'member.away': 'gast', 'issue.ack': 'meister',
+  'section.seen': 'helfer', 'store.seen': 'helfer',
 };
 export const canTeam = (role: TeamRole | undefined, action: TeamAction): boolean => RANK[role ?? 'gast'] >= RANK[NEED[action]];
 
@@ -522,7 +544,10 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
     status: StoreStatus; checkedAt?: string; deviation: Map<string, number>; sealedBy?: string; sealedAt?: string;
     movedIn: Map<string, Map<string, number>>; movedOut: Map<string, Map<string, number>>;
     // COOP-08: farm link and measured yield
-    farm?: string; yieldIn: Map<string, number>; yieldMinutes: number };
+    farm?: string; yieldIn: Map<string, number>; yieldMinutes: number;
+    // COOP-10: what a player's mod saw
+    seen?: { by: string; at: string; items: Map<string, number>; partial: boolean } };
+  const seenSections = new Map<string, SectionSeen>();
   const yields: StoreYield[] = [];
   const addTo = (m: Map<string, number>, item: string, n: number) => { const v = (m.get(item) ?? 0) + n; if (v === 0) m.delete(item); else m.set(item, v); };
   const chests = new Map<string, Chest>();
@@ -643,6 +668,15 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
         if (!self(event.member)) { reject(event, 'Den Baunachweis schaltet jeder nur für sich selbst.'); break; }
         if (event.on) tallyOff.delete(event.member); else tallyOff.add(event.member);
         break;
+      case 'section.seen':
+        seenSections.set(event.section, { by: event.by, at: event.at, placed: event.placed, total: event.total, wrong: event.wrong ?? 0, missing: event.missing ?? [] });
+        break;
+      case 'store.seen': {
+        const c = chests.get(event.chest);
+        if (!c) { reject(event, 'Lagerkiste unbekannt oder entfernt.'); break; }
+        c.seen = { by: event.by, at: event.at, items: new Map(event.items.map(l => [l.item, l.count])), partial: !!event.more };
+        break;
+      }
       case 'build.tally':
         tallies.push({ by: event.by, section: event.section, placed: event.placed, broken: event.broken, ...(event.blocks && { blocks: event.blocks }), from: event.from, until: event.until });
         break;
@@ -771,9 +805,11 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
     if (!tallyFrom || t.from < tallyFrom) tallyFrom = t.from;
     if (!tallyUntil || t.until > tallyUntil) tallyUntil = t.until;
   }
-  const stock: Record<string, number> = {};
+  const stock: Record<string, number> = {}, stockSeen: Record<string, number> = {};
   const stores: StoreChest[] = [...chests.entries()].map(([id, c]) => {
     for (const [item, n] of c.items) stock[item] = (stock[item] ?? 0) + n;
+    // A server count wins; a newer sighting counts only for chests the server never counted.
+    if (!c.counted && c.seen) for (const [item, n] of c.seen.items) stockSeen[item] = (stockSeen[item] ?? 0) + n;
     const rec = (m: Map<string, Map<string, number>>, hopper: boolean) => Object.fromEntries([...m].filter(([w, x]) => (w === 'trichter') === hopper && x.size).map(([w, x]) => [w, Object.fromEntries(x)]));
     return { id, name: c.name, pos: c.pos, dimension: c.dimension, items: Object.fromEntries(c.items), ...(c.countedAt && { countedAt: c.countedAt }), ...(c.countedBy && { countedBy: c.countedBy }), partial: c.partial,
       ...(c.section && { section: c.section }), purpose: c.purpose, ...(c.protection && { protection: c.protection }), ...(c.pos2 && { pos2: c.pos2 }),
@@ -781,7 +817,8 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
       ...(c.sealedBy && { sealedBy: c.sealedBy, sealedAt: c.sealedAt }),
       movedIn: rec(c.movedIn, false), movedOut: rec(c.movedOut, false),
       hopperIn: Object.fromEntries(c.movedIn.get('trichter') ?? []), hopperOut: Object.fromEntries(c.movedOut.get('trichter') ?? []),
-      ...(c.farm && { farm: c.farm }), yieldIn: Object.fromEntries(c.yieldIn), yieldMinutes: c.yieldMinutes };
+      ...(c.farm && { farm: c.farm }), yieldIn: Object.fromEntries(c.yieldIn), yieldMinutes: c.yieldMinutes,
+      ...(c.seen && { seen: { by: c.seen.by, at: c.seen.at, items: Object.fromEntries(c.seen.items), partial: c.seen.partial } }) };
   }).sort((a, b) => a.name.localeCompare(b.name, 'de'));
 
   const ownerOf = new Map<string, string[]>();
@@ -802,7 +839,8 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
     const s = sections.get(id) ?? { status: 'frei' as const, owner: null, history: [] };
     return { sectionId: id, status: s.status, owner: s.owner, ...(s.doneBy && { doneBy: s.doneBy }), ...(s.verifiedBy && { verifiedBy: s.verifiedBy }),
       ...(s.note && { note: s.note }), orphan: !sectionIds.has(id), ...(s.offer && { offer: s.offer }), history: s.history,
-      placed: sectionTally.get(id)?.placed ?? 0, broken: sectionTally.get(id)?.broken ?? 0, builders: Object.fromEntries(sectionTally.get(id)?.builders ?? []) };
+      placed: sectionTally.get(id)?.placed ?? 0, broken: sectionTally.get(id)?.broken ?? 0, builders: Object.fromEntries(sectionTally.get(id)?.builders ?? []),
+      ...(seenSections.has(id) && { seen: seenSections.get(id)! }) };
   });
   const memberByName = new Map<string, string>();
   for (const m of members) { memberByName.set(m.name.toLowerCase().replace(/\s+/g, ''), m.id); if (m.player) memberByName.set(m.player.toLowerCase(), m.id); }
@@ -817,7 +855,7 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
         text: `Planstände auseinander: ${nameOf(last.by)} hat Planstand ${last.revisionNumber} nach Planstand ${previous.revisionNumber} von ${nameOf(previous.by)} freigegeben.` });
   }
   return { members, sections: sectionStates, notes: noteList, gather: [...gather.values()].sort((a, b) => a.item.localeCompare(b.item) || a.member.localeCompare(b.member)),
-    delivered, release, releases, rejected, conflicts, unknownKinds, stores, stock, placedBlocks,
+    delivered, release, releases, rejected, conflicts, unknownKinds, stores, stock, stockSeen, placedBlocks,
     tallySpan: tallyFrom && tallyUntil ? { from: tallyFrom, until: tallyUntil } : null, acknowledged: [...acknowledged], yields };
 }
 
@@ -847,6 +885,8 @@ export function eventLabel(e: TeamEvent): string {
     case 'store.move': return e.via === 'trichter' ? 'Trichter bewegt Items' : 'Lagerbuchung';
     case 'store.check': return e.status === 'geprueft' ? 'Lager geprüft' : e.status === 'fehlt' ? 'Lagerkiste fehlt' : 'Lager weicht ab';
     case 'store.seal': return 'Lager gesiegelt';
+    case 'section.seen': return `Baustand laut Spiel: ${e.placed} von ${e.total} Blöcken${e.total ? ` (${Math.floor(e.placed / e.total * 100)} %)` : ''}`;
+    case 'store.seen': return `Kiste im Spiel gesehen (${e.items.length} Sorten)`;
     case 'store.yield': return `Ertrag gemessen (${e.items.reduce((n, l) => n + l.count, 0)} Items in ${e.minutes} min)`;
     case 'section.handover': return 'Übergabe angeboten';
     case 'section.accept': return 'Übergabe angenommen';

@@ -24,6 +24,7 @@ function StoreRow({ c, sections, nameOf, farmName }: { c: StoreChest; sections: 
       {c.checkedAt ? ` · geprüft ${when(c.checkedAt)}` : ''}{c.sealedBy ? ` · gesiegelt ${when(c.sealedAt)} von ${nameOf(c.sealedBy)}` : ''}</small>
     {Object.keys(c.deviation).length > 0 && <p className="team-store-deviation">Ohne Buchung verändert: {signed(c.deviation, 8)}. Ein Baumeister prüft die Kiste und bestätigt im Spiel mit <code>/bauplaner lager siegeln</code>.</p>}
     {c.status === 'fehlt' && <p className="team-store-deviation">An der Stelle steht keine Kiste mehr. Im Spiel neu aufstellen oder mit <code>/bauplaner lager entmarkieren</code> aufheben.</p>}
+    {c.seen && <p className="team-store-seen" data-seen>Laut Spiel ({nameOf(c.seen.by)}, {when(c.seen.at)}, ungeprüft): {top(c.seen.items, 6).map(([i, n]) => `${formatNumber(n)} ${short(i)}`).join(', ') || 'leer'}{c.seen.partial ? ' …' : ''}</p>}
     {c.purpose === 'ertrag' && <p className="team-store-yield">Ertragskiste{c.farm ? ` · Farm ${farmName?.(c.farm) ?? c.farm}` : ''}: {formatNumber(Object.values(c.yieldIn).reduce((n, x) => n + x, 0))} Items in {formatNumber(c.yieldMinutes)} min Laufzeit
       {c.yieldMinutes >= 10 && ` · ${formatNumber(Math.round(Object.values(c.yieldIn).reduce((n, x) => n + x, 0) * 60 / c.yieldMinutes))} je Stunde`}</p>}
     {(movers.length > 0 || hopper > 0) && <ul className="team-store-moves" aria-label={`Buchungen in ${c.name}`}>
@@ -54,10 +55,11 @@ export function TeamProof({ view, sections, me, role, act, nameOf, sectionBlocks
 }) {
   const builders = view.members.filter(m => m.placed || m.broken || total(m.stored) || total(m.taken) || !m.tally);
   const self = me ? view.members.find(m => m.id === me) : undefined;
-  const sectionRows = view.sections.filter(s => s.placed || s.broken);
+  const sectionRows = view.sections.filter(s => s.placed || s.broken || s.seen);
+  const seenStock = top(view.stockSeen, 24);
   const stock = top(view.stock, 40);
   const differs = Object.entries(view.stock).some(([item, n]) => (siteStock[item] ?? 0) !== n);
-  const nothing = !builders.length && !view.stores.length;
+  const nothing = !builders.length && !view.stores.length && !sectionRows.length;
   return <div role="region" className="team-block team-proof" aria-label="Baunachweis und Lager">
     <div className="team-block-head"><h3>Baunachweis &amp; Lager</h3>
       {self && <button className="link-button" onClick={() => act({ kind: 'member.tally', member: self.id, on: !self.tally }, self.tally ? 'Baunachweis aus' : 'Baunachweis an')}>
@@ -78,7 +80,10 @@ export function TeamProof({ view, sections, me, role, act, nameOf, sectionBlocks
         const name = sections.find(x => x.id === s.sectionId)?.name ?? 'entfernter Abschnitt', need = sectionBlocks.get(s.sectionId);
         const shares = Object.entries(s.builders).sort((a, b) => b[1] - a[1]);
         return <li key={s.sectionId}><strong>{name}</strong>
-          <span>{formatNumber(s.placed)} gesetzt{need ? ` (Plan ${formatNumber(need)})` : ''}{s.broken ? ` · ${formatNumber(s.broken)} abgebaut` : ''}</span>
+          {(s.placed > 0 || s.broken > 0) && <span>{formatNumber(s.placed)} gesetzt{need ? ` (Plan ${formatNumber(need)})` : ''}{s.broken ? ` · ${formatNumber(s.broken)} abgebaut` : ''}</span>}
+          {s.seen && <span className="team-seen" data-seen title="Vom Mod eines Mitspielers im Spiel gezählt, nicht vom Server geprüft">
+            laut Spiel {s.seen.total ? Math.floor(s.seen.placed / s.seen.total * 100) : 0} % ({formatNumber(s.seen.placed)} von {formatNumber(s.seen.total)}{s.seen.wrong ? ` · ${formatNumber(s.seen.wrong)} falsch` : ''}) · {nameOf(s.seen.by)}, {when(s.seen.at)}, ungeprüft
+            {s.seen.missing.length > 0 && <small> · fehlt: {s.seen.missing.slice(0, 4).map(l => `${formatNumber(l.count)} ${short(l.item)}`).join(', ')}</small>}</span>}
           <span className="team-share" aria-label={`Anteile an ${name}`}>{shares.map(([id, n]) => <span key={id} style={{ flexGrow: n }} title={`${nameOf(id)}: ${formatNumber(n)}`}>{nameOf(id)} {s.placed ? Math.round(n / s.placed * 100) : 0} %</span>)}</span></li>;
       })}</ul></>}
     {Object.keys(view.placedBlocks).length > 0 && <><h4>Verbaut</h4>
@@ -91,6 +96,7 @@ export function TeamProof({ view, sections, me, role, act, nameOf, sectionBlocks
         {canTeam(role, 'section.verify') ? <button className="secondary" disabled={!differs} onClick={() => onTakeStock(view.stock)}>
           {differs ? 'Bestand ins Baustellen-Lager übernehmen' : 'Baustellen-Lager entspricht dem Bestand'}</button>
           : <small className="muted">Baumeister und Bauleitung übernehmen den Bestand ins Lager im Reiter „Baustelle“.</small>}</>}
+      {seenStock.length > 0 && <p className="team-chips static seen" aria-label="Bestand laut Spiel">{seenStock.map(([i, n]) => <span key={i}>{formatNumber(n)} × {short(i)}</span>)}<small className="muted"> laut Spiel, ohne Serverzählung (ungeprüft)</small></p>}
     </>}
   </div>;
 }

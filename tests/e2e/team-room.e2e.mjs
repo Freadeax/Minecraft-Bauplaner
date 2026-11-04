@@ -269,6 +269,11 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     assert.deepEqual((await room.append('server', { batch: `b_srv${Date.now()}`, events: [tally] })).accepted, [tally.id]);
     await a.getByRole('region', { name: 'Baunachweis und Lager' }).getByText('77').first().waitFor();
     await b.getByRole('region', { name: 'Baunachweis und Lager' }).getByText('77').first().waitFor();
+    // ---- Client first (COOP-10): a player's mod reports the build state with the member key, unverified.
+    const sighting = teamEvent(anna, { kind: 'section.seen', section: fundament, placed: 72, total: 100, missing: [{ item: 'minecraft:stone', count: 28 }] }, new Date().toISOString());
+    assert.deepEqual((await room.append('member', { batch: `b_seen${Date.now()}`, events: [sighting] })).accepted, [sighting.id]);
+    await a.getByRole('region', { name: 'Baunachweis und Lager' }).locator('[data-seen]', { hasText: 'laut Spiel 72 %' }).waitFor();
+    await b.getByRole('region', { name: 'Baunachweis und Lager' }).locator('[data-seen]', { hasText: 'ungeprüft' }).waitFor();
 
     // ---- New release: goes into the room by itself, the helper takes it over with one click.
     A.answers.push('Zweiter Stand');

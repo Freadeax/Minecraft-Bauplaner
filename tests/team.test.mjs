@@ -308,3 +308,32 @@ test('Projektplanung (PROJ-01): Minecraft-Namen der Bauleute gelten im Team, Tea
   assert.throws(() => checkProgram({ ...program, builders: [{ id: 'b', name: 'X', player: 'kein name!' }], assignments: {} }), /Minecraft-Name/);
   assert.equal(teamIntoProgram({ builders: r.builders, assignments: r.assignments }, view).assigned, 0, 'zweites Übernehmen ändert nichts');
 });
+
+test('Client zuerst (COOP-10): Baustand und Kisteninhalt laut Spiel, ungeprüft und vom Server getrennt', () => {
+  const chest = { kind: 'store.chest', chest: 'lager2', name: 'Nebenlager', pos: [10, 64, 10], dimension: 'minecraft:overworld' };
+  const seen = (by, body) => ev(by, { kind: 'section.seen', section: 'sec_a', ...body });
+  let team = appendEvents(base(), [
+    ev('bld_phil', chest),
+    seen('bld_anna', { placed: 30, total: 100 }),
+    seen('bld_ben', { placed: 72, total: 100, wrong: 3, missing: [{ item: 'minecraft:stone', count: 25 }] }),
+    seen('bld_fremd', { placed: 99, total: 100 }), // Gast may not report
+    ev('bld_anna', { kind: 'store.seen', chest: 'lager2', items: [{ item: 'minecraft:oak_log', count: 32 }] }),
+    ev('bld_anna', { kind: 'store.seen', chest: 'gibtsnicht', items: [] }),
+  ]);
+  let v = teamView(team, ctx);
+  const s = section(v, 'sec_a').seen;
+  assert.deepEqual({ by: s.by, placed: s.placed, total: s.total, wrong: s.wrong }, { by: 'bld_ben', placed: 72, total: 100, wrong: 3 });
+  assert.deepEqual(s.missing, [{ item: 'minecraft:stone', count: 25 }]);
+  assert.equal(section(v, 'sec_a').placed, 0, 'a sighting is no server tally');
+  assert.equal(v.rejected.length, 2);
+  assert.deepEqual(v.stores[0].seen.items, { 'minecraft:oak_log': 32 });
+  assert.deepEqual(v.stock, {}); assert.deepEqual(v.stockSeen, { 'minecraft:oak_log': 32 });
+  // once the server counted the chest, its count wins over the sighting
+  team = appendEvents(team, [srv('bld_anna', { kind: 'store.count', chest: 'lager2', items: [{ item: 'minecraft:oak_log', count: 30 }] })]);
+  v = teamView(team, ctx);
+  assert.deepEqual(v.stock, { 'minecraft:oak_log': 30 }); assert.deepEqual(v.stockSeen, {});
+  assert.match(describeEvent(seen('bld_ben', { placed: 72, total: 100 }), ctx), /72 von 100.*72 %/);
+  assert.throws(() => checkTeamEvent(seen('bld_ben', { placed: 5, total: 4 })), /mehr gesetzt/);
+  assert.throws(() => checkTeamEvent(ev('bld_ben', { kind: 'store.seen', chest: 'lager2', items: [], more: false })), /more/);
+  assert.ok(canTeam('helfer', 'section.seen') && !canTeam('gast', 'store.seen'));
+});

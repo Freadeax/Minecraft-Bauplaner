@@ -83,6 +83,8 @@
 .team-presence li{border:1px solid var(--line);border-radius:12px;padding:3px 9px;background:var(--panel-2);font-size:11px}
 .team-room label.grow{display:flex;flex-direction:column;gap:4px;font-size:11px;flex:3 1 260px}
 .team-store-yield { margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--muted); }
+.team-store-seen, .team-seen { margin: 0.25rem 0 0; font-size: 0.85rem; color: var(--muted); font-style: italic; }
+.team-seen { display: block; }
 /* Team live in every tab (COOP-09) */
 .team-live-chip{font-size:11px;border:1px solid var(--line);border-radius:12px;padding:2px 9px;color:var(--muted);text-decoration:none;white-space:nowrap}
 .team-live-chip.live{color:var(--mint);border-color:var(--mint)}

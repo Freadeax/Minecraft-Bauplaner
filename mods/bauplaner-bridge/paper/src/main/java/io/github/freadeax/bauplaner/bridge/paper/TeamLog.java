@@ -45,6 +45,8 @@ final class TeamLog {
         NEED.put("section.handover", "helfer"); NEED.put("section.accept", "helfer"); NEED.put("section.decline", "helfer");
         NEED.put("member.away", "gast"); NEED.put("issue.ack", "meister");
         NEED.put("store.yield", "gast"); // COOP-08 yield stores
+        // Client-first (COOP-10): what a player's mod saw – unverified, kept in the log, no effect on the fold here.
+        NEED.put("section.seen", "helfer"); NEED.put("store.seen", "helfer");
     }
     /** Measurements only the server writes (origin server), as in team.ts SERVER_ONLY_KINDS. */
     static final Set<String> SERVER_ONLY = Set.of("build.tally", "store.count", "store.move", "store.check", "store.yield");

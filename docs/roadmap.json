@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T14:22:09.121Z",
+  "updatedAt": "2026-11-04T14:30:00.000Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -9216,6 +9216,92 @@
       "orphans": []
     },
     {
+      "id": "COOP-10",
+      "title": "Client zuerst: Baustand und Kisteninhalt laut Spiel (section.seen, store.seen) im Teamstand, ungeprüft getrennt von Servermessungen",
+      "phase": "P4",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“)",
+      "dependencies": [
+        "COOP-07",
+        "COOP-09"
+      ],
+      "scope": [
+        "packages/domain/src/team.ts",
+        "packages/domain/src/index.ts",
+        "apps/web/src/views/project/TeamProof.tsx",
+        "apps/web/src/team.css",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java",
+        "tests/team.test.mjs",
+        "tests/e2e/team-room.e2e.mjs",
+        "docs/architecture/TEAM_LIVE.md",
+        "apps/web/src/testing/testplan.ts",
+        "docs/testing/TESTPLAN.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "COOP-10-S01",
+          "title": "Ereignisse section.seen und store.seen mit Prüfung und Recht Helfer (team.ts, TeamLog.java).",
+          "done": true
+        },
+        {
+          "id": "COOP-10-S02",
+          "title": "Faltung: neuester Stand je Abschnitt, gesehener Kisteninhalt, Bestand laut Spiel nur ohne Serverzählung.",
+          "done": true
+        },
+        {
+          "id": "COOP-10-S03",
+          "title": "Planer zeigt „laut Spiel … ungeprüft“ je Abschnitt und Kiste.",
+          "done": true
+        },
+        {
+          "id": "COOP-10-S04",
+          "title": "Mod meldet beides selbst (Thread „Anbindung von Planer, Mod und Server neu denken“).",
+          "done": false
+        },
+        {
+          "id": "COOP-10-S05",
+          "title": "Abnahme mit Mitspielern ohne Plugin (TEAMBAU-25).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Eine Meldung des Mods ändert nie die Servermessung (build.tally, store.count).",
+        "Gäste können keinen Baustand melden; unbekannte Kisten werden abgelehnt."
+      ],
+      "next": "Mod meldet section.seen/store.seen (Anbindungs-Thread), dann Abnahme TEAMBAU-25.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/team.test.mjs",
+          "note": "Client zuerst: Faltung, Rechte, Serverzählung gewinnt."
+        },
+        {
+          "path": "tests/e2e/team-room.e2e.mjs",
+          "note": "Mod-Meldung mit Mitgliedsschlüssel erscheint in beiden Browsern als ungeprüft."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Automatisch geprüft; Mod-Seite und Abnahme offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-04T14:30:00.000Z",
+      "area": "TEAM",
+      "thread": "Gemeinsames Bauen mehrerer Spieler ermöglichen",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "TEAMBAU-25 mit Mitspielern, sobald der Mod Baustand und Kisten meldet."
+        }
+      ],
+      "orphans": []
+    },
+    {
       "id": "PROJ-02",
       "title": "Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute",
       "phase": "P3",
@@ -17846,6 +17932,35 @@
           "done": 5,
           "total": 6,
           "next": "Team-Thread deployt den Raum (Aufnahmen, Positionen); Modrinth 0.15.0; Abnahme LINK-07/LINK-08 durch Philipp."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T14:30:00.000Z",
+      "kind": "progress",
+      "items": [
+        "COOP-10"
+      ],
+      "summary": "COOP-10 Client zuerst: section.seen/store.seen (Mod meldet Baustand und Kisteninhalt mit Mitgliedsschlüssel) in Teamfaltung, Paper-TeamLog und Planer, ungeprüft getrennt von Servermessungen; Unit + Browser grün.",
+      "files": [
+        "packages/domain/src/team.ts",
+        "packages/domain/src/index.ts",
+        "apps/web/src/views/project/TeamProof.tsx",
+        "apps/web/src/team.css",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java",
+        "tests/team.test.mjs",
+        "tests/e2e/team-room.e2e.mjs",
+        "docs/architecture/TEAM_LIVE.md",
+        "apps/web/src/testing/testplan.ts",
+        "docs/testing/TESTPLAN.md"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-10",
+          "status": "implemented",
+          "done": 3,
+          "total": 5,
+          "next": "Mod meldet section.seen/store.seen (Anbindungs-Thread), dann Abnahme TEAMBAU-25."
         }
       ]
     }

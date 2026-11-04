@@ -100,3 +100,17 @@ Ein Raum gehört zu genau einem Team (`teamId`). Alle Antworten sind JSON. Grenz
 - **Aussperren:** Die Bauleitung (mit adminKey) kann „Einladung erneuern“ und „Server-Link erneuern“ (`POST …/rotate?wer=member|server`). Alte Links gelten sofort nicht mehr; offene Verbindungen schließen mit 4403, der Planer zeigt „Bitte die Bauleitung um einen neuen Einladungslink“. Wer den neuen Link öffnet, wird im vorhandenen Projekt nur neu verbunden.
 - **Abgelehnte Meldungen:** Lehnt der Raum ein eigenes Ereignis ab (Form, Größe, Serverherkunft), zeigt der Planer den Grund als Hinweis, statt es still zu verlieren.
 - Prüfung: `tests/e2e/team-room.e2e.mjs` (auch mit `TEAM_ROOM_URL` gegen den echten Dienst).
+
+## 12. Client zuerst: was der Mod im Spiel sieht (04.11.2026, COOP-10)
+
+Philipps Vorgabe: so viel wie möglich im Client, so wenig Server wie nötig. Viele Teamzahlen braucht man nicht vom Plugin, wenn der Mod eines Mitspielers sie selbst sieht und mit dem Mitgliedsschlüssel in den Team-Raum schreibt. Damit niemand eine Messung fälschen kann, bleiben sie **getrennt von den Servermessungen** und sind im Planer als „ungeprüft“ gekennzeichnet.
+
+| Ereignis | Felder | Recht | Wirkung im Teamstand |
+|---|---|---|---|
+| `section.seen` | `section`, `placed ≤ total`, `wrong?`, `missing?` (≤ 24 Zeilen) | Helfer | neuester Stand je Abschnitt (`SectionTeamState.seen`); ändert nie `placed`/`builders` aus `build.tally` |
+| `store.seen` | `chest` (bekannte Lagerkiste), `items` (≤ 64), `more?: true` | Helfer | `StoreChest.seen`; zählt in `stockSeen` nur, solange der Server die Kiste nie gezählt hat; unbekannte Kiste wird abgelehnt |
+
+- Herkunft `planer` (Mitgliedsschlüssel). Der Mod meldet `section.seen` höchstens alle 30 s je Abschnitt und nur bei Änderung, `store.seen` beim Schließen einer bekannten Teamkiste (Vertrag mit dem Thread „Anbindung von Planer, Mod und Server neu denken“, Mod ab 0.15.0).
+- Planer: Reiter „Team“ → „Baunachweis & Lager“ zeigt je Abschnitt „laut Spiel 72 % (72 von 100) · Anna, …, ungeprüft“ samt den fehlenden Blöcken, je Lagerkiste den gesehenen Inhalt und darunter den „Bestand laut Spiel“ für Kisten ohne Serverzählung. Der Knopf „Bestand ins Baustellen-Lager übernehmen“ nimmt weiterhin nur geprüfte Serverzahlen.
+- Paper `TeamLog.java` kennt beide Arten mit denselben Rechten; das Plugin wertet sie nicht aus (es misst selbst), behält sie aber im Protokoll.
+- Prüfung: `tests/team.test.mjs` („Client zuerst“), `tests/e2e/team-room.e2e.mjs` (Mod-Meldung mit Mitgliedsschlüssel erscheint in beiden Browsern).
