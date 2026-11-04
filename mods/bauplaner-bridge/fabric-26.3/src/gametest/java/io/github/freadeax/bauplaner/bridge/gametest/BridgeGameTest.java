@@ -374,6 +374,11 @@ public final class BridgeGameTest implements FabricClientGameTest {
      * without input, one with input (section 2), and greyed-out server buttons in singleplayer (no plugin).
      */
     private static void commandPage(ClientGameTestContext context, Path io) throws IOException {
+        // GAME-07 stage 6: packing list and scaffold hints for the placed plan (checked in bridge_gametest.mjs).
+        chat(context, "/bauplaner packliste");
+        chat(context, "/bauplaner geruest");
+        chat(context, "/bauplaner markieren lager Testlager");
+        chat(context, "/bauplaner markierungen loeschen 1");
         chat(context, "/bauplaner befehle");
         context.waitForScreen(CommandScreen.class);
         context.waitTicks(5);

@@ -98,6 +98,11 @@ function hologram(logFile, cells) {
   assert.deepEqual(back.slice(1), built.slice(1), 'zurückgedreht wieder wie vorher');
   assert.ok(planned > 0 && planned <= cells);
   assert.match(log, /\[Bauplaner\] Nächster Fehler bei -?\d+ -?\d+ -?\d+: erwartet /);
+  // GAME-07 stage 6 (Mod 0.13.0): packing list and scaffold hints answer in the chat.
+  assert.match(log, /\[Bauplaner\] Packliste[^:]*: (\d+ Blöcke holen = \d+ Stapel|nichts offen)/, 'Packliste');
+  assert.match(log, /\[Bauplaner\] Gerüst(: kein offener Block| nötig: \d+ Blöcke ohne Nachbarn)/, 'Gerüst-Hinweise');
+  assert.match(log, /\[Bauplaner\] Markiert: Lager „Testlager“ bei -?\d+ -?\d+ -?\d+\. Die Weltkarte/, 'Markieren für die Weltkarte (Protokoll 3)');
+  assert.match(log, /\[Bauplaner\] Markierung 1 gelöscht\./, 'wartende Markierung löschen');
   assert.match(readFileSync(join(dir, 'platzierung.properties'), 'utf8'), /\.plan=spieltest\.schem/);
   // Stage 2: material list (only the diamond block is still wrong → one cobblestone open), layer mode.
   const material = [...log.matchAll(/\[Bauplaner\] Material offen: (\d+) Blöcke in (\d+) Sorten\./g)].map(m => [Number(m[1]), Number(m[2])]);

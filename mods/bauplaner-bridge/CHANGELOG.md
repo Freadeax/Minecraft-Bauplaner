@@ -2,6 +2,20 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.13.0 – 2026-11-04
+
+**Packing list, scaffold hints, marks for the world map / Packliste, Gerüst, Markierungen für die Weltkarte**
+
+- `/bauplaner packliste`: what you still have to fetch for the shown part of the plan, minus what you carry, in stacks and shulker boxes, and which team storage chest holds it (nearest first).
+- `/bauplaner geruest`: open blocks with nothing to place them against (floating parts) and falling blocks (sand, gravel, concrete powder) without support; the pointer jumps to the nearest.
+- `/bauplaner markieren <type> [name]` sets a point where you stand; the planner's world map takes it into the world plan with one click (“Take into world plan”). `/bauplaner markierungen` lists waiting points. Website connection only, nothing goes to the server.
+- All three are on the commands page (J → “Commands & status”).
+
+- `/bauplaner packliste`: was du für den gezeigten Teil des Plans noch holen musst, abzüglich dessen, was du trägst, in Stapeln und Shulkerkisten, und welche Team-Lagerkiste es hat (nächste zuerst).
+- `/bauplaner geruest`: offene Blöcke ohne Halt zum Ansetzen (schwebende Teile) und fallende Blöcke (Sand, Kies, Trockenbeton) ohne Block darunter; der Zeiger springt zum nächsten.
+- `/bauplaner markieren <art> [name]` setzt einen Punkt, wo du stehst; die Weltkarte des Planers übernimmt ihn mit einem Klick („In den Weltplan übernehmen“). `/bauplaner markierungen` listet die wartenden. Nur über die Website-Verbindung, nichts geht an den Server.
+- Alle drei stehen auf der Befehlsseite (J → „Befehle & Status“).
+
 ## 0.12.0 – 2026-11-04
 
 **No more server commands / Server ohne Befehle**

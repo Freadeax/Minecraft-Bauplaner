@@ -91,6 +91,10 @@ export const LIVE_FEATURE_MARKS2 = 'marks2';
 export const LIVE_FEATURE_PLAYERS = 'players';
 /** Big plans (SIZE-01, mod 0.9.0): plan box up to 16.7 million cells, file up to 64 MB, loaded without freezing the game. */
 export const LIVE_FEATURE_BIGPLANS = 'bigplans';
+/** Protocol 3 (GAME-08, mod 0.13.0): points set in the game with /bauplaner markieren wait at `GET /v1/marks/game`. */
+export const LIVE_FEATURE_MARKS3 = 'marks3';
+/** Layer the game points land on in the Weltplan. */
+export const GAME_MARKS_LAYER = 'Aus dem Spiel';
 export const liveCan = (hello: LiveHello | null, feature: string): boolean => !!hello?.features.includes(feature);
 
 export interface PlanSendCheck {
@@ -123,6 +127,7 @@ export const LIVE_FEATURE_LABELS: readonly { readonly id: string; readonly label
   { id: LIVE_FEATURE_PLAYERS, label: 'Mitspieler auf der Karte' },
   { id: LIVE_FEATURE_BIGPLANS, label: 'große Pläne bis 16,7 Mio. Zellen' },
   { id: 'team', label: 'Teambau im Spiel (Abschnitte, Meldungen, Server-Plugin)' },
+  { id: LIVE_FEATURE_MARKS3, label: 'Markierungen aus dem Spiel übernehmen' },
 ];
 /** Other players (feature `players`): name and position in the client's dimension. */
 export interface LiveOtherPlayer { readonly name: string; readonly x: number; readonly y: number; readonly z: number; readonly yaw: number }
@@ -226,6 +231,38 @@ export function readLivePlayers(raw: unknown): LivePlayers {
     return { name: str(o.name, 'Spielername', 64), x: num(o.x, 'X'), y: num(o.y, 'Y', -5000, 5000), z: num(o.z, 'Z'), yaw: o.yaw == null ? 0 : num(o.yaw, 'Blickrichtung', -1e6, 1e6) };
   });
   return { dimension, players };
+}
+
+/** A point set in the game (protocol 3), waiting for the Weltplan. */
+export interface LiveGameMark {
+  readonly id: string; readonly type: (typeof WORLD_POINT_TYPES)[number]['id']; readonly name: string; readonly dimension: string;
+  readonly x: number; readonly y: number; readonly z: number; readonly at: string; readonly by: string | null;
+}
+export function readLiveGameMarks(raw: unknown): LiveGameMark[] {
+  if (!isObj(raw) || !Array.isArray(raw.marks) || raw.marks.length > 200) return fail('Markierungen aus dem Spiel ungültig');
+  return (raw.marks as unknown[]).map(m => {
+    const o = isObj(m) ? m : fail('Markierung ungültig');
+    const id = typeof o.id === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(o.id) ? o.id : fail('Markierungs-ID ungültig');
+    const type = WORLD_POINT_TYPES.find(t => t.id === o.type)?.id ?? fail('Punktart unbekannt');
+    return { id, type, name: str(o.name, 'Name', 80), dimension: dim(o.dimension), x: int(o.x, 'X'), y: int(o.y, 'Y', -2048, 4096), z: int(o.z, 'Z'),
+      at: str(o.at, 'Zeit', 40), by: o.by == null ? null : str(o.by, 'Spieler', 64) };
+  });
+}
+/**
+ * Game points as new Weltplan points on the layer „Aus dem Spiel“. The id is the game id, so a point the
+ * planner already took (ack lost) is not added twice; `ack` lists every id the game may forget.
+ */
+export function gameMarksToItems(marks: readonly LiveGameMark[], existing: readonly WorldItem[]): { items: WorldItem[]; ack: string[] } {
+  const have = new Set(existing.map(i => i.id));
+  const items: WorldItem[] = [];
+  for (const m of marks) {
+    const id = `spiel-${m.id}`;
+    if (have.has(id)) continue;
+    have.add(id);
+    const note = `Im Spiel gesetzt${m.by ? ` von ${m.by}` : ''} am ${m.at.slice(0, 16).replace('T', ' ')}`.slice(0, 500);
+    items.push({ kind: 'point', id, name: m.name.trim() || m.type, note, dimension: m.dimension, layer: GAME_MARKS_LAYER, type: m.type, x: m.x, y: Math.max(-2032, Math.min(2031, m.y)), z: m.z });
+  }
+  return { items, ack: marks.map(m => m.id) };
 }
 
 export function readLiveChunks(raw: unknown): LiveChunks {

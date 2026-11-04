@@ -21,7 +21,7 @@ before(async () => {
     await new Promise(r => setTimeout(r, 200));
   }
   oldMod = await startModSimulator(OLD_MOD);
-  newMod = await startModSimulator(NEW_MOD, { protocol: 2, features: ['scan', 'marks2', 'players', 'bigplans', 'team'] });
+  newMod = await startModSimulator(NEW_MOD, { protocol: 2, features: ['scan', 'marks2', 'players', 'bigplans', 'team', 'marks3'] });
   browser = await chromium.launch();
 });
 after(async () => { await browser?.close(); server?.kill(); await oldMod?.close(); await newMod?.close(); });
@@ -221,7 +221,7 @@ test('Neue Mod (Protokoll 2): Mitspieler, Zonen und Ebenen gehen ins Spiel', asy
 
   const game = await connect(p, NEW_MOD, newMod);
   await game.getByText(/Protokoll 2/).waitFor();
-  assert.match(await game.locator('.live-features').innerText(), /^Mod kann: Baustand aus dem Spiel, Zonen, Ebenen und neue Punktarten im Spiel, Mitspieler auf der Karte, große Pläne bis 16,7 Mio. Zellen, Teambau im Spiel \(Abschnitte, Meldungen, Server-Plugin\)$/);
+  assert.match(await game.locator('.live-features').innerText(), /^Mod kann: Baustand aus dem Spiel, Zonen, Ebenen und neue Punktarten im Spiel, Mitspieler auf der Karte, große Pläne bis 16,7 Mio. Zellen, Teambau im Spiel \(Abschnitte, Meldungen, Server-Plugin\), Markierungen aus dem Spiel übernehmen$/);
   await p.getByTestId('live-others').waitFor();
   assert.match(await p.getByTestId('live-others').innerText(), /Mitspieler in Sichtweite: Anna \(X 52 · Z -15\)/);
   assert.equal(await game.getByText(/bleiben nur auf der Karte/).count(), 0);
@@ -229,6 +229,29 @@ test('Neue Mod (Protokoll 2): Mitspieler, Zonen und Ebenen gehen ins Spiel', asy
   await p.getByRole('status').filter({ hasText: /^1 Weltplan-Einträge \(Oberwelt\) im Spiel als Markierungen eingeblendet\./ }).waitFor();
   assert.equal(newMod.state.marks[0].kind, 'zone');
   assert.equal(newMod.state.marks[0].layer, 'Hafen');
+
+  // Protocol 3 (GAME-08, mod 0.13.0): points set in the game with /bauplaner markieren go into the Weltplan.
+  newMod.state.gameMarks = [
+    { id: 'gabc-0', type: 'lager', name: 'Erzlager', dimension: 'minecraft:overworld', x: 40, y: 70, z: -12, at: '2026-11-04T09:15:00Z', by: 'Philipp' },
+    { id: 'gabc-1', type: 'gefahr', name: 'Lavasee', dimension: 'minecraft:overworld', x: 60, y: 11, z: 5, at: '2026-11-04T09:16:00Z', by: 'Philipp' },
+  ];
+  const waiting = game.locator('.live-game-marks');
+  await waiting.getByText('2 Markierungen aus dem Spiel').waitFor({ timeout: 12_000 });
+  await waiting.getByRole('button', { name: 'In den Weltplan übernehmen' }).click();
+  await p.getByRole('status').filter({ hasText: '2 Markierungen aus dem Spiel übernommen (Ebene „Aus dem Spiel“).' }).waitFor();
+  assert.deepEqual(newMod.state.gameMarksAcked, ['gabc-0', 'gabc-1']);
+  assert.equal(await waiting.count(), 0);
+  assert.ok((await names(p)).includes('Erzlager'));
+  assert.ok((await names(p)).includes('Lavasee'));
+  // The same points once more (ack lost): nothing is added twice, the game gets its ack.
+  newMod.state.gameMarks = [{ id: 'gabc-0', type: 'lager', name: 'Erzlager', dimension: 'minecraft:overworld', x: 40, y: 70, z: -12, at: '2026-11-04T09:15:00Z', by: 'Philipp' }];
+  await waiting.getByText('1 Markierung aus dem Spiel').waitFor({ timeout: 12_000 });
+  await waiting.getByRole('button', { name: 'In den Weltplan übernehmen' }).click();
+  await p.getByRole('status').filter({ hasText: 'stehen schon im Weltplan' }).waitFor();
+  assert.equal((await names(p)).filter(n => n === 'Erzlager').length, 1);
+  // One undo takes the adopted points out again.
+  await p.getByRole('button', { name: 'Karte: Schritt zurück' }).click();
+  await p.getByRole('status').filter({ hasText: 'Rückgängig gemacht: 2 Markierungen aus dem Spiel übernommen' }).waitFor();
   assert.deepEqual(errors, []);
   await context.close();
 });

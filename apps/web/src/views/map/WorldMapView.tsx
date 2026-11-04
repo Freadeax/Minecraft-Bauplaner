@@ -5,8 +5,9 @@ import {
   alignToGround, duplicateItems, insertPathVertex, itemsInRect, joinPaths, mirrorItem, movePathVertex, removeItemsOp, removePathVertex, reversePath,
   rotateItem, selectionBounds, selectionPivot, splitPath, updateItemsOp,
   layerNames, marksForMod, routePath, setLayerOp, trailToPath, pointTypeLabel, checkPlanForMod, LIVE_PLAN_EXPORT,
+  gameMarksToItems, liveCan, LIVE_FEATURE_MARKS3, GAME_MARKS_LAYER,
 } from '../../../../../packages/domain/src/index.js';
-import type { EarthworkEstimate, Operation, Project, TerrainSurvey, WorldItem, WorldPath, WorldPlanOp, WorldPointType, Polyline } from '../../../../../packages/domain/src/index.js';
+import type { EarthworkEstimate, LiveGameMark, Operation, Project, TerrainSurvey, WorldItem, WorldPath, WorldPlanOp, WorldPointType, Polyline } from '../../../../../packages/domain/src/index.js';
 import { prepareRevisionExport } from '../../../../../packages/application/src/index.js';
 import {
   DIMENSIONS, MAP_SKIP_LABEL, TERRAIN_NOTE, chunkOf, dimensionLabel, footprintNeighbours, suggestPlacement, topViews, translateBounds, worldOperation, createPlacement,
@@ -539,6 +540,40 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
       setNotice(`Hologramm „${holo.name}“ im Spiel nach X ${x} · Y ${y} · Z ${z} gesetzt${g ? '' : ' (Höhe beibehalten: kein Gelände bekannt)'}. Lage auf der Karte mit „Lage aus dem Spiel übernehmen“ nachziehen.`);
     } catch (e) { setNotice(errorText(e)); }
   };
+  // GAME-08 protocol 3: points set in the game wait in the mod until the Weltplan takes them.
+  const [gameMarks, setGameMarks] = useState<readonly LiveGameMark[]>([]);
+  const [adopting, setAdopting] = useState(false);
+  const marks3 = connected && liveCan(game.hello, LIVE_FEATURE_MARKS3);
+  useEffect(() => {
+    if (!marks3) { setGameMarks([]); return; }
+    let stop = false;
+    const poll = () => {
+      const g = gameRef.current, t = g.token(); if (!t) return;
+      void liveApi.gameMarks(g.settings.port, t).then(m => { if (!stop) setGameMarks(cur => cur.length === m.length && cur.every((x, i) => x.id === m[i]!.id) ? cur : m); }, () => { /* next poll */ });
+    };
+    poll();
+    const timer = setInterval(poll, 5000);
+    return () => { stop = true; clearInterval(timer); };
+  }, [marks3]);
+  const adoptGameMarks = async () => {
+    const t = game.token(); if (!t || !gameMarks.length) return;
+    setAdopting(true);
+    try {
+      const { items: fresh, ack } = gameMarksToItems(gameMarks, wp.plan.items);
+      if (fresh.length) {
+        const label = fresh.length === 1 ? `„${fresh[0]!.name}“ aus dem Spiel übernommen` : `${fresh.length} Markierungen aus dem Spiel übernommen`;
+        const ok = await change({ label, steps: [{ kind: 'plan', op: { kind: 'batch', label: 'Aus dem Spiel', ops: fresh.map(item => ({ kind: 'add' as const, item })) } }] },
+          `${label} (Ebene „${GAME_MARKS_LAYER}“).`);
+        if (!ok) return;
+      }
+      await liveApi.gameMarksAck(game.settings.port, t, ack);
+      setGameMarks([]);
+      if (!fresh.length) setNotice('Diese Markierungen stehen schon im Weltplan; das Spiel hat sie jetzt abgehakt.');
+      const first = fresh[0];
+      if (first && first.dimension !== dimension) setDimension(first.dimension);
+    } catch (e) { setNotice(`Markierungen nicht übernommen: ${errorText(e)}`); }
+    finally { setAdopting(false); }
+  };
   const sendMarks = async () => {
     const t = game.token(); if (!t) return;
     setSending('marks');
@@ -745,6 +780,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
           hologramProject: holoProject, hologramMatch: holoMatch,
           onAdoptHologram: holoMatch && holoMatch !== 'same' && holoMatch !== 'turned' ? () => void adoptHologram() : null,
           autoMarks, onAutoMarks: setAutoMarks, marksSkipped,
+          gameMarks: marks3 ? { count: gameMarks.length, names: gameMarks.slice(0, 4).map(m => m.name).join(', ') + (gameMarks.length > 4 ? ' …' : ''), onAdopt: adopting ? null : () => void adoptGameMarks() } : null,
           onPointAtPlayer: connected && player ? pointAtPlayer : null, onTrailToPath: connected && player && game.trail.length > 1 ? trailAsPath : null,
           onSection: connected ? n => { const t = game.token(); if (t) void liveApi.section(game.settings.port, t, n).then(() => setNotice(n ? `Im Spiel wird nur Abschnitt „${holo?.sections[n - 1]?.name ?? n}“ gezeigt.` : 'Im Spiel wird wieder der ganze Plan gezeigt.'), e => setNotice(errorText(e))); } : null,
           progress: holoProject ? <GameProgressPanel progress={progress} modVersion={game.hello?.mod.version ?? null}

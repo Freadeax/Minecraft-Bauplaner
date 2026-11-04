@@ -39,7 +39,20 @@ Abgestimmt am 02.11.2026 zwischen MAP-06 (Website) und dem Mod-Thread; Website u
 | `marks2` | `POST /v1/marks` nimmt Weltplan-Schema 2 an: `{kind:"zone", id, name, note?, category, points:[[x,z]…] (3–256), layer?, color?}`, neue Punktarten `notiz`, `gefahr`, `rohstoff`, `spawn`, `aussicht`, und an jedem Eintrag optional `layer` (Text bis 40 Zeichen) und `color` (`#rrggbb`). Die Mod (`WorldMarks` Schema 2, `MarksRenderer`) zeichnet Zonen als durchscheinenden Teppich aus Bodenzellen (bei großen Zonen gröber, höchstens 40 000 Zellen) mit Rand entlang des Geländes, nennt die Zone am Spielerstandort in der HUD-Zeile, nutzt `color` statt der Art-Farbe und blendet Ebenen mit `/bauplaner ebenen [<name>|alle]` ein und aus (nicht gespeichert; mit neuen Markierungen bleiben nur noch vorhandene Ebenen ausgeblendet). Ohne `marks2` schickt die Website nur Bauplätze, Wege und die sechs alten Punktarten ohne `layer`/`color` und meldet, was auf der Karte bleibt. |
 | `players` | `GET /v1/players` → `{dimension, players:[{name, x, y, z, yaw}]}`: Mitspieler, die der Client gerade sieht (Tab-Liste reicht nicht, Position nötig; der eigene Spieler fehlt). Die Website fragt sie bei jedem zweiten Statusabruf ab und zeichnet sie als kleine Pfeile mit Namen. Die Mod liest `ClientLevel.players()` auf dem Spielthread, höchstens 200. |
 
-Geplant, noch nicht festgelegt: `POST /v1/zones` entfällt (Zonen reisen in `marks`); eine Rückrichtung „Markierung im Spiel setzen → Weltplan“ (Zwei-Wege-Abgleich) braucht einen Zeitstempel je Eintrag und ist für Protokoll 3 vorgesehen.
+`POST /v1/zones` entfällt (Zonen reisen in `marks`).
+
+## Protokoll 3 (GAME-08, Mod 0.13.0)
+
+Rückrichtung: Punkte, die im Spiel gesetzt werden, landen im Weltplan. Merkmal `marks3` in `hello.features`; `hello.protocol` bleibt 2, eine Website ohne Protokoll 3 merkt nichts.
+
+| Route | Inhalt |
+|---|---|
+| `GET /v1/marks/game` | `{marks:[{id, type, name, dimension, x, y, z, at, by?}]}`: wartende Punkte (höchstens 200). `id` ist eindeutig (`g<Zeit base36>-<Zähler>`), `at` die Zeit des Setzens (ISO, UTC, wie `TeamWire.time`), `type` eine der elf Punktarten. |
+| `POST /v1/marks/game/ack` | `{ids:[…]}`: Der Weltplan hat diese Punkte; die Mod streicht sie aus ihrem Ausgang und sagt es im Chat. |
+
+- **Im Spiel.** `/bauplaner markieren <art> [name]` setzt einen Punkt an der Fußposition (Befehlsseite: Reiter „Website“). `/bauplaner markierungen` listet die wartenden, `/bauplaner markierungen loeschen <nr>` nimmt einen zurück. Bis zur Übernahme zeichnet die Mod sie wie Weltplan-Punkte auf der Ebene „Aus dem Spiel“. Der Ausgang liegt in `config/bauplaner/markierungen-aus-dem-spiel.json` und übersteht Neustarts.
+- **Auf der Weltkarte.** Bei verbundener Mod mit `marks3` fragt die Seite alle 5 s ab und zeigt „N Markierungen aus dem Spiel“ mit „In den Weltplan übernehmen“. Das legt Punkte mit der ID `spiel-<id>`, Ebene „Aus dem Spiel“ und der Notiz „Im Spiel gesetzt von … am …“ als **ein** Rückgängig-Schritt an (`gameMarksToItems`) und quittiert danach alle IDs. Geht die Quittung verloren, erkennt der zweite Abgleich die Punkte an der ID und legt nichts doppelt an.
+- **Sicherheit.** Beide Routen verlangen den Kopplungsschlüssel wie jede andere. Nichts davon geht an den Server.
 
 ## Weltplan
 

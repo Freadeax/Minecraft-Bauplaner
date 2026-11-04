@@ -57,6 +57,8 @@ public final class LiveLink implements LiveLinkServer.Handler {
         this.hologram = hologram;
         this.loader = loader;
         this.version = version;
+        this.gameMarks = new io.github.freadeax.bauplaner.mod.live.GameMarks(root.resolve("markierungen-aus-dem-spiel.json"));
+        gameMarks.load();
         Properties p = load();
         // LINK-03: the service runs by default (loopback only, nothing happens without pairing); off only after
         // "/bauplaner verbinden aus" or the switch in the menu.
@@ -83,7 +85,42 @@ public final class LiveLink implements LiveLinkServer.Handler {
         return n == 0 ? "Es wartet gerade kein Planer auf die Freigabe." : "Abgelehnt. Der Planer bekommt keinen Zugang.";
     }
 
-    public WorldMarks marks() { return marks; }
+    /** Points set in the game for the Weltkarte (live protocol 3, GAME-08). */
+    private final io.github.freadeax.bauplaner.mod.live.GameMarks gameMarks;
+
+    public io.github.freadeax.bauplaner.mod.live.GameMarks outbox() { return gameMarks; }
+
+    /** Website marks plus the points set in the game that still wait for the planer (layer „Aus dem Spiel“). */
+    public WorldMarks marks() {
+        WorldMarks m = marks;
+        if (gameMarks.size() == 0) return m;
+        Minecraft mc = Minecraft.getInstance();
+        String dim = m.size() > 0 ? m.dimension() : mc.level != null ? McCompat.dimension(mc.level) : m.dimension();
+        var own = gameMarks.points(dim);
+        if (own.isEmpty()) return m;
+        List<WorldMarks.Point> points = new java.util.ArrayList<>(m.points());
+        points.addAll(own);
+        return new WorldMarks(dim, m.sites(), m.paths(), List.copyOf(points), m.zones());
+    }
+
+    @Override
+    public String gameMarks() {
+        lastRequest = System.currentTimeMillis();
+        return gameMarks.json();
+    }
+
+    @Override
+    public String gameMarksAck(Map<String, Object> body) {
+        lastRequest = System.currentTimeMillis();
+        List<String> ids = new java.util.ArrayList<>();
+        for (Object o : Json.arr(body.get("ids"), "IDs")) ids.add(Json.str(o, "ID", 40));
+        int n = gameMarks.ack(ids);
+        if (n > 0) {
+            Minecraft mc = Minecraft.getInstance();
+            mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] " + n + " Markierung" + (n == 1 ? "" : "en") + " aus dem Spiel ist jetzt im Weltplan der Website.")));
+        }
+        return "{\"acked\":" + n + ",\"waiting\":" + gameMarks.size() + "}";
+    }
 
     /** Whether entries on this Weltplan layer are drawn ("" = entries without a layer, always shown). */
     public boolean layerShown(String layer) { return layer.isEmpty() || !hiddenLayers.contains(layer); }

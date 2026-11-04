@@ -139,3 +139,11 @@ Im Plan-Menü (J) führt „Befehle & Status“ zu einer Seite, auf der alle Bef
 - **Kleine Fenster.** Ab 520 GUI-Pixeln Breite steht der Status links neben den Knöpfen, darunter nur im Reiter „Status“ über den Knöpfen. Mehr Knöpfe als Platz werden geblättert (◀ ▶ unten links).
 - **Prüfung.** JUnit `CommandCatalogTest`; Spieltest Fabric mit echten Mausklicks (Reiter Team, „Übersicht“, „Abschnitt zeigen 2“, Antworten auf der Seite, Serverknöpfe im Einzelspieler ausgegraut); NeoForge-Szenario öffnet die Seite und führt einen Befehl aus.
 
+
+## Stufe 6 und Protokoll 3 (0.13.0, GAME-07/GAME-08)
+
+- **Packliste.** `/bauplaner packliste` rechnet für den gezeigten Teil des Plans (Filter, Abschnitt, Ebene): offenes Material minus das, was man trägt (mit Shulkerkisten und Bündeln), in Stapeln (Stapelgröße je Item, z. B. 16 für Schilder), Shulkerkisten und freien Inventarplätzen. Liegt ein Item in einer Team-Lagerkiste (COOP-04), nennt die Liste die nächste Kiste zuerst mit Lage und Entfernung (`mod-core/PackList`).
+- **Gerüst.** `/bauplaner geruest` findet offene Blöcke, die man gerade nicht setzen kann: Teile des Plans, die nirgends an etwas Stehendes stoßen (Ausbreitung über benachbarte offene Planblöcke ab jedem Block mit festem Nachbarn; nicht erreichte hängen), und fallende Blöcke (Sand, Kies, Trockenbeton, Ambosse …) ohne Halt darunter. Der Zeiger springt auf den nächsten (`mod-core/Scaffold`). Ungeladene Chunks zählen als möglicher Halt.
+- **Markieren für die Weltkarte.** `/bauplaner markieren <art> [name]`, `/bauplaner markierungen [loeschen <nr>]`; Ablauf und Routen in [LIVE_LINK.md](LIVE_LINK.md), Abschnitt Protokoll 3.
+- **Prüfung.** JUnit `StageSixTest`, `GameMarksTest`, `LiveLinkTest`; Spieltest Fabric und NeoForge führen alle vier Befehle aus und prüfen die Antworten (`scripts/bridge_gametest.mjs`); Browser `tests/e2e/map-depth.e2e.mjs` übernimmt Punkte aus dem Simulator, ohne Doppelte, und macht die Übernahme rückgängig.
+- **Offen.** Gruppen/Sperren aus dem Weltbuilder im Hologramm (GAME-07-S11).

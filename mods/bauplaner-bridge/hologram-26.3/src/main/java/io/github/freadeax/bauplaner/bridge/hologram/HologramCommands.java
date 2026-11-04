@@ -15,7 +15,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 
 /**
- * {@code /bauplaner zeigen|hierher|verschieben|drehen|spiegeln|umschalten|fehler|entfernen|fortschritt|ebene|material|texturen|platzierhilfe|abschnitt|roentgen|leistung|verbinden|ebenen|diagnose}: the same actions as menu and keys, as client commands (no server needed;
+ * {@code /bauplaner zeigen|hierher|verschieben|drehen|spiegeln|umschalten|fehler|packliste|geruest|entfernen|fortschritt|ebene|material|texturen|platzierhilfe|abschnitt|roentgen|leistung|verbinden|ebenen|diagnose}: the same actions as menu and keys, as client commands (no server needed;
  * also used by the game test). Generic over the command source, so every loader registers the same tree
  * with its own client command source; answers go straight to the local chat.
  */
@@ -43,6 +43,8 @@ public final class HologramCommands {
                 HologramCommands.<S>literal("spiegeln").executes(c -> need(c.getSource(), h, h::mirror)),
                 HologramCommands.<S>literal("umschalten").executes(c -> need(c.getSource(), h, h::toggleVisible)),
                 HologramCommands.<S>literal("fehler").executes(c -> finder(c.getSource(), h)),
+                HologramCommands.<S>literal("packliste").executes(c -> packList(c.getSource(), h)),
+                HologramCommands.<S>literal("geruest").executes(c -> scaffold(c.getSource(), h)),
                 HologramCommands.<S>literal("entfernen").executes(c -> need(c.getSource(), h, h::remove)),
                 HologramCommands.<S>literal("ebene").executes(c -> layer(c.getSource(), h))
                         .then(HologramCommands.<S>literal("alle").executes(c -> need(c.getSource(), h, () -> h.setLayers(Hologram.Layers.ALL, h.layerY()))))
@@ -79,6 +81,15 @@ public final class HologramCommands {
                         .then(HologramCommands.<S>literal("port").then(HologramCommands.<S, Integer>argument("port", IntegerArgumentType.integer(1024, 65535))
                                 .executes(c -> said(link.setPort(IntegerArgumentType.getInteger(c, "port")))))),
                 // Weltplan layers (GAME-08): list, hide/show one, show all.
+                HologramCommands.<S>literal("markieren")
+                        .then(HologramCommands.<S, String>argument("art", StringArgumentType.word())
+                                .suggests((c, b) -> { io.github.freadeax.bauplaner.mod.live.GameMarks.TYPES.stream().sorted().forEach(b::suggest); return b.buildFuture(); })
+                                .executes(c -> mark(link, StringArgumentType.getString(c, "art"), null))
+                                .then(HologramCommands.<S, String>argument("name", StringArgumentType.greedyString())
+                                        .executes(c -> mark(link, StringArgumentType.getString(c, "art"), StringArgumentType.getString(c, "name"))))),
+                HologramCommands.<S>literal("markierungen").executes(c -> marksList(link))
+                        .then(HologramCommands.<S>literal("loeschen").then(HologramCommands.<S, String>argument("nr", StringArgumentType.word())
+                                .executes(c -> markRemove(link, StringArgumentType.getString(c, "nr"))))),
                 HologramCommands.<S>literal("ebenen").executes(c -> layers(link))
                         .then(HologramCommands.<S>literal("alle").executes(c -> { link.showAllLayers(); return said("Alle Weltplan-Ebenen sichtbar."); }))
                         .then(HologramCommands.<S, String>argument("ebene", StringArgumentType.greedyString())
@@ -190,6 +201,100 @@ public final class HologramCommands {
         var c = h.check();
         say(s, "Nächster Fehler bei " + c.worldX(i) + " " + c.worldY(i) + " " + c.worldZ(i) + ": erwartet " + c.expected(i) + ", gefunden " + c.found(i) + ".");
         return 1;
+    }
+
+    /**
+     * GAME-07 stage 6: what to pack for the shown part of the plan (layer, section, „meine Abschnitte“):
+     * open minus carried, in stacks and shulker boxes, and which team storage chest holds it.
+     */
+    private static int packList(Object s, Hologram h) {
+        if (!h.active()) return fail(s, "Kein Plan platziert.");
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null) return 0;
+        var open = io.github.freadeax.bauplaner.mod.Materials.of(h.check(), h.filter());
+        var inv = McCompat.carried(mc.player);
+        java.util.Map<String, Integer> carried = new java.util.HashMap<>();
+        for (var l : open) {
+            var item = MaterialScreen.item(l.id());
+            if (item != net.minecraft.world.item.Items.AIR) carried.put(l.id(), inv.getOrDefault(item, 0));
+        }
+        int free = 0;
+        var main = mc.player.getInventory();
+        for (int i = 0; i < 36 && i < main.getContainerSize(); i++) if (main.getItem(i).isEmpty()) free++;
+        var team = HologramClient.current() == null ? null : HologramClient.current().team().state();
+        var stores = team == null ? java.util.List.<io.github.freadeax.bauplaner.mod.team.TeamState.Store>of() : team.stores();
+        var r = io.github.freadeax.bauplaner.mod.PackList.of(open, carried, id -> {
+            var item = MaterialScreen.item(id);
+            return item == net.minecraft.world.item.Items.AIR ? 64 : item.getDefaultMaxStackSize();
+        }, stores, new double[] { mc.player.getX(), mc.player.getY(), mc.player.getZ() }, free);
+        if (r.lines().isEmpty()) { say(s, "Packliste: nichts offen" + (h.filter().allSections() ? "." : " im gezeigten Teil.")); return 0; }
+        int fetch = r.lines().stream().mapToInt(io.github.freadeax.bauplaner.mod.PackList.Line::fetch).sum();
+        say(s, "Packliste" + (h.filter().allSections() ? "" : " (gezeigter Teil)") + ": " + fetch + " Blöcke holen = " + r.stacks() + " Stapel"
+                + (r.boxes() > 1 ? " ≈ " + r.boxes() + " Shulkerkisten" : "") + " · frei im Inventar " + r.freeSlots() + " Plätze" + (r.fits() ? "" : " – passt nicht auf einmal")
+                + (r.missing() > 0 && !stores.isEmpty() ? " · " + r.missing() + " in keinem Lager" : ""));
+        int n = 0;
+        for (var l : r.lines()) {
+            if (l.fetch() == 0) continue;
+            if (n++ >= 12) { say(s, "  … weitere: Plan-Menü (J) → Materialliste"); break; }
+            String name = McCompat.blockName(io.github.freadeax.bauplaner.mod.BlockState.parse(l.id()));
+            StringBuilder b = new StringBuilder("  " + name + ": " + l.fetch() + " (" + l.stacks() + " Stapel" + (l.carried() > 0 ? ", dabei " + l.carried() : "") + ")");
+            for (var t : l.from()) b.append(" · ").append(t.count()).append(" aus „").append(t.store()).append("“ ").append(t.pos()[0]).append(' ').append(t.pos()[1]).append(' ').append(t.pos()[2]).append(" (").append(t.distance()).append(" m)");
+            if (l.missing() > 0 && !stores.isEmpty()) b.append(" · fehlt ").append(l.missing());
+            say(s, b.toString());
+        }
+        return r.stacks();
+    }
+
+    /** GAME-07 stage 6: open blocks that need a scaffold (nothing to place against) or would fall (sand over air). */
+    private static int scaffold(Object s, Hologram h) {
+        if (!h.active()) return fail(s, "Kein Plan platziert.");
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.level == null) return 0;
+        var c = h.check();
+        var r = io.github.freadeax.bauplaner.mod.Scaffold.of(c, h.filter(), McCompat.liveReader(mc.level), mc.player.getX(), mc.player.getY(), mc.player.getZ());
+        if (r.total() == 0) { h.setTarget(-1); say(s, "Gerüst: kein offener Block hängt frei oder fällt – alles lässt sich direkt setzen."); return 0; }
+        say(s, "Gerüst nötig: " + r.hanging() + " Blöcke ohne Nachbarn zum Ansetzen, " + r.falling() + " fallende Blöcke ohne Halt darunter.");
+        if (r.nearestHanging() >= 0) {
+            int i = r.nearestHanging();
+            say(s, "  Nächster hängender bei " + c.worldX(i) + " " + c.worldY(i) + " " + c.worldZ(i) + " (" + McCompat.blockName(c.expected(i)) + "): Hilfsblock oder Gerüst daneben setzen, danach wieder entfernen.");
+        }
+        if (r.nearestFalling() >= 0) {
+            int i = r.nearestFalling();
+            say(s, "  Nächster fallender bei " + c.worldX(i) + " " + c.worldY(i) + " " + c.worldZ(i) + " (" + McCompat.blockName(c.expected(i)) + "): erst darunter stützen.");
+        }
+        h.setTarget(r.nearestHanging() >= 0 ? r.nearestHanging() : r.nearestFalling());
+        return r.total();
+    }
+
+    /** Live protocol 3: a point where the player stands, for the Weltkarte; waits in the game until the planner takes it. */
+    private static int mark(LiveLink link, String type, String name) {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null || mc.level == null) return 0;
+        var pos = mc.player.blockPosition();
+        try {
+            var m = link.outbox().add(type.toLowerCase(java.util.Locale.ROOT), name, McCompat.dimension(mc.level), pos.getX(), pos.getY(), pos.getZ(),
+                    mc.player.getName().getString(), java.time.Instant.now());
+            say(null, "Markiert: " + io.github.freadeax.bauplaner.mod.live.WorldMarks.typeLabel(m.type()) + " „" + m.name() + "“ bei " + m.x() + " " + m.y() + " " + m.z()
+                    + ". Die Weltkarte der Website übernimmt sie beim nächsten Abgleich (" + link.outbox().size() + " warten).");
+            return 1;
+        } catch (IllegalArgumentException e) {
+            return fail(null, e.getMessage());
+        }
+    }
+
+    private static int marksList(LiveLink link) {
+        var list = link.outbox().list();
+        if (list.isEmpty()) return said("Keine Markierungen aus dem Spiel warten. Neue: /bauplaner markieren <art> [name]");
+        say(null, list.size() + " Markierung" + (list.size() == 1 ? "" : "en") + " warten auf die Weltkarte:");
+        for (int i = 0; i < list.size() && i < 15; i++) {
+            var m = list.get(i);
+            say(null, "  " + (i + 1) + ". " + io.github.freadeax.bauplaner.mod.live.WorldMarks.typeLabel(m.type()) + " „" + m.name() + "“ bei " + m.x() + " " + m.y() + " " + m.z());
+        }
+        return list.size();
+    }
+
+    private static int markRemove(LiveLink link, String nr) {
+        return link.outbox().remove(nr) ? said("Markierung " + nr + " gelöscht.") : fail(null, "Keine wartende Markierung " + nr + ". Liste: /bauplaner markierungen");
     }
 
     private static void say(Object s, String text) { McCompat.chat(Minecraft.getInstance(), Component.literal("[Bauplaner] " + text)); }

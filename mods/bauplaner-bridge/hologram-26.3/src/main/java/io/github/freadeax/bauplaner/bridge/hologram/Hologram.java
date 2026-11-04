@@ -469,4 +469,7 @@ public final class Hologram {
     }
 
     public void clearTarget() { target = -1; }
+
+    /** Highlight one cell like the error finder (scaffold hints); -1 switches it off. */
+    public void setTarget(int i) { target = check == null || i >= check.size() ? -1 : i; }
 }

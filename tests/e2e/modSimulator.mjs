@@ -50,7 +50,7 @@ export function startModSimulator(port, options = {}) {
     pairingCode: null, tokens: new Set(),
     player: { x: 40.5, y: 65, z: -20.5, yaw: 0, pitch: 0, dimension: 'minecraft:overworld', name: 'Philipp' },
     others: [{ name: 'Anna', x: 52.5, y: 64, z: -14.5, yaw: 90 }],
-    hologram: null, marks: [], plans: [], placements: [], requests: [], planBytes: null, teamPushed: null, teamOutbox: [], teamAcked: [], teamRejections: [], teamServerEvents: [], teamLink: 'none', features: options.features ?? ['scan'], protocol: options.protocol ?? 1,
+    hologram: null, marks: [], plans: [], placements: [], requests: [], planBytes: null, teamPushed: null, teamOutbox: [], teamAcked: [], teamRejections: [], teamServerEvents: [], teamLink: 'none', gameMarks: [], gameMarksAcked: [], features: options.features ?? ['scan'], protocol: options.protocol ?? 1,
     // LINK-03/02: pairing by click and a stand-in for the Paper plugin behind the game (LinkCore rules).
     asks: [], op: true,
     plugin: { serverId: 'srv_simserver1', name: 'LMNT Testserver', owners: [], controls: [],
@@ -174,6 +174,15 @@ export function startModSimulator(port, options = {}) {
           }
         }
         state.marks = m.items; return send(200, { marks: m.items.length });
+      }
+      if (route === 'GET /v1/marks/game') {
+        if (!state.features.includes('marks3')) return send(404, { error: 'Unbekannte Adresse.' });
+        return send(200, { marks: state.gameMarks });
+      }
+      if (route === 'POST /v1/marks/game/ack') {
+        if (!state.features.includes('marks3')) return send(404, { error: 'Unbekannte Adresse.' });
+        const ids = JSON.parse(body.toString()).ids; state.gameMarksAcked.push(...ids);
+        state.gameMarks = state.gameMarks.filter(m => !ids.includes(m.id)); return send(200, { removed: ids.length });
       }
       if (route === 'GET /v1/players') {
         if (!state.features.includes('players')) return send(404, { error: 'Unbekannte Adresse.' });

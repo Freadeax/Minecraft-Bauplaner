@@ -194,7 +194,7 @@ public final class CommandScreen extends Screen {
     /** Status tab: the most used buttons. */
     private static List<Entry> quick() {
         List<Entry> out = new ArrayList<>();
-        for (String id : List.of("verbinden.zulassen", "team.erlauben", "fortschritt", "fehler", "material", "team", "team.material", "team.mein", "team.alle", "team.korb", "team.status",
+        for (String id : List.of("verbinden.zulassen", "team.erlauben", "fortschritt", "fehler", "material", "packliste", "geruest", "team", "team.material", "team.mein", "team.alle", "team.korb", "team.status",
                 "bp.team", "bp.lager.liste", "bp.lager.bedarf", "bp.beitrag", "verbinden.status", "diagnose"))
             out.add(CommandCatalog.byId(id));
         return out;

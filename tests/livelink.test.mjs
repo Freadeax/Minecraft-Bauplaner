@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {
   readLiveHello, liveCan, readLivePairing, readLiveStatus, readLiveChunks, classifyRuns, chunkColumns, wantedChunks, chunkQuery, liveSurvey, compareHologram, hologramProject,
   liveShare, playerBlock, originFromPlayer, planUploadQuery, marksBody, liveBaseUrl, originAllowed, columnAt, encodeSurvey, decodeSurvey, createPlacement,
-  LIVE_PROTOCOL, SURVEY_UNKNOWN, marksForMod, readLivePlayers,
+  LIVE_PROTOCOL, SURVEY_UNKNOWN, marksForMod, readLivePlayers, readLiveGameMarks, gameMarksToItems, checkWorldItem, GAME_MARKS_LAYER,
 } from '../dist/domain/src/index.js';
 
 const hello = { app: 'bauplaner-mod', protocol: LIVE_PROTOCOL, mod: { version: '0.5.0', loader: 'fabric', minecraft: '26.3' }, pairing: true };
@@ -134,4 +134,20 @@ test('Übergabe: Planabfrage, Markierungen, Adresse, Ursprünge', () => {
   assert.ok(!originAllowed('https://freadeax.github.io.evil.example'));
   assert.ok(!originAllowed('http://localhost.evil.example'));
   assert.ok(!originAllowed('null'));
+});
+
+test('Protokoll 3: Markierungen aus dem Spiel werden Weltplan-Punkte, ohne Doppelte', () => {
+  const marks = readLiveGameMarks({ marks: [
+    { id: 'gx1-0', type: 'lager', name: 'Erzlager', dimension: 'minecraft:overworld', x: 4, y: 70, z: -3, at: '2026-11-04T09:15:00Z', by: 'Anna' },
+    { id: 'gx1-1', type: 'portal', name: 'Portal', dimension: 'minecraft:the_nether', x: 1, y: 40, z: 2, at: '2026-11-04T09:16:00Z' },
+  ] });
+  assert.equal(marks[1].by, null);
+  assert.throws(() => readLiveGameMarks({ marks: [{ ...marks[0], type: 'bombe' }] }), /Punktart/);
+  assert.throws(() => readLiveGameMarks({ marks: [{ ...marks[0], id: '../x' }] }), /ID/);
+  const { items, ack } = gameMarksToItems(marks, [{ kind: 'point', id: 'spiel-gx1-1', name: 'Portal', note: '', dimension: 'minecraft:the_nether', type: 'portal', x: 1, y: 40, z: 2 }]);
+  assert.deepEqual(ack, ['gx1-0', 'gx1-1'], 'auch schon übernommene Punkte werden im Spiel abgehakt');
+  assert.equal(items.length, 1);
+  assert.equal(items[0].layer, GAME_MARKS_LAYER);
+  assert.match(items[0].note, /von Anna am 2026-11-04 09:15/);
+  assert.deepEqual(checkWorldItem(items[0]), items[0], 'gültiger Weltplan-Eintrag');
 });

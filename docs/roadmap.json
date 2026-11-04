@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T09:16:18.610Z",
+  "updatedAt": "2026-11-04T09:25:01.963Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -4796,14 +4796,19 @@
         },
         {
           "id": "GAME-07-S07",
-          "title": "Stufe 6: Gruppen/Sperren aus dem Weltbuilder, Abschnitt als Packliste mit Kistenstandorten, Gerüst-Hinweise für hängende Blöcke.",
+          "title": "Stufe 6: Abschnitt als Packliste mit Kistenstandorten (/bauplaner packliste), Gerüst-Hinweise für hängende und fallende Blöcke (/bauplaner geruest) (0.13.0).",
+          "done": true
+        },
+        {
+          "id": "GAME-07-S11",
+          "title": "Stufe 6b: Gruppen/Sperren aus dem Weltbuilder im Hologramm (gesperrte Teile ausgrauen, Gruppe als Filter).",
           "done": false
         }
       ],
       "acceptance": [
         "Reiner Client: keine Pakete an den Server, keine Weltänderung, kein automatisches Bauen, keine Abhängigkeit von WorldEdit oder Litematica; Ergebnis des Live-Abgleichs gleicht dem Website-Vergleich."
       ],
-      "next": "Philipp testet 0.7.0 auf server.lmnt-gaming.net (Bauabschnitte aus seinem Projekt, Röntgensicht mit Shader); danach Stufe 6.",
+      "next": "Philipp prüft Packliste und Gerüst (0.13.0, TESTPLAN MOD-17) im echten Spiel; danach Stufe 6b (Gruppen/Sperren aus dem Weltbuilder).",
       "blockers": [],
       "evidence": [
         {
@@ -4851,7 +4856,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T21:12:09.599Z",
+      "updatedAt": "2026-11-04T09:25:01.963Z",
       "area": "MOD",
       "thread": "Teambau und Befehle in der Mod ausbauen",
       "philipp": [
@@ -4907,8 +4912,8 @@
         },
         {
           "id": "GAME-08-S05",
-          "title": "Protokoll 3: Markierungen im Spiel setzen und zurück in den Weltplan (Zeitstempel je Eintrag, Abgleich mit MAP-06), siehe LIVE_LINK.md.",
-          "done": false
+          "title": "Protokoll 3: Markierungen im Spiel setzen und zurück in den Weltplan (Zeitstempel je Eintrag, Abgleich mit MAP-06), siehe LIVE_LINK.md (0.13.0, Merkmal marks3).",
+          "done": true
         }
       ],
       "acceptance": [
@@ -4916,7 +4921,7 @@
         "marks mit Zonen und neuen Punktarten werden angenommen und gezeichnet; Antworten entsprechen den Lesern in packages/domain/src/liveLink.ts (readLivePlayers).",
         "Der Simulator tests/e2e/modSimulator.mjs mit {protocol: 2, features: ['scan','marks2','players']} bleibt das Vorbild für Formen und Fehlerfälle."
       ],
-      "next": "Protokoll 3: Rückrichtung „Markierung im Spiel setzen → Weltplan“ mit Zeitstempel je Eintrag (siehe LIVE_LINK.md); Forge und Paper ohne Live-Verbindung.",
+      "next": "Philipp prüft Protokoll 3 im echten Spiel (TESTPLAN MOD-17); Forge und Paper ohne Live-Verbindung.",
       "blockers": [],
       "evidence": [
         {
@@ -4948,7 +4953,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:57:38.742Z",
+      "updatedAt": "2026-11-04T09:25:01.963Z",
       "area": "MOD",
       "thread": "Teambau und Befehle in der Mod ausbauen",
       "philipp": [
@@ -16559,6 +16564,64 @@
           "done": 4,
           "total": 5,
           "next": "Abnahme mit Mitspielern (TEAMBAU-25)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T09:25:01.963Z",
+      "kind": "progress",
+      "items": [
+        "GAME-07",
+        "GAME-08"
+      ],
+      "summary": "Mod 0.13.0: Stufe 6 (/bauplaner packliste mit Stapeln, Shulkerkisten und nächster Team-Lagerkiste; /bauplaner geruest für hängende und fallende Blöcke) und Protokoll 3 (/bauplaner markieren → GET /v1/marks/game, Weltkarte „In den Weltplan übernehmen“ als ein Rückgängig-Schritt, Quittung, keine Doppelten). JUnit, Spieltests Fabric und NeoForge, Browser map-depth grün; offen Philipps Spieltest MOD-17 und Stufe 6b (Gruppen/Sperren).",
+      "files": [
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/map/LiveGamePanel.tsx",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "apps/web/src/views/map/liveClient.ts",
+        "docs/TESTING.md",
+        "docs/architecture/LIVE_LINK.md",
+        "docs/architecture/MOD_HOLOGRAM.md",
+        "docs/testing/TESTPLAN.md",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/CommandScreen.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Hologram.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PackList.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Scaffold.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/GameMarks.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/GameMarksTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/StageSixTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/liveLink.ts",
+        "scripts/bridge_gametest.mjs",
+        "tests/e2e/map-depth.e2e.mjs",
+        "tests/e2e/modSimulator.mjs",
+        "tests/livelink.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-07",
+          "status": "implemented",
+          "done": 9,
+          "total": 11,
+          "next": "Philipp prüft Packliste und Gerüst (0.13.0, TESTPLAN MOD-17) im echten Spiel; danach Stufe 6b (Gruppen/Sperren aus dem Weltbuilder)."
+        },
+        {
+          "id": "GAME-08",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Philipp prüft Protokoll 3 im echten Spiel (TESTPLAN MOD-17); Forge und Paper ohne Live-Verbindung."
         }
       ]
     }

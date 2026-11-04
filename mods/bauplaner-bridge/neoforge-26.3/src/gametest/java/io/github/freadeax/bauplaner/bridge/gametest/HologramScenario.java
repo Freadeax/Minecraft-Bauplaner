@@ -40,6 +40,10 @@ final class HologramScenario {
         step(out, 10, mc -> KeyMapping.click(InputConstants.Type.KEYBOARD.getOrCreate(InputConstants.KEY_J)));
         step(out, 3, mc -> { expectScreen(mc, "PlanScreen", "Taste J öffnet nicht das Planmenü"); mc.gui.setScreen(null); });
         // GAME-10: command page from the chat command (opens on the next tick), the mod's answers land on the page.
+        step(out, 3, mc -> s.command("bauplaner packliste"));
+        step(out, 3, mc -> s.command("bauplaner geruest"));
+        step(out, 3, mc -> s.command("bauplaner markieren lager Testlager"));
+        step(out, 3, mc -> s.command("bauplaner markierungen loeschen 1"));
         step(out, 5, mc -> s.command("bauplaner befehle"));
         step(out, 3, mc -> {
             expectScreen(mc, "CommandScreen", "/bauplaner befehle öffnet nicht die Befehlsseite");

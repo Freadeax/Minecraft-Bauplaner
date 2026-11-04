@@ -94,6 +94,9 @@ public final class LiveLinkServer implements AutoCloseable {
          * plugin checks that the player is operator); POST /v1/server/control {owner,seq,body,sig}: a signed
          * control message, passed on unchanged. All three go over the team channel and answer 409 without it.
          */
+        /** Live protocol 3 (GAME-08): points set in the game, waiting for the Weltkarte. */
+        default String gameMarks() throws Exception { throw new HttpError(404, "Diese Mod kennt keine Markierungen aus dem Spiel."); }
+        default String gameMarksAck(Map<String, Object> body) throws Exception { throw new HttpError(404, "Diese Mod kennt keine Markierungen aus dem Spiel."); }
         default String serverInfo() throws Exception { throw new HttpError(404, "Diese Mod kennt keine Server-Kopplung."); }
         default String serverClaim(Map<String, Object> body) throws Exception { throw new HttpError(404, "Diese Mod kennt keine Server-Kopplung."); }
         default String serverControl(Map<String, Object> body) throws Exception { throw new HttpError(404, "Diese Mod kennt keine Server-Kopplung."); }
@@ -103,7 +106,7 @@ public final class LiveLinkServer implements AutoCloseable {
     public record Binary(String fileName, byte[] bytes) {}
 
     /** What this mod can do beyond protocol 1; the website enables buttons by it. */
-    public static final List<String> FEATURES = List.of("scan", "marks2", "players", "bigplans", "team", "pairask", "server");
+    public static final List<String> FEATURES = List.of("scan", "marks2", "players", "bigplans", "team", "pairask", "server", "marks3");
 
     public record Info(String version, String loader, String minecraft) {}
 
@@ -379,6 +382,8 @@ public final class LiveLinkServer implements AutoCloseable {
                     return ok(h, handler.plan(r.query(), r.body()));
                 case "POST /v1/placement": return ok(h, handler.placement(Json.obj(Json.parse(text(r, 65_536)), "Lage")));
                 case "POST /v1/marks": return ok(h, handler.marks(Json.obj(Json.parse(text(r, MAX_JSON_BYTES)), "Markierungen")));
+                case "GET /v1/marks/game": return ok(h, handler.gameMarks());
+                case "POST /v1/marks/game/ack": return ok(h, handler.gameMarksAck(Json.obj(Json.parse(text(r, 65_536)), "Quittung")));
                 case "POST /v1/section": return ok(h, handler.section(Json.obj(Json.parse(text(r, 4_096)), "Abschnitt")));
                 case "GET /v1/players": return ok(h, handler.players());
                 case "GET /v1/team": return ok(h, handler.teamGet());

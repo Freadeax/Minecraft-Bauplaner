@@ -4949,3 +4949,48 @@ Team live im Alltag: Chip und Meldungen in jedem Reiter, Anwesenheit mit Abschni
 - `tests/e2e/team-room.e2e.mjs`
 - `docs/architecture/TEAM_LIVE.md`
 
+## 2026-11-04T09:25:01.963Z · progress
+
+**Aufgaben:** GAME-07, GAME-08
+
+Mod 0.13.0: Stufe 6 (/bauplaner packliste mit Stapeln, Shulkerkisten und nächster Team-Lagerkiste; /bauplaner geruest für hängende und fallende Blöcke) und Protokoll 3 (/bauplaner markieren → GET /v1/marks/game, Weltkarte „In den Weltplan übernehmen“ als ein Rückgängig-Schritt, Quittung, keine Doppelten). JUnit, Spieltests Fabric und NeoForge, Browser map-depth grün; offen Philipps Spieltest MOD-17 und Stufe 6b (Gruppen/Sperren).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-07 | 🧩 Implementiert · Abnahme offen | 9/11 | Philipp prüft Packliste und Gerüst (0.13.0, TESTPLAN MOD-17) im echten Spiel; danach Stufe 6b (Gruppen/Sperren aus dem Weltbuilder). |
+| GAME-08 | 🧩 Implementiert · Abnahme offen | 5/5 | Philipp prüft Protokoll 3 im echten Spiel (TESTPLAN MOD-17); Forge und Paper ohne Live-Verbindung. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/map/LiveGamePanel.tsx`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/map/liveClient.ts`
+- `docs/TESTING.md`
+- `docs/architecture/LIVE_LINK.md`
+- `docs/architecture/MOD_HOLOGRAM.md`
+- `docs/testing/TESTPLAN.md`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/CommandScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Hologram.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PackList.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Scaffold.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/GameMarks.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/GameMarksTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/StageSixTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`
+- `mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/liveLink.ts`
+- `scripts/bridge_gametest.mjs`
+- `tests/e2e/map-depth.e2e.mjs`
+- `tests/e2e/modSimulator.mjs`
+- `tests/livelink.test.mjs`
+

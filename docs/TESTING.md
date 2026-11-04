@@ -951,3 +951,10 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `tests/grossprojekte.test.mjs`: 11/11 bestanden mit 13 Großprojekten; Residenzstadt und Klosterdorf je 27 Gebäude ohne Voxelkonflikt.
 - Sichtprüfung im Browser: beide Großbauten in 3D (Iso, Nord, Draufsicht), beide Großprojekte im Planer mit Lageplan.
 - Grenzen: Abnahme im Spiel offen (BIB-13).
+
+## GAME-07-S07, GAME-08-S05 · Mod 0.13.0: Packliste, Gerüst, Markierungen aus dem Spiel · 04.11.2026 · Claude
+
+- Mod-Kern (JUnit): `StageSixTest` (Packliste zieht Getragenes ab, Stapelgrößen, nächste Lagerkiste zuerst, Shulkerkisten; Gerüst: nur der freischwebende Block hängt, Sand über Luft fällt, mit Block darunter nicht), `GameMarksTest` (Ausgang übersteht Neustart, Quittung/Löschen, Zeitformat, Merkmal `marks3`), `LiveLinkTest`, `CommandCatalogTest` (neue Befehle auf der Befehlsseite).
+- Spiel: `scripts/test_bridge_ingame.sh` (Fabric 26.3) und `scripts/test_bridge_ingame_forge.sh neoforge` bestanden; beide führen `packliste`, `geruest`, `markieren lager Testlager` und `markierungen loeschen 1` aus, `scripts/bridge_gametest.mjs` prüft die Antworten (Gerüst am Testplan: kein hängender Block).
+- Website: `tests/livelink.test.mjs` (Leser `readLiveGameMarks`, `gameMarksToItems` ohne Doppelte, gültiger Weltplan-Eintrag); Browser `tests/e2e/map-depth.e2e.mjs` 3/3 (Simulator mit `marks3`: zwei Punkte übernehmen, Quittung, verlorene Quittung legt nichts doppelt an, ein Rückgängig).
+- Grenzen: kein Test auf Philipps Server und mit echten Lagerkisten im Spiel (MOD-17); Gruppen/Sperren aus dem Weltbuilder (GAME-07-S11) offen.

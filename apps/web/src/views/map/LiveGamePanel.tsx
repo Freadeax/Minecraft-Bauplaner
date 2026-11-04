@@ -33,6 +33,8 @@ export interface LiveActions {
   readonly onTrailToPath?: (() => void) | null;
   /** What the Weltplan sending would leave out for this mod (older mod without `marks2`). */
   readonly marksSkipped?: string | null;
+  /** Protocol 3 (mod 0.13.0): points set in the game with /bauplaner markieren, waiting for the Weltplan. */
+  readonly gameMarks?: { readonly count: number; readonly names: string; readonly onAdopt: (() => void) | null } | null;
 }
 
 /**
@@ -142,6 +144,10 @@ export function LiveGamePanel({ game, actions }: { game: LiveGame; actions: Live
         <span className="muted small">{actions.marksInfo}</span>
       </div>
       {actions.marksSkipped && <p className="warn-text small" role="note">{actions.marksSkipped}</p>}
+      {actions.gameMarks && actions.gameMarks.count > 0 && <div className="button-row live-game-marks" role="status">
+        <span><strong>{actions.gameMarks.count} {actions.gameMarks.count === 1 ? 'Markierung' : 'Markierungen'} aus dem Spiel</strong> <span className="muted small">({actions.gameMarks.names})</span></span>
+        <button className="primary" disabled={!actions.gameMarks.onAdopt} onClick={() => actions.gameMarks!.onAdopt?.()} title="Legt die im Spiel mit /bauplaner markieren gesetzten Punkte im Weltplan an, Ebene „Aus dem Spiel“. Rückgängig mit Strg+Z.">In den Weltplan übernehmen</button>
+      </div>}
       {actions.onAutoMarks && <label className="check-inline live-auto-marks"><input type="checkbox" checked={!!actions.autoMarks} onChange={e => actions.onAutoMarks!(e.target.checked)} /> Weltplan automatisch abgleichen (jede Änderung erscheint gleich im Spiel)</label>}
       <p className="muted small"><button className="text-button" onClick={() => void game.disconnect()}>Trennen</button> · Die Kopplung bleibt in diesem Browser gespeichert, bis du trennst.</p>
     </div>}

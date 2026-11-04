@@ -134,6 +134,8 @@ public final class CommandCatalog {
         // Hologram (client)
         c(m, HOLOGRAM, "fortschritt", "Fortschritt", "fortschritt", "Prozent, richtig, fehlt, falsch im Chat.", Need.PLAN);
         c(m, HOLOGRAM, "fehler", "Nächster Fehler", "fehler", "Markiert den nächsten falschen oder fehlenden Block.", Need.PLAN);
+        c(m, HOLOGRAM, "packliste", "Packliste", "packliste", "Was du für den gezeigten Teil holen musst: Stapel, Shulkerkisten, aus welcher Lagerkiste.", Need.PLAN);
+        c(m, HOLOGRAM, "geruest", "Gerüst-Hinweise", "geruest", "Offene Blöcke ohne Nachbarn zum Ansetzen und fallende Blöcke ohne Halt; markiert den nächsten.", Need.PLAN);
         c(m, HOLOGRAM, "umschalten", "Ein-/ausblenden", "umschalten", "Hologramm sichtbar oder verborgen.", Need.PLAN);
         c(m, HOLOGRAM, "roentgen", "Röntgensicht", "roentgen", "Offene Blöcke auch durch Wände.", Need.PLAN);
         c(m, HOLOGRAM, "texturen", "Texturen an/aus", "texturen", "Echte Blockmodelle oder einfache Kisten.", Need.PLAN);
@@ -232,6 +234,11 @@ public final class CommandCatalog {
         c(m, LINK, "verbinden.status", "Verbindungsstatus", "verbinden status", "Gekoppelte Browser und Port.", Need.NONE);
         c(m, LINK, "verbinden.aus", "Alle Browser trennen", "verbinden aus", "Kopplungen aufheben.", Need.NONE);
         c(m, LINK, "ebenen", "Weltplan-Ebenen", "ebenen", "Ebenen von der Live-Karte.", Need.NONE);
+        c(m, LINK, "markieren", "Hier markieren", "markieren", "Punkt an deiner Stelle für die Weltkarte (Lager, Portal, Farm, Gefahr …); die Website übernimmt ihn.", Need.NONE,
+                Arg.choice("art", "anker", "aussicht", "farm", "gefahr", "lager", "notiz", "portal", "rohstoff", "spawn", "treffpunkt", "ziel"), Arg.opt("name", Kind.TEXT));
+        c(m, LINK, "markierungen", "Wartende Markierungen", "markierungen", "Im Spiel gesetzte Punkte, die die Weltkarte noch nicht übernommen hat.", Need.NONE);
+        c(m, LINK, "markierungen.loeschen", "Markierung löschen", "markierungen loeschen", "Wartende Markierung löschen (Nummer aus der Liste).", Need.NONE, Arg.of("nr", Kind.NUMBER));
+
         c(m, LINK, "ebenen.alle", "Alle Ebenen zeigen", "ebenen alle", "Alle Weltplan-Ebenen sichtbar.", Need.NONE);
         // Recording for the website (client, all loaders) and on the server
         c(m, RECORD, "plaene", "Pläne", "plaene", "Pläne im Ordner bauplaner/plans.", Need.NONE);

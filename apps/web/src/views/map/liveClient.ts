@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   LIVE_DEFAULT_PORT, LIVE_FEATURE_PLAYERS, LIVE_TOKEN_HEADER, chunkColumns, chunkQuery, liveBaseUrl, liveCan, marksBody, originAllowed, planUploadQuery,
-  readLiveChunks, readLiveHello, readLivePairing, readLivePlayers, readLiveStatus, readLiveTeam, readLiveTeamPull, readServerClaim, readServerInfo, wantedChunks,
+  readLiveChunks, readLiveHello, readLivePairing, readLiveGameMarks, readLivePlayers, readLiveStatus, readLiveTeam, readLiveTeamPull, readServerClaim, readServerInfo, wantedChunks,
 } from '../../../../../packages/domain/src/index.js';
 import type { ControlMessage, ServerInfo, ServerPairing } from '../../../../../packages/domain/src/index.js';
-import type { LiveChunkColumns, LiveHello, LivePlacement, LivePlayers, LiveStatus, LiveTeam, LiveTeamPull, TeamLinkState, TeamServerFile, WorldItem } from '../../../../../packages/domain/src/index.js';
+import type { LiveChunkColumns, LiveGameMark, LiveHello, LivePlacement, LivePlayers, LiveStatus, LiveTeam, LiveTeamPull, TeamLinkState, TeamServerFile, WorldItem } from '../../../../../packages/domain/src/index.js';
 import { MODEL_MAX_FILE_BYTES } from '../../../../../packages/voxel/src/sizeLimits.js';
 
 /**
@@ -124,6 +124,10 @@ export const liveApi = {
   unpair: async (port: number, token: string): Promise<void> => { await call(port, '/v1/unpair', { method: 'POST', token, body: '{}', headers: { 'Content-Type': 'application/json' } }); },
   /** Other players the client sees (feature `players`, protocol 2). */
   players: async (port: number, token: string): Promise<LivePlayers> => readLivePlayers(await call(port, '/v1/players', { token, timeoutMs: 4000 })),
+  /** Protocol 3 (feature `marks3`, mod 0.13.0): points set in the game, waiting for the Weltplan. */
+  gameMarks: async (port: number, token: string): Promise<LiveGameMark[]> => readLiveGameMarks(await call(port, '/v1/marks/game', { token, timeoutMs: 4000 })),
+  /** The Weltplan holds these game points now; the game forgets them. */
+  gameMarksAck: async (port: number, token: string, ids: readonly string[]): Promise<void> => { await call(port, '/v1/marks/game/ack', { method: 'POST', token, body: JSON.stringify({ ids }), headers: { 'Content-Type': 'application/json' } }); },
   /** Teambau (feature `team`, mod 0.10.0): the team view for the game. */
   teamPush: async (port: number, token: string, state: TeamLinkState): Promise<{ inPlan: number; sections: number }> => {
     const r = await call(port, '/v1/team', { method: 'POST', token, body: JSON.stringify(state), headers: { 'Content-Type': 'application/json' } }) as { inPlan?: unknown; sections?: unknown } | null;
