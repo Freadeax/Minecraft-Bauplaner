@@ -252,3 +252,49 @@ test('integration: planSite feeds the analysis, smelts per section, pruning keep
   const pruned = pruneSite(site, { instances: [] });
   assert.equal(productionOf(pruned).farms.length, 1); assert.equal('instanceId' in productionOf(pruned).farms[0], false);
 });
+
+test('PROD-05: farm output from team storage chests – server yield reports, hopper fallback, suggestions', async () => {
+  const { teamChests, chestYield, suggestChests, CHEST_GAP_MINUTES } = await import('../dist/domain/src/index.js');
+  const ev = (id, at, body) => ({ id, at, by: 'server', origin: 'server', ...body });
+  const t0 = Date.parse('2026-11-04T10:00:00Z'), iso = ms => new Date(t0 + ms).toISOString();
+  const events = [
+    ev('c1', iso(0), { kind: 'store.chest', chest: 'kiste-rohr', name: 'Rohrtruhe', pos: [10, 64, 10], dimension: 'minecraft:overworld' }),
+    ev('c2', iso(0), { kind: 'store.chest', chest: 'kiste-eisen', name: 'Eisentruhe', pos: [500, 64, 0], dimension: 'minecraft:overworld' }),
+  ];
+  // Hopper bookings every second for 30 min, a 2 h pause (unloaded), then 31 min again → about 61 min running.
+  for (let i = 0; i <= 1800; i += 60) events.push(ev(`m${i}`, iso(i * 1000), { kind: 'store.move', chest: 'kiste-rohr', in: [{ item: 'minecraft:sugar_cane', count: 1 }], via: 'trichter' }));
+  for (let i = 0; i <= 1860; i += 60) events.push(ev(`n${i}`, iso((9000 + i) * 1000), { kind: 'store.move', chest: 'kiste-rohr', in: [{ item: 'minecraft:sugar_cane', count: 1 }], via: 'trichter' }));
+  const team = { schemaVersion: 1, teamId: 't', name: 'T', createdAt: iso(0), founder: 'a', events };
+  assert.deepEqual(teamChests(team).map(c => [c.id, c.hopperIn['minecraft:sugar_cane'] ?? 0]), [['kiste-rohr', 63], ['kiste-eisen', 0]]);
+  const hop = chestYield(team, 'kiste-rohr');
+  assert.equal(hop.basis, 'trichter'); assert.equal(hop.items['minecraft:sugar_cane'], 63);
+  assert.ok(Math.abs(hop.hours - (1800 + 1860 + 1) / 3600) < 0.01, `${hop.hours} h: the 2 h pause counts as unloaded (> ${CHEST_GAP_MINUTES} min)`);
+
+  let site = setProductionSettings(emptySite(), { gatherHoursPerDay: 2, afkHoursPerDay: 0 });
+  site = addFarm(site, { type: 'zuckerrohr', state: 'laeuft', at: ow(12, 64, 12) }, 'rohr');
+  site = addFarm(site, { type: 'eisen', state: 'laeuft' }, 'eisen');
+  const sug = suggestChests(productionOf(site), team);
+  assert.deepEqual(sug.map(s => [s.farmId, s.chest.id]), [['rohr', 'kiste-rohr']]); assert.match(sug[0].why, /sugar_cane/);
+  site = updateFarm(site, 'rohr', { chest: 'kiste-rohr' });
+  assert.equal(productionOf(site).farms[0].chest, 'kiste-rohr');
+  let st = farmStatuses(productionOf(site), team).find(f => f.farm.id === 'rohr');
+  assert.equal(st.rates[0].source, 'Lagerkiste'); assert.equal(st.chest.basis, 'trichter');
+  assert.equal(st.rates[0].perHour, Math.round(63 / hop.hours * 10) / 10);
+
+  // Server reports (store.yield) win: real loaded minutes, matched by farm id even without a linked chest.
+  const withYield = { ...team, events: [...events,
+    ev('y1', iso(3_600_000), { kind: 'store.yield', chest: 'kiste-eisen', farm: 'eisen', items: [{ item: 'minecraft:iron_ingot', count: 300 }, { item: 'minecraft:poppy', count: 20 }], from: iso(0), until: iso(3_600_000), minutes: 60 }),
+    ev('y2', iso(7_200_000), { kind: 'store.yield', chest: 'kiste-eisen', farm: 'eisen', items: [{ item: 'minecraft:iron_ingot', count: 150 }], from: iso(3_600_000), until: iso(7_200_000), minutes: 30 }),
+    ev('y3', iso(7_200_000), { kind: 'store.yield', chest: 'kiste-x', items: 'kaputt', minutes: 5 }),
+  ] };
+  st = farmStatuses(productionOf(site), withYield).find(f => f.farm.id === 'eisen');
+  assert.equal(st.chest.basis, 'server'); assert.equal(st.chest.hours, 1.5); assert.equal(st.chest.bookings, 2);
+  assert.equal(st.rates.find(r => r.itemId === 'minecraft:iron_ingot').perHour, 300);
+  assert.equal(st.rates[0].source, 'Lagerkiste');
+  // Analysis uses the team of the site; no stock is booked.
+  const r = analyzeProduction({ site: { ...site, team: withYield }, overview: overview([['s', [['minecraft:raw_iron', 600]]]]), pace: DEFAULT_PACE });
+  assert.equal(r.coverage[0].autoPerDay, 600, '300/h · 2 h'); assert.deepEqual(site.stock, {});
+  // A removed chest is reported.
+  const gone = { ...team, events: [...events, ev('rm', iso(9_999_999), { kind: 'store.chest', chest: 'kiste-rohr', name: 'Rohrtruhe', pos: [10, 64, 10], dimension: 'minecraft:overworld', remove: true })] };
+  assert.ok(farmStatuses(productionOf(site), gone).find(f => f.farm.id === 'rohr').issues.some(i => /gibt es im Team-Lager nicht mehr/.test(i)));
+});

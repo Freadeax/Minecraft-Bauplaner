@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import {
   addFarm, analyzeProduction, COVER_WAY_LABEL, detectFarms, FARM_GROUPS, FARM_MODE_LABEL, FARM_RANGE_LABEL, FARM_STATE_LABEL, FARM_TYPES, farmCostOf, farmsOnMap, farmType,
   logHarvest, MAX_UNITS, newWorldItemId, paceOf, planProgram, productionOf, productionText, programOf, removeFarm, removeHarvest, setProductionSettings, siteOf, siteOperation,
-  splitGathering, updateFarm, worldDimensionOf, SUGGESTION_TARGET_DAYS, MIN_SAVED_HOURS,
+  splitGathering, updateFarm, worldDimensionOf, teamChests, suggestChests, SUGGESTION_TARGET_DAYS, MIN_SAVED_HOURS,
 } from '../../../../../packages/domain/src/index.js';
 import type {
   AfkSpot, FarmCost, FarmDimension, FarmPlace, FarmState, FarmStatus, FarmSuggestion, GatherAssignment, ProductionCoverageLine, ProductionReport, SitePlan, WorldItem,
@@ -192,7 +192,7 @@ function FarmCard({ f, site, save, open, onToggle, sitePlace, onMap }: { f: Farm
         <button onClick={() => { if (!log.length || window.confirm(`„${farm.name}“ mit ${log.length} Ernten entfernen? Der eingetragene Lagerbestand bleibt.`)) save(() => removeFarm(site, farm.id), `Farm „${farm.name}“ entfernt`); }} aria-label={`${farm.name} entfernen`}>✕</button>
       </div>
     </div>
-    <div className="prod-rates">{f.rates.map(r => <span key={r.itemId} className={`prod-rate ${r.source === 'gemessen' ? 'measured' : ''}`} title={r.source === 'gemessen' ? `gemessen über ${r.measuredHours} h` : 'Richtwert'}>
+    <div className="prod-rates">{f.rates.map(r => <span key={r.itemId} className={`prod-rate ${r.source !== 'Richtwert' ? 'measured' : ''}`} title={r.source === 'Richtwert' ? 'Richtwert' : `${r.source === 'Lagerkiste' ? 'aus der Sammeltruhe' : 'aus dem Ertragsbuch'} über ${r.measuredHours} h`}>
       <code>{short(r.itemId)}</code> {num(r.perHour)}/h{f.running && r.perDay ? ` · ${num(r.perDay)}/Tag` : ''} <em>{r.source}</em></span>)}</div>
     {f.inputs.length > 0 && <p className="muted">Verbraucht: {f.inputs.map(i => `${short(i.itemId)} ${num(i.perDay)}/Tag (Farmen liefern ${num(i.suppliedPerDay)})`).join(' · ')}</p>}
     {f.issues.length > 0 && <ul className="prod-issues">{f.issues.map(i => <li key={i}>{i}</li>)}</ul>}
@@ -211,6 +211,7 @@ function FarmCard({ f, site, save, open, onToggle, sitePlace, onMap }: { f: Farm
       <div className="prod-place-row"><strong>Ort</strong>
         <PlaceEditor value={farm.at} sitePlace={sitePlace} onCommit={p => save(() => updateFarm(site, farm.id, { at: p }), p ? `Ort von „${farm.name}“ gesetzt` : `Ort von „${farm.name}“ gelöscht`)} />
         {farm.at && !farm.pointId && <button className="link-button" onClick={() => void onMap(farm.name, farm.at!, 'farm')}>Auf Weltkarte eintragen</button>}</div>
+      <ChestLink f={f} site={site} save={save} />
       <p className="muted"><strong>Bedingungen:</strong> {type.needs.join(' · ')} · {FARM_RANGE_LABEL[type.range]}</p>
       <p className="muted"><strong>Richtwert:</strong> {type.basis}</p>
       {f.logistics && <p className="muted"><strong>Logistik:</strong> {formatNumber(f.logistics.itemsPerHour)} Items/h · {f.logistics.hoppers} Trichterstrang · Truhe voll nach {num(f.logistics.chestHours)} h, Doppeltruhe nach {num(f.logistics.doubleChestHours)} h</p>}
@@ -223,7 +224,9 @@ function Found({ detected, mapFarms, site, save, sitePlace, projectId }: { detec
   const prod = productionOf(site);
   const stale = linked.filter(d => { const f = prod.farms.find(x => x.id === d.farmId); return f && f.state !== d.suggested && f.state !== 'aus' && d.suggested === 'laeuft'; });
   const mapNew = mapFarms.filter(m => !m.farmId);
-  if (!newOnes.length && !mapNew.length && !stale.length) return null;
+  const chestSug = suggestChests(prod, site.team);
+  const farmName = (id: string) => prod.farms.find(f => f.id === id)?.name ?? id;
+  if (!newOnes.length && !mapNew.length && !stale.length && !chestSug.length) return null;
   return <section className="site-block" aria-label="Gefundene Farmen">
     <div className="site-head"><h3>Gefunden <small>Farmen im Projekt und auf der <a href="#/karte">Weltkarte</a>, die noch nicht in der Liste stehen</small></h3></div>
     <ul className="prod-found">
@@ -231,6 +234,8 @@ function Found({ detected, mapFarms, site, save, sitePlace, projectId }: { detec
         <button onClick={() => save(() => addFarm(site, { type: d.type.id, name: d.instanceName, instanceId: d.instanceId, state: d.suggested, ...(sitePlace && { at: sitePlace }) }), `Farm „${d.instanceName}“ aus dem Projekt übernommen`)}>Übernehmen ({FARM_STATE_LABEL[d.suggested]})</button></li>)}
       {stale.map(d => <li key={`s-${d.instanceId}`}><span><strong>{d.instanceName}</strong> <small>im Projekt fertig abgehakt – Farm auf „läuft“ setzen?</small></span>
         <button onClick={() => save(() => updateFarm(site, d.farmId!, { state: 'laeuft' }), `„${d.instanceName}“ läuft`)}>Läuft</button></li>)}
+      {chestSug.map(c => <li key={`c-${c.farmId}`}><span><strong>{farmName(c.farmId)} ↔ {c.chest.name}</strong> <small>Lagerkiste des Teams · {c.why}</small></span>
+        <button onClick={() => save(() => updateFarm(site, c.farmId, { chest: c.chest.id }), `„${farmName(c.farmId)}“ mit Lagerkiste „${c.chest.name}“ verknüpft`)}>Als Sammeltruhe verknüpfen</button></li>)}
       {mapNew.map(m => <li key={m.pointId}><span><strong>{m.name}</strong> <small>Kartenpunkt · {placeText(m.at)}{m.type ? ` · erkannt als ${m.type.name}` : ' · Art bitte wählen'}</small></span>
         {m.type ? <button onClick={() => save(() => addFarm(site, { type: m.type!.id, name: m.name, pointId: m.pointId, at: m.at, state: 'laeuft' }), `Farm „${m.name}“ von der Weltkarte übernommen`)}>Übernehmen</button>
           : <MapTypePick onPick={type => save(() => addFarm(site, { type, name: m.name, pointId: m.pointId, at: m.at, state: 'laeuft' }), `Farm „${m.name}“ von der Weltkarte übernommen`)} />}</li>)}
@@ -368,4 +373,17 @@ function Jobs({ assignments, projectId }: { assignments: readonly GatherAssignme
     <div className="prod-jobs">{assignments.map(a => <div key={a.builderId} className="prod-job"><h4>{a.name} <small>{hoursText(a.hours)}</small></h4>
       {a.jobs.length ? <ul className="prod-list">{a.jobs.map(j => <li key={j.label}><strong>{j.label}</strong> <small>{hoursText(j.hours)} · {j.items.map(i => `${formatNumber(i.missing)} ${short(i.itemId)}`).join(', ')}</small></li>)}</ul> : <small className="muted">nichts zu sammeln</small>}</div>)}</div>
   </section>;
+}
+
+/** PROD-05: link a farm to the team storage chest its hoppers fill; the server's reports then give the real rate. */
+function ChestLink({ f, site, save }: { f: FarmStatus; site: SitePlan; save: Save }) {
+  const chests = teamChests(site.team);
+  const y = f.chest;
+  if (!chests.length && !y) return <p className="muted"><strong>Sammeltruhe:</strong> Markiert ihr die Truhe dieser Farm auf dem Server als Team-Lager (Reiter „Team“, Paper-Plugin), misst der Planer die echte Rate aus den Einlagen.</p>;
+  return <div className="prod-place-row"><strong>Sammeltruhe</strong>
+    <select value={f.farm.chest ?? ''} aria-label={`Sammeltruhe von ${f.farm.name}`} onChange={e => save(() => updateFarm(site, f.farm.id, { chest: e.target.value || null }), e.target.value ? `„${f.farm.name}“ mit Lagerkiste verknüpft` : `Lagerkiste von „${f.farm.name}“ gelöst`)}>
+      <option value="">keine</option>{chests.map(c => <option key={c.id} value={c.id}>{c.name} ({c.pos.join(' ')})</option>)}
+    </select>
+    {y && <small className="muted">{y.bookings ? `${y.basis === 'server' ? `${y.bookings} Ertragsmeldungen des Servers` : `${y.bookings} Trichterbuchungen`} · ${num(y.hours)} h Laufzeit · ${Object.entries(y.items).map(([i, n]) => `${formatNumber(n)} ${short(i)}`).join(', ') || 'noch nichts eingelegt'}` : 'noch keine Einlagen gemeldet'}{y.basis === 'trichter' && y.bookings ? ' (Laufzeit aus den Buchungen geschätzt)' : ''}</small>}
+  </div>;
 }

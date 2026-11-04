@@ -1,4 +1,4 @@
-# Produktion: Farmen, Deckung und Anbindung (PROD-01…04)
+# Produktion: Farmen, Deckung und Anbindung (PROD-01…05)
 
 Stand 04.11.2026 · Thread „Produktion und Anbindung im Planer ausbauen“
 
@@ -7,14 +7,14 @@ Der Reiter **Produktion** (`#/projekt/<id>/produktion`) beantwortet die Frage, d
 ## Grundsätze
 
 - **Eine Bedarfsquelle.** Bedarf ist genau „Noch sammeln“ aus `planSite` (nur offene Schritte, Lager schon in Abschnitt-Reihenfolge abgezogen). Produktion zählt kein Material ein zweites Mal.
-- **Annahmen sichtbar.** Farmraten in `FARM_TYPES` sind Richtwerte für einfache, verbreitete Bauweisen; jede Farmart nennt ihre Grundlage (`basis`) und Bedingungen (`needs`). Sobald für eine Farm mindestens eine Stunde im Ertragsbuch steht, rechnet der Planer mit der **gemessenen** Rate.
+- **Annahmen sichtbar.** Farmraten in `FARM_TYPES` sind Richtwerte für einfache, verbreitete Bauweisen; jede Farmart nennt ihre Grundlage (`basis`) und Bedingungen (`needs`). Sobald für eine Farm mindestens eine Stunde gemessen ist, rechnet der Planer mit der echten Rate: zuerst aus der verknüpften **Sammeltruhe** im Team-Lager (PROD-05), sonst aus dem **Ertragsbuch**.
 - **Ein Datensatz, rückgängig machbar.** Alles liegt optional in `project.site.production` (Schema 1) und läuft über `site.set`; Sicherung, Datencheck und `checkSite` prüfen es mit `checkProduction`. Ohne Produktion ändert sich nichts an älteren Projekten.
 
 ## Datensatz (`packages/domain/src/production.ts`)
 
 | Feld | Bedeutung |
 |---|---|
-| `farms[]` | `type` (Farmart), `name`, `units` (Module/Zellen/Händler, 1–256), `state` (geplant · im Bau · läuft · stillgelegt), optional `instanceId` (Bauteil im Projekt), `pointId` (Punkt der Weltkarte), `at` (x/y/z + Dimension), `note` |
+| `farms[]` | `type` (Farmart), `name`, `units` (Module/Zellen/Händler, 1–256), `state` (geplant · im Bau · läuft · stillgelegt), optional `instanceId` (Bauteil im Projekt), `pointId` (Punkt der Weltkarte), `at` (x/y/z + Dimension), `chest` (Lagerkiste des Teams, PROD-05), `note` |
 | `log[]` | Ertragsbuch: `day`, `farmId`, `itemId`, `count`, `hours` (Lauf-/Arbeitszeit seit der letzten Ernte) |
 | `gatherHoursPerDay` | Sammelzeit je Spieltag (Standard 1,5 h) |
 | `afkHoursPerDay` | zusätzliche AFK-Zeit je Spieltag (Standard 0) |
@@ -45,6 +45,16 @@ Der Reiter **Produktion** (`#/projekt/<id>/produktion`) beantwortet die Frage, d
 6. **Lager:** Plätze, Doppeltruhen, Shulkerkisten und Fahrten (Tempo `boxesPerSession`) je offenem Abschnitt; Sortier-Module für die Items aller automatischen Farmen.
 7. **AFK-Platz:** Reichweitenprüfung je Farmart (`inRange`), bester Platz unter Farmen, Mittelpunkten von Paaren, Schwerpunkt je Dimension und 32 Blöcke über Mobfarmen (die meisten Farmen, dann die meisten Items/h).
 
+## Sammeltruhen aus dem Team-Lager (PROD-05)
+
+Farmen füllen über Trichter meist eine feste Truhe. Ist diese Truhe auf dem Server als geprüfte Lagerkiste markiert (Paper-Plugin, COOP-05, [LAGERKISTEN.md](LAGERKISTEN.md)), kennt das Team-Protokoll jede Einlage. Der Planer liest daraus die echte Rate der Farm:
+
+- **Verknüpfen:** je Farm im Reiter Produktion „Sammeltruhe“ wählen (`updateFarm(…, { chest })`). `suggestChests` schlägt Truhen vor, in die Trichter Items der Farmart liefern (+ Nähe ≤ 32 Blöcke zum Farmort); Knopf „Als Sammeltruhe verknüpfen“ unter „Gefunden“.
+- **Ertragsmeldungen des Servers (bevorzugt):** Ereignis `store.yield { chest, farm?, items, from, until, minutes }` – Items, die in der Zeitspanne über Trichter hineinkamen, und die Minuten, in denen der Chunk der Truhe wirklich geladen war. Zuordnung über `farm` (Planer-Farm-ID, aus `store.config.farm`) oder die Truhe. Laufzeit = Σ `minutes`.
+- **Rückfall für ältere Plugins:** Trichterbuchungen (`store.move` mit `via: "trichter"`, sekündlich gebucht). Lücken bis `CHEST_GAP_MINUTES` (5 min) zählen als Laufzeit, längere als Pause; die Laufzeit ist dann als geschätzt gekennzeichnet.
+- **Rangfolge der Rate:** Sammeltruhe (≥ 1 h Laufzeit) vor Ertragsbuch (≥ 1 h) vor Richtwert (`FarmRate.source`: `Lagerkiste` · `gemessen` · `Richtwert`). Unter einer Stunde nennt der Farmzustand die bisherige Laufzeit als Hinweis; eine verknüpfte, inzwischen entfernte Truhe ebenfalls.
+- **Nichts doppelt:** Die Truhe wird nur gelesen. Sie bucht weder ins Ertragsbuch noch ins Baustellen-Lager – der Bestand kommt wie bisher über „Bestand ins Baustellen-Lager übernehmen“ im Reiter Team.
+
 ## Anbindung
 
 | Modul | Richtung | Was passiert |
@@ -55,6 +65,7 @@ Der Reiter **Produktion** (`#/projekt/<id>/produktion`) beantwortet die Frage, d
 | Team / Bauleute | → Produktion | `splitGathering`: Handarbeit nach LPT auf die Bauleute, Nether- und End-Items als eine Tour (TEAM-03-S02) |
 | Weltkarte (MAP-03/06) | ↔ | Farmpunkte (Typ „Farm“) übernehmen mit erkannter Art (`guessFarmType`); Farmen und AFK-Platz als Punkt eintragen; Bauplatz des Projekts als Standardort |
 | Bibliothek | → | Baukosten der Farm-Baupläne (`farmCostOf`), Links „Bauplan“ |
+| Team-Lager / Paper-Plugin (COOP-05) | → Produktion | Sammeltruhe je Farm, echte Rate aus `store.yield` bzw. Trichterbuchungen (`teamChests`, `chestYield`, `suggestChests`) |
 
 Das **Produktionsblatt** (`productionText`) fasst alles als Text zusammen (Download/Kopieren).
 
@@ -63,10 +74,11 @@ Das **Produktionsblatt** (`productionText`) fasst alles als Text zusammen (Downl
 - Raten schwanken je Bauweise, Biom, Höhe und Server stark – deshalb Ertragsbuch.
 - Die Rechnung nimmt an, dass der Spieler während der Sammelzeit in der Nähe der automatischen Farmen ist.
 - Handel und Tausch sind als Richtwert mit Verbrauch modelliert, nicht als vollständige Handelsbäume.
-- Spätere Ideen: Erträge aus geprüften Lagerkisten des Paper-Plugins (COOP-05) direkt ins Ertragsbuch; Farm-Ertrag aus der Mod (Zählung an der Sammeltruhe); Produktionsketten mehrerer Projekte auf der Weltkarte.
+- Die Sammeltruhen-Rate braucht ein Teampaket bzw. Server-Export mit den Lagerereignissen; `store.yield` schreibt erst ein Plugin mit Zweck „ertrag“ (Lagerkisten-Thread), bis dahin gilt die Schätzung aus Trichterbuchungen.
+- Spätere Ideen: Farm-Ertrag aus der Mod (Zählung an der Sammeltruhe ohne Server); Produktionsketten mehrerer Projekte auf der Weltkarte.
 
 ## Prüfung
 
-- `tests/production.test.mjs` – Katalog, Datensatz/Rückgängig/Sicherung, Ertragsbuch, Reichweiten/AFK, Deckung/Engpass/Bereitschaft mit Zeitplan, Vorschläge, Öfen/Brennstoff/Lager/Logistik, Verbrauch, Anbindung, Integration mit `planSite`.
-- `tests/e2e/production.e2e.mjs` – Reiter in Chromium (1400/390 px): Farm anlegen, Ernte ins Lager, gemessene Rate, Ort und AFK-Platz, Lager in der Baustelle, Neuladen, kein Querscrollen.
+- `tests/production.test.mjs` – Katalog, Datensatz/Rückgängig/Sicherung, Ertragsbuch, Reichweiten/AFK, Deckung/Engpass/Bereitschaft mit Zeitplan, Vorschläge, Öfen/Brennstoff/Lager/Logistik, Verbrauch, Anbindung, Integration mit `planSite`, Sammeltruhen (Trichter-Rückfall, Vorschläge, Serverberichte, entfernte Truhe, keine Lagerbuchung).
+- `tests/e2e/production.e2e.mjs` – Reiter in Chromium (1400/390 px): Farm anlegen, Ernte ins Lager, gemessene Rate, Ort und AFK-Platz, Lager in der Baustelle, Neuladen, kein Querscrollen; Sammeltruhe aus einem Server-Export vorgeschlagen, verknüpft, Rate 300 Eisen/h aus zwei Ertragsmeldungen.
 - Testphase: PROJ-12, PROJ-13.

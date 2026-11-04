@@ -5,6 +5,10 @@ import { spawn } from 'node:child_process';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { openSampleProject } from './start.mjs';
+import { readFileSync, writeFileSync, mkdtempSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { readTeamPackage, teamEvent, TEAM_SERVER_FORMAT } from '../../dist/domain/src/index.js';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -90,3 +94,65 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await context.close();
   });
 }
+
+// PROD-05: the server plugin's yield reports from a team storage chest give the farm its real rate.
+test('Produktion: Sammeltruhe aus dem Team-Lager liefert die echte Rate (1400px)', async () => {
+  const context = await browser.newContext({ viewport: { width: 1400, height: 1000 }, acceptDownloads: true });
+  const p = await context.newPage();
+  p.setDefaultTimeout(15_000);
+  const errors = [];
+  p.on('pageerror', e => errors.push(e.message));
+  p.on('console', m => { if (m.type() === 'error' && !/clipboard/i.test(m.text())) errors.push(m.text()); });
+  await p.goto(BASE);
+  await openSampleProject(p);
+  await p.waitForURL(/#\/projekt\//);
+  const nav = p.getByRole('navigation', { name: 'Projektbereiche' });
+
+  // An iron farm in the production plan, running.
+  await nav.getByRole('link', { name: 'Produktion' }).click();
+  const prod = p.getByRole('region', { name: 'Produktion', exact: true });
+  const farms = prod.getByRole('region', { name: 'Farmen' });
+  await farms.getByLabel('Farmart').selectOption('eisen');
+  await farms.getByRole('button', { name: '+ Farm' }).click();
+  const card = farms.locator('.prod-farm').filter({ hasText: 'Eisenfarm' });
+  await card.getByLabel(/^Zustand /).selectOption('laeuft');
+
+  // Team with a storage chest; the plugin export brings two yield reports (90 loaded minutes).
+  await nav.getByRole('link', { name: 'Team' }).click();
+  await p.getByPlaceholder('Dein Name').fill('Philipp');
+  await p.getByRole('button', { name: 'Team gründen' }).click();
+  const [dl] = await Promise.all([p.waitForEvent('download'), p.getByRole('button', { name: 'Teampaket nur Teamstand' }).click()]);
+  const pkg = await readTeamPackage(readFileSync(await dl.path(), 'utf8'));
+  const later = n => new Date(Date.parse(pkg.team.events.at(-1).at) + n * 60_000).toISOString();
+  const by = pkg.team.founder;
+  const y = (id, n, count, minutes) => ({ id, at: later(n), by, origin: 'server', kind: 'store.yield', chest: 'eisen_kiste', items: [{ item: 'minecraft:iron_ingot', count }], from: later(n - minutes), until: later(n), minutes });
+  const file = join(mkdtempSync(join(tmpdir(), 'prod-')), 'Burg-server.export.json');
+  writeFileSync(file, JSON.stringify({
+    format: TEAM_SERVER_FORMAT, formatVersion: 1, teamId: pkg.team.teamId, name: pkg.team.name, projectName: 'Burg', founder: by, createdAt: pkg.team.createdAt,
+    dimension: 'minecraft:overworld', sections: [], members: [], exportedAt: later(200),
+    events: [...pkg.team.events,
+      teamEvent(by, { kind: 'store.chest', chest: 'eisen_kiste', name: 'Eisentruhe', pos: [30, 64, 30], dimension: 'minecraft:overworld' }, later(1), 'server'),
+      y('tev_yield_e2e_1', 61, 300, 60), y('tev_yield_e2e_2', 91, 150, 30)],
+  }));
+  await p.locator('.team-exchange input[type=file]').setInputFiles(file);
+  const preview = p.getByRole('region', { name: 'Vorschau Einlesen' });
+  await preview.getByText(/neue Ereignisse/).waitFor();
+  await preview.getByRole('button', { name: 'Übernehmen' }).click();
+  await preview.waitFor({ state: 'detached' });
+
+  // The production tab proposes the chest; linking it switches the rate to the chest's 300 iron/h.
+  await nav.getByRole('link', { name: 'Produktion' }).click();
+  await prod.getByText(/Eisenfarm \(Golems\) ↔ Eisentruhe/).waitFor();
+  await prod.getByRole('button', { name: 'Als Sammeltruhe verknüpfen' }).click();
+  const rate = card.locator('.prod-rate.measured', { hasText: 'iron' });
+  await rate.waitFor();
+  assert.match(await rate.innerText(), /300/);
+  assert.match(await rate.getAttribute('title'), /Sammeltruhe über 1[,.]5 h/);
+  await card.getByRole('button', { name: 'Ernte & Details' }).click();
+  await card.getByText(/2 Ertragsmeldungen des Servers · 1,5 h Laufzeit/).waitFor();
+  assert.equal(await card.getByLabel('Sammeltruhe von Eisenfarm (Golems)').inputValue(), 'eisen_kiste');
+  // Reading the chest books nothing into the site stock (the team stock does that via "Bestand übernehmen").
+  assert.equal(await card.locator('.prod-log tbody tr').count(), 0);
+  assert.deepEqual(errors, []);
+  await context.close();
+});

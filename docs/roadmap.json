@@ -39,7 +39,8 @@
     "LINK-04",
     "LINK-05",
     "LINK-06",
-    "COOP-08"
+    "COOP-08",
+    "PROD-05"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -8329,6 +8330,88 @@
           "note": "Grundsätze, Datensatz, Farmarten, Auswertung, Anbindung, Grenzen."
         }
       ]
+    },
+    {
+      "id": "PROD-05",
+      "title": "Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung",
+      "phase": "P4",
+      "priority": "P2",
+      "status": "implemented",
+      "owner": "Claude (Thread „Produktion und Anbindung im Planer ausbauen“)",
+      "legacyIds": [],
+      "blockers": [],
+      "verification": {
+        "state": "pending",
+        "note": "Einheits- und Browsertests grün; Plugin schreibt store.yield seit COOP-08. Abnahme im Spiel offen (PROJ-13)."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "area": "PROJEKT",
+      "thread": "Produktion und Anbindung im Planer ausbauen",
+      "philipp": [],
+      "orphans": [],
+      "dependencies": [
+        "PROD-02",
+        "COOP-05",
+        "COOP-08"
+      ],
+      "scope": [
+        "packages/domain/src/production.ts",
+        "packages/domain/src/productionPlan.ts",
+        "apps/web/src/views/project/ProductionTab.tsx",
+        "tests/production.test.mjs",
+        "tests/e2e/production.e2e.mjs",
+        "docs/architecture/PRODUCTION.md"
+      ],
+      "steps": [
+        {
+          "id": "PROD-05-S01",
+          "title": "FarmEntry.chest (geprüft, rückgängig machbar über updateFarm).",
+          "done": true
+        },
+        {
+          "id": "PROD-05-S02",
+          "title": "teamChests/chestYield: store.yield bevorzugt, sonst Trichterbuchungen mit Lückenregel 5 min.",
+          "done": true
+        },
+        {
+          "id": "PROD-05-S03",
+          "title": "Rate aus Sammeltruhe vor Ertragsbuch vor Richtwert; Hinweise bei entfernter Truhe und < 1 h.",
+          "done": true
+        },
+        {
+          "id": "PROD-05-S04",
+          "title": "suggestChests und Reiter: Truhe wählen, Ertrag anzeigen, „Als Sammeltruhe verknüpfen“.",
+          "done": true
+        },
+        {
+          "id": "PROD-05-S05",
+          "title": "Plugin schreibt store.yield für Kisten mit Zweck „ertrag“ (COOP-08, Lagerkisten-Thread).",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "Eine verknüpfte Sammeltruhe ersetzt den Richtwert ab 1 h Laufzeit.",
+        "Lesen der Truhe bucht nichts ins Lager oder Ertragsbuch."
+      ],
+      "next": "Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen.",
+      "evidence": [
+        {
+          "path": "tests/production.test.mjs",
+          "note": "PROD-05-Fall: Trichter-Rückfall, Vorschläge, Serverberichte, entfernte Truhe, keine Lagerbuchung."
+        },
+        {
+          "path": "tests/e2e/production.e2e.mjs",
+          "note": "Server-Export mit Lagerkiste und zwei Ertragsmeldungen, Vorschlag, Verknüpfen, Rate 300 Eisen/h."
+        },
+        {
+          "path": "docs/architecture/PRODUCTION.md",
+          "note": "Abschnitt Sammeltruhen aus dem Team-Lager."
+        }
+      ],
+      "updatedAt": "2026-11-04T09:11:05.851Z"
     },
     {
       "phase": "P4",

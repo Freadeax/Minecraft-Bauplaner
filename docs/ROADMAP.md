@@ -15,7 +15,7 @@ Stand: 2026-11-04T09:13:22.230Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 8 |
 | 🚧 In Arbeit | 4 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 73 |
+| 🧩 Implementiert · Abnahme offen | 74 |
 | ✅ Im beschriebenen Umfang geprüft | 25 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -27,7 +27,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 |---|---:|---:|---:|---:|
 | [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 19 | 9 | 18 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 4 | 10 | 4 |
-| [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 7 | 1 | 5 | 1 |
+| [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 8 | 1 | 5 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 10 | 1 | 10 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 8 | 0 | 7 | 0 |
@@ -98,6 +98,7 @@ Abgeschlossen oder zurückgestellt: LIB-01 (geprüft), GEN-01 (geprüft), WORLD-
 | [PROD-02](#prod-02) | Deckung und Engpässe | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Produktion und Anbindung im Planer ausbauen“ | Engpässe und Zeitplanvergleich prüfen (PROJ-13). |
 | [PROD-03](#prod-03) | Verarbeitung und Logistik | 🧩 Implementiert · Abnahme offen 3/3 | P2 | „Produktion und Anbindung im Planer ausbauen“ | — |
 | [PROD-04](#prod-04) | Anbindung der Produktion | 🧩 Implementiert · Abnahme offen 4/5 | P2 | „Produktion und Anbindung im Planer ausbauen“ | — |
+| [PROD-05](#prod-05) | Erträge aus geprüften Lagerkisten | 🧩 Implementiert · Abnahme offen 5/5 | P2 | „Produktion und Anbindung im Planer ausbauen“ | — |
 
 Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 
@@ -389,6 +390,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **LINK-05 · Zweiter Weg über den Team-Raum: Steuernachrichten ohne Mod (iPad), weiteres Gerät per Link freigeben** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Abnahme vom iPad (Testplan LINK-04).
 - **LINK-06 · Weitere Steuerung ohne Befehle: Plan mit Anker von der Weltkarte auf den Server (umgesetzt), Serveraufnahme (scan) per Steuernachricht (offen)** — 🚧 In Arbeit, 1/2 Teilschritte. Nächster Schritt: Serveraufnahme (scan) als Steueraktion; Abnahme LINK-05 (Testplan).
 - **COOP-08 · Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion)** — 🧩 Implementiert · Abnahme offen, 2/4 Teilschritte. Nächster Schritt: PROD-05 liest TeamView.yields bzw. store.yield; Abnahme LAGER-10 auf Philipps Server.
+- **PROD-05 · Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -563,6 +565,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher | ⏳ Offen | 0/4 | GAME-07, GAME-10 | ausstehend | ausstehend |
 | [COOP-07](#coop-07) | Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel | 🧩 Implementiert · Abnahme offen | 6/7 | COOP-01, COOP-04 | ausstehend | ausstehend |
 | [COOP-08](#coop-08) | Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion) | 🧩 Implementiert · Abnahme offen | 2/4 | COOP-05, PROD-01 | ausstehend | ausstehend |
+| [PROD-05](#prod-05) | Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung | 🧩 Implementiert · Abnahme offen | 5/5 | PROD-02, COOP-05, COOP-08 | ausstehend | ausstehend |
 | [LINK-01](#link-01) | Plugin richtet sich selbst ein und lässt sich per Klick koppeln (link.json, Server-ID, Kopplung nur OP/Bauleitung über den Teamkanal) | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-02 | ausstehend | ausstehend |
 | [LINK-02](#link-02) | Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte) | 🧩 Implementiert · Abnahme offen | 3/4 | LINK-01 | ausstehend | ausstehend |
 | [LINK-03](#link-03) | Mod: Live-Dienst startet selbst, Planer per Klick im Spiel zulassen, Teamfreigabe als Knopf, Server-Wege weiterreichen (Mod 0.12.0) | 🧩 Implementiert · Abnahme offen | 4/5 | GAME-08, COOP-03 | ausstehend | ausstehend |
@@ -2933,6 +2936,28 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/production.test.mjs](../tests/production.test.mjs) — 10 Fälle: Katalog, Datensatz/Rückgängig/Sicherung, Ertragsbuch, Reichweiten/AFK, Deckung/Engpass/Bereitschaft, Vorschläge, Öfen/Lager/Logistik, Verbrauch, Anbindung, Integration mit planSite.; [tests/e2e/production.e2e.mjs](../tests/e2e/production.e2e.mjs) — Reiter „Produktion“ in Chromium (1400/390 px): Farm, Ernte ins Lager, gemessene Rate, Ort, AFK-Platz, Neuladen, kein Querscrollen.; [docs/architecture/PRODUCTION.md](architecture/PRODUCTION.md) — Grundsätze, Datensatz, Farmarten, Auswertung, Anbindung, Grenzen.
 
 **Dateiumfang:** `packages/domain/src/productionPlan.ts`, `apps/web/src/views/project/ProductionTab.tsx`, `apps/web/src/views/project/SiteTab.tsx`, `apps/web/src/views/project/tabs.ts`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `tests/e2e/production.e2e.mjs`. **Abhängigkeiten:** PROD-02, MAP-06, PROJ-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### PROD-05
+
+**Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Produktion und Anbindung im Planer ausbauen“ · Aktualisiert: 2026-11-04T09:11:05.851Z
+
+- [x] PROD-05-S01: FarmEntry.chest (geprüft, rückgängig machbar über updateFarm).
+- [x] PROD-05-S02: teamChests/chestYield: store.yield bevorzugt, sonst Trichterbuchungen mit Lückenregel 5 min.
+- [x] PROD-05-S03: Rate aus Sammeltruhe vor Ertragsbuch vor Richtwert; Hinweise bei entfernter Truhe und < 1 h.
+- [x] PROD-05-S04: suggestChests und Reiter: Truhe wählen, Ertrag anzeigen, „Als Sammeltruhe verknüpfen“.
+- [x] PROD-05-S05: Plugin schreibt store.yield für Kisten mit Zweck „ertrag“ (COOP-08, Lagerkisten-Thread).
+
+**Abnahme:** Eine verknüpfte Sammeltruhe ersetzt den Richtwert ab 1 h Laufzeit. Lesen der Truhe bucht nichts ins Lager oder Ertragsbuch.
+
+**Nächste Aktion:** Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen.
+
+**Prüfstand:** Einheits- und Browsertests grün; Plugin schreibt store.yield seit COOP-08. Abnahme im Spiel offen (PROJ-13).
+
+**Nachweise:** [tests/production.test.mjs](../tests/production.test.mjs) — PROD-05-Fall: Trichter-Rückfall, Vorschläge, Serverberichte, entfernte Truhe, keine Lagerbuchung.; [tests/e2e/production.e2e.mjs](../tests/e2e/production.e2e.mjs) — Server-Export mit Lagerkiste und zwei Ertragsmeldungen, Vorschlag, Verknüpfen, Rate 300 Eisen/h.; [docs/architecture/PRODUCTION.md](architecture/PRODUCTION.md) — Abschnitt Sammeltruhen aus dem Team-Lager.
+
+**Dateiumfang:** `packages/domain/src/production.ts`, `packages/domain/src/productionPlan.ts`, `apps/web/src/views/project/ProductionTab.tsx`, `tests/production.test.mjs`, `tests/e2e/production.e2e.mjs`, `docs/architecture/PRODUCTION.md`. **Abhängigkeiten:** PROD-02, COOP-05, COOP-08. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

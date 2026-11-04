@@ -224,6 +224,8 @@ export interface FarmEntry {
   readonly pointId?: string;
   readonly at?: FarmPlace;
   readonly note?: string;
+  /** Team storage chest the farm's hoppers fill (PROD-05): its hopper bookings give the measured rate. */
+  readonly chest?: string;
 }
 
 export interface HarvestEntry {
@@ -291,6 +293,7 @@ export function checkProduction(raw: unknown): ProductionPlan {
     num(f.units, 1, MAX_UNITS, `„${name}“: Anzahl`, true);
     if (!STATES.includes(f.state as FarmState)) fail(`„${name}“: Zustand ${String(f.state)} unbekannt`);
     if (f.instanceId !== undefined) text(f.instanceId, 128, `„${name}“: Bauteil`);
+    if (f.chest !== undefined) text(f.chest, 128, `„${name}“: Sammeltruhe`);
     if (f.pointId !== undefined) text(f.pointId, 128, `„${name}“: Kartenpunkt`);
     if (f.at !== undefined) checkPlace(f.at, `„${name}“`);
     if (f.note !== undefined && (typeof f.note !== 'string' || f.note.length > 500)) fail(`„${name}“: Notiz zu lang`);
@@ -321,19 +324,19 @@ export function checkProduction(raw: unknown): ProductionPlan {
 const withProduction = (site: SitePlan, production: ProductionPlan): SitePlan => ({ ...site, production: checkProduction(structuredClone(production)) });
 const findFarm = (p: ProductionPlan, id: string): FarmEntry => p.farms.find(f => f.id === id) ?? fail(`Farm ${id} existiert nicht`);
 
-export interface FarmDraft { type: string; name?: string; units?: number; state?: FarmState; instanceId?: string; pointId?: string; at?: FarmPlace; note?: string }
+export interface FarmDraft { type: string; name?: string; units?: number; state?: FarmState; instanceId?: string; pointId?: string; at?: FarmPlace; note?: string; chest?: string }
 
 export function addFarm(site: SitePlan, draft: FarmDraft, id = newId('farm')): SitePlan {
   const p = productionOf(site), type = farmType(draft.type) ?? fail(`Farmart ${draft.type} unbekannt`);
   const entry: FarmEntry = {
     id, type: type.id, name: (draft.name ?? type.name).trim().slice(0, 80) || type.name, units: draft.units ?? 1, state: draft.state ?? 'plan',
     ...(draft.instanceId && { instanceId: draft.instanceId }), ...(draft.pointId && { pointId: draft.pointId }), ...(draft.at && { at: draft.at }),
-    ...(draft.note?.trim() && { note: draft.note.trim() }),
+    ...(draft.note?.trim() && { note: draft.note.trim() }), ...(draft.chest && { chest: draft.chest }),
   };
   return withProduction(site, { ...p, farms: [...p.farms, entry] });
 }
 
-export function updateFarm(site: SitePlan, id: string, patch: { name?: string; units?: number; state?: FarmState; note?: string; at?: FarmPlace | null; instanceId?: string | null }): SitePlan {
+export function updateFarm(site: SitePlan, id: string, patch: { name?: string; units?: number; state?: FarmState; note?: string; at?: FarmPlace | null; instanceId?: string | null; chest?: string | null }): SitePlan {
   const p = productionOf(site);
   findFarm(p, id);
   return withProduction(site, { ...p, farms: p.farms.map(f => {
@@ -345,6 +348,7 @@ export function updateFarm(site: SitePlan, id: string, patch: { name?: string; u
     if (patch.note !== undefined) { if (patch.note.trim()) next.note = patch.note.trim(); else delete next.note; }
     if (patch.at !== undefined) { if (patch.at) next.at = patch.at; else delete next.at; }
     if (patch.instanceId !== undefined) { if (patch.instanceId) next.instanceId = patch.instanceId; else delete next.instanceId; }
+    if (patch.chest !== undefined) { if (patch.chest) next.chest = patch.chest; else delete next.chest; }
     return next;
   }) });
 }

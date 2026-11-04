@@ -8,6 +8,8 @@ import type { ScheduledSection } from './program.js';
 import { fuelBalance, resolveRecipes } from './recipes.js';
 import { gatherRuleFor } from './site.js';
 import type { GatherLine, SiteOverview, SitePlan } from './site.js';
+import { isKnownEvent } from './team.js';
+import type { TeamState } from './team.js';
 import type { WorldItem } from './worldPlan.js';
 
 /**
@@ -128,7 +130,8 @@ export interface FarmRate {
   readonly itemId: string;
   /** Items per hour for the whole farm (all units). */
   readonly perHour: number;
-  readonly source: 'gemessen' | 'Richtwert';
+  /** Lagerkiste = hopper bookings of the linked team chest (server), gemessen = harvest log, Richtwert = farm type. */
+  readonly source: 'Lagerkiste' | 'gemessen' | 'Richtwert';
   /** Logged hours behind a measured rate. */
   readonly measuredHours: number;
   /** Items per play day (auto: loaded hours; halb: 0, they use player hours). */
@@ -148,6 +151,8 @@ export interface FarmStatus {
   readonly inputs: readonly { readonly itemId: string; readonly perDay: number; readonly suppliedPerDay: number }[];
   readonly logistics: FarmLogistics | null;
   readonly issues: readonly string[];
+  /** Hopper output of the linked team chest (PROD-05); null = no chest linked. */
+  readonly chest: ChestYield | null;
 }
 
 export interface FarmLogistics {
@@ -166,7 +171,115 @@ function measured(p: ProductionPlan, farmId: string, itemId: string): { count: n
   return { count, hours };
 }
 
-export function farmStatuses(production: ProductionPlan): FarmStatus[] {
+// ---------------------------------------------------------------------------
+// Team storage chests as farm output (PROD-05)
+
+/** A hopper booking that comes more than this after the previous one starts a new running period (chunk was unloaded). */
+export const CHEST_GAP_MINUTES = 5;
+const MINUTE = 60_000;
+
+export interface TeamChest { readonly id: string; readonly name: string; readonly pos: readonly [number, number, number]; readonly dimension: string; readonly hopperIn: Readonly<Record<string, number>> }
+
+/** Team storage chests (not removed) with everything hoppers put in (store.move via trichter, store.yield), from the team log. */
+export function teamChests(team: TeamState | undefined): TeamChest[] {
+  if (!team) return [];
+  const chests = new Map<string, { name: string; pos: readonly [number, number, number]; dimension: string; hopperIn: Record<string, number> }>();
+  for (const e of team.events) {
+    if (!isKnownEvent(e)) continue;
+    if (e.kind === 'store.chest') { if (e.remove) chests.delete(e.chest); else chests.set(e.chest, { name: e.name, pos: e.pos, dimension: e.dimension, hopperIn: chests.get(e.chest)?.hopperIn ?? {} }); }
+    else if (e.kind === 'store.config' && e.name?.trim()) { const c = chests.get(e.chest); if (c) c.name = e.name; }
+    else if (e.kind === 'store.move' && e.via === 'trichter') { const c = chests.get(e.chest); if (c) for (const l of e.in ?? []) c.hopperIn[l.item] = (c.hopperIn[l.item] ?? 0) + l.count; }
+  }
+  // The plugin's yield reports (store.yield) count as hopper intake too.
+  for (const y of yieldEvents(team)) { const c = chests.get(y.chest); if (c) for (const l of y.items) c.hopperIn[l.item] = (c.hopperIn[l.item] ?? 0) + l.count; }
+  return [...chests.entries()].map(([id, c]) => ({ id, ...c }));
+}
+
+export interface ChestYield {
+  readonly chest: string;
+  /** Items put into the chest, by item. */
+  readonly items: Readonly<Record<string, number>>;
+  /** Running hours: loaded minutes reported by the server (store.yield), or estimated from hopper bookings. */
+  readonly hours: number;
+  readonly bookings: number;
+  readonly from: string | null;
+  readonly until: string | null;
+  /** server = store.yield reports with real loaded minutes; trichter = estimated from hopper bookings (older plugins). */
+  readonly basis: 'server' | 'trichter';
+}
+
+interface YieldEvent { chest: string; farm?: string; items: { item: string; count: number }[]; from: string; until: string; minutes: number }
+/** store.yield (server only, plugin COOP-05 follow-up): read loosely so older and newer planners keep working. */
+function yieldEvents(team: TeamState | undefined): YieldEvent[] {
+  const out: YieldEvent[] = [];
+  for (const raw of team?.events ?? []) {
+    if (raw.kind !== 'store.yield') continue;
+    const e = raw as unknown as Record<string, unknown>;
+    if (typeof e.chest !== 'string' || !Array.isArray(e.items) || typeof e.minutes !== 'number' || !Number.isFinite(e.minutes) || e.minutes < 0) continue;
+    const items = (e.items as unknown[]).filter((l): l is { item: string; count: number } => typeof l === 'object' && l !== null && typeof (l as { item?: unknown }).item === 'string' && typeof (l as { count?: unknown }).count === 'number');
+    out.push({ chest: e.chest, ...(typeof e.farm === 'string' && { farm: e.farm }), items, from: String(e.from ?? raw.at), until: String(e.until ?? raw.at), minutes: e.minutes });
+  }
+  return out;
+}
+
+/**
+ * Output of a farm read from the team storage: preferably the plugin's
+ * store.yield reports (items put in and the minutes the chest's chunk was
+ * really loaded), matched by farm id or chest; otherwise hopper bookings
+ * (`store.move` via trichter, booked every second while the chunk runs) with
+ * gaps up to CHEST_GAP_MINUTES counted as running time.
+ */
+export function chestYield(team: TeamState | undefined, chest: string | null, farmId?: string): ChestYield {
+  const reports = yieldEvents(team).filter(y => (farmId && y.farm === farmId) || (chest && y.chest === chest));
+  if (reports.length) {
+    const items: Record<string, number> = {};
+    let minutes = 0;
+    for (const y of reports) { minutes += y.minutes; for (const l of y.items) items[mc(l.item)] = (items[mc(l.item)] ?? 0) + l.count; }
+    const from = reports.map(y => y.from).sort()[0]!, until = reports.map(y => y.until).sort().at(-1)!;
+    return { chest: chest ?? reports[0]!.chest, items, hours: round2(minutes / 60), bookings: reports.length, from, until, basis: 'server' };
+  }
+  const items: Record<string, number> = {};
+  const times: number[] = [];
+  for (const e of team?.events ?? []) {
+    if (!isKnownEvent(e) || e.kind !== 'store.move' || e.via !== 'trichter' || e.chest !== chest || !e.in?.length) continue;
+    const t = Date.parse(e.at);
+    if (!Number.isFinite(t)) continue;
+    times.push(t);
+    for (const l of e.in) items[l.item] = (items[l.item] ?? 0) + l.count;
+  }
+  times.sort((a, b) => a - b);
+  let ms = times.length ? 1000 : 0;
+  for (let i = 1; i < times.length; i++) { const gap = times[i]! - times[i - 1]!; ms += gap <= CHEST_GAP_MINUTES * MINUTE ? gap : 1000; }
+  return { chest: chest ?? '', items, hours: round2(ms / 3_600_000), bookings: times.length,
+    from: times.length ? new Date(times[0]!).toISOString() : null, until: times.length ? new Date(times[times.length - 1]!).toISOString() : null, basis: 'trichter' };
+}
+
+export interface ChestSuggestion { readonly farmId: string; readonly chest: TeamChest; readonly why: string; readonly score: number }
+
+/** Team chests that look like a farm's collection chest: hoppers brought its outputs in, or it stands next to the farm. */
+export function suggestChests(production: ProductionPlan, team: TeamState | undefined): ChestSuggestion[] {
+  const chests = teamChests(team), taken = new Set(production.farms.map(f => f.chest).filter(Boolean));
+  const out: ChestSuggestion[] = [];
+  for (const f of production.farms) {
+    if (f.chest) continue;
+    const t = farmType(f.type);
+    if (!t) continue;
+    let best: ChestSuggestion | null = null;
+    for (const c of chests) {
+      if (taken.has(c.id)) continue;
+      const own = t.outputs.filter(o => (c.hopperIn[o.item] ?? 0) > 0).map(o => o.item.replace(/^minecraft:/, ''));
+      const near = f.at && dimensionOf(c.dimension) === f.at.dimension ? Math.hypot(c.pos[0] - f.at.x, c.pos[1] - f.at.y, c.pos[2] - f.at.z) : Infinity;
+      const score = own.length * 10 + (near <= 32 ? 5 : 0);
+      if (!score) continue;
+      const why = [own.length ? `Trichter liefern ${own.join(', ')}` : '', near <= 32 ? `${Math.round(near)} Blöcke von der Farm` : ''].filter(Boolean).join(' · ');
+      if (!best || score > best.score) best = { farmId: f.id, chest: c, why, score };
+    }
+    if (best) out.push(best);
+  }
+  return out.sort((a, b) => b.score - a.score);
+}
+
+export function farmStatuses(production: ProductionPlan, team?: TeamState): FarmStatus[] {
   const p = production;
   const loaded = (f: FarmEntry, t: FarmType): { hours: number; afk: RangeCheck | null } => {
     if (t.mode !== 'auto') return { hours: 0, afk: null };
@@ -175,12 +288,15 @@ export function farmStatuses(production: ProductionPlan): FarmStatus[] {
   };
   const base = p.farms.map(f => {
     const t = farmType(f.type)!, { hours, afk } = loaded(f, t), running = f.state === 'laeuft';
+    const linked = f.chest ? chestYield(team, f.chest, f.id) : chestYield(team, null, f.id);
+    const fromChest = f.chest || linked.bookings ? linked : null, useChest = !!fromChest && fromChest.hours >= 1;
     const rates: FarmRate[] = t.outputs.map(o => {
       const m = measured(p, f.id, o.item), useMeasured = m.hours >= 1;
-      const perHour = useMeasured ? round1(m.count / m.hours) : o.perHour * f.units;
-      return { itemId: o.item, perHour, source: useMeasured ? 'gemessen' : 'Richtwert', measuredHours: round1(m.hours), perDay: running ? round1(perHour * hours) : 0, covers: o.covers ?? [] };
+      const perHour = useChest ? round1((fromChest!.items[o.item] ?? 0) / fromChest!.hours) : useMeasured ? round1(m.count / m.hours) : o.perHour * f.units;
+      const source: FarmRate['source'] = useChest ? 'Lagerkiste' : useMeasured ? 'gemessen' : 'Richtwert';
+      return { itemId: o.item, perHour, source, measuredHours: useChest ? round1(fromChest!.hours) : round1(m.hours), perDay: running ? round1(perHour * hours) : 0, covers: o.covers ?? [] };
     });
-    return { farm: f, type: t, running, hours, afk, rates };
+    return { farm: f, type: t, running, hours, afk, rates, fromChest };
   });
   const supply = new Map<string, number>();
   for (const b of base) for (const r of b.rates) supply.set(r.itemId, (supply.get(r.itemId) ?? 0) + r.perDay);
@@ -191,6 +307,8 @@ export function farmStatuses(production: ProductionPlan): FarmStatus[] {
       return { itemId: i.item, perDay, suppliedPerDay: round1(supply.get(i.item) ?? 0) };
     });
     for (const i of inputs) if (i.perDay > 0 && i.suppliedPerDay < i.perDay) issues.push(`Braucht ${Math.round(i.perDay)} ${i.itemId.replace(/^minecraft:/, '')}/Tag, Farmen liefern ${Math.round(i.suppliedPerDay)}.`);
+    if (b.farm.chest && !teamChests(team).some(c => c.id === b.farm.chest)) issues.push('Die verknüpfte Sammeltruhe gibt es im Team-Lager nicht mehr.');
+    else if (b.fromChest && b.fromChest.hours < 1) issues.push(`Sammeltruhe: erst ${de(b.fromChest.hours * 60)} min Laufzeit gemeldet – ab 1 h rechnet der Planer mit ihr.`);
     if (b.afk && !b.afk.ok && p.afkHoursPerDay > 0) issues.push(`Vom AFK-Platz nicht erreicht: ${b.afk.reason}.`);
     if (b.type.mode === 'auto' && b.running && b.hours === 0) issues.push('Läuft nur, wenn ein Spieler in der Nähe ist – Sammel- und AFK-Zeit sind 0.');
     let logistics: FarmLogistics | null = null;
@@ -202,7 +320,7 @@ export function farmStatuses(production: ProductionPlan): FarmStatus[] {
       if (logistics.fullWithinDay) issues.push(`Doppeltruhe ist nach ${de(doubleChestHours)} h voll – öfter leeren oder Lager/Sortieranlage anschließen.`);
       if (logistics.hoppers > 1) issues.push(`Mehr als ein Trichter Durchsatz: ${logistics.hoppers} parallele Trichterstränge nötig.`);
     }
-    return { farm: b.farm, type: b.type, running: b.running, loadedHoursPerDay: b.hours, afk: b.afk, rates: b.rates, inputs, logistics, issues };
+    return { farm: b.farm, type: b.type, running: b.running, loadedHoursPerDay: b.hours, afk: b.afk, rates: b.rates, inputs, logistics, issues, chest: b.fromChest };
   });
 }
 
@@ -343,7 +461,7 @@ export function netFuelSmelts(itemId: string): number {
 
 /** The whole analysis. */
 export function analyzeProduction(input: ProductionInput): ProductionReport {
-  const p = productionOf(input.site), farms = farmStatuses(p), perDayGather = p.gatherHoursPerDay;
+  const p = productionOf(input.site), farms = farmStatuses(p, input.site.team), perDayGather = p.gatherHoursPerDay;
   // Demand: missing of the gathering plan per item, in build order.
   const demand = new Map<string, { missing: number; kind: GatherLine['kind']; line: GatherLine }>();
   for (const s of input.overview.sections) for (const g of s.gather) if (g.missing > 0) {
@@ -601,7 +719,7 @@ export function productionText(report: ProductionReport, title: string, assignme
   lines.push(t.readyDays !== null ? `Material komplett nach etwa ${num(t.readyDays)} Spieltagen.` : 'Material komplett: offen (Items ohne Richtwert).');
   if (t.bottleneck) lines.push(`Engpass: ${nice(t.bottleneck.itemId)} – ${t.bottleneck.why}`);
   lines.push('', 'Farmen:');
-  for (const f of report.farms) lines.push(`- ${f.farm.name} (${f.farm.units}× ${f.type.unit}, ${f.running ? 'läuft' : f.farm.state}): ${f.rates.map(r => `${num(r.perHour)} ${nice(r.itemId)}/h ${r.source === 'gemessen' ? '(gemessen)' : '(Richtwert)'}`).join(', ')}`);
+  for (const f of report.farms) lines.push(`- ${f.farm.name} (${f.farm.units}× ${f.type.unit}, ${f.running ? 'läuft' : f.farm.state}): ${f.rates.map(r => `${num(r.perHour)} ${nice(r.itemId)}/h (${r.source === 'Lagerkiste' ? 'Sammeltruhe' : r.source})`).join(', ')}`);
   if (!report.farms.length) lines.push('- keine');
   lines.push('', 'Deckung je Item:');
   for (const c of report.coverage) lines.push(`- ${nice(c.itemId)}: ${num(c.missing)} · ${COVER_WAY_LABEL[c.way]}${c.days !== null ? ` · ${num(c.days)} Tage` : ''}${c.handHours !== null && c.way === 'hand' ? ` · ${num(c.handHours)} h` : ''}`);
