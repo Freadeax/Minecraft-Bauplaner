@@ -100,7 +100,7 @@ public final class HologramClient {
 
     /** HUD layer: progress panel and the crosshair line of the placement helper. */
     public void hud(GuiGraphicsExtractor g, DeltaTracker delta) {
-        guarded("hud", () -> { hud.extract(g, delta); marks.hud(g, delta); team.hud(g); });
+        guarded("hud", () -> { hud.extract(g, delta); marks.hud(g, delta); team.hud(g); LinkPrompt.hud(g, this); });
     }
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger("bauplaner");

@@ -6,6 +6,7 @@ import { errorText } from '../../app/ui';
 import { createRoom, getPlan, putHeader, putPlan, readRoomUrl, saveRoomUrl, useRoomConnection } from './roomClient';
 import type { ProjectSession } from './session';
 import { roomHeader, takePlan, teamPackageText } from './teamTransfer';
+import { control, currentPairedServer, rememberRoom } from '../mod/serverClient';
 
 const UPLOADED_KEY = (room: string) => `bauplaner.teamraum.plan.${room}`;
 const read = (k: string) => { try { return localStorage.getItem(k) ?? ''; } catch { return ''; } };
@@ -111,13 +112,21 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
       <button className="primary" disabled={busy || !planReady} onClick={() => void takeOver()}>{planReady ? 'Planstand übernehmen' : 'Planstand kommt gleich …'}</button></div>}
     <div className="team-buttons">
       <button disabled={busy} onClick={() => setShown(shown === 'invite' ? '' : 'invite')}>Einladungslink</button>
-      {server && <button disabled={busy} onClick={() => setShown(shown === 'server' ? '' : 'server')}>Link für den Server</button>}
+      {server && <button disabled={busy} title="Der gekoppelte Server verbindet sich selbst mit diesem Raum (LINK-04). Ohne Kopplung: Link für den Server." onClick={() => void run(async () => {
+        const paired = await currentPairedServer();
+        if (!paired) { setShown('server'); throw new Error('Kein gekoppelter Server erreichbar. Im Menü „Spiel“ unter „Spiel und Server verbinden“ den Server koppeln (Minecraft mit Mod muss laufen) – oder den Link unten nutzen.'); }
+        const answer = await control(paired.link, paired.pairing, 'room', { link: server });
+        // From now on the server can also be controlled through this room (e.g. from the iPad, LINK-05).
+        rememberRoom(paired.pairing.serverId, { url: live.url, room: live.room, key: live.key });
+        onMessage(typeof answer.text === 'string' ? `„${paired.pairing.name}“: ${answer.text}` : 'Server verbunden.');
+      })}>Server mit dem Raum verbinden</button>}
+      {server && <button disabled={busy} className="secondary" onClick={() => setShown(shown === 'server' ? '' : 'server')}>Link für den Server</button>}
       {live.adminKey && <button disabled={busy} onClick={() => void run(() => uploadPlan(team as RoomTeam))}>Plan in den Raum stellen</button>}
       <button disabled={busy} onClick={() => { saveLive(leaveLive(team as RoomTeam) as RoomTeam); onMessage('Live-Verbindung in diesem Browser getrennt. Der Team-Raum und die anderen bleiben unberührt.'); }}>Live trennen</button>
     </div>
     {shown && <div className="team-shown">
       <p>{shown === 'invite' ? 'Diesen Link an alle Mitspieler schicken. Wer ihn öffnet, bekommt Plan und Teamstand und ist sofort live dabei.'
-        : <>Für das Paper-Plugin: auf dem Server <code>/bauplaner team verbinden &lt;Link&gt;</code> eingeben (Konsole oder OP). Nicht weitergeben: Mit diesem Link schreibt man Messungen als Server.</>}</p>
+        : <>Einfacher geht es mit „Server mit dem Raum verbinden“, wenn der Server gekoppelt ist. Koppeln geht im Menü „Spiel“ mit einem Klick (als OP mit der Mod im Spiel). Nur ohne Kopplung: auf dem Server <code>/bauplaner team verbinden &lt;Link&gt;</code> eingeben (Konsole oder OP). Nicht weitergeben: Mit diesem Link schreibt man Messungen als Server.</>}</p>
       <textarea readOnly rows={2} value={shown === 'invite' ? invite : server} aria-label={shown === 'invite' ? 'Einladungslink' : 'Link für den Server'} onFocus={e => e.currentTarget.select()} />
       <button onClick={() => void copyText(shown === 'invite' ? invite : server).then(ok => onMessage(ok ? 'Link kopiert.' : 'Kopieren nicht möglich – bitte den Link markieren und kopieren.'))}>Kopieren</button>
     </div>}

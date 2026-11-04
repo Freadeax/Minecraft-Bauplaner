@@ -44,7 +44,7 @@ export function LiveGamePanel({ game, actions }: { game: LiveGame; actions: Live
   const [port, setPort] = useState(String(game.settings.port));
   const s = game.status, p = s?.player ? playerBlock(s.player) : null, h = s?.hologram ?? null;
   const share = h ? liveShare(h) : null;
-  const state = game.phase === 'connected' ? 'verbunden' : game.phase === 'lost' ? 'Verbindung unterbrochen' : game.phase === 'unpaired' ? 'Mod gefunden, nicht gekoppelt'
+  const state = game.phase === 'connected' ? 'verbunden' : game.phase === 'lost' ? 'Verbindung unterbrochen' : game.phase === 'unpaired' ? 'Mod gefunden, nicht gekoppelt' : game.phase === 'asking' ? 'wartet auf „Zulassen“ im Spiel'
     : game.phase === 'searching' ? 'sucht …' : 'nicht verbunden';
   const portValid = /^\d{4,5}$/.test(port) && Number(port) >= 1024 && Number(port) <= 65535;
 
@@ -59,13 +59,13 @@ export function LiveGamePanel({ game, actions }: { game: LiveGame; actions: Live
       <p className="muted">Mit der Bauplaner-Mod (ab 0.5, nur auf deinem PC, der Server braucht nichts) siehst du deine Position, das Gelände um dich und den Baufortschritt des Hologramms live auf der Karte und schickst Pläne direkt ins Spiel.</p>
       <ol className="live-steps">
         <li>Minecraft mit der Mod starten (<a href="#/mod">Mod herunterladen</a>) und eine Welt oder den Server betreten.</li>
-        <li>Im Spiel <code>/bauplaner verbinden</code> eingeben. Im Chat erscheint ein sechsstelliger Code.</li>
         <li>Hier auf „Verbinden“ drücken. Fragt der Browser nach Zugriff auf Geräte im lokalen Netzwerk: „Zulassen“.</li>
-        <li>Den Code aus dem Chat eintragen. Danach verbindet sich die Seite bei jedem Besuch von selbst.</li>
+        <li>Im Spiel <b>J</b> drücken und „Planer zulassen“ klicken (ab Mod 0.12, oben im Bild steht dann „J drücken“). Bei älteren Mods <code>/bauplaner verbinden</code> eingeben und den Code hier eintragen.</li>
+        <li>Danach verbindet sich die Seite bei jedem Besuch von selbst.</li>
       </ol>
       <div className="button-row">
         {game.phase === 'searching'
-          ? <><span className="live-wait" role="status">Suche die Mod auf diesem PC … falls noch nicht geschehen, jetzt im Spiel <code>/bauplaner verbinden</code> eingeben.</span>
+          ? <><span className="live-wait" role="status">Suche die Mod auf diesem PC … läuft Minecraft mit der Bauplaner-Mod?</span>
             <button className="secondary" onClick={() => void game.disconnect()}>Abbrechen</button></>
           : <button className="primary" disabled={!!game.originProblem} onClick={() => { if (portValid) game.setPort(Number(port)); void game.connect(); }}>Verbinden</button>}
         <details className="live-port"><summary>Port</summary>
@@ -81,6 +81,11 @@ export function LiveGamePanel({ game, actions }: { game: LiveGame; actions: Live
           <li>Steht dort Text mit „bauplaner-mod“: Die Mod läuft, aber der Browser blockiert diese Seite. Symbol links neben der Adresse → Website-Einstellungen → „Lokales Netzwerk“ / „Geräte im lokalen Netzwerk“ → „Zulassen“, dann neu laden. Brave: Schutzschild aus oder „Localhost-Zugriff“ erlauben.</li>
         </ol>
       </details>}
+    </div>}
+
+    {game.phase === 'asking' && <div className="live-pair" role="status" data-testid="live-asking">
+      <p><b>Jetzt im Spiel J drücken und „Planer zulassen“ klicken.</b> Oben im Bild steht „Planer möchte sich verbinden“. Du musst nichts eintippen.</p>
+      <button type="button" className="secondary" onClick={() => void game.disconnect()}>Abbrechen</button>
     </div>}
 
     {game.phase === 'unpaired' && <form className="live-pair" onSubmit={e => { e.preventDefault(); void game.pair(code); }}>

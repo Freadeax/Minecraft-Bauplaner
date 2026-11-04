@@ -205,7 +205,7 @@ export const TEST_AREAS: readonly TestArea[] = [
     id: 'LIVE', kind: 'mod', title: 'Mod: Verbindung mit dem Planer',
     intro: 'Live-Karte und Übergabe zwischen Planer und Spiel über 127.0.0.1 (nur auf demselben Rechner).',
     cases: [
-      k('LIVE-01', 'Koppeln', ['Im Spiel `/bauplaner verbinden`.', 'Im Planer Weltkarte → Kasten „Spiel“ → Verbinden, Code eingeben. Browserfrage „Geräte im lokalen Netzwerk“ zulassen.'], 'Verbunden; Karte zeigt die Spielerposition mit Spur.', '#/karte'),
+      k('LIVE-01', 'Koppeln per Klick', ['Minecraft mit Mod 0.12 starten (die Verbindung ist von selbst an).', 'Im Planer Weltkarte → Kasten „Spiel“ → Verbinden. Browserfrage „Geräte im lokalen Netzwerk“ zulassen.', 'Im Spiel steht oben „J drücken“: J drücken, „Planer zulassen“ klicken.'], 'Ohne Code und ohne Befehl verbunden; Karte zeigt die Spielerposition mit Spur.', '#/karte'),
       k('LIVE-02', 'Plan ins Spiel senden', ['Bei einem Projekt auf der Karte „▶ Ins Spiel senden“.'], 'Hologramm erscheint im Spiel genau an der Kartenlage, ohne Datei zu kopieren.', '#/karte'),
       v('LIVE-03', 'Gelände und Weltplan', ['„Gelände um mich lesen“; „Weltplan ins Spiel senden“.'], 'Geladene Chunks werden eingefärbt; Wege/Bauplätze erscheinen im Spiel als Linien.', '#/karte'),
       v('LIVE-07', 'Wiederverbinden', ['Spiel beenden und neu starten, Planer offen lassen.'], 'Die Mod verbindet sich von selbst wieder; Karte zeigt die Position erneut.', '#/karte'),
@@ -214,6 +214,16 @@ export const TEST_AREAS: readonly TestArea[] = [
       v('LIVE-08', 'Weltplan mit alter und neuer Mod', ['Mit der Mod verbunden: „📍 Punkt, wo ich stehe“, „Spur als Weg“ (nach ein paar Schritten im Spiel).', 'Eine Zone und eine Notiz anlegen, „Weltplan ins Spiel senden“.', 'Zeile „Mod kann: …“ im Kasten „Spiel“ lesen.'], 'Punkt liegt genau an der Spielerposition mit Spielhöhe. Mit einer Mod ohne „marks2“ bleiben Zonen und neue Punktarten nur auf der Karte, die Meldung nennt sie; mit „marks2“ erscheinen sie im Spiel, mit „players“ stehen Mitspieler in Sichtweite auf der Karte.', '#/karte'),
       v('LIVE-09', 'Großen Plan senden (SIZE-01)', ['Ein großes Projekt (z. B. Großprojekt Hauptstadt oder ein Import über 1 Mio. Blöcke) auf der Karte „▶ Ins Spiel senden“.', 'Wenn möglich einmal mit Mod 0.8.0 und einmal mit 0.9.0.'], 'Mit 0.9.0: Meldung „Großer Plan …“, das Hologramm erscheint ohne Hänger. Mit 0.8.0 und Box über 4 Mio. Zellen: der Planer sendet nicht und nennt Mod 0.9.0; „Mod kann“ zeigt „große Pläne“ nur bei 0.9.0.', '#/karte'),
       k('LIVE-06', 'Diagnose aus dem Spiel', ['`/bauplaner diagnose` eingeben.'], 'Chat meldet die Datei in bauplaner/diagnose/ und dass der Bericht in der Zwischenablage liegt; Bericht nennt Mod-Version, Loader, Mods, Tasten, Hologramm-Zustand.'),
+    ],
+  },
+  {
+    id: 'LINK', kind: 'mod', title: 'Server ohne Befehle',
+    intro: 'Planer, Mod und Paper-Plugin verbinden sich per Klick; der Server wird aus dem Planer eingestellt (auch vom iPad über den Team-Raum).',
+    cases: [
+      k('LINK-01', 'Server ohne Befehle koppeln', ['Paper-Server mit Plugin 0.12 starten (nichts einstellen). Als OP mit der Mod beitreten: Chat-Hinweis lesen.', 'J → „Teambau erlauben“.', 'Im Planer #/mod, Bereich „Spiel und Server verbinden“: „Server koppeln“.'], 'Servername und Plugin-Version erscheinen, danach „dieser Browser steuert den Server“; im Serverordner steht plugins/BauplanerBridge/link.json mit einem Gerät. Kein Befehl getippt.', '#/mod'),
+      k('LINK-02', 'Server-Einstellungen aus dem Planer', ['Gekoppelt: „Bauen in fremden Abschnitten“ auf „sperren“, „Übernehmen“.', 'Im Spiel in einem fremden Abschnitt einen Block setzen.'], 'Meldung „1 Einstellung übernommen“; das Setzen wird verhindert. config.yml des Plugins zeigt den neuen Wert.', '#/mod'),
+      v('LINK-03', 'Team und Team-Raum per Knopf', ['Im Projekt Reiter „Team“ → „Planstand auf den Server legen“.', 'Unter „Team live“ → „Server mit dem Raum verbinden“.'], 'Beides ohne Datei und ohne Befehl; #/mod zeigt Team und Raum beim Server.', '#/mod'),
+      v('LINK-04', 'Vom iPad ohne Mod steuern', ['Am PC (#/mod, gekoppelt, Server mit Raum verbunden): „Weiteres Gerät freigeben (z. B. iPad)“ → Link erstellen.', 'Link auf dem iPad öffnen, eine Einstellung ändern.', 'Am PC das iPad wieder „entfernen“.'], 'iPad zeigt „über den Team-Raum“ und ändert die Einstellung; nach dem Entfernen meldet es „nicht (mehr) gekoppelt“.', '#/mod'),
     ],
   },
 ];

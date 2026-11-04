@@ -41,7 +41,7 @@ final class LiveLinkScenario {
         steps.add(new ClientScenario.Step(10, mc -> s.command("bauplaner verbinden port 47615")));
         steps.add(new ClientScenario.Step(1, mc -> {
             code[0] = codeFromChat(mc);
-            if (code[0] == null) throw new AssertionError("„/bauplaner verbinden port“ hat keinen Code im Chat gezeigt");
+            if (code[0] == null) throw new AssertionError("„/bauplaner verbinden port“ hat keinen Code im Chat gezeigt – Chat: " + lastChat(mc));
         }));
         request(steps, out, "hello", () -> get(http, "/v1/hello", null, SITE));
         request(steps, out, "foreign", () -> get(http, "/v1/hello", null, "https://example.com"));
@@ -132,6 +132,18 @@ final class LiveLinkScenario {
     }
 
     /** The newest pairing code in the chat, as the player reads it. */
+    private static String lastChat(Minecraft mc) {
+        try {
+            for (Field f : ChatComponent.class.getDeclaredFields()) {
+                if (!f.getName().equals("allMessages")) continue;
+                f.setAccessible(true);
+                List<?> all = (List<?>) f.get(mc.gui.hud.getChat());
+                return all.stream().limit(4).map(o -> ((GuiMessage) o).content().getString()).toList().toString();
+            }
+        } catch (ReflectiveOperationException e) { return e.toString(); }
+        return "?";
+    }
+
     private static String codeFromChat(Minecraft mc) throws ReflectiveOperationException {
         ChatComponent chat = mc.gui.hud.getChat();
         for (Field f : ChatComponent.class.getDeclaredFields()) {

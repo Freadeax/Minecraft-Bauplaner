@@ -321,7 +321,7 @@ final class RoomLink implements TeamUplink {
                 r.ws = null; r.live = false; r.inflight = null;
                 if (code == 4401 || code == 4403) {
                     r.stopped = true;
-                    r.status = "Schlüssel ungültig oder erneuert – im Planer einen neuen Server-Link holen und /bp team verbinden <link>";
+                    r.status = "Schlüssel ungültig oder erneuert – im Planer unter „Team live“ erneut „Server mit dem Raum verbinden“ klicken";
                     plugin.getLogger().warning(PREFIX + r.status);
                 } else retry(r, "getrennt (" + code + (reason == null || reason.isBlank() ? "" : " " + reason) + ")");
             });
@@ -366,8 +366,37 @@ final class RoomLink implements TeamUplink {
                 if (ex != null) plugin.getLogger().warning(PREFIX + "neuer Planstand nicht geholt: " + reason(ex));
                 else teams.reload();
             }));
+            case "control" -> control(r, m);
             case "error" -> plugin.getLogger().warning(PREFIX + "Raum meldet: " + Optional.ofNullable(TeamLog.str(m, "message")).orElse(TeamLog.str(m, "code")));
             default -> { }
         }
+    }
+
+    /**
+     * LINK-05: a control message signed in the planner, passed on by the room (docs/architecture/AUTO_LINK.md).
+     * The room knows no owner key; {@link ServerLink#control} checks signature, number and server like on the mod way.
+     */
+    private void control(Room r, JsonObject m) {
+        String id = TeamLog.str(m, "id");
+        if (id == null) return;
+        ServerLink link = plugin instanceof BridgePlugin b ? b.serverLink() : null;
+        java.util.concurrent.CompletableFuture<JsonObject> answer;
+        if (link == null) {
+            JsonObject e = new JsonObject();
+            e.addProperty("error", "Diese Plugin-Version kennt keine Kopplung.");
+            answer = java.util.concurrent.CompletableFuture.completedFuture(e);
+        } else {
+            long seq = m.has("seq") && m.get("seq").isJsonPrimitive() ? m.get("seq").getAsLong() : -1;
+            answer = link.control(TeamLog.str(m, "owner"), seq, TeamLog.str(m, "body"), TeamLog.str(m, "sig"), "Team-Raum");
+        }
+        answer.whenComplete((a, ex) -> main(() -> {
+            JsonObject out = new JsonObject();
+            out.addProperty("type", "control.answer");
+            out.addProperty("id", id);
+            JsonObject body = a;
+            if (ex != null || body == null) { body = new JsonObject(); body.addProperty("error", "Fehler im Plugin: " + (ex == null ? "keine Antwort" : reason(ex))); }
+            out.add("answer", body);
+            send(r, out);
+        }));
     }
 }

@@ -6,6 +6,7 @@ import type { LiveHello, LiveTeam, TeamEvent, TeamMerge, TeamState, TeamView } f
 import { errorText } from '../../app/ui';
 import { LiveError, liveApi, readLiveSettings } from '../map/liveClient';
 import type { ProjectSession } from './session';
+import { control, currentPairedServer } from '../mod/serverClient';
 
 const AUTO_KEY = 'bauplaner.team.autoabgleich';
 const AUTO_MS = 15_000;
@@ -39,9 +40,9 @@ export function TeamLive({ session, team, view, onMessage }: { session: ProjectS
   const connection = async (): Promise<{ port: number; token: string; hello: LiveHello } | null> => {
     const s = readLiveSettings();
     let h: LiveHello;
-    try { h = await liveApi.hello(s.port); } catch (e) { setHello(null); setProblem(`${errorText(e)} Im Spiel /bauplaner verbinden eingeben und im Menü „Spiel“ koppeln.`); return null; }
+    try { h = await liveApi.hello(s.port); } catch (e) { setHello(null); setProblem(`${errorText(e)} Minecraft mit der Bauplaner-Mod starten und im Menü „Spiel“ auf „Verbinden“ drücken.`); return null; }
     setHello(h);
-    if (!s.token) { setProblem('Die Website ist noch nicht mit der Mod gekoppelt: im Menü „Spiel“ den Code aus dem Spiel eintragen.'); return null; }
+    if (!s.token) { setProblem('Die Website ist noch nicht mit dem Spiel verbunden: im Menü „Spiel“ auf „Mit dem Spiel verbinden“ drücken und im Spiel „Planer zulassen“ klicken.'); return null; }
     if (!liveCan(h, LIVE_FEATURE_TEAM)) { setProblem(`Die Mod ${h.mod.version} kennt den Teambau noch nicht – Mod 0.10.0 oder neuer von der Seite „Mod“ installieren.`); return null; }
     return { port: s.port, token: s.token, hello: h };
   };
@@ -125,6 +126,14 @@ export function TeamLive({ session, team, view, onMessage }: { session: ProjectS
     const guide = computation?.guide;
     if (!guide) throw new Error('Die Bauanleitung ist noch nicht berechnet.');
     const file = teamServerFile({ team, view, projectName: project.name, sections: site.sections, steps: guide.steps, origin: project.world.origin as [number, number, number], dimension: project.world.dimension });
+    // LINK-04: a server paired with this browser takes the plan as a signed control message (no leader role
+    // in the plugin's team needed, nothing typed); otherwise the older push via the mod (plugin checks the role).
+    const paired = await currentPairedServer();
+    if (paired) {
+      const answer = await control(paired.link, paired.pairing, 'team', { file });
+      onMessage(`Planstand und Teamprotokoll liegen auf „${paired.pairing.name}“: ${typeof answer.text === 'string' ? answer.text : 'übernommen'}`);
+      return;
+    }
     const text = await liveApi.teamServer(c.port, c.token, file);
     onMessage(`Planstand und Teamprotokoll liegen auf dem Server: ${text}`);
   });

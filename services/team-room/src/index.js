@@ -2,7 +2,7 @@
 // One Durable Object per room (SQLite storage), WebSocket hibernation for live pushes and presence.
 // Deploy: see services/team-room/README.md (Philipp's Cloudflare account; Claude does not deploy).
 import { DurableObject } from 'cloudflare:workers';
-import { RoomCore, RoomError, cleanPresence, randomKey, LIMITS, PROTOCOL, VERSION } from './core.js';
+import { RoomCore, RoomError, ControlRelay, checkControl, cleanPresence, randomKey, LIMITS, PROTOCOL, VERSION } from './core.js';
 
 const ALLOWED_ORIGINS = ['https://freadeax.github.io', 'http://127.0.0.1', 'http://localhost'];
 
@@ -81,6 +81,7 @@ export class TeamRoom extends DurableObject {
   constructor(ctx, env) {
     super(ctx, env);
     this.core = new RoomCore(new SqlStore(ctx.storage.sql));
+    this.relay = new ControlRelay();
   }
 
   async fetch(request) {
@@ -100,7 +101,15 @@ export class TeamRoom extends DurableObject {
         pair[1].serializeAttachment({ authed: false });
         return new Response(null, { status: 101, webSocket: pair[0] });
       }
-      if (path === '' && request.method === 'GET') { await this.core.auth(bearer(request)); return json(this.core.info(), 200); }
+      if (path === '' && request.method === 'GET') { await this.core.auth(bearer(request)); return json({ ...this.core.info(), serverOnline: !!this.serverSocket() }, 200); }
+      // LINK-05: a signed control message for the Paper plugin; any room key may send, the plugin decides.
+      if (path === 'control' && request.method === 'POST') {
+        await this.core.auth(bearer(request));
+        const message = checkControl(await request.json());
+        const ws = this.serverSocket();
+        if (!ws) throw new RoomError(409, 'server-offline', 'Der Server ist gerade nicht mit dem Team-Raum verbunden (Server aus oder Raum dort nicht verbunden).');
+        return json(await this.relay.ask(frame => ws.send(JSON.stringify(frame)), message), 200);
+      }
       if (path === 'events' && request.method === 'POST') {
         const role = await this.core.auth(bearer(request));
         const body = await request.json();
@@ -162,6 +171,7 @@ export class TeamRoom extends DurableObject {
       }
       if (msg.type === 'presence') { ws.serializeAttachment({ ...att, presence: cleanPresence({ ...att.presence, ...msg, member: att.presence.member, device: att.presence.device }) }); this.sendPresence(); return; }
       if (msg.type === 'ping') return ws.send(JSON.stringify({ type: 'pong' }));
+      if (msg.type === 'control.answer' && att.role === 'server') { this.relay.answer(String(msg.id ?? ''), msg.answer); return; }
     } catch (e) {
       ws.send(JSON.stringify({ type: 'error', error: e.code ?? 'fehler', message: e.message }));
       if (e instanceof RoomError && (e.status === 401 || e.status === 404)) ws.close(4401, e.code);
@@ -170,6 +180,12 @@ export class TeamRoom extends DurableObject {
 
   webSocketClose() { this.sendPresence(); }
   webSocketError() { this.sendPresence(); }
+
+  /** The newest live connection of the Paper plugin (server key), or null. */
+  serverSocket() {
+    const all = this.ctx.getWebSockets().filter(ws => { const a = ws.deserializeAttachment(); return a?.authed && a.role === 'server'; });
+    return all.length ? all[all.length - 1] : null;
+  }
 
   broadcast(msg) {
     const text = JSON.stringify(msg);

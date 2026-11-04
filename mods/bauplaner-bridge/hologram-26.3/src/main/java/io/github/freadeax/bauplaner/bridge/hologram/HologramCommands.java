@@ -72,6 +72,9 @@ public final class HologramCommands {
                 // Website link (MAP-03): off until typed; a port starts it on that port.
                 HologramCommands.<S>literal("verbinden").executes(c -> said(link.connect()))
                         .then(HologramCommands.<S>literal("aus").executes(c -> said(link.disconnect())))
+                        // LINK-03: the buttons "Planer zulassen/ablehnen" in the J menu run these.
+                        .then(HologramCommands.<S>literal("zulassen").executes(c -> said(link.approve())))
+                        .then(HologramCommands.<S>literal("ablehnen").executes(c -> said(link.deny())))
                         .then(HologramCommands.<S>literal("status").executes(c -> said(link.statusText())))
                         .then(HologramCommands.<S>literal("port").then(HologramCommands.<S, Integer>argument("port", IntegerArgumentType.integer(1024, 65535))
                                 .executes(c -> said(link.setPort(IntegerArgumentType.getInteger(c, "port")))))),

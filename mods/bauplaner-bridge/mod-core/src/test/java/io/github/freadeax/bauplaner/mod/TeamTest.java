@@ -176,7 +176,7 @@ class TeamTest {
         sync.tick();
         assertEquals(TeamSync.Link.ASK, sync.link());
         assertTrue(net.sent.isEmpty());
-        assertTrue(chat.get(chat.size() - 1).contains("/bauplaner team erlauben"));
+        assertTrue(chat.get(chat.size() - 1).contains("„Teambau erlauben“"));
         assertTrue(sync.request("pull", Map.of()).isCompletedExceptionally());
         // Allowed: register + hello, and the state answer sends the waiting action.
         sync.allow(true);

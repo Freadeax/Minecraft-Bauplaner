@@ -916,3 +916,11 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `npm run test:e2e` (Chromium 1243 über PLAYWRIGHT_BROWSERS_PATH-Symlinks): 151/151 bestanden, darunter `tests/e2e/production.e2e.mjs` bei 1400 und 390 px (Farm anlegen, Ernte bucht ins Lager, gemessene Rate, Ort/AFK-Platz, Neuladen, kein Querscrollen, keine Konsolenfehler).
 - Sichtprüfung per Screenshot im hellen Thema (1400/390 px); Farbwerte über Theme-Tokens.
 - Grenzen: Farmraten sind Richtwerte; keine Messung im echten Spiel. Abnahme PROJ-12/13 durch Philipp offen.
+
+## LINK-01 … LINK-05 · Server ohne Befehle · 04.11.2026 · Claude
+
+- Einheiten: `LinkCoreTest` (Paper: Rundlauf, Prüfvektor, Wiederholung, falsche Unterschrift, fremder Server, unbekannte Aktion, Einstellungsliste, Obergrenze), `LiveLinkTest` (Mod-Kern: Zulassen per Klick, Ablehnen, Ablauf, Obergrenze, Server-Routen nur mit Token), `tests/server-link.test.mjs` (gleicher Prüfvektor, Freigabe-Link), `tests/team-room.test.mjs` (Raum-Weiterleitung).
+- Browser: `tests/e2e/server-link.e2e.mjs` gegen den Mod-Simulator mit Plugin-Ersatz – PC 1400/390 px (Kopplung per Klick, Server koppeln, signierte Einstellung, Freigabe-Link) und iPad 820 px ohne Mod über einen Raum-Ersatz (Einstellung ändern, Server offline klar gemeldet).
+- Echter Server: `scripts/test_bridge_paper_link.sh` – Paper 1.21.11 mit `minecraft-protocol` als Client: Selbsteinrichtung, Nicht-OP abgewiesen, Kopplung, 2 Einstellungen, Team, Wiederholung/falsche Unterschrift/fremder Server/Einstellung außerhalb der Liste abgewiesen, Neustart behält Kopplung und Nummer, Gerät entfernen; mit `BAUPLANER_ROOM` (wrangler dev) Steuerung über den Team-Raum. Bestehende Paper-Tests (Teambau 1.21.11/26.3, Lagerkisten, Team-Raum) weiter grün.
+- Spiel: `scripts/test_bridge_ingame.sh` (Fabric 26.3) klickt „Planer zulassen“ mit der Maus; Schlüssel kommt genau einmal.
+- Grenzen: Der Protokoll-Client kann Paper 26.3 noch nicht (Bibliothek bis 26.1), daher Servertest auf 1.21.11; kein Test mit Philipps echtem Server und Modpack; Plan-Upload aus dem Planer (LINK-06) offen.

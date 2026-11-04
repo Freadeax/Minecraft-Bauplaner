@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 110 Fälle in 12 Bereichen, davon 54 Kernfälle.
+Umfang: 114 Fälle in 13 Bereichen, davon 56 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -190,7 +190,7 @@ Live-Karte und Übergabe zwischen Planer und Spiel über 127.0.0.1 (nur auf dems
 
 | ID | Fall | Stufe | Schritte | Erwartet |
 |---|---|---|---|---|
-| LIVE-01 | Koppeln ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/karte)) | kern | 1. Im Spiel `/bauplaner verbinden`.<br>2. Im Planer Weltkarte → Kasten „Spiel“ → Verbinden, Code eingeben. Browserfrage „Geräte im lokalen Netzwerk“ zulassen. | Verbunden; Karte zeigt die Spielerposition mit Spur. |
+| LIVE-01 | Koppeln per Klick ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/karte)) | kern | 1. Minecraft mit Mod 0.12 starten (die Verbindung ist von selbst an).<br>2. Im Planer Weltkarte → Kasten „Spiel“ → Verbinden. Browserfrage „Geräte im lokalen Netzwerk“ zulassen.<br>3. Im Spiel steht oben „J drücken“: J drücken, „Planer zulassen“ klicken. | Ohne Code und ohne Befehl verbunden; Karte zeigt die Spielerposition mit Spur. |
 | LIVE-02 | Plan ins Spiel senden ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/karte)) | kern | 1. Bei einem Projekt auf der Karte „▶ Ins Spiel senden“. | Hologramm erscheint im Spiel genau an der Kartenlage, ohne Datei zu kopieren. |
 | LIVE-03 | Gelände und Weltplan ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/karte)) | vertieft | 1. „Gelände um mich lesen“; „Weltplan ins Spiel senden“. | Geladene Chunks werden eingefärbt; Wege/Bauplätze erscheinen im Spiel als Linien. |
 | LIVE-07 | Wiederverbinden ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/karte)) | vertieft | 1. Spiel beenden und neu starten, Planer offen lassen. | Die Mod verbindet sich von selbst wieder; Karte zeigt die Position erneut. |
@@ -199,3 +199,14 @@ Live-Karte und Übergabe zwischen Planer und Spiel über 127.0.0.1 (nur auf dems
 | LIVE-08 | Weltplan mit alter und neuer Mod ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/karte)) | vertieft | 1. Mit der Mod verbunden: „📍 Punkt, wo ich stehe“, „Spur als Weg“ (nach ein paar Schritten im Spiel).<br>2. Eine Zone und eine Notiz anlegen, „Weltplan ins Spiel senden“.<br>3. Zeile „Mod kann: …“ im Kasten „Spiel“ lesen. | Punkt liegt genau an der Spielerposition mit Spielhöhe. Mit einer Mod ohne „marks2“ bleiben Zonen und neue Punktarten nur auf der Karte, die Meldung nennt sie; mit „marks2“ erscheinen sie im Spiel, mit „players“ stehen Mitspieler in Sichtweite auf der Karte. |
 | LIVE-09 | Großen Plan senden (SIZE-01) ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/karte)) | vertieft | 1. Ein großes Projekt (z. B. Großprojekt Hauptstadt oder ein Import über 1 Mio. Blöcke) auf der Karte „▶ Ins Spiel senden“.<br>2. Wenn möglich einmal mit Mod 0.8.0 und einmal mit 0.9.0. | Mit 0.9.0: Meldung „Großer Plan …“, das Hologramm erscheint ohne Hänger. Mit 0.8.0 und Box über 4 Mio. Zellen: der Planer sendet nicht und nennt Mod 0.9.0; „Mod kann“ zeigt „große Pläne“ nur bei 0.9.0. |
 | LIVE-06 | Diagnose aus dem Spiel | kern | 1. `/bauplaner diagnose` eingeben. | Chat meldet die Datei in bauplaner/diagnose/ und dass der Bericht in der Zwischenablage liegt; Bericht nennt Mod-Version, Loader, Mods, Tasten, Hologramm-Zustand. |
+
+## LINK · Server ohne Befehle (Mod)
+
+Planer, Mod und Paper-Plugin verbinden sich per Klick; der Server wird aus dem Planer eingestellt (auch vom iPad über den Team-Raum).
+
+| ID | Fall | Stufe | Schritte | Erwartet |
+|---|---|---|---|---|
+| LINK-01 | Server ohne Befehle koppeln ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/mod)) | kern | 1. Paper-Server mit Plugin 0.12 starten (nichts einstellen). Als OP mit der Mod beitreten: Chat-Hinweis lesen.<br>2. J → „Teambau erlauben“.<br>3. Im Planer #/mod, Bereich „Spiel und Server verbinden“: „Server koppeln“. | Servername und Plugin-Version erscheinen, danach „dieser Browser steuert den Server“; im Serverordner steht plugins/BauplanerBridge/link.json mit einem Gerät. Kein Befehl getippt. |
+| LINK-02 | Server-Einstellungen aus dem Planer ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/mod)) | kern | 1. Gekoppelt: „Bauen in fremden Abschnitten“ auf „sperren“, „Übernehmen“.<br>2. Im Spiel in einem fremden Abschnitt einen Block setzen. | Meldung „1 Einstellung übernommen“; das Setzen wird verhindert. config.yml des Plugins zeigt den neuen Wert. |
+| LINK-03 | Team und Team-Raum per Knopf ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/mod)) | vertieft | 1. Im Projekt Reiter „Team“ → „Planstand auf den Server legen“.<br>2. Unter „Team live“ → „Server mit dem Raum verbinden“. | Beides ohne Datei und ohne Befehl; #/mod zeigt Team und Raum beim Server. |
+| LINK-04 | Vom iPad ohne Mod steuern ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/mod)) | vertieft | 1. Am PC (#/mod, gekoppelt, Server mit Raum verbunden): „Weiteres Gerät freigeben (z. B. iPad)“ → Link erstellen.<br>2. Link auf dem iPad öffnen, eine Einstellung ändern.<br>3. Am PC das iPad wieder „entfernen“. | iPad zeigt „über den Team-Raum“ und ändert die Einstellung; nach dem Entfernen meldet es „nicht (mehr) gekoppelt“. |

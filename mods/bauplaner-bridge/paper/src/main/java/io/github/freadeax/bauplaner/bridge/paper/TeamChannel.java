@@ -53,11 +53,15 @@ final class TeamChannel implements PluginMessageListener, Listener {
     private final Set<UUID> listening = ConcurrentHashMap.newKeySet();
     private boolean dirty;
     private int partCounter;
+    /** Server link without commands (LINK-02): pairing and signed control messages from the planner. */
+    private ServerLink link;
 
     TeamChannel(JavaPlugin plugin, TeamModule team) {
         this.plugin = plugin;
         this.team = team;
     }
+
+    void link(ServerLink link) { this.link = link; }
 
     void enable() {
         Bukkit.getMessenger().registerIncomingPluginChannel(plugin, CHANNEL, this);
@@ -119,6 +123,7 @@ final class TeamChannel implements PluginMessageListener, Listener {
                 case "act" -> act(player, o);
                 case "pull" -> pull(player, o);
                 case "push" -> push(player, o);
+                case "link.info", "link.claim", "link.ctl" -> linkMessage(player, t, o);
                 default -> error(player, "Unbekannte Nachricht " + t);
             }
         } catch (RuntimeException e) {
@@ -192,6 +197,19 @@ final class TeamChannel implements PluginMessageListener, Listener {
             a.addProperty("error", "Teamdatei nicht übernommen: " + e.getMessage());
         }
         send(p, a);
+    }
+
+    /** LINK-02: the planner talks to the server through this player's mod; the answer goes back as {@code answer}. */
+    private void linkMessage(Player p, String type, JsonObject o) {
+        String req = TeamLog.str(o, "req");
+        if (link == null) { JsonObject a = answer(req); a.addProperty("error", "Diese Plugin-Version kennt keine Kopplung."); send(p, a); return; }
+        link.handle(p, type, o).whenComplete((result, ex) -> Bukkit.getScheduler().runTask(plugin, () -> {
+            if (!p.isOnline()) return;
+            JsonObject a = answer(req);
+            if (ex != null) a.addProperty("error", "Fehler im Plugin: " + ex.getMessage());
+            else for (Map.Entry<String, JsonElement> e : result.entrySet()) a.add(e.getKey(), e.getValue());
+            send(p, a);
+        }));
     }
 
     private static JsonObject answer(String req) {

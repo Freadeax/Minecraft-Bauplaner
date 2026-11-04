@@ -2,7 +2,7 @@
 // two browsers and a server go live through one room without any file (docs/architecture/TEAM_LIVE.md).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { RoomCore, MemoryStore, RoomError, checkEventShape, LIMITS } from '../services/team-room/src/core.js';
+import { RoomCore, MemoryStore, RoomError, checkEventShape, LIMITS, checkControl, ControlRelay, CONTROL } from '../services/team-room/src/core.js';
 import {
   createTeam, teamEvent, teamView, goLive, joinLive, appendLocal, nextBatch, confirm, ingest, roomStatus, inviteLink, serverLink, readInvite, shareable, checkLive, retryDelay, buildTeamPackage,
 } from '../dist/domain/src/index.js';
@@ -114,4 +114,25 @@ test('lost answer: resending the same batch books nothing twice; big logs page t
   assert.equal(reader.events.length, 450);
   assert.equal(retryDelay(0), 5000); assert.equal(retryDelay(10), 60000);
   assert.throws(() => checkLive({ ...reader.live, url: 'http://server.example' }), /https/);
+});
+
+test('room: control messages for the server (LINK-05) – form check, relay with answer, timeout, limit', async () => {
+  const ok = { owner: 'own_abcd1234', seq: 1730682000000, body: '{"server":"srv_test01","op":"status"}', sig: 'Z4xxwD4_0cRGwTx6-G-LN_A1h2PzwaSBK_LsXLMOxYo' };
+  assert.deepEqual(checkControl({ ...ok, extra: 1 }), ok, 'only the four fields go on');
+  for (const [k, v] of [['owner', 'x'], ['seq', 0], ['seq', 1.5], ['body', ''], ['sig', 'kurz']]) assert.throws(() => checkControl({ ...ok, [k]: v }), e => e instanceof RoomError && e.status === 400, k);
+  assert.throws(() => checkControl({ ...ok, body: 'x'.repeat(CONTROL.bytes + 1) }), e => e.status === 413);
+
+  const relay = new ControlRelay(200);
+  const sent = [];
+  const pending = relay.ask(f => sent.push(f), ok);
+  assert.equal(sent.length, 1); assert.equal(sent[0].type, 'control'); assert.equal(sent[0].body, ok.body);
+  assert.equal(relay.answer('unbekannt', {}), false);
+  assert.equal(relay.answer(sent[0].id, { ok: true, text: 'Status' }), true);
+  assert.deepEqual(await pending, { ok: true, text: 'Status' });
+  assert.equal(relay.answer(sent[0].id, {}), false, 'an answer counts once');
+  await assert.rejects(relay.ask(() => {}, ok), e => e.status === 504);
+  await assert.rejects(relay.ask(() => { throw new Error('zu'); }, ok), /zu/);
+  const many = Array.from({ length: CONTROL.pending }, () => relay.ask(() => {}, ok).catch(() => {}));
+  assert.throws(() => relay.ask(() => {}, ok), e => e.status === 429);
+  await Promise.all(many);
 });

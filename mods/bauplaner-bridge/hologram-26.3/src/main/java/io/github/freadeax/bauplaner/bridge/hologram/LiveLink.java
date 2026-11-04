@@ -58,10 +58,29 @@ public final class LiveLink implements LiveLinkServer.Handler {
         this.loader = loader;
         this.version = version;
         Properties p = load();
-        enabled = "true".equals(p.getProperty("aktiv"));
+        // LINK-03: the service runs by default (loopback only, nothing happens without pairing); off only after
+        // "/bauplaner verbinden aus" or the switch in the menu.
+        enabled = !"false".equals(p.getProperty("aktiv"));
         try { port = Integer.parseInt(p.getProperty("port", String.valueOf(LiveLinkServer.DEFAULT_PORT))); } catch (NumberFormatException ignored) { }
         List<String> tokens = Arrays.stream(p.getProperty("schluessel", "").split(",")).filter(s -> !s.isBlank()).toList();
         server = new LiveLinkServer(new LiveLinkServer.Info(version, loader, minecraft), this, tokens, this::saveTokens, System::currentTimeMillis);
+        server.onAsk(a -> {
+            Minecraft mc = Minecraft.getInstance();
+            mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] Der Planer („" + a.device + "“) möchte sich mit dem Spiel verbinden. J drücken → „Planer zulassen“.")));
+        });
+    }
+
+    /** A website waits for "Zulassen" (LINK-03); null if none. */
+    public String pendingAsk() { var a = server.pendingAsk(); return a == null ? null : a.device; }
+
+    public String approve() {
+        String device = server.approveAsk();
+        return device == null ? "Es wartet gerade kein Planer auf die Freigabe." : "Planer „" + device + "“ zugelassen. Er ist jetzt mit dem Spiel verbunden.";
+    }
+
+    public String deny() {
+        int n = server.denyAsks();
+        return n == 0 ? "Es wartet gerade kein Planer auf die Freigabe." : "Abgelehnt. Der Planer bekommt keinen Zugang.";
     }
 
     public WorldMarks marks() { return marks; }
@@ -129,6 +148,9 @@ public final class LiveLink implements LiveLinkServer.Handler {
 
     public String setPort(int p) {
         if (p < 1024 || p > 65535) return "Port muss zwischen 1024 und 65535 liegen.";
+        // Since 0.12 the service already runs from the start: the same port needs no restart (a quick
+        // close and bind of the same port can fail while the old socket is still closing).
+        if (server.running() && server.port() == p && port == p) return "Port " + p + " ist schon eingestellt. " + connect();
         server.close();
         port = p;
         save();
@@ -139,7 +161,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
     }
 
     public String statusText() {
-        if (!server.running()) return "Website-Verbindung aus. Einschalten: /bauplaner verbinden";
+        if (!server.running()) return "Website-Verbindung aus. Einschalten: im Menü „Website koppeln“ (oder /bauplaner verbinden).";
         return "Website-Verbindung an, Port " + server.port() + ", " + server.pairedClients() + " gekoppelte(r) Browser" + (websiteActive() ? ", Website fragt gerade ab" : "")
                 + (server.pairingOpen() ? ", Kopplung offen" : "") + ". Markierungen: " + marks.size() + ".";
     }
@@ -480,16 +502,63 @@ public final class LiveLink implements LiveLinkServer.Handler {
         return relay(t.sync().request("pull", q));
     }
 
-    private static String relay(java.util.concurrent.CompletableFuture<Map<String, Object>> f) throws Exception {
+    // ------------------------------------------------------------------ server link (LINK-03)
+
+    /** GET /v1/server: who the server plugin is, whether this player may pair it; or why there is no way. */
+    @Override
+    public String serverInfo() throws Exception {
+        TeamClient t = needTeam();
+        var sync = t.sync();
+        Map<String, Object> out = new LinkedHashMap<>();
+        out.put("link", sync.link().name().toLowerCase(java.util.Locale.ROOT));
+        out.put("linkText", sync.link().label);
+        out.put("allowed", sync.allowed());
+        if (sync.link() != io.github.freadeax.bauplaner.mod.team.TeamSync.Link.LIVE) return Json.write(out);
+        try {
+            Map<String, Object> info = sync.request("link.info", Map.of()).get(10, TimeUnit.SECONDS);
+            info = new LinkedHashMap<>(info);
+            info.remove("t"); info.remove("v"); info.remove("req");
+            if (info.containsKey("error")) out.put("error", info.get("error")); else out.put("server", info);
+        } catch (java.util.concurrent.ExecutionException | TimeoutException e) {
+            out.put("error", e instanceof TimeoutException ? "Das Server-Plugin antwortet nicht." : String.valueOf(e.getCause() == null ? e : e.getCause().getMessage()));
+        }
+        return Json.write(out);
+    }
+
+    /** POST /v1/server/claim {device}: the plugin checks that this player is operator and returns the owner key once. */
+    @Override
+    public String serverClaim(Map<String, Object> body) throws Exception {
+        TeamClient t = needTeam();
+        Map<String, Object> m = new LinkedHashMap<>();
+        if (body.get("device") instanceof String d) m.put("device", d.length() > 40 ? d.substring(0, 40) : d);
+        return relay(t.sync().request("link.claim", m), 15);
+    }
+
+    /** POST /v1/server/control {owner, seq, body, sig}: passed on unchanged; only the plugin can check it. */
+    @Override
+    public String serverControl(Map<String, Object> body) throws Exception {
+        TeamClient t = needTeam();
+        Map<String, Object> m = new LinkedHashMap<>();
+        m.put("owner", Json.str(body.get("owner"), "owner", 64));
+        if (!(body.get("seq") instanceof Number n)) throw new LiveLinkServer.HttpError(400, "seq fehlt.");
+        m.put("seq", n.longValue());
+        m.put("body", Json.str(body.get("body"), "body", 6 * 1024 * 1024));
+        m.put("sig", Json.str(body.get("sig"), "sig", 128));
+        return relay(t.sync().request("link.ctl", m), 30);
+    }
+
+    private static String relay(java.util.concurrent.CompletableFuture<Map<String, Object>> f) throws Exception { return relay(f, 15); }
+
+    private static String relay(java.util.concurrent.CompletableFuture<Map<String, Object>> f, int seconds) throws Exception {
         Map<String, Object> answer;
         try {
-            answer = f.get(15, TimeUnit.SECONDS);
+            answer = f.get(seconds, TimeUnit.SECONDS);
         } catch (java.util.concurrent.ExecutionException e) {
             throw new LiveLinkServer.HttpError(409, e.getCause() == null ? "Kein Weg zum Server." : e.getCause().getMessage());
         } catch (TimeoutException e) {
-            throw new LiveLinkServer.HttpError(504, "Das Server-Plugin hat nicht innerhalb von 15 Sekunden geantwortet.");
+            throw new LiveLinkServer.HttpError(504, "Das Server-Plugin hat nicht innerhalb von " + seconds + " Sekunden geantwortet.");
         }
-        if (answer.get("error") instanceof String err) throw new LiveLinkServer.HttpError(err.startsWith("Nur die Bauleitung") ? 403 : 409, err);
+        if (answer.get("error") instanceof String err) throw new LiveLinkServer.HttpError(err.startsWith("Nur die Bauleitung") || err.startsWith("Koppeln darf nur") ? 403 : 409, err);
         Map<String, Object> out = new LinkedHashMap<>(answer);
         out.remove("t"); out.remove("v"); out.remove("req");
         return Json.write(out);

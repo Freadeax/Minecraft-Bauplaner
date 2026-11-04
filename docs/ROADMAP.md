@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-04T01:49:58.384Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-04T02:19:40.131Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,10 +12,10 @@ Stand: 2026-11-04T01:49:58.384Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 8 |
+| ⏳ Offen | 9 |
 | 🚧 In Arbeit | 3 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 67 |
+| 🧩 Implementiert · Abnahme offen | 72 |
 | ✅ Im beschriebenen Umfang geprüft | 25 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -28,10 +28,10 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 19 | 9 | 18 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 4 | 10 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 7 | 1 | 5 | 1 |
-| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 7 | 1 | 7 | 0 |
+| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 9 | 1 | 9 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
-| [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 7 | 0 | 6 | 0 |
-| [Paper-Plugin (Server)](#bereich-plugin) | 2 | 0 | 2 | 0 |
+| [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 8 | 0 | 7 | 0 |
+| [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 3 | 0 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
 | [Performance und Stabilität](#bereich-perf) | 4 | 1 | 1 | 2 |
 | [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 12 | 2 | 6 | 8 |
@@ -114,6 +114,8 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [COOP-05](#coop-05) | Geprüfte Lagerkisten im Paper-Plugin | 🧩 Implementiert · Abnahme offen 3/5 | P1 | „Server-Plugin mit geprüften Lagerkisten“ | LAGER-01…09 mit echten Spielern. |
 | [COOP-06](#coop-06) | Teamplanung im Planer | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Gemeinsames Bauen im Planer vertiefen“ | TEAMBAU-21…24 mit Mitspielern an einem großen Bau. |
 | [COOP-07](#coop-07) | Team live ohne Dateien | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat). |
+| [LINK-04](#link-04) | Planer | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Anbindung von Planer, Mod und Server neu denken“ | Testplan-Bereich LINK durchgehen. |
+| [LINK-05](#link-05) | Zweiter Weg über den Team-Raum | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Anbindung von Planer, Mod und Server neu denken“ | Am PC „Weiteres Gerät freigeben“, Link auf dem iPad öffnen, eine Einstellung ändern. |
 
 <a id="bereich-groesse"></a>
 
@@ -133,6 +135,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Bauplaner-Mod von Grund auf neu entwickeln“ | Zusammen mit MAP-03-S06. |
 | [GAME-05](#game-05) | NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Teambau und Befehle in der Mod ausbauen“ | Forge-Testversion auf einem Rechner mit Bildschirm starten (S03). |
 | [GAME-07](#game-07) | Bauplaner-Mod 2.0 | 🧩 Implementiert · Abnahme offen 8/10 | P1 | „Teambau und Befehle in der Mod ausbauen“ | Hologramm, Abschnitte und Röntgensicht auf server.lmnt-gaming.net (S05). |
+| [LINK-03](#link-03) | Mod | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Anbindung von Planer, Mod und Server neu denken“ | Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“. |
 | [GAME-08](#game-08) | Bauplaner-Mod Protokoll 2 | 🧩 Implementiert · Abnahme offen 4/5 | P2 | „Teambau und Befehle in der Mod ausbauen“ | Mitspieler-Pfeile auf der Live-Karte mit einem zweiten Spieler. |
 | [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0 | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Teambau und Befehle in der Mod ausbauen“ | Befehlsseite im J-Menü zusammen mit dem Plugin auf deinem Server (MOD-16). |
 | [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher | ⏳ Offen 0/4 | P2 | „Teambau und Befehle in der Mod ausbauen“ | — |
@@ -145,6 +148,9 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 |---|---|---|---|---|---|
 | [GAME-04](#game-04) | Paper-Plugin der Bauplaner-Brücke (serverseitig, mehrere Minecraft-Versionen) | 🚧 In Arbeit 3/4 | P1 | „Server-Plugin mit geprüften Lagerkisten“ | Plugin-Abnahme auf deinem Paper-Server (S04). |
 | [LAGER-01](#lager-01) | Optionale Truhen-/Lagerintegration | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Server-Plugin mit geprüften Lagerkisten“ | Geprüfte Lagerkisten auf dem Paper-Server einrichten und den Bestand im Planer übernehmen (LAGERKISTEN.md). |
+| [LINK-01](#link-01) | Plugin richtet sich selbst ein und lässt sich per Klick koppeln (link.json, Server-ID, K… | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Anbindung von Planer, Mod und Server neu denken“ | Plugin 0.12.0 einspielen, als OP mit Mod beitreten, J → „Teambau erlauben“, im Planer #/mod „Server koppeln“. |
+| [LINK-02](#link-02) | Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstell… | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Anbindung von Planer, Mod und Server neu denken“ | — |
+| [LINK-06](#link-06) | Weitere Steuerung ohne Befehle | ⏳ Offen 0/2 | P2 | „Anbindung von Planer, Mod und Server neu denken“ | — |
 
 <a id="bereich-modrinth"></a>
 
@@ -238,6 +244,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **COOP-06** · TEAMBAU-21…24 mit Mitspielern an einem großen Bau.
 - **GAME-10** · Befehlsseite im J-Menü zusammen mit dem Plugin auf deinem Server (MOD-16).
 - **COOP-07** · TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat).
+- **LINK-01** · Plugin 0.12.0 einspielen, als OP mit Mod beitreten, J → „Teambau erlauben“, im Planer #/mod „Server koppeln“.
 
 ### Im Spiel an deinem PC
 
@@ -257,6 +264,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **MAP-06** · Weltkarte mit Mod 0.8.0 oder neuer im Spiel abnehmen (S08, KARTE-05/06, LIVE-08).
 - **GEN-03** · Kolosseum exportieren und im Spiel aufstellen (BIB-14).
 - **SIZE-01** · Großen Bau (Olympus) ins Spiel senden und prüfen (DATEI-05, MOD-11, MOD-15, LIVE-09).
+- **LINK-03** · Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“.
 
 ### Auf echten Geräten und Browsern
 
@@ -271,6 +279,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **MAP-01** · Weltkarte auf echter GPU und mit Touch (QA-02).
 - **MAP-04** · Langdruck-Menü auf echtem Touch-Gerät (S06).
 - **BACKUP-02** · Sicherungs-Download in Safari; Rückmeldung, ob 7 Tage für die Erinnerung passen.
+- **LINK-05** · Am PC „Weiteres Gerät freigeben“, Link auf dem iPad öffnen, eine Einstellung ändern.
 
 ### Dateien oder Welt liefern
 
@@ -291,6 +300,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **PROJ-01** · Reiter „Planung“ abnehmen (PROJ-09…11).
 - **PROD-01** · Reiter „Produktion“ abnehmen (PROJ-12).
 - **PROD-02** · Engpässe und Zeitplanvergleich prüfen (PROJ-13).
+- **LINK-04** · Testplan-Bereich LINK durchgehen.
 
 ### Entscheiden oder Rückfrage beantworten
 
@@ -365,7 +375,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **COOP-05 · Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf** — 🧩 Implementiert · Abnahme offen, 3/5 Teilschritte. Nächster Schritt: Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server.
 - **PERF-05 · Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund** — 🧩 Implementiert · Abnahme offen, 7/8 Teilschritte. Nächster Schritt: O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8).
 - **COOP-06 · Teamplanung im Planer: Arbeitspakete, Zuteilung, Zeitplan, Material je Spieler, Fortschritt mit Hinweisen, Konflikthilfe, Planstand-Vergleich, Übergabe und Abwesenheit** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern.
-- **COOP-07 · Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl im Thread „Anbindung von Planer, Mod und Server neu denken“ (LINK-05).
+- **COOP-07 · Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl umgesetzt (LINK-05).
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -539,6 +549,12 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-03, COOP-05, GAME-07 | ausstehend | ausstehend |
 | [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher | ⏳ Offen | 0/4 | GAME-07, GAME-10 | ausstehend | ausstehend |
 | [COOP-07](#coop-07) | Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel | 🧩 Implementiert · Abnahme offen | 6/7 | COOP-01, COOP-04 | ausstehend | ausstehend |
+| [LINK-01](#link-01) | Plugin richtet sich selbst ein und lässt sich per Klick koppeln (link.json, Server-ID, Kopplung nur OP/Bauleitung über den Teamkanal) | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-02 | ausstehend | ausstehend |
+| [LINK-02](#link-02) | Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte) | 🧩 Implementiert · Abnahme offen | 3/4 | LINK-01 | ausstehend | ausstehend |
+| [LINK-03](#link-03) | Mod: Live-Dienst startet selbst, Planer per Klick im Spiel zulassen, Teamfreigabe als Knopf, Server-Wege weiterreichen (Mod 0.12.0) | 🧩 Implementiert · Abnahme offen | 4/5 | GAME-08, COOP-03 | ausstehend | ausstehend |
+| [LINK-04](#link-04) | Planer: Bereich „Spiel und Server verbinden – ohne Befehle“ (#/mod), Server koppeln und einstellen, Team und Raum per Knopf | 🧩 Implementiert · Abnahme offen | 3/4 | LINK-02, LINK-03 | ausstehend | ausstehend |
+| [LINK-05](#link-05) | Zweiter Weg über den Team-Raum: Steuernachrichten ohne Mod (iPad), weiteres Gerät per Link freigeben | 🧩 Implementiert · Abnahme offen | 4/5 | LINK-04, COOP-07 | ausstehend | ausstehend |
+| [LINK-06](#link-06) | Weitere Steuerung ohne Befehle: Plan-Upload und Anker aus dem Planer, Serveraufnahme (scan) per Steuernachricht, Befehle nur noch als Ausweg | ⏳ Offen | 0/2 | LINK-05 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
 
@@ -2778,7 +2794,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Beitreten nur per Link, keine Datei; Plan und Protokoll kommen aus dem Raum. Jeder neue lokale Eintrag (Aktion, Import, Spielabgleich) geht ohne weiteres Zutun in den Raum; wiederholtes Senden bucht nichts doppelt. Ereignisse mit Herkunft server nimmt der Raum nur mit dem Serverschlüssel an. Offline weiterarbeiten; beim nächsten Verbinden gleichen alle auf denselben Stand ab.
 
-**Nächste Aktion:** Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl im Thread „Anbindung von Planer, Mod und Server neu denken“ (LINK-05).
+**Nächste Aktion:** Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl umgesetzt (LINK-05).
 
 **Nur Philipp:** Auf deinem Server mit Mitspielern: TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat).
 
@@ -2875,6 +2891,140 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/production.test.mjs](../tests/production.test.mjs) — 10 Fälle: Katalog, Datensatz/Rückgängig/Sicherung, Ertragsbuch, Reichweiten/AFK, Deckung/Engpass/Bereitschaft, Vorschläge, Öfen/Lager/Logistik, Verbrauch, Anbindung, Integration mit planSite.; [tests/e2e/production.e2e.mjs](../tests/e2e/production.e2e.mjs) — Reiter „Produktion“ in Chromium (1400/390 px): Farm, Ernte ins Lager, gemessene Rate, Ort, AFK-Platz, Neuladen, kein Querscrollen.; [docs/architecture/PRODUCTION.md](architecture/PRODUCTION.md) — Grundsätze, Datensatz, Farmarten, Auswertung, Anbindung, Grenzen.
 
 **Dateiumfang:** `packages/domain/src/productionPlan.ts`, `apps/web/src/views/project/ProductionTab.tsx`, `apps/web/src/views/project/SiteTab.tsx`, `apps/web/src/views/project/tabs.ts`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `tests/e2e/production.e2e.mjs`. **Abhängigkeiten:** PROD-02, MAP-06, PROJ-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### LINK-01
+
+**Plugin richtet sich selbst ein und lässt sich per Klick koppeln (link.json, Server-ID, Kopplung nur OP/Bauleitung über den Teamkanal)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Anbindung von Planer, Mod und Server neu denken“ · Aktualisiert: 2026-11-04T02:19:40.131Z
+
+- [x] LINK-01-S01: Selbsteinrichtung beim ersten Start (link.json, Log-Hinweis), Chat-Hinweis für ungekoppelte OPs.
+- [x] LINK-01-S02: link.info/link.claim über bauplaner:team, nur OP oder bauplaner.team.leitung, höchstens 8 Geräte, Schlüssel nie im Log.
+- [x] LINK-01-S03: Echter Servertest Paper 1.21.11 mit Protokoll-Client.
+- [ ] LINK-01-S04: Abnahme bei Philipp auf seinem Paper-Server (LINK-01 im Testplan).
+
+**Abnahme:** Auf dem Server muss niemand etwas eintippen; ein OP koppelt mit einem Klick im Planer. Nicht-OPs können nicht koppeln; Schlüssel erscheinen nie im Log.
+
+**Nächste Aktion:** Abnahme LINK-01 auf Philipps Server.
+
+**Nur Philipp:** Auf deinem Server mit Mitspielern: Plugin 0.12.0 einspielen, als OP mit Mod beitreten, J → „Teambau erlauben“, im Planer #/mod „Server koppeln“.
+
+**Prüfstand:** Automatisch und auf echtem Paper geprüft; Abnahme auf Philipps Server offen.
+
+**Nachweise:** [scripts/test_bridge_paper_link.sh](../scripts/test_bridge_paper_link.sh) — Paper 1.21.11 (Build 132): selbst eingerichtet, Nicht-OP abgewiesen, Kopplung, Neustart behält sie (04.11.2026).; [mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/LinkCoreTest.java](../mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/LinkCoreTest.java) — Regeln, Prüfvektor, Obergrenze.
+
+**Dateiumfang:** `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/LinkCore.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamChannel.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/BridgePlugin.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`, `mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/LinkCoreTest.java`, `docs/architecture/AUTO_LINK.md`. **Abhängigkeiten:** COOP-02. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### LINK-02
+
+**Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Anbindung von Planer, Mod und Server neu denken“ · Aktualisiert: 2026-11-04T02:19:40.131Z
+
+- [x] LINK-02-S01: Format und Unterschrift in Plugin und Planer gleich (gemeinsamer Prüfvektor).
+- [x] LINK-02-S02: Operationen status, config, team, room, plan, rename, invite, forget; config nur Liste, alles oder nichts, Teamkanal ausgenommen.
+- [x] LINK-02-S03: Wiederholung, falsche Unterschrift, fremder Server auf echtem Paper abgewiesen; Nummer übersteht Neustart.
+- [ ] LINK-02-S04: Plan-Upload im Planer anbieten (Plugin kann es schon).
+
+**Abnahme:** Eine aufgezeichnete Nachricht wirkt nie zweimal, eine Nachricht für Server A nie auf B. Keine Nachricht setzt Blöcke oder führt Befehle aus.
+
+**Nächste Aktion:** Plan-Upload aus dem Planer; Abnahme LINK-02.
+
+**Prüfstand:** Automatisch und auf echtem Paper geprüft; Abnahme LINK-02 offen.
+
+**Nachweise:** [scripts/test_bridge_paper_link.sh](../scripts/test_bridge_paper_link.sh) — 2 Einstellungen und ein Team per signierter Nachricht, alle Abweisungen geprüft (04.11.2026).; [tests/server-link.test.mjs](../tests/server-link.test.mjs) — Prüfvektor, Inhalt, Nummer, Leser.
+
+**Dateiumfang:** `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/LinkCore.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java`, `packages/domain/src/serverControl.ts`, `packages/domain/src/index.ts`, `tests/server-link.test.mjs`, `scripts/bridge_paperlink.mjs`, `scripts/test_bridge_paper_link.sh`. **Abhängigkeiten:** LINK-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### LINK-03
+
+**Mod: Live-Dienst startet selbst, Planer per Klick im Spiel zulassen, Teamfreigabe als Knopf, Server-Wege weiterreichen (Mod 0.12.0)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Anbindung von Planer, Mod und Server neu denken“ · Aktualisiert: 2026-11-04T02:19:40.131Z
+
+- [x] LINK-03-S01: /v1/pair/ask mit Frage im Spiel (Banner, eigene Frage-Ansicht im J-Menü mit Später), Schlüssel einmal, 3 Minuten, höchstens 3.
+- [x] LINK-03-S02: Teamkanal-Freigabe als Knopf, Regel „nur freiwillig je Server“ bleibt.
+- [x] LINK-03-S03: /v1/server, /v1/server/claim, /v1/server/control nur mit Token.
+- [x] LINK-03-S04: Spieltest Fabric 26.3: „Planer zulassen“ per Mausklick.
+- [ ] LINK-03-S05: Abnahme in Philipps Modpack.
+
+**Abnahme:** Kein Code und kein Befehl zum Verbinden; ohne Klick im Spiel bekommt keine Website einen Schlüssel.
+
+**Nächste Aktion:** Abnahme LIVE-01 in Philipps Modpack.
+
+**Nur Philipp:** Im Spiel an deinem PC: Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“.
+
+**Prüfstand:** Mod-Kern und echtes Minecraft 26.3 geprüft; Abnahme bei Philipp offen.
+
+**Nachweise:** [scripts/test_bridge_ingame.sh](../scripts/test_bridge_ingame.sh) — Fabric 26.3: Frage im Spiel, Klick auf „Planer zulassen“, Schlüssel einmal, /v1/server (04.11.2026).; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java) — Zulassen, Ablehnen, Ablauf, Obergrenze.
+
+**Dateiumfang:** `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamSync.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/TeamTest.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LinkPrompt.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/CommandScreen.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java`, `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`, `scripts/bridge_gametest.mjs`, `mods/bauplaner-bridge/VERSION`, `mods/bauplaner-bridge/CHANGELOG.md`. **Abhängigkeiten:** GAME-08, COOP-03. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### LINK-04
+
+**Planer: Bereich „Spiel und Server verbinden – ohne Befehle“ (#/mod), Server koppeln und einstellen, Team und Raum per Knopf** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Anbindung von Planer, Mod und Server neu denken“ · Aktualisiert: 2026-11-04T02:19:40.131Z
+
+- [x] LINK-04-S01: Drei Schritte Spiel → Server → Kopplung, Einstellungsformular aus dem Schema, Geräte, Umbenennen.
+- [x] LINK-04-S02: „Planstand auf den Server legen“ und „Server mit dem Raum verbinden“ über Steuernachrichten.
+- [x] LINK-04-S03: Browsertest gegen Mod-Simulator mit Plugin-Ersatz 1400/390 px.
+- [ ] LINK-04-S04: Abnahme LINK-01…03 im Testplan.
+
+**Abnahme:** Vom Start des Spiels bis zur geänderten Server-Einstellung nur Klicks.
+
+**Nächste Aktion:** Abnahme durch Philipp.
+
+**Nur Philipp:** Im Planer abnehmen: Testplan-Bereich LINK durchgehen.
+
+**Prüfstand:** Browsertests grün; Abnahme offen.
+
+**Nachweise:** [tests/e2e/server-link.e2e.mjs](../tests/e2e/server-link.e2e.mjs) — Kopplung per Klick, Server koppeln, signierte Einstellung, 1400/390 px ohne Querscrollen (04.11.2026).
+
+**Dateiumfang:** `apps/web/src/views/mod/ServerPanel.tsx`, `apps/web/src/views/mod/serverClient.ts`, `apps/web/src/views/mod/ModView.tsx`, `apps/web/src/views/map/liveClient.ts`, `apps/web/src/views/map/LiveGamePanel.tsx`, `apps/web/src/views/project/TeamLive.tsx`, `apps/web/src/views/project/TeamRoom.tsx`, `apps/web/src/views/project/TeamJoinView.tsx`, `apps/web/src/views/project/TeamExchange.tsx`, `apps/web/src/catalog.css`, `apps/web/src/testing/testplan.ts`, `tests/e2e/modSimulator.mjs`, `tests/e2e/server-link.e2e.mjs`. **Abhängigkeiten:** LINK-02, LINK-03. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### LINK-05
+
+**Zweiter Weg über den Team-Raum: Steuernachrichten ohne Mod (iPad), weiteres Gerät per Link freigeben** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Anbindung von Planer, Mod und Server neu denken“ · Aktualisiert: 2026-11-04T02:19:40.131Z
+
+- [x] LINK-05-S01: Raum: POST /control (Formprüfung, Weiterleitung an die Plugin-Verbindung, Antwort, 20 s, 409 ohne Server), serverOnline.
+- [x] LINK-05-S02: Plugin: control über RoomLink, gleiche Prüfung wie auf dem Mod-Weg.
+- [x] LINK-05-S03: Planer: Freigabe-Link #/mod?geraet=…, Bereich „Ohne Mod über den Team-Raum“.
+- [x] LINK-05-S04: Echter Test: Paper + wrangler dev; Browsertest iPad 820 px.
+- [ ] LINK-05-S05: Team-Raum mit den neuen Nachrichten ausrollen.
+
+**Abnahme:** Vom iPad ohne Minecraft eine Server-Einstellung ändern; der Raum kann keine Nachricht fälschen.
+
+**Nächste Aktion:** Abnahme vom iPad.
+
+**Nur Philipp:** Auf echten Geräten und Browsern: Am PC „Weiteres Gerät freigeben“, Link auf dem iPad öffnen, eine Einstellung ändern.
+
+**Prüfstand:** Automatisch und gegen wrangler dev geprüft; Abnahme LINK-04 (Testplan) offen.
+
+**Nachweise:** [scripts/test_bridge_paper_link.sh](../scripts/test_bridge_paper_link.sh) — Mit BAUPLANER_ROOM gegen wrangler dev: Status, Einstellung, Wiederholung abgewiesen (04.11.2026).; [tests/e2e/server-link.e2e.mjs](../tests/e2e/server-link.e2e.mjs) — iPad 820 px: Freigabe-Link, Einstellung über Raum-Ersatz, Server offline klar gemeldet.; [tests/team-room.test.mjs](../tests/team-room.test.mjs) — Formprüfung, Weiterleitung, Zeitlimit, Obergrenze.
+
+**Dateiumfang:** `services/team-room/src/core.js`, `services/team-room/src/index.js`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`, `tests/team-room.test.mjs`, `packages/domain/src/serverControl.ts`, `apps/web/src/views/mod/ServerPanel.tsx`, `apps/web/src/views/mod/serverClient.ts`, `docs/architecture/TEAM_LIVE.md`. **Abhängigkeiten:** LINK-04, COOP-07. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### LINK-06
+
+**Weitere Steuerung ohne Befehle: Plan-Upload und Anker aus dem Planer, Serveraufnahme (scan) per Steuernachricht, Befehle nur noch als Ausweg** · ⏳ Offen · Priorität P2 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Anbindung von Planer, Mod und Server neu denken“ · Aktualisiert: 2026-11-04T02:19:40.131Z
+
+- [ ] LINK-06-S01: Plan-Upload und Anker im Planer.
+- [ ] LINK-06-S02: Serveraufnahme als Steueraktion.
+
+**Abnahme:** Auch Pläne und Aufnahmen gehen ohne Befehl auf/vom Server.
+
+**Nächste Aktion:** Nach Abnahme von LINK-01…05.
+
+**Prüfstand:** Noch nicht begonnen.
+
+**Nachweise:** noch ausstehend
+
+**Dateiumfang:** `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java`, `apps/web/src/views/mod/ServerPanel.tsx`. **Abhängigkeiten:** LINK-05. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

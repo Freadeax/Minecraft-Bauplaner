@@ -4680,3 +4680,72 @@ Reiter Produktion: 34 Farmarten, Farmliste und Ertragsbuch (bucht ins Lager, gem
 - `tests/e2e/production.e2e.mjs`
 - `tests/production.test.mjs`
 
+## 2026-11-04T02:19:40.131Z · progress
+
+**Aufgaben:** LINK-01, LINK-02, LINK-03, LINK-04, LINK-05, LINK-06
+
+Server ohne Befehle (Mod/Plugin 0.12.0): Plugin richtet sich selbst ein, Kopplung per Klick (OP), signierte Steuernachrichten statt /bp-Befehlen, Planer-Bereich auf #/mod, zweiter Weg über den Team-Raum (iPad, Freigabe-Link). Geprüft: Einheiten, Browser 1400/390/820 px, echter Paper 1.21.11 über Mod-Kanal und Team-Raum (wrangler dev), Fabric/NeoForge 26.3 Spieltest. Offen: Abnahme bei Philipp, Team-Raum-Deploy, LINK-06.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LINK-01 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LINK-01 auf Philipps Server. |
+| LINK-02 | 🧩 Implementiert · Abnahme offen | 3/4 | Plan-Upload aus dem Planer; Abnahme LINK-02. |
+| LINK-03 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme LIVE-01 in Philipps Modpack. |
+| LINK-04 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme durch Philipp. |
+| LINK-05 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme vom iPad. |
+| LINK-06 | ⏳ Offen | 0/2 | Nach Abnahme von LINK-01…05. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/catalog.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/map/LiveGamePanel.tsx`
+- `apps/web/src/views/map/liveClient.ts`
+- `apps/web/src/views/mod/ModView.tsx`
+- `apps/web/src/views/mod/ServerPanel.tsx`
+- `apps/web/src/views/mod/serverClient.ts`
+- `apps/web/src/views/project/TeamExchange.tsx`
+- `apps/web/src/views/project/TeamJoinView.tsx`
+- `apps/web/src/views/project/TeamLive.tsx`
+- `apps/web/src/views/project/TeamRoom.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/AUTO_LINK.md`
+- `docs/architecture/LIVE_LINK.md`
+- `docs/architecture/TEAMBAU.md`
+- `docs/architecture/TEAM_LIVE.md`
+- `docs/testing/TESTPLAN.md`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/CommandScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LinkPrompt.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamSync.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/TeamTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`
+- `mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/LiveLinkScenario.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/BridgePlugin.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/LinkCore.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamChannel.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`
+- `mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/LinkCoreTest.java`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/serverControl.ts`
+- `scripts/bridge_gametest.mjs`
+- `scripts/bridge_paperlink.mjs`
+- `scripts/test_bridge_paper_link.sh`
+- `services/team-room/src/core.js`
+- `services/team-room/src/index.js`
+- `tests/e2e/modSimulator.mjs`
+- `tests/e2e/server-link.e2e.mjs`
+- `tests/server-link.test.mjs`
+- `tests/team-room.test.mjs`
+

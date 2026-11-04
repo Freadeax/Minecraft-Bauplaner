@@ -19,6 +19,9 @@ public final class PlanScreen extends Screen {
     private final BlockPos lookedAt;
     private int page;
     private String message = "";
+    private LinkPrompt.Question prompt;
+    /** „Später“ was clicked: show the normal menu even though a question is open (the banner stays). */
+    private boolean later;
 
     PlanScreen(Hologram hologram, BlockPos lookedAt) {
         super(Component.literal("Bauplaner"));
@@ -28,6 +31,19 @@ public final class PlanScreen extends Screen {
 
     @Override
     protected void init() {
+        // LINK-03: an open question (planner wants to connect / server offers the plugin) comes first and alone,
+        // centred, so it never overlaps the menu on a small window. After the answer the normal menu follows.
+        prompt = later ? null : LinkPrompt.current(HologramClient.current());
+        if (prompt != null) {
+            LinkPrompt.Question q = prompt;
+            int y = height / 2;
+            addRenderableWidget(Button.builder(Component.literal(q.yes()), b -> { message = LinkPrompt.answer(HologramClient.current(), q.kind(), true); rebuildWidgets(); })
+                    .bounds(width / 2 - 124, y, 140, 20).build());
+            addRenderableWidget(Button.builder(Component.literal(q.no()), b -> { message = LinkPrompt.answer(HologramClient.current(), q.kind(), false); rebuildWidgets(); })
+                    .bounds(width / 2 + 20, y, 104, 20).build());
+            addRenderableWidget(Button.builder(Component.literal("Später"), b -> { later = true; rebuildWidgets(); }).bounds(width / 2 - 50, y + 28, 100, 20).build());
+            return;
+        }
         List<String> files = hologram.planFiles();
         int pages = Math.max(1, (files.size() + PER_PAGE - 1) / PER_PAGE);
         page = Math.min(page, pages - 1);
@@ -120,6 +136,14 @@ public final class PlanScreen extends Screen {
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
         super.extractRenderState(g, mouseX, mouseY, delta);
         g.centeredText(font, title, width / 2, 10, 0xFFFFFFFF);
+        if (prompt != null) {
+            g.centeredText(font, "Frage", width / 2, height / 2 - 44, 0xFFB0B0B0);
+            g.centeredText(font, prompt.text(), width / 2, height / 2 - 28, 0xFFFFD54A);
+            g.centeredText(font, prompt.kind() == LinkPrompt.Kind.PLANER ? "Nur zulassen, wenn du das gerade selbst im Browser angestoßen hast."
+                    : "Danach kann der Planer den Server koppeln und einstellen – ohne Befehle.", width / 2, height / 2 - 14, 0xFFB0B0B0);
+            if (!message.isEmpty()) g.centeredText(font, message, width / 2, height / 2 + 58, 0xFF6BE07B);
+            return;
+        }
         int left = width / 2 - 210;
         if (hologram.planFiles().isEmpty()) {
             g.text(font, "Keine Pläne gefunden. Plan auf der Website", left, 44, 0xFFFFFFFF, true);

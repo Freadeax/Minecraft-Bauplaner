@@ -49,6 +49,7 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
     private BukkitTask task;
     private TeamModule team;
     private TeamChannel channel;
+    private ServerLink link;
 
     @Override
     public void onEnable() {
@@ -64,6 +65,10 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
         team.enable();
         // Teamkanal für die Bauplaner-Mod (COOP-03): Spieler mit Mod sehen Abschnitte, Inhaber und Meldungen live.
         if (getConfig().getBoolean("team.kanal", true)) { channel = new TeamChannel(this, team); channel.enable(); }
+        // Anbindung ohne Befehle (LINK-02): Selbsteinrichtung, Kopplung durch einen OP, Steuerung aus dem Planer.
+        link = new ServerLink(this, root);
+        link.enable();
+        if (channel != null) channel.link(link);
         var command = getCommand("bauplaner");
         if (command != null) { command.setExecutor(this); command.setTabCompleter(this); }
         getLogger().info("Bereit: Minecraft " + PaperCompat.gameVersion() + ", DataVersion " + PaperCompat.dataVersion()
@@ -72,6 +77,18 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
 
     /** Team channel to the Bauplaner mod, null when switched off in the config (for the storage module: broadcastStore). */
     TeamChannel teamChannel() { return channel; }
+
+    /** Server link (LINK-02). */
+    ServerLink serverLink() { return link; }
+
+    Path root() { return root; }
+
+    List<String> planNames() { return planFiles().collect(Collectors.toList()); }
+
+    /** Stores the anchor of a plan for everyone (same as /bauplaner anker). */
+    void storeAnchor(Plan plan, String dimension, int[] pos) throws IOException {
+        anchors().put(anchorKey(plan), new AnchorStore.Entry(plan.fileName(), dimension, pos));
+    }
 
     /** Team module (team logs, rights, facade for the storage module). */
     TeamModule teamModule() { return team; }

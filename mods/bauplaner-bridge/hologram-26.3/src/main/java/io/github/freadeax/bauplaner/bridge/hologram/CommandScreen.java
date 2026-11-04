@@ -194,8 +194,8 @@ public final class CommandScreen extends Screen {
     /** Status tab: the most used buttons. */
     private static List<Entry> quick() {
         List<Entry> out = new ArrayList<>();
-        for (String id : List.of("fortschritt", "fehler", "material", "team", "team.material", "team.mein", "team.alle", "team.korb", "team.status",
-                "team.erlauben", "bp.team", "bp.lager.liste", "bp.lager.bedarf", "bp.beitrag", "verbinden", "verbinden.status", "diagnose"))
+        for (String id : List.of("verbinden.zulassen", "team.erlauben", "fortschritt", "fehler", "material", "team", "team.material", "team.mein", "team.alle", "team.korb", "team.status",
+                "bp.team", "bp.lager.liste", "bp.lager.bedarf", "bp.beitrag", "verbinden.status", "diagnose"))
             out.add(CommandCatalog.byId(id));
         return out;
     }
@@ -276,6 +276,8 @@ public final class CommandScreen extends Screen {
             out.add(row(filter + " · Platzierhilfe " + h.guard().label + (h.xray() ? " · Röntgen" : ""), 0xFF40E0FF));
         }
         out.addAll(client.team().statusRows());
+        LinkPrompt.Question q = LinkPrompt.current(client);
+        if (q != null) out.add(row(q.text() + " → Knopf „" + q.yes() + "“", 0xFFFFD54A));
         boolean single = mc.isLocalServer();
         var con = mc.getConnection();
         String server = single ? "Einzelspieler" : con != null && con.getServerData() != null ? con.getServerData().ip : "Server";

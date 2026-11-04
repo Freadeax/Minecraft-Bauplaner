@@ -54,6 +54,41 @@ class LiveLinkTest {
     }
 
     @Test
+    void pairingByClickHandsOutTheTokenOnceAfterZulassen() {
+        var s = server(List.of());
+        List<String> shown = new ArrayList<>();
+        s.onAsk(a -> shown.add(a.device));
+        var r = s.handle(req("POST", "/v1/pair/ask", SITE, null, "{\"device\":\"Planer (Chrome)\"}"));
+        assertEquals(200, r.status(), r.text());
+        String id = Json.str(Json.obj(Json.parse(r.text()), "a").get("request"), "id", 100);
+        assertEquals(List.of("Planer (Chrome)"), shown);
+        assertEquals("waiting", Json.obj(Json.parse(s.handle(req("GET", "/v1/pair/ask?request=" + id, SITE, null, null)).text()), "s").get("state"));
+        assertEquals("Planer (Chrome)", s.approveAsk());
+        var ok = Json.obj(Json.parse(s.handle(req("GET", "/v1/pair/ask?request=" + id, SITE, null, null)).text()), "s");
+        assertEquals("ok", ok.get("state"));
+        String token = Json.str(ok.get("token"), "token", 200);
+        assertEquals(200, s.handle(req("GET", "/v1/status", SITE, token, null)).status());
+        // Only once: a second poll gets nothing.
+        assertEquals("expired", Json.obj(Json.parse(s.handle(req("GET", "/v1/pair/ask?request=" + id, SITE, null, null)).text()), "s").get("state"));
+        assertEquals(1, saved.size());
+    }
+
+    @Test
+    void pairingByClickCanBeDeniedExpiresAndIsLimited() {
+        var s = server(List.of());
+        String a = Json.str(Json.obj(Json.parse(s.handle(req("POST", "/v1/pair/ask", SITE, null, "{}")).text()), "a").get("request"), "id", 100);
+        assertEquals(1, s.denyAsks());
+        assertEquals("denied", Json.obj(Json.parse(s.handle(req("GET", "/v1/pair/ask?request=" + a, SITE, null, null)).text()), "s").get("state"));
+        assertNull(s.approveAsk());
+        for (int i = 0; i < LiveLinkServer.MAX_ASKS; i++) assertEquals(200, s.handle(req("POST", "/v1/pair/ask", SITE, null, "{}")).status());
+        assertEquals(429, s.handle(req("POST", "/v1/pair/ask", SITE, null, "{}")).status());
+        now.addAndGet(LiveLinkServer.ASK_MS + 1);
+        assertNull(s.pendingAsk());
+        assertEquals(403, s.handle(req("POST", "/v1/pair/ask", "https://evil.example", null, "{}")).status());
+        assertEquals(404, s.handle(req("GET", "/v1/server", SITE, pair(s), null)).status());
+    }
+
+    @Test
     void helloNeedsNoTokenAndNamesTheMod() {
         var s = server(List.of());
         var r = s.handle(req("GET", "/v1/hello", SITE, null, null));
@@ -71,7 +106,7 @@ class LiveLinkTest {
     void baustandIsAFileWithItsNameExposedToTheSite() {
         var s = server(List.of());
         var hello = Json.obj(Json.parse(s.handle(req("GET", "/v1/hello", SITE, null, null)).text()), "hello");
-        assertEquals(List.of("scan", "marks2", "players", "bigplans", "team"), hello.get("features"));
+        assertEquals(List.of("scan", "marks2", "players", "bigplans", "team", "pairask", "server"), hello.get("features"));
         assertEquals(401, s.handle(req("GET", "/v1/scan", SITE, null, null)).status());
         String token = pair(s);
         var r = s.handle(req("GET", "/v1/scan", SITE, token, null));
@@ -161,10 +196,10 @@ class LiveLinkTest {
         assertEquals(400, s.handle(req("POST", "/v1/marks", SITE, token, "{\"dimension\":\"minecraft:overworld\",\"items\":[{\"kind\":\"point\",\"name\":\"x\",\"dimension\":\"minecraft:overworld\",\"type\":\"ziel\",\"x\":1,\"y\":64,\"z\":2,\"color\":\"rot\"}]}")).status(), "Farbe nicht #rrggbb");
         assertEquals(200, s.handle(req("GET", "/v1/players", SITE, token, null)).status());
         assertTrue(new String(s.handle(req("GET", "/v1/hello", SITE, null, null)).body(), StandardCharsets.UTF_8).contains("\"protocol\":2"));
-        assertTrue(new String(s.handle(req("GET", "/v1/hello", SITE, null, null)).body(), StandardCharsets.UTF_8).contains("\"features\":[\"scan\",\"marks2\",\"players\",\"bigplans\",\"team\"]"));
+        assertTrue(new String(s.handle(req("GET", "/v1/hello", SITE, null, null)).body(), StandardCharsets.UTF_8).contains("\"features\":[\"scan\",\"marks2\",\"players\",\"bigplans\",\"team\",\"pairask\",\"server\"]"));
         assertEquals(404, s.handle(req("GET", "/v1/welt-aendern", SITE, token, null)).status());
         // COOP-03: team routes need the key like every other route.
-        for (String[] r : new String[][] { { "GET", "/v1/team" }, { "POST", "/v1/team" }, { "POST", "/v1/team/ack" }, { "POST", "/v1/team/push" }, { "GET", "/v1/team/pull" } })
+        for (String[] r : new String[][] { { "GET", "/v1/team" }, { "POST", "/v1/team" }, { "POST", "/v1/team/ack" }, { "POST", "/v1/team/push" }, { "GET", "/v1/team/pull" }, { "GET", "/v1/server" }, { "POST", "/v1/server/claim" }, { "POST", "/v1/server/control" } })
             assertEquals(401, s.handle(req(r[0], r[1], SITE, null, "{}")).status(), r[1] + " ohne Schlüssel");
         assertEquals(List.of("status", "chunks 2", "plan a.schem 3", "placement 5.0", "marks 1", "marks 2", "players"), calls);
         assertEquals(200, s.handle(req("POST", "/v1/unpair", SITE, token, null)).status());

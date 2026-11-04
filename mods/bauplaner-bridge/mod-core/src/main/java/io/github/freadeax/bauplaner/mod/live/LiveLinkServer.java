@@ -57,6 +57,9 @@ public final class LiveLinkServer implements AutoCloseable {
     static final long PAIRING_MS = 5 * 60_000L;
     static final int PAIRING_ATTEMPTS = 5;
     static final int MAX_TOKENS = 8;
+    /** A pairing request waits this long for the player's click (LINK-03). */
+    static final long ASK_MS = 3 * 60_000L;
+    static final int MAX_ASKS = 3;
     static final Set<String> ALLOWED_ORIGINS = Set.of("https://freadeax.github.io");
     private static final Pattern LOCAL_ORIGIN = Pattern.compile("^http://(localhost|127\\.0\\.0\\.1)(:\\d{1,5})?$");
 
@@ -85,13 +88,22 @@ public final class LiveLinkServer implements AutoCloseable {
         default String teamAck(Map<String, Object> body) throws Exception { throw new HttpError(404, "Diese Mod kennt keinen Teambau."); }
         default String teamPush(Map<String, Object> body) throws Exception { throw new HttpError(404, "Diese Mod kennt keinen Teambau."); }
         default String teamPull(Map<String, String> query) throws Exception { throw new HttpError(404, "Diese Mod kennt keinen Teambau."); }
+        /**
+         * Server link without commands (LINK-03, docs/architecture/AUTO_LINK.md). GET /v1/server: who the server
+         * plugin is ({@code link.info}); POST /v1/server/claim {device}: pair the server with this planner (the
+         * plugin checks that the player is operator); POST /v1/server/control {owner,seq,body,sig}: a signed
+         * control message, passed on unchanged. All three go over the team channel and answer 409 without it.
+         */
+        default String serverInfo() throws Exception { throw new HttpError(404, "Diese Mod kennt keine Server-Kopplung."); }
+        default String serverClaim(Map<String, Object> body) throws Exception { throw new HttpError(404, "Diese Mod kennt keine Server-Kopplung."); }
+        default String serverControl(Map<String, Object> body) throws Exception { throw new HttpError(404, "Diese Mod kennt keine Server-Kopplung."); }
     }
 
     /** A file answer: name for the website, bytes as sent. */
     public record Binary(String fileName, byte[] bytes) {}
 
     /** What this mod can do beyond protocol 1; the website enables buttons by it. */
-    public static final List<String> FEATURES = List.of("scan", "marks2", "players", "bigplans", "team");
+    public static final List<String> FEATURES = List.of("scan", "marks2", "players", "bigplans", "team", "pairask", "server");
 
     public record Info(String version, String loader, String minecraft) {}
 
@@ -115,6 +127,9 @@ public final class LiveLinkServer implements AutoCloseable {
     private String pairingCode;
     private long pairingUntil;
     private int pairingAttempts;
+    /** Pairing requests of websites waiting for "Zulassen" in the game (LINK-03), oldest first. */
+    private final List<Ask> asks = new ArrayList<>();
+    private volatile Consumer<Ask> onAsk = a -> { };
     private volatile ServerSocket socket;
     private volatile int port;
     private ExecutorService pool;
@@ -168,7 +183,92 @@ public final class LiveLinkServer implements AutoCloseable {
         }
     }
 
-    // ------------------------------------------------------------------ pairing
+    // ------------------------------------------------------------------ pairing by click (LINK-03)
+
+    /** One website that asked to pair; {@code state} waiting → ok (token handed out once) / denied / expired. */
+    public static final class Ask {
+        public final String id;
+        public final String device;
+        final long until;
+        String state = "waiting";
+        String token;
+        Ask(String id, String device, long until) { this.id = id; this.device = device; this.until = until; }
+        public String state() { return state; }
+    }
+
+    /** Called (on a server thread) when a website asks to pair; the game shows "Zulassen / Ablehnen". */
+    public void onAsk(Consumer<Ask> listener) { onAsk = listener == null ? a -> { } : listener; }
+
+    /** The oldest request still waiting for the player, if any. */
+    public synchronized Ask pendingAsk() {
+        expireAsks();
+        for (Ask a : asks) if (a.state.equals("waiting")) return a;
+        return null;
+    }
+
+    /** The player clicked "Zulassen": the oldest waiting website gets a token on its next poll. */
+    public synchronized String approveAsk() {
+        Ask a = pendingAsk();
+        if (a == null) return null;
+        a.token = newToken();
+        a.state = "ok";
+        return a.device;
+    }
+
+    /** The player clicked "Ablehnen" (all waiting requests). */
+    public synchronized int denyAsks() {
+        int n = 0;
+        for (Ask a : asks) if (a.state.equals("waiting")) { a.state = "denied"; n++; }
+        return n;
+    }
+
+    private void expireAsks() {
+        long now = clock.getAsLong();
+        for (Ask a : asks) if (a.state.equals("waiting") && now > a.until) a.state = "expired";
+        asks.removeIf(a -> now > a.until + 60_000L);
+    }
+
+    private String ask(String device) {
+        Ask a;
+        synchronized (this) {
+            expireAsks();
+            long waiting = asks.stream().filter(x -> x.state.equals("waiting")).count();
+            if (waiting >= MAX_ASKS) throw new HttpError(429, "Es warten schon " + waiting + " Anfragen im Spiel. Dort zulassen oder ablehnen.");
+            byte[] raw = new byte[18];
+            random.nextBytes(raw);
+            String name = device == null ? "" : device.replaceAll("[\\p{Cntrl}]", "").trim();
+            a = new Ask(Base64.getUrlEncoder().withoutPadding().encodeToString(raw), name.isEmpty() ? "Browser" : name.length() > 40 ? name.substring(0, 40) : name, clock.getAsLong() + ASK_MS);
+            asks.add(a);
+        }
+        onAsk.accept(a);
+        return "{\"request\":" + Json.quote(a.id) + ",\"state\":\"waiting\",\"seconds\":" + ASK_MS / 1000 + "}";
+    }
+
+    private synchronized String askState(String id) {
+        expireAsks();
+        Ask a = null;
+        for (Ask x : asks) if (id != null && constantEquals(id, x.id)) a = x;
+        if (a == null) return "{\"state\":\"expired\"}";
+        if (a.state.equals("ok") && a.token != null) {
+            String t = a.token;
+            a.token = null; // handed out once
+            a.state = "done";
+            return "{\"state\":\"ok\",\"token\":" + Json.quote(t) + "}";
+        }
+        return "{\"state\":" + Json.quote(a.state.equals("done") ? "expired" : a.state) + "}";
+    }
+
+    private synchronized String newToken() {
+        byte[] raw = new byte[32];
+        random.nextBytes(raw);
+        String token = Base64.getUrlEncoder().withoutPadding().encodeToString(raw);
+        tokens.add(token);
+        while (tokens.size() > MAX_TOKENS) tokens.remove(tokens.iterator().next());
+        saveTokens.accept(List.copyOf(tokens));
+        return token;
+    }
+
+    // ------------------------------------------------------------------ pairing by code
 
     /** Opens pairing and returns the code to show in the chat. */
     public synchronized String openPairing() {
@@ -255,6 +355,11 @@ public final class LiveLinkServer implements AutoCloseable {
                     return ok(h, "{\"app\":\"bauplaner-mod\",\"protocol\":" + PROTOCOL + ",\"mod\":{\"version\":" + Json.quote(info.version()) + ",\"loader\":"
                             + Json.quote(info.loader()) + ",\"minecraft\":" + Json.quote(info.minecraft()) + "},\"pairing\":" + pairingOpen()
                             + ",\"features\":[" + String.join(",", FEATURES.stream().map(Json::quote).toList()) + "]}");
+                case "POST /v1/pair/ask": {
+                    Map<String, Object> body = r.body().length == 0 ? Map.of() : Json.obj(Json.parse(text(r, 4096)), "Anfrage");
+                    return ok(h, ask(body.get("device") instanceof String s ? s : null));
+                }
+                case "GET /v1/pair/ask": return ok(h, askState(r.query().get("request")));
                 case "POST /v1/pair": {
                     Map<String, Object> body = Json.obj(Json.parse(text(r, 4096)), "Kopplung");
                     String code = body.get("code") instanceof String s ? s : null;
@@ -265,7 +370,7 @@ public final class LiveLinkServer implements AutoCloseable {
             }
             if (!r.path().startsWith("/v1/")) return error(h, 404, "Unbekannte Adresse.");
             String token = r.headers().get(TOKEN_HEADER);
-            if (!tokenValid(token)) return error(h, 401, "Nicht gekoppelt. Im Spiel /bauplaner verbinden eingeben und den Code auf der Website eintragen.");
+            if (!tokenValid(token)) return error(h, 401, "Nicht gekoppelt. Auf der Website „Verbinden“ wählen und im Spiel „Zulassen“ klicken.");
             switch (route) {
                 case "GET /v1/status": return ok(h, handler.status());
                 case "GET /v1/chunks": return ok(h, handler.chunks(chunkList(r.query().get("c"))));
@@ -281,6 +386,9 @@ public final class LiveLinkServer implements AutoCloseable {
                 case "POST /v1/team/ack": return ok(h, handler.teamAck(Json.obj(Json.parse(text(r, 65_536)), "Quittung")));
                 case "POST /v1/team/push": return ok(h, handler.teamPush(Json.obj(Json.parse(text(r, TEAM_PUSH_BYTES)), "Teamdatei")));
                 case "GET /v1/team/pull": return ok(h, handler.teamPull(r.query()));
+                case "GET /v1/server": return ok(h, handler.serverInfo());
+                case "POST /v1/server/claim": return ok(h, handler.serverClaim(r.body().length == 0 ? Map.of() : Json.obj(Json.parse(text(r, 4096)), "Kopplung")));
+                case "POST /v1/server/control": return ok(h, handler.serverControl(Json.obj(Json.parse(text(r, TEAM_PUSH_BYTES)), "Steuernachricht")));
                 case "GET /v1/scan": {
                     Binary file = handler.scan();
                     h.put("Content-Type", "application/octet-stream");

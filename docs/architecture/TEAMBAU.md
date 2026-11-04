@@ -171,7 +171,7 @@ Das Plugin setzt Urheber (Mitglied zur UUID), Zeit und Herkunft `server` selbst.
 **Regel „keine zusätzlichen Pakete an den Server“ (Philipp, Client-Mod).** Philipp hat am 03.11.2026 entschieden: „Ja, nur freiwillig je Server“. Die Mod sendet auf `bauplaner:team` nur, wenn beides zutrifft:
 
 1. Der Server hat den Kanal angemeldet, Fabric über `ClientPlayNetworking.canSend`, NeoForge über `NetworkRegistry.hasChannel`.
-2. Der Spieler hat es für diesen Server einmal mit `/bauplaner team erlauben` bestätigt (`bauplaner/team/erlaubt.properties`).
+2. Der Spieler hat es für diesen Server einmal bestätigt: ab 0.12.0 per Knopf im J-Menü „Teambau erlauben“ (Frage oben im Bild), sonst `/bauplaner team erlauben` (`bauplaner/team/erlaubt.properties`). Über denselben Kanal koppelt der Planer den Server ohne Befehle (AUTO_LINK.md).
 
 Sonst sendet die Mod nichts. Eingehende Rahmen ignoriert sie, solange der Kanal nicht geöffnet ist. Die Mod prüft jede Sekunde neu, ob der Server den Kanal anbietet.
 

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T01:49:58.384Z",
+  "updatedAt": "2026-11-04T02:19:40.131Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -7867,7 +7867,7 @@
         "Ereignisse mit Herkunft server nimmt der Raum nur mit dem Serverschlüssel an.",
         "Offline weiterarbeiten; beim nächsten Verbinden gleichen alle auf denselben Stand ab."
       ],
-      "next": "Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl im Thread „Anbindung von Planer, Mod und Server neu denken“ (LINK-05).",
+      "next": "Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl umgesetzt (LINK-05).",
       "blockers": [],
       "evidence": [
         {
@@ -8216,6 +8216,458 @@
           "note": "Grundsätze, Datensatz, Farmarten, Auswertung, Anbindung, Grenzen."
         }
       ]
+    },
+    {
+      "phase": "P4",
+      "priority": "P1",
+      "owner": "Claude (Thread „Anbindung von Planer, Mod und Server neu denken“)",
+      "legacyIds": [],
+      "blockers": [],
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-04T02:19:40.131Z",
+      "area": "PLUGIN",
+      "thread": "Anbindung von Planer, Mod und Server neu denken",
+      "orphans": [],
+      "id": "LINK-01",
+      "title": "Plugin richtet sich selbst ein und lässt sich per Klick koppeln (link.json, Server-ID, Kopplung nur OP/Bauleitung über den Teamkanal)",
+      "status": "implemented",
+      "dependencies": [
+        "COOP-02"
+      ],
+      "scope": [
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/LinkCore.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamChannel.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/BridgePlugin.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java",
+        "mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/LinkCoreTest.java",
+        "docs/architecture/AUTO_LINK.md"
+      ],
+      "steps": [
+        {
+          "id": "LINK-01-S01",
+          "title": "Selbsteinrichtung beim ersten Start (link.json, Log-Hinweis), Chat-Hinweis für ungekoppelte OPs.",
+          "done": true
+        },
+        {
+          "id": "LINK-01-S02",
+          "title": "link.info/link.claim über bauplaner:team, nur OP oder bauplaner.team.leitung, höchstens 8 Geräte, Schlüssel nie im Log.",
+          "done": true
+        },
+        {
+          "id": "LINK-01-S03",
+          "title": "Echter Servertest Paper 1.21.11 mit Protokoll-Client.",
+          "done": true
+        },
+        {
+          "id": "LINK-01-S04",
+          "title": "Abnahme bei Philipp auf seinem Paper-Server (LINK-01 im Testplan).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Auf dem Server muss niemand etwas eintippen; ein OP koppelt mit einem Klick im Planer.",
+        "Nicht-OPs können nicht koppeln; Schlüssel erscheinen nie im Log."
+      ],
+      "evidence": [
+        {
+          "path": "scripts/test_bridge_paper_link.sh",
+          "note": "Paper 1.21.11 (Build 132): selbst eingerichtet, Nicht-OP abgewiesen, Kopplung, Neustart behält sie (04.11.2026)."
+        },
+        {
+          "path": "mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/LinkCoreTest.java",
+          "note": "Regeln, Prüfvektor, Obergrenze."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Automatisch und auf echtem Paper geprüft; Abnahme auf Philipps Server offen."
+      },
+      "next": "Abnahme LINK-01 auf Philipps Server.",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "Plugin 0.12.0 einspielen, als OP mit Mod beitreten, J → „Teambau erlauben“, im Planer #/mod „Server koppeln“."
+        }
+      ]
+    },
+    {
+      "phase": "P4",
+      "priority": "P1",
+      "owner": "Claude (Thread „Anbindung von Planer, Mod und Server neu denken“)",
+      "legacyIds": [],
+      "blockers": [],
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-04T02:19:40.131Z",
+      "area": "PLUGIN",
+      "thread": "Anbindung von Planer, Mod und Server neu denken",
+      "orphans": [],
+      "id": "LINK-02",
+      "title": "Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte)",
+      "status": "implemented",
+      "dependencies": [
+        "LINK-01"
+      ],
+      "scope": [
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/LinkCore.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java",
+        "packages/domain/src/serverControl.ts",
+        "packages/domain/src/index.ts",
+        "tests/server-link.test.mjs",
+        "scripts/bridge_paperlink.mjs",
+        "scripts/test_bridge_paper_link.sh"
+      ],
+      "steps": [
+        {
+          "id": "LINK-02-S01",
+          "title": "Format und Unterschrift in Plugin und Planer gleich (gemeinsamer Prüfvektor).",
+          "done": true
+        },
+        {
+          "id": "LINK-02-S02",
+          "title": "Operationen status, config, team, room, plan, rename, invite, forget; config nur Liste, alles oder nichts, Teamkanal ausgenommen.",
+          "done": true
+        },
+        {
+          "id": "LINK-02-S03",
+          "title": "Wiederholung, falsche Unterschrift, fremder Server auf echtem Paper abgewiesen; Nummer übersteht Neustart.",
+          "done": true
+        },
+        {
+          "id": "LINK-02-S04",
+          "title": "Plan-Upload im Planer anbieten (Plugin kann es schon).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Eine aufgezeichnete Nachricht wirkt nie zweimal, eine Nachricht für Server A nie auf B.",
+        "Keine Nachricht setzt Blöcke oder führt Befehle aus."
+      ],
+      "evidence": [
+        {
+          "path": "scripts/test_bridge_paper_link.sh",
+          "note": "2 Einstellungen und ein Team per signierter Nachricht, alle Abweisungen geprüft (04.11.2026)."
+        },
+        {
+          "path": "tests/server-link.test.mjs",
+          "note": "Prüfvektor, Inhalt, Nummer, Leser."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Automatisch und auf echtem Paper geprüft; Abnahme LINK-02 offen."
+      },
+      "next": "Plan-Upload aus dem Planer; Abnahme LINK-02.",
+      "philipp": []
+    },
+    {
+      "phase": "P4",
+      "priority": "P1",
+      "owner": "Claude (Thread „Anbindung von Planer, Mod und Server neu denken“)",
+      "legacyIds": [],
+      "blockers": [],
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-04T02:19:40.131Z",
+      "area": "MOD",
+      "thread": "Anbindung von Planer, Mod und Server neu denken",
+      "orphans": [],
+      "id": "LINK-03",
+      "title": "Mod: Live-Dienst startet selbst, Planer per Klick im Spiel zulassen, Teamfreigabe als Knopf, Server-Wege weiterreichen (Mod 0.12.0)",
+      "status": "implemented",
+      "dependencies": [
+        "GAME-08",
+        "COOP-03"
+      ],
+      "scope": [
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamSync.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/TeamTest.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LinkPrompt.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/CommandScreen.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "scripts/bridge_gametest.mjs",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/CHANGELOG.md"
+      ],
+      "steps": [
+        {
+          "id": "LINK-03-S01",
+          "title": "/v1/pair/ask mit Frage im Spiel (Banner, eigene Frage-Ansicht im J-Menü mit Später), Schlüssel einmal, 3 Minuten, höchstens 3.",
+          "done": true
+        },
+        {
+          "id": "LINK-03-S02",
+          "title": "Teamkanal-Freigabe als Knopf, Regel „nur freiwillig je Server“ bleibt.",
+          "done": true
+        },
+        {
+          "id": "LINK-03-S03",
+          "title": "/v1/server, /v1/server/claim, /v1/server/control nur mit Token.",
+          "done": true
+        },
+        {
+          "id": "LINK-03-S04",
+          "title": "Spieltest Fabric 26.3: „Planer zulassen“ per Mausklick.",
+          "done": true
+        },
+        {
+          "id": "LINK-03-S05",
+          "title": "Abnahme in Philipps Modpack.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Kein Code und kein Befehl zum Verbinden; ohne Klick im Spiel bekommt keine Website einen Schlüssel."
+      ],
+      "evidence": [
+        {
+          "path": "scripts/test_bridge_ingame.sh",
+          "note": "Fabric 26.3: Frage im Spiel, Klick auf „Planer zulassen“, Schlüssel einmal, /v1/server (04.11.2026)."
+        },
+        {
+          "path": "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+          "note": "Zulassen, Ablehnen, Ablauf, Obergrenze."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Mod-Kern und echtes Minecraft 26.3 geprüft; Abnahme bei Philipp offen."
+      },
+      "next": "Abnahme LIVE-01 in Philipps Modpack.",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“."
+        }
+      ]
+    },
+    {
+      "phase": "P4",
+      "priority": "P1",
+      "owner": "Claude (Thread „Anbindung von Planer, Mod und Server neu denken“)",
+      "legacyIds": [],
+      "blockers": [],
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-04T02:19:40.131Z",
+      "area": "TEAM",
+      "thread": "Anbindung von Planer, Mod und Server neu denken",
+      "orphans": [],
+      "id": "LINK-04",
+      "title": "Planer: Bereich „Spiel und Server verbinden – ohne Befehle“ (#/mod), Server koppeln und einstellen, Team und Raum per Knopf",
+      "status": "implemented",
+      "dependencies": [
+        "LINK-02",
+        "LINK-03"
+      ],
+      "scope": [
+        "apps/web/src/views/mod/ServerPanel.tsx",
+        "apps/web/src/views/mod/serverClient.ts",
+        "apps/web/src/views/mod/ModView.tsx",
+        "apps/web/src/views/map/liveClient.ts",
+        "apps/web/src/views/map/LiveGamePanel.tsx",
+        "apps/web/src/views/project/TeamLive.tsx",
+        "apps/web/src/views/project/TeamRoom.tsx",
+        "apps/web/src/views/project/TeamJoinView.tsx",
+        "apps/web/src/views/project/TeamExchange.tsx",
+        "apps/web/src/catalog.css",
+        "apps/web/src/testing/testplan.ts",
+        "tests/e2e/modSimulator.mjs",
+        "tests/e2e/server-link.e2e.mjs"
+      ],
+      "steps": [
+        {
+          "id": "LINK-04-S01",
+          "title": "Drei Schritte Spiel → Server → Kopplung, Einstellungsformular aus dem Schema, Geräte, Umbenennen.",
+          "done": true
+        },
+        {
+          "id": "LINK-04-S02",
+          "title": "„Planstand auf den Server legen“ und „Server mit dem Raum verbinden“ über Steuernachrichten.",
+          "done": true
+        },
+        {
+          "id": "LINK-04-S03",
+          "title": "Browsertest gegen Mod-Simulator mit Plugin-Ersatz 1400/390 px.",
+          "done": true
+        },
+        {
+          "id": "LINK-04-S04",
+          "title": "Abnahme LINK-01…03 im Testplan.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Vom Start des Spiels bis zur geänderten Server-Einstellung nur Klicks."
+      ],
+      "evidence": [
+        {
+          "path": "tests/e2e/server-link.e2e.mjs",
+          "note": "Kopplung per Klick, Server koppeln, signierte Einstellung, 1400/390 px ohne Querscrollen (04.11.2026)."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Browsertests grün; Abnahme offen."
+      },
+      "next": "Abnahme durch Philipp.",
+      "philipp": [
+        {
+          "kind": "planer",
+          "text": "Testplan-Bereich LINK durchgehen."
+        }
+      ]
+    },
+    {
+      "phase": "P4",
+      "priority": "P1",
+      "owner": "Claude (Thread „Anbindung von Planer, Mod und Server neu denken“)",
+      "legacyIds": [],
+      "blockers": [],
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-04T02:19:40.131Z",
+      "area": "TEAM",
+      "thread": "Anbindung von Planer, Mod und Server neu denken",
+      "orphans": [],
+      "id": "LINK-05",
+      "title": "Zweiter Weg über den Team-Raum: Steuernachrichten ohne Mod (iPad), weiteres Gerät per Link freigeben",
+      "status": "implemented",
+      "dependencies": [
+        "LINK-04",
+        "COOP-07"
+      ],
+      "scope": [
+        "services/team-room/src/core.js",
+        "services/team-room/src/index.js",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java",
+        "tests/team-room.test.mjs",
+        "packages/domain/src/serverControl.ts",
+        "apps/web/src/views/mod/ServerPanel.tsx",
+        "apps/web/src/views/mod/serverClient.ts",
+        "docs/architecture/TEAM_LIVE.md"
+      ],
+      "steps": [
+        {
+          "id": "LINK-05-S01",
+          "title": "Raum: POST /control (Formprüfung, Weiterleitung an die Plugin-Verbindung, Antwort, 20 s, 409 ohne Server), serverOnline.",
+          "done": true
+        },
+        {
+          "id": "LINK-05-S02",
+          "title": "Plugin: control über RoomLink, gleiche Prüfung wie auf dem Mod-Weg.",
+          "done": true
+        },
+        {
+          "id": "LINK-05-S03",
+          "title": "Planer: Freigabe-Link #/mod?geraet=…, Bereich „Ohne Mod über den Team-Raum“.",
+          "done": true
+        },
+        {
+          "id": "LINK-05-S04",
+          "title": "Echter Test: Paper + wrangler dev; Browsertest iPad 820 px.",
+          "done": true
+        },
+        {
+          "id": "LINK-05-S05",
+          "title": "Team-Raum mit den neuen Nachrichten ausrollen.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Vom iPad ohne Minecraft eine Server-Einstellung ändern; der Raum kann keine Nachricht fälschen."
+      ],
+      "evidence": [
+        {
+          "path": "scripts/test_bridge_paper_link.sh",
+          "note": "Mit BAUPLANER_ROOM gegen wrangler dev: Status, Einstellung, Wiederholung abgewiesen (04.11.2026)."
+        },
+        {
+          "path": "tests/e2e/server-link.e2e.mjs",
+          "note": "iPad 820 px: Freigabe-Link, Einstellung über Raum-Ersatz, Server offline klar gemeldet."
+        },
+        {
+          "path": "tests/team-room.test.mjs",
+          "note": "Formprüfung, Weiterleitung, Zeitlimit, Obergrenze."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Automatisch und gegen wrangler dev geprüft; Abnahme LINK-04 (Testplan) offen."
+      },
+      "next": "Abnahme vom iPad.",
+      "philipp": [
+        {
+          "kind": "geraet",
+          "text": "Am PC „Weiteres Gerät freigeben“, Link auf dem iPad öffnen, eine Einstellung ändern."
+        }
+      ]
+    },
+    {
+      "phase": "P4",
+      "priority": "P2",
+      "owner": "Claude (Thread „Anbindung von Planer, Mod und Server neu denken“)",
+      "legacyIds": [],
+      "blockers": [],
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-04T02:19:40.131Z",
+      "area": "PLUGIN",
+      "thread": "Anbindung von Planer, Mod und Server neu denken",
+      "orphans": [],
+      "id": "LINK-06",
+      "title": "Weitere Steuerung ohne Befehle: Plan-Upload und Anker aus dem Planer, Serveraufnahme (scan) per Steuernachricht, Befehle nur noch als Ausweg",
+      "status": "planned",
+      "dependencies": [
+        "LINK-05"
+      ],
+      "scope": [
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java",
+        "apps/web/src/views/mod/ServerPanel.tsx"
+      ],
+      "steps": [
+        {
+          "id": "LINK-06-S01",
+          "title": "Plan-Upload und Anker im Planer.",
+          "done": false
+        },
+        {
+          "id": "LINK-06-S02",
+          "title": "Serveraufnahme als Steueraktion.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Auch Pläne und Aufnahmen gehen ohne Befehl auf/vom Server."
+      ],
+      "evidence": [],
+      "verification": {
+        "state": "pending",
+        "note": "Noch nicht begonnen."
+      },
+      "next": "Nach Abnahme von LINK-01…05.",
+      "philipp": []
     }
   ],
   "events": [
@@ -15372,6 +15824,116 @@
           "done": 4,
           "total": 5,
           "next": "Abnahme PROJ-13; danach Farmerträge aus Mod/Plugin."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T02:19:40.131Z",
+      "kind": "progress",
+      "items": [
+        "LINK-01",
+        "LINK-02",
+        "LINK-03",
+        "LINK-04",
+        "LINK-05",
+        "LINK-06"
+      ],
+      "summary": "Server ohne Befehle (Mod/Plugin 0.12.0): Plugin richtet sich selbst ein, Kopplung per Klick (OP), signierte Steuernachrichten statt /bp-Befehlen, Planer-Bereich auf #/mod, zweiter Weg über den Team-Raum (iPad, Freigabe-Link). Geprüft: Einheiten, Browser 1400/390/820 px, echter Paper 1.21.11 über Mod-Kanal und Team-Raum (wrangler dev), Fabric/NeoForge 26.3 Spieltest. Offen: Abnahme bei Philipp, Team-Raum-Deploy, LINK-06.",
+      "files": [
+        "apps/web/src/catalog.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/map/LiveGamePanel.tsx",
+        "apps/web/src/views/map/liveClient.ts",
+        "apps/web/src/views/mod/ModView.tsx",
+        "apps/web/src/views/mod/ServerPanel.tsx",
+        "apps/web/src/views/mod/serverClient.ts",
+        "apps/web/src/views/project/TeamExchange.tsx",
+        "apps/web/src/views/project/TeamJoinView.tsx",
+        "apps/web/src/views/project/TeamLive.tsx",
+        "apps/web/src/views/project/TeamRoom.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/AUTO_LINK.md",
+        "docs/architecture/LIVE_LINK.md",
+        "docs/architecture/TEAMBAU.md",
+        "docs/architecture/TEAM_LIVE.md",
+        "docs/testing/TESTPLAN.md",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/CommandScreen.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LinkPrompt.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamSync.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/TeamTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/LiveLinkScenario.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/BridgePlugin.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/LinkCore.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamChannel.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java",
+        "mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/LinkCoreTest.java",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/serverControl.ts",
+        "scripts/bridge_gametest.mjs",
+        "scripts/bridge_paperlink.mjs",
+        "scripts/test_bridge_paper_link.sh",
+        "services/team-room/src/core.js",
+        "services/team-room/src/index.js",
+        "tests/e2e/modSimulator.mjs",
+        "tests/e2e/server-link.e2e.mjs",
+        "tests/server-link.test.mjs",
+        "tests/team-room.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "LINK-01",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme LINK-01 auf Philipps Server."
+        },
+        {
+          "id": "LINK-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Plan-Upload aus dem Planer; Abnahme LINK-02."
+        },
+        {
+          "id": "LINK-03",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme LIVE-01 in Philipps Modpack."
+        },
+        {
+          "id": "LINK-04",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme durch Philipp."
+        },
+        {
+          "id": "LINK-05",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme vom iPad."
+        },
+        {
+          "id": "LINK-06",
+          "status": "planned",
+          "done": 0,
+          "total": 2,
+          "next": "Nach Abnahme von LINK-01…05."
         }
       ]
     }

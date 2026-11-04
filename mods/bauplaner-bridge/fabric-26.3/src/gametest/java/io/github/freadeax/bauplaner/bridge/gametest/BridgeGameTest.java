@@ -329,6 +329,31 @@ public final class BridgeGameTest implements FabricClientGameTest {
         chat(context, "/bauplaner team alle");
         context.waitTicks(5);
         commandPage(context, io);
+        // LINK-03: pairing by click – the planner asks, the game shows the question, the player clicks
+        // „Planer zulassen“ in the J menu with the mouse and the planner gets its key once. No code, no command.
+        String ask = request(context, http, base + "/v1/pair/ask", "POST", "{\"device\":\"Spieltest-Browser\"}", null, "https://freadeax.github.io");
+        out.append(",\"ask\":").append(ask);
+        var rq = java.util.regex.Pattern.compile("\"request\":\"([A-Za-z0-9_-]+)\"").matcher(ask);
+        if (!rq.find()) throw new AssertionError("Keine Anfrage-ID: " + ask);
+        String askUrl = base + "/v1/pair/ask?request=" + rq.group(1);
+        context.waitTicks(10);
+        copy(context.takeScreenshot("bauplaner-frage"), io.resolve("frage.png"));
+        out.append(",\"askWaiting\":").append(request(context, http, askUrl, "GET", null, null, "https://freadeax.github.io"));
+        context.getInput().pressKey(InputConstants.KEY_J);
+        context.waitTicks(10);
+        copy(context.takeScreenshot("bauplaner-frage-menue"), io.resolve("frage-menue.png"));
+        click(context, "Planer zulassen");
+        context.waitTicks(5);
+        String granted = request(context, http, askUrl, "GET", null, null, "https://freadeax.github.io");
+        out.append(",\"askGranted\":").append(granted);
+        var tk = java.util.regex.Pattern.compile("\"token\":\"([A-Za-z0-9_-]+)\"").matcher(granted);
+        if (!tk.find()) throw new AssertionError("Nach „Planer zulassen“ kein Schlüssel: " + granted);
+        out.append(",\"askAgain\":").append(request(context, http, askUrl, "GET", null, null, "https://freadeax.github.io"));
+        out.append(",\"server\":").append(request(context, http, base + "/v1/server", "GET", null, tk.group(1), "https://freadeax.github.io"));
+        boolean promptLeft = context.computeOnClient(mc -> has(mc, "Planer zulassen"));
+        out.append(",\"promptLeft\":").append(promptLeft);
+        context.setScreen(() -> null);
+        context.waitTicks(2);
         // MAP-05 Baustand: hologram back onto the built plan, then the whole box as recording (one wrong, one missing block).
         String back = "{\"dimension\":\"minecraft:overworld\",\"x\":" + anchor[0] + ",\"y\":" + anchor[1] + ",\"z\":" + anchor[2] + ",\"turns\":0,\"mirror\":false}";
         out.append(",\"back\":").append(request(context, http, base + "/v1/placement", "POST", back, token, "https://freadeax.github.io"));

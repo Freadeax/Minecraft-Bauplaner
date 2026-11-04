@@ -47,7 +47,7 @@ Ein Raum gehört zu genau einem Team (`teamId`). Alle Antworten sind JSON. Grenz
 
 - **Einladung = Link:** `…/#/team/beitreten?raum=<url>&id=<room>&k=<memberKey>`. Der Schlüssel steht im Fragment und geht damit nicht in Server-Logs von Pages. Wer den Link hat, ist Gast, bis er beitritt (`member.join`). Rollen vergibt weiter die Bauleitung im Protokoll.
 - **Drei Schlüssel, drei Rollen im Raum:** `adminKey` (Bauleitung: Planstand und Kopfdaten hochladen, Schlüssel erneuern), `memberKey` (alle Mitspieler: lesen, eigene Ereignisse anhängen), `serverKey` (Paper-Plugin). Ereignisse mit `origin: "server"` (`build.tally`, `store.count`, `SERVER_ONLY_KINDS`) nimmt der Raum **nur mit dem Serverschlüssel** an. Damit ist eine Servermessung im Live-Weg fälschungssicher, was sie beim Dateiweg nicht war.
-- **Server-Link:** wie die Einladung, aber `s=<serverKey>` statt `k=`. Die Bauleitung gibt ihn auf dem Server mit `/bauplaner team verbinden <Link>` ein; im Browser geöffnet erklärt der Planer nur, wofür er ist.
+- **Server-Link:** wie die Einladung, aber `s=<serverKey>` statt `k=`. Ab 0.12.0 schickt der Planer ihn als Steuernachricht `room` an den gekoppelten Server („Server mit dem Raum verbinden“, AUTO_LINK.md); nur ohne Kopplung gibt die Bauleitung ihn mit `/bauplaner team verbinden <Link>` ein. Im Browser geöffnet erklärt der Planer nur, wofür er ist.
 - **Später (nicht in v1):** Gerätschlüssel je Mitglied (ECDSA P-256, `member.key`, Unterschrift `sig`), damit auch innerhalb des Teams niemand im Namen anderer schreibt. Heute gilt wie offline: Rechte prüft die Faltung, der Urheber steht im Ereignis.
 - **Verlust des adminKey:** neuen Raum anlegen und live schalten; das Protokoll geht als Vereinigung wieder hoch.
 
@@ -55,7 +55,7 @@ Ein Raum gehört zu genau einem Team (`teamId`). Alle Antworten sind JSON. Grenz
 
 1. Bauleitung: Reiter „Team“ → **„Live schalten“**. Raum anlegen, das ganze Protokoll und den freigegebenen Planstand hochladen, Einladungslink und QR anzeigen.
 2. Mitspieler: Link öffnen. Der Planer holt Plan und Protokoll aus dem Raum und fragt „Wer bist du?“. Danach ist er drin. Ein Paket öffnen ist nicht nötig.
-3. Server: Bauleitung gibt im Spiel `/bauplaner team verbinden <Link>` ein (OP). Das Plugin holt Header und Protokoll, meldet seinen Schlüssel und schickt ab dann jedes Ereignis sofort. Eine Teamdatei muss nicht mehr kopiert werden.
+3. Server: Bauleitung klickt unter „Team live“ „Server mit dem Raum verbinden“ (gekoppelter Server; sonst `/bauplaner team verbinden <Link>` als OP). Das Plugin holt Header und Protokoll, meldet seinen Schlüssel und schickt ab dann jedes Ereignis sofort. Eine Teamdatei muss nicht mehr kopiert werden.
 4. Jede Aktion (übernehmen, melden, Notiz, Kiste, Nachweis) geht sofort an alle. Oben steht „● live · 3 im Planer · 2 im Spiel“.
 5. Neue Planfreigabe: der Planstand geht in den Raum. Alle sehen „Neuer Planstand 4 – übernehmen?“. Das Plugin aktualisiert die Abschnittsboxen, die Mod lädt den Plan über den Plugin-Kanal.
 
@@ -79,7 +79,7 @@ Ein Raum gehört zu genau einem Team (`teamId`). Alle Antworten sind JSON. Grenz
 
 - Die Variante wählen.
 - Erledigt (04.11.2026): Cloudflare-Zugang in der Cloud-Umgebung hinterlegt; Claude deployt den Dienst damit (§10).
-- Auf dem Server `/bauplaner team verbinden <Server-Link>` eingeben.
+- Server einmal koppeln (Seite „Spiel“, AUTO_LINK.md) und „Server mit dem Raum verbinden“ klicken – ohne Kopplung `/bauplaner team verbinden <Server-Link>` eingeben. Danach lässt sich der Server auch vom iPad über den Raum einstellen (`POST /v1/rooms/<raum>/control`, LINK-05).
 - Der Live-Test mit Mitspielern.
 
 ## 10. Umsetzungsstand (03.11.2026, COOP-07)

@@ -1,6 +1,7 @@
 // Stand-in for the Bauplaner mod's live link (protocol 1, docs/architecture/LIVE_LINK.md) for browser tests:
 // the same routes, pairing, token and origin rules as mod-core LiveLinkServer, with a small synthetic world.
 import http from 'node:http';
+import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { gunzipSync, gzipSync } from 'node:zlib';
 import { readNbt, writeNbt } from '../../dist/formats/src/index.js';
 
@@ -50,6 +51,45 @@ export function startModSimulator(port, options = {}) {
     player: { x: 40.5, y: 65, z: -20.5, yaw: 0, pitch: 0, dimension: 'minecraft:overworld', name: 'Philipp' },
     others: [{ name: 'Anna', x: 52.5, y: 64, z: -14.5, yaw: 90 }],
     hologram: null, marks: [], plans: [], placements: [], requests: [], planBytes: null, teamPushed: null, teamOutbox: [], teamAcked: [], teamRejections: [], teamServerEvents: [], teamLink: 'none', features: options.features ?? ['scan'], protocol: options.protocol ?? 1,
+    // LINK-03/02: pairing by click and a stand-in for the Paper plugin behind the game (LinkCore rules).
+    asks: [], op: true,
+    plugin: { serverId: 'srv_simserver1', name: 'LMNT Testserver', owners: [], controls: [],
+      settings: { 'team.schutz': 'hinweis', 'team.nachweis': true, 'lager.modus': 'sperren', 'max-chunks': 4096 },
+      schema: [{ key: 'team.schutz', kind: 'choice', label: 'Bauen in fremden Abschnitten', choices: ['hinweis', 'sperren', 'aus'] },
+        { key: 'team.nachweis', kind: 'bool', label: 'Baunachweis je Spieler' },
+        { key: 'lager.modus', kind: 'choice', label: 'Lagerschutz', choices: ['sperren', 'hinweis'] },
+        { key: 'max-chunks', kind: 'int', label: 'Aufnahme: höchstens nachzuladende Chunks', min: 0, max: 65536 }],
+      teams: [], rooms: [] },
+  };
+  const b64url = b => Buffer.from(b).toString('base64url');
+  const plugin = state.plugin;
+  const pluginStatus = () => ({ serverId: plugin.serverId, name: plugin.name, plugin: '0.12.0-sim', minecraft: '26.3', protocol: 1,
+    owners: plugin.owners.map(o => ({ id: o.id, name: o.name, seq: o.seq, created: '', by: 'Philipp' })), settings: plugin.settings, schema: plugin.schema,
+    teams: plugin.teams, rooms: plugin.rooms, plans: [], worlds: ['minecraft:overworld'], online: 1 });
+  /** Same checks as LinkCore.verify + ServerLink.control in the plugin. */
+  const pluginControl = m => {
+    const o = plugin.owners.find(x => x.id === m.owner);
+    if (!o) return { error: 'Dieser Planer ist mit dem Server nicht (mehr) gekoppelt. Neu koppeln.' };
+    const want = Buffer.from(createHmac('sha256', o.key).update(`${o.id}\n${m.seq}\n${m.body}`).digest('base64url'));
+    const got = Buffer.from(String(m.sig));
+    if (want.length !== got.length || !timingSafeEqual(want, got)) return { error: 'Unterschrift stimmt nicht.' };
+    if (!(m.seq > o.seq)) return { error: `Diese Steuernachricht wurde schon verarbeitet (Nummer ${m.seq}).` };
+    const b = JSON.parse(m.body);
+    if (b.server !== plugin.serverId) return { error: 'Die Steuernachricht ist für einen anderen Server.' };
+    o.seq = m.seq;
+    plugin.controls.push(b);
+    if (b.op === 'status') return pluginStatus();
+    if (b.op === 'config') {
+      for (const [k, v] of Object.entries(b.set ?? {})) { if (!plugin.schema.some(x => x.key === k)) return { error: `Diese Einstellung kann der Planer nicht ändern: ${k}` }; }
+      Object.assign(plugin.settings, b.set);
+      return { ...pluginStatus(), ok: true, text: `${Object.keys(b.set).length} Einstellung(en) übernommen.` };
+    }
+    if (b.op === 'team') { plugin.teams = [{ teamId: b.file.teamId, name: b.file.name, events: (b.file.events ?? []).length, sections: (b.file.sections ?? []).length }]; return { ok: true, text: `Team „${b.file.name}“ geladen.` }; }
+    if (b.op === 'room') { plugin.rooms = [`verbunden mit ${new URL(b.link.replace('#/team/beitreten?', '?')).searchParams.get('raum') ?? 'Raum'}`]; return { ok: true, text: 'Mit dem Team-Raum verbunden.' }; }
+    if (b.op === 'rename') { plugin.name = b.name; return { ...pluginStatus(), ok: true, text: `Server heißt jetzt „${b.name}“.` }; }
+    if (b.op === 'invite') { const n = { id: `own_${b64url(randomBytes(6))}`, name: b.name, key: b64url(randomBytes(32)), seq: 0 }; plugin.owners.push(n); return { ok: true, serverId: plugin.serverId, name: plugin.name, owner: n.id, key: n.key, text: `Weiteres Gerät „${b.name}“ freigegeben.` }; }
+    if (b.op === 'forget') { plugin.owners = plugin.owners.filter(x => x.id !== b.owner); return { ...pluginStatus(), ok: true, text: 'Gerät entfernt.' }; }
+    return { error: 'Unbekannte Steueraktion.' };
   };
   const V1_POINT_TYPES = new Set(['anker', 'ziel', 'lager', 'portal', 'farm', 'treffpunkt']);
   const allowed = o => o === 'https://freadeax.github.io' || /^http:\/\/(localhost|127\.0\.0\.1)(:\d{1,5})?$/.test(o);
@@ -76,6 +116,17 @@ export function startModSimulator(port, options = {}) {
       }
       const route = `${req.method} ${url.pathname}`;
       if (route === 'GET /v1/hello') return send(200, { app: 'bauplaner-mod', protocol: state.protocol, mod: { version: state.protocol === 2 ? '0.8.0-sim' : '0.5.0-sim', loader: 'fabric', minecraft: '26.3' }, pairing: state.pairingCode !== null, features: state.features });
+      if (route === 'POST /v1/pair/ask' && state.features.includes('pairask')) {
+        const a = { id: b64url(randomBytes(18)), device: JSON.parse(body.toString() || '{}').device ?? 'Browser', state: 'waiting', token: null };
+        state.asks.push(a);
+        return send(200, { request: a.id, state: 'waiting', seconds: 180 });
+      }
+      if (route === 'GET /v1/pair/ask' && state.features.includes('pairask')) {
+        const a = state.asks.find(x => x.id === url.searchParams.get('request'));
+        if (!a) return send(200, { state: 'expired' });
+        if (a.state === 'ok' && a.token) { const token = a.token; a.token = null; a.state = 'done'; return send(200, { state: 'ok', token }); }
+        return send(200, { state: a.state === 'done' ? 'expired' : a.state });
+      }
       if (route === 'POST /v1/pair') {
         const code = JSON.parse(body.toString() || '{}').code;
         if (!state.pairingCode) return send(403, { error: 'Keine Kopplung offen. Im Spiel /bauplaner verbinden eingeben und den Code hier eintragen.' });
@@ -146,9 +197,31 @@ export function startModSimulator(port, options = {}) {
         const since = url.searchParams.get('since'), i = since ? state.teamServerEvents.findIndex(e => e.id === since) + 1 : 0;
         return send(200, { teamId: url.searchParams.get('teamId'), name: 'Server', events: state.teamServerEvents.slice(i), more: false, total: state.teamServerEvents.length });
       }
+      if (url.pathname.startsWith('/v1/server') && !state.features.includes('server')) return send(404, { error: 'Unbekannte Adresse.' });
+      if (route === 'GET /v1/server') {
+        const out = { link: state.teamLink, linkText: state.teamLink, allowed: state.teamLink === 'live' };
+        if (state.teamLink === 'live') out.server = { serverId: plugin.serverId, name: plugin.name, paired: plugin.owners.length > 0, canClaim: state.op, plugin: '0.12.0-sim', minecraft: '26.3', protocol: 1 };
+        return send(200, out);
+      }
+      if (route === 'POST /v1/server/claim') {
+        if (state.teamLink !== 'live') return send(409, { error: 'team-nicht-erlaubt: Im Spiel J drücken und „Teambau erlauben“ klicken.' });
+        if (!state.op) return send(403, { error: 'Koppeln darf nur ein Operator (OP) oder wer das Recht bauplaner.team.leitung hat.' });
+        const o = { id: `own_${b64url(randomBytes(6))}`, name: JSON.parse(body.toString() || '{}').device ?? 'Planer', key: b64url(randomBytes(32)), seq: 0 };
+        plugin.owners.push(o);
+        return send(200, { serverId: plugin.serverId, name: plugin.name, paired: true, canClaim: true, plugin: '0.12.0-sim', minecraft: '26.3', owner: o.id, key: o.key });
+      }
+      if (route === 'POST /v1/server/control') {
+        if (state.teamLink !== 'live') return send(409, { error: 'team-nicht-erlaubt: Im Spiel J drücken und „Teambau erlauben“ klicken.' });
+        const a = pluginControl(JSON.parse(body.toString()));
+        return a.error ? send(409, a) : send(200, a);
+      }
       if (route === 'POST /v1/unpair') { state.tokens.delete(req.headers['x-bauplaner-token']); return send(200, { unpaired: true }); }
       return send(404, { error: 'Unbekannte Adresse.' });
     });
   });
-  return new Promise(resolve => server.listen(port, '127.0.0.1', () => resolve({ state, close: () => new Promise(r => server.close(r)), openPairing: () => { state.pairingCode = '482913'; return state.pairingCode; } })));
+  return new Promise(resolve => server.listen(port, '127.0.0.1', () => resolve({ state, close: () => new Promise(r => server.close(r)), /** The plugin stand-in, e.g. behind a simulated team room (LINK-05). */
+    pluginControl,
+    openPairing: () => { state.pairingCode = '482913'; return state.pairingCode; },
+    /** The player clicks „Planer zulassen“ in the game. */
+    approveAsk: () => { const a = state.asks.find(x => x.state === 'waiting'); if (!a) return false; a.token = `sim${b64url(randomBytes(24))}`; state.tokens.add(a.token); a.state = 'ok'; return true; } })));
 }

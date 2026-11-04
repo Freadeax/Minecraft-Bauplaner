@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   LIVE_DEFAULT_PORT, LIVE_FEATURE_PLAYERS, LIVE_TOKEN_HEADER, chunkColumns, chunkQuery, liveBaseUrl, liveCan, marksBody, originAllowed, planUploadQuery,
-  readLiveChunks, readLiveHello, readLivePairing, readLivePlayers, readLiveStatus, readLiveTeam, readLiveTeamPull, wantedChunks,
+  readLiveChunks, readLiveHello, readLivePairing, readLivePlayers, readLiveStatus, readLiveTeam, readLiveTeamPull, readServerClaim, readServerInfo, wantedChunks,
 } from '../../../../../packages/domain/src/index.js';
+import type { ControlMessage, ServerInfo, ServerPairing } from '../../../../../packages/domain/src/index.js';
 import type { LiveChunkColumns, LiveHello, LivePlacement, LivePlayers, LiveStatus, LiveTeam, LiveTeamPull, TeamLinkState, TeamServerFile, WorldItem } from '../../../../../packages/domain/src/index.js';
 import { MODEL_MAX_FILE_BYTES } from '../../../../../packages/voxel/src/sizeLimits.js';
 
@@ -30,6 +31,8 @@ function readSettings(): LiveSettings {
   } catch { return DEFAULTS; }
 }
 function writeSettings(s: LiveSettings): void { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch { /* private window: only this tab */ } }
+/** Stores a new mod key (pairing by click from another page, LINK-03). */
+export function writeLiveToken(token: string): void { writeSettings({ ...readSettings(), token, auto: true }); }
 
 export class LiveError extends Error {
   constructor(message: string, readonly status: number) { super(message); this.name = 'LiveError'; }
@@ -72,6 +75,27 @@ const MAX_SCAN_BYTES = MODEL_MAX_FILE_BYTES;
 
 export const liveApi = {
   hello: async (port: number): Promise<LiveHello> => readLiveHello(await call(port, '/v1/hello', { timeoutMs: 2500 })),
+  /** LINK-03 (feature `pairask`): ask to pair; the player clicks „Planer zulassen“ in the game. */
+  pairAsk: async (port: number, device: string): Promise<string> => {
+    const r = await call(port, '/v1/pair/ask', { method: 'POST', body: JSON.stringify({ device }), headers: { 'Content-Type': 'application/json' } }) as { request?: unknown } | null;
+    if (typeof r?.request !== 'string') throw new LiveError('Die Mod hat die Anfrage nicht angenommen.', 500);
+    return r.request;
+  },
+  /** State of a pairing request: waiting, ok (with the key, once), denied or expired. */
+  pairAskState: async (port: number, request: string): Promise<{ state: string; token: string | null }> => {
+    const r = await call(port, `/v1/pair/ask?request=${encodeURIComponent(request)}`, { timeoutMs: 4000 }) as { state?: unknown; token?: unknown } | null;
+    return { state: typeof r?.state === 'string' ? r.state : 'expired', token: typeof r?.token === 'string' && /^[A-Za-z0-9_-]{24,128}$/.test(r.token) ? r.token : null };
+  },
+  /** Server plugin behind the game (feature `server`): way, identity, whether this player may pair it. */
+  server: async (port: number, token: string): Promise<ServerInfo> => readServerInfo(await call(port, '/v1/server', { token, timeoutMs: 12000 })),
+  /** Pair the server with this browser; the plugin checks that the player is operator. */
+  serverClaim: async (port: number, token: string, device: string): Promise<ServerPairing> =>
+    readServerClaim(await call(port, '/v1/server/claim', { method: 'POST', token, body: JSON.stringify({ device }), headers: { 'Content-Type': 'application/json' }, timeoutMs: 20000 })),
+  /** A signed control message; the answer is the plugin's (status, text, error). */
+  serverControl: async (port: number, token: string, message: ControlMessage): Promise<Record<string, unknown>> => {
+    const r = await call(port, '/v1/server/control', { method: 'POST', token, body: JSON.stringify(message), headers: { 'Content-Type': 'application/json' }, timeoutMs: 35000 });
+    return r && typeof r === 'object' ? r as Record<string, unknown> : {};
+  },
   pair: async (port: number, code: string): Promise<string> =>
     readLivePairing(await call(port, '/v1/pair', { method: 'POST', body: JSON.stringify({ code }), headers: { 'Content-Type': 'application/json' } })),
   status: async (port: number, token: string): Promise<LiveStatus> => readLiveStatus(await call(port, '/v1/status', { token, timeoutMs: 4000 })),
@@ -119,7 +143,7 @@ export const liveApi = {
   },
 };
 
-export type LivePhase = 'off' | 'searching' | 'unpaired' | 'connected' | 'lost';
+export type LivePhase = 'off' | 'searching' | 'unpaired' | 'asking' | 'connected' | 'lost';
 export interface TrailPoint { readonly x: number; readonly z: number; readonly at: number }
 
 export interface LiveGame {
@@ -160,7 +184,15 @@ async function localAccessState(): Promise<PermissionState | null> {
   }
   return null;
 }
-export const LIVE_NOT_FOUND = 'Die Mod meldet sich nicht. Im Spiel /bauplaner verbinden eingeben (Code erscheint im Chat), dann hier erneut „Verbinden“.';
+export const LIVE_NOT_FOUND = 'Die Mod meldet sich nicht. Läuft Minecraft mit der Bauplaner-Mod? Ab Mod 0.12 ist die Verbindung von selbst an; bei älteren Mods im Spiel /bauplaner verbinden eingeben. Dann hier erneut „Verbinden“.';
+/** Name of this browser for the question in the game („Der Planer (…) möchte sich verbinden“). */
+export function deviceName(): string {
+  const ua = typeof navigator === 'undefined' ? '' : navigator.userAgent;
+  const browser = /Edg\//.test(ua) ? 'Edge' : /Firefox\//.test(ua) ? 'Firefox' : /Chrome\//.test(ua) ? 'Chrome' : /Safari\//.test(ua) ? 'Safari' : 'Browser';
+  const os = /iPad|iPhone/.test(ua) ? 'iPad/iPhone' : /Windows/.test(ua) ? 'Windows' : /Mac OS/.test(ua) ? 'Mac' : /Android/.test(ua) ? 'Android' : /Linux/.test(ua) ? 'Linux' : '';
+  return os ? `${browser} · ${os}` : browser;
+}
+const ASK_EVERY_MS = 1500;
 export const LIVE_BLOCKED = 'Der Browser blockiert den Zugriff auf die Mod auf diesem PC. Links in der Adresszeile auf das Symbol neben der Adresse klicken → Website-Einstellungen → „Lokales Netzwerk“ bzw. „Geräte im lokalen Netzwerk“ auf „Zulassen“ stellen, Seite neu laden.';
 
 /** State of the game connection for the map; polls the mod about once a second while connected. */
@@ -182,6 +214,29 @@ export function useLiveGame(): LiveGame {
   const update = useCallback((next: LiveSettings) => { setSettings(next); live.current = next; writeSettings(next); }, []);
 
   const search = useRef(0);
+  /** Waits for „Planer zulassen“ in the game (up to the mod's three minutes). */
+  const askPairing = async (id: number) => {
+    setPhase('asking');
+    let request: string;
+    try { request = await liveApi.pairAsk(live.current.port, deviceName()); }
+    catch (e) { if (id === search.current) { setPhase('unpaired'); setError(e instanceof Error ? e.message : String(e)); } return; }
+    for (;;) {
+      await new Promise(r => setTimeout(r, ASK_EVERY_MS));
+      if (id !== search.current) return;
+      let answer: { state: string; token: string | null };
+      try { answer = await liveApi.pairAskState(live.current.port, request); }
+      catch { continue; }
+      if (id !== search.current) return;
+      if (answer.state === 'ok' && answer.token) {
+        update({ ...live.current, token: answer.token, auto: true });
+        try { setStatus(await liveApi.status(live.current.port, answer.token)); } catch { /* the poll below retries */ }
+        setPhase('connected'); setError('');
+        return;
+      }
+      if (answer.state === 'denied') { setPhase('off'); setError('Im Spiel abgelehnt. Erneut „Verbinden“ drücken, wenn du doch verbinden willst.'); return; }
+      if (answer.state !== 'waiting') { setPhase('off'); setError('Im Spiel wurde nicht rechtzeitig „Planer zulassen“ geklickt. Erneut „Verbinden“ drücken.'); return; }
+    }
+  };
   const [accessDenied, setAccessDenied] = useState(false);
   const connect = useCallback(async () => {
     const id = ++search.current, until = Date.now() + SEARCH_MS;
@@ -191,7 +246,11 @@ export function useLiveGame(): LiveGame {
         const h = await liveApi.hello(live.current.port);
         if (id !== search.current) return;
         setHello(h); setError('');
-        if (!live.current.token) { setPhase('unpaired'); return; }
+        if (!live.current.token) {
+          // LINK-03: newer mods ask the player in the game; no code to type.
+          if (liveCan(h, 'pairask')) { await askPairing(id); return; }
+          setPhase('unpaired'); return;
+        }
         setStatus(await liveApi.status(live.current.port, live.current.token));
         setPhase('connected');
         return;

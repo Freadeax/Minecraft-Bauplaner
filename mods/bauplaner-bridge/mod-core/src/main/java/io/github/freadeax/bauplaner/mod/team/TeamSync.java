@@ -44,7 +44,7 @@ public final class TeamSync {
         /** The server has no Bauplaner plugin with the team channel. */
         NO_PLUGIN("Server ohne Bauplaner-Plugin"),
         /** Plugin there, player has not allowed the channel for this server yet. */
-        ASK("Plugin da – /bauplaner team erlauben"),
+        ASK("Plugin da – J drücken → „Teambau erlauben“"),
         /** Allowed, hello sent, waiting for the first state. */
         WAITING("verbinde …"),
         /** Live with the plugin. */
@@ -135,7 +135,7 @@ public final class TeamSync {
             String a = allowed.getProperty(serverKey);
             if ("ja".equals(a)) start();
             else if ("nein".equals(a)) link = Link.OFF;
-            else { link = Link.ASK; notify.accept("Auf diesem Server läuft das Bauplaner-Plugin mit Teambau. Live-Abgleich einschalten: /bauplaner team erlauben (einmal je Server). Bis dahin sendet die Mod nichts."); }
+            else { link = Link.ASK; notify.accept("Auf diesem Server läuft das Bauplaner-Plugin. Teambau und Server-Kopplung einschalten: J drücken → „Teambau erlauben“ (einmal je Server). Bis dahin sendet die Mod nichts."); }
         } else if (!has && !announced) link = Link.NO_PLUGIN;
     }
 
@@ -158,6 +158,9 @@ public final class TeamSync {
         start();
         return "Teamkanal für diesen Server erlaubt. Die Mod holt den Teamstand vom Plugin.";
     }
+
+    /** The server offers the plugin and the player has not decided yet (LINK-03: the J menu shows the question). */
+    public synchronized boolean asking() { return link == Link.ASK; }
 
     public synchronized boolean allowed() { return serverKey != null && "ja".equals(allowed.getProperty(serverKey)); }
 
@@ -257,7 +260,7 @@ public final class TeamSync {
         TeamOutbox.Action a;
         try { a = outbox.add(s.teamId(), kind, body); } catch (RuntimeException e) { return e.getMessage(); }
         if (link == Link.LIVE) { sendAction(a); return what + " – an den Server geschickt."; }
-        String way = link == Link.ASK ? " Der Server hat das Plugin: /bauplaner team erlauben schickt es sofort."
+        String way = link == Link.ASK ? " Der Server hat das Plugin: J → „Teambau erlauben“ schickt es sofort."
                 : link == Link.OFF ? "" : link == Link.WAITING ? " Wird geschickt, sobald der Server antwortet." : "";
         return what + " – wartet im Ausgangskorb (" + outbox.pending().size() + "), bis Planer oder Server es abholen." + way;
     }
@@ -292,7 +295,7 @@ public final class TeamSync {
             if (link != Link.LIVE) return CompletableFuture.failedFuture(new IllegalStateException(switch (link) {
                 case NONE -> "Die Mod ist mit keinem Server verbunden.";
                 case NO_PLUGIN -> "team-plugin-fehlt: Auf diesem Server läuft kein Bauplaner-Plugin mit Teambau.";
-                case ASK -> "team-nicht-erlaubt: Im Spiel /bauplaner team erlauben eingeben.";
+                case ASK -> "team-nicht-erlaubt: Im Spiel J drücken und „Teambau erlauben“ klicken.";
                 case OFF -> "team-nicht-erlaubt: Der Teamkanal ist für diesen Server ausgeschaltet.";
                 default -> "Die Mod wartet noch auf die erste Antwort des Plugins.";
             }));

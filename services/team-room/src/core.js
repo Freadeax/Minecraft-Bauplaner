@@ -180,6 +180,46 @@ export class RoomCore {
   }
 }
 
+/**
+ * Server control through the room (LINK-05, docs/architecture/AUTO_LINK.md): the room passes a control message
+ * signed in the planner on to the Paper plugin connected with the server key and the answer back. The room knows
+ * no owner key and checks only the form; the plugin checks signature, sequence number and server.
+ */
+export const CONTROL = Object.freeze({ bytes: 1024 * 1024, timeoutMs: 20_000, pending: 16 });
+export function checkControl(m) {
+  const bad = why => { throw new RoomError(400, 'steuerung', `Steuernachricht ungültig: ${why}.`); };
+  if (!m || typeof m !== 'object') bad('kein Objekt');
+  if (typeof m.owner !== 'string' || !/^own_[A-Za-z0-9_-]{4,40}$/.test(m.owner)) bad('Geräte-ID');
+  if (!Number.isSafeInteger(m.seq) || m.seq <= 0) bad('Nummer');
+  if (typeof m.body !== 'string' || !m.body.length) bad('Inhalt fehlt');
+  if (m.body.length > CONTROL.bytes) throw new RoomError(413, 'steuerung-groesse', 'Steuernachricht größer als 1 MB.');
+  if (typeof m.sig !== 'string' || !/^[A-Za-z0-9_-]{43}$/.test(m.sig)) bad('Unterschrift');
+  return { owner: m.owner, seq: m.seq, body: m.body, sig: m.sig };
+}
+
+/** Open control requests waiting for the plugin's answer (in memory: the room stays awake while a request waits). */
+export class ControlRelay {
+  constructor(timeoutMs = CONTROL.timeoutMs) { this.timeoutMs = timeoutMs; this.open = new Map(); this.n = 0; }
+  /** Sends with `send(frame)` and resolves with the plugin's answer; 504 when it does not come in time. */
+  ask(send, message) {
+    if (this.open.size >= CONTROL.pending) throw new RoomError(429, 'steuerung-voll', 'Zu viele offene Steuernachrichten – kurz warten.');
+    const id = `c${++this.n}_${randomKey(6)}`;
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => { this.open.delete(id); reject(new RoomError(504, 'server-antwortet-nicht', 'Der Server hat nicht rechtzeitig geantwortet.')); }, this.timeoutMs);
+      this.open.set(id, answer => { clearTimeout(timer); resolve(answer); });
+      try { send({ type: 'control', id, ...message }); } catch (e) { clearTimeout(timer); this.open.delete(id); reject(e); }
+    });
+  }
+  /** The plugin's answer; false for unknown or late ids. */
+  answer(id, answer) {
+    const done = this.open.get(id);
+    if (!done) return false;
+    this.open.delete(id);
+    done(answer && typeof answer === 'object' && !Array.isArray(answer) ? answer : { error: 'Leere Antwort vom Server.' });
+    return true;
+  }
+}
+
 /** Presence of one connection (TEAM_LIVE.md §4): flüchtig, nie im Protokoll. */
 export function cleanPresence(p, now = new Date().toISOString()) {
   const where = ['planer', 'spiel', 'server'].includes(p?.where) ? p.where : 'planer';

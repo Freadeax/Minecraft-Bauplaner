@@ -72,7 +72,7 @@ export function TeamExchange({ session, team, view, onMessage }: { session: Proj
     const url = `${location.origin}${location.pathname}`;
     void show('Einladung', [`Hallo! Wir bauen „${project.name}“${team.server ? ` auf ${team.server}` : ''} gemeinsam.`, '',
       '1) Nur spielen: auf dem Server /bauplaner team eingeben – dort siehst du freie Abschnitte, /bauplaner nehmen <nr> übernimmt einen, /bauplaner fertig meldet ihn.',
-      `2) Mit Hologramm im Spiel: Mod von ${url}#/mod installieren, im Spiel /bauplaner verbinden.`,
+      `2) Mit Hologramm im Spiel: Mod von ${url}#/mod installieren, ${url}#/mod öffnen, „Mit dem Spiel verbinden“ klicken und im Spiel J → „Planer zulassen“.`,
       `3) Mit Planer: ${url} öffnen, Projekte → „Teampaket öffnen“ und die Datei wählen, die ich dir schicke. Dann im Reiter „Team“ deinen Namen wählen.`, '',
       'Rollen: Helfer übernehmen Abschnitte und melden sie fertig, Baumeister prüfen, die Bauleitung gibt Planstände frei.'].join('\n'));
   };

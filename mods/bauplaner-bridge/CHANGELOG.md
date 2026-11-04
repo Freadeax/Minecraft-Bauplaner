@@ -2,6 +2,24 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.12.0 – 2026-11-04
+
+**No more server commands / Server ohne Befehle**
+
+- Website link starts by itself. The website asks, the game shows “Press J”, you click “Allow planner” – no code, no command.
+- Team channel: allowing it for a server is now a button in the J menu (“Allow team building”). It is still off until you allow it, per server.
+- Paper plugin sets itself up on first start (server ID, no configuration needed). An operator pairs the server from the planner with one click while playing with the mod.
+- The planner changes server settings (section protection, storage chests, proof, capture), loads the team, connects the team room, renames the server and manages paired devices by signed messages – nobody types a command on the server. Replays, wrong signatures and messages for another server are refused; nothing ever places blocks or runs commands.
+- Second way through the team room: a paired PC can authorise another own device (e.g. an iPad), which then controls the server without the mod.
+- The old commands still work as a fallback.
+
+- Website-Verbindung startet von selbst. Die Website fragt, im Spiel steht „J drücken“, du klickst „Planer zulassen“ – kein Code, kein Befehl.
+- Teamkanal: Die Freigabe je Server ist jetzt ein Knopf im J-Menü („Teambau erlauben“). Ohne Freigabe bleibt er wie bisher aus.
+- Paper-Plugin richtet sich beim ersten Start selbst ein (Server-ID, nichts einzustellen). Ein OP koppelt den Server im Planer mit einem Klick, während er mit der Mod spielt.
+- Der Planer ändert Server-Einstellungen (Abschnittsschutz, Lagerkisten, Baunachweis, Aufnahme), lädt das Team, verbindet den Team-Raum, benennt den Server um und verwaltet gekoppelte Geräte per unterschriebener Nachricht – auf dem Server tippt niemand einen Befehl. Wiederholungen, falsche Unterschriften und Nachrichten für einen anderen Server werden abgewiesen; nichts setzt Blöcke oder führt Befehle aus.
+- Zweiter Weg über den Team-Raum: Ein gekoppelter PC gibt ein weiteres eigenes Gerät frei (z. B. iPad), das den Server dann ohne Mod einstellt.
+- Die bisherigen Befehle funktionieren weiter als Ausweg.
+
 ## 0.11.2 – 2026-11-03
 
 - Paper plugin: live connection to a team room (`/bp team verbinden <link>` in the server console, `/bp team raum`, `/bp team trennen`).

@@ -160,6 +160,18 @@ async function live(file, loader, plan, logFile) {
   assert.deepEqual(chunks.missing, [[4000, 4000]], 'ferner Chunk als nicht geladen gemeldet');
   const columns = chunkColumns(chunks)[0].columns.filter(Boolean);
   assert.ok(columns.length >= 200, `Oberfläche gelesen (${columns.length} Spalten)`);
+  // LINK-03 pairing by click (the J menu button clicked with the mouse in the real game).
+  if (raw.ask) {
+    const { readServerInfo } = await import('../dist/domain/src/index.js');
+    assert.equal(raw.ask.status, 200); assert.equal(raw.ask.body.state, 'waiting');
+    assert.equal(raw.askWaiting.body.state, 'waiting', 'vor dem Klick wartet die Anfrage');
+    assert.equal(raw.askGranted.body.state, 'ok', 'nach „Planer zulassen“ zugelassen');
+    assert.match(raw.askGranted.body.token, /^[A-Za-z0-9_-]{20,}$/);
+    assert.notEqual(raw.askAgain.body.state, 'ok', 'der Schlüssel kommt nur einmal');
+    assert.equal(raw.server.status, 200, 'neuer Schlüssel gilt');
+    assert.equal(readServerInfo(raw.server.body).way, 'none', 'Einzelspieler: kein Server');
+    assert.equal(raw.promptLeft, false, 'Frage nach dem Klick verschwunden');
+  }
   assert.equal(raw.marks.status, 200);
   assert.equal(raw.marks.body.marks, 4, 'Punkt, Bauplatz, Zone und Gefahr-Punkt angenommen');
   // Protocol 2 (GAME-08): hello announces it, players route answers, layers are listed in the chat.

@@ -327,7 +327,7 @@ final class TeamModule implements Listener {
             }
         }
         if (!COMMANDS.contains(sub)) return help(s, label);
-        if (teams.isEmpty()) return fail(s, "Auf diesem Server ist noch kein Team angelegt. Die Bauleitung legt die Serverdatei aus dem Planer (Reiter „Team“) nach plugins/BauplanerBridge/team/ und ruft /" + label + " team laden auf.");
+        if (teams.isEmpty()) return fail(s, "Auf diesem Server ist noch kein Team angelegt. Die Bauleitung legt es im Planer auf den Server (Seite „Spiel“ → „Server“ → „Team auf den Server“), ohne Befehl.");
         TeamLog team = teamOf(a);
         TeamLog.View v = view(team);
         Optional<String> me = memberOf(team, a);
@@ -768,6 +768,12 @@ final class TeamModule implements Listener {
     }
 
     StorageModule storage() { return storage; }
+
+    // ------------------------------------------------------------------ team room for the server link (LINK-02)
+
+    List<String> roomStatus() { return room.status(); }
+    java.util.concurrent.CompletableFuture<String> roomConnect(String link) { return room.connect(link); }
+    String roomDisconnect(String teamId) { return room.disconnect(teamId); }
 
     private boolean tallySwitch(CommandSender s, Actor a, TeamLog team, TeamLog.View v, String[] args, String label) {
         Optional<String> m = ensureMember(team, a);

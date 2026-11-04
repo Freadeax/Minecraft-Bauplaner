@@ -1055,3 +1055,10 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - Kleine Eingriffe: `site.ts` (optionales Feld `production`, `checkSite`/`pruneSite`; `SectionPlan.smelts`/`cookTicks` additiv), `tabs.ts` (ein Eintrag), `SiteTab.tsx` (Link „Farmen & Engpässe“), `index.ts`, `testplan.ts`.
 - **An Plugin-/Mod-Threads (später, keine Änderung jetzt):** Ertragsbuch nimmt `{farmId,itemId,count,hours}` – geprüfte Lagerkisten (COOP-05) oder eine Zählung an der Sammeltruhe könnten das füllen.
 - TEAM-03-S02 (Sammelaufträge auf mehrere Spieler) ist im Planer über `splitGathering` umgesetzt; TEAM-03 bleibt sonst unverändert.
+
+### MSG-LINK-01 · 04.11.2026 · Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Server ohne Befehle, Mod/Plugin 0.12.0
+- Auftrag Philipp (01:01): „Ich will keine Commands auf der Serverseite eingeben müssen!“ Entscheidung per Karte: Weg über die Mod zuerst, dann über den Team-Raum. Vertrag: [AUTO_LINK](architecture/AUTO_LINK.md).
+- **Neu:** Plugin `LinkCore`/`ServerLink` (Selbsteinrichtung, Kopplung, signierte Steuernachrichten), Teamkanal-Nachrichten `link.info|link.claim|link.ctl`, Mod-Routen `/v1/pair/ask`, `/v1/server*` (Features `pairask`, `server`), Raum-Route `POST /v1/rooms/<raum>/control` + WebSocket `control`/`control.answer`, Planer `views/mod/ServerPanel.tsx`/`serverClient.ts`, Domain `serverControl.ts`.
+- **An Mod-/Plugin-Threads:** Neue Einstellungen, die der Planer setzen darf, kommen nur in `LinkCore.SETTINGS` (mit Label, Art, Grenzen). Der Teamkanal (`team.kanal`) bleibt absichtlich nicht fernsteuerbar. Neue Steueraktionen: in `LinkCore.OPS`, `ServerLink.control` und `SERVER_OPS` (Domain) zugleich.
+- **An Planer-Threads:** Wo bisher ein Serverbefehl genannt wurde, zuerst den Klickweg nennen (`currentPairedServer()` + `control(...)`), den Befehl nur als Ausweg.
+- Neue Prüfungen: `scripts/test_bridge_paper_link.sh` (echter Paper-Server mit Protokoll-Client; mit `BAUPLANER_ROOM` auch über den Team-Raum), `tests/e2e/server-link.e2e.mjs`.

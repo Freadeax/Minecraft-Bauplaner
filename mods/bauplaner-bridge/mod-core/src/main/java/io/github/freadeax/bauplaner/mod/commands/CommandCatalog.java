@@ -176,7 +176,7 @@ public final class CommandCatalog {
         c(m, TEAM, "team.rahmen", "Rahmen an/aus", "team rahmen", "Abschnittsrahmen im Spiel.", Need.NONE);
         c(m, TEAM, "team.anzeige", "Anzeige an/aus", "team anzeige", "Teamfeld rechts unten.", Need.NONE);
         c(m, TEAM, "team.status", "Kanalstatus", "team status", "Weg zum Server-Plugin und Erlaubnis.", Need.NONE);
-        c(m, TEAM, "team.erlauben", "Kanal erlauben", "team erlauben", "Teamkanal für diesen Server einschalten (einmal je Server).", Need.NONE);
+        c(m, TEAM, "team.erlauben", "Teambau erlauben", "team erlauben", "Teamkanal für diesen Server einschalten (einmal je Server). Darüber laufen auch die Server-Kopplung und die Einstellungen aus dem Planer.", Need.NONE);
         c(m, TEAM, "team.verbieten", "Kanal verbieten", "team verbieten", "Teamkanal für diesen Server aus: die Mod sendet nichts.", Need.NONE);
         // Team on the server (plugin, /bp)
         s(m, SERVER_TEAM, "bp.team", "Übersicht (Server)", "team", "Was der Server über dich und das Team weiß.", Need.PLUGIN);
@@ -200,7 +200,7 @@ public final class CommandCatalog {
         s(m, SERVER_TEAM, "bp.team.wahl", "Team wählen", "team wahl", "Bei mehreren Teams: welches für dich gilt.", Need.PLUGIN, Arg.of("team", Kind.TEXT));
         s(m, SERVER_TEAM, "bp.team.export", "Ausfuhr schreiben", "team export", "Teamprotokoll für den Planer schreiben.", Need.LEAD);
         s(m, SERVER_TEAM, "bp.team.laden", "Teamdateien neu laden", "team laden", "Nach dem Hochladen einer Serverdatei.", Need.LEAD);
-        s(m, SERVER_TEAM, "bp.team.raum", "Team-Raum (Status)", "team raum", "Live-Verbindung des Servers zum Team-Raum. Verbinden mit dem Link nur in der Serverkonsole: /bp team verbinden <link> – der Link enthält den Serverschlüssel.", Need.PLUGIN);
+        s(m, SERVER_TEAM, "bp.team.raum", "Team-Raum (Status)", "team raum", "Live-Verbindung des Servers zum Team-Raum. Verbinden ohne Befehl: im Planer auf der Seite „Spiel“ → „Server“ → „Team-Raum verbinden“.", Need.PLUGIN);
         s(m, SERVER_TEAM, "bp.team.trennen", "Team-Raum trennen", "team trennen", "Server vom Team-Raum trennen (Bauleitung).", Need.LEAD);
         s(m, SERVER_TEAM, "bp.team.hilfe", "Hilfe (Server)", "team hilfe", "Alle Teambefehle des Servers.", Need.PLUGIN);
         // Storage chests (plugin)
@@ -225,7 +225,9 @@ public final class CommandCatalog {
         s(m, PROOF, "bp.beitrag.alle", "Beitrag aller", "beitrag alle", "Für alle im Team (Baumeister).", Need.PLUGIN);
         s(m, PROOF, "bp.nachweis", "Nachweis an/aus", "nachweis", "Eigene Zählung ein- oder ausschalten.", Need.PLUGIN, Arg.choice("stufe", "an", "aus"));
         // Website link and world plan (client)
-        c(m, LINK, "verbinden", "Website koppeln", "verbinden", "Zeigt den Code für die Website (5 Minuten).", Need.NONE);
+        c(m, LINK, "verbinden.zulassen", "Planer zulassen", "verbinden zulassen", "Der Planer hat „Verbinden“ gewählt: ihn mit diesem Spiel koppeln (ohne Code).", Need.NONE);
+        c(m, LINK, "verbinden.ablehnen", "Planer ablehnen", "verbinden ablehnen", "Wartende Verbindungsanfrage des Planers ablehnen.", Need.NONE);
+        c(m, LINK, "verbinden", "Website koppeln (Code)", "verbinden", "Ausweg ohne Klick-Freigabe: zeigt einen Code für die Website (5 Minuten).", Need.NONE);
         c(m, LINK, "verbinden.status", "Verbindungsstatus", "verbinden status", "Gekoppelte Browser und Port.", Need.NONE);
         c(m, LINK, "verbinden.aus", "Alle Browser trennen", "verbinden aus", "Kopplungen aufheben.", Need.NONE);
         c(m, LINK, "ebenen", "Weltplan-Ebenen", "ebenen", "Ebenen von der Live-Karte.", Need.NONE);

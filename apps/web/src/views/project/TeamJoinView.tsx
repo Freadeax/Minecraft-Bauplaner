@@ -46,7 +46,7 @@ export function TeamJoinView({ search }: { search: string }) {
   return <div className="page"><section className="team-block team-join" aria-label="Team beitreten" style={{ maxWidth: 640 }}>
     <span className="panel-kicker">TEAM LIVE</span>
     <h2>{info ? `Team „${info.name}“ beitreten` : 'Team beitreten'}</h2>
-    {invite?.kind === 'server' ? <p className="notice warning" role="alert">Das ist der Link für den Minecraft-Server. Gib ihn auf dem Server mit <code>/bauplaner team verbinden &lt;Link&gt;</code> ein, nicht im Browser – und gib ihn nicht weiter.</p> : <>
+    {invite?.kind === 'server' ? <p className="notice warning" role="alert">Das ist der Link für den Minecraft-Server, nicht für den Browser – und nicht weitergeben. Einfacher: Server einmal koppeln (Menü „Spiel“) und im Projekt unter „Team live“ „Server mit dem Raum verbinden“ klicken. Nur ohne Kopplung kommt der Link mit <code>/bauplaner team verbinden &lt;Link&gt;</code> auf den Server.</p> : <>
       <p>Du bekommst den Plan und den Teamstand direkt aus dem Team-Raum, ohne Datei. Danach siehst du live, wer welchen Abschnitt baut, und deine Meldungen kommen sofort bei allen an.</p>
       {info && <p className="muted">{info.events} Ereignisse im Team{info.header ? '' : ' · noch kein Planstand freigegeben'}.</p>}
       <button className="primary" disabled={busy || !invite || !info} onClick={() => void join()}>{busy ? 'Plan wird geladen …' : 'Beitreten und Plan laden'}</button>
