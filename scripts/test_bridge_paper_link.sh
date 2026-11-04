@@ -17,6 +17,7 @@ java25=${BAUPLANER_JAVA25:-$(ls -d /usr/lib/jvm/java-25-openjdk-*/bin/java 2>/de
 java21=${java21:-${java25:-java}}
 (cd mods/bauplaner-bridge && ./gradlew -q -PwithPaper :paper:build --console=plain)
 jar=mods/bauplaner-bridge/paper/build/libs/bauplaner-bridge-paper-$(cat mods/bauplaner-bridge/VERSION).jar
+node scripts/bridge_gametest.mjs prepare "$work" >/dev/null   # plan.schem for the plan step (LINK-06)
 mkdir -p "$work/mcp" && (cd "$work/mcp" && npm init -y >/dev/null && npm install --silent --no-audit --no-fund minecraft-protocol@1 >/dev/null)
 for v in "${versions[@]}"; do
   case "$v" in 1.*) j=$java21 ;; *) j=${java25:?JDK 25 fehlt für Minecraft $v} ;; esac

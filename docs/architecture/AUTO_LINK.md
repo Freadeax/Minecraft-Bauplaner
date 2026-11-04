@@ -47,6 +47,7 @@ iPad ohne Mod ─── POST /v1/rooms/<raum>/control ──▶ Team-Raum ──
 
 - Seite **Spiel** (`#/mod`), Bereich „Spiel und Server verbinden – ohne Befehle“ (`ServerPanel.tsx`, `serverClient.ts`): drei Schritte Spiel → Server → Kopplung, danach das Einstellungsformular aus dem Schema des Plugins, Teams, Raum, Pläne, gekoppelte Geräte (trennen/entfernen), Umbenennen.
 - Gerätekopplungen in `localStorage` `bauplaner.server.kopplungen` (wie der Mod-Schlüssel nur in diesem Browser). Die benutzte Nummer wird vor dem Senden gespeichert und mit dem gespeicherten Stand zusammengeführt (der gemerkte Raum bleibt).
+- **Weltkarte** (LINK-06): „⇪ Auf den Server legen“ beim gewählten Projekt exportiert die Revision und schickt sie als Steuernachricht `plan` mit Anker (Kartenlage) an den gekoppelten Server – über die Mod, wenn Minecraft auf dem Server läuft (bis 4 MB), sonst über den Team-Raum (bis 700 KB). Das Plugin prüft die Datei (`Plan.read`) und legt nur lesbare Pläne ab (`serverClient.planToServer`).
 - Reiter „Team“: „Planstand auf den Server legen“ geht über die Steuernachricht `team`, wenn der Server gekoppelt ist. „Team live“: „Server mit dem Raum verbinden“ (`room`) und merkt den Raum bei der Kopplung.
 
 ## 6. Zweiter Weg über den Team-Raum (LINK-05)
@@ -71,6 +72,6 @@ iPad ohne Mod ─── POST /v1/rooms/<raum>/control ──▶ Team-Raum ──
 ## 8. Tests
 
 - `LinkCoreTest` (Paper), `LiveLinkTest` (Mod-Kern), `tests/server-link.test.mjs` (Planer, gemeinsamer Vektor, Freigabe-Link), `tests/team-room.test.mjs` (Raum-Weiterleitung).
-- Browser: `tests/e2e/server-link.e2e.mjs` gegen den Mod-Simulator mit Plugin-Ersatz (PC 1400/390 px, iPad 820 px über einen Raum-Ersatz).
+- Browser: `tests/e2e/server-link.e2e.mjs` gegen den Mod-Simulator mit Plugin-Ersatz (PC 1400/390 px, iPad 820 px über einen Raum-Ersatz, dort auch Plan von der Weltkarte auf den Server). Mit `TEAM_ROOM_URL=https://bauplaner-team.team-room.workers.dev` läuft der iPad-Teil über den echten Team-Raum; ein WebSocket mit Serverschlüssel spielt das Plugin.
 - Echter Server: `scripts/test_bridge_paper_link.sh` – Paper 1.21.11, ein Protokoll-Client (`minecraft-protocol`) spricht den Teamkanal wie die Mod: Selbsteinrichtung, Nicht-OP abgewiesen, Kopplung, Einstellungen, Team, Wiederholung/falsche Unterschrift/fremder Server abgewiesen, Neustart, Gerät entfernen; mit `BAUPLANER_ROOM` zusätzlich Steuerung über einen echten Team-Raum (`npx wrangler dev`).
 - Spiel: `scripts/test_bridge_ingame.sh` klickt im echten Minecraft 26.3 „Planer zulassen“ mit der Maus.

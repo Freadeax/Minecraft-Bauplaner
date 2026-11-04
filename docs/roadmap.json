@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T08:42:48.661Z",
+  "updatedAt": "2026-11-04T08:50:13.176Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -8563,7 +8563,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T02:19:40.131Z",
+      "updatedAt": "2026-11-04T08:50:13.176Z",
       "area": "TEAM",
       "thread": "Anbindung von Planer, Mod und Server neu denken",
       "orphans": [],
@@ -8607,8 +8607,8 @@
         },
         {
           "id": "LINK-05-S05",
-          "title": "Team-Raum mit den neuen Nachrichten ausrollen.",
-          "done": false
+          "title": "Team-Raum mit den neuen Nachrichten ausrollen (04.11.2026, Version 0eb3b458, vom Team-Thread mit Philipps Zustimmung).",
+          "done": true
         }
       ],
       "acceptance": [
@@ -8626,13 +8626,17 @@
         {
           "path": "tests/team-room.test.mjs",
           "note": "Formprüfung, Weiterleitung, Zeitlimit, Obergrenze."
+        },
+        {
+          "path": "tests/e2e/server-link.e2e.mjs",
+          "note": "Mit TEAM_ROOM_URL gegen https://bauplaner-team.team-room.workers.dev: iPad-Weg Ende-zu-Ende grün (04.11.2026)."
         }
       ],
       "verification": {
         "state": "pending",
         "note": "Automatisch und gegen wrangler dev geprüft; Abnahme LINK-04 (Testplan) offen."
       },
-      "next": "Abnahme vom iPad.",
+      "next": "Abnahme vom iPad (Testplan LINK-04).",
       "philipp": [
         {
           "kind": "geraet",
@@ -8650,25 +8654,34 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T02:19:40.131Z",
+      "updatedAt": "2026-11-04T08:50:13.176Z",
       "area": "PLUGIN",
       "thread": "Anbindung von Planer, Mod und Server neu denken",
       "orphans": [],
       "id": "LINK-06",
-      "title": "Weitere Steuerung ohne Befehle: Plan-Upload und Anker aus dem Planer, Serveraufnahme (scan) per Steuernachricht, Befehle nur noch als Ausweg",
-      "status": "planned",
+      "title": "Weitere Steuerung ohne Befehle: Plan mit Anker von der Weltkarte auf den Server (umgesetzt), Serveraufnahme (scan) per Steuernachricht (offen)",
+      "status": "in_progress",
       "dependencies": [
         "LINK-05"
       ],
       "scope": [
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "apps/web/src/views/mod/ServerPanel.tsx",
+        "apps/web/src/views/mod/serverClient.ts",
+        "docs/TESTING.md",
+        "docs/architecture/AUTO_LINK.md",
         "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java",
-        "apps/web/src/views/mod/ServerPanel.tsx"
+        "scripts/bridge_paperlink.mjs",
+        "scripts/test_bridge_paper_link.sh",
+        "tests/e2e/modSimulator.mjs",
+        "tests/e2e/server-link.e2e.mjs"
       ],
       "steps": [
         {
           "id": "LINK-06-S01",
-          "title": "Plan-Upload und Anker im Planer.",
-          "done": false
+          "title": "Plan-Upload mit Anker aus der Weltkarte („⇪ Auf den Server legen“, über Mod oder Team-Raum).",
+          "done": true
         },
         {
           "id": "LINK-06-S02",
@@ -8679,12 +8692,21 @@
       "acceptance": [
         "Auch Pläne und Aufnahmen gehen ohne Befehl auf/vom Server."
       ],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "scripts/test_bridge_paper_link.sh",
+          "note": "Paper 1.21.11: Plan mit Anker per Steuernachricht abgelegt, kaputter Plan abgewiesen; mit BAUPLANER_ROOM gegen den echten Team-Raum (04.11.2026)."
+        },
+        {
+          "path": "tests/e2e/server-link.e2e.mjs",
+          "note": "iPad 820 px: Weltkarte → „Auf den Server legen“ über den Raum; mit TEAM_ROOM_URL gegen den echten Dienst grün."
+        }
+      ],
       "verification": {
         "state": "pending",
-        "note": "Noch nicht begonnen."
+        "note": "Plan-Upload automatisch und gegen echten Paper + Team-Raum geprüft; Serveraufnahme offen."
       },
-      "next": "Nach Abnahme von LINK-01…05.",
+      "next": "Serveraufnahme (scan) als Steueraktion; Abnahme LINK-05 (Testplan).",
       "philipp": []
     }
   ],
@@ -16087,6 +16109,43 @@
           "done": 4,
           "total": 6,
           "next": "Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T08:50:13.176Z",
+      "kind": "progress",
+      "items": [
+        "LINK-05",
+        "LINK-06"
+      ],
+      "summary": "iPad-Weg gegen den echten Team-Raum geprüft (Browsertest mit TEAM_ROOM_URL); LINK-06-S01: „⇪ Auf den Server legen“ auf der Weltkarte – Plan mit Anker per Steuernachricht über Mod oder Team-Raum, geprüft im Browser und auf echtem Paper 1.21.11 samt echtem Raum. Offen: Serveraufnahme per Steuernachricht.",
+      "files": [
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "apps/web/src/views/mod/serverClient.ts",
+        "docs/TESTING.md",
+        "docs/architecture/AUTO_LINK.md",
+        "docs/testing/TESTPLAN.md",
+        "scripts/bridge_paperlink.mjs",
+        "scripts/test_bridge_paper_link.sh",
+        "tests/e2e/modSimulator.mjs",
+        "tests/e2e/server-link.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "LINK-05",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Abnahme vom iPad (Testplan LINK-04)."
+        },
+        {
+          "id": "LINK-06",
+          "status": "in_progress",
+          "done": 1,
+          "total": 2,
+          "next": "Serveraufnahme (scan) als Steueraktion; Abnahme LINK-05 (Testplan)."
         }
       ]
     }

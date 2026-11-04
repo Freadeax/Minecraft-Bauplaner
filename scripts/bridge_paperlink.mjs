@@ -112,6 +112,7 @@ const signed = (pair, op, fields = {}, serverId = pair.serverId) => {
   const sig = createHmac('sha256', pair.key).update(`${pair.owner}\n${seq}\n${body}`).digest('base64url');
   return { owner: pair.owner, seq, body, sig };
 };
+const data_dir = () => data;
 const linkFile = () => JSON.parse(readFileSync(join(data, 'link.json'), 'utf8'));
 const config = () => readFileSync(join(data, 'config.yml'), 'utf8');
 
@@ -176,6 +177,19 @@ try {
   // 6. Team file and new name from the planner.
   const t = await boss.ask('link.ctl', signed(pair, 'team', { file: teamFile }));
   assert.ok(!t.error, t.error);
+  // LINK-06: a plan straight from the planner, with anchor (written by bridge_gametest.mjs prepare).
+  let planWay = '';
+  if (existsSync(join(work, 'plan.schem'))) {
+    const data = readFileSync(join(work, 'plan.schem')).toString('base64');
+    const planned = await boss.ask('link.ctl', signed(pair, 'plan', { name: 'burg-rev3.schem', data, dimension: 'minecraft:overworld', anchor: [40, -60, 8] }));
+    assert.ok(!planned.error, planned.error);
+    assert.match(planned.text, /liegt auf dem Server \(\d+×\d+×\d+\)\. Anker 40 -60 8 \(minecraft:overworld\)\./);
+    assert.ok(existsSync(join(data_dir(), 'plans', 'burg-rev3.schem')), 'Plan im Ordner plans');
+    const bad = await boss.ask('link.ctl', signed(pair, 'plan', { name: 'kaputt.schem', data: Buffer.from('kein plan').toString('base64') }));
+    assert.match(bad.error, /Plan nicht lesbar/);
+    assert.ok(!existsSync(join(data_dir(), 'plans', 'kaputt.schem')), 'kaputter Plan nicht abgelegt');
+    planWay = ', Plan mit Anker aus dem Planer (kaputter Plan abgewiesen)';
+  }
   const renamed = await boss.ask('link.ctl', signed(pair, 'rename', { name: 'LMNT Burgserver' }));
   assert.equal(renamed.name, 'LMNT Burgserver');
   const after = await boss.ask('link.ctl', signed(pair, 'status'));
@@ -234,7 +248,7 @@ try {
   assert.deepEqual(linkFile().owners, []);
   await again.quit();
   await stop();
-  console.log(`  Paper ${version} (Build ${build.id}): Server ohne Befehle – selbst eingerichtet, per Klick gekoppelt, 2 Einstellungen und ein Team per signierter Nachricht, Wiederholung/falsche Unterschrift/fremder Server/Nicht-OP abgewiesen, Neustart behält die Kopplung${roomWay}.`);
+  console.log(`  Paper ${version} (Build ${build.id}): Server ohne Befehle – selbst eingerichtet, per Klick gekoppelt, 2 Einstellungen und ein Team per signierter Nachricht, Wiederholung/falsche Unterschrift/fremder Server/Nicht-OP abgewiesen, Neustart behält die Kopplung${planWay}${roomWay}.`);
 } catch (e) {
   if (server && server.exitCode === null) server.kill('SIGKILL');
   throw e;

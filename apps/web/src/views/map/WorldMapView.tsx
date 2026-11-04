@@ -24,6 +24,7 @@ import type { MapDraft, MapHit, MapTool, MapVertex, PlanLayer } from './Overview
 import { LiveGamePanel } from './LiveGamePanel';
 import { GameProgressPanel, useGameProgress } from './GameProgress';
 import { liveApi, useLiveGame } from './liveClient';
+import { hasServerPairing, planToServer } from '../mod/serverClient';
 import { PlanItemEditor, PlanToolbar } from './PlanPanel';
 import { useWorldPlan } from './useWorldPlan';
 import { useMapHistory } from './useMapHistory';
@@ -565,6 +566,21 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
     } catch (e) { setNotice(errorText(e)); }
     finally { setSending(''); }
   };
+  /** LINK-06: the same revision export straight onto the paired server, anchored at the map position. */
+  const sendToServer = async (p: Project) => {
+    if (!p.world) return;
+    setSending(`server:${p.id}`);
+    try {
+      const dv = suggestDataVersion(p, library.versions).dataVersion ?? 5023;
+      const prepared = await prepareRevisionExport(p, library.versions, { ...LIVE_PLAN_EXPORT, dataVersion: dv });
+      if (prepared.created) await repo.saveProject(prepared.project, p.revision);
+      const out = prepared.output;
+      const msg = await planToServer(out.fileName, out.bytes, { dimension: p.world.dimension, origin: p.world.origin });
+      setNotice(`${msg} Revision ${out.revision.number}.`);
+      if (prepared.created) await load();
+    } catch (e) { setNotice(errorText(e)); }
+    finally { setSending(''); }
+  };
   const adoptHologram = async () => {
     if (!holo || !holoProject) return;
     if (holo.placement.turns || holo.placement.mirror) { setNotice('Das Hologramm ist im Spiel gedreht oder gespiegelt. Die Weltkarte plant Projekte ungedreht – drehe das Projekt im Editor oder setze das Hologramm im Spiel zurück.'); return; }
@@ -774,9 +790,15 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
               <a href={href({ view: 'project', projectId: entry.projectId, tab: 'bauen' })}>Bauanleitung</a>
               <LiveMapLink settings={live} entry={entry} />
             </div></header>
+          {!connected && project.world && hasServerPairing() && <div className="button-row map-game-actions">
+            <button className="secondary" disabled={!!sending || entry.blocks === 0} onClick={() => void sendToServer(project)}
+              title="Legt den aktuellen Stand als Plan auf den gekoppelten Server und speichert dort den Anker an dieser Lage – ohne Datei und ohne Befehl.">{sending === `server:${project.id}` ? 'Wird übertragen …' : '⇪ Auf den Server legen'}</button>
+          </div>}
           {connected && <div className="button-row map-game-actions">
             <button className="primary" disabled={!!sending || entry.blocks === 0} onClick={() => void sendToGame(project)}
               title="Exportiert den aktuellen Stand als Revision (.schem) und blendet ihn im Spiel genau an dieser Lage als Hologramm ein.">{sending === project.id ? 'Wird gesendet …' : '▶ Ins Spiel senden'}</button>
+            {hasServerPairing() && <button className="secondary" disabled={!!sending || entry.blocks === 0} onClick={() => void sendToServer(project)}
+              title="Legt den aktuellen Stand als Plan auf den gekoppelten Server und speichert dort den Anker an dieser Lage – ohne Datei und ohne Befehl.">{sending === `server:${project.id}` ? 'Wird übertragen …' : '⇪ Auf den Server legen'}</button>}
             <button className="secondary" disabled={!player} onClick={() => void placeAtPlayer(project)} title="Setzt den Projektursprung auf den Block, auf dem du im Spiel stehst.">Hier platzieren, wo ich stehe</button>
             {holoProject?.id === project.id && holoMatch && holoMatch !== 'same' && <span className="warn-text small">Im Spiel: {holoMatch === 'moved' ? 'an anderer Stelle' : holoMatch === 'turned' ? 'gedreht/gespiegelt' : 'andere Dimension'}</span>}
           </div>}

@@ -925,3 +925,9 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Spiel: `scripts/test_bridge_ingame.sh` (Fabric 26.3) klickt „Planer zulassen“ mit der Maus; Schlüssel kommt genau einmal.
 - Grenzen: Der Protokoll-Client kann Paper 26.3 noch nicht (Bibliothek bis 26.1), daher Servertest auf 1.21.11; kein Test mit Philipps echtem Server und Modpack; Plan-Upload aus dem Planer (LINK-06) offen.
 - Nachtrag nach Rebase auf PROD-01…04 (04.11.2026): `npm run check` 823/823 grün; Browser `server-link`, `team-live`, `team-room`, `mod-download`, `livelink` grün (der überflüssige Link „Mod herunterladen“ im Bereich „Spiel und Server verbinden“ wurde entfernt, er zeigte auf dieselbe Seite und brach den Download-Test).
+
+## LINK-05/06 · iPad-Weg gegen den echten Team-Raum, Plan auf den Server · 04.11.2026 · Claude
+
+- `TEAM_ROOM_URL=https://bauplaner-team.team-room.workers.dev node --test tests/e2e/server-link.e2e.mjs`: 3/3 grün – iPad 820 px über den echten Dienst (Freigabe-Link, Einstellung, Plan von der Weltkarte mit Anker, Server offline klar gemeldet); ein WebSocket mit Serverschlüssel spielt das Plugin.
+- `BAUPLANER_ROOM=https://bauplaner-team.team-room.workers.dev scripts/test_bridge_paper_link.sh`: Paper 1.21.11 – zusätzlich Plan mit Anker per Steuernachricht abgelegt, kaputter Plan abgewiesen und nicht abgelegt; Steuerung über den echten Raum.
+- Grenzen: Serveraufnahme per Steuernachricht noch offen (LINK-06-S02); Planlimit über den Raum 700 KB, über die Mod 4 MB.

@@ -140,3 +140,43 @@ export async function currentPairedServer(): Promise<{ link: GameLink; info: Ser
     return info.way === 'live' && pairing ? { link, info, pairing } : null;
   } catch { return null; }
 }
+
+/** Largest plan the plugin takes per control message (ServerLink.MAX_PLAN_BYTES) and what fits through the team room (1 MB message, base64). */
+export const PLAN_LIMIT_MOD = 4 * 1024 * 1024;
+export const PLAN_LIMIT_ROOM = 700 * 1024;
+
+const toBase64 = (bytes: Uint8Array): string => {
+  let s = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(s);
+};
+
+/**
+ * A paired server this browser can reach right now: through the mod when the game is on that server,
+ * otherwise through the team room of a paired server (LINK-05). Null when neither works.
+ */
+export async function reachableServer(): Promise<{ pairing: ServerPairing; via: 'mod' | 'room'; send: (op: ServerOp, fields?: Readonly<Record<string, unknown>>) => Promise<Record<string, unknown>> } | null> {
+  const viaMod = await currentPairedServer();
+  if (viaMod) return { pairing: viaMod.pairing, via: 'mod', send: (op, fields) => control(viaMod.link, viaMod.pairing, op, fields) };
+  for (const p of Object.values(readPairings())) {
+    if (!p.room) continue;
+    try { if (await roomServerOnline(p.room)) return { pairing: p, via: 'room', send: (op, fields) => controlViaRoom(p, op, fields) }; } catch { /* try the next */ }
+  }
+  return null;
+}
+
+/**
+ * LINK-06: puts a plan (.schem) on the paired server and, with a placement, stores its anchor there – no file
+ * copy, no command. Returns the plugin's answer text.
+ */
+export async function planToServer(fileName: string, bytes: Uint8Array, placement?: { dimension: string; origin: readonly [number, number, number] }): Promise<string> {
+  const target = await reachableServer();
+  if (!target) throw new LiveError('Kein gekoppelter Server erreichbar. Auf der Seite „Spiel“ den Server koppeln (Minecraft mit Mod auf dem Server) oder ihn im Projekt mit dem Team-Raum verbinden.', 409);
+  const limit = target.via === 'mod' ? PLAN_LIMIT_MOD : PLAN_LIMIT_ROOM;
+  if (bytes.length > limit) throw new LiveError(`Der Plan ist ${(bytes.length / 1024 / 1024).toLocaleString('de-DE', { maximumFractionDigits: 1 })} MB groß; ${target.via === 'mod' ? 'über die Mod' : 'über den Team-Raum'} gehen höchstens ${(limit / 1024 / 1024).toLocaleString('de-DE', { maximumFractionDigits: 1 })} MB.${target.via === 'room' ? ' Mit Minecraft auf dem Server geht es über die Mod (bis 4 MB).' : ''}`, 413);
+  const answer = await target.send('plan', { name: fileName, data: toBase64(bytes), ...(placement && { dimension: placement.dimension, anchor: [...placement.origin] }) });
+  return `„${target.pairing.name}“${target.via === 'room' ? ' (über den Team-Raum)' : ''}: ${typeof answer.text === 'string' ? answer.text : 'Plan übernommen.'}`;
+}
+
+/** Whether this browser is paired with any server (to offer server actions at all). */
+export const hasServerPairing = (): boolean => Object.keys(readPairings()).length > 0;

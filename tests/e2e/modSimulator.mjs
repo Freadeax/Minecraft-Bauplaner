@@ -65,7 +65,7 @@ export function startModSimulator(port, options = {}) {
   const plugin = state.plugin;
   const pluginStatus = () => ({ serverId: plugin.serverId, name: plugin.name, plugin: '0.12.0-sim', minecraft: '26.3', protocol: 1,
     owners: plugin.owners.map(o => ({ id: o.id, name: o.name, seq: o.seq, created: '', by: 'Philipp' })), settings: plugin.settings, schema: plugin.schema,
-    teams: plugin.teams, rooms: plugin.rooms, plans: [], worlds: ['minecraft:overworld'], online: 1 });
+    teams: plugin.teams, rooms: plugin.rooms, plans: (plugin.plans ?? []).map(x => x.name), worlds: ['minecraft:overworld'], online: 1 });
   /** Same checks as LinkCore.verify + ServerLink.control in the plugin. */
   const pluginControl = m => {
     const o = plugin.owners.find(x => x.id === m.owner);
@@ -87,6 +87,12 @@ export function startModSimulator(port, options = {}) {
     if (b.op === 'team') { plugin.teams = [{ teamId: b.file.teamId, name: b.file.name, events: (b.file.events ?? []).length, sections: (b.file.sections ?? []).length }]; return { ok: true, text: `Team „${b.file.name}“ geladen.` }; }
     if (b.op === 'room') { plugin.rooms = [`verbunden mit ${new URL(b.link.replace('#/team/beitreten?', '?')).searchParams.get('raum') ?? 'Raum'}`]; return { ok: true, text: 'Mit dem Team-Raum verbunden.' }; }
     if (b.op === 'rename') { plugin.name = b.name; return { ...pluginStatus(), ok: true, text: `Server heißt jetzt „${b.name}“.` }; }
+    if (b.op === 'plan') {
+      const bytes = Buffer.from(String(b.data ?? ''), 'base64');
+      if (!bytes.length) return { error: 'Plan fehlt.' };
+      plugin.plans = [...(plugin.plans ?? []).filter(x => x.name !== b.name), { name: b.name, magic: bytes.subarray(0, 2).toString('hex'), bytes: bytes.length, dimension: b.dimension ?? null, anchor: b.anchor ?? null }];
+      return { ok: true, file: b.name, text: `Plan „${b.name.replace(/\.schem$/, '')}“ liegt auf dem Server.${b.anchor ? ` Anker ${b.anchor.join(' ')} (${b.dimension}).` : ''}` };
+    }
     if (b.op === 'invite') { const n = { id: `own_${b64url(randomBytes(6))}`, name: b.name, key: b64url(randomBytes(32)), seq: 0 }; plugin.owners.push(n); return { ok: true, serverId: plugin.serverId, name: plugin.name, owner: n.id, key: n.key, text: `Weiteres Gerät „${b.name}“ freigegeben.` }; }
     if (b.op === 'forget') { plugin.owners = plugin.owners.filter(x => x.id !== b.owner); return { ...pluginStatus(), ok: true, text: 'Gerät entfernt.' }; }
     return { error: 'Unbekannte Steueraktion.' };

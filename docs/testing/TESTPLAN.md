@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 114 Fälle in 13 Bereichen, davon 56 Kernfälle.
+Umfang: 115 Fälle in 13 Bereichen, davon 56 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -209,4 +209,5 @@ Planer, Mod und Paper-Plugin verbinden sich per Klick; der Server wird aus dem P
 | LINK-01 | Server ohne Befehle koppeln ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/mod)) | kern | 1. Paper-Server mit Plugin 0.12 starten (nichts einstellen). Als OP mit der Mod beitreten: Chat-Hinweis lesen.<br>2. J → „Teambau erlauben“.<br>3. Im Planer #/mod, Bereich „Spiel und Server verbinden“: „Server koppeln“. | Servername und Plugin-Version erscheinen, danach „dieser Browser steuert den Server“; im Serverordner steht plugins/BauplanerBridge/link.json mit einem Gerät. Kein Befehl getippt. |
 | LINK-02 | Server-Einstellungen aus dem Planer ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/mod)) | kern | 1. Gekoppelt: „Bauen in fremden Abschnitten“ auf „sperren“, „Übernehmen“.<br>2. Im Spiel in einem fremden Abschnitt einen Block setzen. | Meldung „1 Einstellung übernommen“; das Setzen wird verhindert. config.yml des Plugins zeigt den neuen Wert. |
 | LINK-03 | Team und Team-Raum per Knopf ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/mod)) | vertieft | 1. Im Projekt Reiter „Team“ → „Planstand auf den Server legen“.<br>2. Unter „Team live“ → „Server mit dem Raum verbinden“. | Beides ohne Datei und ohne Befehl; #/mod zeigt Team und Raum beim Server. |
+| LINK-05 | Plan von der Weltkarte auf den Server ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/karte)) | vertieft | 1. Gekoppelt (Mod auf dem Server oder Team-Raum): Weltkarte → Projekt wählen → „⇪ Auf den Server legen“.<br>2. Auf dem Server /bp plaene ansehen (nur zur Kontrolle). | Meldung „Plan … liegt auf dem Server … Anker …“; der Plan steht in plugins/BauplanerBridge/plans, ohne Datei kopiert zu haben. |
 | LINK-04 | Vom iPad ohne Mod steuern ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/mod)) | vertieft | 1. Am PC (#/mod, gekoppelt, Server mit Raum verbunden): „Weiteres Gerät freigeben (z. B. iPad)“ → Link erstellen.<br>2. Link auf dem iPad öffnen, eine Einstellung ändern.<br>3. Am PC das iPad wieder „entfernen“. | iPad zeigt „über den Team-Raum“ und ändert die Einstellung; nach dem Entfernen meldet es „nicht (mehr) gekoppelt“. |

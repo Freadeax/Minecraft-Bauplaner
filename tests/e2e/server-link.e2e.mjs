@@ -8,12 +8,33 @@ import http from 'node:http';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { startModSimulator } from './modSimulator.mjs';
+import { openSampleProject } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
 const PORT = 4318, MOD_PORT = 47733, ROOM_PORT = 47734, BASE = `http://127.0.0.1:${PORT}/Minecraft-Bauplaner/`;
-const ROOM = { url: `http://127.0.0.1:${ROOM_PORT}`, room: 'r_simroom0001', key: 'simroommemberkey0123456789' };
-let server, browser, mod, room, roomCalls = [], roomServerOnline = true, invite = '';
+// TEAM_ROOM_URL=https://bauplaner-team.team-room.workers.dev: the iPad part goes through the real deployed team room;
+// a WebSocket with the server key stands in for the Paper plugin and answers with the plugin stand-in.
+const REAL = process.env.TEAM_ROOM_URL?.replace(/\/+$/, '');
+let ROOM = { url: `http://127.0.0.1:${ROOM_PORT}`, room: 'r_simroom0001', key: 'simroommemberkey0123456789' };
+let server, browser, mod, room, roomCalls = [], roomServerOnline = true, invite = '', serverKey = '', serverWs = null;
+
+/** The Paper plugin side of the real room: hello with the server key, answers control frames (RoomLink.control). */
+async function connectServerSocket() {
+  const ws = new WebSocket(`${REAL.replace(/^http/, 'ws')}/v1/rooms/${ROOM.room}/live`);
+  await new Promise((resolve, reject) => { ws.onopen = resolve; ws.onerror = () => reject(new Error('Raum-WebSocket nicht erreichbar')); });
+  ws.onmessage = e => {
+    const m = JSON.parse(e.data);
+    if (m.type === 'control') ws.send(JSON.stringify({ type: 'control.answer', id: m.id, answer: mod.pluginControl(m) }));
+  };
+  ws.send(JSON.stringify({ type: 'hello', key: serverKey, member: 'server', device: 'sim-plugin', where: 'server' }));
+  for (let i = 0; i < 40; i++) {
+    const info = await (await fetch(`${REAL}/v1/rooms/${ROOM.room}`, { headers: { Authorization: `Bearer ${ROOM.key}` } })).json();
+    if (info.serverOnline) return ws;
+    await new Promise(r => setTimeout(r, 250));
+  }
+  throw new Error('Simulierter Server im echten Raum nicht online');
+}
 
 /** Team room stand-in (services/team-room LINK-05): passes control messages to the plugin stand-in behind the mod simulator. */
 function startRoom() {
@@ -44,10 +65,15 @@ before(async () => {
     await new Promise(r => setTimeout(r, 200));
   }
   mod = await startModSimulator(MOD_PORT, { protocol: 2, features: ['scan', 'marks2', 'players', 'bigplans', 'team', 'pairask', 'server'] });
-  room = await startRoom();
+  if (REAL) {
+    const created = await (await fetch(`${REAL}/v1/rooms`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ teamId: 'team_linktest', name: 'LINK-Browsertest' }) })).json();
+    ROOM = { url: REAL, room: created.room, key: created.memberKey };
+    serverKey = created.serverKey;
+    serverWs = await connectServerSocket();
+  } else room = await startRoom();
   browser = await chromium.launch();
 });
-after(async () => { await browser?.close(); await mod?.close(); room?.close(); server?.kill(); });
+after(async () => { serverWs?.close(); await browser?.close(); await mod?.close(); room?.close(); server?.kill(); });
 
 for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844 }]) {
   test(`Server ohne Befehle: Spiel per Klick, Server koppeln, Einstellung ändern (${viewport.width}px)`, async () => {
@@ -142,13 +168,30 @@ test('iPad ohne Mod: Freigabe-Link öffnen, Server über den Team-Raum einstelle
   await panel.getByRole('button', { name: '1 Änderung übernehmen' }).click();
   await panel.getByText('1 Einstellung(en) übernommen.').waitFor();
   assert.equal(mod.state.plugin.settings['lager.modus'], 'hinweis');
-  assert.ok(roomCalls.includes(`POST /v1/rooms/${ROOM.room}/control`), 'über den Raum gesendet');
+  if (!REAL) assert.ok(roomCalls.includes(`POST /v1/rooms/${ROOM.room}/control`), 'über den Raum gesendet');
   const owners = mod.state.plugin.owners.map(o => o.name);
   assert.deepEqual(owners.slice(-1), ['iPad']);
   await panel.getByText('iPad (dieses Gerät)').waitFor();
 
+  // LINK-06: a project from the world map onto the server, anchored at its map position (no mod on this device).
+  await p.goto(`${BASE}#/`);
+  await openSampleProject(p);
+  await p.waitForURL(/#\/projekt\//);
+  await p.goto(`${BASE}#/karte`);
+  await p.locator('.map-page[data-map-state=ready]').waitFor({ timeout: 30_000 });
+  await p.getByRole('button', { name: 'Platzieren' }).first().click();
+  await p.getByRole('status').filter({ hasText: 'Auf die Weltkarte gesetzt' }).waitFor();
+  await p.getByRole('complementary', { name: 'Projekte auf der Karte' }).getByRole('button', { name: /Burgmauer/ }).first().click();
+  await p.getByRole('button', { name: '⇪ Auf den Server legen' }).click();
+  await p.getByRole('status').filter({ hasText: /„LMNT Testserver“ \(über den Team-Raum\): Plan „burgmauer-beispiel-rev\d+“ liegt auf dem Server\. Anker -?\d+ -?\d+ -?\d+ \(minecraft:overworld\)\. Revision \d+\./ }).waitFor();
+  const plan = mod.state.plugin.plans.at(-1);
+  assert.equal(plan.magic, '1f8b', 'gzip-komprimierte .schem');
+  assert.equal(plan.anchor.length, 3);
+  await p.goto(`${BASE}#/mod`);
+
   // Server offline: a clear message instead of a hang.
   roomServerOnline = false;
+  if (REAL) { serverWs.close(); serverWs = null; await new Promise(r => setTimeout(r, 1500)); }
   await p.reload();
   await panel.getByRole('button', { name: '„LMNT Testserver“ einstellen' }).click();
   await panel.getByText('Der Server ist gerade nicht mit dem Team-Raum verbunden').waitFor();

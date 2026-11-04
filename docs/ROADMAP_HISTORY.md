@@ -4807,3 +4807,27 @@ Roadmap-Abgleich 04.11.: Produktion an den Produktions-Thread, COOP-06 an den Pl
 | GAME-11 | ⏳ Offen | 0/4 | Versionsmatrix mit Philipp abstimmen (welche Versionen braucht er wirklich?). |
 | QA-04 | 🧩 Implementiert · Abnahme offen | 4/6 | Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist. |
 
+## 2026-11-04T08:50:13.176Z · progress
+
+**Aufgaben:** LINK-05, LINK-06
+
+iPad-Weg gegen den echten Team-Raum geprüft (Browsertest mit TEAM_ROOM_URL); LINK-06-S01: „⇪ Auf den Server legen“ auf der Weltkarte – Plan mit Anker per Steuernachricht über Mod oder Team-Raum, geprüft im Browser und auf echtem Paper 1.21.11 samt echtem Raum. Offen: Serveraufnahme per Steuernachricht.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LINK-05 | 🧩 Implementiert · Abnahme offen | 5/5 | Abnahme vom iPad (Testplan LINK-04). |
+| LINK-06 | 🚧 In Arbeit | 1/2 | Serveraufnahme (scan) als Steueraktion; Abnahme LINK-05 (Testplan). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/mod/serverClient.ts`
+- `docs/TESTING.md`
+- `docs/architecture/AUTO_LINK.md`
+- `docs/testing/TESTPLAN.md`
+- `scripts/bridge_paperlink.mjs`
+- `scripts/test_bridge_paper_link.sh`
+- `tests/e2e/modSimulator.mjs`
+- `tests/e2e/server-link.e2e.mjs`
+
