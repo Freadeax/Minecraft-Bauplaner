@@ -4776,3 +4776,17 @@ Nächste Aktion nachgetragen: Steuerkanal und Kopplung ohne Befehl sind mit LINK
 |---|---|---:|---|
 | COOP-07 | 🧩 Implementiert · Abnahme offen | 6/7 | Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl umgesetzt (LINK-05). |
 
+## 2026-11-04T02:26:45.477Z · progress
+
+**Aufgaben:** LINK-04
+
+Nachtrag: Selbstverweis „Mod herunterladen“ im Server-Bereich entfernt (Download-Test), Prüfstand nach Rebase in TESTING.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LINK-04 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme durch Philipp. |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+

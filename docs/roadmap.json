@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T02:20:00.609Z",
+  "updatedAt": "2026-11-04T02:26:45.477Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "PERF-02",
@@ -8466,7 +8466,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T02:19:40.131Z",
+      "updatedAt": "2026-11-04T02:26:45.477Z",
       "area": "TEAM",
       "thread": "Anbindung von Planer, Mod und Server neu denken",
       "orphans": [],
@@ -15975,6 +15975,26 @@
           "done": 6,
           "total": 7,
           "next": "Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl umgesetzt (LINK-05)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T02:26:45.477Z",
+      "kind": "progress",
+      "items": [
+        "LINK-04"
+      ],
+      "summary": "Nachtrag: Selbstverweis „Mod herunterladen“ im Server-Bereich entfernt (Download-Test), Prüfstand nach Rebase in TESTING.",
+      "files": [
+        "docs/TESTING.md"
+      ],
+      "snapshot": [
+        {
+          "id": "LINK-04",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme durch Philipp."
         }
       ]
     }
