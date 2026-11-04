@@ -52,8 +52,10 @@ Das Set `packages/domain/src/build/sets/grossbauten.ts` liefert die Wahrzeichen,
 | Arena (`bld_gross_arena`) | 45 × 15 × 35 | Ovale Bogenmauer, Umgang in zwei Geschossen, Sitzreihen, vier Tore, Ehrenloge |
 | Großer Marktplatz (`bld_gross_marktplatz`) | 33 × 8 × 33 | Brunnen, acht Stände mit Waren, Linden, Marktkreuz |
 | Stadttor mit Mauer (`bld_gross_stadttor`) | 37 × 29 × 15 | Torhaus mit Fallgitter, Rundtürme, Wehrgang, offene Mauerenden zum Anbauen |
+| Klosteranlage mit Kreuzgang (`bld_gross_kloster`) | 41 × 35 × 39 | Kirche mit Glockenturm, Kreuzgang mit Arkaden und Kräutergarten, Kapitelsaal, Bibliothek, Schlafsaal, Refektorium, Küche, Bienenstöcke |
+| Universität mit Sternwarte (`bld_gross_universitaet`) | 39 × 35 × 35 | U-Form um einen Hof, Hörsaal mit ansteigenden Bänken, Bibliotheks- und Laborflügel, Studierzimmer, Sternwarte mit Kupferkuppel |
 
-Alle sechs bestehen die Blocklogik-Prüfung (Halt, Verbindungen, Zustände, Drehen und Spiegeln). Die Hauptstadt nutzt sie in den Quartieren „Residenz“ und „Großer Markt“ (Phase 5).
+Alle acht bestehen die Blocklogik-Prüfung (Halt, Verbindungen, Zustände, Drehen und Spiegeln). Die Hauptstadt nutzt sie in den Quartieren „Residenz“ und „Großer Markt“ (Phase 5). Die Großprojekte „Residenzstadt mit Schlosspark“ und „Klosterdorf im Tal“ bauen auf Schloss, Universität, Kloster, Marktplatz und Stadttor auf (S07).
 
 ## Prüfung
 

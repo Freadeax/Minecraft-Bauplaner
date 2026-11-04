@@ -936,3 +936,11 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `scripts/test_bridge_paper_lager.sh` auf echten Paper-Servern 1.18.2 (388), 1.21.4 (232), 26.3 (240): Kürbistruhe markiert, `lager farm … Kürbisfarm` (Farm aus `farms` der Serverdatei), Trichter legt 6 Kürbisse ein, `info` zeigt „6 Items in N min geladen“, beim Herunterfahren ein `store.yield`; Planer-Faltung: Zweck ertrag, Farm, yieldIn, eine Meldung, höchstens 2 Trichterbuchungen (gebündelt). Alle bisherigen Lagerschritte weiter grün; `test_bridge_paper_team.sh 26.3` grün.
 - Gradle `:paper:build`, `:mod-core:test` (Befehlskatalog mit `lager farm`, Zweck ertrag) grün.
 - Grenzen: Laufzeit über eine echte Farm und Spielereinlagen von Hand nur auf Philipps Server (LAGER-10); die Rate im Reiter „Produktion“ baut PROD-05.
+
+
+## GROSS-01-S07 · Bibliothek Runde 2 · 04.11.2026 · Claude
+
+- Blocklogik: Klosteranlage und Universität ohne Befund (Halt, Verbindungen, Zustände, Drehen/Spiegeln).
+- `tests/grossprojekte.test.mjs`: 11/11 bestanden mit 13 Großprojekten; Residenzstadt und Klosterdorf je 27 Gebäude ohne Voxelkonflikt.
+- Sichtprüfung im Browser: beide Großbauten in 3D (Iso, Nord, Draufsicht), beide Großprojekte im Planer mit Lageplan.
+- Grenzen: Abnahme im Spiel offen (BIB-13).

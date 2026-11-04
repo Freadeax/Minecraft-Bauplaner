@@ -424,6 +424,179 @@ function stadttor() {
   return p.payload();
 }
 
+// ------------------------------------------------------------ Kloster
+const KLOSTER: Look = lookWith(LOOKS.stein, {
+  base: [['stone_bricks', 5], ['mossy_stone_bricks', 2], ['cobblestone', 1], ['cracked_stone_bricks', 1]], baseStairs: 'stone_brick_stairs', baseSlab: 'stone_brick_slab', baseWall: 'stone_brick_wall',
+  wall: [['stone_bricks', 4], ['andesite', 2], ['tuff', 1], ['mossy_stone_bricks', 1]], frame: 'stripped_spruce_log',
+  roof: [['deepslate_tiles', 4], ['cracked_deepslate_tiles', 1]], roofStairs: 'deepslate_tile_stairs', roofSlab: 'deepslate_tile_slab',
+  trim: 'spruce', shutter: 'spruce', door: 'spruce', floor: 'spruce_planks',
+});
+
+/** Monastery: church with a bell tower, three ranges around a cloister walk with an arcade and herb garden, refectory, kitchen, library, chapter house, dormitory, beehives and an orchard. */
+function kloster() {
+  const p = new Plot([41, 2, 39]), l = KLOSTER;
+  ground(p, [['grass_block', 1]], 131);
+  for (let x = 0; x < 41; x++) for (let z = 0; z < 39; z++) put(p, x, 0, z, 'grass_block', grass());
+  // Church on the west side: nave with an open roof, door to the north.
+  const church: Rect = { x0: 2, z0: 6, x1: 12, z1: 34 };
+  const hc = house(p, l, { at: church, storeys: [{ h: 9, kind: 'stein' }], openCeiling: true, roof: { kind: 'sattel', ridge: 'z', overhang: 1, pitch: 'steil' },
+    door: { side: 'north', at: 7 }, windowEvery: 4, windowH: 4, noShutters: true, seed: 131 });
+  for (let x = church.x0 + 1; x < church.x1; x++) for (let z = church.z0 + 1; z < church.z1; z++) put(p, x, 0, z, (x + z) % 2 ? 'polished_andesite' : 'stone_bricks');
+  for (let z = 12; z <= 30; z += 2) for (const x of [4, 5, 9, 10]) chair(p, x, 1, z, 'spruce', 'south');
+  for (let x = 5; x <= 9; x++) put(p, x, 1, 32, 'stone_brick_slab', slab('top'));
+  put(p, 7, 1, 33, 'chiseled_stone_bricks'); put(p, 7, 2, 33, 'lectern', lectern('north'));
+  for (const x of [5, 9]) put(p, x, 2, 32, 'candle', { candles: '3', lit: F, waterlogged: F });
+  for (const z of [11, 19, 27]) for (const x of [3, 11]) pedestalLamp(p, x, 1, z, 'chiseled_stone_bricks');
+  rug(p, 7, 8, 7, 31, 1, 'red');
+  // Bell tower at the north-west corner of the church.
+  const T: Rect = { x0: 2, z0: 1, x1: 6, z1: 6 }, top = Math.max(20, hc.roofTop + 3);
+  for (let y = 1; y <= top; y++) for (let x = T.x0; x <= T.x1; x++) for (let z = T.z0; z <= T.z1; z++) {
+    const edge = x === T.x0 || x === T.x1 || z === T.z0 || z === T.z1;
+    if (z === T.z1 && y <= 9) continue;
+    if (edge) put(p, x, y, z, pick(l.base, x, y, z, 132)); else p.air(x, y, z);
+  }
+  for (const y of [top - 4]) for (let x = T.x0 + 1; x < T.x1; x++) for (let z = T.z0 + 1; z < T.z1; z++) put(p, x, y, z, 'spruce_planks');
+  for (let y = top - 3; y <= top - 1; y++) for (const [x, z] of [[4, T.z0], [T.x0, 3], [T.x1, 3]] as const) p.air(x, y, z);
+  for (let x = T.x0 + 1; x < T.x1; x++) for (let z = T.z0 + 1; z < T.z1; z++) put(p, x, top, z, 'spruce_planks');
+  put(p, 4, top - 1, 3, 'bell', bell('north', 'ceiling'));
+  for (let y = 1; y <= 3; y++) p.air(4, y, T.z1);
+  ladderColumn(p, 4, 3, 1, top - 4);
+  const tr = pitchedRoof(p, l, { walls: T, y: top + 1, kind: 'walm', ridge: 'z', overhang: 1, pitch: 'steil', seed: 133 });
+  put(p, 4, tr + 1, 3, 'lightning_rod', { facing: 'up', powered: F, waterlogged: F });
+  // Ranges around the cloister: north (chapter house, library above), east (dormitory), south (refectory and kitchen).
+  const N: Rect = { x0: 13, z0: 8, x1: 37, z1: 15 };
+  const h = house(p, l, { at: N, storeys: [{ h: 5, kind: 'stein' }, { h: 4, kind: 'wand' }],
+    wings: [{ at: { x0: 30, z0: 8, x1: 37, z1: 34 }, ridge: 'z' }, { at: { x0: 13, z0: 27, x1: 37, z1: 34 }, ridge: 'x' }],
+    roof: { kind: 'sattel', ridge: 'x', overhang: 1, pitch: 'steil' }, door: { side: 'north', at: 21 }, windowEvery: 3, windowH: 2, seed: 134 });
+  const [f0, f1] = [h.floors[0]! + 1, h.floors[1]! + 1];
+  // Passages from the ranges into the cloister and from the church into the ranges.
+  for (const [x, z] of [[21, N.z1], [33, 26], [33, 27], [21, 27], [30, 20], [13, 12], [12, 12], [13, 30], [12, 30]] as const) for (let y = 1; y <= 2; y++) p.air(x, y, z);
+  for (let y = 1; y <= 2; y++) { p.air(30, y, 21); }
+  // Cloister: court x 14..29, z 16..26 with a covered walk around a herb garden and a well.
+  const C: Rect = { x0: 13, z0: 16, x1: 29, z1: 26 };
+  for (let x = C.x0; x <= C.x1; x++) for (let z = C.z0; z <= C.z1; z++) {
+    const walk = x <= C.x0 + 1 || x >= C.x1 - 1 || z <= C.z0 + 1 || z >= C.z1 - 1;
+    if (walk) {
+      put(p, x, 0, z, 'polished_andesite'); put(p, x, 4, z, 'stone_brick_slab', slab('bottom'));
+      const inner = (x === C.x0 + 1 || x === C.x1 - 1 || z === C.z0 + 1 || z === C.z1 - 1) && x > C.x0 && x < C.x1 && z > C.z0 && z < C.z1;
+      if (inner && (x + z) % 2 === 0) for (let y = 1; y <= 3; y++) put(p, x, y, z, y === 3 ? 'stone_bricks' : 'stone_brick_wall');
+      else if (inner) put(p, x, 3, z, 'stone_brick_stairs', stairs(x === C.x0 + 1 ? 'west' : x === C.x1 - 1 ? 'east' : z === C.z0 + 1 ? 'north' : 'south', 'top'));
+    } else {
+      const path = x === 21 || z === 21;
+      put(p, x, 0, z, path ? 'gravel' : 'grass_block', path ? {} : grass());
+      if (!path && (x * 3 + z) % 4 === 0) put(p, x, 1, z, ['allium', 'azure_bluet', 'cornflower', 'lily_of_the_valley'][(x + z) % 4]!);
+    }
+  }
+  for (const [x, z] of [[14, 17], [28, 17], [14, 25], [28, 25]] as const) hangLantern(p, null, x, 3, z);
+  p.disc(21, 21, 0, 1, 'stone_bricks'); put(p, 21, 0, 21, 'water', water());
+  for (const [dx, dz] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]] as const) put(p, 21 + dx, 1, 21 + dz, 'stone_brick_wall');
+  for (const [dx, dz] of [[1, 1], [-1, 1], [1, -1], [-1, -1]] as const) for (let y = 2; y <= 3; y++) put(p, 21 + dx, y, 21 + dz, 'spruce_fence');
+  for (let dx = -1; dx <= 1; dx++) for (let dz = -1; dz <= 1; dz++) put(p, 21 + dx, 4, 21 + dz, 'spruce_slab', slab('bottom'));
+  // North range: chapter house (benches along the walls), library upstairs.
+  for (let x = 15; x <= 28; x++) { if (x !== 21) { chair(p, x, f0, 9, 'spruce', 'north'); } }
+  p.set(22, f0, 12, 'lectern', lectern('north'));
+  hangLantern(p, l, 18, f1 - 2, 12); hangLantern(p, l, 25, f1 - 2, 12);
+  for (let x = 14; x <= 28; x += 2) for (const z of [9, 14]) { p.set(x, f1, z, 'bookshelf'); p.set(x, f1 + 1, z, 'bookshelf'); }
+  for (const x of [17, 23]) { table(p, x, f1, 11, 'spruce'); chair(p, x, f1, 12, 'spruce', 'south'); }
+  p.set(26, f1, 11, 'lectern', lectern('south'));
+  // East range: dormitory upstairs, infirmary below.
+  for (let z = 17; z <= 31; z += 3) { bed(p, 32, f1, z, 'brown', 'west'); p.set(36, f1, z, 'chest', chest('west')); }
+  for (let z = 18; z <= 30; z += 4) { bed(p, 36, f0, z, 'white', 'east'); p.set(31, f0, z, 'brewing_stand', { has_bottle_0: F, has_bottle_1: F, has_bottle_2: F }); }
+  for (const z of [14, 24, 32]) { hangLantern(p, l, 34, f1 - 2, z); }
+  hangLantern(p, l, 34, h.ceiling - 1, 22);
+  // South range: refectory with a long table, kitchen at the east end.
+  longTable(p, 15, 30, 26, 30, f0, 'spruce_slab');
+  for (let x = 15; x <= 26; x += 1) { chair(p, x, f0, 29, 'spruce', 'north'); chair(p, x, f0, 31, 'spruce', 'south'); }
+  p.set(20, f0, 33, 'lectern', lectern('north'));
+  for (let x = 28; x <= 29; x++) for (const z of [28, 33]) p.set(x, f0, z, 'smoker', furnace(z === 28 ? 'south' : 'north'));
+  p.set(28, f0, 30, 'cauldron'); p.set(29, f0, 31, 'barrel', barrel('up')); p.set(28, f0, 31, 'crafting_table');
+  for (const x of [18, 24]) hangLantern(p, l, x, f1 - 2, 30);
+  for (const [x, z] of [[15, 13], [35, 32]] as const) ladderColumn(p, x, z, f0, h.floors[1]!);
+  // Grounds: bee garden and orchard along the east, lamp at the gate.
+  for (const z of [3, 6]) for (const x of [32, 35, 38]) { p.set(x, 1, z, 'beehive', { facing: 'south', honey_level: '0' }); }
+  for (const [x, z] of [[39, 12], [39, 20], [39, 28], [39, 36]] as const) roundTree(p, x, 1, z, 'oak', 3, 1);
+  for (let x = 13; x <= 30; x += 4) put(p, x, 1, 37, 'composter', { level: '0' });
+  for (const x of [17, 25]) lampPost(p, x, 1, 5, 'spruce_fence', 3);
+  return p.payload();
+}
+
+// ------------------------------------------------------------ Universität
+const UNI: Look = lookWith(LOOKS.backstein, {
+  base: [['stone_bricks', 5], ['polished_andesite', 2], ['andesite', 1]], baseStairs: 'stone_brick_stairs', baseSlab: 'stone_brick_slab', baseWall: 'stone_brick_wall',
+  wall: [['bricks', 6], ['granite', 1], ['terracotta', 1]], frame: 'polished_andesite',
+  roof: [['deepslate_tiles', 4], ['cracked_deepslate_tiles', 1]], roofStairs: 'deepslate_tile_stairs', roofSlab: 'deepslate_tile_slab',
+  trim: 'dark_oak', shutter: 'dark_oak', door: 'dark_oak', floor: 'oak_planks',
+});
+
+/** University in a U around a quad: great hall with tiered benches, library wing, laboratory wing, study rooms upstairs and an observatory tower with a copper dome. */
+function universitaet() {
+  const p = new Plot([39, 2, 35]), l = UNI;
+  ground(p, PAVE, 141);
+  const M: Rect = { x0: 3, z0: 5, x1: 35, z1: 13 };
+  const h = house(p, l, { at: M, storeys: [{ h: 6, kind: 'stein' }, { h: 5, kind: 'wand' }, { h: 4, kind: 'wand' }],
+    wings: [{ at: { x0: 3, z0: 5, x1: 11, z1: 31 }, ridge: 'z' }, { at: { x0: 27, z0: 5, x1: 35, z1: 31 }, ridge: 'z' }],
+    roof: { kind: 'walm', ridge: 'x', overhang: 1, pitch: 'normal' }, door: null, windowEvery: 2, windowH: 3, noShutters: true, chimney: { x: 8, z: 28 },
+    noWindow: (x, _y, z) => x >= 16 && x <= 22 && z === 5, seed: 141 });
+  const [f0, f1, f2] = [h.floors[0]! + 1, h.floors[1]! + 1, h.floors[2]! + 1];
+  beltCourse(p, l, { x0: 3, z0: 5, x1: 35, z1: 31 }, h.floors[1]!); beltCourse(p, l, { x0: 3, z0: 5, x1: 35, z1: 31 }, h.floors[2]!);
+  // Observatory tower x 16..22, z 1..7 in front of the main range, entrance and a copper dome.
+  const T: Rect = { x0: 16, z0: 1, x1: 22, z1: 7 }, top = h.roofTop + 3;
+  for (let y = 1; y <= top; y++) for (let x = T.x0; x <= T.x1; x++) for (let z = T.z0; z <= T.z1; z++) {
+    const edge = x === T.x0 || x === T.x1 || z === T.z0 || z === T.z1;
+    if (z >= M.z0 && y <= h.ceiling && !(z === T.z1 && x > T.x0 && x < T.x1)) continue;
+    if (edge) put(p, x, y, z, (x === T.x0 || x === T.x1) && (z === T.z0 || z === T.z1) ? 'polished_andesite' : pick(l.wall, x, y, z, 142)); else p.air(x, y, z);
+  }
+  for (let y = 1; y <= 3; y++) { p.air(19, y, T.z0); for (const z of [M.z0, T.z1]) p.air(19, y, z); }
+  door(p, 19, 1, T.z0, 'dark_oak', 'north'); put(p, 19, 3, T.z0, 'stone_brick_stairs', stairs('north', 'top'));
+  for (const x of [17, 21]) putFree(p, x, 1, 0, 'lantern', lantern()) && put(p, x, 0, 0, 'polished_andesite');
+  for (const y of [h.floors[1]!, h.floors[2]!, h.ceiling + 1, top - 5]) { for (let x = T.x0 + 1; x < T.x1; x++) for (let z = T.z0 + 1; z < T.z1; z++) put(p, x, y, z, 'oak_planks'); }
+  for (const y of [h.ceiling + 3, h.ceiling + 4, top - 3, top - 2]) for (const [x, z] of [[19, T.z0], [T.x0, 4], [T.x1, 4]] as const) put(p, x, y, z, 'glass_pane');
+  beltCourse(p, l, T, top);
+  p.disc(19, 4, top + 1, 3, 'polished_andesite');
+  const dt = dome(p, 19, 4, top + 2, 3, CAP, 'oxidized_cut_copper_stairs', 143);
+  put(p, 19, dt + 1, 4, 'lightning_rod', { facing: 'up', powered: F, waterlogged: F });
+  ladderColumn(p, 17, 3, f0, top - 5);
+  p.set(20, top - 4, 5, 'cartography_table'); p.set(21, top - 4, 3, 'lectern', lectern('west')); hangLantern(p, l, 19, top, 4);
+  // Great hall in the main range: tiered benches facing a lectern in the east.
+  for (let x = 13; x <= 25; x++) for (let z = 7; z <= 11; z++) {
+    const tier = Math.max(0, Math.floor((25 - x) / 3) - 1);
+    for (let y = f0; y < f0 + tier; y++) put(p, x, y, z, 'oak_planks');
+    if ((25 - x) % 3 === 0 && x < 25) chair(p, x, f0 + tier, z, 'dark_oak', 'west');
+  }
+  p.set(27, f0, 9, 'lectern', lectern('west'));   for (let z = 7; z <= 11; z++) put(p, 30, f0 + 1, z, 'smooth_stone');
+  for (const x of [14, 20, 26]) hangLantern(p, l, x, f1 - 2, 9);
+  // West wing: library with shelf rows and reading tables.
+  for (let z = 16; z <= 28; z += 3) for (let x = 4; x <= 8; x++) { p.set(x, f0, z, 'bookshelf'); p.set(x, f0 + 1, z, 'bookshelf'); p.set(x, f0 + 2, z, 'bookshelf'); }
+  for (const z of [17, 23]) { longTable(p, 4, z + 1, 8, z + 1, f0, 'dark_oak_slab'); }
+  p.set(10, f0, 22, 'lectern', lectern('west')); p.set(10, f0, 26, 'enchanting_table');
+  for (const z of [18, 24, 29]) hangLantern(p, l, 9, f1 - 2, z);
+  // East wing: laboratory with brewing stands, cauldrons and furnaces.
+  for (let z = 16; z <= 28; z += 3) { p.set(34, f0, z, 'brewing_stand', { has_bottle_0: F, has_bottle_1: F, has_bottle_2: F }); p.set(34, f0, z + 1, 'cauldron'); }
+  longTable(p, 30, 17, 30, 27, f0, 'polished_andesite_slab');
+  for (const z of [16, 22, 28]) p.set(28, f0, z, 'blast_furnace', furnace('east'));
+  for (const z of [18, 24, 29]) hangLantern(p, l, 31, f1 - 2, z);
+  // Upper floors: study rooms with beds and desks; reading room on the top floor of the main range.
+  for (const [x0, f] of [[5, f1], [29, f1], [5, f2], [29, f2]] as const) for (let z = 16; z <= 28; z += 4) { bed(p, x0, f, z, 'blue', 'west'); table(p, x0 + 4, f, z + 1, 'oak'); chair(p, x0 + 3, f, z + 1, 'oak', 'west'); }
+  for (let x = 13; x <= 25; x += 3) { table(p, x, f1, 9, 'dark_oak'); chair(p, x, f1, 10, 'dark_oak', 'south'); }
+  for (let x = 13; x <= 25; x += 2) { p.set(x, f2, 6, 'bookshelf'); p.set(x, f2, 12, 'bookshelf'); }
+  rug(p, 14, 8, 24, 10, f2, 'green', 'lime');
+  for (const [x, z, f] of [[7, 22, f1], [31, 22, f1], [7, 22, f2], [31, 22, f2], [19, 9, f2]] as const) hangLantern(p, l, x, f === f1 ? f2 - 2 : h.ceiling - 1, z);
+  for (const [x, z] of [[10, 14], [28, 14]] as const) ladderColumn(p, x, z, f0, h.floors[2]!);
+  // Doors from the quad into the wings and the hall.
+  for (const [x, z] of [[11, 20], [27, 20], [19, 13]] as const) door(p, x, f0, z, 'dark_oak', x === 11 ? 'west' : x === 27 ? 'east' : 'north');
+  // Quad: lawn with cross paths, trees, benches and a column with a lantern.
+  for (let x = 12; x <= 26; x++) for (let z = 14; z <= 33; z++) {
+    const path = x === 19 || z === 20;
+    put(p, x, 0, z, path ? 'gravel' : 'grass_block', path ? {} : grass());
+  }
+  for (let y = 1; y <= 4; y++) put(p, 19, y, 24, y === 4 ? 'chiseled_stone_bricks' : 'polished_andesite');
+  put(p, 19, 5, 24, 'lantern', lantern());
+  for (const [x, z] of [[14, 17], [24, 17], [14, 29], [24, 29]] as const) roundTree(p, x, 1, z, 'birch', 4, 2);
+  for (const x of [16, 22]) for (const z of [22, 26]) chair(p, x, 1, z, 'dark_oak', x < 19 ? 'west' : 'east');
+  for (const x of [12, 26]) lampPost(p, x, 1, 33, 'dark_oak_fence', 3);
+  return p.payload();
+}
+
 const G = 'bld_gross_';
 export const GROSSBAUTEN_SPECS: readonly BuildingSpec[] = [
   { id: `${G}rathaus`, name: 'Großes Rathaus mit Turm', payload: rathaus, tags: ['rathaus', 'turm', 'uhr', 'fachwerk', 'großbau'],
@@ -456,4 +629,14 @@ export const GROSSBAUTEN_SPECS: readonly BuildingSpec[] = [
     facets: { kategorie: ['befestigung'], stil: ['mittelalterlich'], biom: ['ebene', 'gebirge', 'ueberall'], funktion: ['verteidigung', 'verbindung'] },
     tips: ['Die Mauerstücke enden offen: weitere Mauer mit gleicher Höhe (Wehrgang auf Höhe 8) einfach anbauen.', 'Ein echtes Fallgitter lässt sich mit Kolben und Eisenstangen bauen.'],
     inspiration: [WIKI('Iron_Bars', 'Eisengitter')] },
+  { id: `${G}kloster`, name: 'Klosteranlage mit Kreuzgang', payload: kloster, tags: ['kloster', 'kreuzgang', 'kirche', 'glockenturm', 'großbau'],
+    description: 'Klosteranlage aus Stein: Kirche mit Glockenturm, drei Flügel um einen Kreuzgang mit Arkaden, Kräutergarten und Brunnen; Kapitelsaal, Bibliothek, Schlafsaal, Krankenstube, Refektorium mit langer Tafel und Küche; Bienenstöcke und Obstbäume.',
+    facets: { kategorie: ['sakral'], stil: ['mittelalterlich'], biom: ['ebene', 'wald', 'gebirge', 'ueberall'], funktion: ['wohnen', 'versammlung', 'bildung', 'wasserquelle'] }, gaps: ['minecraft:water'],
+    tips: ['Erst die Kirche, dann die drei Flügel; der Kreuzgang entsteht als Innenhof und bekommt zuletzt seine Arkaden.', 'Bienenstöcke neben Blumen im Kreuzgarten bringen Honig für die Küche.'],
+    inspiration: [WIKI('Beehive', 'Bienenstock'), WIKI('Bell', 'Glocke')] },
+  { id: `${G}universitaet`, name: 'Universität mit Sternwarte', payload: universitaet, tags: ['universität', 'akademie', 'bibliothek', 'sternwarte', 'großbau'],
+    description: 'Dreigeschossige Universität aus Backstein in U-Form um einen Hof: Hörsaal mit ansteigenden Bänken, Bibliotheksflügel mit Regalreihen und Zaubertisch, Laborflügel mit Braustand und Hochöfen, Studierzimmer und Lesesaal oben, Sternwarte mit Kupferkuppel über dem Eingang.',
+    facets: { kategorie: ['oeffentlich'], stil: ['klassisch', 'mittelalterlich'], biom: ['ebene', 'ueberall'], funktion: ['bildung', 'wohnen', 'orientierung'] },
+    tips: ['Der Sternwartenturm gibt die Mittelachse vor; Hof und Flügel spiegeln sich daran.', 'Für volle Verzauberungsstärke braucht der Zaubertisch 15 Bücherregale im Abstand von einem Block – die Regalreihen lassen sich dafür umstellen.'],
+    inspiration: [WIKI('Bookshelf', 'Bücherregal'), WIKI('Brewing_Stand', 'Braustand')] },
 ];

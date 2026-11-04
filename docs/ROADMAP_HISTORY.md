@@ -4890,3 +4890,26 @@ Testplan nach Rebase neu gerendert.
 
 - `docs/testing/TESTPLAN.md`
 
+## 2026-11-04T09:13:22.230Z · progress
+
+**Aufgaben:** GROSS-01
+
+Bibliothek Runde 2 (S07): Großbauten Klosteranlage und Universität, Großprojekte Residenzstadt mit Schlosspark und Klosterdorf im Tal
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GROSS-01 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme durch Philipp (S06); Großbauten-Set (S05). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/GROSSPROJEKTE.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/build/sets/grossbauten.ts`
+- `packages/domain/src/grossprojekte/index.ts`
+- `packages/domain/src/grossprojekte/klosterdorf.ts`
+- `packages/domain/src/grossprojekte/residenzstadt.ts`
+- `tests/e2e/grossprojekte.e2e.mjs`
+
