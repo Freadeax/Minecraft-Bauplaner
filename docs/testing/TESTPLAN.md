@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 131 Fälle in 13 Bereichen, davon 59 Kernfälle.
+Umfang: 132 Fälle in 13 Bereichen, davon 59 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -69,6 +69,7 @@ Das Herzstück: Bauteile anordnen, Material planen, Bauanleitung und Export.
 | PROJ-16 | Planung: Basisplan und Verzug | kern | 1. Projekt mit Bauabschnitten, Tab „Planung“: Startdatum setzen, „Basisplan festhalten“.<br>2. Bauleute anlegen, alle Abschnitte zuweisen und „dabei an 25 % der Bautage“ wählen.<br>3. Neu laden (F5), dann „Basisplan verwerfen“. | Nach dem Festhalten steht „± 0“; mit 25 % zeigt die Karte „+N Bautage“, Meilensteine nennen „später als im Basisplan“ und im Zeitplan liegt unter den Balken eine Linie für den Basisplan; alles bleibt nach dem Neuladen; Verwerfen entfernt den Vergleich. |
 | PROJ-17 | Planung wartet auf Material aus der Produktion | vertieft | 1. Projekt mit Abschnitten, Tab „Produktion“: Sammelzeit je Tag klein stellen (z. B. 0,5 h).<br>2. Tab „Planung“ → Einstellungen: „Abschnitte erst beginnen, wenn ihr Material da ist“ einschalten.<br>3. Im Tab „Produktion“ eine Farm auf „läuft“ stellen und zurück zur Planung. | Abschnitte, deren Material noch fehlt, beginnen später (schraffierter Teil vor dem Balken); die Karte „Material · aus Produktion“ nennt die Wartezeit; im Tab „Produktion“ steht „Die Planung wartet auf das Material“ statt „Material zu spät“; eine laufende Farm verkürzt die Wartezeit. |
 | PROJ-18 | Startdatum in der Vergangenheit | vertieft | 1. In der Planung ein Startdatum vor zwei Wochen setzen, ein Abschnitt ist noch offen. | Die offene Arbeit beginnt am nächsten Bautag ab heute (nicht in der Vergangenheit); ein Hinweis unter dem Plan sagt das; Daten überspringen freie Wochentage. |
+| PROJ-19 | Gelände und Wege: Rampe, Treppen, Brücke | vertieft | 1. Tab „Landschaft“: Gestaltung beginnen, mit „Rampe“ (M) eine Zufahrt zu einem höheren Platz legen, mit „Aufschütten“ (U) eine Mulde füllen.<br>2. Werkzeug „Weg“: Stufen „Treppen“, Belag Steinweg, einen Weg die Rampe hinauf legen; einen zweiten Weg mit „Über Wasser: Brücke mit Geländer“ über einen Bach legen (oder einen Weg aus der Weltkarte übernehmen).<br>3. „Als Bauteil ins Projekt übernehmen“, als .litematic exportieren und im Spiel ansehen. | Jeder Höhenwechsel des Wegs hat eine Treppe, die bergauf zeigt (über die ganze Breite); die Brücke liegt einen Block über dem Wasser, das Wasser bleibt, Zäune oder Mauern stehen an den Seiten und hängen zusammen; Materialliste zählt Treppen, Planken und Zäune. (Abnahme TERRAIN-03) |
 
 ## WERK · Werkstatt (Blockeditor) (Planer)
 
@@ -274,7 +275,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | VIEW-02 | START-06, DATEI-01 |
 | WORLD-IMPORT-01 | KARTE-04 |
 
-### Mit Minecraft (Mod oder Spiel) (31 Pakete)
+### Mit Minecraft (Mod oder Spiel) (32 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -309,6 +310,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | NBT-01 | DATEI-07 |
 | QA-04 | SYS-01, SYS-02, LIVE-06 |
 | SIZE-01 | DATEI-05, WERK-07, MOD-15, LIVE-09 |
+| TERRAIN-03 | PROJ-19, PROJ-06 |
 
 ### Mit Paper-Server und Plugin (10 Pakete)
 

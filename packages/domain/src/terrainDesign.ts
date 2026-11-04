@@ -51,8 +51,14 @@ export interface TerrainDesign extends SurveyArea {
   readonly fill: Uint16Array;
   /** Water surface Y, NO_WATER without water. */
   readonly water: Int16Array;
-  /** 1 = path column. */
+  /**
+   * 0 = no path, 1 = path column; TERRAIN-03 path pieces on top of the column:
+   * 2…5 stair rising to north/east/south/west (`PATH_STAIR + dir`), 6 slab step,
+   * 7 bridge deck (one block over the water), 8 deck with railing.
+   */
   readonly path: Uint8Array;
+  /** TERRAIN-03: palette index of the stair, slab or deck block of a path piece (0 = none). */
+  readonly step: Uint16Array;
   /** Block id palette; index 0 is reserved (unknown). Tools append. */
   readonly ids: string[];
   updatedAt: string;
@@ -189,7 +195,7 @@ export function designFromSurvey(s: TerrainSurvey, base: DesignBase): TerrainDes
   const n = s.width * s.length;
   const d: TerrainDesign = { schemaVersion: DESIGN_SCHEMA_VERSION, dimension: s.dimension, base, minX: s.minX, minZ: s.minZ, width: s.width, length: s.length,
     height: new Int16Array(n).fill(SURVEY_UNKNOWN), top: new Uint16Array(n), fill: new Uint16Array(n), water: new Int16Array(n).fill(NO_WATER), path: new Uint8Array(n),
-    ids: [''], updatedAt: new Date().toISOString() };
+    step: new Uint16Array(n), ids: [''], updatedAt: new Date().toISOString() };
   for (let i = 0; i < n; i++) {
     if (s.surface[i] === SURVEY_UNKNOWN || !s.groundBlock[i]) continue;
     const top = s.ids[s.groundBlock[i]!]!;
@@ -202,17 +208,20 @@ export function designFromSurvey(s: TerrainSurvey, base: DesignBase): TerrainDes
 }
 
 export function cloneDesign(d: TerrainDesign): TerrainDesign {
-  return { ...d, height: d.height.slice(), top: d.top.slice(), fill: d.fill.slice(), water: d.water.slice(), path: d.path.slice(), ids: [...d.ids], ...(d.scatter && { scatter: cloneScatter(d.scatter) }) };
+  return { ...d, height: d.height.slice(), top: d.top.slice(), fill: d.fill.slice(), water: d.water.slice(), path: d.path.slice(), step: d.step.slice(), ids: [...d.ids], ...(d.scatter && { scatter: cloneScatter(d.scatter) }) };
 }
 
 // ------------------------------------------------------------------ file
 
-/** Binary file: "BPTDES01", uint32 LE header length, header JSON, padding to even, then height, top, fill, water (16 bit LE) and path (8 bit). */
+/**
+ * Binary file: "BPTDES01", uint32 LE header length, header JSON, padding to even, then height, top, fill, water (16 bit LE) and path (8 bit).
+ * TERRAIN-03: with path pieces the header says `steps: true` and the step blocks follow as a fifth 16-bit field; files without pieces stay byte-identical.
+ */
 export function encodeDesign(d: TerrainDesign): Uint8Array {
-  const header = new TextEncoder().encode(JSON.stringify({ schemaVersion: d.schemaVersion, dimension: d.dimension, base: d.base, minX: d.minX, minZ: d.minZ, width: d.width, length: d.length, ids: d.ids, updatedAt: d.updatedAt,
+  const header = new TextEncoder().encode(JSON.stringify({ schemaVersion: d.schemaVersion, dimension: d.dimension, base: d.base, minX: d.minX, minZ: d.minZ, width: d.width, length: d.length, ids: d.ids, updatedAt: d.updatedAt, ...(hasPieces(d) && { steps: true }),
     ...(d.scatter && (d.scatter.layers.length || d.scatter.items.length) && { scatter: d.scatter }) }));
   const start = 12 + header.length + ((12 + header.length) % 2), n = d.width * d.length;
-  const out = new Uint8Array(start + n * 9), view = new DataView(out.buffer);
+  const steps = hasPieces(d), out = new Uint8Array(start + n * (steps ? 11 : 9)), view = new DataView(out.buffer);
   out.set(new TextEncoder().encode(MAGIC), 0);
   view.setUint32(8, header.length, true);
   out.set(header, 12);
@@ -222,6 +231,7 @@ export function encodeDesign(d: TerrainDesign): Uint8Array {
     else for (let i = 0; i < n; i++) view.setUint16(base + i * 2, a[i]!, true);
   });
   out.set(d.path, start + n * 8);
+  if (steps) for (let i = 0; i < n; i++) view.setUint16(start + n * 9 + i * 2, d.step[i]!, true);
   return out;
 }
 
@@ -237,7 +247,8 @@ export function decodeDesign(bytes: Uint8Array): TerrainDesign {
   if (typeof h.dimension !== 'string' || !DIMENSION_ID.test(h.dimension)) fail('ungültige Dimension');
   if (!Array.isArray(h.ids) || !h.ids.length || h.ids.length > 65_535 || !h.ids.every(i => typeof i === 'string')) fail('ungültige Blockliste');
   const n = area.width * area.length, start = 12 + len + ((12 + len) % 2);
-  if (bytes.length !== start + n * 9) fail('Datengröße passt nicht zum Bereich');
+  const withSteps = h.steps === true;
+  if (bytes.length !== start + n * (withSteps ? 11 : 9)) fail('Datengröße passt nicht zum Bereich');
   const read16 = (k: number, signed: boolean) => {
     const a = signed ? new Int16Array(n) : new Uint16Array(n), b = start + k * n * 2;
     for (let i = 0; i < n; i++) a[i] = signed ? view.getInt16(b + i * 2, true) : view.getUint16(b + i * 2, true);
@@ -246,9 +257,13 @@ export function decodeDesign(bytes: Uint8Array): TerrainDesign {
   const ids = h.ids as string[];
   const d: TerrainDesign = { schemaVersion: DESIGN_SCHEMA_VERSION, dimension: h.dimension as string, base, ...area,
     height: read16(0, true) as Int16Array, top: read16(1, false) as Uint16Array, fill: read16(2, false) as Uint16Array, water: read16(3, true) as Int16Array,
-    path: bytes.slice(start + n * 8, start + n * 9), ids: [...ids], updatedAt: typeof h.updatedAt === 'string' ? h.updatedAt : new Date(0).toISOString(),
+    path: bytes.slice(start + n * 8, start + n * 9), step: new Uint16Array(n), ids: [...ids], updatedAt: typeof h.updatedAt === 'string' ? h.updatedAt : new Date(0).toISOString(),
     ...(h.scatter !== undefined && { scatter: checkScatterPlan(h.scatter) }) };
-  for (let i = 0; i < n; i++) if (d.top[i]! >= ids.length || d.fill[i]! >= ids.length || d.path[i]! > 1) fail('Blockindex außerhalb der Liste');
+  if (withSteps) for (let i = 0; i < n; i++) d.step[i] = view.getUint16(start + n * 9 + i * 2, true);
+  for (let i = 0; i < n; i++) {
+    if (d.top[i]! >= ids.length || d.fill[i]! >= ids.length || d.step[i]! >= ids.length) fail('Blockindex außerhalb der Liste');
+    if (d.path[i]! > PATH_DECK_RAIL || (d.path[i]! >= PATH_STAIR) !== (d.step[i]! > 0)) fail('ungültige Wegstufe');
+  }
   return d;
 }
 
@@ -269,7 +284,7 @@ export function designMatchesBase(d: TerrainDesign, s: TerrainSurvey): boolean {
 
 // ------------------------------------------------------------------ brushes
 
-export type BrushTool = 'raise' | 'lower' | 'smooth' | 'flatten' | 'roughen' | 'terrace' | 'soften' | 'paint' | 'drain';
+export type BrushTool = 'raise' | 'lower' | 'smooth' | 'flatten' | 'fillUp' | 'cut' | 'roughen' | 'terrace' | 'soften' | 'paint' | 'drain';
 export type Falloff = 'hard' | 'soft' | 'cone';
 
 export interface Brush {
@@ -279,7 +294,7 @@ export interface Brush {
   /** Blocks per dab (raise/lower/roughen), passes (smooth), maximum step (soften). */
   readonly strength: number;
   readonly falloff: Falloff;
-  /** Target height (flatten). */
+  /** Target height (flatten, fillUp, cut). */
   readonly target?: number;
   /** Terrace height (terrace). */
   readonly step?: number;
@@ -292,7 +307,7 @@ export interface Brush {
 export interface PaintFilter { readonly minY?: number; readonly maxY?: number; readonly minSlope?: number; readonly maxSlope?: number; readonly onlyDry?: boolean }
 
 export const BRUSH_LABEL: Readonly<Record<BrushTool, string>> = {
-  raise: 'Anheben', lower: 'Absenken', smooth: 'Glätten', flatten: 'Einebnen', roughen: 'Aufrauen', terrace: 'Terrassen', soften: 'Hänge abflachen', paint: 'Bemalen', drain: 'Wasser entfernen',
+  raise: 'Anheben', lower: 'Absenken', smooth: 'Glätten', flatten: 'Einebnen', fillUp: 'Aufschütten', cut: 'Abtragen', roughen: 'Aufrauen', terrace: 'Terrassen', soften: 'Hänge abflachen', paint: 'Bemalen', drain: 'Wasser entfernen',
 };
 
 export const brushWeight = (dist: number, radius: number, falloff: Falloff): number => {
@@ -335,15 +350,25 @@ const setHeight = (d: TerrainDesign, i: number, h: number, lim: [number, number]
   if (v === d.height[i]) return false;
   d.height[i] = v;
   if (d.water[i] !== NO_WATER && v >= d.water[i]!) d.water[i] = NO_WATER;
+  // A stair or slab belongs to the old height; a deck needs its water.
+  if (d.path[i]! >= PATH_STAIR && (d.path[i]! < PATH_DECK || d.water[i] === NO_WATER)) clearPiece(d, i);
   return true;
 };
+
+/** Removes the stair, slab or deck of a column; a deck column stops being a path (its ground is the bed of the water). */
+function clearPiece(d: TerrainDesign, i: number): void {
+  d.path[i] = d.path[i]! >= PATH_DECK ? 0 : d.path[i]! >= PATH_STAIR ? 1 : d.path[i]!;
+  d.step[i] = 0;
+}
 
 /** Paints one column with a style. */
 export function paintColumn(d: TerrainDesign, i: number, style: SurfaceStyle): boolean {
   const x = d.minX + i % d.width, z = d.minZ + Math.floor(i / d.width);
   const t = idIndex(d, pickTop(style, x, z)), f = idIndex(d, style.fill);
-  const p = style.path ? 1 : 0;
+  // A path style keeps the stair or slab of a path column; any other style ends the path (and its pieces).
+  const p = style.path ? (d.path[i]! >= PATH_DECK ? 1 : d.path[i]! || 1) : 0;
   if (d.top[i] === t && d.fill[i] === f && d.path[i] === p) return false;
+  if (p <= 1 && d.path[i]! >= PATH_STAIR) d.step[i] = 0;
   d.top[i] = t; d.fill[i] = f; d.path[i] = p;
   return true;
 }
@@ -375,10 +400,15 @@ export function applyBrush(d: TerrainDesign, cx: number, cz: number, b: Brush): 
       each((i, w) => { const delta = Math.round(strength * w); return delta > 0 && setHeight(d, i, d.height[i]! + sign * delta, lim); });
       break;
     }
-    case 'flatten': {
+    case 'flatten': case 'fillUp': case 'cut': {
       const target = b.target ?? d.height[Math.max(0, Math.min(d.width - 1, gx)) + Math.max(0, Math.min(d.length - 1, gz)) * d.width]!;
       if (target === SURVEY_UNKNOWN) return 0;
-      each((i, w) => setHeight(d, i, d.height[i]! + (target - d.height[i]!) * w, lim));
+      // Aufschütten only fills hollows up to the target, Abtragen only cuts what stands above it, Einebnen does both.
+      each((i, w) => {
+        const h = d.height[i]!;
+        if ((b.tool === 'fillUp' && h >= target) || (b.tool === 'cut' && h <= target)) return false;
+        return setHeight(d, i, h + (target - h) * w, lim);
+      });
       break;
     }
     case 'smooth': {
@@ -429,7 +459,7 @@ export function applyBrush(d: TerrainDesign, cx: number, cz: number, b: Brush): 
       break;
     }
     case 'paint': each((i, w, x, z) => w >= 0.5 && passes(d, x, z, b.filter) && paintColumn(d, i, style!)); break;
-    case 'drain': each((i, w) => { if (w < 0.5 || d.water[i] === NO_WATER) return false; d.water[i] = NO_WATER; return true; }); break;
+    case 'drain': each((i, w) => { if (w < 0.5 || d.water[i] === NO_WATER) return false; d.water[i] = NO_WATER; if (d.path[i]! >= PATH_DECK) clearPiece(d, i); return true; }); break;
   }
   if (changed) d.updatedAt = new Date().toISOString();
   return changed;
@@ -482,6 +512,124 @@ export function floodWater(d: TerrainDesign, x: number, z: number, level: number
 
 // ------------------------------------------------------------------ paths
 
+// ------------------------------------------------------------------ path pieces (TERRAIN-03)
+
+/** Path codes (`TerrainDesign.path`). */
+export const PATH_PLAIN = 1;
+/** Stair rising towards `PATH_DIRS[k]`: code PATH_STAIR + k. */
+export const PATH_STAIR = 2;
+export const PATH_SLAB = 6;
+/** Bridge deck one block over the water surface. */
+export const PATH_DECK = 7;
+export const PATH_DECK_RAIL = 8;
+/** Directions of path pieces: [dx, dz, facing]. A stair "facing north" rises towards north (you walk up northwards). */
+export const PATH_DIRS = [[0, -1, 'north'], [1, 0, 'east'], [0, 1, 'south'], [-1, 0, 'west']] as const;
+
+/** A material family for stairs, slab steps, bridge decks and railings. */
+export interface PathMaterial {
+  readonly id: string;
+  readonly label: string;
+  readonly stairs: string;
+  readonly slab: string;
+  readonly deck: string;
+  readonly rail: string;
+}
+export const PATH_MATERIALS: readonly PathMaterial[] = [
+  { id: 'fichte', label: 'Fichtenholz', stairs: 'minecraft:spruce_stairs', slab: 'minecraft:spruce_slab', deck: 'minecraft:spruce_planks', rail: 'minecraft:spruce_fence' },
+  { id: 'eiche', label: 'Eichenholz', stairs: 'minecraft:oak_stairs', slab: 'minecraft:oak_slab', deck: 'minecraft:oak_planks', rail: 'minecraft:oak_fence' },
+  { id: 'dunkeleiche', label: 'Schwarzeichenholz', stairs: 'minecraft:dark_oak_stairs', slab: 'minecraft:dark_oak_slab', deck: 'minecraft:dark_oak_planks', rail: 'minecraft:dark_oak_fence' },
+  { id: 'bruchstein', label: 'Bruchstein', stairs: 'minecraft:cobblestone_stairs', slab: 'minecraft:cobblestone_slab', deck: 'minecraft:cobblestone', rail: 'minecraft:cobblestone_wall' },
+  { id: 'moosbruchstein', label: 'Bemooster Bruchstein', stairs: 'minecraft:mossy_cobblestone_stairs', slab: 'minecraft:mossy_cobblestone_slab', deck: 'minecraft:mossy_cobblestone', rail: 'minecraft:mossy_cobblestone_wall' },
+  { id: 'steinziegel', label: 'Steinziegel', stairs: 'minecraft:stone_brick_stairs', slab: 'minecraft:stone_brick_slab', deck: 'minecraft:stone_bricks', rail: 'minecraft:stone_brick_wall' },
+  { id: 'andesit', label: 'Polierter Andesit', stairs: 'minecraft:polished_andesite_stairs', slab: 'minecraft:polished_andesite_slab', deck: 'minecraft:polished_andesite', rail: 'minecraft:andesite_wall' },
+  { id: 'sandstein', label: 'Sandstein', stairs: 'minecraft:sandstone_stairs', slab: 'minecraft:sandstone_slab', deck: 'minecraft:sandstone', rail: 'minecraft:sandstone_wall' },
+  { id: 'ziegel', label: 'Ziegel', stairs: 'minecraft:brick_stairs', slab: 'minecraft:brick_slab', deck: 'minecraft:bricks', rail: 'minecraft:brick_wall' },
+];
+/** Material that fits a path style when the user picks „passend zum Belag“. */
+export const PATH_STYLE_MATERIAL: Readonly<Record<string, string>> = { pfad: 'fichte', kiesweg: 'bruchstein', pflaster: 'bruchstein', steinweg: 'steinziegel' };
+export const pathMaterialById = (id: string): PathMaterial => PATH_MATERIALS.find(m => m.id === id) ?? fail(`unbekanntes Stufenmaterial ${id}`);
+
+/** Whether a design has any stair, slab or deck (the file then carries the step field). */
+export function hasPieces(d: TerrainDesign): boolean {
+  for (let i = 0; i < d.path.length; i++) if (d.path[i]! >= PATH_STAIR) return true;
+  return false;
+}
+
+/** Walking surface of a column: the deck of a bridge, otherwise the planned ground. */
+const surfaceY = (d: TerrainDesign, i: number): number => d.path[i]! >= PATH_DECK && d.water[i] !== NO_WATER ? d.water[i]! + 1 : d.height[i]!;
+
+/** Directions (index into PATH_DIRS) in which a neighbouring path column stands exactly one block higher. */
+export function risingDirs(d: TerrainDesign, gx: number, gz: number): number[] {
+  const i = gx + gz * d.width, h = d.height[i]!;
+  if (h === SURVEY_UNKNOWN) return [];
+  const out: number[] = [];
+  PATH_DIRS.forEach(([dx, dz], k) => {
+    const nx = gx + dx, nz = gz + dz;
+    if (nx < 0 || nz < 0 || nx >= d.width || nz >= d.length) return;
+    const j = nx + nz * d.width;
+    if (d.path[j] && d.height[j] !== SURVEY_UNKNOWN && surfaceY(d, j) === h + 1) out.push(k);
+  });
+  return out;
+}
+
+const isWall = (id: string) => /_wall$/.test(id);
+const railOf = (deck: string): string | undefined => PATH_MATERIALS.find(m => m.deck === deck)?.rail;
+
+/** Railing state: fences and walls connect to the railings next to them. */
+function railState(d: TerrainDesign, gx: number, gz: number, id: string): BlockState {
+  const props: Record<string, string> = {};
+  for (const [dx, dz, facing] of PATH_DIRS) {
+    const nx = gx + dx, nz = gz + dz;
+    const on = nx >= 0 && nz >= 0 && nx < d.width && nz < d.length && d.path[nx + nz * d.width] === PATH_DECK_RAIL;
+    props[facing] = isWall(id) ? (on ? 'low' : 'none') : String(on);
+  }
+  if (isWall(id)) props.up = 'true';
+  return completeState({ id, properties: props }) ?? { id, properties: props };
+}
+
+/**
+ * The blocks of the path piece on one column (stair or slab one block above
+ * the ground, deck one block above the water, railing on the deck). A stair or
+ * slab whose neighbour no longer stands one block higher is left out, so later
+ * brush strokes never leave stairs leading nowhere.
+ */
+function visitPiece(d: TerrainDesign, gx: number, gz: number, visit: (c: DesignCell) => void): void {
+  const i = gx + gz * d.width, code = d.path[i]!, id = d.ids[d.step[i]!];
+  if (code < PATH_STAIR || !id || d.height[i] === SURVEY_UNKNOWN) return;
+  const x = d.minX + gx, z = d.minZ + gz, h = d.height[i]!;
+  if (code >= PATH_DECK) {
+    const w = d.water[i]!;
+    if (w === NO_WATER) return;
+    visit({ x, y: w + 1, z, id });
+    const rail = code === PATH_DECK_RAIL ? railOf(id) : undefined;
+    if (rail) visit({ x, y: w + 2, z, id: rail, state: railState(d, gx, gz, rail) });
+    return;
+  }
+  const dirs = risingDirs(d, gx, gz);
+  if (code === PATH_SLAB) {
+    if (dirs.length) visit({ x, y: h + 1, z, id, state: completeState({ id, properties: { type: 'bottom' } }) ?? { id, properties: { type: 'bottom' } } });
+    return;
+  }
+  const k = code - PATH_STAIR;
+  if (!dirs.includes(k)) return;
+  const props = { facing: PATH_DIRS[k]![2], half: 'bottom', shape: 'straight' };
+  visit({ x, y: h + 1, z, id, state: completeState({ id, properties: props }) ?? { id, properties: props } });
+}
+
+/** All stair, slab, deck and railing blocks of a design (world coordinates), e.g. for a 3D preview. */
+export function pathPieceCells(d: TerrainDesign): DesignCell[] {
+  const out: DesignCell[] = [];
+  for (let gz = 0; gz < d.length; gz++) for (let gx = 0; gx < d.width; gx++) if (d.path[gx + gz * d.width]! >= PATH_STAIR) visitPiece(d, gx, gz, c => out.push(c));
+  return out;
+}
+
+// ------------------------------------------------------------------ paths
+
+/** Pieces at height changes: none (only the report names them), stairs or slab steps (half blocks). */
+export type PathSteps = 'none' | 'stairs' | 'slabs';
+/** Over water: a causeway of ground, or a bridge deck one block above the water. */
+export type PathWater = 'causeway' | 'bridge';
+
 export interface PathOptions {
   /** Path width in blocks (1–9). */
   readonly width: number;
@@ -489,6 +637,12 @@ export interface PathOptions {
   readonly style: string;
   /** Highest height change between two path blocks (1 = walkable without jumping onto full blocks). */
   readonly maxStep?: number;
+  /** TERRAIN-03: stairs or slabs at every one-block rise (default none). */
+  readonly steps?: PathSteps;
+  /** PATH_MATERIALS id; absent or 'auto' = fitting the path style. */
+  readonly material?: string;
+  /** TERRAIN-03: causeway (default) or bridge. */
+  readonly water?: PathWater;
 }
 
 export interface PathReport {
@@ -502,7 +656,16 @@ export interface PathReport {
   readonly cut: number;
   readonly fill: number;
   readonly unknown: number;
+  /** TERRAIN-03: stair and slab blocks set, deck columns (railing columns among them). */
+  readonly stairs: number;
+  readonly slabs: number;
+  readonly bridge: number;
+  readonly rails: number;
+  /** Height changes along the centre line without a stair or slab (more than one block, or none chosen). */
+  readonly open: number;
 }
+
+const EMPTY_REPORT = { length: 0, columns: 0, steps: 0, rise: 0, causeway: 0, cut: 0, fill: 0, unknown: 0, stairs: 0, slabs: 0, bridge: 0, rails: 0, open: 0 } as const;
 
 /** Centre line of a polyline (world columns), without repeated points. */
 export function pathLine(points: readonly (readonly [number, number])[]): [number, number][] {
@@ -527,26 +690,31 @@ export function pathLine(points: readonly (readonly [number, number])[]): [numbe
  * Lays a path along a polyline: the centre heights follow the planned ground,
  * smoothed and limited to `maxStep` per block; the path width is levelled to
  * the centre height and painted with the path style. Over water the path
- * becomes a causeway at water level.
+ * becomes a causeway at water level, or (TERRAIN-03) a bridge deck one block
+ * above the water with railings at its open sides. With `steps` every
+ * one-block rise gets a stair (facing up the path) or a slab step on the lower
+ * column, across the whole width.
  */
 export function layPath(d: TerrainDesign, points: readonly (readonly [number, number])[], o: PathOptions): PathReport {
   const style = styleById(o.style);
   if (!style.path) fail(`„${style.label}“ ist kein Wegbelag`);
   const width = Math.max(1, Math.min(9, Math.round(o.width))), maxStep = Math.max(1, Math.min(4, Math.round(o.maxStep ?? 1)));
+  const bridge = o.water === 'bridge', steps = o.steps ?? 'none';
+  const material = pathMaterialById(o.material && o.material !== 'auto' ? o.material : PATH_STYLE_MATERIAL[style.id] ?? 'fichte');
   const lim = heightLimits(d.dimension);
   const line = pathLine(points).filter(([x, z]) => x >= d.minX && z >= d.minZ && x < d.minX + d.width && z < d.minZ + d.length);
-  if (!line.length) return { length: 0, columns: 0, steps: 0, rise: 0, causeway: 0, cut: 0, fill: 0, unknown: 0 };
+  if (!line.length) return EMPTY_REPORT;
   const at = (x: number, z: number) => (x - d.minX) + (z - d.minZ) * d.width;
-  // Centre heights: ground, at least the water surface (causeway); unknown takes the previous one.
+  // Centre heights (walking surface): ground, over water at least the water surface (causeway) or one above it (deck); unknown takes the previous one.
   let unknown = 0;
-  const floor = line.map(([x, z]) => { const i = at(x, z); return d.height[i] !== SURVEY_UNKNOWN && d.water[i] !== NO_WATER ? d.water[i]! : -Infinity; });
+  const floor = line.map(([x, z]) => { const i = at(x, z); return d.height[i] !== SURVEY_UNKNOWN && d.water[i] !== NO_WATER ? d.water[i]! + (bridge ? 1 : 0) : -Infinity; });
   const raw = line.map(([x, z], k) => {
     const i = at(x, z), h = d.height[i]!;
     if (h === SURVEY_UNKNOWN) { unknown++; return NaN; }
     return Math.max(h, floor[k]!);
   });
   const firstKnown = raw.find(v => !Number.isNaN(v));
-  if (firstKnown === undefined) return { length: line.length, columns: 0, steps: 0, rise: 0, causeway: 0, cut: 0, fill: 0, unknown };
+  if (firstKnown === undefined) return { ...EMPTY_REPORT, length: line.length, unknown };
   for (let k = 0; k < raw.length; k++) if (Number.isNaN(raw[k]!)) raw[k] = k ? raw[k - 1]! : firstKnown;
   // Moving average (5) then a slope limit forwards and backwards.
   const h = raw.map((_, k) => { let s = 0, n = 0; for (let j = Math.max(0, k - 2); j <= Math.min(raw.length - 1, k + 2); j++) { s += raw[j]!; n++; } return Math.round(s / n); });
@@ -557,6 +725,16 @@ export function layPath(d: TerrainDesign, points: readonly (readonly [number, nu
     for (let k = 0; k < h.length; k++) h[k] = Math.max(h[k]!, floor[k]!);
     for (let k = 1; k < h.length; k++) h[k] = Math.max(h[k]!, h[k - 1]! - maxStep);
     for (let k = h.length - 2; k >= 0; k--) h[k] = Math.max(h[k]!, h[k + 1]! - maxStep);
+  }
+  // A bridge deck lies exactly one block above its water; the banks follow it within the slope limit.
+  if (bridge) {
+    const fixed = floor.map(f => f > -Infinity);
+    floor.forEach((f, k) => { if (fixed[k]) h[k] = f; });
+    // Landings: the first bank column on each side lies level with the deck, so stairs can lead up from it (a deck carries no stairs).
+    const landing = fixed.map((f, k) => !f && ((k > 0 && fixed[k - 1]) || (k < fixed.length - 1 && fixed[k + 1])) ? h[fixed[k - 1] ? k - 1 : k + 1]! : null);
+    landing.forEach((y, k) => { if (y !== null) { h[k] = y; fixed[k] = true; } });
+    for (let k = 1; k < h.length; k++) if (!fixed[k]) h[k] = Math.max(h[k - 1]! - maxStep, Math.min(h[k - 1]! + maxStep, h[k]!));
+    for (let k = h.length - 2; k >= 0; k--) if (!fixed[k]) h[k] = Math.max(h[k + 1]! - maxStep, Math.min(h[k + 1]! + maxStep, h[k]!));
   }
   // Assign each column of the width to its nearest centre point.
   const half = (width - 1) / 2, owner = new Map<number, { k: number; dist: number }>();
@@ -574,17 +752,104 @@ export function layPath(d: TerrainDesign, points: readonly (readonly [number, nu
     }
   });
   let cut = 0, fill = 0, causeway = 0;
+  const decks: number[] = [];
   for (const [i, { k }] of owner) {
     const target = Math.max(lim[0], Math.min(lim[1], h[k]!)), before = d.height[i]!;
+    if (d.path[i]! >= PATH_STAIR) clearPiece(d, i);
+    if (bridge && d.water[i] !== NO_WATER && target === d.water[i]! + 1) {
+      // Deck: the ground under the water and the water stay as they are.
+      d.path[i] = PATH_DECK; d.step[i] = idIndex(d, material.deck); decks.push(i);
+      continue;
+    }
     if (d.water[i] !== NO_WATER) { causeway++; d.water[i] = NO_WATER; }
     if (target > before) fill += target - before; else cut += before - target;
     d.height[i] = target;
     paintColumn(d, i, style);
   }
-  let steps = 0, rise = 0;
-  for (let k = 1; k < h.length; k++) if (h[k] !== h[k - 1]) { steps++; rise += Math.abs(h[k]! - h[k - 1]!); }
+  // Railings where a deck borders anything that is not path (water, bank, the edge of the area).
+  let rails = 0;
+  for (const i of decks) {
+    const gx = i % d.width, gz = (i - gx) / d.width;
+    const open = PATH_DIRS.some(([dx, dz]) => { const nx = gx + dx, nz = gz + dz; return nx < 0 || nz < 0 || nx >= d.width || nz >= d.length || !d.path[nx + nz * d.width]; });
+    if (open) { d.path[i] = PATH_DECK_RAIL; rails++; }
+  }
+  // Stairs or slabs on every lower column of a one-block rise, facing up the path where possible.
+  let stairs = 0, slabs = 0;
+  if (steps !== 'none') {
+    const stairIdx = idIndex(d, material.stairs), slabIdx = idIndex(d, material.slab);
+    const along = (k: number): number => {
+      const [ax, az] = line[Math.max(0, k - (k === line.length - 1 ? 1 : 0))]!, [bx, bz] = line[Math.min(line.length - 1, k + (k === line.length - 1 ? 0 : 1))]!;
+      return PATH_DIRS.findIndex(([dx, dz]) => dx === Math.sign(bx - ax) && dz === Math.sign(bz - az));
+    };
+    for (const [i, { k }] of owner) {
+      if (d.path[i]! >= PATH_DECK) continue;
+      const gx = i % d.width, gz = (i - gx) / d.width, dirs = risingDirs(d, gx, gz);
+      if (!dirs.length) continue;
+      if (steps === 'slabs') { d.path[i] = PATH_SLAB; d.step[i] = slabIdx; slabs++; continue; }
+      const a = along(k), back = a < 0 ? -1 : (a + 2) % 4;
+      const dir = dirs.includes(a) ? a : dirs.includes(back) ? back : dirs[0]!;
+      d.path[i] = PATH_STAIR + dir; d.step[i] = stairIdx; stairs++;
+    }
+  }
+  let rises = 0, rise = 0, covered = 0;
+  for (let k = 1; k < h.length; k++) {
+    if (h[k] === h[k - 1]) continue;
+    rises++; rise += Math.abs(h[k]! - h[k - 1]!);
+    const low = h[k]! < h[k - 1]! ? line[k]! : line[k - 1]!, code = d.path[at(low[0], low[1])]!;
+    if (Math.abs(h[k]! - h[k - 1]!) === 1 && code >= PATH_STAIR && code <= PATH_SLAB) covered++;
+  }
   d.updatedAt = new Date().toISOString();
-  return { length: line.length, columns: owner.size, steps, rise, causeway, cut, fill, unknown };
+  return { length: line.length, columns: owner.size, steps: rises, rise, causeway, cut, fill, unknown, stairs, slabs, bridge: decks.length, rails, open: rises - covered };
+}
+
+// ------------------------------------------------------------------ ramp (TERRAIN-03)
+
+export interface RampOptions {
+  /** Ramp width in blocks (1–15). */
+  readonly width: number;
+  /** Heights at start and end; absent = the planned ground there. */
+  readonly fromY?: number;
+  readonly toY?: number;
+  /** Columns beside the ramp that blend into the terrain (0–16). */
+  readonly margin?: number;
+}
+export interface RampReport { readonly columns: number; readonly blended: number; readonly fromY: number; readonly toY: number; readonly length: number; readonly cut: number; readonly fill: number }
+
+/**
+ * A straight ramp from a to b (world columns): the height runs evenly from
+ * `fromY` to `toY`, the full width is set exactly, the margin blends into the
+ * surrounding ground. Unknown columns are left alone.
+ */
+export function layRamp(d: TerrainDesign, a: readonly [number, number], b: readonly [number, number], o: RampOptions): RampReport {
+  const lim = heightLimits(d.dimension);
+  const heightAt = (x: number, z: number) => {
+    const gx = x - d.minX, gz = z - d.minZ;
+    return gx < 0 || gz < 0 || gx >= d.width || gz >= d.length ? SURVEY_UNKNOWN : d.height[gx + gz * d.width]!;
+  };
+  const fromY = o.fromY ?? heightAt(a[0], a[1]), toY = o.toY ?? heightAt(b[0], b[1]);
+  if (fromY === SURVEY_UNKNOWN || toY === SURVEY_UNKNOWN) fail('Anfang oder Ende der Rampe liegt auf unbekanntem Gelände – bitte die Höhe angeben');
+  if (!isInt(fromY, lim[0], lim[1]) || !isInt(toY, lim[0], lim[1])) fail(`Rampenhöhen müssen zwischen Y ${lim[0]} und ${lim[1]} liegen`);
+  const width = Math.max(1, Math.min(15, Math.round(o.width))), margin = Math.max(0, Math.min(16, Math.round(o.margin ?? 2))), half = (width - 1) / 2;
+  const vx = b[0] - a[0], vz = b[1] - a[1], len2 = vx * vx + vz * vz, reach = Math.ceil(half + margin + 1);
+  const x0 = Math.max(0, Math.min(a[0], b[0]) - reach - d.minX), x1 = Math.min(d.width - 1, Math.max(a[0], b[0]) + reach - d.minX);
+  const z0 = Math.max(0, Math.min(a[1], b[1]) - reach - d.minZ), z1 = Math.min(d.length - 1, Math.max(a[1], b[1]) + reach - d.minZ);
+  let columns = 0, blended = 0, cut = 0, fill = 0;
+  for (let gz = z0; gz <= z1; gz++) for (let gx = x0; gx <= x1; gx++) {
+    const i = gx + gz * d.width, h = d.height[i]!;
+    if (h === SURVEY_UNKNOWN) continue;
+    const x = d.minX + gx, z = d.minZ + gz;
+    const t = len2 ? Math.max(0, Math.min(1, ((x - a[0]) * vx + (z - a[1]) * vz) / len2)) : 0;
+    const dist = stableHypot(x - (a[0] + t * vx), z - (a[1] + t * vz));
+    if (dist > half + margin + 0.5) continue;
+    const target = Math.round(fromY + (toY - fromY) * t), core = dist <= half + 0.5;
+    const w = core ? 1 : 1 - (dist - half - 0.5) / (margin + 1);
+    if (!setHeight(d, i, h + (target - h) * w, lim)) continue;
+    const now = d.height[i]!;
+    if (now > h) fill += now - h; else cut += h - now;
+    if (core) columns++; else blended++;
+  }
+  if (columns || blended) d.updatedAt = new Date().toISOString();
+  return { columns, blended, fromY, toY, length: Math.round(Math.sqrt(len2)), cut, fill };
 }
 
 // ------------------------------------------------------------------ area tools
@@ -693,7 +958,7 @@ export function resetToBase(d: TerrainDesign, base: TerrainSurvey): void {
   const fresh = designFromSurvey(base, d.base);
   for (let i = 0; i < d.height.length; i++) {
     d.height[i] = fresh.height[i]!; d.top[i] = idIndex(d, fresh.ids[fresh.top[i]!]!); d.fill[i] = idIndex(d, fresh.ids[fresh.fill[i]!]!);
-    d.water[i] = fresh.water[i]!; d.path[i] = 0;
+    d.water[i] = fresh.water[i]!; d.path[i] = 0; d.step[i] = 0;
   }
   d.updatedAt = new Date().toISOString();
 }
@@ -710,7 +975,9 @@ const AIR = 'minecraft:air';
  * columns: filler and top where ground is raised, explicit air where it is
  * removed (up to the old surface, so plants and leaves over the column are
  * cleared), the top block repainted, water up to the planned surface and air
- * where water is drained. Unchanged columns produce nothing.
+ * where water is drained. Unchanged columns produce nothing, except path
+ * pieces (TERRAIN-03: stairs, slabs, bridge decks, railings), which come last
+ * so they replace the air of their column.
  */
 function visitDesign(base: TerrainSurvey, d: TerrainDesign, visit: (c: DesignCell) => void): void {
   if (!designMatchesBase(d, base)) fail('Gestaltung und Grundlage haben verschiedene Bereiche');
@@ -721,7 +988,7 @@ function visitDesign(base: TerrainSurvey, d: TerrainDesign, visit: (c: DesignCel
     const baseWater = sTop === WATER_ID && base.surface[i]! > g ? base.surface[i]! : NO_WATER;
     const top = d.ids[d.top[i]!]!, filler = d.ids[d.fill[i]!]!, w = d.water[i]!;
     const heightChanged = h !== g, topChanged = top !== gTop, waterChanged = w !== baseWater;
-    if (!heightChanged && !topChanged && !waterChanged) continue;
+    if (!heightChanged && !topChanged && !waterChanged) { visitPiece(d, gx, gz, visit); continue; }
     const x = d.minX + gx, z = d.minZ + gz;
     for (let y = g + 1; y < h; y++) visit({ x, y, z, id: filler });
     if (heightChanged || topChanged) visit({ x, y: h, z, id: top });
@@ -729,6 +996,7 @@ function visitDesign(base: TerrainSurvey, d: TerrainDesign, visit: (c: DesignCel
     // Above the new ground (and above new water): clear what was there.
     const oldTop = Math.max(g, base.surface[i]!);
     if (heightChanged || waterChanged) for (let y = Math.max(h, w === NO_WATER ? h : w) + 1; y <= oldTop; y++) visit({ x, y, z, id: AIR });
+    visitPiece(d, gx, gz, visit);
   }
 }
 
@@ -745,6 +1013,10 @@ export interface DesignStats {
   readonly water: number;
   readonly drained: number;
   readonly path: number;
+  /** TERRAIN-03: stair, slab and deck columns of paths (railings counted with the decks). */
+  readonly stairs: number;
+  readonly slabs: number;
+  readonly deck: number;
   readonly heightRange: readonly [number, number] | null;
   /** Blocks to place (not air), most first. */
   readonly materials: readonly { readonly id: string; readonly count: number }[];
@@ -753,23 +1025,25 @@ export interface DesignStats {
 /** Compares a design with its base. */
 export function compareDesign(base: TerrainSurvey, d: TerrainDesign): DesignStats {
   if (!designMatchesBase(d, base)) fail('Gestaltung und Grundlage haben verschiedene Bereiche');
-  let known = 0, changed = 0, raised = 0, lowered = 0, repainted = 0, cut = 0, fill = 0, drained = 0, path = 0, lo = Infinity, hi = -Infinity;
+  let known = 0, changed = 0, raised = 0, lowered = 0, repainted = 0, cut = 0, fill = 0, drained = 0, path = 0, stairs = 0, slabs = 0, deck = 0, lo = Infinity, hi = -Infinity;
   for (let i = 0; i < d.height.length; i++) {
     const h = d.height[i]!;
     if (h === SURVEY_UNKNOWN || base.surface[i] === SURVEY_UNKNOWN || !base.groundBlock[i]) continue;
     known++; lo = Math.min(lo, h); hi = Math.max(hi, h);
-    if (d.path[i]) path++;
+    const code = d.path[i]!;
+    if (code) path++;
+    if (code >= PATH_DECK) deck++; else if (code === PATH_SLAB) slabs++; else if (code >= PATH_STAIR) stairs++;
     const g = base.ground[i]!, sTop = base.ids[base.surfaceBlock[i]!] ?? '';
     const baseWater = sTop === WATER_ID && base.surface[i]! > g ? base.surface[i]! : NO_WATER;
     const topChanged = d.ids[d.top[i]!] !== base.ids[base.groundBlock[i]!];
-    if (h !== g || topChanged || d.water[i] !== baseWater) changed++;
+    if (h !== g || topChanged || d.water[i] !== baseWater || code >= PATH_STAIR) changed++;
     if (h > g) { raised++; fill += h - g; } else if (h < g) { lowered++; cut += g - h; } else if (topChanged) repainted++;
     if (baseWater !== NO_WATER && d.water[i] === NO_WATER) drained++;
   }
   const counts = new Map<string, number>();
   let water = 0;
   visitDesign(base, d, c => { if (c.id === AIR) return; if (c.id === WATER_ID) water++; counts.set(c.id, (counts.get(c.id) ?? 0) + 1); });
-  return { known, changed, raised, lowered, repainted, cut, fill, water, drained, path, heightRange: Number.isFinite(lo) ? [lo, hi] : null,
+  return { known, changed, raised, lowered, repainted, cut, fill, water, drained, path, stairs, slabs, deck, heightRange: Number.isFinite(lo) ? [lo, hi] : null,
     materials: [...counts].map(([id, count]) => ({ id, count })).sort((a, b) => b.count - a.count || a.id.localeCompare(b.id)) };
 }
 
@@ -847,9 +1121,12 @@ export function designedSurvey(base: TerrainSurvey, d: TerrainDesign, extra: rea
     if (h === SURVEY_UNKNOWN || base.surface[i] === SURVEY_UNKNOWN || !base.groundBlock[i]) continue;
     const g = base.ground[i]!, top = d.ids[d.top[i]!]!, sTop = base.ids[base.surfaceBlock[i]!] ?? '';
     const baseWater = sTop === WATER_ID && base.surface[i]! > g ? base.surface[i]! : NO_WATER;
-    if (h === g && top === base.ids[base.groundBlock[i]!] && d.water[i] === baseWater) continue;
+    const deck = d.path[i]! >= PATH_DECK && d.water[i] !== NO_WATER && d.step[i] ? d.ids[d.step[i]!]! : null;
+    if (h === g && top === base.ids[base.groundBlock[i]!] && d.water[i] === baseWater && !deck) continue;
     ground[i] = h; groundBlock[i] = idOf(top);
-    if (d.water[i] !== NO_WATER) { surface[i] = d.water[i]!; surfaceBlock[i] = water; }
+    // A bridge deck is the visible surface over its water (the world map draws the bridge).
+    if (deck) { surface[i] = d.water[i]! + 1; surfaceBlock[i] = idOf(deck); }
+    else if (d.water[i] !== NO_WATER) { surface[i] = d.water[i]!; surfaceBlock[i] = water; }
     else { surface[i] = h; surfaceBlock[i] = groundBlock[i]!; }
   }
   // Streu-Ebene: trees and rocks raise the visible surface (plants do not, like in a real survey).

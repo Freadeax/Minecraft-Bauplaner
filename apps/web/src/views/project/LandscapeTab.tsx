@@ -2,10 +2,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   BRUSH_LABEL, DEFAULT_AUTO_PAINT, DESIGN_NOTE, NO_WATER, SAMPLE_PROFILE, SURFACE_STYLES, SURVEY_UNKNOWN, addAssetVersion, applyBrush, autoPaint, cloneDesign, columnBases,
   compareDesign, createAsset, designFromSurvey, designMatchesBase, designPayload, designedSurvey, dimensionLabel, flatSurvey, floodWater, gradeFootprints,
-  heightLimits, layPath, newInstance, positionKey, resetToBase, strokePoints, surveyDisplayCells, translateBounds,
+  heightLimits, layPath, layRamp, newInstance, PATH_DECK, PATH_MATERIALS, PATH_SLAB, PATH_STAIR, PATH_STYLE_MATERIAL, pathLine, pathPieceCells, positionKey, resetToBase, strokePoints, surveyDisplayCells, translateBounds,
   SCATTER_MISS_LABEL, STENCIL_TAG, addScatterItem, builtinResolver, removeScatterItems, scatterCells, stencilScatterPart,
 } from '../../../../../packages/domain/src/index.js';
-import type { AssetVersionSource, Brush, BrushTool, DesignStats, Falloff, Operation, PathReport, ScatterCells, ScatterContext, ScatterGroup, ScatterPart, ScatterPartResolver,
+import type { AssetVersionSource, Brush, BrushTool, DesignStats, Falloff, Operation, PathReport, PathSteps, PathWater, WorldPath, WorldPathStyle, ScatterCells, ScatterContext, ScatterGroup, ScatterPart, ScatterPartResolver,
   TerrainDesign, TerrainSurvey } from '../../../../../packages/domain/src/index.js';
 import { createPayload } from '../../../../../packages/voxel/src/index.js';
 import type { Cell } from '../../../../../packages/voxel/src/index.js';
@@ -23,19 +23,27 @@ import { isResolved } from './session';
 import type { ProjectSession } from './session';
 import './landscape/landscape.css';
 
-type Tool = BrushTool | 'water' | 'path' | 'pick' | 'scatter';
-const SHAPE_TOOLS: readonly BrushTool[] = ['raise', 'lower', 'smooth', 'flatten', 'roughen', 'terrace', 'soften'];
-const TOOL_KEYS: Readonly<Record<string, Tool>> = { a: 'raise', s: 'lower', g: 'smooth', e: 'flatten', r: 'roughen', t: 'terrace', h: 'soften', b: 'paint', w: 'water', d: 'drain', p: 'path', i: 'pick', n: 'scatter' };
+type Tool = BrushTool | 'ramp' | 'water' | 'path' | 'pick' | 'scatter';
+const SHAPE_TOOLS: readonly BrushTool[] = ['raise', 'lower', 'smooth', 'flatten', 'fillUp', 'cut', 'roughen', 'terrace', 'soften'];
+const TOOL_KEYS: Readonly<Record<string, Tool>> = { a: 'raise', s: 'lower', g: 'smooth', e: 'flatten', u: 'fillUp', k: 'cut', m: 'ramp', r: 'roughen', t: 'terrace', h: 'soften', b: 'paint', w: 'water', d: 'drain', p: 'path', i: 'pick', n: 'scatter' };
+/** Weltkarte path styles → Belag (TERRAIN-03: „Weg aus der Weltkarte“). */
+const WORLD_PATH_STYLE: Readonly<Record<WorldPathStyle, string>> = { weg: 'pfad', strasse: 'pflaster', bahn: 'kiesweg', bruecke: 'steinweg' };
 const TOOL_HELP: Readonly<Record<Tool, string>> = {
   raise: 'Ziehen hebt das Gelände an, die Kante läuft weich aus.', lower: 'Ziehen senkt das Gelände ab.', smooth: 'Ziehen gleicht Höhen an die Nachbarn an.',
-  flatten: 'Ziehen ebnet auf die Zielhöhe ein (leer = Höhe beim Ansetzen).', roughen: 'Ziehen macht das Gelände unruhig (Hügel, Mulden), immer gleich für dieselbe Stelle.',
+  flatten: 'Ziehen ebnet auf die Zielhöhe ein (leer = Höhe beim Ansetzen).',
+  fillUp: 'Ziehen schüttet Mulden bis zur Zielhöhe auf – was höher liegt, bleibt stehen (leer = Höhe beim Ansetzen).',
+  cut: 'Ziehen trägt ab, was über der Zielhöhe liegt – Mulden bleiben, wie sie sind (leer = Höhe beim Ansetzen).',
+  ramp: 'Erster Klick setzt den Anfang, zweiter das Ende: dazwischen steigt das Gelände gleichmäßig (Zufahrt, Rampe zum Tor, Weg zum Plateau).', roughen: 'Ziehen macht das Gelände unruhig (Hügel, Mulden), immer gleich für dieselbe Stelle.',
   terrace: 'Ziehen rastet Höhen auf Stufen ein (Terrassenfelder, Weinberg).', soften: 'Ziehen trägt Klippen ab, bis keine Stufe höher als die Stärke ist.',
   paint: 'Ziehen bemalt die Oberfläche mit dem Stil, auf Wunsch nur an Hängen oder in Höhenbereichen.', drain: 'Ziehen entfernt Wasser.',
-  water: 'Klick füllt Wasser bis zum Wasserspiegel – wie ein Eimer in einer Mulde.', path: 'Klicks setzen Wegpunkte, „Weg legen“ baut den Weg mit höchstens einem Block Steigung je Schritt.',
+  water: 'Klick füllt Wasser bis zum Wasserspiegel – wie ein Eimer in einer Mulde.',
+  path: 'Klicks setzen Wegpunkte, „Weg legen“ baut den Weg mit höchstens einem Block Steigung je Schritt – auf Wunsch mit Treppen an jedem Höhenwechsel und als Brücke über Wasser.',
   pick: 'Klick übernimmt Höhe und Block der Stelle als Zielhöhe und Wasserspiegel.',
   scatter: 'Setzen: Klick stellt ein Teil der gewählten Streu-Ebene hin. Entfernen: Ziehen nimmt Teile im Pinselkreis weg.',
 };
-const TOOL_LABEL: Readonly<Record<Tool, string>> = { ...BRUSH_LABEL, water: 'Wasser füllen', path: 'Weg', pick: 'Pipette', scatter: 'Streuen' };
+const TOOL_LABEL: Readonly<Record<Tool, string>> = { ...BRUSH_LABEL, ramp: 'Rampe', water: 'Wasser füllen', path: 'Weg', pick: 'Pipette', scatter: 'Streuen' };
+const STEPS_LABEL: Readonly<Record<PathSteps, string>> = { stairs: 'Treppen', slabs: 'Halbstufen', none: 'keine' };
+const pieceLabel = (code: number): string => code >= PATH_DECK ? 'Brücke' : code === PATH_SLAB ? 'Halbstufe' : code >= PATH_STAIR ? `Treppe nach ${['Norden', 'Osten', 'Süden', 'Westen'][code - PATH_STAIR]}` : '';
 const UNDO_LIMIT = 30;
 const short = (id: string) => id.replace(/^minecraft:/, '');
 
@@ -87,6 +95,11 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
   const [pathStyle, setPathStyle] = useState('pfad');
   const [pathWidth, setPathWidth] = useState(3);
   const [pathPoints, setPathPoints] = useState<[number, number][]>([]);
+  const [pathSteps, setPathSteps] = useState<PathSteps>('stairs');
+  const [pathMaterial, setPathMaterial] = useState('auto');
+  const [pathWater, setPathWater] = useState<PathWater>('causeway');
+  const [rampPoints, setRampPoints] = useState<[number, number][]>([]);
+  const [ramp, setRamp] = useState({ width: 3, margin: 2, from: '', to: '' });
   const [mode, setMode] = useState<CanvasMode>('terrain');
   const [hover, setHover] = useState<[number, number] | null>(null);
   const [note, setNote] = useState('');
@@ -113,7 +126,7 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
     const flat = target.trim() ? Number(target) : centreTarget;
     return {
     tool: t, radius, strength, falloff, step, style,
-    ...(t === 'flatten' && flat !== undefined && { target: flat }),
+    ...((t === 'flatten' || t === 'fillUp' || t === 'cut') && flat !== undefined && { target: flat }),
     ...(t === 'paint' && { filter: {
       ...(filter.minSlope.trim() && { minSlope: Number(filter.minSlope) }), ...(filter.minY.trim() && { minY: Number(filter.minY) }),
       ...(filter.maxY.trim() && { maxY: Number(filter.maxY) }), ...(filter.onlyDry && { onlyDry: true }) } }),
@@ -126,6 +139,19 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
       if (!design) return;
       setNote('');
       if (tool === 'path') { setPathPoints(p => [...p, [x, z]]); return; }
+      if (tool === 'ramp') {
+        if (!rampPoints.length) { setRampPoints([[x, z]]); setNote(`Rampe beginnt bei X ${x} · Z ${z}. Jetzt das Ende anklicken.`); return; }
+        const a = rampPoints[0]!;
+        setRampPoints([]);
+        snapshot();
+        try {
+          const r = layRamp(design, a, [x, z], { width: ramp.width, margin: ramp.margin, ...(ramp.from.trim() && { fromY: Math.trunc(Number(ramp.from)) }), ...(ramp.to.trim() && { toY: Math.trunc(Number(ramp.to)) }) });
+          if (!r.columns && !r.blended) { undoStack.current.pop(); setNote('Die Rampe ändert hier nichts.'); return; }
+          setNote(`Rampe gelegt: ${r.length} Blöcke lang von Y ${r.fromY} nach Y ${r.toY}${r.length ? ` (${Math.round(Math.abs(r.toY - r.fromY) / r.length * 100)} % Steigung)` : ''}, ${formatNumber(r.columns)} Spalten, ${formatNumber(r.blended)} im Übergang, ${formatNumber(r.fill)} aufschütten, ${formatNumber(r.cut)} abtragen.`);
+          bump(); setStatsVersion(v => v + 1);
+        } catch (e) { undoStack.current.pop(); setNote(errorText(e)); }
+        return;
+      }
       if (tool === 'pick') {
         const h = heightAt(x, z);
         if (h === SURVEY_UNKNOWN) { setNote('Unbekanntes Gelände an dieser Stelle.'); return; }
@@ -332,10 +358,36 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
   const [margin, setMargin] = useState(4);
   const [pathReport, setPathReport] = useState<PathReport | null>(null);
   const lay = () => runArea('Weg', d => {
-    const r = layPath(d, pathPoints, { width: pathWidth, style: pathStyle });
+    const r = layPath(d, pathPoints, { width: pathWidth, style: pathStyle, steps: pathSteps, material: pathMaterial, water: pathWater });
     setPathReport(r); setPathPoints([]);
-    return `Weg gelegt: ${r.length} Blöcke lang, ${r.columns} Spalten, ${r.steps} Höhenwechsel (Stufen oder Treppen setzen)${r.causeway ? `, ${r.causeway} Spalten als Damm durchs Wasser` : ''}.`;
+    const pieces = [r.stairs && `${r.stairs} Treppen`, r.slabs && `${r.slabs} Halbstufen`].filter(Boolean).join(' und ');
+    return `Weg gelegt: ${r.length} Blöcke lang, ${r.columns} Spalten, ${r.steps} Höhenwechsel${pieces ? ` mit ${pieces}` : ''}${r.open ? ` (${r.open} ohne Stufe${pathSteps === 'none' ? '' : ' – dort mehr als ein Block oder unbekanntes Gelände'})` : ''}`
+      + `${r.causeway ? `, ${r.causeway} Spalten als Damm durchs Wasser` : ''}${r.bridge ? `, Brücke über ${r.bridge} Spalten Wasser mit ${r.rails} Geländerfeldern` : ''}.`;
   });
+
+  // Weg aus der Weltkarte (TERRAIN-03): paths of the Weltplan that cross this design.
+  const [worldPaths, setWorldPaths] = useState<WorldPath[]>([]);
+  const [worldPathId, setWorldPathId] = useState('');
+  const designKey = design ? `${design.dimension}|${design.minX}|${design.minZ}|${design.width}|${design.length}` : '';
+  useEffect(() => {
+    if (!design) { setWorldPaths([]); return; }
+    let live = true;
+    const inside = (x: number, z: number) => x >= design.minX && z >= design.minZ && x < design.minX + design.width && z < design.minZ + design.length;
+    repo.getWorldPlan().then(plan => {
+      if (!live) return;
+      setWorldPaths(plan.items.filter((i): i is WorldPath => i.kind === 'path' && i.dimension === design.dimension && pathLine(i.points).some(([x, z]) => inside(x, z))));
+    }, () => { if (live) setWorldPaths([]); });
+    return () => { live = false; };
+  }, [repo, designKey]); // eslint-disable-line react-hooks/exhaustive-deps
+  const takeWorldPath = () => {
+    const p = worldPaths.find(w => w.id === worldPathId) ?? worldPaths[0];
+    if (!p) return;
+    setPathPoints(p.points.map(([x, z]) => [x, z] as [number, number]));
+    setPathWidth(Math.max(1, Math.min(9, p.width)));
+    setPathStyle(WORLD_PATH_STYLE[p.style]);
+    if (p.style === 'bruecke') setPathWater('bridge');
+    setNote(`„${p.name || 'Weg'}“ aus der Weltkarte übernommen: ${p.points.length} Wegpunkte, Breite ${Math.min(9, p.width)}. Prüfen und „Weg legen“ drücken.`);
+  };
 
   // 3D preview: planned terrain as display cells.
   const preview3d = useMemo(() => {
@@ -343,7 +395,7 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
     try {
       const planned = designedSurvey(base, design);
       const disp = surveyDisplayCells([planned], { maxCells: 400_000, skirt: 3 });
-      const extra = scatterInfo?.cells ?? [];
+      const extra = [...(scatterInfo?.cells ?? []), ...pathPieceCells(design)];
       if (!disp.count) return null;
       let lo = Infinity;
       for (let k = 0; k < disp.count; k++) lo = Math.min(lo, disp.cells[k * 4 + 1]!);
@@ -380,9 +432,9 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
     const i = (hover[0] - design.minX) + (hover[1] - design.minZ) * design.width, h = design.height[i]!;
     if (h === SURVEY_UNKNOWN) return `X ${hover[0]} · Z ${hover[1]} · unbekannt`;
     const g = base.ground[i]!, delta = h - g;
-    return `X ${hover[0]} · Z ${hover[1]} · Y ${h}${delta ? ` (${delta > 0 ? '+' : ''}${delta})` : ''} · ${short(design.ids[design.top[i]!]!)}${design.water[i] !== NO_WATER ? ` · Wasser bis Y ${design.water[i]}` : ''}${design.path[i] ? ' · Weg' : ''}`;
+    return `X ${hover[0]} · Z ${hover[1]} · Y ${h}${delta ? ` (${delta > 0 ? '+' : ''}${delta})` : ''} · ${short(design.ids[design.top[i]!]!)}${design.water[i] !== NO_WATER ? ` · Wasser bis Y ${design.water[i]}` : ''}${design.path[i] ? ` · Weg${pieceLabel(design.path[i]!) ? ` (${pieceLabel(design.path[i]!)})` : ''}` : ''}`;
   })();
-  const isBrush = tool !== 'water' && tool !== 'path' && tool !== 'pick' && (tool !== 'scatter' || scatterMode === 'remove');
+  const isBrush = tool !== 'water' && tool !== 'path' && tool !== 'ramp' && tool !== 'pick' && (tool !== 'scatter' || scatterMode === 'remove');
 
   if (!work) return <section className="landscape" aria-label="Landschaft">
     <header className="landscape-head"><div><span className="panel-kicker">LANDSCHAFT GESTALTEN</span><h2>Gelände formen und bemalen</h2>
@@ -426,7 +478,7 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
     <div className="landscape-grid">
       <div className="landscape-main">
         <div className="landscape-tools" role="toolbar" aria-label="Werkzeuge">
-          {([...SHAPE_TOOLS, 'paint', 'water', 'drain', 'path', 'scatter', 'pick'] as Tool[]).map(t =>
+          {([...SHAPE_TOOLS, 'ramp', 'paint', 'water', 'drain', 'path', 'scatter', 'pick'] as Tool[]).map(t =>
             <button key={t} className={tool === t ? 'active' : ''} aria-pressed={tool === t} onClick={() => setTool(t)}
               title={`${TOOL_LABEL[t]} (${Object.entries(TOOL_KEYS).find(([, v]) => v === t)![0].toUpperCase()})`}>{TOOL_LABEL[t]}</button>)}
         </div>
@@ -434,10 +486,18 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
         <div className="landscape-options">
           {isBrush && <>
             <label>Größe <input type="range" min={0} max={32} value={radius} onChange={e => setRadius(Number(e.target.value))} aria-label="Pinselgröße" /> <b>{radius * 2 + 1}</b></label>
-            {tool !== 'paint' && tool !== 'drain' && tool !== 'flatten' && tool !== 'scatter' && <label>{tool === 'soften' ? 'Höchste Stufe' : tool === 'smooth' ? 'Durchgänge' : 'Stärke'} <input type="number" min={1} max={tool === 'smooth' ? 8 : 16} value={strength} onChange={e => setStrength(Math.max(1, Math.min(16, Math.trunc(Number(e.target.value)) || 1)))} /></label>}
+            {tool !== 'paint' && tool !== 'drain' && tool !== 'flatten' && tool !== 'fillUp' && tool !== 'cut' && tool !== 'scatter' && <label>{tool === 'soften' ? 'Höchste Stufe' : tool === 'smooth' ? 'Durchgänge' : 'Stärke'} <input type="number" min={1} max={tool === 'smooth' ? 8 : 16} value={strength} onChange={e => setStrength(Math.max(1, Math.min(16, Math.trunc(Number(e.target.value)) || 1)))} /></label>}
             {tool !== 'paint' && tool !== 'drain' && tool !== 'scatter' && <label>Kante <select value={falloff} onChange={e => setFalloff(e.target.value as Falloff)}><option value="soft">weich</option><option value="cone">spitz</option><option value="hard">hart</option></select></label>}
           </>}
-          {(tool === 'flatten' || tool === 'pick') && <label>Zielhöhe Y <input type="number" placeholder="beim Ansetzen" value={target} onChange={e => setTarget(e.target.value)} /></label>}
+          {(tool === 'flatten' || tool === 'fillUp' || tool === 'cut' || tool === 'pick') && <label>Zielhöhe Y <input type="number" placeholder="beim Ansetzen" value={target} onChange={e => setTarget(e.target.value)} /></label>}
+          {tool === 'ramp' && <>
+            <label>Breite <input type="number" min={1} max={15} value={ramp.width} onChange={e => setRamp({ ...ramp, width: Math.max(1, Math.min(15, Math.trunc(Number(e.target.value)) || 1)) })} aria-label="Rampenbreite" /></label>
+            <label>Übergang <input type="number" min={0} max={16} value={ramp.margin} onChange={e => setRamp({ ...ramp, margin: Math.max(0, Math.min(16, Math.trunc(Number(e.target.value)) || 0)) })} aria-label="Rampenübergang" /></label>
+            <label>Anfang Y <input type="number" placeholder="Gelände" value={ramp.from} onChange={e => setRamp({ ...ramp, from: e.target.value })} aria-label="Rampe Anfang Y" /></label>
+            <label>Ende Y <input type="number" placeholder="Gelände" value={ramp.to} onChange={e => setRamp({ ...ramp, to: e.target.value })} aria-label="Rampe Ende Y" /></label>
+            <span>{rampPoints.length ? 'Ende anklicken' : 'Anfang anklicken'}</span>
+            {rampPoints.length > 0 && <button onClick={() => setRampPoints([])}>Abbrechen</button>}
+          </>}
           {tool === 'terrace' && <label>Stufenhöhe <input type="number" min={2} max={16} value={step} onChange={e => setStep(Math.max(2, Math.min(16, Math.trunc(Number(e.target.value)) || 4)))} /></label>}
           {tool === 'paint' && <>
             <label>Stil <select value={style} onChange={e => setStyle(e.target.value)} aria-label="Oberflächenstil">{SURFACE_STYLES.map(s => <option key={s.id} value={s.id}>{s.label}{s.path ? ' (Weg)' : ''}</option>)}</select></label>
@@ -461,10 +521,20 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
           {tool === 'path' && <>
             <label>Belag <select value={pathStyle} onChange={e => setPathStyle(e.target.value)} aria-label="Wegbelag">{SURFACE_STYLES.filter(s => s.path).map(s => <option key={s.id} value={s.id}>{s.label}</option>)}</select></label>
             <label>Breite <input type="number" min={1} max={9} value={pathWidth} onChange={e => setPathWidth(Math.max(1, Math.min(9, Math.trunc(Number(e.target.value)) || 1)))} aria-label="Wegbreite" /></label>
+            <label>Stufen <select value={pathSteps} onChange={e => setPathSteps(e.target.value as PathSteps)} aria-label="Wegstufen">{(Object.keys(STEPS_LABEL) as PathSteps[]).map(k => <option key={k} value={k}>{STEPS_LABEL[k]}</option>)}</select></label>
+            <label>Material <select value={pathMaterial} onChange={e => setPathMaterial(e.target.value)} aria-label="Stufenmaterial">
+              <option value="auto">passend zum Belag ({PATH_MATERIALS.find(m => m.id === (PATH_STYLE_MATERIAL[pathStyle] ?? 'fichte'))?.label})</option>
+              {PATH_MATERIALS.map(m => <option key={m.id} value={m.id}>{m.label}</option>)}</select></label>
+            <label>Über Wasser <select value={pathWater} onChange={e => setPathWater(e.target.value as PathWater)} aria-label="Weg über Wasser"><option value="causeway">Damm</option><option value="bridge">Brücke mit Geländer</option></select></label>
             <span>{pathPoints.length} Punkte</span>
             <button className="primary" disabled={pathPoints.length < 2} onClick={lay}>Weg legen</button>
             <button disabled={!pathPoints.length} onClick={() => setPathPoints(p => p.slice(0, -1))}>Letzten Punkt weg</button>
             <button disabled={!pathPoints.length} onClick={() => setPathPoints([])}>Punkte verwerfen</button>
+            {worldPaths.length > 0 && <span className="landscape-worldpath">
+              <label>Weg aus der Weltkarte <select value={worldPathId || worldPaths[0]!.id} onChange={e => setWorldPathId(e.target.value)} aria-label="Weg aus der Weltkarte">
+                {worldPaths.map(w => <option key={w.id} value={w.id}>{w.name || 'Weg'} ({w.points.length} Punkte)</option>)}</select></label>
+              <button onClick={takeWorldPath}>Übernehmen</button>
+            </span>}
           </>}
         </div>
         <div className="landscape-view">
@@ -473,8 +543,8 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
             <label className="chip-check"><input type="checkbox" checked={show3d} onChange={e => setShow3d(e.target.checked)} /> 3D-Vorschau</label>
           </div>
           <DesignCanvas design={d} base={work.base} version={version} mode={mode} handlers={handlers} brushRadius={isBrush ? radius : null}
-            hover={hover} pathPoints={pathPoints} footprint={footprintPath} scatter={scatterDots} />
-          <p className="landscape-hover" aria-live="polite" data-testid="landscape-hover">{hoverInfo ?? 'Zeiger über die Karte bewegen: Höhe und Block erscheinen hier. Tasten: A/S/G/E/R/T/H formen, B malen, W Wasser, D trocknen, P Weg, N Streuen, I Pipette, +/− Größe.'}</p>
+            hover={hover} pathPoints={tool === 'ramp' ? rampPoints : pathPoints} footprint={footprintPath} scatter={scatterDots} />
+          <p className="landscape-hover" aria-live="polite" data-testid="landscape-hover">{hoverInfo ?? 'Zeiger über die Karte bewegen: Höhe und Block erscheinen hier. Tasten: A/S/G/E/U/K/R/T/H formen, M Rampe, B malen, W Wasser, D trocknen, P Weg, N Streuen, I Pipette, +/− Größe.'}</p>
           {show3d && <div className="landscape-3d build-3d">{preview3d ? <Viewer payload={preview3d.payload} cells={preview3d.cells} onSelect={noop} /> : <p className="muted">3D-Vorschau nicht verfügbar (zu groß).</p>}</div>}
         </div>
         {note && <div className="notice" role="status" data-testid="landscape-note">{note}</div>}
@@ -490,12 +560,13 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
           <dt>Neu bemalt</dt><dd>{formatNumber(stats.repainted)} Spalten</dd>
           <dt>Wasser</dt><dd data-stat="water">{formatNumber(stats.water)} Blöcke{stats.drained ? `, ${formatNumber(stats.drained)} Spalten trockengelegt` : ''}</dd>
           <dt>Wege</dt><dd data-stat="path">{formatNumber(stats.path)} Spalten</dd>
+          {(stats.stairs > 0 || stats.slabs > 0 || stats.deck > 0) && <><dt>Wegstufen und Brücken</dt><dd data-stat="pieces">{[stats.stairs && `${formatNumber(stats.stairs)} Treppen`, stats.slabs && `${formatNumber(stats.slabs)} Halbstufen`, stats.deck && `${formatNumber(stats.deck)} Brückenfelder`].filter(Boolean).join(', ')}</dd></>}
           {stats.heightRange && <><dt>Höhen</dt><dd>Y {stats.heightRange[0]} … {stats.heightRange[1]}</dd></>}
         </dl>}
         {stats && stats.materials.length > 0 && <><h4>Material zum Setzen</h4>
           <table className="landscape-materials"><tbody>{stats.materials.slice(0, 10).map(m => <tr key={m.id}><td><i style={{ background: swatchColor(m.id) }} /> {short(m.id)}</td><td>{formatNumber(m.count)}</td></tr>)}</tbody></table>
           {stats.materials.length > 10 && <p className="muted small">… und {stats.materials.length - 10} weitere</p>}</>}
-        {pathReport && <p className="muted small">Letzter Weg: {pathReport.length} Blöcke, {pathReport.rise} Blöcke Höhenunterschied in {pathReport.steps} Stufen, {formatNumber(pathReport.cut)} abtragen, {formatNumber(pathReport.fill)} aufschütten{pathReport.unknown ? `, ${pathReport.unknown} Punkte auf unbekanntem Gelände` : ''}.</p>}
+        {pathReport && <p className="muted small" data-testid="path-report">Letzter Weg: {pathReport.length} Blöcke, {pathReport.rise} Blöcke Höhenunterschied in {pathReport.steps} Stufen{pathReport.stairs ? `, ${pathReport.stairs} Treppen` : ''}{pathReport.slabs ? `, ${pathReport.slabs} Halbstufen` : ''}{pathReport.open ? `, ${pathReport.open} ohne Stufe` : ''}{pathReport.bridge ? `, ${pathReport.bridge} Brückenfelder` : ''}, {formatNumber(pathReport.cut)} abtragen, {formatNumber(pathReport.fill)} aufschütten{pathReport.unknown ? `, ${pathReport.unknown} Punkte auf unbekanntem Gelände` : ''}.</p>}
 
         <h3>Ganze Fläche</h3>
         <details className="landscape-area">

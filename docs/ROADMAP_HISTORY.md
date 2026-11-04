@@ -5249,3 +5249,28 @@ Testplan auf Mod 0.14.0 (TEAMBAU-25/09 ohne Server-Datei, Team-Raum vorausgefül
 - `scripts/render_testplan.mjs`
 - `tests/testphase.test.mjs`
 
+## 2026-11-04T13:25:59.610Z · progress
+
+**Aufgaben:** TERRAIN-03, TERRAIN-02
+
+Gelände und Wege: Aufschütten/Abtragen/Rampe, Wegstufen als Treppen oder Halbstufen, Brücken mit Geländer, Weg aus der Weltkarte; Kern 8/8, Browser 2/2 (Landschaft-Tests zentrieren die Zeichenfläche jetzt, sonst deckt am Handy die untere Leiste sie ab); Abnahme im Spiel (PROJ-19) und Basisplaner auf Gelände offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| TERRAIN-03 | 🧩 Implementiert · Abnahme offen | 5/7 | Abnahme PROJ-19 im Spiel; danach Basisplaner auf Gelände (S06). |
+| TERRAIN-02 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme mit eigener Welt (S05); Wegstufen und Brücken siehe TERRAIN-03. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/project/LandscapeTab.tsx`
+- `apps/web/src/views/project/landscape/DesignCanvas.tsx`
+- `docs/architecture/LANDSCAPE.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/terrainDesign.ts`
+- `tests/e2e/landscape-paths.e2e.mjs`
+- `tests/e2e/landscape-scatter.e2e.mjs`
+- `tests/e2e/landscape.e2e.mjs`
+- `tests/terrain-paths.test.mjs`
+

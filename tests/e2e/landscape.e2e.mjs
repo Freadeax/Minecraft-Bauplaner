@@ -60,7 +60,8 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     // Canvas position after scrolling it into view (tool buttons above it may scroll the page on phones).
     let box;
     const at = (fx, fz) => [box.x + box.width * fx, box.y + box.height * fz];
-    const frame = async () => { await canvas.scrollIntoViewIfNeeded(); box = await canvas.boundingBox(); };
+    // Centre the canvas: on phones the fixed bottom bar covers a canvas that is only just scrolled into view.
+    const frame = async () => { await canvas.evaluate(e => e.scrollIntoView({ block: 'center' })); box = await canvas.boundingBox(); };
     await frame();
     // Hover shows height and block.
     await p.mouse.move(...at(0.3, 0.5));

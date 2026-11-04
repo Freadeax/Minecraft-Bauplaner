@@ -82,9 +82,10 @@ export { SURVEY_SCHEMA_VERSION, SURVEY_UNKNOWN, SURVEY_MAX_SIDE, SURVEY_MAX_COLU
 export type { SurveyArea, TerrainSurvey, ProjectTerrainReference, SurveyColumnsInput, SurveyColumn, ColumnBase, EarthworkEstimate, SurveyDisplay } from './terrainSurvey.js';
 export { DESIGN_SCHEMA_VERSION, DESIGN_MEDIA_TYPE, NO_WATER, SURFACE_STYLES, BRUSH_LABEL, DEFAULT_AUTO_PAINT, DESIGN_MAX_CELLS, DESIGN_NOTE, styleById, fillerFor, columnHash, valueNoise,
   checkTerrainDesignReference, heightLimits, flatSurvey, designFromSurvey, cloneDesign, encodeDesign, decodeDesign, designFile, designMatchesBase, brushWeight, slopeAt, paintColumn,
-  applyBrush, strokePoints, floodWater, pathLine, layPath, autoPaint, gradeFootprints, resetToBase, compareDesign, designPayload, designedSurvey } from './terrainDesign.js';
+  applyBrush, strokePoints, floodWater, pathLine, layPath, autoPaint, gradeFootprints, resetToBase, compareDesign, designPayload, designedSurvey,
+  PATH_PLAIN, PATH_STAIR, PATH_SLAB, PATH_DECK, PATH_DECK_RAIL, PATH_DIRS, PATH_MATERIALS, PATH_STYLE_MATERIAL, pathMaterialById, hasPieces, risingDirs, pathPieceCells, layRamp } from './terrainDesign.js';
 export type { DesignBase, TerrainDesign, ProjectTerrainDesignReference, SurfaceStyle, BrushTool, Falloff, Brush, PaintFilter, FloodResult, PathOptions, PathReport, AutoPaintRules,
-  GradeResult, DesignStats, DesignBlocks, DesignCell } from './terrainDesign.js';
+  GradeResult, DesignStats, DesignBlocks, DesignCell, PathMaterial, PathSteps, PathWater, RampOptions, RampReport } from './terrainDesign.js';
 export { MAX_SCATTER_LAYERS, MAX_SCATTER_ITEMS, EMPTY_SCATTER, checkScatterLayer, checkScatterPlan } from './terrainScatterPlan.js';
 export type { ScatterPartRef, ScatterLayer, ScatterItem, ScatterPlan } from './terrainScatterPlan.js';
 export { SCATTER_NEED_LABEL, SCATTER_GROUP_LABEL, SCATTER_MISS_LABEL, BUILTIN_SCATTER_PARTS, SCATTER_PRESETS, builtinScatterPart, stencilScatterPart, builtinResolver, newScatterLayer,

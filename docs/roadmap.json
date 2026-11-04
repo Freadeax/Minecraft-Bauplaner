@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-04T12:52:53.984Z",
+  "updatedAt": "2026-11-04T13:25:59.610Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -41,7 +41,8 @@
     "LINK-06",
     "COOP-09",
     "PROJ-02",
-    "LINK-07"
+    "LINK-07",
+    "TERRAIN-03"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -4033,15 +4034,15 @@
         },
         {
           "id": "TERRAIN-02-S07",
-          "title": "Wegstufen als Treppen/Stufen an den Höhenwechseln eines Wegs.",
-          "done": false
+          "title": "Wegstufen als Treppen/Stufen an den Höhenwechseln eines Wegs (umgesetzt in TERRAIN-03).",
+          "done": true
         }
       ],
       "acceptance": [
         "Unbekannte Spalten werden nie verändert; Werkzeuge sind deterministisch; in der Welt ändert sich nichts ohne Bau; Geländebauteil gerät nicht in Konflikt mit geplanten Bauten; Weltkarte und Anlagen zeigen dasselbe geplante Gelände.",
         "Streu-Ebene: gleiche Regeln und gleiches Gelände ergeben dieselben Teile; Teile stehen nie im Wasser, auf Wegen, in Bauten, im Bestand oder ineinander; sie folgen dem geplanten Boden und sind Teil des Geländebauteils."
       ],
-      "next": "Abnahme mit eigener Welt (S05); Wegstufen als Treppen (S07).",
+      "next": "Abnahme mit eigener Welt (S05); Wegstufen und Brücken siehe TERRAIN-03.",
       "blockers": [],
       "evidence": [
         {
@@ -4073,7 +4074,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-04T13:25:59.610Z",
       "area": "PLANER",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -4082,9 +4083,110 @@
           "text": "Abnahme in deiner eigenen Welt und auf Touch-Geräten (S05)."
         }
       ],
-      "orphans": [
-        "S07 Wegstufen als Treppen an Höhenwechseln (auch BASE-01)."
-      ]
+      "orphans": []
+    },
+    {
+      "id": "TERRAIN-03",
+      "title": "Gelände und Wege im Projekt: Aufschütten, Abtragen, Rampe, Wegstufen als Treppen, Brücken mit Geländer, Weg aus der Weltkarte",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Gelände und Wege ausbauen“)",
+      "dependencies": [
+        "TERRAIN-02",
+        "TERRAIN-01",
+        "MAP-04",
+        "BASE-01"
+      ],
+      "scope": [
+        "packages/domain/src/terrainDesign.ts",
+        "packages/domain/src/index.ts",
+        "apps/web/src/views/project/LandscapeTab.tsx",
+        "apps/web/src/views/project/landscape/DesignCanvas.tsx",
+        "apps/web/src/testing/testplan.ts",
+        "docs/architecture/LANDSCAPE.md",
+        "docs/testing/TESTPLAN.md",
+        "tests/terrain-paths.test.mjs",
+        "tests/e2e/landscape-paths.e2e.mjs"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "TERRAIN-03-S01",
+          "title": "Geländewerkzeuge: Aufschütten (nur Mulden bis zur Zielhöhe), Abtragen (nur über der Zielhöhe), Rampe mit gleichmäßiger Steigung, Breite und weichem Übergang.",
+          "done": true
+        },
+        {
+          "id": "TERRAIN-03-S02",
+          "title": "Wegstufen: Treppen (bergauf, über die ganze Breite) oder Halbstufen an jedem Höhenwechsel um einen Block, neun Materialfamilien, keine Treppen ins Leere nach späteren Änderungen; Dateiformat BPTDES01 mit optionalem Stufenfeld.",
+          "done": true
+        },
+        {
+          "id": "TERRAIN-03-S03",
+          "title": "Brücken: Belag einen Block über dem Wasser, Wasser und Grund bleiben, Absatz am Ufer mit Treppen, Geländer (Zaun/Mauer) mit Verbindungen; Brücke als Oberfläche im geplanten Gelände.",
+          "done": true
+        },
+        {
+          "id": "TERRAIN-03-S04",
+          "title": "Weg aus der Weltkarte (Weltplan-Wege) in die Landschaft übernehmen; Wegart bestimmt Belag und Brücke.",
+          "done": true
+        },
+        {
+          "id": "TERRAIN-03-S05",
+          "title": "Unit- und Browserprüfung (1400/390 px), Doku LANDSCAPE.md, Testfall PROJ-19.",
+          "done": true
+        },
+        {
+          "id": "TERRAIN-03-S06",
+          "title": "Basisplaner auf Gelände: Küstenlinie aus der Geländeaufnahme, Wegenetz der Basis als Landschaftsweg mit Treppen und Brücken.",
+          "done": false
+        },
+        {
+          "id": "TERRAIN-03-S07",
+          "title": "Abnahme im Spiel (PROJ-19): Treppen, Brücke und Geländer als .litematic in Philipps Welt.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Treppen nur an Höhenwechseln um genau einen Block, immer bergauf gerichtet und mit gültigen Zuständen 26.3; nach späteren Pinselstrichen keine Treppen ins Leere.",
+        "Brücken lassen Wasser und Grund unverändert, liegen einen Block über dem Wasser und haben verbundene Geländer an offenen Seiten.",
+        "Aufschütten hebt nie an, was über der Zielhöhe liegt; Abtragen senkt nie, was darunter liegt; unbekannte Spalten bleiben unverändert.",
+        "Dateien ohne Wegstufen bleiben byte-identisch und ältere Gestaltungen laden unverändert."
+      ],
+      "next": "Abnahme PROJ-19 im Spiel; danach Basisplaner auf Gelände (S06).",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/terrain-paths.test.mjs",
+          "note": "8 Fälle: Aufschütten/Abtragen, Rampe, Treppen beidseitig, Halbstufen, Stufen nach Änderungen, Brücke, Brücke mit hohem Ufer, Datei, Materialien."
+        },
+        {
+          "path": "tests/e2e/landscape-paths.e2e.mjs",
+          "note": "Chromium 1400/390 px: Aufschütten, Graben, Rampe, Weg mit Treppen, Wasser, Brücke, 3D, Speichern/Neuladen, Bauteil mit Treppen und Zäunen im Material."
+        },
+        {
+          "path": "docs/architecture/LANDSCAPE.md",
+          "note": "Abschnitt „Wegstufen und Brücken (TERRAIN-03)“, Werkzeuge, Dateiformat, Grenzen."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Kern- und Chromiumtests bestanden; Abnahme im Spiel offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-04T13:25:59.610Z",
+      "area": "PLANER",
+      "thread": "Gelände und Wege ausbauen",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "PROJ-19: Weg mit Treppen und Brücke als .litematic in deiner Welt ansehen."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "BUILD-06",
@@ -17284,6 +17386,44 @@
           "done": 4,
           "total": 6,
           "next": "Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T13:25:59.610Z",
+      "kind": "progress",
+      "items": [
+        "TERRAIN-03",
+        "TERRAIN-02"
+      ],
+      "summary": "Gelände und Wege: Aufschütten/Abtragen/Rampe, Wegstufen als Treppen oder Halbstufen, Brücken mit Geländer, Weg aus der Weltkarte; Kern 8/8, Browser 2/2 (Landschaft-Tests zentrieren die Zeichenfläche jetzt, sonst deckt am Handy die untere Leiste sie ab); Abnahme im Spiel (PROJ-19) und Basisplaner auf Gelände offen.",
+      "files": [
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/project/LandscapeTab.tsx",
+        "apps/web/src/views/project/landscape/DesignCanvas.tsx",
+        "docs/architecture/LANDSCAPE.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/terrainDesign.ts",
+        "tests/e2e/landscape-paths.e2e.mjs",
+        "tests/e2e/landscape-scatter.e2e.mjs",
+        "tests/e2e/landscape.e2e.mjs",
+        "tests/terrain-paths.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "TERRAIN-03",
+          "status": "implemented",
+          "done": 5,
+          "total": 7,
+          "next": "Abnahme PROJ-19 im Spiel; danach Basisplaner auf Gelände (S06)."
+        },
+        {
+          "id": "TERRAIN-02",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Abnahme mit eigener Welt (S05); Wegstufen und Brücken siehe TERRAIN-03."
         }
       ]
     }

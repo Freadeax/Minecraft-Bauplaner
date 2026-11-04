@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { NO_WATER, SURVEY_UNKNOWN } from '../../../../../../packages/domain/src/index.js';
+import { NO_WATER, PATH_DECK, PATH_STAIR, SURVEY_UNKNOWN } from '../../../../../../packages/domain/src/index.js';
 import type { TerrainDesign, TerrainSurvey } from '../../../../../../packages/domain/src/index.js';
 import { faceColors } from '../../../colors';
 
@@ -55,6 +55,12 @@ export function renderDesign(ctx: CanvasRenderingContext2D, d: TerrainDesign, ba
       const [r, g, b] = colors[d.top[i]!]!;
       c = [r * shade, g * shade, b * shade];
       if (d.water[i] !== NO_WATER) { const depth = Math.min(1, (d.water[i]! - y) / 6); const a = 0.55 + 0.35 * depth; c = [c[0] * (1 - a) + WATER[0] * a, c[1] * (1 - a) + WATER[1] * a, c[2] * (1 - a) + WATER[2] * a]; }
+    }
+    // Path pieces (TERRAIN-03): a bridge deck shows its planks over the water, stairs and slabs a darker band of their block.
+    const code = d.path[i]!;
+    if (code >= PATH_STAIR && d.step[i] && mode !== 'heights') {
+      const [r, g, b] = colors[d.step[i]!]!, k = code >= PATH_DECK ? 1 : 0.6, dark = code >= PATH_DECK ? 1 : 0.75;
+      c = [c[0] * (1 - k) + r * dark * k, c[1] * (1 - k) + g * dark * k, c[2] * (1 - k) + b * dark * k];
     }
     px.set([Math.min(255, c[0]), Math.min(255, c[1]), Math.min(255, c[2]), 255], i * 4);
   }
