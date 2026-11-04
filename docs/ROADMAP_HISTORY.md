@@ -4929,3 +4929,23 @@ Sammeltruhen aus dem Team-Lager: Farm mit Lagerkiste verknüpfen, echte Rate aus
 - `docs/TESTING.md`
 - `docs/architecture/PRODUCTION.md`
 
+## 2026-11-04T08:48:05.000Z · progress
+
+**Aufgaben:** COOP-09
+
+Team live im Alltag: Chip und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar; gegen den echten Team-Raum geprüft.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-09 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme mit Mitspielern (TEAMBAU-25). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/project/TeamLiveBar.tsx`
+- `apps/web/src/views/project/roomClient.ts`
+- `apps/web/src/views/project/TeamRoom.tsx`
+- `apps/web/src/views/project/ProjectView.tsx`
+- `apps/web/src/team.css`
+- `tests/e2e/team-room.e2e.mjs`
+- `docs/architecture/TEAM_LIVE.md`
+

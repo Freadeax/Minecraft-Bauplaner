@@ -3,7 +3,7 @@ import { goLive, inviteLink, leaveLive, readBackup, readTeamPackage, roomStatus,
 import type { RoomTeam, TeamState, TeamView } from '../../../../../packages/domain/src/index.js';
 import { useApp } from '../../app/context';
 import { errorText } from '../../app/ui';
-import { createRoom, getPlan, putHeader, putPlan, readRoomUrl, saveRoomUrl, useRoomConnection } from './roomClient';
+import { createRoom, getPlan, putHeader, putPlan, readRoomUrl, rotateKey, saveRoomUrl, useRoomConnection } from './roomClient';
 import type { ProjectSession } from './session';
 import { roomHeader, takePlan, teamPackageText } from './teamTransfer';
 import { control, currentPairedServer, rememberRoom } from '../mod/serverClient';
@@ -84,6 +84,21 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
     onMessage(`Planstand ${room.planNumber ?? ''} aus dem Team-Raum übernommen. Dein vorheriger Stand liegt als Projekt „${copyName}“ in der Projektliste.`);
   });
 
+  // Lock someone out (COOP-09): a new key makes all old links invalid; open connections with it are closed by the room.
+  const renew = (who: 'member' | 'server') => run(async () => {
+    if (!live?.adminKey) return;
+    const ok = window.confirm(who === 'member'
+      ? 'Neue Einladung: Alle bisherigen Einladungslinks werden ungültig, auch für Mitspieler, die schon drin sind. Wer weiter mitbauen soll, bekommt den neuen Link. Fortfahren?'
+      : 'Neuer Server-Link: Der Server verliert die Verbindung, bis er mit dem neuen Link (oder über „Server mit dem Raum verbinden“) wieder verbunden ist. Fortfahren?');
+    if (!ok) return;
+    const keys = await rotateKey(live, who);
+    const cur = team as RoomTeam;
+    const next = { ...cur, live: { ...cur.live!, ...(keys.memberKey && { key: keys.memberKey }), ...(keys.serverKey && { serverKey: keys.serverKey }) } } as RoomTeam;
+    saveLive(next);
+    setShown(who === 'member' ? 'invite' : 'server');
+    onMessage(who === 'member' ? 'Neue Einladung erstellt. Die alten Links gelten nicht mehr – den neuen an alle schicken, die weiter mitbauen.' : 'Neuer Server-Link erstellt. Den Server damit neu verbinden.');
+  });
+
   if (!live) return <div className="team-block team-room" role="region" aria-label="Team live">
     <div className="team-block-head"><h3>Team live <small>ohne Dateien</small></h3><span className="team-live-state off">aus</span></div>
     <p>Im Team-Raum sieht jeder jeden Schritt der anderen sofort: Abschnitte, Fertigmeldungen, Notizen, Lieferungen und die Messungen des Servers. Neue Planstände kommen ohne Datei an. Wer offline baut, holt beim nächsten Verbinden alles nach.</p>
@@ -123,6 +138,8 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
       {server && <button disabled={busy} className="secondary" onClick={() => setShown(shown === 'server' ? '' : 'server')}>Link für den Server</button>}
       {live.adminKey && <button disabled={busy} onClick={() => void run(() => uploadPlan(team as RoomTeam))}>Plan in den Raum stellen</button>}
       <button disabled={busy} onClick={() => { saveLive(leaveLive(team as RoomTeam) as RoomTeam); onMessage('Live-Verbindung in diesem Browser getrennt. Der Team-Raum und die anderen bleiben unberührt.'); }}>Live trennen</button>
+      {live.adminKey && <button disabled={busy} className="secondary" onClick={() => void renew('member')}>Einladung erneuern</button>}
+      {live.adminKey && live.serverKey && <button disabled={busy} className="secondary" onClick={() => void renew('server')}>Server-Link erneuern</button>}
     </div>
     {shown && <div className="team-shown">
       <p>{shown === 'invite' ? 'Diesen Link an alle Mitspieler schicken. Wer ihn öffnet, bekommt Plan und Teamstand und ist sofort live dabei.'

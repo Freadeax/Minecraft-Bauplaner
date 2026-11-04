@@ -2,7 +2,7 @@
 // The sync logic itself is pure (packages/domain/src/teamSync.ts); this file only moves bytes.
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { confirm, ingest, nextBatch, retryDelay, trackOutbox } from '../../../../../packages/domain/src/index.js';
-import type { AppendAnswer, Batch, FeedAnswer, RoomTeam, TeamLive } from '../../../../../packages/domain/src/index.js';
+import type { AppendAnswer, Batch, FeedAnswer, RoomTeam, TeamEvent, TeamLive } from '../../../../../packages/domain/src/index.js';
 
 const URL_KEY = 'bauplaner.teamraum.adresse';
 /** Team-Raum of the project (Cloudflare worker bauplaner-team, services/team-room); own rooms can be entered instead. */
@@ -32,6 +32,8 @@ export const roomInfo = (live: Pick<TeamLive, 'url' | 'room' | 'key'>) => call<{
 export const postBatch = (live: TeamLive, batch: Batch) => call<AppendAnswer>(live.url, `/v1/rooms/${live.room}/events`, { method: 'POST', body: JSON.stringify(batch), key: live.key });
 export const getFeed = (live: TeamLive) => call<FeedAnswer>(live.url, `/v1/rooms/${live.room}/events?after=${encodeURIComponent(live.cursor)}`, { key: live.key });
 export const putHeader = (live: TeamLive, header: unknown) => call<{ ok: true }>(live.url, `/v1/rooms/${live.room}/header`, { method: 'PUT', body: JSON.stringify(header), key: live.adminKey ?? live.key });
+/** New invitation key (who = member) or server key (who = server); only with the admin key. Old links stop working. */
+export const rotateKey = (live: TeamLive, who: 'member' | 'server') => call<{ memberKey?: string; serverKey?: string }>(live.url, `/v1/rooms/${live.room}/rotate?wer=${who}`, { method: 'POST', key: live.adminKey ?? live.key });
 export const getHeader = <T>(live: Pick<TeamLive, 'url' | 'room' | 'key'>) => call<T>(live.url, `/v1/rooms/${live.room}/header`, { key: live.key });
 
 export async function sha256Hex(bytes: Uint8Array): Promise<string> {
@@ -57,18 +59,34 @@ export interface RoomConnection {
   readonly connected: boolean; readonly presence: readonly Presence[]; readonly error: string;
   /** Plan snapshot announced in the room header (sha), re-read on every header push. */
   readonly planSha: string; readonly planNumber?: number; readonly planRevision?: string;
-  /** Tells the others where I am (the Team tab passes my current section). */
-  announce(section?: string): void;
+  /** Steps of the others that came in while this project is open (newest last, at most 20). */
+  readonly news: readonly { readonly key: string; readonly event: TeamEvent }[];
+  dismiss(key?: string): void;
+  /** Own events the room refused (form, size, server-only), with the reason. */
+  readonly rejected: readonly { readonly id: string; readonly reason: string }[];
+  clearRejected(): void;
 }
-export const NO_ROOM: RoomConnection = { connected: false, presence: [], error: '', planSha: '', announce: () => undefined };
+export const NO_ROOM: RoomConnection = { connected: false, presence: [], error: '', planSha: '', news: [], dismiss: () => undefined, rejected: [], clearRejected: () => undefined };
 
 /**
  * Keeps a live team in sync while the tab is open: WebSocket with the room (push of new events and
  * presence), the outbox goes up as batches, and without WebSocket an HTTP poll with growing pause.
  * `save` stores the merged team without an undo step (incoming events are not the user's actions).
  */
-export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, save: (t: RoomTeam) => void): RoomConnection {
+export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, save: (t: RoomTeam) => void, section?: string): RoomConnection {
   const [connected, setConnected] = useState(false);
+  const [news, setNews] = useState<readonly { readonly key: string; readonly event: TeamEvent }[]>([]);
+  const [rejected, setRejected] = useState<readonly { readonly id: string; readonly reason: string }[]>([]);
+  const meRef = useRef(me); meRef.current = me;
+  const sectionRef = useRef(section); sectionRef.current = section;
+  /** Only pushes count as news, not the catch-up after connecting (that would flood the screen). */
+  const caughtUp = useRef(false);
+  const noteNews = (added: readonly TeamEvent[]) => {
+    if (!caughtUp.current) return;
+    const others = added.filter(e => e.by !== meRef.current);
+    if (others.length) setNews(n => [...n, ...others.map(e => ({ key: e.id, event: e }))].slice(-20));
+  };
+  const noteRejected = (r: AppendAnswer['rejected']) => { if (r.length) setRejected(x => [...x, ...r].slice(-50)); };
   const [presence, setPresence] = useState<readonly Presence[]>([]);
   const [error, setError] = useState('');
   const latest = useRef(team); latest.current = team;
@@ -103,7 +121,7 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
     const socket = ws.current;
     if (socket?.readyState === WebSocket.OPEN) { sending.current = batch.batch; socket.send(JSON.stringify({ type: 'append', ...batch })); return; }
     sending.current = batch.batch;
-    void postBatch(t.live, batch).then(a => { sending.current = null; const cur = latest.current; if (cur) { apply(confirm(cur, a).team); flush(); } })
+    void postBatch(t.live, batch).then(a => { sending.current = null; const cur = latest.current; if (cur) { const c = confirm(cur, a); noteRejected(c.rejected); apply(c.team); flush(); } })
       .catch(e => { sending.current = null; setError(e instanceof Error ? e.message : String(e)); });
   };
 
@@ -118,8 +136,10 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
       const t = latest.current; if (stopped || !t?.live) return;
       try {
         let feed: FeedAnswer, cur = t;
-        do { feed = await getFeed(cur.live!); cur = ingest(cur, feed).team; } while (feed.more && !stopped);
+        const added: TeamEvent[] = [];
+        do { feed = await getFeed(cur.live!); const r = ingest(cur, feed); cur = r.team; added.push(...r.added); } while (feed.more && !stopped);
         if (cur !== t) apply(cur);
+        noteNews(added); caughtUp.current = true;
         flush(); setError(''); failures = 0;
         if (!plan.sha) readHeader();
       } catch (e) { failures++; setError(e instanceof Error ? e.message : String(e)); }
@@ -130,15 +150,20 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
       let socket: WebSocket;
       try { socket = new WebSocket(`${t.live.url.replace(/^http/, 'ws')}/v1/rooms/${t.live.room}/live`); } catch { void poll(); return; }
       ws.current = socket;
-      socket.onopen = () => socket.send(JSON.stringify({ type: 'hello', key: t.live!.key, member: me ?? '?', device: t.live!.device, where: 'planer', after: latest.current?.live?.cursor ?? '' }));
+      socket.onopen = () => socket.send(JSON.stringify({ type: 'hello', key: t.live!.key, member: me ?? '?', device: t.live!.device, where: 'planer', ...(sectionRef.current && { section: sectionRef.current }), after: latest.current?.live?.cursor ?? '' }));
       socket.onmessage = m => {
         let d: { type: string } & Record<string, unknown>;
         try { d = JSON.parse(String(m.data)); } catch { return; }
         const cur = latest.current; if (!cur?.live) return;
-        if (d.type === 'welcome') { setConnected(true); setError(''); failures = 0; flush(); if (d.header) readHeader(); }
+        if (d.type === 'welcome') { setConnected(true); setError(''); failures = 0; caughtUp.current = false; flush(); if (d.header) readHeader(); }
         else if (d.type === 'header' || d.type === 'plan') readHeader();
-        else if (d.type === 'events') { const r = ingest(cur, d as unknown as FeedAnswer); if (r.added.length || r.team.live?.cursor !== cur.live.cursor) apply(r.team); }
-        else if (d.type === 'appended') { sending.current = null; apply(confirm(cur, d as unknown as AppendAnswer).team); flush(); }
+        else if (d.type === 'events') {
+          const feed = d as unknown as FeedAnswer, r = ingest(cur, feed);
+          if (r.added.length || r.team.live?.cursor !== cur.live.cursor) apply(r.team);
+          noteNews(r.added);
+          if (!feed.more) caughtUp.current = true;
+        }
+        else if (d.type === 'appended') { sending.current = null; const c = confirm(cur, d as unknown as AppendAnswer); noteRejected(c.rejected); apply(c.team); flush(); }
         else if (d.type === 'presence') setPresence((d.members as Presence[]) ?? []);
         else if (d.type === 'error') { sending.current = null; setError(String(d.message ?? d.error)); }
       };
@@ -156,11 +181,14 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
     return () => { stopped = true; clearTimeout(timer); window.removeEventListener('online', onOnline); ws.current?.close(); ws.current = null; setConnected(false); };
   }, [roomKey, me]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const announce = (section?: string) => {
+  // Where I am: my section in progress goes to the others' "Gerade da" whenever it changes.
+  useEffect(() => {
     const socket = ws.current;
-    if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify({ type: 'presence', where: 'planer', ...(section && { section }) }));
-  };
-  return { connected, presence, error, planSha: plan.sha, ...(plan.number !== undefined && { planNumber: plan.number }), ...(plan.revision && { planRevision: plan.revision }), announce };
+    if (connected && socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify({ type: 'presence', where: 'planer', ...(section ? { section } : { section: '' }) }));
+  }, [section, connected]);
+  const dismiss = (key?: string) => setNews(n => key ? n.filter(x => x.key !== key) : []);
+  return { connected, presence, error, planSha: plan.sha, ...(plan.number !== undefined && { planNumber: plan.number }), ...(plan.revision && { planRevision: plan.revision }),
+    news, dismiss, rejected, clearRejected: () => setRejected([]) };
 }
 
 /** The connection of the open project (mounted once in ProjectView, so live works in every tab). */

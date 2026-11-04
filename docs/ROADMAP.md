@@ -15,7 +15,7 @@ Stand: 2026-11-04T09:16:18.610Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 8 |
 | 🚧 In Arbeit | 4 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 74 |
+| 🧩 Implementiert · Abnahme offen | 75 |
 | ✅ Im beschriebenen Umfang geprüft | 25 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -28,7 +28,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 19 | 9 | 18 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 4 | 10 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 8 | 1 | 5 | 1 |
-| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 10 | 1 | 10 | 0 |
+| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 11 | 1 | 11 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 8 | 0 | 7 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 3 | 0 |
@@ -115,6 +115,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [COOP-05](#coop-05) | Geprüfte Lagerkisten im Paper-Plugin | 🧩 Implementiert · Abnahme offen 3/5 | P1 | „Server-Plugin mit geprüften Lagerkisten“ | LAGER-01…09 mit echten Spielern. |
 | [COOP-06](#coop-06) | Teamplanung im Planer | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Server-Plugin mit geprüften Lagerkisten“ | TEAMBAU-21…24 mit Mitspielern an einem großen Bau. |
 | [COOP-07](#coop-07) | Team live ohne Dateien | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat). |
+| [COOP-09](#coop-09) | Team live im Alltag | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat). |
 | [LINK-04](#link-04) | Planer | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Anbindung von Planer, Mod und Server neu denken“ | Testplan-Bereich LINK durchgehen. |
 | [LINK-05](#link-05) | Zweiter Weg über den Team-Raum | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Anbindung von Planer, Mod und Server neu denken“ | Am PC „Weiteres Gerät freigeben“, Link auf dem iPad öffnen, eine Einstellung ändern. |
 | [COOP-08](#coop-08) | Ertragskisten | 🧩 Implementiert · Abnahme offen 2/4 | P2 | „Server-Plugin mit geprüften Lagerkisten“ | LAGER-01…09 mit echten Spielern. |
@@ -248,6 +249,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **COOP-07** · TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat).
 - **COOP-08** · LAGER-01…09 mit echten Spielern.
 - **LINK-01** · Plugin 0.12.0 einspielen, als OP mit Mod beitreten, J → „Teambau erlauben“, im Planer #/mod „Server koppeln“.
+- **COOP-09** · TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat).
 
 ### Im Spiel an deinem PC
 
@@ -391,6 +393,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **LINK-06 · Weitere Steuerung ohne Befehle: Plan mit Anker von der Weltkarte auf den Server (umgesetzt), Serveraufnahme (scan) per Steuernachricht (offen)** — 🚧 In Arbeit, 1/2 Teilschritte. Nächster Schritt: Serveraufnahme (scan) als Steueraktion; Abnahme LINK-05 (Testplan).
 - **COOP-08 · Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion)** — 🧩 Implementiert · Abnahme offen, 2/4 Teilschritte. Nächster Schritt: PROD-05 liest TeamView.yields bzw. store.yield; Abnahme LAGER-10 auf Philipps Server.
 - **PROD-05 · Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen.
+- **COOP-09 · Team live im Alltag: Status und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme mit Mitspielern (TEAMBAU-25).
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -572,6 +575,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [LINK-04](#link-04) | Planer: Bereich „Spiel und Server verbinden – ohne Befehle“ (#/mod), Server koppeln und einstellen, Team und Raum per Knopf | 🧩 Implementiert · Abnahme offen | 3/4 | LINK-02, LINK-03 | ausstehend | ausstehend |
 | [LINK-05](#link-05) | Zweiter Weg über den Team-Raum: Steuernachrichten ohne Mod (iPad), weiteres Gerät per Link freigeben | 🧩 Implementiert · Abnahme offen | 5/5 | LINK-04, COOP-07 | ausstehend | ausstehend |
 | [LINK-06](#link-06) | Weitere Steuerung ohne Befehle: Plan mit Anker von der Weltkarte auf den Server (umgesetzt), Serveraufnahme (scan) per Steuernachricht (offen) | 🚧 In Arbeit | 1/2 | LINK-05 | ausstehend | ausstehend |
+| [COOP-09](#coop-09) | Team live im Alltag: Status und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-07 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
 
@@ -3092,6 +3096,30 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [scripts/test_bridge_paper_link.sh](../scripts/test_bridge_paper_link.sh) — Paper 1.21.11: Plan mit Anker per Steuernachricht abgelegt, kaputter Plan abgewiesen; mit BAUPLANER_ROOM gegen den echten Team-Raum (04.11.2026).; [tests/e2e/server-link.e2e.mjs](../tests/e2e/server-link.e2e.mjs) — iPad 820 px: Weltkarte → „Auf den Server legen“ über den Raum; mit TEAM_ROOM_URL gegen den echten Dienst grün.
 
 **Dateiumfang:** `apps/web/src/testing/testplan.ts`, `apps/web/src/views/map/WorldMapView.tsx`, `apps/web/src/views/mod/ServerPanel.tsx`, `apps/web/src/views/mod/serverClient.ts`, `docs/TESTING.md`, `docs/architecture/AUTO_LINK.md`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java`, `scripts/bridge_paperlink.mjs`, `scripts/test_bridge_paper_link.sh`, `tests/e2e/modSimulator.mjs`, `tests/e2e/server-link.e2e.mjs`. **Abhängigkeiten:** LINK-05. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### COOP-09
+
+**Team live im Alltag: Status und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Aktualisiert: 2026-11-04T08:48:05.000Z
+
+- [x] COOP-09-S01: Chip im Projektkopf und Meldungen der anderen in jedem Reiter (ohne Flut beim Nachholen).
+- [x] COOP-09-S02: Anwesenheit mit eigenem Abschnitt in Arbeit.
+- [x] COOP-09-S03: Einladung und Server-Link erneuern (alte Links gesperrt, Verbindungen schließen mit 4403, Neu-Beitritt verbindet vorhandenes Projekt).
+- [x] COOP-09-S04: Vom Raum abgelehnte eigene Meldungen mit Grund anzeigen.
+- [ ] COOP-09-S05: Abnahme mit Mitspielern (TEAMBAU-25).
+
+**Abnahme:** Meldungen nur für neue Schritte anderer, nicht für das Nachholen. Nach „Einladung erneuern“ kommt niemand mit dem alten Link mehr in den Raum.
+
+**Nächste Aktion:** Abnahme mit Mitspielern (TEAMBAU-25).
+
+**Nur Philipp:** Auf deinem Server mit Mitspielern: TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat).
+
+**Prüfstand:** Automatisch geprüft, auch gegen den echten Dienst; Abnahme mit Mitspielern offen.
+
+**Nachweise:** [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — Meldung, Chip in anderem Reiter, Anwesenheit mit Abschnitt, Einladung erneuern mit Aussperren und Wiederbeitritt; 1400/390 px, auch gegen den echten Dienst (04.11.2026).
+
+**Dateiumfang:** `apps/web/src/views/project/TeamLiveBar.tsx`, `apps/web/src/views/project/roomClient.ts`, `apps/web/src/views/project/TeamRoom.tsx`, `apps/web/src/views/project/ProjectView.tsx`, `apps/web/src/team.css`, `tests/e2e/team-room.e2e.mjs`, `docs/architecture/TEAM_LIVE.md`. **Abhängigkeiten:** COOP-07. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

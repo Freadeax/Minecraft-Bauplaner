@@ -40,7 +40,8 @@
     "LINK-05",
     "LINK-06",
     "COOP-08",
-    "PROD-05"
+    "PROD-05",
+    "COOP-09"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -8886,6 +8887,84 @@
       },
       "next": "Serveraufnahme (scan) als Steueraktion; Abnahme LINK-05 (Testplan).",
       "philipp": []
+    },
+    {
+      "id": "COOP-09",
+      "title": "Team live im Alltag: Status und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar",
+      "phase": "P4",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“)",
+      "dependencies": [
+        "COOP-07"
+      ],
+      "scope": [
+        "apps/web/src/views/project/TeamLiveBar.tsx",
+        "apps/web/src/views/project/roomClient.ts",
+        "apps/web/src/views/project/TeamRoom.tsx",
+        "apps/web/src/views/project/ProjectView.tsx",
+        "apps/web/src/team.css",
+        "tests/e2e/team-room.e2e.mjs",
+        "docs/architecture/TEAM_LIVE.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "COOP-09-S01",
+          "title": "Chip im Projektkopf und Meldungen der anderen in jedem Reiter (ohne Flut beim Nachholen).",
+          "done": true
+        },
+        {
+          "id": "COOP-09-S02",
+          "title": "Anwesenheit mit eigenem Abschnitt in Arbeit.",
+          "done": true
+        },
+        {
+          "id": "COOP-09-S03",
+          "title": "Einladung und Server-Link erneuern (alte Links gesperrt, Verbindungen schließen mit 4403, Neu-Beitritt verbindet vorhandenes Projekt).",
+          "done": true
+        },
+        {
+          "id": "COOP-09-S04",
+          "title": "Vom Raum abgelehnte eigene Meldungen mit Grund anzeigen.",
+          "done": true
+        },
+        {
+          "id": "COOP-09-S05",
+          "title": "Abnahme mit Mitspielern (TEAMBAU-25).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Meldungen nur für neue Schritte anderer, nicht für das Nachholen.",
+        "Nach „Einladung erneuern“ kommt niemand mit dem alten Link mehr in den Raum."
+      ],
+      "next": "Abnahme mit Mitspielern (TEAMBAU-25).",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/e2e/team-room.e2e.mjs",
+          "note": "Meldung, Chip in anderem Reiter, Anwesenheit mit Abschnitt, Einladung erneuern mit Aussperren und Wiederbeitritt; 1400/390 px, auch gegen den echten Dienst (04.11.2026)."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Automatisch geprüft, auch gegen den echten Dienst; Abnahme mit Mitspielern offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-04T08:48:05.000Z",
+      "area": "TEAM",
+      "thread": "Gemeinsames Bauen mehrerer Spieler ermöglichen",
+      "philipp": [
+        {
+          "kind": "server",
+          "text": "TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat)."
+        }
+      ],
+      "orphans": []
     }
   ],
   "events": [
@@ -16454,6 +16533,32 @@
           "done": 5,
           "total": 5,
           "next": "Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-04T08:48:05.000Z",
+      "kind": "progress",
+      "items": [
+        "COOP-09"
+      ],
+      "summary": "Team live im Alltag: Chip und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar; gegen den echten Team-Raum geprüft.",
+      "files": [
+        "apps/web/src/views/project/TeamLiveBar.tsx",
+        "apps/web/src/views/project/roomClient.ts",
+        "apps/web/src/views/project/TeamRoom.tsx",
+        "apps/web/src/views/project/ProjectView.tsx",
+        "apps/web/src/team.css",
+        "tests/e2e/team-room.e2e.mjs",
+        "docs/architecture/TEAM_LIVE.md"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-09",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme mit Mitspielern (TEAMBAU-25)."
         }
       ]
     }

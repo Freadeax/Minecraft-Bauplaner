@@ -6,9 +6,10 @@ import { useApp } from '../../app/context';
 import { Icon, tabIcon } from '../../app/icons';
 import { useDocumentTitle } from '../../app/Shell';
 import { useProjectBackupState } from '../../app/backupStatus';
-import { findUpdates, siteOf, summarizeUpdates } from '../../../../../packages/domain/src/index.js';
+import { findUpdates, siteOf, summarizeUpdates, teamContextOf, teamView } from '../../../../../packages/domain/src/index.js';
 import type { RoomTeam, TeamState } from '../../../../../packages/domain/src/index.js';
 import { TeamRoomContext, useTeamRoom } from './roomClient';
+import { TeamLiveChip, TeamNews } from './TeamLiveBar';
 import type { Project } from '../../../../../packages/domain/src/index.js';
 import type { Repository } from '../../app/repository';
 import '../../backup.css';
@@ -29,12 +30,17 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
   // Team live (COOP-07): one room connection per open project; incoming events are stored without an undo step.
   const sessionRef = useRef(session); sessionRef.current = session;
   const team = session?.project.site?.team as RoomTeam | undefined;
+  // "Gerade da": my section in progress (first one), shown to the others.
+  const mySection = useMemo(() => {
+    if (!team?.live || !team.self || !session) return undefined;
+    return teamView(team, teamContextOf(siteOf(session.project))).sections.find(s => s.owner === team.self && s.status === 'vergeben')?.sectionId;
+  }, [team?.events, team?.self, !!team?.live]); // eslint-disable-line react-hooks/exhaustive-deps
   const room = useTeamRoom(team, team?.self, next => {
     const s = sessionRef.current; if (!s) return;
     const p = s.project, site = siteOf(p);
     if (site.team?.teamId !== next.teamId) return;
     s.replace({ ...p, site: { ...site, team: next as TeamState } });
-  });
+  }, mySection);
   useDocumentTitle(session ? `${session.project.name}${active && active.id !== 'editor' ? ` · ${active.label}` : ''}` : 'Projekt');
   if (loadError) return <div className="page"><div className="notice warning" role="alert"><strong>Projekt nicht geladen</strong><p>{loadError}</p><a href="#/">Zur Projektzentrale</a></div></div>;
   if (!session) return <div className="loading" role="status">Projekt wird geladen …</div>;
@@ -43,7 +49,7 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
       <div className="project-title">
         <nav className="crumbs" aria-label="Pfad"><a className="crumb" href="#/">Projekte</a><span aria-hidden="true">›</span><span aria-current="page">{session.project.name}</span></nav>
         <h1 className="page-title">{session.project.name}</h1>
-        <BackupChip repo={repo} project={session.project} /><UpdateChip project={session.project} projectId={projectId} />
+        <BackupChip repo={repo} project={session.project} /><UpdateChip project={session.project} projectId={projectId} /><TeamLiveChip project={session.project} />
       </div>
       <span className={`save-state ${session.saveState}`} role="status" title={session.saveError}>
         {saveLabel[session.saveState]}{repo.kind === 'memory' && ' · nur diese Sitzung'}</span>
@@ -62,6 +68,7 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
       <p>{session.saveError} Deine letzte Änderung ist nur in diesem Tab sichtbar und nicht gespeichert.</p>
       <button onClick={() => void session.reload()}>Gespeicherten Stand laden</button></div>}
     {active ? <active.component session={session} /> : <div className="notice" role="alert">Unbekannter Projektbereich „{tab}“.</div>}
+    <TeamNews project={session.project} />
   </div></TeamRoomContext.Provider>;
 }
 

@@ -62,6 +62,12 @@ function fakeRooms() {
       if (rest === 'header') { await core.auth(key); return json(core.getHeader()); }
       if (rest.startsWith('plan/') && req.method() === 'PUT') { await core.auth(key, 'admin'); await core.putPlan(rest.slice(5), new Uint8Array(req.postDataBuffer())); return json({ ok: true }); }
       if (rest.startsWith('plan/')) { await core.auth(key); return route.fulfill({ status: 200, headers: { ...cors, 'Content-Type': 'application/gzip' }, body: Buffer.from(core.getPlan(rest.slice(5))) }); }
+      if (rest === 'rotate' && req.method() === 'POST') {
+        await core.auth(key, 'admin');
+        const who = url.searchParams.get('wer') === 'server' ? 'server' : 'member', out = await core.rotate(who);
+        for (const s of sockets) if (s.room === parts[2] && s.role === who) s.ws.close({ code: 4403, reason: 'schluessel-erneuert' });
+        return json(out);
+      }
       return json({ error: 'nicht-gefunden' }, 404);
     } catch (e) {
       if (e instanceof RoomError) return json({ error: e.code, message: e.message }, e.status);
@@ -105,11 +111,13 @@ function remote(id, memberKey, serverKey) {
     };
   }
   const call = async (path, key, init = {}) => (await fetch(`${REAL}/v1/rooms/${id}${path}`, { ...init, headers: { Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' } })).json();
-  return {
-    header: () => call('/header', memberKey),
-    events: async () => { let all = [], cursor = '', page; do { page = await call(`/events?after=${cursor}`, memberKey); all = all.concat(page.events); cursor = page.cursor; } while (page.more); return all; },
-    append: (role, batch) => call('/events', role === 'server' ? serverKey : memberKey, { method: 'POST', body: JSON.stringify(batch) }),
+  const r = {
+    memberKey,
+    header: () => call('/header', r.memberKey),
+    events: async () => { let all = [], cursor = '', page; do { page = await call(`/events?after=${cursor}`, r.memberKey); all = all.concat(page.events); cursor = page.cursor; } while (page.more); return all; },
+    append: (role, batch) => call('/events', role === 'server' ? serverKey : r.memberKey, { method: 'POST', body: JSON.stringify(batch) }),
   };
+  return r;
 }
 async function page(viewport) {
   const context = await browser.newContext({ viewport });
@@ -175,8 +183,16 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
 
     // ---- Bauleitung sees it live, without reading anything in.
     await section(a, 'Fundament').locator('.team-owner', { hasText: 'Anna' }).waitFor();
+    // COOP-08: news in every tab, status chip in the head, presence with the section.
+    await a.getByRole('region', { name: 'Neues im Team' }).getByText(/Anna.*Fundament/).waitFor();
+    await a.locator('.project-head [data-team-live=live]').waitFor();
+    await liveBlock(a).getByRole('list', { name: 'Gerade da' }).getByText(/Fundament/).waitFor();
     await a.getByRole('region', { name: 'Mitglieder' }).getByText('Anna').first().waitFor();
     await liveBlock(a).getByRole('list', { name: 'Gerade da' }).getByText('Anna').waitFor();
+    // In another tab: the chip and the news stay.
+    await a.getByRole('navigation', { name: 'Projektbereiche' }).getByRole('link', { name: 'Baustelle' }).click();
+    await a.locator('.project-head [data-team-live=live]').waitFor();
+    await teamTab(a);
     await section(a, 'Dach').getByRole('button', { name: 'Übernehmen' }).click();
     await section(b, 'Dach').locator('.team-owner', { hasText: 'Philipp' }).waitFor();
 
@@ -202,6 +218,17 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     await b.getByText(/Planstand 2 aus dem Team-Raum übernommen/).waitFor();
     await liveBlock(b).getByRole('button', { name: 'Planstand übernehmen' }).waitFor({ state: 'detached' });
     await section(b, 'Dach').locator('.team-owner', { hasText: 'Philipp' }).waitFor();
+
+    // ---- COOP-08: the Bauleitung renews the invitation – the old key is locked out, the new link lets Anna back in.
+    await liveBlock(a).getByRole('button', { name: 'Einladung erneuern' }).click();
+    const fresh = await liveBlock(a).getByLabel('Einladungslink').inputValue();
+    assert.notEqual(fresh, link);
+    await liveBlock(b).getByText(/kennt diesen Schlüssel nicht mehr/).waitFor();
+    await b.goto(fresh);
+    await b.getByRole('button', { name: 'Beitreten und Plan laden' }).click();
+    await b.waitForURL(/\/team$/);
+    await liveBlock(b).locator('[data-state=live]').waitFor();
+    room.memberKey = new URLSearchParams(fresh.split('?')[1]).get('k');
 
     // ---- Survives a reload: still live, nothing waiting, same log on both sides.
     await b.reload();

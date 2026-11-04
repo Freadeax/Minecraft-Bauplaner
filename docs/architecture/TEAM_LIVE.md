@@ -92,3 +92,11 @@ Ein Raum gehört zu genau einem Team (`teamId`). Alle Antworten sind JSON. Grenz
 - Paper-Plugin: `RoomLink.java` (Plugin-Thread, COOP-07-S05), `/bauplaner team verbinden <Server-Link>`; Test `scripts/test_bridge_paper_room.sh` (BAUPLANER_ROOM).
 - **Betrieb (04.11.2026):** Der Dienst läuft unter `https://bauplaner-team.team-room.workers.dev` (Worker `bauplaner-team`, Cloudflare-Konto des Projekts, Deploy mit `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ACCOUNT_ID` aus der Cloud-Umgebung: `cd services/team-room && npx wrangler deploy`). Der Planer schlägt diese Adresse vor (`DEFAULT_ROOM_URL` in `roomClient.ts`); eigene Räume bleiben eintragbar. Geprüft gegen den echten Dienst: Rauchtest, `TEAM_ROOM_URL=… node --test tests/e2e/team-room.e2e.mjs` (zwei Browser, 1400/390 px) und Paper 26.3 mit RoomLink.
 - Offen: Spieltest mit Mitspielern (TEAMBAU-25).
+
+## 11. Team live im Alltag (04.11.2026, COOP-09)
+
+- **In jedem Reiter:** Im Projektkopf steht ein Chip „● Team live · 2 da“ (bzw. „sendet …“, „offline · 3 warten“), Klick öffnet den Reiter „Team“. Schritte der anderen erscheinen unten rechts als kurze Meldung („Anna: Abschnitt „Fundament“ übernommen“), etwa 9 s lang, Klick öffnet „Team“. Das Nachholen beim Verbinden zeigt keine Meldungen (sonst Flut nach einer Nacht offline). `TeamLiveBar.tsx`.
+- **Gerade da mit Abschnitt:** Der Planer meldet den eigenen Abschnitt in Arbeit als Anwesenheit (`presence.section`), bei jedem Wechsel neu.
+- **Aussperren:** Die Bauleitung (mit adminKey) kann „Einladung erneuern“ und „Server-Link erneuern“ (`POST …/rotate?wer=member|server`). Alte Links gelten sofort nicht mehr; offene Verbindungen schließen mit 4403, der Planer zeigt „Bitte die Bauleitung um einen neuen Einladungslink“. Wer den neuen Link öffnet, wird im vorhandenen Projekt nur neu verbunden.
+- **Abgelehnte Meldungen:** Lehnt der Raum ein eigenes Ereignis ab (Form, Größe, Serverherkunft), zeigt der Planer den Grund als Hinweis, statt es still zu verlieren.
+- Prüfung: `tests/e2e/team-room.e2e.mjs` (auch mit `TEAM_ROOM_URL` gegen den echten Dienst).
