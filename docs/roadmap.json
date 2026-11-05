@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-05T07:38:47.249Z",
+  "updatedAt": "2026-11-05T07:43:52.853Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -6795,7 +6795,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-05T07:43:25.996Z",
       "area": "PLANER",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -6951,7 +6951,8 @@
         "apps/web/src/views/library/BasePage.tsx",
         "tests/world-turn.test.mjs",
         "tests/e2e/world-turn.e2e.mjs",
-        "docs/architecture/WORLDMAP.md"
+        "docs/architecture/WORLDMAP.md",
+        "docs/TESTING.md"
       ],
       "legacyIds": [],
       "steps": [
@@ -7001,7 +7002,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T07:38:47.249Z",
+      "updatedAt": "2026-11-05T07:43:52.853Z",
       "area": "PLANER",
       "thread": "Module und Systeme komplex ausarbeiten",
       "philipp": [
@@ -7390,7 +7391,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-05T07:43:25.996Z",
       "area": "TEAM",
       "thread": "Gemeinsames Bauen mehrerer Spieler ermöglichen",
       "philipp": [
@@ -9424,7 +9425,8 @@
         "tests/e2e/team-digest.e2e.mjs",
         "docs/architecture/TEAMBAU.md",
         "apps/web/src/testing/testplan.ts",
-        "docs/testing/TESTPLAN.md"
+        "docs/testing/TESTPLAN.md",
+        "docs/TESTING.md"
       ],
       "legacyIds": [],
       "steps": [
@@ -9479,7 +9481,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T07:38:47.249Z",
+      "updatedAt": "2026-11-05T07:43:52.853Z",
       "area": "TEAM",
       "thread": "Module und Systeme komplex ausarbeiten",
       "philipp": [
@@ -9568,7 +9570,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T09:33:11.151Z",
+      "updatedAt": "2026-11-05T07:43:25.996Z",
       "area": "PROJEKT",
       "thread": "Projektmodul vertiefen",
       "philipp": [
@@ -9603,7 +9605,8 @@
         "tests/e2e/program-absence.e2e.mjs",
         "docs/architecture/PROGRAM.md",
         "apps/web/src/testing/testplan.ts",
-        "docs/testing/TESTPLAN.md"
+        "docs/testing/TESTPLAN.md",
+        "docs/TESTING.md"
       ],
       "legacyIds": [],
       "steps": [
@@ -9653,7 +9656,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T07:38:47.249Z",
+      "updatedAt": "2026-11-05T07:43:52.853Z",
       "area": "PROJEKT",
       "thread": "Module und Systeme komplex ausarbeiten",
       "philipp": [
@@ -18563,6 +18566,100 @@
           "done": 3,
           "total": 4,
           "next": "Abnahme KARTE-07; Server-Plugin könnte Pläne gedreht ablegen (Thread „Mod, Server und Client mit Fallbacks ausbauen“)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-05T07:43:25.996Z",
+      "kind": "progress",
+      "items": [
+        "MAP-05",
+        "COOP-01",
+        "PROJ-02",
+        "MAP-07",
+        "COOP-11",
+        "PROJ-03"
+      ],
+      "summary": "Restpunkte übernommen: MAP-05 gedrehte Lagen → MAP-07, COOP-01 Verdichten → COOP-11, PROJ-02 Abwesenheiten/Basisplan-Verlauf → PROJ-03; Testnachweise in TESTING.md",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "MAP-05",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05); denkbar: gedrehte Projektlagen auf der Weltkarte, damit gedrehte Hologramme übernommen werden können."
+        },
+        {
+          "id": "COOP-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp mit Mitspielern (TEAMBAU-01…05)."
+        },
+        {
+          "id": "PROJ-02",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05, PROJ-16…18)."
+        },
+        {
+          "id": "MAP-07",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme KARTE-07; Server-Plugin könnte Pläne gedreht ablegen (Thread „Mod, Server und Client mit Fallbacks ausbauen“)."
+        },
+        {
+          "id": "COOP-11",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme TEAMBAU-28 durch Philipp; danach optional team.digest im Plugin/Mod-TeamLog (Thread „Mod, Server und Client mit Fallbacks ausbauen“)."
+        },
+        {
+          "id": "PROJ-03",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme PROJ-20 durch Philipp."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-05T07:43:52.853Z",
+      "kind": "progress",
+      "items": [
+        "MAP-07",
+        "COOP-11",
+        "PROJ-03"
+      ],
+      "summary": "Testnachweise in TESTING.md zugeordnet",
+      "files": [
+        "docs/TESTING.md"
+      ],
+      "snapshot": [
+        {
+          "id": "MAP-07",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme KARTE-07; Server-Plugin könnte Pläne gedreht ablegen (Thread „Mod, Server und Client mit Fallbacks ausbauen“)."
+        },
+        {
+          "id": "COOP-11",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme TEAMBAU-28 durch Philipp; danach optional team.digest im Plugin/Mod-TeamLog (Thread „Mod, Server und Client mit Fallbacks ausbauen“)."
+        },
+        {
+          "id": "PROJ-03",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme PROJ-20 durch Philipp."
         }
       ]
     }

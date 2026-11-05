@@ -5596,3 +5596,34 @@ Teamverlauf verdichten und Ertragsbuch (COOP-11, COOP-08 S03), Abwesenheiten und
 - `tests/team-digest.test.mjs`
 - `tests/world-turn.test.mjs`
 
+## 2026-11-05T07:43:25.996Z · progress
+
+**Aufgaben:** MAP-05, COOP-01, PROJ-02, MAP-07, COOP-11, PROJ-03
+
+Restpunkte übernommen: MAP-05 gedrehte Lagen → MAP-07, COOP-01 Verdichten → COOP-11, PROJ-02 Abwesenheiten/Basisplan-Verlauf → PROJ-03; Testnachweise in TESTING.md
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MAP-05 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05); denkbar: gedrehte Projektlagen auf der Weltkarte, damit gedrehte Hologramme übernommen werden können. |
+| COOP-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp mit Mitspielern (TEAMBAU-01…05). |
+| PROJ-02 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05, PROJ-16…18). |
+| MAP-07 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme KARTE-07; Server-Plugin könnte Pläne gedreht ablegen (Thread „Mod, Server und Client mit Fallbacks ausbauen“). |
+| COOP-11 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme TEAMBAU-28 durch Philipp; danach optional team.digest im Plugin/Mod-TeamLog (Thread „Mod, Server und Client mit Fallbacks ausbauen“). |
+| PROJ-03 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme PROJ-20 durch Philipp. |
+
+## 2026-11-05T07:43:52.853Z · progress
+
+**Aufgaben:** MAP-07, COOP-11, PROJ-03
+
+Testnachweise in TESTING.md zugeordnet
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MAP-07 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme KARTE-07; Server-Plugin könnte Pläne gedreht ablegen (Thread „Mod, Server und Client mit Fallbacks ausbauen“). |
+| COOP-11 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme TEAMBAU-28 durch Philipp; danach optional team.digest im Plugin/Mod-TeamLog (Thread „Mod, Server und Client mit Fallbacks ausbauen“). |
+| PROJ-03 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme PROJ-20 durch Philipp. |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+
