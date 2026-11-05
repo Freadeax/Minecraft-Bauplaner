@@ -32,3 +32,11 @@ else
 fi
 echo "Main-Artefaktcommit: $commit; geprüfter Quellcommit: $source."
 echo 'Liveprüfung noch erforderlich: https://freadeax.github.io/Minecraft-Bauplaner/deployment.json'
+# Zweite Adresse (PERF-06): dasselbe geprüfte Artefakt auf Cloudflare Pages, nur wenn die
+# Zugangsdaten da sind. Ein Fehler hier lässt GitHub Pages unberührt und wird nur gemeldet.
+if [ -n "${CLOUDFLARE_API_TOKEN:-}" ] && [ -n "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
+  if node scripts/pages/publish_cloudflare.mjs; then echo 'Cloudflare Pages aktualisiert: https://bauplaner.pages.dev/Minecraft-Bauplaner/'
+  else echo 'Warnung: Cloudflare Pages nicht aktualisiert (GitHub Pages ist veröffentlicht); später `npm run publish:cloudflare`.' >&2; fi
+else
+  echo 'Hinweis: CLOUDFLARE_API_TOKEN/CLOUDFLARE_ACCOUNT_ID fehlen, Cloudflare Pages nicht aktualisiert.' >&2
+fi

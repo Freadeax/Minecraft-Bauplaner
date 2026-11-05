@@ -1104,4 +1104,5 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 
 - Auftrag Philipp (05.11. 11:29/11:34): einfachster Weg zu mehr Leistung ohne eigenen Server/Portfreigabe; gewählt: Offline-Speicher + kostenlose Cloudflare-Anbindung. Aufgabe **PERF-06**.
 - **An alle Threads:** Der Build schreibt jetzt `sw.js` (Offline-Speicher, [OFFLINE](architecture/betrieb/OFFLINE.md)). In automatisierten Browsern bleibt er aus, Browsertests brauchen nichts zu ändern. Neue Dateitypen unter `assets/` landen nur im Speicher, wenn `offlineAsset` in `scripts/pages/build_service_worker.mjs` sie kennt.
-- Folgt: zweite Adresse `https://bauplaner.pages.dev/Minecraft-Bauplaner/`; Team-Raum und Mod müssen diese Herkunft erlauben (PERF-06-S03).
+- Zweite Adresse live: `https://bauplaner.pages.dev/Minecraft-Bauplaner/`. `scripts/publish_pages.sh` lädt sie automatisch mit hoch (wenn die Cloudflare-Umgebungsvariablen gesetzt sind).
+- **An Thread „Anbindung von Planer, Mod und Server neu denken“:** Team-Raum erlaubt die Herkunft `https://bauplaner.pages.dev` im Code (`services/team-room/src/index.js`); bitte beim offenen Raum-Deploy mitnehmen und in der nächsten Mod-Version `LiveLinkServer.ALLOWED_ORIGINS` sowie `LIVE_ALLOWED_ORIGINS` ergänzen (PERF-06-S03).

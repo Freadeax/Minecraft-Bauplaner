@@ -27,7 +27,8 @@ Der Planer rechnet vollständig im Browser: Katalog, Import, 3D-Netz mit Licht, 
 Gratis-Tarif: unbegrenzter Datenverkehr, 500 Veröffentlichungen im Monat, bis 20 000 Dateien und 25 MiB je Datei. Der Planer passt darin.
 
 - Dasselbe Pages-Artefakt (`dist-web`) wird unter `Minecraft-Bauplaner/` hochgeladen, damit Pfade, Katalogschlüssel und `sw.js` identisch bleiben; die Wurzel leitet weiter. Eigene Cache-Regeln: `assets/*` ein Jahr unveränderlich.
+- **Live seit 05.11.2026:** <https://bauplaner.pages.dev/Minecraft-Bauplaner/> (Projekt `bauplaner`, Brotli). `scripts/publish_pages.sh` lädt nach jeder GitHub-Pages-Veröffentlichung dasselbe Artefakt mit hoch, wenn `CLOUDFLARE_API_TOKEN` und `CLOUDFLARE_ACCOUNT_ID` gesetzt sind; ein Fehler dort lässt GitHub Pages unberührt. Von Hand: `npm run publish:cloudflare` (nach `npm run build`). Skript: `scripts/pages/publish_cloudflare.mjs` (wrangler fest auf 4.151.2).
 - GitHub Pages bleibt die Hauptadresse und der Rückfall.
 - **Wichtig für Nutzer:** Browserdaten gehören zur Adresse. Projekte auf `freadeax.github.io` erscheinen auf der Cloudflare-Adresse nicht von selbst; Umzug über „Alles sichern“ und Wiederherstellen.
-- Team-Raum (`ALLOWED_ORIGINS`) und Mod (`LiveLinkServer.ALLOWED_ORIGINS`, `LIVE_ALLOWED_ORIGINS`) müssen die neue Adresse erlauben (S03).
+- Team-Raum: `https://bauplaner.pages.dev` steht seit PERF-06 in `services/team-room/src/index.js`; wirksam mit dem nächsten Raum-Deploy (zusammen mit dem offenen LINK-10-Deploy). Mod (`LiveLinkServer.ALLOWED_ORIGINS`, `LIVE_ALLOWED_ORIGINS`) erlaubt die Adresse ab der nächsten Mod-Version (S03). Bis dahin Mod und Team-Raum über `freadeax.github.io` nutzen.
 - Mehrkern-Rechnen (SharedArrayBuffer) bräuchte zusätzlich COOP/COEP-Kopfzeilen; das würde Anfragen an Mod und Team-Raum ohne CORP-Kopfzeile sperren und ist deshalb nicht eingeschaltet.

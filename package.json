@@ -23,6 +23,7 @@
     "build:web": "node scripts/pages/clean_pages.mjs && vite build && node scripts/pages/build_catalog_snapshot.mjs && node scripts/pages/build_service_worker.mjs && node scripts/pages/prepare_pages.mjs",
     "dev": "vite --host 127.0.0.1",
     "preview": "vite preview --host 127.0.0.1",
+    "publish:cloudflare": "node scripts/pages/publish_cloudflare.mjs",
     "test:e2e": "node --test --test-concurrency=1 tests/e2e/*.e2e.mjs",
     "check:architecture": "node scripts/checks/check_architecture.mjs",
     "format:check-schem": "npm run build:core && node scripts/checks/check_schem_roundtrip.mjs",

@@ -1021,3 +1021,9 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `npm run check` grün (919 Tests: 918 bestanden, 1 übersprungen), darin neu `tests/unit/tooling/service-worker.test.mjs` (Manifest ohne Katalogdatei, Version folgt Inhalt, Notbremse, Publisher erlaubt `sw.js`).
 - Browser: `tests/e2e/offline.e2e.mjs` 3/3 (Chromium 1243 per `PLAYWRIGHT_BROWSERS_PATH` als 1248 verlinkt): alle 104 Programmdateien gespeichert, Neuladen ohne Programmdatei aus dem Netz, Start und Systemseite ohne Netz, alte Dateien fallen beim Aktivieren weg, Ausschalten entfernt Worker und Speicher dauerhaft, ohne Testschalter bleibt er in automatisierten Browsern aus (übrige Browsertests unberührt).
 - Offen: Safari/iPad und Firefox auf echten Geräten.
+
+## PERF-06-S02 · Cloudflare Pages als zweite Adresse · 05.11.2026 · Claude
+
+- `tests/unit/tooling/cloudflare-pages.test.mjs` 1/1 (Upload-Ordner, Mod-Downloads, `_headers`, `_redirects`), `tests/unit/team/team-room.test.mjs` 5/5 nach neuer Herkunft.
+- Live (Upload aus dem geprüften Artefakt von 9c76f89): `/` → 302 auf `/Minecraft-Bauplaner/`, Startseite, `sw.js`, `deployment.json` und ein Mod-Download 200; `assets/*` mit `content-encoding: br` und `max-age=31536000, immutable`. Chromium gegen die Live-Adresse: Start bis Projektzentrale aus der Katalogdatei (`snapshot`), Service Worker steuert die Seite, keine Seitenfehler.
+- Offen: Team-Raum-Deploy mit neuer Herkunft, Mod-Herkunft (S03); Safari/iPad.

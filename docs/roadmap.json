@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-05T11:53:19.756Z",
+  "updatedAt": "2026-11-05T11:59:28.525Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -2581,7 +2581,11 @@
         "tests/unit/tooling/service-worker.test.mjs",
         "docs/architecture/betrieb/HOSTING.md",
         "docs/architecture/betrieb/OFFLINE.md",
-        "package.json"
+        "package.json",
+        "scripts/pages/publish_cloudflare.mjs",
+        "scripts/pages/publish_main_pages.sh",
+        "services/team-room/src/index.js",
+        "tests/unit/tooling/cloudflare-pages.test.mjs"
       ],
       "legacyIds": [],
       "steps": [
@@ -2592,8 +2596,8 @@
         },
         {
           "id": "PERF-06-S02",
-          "title": "Zweite Adresse auf Cloudflare Pages (Gratis-Tarif) aus demselben Build, eigene Cache-Regeln; GitHub Pages bleibt.",
-          "done": false
+          "title": "Zweite Adresse auf Cloudflare Pages (Gratis-Tarif) aus demselben Build, eigene Cache-Regeln; GitHub Pages bleibt. Live: https://bauplaner.pages.dev/Minecraft-Bauplaner/ (Brotli, assets ein Jahr unveränderlich); publish_pages.sh lädt mit hoch, wenn die Zugangsdaten da sind.",
+          "done": true
         },
         {
           "id": "PERF-06-S03",
@@ -2601,7 +2605,7 @@
           "done": false
         }
       ],
-      "next": "PERF-06-S02 Cloudflare Pages einrichten (Philipp 05.11.2026: kostenlos, Offline-Speicher und Cloudflare-Anbindung).",
+      "next": "PERF-06-S03: Team-Raum mit neuer Herkunft deployen (zusammen mit dem offenen LINK-10-Raum-Deploy) und Mod-Herkunft in der nächsten Mod-Version (Thread „Anbindung von Planer, Mod und Server neu denken“).",
       "acceptance": [
         "Zweiter Start lädt keine Programmdatei aus dem Netz, ohne Internet startet die zuletzt geladene Fassung.",
         "Neue Veröffentlichung kommt beim nächsten Laden an; alte Programmdateien werden entfernt.",
@@ -2631,7 +2635,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:53:19.756Z",
+      "updatedAt": "2026-11-05T11:59:28.525Z",
       "area": "PERF",
       "thread": "Einfachsten Weg zu mehr Leistung finden",
       "philipp": [],
@@ -21701,6 +21705,33 @@
           "done": 1,
           "total": 3,
           "next": "PERF-06-S02 Cloudflare Pages einrichten (Philipp 05.11.2026: kostenlos, Offline-Speicher und Cloudflare-Anbindung)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-05T11:59:28.525Z",
+      "kind": "progress",
+      "items": [
+        "PERF-06"
+      ],
+      "summary": "S02 Cloudflare Pages live (bauplaner.pages.dev, gratis), publish_pages.sh lädt mit hoch; Team-Raum-Herkunft im Code, Deploy und Mod-Herkunft offen (S03).",
+      "files": [
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/betrieb/OFFLINE.md",
+        "package.json",
+        "scripts/pages/publish_cloudflare.mjs",
+        "scripts/pages/publish_main_pages.sh",
+        "services/team-room/src/index.js",
+        "tests/unit/tooling/cloudflare-pages.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-06",
+          "status": "in_progress",
+          "done": 2,
+          "total": 3,
+          "next": "PERF-06-S03: Team-Raum mit neuer Herkunft deployen (zusammen mit dem offenen LINK-10-Raum-Deploy) und Mod-Herkunft in der nächsten Mod-Version (Thread „Anbindung von Planer, Mod und Server neu denken“)."
         }
       ]
     }

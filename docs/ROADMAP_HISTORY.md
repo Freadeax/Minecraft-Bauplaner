@@ -6761,3 +6761,24 @@ S01 Offline-Speicher: sw.js aus dem Build, Start ohne Internet, nach Updates nur
 - `tests/e2e/offline.e2e.mjs`
 - `tests/unit/tooling/service-worker.test.mjs`
 
+## 2026-11-05T11:59:28.525Z · progress
+
+**Aufgaben:** PERF-06
+
+S02 Cloudflare Pages live (bauplaner.pages.dev, gratis), publish_pages.sh lädt mit hoch; Team-Raum-Herkunft im Code, Deploy und Mod-Herkunft offen (S03).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-06 | 🚧 In Arbeit | 2/3 | PERF-06-S03: Team-Raum mit neuer Herkunft deployen (zusammen mit dem offenen LINK-10-Raum-Deploy) und Mod-Herkunft in der nächsten Mod-Version (Thread „Anbindung von Planer, Mod und Server neu denken“). |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/betrieb/OFFLINE.md`
+- `package.json`
+- `scripts/pages/publish_cloudflare.mjs`
+- `scripts/pages/publish_main_pages.sh`
+- `services/team-room/src/index.js`
+- `tests/unit/tooling/cloudflare-pages.test.mjs`
+

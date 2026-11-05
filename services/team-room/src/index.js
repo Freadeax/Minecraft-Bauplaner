@@ -4,7 +4,8 @@
 import { DurableObject } from 'cloudflare:workers';
 import { RoomCore, RoomError, ControlRelay, checkControl, cleanPresence, randomKey, LIMITS, PROTOCOL, VERSION, PING, PONG } from './core.js';
 
-const ALLOWED_ORIGINS = ['https://freadeax.github.io', 'http://127.0.0.1', 'http://localhost'];
+// bauplaner.pages.dev: zweite Adresse auf Cloudflare Pages (PERF-06, docs/architecture/betrieb/OFFLINE.md).
+const ALLOWED_ORIGINS = ['https://freadeax.github.io', 'https://bauplaner.pages.dev', 'http://127.0.0.1', 'http://localhost'];
 
 function cors(request, env) {
   const origin = request.headers.get('Origin') ?? '';
