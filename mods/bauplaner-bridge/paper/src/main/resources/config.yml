@@ -28,7 +28,7 @@ team:
   # Die Mod nutzt ihn nur, wenn der Spieler ihn einmal je Server erlaubt (/bauplaner team erlauben). Spieler ohne Mod merken nichts.
   kanal: true
 
-# Geprüfte Lagerkisten (COOP-05, docs/architecture/LAGERKISTEN.md). Baumeister markieren Kisten mit /bauplaner lager markieren.
+# Geprüfte Lagerkisten (COOP-05, docs/architecture/team/LAGERKISTEN.md). Baumeister markieren Kisten mit /bauplaner lager markieren.
 # Das Plugin zählt beim Öffnen und Schließen, bucht Ein- und Ausgaben je Spieler und meldet Abweichungen. Es verändert nie Kisteninhalte.
 lager:
   # sperren: verbotene Klicks, Abbau und Anbau werden verhindert · hinweis: erlaubt, aber gebucht und den Baumeistern gemeldet.

@@ -21,7 +21,7 @@ import net.minecraft.world.level.levelgen.Heightmap;
  * commands typed into the chat screen, anchor taken from the block under the crosshair, scan written
  * by the mod. Only the test itself places blocks (server setblock from setblocks.txt, offsets from the
  * origin) to build the plan with one wrong and one missing block. Input/output folder: env BAUPLANER_GAMETEST_DIR
- * (prepared and verified by scripts/bridge_gametest.mjs).
+ * (prepared and verified by scripts/mod/bridge_gametest.mjs).
  */
 public final class BridgeGameTest implements FabricClientGameTest {
     private static final String PLAN = "spieltest.schem";
@@ -88,7 +88,7 @@ public final class BridgeGameTest implements FabricClientGameTest {
     /**
      * Mod 2.0: the plan as hologram on the same building. Progress must show exactly the wrong and the
      * missing block, follow a block placed afterwards, react to turning, and the placement must be
-     * remembered. Chat lines are checked by scripts/bridge_gametest.mjs verify (game.log).
+     * remembered. Chat lines are checked by scripts/mod/bridge_gametest.mjs verify (game.log).
      */
     private static void hologram(ClientGameTestContext context, TestSingleplayerContext world, Path io, Path root, int[] anchor) throws IOException {
         chat(context, "/bauplaner zeigen " + PLAN);
@@ -270,7 +270,7 @@ public final class BridgeGameTest implements FabricClientGameTest {
     /**
      * Website link over 127.0.0.1 like the website does it: pairing with the code from the chat, status
      * with player and hologram, live terrain of a chunk, Weltplan marks and a plan sent directly. Every
-     * answer goes to live.json and is checked by scripts/bridge_gametest.mjs verify. The game thread
+     * answer goes to live.json and is checked by scripts/mod/bridge_gametest.mjs verify. The game thread
      * only runs while the test waits, so requests run on their own thread and the test waits in ticks.
      */
     private static void liveLink(ClientGameTestContext context, Path io, int[] anchor) throws IOException {
@@ -353,7 +353,7 @@ public final class BridgeGameTest implements FabricClientGameTest {
         boolean promptLeft = context.computeOnClient(mc -> has(mc, "Planer zulassen"));
         out.append(",\"promptLeft\":").append(promptLeft);
         // LINK-07: team room without a server file – the planner hands the room to the mod, the mod goes live
-        // with the room on its own and sends „Abschnitt nehmen“ there (room.json from scripts/bridge_room_prepare.mjs).
+        // with the room on its own and sends „Abschnitt nehmen“ there (room.json from scripts/mod/bridge_room_prepare.mjs).
         Path roomFile = io.resolve("room.json");
         if (Files.isRegularFile(roomFile)) {
             String roomJson = Files.readString(roomFile).replaceAll(",\"adminKey\":\"[^\"]*\"", "");

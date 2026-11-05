@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
  * Bauplaner website on the same computer. Only java.base, no game classes, so it is the same for
  * every loader and Minecraft version.
  *
- * <p>Security contract (docs/architecture/LIVE_LINK.md):
+ * <p>Security contract (docs/architecture/team/LIVE_LINK.md):
  * <ul>
  * <li>Bound to the loopback address only, switched off until the player starts it in game.</li>
  * <li>{@code Host} must be {@code 127.0.0.1:<port>} or {@code localhost:<port>} (no DNS rebinding).</li>
@@ -89,7 +89,7 @@ public final class LiveLinkServer implements AutoCloseable {
         default String teamPush(Map<String, Object> body) throws Exception { throw new HttpError(404, "Diese Mod kennt keinen Teambau."); }
         default String teamPull(Map<String, String> query) throws Exception { throw new HttpError(404, "Diese Mod kennt keinen Teambau."); }
         /**
-         * Server link without commands (LINK-03, docs/architecture/AUTO_LINK.md). GET /v1/server: who the server
+         * Server link without commands (LINK-03, docs/architecture/team/AUTO_LINK.md). GET /v1/server: who the server
          * plugin is ({@code link.info}); POST /v1/server/claim {device}: pair the server with this planner (the
          * plugin checks that the player is operator); POST /v1/server/control {owner,seq,body,sig}: a signed
          * control message, passed on unchanged. All three go over the team channel and answer 409 without it.

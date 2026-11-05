@@ -8,7 +8,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { python } from '../../scripts/python.mjs';
+import { python } from '../../scripts/dev/python.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -17,7 +17,7 @@ let server, browser, dir;
 
 before(async () => {
   dir = mkdtempSync(join(tmpdir(), 'bauplaner-terrain-e2e-'));
-  const r = spawnSync(python, ['-I', '-X', 'utf8', fileURLToPath(new URL('../../scripts/make_terrain_fixture.py', import.meta.url)), dir], { encoding: 'utf8' });
+  const r = spawnSync(python, ['-I', '-X', 'utf8', fileURLToPath(new URL('../../scripts/fixtures/make_terrain_fixture.py', import.meta.url)), dir], { encoding: 'utf8' });
   assert.equal(r.status, 0, r.stderr);
   server = spawn(process.execPath, ['node_modules/vite/bin/vite.js', 'preview', '--host', '127.0.0.1', '--port', String(PORT), '--strictPort'], { stdio: 'ignore' });
   for (let i = 0; i < 50; i++) {

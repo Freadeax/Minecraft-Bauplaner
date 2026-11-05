@@ -7,7 +7,7 @@ import type { BlockState } from './types.js';
  * Das verbindliche Java-Versionsprofil (PROFILE-01). One profile, one origin: every block, property,
  * item, item tag, recipe (domain/profileRecipes.ts) and fuel comes from the same official server jar,
  * documented with SHA-1/SHA-256 in `profileData.ts` and `blockFacts.ts`. Regeneration and sources:
- * docs/architecture/VERSION_PROFILE.md.
+ * docs/architecture/formate/VERSION_PROFILE.md.
  *
  * Rule: a DataVersion number is only a label of the file format. It never claims compatibility on its
  * own; `checkProfileStates` checks the content (ids, property names and values) against the profile.

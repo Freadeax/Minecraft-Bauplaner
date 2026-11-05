@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 /**
  * Records the plan box from a {@link BlockSource} in slices (a fixed cell budget per tick)
- * and writes the recording format {@code bauplaner-scan} v1 (docs/architecture/MOD_BRIDGE.md).
+ * and writes the recording format {@code bauplaner-scan} v1 (docs/architecture/mod/MOD_BRIDGE.md).
  * Cell order and index match Sponge v3: index = x + z·W + y·W·L.
  */
 public final class ScanJob {

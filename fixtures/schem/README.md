@@ -1,6 +1,6 @@
 # Unabhängige binäre Vertragsfixture
 
-Eigene synthetische Daten, keine fremde Welt und kein Nachweis einer bestimmten Minecraft-/WorldEdit-Version. `asymmetric.nbt.hex` enthält feste Big-Endian-NBT-Bytes, erzeugt vom unabhängigen Python-`struct`-Writer [make_schem_fixture.py](../../scripts/make_schem_fixture.py). Der TypeScript-Reader/Normalizer erzeugt diese Erwartungen nicht. GZip wird für Tests/Website unabhängig mit Node `zlib` ergänzt. Kein produktiver Schem-Writer.
+Eigene synthetische Daten, keine fremde Welt und kein Nachweis einer bestimmten Minecraft-/WorldEdit-Version. `asymmetric.nbt.hex` enthält feste Big-Endian-NBT-Bytes, erzeugt vom unabhängigen Python-`struct`-Writer [make_schem_fixture.py](../../scripts/fixtures/make_schem_fixture.py). Der TypeScript-Reader/Normalizer erzeugt diese Erwartungen nicht. GZip wird für Tests/Website unabhängig mit Node `zlib` ergänzt. Kein produktiver Schem-Writer.
 
 Manuelle Erwartungen: Dimensionen 3×2×2, Offset (−10,64,30), DataVersion 3465 als reine Quelldateiangabe, ohne Mapping auf eine bestätigte Spielversion. Reihenfolge x + z×3 + y×6. Zustände pro Ebene:
 

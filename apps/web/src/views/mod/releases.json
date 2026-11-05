@@ -345,7 +345,7 @@
       "sha256": "831cf42f15429a82eb4efc3424c93f1b7d893811050c69068fb4a6ce6a74f678",
       "releasedAt": "2026-11-03",
       "sourceCommit": "6edee72432cd07c53d05bf1dab3ecca10cbd3bb9",
-      "tested": "Echter Paper-Server 1.18.2, 1.21.4 und 26.3: Lagerkisten (scripts/test_bridge_paper_lager.sh) und Teambau (scripts/test_bridge_paper_team.sh) grün; Inventarklicks und Schutz brauchen echte Spieler (LAGER-02…06)."
+      "tested": "Echter Paper-Server 1.18.2, 1.21.4 und 26.3: Lagerkisten (scripts/mod/test_bridge_paper_lager.sh) und Teambau (scripts/mod/test_bridge_paper_team.sh) grün; Inventarklicks und Schutz brauchen echte Spieler (LAGER-02…06)."
     },
     {
       "file": "bauplaner-bridge-fabric-26.3-0.11.0.jar",

@@ -35,7 +35,7 @@ function StoreRow({ c, sections, nameOf, farmName }: { c: StoreChest; sections: 
 }
 
 /**
- * Baunachweis und Lager (COOP-04, docs/architecture/TEAMBAU.md §8–9): numbers measured by the server
+ * Baunachweis und Lager (COOP-04, docs/architecture/team/TEAMBAU.md §8–9): numbers measured by the server
  * plugin – blocks per player and section, storage chests and what each player put in or took out.
  * Read-only except one's own on/off switch and taking the counted stock into the site storage.
  */

@@ -23,7 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 /**
- * Teamkanal {@code bauplaner:team} for players with the Bauplaner mod (COOP-03, docs/architecture/TEAMBAU.md §7).
+ * Teamkanal {@code bauplaner:team} for players with the Bauplaner mod (COOP-03, docs/architecture/team/TEAMBAU.md §7).
  * The plugin announces the channel (Bukkit sends {@code minecraft:register}); a mod only talks on it after its
  * player allowed it for this server. Messages: see {@link TeamWire} (JSON, split into parts above 24 KB).
  * <ul>

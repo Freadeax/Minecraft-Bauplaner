@@ -1,7 +1,7 @@
 # Team-Raum (COOP-07)
 
 Kleiner Dienst, über den Planer und Paper-Plugin eines Teams live synchron bleiben, ohne Dateien
-(Konzept und Protokoll: `docs/architecture/TEAM_LIVE.md`). Ein Raum je Team, als Cloudflare Durable Object
+(Konzept und Protokoll: `docs/architecture/team/TEAM_LIVE.md`). Ein Raum je Team, als Cloudflare Durable Object
 mit SQLite. Läuft im kostenlosen Workers-Tarif.
 
 ## Betrieb
@@ -11,7 +11,7 @@ Cloud-Umgebung (dort liegen `CLOUDFLARE_API_TOKEN` und `CLOUDFLARE_ACCOUNT_ID`):
 
 ```
 cd services/team-room && npx wrangler deploy
-node scripts/team_room_smoke.mjs https://bauplaner-team.team-room.workers.dev
+node scripts/team/team_room_smoke.mjs https://bauplaner-team.team-room.workers.dev
 ```
 
 Protokolländerungen nur abwärtsverträglich (Planer und Paper-Plugin `RoomLink` sprechen v1).
@@ -36,10 +36,10 @@ Eigene Planer-Adressen außer `https://freadeax.github.io` erlaubt `ALLOWED_ORIG
 
 ```
 npx wrangler dev --port 8787          # in services/team-room
-node scripts/team_room_smoke.mjs http://127.0.0.1:8787   # im Repository-Wurzelordner
+node scripts/team/team_room_smoke.mjs http://127.0.0.1:8787   # im Repository-Wurzelordner
 ```
 
-Die Raumlogik (`src/core.js`) hat keine Cloudflare-Abhängigkeit und wird in `tests/team-room.test.mjs` und
+Die Raumlogik (`src/core.js`) hat keine Cloudflare-Abhängigkeit und wird in `tests/unit/team/team-room.test.mjs` und
 `tests/e2e/team-room.e2e.mjs` direkt geprüft.
 
 ## Grenzen

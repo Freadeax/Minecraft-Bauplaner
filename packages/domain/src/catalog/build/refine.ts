@@ -7,7 +7,7 @@ import type { Mix } from './style.js';
 
 /**
  * Veredelung (LIB-05): a deterministic finishing pass over a finished
- * building, applying the rules of docs/architecture/BAUSTIL.md that work
+ * building, applying the rules of docs/architecture/bibliothek/BAUSTIL.md that work
  * without knowing the design:
  *
  * 1. Weathering mix – outside faces of uniform masonry get their mossy and

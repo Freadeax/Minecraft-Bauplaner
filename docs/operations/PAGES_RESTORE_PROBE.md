@@ -7,8 +7,8 @@ Aufgabe: OPS-02. Datum: 01.11.2026. Diese Probe verändert weder main noch GitHu
 Voraussetzungen: Git, Node und ein vorhandener manifestgeprüfter Webbuild, dessen `sourceCommit` im lokalen Repository enthalten ist. Nach Bedarf zuerst den üblichen Build erstellen; der Prüfbefehl selbst baut nichts.
 
 ```sh
-node scripts/probe_pages_restore.mjs
-node --test tests/pages-restore.test.mjs
+node scripts/pages/probe_pages_restore.mjs
+node --test tests/unit/tooling/pages-restore.test.mjs
 ```
 
 Optional nimmt das Probenskript als erstes Argument ein anderes Buildverzeichnis. Dateien müssen vollständig im Manifest stehen und auf der vorhandenen Pages-Allowlist liegen. Symlinks, zusätzliche Dateien, manipulierte Hashes und Kollisionen mit Quellpfaden führen zum Abbruch.

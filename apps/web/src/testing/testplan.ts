@@ -1,6 +1,6 @@
 /**
  * Testplan der großen Testphase (QA-04). Eine Quelle für die Seite „Testphase“ (#/testphase), das
- * Testprotokoll und docs/testing/TESTPLAN.md (erzeugt mit `node scripts/render_testplan.mjs`).
+ * Testprotokoll und docs/testing/TESTPLAN.md (erzeugt mit `node scripts/checks/render_testplan.mjs`).
  *
  * Regeln für neue Fälle: stabile ID (Bereichskürzel + laufende Nummer, nie umnummerieren), Schritte so
  * schreiben, dass jemand ohne Vorwissen sie nachmachen kann, ein beobachtbares Ergebnis nennen.
@@ -281,7 +281,7 @@ export const ACCEPTANCE: Readonly<Record<string, readonly string[]>> = {
   'MAP-05': ['LIVE-04', 'LIVE-05'], 'MAP-06': ['KARTE-05', 'KARTE-06', 'LIVE-08'], 'QA-04': ['SYS-01', 'SYS-02', 'LIVE-06'], 'GEN-03': ['BIB-14'],
   'SIZE-01': ['DATEI-05', 'WERK-07', 'MOD-15', 'LIVE-09'], 'COOP-01': ['TEAMBAU-01', 'TEAMBAU-02', 'TEAMBAU-03', 'TEAMBAU-04', 'TEAMBAU-05'], 'COOP-02': ['TEAMBAU-06'],
   'COOP-03': ['TEAMBAU-09'], 'COOP-04': ['TEAMBAU-07', 'TEAMBAU-08'], 'COOP-05': ['LAGER-01', 'LAGER-02', 'LAGER-03', 'LAGER-04', 'LAGER-05', 'LAGER-06', 'LAGER-07', 'LAGER-08', 'LAGER-09'],
-  'COOP-06': ['TEAMBAU-21', 'TEAMBAU-22', 'TEAMBAU-23', 'TEAMBAU-24'], 'PROJ-01': ['PROJ-09', 'PROJ-10', 'PROJ-11'], 'PROJ-02': ['PROJ-16', 'PROJ-17', 'PROJ-18'], 'GAME-10': ['MOD-16'], 'COOP-07': ['TEAMBAU-25', 'LINK-07'], 'COOP-09': ['TEAMBAU-26', 'TEAMBAU-25'], 'COOP-10': ['TEAMBAU-27', 'TEAMBAU-25'], 'COOP-11': ['TEAMBAU-28'], 'PROJ-03': ['PROJ-20'], 'MAP-07': ['KARTE-07'], 'MAP-02': ['KARTE-08'], 'PROJ-04': ['PROJ-21'], 'CORE-04': ['PROJ-22'],
+  'COOP-06': ['TEAMBAU-21', 'TEAMBAU-22', 'TEAMBAU-23', 'TEAMBAU-24'], 'PROJ-01': ['PROJ-09', 'PROJ-10', 'PROJ-11'], 'PROJ-02': ['PROJ-16', 'PROJ-17', 'PROJ-18'], 'GAME-10': ['MOD-16'], 'COOP-07': ['TEAMBAU-25', 'LINK-07'], 'COOP-09': ['TEAMBAU-26', 'TEAMBAU-25'], 'COOP-10': ['TEAMBAU-27', 'TEAMBAU-25'], 'COOP-11': ['TEAMBAU-28'], 'PROJ-03': ['PROJ-20'], 'MAP-07': ['KARTE-07'], 'MAP-02': ['KARTE-08'], 'PROJ-04': ['PROJ-21'], 'CORE-04': ['PROJ-22'], 'STRUCT-01': ['START-03', 'SYS-03'],
   'PROD-01': ['PROJ-12'], 'PROD-02': ['PROJ-13'], 'PROD-03': ['PROJ-12', 'PROJ-13'], 'PROD-04': ['PROJ-13'], 'PROD-05': ['LAGER-10', 'PROJ-12'],
   'LINK-01': ['LINK-01'], 'LINK-02': ['LINK-02'], 'LINK-03': ['LIVE-01', 'LINK-01'], 'LINK-04': ['LINK-01', 'LINK-02', 'LINK-03'], 'LINK-05': ['LINK-04'], 'LINK-06': ['LINK-05', 'LINK-06'], 'LINK-07': ['LINK-07', 'LINK-08'], 'FALLBACK-01': ['LINK-09'], 'LINK-10': ['LINK-09', 'LINK-10'], 'COOP-08': ['LAGER-10', 'PROJ-12'],
 };

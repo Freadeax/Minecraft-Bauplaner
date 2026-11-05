@@ -1,5 +1,5 @@
 /**
- * Teambau über die Mod (COOP-03, docs/architecture/TEAMBAU.md §7): what the planner sends to the Bauplaner
+ * Teambau über die Mod (COOP-03, docs/architecture/team/TEAMBAU.md §7): what the planner sends to the Bauplaner
  * mod on this computer (`POST /v1/team`, format "team-link" 1 – the Paper plugin sends the same shape on the
  * team channel) and how it reads the mod's answers (`GET /v1/team`, `GET /v1/team/pull`). Pure functions;
  * the page does the requests.

@@ -11,7 +11,7 @@ import { placeToWorld } from '../world/worldmap.js';
 import type { WorldPlacement } from '../world/worldmap.js';
 
 /**
- * In-game check (B8 · P6-01, docs/architecture/MOD_BRIDGE.md). Compares a world
+ * In-game check (B8 · P6-01, docs/architecture/mod/MOD_BRIDGE.md). Compares a world
  * recording cell by cell with the resolved plan and maps every result onto the
  * guide step that owns the cell. The mod only records; this is the single place
  * that decides what counts as built. Manual ticks are never changed here.

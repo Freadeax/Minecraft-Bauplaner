@@ -18,7 +18,7 @@ const WHERE = { planer: 'im Planer', spiel: 'im Spiel', server: 'Server' } as co
 async function copyText(text: string): Promise<boolean> { try { await navigator.clipboard.writeText(text); return true; } catch { return false; } }
 
 /**
- * Team live (COOP-07, docs/architecture/TEAM_LIVE.md): the Bauleitung switches the team live in a Team-Raum,
+ * Team live (COOP-07, docs/architecture/team/TEAM_LIVE.md): the Bauleitung switches the team live in a Team-Raum,
  * shares one invitation link and the server link for the plugin; afterwards every step of everyone appears
  * for all within seconds, and a new plan release reaches the others without any file.
  */

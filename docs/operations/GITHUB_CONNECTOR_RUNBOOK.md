@@ -1,6 +1,6 @@
 # Selbstständiger GitHub- und Pages-Ablauf
 
-Stand: 27.10.2026. Verbindlicher Ausführungsplan für `Freadeax/Minecraft-Bauplaner`, keine Behauptung einer bereits laufenden Deploymentstrecke. Ergänzt [Arbeitsregeln](../../AGENTS.md), [Hosting](../architecture/HOSTING.md) und [Umsetzungsplan](../IMPLEMENTATION_PLAN.md).
+Stand: 27.10.2026. Verbindlicher Ausführungsplan für `Freadeax/Minecraft-Bauplaner`, keine Behauptung einer bereits laufenden Deploymentstrecke. Ergänzt [Arbeitsregeln](../../AGENTS.md), [Hosting](../architecture/betrieb/HOSTING.md) und [Umsetzungsplan](../archiv/IMPLEMENTATION_PLAN.md).
 
 Aktuelle Umgebung vom 01.11.2026: vollständiger Clone mit authentifizierter GitHub CLI; reguläres Git bevorzugen. Pages-API bestätigt main/root, Remote-Refabfrage zeigt nur main. Frühere Konnektorgrenzen sind historische Fähigkeitsnachweise, keine heute fehlende Nutzerfreigabe. Es wurden keine Pages-Einstellungen oder Branches verändert. Codex-Projekt-/Cloudverwaltung ist weiterhin kein Werkzeug dieser Sitzung; siehe [CODEX_SETUP](../project/CODEX_SETUP.md).
 
@@ -49,7 +49,7 @@ Am 27.10.2026 anhand der verfügbaren Werkzeugschemata und bisheriger erfolgreic
 
 ## C. Geprüftes Websiteartefakt auf main veröffentlichen
 
-Aktive Quelle: **main / Repositorywurzel**. Einstieg `scripts/publish_pages.sh`, Implementierung `scripts/publish_main_pages.sh`, sichere Zusammenführung `scripts/prepare_main_pages.mjs`. Keine eigene Actions-Datei.
+Aktive Quelle: **main / Repositorywurzel**. Einstieg `scripts/publish_pages.sh`, Implementierung `scripts/pages/publish_main_pages.sh`, sichere Zusammenführung `scripts/pages/prepare_main_pages.mjs`. Keine eigene Actions-Datei.
 
 1. Integrierten Quellcommit C und aktuellen Main-Tree festhalten; vollständigen Check aus C ausführen. Offene Browserprüfungen dokumentieren.
 2. Build mit `LMNT_SOURCE_SHA=C` erzeugen. Manifest und Artefakt-Allowlist prüfen; keine Symlinks oder fremden Dateien übernehmen.

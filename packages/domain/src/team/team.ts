@@ -2,7 +2,7 @@ import { canonicalJson, newId, sha256Hex } from '../core/hash.js';
 import { DomainError } from '../core/types.js';
 
 /**
- * Teambau (COOP-01, docs/architecture/TEAMBAU.md). Several players build one
+ * Teambau (COOP-01, docs/architecture/team/TEAMBAU.md). Several players build one
  * project without a backend. Everything that happens while building (take a
  * section, report it done, deliver items, write a note, release a plan) is an
  * immutable event in the team log `site.team`. Merging two logs is the union
@@ -73,7 +73,7 @@ export type TeamEventBody =
   | { readonly kind: 'store.seen'; readonly chest: string; readonly items: readonly ItemCount[]; readonly more?: boolean }
   /** Full content of a storage chest, read by the server plugin when someone closed it; `more` when lines were cut. */
   | { readonly kind: 'store.count'; readonly chest: string; readonly items: readonly ItemCount[]; readonly more?: boolean }
-  /** Checked storage chests (COOP-05, docs/architecture/LAGERKISTEN.md): section ('' = whole project), purpose, protection, second half of a double chest (null = none). */
+  /** Checked storage chests (COOP-05, docs/architecture/team/LAGERKISTEN.md): section ('' = whole project), purpose, protection, second half of a double chest (null = none). */
   | { readonly kind: 'store.config'; readonly chest: string; readonly section?: string; readonly purpose?: StorePurpose; readonly protection?: StoreProtection; readonly pos2?: readonly [number, number, number] | null; readonly name?: string; readonly farm?: string }
   /** What one player (or a hopper) put in / took out, net per opening; moves the expected content, never booked again as stored/taken. */
   | { readonly kind: 'store.move'; readonly chest: string; readonly in?: readonly ItemCount[]; readonly out?: readonly ItemCount[]; readonly via: 'spieler' | 'trichter' | 'abbau'; readonly player?: string }

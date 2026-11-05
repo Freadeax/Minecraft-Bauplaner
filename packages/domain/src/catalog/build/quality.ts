@@ -2,7 +2,7 @@ import type { VoxelPayload } from '../../../../voxel/src/types.js';
 
 /**
  * Gestaltungskennwerte (LIB-05): the measures used to compare our buildings
- * with the studied builds (docs/architecture/BAUSTIL.md). Terrain blocks
+ * with the studied builds (docs/architecture/bibliothek/BAUSTIL.md). Terrain blocks
  * (grass, dirt, plants, water) are left out.
  */
 export interface DesignMetrics {

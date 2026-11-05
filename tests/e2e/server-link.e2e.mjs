@@ -1,4 +1,4 @@
-// Browser check of „Spiel und Server verbinden – ohne Befehle“ (LINK-03/04, docs/architecture/AUTO_LINK.md)
+// Browser check of „Spiel und Server verbinden – ohne Befehle“ (LINK-03/04, docs/architecture/team/AUTO_LINK.md)
 // against the mod simulator with a stand-in for the Paper plugin: pairing with the game by a click in the game,
 // pairing the server with one click and changing a server setting by a signed control message.
 // Run after `npm run build`: `npm run test:e2e`.

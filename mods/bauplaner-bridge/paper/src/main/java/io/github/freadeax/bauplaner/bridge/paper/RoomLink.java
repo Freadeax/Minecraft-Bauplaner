@@ -36,7 +36,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 /**
- * Live team room (team-room v1, docs/architecture/TEAM_LIVE.md): the server connects outward over
+ * Live team room (team-room v1, docs/architecture/team/TEAM_LIVE.md): the server connects outward over
  * {@code wss://ROOM/v1/rooms/RID/live} with its own server key, uploads every event it writes and takes
  * the planner's events as they arrive – no team file is copied any more.
  * <ul>
@@ -400,7 +400,7 @@ final class RoomLink implements TeamUplink {
     }
 
     /**
-     * LINK-05: a control message signed in the planner, passed on by the room (docs/architecture/AUTO_LINK.md).
+     * LINK-05: a control message signed in the planner, passed on by the room (docs/architecture/team/AUTO_LINK.md).
      * The room knows no owner key; {@link ServerLink#control} checks signature, number and server like on the mod way.
      */
     private void control(Room r, JsonObject m) {

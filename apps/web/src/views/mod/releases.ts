@@ -1,6 +1,6 @@
 /**
  * Downloadable builds of the Bauplaner-Brücke (GAME-02). The list lives in releases.json and is
- * written by scripts/release_mod.mjs; the jars lie in downloads/mod/ and Pages serves them from main.
+ * written by scripts/mod/release_mod.mjs; the jars lie in downloads/mod/ and Pages serves them from main.
  */
 export interface ModRelease {
   readonly file: string;

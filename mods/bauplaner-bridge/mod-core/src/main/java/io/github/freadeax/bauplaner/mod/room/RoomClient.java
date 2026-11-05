@@ -31,7 +31,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
- * LINK-07 „ohne Server-Datei“: the mod talks to the team room itself (docs/architecture/AUTO_LINK.md §9).
+ * LINK-07 „ohne Server-Datei“: the mod talks to the team room itself (docs/architecture/team/AUTO_LINK.md §9).
  * It reads the plan header and the team log, folds them with the plugin's {@link TeamLog}, sends the player's
  * own team actions as events and its presence („im Spiel“, section). The Minecraft server is not involved:
  * nothing goes to it, it needs no plugin.

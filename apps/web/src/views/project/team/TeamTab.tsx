@@ -20,7 +20,7 @@ const itemId = (raw: string) => { const t = raw.trim().toLowerCase().replace(/\s
 const when = (iso?: string) => iso ? new Date(iso).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '–';
 
 /**
- * Teambau (COOP-01, docs/architecture/TEAMBAU.md): several players build one project. Every action is
+ * Teambau (COOP-01, docs/architecture/team/TEAMBAU.md): several players build one project. Every action is
  * an event in `site.team`, written through the undoable `site.set`; who may do what follows the role
  * in the team log. Exchange with other browsers and the server lives in {@link TeamExchange}.
  */

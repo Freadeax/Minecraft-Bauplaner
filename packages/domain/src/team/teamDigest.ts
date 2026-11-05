@@ -1,5 +1,5 @@
 /**
- * COOP-11 „Verlauf verdichten“ (docs/architecture/TEAMBAU.md §19). The team log only grows: every
+ * COOP-11 „Verlauf verdichten“ (docs/architecture/team/TEAMBAU.md §19). The team log only grows: every
  * Baunachweis, every chest booking, every hopper move and every yield report is one event, and a long
  * build reaches the limit of 20 000 events. The Bauleitung can compact the log up to a cutoff:
  *

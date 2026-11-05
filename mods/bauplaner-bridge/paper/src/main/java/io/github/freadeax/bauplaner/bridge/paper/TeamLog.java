@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 /**
- * Server copy of a team (COOP-02, docs/architecture/TEAMBAU.md): the header the planner exports
+ * Server copy of a team (COOP-02, docs/architecture/team/TEAMBAU.md): the header the planner exports
  * ({@code minecraft-bauplaner-team-server}: sections with world boxes, members, the team log) plus the
  * events written on this server. The fold follows {@code packages/domain/src/team/team.ts} rule by rule, so
  * the planner and the server always show the same state for the same events. Pure Java, no Bukkit.
@@ -39,7 +39,7 @@ final class TeamLog {
         NEED.put("section.done", "helfer"); NEED.put("section.verify", "meister"); NEED.put("contribution", "helfer");
         NEED.put("gather.claim", "helfer"); NEED.put("note.add", "gast"); NEED.put("note.resolve", "helfer"); NEED.put("plan.release", "leitung");
         NEED.put("build.tally", "gast"); NEED.put("member.tally", "gast"); NEED.put("store.chest", "meister"); NEED.put("store.count", "gast");
-        // Checked storage chests (COOP-05, docs/architecture/LAGERKISTEN.md).
+        // Checked storage chests (COOP-05, docs/architecture/team/LAGERKISTEN.md).
         NEED.put("store.config", "meister"); NEED.put("store.seal", "meister"); NEED.put("store.move", "gast"); NEED.put("store.check", "gast");
         // Handover with acceptance, absence, acknowledged hints (COOP-06, TEAMBAU §4).
         NEED.put("section.handover", "helfer"); NEED.put("section.accept", "helfer"); NEED.put("section.decline", "helfer");

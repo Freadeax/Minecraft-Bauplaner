@@ -8,7 +8,7 @@ import type { LiveChunkColumns, LiveGameMark, LiveHello, LivePlacement, LivePlay
 import { MODEL_MAX_FILE_BYTES } from '../../../../../packages/voxel/src/sizeLimits.js';
 
 /**
- * Website side of the live link (MAP-03, docs/architecture/LIVE_LINK.md): talks
+ * Website side of the live link (MAP-03, docs/architecture/team/LIVE_LINK.md): talks
  * to the Bauplaner mod on this computer (http://127.0.0.1:<port>), never to a
  * server. The pairing key stays in this browser only (localStorage); the mod
  * accepts it only from this website's origin.

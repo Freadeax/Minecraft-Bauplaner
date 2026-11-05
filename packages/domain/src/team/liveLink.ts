@@ -52,7 +52,7 @@ export const LIVE_LEGACY_PLAN_BYTES = 16 * 1024 * 1024;
  * Export settings of a plan sent to the mod (POST /v1/plan). Cells outside the selection must be air: the mod
  * skips air, but takes every other block – structure_void too – as a block to build. With structure_void the
  * hologram showed the whole empty box as missing blocks and big plans went over the mod's 4 Mio. limit
- * (found 2026-11-03 with Olympus; checked by scripts/bridge_sendcheck.mjs against the mod's own reader).
+ * (found 2026-11-03 with Olympus; checked by scripts/mod/bridge_sendcheck.mjs against the mod's own reader).
  */
 export const LIVE_PLAN_EXPORT = Object.freeze({ format: 'schem', anchor: 'project-origin', unselected: 'air' } as const);
 export const LIVE_ALLOWED_ORIGINS: readonly string[] = ['https://freadeax.github.io'];

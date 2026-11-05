@@ -23,7 +23,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
- * Pure rules of the server link without Bukkit (LINK-01, docs/architecture/AUTO_LINK.md): server identity,
+ * Pure rules of the server link without Bukkit (LINK-01, docs/architecture/team/AUTO_LINK.md): server identity,
  * owner keys, signed control messages and the list of settings the planner may change. Unit tested in
  * {@code LinkCoreTest}; {@link ServerLink} wires it to the server.
  * <p>

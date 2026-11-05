@@ -14,7 +14,7 @@ const AUTO_MS = 15_000;
 interface Pending { readonly source: 'Spiel' | 'Server'; readonly merge: TeamMerge; readonly issues: readonly string[]; readonly ack: readonly string[] }
 
 /**
- * „Mit Spiel abgleichen“ (COOP-03, docs/architecture/TEAMBAU.md §7): the team view goes to the Bauplaner mod
+ * „Mit Spiel abgleichen“ (COOP-03, docs/architecture/team/TEAMBAU.md §7): the team view goes to the Bauplaner mod
  * on this computer (POST /v1/team), so the game shows sections, owners and the own task. What the player
  * reported in the game comes back as events of „Ich bin“ and is merged like a team package (preview, one
  * undoable step, then acknowledged). With the Paper plugin and the team channel allowed in the game, the

@@ -1,6 +1,6 @@
 # Unabhängige Litematic-Vertragsfixture
 
-Eigene synthetische Daten, keine fremde Welt und kein Export aus Litematica. `multiregion.nbt.hex` enthält feste Big-Endian-NBT-Bytes, erzeugt vom unabhängigen Python-`struct`-Writer [make_litematic_fixture.py](../../scripts/make_litematic_fixture.py). Der TypeScript-Reader erzeugt diese Erwartungen nicht. GZip ergänzen die Tests mit Node `zlib`; auf Pages liegt dieselbe Datei als `examples/contract-multiregion.litematic`.
+Eigene synthetische Daten, keine fremde Welt und kein Export aus Litematica. `multiregion.nbt.hex` enthält feste Big-Endian-NBT-Bytes, erzeugt vom unabhängigen Python-`struct`-Writer [make_litematic_fixture.py](../../scripts/fixtures/make_litematic_fixture.py). Der TypeScript-Reader erzeugt diese Erwartungen nicht. GZip ergänzen die Tests mit Node `zlib`; auf Pages liegt dieselbe Datei als `examples/contract-multiregion.litematic`.
 
 Format 6, SubVersion 1, MinecraftDataVersion 3465 (reine Dateiangabe). Zwei Regionen mit vorzeichenbehafteten Größen; Koordinaten relativ zum Schematic-Ursprung:
 

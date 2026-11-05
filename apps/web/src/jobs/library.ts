@@ -65,7 +65,7 @@ async function seedInBackground(repo: Repository, options: Pick<JobOptions, 'onP
   if (out.cache && repo.saveCatalogCache) await repo.saveCatalogCache(out.cache).catch(e => console.warn('Katalogspeicher nicht geschrieben:', e));
 }
 
-/** The catalogue file built with the page for this key (PERF-05, scripts/build_catalog_snapshot.mjs). */
+/** The catalogue file built with the page for this key (PERF-05, scripts/pages/build_catalog_snapshot.mjs). */
 function snapshotUrl(key: string): string {
   try { return new URL(`assets/catalog-${key}.json`, document.baseURI).href; } catch { return ''; }
 }

@@ -5,7 +5,7 @@ import { defaultProperties } from './defaultStates.js';
 
 /**
  * Minecraft Java region files (Anvil, `.mca`) and the chunk NBT inside them
- * (WORLD-IMPORT-01, docs/architecture/WORLD_IMPORT.md).
+ * (WORLD-IMPORT-01, docs/architecture/welt/WORLD_IMPORT.md).
  *
  * A region file covers 32 × 32 chunks. The first 4 KiB hold one location per
  * chunk (3-byte sector offset, 1-byte sector count, big endian; index

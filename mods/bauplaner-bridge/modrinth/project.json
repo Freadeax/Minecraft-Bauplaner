@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "comment": "Modrinth-Projekt der Bauplaner-Brücke. Gelesen von scripts/modrinth_publish.mjs (check | plan | create | sync | release). Text: DESCRIPTION.md, Änderungen: ../CHANGELOG.md.",
+  "comment": "Modrinth-Projekt der Bauplaner-Brücke. Gelesen von scripts/mod/modrinth_publish.mjs (check | plan | create | sync | release). Text: DESCRIPTION.md, Änderungen: ../CHANGELOG.md.",
   "slug": "bauplaner-bridge",
   "title": "Bauplaner Bridge",
   "summary": "Shows your Minecraft-Bauplaner build plans as a hologram in the world: live progress, material list, placement helper and team building. Client-side, never builds for you.",

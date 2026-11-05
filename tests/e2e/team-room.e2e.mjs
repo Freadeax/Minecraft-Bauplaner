@@ -1,4 +1,4 @@
-// Browser check of Team live (COOP-07, docs/architecture/TEAM_LIVE.md): the Bauleitung switches the team live,
+// Browser check of Team live (COOP-07, docs/architecture/team/TEAM_LIVE.md): the Bauleitung switches the team live,
 // a helper joins by link in another browser – no file anywhere – and both see each other's steps within
 // seconds; the server writes a measurement; a new plan release reaches the helper and is taken over.
 // The room is the real room core (services/team-room/src/core.js) behind Playwright's network routing,

@@ -12,7 +12,7 @@ import { DomainError } from '../core/types.js';
 import type { Project, StepProgress } from '../core/types.js';
 
 /**
- * Bauführung im Spiel (BUILD-06, docs/architecture/BUILD_RUN.md). Turns the
+ * Bauführung im Spiel (BUILD-06, docs/architecture/planer/BUILD_RUN.md). Turns the
  * build guide into instructions a player can follow at the keyboard:
  *
  *  - Schichtführung: the cells of a step as rows/rectangles of equal blocks

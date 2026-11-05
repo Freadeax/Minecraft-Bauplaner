@@ -22,7 +22,7 @@ export interface LiveMapSettings {
 
 /**
  * Starting points, taken from each provider's own web app source (see
- * docs/architecture/WORLDMAP.md). The server part is a placeholder the
+ * docs/architecture/welt/WORLDMAP.md). The server part is a placeholder the
  * operator replaces; camera values are the providers' usual defaults.
  * squaremap is not offered: no primary source for its link format was checked.
  */

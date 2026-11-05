@@ -6,7 +6,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLPaths;
 
-/** Test-only mod: drives {@link ClientScenario} each client tick (scripts/test_bridge_ingame_forge.sh forge). */
+/** Test-only mod: drives {@link ClientScenario} each client tick (scripts/mod/test_bridge_ingame_forge.sh forge). */
 @Mod("bauplaner_bridge_gametest")
 public final class ForgeGameTest {
     public ForgeGameTest() {

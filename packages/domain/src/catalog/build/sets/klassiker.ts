@@ -5,7 +5,7 @@ import type { Look, Mix } from '../style.js';
 import { stableHypot } from '../../../../../voxel/src/stableMath.js';
 
 /**
- * The B9 classics redrawn with the design kit (LIB-05, docs/architecture/BAUSTIL.md):
+ * The B9 classics redrawn with the design kit (LIB-05, docs/architecture/bibliothek/BAUSTIL.md):
  * same purpose, rooms and furnishing as before, now with mixed materials,
  * plinths, frames, dressed windows and roofs with overhang, soffit and verge.
  */

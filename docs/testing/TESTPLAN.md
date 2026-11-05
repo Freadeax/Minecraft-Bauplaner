@@ -1,6 +1,6 @@
 # Testplan der großen Testphase (QA-04)
 
-Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
+Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/checks/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
 Umfang: 146 Fälle in 13 Bereichen, davon 63 Kernfälle.
 
@@ -247,7 +247,7 @@ Planer, Mod und Paper-Plugin verbinden sich per Klick; der Server wird aus dem P
 
 Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan.ts), geordnet nach dem Ort, den die Abnahme braucht. Ein Paket gilt als abgenommen, wenn alle genannten Fälle ✓ sind; Ob ein Paket noch auf Abnahme wartet, steht in `docs/ROADMAP.md`.
 
-### Nur im Browser (43 Pakete)
+### Nur im Browser (44 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -288,6 +288,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | PROJ-03 | PROJ-20 |
 | PROJ-04 | PROJ-21 |
 | SPLIT-01 | BIB-11 |
+| STRUCT-01 | START-03, SYS-03 |
 | TERRAIN-01 | KARTE-04, PROJ-06 |
 | TERRAIN-02 | PROJ-06 |
 | UPDATE-01 | PROJ-07 |

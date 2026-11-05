@@ -16,7 +16,7 @@ sourceSets.main.java.srcDir '../hologram-26.3/src/main/java'
 sourceSets.main.resources.srcDir '../hologram-26.3/src/main/resources'
 
 // Echter Spieltest (Fabric Client Game Test): startet Minecraft 26.3 mit der Mod, baut einen Plan per
-// Testbefehl auf und lässt die Mod ihn wie ein Spieler aufnehmen. Nur über scripts/test_bridge_ingame.sh,
+// Testbefehl auf und lässt die Mod ihn wie ein Spieler aufnehmen. Nur über scripts/mod/test_bridge_ingame.sh,
 // der Testcode landet nicht in der ausgelieferten .jar.
 fabricApi {
     configureTests {

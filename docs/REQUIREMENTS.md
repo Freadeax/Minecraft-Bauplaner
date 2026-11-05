@@ -5,7 +5,7 @@ Priorität: M = Kern, S = Folgeausbau, L = Langfristig. Status: Übersicht der A
 | ID | Anforderung | Priorität | Roadmap |
 |---|---|---|---|
 | R-001 | Schem-Import mit vollständigen Zuständen | M | P1-01 |
-| R-002 | Litematic einschließlich mehrerer Regionen | S | P5-01 (umgesetzt, [LITEMATIC](architecture/LITEMATIC.md)) |
+| R-002 | Litematic einschließlich mehrerer Regionen | S | P5-01 (umgesetzt, [LITEMATIC](architecture/formate/LITEMATIC.md)) |
 | R-003 | Selektiver Weltimport | L | P7-01 |
 | R-004 | Browser-3D und freier Flug | M | P1-03 |
 | R-005 | Ganzzahlige Layer und Schnitte | M | P1-03 |
@@ -32,12 +32,12 @@ Priorität: M = Kern, S = Folgeausbau, L = Langfristig. Status: Übersicht der A
 
 Neue Anforderungen erhalten stabile IDs, Nutzen, Abnahme und Abhängigkeiten. Widersprüche werden dokumentiert und entschieden, nicht still umgedeutet. Nicht unterstützte Features werden in der Oberfläche nicht als fertig angeboten.
 
-Aktueller Nachweis R-001: packages/formats/src, unabhängige fixtures/schem, tests/schem.test.mjs und Importworker/-Bericht. Begrenzte Sponge-v3-Unterstützung, keine allgemeine Versionsfreigabe. [Importvertrag](architecture/SCHEM_IMPORT.md).
+Aktueller Nachweis R-001: packages/formats/src, unabhängige fixtures/schem, tests/unit/formats/schem.test.mjs und Importworker/-Bericht. Begrenzte Sponge-v3-Unterstützung, keine allgemeine Versionsfreigabe. [Importvertrag](architecture/formate/SCHEM_IMPORT.md).
 
-Nachweis B0 (27.10.2026): R-008 teilweise (Metadaten, Tags, Suche, Versionen in `packages/domain/src/catalog/library.ts`), R-010/R-011/R-013 teilweise (Instanztransformationen, Override, Undo/Redo, Voxelkonflikte in `project.ts`/`compose.ts`, Editor), R-024 teilweise (Herkunft/Nutzungsrechte je Asset, inhaltsadressierte Versionen). Tests: `tests/domain.test.mjs`, `tests/e2e/app.e2e.mjs`. Offene Teile siehe [Blockplan](BLOCKS.md).
+Nachweis B0 (27.10.2026): R-008 teilweise (Metadaten, Tags, Suche, Versionen in `packages/domain/src/catalog/library.ts`), R-010/R-011/R-013 teilweise (Instanztransformationen, Override, Undo/Redo, Voxelkonflikte in `project.ts`/`compose.ts`, Editor), R-024 teilweise (Herkunft/Nutzungsrechte je Asset, inhaltsadressierte Versionen). Tests: `tests/unit/core/domain.test.mjs`, `tests/e2e/app.e2e.mjs`. Offene Teile siehe [Blockplan](archiv/BLOCKS.md).
 
-Nachweis B3 (27.10.2026): R-023 umgesetzt für lokalen Browserspeicher (IndexedDB, Revisionskonflikte, Sicherung/Wiederherstellung; [PERSISTENCE](architecture/PERSISTENCE.md)), R-024 teilweise (Sicherung nimmt Herkunft, alle Versionen verwendeter Bauteile und Originale mit; Wiederherstellung prüft Vollständigkeit). Tests: `tests/backup.test.mjs`, `tests/e2e/persistence.e2e.mjs`.
+Nachweis B3 (27.10.2026): R-023 umgesetzt für lokalen Browserspeicher (IndexedDB, Revisionskonflikte, Sicherung/Wiederherstellung; [PERSISTENCE](architecture/kern/PERSISTENCE.md)), R-024 teilweise (Sicherung nimmt Herkunft, alle Versionen verwendeter Bauteile und Originale mit; Wiederherstellung prüft Vollständigkeit). Tests: `tests/unit/data/backup.test.mjs`, `tests/e2e/persistence.e2e.mjs`.
 
-Nachweis B5 (27.10.2026): R-009 umgesetzt (Anschlüsse auf Grenzflächen validiert, Transformation von Position/Normale/Up, Typ-/Profil-/Nutzungsgrenze, deterministischer Snap mit Voxelkonfliktprüfung, gespeicherte und neu geprüfte Verbindungen), R-008 ergänzt um Anschluss-Editor und Bereich als Bauteil, R-011 ergänzt um Snap. Grenzen und Tests: [CONNECTORS](architecture/CONNECTORS.md).
+Nachweis B5 (27.10.2026): R-009 umgesetzt (Anschlüsse auf Grenzflächen validiert, Transformation von Position/Normale/Up, Typ-/Profil-/Nutzungsgrenze, deterministischer Snap mit Voxelkonfliktprüfung, gespeicherte und neu geprüfte Verbindungen), R-008 ergänzt um Anschluss-Editor und Bereich als Bauteil, R-011 ergänzt um Snap. Grenzen und Tests: [CONNECTORS](architecture/kern/CONNECTORS.md).
 
-Nachweis B9 (27.10.2026): R-008 ergänzt um Gebäudekatalog: Facetten (Kategorie, Stil, Biom, Funktion) als gekennzeichnete Angaben, berechnete Kennwerte je Version, Facettenfilter mit Trefferzahlen, Bauplatzfilter, Sortierung, projektbezogene Vorschläge mit Begründung, ähnliche Gebäude und 16 mitgelieferte synthetische Gebäude. Details [CATALOG](architecture/CATALOG.md).
+Nachweis B9 (27.10.2026): R-008 ergänzt um Gebäudekatalog: Facetten (Kategorie, Stil, Biom, Funktion) als gekennzeichnete Angaben, berechnete Kennwerte je Version, Facettenfilter mit Trefferzahlen, Bauplatzfilter, Sortierung, projektbezogene Vorschläge mit Begründung, ähnliche Gebäude und 16 mitgelieferte synthetische Gebäude. Details [CATALOG](architecture/bibliothek/CATALOG.md).

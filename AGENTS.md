@@ -58,7 +58,7 @@ Ausführungsplan: [GitHub-Konnektor und Pages](docs/operations/GITHUB_CONNECTOR_
 
 ## Parallele Blöcke
 
-Bei paralleler Arbeit gelten Dateizuständigkeiten und Regeln aus docs/BLOCKS.md. Vor jedem Push `git pull --rebase origin main`, vollständige Prüfung, danach `scripts/publish_pages.sh`.
+Bei paralleler Arbeit gelten Dateizuständigkeiten und Regeln aus docs/archiv/BLOCKS.md. Vor jedem Push `git pull --rebase origin main`, vollständige Prüfung, danach `scripts/publish_pages.sh`.
 
 ## Prüfungen ohne GitHub Actions
 

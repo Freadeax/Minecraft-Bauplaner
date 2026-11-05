@@ -25,7 +25,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 /**
- * Server link without commands (LINK-02, docs/architecture/AUTO_LINK.md). The plugin sets itself up on the
+ * Server link without commands (LINK-02, docs/architecture/team/AUTO_LINK.md). The plugin sets itself up on the
  * first start ({@code link.json}: server id, name, owners), waits for an operator to pair it with a planner
  * and from then on takes signed control messages instead of commands: settings, team, team room, plans.
  * <ul>

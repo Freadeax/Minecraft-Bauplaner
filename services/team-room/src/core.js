@@ -1,4 +1,4 @@
-// Team-Raum (COOP-07, docs/architecture/TEAM_LIVE.md §4): the room logic without Cloudflare APIs, so the
+// Team-Raum (COOP-07, docs/architecture/team/TEAM_LIVE.md §4): the room logic without Cloudflare APIs, so the
 // same code runs in the Durable Object and in the Node tests. The room is deliberately dumb: it checks
 // form and size of events, keeps them in arrival order and hands them out after a cursor. Rights,
 // conflicts and the meaning of events stay in the fold of every participant (packages/domain/src/team/team.ts).
@@ -215,7 +215,7 @@ export class RoomCore {
 }
 
 /**
- * Server control through the room (LINK-05, docs/architecture/AUTO_LINK.md): the room passes a control message
+ * Server control through the room (LINK-05, docs/architecture/team/AUTO_LINK.md): the room passes a control message
  * signed in the planner on to the Paper plugin connected with the server key and the answer back. The room knows
  * no owner key and checks only the form; the plugin checks signature, sequence number and server.
  */

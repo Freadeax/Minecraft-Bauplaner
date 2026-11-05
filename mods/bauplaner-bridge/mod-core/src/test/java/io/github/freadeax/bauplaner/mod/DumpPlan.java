@@ -8,7 +8,7 @@ import java.nio.file.Path;
 
 /**
  * Reads a plan with the mod's own reader and writes every plan block as "x y z state" (project coordinates).
- * Used by scripts/bridge_sendcheck.mjs to compare what the website sends with what the hologram shows.
+ * Used by scripts/mod/bridge_sendcheck.mjs to compare what the website sends with what the hologram shows.
  */
 public final class DumpPlan {
     private DumpPlan() {}

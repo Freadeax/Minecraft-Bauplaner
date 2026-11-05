@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * setblocks.txt with one wrong and one missing block (only the test places blocks, as server commands),
  * looks at the origin block and sends the {@code /bauplaner} commands like the chat does
  * ({@code ClientPacketListener.sendCommand}, where the loader intercepts client commands). The mod writes
- * the recording; the test copies it to BAUPLANER_GAMETEST_DIR for scripts/bridge_gametest.mjs and quits.
+ * the recording; the test copies it to BAUPLANER_GAMETEST_DIR for scripts/mod/bridge_gametest.mjs and quits.
  */
 public final class ClientScenario {
     private static final Logger LOG = LoggerFactory.getLogger("BauplanerGameTest");

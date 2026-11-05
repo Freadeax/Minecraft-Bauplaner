@@ -8,7 +8,7 @@ import { FormatError, NBT_LIMITS, readNbt } from './nbt.js';
 import { gunzipLimited, parseBlockState } from './schem.js';
 
 /**
- * Reader for in-game recordings ("Ist-Aufnahme", see docs/architecture/MOD_BRIDGE.md).
+ * Reader for in-game recordings ("Ist-Aufnahme", see docs/architecture/mod/MOD_BRIDGE.md).
  * A recording is a Sponge Schem v3 of the plan box as it stands in the world. Unlike
  * the asset import it is not turned into a voxel payload: the comparison works on the
  * dense palette indices, so recordings up to the export size stay cheap.

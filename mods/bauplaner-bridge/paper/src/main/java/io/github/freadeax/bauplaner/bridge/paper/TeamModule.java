@@ -41,7 +41,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 /**
- * Teambau on the server (COOP-02, docs/architecture/TEAMBAU.md). Players without planner or mod see
+ * Teambau on the server (COOP-02, docs/architecture/team/TEAMBAU.md). Players without planner or mod see
  * their sections, take them over, report them done, write notes and report deliveries with chat
  * commands; every action is an event of the team log with the player's real identity (origin
  * {@code server}). Rights come from the team log (roles) and Paper permissions. Never changes the world:

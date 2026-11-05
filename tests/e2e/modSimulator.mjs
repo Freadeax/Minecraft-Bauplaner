@@ -1,4 +1,4 @@
-// Stand-in for the Bauplaner mod's live link (protocol 1, docs/architecture/LIVE_LINK.md) for browser tests:
+// Stand-in for the Bauplaner mod's live link (protocol 1, docs/architecture/team/LIVE_LINK.md) for browser tests:
 // the same routes, pairing, token and origin rules as mod-core LiveLinkServer, with a small synthetic world.
 import http from 'node:http';
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';

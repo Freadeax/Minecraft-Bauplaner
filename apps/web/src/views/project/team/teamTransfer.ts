@@ -1,5 +1,5 @@
 // Plan transfer for the team (COOP-01/07): one way to pack the plan of the Bauleitung and one way to take
-// it over, shared by the file exchange (TeamExchange) and the Team-Raum (TeamRoom, docs/architecture/TEAM_LIVE.md §6).
+// it over, shared by the file exchange (TeamExchange) and the Team-Raum (TeamRoom, docs/architecture/team/TEAM_LIVE.md §6).
 import {
   buildRestore, buildTeamPackage, createBackup, planRestore, readBackup, sectionNeeds, serializeBackup, siteOf, takeOverPlan, teamContextOf, teamServerFile, teamView, serverFarms, productionOf
 } from '../../../../../../packages/domain/src/index.js';

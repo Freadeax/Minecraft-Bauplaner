@@ -3,7 +3,7 @@ import type { BlockState, Vec3 } from '../types.js';
 
 /**
  * Blockfakten 26.3 (BLOCK-01): what the real game code says about every vanilla block
- * state, read once from the generated table `blockFacts.ts` (see scripts/gen_block_facts.mjs).
+ * state, read once from the generated table `blockFacts.ts` (see scripts/gen/gen_block_facts.mjs).
  * Complete property lists with defaults, sturdy faces, support needs, replaceability,
  * light, fluids, items and stack sizes. Pure data access, no rules beyond lookup.
  */

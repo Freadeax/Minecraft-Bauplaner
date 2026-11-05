@@ -14,7 +14,7 @@ import { payloadLookup, settlePayload } from '../../core/placement.js';
  *    derives from the neighbours (settlePayload, from the real block facts).
  * Cells that are not part of the plan count as air: a catalogue building owns
  * its space. Everything else that does not hold must be fixed in the design;
- * tests/catalog-game.test.mjs checks every building and generator.
+ * tests/unit/catalog/catalog-game.test.mjs checks every building and generator.
  */
 export const MAX_CHAIN = 8;
 const CHAIN: BlockState = { id: 'minecraft:iron_chain', properties: { axis: 'y', waterlogged: 'false' } };

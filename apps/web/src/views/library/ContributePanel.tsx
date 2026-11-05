@@ -14,7 +14,7 @@ import { FacetFields, facetsFromForm } from './FacetFields';
  * preview) for download and opens the GitHub form „Bibliotheksbeitrag“, where
  * the file is attached. The maintainer takes it in with `npm run library:add`;
  * after the next published update the building is a fixed catalogue entry for
- * everyone. See docs/architecture/CONTRIBUTIONS.md.
+ * everyone. See docs/architecture/bibliothek/CONTRIBUTIONS.md.
  */
 const AUTHOR_KEY = 'bauplaner.beitrag.autor';
 const readAuthor = (): string => { try { return localStorage.getItem(AUTHOR_KEY) ?? ''; } catch { return ''; } };

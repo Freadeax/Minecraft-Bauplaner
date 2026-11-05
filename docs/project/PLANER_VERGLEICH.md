@@ -98,11 +98,11 @@ Ausgewählt nach Nutzen für Philipps Bauweise (große Burg-/Stadtanlagen, Modpa
 5. **Farbpaletten** – Farbverlauf zwischen zwei Blöcken mit automatisch gewählten Zwischenstufen (Farbabstand in Lab), „ähnliche Blöcke“; übernimmt sich direkt als Verlaufsmuster.
 6. **Bild → Blöcke** – Bilddatei als Wand- oder Bodenbild, Farbabgleich nur mit vollen Würfeln, wahlweise Fehlerverteilung (Dithering), Blockgruppen wählbar (Wolle, Beton, Terrakotta, alle).
 
-Technischer Vertrag: [CREATIVE_TOOLS](../architecture/CREATIVE_TOOLS.md).
+Technischer Vertrag: [CREATIVE_TOOLS](../architecture/planer/CREATIVE_TOOLS.md).
 
 ## 3a. Zweite Runde: EDIT-05 (Thread „Vorschläge aus der Planer-Analyse umsetzen“)
 
-Aus den verbliebenen Lücken der Werkstatt: Zauberauswahl mit Zellauswahl als eigener Auswahlart, Wachsen/Schrumpfen/Einpassen, Stapeln, Extrudieren, Ellipsoid, Torus, Wendel sowie der offene Punkt aus ENTITY-01 (Ausstattung zieht beim Verschieben/Drehen/Stapeln mit). Vertrag: [CREATIVE_TOOLS](../architecture/CREATIVE_TOOLS.md#auswahl--und-formwerkzeuge-edit-05). Weiter offen: Formelformen (niedrig), reale Orte (eigener Thread), Symmetrie/Kurven im Mod.
+Aus den verbliebenen Lücken der Werkstatt: Zauberauswahl mit Zellauswahl als eigener Auswahlart, Wachsen/Schrumpfen/Einpassen, Stapeln, Extrudieren, Ellipsoid, Torus, Wendel sowie der offene Punkt aus ENTITY-01 (Ausstattung zieht beim Verschieben/Drehen/Stapeln mit). Vertrag: [CREATIVE_TOOLS](../architecture/planer/CREATIVE_TOOLS.md#auswahl--und-formwerkzeuge-edit-05). Weiter offen: Formelformen (niedrig), reale Orte (eigener Thread), Symmetrie/Kurven im Mod.
 
 ## 4. Vorschläge für eigene Threads
 

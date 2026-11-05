@@ -21,7 +21,7 @@ import net.minecraft.world.phys.Vec3;
  * menu (J) and material screen (Num 7), then the placement helper. Clicks go through the real input path
  * ({@code Minecraft.startUseItem}/{@code startAttack} with the crosshair target), where NeoForge fires the
  * cancelable click event the mod listens to; a cancelled click never reaches MultiPlayerGameMode. Chat
- * lines and files are checked by scripts/bridge_gametest.mjs verify, like for Fabric.
+ * lines and files are checked by scripts/mod/bridge_gametest.mjs verify, like for Fabric.
  */
 final class HologramScenario {
     private static final String PLAN = "spieltest.schem";

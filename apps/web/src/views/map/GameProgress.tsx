@@ -16,7 +16,7 @@ import type { LiveGame } from './liveClient';
 import { liveApi } from './liveClient';
 
 /**
- * Baustand aus dem Spiel (MAP-05, docs/architecture/LIVE_LINK.md): the mod records the hologram's
+ * Baustand aus dem Spiel (MAP-05, docs/architecture/team/LIVE_LINK.md): the mod records the hologram's
  * whole plan box (GET /v1/scan, mod 0.7.1+), the page compares it like an imported recording
  * (gameCheck.ts), keeps it in the project's recording history and shows what is missing or wrong
  * per layer and on the map. Ticks change only through the explicit „abhaken“ button.

@@ -32,7 +32,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 /**
  * Paper/Spigot plugin of the Bauplaner-Brücke. Reads the box of a website plan from the server world
- * and writes the recording ({@code bauplaner-scan} v1, docs/architecture/MOD_BRIDGE.md) that the
+ * and writes the recording ({@code bauplaner-scan} v1, docs/architecture/mod/MOD_BRIDGE.md) that the
  * website imports. Never sets or removes blocks and never generates terrain.
  * <p>
  * Files below {@code plugins/BauplanerBridge/}: {@code plans/} (exported plans), {@code scans/}

@@ -22,7 +22,7 @@ const send = (way: Way, p: ServerPairing, op: ServerOp, fields: Readonly<Record<
   way.kind === 'mod' ? control(way.link, p, op, fields) : controlViaRoom(p, op, fields);
 
 /**
- * „Server ohne Befehle“ (LINK-04, docs/architecture/AUTO_LINK.md): finds the mod on this computer by itself,
+ * „Server ohne Befehle“ (LINK-04, docs/architecture/team/AUTO_LINK.md): finds the mod on this computer by itself,
  * pairs by a click in the game, shows the server plugin behind the game, pairs the server with one click and
  * changes its settings. Every change is a signed control message; nobody types a command on the server.
  */

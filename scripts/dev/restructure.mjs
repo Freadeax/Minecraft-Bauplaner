@@ -15,7 +15,7 @@
 //  3. Pfade ab Repo-Wurzel in Text, Skripten, Java-Kommentaren und package.json (z. B. `node scripts/roadmap.mjs`);
 //  4. in docs/roadmap.json nur `scope` und `evidence` der Aufgaben (alte Verlaufseinträge bleiben unverändert).
 import { execFileSync } from 'node:child_process';
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, rmdirSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
@@ -23,7 +23,10 @@ const posix = path.posix;
 const CODE = /\.(?:[cm]?js|tsx?|mts)$/;
 const TEXT = /\.(?:md|json|sh|py|java|gradle|toml|ya?ml|txt|css|properties|html)$/;
 // Pages-Ausgabe, erzeugte Ansichten und Binärdaten fassen wir nicht an.
-const SKIP = p => /^(?:assets\/|downloads\/|examples\/|fixtures\/)/.test(p) || ['index.html', 'deployment.json', 'package-lock.json', 'docs/ROADMAP.md', 'docs/ROADMAP_HISTORY.md'].includes(p);
+// Das Werkzeug selbst, seine Listen und sein Test bleiben ebenfalls unberührt; Dateien mit der Marke
+// Zeilen mit der Marke `restructure:keep` (z. B. Verweise auf alte Stände) auch.
+const SKIP = p => /^(?:assets\/|downloads\/|examples\/|scripts\/dev\/)/.test(p) || (/^fixtures\//.test(p) && !p.endsWith('.md')) || ['index.html', 'deployment.json', 'package-lock.json', 'docs/ROADMAP.md', 'docs/ROADMAP_HISTORY.md', 'tests/unit/tooling/restructure.test.mjs'].includes(p);
+const KEEP = 'restructure:keep';
 
 /** Expands directory entries into file moves over the tracked file list. */
 export function expandMoves(pairs, files) {
@@ -95,6 +98,7 @@ export function planRewrites(read, realFiles, moves, virtual = new Set()) {
   };
   const newOf = t => t.kind === 'dir' ? moveDir(t.path) : (moves.get(t.path) ?? t.path);
   const out = new Map();
+  const earlier = new Map([...virtual].map(old => [moves.get(old), old]));
   const rootPaths = [...moves.keys()].filter(p => p.includes('/')).sort((a, b) => b.length - a.length);
   const rootRe = rootPaths.length ? new RegExp(`(?<![\\w./@-])(${rootPaths.map(p => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})(?![\\w/-])`, 'g') : null;
 
@@ -103,16 +107,19 @@ export function planRewrites(read, realFiles, moves, virtual = new Set()) {
     const newPath = moves.get(oldPath) ?? oldPath;
     const oldDir = posix.dirname(oldPath), newDir = posix.dirname(newPath);
     const original = read(oldPath);
-    let text = original;
+    const kept = [];
+    let text = original.split('\n').map(l => l.includes(KEEP) ? `\u0000${kept.push(l) - 1}\u0000` : l).join('\n');
+    // A file that already sits at its new place but still carries imports written for its old place (rebase).
+    const formerDir = earlier.has(oldPath) ? posix.dirname(earlier.get(oldPath)) : null;
     const fixRelative = spec => {
       if (!/^\.\.?(?:\/|$)/.test(spec)) return spec;
       const [pathPart, hash = ''] = spec.split(/(?=#)/);
-      const joined = posix.normalize(posix.join(oldDir, pathPart));
-      if (joined.startsWith('..')) return spec;
-      const target = resolveTarget(joined === '.' ? '' : joined, files, dirs);
+      const resolveFrom = dir => { const j = posix.normalize(posix.join(dir, pathPart)); return j.startsWith('..') ? null : resolveTarget(j === '.' ? '' : j, files, dirs); };
+      let target = resolveFrom(oldDir), stale = false;
+      if (!target && formerDir) { target = resolveFrom(formerDir); stale = !!target; }
       if (!target) return spec;
       const targetNew = newOf(target);
-      if (targetNew === target.path && newDir === oldDir) return spec;
+      if (!stale && targetNew === target.path && newDir === oldDir) return spec;
       const written = restyle(target, targetNew, target.written);
       const r = rel(newDir, written, /\/$/.test(pathPart));
       // Keep './' only where the original had it or where it is required.
@@ -141,6 +148,7 @@ export function planRewrites(read, realFiles, moves, virtual = new Set()) {
       continue;
     }
     if (rootRe) text = text.replace(rootRe, p => moves.get(p) ?? p);
+    text = text.replace(/\u0000(\d+)\u0000/g, (_, i) => kept[Number(i)]);
     if (text !== original) out.set(newPath, text);
   }
   return out;
@@ -164,6 +172,10 @@ function main() {
     execFileSync('git', ['mv', from, to]);
   }
   for (const [p, text] of changes) writeFileSync(p, text);
+  // Leere Ordner, die der Umzug hinterlässt, entfernen.
+  for (const from of moves.keys()) for (let d = posix.dirname(from); d !== '.'; d = posix.dirname(d)) {
+    try { if (readdirSync(d).length) break; rmdirSync(d); } catch { break; }
+  }
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {

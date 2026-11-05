@@ -9,7 +9,7 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
 /**
- * Test-only mod: drives {@link ClientScenario} each client tick (scripts/test_bridge_ingame_forge.sh neoforge),
+ * Test-only mod: drives {@link ClientScenario} each client tick (scripts/mod/test_bridge_ingame_forge.sh neoforge),
  * followed by the client mod's hologram and placement helper ({@link HologramScenario}) and the website link ({@link LiveLinkScenario}).
  */
 @Mod(value = "bauplaner_bridge_gametest", dist = Dist.CLIENT)

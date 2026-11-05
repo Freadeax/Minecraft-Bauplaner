@@ -3,7 +3,7 @@ import type { H, Plot, Props } from './plot.js';
 
 /**
  * Gestaltungsbaukasten (LIB-05 Baustil). Rules derived from studying finished
- * builds (docs/architecture/BAUSTIL.md): mixed materials instead of one block
+ * builds (docs/architecture/bibliothek/BAUSTIL.md): mixed materials instead of one block
  * per surface, relief in front of and behind the wall plane, upside-down stairs
  * as brackets and lintels, open trapdoors as shutters, roofs with overhang,
  * soffit, verge boards and a thick body, storeys that jetty out, stone plinths.

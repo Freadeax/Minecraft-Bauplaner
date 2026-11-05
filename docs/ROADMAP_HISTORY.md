@@ -6237,3 +6237,501 @@ Kernmodule geprüft: Verweise zwischen Projekten, Projektsitzung, Werkstatt (8 F
 - `tests/core-links.test.mjs`
 - `tests/editor-patterns.test.mjs`
 
+## 2026-11-05T11:03:24.121Z · progress
+
+**Aufgaben:** CORE-01, CORE-02, CORE-03, STORE-01, MAT-01, BUILD-01, LIB-01, GEN-01, OPS-01, PLAN-01, ARCH-01, ARCH-02, DOC-01, STORE-02, UI-01, UI-02, STAB-01, OPS-02, PROFILE-01, NBT-01, FORMAT-01, FORMAT-02, MAT-02, MAT-03, MAT-04, DIFF-01, PERF-01, PERF-02, PERF-03, PERF-04, PERF-05, VIEW-01, VIEW-02, BLOCK-01, BLOCK-02, GFX-01, GFX-02, MODEL-01, EDIT-01, EDIT-02, EDIT-03, EDIT-04, EDIT-05, UPDATE-01, LIB-02, LIB-03, WORLD-02, BUILD-05, TERRAIN-01, TERRAIN-02, TERRAIN-03, BUILD-06, GEN-02, MAP-01, MAP-03, MAP-04, MAP-02, GAME-01, GAME-02, GAME-07, GAME-08, GAME-03, WORLD-IMPORT-01, BACKUP-02, GAME-04, GAME-05, LAGER-01, DEFER-01, LIB-04, ENTITY-01, LIB-05, LIB-06, BASE-01, SPLIT-01, GROSS-01, MAP-05, MAP-06, MAP-07, QA-04, GEN-03, SIZE-01, COOP-01, COOP-02, COOP-03, COOP-04, COOP-05, COOP-06, PROJ-01, GAME-09, GAME-10, COOP-07, COOP-08, PROD-01, PROD-02, PROD-03, PROD-04, PROD-05, LINK-01, LINK-02, LINK-03, LINK-05, LINK-06, COOP-09, COOP-10, COOP-11, PROJ-02, PROJ-03, PROJ-04, LINK-07, EDIT-06, FALLBACK-01, LINK-10, STRUCT-01, CORE-04
+
+Stufe 1 (STRUCT-01): scripts/ in Unterordner (pages, checks, roadmap, mod, gen, fixtures, bench, library, team, dev; publish_pages.sh bleibt), Einheitstests nach tests/unit/<bereich>/ (npm test über tests/**/*.test.mjs), docs/architecture nach Bereich, Altbestand nach docs/archiv/, Strukturtest. Übrige Aufgaben: nur Dateiumfang/Nachweispfade umgeschrieben. npm run check und 176 Browsertests grün.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| CORE-01 | ✅ Im beschriebenen Umfang geprüft | 1/1 | Regressionen bei Änderungen weiterführen. |
+| CORE-02 | ✅ Im beschriebenen Umfang geprüft | 1/1 | Regressionen bei Änderungen weiterführen. |
+| CORE-03 | ✅ Im beschriebenen Umfang geprüft | 1/1 | Regressionen bei Änderungen weiterführen. |
+| STORE-01 | ✅ Im beschriebenen Umfang geprüft | 1/1 | Regressionen bei Änderungen weiterführen. |
+| MAT-01 | ✅ Im beschriebenen Umfang geprüft | 1/1 | Regressionen bei Änderungen weiterführen. |
+| BUILD-01 | ✅ Im beschriebenen Umfang geprüft | 1/1 | Regressionen bei Änderungen weiterführen. |
+| LIB-01 | ✅ Im beschriebenen Umfang geprüft | 1/1 | Regressionen bei Änderungen weiterführen. |
+| GEN-01 | ✅ Im beschriebenen Umfang geprüft | 1/1 | Regressionen bei Änderungen weiterführen. |
+| OPS-01 | ✅ Im beschriebenen Umfang geprüft | 1/1 | Regressionen bei Änderungen weiterführen. |
+| PLAN-01 | ✅ Im beschriebenen Umfang geprüft | 4/4 | Codex-Arbeitsablauf bei folgenden Quellblöcken anwenden; Cloud-Umgebung bei Bedarf über die Oberfläche erstellen und separat nachweisen. |
+| ARCH-01 | ✅ Im beschriebenen Umfang geprüft | 4/4 | Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen. |
+| ARCH-02 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme der Migration mit echten Browserdaten (S05); danach kompakte Laufzeitform der Zellen als Folge von PERF-02. |
+| DOC-01 | ✅ Im beschriebenen Umfang geprüft | 3/3 | Aktuelle Prüf-/Main-/Live-Nachweise im nächsten sachlichen Quellblock nachführen; keine selbstreferenzielle Deploymentfolge. |
+| STORE-02 | ✅ Im beschriebenen Umfang geprüft | 3/3 | CAS-/Migrationsregressionen bei Speicheränderungen fortführen; Safari/iPhone gesondert in QA-02. |
+| UI-01 | ✅ Im beschriebenen Umfang geprüft | 3/3 | Oberflächenregression bei Themen-/Layoutänderungen weiterführen; echte Geräte separat in QA-02. |
+| UI-02 | ✅ Im beschriebenen Umfang geprüft | 4/4 | Echte Geräteprüfung (Safari/iPhone, Touch) in QA-02; weitere Hauptbereiche (z. B. Karte MAP-01) als Eintrag in nav.ts anhängen. |
+| STAB-01 | ✅ Im beschriebenen Umfang geprüft | 2/2 | Erledigt. |
+| OPS-02 | ✅ Im beschriebenen Umfang geprüft | 2/2 | Bei tatsächlichem Vorfall bekannten Build neu bestätigen und Recovery regulär ohne Force vorbereiten; Livehashes danach gesondert prüfen. |
+| PROFILE-01 | 🧩 Implementiert · Abnahme offen | 3/3 | Abnahme: Profilprüfung im Gebäudeblatt an einer echten älteren Schem-/Litematic-Datei ansehen (Testphase). |
+| NBT-01 | 🧩 Implementiert · Abnahme offen | 3/3 | Abnahme im Spiel: gedrehtes Bauteil mit Truhen, Schildern und einem Strukturblock exportieren und in 26.3 laden (Testphase). |
+| FORMAT-01 | 🧩 Implementiert · Abnahme offen | 1/2 | Hochgeladene WorldEdit-Datei mit npm run format:check-schem prüfen; Befunde beheben. |
+| FORMAT-02 | 🧩 Implementiert · Abnahme offen | 3/4 | Export im Spiel mit Litematica laden (Philipps PC, Fabric 26.3) – FORMAT-02-S02. |
+| MAT-02 | 🧩 Implementiert · Abnahme offen | 3/3 | Abnahme in der Testphase: Rohstoffliste eines großen Bauwerks mit gewählter Holzart und Brennstoff mit dem Spiel vergleichen. |
+| MAT-03 | 🧩 Implementiert · Abnahme offen | 3/3 | Abnahme PROJ-14. |
+| MAT-04 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme: Kupfervariante eines Bauwerks im Planer erzeugen und im Spiel ansehen (Testphase). |
+| DIFF-01 | 🧩 Implementiert · Abnahme offen | 3/3 | Abnahme in der Testphase: zwei Stände eines verschobenen Bauwerks vergleichen. |
+| PERF-01 | ✅ Im beschriebenen Umfang geprüft | 3/3 | Messung bei Rechenkernänderungen wiederholen; Übertragungs-/Invalidierungsarbeit in PERF-02, vollständige React-/Gerätelatenz gesondert prüfen. |
+| PERF-02 | 🧩 Implementiert · Abnahme offen | 3/3 | PERF-02-S03 zusammen mit PERF-05-S08 (Zellen erst bei Bedarf entpacken) im Performance-Thread umsetzen; beide ändern compose/Entpacken. Übergabe abgestimmt am 03.11.2026. |
+| PERF-03 | ✅ Im beschriebenen Umfang geprüft | 3/3 | Erledigt; weitere Bundle-Arbeit läuft unter PERF-05 (O-5, gezielte Unterpfade). |
+| PERF-04 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); der GPU-Upload großer Szenen läuft seit GFX-02-S03 in Stücken. |
+| PERF-05 | 🧩 Implementiert · Abnahme offen | 8/9 | O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8). |
+| VIEW-01 | 🧩 Implementiert · Abnahme offen | 1/2 | Aktuelle GPU-/Touch-Prüfung mit negativen Koordinaten und allen Schnittachsen. |
+| VIEW-02 | 🧩 Implementiert · Abnahme offen | 5/6 | Mojang-Download im echten Browser und weitere Browser prüfen (Testphase); Register ist seit PROFILE-01 an den Serverbericht gebunden. |
+| BLOCK-01 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme im Spiel; PROFILE-01 kann die Berichtsfakten übernehmen. Die Katalogfehler aus der Spielprüfung behebt BLOCK-02. |
+| BLOCK-02 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme im Spiel (S06): geänderte Gebäude (z. B. Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen. |
+| GFX-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Prüfung auf echten Geräten und Browsern (S06); Biomfarben und leuchtende Blockentities als GFX-02. |
+| GFX-02 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme auf echten GPUs, Firefox/Safari und Abgleich mit Spielbildern (S04, zusammen mit GFX-01-S06). |
+| MODEL-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Dateien in Blender und Slicern prüfen und ein Testdruck; danach Flächenzusammenfassung (S06). Export läuft seit PERF-04 im Worker. |
+| EDIT-01 | 🧩 Implementiert · Abnahme offen | 2/2 | Geräteprüfung (QA-02). Gruppenziehen im 3D-Bild ist mit EDIT-06 erledigt. |
+| EDIT-02 | 🧩 Implementiert · Abnahme offen | 5/5 | Spielprüfung. Picking an 3D-Blockflächen ist mit EDIT-06 erledigt. |
+| EDIT-03 | 🧩 Implementiert · Abnahme offen | 5/5 | Spielprüfung der Schablonen-Zustände (Tür, Treppe, Laterne). Picking an 3D-Blockflächen ist mit EDIT-06 erledigt. |
+| EDIT-04 | 🧩 Implementiert · Abnahme offen | 6/7 | Spielprüfung gespiegelter Zustände; danach Gelände-Werkzeuge auf Projektgelände (eigener Thread) und Symmetrie/Kurven im Mod. |
+| EDIT-05 | 🧩 Implementiert · Abnahme offen | 6/7 | EDIT-05-S07: Abnahme durch Philipp in der Werkstatt (Zauberstab, Stapeln, Extrudieren, Wendel) und Spielprüfung gestapelter/gedrehter Bauteile mit Ausstattung. |
+| UPDATE-01 | 🧩 Implementiert · Abnahme offen | 2/2 | Echtgeräteabnahme (QA-02); Teamreihenfolge der Updateoperationen in TEAM-02. |
+| LIB-02 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme auf echten Geräten (QA-02); Rückmeldung zur Bedienung der Sammlungen einholen. |
+| LIB-03 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme auf echten Geräten (QA-02); Vorlagen für Anlagen (Compounds) und BUILD-05 prüfen. |
+| WORLD-02 | ✅ Im beschriebenen Umfang geprüft | 2/2 | Kuratierte Filter-/Treffernachweise bei Katalogänderungen fortführen; keine weitere Karte ohne tatsächliche Assets. |
+| BUILD-05 | ✅ Im beschriebenen Umfang geprüft | 3/3 | Gelände-/Hanglagen und Türausrichtung zum Weg als eigene Folgeaufgabe; Echtgeräteabnahme mit QA-02. |
+| TERRAIN-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme mit eigener Welt (S05); danach Weg mit Stufen/Kurven und Stützmauern als Blöcke als eigene Folgeaufgabe. |
+| TERRAIN-02 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme mit eigener Welt (S05); Wegstufen und Brücken siehe TERRAIN-03. |
+| TERRAIN-03 | 🧩 Implementiert · Abnahme offen | 6/8 | Abnahme PROJ-19 und BIB-19 im Spiel; danach Wegenetz der Basis als Landschaftsweg (S08). |
+| BUILD-06 | 🧩 Implementiert · Abnahme offen | 5/5 | Echtgeräte- und Druckerabnahme mit QA-02; Philipps Spieltest mit Mod-Aufnahme (WorldAnchor) auf seinem Server. |
+| GEN-02 | 🧩 Implementiert · Abnahme offen | 5/5 | Generierte Bauten (v. a. Treppenhaus, Torhaus-Wehrgang, Hafen) im Spiel abnehmen; Treppenhaus-Anbau an Haus als Anlage erwägen. |
+| MAP-01 | 🧩 Implementiert · Abnahme offen | 4/4 | Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02. |
+| MAP-03 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme durch Philipp im echten Spiel (S06): Browserfreigabe „lokales Netzwerk“, Kopplung, Senden auf dem LMNT-Server. |
+| MAP-04 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme durch Philipp (S06); denkbare Folge: benannte Gruppen/Sperren mit Schemaerweiterung, abgestimmt mit der Mod. |
+| MAP-02 | 🧩 Implementiert · Abnahme offen | 2/3 | Abnahme KARTE-08 auf Philipps Server-Karte. |
+| GAME-01 | ✅ Im beschriebenen Umfang geprüft | 1/1 | Regressionen bei Änderungen weiterführen. |
+| GAME-02 | 🧩 Implementiert · Abnahme offen | 4/5 | Philipp testet die .jar aus /mnt/project-files/mod/ auf server.lmnt-gaming.net und meldet Ergebnis/Fehler (Anleitung ANLEITUNG_SPIELTEST.md). |
+| GAME-07 | 🧩 Implementiert · Abnahme offen | 9/11 | Philipp prüft Packliste und Gerüst (0.13.0, TESTPLAN MOD-17) im echten Spiel; danach Stufe 6b (Gruppen/Sperren aus dem Weltbuilder). |
+| GAME-08 | 🧩 Implementiert · Abnahme offen | 5/5 | Philipp prüft Protokoll 3 im echten Spiel (TESTPLAN MOD-17); Forge und Paper ohne Live-Verbindung. |
+| GAME-03 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme mit MAP-03-S06; Forge/NeoForge/Paper haben die Verbindung noch nicht. |
+| WORLD-IMPORT-01 | 🧩 Implementiert · Abnahme offen | 2/2 | Mit einer Kopie von Philipps eigener 26.3-Welt (Modpack) einen Ausschnitt übernehmen und ein platziertes Projekt prüfen. |
+| BACKUP-02 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme auf echten Geräten (QA-02), besonders Safari-Downloads; Rückmeldung zur Erinnerungsschwelle (7 Tage) einholen. |
+| GAME-04 | 🚧 In Arbeit | 3/4 | Abnahme auf Philipps eigenem Paper-Server (GAME-04-S04). |
+| GAME-05 | 🧩 Implementiert · Abnahme offen | 3/4 | Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen. |
+| LAGER-01 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme auf dem Paper-Server (Thread „Server-Plugin mit geprüften Lagerkisten“). |
+| DEFER-01 | ⏸ Zurückgestellt | 0/1 | Nur nach neuem ausdrücklichem Nutzerauftrag neu bewerten. |
+| LIB-04 | 🧩 Implementiert · Abnahme offen | 4/4 | Weitere Ensembles und Tipps nach Spielrückmeldung; Redstone-Bauten im Spiel abnehmen. |
+| ENTITY-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Export mit Entities im Spiel prüfen (S06). Truhen-/Schildinhalte bearbeiten ist mit EDIT-06 erledigt. |
+| LIB-05 | 🧩 Implementiert · Abnahme offen | 7/8 | LIB-05-S08: Abnahme neuer Gebäude im Spiel durch Philipp. |
+| LIB-06 | 🧩 Implementiert · Abnahme offen | 5/7 | Abnahme durch Philipp (S06) und erster echter Beitrag (S07). |
+| BASE-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme durch Philipp (S06); danach Küstenlinie aus der Geländeaufnahme und Wegstufen. |
+| SPLIT-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme mit echten Dateien (S05). |
+| GROSS-01 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme durch Philipp (S06); Großbauten-Set (S05). |
+| MAP-05 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05); denkbar: gedrehte Projektlagen auf der Weltkarte, damit gedrehte Hologramme übernommen werden können. |
+| MAP-06 | 🧩 Implementiert · Abnahme offen | 7/8 | Abnahme durch Philipp (S08); Mod-Umsetzung GAME-08; denkbar für Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (Zeitstempel je Eintrag). |
+| MAP-07 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme KARTE-07; Server-Plugin könnte Pläne gedreht ablegen (Thread „Mod, Server und Client mit Fallbacks ausbauen“). |
+| QA-04 | 🧩 Implementiert · Abnahme offen | 4/6 | Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist. |
+| GEN-03 | 🧩 Implementiert · Abnahme offen | 4/5 | Philipp baut das Kolosseum im Spiel nach (BIB-14); danach Feinschliff (Statuen in den Attika-Fenstern, Treppen im Hypogäum). |
+| SIZE-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05) mit einem großen Bau im Spiel. |
+| COOP-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp mit Mitspielern (TEAMBAU-01…05). |
+| COOP-02 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme auf Philipps Server. |
+| COOP-03 | 🧩 Implementiert · Abnahme offen | 2/3 | Abnahme TEAMBAU-09 auf Philipps Server mit Mod 0.10.0 und Paper-Plugin mit Teamkanal; Lagerkisten (COOP-04) über TeamChannel.decorate/broadcastStore. |
+| COOP-04 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung in COOP-05 (geprüfte Lagerkisten, docs/architecture/LAGERKISTEN.md). |
+| COOP-05 | 🧩 Implementiert · Abnahme offen | 3/5 | Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server. |
+| COOP-06 | 🧩 Implementiert · Abnahme offen | 4/5 | Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern. |
+| PROJ-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel. |
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
+| GAME-10 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme MOD-16 auf Philipps Server mit Paper-Plugin. |
+| COOP-07 | 🧩 Implementiert · Abnahme offen | 6/7 | Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl umgesetzt (LINK-05). |
+| COOP-08 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LAGER-10 mit einer echten Farm; Ertragsbuch in TEAMBAU-28. |
+| PROD-01 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme PROJ-12; später Erträge aus geprüften Lagerkisten (COOP-05) ins Ertragsbuch. |
+| PROD-02 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme PROJ-13. |
+| PROD-03 | 🧩 Implementiert · Abnahme offen | 3/3 | Später: Ofenstraße aus dem Katalog direkt vorschlagen und in die Planung legen. |
+| PROD-04 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme PROJ-13; danach Farmerträge aus Mod/Plugin. |
+| PROD-05 | 🧩 Implementiert · Abnahme offen | 5/5 | Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen. |
+| LINK-01 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LINK-01 auf Philipps Server. |
+| LINK-02 | 🧩 Implementiert · Abnahme offen | 3/4 | Plan-Upload aus dem Planer; Abnahme LINK-02. |
+| LINK-03 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme LIVE-01 in Philipps Modpack. |
+| LINK-05 | 🧩 Implementiert · Abnahme offen | 5/5 | Abnahme vom iPad (Testplan LINK-04). |
+| LINK-06 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme durch Philipp (Testplan LINK-05, LINK-06; Paper-Plugin 0.13.0 auf dem Server). |
+| COOP-09 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme mit Mitspielern (TEAMBAU-25). |
+| COOP-10 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme mit Mitspielern ohne Plugin (TEAMBAU-27, TEAMBAU-25). |
+| COOP-11 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme TEAMBAU-28 durch Philipp; danach optional team.digest im Plugin/Mod-TeamLog (Thread „Mod, Server und Client mit Fallbacks ausbauen“). |
+| PROJ-02 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05, PROJ-16…18). |
+| PROJ-03 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme PROJ-20 durch Philipp. |
+| PROJ-04 | 🧩 Implementiert · Abnahme offen | 2/3 | Abnahme PROJ-21 durch Philipp. |
+| LINK-07 | 🚧 In Arbeit | 5/6 | Team-Thread deployt den Raum (Aufnahmen, Positionen); Modrinth 0.15.0; Abnahme LINK-07/LINK-08 durch Philipp. |
+| EDIT-06 | 🧩 Implementiert · Abnahme offen | 4/5 | EDIT-06-S05: Philipp prüft das Bauen im 3D-Bild auf PC und iPad (WERK-08) und lädt eine Truhe/ein Schild mit Inhalt im Spiel (WERK-09). |
+| FALLBACK-01 | 🚧 In Arbeit | 4/5 | Spieltest Mod 0.16.0, Release über den Modrinth-Thread, Abnahme LINK-09 durch Philipp. |
+| LINK-10 | 🧩 Implementiert · Abnahme offen | 4/4 | Release 0.17.0 über den Modrinth-Thread, Team-Raum ausrollen, Abnahme mit LINK-09. |
+| STRUCT-01 | 🧩 Implementiert · Abnahme offen | 4/4 | Durchsicht der Ordnerkarte durch Philipp; parallele Threads ziehen neue Dateien mit dem Codemod nach. |
+| CORE-04 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme CORE-04-S05 durch Philipp. |
+
+**Geänderte Dateien:**
+
+- `.githooks/pre-push`
+- `AGENTS.md`
+- `README.md`
+- `apps/web/src/blockmodels/colors26.ts`
+- `apps/web/src/jobs/library.ts`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/library/ContributePanel.tsx`
+- `apps/web/src/views/map/GameProgress.tsx`
+- `apps/web/src/views/map/liveClient.ts`
+- `apps/web/src/views/map/liveMapConfig.ts`
+- `apps/web/src/views/mod/ServerPanel.tsx`
+- `apps/web/src/views/mod/releases.json`
+- `apps/web/src/views/mod/releases.ts`
+- `apps/web/src/views/mod/serverClient.ts`
+- `apps/web/src/views/project/GameCheckPanel.tsx`
+- `apps/web/src/views/project/team/TeamLive.tsx`
+- `apps/web/src/views/project/team/TeamPlan.tsx`
+- `apps/web/src/views/project/team/TeamProof.tsx`
+- `apps/web/src/views/project/team/TeamRoom.tsx`
+- `apps/web/src/views/project/team/TeamTab.tsx`
+- `apps/web/src/views/project/team/roomClient.ts`
+- `apps/web/src/views/project/team/teamTransfer.ts`
+- `docs/BLOCKS.md`
+- `docs/COMMUNICATION.md`
+- `docs/LICENSING.md`
+- `docs/REQUIREMENTS.md`
+- `docs/REVIEW.md`
+- `docs/STATUS.md`
+- `docs/STRUKTUR.md`
+- `docs/TESTING.md`
+- `docs/architecture/betrieb/HOSTING.md`
+- `docs/architecture/betrieb/TESTPHASE.md`
+- `docs/architecture/bibliothek/ANLAGEN.md`
+- `docs/architecture/bibliothek/BASE_PLANNER.md`
+- `docs/architecture/bibliothek/BAUSTIL.md`
+- `docs/architecture/bibliothek/BUILD_THEMES.md`
+- `docs/architecture/bibliothek/CATALOG.md`
+- `docs/architecture/bibliothek/COLLECTIONS.md`
+- `docs/architecture/bibliothek/CONTRIBUTIONS.md`
+- `docs/architecture/bibliothek/GENERATORS.md`
+- `docs/architecture/bibliothek/GROSSPROJEKTE.md`
+- `docs/architecture/formate/BLOCK_LOGIC.md`
+- `docs/architecture/formate/BLOCK_MODELS.md`
+- `docs/architecture/formate/ENTITIES.md`
+- `docs/architecture/formate/LITEMATIC.md`
+- `docs/architecture/formate/MODEL_EXPORT.md`
+- `docs/architecture/formate/NBT_TRANSFORMS.md`
+- `docs/architecture/formate/SCHEM_EXPORT.md`
+- `docs/architecture/formate/SCHEM_IMPORT.md`
+- `docs/architecture/formate/VERSION_PROFILE.md`
+- `docs/architecture/kern/ASSET_CONCURRENCY.md`
+- `docs/architecture/kern/BACKGROUND_JOBS.md`
+- `docs/architecture/kern/BACKUPS.md`
+- `docs/architecture/kern/COMPOSITION_PERFORMANCE.md`
+- `docs/architecture/kern/CONNECTORS.md`
+- `docs/architecture/kern/DECISIONS.md`
+- `docs/architecture/kern/DOMAIN.md`
+- `docs/architecture/kern/MODULES.md`
+- `docs/architecture/kern/PERFORMANCE_AUDIT.md`
+- `docs/architecture/kern/PERSISTENCE.md`
+- `docs/architecture/kern/PLAN_MODEL.md`
+- `docs/architecture/kern/PROJECT_BROWSER_BENCHMARK.md`
+- `docs/architecture/kern/PROJECT_COMPUTATION.md`
+- `docs/architecture/kern/SIZE_LIMITS.md`
+- `docs/architecture/kern/SPECIFICATION.md`
+- `docs/architecture/kern/STABILITY.md`
+- `docs/architecture/kern/UPDATES.md`
+- `docs/architecture/kern/VOXEL_CONTRACT.md`
+- `docs/architecture/kern/project-browser-benchmark.json`
+- `docs/architecture/mod/MOD_BRIDGE.md`
+- `docs/architecture/mod/MOD_HOLOGRAM.md`
+- `docs/architecture/planer/BLOCK_EDITOR.md`
+- `docs/architecture/planer/BUILD_RUN.md`
+- `docs/architecture/planer/CREATIVE_TOOLS.md`
+- `docs/architecture/planer/GRAPHICS.md`
+- `docs/architecture/planer/GUIDE.md`
+- `docs/architecture/planer/MATERIALS.md`
+- `docs/architecture/planer/MATERIAL_LAB.md`
+- `docs/architecture/planer/PRODUCTION.md`
+- `docs/architecture/planer/PROGRAM.md`
+- `docs/architecture/planer/SCHEM_VIEWS.md`
+- `docs/architecture/planer/SITE.md`
+- `docs/architecture/planer/THEME_TOKENS.md`
+- `docs/architecture/planer/UI.md`
+- `docs/architecture/planer/UI_ACCEPTANCE.md`
+- `docs/architecture/planer/VIEWER.md`
+- `docs/architecture/team/AUTO_LINK.md`
+- `docs/architecture/team/FALLBACKS.md`
+- `docs/architecture/team/LAGERKISTEN.md`
+- `docs/architecture/team/LIVE_LINK.md`
+- `docs/architecture/team/TEAMBAU.md`
+- `docs/architecture/team/TEAM_LIVE.md`
+- `docs/architecture/welt/LANDSCAPE.md`
+- `docs/architecture/welt/LIVEMAP.md`
+- `docs/architecture/welt/TERRAIN.md`
+- `docs/architecture/welt/WORLDMAP.md`
+- `docs/architecture/welt/WORLD_BUILDER.md`
+- `docs/architecture/welt/WORLD_IMPORT.md`
+- `docs/archiv/BLOCKS.md`
+- `docs/archiv/IMPLEMENTATION_PLAN.md`
+- `docs/archiv/NOVEMBER_EXPANSION.md`
+- `docs/archiv/ROADMAP_LEGACY.md`
+- `docs/archiv/STATUS_HISTORY.md`
+- `docs/library/BEITRAEGE.md`
+- `docs/operations/GITHUB_CONNECTOR_RUNBOOK.md`
+- `docs/operations/MAIN_ONLY_BRANCHES.md`
+- `docs/operations/PAGES_RESTORE_PROBE.md`
+- `docs/project/CODEX_PROMPT.md`
+- `docs/project/CODEX_SETUP.md`
+- `docs/project/PLANER_VERGLEICH.md`
+- `docs/testing/TESTPLAN.md`
+- `fixtures/litematic/README.md`
+- `fixtures/schem/README.md`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/README.md`
+- `mods/bauplaner-bridge/client-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/ClientScenario.java`
+- `mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/ScanJob.java`
+- `mods/bauplaner-bridge/core/src/test/java/io/github/freadeax/bauplaner/bridge/SimulateScan.java`
+- `mods/bauplaner-bridge/fabric-26.3/build.gradle`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/forge-26.3/build.gradle`
+- `mods/bauplaner-bridge/forge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/ForgeGameTest.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LinkPrompt.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/BlockRules.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamState.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/DumpPlan.java`
+- `mods/bauplaner-bridge/modrinth/project.json`
+- `mods/bauplaner-bridge/neoforge-26.3/build.gradle`
+- `mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java`
+- `mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/LiveLinkScenario.java`
+- `mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/NeoForgeGameTest.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/BridgePlugin.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/LinkCore.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageModule.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndex.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreLedger.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamChannel.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`
+- `mods/bauplaner-bridge/paper/src/main/resources/config.yml`
+- `mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/LinkCoreTest.java`
+- `package.json`
+- `packages/application/src/catalogSnapshot.ts`
+- `packages/domain/src/building/buildRun.ts`
+- `packages/domain/src/building/gameCheck.ts`
+- `packages/domain/src/catalog/build/gameReady.ts`
+- `packages/domain/src/catalog/build/quality.ts`
+- `packages/domain/src/catalog/build/refine.ts`
+- `packages/domain/src/catalog/build/sets/klassiker.ts`
+- `packages/domain/src/catalog/build/style.ts`
+- `packages/domain/src/catalog/community/registry.ts`
+- `packages/domain/src/materials/profileRecipes.ts`
+- `packages/domain/src/team/liveLink.ts`
+- `packages/domain/src/team/serverControl.ts`
+- `packages/domain/src/team/team.ts`
+- `packages/domain/src/team/teamDigest.ts`
+- `packages/domain/src/team/teamLink.ts`
+- `packages/domain/src/team/teamPlan.ts`
+- `packages/domain/src/team/teamSync.ts`
+- `packages/domain/src/world/liveMapExport.ts`
+- `packages/formats/src/anvil.ts`
+- `packages/formats/src/defaultStates.ts`
+- `packages/formats/src/scan.ts`
+- `packages/voxel/src/blockFacts.ts`
+- `packages/voxel/src/blocklogic/facts.ts`
+- `packages/voxel/src/entities.ts`
+- `packages/voxel/src/profile.ts`
+- `packages/voxel/src/profileData.ts`
+- `scripts/bench/benchmark_composition.mjs`
+- `scripts/bench/benchmark_project_browser.mjs`
+- `scripts/bench/perf/measure_start.mjs`
+- `scripts/checks/check_architecture.mjs`
+- `scripts/checks/check_docs.py`
+- `scripts/checks/check_schem_roundtrip.mjs`
+- `scripts/checks/render_testplan.mjs`
+- `scripts/checks/verify_litematic.py`
+- `scripts/checks/verify_schem.py`
+- `scripts/dev/moves/2026-11-05-stufe1-doku.json`
+- `scripts/dev/moves/2026-11-05-stufe1-skripte.json`
+- `scripts/dev/moves/2026-11-05-stufe1-tests.json`
+- `scripts/dev/python.mjs`
+- `scripts/dev/restructure.mjs`
+- `scripts/dev/setup_codex.mjs`
+- `scripts/fixtures/make_litematic_fixture.py`
+- `scripts/fixtures/make_region_fixture.py`
+- `scripts/fixtures/make_schem_fixture.py`
+- `scripts/fixtures/make_terrain_fixture.py`
+- `scripts/gen/gen_block_data.py`
+- `scripts/gen/gen_block_facts.mjs`
+- `scripts/gen/gen_default_states.mjs`
+- `scripts/gen/gen_profile.mjs`
+- `scripts/gen/probe/BlockFactsProbe.java`
+- `scripts/library/library_intake.mjs`
+- `scripts/mod/bridge_crosscheck.mjs`
+- `scripts/mod/bridge_gametest.mjs`
+- `scripts/mod/bridge_paperlager.mjs`
+- `scripts/mod/bridge_paperlink.mjs`
+- `scripts/mod/bridge_paperroom.mjs`
+- `scripts/mod/bridge_paperteam.mjs`
+- `scripts/mod/bridge_papertest.mjs`
+- `scripts/mod/bridge_room_prepare.mjs`
+- `scripts/mod/bridge_sendcheck.mjs`
+- `scripts/mod/modrinth_publish.mjs`
+- `scripts/mod/release_mod.mjs`
+- `scripts/mod/test_bridge.sh`
+- `scripts/mod/test_bridge_ingame.sh`
+- `scripts/mod/test_bridge_ingame_forge.sh`
+- `scripts/mod/test_bridge_paper.sh`
+- `scripts/mod/test_bridge_paper_lager.sh`
+- `scripts/mod/test_bridge_paper_link.sh`
+- `scripts/mod/test_bridge_paper_room.sh`
+- `scripts/mod/test_bridge_paper_team.sh`
+- `scripts/mod/test_world_import_real.sh`
+- `scripts/pages/build_catalog_snapshot.mjs`
+- `scripts/pages/catalog_key.mjs`
+- `scripts/pages/clean_pages.mjs`
+- `scripts/pages/prepare_main_pages.mjs`
+- `scripts/pages/prepare_pages.mjs`
+- `scripts/pages/probe_pages_restore.mjs`
+- `scripts/pages/publish_main_pages.sh`
+- `scripts/publish_pages.sh`
+- `scripts/roadmap/roadmap.mjs`
+- `scripts/team/team_room_smoke.mjs`
+- `services/team-room/README.md`
+- `services/team-room/src/core.js`
+- `services/team-room/src/index.js`
+- `services/team-room/wrangler.toml`
+- `tests/e2e/export.e2e.mjs`
+- `tests/e2e/landscape-scatter.e2e.mjs`
+- `tests/e2e/landscape.e2e.mjs`
+- `tests/e2e/litematic.e2e.mjs`
+- `tests/e2e/modSimulator.mjs`
+- `tests/e2e/server-link.e2e.mjs`
+- `tests/e2e/team-live.e2e.mjs`
+- `tests/e2e/team-room.e2e.mjs`
+- `tests/e2e/terrain.e2e.mjs`
+- `tests/e2e/world-import.e2e.mjs`
+- `tests/unit/building/block-content-edit.test.mjs`
+- `tests/unit/building/block-logic.test.mjs`
+- `tests/unit/building/blocks.test.mjs`
+- `tests/unit/building/build-run.test.mjs`
+- `tests/unit/building/game-check.test.mjs`
+- `tests/unit/building/guide.test.mjs`
+- `tests/unit/building/site.test.mjs`
+- `tests/unit/catalog/anlagen.test.mjs`
+- `tests/unit/catalog/base-shore.test.mjs`
+- `tests/unit/catalog/base.test.mjs`
+- `tests/unit/catalog/baustil.test.mjs`
+- `tests/unit/catalog/build-themes.test.mjs`
+- `tests/unit/catalog/catalog-game.test.mjs`
+- `tests/unit/catalog/catalog.test.mjs`
+- `tests/unit/catalog/collections.test.mjs`
+- `tests/unit/catalog/contribution.test.mjs`
+- `tests/unit/catalog/generators.test.mjs`
+- `tests/unit/catalog/grossprojekte.test.mjs`
+- `tests/unit/catalog/library-start.test.mjs`
+- `tests/unit/core/application.test.mjs`
+- `tests/unit/core/asset-concurrency.test.mjs`
+- `tests/unit/core/asset-restore.test.mjs`
+- `tests/unit/core/asset-seeding.test.mjs`
+- `tests/unit/core/background-jobs.test.mjs`
+- `tests/unit/core/canonical-json.test.mjs`
+- `tests/unit/core/composition-index.test.mjs`
+- `tests/unit/core/computation-transport.test.mjs`
+- `tests/unit/core/connectors.test.mjs`
+- `tests/unit/core/core-links.test.mjs`
+- `tests/unit/core/diff-shift.test.mjs`
+- `tests/unit/core/domain.test.mjs`
+- `tests/unit/core/large-edit.test.mjs`
+- `tests/unit/core/lazy-cells.test.mjs`
+- `tests/unit/core/project-computation.test.mjs`
+- `tests/unit/core/scan-persistence.test.mjs`
+- `tests/unit/core/selective-recompute.test.mjs`
+- `tests/unit/core/size-limits.test.mjs`
+- `tests/unit/core/split-under.test.mjs`
+- `tests/unit/core/stable-math.test.mjs`
+- `tests/unit/core/states.test.mjs`
+- `tests/unit/core/updates.test.mjs`
+- `tests/unit/core/variants.test.mjs`
+- `tests/unit/core/voxel.test.mjs`
+- `tests/unit/data/backup-reminder.test.mjs`
+- `tests/unit/data/backup.test.mjs`
+- `tests/unit/data/integrity.test.mjs`
+- `tests/unit/data/plan-model.test.mjs`
+- `tests/unit/data/record-validation.test.mjs`
+- `tests/unit/editor/editor-creative.test.mjs`
+- `tests/unit/editor/editor-patterns.test.mjs`
+- `tests/unit/editor/editor-region.test.mjs`
+- `tests/unit/editor/editor.test.mjs`
+- `tests/unit/formats/anvil.test.mjs`
+- `tests/unit/formats/entities.test.mjs`
+- `tests/unit/formats/litematic.test.mjs`
+- `tests/unit/formats/model3d.test.mjs`
+- `tests/unit/formats/nbt-transforms.test.mjs`
+- `tests/unit/formats/profile.test.mjs`
+- `tests/unit/formats/schem-export.test.mjs`
+- `tests/unit/formats/schem-roundtrip.test.mjs`
+- `tests/unit/formats/schem-views.test.mjs`
+- `tests/unit/formats/schem.test.mjs`
+- `tests/unit/materials/copper.test.mjs`
+- `tests/unit/materials/material-catalog.test.mjs`
+- `tests/unit/materials/material-lab.test.mjs`
+- `tests/unit/materials/materials.test.mjs`
+- `tests/unit/materials/production.test.mjs`
+- `tests/unit/materials/recipe-prefs.test.mjs`
+- `tests/unit/materials/recipe-profile.test.mjs`
+- `tests/unit/materials/recipes.test.mjs`
+- `tests/unit/mod/mod-releases.test.mjs`
+- `tests/unit/mod/modrinth.test.mjs`
+- `tests/unit/planning/program-absence.test.mjs`
+- `tests/unit/planning/program-depth.test.mjs`
+- `tests/unit/planning/program.test.mjs`
+- `tests/unit/planning/project-order.test.mjs`
+- `tests/unit/team/lager.test.mjs`
+- `tests/unit/team/livelink.test.mjs`
+- `tests/unit/team/owner-wire.test.mjs`
+- `tests/unit/team/server-link.test.mjs`
+- `tests/unit/team/team-digest.test.mjs`
+- `tests/unit/team/team-link.test.mjs`
+- `tests/unit/team/team-room.test.mjs`
+- `tests/unit/team/team.test.mjs`
+- `tests/unit/team/teamPlan.test.mjs`
+- `tests/unit/tooling/architecture.test.mjs`
+- `tests/unit/tooling/main-pages.test.mjs`
+- `tests/unit/tooling/pages-restore.test.mjs`
+- `tests/unit/tooling/pages.test.mjs`
+- `tests/unit/tooling/python-runner.test.mjs`
+- `tests/unit/tooling/restructure.test.mjs`
+- `tests/unit/tooling/roadmap.test.mjs`
+- `tests/unit/tooling/structure.test.mjs`
+- `tests/unit/web/graphics.test.mjs`
+- `tests/unit/web/graphics2.test.mjs`
+- `tests/unit/web/preferences.test.mjs`
+- `tests/unit/web/router.test.mjs`
+- `tests/unit/web/stability.test.mjs`
+- `tests/unit/web/testphase.test.mjs`
+- `tests/unit/web/theme-preferences.test.mjs`
+- `tests/unit/web/theme-tokens.test.mjs`
+- `tests/unit/web/viewer.test.mjs`
+- `tests/unit/world/livemap-export.test.mjs`
+- `tests/unit/world/livemap.test.mjs`
+- `tests/unit/world/scan-routes.test.mjs`
+- `tests/unit/world/terrain-design.test.mjs`
+- `tests/unit/world/terrain-paths.test.mjs`
+- `tests/unit/world/terrain-scatter.test.mjs`
+- `tests/unit/world/terrain-survey.test.mjs`
+- `tests/unit/world/terrain.test.mjs`
+- `tests/unit/world/world-turn.test.mjs`
+- `tests/unit/world/worldbuilder.test.mjs`
+- `tests/unit/world/worldmap.test.mjs`
+- `tests/unit/world/worldplan.test.mjs`
+- `tests/unit/world/worldroute.test.mjs`
+- `vite.config.mjs`
+
+## 2026-11-05T11:06:42.936Z · progress
+
+**Aufgaben:** STRUCT-01
+
+STRUCT-01 im Testplan an Start- und Systemcheck (START-03, SYS-03) gebunden: nach dem Umzug startet der Planer und der Datencheck ist sauber.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| STRUCT-01 | 🧩 Implementiert · Abnahme offen | 4/4 | Durchsicht der Ordnerkarte durch Philipp; parallele Threads ziehen neue Dateien mit dem Codemod nach. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `docs/testing/TESTPLAN.md`
+

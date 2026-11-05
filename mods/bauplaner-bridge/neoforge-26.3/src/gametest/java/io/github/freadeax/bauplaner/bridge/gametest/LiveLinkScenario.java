@@ -22,7 +22,7 @@ import net.minecraft.client.gui.components.ChatComponent;
  * starts the service and shows a code in the chat, pairing with that code, status with player and
  * hologram, live terrain, Weltplan marks and a plan sent directly. Requests run beside the game (the mod
  * answers on the game thread); each step waits until its answer is there. Answers go to live.json and
- * are checked by scripts/bridge_gametest.mjs verify.
+ * are checked by scripts/mod/bridge_gametest.mjs verify.
  */
 final class LiveLinkScenario {
     private static final String BASE = "http://127.0.0.1:47615";

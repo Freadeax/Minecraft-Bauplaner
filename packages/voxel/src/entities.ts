@@ -6,7 +6,7 @@ import type { Direction } from './states.js';
  * Free entities and block entity contents (ENTITY-01): paintings, item frames,
  * armor stands and the readable content of signs, containers and banners.
  *
- * Contract (docs/architecture/ENTITIES.md):
+ * Contract (docs/architecture/formate/ENTITIES.md):
  *  - `FreeEntity.position` is the exact entity position in the payload frame
  *    (Minecraft `Pos`); position fields inside `data` are stripped on import
  *    and derived again on export (`entityExportData`).

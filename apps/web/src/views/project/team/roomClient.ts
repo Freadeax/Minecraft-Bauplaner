@@ -1,4 +1,4 @@
-// Team-Raum client (COOP-07, docs/architecture/TEAM_LIVE.md): HTTP calls and the live connection.
+// Team-Raum client (COOP-07, docs/architecture/team/TEAM_LIVE.md): HTTP calls and the live connection.
 // The sync logic itself is pure (packages/domain/src/team/teamSync.ts); this file only moves bytes.
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { confirm, ingest, nextBatch, retryDelay, trackOutbox } from '../../../../../../packages/domain/src/index.js';

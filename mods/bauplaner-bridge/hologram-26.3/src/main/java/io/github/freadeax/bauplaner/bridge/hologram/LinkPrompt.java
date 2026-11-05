@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 /**
- * Questions instead of commands (LINK-03, docs/architecture/AUTO_LINK.md): a planner waits for "Zulassen", or the
+ * Questions instead of commands (LINK-03, docs/architecture/team/AUTO_LINK.md): a planner waits for "Zulassen", or the
  * server offers the Bauplaner plugin and the player has not allowed the team channel yet. A banner at the top of
  * the screen says "J drücken"; the J menu shows the two buttons. Nothing is sent before the click.
  */

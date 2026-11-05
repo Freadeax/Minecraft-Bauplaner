@@ -1,5 +1,5 @@
 /**
- * Server link without commands (LINK-01/04, docs/architecture/AUTO_LINK.md): the planner pairs once with the
+ * Server link without commands (LINK-01/04, docs/architecture/team/AUTO_LINK.md): the planner pairs once with the
  * Bauplaner plugin on a Paper server and from then on sends signed control messages instead of commands
  * (settings, team, team room, plans). The mod on this computer and later the team room only pass them on.
  *

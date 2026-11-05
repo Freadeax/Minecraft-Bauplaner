@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Fold of the checked storage chests (COOP-05, docs/architecture/LAGERKISTEN.md §9) over the store events
+ * Fold of the checked storage chests (COOP-05, docs/architecture/team/LAGERKISTEN.md §9) over the store events
  * of a team log. {@link TeamLog} checks rights and origin and then calls {@link #apply}; the planner
  * ({@code packages/domain/src/team/team.ts}) applies the same rules in the same order. Pure Java, no Bukkit.
  * <ul>

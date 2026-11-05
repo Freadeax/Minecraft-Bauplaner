@@ -1,4 +1,4 @@
-// Cloudflare Worker + Durable Object for the Team-Raum (COOP-07, docs/architecture/TEAM_LIVE.md).
+// Cloudflare Worker + Durable Object for the Team-Raum (COOP-07, docs/architecture/team/TEAM_LIVE.md).
 // One Durable Object per room (SQLite storage), WebSocket hibernation for live pushes and presence.
 // Deploy: see services/team-room/README.md (`npx wrangler deploy` with CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID).
 import { DurableObject } from 'cloudflare:workers';
@@ -23,7 +23,7 @@ export default {
     const url = new URL(request.url);
     const parts = url.pathname.split('/').filter(Boolean);
     try {
-      if (parts[0] !== 'v1') return json({ protocol: PROTOCOL, version: VERSION, hint: 'Team-Raum des Minecraft-Bauplaners. Siehe docs/architecture/TEAM_LIVE.md.' }, 200, h);
+      if (parts[0] !== 'v1') return json({ protocol: PROTOCOL, version: VERSION, hint: 'Team-Raum des Minecraft-Bauplaners. Siehe docs/architecture/team/TEAM_LIVE.md.' }, 200, h);
       if (parts.length === 2 && parts[1] === 'rooms' && request.method === 'POST') {
         const room = `r_${randomKey(12)}`;
         const stub = env.ROOMS.get(env.ROOMS.idFromName(room));

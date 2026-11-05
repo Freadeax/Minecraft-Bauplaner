@@ -58,7 +58,7 @@ interface Props {
   onSelect(id: string): void;
 }
 
-/** Import and summary of an in-game recording (B8, docs/architecture/MOD_BRIDGE.md). */
+/** Import and summary of an in-game recording (B8, docs/architecture/mod/MOD_BRIDGE.md). */
 export function GameCheckPanel(p: Props) {
   const { repo } = useApp();
   const [busy, setBusy] = useState(false);

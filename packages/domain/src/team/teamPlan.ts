@@ -10,7 +10,7 @@ import { teamView } from './team.js';
 import { DomainError } from '../core/types.js';
 
 /**
- * Teamplanung (COOP-06, docs/architecture/TEAMBAU.md §18). Pure helpers on top of the team log
+ * Teamplanung (COOP-06, docs/architecture/team/TEAMBAU.md §18). Pure helpers on top of the team log
  * (team.ts) and the site plan (site.ts) for planning a big build with several players:
  *
  *  - work packages: split one section into team-sized parts (by layers or by building parts);

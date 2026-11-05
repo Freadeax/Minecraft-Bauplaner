@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { catalogFingerprint } from './scripts/catalog_key.mjs';
+import { catalogFingerprint } from './scripts/pages/catalog_key.mjs';
 
 export default defineConfig(({ command }) => ({
   root: 'apps/web', base: '/Minecraft-Bauplaner/',

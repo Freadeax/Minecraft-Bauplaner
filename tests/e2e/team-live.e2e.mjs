@@ -1,4 +1,4 @@
-// Browser check of „Mit Spiel abgleichen“ (COOP-03, docs/architecture/TEAMBAU.md §7) against the mod simulator:
+// Browser check of „Mit Spiel abgleichen“ (COOP-03, docs/architecture/team/TEAMBAU.md §7) against the mod simulator:
 // the team view goes to the mod, a claim made in the game comes back as a preview, is merged in one undoable
 // step and acknowledged; with the team channel live, events of other players come from the server.
 // Run after `npm run build`: `npm run test:e2e`.

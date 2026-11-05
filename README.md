@@ -11,21 +11,21 @@ Zielrepository: https://github.com/Freadeax/Minecraft-Bauplaner
 - [Verbindliche Regeln für Coding-Agenten](AGENTS.md)
 - [Ordnerkarte: wo liegt was?](docs/STRUKTUR.md)
 - [Produktgrundsätze](docs/project/PRINCIPLES.md)
-- [Technische Gesamtspezifikation](docs/architecture/SPECIFICATION.md)
-- [Normativer Voxelvertrag v1](docs/architecture/VOXEL_CONTRACT.md)
-- [Architekturentscheidungen](docs/architecture/DECISIONS.md)
+- [Technische Gesamtspezifikation](docs/architecture/kern/SPECIFICATION.md)
+- [Normativer Voxelvertrag v1](docs/architecture/kern/VOXEL_CONTRACT.md)
+- [Architekturentscheidungen](docs/architecture/kern/DECISIONS.md)
 - [Verbindliche Roadmap mit 56 Arbeitspaketen](docs/ROADMAP.md)
 - [Nachvollziehbarer Arbeitsverlauf](docs/ROADMAP_HISTORY.md)
 - [Maschinenlesbarer Aufgabenstand](docs/roadmap.json)
-- [Ausführbarer Modulvertrag](docs/architecture/MODULES.md)
+- [Ausführbarer Modulvertrag](docs/architecture/kern/MODULES.md)
 - [Strukturierte Bestandsprüfung](docs/REVIEW.md)
-- [Weltkarte und Live-Karten-Verknüpfung](docs/architecture/WORLDMAP.md)
-- [Schem-Import und Grenzen](docs/architecture/SCHEM_IMPORT.md)
-- [Vollständiger Umsetzungsplan](docs/IMPLEMENTATION_PLAN.md)
+- [Weltkarte und Live-Karten-Verknüpfung](docs/architecture/welt/WORLDMAP.md)
+- [Schem-Import und Grenzen](docs/architecture/formate/SCHEM_IMPORT.md)
+- [Vollständiger Umsetzungsplan](docs/archiv/IMPLEMENTATION_PLAN.md)
 - [Selbstständiger GitHub-/Pages-Ablauf](docs/operations/GITHUB_CONNECTOR_RUNBOOK.md)
 - [Anforderungen und Zuordnung](docs/REQUIREMENTS.md)
-- [Domänenvertrag: Bibliothek, Projekte, Konflikte](docs/architecture/DOMAIN.md)
-- [Parallele Arbeitsblöcke](docs/BLOCKS.md)
+- [Domänenvertrag: Bibliothek, Projekte, Konflikte](docs/architecture/kern/DOMAIN.md)
+- [Parallele Arbeitsblöcke](docs/archiv/BLOCKS.md)
 - [Zusammenarbeit und Kommunikation](docs/COMMUNICATION.md)
 - [Stand und Übergabe](docs/STATUS.md)
 - [Eigenständig ausgeführte Prüfungen](docs/TESTING.md)
@@ -35,7 +35,7 @@ Zielrepository: https://github.com/Freadeax/Minecraft-Bauplaner
 
 ## Hosting
 
-Verbindliches Ziel: **GitHub Pages** mit lokal gebautem statischem Frontend und Browser-Web-Workers. Keine eigenen Actions. Teamdienste werden später separat angebunden. Statischer Webbuild und Hashmanifest sind vorhanden; die erste Veröffentlichung ist unter https://freadeax.github.io/Minecraft-Bauplaner/ erreichbar. Siehe [Hostingvertrag](docs/architecture/HOSTING.md).
+Verbindliches Ziel: **GitHub Pages** mit lokal gebautem statischem Frontend und Browser-Web-Workers. Keine eigenen Actions. Teamdienste werden später separat angebunden. Statischer Webbuild und Hashmanifest sind vorhanden; die erste Veröffentlichung ist unter https://freadeax.github.io/Minecraft-Bauplaner/ erreichbar. Siehe [Hostingvertrag](docs/architecture/betrieb/HOSTING.md).
 
 ## Modulstruktur und Datenfluss
 

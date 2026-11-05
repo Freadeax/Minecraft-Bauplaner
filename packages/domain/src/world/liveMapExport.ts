@@ -8,7 +8,7 @@ import { DomainError } from '../core/types.js';
 /**
  * MAP-02: everything on one dimension of the Weltkarte as neutral map shapes,
  * and writers for the live maps whose marker formats were checked against
- * their own documentation (see docs/architecture/LIVEMAP.md, section MAP-02).
+ * their own documentation (see docs/architecture/welt/LIVEMAP.md, section MAP-02).
  */
 export type MapShape =
   | { readonly kind: 'area'; readonly id: string; readonly label: string; readonly detail: string; readonly color: string; readonly group: MapShapeGroup;

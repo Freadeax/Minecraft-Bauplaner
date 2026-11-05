@@ -47,7 +47,7 @@ neoForge.ideSyncTask generateModMetadata
 
 // Echter Spieltest: eigener Quellsatz mit Testmod (nicht in der ausgelieferten .jar). Startet den
 // NeoForge-Client mit Mod und Testmod; ClientScenario legt eine Testwelt an, baut den Plan und tippt die
-// Befehle. Nur über scripts/test_bridge_ingame.sh neoforge.
+// Befehle. Nur über scripts/mod/test_bridge_ingame.sh neoforge.
 sourceSets {
     gametest {
         java.srcDir '../client-26.3/src/gametest/java'

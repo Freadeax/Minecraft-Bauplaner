@@ -29,7 +29,7 @@ class LinkCoreTest {
 
     @Test
     void signatureMatchesTheWebsite() {
-        // Same vector as tests/server-link.test.mjs (planner side, WebCrypto HMAC-SHA-256).
+        // Same vector as tests/unit/team/server-link.test.mjs (planner side, WebCrypto HMAC-SHA-256).
         assertEquals("Z4xxwD4_0cRGwTx6-G-LN_A1h2PzwaSBK_LsXLMOxYo",
                 LinkCore.sign("abcdefghijklmnopqrstuvwxyz0123456789ABCDEFG", "own_test", 1730682000000L, "{\"server\":\"srv_test01\",\"op\":\"status\"}"));
     }

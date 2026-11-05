@@ -12,7 +12,7 @@ import type { ProjectSession } from '../session';
 import '../../../styles/teamplan.css';
 
 /**
- * Teamplanung (COOP-06, docs/architecture/TEAMBAU.md §18): planning a big build with several
+ * Teamplanung (COOP-06, docs/architecture/team/TEAMBAU.md §18): planning a big build with several
  * players on top of the team log. Areas: Planung (work packages, assignment, schedule, material),
  * Fortschritt (board, members, hints, plan changes since the release) and Rechte & Übergabe.
  * Every change is a team event or a site edit through the undoable `site.set`.

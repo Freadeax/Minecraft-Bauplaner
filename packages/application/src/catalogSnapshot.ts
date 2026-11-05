@@ -9,7 +9,7 @@ import type { PackedVersionRecord, StoredVersionRecord } from '../../domain/src/
  * Worker erzeugt (Generatoren, Hashes, Kennwerte): auf einem schnellen Rechner rund
  * 5 s, auf einem langsamen deutlich mehr – und das nach jeder Veröffentlichung neu,
  * weil der Katalogschlüssel jede Kernänderung erfasst. Dieselbe Rechnung läuft jetzt
- * einmal beim Bauen der Seite (`scripts/build_catalog_snapshot.mjs`); der Browser lädt
+ * einmal beim Bauen der Seite (`scripts/pages/build_catalog_snapshot.mjs`); der Browser lädt
  * das Ergebnis als eine Datei und rechnet nur noch, wenn sie fehlt oder nicht passt.
  *
  * Die Datei gilt nur für genau einen Katalogschlüssel (`__CATALOG_KEY__`, Fingerabdruck

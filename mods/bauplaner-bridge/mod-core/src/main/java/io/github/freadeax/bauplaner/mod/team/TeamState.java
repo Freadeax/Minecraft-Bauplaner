@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * What the mod knows about the team of a build (Teambau, COOP-03, docs/architecture/TEAMBAU.md §7): the
+ * What the mod knows about the team of a build (Teambau, COOP-03, docs/architecture/team/TEAMBAU.md §7): the
  * folded team view, sent either by the planner over the website link ({@code POST /v1/team}, source
  * {@link Source#PLANER}) or by the Paper plugin over the channel {@code bauplaner:team} ({@link Source#SERVER}).
  * Both send the same JSON ("Teamstand", format {@code team-link} version 1). The mod never folds events

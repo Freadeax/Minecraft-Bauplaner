@@ -1,5 +1,5 @@
 /**
- * Team live (COOP-07, docs/architecture/TEAM_LIVE.md): the transport-neutral sync core. A team that is
+ * Team live (COOP-07, docs/architecture/team/TEAM_LIVE.md): the transport-neutral sync core. A team that is
  * "live" remembers the room it belongs to, how far it has read the room (cursor) and which of its own
  * events the room has not confirmed yet (outbox). Every transport – the hosted team room, the Paper
  * plugin as hub or the mod's `/v1/team` – only has to offer "append a batch" and "events after a

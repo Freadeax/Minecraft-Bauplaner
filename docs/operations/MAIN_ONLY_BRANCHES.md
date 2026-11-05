@@ -30,8 +30,8 @@ Branchpublishing unterstützt nur Repositorywurzel oder `/docs`, nicht `/dist-we
 
 ## Vorbereiteter Publisher
 
-- Neuer, noch nicht aktiver Einstieg: `scripts/publish_main_pages.sh`.
-- Helfer: `scripts/prepare_main_pages.mjs`.
+- Neuer, noch nicht aktiver Einstieg: `scripts/pages/publish_main_pages.sh`.
+- Helfer: `scripts/pages/prepare_main_pages.mjs`.
 - Bestehendes `scripts/publish_pages.sh` bleibt bis zur Umstellung unverändert aktiv.
 - Voraussetzung: sauber ausgechecktes `main`, `HEAD == origin/main`, funktionierender Git-Schreibzugriff.
 - `npm run check` prüft Typen, Kern-/Webbuild, Node-Tests und Dokumentation. Der Build nennt den geprüften Quellcommit `C`.
@@ -65,7 +65,7 @@ Der verfügbare GitHub-Konnektor kann Gitobjekte/Refs lesen und schreiben, biete
 
 ## Prüfungen
 
-`node --test tests/main-pages.test.mjs`: Allowlist, Source-Erhalt, Entfernen alter Chunks, Kollisionen, Pfadmanipulation, Manifest-/Hashfehler und echte Git-Tree-Zusammenführung ohne Quellcommitänderung. `bash -n scripts/publish_main_pages.sh`; Dokumentationsprüfung. Kein tatsächlicher Main-Push, Quellenwechsel oder Löschversuch durch diesen Thread.
+`node --test tests/unit/tooling/main-pages.test.mjs`: Allowlist, Source-Erhalt, Entfernen alter Chunks, Kollisionen, Pfadmanipulation, Manifest-/Hashfehler und echte Git-Tree-Zusammenführung ohne Quellcommitänderung. `bash -n scripts/pages/publish_main_pages.sh`; Dokumentationsprüfung. Kein tatsächlicher Main-Push, Quellenwechsel oder Löschversuch durch diesen Thread.
 
 ## Maßgeblicher Hostingstand · 31.10.2026
 

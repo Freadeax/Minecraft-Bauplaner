@@ -11,13 +11,13 @@ Du arbeitest im Repository `Freadeax/Minecraft-Bauplaner` (lokal z. B. `F:\LMNT\
 ### 1. Vor jedem Arbeitsblock
 
 1. `git pull --rebase origin main`. Arbeitsbaum prüfen; fremde Änderungen nie verwerfen.
-2. Lesen: `AGENTS.md`, `docs/STATUS.md`, `docs/roadmap.json` (einzige Aufgabenquelle), `docs/ROADMAP.md`, `docs/BLOCKS.md`, **die neuesten Einträge in `docs/COMMUNICATION.md`** (neue Nachrichten stehen am Dateiende) und den Architekturvertrag des betroffenen Moduls unter `docs/architecture/`.
+2. Lesen: `AGENTS.md`, `docs/STATUS.md`, `docs/roadmap.json` (einzige Aufgabenquelle), `docs/ROADMAP.md`, `docs/archiv/BLOCKS.md`, **die neuesten Einträge in `docs/COMMUNICATION.md`** (neue Nachrichten stehen am Dateiende) und den Architekturvertrag des betroffenen Moduls unter `docs/architecture/`.
 3. Beantworte zuerst offene Nachrichten, die an Codex gerichtet sind, insbesondere `MSG-CLAUDE-SYNC-00` (siehe unten), mit einem neuen Eintrag `Antwort auf MSG-…`.
 4. Aufgabe über ihre stabile Roadmap-ID anmelden: neuer MSG-Eintrag **am Ende** von `COMMUNICATION.md` mit ID, Autor `Codex`, Zeit mit Zeitzone, Aufgabe, Dateien, Reservierung bis, nächster Schritt. In `roadmap.json` `owner` der Aufgabe setzen (z. B. `Codex`), danach `npm run roadmap:record -- ID "…"`.
 
 ### 2. Dateibesitz und Aufteilung mit Claude
 
-- Jede Aufgabe besitzt ihre Dateien (Scope in `roadmap.json`, ältere Blöcke in `docs/BLOCKS.md`). Dateien einer Aufgabe, deren Owner Claude ist, änderst du nicht. Brauchst du dort etwas, schreib eine Nachricht an Claude in `COMMUNICATION.md` und arbeite an etwas anderem weiter.
+- Jede Aufgabe besitzt ihre Dateien (Scope in `roadmap.json`, ältere Blöcke in `docs/archiv/BLOCKS.md`). Dateien einer Aufgabe, deren Owner Claude ist, änderst du nicht. Brauchst du dort etwas, schreib eine Nachricht an Claude in `COMMUNICATION.md` und arbeite an etwas anderem weiter.
 - Aktuell vorgeschlagene Aufteilung (gilt, sobald du in `COMMUNICATION.md` zustimmst oder Änderungen vorschlägst):
   - **Codex:** Kern, Datentreue, Performance, Formate und Abnahme: `PERF-02` (S03 Transport/selektive Neuberechnung), `PERF-03`, `PROFILE-01` (früh, VIEW-02 und GEN-02 hängen daran), `MAT-02`, `MAT-04`, `NBT-01`, `DIFF-01`, `FORMAT-01/02`, `QA-02`-Vorbereitung, `STAB-01`-Abnahme.
   - **Claude:** sichtbare und kreative Werkbankfunktionen: `VIEW-02` Blockformen/Texturen (B16), `MAP-01` Weltkarte (B15), `GAME-02` Fabric-Mod bauen, `LIB-02`/`LIB-03` eigene Sammlungen und Vorlagen (B17), `EDIT-01` Editor-Mehrfachauswahl, danach `GEN-02`/`BUILD-05`.

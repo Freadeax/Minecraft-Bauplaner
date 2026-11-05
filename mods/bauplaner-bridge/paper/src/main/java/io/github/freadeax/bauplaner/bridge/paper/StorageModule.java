@@ -46,7 +46,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 /**
- * Checked storage chests of a team on the server (COOP-05, docs/architecture/LAGERKISTEN.md). A container
+ * Checked storage chests of a team on the server (COOP-05, docs/architecture/team/LAGERKISTEN.md). A container
  * marked as store is counted (with shulker and bundle content), compared with the expected content
  * (last count plus booked moves), protected by its level and the team roles, and every deposit and
  * withdrawal is booked per player. Writes only team events (origin {@code server}); never changes a

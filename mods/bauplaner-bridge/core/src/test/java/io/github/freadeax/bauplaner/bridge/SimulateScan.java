@@ -5,7 +5,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 
 /**
- * Cross-language check (scripts/test_bridge.sh): records a world built exactly from the plan,
+ * Cross-language check (scripts/mod/test_bridge.sh): records a world built exactly from the plan,
  * with optional overrides {@code x,y,z=state} in world coordinates, using the real ScanJob.
  * Usage: plan.schem out.schem anchorX anchorY anchorZ [x,y,z=state ...]
  */

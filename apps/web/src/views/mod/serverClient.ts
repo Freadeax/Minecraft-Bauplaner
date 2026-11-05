@@ -4,7 +4,7 @@ import { LiveError, deviceName, liveApi, readLiveSettings, writeLiveToken } from
 import { MODEL_MAX_FILE_BYTES } from '../../../../../packages/voxel/src/sizeLimits.js';
 
 /**
- * Server link of this browser (LINK-04, docs/architecture/AUTO_LINK.md). The owner key of each paired server
+ * Server link of this browser (LINK-04, docs/architecture/team/AUTO_LINK.md). The owner key of each paired server
  * stays in this browser (localStorage) like the mod key; control messages are signed here and go through the
  * mod on this computer to the plugin. Nothing here types or sends a server command.
  */
