@@ -47,7 +47,13 @@ Grenzen: Wege laufen nur orthogonal und auf einer Höhe (Stufen folgen aus der G
 
 Oberfläche (`SplitPanel.tsx`): Optionen, Draufsicht der Teile, Liste mit Namen und Erkennung, Hervorhebung in der 3D-Ansicht, drei Wege: einzeln als Bauteile (Schlagwort `herausgeloest`, `funktion:<id>`), gewählte zu einem Bauteil, als Projekt aufteilen (optional mit Rest). Große Versionen laufen über `addAssetVersionInBackground`.
 
-Grenzen: Erkennung über Säulen – Gebäude, die sich überlappen oder über Brücken verbunden sind, werden ein Teil (dann `join` senken oder die Anschlussbrücke als Fläche abwählen); unterirdische Räume ohne Boden darüber werden nicht als eigenes Gebäude erkannt; Höhlen zählen als Boden.
+**Unterirdisch und Brücken (SPLIT-01-S05, 05.11.2026).**
+
+- *Unterirdische Räume*: Säulen, deren gebaute Blöcke alle auf oder unter dem Boden liegen, bilden eigene Kerne und verbinden sich nie mit Gebäuden an der Oberfläche. Liegt ein solcher Raum mindestens zur Hälfte im Grundriss eines Gebäudes (um `join` + 1 erweitert), ist er dessen **Keller** und gehört dazu (Erkennung „mit Keller (N Blöcke unter dem Gelände)“). Sonst wird er ein eigener Teil mit `role: 'underground'`, Name „Unterirdischer Raum“ oder „Lager (unterirdisch)“, Höhe = Raumhöhe. `below` zählt je Teil die gebauten Blöcke unter dem Gelände.
+- *Brücken*: Säulen, deren feste Blöcke über einer Lücke (Luft ab 1 Block, über Wasser direkt) beginnen und dünner als `coreHeight` sind, schweben. Zwei Durchläufe: erst Gebäude ohne schwebende Säulen; ein 8-verbundener Schwebestreifen, der zwei dieser Gebäude direkt berührt, oder ein langer schmaler freier Steg (≥ 8 lang, ≤ 5 breit, dreimal so lang wie breit) wird ein eigener Teil mit `role: 'bridge'` und `connects` (Teile an beiden Enden). Alle anderen schwebenden Säulen (Dächer großer Hallen, Traufen, Balkone) gehören im zweiten Durchlauf wieder zu ihrem Gebäude. So legt eine Brücke zwei Häuser nicht mehr zu einem Teil zusammen.
+- Liste: Art „Brücke“/„Unterirdisch“, „verbindet „A“ und „B““, eigene Farben, Schlagwörter `bruecke`/`unterirdisch`.
+
+Grenzen: Erkennung über Säulen – Gebäude, die sich überlappen, werden ein Teil (dann `join` senken); eine Brücke von einem Gebäude zu einem Weg (nur ein Gebäude am Ende) bleibt beim Gebäude; unterirdische Räume ohne Boden darüber gelten als Oberflächengebäude; Höhlen zählen als Boden. Prüfung: `tests/split-under.test.mjs`.
 
 ## Prüfung
 

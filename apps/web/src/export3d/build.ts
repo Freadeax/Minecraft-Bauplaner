@@ -145,7 +145,10 @@ export interface PrintReport {
   readonly removedParts: number;
   readonly parts: number;
   readonly colors: number;
+  /** Flächen der Hülle nach dem Zusammenfassen (MODEL-01-S06). */
   readonly faces: number;
+  /** Einheitsflächen vor dem Zusammenfassen. */
+  readonly unitFaces: number;
   readonly check: ClosedCheck;
   /** Kantenlänge einer Gitterzelle in der Zieleinheit. */
   readonly cellSize: number;
@@ -231,7 +234,7 @@ export function printModel(f: FormatsApi, cells: readonly Cell[], palette: reado
     ...mesh, welded,
     report: {
       blocks: blocks.length, skipped, cellsFilled, cellsHollowed, repairCells, removedParts: removed.removedParts, parts: partCount,
-      colors: reduced ?? used, faces: mesh.faces, check, cellSize,
+      colors: reduced ?? used, faces: mesh.faces, unitFaces: mesh.unitFaces, check, cellSize,
     },
   };
 }

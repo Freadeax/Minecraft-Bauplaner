@@ -220,8 +220,16 @@ const FACES: readonly { readonly d: readonly [number, number, number]; readonly 
   { d: [0, 0, 1], c: [[0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]] },
 ];
 
-/** Hülle aus Einheitsflächen zwischen belegten und leeren Zellen, Gruppen je Material, Eckpunkte je Gruppe geteilt. */
-export function shellMesh(g: PrintGrid, options: ShellOptions): Mesh3d & { readonly faces: number } {
+/**
+ * Hülle zwischen belegten und leeren Zellen, Gruppen je Material, Eckpunkte je Gruppe geteilt.
+ *
+ * MODEL-01-S06: Einheitsflächen gleicher Richtung, Ebene und Farbe werden gierig zu Rechtecken
+ * zusammengefasst (`merge`, Standard an). Damit keine T-Stöße entstehen, bekommt jedes Rechteck auf
+ * seinem Rand jeden Eckpunkt eines anderen Rechtecks, der darauf liegt; ein solches Rechteck wird als
+ * Fächer um seine Mitte trianguliert, sonst mit zwei Dreiecken. Jede Kante gehört weiter genau zwei
+ * Dreiecken mit denselben Eckpunkten (wasserdicht, `checkClosed`).
+ */
+export function shellMesh(g: PrintGrid, options: ShellOptions & { readonly merge?: boolean }): Mesh3d & { readonly faces: number; readonly unitFaces: number } {
   const { sx, sy, sz, cells } = g, [a, b] = strides(g);
   let lo = [sx, sy, sz], any = false;
   for (let x = 0; x < sx; x++) for (let y = 0; y < sy; y++) for (let z = 0; z < sz; z++) if (cells[x * a + y * b + z]) {
@@ -239,26 +247,80 @@ export function shellMesh(g: PrintGrid, options: ShellOptions): Mesh3d & { reado
   interface Acc { pos: number[]; idx: number[]; map: Map<number, number> }
   const acc = new Map<number, Acc>();
   const vkey = (x: number, y: number, z: number) => (x * (sy + 1) + y) * (sz + 1) + z;
-  let faces = 0;
-  for (let x = 1; x < sx - 1; x++) for (let y = 1; y < sy - 1; y++) for (let z = 1; z < sz - 1; z++) {
-    const i = x * a + y * b + z, v = cells[i]!;
-    if (!v) continue;
-    for (const f of FACES) {
-      if (cells[i + f.d[0] * a + f.d[1] * b + f.d[2]]) continue;
-      let t = acc.get(v);
-      if (!t) { t = { pos: [], idx: [], map: new Map() }; acc.set(v, t); }
-      const ids = f.c.map(([cx, cy, cz]) => {
-        const k = vkey(x + cx, y + cy, z + cz);
-        let id = t!.map.get(k);
-        if (id === undefined) { id = t!.pos.length / 3; t!.pos.push(...tx(x + cx, y + cy, z + cz)); t!.map.set(k, id); }
-        return id;
-      });
-      t.idx.push(ids[0]!, ids[1]!, ids[2]!, ids[0]!, ids[2]!, ids[3]!);
-      faces++;
+  const groupOf = (v: number): Acc => { let t = acc.get(v); if (!t) { t = { pos: [], idx: [], map: new Map() }; acc.set(v, t); } return t; };
+  const vertex = (t: Acc, x: number, y: number, z: number): number => {
+    const k = vkey(x, y, z);
+    let id = t.map.get(k);
+    if (id === undefined) { id = t.pos.length / 3; t.pos.push(...tx(x, y, z)); t.map.set(k, id); }
+    return id;
+  };
+  let unitFaces = 0;
+  // Rectangles: direction index, material, four corners (lattice points, counter-clockwise from outside).
+  const rects: { v: number; c: [number, number, number][] }[] = [];
+  for (let fi = 0; fi < 6; fi++) {
+    const f = FACES[fi]!, k = f.d.findIndex(n => n !== 0), [ua, va] = k === 0 ? [1, 2] : k === 1 ? [0, 2] : [0, 1];
+    const size = [sx, sy, sz] as const, U = size[ua]!, V = size[va]!;
+    const off = f.d[0] * a + f.d[1] * b + f.d[2];
+    const mask = new Uint16Array(U * V);
+    for (let w = 1; w < size[k]! - 1; w++) {
+      let has = false;
+      for (let u = 1; u < U - 1; u++) for (let v = 1; v < V - 1; v++) {
+        const p = [0, 0, 0]; p[k] = w; p[ua] = u; p[va] = v;
+        const i = p[0]! * a + p[1]! * b + p[2]!, m = cells[i]!;
+        const face = m && !cells[i + off] ? m : 0;
+        mask[u * V + v] = face;
+        if (face) { has = true; unitFaces++; }
+      }
+      if (!has) continue;
+      const plane = w + (f.d[k]! > 0 ? 1 : 0);
+      const emit = (u0: number, v0: number, u1: number, v1: number, m: number) => {
+        rects.push({ v: m, c: f.c.map(cc => { const p: [number, number, number] = [0, 0, 0]; p[k] = plane; p[ua] = cc[ua] ? u1 : u0; p[va] = cc[va] ? v1 : v0; return p; }) });
+      };
+      for (let u = 1; u < U - 1; u++) for (let v = 1; v < V - 1; v++) {
+        const m = mask[u * V + v]!;
+        if (!m) continue;
+        if (options.merge === false) { mask[u * V + v] = 0; emit(u, v, u + 1, v + 1, m); continue; }
+        let v1 = v + 1;
+        while (v1 < V - 1 && mask[u * V + v1] === m) v1++;
+        let u1 = u + 1;
+        grow: while (u1 < U - 1) { for (let t = v; t < v1; t++) if (mask[u1 * V + t] !== m) break grow; u1++; }
+        for (let uu = u; uu < u1; uu++) for (let t = v; t < v1; t++) mask[uu * V + t] = 0;
+        emit(u, v, u1, v1, m);
+      }
     }
+  }
+  // Corner points on axis-parallel lines, to split the edges of neighbouring rectangles at the same points.
+  const lines = [new Map<string, number[]>(), new Map<string, number[]>(), new Map<string, number[]>()];
+  const lineKey = (axis: number, p: readonly number[]) => axis === 0 ? `${p[1]},${p[2]}` : axis === 1 ? `${p[0]},${p[2]}` : `${p[0]},${p[1]}`;
+  for (const r of rects) for (const p of r.c) for (let axis = 0; axis < 3; axis++) {
+    const key = lineKey(axis, p); let l = lines[axis]!.get(key); if (!l) lines[axis]!.set(key, l = []); l.push(p[axis]!);
+  }
+  for (const m of lines) for (const [key, l] of m) m.set(key, [...new Set(l)].sort((p, q) => p - q));
+  const between = (from: readonly number[], to: readonly number[]): [number, number, number][] => {
+    const axis = from[0] !== to[0] ? 0 : from[1] !== to[1] ? 1 : 2;
+    const l = lines[axis]!.get(lineKey(axis, from)) ?? [];
+    const lo = Math.min(from[axis]!, to[axis]!), hi = Math.max(from[axis]!, to[axis]!);
+    // Binary search for the first value > lo.
+    let i = 0, j = l.length;
+    while (i < j) { const h = (i + j) >> 1; if (l[h]! <= lo) i = h + 1; else j = h; }
+    const out: [number, number, number][] = [];
+    for (; i < l.length && l[i]! < hi; i++) { const p = [...from] as [number, number, number]; p[axis] = l[i]!; out.push(p); }
+    return from[axis]! < to[axis]! ? out : out.reverse();
+  };
+  for (const r of rects) {
+    const t = groupOf(r.v);
+    const ring: [number, number, number][] = [];
+    for (let e = 0; e < 4; e++) { ring.push(r.c[e]!); ring.push(...between(r.c[e]!, r.c[(e + 1) % 4]!)); }
+    const ids = ring.map(p => vertex(t, p[0], p[1], p[2]));
+    if (ring.length === 4) { t.idx.push(ids[0]!, ids[1]!, ids[2]!, ids[0]!, ids[2]!, ids[3]!); continue; }
+    // Fan around the centre: no sliver or degenerate triangles from the extra edge points.
+    const c0 = r.c[0]!, c2 = r.c[2]!;
+    const centre = t.pos.length / 3;
+    t.pos.push(...tx((c0[0] + c2[0]) / 2, (c0[1] + c2[1]) / 2, (c0[2] + c2[2]) / 2));
+    for (let n = 0; n < ids.length; n++) t.idx.push(centre, ids[n]!, ids[(n + 1) % ids.length]!);
   }
   const groups: MeshGroup3d[] = [...acc.entries()].sort((p, q) => p[0] - q[0]).map(([v, t]) => ({
     material: v - 1, positions: Float32Array.from(t.pos), normals: null, uvs: null, colors: null, indices: Uint32Array.from(t.idx),
   }));
-  return { name: options.name, materials: options.materials, groups, unit: options.unit, up, faces };
+  return { name: options.name, materials: options.materials, groups, unit: options.unit, up, faces: rects.length, unitFaces };
 }

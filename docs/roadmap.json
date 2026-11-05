@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-05T07:43:52.853Z",
+  "updatedAt": "2026-11-05T07:58:33.828Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -1906,7 +1906,10 @@
         "QA-01"
       ],
       "scope": [
-        "packages/domain/src/variants.ts"
+        "packages/domain/src/variants.ts",
+        "tests/variants.test.mjs",
+        "tests/e2e/mat-variants.e2e.mjs",
+        "docs/TESTING.md"
       ],
       "legacyIds": [
         "MAT-03"
@@ -1925,35 +1928,41 @@
         {
           "id": "MAT-03-S03",
           "title": "Varianten im Zielprofil und in der Oberfläche prüfen.",
-          "done": false
+          "done": true
         }
       ],
       "acceptance": [
         "Bestehende Versionen bleiben unverändert; Form und Properties kompatibel."
       ],
-      "next": "Varianten im Zielprofil und in der Oberfläche prüfen.",
+      "next": "Abnahme PROJ-14.",
       "blockers": [],
       "evidence": [
         {
           "path": "tests/variants.test.mjs",
           "note": "Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md."
+        },
+        {
+          "path": "tests/variants.test.mjs",
+          "note": "MAT-03-S03: jede Form jedes Materialsatzes im Profil 26.3, gleiche Eigenschaften je Art und Form."
+        },
+        {
+          "path": "tests/e2e/mat-variants.e2e.mjs",
+          "note": "Leuchtturm: Beton, Glas, Terrakotta getrennt umgefärbt (208 Blöcke), gespeicherte Variante enthält genau die neuen Farben; 1400/390 px."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "note": "Profil- und Browserprüfung bestanden (S03); Abnahme PROJ-14 im Spiel offen."
       },
       "delivery": {
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-05T07:58:33.828Z",
       "area": "KERN",
-      "thread": null,
+      "thread": "Module und Systeme komplex ausarbeiten",
       "philipp": [],
-      "orphans": [
-        "S03 Glas-/Beton-/Terrakottavarianten in Profil und Oberfläche prüfen – im Cloud-Browser machbar."
-      ]
+      "orphans": []
     },
     {
       "id": "MAT-04",
@@ -3104,7 +3113,10 @@
         "apps/web/src/schem/SchemView.tsx",
         "tests/model3d.test.mjs",
         "tests/e2e/model3d.e2e.mjs",
-        "docs/architecture/MODEL_EXPORT.md"
+        "docs/architecture/MODEL_EXPORT.md",
+        "docs/TESTING.md",
+        "apps/web/src/testing/testplan.ts",
+        "docs/testing/TESTPLAN.md"
       ],
       "legacyIds": [],
       "steps": [
@@ -3135,8 +3147,8 @@
         },
         {
           "id": "MODEL-01-S06",
-          "title": "Flächen der Druckhülle ohne T-Stöße zusammenfassen (Export im Worker ist mit PERF-04 erledigt).",
-          "done": false
+          "title": "Flächen der Druckhülle ohne T-Stöße zusammenfassen: gierige Rechtecke je Richtung/Ebene/Farbe, Randpunkte der Nachbarn, Fächer um die Mitte; wasserdicht geprüft.",
+          "done": true
         }
       ],
       "acceptance": [
@@ -3158,6 +3170,10 @@
         {
           "path": "docs/architecture/MODEL_EXPORT.md",
           "note": "Verfahren, Formate, Achsen, Messwerte, Grenzen."
+        },
+        {
+          "path": "tests/model3d.test.mjs",
+          "note": "MODEL-01-S06: Stufenpyramide mit Loch und zwei Farben sowie 12 zufällige Formen – zusammengefasst wasserdicht, gleiches Volumen, weniger Dreiecke."
         }
       ],
       "verification": {
@@ -3168,18 +3184,16 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-05T07:58:33.828Z",
       "area": "PLANER",
-      "thread": null,
+      "thread": "Module und Systeme komplex ausarbeiten",
       "philipp": [
         {
           "kind": "datei",
           "text": "Export in Blender und einem Slicer öffnen, ein Testdruck (S05)."
         }
       ],
-      "orphans": [
-        "S06 Flächen der Druckhülle ohne T-Stöße zusammenfassen – Thread „Bauten als 3D-Modell exportieren“ ist beendet."
-      ]
+      "orphans": []
     },
     {
       "id": "EDIT-01",
@@ -6533,7 +6547,11 @@
         "apps/web/src/views/library/BuildingDetail.tsx",
         "tests/base.test.mjs",
         "tests/e2e/base.e2e.mjs",
-        "docs/architecture/BASE_PLANNER.md"
+        "docs/architecture/BASE_PLANNER.md",
+        "tests/split-under.test.mjs",
+        "docs/TESTING.md",
+        "apps/web/src/testing/testplan.ts",
+        "docs/testing/TESTPLAN.md"
       ],
       "legacyIds": [],
       "steps": [
@@ -6559,8 +6577,13 @@
         },
         {
           "id": "SPLIT-01-S05",
-          "title": "Abnahme mit Philipps echten Litematic-Basen in der Testphase; Erkennung unterirdischer Räume und Brückenverbindungen.",
+          "title": "Abnahme mit Philipps echten Litematic-Basen in der Testphase.",
           "done": false
+        },
+        {
+          "id": "SPLIT-01-S06",
+          "title": "Unterirdische Räume (eigene Teile, Keller gehört zum Haus) und Brücken zwischen Gebäuden (eigener Teil mit connects, legt Häuser nicht zusammen) erkennen; Liste zeigt Art und Verbindung.",
+          "done": true
         }
       ],
       "acceptance": [
@@ -6581,6 +6604,10 @@
         {
           "path": "docs/architecture/BASE_PLANNER.md",
           "note": "Analyse, Klassen, Herauslösen, Grenzen."
+        },
+        {
+          "path": "tests/split-under.test.mjs",
+          "note": "4 Fälle: Brücke zwischen zwei Häusern, Steg über Wasser und Dachüberstand, Bunker unter Gras, Keller unter einem Haus."
         }
       ],
       "verification": {
@@ -6591,7 +6618,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-05T07:58:33.828Z",
       "area": "BIBLIOTHEK",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -6600,9 +6627,7 @@
           "text": "Echte Litematic-Basen zum Herauslösen bereitstellen (S05)."
         }
       ],
-      "orphans": [
-        "Unterirdische Räume und Brückenverbindungen erkennen."
-      ]
+      "orphans": []
     },
     {
       "id": "GROSS-01",
@@ -18660,6 +18685,54 @@
           "done": 3,
           "total": 4,
           "next": "Abnahme PROJ-20 durch Philipp."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-05T07:58:33.828Z",
+      "kind": "progress",
+      "items": [
+        "SPLIT-01",
+        "MODEL-01",
+        "MAT-03"
+      ],
+      "summary": "Herauslösen erkennt unterirdische Räume, Keller und Brücken (SPLIT-01-S06); Druckhülle fasst Flächen ohne T-Stöße zusammen (MODEL-01-S06); Materialvarianten gegen das Profil 26.3 und im Browser geprüft (MAT-03-S03)",
+      "files": [
+        "apps/web/src/export3d/build.ts",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/library/SplitPanel.tsx",
+        "docs/TESTING.md",
+        "docs/architecture/BASE_PLANNER.md",
+        "docs/architecture/MODEL_EXPORT.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/split.ts",
+        "packages/formats/src/printGrid.ts",
+        "tests/e2e/mat-variants.e2e.mjs",
+        "tests/model3d.test.mjs",
+        "tests/split-under.test.mjs",
+        "tests/variants.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "SPLIT-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme mit echten Dateien (S05)."
+        },
+        {
+          "id": "MODEL-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Dateien in Blender und Slicern prüfen und ein Testdruck; danach Flächenzusammenfassung (S06). Export läuft seit PERF-04 im Worker."
+        },
+        {
+          "id": "MAT-03",
+          "status": "implemented",
+          "done": 3,
+          "total": 3,
+          "next": "Abnahme PROJ-14."
         }
       ]
     }

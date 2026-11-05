@@ -218,3 +218,23 @@ test('all scoped coloured forms use compatible schemas and produce catalogued bu
     }
   }
 });
+
+test('MAT-03-S03: every material form exists in the 26.3 profile with the same property schema per kind and form', async () => {
+  const { isVanillaBlock, vanillaBlockProperties } = await import('../dist/voxel/src/index.js');
+  const all = [...MATERIAL_SETS, ...SCOPED_MATERIAL_SETS];
+  const schemas = new Map();
+  for (const set of all) for (const [form, id] of Object.entries(set.forms)) {
+    assert.ok(isVanillaBlock(`minecraft:${id}`), `${set.id}/${form}: minecraft:${id} fehlt im Versionsprofil`);
+    const props = vanillaBlockProperties(`minecraft:${id}`) ?? {};
+    const schema = JSON.stringify(Object.keys(props).sort().map(k => [k, [...props[k]].sort()]));
+    const key = `${set.kind}/${form}`;
+    if (!schemas.has(key)) schemas.set(key, { schema, id });
+    else assert.equal(schema, schemas.get(key).schema, `${key}: ${id} hat andere Eigenschaften als ${schemas.get(key).id}`);
+  }
+  // Scoped glass, concrete and terracotta: every colour offers every form the clear/natural set has.
+  for (const kind of ['glas', 'beton', 'terrakotta']) {
+    const sets = SCOPED_MATERIAL_SETS.filter(s => s.kind === kind);
+    assert.ok(sets.length >= 16, kind);
+    for (const s of sets) for (const t of materialTargets(s)) assert.equal(t.kind, kind);
+  }
+});

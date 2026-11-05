@@ -5627,3 +5627,31 @@ Testnachweise in TESTING.md zugeordnet
 
 - `docs/TESTING.md`
 
+## 2026-11-05T07:58:33.828Z · progress
+
+**Aufgaben:** SPLIT-01, MODEL-01, MAT-03
+
+Herauslösen erkennt unterirdische Räume, Keller und Brücken (SPLIT-01-S06); Druckhülle fasst Flächen ohne T-Stöße zusammen (MODEL-01-S06); Materialvarianten gegen das Profil 26.3 und im Browser geprüft (MAT-03-S03)
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| SPLIT-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme mit echten Dateien (S05). |
+| MODEL-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Dateien in Blender und Slicern prüfen und ein Testdruck; danach Flächenzusammenfassung (S06). Export läuft seit PERF-04 im Worker. |
+| MAT-03 | 🧩 Implementiert · Abnahme offen | 3/3 | Abnahme PROJ-14. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/export3d/build.ts`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/library/SplitPanel.tsx`
+- `docs/TESTING.md`
+- `docs/architecture/BASE_PLANNER.md`
+- `docs/architecture/MODEL_EXPORT.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/split.ts`
+- `packages/formats/src/printGrid.ts`
+- `tests/e2e/mat-variants.e2e.mjs`
+- `tests/model3d.test.mjs`
+- `tests/split-under.test.mjs`
+- `tests/variants.test.mjs`
+

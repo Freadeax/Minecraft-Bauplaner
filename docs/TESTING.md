@@ -979,3 +979,11 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Browser (Chromium 1243 per `PLAYWRIGHT_BROWSERS_PATH` als 1248 verlinkt): voller Lauf `npm run test:e2e` 166/166 vor MAP-07; danach neu `team-digest.e2e.mjs` 2/2 (Ertragsbuch 300 cactus/h, Verdichten, gleiche Zahlen, Rückgängig), `program-absence.e2e.mjs` 2/2 (1400/390 px), `world-turn.e2e.mjs` 1/1 und die berührten Bereiche Weltkarte, Weltbuilder, Live-Karte, Baustand, Bauführung, Gelände, Landschaft, Anlagen, Basis, Planung, Team erneut.
 - Grenzen: Abnahmen TEAMBAU-28, PROJ-20 und KARTE-07 offen; der Raum behält alte Ereignisse (nur Kopien werden kleiner); das Server-Plugin legt Pläne weiter nur ungedreht ab.
 - Nachtrag: `check:roadmap-change` beim Veröffentlichen verlangte eine Zuordnung für diese Datei und die übernommenen Restpunkte (MAP-05, COOP-01, PROJ-02); nachgetragen.
+
+## SPLIT-01-S06, MODEL-01-S06, MAT-03-S03 · Unterirdisch und Brücken, Druckhülle zusammengefasst, Materialvarianten im Profil · 05.11.2026 · Claude
+
+- `tests/split-under.test.mjs` 4/4: Brücke zwischen zwei Häusern (eigener Teil, `connects` beide, Häuser bleiben getrennt, Ausschnitt nur Deck und Geländer), Steg über Wasser ohne Gebäude (Brücke) und breite Traufe (bleibt beim Haus), Bunker unter Gras (eigener „Unterirdischer Raum“, Höhe 6, Ausschnitt ohne Boden), Keller unter und neben einem Haus (gehört zum Haus, „mit Keller“). `tests/base.test.mjs` 10/10 unverändert (Starterbasis: gleiche Gebäude, Felder, Wegenetz).
+- `tests/model3d.test.mjs` 16/16, neu: Stufenpyramide mit Loch und zwei Farben sowie 12 zufällige reparierte Formen – zusammengefasste Hülle wasserdicht (0 offene Kanten), gleiches Volumen wie Einheitsflächen, weniger als halb so viele Flächen; Würfel 3×3×3: 6 statt 54 Flächen.
+- `tests/variants.test.mjs` 13/13, neu: jede Form jedes Materialsatzes (Holz, Stein, Farbe, Glas, Beton, Terrakotta, Kupfer) steht im Profil Java 26.3 und hat je Art und Form dieselben Eigenschaften und Werte.
+- Browser: `tests/e2e/mat-variants.e2e.mjs` 2/2 (Leuchtturm 1400/390 px: Beton, Klarglas und Terrakotta getrennt umgefärbt, 208 Blöcke, kein fehlendes Gegenstück, gespeicherte Variante enthält genau die neuen Farben), `base.e2e.mjs`, `model3d.e2e.mjs`, `schem.e2e.mjs` grün.
+- Grenzen: Abnahmen BIB-11 mit echten Basen, PROJ-05 im Slicer und PROJ-14 im Spiel offen.

@@ -26,7 +26,13 @@ import type { AssetVersion, Instance, Project } from './types.js';
  *    columns up to `margin` blocks around a building belong to it (stairs,
  *    porch, lanterns);
  *  - the remaining low columns form areas (fields, pens, path networks); areas
- *    with fewer than `minArea` columns stay in the rest.
+ *    with fewer than `minArea` columns stay in the rest;
+ *  - underground rooms (SPLIT-01-S05): columns whose built blocks all lie at or below
+ *    the ground form their own buildings (role 'underground') and never join surface
+ *    buildings, except as the cellar of the building they lie under;
+ *  - bridges (SPLIT-01-S05): thin built columns that float over the ground or over
+ *    water (a gap below) never make a core column; a floating strip that links two
+ *    buildings, or is long and narrow, becomes its own part (role 'bridge', `connects`).
  *
  * Analysis is pure and never changes the source; extraction returns new
  * payloads, the source stays as it is.
@@ -65,6 +71,12 @@ export interface SplitPart {
   readonly height: number;
   /** Most frequent blocks of the part (for the list). */
   readonly top: readonly { readonly id: string; readonly count: number }[];
+  /** SPLIT-01-S05: 'underground' = room below the ground, 'bridge' = floating link; missing = ordinary part. */
+  readonly role?: 'underground' | 'bridge';
+  /** Built blocks of the part at or below the ground of their column (cellars, tunnels). */
+  readonly below?: number;
+  /** Bridges: ids of the parts at both ends. */
+  readonly connects?: readonly string[];
 }
 export interface SplitAnalysis {
   readonly options: Required<SplitOptions>;
@@ -152,6 +164,8 @@ export function analyzeSplit(payload: VoxelPayload, rawOptions: SplitOptions = {
   // Paving: a column whose only built blocks are paving stones (path edges, plazas) counts as flat when one block high.
   const paving = kinds.map((k, i) => (k === 'built' || k === 'stone') && PAVING.has(payload.palette[i]!.id));
   const nonPaving = new Uint8Array(N);
+  // Lowest built block that is not water, highest water above the ground (bridges float over it).
+  const solidMin = new Int32Array(N).fill(2 ** 31 - 1), solidMax = new Int32Array(N).fill(NO_GROUND), waterTop = new Int32Array(N).fill(NO_GROUND);
   const colOf = (c: { readonly position: readonly number[] }) => (c.position[0]! - minX) + (c.position[2]! - minZ) * W;
   // Pass 1: ground from unambiguous soil, paths and farmland (a building on a path does not start below it).
   for (const c of payload.cells) {
@@ -190,46 +204,129 @@ export function analyzeSplit(payload: VoxelPayload, rawOptions: SplitOptions = {
     if (fieldId[c.paletteIndex]) cat[col] = 1; else if (pathId[c.paletteIndex] && cat[col] !== 1) cat[col] = 2; else if (k !== 'flat' && !cat[col]) cat[col] = 3;
     if (k === 'flat') hasFlat[col] = 1;
     else { if (y < builtMin[col]!) builtMin[col] = y; if (y > builtMax[col]!) builtMax[col] = y; if (!paving[c.paletteIndex]) nonPaving[col] = 1; }
+    if (k === 'water') { if (y > waterTop[col]!) waterTop[col] = y; }
+    else if (k !== 'flat') { if (y < solidMin[col]!) solidMin[col] = y; if (y > solidMax[col]!) solidMax[col] = y; }
+  }
+  // under: every solid built block lies at or below the ground (cellar, bunker, tunnel).
+  // float: the solid built blocks start above a gap (air or water) and are thin – a deck, not a wall on the ground.
+  const under = new Uint8Array(N), float = new Uint8Array(N);
+  for (let i = 0; i < N; i++) {
+    if (solidMax[i] === NO_GROUND || ground[i] === NO_GROUND) continue;
+    if (solidMax[i]! <= ground[i]!) { under[i] = 1; continue; }
+    const floor = Math.max(ground[i]!, waterTop[i]!);
+    if (solidMin[i]! - floor >= (waterTop[i] !== NO_GROUND && waterTop[i]! >= ground[i]! ? 1 : 2) && solidMax[i]! - solidMin[i]! < options.coreHeight) float[i] = 1;
   }
   // low: built but below core height; flatOnly: only paths/fields (never absorbed into a building, so path networks stay whole).
-  const core = new Uint8Array(N), low = new Uint8Array(N), flatOnly = new Uint8Array(N);
+  const tall = new Uint8Array(N), core = new Uint8Array(N), low = new Uint8Array(N), flatOnly = new Uint8Array(N);
   for (let i = 0; i < N; i++) {
     if (builtMax[i] !== NO_GROUND) {
       const base = ground[i] !== NO_GROUND && ground[i]! < builtMax[i]! ? ground[i]! : builtMin[i]! - 1;
-      if (builtMax[i]! - base >= options.coreHeight) core[i] = 1;
+      if (builtMax[i]! - base >= options.coreHeight) tall[i] = 1;
       else { low[i] = 1; if (!nonPaving[i] && builtMax[i] === builtMin[i]) flatOnly[i] = 1; }
     } else if (hasFlat[i]) { low[i] = 1; flatOnly[i] = 1; }
   }
 
-  // Buildings: core columns joined within `join` (Chebyshev).
+  // Buildings: core columns joined within `join` (Chebyshev); rooms below ground and surface buildings never join,
+  // except a room lying (mostly) right next to or under a surface building: that is its cellar.
   const owner = new Int32Array(N);
-  const groups: number[][] = [];
   const j = options.join;
-  for (let start = 0; start < N; start++) {
-    if (!core[start] || owner[start]) continue;
-    const id = groups.length + 1, list = [start];
-    owner[start] = id;
-    for (let q = 0; q < list.length; q++) {
-      const i = list[q]!, x = i % W, z = (i - x) / W;
-      for (let dz = -j - 1; dz <= j + 1; dz++) for (let dx = -j - 1; dx <= j + 1; dx++) {
-        if (Math.max(Math.abs(dx), Math.abs(dz)) > j + 1) continue;
-        const nx = x + dx, nz = z + dz;
-        if (nx < 0 || nz < 0 || nx >= W || nz >= L) continue;
-        const n = nx + nz * W;
-        if (core[n] && !owner[n]) { owner[n] = id; list.push(n); }
+  const groupCores = (): number => {
+    owner.fill(0);
+    const groups: number[][] = [];
+    for (let start = 0; start < N; start++) {
+      if (!core[start] || owner[start]) continue;
+      const id = groups.length + 1, list = [start];
+      owner[start] = id;
+      for (let q = 0; q < list.length; q++) {
+        const i = list[q]!, x = i % W, z = (i - x) / W;
+        for (let dz = -j - 1; dz <= j + 1; dz++) for (let dx = -j - 1; dx <= j + 1; dx++) {
+          const nx = x + dx, nz = z + dz;
+          if (nx < 0 || nz < 0 || nx >= W || nz >= L) continue;
+          const n = nx + nz * W;
+          if (core[n] && !owner[n] && under[n] === under[start]) { owner[n] = id; list.push(n); }
+        }
+      }
+      groups.push(list);
+    }
+    const boxOf = groups.map(list => { let x0 = Infinity, z0 = Infinity, x1 = -Infinity, z1 = -Infinity; for (const i of list) { const x = i % W, z = (i - x) / W; x0 = Math.min(x0, x); x1 = Math.max(x1, x); z0 = Math.min(z0, z); z1 = Math.max(z1, z); } return { x0: x0 - j - 1, z0: z0 - j - 1, x1: x1 + j + 1, z1: z1 + j + 1 }; });
+    for (let g = 0; g < groups.length; g++) {
+      if (!groups[g]!.length || !under[groups[g]![0]!]) continue;
+      let best = -1, bestIn = 0;
+      for (let h = 0; h < groups.length; h++) {
+        if (h === g || !groups[h]!.length || under[groups[h]![0]!]) continue;
+        const b = boxOf[h]!;
+        const inside = groups[g]!.filter(i => { const x = i % W, z = (i - x) / W; return x >= b.x0 && x <= b.x1 && z >= b.z0 && z <= b.z1; }).length;
+        if (inside > bestIn) { best = h; bestIn = inside; }
+      }
+      if (best >= 0 && bestIn * 2 >= groups[g]!.length) {
+        for (const i of groups[g]!) { owner[i] = best + 1; groups[best]!.push(i); }
+        groups[g] = [];
       }
     }
-    groups.push(list);
+    // Too small cores (lamp posts, single pillars) stay low columns.
+    const keep: number[] = [];
+    for (let g = 0; g < groups.length; g++) {
+      if (!groups[g]!.length) continue;
+      if (groups[g]!.length >= options.minCore) keep.push(g);
+      else for (const i of groups[g]!) owner[i] = 0;
+    }
+    const remap = new Map(keep.map((g, k) => [g + 1, k + 1]));
+    for (let i = 0; i < N; i++) if (owner[i]) owner[i] = remap.get(owner[i]!)!;
+    return keep.length;
+  };
+
+  // Bridges, first pass: buildings without floating columns; a floating strip that touches two of them,
+  // or a long narrow free strip, is a bridge. Every other floating column (roofs over a hall, eaves) is
+  // part of its building again in the second pass.
+  for (let i = 0; i < N; i++) core[i] = tall[i] && !float[i] ? 1 : 0;
+  const firstBuildings = groupCores();
+  const bridgeCols: number[][] = [], bridgeEnds: number[][] = [];
+  const isBridge = new Uint8Array(N);
+  {
+    const seen = new Uint8Array(N);
+    for (let start = 0; start < N; start++) {
+      if (!float[start] || owner[start] || seen[start]) continue;
+      const list = [start]; seen[start] = 1;
+      for (let q = 0; q < list.length; q++) {
+        const i = list[q]!, x = i % W, z = (i - x) / W;
+        for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
+          const nx = x + dx, nz = z + dz;
+          if ((!dx && !dz) || nx < 0 || nz < 0 || nx >= W || nz >= L) continue;
+          const n = nx + nz * W;
+          if (float[n] && !owner[n] && !seen[n]) { seen[n] = 1; list.push(n); }
+        }
+      }
+      const touch = new Map<number, number>();
+      let x0 = Infinity, z0 = Infinity, x1 = -Infinity, z1 = -Infinity;
+      for (const i of list) {
+        const x = i % W, z = (i - x) / W;
+        x0 = Math.min(x0, x); x1 = Math.max(x1, x); z0 = Math.min(z0, z); z1 = Math.max(z1, z);
+        // Direct neighbours only: eaves of two close houses do not make a bridge (their cores join anyway).
+        for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
+          const nx = x + dx, nz = z + dz;
+          if (nx < 0 || nz < 0 || nx >= W || nz >= L) continue;
+          const o = owner[nx + nz * W]!;
+          if (o > 0 && o <= firstBuildings && !touch.has(o)) touch.set(o, nx + nz * W);
+        }
+      }
+      const long = Math.max(x1 - x0, z1 - z0) + 1, wide = Math.min(x1 - x0, z1 - z0) + 1;
+      // One building only: eaves, balconies, overhangs, roofs – they stay with it.
+      if (touch.size >= 2 || (touch.size === 0 && long >= 8 && wide <= 5 && long >= wide * 3)) {
+        for (const i of list) isBridge[i] = 1;
+        bridgeCols.push(list); bridgeEnds.push([...touch.values()]);
+      }
+    }
   }
-  // Too small cores (lamp posts, single pillars) become low columns again.
-  const keep: number[] = [];
-  for (let g = 0; g < groups.length; g++) {
-    if (groups[g]!.length >= options.minCore) keep.push(g);
-    else for (const i of groups[g]!) { owner[i] = 0; core[i] = 0; low[i] = 1; }
-  }
-  const remap = new Map(keep.map((g, k) => [g + 1, k + 1]));
-  for (let i = 0; i < N; i++) if (owner[i]) owner[i] = remap.get(owner[i]!)!;
-  const buildings = keep.length;
+  // Second pass: the real buildings (floating roofs belong to them again), bridges after them.
+  for (let i = 0; i < N; i++) { core[i] = tall[i] && !isBridge[i] ? 1 : 0; if (tall[i] && !core[i]) low[i] = 1; }
+  const buildings = groupCores();
+  for (let i = 0; i < N; i++) if (tall[i] && !owner[i]) { core[i] = 0; low[i] = 1; }
+  const bridgeLinks: number[][] = [];
+  bridgeCols.forEach((list, b) => {
+    for (const i of list) { owner[i] = buildings + b + 1; low[i] = 1; }
+    bridgeLinks.push([...new Set(bridgeEnds[b]!.map(i => owner[i]!).filter(o => o > 0 && o <= buildings))].sort((a, c) => a - c));
+  });
+  const bridges = bridgeLinks.length;
 
   // Margin: low columns near a building join it (breadth first, nearest wins).
   let frontier: number[] = [];
@@ -249,7 +346,7 @@ export function analyzeSplit(payload: VoxelPayload, rawOptions: SplitOptions = {
   }
 
   // Areas: remaining low columns, 8-connected.
-  let nextId = buildings + 1;
+  let nextId = buildings + bridges + 1;
   const areaIds: number[] = [];
   // Seeds by category: fields first (they take their fence rings with them), then paths, then the rest.
   for (const seedCat of [1, 2, 3]) for (let start = 0; start < N; start++) {
@@ -272,7 +369,7 @@ export function analyzeSplit(payload: VoxelPayload, rawOptions: SplitOptions = {
 
   // Per part: box, counts, height.
   const total = nextId - 1;
-  const box = Array.from({ length: total }, () => ({ x0: Infinity, z0: Infinity, x1: -Infinity, z1: -Infinity, y0: Infinity, y1: -Infinity, cols: 0, blocks: 0, groundMin: Infinity }));
+  const box = Array.from({ length: total }, () => ({ x0: Infinity, z0: Infinity, x1: -Infinity, z1: -Infinity, y0: Infinity, y1: -Infinity, cols: 0, blocks: 0, groundMin: Infinity, below: 0, under: 0 }));
   const counts = Array.from({ length: total }, () => new Map<string, number>());
   const ents = Array.from({ length: total }, () => new Map<string, number>());
   for (let i = 0; i < N; i++) {
@@ -280,6 +377,7 @@ export function analyzeSplit(payload: VoxelPayload, rawOptions: SplitOptions = {
     const b = box[o - 1]!, x = i % W, z = (i - x) / W;
     b.cols++; b.x0 = Math.min(b.x0, x); b.x1 = Math.max(b.x1, x); b.z0 = Math.min(b.z0, z); b.z1 = Math.max(b.z1, z);
     if (ground[i] !== NO_GROUND) b.groundMin = Math.min(b.groundMin, ground[i]!);
+    if (under[i]) b.under++;
   }
   let restBlocks = 0;
   for (const c of payload.cells) {
@@ -288,6 +386,8 @@ export function analyzeSplit(payload: VoxelPayload, rawOptions: SplitOptions = {
     if (!o) { restBlocks++; continue; }
     const b = box[o - 1]!;
     b.blocks++; b.y0 = Math.min(b.y0, c.position[1]); b.y1 = Math.max(b.y1, c.position[1]);
+    const g = ground[colOf(c)]!;
+    if (g !== NO_GROUND && c.position[1] <= g && kinds[c.paletteIndex] !== 'flat') b.below++;
     const id = payload.palette[c.paletteIndex]!.id.replace('minecraft:', '');
     counts[o - 1]!.set(id, (counts[o - 1]!.get(id) ?? 0) + 1);
   }
@@ -301,21 +401,30 @@ export function analyzeSplit(payload: VoxelPayload, rawOptions: SplitOptions = {
   }
   const parts: SplitPart[] = [];
   const named = new Map<string, number>();
+  // Order: buildings (rooms below ground after the surface ones of the same size), bridges, areas.
+  const rank = (k: number) => k < buildings ? 0 : k < buildings + bridges ? 1 : 2;
   const order = [...Array(total).keys()].filter(k => box[k]!.blocks > 0)
-    .sort((a, b) => (a < buildings ? 0 : 1) - (b < buildings ? 0 : 1) || box[b]!.blocks - box[a]!.blocks || a - b);
-  for (const k of order) {
-    const b = box[k]!, kind = k < buildings ? 'building' : 'area';
-    const guess = detectFunction(counts[k]!, ents[k]!, kind === 'area');
-    const n = (named.get(guess.name) ?? 0) + 1; named.set(guess.name, n);
-    const groundTop = Number.isFinite(b.groundMin) ? b.groundMin : b.y0 - 1;
-    parts.push({ id: `teil-${parts.length + 1}`, kind, name: n > 1 ? `${guess.name} ${n}` : guess.name, fn: guess.id, reason: guess.reason,
-      box: { min: [minX + b.x0, Math.min(b.y0, groundTop + 1), minZ + b.z0], maxExclusive: [minX + b.x1 + 1, b.y1 + 1, minZ + b.z1 + 1] },
-      columns: b.cols, blocks: b.blocks, height: Math.max(0, b.y1 - groundTop),
-      top: [...counts[k]!].sort((p, q) => q[1] - p[1] || (p[0] < q[0] ? -1 : 1)).slice(0, 5).map(([id, count]) => ({ id, count })) });
-  }
-  // Renumber owners to the sorted part order.
+    .sort((a, b) => rank(a) - rank(b) || box[b]!.blocks - box[a]!.blocks || a - b);
   const toPart = new Int32Array(total + 1);
   order.forEach((k, idx) => { toPart[k + 1] = idx + 1; });
+  for (const k of order) {
+    const b = box[k]!, kind = k < buildings ? 'building' : k < buildings + bridges ? 'building' : 'area';
+    const role = k >= buildings && k < buildings + bridges ? 'bridge' as const : k < buildings && b.under * 2 > b.cols ? 'underground' as const : undefined;
+    const guess = role === 'bridge' ? { id: null, name: 'Brücke', reason: '' } : detectFunction(counts[k]!, ents[k]!, kind === 'area');
+    const base = role === 'underground' ? (guess.id ? `${guess.name} (unterirdisch)` : 'Unterirdischer Raum') : guess.name;
+    const n = (named.get(base) ?? 0) + 1; named.set(base, n);
+    const groundTop = Number.isFinite(b.groundMin) ? b.groundMin : b.y0 - 1;
+    const links = role === 'bridge' ? bridgeLinks[k - buildings]!.map(o => toPart[o]!).filter(Boolean).map(o => `teil-${o}`) : [];
+    const reason = role === 'bridge' ? (links.length >= 2 ? 'verbindet zwei Gebäude über eine Lücke' : 'schmaler Steg über Wasser oder Luft')
+      : role === 'underground' ? [guess.reason, 'unter dem Gelände'].filter(Boolean).join(', ')
+      : b.below >= 20 && b.below * 5 >= b.blocks ? [guess.reason, `mit Keller (${b.below} Blöcke unter dem Gelände)`].filter(Boolean).join(', ') : guess.reason;
+    parts.push({ id: `teil-${parts.length + 1}`, kind, name: n > 1 ? `${base} ${n}` : base, fn: guess.id, reason,
+      box: { min: [minX + b.x0, Math.min(b.y0, groundTop + 1), minZ + b.z0], maxExclusive: [minX + b.x1 + 1, b.y1 + 1, minZ + b.z1 + 1] },
+      columns: b.cols, blocks: b.blocks, height: role === 'underground' ? b.y1 - b.y0 + 1 : Math.max(0, b.y1 - groundTop),
+      top: [...counts[k]!].sort((p, q) => q[1] - p[1] || (p[0] < q[0] ? -1 : 1)).slice(0, 5).map(([id, count]) => ({ id, count })),
+      ...(role && { role }), ...(b.below && { below: b.below }), ...(links.length && { connects: links }) });
+  }
+  // Renumber owners to the sorted part order.
   for (let i = 0; i < N; i++) if (owner[i]) owner[i] = toPart[owner[i]!]!;
   void minY;
   return { options, parts, owner, width: W, length: L, minX, minZ, ground, field, restBlocks, natureBlocks };

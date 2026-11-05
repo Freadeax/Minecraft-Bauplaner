@@ -9,7 +9,9 @@ import { addAssetVersionInBackground } from '../../jobs/versions';
 import type { Highlight } from './ConnectorEditor';
 
 const AREA_COLOR = '#c9b48a';
-const colorOf = (p: SplitPart) => p.kind === 'area' ? AREA_COLOR : BASE_FUNCTIONS.find(f => f.id === p.fn)?.color ?? '#8be3c0';
+const colorOf = (p: SplitPart) => p.kind === 'area' ? AREA_COLOR : p.role === 'bridge' ? '#c9a46a' : p.role === 'underground' ? '#7d7f9a' : BASE_FUNCTIONS.find(f => f.id === p.fn)?.color ?? '#8be3c0';
+/** SPLIT-01-S05: what the list says about a part's kind. */
+const kindLabel = (p: SplitPart) => p.kind === 'area' ? 'Fläche' : p.role === 'bridge' ? 'Brücke' : p.role === 'underground' ? 'Unterirdisch' : 'Gebäude';
 
 /**
  * Gebäude herauslösen (SPLIT-01): finds the single buildings and areas
@@ -82,7 +84,7 @@ export function SplitPanel({ payload, name, provenance, getSource, onHighlight, 
     await repo.applyBatch({ versions: [r.version], assets: [r.asset] });
     return r.version;
   };
-  const tagsOf = (p: SplitPart) => [p.kind === 'area' ? 'flaeche' : 'gebaeude', ...(p.fn ? [`funktion:${p.fn}`] : [])];
+  const tagsOf = (p: SplitPart) => [p.kind === 'area' ? 'flaeche' : 'gebaeude', ...(p.role === 'bridge' ? ['bruecke'] : p.role === 'underground' ? ['unterirdisch'] : []), ...(p.fn ? [`funktion:${p.fn}`] : [])];
 
   const run = async (how: 'each' | 'merge' | 'project') => {
     if (!analysis || !chosen.length) return;
@@ -99,7 +101,7 @@ export function SplitPanel({ payload, name, provenance, getSource, onHighlight, 
       const saved: { version: AssetVersion; part: SplitPart; at: readonly [number, number, number] }[] = [];
       for (const p of chosen) {
         const ex = extractParts(payload, analysis, [p.id], { ground });
-        const v = await store(ex.payload, nameOf(p), tagsOf(p), `Aus „${name}“ herausgelöst (${p.kind === 'area' ? 'Fläche' : 'Gebäude'}${p.reason ? `, erkannt an: ${p.reason}` : ''}), Bereich ab ${ex.at.join('/')}.`);
+        const v = await store(ex.payload, nameOf(p), tagsOf(p), `Aus „${name}“ herausgelöst (${kindLabel(p)}${p.reason ? `, erkannt an: ${p.reason}` : ''}), Bereich ab ${ex.at.join('/')}.`);
         saved.push({ version: v, part: p, at: ex.at });
       }
       if (how === 'each') {
@@ -138,7 +140,7 @@ export function SplitPanel({ payload, name, provenance, getSource, onHighlight, 
     {state.running && <p className="muted" role="status">Modell wird untersucht …</p>}
     {state.error && <p className="field-error" role="alert">{state.error}</p>}
     {analysis && <>
-      <p className="muted" data-testid="split-summary">{analysis.parts.filter(p => p.kind === 'building').length} Gebäude, {analysis.parts.filter(p => p.kind === 'area').length} Flächen gefunden · {formatNumber(analysis.restBlocks)} gebaute Blöcke ohne Teil · {formatNumber(analysis.natureBlocks)} Naturblöcke</p>
+      <p className="muted" data-testid="split-summary">{analysis.parts.filter(p => p.kind === 'building' && !p.role).length} Gebäude, {analysis.parts.filter(p => p.kind === 'area').length} Flächen{analysis.parts.some(p => p.role === 'underground') ? `, ${analysis.parts.filter(p => p.role === 'underground').length} unterirdisch` : ''}{analysis.parts.some(p => p.role === 'bridge') ? `, ${analysis.parts.filter(p => p.role === 'bridge').length} Brücken` : ''} gefunden · {formatNumber(analysis.restBlocks)} gebaute Blöcke ohne Teil · {formatNumber(analysis.natureBlocks)} Naturblöcke</p>
       <SplitMap analysis={analysis} picked={picked} hover={hover} onToggle={toggle} />
       <div className="button-row"><button type="button" onClick={() => setPicked(new Set(analysis.parts.map(p => p.id)))}>Alle wählen</button>
         <button type="button" onClick={() => setPicked(new Set(analysis.parts.filter(p => p.kind === 'building').map(p => p.id)))}>Nur Gebäude</button>
@@ -147,7 +149,7 @@ export function SplitPanel({ payload, name, provenance, getSource, onHighlight, 
         <input type="checkbox" checked={picked.has(p.id)} onChange={() => toggle(p.id)} aria-label={`${p.name} wählen`} />
         <span className="split-swatch" style={{ background: colorOf(p) }} aria-hidden="true" />
         <input type="text" value={names[p.id] ?? p.name} maxLength={120} aria-label={`Name für ${p.name}`} onChange={e => setNames(n => ({ ...n, [p.id]: e.target.value }))} />
-        <span className="split-meta">{p.kind === 'area' ? 'Fläche' : 'Gebäude'} · {p.box.maxExclusive[0] - p.box.min[0]} × {p.box.maxExclusive[1] - p.box.min[1]} × {p.box.maxExclusive[2] - p.box.min[2]} · {formatNumber(p.blocks)} Blöcke{p.reason ? ` · erkannt: ${p.reason}` : ''} · {p.top.slice(0, 3).map(t => t.id).join(', ')}</span>
+        <span className="split-meta" data-role={p.role ?? p.kind}>{kindLabel(p)} · {p.box.maxExclusive[0] - p.box.min[0]} × {p.box.maxExclusive[1] - p.box.min[1]} × {p.box.maxExclusive[2] - p.box.min[2]} · {formatNumber(p.blocks)} Blöcke{p.reason ? ` · erkannt: ${p.reason}` : ''}{p.connects?.length ? ` · verbindet ${p.connects.map(id => `„${nameOf(analysis.parts.find(x => x.id === id) ?? p)}“`).join(' und ')}` : ''} · {p.top.slice(0, 3).map(t => t.id).join(', ')}</span>
       </li>)}</ul>
       <label className="chip-check"><input type="checkbox" checked={rest} onChange={e => setRest(e.target.checked)} /> Beim Aufteilen in ein Projekt den Rest (Gelände, Bäume) als eigenes Teil mitnehmen</label>
       <div className="button-row">

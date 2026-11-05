@@ -49,7 +49,8 @@ test('print shell of blocks: faces between equal neighbours are hidden, volume e
   const cells = cube(3);
   const m = printModel(cells, [state('stone')], { name: 'Würfel', detail: 1, blockSize: 10, unit: 'millimeter', up: 'z', smallParts: true, fill: false, hollow: 0, minPart: 0, maxColors: 0 });
   assert.equal(m.report.check.closed, true);
-  assert.equal(m.report.faces, 6 * 9);
+  assert.equal(m.report.unitFaces, 6 * 9);
+  assert.equal(m.report.faces, 6, 'MODEL-01-S06: each side is one rectangle');
   assert.ok(Math.abs(m.report.check.volume - 27 * 1000) < 1e-6);
   assert.equal(m.up, 'z');
   // Printer bed: model starts at 0/0/0.
@@ -292,4 +293,32 @@ test('exportModel: file names, units, print formats force the print shell, OBJ i
   assert.deepEqual([...files.keys()].sort(), ['Mein_Haus.mtl', 'Mein_Haus.obj']);
   const mf = await exportModel({ ...common, format: '3mf', kind: 'view', blockSize: 2 });
   assert.equal(mf.file.name, 'Mein_Haus.3mf');
+});
+
+test('MODEL-01-S06: merged faces stay watertight without T-junctions (steps, colours, holes, random shapes)', () => {
+  // Stepped pyramid with a hole and two colours: rectangles of different size meet along shared edges.
+  const g = createPrintGrid(14, 8, 14);
+  for (let y = 1; y < 6; y++) for (let x = y; x < 13 - y; x++) for (let z = y; z < 13 - y; z++) g.cells[idx(g, x, y, z)] = (x + y) % 3 === 0 ? 2 : 1;
+  for (let y = 1; y < 3; y++) g.cells[idx(g, 6, y, 6)] = 0;
+  const merged = shell(g), unit = shell(g, { merge: false });
+  const cm = checkClosed(merged), cu = checkClosed(unit);
+  assert.equal(cm.closed, true, JSON.stringify(cm));
+  assert.equal(cu.closed, true);
+  assert.ok(Math.abs(cm.volume - cu.volume) < 1e-9, `${cm.volume} = ${cu.volume}`);
+  assert.equal(merged.unitFaces, unit.faces);
+  assert.ok(merged.faces < unit.faces / 2, `${merged.faces} Rechtecke statt ${unit.faces} Flächen`);
+  const tris = m => m.groups.reduce((n, q) => n + q.indices.length / 3, 0);
+  assert.ok(tris(merged) < tris(unit), 'fewer triangles');
+  // Random blobs, repaired like the export does: merged is closed whenever the unit shell is.
+  let seed = 7;
+  const rnd = () => (seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648;
+  for (let n = 0; n < 12; n++) {
+    const r = createPrintGrid(12, 12, 12);
+    for (let i = 0; i < 300; i++) r.cells[idx(r, 1 + Math.floor(rnd() * 10), 1 + Math.floor(rnd() * 10), 1 + Math.floor(rnd() * 10))] = 1 + Math.floor(rnd() * 3);
+    repairGrid(r);
+    const a = checkClosed(shell(r)), b = checkClosed(shell(r, { merge: false }));
+    assert.equal(a.closed, b.closed, `Form ${n}`);
+    assert.equal(a.boundaryEdges, 0, `Form ${n}: keine offenen Kanten`);
+    assert.ok(Math.abs(a.volume - b.volume) < 1e-6);
+  }
 });
