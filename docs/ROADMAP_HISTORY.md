@@ -6848,3 +6848,23 @@ KI-Offenlegung wird nicht mehr vom Skript gepflegt (Philipp 05.11.2026); Skript 
 - `scripts/mod/modrinth_publish.mjs`
 - `tests/unit/mod/modrinth.test.mjs`
 
+## 2026-11-05T12:23:25.618Z · progress
+
+**Aufgaben:** LINK-10
+
+Mod 0.17.2: Planmenü kompakt bei 854×480/großer GUI-Größe (Footer unter die Planliste, engere rechte Spalte), Offenlegung um bauplaner.pages.dev ergänzt. Geprüft: Spieltest Fabric 26.3 mit Bildschirmfoto 854×480 und NeoForge 26.3 bestanden.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LINK-10 | 🧩 Implementiert · Abnahme offen | 6/6 | Team-Raum mit bauplaner.pages.dev ausrollen (Karte), Release 0.17.2 über den Modrinth-Thread, Abnahme LINK-10. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.17.2.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.17.2.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java`
+- `mods/bauplaner-bridge/modrinth/project.json`
+

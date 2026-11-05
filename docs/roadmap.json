@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-05T12:13:28.443Z",
+  "updatedAt": "2026-11-05T12:23:25.618Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -10225,7 +10225,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T12:09:15.574Z",
+      "updatedAt": "2026-11-05T12:23:25.618Z",
       "area": "MOD",
       "thread": "Anbindung von Mod, Team-Raum und Planer prüfen",
       "orphans": [],
@@ -10262,7 +10262,11 @@
         "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
         "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
         "downloads/mod/bauplaner-bridge-fabric-26.3-0.17.1.jar",
-        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.17.1.jar"
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.17.1.jar",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java",
+        "mods/bauplaner-bridge/modrinth/project.json",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.17.2.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.17.2.jar"
       ],
       "steps": [
         {
@@ -10289,6 +10293,11 @@
           "id": "LINK-10-S05",
           "title": "PERF-06: Planer unter https://bauplaner.pages.dev als erlaubte Herkunft in Team-Raum, Mod 0.17.1 (LiveLinkServer) und Planer (LIVE_ALLOWED_ORIGINS).",
           "done": true
+        },
+        {
+          "id": "LINK-10-S06",
+          "title": "Mod 0.17.2: Planmenü (J) bei kleinem Fenster/großer GUI-Größe kompakt – „Befehle & Status“/„Fertig“ verdecken „Abschnitt: alle“ nicht mehr (Fund aus dem Spieltest des Modrinth-Threads); Modrinth-Offenlegung nennt beide Planer-Adressen.",
+          "done": true
         }
       ],
       "acceptance": [
@@ -10313,7 +10322,7 @@
         "state": "pending",
         "note": "Unit-Tests, RoomClientTest gegen lokalen Team-Raum (wrangler dev), Ping/Schließen/Anwesenheit per WebSocket gegen wrangler dev geprüft; Spieltest und Abnahme durch Philipp offen."
       },
-      "next": "Team-Raum mit bauplaner.pages.dev ausrollen (Karte), Release 0.17.0/0.17.1 über den Modrinth-Thread, Abnahme LINK-10.",
+      "next": "Team-Raum mit bauplaner.pages.dev ausrollen (Karte), Release 0.17.2 über den Modrinth-Thread, Abnahme LINK-10.",
       "philipp": [
         {
           "kind": "spiel",
@@ -21827,6 +21836,32 @@
           "done": 4,
           "total": 5,
           "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-05T12:23:25.618Z",
+      "kind": "progress",
+      "items": [
+        "LINK-10"
+      ],
+      "summary": "Mod 0.17.2: Planmenü kompakt bei 854×480/großer GUI-Größe (Footer unter die Planliste, engere rechte Spalte), Offenlegung um bauplaner.pages.dev ergänzt. Geprüft: Spieltest Fabric 26.3 mit Bildschirmfoto 854×480 und NeoForge 26.3 bestanden.",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.17.2.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.17.2.jar",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java",
+        "mods/bauplaner-bridge/modrinth/project.json"
+      ],
+      "snapshot": [
+        {
+          "id": "LINK-10",
+          "status": "implemented",
+          "done": 6,
+          "total": 6,
+          "next": "Team-Raum mit bauplaner.pages.dev ausrollen (Karte), Release 0.17.2 über den Modrinth-Thread, Abnahme LINK-10."
         }
       ]
     }

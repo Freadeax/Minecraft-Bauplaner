@@ -716,6 +716,33 @@
       "releasedAt": "2026-11-05",
       "sourceCommit": "30db15f3db2a401416682e1ac7c384323d9d041d",
       "tested": "Minecraft 26.3 neoforge: echter Spieltest bestanden 05.11.2026 (0.17.1: Planer auch unter bauplaner.pages.dev)"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.17.2.jar",
+      "modVersion": "0.17.2",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 489567,
+      "sha256": "22d2d6644c1dc48736cd755981a93211a7d43b4b7cd0c0a9274eb15f67f70859",
+      "releasedAt": "2026-11-05",
+      "sourceCommit": "5f24e62b48e6ce1e0dc025c0da326b2ca96e43b2",
+      "tested": "Minecraft 26.3 fabric: echter Spieltest bestanden 05.11.2026 (0.17.2: Planmenü bei 854×480 geprüft)"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.17.2.jar",
+      "modVersion": "0.17.2",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 485826,
+      "sha256": "32569f4b7600d7db0741a2403fbd088ac1984f9eccde89259f5a33004f37f841",
+      "releasedAt": "2026-11-05",
+      "sourceCommit": "5f24e62b48e6ce1e0dc025c0da326b2ca96e43b2",
+      "tested": "Minecraft 26.3 neoforge: echter Spieltest bestanden 05.11.2026 (0.17.2: Planmenü bei 854×480 geprüft)"
     }
   ]
 }

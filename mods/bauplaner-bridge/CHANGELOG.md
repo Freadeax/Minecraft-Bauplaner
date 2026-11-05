@@ -2,6 +2,14 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.17.2 – 2026-11-05
+
+**Plan menu fits small windows / Planmenü passt in kleine Fenster**
+
+- Fixed: in a small game window or with a large GUI scale (e.g. 854×480), the buttons “Commands & status” and “Done” covered the row “Section: all” in the plan menu (J). The right column now gets tighter rows when space is short, and these two buttons move under the plan list.
+
+- Behoben: In einem kleinen Spielfenster oder bei großer GUI-Größe (z. B. 854×480) verdeckten die Knöpfe „Befehle & Status“ und „Fertig“ im Planmenü (J) die Zeile „Abschnitt: alle“. Die rechte Spalte rückt bei wenig Platz enger zusammen, und die beiden Knöpfe wandern unter die Planliste.
+
 ## 0.17.1 – 2026-11-05
 
 **Planner also on Cloudflare Pages / Planer auch unter Cloudflare Pages**

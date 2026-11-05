@@ -120,7 +120,7 @@
       "type": "system_interactions",
       "note": "Everything is local to this PC or goes to the team room you chose; the mod never contacts the Minecraft server unless you allow team building there.",
       "interactions": [
-        "While the game runs, a small service answers on 127.0.0.1 (port 47615 by default, reachable only from this PC) so the Bauplaner website in your browser can find the game. Plans, map markers and build state are exchanged only after you click “Allow planner” in the game (J menu).",
+        "While the game runs, a small service answers on 127.0.0.1 (port 47615 by default, reachable only from this PC) so the Bauplaner website in your browser can find the game. It answers only the website itself (freadeax.github.io or its mirror bauplaner.pages.dev) and local development pages. Plans, map markers and build state are exchanged only after you click “Allow planner” in the game (J menu).",
         "With a team room connected in the planner: an outgoing WebSocket or HTTPS connection to that room.",
         "/bauplaner diagnose copies a diagnosis report to the clipboard.",
         "Plans, settings, the team room address and reports are stored in the game folder under bauplaner/."
