@@ -7,7 +7,7 @@ import type {
   AssignmentProposal, SectionChange, SectionWork, SitePlan, SplitMode, TeamContext, TeamEventBody, TeamIssue, TeamRole, TeamState, TeamView,
 } from '../../../../../packages/domain/src/index.js';
 import { useApp } from '../../app/context';
-import { errorText, formatNumber } from '../../app/ui';
+import { errorText, formatNumber, localToday } from '../../app/ui';
 import type { ProjectSession } from './session';
 import '../../teamplan.css';
 
@@ -41,7 +41,9 @@ const short = (id: string) => id.replace(/^minecraft:/, '');
 const days = (n: number) => `${formatNumber(Math.round(n * 10) / 10)} Bautag${Math.round(n * 10) === 10 ? '' : 'e'}`;
 const pct = (a: number, b: number) => b ? Math.round(a / b * 100) : 0;
 const dateDe = (iso: string) => new Date(`${iso.slice(0, 10)}T12:00:00Z`).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' });
-const today = () => new Date().toISOString();
+// Calendar day for schedules and away checks is the local one; progress ages compare instants.
+const today = localToday;
+const now = () => new Date().toISOString();
 
 async function copy(text: string): Promise<boolean> { try { await navigator.clipboard.writeText(text); return true; } catch { return false; } }
 
@@ -240,7 +242,7 @@ export function TeamProgressArea(p: TeamPlanProps) {
   const work = useMemo(() => computation ? sectionWork(site, computation.guide, computation.site.progress) : [], [site, computation]);
   const [changes, setChanges] = useState<{ number: number; list: readonly SectionChange[] } | null>(null);
   const changed = useMemo(() => new Set((changes?.list ?? []).filter(c => c.sectionId).map(c => c.sectionId!)), [changes]);
-  const prog = useMemo(() => teamProgress({ view, work, now: today(), changed }), [view, work, changed]);
+  const prog = useMemo(() => teamProgress({ view, work, now: now(), changed }), [view, work, changed]);
   const meister = canTeam(p.role, 'section.verify');
   const sname = (id: string) => ctx.sections.find(s => s.id === id)?.name ?? 'entfernter Abschnitt';
   const name = (id?: string | null) => id ? view.members.find(m => m.id === id)?.name ?? id : '–';

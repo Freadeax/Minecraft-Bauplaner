@@ -338,6 +338,7 @@ export function farmStatuses(production: ProductionPlan, team?: TeamState): Farm
     if (b.farm.chest && !teamChests(team).some(c => c.id === b.farm.chest)) issues.push('Die verknüpfte Sammeltruhe gibt es im Team-Lager nicht mehr.');
     else if (b.fromChest && b.fromChest.hours < 1) issues.push(`Sammeltruhe: erst ${de(b.fromChest.hours * 60)} min Laufzeit gemeldet – ab 1 h rechnet der Planer mit ihr.`);
     if (b.afk && !b.afk.ok && p.afkHoursPerDay > 0) issues.push(`Vom AFK-Platz nicht erreicht: ${b.afk.reason}.`);
+    else if (!b.afk && b.type.mode === 'auto' && b.running && p.afkHoursPerDay > 0) issues.push(`AFK-Zeit angenommen, Reichweite ungeprüft: ${b.farm.at ? 'kein AFK-Platz gesetzt' : 'Ort der Farm fehlt'}.`);
     if (b.type.mode === 'auto' && b.running && b.hours === 0) issues.push('Läuft nur, wenn ein Spieler in der Nähe ist – Sammel- und AFK-Zeit sind 0.');
     let logistics: FarmLogistics | null = null;
     if (b.type.mode === 'auto') {

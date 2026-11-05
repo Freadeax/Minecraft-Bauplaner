@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import {
-  addFarm, analyzeProduction, COVER_WAY_LABEL, detectFarms, FARM_GROUPS, FARM_MODE_LABEL, FARM_RANGE_LABEL, FARM_STATE_LABEL, FARM_TYPES, farmCostOf, farmsOnMap, farmType,
+  addFarm, analyzeProduction, COVER_WAY_LABEL, detectFarms, dimensionOf, FARM_GROUPS, FARM_MODE_LABEL, FARM_RANGE_LABEL, FARM_STATE_LABEL, FARM_TYPES, farmCostOf, farmsOnMap, farmType,
   logHarvest, MAX_UNITS, newWorldItemId, paceOf, planProgramWithMaterial, productionOf, productionText, programOf, removeFarm, removeHarvest, setProductionSettings, siteOf, siteOperation,
   splitGathering, updateFarm, worldDimensionOf, teamChests, suggestChests, SUGGESTION_TARGET_DAYS, MIN_SAVED_HOURS,
 } from '../../../../../packages/domain/src/index.js';
@@ -8,7 +8,7 @@ import type {
   AfkSpot, FarmCost, FarmDimension, FarmPlace, FarmState, FarmStatus, FarmSuggestion, GatherAssignment, ProductionCoverageLine, ProductionReport, SitePlan, WorldItem,
 } from '../../../../../packages/domain/src/index.js';
 import { useApp } from '../../app/context';
-import { download, errorText, formatNumber } from '../../app/ui';
+import { download, errorText, formatNumber, localToday } from '../../app/ui';
 import { useWorldPlan } from '../map/useWorldPlan';
 import { isResolved } from './session';
 import type { ProjectSession } from './session';
@@ -19,7 +19,7 @@ const short = (id: string): string => id.replace(/^minecraft:/, '');
 const num = (n: number): string => n.toLocaleString('de-DE', { maximumFractionDigits: 1 });
 const hoursText = (h: number): string => h < 1 ? `${Math.round(h * 60)} min` : `${num(h)} h`;
 const daysText = (d: number | null): string => d === null ? 'offen' : d === 0 ? 'sofort' : `${num(d)} ${d === 1 ? 'Tag' : 'Tage'}`;
-const today = (): string => new Date().toISOString().slice(0, 10);
+const today = localToday;
 const fileStem = (name: string): string => name.replace(/[^\p{L}\p{N}_-]+/gu, '_');
 const placeText = (p: FarmPlace): string => `${p.dimension} ${p.x} / ${p.y} / ${p.z}`;
 const DIMS: readonly FarmDimension[] = ['Oberwelt', 'Nether', 'Ende'];
@@ -75,7 +75,7 @@ export function ProductionTab({ session }: { session: ProjectSession }) {
   if (!report || !overview) return <section className="site prod" aria-label="Produktion"><p role="alert">Die Produktionsplanung konnte nicht erstellt werden.</p></section>;
 
   const t = report.totals;
-  const sitePlace: FarmPlace | null = ownSite ? { x: ownSite.minX + Math.floor(ownSite.width / 2), y: ownSite.y ?? 64, z: ownSite.minZ + Math.floor(ownSite.length / 2), dimension: 'Oberwelt' } : null;
+  const sitePlace: FarmPlace | null = ownSite ? { x: ownSite.minX + Math.floor(ownSite.width / 2), y: ownSite.y ?? 64, z: ownSite.minZ + Math.floor(ownSite.length / 2), dimension: dimensionOf(ownSite.dimension) } : null;
   const addToMap = async (name: string, at: FarmPlace, type: 'farm' | 'treffpunkt'): Promise<void> => {
     const item: WorldItem = { kind: 'point', id: newWorldItemId('point'), name, note: type === 'farm' ? `Aus Projekt „${project.name}“ (Produktion)` : `AFK-Platz für „${project.name}“`, dimension: worldDimensionOf(at.dimension), type, x: at.x, y: at.y, z: at.z };
     const inverse = await world.commit({ kind: 'add', item });

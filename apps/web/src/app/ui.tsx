@@ -13,6 +13,13 @@ export function download(name: string, data: BlobPart, type = 'application/octet
 }
 
 export const formatNumber = (n: number): string => n.toLocaleString('de-DE');
+/** Local calendar day (YYYY-MM-DD) of a time; the day a player sees on the clock (not the UTC day). */
+export const localDay = (iso: string | Date): string => {
+  const d = typeof iso === 'string' ? new Date(iso) : iso;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+/** Today as local calendar day; schedules, harvest days and baselines use it (UTC would say „yesterday“ after midnight in Germany). */
+export const localToday = (): string => localDay(new Date());
 
 export function errorText(e: unknown): string {
   return e instanceof Error ? e.message : String(e);

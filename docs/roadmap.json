@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-05T08:30:33.788Z",
+  "updatedAt": "2026-11-05T10:29:43.640Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -4245,12 +4245,17 @@
         },
         {
           "id": "TERRAIN-03-S06",
-          "title": "Basisplaner auf Gelände: Küstenlinie aus der Geländeaufnahme, Wegenetz der Basis als Landschaftsweg mit Treppen und Brücken.",
-          "done": false
+          "title": "Basisplaner auf Gelände: Küstenlinie aus der Geländeaufnahme (baseShore.ts: Wasserseite je Seite aus Reihen mit offenem Wasser, echtes Ufer gegen geplante Uferlinie, Gebäude im Wasser/Stege an Land), Kasten „Küste“ mit „Wasserseite übernehmen“ und „Ans echte Ufer schieben“; Abnahme BIB-19.",
+          "done": true
         },
         {
           "id": "TERRAIN-03-S07",
           "title": "Abnahme im Spiel (PROJ-19): Treppen, Brücke und Geländer als .litematic in Philipps Welt.",
+          "done": false
+        },
+        {
+          "id": "TERRAIN-03-S08",
+          "title": "Wegenetz der Basis als Landschaftsweg mit Treppen und Brücken (Rest von S06).",
           "done": false
         }
       ],
@@ -4260,7 +4265,7 @@
         "Aufschütten hebt nie an, was über der Zielhöhe liegt; Abtragen senkt nie, was darunter liegt; unbekannte Spalten bleiben unverändert.",
         "Dateien ohne Wegstufen bleiben byte-identisch und ältere Gestaltungen laden unverändert."
       ],
-      "next": "Abnahme PROJ-19 im Spiel; danach Basisplaner auf Gelände (S06).",
+      "next": "Abnahme PROJ-19 und BIB-19 im Spiel; danach Wegenetz der Basis als Landschaftsweg (S08).",
       "blockers": [],
       "evidence": [
         {
@@ -4274,6 +4279,14 @@
         {
           "path": "docs/architecture/LANDSCAPE.md",
           "note": "Abschnitt „Wegstufen und Brücken (TERRAIN-03)“, Werkzeuge, Dateiformat, Grenzen."
+        },
+        {
+          "path": "tests/base-shore.test.mjs",
+          "note": "Küste aus der Geländeaufnahme: alle vier Seiten, Verschiebung, Binnenland, Bach, Bucht, Halbinsel, Aufnahmerand."
+        },
+        {
+          "path": "tests/e2e/base-shore.e2e.mjs",
+          "note": "Chromium 1400/390 px: Sicherung mit Küstenaufnahme, Wasserseite übernehmen, ans Ufer schieben, Übernahme an verschobener Stelle."
         }
       ],
       "verification": {
@@ -4284,7 +4297,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T13:25:59.610Z",
+      "updatedAt": "2026-11-05T10:29:43.640Z",
       "area": "PLANER",
       "thread": "Gelände und Wege ausbauen",
       "philipp": [
@@ -7842,7 +7855,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T08:42:48.661Z",
+      "updatedAt": "2026-11-05T10:23:42.887Z",
       "area": "TEAM",
       "thread": "Server-Plugin mit geprüften Lagerkisten",
       "philipp": [
@@ -7932,7 +7945,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-05T10:23:42.887Z",
       "area": "PROJEKT",
       "thread": "Projektmodul vertiefen",
       "philipp": [
@@ -8626,7 +8639,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-04T08:42:48.661Z",
+      "updatedAt": "2026-11-05T10:23:42.887Z",
       "area": "PROJEKT",
       "thread": "Produktion und Anbindung im Planer ausbauen",
       "philipp": [],
@@ -18899,6 +18912,107 @@
           "done": 2,
           "total": 3,
           "next": "Abnahme PROJ-21 durch Philipp."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-05T10:23:42.887Z",
+      "kind": "progress",
+      "items": [
+        "TERRAIN-03",
+        "PROD-04",
+        "COOP-06",
+        "PROJ-01"
+      ],
+      "summary": "Prüfrunde Bibliothek/Welt/Team (05.11.): TERRAIN-03-S06 Küste aus der Geländeaufnahme im Basisplaner (baseShore.ts: Wasserseite aus Reihen mit offenem Wasser, echtes Ufer gegen geplante Uferlinie, ans Ufer schieben, Gebäude im Wasser/Stege an Land; Abnahme BIB-19); Fehler behoben: Tagesdatum in Planung/Produktion/Team/Projektzentrale als Ortszeit statt UTC, Standardort übernommener Farmen in der Dimension des Bauplatzes, AFK-Annahme ohne Ort/AFK-Platz als Hinweis; Team-Einstieg nennt Team live zuerst. Unit 6+1 neu, Browser base-shore 1400/390 px; Wegenetz als Landschaftsweg (S08) offen.",
+      "files": [
+        "apps/web/src/app/ui.tsx",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/ProjectsView.tsx",
+        "apps/web/src/views/library/BasePage.tsx",
+        "apps/web/src/views/library/base.css",
+        "apps/web/src/views/project/PlanningTab.tsx",
+        "apps/web/src/views/project/ProductionTab.tsx",
+        "apps/web/src/views/project/TeamPlan.tsx",
+        "apps/web/src/views/project/TeamTab.tsx",
+        "apps/web/src/views/project/buildrun/common.ts",
+        "docs/architecture/BASE_PLANNER.md",
+        "docs/architecture/PRODUCTION.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/baseShore.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/productionPlan.ts",
+        "tests/base-shore.test.mjs",
+        "tests/e2e/base-shore.e2e.mjs",
+        "tests/production.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "TERRAIN-03",
+          "status": "implemented",
+          "done": 6,
+          "total": 8,
+          "next": "Abnahme PROJ-19 und BIB-19 im Spiel; danach Wegenetz der Basis als Landschaftsweg (S08)."
+        },
+        {
+          "id": "PROD-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme PROJ-13; danach Farmerträge aus Mod/Plugin."
+        },
+        {
+          "id": "COOP-06",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern."
+        },
+        {
+          "id": "PROJ-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-05T10:29:43.640Z",
+      "kind": "progress",
+      "items": [
+        "TERRAIN-03"
+      ],
+      "summary": "Prüfprotokoll der Prüfrunde Bibliothek/Welt/Team in TESTING ergänzt.",
+      "files": [
+        "apps/web/src/app/ui.tsx",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/ProjectsView.tsx",
+        "apps/web/src/views/library/BasePage.tsx",
+        "apps/web/src/views/library/base.css",
+        "apps/web/src/views/project/PlanningTab.tsx",
+        "apps/web/src/views/project/ProductionTab.tsx",
+        "apps/web/src/views/project/TeamPlan.tsx",
+        "apps/web/src/views/project/TeamTab.tsx",
+        "apps/web/src/views/project/buildrun/common.ts",
+        "docs/TESTING.md",
+        "docs/architecture/BASE_PLANNER.md",
+        "docs/architecture/PRODUCTION.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/baseShore.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/productionPlan.ts",
+        "tests/base-shore.test.mjs",
+        "tests/e2e/base-shore.e2e.mjs",
+        "tests/production.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "TERRAIN-03",
+          "status": "implemented",
+          "done": 6,
+          "total": 8,
+          "next": "Abnahme PROJ-19 und BIB-19 im Spiel; danach Wegenetz der Basis als Landschaftsweg (S08)."
         }
       ]
     }

@@ -1,8 +1,4 @@
-/** Local calendar day (YYYY-MM-DD) of an ISO time; the day a player sees on the clock. */
-export const localDay = (iso: string | Date): string => {
-  const d = typeof iso === 'string' ? new Date(iso) : iso;
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-};
+export { localDay } from '../../../app/ui';
 export const dayLabel = (day: string): string => {
   const [y, m, d] = day.split('-').map(Number);
   return new Date(y!, m! - 1, d!).toLocaleDateString('de-DE', { weekday: 'short', day: '2-digit', month: '2-digit' });

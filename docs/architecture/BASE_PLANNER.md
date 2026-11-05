@@ -31,7 +31,17 @@ Route: `#/bibliothek/basis`, Reiter „Basisplaner“ in der Bibliothek. Herausl
 
 **Übernahme**: `createBaseProject` / `baseIntoProject` (eine rückgängig machbare Batch-Operation, Veraltungsprüfung wie bei Anlagen). Die Oberfläche speichert zuerst das Wegenetz als Bauteil, dann das Projekt. Bauabschnitte: „Wege & Platz“, dann „Phase 1–4“ mit Zonen; offene Prüfpunkte und freigehaltene Bauplätze stehen in der Notiz.
 
-Grenzen: Wege laufen nur orthogonal und auf einer Höhe (Stufen folgen aus der Geländeanpassung je Einheit, nicht als Blöcke); die Uferlinie ist eine Gerade; keine Brücken; Erkennung der Küstenlinie aus der Geländeaufnahme bleibt dem Geländereiter überlassen (der Planer nimmt die Wasserseite als Wahl).
+### Küste aus der Geländeaufnahme (TERRAIN-03-S06)
+
+Ist das Ziel ein Projekt mit Weltlage und Geländeaufnahme (oder Geländegestaltung), vergleicht `fitBaseShore` (`packages/domain/src/baseShore.ts`) den Plan mit dem echten Ufer. Rein, nichts wird gespeichert; die Seite zeigt das Ergebnis im Kasten „Küste“ unter „Prüfung“.
+
+- **Wasserseite**: Je Seite werden alle Reihen quer zur Basis vom Rand nach außen abgesucht (bis 64 Blöcke). Eine Reihe trifft „offenes Wasser“, wenn mindestens 8 Wassersäulen hintereinander folgen (Wasser, das aus der Aufnahme hinausläuft, zählt als offen). Erreichen mindestens 50 % der Reihen einer Seite offenes Wasser, ist das die Küste (mit mittlerem Abstand); gilt das für zwei Seiten, entscheidet der Planer nicht (Halbinsel, Bucht). Unter 10 % Reihen mit irgendeinem Wasser heißt „kein Wasser“; nur schmales Wasser heißt Bach oder Teich, keine Küste. Lava zählt weder als Wasser noch als Land. Bei einer Küstenbasis wird nur der Landteil (bis zur geplanten Uferlinie) betrachtet.
+- **Uferlinie**: Je Reihe quer zur Basis wird vom Platz aus zum Wasser hin das erste Wasser gesucht; der Median ist das echte Ufer. Die Differenz zur geplanten Uferlinie ist die vorgeschlagene Verschiebung entlang der Wasserachse (höchstens 48 Blöcke, sonst Hinweis „an anderer Stelle planen“).
+- **Lage**: gezählt werden Grundrissspalten von Gebäuden auf echtem Wasser und Stegspalten auf echtem Land, jetzt und nach der Verschiebung.
+- **Oberfläche**: „Wasserseite übernehmen“ setzt die vorgeschlagene Seite, „Ans echte Ufer schieben“ addiert die Verschiebung zum Versatz neben den bestehenden Bauten (Vorschau, Geländeanpassung, Konfliktprüfung und Übernahme nutzen denselben Versatz), „Verschiebung zurücksetzen“ nimmt sie zurück. Ein anderes Zielprojekt setzt die Verschiebung zurück. Bei gedrehter Weltlage gibt es (wie bei der Höhenanpassung) keine Küstenprüfung.
+- Prüfung: `tests/base-shore.test.mjs` (alle vier Seiten, Verschiebung, zu weit, Binnenland, Bach, Bucht, Halbinsel, Aufnahmerand), `tests/e2e/base-shore.e2e.mjs` (Sicherung mit Küsten-Aufnahme, Seite übernehmen, schieben, übernehmen; 1400/390 px); Abnahme BIB-19.
+
+Grenzen: Wege laufen nur orthogonal und auf einer Höhe (Stufen folgen aus der Geländeanpassung je Einheit, nicht als Blöcke); die geplante Uferlinie ist eine Gerade (eine krumme echte Küste meldet die Lageprüfung als Gebäude im Wasser bzw. Stege an Land); keine Brücken; das Wegenetz der Basis wird noch nicht als Landschaftsweg mit Treppen und Brücken übernommen (Rest von TERRAIN-03-S06).
 
 ## Gebäude herauslösen (`packages/domain/src/split.ts`)
 

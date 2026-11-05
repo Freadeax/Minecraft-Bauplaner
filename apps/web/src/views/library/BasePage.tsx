@@ -2,11 +2,11 @@ import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'rea
 import type { Cell } from '../../../../../packages/voxel/src/index.js';
 import {
   BASE_FUNCTIONS, BASE_PHASES, BASE_SPACING, BASE_TEMPLATES, EARTHWORK_NOTE, PATH_STYLE_LABEL, PATH_WIDTH, RESERVE_ID, TERRAIN_MODE_LABEL, WATER_SIDE_LABEL,
-  applyOperation, baseIntoProject, baseTemplateById, besideOffset, buildBasePlan, createBaseProject, defaultZones, fitAnlageToTerrain, isTurned, turnLabel, turnOf, layoutBase,
+  applyOperation, baseIntoProject, baseTemplateById, besideOffset, buildBasePlan, createBaseProject, defaultZones, fitAnlageToTerrain, fitBaseShore, isTurned, turnLabel, turnOf, layoutBase,
   mainCandidates, previewBase, resolveProject, zoneKeyFor,
 } from '../../../../../packages/domain/src/index.js';
 import type {
-  AnlageLibrary, AnlagePreview, AnlageTerrainFit, BaseChoices, BaseFunctionId, BaseLayout, BasePhase, BasePlan, BaseZoneChoice, BaseZonePlan, PathStyle, Project, TerrainMode, WaterSide,
+  AnlageLibrary, AnlagePreview, AnlageTerrainFit, BaseChoices, BaseFunctionId, BaseLayout, BasePhase, BasePlan, BaseZoneChoice, BaseZonePlan, PathStyle, Project, ShoreFit, TerrainMode, WaterSide,
 } from '../../../../../packages/domain/src/index.js';
 import { useApp } from '../../app/context';
 import { navigate } from '../../app/router';
@@ -20,6 +20,9 @@ import './base.css';
 const CONFLICT_MARK = { color: '#ff5f57', amount: 0.85 } as const;
 type Target = { readonly kind: 'new' } | { readonly kind: 'project'; readonly projectId: string };
 const size = (f: { x0: number; z0: number; x1: number; z1: number } | null) => f ? `${f.x1 - f.x0} × ${f.z1 - f.z0}` : '–';
+const NO_SHIFT: readonly [number, number] = [0, 0];
+const addShift = (a: readonly [number, number], b: readonly [number, number]): [number, number] => [a[0] + b[0], a[1] + b[1]];
+const shiftText = (s: readonly [number, number]) => [s[0] && `${Math.abs(s[0])} nach ${s[0] > 0 ? 'Osten' : 'Westen'}`, s[1] && `${Math.abs(s[1])} nach ${s[1] > 0 ? 'Süden' : 'Norden'}`].filter(Boolean).join(' und ');
 
 function safeLayout(lib: AnlageLibrary, choices: BaseChoices): { layout: BaseLayout | null; error: string } {
   try { return { layout: layoutBase(lib, choices), error: '' }; } catch (e) { return { layout: null, error: errorText(e) }; }
@@ -46,6 +49,8 @@ export function BasePage({ projects, libHref, onMessage }: {
   const [useTerrain, setUseTerrain] = useState(true);
   const [mode, setMode] = useState<TerrainMode>('eben');
   const [focus, setFocus] = useState<string | null>(null);
+  // Shift onto the real shore (TERRAIN-03-S06), added to the offset beside the existing buildings.
+  const [shift, setShift] = useState<readonly [number, number]>(NO_SHIFT);
   const deferred = useDeferredValue(choices);
   const stale = deferred !== choices;
 
@@ -64,7 +69,7 @@ export function BasePage({ projects, libHref, onMessage }: {
 
   const base = target.kind === 'project' ? projects.find(p => p.id === target.projectId) : undefined;
   const baseResolution = useMemo(() => { if (!base) return null; try { return resolveProject(base, lib.versions); } catch { return null; } }, [base, lib]);
-  const offset = useMemo<[number, number]>(() => base && plan ? besideOffset(plan, baseResolution) : [0, 0], [base, plan, baseResolution]);
+  const offset = useMemo<[number, number]>(() => base && plan ? addShift(besideOffset(plan, baseResolution), shift) : [0, 0], [base, plan, baseResolution, shift]);
   const terrainRef = base?.world && projectTerrainDimension(base, 'planned') === base.world.dimension && (base.terrain || base.terrainDesign) ? base : null;
   const { survey, error: surveyError } = useProjectTerrain(repo, terrainRef, 'planned');
   const fit = useMemo((): { fit: AnlageTerrainFit | null; error: string } => {
@@ -72,6 +77,10 @@ export function BasePage({ projects, libHref, onMessage }: {
     if (isTurned(base.world)) return { fit: null, error: `„${base.name}“ liegt auf der Weltkarte ${turnLabel(turnOf(base.world))}; ans Gelände angepasst wird nur bei ungedrehter Weltlage.` };
     try { return { fit: fitAnlageToTerrain(plan, { survey, origin: base.world.origin, offset, mode }), error: '' }; } catch (e) { return { fit: null, error: errorText(e) }; }
   }, [plan, survey, useTerrain, base, offset, mode]);
+  const shore = useMemo((): ShoreFit | null => {
+    if (!layout || !plan || !survey || !useTerrain || !base?.world || isTurned(base.world)) return null;
+    try { return fitBaseShore(layout, { survey, origin: base.world.origin, offset }); } catch { return null; }
+  }, [layout, plan, survey, useTerrain, base, offset]);
   const { preview, error: previewError } = useMemo((): { preview: AnlagePreview | null; error: string } => {
     if (!plan) return { preview: null, error: '' };
     try { return { preview: previewBase(plan, { ...(base && { base }), offset, versions: lib.versions, ...(fit.fit && { heights: fit.fit.heights }) }), error: '' }; }
@@ -107,7 +116,7 @@ export function BasePage({ projects, libHref, onMessage }: {
       if (!project) throw new Error('Projekt nicht mehr vorhanden');
       let world = null;
       try { world = resolveProject(project, versions); } catch { /* unresolved: beside offset 0 */ }
-      const at = besideOffset(stored, world);
+      const at = addShift(besideOffset(stored, world), shift);
       const heights = useTerrain && survey && project.world && !isTurned(project.world) ? fitAnlageToTerrain(stored, { survey, origin: project.world.origin, offset: at, mode }).heights : undefined;
       const fresh = previewBase(stored, { base: project, offset: at, versions, ...(heights && { heights }) });
       if (fresh.conflicts.length && !accept) throw new Error(`${fresh.conflicts.length} Voxelkonflikt(e) nach Neuberechnung; bitte prüfen und bestätigen`);
@@ -183,6 +192,8 @@ export function BasePage({ projects, libHref, onMessage }: {
           {blockers.map(b => <li key={b} className="bad"><strong>Nicht übernehmbar</strong><span>{b}</span></li>)}
           {(layoutError || previewError) && <li className="bad"><strong>Fehler</strong><span>{layoutError || previewError}</span></li>}
         </ul>
+        {shore && <ShoreCheck shore={shore} water={choices.water ?? template.water} shift={shift}
+          onWater={w => update(c => ({ ...c, water: w }))} onShift={s => { setAccept(false); setShift(addShift(shift, s)); }} onReset={() => { setAccept(false); setShift(NO_SHIFT); }} />}
         {fit.fit ? <p className="small-note">Gelände aus „{base!.name}“ ({TERRAIN_MODE_LABEL[fit.fit.mode]}): {formatNumber(fit.fit.totals.fill)} Blöcke Unterbau, {formatNumber(fit.fit.totals.cut)} Blöcke Abtrag. {EARTHWORK_NOTE}</p>
           : <p className="small-note">Gelände ungeprüft: Für Hanglagen und die echte Küstenlinie ein Projekt mit Geländeaufnahme als Ziel wählen.</p>}
         {(surveyError || fit.error) && <p className="field-error" role="alert">{surveyError || fit.error}</p>}
@@ -205,7 +216,7 @@ export function BasePage({ projects, libHref, onMessage }: {
     <section className="anlage-panel" aria-labelledby="base-adopt-title">
       <h3 id="base-adopt-title">Übernehmen</h3>
       <div className="anlage-target">
-        <label>Ziel<select value={target.kind === 'new' ? '' : target.projectId} aria-label="Zielprojekt" onChange={e => { setAccept(false); setTarget(e.target.value ? { kind: 'project', projectId: e.target.value } : { kind: 'new' }); }}>
+        <label>Ziel<select value={target.kind === 'new' ? '' : target.projectId} aria-label="Zielprojekt" onChange={e => { setAccept(false); setShift(NO_SHIFT); setTarget(e.target.value ? { kind: 'project', projectId: e.target.value } : { kind: 'new' }); }}>
           <option value="">Neues Projekt</option>{projects.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</select></label>
         {target.kind === 'new' && <label>Projektname<input value={name} maxLength={120} onChange={e => setName(e.target.value)} aria-label="Projektname" /></label>}
         {terrainRef && <label className="chip-check"><input type="checkbox" checked={useTerrain} onChange={e => setUseTerrain(e.target.checked)} /> Geländeaufnahme nutzen</label>}
@@ -217,6 +228,32 @@ export function BasePage({ projects, libHref, onMessage }: {
       <p className="small-note">Angelegt werden alle Gebäude, das Wegenetz als eigenes Bauteil und Bauabschnitte „Wege & Platz“ und Phase 1–4 mit den offenen Prüfpunkten als Notiz.</p>
     </section>
   </section>;
+}
+
+/** Coast from the terrain survey (TERRAIN-03-S06): water side, real shore line, shift onto it. */
+function ShoreCheck({ shore, water, shift, onWater, onShift, onReset }: {
+  shore: ShoreFit; water: WaterSide; shift: readonly [number, number];
+  onWater(w: WaterSide): void; onShift(s: readonly [number, number]): void; onReset(): void;
+}) {
+  const wrongSide = shore.suggested !== null && shore.suggested !== water;
+  const moved = shift[0] !== 0 || shift[1] !== 0, canShift = shore.shift[0] !== 0 || shore.shift[1] !== 0;
+  const clash = shore.now.wet + shore.now.dry;
+  const status = wrongSide || canShift || clash ? 'warn' : shore.suggested === null && water !== 'keine' && shore.realLine === null ? 'warn' : 'good';
+  const lead = wrongSide ? `Wasserseite passt nicht zum Gelände` : canShift ? 'Uferlinie weicht vom echten Ufer ab'
+    : shore.plannedLine !== null && shore.realLine === shore.plannedLine ? 'Uferlinie liegt am echten Ufer' : clash ? 'Lage am Wasser prüfen' : 'Küste geprüft';
+  return <div className={`base-shore ${status}`} data-testid="base-shore" role="group" aria-label="Küste aus der Geländeaufnahme">
+    <strong>{lead}</strong>
+    <span>{shore.reason}{shore.plannedLine !== null && shore.realLine !== null && shore.realLine !== shore.plannedLine
+      ? ` Echtes Ufer ${Math.abs(shore.realLine - shore.plannedLine)} Blöcke ${shiftText(shore.shift) ? `(${shiftText(shore.shift)})` : ''} neben der geplanten Uferlinie.` : ''}
+      {clash ? ` Jetzt: ${shore.now.wet} Gebäudespalten im Wasser, ${shore.now.dry} Stegspalten an Land.` : ''}</span>
+    {shore.notes.length > 0 && <ul className="small-note">{shore.notes.map(n => <li key={n}>{n}</li>)}</ul>}
+    <div className="button-row">
+      {wrongSide && <button type="button" onClick={() => onWater(shore.suggested!)}>Wasserseite übernehmen: {WATER_SIDE_LABEL[shore.suggested!]}</button>}
+      {!wrongSide && canShift && <button type="button" onClick={() => onShift(shore.shift)}>Ans echte Ufer schieben ({shiftText(shore.shift)})</button>}
+      {moved && <button type="button" className="text-button" onClick={onReset}>Verschiebung zurücksetzen ({shiftText(shift)})</button>}
+    </div>
+    {canShift && !wrongSide && <small>Danach: {shore.shifted.wet} Gebäudespalten im Wasser, {shore.shifted.dry} Stegspalten an Land.</small>}
+  </div>;
 }
 
 function ZoneRow({ choice, plan, lib, focused, onFocus, onPatch, onRemove }: {

@@ -122,6 +122,8 @@ export type { BaseFunction, BaseFunctionId, BasePhase, BaseMember, Requirement, 
 export { BASE_TEMPLATES, baseTemplateById, defaultZones, zoneKeyFor, normalizeBaseChoices, layoutBase, buildBasePlan, previewBase, createBaseProject, baseIntoProject, pathNetworkPayload, mainCandidates, isWaterCell,
   WATER_SIDE_LABEL, PATH_STYLE_LABEL, PATH_WIDTH, BASE_SPACING, MAX_ZONES, RESERVE_ID } from './base.js';
 export type { BaseTemplate, BaseZoneChoice, BaseChoices, NormalizedBaseChoices, WaterSide, PathStyle, BaseMemberPlan, BaseZonePlan, BaseLayout, BasePlan } from './base.js';
+export { fitBaseShore, shoreSides, suggestWaterSide, SHORE_WIDE, SHORE_COAST_SHARE, SHORE_INLAND_SHARE, SHORE_SEARCH, SHORE_MAX_SHIFT } from './baseShore.js';
+export type { ShoreSide, ShoreFit, ShoreClash, ShoreInput } from './baseShore.js';
 export { analyzeSplit, extractParts, extractRest, splitProject, blockClass, SPLIT_DEFAULTS, SPLIT_MAX_COLUMNS, NO_GROUND } from './split.js';
 export type { SplitOptions, SplitPart, SplitAnalysis, ExtractOptions, ExtractedPart, GroundMode, SplitProjectPart, BlockClass as SplitBlockClass } from './split.js';
 export { GROSSPROJEKT_SCHEMA_VERSION, MIN_STREET_WIDTH, MAX_STREET_WIDTH, MAX_GP_SPACING, DEFAULT_QUARTER_ROW, LAMP_STEP, QUARTIER_KIND_LABEL, STREET_STYLE_LABEL, SCALE_LABEL, scaleOf,

@@ -315,3 +315,16 @@ test('PROD-05: farm output from team storage chests – server yield reports, ho
   const unassigned = { ...assigned, events: [...assigned.events, ev('k2', iso(4_000_000), { kind: 'store.config', chest: 'kiste-eisen', farm: '' })] };
   assert.equal(teamChests(unassigned).find(c => c.id === 'kiste-eisen').farm, undefined);
 });
+
+test('AFK hours without farm place or AFK spot are named as an unchecked assumption', () => {
+  let site = setProductionSettings(emptySite(), { gatherHoursPerDay: 1, afkHoursPerDay: 4 });
+  site = addFarm(site, { type: 'kaktus', state: 'laeuft' }, 'mob');
+  const issue = s => farmStatuses(productionOf(s)).find(f => f.farm.id === 'mob').issues.find(i => /AFK-Zeit angenommen/.test(i));
+  assert.match(issue(site), /Ort der Farm fehlt/);
+  site = updateFarm(site, 'mob', { at: { x: 0, y: 64, z: 0, dimension: 'Oberwelt' } });
+  assert.match(issue(site), /kein AFK-Platz gesetzt/);
+  site = setProductionSettings(site, { afk: { x: 40, y: 64, z: 0, dimension: 'Oberwelt' } });
+  assert.equal(issue(site), undefined, 'mit Ort und AFK-Platz wird die Reichweite geprüft');
+  const noAfk = addFarm(setProductionSettings(emptySite(), { gatherHoursPerDay: 1, afkHoursPerDay: 0 }), { type: 'kaktus', state: 'laeuft' }, 'mob');
+  assert.equal(issue(noAfk), undefined, 'ohne AFK-Stunden keine Annahme');
+});

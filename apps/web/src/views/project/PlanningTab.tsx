@@ -5,7 +5,7 @@ import {
   suggestDependencies, suggestProgram, updateBuilder, updateMilestone, UNASSIGNED,
 } from '../../../../../packages/domain/src/index.js';
 import type { Builder, BuilderLoad, DependencySuggestion, ProductionReport, ProgramPlan, ProgramPreset, ScheduledSection, SitePlan } from '../../../../../packages/domain/src/index.js';
-import { download, errorText, formatNumber } from '../../app/ui';
+import { download, errorText, formatNumber, localToday } from '../../app/ui';
 import { isResolved } from './session';
 import type { ProjectSession } from './session';
 import { ProjectOrder } from './ProjectOrder';
@@ -14,7 +14,7 @@ import '../../planning.css';
 const pct = (a: number, b: number): number => b ? Math.round(a / b * 100) : 0;
 const deDate = (iso: string | null | undefined): string => iso ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(0, 4)}` : '';
 const days = (n: number): string => `${n} Bautag${n === 1 ? '' : 'e'}`;
-const today = (): string => new Date().toISOString().slice(0, 10);
+const today = localToday;
 const fileStem = (name: string): string => name.replace(/[^\p{L}\p{N}_-]+/gu, '_');
 const slipText = (n: number | null | undefined): string => n === null || n === undefined ? '' : n === 0 ? 'wie im Basisplan' : n > 0 ? `${days(n)} später als im Basisplan` : `${days(-n)} früher als im Basisplan`;
 const whenText = (s: Pick<ScheduledSection, 'sessions' | 'start' | 'end' | 'startDate' | 'endDate'>): string =>

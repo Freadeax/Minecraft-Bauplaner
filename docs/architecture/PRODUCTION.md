@@ -43,7 +43,7 @@ Der Reiter **Produktion** (`#/projekt/<id>/produktion`) beantwortet die Frage, d
 4. **Lohnt sich eine Farm?** je Farmart über alle Items, die sie abdeckt: gesparte Spielerzeit gegen Bauaufwand (Material des Katalog-Bauplans per Rezeptbaum und Sammel-Richtwerten + Blöcke ÷ 500/h, sonst `effortHours`), Einheiten für 7 Spieltage, Urteil *lohnt / knapp / lohnt nicht / macht planbar*. Vorschläge unter 1 h Ersparnis entfallen.
 5. **Öfen und Brennstoff:** Schmelzvorgänge der fehlenden Bauitems (`SectionPlan.smelts/cookTicks` aus dem Rezeptbaum), Öfen für 1/2/4/8 h, Brennstoff je Sorte (Profil-Brennzeiten) und Brennstoff aus laufenden Farmen netto (getrockneter Seetang: (20 − 9) ÷ 9 Vorgänge je Seetang).
 6. **Lager:** Plätze, Doppeltruhen, Shulkerkisten und Fahrten (Tempo `boxesPerSession`) je offenem Abschnitt; Sortier-Module für die Items aller automatischen Farmen.
-7. **AFK-Platz:** Reichweitenprüfung je Farmart (`inRange`), bester Platz unter Farmen, Mittelpunkten von Paaren, Schwerpunkt je Dimension und 32 Blöcke über Mobfarmen (die meisten Farmen, dann die meisten Items/h).
+7. **AFK-Platz:** Reichweitenprüfung je Farmart (`inRange`), bester Platz unter Farmen, Mittelpunkten von Paaren, Schwerpunkt je Dimension und 32 Blöcke über Mobfarmen (die meisten Farmen, dann die meisten Items/h). Fehlt der Ort einer automatischen Farm oder der AFK-Platz, rechnet der Planer die AFK-Stunden mit und nennt das bei der Farm als Annahme („AFK-Zeit angenommen, Reichweite ungeprüft“). Der Standardort übernommener Farmen ist die Mitte des Bauplatzes auf der Weltkarte in dessen Dimension.
 
 ## Sammeltruhen aus dem Team-Lager (PROD-05)
 

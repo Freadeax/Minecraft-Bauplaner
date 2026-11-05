@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 143 Fälle in 13 Bereichen, davon 62 Kernfälle.
+Umfang: 144 Fälle in 13 Bereichen, davon 62 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -44,6 +44,7 @@ Katalog mit Gebäuden, Ensembles, Generatoren, Sammlungen, Vorlagen, Anlagen und
 | BIB-16 | Eingereichtes Bauwerk ist fest in der Bibliothek ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek?q=beitrag)) | vertieft | 1. Nach der Übernahme eines Beitrags und dem Update der Seite: Bibliothek öffnen, nach „beitrag“ suchen.<br>2. Den Beitrag öffnen, in ein Projekt übernehmen und als .litematic exportieren.<br>3. In einem zweiten Browser (oder privaten Fenster) prüfen, dass er auch dort erscheint. | Der Beitrag steht mit „Bibliotheksbeitrag von …“, Bautipps und genau den eingereichten Blöcken in der Bibliothek, auch in einem frischen Browser; Export und Material funktionieren wie bei jedem Gebäude. (Abnahme LIB-06-S07) |
 | BIB-17 | Zwei Stände eines Bauwerks vergleichen | vertieft | 1. Ein eigenes Bauteil in der Werkstatt öffnen, alles markieren und um ein paar Blöcke verschieben, eine Truhe oder ein Schild ändern, als neue Version speichern.<br>2. In der Bibliothek beim Bauteil unter „Bauversionen & Varianten“ die ältere mit der neuen Version vergleichen. | Der Vergleich meldet „ist verschoben“ mit dem richtigen Versatz statt aller Blöcke als geändert; die geänderte Truhe bzw. das Schild steht als Inhaltsänderung da. (Abnahme DIFF-01) |
 | BIB-18 | Filter bleiben beim Seitenwechsel ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek)) | vertieft | 1. Bibliothek filtern (Kategorie, Größe, Suchwort), auf Seite 2 blättern.<br>2. Ein Gebäude öffnen und mit „Zurück“ des Browsers zurückgehen. | Filter, Suchwort und Seite sind wie vorher; Vorschaubilder erscheinen ohne langes Nachladen. (Abnahme PERF-03) |
+| BIB-19 | Basisplaner an der echten Küste ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek/basis)) | vertieft | 1. Einen Bauplatz an einer Küste aus der eigenen Welt anlegen (Weltimport #/welt → „Bauplatz anlegen“).<br>2. Bibliothek → „Basisplaner“, Vorlage „Küstenbasis“, Ziel = dieser Bauplatz.<br>3. Unter „Prüfung“ den Kasten zur Küste lesen; ggf. „Wasserseite übernehmen“ und „Ans echte Ufer schieben“ drücken.<br>4. In Projekt einfügen und die Basis auf der Weltkarte mit dem Gelände vergleichen. | Der Kasten nennt die Seite der Küste und den Abstand des echten Ufers zur geplanten Uferlinie; nach dem Schieben steht „Uferlinie liegt am echten Ufer“; Stege stehen im Wasser, Gebäude an Land. (Abnahme TERRAIN-03-S06) |
 
 ## PROJ · Projekt: Editor, Material, Bauen, Export (Planer)
 
@@ -330,7 +331,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | NBT-01 | DATEI-07 |
 | QA-04 | SYS-01, SYS-02, LIVE-06 |
 | SIZE-01 | DATEI-05, WERK-07, MOD-15, LIVE-09 |
-| TERRAIN-03 | PROJ-19, PROJ-06 |
+| TERRAIN-03 | PROJ-19, PROJ-06, BIB-19 |
 
 ### Mit Paper-Server und Plugin (10 Pakete)
 

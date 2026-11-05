@@ -5,7 +5,7 @@ import type { Ensemble, Instance, Project, ProjectChoice, RestorePlan } from '..
 import { useApp } from '../app/context';
 import type { StorageInfo } from '../app/repository';
 import { href, navigate } from '../app/router';
-import { download, errorText } from '../app/ui';
+import { download, errorText, localToday } from '../app/ui';
 import { Thumb } from '../thumbnail/Thumb';
 import { recordBackupReceipt, useBackupStatus } from '../app/backupStatus';
 import { BackupReminder, BackupStatusPanel } from './BackupPanel';
@@ -162,7 +162,7 @@ export function ProjectsView() {
         {p.description && <p className="muted">{p.description}</p>}
         <div className="chips"><span>{p.instances.length} Bauteile</span><span>{p.revisions.length} Revisionen</span><span title={new Date(p.updatedAt).toLocaleString('de-DE')}>geändert {new Date(p.updatedAt).toLocaleDateString('de-DE')}</span>
           {(() => { const n = summarizeUpdates(findUpdates(p, library)).available; return n > 0 && <a className="update-card-chip" href={href({ view: 'project', projectId: p.id, tab: 'updates' })} data-updates={n}>{n === 1 ? '1 Update' : `${n} Updates`}</a>; })()}
-          {(() => { const s = programSummary(siteOf(p), new Date().toISOString().slice(0, 10)); return s.next && <a className="milestone-chip" href={href({ view: 'project', projectId: p.id, tab: 'planung' })} title={`${s.milestones} Meilenstein(e), ${s.builders} Bauleute`}>◆ {s.next.name}{s.next.due ? ` · bis ${s.next.due.slice(8, 10)}.${s.next.due.slice(5, 7)}.` : ''}</a>; })()}</div>
+          {(() => { const s = programSummary(siteOf(p), localToday()); return s.next && <a className="milestone-chip" href={href({ view: 'project', projectId: p.id, tab: 'planung' })} title={`${s.milestones} Meilenstein(e), ${s.builders} Bauleute`}>◆ {s.next.name}{s.next.due ? ` · bis ${s.next.due.slice(8, 10)}.${s.next.due.slice(5, 7)}.` : ''}</a>; })()}</div>
         <dl className="stats sr-only"><div><dt>Instanzen</dt><dd>{p.instances.length}</dd></div><div><dt>Freigegebene Revisionen</dt><dd>{p.revisions.length}</dd></div>
           <div><dt>Speicherrevision</dt><dd>{p.revision}</dd></div><div><dt>Profil</dt><dd>{p.profileId}</dd></div></dl>
         <div className="button-row"><a className="primary" href={href({ view: 'project', projectId: p.id, tab: 'editor' })}>Öffnen</a>

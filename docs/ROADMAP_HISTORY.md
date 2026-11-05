@@ -5710,3 +5710,71 @@ PROJ-04: Reihenfolge zwischen Projekten (program.after, projectOrder.ts), Planun
 - `tests/e2e/project-order.e2e.mjs`
 - `tests/project-order.test.mjs`
 
+## 2026-11-05T10:23:42.887Z · progress
+
+**Aufgaben:** TERRAIN-03, PROD-04, COOP-06, PROJ-01
+
+Prüfrunde Bibliothek/Welt/Team (05.11.): TERRAIN-03-S06 Küste aus der Geländeaufnahme im Basisplaner (baseShore.ts: Wasserseite aus Reihen mit offenem Wasser, echtes Ufer gegen geplante Uferlinie, ans Ufer schieben, Gebäude im Wasser/Stege an Land; Abnahme BIB-19); Fehler behoben: Tagesdatum in Planung/Produktion/Team/Projektzentrale als Ortszeit statt UTC, Standardort übernommener Farmen in der Dimension des Bauplatzes, AFK-Annahme ohne Ort/AFK-Platz als Hinweis; Team-Einstieg nennt Team live zuerst. Unit 6+1 neu, Browser base-shore 1400/390 px; Wegenetz als Landschaftsweg (S08) offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| TERRAIN-03 | 🧩 Implementiert · Abnahme offen | 6/8 | Abnahme PROJ-19 und BIB-19 im Spiel; danach Wegenetz der Basis als Landschaftsweg (S08). |
+| PROD-04 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme PROJ-13; danach Farmerträge aus Mod/Plugin. |
+| COOP-06 | 🧩 Implementiert · Abnahme offen | 4/5 | Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern. |
+| PROJ-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/ui.tsx`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/ProjectsView.tsx`
+- `apps/web/src/views/library/BasePage.tsx`
+- `apps/web/src/views/library/base.css`
+- `apps/web/src/views/project/PlanningTab.tsx`
+- `apps/web/src/views/project/ProductionTab.tsx`
+- `apps/web/src/views/project/TeamPlan.tsx`
+- `apps/web/src/views/project/TeamTab.tsx`
+- `apps/web/src/views/project/buildrun/common.ts`
+- `docs/architecture/BASE_PLANNER.md`
+- `docs/architecture/PRODUCTION.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/baseShore.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/productionPlan.ts`
+- `tests/base-shore.test.mjs`
+- `tests/e2e/base-shore.e2e.mjs`
+- `tests/production.test.mjs`
+
+## 2026-11-05T10:29:43.640Z · progress
+
+**Aufgaben:** TERRAIN-03
+
+Prüfprotokoll der Prüfrunde Bibliothek/Welt/Team in TESTING ergänzt.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| TERRAIN-03 | 🧩 Implementiert · Abnahme offen | 6/8 | Abnahme PROJ-19 und BIB-19 im Spiel; danach Wegenetz der Basis als Landschaftsweg (S08). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/ui.tsx`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/ProjectsView.tsx`
+- `apps/web/src/views/library/BasePage.tsx`
+- `apps/web/src/views/library/base.css`
+- `apps/web/src/views/project/PlanningTab.tsx`
+- `apps/web/src/views/project/ProductionTab.tsx`
+- `apps/web/src/views/project/TeamPlan.tsx`
+- `apps/web/src/views/project/TeamTab.tsx`
+- `apps/web/src/views/project/buildrun/common.ts`
+- `docs/TESTING.md`
+- `docs/architecture/BASE_PLANNER.md`
+- `docs/architecture/PRODUCTION.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/baseShore.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/productionPlan.ts`
+- `tests/base-shore.test.mjs`
+- `tests/e2e/base-shore.e2e.mjs`
+- `tests/production.test.mjs`
+

@@ -4,7 +4,7 @@ import {
   programOf, setProgram, setStock, teamContextOf, teamIntoProgram, teamEvent, laterThan, TEAM_ROLE_LABEL, TEAM_ROLE_TEXT, TEAM_ROLES, teamView,
 } from '../../../../../packages/domain/src/index.js';
 import type { NoteTag, SectionTeamState, SitePlan, TeamEventBody, TeamRole, TeamState, TeamView } from '../../../../../packages/domain/src/index.js';
-import { errorText, formatNumber } from '../../app/ui';
+import { errorText, formatNumber, localToday } from '../../app/ui';
 import type { ProjectSession } from './session';
 import { TeamExchange } from './TeamExchange';
 import { TeamProof } from './TeamProof';
@@ -64,8 +64,9 @@ function Found({ site, projectName, projectId, onFound }: { site: SitePlan; proj
     <h3>Gemeinsam bauen</h3>
     <p>Mehrere Spieler bauen an diesem Projekt: jeder übernimmt Bauabschnitte, meldet sie fertig, liefert Material und schreibt Notizen am Bau. Du wirst <strong>Bauleitung</strong>: nur du gibst Planstände frei und vergibst Rollen.</p>
     <ul className="muted">
-      <li>Ohne Server und Konten: Ihr tauscht ein <strong>Teampaket</strong> (Datei) oder einen kurzen <strong>Meldecode</strong> im Chat aus. Nichts geht verloren, egal in welcher Reihenfolge ihr einlest.</li>
-      <li>Mit dem Paper-Plugin auf eurem Server: Mitspieler ohne Planer melden direkt im Spiel (<code>/bauplaner nehmen 2</code>, <code>/bauplaner fertig</code>).</li>
+      <li><strong>Team live</strong>: Nach dem Gründen einen Einladungslink schicken; alle sehen Übernahmen, Meldungen und Notizen sofort, auch auf dem iPad. Ohne Konten.</li>
+      <li>Im Spiel: Mit der Bauplaner-Mod sieht jeder seine Abschnitte im Hologramm und meldet Baustand und Kisten aus dem Spiel. Das Paper-Plugin ist freiwillig (Abschnittsschutz, geprüfte Lagerkisten).</li>
+      <li>Ohne Internet: Ihr tauscht ein <strong>Teampaket</strong> (Datei) oder einen kurzen <strong>Meldecode</strong> im Chat aus. Nichts geht verloren, egal in welcher Reihenfolge ihr einlest.</li>
       <li>Bauabschnitte legst du im Reiter <a href={`#/projekt/${projectId}/baustelle`}>Baustelle</a> an{site.sections.length ? ` (jetzt ${site.sections.length})` : ' – noch keine angelegt'}.</li>
     </ul>
     <div className="team-form">
@@ -93,7 +94,7 @@ function TeamPage({ session, site, team, message, setMessage, saveTeam, saveSite
   const progress = new Map((computation?.site.plan?.sections ?? []).map(s => [s.id, s.blocks ? s.blocksDone / s.blocks : 0]));
   const sectionBlocks = new Map((computation?.site.plan?.sections ?? []).map(s => [s.id, s.blocks]));
   const toProgram = () => {
-    const program = programOf(site), r = teamIntoProgram(program, view, new Date().toISOString().slice(0, 10));
+    const program = programOf(site), r = teamIntoProgram(program, view, localToday());
     if (!r.added && !r.linked && !r.assigned && !r.absences) { setMessage('Die Projektplanung entspricht schon dem Team.'); return; }
     if (saveSite(setProgram(site, { ...program, builders: r.builders, assignments: r.assignments }), 'Team in die Projektplanung übernommen'))
       setMessage(`Projektplanung aktualisiert: ${r.added} Bauleute neu, ${r.linked} Minecraft-Namen ergänzt, ${r.assigned} Abschnittszuweisungen geändert${r.absences ? `, ${r.absences} Abwesenheiten übernommen` : ''}. Strg+Z macht es rückgängig.`);
@@ -236,7 +237,7 @@ function SectionActions({ s, me, role, view, act, name }: { s: SectionTeamState;
     {meister && (s.status === 'gemeldet' || s.status === 'nacharbeit') && <>
       <button onClick={() => act({ kind: 'section.verify', section: s.sectionId, ok: true }, `„${name}“ bestätigt`)}>✓ Bestätigen</button>
       <button className="secondary" onClick={() => { const note = window.prompt('Was muss nachgearbeitet werden?', ''); if (note !== null) act({ kind: 'section.verify', section: s.sectionId, ok: false, ...(note.trim() && { note: note.trim().slice(0, 300) }) }, `„${name}“: Nacharbeit`); }}>Nacharbeit</button></>}
-    {s.owner && s.status !== 'bestaetigt' && (s.owner === me || meister) && s.owner !== me && <button className="secondary" onClick={() => act({ kind: 'section.release', section: s.sectionId }, `„${name}“ freigegeben`)}>Freigeben</button>}
+    {s.owner && s.owner !== me && s.status !== 'bestaetigt' && meister && <button className="secondary" onClick={() => act({ kind: 'section.release', section: s.sectionId }, `„${name}“ freigegeben`)}>Freigeben</button>}
   </span>;
 }
 

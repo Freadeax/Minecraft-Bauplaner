@@ -21,3 +21,8 @@
 .split-swatch{width:12px;height:12px;border-radius:3px}
 .split-map{width:100%;max-height:260px;display:block;background:var(--panel-2);border-radius:8px}
 @media(max-width:650px){.base-reqs{grid-template-columns:1fr}}
+/* Küste aus der Geländeaufnahme (TERRAIN-03-S06) */
+.base-shore{display:grid;gap:4px;margin-top:8px;border-left:3px solid var(--line);padding:6px 10px;font-size:12px;line-height:1.6}
+.base-shore.good{border-color:var(--mint)}.base-shore.warn{border-color:var(--gold,#e3c59a)}
+.base-shore>span,.base-shore small{color:var(--muted)}.base-shore ul{margin:0;padding-left:16px}
+.base-shore .button-row{flex-wrap:wrap}
