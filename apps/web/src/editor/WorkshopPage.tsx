@@ -43,10 +43,12 @@ function Workshop({ asset, version }: { asset: Asset | null; version: AssetVersi
         ? await commitDraftAsVersion(model.draft, base, version)
         : await commitDraftAsNewAsset(model.draft, { name: name.trim() || 'Eigenes Bauteil', ...(asset && { description: `Im Blockeditor aus „${asset.name}“ v${version?.label ?? ''} umgebaut.`, tags: asset.tags.filter(t => !t.includes(':')) }), from: version });
       await repo.applyBatch({ assets: [r.asset], versions: [r.version] });
-      await reloadLibrary();
-      carried = ({ text: mode === 'version' ? `Version ${r.version.label} von „${r.asset.name}“ gespeichert. Projekte behalten ihre bisherige Version, bis du sie dort umstellst.` : `Neues Bauteil „${r.asset.name}“ gespeichert.`, warnings: r.warnings });
+      // Stored from here on: a failing library reload must not read as a failed save (a retry would conflict).
+      let reloadError = '';
+      try { await reloadLibrary(); } catch (e) { reloadError = ` Die Bibliothek ließ sich danach nicht neu laden (${errorText(e)}); bitte die Seite neu laden.`; }
+      carried = ({ text: `${mode === 'version' ? `Version ${r.version.label} von „${r.asset.name}“ gespeichert. Projekte behalten ihre bisherige Version, bis du sie dort umstellst.` : `Neues Bauteil „${r.asset.name}“ gespeichert.`}${reloadError}`, warnings: r.warnings, ...(reloadError && { error: true }) });
       model.reset(r.version.payload);
-      navigate({ view: 'workshop', versionId: r.version.id });
+      navigate({ view: 'workshop', versionId: r.version.id }, { afterSave: true });
     } catch (e) { setResult({ text: errorText(e), warnings: [], error: true }); } finally { setBusy(false); }
   };
 

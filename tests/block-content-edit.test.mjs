@@ -31,7 +31,7 @@ test('withContainer writes Items with Slot/id/count, keeps components and other 
       compound({ Slot: b(4), id: s('minecraft:bread'), Count: b(3) }),
     ] },
   });
-  assert.deepEqual(readContainer(old), { items: [{ slot: 0, id: 'minecraft:diamond_sword', count: 1 }, { slot: 4, id: 'minecraft:bread', count: 3 }], name: '' });
+  assert.deepEqual(readContainer(old), { items: [{ slot: 0, id: 'minecraft:diamond_sword', count: 1, from: 0 }, { slot: 4, id: 'minecraft:bread', count: 3, from: 4 }], name: '' });
   const next = withContainer(old, 'minecraft:chest', { items: [{ slot: 0, id: 'minecraft:diamond_sword', count: 1 }, { slot: 4, id: 'torch', count: 16 }, { slot: 26, id: 'minecraft:bread', count: 64 }], name: 'Vorrat' });
   const t = next.value;
   assert.equal(t.LootTable.value, 'minecraft:chests/village');
@@ -108,4 +108,35 @@ test('a content edit is one undoable cell change and lands in the materialized p
   const payload = materializeDraft(run.draft);
   assert.equal(payload.blockEntities.length, 1);
   assert.deepEqual(blockEntityContent(payload.blockEntities[0].data).items.map(x => x.id), ['minecraft:apple']);
+});
+
+test('CORE-04: verschobener Gegenstand behält Verzauberung, unveränderter Name und Schildzeilen bleiben formatiert', () => {
+  const sword = compound({ Slot: b(0), id: s('minecraft:diamond_sword'), count: i(1), components: compound({ 'minecraft:damage': i(5) }) });
+  const fancyName = compound({ text: s('Schatz'), color: s('gold') });
+  const old = compound({ id: s('minecraft:chest'), CustomName: fancyName, Items: { type: 'list', elementType: 'compound', value: [sword] } });
+  const read = readContainer(old);
+  // Move the sword from slot 0 to slot 1, keep the name.
+  const moved = withContainer(old, 'minecraft:chest', { items: read.items.map(it => ({ ...it, slot: 1 })), name: read.name });
+  const item = moved.value.Items.value[0].value;
+  assert.equal(item.Slot.value, 1);
+  assert.deepEqual(item.components, sword.value.components, 'Komponenten wandern mit');
+  assert.deepEqual(moved.value.CustomName, fancyName, 'unveränderter Name bleibt formatiert');
+  const renamed = withContainer(old, 'minecraft:chest', { items: read.items, name: 'Neu' });
+  assert.deepEqual(renamed.value.CustomName, s('Neu'));
+
+  const red = compound({ text: s('Taverne'), color: s('red') });
+  const sign = compound({ id: s('minecraft:sign'),
+    front_text: compound({ messages: { type: 'list', elementType: 'compound', value: [red, compound({ text: s('') }), compound({ text: s('') }), compound({ text: s('') })] },
+      filtered_messages: { type: 'list', elementType: 'compound', value: [red] }, color: s('black'), has_glowing_text: b(0) }) });
+  const r = readSign(sign);
+  assert.equal(r.front[0], 'Taverne');
+  const waxed = withSign(sign, 'minecraft:oak_sign', { ...r, waxed: true });
+  assert.deepEqual(waxed.value.front_text.value.messages.value[0], red, 'nur Wachs geändert: Zeile bleibt rot');
+  assert.ok(waxed.value.front_text.value.filtered_messages, 'unverändert: gefilterter Text bleibt');
+  const edited = withSign(sign, 'minecraft:oak_sign', { ...r, front: ['Taverne', 'zum Creeper', '', ''] });
+  const lines = edited.value.front_text.value.messages;
+  assert.equal(lines.elementType, 'compound');
+  assert.deepEqual(lines.value[0], red);
+  assert.deepEqual(lines.value[1], compound({ text: s('zum Creeper') }));
+  assert.equal(edited.value.front_text.value.filtered_messages, undefined, 'geänderte Seite: veralteter gefilterter Text fällt weg');
 });

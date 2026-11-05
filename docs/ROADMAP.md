@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-05T10:34:38.680Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-05T11:02:09.307Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-05T10:34:38.680Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 7 |
 | 🚧 In Arbeit | 6 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 86 |
+| 🧩 Implementiert · Abnahme offen | 87 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -34,7 +34,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 3 | 0 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
 | [Performance und Stabilität](#bereich-perf) | 3 | 2 | 1 | 3 |
-| [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 13 | 0 | 6 | 8 |
+| [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 14 | 0 | 7 | 8 |
 | [Testphase, Qualität und Betrieb](#bereich-qa) | 2 | 1 | 2 | 8 |
 | [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 6 | 0 | 0 | 0 |
 
@@ -200,6 +200,7 @@ Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft), PERF
 | [PROFILE-01](#profile-01) | Ein verbindliches Java-Versionsprofil | 🧩 Implementiert · Abnahme offen 3/3 | P0 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3 | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Einen Bau mit Spielprüfung ohne Hinweise nachbauen und Verbindungen vergleichen (S07). |
 | [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Geänderte Gebäude (Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen (S06). |
+| [CORE-04](#core-04) | Planer-Kernmodule prüfen und überarbeiten | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Planer-Kernmodule prüfen und überarbeiten“ | Projekt mit Nachfolger und Bauplatz löschen; Blockeditor mit Änderungen verlassen; Truhe mit verzaubertem Schwert umsortieren (CORE-04-S05). |
 | [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [ENTITY-01](#entity-01) | Gemälde, Rahmen, Rüstungsständer und Blockinhalte | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Export mit Gemälden, Rahmen und Rüstungsständern im Spiel laden (S06). |
 | [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
@@ -331,6 +332,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **PROJ-02** · Basisplan, Material abwarten und Anteil der Bautage im Reiter „Planung“ abnehmen (PROJ-16…18).
 - **PROJ-03** · Im Reiter „Planung“ eine Abwesenheit eintragen und zwei Basispläne vergleichen (PROJ-20).
 - **PROJ-04** · Zwei Projekte nacheinander planen (erst Lager, dann Burg) und den Starthinweis prüfen (PROJ-21).
+- **CORE-04** · Projekt mit Nachfolger und Bauplatz löschen; Blockeditor mit Änderungen verlassen; Truhe mit verzaubertem Schwert umsortieren (CORE-04-S05).
 
 ### Entscheiden oder Rückfrage beantworten
 
@@ -566,6 +568,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [PROJ-04](#proj-04) | Reihenfolge zwischen Projekten: „erst nach“ anderen Projekten, frühester Start aus dem Basisplan der Vorgänger, Kreise abweisen, Pfeile auf der Weltkarte | 🧩 Implementiert · Abnahme offen | 2/3 | PROJ-03, MAP-04 | ausstehend | ausstehend |
 | [EDIT-06](#edit-06) | Direkt im 3D-Bild bauen: Blöcke an Flächen setzen/abbauen, Formen und Gruppen im 3D aufziehen und ziehen, Truhen- und Schildinhalte bearbeiten | 🧩 Implementiert · Abnahme offen | 4/5 | EDIT-01, EDIT-02, EDIT-03, EDIT-05, ENTITY-01 | ausstehend | ausstehend |
 | [STRUCT-01](#struct-01) | Dateistruktur sauber neu ordnen: Fachordner im Kern und in der Oberfläche, Skripte, Tests und Doku nach Bereich, Ordnerkarte docs/STRUKTUR.md | 🚧 In Arbeit | 2/4 | — | ausstehend | ausstehend |
+| [CORE-04](#core-04) | Planer-Kernmodule prüfen und überarbeiten: Verbindungen zwischen Projekt, Planung, Werkstatt, Import/Export und Speicher sauber, gefundene Fehler behoben | 🧩 Implementiert · Abnahme offen | 4/5 | ARCH-02, PROJ-04, EDIT-06 | ausstehend | ausstehend |
 
 ## P4: Optionale Zusammenarbeit und Integrationen
 
@@ -3450,6 +3453,30 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/restructure.test.mjs](../tests/restructure.test.mjs) — Codemod: Importe, dist-Verweise, Markdown-Links, Wurzelpfade, Wiederholung nach Rebase.; [docs/STRUKTUR.md](STRUKTUR.md) — Verbindliche Ordnerkarte.
 
 **Dateiumfang:** `scripts/dev/restructure.mjs`, `scripts/dev/moves`, `packages/domain/src`, `apps/web/src/styles`, `apps/web/src/views/project/team`, `scripts`, `tests`, `docs/STRUKTUR.md`. **Abhängigkeiten:** keine. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### CORE-04
+
+**Planer-Kernmodule prüfen und überarbeiten: Verbindungen zwischen Projekt, Planung, Werkstatt, Import/Export und Speicher sauber, gefundene Fehler behoben** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Planer-Kernmodule prüfen und überarbeiten“) · Zuständiger Thread: „Planer-Kernmodule prüfen und überarbeiten“ · Aktualisiert: 2026-11-05T11:02:09.307Z
+
+- [x] CORE-04-S01: Projekt/Planung: „erst nach“ (PROJ-04) im Verweisgraphen und Datencheck; Löschen eines Projekts nennt und entfernt Nachfolger-Verweise und gibt Bauplätze der Weltkarte frei.
+- [x] CORE-04-S02: Projektsitzung: Aktionen bauen auf dem neuesten Stand (keine verlorenen Änderungen bei zwei Aktionen im selben Takt); Rückgängig/Wiederholen behalten live empfangene Teamereignisse.
+- [x] CORE-04-S03: Werkstatt: Ausstattung im Reiter „Blöcke“ nicht mehr scheinbar verschoben, Rückfrage bei ungespeichertem Entwurf, 3D-Klick mit aktueller Symmetrie/Muster, Truhen-/Schild-NBT bleibt erhalten, Fehler großer Auswahlen sichtbar, Schablonen behalten Ausstattung, Touch-Abbruch beendet Striche, Speichern meldet Teilerfolg richtig.
+- [x] CORE-04-S04: Import/Export/Speicher: Sicherung über der Wiederherstellungsgrenze wird nicht mehr erzeugt, große Schem-Dateien nicht mehr am Litematic-Knotenlimit abgewiesen, Wiederherstellung prüft den Weltplan vorab und meldet Teilerfolg.
+- [ ] CORE-04-S05: Abnahme durch Philipp: Projekt mit Nachfolger löschen, Werkstatt-Entwurf verlassen, Truhe mit verzaubertem Gegenstand umsortieren.
+
+**Abnahme:** Kein Datensatz verweist nach dem Löschen eines Projekts still ins Leere. Keine Aktion im Planer meldet Erfolg oder Misserfolg falsch. Ungespeicherte Arbeit im Blockeditor geht nicht ohne Rückfrage verloren.
+
+**Nächste Aktion:** Abnahme CORE-04-S05 durch Philipp.
+
+**Nur Philipp:** Im Planer abnehmen: Projekt mit Nachfolger und Bauplatz löschen; Blockeditor mit Änderungen verlassen; Truhe mit verzaubertem Schwert umsortieren (CORE-04-S05).
+
+**Prüfstand:** Einheitstests grün; Browsertests der betroffenen Bereiche siehe TESTING.md; Abnahme offen.
+
+**Nachweise:** [tests/core-links.test.mjs](../tests/core-links.test.mjs) — Verweisgraph, Datencheck, Löschen mit Nachfolgern/Bauplätzen, Rückgängig mit Teamereignissen.; [tests/block-content-edit.test.mjs](../tests/block-content-edit.test.mjs) — Verschobener Gegenstand behält Komponenten, formatierte Namen/Zeilen bleiben.; [tests/editor-patterns.test.mjs](../tests/editor-patterns.test.mjs) — Schablone behält Ausstattung.
+
+**Dateiumfang:** `packages/domain/src/data/planGraph.ts`, `packages/domain/src/data/integrity.ts`, `packages/domain/src/planning/projectOrder.ts`, `packages/domain/src/core/project.ts`, `packages/domain/src/data/backup.ts`, `packages/domain/src/editor/stencils.ts`, `packages/voxel/src/blockContentEdit.ts`, `packages/formats/src/structure.ts`, `apps/web/src/app/router.ts`, `apps/web/src/views/ProjectsView.tsx`, `apps/web/src/views/project/session.ts`, `apps/web/src/views/project/BlocksTab.tsx`, `apps/web/src/editor/BlockEditor.tsx`, `apps/web/src/editor/LayerGrid.tsx`, `apps/web/src/editor/WorkshopPage.tsx`, `tests/core-links.test.mjs`. **Abhängigkeiten:** ARCH-02, PROJ-04, EDIT-06. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

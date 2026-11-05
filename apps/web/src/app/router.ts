@@ -101,12 +101,45 @@ export function href(route: Route): string {
   }
 }
 
-export function navigate(route: Route): void { window.location.hash = href(route); }
+/** `afterSave`: the caller has just stored the unsaved work; the leave question is skipped for this navigation. */
+export function navigate(route: Route, options: { afterSave?: boolean } = {}): void {
+  if (options.afterSave) skipGuardOnce = true;
+  window.location.hash = href(route);
+}
+let skipGuardOnce = false;
+
+/**
+ * Leave guards: views with unsaved work (e.g. an editor draft) register a question. Leaving the
+ * route (hash change, closing or reloading the tab) then asks first; „Abbrechen“ keeps the old route.
+ */
+const leaveGuards = new Set<() => string | null>();
+const pendingLeave = (): string | null => { for (const g of leaveGuards) { const m = g(); if (m) return m; } return null; };
+export function useLeaveGuard(message: string | null): void {
+  useEffect(() => {
+    if (!message) return;
+    const guard = () => message;
+    leaveGuards.add(guard);
+    const onUnload = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = message; };
+    window.addEventListener('beforeunload', onUnload);
+    return () => { leaveGuards.delete(guard); window.removeEventListener('beforeunload', onUnload); };
+  }, [message]);
+}
 
 export function useRoute(): Route {
   const [route, setRoute] = useState(() => parseRoute(window.location.hash));
   useEffect(() => {
-    const update = () => { setRoute(parseRoute(window.location.hash)); window.scrollTo(0, 0); };
+    let current = window.location.href;
+    const update = (e?: HashChangeEvent) => {
+      const message = skipGuardOnce ? null : pendingLeave();
+      skipGuardOnce = false;
+      if (message && e && !window.confirm(`${message}\n\nTrotzdem verlassen?`)) {
+        // Stay: put the previous address back without another hashchange.
+        history.replaceState(history.state, '', current);
+        return;
+      }
+      current = window.location.href;
+      setRoute(parseRoute(window.location.hash)); window.scrollTo(0, 0);
+    };
     window.addEventListener('hashchange', update);
     return () => window.removeEventListener('hashchange', update);
   }, []);

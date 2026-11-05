@@ -26,7 +26,9 @@ export function detectStructureFormat(tag: NbtTag): StructureFormat {
 
 /** GZip structure file → Sponge Schem v3 or Litematic, decompressed and parsed once. */
 export async function importStructure(buffer: ArrayBuffer, options: { region?: string; onStep?: (step: string) => void } = {}): Promise<StructureImport> {
-  const limits = { ...SCHEM_LIMITS, ...LITEMATIC_LIMITS };
+  // The format is only known after parsing, so the NBT budget must fit both: a spread would let the
+  // Litematic node budget (one node per cell) override the Schem one (byte arrays cost one node per byte).
+  const limits = { ...SCHEM_LIMITS, ...LITEMATIC_LIMITS, maxNodes: Math.max(SCHEM_LIMITS.maxNodes, LITEMATIC_LIMITS.maxNodes) };
   options.onStep?.('Datei entpacken und lesen');
   const { sourceNbt, sourceSha256, compression } = await readCompressedNbt(buffer, limits);
   options.onStep?.('Blöcke zusammensetzen');

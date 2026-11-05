@@ -34,6 +34,7 @@ Anlagen (BUILD-05), Bauwelten, Ensembles und Generatoren sind **Programmdaten**,
 | Projekt | `pin` | Version | nein | Warnung, im Reiter „Updates“ lösen |
 | Projekt | `section-snapshot` | Version | nein | Warnung, Stand nicht vollständig wiederherstellbar |
 | Projekt | `scan`, `terrain` | Original | nein | Warnung (bisheriger Datencheck) |
+| Projekt | `project-after` (PROJ-04, `site.program.after`) | Projekt | nein | Hinweis, Reihenfolge im Reiter „Planung“ entfernen (CORE-04) |
 | Bauteil | `version-list` | Version | ja | Fehler (bisheriger Datencheck) |
 | Version | `version-asset` | Bauteil | ja | Warnung (bisheriger Datencheck) |
 | Version | `original-file` | Original | nein | Warnung, Originalexport nicht möglich |
@@ -49,6 +50,7 @@ Verbraucher:
 - `referencedVersionIds` (Sicherung, Wiederherstellung, Datencheck) = Pflichtverweise eines Projekts (`projectVersionIds(p, true)`). Damit bleibt die Wiederherstellung älterer Sicherungen unverändert streng, aber nie strenger.
 - `createBackup` nimmt zusätzlich die Bauteile aller Verlaufsverweise auf, sofern lokal vorhanden. **Behobener Bruch:** Abschnittsstände (BACKUP-02) konnten Versionen eines später aus dem Projekt entfernten Bauteils enthalten; eine Projektsicherung enthielt diese Version bisher nicht.
 - `checkIntegrity` meldet alle hängenden Verweise, die die Einzelprüfungen noch nicht abdecken (`DANGLING_REFERENCE`), und prüft jetzt auch Sammlungen und Vorlagen strukturell.
+- Löschen eines Projekts (Projektzentrale, CORE-04): `projectRemoval` nennt vor der Rückfrage, welche Projekte auf das gelöschte warten und welche Bauplätze der Weltkarte es tragen; nach dem Löschen werden die Verweise entfernt bzw. die Bauplätze frei (gespeicherte Revision als CAS-Basis, Fehler werden genannt, nie still übergangen).
 - `whereUsed(graph, { kind: 'asset', id })` beantwortet „Wo wird das verwendet?“ einschließlich alter, eingefrorener oder nur in Abschnittsständen gemerkter Versionen. Die Gebäudeseite zeigt das unter „Verwaltung → Verwendet in“.
 
 **Regel für neue Verweise:** Wer einen Datensatz um einen Verweis auf einen anderen Datensatz erweitert (z. B. Kartenziele MAP-02, Lager LAGER-01, Teamaufgaben TEAM-03), ergänzt die Rolle in `planGraph.ts` mit Pflichtgrad, Bezeichnung und Datencheck-Hinweis plus einen Test in `tests/plan-model.test.mjs`. Keine eigenen ID-Sammler in UI oder Sicherung.

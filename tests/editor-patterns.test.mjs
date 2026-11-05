@@ -181,5 +181,10 @@ test('built-in stencils are valid and survive rotation; payload â‡„ clipboard â‡
   const p2 = createPayload({ schemaVersion: 1, profileId: P, bounds: { min: [5, 5, 5], maxExclusive: [7, 6, 6] }, pivot: [5, 5, 5], sourceOrigin: [0, 0, 0],
     palette: [st('stone')], cells: [{ position: [6, 5, 5], kind: 'block', paletteIndex: 0 }], blockEntities: [] });
   assert.deepEqual(clipboardFromPayload(p2), { size: [2, 1, 1], cells: [{ offset: [1, 0, 0], value: B('stone') }] });
+  // CORE-04: paintings/frames/armor stands of a saved stencil come back relative to the minimum corner.
+  const painting = { position: [6.5, 5.5, 5.25], data: { type: 'compound', value: { id: { type: 'string', value: 'minecraft:painting' } } } };
+  const p3 = createPayload({ schemaVersion: 1, profileId: P, bounds: { min: [5, 5, 5], maxExclusive: [7, 6, 6] }, pivot: [5, 5, 5], sourceOrigin: [0, 0, 0],
+    palette: [st('stone')], cells: [{ position: [6, 5, 5], kind: 'block', paletteIndex: 0 }], blockEntities: [], entities: [painting] });
+  assert.deepEqual(clipboardFromPayload(p3).entities, [{ position: [1.5, 0.5, 0.25], data: painting.data }]);
   void copyBox;
 });

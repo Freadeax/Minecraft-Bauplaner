@@ -1,6 +1,8 @@
 import type { Asset, AssetVersion, Project } from '../core/types.js';
 import type { Collection, LibraryTemplate } from '../catalog/collections.js';
 import { updatesOf } from '../versions/updateState.js';
+import { programOf } from '../planning/program.js';
+import { siteOf } from '../building/site.js';
 
 /**
  * Verweisgraph des Planers (ARCH-02).
@@ -28,7 +30,7 @@ export type PlanRole =
   | 'instance' | 'revision' | 'update-log' | 'pin' | 'section-snapshot' | 'scan' | 'terrain' | 'terrain-design'
   | 'version-list' | 'version-asset' | 'original-file' | 'edited-from' | 'local-to'
   | 'collection-asset' | 'collection-version' | 'collection-template' | 'collection-parent'
-  | 'template-member';
+  | 'template-member' | 'project-after';
 
 export interface PlanEdge {
   readonly from: PlanNodeRef;
@@ -44,7 +46,7 @@ export const PLAN_ROLE_LABEL: Readonly<Record<PlanRole, string>> = {
   'section-snapshot': 'Abschnittsstand', scan: 'Spielaufnahme', terrain: 'Geländeaufnahme', 'terrain-design': 'Geländegestaltung',
   'version-list': 'Versionsliste', 'version-asset': 'gehört zu Bauteil', 'original-file': 'Originaldatei', 'edited-from': 'bearbeitet aus', 'local-to': 'lokale Änderung in Projekt',
   'collection-asset': 'Sammlungseintrag', 'collection-version': 'Sammlung mit fester Version', 'collection-template': 'Vorlage in Sammlung', 'collection-parent': 'übergeordneter Ordner',
-  'template-member': 'Vorlagenmitglied',
+  'template-member': 'Vorlagenmitglied', 'project-after': 'beginnt erst nach',
 };
 
 export const PLAN_KIND_LABEL: Readonly<Record<PlanNodeKind, string>> = {
@@ -74,6 +76,8 @@ export function projectEdges(project: Project): PlanEdge[] {
     out.push(edge(from, 'original', design.sha256, 'terrain-design', false, design.fileName));
     if (design.base.kind === 'survey' && design.base.sha256 !== project.terrain?.sha256) out.push(edge(from, 'original', design.base.sha256, 'terrain', false, 'Grundlage der Geländegestaltung'));
   }
+  // PROJ-04: order between projects (site.program.after). Planning only, so it may dangle.
+  if (project.site) for (const a of programOf(siteOf(project)).after ?? []) out.push(edge(from, 'project', a.projectId, 'project-after', false, a.note));
   return out;
 }
 

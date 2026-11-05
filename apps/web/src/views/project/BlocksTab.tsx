@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { commitProjectEdit, planProjectEdit } from '../../../../../packages/domain/src/index.js';
 import type { CommitWarning, Resolution } from '../../../../../packages/domain/src/index.js';
 import type { Vec3 } from '../../../../../packages/voxel/src/index.js';
@@ -17,11 +17,17 @@ import type { ProjectSession } from './session';
  * chosen instance or a new "Eigene Blöcke" module. One undo step in the project.
  */
 export function BlocksTab({ session }: { session: ProjectSession }) {
-  const { resolution, project } = session;
+  const { project } = session;
   const [result, setResult] = useState<Notice | null>(null);
-  if (!isResolved(resolution)) return <div className="notice warning" role="alert">Das Projekt lässt sich nicht zusammensetzen: {resolution.error}</div>;
   // A different placement (other tab, undo) starts a fresh draft on the new world.
   const signature = project.instances.map(i => `${i.id}:${i.assetVersionId}:${i.transform.position.join(',')}:${i.transform.quarterTurns}:${i.transform.mirrorX}`).join('|');
+  // While the project is recalculated with the same placement (e.g. a renamed instance from the team),
+  // keep editing on the last world instead of unmounting the editor and losing the draft.
+  const last = useRef<{ signature: string; resolution: Resolution } | null>(null);
+  let resolution = session.resolution;
+  if (isResolved(resolution)) last.current = { signature, resolution };
+  else if (session.computationState === 'pending' && last.current?.signature === signature) resolution = last.current.resolution;
+  if (!isResolved(resolution)) return <div className="notice warning" role="alert">Das Projekt lässt sich nicht zusammensetzen: {resolution.error}</div>;
   return <>
     {result && <div className={`notice ${result.error ? 'warning' : 'success'}`} role={result.error ? 'alert' : 'status'}>
       <p>{result.text}</p>{result.warnings.length > 0 && <ul>{result.warnings.map((w, i) => <li key={i}>{w.message}</li>)}</ul>}</div>}
@@ -44,9 +50,10 @@ function ProjectBlocks({ session, resolution, setResult }: { session: ProjectSes
       const c = await commitProjectEdit(project, resolution, library.assets, model.draft, { loose, newName: name });
       if (!c.operation) { setResult({ text: 'Keine Änderung zu speichern.', warnings: [] }); return; }
       await repo.applyBatch({ assets: c.assets, versions: c.versions });
-      await reloadLibrary();
+      // The new versions are stored from here on: report later problems as such, not as a failed save.
+      try { await reloadLibrary(); } catch (e) { setResult({ text: `Bauteilversionen gespeichert, aber die Bibliothek ließ sich nicht neu laden (${errorText(e)}). Bitte die Seite neu laden, bevor du erneut speicherst.`, warnings: c.warnings, error: true }); return; }
       const err = session.execute(c.operation);
-      if (err) throw new Error(err);
+      if (err) { setResult({ text: `Bauteilversionen gespeichert, aber das Projekt wurde nicht umgestellt: ${err} Nicht erneut speichern, sondern zuerst neu laden.`, warnings: c.warnings, error: true }); return; }
       setResult({ text: `Gespeichert: ${c.versions.length} neue Bauteilversion(en). Ein Schritt „Blöcke bearbeitet“ ist im Projekt rückgängig machbar (Editor-Reiter, Strg+Z).`, warnings: c.warnings });
     } catch (e) { setResult({ text: errorText(e), warnings: [], error: true }); } finally { setBusy(false); }
   };

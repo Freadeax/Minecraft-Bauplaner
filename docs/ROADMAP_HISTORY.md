@@ -6197,3 +6197,43 @@ Stufe 2 (STRUCT-01): packages/domain/src in Fachordner (core, catalog, base, mat
 - `tests/variants.test.mjs`
 - `vite.config.mjs`
 
+## 2026-11-05T11:02:09.307Z · progress
+
+**Aufgaben:** CORE-04
+
+Kernmodule geprüft: Verweise zwischen Projekten, Projektsitzung, Werkstatt (8 Fehler), Import/Export/Speicher (3 Fehler) behoben; check grün, Browser 175 Tests grün (team-room einmal wackelig); Abnahme PROJ-22 offen
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| CORE-04 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme CORE-04-S05 durch Philipp. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/router.ts`
+- `apps/web/src/editor/BlockEditor.tsx`
+- `apps/web/src/editor/LayerGrid.tsx`
+- `apps/web/src/editor/WorkshopPage.tsx`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/ProjectsView.tsx`
+- `apps/web/src/views/project/BlocksTab.tsx`
+- `apps/web/src/views/project/ProjectView.tsx`
+- `apps/web/src/views/project/session.ts`
+- `apps/web/src/views/project/team/TeamRoom.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/DOMAIN.md`
+- `docs/architecture/PLAN_MODEL.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/core/project.ts`
+- `packages/domain/src/data/backup.ts`
+- `packages/domain/src/data/integrity.ts`
+- `packages/domain/src/data/planGraph.ts`
+- `packages/domain/src/editor/stencils.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/planning/projectOrder.ts`
+- `packages/formats/src/structure.ts`
+- `packages/voxel/src/blockContentEdit.ts`
+- `tests/block-content-edit.test.mjs`
+- `tests/core-links.test.mjs`
+- `tests/editor-patterns.test.mjs`
+

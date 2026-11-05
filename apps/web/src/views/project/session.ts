@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { EMPTY_HISTORY, execute as run, redo as runRedo, undo as runUndo } from '../../../../../packages/domain/src/index.js';
+import { EMPTY_HISTORY, execute as run, redoKeepingTeam as runRedo, undoKeepingTeam as runUndo } from '../../../../../packages/domain/src/index.js';
 import type { History, Operation, Project, Resolution } from '../../../../../packages/domain/src/index.js';
 import type { ProjectComputation } from '../../../../../packages/application/src/projectComputation.js';
 import { useApp } from '../../app/context';
@@ -29,8 +29,11 @@ export interface ProjectSession {
   execute(op: Operation): string;
   undo(): void;
   redo(): void;
-  /** Replaces the in-memory project after storing it elsewhere (e.g. freezing a revision). */
-  replace(project: Project): void;
+  /**
+   * Replaces the in-memory project without an undo step (team events, a frozen revision) and saves it.
+   * Pass a function to build on the newest state: two calls before the next render then both survive.
+   */
+  replace(project: Project | ((current: Project) => Project)): void;
   reload(): Promise<void>;
 }
 
@@ -46,13 +49,15 @@ export function useProjectSession(projectId: string): { session: ProjectSession 
   const [selectedInstanceId, select] = useState<string | null>(null);
   // Saves are serialised; `stored` is the last revision confirmed by the repository.
   const stored = useRef(0), queue = useRef<Promise<void>>(Promise.resolve()), latest = useRef<Project | null>(null);
+  /** Newest project and history, updated synchronously by every action (state follows on the next render). */
+  const current = useRef<{ project: Project; history: History } | null>(null);
 
   const reload = useCallback(async () => {
     setLoadError('');
     try {
       const p = await repo.getProject(projectId);
       if (!p) { setLoadError('Projekt nicht gefunden. Es wurde gelöscht oder nur in einer früheren Sitzung gespeichert.'); setProject(null); return; }
-      stored.current = p.revision; latest.current = p;
+      stored.current = p.revision; latest.current = p; current.current = { project: p, history: EMPTY_HISTORY };
       setProject(p); setHistory(EMPTY_HISTORY); setSaveState('saved'); setSaveError('');
     } catch (e) { setLoadError(errorText(e)); }
   }, [repo, projectId]);
@@ -65,7 +70,10 @@ export function useProjectSession(projectId: string): { session: ProjectSession 
       try {
         const saved = await repo.saveProject(next, stored.current);
         stored.current = saved.revision;
-        if (latest.current === next) { latest.current = saved; setProject(saved); setSaveState('saved'); setSaveError(''); }
+        if (latest.current === next) {
+          latest.current = saved; setProject(saved); setSaveState('saved'); setSaveError('');
+          if (current.current?.project === next) current.current = { ...current.current, project: saved };
+        }
       } catch (e) {
         setSaveState(e instanceof RevisionConflictError ? 'conflict' : 'error'); setSaveError(errorText(e));
       }
@@ -78,18 +86,31 @@ export function useProjectSession(projectId: string): { session: ProjectSession 
 
   if (!project) return { session: null, loadError };
   const blocked = saveState === 'conflict';
+  // Actions build on the newest state, not on this render's copy: two actions in one tick (a team event
+  // arriving right after a click, a double click) must not overwrite each other.
+  const base = () => current.current ?? { project, history };
+  const commit = (next: Project, nextHistory: History) => {
+    current.current = { project: next, history: nextHistory };
+    setProject(next); setHistory(nextHistory); persist(next);
+  };
   const session: ProjectSession = {
     project, history, resolution, saveState, saveError, selectedInstanceId, select, reload,
     computation: computation.result, computationState: computation.status, computationError: computation.error,
     cancelComputation: computation.cancel, retryComputation: computation.retry,
     execute(op) {
       if (blocked) return 'Gespeicherter Stand hat sich geändert. Bitte zuerst neu laden.';
-      try { const r = run(project, history, op); setProject(r.project); setHistory(r.history); persist(r.project); return ''; }
+      const { project: p, history: h } = base();
+      try { const r = run(p, h, op); commit(r.project, r.history); return ''; }
       catch (e) { return errorText(e); }
     },
-    undo() { if (blocked) return; const r = runUndo(project, history); if (r) { setProject(r.project); setHistory(r.history); persist(r.project); } },
-    redo() { if (blocked) return; const r = runRedo(project, history); if (r) { setProject(r.project); setHistory(r.history); persist(r.project); } },
-    replace(next) { if (blocked) return; setProject(next); persist(next); },
+    undo() { if (blocked) return; const { project: p, history: h } = base(); const r = runUndo(p, h); if (r) commit(r.project, r.history); },
+    redo() { if (blocked) return; const { project: p, history: h } = base(); const r = runRedo(p, h); if (r) commit(r.project, r.history); },
+    replace(next) {
+      if (blocked) return;
+      const { project: p, history: h } = base();
+      const value = typeof next === 'function' ? next(p) : next;
+      if (value !== p) commit(value, h);
+    },
   };
   return { session, loadError };
 }

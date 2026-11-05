@@ -37,9 +37,7 @@ export function ProjectView({ projectId, tab }: { projectId: string; tab: string
   }, [team?.events, team?.self, !!team?.live]); // eslint-disable-line react-hooks/exhaustive-deps
   const room = useTeamRoom(team, team?.self, next => {
     const s = sessionRef.current; if (!s) return;
-    const p = s.project, site = siteOf(p);
-    if (site.team?.teamId !== next.teamId) return;
-    s.replace({ ...p, site: { ...site, team: next as TeamState } });
+    s.replace(p => { const site = siteOf(p); return site.team?.teamId !== next.teamId ? p : { ...p, site: { ...site, team: next as TeamState } }; });
   }, mySection);
   useDocumentTitle(session ? `${session.project.name}${active && active.id !== 'editor' ? ` · ${active.label}` : ''}` : 'Projekt');
   if (loadError) return <div className="page"><div className="notice warning" role="alert"><strong>Projekt nicht geladen</strong><p>{loadError}</p><a href="#/">Zur Projektzentrale</a></div></div>;

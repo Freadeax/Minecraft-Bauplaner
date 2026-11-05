@@ -178,7 +178,11 @@ export function describeOperation(op: Operation): string {
   }
 }
 
-export interface HistoryEntry { readonly label: string; readonly forward: Operation; readonly inverse: Operation }
+export interface HistoryEntry {
+  readonly label: string; readonly forward: Operation; readonly inverse: Operation;
+  /** The step changed the team log itself (e.g. an imported team file); see undoKeepingTeam. */
+  readonly team?: true;
+}
 export interface History { readonly undo: readonly HistoryEntry[]; readonly redo: readonly HistoryEntry[] }
 export const EMPTY_HISTORY: History = Object.freeze({ undo: Object.freeze([]), redo: Object.freeze([]) });
 const HISTORY_LIMIT = 200;
@@ -186,7 +190,8 @@ const HISTORY_LIMIT = 200;
 /** Session-local undo/redo over the caller's own operations. */
 export function execute(project: Project, history: History, op: Operation): { project: Project; history: History } {
   const r = applyOperation(project, op);
-  const entry = { label: describeOperation(op), forward: op, inverse: r.inverse };
+  const entry: HistoryEntry = { label: describeOperation(op), forward: op, inverse: r.inverse,
+    ...(op.kind === 'site.set' && (op.site?.team ?? undefined) !== (project.site?.team ?? undefined) && { team: true as const }) };
   return { project: r.project, history: { undo: [...history.undo, entry].slice(-HISTORY_LIMIT), redo: [] } };
 }
 
@@ -202,6 +207,27 @@ export function redo(project: Project, history: History): { project: Project; hi
   if (!entry) return null;
   const r = applyOperation(project, entry.forward);
   return { project: r.project, history: { undo: [...history.undo, { ...entry, inverse: r.inverse }], redo: history.redo.slice(0, -1) } };
+}
+
+/**
+ * The team log (`site.team`) is live data: incoming events are stored without an undo step. Undo and redo
+ * of a site edit restore the whole site, which would drop events received in between. These variants
+ * keep the current team unless the undone/redone step itself changed the team (e.g. an imported team file).
+ */
+const changesTeam = (entry: HistoryEntry) => entry.team === true;
+function withTeamOf(next: Project, current: Project): Project {
+  const team = current.site?.team;
+  if (!next.site || next.site.team === team) return next;
+  const { team: _drop, ...rest } = next.site;
+  return { ...next, site: team ? { ...rest, team } : rest };
+}
+export function undoKeepingTeam(project: Project, history: History): { project: Project; history: History } | null {
+  const entry = history.undo.at(-1), r = undo(project, history);
+  return r && entry && !changesTeam(entry) ? { ...r, project: withTeamOf(r.project, project) } : r;
+}
+export function redoKeepingTeam(project: Project, history: History): { project: Project; history: History } | null {
+  const entry = history.redo.at(-1), r = redo(project, history);
+  return r && entry && !changesTeam(entry) ? { ...r, project: withTeamOf(r.project, project) } : r;
 }
 
 export function newInstance(input: { assetVersionId: string; name: string; transform?: Transform; override?: boolean }): Instance {

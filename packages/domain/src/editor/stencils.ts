@@ -4,7 +4,7 @@ import { applyEdit, createDraft, payloadCells, keyPos, MAX_EDIT_CELLS } from './
 import type { CellValue, Draft } from './draft.js';
 import { defaultState } from './blocks.js';
 import type { ClipCell, Clipboard } from './tools.js';
-import { pasteEdit } from './tools.js';
+import { entitiesRelative, pasteEdit } from './tools.js';
 
 /**
  * Schablonen (EDIT-03). A stencil is a clipboard with a name: built-in
@@ -24,7 +24,9 @@ export function clipboardFromPayload(payload: VoxelPayload): Clipboard {
     const p = keyPos(k);
     cells.push({ offset: [p[0] - min[0], p[1] - min[1], p[2] - min[2]], value });
   }
-  return { size: [maxExclusive[0] - min[0], maxExclusive[1] - min[1], maxExclusive[2] - min[2]], cells };
+  // Paintings, frames and armor stands travel with the stencil (CREATIVE_TOOLS: „gespeicherte Schablonen behalten sie“).
+  const entities = entitiesRelative(payload.entities, () => true, min);
+  return { size: [maxExclusive[0] - min[0], maxExclusive[1] - min[1], maxExclusive[2] - min[2]], cells, ...(entities.length && { entities }) };
 }
 
 /** A new draft containing only the clipboard at the origin (to save it as a module/stencil). */

@@ -42,7 +42,7 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
   const boxes = useMemo(() => { if (!anyPos) return null; try { return roomHeader(session, team); } catch { return null; } },
     [anyPos, session.project, session.computation, team]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const saveLive = (next: RoomTeam) => { const p = session.project, site = siteOf(p); session.replace({ ...p, site: { ...site, team: next as TeamState } }); };
+  const saveLive = (next: RoomTeam) => session.replace(p => ({ ...p, site: { ...siteOf(p), team: next as TeamState } }));
 
   const uploadPlan = async (t: RoomTeam, quiet = false) => {
     if (!t.live?.adminKey) return;

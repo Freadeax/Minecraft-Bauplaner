@@ -51,7 +51,8 @@ export function editableContent(blockId: string): { kind: ContentKind; type: str
 /** Label of slot `i` (0-based) of a container type: „Platz 1“ … or the furnace/brewing name. */
 export function slotLabel(type: string, i: number): string { return SLOT_NAMES[type]?.[i] ?? `Platz ${i + 1}`; }
 
-export interface SlotItem { readonly slot: number; readonly id: string; readonly count: number }
+/** `from`: slot the item was read from (readContainer); a moved item keeps its stored compound (enchantments …). */
+export interface SlotItem { readonly slot: number; readonly id: string; readonly count: number; readonly from?: number }
 export interface ContainerEdit { readonly items: readonly SlotItem[]; readonly name: string }
 export interface SignEdit { readonly front: readonly string[]; readonly back: readonly string[]; readonly waxed: boolean; readonly color: string; readonly glowing: boolean }
 
@@ -72,7 +73,7 @@ export function readContainer(data: NbtTag | undefined): ContainerEdit {
   for (const e of list(tile.Items)) {
     const c = comp(e); const id = text(c?.id); const slot = num(c?.Slot);
     if (!c || !id || slot === null || namespaced(id) === 'minecraft:air') continue;
-    items.push({ slot, id: namespaced(id), count: Math.max(1, num(c.count) ?? num(c.Count) ?? 1) });
+    items.push({ slot, id: namespaced(id), count: Math.max(1, num(c.count) ?? num(c.Count) ?? 1), from: slot });
   }
   items.sort((a, b) => a.slot - b.slot);
   return { items, name: blockEntityContent(data).name ?? '' };
@@ -107,7 +108,7 @@ export function withContainer(data: NbtTag | undefined, blockId: string, edit: C
   const before = new Map<number, Compound>();
   for (const e of list(tile.Items)) { const c = comp(e); const s = num(c?.Slot); if (c && s !== null) before.set(s, c); }
   const items: NbtTag[] = [...edit.items].sort((a, b) => a.slot - b.slot).map(it => {
-    const id = namespaced(it.id.trim()), old = before.get(it.slot);
+    const id = namespaced(it.id.trim()), old = before.get(it.from ?? it.slot);
     const keep = old && text(old.id) && namespaced(text(old.id)!) === id ? old : {};
     const { Count: _legacy, ...rest } = keep as Record<string, NbtTag>;
     return { type: 'compound', value: { ...rest, Slot: byte(it.slot), id: str(id), count: int(it.count) } };
@@ -115,8 +116,10 @@ export function withContainer(data: NbtTag | undefined, blockId: string, edit: C
   const next: Record<string, NbtTag> = { ...tile };
   if (!text(next.id)) next.id = str(info.type);
   if (items.length) next.Items = { type: 'list', elementType: 'compound', value: items }; else delete next.Items;
-  const name = edit.name.trim();
-  if (name) next.CustomName = str(name); else delete next.CustomName;
+  // Only a changed name is rewritten; an unchanged (possibly formatted) CustomName stays as stored.
+  const name = edit.name.trim(), storedName = data ? blockEntityContent(data).name ?? '' : '';
+  if (!name) delete next.CustomName;
+  else if (name !== storedName.trim() || !next.CustomName) next.CustomName = str(name);
   return wrap(next);
 }
 
@@ -157,10 +160,21 @@ export function withSign(data: NbtTag | undefined, blockId: string, edit: SignEd
   const problems = checkSign(edit);
   if (problems.length) throw new Error(problems[0]);
   const { tile, wrap } = unwrap(data, info.type);
-  const messages = (lines: readonly string[]): NbtTag => ({ type: 'list', elementType: 'string', value: [...lines, '', '', '', ''].slice(0, SIGN_LINES).map(l => str(l)) });
-  const sideTag = (old: NbtTag | undefined, lines: readonly string[], color: string, glowing: boolean): NbtTag => ({
-    type: 'compound', value: { ...(comp(old) ?? {}), messages: messages(lines), color: str(color), has_glowing_text: byte(glowing ? 1 : 0) },
-  });
+  // Unchanged lines keep their stored component (colours, click events); changed lines become plain text.
+  // Filtered text belongs to the old lines, so it is dropped on a side whose text changed.
+  const sideTag = (old: NbtTag | undefined, lines: readonly string[], color: string, glowing: boolean): NbtTag => {
+    const prev = comp(old) ?? {}, stored = list(prev.messages);
+    // Lists are homogeneous: in a list of compound components a changed line is written as {text: …}.
+    const asCompound = prev.messages?.type === 'list' && prev.messages.elementType === 'compound';
+    let changed = false;
+    const value = [...lines, '', '', '', ''].slice(0, SIGN_LINES).map((l, i): NbtTag => {
+      const o = stored[i];
+      if (o && o.type === (asCompound ? 'compound' : 'string') && componentText(o) === l) return o;
+      changed = true; return asCompound ? { type: 'compound', value: { text: str(l) } } : str(l);
+    });
+    const { filtered_messages: filtered, ...rest } = prev;
+    return { type: 'compound', value: { ...rest, ...(filtered && !changed && { filtered_messages: filtered }), messages: { type: 'list', elementType: asCompound ? 'compound' : 'string', value }, color: str(color), has_glowing_text: byte(glowing ? 1 : 0) } };
+  };
   const back = side(tile.back_text);
   const next: Record<string, NbtTag> = { ...tile };
   for (const k of ['Text1', 'Text2', 'Text3', 'Text4', 'Color', 'GlowingText']) delete next[k];

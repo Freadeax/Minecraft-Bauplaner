@@ -5,7 +5,8 @@ import { blockLook } from '../blockmodels/colors26';
 import { stateColor } from '../colors';
 import type { LayerCell } from './useDraft';
 
-export interface Stroke { readonly phase: 'down' | 'move' | 'up'; readonly cell: Vec3; readonly shift: boolean; readonly alt: boolean }
+/** `cancel`: the system took the pointer (touch gesture, lost capture); nothing of the stroke is applied. */
+export interface Stroke { readonly phase: 'down' | 'move' | 'up' | 'cancel'; readonly cell: Vec3; readonly shift: boolean; readonly alt: boolean }
 export interface GridBox { readonly min: Vec3; readonly maxExclusive: Vec3 }
 
 interface Props {
@@ -207,6 +208,8 @@ export function LayerGrid({ layers, y, extent, selection, selectionCells, previe
         const d = drag.current; drag.current = null;
         if (d?.mode === 'paint') { const [px, py] = point(e); onStroke({ phase: 'up', cell: toCell(px, py), shift: e.shiftKey, alt: e.altKey }); }
       }}
+      onPointerCancel={e => { const d = drag.current; drag.current = null; if (d?.mode === 'paint') onStroke({ phase: 'cancel', cell: toCell(...point(e)), shift: false, alt: false }); }}
+      onLostPointerCapture={e => { const d = drag.current; if (!d) return; drag.current = null; if (d.mode === 'paint') onStroke({ phase: 'cancel', cell: toCell(...point(e)), shift: false, alt: false }); }}
       onPointerLeave={() => { setHover(null); onHover(null); }}
       onWheel={e => {
         if (e.ctrlKey || e.metaKey) { zoom(e.deltaY < 0 ? 1.15 : 1 / 1.15); return; }

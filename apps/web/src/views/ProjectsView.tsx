@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TeamOpen } from './project/team/TeamOpen';
-import { applyOperation, applyWorldPlanOp, backupFileName, cellCount, buildRestore, createBackup, createEnsembleProject, createProject, findUpdates, latestReleaseId, latestVersions, summarizeUpdates, MAX_BACKUP_BYTES, missingMembers, newInstance, planRestore, programSummary, readBackup, resolveProject, serializeBackup, siteOf, ENSEMBLES } from '../../../../packages/domain/src/index.js';
+import { applyOperation, applyWorldPlanOp, backupFileName, cellCount, buildRestore, createBackup, createEnsembleProject, createProject, findUpdates, latestReleaseId, latestVersions, summarizeUpdates, MAX_BACKUP_BYTES, missingMembers, newInstance, planRestore, programSummary, projectRemoval, readBackup, resolveProject, serializeBackup, siteOf, ENSEMBLES } from '../../../../packages/domain/src/index.js';
 import type { Ensemble, Instance, Project, ProjectChoice, RestorePlan } from '../../../../packages/domain/src/index.js';
 import { useApp } from '../app/context';
 import type { StorageInfo } from '../app/repository';
 import { href, navigate } from '../app/router';
-import { download, errorText, localToday } from '../app/ui';
+import { download, errorText } from '../app/ui';
 import { Thumb } from '../thumbnail/Thumb';
 import { recordBackupReceipt, useBackupStatus } from '../app/backupStatus';
 import { BackupReminder, BackupStatusPanel } from './BackupPanel';
@@ -68,14 +68,19 @@ export function ProjectsView() {
     try {
       const write = buildRestore(restore.plan, restore.choices);
       const { worldPlanItems, ...batch } = write;
+      // The Weltplan is its own record: its merge is checked before anything is written (e.g. item limit),
+      // so a refusal there really writes nothing.
+      const before = worldPlanItems.length ? await repo.getWorldPlan() : null;
+      const merged = before && applyWorldPlanOp(before, { kind: 'batch', label: 'Aus Sicherung', ops: worldPlanItems.filter(i => !before.items.some(c => c.id === i.id)).map(item => ({ kind: 'add' as const, item })) }).plan;
       await repo.applyBatch(batch);
-      // Weltplan entries are added afterwards (own record); a conflict there leaves the restored projects intact and says so.
-      if (worldPlanItems.length) {
-        const current = await repo.getWorldPlan();
-        await repo.saveWorldPlan(applyWorldPlanOp(current, { kind: 'batch', label: 'Aus Sicherung', ops: worldPlanItems.filter(i => !current.items.some(c => c.id === i.id)).map(item => ({ kind: 'add' as const, item })) }).plan, current.revision);
+      // From here on data is stored: a later Weltplan conflict is reported as partial success, never as „nichts geschrieben“.
+      let partial = '';
+      if (merged && before) {
+        try { await repo.saveWorldPlan(merged, before.revision); }
+        catch (e) { partial = ` Weltplan-Einträge nicht übernommen (${errorText(e)}); die Sicherung lässt sich dafür erneut öffnen.`; }
       }
       setRestore(null); await reloadLibrary(); await load();
-      setMessage(`Wiederhergestellt. ${write.summary.join(' ')}`);
+      setMessage(`Wiederhergestellt. ${write.summary.join(' ')}${partial}`);
     } catch (e) { setMessage(`Wiederherstellung abgebrochen, nichts geschrieben: ${errorText(e)}`); }
     finally { setBusy(false); }
   };
@@ -105,8 +110,23 @@ export function ProjectsView() {
     void create(project);
   };
   const remove = async (project: Project) => {
-    if (!window.confirm(`Projekt „${project.name}“ endgültig löschen? Bibliotheksbauteile bleiben erhalten.`)) return;
-    try { await repo.deleteProject(project.id); await load(); } catch (e) { setMessage(errorText(e)); }
+    // Successors (PROJ-04) and world-map sites that point at this project are tidied up after deleting it.
+    let removal;
+    try { removal = projectRemoval(project.id, await repo.listProjects(), await repo.getWorldPlan()); } catch (e) { setMessage(errorText(e)); return; }
+    const quote = (list: readonly { name: string }[]) => list.map(x => `„${x.name}“`).join(', ');
+    const effects = [
+      removal.successors.length ? `${quote(removal.successors)} ${removal.successors.length === 1 ? 'wartet' : 'warten'} nicht mehr auf dieses Projekt.` : '',
+      removal.sites.length ? `${removal.sites.length === 1 ? 'Der Bauplatz' : 'Die Bauplätze'} ${quote(removal.sites)} auf der Weltkarte ${removal.sites.length === 1 ? 'wird' : 'werden'} frei.` : '',
+    ].filter(Boolean).join(' ');
+    if (!window.confirm(`Projekt „${project.name}“ endgültig löschen? Bibliotheksbauteile bleiben erhalten.${effects ? `\n\n${effects}` : ''}`)) return;
+    try { await repo.deleteProject(project.id); } catch (e) { setMessage(errorText(e)); return; }
+    const left: string[] = [];
+    try { if (removal.projects.length) await repo.applyBatch({ projects: removal.projects.map(p => ({ project: p, baseRevision: p.revision })) }); }
+    catch (e) { left.push(`Reihenfolge der anderen Projekte nicht angepasst (${errorText(e)}); im Reiter „Planung“ entfernen.`); }
+    try { if (removal.worldPlanOp) { const plan = await repo.getWorldPlan(); await repo.saveWorldPlan(applyWorldPlanOp(plan, removal.worldPlanOp).plan, plan.revision); } }
+    catch (e) { left.push(`Bauplatz auf der Weltkarte nicht freigegeben (${errorText(e)}).`); }
+    setMessage(`Projekt „${project.name}“ gelöscht.${effects && !left.length ? ` ${effects}` : ''}${left.length ? ` ${left.join(' ')}` : ''}`);
+    await load();
   };
 
   const byAsset = useMemo(() => latestVersions(library.assets, library.versions), [library]);
@@ -162,7 +182,7 @@ export function ProjectsView() {
         {p.description && <p className="muted">{p.description}</p>}
         <div className="chips"><span>{p.instances.length} Bauteile</span><span>{p.revisions.length} Revisionen</span><span title={new Date(p.updatedAt).toLocaleString('de-DE')}>geändert {new Date(p.updatedAt).toLocaleDateString('de-DE')}</span>
           {(() => { const n = summarizeUpdates(findUpdates(p, library)).available; return n > 0 && <a className="update-card-chip" href={href({ view: 'project', projectId: p.id, tab: 'updates' })} data-updates={n}>{n === 1 ? '1 Update' : `${n} Updates`}</a>; })()}
-          {(() => { const s = programSummary(siteOf(p), localToday()); return s.next && <a className="milestone-chip" href={href({ view: 'project', projectId: p.id, tab: 'planung' })} title={`${s.milestones} Meilenstein(e), ${s.builders} Bauleute`}>◆ {s.next.name}{s.next.due ? ` · bis ${s.next.due.slice(8, 10)}.${s.next.due.slice(5, 7)}.` : ''}</a>; })()}</div>
+          {(() => { const s = programSummary(siteOf(p), new Date().toISOString().slice(0, 10)); return s.next && <a className="milestone-chip" href={href({ view: 'project', projectId: p.id, tab: 'planung' })} title={`${s.milestones} Meilenstein(e), ${s.builders} Bauleute`}>◆ {s.next.name}{s.next.due ? ` · bis ${s.next.due.slice(8, 10)}.${s.next.due.slice(5, 7)}.` : ''}</a>; })()}</div>
         <dl className="stats sr-only"><div><dt>Instanzen</dt><dd>{p.instances.length}</dd></div><div><dt>Freigegebene Revisionen</dt><dd>{p.revisions.length}</dd></div>
           <div><dt>Speicherrevision</dt><dd>{p.revision}</dd></div><div><dt>Profil</dt><dd>{p.profileId}</dd></div></dl>
         <div className="button-row"><a className="primary" href={href({ view: 'project', projectId: p.id, tab: 'editor' })}>Öffnen</a>

@@ -9,6 +9,7 @@ import {
 import type { ArchStyle, Box, BoxShape, CellSlot, Clipboard, Draft, Edit, Region, ReplaceQuery } from '../../../../packages/domain/src/index.js';
 import type { BlockState, Cell, Vec3, VoxelPayload } from '../../../../packages/voxel/src/index.js';
 import { formatNumber } from '../app/ui';
+import { useLeaveGuard } from '../app/router';
 import { SizeNotice } from '../app/SizeNotice';
 import { Viewer } from '../Viewer';
 import type { BuildHandler, DragHandler, Mark, PickHit, PointerMods, PreviewCells } from '../viewer/types';
@@ -180,7 +181,21 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
   const entityOpt = entityTools ? { entities: draft.entities ?? [] } : {};
 
   const setBrush = (b: CellSlot) => { setBrushRaw(b); if (tool === 'abbauen' || tool === 'pipette' || tool === 'zustand') setTool('stift'); };
-  const run = useCallback((edit: Edit, ok = '') => { const err = model.run(edit); setMessage(err === '' ? ok || `${edit.label}: ${formatNumber(edit.changes.length)} Zellen` : err); return err === ''; }, [model]);
+  const run = useCallback((input: Edit, ok = '') => {
+    // Without the „Ausstattung“ tools the caller cannot save free entities (project tab „Blöcke“): moving,
+    // clearing or stacking blocks must not pretend to move paintings and armor stands with them.
+    let edit = input, kept = '';
+    if (!entityTools && input.entities) { const { entities: _e, ...rest } = input; edit = rest; if (input.changes.length) kept = ' Gemälde, Rahmen und Rüstungsständer bleiben hier an ihrem Platz (in der Werkstatt mitbewegen).'; }
+    if (!edit.changes.length && !edit.entities) { setMessage('Keine Änderung'); return false; }
+    const err = model.run(edit); setMessage(err === '' ? `${ok || `${edit.label}: ${formatNumber(edit.changes.length)} Zellen`}${kept && (input.entities?.length || draft.entities?.length) ? kept : ''}` : err); return err === '';
+  }, [model, entityTools, draft]);
+  /**
+   * Building an edit can throw (size limit of one edit, invalid region): show the reason instead of
+   * losing the click silently in the console.
+   */
+  const guarded = <A extends unknown[]>(f: (...a: A) => unknown) => (...a: A): void => {
+    try { f(...a); } catch (e) { setMessage(e instanceof Error ? e.message : String(e)); }
+  };
   const toolValue = (t: Tool): CellSlot => t === 'abbauen' ? null : brush;
   const usePattern = patternActive(pattern);
   const activePattern = useMemo(() => toPattern(pattern, brush), [pattern, brush]);
@@ -310,6 +325,7 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
   };
 
   const onStroke = (s: Stroke) => {
+    if (s.phase === 'cancel') { setLiveStroke(null); return; }
     if (tool === 'zauberstab') { if (s.phase === 'down') magicPick(s.cell, s.shift, s.alt); return; }
     const selecting = tool === 'auswahl' || s.shift;
     if (s.phase === 'down') {
@@ -367,7 +383,7 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
     setY(p[1]); setPicked(c.position); onCell(p, true);
   },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [tool, draft, brush, clip, selection, mask, magic, build3d, curvePts]);
+    [tool, draft, brush, clip, selection, mask, magic, build3d, curvePts, paint, sym]);
 
   // ---------------------------------------------------------------- EDIT-06: building in the 3D view
   /** Latest handler body; the object handed to the viewer stays the same so the scene never re-registers. */
@@ -449,7 +465,7 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
   const selBox = selection ? toBox(selection) : null;
   /** Selection operations: on a cell selection only its cells change. */
   const selOp = (edit: Edit, ok = '') => run(mask ? clipEdit(edit, mask) : edit, ok);
-  const clearSelection = (label = 'Auswahl leeren') => selBox && run(mask ? clearRegionEdit(draft, mask, { label }) : clearBoxEdit(draft, selBox, label));
+  const clearSelection = guarded((label: string = 'Auswahl leeren') => selBox && run(mask ? clearRegionEdit(draft, mask, { label }) : clearBoxEdit(draft, selBox, label)));
   const maskLayer = useMemo(() => mask ? [...mask].map(k => k.split(',').map(Number) as unknown as Vec3).filter(p => p[1] === y) : undefined, [mask, y]);
   const replaceQuery = (): ReplaceQuery | null => {
     if (!replaceFrom) return null;
@@ -463,8 +479,15 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
     const e = usePattern ? replacePatternEdit(draft, q, activePattern, blockSchema) : replaceEdit(draft, q, blockSchema);
     return mask && q.box ? clipEdit(e, mask) : e;
   };
-  const replaceCount = rq ? (mask && rq.box ? clipEdit(replaceEdit(draft, rq, blockSchema), mask).changes.length : countMatches(draft, rq.from, rq.box)) : 0;
-  const transformSelection = (t: { quarterTurns: 0 | 1 | 2 | 3; mirrorX: boolean } | null, delta: Vec3 = [0, 0, 0]) => {
+  // Counted once per draft/query, not on every hover render; a too large edit shows its reason instead of crashing the editor.
+  const rqKey = rq ? JSON.stringify(rq) : '';
+  const replaceInfo = useMemo((): { count: number; error?: string } => {
+    if (!rq) return { count: 0 };
+    try { return { count: mask && rq.box ? clipEdit(replaceEdit(draft, rq, blockSchema), mask).changes.length : countMatches(draft, rq.from, rq.box) }; }
+    catch (e) { return { count: 0, error: e instanceof Error ? e.message : String(e) }; }
+  }, [draft, rqKey, mask, blockSchema]); // eslint-disable-line react-hooks/exhaustive-deps
+  const replaceCount = replaceInfo.count;
+  const transformSelection = guarded((t: { quarterTurns: 0 | 1 | 2 | 3; mirrorX: boolean } | null, delta: Vec3 = [0, 0, 0]) => {
     if (!selBox) return;
     if (mask) {
       const r = moveRegionEdit(draft, mask, delta, t ?? undefined);
@@ -482,15 +505,15 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
       const min: Vec3 = [s.min[0] + delta[0] + off[0]!, s.min[1] + delta[1], s.min[2] + delta[2] + off[2]!];
       setSelection({ min, maxExclusive: [min[0] + turned[0]!, min[1] + turned[1]!, min[2] + turned[2]!] });
     }
-  };
+  });
 
-  const copySelection = (cut: boolean) => {
+  const copySelection = guarded((cut: boolean) => {
     if (!selBox) { setMessage('Keine Auswahl.'); return; }
     const c = mask ? copyRegion(draft, mask) : copyBox(draft, selBox); setClip(c);
     const ent = c.entities?.length ? ` und ${c.entities.length} Ausstattungsstücke` : '';
     if (cut) run(mask ? clearRegionEdit(draft, mask, { label: 'Ausschneiden' }) : clearBoxEdit(draft, selBox, 'Ausschneiden'), `Ausgeschnitten: ${formatNumber(c.cells.length)} Zellen${ent}`);
     else setMessage(`Kopiert: ${formatNumber(c.cells.length)} Zellen${ent}`);
-  };
+  });
   const turnClip = (t: { quarterTurns: 0 | 1 | 2 | 3; mirrorX: boolean }) => {
     if (!clip) return;
     const r = transformClipboard(clip, t); setClip(r.clip);
@@ -534,12 +557,14 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
   const pickedValue = picked ? cellAt(draft, picked) : null;
   const yRange = extent ? `${extent.min[1]} … ${extent.max[1]}` : '–';
   const changes = model.summary.added + model.summary.removed + model.summary.changed + model.summary.entities;
+  // Unsaved draft: leaving the page (other tab, other route, closing the browser tab) asks first.
+  useLeaveGuard(changes ? `Im Blockeditor ${changes === 1 ? 'ist 1 Änderung' : `sind ${formatNumber(changes)} Änderungen`} noch nicht gespeichert.` : null);
 
   return <div className="block-editor">
     <div className="editor-bar" role="toolbar" aria-label="Bearbeitung">
       <button onClick={model.undo} disabled={!model.history.undo.length} title={model.history.undo.at(-1) ? `Rückgängig: ${model.history.undo.at(-1)!.label} (Strg+Z)` : 'Rückgängig (Strg+Z)'}>↶ Rückgängig</button>
       <button onClick={model.redo} disabled={!model.history.redo.length} title="Wiederholen (Strg+Y)">↷ Wiederholen</button>
-      <button data-testid="settle" onClick={() => { const e = settleEdit(draft, selBox); if (e) run(e, `${e.label}: Zäune, Mauern, Scheiben, Treppen und Tore zeigen jetzt die Form aus dem Spiel.`); else setMessage('Alle Verbindungen entsprechen schon dem Spiel.'); }}
+      <button data-testid="settle" onClick={guarded(() => { const e = settleEdit(draft, selBox); if (e) run(e, `${e.label}: Zäune, Mauern, Scheiben, Treppen und Tore zeigen jetzt die Form aus dem Spiel.`); else setMessage('Alle Verbindungen entsprechen schon dem Spiel.'); })}
         title={selBox ? 'Verbindungen in der Auswahl wie im Spiel setzen (Zäune, Mauern, Scheiben, Gitter, Treppenecken, Tore)' : 'Verbindungen im ganzen Modell wie im Spiel setzen (Zäune, Mauern, Scheiben, Gitter, Treppenecken, Tore)'}>⛓ Wie im Spiel verbinden</button>
       <button data-testid="placement-check" onClick={() => { const pl = materializeDraft(draft); setMessage(pl ? placementSummary(checkPlacement(pl)) : 'Das Modell ist leer.'); }} title="Halt, Schwerkraft, Verbindungen und Hälften wie im Spiel prüfen">✓ Spielprüfung</button>
       <span className="editor-stats" aria-live="polite" data-changes={changes}>
@@ -648,14 +673,14 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
               <label>bis<input type="number" value={selection.maxExclusive[1] - 1} onChange={e => { const v = Math.trunc(Number(e.target.value)); setSelection(s => s && { min: s.min, maxExclusive: [s.maxExclusive[0], Math.max(v, s.min[1]) + 1, s.maxExclusive[2]] }); }} /></label>
             </div>}
             <div className="button-grid">
-              {(Object.keys(BOX_SHAPE_LABEL) as BoxShape[]).map(s => <button key={s} onClick={() => selOp(paint(boxEdit(selBox, s, brush)))}>{BOX_SHAPE_LABEL[s]}</button>)}
+              {(Object.keys(BOX_SHAPE_LABEL) as BoxShape[]).map(s => <button key={s} onClick={guarded(() => selOp(paint(boxEdit(selBox, s, brush))))}>{BOX_SHAPE_LABEL[s]}</button>)}
               <button onClick={() => clearSelection()}>Leeren</button>
-              <button onClick={() => selOp({ ...boxEdit(selBox, 'fill', { kind: 'air' }), label: 'Mit Luft füllen' })} title="Explizite Luft räumt beim Einfügen im Spiel frei">Luft setzen</button>
+              <button onClick={guarded(() => selOp({ ...boxEdit(selBox, 'fill', { kind: 'air' }), label: 'Mit Luft füllen' }))} title="Explizite Luft räumt beim Einfügen im Spiel frei">Luft setzen</button>
             </div>
             <div className="button-grid">
               <button onClick={() => copySelection(false)} title="Strg+C">Kopieren</button>
               <button onClick={() => copySelection(true)} title="Strg+X">Ausschneiden</button>
-              <button disabled={!clip} onClick={() => clip && run(pasteEdit(clip, selection.min, entityOpt))}>Einfügen hier</button>
+              <button disabled={!clip} onClick={guarded(() => clip && run(pasteEdit(clip, selection.min, entityOpt)))}>Einfügen hier</button>
               <button onClick={() => transformSelection({ quarterTurns: 1, mirrorX: false })} title="R">Drehen 90°</button>
               <button onClick={() => transformSelection({ quarterTurns: 0, mirrorX: true })} title="M">Spiegeln X</button>
             </div>
@@ -693,8 +718,9 @@ export function BlockEditor({ base, profileId, saveBar, inspectExtra, startY, en
           <label className="check"><input type="checkbox" checked={keepProps} onChange={e => setKeepProps(e.target.checked)} /> Ausrichtung/Zustand übernehmen, wo möglich</label>
           <div className="seg" role="group" aria-label="Bereich"><button aria-pressed={replaceScope === 'all'} onClick={() => setReplaceScope('all')}>Ganzes Modell</button>
             <button aria-pressed={replaceScope === 'selection'} disabled={!selection} onClick={() => setReplaceScope('selection')}>Nur Auswahl</button></div>
-          <button className="primary" disabled={!rq || !replaceCount} onClick={() => rq && run(replaceEditNow(rq))}>
+          <button className="primary" disabled={!rq || !replaceCount} onClick={guarded(() => rq && run(replaceEditNow(rq)))}>
             {formatNumber(replaceCount)} Zellen {usePattern ? 'mit Muster ' : ''}ersetzen</button>
+          {replaceInfo.error && <p className="muted" role="status">{replaceInfo.error}</p>}
         </section>
 
         <section className="panel-lite" aria-label="Gewählter Block">

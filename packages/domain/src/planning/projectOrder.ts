@@ -1,6 +1,8 @@
-import { dayText, parseDay, programOf } from './program.js';
+import { dayText, parseDay, programOf, removeProjectAfter } from './program.js';
+import { applyOperation } from '../core/project.js';
 import { siteOf } from '../building/site.js';
 import type { Project } from '../core/types.js';
+import type { WorldPlan, WorldPlanOp, WorldSite } from '../world/worldPlan.js';
 
 /**
  * PROJ-04: order between projects („erst das Lager, dann die Burg“). Each
@@ -104,4 +106,28 @@ export function projectStartCheck(project: OrderProject, projects: readonly Orde
 /** Projects that wait for `projectId` (direct successors), with names. */
 export function projectSuccessors(projectId: string, projects: readonly OrderProject[]): { id: string; name: string }[] {
   return projects.filter(p => (programOf(siteOf(p)).after ?? []).some(a => a.projectId === projectId)).map(p => ({ id: p.id, name: p.name }));
+}
+
+/**
+ * What deleting a project leaves behind and how to tidy it (Projektzentrale):
+ * successors that wait for it (`site.program.after`) and world-map sites built
+ * with it. `projects` are the successors with the link removed (save with their
+ * stored revision), `worldPlanOp` turns those sites into free sites. Nothing is
+ * deleted here; the caller deletes the project and then saves both.
+ */
+export interface ProjectRemoval {
+  readonly successors: readonly { readonly id: string; readonly name: string }[];
+  readonly sites: readonly { readonly id: string; readonly name: string }[];
+  readonly projects: readonly Project[];
+  readonly worldPlanOp: WorldPlanOp | null;
+}
+export function projectRemoval(projectId: string, projects: readonly Project[], worldPlan?: Pick<WorldPlan, 'items'>): ProjectRemoval {
+  const waiting = projects.filter(p => p.id !== projectId && (programOf(siteOf(p)).after ?? []).some(a => a.projectId === projectId));
+  const sites = (worldPlan?.items ?? []).filter((i): i is WorldSite => i.kind === 'site' && i.projectId === projectId);
+  return {
+    successors: waiting.map(p => ({ id: p.id, name: p.name })),
+    sites: sites.map(s => ({ id: s.id, name: s.name })),
+    projects: waiting.map(p => applyOperation(p, { kind: 'site.set', site: removeProjectAfter(siteOf(p), projectId), label: 'Reihenfolge: gelöschtes Projekt entfernt' }).project),
+    worldPlanOp: sites.length ? { kind: 'batch', label: sites.length === 1 ? `Bauplatz „${sites[0]!.name}“ freigegeben` : `${sites.length} Bauplätze freigegeben`, ops: sites.map(s => ({ kind: 'update' as const, item: { ...s, projectId: null } })) } : null,
+  };
 }

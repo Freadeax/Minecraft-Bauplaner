@@ -59,6 +59,7 @@ const DANGLING: Partial<Record<PlanRole, { readonly severity: IntegritySeverity;
   'collection-version': { severity: 'warning', advice: 'Die fest gewählte Version fehlt; der Eintrag folgt nun der neuesten Version.' },
   'collection-template': { severity: 'warning', advice: 'Die Vorlage wurde gelöscht; Eintrag entfernen.' },
   'collection-parent': { severity: 'info', advice: 'Der übergeordnete Ordner fehlt; die Sammlung erscheint oben.' },
+  'project-after': { severity: 'info', advice: 'Das vorherige Projekt ist gelöscht; die Reihenfolge wird nicht mehr beachtet. Im Reiter „Planung“ entfernen.' },
   'template-member': { severity: 'error', advice: 'Die Vorlage kann so nicht übernommen werden; Sicherung mit der Version einspielen.' },
 };
 const severityOf = (e: PlanEdge): IntegritySeverity | null => {

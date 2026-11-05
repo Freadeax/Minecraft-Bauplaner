@@ -200,8 +200,12 @@ export async function createBackup(source: BackupSource, scope: 'project' | 'all
  */
 export function serializeBackup(file: BackupFile): string {
   const versions = file.versions.map(v => packVersionForFile(v, toBase64));
-  if (!versions.some(v => 'packedCells' in v)) return JSON.stringify(file);
-  return JSON.stringify({ ...file, formatVersion: BACKUP_FORMAT_VERSION_PACKED, baseFormatVersion: file.formatVersion, versions });
+  const text = !versions.some(v => 'packedCells' in v) ? JSON.stringify(file)
+    : JSON.stringify({ ...file, formatVersion: BACKUP_FORMAT_VERSION_PACKED, baseFormatVersion: file.formatVersion, versions });
+  // Never hand out a file the restore would refuse (CORE-04): readers check the byte size first.
+  const bytes = text.length * 3 <= MAX_BACKUP_BYTES ? text.length : new TextEncoder().encode(text).length;
+  if (bytes > MAX_BACKUP_BYTES) throw new DomainError('LIMIT', `Die Sicherung wäre ${Math.ceil(bytes / 1_000_000)} MB groß; wiederherstellen lassen sich höchstens ${MAX_BACKUP_BYTES / 1_000_000} MB. Bitte Projekte einzeln sichern (Originaldateien großer Importe machen den Großteil aus).`);
+  return text;
 }
 
 /** Turns a format 3 container back into its logical base format; other formats pass through. */

@@ -3,7 +3,7 @@ export { DomainError, DOMAIN_SCHEMA_VERSION } from './core/types.js';
 export { canonicalJson, sha256Hex, quickHash, newId } from './core/hash.js';
 export { createAsset, addAssetVersion, verifyAssetVersion, updateAssetMeta, cropPayload, searchAssets, payloadHash, rememberPayloadHash, checkConnectorShape, deepFreeze } from './catalog/library.js';
 export type { NewAssetInput, NewVersionInput, AssetQuery } from './catalog/library.js';
-export { createProject, applyOperation, execute, undo, redo, newInstance, freezeRevision, describeOperation, rotateInPlace, checkTransform, EMPTY_HISTORY } from './core/project.js';
+export { createProject, applyOperation, execute, undo, redo, undoKeepingTeam, redoKeepingTeam, newInstance, freezeRevision, describeOperation, rotateInPlace, checkTransform, EMPTY_HISTORY } from './core/project.js';
 export type { Operation, History, HistoryEntry } from './core/project.js';
 export { resolveProject, positionKey } from './core/compose.js';
 export type { Resolution, PlacedInstance, VoxelConflict, ConflictKind, CompositionIssue } from './core/compose.js';
@@ -163,5 +163,5 @@ export { checkSavedLiveMap, checkSavedLiveMaps, upsertSavedLiveMap, createLiveMa
 export type { SavedLiveMap, LiveMapTargetsFile } from './world/livemap.js';
 export { mapShapes, markersToPoints, pointMarkers, blueMapMarkerConfig, dynmapMarkerCommands, MAP_SHAPE_GROUPS, MAP_SHAPE_GROUP_LABEL, DEFAULT_SHAPE_Y } from './world/liveMapExport.js';
 export type { MapShape, MapShapeGroup, MapShapeOptions } from './world/liveMapExport.js';
-export { projectLinks, projectCycle, projectAfterProblem, projectLevels, projectStartCheck, projectSuccessors } from './planning/projectOrder.js';
-export type { OrderProject, ProjectLink, PredecessorState, ProjectStartCheck } from './planning/projectOrder.js';
+export { projectLinks, projectCycle, projectAfterProblem, projectLevels, projectStartCheck, projectSuccessors, projectRemoval } from './planning/projectOrder.js';
+export type { OrderProject, ProjectLink, PredecessorState, ProjectStartCheck, ProjectRemoval } from './planning/projectOrder.js';
