@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 144 Fälle in 13 Bereichen, davon 62 Kernfälle.
+Umfang: 145 Fälle in 13 Bereichen, davon 63 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -239,6 +239,7 @@ Planer, Mod und Paper-Plugin verbinden sich per Klick; der Server wird aus dem P
 | LINK-07 | Teambau ohne Server-Datei ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Server ohne Bauplaner-Plugin. Im Planer Reiter „Team“ → „Team live“ (live geschaltet), „Ich bin“ gewählt.<br>2. Minecraft mit Mod 0.14.0 oder neuer läuft: „Mein Spiel verbinden“.<br>3. Im Spiel /bauplaner team nehmen <nr> (oder J → Befehle).<br>4. Im Planer auf die Abschnittsliste schauen. | Im Spiel „Team live über den Team-Raum“; der Abschnitt steht im Planer innerhalb von Sekunden als „in Arbeit“ – ohne Datei und ohne Plugin auf dem Server. J → „Befehle & Status“ zeigt „Team-Raum: live“. |
 | LINK-08 | Positionen und Aufnahme über den Team-Raum ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Wie LINK-07: Server ohne Plugin, Team live, Mod 0.15.0 mit „Mein Spiel verbinden“, Plan im Spiel platziert.<br>2. Im Spiel ein paar Schritte gehen; im Planer Reiter „Team“ → „Gerade da“ ansehen.<br>3. Im Planer Reiter „Bauen“ → „⇩ Aufnahme im Spiel anfordern“.<br>4. Im Spiel eine im Planer markierte Lagerkiste öffnen und schließen. | Unter „Gerade da“ steht dein Spielername mit Blockposition und wandert mit; die Aufnahme ist nach wenigen Sekunden geladen („Aufnahme aus dem Team-Raum geladen …“) und steht unter „Aufnahmen im Team-Raum“; im Spiel kommt eine Chatzeile „Baustand aufgenommen …“. Ohne Plugin und ohne Datei auf dem Server. |
 | LINK-09 | Ausweichwege: Team-Raum weg, WebSocket gesperrt, Baustand über den besten Weg ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Mod 0.16.0, Team live, „Mein Spiel verbinden“, Plan im Spiel platziert.<br>2. Minecraft beenden, WLAN/Internet trennen, Minecraft neu starten und J → „Befehle & Status“ öffnen.<br>3. Ohne Internet einen Abschnitt bauen (Hologramm misst), dann Internet wieder verbinden.<br>4. Im Planer Reiter „Bauen“ → „⟳ Baustand holen (bester Weg)“. | Ohne Internet zeigt die Mod den Teamstand weiter („zeigt den Stand von …“, „1 Meldung wartet“); nach dem Wiederverbinden meldet der Chat „gemerkte Messung … nachgereicht“ und der Planer zeigt den Abschnitt „laut Spiel“. Der Planer holt den Baustand über „dein Spiel auf diesem PC“ und nennt den Weg; ohne Mod nimmt er den Team-Raum oder den Server und sagt, warum. |
+| LINK-10 | Viele Meldungen auf einmal und Verbindungsabbruch: nichts geht verloren ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Mod 0.17.0, Team live, „Mein Spiel verbinden“, Plan im Spiel platziert, Planer im Reiter „Team“ offen.<br>2. Internet am PC mit Minecraft trennen und in zwei, drei Abschnitten bauen sowie eine markierte Team-Kiste öffnen und schließen.<br>3. Internet wieder verbinden und warten, bis J → „Befehle & Status“ „live über den Team-Raum“ zeigt.<br>4. Mit freiwilligem Server-Plugin: im Planer eine Servereinstellung ändern, während im Spiel gebaut wird. | Nach dem Wiederverbinden stehen alle gemessenen Abschnitte und die Kiste „laut Spiel“ im Planer, jede genau einmal; „Meldungen warten“ geht auf 0. Das Plugin bleibt dabei mit dem Team-Raum verbunden (kein „Verbindung verloren“ in der Serverkonsole). |
 | LINK-04 | Vom iPad ohne Mod steuern ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/mod)) | vertieft | 1. Am PC (#/mod, gekoppelt, Server mit Raum verbunden): „Weiteres Gerät freigeben (z. B. iPad)“ → Link erstellen.<br>2. Link auf dem iPad öffnen, eine Einstellung ändern.<br>3. Am PC das iPad wieder „entfernen“. | iPad zeigt „über den Team-Raum“ und ändert die Einstellung; nach dem Entfernen meldet es „nicht (mehr) gekoppelt“. |
 
 ## Abnahme je Roadmap-Paket
@@ -292,7 +293,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | VIEW-02 | START-06, DATEI-01 |
 | WORLD-IMPORT-01 | KARTE-04 |
 
-### Mit Minecraft (Mod oder Spiel) (36 Pakete)
+### Mit Minecraft (Mod oder Spiel) (37 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -321,6 +322,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | LINK-02 | LINK-02 |
 | LINK-05 | LINK-04 |
 | LINK-07 | LINK-07, LINK-08 |
+| LINK-10 | LINK-09, LINK-10 |
 | MAP-03 | LIVE-01, LIVE-03, LIVE-04 |
 | MAP-05 | LIVE-04, LIVE-05 |
 | MAP-06 | KARTE-05, KARTE-06, LIVE-08 |

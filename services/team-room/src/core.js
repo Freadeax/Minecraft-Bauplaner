@@ -219,6 +219,9 @@ export class RoomCore {
  * signed in the planner on to the Paper plugin connected with the server key and the answer back. The room knows
  * no owner key and checks only the form; the plugin checks signature, sequence number and server.
  */
+/** Keep-alive frames: the Durable Object answers them without waking up (setWebSocketAutoResponse). */
+export const PING = '{"type":"ping"}', PONG = '{"type":"pong"}';
+
 export const CONTROL = Object.freeze({ bytes: 1024 * 1024, timeoutMs: 20_000, pending: 16 });
 export function checkControl(m) {
   const bad = why => { throw new RoomError(400, 'steuerung', `Steuernachricht ungültig: ${why}.`); };
@@ -254,9 +257,15 @@ export class ControlRelay {
   }
 }
 
-/** Presence of one connection (TEAM_LIVE.md §4): flüchtig, nie im Protokoll. */
-export function cleanPresence(p, now = new Date().toISOString()) {
-  const where = ['planer', 'spiel', 'server'].includes(p?.where) ? p.where : 'planer';
+/**
+ * Presence of one connection (TEAM_LIVE.md §4): flüchtig, nie im Protokoll. With `role`, only the server key may
+ * appear as „server“ (a member could otherwise pretend the Minecraft server were online), and the server key
+ * always does.
+ */
+export function cleanPresence(p, now = new Date().toISOString(), role) {
+  let where = ['planer', 'spiel', 'server'].includes(p?.where) ? p.where : 'planer';
+  if (role === 'server') where = 'server';
+  else if (role && where === 'server') where = 'planer';
   return { member: typeof p?.member === 'string' ? p.member.slice(0, 64) : '?', device: typeof p?.device === 'string' ? p.device.slice(0, 64) : '?', where,
     ...(typeof p?.section === 'string' && { section: p.section.slice(0, 64) }), since: typeof p?.since === 'string' ? p.since.slice(0, 40) : now,
     ...(where === 'spiel' && cleanPos(p?.pos) && { pos: cleanPos(p.pos) }),

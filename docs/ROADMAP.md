@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-05T10:29:43.640Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-05T10:30:50.888Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-05T10:29:43.640Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 7 |
 | 🚧 In Arbeit | 5 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 85 |
+| 🧩 Implementiert · Abnahme offen | 86 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -30,7 +30,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 11 | 2 | 8 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 13 | 1 | 13 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
-| [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 10 | 0 | 8 | 0 |
+| [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 11 | 0 | 9 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 3 | 0 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
 | [Performance und Stabilität](#bereich-perf) | 3 | 2 | 1 | 3 |
@@ -150,6 +150,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [GAME-07](#game-07) | Bauplaner-Mod 2.0 | 🧩 Implementiert · Abnahme offen 9/11 | P1 | „Teambau und Befehle in der Mod ausbauen“ | Hologramm, Abschnitte und Röntgensicht auf server.lmnt-gaming.net (S05). |
 | [LINK-03](#link-03) | Mod | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Verbindung ohne Server-Datei neu bauen“ | Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“. |
 | [LINK-07](#link-07) | Ohne Server-Datei | 🚧 In Arbeit 5/6 | P1 | „Verbindung ohne Server-Datei neu bauen“ | — |
+| [LINK-10](#link-10) | Anbindung geprüft und gehärtet | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Anbindung von Mod, Team-Raum und Planer prüfen“ | Abnahme LINK-10: offline in mehreren Abschnitten bauen, wieder verbinden – alle Messungen genau einmal im Planer; mit Plugin bleibt die Raumverbindung stehen. |
 | [GAME-08](#game-08) | Bauplaner-Mod Protokoll 2 | 🧩 Implementiert · Abnahme offen 5/5 | P2 | „Teambau und Befehle in der Mod ausbauen“ | Mitspieler-Pfeile auf der Live-Karte mit einem zweiten Spieler. |
 | [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0 | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Teambau und Befehle in der Mod ausbauen“ | Befehlsseite im J-Menü zusammen mit dem Plugin auf deinem Server (MOD-16). |
 | [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher | ⏳ Offen 0/4 | P2 | „Teambau und Befehle in der Mod ausbauen“ | — |
@@ -286,6 +287,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **LINK-03** · Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“.
 - **EDIT-06** · Truhe und Schild mit Inhalt im Spiel laden (WERK-09).
 - **FALLBACK-01** · Abnahme LINK-09: mit Team live kurz das Internet trennen, Minecraft neu starten, Teamstand und „Baustand holen (bester Weg)“ prüfen.
+- **LINK-10** · Abnahme LINK-10: offline in mehreren Abschnitten bauen, wieder verbinden – alle Messungen genau einmal im Planer; mit Plugin bleibt die Raumverbindung stehen.
 
 ### Auf echten Geräten und Browsern
 
@@ -603,6 +605,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [COOP-11](#coop-11) | Verlauf verdichten: Bauleitung ersetzt Messungen bis zu einem Stichtag durch Summen (team.digest), gleicher Teamstand, Merge ohne Doppelzählung, Produktion und Team live lesen mit | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-01, COOP-05, COOP-08, COOP-09 | ausstehend | ausstehend |
 | [LINK-07](#link-07) | Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten | 🚧 In Arbeit | 5/6 | LINK-06, COOP-07 | ausstehend | ausstehend |
 | [FALLBACK-01](#fallback-01) | Ausweichwege über alle Verbindungen: Teamstand offline in der Mod, HTTP statt WebSocket, offline gemerkte Messungen, Baustand über den besten Weg (Spiel → Team-Raum → Server → Datei) | 🚧 In Arbeit | 4/5 | LINK-07, COOP-10 | ausstehend | ausstehend |
+| [LINK-10](#link-10) | Anbindung geprüft und gehärtet: Sendungen über den WebSocket nacheinander (Mod und Plugin), Messungen bis zur Bestätigung gemerkt, Team-Raum mit Ping ohne Aufwecken und sauberem Schließen, Planer ohne gestapelte Abfrage-Schleifen | 🧩 Implementiert · Abnahme offen | 4/4 | FALLBACK-01, LINK-07 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
 
@@ -3400,6 +3403,29 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java) — Raum-Ersatz ohne WebSocket: HTTP-Abfrage, Aktion/Notiz/Messung; Neustart ohne Netz mit gespeichertem Stand, Nachreichen, Cursor (04.11.2026).; [tests/e2e/game-progress.e2e.mjs](../tests/e2e/game-progress.e2e.mjs) — „Baustand holen (bester Weg)“ über das eigene Spiel; anderer Plan → alle Gründe und Datei-Ausweg (04.11.2026).; [scripts/test_bridge_ingame.sh](../scripts/test_bridge_ingame.sh) — Minecraft 26.3 Fabric (mit BAUPLANER_ROOM gegen den echten Team-Raum) und NeoForge bestanden mit Mod 0.16.0 (04.11.2026).
 
 **Dateiumfang:** `apps/web/src/testing/testplan.ts`, `apps/web/src/views/mod/releases.json`, `apps/web/src/views/project/GameCheckPanel.tsx`, `docs/architecture/AUTO_LINK.md`, `docs/architecture/FALLBACKS.md`, `docs/testing/TESTPLAN.md`, `downloads/mod/bauplaner-bridge-fabric-26.3-0.16.0.jar`, `downloads/mod/bauplaner-bridge-neoforge-26.3-0.16.0.jar`, `mods/bauplaner-bridge/CHANGELOG.md`, `mods/bauplaner-bridge/VERSION`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java`, `packages/domain/src/index.ts`, `packages/domain/src/scanRoutes.ts`, `tests/e2e/game-progress.e2e.mjs`, `tests/scan-routes.test.mjs`. **Abhängigkeiten:** LINK-07, COOP-10. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### LINK-10
+
+**Anbindung geprüft und gehärtet: Sendungen über den WebSocket nacheinander (Mod und Plugin), Messungen bis zur Bestätigung gemerkt, Team-Raum mit Ping ohne Aufwecken und sauberem Schließen, Planer ohne gestapelte Abfrage-Schleifen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Mod, Team-Raum und Planer prüfen“) · Zuständiger Thread: „Anbindung von Mod, Team-Raum und Planer prüfen“ · Aktualisiert: 2026-11-05T10:30:50.888Z
+
+- [x] LINK-10-S01: Mod und Plugin: alle WebSocket-Rahmen über WsQueue streng nacheinander (JDK erlaubt nur eine offene Sendung, zweite scheiterte still mit „Send pending“); Plugin trennte vorher bei gleichzeitiger Steuerantwort und Ereignissen.
+- [x] LINK-10-S02: Mod: section.seen/store.seen bleiben gemerkt, bis der Raum die Kennung beantwortet; über HTTP stilles Nachsenden nach 10 s.
+- [x] LINK-10-S03: Team-Raum: Ping per setWebSocketAutoResponse ohne Aufwecken, webSocketClose schließt sauber und lässt die Verbindung aus der Anwesenheit, „Server“ nur mit Serverschlüssel; Plugin pingt alle 30 s, Rahmen über 4 MB trennen.
+- [x] LINK-10-S04: Planer: höchstens eine Abfrage-Schleife und ein Wiederverbindungs-Zeitgeber (vorher je gescheitertem WebSocket eine weitere Schleife); Planstand-Prüfung ohne veraltete Closure.
+
+**Abnahme:** Mehrere gleichzeitige Nachrichten von Mod oder Plugin kommen alle im Team-Raum an, ohne Verbindungsabbruch. Eine Messung geht bei einem Verbindungsabbruch nicht verloren und steht im Raum genau einmal.
+
+**Nächste Aktion:** Release 0.17.0 über den Modrinth-Thread, Team-Raum ausrollen, Abnahme mit LINK-09.
+
+**Nur Philipp:** Im Spiel an deinem PC: Abnahme LINK-10: offline in mehreren Abschnitten bauen, wieder verbinden – alle Messungen genau einmal im Planer; mit Plugin bleibt die Raumverbindung stehen.
+
+**Prüfstand:** Unit-Tests, RoomClientTest gegen lokalen Team-Raum (wrangler dev), Ping/Schließen/Anwesenheit per WebSocket gegen wrangler dev geprüft; Spieltest und Abnahme durch Philipp offen.
+
+**Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/WsQueueTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/WsQueueTest.java) — Ersatz-Socket mit JDK-Verhalten: Reihenfolge, 8 Threads × 25 Rahmen ohne Verlust, Fehler einmal, Rückstau (05.11.2026).; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java) — Verlorene Antwort: Messung bleibt gemerkt, geht erneut raus, einmal im Raum (05.11.2026).; [tests/team-room.test.mjs](../tests/team-room.test.mjs) — Anwesenheit „Server“ nur mit Serverschlüssel (05.11.2026).
+
+**Dateiumfang:** `apps/web/src/views/project/roomClient.ts`, `apps/web/src/views/mod/releases.json`, `docs/architecture/FALLBACKS.md`, `docs/architecture/TEAM_LIVE.md`, `downloads/mod/bauplaner-bridge-fabric-26.3-0.17.0.jar`, `downloads/mod/bauplaner-bridge-neoforge-26.3-0.17.0.jar`, `downloads/mod/bauplaner-bridge-paper-0.17.0.jar`, `mods/bauplaner-bridge/CHANGELOG.md`, `mods/bauplaner-bridge/VERSION`, `mods/bauplaner-bridge/paper/build.gradle`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WsQueue.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/WsQueueTest.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`, `services/team-room/src/core.js`, `services/team-room/src/index.js`, `tests/team-room.test.mjs`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`. **Abhängigkeiten:** FALLBACK-01, LINK-07. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

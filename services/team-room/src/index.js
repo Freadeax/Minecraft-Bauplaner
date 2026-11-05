@@ -1,8 +1,8 @@
 // Cloudflare Worker + Durable Object for the Team-Raum (COOP-07, docs/architecture/TEAM_LIVE.md).
 // One Durable Object per room (SQLite storage), WebSocket hibernation for live pushes and presence.
-// Deploy: see services/team-room/README.md (Philipp's Cloudflare account; Claude does not deploy).
+// Deploy: see services/team-room/README.md (`npx wrangler deploy` with CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID).
 import { DurableObject } from 'cloudflare:workers';
-import { RoomCore, RoomError, ControlRelay, checkControl, cleanPresence, randomKey, LIMITS, PROTOCOL, VERSION } from './core.js';
+import { RoomCore, RoomError, ControlRelay, checkControl, cleanPresence, randomKey, LIMITS, PROTOCOL, VERSION, PING, PONG } from './core.js';
 
 const ALLOWED_ORIGINS = ['https://freadeax.github.io', 'http://127.0.0.1', 'http://localhost'];
 
@@ -82,6 +82,8 @@ export class TeamRoom extends DurableObject {
     super(ctx, env);
     this.core = new RoomCore(new SqlStore(ctx.storage.sql));
     this.relay = new ControlRelay();
+    // Mod and plugin send a ping every 30 s; answering it must not wake the room from hibernation.
+    try { this.ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair(PING, PONG)); } catch { /* older runtime: webSocketMessage answers */ }
   }
 
   async fetch(request) {
@@ -165,7 +167,7 @@ export class TeamRoom extends DurableObject {
     try {
       if (msg.type === 'hello') {
         const role = await this.core.auth(msg.key);
-        const presence = cleanPresence(msg);
+        const presence = cleanPresence(msg, undefined, role);
         ws.serializeAttachment({ authed: true, role, presence });
         ws.send(JSON.stringify({ type: 'welcome', ...this.core.info() }));
         let feed;
@@ -182,8 +184,8 @@ export class TeamRoom extends DurableObject {
         if (added?.length) this.broadcast({ type: 'events', events: added, cursor: answer.cursor });
         return;
       }
-      if (msg.type === 'presence') { ws.serializeAttachment({ ...att, presence: cleanPresence({ ...att.presence, ...msg, member: att.presence.member, device: att.presence.device }) }); this.sendPresence(); return; }
-      if (msg.type === 'ping') return ws.send(JSON.stringify({ type: 'pong' }));
+      if (msg.type === 'presence') { ws.serializeAttachment({ ...att, presence: cleanPresence({ ...att.presence, ...msg, member: att.presence.member, device: att.presence.device, since: att.presence.since }, undefined, att.role) }); this.sendPresence(); return; }
+      if (msg.type === 'ping') return ws.send(PONG); // only when the runtime has no auto response
       // LINK-07: the planner asks the games for a fresh recording of a project; only passed on, never stored.
       if (msg.type === 'ask' && msg.what === 'scan') {
         const out = JSON.stringify({ type: 'ask', what: 'scan', from: att.presence?.member ?? '?', ...(typeof msg.projectId === 'string' && { projectId: msg.projectId.slice(0, 64) }), ...(typeof msg.id === 'string' && { id: msg.id.slice(0, 64) }) });
@@ -203,8 +205,15 @@ export class TeamRoom extends DurableObject {
     }
   }
 
-  webSocketClose() { this.sendPresence(); }
-  webSocketError() { this.sendPresence(); }
+  /**
+   * A connection ended. The closing socket can still be listed by getWebSockets() here, so it is left out of the
+   * presence explicitly; closing it from this side completes the close handshake (otherwise the other side sees 1006).
+   */
+  webSocketClose(ws, code) {
+    try { ws.close(code >= 1000 && code < 5000 && code !== 1005 && code !== 1006 && code !== 1015 ? code : 1000, 'tschüss'); } catch { /* already closed */ }
+    this.sendPresence(ws);
+  }
+  webSocketError(ws) { this.sendPresence(ws); }
 
   /** The newest live connection of the Paper plugin (server key), or null. */
   serverSocket() {
@@ -212,13 +221,14 @@ export class TeamRoom extends DurableObject {
     return all.length ? all[all.length - 1] : null;
   }
 
-  broadcast(msg) {
+  broadcast(msg, except) {
     const text = JSON.stringify(msg);
-    for (const ws of this.ctx.getWebSockets()) if (ws.deserializeAttachment()?.authed) { try { ws.send(text); } catch { /* closed */ } }
+    for (const ws of this.ctx.getWebSockets()) if (ws !== except && ws.deserializeAttachment()?.authed) { try { ws.send(text); } catch { /* closed */ } }
   }
-  sendPresence() {
-    const list = this.ctx.getWebSockets().map(ws => ws.deserializeAttachment()).filter(a => a?.authed && a.presence).map(a => a.presence);
-    this.broadcast({ type: 'presence', members: list });
+  /** @param gone a socket that is closing and must not count as present */
+  sendPresence(gone) {
+    const list = this.ctx.getWebSockets().filter(ws => ws !== gone).map(ws => ws.deserializeAttachment()).filter(a => a?.authed && a.presence).map(a => a.presence);
+    this.broadcast({ type: 'presence', members: list }, gone);
   }
   closeRole(role) {
     for (const ws of this.ctx.getWebSockets()) if (ws.deserializeAttachment()?.role === role) ws.close(4403, 'schluessel-erneuert');

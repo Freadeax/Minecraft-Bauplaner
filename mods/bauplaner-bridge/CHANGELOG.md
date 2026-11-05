@@ -2,6 +2,18 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.17.0 – 2026-11-05
+
+**More reliable connection to the team room / Verbindung zum Team-Raum zuverlässiger**
+
+- Fixed: when several messages left the game at the same moment (e.g. waiting measurements after reconnecting, position and team actions), only the first one reached the team room – the others were dropped without notice. Messages now go out strictly one after the other.
+- Fixed: a measurement sent right before the connection broke could get lost. It now stays waiting until the team room confirms it, and goes out again with the same id (never twice in the room).
+- Optional server plugin: when it sent two messages at once (an answer to the planner and new team events), it dropped its room connection and reconnected. Now queued as well; it also keeps the connection alive with a small ping every 30 seconds and shows the room's error texts correctly.
+
+- Behoben: Gingen mehrere Nachrichten gleichzeitig aus dem Spiel (z. B. gemerkte Messungen nach dem Wiederverbinden, Position und Teamaktionen), kam nur die erste im Team-Raum an – die anderen fielen unbemerkt weg. Nachrichten gehen jetzt streng nacheinander raus.
+- Behoben: Eine Messung, die kurz vor einem Verbindungsabbruch rausging, konnte verloren gehen. Sie bleibt jetzt gemerkt, bis der Team-Raum sie bestätigt, und geht mit derselben Kennung erneut raus (im Raum nie doppelt).
+- Freiwilliges Server-Plugin: Schickte es zwei Nachrichten auf einmal (Antwort an den Planer und neue Teamereignisse), trennte es die Raumverbindung und verband neu. Jetzt ebenfalls in einer Warteschlange; dazu hält ein kleiner Ping alle 30 Sekunden die Verbindung offen, und Fehlertexte des Raums werden richtig angezeigt.
+
 ## 0.16.0 – 2026-11-04
 
 **Fallbacks: team mode keeps working when the connection does not / Ausweichwege: Teammodus läuft weiter, wenn die Verbindung nicht will**

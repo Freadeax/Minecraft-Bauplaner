@@ -29,11 +29,12 @@ test {
 }
 
 sourceSets.main.java.srcDir '../core/src/main/java'
-// Teamkanal (COOP-03): dasselbe Nachrichtenformat wie die Mod – nur Json und TeamWire aus dem Mod-Kern.
+// Teamkanal (COOP-03): dasselbe Nachrichtenformat wie die Mod – Json, TeamWire und die Sende-Warteschlange WsQueue aus dem Mod-Kern.
 def teamWire = tasks.register('teamWireSources', Sync) {
     from('../mod-core/src/main/java') {
         include 'io/github/freadeax/bauplaner/mod/live/Json.java'
         include 'io/github/freadeax/bauplaner/mod/team/TeamWire.java'
+        include 'io/github/freadeax/bauplaner/mod/live/WsQueue.java'
     }
     into layout.buildDirectory.dir('generated/teamwire')
 }

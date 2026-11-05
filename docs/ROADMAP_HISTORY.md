@@ -5778,3 +5778,36 @@ Prüfprotokoll der Prüfrunde Bibliothek/Welt/Team in TESTING ergänzt.
 - `tests/e2e/base-shore.e2e.mjs`
 - `tests/production.test.mjs`
 
+## 2026-11-05T10:30:50.888Z · progress
+
+**Aufgaben:** LINK-10
+
+Anbindung geprüft und gehärtet (Mod/Plugin 0.17.0): WebSocket-Rahmen über WsQueue streng nacheinander (vorher gingen gleichzeitige Rahmen still verloren bzw. das Plugin trennte), Messungen bis zur Bestätigung gemerkt, Team-Raum mit Ping ohne Aufwecken, sauberem Schließen und Server-Anwesenheit nur mit Serverschlüssel, Planer ohne gestapelte Abfrage-Schleifen. Geprüft: mod-core/core/paper-Unit-Tests, RoomClientTest gegen lokalen Team-Raum (wrangler dev), test_bridge_paper_room.sh (Paper 1.21.11, 26.3) und test_bridge_paper_link.sh über den Raum, Spieltest Fabric 26.3 mit Team-Raum und NeoForge 26.3 bestanden. Offen: Ausrollen des Team-Raums, Modrinth, Abnahme LINK-10.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LINK-10 | 🧩 Implementiert · Abnahme offen | 4/4 | Release 0.17.0 über den Modrinth-Thread, Team-Raum ausrollen, Abnahme mit LINK-09. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/mod/releases.json`
+- `apps/web/src/views/project/roomClient.ts`
+- `docs/architecture/FALLBACKS.md`
+- `docs/architecture/TEAM_LIVE.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.17.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.17.0.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.17.0.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WsQueue.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/WsQueueTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java`
+- `mods/bauplaner-bridge/paper/build.gradle`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`
+- `services/team-room/src/core.js`
+- `services/team-room/src/index.js`
+- `tests/team-room.test.mjs`
+

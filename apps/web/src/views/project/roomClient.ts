@@ -109,6 +109,8 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
   const ws = useRef<WebSocket | null>(null);
   const sending = useRef<string | null>(null);
   const [plan, setPlan] = useState<{ sha: string; number?: number; revision?: string }>({ sha: '' });
+  /** For the poll loop, which lives across renders and must see the current plan, not the first one. */
+  const planSha = useRef(''); planSha.current = plan.sha;
   const live = team?.live;
   const roomKey = live ? `${live.url}|${live.room}|${live.key}` : '';
 
@@ -146,9 +148,14 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
 
   useEffect(() => {
     if (!roomKey || !latest.current?.live) return;
-    let stopped = false, failures = 0, timer: ReturnType<typeof setTimeout> | undefined;
+    // One poll loop and one reconnect timer at most: every failed WebSocket used to start another poll chain,
+    // so a blocked WebSocket multiplied the HTTP requests with each retry.
+    let stopped = false, failures = 0, polling = false;
+    let openTimer: ReturnType<typeof setTimeout> | undefined, pollTimer: ReturnType<typeof setTimeout> | undefined;
+    const schedulePoll = (ms: number) => { clearTimeout(pollTimer); pollTimer = setTimeout(() => { void poll(); }, ms); };
     const poll = async () => {
-      const t = latest.current; if (stopped || !t?.live) return;
+      const t = latest.current; if (stopped || !t?.live || polling) return;
+      polling = true; clearTimeout(pollTimer);
       try {
         let feed: FeedAnswer, cur = t;
         const added: TeamEvent[] = [];
@@ -156,9 +163,10 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
         if (cur !== t) apply(cur);
         noteNews(added); caughtUp.current = true;
         flush(); setError(''); failures = 0;
-        if (!plan.sha) readHeader();
+        if (!planSha.current) readHeader();
       } catch (e) { failures++; setError(e instanceof Error ? e.message : String(e)); }
-      if (!stopped && ws.current?.readyState !== WebSocket.OPEN) timer = setTimeout(() => { void poll(); }, retryDelay(failures));
+      finally { polling = false; }
+      if (!stopped && ws.current?.readyState !== WebSocket.OPEN) schedulePoll(retryDelay(failures));
     };
     const open = () => {
       const t = latest.current; if (stopped || !t?.live) return;
@@ -170,7 +178,7 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
         let d: { type: string } & Record<string, unknown>;
         try { d = JSON.parse(String(m.data)); } catch { return; }
         const cur = latest.current; if (!cur?.live) return;
-        if (d.type === 'welcome') { setConnected(true); setError(''); failures = 0; caughtUp.current = false; flush(); if (d.header) readHeader(); void getScans(cur.live).then(setScans).catch(() => undefined); }
+        if (d.type === 'welcome') { clearTimeout(pollTimer); setConnected(true); setError(''); failures = 0; caughtUp.current = false; flush(); if (d.header) readHeader(); void getScans(cur.live).then(setScans).catch(() => undefined); }
         else if (d.type === 'scan' && d.scan && typeof d.scan === 'object') { const sc = d.scan as RoomScan; setScans(l => [sc, ...l.filter(x => x.id !== sc.id)].slice(0, 12)); }
         else if (d.type === 'asked') setAsked({ games: Number(d.games) || 0, ...(typeof d.message === 'string' && { message: d.message }), at: Date.now() });
         else if (d.type === 'header' || d.type === 'plan') readHeader();
@@ -189,13 +197,13 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
         if (stopped) return;
         if (ev.code === 4401 || ev.code === 4403) { setError('Der Team-Raum kennt diesen Schlüssel nicht mehr. Bitte die Bauleitung um einen neuen Einladungslink.'); return; }
         failures++; void poll();
-        timer = setTimeout(open, retryDelay(failures));
+        clearTimeout(openTimer); openTimer = setTimeout(open, retryDelay(failures));
       };
     };
     open();
-    const onOnline = () => { if (!ws.current) { failures = 0; open(); } };
+    const onOnline = () => { if (!ws.current) { failures = 0; clearTimeout(openTimer); open(); } };
     window.addEventListener('online', onOnline);
-    return () => { stopped = true; clearTimeout(timer); window.removeEventListener('online', onOnline); ws.current?.close(); ws.current = null; setConnected(false); };
+    return () => { stopped = true; clearTimeout(openTimer); clearTimeout(pollTimer); window.removeEventListener('online', onOnline); ws.current?.close(); ws.current = null; setConnected(false); };
   }, [roomKey, me]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Where I am: my section in progress goes to the others' "Gerade da" whenever it changes.

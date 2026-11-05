@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-05T10:29:43.640Z",
+  "updatedAt": "2026-11-05T10:30:50.888Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -10132,6 +10132,101 @@
           "text": "Abnahme LINK-09: mit Team live kurz das Internet trennen, Minecraft neu starten, Teamstand und „Baustand holen (bester Weg)“ prüfen."
         }
       ]
+    },
+    {
+      "phase": "P4",
+      "priority": "P1",
+      "owner": "Claude (Thread „Anbindung von Mod, Team-Raum und Planer prüfen“)",
+      "legacyIds": [],
+      "blockers": [],
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-05T10:30:50.888Z",
+      "area": "MOD",
+      "thread": "Anbindung von Mod, Team-Raum und Planer prüfen",
+      "orphans": [],
+      "id": "LINK-10",
+      "title": "Anbindung geprüft und gehärtet: Sendungen über den WebSocket nacheinander (Mod und Plugin), Messungen bis zur Bestätigung gemerkt, Team-Raum mit Ping ohne Aufwecken und sauberem Schließen, Planer ohne gestapelte Abfrage-Schleifen",
+      "status": "implemented",
+      "dependencies": [
+        "FALLBACK-01",
+        "LINK-07"
+      ],
+      "scope": [
+        "apps/web/src/views/project/roomClient.ts",
+        "apps/web/src/views/mod/releases.json",
+        "docs/architecture/FALLBACKS.md",
+        "docs/architecture/TEAM_LIVE.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.17.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.17.0.jar",
+        "downloads/mod/bauplaner-bridge-paper-0.17.0.jar",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/paper/build.gradle",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WsQueue.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/WsQueueTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java",
+        "services/team-room/src/core.js",
+        "services/team-room/src/index.js",
+        "tests/team-room.test.mjs",
+        "apps/web/src/testing/testplan.ts",
+        "docs/testing/TESTPLAN.md"
+      ],
+      "steps": [
+        {
+          "id": "LINK-10-S01",
+          "title": "Mod und Plugin: alle WebSocket-Rahmen über WsQueue streng nacheinander (JDK erlaubt nur eine offene Sendung, zweite scheiterte still mit „Send pending“); Plugin trennte vorher bei gleichzeitiger Steuerantwort und Ereignissen.",
+          "done": true
+        },
+        {
+          "id": "LINK-10-S02",
+          "title": "Mod: section.seen/store.seen bleiben gemerkt, bis der Raum die Kennung beantwortet; über HTTP stilles Nachsenden nach 10 s.",
+          "done": true
+        },
+        {
+          "id": "LINK-10-S03",
+          "title": "Team-Raum: Ping per setWebSocketAutoResponse ohne Aufwecken, webSocketClose schließt sauber und lässt die Verbindung aus der Anwesenheit, „Server“ nur mit Serverschlüssel; Plugin pingt alle 30 s, Rahmen über 4 MB trennen.",
+          "done": true
+        },
+        {
+          "id": "LINK-10-S04",
+          "title": "Planer: höchstens eine Abfrage-Schleife und ein Wiederverbindungs-Zeitgeber (vorher je gescheitertem WebSocket eine weitere Schleife); Planstand-Prüfung ohne veraltete Closure.",
+          "done": true
+        }
+      ],
+      "acceptance": [
+        "Mehrere gleichzeitige Nachrichten von Mod oder Plugin kommen alle im Team-Raum an, ohne Verbindungsabbruch.",
+        "Eine Messung geht bei einem Verbindungsabbruch nicht verloren und steht im Raum genau einmal."
+      ],
+      "evidence": [
+        {
+          "path": "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/WsQueueTest.java",
+          "note": "Ersatz-Socket mit JDK-Verhalten: Reihenfolge, 8 Threads × 25 Rahmen ohne Verlust, Fehler einmal, Rückstau (05.11.2026)."
+        },
+        {
+          "path": "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java",
+          "note": "Verlorene Antwort: Messung bleibt gemerkt, geht erneut raus, einmal im Raum (05.11.2026)."
+        },
+        {
+          "path": "tests/team-room.test.mjs",
+          "note": "Anwesenheit „Server“ nur mit Serverschlüssel (05.11.2026)."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Unit-Tests, RoomClientTest gegen lokalen Team-Raum (wrangler dev), Ping/Schließen/Anwesenheit per WebSocket gegen wrangler dev geprüft; Spieltest und Abnahme durch Philipp offen."
+      },
+      "next": "Release 0.17.0 über den Modrinth-Thread, Team-Raum ausrollen, Abnahme mit LINK-09.",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "Abnahme LINK-10: offline in mehreren Abschnitten bauen, wieder verbinden – alle Messungen genau einmal im Planer; mit Plugin bleibt die Raumverbindung stehen."
+        }
+      ]
     }
   ],
   "events": [
@@ -19013,6 +19108,45 @@
           "done": 6,
           "total": 8,
           "next": "Abnahme PROJ-19 und BIB-19 im Spiel; danach Wegenetz der Basis als Landschaftsweg (S08)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-05T10:30:50.888Z",
+      "kind": "progress",
+      "items": [
+        "LINK-10"
+      ],
+      "summary": "Anbindung geprüft und gehärtet (Mod/Plugin 0.17.0): WebSocket-Rahmen über WsQueue streng nacheinander (vorher gingen gleichzeitige Rahmen still verloren bzw. das Plugin trennte), Messungen bis zur Bestätigung gemerkt, Team-Raum mit Ping ohne Aufwecken, sauberem Schließen und Server-Anwesenheit nur mit Serverschlüssel, Planer ohne gestapelte Abfrage-Schleifen. Geprüft: mod-core/core/paper-Unit-Tests, RoomClientTest gegen lokalen Team-Raum (wrangler dev), test_bridge_paper_room.sh (Paper 1.21.11, 26.3) und test_bridge_paper_link.sh über den Raum, Spieltest Fabric 26.3 mit Team-Raum und NeoForge 26.3 bestanden. Offen: Ausrollen des Team-Raums, Modrinth, Abnahme LINK-10.",
+      "files": [
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/mod/releases.json",
+        "apps/web/src/views/project/roomClient.ts",
+        "docs/architecture/FALLBACKS.md",
+        "docs/architecture/TEAM_LIVE.md",
+        "docs/testing/TESTPLAN.md",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.17.0.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.17.0.jar",
+        "downloads/mod/bauplaner-bridge-paper-0.17.0.jar",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WsQueue.java",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/WsQueueTest.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java",
+        "mods/bauplaner-bridge/paper/build.gradle",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java",
+        "services/team-room/src/core.js",
+        "services/team-room/src/index.js",
+        "tests/team-room.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "LINK-10",
+          "status": "implemented",
+          "done": 4,
+          "total": 4,
+          "next": "Release 0.17.0 über den Modrinth-Thread, Team-Raum ausrollen, Abnahme mit LINK-09."
         }
       ]
     }

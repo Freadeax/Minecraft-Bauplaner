@@ -41,6 +41,8 @@ class RoomFallbackTest {
         final List<JsonObject> rows = new CopyOnWriteArrayList<>();
         final List<String> gets = new CopyOnWriteArrayList<>();
         final List<String> wsTries = new CopyOnWriteArrayList<>();
+        /** Stores POSTed events but answers 503 – like an answer lost on the way back. */
+        volatile boolean loseAnswers;
 
         FakeRoom(int port) throws IOException {
             server = HttpServer.create(new InetSocketAddress("127.0.0.1", port), 0);
@@ -71,6 +73,7 @@ class RoomFallbackTest {
                                 else { rows.add(e.getAsJsonObject()); accepted.add(id); }
                             }
                         }
+                        if (loseAnswers) { send(x, 503, "{\"error\":\"weg\"}"); return; }
                         send(x, 200, "{\"cursor\":\"" + rows.size() + "\",\"accepted\":" + accepted + ",\"known\":" + known + ",\"rejected\":[]}");
                     } else {
                         String q = x.getRequestURI().getRawQuery();
@@ -107,11 +110,11 @@ class RoomFallbackTest {
     @BeforeEach
     void fast() {
         every = RoomClient.pollEveryMs; soon = RoomClient.pollSoonMs; welcome = RoomClient.welcomeTimeoutMs;
-        RoomClient.pollEveryMs = 150; RoomClient.pollSoonMs = 50; RoomClient.welcomeTimeoutMs = 1_000;
+        RoomClient.pollEveryMs = 150; RoomClient.pollSoonMs = 50; RoomClient.welcomeTimeoutMs = 1_000; RoomClient.resendAfterMs = 200;
     }
 
     @AfterEach
-    void back() { RoomClient.pollEveryMs = every; RoomClient.pollSoonMs = soon; RoomClient.welcomeTimeoutMs = welcome; }
+    void back() { RoomClient.pollEveryMs = every; RoomClient.pollSoonMs = soon; RoomClient.welcomeTimeoutMs = welcome; RoomClient.resendAfterMs = 10_000; }
 
     static void until(BooleanSupplier ok, String what) throws InterruptedException {
         for (int i = 0; i < 200 && !ok.getAsBoolean(); i++) Thread.sleep(50);
@@ -152,7 +155,17 @@ class RoomFallbackTest {
             // A measurement goes out directly.
             assertTrue(client.report("section.seen", new LinkedHashMap<>(Map.of("section", "sec_a", "placed", 10, "total", 50))));
             until(() -> room.has("section.seen"), "Messung über HTTP");
-            assertEquals(0, client.pendingReports());
+            until(() -> client.pendingReports() == 0, "vom Raum bestätigt");
+
+            // The answer to a measurement gets lost: it stays waiting and goes out again with the same id.
+            room.loseAnswers = true;
+            assertTrue(client.report("store.seen", new LinkedHashMap<>(Map.of("chest", "ch_1", "items", Map.of("minecraft:stone", 12)))));
+            until(() -> room.has("store.seen"), "Messung im Raum angekommen");
+            Thread.sleep(300);
+            assertEquals(1, client.pendingReports(), "ohne Antwort bleibt sie gemerkt");
+            room.loseAnswers = false;
+            until(() -> client.pendingReports() == 0, "beim nächsten Versuch bestätigt (known)");
+            assertEquals(1, room.rows.stream().filter(r -> "store.seen".equals(r.get("kind").getAsString())).count(), "nicht doppelt im Raum");
         } finally { client.close(); room.stop(); }
     }
 
@@ -201,7 +214,7 @@ class RoomFallbackTest {
             until(() -> b.has("section.seen"), "gemerkte Messung nachgereicht: " + again.status() + " " + again.lastError());
             JsonObject seen = b.first("section.seen");
             assertEquals(7, seen.get("placed").getAsInt(), "nur die neueste Messung");
-            assertEquals(0, again.pendingReports());
+            until(() -> again.pendingReports() == 0, "nachgereichte Messung bestätigt");
             assertTrue(!b.gets.isEmpty() && "2".equals(b.gets.get(0)), "nur der Rest ab dem gespeicherten Cursor: " + b.gets);
             until(() -> again.events() == 4, "neues Ereignis dazu, nichts doppelt: " + again.events());
         } finally { again.close(); if (back != null) back.stop(); }

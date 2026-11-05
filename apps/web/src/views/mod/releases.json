@@ -642,6 +642,53 @@
       "releasedAt": "2026-11-04",
       "sourceCommit": "73f9f560ff7ff284bb9810f509af78c2b27d138e",
       "tested": "Spieltest Minecraft 26.3 NeoForge (04.11.2026): Hologramm, Website-Verbindung, Baustand"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.17.0.jar",
+      "modVersion": "0.17.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 489214,
+      "sha256": "4bbfb47f2d8d152815cdb205c15386ef1b4c1fc9b8624d6e6721bae904688832",
+      "releasedAt": "2026-11-05",
+      "sourceCommit": "bc5993e438e122005e5ff96366608475f051bf8f",
+      "tested": "Minecraft 26.3 Fabric: echter Spieltest (Hologramm, Website-Verbindung, Team-Raum lokal per wrangler dev) bestanden 05.11.2026"
+    },
+    {
+      "file": "bauplaner-bridge-paper-0.17.0.jar",
+      "modVersion": "0.17.0",
+      "loader": "paper",
+      "minecraft": "26.3",
+      "loaderMin": "1.18",
+      "minecraftVersions": [
+        "1.18.2",
+        "1.20.6",
+        "1.21.4",
+        "1.21.11",
+        "26.3"
+      ],
+      "java": "17",
+      "bytes": 249613,
+      "sha256": "5faeb483449437439289af15753da6a819bd78b21e99631e4539a3b59507a445",
+      "releasedAt": "2026-11-05",
+      "sourceCommit": "bc5993e438e122005e5ff96366608475f051bf8f",
+      "tested": "Paper 1.21.11 und 26.3: Team-Raum (test_bridge_paper_room.sh) und Server ohne Befehle über den Raum (test_bridge_paper_link.sh) bestanden 05.11.2026"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.17.0.jar",
+      "modVersion": "0.17.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 485473,
+      "sha256": "2bd5d0d700962f9f5ce5e0dbada8097428c1ad3ea01ecebda6cc1e32f3df0b8f",
+      "releasedAt": "2026-11-05",
+      "sourceCommit": "bc5993e438e122005e5ff96366608475f051bf8f",
+      "tested": "Minecraft 26.3 NeoForge: echter Spieltest (Hologramm, Website-Verbindung, Baustand) bestanden 05.11.2026"
     }
   ]
 }

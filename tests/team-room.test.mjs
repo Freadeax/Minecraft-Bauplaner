@@ -145,6 +145,9 @@ test('room: without a server file (LINK-07) – player positions in the presence
   assert.equal(cleanPos({ x: 1e9, y: 0, z: 0 }), null);
   assert.equal(cleanPos({ x: 1, y: 2, z: 3, dim: 'böse' }).dim, 'minecraft:overworld');
   assert.equal(cleanPresence({ where: 'spiel', player: 'kein name!' }).player, undefined);
+  assert.equal(cleanPresence({ member: 'mem_x', where: 'server' }, undefined, 'member').where, 'planer', 'nur der Serverschlüssel erscheint als Server');
+  assert.equal(cleanPresence({ member: 'server', where: 'planer' }, undefined, 'server').where, 'server');
+  assert.equal(cleanPresence({ member: 'mem_x', where: 'spiel' }, undefined, 'admin').where, 'spiel');
 
   const core = new RoomCore(new MemoryStore());
   await core.create({ room: 'r_scans01', teamId: 'team_a', name: 'A' });

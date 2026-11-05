@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.github.freadeax.bauplaner.mod.live.WsQueue;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URLDecoder;
@@ -50,6 +51,10 @@ import org.bukkit.scheduler.BukkitTask;
  */
 final class RoomLink implements TeamUplink {
     static final int BATCH = 200;
+    /** Largest frame from the room (a page of 500 events of at most 4 KB each fits easily). */
+    static final int MAX_FRAME = 4 * 1024 * 1024;
+    /** Keep-alive every 30 s (600 ticks): the room answers without waking up, idle sockets are not cut by proxies. */
+    static final long PING_TICKS = 600L;
     private static final String PREFIX = "Team-Raum: ";
 
     private final JavaPlugin plugin;
@@ -70,13 +75,15 @@ final class RoomLink implements TeamUplink {
         String teamId, cursor, status = "verbindet …";
         final LinkedHashSet<String> outbox = new LinkedHashSet<>();
         WebSocket ws;
+        /** Frames over {@link #ws} one after the other: the JDK socket fails a second outstanding send. */
+        WsQueue out;
+        BukkitTask ping;
         boolean live, stopped, caughtUp;
         long backoff = 5;
         BukkitTask retry;
         /** Batch in flight: batch id → event ids. */
         String inflight;
         List<String> inflightIds = List.of();
-        final StringBuilder partial = new StringBuilder();
 
         Room(String base, String rid, String key, String device) { this.base = base; this.rid = rid; this.key = key; this.device = device; }
 
@@ -253,6 +260,10 @@ final class RoomLink implements TeamUplink {
             if (ex != null) { retry(r, "nicht erreichbar (" + reason(ex) + ")"); return; }
             if (r.stopped) { ws.sendClose(WebSocket.NORMAL_CLOSURE, "stop"); return; }
             r.ws = ws; r.live = true; r.caughtUp = false; r.inflight = null;
+            r.out = new WsQueue(ws, failure -> main(() -> lost(r, ws, reason(failure))));
+            if (r.ping != null) r.ping.cancel();
+            JsonObject ping = new JsonObject(); ping.addProperty("type", "ping");
+            r.ping = Bukkit.getScheduler().runTaskTimer(plugin, () -> { if (r.ws == ws) send(r, ping); }, PING_TICKS, PING_TICKS);
             JsonObject hello = new JsonObject();
             hello.addProperty("type", "hello"); hello.addProperty("key", r.key); hello.addProperty("member", "server");
             hello.addProperty("device", r.device); hello.addProperty("where", "server");
@@ -262,14 +273,21 @@ final class RoomLink implements TeamUplink {
     }
 
     private void send(Room r, JsonObject m) {
-        WebSocket ws = r.ws;
-        if (ws == null) return;
-        ws.sendText(TeamLog.GSON.toJson(m), true).exceptionally(ex -> { main(() -> lost(r, ws, reason(ex))); return null; });
+        WsQueue q = r.out;
+        if (q == null || r.ws == null) return;
+        q.send(TeamLog.GSON.toJson(m)); // a failure ends the connection through the queue's onFail (lost)
+    }
+
+    /** Forgets the current socket (main thread). */
+    private static void drop(Room r) {
+        r.ws = null; r.out = null; r.live = false; r.inflight = null;
+        if (r.ping != null) { r.ping.cancel(); r.ping = null; }
     }
 
     private void lost(Room r, WebSocket ws, String why) {
         if (r.ws != ws) return;
-        r.ws = null; r.live = false; r.inflight = null;
+        try { ws.abort(); } catch (RuntimeException ignored) { }
+        drop(r);
         retry(r, "Verbindung verloren (" + why + ")");
     }
 
@@ -285,7 +303,8 @@ final class RoomLink implements TeamUplink {
     private void stop(Room r, String why) {
         r.stopped = true; r.live = false; r.status = why;
         if (r.retry != null) r.retry.cancel();
-        if (r.ws != null) { try { r.ws.sendClose(WebSocket.NORMAL_CLOSURE, why); } catch (RuntimeException ignored) { } r.ws = null; }
+        if (r.ws != null) { try { r.ws.sendClose(WebSocket.NORMAL_CLOSURE, why); } catch (RuntimeException ignored) { } }
+        drop(r);
     }
 
     private void main(Runnable task) {
@@ -302,13 +321,21 @@ final class RoomLink implements TeamUplink {
 
     private final class Listener implements WebSocket.Listener {
         private final Room r;
+        /** Parts of the current frame; one per socket, so a broken old socket cannot mix into a new one. */
+        private final StringBuilder partial = new StringBuilder();
         Listener(Room r) { this.r = r; }
 
         @Override public CompletionStage<?> onText(WebSocket ws, CharSequence data, boolean last) {
-            r.partial.append(data);
+            if (partial.length() + data.length() > MAX_FRAME) {
+                partial.setLength(0);
+                ws.abort();
+                main(() -> lost(r, ws, "Nachricht vom Raum größer als 4 MB"));
+                return null;
+            }
+            partial.append(data);
             if (last) {
-                String text = r.partial.toString();
-                r.partial.setLength(0);
+                String text = partial.toString();
+                partial.setLength(0);
                 main(() -> { if (r.ws == ws) message(r, text); });
             }
             ws.request(1);
@@ -318,7 +345,7 @@ final class RoomLink implements TeamUplink {
         @Override public CompletionStage<?> onClose(WebSocket ws, int code, String reason) {
             main(() -> {
                 if (r.ws != ws) return;
-                r.ws = null; r.live = false; r.inflight = null;
+                drop(r);
                 if (code == 4401 || code == 4403) {
                     r.stopped = true;
                     r.status = "Schlüssel ungültig oder erneuert – im Planer unter „Team live“ erneut „Server mit dem Raum verbinden“ klicken";
@@ -367,7 +394,7 @@ final class RoomLink implements TeamUplink {
                 else teams.reload();
             }));
             case "control" -> control(r, m);
-            case "error" -> plugin.getLogger().warning(PREFIX + "Raum meldet: " + Optional.ofNullable(TeamLog.str(m, "message")).orElse(TeamLog.str(m, "code")));
+            case "error" -> plugin.getLogger().warning(PREFIX + "Raum meldet: " + Optional.ofNullable(TeamLog.str(m, "message")).orElse(TeamLog.str(m, "error")));
             default -> { }
         }
     }

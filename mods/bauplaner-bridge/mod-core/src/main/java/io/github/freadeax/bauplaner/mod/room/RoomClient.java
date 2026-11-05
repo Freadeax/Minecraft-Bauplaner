@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.freadeax.bauplaner.mod.live.Json;
+import io.github.freadeax.bauplaner.mod.live.WsQueue;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -77,6 +78,8 @@ public final class RoomClient {
     static final int WS_FAILS_FOR_POLL = 2;
     /** Poll pause in normal operation, shortly after an own append and between WebSocket probes. */
     static long pollEveryMs = 5_000, pollSoonMs = 1_000, probeEveryMs = 5 * 60_000, welcomeTimeoutMs = 15_000;
+    /** While polling: own measurements without an answer this long go out again (same ids, the room answers "known"). */
+    static long resendAfterMs = 10_000;
 
     private final Path file;
     /** {@code raum-stand.json} next to {@code raum.json}: header, events and cursor of the last contact. */
@@ -88,6 +91,8 @@ public final class RoomClient {
     private volatile Status status = Status.OFF;
     private volatile String lastError;
     private WebSocket ws;
+    /** Frames over {@link #ws} strictly one after the other (the JDK socket fails a second outstanding send). */
+    private WsQueue out;
     private ScheduledFuture<?> retry, ping, poll, save, welcomeWait;
     private int attempts;
     /** FALLBACK-01: polling instead of a WebSocket; WebSocket failures in a row while HTTP worked. */
@@ -208,9 +213,12 @@ public final class RoomClient {
                 if (ex != null) { failed(reason(ex), unwrap(ex) instanceof Refused, headerGen == gen); return; }
                 if (socket == null) return;
                 ws = socket;
+                out = new WsQueue(socket, ex2 -> timer.execute(() -> { synchronized (this) {
+                    if (gen == generation && ws == socket) { ws = null; out = null; socket.abort(); failed("Senden: " + reason(ex2), false, welcomedGen != gen); }
+                } }));
                 // A proxy may accept the upgrade and then swallow everything: no welcome in time counts as a WebSocket failure.
                 welcomeWait = timer.schedule(() -> { synchronized (this) {
-                    if (gen == generation && welcomedGen != gen && ws != null) { WebSocket w = ws; ws = null; w.abort(); failed("keine Antwort über den WebSocket", false, true); }
+                    if (gen == generation && welcomedGen != gen && ws != null) { WebSocket w = ws; ws = null; out = null; w.abort(); failed("keine Antwort über den WebSocket", false, true); }
                 } }, welcomeTimeoutMs, TimeUnit.MILLISECONDS);
                 Map<String, Object> hello = new LinkedHashMap<>();
                 hello.put("type", "hello"); hello.put("key", c.key()); hello.put("member", c.member()); hello.put("device", c.device());
@@ -248,6 +256,7 @@ public final class RoomClient {
         if (poll != null) { poll.cancel(false); poll = null; }
         if (welcomeWait != null) { welcomeWait.cancel(false); welcomeWait = null; }
         if (ws != null) { try { ws.sendClose(WebSocket.NORMAL_CLOSURE, "aus"); } catch (RuntimeException ignored) { } ws = null; }
+        out = null;
     }
 
     /**
@@ -258,7 +267,7 @@ public final class RoomClient {
         if (ping != null) { ping.cancel(false); ping = null; }
         if (poll != null) { poll.cancel(false); poll = null; }
         if (welcomeWait != null) { welcomeWait.cancel(false); welcomeWait = null; }
-        ws = null;
+        ws = null; out = null;
         lastError = why;
         presence = List.of();
         if (refused) { status = Status.REFUSED; polling = false; notify.accept("Team-Raum: " + why + ". Im Planer unter „Team live“ das Spiel neu verbinden."); onChange.run(); return; }
@@ -326,7 +335,7 @@ public final class RoomClient {
                 status = Status.LIVE; attempts = 0; wsFails = 0; polling = false; lastError = null; syncedAt = System.currentTimeMillis();
                 if (first) notify.accept(fromPoll ? "Team-Raum wieder über den WebSocket verbunden."
                         : "Team live über den Team-Raum" + (config.teamName() != null ? " „" + config.teamName() + "“" : "") + " – ohne Server-Datei.");
-                flushReports();
+                flushReports(true);
                 onChange.run();
             }
             case "events" -> { ingest(m); onChange.run(); }
@@ -362,9 +371,9 @@ public final class RoomClient {
     }
 
     private void send(Map<String, Object> m) {
-        WebSocket w = ws;
-        if (w == null) return;
-        try { w.sendText(Json.write(m), true); } catch (RuntimeException e) { lastError = "Senden: " + e.getMessage(); }
+        WsQueue q = out;
+        if (q == null) return;
+        q.send(Json.write(m));
     }
 
     // ------------------------------------------------------------------ use
@@ -489,8 +498,10 @@ public final class RoomClient {
     }
 
     /**
-     * Sends a report the game measured itself (section.seen, store.seen; unverified, origin planer) straight to the
-     * room – no outbox: a newer report replaces it anyway. False when not live or no member.
+     * Sends a report the game measured itself (section.seen, store.seen; unverified, origin planer) to the room.
+     * It stays in {@link #reports} until the room confirmed (accepted, known or rejected) its id, so a connection
+     * that breaks right after sending loses nothing; a newer report for the same section/chest replaces it.
+     * False only without a room.
      */
     public synchronized boolean report(String kind, Map<String, Object> body) {
         if (config == null) return false;
@@ -500,26 +511,35 @@ public final class RoomClient {
         e.put("id", id); e.put("at", io.github.freadeax.bauplaner.mod.team.TeamWire.time(java.time.Instant.now())); e.put("by", config.member()); e.put("origin", "planer"); e.put("kind", kind);
         e.putAll(body);
         String key = kind + ":" + (body.get("section") instanceof String s ? s : body.get("chest") instanceof String s ? s : "");
+        // FALLBACK-01: kept until confirmed – while the room is away it goes out on reconnect (flushReports).
         reports.remove(key);
-        if (live() && append("b_" + id, List.of(e))) { scheduleSave(); return true; }
-        // FALLBACK-01: room away – keep the newest measurement per section/chest and send it on reconnect.
         reports.put(key, e);
         while (reports.size() > MAX_REPORTS) reports.remove(reports.keySet().iterator().next());
+        if (live()) append("b_" + id, List.of(e));
         scheduleSave();
         return true;
     }
 
-    private void flushReports() {
+    /** The room answered for these ids: own measurements with them are done. */
+    private synchronized void reportsDone(List<String> ids) {
+        if (reports.isEmpty() || ids.isEmpty()) return;
+        java.util.Set<String> done = new java.util.HashSet<>(ids);
+        if (reports.values().removeIf(e -> done.contains(e.get("id")))) scheduleSave();
+    }
+
+    /** @param announce tell the player (after an outage), not for a quiet resend while polling */
+    private void flushReports(boolean announce) {
         if (reports.isEmpty() || !live()) return;
         long now = System.currentTimeMillis();
-        List<Map<String, Object>> out = new ArrayList<>();
+        List<Map<String, Object>> due = new ArrayList<>();
         for (Map<String, Object> e : reports.values()) {
             try { if (now - java.time.Instant.parse((String) e.get("at")).toEpochMilli() > REPORT_TTL_MS) continue; } catch (RuntimeException ignored) { continue; }
-            out.add(e);
+            due.add(e);
         }
-        reports.clear();
-        for (Map<String, Object> e : out) append("b_" + e.get("id"), List.of(e));
-        if (!out.isEmpty()) notify.accept("Team-Raum: " + out.size() + (out.size() == 1 ? " gemerkte Messung" : " gemerkte Messungen") + " aus der Offline-Zeit nachgereicht.");
+        reports.values().removeIf(e -> !due.contains(e));
+        // Each one with its own batch id: repeated after a lost answer, the room answers from its batch memory.
+        for (Map<String, Object> e : due) append("b_" + e.get("id"), List.of(e));
+        if (announce && !due.isEmpty()) notify.accept("Team-Raum: " + due.size() + (due.size() == 1 ? " gemerkte Messung" : " gemerkte Messungen") + " aus der Offline-Zeit nachgereicht.");
         scheduleSave();
     }
 
@@ -550,7 +570,7 @@ public final class RoomClient {
         lastError = "WebSocket nicht möglich – Abgleich über HTTP";
         probeAt = System.currentTimeMillis() + probeEveryMs;
         if (first) notify.accept("Team-Raum: WebSocket gesperrt (Netz oder Proxy?) – die Mod gleicht jetzt über HTTP ab. Alles geht weiter, nur mit ein paar Sekunden Verzögerung.");
-        flushReports();
+        flushReports(true);
         schedulePoll(0);
         onChange.run();
     }
@@ -586,6 +606,8 @@ public final class RoomClient {
                     if (events.size() != before || m.has("reset")) onChange.run();
                 } catch (RuntimeException e) { failed("Antwort nicht lesbar: " + e.getMessage(), false, false); return; }
                 lastError = "WebSocket nicht möglich – Abgleich über HTTP";
+                // A lost POST answer leaves measurements unconfirmed: send them again now and then.
+                if (!reports.isEmpty() && System.currentTimeMillis() - lastAppendAt >= resendAfterMs) flushReports(false);
                 schedulePoll(more ? 0 : System.currentTimeMillis() - lastAppendAt < 10_000 ? pollSoonMs : pollEveryMs);
             }
         });
@@ -614,11 +636,16 @@ public final class RoomClient {
         List<String> ok = new ArrayList<>();
         for (JsonElement e : TeamLog.array(m, "accepted")) ok.add(e.getAsString());
         for (JsonElement e : TeamLog.array(m, "known")) ok.add(e.getAsString());
-        if (!ok.isEmpty()) onAck.accept(ok);
+        List<String> rejected = new ArrayList<>();
         for (JsonElement e : TeamLog.array(m, "rejected")) {
+            if (!e.isJsonObject()) continue;
             JsonObject r = e.getAsJsonObject();
+            rejected.add(TeamLog.str(r, "id"));
             onReject.accept(TeamLog.str(r, "id"), TeamLog.str(r, "reason"));
         }
+        if (!ok.isEmpty()) onAck.accept(ok);
+        List<String> done = new ArrayList<>(ok); done.addAll(rejected);
+        reportsDone(done);
     }
 
     private void scheduleSave() {
