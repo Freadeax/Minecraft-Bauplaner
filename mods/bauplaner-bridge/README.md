@@ -125,7 +125,8 @@ Die Mod (Fabric, NeoForge) und das Paper-Plugin erscheinen als ein Projekt auf M
 
 - `modrinth/project.json` – Titel, Kurztext, Sichtbarkeit, Kategorien, Seiten, Lizenz, Links, Loader und Abhängigkeiten (Fabric braucht die Fabric API). Forge fehlt bewusst, bis es im Spiel geprüft ist.
 - `modrinth/DESCRIPTION.md` – Projektseite, Englisch (Pflicht bei Modrinth) und Deutsch.
-- `modrinth/icon.png`, `modrinth/gallery/` – Icon und Bilder aus den Spieltests.
+- `modrinth/icon.png`, `modrinth/gallery/` – Icon und Bilder, alle echte Spielaufnahmen aus den Spieltests (keine KI-Bilder, Modrinth-Regel 6.2).
+- `project.json` → `disclosures` – Offenlegungen (Content Disclosures, API v3): KI-Anteil an Code und Text, Telemetrie nur mit Zustimmung (Team-Raum), Systemzugriffe (127.0.0.1, Zwischenablage). Bei neuen Netz- oder Datenfunktionen hier nachziehen.
 - `CHANGELOG.md` – je Version ein Abschnitt `## <Version>`, wird unverändert als Änderungsliste hochgeladen.
 
 Hochgeladen werden genau die .jar aus `downloads/mod/`, die `releases.json` ab `firstVersion` nennt (SHA-256 wird verglichen). Ohne GitHub Actions (Projektregel): Der Token liegt als Umgebungsvariable `MODRINTH_TOKEN` in der Cloud-Umgebung des Projekts und nie im Repo. Nötige Rechte: Create/Read/Write projects, Create/Read versions.
@@ -135,7 +136,7 @@ node scripts/mod/modrinth_publish.mjs check     # offline, auch in npm test
 node scripts/mod/modrinth_publish.mjs plan      # was passieren würde
 node scripts/mod/modrinth_publish.mjs create    # einmalig: Projekt anlegen, Bilder, Versionen, zur Prüfung einreichen
 node scripts/mod/modrinth_publish.mjs release   # nach jeder Mod-Veröffentlichung: fehlende Versionen hochladen
-node scripts/mod/modrinth_publish.mjs sync      # nach Änderungen an Text, Bildern oder Kategorien
+node scripts/mod/modrinth_publish.mjs sync      # Text, Icon, Galerie (ersetzen, entfernen, sortieren) und Offenlegungen abgleichen; release macht das bei jeder Version mit
 ```
 
 Ablauf bei einer neuen Mod-Version: bauen und im Spiel prüfen, `release_mod.mjs` je Loader, Abschnitt in `CHANGELOG.md`, Push auf main, dann `modrinth_publish.mjs release`.

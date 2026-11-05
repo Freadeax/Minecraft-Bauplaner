@@ -1027,3 +1027,9 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `tests/unit/tooling/cloudflare-pages.test.mjs` 1/1 (Upload-Ordner, Mod-Downloads, `_headers`, `_redirects`), `tests/unit/team/team-room.test.mjs` 5/5 nach neuer Herkunft.
 - Live (Upload aus dem geprüften Artefakt von 9c76f89): `/` → 302 auf `/Minecraft-Bauplaner/`, Startseite, `sw.js`, `deployment.json` und ein Mod-Download 200; `assets/*` mit `content-encoding: br` und `max-age=31536000, immutable`. Chromium gegen die Live-Adresse: Start bis Projektzentrale aus der Katalogdatei (`snapshot`), Service Worker steuert die Seite, keine Seitenfehler.
 - Offen: Team-Raum-Deploy mit neuer Herkunft, Mod-Herkunft (S03); Safari/iPad.
+
+## GAME-09 · Modrinth-Seite vollständig: Offenlegungen, Galerie, Icon · 05.11.2026 · Claude
+- `tests/unit/mod/modrinth.test.mjs` 5/5 (neu: Offenlegungen ai_content code+text, telemetry opt_in, system_interactions mit 127.0.0.1; kaputte Offenlegung wird abgelehnt).
+- Echter Spieltest Fabric 26.3 (`scripts/mod/test_bridge_ingame.sh`, BAUPLANER_KEEP) bestanden; daraus neue Galeriebilder (Hologramm, Materialliste, Befehle & Status, Team-Befehle, Team-HUD, „Planer zulassen“). Icon jetzt ein Ausschnitt einer echten Spielaufnahme (Geisterblöcke mit Shader) statt der gezeichneten Würfelgrafik.
+- Echte Modrinth-API: `sync` setzte Beschreibung (Stand 0.17.0), Offenlegungen (API v3 `PATCH /project/{id}/disclosures` mit `set`/`remove`), Icon (Vergleich über SHA-1 im raw_icon_url) und Galerie (4 alte Bilder entfernt, 6 neue, Reihenfolge und Hervorhebung); zweiter Lauf: alles „aktuell“, nichts doppelt. `release` ruft danach immer `sync` auf.
+- Befund nebenbei: Im Planmenü überlappen bei 854×480 „Befehle & Status“/„Fertig“ die Zeile „Abschnitt: alle“ (kleines Fenster/hohe GUI-Größe).

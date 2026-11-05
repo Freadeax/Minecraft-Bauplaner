@@ -7,16 +7,17 @@
 - **Hologram of your plan.** Load a `.schem` exported from the Bauplaner, put it where you are looking, then move, rotate and mirror it. The position is remembered per world and server.
 - **Live progress.** The HUD shows how much is done and how many blocks are missing, wrong or in the wrong state (stairs facing the wrong way, for example), and points you to the next mistake.
 - **Layers, sections and x-ray.** Show all layers, one layer or everything up to a layer. Build the plan section by section as planned on the website, and see open blocks through walls.
-- **Material list.** Lists what is still open, what is in your inventory and what you still need to fetch. Shulker boxes and bundles you carry are counted.
-- **Placement helper.** Optionally stops you from placing a wrong block or a wrong rotation inside the plan, or only warns you. You can pick the planned block straight into your hand.
-- **Link to the website (optional).** On the same PC, the Bauplaner website can send plans and map markers to the game and read back the build state. The link only listens on `127.0.0.1` and only starts after `/bauplaner verbinden`, which shows a code you enter on the website.
-- **Team building (optional).** With the Bauplaner Paper plugin on the server, a team can claim sections, report them as done and see who builds what. The mod only talks to the server after you run `/bauplaner team erlauben` once on that server.
+- **Material and packing list.** What is still open, what you carry (shulker boxes and bundles count) and what you still need to fetch, in stacks and shulker boxes, with the nearest team storage chest that holds it.
+- **Placement helper.** Optionally stops you from placing a wrong block or a wrong rotation inside the plan, or only warns you. Pick the planned block straight into your hand. `/bauplaner geruest` finds floating parts and falling blocks without support.
+- **Commands & status.** Press `J` → *Commands & status* for every command as a button, and to see how the mod is connected.
+- **Link to the planner on the same PC.** The website finds the game by itself. Nothing happens until you press `J` in the game and click *Allow planner*. Then the website can send plans and map markers to the game and read back the build state. You can also set map markers in the game (`/bauplaner markieren`).
+- **Team building (optional).** Connect your game to your team's *team room* from the planner with one click. Section owners, reports, notes and storage chests come live into the game, and your own actions go to the team. Nothing goes to the Minecraft server; the server needs no plugin for this. If the network blocks WebSockets, the mod falls back to plain HTTP, and it keeps the last team state when you are offline.
 - **Large builds.** Plans with up to 4 million blocks load in the background and are checked in slices.
 
 ## Good to know
 
 - **Client-side.** The mod works in singleplayer and on any multiplayer server. The server does not need it.
-- **No internet.** The mod sends nothing to the internet. Plans are files in your game folder (`bauplaner/plans`).
+- **What goes over the network.** Without a team room, nothing leaves your PC: the planner link only listens on `127.0.0.1`. With a team room (your choice in the planner), the mod sends your player name, your position and build section while you play, and your team actions and measurements to that room. See *Content disclosures* on this page.
 - **Language.** Key bindings are in English and German. The HUD, menus and chat messages are currently in German.
 - **Keys.** `J` opens the plan menu. All keys can be changed under *Options → Controls → Bauplaner*. `/bauplaner` lists all commands.
 - **Works with** Iris with shader packs, Xaero's Minimap, Jade and REI (tested in a real Fabric modpack).
@@ -29,7 +30,7 @@
 | NeoForge | Minecraft 26.3 client | NeoForge 26.3.0.100+, Java 25 |
 | Paper plugin (optional) | Paper **server** 1.18.2 to 26.3 | Java 17+. Goes into the server's `plugins` folder, not into a client `mods` folder |
 
-The Paper plugin reads a build area on the server to record progress, and is the team hub for team building. It never changes the world.
+The Paper plugin is optional. It sets itself up, an operator pairs it from the planner with one click, and nobody needs to type server commands. It adds what only a server can do: recording the build state of the whole area, enforced section protection, checked team storage chests and yield chests for farms. It never changes the world.
 
 ## Links
 
@@ -47,9 +48,10 @@ The Paper plugin reads a build area on the server to record progress, and is the
 - **Hologramm** an der gewünschten Stelle, verschieben, drehen, spiegeln; die Lage wird je Welt und Server gemerkt.
 - **Baustand live** im HUD mit Hinweis auf den nächsten Fehler.
 - **Ebenen, Bauabschnitte und Röntgensicht.**
-- **Materialliste** mit Inventar, Shulkerkisten und Bündeln.
-- **Platzierhilfe**, die falsche Blöcke verhindert oder nur warnt.
-- **Website-Verbindung** (freiwillig, nur auf demselben PC über `127.0.0.1`).
-- **Teambau** (freiwillig) mit dem Paper-Plugin auf dem Server, erst nach `/bauplaner team erlauben`.
+- **Material- und Packliste** mit Inventar, Shulkerkisten, Bündeln und der nächsten Team-Kiste.
+- **Platzierhilfe**, die falsche Blöcke verhindert oder nur warnt; `/bauplaner geruest` findet schwebende Teile.
+- **Befehle & Status** im J-Menü: jeder Befehl als Knopf, dazu der Verbindungsstand.
+- **Planer auf demselben PC:** Die Website findet das Spiel selbst; erst nach `J` → *Planer zulassen* tauscht sie Pläne, Markierungen und Baustand aus.
+- **Teambau** (freiwillig): Spiel im Planer mit einem Klick mit dem Team-Raum verbinden. Abschnitte, Meldungen, Notizen und Kisten kommen live ins Spiel. Der Minecraft-Server braucht dafür nichts.
 
-Reine Client-Mod, sendet nichts ins Internet. `J` öffnet das Planmenü, alle Tasten unter *Optionen → Steuerung → Bauplaner*. Das Paper-Plugin gehört nur auf den Server in den Ordner `plugins`.
+Reine Client-Mod. Ohne Team-Raum verlässt nichts deinen PC; mit Team-Raum gehen Spielername, Position, Abschnitt, Teamaktionen und Messungen an diesen Raum. `J` öffnet das Planmenü, alle Tasten unter *Optionen → Steuerung → Bauplaner*. Das Paper-Plugin ist freiwillig und gehört nur auf den Server in den Ordner `plugins`.

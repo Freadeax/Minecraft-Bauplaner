@@ -4,8 +4,8 @@
 //                                               die hochzuladenden Dateien prüfen (läuft in npm test, braucht nichts).
 //   node scripts/mod/modrinth_publish.mjs plan      Zeigt, was create/sync/release tun würden. Ohne Token nur öffentliche Daten.
 //   node scripts/mod/modrinth_publish.mjs create    Legt das Projekt als Entwurf an (Icon, Bilder, Versionen) und reicht es zur Prüfung ein.
-//   node scripts/mod/modrinth_publish.mjs sync      Gleicht Titel, Kurztext, Beschreibung, Kategorien, Links und Bilder ab.
-//   node scripts/mod/modrinth_publish.mjs release   Lädt jede Version aus releases.json hoch, die auf Modrinth noch fehlt.
+//   node scripts/mod/modrinth_publish.mjs sync      Gleicht Texte, Kategorien, Links, Icon, Galerie (ersetzen/entfernen/sortieren) und Offenlegungen ab.
+//   node scripts/mod/modrinth_publish.mjs release   Lädt fehlende Versionen hoch und ruft danach sync auf.
 //
 // Quelle der Dateien ist apps/web/src/views/mod/releases.json mit downloads/mod/ (dieselben geprüften .jar wie auf der
 // Website, SHA-256 wird verglichen). Metadaten: mods/bauplaner-bridge/modrinth/, Änderungen: mods/bauplaner-bridge/CHANGELOG.md.
@@ -24,6 +24,7 @@ const MANIFEST = 'apps/web/src/views/mod/releases.json';
 const CHANGELOG = 'mods/bauplaner-bridge/CHANGELOG.md';
 const SIDES = ['required', 'optional', 'unsupported'];
 const STATUSES = ['approved', 'unlisted', 'private'];
+const DISCLOSURES = ['ai_content', 'ai_functionality', 'advertisements', 'paid_features', 'telemetry', 'derivative_work', 'epilepsy_triggers', 'system_interactions', 'archived'];
 const ENVIRONMENTS = ['client_only', 'server_only', 'client_and_server', 'client_only_server_optional', 'server_only_client_optional', 'client_or_server', 'client_or_server_prefers_both', 'singleplayer_only', 'dedicated_server_only'];
 
 export function loadConfig(root = '.') {
@@ -94,9 +95,17 @@ export function checkConfig(cfg) {
     need(g.title && g.title.length <= 255, `Bild ${g.file}: Titel fehlt`);
   }
   need(p.gallery.filter(g => g.featured).length <= 1, 'höchstens ein hervorgehobenes Bild');
+  need(new Set(p.gallery.map(g => sha1(join(root, DIR, g.file)))).size === p.gallery.length, 'zwei Galeriebilder sind dieselbe Datei');
+  for (const d of p.disclosures ?? []) {
+    need(DISCLOSURES.includes(d.type), `Offenlegung ${d.type} unbekannt`);
+    if (d.type === 'telemetry') need(['opt_in', 'opt_out', 'always_active'].includes(d.consent) && d.data_collected?.length, 'Offenlegung telemetry braucht consent und data_collected');
+    if (d.type === 'ai_content') need(d.uses?.length && d.uses.every(u => ['code', 'assets', 'text'].includes(u)), 'Offenlegung ai_content braucht uses (code, assets, text)');
+    if (d.type === 'system_interactions') need(d.interactions?.length, 'Offenlegung system_interactions braucht interactions');
+    if (['advertisements', 'epilepsy_triggers'].includes(d.type)) need(d.note?.length > 20, `Offenlegung ${d.type} braucht eine Erklärung`);
+  }
   // Philipp 03.11.2026: no AI tool names anywhere on Modrinth (texts, changelogs, image titles).
   const forbidden = /claude|anthropic/i;
-  const texts = [p.title, p.summary, body, ...p.gallery.flatMap(g => [g.title, g.description ?? ''])];
+  const texts = [p.title, p.summary, body, ...p.gallery.flatMap(g => [g.title, g.description ?? '']), JSON.stringify(p.disclosures ?? [])];
   need(!texts.some(t => forbidden.test(t)), 'Projekttext oder Bildtitel nennt ein KI-Werkzeug');
   const wanted = wantedVersions(cfg);
   need(wanted.length > 0, `keine Version ab ${p.firstVersion} in ${MANIFEST}`);
@@ -112,6 +121,10 @@ export function checkConfig(cfg) {
   }
   return problems;
 }
+
+function sha1(path) { return existsSync(path) ? createHash('sha1').update(readFileSync(path)).digest('hex') : null; }
+/** Modrinth names uploaded images by the SHA-1 of the original file (raw_url / raw_icon_url). */
+function liveSha1(url) { return url?.match(/\/([0-9a-f]{40})\.[a-z]+$/)?.[1] ?? null; }
 
 async function api(method, path, { token, json, form, raw, contentType, ok = [200, 201, 204], base = API } = {}) {
   const headers = { 'User-Agent': UA };
@@ -184,19 +197,53 @@ async function create(cfg, dry) {
   await submit(cfg, t, false);
 }
 
+/** Gallery exactly as project.json: same files (SHA-1), titles, texts, order and featured image; extra images go. */
 async function syncGallery(cfg, t, dry) {
   const { project: p } = cfg;
   const live = await api('GET', `/project/${p.slug}`, { token: t });
-  const have = new Set((live?.gallery ?? []).map(g => g.title));
-  let order = 0;
+  const byHash = new Map((live?.gallery ?? []).map(g => [liveSha1(g.raw_url), g]));
+  const wanted = new Set(p.gallery.map(g => sha1(join(cfg.root, DIR, g.file))));
+  let order = 0, changes = 0;
+  const say = (msg) => { changes++; console.log(`${dry ? '[plan] würde ' : ''}${msg}`); };
+  // Remove first, so the new featured image never competes with an old one.
+  for (const [hash, g] of byHash) if (!wanted.has(hash)) {
+    say(`Bild entfernen: ${g.title}`);
+    if (!dry) await api('DELETE', `/project/${p.slug}/gallery?${new URLSearchParams({ url: g.url })}`, { token: t });
+  }
   for (const g of p.gallery) {
     order++;
-    if (have.has(g.title)) continue;
-    console.log(`${dry ? '[plan] würde Bild hochladen' : 'Bild'}: ${g.file}`);
-    if (dry) continue;
-    const q = new URLSearchParams({ ext: 'png', featured: String(!!g.featured), title: g.title, description: g.description ?? '', ordering: String(order) });
-    await api('POST', `/project/${p.slug}/gallery?${q}`, { token: t, raw: readFileSync(join(cfg.root, DIR, g.file)), contentType: 'image/png' });
+    const hash = sha1(join(cfg.root, DIR, g.file));
+    const meta = { featured: String(!!g.featured), title: g.title, description: g.description ?? '', ordering: String(order) };
+    const have = byHash.get(hash);
+    if (!have) {
+      say(`Bild hochladen: ${g.file}`);
+      if (!dry) await api('POST', `/project/${p.slug}/gallery?${new URLSearchParams({ ext: 'png', ...meta })}`, { token: t, raw: readFileSync(join(cfg.root, DIR, g.file)), contentType: 'image/png' });
+    } else if (have.title !== g.title || (have.description ?? '') !== meta.description || have.featured !== !!g.featured || have.ordering !== order) {
+      say(`Bildangaben ändern: ${g.file}`);
+      if (!dry) await api('PATCH', `/project/${p.slug}/gallery?${new URLSearchParams({ url: have.url, ...meta })}`, { token: t });
+    }
   }
+  if (!changes) console.log('Galerie aktuell.');
+}
+
+async function syncIcon(cfg, t, dry) {
+  const { project: p } = cfg;
+  const live = await api('GET', `/project/${p.slug}`, { token: t, base: API3 });
+  const file = join(cfg.root, DIR, p.icon);
+  if (liveSha1(live?.raw_icon_url) === sha1(file)) { console.log('Icon aktuell.'); return; }
+  console.log(dry ? '[plan] würde das Icon ersetzen' : 'Ersetze das Icon.');
+  if (!dry) await api('PATCH', `/project/${p.slug}/icon?ext=png`, { token: t, raw: readFileSync(file), contentType: 'image/png' });
+}
+
+/** Content disclosures (API v3 only): exactly the list in project.json. */
+async function syncDisclosures(cfg, t, dry) {
+  const { project: p } = cfg;
+  const want = (p.disclosures ?? []).map(d => Object.fromEntries(Object.entries(d).filter(([k]) => k !== 'updated_at')));
+  const live = await api('GET', `/project/${p.slug}/disclosures`, { token: t, base: API3 });
+  const norm = list => JSON.stringify((list ?? []).map(d => Object.fromEntries(Object.entries(d).filter(([k, v]) => !['updated_at', 'updated_by', 'set_by_moderator', 'lock_status', 'deleted_at'].includes(k) && v != null && !(Array.isArray(v) && !v.length)).sort())).sort((a, b) => a.type.localeCompare(b.type)));
+  if (norm(live?.disclosures) === norm(want)) { console.log('Offenlegungen aktuell.'); return; }
+  console.log(`${dry ? '[plan] würde Offenlegungen setzen' : 'Setze Offenlegungen'}: ${want.map(d => d.type).join(', ') || 'keine'}`);
+  if (!dry) await api('PATCH', `/project/${p.slug}/disclosures`, { token: t, json: { set: want, remove: (live?.disclosures ?? []).map(d => d.type).filter(type => !want.some(w => w.type === type)) }, base: API3 });
 }
 
 async function sync(cfg, dry) {
@@ -213,7 +260,9 @@ async function sync(cfg, dry) {
   });
   console.log(diff.length ? `${dry ? '[plan] würde ändern' : 'Ändere'}: ${diff.join(', ')}` : 'Projekttexte aktuell.');
   if (diff.length && !dry) await api('PATCH', `/project/${p.slug}`, { token: t, json: Object.fromEntries(diff.map(k => [k, want[k]])) });
+  await syncIcon(cfg, t, dry);
   await syncGallery(cfg, t, dry);
+  await syncDisclosures(cfg, t, dry);
   if (live.status === 'draft') await submit(cfg, t, dry);
 }
 
@@ -230,7 +279,7 @@ async function release(cfg, dry) {
   if (!live) { console.log(`Projekt ${p.slug} gibt es noch nicht – zuerst create.`); return; }
   const have = await existingVersions(p.slug, t);
   const missing = wantedVersions(cfg).filter(v => !have.has(v.version_number));
-  if (!missing.length) { console.log('Alle Versionen sind schon auf Modrinth.'); return; }
+  if (!missing.length) console.log('Alle Versionen sind schon auf Modrinth.');
   for (const v of missing) {
     console.log(`${dry ? '[plan] würde hochladen' : 'Lade hoch'}: ${v.version_number} (${v.file}, Minecraft ${v.game_versions.join(', ')})`);
     if (dry) continue;
@@ -248,6 +297,8 @@ async function release(cfg, dry) {
     await api('PATCH', `/version/${made.id}`, { token: t, json: { environment: v.environment }, base: API3 });
     console.log(`  → https://modrinth.com/mod/${p.slug}/version/${made.id} (${v.environment})`);
   }
+  // Every release also brings text, icon, gallery and disclosures up to date (Philipp 05.11.2026).
+  if (!dry) await sync(cfg, false);
 }
 
 async function main() {
@@ -258,7 +309,7 @@ async function main() {
   if (cmd === 'check') { console.log(`Modrinth-Daten in Ordnung: ${wantedVersions(cfg).map(v => v.version_number).join(', ')}.`); return; }
   const online = await checkOnline(cfg);
   if (online.length) { console.error('Modrinth lehnt ab:\n- ' + online.join('\n- ')); process.exit(1); }
-  if (cmd === 'plan') { await create(cfg, true); await sync(cfg, true); await release(cfg, true); return; }
+  if (cmd === 'plan') { await create(cfg, true); await release(cfg, true); await sync(cfg, true); return; }
   if (cmd === 'create') return create(cfg, false);
   if (cmd === 'sync') return sync(cfg, false);
   if (cmd === 'release') return release(cfg, false);

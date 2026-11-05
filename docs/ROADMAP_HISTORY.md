@@ -6782,3 +6782,31 @@ S02 Cloudflare Pages live (bauplaner.pages.dev, gratis), publish_pages.sh lädt 
 - `services/team-room/src/index.js`
 - `tests/unit/tooling/cloudflare-pages.test.mjs`
 
+## 2026-11-05T12:05:46.647Z · progress
+
+**Aufgaben:** GAME-09
+
+Modrinth-Seite vollständig: Offenlegungen (KI-Anteil Code/Text, Telemetrie nur mit Zustimmung über den Team-Raum, Systemzugriffe), Beschreibung Stand 0.17.0, neue Galerie und Icon aus echtem Spieltest; release gleicht Text, Icon, Galerie und Offenlegungen bei jeder Version ab
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+- `mods/bauplaner-bridge/README.md`
+- `mods/bauplaner-bridge/modrinth/DESCRIPTION.md`
+- `mods/bauplaner-bridge/modrinth/gallery/01-hologram.png`
+- `mods/bauplaner-bridge/modrinth/gallery/04-material-list.png`
+- `mods/bauplaner-bridge/modrinth/gallery/05-commands-status.png`
+- `mods/bauplaner-bridge/modrinth/gallery/05-plan-menu.png`
+- `mods/bauplaner-bridge/modrinth/gallery/06-team-commands.png`
+- `mods/bauplaner-bridge/modrinth/gallery/06-website-link.png`
+- `mods/bauplaner-bridge/modrinth/gallery/07-team-hud.png`
+- `mods/bauplaner-bridge/modrinth/gallery/08-allow-planner.png`
+- `mods/bauplaner-bridge/modrinth/icon.png`
+- `mods/bauplaner-bridge/modrinth/project.json`
+- `scripts/mod/modrinth_publish.mjs`
+- `tests/unit/mod/modrinth.test.mjs`
+

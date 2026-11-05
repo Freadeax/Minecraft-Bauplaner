@@ -33,3 +33,13 @@ test('Modrinth-Hilfen: Versionsvergleich und Abschnitt der Änderungsliste', () 
   assert.equal(changelogFor(log, '0.1.0'), null);
   assert.equal(changelogFor('## 0.10.0\n- a\n', '0.1.0'), null);
 });
+
+test('Modrinth-Offenlegungen: KI-Anteil, Team-Raum nur mit Zustimmung, lokale Verbindung beschrieben', () => {
+  const cfg = loadConfig();
+  const byType = Object.fromEntries((cfg.project.disclosures ?? []).map(d => [d.type, d]));
+  assert.deepEqual(byType.ai_content?.uses, ['code', 'text']);
+  assert.equal(byType.telemetry?.consent, 'opt_in');
+  assert.ok(byType.system_interactions?.interactions.some(i => i.includes('127.0.0.1')));
+  const broken = structuredClone(cfg.project); broken.disclosures = [{ type: 'telemetry', consent: 'maybe', data_collected: [] }];
+  assert.ok(checkConfig({ ...cfg, project: broken }).some(p => p.includes('telemetry')));
+});

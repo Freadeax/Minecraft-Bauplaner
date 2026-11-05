@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-05T11:59:28.525Z",
+  "updatedAt": "2026-11-05T12:05:46.647Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -8111,7 +8111,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-05T12:05:46.647Z",
       "area": "MODRINTH",
       "thread": "Mod auf Modrinth veröffentlichen",
       "philipp": [],
@@ -21732,6 +21732,40 @@
           "done": 2,
           "total": 3,
           "next": "PERF-06-S03: Team-Raum mit neuer Herkunft deployen (zusammen mit dem offenen LINK-10-Raum-Deploy) und Mod-Herkunft in der nächsten Mod-Version (Thread „Anbindung von Planer, Mod und Server neu denken“)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-05T12:05:46.647Z",
+      "kind": "progress",
+      "items": [
+        "GAME-09"
+      ],
+      "summary": "Modrinth-Seite vollständig: Offenlegungen (KI-Anteil Code/Text, Telemetrie nur mit Zustimmung über den Team-Raum, Systemzugriffe), Beschreibung Stand 0.17.0, neue Galerie und Icon aus echtem Spieltest; release gleicht Text, Icon, Galerie und Offenlegungen bei jeder Version ab",
+      "files": [
+        "docs/TESTING.md",
+        "mods/bauplaner-bridge/README.md",
+        "mods/bauplaner-bridge/modrinth/DESCRIPTION.md",
+        "mods/bauplaner-bridge/modrinth/gallery/01-hologram.png",
+        "mods/bauplaner-bridge/modrinth/gallery/04-material-list.png",
+        "mods/bauplaner-bridge/modrinth/gallery/05-commands-status.png",
+        "mods/bauplaner-bridge/modrinth/gallery/05-plan-menu.png",
+        "mods/bauplaner-bridge/modrinth/gallery/06-team-commands.png",
+        "mods/bauplaner-bridge/modrinth/gallery/06-website-link.png",
+        "mods/bauplaner-bridge/modrinth/gallery/07-team-hud.png",
+        "mods/bauplaner-bridge/modrinth/gallery/08-allow-planner.png",
+        "mods/bauplaner-bridge/modrinth/icon.png",
+        "mods/bauplaner-bridge/modrinth/project.json",
+        "scripts/mod/modrinth_publish.mjs",
+        "tests/unit/mod/modrinth.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 4,
+          "total": 5,
+          "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind."
         }
       ]
     }

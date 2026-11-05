@@ -48,14 +48,24 @@
       "description": "What is still open, what is in your inventory and what you still need to fetch."
     },
     {
-      "file": "gallery/05-plan-menu.png",
-      "title": "Plan menu",
-      "description": "Load a plan, move, rotate and mirror it, or put it where you are looking."
+      "file": "gallery/05-commands-status.png",
+      "title": "Commands & status",
+      "description": "J → Commands & status: every command as a button, the plan's progress and how the mod is connected."
     },
     {
-      "file": "gallery/06-website-link.png",
-      "title": "Link to the planner website",
-      "description": "Optional local link to the Bauplaner website on the same PC: send plans and map markers, read back the build state."
+      "file": "gallery/06-team-commands.png",
+      "title": "Team building commands",
+      "description": "Claim, hand back and finish sections, or show where a section is – right from the menu."
+    },
+    {
+      "file": "gallery/07-team-hud.png",
+      "title": "Your team task in the HUD",
+      "description": "“My task” shows your sections and what is still open; frames show who builds what."
+    },
+    {
+      "file": "gallery/08-allow-planner.png",
+      "title": "Allow the planner",
+      "description": "The Bauplaner website on this PC asks to connect; nothing is exchanged until you click Allow planner."
     }
   ],
   "firstVersion": "0.10.0",
@@ -91,5 +101,38 @@
       "dependencies": [],
       "environment": "server_only"
     }
-  }
+  },
+  "disclosures": [
+    {
+      "type": "ai_content",
+      "uses": [
+        "code",
+        "text"
+      ],
+      "note": "The source code, the documentation and the texts of this page were written with substantial help from an AI coding assistant. The author designs every feature, directs and reviews the work and tests it in the real game. The icon and all gallery images are real in-game screenshots; no image is AI-generated. The mod itself contains no AI features."
+    },
+    {
+      "type": "telemetry",
+      "consent": "opt_in",
+      "data_collected": [
+        "Only after you connect your game to a team room in the planner, and only to that room (by default the project's own service on Cloudflare Workers, or a room your team runs itself):",
+        "your Minecraft player name, your team member ID and a device name",
+        "your block position, dimension and current build section while you play (at most every 2 seconds, only after moving)",
+        "your team actions: claimed and finished sections, notes, deliveries",
+        "build measurements per section (placed, missing, wrong blocks) and the content of team storage chests you open",
+        "build-state recordings of loaded chunks when your team requests one",
+        "Optional Paper plugin, if the server operator connects it to a team room: server-side build measurements, checked storage chests and farm yield counts"
+      ]
+    },
+    {
+      "type": "system_interactions",
+      "note": "Everything is local to this PC or goes to the team room you chose; the mod never contacts the Minecraft server unless you allow team building there.",
+      "interactions": [
+        "While the game runs, a small service answers on 127.0.0.1 (port 47615 by default, reachable only from this PC) so the Bauplaner website in your browser can find the game. Plans, map markers and build state are exchanged only after you click “Allow planner” in the game (J menu).",
+        "With a team room connected in the planner: an outgoing WebSocket or HTTPS connection to that room.",
+        "/bauplaner diagnose copies a diagnosis report to the clipboard.",
+        "Plans, settings, the team room address and reports are stored in the game folder under bauplaner/."
+      ]
+    }
+  ]
 }
