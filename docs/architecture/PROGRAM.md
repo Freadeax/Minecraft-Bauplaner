@@ -72,8 +72,26 @@ Vier Erweiterungen, alle optional im selben Datensatz `project.site.program` (Sc
 
 **Prüfung.** `tests/program-depth.test.mjs` (Bautage zwischen Daten, Anteil, Start in der Vergangenheit, Basisplan mit Verzug/Bereinigung/Sicherung, Material abwarten gegen Produktion, Altbestand), `tests/e2e/program-depth.e2e.mjs` (1400/390 px, Port 4337), Testphase PROJ-16…18.
 
+## Runde 3 PROJ-03 (05.11.2026)
+
+Weiter optional in `project.site.program`, ältere Projekte bleiben unverändert:
+
+| Feld | Bedeutung |
+|---|---|
+| `builders[].absences` | Abwesenheiten `{from, to, note?}` als Tage, geordnet und ohne Überlappung (`addAbsence` fügt angrenzende zusammen), höchstens 24, jede höchstens ein Jahr, Grund ≤ 80 Zeichen. |
+| `baseline.name` | Name des aktiven Basisplans (1–60 Zeichen). |
+| `baselines` | Frühere Basispläne (neueste zuerst, höchstens 8), gleiche Form wie `baseline`. |
+
+**Abwesenheiten im Zeitplan.** Mit Startdatum rechnet `planProgram` für Bahnen mit Abwesenheiten Tag für Tag: an einem Bautag, an dem alle zugewiesenen Bauleute eines Abschnitts abwesend sind, ruht der Abschnitt (`ScheduledSection.absent` zählt diese Tage, `sessions` bleibt die Arbeitszeit). Bei gemeinsamen Abschnitten baut, wer da ist, mit seinem Tempo weiter. Ohne Abwesenheit bleibt die alte, geschlossene Rechnung (Altbestand identisch). Ohne Startdatum gibt es keine Daten, ein Hinweis sagt „Abwesenheiten wirken erst mit einem Startdatum“.
+
+**Basisplan-Verlauf.** `setBaseline(site, plan, today, name?)` schiebt den bisherigen Basisplan in `baselines`; `clearBaseline` holt den neuesten früheren zurück; `activateBaseline(site, i)` tauscht einen früheren mit dem aktiven (Vergleichen), `renameBaseline(site, i | -1, name)`, `removeBaseline(site, i)`. `planProgram` liefert `baselines[]` mit `end`/`slip` je früherem Plan, damit die Liste „Frühere Basispläne“ den Verzug gegen jeden Stand zeigt. `removeSection` bereinigt alle Basispläne.
+
+**Team → Planung.** `teamIntoProgram(program, view, today)` übernimmt „abwesend bis“ eines Mitglieds als Abwesenheit von heute bis zu diesem Tag (nicht doppelt, nichts Vergangenes) und meldet die Zahl.
+
+**Prüfung.** `tests/program-absence.test.mjs`, `tests/e2e/program-absence.e2e.mjs` (1400/390 px, Port 4345), Testphase PROJ-20.
+
 ## Grenzen
 
 - Bautage sind Projektionen aus Bautempo und Restbedarf – keine Messung, keine Sammel- oder Laufzeiten. Ein Abschnitt ist die kleinste Planungseinheit; ein großer Abschnitt mit einer Person bleibt lang.
 - Abhängigkeiten gelten erst als erfüllt, wenn alle Schritte des vorausgesetzten Abschnitts abgehakt sind (auch geprüfte Schritte aus dem Spiel zählen erst nach dem Abhaken).
-- Keine Teamsynchronisation: Bauleute sind Namen im lokalen Projekt; wer was abhakt, wird nicht festgehalten (TEAM-03). Lagerbuchungen je Bauleute und Abhängigkeiten zwischen verschiedenen Projekten auf der Weltkarte sind offen.
+- Keine Teamsynchronisation: Bauleute sind Namen im lokalen Projekt; wer was abhakt, wird nicht festgehalten (TEAM-03). Abwesenheiten sind ganze Tage (keine halben). Lagerbuchungen je Bauleute und Abhängigkeiten zwischen verschiedenen Projekten auf der Weltkarte sind offen.

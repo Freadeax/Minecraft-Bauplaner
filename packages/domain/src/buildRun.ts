@@ -37,10 +37,14 @@ export interface BuildAnchor {
   /** World coordinate of project 0/0/0; null = project not placed, only relative coordinates. */
   readonly origin: Vec3 | null;
   readonly dimension: string | null;
+  /** MAP-07: turn of the world placement (missing = ungedreht); relative coordinates stay project coordinates. */
+  readonly turns?: number;
+  readonly mirror?: boolean;
 }
 
 export function anchorOf(project: Pick<Project, 'world'>): BuildAnchor {
-  return project.world ? { origin: project.world.origin, dimension: project.world.dimension } : { origin: null, dimension: null };
+  const w = project.world;
+  return w ? { origin: w.origin, dimension: w.dimension, ...(w.turns && { turns: w.turns }), ...(w.mirror && { mirror: true }) } : { origin: null, dimension: null };
 }
 
 /** Anchor written by the game bridge into a recording (`WorldAnchor`, `Dimension`); null when the recording has none. */
@@ -52,7 +56,16 @@ export function anchorFromScan(meta: ScanMeta | null | undefined): BuildAnchor |
 export const sameAnchor = (a: BuildAnchor, b: BuildAnchor): boolean =>
   !!a.origin && !!b.origin && a.origin.every((v, i) => v === b.origin![i]) && (a.dimension ?? '') === (b.dimension ?? '');
 
-export const worldPos = (p: Vec3, anchor: BuildAnchor): Vec3 | null => anchor.origin ? [p[0] + anchor.origin[0], p[1] + anchor.origin[1], p[2] + anchor.origin[2]] : null;
+const turnXZ = (x: number, z: number, anchor: BuildAnchor): [number, number] => {
+  if (anchor.mirror) x = -x;
+  for (let i = 0; i < ((((anchor.turns ?? 0) % 4) + 4) % 4); i++) { const k = x; x = -z; z = k; }
+  return [x, z];
+};
+export const worldPos = (p: Vec3, anchor: BuildAnchor): Vec3 | null => {
+  if (!anchor.origin) return null;
+  const [x, z] = turnXZ(p[0], p[2], anchor);
+  return [x + anchor.origin[0], p[1] + anchor.origin[1], z + anchor.origin[2]];
+};
 
 // ---------------------------------------------------------------------------
 // Schichtführung (rows and rectangles of equal cells)
@@ -142,7 +155,9 @@ const PLACEMENT_PROPS = new Set(['facing', 'half', 'type', 'axis', 'rotation', '
 export function runCoords(run: Pick<StepRun, 'x0' | 'x1' | 'z0' | 'z1' | 'y'>, anchor: BuildAnchor): { rel: string; abs: string | null } {
   const rel = `X ${span(run.x0, run.x1)} · Y ${run.y} · Z ${span(run.z0, run.z1)}`;
   const o = anchor.origin;
-  return { rel, abs: o ? `X ${span(run.x0 + o[0], run.x1 + o[0])} · Y ${run.y + o[1]} · Z ${span(run.z0 + o[2], run.z1 + o[2])}` : null };
+  if (!o) return { rel, abs: null };
+  const [ax, az] = turnXZ(run.x0, run.z0, anchor), [bx, bz] = turnXZ(run.x1, run.z1, anchor);
+  return { rel, abs: `X ${span(Math.min(ax, bx) + o[0], Math.max(ax, bx) + o[0])} · Y ${run.y + o[1]} · Z ${span(Math.min(az, bz) + o[2], Math.max(az, bz) + o[2])}` };
 }
 
 /** Plain text for one step (print sheet, copy to phone). */
@@ -396,7 +411,7 @@ export function progressByDay(progress: Readonly<Record<string, StepProgress>>, 
 export function sessionText(session: BuildSession, world: VoxelPayload, anchor: BuildAnchor, title: string): string {
   const lookup = cellLookup(world);
   const head = [title, `Bautag ${session.index}: ${session.steps.length} Schritte, ${session.work} Blöcke, Y ${span(session.minY, session.maxY)}`,
-    anchor.origin ? `Anker (Projekt 0/0/0) = Welt X ${anchor.origin[0]} · Y ${anchor.origin[1]} · Z ${anchor.origin[2]}${anchor.dimension ? ` (${anchor.dimension})` : ''}` : 'Koordinaten relativ zum Anker (Projekt 0/0/0); Weltlage nicht gesetzt.',
+    anchor.origin ? `Anker (Projekt 0/0/0) = Welt X ${anchor.origin[0]} · Y ${anchor.origin[1]} · Z ${anchor.origin[2]}${anchor.dimension ? ` (${anchor.dimension})` : ''}${anchor.turns || anchor.mirror ? `, Projekt ${anchor.mirror ? 'gespiegelt' : ''}${anchor.mirror && anchor.turns ? ' und ' : ''}${anchor.turns ? `um ${anchor.turns * 90}° im Uhrzeigersinn gedreht` : ''}` : ''}` : 'Koordinaten relativ zum Anker (Projekt 0/0/0); Weltlage nicht gesetzt.',
     '', 'Packliste:', packText(session.pack), ''];
   return [...head, ...session.steps.map(s => stepText(s, stepRunsIn(s, world, lookup), anchor))].join('\n');
 }

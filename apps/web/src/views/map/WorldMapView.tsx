@@ -6,6 +6,7 @@ import {
   rotateItem, selectionBounds, selectionPivot, splitPath, updateItemsOp,
   layerNames, marksForMod, routePath, setLayerOp, trailToPath, pointTypeLabel, checkPlanForMod, LIVE_PLAN_EXPORT,
   gameMarksToItems, liveCan, LIVE_FEATURE_MARKS3, GAME_MARKS_LAYER,
+  isTurned, livePlacementOf, placedBounds, sameTurn, turnInPlace, turnLabel, turnOf, withTurn,
 } from '../../../../../packages/domain/src/index.js';
 import type { EarthworkEstimate, LiveGameMark, Operation, Project, TerrainSurvey, WorldItem, WorldPath, WorldPlanOp, WorldPointType, Polyline } from '../../../../../packages/domain/src/index.js';
 import { prepareRevisionExport } from '../../../../../packages/application/src/index.js';
@@ -356,15 +357,26 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
     } catch (e) { setNotice(errorText(e)); setNoticeUndo(false); }
   }, [selItems, selProjects.length, wp.plan.items.length, change, frameItems]);
   const transformSelection = useCallback((how: { turns: number } | { axis: 'x' | 'z' }) => {
-    if (!selItems.length) { setNotice('Drehen und Spiegeln gilt für Bauplätze, Wege und Punkte. Ein Projekt drehst du im Editor.'); setNoticeUndo(false); return; }
-    const pivot = selectionPivot(selItems);
-    const next = selItems.map(i => 'turns' in how ? rotateItem(i, pivot, how.turns) : mirrorItem(i, pivot, how.axis));
+    if (!selItems.length && !selProjects.length) return;
     const label = 'turns' in how ? `Gedreht (${how.turns > 0 ? '90° im Uhrzeigersinn' : '90° gegen den Uhrzeigersinn'})` : how.axis === 'x' ? 'Ost-West gespiegelt' : 'Nord-Süd gespiegelt';
     try {
-      const op = updateItemsOp(selItems, next, label);
-      if (op) void change({ label, steps: [{ kind: 'plan', op }] }, `${label}${selProjects.length ? ' – nur die Weltplan-Einträge, Projekte drehst du im Editor' : ''}.`);
+      const steps: MapChange['steps'][number][] = [];
+      if (selItems.length) {
+        const pivot = selectionPivot(selItems);
+        const next = selItems.map(i => 'turns' in how ? rotateItem(i, pivot, how.turns) : mirrorItem(i, pivot, how.axis));
+        const op = updateItemsOp(selItems, next, label);
+        if (op) steps.push({ kind: 'plan', op });
+      }
+      // MAP-07: projects turn in place (north-west corner of the footprint stays); Nord-Süd = Ost-West + 180°.
+      for (const p of selProjects) {
+        const local = map?.entries.find(e => e.projectId === p.id)?.localBounds ?? null;
+        const w = 'turns' in how ? turnInPlace(p.world!, local, { turns: how.turns })
+          : how.axis === 'x' ? turnInPlace(p.world!, local, { mirror: true }) : turnInPlace(turnInPlace(p.world!, local, { mirror: true }), local, { turns: 2 });
+        steps.push({ kind: 'project', projectId: p.id, op: worldOperation(w, label) });
+      }
+      if (steps.length) void change({ label, steps }, `${label}${selProjects.length ? ' – Projekte drehen sich auf der Weltkarte um ihre Nordwestecke; „Ins Spiel senden“ setzt das Hologramm genauso gedreht' : ''}.`);
     } catch (e) { setNotice(errorText(e)); setNoticeUndo(false); }
-  }, [selItems, selProjects.length, change]);
+  }, [selItems, selProjects, map, change]);
 
   const editPath = useCallback((path: Polyline, next: Polyline | readonly [WorldPath, WorldPath], label: string) => {
     try {
@@ -595,7 +607,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
       const fit = checkPlanForMod(game.hello, { volume: report.volume, cells: report.counts.blocks, bytes: out.bytes.length });
       if (!fit.ok) { setNotice(fit.message); if (prepared.created) await load(); return; }
       if (fit.message) setNotice(`Sende „${p.name}“ (${(out.bytes.length / 1_000_000).toLocaleString('de-DE', { maximumFractionDigits: 1 })} MB) … ${fit.message}`);
-      const msg = await liveApi.plan(game.settings.port, t, out.fileName, { dimension: w.dimension, x: w.origin[0], y: w.origin[1], z: w.origin[2], turns: 0, mirror: false }, out.bytes, fit.timeoutMs);
+      const msg = await liveApi.plan(game.settings.port, t, out.fileName, livePlacementOf(w), out.bytes, fit.timeoutMs);
       setNotice(`${msg} Revision ${out.revision.number}.${fit.message ? ` ${fit.message}` : ''}`);
       if (prepared.created) await load();
     } catch (e) { setNotice(errorText(e)); }
@@ -604,6 +616,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   /** LINK-06: the same revision export straight onto the paired server, anchored at the map position. */
   const sendToServer = async (p: Project) => {
     if (!p.world) return;
+    if (isTurned(p.world)) { setNotice(`„${p.name}“ liegt auf der Weltkarte ${turnLabel(turnOf(p.world))}. Das Server-Plugin legt Pläne nur ungedreht ab – über „Ins Spiel senden“ (Mod) geht es gedreht, oder die Drehung auf der Karte zurücksetzen.`); setNoticeUndo(false); return; }
     setSending(`server:${p.id}`);
     try {
       const dv = suggestDataVersion(p, library.versions).dataVersion ?? 5023;
@@ -618,9 +631,10 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   };
   const adoptHologram = async () => {
     if (!holo || !holoProject) return;
-    if (holo.placement.turns || holo.placement.mirror) { setNotice('Das Hologramm ist im Spiel gedreht oder gespiegelt. Die Weltkarte plant Projekte ungedreht – drehe das Projekt im Editor oder setze das Hologramm im Spiel zurück.'); return; }
     const pl = holo.placement;
-    if (await save(holoProject, worldOperation({ ...(holoProject.world ?? createPlacement([pl.x, pl.y, pl.z], pl.dimension)), origin: [pl.x, pl.y, pl.z], dimension: pl.dimension }, 'Lage aus dem Spiel übernommen'))) {
+    // MAP-07: the map takes the hologram's turn and mirror as well (same rule as the mod's Placement).
+    const turned = withTurn({ ...(holoProject.world ?? createPlacement([pl.x, pl.y, pl.z], pl.dimension)), origin: [pl.x, pl.y, pl.z], dimension: pl.dimension }, { turns: (((pl.turns % 4) + 4) % 4) as 0 | 1 | 2 | 3, mirror: pl.mirror });
+    if (await save(holoProject, worldOperation(turned, 'Lage aus dem Spiel übernommen'))) {
       setDimension(pl.dimension); setSelected(holoProject.id); setFrame2d({ projectId: holoProject.id, seq: ++seq.current });
     }
   };
@@ -688,21 +702,21 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
       { label: 'Im Editor öffnen', onClick: () => { location.hash = href({ view: 'project', projectId: selProjects[0]!.id, tab: 'editor' }); } },
       ...(connected && selProjects[0]!.world ? [{ label: '▶ Ins Spiel senden', onClick: () => void sendToGame(selProjects[0]!) }] : []),
     ] : []),
-    ...(selItems.length ? [
-      { label: '⧉ Duplizieren (Strg+D)', onClick: duplicateSelection },
+    ...(selItems.length ? [{ label: '⧉ Duplizieren (Strg+D)', onClick: duplicateSelection }] : []),
+    ...(selItems.length || selProjects.length ? [
       { label: '↻ Drehen 90° (R)', onClick: () => transformSelection({ turns: 1 }) },
       { label: '↺ Drehen −90° (Umschalt+R)', onClick: () => transformSelection({ turns: -1 }) },
       { label: '⇋ Ost-West spiegeln', onClick: () => transformSelection({ axis: 'x' }) },
       { label: '⇅ Nord-Süd spiegeln', onClick: () => transformSelection({ axis: 'z' }) },
-      ...(canAlign ? [{ label: '⛰ Ans Gelände ausrichten', onClick: alignSelection }] : []),
     ] : []),
+    ...(selItems.length && canAlign ? [{ label: '⛰ Ans Gelände ausrichten', onClick: alignSelection }] : []),
     { label: 'Auf der Karte zeigen', onClick: () => frameItems(selItems, selProjects) },
     null,
     { label: selItems.length && !selProjects.length ? '🗑 Löschen (Entf)' : !selItems.length ? '🗑 Von der Karte nehmen (Entf)' : '🗑 Löschen / von der Karte nehmen (Entf)', onClick: deleteSelection, danger: true },
   ];
 
   // Preview of an edited placement: outline + neighbours whose footprint it touches.
-  const previewBounds = preview && entry?.localBounds && preview.dimension === dimension ? translateBounds(entry.localBounds, preview.origin) : null;
+  const previewBounds = preview && entry?.localBounds && preview.dimension === dimension ? placedBounds(entry.localBounds, preview) : null;
   const previewHits = previewBounds && map ? footprintNeighbours(map, previewBounds, selected ?? undefined) : [];
 
   if (loadError) return <div className="page"><div className="notice warning" role="alert"><strong>Projekte nicht geladen</strong><p>{loadError}</p></div></div>;
@@ -713,6 +727,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   // Earthwork estimate of the selected project on the first survey that covers its footprint (own survey first).
   const estimate = useMemo((): { survey: TerrainSurvey; own: boolean; result: EarthworkEstimate; shift: number } | null => {
     if (!map || !entry?.worldBounds || entry.skipped || !project?.world) return null;
+    if (preview && !sameTurn(turnOf(preview), turnOf(project.world))) return null; // a turned preview has another footprint
     const b = entry.worldBounds;
     const dy = preview && preview.dimension === dimension ? [preview.origin[0] - project.world.origin[0], preview.origin[1] - project.world.origin[1], preview.origin[2] - project.world.origin[2]] as const : [0, 0, 0] as const;
     const own = surveys.get(entry.projectId);
@@ -778,7 +793,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
           onSendMarks: connected && sending !== 'marks' ? () => void sendMarks() : null,
           marksInfo: `${items.length} Einträge in ${dimensionLabel(dimension)}${status?.marks ? ` · im Spiel: ${status.marks}` : ''}`,
           hologramProject: holoProject, hologramMatch: holoMatch,
-          onAdoptHologram: holoMatch && holoMatch !== 'same' && holoMatch !== 'turned' ? () => void adoptHologram() : null,
+          onAdoptHologram: holoMatch && holoMatch !== 'same' ? () => void adoptHologram() : null,
           autoMarks, onAutoMarks: setAutoMarks, marksSkipped,
           gameMarks: marks3 ? { count: gameMarks.length, names: gameMarks.slice(0, 4).map(m => m.name).join(', ') + (gameMarks.length > 4 ? ' …' : ''), onAdopt: adopting ? null : () => void adoptGameMarks() } : null,
           onPointAtPlayer: connected && player ? pointAtPlayer : null, onTrailToPath: connected && player && game.trail.length > 1 ? trailAsPath : null,
@@ -793,7 +808,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
           onHidden={h => { setHiddenNames(h); setSelection(cur => cur.filter(x => { if (x.kind !== 'item') return true; const it = items.find(i => i.id === x.id); return !it?.layer || !h.has(it.layer); })); }} />
         {selectionCount > 0 && <SelectionBar items={selItems.length} projects={selProjects.length} actions={{
           onDelete: deleteSelection, onDuplicate: selItems.length ? duplicateSelection : null,
-          onRotate: selItems.length ? turns => transformSelection({ turns }) : null, onMirror: selItems.length ? axis => transformSelection({ axis }) : null,
+          onRotate: selItems.length || selProjects.length ? turns => transformSelection({ turns }) : null, onMirror: selItems.length || selProjects.length ? axis => transformSelection({ axis }) : null,
           onAlign: canAlign ? alignSelection : null, onFrame: () => frameItems(selItems, selProjects), onClear: () => setSelection([]),
           layers: selItems.length ? { names, current: selectionLayer, onPick: assignLayer } : null, playerDistance,
         }} />}
@@ -865,7 +880,7 @@ function EntryCard({ entry, selected, collisions, onSelect, onFly, onRemove }: {
   return <li className={`map-entry${selected ? ' selected' : ''}${entry.skipped ? ' skipped' : ''}`}>
     <button className="map-entry-main" aria-pressed={selected} onClick={e => onSelect(e.shiftKey || e.ctrlKey || e.metaKey)} onDoubleClick={onFly}>
       <b>{entry.name}</b>
-      <small>X {o[0]} · Y {o[1]} · Z {o[2]}{entry.skipped ? ` · ${MAP_SKIP_LABEL[entry.skipped]}` : ''}</small>
+      <small>X {o[0]} · Y {o[1]} · Z {o[2]}{isTurned(entry.placement) ? ` · ${turnLabel(turnOf(entry.placement))}` : ''}{entry.skipped ? ` · ${MAP_SKIP_LABEL[entry.skipped]}` : ''}</small>
       <span className="map-progress" aria-label={`Fortschritt ${pct(entry.share)}`}><span style={{ width: `${Math.round(entry.share * 100)}%` }} /></span>
       <small>{entry.stepsDone}/{entry.steps} Schritte · {pct(entry.share)}{entry.stepsReview ? ` · ${entry.stepsReview} prüfen` : ''}{collisions ? <em> · {collisions}× Überschneidung</em> : null}</small>
     </button>
@@ -878,6 +893,7 @@ function Facts({ entry }: { entry: MapEntry }) {
   const b = entry.worldBounds;
   return <dl className="map-facts">
     <div><dt>Ursprung</dt><dd>X {entry.placement.origin[0]} · Y {entry.placement.origin[1]} · Z {entry.placement.origin[2]}</dd></div>
+    {isTurned(entry.placement) && <div><dt>Drehung</dt><dd data-turn={`${entry.placement.turns ?? 0}${entry.placement.mirror ? 'm' : ''}`}>{turnLabel(turnOf(entry.placement))} (um den Ursprung, wie das Hologramm der Mod)</dd></div>}
     {b && <div><dt>Bauplatz (Nordwestecke unten)</dt><dd>X {b.min[0]} · Y {b.min[1]} · Z {b.min[2]}</dd></div>}
     {b && <div><dt>Bis (Südostecke oben)</dt><dd>X {b.maxExclusive[0] - 1} · Y {b.maxExclusive[1] - 1} · Z {b.maxExclusive[2] - 1}</dd></div>}
     {b && <div><dt>Größe</dt><dd>{b.maxExclusive[0] - b.min[0]} × {b.maxExclusive[2] - b.min[2]} Blöcke, {b.maxExclusive[1] - b.min[1]} hoch</dd></div>}

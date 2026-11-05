@@ -8,8 +8,8 @@ import type { ScheduledSection } from './program.js';
 import { fuelBalance, resolveRecipes } from './recipes.js';
 import { gatherRuleFor } from './site.js';
 import type { GatherLine, SiteOverview, SitePlan } from './site.js';
-import { isKnownEvent } from './team.js';
-import type { TeamState } from './team.js';
+import { effectiveEvents, isKnownEvent } from './team.js';
+import type { DigestBody, TeamEvent, TeamState } from './team.js';
 import type { WorldItem } from './worldPlan.js';
 
 /**
@@ -186,7 +186,9 @@ export interface TeamChest { readonly id: string; readonly name: string; readonl
 export function teamChests(team: TeamState | undefined): TeamChest[] {
   if (!team) return [];
   const chests = new Map<string, { name: string; pos: readonly [number, number, number]; dimension: string; hopperIn: Record<string, number>; farm?: string }>();
-  for (const e of team.events) {
+  for (const e of effectiveEvents(team)) {
+    // COOP-11: hopper intake up to the cutoff of a digest.
+    for (const r of digestOf(e)?.chests ?? []) { const c = chests.get(r.chest); if (c) for (const mv of r.moves ?? []) if (mv.who === 'trichter') for (const l of mv.in ?? []) c.hopperIn[l.item] = (c.hopperIn[l.item] ?? 0) + l.count; }
     if (!isKnownEvent(e)) continue;
     if (e.kind === 'store.chest') { if (e.remove) chests.delete(e.chest); else { const old = chests.get(e.chest); chests.set(e.chest, { name: e.name, pos: e.pos, dimension: e.dimension, hopperIn: old?.hopperIn ?? {}, ...(old?.farm && { farm: old.farm }) }); } }
     else if (e.kind === 'store.config') {
@@ -215,10 +217,13 @@ export interface ChestYield {
 }
 
 interface YieldEvent { chest: string; farm?: string; items: { item: string; count: number }[]; from: string; until: string; minutes: number }
+/** The digest part an event is, when it is one of the digest in force (effectiveEvents keeps only those). */
+const digestOf = (e: TeamEvent): DigestBody | null => e.kind === 'team.digest' ? e as unknown as DigestBody : null;
 /** store.yield (server only, plugin COOP-05 follow-up): read loosely so older and newer planners keep working. */
 function yieldEvents(team: TeamState | undefined): YieldEvent[] {
   const out: YieldEvent[] = [];
-  for (const raw of team?.events ?? []) {
+  for (const raw of team ? effectiveEvents(team) : []) {
+    for (const y of digestOf(raw)?.yields ?? []) out.push({ chest: y.chest, ...(y.farm && { farm: y.farm }), items: [...y.items], from: y.from, until: y.until, minutes: y.minutes });
     if (raw.kind !== 'store.yield') continue;
     const e = raw as unknown as Record<string, unknown>;
     if (typeof e.chest !== 'string' || !Array.isArray(e.items) || typeof e.minutes !== 'number' || !Number.isFinite(e.minutes) || e.minutes < 0) continue;
@@ -246,7 +251,19 @@ export function chestYield(team: TeamState | undefined, chest: string | null, fa
   }
   const items: Record<string, number> = {};
   const times: number[] = [];
-  for (const e of team?.events ?? []) {
+  // COOP-11: running time and intake up to the cutoff of a digest.
+  let digestMs = 0, digestBookings = 0, digestFrom: string | null = null, digestUntil: string | null = null;
+  const events = team ? effectiveEvents(team) : [];
+  for (const e of events) for (const r of digestOf(e)?.chests ?? []) {
+    if (r.chest !== chest) continue;
+    for (const mv of r.moves ?? []) if (mv.who === 'trichter') for (const l of mv.in ?? []) items[l.item] = (items[l.item] ?? 0) + l.count;
+    if (r.hopper) {
+      digestMs += r.hopper.seconds * 1000; digestBookings += r.hopper.bookings;
+      if (!digestFrom || r.hopper.from < digestFrom) digestFrom = r.hopper.from;
+      if (!digestUntil || r.hopper.until > digestUntil) digestUntil = r.hopper.until;
+    }
+  }
+  for (const e of events) {
     if (!isKnownEvent(e) || e.kind !== 'store.move' || e.via !== 'trichter' || e.chest !== chest || !e.in?.length) continue;
     const t = Date.parse(e.at);
     if (!Number.isFinite(t)) continue;
@@ -254,10 +271,11 @@ export function chestYield(team: TeamState | undefined, chest: string | null, fa
     for (const l of e.in) items[l.item] = (items[l.item] ?? 0) + l.count;
   }
   times.sort((a, b) => a - b);
-  let ms = times.length ? 1000 : 0;
+  let ms = (times.length ? 1000 : 0) + digestMs;
   for (let i = 1; i < times.length; i++) { const gap = times[i]! - times[i - 1]!; ms += gap <= CHEST_GAP_MINUTES * MINUTE ? gap : 1000; }
-  return { chest: chest ?? '', items, hours: round2(ms / 3_600_000), bookings: times.length,
-    from: times.length ? new Date(times[0]!).toISOString() : null, until: times.length ? new Date(times[times.length - 1]!).toISOString() : null, basis: 'trichter' };
+  const from = digestFrom ?? (times.length ? new Date(times[0]!).toISOString() : null);
+  const until = times.length ? new Date(times[times.length - 1]!).toISOString() : digestUntil;
+  return { chest: chest ?? '', items, hours: round2(ms / 3_600_000), bookings: times.length + digestBookings, from, until, basis: 'trichter' };
 }
 
 export interface ChestSuggestion { readonly farmId: string; readonly chest: TeamChest; readonly why: string; readonly score: number }

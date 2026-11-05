@@ -95,3 +95,13 @@
 .team-news-item a{color:var(--text);text-decoration:none}
 .team-game-room { margin: 0.4rem 0; font-size: 0.9rem; color: var(--muted); }
 .team-game-room.warn { color: var(--warning, #b45309); }
+
+/* COOP-08 S03 Ertragsbuch, COOP-11 Verlauf verdichten */
+.team-yield-book { margin-top: 0.75rem; }
+.team-yield-book td .bad { color: var(--danger, #b3261e); }
+.team-compact summary small { color: var(--muted); margin-left: 0.5rem; }
+.team-compact-meter { height: 6px; background: var(--line, #ddd); border-radius: 3px; overflow: hidden; margin: 0.5rem 0; }
+.team-compact-meter span { display: block; height: 100%; background: var(--accent, #3a7); }
+.team-compact-meter span.bad { background: var(--danger, #b3261e); }
+.team-compact-plan { margin: 0.5rem 0; padding-left: 1.2rem; font-size: 0.9rem; }
+.team-compact-last { font-size: 0.9rem; }

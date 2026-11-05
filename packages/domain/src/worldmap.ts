@@ -1,5 +1,6 @@
 import type { BlockState, Bounds, Cell, Vec3, VoxelPayload } from '../../voxel/src/types.js';
 import { stateKey } from '../../voxel/src/validation.js';
+import { transformBlockState } from '../../voxel/src/states.js';
 import { positionKey, resolveProject } from './compose.js';
 import { buildGuide, evaluateProgress } from './guide.js';
 import { createLiveMapMarkerFile } from './livemap.js';
@@ -59,6 +60,13 @@ export interface WorldPlacement {
   readonly hidden: boolean;
   /** Free text, e.g. "Nordufer, neben dem Dorf". */
   readonly note: string;
+  /**
+   * MAP-07: quarter turns clockwise seen from above around project 0/0/0, exactly like the mod's
+   * Placement (mirror X first, then (x,z) → (−z,x) per turn, on block positions). Missing = 0.
+   */
+  readonly turns?: 1 | 2 | 3;
+  /** MAP-07: mirror of the project X axis before turning; missing = not mirrored. */
+  readonly mirror?: true;
 }
 
 const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
@@ -78,6 +86,8 @@ export function checkWorldPlacement(raw: unknown): WorldPlacement {
   if (typeof raw.dimension !== 'string' || !DIMENSION_ID.test(raw.dimension)) fail('Dimension muss eine ID wie minecraft:overworld sein');
   if (typeof raw.hidden !== 'boolean') fail('„ausgeblendet“ muss wahr oder falsch sein');
   if (typeof raw.note !== 'string' || raw.note.length > 300) fail('Notiz höchstens 300 Zeichen');
+  if (raw.turns !== undefined && raw.turns !== 1 && raw.turns !== 2 && raw.turns !== 3) fail('Drehung muss 1, 2 oder 3 Vierteldrehungen sein (ungedreht: Feld weglassen)');
+  if (raw.mirror !== undefined && raw.mirror !== true) fail('Spiegelung muss wahr sein (ungespiegelt: Feld weglassen)');
   return raw as unknown as WorldPlacement;
 }
 
@@ -94,6 +104,86 @@ export function worldOperation(world: WorldPlacement | null, label?: string): Op
 
 export const toWorld = (p: Vec3, origin: Vec3): Vec3 => [p[0] + origin[0], p[1] + origin[1], p[2] + origin[2]];
 export const translateBounds = (b: Bounds, origin: Vec3): Bounds => ({ min: toWorld(b.min, origin), maxExclusive: toWorld(b.maxExclusive, origin) });
+
+// ------------------------------------------------------------------ turned placements (MAP-07)
+
+export type PlacementTurns = 0 | 1 | 2 | 3;
+/** Turn and mirror of a placement (or of a mod hologram); the anchor is not part of it. */
+export interface PlacementTurn { readonly turns: PlacementTurns; readonly mirror: boolean }
+type Turnable = Pick<WorldPlacement, 'turns' | 'mirror'>;
+export const turnOf = (p: Turnable | null | undefined): PlacementTurn => ({ turns: (p?.turns ?? 0) as PlacementTurns, mirror: p?.mirror === true });
+export const isTurned = (p: Turnable | null | undefined): boolean => !!p && (!!p.turns || p.mirror === true);
+export const sameTurn = (a: PlacementTurn, b: PlacementTurn): boolean => (((a.turns % 4) + 4) % 4) === (((b.turns % 4) + 4) % 4) && a.mirror === b.mirror;
+export const TURN_LABEL: Readonly<Record<PlacementTurns, string>> = { 0: 'ungedreht', 1: '90° im Uhrzeigersinn', 2: '180°', 3: '90° gegen den Uhrzeigersinn' };
+export const turnLabel = (t: PlacementTurn): string => t.turns === 0 && !t.mirror ? 'ungedreht' : `${t.mirror ? 'gespiegelt' : ''}${t.mirror && t.turns ? ', ' : ''}${t.turns ? TURN_LABEL[t.turns] : ''}`;
+
+/** Project block position → turned position around project 0/0/0 (no anchor), like Placement.toWorld in the mod. */
+export function turnVector(p: Vec3, t: PlacementTurn): Vec3 {
+  let x = t.mirror ? -p[0] : p[0], z = p[2];
+  for (let i = 0; i < t.turns; i++) { const k = x; x = -z; z = k; }
+  return [x === 0 ? 0 : x, p[1], z === 0 ? 0 : z];
+}
+/** Inverse of turnVector. */
+export function unturnVector(p: Vec3, t: PlacementTurn): Vec3 {
+  let x = p[0], z = p[2];
+  for (let i = 0; i < t.turns; i++) { const k = x; x = z; z = -k; }
+  if (t.mirror) x = -x;
+  return [x === 0 ? 0 : x, p[1], z === 0 ? 0 : z];
+}
+/** World block of a project block. */
+export const placeToWorld = (p: Vec3, pl: Pick<WorldPlacement, 'origin' | 'turns' | 'mirror'>): Vec3 => toWorld(isTurned(pl) ? turnVector(p, turnOf(pl)) : p, pl.origin);
+/** Project block of a world block (inverse of placeToWorld). */
+export const worldToProject = (w: Vec3, pl: Pick<WorldPlacement, 'origin' | 'turns' | 'mirror'>): Vec3 => {
+  const r: Vec3 = [w[0] - pl.origin[0], w[1] - pl.origin[1], w[2] - pl.origin[2]];
+  return isTurned(pl) ? unturnVector(r, turnOf(pl)) : r;
+};
+/** Bounds of turned blocks (cell boxes, not points). */
+export function turnBounds(b: Bounds, t: PlacementTurn): Bounds {
+  if (!t.turns && !t.mirror) return b;
+  const a = turnVector(b.min, t), c = turnVector([b.maxExclusive[0] - 1, b.maxExclusive[1] - 1, b.maxExclusive[2] - 1], t);
+  return { min: [Math.min(a[0], c[0]), b.min[1], Math.min(a[2], c[2])], maxExclusive: [Math.max(a[0], c[0]) + 1, b.maxExclusive[1], Math.max(a[2], c[2]) + 1] };
+}
+/** World bounds of a project's bounds at a (possibly turned) placement. */
+export const placedBounds = (b: Bounds, pl: Pick<WorldPlacement, 'origin' | 'turns' | 'mirror'>): Bounds => translateBounds(turnBounds(b, turnOf(pl)), pl.origin);
+/** Block state as it stands in the world (same rules as the voxel core and the mod; unknown families stay as they are). */
+export function turnState(state: BlockState, t: PlacementTurn): BlockState {
+  if (!t.turns && !t.mirror) return state;
+  return transformBlockState(state, { position: [0, 0, 0], quarterTurns: t.turns, mirrorX: t.mirror }).state;
+}
+/**
+ * The payload turned around project 0/0/0 (positions, states, block entity positions, bounds), so code that
+ * adds the origin to project positions (terrain check, landscape, earthwork) works unchanged for a turned placement.
+ * Display/analysis data only; never exported.
+ */
+export function turnPayload(payload: VoxelPayload, t: PlacementTurn): VoxelPayload {
+  if (!t.turns && !t.mirror) return payload;
+  return {
+    ...payload,
+    palette: payload.palette.map(s => turnState(s, t)),
+    cells: payload.cells.map(c => ({ ...c, position: turnVector(c.position, t) })),
+    blockEntities: payload.blockEntities.map(e => ({ ...e, position: turnVector(e.position, t) })),
+    bounds: turnBounds(payload.bounds, t),
+  };
+}
+/** Same placement with another turn/mirror; fields are left out for 0/false so old copies compare equal. */
+export function withTurn(pl: WorldPlacement, t: PlacementTurn): WorldPlacement {
+  const { turns: _t, mirror: _m, ...rest } = pl;
+  const turns = (((t.turns % 4) + 4) % 4) as PlacementTurns;
+  return checkWorldPlacement({ ...rest, ...(turns && { turns }), ...(t.mirror && { mirror: true }) });
+}
+/**
+ * Turns (by quarter turns, ±) and/or mirrors a placed project in place: the north-west corner of its
+ * footprint stays where it is, the anchor moves. `local` are the project's own bounds.
+ */
+export function turnInPlace(pl: WorldPlacement, local: Bounds | null, how: { turns?: number; mirror?: boolean }): WorldPlacement {
+  const t = turnOf(pl);
+  // Mirroring a turned placement in world X: mirror first in project space, so the turn has to change sign.
+  const next: PlacementTurn = how.mirror ? { turns: ((4 - t.turns) % 4) as PlacementTurns, mirror: !t.mirror } : { turns: ((t.turns + (how.turns ?? 0)) % 4 + 4) % 4 as PlacementTurns, mirror: t.mirror };
+  const turned = withTurn(pl, next);
+  if (!local) return turned;
+  const before = placedBounds(local, pl), after = placedBounds(local, turned);
+  return checkWorldPlacement({ ...turned, origin: [pl.origin[0] + before.min[0] - after.min[0], pl.origin[1], pl.origin[2] + before.min[2] - after.min[2]] });
+}
 /** Chunk (16×16 columns) and region (32×32 chunks) of a world X or Z. */
 export const chunkOf = (n: number): number => Math.floor(n / 16);
 export const regionOf = (n: number): number => Math.floor(n / 512);
@@ -199,7 +289,7 @@ export function buildWorldMap(projects: readonly Project[], versions: ReadonlyMa
   const cells: Cell[] = [], owner: number[] = [], progress: number[] = [];
   const palette: BlockState[] = [], paletteIndex = new Map<string, number>();
   // Per drawn entry: world cells (incl. required air) for the collision check.
-  const footprints: { entry: number; bounds: Bounds; world: VoxelPayload; origin: Vec3 }[] = [];
+  const footprints: { entry: number; bounds: Bounds; world: VoxelPayload; placement: WorldPlacement }[] = [];
 
   for (const project of projects) {
     const placement = worldOf(project);
@@ -223,13 +313,13 @@ export function buildWorldMap(projects: readonly Project[], versions: ReadonlyMa
     const blocks = world ? world.cells.reduce((n, c) => n + (c.kind === 'block' ? 1 : 0), 0) : 0;
     const localBounds = world?.bounds ?? null;
     const summary = {
-      ...base, localBounds, worldBounds: localBounds && translateBounds(localBounds, placement.origin), blocks,
+      ...base, localBounds, worldBounds: localBounds && placedBounds(localBounds, placement), blocks,
       steps: guide.steps.length, stepsDone: status.done, stepsReview: status.review,
       share: guide.totals.blocks ? status.blocksDone / guide.totals.blocks : 0, conflicts: resolution.conflicts.length,
     };
     if (!world || !blocks) { entries.push({ ...summary, skipped: 'empty' }); continue; }
     // Hidden projects are not drawn but still take part in the collision check.
-    if (placement.hidden && !options.showHidden) { entries.push({ ...summary, skipped: 'hidden' }); footprints.push({ entry: index, bounds: summary.worldBounds!, world, origin: placement.origin }); continue; }
+    if (placement.hidden && !options.showHidden) { entries.push({ ...summary, skipped: 'hidden' }); footprints.push({ entry: index, bounds: summary.worldBounds!, world, placement }); continue; }
     if (cells.length + blocks > maxCells || index > 0xfffe) { entries.push({ ...summary, skipped: 'limit' }); continue; }
     entries.push(summary);
 
@@ -238,16 +328,16 @@ export function buildWorldMap(projects: readonly Project[], versions: ReadonlyMa
       const code = PROGRESS_CODE[status.status.get(step.id) ?? 'open'];
       for (const p of step.positions) stepOf.set(positionKey(p), code);
     }
-    const o = placement.origin;
+    const turn = turnOf(placement), turnedStates = world.palette.map(st => turnState(st, turn));
     for (const cell of world.cells) {
       if (cell.kind !== 'block') continue;
-      const state = world.palette[cell.paletteIndex]!, sk = stateKey(state);
+      const state = turnedStates[cell.paletteIndex]!, sk = stateKey(state);
       let pi = paletteIndex.get(sk);
       if (pi === undefined) { pi = palette.length; palette.push(state); paletteIndex.set(sk, pi); }
-      cells.push({ position: toWorld(cell.position, o), kind: 'block', paletteIndex: pi });
+      cells.push({ position: placeToWorld(cell.position, placement), kind: 'block', paletteIndex: pi });
       owner.push(index); progress.push(stepOf.get(positionKey(cell.position)) ?? 0);
     }
-    footprints.push({ entry: index, bounds: summary.worldBounds!, world, origin: o });
+    footprints.push({ entry: index, bounds: summary.worldBounds!, world, placement });
   }
 
   // Collisions between drawn projects: AABB pre-filter, then per voxel (incl. required air and delete cells).
@@ -256,7 +346,8 @@ export function buildWorldMap(projects: readonly Project[], versions: ReadonlyMa
     let m = keyed.get(f.entry);
     if (!m) {
       m = new Map();
-      for (const c of f.world.cells) m.set(positionKey(toWorld(c.position, f.origin)), c.kind === 'erase' ? '!erase' : c.kind === 'air' ? '!air' : stateKey(f.world.palette[c.paletteIndex]!));
+      const turn = turnOf(f.placement);
+      for (const c of f.world.cells) m.set(positionKey(placeToWorld(c.position, f.placement)), c.kind === 'erase' ? '!erase' : c.kind === 'air' ? '!air' : stateKey(turnState(f.world.palette[c.paletteIndex]!, turn)));
       keyed.set(f.entry, m);
     }
     return m;
@@ -328,6 +419,7 @@ export function placementsJson(map: WorldMapView): string {
     format: 'bauplaner-weltkarte', version: 1, dimension: map.dimension,
     projects: map.entries.filter(e => e.worldBounds).map(e => ({
       id: e.projectId, name: e.name, origin: e.placement.origin, note: e.placement.note,
+      ...(isTurned(e.placement) && { turns: e.placement.turns ?? 0, mirror: e.placement.mirror === true }),
       min: e.worldBounds!.min, maxExclusive: e.worldBounds!.maxExclusive, blocks: e.blocks,
       stepsDone: e.stepsDone, steps: e.steps, share: Math.round(e.share * 1000) / 1000,
     })),

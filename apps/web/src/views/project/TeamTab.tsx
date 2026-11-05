@@ -10,6 +10,7 @@ import { TeamExchange } from './TeamExchange';
 import { TeamProof } from './TeamProof';
 import { TeamLive } from './TeamLive';
 import { TeamRoom } from './TeamRoom';
+import { TeamCompact } from './TeamCompact';
 import { TeamAreaNav, TeamIssues, TeamPlanning, TeamProgressArea, TeamRightsArea } from './TeamPlan';
 import type { TeamArea } from './TeamPlan';
 import '../../team.css';
@@ -92,10 +93,10 @@ function TeamPage({ session, site, team, message, setMessage, saveTeam, saveSite
   const progress = new Map((computation?.site.plan?.sections ?? []).map(s => [s.id, s.blocks ? s.blocksDone / s.blocks : 0]));
   const sectionBlocks = new Map((computation?.site.plan?.sections ?? []).map(s => [s.id, s.blocks]));
   const toProgram = () => {
-    const program = programOf(site), r = teamIntoProgram(program, view);
-    if (!r.added && !r.linked && !r.assigned) { setMessage('Die Projektplanung entspricht schon dem Team.'); return; }
+    const program = programOf(site), r = teamIntoProgram(program, view, new Date().toISOString().slice(0, 10));
+    if (!r.added && !r.linked && !r.assigned && !r.absences) { setMessage('Die Projektplanung entspricht schon dem Team.'); return; }
     if (saveSite(setProgram(site, { ...program, builders: r.builders, assignments: r.assignments }), 'Team in die Projektplanung übernommen'))
-      setMessage(`Projektplanung aktualisiert: ${r.added} Bauleute neu, ${r.linked} Minecraft-Namen ergänzt, ${r.assigned} Abschnittszuweisungen geändert. Strg+Z macht es rückgängig.`);
+      setMessage(`Projektplanung aktualisiert: ${r.added} Bauleute neu, ${r.linked} Minecraft-Namen ergänzt, ${r.assigned} Abschnittszuweisungen geändert${r.absences ? `, ${r.absences} Abwesenheiten übernommen` : ''}. Strg+Z macht es rückgängig.`);
   };
   const takeStock = (stock: Readonly<Record<string, number>>) => {
     let next = site;
@@ -158,6 +159,7 @@ function TeamPage({ session, site, team, message, setMessage, saveTeam, saveSite
     <TeamRoom session={session} team={team} view={view} onMessage={setMessage} />
     <TeamLive session={session} team={team} view={view} onMessage={setMessage} />
     <TeamExchange session={session} team={team} view={view} onMessage={setMessage} />
+    <TeamCompact team={team} ctx={ctx} me={me?.id ?? null} role={role} live={!!(team as TeamState & { live?: unknown }).live} onSave={saveTeam} onUndo={session.undo} />
     <Log team={team} ctx={ctx} names={names} />
     </>}
   </section>;

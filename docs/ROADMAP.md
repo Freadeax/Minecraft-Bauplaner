@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-04T22:55:00.000Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-05T07:38:47.249Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-04T22:55:00.000Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 8 |
 | 🚧 In Arbeit | 5 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 80 |
+| 🧩 Implementiert · Abnahme offen | 83 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -25,10 +25,10 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 
 | Bereich | Offen | Verwaist | Nur Philipp | Geprüft |
 |---|---:|---:|---:|---:|
-| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 22 | 5 | 21 | 2 |
+| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 23 | 4 | 22 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 4 | 10 | 4 |
-| [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 9 | 2 | 6 | 1 |
-| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 12 | 3 | 12 | 0 |
+| [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 10 | 2 | 7 | 1 |
+| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 13 | 1 | 13 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 10 | 0 | 8 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 3 | 0 |
@@ -57,8 +57,9 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter | ⏳ Offen 0/2 | P1 | **verwaist** · 1 verwaist | — |
 | [MAP-03](#map-03) | Live-Karte mit Spielanbindung | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Kopplung und Senden auf dem LMNT-Server mit Browserfreigabe „lokales Netzwerk“ (S06). |
 | [MAP-04](#map-04) | Weltbuilder vertiefen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Langdruck-Menü auf echtem Touch-Gerät (S06). |
-| [MAP-05](#map-05) | Planung auf der Live-Karte vertiefen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | „Baustand holen“ mit der Mod auf server.lmnt-gaming.net (S05). |
+| [MAP-05](#map-05) | Planung auf der Live-Karte vertiefen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | „Baustand holen“ mit der Mod auf server.lmnt-gaming.net (S05). |
 | [MAP-06](#map-06) | Weltkarte in die Tiefe | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Weltkarte in die Tiefe ausbauen“ | Weltkarte mit Mod 0.8.0 oder neuer im Spiel abnehmen (S08, KARTE-05/06, LIVE-08). |
+| [MAP-07](#map-07) | Gedrehte und gespiegelte Projektlagen auf der Weltkarte | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Module und Systeme komplex ausarbeiten“ | Ein Projekt auf der Weltkarte drehen, ins Spiel senden und mit F3 prüfen; ein im Spiel gedrehtes Hologramm übernehmen (KARTE-07). |
 | [TERRAIN-01](#terrain-01) | Geländeaufnahmen für Weltkarte und Anlagen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Kopie deiner 26.3-Welt für die Geländeabnahme (S05). |
 | [TERRAIN-02](#terrain-02) | Landschaft gestalten | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Abnahme in deiner eigenen Welt und auf Touch-Geräten (S05). |
 | [TERRAIN-03](#terrain-03) | Gelände und Wege im Projekt | 🧩 Implementiert · Abnahme offen 5/7 | P1 | „Gelände und Wege ausbauen“ | PROJ-19: Weg mit Treppen und Brücke als .litematic in deiner Welt ansehen. |
@@ -97,6 +98,7 @@ Abgeschlossen oder zurückgestellt: LIB-01 (geprüft), GEN-01 (geprüft), WORLD-
 | [BUILD-06](#build-06) | Bauführung im Spiel | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Bauführung mit Mod-Aufnahme auf deinem Server; Druck- und Handyansicht. |
 | [PROJ-01](#proj-01) | Projektplanung für große Projekte | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Projektmodul vertiefen“ · 1 verwaist | Reiter „Planung“ abnehmen (PROJ-09…11). |
 | [PROJ-02](#proj-02) | Projektplanung vertieft | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Projektmodul vertiefen“ · 1 verwaist | Basisplan, Material abwarten und Anteil der Bautage im Reiter „Planung“ abnehmen (PROJ-16…18). |
+| [PROJ-03](#proj-03) | Planung Runde 3 | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Module und Systeme komplex ausarbeiten“ | Im Reiter „Planung“ eine Abwesenheit eintragen und zwei Basispläne vergleichen (PROJ-20). |
 | [UPDATE-01](#update-01) | Kontrollierte Versionsupdates mit lokalen Overrides | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Versionsupdates auf echten Geräten (QA-02). |
 | [PROD-01](#prod-01) | Produktionsdaten | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Produktion und Anbindung im Planer ausbauen“ | Reiter „Produktion“ abnehmen (PROJ-12). |
 | [PROD-02](#prod-02) | Deckung und Engpässe | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Produktion und Anbindung im Planer ausbauen“ | Engpässe und Zeitplanvergleich prüfen (PROJ-13). |
@@ -112,7 +114,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
-| [COOP-01](#coop-01) | Teambau im Planer | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · 1 verwaist | Mit Mitspielern TEAMBAU-01…05.<br>Weg für den Live-Abgleich ohne Herunter- und Hochladen wählen (Rückfrage im Thread). |
+| [COOP-01](#coop-01) | Teambau im Planer | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | Mit Mitspielern TEAMBAU-01…05.<br>Weg für den Live-Abgleich ohne Herunter- und Hochladen wählen (Rückfrage im Thread). |
 | [COOP-02](#coop-02) | Paper-Plugin als Teamknoten | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | Plugin auf deinem Paper-Server, TEAMBAU-06 mit Mitspielern. |
 | [COOP-03](#coop-03) | Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte i… | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Teambau und Befehle in der Mod ausbauen“ | TEAMBAU-09: aktuelle Mod und aktuelles Plugin (ab 0.10.0) zusammen auf deinem Server. |
 | [COOP-04](#coop-04) | Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams z… | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | TEAMBAU-07/08 mit echten Spielern. |
@@ -121,9 +123,10 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [COOP-07](#coop-07) | Team live ohne Dateien | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat). |
 | [COOP-09](#coop-09) | Team live im Alltag | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat). |
 | [COOP-10](#coop-10) | Client zuerst | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | TEAMBAU-27 mit Mitspielern: Mod 0.15.0, Team live, ohne Plugin bauen und Kiste öffnen. |
+| [COOP-11](#coop-11) | Verlauf verdichten | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Module und Systeme komplex ausarbeiten“ | TEAMBAU-28: einen echten Teamstand verdichten und mit einem Mitspieler abgleichen. |
 | [LINK-04](#link-04) | Planer | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Verbindung ohne Server-Datei neu bauen“ | Testplan-Bereich LINK durchgehen. |
 | [LINK-05](#link-05) | Zweiter Weg über den Team-Raum | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Verbindung ohne Server-Datei neu bauen“ | Am PC „Weiteres Gerät freigeben“, Link auf dem iPad öffnen, eine Einstellung ändern. |
-| [COOP-08](#coop-08) | Ertragskisten | 🧩 Implementiert · Abnahme offen 2/4 | P2 | „Server-Plugin mit geprüften Lagerkisten“ · 1 verwaist | LAGER-01…09 mit echten Spielern. |
+| [COOP-08](#coop-08) | Ertragskisten | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Module und Systeme komplex ausarbeiten“ | LAGER-01…09 mit echten Spielern. |
 
 <a id="bereich-groesse"></a>
 
@@ -275,6 +278,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **LIB-05** · Einige neu gezeichnete Gebäude im Spiel ansehen (S08).
 - **GROSS-01** · Großprojekte und die sechs Großbauten im Spiel ansehen (BIB-13).
 - **MAP-06** · Weltkarte mit Mod 0.8.0 oder neuer im Spiel abnehmen (S08, KARTE-05/06, LIVE-08).
+- **MAP-07** · Ein Projekt auf der Weltkarte drehen, ins Spiel senden und mit F3 prüfen; ein im Spiel gedrehtes Hologramm übernehmen (KARTE-07).
 - **GEN-03** · Kolosseum exportieren und im Spiel aufstellen (BIB-14).
 - **SIZE-01** · Großen Bau (Olympus) ins Spiel senden und prüfen (DATEI-05, MOD-11, MOD-15, LIVE-09).
 - **LINK-03** · Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“.
@@ -318,7 +322,9 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **PROD-01** · Reiter „Produktion“ abnehmen (PROJ-12).
 - **PROD-02** · Engpässe und Zeitplanvergleich prüfen (PROJ-13).
 - **LINK-04** · Testplan-Bereich LINK durchgehen.
+- **COOP-11** · TEAMBAU-28: einen echten Teamstand verdichten und mit einem Mitspieler abgleichen.
 - **PROJ-02** · Basisplan, Material abwarten und Anteil der Bautage im Reiter „Planung“ abnehmen (PROJ-16…18).
+- **PROJ-03** · Im Reiter „Planung“ eine Abwesenheit eintragen und zwei Basispläne vergleichen (PROJ-20).
 
 ### Entscheiden oder Rückfrage beantworten
 
@@ -333,21 +339,18 @@ Arbeit, für die gerade kein laufender Thread zuständig ist. Zum Verteilen: Thr
 |---|---|---|---|---|
 | [QA-04](#qa-04) | Testphase, Qualität und Betrieb | P0 | 🧩 Implementiert · Abnahme offen | Der Thread „Große Testphase vorbereiten und betreuen“ ist beendet; die rund 30 Pakete, bei denen nur Philipps Abnahme fehlt, haben keinen aktiven Thread für Diagnose und Fehlerbehebung. |
 | [BASE-01](#base-01) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Küstenlinie aus der Geländeaufnahme, Wegstufen als Treppen, Brücken. |
-| [COOP-01](#coop-01) | Teambau live | P1 | 🧩 Implementiert · Abnahme offen | „Verlauf verdichten“ für große Teamprotokolle (TEAMBAU §16) – vorgesehen, nicht gebaut. |
 | [COOP-05](#coop-05) | Teambau live | P1 | 🧩 Implementiert · Abnahme offen | S04 Lagerstände über den Team-Raum an die Mod (passt zu LINK-07 „gesehene Kisteninhalte in den Raum“) – Plugin-Thread beendet. |
 | [EDIT-04](#edit-04) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Gelände-Werkzeuge auf dem Projektgelände (als eigener Thread angekündigt, nie gestartet).<br>Symmetrie und Kurven auch in der Mod. |
 | [GEN-03](#gen-03) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Feinschliff Kolosseum: Statuen in den Attika-Fenstern, Treppen im Hypogäum. |
 | [GROSS-01](#gross-01) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Geländeanpassung und Wasserkanten für Großprojekte, eigene Großprojekte aus Sammlungen. |
 | [MAP-02](#map-02) | Planer | P1 | ⏳ Offen | Komplett offen: gespeicherte Kartenziele und Provideradapter (BlueMap, Dynmap, Squaremap) mit eigenen Markerdateien. |
 | [MAP-04](#map-04) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Benannte Gruppen und Sperren mit Schemaerweiterung, abgestimmt mit der Mod (siehe GAME-07-S07). |
-| [MAP-05](#map-05) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Gedrehte Projektlagen auf der Weltkarte, damit gedrehte Hologramme übernommen werden. |
 | [MAT-03](#mat-03) | Kern, Minecraft-Daten und Dateiformate | P1 | 🧩 Implementiert · Abnahme offen | S03 Glas-/Beton-/Terrakottavarianten in Profil und Oberfläche prüfen – im Cloud-Browser machbar. |
 | [PERF-04](#perf-04) | Performance und Stabilität | P1 | 🧩 Implementiert · Abnahme offen | GPU-Upload großer Szenen in Stücken. |
 | [PERF-05](#perf-05) | Performance und Stabilität | P1 | 🧩 Implementiert · Abnahme offen | S07 Analyse von Mod und Paper-Plugin (O-8), große Dateien aufteilen – Thread „Gesamtsystem auf Performance und Stabilität optimieren“ ist beendet. |
 | [PROJ-01](#proj-01) | Projektmodul | P1 | 🧩 Implementiert · Abnahme offen | Abhängigkeiten zwischen Projekten auf der Weltkarte; Bauleute aus dem Spiel; Lagerbuchungen je Bauleute. |
-| [PROJ-02](#proj-02) | Projektmodul | P1 | 🧩 Implementiert · Abnahme offen | Abwesenheiten je Bauleute nach Datum; Basisplan-Verlauf mit mehreren Ständen; Abhängigkeiten zwischen Projekten auf der Weltkarte. |
+| [PROJ-02](#proj-02) | Projektmodul | P1 | 🧩 Implementiert · Abnahme offen | Abhängigkeiten zwischen Projekten auf der Weltkarte. |
 | [SPLIT-01](#split-01) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Unterirdische Räume und Brückenverbindungen erkennen. |
-| [COOP-08](#coop-08) | Teambau live | P2 | 🧩 Implementiert · Abnahme offen | S03 Ertragskisten im Reiter Team anzeigen – Thread „Server-Plugin mit geprüften Lagerkisten“ ist beendet. |
 | [MODEL-01](#model-01) | Planer | P2 | 🧩 Implementiert · Abnahme offen | S06 Flächen der Druckhülle ohne T-Stöße zusammenfassen – Thread „Bauten als 3D-Modell exportieren“ ist beendet. |
 
 ## Eingänge ohne eigenes Paket
@@ -542,6 +545,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [GROSS-01](#gross-01) | Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt | 🧩 Implementiert · Abnahme offen | 6/7 | BUILD-05, BASE-01, LIB-05 | ausstehend | ausstehend |
 | [MAP-05](#map-05) | Planung auf der Live-Karte vertiefen: Baustand aus dem Spiel (Mod 0.7.1, GET /v1/scan), Ebenen und Abweichungen auf der Karte, bestätigte Schritte abhaken, Bauabschnitte wählen, Weltplan automatisch abgleichen, Hologramm und BlueMap aus dem Kontextmenü | 🧩 Implementiert · Abnahme offen | 4/5 | MAP-03, MAP-04, GAME-07, GAME-01 | ausstehend | ausstehend |
 | [MAP-06](#map-06) | Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players) | 🧩 Implementiert · Abnahme offen | 7/8 | MAP-04, MAP-05, GAME-07 | ausstehend | ausstehend |
+| [MAP-07](#map-07) | Gedrehte und gespiegelte Projektlagen auf der Weltkarte: dieselbe Regel wie das Hologramm der Mod, gedrehtes Hologramm übernehmen, Plan gedreht ins Spiel | 🧩 Implementiert · Abnahme offen | 3/4 | MAP-05, MAP-04, GAME-07 | ausstehend | ausstehend |
 | [QA-04](#qa-04) | Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage | 🧩 Implementiert · Abnahme offen | 4/6 | QA-01, STAB-01, GAME-07 | ausstehend | ausstehend |
 | [GEN-03](#gen-03) | Kolosseum aus Philipps Bauplan: Arena-Generator, Bauset Antike und Großprojekt Kolosseum-Viertel | 🧩 Implementiert · Abnahme offen | 4/5 | GEN-02, GROSS-01 | ausstehend | ausstehend |
 | [SIZE-01](#size-01) | Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger | 🧩 Implementiert · Abnahme offen | 4/5 | PERF-04, ARCH-02, GFX-01, GAME-08 | ausstehend | ausstehend |
@@ -555,6 +559,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [PROD-03](#prod-03) | Verarbeitung und Logistik: Öfen für eine Zielzeit, Brennstoff je Sorte und netto aus Brennstofffarmen (Seetang, Bambus, Lava), Lagerplatz/Shulker/Fahrten je Abschnitt, Trichterdurchsatz und „Truhe voll nach“ je Farm, Sortier-Module | 🧩 Implementiert · Abnahme offen | 3/3 | PROD-01 | ausstehend | ausstehend |
 | [PROD-04](#prod-04) | Anbindung der Produktion: Farmen aus Projekt-Bauteilen mit Baufortschritt, Farmpunkte der Weltkarte übernehmen und eintragen, bester AFK-Platz nach Simulationsdistanz, Materialbereitschaft gegen Zeitplan der Planung, Sammelaufträge je Bauleute (TEAM-03-S02), Produktionsblatt als Text | 🧩 Implementiert · Abnahme offen | 4/5 | PROD-02, MAP-06, PROJ-01 | ausstehend | ausstehend |
 | [PROJ-02](#proj-02) | Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute | 🧩 Implementiert · Abnahme offen | 4/5 | PROJ-01, PROD-01 | ausstehend | ausstehend |
+| [PROJ-03](#proj-03) | Planung Runde 3: Abwesenheiten je Bauleute nach Datum, mehrere Basispläne mit Namen und Vergleich, „abwesend bis“ aus dem Team in die Planung | 🧩 Implementiert · Abnahme offen | 3/4 | PROJ-02, COOP-06 | ausstehend | ausstehend |
 | [EDIT-06](#edit-06) | Direkt im 3D-Bild bauen: Blöcke an Flächen setzen/abbauen, Formen und Gruppen im 3D aufziehen und ziehen, Truhen- und Schildinhalte bearbeiten | 🧩 Implementiert · Abnahme offen | 4/5 | EDIT-01, EDIT-02, EDIT-03, EDIT-05, ENTITY-01 | ausstehend | ausstehend |
 
 ## P4: Optionale Zusammenarbeit und Integrationen
@@ -585,7 +590,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-03, COOP-05, GAME-07 | ausstehend | ausstehend |
 | [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher | ⏳ Offen | 0/4 | GAME-07, GAME-10 | ausstehend | ausstehend |
 | [COOP-07](#coop-07) | Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel | 🧩 Implementiert · Abnahme offen | 6/7 | COOP-01, COOP-04 | ausstehend | ausstehend |
-| [COOP-08](#coop-08) | Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion) | 🧩 Implementiert · Abnahme offen | 2/4 | COOP-05, PROD-01 | ausstehend | ausstehend |
+| [COOP-08](#coop-08) | Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion) | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-05, PROD-01 | ausstehend | ausstehend |
 | [PROD-05](#prod-05) | Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung | 🧩 Implementiert · Abnahme offen | 5/5 | PROD-02, COOP-05, COOP-08 | ausstehend | ausstehend |
 | [LINK-01](#link-01) | Plugin richtet sich selbst ein und lässt sich per Klick koppeln (link.json, Server-ID, Kopplung nur OP/Bauleitung über den Teamkanal) | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-02 | ausstehend | ausstehend |
 | [LINK-02](#link-02) | Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte) | 🧩 Implementiert · Abnahme offen | 3/4 | LINK-01 | ausstehend | ausstehend |
@@ -595,6 +600,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [LINK-06](#link-06) | Weitere Steuerung ohne Befehle: Plan mit Anker von der Weltkarte auf den Server und Serveraufnahme per Klick zurück in den Planer | 🧩 Implementiert · Abnahme offen | 2/2 | LINK-05 | ausstehend | ausstehend |
 | [COOP-09](#coop-09) | Team live im Alltag: Status und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-07 | ausstehend | ausstehend |
 | [COOP-10](#coop-10) | Client zuerst: Baustand und Kisteninhalt laut Spiel (section.seen, store.seen) im Teamstand, ungeprüft getrennt von Servermessungen | 🧩 Implementiert · Abnahme offen | 6/7 | COOP-07, COOP-09 | ausstehend | ausstehend |
+| [COOP-11](#coop-11) | Verlauf verdichten: Bauleitung ersetzt Messungen bis zu einem Stichtag durch Summen (team.digest), gleicher Teamstand, Merge ohne Doppelzählung, Produktion und Team live lesen mit | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-01, COOP-05, COOP-08, COOP-09 | ausstehend | ausstehend |
 | [LINK-07](#link-07) | Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten | 🚧 In Arbeit | 5/6 | LINK-06, COOP-07 | ausstehend | ausstehend |
 | [FALLBACK-01](#fallback-01) | Ausweichwege über alle Verbindungen: Teamstand offline in der Mod, HTTP statt WebSocket, offline gemerkte Messungen, Baustand über den besten Weg (Spiel → Team-Raum → Server → Datei) | 🚧 In Arbeit | 4/5 | LINK-07, COOP-10 | ausstehend | ausstehend |
 
@@ -2522,8 +2528,6 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nur Philipp:** Auf deinem Server mit Mitspielern: „Baustand holen“ mit der Mod auf server.lmnt-gaming.net (S05).
 
-**Verwaist (ohne Bearbeiter):** Gedrehte Projektlagen auf der Weltkarte, damit gedrehte Hologramme übernommen werden.
-
 **Prüfstand:** Einheits-, Browser- und echte Spieltests grün; Abnahme durch Philipp offen (S05).
 
 **Nachweise:** [tests/e2e/game-progress.e2e.mjs](../tests/e2e/game-progress.e2e.mjs) — Abschnitt wählen, Baustand holen, Ebenenfilter, Kartenspalten, Abhaken + Rückgängig, Bauen-Reiter, Weltplan-Autoabgleich, Hologramm per Kontextmenü, alte Mod.; [tests/game-check.test.mjs](../tests/game-check.test.mjs) — layerProgress, deviationColumns, stepStatusCounts.; [scripts/bridge_gametest.mjs](../scripts/bridge_gametest.mjs) — Echter Spieltest Fabric/NeoForge: Baustand = Live-Zählung, falscher Block an der erwarteten Stelle, gedreht in Plankoordinaten.; [docs/architecture/LIVE_LINK.md](architecture/LIVE_LINK.md) — Protokoll, Oberfläche, Grenzen (BlueMap http).
@@ -2556,6 +2560,29 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/e2e/map-depth.e2e.mjs](../tests/e2e/map-depth.e2e.mjs) — Zonen, Ebenen, Messen, Notiz, Neuladen; alte Mod gefiltert, Höhenprofil, Route, Punkt wo ich stehe; Protokoll-2-Simulator mit Mitspielern und Zonen.; [tests/worldroute.test.mjs](../tests/worldroute.test.mjs) — Messung, Profil, A*-Route um Kamm/Tor/Wasser, Vereinfachung.; [tests/livelink.test.mjs](../tests/livelink.test.mjs) — Protokoll 1–2, marksForMod, readLivePlayers.; [docs/architecture/LIVE_LINK.md](architecture/LIVE_LINK.md) — Protokoll 2 (Entwurf) als Vertrag mit der Mod.
 
 **Dateiumfang:** `apps/web/src/views/map/`, `apps/web/src/map.css`, `packages/domain/src/worldPlan.ts`, `packages/domain/src/worldPlanEdit.ts`, `packages/domain/src/worldRoute.ts`, `packages/domain/src/liveLink.ts`, `packages/domain/src/index.ts`, `tests/worldplan.test.mjs`, `tests/worldbuilder.test.mjs`, `tests/worldroute.test.mjs`, `tests/livelink.test.mjs`, `tests/e2e/map-depth.e2e.mjs`, `tests/e2e/modSimulator.mjs`, `apps/web/src/testing/testplan.ts`, `docs/`. **Abhängigkeiten:** MAP-04, MAP-05, GAME-07. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### MAP-07
+
+**Gedrehte und gespiegelte Projektlagen auf der Weltkarte: dieselbe Regel wie das Hologramm der Mod, gedrehtes Hologramm übernehmen, Plan gedreht ins Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Module und Systeme komplex ausarbeiten“ · Aktualisiert: 2026-11-05T07:38:47.249Z
+
+- [x] MAP-07-S01: Weltlage mit optionaler Drehung/Spiegelung (turns 1–3, mirror), Regel wie Placement.java (Spiegeln X, dann (x,z)→(−z,x) auf Blockpositionen), Blockzustände über den Voxelkern.
+- [x] MAP-07-S02: Weltkarte zeichnet gedreht (Zellen, Zustände, Grenzen, Überschneidungen, placementsJson); R/Kontextmenü/Spiegeln drehen Projekte um ihre Nordwestecke; Weltlage-Formular mit Drehung.
+- [x] MAP-07-S03: Mod: Plan gedreht senden, gedrehtes Hologramm übernehmen, Vergleich nur bei anderer Drehung; Baustand-Abweichungen, Bauführung (Weltkoordinaten), Teamdatei (Abschnittsboxen), Geländeprüfung gedreht.
+- [ ] MAP-07-S04: Abnahme KARTE-07 im Spiel.
+
+**Abnahme:** Ungedrehte Lagen bleiben Feld für Feld gleich (keine neuen Felder). Eine Weltposition ist für Karte, Mod-Hologramm, Bauführung und Teamdatei dieselbe. Wo eine Funktion nur ungedreht rechnen kann (Server-Plugin-Plan, Geländebauteil, Anlagen ans Gelände), sagt der Planer das statt falsch zu rechnen.
+
+**Nächste Aktion:** Abnahme KARTE-07; Server-Plugin könnte Pläne gedreht ablegen (Thread „Mod, Server und Client mit Fallbacks ausbauen“).
+
+**Nur Philipp:** Im Spiel an deinem PC: Ein Projekt auf der Weltkarte drehen, ins Spiel senden und mit F3 prüfen; ein im Spiel gedrehtes Hologramm übernehmen (KARTE-07).
+
+**Prüfstand:** Einheits- und Browsertests grün; Abnahme im Spiel offen (S04).
+
+**Nachweise:** [tests/world-turn.test.mjs](../tests/world-turn.test.mjs) — 5 Fälle: Regel gegen die Mod-Formel für alle 8 Lagen, Prüfung/Drehen an Ort, Weltkarte mit Zuständen und Überschneidungen, Hologramm/Plan/Teamdatei, Baustand/Bauführung/Geländebox.; [tests/e2e/world-turn.e2e.mjs](../tests/e2e/world-turn.e2e.mjs) — Chromium: Drehung im Formular, R an Ort und Stelle, Rückgängig, zurück auf ungedreht.
+
+**Dateiumfang:** `packages/domain/src/worldmap.ts`, `packages/domain/src/terrain.ts`, `packages/domain/src/liveLink.ts`, `packages/domain/src/gameCheck.ts`, `packages/domain/src/buildRun.ts`, `packages/domain/src/team.ts`, `apps/web/src/views/map/WorldMapView.tsx`, `apps/web/src/views/map/PlacementForm.tsx`, `apps/web/src/views/map/GameProgress.tsx`, `apps/web/src/views/project/TerrainTab.tsx`, `apps/web/src/views/project/LandscapeTab.tsx`, `apps/web/src/views/project/buildrun/AnchorBar.tsx`, `apps/web/src/views/library/AnlagenPage.tsx`, `apps/web/src/views/library/BasePage.tsx`, `tests/world-turn.test.mjs`, `tests/e2e/world-turn.e2e.mjs`, `docs/architecture/WORLDMAP.md`. **Abhängigkeiten:** MAP-05, MAP-04, GAME-07. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -2651,8 +2678,6 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nächste Aktion:** Abnahme durch Philipp mit Mitspielern (TEAMBAU-01…05).
 
 **Nur Philipp:** Auf deinem Server mit Mitspielern: Mit Mitspielern TEAMBAU-01…05. Entscheiden oder Rückfrage beantworten: Weg für den Live-Abgleich ohne Herunter- und Hochladen wählen (Rückfrage im Thread).
-
-**Verwaist (ohne Bearbeiter):** „Verlauf verdichten“ für große Teamprotokolle (TEAMBAU §16) – vorgesehen, nicht gebaut.
 
 **Prüfstand:** 12 Domänentests und Browsertest mit zwei getrennten Browsern (1400/390 px) grün; Abnahme mit echten Mitspielern offen.
 
@@ -2900,20 +2925,18 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-08
 
-**Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion)** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Server-Plugin mit geprüften Lagerkisten“) · Zuständiger Thread: „Server-Plugin mit geprüften Lagerkisten“ · Aktualisiert: 2026-11-04T12:47:26.654Z
+**Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion)** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Server-Plugin mit geprüften Lagerkisten“) · Zuständiger Thread: „Module und Systeme komplex ausarbeiten“ · Aktualisiert: 2026-11-05T07:38:47.249Z
 
 - [x] COOP-08-S01: Zweck ertrag, store.config.farm, store.yield (nur Server) in team.ts und TeamLog/StoreIndex; farms in der Serverdatei (production.serverFarms).
 - [x] COOP-08-S02: Plugin misst Ertrag und Laufzeit, /bauplaner lager farm, Info mit Rate; Trichterbuchungen gebündelt (lager.trichter-buendeln-sekunden).
-- [ ] COOP-08-S03: Planer zeigt Ertragskisten im Reiter Team; Reiter Produktion nutzt yields als gemessene Rate (Thread PROD-05).
+- [x] COOP-08-S03: Planer zeigt Ertragskisten im Reiter Team (Ertragsbuch: Items je Stunde, Laufzeit, Planwert der Farm); Reiter Produktion nutzt yields als gemessene Rate (PROD-05).
 - [ ] COOP-08-S04: Abnahme mit einer echten Farm auf Philipps Server (LAGER-10).
 
 **Abnahme:** Ertragskiste (Zweck ertrag, Farm) misst Trichter- und Spielereinlagen und geladene Minuten; store.yield alle 30 min und beim Herunterfahren; Planer-Faltung yields gleich Plugin; Trichterbuchungen je Minute gebündelt; echte Paper-Server 1.18.2, 1.21.4, 26.3.
 
-**Nächste Aktion:** S03 zur Hälfte durch PROD-05 erledigt (Reiter Produktion nutzt store.yield als gemessene Rate); offen: Ertragskisten im Reiter Team anzeigen; Abnahme LAGER-10.
+**Nächste Aktion:** Abnahme LAGER-10 mit einer echten Farm; Ertragsbuch in TEAMBAU-28.
 
 **Nur Philipp:** Auf deinem Server mit Mitspielern: LAGER-01…09 mit echten Spielern.
-
-**Verwaist (ohne Bearbeiter):** S03 Ertragskisten im Reiter Team anzeigen – Thread „Server-Plugin mit geprüften Lagerkisten“ ist beendet.
 
 **Prüfstand:** Servertests und Unit-Tests bestanden; Inventarklicks, Schutz und Buchungen beim Schließen brauchen echte Spieler (LAGER-02…06).
 
@@ -3217,6 +3240,30 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
+### COOP-11
+
+**Verlauf verdichten: Bauleitung ersetzt Messungen bis zu einem Stichtag durch Summen (team.digest), gleicher Teamstand, Merge ohne Doppelzählung, Produktion und Team live lesen mit** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Module und Systeme komplex ausarbeiten“ · Aktualisiert: 2026-11-05T07:38:47.249Z
+
+- [x] COOP-11-S01: Ereignis team.digest (Teile unter 4 KB, Prüfung), Lauf in Kraft (vollständig, spätester Stichtag, Bauleitung zum Stichtag), Faltung überspringt Ersetztes.
+- [x] COOP-11-S02: compactTeam: Summen je Mitglied/Abschnitt/Kiste/Farm, neueste Zählung bleibt, erledigte Notizen und alte Ablehnungen entfallen; Gleichheitsprüfung vor dem Speichern.
+- [x] COOP-11-S03: mergeTeam lässt Ersetztes weg (alte und halbe Kopien), Team live: Teile in den Postausgang, ersetzte Wartende heraus; Produktion liest Ertrag und Trichterlaufzeit aus dem Lauf.
+- [x] COOP-11-S04: Oberfläche „Verlauf verdichten“ (Füllstand, Vorschau, Rückgängig) und Ertragsbuch im Reiter Team.
+- [ ] COOP-11-S05: Abnahme TEAMBAU-28 mit einem echten Teamstand.
+
+**Abnahme:** Der sichtbare Teamstand ist vor und nach dem Verdichten gleich (automatisch geprüft). Eine ältere Kopie bringt ersetzte Ereignisse nicht zurück; nichts wird doppelt gezählt. Nur wer zum Stichtag Bauleitung war, kann wirksam verdichten.
+
+**Nächste Aktion:** Abnahme TEAMBAU-28 durch Philipp; danach optional team.digest im Plugin/Mod-TeamLog (Thread „Mod, Server und Client mit Fallbacks ausbauen“).
+
+**Nur Philipp:** Im Planer abnehmen: TEAMBAU-28: einen echten Teamstand verdichten und mit einem Mitspieler abgleichen.
+
+**Prüfstand:** Automatisch geprüft; Abnahme offen.
+
+**Nachweise:** [tests/team-digest.test.mjs](../tests/team-digest.test.mjs) — Gleicher Stand, Merge, Rechte, Produktion, Postausgang.; [tests/e2e/team-digest.e2e.mjs](../tests/e2e/team-digest.e2e.mjs) — Ertragsbuch, Verdichten, Rückgängig auf Desktop und Handy.
+
+**Dateiumfang:** `packages/domain/src/team.ts`, `packages/domain/src/teamDigest.ts`, `packages/domain/src/teamSync.ts`, `packages/domain/src/productionPlan.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/TeamCompact.tsx`, `apps/web/src/views/project/TeamTab.tsx`, `apps/web/src/views/project/TeamProof.tsx`, `apps/web/src/team.css`, `tests/team-digest.test.mjs`, `tests/e2e/team-digest.e2e.mjs`, `docs/architecture/TEAMBAU.md`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`. **Abhängigkeiten:** COOP-01, COOP-05, COOP-08, COOP-09. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
 ### PROJ-02
 
 **Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projektmodul vertiefen“) · Zuständiger Thread: „Projektmodul vertiefen“ · Aktualisiert: 2026-11-04T09:33:11.151Z
@@ -3233,13 +3280,36 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nur Philipp:** Im Planer abnehmen: Basisplan, Material abwarten und Anteil der Bautage im Reiter „Planung“ abnehmen (PROJ-16…18).
 
-**Verwaist (ohne Bearbeiter):** Abwesenheiten je Bauleute nach Datum; Basisplan-Verlauf mit mehreren Ständen; Abhängigkeiten zwischen Projekten auf der Weltkarte.
+**Verwaist (ohne Bearbeiter):** Abhängigkeiten zwischen Projekten auf der Weltkarte.
 
 **Prüfstand:** Einheits- und Browsertests grün; Abnahme durch Philipp offen (S05).
 
 **Nachweise:** [tests/program-depth.test.mjs](../tests/program-depth.test.mjs) — 6 Fälle: Bautage zwischen Daten, Anteil der Bautage, Start in der Vergangenheit, Basisplan mit Verzug/Bereinigung/Sicherung, Material abwarten gegen Produktion, Altbestand.; [tests/e2e/program-depth.e2e.mjs](../tests/e2e/program-depth.e2e.mjs) — Chromium 1400/390 px: Basisplan ± 0 → +N Bautage, Anteil 25 %, Material-Karte mit Link zur Produktion, Neuladen, Verwerfen, kein Querscrollen.; [docs/architecture/PROGRAM.md](architecture/PROGRAM.md) — Abschnitt „Vertiefung PROJ-02“.
 
 **Dateiumfang:** `packages/domain/src/program.ts`, `packages/domain/src/programMaterial.ts`, `apps/web/src/views/project/PlanningTab.tsx`, `apps/web/src/views/project/ProductionTab.tsx`, `apps/web/src/planning.css`, `tests/program-depth.test.mjs`, `tests/e2e/program-depth.e2e.mjs`, `docs/architecture/PROGRAM.md`. **Abhängigkeiten:** PROJ-01, PROD-01. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### PROJ-03
+
+**Planung Runde 3: Abwesenheiten je Bauleute nach Datum, mehrere Basispläne mit Namen und Vergleich, „abwesend bis“ aus dem Team in die Planung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Module und Systeme komplex ausarbeiten“ · Aktualisiert: 2026-11-05T07:38:47.249Z
+
+- [x] PROJ-03-S01: Abwesenheiten je Bauleute (von–bis, Grund; geordnet, zusammengeführt, höchstens 24, höchstens ein Jahr); Zeitplan rechnet Tag für Tag um Abwesenheiten herum, gemeinsame Abschnitte bauen weiter.
+- [x] PROJ-03-S02: Basisplan-Verlauf: bis zu 8 frühere Basispläne mit Namen, Vergleichen (aktiv schalten), Umbenennen, Entfernen, Verwerfen holt den vorigen zurück; Bereinigung beim Entfernen eines Abschnitts.
+- [x] PROJ-03-S03: Team → Planung übernimmt „abwesend bis“ als Abwesenheit ab heute (kein Doppel, Vergangenes nicht).
+- [ ] PROJ-03-S04: Abnahme durch Philipp im Reiter „Planung“ (PROJ-20).
+
+**Abnahme:** Ohne Abwesenheiten und frühere Basispläne bleibt jeder Plan unverändert (Altbestand). Abwesenheit verschiebt nur die Bahn dieser Bauleute; ohne Startdatum wirkt sie nicht und der Plan sagt das. Frühere Basispläne speichern nur Daten und zeigen ihren Verzug gegen den aktuellen Plan.
+
+**Nächste Aktion:** Abnahme PROJ-20 durch Philipp.
+
+**Nur Philipp:** Im Planer abnehmen: Im Reiter „Planung“ eine Abwesenheit eintragen und zwei Basispläne vergleichen (PROJ-20).
+
+**Prüfstand:** Einheits- und Browsertests grün; Abnahme durch Philipp offen (S04).
+
+**Nachweise:** [tests/program-absence.test.mjs](../tests/program-absence.test.mjs) — 4 Fälle: Prüfung/Zusammenführen, Zeitplan um Abwesenheiten, Basisplan-Verlauf, Team → Planung.; [tests/e2e/program-absence.e2e.mjs](../tests/e2e/program-absence.e2e.mjs) — Chromium 1400/390 px: Basisplan mit Namen, Abwesenheit verschiebt Beginn um 3 Bautage, zweiter Basisplan, Vergleichen, Neuladen, Entfernen.
+
+**Dateiumfang:** `packages/domain/src/program.ts`, `packages/domain/src/team.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/PlanningTab.tsx`, `apps/web/src/views/project/TeamTab.tsx`, `apps/web/src/planning.css`, `tests/program-absence.test.mjs`, `tests/e2e/program-absence.e2e.mjs`, `docs/architecture/PROGRAM.md`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`. **Abhängigkeiten:** PROJ-02, COOP-06. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

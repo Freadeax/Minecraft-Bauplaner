@@ -88,7 +88,53 @@ export type TeamEventBody =
   | { readonly kind: 'member.away'; readonly member: string; readonly until?: string; readonly note?: string }
   | { readonly kind: 'issue.ack'; readonly events: readonly string[] }
   /** COOP-08 (LAGERKISTEN §13): what hoppers and players put into a yield store (purpose ertrag) between from and until, minutes = time the store's chunk was loaded. Server only. */
-  | { readonly kind: 'store.yield'; readonly chest: string; readonly farm?: string; readonly items: readonly ItemCount[]; readonly from: string; readonly until: string; readonly minutes: number };
+  | { readonly kind: 'store.yield'; readonly chest: string; readonly farm?: string; readonly items: readonly ItemCount[]; readonly from: string; readonly until: string; readonly minutes: number }
+  /** COOP-11 „Verlauf verdichten“: one part of a digest of all measurements up to `cutoff` (Bauleitung). Sorts right after the cutoff event. */
+  | ({ readonly kind: 'team.digest' } & DigestBody);
+
+/** An item and a signed amount (expected stock and open differences of a store can be negative). */
+export interface ItemDelta { readonly item: string; readonly delta: number }
+/** Baunachweis of one member in one section up to the cutoff (sum of build.tally). Blocks may be split over several rows. */
+export interface DigestTally { readonly member: string; readonly section: string; readonly placed: number; readonly broken: number; readonly blocks?: readonly ItemCount[]; readonly from: string; readonly until: string }
+/** Contributions and store bookings of one member up to the cutoff (sums, added up over rows). */
+export interface DigestMember { readonly member: string; readonly blocks?: number; readonly items?: readonly ItemCount[]; readonly stored?: readonly ItemCount[]; readonly taken?: readonly ItemCount[]; readonly last?: string }
+/**
+ * State of one store chest at the cutoff. The row with `head` sets status, check and seal and resets the
+ * expected stock; every row adds its amounts (a chest with many items is split over rows).
+ * The newest count itself stays in the log as a store.count event.
+ */
+export interface DigestChest {
+  readonly chest: string;
+  readonly head?: { readonly status: StoreStatus; readonly expected: boolean; readonly checkedAt?: string; readonly sealedBy?: string; readonly sealedAt?: string };
+  readonly expected?: readonly ItemDelta[];
+  readonly deviation?: readonly ItemDelta[];
+  /** Booked moves; who = member id or 'trichter'. */
+  readonly moves?: readonly { readonly who: string; readonly in?: readonly ItemCount[]; readonly out?: readonly ItemCount[] }[];
+  readonly yieldIn?: readonly ItemCount[];
+  readonly yieldMinutes?: number;
+  /** Hopper intake as running time (PROD-05 estimate from the booking times), so the Produktion keeps its rate. */
+  readonly hopper?: { readonly seconds: number; readonly bookings: number; readonly from: string; readonly until: string };
+}
+/** Measured yield of one store (and farm) up to the cutoff, summed over `periods` store.yield reports. */
+export interface DigestYield { readonly chest: string; readonly farm?: string; readonly items: readonly ItemCount[]; readonly minutes: number; readonly from: string; readonly until: string; readonly periods: number }
+export interface DigestBody {
+  /** Id of the last event the digest covers; the digest's `at` is that event's time. */
+  readonly cutoff: string;
+  /** Random tag of one compaction run; parts of one run share it. */
+  readonly run: string;
+  readonly part: number;
+  readonly parts: number;
+  /** When the Bauleitung compacted (display only). */
+  readonly made: string;
+  /** Events the run took out of the log (display only). */
+  readonly covered: number;
+  readonly tallies?: readonly DigestTally[];
+  readonly members?: readonly DigestMember[];
+  readonly chests?: readonly DigestChest[];
+  readonly yields?: readonly DigestYield[];
+  /** Notes that were closed before the cutoff: their note.add and note.resolve are gone. */
+  readonly notes?: readonly string[];
+}
 export type StorePurpose = 'vorrat' | 'eingang' | 'ausgabe' | 'rest' | 'ertrag';
 export type StoreProtection = 'offen' | 'team' | 'abschnitt' | 'eingang' | 'gesperrt';
 export const STORE_PURPOSES: readonly StorePurpose[] = ['vorrat', 'eingang', 'ausgabe', 'rest', 'ertrag'];
@@ -102,7 +148,7 @@ export type TeamEventKind = TeamEventBody['kind'];
 const KNOWN = new Set<string>(['member.join', 'member.role', 'member.player', 'section.claim', 'section.assign', 'section.release', 'section.done',
   'section.verify', 'contribution', 'gather.claim', 'note.add', 'note.resolve', 'plan.release', 'build.tally', 'member.tally', 'store.chest', 'store.count',
   'store.config', 'store.move', 'store.check', 'store.seal',
-  'section.handover', 'section.accept', 'section.decline', 'member.away', 'issue.ack', 'store.yield', 'section.seen', 'store.seen']);
+  'section.handover', 'section.accept', 'section.decline', 'member.away', 'issue.ack', 'store.yield', 'section.seen', 'store.seen', 'team.digest']);
 /** Kinds only the server plugin may write (origin server): they are measurements, not claims. */
 export const SERVER_ONLY_KINDS: ReadonlySet<string> = new Set(['build.tally', 'store.count', 'store.move', 'store.check', 'store.yield']);
 export const isKnownEvent = (e: TeamEvent): e is KnownTeamEvent => KNOWN.has(e.kind);
@@ -269,9 +315,75 @@ export function checkTeamEvent(raw: unknown): TeamEvent {
       if (!Array.isArray(raw.events) || raw.events.length < 1 || raw.events.length > 200) fail(`${where}: Liste der Hinweise ungültig`);
       for (const id of raw.events as unknown[]) text(id, 64, `${where}: Ereignis-ID`);
       break;
+    case 'team.digest': checkDigest(raw, where); break;
     default: break; // newer kinds: kept as they are
   }
   return raw as unknown as TeamEvent;
+}
+
+function deltaLines(v: unknown, max: number, what: string) {
+  if (v === undefined) return;
+  if (!Array.isArray(v) || v.length > max) fail(`${what}: höchstens ${max} Zeilen`);
+  for (const l of v as unknown[]) {
+    if (!isObj(l) || typeof l.item !== 'string' || !ITEM_ID.test(l.item)) fail(`${what}: Item ungültig`);
+    int((l as Record<string, unknown>).delta, -1e12, 1e12, `${what}: Menge`);
+  }
+}
+const STORE_STATUSES: readonly StoreStatus[] = ['ungeprueft', 'geprueft', 'abweichend', 'fehlt'];
+function checkDigest(raw: Record<string, unknown>, where: string) {
+  text(raw.cutoff, 64, `${where}: Stichtag`);
+  if (typeof raw.run !== 'string' || !/^[a-z0-9]{4,12}$/.test(raw.run)) fail(`${where}: Lauf ungültig`);
+  const parts = int(raw.parts, 1, 999, `${where}: Teile`); int(raw.part, 0, parts - 1, `${where}: Teil`);
+  iso(raw.made, `${where}: verdichtet am`); int(raw.covered, 0, 1e7, `${where}: Anzahl`);
+  const rows = (v: unknown, what: string): Record<string, unknown>[] => {
+    if (v === undefined) return [];
+    if (!Array.isArray(v) || v.length > 400 || v.some(r => !isObj(r))) fail(`${where}: ${what} ungültig`);
+    return v as Record<string, unknown>[];
+  };
+  for (const t of rows(raw.tallies, 'Baunachweis')) {
+    text(t.member, 64, `${where}: Mitglied`); text(t.section, 64, `${where}: Abschnitt`);
+    int(t.placed, 0, 1e12, `${where}: gesetzt`); int(t.broken, 0, 1e12, `${where}: abgebaut`);
+    itemLines(t.blocks, 64, `${where}: Blöcke`); iso(t.from, `${where}: von`); iso(t.until, `${where}: bis`);
+  }
+  for (const m of rows(raw.members, 'Mitglieder')) {
+    text(m.member, 64, `${where}: Mitglied`); if (m.blocks !== undefined) int(m.blocks, 0, 1e12, `${where}: Blöcke`);
+    itemLines(m.items, 64, `${where}: geliefert`); itemLines(m.stored, 64, `${where}: eingelagert`); itemLines(m.taken, 64, `${where}: entnommen`);
+    if (m.last !== undefined) iso(m.last, `${where}: zuletzt`);
+  }
+  for (const c of rows(raw.chests, 'Lager')) {
+    text(c.chest, 64, `${where}: Kiste`);
+    if (c.head !== undefined) {
+      if (!isObj(c.head) || !STORE_STATUSES.includes(c.head.status as StoreStatus) || typeof c.head.expected !== 'boolean') fail(`${where}: Kistenstand ungültig`);
+      const h = c.head as Record<string, unknown>;
+      if (h.checkedAt !== undefined) iso(h.checkedAt, `${where}: geprüft`);
+      if (h.sealedBy !== undefined) text(h.sealedBy, 64, `${where}: gesiegelt von`);
+      if (h.sealedAt !== undefined) iso(h.sealedAt, `${where}: gesiegelt`);
+    }
+    deltaLines(c.expected, 64, `${where}: Sollstand`); deltaLines(c.deviation, 64, `${where}: Abweichung`);
+    if (c.moves !== undefined) {
+      if (!Array.isArray(c.moves) || c.moves.length > 64) fail(`${where}: Buchungen ungültig`);
+      for (const mv of c.moves as unknown[]) {
+        if (!isObj(mv)) fail(`${where}: Buchung ungültig`);
+        const x = mv as Record<string, unknown>;
+        text(x.who, 64, `${where}: Buchung von`); itemLines(x.in, 64, `${where}: eingelegt`); itemLines(x.out, 64, `${where}: entnommen`);
+      }
+    }
+    itemLines(c.yieldIn, 64, `${where}: Ertrag`); if (c.yieldMinutes !== undefined) int(c.yieldMinutes, 0, 1e9, `${where}: Laufzeit`);
+    if (c.hopper !== undefined) {
+      if (!isObj(c.hopper)) fail(`${where}: Trichter ungültig`);
+      const h = c.hopper as Record<string, unknown>;
+      int(h.seconds, 0, 1e12, `${where}: Trichterlaufzeit`); int(h.bookings, 0, 1e12, `${where}: Trichterbuchungen`); iso(h.from, `${where}: von`); iso(h.until, `${where}: bis`);
+    }
+  }
+  for (const y of rows(raw.yields, 'Ertrag')) {
+    text(y.chest, 64, `${where}: Kiste`); if (y.farm !== undefined) text(y.farm, 64, `${where}: Farm`);
+    itemLines(y.items, 64, `${where}: Ertrag`, true); int(y.minutes, 0, 1e9, `${where}: Minuten`); iso(y.from, `${where}: von`); iso(y.until, `${where}: bis`);
+    int(y.periods, 1, 1e9, `${where}: Zeiträume`);
+  }
+  if (raw.notes !== undefined) {
+    if (!Array.isArray(raw.notes) || raw.notes.length > 400) fail(`${where}: Notizen ungültig`);
+    for (const n of raw.notes as unknown[]) text(n, 64, `${where}: Notiz-ID`);
+  }
 }
 
 export const compareEvents = (a: { at: string; id: string }, b: { at: string; id: string }): number =>
@@ -294,6 +406,100 @@ export function checkTeam(raw: unknown): TeamState {
     previous = event;
   }
   return raw as unknown as TeamState;
+}
+
+// ---------------------------------------------------------------- COOP-11 digest (Verlauf verdichten)
+
+/** Measurements that a digest replaces completely up to its cutoff. */
+const DIGESTED_KINDS: ReadonlySet<string> = new Set(['build.tally', 'contribution', 'store.move', 'store.check', 'store.seal', 'store.yield']);
+/** Snapshot kinds: only the newest per chest/section up to the cutoff stays (it is the state; older ones are history). */
+function snapshotKey(e: TeamEvent): string | null {
+  const r = e as unknown as Record<string, unknown>;
+  if (e.kind === 'store.count' && typeof r.chest === 'string') return `count ${r.chest}`;
+  if (e.kind === 'store.seen' && typeof r.chest === 'string') return `seen ${r.chest}`;
+  if (e.kind === 'section.seen' && typeof r.section === 'string') return `section ${r.section}`;
+  return null;
+}
+
+/** The digest the fold uses: the newest complete run of a Bauleitung. */
+export interface DigestInfo {
+  /** Cutoff event: time and id. Everything up to here is folded through the digest. */
+  readonly at: string;
+  readonly id: string;
+  readonly run: string;
+  readonly by: string;
+  readonly made: string;
+  readonly covered: number;
+  readonly parts: number;
+  /** Event ids of the parts. */
+  readonly ids: ReadonlySet<string>;
+  /** Closed notes whose events are gone. */
+  readonly notes: ReadonlySet<string>;
+  /** Snapshot events that stay (newest per key at or before the cutoff). */
+  readonly keep: ReadonlySet<string>;
+}
+
+type DigestEvent = Base & { readonly kind: 'team.digest' } & DigestBody;
+
+/**
+ * Finds the digest in force: among complete runs (all parts present) the one with the latest cutoff whose
+ * author was Bauleitung at the cutoff. Roles are replayed from member.role events alone (founder first),
+ * so every copy decides the same without the plan. Pure; null without a usable digest.
+ */
+export function digestInfo(team: Pick<TeamState, 'founder' | 'events'>): DigestInfo | null {
+  const runs = new Map<string, DigestEvent[]>();
+  for (const e of team.events) {
+    if (e.kind !== 'team.digest') continue;
+    const d = e as DigestEvent, key = `${d.run}|${d.cutoff}`;
+    let l = runs.get(key); if (!l) runs.set(key, l = []); l.push(d);
+  }
+  if (!runs.size) return null;
+  const complete = [...runs.values()].filter(l => {
+    const parts = l[0]!.parts, by = l[0]!.by, at = l[0]!.at;
+    const seen = new Set(l.map(d => d.part));
+    return l.every(d => d.parts === parts && d.by === by && d.at === at) && seen.size === parts && l.length === parts;
+  }).map(l => ({ l, ref: { at: l[0]!.at, id: l[0]!.cutoff } })).sort((a, b) => compareEvents(b.ref, a.ref) || (a.l[0]!.run < b.l[0]!.run ? -1 : 1));
+  if (!complete.length) return null;
+  // Role history from member.role (simplified: who is Bauleitung at that moment may change roles).
+  const history = new Map<string, { at: string; id: string; role: TeamRole }[]>([[team.founder, [{ at: '', id: '', role: 'leitung' }]]]);
+  const roleAt = (m: string, ref: { at: string; id: string }): TeamRole | undefined => {
+    let r: TeamRole | undefined;
+    for (const h of history.get(m) ?? []) if (compareEvents(h, ref) <= 0) r = h.role;
+    return r;
+  };
+  for (const e of team.events) {
+    if (e.kind !== 'member.role') continue;
+    const r = e as unknown as { member: string; role: TeamRole };
+    if (roleAt(e.by, e) !== 'leitung') continue;
+    let l = history.get(r.member); if (!l) history.set(r.member, l = []); l.push({ at: e.at, id: e.id, role: r.role });
+  }
+  const chosen = complete.find(c => roleAt(c.l[0]!.by, c.ref) === 'leitung');
+  if (!chosen) return null;
+  const { l, ref } = chosen;
+  const newest = new Map<string, string>();
+  for (const e of team.events) {
+    if (compareEvents(e, ref) > 0) break;
+    const k = snapshotKey(e); if (k) newest.set(k, e.id);
+  }
+  const first = l.find(d => d.part === 0)!;
+  return { at: ref.at, id: ref.id, run: first.run, by: first.by, made: first.made, covered: first.covered, parts: first.parts,
+    ids: new Set(l.map(d => d.id)), notes: new Set(l.flatMap(d => d.notes ?? [])), keep: new Set(newest.values()) };
+}
+
+/** True for events the digest replaces: the fold skips them and a merge leaves them out. */
+export function coveredByDigest(e: TeamEvent, dg: DigestInfo): boolean {
+  if (compareEvents(e, dg) > 0) return false;
+  if (e.kind === 'team.digest') return !dg.ids.has(e.id);
+  if (DIGESTED_KINDS.has(e.kind)) return true;
+  if (snapshotKey(e)) return !dg.keep.has(e.id);
+  if ((e.kind === 'note.add' || e.kind === 'note.resolve') && dg.notes.has((e as unknown as { noteId: string }).noteId)) return true;
+  return false;
+}
+
+/** The log without what the digest in force replaces (what the fold really reads). */
+export function effectiveEvents(team: Pick<TeamState, 'founder' | 'events'>): readonly TeamEvent[] {
+  const dg = digestInfo(team);
+  return dg ? team.events.filter(e => !coveredByDigest(e, dg)) : team.events;
 }
 
 // ---------------------------------------------------------------- building
@@ -324,6 +530,8 @@ export interface TeamMerge {
   readonly known: number;
   /** Same id but different content: the local one is kept, the other is reported. */
   readonly clashes: readonly { readonly local: TeamEvent; readonly incoming: TeamEvent }[];
+  /** COOP-11: events left out because the digest in force replaces them (late arrivals from older copies). */
+  readonly pruned: number;
 }
 
 /**
@@ -341,11 +549,16 @@ export function mergeTeam(local: TeamState, incoming: TeamState): TeamMerge {
     if (!mine) { byId.set(e.id, e); added.push(e); continue; }
     if (canonicalJson(mine) === canonicalJson(e)) known++; else clashes.push({ local: mine, incoming: e });
   }
-  if (byId.size > MAX_TEAM_EVENTS) throw new DomainError('TEAM_FULL', `Das Teamprotokoll hätte mehr als ${MAX_TEAM_EVENTS} Ereignisse.`);
-  const events = [...byId.values()].sort(compareEvents);
+  // COOP-11: what a digest replaces does not come back with an older copy of the log.
+  let events = [...byId.values()].sort(compareEvents);
+  const dg = digestInfo({ founder: local.founder, events });
+  let pruned = 0;
+  if (dg) { const before = events.length; events = events.filter(e => !coveredByDigest(e, dg)); pruned = before - events.length; }
+  if (events.length > MAX_TEAM_EVENTS) throw new DomainError('TEAM_FULL', `Das Teamprotokoll hätte mehr als ${MAX_TEAM_EVENTS} Ereignisse. Die Bauleitung kann den Verlauf verdichten.`);
+  const kept = new Set(events.map(e => e.id));
   // The founder is fixed at creation; a different founder means two teams were created with one id (should not happen).
   const team: TeamState = { ...local, events, ...(local.server === undefined && incoming.server !== undefined && { server: incoming.server }) };
-  return { team, added: added.sort(compareEvents), known, clashes };
+  return { team, added: added.filter(e => kept.has(e.id)).sort(compareEvents), known, clashes, pruned };
 }
 
 // ---------------------------------------------------------------- derived view
@@ -508,14 +721,37 @@ const NEED: Readonly<Record<TeamEventKind, TeamRole>> = {
   'build.tally': 'gast', 'member.tally': 'gast', 'store.chest': 'meister', 'store.count': 'gast',
   'store.config': 'meister', 'store.seal': 'meister', 'store.move': 'gast', 'store.check': 'gast', 'store.yield': 'gast',
   'section.handover': 'helfer', 'section.accept': 'helfer', 'section.decline': 'helfer', 'member.away': 'gast', 'issue.ack': 'meister',
-  'section.seen': 'helfer', 'store.seen': 'helfer',
+  'section.seen': 'helfer', 'store.seen': 'helfer', 'team.digest': 'leitung',
 };
 export const canTeam = (role: TeamRole | undefined, action: TeamAction): boolean => RANK[role ?? 'gast'] >= RANK[NEED[action]];
 
 const mentionRe = /@([A-Za-zÄÖÜäöüß0-9_.-]{2,40})/g;
 
 /** Folds the log into the visible state. Pure and deterministic. */
-export function teamView(team: TeamState, ctx: TeamContext): TeamView {
+export function teamView(team: TeamState, ctx: TeamContext): TeamView { return foldTeam(team, ctx); }
+
+/** Raw fold state at the end of the fold, for the digest (COOP-11). Internal. */
+export interface FoldRaw {
+  readonly tallies: readonly { by: string; section: string; placed: number; broken: number; blocks?: readonly ItemCount[]; from: string; until: string }[];
+  readonly blocks: ReadonlyMap<string, number>;
+  readonly items: ReadonlyMap<string, ReadonlyMap<string, number>>;
+  readonly stored: ReadonlyMap<string, ReadonlyMap<string, number>>;
+  readonly taken: ReadonlyMap<string, ReadonlyMap<string, number>>;
+  readonly lastActive: ReadonlyMap<string, string>;
+  readonly chests: ReadonlyMap<string, { counted: boolean; expected: ReadonlyMap<string, number> | null; status: StoreStatus; checkedAt?: string; sealedBy?: string; sealedAt?: string;
+    deviation: ReadonlyMap<string, number>; movedIn: ReadonlyMap<string, ReadonlyMap<string, number>>; movedOut: ReadonlyMap<string, ReadonlyMap<string, number>>;
+    farm?: string; yieldIn: ReadonlyMap<string, number>; yieldMinutes: number }>;
+  readonly yields: readonly StoreYield[];
+  readonly notes: ReadonlyMap<string, { resolved?: { at: string } }>;
+  readonly rejected: readonly TeamRejection[];
+}
+
+/**
+ * The fold. `until` stops after that event (the digest folds the log up to its cutoff); `capture` gets
+ * the raw state at the end. Events the digest in force replaces are skipped.
+ */
+export function foldTeam(team: TeamState, ctx: TeamContext, opts: { until?: { at: string; id: string }; capture?: (raw: FoldRaw) => void } = {}): TeamView {
+  const dg = digestInfo(team);
   const sectionIds = new Set(ctx.sections.map(s => s.id));
   const names = new Map<string, string>(ctx.builders.map(b => [b.id, b.name]));
   const inProgram = new Set(ctx.builders.map(b => b.id));
@@ -558,9 +794,56 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
   const nameOf = (id: string) => names.get(id) ?? id;
   const roleOf = (id: string): TeamRole => roles.get(id) ?? (known.has(id) ? 'helfer' : 'gast');
   const reject = (event: TeamEvent, reason: string) => { rejected.push({ event, reason }); };
+  const later = (m: string, at?: string) => { if (at && (!lastActive.has(m) || at > lastActive.get(m)!)) lastActive.set(m, at); };
+  const applyDigest = (d: DigestBody) => {
+    for (const t of d.tallies ?? []) tallies.push({ by: t.member, section: t.section, placed: t.placed, broken: t.broken, ...(t.blocks && { blocks: t.blocks }), from: t.from, until: t.until });
+    for (const m of d.members ?? []) {
+      if (m.blocks) blocks.set(m.member, (blocks.get(m.member) ?? 0) + m.blocks);
+      for (const l of m.items ?? []) {
+        let x = items.get(m.member); if (!x) items.set(m.member, x = new Map());
+        x.set(l.item, (x.get(l.item) ?? 0) + l.count);
+        delivered[l.item] = (delivered[l.item] ?? 0) + l.count;
+      }
+      for (const l of m.stored ?? []) book(stored, m.member, l.item, l.count);
+      for (const l of m.taken ?? []) book(taken, m.member, l.item, l.count);
+      later(m.member, m.last);
+    }
+    for (const r of d.chests ?? []) {
+      const c = chests.get(r.chest);
+      if (!c) continue; // removed after all: nothing to restore
+      if (r.head) {
+        c.status = r.head.status; c.deviation.clear();
+        if (r.head.checkedAt) c.checkedAt = r.head.checkedAt; else delete c.checkedAt;
+        if (r.head.sealedBy) { c.sealedBy = r.head.sealedBy; c.sealedAt = r.head.sealedAt!; } else { delete c.sealedBy; delete c.sealedAt; }
+        c.expected = r.head.expected ? new Map() : null;
+      }
+      for (const l of r.expected ?? []) if (c.expected) addTo(c.expected, l.item, l.delta);
+      for (const l of r.deviation ?? []) addTo(c.deviation, l.item, l.delta);
+      for (const mv of r.moves ?? []) for (const [list, target] of [[mv.in, c.movedIn], [mv.out, c.movedOut]] as const) {
+        if (!list?.length) continue;
+        let m = target.get(mv.who); if (!m) target.set(mv.who, m = new Map());
+        for (const l of list) addTo(m, l.item, l.count);
+      }
+      for (const l of r.yieldIn ?? []) addTo(c.yieldIn, l.item, l.count);
+      c.yieldMinutes += r.yieldMinutes ?? 0;
+    }
+    for (const y of d.yields ?? []) {
+      const c = chests.get(y.chest);
+      if (!c) continue;
+      yields.push({ eventId: `${(d as unknown as { id: string }).id}#${y.chest}`, chest: y.chest, chestName: c.name, ...(y.farm && { farm: y.farm }),
+        items: Object.fromEntries(y.items.map(l => [l.item, l.count])), minutes: y.minutes, from: y.from, until: y.until });
+    }
+  };
 
   for (const event of team.events) {
+    if (opts.until && compareEvents(event, opts.until) > 0) break;
     if (!isKnownEvent(event)) { unknownKinds++; continue; }
+    if (dg && coveredByDigest(event, dg)) continue;
+    if (event.kind === 'team.digest') {
+      // Decided before the fold (digestInfo): a run that is not in force has no effect and is no error.
+      if (dg?.ids.has(event.id)) applyDigest(event);
+      continue;
+    }
     const role = roleOf(event.by);
     const self = (m: string) => m === event.by;
     // member.join and member.player may always be written for oneself.
@@ -790,6 +1073,8 @@ export function teamView(team: TeamState, ctx: TeamContext): TeamView {
     }
   }
 
+  opts.capture?.({ tallies, blocks, items, stored, taken, lastActive, chests, yields, notes, rejected });
+
   // Baunachweis: a member who switched it off is left out completely (also earlier numbers).
   const placedBy = new Map<string, number>(), brokenBy = new Map<string, number>();
   const sectionTally = new Map<string, { placed: number; broken: number; builders: Map<string, number> }>();
@@ -893,6 +1178,7 @@ export function eventLabel(e: TeamEvent): string {
     case 'section.decline': return 'Übergabe abgelehnt oder zurückgezogen';
     case 'member.away': return e.until || e.note ? `abwesend${e.until ? ` bis ${e.until}` : ''}` : 'wieder da';
     case 'issue.ack': return `${e.events.length} Hinweis${e.events.length === 1 ? '' : 'e'} erledigt`;
+    case 'team.digest': return `Verlauf verdichtet (Teil ${e.part + 1} von ${e.parts}, ${e.covered} Ereignisse)`;
   }
 }
 
@@ -1098,6 +1384,8 @@ export function teamServerFile(input: {
   team: TeamState; view: TeamView; projectName: string;
   sections: readonly { readonly id: string; readonly name: string; readonly members: readonly { readonly instanceId: string; readonly fromLayer?: number; readonly toLayer?: number }[] }[];
   steps: readonly StepBox[]; origin: readonly [number, number, number]; dimension: string;
+  /** MAP-07: turn of the world placement (mirror X first, then (x,z) → (−z,x) per quarter turn, like the mod). */
+  turns?: number; mirror?: boolean;
   /** Material need per section and in total (teamPlan.sectionNeeds). */
   needs?: { readonly sections: ReadonlyMap<string, readonly ItemCount[]>; readonly total: readonly ItemCount[] };
   /** Farms of the project (production.serverFarms), so yield stores on the server can name their farm (COOP-08). */
@@ -1114,7 +1402,12 @@ export function teamServerFile(input: {
     if (!b) byInstance.set(step.instanceId, [x0, y0, z0, x1, y1, z1]);
     else { b[0] = Math.min(b[0], x0); b[1] = Math.min(b[1], y0); b[2] = Math.min(b[2], z0); b[3] = Math.max(b[3], x1); b[4] = Math.max(b[4], y1); b[5] = Math.max(b[5], z1); }
   }
-  const move = (b: readonly number[]) => [b[0]! + origin[0], b[1]! + origin[1], b[2]! + origin[2], b[3]! + origin[0], b[4]! + origin[1], b[5]! + origin[2]] as const;
+  const turns = (((input.turns ?? 0) % 4) + 4) % 4, mirror = input.mirror === true;
+  const turn = (x: number, z: number): [number, number] => { if (mirror) x = -x; for (let i = 0; i < turns; i++) { const k = x; x = -z; z = k; } return [x, z]; };
+  const move = (b: readonly number[]) => {
+    const [ax, az] = turn(b[0]!, b[2]!), [cx, cz] = turn(b[3]!, b[5]!);
+    return [Math.min(ax, cx) + origin[0], b[1]! + origin[1], Math.min(az, cz) + origin[2], Math.max(ax, cx) + origin[0], b[4]! + origin[1], Math.max(az, cz) + origin[2]] as const;
+  };
   return {
     format: TEAM_SERVER_FORMAT, formatVersion: 1, teamId: team.teamId, name: team.name, projectName: input.projectName, founder: team.founder,
     createdAt: new Date().toISOString(), dimension: input.dimension,
@@ -1158,17 +1451,25 @@ export function programBuilders(site: unknown): { id: string; name: string; play
  * the builder has none, and every section the team touched gets its current owner as assignment
  * (a free section loses its assignment). Sections the team never touched keep their planning.
  */
+type ProgramAbsence = { readonly from: string; readonly to: string; readonly note?: string };
 export function teamIntoProgram(program: {
-  readonly builders: readonly { readonly id: string; readonly name: string; readonly player?: string }[];
+  readonly builders: readonly { readonly id: string; readonly name: string; readonly player?: string; readonly absences?: readonly ProgramAbsence[] }[];
   readonly assignments: Readonly<Record<string, readonly string[]>>;
-}, view: TeamView): { builders: { id: string; name: string; player?: string }[]; assignments: Record<string, string[]>; added: number; linked: number; assigned: number } {
-  const builders = program.builders.map(b => ({ ...b }));
-  let added = 0, linked = 0, assigned = 0;
+}, view: TeamView, today?: string): { builders: { id: string; name: string; player?: string; absences?: ProgramAbsence[] }[]; assignments: Record<string, string[]>; added: number; linked: number; assigned: number; absences: number } {
+  const builders: { id: string; name: string; player?: string; absences?: ProgramAbsence[] }[] = program.builders.map(({ absences: a, ...b }) => ({ ...b, ...(a && { absences: [...a] }) }));
+  let added = 0, linked = 0, assigned = 0, absences = 0;
   for (const m of view.members) {
     if (m.role === 'gast' && !m.sections.length) continue;
-    const b = builders.find(x => x.id === m.id);
-    if (!b) { builders.push({ id: m.id, name: m.name.slice(0, 60), ...(m.player && { player: m.player }) }); added++; }
+    let b = builders.find(x => x.id === m.id);
+    if (!b) { builders.push(b = { id: m.id, name: m.name.slice(0, 60), ...(m.player && { player: m.player }) }); added++; }
     else if (m.player && !b.player) { b.player = m.player; linked++; }
+    // PROJ-03: „abwesend bis …“ from the team becomes an absence from today in the schedule (once).
+    const until = m.away?.until;
+    if (today && until && until >= today && !(b.absences ?? []).some(a => a.from <= today && a.to >= until)) {
+      const list = [...(b.absences ?? []).filter(a => !(a.from >= today && a.to <= until)), { from: today, to: until, note: (m.away?.note ?? 'laut Team').slice(0, 80) }];
+      b.absences = list.sort((x, y) => x.from.localeCompare(y.from)).slice(-24);
+      absences++;
+    }
   }
   const assignments: Record<string, string[]> = Object.fromEntries(Object.entries(program.assignments).map(([k, v]) => [k, [...v]]));
   for (const [section, owners] of Object.entries(teamAssignments(view))) {
@@ -1176,7 +1477,7 @@ export function teamIntoProgram(program: {
     if (owners.length) assignments[section] = owners; else delete assignments[section];
     if ((assignments[section] ?? []).join() !== before) assigned++;
   }
-  return { builders, assignments, added, linked, assigned };
+  return { builders, assignments, added, linked, assigned, absences };
 }
 
 /** Context of the fold for a site plan: its sections and builders. */

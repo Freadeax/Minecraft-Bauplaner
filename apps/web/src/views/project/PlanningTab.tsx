@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
 import {
-  addBuilder, addDependency, addMilestone, assignSection, builderText, clearBaseline, moveMilestone, MILESTONE_STATUS_LABEL, paceOf, planProgramWithMaterial, programIssues, programOf, setBaseline,
+  activateBaseline, addAbsence, addBuilder, addDependency, addMilestone, assignSection, builderText, clearBaseline, removeAbsence, removeBaseline, renameBaseline, moveMilestone, MILESTONE_STATUS_LABEL, paceOf, planProgramWithMaterial, programIssues, programOf, setBaseline,
   PROGRAM_PRESET_LABEL, programText, removeBuilder, removeDependency, removeMilestone, SECTION_STATE_LABEL, setProgramSettings, siteOf, siteOperation,
   suggestDependencies, suggestProgram, updateBuilder, updateMilestone, UNASSIGNED,
 } from '../../../../../packages/domain/src/index.js';
-import type { BuilderLoad, DependencySuggestion, ProductionReport, ProgramPlan, ProgramPreset, ScheduledSection, SitePlan } from '../../../../../packages/domain/src/index.js';
+import type { Builder, BuilderLoad, DependencySuggestion, ProductionReport, ProgramPlan, ProgramPreset, ScheduledSection, SitePlan } from '../../../../../packages/domain/src/index.js';
 import { download, errorText, formatNumber } from '../../app/ui';
 import { isResolved } from './session';
 import type { ProjectSession } from './session';
@@ -58,7 +58,7 @@ export function PlanningTab({ session }: { session: ProjectSession }) {
         <small>{plan.builders.length ? plan.builders.map(b => `${b.name} ${days(b.sessions)}`).join(' · ') : 'Ein Spieler mit Projekt-Bautempo'}</small></div>
       <div className="site-kpi"><span className="panel-kicker">KRITISCHER PFAD</span><strong>{plan.criticalPath.length}</strong>
         <small>{plan.criticalPath.length ? `Abschnitte ohne Puffer: ${plan.criticalPath.map(id => name.get(id)).join(', ')}` : 'Nichts offen'}</small></div>
-      {plan.baseline && <div className="site-kpi prog-slip-kpi"><span className="panel-kicker">BASISPLAN VOM {deDate(plan.baseline.at)}</span>
+      {plan.baseline && <div className="site-kpi prog-slip-kpi"><span className="panel-kicker">BASISPLAN {plan.baseline.name ? `„${plan.baseline.name.toUpperCase()}“ ` : ''}VOM {deDate(plan.baseline.at)}</span>
         <strong className={plan.baseline.slip && plan.baseline.slip > 0 ? 'warn-text' : ''}>{plan.baseline.slip === null ? (plan.sessions === 0 ? '✓ Fertig' : '–') : plan.baseline.slip === 0 ? '± 0' : `${plan.baseline.slip > 0 ? '+' : '−'}${days(Math.abs(plan.baseline.slip))}`}</strong>
         <small>{plan.baseline.end ? `Ende geplant ${deDate(plan.baseline.end)}${plan.endDate ? `, jetzt ${deDate(plan.endDate)}` : ''}` : 'Basisplan ohne offenes Ende'}</small></div>}
       {readiness && <MaterialKpi readiness={readiness} plan={plan} projectId={project.id} />}
@@ -85,14 +85,7 @@ export function PlanningTab({ session }: { session: ProjectSession }) {
           Abschnitte erst beginnen, wenn ihr Material da ist</label>
         <small className="muted">Rechnet mit Farmen und Sammelzeit aus dem Reiter <a href={`#/projekt/${project.id}/produktion`}>Produktion</a>; ein Spieltag zählt als ein Bautag.</small>
       </div>
-      <div className="prog-settings-row">
-        {program.baseline
-          ? <><span>Basisplan vom <strong>{deDate(program.baseline.at)}</strong>{program.baseline.end ? ` · Ende ${deDate(program.baseline.end)}` : ''}</span>
-            <button onClick={() => save(setBaseline(site, plan, today()), 'Basisplan neu festgehalten')}>Neu festhalten</button>
-            <button onClick={() => save(clearBaseline(site), 'Basisplan verworfen')}>Basisplan verwerfen</button></>
-          : <button onClick={() => save(() => setBaseline(site, plan, today()), 'Basisplan festgehalten')} disabled={!program.start || plan.sessions === 0}>Basisplan festhalten</button>}
-        <small className="muted">{program.start ? 'Hält die heutigen Termine fest; danach zeigt der Plan, wie weit jeder Abschnitt und Meilenstein davon abweicht.' : 'Ein Basisplan braucht ein Startdatum.'}</small>
-      </div>
+      <Baselines plan={plan} site={site} save={save} />
     </section>
     <ul className="materials-notes">{plan.notes.map(n => <li key={n}>{n}</li>)}</ul>
   </section>;
@@ -117,7 +110,7 @@ function Timeline({ plan }: { plan: ProgramPlan }) {
             {s.baseline && s.baseline.end > 0 && <span className="prog-baseline" style={{ left: `${Math.max(0, s.baseline.start) / total * 100}%`, width: `${Math.max(1, s.baseline.end - Math.max(0, s.baseline.start)) / total * 100}%` }} title={`Basisplan: ${s.name}${s.slip !== undefined ? ` · ${slipText(s.slip)}` : ''}`} />}
             {!!s.materialWait && <span className="prog-wait" style={{ left: `${(s.start - s.materialWait) / total * 100}%`, width: `${s.materialWait / total * 100}%` }} title={`${s.name} wartet ${days(s.materialWait)} auf Material`} aria-label={`${s.name} wartet auf Material`} />}
             <span className={`prog-bar${s.critical ? ' critical' : ''}${s.state === 'blocked' ? ' blocked' : ''}`} style={{ left: `${s.start / total * 100}%`, width: `${Math.max(1.5, s.sessions / total * 100)}%` }}
-              title={`${s.name}: ${whenText(s)} · ${days(s.sessions)} · ${SECTION_STATE_LABEL[s.state]}${s.waitingFor.length ? ` · wartet auf ${s.waitingFor.length} Abschnitt(e)` : ''}${s.materialWait ? ` · ${days(s.materialWait)} auf Material warten` : ''}${s.slip !== undefined ? ` · ${slipText(s.slip)}` : ''}`}>
+              title={`${s.name}: ${whenText(s)} · ${days(s.sessions)} · ${SECTION_STATE_LABEL[s.state]}${s.waitingFor.length ? ` · wartet auf ${s.waitingFor.length} Abschnitt(e)` : ''}${s.materialWait ? ` · ${days(s.materialWait)} auf Material warten` : ''}${s.absent ? ` · ${days(s.absent)} Abwesenheit` : ''}${s.slip !== undefined ? ` · ${slipText(s.slip)}` : ''}`}>
               <span className="prog-bar-text">{s.name}</span></span>
             {plan.milestones.filter(m => m.status !== 'done' && m.end === s.end && m.sectionIds.includes(s.id) && m.sectionIds.every(id => plan.sections.find(x => x.id === id)!.end <= s.end)).slice(0, 1)
               .map(m => <span key={m.id} className={`prog-milestone ${m.status}`} style={{ left: `${m.end / total * 100}%` }} title={`Meilenstein ${m.name}: ${MILESTONE_STATUS_LABEL[m.status]}`}>◆</span>)}
@@ -241,17 +234,65 @@ function Builders({ plan, site, save, title }: { plan: ProgramPlan; site: SitePl
             {[100, 75, 50, 25, 10].map(n => <option key={n} value={n}>{n} %</option>)}</select> der Bautage</label>
           <button onClick={() => void sheet(b)}>{copied === b.id ? 'Kopiert ✓' : 'Bauzettel kopieren'}</button>
           <button onClick={() => save(removeBuilder(site, b.id), `„${b.name}“ entfernt`)} aria-label={`${b.name} entfernen`}>✕</button></div>
+        <Absences builder={program.builders.find(x => x.id === b.id)!} site={site} save={save} hasStart={!!program.start} />
         <small>{b.sectionIds.length} Abschnitt{b.sectionIds.length === 1 ? '' : 'e'} · {days(b.sessions)} · {formatNumber(b.blocksDone)} / {formatNumber(b.blocks)} Blöcke{b.nextId ? ` · als Nächstes „${site.sections.find(s => s.id === b.nextId)?.name}“` : ''}{b.gatherHours ? ` · ${b.gatherHours} h sammeln` : ''}{b.items.length ? ` · ${b.items.length} Items fehlen` : ''}</small>
       </li>)}</ul>
       <div className="table-wrap"><table className="materials-table prog-matrix" aria-label="Zuweisung">
         <thead><tr><th>Abschnitt</th>{plan.builders.map(b => <th key={b.id}>{b.name}</th>)}<th>Plan</th></tr></thead>
         <tbody>{plan.sections.map(s => <tr key={s.id} className={s.state === 'done' ? 'done' : ''}><td>{s.name}<small>{SECTION_STATE_LABEL[s.state]}{s.waitingFor.length ? ` · wartet auf ${s.waitingFor.map(id => site.sections.find(x => x.id === id)?.name).join(', ')}` : ''}</small></td>
           {plan.builders.map(b => <td key={b.id} className="num"><input type="checkbox" checked={s.builderIds.includes(b.id)} aria-label={`${s.name}: ${b.name}`} onChange={e => toggle(s.id, b.id, e.target.checked)} /></td>)}
-          <td className="num">{whenText(s)}{s.critical && <small className="warn-text">kritisch</small>}</td></tr>)}</tbody>
+          <td className="num">{whenText(s)}{s.critical && <small className="warn-text">kritisch</small>}{s.absent ? <small>davon {days(s.absent)} abwesend</small> : null}</td></tr>)}</tbody>
       </table></div></>}
   </section>;
 }
 
+
+/**
+ * Basispläne (PROJ-02/PROJ-03): the active baseline and the earlier ones. A new baseline keeps the old
+ * one in the history (up to eight), so slip can be read against the first plan and against later ones.
+ */
+function Baselines({ plan, site, save }: { plan: ProgramPlan; site: SitePlan; save: Save }) {
+  const program = programOf(site);
+  const [label, setLabel] = useState('');
+  const take = () => { save(() => setBaseline(site, plan, today(), label), program.baseline ? 'Neuer Basisplan festgehalten' : 'Basisplan festgehalten'); setLabel(''); };
+  const slip = (n: number | null) => n === null ? '–' : n === 0 ? '± 0' : `${n > 0 ? '+' : '−'}${days(Math.abs(n))}`;
+  return <div className="prog-baselines" role="group" aria-label="Basispläne">
+    <div className="prog-settings-row">
+      {program.baseline && <span>Basisplan {program.baseline.name ? <strong>„{program.baseline.name}“ </strong> : ''}vom <strong>{deDate(program.baseline.at)}</strong>{program.baseline.end ? ` · Ende ${deDate(program.baseline.end)}` : ''}</span>}
+      <input value={label} onChange={e => setLabel(e.target.value)} maxLength={60} placeholder="Name, z. B. Vor den Ferien" aria-label="Name des neuen Basisplans" />
+      <button onClick={take} disabled={!program.start || plan.sessions === 0}>{program.baseline ? 'Neuen Basisplan festhalten' : 'Basisplan festhalten'}</button>
+      {program.baseline && <button onClick={() => { const n = window.prompt('Name des Basisplans', program.baseline?.name ?? ''); if (n !== null) save(renameBaseline(site, -1, n), 'Basisplan umbenannt'); }}>Umbenennen</button>}
+      {program.baseline && <button onClick={() => save(clearBaseline(site), 'Basisplan verworfen')}>Basisplan verwerfen</button>}
+      <small className="muted">{program.start ? 'Hält die heutigen Termine fest; der Plan zeigt dann, wie weit jeder Abschnitt und Meilenstein davon abweicht. Ein neuer Basisplan behält den alten zum Vergleich.' : 'Ein Basisplan braucht ein Startdatum.'}</small>
+    </div>
+    {plan.baselines.length > 0 && <div className="table-wrap"><table className="materials-table prog-baseline-table" aria-label="Frühere Basispläne">
+      <thead><tr><th>Früherer Basisplan</th><th>Ende damals</th><th>Heute gegenüber damals</th><th /></tr></thead>
+      <tbody>{plan.baselines.map((b, i) => <tr key={`${b.at}-${i}`}>
+        <td>{b.name ? `„${b.name}“ · ` : ''}{deDate(b.at)}<small>{b.sections} Abschnitte</small></td>
+        <td>{b.end ? deDate(b.end) : 'alles fertig'}</td>
+        <td className={b.slip && b.slip > 0 ? 'warn-text' : ''}>{slip(b.slip)}</td>
+        <td><button onClick={() => save(() => activateBaseline(site, i), 'Früheren Basisplan aktiviert')}>Vergleichen</button>
+          <button onClick={() => save(removeBaseline(site, i), 'Früheren Basisplan entfernt')} aria-label={`Basisplan vom ${deDate(b.at)} entfernen`}>✕</button></td></tr>)}</tbody>
+    </table></div>}
+  </div>;
+}
+
+/** Abwesenheiten (PROJ-03): periods a builder does not build; the schedule moves their sections. */
+function Absences({ builder, site, save, hasStart }: { builder: Builder; site: SitePlan; save: Save; hasStart: boolean }) {
+  const [from, setFrom] = useState(''), [to, setTo] = useState(''), [note, setNote] = useState('');
+  const list = builder.absences ?? [];
+  return <div className="prog-absences" role="group" aria-label={`Abwesenheiten von ${builder.name}`}>
+    {list.length > 0 && <ul>{list.map((a, i) => <li key={`${a.from}-${i}`}><span>abwesend {a.from === a.to ? deDate(a.from) : `${deDate(a.from)} – ${deDate(a.to)}`}{a.note ? ` · ${a.note}` : ''}</span>
+      <button onClick={() => save(removeAbsence(site, builder.id, i), `Abwesenheit von „${builder.name}“ entfernt`)} aria-label={`Abwesenheit ${deDate(a.from)} von ${builder.name} entfernen`}>✕</button></li>)}</ul>}
+    <form className="site-add" onSubmit={e => { e.preventDefault(); if (from) { save(() => addAbsence(site, builder.id, from, to || from, note), `„${builder.name}“ abwesend ab ${deDate(from)}`); setFrom(''); setTo(''); setNote(''); } }}>
+      <input type="date" value={from} onChange={e => setFrom(e.target.value)} aria-label={`Abwesend von (${builder.name})`} />
+      <input type="date" value={to} min={from || undefined} onChange={e => setTo(e.target.value)} aria-label={`Abwesend bis (${builder.name})`} />
+      <input value={note} onChange={e => setNote(e.target.value)} maxLength={80} placeholder="Grund (optional)" aria-label={`Grund der Abwesenheit von ${builder.name}`} />
+      <button type="submit" disabled={!from}>+ Abwesend</button>
+    </form>
+    {list.length > 0 && !hasStart && <small className="muted">Abwesenheiten wirken erst mit einem Startdatum.</small>}
+  </div>;
+}
 
 /** Material readiness from Produktion when the plan waits for it (PROJ-02). */
 function MaterialKpi({ readiness, plan, projectId }: { readiness: ProductionReport; plan: ProgramPlan; projectId: string }) {

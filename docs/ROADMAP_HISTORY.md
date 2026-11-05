@@ -5512,3 +5512,87 @@ COOP-10: Zeile „Mein Spiel“ unter Team live mit den FALLBACK-01-Feldern der 
 - `tests/e2e/modSimulator.mjs`
 - `docs/architecture/TEAM_LIVE.md`
 
+## 2026-11-05T07:12:28.553Z · progress
+
+**Aufgaben:** COOP-11, COOP-08
+
+COOP-11 Verlauf verdichten (team.digest, compactTeam, Merge ohne Doppelzählung, Produktion/Team live) und COOP-08 S03 Ertragsbuch im Reiter Team. Geprüft: tests/team-digest.test.mjs (10), tests/e2e/team-digest.e2e.mjs (Desktop+Handy). Grenze: Plugin/Mod-TeamLog übergehen team.digest; Abnahme TEAMBAU-28 offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-11 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme TEAMBAU-28 durch Philipp; danach optional team.digest im Plugin/Mod-TeamLog (Thread „Mod, Server und Client mit Fallbacks ausbauen“). |
+| COOP-08 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LAGER-10 mit einer echten Farm; Ertragsbuch in TEAMBAU-28. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/team.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/project/TeamCompact.tsx`
+- `apps/web/src/views/project/TeamProof.tsx`
+- `apps/web/src/views/project/TeamTab.tsx`
+- `docs/architecture/TEAMBAU.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/productionPlan.ts`
+- `packages/domain/src/team.ts`
+- `packages/domain/src/teamDigest.ts`
+- `packages/domain/src/teamSync.ts`
+- `tests/e2e/team-digest.e2e.mjs`
+- `tests/team-digest.test.mjs`
+
+## 2026-11-05T07:38:47.249Z · progress
+
+**Aufgaben:** COOP-11, COOP-08, PROJ-03, MAP-07
+
+Teamverlauf verdichten und Ertragsbuch (COOP-11, COOP-08 S03), Abwesenheiten und Basisplan-Verlauf in der Planung (PROJ-03), gedrehte Projektlagen auf der Weltkarte wie das Mod-Hologramm (MAP-07)
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-11 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme TEAMBAU-28 durch Philipp; danach optional team.digest im Plugin/Mod-TeamLog (Thread „Mod, Server und Client mit Fallbacks ausbauen“). |
+| COOP-08 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LAGER-10 mit einer echten Farm; Ertragsbuch in TEAMBAU-28. |
+| PROJ-03 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme PROJ-20 durch Philipp. |
+| MAP-07 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme KARTE-07; Server-Plugin könnte Pläne gedreht ablegen (Thread „Mod, Server und Client mit Fallbacks ausbauen“). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/planning.css`
+- `apps/web/src/team.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/library/AnlagenPage.tsx`
+- `apps/web/src/views/library/BasePage.tsx`
+- `apps/web/src/views/map/GameProgress.tsx`
+- `apps/web/src/views/map/PlacementForm.tsx`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/project/LandscapeTab.tsx`
+- `apps/web/src/views/project/PlanningTab.tsx`
+- `apps/web/src/views/project/TeamCompact.tsx`
+- `apps/web/src/views/project/TeamExchange.tsx`
+- `apps/web/src/views/project/TeamLive.tsx`
+- `apps/web/src/views/project/TeamProof.tsx`
+- `apps/web/src/views/project/TeamTab.tsx`
+- `apps/web/src/views/project/TerrainTab.tsx`
+- `apps/web/src/views/project/buildrun/AnchorBar.tsx`
+- `apps/web/src/views/project/teamTransfer.ts`
+- `apps/web/src/views/world/world.worker.ts`
+- `docs/architecture/PROGRAM.md`
+- `docs/architecture/TEAMBAU.md`
+- `docs/architecture/WORLDMAP.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/buildRun.ts`
+- `packages/domain/src/gameCheck.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/liveLink.ts`
+- `packages/domain/src/productionPlan.ts`
+- `packages/domain/src/program.ts`
+- `packages/domain/src/team.ts`
+- `packages/domain/src/teamDigest.ts`
+- `packages/domain/src/teamSync.ts`
+- `packages/domain/src/terrain.ts`
+- `packages/domain/src/worldmap.ts`
+- `tests/e2e/program-absence.e2e.mjs`
+- `tests/e2e/team-digest.e2e.mjs`
+- `tests/e2e/world-turn.e2e.mjs`
+- `tests/program-absence.test.mjs`
+- `tests/team-digest.test.mjs`
+- `tests/world-turn.test.mjs`
+

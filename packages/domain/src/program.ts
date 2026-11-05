@@ -38,7 +38,18 @@ export interface Builder {
   readonly player?: string;
   /** Share of the building days this builder takes part in, 10–100 % (PROJ-02); absent = 100. */
   readonly share?: number;
+  /** PROJ-03: days without building (holidays, exams), inclusive, sorted by start. Only with a start date. */
+  readonly absences?: readonly Absence[];
 }
+
+/** A period a builder does not build (PROJ-03), `YYYY-MM-DD` inclusive. */
+export interface Absence {
+  readonly from: string;
+  readonly to: string;
+  readonly note?: string;
+}
+export const MAX_ABSENCES = 24;
+export const MAX_BASELINES = 8;
 
 export interface Milestone {
   readonly id: string;
@@ -72,12 +83,16 @@ export interface BuildProgram {
   readonly waitForMaterial?: true;
   /** PROJ-02: frozen schedule to compare the current projection with (needs a start date). */
   readonly baseline?: Baseline;
+  /** PROJ-03: earlier baselines, newest first (at most MAX_BASELINES); the active one is `baseline`. */
+  readonly baselines?: readonly Baseline[];
 }
 
 /** Frozen dates of a schedule (PROJ-02). Dates only, so it stays comparable when the plan is recomputed from today. */
 export interface Baseline {
   /** Day the baseline was taken. */
   readonly at: string;
+  /** PROJ-03: optional name, e.g. „Vor den Ferien“. */
+  readonly name?: string;
   /** Last building day of the whole plan; absent = everything was done. */
   readonly end?: string;
   /** Section id → first and last building day. Done sections are not recorded. */
@@ -149,6 +164,7 @@ export function checkProgram(raw: unknown): BuildProgram {
     if (b.note !== undefined && (typeof b.note !== 'string' || b.note.length > 300)) fail(`Notiz von „${name}“ zu lang`);
     if (b.player !== undefined && (typeof b.player !== 'string' || !/^[.*]?[A-Za-z0-9_]{2,16}$/.test(b.player))) fail(`Minecraft-Name von „${name}“ ungültig`);
     if (b.share !== undefined && (!Number.isInteger(b.share) || (b.share as number) < 10 || (b.share as number) > 99)) fail(`Anteil der Bautage von „${name}“ muss 10 bis 99 % sein`);
+    if (b.absences !== undefined) checkAbsences(b.absences, name);
   }
   if (!Array.isArray(raw.milestones) || raw.milestones.length > MAX_MILESTONES) fail(`höchstens ${MAX_MILESTONES} Meilensteine`);
   const milestoneIds = new Set<string>();
@@ -183,13 +199,32 @@ export function checkProgram(raw: unknown): BuildProgram {
   if (raw.sessionsPerWeek !== undefined && (!Number.isInteger(raw.sessionsPerWeek) || (raw.sessionsPerWeek as number) < 1 || (raw.sessionsPerWeek as number) > 7)) fail('Bautage je Woche müssen 1 bis 7 sein');
   if (raw.waitForMaterial !== undefined && raw.waitForMaterial !== true) fail('„Auf Material warten“ ist ungültig');
   if (raw.baseline !== undefined) checkBaseline(raw.baseline);
+  if (raw.baselines !== undefined) {
+    if (!Array.isArray(raw.baselines) || raw.baselines.length > MAX_BASELINES) fail(`höchstens ${MAX_BASELINES} frühere Basispläne`);
+    for (const b of raw.baselines as unknown[]) checkBaseline(b);
+  }
   return raw as unknown as BuildProgram;
+}
+
+function checkAbsences(raw: unknown, name: string): void {
+  if (!Array.isArray(raw) || raw.length > MAX_ABSENCES) return void fail(`„${name}“: höchstens ${MAX_ABSENCES} Abwesenheiten`);
+  let last = -Infinity;
+  for (const a of raw as unknown[]) {
+    if (!isObj(a)) return void fail(`„${name}“: Abwesenheit ungültig`);
+    const from = parseDay(checkDate(a.from, `Abwesenheit von „${name}“: Beginn`))!, to = parseDay(checkDate(a.to, `Abwesenheit von „${name}“: Ende`))!;
+    if (from > to) fail(`Abwesenheit von „${name}“ endet vor ihrem Beginn`);
+    if (to - from > 366) fail(`Abwesenheit von „${name}“ ist länger als ein Jahr`);
+    if (from < last) fail(`Abwesenheiten von „${name}“ sind nicht nach Beginn geordnet`);
+    last = from;
+    if (a.note !== undefined && (typeof a.note !== 'string' || a.note.length > 80)) fail(`Notiz einer Abwesenheit von „${name}“ zu lang`);
+  }
 }
 
 const MAX_BASELINE_ENTRIES = 4096;
 function checkBaseline(raw: unknown): void {
   if (!isObj(raw)) return void fail('Basisplan ist kein Objekt');
   checkDate(raw.at, 'Datum des Basisplans');
+  if (raw.name !== undefined && (typeof raw.name !== 'string' || !raw.name.trim() || raw.name.length > 60)) fail('Name des Basisplans braucht 1–60 Zeichen');
   if (raw.end !== undefined) checkDate(raw.end, 'Ende des Basisplans');
   if (!isObj(raw.sections) || Object.keys(raw.sections).length > MAX_BASELINE_ENTRIES) fail('Basisplan: Abschnitte ungültig');
   for (const v of Object.values(raw.sections as Record<string, unknown>)) {
@@ -241,6 +276,42 @@ export function removeBuilder(site: SitePlan, id: string): SitePlan {
   return edit(site, p => ({ ...p, builders: p.builders.filter(b => b.id !== id),
     assignments: Object.fromEntries(Object.entries(p.assignments).map(([s, ids]) => [s, ids.filter(b => b !== id)]).filter(([, ids]) => (ids as string[]).length)) }));
 }
+/** PROJ-03: adds an absence (inclusive dates); overlapping or adjacent ones of the same builder are joined. */
+export function addAbsence(site: SitePlan, builderId: string, from: string, to: string, note?: string): SitePlan {
+  return edit(site, p => {
+    const b = p.builders.find(x => x.id === builderId);
+    if (!b) return fail(`Bauleute-Eintrag ${builderId} existiert nicht`);
+    const a = parseDay(checkDate(from, 'Beginn der Abwesenheit'))!, z = parseDay(checkDate(to, 'Ende der Abwesenheit'))!;
+    if (a > z) fail('Die Abwesenheit endet vor ihrem Beginn');
+    const clean = note?.trim().slice(0, 80);
+    const list = [...(b.absences ?? []), { from, to, ...(clean && { note: clean }) }].sort((x, y) => x.from.localeCompare(y.from));
+    const joined: Absence[] = [];
+    for (const x of list) {
+      const prev = joined.at(-1);
+      if (prev && parseDay(x.from)! <= parseDay(prev.to)! + 1) {
+        const note2 = [prev.note, x.note].filter(Boolean).join(' · ').slice(0, 80);
+        joined[joined.length - 1] = { from: prev.from, to: x.to > prev.to ? x.to : prev.to, ...(note2 && { note: note2 }) };
+      } else joined.push(x);
+    }
+    checkAbsences(joined, b.name);
+    return { ...p, builders: p.builders.map(x => x.id === builderId ? { ...x, absences: joined } : x) };
+  });
+}
+/** PROJ-03: removes the absence at `index` of a builder. */
+export function removeAbsence(site: SitePlan, builderId: string, index: number): SitePlan {
+  return edit(site, p => ({ ...p, builders: p.builders.map(b => {
+    if (b.id !== builderId || !b.absences?.[index]) return b;
+    const rest = b.absences.filter((_, i) => i !== index);
+    const { absences: _a, ...without } = b; void _a;
+    return rest.length ? { ...b, absences: rest } : without;
+  }) }));
+}
+/** True when the builder does not build on that day (days since the epoch). */
+export function absentOn(builder: Pick<Builder, 'absences'>, day: number): boolean {
+  for (const a of builder.absences ?? []) { const f = parseDay(a.from)!, t = parseDay(a.to)!; if (day >= f && day <= t) return true; }
+  return false;
+}
+
 /** Sets who builds a section (empty = unassigned). */
 export function assignSection(site: SitePlan, sectionId: string, builderIds: readonly string[]): SitePlan {
   return edit(site, p => {
@@ -311,6 +382,7 @@ export function pruneProgram(program: BuildProgram, sectionIds: ReadonlySet<stri
     dependencies: program.dependencies.filter(d => sectionIds.has(d.before) && sectionIds.has(d.after)),
     assignments: Object.fromEntries(Object.entries(program.assignments).filter(([id]) => sectionIds.has(id))),
     ...(program.baseline && { baseline: { ...program.baseline, sections: Object.fromEntries(Object.entries(program.baseline.sections).filter(([id]) => sectionIds.has(id))) } }),
+    ...(program.baselines && { baselines: program.baselines.map(b => ({ ...b, sections: Object.fromEntries(Object.entries(b.sections).filter(([id]) => sectionIds.has(id))) })) }),
   };
 }
 
@@ -318,18 +390,52 @@ export function pruneProgram(program: BuildProgram, sectionIds: ReadonlySet<stri
  * Freezes the dates of a computed plan as baseline (PROJ-02). Needs a start
  * date, because only dates stay comparable when later plans start from today.
  */
-export function setBaseline(site: SitePlan, plan: ProgramPlan, today: string): SitePlan {
+export function setBaseline(site: SitePlan, plan: ProgramPlan, today: string, name?: string): SitePlan {
   if (!plan.start) fail('ein Basisplan braucht ein Startdatum (Einstellungen)');
   checkDate(today, 'Datum');
   const sections: Record<string, { start: string; end: string }> = {};
   for (const s of plan.sections) if (s.sessions > 0 && s.startDate && s.endDate) sections[s.id] = { start: s.startDate, end: s.endDate };
   const milestones: Record<string, string> = {};
   for (const m of plan.milestones) if (m.status !== 'done' && m.endDate) milestones[m.id] = m.endDate;
-  return edit(site, p => ({ ...p, baseline: { at: today, ...(plan.endDate && { end: plan.endDate }), sections, milestones } }));
+  const label = name?.trim().slice(0, 60);
+  // PROJ-03: the previous baseline is kept as history (newest first).
+  return edit(site, p => withBaselines({ ...p, baseline: { at: today, ...(label && { name: label }), ...(plan.endDate && { end: plan.endDate }), sections, milestones } },
+    p.baseline ? [p.baseline, ...(p.baselines ?? [])] : p.baselines ?? []));
 }
+/** Drops the active baseline; the newest earlier one (if any) becomes active. */
 export function clearBaseline(site: SitePlan): SitePlan {
-  return edit(site, p => { if (!p.baseline) return p; const { baseline: _b, ...rest } = p; void _b; return rest; });
+  return edit(site, p => {
+    if (!p.baseline) return p;
+    const { baseline: _b, baselines: _h, ...rest } = p; void _b; void _h;
+    const [next, ...older] = p.baselines ?? [];
+    return withBaselines(next ? { ...rest, baseline: next } : rest, older);
+  });
 }
+/** PROJ-03: makes an earlier baseline (index in `baselines`) the active one; the active one goes into the history. */
+export function activateBaseline(site: SitePlan, index: number): SitePlan {
+  return edit(site, p => {
+    const pick = p.baselines?.[index];
+    if (!pick || !p.baseline) return fail('Diesen früheren Basisplan gibt es nicht');
+    return withBaselines({ ...p, baseline: pick }, [p.baseline, ...p.baselines!.filter((_, i) => i !== index)]);
+  });
+}
+/** PROJ-03: removes an earlier baseline from the history. */
+export function removeBaseline(site: SitePlan, index: number): SitePlan {
+  return edit(site, p => p.baselines?.[index] ? withBaselines(p, p.baselines.filter((_, i) => i !== index)) : p);
+}
+/** PROJ-03: renames the active baseline (index -1) or an earlier one. */
+export function renameBaseline(site: SitePlan, index: number, name: string): SitePlan {
+  const label = name.trim().slice(0, 60);
+  const named = (b: Baseline): Baseline => { const { name: _n, ...rest } = b; void _n; return label ? { ...rest, name: label } : rest; };
+  return edit(site, p => {
+    if (index < 0) return p.baseline ? { ...p, baseline: named(p.baseline) } : p;
+    return p.baselines?.[index] ? { ...p, baselines: p.baselines.map((b, i) => i === index ? named(b) : b) } : p;
+  });
+}
+const withBaselines = (p: BuildProgram, history: readonly Baseline[]): BuildProgram => {
+  const { baselines: _old, ...rest } = p; void _old;
+  return history.length ? { ...rest, baselines: history.slice(0, MAX_BASELINES) } : rest;
+};
 
 // ---------------------------------------------------------------------------
 // Checks and suggestions
@@ -484,6 +590,8 @@ export interface ScheduledSection {
   /** PROJ-02: position in the baseline (building-day indices of this plan, may be negative) and the slip of the end in building days. */
   readonly baseline?: { readonly start: number; readonly end: number };
   readonly slip?: number;
+  /** PROJ-03: building days lost because the assigned builders are away (later start, days with nobody there). */
+  readonly absent?: number;
 }
 
 export interface BuilderLoad {
@@ -545,7 +653,9 @@ export interface ProgramPlan {
   /** Sections whose material contains items without rate (cannot wait for them). */
   readonly materialUnknown: readonly string[];
   /** PROJ-02: comparison with the frozen baseline. */
-  readonly baseline: { readonly at: string; readonly end: string | null; readonly slip: number | null } | null;
+  readonly baseline: { readonly at: string; readonly name?: string; readonly end: string | null; readonly slip: number | null } | null;
+  /** PROJ-03: earlier baselines with their end and the slip of today's projection against them, newest first. */
+  readonly baselines: readonly { readonly at: string; readonly name?: string; readonly end: string | null; readonly slip: number | null; readonly sections: number }[];
 }
 
 /** Options of planProgram that come from other modules. */
@@ -636,6 +746,14 @@ export function planProgram(site: SitePlan, overview: SiteOverview, pace: PaceSe
   const scheduled = new Map<string, Omit<ScheduledSection, 'critical' | 'startDate' | 'endDate' | 'milestoneIds'>>();
   const milestoneOf = new Map<string, string[]>();
   for (const m of program.milestones) for (const id of m.sectionIds) (milestoneOf.get(id) ?? (milestoneOf.set(id, []), milestoneOf.get(id)!)).push(m.id);
+  const perWeek = program.sessionsPerWeek ?? DEFAULT_SESSIONS_PER_WEEK;
+  // Remaining work starts at the start date, or today once the start date lies in the past.
+  const startDay = parseDay(program.start), todayDay0 = parseDay(today);
+  const fromDate = program.start ? (startDay !== null && todayDay0 !== null && todayDay0 > startDay ? today! : program.start) : undefined;
+  const calendar = sessionCalendar(fromDate, perWeek);
+  // PROJ-03: absences need dates; without a start date they are ignored (note below).
+  const withAbsences = !!fromDate && program.builders.some(b => b.absences?.length);
+  const dayAt = (i: number): number => parseDay(calendar(i) ?? undefined)!;
 
   for (const id of order) {
     const p = plans.get(id), name = site.sections.find(s => s.id === id)!.name;
@@ -655,7 +773,22 @@ export function planProgram(site: SitePlan, overview: SiteOverview, pace: PaceSe
     // Material ready after x play days → the section can start on building day ceil(x) (one play day = one building day).
     const raw = material ? material.get(id) : undefined;
     const materialDay = raw === undefined ? undefined : raw === null ? null : Math.ceil(raw - 0.05);
-    const start = Math.max(withoutMaterial, materialDay ?? 0), end = start + sessions;
+    let start = Math.max(withoutMaterial, materialDay ?? 0), end = start + sessions, absent = 0;
+    if (withAbsences && builderIds.some(b => builderById.get(b)!.absences?.length)) {
+      // Day by day: only present builders build; the section starts on the first day someone is there.
+      const present = (i: number) => builderIds.filter(b => !absentOn(builderById.get(b)!, dayAt(i)));
+      const planned = start;
+      let guard = 0;
+      while (!present(start).length && guard++ < MAX_SPAN_DAYS) start++;
+      absent = start - planned;
+      let built = 0, i = start;
+      while (built < openWork && guard++ < MAX_SPAN_DAYS) {
+        const here = present(i);
+        if (here.length) built += here.reduce((n, b) => n + rateOf(builderById.get(b)!), 0); else absent++;
+        i++;
+      }
+      end = Math.max(i, start + 1);
+    }
     for (const l of lanes) {
       free.set(l, end);
       const prev = laneLast.get(l);
@@ -663,8 +796,8 @@ export function planProgram(site: SitePlan, overview: SiteOverview, pace: PaceSe
       laneLast.set(l, id);
     }
     const state: SectionState = waitingFor.length ? 'blocked' : blocksDone > 0 || (p?.done ?? 0) > 0 ? 'open' : 'ready';
-    scheduled.set(id, { id, name, builderIds, blocks, blocksDone, openWork, sessions, start, end, waitingFor, state,
-      ...(materialDay !== undefined && { materialDay, materialWait: start - withoutMaterial }) });
+    scheduled.set(id, { id, name, builderIds, blocks, blocksDone, openWork, sessions: end - start, start, end, waitingFor, state,
+      ...(materialDay !== undefined && { materialDay, materialWait: Math.max(0, (materialDay ?? 0) - withoutMaterial) }), ...(absent > 0 && { absent }) });
   }
   const total = Math.max(0, ...[...scheduled.values()].map(s => s.end));
   // Latest start without delaying the end, backwards over dependency and lane successors.
@@ -675,11 +808,6 @@ export function planProgram(site: SitePlan, overview: SiteOverview, pace: PaceSe
     const ls = followers.length ? Math.min(...followers.map(f => latest.get(f.id)!)) - s.sessions : total - s.sessions;
     latest.set(id, ls);
   }
-  const perWeek = program.sessionsPerWeek ?? DEFAULT_SESSIONS_PER_WEEK;
-  // Remaining work starts at the start date, or today once the start date lies in the past.
-  const startDay = parseDay(program.start), todayDay0 = parseDay(today);
-  const fromDate = program.start ? (startDay !== null && todayDay0 !== null && todayDay0 > startDay ? today! : program.start) : undefined;
-  const calendar = sessionCalendar(fromDate, perWeek);
   const from = calendar(0);
   const dateOfEnd = (end: number): string | null => end > 0 ? calendar(end - 1) : null;
   const index = (date: string): number | null => from ? buildingDaysBetween(from, date, perWeek) : null;
@@ -727,14 +855,17 @@ export function planProgram(site: SitePlan, overview: SiteOverview, pace: PaceSe
   if (sections.some(s => s.builderIds.length === 0 && s.sessions > 0) && program.builders.length) notes.push('Nicht zugewiesene Abschnitte laufen nacheinander in einer eigenen Spur mit dem Projekt-Bautempo.');
   if (fromDate && fromDate !== program.start) notes.push('Das Startdatum liegt in der Vergangenheit: die offene Arbeit beginnt am nächsten Bautag ab heute.');
   if (program.builders.some(b => b.share !== undefined)) notes.push('Bauleute mit Anteil unter 100 % bauen anteilig weniger je Bautag (Tempo × Anteil).');
+  if (program.builders.some(b => b.absences?.length)) notes.push(withAbsences ? 'Abwesenheiten sind eingerechnet: an diesen Tagen baut nur, wer da ist; ein Abschnitt beginnt, sobald einer seiner Bauleute da ist.' : 'Abwesenheiten wirken erst mit einem Startdatum (Einstellungen).');
   const materialUnknown = material ? sections.filter(s => s.sessions > 0 && s.materialDay === null).map(s => s.id) : [];
   if (program.waitForMaterial && !material) notes.push('„Auf Material warten“ ist an, aber ohne Produktionsauswertung – der Zeitplan rechnet ohne Material.');
   if (material) notes.push('Abschnitte beginnen erst, wenn ihr Material beisammen ist (Deckung aus dem Reiter „Produktion“: Farmen, Sammelzeit je Tag); ein Spieltag zählt als ein Bautag.');
   if (materialUnknown.length) notes.push(`${materialUnknown.length} Abschnitt${materialUnknown.length === 1 ? ' enthält' : 'e enthalten'} Items ohne Sammel-Richtwert – dort kann der Plan nicht auf Material warten.`);
   const endDate = dateOfEnd(total);
-  const baseline = base ? { at: base.at, end: base.end ?? null, slip: base.end && endDate ? buildingDaysBetween(base.end, endDate, perWeek) : null } : null;
+  const compare = (b: Baseline) => ({ at: b.at, ...(b.name && { name: b.name }), end: b.end ?? null, slip: b.end && endDate ? buildingDaysBetween(b.end, endDate, perWeek) : null });
+  const baseline = base ? compare(base) : null;
+  const baselines = (from ? program.baselines ?? [] : []).map(b => ({ ...compare(b), sections: Object.keys(b.sections).length }));
   return { sections, builders, milestones, sessions: total, endDate, criticalPath, start: program.start ?? null, from, sessionsPerWeek: perWeek, notes,
-    waitForMaterial: !!material, materialUnknown, baseline };
+    waitForMaterial: !!material, materialUnknown, baseline, baselines };
 }
 
 const baselineOf = (baseEnd: string | undefined, endDate: string | null, perWeek: number): { baselineEnd?: string; slip?: number } => {

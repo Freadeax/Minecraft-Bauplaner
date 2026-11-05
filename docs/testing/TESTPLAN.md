@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 138 Fälle in 13 Bereichen, davon 62 Kernfälle.
+Umfang: 141 Fälle in 13 Bereichen, davon 62 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -69,6 +69,7 @@ Das Herzstück: Bauteile anordnen, Material planen, Bauanleitung und Export.
 | PROJ-16 | Planung: Basisplan und Verzug | kern | 1. Projekt mit Bauabschnitten, Tab „Planung“: Startdatum setzen, „Basisplan festhalten“.<br>2. Bauleute anlegen, alle Abschnitte zuweisen und „dabei an 25 % der Bautage“ wählen.<br>3. Neu laden (F5), dann „Basisplan verwerfen“. | Nach dem Festhalten steht „± 0“; mit 25 % zeigt die Karte „+N Bautage“, Meilensteine nennen „später als im Basisplan“ und im Zeitplan liegt unter den Balken eine Linie für den Basisplan; alles bleibt nach dem Neuladen; Verwerfen entfernt den Vergleich. |
 | PROJ-17 | Planung wartet auf Material aus der Produktion | vertieft | 1. Projekt mit Abschnitten, Tab „Produktion“: Sammelzeit je Tag klein stellen (z. B. 0,5 h).<br>2. Tab „Planung“ → Einstellungen: „Abschnitte erst beginnen, wenn ihr Material da ist“ einschalten.<br>3. Im Tab „Produktion“ eine Farm auf „läuft“ stellen und zurück zur Planung. | Abschnitte, deren Material noch fehlt, beginnen später (schraffierter Teil vor dem Balken); die Karte „Material · aus Produktion“ nennt die Wartezeit; im Tab „Produktion“ steht „Die Planung wartet auf das Material“ statt „Material zu spät“; eine laufende Farm verkürzt die Wartezeit. |
 | PROJ-18 | Startdatum in der Vergangenheit | vertieft | 1. In der Planung ein Startdatum vor zwei Wochen setzen, ein Abschnitt ist noch offen. | Die offene Arbeit beginnt am nächsten Bautag ab heute (nicht in der Vergangenheit); ein Hinweis unter dem Plan sagt das; Daten überspringen freie Wochentage. |
+| PROJ-20 | Planung: Abwesenheit und frühere Basispläne | vertieft | 1. Tab „Planung“: Startdatum setzen, Bauleute anlegen, alle Abschnitte zuweisen, Basisplan mit Namen festhalten.<br>2. Bei den Bauleuten „Abwesend von/bis“ für die ersten Tage mit Grund eintragen, „+ Abwesend“.<br>3. Einen zweiten Basisplan mit anderem Namen festhalten, in „Frühere Basispläne“ den ersten „Vergleichen“; im Reiter Team bei einem Mitglied „abwesend bis“ setzen und „In die Projektplanung übernehmen“. | Der erste Abschnitt beginnt nach der Abwesenheit, die Zuweisung nennt „davon N Bautage abwesend“, die Karte zeigt „+N Bautage“ gegen den ersten Plan; der zweite Basisplan steht bei ± 0, der frühere bleibt mit seinem Verzug in der Liste; die Abwesenheit aus dem Team erscheint bei den Bauleuten; alles bleibt nach dem Neuladen. (Abnahme PROJ-03) |
 | PROJ-19 | Gelände und Wege: Rampe, Treppen, Brücke | vertieft | 1. Tab „Landschaft“: Gestaltung beginnen, mit „Rampe“ (M) eine Zufahrt zu einem höheren Platz legen, mit „Aufschütten“ (U) eine Mulde füllen.<br>2. Werkzeug „Weg“: Stufen „Treppen“, Belag Steinweg, einen Weg die Rampe hinauf legen; einen zweiten Weg mit „Über Wasser: Brücke mit Geländer“ über einen Bach legen (oder einen Weg aus der Weltkarte übernehmen).<br>3. „Als Bauteil ins Projekt übernehmen“, als .litematic exportieren und im Spiel ansehen. | Jeder Höhenwechsel des Wegs hat eine Treppe, die bergauf zeigt (über die ganze Breite); die Brücke liegt einen Block über dem Wasser, das Wasser bleibt, Zäune oder Mauern stehen an den Seiten und hängen zusammen; Materialliste zählt Treppen, Planken und Zäune. (Abnahme TERRAIN-03) |
 
 ## WERK · Werkstatt (Blockeditor) (Planer)
@@ -115,6 +116,7 @@ Projekte in der Welt platzieren, Wege und Bauplätze planen, Gelände aus der ei
 | KARTE-04 | Weltimport aus Regionsdateien ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/welt)) | vertieft | 1. Weltimport öffnen, Regionsdateien (.mca) der eigenen Welt wählen, Bereich auswählen, übernehmen. | Ausschnitt erscheint als Bauteil; Gelände-Reiter im Projekt kann ihn nutzen. |
 | KARTE-05 | Zonen und benannte Ebenen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/karte)) | kern | 1. Werkzeug „Zone“ (Taste Z), drei oder mehr Ecken klicken, Eingabe beendet; Art (Wohnen, Farmen, …) und Farbe setzen.<br>2. Zone und einen Punkt wählen, in der Auswahlleiste „Ebene zuweisen“ → „Neue Ebene …“ (z. B. „Phase 2“).<br>3. Die neue Ebene unter „Benannt:“ ausblenden, wieder einblenden; in der Objektliste nach der Ebene filtern.<br>4. Seite neu laden. | Zone liegt als gefüllte Fläche mit Namen und Fläche (Blöcke²) auf der Karte; ausgeblendete Ebenen verschwinden samt Auswahl; nach dem Neuladen sind Zone, Ebene und Farbe noch da. |
 | KARTE-06 | Messen, Höhenprofil, Route übers Gelände ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/karte)) | vertieft | 1. Messen (M): drei Punkte klicken, Eingabe beendet, Escape löscht.<br>2. Gelände laden („Gelände um mich lesen“ mit Mod oder eine Geländeaufnahme), einen Weg über einen Hang zeichnen.<br>3. Im Bearbeitungsfeld des Wegs „⤳ Route übers Gelände“. | Messung nennt Luftlinie, Weg zu Fuß, Punkte, Nether-Entfernung und bei drei oder mehr Punkten die Fläche. Das Höhenprofil zeigt Y-Bereich, Auf-/Abstieg und Stufen; die Route weicht Wasser und Steilstufen aus (oder meldet, dass es keinen Weg gibt). |
+| KARTE-07 | Projekt auf der Weltkarte drehen, gedrehtes Hologramm übernehmen | vertieft | 1. Weltkarte: ein Projekt wählen, mit R (oder Kontextmenü „Drehen 90°“) drehen, dann „Ins Spiel senden“.<br>2. Im Spiel das Hologramm mit der Mod weiter drehen oder spiegeln und auf der Weltkarte „Lage aus dem Spiel übernehmen“ wählen.<br>3. Bauanleitung öffnen und eine Koordinate im Spiel nachprüfen. | Die Nordwestecke bleibt beim Drehen stehen, Treppen und Türen zeigen gedreht in die richtige Richtung; das Hologramm steht genau auf dem Grundriss der Karte; nach dem Übernehmen zeigt die Karte „Im Spiel“ keine Abweichung mehr und die Weltlage nennt dieselbe Drehung; Weltkoordinaten der Bauanleitung stimmen mit dem Spiel (F3). (Abnahme MAP-07) |
 
 ## SYS · Systemcheck und Stabilität (Planer)
 
@@ -161,6 +163,7 @@ Mehrere Spieler an einem Projekt: Reiter „Team“ im Planer und Teambefehle de
 | TEAMBAU-25 | Team live ohne Dateien ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Reiter „Team“ → „Team live“: Die Adresse des Team-Raums ist vorausgefüllt (https://bauplaner-team.team-room.workers.dev). „Live schalten“, Einladungslink an einen Mitspieler schicken.<br>2. Mitspieler öffnet den Link auf seinem Rechner oder Handy, „Beitreten und Plan laden“, wählt „Ich bin“ und übernimmt einen Abschnitt.<br>3. Bauleitung gibt einen neuen Planstand frei; Mitspieler klickt „Planstand übernehmen“. Danach WLAN kurz aus, eine Notiz schreiben, WLAN wieder an.<br>4. Spiel dazu: mit Mod 0.14.0 im Planer „Mein Spiel verbinden“ (ohne Plugin, siehe LINK-07) oder auf einem Server mit Plugin `/bauplaner team verbinden <Link für den Server>`; ein paar Blöcke setzen. | Ohne jede Datei sieht jeder die Schritte der anderen nach wenigen Sekunden; unter „Gerade da“ stehen beide (und der Server); der neue Planstand kommt mit einem Klick an, der alte bleibt als Kopie; offline zeigt der Status „offline · 1 warten“ und holt die Notiz nach dem Verbinden nach; Messungen des Servers (mit Plugin) erscheinen im Baunachweis; ohne Plugin kommen Abschnittsschritte aus dem Spiel über die Mod an. |
 | TEAMBAU-26 | Team live im Alltag: Meldungen, Anwesenheit, Einladung erneuern | vertieft | 1. Team live wie in TEAMBAU-25, zwei Rechner (oder Rechner und Handy).<br>2. Mitspieler übernimmt einen Abschnitt und meldet ihn; Bauleitung ist dabei in einem anderen Reiter (z. B. „Material“).<br>3. Mitspieler lädt die Seite neu (Nachholen).<br>4. Bauleitung: „Einladung erneuern“; ein dritter Browser versucht es mit dem alten Link. | Die Meldung erscheint bei der Bauleitung in jedem Reiter, mit Name und Abschnitt in der Anwesenheit; nach dem Neuladen kommen keine alten Meldungen erneut; mit dem alten Link kommt niemand mehr in den Raum, abgelehnte Meldungen sind sichtbar. (Abnahme COOP-09) |
 | TEAMBAU-27 | Baustand laut Spiel ohne Plugin | vertieft | 1. Team live mit Mod ab 0.15.0, Server ohne Bauplaner-Plugin.<br>2. Mitspieler baut im eigenen Abschnitt ein paar Minuten und öffnet und schließt eine markierte Teamkiste.<br>3. Bauleitung öffnet Reiter „Team“ → „Baunachweis & Lager“. | Beim Abschnitt steht „laut Spiel … % … ungeprüft“ mit fehlenden Blöcken, bei der Kiste der gesehene Inhalt; die geprüften Serverzahlen bleiben davon unberührt. (Abnahme COOP-10) |
+| TEAMBAU-28 | Verlauf verdichten und Ertragsbuch | vertieft | 1. Ein Team mit einigen Tagen Baunachweis, Lagerbuchungen und einer Ertragskiste (Plugin) öffnen, als Bauleitung.<br>2. Reiter „Team“ → „Baunachweis & Lager“: Ertragsbuch ansehen.<br>3. Ganz unten „Verlauf verdichten“ öffnen, „älter als 3 Tage“, „Vorschau“, „Jetzt verdichten“.<br>4. Teampaket an einen Mitspieler mit älterem Stand schicken oder Team live abwarten; Mitspieler liest ein. | Das Ertragsbuch zeigt je Ertragskiste Items je Stunde, Laufzeit und den Planwert der Farm; nach dem Verdichten sind Baunachweis, Lager und Ertragsbuch unverändert, die Zahl der Ereignisse ist deutlich kleiner; beim Mitspieler kommen keine alten Ereignisse doppelt zurück; „Rückgängig“ stellt den vollen Verlauf wieder her. (Abnahme COOP-11, COOP-08) |
 
 ## LAGER · Server: geprüfte Lagerkisten (Server)
 
@@ -239,7 +242,7 @@ Planer, Mod und Paper-Plugin verbinden sich per Klick; der Server wird aus dem P
 
 Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan.ts), geordnet nach dem Ort, den die Abnahme braucht. Ein Paket gilt als abgenommen, wenn alle genannten Fälle ✓ sind; Ob ein Paket noch auf Abnahme wartet, steht in `docs/ROADMAP.md`.
 
-### Nur im Browser (38 Pakete)
+### Nur im Browser (40 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -248,6 +251,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | BASE-01 | BIB-10 |
 | BUILD-06 | PROJ-03, GERAET-06 |
 | COOP-06 | TEAMBAU-21, TEAMBAU-22, TEAMBAU-23, TEAMBAU-24 |
+| COOP-11 | TEAMBAU-28 |
 | DIFF-01 | BIB-17, PROJ-07 |
 | EDIT-01 | WERK-03 |
 | EDIT-02 | WERK-01 |
@@ -274,6 +278,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | PROFILE-01 | DATEI-06 |
 | PROJ-01 | PROJ-09, PROJ-10, PROJ-11 |
 | PROJ-02 | PROJ-16, PROJ-17, PROJ-18 |
+| PROJ-03 | PROJ-20 |
 | SPLIT-01 | BIB-11 |
 | TERRAIN-01 | KARTE-04, PROJ-06 |
 | TERRAIN-02 | PROJ-06 |
@@ -282,7 +287,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | VIEW-02 | START-06, DATEI-01 |
 | WORLD-IMPORT-01 | KARTE-04 |
 
-### Mit Minecraft (Mod oder Spiel) (35 Pakete)
+### Mit Minecraft (Mod oder Spiel) (36 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -314,6 +319,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | MAP-03 | LIVE-01, LIVE-03, LIVE-04 |
 | MAP-05 | LIVE-04, LIVE-05 |
 | MAP-06 | KARTE-05, KARTE-06, LIVE-08 |
+| MAP-07 | KARTE-07 |
 | MAT-02 | PROJ-15, PROJ-02 |
 | MAT-03 | PROJ-14 |
 | MAT-04 | PROJ-14 |

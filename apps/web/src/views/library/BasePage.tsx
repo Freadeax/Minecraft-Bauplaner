@@ -2,7 +2,7 @@ import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'rea
 import type { Cell } from '../../../../../packages/voxel/src/index.js';
 import {
   BASE_FUNCTIONS, BASE_PHASES, BASE_SPACING, BASE_TEMPLATES, EARTHWORK_NOTE, PATH_STYLE_LABEL, PATH_WIDTH, RESERVE_ID, TERRAIN_MODE_LABEL, WATER_SIDE_LABEL,
-  applyOperation, baseIntoProject, baseTemplateById, besideOffset, buildBasePlan, createBaseProject, defaultZones, fitAnlageToTerrain, layoutBase,
+  applyOperation, baseIntoProject, baseTemplateById, besideOffset, buildBasePlan, createBaseProject, defaultZones, fitAnlageToTerrain, isTurned, turnLabel, turnOf, layoutBase,
   mainCandidates, previewBase, resolveProject, zoneKeyFor,
 } from '../../../../../packages/domain/src/index.js';
 import type {
@@ -69,6 +69,7 @@ export function BasePage({ projects, libHref, onMessage }: {
   const { survey, error: surveyError } = useProjectTerrain(repo, terrainRef, 'planned');
   const fit = useMemo((): { fit: AnlageTerrainFit | null; error: string } => {
     if (!plan || !survey || !useTerrain || !base?.world) return { fit: null, error: '' };
+    if (isTurned(base.world)) return { fit: null, error: `„${base.name}“ liegt auf der Weltkarte ${turnLabel(turnOf(base.world))}; ans Gelände angepasst wird nur bei ungedrehter Weltlage.` };
     try { return { fit: fitAnlageToTerrain(plan, { survey, origin: base.world.origin, offset, mode }), error: '' }; } catch (e) { return { fit: null, error: errorText(e) }; }
   }, [plan, survey, useTerrain, base, offset, mode]);
   const { preview, error: previewError } = useMemo((): { preview: AnlagePreview | null; error: string } => {
@@ -107,7 +108,7 @@ export function BasePage({ projects, libHref, onMessage }: {
       let world = null;
       try { world = resolveProject(project, versions); } catch { /* unresolved: beside offset 0 */ }
       const at = besideOffset(stored, world);
-      const heights = useTerrain && survey && project.world ? fitAnlageToTerrain(stored, { survey, origin: project.world.origin, offset: at, mode }).heights : undefined;
+      const heights = useTerrain && survey && project.world && !isTurned(project.world) ? fitAnlageToTerrain(stored, { survey, origin: project.world.origin, offset: at, mode }).heights : undefined;
       const fresh = previewBase(stored, { base: project, offset: at, versions, ...(heights && { heights }) });
       if (fresh.conflicts.length && !accept) throw new Error(`${fresh.conflicts.length} Voxelkonflikt(e) nach Neuberechnung; bitte prüfen und bestätigen`);
       const saved = await repo.saveProject(applyOperation(project, baseIntoProject(stored, fresh, project, { acceptConflicts: accept })).project, project.revision);

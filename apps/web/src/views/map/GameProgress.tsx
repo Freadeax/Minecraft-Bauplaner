@@ -126,8 +126,8 @@ export function useGameProgress(game: LiveGame, project: Project | null, dimensi
   const layers = useMemo(() => check && result?.resolution.world ? layerProgress(result.resolution.world, check) : [], [check, result]);
   const confirmable = useMemo(() => check && result ? confirmedUnticked(result.guide, check, status) : [], [check, result, status]);
   const contradicted = useMemo(() => check && result ? tickedButNotBuilt(result.guide, check, status) : [], [check, result, status]);
-  const origin = project?.world && project.world.dimension === dimension ? project.world.origin : null;
-  const columns = useMemo(() => check && origin && showOnMap ? deviationColumns(check, origin, layer) : [], [check, origin, showOnMap, layer]);
+  const placement = project?.world && project.world.dimension === dimension ? project.world : null;
+  const columns = useMemo(() => check && placement && showOnMap ? deviationColumns(check, placement, layer) : [], [check, placement, showOnMap, layer]);
 
   return {
     supported, project, busy, error, notice, scan, fetchedAt, stored, check,

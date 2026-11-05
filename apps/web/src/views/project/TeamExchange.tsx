@@ -83,7 +83,7 @@ export function TeamExchange({ session, team, view, onMessage }: { session: Proj
     const guide = computation?.guide;
     if (!guide) { onMessage('Die Bauanleitung ist noch nicht berechnet.'); return; }
     const needs = computation ? sectionNeeds(site, guide, computation.stepMaterials) : undefined;
-    const file = teamServerFile({ team, view, projectName: project.name, sections: site.sections, steps: guide.steps, origin: project.world.origin as [number, number, number], dimension: project.world.dimension,
+    const file = teamServerFile({ team, view, projectName: project.name, sections: site.sections, steps: guide.steps, origin: project.world.origin as [number, number, number], dimension: project.world.dimension, turns: project.world.turns ?? 0, mirror: project.world.mirror === true,
       ...(needs && { needs }), farms: serverFarms(productionOf(site)) });
     const name = teamServerFileName(team);
     download(name, JSON.stringify(file, null, 1), 'application/json');

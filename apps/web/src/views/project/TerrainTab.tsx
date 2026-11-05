@@ -11,7 +11,7 @@ import { WorldClient } from '../world/protocol';
 import type { WorldResponse } from '../world/protocol';
 import { RegionPicker } from '../world/RegionPicker';
 import { TerrainSurveyPanel } from './TerrainSurveyPanel';
-import { translateBounds } from '../../../../../packages/domain/src/index.js';
+import { placedBounds } from '../../../../../packages/domain/src/index.js';
 import type { PickedWorld } from '../world/RegionPicker';
 import { isResolved } from './session';
 import type { ProjectSession } from './session';
@@ -44,7 +44,7 @@ export function TerrainTab({ session }: { session: ProjectSession }) {
   const [incomplete, setIncomplete] = useState(false);
   const [result, setResult] = useState<Result | null>(null);
   const [note, setNote] = useState('');
-  const originKey = placement ? placement.origin.join(',') : '';
+  const originKey = placement ? `${placement.origin.join(',')}|${placement.turns ?? 0}${placement.mirror ? 'm' : ''}` : '';
   const stale = result !== null && (result.revision !== project.revision || result.originKey !== originKey);
 
   const open = async (files: File[]) => {
@@ -86,7 +86,7 @@ export function TerrainTab({ session }: { session: ProjectSession }) {
   const world = resolution.world;
   const b = world.bounds, o = placement.origin;
   const empty = !world.cells.length;
-  const survey = <TerrainSurveyPanel project={project} placement={placement} worldBounds={empty ? null : translateBounds(b, o)} client={client.current!} canRead={!!picked}
+  const survey = <TerrainSurveyPanel project={project} placement={placement} worldBounds={empty ? null : placedBounds(b, placement)} client={client.current!} canRead={!!picked}
     busy={!!busy} setBusy={setBusy} execute={op => session.execute(op)} />;
 
   return <section className="terrain" aria-label="Gelände">

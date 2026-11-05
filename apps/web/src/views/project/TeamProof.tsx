@@ -1,5 +1,5 @@
 import type { StoreChest, TeamEventBody, TeamRole, TeamView } from '../../../../../packages/domain/src/index.js';
-import { canTeam } from '../../../../../packages/domain/src/index.js';
+import { canTeam, farmType } from '../../../../../packages/domain/src/index.js';
 import { formatNumber } from '../../app/ui';
 
 const short = (id: string) => id.replace(/^minecraft:/, '');
@@ -49,8 +49,8 @@ export function TeamProof({ view, sections, me, role, act, nameOf, sectionBlocks
   /** Blocks of each section in the plan (for "x of y"). */
   sectionBlocks: ReadonlyMap<string, number>;
   siteStock: Readonly<Record<string, number>>;
-  /** Farms of the project (Produktion), to name the farm of a yield store. */
-  farms?: readonly { readonly id: string; readonly name: string }[];
+  /** Farms of the project (Produktion), to name the farm of a yield store and compare with its planned rate. */
+  farms?: readonly { readonly id: string; readonly name: string; readonly type?: string; readonly units?: number }[];
   onTakeStock(stock: Readonly<Record<string, number>>): void;
 }) {
   const builders = view.members.filter(m => m.placed || m.broken || total(m.stored) || total(m.taken) || !m.tally);
@@ -88,6 +88,7 @@ export function TeamProof({ view, sections, me, role, act, nameOf, sectionBlocks
       })}</ul></>}
     {Object.keys(view.placedBlocks).length > 0 && <><h4>Verbaut</h4>
       <p className="team-chips static">{top(view.placedBlocks, 12).map(([i, n]) => <span key={i}>{formatNumber(n)} × {short(i)}</span>)}</p></>}
+    <YieldBook view={view} farms={farms} />
     {view.stores.length > 0 && <><h4>Lagerkisten</h4>
       {(() => { const bad = view.stores.filter(c => c.status === 'abweichend' || c.status === 'fehlt').length;
         return <p className={bad ? 'team-store-summary bad' : 'team-store-summary'}>{view.stores.length} Lager · {view.stores.filter(c => c.status === 'geprueft').length} geprüft{bad ? ` · ${bad} mit Abweichung oder fehlender Kiste` : ''}</p>; })()}
@@ -98,5 +99,45 @@ export function TeamProof({ view, sections, me, role, act, nameOf, sectionBlocks
           : <small className="muted">Baumeister und Bauleitung übernehmen den Bestand ins Lager im Reiter „Baustelle“.</small>}</>}
       {seenStock.length > 0 && <p className="team-chips static seen" aria-label="Bestand laut Spiel">{seenStock.map(([i, n]) => <span key={i}>{formatNumber(n)} × {short(i)}</span>)}<small className="muted"> laut Spiel, ohne Serverzählung (ungeprüft)</small></p>}
     </>}
+  </div>;
+}
+
+/**
+ * Ertragsbuch (COOP-08 S03): every yield store with what the server measured (store.yield: items and the
+ * minutes the chunk was loaded), as items per hour, next to the planned rate of its farm (Produktion).
+ */
+export function YieldBook({ view, farms }: { view: TeamView; farms?: undefined | readonly { readonly id: string; readonly name: string; readonly type?: string; readonly units?: number }[] }) {
+  const rows = new Map<string, { chest: string; name: string; farm?: string; items: Record<string, number>; minutes: number; periods: number; last?: { until: string; minutes: number; items: number } }>();
+  for (const y of view.yields) {
+    let r = rows.get(y.chest);
+    if (!r) rows.set(y.chest, r = { chest: y.chest, name: y.chestName, ...(y.farm && { farm: y.farm }), items: {}, minutes: 0, periods: 0 });
+    for (const [i, n] of Object.entries(y.items)) r.items[i] = (r.items[i] ?? 0) + n;
+    r.minutes += y.minutes; r.periods++;
+    if (y.farm) r.farm = y.farm;
+    if (!r.last || y.until > r.last.until) r.last = { until: y.until, minutes: y.minutes, items: total(y.items) };
+  }
+  for (const c of view.stores) if (c.purpose === 'ertrag' && !rows.has(c.id)) rows.set(c.id, { chest: c.id, name: c.name, ...(c.farm && { farm: c.farm }), items: {}, minutes: 0, periods: 0 });
+  if (!rows.size) return null;
+  return <div className="team-yield-book" role="region" aria-label="Ertragsbuch">
+    <h4>Ertragsbuch <small>gemessen vom Server-Plugin</small></h4>
+    <table className="team-table"><thead><tr><th>Ertragskiste</th><th>Farm</th><th className="num">Laufzeit</th><th>je Stunde (gemessen)</th><th>Plan</th></tr></thead>
+      <tbody>{[...rows.values()].sort((a, b) => a.name.localeCompare(b.name, 'de')).map(r => {
+        const f = r.farm ? farms?.find(x => x.id === r.farm) : undefined, type = f?.type ? farmType(f.type) : undefined;
+        const hours = r.minutes / 60;
+        const measured = hours > 0 ? top(r.items, 3).map(([i, n]) => ({ item: i, perHour: n / hours })) : [];
+        const planned = type ? type.outputs.map(o => ({ item: o.item, perHour: o.perHour * (f?.units ?? 1) })) : [];
+        return <tr key={r.chest} data-yield={r.chest}>
+          <td><strong>{r.name}</strong>{r.last && <small className="muted"><br />zuletzt {when(r.last.until)}: {formatNumber(r.last.items)} in {formatNumber(r.last.minutes)} min</small>}</td>
+          <td>{f?.name ?? (r.farm ? <span className="muted">{r.farm}</span> : <span className="muted">keine</span>)}</td>
+          <td className="num">{r.minutes ? `${formatNumber(Math.round(hours * 10) / 10)} h` : '–'}{r.periods > 1 ? <small className="muted"> · {r.periods} Meldungen</small> : null}</td>
+          <td>{measured.length ? measured.map(m => `${formatNumber(Math.round(m.perHour))} ${short(m.item)}`).join(', ') : <span className="muted">noch nichts gemeldet</span>}
+            {hours > 0 && hours < 1 && <small className="muted"> · unter 1 h, noch unsicher</small>}</td>
+          <td>{planned.length ? planned.map(p => {
+            const got = measured.find(m => m.item === p.item);
+            const ratio = got && p.perHour ? Math.round(got.perHour / p.perHour * 100) : null;
+            return <span key={p.item} className={ratio !== null && ratio < 70 ? 'bad' : undefined}>{formatNumber(Math.round(p.perHour))} {short(p.item)}{ratio !== null ? ` (${ratio} %)` : ''} </span>;
+          }) : <span className="muted">–</span>}</td></tr>;
+      })}</tbody></table>
+    <small className="muted">Rate = Items durch die Minuten, in denen der Chunk der Kiste geladen war. Der Reiter „Produktion“ rechnet ab 1 h Laufzeit mit diesen Werten.</small>
   </div>;
 }

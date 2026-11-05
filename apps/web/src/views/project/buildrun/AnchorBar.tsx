@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { anchorFromScan, anchorOf, checkWorldPlacement, createPlacement, dimensionLabel, sameAnchor, worldOperation } from '../../../../../../packages/domain/src/index.js';
+import { anchorFromScan, anchorOf, checkWorldPlacement, createPlacement, dimensionLabel, sameAnchor, turnLabel, turnOf, worldOperation } from '../../../../../../packages/domain/src/index.js';
 import type { Operation, Project } from '../../../../../../packages/domain/src/index.js';
 import type { ScanMeta, Vec3 } from '../../../../../../packages/voxel/src/index.js';
 import { errorText } from '../../../app/ui';
@@ -24,7 +24,7 @@ export function AnchorBar({ project, scanMeta, execute }: { project: Project; sc
   return <section className="anchor-bar build-wide" aria-label="Anker">
     <div className="anchor-text">
       <span className="panel-kicker">ANKER · PROJEKT 0/0/0 IN DER WELT</span>
-      {o ? <strong data-anchor={o.join(',')}>X {o[0]} · Y {o[1]} · Z {o[2]} <small>{dimensionLabel(anchor.dimension!)}</small></strong>
+      {o ? <strong data-anchor={o.join(',')}>X {o[0]} · Y {o[1]} · Z {o[2]} <small>{dimensionLabel(anchor.dimension!)}{project.world && (project.world.turns || project.world.mirror) ? ` · Projekt ${turnLabel(turnOf(project.world))}` : ''}</small></strong>
         : <strong>nicht gesetzt <small>Koordinaten gelten relativ zum Anker</small></strong>}
       <small className="muted">Derselbe Punkt wie <code>/bauplaner anker</code> in der Mod und die Weltlage auf der <a href={`#/karte?projekt=${encodeURIComponent(project.id)}`}>Weltkarte</a>. Norden = −Z, Osten = +X.</small>
     </div>

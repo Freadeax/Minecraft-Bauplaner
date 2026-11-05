@@ -6,6 +6,8 @@ import { DomainError } from './types.js';
 import type { Project } from './types.js';
 import { WORLD_POINT_TYPES } from './worldPlan.js';
 import type { WorldItem } from './worldPlan.js';
+import { sameTurn, turnOf } from './worldmap.js';
+import type { WorldPlacement } from './worldmap.js';
 
 /**
  * Live-Verbindung Website ↔ Mod (GAME-03/MAP-03). The Bauplaner mod opens a
@@ -371,7 +373,8 @@ export function compareHologram(h: LiveHologram, project: Pick<Project, 'world'>
   const w = project.world;
   if (!w) return 'unplaced';
   if (w.dimension !== h.placement.dimension) return 'dimension';
-  if (h.placement.turns !== 0 || h.placement.mirror) return 'turned';
+  // MAP-07: the map can carry the same turn as the hologram; only a different turn/mirror counts.
+  if (!sameTurn(turnOf(w), { turns: (((h.placement.turns % 4) + 4) % 4) as 0 | 1 | 2 | 3, mirror: h.placement.mirror })) return 'turned';
   return w.origin[0] === h.placement.x && w.origin[1] === h.placement.y && w.origin[2] === h.placement.z ? 'same' : 'moved';
 }
 
@@ -386,6 +389,12 @@ export function playerBlock(p: LivePlayer): { x: number; y: number; z: number; f
   const yaw = ((p.yaw % 360) + 360) % 360;
   const facing = (['Süden', 'Westen', 'Norden', 'Osten'] as const)[Math.round(yaw / 90) % 4]!;
   return { x: Math.floor(p.x), y: Math.floor(p.y), z: Math.floor(p.z), facing };
+}
+
+/** What the mod gets for a plan at a world placement (anchor = world block of project 0/0/0, turn as on the map). */
+export function livePlacementOf(w: Pick<WorldPlacement, 'origin' | 'dimension' | 'turns' | 'mirror'>): LivePlacement {
+  const t = turnOf(w);
+  return { dimension: w.dimension, x: w.origin[0], y: w.origin[1], z: w.origin[2], turns: t.turns, mirror: t.mirror };
 }
 
 /** Anchor in the game for a project origin taken from where the player stands (block under the feet + 1 = feet level). */

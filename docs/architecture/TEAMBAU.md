@@ -264,7 +264,7 @@ Tokens, Konten oder Cloud-Dienste werden für keine Stufe benötigt.
 - Ohne Server-Plugin sind Rechte und Namen Angaben, keine Beweise.
 - Uhrzeiten der Geräte können abweichen; die Reihenfolge ist für alle gleich, entspricht bei verstellten Uhren aber nicht immer der wirklichen.
 - Gleichzeitiges Bearbeiten der Geometrie durch mehrere Personen wird bewusst nicht unterstützt (Plan-Hoheit).
-- Das Teamprotokoll wächst; die Prüfung erlaubt höchstens 20 000 Ereignisse. „Verlauf verdichten“ (Zustand als ein Ereignis der Bauleitung) ist vorgesehen, aber noch nicht gebaut.
+- Das Teamprotokoll wächst; die Prüfung erlaubt höchstens 20 000 Ereignisse. Die Bauleitung kann den Verlauf verdichten (COOP-11, §19).
 
 ## 17. Umsetzungsstand (03.11.2026)
 
@@ -333,3 +333,35 @@ Ziel: Ein großer Bau (Burg, Stadt, Kolosseum) lässt sich mit mehreren Spielern
 
 **COOP-07 Team live ohne Dateien (03.11.2026)**
 - Team-Raum (Cloudflare Worker, `services/team-room`), Sync-Kern `teamSync.ts`, Bereich „Team live“ im Reiter Team und Seite `#/team/beitreten`. Einladung per Link statt Teampaket, neuer Planstand kommt live an, Servermessungen nur mit Serverschlüssel. Teampaket, Meldecode und Serverdatei bleiben als Weg ohne Internet. Details: `TEAM_LIVE.md` §10.
+
+## 19. Verlauf verdichten (COOP-11, 05.11.2026)
+
+Jede Baunachweis-Meldung, jede Lagerbuchung, jeder Trichterschub und jede Ertragsmeldung ist ein Ereignis. Ein Server mit Plugin erreicht so nach einigen Wochen die Grenze von 20 000 Ereignissen. Die Bauleitung kann deshalb alles vor einem Stichtag zu Summen verdichten (Reiter „Team“ → „Verlauf verdichten“, Domäne `packages/domain/src/teamDigest.ts`, Faltung in `team.ts`).
+
+**Neues Ereignis `team.digest`** (Mindestrolle Bauleitung, ein Lauf hat mehrere Teile, jedes Teil unter 4 KB für den Team-Raum):
+
+| Feld | Inhalt |
+|---|---|
+| `cutoff`, `run`, `part`, `parts`, `made`, `covered` | Stichtag-Ereignis, Kennung des Laufs, Teil i von n, Zeitpunkt, Anzahl ersetzter Ereignisse |
+| `tallies` | Baunachweis je Mitglied und Abschnitt (gesetzt, abgebaut, Blöcke, von–bis) |
+| `members` | Beiträge, gelieferte Items, Lagerbuchungen (eingelagert/entnommen), zuletzt aktiv |
+| `chests` | je Kiste: Prüfstatus, Siegel, Sollstand, offene Abweichung, Buchungen je Person und Trichter, Ertrag, Trichterlaufzeit (für die Produktion) |
+| `yields` | Ertragsmeldungen je Kiste und Farm zusammengefasst |
+| `notes` | IDs der vor dem Stichtag erledigten Notizen |
+
+**Regeln (gleich auf jedem Gerät):**
+
+- Das Teil hat die Zeit des Stichtag-Ereignisses und die ID `<Stichtag-ID>.<Lauf>.<Teil>`. Es sortiert damit genau hinter dem Stichtag, die Faltung wendet die Summen an derselben Stelle an, an der vorher die Einzelereignisse lagen.
+- In Kraft ist der vollständige Lauf (alle Teile da) mit dem spätesten Stichtag, dessen Urheber zum Stichtag Bauleitung war (Rollen nur aus `member.role`, Gründer zuerst). Unvollständige, ältere oder fremde Läufe bleiben im Protokoll ohne Wirkung.
+- Bis zum Stichtag ersetzt der Lauf `build.tally`, `contribution`, `store.move`, `store.check`, `store.seal`, `store.yield`. Von `store.count`, `store.seen` und `section.seen` bleibt je Kiste bzw. Abschnitt nur der neueste. Erledigte Notizen fallen mit Anlegen und Erledigen weg. Abgelehnte Ereignisse vor dem Stichtag entfallen beim Verdichten.
+- Unverändert bleiben Mitglieder, Rollen, Abschnittsschritte und Übergaben (Verlauf je Abschnitt), Planstände, Kistendefinitionen und Einstellungen, Sammelaufträge und `issue.ack`. Rechte ändern sich dadurch nie.
+- `mergeTeam` lässt alles weg, was der Lauf in Kraft ersetzt. Eine ältere Kopie (Teampaket, Server-Ausfuhr, Raum ab Anfang) bringt deshalb nichts doppelt zurück. Einzig abgelehnte Ereignisse können wiederkommen, sie bleiben wirkungslos.
+- Vor dem Speichern prüft `compactTeam`, dass der sichtbare Teamstand (Mitglieder, Abschnitte, offene Notizen, Lager, Bestand, Baunachweis, Ertrag je Kiste) mit und ohne Verdichtung gleich ist; sonst bricht es ab. Der Schritt ist wie jede Teamänderung rückgängig zu machen.
+- Die Produktion (`productionPlan.ts`) liest Ertrag und Trichterlaufzeit auch aus dem Lauf in Kraft; „gemessen“ bleibt nach dem Verdichten gleich.
+- Team live: Die Teile gehen wie jedes neue Ereignis in den Postausgang, ersetzte noch nicht gesendete Ereignisse fallen heraus. Der Raum behält alle alten Ereignisse (Ankunftsnummern bleiben); wer neu liest, bekommt Einzelereignisse und Lauf und lässt die ersetzten weg. Ist der Raum voll, eröffnet die Bauleitung mit dem verdichteten Stand einen neuen Raum.
+- Paper-Plugin und Mod (`TeamLog.java`) kennen `team.digest` nicht und übergehen es wie jede neuere Art. Das Plugin führt sein eigenes vollständiges Protokoll; die Mod liest aus dem Raum Abschnitte, Mitglieder, offene Notizen und Kisteninhalte, die vom Verdichten nicht betroffen sind.
+
+**Ertragsbuch (COOP-08 S03):** Unter „Baunachweis & Lager“ steht je Ertragskiste, was das Plugin gemessen hat: Items je Stunde (Items durch die Minuten, in denen der Chunk geladen war), Laufzeit, letzte Meldung und daneben der Planwert der verknüpften Farm aus der Produktion mit dem erreichten Anteil.
+
+Prüfung: `tests/team-digest.test.mjs` (gleicher Stand, Produktion, Trichter, Merge mit alter und halber Kopie, zweimal verdichten, Rechte, halbe und gefälschte Läufe, Postausgang), `tests/e2e/team-digest.e2e.mjs` (Ertragsbuch, Verdichten, Rückgängig, Desktop und Handy). Abnahme: TEAMBAU-28.
+

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   BRUSH_LABEL, DEFAULT_AUTO_PAINT, DESIGN_NOTE, NO_WATER, SAMPLE_PROFILE, SURFACE_STYLES, SURVEY_UNKNOWN, addAssetVersion, applyBrush, autoPaint, cloneDesign, columnBases,
   compareDesign, createAsset, designFromSurvey, designMatchesBase, designPayload, designedSurvey, dimensionLabel, flatSurvey, floodWater, gradeFootprints,
-  heightLimits, layPath, layRamp, newInstance, PATH_DECK, PATH_MATERIALS, PATH_SLAB, PATH_STAIR, PATH_STYLE_MATERIAL, pathLine, pathPieceCells, positionKey, resetToBase, strokePoints, surveyDisplayCells, translateBounds,
+  heightLimits, layPath, layRamp, newInstance, PATH_DECK, PATH_MATERIALS, PATH_SLAB, PATH_STAIR, PATH_STYLE_MATERIAL, pathLine, pathPieceCells, positionKey, resetToBase, strokePoints, surveyDisplayCells, placedBounds, isTurned, turnOf, turnVector, turnLabel,
   SCATTER_MISS_LABEL, STENCIL_TAG, addScatterItem, builtinResolver, removeScatterItems, scatterCells, stencilScatterPart,
 } from '../../../../../packages/domain/src/index.js';
 import type { AssetVersionSource, Brush, BrushTool, DesignStats, Falloff, Operation, PathReport, PathSteps, PathWater, WorldPath, WorldPathStyle, ScatterCells, ScatterContext, ScatterGroup, ScatterPart, ScatterPartResolver,
@@ -238,7 +238,9 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
     if (!placement || !isResolved(session.resolution) || !session.resolution.world) return null;
     const own = new Set(terrainInstances.map(i => i.id)), owners = session.resolution.owners;
     const cells = session.resolution.world.cells.filter(c => c.kind === 'block' && !own.has(owners.get(positionKey(c.position))?.[0] ?? ''));
-    return cells.length ? cells : null;
+    // MAP-07: on a turned placement the buildings stand turned around the origin.
+    const t = turnOf(placement);
+    return cells.length ? (isTurned(placement) ? cells.map(c => ({ ...c, position: turnVector(c.position, t) })) : cells) : null;
   }, [session.resolution, placement, terrainInstances]);
   const footprint = useMemo(() => buildingCells && placement ? columnBases(buildingCells, placement.origin) : null, [buildingCells, placement]);
   const footprintPath = useMemo(() => {
@@ -284,7 +286,7 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
   // ------------------------------------------------------------------ start
   const area = useMemo(() => {
     if (placement && isResolved(session.resolution) && session.resolution.world && session.resolution.world.cells.length) {
-      const b = translateBounds(session.resolution.world.bounds, placement.origin);
+      const b = placedBounds(session.resolution.world.bounds, placement);
       return areaAround(b.min[0], b.min[2], b.maxExclusive[0], b.maxExclusive[2], 32);
     }
     const o = placement?.origin ?? [0, 64, 0];
@@ -325,6 +327,7 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
 
   const toProject = async () => {
     if (!work) return;
+    if (isTurned(placement)) { setNote(`Nicht übernommen: Das Projekt liegt auf der Weltkarte ${turnLabel(turnOf(placement))}. Ein Geländebauteil passt nur zu einer ungedrehten Weltlage – Drehung auf der Weltkarte zurücksetzen, übernehmen, dann wieder drehen.`); return; }
     setBusy('Blöcke werden erzeugt'); setNote('');
     try {
       const o0 = placement?.origin ?? [0, 0, 0];

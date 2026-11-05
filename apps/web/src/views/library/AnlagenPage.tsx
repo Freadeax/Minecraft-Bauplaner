@@ -1,5 +1,5 @@
 import { useCallback, useDeferredValue, useMemo, useState } from 'react';
-import { SIDE_LABEL, TERRAIN_MODE_LABEL, EARTHWORK_NOTE, findTerrainSpot, fitAnlageToTerrain } from '../../../../../packages/domain/src/index.js';
+import { SIDE_LABEL, TERRAIN_MODE_LABEL, EARTHWORK_NOTE, findTerrainSpot, fitAnlageToTerrain, isTurned, turnLabel, turnOf } from '../../../../../packages/domain/src/index.js';
 import type { AnlageTerrainFit, TerrainMode, TerrainSurvey } from '../../../../../packages/domain/src/index.js';
 import { projectTerrainDimension, useProjectTerrain } from '../world/designs';
 import type { TerrainSource } from '../world/designs';
@@ -115,6 +115,7 @@ function AnlagePlanner({ anlage, lib, entries, projects, libHref, onMessage }: {
   const { survey, error: surveyError } = useProjectTerrain(repo, terrainRef ? base : null, terrainSource);
   const fit = useMemo((): { fit: AnlageTerrainFit | null; error: string } => {
     if (!plan || !survey || !useTerrain || !base?.world) return { fit: null, error: '' };
+    if (isTurned(base.world)) return { fit: null, error: `„${base.name}“ liegt auf der Weltkarte ${turnLabel(turnOf(base.world))}; ans Gelände angepasst wird nur bei ungedrehter Weltlage.` };
     try { return { fit: fitAnlageToTerrain(plan, { survey, origin: base.world.origin, offset, mode }), error: '' }; } catch (e) { return { fit: null, error: errorText(e) }; }
   }, [plan, survey, useTerrain, base, offset, mode]);
   const { preview, error: previewError } = useMemo(() => safePreview(plan, base, offset, lib.versions, fit.fit?.heights), [plan, base, offset, lib, fit]);
@@ -132,6 +133,7 @@ function AnlagePlanner({ anlage, lib, entries, projects, libHref, onMessage }: {
   const resetTurn = (slot: SlotState) => update(c => { const rest = { ...c.turns }; delete rest[slot.key]; return { ...c, turns: rest }; });
   const searchSpot = () => {
     if (!plan || !survey || !base?.world) return;
+    if (isTurned(base.world)) { setSpotNote(`„${base.name}“ liegt auf der Weltkarte ${turnLabel(turnOf(base.world))}; die Platzsuche geht nur bei ungedrehter Weltlage.`); return; }
     setSearching(true); setSpotNote('');
     // Let the button show its busy state before the (synchronous) search runs.
     setTimeout(() => {
@@ -165,7 +167,7 @@ function AnlagePlanner({ anlage, lib, entries, projects, libHref, onMessage }: {
       // Heights from the stored project's terrain (its origin may have changed since the preview).
       const storedRef = terrainOf(stored, terrainSource);
       if (useTerrain && terrainRef && storedRef !== terrainRef) throw new Error('Das Gelände des Projekts (Aufnahme oder Gestaltung) wurde seit der Vorschau geändert; bitte Vorschau prüfen');
-      const heights = useTerrain && storedRef && survey && stored.world ? fitAnlageToTerrain(plan, { survey, origin: stored.world.origin, offset: at, mode }).heights : undefined;
+      const heights = useTerrain && storedRef && survey && stored.world && !isTurned(stored.world) ? fitAnlageToTerrain(plan, { survey, origin: stored.world.origin, offset: at, mode }).heights : undefined;
       const fresh = previewAnlage(plan, { base: stored, offset: at, versions: lib.versions, ...(heights && { heights }) });
       if (fresh.conflicts.length && !accept) throw new Error(`${fresh.conflicts.length} Voxelkonflikt(e) nach Neuberechnung; bitte prüfen und bestätigen`);
       const saved = await repo.saveProject(applyOperation(stored, anlageIntoProject(fresh, stored, { acceptConflicts: accept })).project, stored.revision);

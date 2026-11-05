@@ -2,6 +2,7 @@ import type { BlockState, Bounds, Vec3, VoxelPayload } from '../../voxel/src/typ
 import { UNLOADED_STATE } from '../../voxel/src/observation.js';
 import { AIR_IDS } from '../../voxel/src/validation.js';
 import type { WorldPlacement } from './worldmap.js';
+import { placeToWorld, placedBounds } from './worldmap.js';
 
 /**
  * Terrain check of a placed project (WORLD-IMPORT-01). The planned blocks
@@ -98,7 +99,11 @@ export interface TerrainCheck {
 }
 
 /** World box a terrain check needs: the planned bounds at the placement, `depth` blocks deeper. */
-export function terrainBox(planned: Bounds, origin: Vec3, depth = TERRAIN_DEPTH): Bounds {
+export function terrainBox(planned: Bounds, origin: Vec3 | Pick<WorldPlacement, 'origin' | 'turns' | 'mirror'>, depth = TERRAIN_DEPTH): Bounds {
+  if (!Array.isArray(origin)) {
+    const b = placedBounds(planned, origin as Pick<WorldPlacement, 'origin' | 'turns' | 'mirror'>);
+    return { min: [b.min[0], b.min[1] - depth, b.min[2]], maxExclusive: b.maxExclusive };
+  }
   return {
     min: [planned.min[0] + origin[0], planned.min[1] + origin[1] - depth, planned.min[2] + origin[2]],
     maxExclusive: [planned.maxExclusive[0] + origin[0], planned.maxExclusive[1] + origin[1], planned.maxExclusive[2] + origin[2]],
@@ -126,7 +131,7 @@ export function checkTerrain(planned: VoxelPayload, placement: WorldPlacement, g
   const lowest = new Map<string, number>();
   let baseY = Infinity;
   for (const c of planned.cells) {
-    const [x, y, z] = c.position, i = at(x + o[0], y + o[1], z + o[2]);
+    const [x, y, z] = c.position, w = placeToWorld(c.position, placement), i = at(w[0], w[1], w[2]);
     let v: TerrainVerdict;
     if (i < 0) { outside++; v = 'unknown'; }
     else if (kind[i] === 'unknown') v = 'unknown';
@@ -148,7 +153,7 @@ export function checkTerrain(planned: VoxelPayload, placement: WorldPlacement, g
   const gridTop = by + H - 1;
   for (const [k, y] of lowest) {
     const [x, z] = k.split(',').map(Number) as [number, number];
-    const wx = x + o[0], wz = z + o[2];
+    const [wx, , wz] = placeToWorld([x, 0, z], placement);
     // Ground height of the column (for the Y suggestion), searched from the grid top down.
     for (let wy = gridTop; wy >= by; wy--) {
       const i = at(wx, wy, wz);

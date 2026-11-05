@@ -52,7 +52,7 @@ export function roomHeader(session: ProjectSession, team: TeamState, plan?: Room
   const view = teamView(team, teamContextOf(site));
   const guide = computation?.guide;
   const needs = computation && guide ? sectionNeeds(site, guide, computation.stepMaterials) : undefined;
-  const file = teamServerFile({ team, view, projectName: project.name, sections: site.sections, steps: guide?.steps ?? [], origin: (project.world?.origin ?? [0, 0, 0]) as [number, number, number],
+  const file = teamServerFile({ team, view, projectName: project.name, sections: site.sections, steps: guide?.steps ?? [], origin: (project.world?.origin ?? [0, 0, 0]) as [number, number, number], turns: project.world?.turns ?? 0, mirror: project.world?.mirror === true,
     dimension: project.world?.dimension ?? 'minecraft:overworld', ...(needs && { needs }), farms: serverFarms(productionOf(site)) });
   return { ...file, events: [], ...(plan && { plan }) };
 }

@@ -75,7 +75,7 @@ self.onmessage = async (event: MessageEvent<WorldRequest>) => {
       return;
     }
     if (req.kind === 'terrain') {
-      const box: Bounds = terrainBox(req.planned.bounds, req.placement.origin, req.depth);
+      const box: Bounds = terrainBox(req.planned.bounds, req.placement, req.depth);
       const sample = await sampleWorld(files, box, { onProgress: progress, signal, includeIncomplete: req.includeIncomplete });
       const check = checkTerrain(req.planned as VoxelPayload, req.placement as WorldPlacement, sample, { depth: req.depth });
       post({ id: req.id, kind: 'terrain', check, chunks: sample.chunks, warnings: sample.warnings, box });

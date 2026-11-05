@@ -77,7 +77,13 @@ export function appendLocal(team: RoomTeam, events: readonly TeamEvent[]): RoomT
   const merged = mergeTeam(team, { ...team, events }).team as RoomTeam;
   if (!team.live) return merged;
   const pending = [...team.live.pending, ...events.map(e => e.id).filter(id => !team.live!.pending.includes(id))];
-  return { ...merged, live: { ...team.live, pending } };
+  return { ...merged, live: { ...team.live, pending: present(merged, pending) } };
+}
+
+/** COOP-11: pending ids of events a digest replaced are dropped (the digest itself goes out instead). */
+function present(team: TeamState, pending: readonly string[]): string[] {
+  const ids = new Set(team.events.map(e => e.id));
+  return pending.filter(id => ids.has(id));
 }
 
 /**
@@ -90,7 +96,8 @@ export function trackOutbox(previous: TeamState | undefined, next: RoomTeam): Ro
   if (!next.live) return next;
   const before = new Set((previous?.events ?? []).map(e => e.id)), queued = new Set(next.live.pending);
   const fresh = next.events.filter(e => !before.has(e.id) && !queued.has(e.id)).map(e => e.id);
-  return fresh.length ? { ...next, live: { ...next.live, pending: [...next.live.pending, ...fresh] } } : next;
+  const pending = present(next, [...next.live.pending, ...fresh]);
+  return pending.length !== next.live.pending.length || fresh.length ? { ...next, live: { ...next.live, pending } } : next;
 }
 
 export interface Batch { readonly batch: string; readonly events: readonly TeamEvent[] }
@@ -141,7 +148,7 @@ export function ingest(team: RoomTeam, feed: FeedAnswer, now = new Date().toISOS
   let invalid = 0;
   for (const raw of feed.events) { try { valid.push(checkTeamEvent(raw)); } catch { invalid++; } }
   const m = mergeTeam(team, { ...team, events: valid.sort(compareEvents) });
-  const live = team.live ? { ...team.live, cursor: feed.reset && !feed.cursor ? '' : feed.cursor || team.live.cursor, lastContact: now } : undefined;
+  const live = team.live ? { ...team.live, cursor: feed.reset && !feed.cursor ? '' : feed.cursor || team.live.cursor, lastContact: now, pending: present(m.team, team.live.pending) } : undefined;
   return { team: { ...(m.team as RoomTeam), ...(live && { live }) }, added: m.added, clashes: m.clashes.length, invalid };
 }
 

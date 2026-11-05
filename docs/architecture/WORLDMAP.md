@@ -56,6 +56,18 @@ Die LMNT-Website (`lmnt-gaming.net`, Seiten Start, Gameserver, Tools) zeigt am 2
 - Downloads: Marker im Bauplaner-Austauschformat (`createLiveMapMarkerFile`, kein natives Plugin-Format) und Weltlagen als JSON.
 - Die Einstellung liegt nur im Browser (localStorage). Gespeicherte, geteilte Kartenziele und native Markerdateien gehören zu MAP-02.
 
+## Gedrehte Lagen (MAP-07, 05.11.2026)
+
+`WorldPlacement` trägt optional `turns` (1–3 Vierteldrehungen im Uhrzeigersinn von oben) und `mirror: true` (X spiegeln, vor dem Drehen). Fehlen beide, ist die Lage ungedreht und Feld für Feld wie bisher (`withTurn` lässt 0/false weg). Die Regel ist genau die von `Placement.java` der Mod: Weltblock = Ursprung + Drehung(Spiegelung(Projektblock)), auf **Blockpositionen** um Projekt 0/0/0 (nicht um Zellmitten wie die Bauteil-Transformation im Voxelkern); Blockzustände drehen über `transformBlockState` des Voxelkerns (dieselbe Richtungsregel wie die Mod).
+
+- Helfer: `placeToWorld`/`worldToProject`, `placedBounds`, `turnState`, `turnPayload`, `turnInPlace` (dreht um die Nordwestecke des Grundrisses, der Ursprung wandert), `turnLabel`.
+- Weltkarte: Zellen, Zustände, Grenzen, Überschneidungen und `placementsJson` gedreht. R / Umschalt+R / Spiegeln im Kontextmenü und in der Auswahlleiste drehen jetzt auch Projekte (an Ort und Stelle); das Weltlage-Formular hat „Drehung“ und „gespiegelt“ (um den Ursprung).
+- Mod: „Ins Spiel senden“ schickt `turns`/`mirror` mit (`livePlacementOf`), `compareHologram` meldet „gedreht“ nur bei anderer Drehung, „Lage aus dem Spiel übernehmen“ übernimmt Anker **und** Drehung.
+- Baustand-Spalten (`deviationColumns`), Bauführung (`anchorOf` mit Drehung, `worldPos`, `runCoords`), Teamdatei fürs Plugin (Abschnittsboxen gedreht) und Geländeprüfung (`checkTerrain`, `terrainBox`) rechnen gedreht; die Landschaft zeigt den Grundriss gedreht.
+- Nur ungedreht (der Planer sagt es): Plan aufs Server-Plugin legen (das Plugin legt ohne Drehung ab), Geländegestaltung als Bauteil übernehmen, Anlagen/Basis ans Gelände anpassen.
+
+Prüfung: `tests/world-turn.test.mjs` (Regel gegen die Mod-Formel für alle acht Lagen), `tests/e2e/world-turn.e2e.mjs`, Testphase KARTE-07.
+
 ## Prüfung
 
 - `tests/worldmap.test.mjs`: Validierung, Rückgängig, Sicherung; Zelle für Zelle Welt = Projekt + Ursprung; Dimensionen, nicht platzierte, leere und ausgeblendete Projekte; Überschneidungen gegen Handzählung; Fortschritt je Zelle inkl. „prüfen“ nach Drehung; Budget; Platzierungsvorschlag; Draufsicht; Determinismus; Marker und Link-Übernahme für alle drei Formen.

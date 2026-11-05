@@ -7,6 +7,8 @@ import { tickSteps } from './guide.js';
 import type { Operation } from './project.js';
 import { dataVersionFromProfile } from './revisionExport.js';
 import type { BlueprintRevision, Project } from './types.js';
+import { placeToWorld } from './worldmap.js';
+import type { WorldPlacement } from './worldmap.js';
 
 /**
  * In-game check (B8 · P6-01, docs/architecture/MOD_BRIDGE.md). Compares a world
@@ -227,11 +229,12 @@ const URGENCY: Readonly<Record<Exclude<CellVerdict, 'ok' | 'unknown'>, number>> 
  * Deviations as world columns: project position + `origin` (where the project stands on the map).
  * `layer` limits to one project height. Unknown cells are left out: they are not a building error.
  */
-export function deviationColumns(check: Pick<GameCheck, 'deviations'>, origin: Vec3, layer: number | null = null): DeviationColumn[] {
+export function deviationColumns(check: Pick<GameCheck, 'deviations'>, origin: Vec3 | Pick<WorldPlacement, 'origin' | 'turns' | 'mirror'>, layer: number | null = null): DeviationColumn[] {
+  const pl = Array.isArray(origin) ? { origin: origin as Vec3 } : origin as Pick<WorldPlacement, 'origin' | 'turns' | 'mirror'>;
   const cols = new Map<string, { x: number; z: number; verdict: DeviationColumn['verdict']; count: number; minY: number; maxY: number }>();
   for (const d of check.deviations.values()) {
     if (d.verdict === 'unknown' || (layer !== null && d.position[1] !== layer)) continue;
-    const x = d.position[0] + origin[0], z = d.position[2] + origin[2], y = d.position[1] + origin[1], k = `${x},${z}`;
+    const [x, y, z] = placeToWorld(d.position, pl), k = `${x},${z}`;
     const c = cols.get(k);
     if (!c) { cols.set(k, { x, z, verdict: d.verdict, count: 1, minY: y, maxY: y }); continue; }
     c.count++; c.minY = Math.min(c.minY, y); c.maxY = Math.max(c.maxY, y);

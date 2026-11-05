@@ -19,14 +19,15 @@ export function PlacementForm({ placement, onPreview, neighbours, onSave, onRemo
   const known = DIMENSIONS.some(d => d.id === start.dimension);
   const [dimension, setDimension] = useState(known ? start.dimension : 'custom'), [custom, setCustom] = useState(known ? '' : start.dimension);
   const [hidden, setHidden] = useState(start.hidden), [note, setNote] = useState(start.note);
+  const [turns, setTurns] = useState<number>(start.turns ?? 0), [mirror, setMirror] = useState(start.mirror === true);
   const [busy, setBusy] = useState(false);
 
   const draft = useMemo((): { value: WorldPlacement | null; error: string } => {
     try {
       const n = (s: string) => (/^-?\d+$/.test(s.trim()) ? Number(s.trim()) : Number.NaN);
-      return { value: checkWorldPlacement({ schemaVersion: WORLD_SCHEMA_VERSION, origin: [n(x), n(y), n(z)], dimension: dimension === 'custom' ? custom.trim() : dimension, hidden, note: note.trim() }), error: '' };
+      return { value: checkWorldPlacement({ schemaVersion: WORLD_SCHEMA_VERSION, origin: [n(x), n(y), n(z)], dimension: dimension === 'custom' ? custom.trim() : dimension, hidden, note: note.trim(), ...(turns && { turns }), ...(mirror && { mirror: true }) }), error: '' };
     } catch (e) { return { value: null, error: e instanceof Error ? e.message : String(e) }; }
-  }, [x, y, z, dimension, custom, hidden, note]);
+  }, [x, y, z, dimension, custom, hidden, note, turns, mirror]);
   const changed = !!draft.value && JSON.stringify(draft.value) !== JSON.stringify(placement);
   useEffect(() => { onPreview(changed ? draft.value : null); }, [changed, draft.value]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => () => onPreview(null), []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -36,7 +37,7 @@ export function PlacementForm({ placement, onPreview, neighbours, onSave, onRemo
 
   return <form className="placement-form" onSubmit={e => { e.preventDefault(); void submit(); }} aria-label="Weltlage bearbeiten">
     <h3>{placement ? 'Weltlage' : 'Auf die Karte setzen'}</h3>
-    <p className="muted">Weltkoordinate = Projektkoordinate + Ursprung. Pfeile verschieben um einen Chunk (16 Blöcke).</p>
+    <p className="muted">Weltkoordinate = Projektkoordinate + Ursprung{turns || mirror ? ', gedreht um den Ursprung' : ''}. Pfeile verschieben um einen Chunk (16 Blöcke).</p>
     <div className="placement-grid">
       {([['X', x, setX, WORLD_XZ_LIMIT], ['Y', y, setY, WORLD_Y_MAX], ['Z', z, setZ, WORLD_XZ_LIMIT]] as const).map(([label, value, set, max]) =>
         <label key={label}>{label}
@@ -52,6 +53,11 @@ export function PlacementForm({ placement, onPreview, neighbours, onSave, onRemo
           <option value="custom">Andere (Mod-Dimension) …</option>
         </select></label>
       {dimension === 'custom' && <label>Dimensions-ID<input value={custom} onChange={e => setCustom(e.target.value)} placeholder="mod:dimension" /></label>}
+      <label>Drehung
+        <select value={turns} onChange={e => setTurns(Number(e.target.value))} title="Dreht das Projekt um seinen Ursprung (Projekt 0/0/0), wie das Hologramm der Mod. Auf der Karte dreht R eine Auswahl um ihre Nordwestecke.">
+          <option value={0}>ungedreht</option><option value={1}>90° im Uhrzeigersinn</option><option value={2}>180°</option><option value={3}>90° gegen den Uhrzeigersinn</option>
+        </select></label>
+      <label className="chip-check"><input type="checkbox" checked={mirror} onChange={e => setMirror(e.target.checked)} /> gespiegelt (Ost ↔ West vor dem Drehen)</label>
       <label className="placement-note">Notiz<input value={note} maxLength={300} onChange={e => setNote(e.target.value)} placeholder="z. B. Nordufer, neben dem Dorf" /></label>
       <label className="chip-check"><input type="checkbox" checked={hidden} onChange={e => setHidden(e.target.checked)} /> auf der Karte ausblenden</label>
     </div>
