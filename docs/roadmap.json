@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-05T12:09:15.574Z",
+  "updatedAt": "2026-11-05T12:13:28.443Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -8111,7 +8111,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T12:05:46.647Z",
+      "updatedAt": "2026-11-05T12:13:28.443Z",
       "area": "MODRINTH",
       "thread": "Mod auf Modrinth veröffentlichen",
       "philipp": [],
@@ -21805,6 +21805,28 @@
           "done": 5,
           "total": 5,
           "next": "Team-Raum mit bauplaner.pages.dev ausrollen (Karte), Release 0.17.0/0.17.1 über den Modrinth-Thread, Abnahme LINK-10."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-05T12:13:28.443Z",
+      "kind": "progress",
+      "items": [
+        "GAME-09"
+      ],
+      "summary": "KI-Offenlegung wird nicht mehr vom Skript gepflegt (Philipp 05.11.2026); Skript setzt nur die in project.json genannten Offenlegungen und lässt andere unangetastet",
+      "files": [
+        "mods/bauplaner-bridge/modrinth/project.json",
+        "scripts/mod/modrinth_publish.mjs",
+        "tests/unit/mod/modrinth.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 4,
+          "total": 5,
+          "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind."
         }
       ]
     }

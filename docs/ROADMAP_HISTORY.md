@@ -6832,3 +6832,19 @@ Mod 0.17.1 und Planer: https://bauplaner.pages.dev (PERF-06, Cloudflare Pages) a
 - `packages/domain/src/team/liveLink.ts`
 - `tests/unit/team/livelink.test.mjs`
 
+## 2026-11-05T12:13:28.443Z · progress
+
+**Aufgaben:** GAME-09
+
+KI-Offenlegung wird nicht mehr vom Skript gepflegt (Philipp 05.11.2026); Skript setzt nur die in project.json genannten Offenlegungen und lässt andere unangetastet
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
+
+**Geänderte Dateien:**
+
+- `mods/bauplaner-bridge/modrinth/project.json`
+- `scripts/mod/modrinth_publish.mjs`
+- `tests/unit/mod/modrinth.test.mjs`
+

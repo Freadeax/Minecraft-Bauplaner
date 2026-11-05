@@ -241,9 +241,11 @@ async function syncDisclosures(cfg, t, dry) {
   const want = (p.disclosures ?? []).map(d => Object.fromEntries(Object.entries(d).filter(([k]) => k !== 'updated_at')));
   const live = await api('GET', `/project/${p.slug}/disclosures`, { token: t, base: API3 });
   const norm = list => JSON.stringify((list ?? []).map(d => Object.fromEntries(Object.entries(d).filter(([k, v]) => !['updated_at', 'updated_by', 'set_by_moderator', 'lock_status', 'deleted_at'].includes(k) && v != null && !(Array.isArray(v) && !v.length)).sort())).sort((a, b) => a.type.localeCompare(b.type)));
-  if (norm(live?.disclosures) === norm(want)) { console.log('Offenlegungen aktuell.'); return; }
+  // Only the types listed in project.json are managed; others stay as set on Modrinth.
+  const managed = (live?.disclosures ?? []).filter(d => want.some(w => w.type === d.type));
+  if (norm(managed) === norm(want)) { console.log('Offenlegungen aktuell.'); return; }
   console.log(`${dry ? '[plan] würde Offenlegungen setzen' : 'Setze Offenlegungen'}: ${want.map(d => d.type).join(', ') || 'keine'}`);
-  if (!dry) await api('PATCH', `/project/${p.slug}/disclosures`, { token: t, json: { set: want, remove: (live?.disclosures ?? []).map(d => d.type).filter(type => !want.some(w => w.type === type)) }, base: API3 });
+  if (!dry) await api('PATCH', `/project/${p.slug}/disclosures`, { token: t, json: { set: want, remove: [] }, base: API3 });
 }
 
 async function sync(cfg, dry) {

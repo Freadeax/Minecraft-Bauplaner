@@ -104,14 +104,6 @@
   },
   "disclosures": [
     {
-      "type": "ai_content",
-      "uses": [
-        "code",
-        "text"
-      ],
-      "note": "The source code, the documentation and the texts of this page were written with substantial help from an AI coding assistant. The author designs every feature, directs and reviews the work and tests it in the real game. The icon and all gallery images are real in-game screenshots; no image is AI-generated. The mod itself contains no AI features."
-    },
-    {
       "type": "telemetry",
       "consent": "opt_in",
       "data_collected": [
@@ -134,5 +126,6 @@
         "Plans, settings, the team room address and reports are stored in the game folder under bauplaner/."
       ]
     }
-  ]
+  ],
+  "disclosuresNote": "Nur diese Typen pflegt das Skript. Andere Offenlegungen auf Modrinth (z. B. KI-Inhalte) bleiben, wie sie in den Projekteinstellungen gesetzt sind (Philipp 05.11.2026)."
 }
