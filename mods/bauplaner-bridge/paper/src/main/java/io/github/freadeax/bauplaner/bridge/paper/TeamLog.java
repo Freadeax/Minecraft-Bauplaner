@@ -23,7 +23,7 @@ import java.util.TreeMap;
 /**
  * Server copy of a team (COOP-02, docs/architecture/TEAMBAU.md): the header the planner exports
  * ({@code minecraft-bauplaner-team-server}: sections with world boxes, members, the team log) plus the
- * events written on this server. The fold follows {@code packages/domain/src/team.ts} rule by rule, so
+ * events written on this server. The fold follows {@code packages/domain/src/team/team.ts} rule by rule, so
  * the planner and the server always show the same state for the same events. Pure Java, no Bukkit.
  */
 final class TeamLog {

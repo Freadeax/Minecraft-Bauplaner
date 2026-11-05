@@ -41,3 +41,7 @@ STORE-02 ergänzt Asset-Revisionsschutz samt Migration und UI-Konfliktbehandlung
 ## Planmodell · ARCH-02
 
 Verweise zwischen gespeicherten Datensätzen (Projekt, Bauteil, Version, Original, Sammlung, Vorlage) kennt ausschließlich `domain/planGraph.ts`; Sicherung, Datencheck und „Verwendet in“ nutzen ihn. Die Speicherform der Blockdaten (`voxel/packedCells.ts`, `domain/versionStorage.ts`) ist nur Speichern und Sicherungen bekannt. Vertrag und Regeln für neue Verweise: [PLAN_MODEL](PLAN_MODEL.md).
+
+## Fachordner im Kern · STRUCT-01
+
+Seit 05.11.2026 liegt `packages/domain/src` nicht mehr flach, sondern in Fachordnern (`core`, `catalog`, `base`, `materials`, `building`, `planning`, `world`, `team`, `data`, `versions`, `editor`). Die Paketgrenzen oben bleiben unverändert; `index.ts` bleibt die öffentliche Tür. Zuordnung und Ablageregeln: [Ordnerkarte](../STRUKTUR.md).

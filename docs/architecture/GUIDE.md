@@ -1,6 +1,6 @@
 # Bauanleitung und manueller Fortschritt (B4 · P3-02 · R-007)
 
-Stand: 27.10.2026. Implementierung `packages/domain/src/guide.ts`, Tests `tests/guide.test.mjs` und `tests/e2e/guide.e2e.mjs`, Oberfläche `apps/web/src/views/project/BuildTab.tsx` (Projekt-Tab „Bauen“, Route `#/projekt/<id>/bauen`).
+Stand: 27.10.2026. Implementierung `packages/domain/src/building/guide.ts`, Tests `tests/guide.test.mjs` und `tests/e2e/guide.e2e.mjs`, Oberfläche `apps/web/src/views/project/BuildTab.tsx` (Projekt-Tab „Bauen“, Route `#/projekt/<id>/bauen`).
 
 ## Grundlage
 

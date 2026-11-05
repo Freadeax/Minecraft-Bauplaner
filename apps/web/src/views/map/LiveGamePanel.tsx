@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { ReactNode } from 'react';
 import { HOLOGRAM_MATCH_LABEL, LIVE_DEFAULT_PORT, LIVE_FEATURE_LABELS, liveShare, playerBlock } from '../../../../../packages/domain/src/index.js';
 import type { HologramMatch, Project } from '../../../../../packages/domain/src/index.js';
-import { dimensionLabel } from '../../../../../packages/domain/src/worldmap.js';
+import { dimensionLabel } from '../../../../../packages/domain/src/world/worldmap.js';
 import { formatNumber } from '../../app/ui';
 import type { LiveGame } from './liveClient';
 

@@ -10,7 +10,7 @@ Der Reiter **Produktion** (`#/projekt/<id>/produktion`) beantwortet die Frage, d
 - **Annahmen sichtbar.** Farmraten in `FARM_TYPES` sind Richtwerte für einfache, verbreitete Bauweisen; jede Farmart nennt ihre Grundlage (`basis`) und Bedingungen (`needs`). Sobald für eine Farm mindestens eine Stunde gemessen ist, rechnet der Planer mit der echten Rate: zuerst aus der verknüpften **Sammeltruhe** im Team-Lager (PROD-05), sonst aus dem **Ertragsbuch**.
 - **Ein Datensatz, rückgängig machbar.** Alles liegt optional in `project.site.production` (Schema 1) und läuft über `site.set`; Sicherung, Datencheck und `checkSite` prüfen es mit `checkProduction`. Ohne Produktion ändert sich nichts an älteren Projekten.
 
-## Datensatz (`packages/domain/src/production.ts`)
+## Datensatz (`packages/domain/src/materials/production.ts`)
 
 | Feld | Bedeutung |
 |---|---|
@@ -33,7 +33,7 @@ Der Reiter **Produktion** (`#/projekt/<id>/produktion`) beantwortet die Frage, d
 - optional `inputs` (Piglin-Tausch braucht Gold, Bibliothekar Zuckerrohr) – der Planer prüft, ob andere Farmen genug liefern;
 - `buildingId` (Bauplan im Katalog; Baukosten werden daraus gezählt) oder `effortHours` (Richtwert für den Bauaufwand).
 
-## Auswertung (`packages/domain/src/productionPlan.ts`)
+## Auswertung (`packages/domain/src/materials/productionPlan.ts`)
 
 `analyzeProduction({ site, overview, pace, farmCosts?, schedule? })` liefert:
 

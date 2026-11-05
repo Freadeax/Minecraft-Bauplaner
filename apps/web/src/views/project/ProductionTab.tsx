@@ -12,8 +12,8 @@ import { download, errorText, formatNumber, localToday } from '../../app/ui';
 import { useWorldPlan } from '../map/useWorldPlan';
 import { isResolved } from './session';
 import type { ProjectSession } from './session';
-import '../../site.css';
-import '../../production.css';
+import '../../styles/site.css';
+import '../../styles/production.css';
 
 const short = (id: string): string => id.replace(/^minecraft:/, '');
 const num = (n: number): string => n.toLocaleString('de-DE', { maximumFractionDigits: 1 });

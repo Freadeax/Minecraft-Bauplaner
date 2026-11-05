@@ -105,7 +105,7 @@ async function player(name) {
   return { ask, chat, quit: () => { client.end(); return new Promise(r => setTimeout(r, 500)); } };
 }
 
-// Signed like packages/domain/src/serverControl.ts (controlMessage).
+// Signed like packages/domain/src/team/serverControl.ts (controlMessage).
 let lastSeq = 0;
 const signed = (pair, op, fields = {}, serverId = pair.serverId) => {
   const seq = lastSeq = Math.max(Date.now(), lastSeq + 1);

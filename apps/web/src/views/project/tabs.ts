@@ -30,7 +30,7 @@ const components: Record<ProjectTabId, TabComponent> = {
   gelaende: lazyPage(() => import('./TerrainTab').then(m => m.TerrainTab)),
   landschaft: lazyPage(() => import('./LandscapeTab').then(m => m.LandscapeTab)),
   updates: lazyPage(() => import('./UpdatesTab').then(m => m.UpdatesTab)),
-  team: lazyPage(() => import('./TeamTab').then(m => m.TeamTab)),
+  team: lazyPage(() => import('./team/TeamTab').then(m => m.TeamTab)),
 };
 
 export const projectTabs: readonly ProjectTab[] = projectTabNames.map(t => ({ ...t, component: components[t.id] }));

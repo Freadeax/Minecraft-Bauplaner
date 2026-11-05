@@ -1,6 +1,6 @@
 # Planmodell: Datensätze, Verweise und Blockdatenspeicher
 
-Stand: 02.11.2026 · ARCH-02 (mit STORE-03). Code: `packages/domain/src/planGraph.ts`, `packages/domain/src/versionStorage.ts`, `packages/voxel/src/packedCells.ts`. Tests: `tests/plan-model.test.mjs`, `tests/e2e/plan-model.e2e.mjs`. Ergänzt [DOMAIN](DOMAIN.md), [MODULES](MODULES.md) und [PERSISTENCE](PERSISTENCE.md).
+Stand: 02.11.2026 · ARCH-02 (mit STORE-03). Code: `packages/domain/src/data/planGraph.ts`, `packages/domain/src/data/versionStorage.ts`, `packages/voxel/src/packedCells.ts`. Tests: `tests/plan-model.test.mjs`, `tests/e2e/plan-model.e2e.mjs`. Ergänzt [DOMAIN](DOMAIN.md), [MODULES](MODULES.md) und [PERSISTENCE](PERSISTENCE.md).
 
 Ziel: Bibliothek, Werkstatt, Baustelle, Welt und Mod wachsen auf **einer** Grundstruktur. Jeder Bereich darf eigene Felder ergänzen, aber Verweise zwischen Datensätzen und die Speicherform der Blockdaten sind hier einmal festgelegt.
 

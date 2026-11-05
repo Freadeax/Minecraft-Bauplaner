@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-05T10:30:50.888Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-05T10:34:38.680Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -13,7 +13,7 @@ Stand: 2026-11-05T10:30:50.888Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | Status | Pakete |
 |---|---:|
 | ⏳ Offen | 7 |
-| 🚧 In Arbeit | 5 |
+| 🚧 In Arbeit | 6 |
 | ⛔ Blockiert | 0 |
 | 🧩 Implementiert · Abnahme offen | 86 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
@@ -34,7 +34,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 3 | 0 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
 | [Performance und Stabilität](#bereich-perf) | 3 | 2 | 1 | 3 |
-| [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 12 | 0 | 6 | 8 |
+| [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 13 | 0 | 6 | 8 |
 | [Testphase, Qualität und Betrieb](#bereich-qa) | 2 | 1 | 2 | 8 |
 | [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 6 | 0 | 0 | 0 |
 
@@ -205,6 +205,7 @@ Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft), PERF
 | [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [MAT-03](#mat-03) | Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Module und Systeme komplex ausarbeiten“ | — |
 | [MAT-04](#mat-04) | Kupfer mit Oxidation und Wachsstatus | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
+| [STRUCT-01](#struct-01) | Dateistruktur sauber neu ordnen | 🚧 In Arbeit 2/4 | P1 | „Dateistruktur sauber neu ordnen“ | — |
 
 Abgeschlossen oder zurückgestellt: CORE-01 (geprüft), CORE-02 (geprüft), CORE-03 (geprüft), STORE-01 (geprüft), MAT-01 (geprüft), ARCH-01 (geprüft), STORE-02 (geprüft), GAME-01 (geprüft).
 
@@ -412,6 +413,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **TERRAIN-03 · Gelände und Wege im Projekt: Aufschütten, Abtragen, Rampe, Wegstufen als Treppen, Brücken mit Geländer, Weg aus der Weltkarte** — 🧩 Implementiert · Abnahme offen, 6/8 Teilschritte. Nächster Schritt: Abnahme PROJ-19 und BIB-19 im Spiel; danach Wegenetz der Basis als Landschaftsweg (S08).
 - **GFX-02 · Darstellung und Leistung, Runde 2: Biomfarben, leuchtende Blockentities (Leuchtfeuer-Strahl, Endportal, Magma), GPU-Upload großer Szenen in Stücken** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme auf echten GPUs, Firefox/Safari und Abgleich mit Spielbildern (S04, zusammen mit GFX-01-S06).
 - **EDIT-06 · Direkt im 3D-Bild bauen: Blöcke an Flächen setzen/abbauen, Formen und Gruppen im 3D aufziehen und ziehen, Truhen- und Schildinhalte bearbeiten** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: EDIT-06-S05: Philipp prüft das Bauen im 3D-Bild auf PC und iPad (WERK-08) und lädt eine Truhe/ein Schild mit Inhalt im Spiel (WERK-09).
+- **STRUCT-01 · Dateistruktur sauber neu ordnen: Fachordner im Kern und in der Oberfläche, Skripte, Tests und Doku nach Bereich, Ordnerkarte docs/STRUKTUR.md** — 🚧 In Arbeit, 2/4 Teilschritte. Nächster Schritt: Stufe 1: scripts/, tests/ und docs/architecture nach Bereich ordnen.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -563,6 +565,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [PROJ-03](#proj-03) | Planung Runde 3: Abwesenheiten je Bauleute nach Datum, mehrere Basispläne mit Namen und Vergleich, „abwesend bis“ aus dem Team in die Planung | 🧩 Implementiert · Abnahme offen | 3/4 | PROJ-02, COOP-06 | ausstehend | ausstehend |
 | [PROJ-04](#proj-04) | Reihenfolge zwischen Projekten: „erst nach“ anderen Projekten, frühester Start aus dem Basisplan der Vorgänger, Kreise abweisen, Pfeile auf der Weltkarte | 🧩 Implementiert · Abnahme offen | 2/3 | PROJ-03, MAP-04 | ausstehend | ausstehend |
 | [EDIT-06](#edit-06) | Direkt im 3D-Bild bauen: Blöcke an Flächen setzen/abbauen, Formen und Gruppen im 3D aufziehen und ziehen, Truhen- und Schildinhalte bearbeiten | 🧩 Implementiert · Abnahme offen | 4/5 | EDIT-01, EDIT-02, EDIT-03, EDIT-05, ENTITY-01 | ausstehend | ausstehend |
+| [STRUCT-01](#struct-01) | Dateistruktur sauber neu ordnen: Fachordner im Kern und in der Oberfläche, Skripte, Tests und Doku nach Bereich, Ordnerkarte docs/STRUKTUR.md | 🚧 In Arbeit | 2/4 | — | ausstehend | ausstehend |
 
 ## P4: Optionale Zusammenarbeit und Integrationen
 
@@ -629,7 +632,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### CORE-02
 
-**Assets, feste Versionen und Projektoperationen** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Zuständiger Thread: — · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Assets, feste Versionen und Projektoperationen** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Zuständiger Thread: — · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] CORE-02-S01: Asset/Version/Instanz/Revision getrennt; Undo/Redo und Hashprüfung vorhanden.
 
@@ -641,13 +644,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/domain.test.mjs](../tests/domain.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
 
-**Dateiumfang:** `packages/domain/src/library.ts`, `packages/domain/src/project.ts`. **Abhängigkeiten:** CORE-01. **Alte IDs:** B0, P2-01.
+**Dateiumfang:** `packages/domain/src/catalog/library.ts`, `packages/domain/src/core/project.ts`. **Abhängigkeiten:** CORE-01. **Alte IDs:** B0, P2-01.
 
 **Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
 
 ### CORE-03
 
-**Composer, Voxelkonflikte und Anschlüsse** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Zuständiger Thread: — · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Composer, Voxelkonflikte und Anschlüsse** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Zuständiger Thread: — · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] CORE-03-S01: Auflösung, Override, Snap, Händigkeit und Freiraumprüfung vorhanden.
 
@@ -659,13 +662,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/connectors.test.mjs](../tests/connectors.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
 
-**Dateiumfang:** `packages/domain/src/compose.ts`, `packages/domain/src/connectors.ts`. **Abhängigkeiten:** CORE-02. **Alte IDs:** B5, P2-02.
+**Dateiumfang:** `packages/domain/src/core/compose.ts`, `packages/domain/src/core/connectors.ts`. **Abhängigkeiten:** CORE-02. **Alte IDs:** B5, P2-02.
 
 **Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
 
 ### STORE-01
 
-**Lokale Speicherung, Migration und Sicherungen** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Zuständiger Thread: — · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Lokale Speicherung, Migration und Sicherungen** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Zuständiger Thread: — · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] STORE-01-S01: Atomare Transaktionen, Projekt-revisionen, Originale und geprüfte Backups vorhanden.
 
@@ -677,13 +680,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/backup.test.mjs](../tests/backup.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/e2e/persistence.e2e.mjs](../tests/e2e/persistence.e2e.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
 
-**Dateiumfang:** `apps/web/src/app/idbRepository.ts`, `packages/domain/src/backup.ts`. **Abhängigkeiten:** CORE-02. **Alte IDs:** B3.
+**Dateiumfang:** `apps/web/src/app/idbRepository.ts`, `packages/domain/src/data/backup.ts`. **Abhängigkeiten:** CORE-02. **Alte IDs:** B3.
 
 **Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
 
 ### MAT-01
 
-**Bauitems und Rohstoffplanung im bestehenden Katalog** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Zuständiger Thread: — · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Bauitems und Rohstoffplanung im bestehenden Katalog** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Zuständiger Thread: — · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] MAT-01-S01: Mehrblock-/Anzahlregeln, Stacks, Rezepte, Rundung und Reste vorhanden.
 
@@ -695,13 +698,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/materials.test.mjs](../tests/materials.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/recipes.test.mjs](../tests/recipes.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
 
-**Dateiumfang:** `packages/domain/src/materials.ts`, `packages/domain/src/recipes.ts`. **Abhängigkeiten:** CORE-03. **Alte IDs:** B1, B1-R.
+**Dateiumfang:** `packages/domain/src/materials/materials.ts`, `packages/domain/src/materials/recipes.ts`. **Abhängigkeiten:** CORE-03. **Alte IDs:** B1, B1-R.
 
 **Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
 
 ### BUILD-01
 
-**Bauanleitung, eigene Abschnitte, Lager und Sammelplan** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Zuständiger Thread: — · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Bauanleitung, eigene Abschnitte, Lager und Sammelplan** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Zuständiger Thread: — · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] BUILD-01-S01: Schritte, Packlisten, Fortschritt, Abschnitte und Lagerberechnung vorhanden.
 
@@ -713,7 +716,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/guide.test.mjs](../tests/guide.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/site.test.mjs](../tests/site.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.
 
-**Dateiumfang:** `packages/domain/src/guide.ts`, `packages/domain/src/site.ts`. **Abhängigkeiten:** MAT-01. **Alte IDs:** B4, B14.
+**Dateiumfang:** `packages/domain/src/building/guide.ts`, `packages/domain/src/building/site.ts`. **Abhängigkeiten:** MAT-01. **Alte IDs:** B4, B14.
 
 **Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
 
@@ -794,7 +797,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### ARCH-01
 
-**Anwendungsschicht und überprüfte Modulgrenzen** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Zuständiger Thread: — · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Anwendungsschicht und überprüfte Modulgrenzen** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Codex · Zuständiger Thread: — · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] ARCH-01-S01: Exportkoordination, Speicherports und Aufnahmeverwaltung herausgelöst.
 - [x] ARCH-01-S02: Neutraler Aufnahmevertrag und Anwendungsexport an UI angebunden.
@@ -809,13 +812,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/application.test.mjs](../tests/application.test.mjs) — Exportanwendungsfall, Writerfehler und atomarer Konfliktfall bestanden.; [tests/architecture.test.mjs](../tests/architecture.test.mjs) — 3 Architekturregressionen bestanden.; [docs/TESTING.md](TESTING.md) — 353/353 Node-Tests; strenge Typ-/Buildprüfungen bestanden; Browser offen.
 
-**Dateiumfang:** `packages/application/`, `packages/domain/src/revisionExport.ts`, `scripts/check_architecture.mjs`. **Abhängigkeiten:** CORE-01, CORE-02. **Alte IDs:** —.
+**Dateiumfang:** `packages/application/`, `packages/domain/src/versions/revisionExport.ts`, `scripts/check_architecture.mjs`. **Abhängigkeiten:** CORE-01, CORE-02. **Alte IDs:** —.
 
 **Integration:** Main [ccf4fa7](https://github.com/Freadeax/Minecraft-Bauplaner/commit/ccf4fa71c033c2f9415528192a04faed36730660); Pages-Quelle [ccf4fa7](https://github.com/Freadeax/Minecraft-Bauplaner/commit/ccf4fa71c033c2f9415528192a04faed36730660).
 
 ### ARCH-02
 
-**Planmodell: Verweisgraph, kompakter Blockdatenspeicher und Migrationsregeln** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Grundstruktur des Planers erweitern“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Planmodell: Verweisgraph, kompakter Blockdatenspeicher und Migrationsregeln** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Grundstruktur des Planers erweitern“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] ARCH-02-S01: Bestand aller gespeicherten Datensätze, Teilschemata und Verweise dokumentieren (PLAN_MODEL).
 - [x] ARCH-02-S02: Blockzellen gepackt speichern (bp-cells-1, bitgenau, IndexedDB-Migration 4, Sicherungsformat 3).
@@ -833,7 +836,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/plan-model.test.mjs](../tests/plan-model.test.mjs) — 13 Fälle: handgerechnete Bytes, Reihenfolge/negative Grenzen/>32 Bit, Ablehnung nicht exakter Zellen, beschädigte Daten, ganzer Katalog bitgenau (41× kleiner), Sicherungsformat 3, Abschnittsstand in Projektsicherung, whereUsed, Datencheck-Schweregrade.; [tests/e2e/plan-model.e2e.mjs](../tests/e2e/plan-model.e2e.mjs) — Chromium: echte Datenbank Version 3 → Migration 4 packt in place, Datencheck ohne Befund, Datenmodell-Karte; „Verwendet in“ nach Projektanlage.; [docs/architecture/PLAN_MODEL.md](architecture/PLAN_MODEL.md) — Datensätze, Verweisrollen mit Pflichtgrad, Speicherform, Migrationsregeln, Grenzen.
 
-**Dateiumfang:** `packages/domain/src/planGraph.ts`, `packages/domain/src/versionStorage.ts`, `packages/voxel/src/packedCells.ts`, `packages/domain/src/backup.ts`, `packages/domain/src/integrity.ts`, `apps/web/src/app/idbRepository.ts`, `apps/web/src/views/SystemView.tsx`, `apps/web/src/views/library/UsageSection.tsx`, `docs/architecture/PLAN_MODEL.md`, `tests/plan-model.test.mjs`, `tests/e2e/plan-model.e2e.mjs`. **Abhängigkeiten:** ARCH-01, STORE-01, STORE-02. **Alte IDs:** STORE-03.
+**Dateiumfang:** `packages/domain/src/data/planGraph.ts`, `packages/domain/src/data/versionStorage.ts`, `packages/voxel/src/packedCells.ts`, `packages/domain/src/data/backup.ts`, `packages/domain/src/data/integrity.ts`, `apps/web/src/app/idbRepository.ts`, `apps/web/src/views/SystemView.tsx`, `apps/web/src/views/library/UsageSection.tsx`, `docs/architecture/PLAN_MODEL.md`, `tests/plan-model.test.mjs`, `tests/e2e/plan-model.e2e.mjs`. **Abhängigkeiten:** ARCH-01, STORE-01, STORE-02. **Alte IDs:** STORE-03.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -963,7 +966,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### UI-02
 
-**App-Hülle, Navigation und Handyoberfläche überarbeiten** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Claude Thread „Oberfläche gründlich überarbeiten“ · Zuständiger Thread: — · Aktualisiert: 2026-11-03T20:52:59.449Z
+**App-Hülle, Navigation und Handyoberfläche überarbeiten** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Claude Thread „Oberfläche gründlich überarbeiten“ · Zuständiger Thread: — · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] UI-02-S01: App-Hülle mit Navigationsliste, Schnellsuche (Strg+K), Seitentiteln und unterer Leiste am Handy.
 - [x] UI-02-S02: Projektkopf mit Pfad, Speicherstatus und scrollbarer Bereichsleiste; Editor am Handy mit 3D zuerst.
@@ -978,13 +981,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/e2e/shell.e2e.mjs](../tests/e2e/shell.e2e.mjs) — Vier echte Chromiumfälle: Hauptnavigation, Seitentitel, Schnellsuche mit Tastatur, Projektkopf/Bereichssprung (hell), Handy 390 px dunkel/hell ohne Überbreite, aktiver Bereich sichtbar, 3D zuerst.; [docs/architecture/UI.md](architecture/UI.md) — Abschnitt UI-02: Hülle, Navigationsliste, Schnellsuche, Projektkopf, Handyleiste, Lesbarkeit, Selektoren.
 
-**Dateiumfang:** `apps/web/src/app/CommandPalette.tsx`, `apps/web/src/app/Shell.tsx`, `apps/web/src/app/icons.tsx`, `apps/web/src/app/nav.ts`, `apps/web/src/main.tsx`, `apps/web/src/shell.css`, `apps/web/src/style.css`, `apps/web/src/views/project/ProjectView.tsx`, `docs/COMMUNICATION.md`, `docs/TESTING.md`, `docs/architecture/UI.md`, `tests/e2e/shell.e2e.mjs`. **Abhängigkeiten:** UI-01, QA-01. **Alte IDs:** —.
+**Dateiumfang:** `apps/web/src/app/CommandPalette.tsx`, `apps/web/src/app/Shell.tsx`, `apps/web/src/app/icons.tsx`, `apps/web/src/app/nav.ts`, `apps/web/src/main.tsx`, `apps/web/src/styles/shell.css`, `apps/web/src/styles/style.css`, `apps/web/src/views/project/ProjectView.tsx`, `docs/COMMUNICATION.md`, `docs/TESTING.md`, `docs/architecture/UI.md`, `tests/e2e/shell.e2e.mjs`. **Abhängigkeiten:** UI-01, QA-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### STAB-01
 
-**Absturzschutz, Datencheck und Fehlerberichte abnehmen** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: „Offene Punkte prüfen und Roadmap neu ordnen“ · Aktualisiert: 2026-11-03T21:19:45.021Z
+**Absturzschutz, Datencheck und Fehlerberichte abnehmen** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: „Offene Punkte prüfen und Roadmap neu ordnen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] STAB-01-S01: Datencheck, Auslieferungsprüfung und Sitzungserrorlog mit Tests vorhanden.
 - [x] STAB-01-S02: Echten Renderingfehler auslösen und Wiederaufnahme im Browser prüfen.
@@ -997,7 +1000,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/integrity.test.mjs](../tests/integrity.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/stability.test.mjs](../tests/stability.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/e2e/render-crash.e2e.mjs](../tests/e2e/render-crash.e2e.mjs) — S02: nicht ladbarer Seitenbaustein im Browser; ein Neuladen, dann Fehlergrenze statt leerer App, Projekte bleiben, Wiederaufnahme nach „Seite neu laden“. Ohne die ErrorBoundary-Korrektur rot.
 
-**Dateiumfang:** `apps/web/src/app/ErrorBoundary.tsx`, `packages/domain/src/integrity.ts`, `tests/e2e/render-crash.e2e.mjs`. **Abhängigkeiten:** QA-01. **Alte IDs:** S1, S3.
+**Dateiumfang:** `apps/web/src/app/ErrorBoundary.tsx`, `packages/domain/src/data/integrity.ts`, `tests/e2e/render-crash.e2e.mjs`. **Abhängigkeiten:** QA-01. **Alte IDs:** S1, S3.
 
 **Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
 
@@ -1060,7 +1063,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROFILE-01
 
-**Ein verbindliches Java-Versionsprofil** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T21:37:46.206Z
+**Ein verbindliches Java-Versionsprofil** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] PROFILE-01-S01: Registryreport und Zielversion mit Herkunft/Hash dokumentieren.
 - [x] PROFILE-01-S02: Block-/Property-/Item-/Rezeptdaten an das Profil binden.
@@ -1074,7 +1077,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/profile.test.mjs](../tests/profile.test.mjs) — Hashes/gleiche Jar wie BLOCK-01, Register = Serverbericht, Items, Brennstoffe, DataVersion-Regel.; [docs/architecture/VERSION_PROFILE.md](architecture/VERSION_PROFILE.md) — Herkunft, Hashes, Neuerzeugung, Regeln.
 
-**Dateiumfang:** `packages/voxel/src/profile.ts`, `packages/voxel/src/profileData.ts`, `packages/domain/src/profileRecipes.ts`, `packages/voxel/src/blockRegistry.ts`, `scripts/gen_profile.mjs`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** P1-02a.
+**Dateiumfang:** `packages/voxel/src/profile.ts`, `packages/voxel/src/profileData.ts`, `packages/domain/src/materials/profileRecipes.ts`, `packages/voxel/src/blockRegistry.ts`, `scripts/gen_profile.mjs`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** P1-02a.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -1146,7 +1149,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAT-02
 
-**Versionierte Item-/Rezeptauflösung vervollständigen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-04T09:28:40.230Z
+**Versionierte Item-/Rezeptauflösung vervollständigen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] MAT-02-S01: Vorhandene Regeln mit Profilreport abgleichen.
 - [x] MAT-02-S02: Mehrblockobjekte, Rezeptalternativen, Rest-/Brennstoffbilanzen profilgenau prüfen.
@@ -1160,13 +1163,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/recipe-profile.test.mjs](../tests/recipe-profile.test.mjs) — Jedes Stationsrezept = Profilrezept; Funde iron_chain, Quarzziegel 4, Holzkohle; Profil-Lückenfüller; Tür 3 je Vorgang mit Rest; Brennstoffbilanz.; [docs/architecture/MATERIALS.md](architecture/MATERIALS.md) — Abschnitt MAT-02.; [tests/recipe-prefs.test.mjs](../tests/recipe-prefs.test.mjs) — Gewählte Plankensorte, Brennstoffwahl, Holzkohle mit festem Punkt (92 für 640 Vorgänge), Lavaeimer nicht aufgenommen, Prüfung im Baustellenplan.
 
-**Dateiumfang:** `packages/domain/src/recipes.ts`, `packages/domain/src/recipeProfile.ts`, `packages/domain/src/profileRecipes.ts`, `apps/web/src/views/project/RawMaterialsPanel.tsx`, `apps/web/src/views/project/MaterialsTab.tsx`, `packages/domain/src/site.ts`. **Abhängigkeiten:** PROFILE-01, MAT-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/materials/recipes.ts`, `packages/domain/src/materials/recipeProfile.ts`, `packages/domain/src/materials/profileRecipes.ts`, `apps/web/src/views/project/RawMaterialsPanel.tsx`, `apps/web/src/views/project/MaterialsTab.tsx`, `packages/domain/src/building/site.ts`. **Abhängigkeiten:** PROFILE-01, MAT-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### MAT-03
 
-**Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: „Module und Systeme komplex ausarbeiten“ · Aktualisiert: 2026-11-05T07:58:33.828Z
+**Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: „Module und Systeme komplex ausarbeiten“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] MAT-03-S01: 50 gezielte Materialsätze und Property-/BlockEntity-Sperren vorhanden.
 - [x] MAT-03-S02: Alte 174 Gebäude-Payloadhashes unverändert nachgewiesen.
@@ -1180,13 +1183,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/variants.test.mjs](../tests/variants.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/variants.test.mjs](../tests/variants.test.mjs) — MAT-03-S03: jede Form jedes Materialsatzes im Profil 26.3, gleiche Eigenschaften je Art und Form.; [tests/e2e/mat-variants.e2e.mjs](../tests/e2e/mat-variants.e2e.mjs) — Leuchtturm: Beton, Glas, Terrakotta getrennt umgefärbt (208 Blöcke), gespeicherte Variante enthält genau die neuen Farben; 1400/390 px.
 
-**Dateiumfang:** `packages/domain/src/variants.ts`, `tests/variants.test.mjs`, `tests/e2e/mat-variants.e2e.mjs`, `docs/TESTING.md`. **Abhängigkeiten:** PROFILE-01, QA-01. **Alte IDs:** MAT-03.
+**Dateiumfang:** `packages/domain/src/materials/variants.ts`, `tests/variants.test.mjs`, `tests/e2e/mat-variants.e2e.mjs`, `docs/TESTING.md`. **Abhängigkeiten:** PROFILE-01, QA-01. **Alte IDs:** MAT-03.
 
 **Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
 
 ### MAT-04
 
-**Kupfer mit Oxidation und Wachsstatus** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T22:26:37.867Z
+**Kupfer mit Oxidation und Wachsstatus** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] MAT-04-S01: Zustandsmatrix und Formfamilien mit Profilbeleg definieren.
 - [x] MAT-04-S02: Tausch mit Properties, Wachs und Oxidation testen.
@@ -1199,13 +1202,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/copper.test.mjs](../tests/copper.test.mjs) — 15 vollständige Familien aus Weathering-Klassen, Tausch mit Properties und Truhen-NBT, Rezepte aller Stufen.
 
-**Dateiumfang:** `packages/domain/src/copper.ts`, `packages/domain/src/variants.ts`, `packages/domain/src/recipes.ts`. **Abhängigkeiten:** PROFILE-01, MAT-03. **Alte IDs:** MAT-04.
+**Dateiumfang:** `packages/domain/src/materials/copper.ts`, `packages/domain/src/materials/variants.ts`, `packages/domain/src/materials/recipes.ts`. **Abhängigkeiten:** PROFILE-01, MAT-03. **Alte IDs:** MAT-04.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### DIFF-01
 
-**Verschiebungserkennung und BlockEntity-Diff** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-03T22:26:42.450Z
+**Verschiebungserkennung und BlockEntity-Diff** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Liegengebliebene Datenpakete abarbeiten“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] DIFF-01-S01: Basisvergleich A/B für Geometrie und Materialien vorhanden.
 - [x] DIFF-01-S02: Verschiebung von echten Geometrieänderungen unterscheiden.
@@ -1219,7 +1222,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/variants.test.mjs](../tests/variants.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/diff-shift.test.mjs](../tests/diff-shift.test.mjs) — Reine Verschiebung = 0 Änderungen, Verschiebung plus Anbau, Materialtausch und Anbau nicht als Verschiebung, Kisteninhalt als Inhaltsänderung, Zaunverbindung abgeleitet vs. gedrehte Treppe, deterministisch und ohne Veränderung der Eingaben.; [docs/architecture/SCHEM_VIEWS.md](architecture/SCHEM_VIEWS.md) — Abschnitte Verschiebung erkennen / Inhalte und Folgen.
 
-**Dateiumfang:** `packages/voxel/src/diff.ts`, `apps/web/src/schem/DiffView.tsx`, `apps/web/src/jobs/diffJob.ts`, `packages/domain/src/updates.ts`. **Abhängigkeiten:** CORE-02, NBT-01. **Alte IDs:** P5-03.
+**Dateiumfang:** `packages/voxel/src/diff.ts`, `apps/web/src/schem/DiffView.tsx`, `apps/web/src/jobs/diffJob.ts`, `packages/domain/src/versions/updates.ts`. **Abhängigkeiten:** CORE-02, NBT-01. **Alte IDs:** P5-03.
 
 **Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
 
@@ -1245,7 +1248,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-02
 
-**Zellindizes, Chunkdaten und selektive Neuberechnung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gesamtsystem auf Performance und Stabilität optimieren“) · Zuständiger Thread: „Gesamtsystem auf Performance und Stabilität optimieren“ · Aktualisiert: 2026-11-03T23:02:57.928Z
+**Zellindizes, Chunkdaten und selektive Neuberechnung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gesamtsystem auf Performance und Stabilität optimieren“) · Zuständiger Thread: „Gesamtsystem auf Performance und Stabilität optimieren“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] PERF-02-S01: Kosten von owners/Strings/Übertragungen messen.
 - [x] PERF-02-S02: Index-/Chunkstrategie nur mit identischem semantischem Ergebnis einführen.
@@ -1259,7 +1262,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/composition-index.test.mjs](../tests/composition-index.test.mjs) — Vier handberechnete Regressionsgruppen: Koordinaten, Konflikte, NBT, Grenzen.; [scripts/benchmark_composition.mjs](../scripts/benchmark_composition.mjs) — Vorher-/Nachher-Vergleich mit vollständigem Resolutionhash; Node-Szenario.; [docs/architecture/COMPOSITION_PERFORMANCE.md](architecture/COMPOSITION_PERFORMANCE.md) — Abschließender Median 5,2 % niedriger; Streuung und offene Chunk-/Browserabnahme ausdrücklich getrennt.
 
-**Dateiumfang:** `packages/domain/src/compose.ts`, `packages/voxel/`. **Abhängigkeiten:** PERF-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/core/compose.ts`, `packages/voxel/`. **Abhängigkeiten:** PERF-01. **Alte IDs:** —.
 
 **Integration:** Main [7dffd92](https://github.com/Freadeax/Minecraft-Bauplaner/commit/7dffd922f46876c70700afc0429afb969e5478aa); Pages-Quelle [7dffd92](https://github.com/Freadeax/Minecraft-Bauplaner/commit/7dffd922f46876c70700afc0429afb969e5478aa).
 
@@ -1285,7 +1288,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-04
 
-**Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Große Modelle flüssig berechnen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-04T13:24:32.693Z
+**Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Große Modelle flüssig berechnen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] PERF-04-S01: Gemeinsame Auftragsschicht: ein Worker je Auftrag, Fortschritt, Abbrechen per terminate, Zeitlimit, Rückfall ohne Worker; Zellen als übertragbare Spalten.
 - [x] PERF-04-S02: Litematic-Import und Speichern großer Versionen (Prüfsumme, ID, Packen, Kennwerte) im Worker; versiegelte Payloads ohne erneute Kopie.
@@ -1307,13 +1310,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/background-jobs.test.mjs](../tests/background-jobs.test.mjs) — Spaltenübergabe, Versiegeln, Caches, byte-gleiches Netz, Exportfortschritt, Auftragsclient mit Abbrechen und Fehlern.; [tests/e2e/background-jobs.e2e.mjs](../tests/e2e/background-jobs.e2e.mjs) — Chromium: 130 000 Blöcke importieren, speichern, Datencheck, STL wasserdicht; Abbrechen; Update-Vorschau und Vergleich über den Worker.; [docs/architecture/BACKGROUND_JOBS.md](architecture/BACKGROUND_JOBS.md) — Aufträge, Vertrauensregel, Caches, Schwellen, Messung, Grenzen.; [tests/library-start.test.mjs](../tests/library-start.test.mjs) — Worker-Start schreibt genau das, was seedSamples schreibt; Kennwerte gleich wie im Katalog; nichts zu schreiben beim zweiten Start; beschädigte Version stoppt den Start nicht.; [tests/e2e/library-start.e2e.mjs](../tests/e2e/library-start.e2e.mjs) — Chromium: Fortschritt beim Start, längste Blockade < 1,5 s, Katalog vollständig, Neuladen schreibt nichts, Datencheck ohne Befund; Start ohne Worker und mit defektem Worker.
 
-**Dateiumfang:** `apps/web/src/jobs/`, `packages/voxel/src/cellColumns.ts`, `packages/voxel/src/validation.ts`, `packages/domain/src/library.ts`, `packages/domain/src/versionStorage.ts`, `apps/web/src/viewer/backgroundMesh.ts`, `apps/web/src/blockmodels/snapshot.ts`, `apps/web/src/app/importFile.ts`, `tests/background-jobs.test.mjs`, `tests/e2e/background-jobs.e2e.mjs`, `docs/architecture/BACKGROUND_JOBS.md`, `apps/web/src/app/context.tsx`, `apps/web/src/app/repository.ts`, `apps/web/src/app/idbRepository.ts`, `packages/application/src/catalogSync.ts`, `packages/application/src/repository.ts`, `packages/domain/src/buildings.ts`, `tests/library-start.test.mjs`, `tests/e2e/library-start.e2e.mjs`, `vite.config.mjs`. **Abhängigkeiten:** PERF-01, MODEL-01, ARCH-02. **Alte IDs:** —.
+**Dateiumfang:** `apps/web/src/jobs/`, `packages/voxel/src/cellColumns.ts`, `packages/voxel/src/validation.ts`, `packages/domain/src/catalog/library.ts`, `packages/domain/src/data/versionStorage.ts`, `apps/web/src/viewer/backgroundMesh.ts`, `apps/web/src/blockmodels/snapshot.ts`, `apps/web/src/app/importFile.ts`, `tests/background-jobs.test.mjs`, `tests/e2e/background-jobs.e2e.mjs`, `docs/architecture/BACKGROUND_JOBS.md`, `apps/web/src/app/context.tsx`, `apps/web/src/app/repository.ts`, `apps/web/src/app/idbRepository.ts`, `packages/application/src/catalogSync.ts`, `packages/application/src/repository.ts`, `packages/domain/src/catalog/buildings.ts`, `tests/library-start.test.mjs`, `tests/e2e/library-start.e2e.mjs`, `vite.config.mjs`. **Abhängigkeiten:** PERF-01, MODEL-01, ARCH-02. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### PERF-05
 
-**Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Gesamtsystem auf Performance und Stabilität optimieren“ · Zuständiger Thread: „Gesamtsystem auf Performance und Stabilität optimieren“ · Aktualisiert: 2026-11-04T12:47:26.654Z
+**Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Gesamtsystem auf Performance und Stabilität optimieren“ · Zuständiger Thread: „Gesamtsystem auf Performance und Stabilität optimieren“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] PERF-05-S01: Messbasis und priorisierter Befund (Ladezeiten, Pakete, CPU-Brennpunkte, Fehlerbehandlung) in PERFORMANCE_AUDIT.md; Messskript scripts/perf/measure_start.mjs.
 - [x] PERF-05-S02: Mitgelieferter Katalog als Datei beim Bauen (assets/catalog-<key>.json), Worker lädt sie bei fehlendem Katalogspeicher, Rückfall auf Erzeugen; Erststart 5,2 s → 1,4 s.
@@ -1335,7 +1338,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [docs/architecture/PERFORMANCE_AUDIT.md](architecture/PERFORMANCE_AUDIT.md) — Messungen vorher/nachher, umgesetzte und offene Befunde mit Priorität.; [tests/e2e/catalog-snapshot.e2e.mjs](../tests/e2e/catalog-snapshot.e2e.mjs) — Chromium: Erststart aus Datei, Neustart aus Speicher, gleicher Katalog wie selbst erzeugt, Rückfall bei fehlender/beschädigter/fremder Datei.; [tests/stable-math.test.mjs](../tests/stable-math.test.mjs) — Genauigkeit gegen Math, Sonderwerte, feste Referenzbits.; [tests/canonical-json.test.mjs](../tests/canonical-json.test.mjs) — 2000 Zufallswerte und Sonderfälle gleich der alten Implementierung.; [tests/e2e/thumb-store.e2e.mjs](../tests/e2e/thumb-store.e2e.mjs) — Chromium: Vorschaubilder nach Neustart aus dem Speicher (blob), alter Speicher entfernt, ohne Cache Storage normal gerendert.
 
-**Dateiumfang:** `docs/architecture/PERFORMANCE_AUDIT.md`, `packages/application/src/catalogSnapshot.ts`, `packages/voxel/src/stableMath.ts`, `packages/domain/src/hash.ts`, `scripts/build_catalog_snapshot.mjs`, `scripts/catalog_key.mjs`, `scripts/perf/measure_start.mjs`, `apps/web/src/app/lazyPage.tsx`, `apps/web/src/main.tsx`, `apps/web/src/jobs/libraryJob.ts`, `apps/web/src/jobs/library.ts`, `tests/e2e/catalog-snapshot.e2e.mjs`, `tests/stable-math.test.mjs`, `tests/canonical-json.test.mjs`, `apps/web/src/thumbnail/thumbStore.ts`, `apps/web/src/thumbnail/Thumb.tsx`, `tests/e2e/thumb-store.e2e.mjs`, `apps/web/src/views/map/useMapHistory.ts`. **Abhängigkeiten:** PERF-04. **Alte IDs:** —.
+**Dateiumfang:** `docs/architecture/PERFORMANCE_AUDIT.md`, `packages/application/src/catalogSnapshot.ts`, `packages/voxel/src/stableMath.ts`, `packages/domain/src/core/hash.ts`, `scripts/build_catalog_snapshot.mjs`, `scripts/catalog_key.mjs`, `scripts/perf/measure_start.mjs`, `apps/web/src/app/lazyPage.tsx`, `apps/web/src/main.tsx`, `apps/web/src/jobs/libraryJob.ts`, `apps/web/src/jobs/library.ts`, `tests/e2e/catalog-snapshot.e2e.mjs`, `tests/stable-math.test.mjs`, `tests/canonical-json.test.mjs`, `apps/web/src/thumbnail/thumbStore.ts`, `apps/web/src/thumbnail/Thumb.tsx`, `tests/e2e/thumb-store.e2e.mjs`, `apps/web/src/views/map/useMapHistory.ts`. **Abhängigkeiten:** PERF-04. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -1387,7 +1390,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### BLOCK-01
 
-**Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Echte Minecraft-Blocklogik einbauen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Echte Minecraft-Blocklogik einbauen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] BLOCK-01-S01: Blockfakten aus dem echten 26.3-Server (Berichte + Prüfprogramm): alle 1286 Blöcke, 35.723 Zustände, Stützflächen, Halt, Items, Stapelgrößen, Tags.
 - [x] BLOCK-01-S02: Verbindungen wie im Spiel (Zäune, Mauern hoch/niedrig/Pfosten, Scheiben/Gitter, Treppenformen, Tore, Schneegras, Pilzblöcke); 3.060 Spielvektoren gleich.
@@ -1407,13 +1410,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/block-logic.test.mjs](../tests/block-logic.test.mjs) — Fakten, alle 3.060 Spielvektoren, Halt-Sonderfälle, Platzierprüfung, Verbinden, Bauanleitung, Material.; [tests/e2e/block-logic.e2e.mjs](../tests/e2e/block-logic.e2e.mjs) — Spielprüfung in der Bauanleitung (1400/390 px), Zaunreihe in der Werkstatt verbinden und rückgängig.; [docs/architecture/BLOCK_LOGIC.md](architecture/BLOCK_LOGIC.md) — Herkunft der Fakten, Module, Regeln, Grenzen.
 
-**Dateiumfang:** `packages/voxel/src/blockFacts.ts`, `packages/voxel/src/blocklogic/`, `packages/domain/src/placement.ts`, `packages/domain/src/editor/settle.ts`, `packages/domain/src/guide.ts`, `packages/domain/src/materials.ts`, `packages/domain/src/editor/blocks.ts`, `apps/web/src/views/project/PlacementPanel.tsx`, `apps/web/src/editor/BlockEditor.tsx`, `scripts/probe/`, `scripts/gen_block_facts.mjs`, `fixtures/blocks/`. **Abhängigkeiten:** VIEW-02, BUILD-01, MAT-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/voxel/src/blockFacts.ts`, `packages/voxel/src/blocklogic/`, `packages/domain/src/core/placement.ts`, `packages/domain/src/editor/settle.ts`, `packages/domain/src/building/guide.ts`, `packages/domain/src/materials/materials.ts`, `packages/domain/src/editor/blocks.ts`, `apps/web/src/views/project/PlacementPanel.tsx`, `apps/web/src/editor/BlockEditor.tsx`, `scripts/probe/`, `scripts/gen_block_facts.mjs`, `fixtures/blocks/`. **Abhängigkeiten:** VIEW-02, BUILD-01, MAT-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### BLOCK-02
 
-**Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Schwebende Blöcke im Katalog reparieren“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Schwebende Blöcke im Katalog reparieren“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] BLOCK-02-S01: Gemeinsame Bauregel gameReady(): Laternen ohne Halt hängen an iron_chain bis zur nächsten Decke, danach alle Verbindungen wie im Spiel (settlePayload); gilt für jedes Katalog-Gebäude und jeden Generator.
 - [x] BLOCK-02-S02: Alte Block-ID chain durch iron_chain ersetzt (in 26.3 gibt es chain nicht mehr): 152 Katalog- und alle Generator-Ketten.
@@ -1432,7 +1435,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/catalog-game.test.mjs](../tests/catalog-game.test.mjs) — Alle Gebäude und Generator-Fälle ohne Halt-, Verbindungs- und ID-Fehler; hangLanterns, ownSpace, Kakao.; [docs/architecture/BLOCK_LOGIC.md](architecture/BLOCK_LOGIC.md) — Abschnitt „Spielgerechter Katalog (BLOCK-02)“.
 
-**Dateiumfang:** `packages/domain/src/build/`, `packages/domain/src/buildings.ts`, `packages/domain/src/generators/`, `packages/domain/src/placement.ts`, `packages/voxel/src/blocklogic/support.ts`, `packages/domain/src/materials.ts`, `packages/domain/src/guide.ts`, `tests/catalog-game.test.mjs`. **Abhängigkeiten:** BLOCK-01, LIB-04, UPDATE-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/build/`, `packages/domain/src/catalog/buildings.ts`, `packages/domain/src/generators/`, `packages/domain/src/core/placement.ts`, `packages/voxel/src/blocklogic/support.ts`, `packages/domain/src/materials/materials.ts`, `packages/domain/src/building/guide.ts`, `tests/catalog-game.test.mjs`. **Abhängigkeiten:** BLOCK-01, LIB-04, UPDATE-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -1511,7 +1514,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### EDIT-01
 
-**Mehrfachauswahl und sichtbare Freiraumhüllen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Vollständigen Block-Builder bauen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-04T13:41:53.533Z
+**Mehrfachauswahl und sichtbare Freiraumhüllen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Vollständigen Block-Builder bauen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] EDIT-01-S01: Auswahlvertrag und atomare Gruppenoperationen definieren.
 - [x] EDIT-01-S02: Freiraum-/Konflikthüllen und Undo/Redo ergänzen.
@@ -1526,7 +1529,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/editor.test.mjs](../tests/editor.test.mjs) — Unit-Tests Entwurf, Werkzeuge, Speichern, Projektzuordnung, Gruppenoperationen.; [tests/e2e/editor.e2e.mjs](../tests/e2e/editor.e2e.mjs) — Chromium: Werkstatt, Projekt-Reiter, Mehrfachauswahl, 390 px.; [docs/architecture/BLOCK_EDITOR.md](architecture/BLOCK_EDITOR.md) — Vertrag, Grenzen und Prüfbefehle.
 
-**Dateiumfang:** `apps/web/src/views/project/EditorTab.tsx`, `packages/domain/src/connectors.ts`, `apps/web/src/views/project/selection/`. **Abhängigkeiten:** STORE-02, VIEW-01. **Alte IDs:** —.
+**Dateiumfang:** `apps/web/src/views/project/EditorTab.tsx`, `packages/domain/src/core/connectors.ts`, `apps/web/src/views/project/selection/`. **Abhängigkeiten:** STORE-02, VIEW-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -1634,7 +1637,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### UPDATE-01
 
-**Kontrollierte Versionsupdates mit lokalen Overrides** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Updates und neue Versionen anzeigen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Kontrollierte Versionsupdates mit lokalen Overrides** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Updates und neue Versionen anzeigen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] UPDATE-01-S01: Updateplan mit Geometrie/Material/Anschluss-/Aufgabendiff erstellen.
 - [x] UPDATE-01-S02: Bewusst übernehmen, einfrieren und zurückkehren ermöglichen.
@@ -1649,7 +1652,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/updates.test.mjs](../tests/updates.test.mjs) — Updatequellen ohne fremde lokale Änderungen, Patch-Übertragung mit Doppeländerung je Regel, pivotbezogen, Folgenplan (Geometrie/Material/Anschlüsse/Schritte), ein Rückgängig-Schritt, Rückkehr, Einfrieren, Validierung, Katalogzustellung als neue Version ohne Projektumstellung, neueste Version ohne lokale Änderungen.; [tests/e2e/updates.e2e.mjs](../tests/e2e/updates.e2e.mjs) — Chromium 1400/390 px: neue Version in der Werkstatt, Hinweise in Projektzentrale und Projektkopf, Folgen mit Vergleich, Übernehmen, Rückgängig, Zurückkehren, Einfrieren mit Notiz, Neuladen, Mehrfachauswahl.; [docs/architecture/UPDATES.md](architecture/UPDATES.md) — Vertrag, Datenmodell, Katalogzustellung und Grenzen.
 
-**Dateiumfang:** `packages/domain/src/project.ts`, `packages/application/`. **Abhängigkeiten:** DIFF-01, STORE-02. **Alte IDs:** P5-03.
+**Dateiumfang:** `packages/domain/src/core/project.ts`, `packages/application/`. **Abhängigkeiten:** DIFF-01, STORE-02. **Alte IDs:** P5-03.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -1676,7 +1679,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LIB-03
 
-**Eigene Ensembles und Generatorvorlagen speichern** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread Sammlungen und Vorlagen) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Eigene Ensembles und Generatorvorlagen speichern** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread Sammlungen und Vorlagen) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] LIB-03-S01: Vorlagen referenzieren feste Versionen bzw. versionierte Generatorparameter.
 - [x] LIB-03-S02: Speichern, Bearbeiten, Wiederherstellen und Projektübernahme umsetzen.
@@ -1691,13 +1694,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/collections.test.mjs](../tests/collections.test.mjs) — Feste Versionen, Verlauf/Wiederherstellen, Projektübernahme als Kopie, Generatorvorlagen.; [tests/e2e/collections.e2e.mjs](../tests/e2e/collections.e2e.mjs) — Ensemble als Vorlage, Bearbeiten, Wiederherstellen, Projekt bleibt unverändert, Generatorvorlage, Sicherung/Wiederherstellung in frischem Profil.; [tests/e2e/asset-concurrency.e2e.mjs](../tests/e2e/asset-concurrency.e2e.mjs) — IndexedDB-Migration v2→v3 und Revisionsprüfung über zwei Verbindungen.
 
-**Dateiumfang:** `packages/domain/src/ensembles.ts`, `packages/domain/src/generators/`. **Abhängigkeiten:** LIB-02, GEN-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/catalog/ensembles.ts`, `packages/domain/src/generators/`. **Abhängigkeiten:** LIB-02, GEN-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### WORLD-02
 
-**Weitere kuratierte Bauwelten** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Codex Teilagent ui_acceptance · Zuständiger Thread: — · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Weitere kuratierte Bauwelten** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Codex Teilagent ui_acceptance · Zuständiger Thread: — · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] WORLD-02-S01: Abdeckung für fernöstliche Gärten, Wüstenhandel und End prüfen.
 - [x] WORLD-02-S02: Nur mit tatsächlichen Treffern und reproduzierbaren Links ergänzen.
@@ -1710,13 +1713,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/build-themes.test.mjs](../tests/build-themes.test.mjs) — Prüft elf Welten, reale Facetten, Treffer/Vorschauen der drei neuen Welten, reproduzierbare Links und dass keine Welt eine Stilrichtung ohne Bauteile nennt.; [docs/architecture/BUILD_THEMES.md](architecture/BUILD_THEMES.md) — Abdeckungstabelle der tatsächlichen Treffer je neuer Bauwelt.; [tests/e2e/ui-acceptance.e2e.mjs](../tests/e2e/ui-acceptance.e2e.mjs) — Vier echte Chromiumfälle, Themenmatrix, Mengenerhalt und drei neue kanonische Filterlinks.; [docs/architecture/UI_ACCEPTANCE.md](architecture/UI_ACCEPTANCE.md) — 48 visuell geprüfte Aufnahmen; Desktop und Touchsimulation von echten Geräten getrennt.
 
-**Dateiumfang:** `packages/domain/src/buildThemes.ts`, `tests/build-themes.test.mjs`, `docs/architecture/BUILD_THEMES.md`. **Abhängigkeiten:** LIB-01, UI-01. **Alte IDs:** WORLD-02.
+**Dateiumfang:** `packages/domain/src/catalog/buildThemes.ts`, `tests/build-themes.test.mjs`, `docs/architecture/BUILD_THEMES.md`. **Abhängigkeiten:** LIB-01, UI-01. **Alte IDs:** WORLD-02.
 
 **Integration:** Main [c3e6478](https://github.com/Freadeax/Minecraft-Bauplaner/commit/c3e647855dc3b1bc5417a64cc6350b375b9b510d); Pages-Quelle [c3e6478](https://github.com/Freadeax/Minecraft-Bauplaner/commit/c3e647855dc3b1bc5417a64cc6350b375b9b510d).
 
 ### BUILD-05
 
-**Bauwelt-Anlagen mit Konfliktvorschau** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Claude Thread Bauwelt-Anlagen · Zuständiger Thread: — · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Bauwelt-Anlagen mit Konfliktvorschau** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Claude Thread Bauwelt-Anlagen · Zuständiger Thread: — · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] BUILD-05-S01: Feste AssetVersionen, Abstände und Anschlüsse kuratieren.
 - [x] BUILD-05-S02: Konfliktvorschau und ausdrückliche Projektübernahme anbieten.
@@ -1730,13 +1733,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/anlagen.test.mjs](../tests/anlagen.test.mjs) — 12 Fälle gegen den echten Katalog: 11 Anlagen konflikt- und befundfrei, feste Versionen, Tausch, Blocker, echte Voxelkonflikte mit Bestätigungspflicht, Übernahme mit Bauabschnitten, Einfügen mit Rückgängig.; [tests/e2e/anlagen.e2e.mjs](../tests/e2e/anlagen.e2e.mjs) — Chromium: Bauwelt-Link, Vorschau speichert nichts, Konflikt sperrt Übernahme, Anlegen und Einfügen, 390 px.; [docs/architecture/ANLAGEN.md](architecture/ANLAGEN.md) — Datenmodell, Layout, Konfliktvorschau, Übernahme und Grenzen.
 
-**Dateiumfang:** `packages/domain/src/anlagen.ts`, `packages/domain/src/ensembles.ts`, `apps/web/src/views/library/`, `tests/anlagen.test.mjs`, `tests/e2e/anlagen.e2e.mjs`, `docs/architecture/ANLAGEN.md`. **Abhängigkeiten:** LIB-03, CORE-03. **Alte IDs:** BUILD-05.
+**Dateiumfang:** `packages/domain/src/base/anlagen.ts`, `packages/domain/src/catalog/ensembles.ts`, `apps/web/src/views/library/`, `tests/anlagen.test.mjs`, `tests/e2e/anlagen.e2e.mjs`, `docs/architecture/ANLAGEN.md`. **Abhängigkeiten:** LIB-03, CORE-03. **Alte IDs:** BUILD-05.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### TERRAIN-01
 
-**Geländeaufnahmen für Weltkarte und Anlagen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread Gelände in Anlagen und Weltkarte) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Geländeaufnahmen für Weltkarte und Anlagen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread Gelände in Anlagen und Weltkarte) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] TERRAIN-01-S01: Geländeaufnahme (Höhenkarte) aus Regionsdateien lesen, als Original speichern, sichern und prüfen; Bauplatz aus dem Weltimport.
 - [x] TERRAIN-01-S02: Gelände in der Weltkarte (Draufsicht, 3D, Höhe unter dem Zeiger) mit Erdarbeiten-Schätzung und Höhenvorschlag.
@@ -1754,13 +1757,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/terrain-survey.test.mjs](../tests/terrain-survey.test.mjs) — 9 Fälle: echte Regionsdatei mit Hang/Teich/Baum/Gras gegen Handwerte und dichte Probe, Dateiformat, terrain.set mit Rückgängig/Sicherung/Datencheck, Erdarbeiten, 3D-Zellen, Eingangsregel, Katalogtüren, Terrassen/Ebene, Platzsuche.; [tests/e2e/terrain.e2e.mjs](../tests/e2e/terrain.e2e.mjs) — Chromium 1400/390 px: Bauplatz aus Regionsdatei, Weltkarte mit Gelände, Anlage auf dem Hang, Einfügen, Schätzung, Reiter Gelände.; [docs/architecture/TERRAIN.md](architecture/TERRAIN.md) — Datenmodell, Weltkarte, Anlagen auf Gelände, Türregel, Grenzen.
 
-**Dateiumfang:** `packages/domain/src/terrainSurvey.ts`, `packages/domain/src/anlagenTerrain.ts`, `packages/domain/src/entrance.ts`, `packages/formats/src/worldExcerpt.ts`, `apps/web/src/views/world/surveys.ts`, `apps/web/src/views/project/TerrainSurveyPanel.tsx`, `apps/web/src/views/map/terrainLayer.ts`, `scripts/make_terrain_fixture.py`, `tests/terrain-survey.test.mjs`, `tests/e2e/terrain.e2e.mjs`, `docs/architecture/TERRAIN.md`. **Abhängigkeiten:** WORLD-IMPORT-01, BUILD-05, MAP-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/world/terrainSurvey.ts`, `packages/domain/src/base/anlagenTerrain.ts`, `packages/domain/src/base/entrance.ts`, `packages/formats/src/worldExcerpt.ts`, `apps/web/src/views/world/surveys.ts`, `apps/web/src/views/project/TerrainSurveyPanel.tsx`, `apps/web/src/views/map/terrainLayer.ts`, `scripts/make_terrain_fixture.py`, `tests/terrain-survey.test.mjs`, `tests/e2e/terrain.e2e.mjs`, `docs/architecture/TERRAIN.md`. **Abhängigkeiten:** WORLD-IMPORT-01, BUILD-05, MAP-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### TERRAIN-02
 
-**Landschaft gestalten: Gelände formen, bemalen, Wasser und Wege** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread Gelände modellieren und bemalen) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-04T13:25:59.610Z
+**Landschaft gestalten: Gelände formen, bemalen, Wasser und Wege** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread Gelände modellieren und bemalen) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] TERRAIN-02-S01: Geländegestaltung als Original (BPTDES01) mit terrainDesign.set, Sicherung samt Grund-Aufnahme und Datencheck.
 - [x] TERRAIN-02-S02: Höhenpinsel (Anheben, Absenken, Glätten, Einebnen, Aufrauen, Terrassen, Hänge abflachen), Bemalen mit Biom-Stilen und Filtern, automatisches Bemalen.
@@ -1780,13 +1783,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/terrain-design.test.mjs](../tests/terrain-design.test.mjs) — 10 Fälle: Pinsel mit Handwerten, Stile/Filter, Wasser, Wege, Automatik, Einebnen, Blöcke, geplantes Gelände, Datei, Operation, Sicherung, Datencheck.; [tests/e2e/landscape.e2e.mjs](../tests/e2e/landscape.e2e.mjs) — Chromium 1400/390 px: formen, bemalen, Wasser, Weg, speichern, Weltkarte, Anlagen, Bauteil im Projekt.; [docs/architecture/LANDSCAPE.md](architecture/LANDSCAPE.md) — Datenmodell, Werkzeuge, Übergabe, Grenzen.; [tests/terrain-scatter.test.mjs](../tests/terrain-scatter.test.mjs) — 8 Fälle: Bauteile (Zustände 26.3, dauerhaftes Laub), Determinismus/Dichte/Abstand, Regeln (Stil, Hang, Höhe, Ufer, Wasser, Weg, Bauten, Bestand), Handsetzen/Entfernen, Teile folgen dem Gelände, Blöcke im Geländebauteil, Datei, Schablonen gedreht, Kaktus.; [tests/e2e/landscape-scatter.e2e.mjs](../tests/e2e/landscape-scatter.e2e.mjs) — Chromium 1400/390 px: Mischung streuen, Ebene ändern, von Hand setzen/entfernen, Rückgängig, 3D, Speichern/Neuladen, Bauteil mit Laub und Stämmen in der Materialliste.
 
-**Dateiumfang:** `packages/domain/src/terrainDesign.ts`, `apps/web/src/views/world/designs.ts`, `apps/web/src/views/project/LandscapeTab.tsx`, `apps/web/src/views/project/landscape/`, `tests/terrain-design.test.mjs`, `tests/e2e/landscape.e2e.mjs`, `docs/architecture/LANDSCAPE.md`, `packages/domain/src/terrainScatter.ts`, `packages/domain/src/terrainScatterPlan.ts`, `tests/terrain-scatter.test.mjs`, `tests/e2e/landscape-scatter.e2e.mjs`. **Abhängigkeiten:** TERRAIN-01, BUILD-05, MAP-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/world/terrainDesign.ts`, `apps/web/src/views/world/designs.ts`, `apps/web/src/views/project/LandscapeTab.tsx`, `apps/web/src/views/project/landscape/`, `tests/terrain-design.test.mjs`, `tests/e2e/landscape.e2e.mjs`, `docs/architecture/LANDSCAPE.md`, `packages/domain/src/world/terrainScatter.ts`, `packages/domain/src/world/terrainScatterPlan.ts`, `tests/terrain-scatter.test.mjs`, `tests/e2e/landscape-scatter.e2e.mjs`. **Abhängigkeiten:** TERRAIN-01, BUILD-05, MAP-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### TERRAIN-03
 
-**Gelände und Wege im Projekt: Aufschütten, Abtragen, Rampe, Wegstufen als Treppen, Brücken mit Geländer, Weg aus der Weltkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gelände und Wege ausbauen“) · Zuständiger Thread: „Gelände und Wege ausbauen“ · Aktualisiert: 2026-11-05T10:29:43.640Z
+**Gelände und Wege im Projekt: Aufschütten, Abtragen, Rampe, Wegstufen als Treppen, Brücken mit Geländer, Weg aus der Weltkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gelände und Wege ausbauen“) · Zuständiger Thread: „Gelände und Wege ausbauen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] TERRAIN-03-S01: Geländewerkzeuge: Aufschütten (nur Mulden bis zur Zielhöhe), Abtragen (nur über der Zielhöhe), Rampe mit gleichmäßiger Steigung, Breite und weichem Übergang.
 - [x] TERRAIN-03-S02: Wegstufen: Treppen (bergauf, über die ganze Breite) oder Halbstufen an jedem Höhenwechsel um einen Block, neun Materialfamilien, keine Treppen ins Leere nach späteren Änderungen; Dateiformat BPTDES01 mit optionalem Stufenfeld.
@@ -1807,13 +1810,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/terrain-paths.test.mjs](../tests/terrain-paths.test.mjs) — 8 Fälle: Aufschütten/Abtragen, Rampe, Treppen beidseitig, Halbstufen, Stufen nach Änderungen, Brücke, Brücke mit hohem Ufer, Datei, Materialien.; [tests/e2e/landscape-paths.e2e.mjs](../tests/e2e/landscape-paths.e2e.mjs) — Chromium 1400/390 px: Aufschütten, Graben, Rampe, Weg mit Treppen, Wasser, Brücke, 3D, Speichern/Neuladen, Bauteil mit Treppen und Zäunen im Material.; [docs/architecture/LANDSCAPE.md](architecture/LANDSCAPE.md) — Abschnitt „Wegstufen und Brücken (TERRAIN-03)“, Werkzeuge, Dateiformat, Grenzen.; [tests/base-shore.test.mjs](../tests/base-shore.test.mjs) — Küste aus der Geländeaufnahme: alle vier Seiten, Verschiebung, Binnenland, Bach, Bucht, Halbinsel, Aufnahmerand.; [tests/e2e/base-shore.e2e.mjs](../tests/e2e/base-shore.e2e.mjs) — Chromium 1400/390 px: Sicherung mit Küstenaufnahme, Wasserseite übernehmen, ans Ufer schieben, Übernahme an verschobener Stelle.
 
-**Dateiumfang:** `packages/domain/src/terrainDesign.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/LandscapeTab.tsx`, `apps/web/src/views/project/landscape/DesignCanvas.tsx`, `apps/web/src/testing/testplan.ts`, `docs/architecture/LANDSCAPE.md`, `docs/testing/TESTPLAN.md`, `tests/terrain-paths.test.mjs`, `tests/e2e/landscape-paths.e2e.mjs`. **Abhängigkeiten:** TERRAIN-02, TERRAIN-01, MAP-04, BASE-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/world/terrainDesign.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/LandscapeTab.tsx`, `apps/web/src/views/project/landscape/DesignCanvas.tsx`, `apps/web/src/testing/testplan.ts`, `docs/architecture/LANDSCAPE.md`, `docs/testing/TESTPLAN.md`, `tests/terrain-paths.test.mjs`, `tests/e2e/landscape-paths.e2e.mjs`. **Abhängigkeiten:** TERRAIN-02, TERRAIN-01, MAP-04, BASE-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### BUILD-06
 
-**Bauführung im Spiel: Schichtführung, Tagesziele, Packlisten, Druck-/Handyansicht, Spielfortschritt** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Bauanleitung fürs Spiel vertiefen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Bauführung im Spiel: Schichtführung, Tagesziele, Packlisten, Druck-/Handyansicht, Spielfortschritt** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Bauanleitung fürs Spiel vertiefen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] BUILD-06-S01: Schichtführung: Reihen/Rechtecke je Schritt mit Koordinaten relativ zum Anker und in Weltkoordinaten; Anker aus Weltlage oder Spielaufnahme.
 - [x] BUILD-06-S02: Shulker-Packliste je Bauabschnitt und Bautag in Reihenfolge des ersten Bedarfs.
@@ -1831,7 +1834,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/build-run.test.mjs](../tests/build-run.test.mjs) — 9 Fälle: Rechteckabdeckung, Anker, Packliste = Material-Tab, Bautage/Budget/Abschnitte/Lager, Haken je Tag, Textzettel, Nacharbeit.; [tests/e2e/build-run.e2e.mjs](../tests/e2e/build-run.e2e.mjs) — Chromium 1400/390 px: Anker aus Aufnahme, Weltkoordinaten, Bautage, Packliste, Nacharbeit, Tag abhaken, Druckmedienemulation, Textdownload, Baumodus.
 
-**Dateiumfang:** `packages/domain/src/buildRun.ts`, `packages/domain/src/site.ts`, `apps/web/src/views/project/BuildTab.tsx`, `apps/web/src/buildrun.css`, `tests/build-run.test.mjs`, `tests/e2e/build-run.e2e.mjs`, `docs/architecture/BUILD_RUN.md`, `apps/web/src/views/project/buildrun/`. **Abhängigkeiten:** BUILD-01, GAME-01, MAP-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/building/buildRun.ts`, `packages/domain/src/building/site.ts`, `apps/web/src/views/project/BuildTab.tsx`, `apps/web/src/styles/buildrun.css`, `tests/build-run.test.mjs`, `tests/e2e/build-run.e2e.mjs`, `docs/architecture/BUILD_RUN.md`, `apps/web/src/views/project/buildrun/`. **Abhängigkeiten:** BUILD-01, GAME-01, MAP-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -1861,7 +1864,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAP-01
 
-**Weltlage und begehbare Projektkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread Weltkarte) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Weltlage und begehbare Projektkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread Weltkarte) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] MAP-01-S01: B15-Konzept und generischer Livekarten-/Markeradapter vorhanden.
 - [x] MAP-01-S02: B15-Reservierung vor Übernahme abgleichen.
@@ -1878,7 +1881,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/livemap.test.mjs](../tests/livemap.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/worldmap.test.mjs](../tests/worldmap.test.mjs) — Kernvertrag Weltlage/Weltkarte, 8 Tests.; [tests/e2e/worldmap.e2e.mjs](../tests/e2e/worldmap.e2e.mjs) — Browserablauf 1400/390 px.; [docs/architecture/WORLDMAP.md](architecture/WORLDMAP.md) — Vertrag, Quellen der Linkformate und Grenzen.
 
-**Dateiumfang:** `packages/domain/src/worldmap.ts`, `apps/web/src/views/map/`. **Abhängigkeiten:** CORE-03, STORE-02. **Alte IDs:** B15, B15-L.
+**Dateiumfang:** `packages/domain/src/world/worldmap.ts`, `apps/web/src/views/map/`. **Abhängigkeiten:** CORE-03, STORE-02. **Alte IDs:** B15, B15-L.
 
 **Integration:** Main [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2); Pages-Quelle [e232b26](https://github.com/Freadeax/Minecraft-Bauplaner/commit/e232b26fbc457c20182e4e35581244234218664e).
 
@@ -1909,7 +1912,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAP-04
 
-**Weltbuilder vertiefen: Löschen und Entfernen für alle Objekte der Weltkarte, Mehrfachauswahl, Kontextmenü, gemeinsames Rückgängig, Duplizieren/Drehen/Spiegeln, Wegecken, Ebenen, Objektliste** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Weltbuilder mit Löschen vertiefen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Weltbuilder vertiefen: Löschen und Entfernen für alle Objekte der Weltkarte, Mehrfachauswahl, Kontextmenü, gemeinsames Rückgängig, Duplizieren/Drehen/Spiegeln, Wegecken, Ebenen, Objektliste** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Weltbuilder mit Löschen vertiefen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] MAP-04-S01: Löschen/Entfernen für alle Objekte: Entf-Taste, Auswahlleiste, Kontextmenü, Listenzeilen; Projekte nur von der Karte nehmen.
 - [x] MAP-04-S02: Mehrfachauswahl (Umschalt/Strg-Klick, Rahmen, Strg+A) und gemeinsames Rückgängig für Weltplan und Projektlagen.
@@ -1930,13 +1933,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/worldbuilder.test.mjs](../tests/worldbuilder.test.mjs) — Löschen mit linearer Umkehrung, Einfügen, Auswahl, Drehen/Spiegeln im Raster, Duplizieren, Wegecken, Geländehöhe.; [tests/e2e/worldbuilder.e2e.mjs](../tests/e2e/worldbuilder.e2e.mjs) — Entf, Kontextmenü, Listenlöschen, Rahmen, Verschieben mit Pfeilen, Löschen samt Projekt und Rückgängig, Duplizieren, Drehen, Wegecken, Ebenen, Strg+A, Neuladen; Handy 390 px.; [docs/architecture/WORLD_BUILDER.md](architecture/WORLD_BUILDER.md) — Bedienung, Technik, Grenzen.
 
-**Dateiumfang:** `apps/web/src/views/map/`, `apps/web/src/map.css`, `packages/domain/src/`, `tests/`, `docs/`. **Abhängigkeiten:** MAP-03. **Alte IDs:** —.
+**Dateiumfang:** `apps/web/src/views/map/`, `apps/web/src/styles/map.css`, `packages/domain/src/`, `tests/`, `docs/`. **Abhängigkeiten:** MAP-03. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### MAP-02
 
-**Gespeicherte Kartenziele und konkrete Provideradapter: mehrere Server-Karten speichern und teilen, echte Marker für BlueMap (marker-sets) und Dynmap (dmarker-Befehle), Markerdatei als Weltplan-Punkte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Module und Systeme komplex ausarbeiten“ · Aktualisiert: 2026-11-05T08:18:58.875Z
+**Gespeicherte Kartenziele und konkrete Provideradapter: mehrere Server-Karten speichern und teilen, echte Marker für BlueMap (marker-sets) und Dynmap (dmarker-Befehle), Markerdatei als Weltplan-Punkte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Module und Systeme komplex ausarbeiten“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] MAP-02-S01: URL-/Markerformate anhand Primärquellen pro Provider verifizieren (BlueMap-Wiki Markers, Dynmap-Wiki Using markers/Commands, squaremap/Pl3xMap README: nur API).
 - [x] MAP-02-S02: Gespeicherte Ziele (bis 20, Kartenliste als Datei), UI-Dateiadapter und eigene Markerdateien (Import als Weltplan-Punkte, Export mit Punkten), BlueMap-marker-sets und Dynmap-Befehle aus Projekten, Bauplätzen, Wegen, Zonen und Punkten.
@@ -1952,13 +1955,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/livemap-export.test.mjs](../tests/livemap-export.test.mjs) — 5 Fälle: gespeicherte Karten/Datei/Zusammenführen, Markerdatei → Punkte ohne Doppelte, Formen je Dimension, BlueMap-Format (extrude/shape/line/poi, Maskierung, Klammern), Dynmap-Befehle.; [tests/e2e/livemap-export.e2e.mjs](../tests/e2e/livemap-export.e2e.mjs) — Chromium 1400/390 px: zwei Karten speichern/wechseln, Kartenliste, Dynmap- und BlueMap-Download, Markerdatei laden, doppelt, Rückgängig, Neuladen.
 
-**Dateiumfang:** `packages/domain/src/livemap.ts`, `packages/domain/src/liveMapExport.ts`, `apps/web/src/views/map/LiveMapPanel.tsx`, `apps/web/src/views/map/liveMapConfig.ts`, `apps/web/src/views/map/WorldMapView.tsx`, `tests/livemap-export.test.mjs`, `tests/e2e/livemap-export.e2e.mjs`, `docs/architecture/LIVEMAP.md`. **Abhängigkeiten:** MAP-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/world/livemap.ts`, `packages/domain/src/world/liveMapExport.ts`, `apps/web/src/views/map/LiveMapPanel.tsx`, `apps/web/src/views/map/liveMapConfig.ts`, `apps/web/src/views/map/WorldMapView.tsx`, `tests/livemap-export.test.mjs`, `tests/e2e/livemap-export.e2e.mjs`, `docs/architecture/LIVEMAP.md`. **Abhängigkeiten:** MAP-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### GAME-01
 
-**Spielaufnahmen und Soll/Ist-Vergleich** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Zuständiger Thread: — · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Spielaufnahmen und Soll/Ist-Vergleich** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Bestand · Zuständiger Thread: — · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] GAME-01-S01: Vergleich, Originalspeicherung, Verlauf, Ausrichtung und Backup vorhanden.
 
@@ -1970,7 +1973,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/game-check.test.mjs](../tests/game-check.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/scan-persistence.test.mjs](../tests/scan-persistence.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/e2e/game-check.e2e.mjs](../tests/e2e/game-check.e2e.mjs) — Reale Aufnahme gegen eingefrorene Revision, Abweichungszelle und ausdrücklich bestätigte Schritte.; [tests/e2e/scan-persistence.e2e.mjs](../tests/e2e/scan-persistence.e2e.mjs) — Original und Ausrichtung über Speichern/Neuladen hinweg erhalten; Download bytes-identisch.
 
-**Dateiumfang:** `packages/domain/src/gameCheck.ts`, `packages/application/src/scanPersistence.ts`. **Abhängigkeiten:** CORE-02, BUILD-01. **Alte IDs:** B8-M1, B8P.
+**Dateiumfang:** `packages/domain/src/building/gameCheck.ts`, `packages/application/src/scanPersistence.ts`. **Abhängigkeiten:** CORE-02, BUILD-01. **Alte IDs:** B8-M1, B8P.
 
 **Integration:** Main [b5eb5b9](https://github.com/Freadeax/Minecraft-Bauplaner/commit/b5eb5b9bc039160e668a7183c0ccfcdcd764a933); Pages-Quelle [b5eb5b9](https://github.com/Freadeax/Minecraft-Bauplaner/commit/b5eb5b9bc039160e668a7183c0ccfcdcd764a933).
 
@@ -2000,7 +2003,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-07
 
-**Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Teambau und Befehle in der Mod ausbauen“) · Zuständiger Thread: „Teambau und Befehle in der Mod ausbauen“ · Aktualisiert: 2026-11-04T09:25:02.358Z
+**Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Teambau und Befehle in der Mod ausbauen“) · Zuständiger Thread: „Teambau und Befehle in der Mod ausbauen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] GAME-07-S01: Versionsneutraler Mod-Kern: Blockzustände, Vergleichsregeln wie gameCheck.ts, Platzierung mit Drehen/Spiegeln, Planmodell, Live-Abgleich, Platzierungsspeicher; JUnit-Tests.
 - [x] GAME-07-S02: Fabric 26.3: Planmenü, Tasten, Platzieren/Verschieben/Drehen/Spiegeln, Rahmen, Speicherung je Server/Welt.
@@ -2024,7 +2027,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java) — 7 JUnit-Fälle: Zustände, Regeln wie gameCheck.ts, Drehen/Spiegeln mit Rückweg, Planlesen, Live-Abgleich, Speicher.; [scripts/test_bridge_ingame.sh](../scripts/test_bridge_ingame.sh) — Echter 26.3-Client und Produktionsstart mit Philipps Modpack (Sodium, Iris, Xaero …): Hologramm fehlt 1/falsch 1, gesetzter Block ohne Befehl erkannt, Drehen, Speichern, Taste J öffnet das Menü (02.11.2026).; [docs/architecture/MOD_HOLOGRAM.md](architecture/MOD_HOLOGRAM.md) — Grundsätze, Aufbau, Tasten, Darstellung, Live-Abgleich, Prüfung.; [tests/e2e/mod-download.e2e.mjs](../tests/e2e/mod-download.e2e.mjs) — Download-Seite wählt 0.2.0 vor, 0.1.0 bleibt wählbar.; [tests/mod-releases.test.mjs](../tests/mod-releases.test.mjs) — Jede .jar wie ein Launcher geprüft (EOCD, Verzeichnis, Loader-Metadaten); abgeschnittene/HTML/beschädigte Dateien erkannt. Download-Seite speichert nur geprüfte Bytes (02.11.2026).; [scripts/bridge_gametest.mjs](../scripts/bridge_gametest.mjs) — 0.3.0: Materialliste, Ebenenmodus, texturierte Geisterblöcke im echten Client und mit Philipps Modpack (Sodium/Iris) geprüft (02.11.2026).; [mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlacementAdvice.java](../mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlacementAdvice.java) — 0.4.0 Platzierhilfe: Urteil, Wegsuche und Hinweise; im echten Client und mit Philipps Modpack über den echten Klickweg geprüft (02.11.2026).; [mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java](../mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java) — 0.6.0: echter NeoForge-26.3-Client spielt Hologramm, Materialliste, Ebenen, J/Num 7, Platzierhilfe über Minecraft.startUseItem/startAttack und die Website-Verbindung durch; Fabric zusätzlich mit Philipps 25 Mods und Complementary Unbound (BAUPLANER_SHADERPACK) bestanden (02.11.2026).; [mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Filter.java](../mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Filter.java) — 0.7.0: ein Filter (Ebenen + Bauabschnitt) für Hologramm, HUD, Material und Fehlerfinder; JUnit buildSectionsFilterEverything, Website-Test für SectionNames/SectionCells im Export und Abschnitte im Live-Status; Spieltests Fabric (auch Modpack + Complementary) und NeoForge prüfen Abschnittsliste, Röntgensicht und Abschnittswahl über die Website (02.11.2026).
 
-**Dateiumfang:** `mods/bauplaner-bridge/mod-core/`, `mods/bauplaner-bridge/fabric-26.3/`, `mods/bauplaner-bridge/settings.gradle`, `mods/bauplaner-bridge/VERSION`, `scripts/bridge_gametest.mjs`, `scripts/test_bridge_ingame.sh`, `docs/architecture/MOD_HOLOGRAM.md`, `downloads/mod/`, `apps/web/src/views/mod/releases.json`, `tests/e2e/mod-download.e2e.mjs`, `apps/web/src/views/mod/`, `apps/web/src/catalog.css`, `tests/mod-releases.test.mjs`, `scripts/release_mod.mjs`, `mods/bauplaner-bridge/hologram-26.3/`, `mods/bauplaner-bridge/neoforge-26.3/`, `mods/bauplaner-bridge/client-26.3/`, `scripts/test_bridge_ingame_forge.sh`, `mods/bauplaner-bridge/README.md`, `docs/architecture/LIVE_LINK.md`, `packages/application/src/revisionExport.ts`, `packages/domain/src/liveLink.ts`, `tests/game-check.test.mjs`, `tests/livelink.test.mjs`. **Abhängigkeiten:** GAME-02. **Alte IDs:** —.
+**Dateiumfang:** `mods/bauplaner-bridge/mod-core/`, `mods/bauplaner-bridge/fabric-26.3/`, `mods/bauplaner-bridge/settings.gradle`, `mods/bauplaner-bridge/VERSION`, `scripts/bridge_gametest.mjs`, `scripts/test_bridge_ingame.sh`, `docs/architecture/MOD_HOLOGRAM.md`, `downloads/mod/`, `apps/web/src/views/mod/releases.json`, `tests/e2e/mod-download.e2e.mjs`, `apps/web/src/views/mod/`, `apps/web/src/styles/catalog.css`, `tests/mod-releases.test.mjs`, `scripts/release_mod.mjs`, `mods/bauplaner-bridge/hologram-26.3/`, `mods/bauplaner-bridge/neoforge-26.3/`, `mods/bauplaner-bridge/client-26.3/`, `scripts/test_bridge_ingame_forge.sh`, `mods/bauplaner-bridge/README.md`, `docs/architecture/LIVE_LINK.md`, `packages/application/src/revisionExport.ts`, `packages/domain/src/team/liveLink.ts`, `tests/game-check.test.mjs`, `tests/livelink.test.mjs`. **Abhängigkeiten:** GAME-02. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -2075,7 +2078,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### WORLD-IMPORT-01
 
-**Bereichsweiser Weltimport und Terrainprüfung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread Weltausschnitte importieren) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Bereichsweiser Weltimport und Terrainprüfung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread Weltausschnitte importieren) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] WORLD-IMPORT-01-S01: Konsistentes Sicherungsformat und Bereichsauswahl festlegen.
 - [x] WORLD-IMPORT-01-S02: Begrenzten Adapter, Terrain-/Fundamentprüfung und Lastszenarien implementieren.
@@ -2090,13 +2093,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/anvil.test.mjs](../tests/anvil.test.mjs) — Unabhängige Python-Regionsfixture (26.x/1.21/1.17, zlib/GZip/LZ4/ohne), jede Zelle geprüft, Fehlerfälle, Lastszenario 16,7 Mio. Zellen.; [tests/terrain.test.mjs](../tests/terrain.test.mjs) — Handberechnete Geländeprüfung: Hindernis, Wasser, Loch mit Unterbautiefe, unbekannt, außerhalb, Y-Vorschlag.; [tests/e2e/world-import.e2e.mjs](../tests/e2e/world-import.e2e.mjs) — Chromium 1400/390 px: Dateien, Übersicht, Bereich, Bibliothek, Gelände-Reiter.; [scripts/test_world_import_real.sh](../scripts/test_world_import_real.sh) — Echte 26.3-Welten vom offiziellen Server (deflate/lz4/none) gelesen und gegen gesetzte Blöcke geprüft.; [docs/architecture/WORLD_IMPORT.md](architecture/WORLD_IMPORT.md) — Format, Sicherung, Bereichswahl, Geländeprüfung und Grenzen.
 
-**Dateiumfang:** `packages/formats/src/anvil.ts`, `packages/formats/src/lz4.ts`, `packages/formats/src/worldExcerpt.ts`, `packages/domain/src/terrain.ts`, `apps/web/src/views/world/`, `apps/web/src/views/project/TerrainTab.tsx`, `tests/anvil.test.mjs`, `docs/architecture/WORLD_IMPORT.md`, `packages/formats/src/defaultStates.ts`, `packages/formats/src/nbt.ts`, `tests/terrain.test.mjs`, `tests/e2e/world-import.e2e.mjs`, `scripts/make_region_fixture.py`, `scripts/test_world_import_real.sh`, `scripts/gen_default_states.mjs`. **Abhängigkeiten:** PROFILE-01, PERF-02, FORMAT-01. **Alte IDs:** P7-01.
+**Dateiumfang:** `packages/formats/src/anvil.ts`, `packages/formats/src/lz4.ts`, `packages/formats/src/worldExcerpt.ts`, `packages/domain/src/world/terrain.ts`, `apps/web/src/views/world/`, `apps/web/src/views/project/TerrainTab.tsx`, `tests/anvil.test.mjs`, `docs/architecture/WORLD_IMPORT.md`, `packages/formats/src/defaultStates.ts`, `packages/formats/src/nbt.ts`, `tests/terrain.test.mjs`, `tests/e2e/world-import.e2e.mjs`, `scripts/make_region_fixture.py`, `scripts/test_world_import_real.sh`, `scripts/gen_default_states.mjs`. **Abhängigkeiten:** PROFILE-01, PERF-02, FORMAT-01. **Alte IDs:** P7-01.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### BACKUP-02
 
-**Sicherungserinnerung und Abschnittsrevisionen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Sicherungen erweitern“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Sicherungserinnerung und Abschnittsrevisionen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Sicherungen erweitern“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] BACKUP-02-S01: Letzte erfolgreiche Sicherung mit Datenänderungen vergleichen.
 - [x] BACKUP-02-S02: Abschnittsstand reproduzierbar einfrieren und wiederfinden.
@@ -2111,7 +2114,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/backup-reminder.test.mjs](../tests/backup-reminder.test.mjs) — Belege aus Dateiinhalt, Revision ignoriert, Hinweis/fällig nach Alter, Projekt- vs. Gesamtsicherung, eigene Bibliothek, Prüfen per Hash, Protokollgrenze; Stände einfrieren, jede Abweichungsart, Zurücksetzen reproduziert Fingerabdruck, Undo, Sperre bei fehlender Version, Kopie als Projekt.; [tests/e2e/backup-reminder.e2e.mjs](../tests/e2e/backup-reminder.e2e.mjs) — Chromium 1400/390 px: Erinnerung ohne Cloudbehauptung, Alles sichern, Datei prüfen (gültig/manipuliert), Projektkopf-Chip, Neuladen; Einfrieren, Warnung im Editor, Abweichung, Zurücksetzen mit Vorschau, entfernter Abschnitt wiederfinden, als Projekt öffnen.; [docs/architecture/BACKUPS.md](architecture/BACKUPS.md) — Vertrag, Ehrlichkeitsregeln und Grenzen.
 
-**Dateiumfang:** `packages/domain/src/backupStatus.ts`, `packages/domain/src/sectionSnapshots.ts`, `packages/domain/src/site.ts`, `apps/web/src/views/BackupPanel.tsx`, `apps/web/src/views/project/`, `docs/architecture/BACKUPS.md`. **Abhängigkeiten:** STORE-01, BUILD-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/data/backupStatus.ts`, `packages/domain/src/building/sectionSnapshots.ts`, `packages/domain/src/building/site.ts`, `apps/web/src/views/BackupPanel.tsx`, `apps/web/src/views/project/`, `docs/architecture/BACKUPS.md`. **Abhängigkeiten:** STORE-01, BUILD-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -2155,7 +2158,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TEAM-02
 
-**Geordnete Operationen, Reconnect und Team-Undo** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: — · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Geordnete Operationen, Reconnect und Team-Undo** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: — · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [ ] TEAM-02-S01: Operation-ID, Revisionsprüfung und Wiederholung serverseitig umsetzen.
 - [ ] TEAM-02-S02: Konkurrierende Änderungen, Reconnect und geprüfte Gegenoperationen testen.
@@ -2168,13 +2171,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** noch ausstehend
 
-**Dateiumfang:** `packages/application/`, `packages/domain/src/project.ts`. **Abhängigkeiten:** AUTH-01, UPDATE-01. **Alte IDs:** P4-02.
+**Dateiumfang:** `packages/application/`, `packages/domain/src/core/project.ts`. **Abhängigkeiten:** AUTH-01, UPDATE-01. **Alte IDs:** P4-02.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### TEAM-03
 
-**Gemeinsame Aufgaben, Abschnitte und Sammelplanung** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: — · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Gemeinsame Aufgaben, Abschnitte und Sammelplanung** · ⏳ Offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: — · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [ ] TEAM-03-S01: Zuständigkeiten und Lagerbuchungen versionieren.
 - [ ] TEAM-03-S02: Abschnitte und Sammelaufträge mehreren Spielern zuweisen.
@@ -2187,7 +2190,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** noch ausstehend
 
-**Dateiumfang:** `packages/domain/src/site.ts`, `packages/application/`. **Abhängigkeiten:** TEAM-02, BUILD-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/building/site.ts`, `packages/application/`. **Abhängigkeiten:** TEAM-02, BUILD-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -2257,7 +2260,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LAGER-01
 
-**Optionale Truhen-/Lagerintegration** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: „Server-Plugin mit geprüften Lagerkisten“ · Aktualisiert: 2026-11-03T21:19:45.021Z
+**Optionale Truhen-/Lagerintegration** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: „Server-Plugin mit geprüften Lagerkisten“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] LAGER-01-S01: Inventar-/NBT-Rechte und Herkunft der Aufnahme festlegen.
 - [x] LAGER-01-S02: Bestand mit Zeitpunkt, Konflikten und ausdrücklicher Übernahme anzeigen.
@@ -2272,7 +2275,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [docs/architecture/LAGERKISTEN.md](architecture/LAGERKISTEN.md) — S01: Rechte (nur geprüfte Kisten, Freigabe durch Bauleitung) und Herkunft je Bestand festgelegt (COOP-04/05).; [tests/lager.test.mjs](../tests/lager.test.mjs) — S02: Bestand mit Zeitpunkt, Abweichungen und ausdrücklicher Übernahme ins Baustellen-Lager.
 
-**Dateiumfang:** `packages/domain/src/site.ts`, `mods/`, `docs/architecture/LAGERKISTEN.md`, `mods/bauplaner-bridge/paper/`. **Abhängigkeiten:** GAME-04. **Alte IDs:** P6-02.
+**Dateiumfang:** `packages/domain/src/building/site.ts`, `mods/`, `docs/architecture/LAGERKISTEN.md`, `mods/bauplaner-bridge/paper/`. **Abhängigkeiten:** GAME-04. **Alte IDs:** P6-02.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -2333,7 +2336,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LIB-04
 
-**Gebäudebibliothek v3: Inhalte in alle Richtungen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude Thread Bibliothek erweitern · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Gebäudebibliothek v3: Inhalte in alle Richtungen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude Thread Bibliothek erweitern · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] LIB-04-S01: Neue Kategorien/Stile/Funktionen, Möbel- und Zustandshelfer (furnish.ts) passend zu den B7-Regeln von main.
 - [x] LIB-04-S02: Neue Themen-Sets: Interieur, Garten, Natur, Stadt, Küste, Fahrzeuge, Untergrund, Nether/End, Hof, Technik, Fantasy, Epochen.
@@ -2348,15 +2351,15 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Prüfstand:** Node-Katalogtests und Vorschaubild-Sichtprüfung bestanden; Redstone-Bauten nicht im Spiel abgenommen.
 
-**Nachweise:** [tests/catalog.test.mjs](../tests/catalog.test.mjs) — Alle 336 Gebäude: Schema, vier Drehungen, doppelte Spiegelung, Material-/Rezeptlücken, Ensembles.; [packages/domain/src/build/sets/index.ts](../packages/domain/src/build/sets/index.ts) — 12 neue Sets (159 Gebäude) plus 20 Materialvarianten.; [docs/architecture/CATALOG.md](architecture/CATALOG.md) — Abschnitt Katalog v3 mit Sets, Facetten, Ensembles und Grenzen.
+**Nachweise:** [tests/catalog.test.mjs](../tests/catalog.test.mjs) — Alle 336 Gebäude: Schema, vier Drehungen, doppelte Spiegelung, Material-/Rezeptlücken, Ensembles.; [packages/domain/src/catalog/build/sets/index.ts](../packages/domain/src/catalog/build/sets/index.ts) — 12 neue Sets (159 Gebäude) plus 20 Materialvarianten.; [docs/architecture/CATALOG.md](architecture/CATALOG.md) — Abschnitt Katalog v3 mit Sets, Facetten, Ensembles und Grenzen.
 
-**Dateiumfang:** `packages/domain/src/build/`, `packages/domain/src/catalog.ts`, `packages/domain/src/ensembles.ts`, `docs/architecture/CATALOG.md`, `apps/web/src/colors.ts`. **Abhängigkeiten:** LIB-01. **Alte IDs:** B9-B.
+**Dateiumfang:** `packages/domain/src/build/`, `packages/domain/src/catalog/catalog.ts`, `packages/domain/src/catalog/ensembles.ts`, `docs/architecture/CATALOG.md`, `apps/web/src/colors.ts`. **Abhängigkeiten:** LIB-01. **Alte IDs:** B9-B.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### ENTITY-01
 
-**Gemälde, Rahmen, Rüstungsständer und Blockinhalte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemälde, Rahmen und Rüstungsständer darstellen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-04T13:41:53.533Z
+**Gemälde, Rahmen, Rüstungsständer und Blockinhalte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemälde, Rahmen und Rüstungsständer darstellen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] ENTITY-01-S01: Datenmodell freie Entities (optional in der Nutzlast), Geometrie hängender Entities, Drehen/Spiegeln, Validierung.
 - [x] ENTITY-01-S02: Litematic- und Schem-Import/-Export der Entities mit Bericht.
@@ -2375,13 +2378,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/entities.test.mjs](../tests/entities.test.mjs) — Geometrie, Drehung/Spiegelung, Litematic-/Schem-Roundtrip, Inhalte, Materialliste, Bauanleitung, Draft.; [tests/e2e/entities.e2e.mjs](../tests/e2e/entities.e2e.mjs) — Werkstatt: platzieren, Rückgängig, 3D-Zählung, Steckbrief, Ebenenlegende.; [docs/architecture/ENTITIES.md](architecture/ENTITIES.md) — Vertrag und Grenzen.
 
-**Dateiumfang:** `packages/voxel/src/entities.ts`, `packages/voxel/src/types.ts`, `packages/voxel/src/validation.ts`, `packages/voxel/src/transforms.ts`, `packages/formats/src/entityIo.ts`, `packages/formats/src/litematic.ts`, `packages/formats/src/litematicWrite.ts`, `packages/formats/src/schem.ts`, `packages/formats/src/schemWrite.ts`, `packages/domain/src/compose.ts`, `packages/domain/src/materials.ts`, `packages/domain/src/guide.ts`, `packages/domain/src/editor/draft.ts`, `apps/web/src/blockmodels/entityShapes.ts`, `apps/web/src/blockmodels/entityScene.ts`, `apps/web/src/viewer/ContentInfo.tsx`, `apps/web/src/editor/EntityPanel.tsx`, `docs/architecture/ENTITIES.md`. **Abhängigkeiten:** FORMAT-02. **Alte IDs:** —.
+**Dateiumfang:** `packages/voxel/src/entities.ts`, `packages/voxel/src/types.ts`, `packages/voxel/src/validation.ts`, `packages/voxel/src/transforms.ts`, `packages/formats/src/entityIo.ts`, `packages/formats/src/litematic.ts`, `packages/formats/src/litematicWrite.ts`, `packages/formats/src/schem.ts`, `packages/formats/src/schemWrite.ts`, `packages/domain/src/core/compose.ts`, `packages/domain/src/materials/materials.ts`, `packages/domain/src/building/guide.ts`, `packages/domain/src/editor/draft.ts`, `apps/web/src/blockmodels/entityShapes.ts`, `apps/web/src/blockmodels/entityScene.ts`, `apps/web/src/viewer/ContentInfo.tsx`, `apps/web/src/editor/EntityPanel.tsx`, `docs/architecture/ENTITIES.md`. **Abhängigkeiten:** FORMAT-02. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### LIB-05
 
-**Bibliothek im Stil der Vorlagen: Gestaltungsregeln, Baukasten, neu gezeichnete Gebäude und Generatoren** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Bibliothek im Stil der Vorlagen neu gestalten“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Bibliothek im Stil der Vorlagen: Gestaltungsregeln, Baukasten, neu gezeichnete Gebäude und Generatoren** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Bibliothek im Stil der Vorlagen neu gestalten“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] LIB-05-S01: 31 Vorlagen (4 brauchbare der 5 hochgeladenen, 27 freie von minemev.com) vermessen: Detailblöcke, umgedrehte Treppen, Fassadenrelief, Fenster, Dächer; Regeln in BAUSTIL.md. Dateien nur als Studienmaterial, nicht im Repository.
 - [x] LIB-05-S02: Baukasten build/style.ts: Mischungen, Looks, Fenster mit Läden/Sturz/Blumenkasten, Tür, Dächer mit Überstand/Traufkasten/Ortgang und Quergiebeln, house(), ladderUp, hangLantern; designMetrics.
@@ -2400,15 +2403,15 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Prüfstand:** Node-Prüfungen bestanden (baustil 9/9, catalog-game, catalog, generators); Sichtprüfung über isometrische Ansichten; Abnahme im echten Spiel steht aus.
 
-**Nachweise:** [tests/baustil.test.mjs](../tests/baustil.test.mjs) — Gestaltungsziele als Medianwerte, Baukasten deterministisch, Veredelung verlustfrei.; [docs/architecture/BAUSTIL.md](architecture/BAUSTIL.md) — Quellen, Messwerte vorher/nachher, Regeln, Baukasten.; [packages/domain/src/build/facade.ts](../packages/domain/src/build/facade.ts) — Fassadenbaukasten der Runde 2, getestet in tests/baustil.test.mjs.; [packages/domain/src/build/sets/meister.ts](../packages/domain/src/build/sets/meister.ts) — Sieben neue Meisterstücke mit Einrichtung.
+**Nachweise:** [tests/baustil.test.mjs](../tests/baustil.test.mjs) — Gestaltungsziele als Medianwerte, Baukasten deterministisch, Veredelung verlustfrei.; [docs/architecture/BAUSTIL.md](architecture/BAUSTIL.md) — Quellen, Messwerte vorher/nachher, Regeln, Baukasten.; [packages/domain/src/catalog/build/facade.ts](../packages/domain/src/catalog/build/facade.ts) — Fassadenbaukasten der Runde 2, getestet in tests/baustil.test.mjs.; [packages/domain/src/catalog/build/sets/meister.ts](../packages/domain/src/catalog/build/sets/meister.ts) — Sieben neue Meisterstücke mit Einrichtung.
 
-**Dateiumfang:** `packages/domain/src/build/`, `packages/domain/src/buildings.ts`, `packages/domain/src/ensembles.ts`, `packages/domain/src/generators/`, `docs/architecture/BAUSTIL.md`, `docs/architecture/CATALOG.md`, `docs/architecture/GENERATORS.md`, `tests/baustil.test.mjs`, `tests/catalog.test.mjs`, `tests/generators.test.mjs`. **Abhängigkeiten:** LIB-04, BLOCK-02, GEN-02. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/build/`, `packages/domain/src/catalog/buildings.ts`, `packages/domain/src/catalog/ensembles.ts`, `packages/domain/src/generators/`, `docs/architecture/BAUSTIL.md`, `docs/architecture/CATALOG.md`, `docs/architecture/GENERATORS.md`, `tests/baustil.test.mjs`, `tests/catalog.test.mjs`, `tests/generators.test.mjs`. **Abhängigkeiten:** LIB-04, BLOCK-02, GEN-02. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### LIB-06
 
-**Bibliotheksbeiträge: eigene Bauwerke (Importe, Werkstatt, Generator) als festen Katalogeintrag für alle einreichen – Beitragspaket mit Prüfsumme und Rechtebestätigung, GitHub-Formular, Übernahme-Skript, Auslieferung wie mitgelieferte Gebäude** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Hochgeladene Bauobjekte fest in Bibliothek übernehmen“) · Zuständiger Thread: „Hochgeladene Bauobjekte fest in Bibliothek übernehmen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Bibliotheksbeiträge: eigene Bauwerke (Importe, Werkstatt, Generator) als festen Katalogeintrag für alle einreichen – Beitragspaket mit Prüfsumme und Rechtebestätigung, GitHub-Formular, Übernahme-Skript, Auslieferung wie mitgelieferte Gebäude** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Hochgeladene Bauobjekte fest in Bibliothek übernehmen“) · Zuständiger Thread: „Hochgeladene Bauobjekte fest in Bibliothek übernehmen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] LIB-06-S01: Paketformat minecraft-bauplaner/bibliotheksbeitrag v1: Angaben, Rechtebestätigung, Nutzungsrechte, Version in Sicherungsform, Vorschaubild ohne Texturen, Prüfsumme; Prüfung mit Inhalts-Hash und Größengrenzen.
 - [x] LIB-06-S02: Fester Katalog: Register und Eintragsmodule unter community/, je Beitrag ein nachgeladener Chunk; Auslieferung über Katalogabgleich (neu, neue Fassung als 2.0), kaputter Beitrag stoppt den Start nicht.
@@ -2428,13 +2431,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/contribution.test.mjs](../tests/contribution.test.mjs) — Kennung, Angaben, Rundreise mit Blockinhalten, Manipulation, Ausschlüsse, Auslieferung und Katalogabgleich 1.0→2.0, Register, Skript im Testordner.; [tests/e2e/contribution.e2e.mjs](../tests/e2e/contribution.e2e.mjs) — Chromium 1400/390 px: Litematic importieren, Paket erstellen, Datei mit readContribution prüfen, GitHub-Link, keine seitliche Überbreite.; [docs/architecture/CONTRIBUTIONS.md](architecture/CONTRIBUTIONS.md) — Ablauf, Paketformat, Prüfungen, Auslieferung und Grenzen.
 
-**Dateiumfang:** `packages/domain/src/contribution.ts`, `packages/domain/src/community/`, `packages/domain/src/buildings.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/library/ContributePanel.tsx`, `apps/web/src/views/library/BuildingDetail.tsx`, `apps/web/src/views/library/BuildingCard.tsx`, `apps/web/src/views/LibraryView.tsx`, `apps/web/src/jobs/libraryJob.ts`, `apps/web/src/app/repository.ts`, `apps/web/src/catalog.css`, `apps/web/src/testing/testplan.ts`, `scripts/library_intake.mjs`, `package.json`, `.github/ISSUE_TEMPLATE/bibliotheksbeitrag.yml`, `tests/contribution.test.mjs`, `tests/e2e/contribution.e2e.mjs`, `docs/`. **Abhängigkeiten:** LIB-02, LIB-05, PERF-04, UPDATE-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/catalog/contribution.ts`, `packages/domain/src/community/`, `packages/domain/src/catalog/buildings.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/library/ContributePanel.tsx`, `apps/web/src/views/library/BuildingDetail.tsx`, `apps/web/src/views/library/BuildingCard.tsx`, `apps/web/src/views/LibraryView.tsx`, `apps/web/src/jobs/libraryJob.ts`, `apps/web/src/app/repository.ts`, `apps/web/src/styles/catalog.css`, `apps/web/src/testing/testplan.ts`, `scripts/library_intake.mjs`, `package.json`, `.github/ISSUE_TEMPLATE/bibliotheksbeitrag.yml`, `tests/contribution.test.mjs`, `tests/e2e/contribution.e2e.mjs`, `docs/`. **Abhängigkeiten:** LIB-02, LIB-05, PERF-04, UPDATE-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### BASE-01
 
-**Basisplaner: ganze Survival-Basis aus Funktionszonen (Platz, Lager, Schmiede, Verzauberung, XP-Farm, Küche, Halle, Felder, Tierfarm, Hafen, Händler), Wegenetz mit Laternen, Wasserseite, Spielprüfungen je Zone, Bauphasen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Basisanlagen wie im Bild planen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Basisplaner: ganze Survival-Basis aus Funktionszonen (Platz, Lager, Schmiede, Verzauberung, XP-Farm, Küche, Halle, Felder, Tierfarm, Hafen, Händler), Wegenetz mit Laternen, Wasserseite, Spielprüfungen je Zone, Bauphasen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Basisanlagen wie im Bild planen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] BASE-01-S01: Funktionskatalog mit Lagewünschen, Affinitäten, Katalogbauteilen, Alternativen, freiem Bauplatz und Bauphasen.
 - [x] BASE-01-S02: Spielprüfungen auf echten Blöcken: Verzauberungsstufe (Vanilla-Regel), Bewässerung, Arbeitsblöcke/Betten, Lagerplatz, Schmiede, Kochstelle, Gehege, Stege im Wasser.
@@ -2455,13 +2458,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/base.test.mjs](../tests/base.test.mjs) — Funktionen, Spielprüfungen, alle Vorlagen (Konflikte, Abstand, Wasser, Wege), Zonenwahl, Übernahme mit Phasen, Einfügen mit Rückgängig.; [tests/e2e/base.e2e.mjs](../tests/e2e/base.e2e.mjs) — Chromium: Zonen, Tausch, Bauplatz, Wasserseite, Zusatzzone, Übernahme, Wegenetz-Bauteil, 390 px.; [docs/architecture/BASE_PLANNER.md](architecture/BASE_PLANNER.md) — Funktionen, Layout, Wegenetz, Prüfung, Grenzen.
 
-**Dateiumfang:** `packages/domain/src/baseFunctions.ts`, `packages/domain/src/base.ts`, `packages/domain/src/anlagen.ts`, `apps/web/src/views/library/BasePage.tsx`, `apps/web/src/views/library/base.css`, `apps/web/src/app/router.ts`, `tests/base.test.mjs`, `tests/e2e/base.e2e.mjs`, `docs/architecture/BASE_PLANNER.md`. **Abhängigkeiten:** BUILD-05, TERRAIN-01, BLOCK-02. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/base/baseFunctions.ts`, `packages/domain/src/base/base.ts`, `packages/domain/src/base/anlagen.ts`, `apps/web/src/views/library/BasePage.tsx`, `apps/web/src/views/library/base.css`, `apps/web/src/app/router.ts`, `tests/base.test.mjs`, `tests/e2e/base.e2e.mjs`, `docs/architecture/BASE_PLANNER.md`. **Abhängigkeiten:** BUILD-05, TERRAIN-01, BLOCK-02. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### SPLIT-01
 
-**Gebäude aus großen Modellen herauslösen: Gebäude, Felder, Gehege und Wegenetz erkennen, einzeln oder zusammen als Bauteile speichern, als Projekt an alter Stelle aufteilen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Basisanlagen wie im Bild planen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T07:58:33.828Z
+**Gebäude aus großen Modellen herauslösen: Gebäude, Felder, Gehege und Wegenetz erkennen, einzeln oder zusammen als Bauteile speichern, als Projekt an alter Stelle aufteilen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Basisanlagen wie im Bild planen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] SPLIT-01-S01: Säulenanalyse: Bodenhöhe (mit Auffüllen unter Gebäuden), Natur/Flach/Gebaut je Zelle, Kernsäulen, Rand, Flächen nach Kategorie.
 - [x] SPLIT-01-S02: Funktionserkennung je Teil (Zaubertisch, Amboss, Truhen, Ackerboden, Zaun, Wegblöcke) und Benennung.
@@ -2480,13 +2483,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/base.test.mjs](../tests/base.test.mjs) — Ganze Basis auf Gras: Gebäude, Felder, Wegenetz, Schmiede nahezu vollständig, mit/ohne Boden, Zusammenlegen, Rest, Bilanz; Projekt ohne Konflikte am alten Platz.; [tests/e2e/base.e2e.mjs](../tests/e2e/base.e2e.mjs) — Chromium: Herauslösen im Gebäudeblatt, Teil benennen und speichern.; [docs/architecture/BASE_PLANNER.md](architecture/BASE_PLANNER.md) — Analyse, Klassen, Herauslösen, Grenzen.; [tests/split-under.test.mjs](../tests/split-under.test.mjs) — 4 Fälle: Brücke zwischen zwei Häusern, Steg über Wasser und Dachüberstand, Bunker unter Gras, Keller unter einem Haus.
 
-**Dateiumfang:** `packages/domain/src/split.ts`, `packages/domain/src/baseFunctions.ts`, `apps/web/src/views/library/SplitPanel.tsx`, `apps/web/src/views/library/BuildingDetail.tsx`, `tests/base.test.mjs`, `tests/e2e/base.e2e.mjs`, `docs/architecture/BASE_PLANNER.md`, `tests/split-under.test.mjs`, `docs/TESTING.md`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`. **Abhängigkeiten:** LIB-04, WORLD-IMPORT-01, PERF-04. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/core/split.ts`, `packages/domain/src/base/baseFunctions.ts`, `apps/web/src/views/library/SplitPanel.tsx`, `apps/web/src/views/library/BuildingDetail.tsx`, `tests/base.test.mjs`, `tests/e2e/base.e2e.mjs`, `docs/architecture/BASE_PLANNER.md`, `tests/split-under.test.mjs`, `docs/TESTING.md`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`. **Abhängigkeiten:** LIB-04, WORLD-IMPORT-01, PERF-04. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### GROSS-01
 
-**Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Bibliothek um größere Projekte erweitern“) · Zuständiger Thread: „Bibliothek um größere Projekte erweitern“ · Aktualisiert: 2026-11-04T09:13:22.230Z
+**Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Bibliothek um größere Projekte erweitern“) · Zuständiger Thread: „Bibliothek um größere Projekte erweitern“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] GROSS-01-S01: Lückenanalyse der Größenstufen (Gebäude ≤ 25 × 25, Ensembles, Anlagen, Basisplaner) und Datenmodell Großprojekt (Quartiere, Einheiten slot/ensemble/anlage, Phasen, Straßen), abgestimmt mit Projektmodul- und ChatGPT-Projekt-Thread.
 - [x] GROSS-01-S02: Engine: deterministisches Rasterlayout aus echten Grundflächen, Türen zur Straße, Straßennetz als eigenes Bauteil (vier Stile, Laternen, Ring, Aussparung in Quartieren über mehrere Zellen), AnlagePlan-kompatible Vorschau, Übernahme mit Abschnitten je Phase.
@@ -2508,13 +2511,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/grossprojekte.test.mjs](../tests/grossprojekte.test.mjs) — Kuratierung, Layouts ohne Konflikte, Straßennetz, Wahl, Datenprüfung, Übernahme, Einfügen mit Rückgängig.; [tests/e2e/grossprojekte.e2e.mjs](../tests/e2e/grossprojekte.e2e.mjs) — Chromium: Übersicht, Planer, Quartier ab, Straßen, Tausch/Drehung, Übernahme mit Netz-Bauteil, Einfügen, 390 px.; [docs/architecture/GROSSPROJEKTE.md](architecture/GROSSPROJEKTE.md) — Daten, Layout, Vorschau/Übernahme, eigene Projekte, Grenzen.
 
-**Dateiumfang:** `packages/domain/src/grossprojekte.ts`, `packages/domain/src/grossprojekte/`, `apps/web/src/views/library/GrossprojektePage.tsx`, `apps/web/src/views/library/grossprojekte.css`, `apps/web/src/views/LibraryView.tsx`, `apps/web/src/app/router.ts`, `tests/grossprojekte.test.mjs`, `tests/e2e/grossprojekte.e2e.mjs`, `docs/architecture/GROSSPROJEKTE.md`, `packages/domain/src/build/sets/grossbauten.ts`, `packages/domain/src/build/sets/index.ts`. **Abhängigkeiten:** BUILD-05, BASE-01, LIB-05. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/catalog/grossprojekte.ts`, `packages/domain/src/grossprojekte/`, `apps/web/src/views/library/GrossprojektePage.tsx`, `apps/web/src/views/library/grossprojekte.css`, `apps/web/src/views/LibraryView.tsx`, `apps/web/src/app/router.ts`, `tests/grossprojekte.test.mjs`, `tests/e2e/grossprojekte.e2e.mjs`, `docs/architecture/GROSSPROJEKTE.md`, `packages/domain/src/catalog/build/sets/grossbauten.ts`, `packages/domain/src/catalog/build/sets/index.ts`. **Abhängigkeiten:** BUILD-05, BASE-01, LIB-05. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### MAP-05
 
-**Planung auf der Live-Karte vertiefen: Baustand aus dem Spiel (Mod 0.7.1, GET /v1/scan), Ebenen und Abweichungen auf der Karte, bestätigte Schritte abhaken, Bauabschnitte wählen, Weltplan automatisch abgleichen, Hologramm und BlueMap aus dem Kontextmenü** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Planung auf der Live-Karte vertiefen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T07:43:25.996Z
+**Planung auf der Live-Karte vertiefen: Baustand aus dem Spiel (Mod 0.7.1, GET /v1/scan), Ebenen und Abweichungen auf der Karte, bestätigte Schritte abhaken, Bauabschnitte wählen, Weltplan automatisch abgleichen, Hologramm und BlueMap aus dem Kontextmenü** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Planung auf der Live-Karte vertiefen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] MAP-05-S01: Mod 0.7.1: GET /v1/scan liefert die Planbox des Hologramms als bauplaner-scan-Aufnahme in Plankoordinaten (auch gedreht/gespiegelt), hello.features.
 - [x] MAP-05-S02: Karte: Baustand holen (auch alle 20 s), Vergleich wie Spielaufnahme, Speicherung im Projektverlauf, Ebenen mit Filter, Abweichungen als Spalten auf der Draufsicht, bestätigte Schritte abhaken mit Rückgängig.
@@ -2532,13 +2535,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/e2e/game-progress.e2e.mjs](../tests/e2e/game-progress.e2e.mjs) — Abschnitt wählen, Baustand holen, Ebenenfilter, Kartenspalten, Abhaken + Rückgängig, Bauen-Reiter, Weltplan-Autoabgleich, Hologramm per Kontextmenü, alte Mod.; [tests/game-check.test.mjs](../tests/game-check.test.mjs) — layerProgress, deviationColumns, stepStatusCounts.; [scripts/bridge_gametest.mjs](../scripts/bridge_gametest.mjs) — Echter Spieltest Fabric/NeoForge: Baustand = Live-Zählung, falscher Block an der erwarteten Stelle, gedreht in Plankoordinaten.; [docs/architecture/LIVE_LINK.md](architecture/LIVE_LINK.md) — Protokoll, Oberfläche, Grenzen (BlueMap http).
 
-**Dateiumfang:** `apps/web/src/views/map/`, `apps/web/src/views/project/GameCheckPanel.tsx`, `apps/web/src/map.css`, `packages/domain/src/`, `mods/bauplaner-bridge/`, `downloads/mod/`, `apps/web/src/views/mod/releases.json`, `scripts/bridge_gametest.mjs`, `tests/`, `docs/`. **Abhängigkeiten:** MAP-03, MAP-04, GAME-07, GAME-01. **Alte IDs:** —.
+**Dateiumfang:** `apps/web/src/views/map/`, `apps/web/src/views/project/GameCheckPanel.tsx`, `apps/web/src/styles/map.css`, `packages/domain/src/`, `mods/bauplaner-bridge/`, `downloads/mod/`, `apps/web/src/views/mod/releases.json`, `scripts/bridge_gametest.mjs`, `tests/`, `docs/`. **Abhängigkeiten:** MAP-03, MAP-04, GAME-07, GAME-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### MAP-06
 
-**Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Weltkarte in die Tiefe ausbauen“) · Zuständiger Thread: „Weltkarte in die Tiefe ausbauen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Weltkarte in die Tiefe ausbauen“) · Zuständiger Thread: „Weltkarte in die Tiefe ausbauen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] MAP-06-S01: Plan und Vertrag: Stufen festgelegt, Mod-Protokoll 2 (hello.features marks2/players) als Entwurf in LIVE_LINK.md, GAME-08 für den Mod-Thread angelegt.
 - [x] MAP-06-S02: Weltplan-Schema 2: Zonen (Polygon, Art, Fläche), Ebene und Farbe je Eintrag, neue Punktarten; Schema 1 lesbar, Umkehrungen, Sicherung.
@@ -2559,13 +2562,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/e2e/map-depth.e2e.mjs](../tests/e2e/map-depth.e2e.mjs) — Zonen, Ebenen, Messen, Notiz, Neuladen; alte Mod gefiltert, Höhenprofil, Route, Punkt wo ich stehe; Protokoll-2-Simulator mit Mitspielern und Zonen.; [tests/worldroute.test.mjs](../tests/worldroute.test.mjs) — Messung, Profil, A*-Route um Kamm/Tor/Wasser, Vereinfachung.; [tests/livelink.test.mjs](../tests/livelink.test.mjs) — Protokoll 1–2, marksForMod, readLivePlayers.; [docs/architecture/LIVE_LINK.md](architecture/LIVE_LINK.md) — Protokoll 2 (Entwurf) als Vertrag mit der Mod.
 
-**Dateiumfang:** `apps/web/src/views/map/`, `apps/web/src/map.css`, `packages/domain/src/worldPlan.ts`, `packages/domain/src/worldPlanEdit.ts`, `packages/domain/src/worldRoute.ts`, `packages/domain/src/liveLink.ts`, `packages/domain/src/index.ts`, `tests/worldplan.test.mjs`, `tests/worldbuilder.test.mjs`, `tests/worldroute.test.mjs`, `tests/livelink.test.mjs`, `tests/e2e/map-depth.e2e.mjs`, `tests/e2e/modSimulator.mjs`, `apps/web/src/testing/testplan.ts`, `docs/`. **Abhängigkeiten:** MAP-04, MAP-05, GAME-07. **Alte IDs:** —.
+**Dateiumfang:** `apps/web/src/views/map/`, `apps/web/src/styles/map.css`, `packages/domain/src/world/worldPlan.ts`, `packages/domain/src/world/worldPlanEdit.ts`, `packages/domain/src/world/worldRoute.ts`, `packages/domain/src/team/liveLink.ts`, `packages/domain/src/index.ts`, `tests/worldplan.test.mjs`, `tests/worldbuilder.test.mjs`, `tests/worldroute.test.mjs`, `tests/livelink.test.mjs`, `tests/e2e/map-depth.e2e.mjs`, `tests/e2e/modSimulator.mjs`, `apps/web/src/testing/testplan.ts`, `docs/`. **Abhängigkeiten:** MAP-04, MAP-05, GAME-07. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### MAP-07
 
-**Gedrehte und gespiegelte Projektlagen auf der Weltkarte: dieselbe Regel wie das Hologramm der Mod, gedrehtes Hologramm übernehmen, Plan gedreht ins Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Module und Systeme komplex ausarbeiten“ · Aktualisiert: 2026-11-05T07:43:52.853Z
+**Gedrehte und gespiegelte Projektlagen auf der Weltkarte: dieselbe Regel wie das Hologramm der Mod, gedrehtes Hologramm übernehmen, Plan gedreht ins Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Module und Systeme komplex ausarbeiten“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] MAP-07-S01: Weltlage mit optionaler Drehung/Spiegelung (turns 1–3, mirror), Regel wie Placement.java (Spiegeln X, dann (x,z)→(−z,x) auf Blockpositionen), Blockzustände über den Voxelkern.
 - [x] MAP-07-S02: Weltkarte zeichnet gedreht (Zellen, Zustände, Grenzen, Überschneidungen, placementsJson); R/Kontextmenü/Spiegeln drehen Projekte um ihre Nordwestecke; Weltlage-Formular mit Drehung.
@@ -2582,7 +2585,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/world-turn.test.mjs](../tests/world-turn.test.mjs) — 5 Fälle: Regel gegen die Mod-Formel für alle 8 Lagen, Prüfung/Drehen an Ort, Weltkarte mit Zuständen und Überschneidungen, Hologramm/Plan/Teamdatei, Baustand/Bauführung/Geländebox.; [tests/e2e/world-turn.e2e.mjs](../tests/e2e/world-turn.e2e.mjs) — Chromium: Drehung im Formular, R an Ort und Stelle, Rückgängig, zurück auf ungedreht.
 
-**Dateiumfang:** `packages/domain/src/worldmap.ts`, `packages/domain/src/terrain.ts`, `packages/domain/src/liveLink.ts`, `packages/domain/src/gameCheck.ts`, `packages/domain/src/buildRun.ts`, `packages/domain/src/team.ts`, `apps/web/src/views/map/WorldMapView.tsx`, `apps/web/src/views/map/PlacementForm.tsx`, `apps/web/src/views/map/GameProgress.tsx`, `apps/web/src/views/project/TerrainTab.tsx`, `apps/web/src/views/project/LandscapeTab.tsx`, `apps/web/src/views/project/buildrun/AnchorBar.tsx`, `apps/web/src/views/library/AnlagenPage.tsx`, `apps/web/src/views/library/BasePage.tsx`, `tests/world-turn.test.mjs`, `tests/e2e/world-turn.e2e.mjs`, `docs/architecture/WORLDMAP.md`, `docs/TESTING.md`. **Abhängigkeiten:** MAP-05, MAP-04, GAME-07. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/world/worldmap.ts`, `packages/domain/src/world/terrain.ts`, `packages/domain/src/team/liveLink.ts`, `packages/domain/src/building/gameCheck.ts`, `packages/domain/src/building/buildRun.ts`, `packages/domain/src/team/team.ts`, `apps/web/src/views/map/WorldMapView.tsx`, `apps/web/src/views/map/PlacementForm.tsx`, `apps/web/src/views/map/GameProgress.tsx`, `apps/web/src/views/project/TerrainTab.tsx`, `apps/web/src/views/project/LandscapeTab.tsx`, `apps/web/src/views/project/buildrun/AnchorBar.tsx`, `apps/web/src/views/library/AnlagenPage.tsx`, `apps/web/src/views/library/BasePage.tsx`, `tests/world-turn.test.mjs`, `tests/e2e/world-turn.e2e.mjs`, `docs/architecture/WORLDMAP.md`, `docs/TESTING.md`. **Abhängigkeiten:** MAP-05, MAP-04, GAME-07. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -2615,7 +2618,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GEN-03
 
-**Kolosseum aus Philipps Bauplan: Arena-Generator, Bauset Antike und Großprojekt Kolosseum-Viertel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projekt aus ChatGPT-Verlauf ausarbeiten“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Kolosseum aus Philipps Bauplan: Arena-Generator, Bauset Antike und Großprojekt Kolosseum-Viertel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projekt aus ChatGPT-Verlauf ausarbeiten“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] GEN-03-S01: Bauplan aus Philipps ChatGPT-Verlauf übernehmen (81 × 61, vier Etagen à 8, Ellipsen-Ringe, Arena, 8 Sitzreihen, 4 Tore, Hypogäum Y 55–63, Materialien).
 - [x] GEN-03-S02: Generator „Arena“ (ovale Ringe nach Tiefe, Bögen nach Bogenlänge, Wandelgang mit Treppen, zwei Ränge auf Gewölben, Tore mit Wegeanschluss weg_5, Hypogäum, Velarium) mit sechs Vorlagen.
@@ -2635,13 +2638,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/generators.test.mjs](../tests/generators.test.mjs) — Arena in allen Generatorprüfungen (Vorlagen, Stile, Zufallswerte, Bereichsenden, Spielprüfung, Material, Anschlüsse, festgehaltener Hash).; [tests/grossprojekte.test.mjs](../tests/grossprojekte.test.mjs) — Kolosseum-Viertel automatisch geprüft: echte Bauteile, keine Voxelkonflikte, Straßennetz, Phasen, Übernahme.; [docs/architecture/GENERATORS.md](architecture/GENERATORS.md) — Abschnitt GEN-03 Arena mit Aufbau, Parametern und Grenzen.
 
-**Dateiumfang:** `packages/domain/src/generators/arena.ts`, `packages/domain/src/generators/index.ts`, `packages/domain/src/build/sets/antike.ts`, `packages/domain/src/build/sets/index.ts`, `packages/domain/src/ensembles.ts`, `packages/domain/src/grossprojekte/kolosseum.ts`, `packages/domain/src/grossprojekte/index.ts`, `tests/generators.test.mjs`, `tests/e2e/generators.e2e.mjs`, `tests/e2e/grossprojekte.e2e.mjs`, `apps/web/src/testing/testplan.ts`, `docs/architecture/GENERATORS.md`, `docs/architecture/CATALOG.md`, `docs/architecture/GROSSPROJEKTE.md`. **Abhängigkeiten:** GEN-02, GROSS-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/catalog/generators/arena.ts`, `packages/domain/src/catalog/generators/index.ts`, `packages/domain/src/catalog/build/sets/antike.ts`, `packages/domain/src/catalog/build/sets/index.ts`, `packages/domain/src/catalog/ensembles.ts`, `packages/domain/src/catalog/grossprojekte/kolosseum.ts`, `packages/domain/src/catalog/grossprojekte/index.ts`, `tests/generators.test.mjs`, `tests/e2e/generators.e2e.mjs`, `tests/e2e/grossprojekte.e2e.mjs`, `apps/web/src/testing/testplan.ts`, `docs/architecture/GENERATORS.md`, `docs/architecture/CATALOG.md`, `docs/architecture/GROSSPROJEKTE.md`. **Abhängigkeiten:** GEN-02, GROSS-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### SIZE-01
 
-**Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Volumenlimit für große Builds aufheben“) · Zuständiger Thread: „Volumenlimit für große Builds aufheben“ · Aktualisiert: 2026-11-03T20:58:46.186Z
+**Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Volumenlimit für große Builds aufheben“) · Zuständiger Thread: „Volumenlimit für große Builds aufheben“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] SIZE-01-S01: Bestandsaufnahme aller harten Größen-/Blockgrenzen in Planer und Mod, Messung von Speicher und Zeit bei 1–4 Mio. Zellen.
 - [x] SIZE-01-S02: Planer: zentrale Grenzen in sizeLimits.ts, Importe ohne Kopie (adoptPayload), Luft ab 250.000 Zellen Box unausgewählt, Werkstatt 4 Mio./1 Mio. je Schritt mit linearer Umkehrung und Rückgängig-Budget, Export/Aufnahmen bis 16,7 Mio. Box, Größenhinweise.
@@ -2659,13 +2662,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/size-limits.test.mjs](../tests/size-limits.test.mjs) — Grenzen, Stufen, großer Schem-Import ohne Luft, SectionRuns, lineare Werkstattschritte, Rückgängig-Budget, Prüfung gegen alte/neue Mod.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/BigPlanTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/BigPlanTest.java) — 6,3 Mio. Box / 3,1 Mio. Blöcke laden und abgleichen, SectionRuns = SectionCells, Ablehnung zu großer Pläne.; [docs/architecture/SIZE_LIMITS.md](architecture/SIZE_LIMITS.md) — Grenzen vorher/jetzt, Messwerte, Umbau Website und Mod.
 
-**Dateiumfang:** `packages/voxel/src/sizeLimits.ts`, `packages/voxel/src/validation.ts`, `packages/formats/src/schem.ts`, `packages/formats/src/litematic.ts`, `packages/formats/src/worldExcerpt.ts`, `packages/formats/src/schemWrite.ts`, `packages/formats/src/litematicWrite.ts`, `packages/formats/src/scan.ts`, `packages/domain/src/editor/draft.ts`, `packages/domain/src/liveLink.ts`, `packages/application/src/revisionExport.ts`, `packages/application/src/scanPersistence.ts`, `apps/web/src/app/SizeNotice.tsx`, `apps/web/src/app/importLimits.ts`, `apps/web/src/jobs/importJob.ts`, `apps/web/src/editor/BlockEditor.tsx`, `apps/web/src/views/map/WorldMapView.tsx`, `apps/web/src/views/map/liveClient.ts`, `mods/bauplaner-bridge/`, `tests/size-limits.test.mjs`, `docs/architecture/SIZE_LIMITS.md`. **Abhängigkeiten:** PERF-04, ARCH-02, GFX-01, GAME-08. **Alte IDs:** —.
+**Dateiumfang:** `packages/voxel/src/sizeLimits.ts`, `packages/voxel/src/validation.ts`, `packages/formats/src/schem.ts`, `packages/formats/src/litematic.ts`, `packages/formats/src/worldExcerpt.ts`, `packages/formats/src/schemWrite.ts`, `packages/formats/src/litematicWrite.ts`, `packages/formats/src/scan.ts`, `packages/domain/src/editor/draft.ts`, `packages/domain/src/team/liveLink.ts`, `packages/application/src/revisionExport.ts`, `packages/application/src/scanPersistence.ts`, `apps/web/src/app/SizeNotice.tsx`, `apps/web/src/app/importLimits.ts`, `apps/web/src/jobs/importJob.ts`, `apps/web/src/editor/BlockEditor.tsx`, `apps/web/src/views/map/WorldMapView.tsx`, `apps/web/src/views/map/liveClient.ts`, `mods/bauplaner-bridge/`, `tests/size-limits.test.mjs`, `docs/architecture/SIZE_LIMITS.md`. **Abhängigkeiten:** PERF-04, ARCH-02, GFX-01, GAME-08. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### COOP-01
 
-**Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Aktualisiert: 2026-11-05T07:43:25.996Z
+**Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] COOP-01-S01: Konzept TEAMBAU.md: Rollen, Ereignismodell, Konfliktregeln, Austauschwege, Plugin, Mod, Nachweis, Lager, Freigabe, Einstieg, was nur Philipp tun kann.
 - [x] COOP-01-S02: Domäne team.ts: Ereignisse, Prüfung, Faltung mit Rechten, Zusammenführen, Meldecode, Teampaket, Statustext, Serverdatei, Planübernahme; site.team in checkSite.
@@ -2683,7 +2686,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/team.test.mjs](../tests/team.test.mjs) — Faltung, Rechte, Zusammenführen vertauschbar/idempotent, Meldecode, Teampaket, Statustext.; [tests/e2e/team.e2e.mjs](../tests/e2e/team.e2e.mjs) — Zwei Browser: Paket mit Plan, Meldecode, Doppelübernahme, Bestätigen, Neuladen, Rückgängig.
 
-**Dateiumfang:** `packages/domain/src/team.ts`, `packages/domain/src/site.ts`, `apps/web/src/views/project/TeamTab.tsx`, `apps/web/src/views/project/TeamExchange.tsx`, `apps/web/src/views/project/TeamOpen.tsx`, `apps/web/src/team.css`, `tests/team.test.mjs`, `tests/e2e/team.e2e.mjs`, `docs/architecture/TEAMBAU.md`, `packages/domain/src/program.ts`. **Abhängigkeiten:** BUILD-06, BACKUP-02. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/team/team.ts`, `packages/domain/src/building/site.ts`, `apps/web/src/views/project/team/TeamTab.tsx`, `apps/web/src/views/project/team/TeamExchange.tsx`, `apps/web/src/views/project/team/TeamOpen.tsx`, `apps/web/src/styles/team.css`, `tests/team.test.mjs`, `tests/e2e/team.e2e.mjs`, `docs/architecture/TEAMBAU.md`, `packages/domain/src/planning/program.ts`. **Abhängigkeiten:** BUILD-06, BACKUP-02. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -2712,7 +2715,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-03
 
-**Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Teambau in der Mod“) · Zuständiger Thread: „Teambau und Befehle in der Mod ausbauen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Teambau in der Mod“) · Zuständiger Thread: „Teambau und Befehle in der Mod ausbauen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] COOP-03-S01: Vertrag mit dem Mod-Thread abstimmen (Vorschlag TEAMBAU.md §7).
 - [x] COOP-03-S02: Mod, Plugin und Website umsetzen, Spieltest.
@@ -2728,13 +2731,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/TeamTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/TeamTest.java) — Teamstand, Ausgang, Planzuordnung, Rahmen, Kanalregel (nichts ohne Ankündigung und Erlaubnis).; [scripts/bridge_gametest.mjs](../scripts/bridge_gametest.mjs) — Echter Fabric-Client 26.3: Teamstand vom Planer, nehmen 2, mein, Übernahme im Ausgang, 409 ohne Server. NeoForge-Spieltest grün.; [tests/e2e/team-live.e2e.mjs](../tests/e2e/team-live.e2e.mjs) — Browser gegen Mod-Simulator: Vorschau, Übernehmen, Quittung, Server-Meldungen, Rückgängig (1400/390 px).; [tests/team-link.test.mjs](../tests/team-link.test.mjs) — Format team-link, Lesen der Mod-Antworten, Fehlercodes.
 
-**Dateiumfang:** `mods/bauplaner-bridge/`, `packages/domain/src/teamLink.ts`, `packages/application/src/revisionExport.ts`, `apps/web/src/views/project/TeamLive.tsx`, `apps/web/src/views/project/TeamTab.tsx`, `apps/web/src/views/map/liveClient.ts`, `apps/web/src/views/mod/`, `apps/web/src/testing/testplan.ts`, `scripts/bridge_gametest.mjs`, `tests/`, `docs/`. **Abhängigkeiten:** COOP-02, GAME-08. **Alte IDs:** —.
+**Dateiumfang:** `mods/bauplaner-bridge/`, `packages/domain/src/team/teamLink.ts`, `packages/application/src/revisionExport.ts`, `apps/web/src/views/project/team/TeamLive.tsx`, `apps/web/src/views/project/team/TeamTab.tsx`, `apps/web/src/views/map/liveClient.ts`, `apps/web/src/views/mod/`, `apps/web/src/testing/testplan.ts`, `scripts/bridge_gametest.mjs`, `tests/`, `docs/`. **Abhängigkeiten:** COOP-02, GAME-08. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### COOP-04
 
-**Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Aktualisiert: 2026-11-03T20:52:59.449Z
+**Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] COOP-04-S01: Zähler je Spieler mit Datenschutzschalter.
 - [x] COOP-04-S02: Lagerkisten lesen und Lieferungen buchen ohne Doppelzählung.
@@ -2751,13 +2754,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [scripts/bridge_paperteam.mjs](../scripts/bridge_paperteam.mjs) — Echte Kiste, Zählungen, Baunachweis und Abschalten auf Paper 1.18.2 bis 26.3; Planer-Faltung = Server.; [tests/team.test.mjs](../tests/team.test.mjs) — Faltung Baunachweis und Lagerkisten.
 
-**Dateiumfang:** `mods/bauplaner-bridge/paper/`, `packages/domain/src/team.ts`, `apps/web/src/views/project/TeamProof.tsx`. **Abhängigkeiten:** COOP-02, LAGER-01. **Alte IDs:** —.
+**Dateiumfang:** `mods/bauplaner-bridge/paper/`, `packages/domain/src/team/team.ts`, `apps/web/src/views/project/team/TeamProof.tsx`. **Abhängigkeiten:** COOP-02, LAGER-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### COOP-05
 
-**Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Server-Plugin mit geprüften Lagerkisten“) · Zuständiger Thread: „Server-Plugin mit geprüften Lagerkisten“ · Aktualisiert: 2026-11-04T12:47:26.654Z
+**Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Server-Plugin mit geprüften Lagerkisten“) · Zuständiger Thread: „Server-Plugin mit geprüften Lagerkisten“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] COOP-05-S01: Konzept LAGERKISTEN.md, reine Regeln StoreLedger/StoreIndex mit Unit-Tests.
 - [x] COOP-05-S02: StorageModule: Markieren, Schutzstufen bei Klicks/Trichtern/Explosionen/Abbau/Anbau, Buchungen je Öffnen, Prüfen gegen Sollstand, Siegeln, Bedarf, Verlauf.
@@ -2777,13 +2780,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [scripts/bridge_paperlager.mjs](../scripts/bridge_paperlager.mjs) — Echter Server 1.18.2, 1.21.4, 26.3: Abweichung, Siegel, Trichter, TNT, Doppelkiste, fehlende Kiste, Bedarf, Sammelauftrag, Neustart; Planer-Faltung = Server.; [tests/lager.test.mjs](../tests/lager.test.mjs) — Faltung, Rechte, Herkunft und Prüfung der neuen Arten.; [mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndexTest.java](../mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndexTest.java) — Unit-Tests der Rechte-Matrix, Differenzen, Prüfsumme und Faltung (StoreIndex).
 
-**Dateiumfang:** `mods/bauplaner-bridge/paper/`, `packages/domain/src/team.ts`, `apps/web/src/views/project/TeamProof.tsx`, `docs/architecture/LAGERKISTEN.md`, `scripts/bridge_paperlager.mjs`, `apps/web/src/testing/testplan.ts`. **Abhängigkeiten:** COOP-04. **Alte IDs:** —.
+**Dateiumfang:** `mods/bauplaner-bridge/paper/`, `packages/domain/src/team/team.ts`, `apps/web/src/views/project/team/TeamProof.tsx`, `docs/architecture/LAGERKISTEN.md`, `scripts/bridge_paperlager.mjs`, `apps/web/src/testing/testplan.ts`. **Abhängigkeiten:** COOP-04. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### COOP-06
 
-**Teamplanung im Planer: Arbeitspakete, Zuteilung, Zeitplan, Material je Spieler, Fortschritt mit Hinweisen, Konflikthilfe, Planstand-Vergleich, Übergabe und Abwesenheit** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen im Planer vertiefen“) · Zuständiger Thread: „Server-Plugin mit geprüften Lagerkisten“ · Aktualisiert: 2026-11-05T10:23:42.887Z
+**Teamplanung im Planer: Arbeitspakete, Zuteilung, Zeitplan, Material je Spieler, Fortschritt mit Hinweisen, Konflikthilfe, Planstand-Vergleich, Übergabe und Abwesenheit** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen im Planer vertiefen“) · Zuständiger Thread: „Server-Plugin mit geprüften Lagerkisten“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] COOP-06-S01: Domäne teamPlan.ts: Arbeitspakete teilen, Abhängigkeiten, Zuteilungsvorschlag, Zeitplan, Material je Spieler, Fortschritt/Achtung, Konflikthilfe, Planstand-Vergleich, Rechteübersicht.
 - [x] COOP-06-S02: Teamprotokoll: section.handover/accept/decline, member.away, issue.ack; Bedarf je Abschnitt in der Serverdatei.
@@ -2801,13 +2804,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/teamPlan.test.mjs](../tests/teamPlan.test.mjs) — 13 Fälle: Teilen, Zuteilung, Zeitplan, Material, Fortschritt, Konflikte, Vergleich, Übergabe, Abwesenheit, Serverdatei.; [tests/e2e/teamplan.e2e.mjs](../tests/e2e/teamplan.e2e.mjs) — Browser 1400/390 px: teilen, zuweisen, Zeitplan, Material, Fortschritt, Vergleich, Übergabe, Abwesenheit, Bauleitung übergeben.
 
-**Dateiumfang:** `packages/domain/src/teamPlan.ts`, `packages/domain/src/team.ts`, `apps/web/src/views/project/TeamPlan.tsx`, `apps/web/src/teamplan.css`, `tests/teamPlan.test.mjs`, `tests/e2e/teamplan.e2e.mjs`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`, `scripts/bridge_paperteam.mjs`. **Abhängigkeiten:** COOP-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/team/teamPlan.ts`, `packages/domain/src/team/team.ts`, `apps/web/src/views/project/team/TeamPlan.tsx`, `apps/web/src/styles/teamplan.css`, `tests/teamPlan.test.mjs`, `tests/e2e/teamplan.e2e.mjs`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`, `scripts/bridge_paperteam.mjs`. **Abhängigkeiten:** COOP-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### PROJ-01
 
-**Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projektmodul vertiefen“) · Zuständiger Thread: „Projektmodul vertiefen“ · Aktualisiert: 2026-11-05T10:23:42.887Z
+**Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projektmodul vertiefen“) · Zuständiger Thread: „Projektmodul vertiefen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] PROJ-01-S01: Datensatz project.site.program (Bauleute, Meilensteine, Abhängigkeiten azyklisch, Zuweisungen, Start, Bautage je Woche) mit Prüfung, Rückgängig über site.set, Sicherung und Datencheck.
 - [x] PROJ-01-S02: Zeitplan: Spur je Bauleute, gemeinsames Tempo bei geteilten Abschnitten, Abhängigkeiten, kritischer Pfad, Kalender mit Bautagen je Woche, Meilensteinstatus und Bedarf je Meilenstein/Bauleute.
@@ -2827,7 +2830,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/program.test.mjs](../tests/program.test.mjs) — 9 Fälle: Prüfung (Kreise, Daten, Bauleute), Bearbeiten/Rückgängig/Bereinigen, Befunde, Vorschläge aus Geometrie und Anschlüssen, Vorlagen Phasen/Kette/Etappen, Kalender, Zeitplan mit Spuren/kritischem Pfad/Meilensteinen/Texten, Sicherung, Großprojekt aus der Bibliothek (GROSS-01) mit Phasen-Meilensteinen.; [tests/e2e/program.e2e.mjs](../tests/e2e/program.e2e.mjs) — Chromium 1400/390 px: Vorschläge übernehmen, Kreis abgelehnt, Meilenstein mit Abschnitten und Status, zwei Bauleute mit Zuweisung, Bauzettel, Startdatum, Textdatei, Neuladen, Projektkarte.; [docs/architecture/PROGRAM.md](architecture/PROGRAM.md) — Datenmodell, Zeitplanregeln, Vorschläge, Oberfläche, Grenzen.
 
-**Dateiumfang:** `packages/domain/src/program.ts`, `packages/domain/src/site.ts`, `apps/web/src/views/project/PlanningTab.tsx`, `apps/web/src/planning.css`, `apps/web/src/views/ProjectsView.tsx`, `tests/program.test.mjs`, `tests/e2e/program.e2e.mjs`, `docs/architecture/PROGRAM.md`. **Abhängigkeiten:** BUILD-01, BUILD-06, BACKUP-02. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/planning/program.ts`, `packages/domain/src/building/site.ts`, `apps/web/src/views/project/PlanningTab.tsx`, `apps/web/src/styles/planning.css`, `apps/web/src/views/ProjectsView.tsx`, `tests/program.test.mjs`, `tests/e2e/program.e2e.mjs`, `docs/architecture/PROGRAM.md`. **Abhängigkeiten:** BUILD-01, BUILD-06, BACKUP-02. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -2899,7 +2902,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-07
 
-**Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Aktualisiert: 2026-11-04T02:20:00.609Z
+**Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] COOP-07-S01: Konzept TEAM_LIVE.md: Varianten, Raumprotokoll team-room v1, Schlüssel und Rollen, Ablauf, Offline, Aufteilung.
 - [x] COOP-07-S02: Sync-Kern teamSync.ts: Postausgang, Stapel, Cursor, Einladungs- und Server-Link; Pakete ohne Schlüssel.
@@ -2919,13 +2922,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/team-room.test.mjs](../tests/team-room.test.mjs) — Raum, zwei Browser und Server ohne Datei, Serverschlüssel, verlorene Antworten, Seiten.; [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — Zwei Browser 1400/390 px über den Raumkern: Live schalten, Beitreten per Link, Schritte live, Servermessung, neuer Planstand übernommen, Neuladen.; [scripts/team_room_smoke.mjs](../scripts/team_room_smoke.mjs) — Gegen wrangler dev (Worker + Durable Object) bestanden, 03.11.2026.; [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — Mit TEAM_ROOM_URL gegen den echten Dienst: zwei Browser 1400/390 px grün (04.11.2026).; [scripts/test_bridge_paper_room.sh](../scripts/test_bridge_paper_room.sh) — Paper 26.3 mit RoomLink gegen den echten Dienst: 10 Ereignisse, 6 vom Server, Faltung gleich (04.11.2026).
 
-**Dateiumfang:** `packages/domain/src/teamSync.ts`, `packages/domain/src/team.ts`, `services/team-room/src/core.js`, `services/team-room/src/index.js`, `services/team-room/wrangler.toml`, `services/team-room/README.md`, `apps/web/src/views/project/roomClient.ts`, `apps/web/src/views/project/TeamRoom.tsx`, `apps/web/src/views/project/TeamJoinView.tsx`, `apps/web/src/views/project/teamTransfer.ts`, `apps/web/src/views/project/TeamOpen.tsx`, `apps/web/src/views/project/TeamExchange.tsx`, `apps/web/src/views/project/ProjectView.tsx`, `apps/web/src/views/project/TeamTab.tsx`, `apps/web/src/app/router.ts`, `apps/web/src/main.tsx`, `apps/web/src/team.css`, `docs/architecture/TEAM_LIVE.md`, `tests/team-room.test.mjs`, `tests/e2e/team-room.e2e.mjs`, `scripts/team_room_smoke.mjs`, `apps/web/src/testing/testplan.ts`, `docs/architecture/TEAMBAU.md`, `docs/testing/TESTPLAN.md`, `packages/domain/src/index.ts`, `services/team-room/.gitignore`, `tests/router.test.mjs`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`, `scripts/bridge_paperroom.mjs`, `scripts/test_bridge_paper_room.sh`. **Abhängigkeiten:** COOP-01, COOP-04. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/team/teamSync.ts`, `packages/domain/src/team/team.ts`, `services/team-room/src/core.js`, `services/team-room/src/index.js`, `services/team-room/wrangler.toml`, `services/team-room/README.md`, `apps/web/src/views/project/team/roomClient.ts`, `apps/web/src/views/project/team/TeamRoom.tsx`, `apps/web/src/views/project/team/TeamJoinView.tsx`, `apps/web/src/views/project/team/teamTransfer.ts`, `apps/web/src/views/project/team/TeamOpen.tsx`, `apps/web/src/views/project/team/TeamExchange.tsx`, `apps/web/src/views/project/ProjectView.tsx`, `apps/web/src/views/project/team/TeamTab.tsx`, `apps/web/src/app/router.ts`, `apps/web/src/main.tsx`, `apps/web/src/styles/team.css`, `docs/architecture/TEAM_LIVE.md`, `tests/team-room.test.mjs`, `tests/e2e/team-room.e2e.mjs`, `scripts/team_room_smoke.mjs`, `apps/web/src/testing/testplan.ts`, `docs/architecture/TEAMBAU.md`, `docs/testing/TESTPLAN.md`, `packages/domain/src/index.ts`, `services/team-room/.gitignore`, `tests/router.test.mjs`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`, `scripts/bridge_paperroom.mjs`, `scripts/test_bridge_paper_room.sh`. **Abhängigkeiten:** COOP-01, COOP-04. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### COOP-08
 
-**Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion)** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Server-Plugin mit geprüften Lagerkisten“) · Zuständiger Thread: „Module und Systeme komplex ausarbeiten“ · Aktualisiert: 2026-11-05T07:38:47.249Z
+**Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion)** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Server-Plugin mit geprüften Lagerkisten“) · Zuständiger Thread: „Module und Systeme komplex ausarbeiten“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] COOP-08-S01: Zweck ertrag, store.config.farm, store.yield (nur Server) in team.ts und TeamLog/StoreIndex; farms in der Serverdatei (production.serverFarms).
 - [x] COOP-08-S02: Plugin misst Ertrag und Laufzeit, /bauplaner lager farm, Info mit Rate; Trichterbuchungen gebündelt (lager.trichter-buendeln-sekunden).
@@ -2942,13 +2945,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [scripts/bridge_paperlager.mjs](../scripts/bridge_paperlager.mjs) — Echter Server 1.18.2, 1.21.4, 26.3: Abweichung, Siegel, Trichter, TNT, Doppelkiste, fehlende Kiste, Bedarf, Sammelauftrag, Neustart; Planer-Faltung = Server.; [tests/lager.test.mjs](../tests/lager.test.mjs) — Faltung, Rechte, Herkunft und Prüfung der neuen Arten.; [mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndexTest.java](../mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndexTest.java) — Unit-Tests der Rechte-Matrix, Differenzen, Prüfsumme und Faltung (StoreIndex).
 
-**Dateiumfang:** `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageModule.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndex.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreLedger.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`, `mods/bauplaner-bridge/paper/src/main/resources/config.yml`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`, `packages/domain/src/team.ts`, `packages/domain/src/production.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/TeamProof.tsx`, `apps/web/src/views/project/TeamTab.tsx`, `apps/web/src/views/project/TeamLive.tsx`, `apps/web/src/views/project/teamTransfer.ts`, `apps/web/src/views/project/TeamExchange.tsx`, `apps/web/src/team.css`, `apps/web/src/testing/testplan.ts`, `docs/architecture/LAGERKISTEN.md`, `docs/testing/TESTPLAN.md`, `tests/lager.test.mjs`, `scripts/bridge_paperlager.mjs`. **Abhängigkeiten:** COOP-05, PROD-01. **Alte IDs:** —.
+**Dateiumfang:** `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageModule.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndex.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreLedger.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`, `mods/bauplaner-bridge/paper/src/main/resources/config.yml`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`, `packages/domain/src/team/team.ts`, `packages/domain/src/materials/production.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/team/TeamProof.tsx`, `apps/web/src/views/project/team/TeamTab.tsx`, `apps/web/src/views/project/team/TeamLive.tsx`, `apps/web/src/views/project/team/teamTransfer.ts`, `apps/web/src/views/project/team/TeamExchange.tsx`, `apps/web/src/styles/team.css`, `apps/web/src/testing/testplan.ts`, `docs/architecture/LAGERKISTEN.md`, `docs/testing/TESTPLAN.md`, `tests/lager.test.mjs`, `scripts/bridge_paperlager.mjs`. **Abhängigkeiten:** COOP-05, PROD-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### PROD-01
 
-**Produktionsdaten: Katalog von 34 Farmarten mit Richtwerten je Einheit, Bedingungen, Reichweite, Verbrauch und Bauplan; Farmliste je Projekt (Anzahl, Zustand, Ort, Bauteil, Kartenpunkt) und Ertragsbuch, das ins Baustellen-Lager bucht und gemessene Raten liefert** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Produktion und Anbindung im Planer ausbauen“ · Aktualisiert: 2026-11-04T08:42:48.661Z
+**Produktionsdaten: Katalog von 34 Farmarten mit Richtwerten je Einheit, Bedingungen, Reichweite, Verbrauch und Bauplan; Farmliste je Projekt (Anzahl, Zustand, Ort, Bauteil, Kartenpunkt) und Ertragsbuch, das ins Baustellen-Lager bucht und gemessene Raten liefert** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Produktion und Anbindung im Planer ausbauen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] PROD-01-S01: Farmarten mit Raten, covers, inputs, Bauplan/Aufwand, Reichweitenart.
 - [x] PROD-01-S02: Datensatz site.production mit Prüfung, Rückgängig über site.set, Sicherung, Bereinigung.
@@ -2965,13 +2968,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/production.test.mjs](../tests/production.test.mjs) — 10 Fälle: Katalog, Datensatz/Rückgängig/Sicherung, Ertragsbuch, Reichweiten/AFK, Deckung/Engpass/Bereitschaft, Vorschläge, Öfen/Lager/Logistik, Verbrauch, Anbindung, Integration mit planSite.; [tests/e2e/production.e2e.mjs](../tests/e2e/production.e2e.mjs) — Reiter „Produktion“ in Chromium (1400/390 px): Farm, Ernte ins Lager, gemessene Rate, Ort, AFK-Platz, Neuladen, kein Querscrollen.; [docs/architecture/PRODUCTION.md](architecture/PRODUCTION.md) — Grundsätze, Datensatz, Farmarten, Auswertung, Anbindung, Grenzen.
 
-**Dateiumfang:** `packages/domain/src/production.ts`, `packages/domain/src/site.ts`, `tests/production.test.mjs`, `docs/architecture/PRODUCTION.md`. **Abhängigkeiten:** BUILD-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/materials/production.ts`, `packages/domain/src/building/site.ts`, `tests/production.test.mjs`, `docs/architecture/PRODUCTION.md`. **Abhängigkeiten:** BUILD-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### PROD-02
 
-**Deckung und Engpässe: Restbedarf des Sammelplans gegen laufende Farmen und Handarbeit (gemeinsame Warteschlange, gieriger Ausgleich), Engpass, Materialbereitschaft je Abschnitt in Spieltagen, „Lohnt sich eine Farm?“ mit Amortisation aus Bauplan-Kosten** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Produktion und Anbindung im Planer ausbauen“ · Aktualisiert: 2026-11-04T08:42:48.661Z
+**Deckung und Engpässe: Restbedarf des Sammelplans gegen laufende Farmen und Handarbeit (gemeinsame Warteschlange, gieriger Ausgleich), Engpass, Materialbereitschaft je Abschnitt in Spieltagen, „Lohnt sich eine Farm?“ mit Amortisation aus Bauplan-Kosten** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Produktion und Anbindung im Planer ausbauen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] PROD-02-S01: Deckung je Rohstoff mit Weg Farm/Hand/offen und Engpass.
 - [x] PROD-02-S02: Bereitschaft je Abschnitt kumulativ in Bau-Reihenfolge, Vergleich mit Baubeginn aus planProgram.
@@ -2988,13 +2991,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/production.test.mjs](../tests/production.test.mjs) — 10 Fälle: Katalog, Datensatz/Rückgängig/Sicherung, Ertragsbuch, Reichweiten/AFK, Deckung/Engpass/Bereitschaft, Vorschläge, Öfen/Lager/Logistik, Verbrauch, Anbindung, Integration mit planSite.; [tests/e2e/production.e2e.mjs](../tests/e2e/production.e2e.mjs) — Reiter „Produktion“ in Chromium (1400/390 px): Farm, Ernte ins Lager, gemessene Rate, Ort, AFK-Platz, Neuladen, kein Querscrollen.; [docs/architecture/PRODUCTION.md](architecture/PRODUCTION.md) — Grundsätze, Datensatz, Farmarten, Auswertung, Anbindung, Grenzen.
 
-**Dateiumfang:** `packages/domain/src/productionPlan.ts`, `apps/web/src/views/project/ProductionTab.tsx`, `apps/web/src/production.css`, `tests/production.test.mjs`. **Abhängigkeiten:** PROD-01, PROJ-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/materials/productionPlan.ts`, `apps/web/src/views/project/ProductionTab.tsx`, `apps/web/src/styles/production.css`, `tests/production.test.mjs`. **Abhängigkeiten:** PROD-01, PROJ-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### PROD-03
 
-**Verarbeitung und Logistik: Öfen für eine Zielzeit, Brennstoff je Sorte und netto aus Brennstofffarmen (Seetang, Bambus, Lava), Lagerplatz/Shulker/Fahrten je Abschnitt, Trichterdurchsatz und „Truhe voll nach“ je Farm, Sortier-Module** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Produktion und Anbindung im Planer ausbauen“ · Aktualisiert: 2026-11-04T08:42:48.661Z
+**Verarbeitung und Logistik: Öfen für eine Zielzeit, Brennstoff je Sorte und netto aus Brennstofffarmen (Seetang, Bambus, Lava), Lagerplatz/Shulker/Fahrten je Abschnitt, Trichterdurchsatz und „Truhe voll nach“ je Farm, Sortier-Module** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Produktion und Anbindung im Planer ausbauen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] PROD-03-S01: SectionPlan.smelts/cookTicks aus dem Rezeptbaum.
 - [x] PROD-03-S02: Ofen- und Brennstoffplan inkl. Netto-Seetang.
@@ -3008,13 +3011,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/production.test.mjs](../tests/production.test.mjs) — 10 Fälle: Katalog, Datensatz/Rückgängig/Sicherung, Ertragsbuch, Reichweiten/AFK, Deckung/Engpass/Bereitschaft, Vorschläge, Öfen/Lager/Logistik, Verbrauch, Anbindung, Integration mit planSite.; [tests/e2e/production.e2e.mjs](../tests/e2e/production.e2e.mjs) — Reiter „Produktion“ in Chromium (1400/390 px): Farm, Ernte ins Lager, gemessene Rate, Ort, AFK-Platz, Neuladen, kein Querscrollen.; [docs/architecture/PRODUCTION.md](architecture/PRODUCTION.md) — Grundsätze, Datensatz, Farmarten, Auswertung, Anbindung, Grenzen.
 
-**Dateiumfang:** `packages/domain/src/productionPlan.ts`, `packages/domain/src/site.ts`, `apps/web/src/views/project/ProductionTab.tsx`. **Abhängigkeiten:** PROD-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/materials/productionPlan.ts`, `packages/domain/src/building/site.ts`, `apps/web/src/views/project/ProductionTab.tsx`. **Abhängigkeiten:** PROD-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### PROD-04
 
-**Anbindung der Produktion: Farmen aus Projekt-Bauteilen mit Baufortschritt, Farmpunkte der Weltkarte übernehmen und eintragen, bester AFK-Platz nach Simulationsdistanz, Materialbereitschaft gegen Zeitplan der Planung, Sammelaufträge je Bauleute (TEAM-03-S02), Produktionsblatt als Text** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Produktion und Anbindung im Planer ausbauen“ · Aktualisiert: 2026-11-05T10:23:42.887Z
+**Anbindung der Produktion: Farmen aus Projekt-Bauteilen mit Baufortschritt, Farmpunkte der Weltkarte übernehmen und eintragen, bester AFK-Platz nach Simulationsdistanz, Materialbereitschaft gegen Zeitplan der Planung, Sammelaufträge je Bauleute (TEAM-03-S02), Produktionsblatt als Text** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Produktion und Anbindung im Planer ausbauen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] PROD-04-S01: detectFarms aus Katalog-Bauteilen und Anleitungsfortschritt.
 - [x] PROD-04-S02: Weltkarte: farmsOnMap mit guessFarmType, Punkte eintragen, Bauplatz als Standardort.
@@ -3030,13 +3033,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/production.test.mjs](../tests/production.test.mjs) — 10 Fälle: Katalog, Datensatz/Rückgängig/Sicherung, Ertragsbuch, Reichweiten/AFK, Deckung/Engpass/Bereitschaft, Vorschläge, Öfen/Lager/Logistik, Verbrauch, Anbindung, Integration mit planSite.; [tests/e2e/production.e2e.mjs](../tests/e2e/production.e2e.mjs) — Reiter „Produktion“ in Chromium (1400/390 px): Farm, Ernte ins Lager, gemessene Rate, Ort, AFK-Platz, Neuladen, kein Querscrollen.; [docs/architecture/PRODUCTION.md](architecture/PRODUCTION.md) — Grundsätze, Datensatz, Farmarten, Auswertung, Anbindung, Grenzen.
 
-**Dateiumfang:** `packages/domain/src/productionPlan.ts`, `apps/web/src/views/project/ProductionTab.tsx`, `apps/web/src/views/project/SiteTab.tsx`, `apps/web/src/views/project/tabs.ts`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `tests/e2e/production.e2e.mjs`. **Abhängigkeiten:** PROD-02, MAP-06, PROJ-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/materials/productionPlan.ts`, `apps/web/src/views/project/ProductionTab.tsx`, `apps/web/src/views/project/SiteTab.tsx`, `apps/web/src/views/project/tabs.ts`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `tests/e2e/production.e2e.mjs`. **Abhängigkeiten:** PROD-02, MAP-06, PROJ-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### PROD-05
 
-**Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Produktion und Anbindung im Planer ausbauen“ · Aktualisiert: 2026-11-04T10:03:44.722Z
+**Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Produktion und Anbindung im Planer ausbauen“) · Zuständiger Thread: „Produktion und Anbindung im Planer ausbauen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] PROD-05-S01: FarmEntry.chest (geprüft, rückgängig machbar über updateFarm).
 - [x] PROD-05-S02: teamChests/chestYield: store.yield bevorzugt, sonst Trichterbuchungen mit Lückenregel 5 min.
@@ -3052,7 +3055,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/production.test.mjs](../tests/production.test.mjs) — PROD-05-Fall: Trichter-Rückfall, Vorschläge, Serverberichte, entfernte Truhe, keine Lagerbuchung.; [tests/e2e/production.e2e.mjs](../tests/e2e/production.e2e.mjs) — Server-Export mit Lagerkiste und zwei Ertragsmeldungen, Vorschlag, Verknüpfen, Rate 300 Eisen/h.; [docs/architecture/PRODUCTION.md](architecture/PRODUCTION.md) — Abschnitt Sammeltruhen aus dem Team-Lager.
 
-**Dateiumfang:** `packages/domain/src/production.ts`, `packages/domain/src/productionPlan.ts`, `apps/web/src/views/project/ProductionTab.tsx`, `tests/production.test.mjs`, `tests/e2e/production.e2e.mjs`, `docs/architecture/PRODUCTION.md`. **Abhängigkeiten:** PROD-02, COOP-05, COOP-08. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/materials/production.ts`, `packages/domain/src/materials/productionPlan.ts`, `apps/web/src/views/project/ProductionTab.tsx`, `tests/production.test.mjs`, `tests/e2e/production.e2e.mjs`, `docs/architecture/PRODUCTION.md`. **Abhängigkeiten:** PROD-02, COOP-05, COOP-08. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -3081,7 +3084,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LINK-02
 
-**Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Verbindung ohne Server-Datei neu bauen“ · Aktualisiert: 2026-11-04T12:47:26.654Z
+**Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Verbindung ohne Server-Datei neu bauen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] LINK-02-S01: Format und Unterschrift in Plugin und Planer gleich (gemeinsamer Prüfvektor).
 - [x] LINK-02-S02: Operationen status, config, team, room, plan, rename, invite, forget; config nur Liste, alles oder nichts, Teamkanal ausgenommen.
@@ -3096,7 +3099,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [scripts/test_bridge_paper_link.sh](../scripts/test_bridge_paper_link.sh) — 2 Einstellungen und ein Team per signierter Nachricht, alle Abweisungen geprüft (04.11.2026).; [tests/server-link.test.mjs](../tests/server-link.test.mjs) — Prüfvektor, Inhalt, Nummer, Leser.
 
-**Dateiumfang:** `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/LinkCore.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java`, `packages/domain/src/serverControl.ts`, `packages/domain/src/index.ts`, `tests/server-link.test.mjs`, `scripts/bridge_paperlink.mjs`, `scripts/test_bridge_paper_link.sh`. **Abhängigkeiten:** LINK-01. **Alte IDs:** —.
+**Dateiumfang:** `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/LinkCore.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java`, `packages/domain/src/team/serverControl.ts`, `packages/domain/src/index.ts`, `tests/server-link.test.mjs`, `scripts/bridge_paperlink.mjs`, `scripts/test_bridge_paper_link.sh`. **Abhängigkeiten:** LINK-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -3126,7 +3129,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LINK-04
 
-**Planer: Bereich „Spiel und Server verbinden – ohne Befehle“ (#/mod), Server koppeln und einstellen, Team und Raum per Knopf** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Verbindung ohne Server-Datei neu bauen“ · Aktualisiert: 2026-11-04T12:47:26.654Z
+**Planer: Bereich „Spiel und Server verbinden – ohne Befehle“ (#/mod), Server koppeln und einstellen, Team und Raum per Knopf** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Verbindung ohne Server-Datei neu bauen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] LINK-04-S01: Drei Schritte Spiel → Server → Kopplung, Einstellungsformular aus dem Schema, Geräte, Umbenennen.
 - [x] LINK-04-S02: „Planstand auf den Server legen“ und „Server mit dem Raum verbinden“ über Steuernachrichten.
@@ -3143,13 +3146,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/e2e/server-link.e2e.mjs](../tests/e2e/server-link.e2e.mjs) — Kopplung per Klick, Server koppeln, signierte Einstellung, 1400/390 px ohne Querscrollen (04.11.2026).
 
-**Dateiumfang:** `apps/web/src/views/mod/ServerPanel.tsx`, `apps/web/src/views/mod/serverClient.ts`, `apps/web/src/views/mod/ModView.tsx`, `apps/web/src/views/map/liveClient.ts`, `apps/web/src/views/map/LiveGamePanel.tsx`, `apps/web/src/views/project/TeamLive.tsx`, `apps/web/src/views/project/TeamRoom.tsx`, `apps/web/src/views/project/TeamJoinView.tsx`, `apps/web/src/views/project/TeamExchange.tsx`, `apps/web/src/catalog.css`, `apps/web/src/testing/testplan.ts`, `tests/e2e/modSimulator.mjs`, `tests/e2e/server-link.e2e.mjs`. **Abhängigkeiten:** LINK-02, LINK-03. **Alte IDs:** —.
+**Dateiumfang:** `apps/web/src/views/mod/ServerPanel.tsx`, `apps/web/src/views/mod/serverClient.ts`, `apps/web/src/views/mod/ModView.tsx`, `apps/web/src/views/map/liveClient.ts`, `apps/web/src/views/map/LiveGamePanel.tsx`, `apps/web/src/views/project/team/TeamLive.tsx`, `apps/web/src/views/project/team/TeamRoom.tsx`, `apps/web/src/views/project/team/TeamJoinView.tsx`, `apps/web/src/views/project/team/TeamExchange.tsx`, `apps/web/src/styles/catalog.css`, `apps/web/src/testing/testplan.ts`, `tests/e2e/modSimulator.mjs`, `tests/e2e/server-link.e2e.mjs`. **Abhängigkeiten:** LINK-02, LINK-03. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### LINK-05
 
-**Zweiter Weg über den Team-Raum: Steuernachrichten ohne Mod (iPad), weiteres Gerät per Link freigeben** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Verbindung ohne Server-Datei neu bauen“ · Aktualisiert: 2026-11-04T12:47:26.654Z
+**Zweiter Weg über den Team-Raum: Steuernachrichten ohne Mod (iPad), weiteres Gerät per Link freigeben** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Verbindung ohne Server-Datei neu bauen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] LINK-05-S01: Raum: POST /control (Formprüfung, Weiterleitung an die Plugin-Verbindung, Antwort, 20 s, 409 ohne Server), serverOnline.
 - [x] LINK-05-S02: Plugin: control über RoomLink, gleiche Prüfung wie auf dem Mod-Weg.
@@ -3167,13 +3170,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [scripts/test_bridge_paper_link.sh](../scripts/test_bridge_paper_link.sh) — Mit BAUPLANER_ROOM gegen wrangler dev: Status, Einstellung, Wiederholung abgewiesen (04.11.2026).; [tests/e2e/server-link.e2e.mjs](../tests/e2e/server-link.e2e.mjs) — iPad 820 px: Freigabe-Link, Einstellung über Raum-Ersatz, Server offline klar gemeldet.; [tests/team-room.test.mjs](../tests/team-room.test.mjs) — Formprüfung, Weiterleitung, Zeitlimit, Obergrenze.; [tests/e2e/server-link.e2e.mjs](../tests/e2e/server-link.e2e.mjs) — Mit TEAM_ROOM_URL gegen https://bauplaner-team.team-room.workers.dev: iPad-Weg Ende-zu-Ende grün (04.11.2026).
 
-**Dateiumfang:** `services/team-room/src/core.js`, `services/team-room/src/index.js`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`, `tests/team-room.test.mjs`, `packages/domain/src/serverControl.ts`, `apps/web/src/views/mod/ServerPanel.tsx`, `apps/web/src/views/mod/serverClient.ts`, `docs/architecture/TEAM_LIVE.md`. **Abhängigkeiten:** LINK-04, COOP-07. **Alte IDs:** —.
+**Dateiumfang:** `services/team-room/src/core.js`, `services/team-room/src/index.js`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`, `tests/team-room.test.mjs`, `packages/domain/src/team/serverControl.ts`, `apps/web/src/views/mod/ServerPanel.tsx`, `apps/web/src/views/mod/serverClient.ts`, `docs/architecture/TEAM_LIVE.md`. **Abhängigkeiten:** LINK-04, COOP-07. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### LINK-06
 
-**Weitere Steuerung ohne Befehle: Plan mit Anker von der Weltkarte auf den Server und Serveraufnahme per Klick zurück in den Planer** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Verbindung ohne Server-Datei neu bauen“ · Aktualisiert: 2026-11-04T12:47:26.654Z
+**Weitere Steuerung ohne Befehle: Plan mit Anker von der Weltkarte auf den Server und Serveraufnahme per Klick zurück in den Planer** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Verbindung ohne Server-Datei neu bauen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] LINK-06-S01: Plan-Upload mit Anker aus der Weltkarte („⇪ Auf den Server legen“, über Mod oder Team-Raum).
 - [x] LINK-06-S02: Serveraufnahme als Steueraktion scan (list/start/fetch/cancel), Reiter „Bauen“ → „⇩ Auf dem Server aufnehmen“, Paper-Plugin 0.13.0.
@@ -3186,13 +3189,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [scripts/test_bridge_paper_link.sh](../scripts/test_bridge_paper_link.sh) — Paper 1.21.11: Plan mit Anker per Steuernachricht abgelegt, kaputter Plan abgewiesen; mit BAUPLANER_ROOM gegen den echten Team-Raum (04.11.2026).; [tests/e2e/server-link.e2e.mjs](../tests/e2e/server-link.e2e.mjs) — iPad 820 px: Weltkarte → „Auf den Server legen“ über den Raum; mit TEAM_ROOM_URL gegen den echten Dienst grün.; [scripts/test_bridge_paper_link.sh](../scripts/test_bridge_paper_link.sh) — Paper 1.21.11 (04.11.2026): Aufnahme per Steuernachricht scan gestartet, Fortschritt abgefragt, Datei byte-gleich in Teilen geholt; fremde Pfade und unbekannte Pläne abgewiesen.; [tests/e2e/server-link.e2e.mjs](../tests/e2e/server-link.e2e.mjs) — iPad 820 px: Reiter „Bauen“ → „Auf dem Server aufnehmen“ über den Raum, in Teilen geholt, gespeichert, „Letzte Aufnahme holen“; auch mit TEAM_ROOM_URL gegen den echten Dienst grün.; [scripts/test_bridge_paper.sh](../scripts/test_bridge_paper.sh) — Paper 1.21.11 und 26.3: /bp scan nach dem Umbau unverändert (Spieltest bestanden); Lagerkisten-Test 1.21.11/26.3 mit Ertragskisten grün.
 
-**Dateiumfang:** `apps/web/src/testing/testplan.ts`, `apps/web/src/views/map/WorldMapView.tsx`, `apps/web/src/views/mod/ModView.tsx`, `apps/web/src/views/mod/ServerPanel.tsx`, `apps/web/src/views/mod/releases.json`, `apps/web/src/views/mod/serverClient.ts`, `apps/web/src/views/project/GameCheckPanel.tsx`, `docs/TESTING.md`, `docs/architecture/AUTO_LINK.md`, `docs/testing/TESTPLAN.md`, `mods/bauplaner-bridge/CHANGELOG.md`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/BridgePlugin.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/LinkCore.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java`, `packages/domain/src/serverControl.ts`, `scripts/bridge_paperlink.mjs`, `scripts/test_bridge_paper_link.sh`, `tests/e2e/modSimulator.mjs`, `tests/e2e/server-link.e2e.mjs`. **Abhängigkeiten:** LINK-05. **Alte IDs:** —.
+**Dateiumfang:** `apps/web/src/testing/testplan.ts`, `apps/web/src/views/map/WorldMapView.tsx`, `apps/web/src/views/mod/ModView.tsx`, `apps/web/src/views/mod/ServerPanel.tsx`, `apps/web/src/views/mod/releases.json`, `apps/web/src/views/mod/serverClient.ts`, `apps/web/src/views/project/GameCheckPanel.tsx`, `docs/TESTING.md`, `docs/architecture/AUTO_LINK.md`, `docs/testing/TESTPLAN.md`, `mods/bauplaner-bridge/CHANGELOG.md`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/BridgePlugin.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/LinkCore.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java`, `packages/domain/src/team/serverControl.ts`, `scripts/bridge_paperlink.mjs`, `scripts/test_bridge_paper_link.sh`, `tests/e2e/modSimulator.mjs`, `tests/e2e/server-link.e2e.mjs`. **Abhängigkeiten:** LINK-05. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### COOP-09
 
-**Team live im Alltag: Status und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Aktualisiert: 2026-11-04T08:48:05.000Z
+**Team live im Alltag: Status und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] COOP-09-S01: Chip im Projektkopf und Meldungen der anderen in jedem Reiter (ohne Flut beim Nachholen).
 - [x] COOP-09-S02: Anwesenheit mit eigenem Abschnitt in Arbeit.
@@ -3210,13 +3213,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — Meldung, Chip in anderem Reiter, Anwesenheit mit Abschnitt, Einladung erneuern mit Aussperren und Wiederbeitritt; 1400/390 px, auch gegen den echten Dienst (04.11.2026).
 
-**Dateiumfang:** `apps/web/src/views/project/TeamLiveBar.tsx`, `apps/web/src/views/project/roomClient.ts`, `apps/web/src/views/project/TeamRoom.tsx`, `apps/web/src/views/project/ProjectView.tsx`, `apps/web/src/team.css`, `tests/e2e/team-room.e2e.mjs`, `docs/architecture/TEAM_LIVE.md`. **Abhängigkeiten:** COOP-07. **Alte IDs:** —.
+**Dateiumfang:** `apps/web/src/views/project/team/TeamLiveBar.tsx`, `apps/web/src/views/project/team/roomClient.ts`, `apps/web/src/views/project/team/TeamRoom.tsx`, `apps/web/src/views/project/ProjectView.tsx`, `apps/web/src/styles/team.css`, `tests/e2e/team-room.e2e.mjs`, `docs/architecture/TEAM_LIVE.md`. **Abhängigkeiten:** COOP-07. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### COOP-10
 
-**Client zuerst: Baustand und Kisteninhalt laut Spiel (section.seen, store.seen) im Teamstand, ungeprüft getrennt von Servermessungen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Aktualisiert: 2026-11-04T22:55:00.000Z
+**Client zuerst: Baustand und Kisteninhalt laut Spiel (section.seen, store.seen) im Teamstand, ungeprüft getrennt von Servermessungen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Gemeinsames Bauen mehrerer Spieler ermöglichen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] COOP-10-S01: Ereignisse section.seen und store.seen mit Prüfung und Recht Helfer (team.ts, TeamLog.java).
 - [x] COOP-10-S02: Faltung: neuester Stand je Abschnitt, gesehener Kisteninhalt, Bestand laut Spiel nur ohne Serverzählung.
@@ -3236,13 +3239,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/team.test.mjs](../tests/team.test.mjs) — Client zuerst: Faltung, Rechte, Serverzählung gewinnt.; [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — Mod-Meldung mit Mitgliedsschlüssel erscheint in beiden Browsern als ungeprüft.
 
-**Dateiumfang:** `packages/domain/src/team.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/TeamProof.tsx`, `apps/web/src/team.css`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`, `tests/team.test.mjs`, `tests/e2e/team-room.e2e.mjs`, `docs/architecture/TEAM_LIVE.md`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `apps/web/src/views/project/TeamRoom.tsx`, `tests/e2e/modSimulator.mjs`. **Abhängigkeiten:** COOP-07, COOP-09. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/team/team.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/team/TeamProof.tsx`, `apps/web/src/styles/team.css`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`, `tests/team.test.mjs`, `tests/e2e/team-room.e2e.mjs`, `docs/architecture/TEAM_LIVE.md`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `apps/web/src/views/project/team/TeamRoom.tsx`, `tests/e2e/modSimulator.mjs`. **Abhängigkeiten:** COOP-07, COOP-09. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### COOP-11
 
-**Verlauf verdichten: Bauleitung ersetzt Messungen bis zu einem Stichtag durch Summen (team.digest), gleicher Teamstand, Merge ohne Doppelzählung, Produktion und Team live lesen mit** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Module und Systeme komplex ausarbeiten“ · Aktualisiert: 2026-11-05T07:43:52.853Z
+**Verlauf verdichten: Bauleitung ersetzt Messungen bis zu einem Stichtag durch Summen (team.digest), gleicher Teamstand, Merge ohne Doppelzählung, Produktion und Team live lesen mit** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Module und Systeme komplex ausarbeiten“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] COOP-11-S01: Ereignis team.digest (Teile unter 4 KB, Prüfung), Lauf in Kraft (vollständig, spätester Stichtag, Bauleitung zum Stichtag), Faltung überspringt Ersetztes.
 - [x] COOP-11-S02: compactTeam: Summen je Mitglied/Abschnitt/Kiste/Farm, neueste Zählung bleibt, erledigte Notizen und alte Ablehnungen entfallen; Gleichheitsprüfung vor dem Speichern.
@@ -3260,13 +3263,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/team-digest.test.mjs](../tests/team-digest.test.mjs) — Gleicher Stand, Merge, Rechte, Produktion, Postausgang.; [tests/e2e/team-digest.e2e.mjs](../tests/e2e/team-digest.e2e.mjs) — Ertragsbuch, Verdichten, Rückgängig auf Desktop und Handy.
 
-**Dateiumfang:** `packages/domain/src/team.ts`, `packages/domain/src/teamDigest.ts`, `packages/domain/src/teamSync.ts`, `packages/domain/src/productionPlan.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/TeamCompact.tsx`, `apps/web/src/views/project/TeamTab.tsx`, `apps/web/src/views/project/TeamProof.tsx`, `apps/web/src/team.css`, `tests/team-digest.test.mjs`, `tests/e2e/team-digest.e2e.mjs`, `docs/architecture/TEAMBAU.md`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `docs/TESTING.md`. **Abhängigkeiten:** COOP-01, COOP-05, COOP-08, COOP-09. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/team/team.ts`, `packages/domain/src/team/teamDigest.ts`, `packages/domain/src/team/teamSync.ts`, `packages/domain/src/materials/productionPlan.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/team/TeamCompact.tsx`, `apps/web/src/views/project/team/TeamTab.tsx`, `apps/web/src/views/project/team/TeamProof.tsx`, `apps/web/src/styles/team.css`, `tests/team-digest.test.mjs`, `tests/e2e/team-digest.e2e.mjs`, `docs/architecture/TEAMBAU.md`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `docs/TESTING.md`. **Abhängigkeiten:** COOP-01, COOP-05, COOP-08, COOP-09. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### PROJ-02
 
-**Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projektmodul vertiefen“) · Zuständiger Thread: „Projektmodul vertiefen“ · Aktualisiert: 2026-11-05T07:43:25.996Z
+**Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projektmodul vertiefen“) · Zuständiger Thread: „Projektmodul vertiefen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] PROJ-02-S01: Zeitplan ab heute bei Startdatum in der Vergangenheit; Bautage zwischen Daten nach Bautagen je Woche (buildingDaysBetween).
 - [x] PROJ-02-S02: Planung ↔ Produktion: waitForMaterial, planProgramWithMaterial (Bereitschaft → frühester Beginn, materialWait), Produktion vergleicht mit demselben Zeitplan.
@@ -3286,13 +3289,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/program-depth.test.mjs](../tests/program-depth.test.mjs) — 6 Fälle: Bautage zwischen Daten, Anteil der Bautage, Start in der Vergangenheit, Basisplan mit Verzug/Bereinigung/Sicherung, Material abwarten gegen Produktion, Altbestand.; [tests/e2e/program-depth.e2e.mjs](../tests/e2e/program-depth.e2e.mjs) — Chromium 1400/390 px: Basisplan ± 0 → +N Bautage, Anteil 25 %, Material-Karte mit Link zur Produktion, Neuladen, Verwerfen, kein Querscrollen.; [docs/architecture/PROGRAM.md](architecture/PROGRAM.md) — Abschnitt „Vertiefung PROJ-02“.
 
-**Dateiumfang:** `packages/domain/src/program.ts`, `packages/domain/src/programMaterial.ts`, `apps/web/src/views/project/PlanningTab.tsx`, `apps/web/src/views/project/ProductionTab.tsx`, `apps/web/src/planning.css`, `tests/program-depth.test.mjs`, `tests/e2e/program-depth.e2e.mjs`, `docs/architecture/PROGRAM.md`. **Abhängigkeiten:** PROJ-01, PROD-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/planning/program.ts`, `packages/domain/src/planning/programMaterial.ts`, `apps/web/src/views/project/PlanningTab.tsx`, `apps/web/src/views/project/ProductionTab.tsx`, `apps/web/src/styles/planning.css`, `tests/program-depth.test.mjs`, `tests/e2e/program-depth.e2e.mjs`, `docs/architecture/PROGRAM.md`. **Abhängigkeiten:** PROJ-01, PROD-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### PROJ-03
 
-**Planung Runde 3: Abwesenheiten je Bauleute nach Datum, mehrere Basispläne mit Namen und Vergleich, „abwesend bis“ aus dem Team in die Planung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Module und Systeme komplex ausarbeiten“ · Aktualisiert: 2026-11-05T07:43:52.853Z
+**Planung Runde 3: Abwesenheiten je Bauleute nach Datum, mehrere Basispläne mit Namen und Vergleich, „abwesend bis“ aus dem Team in die Planung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Module und Systeme komplex ausarbeiten“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] PROJ-03-S01: Abwesenheiten je Bauleute (von–bis, Grund; geordnet, zusammengeführt, höchstens 24, höchstens ein Jahr); Zeitplan rechnet Tag für Tag um Abwesenheiten herum, gemeinsame Abschnitte bauen weiter.
 - [x] PROJ-03-S02: Basisplan-Verlauf: bis zu 8 frühere Basispläne mit Namen, Vergleichen (aktiv schalten), Umbenennen, Entfernen, Verwerfen holt den vorigen zurück; Bereinigung beim Entfernen eines Abschnitts.
@@ -3309,13 +3312,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/program-absence.test.mjs](../tests/program-absence.test.mjs) — 4 Fälle: Prüfung/Zusammenführen, Zeitplan um Abwesenheiten, Basisplan-Verlauf, Team → Planung.; [tests/e2e/program-absence.e2e.mjs](../tests/e2e/program-absence.e2e.mjs) — Chromium 1400/390 px: Basisplan mit Namen, Abwesenheit verschiebt Beginn um 3 Bautage, zweiter Basisplan, Vergleichen, Neuladen, Entfernen.
 
-**Dateiumfang:** `packages/domain/src/program.ts`, `packages/domain/src/team.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/PlanningTab.tsx`, `apps/web/src/views/project/TeamTab.tsx`, `apps/web/src/planning.css`, `tests/program-absence.test.mjs`, `tests/e2e/program-absence.e2e.mjs`, `docs/architecture/PROGRAM.md`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `docs/TESTING.md`. **Abhängigkeiten:** PROJ-02, COOP-06. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/planning/program.ts`, `packages/domain/src/team/team.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/PlanningTab.tsx`, `apps/web/src/views/project/team/TeamTab.tsx`, `apps/web/src/styles/planning.css`, `tests/program-absence.test.mjs`, `tests/e2e/program-absence.e2e.mjs`, `docs/architecture/PROGRAM.md`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `docs/TESTING.md`. **Abhängigkeiten:** PROJ-02, COOP-06. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### PROJ-04
 
-**Reihenfolge zwischen Projekten: „erst nach“ anderen Projekten, frühester Start aus dem Basisplan der Vorgänger, Kreise abweisen, Pfeile auf der Weltkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Module und Systeme komplex ausarbeiten“ · Aktualisiert: 2026-11-05T08:30:33.788Z
+**Reihenfolge zwischen Projekten: „erst nach“ anderen Projekten, frühester Start aus dem Basisplan der Vorgänger, Kreise abweisen, Pfeile auf der Weltkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Module und Systeme komplex ausarbeiten“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] PROJ-04-S01: program.after (Vorgängerprojekte mit Grund) mit Prüfung; projectOrder.ts: Verknüpfungen, Kreise, Stufen, Nachfolger, frühester Start aus dem aktiven Basisplan.
 - [x] PROJ-04-S02: Planung „Reihenfolge der Projekte“ (erst nach, Kreis-Hinweis, Start mit einem Klick korrigieren, Danach kommen) und Weltkarte (Pfeile, Detail).
@@ -3331,13 +3334,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [tests/project-order.test.mjs](../tests/project-order.test.mjs) — 3 Fälle: anlegen/prüfen/entfernen, Kreise/Stufen/Nachfolger, frühester Start aus Basisplan (offen, fertig, gelöscht).; [tests/e2e/project-order.e2e.mjs](../tests/e2e/project-order.e2e.mjs) — Chromium: Basisplan in A, B erst nach A, Start korrigieren, Kreis abgewiesen, Weltkarte nennt die Reihenfolge, entfernen.
 
-**Dateiumfang:** `packages/domain/src/program.ts`, `packages/domain/src/projectOrder.ts`, `apps/web/src/views/project/ProjectOrder.tsx`, `apps/web/src/views/project/PlanningTab.tsx`, `apps/web/src/views/map/OverviewMap.tsx`, `apps/web/src/views/map/WorldMapView.tsx`, `tests/project-order.test.mjs`, `tests/e2e/project-order.e2e.mjs`, `docs/architecture/PROGRAM.md`. **Abhängigkeiten:** PROJ-03, MAP-04. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/planning/program.ts`, `packages/domain/src/planning/projectOrder.ts`, `apps/web/src/views/project/ProjectOrder.tsx`, `apps/web/src/views/project/PlanningTab.tsx`, `apps/web/src/views/map/OverviewMap.tsx`, `apps/web/src/views/map/WorldMapView.tsx`, `tests/project-order.test.mjs`, `tests/e2e/project-order.e2e.mjs`, `docs/architecture/PROGRAM.md`. **Abhängigkeiten:** PROJ-03, MAP-04. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### LINK-07
 
-**Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Verbindung ohne Server-Datei neu bauen“ · Aktualisiert: 2026-11-04T14:22:09.121Z
+**Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Verbindung ohne Server-Datei neu bauen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] LINK-07-S01: RoomClient in mod-core: Kopf + Ereignisse aus dem Raum, Faltung mit dem TeamLog des Plugins, eigene Aktionen per append, Anwesenheit, Wiederverbinden.
 - [x] LINK-07-S02: Planer „Mein Spiel verbinden“/„Spiel trennen“ (POST /v1/room, Feature room).
@@ -3354,7 +3357,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java) — Mit BAUPLANER_ROOM gegen wrangler dev: live, Abschnitt aus dem Spiel im Raum, Notiz aus dem Planer im Spiel (04.11.2026).; [scripts/test_bridge_ingame.sh](../scripts/test_bridge_ingame.sh) — Minecraft 26.3 Fabric mit BAUPLANER_ROOM: live mit dem Raum, /bauplaner team nehmen 2 kommt im Raum an, ohne Server (04.11.2026).; [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — „Mein Spiel verbinden“ übergibt nur den Mitgliedsschlüssel (1400/390 px).; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java) — 0.15.0 gegen wrangler dev: Position kommt beim Planer an, Anforderung erreicht das Spiel, Aufnahme hochgeladen und byte-gleich geholt, section.seen im Protokoll (04.11.2026).; [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — Position unter „Gerade da“, „Aufnahme im Spiel anfordern“ lädt die Aufnahme aus dem Raum (1400 px und 390 px).; [tests/team-room.test.mjs](../tests/team-room.test.mjs) — Raum: Aufnahmen (gzip-Prüfung, 8 MB, neueste 12), Position nur bei where spiel.
 
-**Dateiumfang:** `apps/web/src/testing/testplan.ts`, `apps/web/src/views/map/liveClient.ts`, `apps/web/src/views/mod/releases.json`, `apps/web/src/views/mod/serverClient.ts`, `apps/web/src/views/project/GameCheckPanel.tsx`, `apps/web/src/views/project/TeamRoom.tsx`, `apps/web/src/views/project/roomClient.ts`, `docs/architecture/AUTO_LINK.md`, `docs/testing/TESTPLAN.md`, `downloads/mod/bauplaner-bridge-fabric-26.3-0.15.0.jar`, `downloads/mod/bauplaner-bridge-neoforge-26.3-0.15.0.jar`, `mods/bauplaner-bridge/CHANGELOG.md`, `mods/bauplaner-bridge/VERSION`, `mods/bauplaner-bridge/fabric-26.3/build.gradle`, `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/McCompat.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`, `mods/bauplaner-bridge/mod-core/build.gradle`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomState.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamState.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamSync.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java`, `mods/bauplaner-bridge/neoforge-26.3/build.gradle`, `scripts/bridge_gametest.mjs`, `scripts/bridge_room_prepare.mjs`, `scripts/test_bridge_ingame.sh`, `services/team-room/src/core.js`, `services/team-room/src/index.js`, `tests/e2e/modSimulator.mjs`, `tests/e2e/team-room.e2e.mjs`, `tests/team-room.test.mjs`. **Abhängigkeiten:** LINK-06, COOP-07. **Alte IDs:** —.
+**Dateiumfang:** `apps/web/src/testing/testplan.ts`, `apps/web/src/views/map/liveClient.ts`, `apps/web/src/views/mod/releases.json`, `apps/web/src/views/mod/serverClient.ts`, `apps/web/src/views/project/GameCheckPanel.tsx`, `apps/web/src/views/project/team/TeamRoom.tsx`, `apps/web/src/views/project/team/roomClient.ts`, `docs/architecture/AUTO_LINK.md`, `docs/testing/TESTPLAN.md`, `downloads/mod/bauplaner-bridge-fabric-26.3-0.15.0.jar`, `downloads/mod/bauplaner-bridge-neoforge-26.3-0.15.0.jar`, `mods/bauplaner-bridge/CHANGELOG.md`, `mods/bauplaner-bridge/VERSION`, `mods/bauplaner-bridge/fabric-26.3/build.gradle`, `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/McCompat.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`, `mods/bauplaner-bridge/mod-core/build.gradle`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomState.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamState.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamSync.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomClientTest.java`, `mods/bauplaner-bridge/neoforge-26.3/build.gradle`, `scripts/bridge_gametest.mjs`, `scripts/bridge_room_prepare.mjs`, `scripts/test_bridge_ingame.sh`, `services/team-room/src/core.js`, `services/team-room/src/index.js`, `tests/e2e/modSimulator.mjs`, `tests/e2e/team-room.e2e.mjs`, `tests/team-room.test.mjs`. **Abhängigkeiten:** LINK-06, COOP-07. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -3384,7 +3387,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### FALLBACK-01
 
-**Ausweichwege über alle Verbindungen: Teamstand offline in der Mod, HTTP statt WebSocket, offline gemerkte Messungen, Baustand über den besten Weg (Spiel → Team-Raum → Server → Datei)** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread „Mod, Server und Client mit Fallbacks ausbauen“) · Zuständiger Thread: „Mod, Server und Client mit Fallbacks ausbauen“ · Aktualisiert: 2026-11-04T22:23:54.313Z
+**Ausweichwege über alle Verbindungen: Teamstand offline in der Mod, HTTP statt WebSocket, offline gemerkte Messungen, Baustand über den besten Weg (Spiel → Team-Raum → Server → Datei)** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread „Mod, Server und Client mit Fallbacks ausbauen“) · Zuständiger Thread: „Mod, Server und Client mit Fallbacks ausbauen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] FALLBACK-01-S01: Mod: Teamstand aus dem Raum in bauplaner/team/raum-stand.json (Kopf, Ereignisse, Cursor); nach Neustart offline sichtbar, beim Wiederverbinden nur der Rest.
 - [x] FALLBACK-01-S02: Mod: HTTP-Ausweg (GET/POST …/events) nach zwei WebSocket-Fehlschlägen bei erreichbarem Raum, alle 5 min neuer WebSocket-Versuch.
@@ -3402,13 +3405,13 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java) — Raum-Ersatz ohne WebSocket: HTTP-Abfrage, Aktion/Notiz/Messung; Neustart ohne Netz mit gespeichertem Stand, Nachreichen, Cursor (04.11.2026).; [tests/e2e/game-progress.e2e.mjs](../tests/e2e/game-progress.e2e.mjs) — „Baustand holen (bester Weg)“ über das eigene Spiel; anderer Plan → alle Gründe und Datei-Ausweg (04.11.2026).; [scripts/test_bridge_ingame.sh](../scripts/test_bridge_ingame.sh) — Minecraft 26.3 Fabric (mit BAUPLANER_ROOM gegen den echten Team-Raum) und NeoForge bestanden mit Mod 0.16.0 (04.11.2026).
 
-**Dateiumfang:** `apps/web/src/testing/testplan.ts`, `apps/web/src/views/mod/releases.json`, `apps/web/src/views/project/GameCheckPanel.tsx`, `docs/architecture/AUTO_LINK.md`, `docs/architecture/FALLBACKS.md`, `docs/testing/TESTPLAN.md`, `downloads/mod/bauplaner-bridge-fabric-26.3-0.16.0.jar`, `downloads/mod/bauplaner-bridge-neoforge-26.3-0.16.0.jar`, `mods/bauplaner-bridge/CHANGELOG.md`, `mods/bauplaner-bridge/VERSION`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java`, `packages/domain/src/index.ts`, `packages/domain/src/scanRoutes.ts`, `tests/e2e/game-progress.e2e.mjs`, `tests/scan-routes.test.mjs`. **Abhängigkeiten:** LINK-07, COOP-10. **Alte IDs:** —.
+**Dateiumfang:** `apps/web/src/testing/testplan.ts`, `apps/web/src/views/mod/releases.json`, `apps/web/src/views/project/GameCheckPanel.tsx`, `docs/architecture/AUTO_LINK.md`, `docs/architecture/FALLBACKS.md`, `docs/testing/TESTPLAN.md`, `downloads/mod/bauplaner-bridge-fabric-26.3-0.16.0.jar`, `downloads/mod/bauplaner-bridge-neoforge-26.3-0.16.0.jar`, `mods/bauplaner-bridge/CHANGELOG.md`, `mods/bauplaner-bridge/VERSION`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java`, `packages/domain/src/index.ts`, `packages/domain/src/world/scanRoutes.ts`, `tests/e2e/game-progress.e2e.mjs`, `tests/scan-routes.test.mjs`. **Abhängigkeiten:** LINK-07, COOP-10. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
 ### LINK-10
 
-**Anbindung geprüft und gehärtet: Sendungen über den WebSocket nacheinander (Mod und Plugin), Messungen bis zur Bestätigung gemerkt, Team-Raum mit Ping ohne Aufwecken und sauberem Schließen, Planer ohne gestapelte Abfrage-Schleifen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Mod, Team-Raum und Planer prüfen“) · Zuständiger Thread: „Anbindung von Mod, Team-Raum und Planer prüfen“ · Aktualisiert: 2026-11-05T10:30:50.888Z
+**Anbindung geprüft und gehärtet: Sendungen über den WebSocket nacheinander (Mod und Plugin), Messungen bis zur Bestätigung gemerkt, Team-Raum mit Ping ohne Aufwecken und sauberem Schließen, Planer ohne gestapelte Abfrage-Schleifen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Mod, Team-Raum und Planer prüfen“) · Zuständiger Thread: „Anbindung von Mod, Team-Raum und Planer prüfen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
 
 - [x] LINK-10-S01: Mod und Plugin: alle WebSocket-Rahmen über WsQueue streng nacheinander (JDK erlaubt nur eine offene Sendung, zweite scheiterte still mit „Send pending“); Plugin trennte vorher bei gleichzeitiger Steuerantwort und Ereignissen.
 - [x] LINK-10-S02: Mod: section.seen/store.seen bleiben gemerkt, bis der Raum die Kennung beantwortet; über HTTP stilles Nachsenden nach 10 s.
@@ -3425,7 +3428,28 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/WsQueueTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/WsQueueTest.java) — Ersatz-Socket mit JDK-Verhalten: Reihenfolge, 8 Threads × 25 Rahmen ohne Verlust, Fehler einmal, Rückstau (05.11.2026).; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java) — Verlorene Antwort: Messung bleibt gemerkt, geht erneut raus, einmal im Raum (05.11.2026).; [tests/team-room.test.mjs](../tests/team-room.test.mjs) — Anwesenheit „Server“ nur mit Serverschlüssel (05.11.2026).
 
-**Dateiumfang:** `apps/web/src/views/project/roomClient.ts`, `apps/web/src/views/mod/releases.json`, `docs/architecture/FALLBACKS.md`, `docs/architecture/TEAM_LIVE.md`, `downloads/mod/bauplaner-bridge-fabric-26.3-0.17.0.jar`, `downloads/mod/bauplaner-bridge-neoforge-26.3-0.17.0.jar`, `downloads/mod/bauplaner-bridge-paper-0.17.0.jar`, `mods/bauplaner-bridge/CHANGELOG.md`, `mods/bauplaner-bridge/VERSION`, `mods/bauplaner-bridge/paper/build.gradle`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WsQueue.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/WsQueueTest.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`, `services/team-room/src/core.js`, `services/team-room/src/index.js`, `tests/team-room.test.mjs`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`. **Abhängigkeiten:** FALLBACK-01, LINK-07. **Alte IDs:** —.
+**Dateiumfang:** `apps/web/src/views/project/team/roomClient.ts`, `apps/web/src/views/mod/releases.json`, `docs/architecture/FALLBACKS.md`, `docs/architecture/TEAM_LIVE.md`, `downloads/mod/bauplaner-bridge-fabric-26.3-0.17.0.jar`, `downloads/mod/bauplaner-bridge-neoforge-26.3-0.17.0.jar`, `downloads/mod/bauplaner-bridge-paper-0.17.0.jar`, `mods/bauplaner-bridge/CHANGELOG.md`, `mods/bauplaner-bridge/VERSION`, `mods/bauplaner-bridge/paper/build.gradle`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WsQueue.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/WsQueueTest.java`, `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomFallbackTest.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/RoomLink.java`, `services/team-room/src/core.js`, `services/team-room/src/index.js`, `tests/team-room.test.mjs`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`. **Abhängigkeiten:** FALLBACK-01, LINK-07. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### STRUCT-01
+
+**Dateistruktur sauber neu ordnen: Fachordner im Kern und in der Oberfläche, Skripte, Tests und Doku nach Bereich, Ordnerkarte docs/STRUKTUR.md** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread „Dateistruktur sauber neu ordnen“) · Zuständiger Thread: „Dateistruktur sauber neu ordnen“ · Aktualisiert: 2026-11-05T10:34:38.680Z
+
+- [x] STRUCT-01-S01: Codemod scripts/dev/restructure.mjs: verschiebt nach Liste und schreibt Importe, Markdown-Links, Pfade ab Wurzel und Roadmap-Umfang um; wiederholbar nach Rebase.
+- [x] STRUCT-01-S02: Stufe 2: packages/domain/src in Fachordner (core, catalog, base, materials, building, planning, world, team, data, versions), Web-CSS nach styles/, Team-Ansichten nach views/project/team/.
+- [ ] STRUCT-01-S03: Stufe 1: scripts/ in Unterordner, tests/*.test.mjs nach tests/unit/<bereich>/, docs/architecture nach Bereich.
+- [ ] STRUCT-01-S04: Ordnerkarte docs/STRUKTUR.md und Strukturtest (keine neuen flachen Dateien in scripts/, tests/, domain/src).
+
+**Abnahme:** npm run check und Browsertests grün, Pages unverändert erreichbar. Jede Datei liegt in dem Fachordner, den docs/STRUKTUR.md nennt. Parallele Threads können nach Rebase mit dem Codemod veraltete Pfade nachziehen.
+
+**Nächste Aktion:** Stufe 1: scripts/, tests/ und docs/architecture nach Bereich ordnen.
+
+**Prüfstand:** Stufe 2: npm run check (903 Einheitstests) und 174 Browsertests grün.
+
+**Nachweise:** [tests/restructure.test.mjs](../tests/restructure.test.mjs) — Codemod: Importe, dist-Verweise, Markdown-Links, Wurzelpfade, Wiederholung nach Rebase.; [docs/STRUKTUR.md](STRUKTUR.md) — Verbindliche Ordnerkarte.
+
+**Dateiumfang:** `scripts/dev/restructure.mjs`, `scripts/dev/moves`, `packages/domain/src`, `apps/web/src/styles`, `apps/web/src/views/project/team`, `scripts`, `tests`, `docs/STRUKTUR.md`. **Abhängigkeiten:** keine. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

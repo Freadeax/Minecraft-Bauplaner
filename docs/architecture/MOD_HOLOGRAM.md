@@ -6,7 +6,7 @@ Stand 02.11.2026 · Stufe 1 „Fundament + Hologramm“ (0.2.0, Wahl Philipp) St
 
 - **Reiner Client.** Kein zusätzliches oder verändertes Paket an den Server (die Platzierhilfe lässt einen normalen Klick durch oder verwirft ihn vorher, und wählt höchstens einen Schnellleistenplatz wie eine Zifferntaste), keine Weltänderung, kein automatisches Bauen („Printer“), kein Teleport. Funktioniert damit auf jedem Server, auch ohne Plugin und ohne Rechte. Einzige Ausnahme seit 0.10.0: der Teamkanal `bauplaner:team` – nur wenn der Server ihn selbst anbietet (Bauplaner-Plugin) **und** der Spieler ihn mit `/bauplaner team erlauben` für diesen Server eingeschaltet hat (Entscheidung Philipp 03.11.2026, [TEAMBAU §7](TEAMBAU.md)).
 - **Keine Abhängigkeiten** außer Fabric API bzw. NeoForge: kein WorldEdit, kein Litematica, keine eigenen Shader. Gezeichnet wird mit Vanilla-Rendertypen (`debugQuads`, `lines`) über `LevelRenderEvents.COLLECT_SUBMITS` (Fabric) bzw. `SubmitCustomGeometryEvent` (NeoForge), damit Sodium und Iris nichts ersetzen müssen.
-- **Eine Wahrheit für den Vergleich.** `BlockRules.compare` ist eine Portierung von `compareBlock`/`ignoredProperties` aus `packages/domain/src/gameCheck.ts`: Ergebnis im Spiel = Ergebnis der Website.
+- **Eine Wahrheit für den Vergleich.** `BlockRules.compare` ist eine Portierung von `compareBlock`/`ignoredProperties` aus `packages/domain/src/building/gameCheck.ts`: Ergebnis im Spiel = Ergebnis der Website.
 
 ## Aufbau
 

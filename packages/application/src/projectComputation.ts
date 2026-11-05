@@ -1,14 +1,14 @@
-import { cellOwnersOf, resolveProject } from '../../domain/src/compose.js';
-import type { Resolution } from '../../domain/src/compose.js';
-import { buildGuide, evaluateProgress, stepCellIndices } from '../../domain/src/guide.js';
-import { canonicalJson } from '../../domain/src/hash.js';
-import type { Guide, GuideProgress } from '../../domain/src/guide.js';
-import { computeMaterials, materialsForParts, materialsForResolution, SHULKER_SLOTS } from '../../domain/src/materials.js';
-import type { ItemLine, ItemSource, MaterialReport, UnresolvedLine } from '../../domain/src/materials.js';
-import { checkSections, planSite, reservationsFor, siteOf } from '../../domain/src/site.js';
-import type { Reservation, SectionIssue, SiteOverview } from '../../domain/src/site.js';
+import { cellOwnersOf, resolveProject } from '../../domain/src/core/compose.js';
+import type { Resolution } from '../../domain/src/core/compose.js';
+import { buildGuide, evaluateProgress, stepCellIndices } from '../../domain/src/building/guide.js';
+import { canonicalJson } from '../../domain/src/core/hash.js';
+import type { Guide, GuideProgress } from '../../domain/src/building/guide.js';
+import { computeMaterials, materialsForParts, materialsForResolution, SHULKER_SLOTS } from '../../domain/src/materials/materials.js';
+import type { ItemLine, ItemSource, MaterialReport, UnresolvedLine } from '../../domain/src/materials/materials.js';
+import { checkSections, planSite, reservationsFor, siteOf } from '../../domain/src/building/site.js';
+import type { Reservation, SectionIssue, SiteOverview } from '../../domain/src/building/site.js';
 import type { Cell } from '../../voxel/src/types.js';
-import type { AssetVersion, BlueprintRevision, Project } from '../../domain/src/types.js';
+import type { AssetVersion, BlueprintRevision, Project } from '../../domain/src/core/types.js';
 
 export interface ComputeInput {
   readonly project: Project;

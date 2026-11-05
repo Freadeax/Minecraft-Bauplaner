@@ -1,6 +1,6 @@
 # Bauführung im Spiel (BUILD-06)
 
-Stand: 02.11.2026. Domäne `packages/domain/src/buildRun.ts`, Oberfläche im Projekt-Tab „Bauen“ (`views/project/BuildTab.tsx`, Komponenten in `views/project/buildrun/`), Stile `apps/web/src/buildrun.css`, Tests `tests/build-run.test.mjs` und `tests/e2e/build-run.e2e.mjs`.
+Stand: 02.11.2026. Domäne `packages/domain/src/building/buildRun.ts`, Oberfläche im Projekt-Tab „Bauen“ (`views/project/BuildTab.tsx`, Komponenten in `views/project/buildrun/`), Stile `apps/web/src/styles/buildrun.css`, Tests `tests/build-run.test.mjs` und `tests/e2e/build-run.e2e.mjs`.
 
 Ziel: Mit der Bauanleitung im Spiel Schritt für Schritt bauen, ohne zwischen Plan, Material und Koordinaten zu rechnen. Alles wird aus `buildGuide` (Schritte, Reihenfolge, Geometriehash), den Bauitems je Schritt (`materialsForParts`, wie Material-Tab) und `checkScan` (Spielaufnahme) abgeleitet. Es gibt **keine zweite Geometrie-, Zähl- oder Itemlogik**, und kein Haken wird ohne ausdrücklichen Klick gesetzt.
 

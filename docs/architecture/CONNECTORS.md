@@ -1,6 +1,6 @@
 # Anschlüsse, Snap und Bereich als Bauteil (B5)
 
-Stand: 27.10.2026. Umsetzung von P2-02 (Snap-Anteil), R-009 und Bereichsauswahl aus R-008. Code: `packages/domain/src/connectors.ts`, Tests `tests/connectors.test.mjs` und `tests/e2e/snap.e2e.mjs`. Oberfläche: `views/project/SnapPanel.tsx`, `views/library/ConnectorEditor.tsx`, `views/library/CropPanel.tsx`. Ergänzt den [Domänenvertrag](DOMAIN.md).
+Stand: 27.10.2026. Umsetzung von P2-02 (Snap-Anteil), R-009 und Bereichsauswahl aus R-008. Code: `packages/domain/src/core/connectors.ts`, Tests `tests/connectors.test.mjs` und `tests/e2e/snap.e2e.mjs`. Oberfläche: `views/project/SnapPanel.tsx`, `views/library/ConnectorEditor.tsx`, `views/library/CropPanel.tsx`. Ergänzt den [Domänenvertrag](DOMAIN.md).
 
 ## Anschlussvertrag
 

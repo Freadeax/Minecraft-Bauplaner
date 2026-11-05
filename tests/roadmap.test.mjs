@@ -31,7 +31,7 @@ test('source merge requires changed-file mapping, appended history and task attr
 });
 test('artifact-only child commit does not require a self-referencing roadmap update', () => {
   assert.deepEqual(checkChange({}, {}, ['deployment.json', 'assets/main-abc.js', 'index.html']), []);
-  assert.ok(checkChange({ items: [], events: [] }, { items: [], events: [] }, ['packages/domain/src/project.ts', 'deployment.json']).length > 0);
+  assert.ok(checkChange({ items: [], events: [] }, { items: [], events: [] }, ['packages/domain/src/core/project.ts', 'deployment.json']).length > 0);
 });
 test('overview groups open work by area, lists Philipp-only tasks and orphaned work', () => {
   const data = baseline();

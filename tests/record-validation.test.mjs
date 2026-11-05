@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { createAsset, createBuildingLibrary, createSampleLibrary, createBackup, readBackup, addAssetVersion, sampleWallPayload, canonicalJson, sha256Hex } from '../dist/domain/src/index.js';
-import { assertAssetRecordFields, validateOriginalManifest } from '../dist/domain/src/recordValidation.js';
+import { assertAssetRecordFields, validateOriginalManifest } from '../dist/domain/src/data/recordValidation.js';
 
 const fresh = () => createAsset({ name: 'Haus', provenance: { author: '', source: '', license: '' } });
 const sha = 'ab'.repeat(32), other = 'cd'.repeat(32);

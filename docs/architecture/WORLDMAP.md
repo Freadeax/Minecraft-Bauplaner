@@ -11,7 +11,7 @@ Die Weltkarte zeigt alle Projekte an ihren Koordinaten in einer Minecraft-Welt. 
 - **Weltkoordinate = Projektkoordinate + Ursprung**, für jede Zelle. Es gibt keine zweite Koordinatenregel: Karte, Bauanleitung und Schem-Export beschreiben dieselben Blöcke; die Karte verschiebt nur.
 - Änderung ausschließlich über die Operation `world.set` (`project.ts`) mit exakter Umkehrung (Rückgängig), validiert durch `checkWorldPlacement`. Sicherungen prüfen das Feld in `checkProjectRecord`.
 
-## Ableitung (`packages/domain/src/worldmap.ts`)
+## Ableitung (`packages/domain/src/world/worldmap.ts`)
 
 `buildWorldMap(projects, versions, { dimension, maxCells, showHidden })` ist rein und deterministisch:
 

@@ -5811,3 +5811,389 @@ Anbindung geprüft und gehärtet (Mod/Plugin 0.17.0): WebSocket-Rahmen über WsQ
 - `services/team-room/src/index.js`
 - `tests/team-room.test.mjs`
 
+## 2026-11-05T10:34:38.680Z · progress
+
+**Aufgaben:** STRUCT-01, CORE-02, CORE-03, STORE-01, MAT-01, BUILD-01, ARCH-01, ARCH-02, UI-02, STAB-01, PROFILE-01, MAT-02, MAT-03, MAT-04, DIFF-01, PERF-02, PERF-04, PERF-05, BLOCK-01, BLOCK-02, EDIT-01, UPDATE-01, LIB-03, WORLD-02, BUILD-05, TERRAIN-01, TERRAIN-02, TERRAIN-03, BUILD-06, MAP-01, MAP-04, MAP-02, GAME-01, GAME-07, WORLD-IMPORT-01, BACKUP-02, TEAM-02, TEAM-03, LAGER-01, LIB-04, ENTITY-01, LIB-05, LIB-06, BASE-01, SPLIT-01, GROSS-01, MAP-05, MAP-06, MAP-07, GEN-03, SIZE-01, COOP-01, COOP-03, COOP-04, COOP-05, COOP-06, PROJ-01, COOP-07, COOP-08, PROD-01, PROD-02, PROD-03, PROD-04, PROD-05, LINK-02, LINK-04, LINK-05, LINK-06, COOP-09, COOP-10, COOP-11, PROJ-02, PROJ-03, PROJ-04, LINK-07, FALLBACK-01, LINK-10
+
+Stufe 2 (STRUCT-01): packages/domain/src in Fachordner (core, catalog, base, materials, building, planning, world, team, data, versions), Web-CSS nach styles/, Team-Ansichten nach views/project/team/, Codemod scripts/dev/restructure.mjs, Ordnerkarte docs/STRUKTUR.md. Übrige Aufgaben: nur Dateiumfang/Nachweispfade auf die neuen Orte umgeschrieben.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| STRUCT-01 | 🚧 In Arbeit | 2/4 | Stufe 1: scripts/, tests/ und docs/architecture nach Bereich ordnen. |
+| CORE-02 | ✅ Im beschriebenen Umfang geprüft | 1/1 | Regressionen bei Änderungen weiterführen. |
+| CORE-03 | ✅ Im beschriebenen Umfang geprüft | 1/1 | Regressionen bei Änderungen weiterführen. |
+| STORE-01 | ✅ Im beschriebenen Umfang geprüft | 1/1 | Regressionen bei Änderungen weiterführen. |
+| MAT-01 | ✅ Im beschriebenen Umfang geprüft | 1/1 | Regressionen bei Änderungen weiterführen. |
+| BUILD-01 | ✅ Im beschriebenen Umfang geprüft | 1/1 | Regressionen bei Änderungen weiterführen. |
+| ARCH-01 | ✅ Im beschriebenen Umfang geprüft | 4/4 | Bei folgenden Quellblöcken gepflegt halten; Browserabnahme separat in QA-01 verfolgen. |
+| ARCH-02 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme der Migration mit echten Browserdaten (S05); danach kompakte Laufzeitform der Zellen als Folge von PERF-02. |
+| UI-02 | ✅ Im beschriebenen Umfang geprüft | 4/4 | Echte Geräteprüfung (Safari/iPhone, Touch) in QA-02; weitere Hauptbereiche (z. B. Karte MAP-01) als Eintrag in nav.ts anhängen. |
+| STAB-01 | ✅ Im beschriebenen Umfang geprüft | 2/2 | Erledigt. |
+| PROFILE-01 | 🧩 Implementiert · Abnahme offen | 3/3 | Abnahme: Profilprüfung im Gebäudeblatt an einer echten älteren Schem-/Litematic-Datei ansehen (Testphase). |
+| MAT-02 | 🧩 Implementiert · Abnahme offen | 3/3 | Abnahme in der Testphase: Rohstoffliste eines großen Bauwerks mit gewählter Holzart und Brennstoff mit dem Spiel vergleichen. |
+| MAT-03 | 🧩 Implementiert · Abnahme offen | 3/3 | Abnahme PROJ-14. |
+| MAT-04 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme: Kupfervariante eines Bauwerks im Planer erzeugen und im Spiel ansehen (Testphase). |
+| DIFF-01 | 🧩 Implementiert · Abnahme offen | 3/3 | Abnahme in der Testphase: zwei Stände eines verschobenen Bauwerks vergleichen. |
+| PERF-02 | 🧩 Implementiert · Abnahme offen | 3/3 | PERF-02-S03 zusammen mit PERF-05-S08 (Zellen erst bei Bedarf entpacken) im Performance-Thread umsetzen; beide ändern compose/Entpacken. Übergabe abgestimmt am 03.11.2026. |
+| PERF-04 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); der GPU-Upload großer Szenen läuft seit GFX-02-S03 in Stücken. |
+| PERF-05 | 🧩 Implementiert · Abnahme offen | 8/9 | O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8). |
+| BLOCK-01 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme im Spiel; PROFILE-01 kann die Berichtsfakten übernehmen. Die Katalogfehler aus der Spielprüfung behebt BLOCK-02. |
+| BLOCK-02 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme im Spiel (S06): geänderte Gebäude (z. B. Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen. |
+| EDIT-01 | 🧩 Implementiert · Abnahme offen | 2/2 | Geräteprüfung (QA-02). Gruppenziehen im 3D-Bild ist mit EDIT-06 erledigt. |
+| UPDATE-01 | 🧩 Implementiert · Abnahme offen | 2/2 | Echtgeräteabnahme (QA-02); Teamreihenfolge der Updateoperationen in TEAM-02. |
+| LIB-03 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme auf echten Geräten (QA-02); Vorlagen für Anlagen (Compounds) und BUILD-05 prüfen. |
+| WORLD-02 | ✅ Im beschriebenen Umfang geprüft | 2/2 | Kuratierte Filter-/Treffernachweise bei Katalogänderungen fortführen; keine weitere Karte ohne tatsächliche Assets. |
+| BUILD-05 | ✅ Im beschriebenen Umfang geprüft | 3/3 | Gelände-/Hanglagen und Türausrichtung zum Weg als eigene Folgeaufgabe; Echtgeräteabnahme mit QA-02. |
+| TERRAIN-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme mit eigener Welt (S05); danach Weg mit Stufen/Kurven und Stützmauern als Blöcke als eigene Folgeaufgabe. |
+| TERRAIN-02 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme mit eigener Welt (S05); Wegstufen und Brücken siehe TERRAIN-03. |
+| TERRAIN-03 | 🧩 Implementiert · Abnahme offen | 6/8 | Abnahme PROJ-19 und BIB-19 im Spiel; danach Wegenetz der Basis als Landschaftsweg (S08). |
+| BUILD-06 | 🧩 Implementiert · Abnahme offen | 5/5 | Echtgeräte- und Druckerabnahme mit QA-02; Philipps Spieltest mit Mod-Aufnahme (WorldAnchor) auf seinem Server. |
+| MAP-01 | 🧩 Implementiert · Abnahme offen | 4/4 | Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02. |
+| MAP-04 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme durch Philipp (S06); denkbare Folge: benannte Gruppen/Sperren mit Schemaerweiterung, abgestimmt mit der Mod. |
+| MAP-02 | 🧩 Implementiert · Abnahme offen | 2/3 | Abnahme KARTE-08 auf Philipps Server-Karte. |
+| GAME-01 | ✅ Im beschriebenen Umfang geprüft | 1/1 | Regressionen bei Änderungen weiterführen. |
+| GAME-07 | 🧩 Implementiert · Abnahme offen | 9/11 | Philipp prüft Packliste und Gerüst (0.13.0, TESTPLAN MOD-17) im echten Spiel; danach Stufe 6b (Gruppen/Sperren aus dem Weltbuilder). |
+| WORLD-IMPORT-01 | 🧩 Implementiert · Abnahme offen | 2/2 | Mit einer Kopie von Philipps eigener 26.3-Welt (Modpack) einen Ausschnitt übernehmen und ein platziertes Projekt prüfen. |
+| BACKUP-02 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme auf echten Geräten (QA-02), besonders Safari-Downloads; Rückmeldung zur Erinnerungsschwelle (7 Tage) einholen. |
+| TEAM-02 | ⏳ Offen | 0/2 | Operation-ID, Revisionsprüfung und Wiederholung serverseitig umsetzen. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option. |
+| TEAM-03 | ⏳ Offen | 0/2 | Zuständigkeiten und Lagerbuchungen versionieren. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option. |
+| LAGER-01 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme auf dem Paper-Server (Thread „Server-Plugin mit geprüften Lagerkisten“). |
+| LIB-04 | 🧩 Implementiert · Abnahme offen | 4/4 | Weitere Ensembles und Tipps nach Spielrückmeldung; Redstone-Bauten im Spiel abnehmen. |
+| ENTITY-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Export mit Entities im Spiel prüfen (S06). Truhen-/Schildinhalte bearbeiten ist mit EDIT-06 erledigt. |
+| LIB-05 | 🧩 Implementiert · Abnahme offen | 7/8 | LIB-05-S08: Abnahme neuer Gebäude im Spiel durch Philipp. |
+| LIB-06 | 🧩 Implementiert · Abnahme offen | 5/7 | Abnahme durch Philipp (S06) und erster echter Beitrag (S07). |
+| BASE-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme durch Philipp (S06); danach Küstenlinie aus der Geländeaufnahme und Wegstufen. |
+| SPLIT-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme mit echten Dateien (S05). |
+| GROSS-01 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme durch Philipp (S06); Großbauten-Set (S05). |
+| MAP-05 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05); denkbar: gedrehte Projektlagen auf der Weltkarte, damit gedrehte Hologramme übernommen werden können. |
+| MAP-06 | 🧩 Implementiert · Abnahme offen | 7/8 | Abnahme durch Philipp (S08); Mod-Umsetzung GAME-08; denkbar für Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (Zeitstempel je Eintrag). |
+| MAP-07 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme KARTE-07; Server-Plugin könnte Pläne gedreht ablegen (Thread „Mod, Server und Client mit Fallbacks ausbauen“). |
+| GEN-03 | 🧩 Implementiert · Abnahme offen | 4/5 | Philipp baut das Kolosseum im Spiel nach (BIB-14); danach Feinschliff (Statuen in den Attika-Fenstern, Treppen im Hypogäum). |
+| SIZE-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05) mit einem großen Bau im Spiel. |
+| COOP-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp mit Mitspielern (TEAMBAU-01…05). |
+| COOP-03 | 🧩 Implementiert · Abnahme offen | 2/3 | Abnahme TEAMBAU-09 auf Philipps Server mit Mod 0.10.0 und Paper-Plugin mit Teamkanal; Lagerkisten (COOP-04) über TeamChannel.decorate/broadcastStore. |
+| COOP-04 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung in COOP-05 (geprüfte Lagerkisten, docs/architecture/LAGERKISTEN.md). |
+| COOP-05 | 🧩 Implementiert · Abnahme offen | 3/5 | Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server. |
+| COOP-06 | 🧩 Implementiert · Abnahme offen | 4/5 | Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern. |
+| PROJ-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel. |
+| COOP-07 | 🧩 Implementiert · Abnahme offen | 6/7 | Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl umgesetzt (LINK-05). |
+| COOP-08 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme LAGER-10 mit einer echten Farm; Ertragsbuch in TEAMBAU-28. |
+| PROD-01 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme PROJ-12; später Erträge aus geprüften Lagerkisten (COOP-05) ins Ertragsbuch. |
+| PROD-02 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme PROJ-13. |
+| PROD-03 | 🧩 Implementiert · Abnahme offen | 3/3 | Später: Ofenstraße aus dem Katalog direkt vorschlagen und in die Planung legen. |
+| PROD-04 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme PROJ-13; danach Farmerträge aus Mod/Plugin. |
+| PROD-05 | 🧩 Implementiert · Abnahme offen | 5/5 | Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen. |
+| LINK-02 | 🧩 Implementiert · Abnahme offen | 3/4 | Plan-Upload aus dem Planer; Abnahme LINK-02. |
+| LINK-04 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme durch Philipp. |
+| LINK-05 | 🧩 Implementiert · Abnahme offen | 5/5 | Abnahme vom iPad (Testplan LINK-04). |
+| LINK-06 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme durch Philipp (Testplan LINK-05, LINK-06; Paper-Plugin 0.13.0 auf dem Server). |
+| COOP-09 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme mit Mitspielern (TEAMBAU-25). |
+| COOP-10 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme mit Mitspielern ohne Plugin (TEAMBAU-27, TEAMBAU-25). |
+| COOP-11 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme TEAMBAU-28 durch Philipp; danach optional team.digest im Plugin/Mod-TeamLog (Thread „Mod, Server und Client mit Fallbacks ausbauen“). |
+| PROJ-02 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05, PROJ-16…18). |
+| PROJ-03 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme PROJ-20 durch Philipp. |
+| PROJ-04 | 🧩 Implementiert · Abnahme offen | 2/3 | Abnahme PROJ-21 durch Philipp. |
+| LINK-07 | 🚧 In Arbeit | 5/6 | Team-Thread deployt den Raum (Aufnahmen, Positionen); Modrinth 0.15.0; Abnahme LINK-07/LINK-08 durch Philipp. |
+| FALLBACK-01 | 🚧 In Arbeit | 4/5 | Spieltest Mod 0.16.0, Release über den Modrinth-Thread, Abnahme LINK-09 durch Philipp. |
+| LINK-10 | 🧩 Implementiert · Abnahme offen | 4/4 | Release 0.17.0 über den Modrinth-Thread, Team-Raum ausrollen, Abnahme mit LINK-09. |
+
+**Geänderte Dateien:**
+
+- `AGENTS.md`
+- `README.md`
+- `apps/web/src/app/useProjectComputation.ts`
+- `apps/web/src/jobs/libraryJob.ts`
+- `apps/web/src/main.tsx`
+- `apps/web/src/materials/MaterialLab.tsx`
+- `apps/web/src/styles/backup.css`
+- `apps/web/src/styles/buildrun.css`
+- `apps/web/src/styles/catalog.css`
+- `apps/web/src/styles/datamodel.css`
+- `apps/web/src/styles/map.css`
+- `apps/web/src/styles/planning.css`
+- `apps/web/src/styles/production.css`
+- `apps/web/src/styles/schem.css`
+- `apps/web/src/styles/shell.css`
+- `apps/web/src/styles/site.css`
+- `apps/web/src/styles/style.css`
+- `apps/web/src/styles/team.css`
+- `apps/web/src/styles/teamplan.css`
+- `apps/web/src/views/BackupPanel.tsx`
+- `apps/web/src/views/ProjectsView.tsx`
+- `apps/web/src/views/SystemView.tsx`
+- `apps/web/src/views/library/AssetRevisionNotice.tsx`
+- `apps/web/src/views/library/BuildThemesPage.tsx`
+- `apps/web/src/views/library/UsageSection.tsx`
+- `apps/web/src/views/library/VersionsSection.tsx`
+- `apps/web/src/views/library/buildThemeLinks.ts`
+- `apps/web/src/views/map/LiveGamePanel.tsx`
+- `apps/web/src/views/map/LiveMapPanel.tsx`
+- `apps/web/src/views/map/OverviewMap.tsx`
+- `apps/web/src/views/map/PlacementForm.tsx`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/map/liveMapConfig.ts`
+- `apps/web/src/views/map/map.worker.ts`
+- `apps/web/src/views/map/transport.ts`
+- `apps/web/src/views/project/BuildTab.tsx`
+- `apps/web/src/views/project/GameCheckPanel.tsx`
+- `apps/web/src/views/project/PlanningTab.tsx`
+- `apps/web/src/views/project/ProductionTab.tsx`
+- `apps/web/src/views/project/ProjectView.tsx`
+- `apps/web/src/views/project/SiteTab.tsx`
+- `apps/web/src/views/project/SnapshotsPanel.tsx`
+- `apps/web/src/views/project/tabs.ts`
+- `apps/web/src/views/project/team/TeamCompact.tsx`
+- `apps/web/src/views/project/team/TeamExchange.tsx`
+- `apps/web/src/views/project/team/TeamJoinView.tsx`
+- `apps/web/src/views/project/team/TeamLive.tsx`
+- `apps/web/src/views/project/team/TeamLiveBar.tsx`
+- `apps/web/src/views/project/team/TeamOpen.tsx`
+- `apps/web/src/views/project/team/TeamPlan.tsx`
+- `apps/web/src/views/project/team/TeamProof.tsx`
+- `apps/web/src/views/project/team/TeamRoom.tsx`
+- `apps/web/src/views/project/team/TeamTab.tsx`
+- `apps/web/src/views/project/team/roomClient.ts`
+- `apps/web/src/views/project/team/teamTransfer.ts`
+- `docs/BLOCKS.md`
+- `docs/COMMUNICATION.md`
+- `docs/REQUIREMENTS.md`
+- `docs/STRUKTUR.md`
+- `docs/architecture/ANLAGEN.md`
+- `docs/architecture/AUTO_LINK.md`
+- `docs/architecture/BACKUPS.md`
+- `docs/architecture/BASE_PLANNER.md`
+- `docs/architecture/BAUSTIL.md`
+- `docs/architecture/BLOCK_LOGIC.md`
+- `docs/architecture/BUILD_RUN.md`
+- `docs/architecture/BUILD_THEMES.md`
+- `docs/architecture/CATALOG.md`
+- `docs/architecture/COLLECTIONS.md`
+- `docs/architecture/CONNECTORS.md`
+- `docs/architecture/CONTRIBUTIONS.md`
+- `docs/architecture/FALLBACKS.md`
+- `docs/architecture/GENERATORS.md`
+- `docs/architecture/GROSSPROJEKTE.md`
+- `docs/architecture/GUIDE.md`
+- `docs/architecture/LANDSCAPE.md`
+- `docs/architecture/LIVEMAP.md`
+- `docs/architecture/LIVE_LINK.md`
+- `docs/architecture/MATERIALS.md`
+- `docs/architecture/MODULES.md`
+- `docs/architecture/MOD_BRIDGE.md`
+- `docs/architecture/MOD_HOLOGRAM.md`
+- `docs/architecture/PERSISTENCE.md`
+- `docs/architecture/PLAN_MODEL.md`
+- `docs/architecture/PRODUCTION.md`
+- `docs/architecture/PROGRAM.md`
+- `docs/architecture/SCHEM_VIEWS.md`
+- `docs/architecture/SITE.md`
+- `docs/architecture/STABILITY.md`
+- `docs/architecture/TEAMBAU.md`
+- `docs/architecture/TEAM_LIVE.md`
+- `docs/architecture/TERRAIN.md`
+- `docs/architecture/UI.md`
+- `docs/architecture/UPDATES.md`
+- `docs/architecture/VERSION_PROFILE.md`
+- `docs/architecture/VIEWER.md`
+- `docs/architecture/WORLDMAP.md`
+- `docs/architecture/WORLD_BUILDER.md`
+- `docs/architecture/WORLD_IMPORT.md`
+- `docs/project/CODEX_PROMPT.md`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/BlockRules.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WorldMarks.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndex.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StoreLedger.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`
+- `packages/application/src/assetConcurrency.ts`
+- `packages/application/src/catalogSnapshot.ts`
+- `packages/application/src/catalogSync.ts`
+- `packages/application/src/computationTransport.ts`
+- `packages/application/src/memoryRepository.ts`
+- `packages/application/src/projectComputation.ts`
+- `packages/application/src/revisionExport.ts`
+- `packages/application/src/scanPersistence.ts`
+- `packages/domain/src/base/anlagen.ts`
+- `packages/domain/src/base/anlagenTerrain.ts`
+- `packages/domain/src/base/base.ts`
+- `packages/domain/src/base/baseFunctions.ts`
+- `packages/domain/src/base/baseShore.ts`
+- `packages/domain/src/base/entrance.ts`
+- `packages/domain/src/building/buildRun.ts`
+- `packages/domain/src/building/gameCheck.ts`
+- `packages/domain/src/building/guide.ts`
+- `packages/domain/src/building/sectionMembership.ts`
+- `packages/domain/src/building/sectionSnapshots.ts`
+- `packages/domain/src/building/site.ts`
+- `packages/domain/src/catalog/build/facade.ts`
+- `packages/domain/src/catalog/build/furnish.ts`
+- `packages/domain/src/catalog/build/gameReady.ts`
+- `packages/domain/src/catalog/build/plot.ts`
+- `packages/domain/src/catalog/build/quality.ts`
+- `packages/domain/src/catalog/build/refine.ts`
+- `packages/domain/src/catalog/build/sets/antike.ts`
+- `packages/domain/src/catalog/build/sets/befestigung.ts`
+- `packages/domain/src/catalog/build/sets/deko.ts`
+- `packages/domain/src/catalog/build/sets/dimensionen.ts`
+- `packages/domain/src/catalog/build/sets/dorf.ts`
+- `packages/domain/src/catalog/build/sets/epochen.ts`
+- `packages/domain/src/catalog/build/sets/fahrzeuge.ts`
+- `packages/domain/src/catalog/build/sets/fantasy.ts`
+- `packages/domain/src/catalog/build/sets/farmen.ts`
+- `packages/domain/src/catalog/build/sets/garten.ts`
+- `packages/domain/src/catalog/build/sets/grossbauten.ts`
+- `packages/domain/src/catalog/build/sets/hof.ts`
+- `packages/domain/src/catalog/build/sets/index.ts`
+- `packages/domain/src/catalog/build/sets/infrastruktur.ts`
+- `packages/domain/src/catalog/build/sets/interieur.ts`
+- `packages/domain/src/catalog/build/sets/klassiker.ts`
+- `packages/domain/src/catalog/build/sets/kueste.ts`
+- `packages/domain/src/catalog/build/sets/landschaft.ts`
+- `packages/domain/src/catalog/build/sets/meister.ts`
+- `packages/domain/src/catalog/build/sets/natur.ts`
+- `packages/domain/src/catalog/build/sets/redstone.ts`
+- `packages/domain/src/catalog/build/sets/sakral.ts`
+- `packages/domain/src/catalog/build/sets/spielhilfen.ts`
+- `packages/domain/src/catalog/build/sets/stadt.ts`
+- `packages/domain/src/catalog/build/sets/technik.ts`
+- `packages/domain/src/catalog/build/sets/untergrund.ts`
+- `packages/domain/src/catalog/build/sets/varianten.ts`
+- `packages/domain/src/catalog/build/sets/welten.ts`
+- `packages/domain/src/catalog/build/sets/wohnen.ts`
+- `packages/domain/src/catalog/build/spec.ts`
+- `packages/domain/src/catalog/build/style.ts`
+- `packages/domain/src/catalog/buildThemes.ts`
+- `packages/domain/src/catalog/buildings.ts`
+- `packages/domain/src/catalog/catalog.ts`
+- `packages/domain/src/catalog/collections.ts`
+- `packages/domain/src/catalog/community/library.ts`
+- `packages/domain/src/catalog/community/registry.ts`
+- `packages/domain/src/catalog/community/types.ts`
+- `packages/domain/src/catalog/contribution.ts`
+- `packages/domain/src/catalog/ensembles.ts`
+- `packages/domain/src/catalog/generators/arena.ts`
+- `packages/domain/src/catalog/generators/bridge.ts`
+- `packages/domain/src/catalog/generators/church.ts`
+- `packages/domain/src/catalog/generators/compound.ts`
+- `packages/domain/src/catalog/generators/gatehouse.ts`
+- `packages/domain/src/catalog/generators/harbor.ts`
+- `packages/domain/src/catalog/generators/house.ts`
+- `packages/domain/src/catalog/generators/index.ts`
+- `packages/domain/src/catalog/generators/params.ts`
+- `packages/domain/src/catalog/generators/roof.ts`
+- `packages/domain/src/catalog/generators/roofs.ts`
+- `packages/domain/src/catalog/generators/stairwell.ts`
+- `packages/domain/src/catalog/generators/styles.ts`
+- `packages/domain/src/catalog/generators/tower.ts`
+- `packages/domain/src/catalog/generators/types.ts`
+- `packages/domain/src/catalog/generators/wall.ts`
+- `packages/domain/src/catalog/generators/well.ts`
+- `packages/domain/src/catalog/generators/windmill.ts`
+- `packages/domain/src/catalog/grossprojekte.ts`
+- `packages/domain/src/catalog/grossprojekte/bergbaustadt.ts`
+- `packages/domain/src/catalog/grossprojekte/burganlage.ts`
+- `packages/domain/src/catalog/grossprojekte/hafenstadt.ts`
+- `packages/domain/src/catalog/grossprojekte/hauptstadt.ts`
+- `packages/domain/src/catalog/grossprojekte/helpers.ts`
+- `packages/domain/src/catalog/grossprojekte/index.ts`
+- `packages/domain/src/catalog/grossprojekte/industriehafen.ts`
+- `packages/domain/src/catalog/grossprojekte/innenstadt.ts`
+- `packages/domain/src/catalog/grossprojekte/klosterdorf.ts`
+- `packages/domain/src/catalog/grossprojekte/kolosseum.ts`
+- `packages/domain/src/catalog/grossprojekte/landgut.ts`
+- `packages/domain/src/catalog/grossprojekte/magierstadt.ts`
+- `packages/domain/src/catalog/grossprojekte/marktstadt.ts`
+- `packages/domain/src/catalog/grossprojekte/residenzstadt.ts`
+- `packages/domain/src/catalog/grossprojekte/tempelstadt.ts`
+- `packages/domain/src/catalog/library.ts`
+- `packages/domain/src/core/compose.ts`
+- `packages/domain/src/core/connectors.ts`
+- `packages/domain/src/core/hash.ts`
+- `packages/domain/src/core/inspect.ts`
+- `packages/domain/src/core/placement.ts`
+- `packages/domain/src/core/project.ts`
+- `packages/domain/src/core/samples.ts`
+- `packages/domain/src/core/split.ts`
+- `packages/domain/src/core/types.ts`
+- `packages/domain/src/data/backup.ts`
+- `packages/domain/src/data/backupStatus.ts`
+- `packages/domain/src/data/integrity.ts`
+- `packages/domain/src/data/planGraph.ts`
+- `packages/domain/src/data/recordValidation.ts`
+- `packages/domain/src/data/versionStorage.ts`
+- `packages/domain/src/editor/colorMatch.ts`
+- `packages/domain/src/editor/commit.ts`
+- `packages/domain/src/editor/curves.ts`
+- `packages/domain/src/editor/draft.ts`
+- `packages/domain/src/editor/forms.ts`
+- `packages/domain/src/editor/patterns.ts`
+- `packages/domain/src/editor/region.ts`
+- `packages/domain/src/editor/sculpt.ts`
+- `packages/domain/src/editor/settle.ts`
+- `packages/domain/src/editor/shapes.ts`
+- `packages/domain/src/editor/stencils.ts`
+- `packages/domain/src/editor/symmetry.ts`
+- `packages/domain/src/editor/tools.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/materials/copper.ts`
+- `packages/domain/src/materials/materialLab.ts`
+- `packages/domain/src/materials/materials.ts`
+- `packages/domain/src/materials/production.ts`
+- `packages/domain/src/materials/productionPlan.ts`
+- `packages/domain/src/materials/profileRecipes.ts`
+- `packages/domain/src/materials/recipeProfile.ts`
+- `packages/domain/src/materials/recipes.ts`
+- `packages/domain/src/materials/variants.ts`
+- `packages/domain/src/planning/program.ts`
+- `packages/domain/src/planning/programMaterial.ts`
+- `packages/domain/src/planning/projectOrder.ts`
+- `packages/domain/src/team/liveLink.ts`
+- `packages/domain/src/team/ownerWire.ts`
+- `packages/domain/src/team/serverControl.ts`
+- `packages/domain/src/team/team.ts`
+- `packages/domain/src/team/teamDigest.ts`
+- `packages/domain/src/team/teamLink.ts`
+- `packages/domain/src/team/teamPlan.ts`
+- `packages/domain/src/team/teamSync.ts`
+- `packages/domain/src/versions/revisionExport.ts`
+- `packages/domain/src/versions/updateState.ts`
+- `packages/domain/src/versions/updates.ts`
+- `packages/domain/src/world/liveMapExport.ts`
+- `packages/domain/src/world/livemap.ts`
+- `packages/domain/src/world/scanRoutes.ts`
+- `packages/domain/src/world/terrain.ts`
+- `packages/domain/src/world/terrainDesign.ts`
+- `packages/domain/src/world/terrainScatter.ts`
+- `packages/domain/src/world/terrainScatterPlan.ts`
+- `packages/domain/src/world/terrainSurvey.ts`
+- `packages/domain/src/world/worldPlan.ts`
+- `packages/domain/src/world/worldPlanEdit.ts`
+- `packages/domain/src/world/worldRoute.ts`
+- `packages/domain/src/world/worldmap.ts`
+- `packages/formats/src/worldExcerpt.ts`
+- `scripts/benchmark_composition.mjs`
+- `scripts/benchmark_project_browser.mjs`
+- `scripts/bridge_paperlink.mjs`
+- `scripts/dev/moves/2026-11-05-stufe2-module.json`
+- `scripts/dev/restructure.mjs`
+- `scripts/gen_profile.mjs`
+- `scripts/library_intake.mjs`
+- `services/team-room/src/core.js`
+- `tests/anlagen.test.mjs`
+- `tests/baustil.test.mjs`
+- `tests/build-run.test.mjs`
+- `tests/build-themes.test.mjs`
+- `tests/contribution.test.mjs`
+- `tests/copper.test.mjs`
+- `tests/generators.test.mjs`
+- `tests/grossprojekte.test.mjs`
+- `tests/large-edit.test.mjs`
+- `tests/lazy-cells.test.mjs`
+- `tests/livemap.test.mjs`
+- `tests/material-lab.test.mjs`
+- `tests/owner-wire.test.mjs`
+- `tests/record-validation.test.mjs`
+- `tests/restructure.test.mjs`
+- `tests/roadmap.test.mjs`
+- `tests/variants.test.mjs`
+- `vite.config.mjs`
+

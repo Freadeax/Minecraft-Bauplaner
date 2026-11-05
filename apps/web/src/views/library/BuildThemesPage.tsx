@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { BUILD_THEMES, selectBuildTheme } from '../../../../../packages/domain/src/buildThemes.js';
-import { anlageForTheme } from '../../../../../packages/domain/src/anlagen.js';
-import { FACETS, facetLabel } from '../../../../../packages/domain/src/catalog.js';
-import type { CatalogEntry } from '../../../../../packages/domain/src/catalog.js';
+import { BUILD_THEMES, selectBuildTheme } from '../../../../../packages/domain/src/catalog/buildThemes.js';
+import { anlageForTheme } from '../../../../../packages/domain/src/base/anlagen.js';
+import { FACETS, facetLabel } from '../../../../../packages/domain/src/catalog/catalog.js';
+import type { CatalogEntry } from '../../../../../packages/domain/src/catalog/catalog.js';
 import { Thumb } from '../../thumbnail/Thumb';
 import { formatNumber } from '../../app/ui';
 import { buildThemeSearch } from './buildThemeLinks';

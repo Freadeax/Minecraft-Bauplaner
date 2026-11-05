@@ -1,6 +1,6 @@
 # Bibliotheksbeiträge: eigene Bauwerke fest in die Bibliothek (LIB-06)
 
-Stand: 03.11.2026. Code: `packages/domain/src/contribution.ts` (Paketformat, Prüfung, Katalog-Asset), `packages/domain/src/community/` (Register, Eintragsmodule, `createCommunityLibrary`), Übernahme `scripts/library_intake.mjs`, Oberfläche `apps/web/src/views/library/ContributePanel.tsx` im Gebäudeblatt, GitHub-Formular `.github/ISSUE_TEMPLATE/bibliotheksbeitrag.yml`. Tests: `tests/contribution.test.mjs`, `tests/e2e/contribution.e2e.mjs`. Übersicht der aufgenommenen Beiträge: [BEITRAEGE](../library/BEITRAEGE.md).
+Stand: 03.11.2026. Code: `packages/domain/src/catalog/contribution.ts` (Paketformat, Prüfung, Katalog-Asset), `packages/domain/src/catalog/community/` (Register, Eintragsmodule, `createCommunityLibrary`), Übernahme `scripts/library_intake.mjs`, Oberfläche `apps/web/src/views/library/ContributePanel.tsx` im Gebäudeblatt, GitHub-Formular `.github/ISSUE_TEMPLATE/bibliotheksbeitrag.yml`. Tests: `tests/contribution.test.mjs`, `tests/e2e/contribution.e2e.mjs`. Übersicht der aufgenommenen Beiträge: [BEITRAEGE](../library/BEITRAEGE.md).
 
 ## Ziel und Abgrenzung
 
@@ -39,8 +39,8 @@ Die Seite ist statisch (GitHub Pages, keine Server, keine Konten). Deshalb lädt
 
 ## Im Repository
 
-- `packages/domain/src/community/entries/<kennung>.ts`: das Paket unverändert als Modul (`export default`), dazu `addedAt`. Jedes Modul wird **nur bei Bedarf geladen** (eigener Chunk); der Startcode wird nicht größer.
-- `packages/domain/src/community/registry.ts`: vom Skript erzeugt (Kennung, Name, Autor, Datum, Prüfsumme, Bautipps, Lader). Nicht von Hand ändern; `npm run check:library` (Teil von `npm run check`) prüft, dass jedes Paket lesbar ist und das Register zu den Dateien passt.
+- `packages/domain/src/catalog/community/entries/<kennung>.ts`: das Paket unverändert als Modul (`export default`), dazu `addedAt`. Jedes Modul wird **nur bei Bedarf geladen** (eigener Chunk); der Startcode wird nicht größer.
+- `packages/domain/src/catalog/community/registry.ts`: vom Skript erzeugt (Kennung, Name, Autor, Datum, Prüfsumme, Bautipps, Lader). Nicht von Hand ändern; `npm run check:library` (Teil von `npm run check`) prüft, dass jedes Paket lesbar ist und das Register zu den Dateien passt.
 - `docs/library/BEITRAEGE.md` und `docs/library/beitraege/<kennung>.png`: Übersicht mit Vorschau für die Durchsicht.
 
 ## In der App

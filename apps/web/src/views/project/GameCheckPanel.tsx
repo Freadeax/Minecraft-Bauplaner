@@ -9,9 +9,9 @@ import { loadProjectScanOriginal, saveProjectScan } from '../../app/scanPersiste
 import { MODEL_MAX_FILE_BYTES } from '../../../../../packages/voxel/src/sizeLimits.js';
 import { hasServerPairing, latestServerRecording, recordOnServer } from '../mod/serverClient';
 import type { ServerRecording } from '../mod/serverClient';
-import { useRoomConnection } from './roomClient';
+import { useRoomConnection } from './team/roomClient';
 import { liveApi, readLiveSettings } from '../map/liveClient';
-import type { RoomScan } from './roomClient';
+import type { RoomScan } from './team/roomClient';
 
 export type LoadedScan = WorldScan & { readonly sourceSha256: string; readonly fileName: string };
 const MAX_SCAN_BYTES = MODEL_MAX_FILE_BYTES;

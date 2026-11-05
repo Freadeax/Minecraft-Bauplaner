@@ -1,7 +1,7 @@
 import { transformBlockState, transformVector } from '../../../voxel/src/states.js';
 import { entityAnchor, transformEntity } from '../../../voxel/src/entities.js';
 import type { BlockState, Bounds, FreeEntity, Transform, Vec3 } from '../../../voxel/src/types.js';
-import { DomainError } from '../types.js';
+import { DomainError } from '../core/types.js';
 import { MAX_EDIT_CELLS, cellAt, draftEntries, keyPos, posKey, sameSlot } from './draft.js';
 import type { CellChange, CellSlot, CellValue, Draft, Edit } from './draft.js';
 

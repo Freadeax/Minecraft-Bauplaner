@@ -28,7 +28,7 @@ Die Weltkarte (`#/karte`) wird zur Live-Karte: Die Bauplaner-Mod (Fabric 26.3, a
 
 Fehler: `{error:"…"}` mit Status 400/401/403/404/409/411/413/503. Arbeit im Spiel läuft über den Spielthread (`CompletableFuture.supplyAsync(…, mc)`, 3 s Zeitlimit → 503).
 
-Code: `mods/bauplaner-bridge/mod-core/…/mod/live/` (versionsneutral: `LiveLinkServer`, `Json`, `WorldMarks`, `SurfaceRuns`), `hologram-26.3/…/LiveLink.java` (Handler, Fabric und NeoForge), `MarksRenderer.java` (Linien und HUD); Website `packages/domain/src/liveLink.ts` (strenge Leser, Geländeeinstufung wie TERRAIN-01), `apps/web/src/views/map/liveClient.ts`.
+Code: `mods/bauplaner-bridge/mod-core/…/mod/live/` (versionsneutral: `LiveLinkServer`, `Json`, `WorldMarks`, `SurfaceRuns`), `hologram-26.3/…/LiveLink.java` (Handler, Fabric und NeoForge), `MarksRenderer.java` (Linien und HUD); Website `packages/domain/src/team/liveLink.ts` (strenge Leser, Geländeeinstufung wie TERRAIN-01), `apps/web/src/views/map/liveClient.ts`.
 
 ## Protokoll 2 (GAME-08, Mod 0.8.0)
 
@@ -56,7 +56,7 @@ Rückrichtung: Punkte, die im Spiel gesetzt werden, landen im Weltplan. Merkmal 
 
 ## Weltplan
 
-`packages/domain/src/worldPlan.ts` (**Schema 2** seit MAP-06; Schema 1 wird gelesen und beim Speichern angehoben): Bauplätze (Rechteck, Höhe, Projekt), Wege (Ecken, Art, Breite; vierfach verbundene Spalten, begehbar), Punkte (Anker, Ziel, Lager, Portal, Farm, Treffpunkt; seit Schema 2 auch Notiz, Gefahr, Rohstoff, Spawn/Bett, Aussicht) und Zonen (Polygon mit Art) je Dimension; jeder Eintrag optional mit Ebene und Farbe. Jede Änderung ist eine Operation mit exakter Umkehrung (Rückgängig/Wiederholen, Strg+Z/Strg+Y). Gespeichert in IndexedDB (`meta`, Schlüssel `worldPlan`) mit Revisionsprüfung wie Projekte; reist in der vollen Sicherung (Format 2, `worldPlanItems`) mit.
+`packages/domain/src/world/worldPlan.ts` (**Schema 2** seit MAP-06; Schema 1 wird gelesen und beim Speichern angehoben): Bauplätze (Rechteck, Höhe, Projekt), Wege (Ecken, Art, Breite; vierfach verbundene Spalten, begehbar), Punkte (Anker, Ziel, Lager, Portal, Farm, Treffpunkt; seit Schema 2 auch Notiz, Gefahr, Rohstoff, Spawn/Bett, Aussicht) und Zonen (Polygon mit Art) je Dimension; jeder Eintrag optional mit Ebene und Farbe. Jede Änderung ist eine Operation mit exakter Umkehrung (Rückgängig/Wiederholen, Strg+Z/Strg+Y). Gespeichert in IndexedDB (`meta`, Schlüssel `worldPlan`) mit Revisionsprüfung wie Projekte; reist in der vollen Sicherung (Format 2, `worldPlanItems`) mit.
 
 ## Oberfläche
 

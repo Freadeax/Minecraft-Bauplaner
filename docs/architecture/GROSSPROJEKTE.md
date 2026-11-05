@@ -6,7 +6,7 @@ Route: `#/bibliothek/grossprojekte[/<id>]`, Reiter „Großprojekte“ in der Bi
 
 ## Daten
 
-`packages/domain/src/grossprojekte.ts` (Typen und Engine), `packages/domain/src/grossprojekte/*.ts` (ein Projekt je Datei, Registry `index.ts` mit `GROSSPROJEKTE`). Ein Großprojekt hat
+`packages/domain/src/catalog/grossprojekte.ts` (Typen und Engine), `packages/domain/src/catalog/grossprojekte/*.ts` (ein Projekt je Datei, Registry `index.ts` mit `GROSSPROJEKTE`). Ein Großprojekt hat
 
 - `streets`: Straßenstil (`dorf`, `kies`, `stein`, `asphalt`), Breite 2–9, Laternen, optional Ringstraße; oder `null`,
 - `spacing`: empfohlener Abstand zwischen Gebäuden und zur Straße,
@@ -38,11 +38,11 @@ Mit Voxelkonflikten ist die Übernahme nur nach ausdrücklicher Bestätigung mö
 
 ## Eigenes Großprojekt hinzufügen
 
-Eine Datei `packages/domain/src/grossprojekte/<slug>.ts` mit einer `const` vom Typ `Grossprojekt` (Helfer `s`, `e`, `a`, `q`, `ph` aus `helpers.ts`) und eine Zeile in `grossprojekte/index.ts`. Die Tests prüfen automatisch: Struktur, vorhandene Bauteile, keine Voxelkonflikte und Abstände im Standardlayout, zusammenhängendes Straßennetz, jedes Quartier in einer Phase.
+Eine Datei `packages/domain/src/catalog/grossprojekte/<slug>.ts` mit einer `const` vom Typ `Grossprojekt` (Helfer `s`, `e`, `a`, `q`, `ph` aus `helpers.ts`) und eine Zeile in `grossprojekte/index.ts`. Die Tests prüfen automatisch: Struktur, vorhandene Bauteile, keine Voxelkonflikte und Abstände im Standardlayout, zusammenhängendes Straßennetz, jedes Quartier in einer Phase.
 
 ## Großbauten (S05)
 
-Das Set `packages/domain/src/build/sets/grossbauten.ts` liefert die Wahrzeichen, für die Großprojekte einen Platz brauchen. Bis dahin war kein Katalog-Gebäude größer als 25 × 25 Blöcke.
+Das Set `packages/domain/src/catalog/build/sets/grossbauten.ts` liefert die Wahrzeichen, für die Großprojekte einen Platz brauchen. Bis dahin war kein Katalog-Gebäude größer als 25 × 25 Blöcke.
 
 | Gebäude | Größe (B × H × T) | Inhalt |
 | --- | --- | --- |

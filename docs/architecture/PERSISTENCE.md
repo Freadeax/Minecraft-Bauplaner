@@ -1,6 +1,6 @@
 # Dauerhafte Speicherung und Sicherung (B3)
 
-Stand: 27.10.2026. Umsetzung zu P2-01, R-023/R-024. Code: `apps/web/src/app/idbRepository.ts`, `apps/web/src/app/repository.ts`, `packages/domain/src/backup.ts`. Tests: `tests/backup.test.mjs`, `tests/e2e/persistence.e2e.mjs`. Ergänzt den [Domänenvertrag](DOMAIN.md).
+Stand: 27.10.2026. Umsetzung zu P2-01, R-023/R-024. Code: `apps/web/src/app/idbRepository.ts`, `apps/web/src/app/repository.ts`, `packages/domain/src/data/backup.ts`. Tests: `tests/backup.test.mjs`, `tests/e2e/persistence.e2e.mjs`. Ergänzt den [Domänenvertrag](DOMAIN.md).
 
 ## Speicherschnittstelle
 

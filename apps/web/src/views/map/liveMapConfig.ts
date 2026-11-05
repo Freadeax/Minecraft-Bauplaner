@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
-import { checkLiveMapTarget, checkSavedLiveMaps } from '../../../../../packages/domain/src/livemap.js';
-import type { SavedLiveMap } from '../../../../../packages/domain/src/livemap.js';
-import { liveMapTemplateFromLink } from '../../../../../packages/domain/src/worldmap.js';
+import { checkLiveMapTarget, checkSavedLiveMaps } from '../../../../../packages/domain/src/world/livemap.js';
+import type { SavedLiveMap } from '../../../../../packages/domain/src/world/livemap.js';
+import { liveMapTemplateFromLink } from '../../../../../packages/domain/src/world/worldmap.js';
 
 export const LIVE_MAP_KIND_LABEL = { bluemap: 'BlueMap', dynmap: 'Dynmap', 'world-x-z': 'Webkarte' } as const;
 

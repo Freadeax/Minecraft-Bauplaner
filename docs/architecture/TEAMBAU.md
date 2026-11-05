@@ -39,7 +39,7 @@ Leitsatz: **Der Plan hat eine Hoheit, der Baustand hat viele Hände.** Geometrie
 
 ## 4. Datenmodell `site.team` (COOP-01)
 
-Liegt in `project.site.team` neben `site.program` (PROJ-01) und reist dadurch mit Rückgängig (`site.set`), Sicherung, Datencheck und Abschnittsständen mit. Kein IDB-Schemasprung; `checkSite` ruft `checkTeam` auf. Domäne: `packages/domain/src/team.ts` (rein, ohne Oberfläche).
+Liegt in `project.site.team` neben `site.program` (PROJ-01) und reist dadurch mit Rückgängig (`site.set`), Sicherung, Datencheck und Abschnittsständen mit. Kein IDB-Schemasprung; `checkSite` ruft `checkTeam` auf. Domäne: `packages/domain/src/team/team.ts` (rein, ohne Oberfläche).
 
 ```ts
 interface TeamState {
@@ -269,7 +269,7 @@ Tokens, Konten oder Cloud-Dienste werden für keine Stufe benötigt.
 ## 17. Umsetzungsstand (03.11.2026)
 
 **COOP-01 (Planer)**
-- Domäne `packages/domain/src/team.ts`: Ereignisse und Prüfung (`checkTeamEvent`, `checkTeam`, höchstens 20 000 Ereignisse, 4 KB je Ereignis), Faltung `teamView` mit Rechten zum Ereigniszeitpunkt, `mergeTeam` (Vereinigung, `clashes` bei gleicher ID mit anderem Inhalt), `authorize`, `laterThan` (nie vor dem letzten Ereignis), Meldecode `encodeReportCode`/`decodeReportCode` (gzip, base64url, Prüfsumme), Teampaket `buildTeamPackage`/`readTeamPackage` (SHA-256), Statustext, Serverdatei `teamServerFile`/`readTeamServerFile`, Planübernahme `takeOverPlan`. `site.team` wird von `checkSite` geprüft.
+- Domäne `packages/domain/src/team/team.ts`: Ereignisse und Prüfung (`checkTeamEvent`, `checkTeam`, höchstens 20 000 Ereignisse, 4 KB je Ereignis), Faltung `teamView` mit Rechten zum Ereigniszeitpunkt, `mergeTeam` (Vereinigung, `clashes` bei gleicher ID mit anderem Inhalt), `authorize`, `laterThan` (nie vor dem letzten Ereignis), Meldecode `encodeReportCode`/`decodeReportCode` (gzip, base64url, Prüfsumme), Teampaket `buildTeamPackage`/`readTeamPackage` (SHA-256), Statustext, Serverdatei `teamServerFile`/`readTeamServerFile`, Planübernahme `takeOverPlan`. `site.team` wird von `checkSite` geprüft.
 - Mitglieder: Gründer ist Bauleitung; Bauleute aus `site.program` (PROJ-01) und per `member.join` Beigetretene sind Helfer, Unbekannte Gäste.
 - Oberfläche: Reiter **„Team“** (`views/project/TeamTab.tsx`, `TeamExchange.tsx`, `team.css`): Gründen, „Ich bin“, Planfreigabe (friert eine Revision ein), Meine Aufgaben, Abschnitte (übernehmen, zuweisen, bestätigen, Nacharbeit, Verlauf), Mitglieder mit Rollen und Spielernamen, Beiträge und Sammelaufträge, Notizen mit @Name, Teamprotokoll, Austausch (Teampaket mit Plan / nur Teamstand, Meldecode, Statustext, Einladung, Serverdatei, Einlesen mit Vorschau). Startseite: **„Teampaket öffnen“** (`TeamOpen.tsx`) legt das Projekt für neue Mitspieler an; ein vorhandenes Teamprojekt wird nie ersetzt.
 - Einlesen ohne neuen Planstand ist ein `site.set` (Strg+Z). Mit neuem Planstand wird vorher eine Kopie „<Name> (vor Planstand N)“ gespeichert; Haken beider Seiten bleiben.
@@ -298,7 +298,7 @@ Tokens, Konten oder Cloud-Dienste werden für keine Stufe benötigt.
   - Tests: `TeamTest` (5) und `LiveLinkTest` (Merkmal `team`, Schlüssel für alle Teamwege).
 - Spiel (`hologram-26.3`): `TeamClient` (Rahmen, HUD, Befehle), `TeamPayload`, Anbindung in `HologramClient` und `LiveLink`. Loader: Fabric `PayloadTypeRegistry`/`ClientPlayNetworking`, NeoForge `RegisterPayloadHandlersEvent` (optional, beidseitig).
 - Plugin: `TeamChannel.java` und `config.yml` `team.kanal: true`. Die Fassade in `TeamModule` heißt `submitFor`, `importFile` und `onChange`. Das Plugin verwendet `Json`/`TeamWire` aus mod-core als gemeinsame Quelle (Gradle-Sync).
-- Planer: `packages/domain/src/teamLink.ts` (`teamLinkState`, `readLiveTeam`, `readLiveTeamPull`), `revisionExport.ts` (`SectionIds`, `TeamId`), `liveClient.ts` und `TeamLive.tsx`. Tests: `tests/team-link.test.mjs` und `tests/game-check.test.mjs`.
+- Planer: `packages/domain/src/team/teamLink.ts` (`teamLinkState`, `readLiveTeam`, `readLiveTeamPull`), `revisionExport.ts` (`SectionIds`, `TeamId`), `liveClient.ts` und `TeamLive.tsx`. Tests: `tests/team-link.test.mjs` und `tests/game-check.test.mjs`.
 
 **COOP-01-S04 (Projektplanung, 03.11.2026)**
 - `Builder.player?` in `program.ts` (geprüft in `checkProgram`); Minecraft-Namen der Bauleute gelten im Team, solange kein `member.player` etwas anderes sagt.
@@ -312,7 +312,7 @@ Tokens, Konten oder Cloud-Dienste werden für keine Stufe benötigt.
 
 ## 18. Teamplanung im Planer (COOP-06, 03.11.2026)
 
-Ziel: Ein großer Bau (Burg, Stadt, Kolosseum) lässt sich mit mehreren Spielern **planen**, nicht nur verteilen. Der Reiter „Team“ hat dafür vier Bereiche: **Bauen** (Stufe 1, unverändert), **Planung**, **Fortschritt**, **Rechte & Übergabe**. Domäne: `packages/domain/src/teamPlan.ts` (rein); Oberfläche `views/project/TeamPlan.tsx`, `teamplan.css`.
+Ziel: Ein großer Bau (Burg, Stadt, Kolosseum) lässt sich mit mehreren Spielern **planen**, nicht nur verteilen. Der Reiter „Team“ hat dafür vier Bereiche: **Bauen** (Stufe 1, unverändert), **Planung**, **Fortschritt**, **Rechte & Übergabe**. Domäne: `packages/domain/src/team/teamPlan.ts` (rein); Oberfläche `views/project/TeamPlan.tsx`, `teamplan.css`.
 
 | Baustein | Regel |
 |---|---|
@@ -336,7 +336,7 @@ Ziel: Ein großer Bau (Burg, Stadt, Kolosseum) lässt sich mit mehreren Spielern
 
 ## 19. Verlauf verdichten (COOP-11, 05.11.2026)
 
-Jede Baunachweis-Meldung, jede Lagerbuchung, jeder Trichterschub und jede Ertragsmeldung ist ein Ereignis. Ein Server mit Plugin erreicht so nach einigen Wochen die Grenze von 20 000 Ereignissen. Die Bauleitung kann deshalb alles vor einem Stichtag zu Summen verdichten (Reiter „Team“ → „Verlauf verdichten“, Domäne `packages/domain/src/teamDigest.ts`, Faltung in `team.ts`).
+Jede Baunachweis-Meldung, jede Lagerbuchung, jeder Trichterschub und jede Ertragsmeldung ist ein Ereignis. Ein Server mit Plugin erreicht so nach einigen Wochen die Grenze von 20 000 Ereignissen. Die Bauleitung kann deshalb alles vor einem Stichtag zu Summen verdichten (Reiter „Team“ → „Verlauf verdichten“, Domäne `packages/domain/src/team/teamDigest.ts`, Faltung in `team.ts`).
 
 **Neues Ereignis `team.digest`** (Mindestrolle Bauleitung, ein Lauf hat mehrere Teile, jedes Teil unter 4 KB für den Team-Raum):
 

@@ -10,11 +10,11 @@ import {
 } from '../../../../../packages/domain/src/index.js';
 import type { EarthworkEstimate, LiveGameMark, Operation, Project, TerrainSurvey, WorldItem, WorldPath, WorldPlanOp, WorldPointType, Polyline } from '../../../../../packages/domain/src/index.js';
 import { prepareRevisionExport } from '../../../../../packages/application/src/index.js';
-import { projectLinks, projectStartCheck, projectSuccessors } from '../../../../../packages/domain/src/projectOrder.js';
+import { projectLinks, projectStartCheck, projectSuccessors } from '../../../../../packages/domain/src/planning/projectOrder.js';
 import {
   DIMENSIONS, MAP_SKIP_LABEL, TERRAIN_NOTE, chunkOf, dimensionLabel, footprintNeighbours, suggestPlacement, topViews, translateBounds, worldOperation, createPlacement,
-} from '../../../../../packages/domain/src/worldmap.js';
-import type { MapEntry, WorldMapView as MapData, WorldPlacement } from '../../../../../packages/domain/src/worldmap.js';
+} from '../../../../../packages/domain/src/world/worldmap.js';
+import type { MapEntry, WorldMapView as MapData, WorldPlacement } from '../../../../../packages/domain/src/world/worldmap.js';
 import type { Bounds, Cell, VoxelPayload } from '../../../../../packages/voxel/src/index.js';
 import { useApp } from '../../app/context';
 import { href } from '../../app/router';
@@ -41,7 +41,7 @@ import { LiveMapPanel, LiveMapLink, liveMapUrlAt } from './LiveMapPanel';
 import { useLiveMapSettings } from './liveMapConfig';
 import { computeMap } from './transport';
 import { projectTerrain, projectTerrainDimension } from '../world/designs';
-import '../../map.css';
+import '../../styles/map.css';
 
 export type ColorMode = 'block' | 'project' | 'progress';
 const COLOR_MODES: readonly (readonly [ColorMode, string])[] = [['block', 'Blöcke'], ['project', 'Projekte'], ['progress', 'Fortschritt']];

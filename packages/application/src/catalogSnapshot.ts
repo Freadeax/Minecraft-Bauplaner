@@ -1,6 +1,6 @@
 import { analyzeVersion, createBuildingLibrary, createCommunityLibrary, createSampleLibrary, latestReleaseId, packVersion } from '../../domain/src/index.js';
 import type { Asset, AssetVersion, BuildingMetrics } from '../../domain/src/index.js';
-import type { PackedVersionRecord, StoredVersionRecord } from '../../domain/src/versionStorage.js';
+import type { PackedVersionRecord, StoredVersionRecord } from '../../domain/src/data/versionStorage.js';
 
 /**
  * Mitgelieferter Katalog als fertige Datei (PERF-05).

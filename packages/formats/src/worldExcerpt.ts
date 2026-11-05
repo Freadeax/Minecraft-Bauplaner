@@ -15,7 +15,7 @@ import type { AnvilLimits, ChunkBlockEntity, ChunkCompression, ParsedChunk, Regi
  * of a readable chunk are air (nothing can be there).
  *
  * The sample feeds two consumers: the library import (sampleToPayload) and the
- * terrain check of a placed project (packages/domain/src/terrain.ts).
+ * terrain check of a placed project (packages/domain/src/world/terrain.ts).
  */
 
 export interface WorldSampleLimits {

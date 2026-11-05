@@ -1,6 +1,6 @@
 # Parametrische Gebäudegeneratoren (B13)
 
-Stand: 28.10.2026. Code: `packages/domain/src/generators/` (`params.ts` Parametervertrag, `styles.ts` Stilpaletten, `roofs.ts` Dachformen, `types.ts` Mason und gemeinsame Parameter, Generatoren `house.ts`, `tower.ts`, `wall.ts`, `bridge.ts`, `roof.ts`, Anlagen `compound.ts`, Register und Versionen `index.ts`). Oberfläche: `views/library/GeneratorsPage.tsx`, `GeneratorForm.tsx`. Tests: `tests/generators.test.mjs`, `tests/e2e/generators.e2e.mjs`. Setzt R-012/P5-02 („Größenänderung durch deklarierte Generatoren“, AGENTS.md) um und ergänzt den [Domänenvertrag](DOMAIN.md) und den [Katalog](CATALOG.md).
+Stand: 28.10.2026. Code: `packages/domain/src/catalog/generators/` (`params.ts` Parametervertrag, `styles.ts` Stilpaletten, `roofs.ts` Dachformen, `types.ts` Mason und gemeinsame Parameter, Generatoren `house.ts`, `tower.ts`, `wall.ts`, `bridge.ts`, `roof.ts`, Anlagen `compound.ts`, Register und Versionen `index.ts`). Oberfläche: `views/library/GeneratorsPage.tsx`, `GeneratorForm.tsx`. Tests: `tests/generators.test.mjs`, `tests/e2e/generators.e2e.mjs`. Setzt R-012/P5-02 („Größenänderung durch deklarierte Generatoren“, AGENTS.md) um und ergänzt den [Domänenvertrag](DOMAIN.md) und den [Katalog](CATALOG.md).
 
 ## Grundsatz
 

@@ -1,6 +1,6 @@
 # Baustil: Gestaltungsregeln für Bibliothek und Generatoren (LIB-05)
 
-Stand: 02.11.2026. Code: `packages/domain/src/build/style.ts` (Gestaltungsbaukasten), `packages/domain/src/build/refine.ts` (Veredelung), `packages/domain/src/build/quality.ts` (Gestaltungskennwerte), Stile der Generatoren in `packages/domain/src/generators/styles.ts`. Tests: `tests/baustil.test.mjs`.
+Stand: 02.11.2026. Code: `packages/domain/src/catalog/build/style.ts` (Gestaltungsbaukasten), `packages/domain/src/catalog/build/refine.ts` (Veredelung), `packages/domain/src/catalog/build/quality.ts` (Gestaltungskennwerte), Stile der Generatoren in `packages/domain/src/catalog/generators/styles.ts`. Tests: `tests/baustil.test.mjs`.
 
 Auftrag (Philipp, 02.11.2026): „Prüfe die hochgeladenen Bauobjekte, wie sie aufgebaut sind, die Muster und Varianten, und gehe darauf hin über die komplette Bibliothek – die ganzen Sachen, die wir haben, sehen nicht gut aus.“ Dazu drei Seiten als weitere Quelle.
 

@@ -12,12 +12,12 @@ import { CommandPalette } from './app/CommandPalette';
 import { ProjectsView } from './views/ProjectsView';
 import { installDiagnostics } from './app/diagnostics';
 import { lazyPage } from './app/lazyPage';
-import './style.css';
-import './catalog.css';
-import './schem.css';
+import './styles/style.css';
+import './styles/catalog.css';
+import './styles/schem.css';
 import './theme/theme.css';
 import './blockmodels/blocks.css';
-import './shell.css';
+import './styles/shell.css';
 
 // PERF-05: pages load when opened; the start needs only the shell and the project centre.
 const LibraryView = lazyPage(() => import('./views/LibraryView').then(m => m.LibraryView));
@@ -26,7 +26,7 @@ const ViewerView = lazyPage(() => import('./views/ViewerView').then(m => m.Viewe
 const SystemView = lazyPage(() => import('./views/SystemView').then(m => m.SystemView));
 const TestphaseView = lazyPage(() => import('./testing/TestphaseView').then(m => m.TestphaseView));
 const WorldMapView = lazyPage(() => import('./views/map/WorldMapView').then(m => m.WorldMapView));
-const TeamJoinView = lazyPage(() => import('./views/project/TeamJoinView').then(m => m.TeamJoinView));
+const TeamJoinView = lazyPage(() => import('./views/project/team/TeamJoinView').then(m => m.TeamJoinView));
 const ModView = lazyPage(() => import('./views/mod/ModView').then(m => m.ModView));
 const WorkshopPage = lazyPage(() => import('./editor/WorkshopPage').then(m => m.WorkshopPage));
 const WorldImportView = lazyPage(() => import('./views/world/WorldImportView').then(m => m.WorldImportView));

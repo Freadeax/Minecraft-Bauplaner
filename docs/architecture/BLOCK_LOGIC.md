@@ -74,7 +74,7 @@ Folge: Schritte, deren Blöcke die Phase wechseln (z. B. Türen jetzt „angebra
 
 Stand 02.11.2026. Die Spielprüfung fand im Katalog 140 Blöcke ohne Halt (meist Laternen in der Luft), 1.239 Verbindungen anders als im Spiel und 152 Ketten mit der alten ID `minecraft:chain`, die es in 26.3 nicht mehr gibt (seit 1.21.9 `minecraft:iron_chain`; ein Litematic-Import im Spiel hätte sie verworfen). Streng gezählt – leere Zellen im Gebäuderaum als Luft – waren es 208 Fehler in 85 Gebäuden, dazu Fehler in vier Generatoren.
 
-**Gemeinsame Bauregel** [`build/gameReady.ts`](../../packages/domain/src/build/gameReady.ts): `gameReady(payload)` ist der letzte Schritt von `Plot.payload()` (Baukasten `build/plot.ts` und die Kopie der 16 Klassiker in `buildings.ts`), gilt also für jedes Katalog-Gebäude und jeden Generator.
+**Gemeinsame Bauregel** [`build/gameReady.ts`](../../packages/domain/src/catalog/build/gameReady.ts): `gameReady(payload)` ist der letzte Schritt von `Plot.payload()` (Baukasten `build/plot.ts` und die Kopie der 16 Klassiker in `buildings.ts`), gilt also für jedes Katalog-Gebäude und jeden Generator.
 
 - `hangLanterns`: Eine Laterne (auch Seelen-/Kupferlaterne), die an ihrer Stelle nicht hält, hängt an `iron_chain`-Gliedern bis zum nächsten Block darüber (höchstens `MAX_CHAIN` = 8 Glieder). Eine stehende Laterne ohne Boden, aber mit tragendem Block direkt darüber, wird hängend. Ohne Decke bleibt sie unverändert – dann meldet die Prüfung den Fehler und das Gebäude muss von Hand repariert werden.
 - Danach `settlePayload`: Zäune, Mauern, Scheiben, Gitter, Treppenformen usw. bekommen den Zustand, den das Spiel aus den Nachbarn ableitet.

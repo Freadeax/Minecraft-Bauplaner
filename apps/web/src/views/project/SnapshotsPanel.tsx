@@ -4,7 +4,7 @@ import type { Guide, GuideProgress, Operation, Project, SectionSnapshot, SitePla
 import { useApp } from '../../app/context';
 import { navigate } from '../../app/router';
 import { errorText, formatNumber } from '../../app/ui';
-import '../../backup.css';
+import '../../styles/backup.css';
 
 const when = (iso: string) => new Date(iso).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
 

@@ -1,5 +1,5 @@
 import type { BlockState, Vec3, VoxelPayload } from '../../../voxel/src/types.js';
-import { DomainError } from '../types.js';
+import { DomainError } from '../core/types.js';
 import { applyEdit, createDraft, payloadCells, keyPos, MAX_EDIT_CELLS } from './draft.js';
 import type { CellValue, Draft } from './draft.js';
 import { defaultState } from './blocks.js';

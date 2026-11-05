@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createSampleLibrary, packVersion, unpackVersion, unpackVersionLazily, cellCount, verifyAssetVersion } from '../dist/domain/src/index.js';
-import { canonicalJson } from '../dist/domain/src/hash.js';
+import { canonicalJson } from '../dist/domain/src/core/hash.js';
 
 // PERF-05-S08: packed versions unpack their cells on first read, with the same result as unpacking at once.
 const library = await createSampleLibrary();

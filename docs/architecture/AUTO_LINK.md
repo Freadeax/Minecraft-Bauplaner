@@ -31,7 +31,7 @@ iPad ohne Mod ─── POST /v1/rooms/<raum>/control ──▶ Team-Raum ──
 ## 3. Signierte Steuernachrichten (LINK-02)
 
 - Format `{owner, seq, body, sig}`; `body` ist der exakte JSON-Text mit `server` (Server-ID) und `op`.
-- `sig = base64url(HMAC-SHA-256(key, owner + "\n" + seq + "\n" + body))` – `LinkCore.sign` und `packages/domain/src/serverControl.ts` (`signControl`) rechnen gleich; gemeinsamer Prüfvektor in beiden Tests.
+- `sig = base64url(HMAC-SHA-256(key, owner + "\n" + seq + "\n" + body))` – `LinkCore.sign` und `packages/domain/src/team/serverControl.ts` (`signControl`) rechnen gleich; gemeinsamer Prüfvektor in beiden Tests.
 - `seq` muss je Gerät streng steigen (der Planer nimmt Millisekunden), die letzte Nummer liegt in `link.json`: eine aufgezeichnete Nachricht wirkt nie zweimal, auch nicht nach einem Neustart.
 - Operationen: `status`, `config` (nur die Liste in `LinkCore.SETTINGS`, alles oder nichts; `team.kanal` ist absichtlich nicht fernsteuerbar), `team` (Teamdatei), `room` (Team-Raum verbinden/trennen), `plan` (.schem bis 4 MB, optional Anker), `scan` (Aufnahme, siehe §5), `rename`, `invite` (weiteres Gerät), `forget` (Gerät entfernen).
 - Steuernachrichten setzen nie Blöcke und führen nie Serverbefehle aus.

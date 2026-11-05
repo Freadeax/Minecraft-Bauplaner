@@ -4,7 +4,7 @@ Vorbild ist eine ganze Survival-Basis an der Küste: Dorfplatz in der Mitte, Lag
 
 Route: `#/bibliothek/basis`, Reiter „Basisplaner“ in der Bibliothek. Herauslösen: Gebäudeblatt, Abschnitt „Verwalten“, „Gebäude herauslösen“. Nichts davon speichert ohne Knopfdruck.
 
-## Funktionen (`packages/domain/src/baseFunctions.ts`)
+## Funktionen (`packages/domain/src/base/baseFunctions.ts`)
 
 `BASE_FUNCTIONS`: 13 Funktionen (Dorfplatz, Lager, Küche, Gemeinschaftshalle, Wohnhaus, Schmiede, Waffenkammer, Verzauberungsturm, XP-Farm, Getreidefarm, Tierfarm, Hafen, Händlerviertel). Jede Funktion kennt
 
@@ -17,7 +17,7 @@ Route: `#/bibliothek/basis`, Reiter „Basisplaner“ in der Bibliothek. Herausl
 
 `detectFunction(counts)` erkennt dieselben Signaturen in fremden Modellen (Zaubertisch → Verzauberungsturm, Amboss → Schmiede, viele Truhen → Lager, Ackerboden → Feld, Zaun → Gehege, Wegblöcke → Wege).
 
-## Layout (`packages/domain/src/base.ts`)
+## Layout (`packages/domain/src/base/base.ts`)
 
 `layoutBase(bibliothek, wahl)` ist rein und deterministisch:
 
@@ -33,7 +33,7 @@ Route: `#/bibliothek/basis`, Reiter „Basisplaner“ in der Bibliothek. Herausl
 
 ### Küste aus der Geländeaufnahme (TERRAIN-03-S06)
 
-Ist das Ziel ein Projekt mit Weltlage und Geländeaufnahme (oder Geländegestaltung), vergleicht `fitBaseShore` (`packages/domain/src/baseShore.ts`) den Plan mit dem echten Ufer. Rein, nichts wird gespeichert; die Seite zeigt das Ergebnis im Kasten „Küste“ unter „Prüfung“.
+Ist das Ziel ein Projekt mit Weltlage und Geländeaufnahme (oder Geländegestaltung), vergleicht `fitBaseShore` (`packages/domain/src/base/baseShore.ts`) den Plan mit dem echten Ufer. Rein, nichts wird gespeichert; die Seite zeigt das Ergebnis im Kasten „Küste“ unter „Prüfung“.
 
 - **Wasserseite**: Je Seite werden alle Reihen quer zur Basis vom Rand nach außen abgesucht (bis 64 Blöcke). Eine Reihe trifft „offenes Wasser“, wenn mindestens 8 Wassersäulen hintereinander folgen (Wasser, das aus der Aufnahme hinausläuft, zählt als offen). Erreichen mindestens 50 % der Reihen einer Seite offenes Wasser, ist das die Küste (mit mittlerem Abstand); gilt das für zwei Seiten, entscheidet der Planer nicht (Halbinsel, Bucht). Unter 10 % Reihen mit irgendeinem Wasser heißt „kein Wasser“; nur schmales Wasser heißt Bach oder Teich, keine Küste. Lava zählt weder als Wasser noch als Land. Bei einer Küstenbasis wird nur der Landteil (bis zur geplanten Uferlinie) betrachtet.
 - **Uferlinie**: Je Reihe quer zur Basis wird vom Platz aus zum Wasser hin das erste Wasser gesucht; der Median ist das echte Ufer. Die Differenz zur geplanten Uferlinie ist die vorgeschlagene Verschiebung entlang der Wasserachse (höchstens 48 Blöcke, sonst Hinweis „an anderer Stelle planen“).
@@ -43,7 +43,7 @@ Ist das Ziel ein Projekt mit Weltlage und Geländeaufnahme (oder Geländegestalt
 
 Grenzen: Wege laufen nur orthogonal und auf einer Höhe (Stufen folgen aus der Geländeanpassung je Einheit, nicht als Blöcke); die geplante Uferlinie ist eine Gerade (eine krumme echte Küste meldet die Lageprüfung als Gebäude im Wasser bzw. Stege an Land); keine Brücken; das Wegenetz der Basis wird noch nicht als Landschaftsweg mit Treppen und Brücken übernommen (Rest von TERRAIN-03-S06).
 
-## Gebäude herauslösen (`packages/domain/src/split.ts`)
+## Gebäude herauslösen (`packages/domain/src/core/split.ts`)
 
 `analyzeSplit(payload, optionen)` arbeitet säulenweise (x, z), linear in der Zellzahl (eine Million Zellen unter einer Sekunde):
 

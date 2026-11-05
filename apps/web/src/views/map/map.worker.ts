@@ -1,6 +1,6 @@
 /// <reference lib="webworker" />
-import { buildWorldMap } from '../../../../../packages/domain/src/worldmap.js';
-import type { AssetVersion, Project } from '../../../../../packages/domain/src/types.js';
+import { buildWorldMap } from '../../../../../packages/domain/src/world/worldmap.js';
+import type { AssetVersion, Project } from '../../../../../packages/domain/src/core/types.js';
 import { packMap } from './transport';
 import type { MapRequest, MapResponse } from './transport';
 

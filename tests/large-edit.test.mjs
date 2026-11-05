@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { canonicalPayloadJson } from '../dist/domain/src/library.js';
-import { canonicalJson } from '../dist/domain/src/hash.js';
+import { canonicalPayloadJson } from '../dist/domain/src/catalog/library.js';
+import { canonicalJson } from '../dist/domain/src/core/hash.js';
 import { blockValue, createDraft, EMPTY_DRAFT_HISTORY, executeEdit, materializeDraft, keyPos } from '../dist/domain/src/index.js';
 import { createPayload } from '../dist/voxel/src/index.js';
 import { isSealedPayload } from '../dist/voxel/src/validation.js';

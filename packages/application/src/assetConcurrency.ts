@@ -1,6 +1,6 @@
-import { checkAssetRecord } from '../../domain/src/backup.js';
-import { checkLibraryBatch } from '../../domain/src/collections.js';
-import type { Asset } from '../../domain/src/types.js';
+import { checkAssetRecord } from '../../domain/src/data/backup.js';
+import { checkLibraryBatch } from '../../domain/src/catalog/collections.js';
+import type { Asset } from '../../domain/src/core/types.js';
 import type { StorageBatch } from './repository.js';
 import { AssetRevisionConflictError } from './repository.js';
 

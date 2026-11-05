@@ -1,10 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { BUILDING_SPECS } from '../dist/domain/src/index.js';
-import { Plot } from '../dist/domain/src/build/plot.js';
-import { house, pick, LOOKS, pitchedRoof } from '../dist/domain/src/build/style.js';
-import { designMetrics } from '../dist/domain/src/build/quality.js';
-import { refinePayload, refineOptionsFor } from '../dist/domain/src/build/refine.js';
+import { Plot } from '../dist/domain/src/catalog/build/plot.js';
+import { house, pick, LOOKS, pitchedRoof } from '../dist/domain/src/catalog/build/style.js';
+import { designMetrics } from '../dist/domain/src/catalog/build/quality.js';
+import { refinePayload, refineOptionsFor } from '../dist/domain/src/catalog/build/refine.js';
 
 /**
  * LIB-05 Baustil: die Regeln aus docs/architecture/BAUSTIL.md als Messwerte.
@@ -92,7 +92,7 @@ test('Veredelung: Grenzen bleiben, kein Block verschwindet, Luft bleibt Luft', (
 });
 
 // ------------------------------------------------------------ LIB-05 Runde 2
-import { facade, machicolations, dressRoom, innerRibs } from '../dist/domain/src/build/facade.js';
+import { facade, machicolations, dressRoom, innerRibs } from '../dist/domain/src/catalog/build/facade.js';
 
 test('Runde 2: Stadt mit Relief, Meisterstücke reich gegliedert', () => {
   const stadt = BUILDING_SPECS.filter(s => s.id.startsWith('bld_stadt_') && ['oeffentlich', 'wohnhaus', 'handel'].includes(s.facets.kategorie[0])).map(s => designMetrics(s.payload()));
@@ -134,7 +134,7 @@ test('machicolations(): Konsolen, Brüstung und Zinnen außen um den Turm', () =
 });
 
 test('dressRoom(): Pfosten, Sockelleiste, Deckenprofil und Bodenrand nur an geschlossenen Wänden', async () => {
-  const { roomShell } = await import('../dist/domain/src/build/furnish.js');
+  const { roomShell } = await import('../dist/domain/src/catalog/build/furnish.js');
   const p = new Plot([7, 6, 7]);
   roomShell(p, 7, 7, 4, 'oak_planks', 'cobblestone', ['south', 'east'], null);
   p.set(1, 1, 1, 'barrel');

@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createPayload } from '../dist/voxel/src/index.js';
-import { computeMaterials } from '../dist/domain/src/materials.js';
-import { materialLab, labEntry } from '../dist/domain/src/materialLab.js';
+import { computeMaterials } from '../dist/domain/src/materials/materials.js';
+import { materialLab, labEntry } from '../dist/domain/src/materials/materialLab.js';
 
 const states = [
   ['minecraft:stone_slab', { type: 'double' }],

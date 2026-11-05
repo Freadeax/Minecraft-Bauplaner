@@ -9,7 +9,7 @@ import { download, errorText, formatNumber, localToday } from '../../app/ui';
 import { isResolved } from './session';
 import type { ProjectSession } from './session';
 import { ProjectOrder } from './ProjectOrder';
-import '../../planning.css';
+import '../../styles/planning.css';
 
 const pct = (a: number, b: number): number => b ? Math.round(a / b * 100) : 0;
 const deDate = (iso: string | null | undefined): string => iso ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(0, 4)}` : '';

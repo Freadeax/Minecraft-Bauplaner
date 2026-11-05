@@ -1,6 +1,6 @@
 import { analyzeVersion, checkAssetRecord, latestReleaseId, packVersion, unpackVersion, unpackVersionOrDamaged } from '../../../../packages/domain/src/index.js';
 import type { Asset, AssetVersion, BuildingMetrics } from '../../../../packages/domain/src/index.js';
-import type { StoredVersionRecord } from '../../../../packages/domain/src/versionStorage.js';
+import type { StoredVersionRecord } from '../../../../packages/domain/src/data/versionStorage.js';
 import { planSeed } from '../../../../packages/application/src/catalogSync.js';
 import { buildShippedCatalog, readCatalogSnapshot } from '../../../../packages/application/src/catalogSnapshot.js';
 import type { JobContext } from './protocol';

@@ -12,6 +12,7 @@ import { createProject, newInstance, resolveProject } from '../dist/domain/src/i
 
 const baselineRef = process.argv[2];
 if (!baselineRef || !/^[a-zA-Z0-9_.\/-]+$/.test(baselineRef)) throw new Error('Usage: node --expose-gc scripts/benchmark_composition.mjs <baseline-git-ref>');
+// Nach STRUCT-01 liegen die Kernmodule in Fachordnern; ein Vergleich mit älteren Ständen braucht einen eigenen dist-Build jenes Stands.
 const root = new URL('../', import.meta.url);
 const source = execFileSync('git', ['show', `${baselineRef}:packages/domain/src/compose.ts`], { cwd: root, encoding: 'utf8' });
 const compiled = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2023, module: ts.ModuleKind.ESNext } }).outputText;

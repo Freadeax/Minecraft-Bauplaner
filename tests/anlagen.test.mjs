@@ -4,7 +4,7 @@ import {
   ANLAGEN, ENSEMBLES, SHIPPED_LABEL, addAssetVersion, anlageById, anlageForTheme, anlageIntoProject, applyOperation, besideOffset, buildCatalog, checkSite,
   createAnlageProject, createBuildingLibrary, createProject, normalizeChoices, pinnedVersionIdsOf, planAnlage, previewAnlage, resolveProject, swapCandidates, undo, execute, EMPTY_HISTORY,
 } from '../dist/domain/src/index.js';
-import { BUILD_THEMES } from '../dist/domain/src/buildThemes.js';
+import { BUILD_THEMES } from '../dist/domain/src/catalog/buildThemes.js';
 
 const buildings = await createBuildingLibrary();
 const versions = new Map(buildings.versions.map(v => [v.id, v]));

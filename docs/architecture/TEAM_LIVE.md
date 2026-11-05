@@ -70,7 +70,7 @@ Ein Raum gehört zu genau einem Team (`teamId`). Alle Antworten sind JSON. Grenz
 
 | Teil | Wer |
 |---|---|
-| Protokoll, Sync-Kern `packages/domain/src/teamSync.ts`, Raumdienst `services/team-room/` (Worker + Durable Object, Tests), „Live schalten“/Beitreten/Statuszeile | dieser Thread |
+| Protokoll, Sync-Kern `packages/domain/src/team/teamSync.ts`, Raumdienst `services/team-room/` (Worker + Durable Object, Tests), „Live schalten“/Beitreten/Statuszeile | dieser Thread |
 | Bedienung im Reiter Team (Anwesenheit, Hinweise, neue Bereiche) | Thread „Gemeinsames Bauen im Planer vertiefen“ |
 | `TeamUplink` im Plugin (ausgehend wss/https, Serverschlüssel, Header statt Datei), Befehl `team verbinden` | Thread „Server-Plugin mit geprüften Lagerkisten“ |
 | `/v1/team/pull` als Cursor-Feed, Plan aus dem Raum über den Plugin-Kanal | Mod-Thread |
@@ -84,7 +84,7 @@ Ein Raum gehört zu genau einem Team (`teamId`). Alle Antworten sind JSON. Grenz
 
 ## 10. Umsetzungsstand (03.11.2026, COOP-07)
 
-- Sync-Kern `packages/domain/src/teamSync.ts`: `goLive`, `joinLive`, `leaveLive`, `trackOutbox` (jeder neue lokale Eintrag geht in den Postausgang, egal über welchen Weg), `nextBatch`/`confirm` (Stapel-ID aus den Ereignis-IDs), `ingest` (Cursor nur vorwärts, `reset`), `roomStatus`, `inviteLink`/`serverLink`/`readInvite`. Teampakete und Sicherungen für das Team tragen nie `live` oder Schlüssel.
+- Sync-Kern `packages/domain/src/team/teamSync.ts`: `goLive`, `joinLive`, `leaveLive`, `trackOutbox` (jeder neue lokale Eintrag geht in den Postausgang, egal über welchen Weg), `nextBatch`/`confirm` (Stapel-ID aus den Ereignis-IDs), `ingest` (Cursor nur vorwärts, `reset`), `roomStatus`, `inviteLink`/`serverLink`/`readInvite`. Teampakete und Sicherungen für das Team tragen nie `live` oder Schlüssel.
 - Raumdienst `services/team-room`: `src/core.js` (Raumlogik ohne Cloudflare, auch in Node getestet), `src/index.js` (Worker + Durable Object mit SQLite, WebSocket-Ruhezustand), `wrangler.toml`.
 - Planer: Die Verbindung hängt am geöffneten Projekt (`ProjectView` → `useTeamRoom` in `views/project/roomClient.ts`), also in jedem Reiter. Eingehende Ereignisse werden ohne Rückgängig-Schritt gespeichert. Reiter „Team“ → Bereich **„Team live“** (`TeamRoom.tsx`): Live schalten, Einladungslink, Link für den Server, Plan in den Raum stellen (bei jeder Freigabe automatisch), „Planstand übernehmen“ für die anderen (vorheriger Stand bleibt als Kopie), Anwesenheit, Status (live / sendet / offline mit wartenden Aktionen), Live trennen. Seite `#/team/beitreten` (`TeamJoinView.tsx`) lädt Plan und Protokoll aus dem Raum, ohne Datei.
 - Prüfung: `tests/team-room.test.mjs` (Raum, zwei Browser und Server ohne Datei, verlorene Antworten, Seiten), `tests/e2e/team-room.e2e.mjs` (zwei echte Browser über den Raumkern hinter Playwright-Routing, 1400 und 390 px), `scripts/team_room_smoke.mjs <url>` gegen `wrangler dev` oder den echten Dienst.

@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { addAssetVersion, BASIS_PREFIX, createAsset, detectMaterials, FAMILY_PREFIX, MATERIAL_KIND_LABEL, swapLabel, swapMaterials } from '../../../../../packages/domain/src/index.js';
 import type { Asset, AssetVersion, CatalogEntry, MaterialSwap } from '../../../../../packages/domain/src/index.js';
-import { materialTargets } from '../../../../../packages/domain/src/variants.js';
+import { materialTargets } from '../../../../../packages/domain/src/materials/variants.js';
 import { useApp } from '../../app/context';
 import { errorText, formatNumber } from '../../app/ui';
 import { DiffView } from '../../schem/DiffView';

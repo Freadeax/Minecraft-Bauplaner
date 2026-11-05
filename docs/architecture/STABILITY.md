@@ -10,7 +10,7 @@ Stand: 28.10.2026. Ziel: Fehler früh sichtbar machen, gespeicherte Daten prüfb
 
 ## S-02 · Datencheck
 
-`checkIntegrity` in `packages/domain/src/integrity.ts` prüft alle gespeicherten Datensätze, nur lesend:
+`checkIntegrity` in `packages/domain/src/data/integrity.ts` prüft alle gespeicherten Datensätze, nur lesend:
 
 | Code | Stufe | Bedeutung |
 |---|---|---|

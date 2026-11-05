@@ -10,8 +10,8 @@
  * „add“ prüft das Paket mit derselben Domänenfunktion wie die App (readContribution:
  * Format, Prüfsumme, Angaben, Rechtebestätigung, Blockdaten, Inhalts-Hash, Anschlüsse,
  * Größe), lehnt Kennungen mitgelieferter Gebäude ab und schreibt
- *   packages/domain/src/community/entries/<kennung>.ts   (das Paket, unverändert)
- *   packages/domain/src/community/registry.ts            (Register, neu erzeugt)
+ *   packages/domain/src/catalog/community/entries/<kennung>.ts   (das Paket, unverändert)
+ *   packages/domain/src/catalog/community/registry.ts            (Register, neu erzeugt)
  *   docs/library/beitraege/<kennung>.png                 (Vorschaubild, falls im Paket)
  *   docs/library/BEITRAEGE.md                            (Übersicht, neu erzeugt)
  * Danach wie immer: npm run check, Commit, Push, Pages veröffentlichen.
@@ -24,8 +24,8 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const repo = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const ENTRY_DIR = 'packages/domain/src/community/entries';
-const REGISTRY = 'packages/domain/src/community/registry.ts';
+const ENTRY_DIR = 'packages/domain/src/catalog/community/entries';
+const REGISTRY = 'packages/domain/src/catalog/community/registry.ts';
 const PREVIEW_DIR = 'docs/library/beitraege';
 const OVERVIEW = 'docs/library/BEITRAEGE.md';
 const HEADER = '// Erzeugt von scripts/library_intake.mjs (npm run library:add / library:remove) – nicht von Hand ändern.';

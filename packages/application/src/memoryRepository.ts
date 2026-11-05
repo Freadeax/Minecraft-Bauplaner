@@ -1,7 +1,7 @@
 import type { Asset, AssetVersion, BackupLedger, BackupReceipt, Collection, LibraryTemplate, OriginalFile, Project, WorldPlan } from '../../domain/src/index.js';
-import { checkWorldPlan, emptyWorldPlan } from '../../domain/src/worldPlan.js';
-import { addReceipt, checkBackupLedger, emptyLedger } from '../../domain/src/backupStatus.js';
-import { LibraryRecordConflictError, nextLibraryRevision } from '../../domain/src/collections.js';
+import { checkWorldPlan, emptyWorldPlan } from '../../domain/src/world/worldPlan.js';
+import { addReceipt, checkBackupLedger, emptyLedger } from '../../domain/src/data/backupStatus.js';
+import { LibraryRecordConflictError, nextLibraryRevision } from '../../domain/src/catalog/collections.js';
 import { checkStorageBatch, nextAssetRevision } from './assetConcurrency.js';
 import { RevisionConflictError, WorldPlanConflictError } from './repository.js';
 import type { Repository, StorageBatch, StorageInfo } from './repository.js';

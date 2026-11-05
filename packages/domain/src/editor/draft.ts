@@ -2,8 +2,8 @@ import { AIR_IDS, adoptPayload, stateKey } from '../../../voxel/src/validation.j
 import { MODEL_MAX_CELLS, formatCount } from '../../../voxel/src/sizeLimits.js';
 import type { BlockState, Bounds, Cell, FreeEntity, NbtTag, Vec3, VoxelPayload } from '../../../voxel/src/types.js';
 import { entityAnchor } from '../../../voxel/src/entities.js';
-import { canonicalJson } from '../hash.js';
-import { DomainError } from '../types.js';
+import { canonicalJson } from '../core/hash.js';
+import { DomainError } from '../core/types.js';
 
 /**
  * Blockeditor (B15): a draft is a base payload plus an overlay of edited

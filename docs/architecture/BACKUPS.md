@@ -4,10 +4,10 @@ Stand: 01.11.2026. Baut auf [PERSISTENCE](PERSISTENCE.md) (Sicherungsformat, Wie
 
 | Teil | Dateien |
 |---|---|
-| Domäne Sicherungsstand | `packages/domain/src/backupStatus.ts` |
-| Domäne Abschnittsstände | `packages/domain/src/sectionSnapshots.ts`, gemeinsame Zuordnungsregel `sectionMembership.ts`, Validierung über `checkSite` in `site.ts` |
+| Domäne Sicherungsstand | `packages/domain/src/data/backupStatus.ts` |
+| Domäne Abschnittsstände | `packages/domain/src/building/sectionSnapshots.ts`, gemeinsame Zuordnungsregel `sectionMembership.ts`, Validierung über `checkSite` in `site.ts` |
 | Speicher | `Repository.getBackupLedger/recordBackup` (`packages/application/src/repository.ts`), IndexedDB-Store `meta` Schlüssel `backupLedger` (keine Migration), `MemoryRepository` |
-| Oberfläche | `apps/web/src/app/backupStatus.ts` (Hooks), `views/BackupPanel.tsx` (Erinnerung, Sicherungsstand, Prüfen), Projektkopf-Chip in `views/project/ProjectView.tsx`, `views/project/SnapshotsPanel.tsx` und Einfrieren in `SiteTab.tsx`, Stile `apps/web/src/backup.css` |
+| Oberfläche | `apps/web/src/app/backupStatus.ts` (Hooks), `views/BackupPanel.tsx` (Erinnerung, Sicherungsstand, Prüfen), Projektkopf-Chip in `views/project/ProjectView.tsx`, `views/project/SnapshotsPanel.tsx` und Einfrieren in `SiteTab.tsx`, Stile `apps/web/src/styles/backup.css` |
 | Tests | `tests/backup-reminder.test.mjs`, `tests/e2e/backup-reminder.e2e.mjs` |
 
 ## S01 · Letzte Sicherung mit Datenänderungen vergleichen

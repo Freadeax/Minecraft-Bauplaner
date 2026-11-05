@@ -6,7 +6,7 @@ Der Weltimport liest Regionsdateien nur für die Dauer einer Sitzung. Eine **Gel
 
 ## Geländeaufnahme
 
-`packages/domain/src/terrainSurvey.ts`. Je Spalte eines X/Z-Rechtecks (höchstens 512 × 512, 262 144 Spalten):
+`packages/domain/src/world/terrainSurvey.ts`. Je Spalte eines X/Z-Rechtecks (höchstens 512 × 512, 262 144 Spalten):
 
 - `surface`/`surfaceBlock`: oberster sichtbarer Block. Wasser, Lava und Laub zählen, Pflanzen, Schneeschichten und Luft nicht (`SURFACE_SKIP_IDS` = alles Ersetzbare aus `terrain.ts` plus Barriere, Strukturleere, Licht).
 - `ground`/`groundBlock`: höchster **Boden**block: fest, nicht ersetzbar, keine Flüssigkeit, kein Baumteil (`isGroundId`, dieselben Klassen wie die blockgenaue Geländeprüfung).
@@ -32,7 +32,7 @@ Die Schätzung ist 2,5D (Höhenkarte): Höhlen, Überhänge und Blöcke im Boden
 
 ## Anlagen auf Gelände
 
-`packages/domain/src/anlagenTerrain.ts`. Ist das Ziel ein Projekt mit Weltlage und Geländeaufnahme derselben Dimension, bietet der Planer „Anlage ans Gelände anpassen“ (Standard an):
+`packages/domain/src/base/anlagenTerrain.ts`. Ist das Ziel ein Projekt mit Weltlage und Geländeaufnahme derselben Dimension, bietet der Planer „Anlage ans Gelände anpassen“ (Standard an):
 
 - **Einheiten:** jedes Einzelgebäude, jedes eingebettete Ensemble (behält eine Ebene, sein kuratiertes Layout bleibt) und der ganze Hauptweg (eine Höhe, damit die Anschlüsse der Wegmodule weiter exakt aufeinanderliegen).
 - **Terrassen (Hanglage):** jede Einheit steht mit ihrer untersten Schicht eins über dem mittleren Boden ihres eigenen Grundrisses.
@@ -43,7 +43,7 @@ Die Schätzung ist 2,5D (Höhenkarte): Höhlen, Überhänge und Blöcke im Boden
 
 ## Türen zum Weg
 
-`packages/domain/src/entrance.ts`. Der Eingang eines Gebäudes wird aus der festgehaltenen Version selbst bestimmt: untere Türhälften (ohne Türen Zauntore), nur das unterste Geschoss mit Tür (Balkon- und Obergeschosstüren zählen nicht), die Tür mit dem kleinsten Abstand zum Grundrissrand legt die Seite fest. Das `facing` der Tür wird bewusst nicht verwendet, weil der Katalog Türen an derselben Wand mit unterschiedlichem `facing` setzt.
+`packages/domain/src/base/entrance.ts`. Der Eingang eines Gebäudes wird aus der festgehaltenen Version selbst bestimmt: untere Türhälften (ohne Türen Zauntore), nur das unterste Geschoss mit Tür (Balkon- und Obergeschosstüren zählen nicht), die Tür mit dem kleinsten Abstand zum Grundrissrand legt die Seite fest. Das `facing` der Tür wird bewusst nicht verwendet, weil der Katalog Türen an derselben Wand mit unterschiedlichem `facing` setzt.
 
 In Anlagen mit Hauptweg dreht `planAnlage` jedes Einzelgebäude so, dass der Eingang zum Weg zeigt (Nordbereiche nach Süden, Südbereiche nach Norden); bei gleich nahen Türen gewinnt die kleinste Drehung. Eine Drehung von Hand hat Vorrang („automatisch“ setzt sie zurück), der Schalter „Türen zum Weg drehen“ schaltet die Regel ab, Ensembles behalten ihre kuratierte Ausrichtung. Ergebnis im mitgelieferten Katalog: alle 69 Plätze mit Tür oder Tor zeigen zum Weg, alle Standardlayouts bleiben konfliktfrei und abstandsgerecht.
 

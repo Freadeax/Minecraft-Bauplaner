@@ -24,7 +24,7 @@ Du arbeitest im Repository `Freadeax/Minecraft-Bauplaner` (lokal z. B. `F:\LMNT\
 - Gemeinsame Dateien nur **anhängend** bearbeiten, nie umsortieren oder fremde Zeilen umschreiben:
   - `packages/domain/src/index.ts`: eigene Exportzeilen anhängen.
   - `apps/web/src/views/project/tabs.ts`: genau einen Registry-Eintrag anhängen.
-  - `apps/web/src/style.css` und andere gemeinsame CSS: eigener kommentierter Abschnitt am Ende.
+  - `apps/web/src/styles/style.css` und andere gemeinsame CSS: eigener kommentierter Abschnitt am Ende.
   - `router.ts`, `main.tsx`, `types.ts`, `project.ts`, `backup.ts`: nur minimale, klar abgegrenzte Ergänzungen.
   - `docs/COMMUNICATION.md`, `docs/TESTING.md`: eigener Abschnitt am Ende; alte Einträge nie umdeuten.
   - `docs/STATUS.md`: nur eigene Zeilen.

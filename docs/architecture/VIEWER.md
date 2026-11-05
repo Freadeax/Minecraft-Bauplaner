@@ -1,6 +1,6 @@
 # Viewer und Bedienung (Block B6, P1-03c)
 
-Stand: 27.10.2026. Umsetzung in `apps/web/src/viewer/`, `apps/web/src/Viewer.tsx`, `apps/web/src/canvasFallback.ts`; Inspektorlogik in `packages/domain/src/inspect.ts`. Tests: `tests/viewer.test.mjs`, `tests/e2e/viewer.e2e.mjs`.
+Stand: 27.10.2026. Umsetzung in `apps/web/src/viewer/`, `apps/web/src/Viewer.tsx`, `apps/web/src/canvasFallback.ts`; Inspektorlogik in `packages/domain/src/core/inspect.ts`. Tests: `tests/viewer.test.mjs`, `tests/e2e/viewer.e2e.mjs`.
 
 Der Viewer ist reine Ansicht. Mengen, Konflikte und Export lesen weiterhin ausschließlich das Voxelpayload bzw. `resolution.world`, nie das Vorschaumesh.
 

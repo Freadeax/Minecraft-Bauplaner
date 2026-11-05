@@ -4,8 +4,8 @@ import type { LitematicExportReport } from '../../formats/src/litematicWrite.js'
 import type { SchemAnchor, SchemExportReport, UnselectedPolicy } from '../../formats/src/schemWrite.js';
 import type { NbtTag } from '../../voxel/src/types.js';
 import { LEGACY_MOD_MAX_VOLUME } from '../../voxel/src/sizeLimits.js';
-import { DomainError } from '../../domain/src/types.js';
-import type { AssetVersion, BlueprintRevision, Project } from '../../domain/src/types.js';
+import { DomainError } from '../../domain/src/core/types.js';
+import type { AssetVersion, BlueprintRevision, Project } from '../../domain/src/core/types.js';
 
 /**
  * Schem v3 export of frozen revisions (P3-01). Every export names exactly one
@@ -46,11 +46,11 @@ export interface RevisionExport {
   readonly notes: readonly string[];
 }
 
-import { dataVersionFromProfile, resolveRevision, revisionForExport } from '../../domain/src/revisionExport.js';
-import { resolveProject } from '../../domain/src/compose.js';
-import { buildGuide } from '../../domain/src/guide.js';
-import { sectionOfStep } from '../../domain/src/sectionMembership.js';
-import type { Resolution } from '../../domain/src/compose.js';
+import { dataVersionFromProfile, resolveRevision, revisionForExport } from '../../domain/src/versions/revisionExport.js';
+import { resolveProject } from '../../domain/src/core/compose.js';
+import { buildGuide } from '../../domain/src/building/guide.js';
+import { sectionOfStep } from '../../domain/src/building/sectionMembership.js';
+import type { Resolution } from '../../domain/src/core/compose.js';
 
 /** Most build sections a plan file carries (one byte per cell, 0 = no section). */
 export const MAX_FILE_SECTIONS = 255;

@@ -3,7 +3,7 @@ import { buildPlanGraph, PLAN_ROLE_LABEL, whereUsed } from '../../../../../packa
 import type { Asset, Project } from '../../../../../packages/domain/src/index.js';
 import { useApp } from '../../app/context';
 import { useUserLibrary } from './userLibrary';
-import '../../datamodel.css';
+import '../../styles/datamodel.css';
 
 /**
  * "Verwendet in" (ARCH-02): every project, template and collection that uses

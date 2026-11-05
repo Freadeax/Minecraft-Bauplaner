@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import type { AssetVersion, BlueprintRevision, Project } from '../../../../packages/domain/src/types.js';
+import type { AssetVersion, BlueprintRevision, Project } from '../../../../packages/domain/src/core/types.js';
 import type { ComputeInput, ProjectComputation } from '../../../../packages/application/src/projectComputation.js';
 import { createProjectComputationClient } from '../computation/client';
 import type { ComputationCodec } from '../computation/client';

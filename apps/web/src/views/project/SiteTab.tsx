@@ -9,7 +9,7 @@ import { download, errorText, formatNumber } from '../../app/ui';
 import { isResolved } from './session';
 import { latestBySection, SnapshotBadge, SnapshotsPanel, useSnapshotComparisons } from './SnapshotsPanel';
 import type { ProjectSession } from './session';
-import '../../site.css';
+import '../../styles/site.css';
 
 const short = (id: string): string => id.replace(/^minecraft:/, '');
 const pct = (a: number, b: number): number => b ? Math.round(a / b * 100) : 0;

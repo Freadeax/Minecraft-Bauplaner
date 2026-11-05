@@ -1,6 +1,6 @@
 # Kontrollierte Versionsupdates (UPDATE-01)
 
-Stand: 02.11.2026. Code: `packages/domain/src/updates.ts`, `packages/domain/src/updateState.ts`, `packages/application/src/catalogSync.ts`, Oberfläche `apps/web/src/views/project/UpdatesTab.tsx` (Projekt-Reiter „Updates“). Tests: `tests/updates.test.mjs`, `tests/e2e/updates.e2e.mjs`.
+Stand: 02.11.2026. Code: `packages/domain/src/versions/updates.ts`, `packages/domain/src/versions/updateState.ts`, `packages/application/src/catalogSync.ts`, Oberfläche `apps/web/src/views/project/UpdatesTab.tsx` (Projekt-Reiter „Updates“). Tests: `tests/updates.test.mjs`, `tests/e2e/updates.e2e.mjs`.
 
 ## Grundsatz
 

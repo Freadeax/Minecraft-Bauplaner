@@ -1,6 +1,6 @@
 import { connectFamily, settleState } from '../../../voxel/src/blocklogic/index.js';
 import type { BlockState, Vec3 } from '../../../voxel/src/types.js';
-import { changedKeys } from '../placement.js';
+import { changedKeys } from '../core/placement.js';
 import { draftEntries, keyPos, posKey } from './draft.js';
 import type { CellChange, Draft, Edit } from './draft.js';
 import { inBox } from './tools.js';

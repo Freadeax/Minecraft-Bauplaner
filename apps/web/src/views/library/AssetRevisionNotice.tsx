@@ -1,4 +1,4 @@
-import type { Asset } from '../../../../../packages/domain/src/types.js';
+import type { Asset } from '../../../../../packages/domain/src/core/types.js';
 
 /** An editing draft keeps its original storage base even when another tab broadcasts new data. */
 export function AssetRevisionNotice({ base, current }: { base: Asset; current: Asset }) {

@@ -1,6 +1,6 @@
 # Baustelle: Bauabschnitte, Lager, Sammelplan, Freiraum (B14)
 
-Stand: 28.10.2026. Domäne `packages/domain/src/site.ts`, Oberfläche Tab „Baustelle“ (`#/projekt/<id>/baustelle`, `views/project/SiteTab.tsx`), Stile `apps/web/src/site.css`, Tests `tests/site.test.mjs` und `tests/e2e/site.e2e.mjs`.
+Stand: 28.10.2026. Domäne `packages/domain/src/building/site.ts`, Oberfläche Tab „Baustelle“ (`#/projekt/<id>/baustelle`, `views/project/SiteTab.tsx`), Stile `apps/web/src/styles/site.css`, Tests `tests/site.test.mjs` und `tests/e2e/site.e2e.mjs`.
 
 ## Datenmodell
 

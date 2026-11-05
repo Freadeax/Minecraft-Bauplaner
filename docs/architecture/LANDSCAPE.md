@@ -6,7 +6,7 @@ Die Geländeaufnahme hält fest, wie der Bauplatz **ist**. Die Geländegestaltun
 
 ## Datenmodell
 
-`packages/domain/src/terrainDesign.ts`. Je Spalte eines X/Z-Rechtecks (dieselben Grenzen wie die Aufnahme, höchstens 512 × 512):
+`packages/domain/src/world/terrainDesign.ts`. Je Spalte eines X/Z-Rechtecks (dieselben Grenzen wie die Aufnahme, höchstens 512 × 512):
 
 - `height`: geplanter Boden (Y), `SURVEY_UNKNOWN` für unbekannte Spalten – die werden von keinem Werkzeug verändert.
 - `top`/`fill`: oberster Block und Füllblock darunter (Index in `ids`). Der Füllblock wird beim Aufschütten verbaut (Gras → Erde, Sand → Sand, Fels → Stein …, `fillerFor`).
@@ -76,7 +76,7 @@ Projektreiter **„Landschaft“** (`#/projekt/<id>/landschaft`, `apps/web/src/v
 
 ## Streu-Ebene (S06)
 
-`packages/domain/src/terrainScatter.ts` (Verteilung, Bauteile, Blöcke) und `terrainScatterPlan.ts` (Daten, Prüfung). Idee wie die Objektebenen von WorldPainter, eigene Umsetzung.
+`packages/domain/src/world/terrainScatter.ts` (Verteilung, Bauteile, Blöcke) und `terrainScatterPlan.ts` (Daten, Prüfung). Idee wie die Objektebenen von WorldPainter, eigene Umsetzung.
 
 - **Bauteile:** eingebaut Eiche, Birke, Fichte, Kirschbaum, Busch, Felsbrocken, Steine, Blumen, Gras, Farn, Pilze, Kaktus, Toter Busch, Zuckerrohr – je mit Varianten, Laub dauerhaft (`persistent=true`), Zustände aus den Blockfakten 26.3. Dazu jede **eigene Schablone** (Bibliotheksmodul mit Schlagwort `schablone`, EDIT-03/EDIT-04): unterste Schicht steht auf dem Boden, Luftzellen werden nicht gesetzt, höchstens 4 096 Blöcke.
 - **Ebene:** Bauteil, Dichte (Teile je 1 000 Spalten), Mindestabstand, Oberflächenstile (wie Biome; erkannt am obersten Block der Spalte), Hang von/bis, Höhe von/bis, „nur bis n vom Wasser“, Abstand zu Bauten, Startwert. Mischungen legen mehrere Ebenen auf einmal an (Mischwald, Nadelwald, Blumenwiese, Felsen und Geröll, Wüste, Ufer, Kirschhain, Pilze im Wald).

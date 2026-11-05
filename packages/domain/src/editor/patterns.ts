@@ -1,5 +1,5 @@
 import type { BlockState, Vec3 } from '../../../voxel/src/types.js';
-import { DomainError } from '../types.js';
+import { DomainError } from '../core/types.js';
 import { cellAt, draftEntries, keyPos, sameSlot } from './draft.js';
 import type { CellChange, CellSlot, CellValue, Draft, Edit } from './draft.js';
 import { carryProperties, inBox } from './tools.js';

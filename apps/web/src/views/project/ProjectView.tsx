@@ -8,11 +8,11 @@ import { useDocumentTitle } from '../../app/Shell';
 import { useProjectBackupState } from '../../app/backupStatus';
 import { findUpdates, siteOf, summarizeUpdates, teamContextOf, teamView } from '../../../../../packages/domain/src/index.js';
 import type { RoomTeam, TeamState } from '../../../../../packages/domain/src/index.js';
-import { TeamRoomContext, useTeamRoom } from './roomClient';
-import { TeamLiveChip, TeamNews } from './TeamLiveBar';
+import { TeamRoomContext, useTeamRoom } from './team/roomClient';
+import { TeamLiveChip, TeamNews } from './team/TeamLiveBar';
 import type { Project } from '../../../../../packages/domain/src/index.js';
 import type { Repository } from '../../app/repository';
-import '../../backup.css';
+import '../../styles/backup.css';
 import './updates.css';
 
 const saveLabel = { saved: 'gespeichert', saving: 'speichert …', error: 'Speichern fehlgeschlagen', conflict: 'Konflikt mit anderem Tab' } as const;

@@ -5,7 +5,7 @@ import java.util.Set;
 
 /**
  * Comparison of a planned and a found block, rule for rule the same as the website
- * ({@code packages/domain/src/gameCheck.ts}: {@code compareBlock}, {@code ignoredProperties}).
+ * ({@code packages/domain/src/building/gameCheck.ts}: {@code compareBlock}, {@code ignoredProperties}).
  * scripts/bridge_crosscheck.mjs feeds both sides the same cases.
  */
 public final class BlockRules {

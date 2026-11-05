@@ -1,4 +1,4 @@
-import type { BuildTheme } from '../../../../../packages/domain/src/buildThemes.js';
+import type { BuildTheme } from '../../../../../packages/domain/src/catalog/buildThemes.js';
 import { encodeLibraryState } from './urlState.ts';
 
 /** Uses the same serializer as the catalogue; the caller retains any project context in its base href. */

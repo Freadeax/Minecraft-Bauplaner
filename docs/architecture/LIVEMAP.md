@@ -1,6 +1,6 @@
 # Livekartenlinks und Markerdatei · B15-L
 
-Stand: 31.10.2026. Implementierung: `packages/domain/src/livemap.ts`; Regressionen: `tests/livemap.test.mjs`.
+Stand: 31.10.2026. Implementierung: `packages/domain/src/world/livemap.ts`; Regressionen: `tests/livemap.test.mjs`.
 
 ## Bewusster Umfang
 
@@ -30,7 +30,7 @@ Die Tests prüfen negative/sichere Koordinaten, Pfad-/Query-/Fragmentkodierung, 
 
 ## MAP-02: gespeicherte Karten, echte Marker für BlueMap und Dynmap
 
-Stand: 05.11.2026. Implementierung: `packages/domain/src/livemap.ts` (gespeicherte Karten), `packages/domain/src/liveMapExport.ts` (Formen, Markerimport, Exporte), Oberfläche im Weltkarten-Bereich „Server-Webkarte verknüpfen“ (`apps/web/src/views/map/LiveMapPanel.tsx`). Tests: `tests/livemap-export.test.mjs`, `tests/e2e/livemap-export.e2e.mjs`. Abnahme: KARTE-08.
+Stand: 05.11.2026. Implementierung: `packages/domain/src/world/livemap.ts` (gespeicherte Karten), `packages/domain/src/world/liveMapExport.ts` (Formen, Markerimport, Exporte), Oberfläche im Weltkarten-Bereich „Server-Webkarte verknüpfen“ (`apps/web/src/views/map/LiveMapPanel.tsx`). Tests: `tests/livemap-export.test.mjs`, `tests/e2e/livemap-export.e2e.mjs`. Abnahme: KARTE-08.
 
 **Gespeicherte Karten.** `SavedLiveMap { name, urlTemplate, worlds }`, höchstens 20, Name eindeutig ohne Groß-/Kleinschreibung (`checkSavedLiveMap(s)`, `upsertSavedLiveMap`). Sie liegen wie die aktive Einstellung im Browser (`localStorage` `bauplaner.livekarten`); geteilt wird über die Datei `bauplaner-live-maps` (`createLiveMapTargetsFile`/`readLiveMapTargetsFile`, höchstens 256 KB). `mergeSavedLiveMaps` fügt neue Namen hinzu und überspringt vorhandene. Es wird nie etwas an einen Kartenserver gesendet.
 

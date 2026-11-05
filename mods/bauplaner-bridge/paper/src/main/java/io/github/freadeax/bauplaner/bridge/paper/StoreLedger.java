@@ -16,7 +16,7 @@ import java.util.TreeMap;
 /**
  * Pure rules of the checked storage chests (COOP-05, docs/architecture/LAGERKISTEN.md): item counts,
  * check sum, difference against the expected content, booking of moves and the rights matrix. No Bukkit,
- * so the rules are unit tested and the planner fold ({@code packages/domain/src/team.ts}) can follow them
+ * so the rules are unit tested and the planner fold ({@code packages/domain/src/team/team.ts}) can follow them
  * line by line.
  */
 final class StoreLedger {

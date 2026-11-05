@@ -18,7 +18,7 @@ Ein Profil, eine Herkunft: Blöcke, Property-Werte, Items, Item-Tags, Rezepte un
 |---|---|
 | `scripts/gen_profile.mjs` | Erzeugt die beiden Datendateien aus Serverberichten und den Daten im Server-Jar. |
 | `packages/voxel/src/profileData.ts` | Profilkopf mit Hashes, Item-IDs, Item-Tags (aufgelöst), Brennstoffe. Erzeugt. |
-| `packages/domain/src/profileRecipes.ts` | Alle Rezepte, die Items in Bauitems verwandeln (Werkbank inkl. Umfärben, Steinsäge, Ofen, Schmelzofen, Räucherofen, Lagerfeuer, Schmiedetisch). Erzeugt. |
+| `packages/domain/src/materials/profileRecipes.ts` | Alle Rezepte, die Items in Bauitems verwandeln (Werkbank inkl. Umfärben, Steinsäge, Ofen, Schmelzofen, Räucherofen, Lagerfeuer, Schmiedetisch). Erzeugt. |
 | `packages/voxel/src/profile.ts` | Profil-API: `JAVA_PROFILE`, `assertProfileConsistent`, `isProfileItem`, `profileItemTag`, `fuelOf`, `smeltsPerFuel`, `checkProfileStates`, `checkPayloadProfile`. |
 | `packages/voxel/src/blockRegistry.ts` | Blockregister (VIEW-02), jetzt direkt aus den Blockfakten des Serverberichts. |
 

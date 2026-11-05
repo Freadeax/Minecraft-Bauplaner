@@ -23,7 +23,7 @@ import type { BuildView, PrintTarget } from './buildrun/common';
 import { PrintSheet } from './buildrun/PrintSheet';
 import { SessionsView } from './buildrun/SessionsView';
 import { StepRows, useStepRuns } from './buildrun/StepRows';
-import '../../buildrun.css';
+import '../../styles/buildrun.css';
 import { FurnishList } from './FurnishList';
 
 type Filter = 'all' | 'todo' | 'review';

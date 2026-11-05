@@ -10,7 +10,7 @@ import java.util.Set;
  * Weltplan marks the website sent for one dimension (MAP-03, schema 2 since MAP-06 / GAME-08): building
  * sites, paths, points and zones, each optionally on a named layer and with its own colour. The mod only
  * draws them (client side) and points the way on the HUD; nothing is built. Same field names and limits
- * as the website (packages/domain/src/worldPlan.ts); unknown fields are ignored, unknown kinds rejected.
+ * as the website (packages/domain/src/world/worldPlan.ts); unknown fields are ignored, unknown kinds rejected.
  */
 public record WorldMarks(String dimension, List<Site> sites, List<Path> paths, List<Point> points, List<Zone> zones) {
     public static final int MAX_ITEMS = 500;

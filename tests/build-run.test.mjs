@@ -7,7 +7,7 @@ import {
   DEFAULT_PACE, checkPace, paceOf, stepWork, planSessions, progressByDay, sessionText, reworkList, gameCounts,
 } from '../dist/domain/src/index.js';
 
-import { stackSizeOf } from '../dist/domain/src/materials.js';
+import { stackSizeOf } from '../dist/domain/src/materials/materials.js';
 const lib = await createSampleLibrary();
 const versions = new Map(lib.versions.map(v => [v.id, v]));
 const latest = id => lib.versions.find(v => v.assetId === id).id;

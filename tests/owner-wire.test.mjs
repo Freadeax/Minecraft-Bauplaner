@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { decodeOwners, encodeOwners } from '../dist/domain/src/ownerWire.js';
+import { decodeOwners, encodeOwners } from '../dist/domain/src/team/ownerWire.js';
 import { computeProject, decodeComputeResult, encodeComputeResult } from '../dist/application/src/index.js';
 import { createProject, createSampleLibrary, newInstance, resolveProject, buildGuide, materialsForParts } from '../dist/domain/src/index.js';
-import { stepCellIndices } from '../dist/domain/src/guide.js';
+import { stepCellIndices } from '../dist/domain/src/building/guide.js';
 
 // PERF-02-S03: owners compact on the wire; same keys, values and order as the worker's Map.
 const library = await createSampleLibrary(), versions = new Map(library.versions.map(v => [v.id, v]));

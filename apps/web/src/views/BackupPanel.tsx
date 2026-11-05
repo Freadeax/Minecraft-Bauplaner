@@ -5,7 +5,7 @@ import { recordBackupReceipt, snooze, snoozedUntil } from '../app/backupStatus';
 import type { BackupStatusState } from '../app/backupStatus';
 import { useApp } from '../app/context';
 import { errorText } from '../app/ui';
-import '../backup.css';
+import '../styles/backup.css';
 
 const when = (iso: string) => new Date(iso).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
 const stateLabel: Record<CoverageLine['state'], string> = { never: 'noch nie gesichert', changed: 'seit Sicherung geändert', current: 'gesichert' };

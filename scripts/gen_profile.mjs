@@ -9,7 +9,7 @@
 //   node scripts/gen_profile.mjs out jar 26.3 5023 <server.jar sha1>
 //
 // Ausgabe: packages/voxel/src/profileData.ts (Profilkopf, Items, Item-Tags, Brennstoffe) und
-// packages/domain/src/profileRecipes.ts (alle Bau-relevanten Rezepte des Profils).
+// packages/domain/src/materials/profileRecipes.ts (alle Bau-relevanten Rezepte des Profils).
 // Prüfung: tests/profile.test.mjs (Hashes, Bindung an blockFacts.ts) und tests/recipe-profile.test.mjs.
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
@@ -173,6 +173,6 @@ const domain = `${header}
 export const PROFILE_RECIPES = \`${kept.join('\n')}\`;
 `;
 writeFileSync('packages/voxel/src/profileData.ts', voxel);
-writeFileSync('packages/domain/src/profileRecipes.ts', domain);
+writeFileSync('packages/domain/src/materials/profileRecipes.ts', domain);
 console.log(`Profil ${version}: ${items.length} Items, ${kept.length}/${Object.values(typeCounts).reduce((a, b) => a + b, 0)} Rezepte, ${tagLines.length} Tags, ${fuels.length} Brennstoffe.`);
 console.log(JSON.stringify(sources, null, 2));

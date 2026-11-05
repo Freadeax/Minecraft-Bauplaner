@@ -98,7 +98,7 @@ test('detect and swap every shipped building into every wood without breaking th
   assert.ok(checked > 100, `${checked} Varianten geprüft`);
 });
 
-import { MATERIAL_FAMILIES, variantSwaps } from '../dist/domain/src/build/sets/varianten.js';
+import { MATERIAL_FAMILIES, variantSwaps } from '../dist/domain/src/catalog/build/sets/varianten.js';
 import { buildCatalog, createBuildingLibrary, variantGroup, BASIS_PREFIX, plainTags, withFacets } from '../dist/domain/src/index.js';
 
 test('shipped material families: every swap resolves, variants differ only in material', () => {
@@ -149,7 +149,7 @@ test('variant group: family members, derived variants and their basis', async ()
   assert.ok(withFacets(own.tags, { kategorie: ['befestigung'], stil: [], biom: [], funktion: [] }).includes(`${BASIS_PREFIX}bld_wachturm`));
 });
 
-import { SCOPED_MATERIAL_SETS, materialTargets, scopedMaterialOf } from '../dist/domain/src/variants.js';
+import { SCOPED_MATERIAL_SETS, materialTargets, scopedMaterialOf } from '../dist/domain/src/materials/variants.js';
 
 test('scoped families are opt-in and legacy colour swaps remain unchanged', () => {
   const p = payload([st('red_wool'), st('red_stained_glass'), st('red_concrete'), st('red_terracotta')], [at(0,0,0,0),at(1,0,0,1),at(2,0,0,2),at(0,1,0,3)]);

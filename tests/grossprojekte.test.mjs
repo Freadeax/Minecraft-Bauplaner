@@ -5,7 +5,7 @@ import {
   createProject, grossprojektAssetIds, grossprojektById, grossprojektIntoProject, grossprojekteForTheme, normalizeGpChoices, planGrossprojekt, previewGrossprojekt, resolveProject, scaleOf,
   summarizeGrossprojekt, swapCandidates, undo, execute, EMPTY_HISTORY, validateGrossprojekt, streetPayload, siteOf,
 } from '../dist/domain/src/index.js';
-import { BUILD_THEMES } from '../dist/domain/src/buildThemes.js';
+import { BUILD_THEMES } from '../dist/domain/src/catalog/buildThemes.js';
 
 const buildings = await createBuildingLibrary();
 const versions = new Map(buildings.versions.map(v => [v.id, v]));

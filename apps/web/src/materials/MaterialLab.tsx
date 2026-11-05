@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
-import { materialLab, LAB_FAMILY_LABEL } from '../../../../packages/domain/src/materialLab.js';
-import type { LabFamily } from '../../../../packages/domain/src/materialLab.js';
-import type { MaterialReport } from '../../../../packages/domain/src/materials.js';
-import { formatStacks } from '../../../../packages/domain/src/materials.js';
+import { materialLab, LAB_FAMILY_LABEL } from '../../../../packages/domain/src/materials/materialLab.js';
+import type { LabFamily } from '../../../../packages/domain/src/materials/materialLab.js';
+import type { MaterialReport } from '../../../../packages/domain/src/materials/materials.js';
+import { formatStacks } from '../../../../packages/domain/src/materials/materials.js';
 import { formatNumber } from '../app/ui';
 import { stateColor } from '../colors';
 import './materialLab.css';

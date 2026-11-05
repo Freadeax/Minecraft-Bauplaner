@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { BUILD_THEMES, buildThemeQuery, selectBuildTheme } from '../dist/domain/src/buildThemes.js';
+import { BUILD_THEMES, buildThemeQuery, selectBuildTheme } from '../dist/domain/src/catalog/buildThemes.js';
 import { buildCatalog, createBuildingLibrary, FACETS, queryCatalog, SORT_LABEL, STAGES } from '../dist/domain/src/index.js';
 import { buildThemeSearch } from '../apps/web/src/views/library/buildThemeLinks.ts';
 import { decodeLibraryState } from '../apps/web/src/views/library/urlState.ts';

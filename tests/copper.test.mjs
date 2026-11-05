@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createPayload, blockFacts } from '../dist/voxel/src/index.js';
 import { swapMaterials, computeMaterials, resolveRecipes, chooseRecipe } from '../dist/domain/src/index.js';
-import { copperMatrix, copperVariant, stageId, COPPER_STAGES } from '../dist/domain/src/copper.js';
-import { SCOPED_MATERIAL_SETS, scopedMaterialOf, materialTargets } from '../dist/domain/src/variants.js';
+import { copperMatrix, copperVariant, stageId, COPPER_STAGES } from '../dist/domain/src/materials/copper.js';
+import { SCOPED_MATERIAL_SETS, scopedMaterialOf, materialTargets } from '../dist/domain/src/materials/variants.js';
 
 const mc = (id, properties = {}) => ({ id: `minecraft:${id}`, properties });
 function one(state, blockEntities = []) {

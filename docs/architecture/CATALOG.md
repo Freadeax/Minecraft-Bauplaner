@@ -1,6 +1,6 @@
 # Gebäudekatalog: Vorschläge, Kennwerte und Filter (B9)
 
-Stand: 01.11.2026 (Katalog v3, siehe [Abschnitt LIB-04](#katalog-v3-bibliothek-in-alle-richtungen-lib-04)). Code: `packages/domain/src/catalog.ts` (Facetten, Kennwerte, Spielphase, Familien, Suche, Vorschläge), `packages/domain/src/buildings.ts` (Register der mitgelieferten Gebäude), `packages/domain/src/build/` (Bauwerkzeug `plot.ts`, `spec.ts` und zehn Themen-Sets unter `sets/`), `packages/domain/src/ensembles.ts`, Oberfläche `views/LibraryView.tsx` mit `views/library/BuildingSheet.tsx`, `CatalogFilters.tsx`, `FacetFields.tsx`. Tests: `tests/catalog.test.mjs`, `tests/e2e/catalog.e2e.mjs`. Ergänzt den [Domänenvertrag](DOMAIN.md).
+Stand: 01.11.2026 (Katalog v3, siehe [Abschnitt LIB-04](#katalog-v3-bibliothek-in-alle-richtungen-lib-04)). Code: `packages/domain/src/catalog/catalog.ts` (Facetten, Kennwerte, Spielphase, Familien, Suche, Vorschläge), `packages/domain/src/catalog/buildings.ts` (Register der mitgelieferten Gebäude), `packages/domain/src/catalog/build/` (Bauwerkzeug `plot.ts`, `spec.ts` und zehn Themen-Sets unter `sets/`), `packages/domain/src/catalog/ensembles.ts`, Oberfläche `views/LibraryView.tsx` mit `views/library/BuildingSheet.tsx`, `CatalogFilters.tsx`, `FacetFields.tsx`. Tests: `tests/catalog.test.mjs`, `tests/e2e/catalog.e2e.mjs`. Ergänzt den [Domänenvertrag](DOMAIN.md).
 
 ## Zwei Arten von Werten
 
@@ -45,7 +45,7 @@ Kennwerte sind reine Funktionen der inhaltsadressierten Version; die Oberfläche
 150 eigene synthetische Entwürfe aus Code plus die drei B0-Module (153 Einträge); seit B12 weitere 24 (Spielhilfen und Materialvarianten, siehe [SCHEM_VIEWS](SCHEM_VIEWS.md#bibliothek)), zusammen 174 plus 3 Module. Keine importierten Welten, keine fremden Schematics, keine Texturen.
 
 - **Klassisch (16, unverändert):** Fachwerkhaus, Blockhütte, Wüstenhaus, Leuchtturm, Dorfbrunnen, Schmiede, Scheune, Marktstand, Kapelle, Gewächshaus, Moderne Villa, Iglu, Steinbrücke, Hafensteg, Holz-Wachturm, Baumhaus. Ihre Versions-IDs sind im Test festgeschrieben, bestehende Projekte bleiben gültig.
-- **Themen-Sets (134)** unter `packages/domain/src/build/sets/`, jedes eine Datei:
+- **Themen-Sets (134)** unter `packages/domain/src/catalog/build/sets/`, jedes eine Datei:
 
 | Set | Inhalt |
 |---|---|
@@ -115,7 +115,7 @@ Runde 2 (02.11.2026): Fassadenbaukasten `build/facade.ts` für Stadt, Küste, Ep
 
 ## Bibliotheksbeiträge (LIB-06)
 
-Seit 03.11.2026 können eigene Bauwerke feste Katalogeinträge werden: Gebäudeblatt → „In Bibliothek einreichen“ erzeugt ein Beitragspaket, `npm run library:add` nimmt es unter `packages/domain/src/community/` auf. Beiträge sind mitgelieferte Gebäude (`demo`) mit der Kennung `beitrag_…`, dem Tag `beitrag`, den eingereichten Angaben und Bautipps und ihrer Geometrie ohne Baustil-Veredelung. Ablauf, Format und Prüfungen: [CONTRIBUTIONS](CONTRIBUTIONS.md).
+Seit 03.11.2026 können eigene Bauwerke feste Katalogeinträge werden: Gebäudeblatt → „In Bibliothek einreichen“ erzeugt ein Beitragspaket, `npm run library:add` nimmt es unter `packages/domain/src/catalog/community/` auf. Beiträge sind mitgelieferte Gebäude (`demo`) mit der Kennung `beitrag_…`, dem Tag `beitrag`, den eingereichten Angaben und Bautipps und ihrer Geometrie ohne Baustil-Veredelung. Ablauf, Format und Prüfungen: [CONTRIBUTIONS](CONTRIBUTIONS.md).
 
 ## Vorbild und Abgrenzung
 

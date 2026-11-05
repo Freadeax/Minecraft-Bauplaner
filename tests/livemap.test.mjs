@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildLiveMapUrl, checkLiveMapTarget, createLiveMapMarkerFile, readLiveMapMarkerFile } from '../dist/domain/src/livemap.js';
+import { buildLiveMapUrl, checkLiveMapTarget, createLiveMapMarkerFile, readLiveMapMarkerFile } from '../dist/domain/src/world/livemap.js';
 
 const pos = { x: -42, y: 64, z: 128, world: 'Meine Welt', dimension: 'minecraft:overworld' };
 const target = template => ({ name: 'Eigene Livekarte', urlTemplate: template });

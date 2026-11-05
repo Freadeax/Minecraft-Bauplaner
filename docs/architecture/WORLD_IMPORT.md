@@ -10,7 +10,7 @@ Ein begrenzter Bereich wird direkt aus den Regionsdateien (`.mca`, Anvil) einer 
 | `packages/formats/src/lz4.ts` | LZ4-Blockstrom im lz4-java-Format (Chunk-Kompression 4) mit XXH32-Prüfsumme |
 | `packages/formats/src/defaultStates.ts` | Standardzustände aller 884 Blöcke mit Properties aus dem offiziellen 26.3-Bericht (generiert) |
 | `packages/formats/src/worldExcerpt.ts` | Dichte Probe eines Weltbereichs (`sampleWorld`), Übernahme als Payload (`sampleToPayload`), Draufsicht (`surfaceMap`) |
-| `packages/domain/src/terrain.ts` | Geländeprüfung eines platzierten Projekts (`checkTerrain`) |
+| `packages/domain/src/world/terrain.ts` | Geländeprüfung eines platzierten Projekts (`checkTerrain`) |
 | `apps/web/src/views/world/` | Worker (liest Dateien per `File.slice`), Dateiauswahl, Draufsicht mit Bereichswahl, Seite Weltimport |
 | `apps/web/src/views/project/TerrainTab.tsx` | Projektbereich „Gelände“ |
 

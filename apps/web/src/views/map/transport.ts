@@ -1,6 +1,6 @@
-import { buildWorldMap } from '../../../../../packages/domain/src/worldmap.js';
-import type { WorldMapView } from '../../../../../packages/domain/src/worldmap.js';
-import type { AssetVersion, Project } from '../../../../../packages/domain/src/types.js';
+import { buildWorldMap } from '../../../../../packages/domain/src/world/worldmap.js';
+import type { WorldMapView } from '../../../../../packages/domain/src/world/worldmap.js';
+import type { AssetVersion, Project } from '../../../../../packages/domain/src/core/types.js';
 import type { Cell } from '../../../../../packages/voxel/src/index.js';
 
 export interface MapRequest {

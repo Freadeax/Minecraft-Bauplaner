@@ -148,20 +148,20 @@ test('Register im Repository: alle Beiträge lesbar, Kennungen eindeutig, keine 
 test('Übernahme-Skript: add, Doppelte, ersetzen, check, remove in einem Testordner', async () => {
   const root = mkdtempSync(path.join(tmpdir(), 'beitrag-'));
   try {
-    mkdirSync(path.join(root, 'packages/domain/src/community'), { recursive: true });
-    writeFileSync(path.join(root, 'packages/domain/src/community/registry.ts'), 'export const COMMUNITY_ENTRIES = [\n];\n');
+    mkdirSync(path.join(root, 'packages/domain/src/catalog/community'), { recursive: true });
+    writeFileSync(path.join(root, 'packages/domain/src/catalog/community/registry.ts'), 'export const COMMUNITY_ENTRIES = [\n];\n');
     const { asset, version } = await ownTower();
     const pkg = path.join(root, 'rathaus.bauplaner-beitrag.json');
     writeFileSync(pkg, JSON.stringify(await createContribution(asset, version, { meta: META, preview: PNG })));
     const run = (...args) => execFileSync(process.execPath, ['scripts/library_intake.mjs', ...args, '--root', root], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
     assert.match(run('add', pkg, '--trocken'), /Trockenlauf/);
-    assert.ok(!existsSync(path.join(root, 'packages/domain/src/community/entries', `${META.id}.ts`)));
+    assert.ok(!existsSync(path.join(root, 'packages/domain/src/catalog/community/entries', `${META.id}.ts`)));
     assert.match(run('add', pkg), /Aufgenommen/);
-    const entryFile = path.join(root, 'packages/domain/src/community/entries', `${META.id}.ts`);
+    const entryFile = path.join(root, 'packages/domain/src/catalog/community/entries', `${META.id}.ts`);
     const parsed = parseEntryModule(readFileSync(entryFile, 'utf8'));
     assert.equal(parsed.file.checksum, JSON.parse(readFileSync(pkg, 'utf8')).checksum);
     assert.equal(entryModule(parsed.file, parsed.addedAt), readFileSync(entryFile, 'utf8'));
-    const registry = readFileSync(path.join(root, 'packages/domain/src/community/registry.ts'), 'utf8');
+    const registry = readFileSync(path.join(root, 'packages/domain/src/catalog/community/registry.ts'), 'utf8');
     assert.match(registry, new RegExp(`id: "${META.id}"`));
     assert.match(registry, /load: \(\) => import\('\.\/entries\/beitrag_rathaus_am_see\.js'\)/);
     assert.ok(existsSync(path.join(root, 'docs/library/beitraege', `${META.id}.png`)));
@@ -178,7 +178,7 @@ test('Übernahme-Skript: add, Doppelte, ersetzen, check, remove in einem Testord
     assert.match(run('check'), /in Ordnung: 1/);
     assert.ok(!existsSync(path.join(root, 'docs/library/beitraege', `${META.id}.png`)));
     // Register out of sync with the entry files is reported.
-    writeFileSync(path.join(root, 'packages/domain/src/community/registry.ts'), 'export const COMMUNITY_ENTRIES = [\n];\n');
+    writeFileSync(path.join(root, 'packages/domain/src/catalog/community/registry.ts'), 'export const COMMUNITY_ENTRIES = [\n];\n');
     assert.throws(() => run('check'), /passt nicht/);
     // Tampered file is refused before anything is written.
     const bad = JSON.parse(readFileSync(pkg, 'utf8')); bad.meta.name = 'Anders';

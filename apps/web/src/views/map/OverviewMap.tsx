@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { Bounds } from '../../../../../packages/voxel/src/index.js';
-import { chunkOf, regionOf } from '../../../../../packages/domain/src/worldmap.js';
-import type { TopView, WorldMapView } from '../../../../../packages/domain/src/worldmap.js';
+import { chunkOf, regionOf } from '../../../../../packages/domain/src/world/worldmap.js';
+import type { TopView, WorldMapView } from '../../../../../packages/domain/src/world/worldmap.js';
 import { columnAt, itemAt, itemColor, measureText, pathColumns, pathVertexAt, zoneArea, zoneCategoryOf } from '../../../../../packages/domain/src/index.js';
 import type { DeviationColumn, LiveOtherPlayer, Polyline, TerrainSurvey, WorldItem } from '../../../../../packages/domain/src/index.js';
 import { surveyImage } from './terrainLayer';

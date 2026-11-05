@@ -292,7 +292,7 @@ test('stair corners: hip roofs get the outer and inner shapes the game would com
   // Game rule: a stair facing east whose back neighbour faces south (not its counter-clockwise north) is outer_right.
   assert.deepEqual([at(0, 0, 0).properties.facing, at(1, 0, 0).properties.facing, at(0, 0, 0).properties.shape], ['east', 'south', 'outer_right']);
   // Inner corners: a stair whose front neighbour is perpendicular (game rule, checked on the plot directly).
-  const { Plot } = await import('../dist/domain/src/build/plot.js');
+  const { Plot } = await import('../dist/domain/src/catalog/build/plot.js');
   const p = new Plot([3, 1, 3]);
   p.set(1, 0, 1, 'oak_stairs', { facing: 'north', half: 'bottom', shape: 'straight', waterlogged: 'false' });
   p.set(1, 0, 2, 'oak_stairs', { facing: 'east', half: 'bottom', shape: 'straight', waterlogged: 'false' });

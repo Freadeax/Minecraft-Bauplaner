@@ -2,7 +2,7 @@ import { MODEL_MAX_FILE_BYTES } from '../../voxel/src/sizeLimits.js';
 import type { Project, OriginalFile, ProjectScanReference } from '../../domain/src/index.js';
 import type { WorldScan } from '../../voxel/src/observation.js';
 import type { Vec3 } from '../../voxel/src/index.js';
-import { sha256Hex } from '../../domain/src/hash.js';
+import { sha256Hex } from '../../domain/src/core/hash.js';
 import type { Repository } from './repository.js';
 
 export type PersistableScan = WorldScan & { readonly sourceSha256: string; readonly fileName: string };

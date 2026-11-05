@@ -1,5 +1,5 @@
 import type { Vec3 } from '../../../voxel/src/types.js';
-import { DomainError } from '../types.js';
+import { DomainError } from '../core/types.js';
 import { MAX_EDIT_CELLS } from './draft.js';
 import type { CellChange, CellValue, Edit } from './draft.js';
 

@@ -9,6 +9,7 @@ Zielrepository: https://github.com/Freadeax/Minecraft-Bauplaner
 ## Einstieg
 
 - [Verbindliche Regeln für Coding-Agenten](AGENTS.md)
+- [Ordnerkarte: wo liegt was?](docs/STRUKTUR.md)
 - [Produktgrundsätze](docs/project/PRINCIPLES.md)
 - [Technische Gesamtspezifikation](docs/architecture/SPECIFICATION.md)
 - [Normativer Voxelvertrag v1](docs/architecture/VOXEL_CONTRACT.md)
@@ -45,10 +46,13 @@ Verbindliches Ziel: **GitHub Pages** mit lokal gebautem statischem Frontend und 
 | `packages/application` | Exportanwendungsfall, Speicherports, Aufnahmeverwaltung und portabler Sitzungsspeicher |
 | `packages/domain` | Assets/Versionen, Projekte, Zusammensetzen, Materialien, Anleitung, Sicherung und Generatoren |
 | `packages/formats` | getrennte NBT-/Schem-/Litematic-Adapter |
-| `mods/bauplaner-bridge` | lesende Spielbrücke; Fabric-Adapter noch nicht im Spiel abgenommen |
+| `mods/bauplaner-bridge` | Client-Mod (Fabric/NeoForge), Paper-Plugin und Modrinth-Angaben |
 | `fixtures`, `tests` | Formatbeispiele, Kernregressionen und Browserprüfungen |
 | `scripts` | lokale Prüfungen, Webbuild und Main-Veröffentlichung |
 | `docs` | Verträge, Entscheidungen, Aufgaben und Prüfprotokolle |
+| `services/team-room` | Team-Raum (Cloudflare Worker) |
+
+Die Fachordner innerhalb der Pakete und wo neue Dateien hingehören: [Ordnerkarte](docs/STRUKTUR.md). Die Dateien `index.html`, `assets/`, `deployment.json` und `examples/` in der Wurzel sind Pages-Ausgabe und werden nur von `scripts/publish_pages.sh` geschrieben.
 
 Importadapter erhalten Originaldaten getrennt vom normalisierten Voxelmodell. Der gemeinsame Kern liefert Vorschau, Materialbedarf, Bauanleitung und Export. Projekte referenzieren konkrete unveränderliche Bauteilversionen. IndexedDB speichert Projekte und Originaldateien lokal; Sicherungen ermöglichen den manuellen Transfer. Es gibt noch keinen produktiven Team-/Cloudserver.
 

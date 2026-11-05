@@ -8,7 +8,7 @@ Route: `#/bibliothek/anlagen[/<id>]`, Reiter „Anlagen“ in der Bibliothek. Je
 
 ## Daten
 
-`packages/domain/src/anlagen.ts`, `ANLAGEN`: genau eine Anlage je Bauwelt (11). Eine Anlage hat
+`packages/domain/src/base/anlagen.ts`, `ANLAGEN`: genau eine Anlage je Bauwelt (11). Eine Anlage hat
 
 - `path`: Hauptweg aus Wegmodulen (`weg`: Wege-Baukasten mit Wendeplatz, `strasse`: Stadtstraße) oder `null` (Nether, End),
 - `spacing`: empfohlener Abstand zwischen Gebäuden und zum Weg (Blöcke),

@@ -1,6 +1,6 @@
-import { canonicalJson } from '../../domain/src/hash.js';
-import { addAssetVersion, updateAssetMeta } from '../../domain/src/library.js';
-import type { Asset, AssetVersion } from '../../domain/src/types.js';
+import { canonicalJson } from '../../domain/src/core/hash.js';
+import { addAssetVersion, updateAssetMeta } from '../../domain/src/catalog/library.js';
+import type { Asset, AssetVersion } from '../../domain/src/core/types.js';
 
 /**
  * Delivery of changed shipped buildings (UPDATE-01). The app ships every

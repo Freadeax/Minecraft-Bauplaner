@@ -1,6 +1,6 @@
 # Projektplanung: Meilensteine, Abhängigkeiten, Bauleute, Zeitplan (PROJ-01)
 
-Stand: 03.11.2026. Domäne `packages/domain/src/program.ts`, Oberfläche Projektreiter „Planung“ (`#/projekt/<id>/planung`, `views/project/PlanningTab.tsx`), Stile `apps/web/src/planning.css`, Tests `tests/program.test.mjs` und `tests/e2e/program.e2e.mjs`. Ergänzt [SITE](SITE.md) (Bauabschnitte, Lager, Sammelplan) und [BUILD_RUN](BUILD_RUN.md) (Bautempo, Bautage).
+Stand: 03.11.2026. Domäne `packages/domain/src/planning/program.ts`, Oberfläche Projektreiter „Planung“ (`#/projekt/<id>/planung`, `views/project/PlanningTab.tsx`), Stile `apps/web/src/styles/planning.css`, Tests `tests/program.test.mjs` und `tests/e2e/program.e2e.mjs`. Ergänzt [SITE](SITE.md) (Bauabschnitte, Lager, Sammelplan) und [BUILD_RUN](BUILD_RUN.md) (Bautempo, Bautage).
 
 Ziel: Große Projekte (Anlagen, Basen, Stadtviertel mit vielen Gebäuden) über die reine Reihenfolge der Bauabschnitte hinaus planen – Meilensteine mit Zieltermin, Abhängigkeiten zwischen Abschnitten, mehrere Bauleute, ein Zeitplan mit kritischem Pfad und der Material-/Sammelbedarf je Meilenstein und je Bauleute.
 
@@ -93,7 +93,7 @@ Weiter optional in `project.site.program`, ältere Projekte bleiben unverändert
 ## Runde 4 PROJ-04: Reihenfolge zwischen Projekten (05.11.2026)
 
 - **Datenmodell:** `program.after?: { projectId, note? }[]` (1–16 Einträge, keine Doppelten, Notiz ≤ 200 Zeichen). Jedes Projekt hält seine Vorgänger selbst, darum reisen sie mit Sicherung, Rückgängig und Teampaket mit. Bearbeitet wird über `addProjectAfter(site, ownId, projectId, note)` / `removeProjectAfter` als normale Bauplatz-Operation.
-- **Projektübergreifend** (`packages/domain/src/projectOrder.ts`): `projectLinks` (Verweise auf gelöschte Projekte fallen weg), `projectCycle`, `projectAfterProblem` (Selbstbezug, doppelt, Kreis mit Namen), `projectLevels` (Stufe = längste Vorgängerkette), `projectSuccessors`.
+- **Projektübergreifend** (`packages/domain/src/planning/projectOrder.ts`): `projectLinks` (Verweise auf gelöschte Projekte fallen weg), `projectCycle`, `projectAfterProblem` (Selbstbezug, doppelt, Kreis mit Namen), `projectLevels` (Stufe = längste Vorgängerkette), `projectSuccessors`.
 - **Frühester Start:** `projectStartCheck` nimmt das Ende aus dem **aktiven Basisplan** des Vorgängers (ein Basisplan ohne Ende heißt „fertig seit“), sonst „Ende offen“. Frühester Start = Tag nach dem spätesten bekannten Ende; liegt das Startdatum davor, meldet die Planung das mit „Start auf … setzen“. Der Basisplan ist bewusst die Quelle: er ist der vereinbarte Termin, und die Planung muss dafür kein anderes Projekt durchrechnen.
 - **Oberfläche:** Planung → „Reihenfolge der Projekte“ (Auswahl, Grund, Liste mit Endtermin, „Danach kommen“); Weltkarte: gestrichelte Pfeile vom Vorgänger zum Nachfolger (`PlanLayer.order`, Farbe `--map-order`) und im Detail „Erst nach … / Danach …“.
 - Tests: `tests/project-order.test.mjs`, `tests/e2e/project-order.e2e.mjs`; Abnahme PROJ-21.

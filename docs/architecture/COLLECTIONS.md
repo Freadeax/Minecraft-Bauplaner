@@ -1,6 +1,6 @@
 # Eigene Sammlungen und Vorlagen (LIB-02, LIB-03 · Block B17)
 
-Stand 01.11.2026. Code: `packages/domain/src/collections.ts` (fachliche Regeln, Prüfung, Revisionen), Speicher `apps/web/src/app/idbRepository.ts` (Migration 3) und `packages/application/src/memoryRepository.ts`, Sicherung `packages/domain/src/backup.ts`, Oberfläche `apps/web/src/views/library/` (`CollectionsPage`, `TemplatesPage`, `CollectionPicker`, `userLibrary`, Generatorvorlagen in `GeneratorsPage`). Tests: `tests/collections.test.mjs`, `tests/e2e/collections.e2e.mjs`, Migration v2→v3 in `tests/e2e/asset-concurrency.e2e.mjs`.
+Stand 01.11.2026. Code: `packages/domain/src/catalog/collections.ts` (fachliche Regeln, Prüfung, Revisionen), Speicher `apps/web/src/app/idbRepository.ts` (Migration 3) und `packages/application/src/memoryRepository.ts`, Sicherung `packages/domain/src/data/backup.ts`, Oberfläche `apps/web/src/views/library/` (`CollectionsPage`, `TemplatesPage`, `CollectionPicker`, `userLibrary`, Generatorvorlagen in `GeneratorsPage`). Tests: `tests/collections.test.mjs`, `tests/e2e/collections.e2e.mjs`, Migration v2→v3 in `tests/e2e/asset-concurrency.e2e.mjs`.
 
 ## Grundsatz: eine Bibliothek
 

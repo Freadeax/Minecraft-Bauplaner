@@ -51,7 +51,7 @@ Jede Funktion hat eine feste Reihenfolge. Fällt ein Weg aus, nimmt die Seite de
 
 ## 4. Planer: Baustand über den besten Weg
 
-Reiter „Bauen“ → **„⟳ Baustand holen (bester Weg)“** (`planScanRoutes`/`scanRouteSummary` in `packages/domain/src/scanRoutes.ts`, `GameCheckPanel.tsx`). Daneben steht je Weg ✓ oder – mit Grund im Tooltip.
+Reiter „Bauen“ → **„⟳ Baustand holen (bester Weg)“** (`planScanRoutes`/`scanRouteSummary` in `packages/domain/src/world/scanRoutes.ts`, `GameCheckPanel.tsx`). Daneben steht je Weg ✓ oder – mit Grund im Tooltip.
 
 1. **Dein Spiel auf diesem PC** (gekoppelt, Merkmal `scan`, Hologramm dieses Projekts platziert): `GET /v1/scan`, ohne Server und ohne Internet.
 2. **Spiele im Team-Raum** (Team live, mindestens ein Spiel da): Anforderung, das Spiel mit dem platzierten Plan lädt die Aufnahme in den Raum (bis 90 s).

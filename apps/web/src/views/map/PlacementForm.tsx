@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { DIMENSIONS, WORLD_SCHEMA_VERSION, WORLD_XZ_LIMIT, WORLD_Y_MAX, WORLD_Y_MIN, checkWorldPlacement, createPlacement } from '../../../../../packages/domain/src/worldmap.js';
-import type { WorldPlacement } from '../../../../../packages/domain/src/worldmap.js';
+import { DIMENSIONS, WORLD_SCHEMA_VERSION, WORLD_XZ_LIMIT, WORLD_Y_MAX, WORLD_Y_MIN, checkWorldPlacement, createPlacement } from '../../../../../packages/domain/src/world/worldmap.js';
+import type { WorldPlacement } from '../../../../../packages/domain/src/world/worldmap.js';
 
 /**
  * Edits one project's placement. Every change previews live (outline on the

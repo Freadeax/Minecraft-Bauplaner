@@ -26,7 +26,7 @@ Beides sind Ansichtseinstellungen je Browser in `localStorage` (`bauplaner.merkl
 
 ## Gestaltung
 
-Zusätzliches Stylesheet `apps/web/src/catalog.css` nach `style.css`: Farbtokens (`--panel`, `--line-2`, `--gold` …), größere Grundschriftgrade (vorher 8–11 px, jetzt 11–15 px), Karten mit Hover-Anhebung, `prefers-reduced-motion` respektiert. Mobil (≤ 900 px) Filter hinter einem Schalter, ≤ 560 px zwei Karten je Zeile; die Hauptnavigation zeigt dort Projekte, Bibliothek, Betrachter.
+Zusätzliches Stylesheet `apps/web/src/styles/catalog.css` nach `style.css`: Farbtokens (`--panel`, `--line-2`, `--gold` …), größere Grundschriftgrade (vorher 8–11 px, jetzt 11–15 px), Karten mit Hover-Anhebung, `prefers-reduced-motion` respektiert. Mobil (≤ 900 px) Filter hinter einem Schalter, ≤ 560 px zwei Karten je Zeile; die Hauptnavigation zeigt dort Projekte, Bibliothek, Betrachter.
 
 ## Prüfung
 

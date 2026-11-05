@@ -20,7 +20,7 @@ Der Weltbuilder ist das Bearbeiten auf der Weltkarte (`#/karte`): Projekte setze
 
 ## Technik
 
-- Fachkern `packages/domain/src/worldPlanEdit.ts` (rein, getestet in `tests/worldbuilder.test.mjs`): `removeItemsOp`, `selectionBounds`/`selectionPivot`, `itemsInRect`, `rotateColumn`/`rotateItem`, `mirrorColumn`/`mirrorItem`, `updateItemsOp`, `duplicateItems`, Wegecken (`pathVertexAt`, `movePathVertex`, `insertPathVertex`, `removePathVertex`, `reversePath`, `splitPath`, `joinPaths`), `groundHeight`/`alignToGround`.
+- Fachkern `packages/domain/src/world/worldPlanEdit.ts` (rein, getestet in `tests/worldbuilder.test.mjs`): `removeItemsOp`, `selectionBounds`/`selectionPivot`, `itemsInRect`, `rotateColumn`/`rotateItem`, `mirrorColumn`/`mirrorItem`, `updateItemsOp`, `duplicateItems`, Wegecken (`pathVertexAt`, `movePathVertex`, `insertPathVertex`, `removePathVertex`, `reversePath`, `splitPath`, `joinPaths`), `groundHeight`/`alignToGround`.
 - Drehen und Spiegeln rechnen auf Spaltenmitten um einen ganzzahligen Drehpunkt; dadurch bleibt alles im Blockraster, vier Vierteldrehungen bzw. zweimal Spiegeln ergeben exakt den Ausgang.
 - `worldPlan.ts`: neue Operation `insert` (Eintrag an Listenposition). `remove` hat jetzt `insert` als Umkehrung statt eines Stapels über den ganzen Listenrest – Löschen von 2000 Einträgen hat eine lineare Umkehrung. Gespeicherte Daten und das Schema (Version 1) sind unverändert; die Mod bekommt weiterhin dieselben Einträge.
 - `apps/web/src/views/map/useMapHistory.ts`: Verlauf aus Schritten (`plan` oder `project`). Alle Weltplan-Schritte einer Änderung werden als ein Batch gespeichert, jede Projektlage mit eigener Revisionsprüfung. Ändert ein anderer Tab den Weltplan (`useWorldPlan().epoch`), wird der Verlauf verworfen.

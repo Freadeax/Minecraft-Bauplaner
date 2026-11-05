@@ -1,7 +1,7 @@
 // Team-Raum (COOP-07, docs/architecture/TEAM_LIVE.md §4): the room logic without Cloudflare APIs, so the
 // same code runs in the Durable Object and in the Node tests. The room is deliberately dumb: it checks
 // form and size of events, keeps them in arrival order and hands them out after a cursor. Rights,
-// conflicts and the meaning of events stay in the fold of every participant (packages/domain/src/team.ts).
+// conflicts and the meaning of events stay in the fold of every participant (packages/domain/src/team/team.ts).
 
 export const PROTOCOL = 'team-room';
 export const VERSION = 1;

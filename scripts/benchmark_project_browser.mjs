@@ -23,8 +23,8 @@ try {
       load(id) { if (id === '\0benchmark-entry') return `
         import {computeProject} from ${JSON.stringify(source('packages/application/src/projectComputation.ts'))};
         import {createProjectComputationClient} from ${JSON.stringify(source('apps/web/src/computation/client.ts'))};
-        import {createProject} from ${JSON.stringify(source('packages/domain/src/project.ts'))};
-        import {createAsset,addAssetVersion} from ${JSON.stringify(source('packages/domain/src/library.ts'))};
+        import {createProject} from ${JSON.stringify(source('packages/domain/src/core/project.ts'))};
+        import {createAsset,addAssetVersion} from ${JSON.stringify(source('packages/domain/src/catalog/library.ts'))};
         window.benchmarkModules={computeProject,createProjectComputationClient,createProject,createAsset,addAssetVersion};`;
       } }], build: { outDir: path.join(directory, 'output'), emptyOutDir: true, sourcemap: false } });
   const output = path.join(directory, 'output');

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { buildPlanGraph, cellStorageEstimate, checkIntegrity, INTEGRITY_SEVERITY_LABEL, PLAN_KIND_LABEL, sha256Hex } from '../../../../packages/domain/src/index.js';
 import type { IntegrityReport, PlanNodeKind } from '../../../../packages/domain/src/index.js';
-import '../datamodel.css';
+import '../styles/datamodel.css';
 import { useApp } from '../app/context';
 import { parseManifest, verifyDelivery } from '../app/delivery';
 import type { DeliveryResult, DeploymentManifest } from '../app/delivery';

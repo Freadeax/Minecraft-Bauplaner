@@ -1,6 +1,6 @@
 import { entityAnchor } from '../../../voxel/src/entities.js';
 import type { Bounds, FreeEntity, Transform, Vec3 } from '../../../voxel/src/types.js';
-import { DomainError } from '../types.js';
+import { DomainError } from '../core/types.js';
 import { AIR_VALUE, MAX_EDIT_CELLS, cellAt, draftEntries, keyPos, posKey } from './draft.js';
 import type { CellChange, CellSlot, CellValue, Draft, Edit } from './draft.js';
 import { boxBounds, entitiesRelative, inBox, pasteEdit, transformClipboard } from './tools.js';

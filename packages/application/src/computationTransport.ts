@@ -3,14 +3,14 @@ import type { PayloadTransport } from '../../voxel/src/cellColumns.js';
 import { sealTransportedPayload } from '../../voxel/src/validation.js';
 import { transformPayload } from '../../voxel/src/transforms.js';
 import type { Cell, Vec3, VoxelPayload } from '../../voxel/src/types.js';
-import { rememberPayloadHash } from '../../domain/src/library.js';
-import type { PlacedInstance } from '../../domain/src/compose.js';
-import { decodeOwners, encodeOwners } from '../../domain/src/ownerWire.js';
-import type { OwnerWire } from '../../domain/src/ownerWire.js';
-import { stepCellIndices } from '../../domain/src/guide.js';
-import type { GuideStep } from '../../domain/src/guide.js';
-import type { SectionPlan } from '../../domain/src/site.js';
-import type { AssetVersion, Instance } from '../../domain/src/types.js';
+import { rememberPayloadHash } from '../../domain/src/catalog/library.js';
+import type { PlacedInstance } from '../../domain/src/core/compose.js';
+import { decodeOwners, encodeOwners } from '../../domain/src/team/ownerWire.js';
+import type { OwnerWire } from '../../domain/src/team/ownerWire.js';
+import { stepCellIndices } from '../../domain/src/building/guide.js';
+import type { GuideStep } from '../../domain/src/building/guide.js';
+import type { SectionPlan } from '../../domain/src/building/site.js';
+import type { AssetVersion, Instance } from '../../domain/src/core/types.js';
 import type { ComputeInput, ProjectComputation } from './projectComputation.js';
 
 /**

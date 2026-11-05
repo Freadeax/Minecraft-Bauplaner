@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
-import { buildLiveMapUrl, createLiveMapTargetsFile, mergeSavedLiveMaps, readLiveMapTargetsFile, upsertSavedLiveMap } from '../../../../../packages/domain/src/livemap.js';
-import { blueMapMarkerConfig, dynmapMarkerCommands, mapShapes, markersToPoints, pointMarkers } from '../../../../../packages/domain/src/liveMapExport.js';
-import { createLiveMapMarkerFile } from '../../../../../packages/domain/src/livemap.js';
-import type { WorldItem, WorldPoint } from '../../../../../packages/domain/src/worldPlan.js';
-import { DIMENSIONS, dimensionLabel, liveMapPositionOf, liveMapTemplateFromLink, mapMarkers, placementsJson } from '../../../../../packages/domain/src/worldmap.js';
-import type { MapEntry, WorldMapView } from '../../../../../packages/domain/src/worldmap.js';
+import { buildLiveMapUrl, createLiveMapTargetsFile, mergeSavedLiveMaps, readLiveMapTargetsFile, upsertSavedLiveMap } from '../../../../../packages/domain/src/world/livemap.js';
+import { blueMapMarkerConfig, dynmapMarkerCommands, mapShapes, markersToPoints, pointMarkers } from '../../../../../packages/domain/src/world/liveMapExport.js';
+import { createLiveMapMarkerFile } from '../../../../../packages/domain/src/world/livemap.js';
+import type { WorldItem, WorldPoint } from '../../../../../packages/domain/src/world/worldPlan.js';
+import { DIMENSIONS, dimensionLabel, liveMapPositionOf, liveMapTemplateFromLink, mapMarkers, placementsJson } from '../../../../../packages/domain/src/world/worldmap.js';
+import type { MapEntry, WorldMapView } from '../../../../../packages/domain/src/world/worldmap.js';
 import { download, errorText } from '../../app/ui';
 import { LIVE_MAP_KIND_LABEL as KIND_LABEL, LIVE_MAP_PRESETS, templateProblem, useSavedLiveMaps } from './liveMapConfig';
 import type { LiveMapSettings } from './liveMapConfig';

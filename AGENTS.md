@@ -11,7 +11,8 @@ Aktuell geprüft am 01.11.2026: GitHub CLI ist authentifiziert, regulärer Git-T
 1. README, diese Datei, docs/STATUS.md, docs/ROADMAP.md, docs/COMMUNICATION.md und relevante Architekturentscheidungen lesen.
 2. Arbeitsbaum, Branch und aktuellen Remote-Stand prüfen. Vorhandene oder fremde Änderungen weder löschen noch ungefragt überschreiben.
 3. Neueste Kommunikation lesen und betroffene Aufgaben mit stabilen IDs identifizieren. Planungsstand, implementierten Stand und tatsächlich geprüften Stand unterscheiden.
-4. Ziel, betroffene Dateien, Abhängigkeiten und Prüfmethode kurz festhalten. Bestehende Architektur erweitern; keine parallele Ersatzanwendung anlegen.
+4. Neue Dateien in den Fachordner legen, den [docs/STRUKTUR.md](docs/STRUKTUR.md) nennt; verschoben wird nur mit `scripts/dev/restructure.mjs`.
+5. Ziel, betroffene Dateien, Abhängigkeiten und Prüfmethode kurz festhalten. Bestehende Architektur erweitern; keine parallele Ersatzanwendung anlegen.
 
 ## Produkt und Architektur
 

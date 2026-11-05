@@ -1,6 +1,6 @@
 # Materialbedarf und Bauitems (B1)
 
-Stand: 27.10.2026. Umsetzung von P1-04a / R-017. Implementierung in [materials.ts](../../packages/domain/src/materials.ts), Tests in `tests/materials.test.mjs` und `tests/e2e/materials.e2e.mjs`, Oberfläche im Projekt-Tab „Material“ (`apps/web/src/views/project/MaterialsTab.tsx`). Ergänzt den [Domänenvertrag](DOMAIN.md).
+Stand: 27.10.2026. Umsetzung von P1-04a / R-017. Implementierung in [materials.ts](../../packages/domain/src/materials/materials.ts), Tests in `tests/materials.test.mjs` und `tests/e2e/materials.e2e.mjs`, Oberfläche im Projekt-Tab „Material“ (`apps/web/src/views/project/MaterialsTab.tsx`). Ergänzt den [Domänenvertrag](DOMAIN.md).
 
 ## Drei getrennte Ebenen
 
@@ -65,7 +65,7 @@ Tab „Material“: Umfang Gesamtprojekt oder einzelne Instanz, Status vollstän
 
 ## Rohstoffe und Rezepte (B1-R)
 
-Stand: 27.10.2026. Rest von R-017. Implementierung in [recipes.ts](../../packages/domain/src/recipes.ts), Tests in `tests/recipes.test.mjs` und `tests/e2e/recipes.e2e.mjs`, Oberfläche als Abschnitt „Rohstoffe und Rezepte“ im Tab „Material“ (`apps/web/src/views/project/RawMaterialsPanel.tsx`).
+Stand: 27.10.2026. Rest von R-017. Implementierung in [recipes.ts](../../packages/domain/src/materials/recipes.ts), Tests in `tests/recipes.test.mjs` und `tests/e2e/recipes.e2e.mjs`, Oberfläche als Abschnitt „Rohstoffe und Rezepte“ im Tab „Material“ (`apps/web/src/views/project/RawMaterialsPanel.tsx`).
 
 Eingang sind die Bauitems des Materialberichts (gleicher Umfang: Projekt oder Instanz). Ungelöste Blockzustände fehlen dort und damit auch hier; der Abschnitt sagt das, solange der Materialbericht vorläufig ist.
 
@@ -86,7 +86,7 @@ Grenzen (Stand B1-R, siehe MAT-02 unten): nur ein Rezept je Item; Werkzeuge, Bre
 
 ## Profilgebundene Rezepte (MAT-02) · 03.11.2026
 
-Katalog jetzt `vanilla-java-recipes-v2+java-26.3`. Jedes Werkbank-, Steinsägen- und Ofenrezept des eigenen Katalogs ist gegen die 1696 Rezepte des offiziellen 26.3-Servers geprüft (`packages/domain/src/recipeProfile.ts`, Herkunft in [VERSION_PROFILE](VERSION_PROFILE.md)) und trägt die Datei, der es folgt (`profileFile`). Der Abgleich hat 15 echte Fehler gefunden und behoben:
+Katalog jetzt `vanilla-java-recipes-v2+java-26.3`. Jedes Werkbank-, Steinsägen- und Ofenrezept des eigenen Katalogs ist gegen die 1696 Rezepte des offiziellen 26.3-Servers geprüft (`packages/domain/src/materials/recipeProfile.ts`, Herkunft in [VERSION_PROFILE](VERSION_PROFILE.md)) und trägt die Datei, der es folgt (`profileFile`). Der Abgleich hat 15 echte Fehler gefunden und behoben:
 
 - Die Kette heißt in 26.3 `iron_chain`; das alte `chain`-Item gibt es nicht mehr (12 Hängeschilder brauchten es).
 - Quarzziegel: 4 Quarzblöcke ergeben **4** Quarzziegel, nicht 1.
@@ -111,7 +111,7 @@ In „Rohstoffe und Rezepte“ steht für jeden Rezept-Tag im Baum (z. B. „bel
 
 ## Kupfer mit Oxidation und Wachs (MAT-04) · 03.11.2026
 
-Die Zustandsmatrix kommt aus dem Profil (`packages/domain/src/copper.ts`): jeder Block mit einer `Weathering*`-Spielklasse oxidiert. Eine Familie zählt nur, wenn alle vier Stufen (Kupfer, angelaufen, verwittert, oxidiert) und ihre vier gewachsten Gegenstücke existieren, die gewachsten nicht oxidieren und alle acht dieselben Eigenschaften haben. In 26.3 sind das 15 vollständige Familien: Block, geschnitten, Treppe, Stufe, gemeißelt, Gitter, Lampe, Tür, Falltür, Stangen, Kette, Truhe, Golemstatue, Laterne, Blitzableiter. Unvollständige Familien würden in `incomplete` stehen und nie angeboten.
+Die Zustandsmatrix kommt aus dem Profil (`packages/domain/src/materials/copper.ts`): jeder Block mit einer `Weathering*`-Spielklasse oxidiert. Eine Familie zählt nur, wenn alle vier Stufen (Kupfer, angelaufen, verwittert, oxidiert) und ihre vier gewachsten Gegenstücke existieren, die gewachsten nicht oxidieren und alle acht dieselben Eigenschaften haben. In 26.3 sind das 15 vollständige Familien: Block, geschnitten, Treppe, Stufe, gemeißelt, Gitter, Lampe, Tür, Falltür, Stangen, Kette, Truhe, Golemstatue, Laterne, Blitzableiter. Unvollständige Familien würden in `incomplete` stehen und nie angeboten.
 
 - **Materialvarianten:** acht Sätze „Kupfer/Angelaufen/Verwittert/Oxidiert“, je mit und ohne Wachs, Art „Kupfer“. Der Tausch behält jede Eigenschaft (Treppenform, Lampe an/aus, Truhenart). Kupfertruhen und Golemstatuen behalten ihr NBT, weil der BlockEntity-Typ gleich bleibt und sein Inhalt relativ ist (NBT-01).
 - **Rezepte:** jede Stufe entsteht aus der vorigen durch Oxidation (Zeitschritt), jede gewachste aus ihrer Stufe plus Honigwabe (gegen das Profil geprüft). Die Golemstatue entsteht nur aus einem vollständig oxidierten Kupfergolem.
