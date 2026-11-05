@@ -869,7 +869,8 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
         </section>}
         {!entry && project && <p className="muted">„{project.name}“ liegt in einer anderen Dimension oder ist nicht platziert.</p>}
 
-        <LiveMapPanel settings={live} onChange={setLive} map={map} dimension={dimension} />
+        <LiveMapPanel settings={live} onChange={setLive} map={map} dimension={dimension} items={wp.plan.items}
+          onImportPoints={(points, label) => change({ label, steps: [{ kind: 'plan', op: { kind: 'batch', label, ops: points.map(item => ({ kind: 'add' as const, item })) } }] })} />
       </section>
     </div>
   </div>;

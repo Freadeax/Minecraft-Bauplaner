@@ -120,3 +120,83 @@ export function readLiveMapMarkerFile(input: unknown): LiveMapMarkerFile {
   });
   return createLiveMapMarkerFile(markers);
 }
+
+/**
+ * MAP-02: a live map kept under a name (several per browser, shareable as a file).
+ * `worlds` maps a dimension id (minecraft:overworld …) to the map/world name the live map uses.
+ */
+export interface SavedLiveMap {
+  readonly name: string;
+  readonly urlTemplate: string;
+  readonly worlds: Readonly<Record<string, string>>;
+}
+export interface LiveMapTargetsFile {
+  readonly schemaVersion: 1;
+  readonly format: 'bauplaner-live-maps';
+  readonly maps: readonly SavedLiveMap[];
+}
+export const LIVE_MAP_SAVED_MAX = 20;
+const DIMENSION = /^[a-z0-9_.-]{1,64}:[a-z0-9_./-]{1,128}$/;
+
+/** Validates one saved map (template rules of checkLiveMapTarget, world names as text) and returns a copy. */
+export function checkSavedLiveMap(raw: unknown): SavedLiveMap {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return fail('Gespeicherte Karte: Objekt erforderlich');
+  const r = raw as Record<string, unknown>;
+  if (Object.keys(r).some(k => !['name', 'urlTemplate', 'worlds'].includes(k))) fail('Gespeicherte Karte: unbekannte Felder');
+  const target = { name: r.name, urlTemplate: r.urlTemplate } as LiveMapTarget;
+  checkLiveMapTarget(target);
+  const worlds: Record<string, string> = {};
+  if (!r.worlds || typeof r.worlds !== 'object' || Array.isArray(r.worlds)) fail(`„${target.name}“: Kartennamen je Dimension fehlen`);
+  const entries = Object.entries(r.worlds as Record<string, unknown>);
+  if (entries.length > 16) fail(`„${target.name}“: höchstens 16 Dimensionen`);
+  for (const [dim, world] of entries) {
+    if (!DIMENSION.test(dim)) fail(`„${target.name}“: Dimension ${dim} ungültig`);
+    if (world === '') continue;
+    text(world, `Kartenname für ${dim}`, 128);
+    if (world === '.' || world === '..') fail(`„${target.name}“: Kartenname darf kein relatives Pfadsegment sein`);
+    worlds[dim] = world;
+  }
+  return { name: target.name.trim(), urlTemplate: target.urlTemplate, worlds };
+}
+
+/** Saved maps, unique by name (case-insensitive), at most LIVE_MAP_SAVED_MAX. */
+export function checkSavedLiveMaps(raw: unknown): SavedLiveMap[] {
+  if (!Array.isArray(raw) || raw.length > LIVE_MAP_SAVED_MAX) return fail(`Höchstens ${LIVE_MAP_SAVED_MAX} gespeicherte Karten`);
+  const maps = raw.map(checkSavedLiveMap), names = new Set<string>();
+  for (const m of maps) { const k = m.name.toLocaleLowerCase('de'); if (names.has(k)) fail(`Karte „${m.name}“ doppelt`); names.add(k); }
+  return maps;
+}
+
+/** Adds or replaces (same name) a saved map; the newest is first. */
+export function upsertSavedLiveMap(maps: readonly SavedLiveMap[], map: SavedLiveMap): SavedLiveMap[] {
+  const next = checkSavedLiveMap(map), key = next.name.toLocaleLowerCase('de');
+  const rest = maps.filter(m => m.name.toLocaleLowerCase('de') !== key);
+  if (rest.length >= LIVE_MAP_SAVED_MAX) fail(`Höchstens ${LIVE_MAP_SAVED_MAX} gespeicherte Karten – erst eine entfernen`);
+  return [next, ...rest];
+}
+
+/** File to hand saved maps to a teammate or another browser. */
+export function createLiveMapTargetsFile(maps: readonly SavedLiveMap[]): LiveMapTargetsFile {
+  return { schemaVersion: 1, format: 'bauplaner-live-maps', maps: checkSavedLiveMaps(maps) };
+}
+
+export function readLiveMapTargetsFile(input: unknown): LiveMapTargetsFile {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return fail('Kartendatei: Objekt erforderlich');
+  const r = input as Record<string, unknown>;
+  if (r.format !== 'bauplaner-live-maps') return fail('Das ist keine Bauplaner-Kartendatei');
+  if (r.schemaVersion !== 1) return fail(`Kartendatei: unbekannte Schemaversion ${String(r.schemaVersion)}`);
+  if (Object.keys(r).some(k => !['schemaVersion', 'format', 'maps'].includes(k))) fail('Kartendatei: unbekannte Felder');
+  return { schemaVersion: 1, format: 'bauplaner-live-maps', maps: checkSavedLiveMaps(r.maps) };
+}
+
+/** Merges imported maps: new names are added, same name replaces only when `replace`. */
+export function mergeSavedLiveMaps(local: readonly SavedLiveMap[], incoming: readonly SavedLiveMap[], replace = false): { maps: SavedLiveMap[]; added: number; replaced: number; skipped: number } {
+  let maps = [...local], added = 0, replaced = 0, skipped = 0;
+  for (const m of incoming) {
+    const exists = maps.some(x => x.name.toLocaleLowerCase('de') === m.name.toLocaleLowerCase('de'));
+    if (exists && !replace) { skipped++; continue; }
+    if (!exists && maps.length >= LIVE_MAP_SAVED_MAX) { skipped++; continue; }
+    maps = upsertSavedLiveMap(maps, m); if (exists) replaced++; else added++;
+  }
+  return { maps, added, replaced, skipped };
+}

@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 141 Fälle in 13 Bereichen, davon 62 Kernfälle.
+Umfang: 142 Fälle in 13 Bereichen, davon 62 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -117,6 +117,7 @@ Projekte in der Welt platzieren, Wege und Bauplätze planen, Gelände aus der ei
 | KARTE-05 | Zonen und benannte Ebenen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/karte)) | kern | 1. Werkzeug „Zone“ (Taste Z), drei oder mehr Ecken klicken, Eingabe beendet; Art (Wohnen, Farmen, …) und Farbe setzen.<br>2. Zone und einen Punkt wählen, in der Auswahlleiste „Ebene zuweisen“ → „Neue Ebene …“ (z. B. „Phase 2“).<br>3. Die neue Ebene unter „Benannt:“ ausblenden, wieder einblenden; in der Objektliste nach der Ebene filtern.<br>4. Seite neu laden. | Zone liegt als gefüllte Fläche mit Namen und Fläche (Blöcke²) auf der Karte; ausgeblendete Ebenen verschwinden samt Auswahl; nach dem Neuladen sind Zone, Ebene und Farbe noch da. |
 | KARTE-06 | Messen, Höhenprofil, Route übers Gelände ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/karte)) | vertieft | 1. Messen (M): drei Punkte klicken, Eingabe beendet, Escape löscht.<br>2. Gelände laden („Gelände um mich lesen“ mit Mod oder eine Geländeaufnahme), einen Weg über einen Hang zeichnen.<br>3. Im Bearbeitungsfeld des Wegs „⤳ Route übers Gelände“. | Messung nennt Luftlinie, Weg zu Fuß, Punkte, Nether-Entfernung und bei drei oder mehr Punkten die Fläche. Das Höhenprofil zeigt Y-Bereich, Auf-/Abstieg und Stufen; die Route weicht Wasser und Steilstufen aus (oder meldet, dass es keinen Weg gibt). |
 | KARTE-07 | Projekt auf der Weltkarte drehen, gedrehtes Hologramm übernehmen | vertieft | 1. Weltkarte: ein Projekt wählen, mit R (oder Kontextmenü „Drehen 90°“) drehen, dann „Ins Spiel senden“.<br>2. Im Spiel das Hologramm mit der Mod weiter drehen oder spiegeln und auf der Weltkarte „Lage aus dem Spiel übernehmen“ wählen.<br>3. Bauanleitung öffnen und eine Koordinate im Spiel nachprüfen. | Die Nordwestecke bleibt beim Drehen stehen, Treppen und Türen zeigen gedreht in die richtige Richtung; das Hologramm steht genau auf dem Grundriss der Karte; nach dem Übernehmen zeigt die Karte „Im Spiel“ keine Abweichung mehr und die Weltlage nennt dieselbe Drehung; Weltkoordinaten der Bauanleitung stimmen mit dem Spiel (F3). (Abnahme MAP-07) |
+| KARTE-08 | Eigene Server-Karte: Marker exportieren und Karten speichern | vertieft | 1. Weltkarte → „Server-Webkarte verknüpfen“: Link aus BlueMap (oder Dynmap) einfügen und „Aktuelle Karte speichern“.<br>2. BlueMap: „BlueMap-Marker (.conf)“ herunterladen, den Block ans Ende der Kartenkonfiguration der Welt setzen und BlueMap neu laden. Dynmap: „Dynmap-Befehle (.txt)“ in die Serverkonsole eingeben.<br>3. Eine Markerdatei (JSON) über „Markerdatei als Punkte laden“ übernehmen; die Kartenliste herunterladen und in einem zweiten Browser laden. | Auf der Server-Karte erscheinen die Sets „Bauplaner: Projekte/Bauplätze/Wege/Zonen/Punkte“, Projekte als Körper an der richtigen Stelle und Höhe, Wege als Linien, Punkte als Marker; ein zweiter Export ersetzt die alten Marker statt sie zu verdoppeln; Marker landen als Punkte im Weltplan (ein Rückgängig nimmt sie zurück); gespeicherte Karten bleiben nach Neuladen und kommen im zweiten Browser an. (Abnahme MAP-02) |
 
 ## SYS · Systemcheck und Stabilität (Planer)
 
@@ -242,7 +243,7 @@ Planer, Mod und Paper-Plugin verbinden sich per Klick; der Server wird aus dem P
 
 Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan.ts), geordnet nach dem Ort, den die Abnahme braucht. Ein Paket gilt als abgenommen, wenn alle genannten Fälle ✓ sind; Ob ein Paket noch auf Abnahme wartet, steht in `docs/ROADMAP.md`.
 
-### Nur im Browser (40 Pakete)
+### Nur im Browser (41 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -265,6 +266,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | LIB-03 | BIB-08 |
 | LIB-06 | BIB-15, BIB-16 |
 | MAP-01 | KARTE-01 |
+| MAP-02 | KARTE-08 |
 | MAP-04 | KARTE-02, KARTE-03 |
 | MODEL-01 | PROJ-05 |
 | PERF-02 | PROJ-08, DATEI-05 |

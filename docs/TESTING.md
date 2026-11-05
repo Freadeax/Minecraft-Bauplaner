@@ -987,3 +987,10 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `tests/variants.test.mjs` 13/13, neu: jede Form jedes Materialsatzes (Holz, Stein, Farbe, Glas, Beton, Terrakotta, Kupfer) steht im Profil Java 26.3 und hat je Art und Form dieselben Eigenschaften und Werte.
 - Browser: `tests/e2e/mat-variants.e2e.mjs` 2/2 (Leuchtturm 1400/390 px: Beton, Klarglas und Terrakotta getrennt umgefärbt, 208 Blöcke, kein fehlendes Gegenstück, gespeicherte Variante enthält genau die neuen Farben), `base.e2e.mjs`, `model3d.e2e.mjs`, `schem.e2e.mjs` grün.
 - Grenzen: Abnahmen BIB-11 mit echten Basen, PROJ-05 im Slicer und PROJ-14 im Spiel offen.
+
+## MAP-02 · Gespeicherte Server-Karten, BlueMap-/Dynmap-Marker, Markerdatei als Punkte · 05.11.2026 · Claude
+
+- Formate aus Primärquellen geprüft (BlueMap-Wiki „Markers“, Dynmap-Wiki „Using markers“/„Commands“, squaremap/Pl3xMap README), Tabelle in `docs/architecture/LIVEMAP.md`.
+- `tests/livemap-export.test.mjs` 5/5: gespeicherte Karten (Prüfung, gleicher Name ersetzt, Grenze 20, Datei hin und zurück, Zusammenführen), Markerdatei → Weltplan-Punkte ohne Doppelte, Formen je Dimension und Gruppe, BlueMap-`marker-sets` (extrude/shape/line/poi, JSON-/HTML-Maskierung, ausgeglichene Klammern), Dynmap-Befehle (deleteset/addset/addcorner/addarea/addline/add).
+- Browser: `tests/e2e/livemap-export.e2e.mjs` 2/2 (1400/390 px) und `tests/e2e/worldmap.e2e.mjs` 2/2 (Knopf jetzt „Marker (JSON, Bauplaner-Format) herunterladen“).
+- Offen: Abnahme KARTE-08 auf einem echten Kartenserver.

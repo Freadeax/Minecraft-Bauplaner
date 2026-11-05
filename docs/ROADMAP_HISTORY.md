@@ -5655,3 +5655,31 @@ Herauslösen erkennt unterirdische Räume, Keller und Brücken (SPLIT-01-S06); D
 - `tests/split-under.test.mjs`
 - `tests/variants.test.mjs`
 
+## 2026-11-05T08:18:58.875Z · progress
+
+**Aufgaben:** MAP-02
+
+MAP-02: gespeicherte Server-Karten (bis 20, Kartenliste als Datei), BlueMap-marker-sets und Dynmap-Befehle aus Projekten/Bauplätzen/Wegen/Zonen/Punkten, Markerdatei als Weltplan-Punkte; Formate aus Primärquellen geprüft; Roadmap-Test unabhängig vom echten Waisenstand.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MAP-02 | 🧩 Implementiert · Abnahme offen | 2/3 | Abnahme KARTE-08 auf Philipps Server-Karte. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/map.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/map/LiveMapPanel.tsx`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/map/liveMapConfig.ts`
+- `docs/TESTING.md`
+- `docs/architecture/LIVEMAP.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/liveMapExport.ts`
+- `packages/domain/src/livemap.ts`
+- `tests/e2e/livemap-export.e2e.mjs`
+- `tests/e2e/worldmap.e2e.mjs`
+- `tests/livemap-export.test.mjs`
+- `tests/roadmap.test.mjs`
+

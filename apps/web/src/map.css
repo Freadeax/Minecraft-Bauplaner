@@ -167,3 +167,10 @@
 .plan-profile svg{display:block;color:var(--map-accent);background:var(--map-bg);border:1px solid var(--line);border-radius:6px}
 .plan-profile p{margin:0}.plan-profile button{justify-self:start}
 .live-features{margin-top:6px}.live-features a{color:var(--mint)}
+/* MAP-02: gespeicherte Karten und Markerexport */
+.live-saved,.live-export{margin-top:12px;border-top:1px solid var(--line);padding-top:8px}
+.live-saved h4,.live-export h4{margin:0 0 6px;font-size:12px}
+.live-saved-list{list-style:none;margin:0 0 8px;padding:0;display:grid;gap:4px}
+.live-saved-list li{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:4px 6px;border-radius:6px;background:rgba(255,255,255,.03)}
+.live-saved-list li>span{flex:1 1 160px;min-width:0;overflow-wrap:anywhere}
+.live-saved-list li[data-active]{outline:1px solid var(--mint)}

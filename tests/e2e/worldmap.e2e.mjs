@@ -132,7 +132,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     const link = p.locator('.map-detail a[target=_blank]');
     assert.equal(await link.getAttribute('href'), 'https://karte.example.net/#world:13:72:2:150:0:0.9:0:0:perspective');
     const download = p.waitForEvent('download');
-    await p.getByRole('button', { name: 'Marker (JSON) herunterladen' }).click();
+    await p.getByRole('button', { name: 'Marker (JSON, Bauplaner-Format) herunterladen' }).click();
     const file = await download;
     const markers = JSON.parse(await (await file.createReadStream()).toArray().then(b => Buffer.concat(b).toString('utf8')));
     assert.equal(markers.format, 'bauplaner-world-markers');

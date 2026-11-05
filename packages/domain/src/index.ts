@@ -157,3 +157,7 @@ export { SERVER_OPS, SERVER_WAY_TEXT, readServerInfo, readServerClaim, readServe
 export type { ServerOp, ServerWay, ServerIdentity, ServerInfo, ServerPairing, ServerSetting, ServerStatus, ControlMessage, ServerRoom } from './serverControl.js';
 export { SCAN_ROUTE_LABEL, planScanRoutes, scanRouteSummary } from './scanRoutes.js';
 export type { ScanRouteId, ScanRouteInput, ScanRoute } from './scanRoutes.js';
+export { checkSavedLiveMap, checkSavedLiveMaps, upsertSavedLiveMap, createLiveMapTargetsFile, readLiveMapTargetsFile, mergeSavedLiveMaps, LIVE_MAP_SAVED_MAX } from './livemap.js';
+export type { SavedLiveMap, LiveMapTargetsFile } from './livemap.js';
+export { mapShapes, markersToPoints, pointMarkers, blueMapMarkerConfig, dynmapMarkerCommands, MAP_SHAPE_GROUPS, MAP_SHAPE_GROUP_LABEL, DEFAULT_SHAPE_Y } from './liveMapExport.js';
+export type { MapShape, MapShapeGroup, MapShapeOptions } from './liveMapExport.js';

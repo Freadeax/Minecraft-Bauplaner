@@ -1,9 +1,12 @@
 import { useMemo, useState } from 'react';
-import { buildLiveMapUrl } from '../../../../../packages/domain/src/livemap.js';
+import { buildLiveMapUrl, createLiveMapTargetsFile, mergeSavedLiveMaps, readLiveMapTargetsFile, upsertSavedLiveMap } from '../../../../../packages/domain/src/livemap.js';
+import { blueMapMarkerConfig, dynmapMarkerCommands, mapShapes, markersToPoints, pointMarkers } from '../../../../../packages/domain/src/liveMapExport.js';
+import { createLiveMapMarkerFile } from '../../../../../packages/domain/src/livemap.js';
+import type { WorldItem, WorldPoint } from '../../../../../packages/domain/src/worldPlan.js';
 import { DIMENSIONS, dimensionLabel, liveMapPositionOf, liveMapTemplateFromLink, mapMarkers, placementsJson } from '../../../../../packages/domain/src/worldmap.js';
 import type { MapEntry, WorldMapView } from '../../../../../packages/domain/src/worldmap.js';
 import { download, errorText } from '../../app/ui';
-import { LIVE_MAP_KIND_LABEL as KIND_LABEL, LIVE_MAP_PRESETS, templateProblem } from './liveMapConfig';
+import { LIVE_MAP_KIND_LABEL as KIND_LABEL, LIVE_MAP_PRESETS, templateProblem, useSavedLiveMaps } from './liveMapConfig';
 import type { LiveMapSettings } from './liveMapConfig';
 
 function linkFor(settings: LiveMapSettings, entry: MapEntry): string | null {
@@ -38,7 +41,20 @@ export function blockedAsMixedContent(url: string): boolean {
  * every project gets a link to the same coordinates. Markers and placements can
  * be downloaded. No request goes to the map server.
  */
-export function LiveMapPanel({ settings, onChange, map, dimension }: { settings: LiveMapSettings; onChange: (s: LiveMapSettings) => void; map: WorldMapView | null; dimension: string }) {
+/** Reads a small JSON file chosen by the user; rejects big files before parsing. */
+async function readJsonFile(file: File, max = 4 * 1024 * 1024): Promise<unknown> {
+  if (file.size > max) throw new Error(`Datei zu groß (höchstens ${Math.round(max / 1024 / 1024)} MB)`);
+  try { return JSON.parse(await file.text()); } catch { throw new Error('Die Datei ist kein gültiges JSON'); }
+}
+
+export function LiveMapPanel({ settings, onChange, map, dimension, items = [], onImportPoints }: {
+  settings: LiveMapSettings; onChange: (s: LiveMapSettings) => void; map: WorldMapView | null; dimension: string;
+  /** Weltplan entries (MAP-02 export of sites, paths, zones and points). */
+  items?: readonly WorldItem[];
+  /** Adds points from a marker file to the Weltplan (one undo step); resolves false when nothing was saved. */
+  onImportPoints?: (points: WorldPoint[], label: string) => Promise<boolean>;
+}) {
+  const [saved, setSaved] = useSavedLiveMaps();
   const [pasted, setPasted] = useState('');
   const [target, setTarget] = useState(dimension);
   const [message, setMessage] = useState('');
@@ -69,8 +85,45 @@ export function LiveMapPanel({ settings, onChange, map, dimension }: { settings:
   };
   const exportMarkers = () => {
     if (!map) return;
-    try { download(`bauplaner-marker-${dimensionLabel(dimension).toLowerCase()}.json`, JSON.stringify(mapMarkers(map, world || 'world'), null, 2), 'application/json'); }
-    catch (e) { setMessage(errorText(e)); }
+    try {
+      const projects = mapMarkers(map, world || 'world').markers;
+      download(`bauplaner-marker-${dimensionLabel(dimension).toLowerCase()}.json`, JSON.stringify(createLiveMapMarkerFile([...projects, ...pointMarkers(items, dimension, world || 'world')]), null, 2), 'application/json');
+    } catch (e) { setMessage(errorText(e)); }
+  };
+  const shapes = useMemo(() => mapShapes(map, items, dimension), [map, items, dimension]);
+  const fileBase = `bauplaner-${dimensionLabel(dimension).toLowerCase()}`;
+  const exportBlueMap = () => {
+    download(`${fileBase}-bluemap-marker.conf`, blueMapMarkerConfig(shapes), 'text/plain');
+    setMessage(`BlueMap-Marker für ${dimensionLabel(dimension)} heruntergeladen (${shapes.length} Marker): den Block ans Ende der Kartenkonfiguration dieser Welt setzen und BlueMap neu laden.`);
+  };
+  const exportDynmap = () => {
+    try {
+      download(`${fileBase}-dynmap-befehle.txt`, dynmapMarkerCommands(shapes, world || 'world'), 'text/plain');
+      setMessage(`Dynmap-Befehle für Welt „${world || 'world'}“ heruntergeladen (${shapes.length} Marker): die Zeilen ohne # in die Serverkonsole eingeben. Ein zweiter Lauf ersetzt die alten Bauplaner-Marker.`);
+    } catch (e) { setMessage(errorText(e)); }
+  };
+  const importMarkers = async (file: File | undefined) => {
+    if (!file || !onImportPoints) return;
+    try {
+      const r = markersToPoints(await readJsonFile(file), items);
+      if (!r.points.length) { setMessage(`Keine neuen Marker: ${r.skipped} schon vorhanden oder mit unbekannter Dimension.`); return; }
+      const ok = await onImportPoints(r.points, `${r.points.length} Marker als Punkte übernommen`);
+      if (ok) setMessage(`${r.points.length} Marker als Punkte (Notiz) in den Weltplan übernommen${r.skipped ? `, ${r.skipped} übersprungen (schon vorhanden oder unbekannte Dimension)` : ''}.`);
+    } catch (e) { setMessage(`Markerdatei nicht übernommen: ${errorText(e)}`); }
+  };
+  const saveCurrent = () => {
+    try {
+      const next = upsertSavedLiveMap(saved, { name: settings.name.trim() || 'Live-Karte', urlTemplate: settings.urlTemplate, worlds: settings.worlds });
+      setSaved(next); setMessage(`„${next[0]!.name}“ gespeichert. Unter „Gespeicherte Karten“ lässt sie sich jederzeit wieder verwenden.`);
+    } catch (e) { setMessage(errorText(e)); }
+  };
+  const importTargets = async (file: File | undefined) => {
+    if (!file) return;
+    try {
+      const r = mergeSavedLiveMaps(saved, readLiveMapTargetsFile(await readJsonFile(file, 256 * 1024)).maps);
+      setSaved(r.maps);
+      setMessage(`${r.added} Karte(n) übernommen${r.skipped ? `, ${r.skipped} übersprungen (gleicher Name schon da oder Liste voll)` : ''}.`);
+    } catch (e) { setMessage(`Kartendatei nicht übernommen: ${errorText(e)}`); }
   };
   /** Template field: a pasted real link (no placeholders) is converted instead of rejected. */
   const setTemplate = (value: string) => {
@@ -107,6 +160,31 @@ export function LiveMapPanel({ settings, onChange, map, dimension }: { settings:
       {openUrl && <a className="secondary" href={openUrl} target="_blank" rel="noreferrer noopener">{settings.name} öffnen ↗</a>}
       {!world && <span className="warn-text">Für {dimensionLabel(dimension)} ist noch keine Karte eingetragen: in eurer Karte zu {dimensionLabel(dimension)} wechseln, Link kopieren und oben mit „gilt für {dimensionLabel(dimension)}“ einfügen.</span>}
     </div>}
+    <section className="live-saved" aria-label="Gespeicherte Karten">
+      <h4>Gespeicherte Karten <small className="muted">{saved.length ? `${saved.length}` : 'noch keine'}</small></h4>
+      {saved.length > 0 && <ul className="live-saved-list">{saved.map(m => {
+        const active = m.urlTemplate === settings.urlTemplate && m.name === settings.name;
+        return <li key={m.name} data-active={active || undefined}>
+          <span><b>{m.name}</b> <small className="muted">{(() => { try { return new URL(m.urlTemplate.replace(/\{\w+\}/g, '0')).host; } catch { return ''; } })()}</small></span>
+          <button className="secondary" disabled={active} onClick={() => { onChange({ ...settings, name: m.name, urlTemplate: m.urlTemplate, worlds: { ...m.worlds } }); setMessage(`„${m.name}“ wird jetzt verwendet.`); }}>{active ? 'Aktiv' : 'Verwenden'}</button>
+          <button className="secondary" aria-label={`Karte „${m.name}“ entfernen`} onClick={() => { setSaved(saved.filter(x => x !== m)); setMessage(`„${m.name}“ entfernt.`); }}>Entfernen</button>
+        </li>;
+      })}</ul>}
+      <div className="button-row">
+        <button className="secondary" disabled={!ready} onClick={saveCurrent}>Aktuelle Karte speichern</button>
+        <button className="secondary" disabled={!saved.length} onClick={() => download('bauplaner-karten.json', JSON.stringify(createLiveMapTargetsFile(saved), null, 2), 'application/json')}>Kartenliste herunterladen</button>
+        <label className="file-button">Kartenliste laden<input type="file" accept=".json,application/json" aria-label="Kartenliste laden" onChange={e => { void importTargets(e.target.files?.[0]); e.target.value = ''; }} /></label>
+      </div>
+    </section>
+    <section className="live-export" aria-label="Für die Server-Karte exportieren">
+      <h4>Für die Server-Karte exportieren <small className="muted">{dimensionLabel(dimension)} · {shapes.length} Marker</small></h4>
+      <p className="muted small">Projekte (als Körper mit Höhe), Bauplätze, Wege, Zonen und Punkte dieser Dimension als echte Marker eurer Karte. BlueMap: Block für die Kartenkonfiguration. Dynmap: Befehle für die Serverkonsole. squaremap und Pl3xMap haben keine Markerdatei, nur Erweiterungen über ihre Schnittstelle.</p>
+      <div className="button-row">
+        <button className="secondary" disabled={!shapes.length} onClick={exportBlueMap}>BlueMap-Marker (.conf)</button>
+        <button className="secondary" disabled={!shapes.length} onClick={exportDynmap}>Dynmap-Befehle (.txt)</button>
+        {onImportPoints && <label className="file-button">Markerdatei als Punkte laden<input type="file" accept=".json,application/json" aria-label="Markerdatei als Punkte laden" onChange={e => { void importMarkers(e.target.files?.[0]); e.target.value = ''; }} /></label>}
+      </div>
+    </section>
     <details className="live-advanced"><summary>Erweitert: Vorlage, Kartennamen, Einbetten, Export</summary>
       <div className="live-presets" role="group" aria-label="Vorlagen">
         <span className="muted">Leere Vorlage:</span>
@@ -121,10 +199,10 @@ export function LiveMapPanel({ settings, onChange, map, dimension }: { settings:
       </div>
       <div className="button-row">
         <label className="chip-check"><input type="checkbox" checked={settings.embed} onChange={e => onChange({ ...settings, embed: e.target.checked })} /> Karte hier einbetten</label>
-        <button className="secondary" disabled={!map?.entries.length} onClick={exportMarkers}>Marker (JSON) herunterladen</button>
+        <button className="secondary" disabled={!map?.entries.length} onClick={exportMarkers}>Marker (JSON, Bauplaner-Format) herunterladen</button>
         <button className="secondary" disabled={!map?.entries.length} onClick={() => map && download(`bauplaner-weltlage-${dimensionLabel(dimension).toLowerCase()}.json`, placementsJson(map), 'application/json')}>Lagen (JSON) herunterladen</button>
       </div>
-      <p className="muted small">Die Markerdatei ist das eigene Bauplaner-Austauschformat, keine fertige Plugin-Konfiguration. Die Vorlagen für BlueMap, Dynmap und Pl3xMap sind aus deren Quelltext abgeleitet.</p>
+      <p className="muted small">Die JSON-Markerdatei ist das eigene Bauplaner-Austauschformat (Projekte und Punkte), keine Plugin-Konfiguration; fertige Marker gibt es oben unter „Für die Server-Karte exportieren“. Die Vorlagen für BlueMap, Dynmap und Pl3xMap sind aus deren Quelltext abgeleitet.</p>
     </details>
     {settings.embed && openUrl && (mixed
       ? <p className="notice" role="note">Eure Karte läuft über <code>http://</code>. Eine <code>https</code>-Seite wie diese darf sie nicht einbetten, der Browser blockiert das. <a href={openUrl} target="_blank" rel="noreferrer noopener">{settings.name} in neuem Tab öffnen ↗</a></p>

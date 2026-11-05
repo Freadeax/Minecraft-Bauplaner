@@ -36,7 +36,11 @@ test('artifact-only child commit does not require a self-referencing roadmap upd
 test('overview groups open work by area, lists Philipp-only tasks and orphaned work', () => {
   const data = baseline();
   const text = renderOverview(data);
-  for (const expected of ['## Überblick nach Bereichen', '## Was nur Philipp tun kann', '## Verwaiste Punkte', '**verwaist**']) assert.ok(text.includes(expected), expected);
+  for (const expected of ['## Überblick nach Bereichen', '## Was nur Philipp tun kann', '## Verwaiste Punkte']) assert.ok(text.includes(expected), expected);
+  // „verwaist“ steht da, sobald es offene Arbeit ohne Thread gibt (der echte Stand kann auch keine haben).
+  const orphan = structuredClone(data); orphan.items[0].status = 'planned'; delete orphan.items[0].thread; orphan.items[0].area = orphan.areas.find(a => a.id !== 'SPAETER').id;
+  orphan.items[0].steps = orphan.items[0].steps.map(s => ({ ...s, done: false })); orphan.items[0].verification = { state: 'pending', note: 'x' };
+  assert.ok(renderOverview(orphan).includes('**verwaist**'));
   for (const a of data.areas) assert.ok(text.includes(a.title), a.id);
   // Jede offene Aufgabe ohne Thread erscheint unter den verwaisten Punkten (außer zurückgestellte Backend-Option).
   const orphanPart = text.slice(text.indexOf('## Verwaiste Punkte'));

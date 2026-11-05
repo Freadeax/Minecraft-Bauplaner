@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-05T07:58:33.828Z",
+  "updatedAt": "2026-11-05T08:18:58.875Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -4739,52 +4739,75 @@
     },
     {
       "id": "MAP-02",
-      "title": "Gespeicherte Kartenziele und konkrete Provideradapter",
+      "title": "Gespeicherte Kartenziele und konkrete Provideradapter: mehrere Server-Karten speichern und teilen, echte Marker für BlueMap (marker-sets) und Dynmap (dmarker-Befehle), Markerdatei als Weltplan-Punkte",
       "phase": "P3",
       "priority": "P1",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "implemented",
+      "owner": "Claude (Thread „Module und Systeme komplex ausarbeiten“)",
       "dependencies": [
         "MAP-01"
       ],
       "scope": [
         "packages/domain/src/livemap.ts",
-        "apps/web/src/views/map/"
+        "packages/domain/src/liveMapExport.ts",
+        "apps/web/src/views/map/LiveMapPanel.tsx",
+        "apps/web/src/views/map/liveMapConfig.ts",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "tests/livemap-export.test.mjs",
+        "tests/e2e/livemap-export.e2e.mjs",
+        "docs/architecture/LIVEMAP.md"
       ],
       "legacyIds": [],
       "steps": [
         {
           "id": "MAP-02-S01",
-          "title": "URL-/Markerformate anhand Primärquellen pro Provider verifizieren.",
-          "done": false
+          "title": "URL-/Markerformate anhand Primärquellen pro Provider verifizieren (BlueMap-Wiki Markers, Dynmap-Wiki Using markers/Commands, squaremap/Pl3xMap README: nur API).",
+          "done": true
         },
         {
           "id": "MAP-02-S02",
-          "title": "Gespeicherte Ziele, UI-Dateiadapter und eigene Markerdateien anbinden.",
+          "title": "Gespeicherte Ziele (bis 20, Kartenliste als Datei), UI-Dateiadapter und eigene Markerdateien (Import als Weltplan-Punkte, Export mit Punkten), BlueMap-marker-sets und Dynmap-Befehle aus Projekten, Bauplätzen, Wegen, Zonen und Punkten.",
+          "done": true
+        },
+        {
+          "id": "MAP-02-S03",
+          "title": "Abnahme KARTE-08 auf einem echten BlueMap-/Dynmap-Server.",
           "done": false
         }
       ],
       "acceptance": [
         "Keine behauptete BlueMap-/Dynmap-/squaremap-/Pl3xMap-Kompatibilität ohne Formatnachweis."
       ],
-      "next": "URL-/Markerformate anhand Primärquellen pro Provider verifizieren.",
+      "next": "Abnahme KARTE-08 auf Philipps Server-Karte.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/livemap-export.test.mjs",
+          "note": "5 Fälle: gespeicherte Karten/Datei/Zusammenführen, Markerdatei → Punkte ohne Doppelte, Formen je Dimension, BlueMap-Format (extrude/shape/line/poi, Maskierung, Klammern), Dynmap-Befehle."
+        },
+        {
+          "path": "tests/e2e/livemap-export.e2e.mjs",
+          "note": "Chromium 1400/390 px: zwei Karten speichern/wechseln, Kartenliste, Dynmap- und BlueMap-Download, Markerdatei laden, doppelt, Rückgängig, Neuladen."
+        }
+      ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "note": "Einheits- und Browsertests grün; Abnahme auf echtem Kartenserver offen (S03)."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
+      "updatedAt": "2026-11-05T08:18:58.875Z",
       "area": "PLANER",
-      "thread": null,
-      "philipp": [],
-      "orphans": [
-        "Komplett offen: gespeicherte Kartenziele und Provideradapter (BlueMap, Dynmap, Squaremap) mit eigenen Markerdateien."
-      ]
+      "thread": "Module und Systeme komplex ausarbeiten",
+      "philipp": [
+        {
+          "kind": "spiel",
+          "text": "BlueMap-Marker (.conf) bzw. Dynmap-Befehle auf eurer Server-Karte einspielen und prüfen, ob Projekte, Wege und Punkte an der richtigen Stelle erscheinen (KARTE-08)."
+        }
+      ],
+      "orphans": []
     },
     {
       "id": "GAME-01",
@@ -18733,6 +18756,40 @@
           "done": 3,
           "total": 3,
           "next": "Abnahme PROJ-14."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-05T08:18:58.875Z",
+      "kind": "progress",
+      "items": [
+        "MAP-02"
+      ],
+      "summary": "MAP-02: gespeicherte Server-Karten (bis 20, Kartenliste als Datei), BlueMap-marker-sets und Dynmap-Befehle aus Projekten/Bauplätzen/Wegen/Zonen/Punkten, Markerdatei als Weltplan-Punkte; Formate aus Primärquellen geprüft; Roadmap-Test unabhängig vom echten Waisenstand.",
+      "files": [
+        "apps/web/src/map.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/map/LiveMapPanel.tsx",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "apps/web/src/views/map/liveMapConfig.ts",
+        "docs/TESTING.md",
+        "docs/architecture/LIVEMAP.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/liveMapExport.ts",
+        "packages/domain/src/livemap.ts",
+        "tests/e2e/livemap-export.e2e.mjs",
+        "tests/e2e/worldmap.e2e.mjs",
+        "tests/livemap-export.test.mjs",
+        "tests/roadmap.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "MAP-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Abnahme KARTE-08 auf Philipps Server-Karte."
         }
       ]
     }

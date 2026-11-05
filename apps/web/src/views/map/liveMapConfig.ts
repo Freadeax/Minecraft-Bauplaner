@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
-import { checkLiveMapTarget } from '../../../../../packages/domain/src/livemap.js';
+import { checkLiveMapTarget, checkSavedLiveMaps } from '../../../../../packages/domain/src/livemap.js';
+import type { SavedLiveMap } from '../../../../../packages/domain/src/livemap.js';
 import { liveMapTemplateFromLink } from '../../../../../packages/domain/src/worldmap.js';
 
 export const LIVE_MAP_KIND_LABEL = { bluemap: 'BlueMap', dynmap: 'Dynmap', 'world-x-z': 'Webkarte' } as const;
@@ -84,4 +85,23 @@ export function useLiveMapSettings(): [LiveMapSettings, (next: LiveMapSettings) 
     try { localStorage.setItem(KEY, JSON.stringify(next)); } catch { /* session only */ }
   }, []);
   return [settings, update];
+}
+
+const SAVED_KEY = 'bauplaner.livekarten';
+function readSaved(): SavedLiveMap[] {
+  try { return checkSavedLiveMaps(JSON.parse(localStorage.getItem(SAVED_KEY) ?? '[]')); } catch { return []; }
+}
+
+/**
+ * MAP-02: named live maps of this browser (several servers, a test and a main
+ * map …). Like the active settings a viewer preference; shared as a file
+ * (`bauplaner-live-maps`) instead of being sent anywhere.
+ */
+export function useSavedLiveMaps(): [SavedLiveMap[], (next: SavedLiveMap[]) => void] {
+  const [maps, set] = useState<SavedLiveMap[]>(readSaved);
+  const update = useCallback((next: SavedLiveMap[]) => {
+    set(next);
+    try { localStorage.setItem(SAVED_KEY, JSON.stringify(next)); } catch { /* session only */ }
+  }, []);
+  return [maps, update];
 }

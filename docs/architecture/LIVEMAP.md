@@ -27,3 +27,26 @@ Das ist ein eigenes Bauplaner-Austauschformat, **kein direkt importierbares nati
 ## Prüfung und Grenzen
 
 Die Tests prüfen negative/sichere Koordinaten, Pfad-/Query-/Fragmentkodierung, Protokoll-/Zugangsdaten-/Origin-Prüfung, fehlerhafte Platzhalter, Unicode, Markerduplikate und Kopierverhalten. Keine Netzaufrufe, kein Livekartensmoke und keine Spielabnahme. Noch keine UI-Einbindung oder gespeicherte Zielkonfiguration; diese folgen im Weltkartenblock B15.
+
+## MAP-02: gespeicherte Karten, echte Marker für BlueMap und Dynmap
+
+Stand: 05.11.2026. Implementierung: `packages/domain/src/livemap.ts` (gespeicherte Karten), `packages/domain/src/liveMapExport.ts` (Formen, Markerimport, Exporte), Oberfläche im Weltkarten-Bereich „Server-Webkarte verknüpfen“ (`apps/web/src/views/map/LiveMapPanel.tsx`). Tests: `tests/livemap-export.test.mjs`, `tests/e2e/livemap-export.e2e.mjs`. Abnahme: KARTE-08.
+
+**Gespeicherte Karten.** `SavedLiveMap { name, urlTemplate, worlds }`, höchstens 20, Name eindeutig ohne Groß-/Kleinschreibung (`checkSavedLiveMap(s)`, `upsertSavedLiveMap`). Sie liegen wie die aktive Einstellung im Browser (`localStorage` `bauplaner.livekarten`); geteilt wird über die Datei `bauplaner-live-maps` (`createLiveMapTargetsFile`/`readLiveMapTargetsFile`, höchstens 256 KB). `mergeSavedLiveMaps` fügt neue Namen hinzu und überspringt vorhandene. Es wird nie etwas an einen Kartenserver gesendet.
+
+**Formen.** `mapShapes(map, items, dimension)` macht aus einer Dimension der Weltkarte neutrale Formen in fünf Gruppen: Projekte (Grundrissrechteck der Weltlage mit Höhe von–bis, auch gedrehte Lagen über `worldBounds`), Bauplätze (Rechteck, Höhe des Bauplatzes oder 64), Wege (Linie durch die Blockmitten, Breite), Zonen (Umriss durch die Blockmitten) und Punkte.
+
+**Primärquellen (geprüft 05.11.2026).**
+
+| Karte | Quelle | Ergebnis |
+| --- | --- | --- |
+| BlueMap | Wiki „Markers“ (bluemap.bluecolored.de/wiki/customization/Markers.html) | `marker-sets` am Ende der Kartenkonfiguration; Set mit `label`, `toggleable`, `default-hidden`, `sorting`, `markers`; Marker `poi` (`position`, `label`, `detail` mit HTML), `line` (`line`-Punkte x/y/z, `line-width`, `line-color`), `shape` (`shape` x/z, `shape-y`, `fill-color`), `extrude` (`shape-min-y`, `shape-max-y`); Farben als `{ r, g, b, a }`. Keine Markerdatei außerhalb der Kartenkonfiguration. |
+| Dynmap | Wiki „Using markers“ und „Commands“ (github.com/webbukkit/dynmap/wiki) | Nur Befehle, kein Markerimport aus Datei: `dmarker addset id:… <label> hide:…`, `dmarker add id:… <label> icon:… set:… x: y: z: world:` (auch aus der Konsole), `dmarker clearcorners`/`addcorner x y z world`, `dmarker addarea id:… <label> set:… color: fillcolor: fillopacity: weight: ytop: ybottom:`, `dmarker addline … color: weight:`, `dmarker deleteset id:…`. |
+| squaremap | README, Ordner `web/src/js` | Marker nur über die Programmierschnittstelle (`squaremap-api`) bzw. Erweiterungen; kein Dateiformat. Linkformat nicht aus dem Quelltext belegt, darum weiter keine Vorlage. |
+| Pl3xMap | README (v3) | Marker nur über API bzw. Addons; keine Markerdatei. |
+
+**Exporte.** `blueMapMarkerConfig(shapes)` schreibt einen vollständigen `marker-sets: { … }`-Block (Sets `bauplaner-projekte` … `bauplaner-punkte`; Bauplätze und Zonen standardmäßig ausgeblendet; Projekte als `extrude` mit `depth-test: true`, flache Flächen als `shape`, Wege als `line`, Punkte als `poi`). Zeichenketten werden JSON-maskiert (gültiges HOCON), das HTML-Detail zusätzlich HTML-maskiert. `dynmapMarkerCommands(shapes, world)` schreibt Konsolenbefehle; jedes Set wird zuerst gelöscht, ein zweiter Lauf ersetzt also die alten Marker. Bezeichnungen stehen in `"…"`, enthaltene `"` werden zu `'`. Der Dynmap-Weltname kommt aus der aktiven gespeicherten Karte (Kartenname der Dimension).
+
+**Markerdatei → Punkte.** `markersToPoints(json, items, type)` liest das eigene Format (`readLiveMapMarkerFile`) und legt je Marker einen Weltplan-Punkt (Art „Notiz“) an, als ein Rückgängig-Schritt. Bereits vorhandene Punkte (gleicher Name und Block in derselben Dimension) und Marker mit ungültiger Dimension werden übersprungen; Dateien über 4 MB werden vor dem Lesen abgewiesen. Der JSON-Export enthält jetzt neben den Projekten auch die Punkte des Weltplans.
+
+**Grenzen.** Keine Prüfung gegen einen laufenden BlueMap-/Dynmap-Server in den Tests (Abnahme KARTE-08); Zonen mit Löchern und Kreise werden nicht erzeugt.
