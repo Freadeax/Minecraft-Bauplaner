@@ -6868,3 +6868,19 @@ Mod 0.17.2: Planmenü kompakt bei 854×480/großer GUI-Größe (Footer unter die
 - `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java`
 - `mods/bauplaner-bridge/modrinth/project.json`
 
+## 2026-11-05T12:25:51.250Z · progress
+
+**Aufgaben:** GAME-09
+
+Titelbild (hervorgehobenes Galeriebild aus echter Spielaufnahme mit Projekttitel); KI-Offenlegung nur als Pflichtfeld ohne Text
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
+
+**Geänderte Dateien:**
+
+- `mods/bauplaner-bridge/modrinth/gallery/00-title.png`
+- `mods/bauplaner-bridge/modrinth/project.json`
+- `tests/unit/mod/modrinth.test.mjs`
+

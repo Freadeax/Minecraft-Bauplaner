@@ -37,7 +37,7 @@ test('Modrinth-Hilfen: Versionsvergleich und Abschnitt der Änderungsliste', () 
 test('Modrinth-Offenlegungen: Team-Raum nur mit Zustimmung, lokale Verbindung beschrieben', () => {
   const cfg = loadConfig();
   const byType = Object.fromEntries((cfg.project.disclosures ?? []).map(d => [d.type, d]));
-  assert.equal(byType.ai_content, undefined, 'KI-Angabe pflegt das Skript nicht (Philipp 05.11.2026)');
+  assert.deepEqual(byType.ai_content, { type: 'ai_content', uses: ['code', 'text'] }, 'nur das Pflichtfeld, ohne Text (05.11.2026)');
   assert.equal(byType.telemetry?.consent, 'opt_in');
   assert.ok(byType.system_interactions?.interactions.some(i => i.includes('127.0.0.1')));
   const broken = structuredClone(cfg.project); broken.disclosures = [{ type: 'telemetry', consent: 'maybe', data_collected: [] }];

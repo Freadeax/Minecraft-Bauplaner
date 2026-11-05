@@ -27,10 +27,15 @@
   "icon": "icon.png",
   "gallery": [
     {
+      "file": "gallery/00-title.png",
+      "title": "Bauplaner Bridge",
+      "description": "Your build plan as a hologram, checked block by block. For Fabric, NeoForge and Paper servers.",
+      "featured": true
+    },
+    {
       "file": "gallery/01-hologram.png",
       "title": "Hologram with live progress",
-      "description": "The plan as a hologram over the build. The HUD counts missing, wrong and misrotated blocks and points to the next mistake.",
-      "featured": true
+      "description": "The plan as a hologram over the build. The HUD counts missing, wrong and misrotated blocks and points to the next mistake."
     },
     {
       "file": "gallery/02-placement-helper-shaders.png",
@@ -104,6 +109,13 @@
   },
   "disclosures": [
     {
+      "type": "ai_content",
+      "uses": [
+        "code",
+        "text"
+      ]
+    },
+    {
       "type": "telemetry",
       "consent": "opt_in",
       "data_collected": [
@@ -126,6 +138,5 @@
         "Plans, settings, the team room address and reports are stored in the game folder under bauplaner/."
       ]
     }
-  ],
-  "disclosuresNote": "Nur diese Typen pflegt das Skript. Andere Offenlegungen auf Modrinth (z. B. KI-Inhalte) bleiben, wie sie in den Projekteinstellungen gesetzt sind (Philipp 05.11.2026)."
+  ]
 }
