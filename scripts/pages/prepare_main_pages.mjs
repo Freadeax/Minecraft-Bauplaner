@@ -4,7 +4,7 @@ import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-const fixed = new Set(['.nojekyll', 'index.html', 'favicon.svg', 'THIRD_PARTY_NOTICES.txt', 'deployment.json', 'examples/contract-v3.schem', 'examples/contract-multiregion.litematic']);
+const fixed = new Set(['.nojekyll', 'index.html', 'sw.js', 'favicon.svg', 'THIRD_PARTY_NOTICES.txt', 'deployment.json', 'examples/contract-v3.schem', 'examples/contract-multiregion.litematic']);
 // assets/catalog-<key>.json: mitgelieferter Katalog als Datei (PERF-05, scripts/pages/build_catalog_snapshot.mjs).
 export const isPagesArtifact = p => fixed.has(p) || /^assets\/[A-Za-z0-9_.-]+\.(?:js|css|woff2?|png|webp|svg)$/.test(p) || /^assets\/catalog-[a-f0-9]{32}\.json$/.test(p);
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');

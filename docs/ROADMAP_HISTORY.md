@@ -6735,3 +6735,29 @@ STRUCT-01 im Testplan an Start- und Systemcheck (START-03, SYS-03) gebunden: nac
 - `apps/web/src/testing/testplan.ts`
 - `docs/testing/TESTPLAN.md`
 
+## 2026-11-05T11:53:19.756Z · progress
+
+**Aufgaben:** PERF-06
+
+S01 Offline-Speicher: sw.js aus dem Build, Start ohne Internet, nach Updates nur geänderte Dateien, Systemcheck-Karte, Notbremse; npm run check grün, offline.e2e 3/3 in Chromium; Safari/Firefox offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-06 | 🚧 In Arbeit | 1/3 | PERF-06-S02 Cloudflare Pages einrichten (Philipp 05.11.2026: kostenlos, Offline-Speicher und Cloudflare-Anbindung). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/offline.ts`
+- `apps/web/src/main.tsx`
+- `apps/web/src/views/SystemView.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/betrieb/HOSTING.md`
+- `docs/architecture/betrieb/OFFLINE.md`
+- `package.json`
+- `scripts/pages/build_service_worker.mjs`
+- `scripts/pages/prepare_main_pages.mjs`
+- `scripts/pages/service_worker.template.js`
+- `tests/e2e/offline.e2e.mjs`
+- `tests/unit/tooling/service-worker.test.mjs`
+

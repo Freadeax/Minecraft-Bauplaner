@@ -6,6 +6,8 @@ import { useApp } from '../app/context';
 import { parseManifest, verifyDelivery } from '../app/delivery';
 import type { DeliveryResult, DeploymentManifest } from '../app/delivery';
 import { clearErrors, errorReport, loggedErrors, onErrorLogged } from '../app/errorLog';
+import { offlineState, setOffline } from '../app/offline';
+import type { OfflineState } from '../app/offline';
 import type { StorageInfo } from '../app/repository';
 import { errorText, formatNumber } from '../app/ui';
 
@@ -25,6 +27,33 @@ function capabilities(kind: string): Capability[] {
     { name: 'Entpacken im Browser', ok: typeof DecompressionStream !== 'undefined', note: typeof DecompressionStream !== 'undefined' ? 'DecompressionStream' : 'fehlt – Schem/Litematic-Import nicht möglich' },
     { name: 'Zwischenablage', ok: !!navigator.clipboard, note: navigator.clipboard ? 'verfügbar' : 'nicht verfügbar – Bericht manuell markieren' },
   ];
+}
+
+/** Offline-Speicher (PERF-06): is the app kept in the browser, which version, switch it off or on. */
+function OfflineCard() {
+  const [state, setState] = useState<OfflineState | null>(null);
+  const [busy, setBusy] = useState(false);
+  const refresh = useCallback(() => { void offlineState().then(setState, () => setState(null)); }, []);
+  useEffect(refresh, [refresh]);
+  const toggle = async (on: boolean) => { setBusy(true); try { await setOffline(on); } finally { setBusy(false); setTimeout(refresh, on ? 1500 : 0); } };
+  return <section className="system-card" aria-labelledby="sys-offline" data-offline={state?.active ? 'aktiv' : 'aus'}>
+    <h2 id="sys-offline">Offline-Speicher</h2>
+    <p className="muted">Hält die Programmdateien im Browser: Start ohne erneutes Laden, auch ohne Internet. Nach einem Update werden nur geänderte Dateien geholt. Projekte liegen davon unabhängig im Speicher unten.</p>
+    {!state ? <p className="muted">Wird geprüft …</p> : !state.supported
+      ? <p className="muted">Nicht verfügbar (Entwicklungsumgebung oder Browser ohne Service Worker).</p>
+      : <>
+        <dl className="system-facts">
+          <div><dt>Zustand</dt><dd>{state.active ? 'aktiv' : state.switchedOff ? 'ausgeschaltet' : 'wird eingerichtet'}</dd></div>
+          {state.version && <div><dt>Programmstand</dt><dd><code>{state.version}</code></dd></div>}
+          {state.files !== undefined && <div><dt>Gespeichert</dt><dd>{formatNumber(state.files)} Dateien{state.bytes ? `, ${mb(state.bytes)}` : ''}</dd></div>}
+        </dl>
+        <div className="button-row">
+          {state.switchedOff
+            ? <button onClick={() => void toggle(true)} disabled={busy}>Offline-Speicher einschalten</button>
+            : <button onClick={() => void toggle(false)} disabled={busy}>Offline-Speicher leeren und ausschalten</button>}
+        </div>
+      </>}
+  </section>;
 }
 
 interface DataModelFacts {
@@ -133,6 +162,8 @@ export function SystemView() {
         <h2 id="sys-caps">Browser</h2>
         <ul className="system-caps">{caps.map(c => <li key={c.name} data-ok={c.ok}><span aria-hidden="true">{c.ok ? '✓' : '!'}</span><b>{c.name}</b><small>{c.note}</small></li>)}</ul>
       </section>
+
+      <OfflineCard />
 
       <section className="system-card" aria-labelledby="sys-storage">
         <h2 id="sys-storage">Speicher</h2>

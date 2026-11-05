@@ -12,6 +12,7 @@ import { CommandPalette } from './app/CommandPalette';
 import { ProjectsView } from './views/ProjectsView';
 import { installDiagnostics } from './app/diagnostics';
 import { lazyPage } from './app/lazyPage';
+import { registerOffline } from './app/offline';
 import './styles/style.css';
 import './styles/catalog.css';
 import './styles/schem.css';
@@ -58,5 +59,6 @@ function App() {
 
 installErrorCapture();
 installDiagnostics();
+registerOffline();
 initTextures();
 createRoot(document.getElementById('root')!).render(<App />);

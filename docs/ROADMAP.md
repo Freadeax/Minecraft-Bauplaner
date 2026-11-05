@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-05T11:06:42.936Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-05T11:53:19.756Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -13,7 +13,7 @@ Stand: 2026-11-05T11:06:42.936Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | Status | Pakete |
 |---|---:|
 | ⏳ Offen | 7 |
-| 🚧 In Arbeit | 5 |
+| 🚧 In Arbeit | 6 |
 | ⛔ Blockiert | 0 |
 | 🧩 Implementiert · Abnahme offen | 88 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
@@ -33,7 +33,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 11 | 0 | 9 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 3 | 0 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
-| [Performance und Stabilität](#bereich-perf) | 3 | 2 | 1 | 3 |
+| [Performance und Stabilität](#bereich-perf) | 4 | 2 | 1 | 3 |
 | [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 14 | 0 | 7 | 8 |
 | [Testphase, Qualität und Betrieb](#bereich-qa) | 2 | 1 | 2 | 8 |
 | [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 6 | 0 | 0 | 0 |
@@ -184,6 +184,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ | — |
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Olympus auf deinem Rechner, dazu Firefox/Safari (S06). |
 | [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert | 🧩 Implementiert · Abnahme offen 8/9 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ · 1 verwaist | — |
+| [PERF-06](#perf-06) | Mehr Leistung ohne eigenen Server | 🚧 In Arbeit 1/3 | P1 | „Einfachsten Weg zu mehr Leistung finden“ | — |
 
 Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft), PERF-03 (geprüft).
 
@@ -509,6 +510,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [UI-02](#ui-02) | App-Hülle, Navigation und Handyoberfläche überarbeiten | ✅ Im beschriebenen Umfang geprüft | 4/4 | UI-01, QA-01 | ausstehend | ausstehend |
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart | 🧩 Implementiert · Abnahme offen | 6/7 | PERF-01, MODEL-01, ARCH-02 | ausstehend | ausstehend |
 | [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund | 🧩 Implementiert · Abnahme offen | 8/9 | PERF-04 | ausstehend | ausstehend |
+| [PERF-06](#perf-06) | Mehr Leistung ohne eigenen Server: Offline-Speicher (Service Worker) und kostenlose zweite Adresse auf Cloudflare Pages | 🚧 In Arbeit | 1/3 | PERF-05 | ausstehend | ausstehend |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen | 5/6 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material | 🧩 Implementiert · Abnahme offen | 6/7 | VIEW-02, BUILD-01, MAT-01 | ausstehend | ausstehend |
 | [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel | 🧩 Implementiert · Abnahme offen | 5/6 | BLOCK-01, LIB-04, UPDATE-01 | ausstehend | ausstehend |
@@ -1342,6 +1344,26 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [docs/architecture/kern/PERFORMANCE_AUDIT.md](architecture/kern/PERFORMANCE_AUDIT.md) — Messungen vorher/nachher, umgesetzte und offene Befunde mit Priorität.; [tests/e2e/catalog-snapshot.e2e.mjs](../tests/e2e/catalog-snapshot.e2e.mjs) — Chromium: Erststart aus Datei, Neustart aus Speicher, gleicher Katalog wie selbst erzeugt, Rückfall bei fehlender/beschädigter/fremder Datei.; [tests/unit/core/stable-math.test.mjs](../tests/unit/core/stable-math.test.mjs) — Genauigkeit gegen Math, Sonderwerte, feste Referenzbits.; [tests/unit/core/canonical-json.test.mjs](../tests/unit/core/canonical-json.test.mjs) — 2000 Zufallswerte und Sonderfälle gleich der alten Implementierung.; [tests/e2e/thumb-store.e2e.mjs](../tests/e2e/thumb-store.e2e.mjs) — Chromium: Vorschaubilder nach Neustart aus dem Speicher (blob), alter Speicher entfernt, ohne Cache Storage normal gerendert.
 
 **Dateiumfang:** `docs/architecture/kern/PERFORMANCE_AUDIT.md`, `packages/application/src/catalogSnapshot.ts`, `packages/voxel/src/stableMath.ts`, `packages/domain/src/core/hash.ts`, `scripts/pages/build_catalog_snapshot.mjs`, `scripts/pages/catalog_key.mjs`, `scripts/bench/perf/measure_start.mjs`, `apps/web/src/app/lazyPage.tsx`, `apps/web/src/main.tsx`, `apps/web/src/jobs/libraryJob.ts`, `apps/web/src/jobs/library.ts`, `tests/e2e/catalog-snapshot.e2e.mjs`, `tests/unit/core/stable-math.test.mjs`, `tests/unit/core/canonical-json.test.mjs`, `apps/web/src/thumbnail/thumbStore.ts`, `apps/web/src/thumbnail/Thumb.tsx`, `tests/e2e/thumb-store.e2e.mjs`, `apps/web/src/views/map/useMapHistory.ts`. **Abhängigkeiten:** PERF-04. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### PERF-06
+
+**Mehr Leistung ohne eigenen Server: Offline-Speicher (Service Worker) und kostenlose zweite Adresse auf Cloudflare Pages** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude-Thread „Einfachsten Weg zu mehr Leistung finden“ · Zuständiger Thread: „Einfachsten Weg zu mehr Leistung finden“ · Aktualisiert: 2026-11-05T11:53:19.756Z
+
+- [x] PERF-06-S01: Offline-Speicher: sw.js aus dem Build (Programmdateien mit Inhalts-Hash, Startseite erst Netz), Start ohne Internet, nach Updates nur geänderte Dateien, Karte im Systemcheck zum Ausschalten, Notbremse.
+- [ ] PERF-06-S02: Zweite Adresse auf Cloudflare Pages (Gratis-Tarif) aus demselben Build, eigene Cache-Regeln; GitHub Pages bleibt.
+- [ ] PERF-06-S03: Team-Raum und Mod-Verbindung erlauben die Cloudflare-Adresse.
+
+**Abnahme:** Zweiter Start lädt keine Programmdatei aus dem Netz, ohne Internet startet die zuletzt geladene Fassung. Neue Veröffentlichung kommt beim nächsten Laden an; alte Programmdateien werden entfernt. Ausschalten im Systemcheck entfernt Service Worker und Speicher dauerhaft; Notbremse über sw.js möglich. Automatisierte Browser bleiben ohne Testschalter unberührt; alle Tests grün.
+
+**Nächste Aktion:** PERF-06-S02 Cloudflare Pages einrichten (Philipp 05.11.2026: kostenlos, Offline-Speicher und Cloudflare-Anbindung).
+
+**Prüfstand:** Chromium im Cloud-Container; Safari/iPad und Firefox offen.
+
+**Nachweise:** [tests/e2e/offline.e2e.mjs](../tests/e2e/offline.e2e.mjs) — Chromium: Installation, Laden aus dem Speicher, Start offline, alte Dateien weg, Ausschalten.; [tests/unit/tooling/service-worker.test.mjs](../tests/unit/tooling/service-worker.test.mjs) — Manifest ohne Katalogdatei, Version folgt dem Inhalt, Notbremse, Publisher erlaubt sw.js.; [docs/architecture/betrieb/OFFLINE.md](architecture/betrieb/OFFLINE.md) — Regeln, Grenzen, Notbremse, Cloudflare-Plan.
+
+**Dateiumfang:** `scripts/pages/service_worker.template.js`, `scripts/pages/build_service_worker.mjs`, `scripts/pages/prepare_main_pages.mjs`, `apps/web/src/app/offline.ts`, `apps/web/src/main.tsx`, `apps/web/src/views/SystemView.tsx`, `tests/e2e/offline.e2e.mjs`, `tests/unit/tooling/service-worker.test.mjs`, `docs/architecture/betrieb/HOSTING.md`, `docs/architecture/betrieb/OFFLINE.md`, `package.json`. **Abhängigkeiten:** PERF-05. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

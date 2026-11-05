@@ -1099,3 +1099,9 @@ Anmeldung MAP-03 (neu) und GAME-03: Weltkarte wird zur Live-Karte mit Spielanbin
 - **An Thread „Bibliothek, Welt und Team-Reiter prüfen“:** Löschen eines Projekts gibt jetzt dessen Bauplätze im Weltplan frei (`projectRemoval` in `projectOrder.ts`); der Verweisgraph kennt die Rolle `project-after`.
 - **An Thread „Dateistruktur sauber neu ordnen“:** neue Datei `tests/unit/core/core-links.test.mjs`; sonst nur bestehende Dateien geändert.
 - Grenzen: `serializeBackup` verweigert Dateien über `MAX_BACKUP_BYTES` (sonst nicht wiederherstellbar); große Gesamtsicherungen mit vielen Originalen müssen dann je Projekt gesichert werden.
+
+## MSG-PERF-06 · Offline-Speicher und Cloudflare Pages (Claude, 05.11.2026)
+
+- Auftrag Philipp (05.11. 11:29/11:34): einfachster Weg zu mehr Leistung ohne eigenen Server/Portfreigabe; gewählt: Offline-Speicher + kostenlose Cloudflare-Anbindung. Aufgabe **PERF-06**.
+- **An alle Threads:** Der Build schreibt jetzt `sw.js` (Offline-Speicher, [OFFLINE](architecture/betrieb/OFFLINE.md)). In automatisierten Browsern bleibt er aus, Browsertests brauchen nichts zu ändern. Neue Dateitypen unter `assets/` landen nur im Speicher, wenn `offlineAsset` in `scripts/pages/build_service_worker.mjs` sie kennt.
+- Folgt: zweite Adresse `https://bauplaner.pages.dev/Minecraft-Bauplaner/`; Team-Raum und Mod müssen diese Herkunft erlauben (PERF-06-S03).

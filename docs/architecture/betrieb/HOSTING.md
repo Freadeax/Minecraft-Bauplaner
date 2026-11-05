@@ -57,3 +57,7 @@ Seit 27.10.2026 führt `scripts/publish_pages.sh` Schritt 1–5 aus: Abbruch, we
 Die tatsächlichen GitHub-internen Pages-Buildlogs (Run 41201874786, Buildjob 124539104569) bestätigen Checkout `ref: main` und `source: .`. Damit ist Pages bereits auf main / Repositorywurzel gestellt; ältere Angaben zu gh-pages sind historisch überholt. Der bisher fehlende Root-Webbuild erklärt die 404-Antwort für deployment.json.
 
 Aktiver Einstieg ist nun `scripts/publish_pages.sh`, der an `publish_main_pages.sh` delegiert. Geprüften Quellcommit bauen, Artefakte manifestgeprüft in den vollständigen Main-Tree übernehmen, als normalen Artefakt-Kindcommit auf main veröffentlichen und live prüfen. Das Manifest nennt den Quell-Elterncommit (keine selbstreferenzielle Commit-SHA). gh-pages wird nicht mehr benötigt, darf nach bestätigter Liveauslieferung gelöscht werden. Alte Arbeitsbranches bleiben bis zu einer verfügbaren Löschfunktion bestehen; alle Inhalte und auch die zuvor gesquashte WIP-Historie sind in main enthalten.
+
+## Offline-Speicher und zweite Adresse (PERF-06, 05.11.2026)
+
+Seit PERF-06 liefert der Build zusätzlich `sw.js` (Offline-Speicher der Programmdateien); der Publisher führt sie als feste Artefaktdatei. Regeln, Notbremse und die zweite Adresse auf Cloudflare Pages: [OFFLINE](OFFLINE.md).

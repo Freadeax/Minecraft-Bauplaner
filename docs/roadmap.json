@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-05T11:06:42.936Z",
+  "updatedAt": "2026-11-05T11:53:19.756Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -2559,6 +2559,83 @@
       "orphans": [
         "S07 Analyse von Mod und Paper-Plugin (O-8), große Dateien aufteilen – Thread „Gesamtsystem auf Performance und Stabilität optimieren“ ist beendet."
       ]
+    },
+    {
+      "id": "PERF-06",
+      "title": "Mehr Leistung ohne eigenen Server: Offline-Speicher (Service Worker) und kostenlose zweite Adresse auf Cloudflare Pages",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "in_progress",
+      "owner": "Claude-Thread „Einfachsten Weg zu mehr Leistung finden“",
+      "dependencies": [
+        "PERF-05"
+      ],
+      "scope": [
+        "scripts/pages/service_worker.template.js",
+        "scripts/pages/build_service_worker.mjs",
+        "scripts/pages/prepare_main_pages.mjs",
+        "apps/web/src/app/offline.ts",
+        "apps/web/src/main.tsx",
+        "apps/web/src/views/SystemView.tsx",
+        "tests/e2e/offline.e2e.mjs",
+        "tests/unit/tooling/service-worker.test.mjs",
+        "docs/architecture/betrieb/HOSTING.md",
+        "docs/architecture/betrieb/OFFLINE.md",
+        "package.json"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "PERF-06-S01",
+          "title": "Offline-Speicher: sw.js aus dem Build (Programmdateien mit Inhalts-Hash, Startseite erst Netz), Start ohne Internet, nach Updates nur geänderte Dateien, Karte im Systemcheck zum Ausschalten, Notbremse.",
+          "done": true
+        },
+        {
+          "id": "PERF-06-S02",
+          "title": "Zweite Adresse auf Cloudflare Pages (Gratis-Tarif) aus demselben Build, eigene Cache-Regeln; GitHub Pages bleibt.",
+          "done": false
+        },
+        {
+          "id": "PERF-06-S03",
+          "title": "Team-Raum und Mod-Verbindung erlauben die Cloudflare-Adresse.",
+          "done": false
+        }
+      ],
+      "next": "PERF-06-S02 Cloudflare Pages einrichten (Philipp 05.11.2026: kostenlos, Offline-Speicher und Cloudflare-Anbindung).",
+      "acceptance": [
+        "Zweiter Start lädt keine Programmdatei aus dem Netz, ohne Internet startet die zuletzt geladene Fassung.",
+        "Neue Veröffentlichung kommt beim nächsten Laden an; alte Programmdateien werden entfernt.",
+        "Ausschalten im Systemcheck entfernt Service Worker und Speicher dauerhaft; Notbremse über sw.js möglich.",
+        "Automatisierte Browser bleiben ohne Testschalter unberührt; alle Tests grün."
+      ],
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/e2e/offline.e2e.mjs",
+          "note": "Chromium: Installation, Laden aus dem Speicher, Start offline, alte Dateien weg, Ausschalten."
+        },
+        {
+          "path": "tests/unit/tooling/service-worker.test.mjs",
+          "note": "Manifest ohne Katalogdatei, Version folgt dem Inhalt, Notbremse, Publisher erlaubt sw.js."
+        },
+        {
+          "path": "docs/architecture/betrieb/OFFLINE.md",
+          "note": "Regeln, Grenzen, Notbremse, Cloudflare-Plan."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Chromium im Cloud-Container; Safari/iPad und Firefox offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-05T11:53:19.756Z",
+      "area": "PERF",
+      "thread": "Einfachsten Weg zu mehr Leistung finden",
+      "philipp": [],
+      "orphans": []
     },
     {
       "id": "VIEW-01",
@@ -21592,6 +21669,38 @@
           "done": 4,
           "total": 4,
           "next": "Durchsicht der Ordnerkarte durch Philipp; parallele Threads ziehen neue Dateien mit dem Codemod nach."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-05T11:53:19.756Z",
+      "kind": "progress",
+      "items": [
+        "PERF-06"
+      ],
+      "summary": "S01 Offline-Speicher: sw.js aus dem Build, Start ohne Internet, nach Updates nur geänderte Dateien, Systemcheck-Karte, Notbremse; npm run check grün, offline.e2e 3/3 in Chromium; Safari/Firefox offen.",
+      "files": [
+        "apps/web/src/app/offline.ts",
+        "apps/web/src/main.tsx",
+        "apps/web/src/views/SystemView.tsx",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/betrieb/HOSTING.md",
+        "docs/architecture/betrieb/OFFLINE.md",
+        "package.json",
+        "scripts/pages/build_service_worker.mjs",
+        "scripts/pages/prepare_main_pages.mjs",
+        "scripts/pages/service_worker.template.js",
+        "tests/e2e/offline.e2e.mjs",
+        "tests/unit/tooling/service-worker.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-06",
+          "status": "in_progress",
+          "done": 1,
+          "total": 3,
+          "next": "PERF-06-S02 Cloudflare Pages einrichten (Philipp 05.11.2026: kostenlos, Offline-Speicher und Cloudflare-Anbindung)."
         }
       ]
     }
