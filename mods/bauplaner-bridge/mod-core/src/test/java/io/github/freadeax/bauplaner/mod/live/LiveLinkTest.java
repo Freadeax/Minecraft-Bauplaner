@@ -121,12 +121,13 @@ class LiveLinkTest {
     @Test
     void foreignOriginsAndHostsAreRejected() {
         var s = server(List.of());
-        for (String bad : List.of("https://evil.example", "https://freadeax.github.io.evil.example", "http://localhost.evil.example", "null", "https://freadeax.github.io:443")) {
+        for (String bad : List.of("https://evil.example", "https://freadeax.github.io.evil.example", "http://localhost.evil.example", "null", "https://freadeax.github.io:443", "https://bauplaner.pages.dev.evil.example", "https://evil.pages.dev")) {
             var r = s.handle(req("GET", "/v1/hello", bad, null, null));
             assertEquals(403, r.status(), bad);
             assertNull(r.headers().get("Access-Control-Allow-Origin"), bad);
         }
         assertEquals(200, s.handle(req("GET", "/v1/hello", "http://127.0.0.1:4173", null, null)).status());
+        assertEquals(200, s.handle(req("GET", "/v1/hello", "https://bauplaner.pages.dev", null, null)).status(), "Cloudflare Pages (PERF-06)");
         assertEquals(200, s.handle(req("GET", "/v1/hello", "http://localhost:5173", null, null)).status());
         // DNS rebinding: a page on another name resolving to 127.0.0.1 sends its own Host.
         var rebind = req("GET", "/v1/hello", null, null, null);

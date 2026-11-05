@@ -55,7 +55,8 @@ export const LIVE_LEGACY_PLAN_BYTES = 16 * 1024 * 1024;
  * (found 2026-11-03 with Olympus; checked by scripts/mod/bridge_sendcheck.mjs against the mod's own reader).
  */
 export const LIVE_PLAN_EXPORT = Object.freeze({ format: 'schem', anchor: 'project-origin', unselected: 'air' } as const);
-export const LIVE_ALLOWED_ORIGINS: readonly string[] = ['https://freadeax.github.io'];
+/** Same list as LiveLinkServer.ALLOWED_ORIGINS in the mod (GitHub Pages and, since PERF-06 / mod 0.17.1, Cloudflare Pages). */
+export const LIVE_ALLOWED_ORIGINS: readonly string[] = ['https://freadeax.github.io', 'https://bauplaner.pages.dev'];
 
 const fail = (message: string): never => { throw new DomainError('LIVELINK', `Mod-Verbindung: ${message}`); };
 const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);

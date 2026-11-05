@@ -6810,3 +6810,25 @@ Modrinth-Seite vollständig: Offenlegungen (KI-Anteil Code/Text, Telemetrie nur 
 - `scripts/mod/modrinth_publish.mjs`
 - `tests/unit/mod/modrinth.test.mjs`
 
+## 2026-11-05T12:09:15.574Z · progress
+
+**Aufgaben:** LINK-10
+
+Mod 0.17.1 und Planer: https://bauplaner.pages.dev (PERF-06, Cloudflare Pages) als erlaubte Herkunft der Spielverbindung; Team-Raum-Quelle ebenso (Ausrollen wartet auf Philipps Karte). Geprüft: livelink.test, LiveLinkTest, Spieltest Fabric 26.3 und NeoForge 26.3 bestanden.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LINK-10 | 🧩 Implementiert · Abnahme offen | 5/5 | Team-Raum mit bauplaner.pages.dev ausrollen (Karte), Release 0.17.0/0.17.1 über den Modrinth-Thread, Abnahme LINK-10. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.17.1.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.17.1.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`
+- `packages/domain/src/team/liveLink.ts`
+- `tests/unit/team/livelink.test.mjs`
+

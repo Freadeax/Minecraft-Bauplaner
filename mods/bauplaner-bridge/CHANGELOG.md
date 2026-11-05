@@ -2,6 +2,14 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.17.1 – 2026-11-05
+
+**Planner also on Cloudflare Pages / Planer auch unter Cloudflare Pages**
+
+- The game connection now also accepts the planner at https://bauplaner.pages.dev/Minecraft-Bauplaner/ (faster mirror of the planner), besides https://freadeax.github.io. Nothing else changes.
+
+- Die Spielverbindung nimmt den Planer jetzt auch unter https://bauplaner.pages.dev/Minecraft-Bauplaner/ an (schnellerer Spiegel des Planers), neben https://freadeax.github.io. Sonst ändert sich nichts.
+
 ## 0.17.0 – 2026-11-05
 
 **More reliable connection to the team room / Verbindung zum Team-Raum zuverlässiger**

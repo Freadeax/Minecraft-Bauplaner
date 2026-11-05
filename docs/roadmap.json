@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-05T12:05:46.647Z",
+  "updatedAt": "2026-11-05T12:09:15.574Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -10225,7 +10225,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-05T12:09:15.574Z",
       "area": "MOD",
       "thread": "Anbindung von Mod, Team-Raum und Planer prüfen",
       "orphans": [],
@@ -10256,7 +10256,13 @@
         "services/team-room/src/index.js",
         "tests/unit/team/team-room.test.mjs",
         "apps/web/src/testing/testplan.ts",
-        "docs/testing/TESTPLAN.md"
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/team/liveLink.ts",
+        "tests/unit/team/livelink.test.mjs",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.17.1.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.17.1.jar"
       ],
       "steps": [
         {
@@ -10277,6 +10283,11 @@
         {
           "id": "LINK-10-S04",
           "title": "Planer: höchstens eine Abfrage-Schleife und ein Wiederverbindungs-Zeitgeber (vorher je gescheitertem WebSocket eine weitere Schleife); Planstand-Prüfung ohne veraltete Closure.",
+          "done": true
+        },
+        {
+          "id": "LINK-10-S05",
+          "title": "PERF-06: Planer unter https://bauplaner.pages.dev als erlaubte Herkunft in Team-Raum, Mod 0.17.1 (LiveLinkServer) und Planer (LIVE_ALLOWED_ORIGINS).",
           "done": true
         }
       ],
@@ -10302,7 +10313,7 @@
         "state": "pending",
         "note": "Unit-Tests, RoomClientTest gegen lokalen Team-Raum (wrangler dev), Ping/Schließen/Anwesenheit per WebSocket gegen wrangler dev geprüft; Spieltest und Abnahme durch Philipp offen."
       },
-      "next": "Release 0.17.0 über den Modrinth-Thread, Team-Raum ausrollen, Abnahme mit LINK-09.",
+      "next": "Team-Raum mit bauplaner.pages.dev ausrollen (Karte), Release 0.17.0/0.17.1 über den Modrinth-Thread, Abnahme LINK-10.",
       "philipp": [
         {
           "kind": "spiel",
@@ -21766,6 +21777,34 @@
           "done": 4,
           "total": 5,
           "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-05T12:09:15.574Z",
+      "kind": "progress",
+      "items": [
+        "LINK-10"
+      ],
+      "summary": "Mod 0.17.1 und Planer: https://bauplaner.pages.dev (PERF-06, Cloudflare Pages) als erlaubte Herkunft der Spielverbindung; Team-Raum-Quelle ebenso (Ausrollen wartet auf Philipps Karte). Geprüft: livelink.test, LiveLinkTest, Spieltest Fabric 26.3 und NeoForge 26.3 bestanden.",
+      "files": [
+        "apps/web/src/views/mod/releases.json",
+        "downloads/mod/bauplaner-bridge-fabric-26.3-0.17.1.jar",
+        "downloads/mod/bauplaner-bridge-neoforge-26.3-0.17.1.jar",
+        "mods/bauplaner-bridge/CHANGELOG.md",
+        "mods/bauplaner-bridge/VERSION",
+        "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java",
+        "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java",
+        "packages/domain/src/team/liveLink.ts",
+        "tests/unit/team/livelink.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "LINK-10",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Team-Raum mit bauplaner.pages.dev ausrollen (Karte), Release 0.17.0/0.17.1 über den Modrinth-Thread, Abnahme LINK-10."
         }
       ]
     }

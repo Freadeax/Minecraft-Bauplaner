@@ -60,7 +60,7 @@ public final class LiveLinkServer implements AutoCloseable {
     /** A pairing request waits this long for the player's click (LINK-03). */
     static final long ASK_MS = 3 * 60_000L;
     static final int MAX_ASKS = 3;
-    static final Set<String> ALLOWED_ORIGINS = Set.of("https://freadeax.github.io");
+    static final Set<String> ALLOWED_ORIGINS = Set.of("https://freadeax.github.io", "https://bauplaner.pages.dev"); // GitHub Pages + Cloudflare Pages (PERF-06)
     private static final Pattern LOCAL_ORIGIN = Pattern.compile("^http://(localhost|127\\.0\\.0\\.1)(:\\d{1,5})?$");
 
     /** Game side; every method runs on a server thread and must hop to the game thread itself. Returns JSON. */

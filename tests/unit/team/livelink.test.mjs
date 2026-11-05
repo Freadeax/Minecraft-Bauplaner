@@ -130,6 +130,8 @@ test('Übergabe: Planabfrage, Markierungen, Adresse, Ursprünge', () => {
   assert.throws(() => liveBaseUrl(80), /Port/);
   assert.ok(originAllowed('https://freadeax.github.io'));
   assert.ok(originAllowed('http://127.0.0.1:4173'));
+  assert.ok(originAllowed('https://bauplaner.pages.dev'), 'Cloudflare Pages (PERF-06)');
+  assert.ok(!originAllowed('https://evil.pages.dev'));
   assert.ok(originAllowed('http://localhost:5173'));
   assert.ok(!originAllowed('https://freadeax.github.io.evil.example'));
   assert.ok(!originAllowed('http://localhost.evil.example'));
