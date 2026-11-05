@@ -174,3 +174,6 @@
 .live-saved-list li{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:4px 6px;border-radius:6px;background:rgba(255,255,255,.03)}
 .live-saved-list li>span{flex:1 1 160px;min-width:0;overflow-wrap:anywhere}
 .live-saved-list li[data-active]{outline:1px solid var(--mint)}
+/* PROJ-04: Reihenfolge zwischen Projekten */
+.map-order{border-left:3px solid var(--map-order,#c9a2ff);padding:2px 0 2px 8px;margin:6px 0;font-size:12px}
+.map-order p{margin:2px 0}

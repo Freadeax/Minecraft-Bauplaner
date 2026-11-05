@@ -90,6 +90,8 @@ export interface PlanLayer {
   readonly deviations?: readonly DeviationColumn[];
   /** Ground height under a column (for measuring), from surveys or live chunks. */
   readonly groundAt?: (x: number, z: number) => { readonly y: number; readonly id: string; readonly live: boolean } | null;
+  /** PROJ-04: „after“ starts only when „before“ is finished; drawn as arrows between the projects. */
+  readonly order?: readonly { readonly before: string; readonly after: string }[];
 }
 
 interface View { cx: number; cz: number; scale: number }
@@ -714,6 +716,23 @@ function drawPlan(ctx: CanvasRenderingContext2D, plan: PlanLayer, d: Draw, st: {
       let len = 0; for (let i = 0; i + 1 < all.length; i++) len += Math.hypot(all[i + 1]![0] - all[i]![0], all[i + 1]![1] - all[i]![1]);
       const a = pts.at(-2)!, b = pts.at(-1)!;
       label(`${fmt(Math.round(len * 10) / 10)} Blöcke`, (a[0] + b[0]) / 2 + 6, (a[1] + b[1]) / 2, d.accent);
+    }
+  }
+  // PROJ-04: order between projects as dashed arrows from centre to centre.
+  if (plan.order?.length && !plan.hideProjects) {
+    const centre = new Map(st.map.entries.filter(e => e.worldBounds && !e.skipped).map(e => [e.projectId, [sx((e.worldBounds!.min[0] + e.worldBounds!.maxExclusive[0]) / 2), sz((e.worldBounds!.min[2] + e.worldBounds!.maxExclusive[2]) / 2)] as const]));
+    const color = d.css.getPropertyValue('--map-order').trim() || '#c9a2ff';
+    for (const o of plan.order) {
+      const a = centre.get(o.before), b = centre.get(o.after);
+      if (!a || !b) continue;
+      const len = Math.hypot(b[0] - a[0], b[1] - a[1]); if (len < 16) continue;
+      const ux = (b[0] - a[0]) / len, uz = (b[1] - a[1]) / len, gap = Math.min(10, len / 4);
+      const x0 = a[0] + ux * gap, z0 = a[1] + uz * gap, x1 = b[0] - ux * gap, z1 = b[1] - uz * gap;
+      const hot = plan.selectedProjects.has(o.before) || plan.selectedProjects.has(o.after);
+      ctx.strokeStyle = color; ctx.globalAlpha = hot ? 1 : 0.75; ctx.lineWidth = hot ? 3 : 2; ctx.setLineDash([7, 5]);
+      ctx.beginPath(); ctx.moveTo(x0, z0); ctx.lineTo(x1, z1); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = color; ctx.beginPath(); ctx.moveTo(x1, z1); ctx.lineTo(x1 - ux * 11 - uz * 6, z1 - uz * 11 + ux * 6); ctx.lineTo(x1 - ux * 11 + uz * 6, z1 - uz * 11 - ux * 6); ctx.closePath(); ctx.fill();
+      ctx.globalAlpha = 1;
     }
   }
   if (st.hoverCol && plan.tool !== 'select' && plan.tool !== 'box' && scale >= 3) {

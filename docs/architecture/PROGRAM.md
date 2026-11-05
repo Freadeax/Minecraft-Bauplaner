@@ -90,6 +90,14 @@ Weiter optional in `project.site.program`, ältere Projekte bleiben unverändert
 
 **Prüfung.** `tests/program-absence.test.mjs`, `tests/e2e/program-absence.e2e.mjs` (1400/390 px, Port 4345), Testphase PROJ-20.
 
+## Runde 4 PROJ-04: Reihenfolge zwischen Projekten (05.11.2026)
+
+- **Datenmodell:** `program.after?: { projectId, note? }[]` (1–16 Einträge, keine Doppelten, Notiz ≤ 200 Zeichen). Jedes Projekt hält seine Vorgänger selbst, darum reisen sie mit Sicherung, Rückgängig und Teampaket mit. Bearbeitet wird über `addProjectAfter(site, ownId, projectId, note)` / `removeProjectAfter` als normale Bauplatz-Operation.
+- **Projektübergreifend** (`packages/domain/src/projectOrder.ts`): `projectLinks` (Verweise auf gelöschte Projekte fallen weg), `projectCycle`, `projectAfterProblem` (Selbstbezug, doppelt, Kreis mit Namen), `projectLevels` (Stufe = längste Vorgängerkette), `projectSuccessors`.
+- **Frühester Start:** `projectStartCheck` nimmt das Ende aus dem **aktiven Basisplan** des Vorgängers (ein Basisplan ohne Ende heißt „fertig seit“), sonst „Ende offen“. Frühester Start = Tag nach dem spätesten bekannten Ende; liegt das Startdatum davor, meldet die Planung das mit „Start auf … setzen“. Der Basisplan ist bewusst die Quelle: er ist der vereinbarte Termin, und die Planung muss dafür kein anderes Projekt durchrechnen.
+- **Oberfläche:** Planung → „Reihenfolge der Projekte“ (Auswahl, Grund, Liste mit Endtermin, „Danach kommen“); Weltkarte: gestrichelte Pfeile vom Vorgänger zum Nachfolger (`PlanLayer.order`, Farbe `--map-order`) und im Detail „Erst nach … / Danach …“.
+- Tests: `tests/project-order.test.mjs`, `tests/e2e/project-order.e2e.mjs`; Abnahme PROJ-21.
+
 ## Grenzen
 
 - Bautage sind Projektionen aus Bautempo und Restbedarf – keine Messung, keine Sammel- oder Laufzeiten. Ein Abschnitt ist die kleinste Planungseinheit; ein großer Abschnitt mit einer Person bleibt lang.

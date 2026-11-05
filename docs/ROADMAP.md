@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-05T08:18:58.875Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-05T08:30:33.788Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-05T08:18:58.875Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 7 |
 | 🚧 In Arbeit | 5 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 84 |
+| 🧩 Implementiert · Abnahme offen | 85 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -27,7 +27,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 |---|---:|---:|---:|---:|
 | [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 23 | 2 | 23 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 3 | 10 | 4 |
-| [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 10 | 2 | 7 | 1 |
+| [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 11 | 2 | 8 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 13 | 1 | 13 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 10 | 0 | 8 | 0 |
@@ -99,6 +99,7 @@ Abgeschlossen oder zurückgestellt: LIB-01 (geprüft), GEN-01 (geprüft), WORLD-
 | [PROJ-01](#proj-01) | Projektplanung für große Projekte | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Projektmodul vertiefen“ · 1 verwaist | Reiter „Planung“ abnehmen (PROJ-09…11). |
 | [PROJ-02](#proj-02) | Projektplanung vertieft | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Projektmodul vertiefen“ · 1 verwaist | Basisplan, Material abwarten und Anteil der Bautage im Reiter „Planung“ abnehmen (PROJ-16…18). |
 | [PROJ-03](#proj-03) | Planung Runde 3 | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Module und Systeme komplex ausarbeiten“ | Im Reiter „Planung“ eine Abwesenheit eintragen und zwei Basispläne vergleichen (PROJ-20). |
+| [PROJ-04](#proj-04) | Reihenfolge zwischen Projekten | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Module und Systeme komplex ausarbeiten“ | Zwei Projekte nacheinander planen (erst Lager, dann Burg) und den Starthinweis prüfen (PROJ-21). |
 | [UPDATE-01](#update-01) | Kontrollierte Versionsupdates mit lokalen Overrides | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Versionsupdates auf echten Geräten (QA-02). |
 | [PROD-01](#prod-01) | Produktionsdaten | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Produktion und Anbindung im Planer ausbauen“ | Reiter „Produktion“ abnehmen (PROJ-12). |
 | [PROD-02](#prod-02) | Deckung und Engpässe | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Produktion und Anbindung im Planer ausbauen“ | Engpässe und Zeitplanvergleich prüfen (PROJ-13). |
@@ -326,6 +327,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **COOP-11** · TEAMBAU-28: einen echten Teamstand verdichten und mit einem Mitspieler abgleichen.
 - **PROJ-02** · Basisplan, Material abwarten und Anteil der Bautage im Reiter „Planung“ abnehmen (PROJ-16…18).
 - **PROJ-03** · Im Reiter „Planung“ eine Abwesenheit eintragen und zwei Basispläne vergleichen (PROJ-20).
+- **PROJ-04** · Zwei Projekte nacheinander planen (erst Lager, dann Burg) und den Starthinweis prüfen (PROJ-21).
 
 ### Entscheiden oder Rückfrage beantworten
 
@@ -557,6 +559,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [PROD-04](#prod-04) | Anbindung der Produktion: Farmen aus Projekt-Bauteilen mit Baufortschritt, Farmpunkte der Weltkarte übernehmen und eintragen, bester AFK-Platz nach Simulationsdistanz, Materialbereitschaft gegen Zeitplan der Planung, Sammelaufträge je Bauleute (TEAM-03-S02), Produktionsblatt als Text | 🧩 Implementiert · Abnahme offen | 4/5 | PROD-02, MAP-06, PROJ-01 | ausstehend | ausstehend |
 | [PROJ-02](#proj-02) | Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute | 🧩 Implementiert · Abnahme offen | 4/5 | PROJ-01, PROD-01 | ausstehend | ausstehend |
 | [PROJ-03](#proj-03) | Planung Runde 3: Abwesenheiten je Bauleute nach Datum, mehrere Basispläne mit Namen und Vergleich, „abwesend bis“ aus dem Team in die Planung | 🧩 Implementiert · Abnahme offen | 3/4 | PROJ-02, COOP-06 | ausstehend | ausstehend |
+| [PROJ-04](#proj-04) | Reihenfolge zwischen Projekten: „erst nach“ anderen Projekten, frühester Start aus dem Basisplan der Vorgänger, Kreise abweisen, Pfeile auf der Weltkarte | 🧩 Implementiert · Abnahme offen | 2/3 | PROJ-03, MAP-04 | ausstehend | ausstehend |
 | [EDIT-06](#edit-06) | Direkt im 3D-Bild bauen: Blöcke an Flächen setzen/abbauen, Formen und Gruppen im 3D aufziehen und ziehen, Truhen- und Schildinhalte bearbeiten | 🧩 Implementiert · Abnahme offen | 4/5 | EDIT-01, EDIT-02, EDIT-03, EDIT-05, ENTITY-01 | ausstehend | ausstehend |
 
 ## P4: Optionale Zusammenarbeit und Integrationen
@@ -3303,6 +3306,28 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/program-absence.test.mjs](../tests/program-absence.test.mjs) — 4 Fälle: Prüfung/Zusammenführen, Zeitplan um Abwesenheiten, Basisplan-Verlauf, Team → Planung.; [tests/e2e/program-absence.e2e.mjs](../tests/e2e/program-absence.e2e.mjs) — Chromium 1400/390 px: Basisplan mit Namen, Abwesenheit verschiebt Beginn um 3 Bautage, zweiter Basisplan, Vergleichen, Neuladen, Entfernen.
 
 **Dateiumfang:** `packages/domain/src/program.ts`, `packages/domain/src/team.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/PlanningTab.tsx`, `apps/web/src/views/project/TeamTab.tsx`, `apps/web/src/planning.css`, `tests/program-absence.test.mjs`, `tests/e2e/program-absence.e2e.mjs`, `docs/architecture/PROGRAM.md`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `docs/TESTING.md`. **Abhängigkeiten:** PROJ-02, COOP-06. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### PROJ-04
+
+**Reihenfolge zwischen Projekten: „erst nach“ anderen Projekten, frühester Start aus dem Basisplan der Vorgänger, Kreise abweisen, Pfeile auf der Weltkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Module und Systeme komplex ausarbeiten“ · Aktualisiert: 2026-11-05T08:30:33.788Z
+
+- [x] PROJ-04-S01: program.after (Vorgängerprojekte mit Grund) mit Prüfung; projectOrder.ts: Verknüpfungen, Kreise, Stufen, Nachfolger, frühester Start aus dem aktiven Basisplan.
+- [x] PROJ-04-S02: Planung „Reihenfolge der Projekte“ (erst nach, Kreis-Hinweis, Start mit einem Klick korrigieren, Danach kommen) und Weltkarte (Pfeile, Detail).
+- [ ] PROJ-04-S03: Abnahme PROJ-21 durch Philipp.
+
+**Abnahme:** Die Reihenfolge reist mit dem Projekt (Sicherung, Rückgängig, Teampaket). Kein Kreis über Projekte hinweg; gelöschte Vorgänger werden angezeigt und lassen sich entfernen. Der früheste Start nennt seine Quelle (Basisplan des Vorgängers) und sagt „Ende offen“, wenn es keine gibt.
+
+**Nächste Aktion:** Abnahme PROJ-21 durch Philipp.
+
+**Nur Philipp:** Im Planer abnehmen: Zwei Projekte nacheinander planen (erst Lager, dann Burg) und den Starthinweis prüfen (PROJ-21).
+
+**Prüfstand:** Einheits- und Browsertests grün; Abnahme PROJ-21 offen.
+
+**Nachweise:** [tests/project-order.test.mjs](../tests/project-order.test.mjs) — 3 Fälle: anlegen/prüfen/entfernen, Kreise/Stufen/Nachfolger, frühester Start aus Basisplan (offen, fertig, gelöscht).; [tests/e2e/project-order.e2e.mjs](../tests/e2e/project-order.e2e.mjs) — Chromium: Basisplan in A, B erst nach A, Start korrigieren, Kreis abgewiesen, Weltkarte nennt die Reihenfolge, entfernen.
+
+**Dateiumfang:** `packages/domain/src/program.ts`, `packages/domain/src/projectOrder.ts`, `apps/web/src/views/project/ProjectOrder.tsx`, `apps/web/src/views/project/PlanningTab.tsx`, `apps/web/src/views/map/OverviewMap.tsx`, `apps/web/src/views/map/WorldMapView.tsx`, `tests/project-order.test.mjs`, `tests/e2e/project-order.e2e.mjs`, `docs/architecture/PROGRAM.md`. **Abhängigkeiten:** PROJ-03, MAP-04. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

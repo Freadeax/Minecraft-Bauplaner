@@ -8,6 +8,7 @@ import type { Builder, BuilderLoad, DependencySuggestion, ProductionReport, Prog
 import { download, errorText, formatNumber } from '../../app/ui';
 import { isResolved } from './session';
 import type { ProjectSession } from './session';
+import { ProjectOrder } from './ProjectOrder';
 import '../../planning.css';
 
 const pct = (a: number, b: number): number => b ? Math.round(a / b * 100) : 0;
@@ -69,6 +70,7 @@ export function PlanningTab({ session }: { session: ProjectSession }) {
     <Timeline plan={plan} />
     <Milestones plan={plan} site={site} save={save} />
     <Dependencies site={site} plan={plan} suggestions={suggestions} save={save} />
+    <ProjectOrder project={project} site={site} save={save} />
     <Builders plan={plan} site={site} save={save} title={title} />
     <section className="site-block prog-settings" aria-label="Einstellungen">
       <div className="site-head"><h3>Einstellungen <small>Startdatum, Bautage je Woche, Material und Basisplan</small></h3>

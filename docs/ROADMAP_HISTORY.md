@@ -5683,3 +5683,30 @@ MAP-02: gespeicherte Server-Karten (bis 20, Kartenliste als Datei), BlueMap-mark
 - `tests/livemap-export.test.mjs`
 - `tests/roadmap.test.mjs`
 
+## 2026-11-05T08:30:33.788Z · progress
+
+**Aufgaben:** PROJ-04
+
+PROJ-04: Reihenfolge zwischen Projekten (program.after, projectOrder.ts), Planung „Reihenfolge der Projekte“ mit frühestem Start aus dem Basisplan der Vorgänger, Kreisprüfung, Pfeile und Detail auf der Weltkarte.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PROJ-04 | 🧩 Implementiert · Abnahme offen | 2/3 | Abnahme PROJ-21 durch Philipp. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/map.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/map/OverviewMap.tsx`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/project/PlanningTab.tsx`
+- `apps/web/src/views/project/ProjectOrder.tsx`
+- `docs/TESTING.md`
+- `docs/architecture/PROGRAM.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/program.ts`
+- `packages/domain/src/projectOrder.ts`
+- `tests/e2e/project-order.e2e.mjs`
+- `tests/project-order.test.mjs`
+

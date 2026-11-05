@@ -10,6 +10,7 @@ import {
 } from '../../../../../packages/domain/src/index.js';
 import type { EarthworkEstimate, LiveGameMark, Operation, Project, TerrainSurvey, WorldItem, WorldPath, WorldPlanOp, WorldPointType, Polyline } from '../../../../../packages/domain/src/index.js';
 import { prepareRevisionExport } from '../../../../../packages/application/src/index.js';
+import { projectLinks, projectStartCheck, projectSuccessors } from '../../../../../packages/domain/src/projectOrder.js';
 import {
   DIMENSIONS, MAP_SKIP_LABEL, TERRAIN_NOTE, chunkOf, dimensionLabel, footprintNeighbours, suggestPlacement, topViews, translateBounds, worldOperation, createPlacement,
 } from '../../../../../packages/domain/src/worldmap.js';
@@ -475,7 +476,9 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
     const dir = ['N', 'NO', 'O', 'SO', 'S', 'SW', 'W', 'NW'][((Math.round(Math.atan2(dx, -dz) / (Math.PI / 4)) % 8) + 8) % 8];
     return `${formatNumber(Math.round(d))} Blöcke von dir (${dir})`;
   }, [player, dimension, selectionCount, selItems, selProjects, map]);
+  const order = useMemo(() => projects ? projectLinks(projects) : [], [projects]);
   const planLayer: PlanLayer = {
+    order,
     items: visibleItems, selection: visibleSelection, selectedProjects: visibleProjects, hideProjects: !layers.projects,
     tool, onTool: setTool, onPick: pick, onBox: boxSelect, onMove: moveSelection, onNudge: moveSelection, onContext: openMenu, onVertex, onDraw: draw, follow, groundAt, tiles,
     player: player && player.dimension === dimension ? { x: player.x, z: player.z, yaw: player.yaw, name: player.name } : null,
@@ -854,6 +857,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
             {holoProject?.id === project.id && holoMatch && holoMatch !== 'same' && <span className="warn-text small">Im Spiel: {holoMatch === 'moved' ? 'an anderer Stelle' : holoMatch === 'turned' ? 'gedreht/gespiegelt' : 'andere Dimension'}</span>}
           </div>}
           <Facts entry={entry} />
+          <ProjectOrderFacts project={project} projects={projects ?? []} />
           {entry.skipped && <p className="notice">Nicht gezeichnet: {MAP_SKIP_LABEL[entry.skipped]}{entry.error ? ` (${entry.error})` : ''}.</p>}
           {estimate && <TerrainEstimate estimate={estimate} preview={!!preview} onApply={estimate.result.suggestedShift && !preview ? () => {
             const w = project.world!;
@@ -873,6 +877,19 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
           onImportPoints={(points, label) => change({ label, steps: [{ kind: 'plan', op: { kind: 'batch', label, ops: points.map(item => ({ kind: 'add' as const, item })) } }] })} />
       </section>
     </div>
+  </div>;
+}
+
+/** PROJ-04: which projects come before and after this one; edited in the project's Planung. */
+function ProjectOrderFacts({ project, projects }: { project: Project; projects: readonly Project[] }) {
+  const check = projectStartCheck(project, projects), next = projectSuccessors(project.id, projects);
+  if (!check.predecessors.length && !next.length) return null;
+  const de = (iso: string | null) => iso ? `${iso.slice(8, 10)}.${iso.slice(5, 7)}.${iso.slice(0, 4)}` : '';
+  return <div className="map-order" aria-label="Reihenfolge">
+    {check.predecessors.length > 0 && <p>Erst nach {check.predecessors.map((p, i) => <span key={p.projectId}>{i ? ', ' : ''}<b>{p.name}</b>{p.end ? ` (${p.source === 'done' ? 'fertig' : `bis ${de(p.end)}`})` : ''}</span>)}
+      {check.tooEarly && <em className="warn-text"> · Start liegt davor</em>}</p>}
+    {next.length > 0 && <p>Danach: {next.map(n => n.name).join(', ')}</p>}
+    <a href={href({ view: 'project', projectId: project.id, tab: 'planung' })}>Reihenfolge in der Planung ändern</a>
   </div>;
 }
 

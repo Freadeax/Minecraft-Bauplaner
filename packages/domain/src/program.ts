@@ -85,7 +85,16 @@ export interface BuildProgram {
   readonly baseline?: Baseline;
   /** PROJ-03: earlier baselines, newest first (at most MAX_BASELINES); the active one is `baseline`. */
   readonly baselines?: readonly Baseline[];
+  /** PROJ-04: other projects this project starts after (e.g. „erst nach dem Lager“). Absent = none. */
+  readonly after?: readonly ProjectAfter[];
 }
+
+/** PROJ-04: a project that has to be finished before this one starts. */
+export interface ProjectAfter {
+  readonly projectId: string;
+  readonly note?: string;
+}
+export const MAX_PROJECT_AFTER = 16;
 
 /** Frozen dates of a schedule (PROJ-02). Dates only, so it stays comparable when the plan is recomputed from today. */
 export interface Baseline {
@@ -203,6 +212,17 @@ export function checkProgram(raw: unknown): BuildProgram {
     if (!Array.isArray(raw.baselines) || raw.baselines.length > MAX_BASELINES) fail(`höchstens ${MAX_BASELINES} frühere Basispläne`);
     for (const b of raw.baselines as unknown[]) checkBaseline(b);
   }
+  if (raw.after !== undefined) {
+    if (!Array.isArray(raw.after) || !raw.after.length || raw.after.length > MAX_PROJECT_AFTER) fail(`1 bis ${MAX_PROJECT_AFTER} vorherige Projekte`);
+    const ids = new Set<string>();
+    for (const a of raw.after as unknown[]) {
+      if (!isObj(a) || typeof a.projectId !== 'string' || !a.projectId || a.projectId.length > 128) return fail('vorheriges Projekt ungültig');
+      if (ids.has(a.projectId)) fail('vorheriges Projekt doppelt');
+      ids.add(a.projectId);
+      if (Object.keys(a).some(k => k !== 'projectId' && k !== 'note')) fail('vorheriges Projekt: unbekannte Felder');
+      if (a.note !== undefined && (typeof a.note !== 'string' || a.note.length > 200)) fail('Notiz zum vorherigen Projekt zu lang');
+    }
+  }
   return raw as unknown as BuildProgram;
 }
 
@@ -249,6 +269,25 @@ export function setProgram(site: SitePlan, program: BuildProgram | null): SitePl
   return withProgram(site, program ? checkProgram(structuredClone(program)) : null);
 }
 const edit = (site: SitePlan, f: (p: BuildProgram) => BuildProgram): SitePlan => { const p = programOf(site), next = f(p); return next === p && site.program ? site : withProgram(site, next); };
+
+/** PROJ-04: this project starts only after `projectId` is finished. Self links are refused; cycles across projects are checked in projectOrder.ts. */
+export function addProjectAfter(site: SitePlan, ownId: string, projectId: string, note?: string): SitePlan {
+  if (projectId === ownId) fail('ein Projekt kann nicht nach sich selbst kommen');
+  return edit(site, p => {
+    const list = p.after ?? [];
+    if (list.some(a => a.projectId === projectId)) fail('dieses Projekt ist schon eingetragen');
+    if (list.length >= MAX_PROJECT_AFTER) fail(`höchstens ${MAX_PROJECT_AFTER} vorherige Projekte`);
+    return { ...p, after: [...list, { projectId, ...(note?.trim() && { note: note.trim().slice(0, 200) }) }] };
+  });
+}
+export function removeProjectAfter(site: SitePlan, projectId: string): SitePlan {
+  return edit(site, p => {
+    const list = (p.after ?? []).filter(a => a.projectId !== projectId);
+    const next: { -readonly [K in keyof BuildProgram]: BuildProgram[K] } = { ...p };
+    if (list.length) next.after = list; else delete next.after;
+    return next;
+  });
+}
 
 export function addBuilder(site: SitePlan, name: string, blocksPerSession?: number, id = newId('bld')): SitePlan {
   return edit(site, p => ({ ...p, builders: [...p.builders, { id, name: name.trim(), ...(blocksPerSession !== undefined && { blocksPerSession }) }] }));

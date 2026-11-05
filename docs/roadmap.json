@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-05T08:18:58.875Z",
+  "updatedAt": "2026-11-05T08:30:33.788Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -9716,6 +9716,82 @@
       "orphans": []
     },
     {
+      "id": "PROJ-04",
+      "title": "Reihenfolge zwischen Projekten: „erst nach“ anderen Projekten, frühester Start aus dem Basisplan der Vorgänger, Kreise abweisen, Pfeile auf der Weltkarte",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Module und Systeme komplex ausarbeiten“)",
+      "dependencies": [
+        "PROJ-03",
+        "MAP-04"
+      ],
+      "scope": [
+        "packages/domain/src/program.ts",
+        "packages/domain/src/projectOrder.ts",
+        "apps/web/src/views/project/ProjectOrder.tsx",
+        "apps/web/src/views/project/PlanningTab.tsx",
+        "apps/web/src/views/map/OverviewMap.tsx",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "tests/project-order.test.mjs",
+        "tests/e2e/project-order.e2e.mjs",
+        "docs/architecture/PROGRAM.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "PROJ-04-S01",
+          "title": "program.after (Vorgängerprojekte mit Grund) mit Prüfung; projectOrder.ts: Verknüpfungen, Kreise, Stufen, Nachfolger, frühester Start aus dem aktiven Basisplan.",
+          "done": true
+        },
+        {
+          "id": "PROJ-04-S02",
+          "title": "Planung „Reihenfolge der Projekte“ (erst nach, Kreis-Hinweis, Start mit einem Klick korrigieren, Danach kommen) und Weltkarte (Pfeile, Detail).",
+          "done": true
+        },
+        {
+          "id": "PROJ-04-S03",
+          "title": "Abnahme PROJ-21 durch Philipp.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Die Reihenfolge reist mit dem Projekt (Sicherung, Rückgängig, Teampaket).",
+        "Kein Kreis über Projekte hinweg; gelöschte Vorgänger werden angezeigt und lassen sich entfernen.",
+        "Der früheste Start nennt seine Quelle (Basisplan des Vorgängers) und sagt „Ende offen“, wenn es keine gibt."
+      ],
+      "next": "Abnahme PROJ-21 durch Philipp.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/project-order.test.mjs",
+          "note": "3 Fälle: anlegen/prüfen/entfernen, Kreise/Stufen/Nachfolger, frühester Start aus Basisplan (offen, fertig, gelöscht)."
+        },
+        {
+          "path": "tests/e2e/project-order.e2e.mjs",
+          "note": "Chromium: Basisplan in A, B erst nach A, Start korrigieren, Kreis abgewiesen, Weltkarte nennt die Reihenfolge, entfernen."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Einheits- und Browsertests grün; Abnahme PROJ-21 offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-05T08:30:33.788Z",
+      "area": "PROJEKT",
+      "thread": "Module und Systeme komplex ausarbeiten",
+      "philipp": [
+        {
+          "kind": "planer",
+          "text": "Zwei Projekte nacheinander planen (erst Lager, dann Burg) und den Starthinweis prüfen (PROJ-21)."
+        }
+      ],
+      "orphans": []
+    },
+    {
       "phase": "P4",
       "priority": "P1",
       "owner": "Claude (Thread „Anbindung von Planer, Mod und Server neu denken“)",
@@ -18790,6 +18866,39 @@
           "done": 2,
           "total": 3,
           "next": "Abnahme KARTE-08 auf Philipps Server-Karte."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-05T08:30:33.788Z",
+      "kind": "progress",
+      "items": [
+        "PROJ-04"
+      ],
+      "summary": "PROJ-04: Reihenfolge zwischen Projekten (program.after, projectOrder.ts), Planung „Reihenfolge der Projekte“ mit frühestem Start aus dem Basisplan der Vorgänger, Kreisprüfung, Pfeile und Detail auf der Weltkarte.",
+      "files": [
+        "apps/web/src/map.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/map/OverviewMap.tsx",
+        "apps/web/src/views/map/WorldMapView.tsx",
+        "apps/web/src/views/project/PlanningTab.tsx",
+        "apps/web/src/views/project/ProjectOrder.tsx",
+        "docs/TESTING.md",
+        "docs/architecture/PROGRAM.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/program.ts",
+        "packages/domain/src/projectOrder.ts",
+        "tests/e2e/project-order.e2e.mjs",
+        "tests/project-order.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PROJ-04",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Abnahme PROJ-21 durch Philipp."
         }
       ]
     }

@@ -994,3 +994,9 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `tests/livemap-export.test.mjs` 5/5: gespeicherte Karten (Prüfung, gleicher Name ersetzt, Grenze 20, Datei hin und zurück, Zusammenführen), Markerdatei → Weltplan-Punkte ohne Doppelte, Formen je Dimension und Gruppe, BlueMap-`marker-sets` (extrude/shape/line/poi, JSON-/HTML-Maskierung, ausgeglichene Klammern), Dynmap-Befehle (deleteset/addset/addcorner/addarea/addline/add).
 - Browser: `tests/e2e/livemap-export.e2e.mjs` 2/2 (1400/390 px) und `tests/e2e/worldmap.e2e.mjs` 2/2 (Knopf jetzt „Marker (JSON, Bauplaner-Format) herunterladen“).
 - Offen: Abnahme KARTE-08 auf einem echten Kartenserver.
+
+## PROJ-04 · Reihenfolge zwischen Projekten · 05.11.2026 · Claude
+
+- `tests/project-order.test.mjs` 3/3: „erst nach“ anlegen/prüfen/entfernen (Selbstbezug, doppelt, unbekannte Felder, Grenze 16), Verknüpfungen ohne gelöschte Projekte, Kreis mit Namen, Stufen, Nachfolger, frühester Start aus dem aktiven Basisplan (Ende, fertig, offen, gelöscht).
+- Browser: `tests/e2e/project-order.e2e.mjs` 1/1 (Basisplan in A, B erst nach A mit Grund, zu früher Start mit einem Klick korrigiert, Kreis in A abgewiesen, Weltkarte „Erst nach … (bis …)“, entfernen); erneut grün: `program*.e2e.mjs`, `world-turn`, `worldbuilder`, `worldmap`, `livemap-export`.
+- Offen: Abnahme PROJ-21.
