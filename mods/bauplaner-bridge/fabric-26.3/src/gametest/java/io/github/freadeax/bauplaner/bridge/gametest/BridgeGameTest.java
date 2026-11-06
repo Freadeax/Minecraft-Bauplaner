@@ -33,6 +33,9 @@ public final class BridgeGameTest implements FabricClientGameTest {
         Path io = Path.of(require(System.getenv("BAUPLANER_GAMETEST_DIR"), "BAUPLANER_GAMETEST_DIR fehlt"));
         Path root = FabricLoader.getInstance().getGameDir().resolve("bauplaner");
         try {
+            // Multiplayer acceptance on a real Paper server instead of the singleplayer run (test_multiplayer_client.sh).
+            String paper = System.getenv("BAUPLANER_PAPER");
+            if (paper != null && !paper.isBlank()) { PaperMultiplayerTest.run(context, io, paper); return; }
             Files.createDirectories(root.resolve("plans"));
             Files.copy(io.resolve("plan.schem"), root.resolve("plans").resolve(PLAN), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
             deleteScans(root);
@@ -701,7 +704,7 @@ public final class BridgeGameTest implements FabricClientGameTest {
     }
 
     /** Pairing code the mod just showed in the chat (read from the running link, like the player reads it). */
-    private static String pairingCode() {
+    static String pairingCode() {
         try {
             Object client = FabricLoader.getInstance().getEntrypointContainers("client", net.fabricmc.api.ClientModInitializer.class).stream()
                     .map(c -> c.getEntrypoint()).filter(e -> e.getClass().getName().endsWith(".BridgeClient")).findFirst().orElseThrow();
@@ -719,7 +722,7 @@ public final class BridgeGameTest implements FabricClientGameTest {
     }
 
     /** One request as {"status":n,"body":...}; runs beside the game so the mod can answer on the game thread. */
-    private static String request(ClientGameTestContext context, java.net.http.HttpClient http, String url, String method, String body, String token, String origin) {
+    static String request(ClientGameTestContext context, java.net.http.HttpClient http, String url, String method, String body, String token, String origin) {
         var b = java.net.http.HttpRequest.newBuilder(java.net.URI.create(url)).timeout(java.time.Duration.ofSeconds(10)).header("Origin", origin);
         if (token != null) b.header("X-Bauplaner-Token", token);
         b.method(method, body == null ? java.net.http.HttpRequest.BodyPublishers.noBody() : java.net.http.HttpRequest.BodyPublishers.ofString(body));

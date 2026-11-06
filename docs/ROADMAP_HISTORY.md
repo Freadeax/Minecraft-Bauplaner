@@ -8195,3 +8195,34 @@ Echtserver-Prüfung KARTE-07/08: Placement.java und Planer gleich dem Spiel (/pl
 - `scripts/mod/test_bridge_paper_placement.sh`
 - `tests/unit/world/livemap-export.test.mjs`
 
+## 2026-11-06T21:44:54.861Z · progress
+
+**Aufgaben:** COOP-02, COOP-03, COOP-04, LINK-01, LINK-04, LINK-05, LINK-11, GAME-02, QA-04
+
+Block 4 Mehrspieler und Server automatisch abnehmen: Prüfstand scripts/mod/lib/multiplayer.mjs (Paper + echte Spieler als Bots + Team-Raum), test_multiplayer.sh (TEAMBAU-06, LINK-01/04/12 auf Paper 1.21.11 und 26.1.2), test_multiplayer_client.sh (echter 26.3-Client mit Mod auf Paper 26.3); COOP-02 und LINK-01 geprüft, AUTO_CHECKS für TEAMBAU-06, LINK-12, LINK-01, LINK-04. Grenzen: Hologramm mit Teamplan, Baustellen-Lager-Übernahme im Planer, echte Mitspieler auf Philipps Server bleiben Stichprobe.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-02 | ✅ Im beschriebenen Umfang geprüft | 4/4 | Regressionen bei Plugin-Änderungen mit scripts/mod/test_multiplayer.sh. |
+| COOP-03 | 🧩 Implementiert · Abnahme offen | 2/3 | Abnahme TEAMBAU-09 auf Philipps Server mit Mod 0.10.0 und Paper-Plugin mit Teamkanal; Lagerkisten (COOP-04) über TeamChannel.decorate/broadcastStore. |
+| COOP-04 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung in COOP-05 (geprüfte Lagerkisten, docs/architecture/LAGERKISTEN.md). |
+| LINK-01 | ✅ Im beschriebenen Umfang geprüft | 4/4 | Regressionen mit test_bridge_paper_link.sh und test_multiplayer.sh. |
+| LINK-04 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme durch Philipp. |
+| LINK-05 | 🧩 Implementiert · Abnahme offen | 5/5 | Abnahme vom iPad (Testplan LINK-04). |
+| LINK-11 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme LINK-12 und LINK-13 durch Philipp auf seinem Server; Weltplan/Karten im eigenen Thread. |
+| GAME-02 | 🧩 Implementiert · Abnahme offen | 4/5 | Philipp testet die .jar aus /mnt/project-files/mod/ auf server.lmnt-gaming.net und meldet Ergebnis/Fehler (Anleitung ANLEITUNG_SPIELTEST.md). |
+| QA-04 | 🧩 Implementiert · Abnahme offen | 4/6 | Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/autochecks.ts`
+- `docs/TESTING.md`
+- `docs/testing/TESTPLAN.md`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/PaperMultiplayerTest.java`
+- `scripts/mod/bridge_multiplayer.mjs`
+- `scripts/mod/bridge_multiplayer_client.mjs`
+- `scripts/mod/lib/multiplayer.mjs`
+- `scripts/mod/test_multiplayer.sh`
+- `scripts/mod/test_multiplayer_client.sh`
+

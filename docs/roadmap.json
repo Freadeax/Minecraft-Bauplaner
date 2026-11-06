@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T21:41:13.586Z",
+  "updatedAt": "2026-11-06T21:44:54.861Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -5517,17 +5517,21 @@
         {
           "path": "tests/unit/mod/mod-releases.test.mjs",
           "note": "Jede angebotene .jar liegt mit gelisteter Größe und SHA-256 in downloads/mod; Auswahl-Logik."
+        },
+        {
+          "path": "scripts/mod/test_multiplayer_client.sh",
+          "note": "Echter Minecraft-26.3-Client mit Mod auf echtem Paper 26.3 mit Plugin und Team-Raum (PaperMultiplayerTest.java)."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "Build, Einzelspieler-Spieltest im echten 26.3-Client und Modpack-Verträglichkeit bestanden; Mehrspieler-Abnahme auf echtem Server durch den Nutzer offen."
+        "note": "06.11.2026: Mod im Mehrspieler auf echtem Paper 26.3 automatisch geprüft (test_multiplayer_client.sh). Offen: eigener Bau auf server.lmnt-gaming.net als Stichprobe."
       },
       "delivery": {
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T21:44:54.861Z",
       "area": "MOD",
       "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
@@ -7893,7 +7897,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T21:17:39.366Z",
+      "updatedAt": "2026-11-06T21:44:54.861Z",
       "area": "QA",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -8208,7 +8212,7 @@
       "title": "Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll",
       "phase": "P3",
       "priority": "P1",
-      "status": "implemented",
+      "status": "verified",
       "owner": "Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“)",
       "dependencies": [
         "COOP-01",
@@ -8238,39 +8242,38 @@
         },
         {
           "id": "COOP-02-S04",
-          "title": "Abnahme auf Philipps Paper-Server mit Mitspielern (TEAMBAU-06).",
-          "done": false
+          "title": "Abnahme TEAMBAU-06 mit echten Spielern automatisch auf echtem Paper-Server (test_multiplayer.sh): Befehle, Aktionsleiste, Umriss, Schutz hinweis/sperren, Baunachweis, Teamkiste, Raum = Serverstand.",
+          "done": true
         }
       ],
       "acceptance": [
         "Plugin verändert die Welt nie; Schutz verhindert höchstens Blockänderungen in fremden Abschnitten und ist abschaltbar.",
         "Ereignisse vom Server tragen die echte Spieleridentität und die Herkunft server."
       ],
-      "next": "Abnahme auf Philipps Server.",
+      "next": "Regressionen bei Plugin-Änderungen mit scripts/mod/test_multiplayer.sh.",
       "blockers": [],
       "evidence": [
         {
           "path": "scripts/mod/bridge_paperteam.mjs",
           "note": "Baustag auf echtem Paper-Server, Neustart, Ausfuhr, Vergleich mit teamView."
+        },
+        {
+          "path": "scripts/mod/test_multiplayer.sh",
+          "note": "Mehrspieler-Abnahme mit echten Spielern (Bots) auf echtem Paper 1.21.11 und 26.1.2 mit Team-Raum (bridge_multiplayer.mjs, Prüfstand lib/multiplayer.mjs)."
         }
       ],
       "verification": {
-        "state": "pending",
-        "note": "Servertest mit Konsolenbefehlen auf drei Paper-Versionen bestanden; Aktionsleiste, Partikel und Schutz brauchen echte Spieler."
+        "state": "passed",
+        "note": "06.11.2026: test_multiplayer.sh auf Paper 1.21.11 und 26.1.2 mit drei echten Spielern (Bots) bestanden; Philipp nur noch Stichprobe."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T21:44:54.861Z",
       "area": "TEAM",
       "thread": "Mehrspieler und Server automatisch abnehmen",
-      "philipp": [
-        {
-          "kind": "server",
-          "text": "Plugin auf deinem Paper-Server, TEAMBAU-06 mit Mitspielern."
-        }
-      ],
+      "philipp": [],
       "orphans": []
     },
     {
@@ -8338,17 +8341,21 @@
         {
           "path": "tests/unit/team/team-link.test.mjs",
           "note": "Format team-link, Lesen der Mod-Antworten, Fehlercodes."
+        },
+        {
+          "path": "scripts/mod/test_multiplayer_client.sh",
+          "note": "Echter Minecraft-26.3-Client mit Mod auf echtem Paper 26.3 mit Plugin und Team-Raum (PaperMultiplayerTest.java)."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "Spieltests Fabric und NeoForge 26.3, Paper-26.3-Servertest mit eingeschaltetem Kanal und Browsertest bestanden; der Kanal selbst mit echtem Client gegen echtes Paper-Plugin ist nur auf Philipps Server prüfbar (TEAMBAU-09)."
+        "note": "06.11.2026: Teamkanal mit echtem 26.3-Client und echtem Paper-Plugin automatisch geprüft (Nehmen über die Mod, Stand vom Server, Baunachweis). Offen für Philipp: Abschnitte in Inhaberfarbe im Hologramm mit Teamplan."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T21:44:54.861Z",
       "area": "TEAM",
       "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
@@ -8411,17 +8418,25 @@
         {
           "path": "tests/unit/team/team.test.mjs",
           "note": "Faltung Baunachweis und Lagerkisten."
+        },
+        {
+          "path": "scripts/mod/test_multiplayer.sh",
+          "note": "Mehrspieler-Abnahme mit echten Spielern (Bots) auf echtem Paper 1.21.11 und 26.1.2 mit Team-Raum (bridge_multiplayer.mjs, Prüfstand lib/multiplayer.mjs)."
+        },
+        {
+          "path": "scripts/mod/test_multiplayer_client.sh",
+          "note": "Echter Minecraft-26.3-Client mit Mod auf echtem Paper 26.3 mit Plugin und Team-Raum (PaperMultiplayerTest.java)."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "Servertest auf fünf Paper-Versionen und Browsertest bestanden; Zählen beim Bauen und Schließen braucht echte Spieler."
+        "note": "06.11.2026: Baunachweis je Spieler, nachweis aus, Teamkiste mit Shulkerinhalt mit echten Spielern geprüft (test_multiplayer.sh). Offen: „Bestand ins Baustellen-Lager übernehmen“ im Planer als Stichprobe."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T21:44:54.861Z",
       "area": "TEAM",
       "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
@@ -9656,13 +9671,13 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T21:44:54.861Z",
       "area": "PLUGIN",
       "thread": "Mehrspieler und Server automatisch abnehmen",
       "orphans": [],
       "id": "LINK-01",
       "title": "Plugin richtet sich selbst ein und lässt sich per Klick koppeln (link.json, Server-ID, Kopplung nur OP/Bauleitung über den Teamkanal)",
-      "status": "implemented",
+      "status": "verified",
       "dependencies": [
         "COOP-02"
       ],
@@ -9693,8 +9708,8 @@
         },
         {
           "id": "LINK-01-S04",
-          "title": "Abnahme bei Philipp auf seinem Paper-Server (LINK-01 im Testplan).",
-          "done": false
+          "title": "Abnahme LINK-01 automatisch: Kopplung per Klick als OP, Nicht-OP abgewiesen, Einstellung über den Team-Raum wirkt auf echte Spieler (test_multiplayer.sh), Mod-Übergabe mit echtem Client (test_multiplayer_client.sh).",
+          "done": true
         }
       ],
       "acceptance": [
@@ -9709,19 +9724,22 @@
         {
           "path": "mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/LinkCoreTest.java",
           "note": "Regeln, Prüfvektor, Obergrenze."
+        },
+        {
+          "path": "scripts/mod/test_multiplayer.sh",
+          "note": "Mehrspieler-Abnahme mit echten Spielern (Bots) auf echtem Paper 1.21.11 und 26.1.2 mit Team-Raum (bridge_multiplayer.mjs, Prüfstand lib/multiplayer.mjs)."
+        },
+        {
+          "path": "scripts/mod/test_multiplayer_client.sh",
+          "note": "Echter Minecraft-26.3-Client mit Mod auf echtem Paper 26.3 mit Plugin und Team-Raum (PaperMultiplayerTest.java)."
         }
       ],
       "verification": {
-        "state": "pending",
-        "note": "Automatisch und auf echtem Paper geprüft; Abnahme auf Philipps Server offen."
+        "state": "passed",
+        "note": "06.11.2026: echter Paper-Server mit echten Spielern und echtem 26.3-Client bestanden; Philipp nur noch Stichprobe."
       },
-      "next": "Abnahme LINK-01 auf Philipps Server.",
-      "philipp": [
-        {
-          "kind": "server",
-          "text": "Plugin 0.12.0 einspielen, als OP mit Mod beitreten, J → „Teambau erlauben“, im Planer #/mod „Server koppeln“."
-        }
-      ]
+      "next": "Regressionen mit test_bridge_paper_link.sh und test_multiplayer.sh.",
+      "philipp": []
     },
     {
       "phase": "P4",
@@ -9906,7 +9924,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T21:44:54.861Z",
       "area": "TEAM",
       "thread": "Mehrspieler und Server automatisch abnehmen",
       "orphans": [],
@@ -9961,11 +9979,15 @@
         {
           "path": "tests/e2e/server-link.e2e.mjs",
           "note": "Kopplung per Klick, Server koppeln, signierte Einstellung, 1400/390 px ohne Querscrollen (04.11.2026)."
+        },
+        {
+          "path": "scripts/mod/test_multiplayer.sh",
+          "note": "Mehrspieler-Abnahme mit echten Spielern (Bots) auf echtem Paper 1.21.11 und 26.1.2 mit Team-Raum (bridge_multiplayer.mjs, Prüfstand lib/multiplayer.mjs)."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "Browsertests grün; Abnahme offen."
+        "note": "06.11.2026: Server über den Team-Raum eingestellt, Wirkung auf echte Spieler geprüft (test_multiplayer.sh); Planer-Oberfläche per Browsertest server-link.e2e."
       },
       "next": "Abnahme durch Philipp.",
       "philipp": [
@@ -9985,7 +10007,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T21:44:54.861Z",
       "area": "TEAM",
       "thread": "Mehrspieler und Server automatisch abnehmen",
       "orphans": [],
@@ -10052,11 +10074,15 @@
         {
           "path": "tests/e2e/server-link.e2e.mjs",
           "note": "Mit TEAM_ROOM_URL gegen https://bauplaner-team.team-room.workers.dev: iPad-Weg Ende-zu-Ende grün (04.11.2026)."
+        },
+        {
+          "path": "scripts/mod/test_multiplayer.sh",
+          "note": "Mehrspieler-Abnahme mit echten Spielern (Bots) auf echtem Paper 1.21.11 und 26.1.2 mit Team-Raum (bridge_multiplayer.mjs, Prüfstand lib/multiplayer.mjs)."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "Automatisch und gegen wrangler dev geprüft; Abnahme LINK-04 (Testplan) offen."
+        "note": "06.11.2026: Steuernachricht über den Team-Raum ohne Mod (iPad-Weg) mit Wirkung auf echte Spieler geprüft (test_multiplayer.sh)."
       },
       "next": "Abnahme vom iPad (Testplan LINK-04).",
       "philipp": [
@@ -11198,7 +11224,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T13:02:57.153Z",
+      "updatedAt": "2026-11-06T21:44:54.861Z",
       "area": "MOD",
       "thread": "Alle Systeme online verbinden",
       "orphans": [],
@@ -11301,12 +11327,20 @@
         {
           "path": "tests/unit/team/team-room.test.mjs",
           "note": "headerFingerprint folgt Abschnitten/Lage, nicht Zeit/Mitgliedern."
+        },
+        {
+          "path": "scripts/mod/test_multiplayer.sh",
+          "note": "Mehrspieler-Abnahme mit echten Spielern (Bots) auf echtem Paper 1.21.11 und 26.1.2 mit Team-Raum (bridge_multiplayer.mjs, Prüfstand lib/multiplayer.mjs)."
+        },
+        {
+          "path": "scripts/mod/test_multiplayer_client.sh",
+          "note": "Echter Minecraft-26.3-Client mit Mod auf echtem Paper 26.3 mit Plugin und Team-Raum (PaperMultiplayerTest.java)."
         }
       ],
       "next": "Abnahme LINK-12 und LINK-13 durch Philipp auf seinem Server; Weltplan/Karten im eigenen Thread.",
       "verification": {
         "state": "pending",
-        "note": "Einheitstests (TeamTest, RoomLinkTest, LiveLinkTest, team-room), Browsertests team-room/team/game-check, echter Paper 1.21.11 mit lokalem Team-Raum (link.room) grün; Abnahme durch Philipp offen."
+        "note": "06.11.2026: Raum-Übergabe durch die Mod an das Plugin mit echtem 26.3-Client und mit Bots (Nicht-OP abgewiesen) automatisch geprüft."
       },
       "philipp": [
         {
@@ -25480,6 +25514,99 @@
           "done": 3,
           "total": 3,
           "next": "Rest von KARTE-08 auf Philipps Server-Karte (Link speichern, Sets ansehen, Markerdatei laden)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T21:44:54.861Z",
+      "kind": "progress",
+      "items": [
+        "COOP-02",
+        "COOP-03",
+        "COOP-04",
+        "LINK-01",
+        "LINK-04",
+        "LINK-05",
+        "LINK-11",
+        "GAME-02",
+        "QA-04"
+      ],
+      "summary": "Block 4 Mehrspieler und Server automatisch abnehmen: Prüfstand scripts/mod/lib/multiplayer.mjs (Paper + echte Spieler als Bots + Team-Raum), test_multiplayer.sh (TEAMBAU-06, LINK-01/04/12 auf Paper 1.21.11 und 26.1.2), test_multiplayer_client.sh (echter 26.3-Client mit Mod auf Paper 26.3); COOP-02 und LINK-01 geprüft, AUTO_CHECKS für TEAMBAU-06, LINK-12, LINK-01, LINK-04. Grenzen: Hologramm mit Teamplan, Baustellen-Lager-Übernahme im Planer, echte Mitspieler auf Philipps Server bleiben Stichprobe.",
+      "files": [
+        "apps/web/src/testing/autochecks.ts",
+        "docs/TESTING.md",
+        "docs/testing/TESTPLAN.md",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java",
+        "mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/PaperMultiplayerTest.java",
+        "scripts/mod/bridge_multiplayer.mjs",
+        "scripts/mod/bridge_multiplayer_client.mjs",
+        "scripts/mod/lib/multiplayer.mjs",
+        "scripts/mod/test_multiplayer.sh",
+        "scripts/mod/test_multiplayer_client.sh"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-02",
+          "status": "verified",
+          "done": 4,
+          "total": 4,
+          "next": "Regressionen bei Plugin-Änderungen mit scripts/mod/test_multiplayer.sh."
+        },
+        {
+          "id": "COOP-03",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Abnahme TEAMBAU-09 auf Philipps Server mit Mod 0.10.0 und Paper-Plugin mit Teamkanal; Lagerkisten (COOP-04) über TeamChannel.decorate/broadcastStore."
+        },
+        {
+          "id": "COOP-04",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung in COOP-05 (geprüfte Lagerkisten, docs/architecture/LAGERKISTEN.md)."
+        },
+        {
+          "id": "LINK-01",
+          "status": "verified",
+          "done": 4,
+          "total": 4,
+          "next": "Regressionen mit test_bridge_paper_link.sh und test_multiplayer.sh."
+        },
+        {
+          "id": "LINK-04",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme durch Philipp."
+        },
+        {
+          "id": "LINK-05",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Abnahme vom iPad (Testplan LINK-04)."
+        },
+        {
+          "id": "LINK-11",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme LINK-12 und LINK-13 durch Philipp auf seinem Server; Weltplan/Karten im eigenen Thread."
+        },
+        {
+          "id": "GAME-02",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Philipp testet die .jar aus /mnt/project-files/mod/ auf server.lmnt-gaming.net und meldet Ergebnis/Fehler (Anleitung ANLEITUNG_SPIELTEST.md)."
+        },
+        {
+          "id": "QA-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 6,
+          "next": "Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist."
         }
       ]
     }

@@ -42,6 +42,34 @@ export const AUTO_CHECKS: readonly AutoCheck[] = [
     command: 'scripts/mod/test_bridge_paper_world.sh && scripts/mod/test_bridge_paper_mapfallback.sh',
     evidence: '06.11.2026, Paper 26.3 Build 244 + BlueMap 5.29, Paper 1.21.4 Build 232 + Dynmap 3.7-beta-8, Plugin 0.23.0 aus dem Quellstand, Team-Raum per wrangler dev: beide Wege grün nach den Korrekturen in liveMapExport.ts.',
   },
+  // ── Block 4: Mehrspieler und Server (echter Paper-Server, echte Spieler als Bots, echter 26.3-Client, Team-Raum)
+  {
+    caseId: 'TEAMBAU-06', scope: 'teil',
+    covers: 'Server bekommt das Team über den Team-Raum ohne Datei; Mitspieler mit /bp abschnitte, nehmen, zeigen (Partikelumriss), fertig, notiz; Aktionsleiste „Abschnitt 2 · Rohbau · in Arbeit · Anna“; Hinweis bzw. Sperre im fremden Abschnitt; Baunachweis zählt nur in Teamabschnitten, „nachweis aus“ blendet aus; Teamkiste markiert, Einlegen mit gefüllter Shulkerkiste und Entnehmen gebucht; Planer-Faltung des Raums = Serverstand. Mit echtem 26.3-Client: /bauplaner team nehmen über den Teamkanal, Stand vom Server in der Mod.',
+    remaining: '/bauplaner team mein und material mit eingeblendetem Teamplan im Hologramm; „Bestand ins Baustellen-Lager übernehmen“ (Strg+Z) im Planer; Stichprobe mit echten Mitspielern auf Philipps Server.',
+    command: 'scripts/mod/test_multiplayer.sh && scripts/mod/test_multiplayer_client.sh',
+    evidence: '06.11.2026, Plugin/Mod 0.23.0: Paper 1.21.11 (Build 132) und 26.1.2 (Build 74) mit drei Bot-Spielern, Paper 26.3 (Build 244) mit echtem Fabric-Client, Team-Raum wrangler dev.',
+  },
+  {
+    caseId: 'LINK-12', scope: 'teil',
+    covers: 'Paper-Server ohne Team-Raum; Bauleitung verbindet ihr Spiel („Mein Spiel verbinden“ über 127.0.0.1 mit Serverschlüssel), erlaubt den Teamkanal, die Mod übergibt den Raum: „Server-Plugin: Mit dem Team-Raum … verbunden“ ohne Herunterladen, Kopieren oder Eintippen; ein Spieler ohne OP kann den Raum nicht übergeben; Abschnittsschutz und Lagerkisten greifen danach; Neustart verbindet sich selbst wieder.',
+    remaining: 'Zeile „Server-Plugin: ● im Team-Raum“ im Planer und Umbenennen/Verschieben eines Abschnitts im echten Planer (Browsertest team-room.e2e deckt die Planerseite gegen den Mod-Ersatz).',
+    command: 'scripts/mod/test_multiplayer_client.sh && scripts/mod/test_multiplayer.sh',
+    evidence: '06.11.2026, Mod/Plugin 0.23.0: echter Minecraft-26.3-Client (Fabric, weston) auf Paper 26.3 (Build 244); Bots auf Paper 1.21.11 und 26.1.2; Team-Raum wrangler dev.',
+  },
+  {
+    caseId: 'LINK-01', scope: 'voll',
+    covers: 'Plugin richtet sich selbst ein; Bauleitung als OP koppelt per Klick (link.claim), Nicht-OP abgewiesen; „Bauen in fremden Abschnitten: sperren“ als signierte Steuernachricht übernommen, config.yml geändert, das Setzen und Abbauen eines Mitspielers im fremden Abschnitt wird danach verhindert.',
+    command: 'scripts/mod/test_multiplayer.sh && scripts/mod/test_bridge_paper_link.sh',
+    evidence: '06.11.2026, Plugin 0.23.0: Paper 1.21.11 und 26.1.2 mit echten Spielern (Bots), Team-Raum wrangler dev; Planer-Oberfläche „Server koppeln“ per Browsertest server-link.e2e.',
+  },
+  {
+    caseId: 'LINK-04', scope: 'teil',
+    covers: 'Steuernachricht über den Team-Raum ohne Mod (der iPad-Weg, POST /control): Einstellung geändert, Wirkung auf echte Spieler im Spiel; Wiederholung und falscher Schlüssel abgewiesen.',
+    remaining: 'Freigabe-Link auf einem echten iPad öffnen und das Gerät am PC entfernen (Browsertest server-link.e2e emuliert iPad 820 px).',
+    command: 'scripts/mod/test_multiplayer.sh && BAUPLANER_ROOM=http://127.0.0.1:8787 scripts/mod/test_bridge_paper_link.sh',
+    evidence: '06.11.2026, Plugin 0.23.0: Paper 1.21.11 und 26.1.2, Team-Raum wrangler dev.',
+  },
 ];
 
 export function autoCheckOf(caseId: string): AutoCheck | undefined {
