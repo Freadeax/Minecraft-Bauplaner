@@ -55,9 +55,28 @@ public record TeamState(Source source, String teamId, String name, String dimens
 
     public record Note(String id, String tag, String text, String by, String section, int[] pos) {}
 
-    /** A marked chest at the build site, counted by the plugin (COOP-04). */
+    /**
+     * A marked chest at the build site, counted by the plugin (COOP-04). COOP-05 S04: {@code origin} says where the
+     * stock comes from – "server" (the plugin's count, checked) or "spiel" (what a player's mod saw, unverified,
+     * via the team room); null when nobody counted yet. {@code stockAt}/{@code stockBy}: when and by whom.
+     */
     public record Store(String id, String name, String dimension, int[] pos, int[] pos2, String section, String purpose, String status, String checkedAt,
-            List<Item> items, boolean more) {}
+            List<Item> items, boolean more, String origin, String stockAt, String stockBy) {
+        public Store(String id, String name, String dimension, int[] pos, int[] pos2, String section, String purpose, String status, String checkedAt,
+                List<Item> items, boolean more) {
+            this(id, name, dimension, pos, pos2, section, purpose, status, checkedAt, items, more, items.isEmpty() ? null : "server", checkedAt, null);
+        }
+
+        /** True when the stock is only what a player saw (no plugin count). */
+        public boolean unverified() { return "spiel".equals(origin); }
+
+        /** How many of an item the chest holds by its stock. */
+        public int count(String item) {
+            int n = 0;
+            for (Item i : items) if (i.item().equals(item)) n += i.count();
+            return n;
+        }
+    }
 
     public record Item(String item, int count) {}
 
@@ -134,7 +153,10 @@ public record TeamState(Source source, String teamId, String name, String dimens
                 point(Json.arr(m.get("pos"), "Kistenposition")), m.get("pos2") == null ? null : point(Json.arr(m.get("pos2"), "Kistenposition 2")),
                 m.get("section") == null ? null : Json.str(m.get("section"), "Abschnitt", 64),
                 m.get("purpose") == null ? "vorrat" : Json.str(m.get("purpose"), "Zweck", 20), m.get("status") == null ? "ungeprueft" : Json.str(m.get("status"), "Prüfstand", 20),
-                m.get("checkedAt") instanceof String s && s.length() <= 40 ? s : null, List.copyOf(items), Boolean.TRUE.equals(m.get("more")));
+                m.get("checkedAt") instanceof String s && s.length() <= 40 ? s : null, List.copyOf(items), Boolean.TRUE.equals(m.get("more")),
+                "spiel".equals(m.get("origin")) || "server".equals(m.get("origin")) ? (String) m.get("origin") : items.isEmpty() ? null : "server",
+                m.get("stockAt") instanceof String a && a.length() <= 40 ? a : m.get("checkedAt") instanceof String c && c.length() <= 40 ? c : null,
+                m.get("stockBy") instanceof String b && b.length() <= 60 ? b : null);
     }
 
     /** Same state with one chest replaced or added (after a {@code store} broadcast). */

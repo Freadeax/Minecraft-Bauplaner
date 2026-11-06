@@ -26,6 +26,8 @@ public final class MaterialScreen extends Screen {
     private boolean onlyOpen = true;
     /** Carried items incl. shulker boxes and bundles, refreshed once a second. */
     private java.util.Map<Item, Integer> carried = java.util.Map.of();
+    /** COOP-05 S04: stock in the team's storage chests (plugin count or, via the team room, last seen), per block id. */
+    private java.util.Map<String, io.github.freadeax.bauplaner.mod.team.StoreStock.Amount> stock = java.util.Map.of();
     private int ticks;
 
     MaterialScreen(Hologram hologram, Screen parent) {
@@ -38,6 +40,7 @@ public final class MaterialScreen extends Screen {
     protected void init() {
         lines = hologram.active() ? Materials.of(hologram.check(), hologram.filter()) : List.of();
         if (minecraft.player != null) carried = McCompat.carried(minecraft.player);
+        refreshStock();
         if (onlyOpen) lines = lines.stream().filter(l -> l.open() > 0).toList();
         int pages = Math.max(1, (lines.size() + ROWS - 1) / ROWS);
         page = Math.min(page, pages - 1);
@@ -55,7 +58,14 @@ public final class MaterialScreen extends Screen {
     @Override
     public void tick() {
         super.tick();
-        if (++ticks % 20 == 0 && minecraft.player != null) carried = McCompat.carried(minecraft.player);
+        if (++ticks % 20 == 0 && minecraft.player != null) { carried = McCompat.carried(minecraft.player); refreshStock(); }
+    }
+
+    private void refreshStock() {
+        var client = HologramClient.current();
+        var team = client == null ? null : client.team().state();
+        stock = team == null || !hologram.active() ? java.util.Map.of()
+                : io.github.freadeax.bauplaner.mod.team.StoreStock.totals(team.stores(), hologram.check().placement().dimension());
     }
 
     @Override
@@ -81,6 +91,7 @@ public final class MaterialScreen extends Screen {
         g.text(font, "offen", left + 210, top, 0xFFB0B0B0, true);
         g.text(font, "Inventar", left + 250, top, 0xFFB0B0B0, true);
         g.text(font, "holen", left + 305, top, 0xFFB0B0B0, true);
+        if (!stock.isEmpty()) g.text(font, "Lager", left + 345, top, 0xFFB0B0B0, true);
         if (lines.isEmpty()) g.text(font, onlyOpen ? "Alles gebaut – nichts mehr offen." : "Keine Blöcke.", left + 22, top + row, 0xFF6BE07B, true);
         for (int k = 0; k < ROWS; k++) {
             int i = page * ROWS + k;
@@ -97,9 +108,14 @@ public final class MaterialScreen extends Screen {
             g.text(font, Integer.toString(l.open()), left + 210, y, done, true);
             g.text(font, Integer.toString(have), left + 250, y, 0xFFB0B0B0, true);
             g.text(font, need == 0 ? "✓" : Integer.toString(need), left + 305, y, need == 0 ? 0xFF6BE07B : 0xFFFFD54A, true);
+            if (!stock.isEmpty()) {
+                var a = stock.getOrDefault(l.id(), io.github.freadeax.bauplaner.mod.team.StoreStock.Amount.NONE);
+                g.text(font, a.label(), left + 345, y, a.count() == 0 ? 0xFF808080 : a.count() >= need ? 0xFF6BE07B : 0xFFFFD54A, true);
+            }
         }
         int pages = Math.max(1, (lines.size() + ROWS - 1) / ROWS);
-        g.text(font, "Seite " + (page + 1) + " / " + pages + "  ·  Inventar zählt Shulkerkisten und Bündel mit", left, height - 44, 0xFF808080, true);
+        boolean seen = stock.values().stream().anyMatch(io.github.freadeax.bauplaner.mod.team.StoreStock.Amount::unverified);
+        g.text(font, "Seite " + (page + 1) + " / " + pages + "  ·  Inventar zählt Shulkerkisten und Bündel mit" + (stock.isEmpty() ? "" : "  ·  Lager = Team-Lagerkisten" + (seen ? ", * nur im Spiel gesehen" : "")), left, height - 44, 0xFF808080, true);
     }
 
     static Item item(String id) {

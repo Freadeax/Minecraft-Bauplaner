@@ -21,6 +21,8 @@ import java.util.TreeMap;
  * <li>{@code store.check} is the server's comparison of a count with the expected content: {@code geprueft},
  * {@code abweichend} (with the unexplained difference, which adds up until a seal) or {@code fehlt}.</li>
  * <li>{@code store.seal} accepts the current content: open differences are closed.</li>
+ * <li>{@code store.seen} (COOP-10) is what a player's mod saw in the chest – unverified, only the newest is kept;
+ * it never changes counts, expected content or the check status (COOP-05 S04: shown in the mod via the team room).</li>
  * </ul>
  */
 final class StoreIndex {
@@ -50,6 +52,10 @@ final class StoreIndex {
         /** Unexplained difference since the last seal (sum of the differences of all deviating checks). */
         final TreeMap<String, Long> deviation = new TreeMap<>();
         String sealedBy, sealedAt;
+        /** COOP-10: newest content a player's mod saw (store.seen), unverified; null before the first sighting. */
+        TreeMap<String, Long> seen;
+        String seenAt, seenBy;
+        boolean seenPartial;
         /** In/out per member (player moves) and for hoppers ({@code "trichter"}). */
         final Map<String, TreeMap<String, Long>> in = new LinkedHashMap<>(), out = new LinkedHashMap<>();
         final Deque<Move> recent = new ArrayDeque<>();
@@ -142,6 +148,11 @@ final class StoreIndex {
                 if (st.equals("abweichend")) StoreLedger.read(e.getAsJsonArray("diff"), "delta").forEach((k, v) -> StoreLedger.add(s.deviation, k, v));
                 // A deviation stays until a seal; a later clean check does not hide it.
                 s.status = st.equals("geprueft") && !s.deviation.isEmpty() ? "abweichend" : st;
+            }
+            case "store.seen" -> {
+                s.seen = StoreLedger.read(e.getAsJsonArray("items"), "count");
+                s.seenPartial = e.has("more") && e.get("more").getAsBoolean();
+                s.seenAt = at; s.seenBy = by;
             }
             case "store.seal" -> {
                 s.deviation.clear();

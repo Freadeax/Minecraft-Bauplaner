@@ -749,13 +749,14 @@ public final class TeamClient {
         TeamState t = need();
         Minecraft mc = Minecraft.getInstance();
         if (t == null || mc.player == null) return 0;
-        if (t.stores().isEmpty()) return said(t.source() == TeamState.Source.SERVER ? "Keine markierten Lagerkisten auf dem Server." : "Lagerkisten kommen vom Server-Plugin (Teamkanal).");
+        if (t.stores().isEmpty()) return said(t.source() == TeamState.Source.SERVER ? "Keine markierten Lagerkisten auf dem Server." : "Noch keine markierten Lagerkisten im Team-Raum. Kisten markiert die Bauleitung mit dem Server-Plugin (/bp lager markieren).");
         say("Lagerkisten (" + t.stores().size() + "):");
         for (TeamState.Store s : t.stores()) {
             int total = s.items().stream().mapToInt(TeamState.Item::count).sum();
             String top = String.join(", ", s.items().stream().sorted(java.util.Comparator.comparingInt(TeamState.Item::count).reversed()).limit(3)
                     .map(i -> i.count() + " " + McCompat.blockName(io.github.freadeax.bauplaner.mod.BlockState.parse(i.item()))).toList());
-            McCompat.chat(mc, Component.literal("  " + s.name() + " (" + s.purpose() + ") @ " + s.pos()[0] + " " + s.pos()[1] + " " + s.pos()[2] + " · " + s.status() + " · " + total + " Items" + (top.isEmpty() ? "" : ": " + top) + (s.more() ? " …" : ""))
+            McCompat.chat(mc, Component.literal("  " + s.name() + " (" + s.purpose() + ") @ " + s.pos()[0] + " " + s.pos()[1] + " " + s.pos()[2] + " · " + s.status() + " · " + total + " Items" + (top.isEmpty() ? "" : ": " + top) + (s.more() ? " …" : "")
+                    + " · " + io.github.freadeax.bauplaner.mod.team.StoreStock.source(s, java.time.Instant.now()))
                     .withColor(storeColor(s.status()) & 0xFFFFFF));
         }
         return t.stores().size();

@@ -2,6 +2,24 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.18.0 – 2026-11-06
+
+**Build guides: symmetry and curves / Bauhilfen: Symmetrie und Kurven**
+
+- New build guide symmetry: `/bauplaner symmetrie hier` (or `kante`, `x`, `z`, `drehen 2|4`, `aus`) sets a mirror or rotation axis where you stand. Every block you place then shows its mirrored and rotated copies as ghost blocks – doors, stairs, chests, rails and logs turn correctly, exactly like the symmetry tool in the planner. Breaking a placed source block removes its copies.
+- New build guide curves: `/bauplaner kurve punkt` adds control points (also on a key, unbound by default), the mod shows a smooth curve as a pipe, path or wall (`profil`, `breite`, `hoehe`, `radius`, `geschlossen`, `glatt`). The cells are the same as in the planner's curve tool.
+- Ghost blocks show progress above the hotbar; `/bauplaner bauhilfe alsplan [name]` saves the guide as a plan and shows it as hologram, so section, material list and placement helper work with it. Everything stays in your game – nothing is sent to the server.
+- Material list (plan menu): new column “Lager” (storage) with the stock of the team's storage chests from the team room. Counts from the optional server plugin are checked; content only seen in the game is marked with *. `/bauplaner team lager` also names the source and age of each count.
+- Optional server plugin: its storage records also keep the chest content last seen in the game (same rules as planner and mod).
+- Server plugin: faster with several teams (team state is kept per team instead of rebuilt for every request).
+
+- Neu Bauhilfe Symmetrie: `/bauplaner symmetrie hier` (oder `kante`, `x`, `z`, `drehen 2|4`, `aus`) setzt eine Spiegel- oder Drehachse an deiner Stelle. Jeder gesetzte Block zeigt dann seine gespiegelten und gedrehten Kopien als Geisterblöcke – Türen, Treppen, Truhen, Schienen und Stämme drehen richtig mit, genau wie das Symmetrie-Werkzeug im Planer. Wird ein gesetzter Ausgangsblock abgebaut, verschwinden seine Kopien.
+- Neu Bauhilfe Kurven: `/bauplaner kurve punkt` setzt Kontrollpunkte (auch per Taste, standardmäßig nicht belegt), die Mod zeigt eine glatte Kurve als Rohr, Weg oder Mauer (`profil`, `breite`, `hoehe`, `radius`, `geschlossen`, `glatt`). Die Zellen sind dieselben wie im Kurvenwerkzeug des Planers.
+- Geisterblöcke zeigen den Fortschritt über der Schnellleiste; `/bauplaner bauhilfe alsplan [name]` speichert die Bauhilfe als Plan und blendet sie als Hologramm ein, damit Abschnitte, Materialliste und Platzierhilfe damit arbeiten. Alles bleibt in deinem Spiel – nichts geht an den Server.
+- Materialliste (Planmenü): neue Spalte „Lager“ mit dem Bestand der Team-Lagerkisten aus dem Team-Raum. Zählungen des freiwilligen Server-Plugins gelten als geprüft; nur im Spiel gesehener Inhalt ist mit * markiert. `/bauplaner team lager` nennt zusätzlich Quelle und Alter jeder Zählung.
+- Freiwilliges Server-Plugin: seine Lagerdaten führen je Kiste auch den zuletzt im Spiel gesehenen Inhalt (gleiche Regeln wie Planer und Mod).
+- Server-Plugin: schneller mit mehreren Teams (der Teamstand wird je Team vorgehalten statt bei jeder Anfrage neu aufgebaut).
+
 ## 0.17.2 – 2026-11-05
 
 **Plan menu fits small windows / Planmenü passt in kleine Fenster**

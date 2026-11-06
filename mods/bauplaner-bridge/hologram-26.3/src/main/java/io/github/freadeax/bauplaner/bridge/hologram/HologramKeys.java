@@ -41,11 +41,17 @@ public final class HologramKeys {
     private final KeyMapping xray = key("xray", 86);
     /** Unbound by default (every numpad key near it is taken in Philipp's modpack); menu J and command work too. */
     private final KeyMapping guard = key("guard", InputConstants.UNKNOWN.getValue());
+    /** EDIT-04 build guides, unbound by default: curve point where a block would go, symmetry axis on the looked-at block. */
+    private final KeyMapping curvePoint = key("curve_point", InputConstants.UNKNOWN.getValue());
+    private final KeyMapping symmetryAxis = key("symmetry_axis", InputConstants.UNKNOWN.getValue());
+    private GuideClient guides;
     private final PlacementAssist assist;
 
     public HologramKeys(Hologram hologram, PlacementAssist assist) { this.hologram = hologram; this.assist = assist; }
 
     public java.util.List<KeyMapping> all() { return java.util.List.copyOf(all); }
+
+    void guides(GuideClient g) { guides = g; }
 
     private KeyMapping key(String name, int code) {
         KeyMapping k = new KeyMapping("key.bauplaner_bridge." + name, InputConstants.Type.KEYBOARD, code, CATEGORY);
@@ -81,6 +87,10 @@ public final class HologramKeys {
         while (section.consumeClick()) if (active) overlay(mc, hologram.stepSection(1));
         while (xray.consumeClick()) { hologram.toggleXray(); overlay(mc, hologram.xray() ? "Röntgensicht an: offene Blöcke auch durch Wände" : "Röntgensicht aus"); }
         while (guard.consumeClick()) { hologram.setGuard(hologram.guard().next()); overlay(mc, "Platzierhilfe: " + hologram.guard().label); }
+        while (curvePoint.consumeClick()) if (guides != null) {
+            try { overlay(mc, guides.addPoint(mc)); } catch (IllegalArgumentException e) { overlay(mc, e.getMessage()); }
+        }
+        while (symmetryAxis.consumeClick()) if (guides != null) overlay(mc, guides.axisHere(mc, false));
         while (here.consumeClick()) if (active) { hologram.moveTo(McCompat.targetBlock(mc)); overlay(mc, "Plan zum angeschauten Block verschoben"); }
     }
 

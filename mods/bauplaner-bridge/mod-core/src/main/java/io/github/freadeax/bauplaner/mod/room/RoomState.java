@@ -72,27 +72,46 @@ final class RoomState {
             notes.add(j);
         }
         s.add("notes", notes);
-        // Marked chests (store.chest) – without a plugin nobody counts them; the game reports what it sees (store.seen).
+        // COOP-05 S04: marked chests with their stock, as the plugin's team channel sends them (StorageModule.storeJson):
+        // section, purpose, check status and the plugin's last count. Without a plugin nobody counts, so the newest
+        // content a player's mod saw (store.seen, unverified) stands in; "origin" says which one it is.
         JsonArray stores = new JsonArray();
-        for (var e : v.chests.entrySet()) {
+        for (StoreIndex.Store st : v.stores.stores.values()) {
+            if (st.removed || st.pos == null) continue;
             if (stores.size() >= 200) break;
-            TeamLog.Chest c = e.getValue();
-            JsonObject j = new JsonObject();
-            j.addProperty("id", e.getKey());
-            j.addProperty("name", c.name == null ? "Lager" : c.name.length() > 60 ? c.name.substring(0, 60) : c.name);
-            if (c.dimension != null) j.addProperty("dimension", c.dimension);
-            JsonArray a = new JsonArray(); a.add(c.x); a.add(c.y); a.add(c.z); j.add("pos", a);
-            JsonArray items = new JsonArray();
-            for (var it : c.items.entrySet()) {
-                if (items.size() >= 64) break;
-                JsonObject i = new JsonObject(); i.addProperty("item", it.getKey()); i.addProperty("count", Math.min(it.getValue(), 1_000_000_000L)); items.add(i);
-            }
-            j.add("items", items);
-            if (c.items.size() > 64) j.addProperty("more", true);
-            stores.add(j);
+            stores.add(store(st, v));
         }
         s.add("stores", stores);
         s.addProperty("at", java.time.Instant.now().toString());
         return Json.obj(Json.parse(TeamLog.GSON.toJson(s)), "Teamstand");
     }
+
+    /** One chest in the game format (TeamState.store): stock from the plugin's count, else from the newest sighting. */
+    static JsonObject store(StoreIndex.Store st, TeamLog.View v) {
+        JsonObject j = new JsonObject();
+        j.addProperty("id", st.id);
+        j.addProperty("name", st.name == null ? "Lager" : st.name.length() > 60 ? st.name.substring(0, 60) : st.name);
+        if (st.dimension != null) j.addProperty("dimension", st.dimension);
+        j.add("pos", xyz(st.pos));
+        if (st.pos2 != null) j.add("pos2", xyz(st.pos2));
+        if (st.section != null) j.addProperty("section", st.section);
+        j.addProperty("purpose", st.purpose);
+        j.addProperty("status", st.deviating() && !"fehlt".equals(st.status) ? "abweichend" : st.status);
+        if (st.checkedAt != null) j.addProperty("checkedAt", st.checkedAt);
+        boolean counted = st.items != null;
+        java.util.Map<String, Long> items = counted ? st.items : st.seen != null ? st.seen : java.util.Map.of();
+        j.add("items", StoreLedger.json(items));
+        if (StoreLedger.truncated(items) || (counted ? st.partial : st.seenPartial)) j.addProperty("more", true);
+        if (counted) {
+            j.addProperty("origin", "server");
+            if (st.countedAt != null) j.addProperty("stockAt", st.countedAt);
+        } else if (st.seen != null) {
+            j.addProperty("origin", "spiel");
+            if (st.seenAt != null) j.addProperty("stockAt", st.seenAt);
+            if (st.seenBy != null) { String n = v.name(st.seenBy); j.addProperty("stockBy", n.length() > 60 ? n.substring(0, 60) : n); }
+        }
+        return j;
+    }
+
+    private static JsonArray xyz(int[] p) { JsonArray a = new JsonArray(); a.add(p[0]); a.add(p[1]); a.add(p[2]); return a; }
 }

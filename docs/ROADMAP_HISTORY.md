@@ -6978,3 +6978,16 @@ Wegenetze als Landschaftsweg, Bauplätze einebnen mit Kaimauer, Küste im Lagepl
 - `tests/unit/catalog/plan-landscape.test.mjs`
 - `tests/unit/world/terrain-network.test.mjs`
 
+## 2026-11-06T09:35:19.769Z · progress
+
+**Aufgaben:** EDIT-04, COOP-05, LINK-02, GAME-11
+
+Mod 0.18.0: Bauhilfen Symmetrie und Kurven in der Mod (Java-Port gleich den Planer-Prüfvektoren), Lagerstand aus dem Team-Raum im Materialfenster, Plan-Upload aus „Bauen“ mit Ankerwahl, Launcher-Anleitung auf #/mod; Plugin mit Teamstand-Zwischenspeicher aus GFX-03. Geprüft: Unit-Tests, mod-core/Paper-Tests, echte Spieltests Fabric und NeoForge 26.3, alle Browsertests; Bauhilfen im Spiel noch durch Philipp (MOD-18/19).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| EDIT-04 | 🧩 Implementiert · Abnahme offen | 7/8 | Spielprüfung gespiegelter Zustände im Planer (S07) und der Bauhilfen in der Mod (MOD-18/19); Gelände-Werkzeuge auf dem Projektgelände bleiben offen. |
+| COOP-05 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme LAGER-01…09 und LAGER-11 auf Philipps Server. |
+| LINK-02 | 🧩 Implementiert · Abnahme offen | 4/4 | Abnahme LINK-02 und LINK-11. |
+| GAME-11 | 🚧 In Arbeit | 1/4 | Entschieden (Philipp 04.11.): Fabric 26.3 (sein Modpack mit REI) hat Vorrang, danach jeweils die neueste Minecraft-Version nachziehen; keine Matrix älterer Versionen. |
+

@@ -743,6 +743,53 @@
       "releasedAt": "2026-11-05",
       "sourceCommit": "5f24e62b48e6ce1e0dc025c0da326b2ca96e43b2",
       "tested": "Minecraft 26.3 neoforge: echter Spieltest bestanden 05.11.2026 (0.17.2: Planmenü bei 854×480 geprüft)"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.18.0.jar",
+      "modVersion": "0.18.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 544097,
+      "sha256": "2db50e14d2e9860cc76cb05bd268ddce57d3fe115d1ce2c959289ef32d52a9dd",
+      "releasedAt": "2026-11-06",
+      "sourceCommit": "2d8aa4235a13c38ce2d1347977d5c9c7cd8e0b81",
+      "tested": "Echter Spieltest Fabric 26.3 bestanden (Hologramm, Platzierhilfe, Website-Verbindung); Bauhilfen gegen Planer-Prüfvektoren"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.18.0.jar",
+      "modVersion": "0.18.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 540068,
+      "sha256": "059779fb95905f50506755b8f932b6d96718890280375ab4d14f7a4b9be1b874",
+      "releasedAt": "2026-11-06",
+      "sourceCommit": "2d8aa4235a13c38ce2d1347977d5c9c7cd8e0b81",
+      "tested": "Echter Spieltest NeoForge 26.3 bestanden (Hologramm, Platzierhilfe, Website-Verbindung); Bauhilfen gegen Planer-Prüfvektoren"
+    },
+    {
+      "file": "bauplaner-bridge-paper-0.18.0.jar",
+      "modVersion": "0.18.0",
+      "loader": "paper",
+      "minecraft": "26.3",
+      "loaderMin": "1.18",
+      "minecraftVersions": [
+        "1.18.2",
+        "1.20.6",
+        "1.21.4",
+        "1.21.11",
+        "26.3"
+      ],
+      "java": "17",
+      "bytes": 256147,
+      "sha256": "7acb83fa76a536c8589bd05e5678829d3976803afaeb6705b1263e9ad1819b38",
+      "releasedAt": "2026-11-06",
+      "sourceCommit": "2d8aa4235a13c38ce2d1347977d5c9c7cd8e0b81",
+      "tested": "Plugin-Unit-Tests bestanden; Lagerfaltung mit store.seen; Teamstand-Zwischenspeicher (GFX-03)"
     }
   ]
 }

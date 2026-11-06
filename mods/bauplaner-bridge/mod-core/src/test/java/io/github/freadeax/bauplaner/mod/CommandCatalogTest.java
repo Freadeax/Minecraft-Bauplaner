@@ -22,7 +22,10 @@ class CommandCatalogTest {
     @Test
     void catalogCoversClientAndServerAndUsesTheAliasForTheServer() {
         List<String> groups = CommandCatalog.groups();
-        assertEquals(List.of("Status", "Hologramm", "Team", "Server-Team", "Lager", "Nachweis", "Verbindung", "Aufnahme"), groups);
+        assertEquals(List.of("Status", "Hologramm", "Bauhilfen", "Team", "Server-Team", "Lager", "Nachweis", "Verbindung", "Aufnahme"), groups);
+        // EDIT-04: symmetry and curve commands are clickable too (client side, no server).
+        assertTrue(CommandCatalog.all().stream().filter(e -> e.group().equals("Bauhilfen")).allMatch(e -> e.side() == CommandCatalog.Side.CLIENT));
+        assertTrue(CommandCatalog.all().stream().filter(e -> e.group().equals("Bauhilfen")).count() >= 15);
         Set<String> ids = new HashSet<>();
         for (var e : CommandCatalog.all()) {
             assertTrue(ids.add(e.id()), "doppelte ID " + e.id());

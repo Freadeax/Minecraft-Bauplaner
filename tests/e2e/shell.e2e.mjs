@@ -39,6 +39,8 @@ test('Desktop: Hauptnavigation, Seitentitel und Schnellsuche (Strg+K) mit Tastat
     assert.equal(await p.locator('.bottom-nav').isVisible(), false);
     await nav.getByRole('link', { name: 'Bibliothek' }).click();
     await p.waitForURL(/#\/bibliothek$/);
+    // The hash changes before React marks the link; wait for the mark instead of reading it right away.
+    await nav.locator('a[aria-current="page"]', { hasText: 'Bibliothek' }).waitFor({ timeout: 5000 });
     assert.equal(await nav.getByRole('link', { name: 'Bibliothek' }).getAttribute('aria-current'), 'page');
     await p.waitForFunction(() => document.title.startsWith('Bibliothek ·'));
 

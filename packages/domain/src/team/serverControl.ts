@@ -1,3 +1,7 @@
+import { isTurned, turnLabel, turnOf } from '../world/worldmap.js';
+import type { Project } from '../core/types.js';
+import type { LiveHologram } from './liveLink.js';
+
 /**
  * Server link without commands (LINK-01/04, docs/architecture/team/AUTO_LINK.md): the planner pairs once with the
  * Bauplaner plugin on a Paper server and from then on sends signed control messages instead of commands
@@ -184,3 +188,43 @@ export function readDeviceInvite(linkOrSearch: string, now = new Date()): Server
   const room = readServerRoom(r.r);
   return { serverId: id.serverId, name: id.name, owner, key, seq: 0, at: now.toISOString(), ...(room && { room }) };
 }
+
+// ------------------------------------------------------------------ LINK-02 S04: anchor for a plan upload
+
+/**
+ * Where a project's plan stands on the server (its anchor = world block of project 0/0/0), in this order:
+ * the world map (the project's placement), the hologram in the own game (when it shows this project), or
+ * nothing – then the plan lies on the server without an anchor and `/bp anker hier` sets it later.
+ * The plugin keeps plans only unturned, so a turned placement is never used as anchor.
+ */
+export type AnchorSource = 'karte' | 'hologramm' | 'keiner';
+export interface ServerAnchor {
+  readonly source: AnchorSource;
+  readonly dimension?: string;
+  readonly origin?: readonly [number, number, number];
+  /** Why a placement was skipped (turned on the map or in the game); shown next to the button. */
+  readonly note?: string;
+}
+
+export const ANCHOR_LABEL: Readonly<Record<AnchorSource, string>> = {
+  karte: 'Position von der Weltkarte',
+  hologramm: 'Position deines Hologramms im Spiel',
+  keiner: 'ohne Position (Anker im Spiel setzen)',
+};
+
+/** Picks the anchor for the server copy of a project (pure; see the module comment for the order). */
+export function chooseServerAnchor(project: Pick<Project, 'id' | 'world'>, hologram?: Pick<LiveHologram, 'projectId' | 'placement'> | null): ServerAnchor {
+  const notes: string[] = [];
+  const w = project.world;
+  if (w) {
+    if (!isTurned(w)) return { source: 'karte', dimension: w.dimension, origin: [w.origin[0], w.origin[1], w.origin[2]] };
+    notes.push(`Auf der Weltkarte liegt der Plan ${turnLabel(turnOf(w))}; das Server-Plugin legt Pläne nur ungedreht ab.`);
+  }
+  if (hologram && hologram.projectId === project.id) {
+    const h = hologram.placement;
+    if (!h.turns && !h.mirror) return { source: 'hologramm', dimension: h.dimension, origin: [h.x, h.y, h.z], ...(notes.length && { note: notes.join(' ') }) };
+    notes.push('Dein Hologramm im Spiel ist gedreht oder gespiegelt.');
+  }
+  return { source: 'keiner', ...(notes.length && { note: notes.join(' ') }) };
+}
+

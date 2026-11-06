@@ -33,6 +33,8 @@ public final class HologramClient {
     private final LiveLink link;
     private final MarksRenderer marks;
     private final TeamClient team;
+    /** EDIT-04: symmetry and curves while building by hand (ghosts only). */
+    private final GuideClient guides;
 
     /** @param loader "fabric" or "neoforge" (reported to the website); @param version mod version */
     public HologramClient(Path root, String loader, String version) {
@@ -47,6 +49,8 @@ public final class HologramClient {
         keys = new HologramKeys(hologram, assist);
         hud = new HologramHud(hologram, assist);
         team = new TeamClient(root, hologram, version);
+        guides = new GuideClient(hologram);
+        keys.guides(guides);
         link.team(team);
         current = this;
     }
@@ -60,6 +64,9 @@ public final class HologramClient {
     public TeamClient team() { return team; }
 
     public Hologram hologram() { return hologram; }
+
+    /** EDIT-04 build guides (symmetry, curves). */
+    GuideClient guides() { return guides; }
 
     /** Website link over 127.0.0.1 (MAP-03). */
     public LiveLink link() { return link; }
@@ -77,6 +84,7 @@ public final class HologramClient {
     public <S> List<LiteralArgumentBuilder<S>> commands() {
         List<LiteralArgumentBuilder<S>> list = new java.util.ArrayList<>(HologramCommands.build(hologram, link));
         list.add(team.command());
+        list.addAll(guides.<S>commands());
         // GAME-10: command page; opened on the next tick because the chat screen closes right after the command.
         list.add(LiteralArgumentBuilder.<S>literal("befehle").executes(c -> { openCommands = true; return 1; }));
         return list;
@@ -89,18 +97,18 @@ public final class HologramClient {
 
     /** End of every client tick. */
     public void tick(Minecraft mc) {
-        guarded("tick", () -> { keys.tick(mc); hologram.tick(mc); assist.tick(mc); marks.tick(mc); team.tick(mc); });
+        guarded("tick", () -> { keys.tick(mc); hologram.tick(mc); assist.tick(mc); marks.tick(mc); team.tick(mc); guides.tick(mc); });
         if (openCommands && mc.gui.screen() == null) { openCommands = false; openCommands(mc); }
     }
 
     /** Level render pass: ghost blocks, frames, finder beam. */
     public void render(PoseStack pose, SubmitNodeCollector out, Vec3 camera) {
-        guarded("render", () -> { renderer.submit(pose, out, camera); marks.submit(pose, out, camera); team.render(pose, out, camera); });
+        guarded("render", () -> { renderer.submit(pose, out, camera); marks.submit(pose, out, camera); team.render(pose, out, camera); guides.render(pose, out, camera); });
     }
 
     /** HUD layer: progress panel and the crosshair line of the placement helper. */
     public void hud(GuiGraphicsExtractor g, DeltaTracker delta) {
-        guarded("hud", () -> { hud.extract(g, delta); marks.hud(g, delta); team.hud(g); LinkPrompt.hud(g, this); });
+        guarded("hud", () -> { hud.extract(g, delta); marks.hud(g, delta); team.hud(g); guides.hud(g); LinkPrompt.hud(g, this); });
     }
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger("bauplaner");
@@ -158,6 +166,7 @@ public final class HologramClient {
     public InteractionResult use(Player player, Level level, InteractionHand hand, BlockHitResult hit) {
         InteractionResult[] r = { InteractionResult.PASS };
         guarded("rechtsklick", () -> r[0] = assist.onUse(player, level, hand, hit));
+        if (r[0] != InteractionResult.FAIL) guarded("bauhilfe", () -> guides.use(player, level, hand, hit));
         return r[0];
     }
 
@@ -165,6 +174,7 @@ public final class HologramClient {
     public InteractionResult attack(Player player, Level level, BlockPos pos) {
         InteractionResult[] r = { InteractionResult.PASS };
         guarded("linksklick", () -> r[0] = assist.onAttack(player, level, pos));
+        if (r[0] != InteractionResult.FAIL) guarded("bauhilfe", () -> guides.attack(level, pos));
         return r[0];
     }
 }

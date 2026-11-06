@@ -21,6 +21,11 @@ Sechs Werkzeuge, deren Ideen aus anderen Minecraft-Bautools stammen (Symmetrie- 
 - Profile: `tube` (Kugelquerschnitt Radius 0–16, 0 = Linie), `road` (waagrechtes Band der Breite 1–33 quer zur Fahrtrichtung, Schienen im Abstand ½ Block → keine Löcher), `wall` (Band mit Höhe 1–128).
 - Oberfläche: Werkzeug „Kurve“ (U). Klicks setzen Punkte (Ebene wechseln für Steigungen), Vorschau folgt dem Zeiger, Enter setzt, Rücktaste nimmt den letzten Punkt, Esc verwirft. Muster und Symmetrie wirken mit (z. B. Kiesweg mit Pflastermischung, gespiegelter Burggraben).
 
+## Symmetrie und Kurven im Spiel (Mod, EDIT-04)
+
+- Die Mod rechnet Symmetrie und Kurven mit einer zeilengetreuen Java-Fassung (`mod-core/.../mod/edit/Symmetry.java`, `Curve.java`); Blockzustände dreht sie mit ihrer einen Regel (`Placement.toWorld`). `fixtures/edit/mod-edit-vectors.json` hält Zellen, Gruppen, Bilder und gedrehte Zustände (Tür, Treppe, Truhe, Schiene, Stamm, Schild), die der Planer berechnet (`scripts/fixtures/make_edit_vectors.mjs`); `tests/unit/editor/mod-edit-vectors.test.mjs` hält die Datei aktuell, JUnit `EditGuidesTest` verlangt dieselben Werte von der Mod.
+- Im Spiel sind es **Bauhilfen**: Die Mod setzt nie selbst einen Block und schickt nichts an den Server. Sie zeigt Geisterblöcke, wo noch gebaut werden muss; Ablauf und Befehle in [MOD_HOLOGRAM.md](../mod/MOD_HOLOGRAM.md#bauhilfen-symmetrie-und-kurven-edit-04).
+
 ## Natur- und Formwerkzeuge (`editor/sculpt.ts`)
 
 Wirken in der Auswahl; Nachbarn außerhalb werden gelesen, aber nicht geändert. „Fest“ heißt Blockzelle; Luft, Löschzellen und leere Zellen sind offen. Entfernte Zellen werden `null` wie beim Abbauen.

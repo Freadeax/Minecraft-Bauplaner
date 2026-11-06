@@ -61,3 +61,21 @@ test('another device: invite link carries owner key and team room in the fragmen
   assert.equal(readServerRoom({ ...room, room: 'kein_raum' }), null);
   assert.equal(readServerRoom({ ...room, url: 'javascript:alert(1)' }), null);
 });
+
+// LINK-02 S04: anchor of a plan upload from the planner – map first, then the own hologram, never turned.
+test('plan upload anchor: world map, then hologram of this project, else none', async () => {
+  const { chooseServerAnchor, ANCHOR_LABEL } = await import('../../../dist/domain/src/index.js');
+  const world = { dimension: 'minecraft:overworld', origin: [10, 64, -20], box: { min: [0, 0, 0], max: [1, 1, 1] } };
+  const holo = (projectId, turns = 0, mirror = false) => ({ projectId, placement: { dimension: 'minecraft:the_nether', x: 1, y: 2, z: 3, turns, mirror } });
+  assert.deepEqual(chooseServerAnchor({ id: 'p', world }, holo('p')), { source: 'karte', dimension: 'minecraft:overworld', origin: [10, 64, -20] });
+  assert.deepEqual(chooseServerAnchor({ id: 'p' }, holo('p')), { source: 'hologramm', dimension: 'minecraft:the_nether', origin: [1, 2, 3] });
+  assert.deepEqual(chooseServerAnchor({ id: 'p' }, holo('other')), { source: 'keiner' });
+  assert.deepEqual(chooseServerAnchor({ id: 'p' }, null), { source: 'keiner' });
+  const turned = chooseServerAnchor({ id: 'p', world: { ...world, turns: 1 } }, holo('p'));
+  assert.equal(turned.source, 'hologramm');
+  assert.match(turned.note, /Weltkarte.*ungedreht/);
+  const both = chooseServerAnchor({ id: 'p', world: { ...world, mirror: true } }, holo('p', 2));
+  assert.equal(both.source, 'keiner');
+  assert.match(both.note, /Hologramm im Spiel ist gedreht/);
+  assert.ok(ANCHOR_LABEL.karte && ANCHOR_LABEL.hologramm && ANCHOR_LABEL.keiner);
+});

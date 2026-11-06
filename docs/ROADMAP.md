@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T09:18:45.680Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T09:35:19.769Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,8 +12,8 @@ Stand: 2026-11-06T09:18:45.680Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 7 |
-| 🚧 In Arbeit | 6 |
+| ⏳ Offen | 6 |
+| 🚧 In Arbeit | 7 |
 | ⛔ Blockiert | 0 |
 | 🧩 Implementiert · Abnahme offen | 90 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
@@ -28,10 +28,10 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 23 | 2 | 23 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 0 | 10 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
-| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 13 | 1 | 13 | 0 |
+| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 13 | 0 | 13 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 11 | 0 | 9 | 0 |
-| [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 3 | 0 |
+| [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 4 | 0 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
 | [Performance und Stabilität](#bereich-perf) | 5 | 0 | 2 | 3 |
 | [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 14 | 0 | 7 | 8 |
@@ -48,7 +48,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Mehrfachauswahl auf echten Geräten (QA-02). |
 | [EDIT-02](#edit-02) | Blockeditor | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Gesetzte und gedrehte Zustände im Spiel prüfen. |
 | [EDIT-03](#edit-03) | Werkstatt vertiefen | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Schablonen-Zustände (Tür, Treppe, Laterne) im Spiel prüfen. |
-| [EDIT-04](#edit-04) | Kreativwerkzeuge aus dem Planer-Vergleich | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ · 2 verwaist | Gespiegelte und gedrehte Zustände (Türen, Truhen, Schienen) im Spiel (S07). |
+| [EDIT-04](#edit-04) | Kreativwerkzeuge aus dem Planer-Vergleich | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Mod-Werkzeuge und Planer-Anbindung erweitern“ · 1 verwaist | Gespiegelte und gedrehte Zustände (Türen, Truhen, Schienen) im Spiel (S07).<br>Bauhilfen Symmetrie und Kurven in der Mod (MOD-18, MOD-19). |
 | [EDIT-05](#edit-05) | Auswahl- und Formwerkzeuge aus Editor-Mods | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Zauberstab, Stapeln, Extrudieren und Wendel in der Werkstatt abnehmen (S07).<br>Gestapelte und gedrehte Bauteile mit Ausstattung im Spiel. |
 | [EDIT-06](#edit-06) | Direkt im 3D-Bild bauen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Direkt im 3D-Bild bauen“ | Im 3D-Bild bauen auf PC und iPad (WERK-08).<br>Truhe und Schild mit Inhalt im Spiel laden (WERK-09). |
 | [GFX-01](#gfx-01) | Grafik vertiefen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Licht und Schatten auf echten GPUs, Firefox/Safari und Handy (S06). |
@@ -120,7 +120,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [COOP-02](#coop-02) | Paper-Plugin als Teamknoten | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | Plugin auf deinem Paper-Server, TEAMBAU-06 mit Mitspielern. |
 | [COOP-03](#coop-03) | Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte i… | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Teambau und Befehle in der Mod ausbauen“ | TEAMBAU-09: aktuelle Mod und aktuelles Plugin (ab 0.10.0) zusammen auf deinem Server. |
 | [COOP-04](#coop-04) | Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams z… | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | TEAMBAU-07/08 mit echten Spielern. |
-| [COOP-05](#coop-05) | Geprüfte Lagerkisten im Paper-Plugin | 🧩 Implementiert · Abnahme offen 3/5 | P1 | „Server-Plugin mit geprüften Lagerkisten“ · 1 verwaist | LAGER-01…09 mit echten Spielern. |
+| [COOP-05](#coop-05) | Geprüfte Lagerkisten im Paper-Plugin | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Mod-Werkzeuge und Planer-Anbindung erweitern“ | LAGER-01…09 mit echten Spielern.<br>LAGER-11: Lagerstand im Materialfenster der Mod. |
 | [COOP-06](#coop-06) | Teamplanung im Planer | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Server-Plugin mit geprüften Lagerkisten“ | TEAMBAU-21…24 mit Mitspielern an einem großen Bau. |
 | [COOP-07](#coop-07) | Team live ohne Dateien | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat). |
 | [COOP-09](#coop-09) | Team live im Alltag | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat). |
@@ -154,7 +154,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [LINK-10](#link-10) | Anbindung geprüft und gehärtet | 🧩 Implementiert · Abnahme offen 6/6 | P1 | „Anbindung von Mod, Team-Raum und Planer prüfen“ | Abnahme LINK-10: offline in mehreren Abschnitten bauen, wieder verbinden – alle Messungen genau einmal im Planer; mit Plugin bleibt die Raumverbindung stehen. |
 | [GAME-08](#game-08) | Bauplaner-Mod Protokoll 2 | 🧩 Implementiert · Abnahme offen 5/5 | P2 | „Teambau und Befehle in der Mod ausbauen“ | Mitspieler-Pfeile auf der Live-Karte mit einem zweiten Spieler. |
 | [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0 | 🧩 Implementiert · Abnahme offen 3/4 | P2 | „Teambau und Befehle in der Mod ausbauen“ | Befehlsseite im J-Menü zusammen mit dem Plugin auf deinem Server (MOD-16). |
-| [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher | ⏳ Offen 0/4 | P2 | „Teambau und Befehle in der Mod ausbauen“ | — |
+| [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher | 🚧 In Arbeit 1/4 | P2 | „Mod-Werkzeuge und Planer-Anbindung erweitern“ | — |
 
 <a id="bereich-plugin"></a>
 
@@ -165,7 +165,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [GAME-04](#game-04) | Paper-Plugin der Bauplaner-Brücke (serverseitig, mehrere Minecraft-Versionen) | 🚧 In Arbeit 3/4 | P1 | „Server-Plugin mit geprüften Lagerkisten“ | Plugin-Abnahme auf deinem Paper-Server (S04). |
 | [LAGER-01](#lager-01) | Optionale Truhen-/Lagerintegration | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Server-Plugin mit geprüften Lagerkisten“ | Geprüfte Lagerkisten auf dem Paper-Server einrichten und den Bestand im Planer übernehmen (LAGERKISTEN.md). |
 | [LINK-01](#link-01) | Plugin richtet sich selbst ein und lässt sich per Klick koppeln (link.json, Server-ID, K… | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Verbindung ohne Server-Datei neu bauen“ | Plugin 0.12.0 einspielen, als OP mit Mod beitreten, J → „Teambau erlauben“, im Planer #/mod „Server koppeln“. |
-| [LINK-02](#link-02) | Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstell… | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Verbindung ohne Server-Datei neu bauen“ | — |
+| [LINK-02](#link-02) | Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstell… | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Mod-Werkzeuge und Planer-Anbindung erweitern“ | LINK-11: Plan aus „Bauen“ auf den Server legen. |
 | [LINK-06](#link-06) | Weitere Steuerung ohne Befehle | 🧩 Implementiert · Abnahme offen 2/2 | P2 | „Verbindung ohne Server-Datei neu bauen“ | — |
 
 <a id="bereich-modrinth"></a>
@@ -265,6 +265,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **COOP-07** · TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat).
 - **COOP-08** · LAGER-01…09 mit echten Spielern.
 - **LINK-01** · Plugin 0.12.0 einspielen, als OP mit Mod beitreten, J → „Teambau erlauben“, im Planer #/mod „Server koppeln“.
+- **LINK-02** · LINK-11: Plan aus „Bauen“ auf den Server legen.
 - **COOP-09** · TEAMBAU-25 mit Mitspielern; auf dem Server /bauplaner team verbinden mit dem Server-Link (sobald das Plugin RoomLink hat).
 - **COOP-10** · TEAMBAU-27 mit Mitspielern: Mod 0.15.0, Team live, ohne Plugin bauen und Kiste öffnen.
 
@@ -276,6 +277,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **EDIT-02** · Gesetzte und gedrehte Zustände im Spiel prüfen.
 - **EDIT-03** · Schablonen-Zustände (Tür, Treppe, Laterne) im Spiel prüfen.
 - **EDIT-04** · Gespiegelte und gedrehte Zustände (Türen, Truhen, Schienen) im Spiel (S07).
+- **EDIT-04** · Bauhilfen Symmetrie und Kurven in der Mod (MOD-18, MOD-19).
 - **EDIT-05** · Gestapelte und gedrehte Bauteile mit Ausstattung im Spiel.
 - **TERRAIN-03** · PROJ-19: Weg mit Treppen und Brücke als .litematic in deiner Welt ansehen.
 - **TERRAIN-03** · BIB-20: Basis mit Wegenetz als Landschaftsweg auf einem echten Hang einfügen und im Spiel ansehen.
@@ -290,6 +292,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **MAP-07** · Ein Projekt auf der Weltkarte drehen, ins Spiel senden und mit F3 prüfen; ein im Spiel gedrehtes Hologramm übernehmen (KARTE-07).
 - **GEN-03** · Kolosseum exportieren und im Spiel aufstellen (BIB-14).
 - **SIZE-01** · Großen Bau (Olympus) ins Spiel senden und prüfen (DATEI-05, MOD-11, MOD-15, LIVE-09).
+- **COOP-05** · LAGER-11: Lagerstand im Materialfenster der Mod.
 - **LINK-03** · Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“.
 - **EDIT-06** · Truhe und Schild mit Inhalt im Spiel laden (WERK-09).
 - **FALLBACK-01** · Abnahme LINK-09: mit Team live kurz das Internet trennen, Minecraft neu starten, Teamstand und „Baustand holen (bester Weg)“ prüfen.
@@ -353,8 +356,7 @@ Arbeit, für die gerade kein laufender Thread zuständig ist. Zum Verteilen: Thr
 | ID | Bereich | Prio | Status | Offen ohne Bearbeiter |
 |---|---|---|---|---|
 | [QA-04](#qa-04) | Testphase, Qualität und Betrieb | P0 | 🧩 Implementiert · Abnahme offen | Der Thread „Große Testphase vorbereiten und betreuen“ ist beendet; die rund 30 Pakete, bei denen nur Philipps Abnahme fehlt, haben keinen aktiven Thread für Diagnose und Fehlerbehebung. |
-| [COOP-05](#coop-05) | Teambau live | P1 | 🧩 Implementiert · Abnahme offen | S04 Lagerstände über den Team-Raum an die Mod (passt zu LINK-07 „gesehene Kisteninhalte in den Raum“) – Plugin-Thread beendet. |
-| [EDIT-04](#edit-04) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Gelände-Werkzeuge auf dem Projektgelände (als eigener Thread angekündigt, nie gestartet).<br>Symmetrie und Kurven auch in der Mod. |
+| [EDIT-04](#edit-04) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Gelände-Werkzeuge auf dem Projektgelände (als eigener Thread angekündigt, nie gestartet). |
 | [MAP-04](#map-04) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Benannte Gruppen und Sperren mit Schemaerweiterung, abgestimmt mit der Mod (siehe GAME-07-S07). |
 
 ## Eingänge ohne eigenes Paket
@@ -396,7 +398,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **PROJ-01 · Projektplanung für große Projekte: Meilensteine mit Terminen, Abhängigkeiten zwischen Bauabschnitten (Vorschläge aus Geometrie und Anschlüssen), Bauleute mit Zuweisung, Zeitplan über Bautage mit kritischem Pfad, Bedarf je Meilenstein und Bauleute, Vorlagen aus Phasen-Abschnitten** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel.
 - **GAME-09 · Bauplaner-Brücke auf Modrinth: Projekt „Bauplaner Bridge“ (Fabric, NeoForge, Paper-Plugin) mit Text, Icon, Bildern, Änderungsliste und Hochladeskript; jede Mod-Veröffentlichung lädt die neue Version hoch** — 🚧 In Arbeit, 4/5 Teilschritte. Nächster Schritt: Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind.
 - **GAME-10 · Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme MOD-16 auf Philipps Server mit Paper-Plugin.
-- **GAME-11 · Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** — ⏳ Offen, 0/4 Teilschritte. Nächster Schritt: Entschieden (Philipp 04.11.): Fabric 26.3 (sein Modpack mit REI) hat Vorrang, danach jeweils die neueste Minecraft-Version nachziehen; keine Matrix älterer Versionen.
+- **GAME-11 · Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** — 🚧 In Arbeit, 1/4 Teilschritte. Nächster Schritt: Entschieden (Philipp 04.11.): Fabric 26.3 (sein Modpack mit REI) hat Vorrang, danach jeweils die neueste Minecraft-Version nachziehen; keine Matrix älterer Versionen.
 - **COOP-07 · Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl umgesetzt (LINK-05).
 - **PROD-01 · Produktionsdaten: Katalog von 34 Farmarten mit Richtwerten je Einheit, Bedingungen, Reichweite, Verbrauch und Bauplan; Farmliste je Projekt (Anzahl, Zustand, Ort, Bauteil, Kartenpunkt) und Ertragsbuch, das ins Baustellen-Lager bucht und gemessene Raten liefert** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme PROJ-12; später Erträge aus geprüften Lagerkisten (COOP-05) ins Ertragsbuch.
 - **PROD-02 · Deckung und Engpässe: Restbedarf des Sammelplans gegen laufende Farmen und Handarbeit (gemeinsame Warteschlange, gieriger Ausgleich), Engpass, Materialbereitschaft je Abschnitt in Spieltagen, „Lohnt sich eine Farm?“ mit Amortisation aus Bauplan-Kosten** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme PROJ-13.
@@ -404,7 +406,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **PROD-04 · Anbindung der Produktion: Farmen aus Projekt-Bauteilen mit Baufortschritt, Farmpunkte der Weltkarte übernehmen und eintragen, bester AFK-Platz nach Simulationsdistanz, Materialbereitschaft gegen Zeitplan der Planung, Sammelaufträge je Bauleute (TEAM-03-S02), Produktionsblatt als Text** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme PROJ-13; danach Farmerträge aus Mod/Plugin.
 - **PROD-05 · Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen.
 - **LINK-01 · Plugin richtet sich selbst ein und lässt sich per Klick koppeln (link.json, Server-ID, Kopplung nur OP/Bauleitung über den Teamkanal)** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme LINK-01 auf Philipps Server.
-- **LINK-02 · Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte)** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Plan-Upload aus dem Planer; Abnahme LINK-02.
+- **LINK-02 · Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte)** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Abnahme LINK-02 und LINK-11.
 - **LINK-03 · Mod: Live-Dienst startet selbst, Planer per Klick im Spiel zulassen, Teamfreigabe als Knopf, Server-Wege weiterreichen (Mod 0.12.0)** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme LIVE-01 in Philipps Modpack.
 - **LINK-04 · Planer: Bereich „Spiel und Server verbinden – ohne Befehle“ (#/mod), Server koppeln und einstellen, Team und Raum per Knopf** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme durch Philipp.
 - **LINK-05 · Zweiter Weg über den Team-Raum: Steuernachrichten ohne Mod (iPad), weiteres Gerät per Link freigeben** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Abnahme vom iPad (Testplan LINK-04).
@@ -520,7 +522,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-02, VIEW-01 | ausstehend | ausstehend |
 | [EDIT-02](#edit-02) | Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen | 🧩 Implementiert · Abnahme offen | 5/5 | VIEW-01, STORE-02 | ausstehend | ausstehend |
 | [EDIT-03](#edit-03) | Werkstatt vertiefen: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Ebenenübersicht und Tastenkürzel | 🧩 Implementiert · Abnahme offen | 5/5 | EDIT-02 | ausstehend | ausstehend |
-| [EDIT-04](#edit-04) | Kreativwerkzeuge aus dem Planer-Vergleich: Symmetrie, Kurven, Naturwerkzeuge, Oberflächenmaske, Farbpaletten, Bild → Blöcke | 🧩 Implementiert · Abnahme offen | 6/7 | EDIT-03 | ausstehend | ausstehend |
+| [EDIT-04](#edit-04) | Kreativwerkzeuge aus dem Planer-Vergleich: Symmetrie, Kurven, Naturwerkzeuge, Oberflächenmaske, Farbpaletten, Bild → Blöcke | 🧩 Implementiert · Abnahme offen | 7/8 | EDIT-03 | ausstehend | ausstehend |
 | [EDIT-05](#edit-05) | Auswahl- und Formwerkzeuge aus Editor-Mods: Zauberauswahl, Auswahl wachsen/schrumpfen/einpassen, Stapeln, Extrudieren, Ellipsoid/Torus/Spirale, Entities ziehen mit | 🧩 Implementiert · Abnahme offen | 6/7 | EDIT-04, ENTITY-01 | ausstehend | ausstehend |
 | [UPDATE-01](#update-01) | Kontrollierte Versionsupdates mit lokalen Overrides | 🧩 Implementiert · Abnahme offen | 2/2 | DIFF-01, STORE-02 | ausstehend | ausstehend |
 | [LIB-02](#lib-02) | Eigene Sammlungen, Ordner und Kategorien | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-02, LIB-01 | ausstehend | ausstehend |
@@ -597,14 +599,14 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [DEFER-02](#defer-02) | Optionale Discord-Integration | ⏸ Zurückgestellt | 0/1 | AUTH-01 | ausstehend | ausstehend |
 | [COOP-03](#coop-03) | Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte in Inhaberfarbe im Hologramm | 🧩 Implementiert · Abnahme offen | 2/3 | COOP-02, GAME-08 | ausstehend | ausstehend |
 | [COOP-04](#coop-04) | Baunachweis je Spieler (Plugin zählt Blöcke in Abschnittsboxen), Lagerkisten des Teams zählen, Bestand ins Baustellen-Lager übernehmen | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-02, LAGER-01 | ausstehend | ausstehend |
-| [COOP-05](#coop-05) | Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf | 🧩 Implementiert · Abnahme offen | 3/5 | COOP-04 | ausstehend | ausstehend |
+| [COOP-05](#coop-05) | Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-04 | ausstehend | ausstehend |
 | [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-03, COOP-05, GAME-07 | ausstehend | ausstehend |
-| [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher | ⏳ Offen | 0/4 | GAME-07, GAME-10 | ausstehend | ausstehend |
+| [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher | 🚧 In Arbeit | 1/4 | GAME-07, GAME-10 | ausstehend | ausstehend |
 | [COOP-07](#coop-07) | Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel | 🧩 Implementiert · Abnahme offen | 6/7 | COOP-01, COOP-04 | ausstehend | ausstehend |
 | [COOP-08](#coop-08) | Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion) | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-05, PROD-01 | ausstehend | ausstehend |
 | [PROD-05](#prod-05) | Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung | 🧩 Implementiert · Abnahme offen | 5/5 | PROD-02, COOP-05, COOP-08 | ausstehend | ausstehend |
 | [LINK-01](#link-01) | Plugin richtet sich selbst ein und lässt sich per Klick koppeln (link.json, Server-ID, Kopplung nur OP/Bauleitung über den Teamkanal) | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-02 | ausstehend | ausstehend |
-| [LINK-02](#link-02) | Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte) | 🧩 Implementiert · Abnahme offen | 3/4 | LINK-01 | ausstehend | ausstehend |
+| [LINK-02](#link-02) | Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte) | 🧩 Implementiert · Abnahme offen | 4/4 | LINK-01 | ausstehend | ausstehend |
 | [LINK-03](#link-03) | Mod: Live-Dienst startet selbst, Planer per Klick im Spiel zulassen, Teamfreigabe als Knopf, Server-Wege weiterreichen (Mod 0.12.0) | 🧩 Implementiert · Abnahme offen | 4/5 | GAME-08, COOP-03 | ausstehend | ausstehend |
 | [LINK-04](#link-04) | Planer: Bereich „Spiel und Server verbinden – ohne Befehle“ (#/mod), Server koppeln und einstellen, Team und Raum per Knopf | 🧩 Implementiert · Abnahme offen | 3/4 | LINK-02, LINK-03 | ausstehend | ausstehend |
 | [LINK-05](#link-05) | Zweiter Weg über den Team-Raum: Steuernachrichten ohne Mod (iPad), weiteres Gerät per Link freigeben | 🧩 Implementiert · Abnahme offen | 5/5 | LINK-04, COOP-07 | ausstehend | ausstehend |
@@ -1628,7 +1630,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### EDIT-04
 
-**Kreativwerkzeuge aus dem Planer-Vergleich: Symmetrie, Kurven, Naturwerkzeuge, Oberflächenmaske, Farbpaletten, Bild → Blöcke** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Ideen aus anderen Planern übernehmen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T11:03:24.121Z
+**Kreativwerkzeuge aus dem Planer-Vergleich: Symmetrie, Kurven, Naturwerkzeuge, Oberflächenmaske, Farbpaletten, Bild → Blöcke** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Ideen aus anderen Planern übernehmen“ · Zuständiger Thread: „Mod-Werkzeuge und Planer-Anbindung erweitern“ · Aktualisiert: 2026-11-06T09:35:19.769Z
 
 - [x] EDIT-04-S01: Gap-Analyse: andere Planer und Bautools gegen unsere Module, Auswahl und Vorschläge für eigene Threads (docs/project/PLANER_VERGLEICH.md).
 - [x] EDIT-04-S02: Symmetrie (Spiegeln X/Z, 2-/4-fach drehen, Achse auf Zellmitte oder -grenze) mit Zustandsdrehung über transformBlockState für alle Pinsel-Werkzeuge.
@@ -1637,20 +1639,21 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 - [x] EDIT-04-S05: Farbpaletten (ähnliche Blöcke, Farbverlauf in Lab als Muster) und Bild → Blöcke (Wand/Boden, Dithering, Blockgruppen) über die Zwischenablage.
 - [x] EDIT-04-S06: Unit-, Browser- und Handyprüfung, Doku.
 - [ ] EDIT-04-S07: Spielprüfung gespiegelter und gedrehter Zustände (Türen, Truhen, Schienen) sowie Firefox/Safari/Geräte.
+- [x] EDIT-04-S08: Symmetrie und Kurven auch in der Mod (Bauhilfen, nur Client): gleiche Gruppe, Zustandsdrehung und Kurvenzellen wie der Planer (gemeinsame Prüfvektoren), Geisterblöcke, Fortschritt, „als Plan“ ins Hologramm.
 
 **Abnahme:** Gleiche Eingaben ergeben dieselben Zellen und dieselbe Version (auch Dithering). Keine zweite Koordinaten- oder Drehregel; Symmetrie nutzt transformVector/transformBlockState, ungelöste Zustände werden gemeldet. Jede Kurve ist flächenverbunden; jedes Werkzeug ist ein Rückgängig-Schritt. Keine Farbtabellen oder Texturen im Kern.
 
-**Nächste Aktion:** Spielprüfung gespiegelter Zustände; danach Gelände-Werkzeuge auf Projektgelände (eigener Thread) und Symmetrie/Kurven im Mod.
+**Nächste Aktion:** Spielprüfung gespiegelter Zustände im Planer (S07) und der Bauhilfen in der Mod (MOD-18/19); Gelände-Werkzeuge auf dem Projektgelände bleiben offen.
 
-**Nur Philipp:** Im Spiel an deinem PC: Gespiegelte und gedrehte Zustände (Türen, Truhen, Schienen) im Spiel (S07).
+**Nur Philipp:** Im Spiel an deinem PC: Gespiegelte und gedrehte Zustände (Türen, Truhen, Schienen) im Spiel (S07). Im Spiel an deinem PC: Bauhilfen Symmetrie und Kurven in der Mod (MOD-18, MOD-19).
 
-**Verwaist (ohne Bearbeiter):** Gelände-Werkzeuge auf dem Projektgelände (als eigener Thread angekündigt, nie gestartet). Symmetrie und Kurven auch in der Mod.
+**Verwaist (ohne Bearbeiter):** Gelände-Werkzeuge auf dem Projektgelände (als eigener Thread angekündigt, nie gestartet).
 
 **Prüfstand:** Unit- und Chromium-Prüfung bestanden; Spielprüfung, Firefox/Safari und Geräte offen.
 
-**Nachweise:** [tests/unit/editor/editor-creative.test.mjs](../tests/unit/editor/editor-creative.test.mjs) — Symmetrie, Kurven, Natur, Maske, Farben, Bild mit Handzählung.; [tests/e2e/workshop-creative.e2e.mjs](../tests/e2e/workshop-creative.e2e.mjs) — Chromium 1400/390 px: Symmetrie, Kurve, Abtragen, Naturalisieren, Farbverlauf, Oberfläche, PNG → Wollbild.; [docs/architecture/planer/CREATIVE_TOOLS.md](architecture/planer/CREATIVE_TOOLS.md) — Vertrag und Grenzen EDIT-04.
+**Nachweise:** [tests/unit/editor/editor-creative.test.mjs](../tests/unit/editor/editor-creative.test.mjs) — Symmetrie, Kurven, Natur, Maske, Farben, Bild mit Handzählung.; [tests/e2e/workshop-creative.e2e.mjs](../tests/e2e/workshop-creative.e2e.mjs) — Chromium 1400/390 px: Symmetrie, Kurve, Abtragen, Naturalisieren, Farbverlauf, Oberfläche, PNG → Wollbild.; [docs/architecture/planer/CREATIVE_TOOLS.md](architecture/planer/CREATIVE_TOOLS.md) — Vertrag und Grenzen EDIT-04.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/edit/EditGuidesTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/edit/EditGuidesTest.java) — Java-Port gegen fixtures/edit/mod-edit-vectors.json: 7 Kurven, 6 Symmetrien, Zustände von Tür, Treppe, Truhe, Schiene, Stamm, Schild identisch zum Planer.
 
-**Dateiumfang:** `packages/domain/src/editor/symmetry.ts`, `packages/domain/src/editor/curves.ts`, `packages/domain/src/editor/sculpt.ts`, `packages/domain/src/editor/colorMatch.ts`, `apps/web/src/editor/`, `tests/unit/editor/editor-creative.test.mjs`, `tests/e2e/workshop-creative.e2e.mjs`, `docs/architecture/planer/CREATIVE_TOOLS.md`, `docs/project/PLANER_VERGLEICH.md`. **Abhängigkeiten:** EDIT-03. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/editor/symmetry.ts`, `packages/domain/src/editor/curves.ts`, `packages/domain/src/editor/sculpt.ts`, `packages/domain/src/editor/colorMatch.ts`, `apps/web/src/editor/`, `tests/unit/editor/editor-creative.test.mjs`, `tests/e2e/workshop-creative.e2e.mjs`, `docs/architecture/planer/CREATIVE_TOOLS.md`, `docs/project/PLANER_VERGLEICH.md`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/edit/`, `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/GuideClient.java`, `scripts/fixtures/make_edit_vectors.mjs`, `fixtures/edit/mod-edit-vectors.json`, `tests/unit/editor/mod-edit-vectors.test.mjs`. **Abhängigkeiten:** EDIT-03. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -2801,27 +2804,25 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-05
 
-**Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Server-Plugin mit geprüften Lagerkisten“) · Zuständiger Thread: „Server-Plugin mit geprüften Lagerkisten“ · Aktualisiert: 2026-11-05T11:03:24.121Z
+**Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Server-Plugin mit geprüften Lagerkisten“) · Zuständiger Thread: „Mod-Werkzeuge und Planer-Anbindung erweitern“ · Aktualisiert: 2026-11-06T09:35:19.769Z
 
 - [x] COOP-05-S01: Konzept LAGERKISTEN.md, reine Regeln StoreLedger/StoreIndex mit Unit-Tests.
 - [x] COOP-05-S02: StorageModule: Markieren, Schutzstufen bei Klicks/Trichtern/Explosionen/Abbau/Anbau, Buchungen je Öffnen, Prüfen gegen Sollstand, Siegeln, Bedarf, Verlauf.
 - [x] COOP-05-S03: Planer: store.config/move/check/seal falten, Lagerkisten mit Status, Abweichung und Buchungen im Reiter Team.
-- [ ] COOP-05-S04: Lagerstände über den Teamkanal an die Mod (COOP-03) und Paper-Jar 0.10.0 auf #/mod.
+- [x] COOP-05-S04: Lagerstände über den Team-Raum an die Mod: Plugin-Zählung oder im Spiel gesehener Inhalt (mit * markiert), Spalte „Lager“ im Materialfenster, /bp lager mit Quelle.
 - [ ] COOP-05-S05: Abnahme LAGER-01…09 mit echten Spielern auf Philipps Server.
 
 **Abnahme:** Jede Abweichung zwischen Zählung und Sollstand bleibt sichtbar, bis ein Baumeister siegelt; Buchungen je Spieler und Trichter stimmen mit dem Inhalt; das Plugin verändert nie Kisteninhalte.
 
-**Nächste Aktion:** Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server.
+**Nächste Aktion:** Abnahme LAGER-01…09 und LAGER-11 auf Philipps Server.
 
-**Nur Philipp:** Auf deinem Server mit Mitspielern: LAGER-01…09 mit echten Spielern.
-
-**Verwaist (ohne Bearbeiter):** S04 Lagerstände über den Team-Raum an die Mod (passt zu LINK-07 „gesehene Kisteninhalte in den Raum“) – Plugin-Thread beendet.
+**Nur Philipp:** Auf deinem Server mit Mitspielern: LAGER-01…09 mit echten Spielern. Im Spiel an deinem PC: LAGER-11: Lagerstand im Materialfenster der Mod.
 
 **Prüfstand:** Servertests und Unit-Tests bestanden; Inventarklicks, Schutz und Buchungen beim Schließen brauchen echte Spieler (LAGER-02…06).
 
-**Nachweise:** [scripts/mod/bridge_paperlager.mjs](../scripts/mod/bridge_paperlager.mjs) — Echter Server 1.18.2, 1.21.4, 26.3: Abweichung, Siegel, Trichter, TNT, Doppelkiste, fehlende Kiste, Bedarf, Sammelauftrag, Neustart; Planer-Faltung = Server.; [tests/unit/team/lager.test.mjs](../tests/unit/team/lager.test.mjs) — Faltung, Rechte, Herkunft und Prüfung der neuen Arten.; [mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndexTest.java](../mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndexTest.java) — Unit-Tests der Rechte-Matrix, Differenzen, Prüfsumme und Faltung (StoreIndex).
+**Nachweise:** [scripts/mod/bridge_paperlager.mjs](../scripts/mod/bridge_paperlager.mjs) — Echter Server 1.18.2, 1.21.4, 26.3: Abweichung, Siegel, Trichter, TNT, Doppelkiste, fehlende Kiste, Bedarf, Sammelauftrag, Neustart; Planer-Faltung = Server.; [tests/unit/team/lager.test.mjs](../tests/unit/team/lager.test.mjs) — Faltung, Rechte, Herkunft und Prüfung der neuen Arten.; [mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndexTest.java](../mods/bauplaner-bridge/paper/src/test/java/io/github/freadeax/bauplaner/bridge/paper/StoreIndexTest.java) — Unit-Tests der Rechte-Matrix, Differenzen, Prüfsumme und Faltung (StoreIndex).; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomStockTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/room/RoomStockTest.java) — Raum-Faltung store.* und store.seen → Lagerstand der Mod, Summen je Dimension, fehlende Kisten ausgelassen.
 
-**Dateiumfang:** `mods/bauplaner-bridge/paper/`, `packages/domain/src/team/team.ts`, `apps/web/src/views/project/team/TeamProof.tsx`, `docs/architecture/team/LAGERKISTEN.md`, `scripts/mod/bridge_paperlager.mjs`, `apps/web/src/testing/testplan.ts`. **Abhängigkeiten:** COOP-04. **Alte IDs:** —.
+**Dateiumfang:** `mods/bauplaner-bridge/paper/`, `packages/domain/src/team/team.ts`, `apps/web/src/views/project/team/TeamProof.tsx`, `docs/architecture/team/LAGERKISTEN.md`, `scripts/mod/bridge_paperlager.mjs`, `apps/web/src/testing/testplan.ts`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/StoreStock.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomState.java`. **Abhängigkeiten:** COOP-04. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -2920,22 +2921,22 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-11
 
-**Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** · ⏳ Offen · Priorität P2 · Verantwortlich: Claude (Thread „Teambau und Befehle in der Mod ausbauen“) · Zuständiger Thread: „Teambau und Befehle in der Mod ausbauen“ · Aktualisiert: 2026-11-04T09:00:40.731Z
+**Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher** · 🚧 In Arbeit · Priorität P2 · Verantwortlich: Claude (Thread „Teambau und Befehle in der Mod ausbauen“) · Zuständiger Thread: „Mod-Werkzeuge und Planer-Anbindung erweitern“ · Aktualisiert: 2026-11-06T09:35:19.769Z
 
 - [ ] GAME-11-S01: Versionsmatrix festlegen: welche Minecraft-Versionen und Loader (Philipps Server, verbreitete Modpacks), was der Kern schon versionsneutral abdeckt.
 - [ ] GAME-11-S02: Zweite Minecraft-Version (Fabric und NeoForge) als eigener Adapter über mod-core und eine Versionsfassade, ohne 26.3 zu verändern.
 - [ ] GAME-11-S03: Echte Spieltests je Version, Release auf #/mod mit Versionswahl, Modrinth je Version.
-- [ ] GAME-11-S04: Installationsanleitung für Modrinth App, Prism Launcher, CurseForge und den offiziellen Launcher auf #/mod.
+- [x] GAME-11-S04: Installationsanleitung für Modrinth App, Prism Launcher, CurseForge und den offiziellen Launcher auf #/mod.
 
 **Abnahme:** Die Mod läuft in mindestens einer weiteren Minecraft-Version mit Hologramm, Platzierhilfe, Website-Verbindung, Teambau und Befehlsseite. #/mod und Modrinth bieten je Version und Loader die passende Datei an.
 
 **Nächste Aktion:** Entschieden (Philipp 04.11.): Fabric 26.3 (sein Modpack mit REI) hat Vorrang, danach jeweils die neueste Minecraft-Version nachziehen; keine Matrix älterer Versionen.
 
-**Prüfstand:** Noch nicht begonnen.
+**Prüfstand:** S04 Launcher-Anleitung auf #/mod fertig; S01–S03 (weitere Versionen) offen.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/unit/mod/install-guide.test.mjs](../tests/unit/mod/install-guide.test.mjs) — Anleitung je Launcher und Loader, Fabric API nur bei Fabric.
 
-**Dateiumfang:** `mods/bauplaner-bridge/`, `scripts/`, `apps/web/src/views/mod/`, `downloads/mod/`, `docs/`. **Abhängigkeiten:** GAME-07, GAME-10. **Alte IDs:** —.
+**Dateiumfang:** `mods/bauplaner-bridge/`, `scripts/`, `apps/web/src/views/mod/`, `downloads/mod/`, `docs/`, `apps/web/src/views/mod/installGuide.ts`. **Abhängigkeiten:** GAME-07, GAME-10. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -3123,22 +3124,24 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### LINK-02
 
-**Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Verbindung ohne Server-Datei neu bauen“ · Aktualisiert: 2026-11-05T11:03:24.121Z
+**Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Anbindung von Planer, Mod und Server neu denken“) · Zuständiger Thread: „Mod-Werkzeuge und Planer-Anbindung erweitern“ · Aktualisiert: 2026-11-06T09:35:19.769Z
 
 - [x] LINK-02-S01: Format und Unterschrift in Plugin und Planer gleich (gemeinsamer Prüfvektor).
 - [x] LINK-02-S02: Operationen status, config, team, room, plan, rename, invite, forget; config nur Liste, alles oder nichts, Teamkanal ausgenommen.
 - [x] LINK-02-S03: Wiederholung, falsche Unterschrift, fremder Server auf echtem Paper abgewiesen; Nummer übersteht Neustart.
-- [ ] LINK-02-S04: Plan-Upload im Planer anbieten (Plugin kann es schon).
+- [x] LINK-02-S04: Plan-Upload im Planer anbieten: Reiter „Bauen“ und Weltkarte, Anker aus Kartenplatzierung oder Hologramm.
 
 **Abnahme:** Eine aufgezeichnete Nachricht wirkt nie zweimal, eine Nachricht für Server A nie auf B. Keine Nachricht setzt Blöcke oder führt Befehle aus.
 
-**Nächste Aktion:** Plan-Upload aus dem Planer; Abnahme LINK-02.
+**Nächste Aktion:** Abnahme LINK-02 und LINK-11.
+
+**Nur Philipp:** Auf deinem Server mit Mitspielern: LINK-11: Plan aus „Bauen“ auf den Server legen.
 
 **Prüfstand:** Automatisch und auf echtem Paper geprüft; Abnahme LINK-02 offen.
 
-**Nachweise:** [scripts/mod/test_bridge_paper_link.sh](../scripts/mod/test_bridge_paper_link.sh) — 2 Einstellungen und ein Team per signierter Nachricht, alle Abweisungen geprüft (04.11.2026).; [tests/unit/team/server-link.test.mjs](../tests/unit/team/server-link.test.mjs) — Prüfvektor, Inhalt, Nummer, Leser.
+**Nachweise:** [scripts/mod/test_bridge_paper_link.sh](../scripts/mod/test_bridge_paper_link.sh) — 2 Einstellungen und ein Team per signierter Nachricht, alle Abweisungen geprüft (04.11.2026).; [tests/unit/team/server-link.test.mjs](../tests/unit/team/server-link.test.mjs) — Prüfvektor, Inhalt, Nummer, Leser.; [tests/unit/team/server-link.test.mjs](../tests/unit/team/server-link.test.mjs) — Ankerwahl Karte > Hologramm > keiner, gedrehte Platzierung abgewiesen.
 
-**Dateiumfang:** `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/LinkCore.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java`, `packages/domain/src/team/serverControl.ts`, `packages/domain/src/index.ts`, `tests/unit/team/server-link.test.mjs`, `scripts/mod/bridge_paperlink.mjs`, `scripts/mod/test_bridge_paper_link.sh`. **Abhängigkeiten:** LINK-01. **Alte IDs:** —.
+**Dateiumfang:** `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/LinkCore.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java`, `packages/domain/src/team/serverControl.ts`, `packages/domain/src/index.ts`, `tests/unit/team/server-link.test.mjs`, `scripts/mod/bridge_paperlink.mjs`, `scripts/mod/test_bridge_paper_link.sh`, `apps/web/src/views/mod/planUpload.ts`, `apps/web/src/views/project/GameCheckPanel.tsx`. **Abhängigkeiten:** LINK-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

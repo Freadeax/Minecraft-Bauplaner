@@ -27,7 +27,8 @@ import type { MapDraft, MapHit, MapTool, MapVertex, PlanLayer } from './Overview
 import { LiveGamePanel } from './LiveGamePanel';
 import { GameProgressPanel, useGameProgress } from './GameProgress';
 import { liveApi, useLiveGame } from './liveClient';
-import { hasServerPairing, planToServer } from '../mod/serverClient';
+import { hasServerPairing } from '../mod/serverClient';
+import { chooseServerAnchor, uploadPlanToServer } from '../mod/planUpload';
 import { PlanItemEditor, PlanToolbar } from './PlanPanel';
 import { useWorldPlan } from './useWorldPlan';
 import { useMapHistory } from './useMapHistory';
@@ -616,19 +617,16 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
     } catch (e) { setNotice(errorText(e)); }
     finally { setSending(''); }
   };
-  /** LINK-06: the same revision export straight onto the paired server, anchored at the map position. */
+  /** LINK-06: the same revision export straight onto the paired server, anchored at the map position (LINK-02 S04: shared with „Bauen“). */
   const sendToServer = async (p: Project) => {
     if (!p.world) return;
     if (isTurned(p.world)) { setNotice(`„${p.name}“ liegt auf der Weltkarte ${turnLabel(turnOf(p.world))}. Das Server-Plugin legt Pläne nur ungedreht ab – über „Ins Spiel senden“ (Mod) geht es gedreht, oder die Drehung auf der Karte zurücksetzen.`); setNoticeUndo(false); return; }
     setSending(`server:${p.id}`);
     try {
-      const dv = suggestDataVersion(p, library.versions).dataVersion ?? 5023;
-      const prepared = await prepareRevisionExport(p, library.versions, { ...LIVE_PLAN_EXPORT, dataVersion: dv });
-      if (prepared.created) await repo.saveProject(prepared.project, p.revision);
-      const out = prepared.output;
-      const msg = await planToServer(out.fileName, out.bytes, { dimension: p.world.dimension, origin: p.world.origin });
-      setNotice(`${msg} Revision ${out.revision.number}.`);
-      if (prepared.created) await load();
+      const r = await uploadPlanToServer(p, library.versions, chooseServerAnchor(p));
+      if (r.frozen) await repo.saveProject(r.frozen, p.revision);
+      setNotice(r.text);
+      if (r.frozen) await load();
     } catch (e) { setNotice(errorText(e)); }
     finally { setSending(''); }
   };

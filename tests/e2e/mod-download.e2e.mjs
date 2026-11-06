@@ -46,12 +46,25 @@ for (const viewport of [{ width: 1400, height: 900 }, { width: 390, height: 844 
     assert.equal(await p.getByRole('button', { name: /Für mein Spiel/ }).getAttribute('aria-pressed'), 'true');
     assert.equal(await p.locator('option[value=paper]').count(), 0, 'Paper nicht in der Client-Auswahl');
     assert.ok(await p.getByText(/Ordner öffnen/).first().isVisible(), 'Modrinth-Anleitung');
+    // GAME-11 S04: one guide per launcher, the choice is remembered.
+    const guide = p.locator('.mod-launchers');
+    await guide.getByRole('button', { name: 'Prism Launcher' }).click();
+    assert.equal(await guide.getByRole('button', { name: 'Prism Launcher' }).getAttribute('aria-pressed'), 'true');
+    assert.ok(await guide.getByText(/Mods herunterladen/).isVisible(), 'Prism-Schritte');
+    await guide.getByRole('button', { name: 'CurseForge' }).click();
+    assert.ok(await guide.getByText(/nicht auf CurseForge/).isVisible(), 'CurseForge: Datei von dieser Seite');
+    await guide.getByRole('button', { name: 'Offizieller Launcher' }).click();
+    assert.ok(await guide.getByText(/fabric-loader-/).isVisible(), 'offizieller Launcher mit Fabric-Installer');
+    await p.reload();
+    assert.equal(await p.locator('.mod-launchers').getByRole('button', { name: 'Offizieller Launcher' }).getAttribute('aria-pressed'), 'true', 'Wahl gemerkt');
+    await p.locator('.mod-launchers').getByRole('button', { name: 'Modrinth App' }).click();
     // NeoForge-Mod (GAME-05): eigene .jar und eigener Installationsschritt.
     const neo = releases.filter(r => r.loader === 'neoforge' && r.minecraft === newest.minecraft).toSorted(byVersion)[0];
     if (neo) {
       await p.getByLabel('Mod-Loader').selectOption('neoforge');
       assert.equal(await p.getByRole('link', { name: /herunterladen$/ }).getAttribute('href'), `/Minecraft-Bauplaner/downloads/mod/${neo.file}`);
-      assert.ok(await p.getByText(/NeoForge-Instanz/).isVisible());
+      assert.ok(await p.locator('.mod-launchers').getByText(/Loader NeoForge, Version/).isVisible(), 'Launcher-Anleitung folgt dem Loader');
+      assert.equal(await p.locator('.mod-launchers').getByText(/Fabric API muss im Profil/).count(), 0, 'NeoForge braucht keine Fabric API');
       await p.getByLabel('Mod-Loader').selectOption('fabric');
     }
     const link = p.getByRole('link', { name: /herunterladen$/ });

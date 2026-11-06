@@ -5,6 +5,32 @@ import { buildsFor, checkJarBytes, INSTALL_HINT, LOADER_LABEL, loadersFor, minec
 import type { ModRelease, Selection, Target } from './releases';
 import { formatNumber } from '../../app/ui';
 import { ServerPanel } from './ServerPanel';
+import { INSTALL_CHECKS, LAUNCHERS, LAUNCHER_LABEL, MODRINTH_PAGE, installGuide, stepParts } from './installGuide';
+import type { LauncherId } from './installGuide';
+
+const LAUNCHER_KEY = 'bauplaner.mod.launcher';
+const readLauncher = (): LauncherId => { try { const v = localStorage.getItem(LAUNCHER_KEY); return LAUNCHERS.includes(v as LauncherId) ? v as LauncherId : 'modrinth'; } catch { return 'modrinth'; } };
+
+/** Text with `code` and **bold** parts (installGuide.ts). */
+const Rich = ({ text }: { text: string }) => <>{stepParts(text).map((p, i) => p.code ? <code key={i}>{p.text}</code> : p.bold ? <b key={i}>{p.text}</b> : <span key={i}>{p.text}</span>)}</>;
+
+/** GAME-11 S04: installation per launcher for the chosen loader and Minecraft version. */
+function LauncherGuide({ loader, minecraft, file }: { loader: string; minecraft: string; file: string }) {
+  const [launcher, setLauncher] = useState<LauncherId>(readLauncher);
+  const pick = (l: LauncherId) => { setLauncher(l); try { localStorage.setItem(LAUNCHER_KEY, l); } catch { /* private mode */ } };
+  const guide = installGuide(launcher, loader, minecraft, file);
+  return <section className="system-card system-wide mod-launchers" aria-labelledby="mod-launcher">
+    <h2 id="mod-launcher">Installieren mit deinem Launcher</h2>
+    <div className="seg" role="group" aria-label="Launcher">
+      {LAUNCHERS.map(l => <button key={l} type="button" aria-pressed={launcher === l} onClick={() => pick(l)}>{LAUNCHER_LABEL[l]}</button>)}
+    </div>
+    <ol className="mod-steps" aria-label={`Schritte für ${LAUNCHER_LABEL[launcher]}`}>
+      {guide.steps.map((step, i) => <li key={i}><Rich text={step} /></li>)}
+    </ol>
+    <p className="muted"><b>Ordner <code>mods</code>:</b> <Rich text={guide.folder} />{guide.needs.length > 0 && <> · Außerdem nötig: {guide.needs.join(', ')}.</>} Modrinth-Seite: <a href={MODRINTH_PAGE} target="_blank" rel="noopener noreferrer">Bauplaner Bridge</a> (erscheint, sobald Modrinth sie freigegeben hat).</p>
+    <ul className="mod-checks">{INSTALL_CHECKS.map((c, i) => <li key={i}><Rich text={c} /></li>)}</ul>
+  </section>;
+}
 
 const releases: readonly ModRelease[] = releasesData.releases;
 const base = import.meta.env.BASE_URL;
@@ -153,9 +179,7 @@ export function ModView({ search }: { search?: string | undefined }) {
     </section> : <section className="system-card system-wide" aria-labelledby="mod-install">
       <h2 id="mod-install">In dein Profil installieren und benutzen</h2>
       <ol className="mod-steps">
-        {selection?.loader === 'fabric' || !selection
-          ? <li><b>Modrinth App:</b> Profil öffnen → oben rechts <b>⋯</b> → „Ordner öffnen“ → Ordner <code>mods</code> öffnen und die .jar hineinlegen (unter Windows <code>%APPDATA%\ModrinthApp\profiles\&lt;Profilname&gt;\mods</code>). Ältere <code>bauplaner-bridge-…jar</code> dort löschen. Prism, CurseForge und andere Launcher haben ebenfalls einen Ordner <code>mods</code> je Profil. Fabric API muss im Profil sein (in Modpacks meist schon dabei).</li>
-          : <li>{INSTALL_HINT[selection.loader] ?? INSTALL_HINT.fabric}</li>}
+        <li>{selection ? <>Mod in dein Profil bringen: Schritte für deinen Launcher stehen unten unter „Installieren mit deinem Launcher“. Kurz: <code>.jar</code> in den Ordner <code>mods</code> des {LOADER_LABEL[selection.loader] ?? selection.loader}-Profils legen.</> : INSTALL_HINT.fabric}</li>
         <li>Im Projekt unter „Bauen“ eine Revision einfrieren, im Tab „Export“ als <code>.schem</code> exportieren (DataVersion für 26.3: 5023) und in den Profilordner nach <code>bauplaner/plans/</code> kopieren.</li>
         <li>Im Spiel auf die Stelle schauen, an der der Plan stehen soll, <b>J</b> drücken und den Plan anklicken. Dann mit Pfeiltasten und Bild↑/↓ schieben, Ende dreht, Einfg spiegelt.</li>
         <li>Bauen: fehlende Blöcke erscheinen als durchsichtige Geisterblöcke, falsche rot. <b>Num 7</b> Materialliste, <b>Num 6</b> Ebenen, <b>Num 8</b> Planblock in die Hand, <b>.</b> nächster Fehler. Die Platzierhilfe verhindert falsche Blöcke und falsche Ausrichtung und sagt, wie man richtig klickt.</li>
@@ -163,6 +187,8 @@ export function ModView({ search }: { search?: string | undefined }) {
       </ol>
       <p className="muted">Läuft nur auf deinem Rechner, auch auf fremden Servern ohne Plugin. Alle Tasten unter Optionen → Steuerung → „Bauplaner“.</p>
     </section>}
+
+    {!server && selection && build && <LauncherGuide loader={selection.loader} minecraft={selection.minecraft} file={build.file} />}
 
     {!server && <section className="system-card system-wide" aria-labelledby="mod-live">
       <h2 id="mod-live">Mit dem Spiel verbinden (Live-Karte, ab Mod 0.5)</h2>

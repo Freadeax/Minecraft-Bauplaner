@@ -18,6 +18,8 @@
   "key.bauplaner_bridge.layer_down": "Layer down",
   "key.bauplaner_bridge.pick": "Pick planned block into hand",
   "key.bauplaner_bridge.guard": "Placement helper on / warn / off",
+  "key.bauplaner_bridge.curve_point": "Build guide: set curve point",
+  "key.bauplaner_bridge.symmetry_axis": "Build guide: symmetry axis here",
   "key.bauplaner_bridge.section": "Next build section",
   "key.bauplaner_bridge.xray": "X-ray (open blocks through walls)"
 }

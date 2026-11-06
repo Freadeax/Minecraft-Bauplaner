@@ -61,7 +61,7 @@ public final class CommandCatalog {
     }
 
     public static final String STATUS = "Status", HOLOGRAM = "Hologramm", TEAM = "Team", SERVER_TEAM = "Server-Team", STORAGE = "Lager", PROOF = "Nachweis",
-            LINK = "Verbindung", RECORD = "Aufnahme";
+            LINK = "Verbindung", RECORD = "Aufnahme", GUIDES = "Bauhilfen";
 
     private static final List<Entry> ALL = build();
 
@@ -154,6 +154,27 @@ public final class CommandCatalog {
         c(m, HOLOGRAM, "leistung", "Leistung", "leistung", "Wie viele Geisterblöcke gezeichnet werden.", Need.NONE, Arg.optChoice("stufe", "niedrig", "normal", "hoch"));
         c(m, HOLOGRAM, "entfernen", "Plan entfernen", "entfernen", "Hologramm entfernen (Datei bleibt).", Need.PLAN);
         c(m, HOLOGRAM, "diagnose", "Diagnose", "diagnose", "Versionen, Plan, Speicher – für Fehlerberichte.", Need.NONE);
+        // EDIT-04: symmetry and curves while building by hand (ghosts only, nothing is placed or sent)
+        c(m, GUIDES, "symmetrie", "Symmetrie-Stand", "symmetrie", "Achse, Modus und wie viele Blöcke gespiegelt werden.", Need.NONE);
+        c(m, GUIDES, "symmetrie.x", "Spiegeln Ost/West", "symmetrie x", "Gesetzte Blöcke erscheinen gespiegelt als Geister (an/aus).", Need.NONE);
+        c(m, GUIDES, "symmetrie.z", "Spiegeln Nord/Süd", "symmetrie z", "Spiegelt an einer Ost-West-Linie (an/aus).", Need.NONE);
+        c(m, GUIDES, "symmetrie.drehen", "Drehsymmetrie", "symmetrie drehen", "2- oder 4-fach um die Achse drehen (1 = aus).", Need.NONE, Arg.choice("fach", "1", "2", "4"));
+        c(m, GUIDES, "symmetrie.hier", "Achse hierher", "symmetrie hier", "Achse durch die Mitte des angeschauten Blocks.", Need.NONE);
+        c(m, GUIDES, "symmetrie.kante", "Achse auf Kante", "symmetrie kante", "Achse an die Ecke des angeschauten Blocks (gerade Breiten).", Need.NONE);
+        c(m, GUIDES, "symmetrie.aus", "Symmetrie aus", "symmetrie aus", "Spiegeln und Drehen aus, Geister weg.", Need.NONE);
+        c(m, GUIDES, "kurve", "Kurven-Stand", "kurve", "Punkte, Profil, Länge und Blöcke der Kurve.", Need.NONE);
+        c(m, GUIDES, "kurve.punkt", "Kurvenpunkt setzen", "kurve punkt", "Punkt dort, wo ein Block hinkäme (Fadenkreuz).", Need.NONE);
+        c(m, GUIDES, "kurve.zurueck", "Letzten Punkt weg", "kurve zurueck", "Entfernt den zuletzt gesetzten Kurvenpunkt.", Need.NONE);
+        c(m, GUIDES, "kurve.block", "Block aus der Hand", "kurve block", "Der Block in der Hand wird Kurvenblock.", Need.NONE);
+        c(m, GUIDES, "kurve.profil", "Profil", "kurve profil", "Rohr/Linie, Weg (flaches Band) oder Mauer.", Need.NONE, Arg.choice("profil", "rohr", "weg", "mauer"));
+        c(m, GUIDES, "kurve.breite", "Breite", "kurve breite", "Breite von Weg und Mauer (1–33).", Need.NONE, Arg.of("bloecke", Kind.NUMBER));
+        c(m, GUIDES, "kurve.hoehe", "Mauerhöhe", "kurve hoehe", "Höhe der Mauer (1–128).", Need.NONE, Arg.of("bloecke", Kind.NUMBER));
+        c(m, GUIDES, "kurve.radius", "Rohr-Radius", "kurve radius", "Radius des Rohrs (0 = Linie).", Need.NONE, Arg.of("bloecke", Kind.NUMBER));
+        c(m, GUIDES, "kurve.geschlossen", "Ring schließen", "kurve geschlossen", "Kurve zurück zum ersten Punkt (an/aus).", Need.NONE);
+        c(m, GUIDES, "kurve.versetzen", "Höher/tiefer", "kurve versetzen", "Ganze Kurve um Blöcke nach oben (+) oder unten (−).", Need.NONE, Arg.of("dy", Kind.NUMBER));
+        c(m, GUIDES, "kurve.loeschen", "Kurve löschen", "kurve loeschen", "Alle Kurvenpunkte weg.", Need.NONE);
+        c(m, GUIDES, "bauhilfe.alsplan", "Als Plan ins Hologramm", "bauhilfe alsplan", "Geister werden ein Plan: Materialliste, Platzierhilfe, Fortschritt.", Need.NONE);
+        c(m, GUIDES, "bauhilfe.aus", "Bauhilfen aus", "bauhilfe aus", "Symmetrie und Kurve löschen.", Need.NONE);
         // Team in the mod (client, works with the planner and with the server plugin)
         c(m, TEAM, "team", "Übersicht", "team", "Team, Weg zum Server, dein Auftrag.", Need.TEAM);
         c(m, TEAM, "team.abschnitte", "Abschnitte", "team abschnitte", "Alle Abschnitte mit Inhaber und Stand.", Need.TEAM);

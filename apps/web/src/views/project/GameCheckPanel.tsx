@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { WorldScan } from '../../../../../packages/formats/src/index.js';
 import { GAME_STATUS_LABEL, VERDICT_LABEL, planScanRoutes, scanRouteSummary } from '../../../../../packages/domain/src/index.js';
-import type { CellVerdict, GameCheck, GameStepStatus, GuideStep, Project, ProjectScanReference, ScanRouteId } from '../../../../../packages/domain/src/index.js';
+import type { CellVerdict, GameCheck, GameStepStatus, GuideStep, LiveHologram, Project, ProjectScanReference, ScanRouteId } from '../../../../../packages/domain/src/index.js';
 import type { Vec3 } from '../../../../../packages/voxel/src/index.js';
 import { download, errorText, formatNumber } from '../../app/ui';
 import { useApp } from '../../app/context';
@@ -9,6 +9,7 @@ import { loadProjectScanOriginal, saveProjectScan } from '../../app/scanPersiste
 import { MODEL_MAX_FILE_BYTES } from '../../../../../packages/voxel/src/sizeLimits.js';
 import { hasServerPairing, latestServerRecording, recordOnServer } from '../mod/serverClient';
 import type { ServerRecording } from '../mod/serverClient';
+import { ANCHOR_LABEL, chooseServerAnchor, uploadPlanToServer } from '../mod/planUpload';
 import { useRoomConnection } from './team/roomClient';
 import { liveApi, readLiveSettings } from '../map/liveClient';
 import type { RoomScan } from './team/roomClient';
@@ -60,7 +61,7 @@ interface Props {
 
 /** Import and summary of an in-game recording (B8, docs/architecture/mod/MOD_BRIDGE.md). */
 export function GameCheckPanel(p: Props) {
-  const { repo } = useApp();
+  const { repo, library } = useApp();
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
   const [error, setError] = useState('');
@@ -136,6 +137,25 @@ export function GameCheckPanel(p: Props) {
       if (request !== requestId.current) return;
       setOriginal({ hash: scan.sourceSha256, bytes }); latest.current.onLoad(scan);
     } finally { if (request === requestId.current) setBusy(false); }
+  };
+  /**
+   * LINK-02 S04: the current plan onto the paired server straight from here (no export, no file copy, no
+   * command). Anchor from the world map, else from the own hologram showing this project, else none.
+   */
+  const toServer = async () => {
+    setError(''); setNotice('');
+    setServerStep('Plan wird exportiert und an den Server geschickt …');
+    try {
+      let hologram: LiveHologram | null = null;
+      const live = readLiveSettings();
+      if (live.token) { try { hologram = (await liveApi.status(live.port, live.token)).hologram; } catch { /* game not running: map or no anchor */ } }
+      const base = latest.current.project;
+      const anchor = chooseServerAnchor(base, hologram);
+      const r = await uploadPlanToServer(base, library.versions, anchor);
+      if (r.frozen) { await repo.saveProject(r.frozen, base.revision); await latest.current.onStored(base); }
+      setNotice(`${r.text}${anchor.note ? ` ${anchor.note}` : ''}`);
+    } catch (e) { setError(errorText(e)); }
+    finally { setServerStep(''); }
   };
   /** FALLBACK-01: Baustand straight from the game on this computer (GET /v1/scan, no server, no internet); throws. */
   const modRecording = async (): Promise<string> => {
@@ -273,6 +293,8 @@ export function GameCheckPanel(p: Props) {
       <button disabled={busy || !!serverStep} onClick={() => void fromServer(true)}
         title="Der gekoppelte Server liest die Planbox am gespeicherten Anker und schickt die Aufnahme hierher – ohne Befehl und ohne Datei kopieren. Die Welt wird nicht verändert.">⇩ Auf dem Server aufnehmen</button>
       <button disabled={busy || !!serverStep} onClick={() => void fromServer(false)} title="Holt die neueste Aufnahme dieses Projekts, die schon auf dem Server liegt.">Letzte Aufnahme vom Server holen</button>
+      <button disabled={busy || !!serverStep} onClick={() => void toServer()}
+        title={`Legt den aktuellen Plan (eingefrorene Revision) auf den gekoppelten Server – über die Mod oder den Team-Raum, ohne Datei und ohne Befehl. Anker: ${p.project.world ? ANCHOR_LABEL.karte : 'Hologramm im Spiel, sonst ohne'}.`}>⇪ Plan auf den Server legen</button>
       {serverStep && <><span className="muted" role="status">{serverStep}</span><button className="link-button" onClick={() => { serverCancel.current = true; }}>Abbrechen</button></>}
     </div>}
     {room.connected && <div className="button-row game-room-scan" data-testid="room-scans">

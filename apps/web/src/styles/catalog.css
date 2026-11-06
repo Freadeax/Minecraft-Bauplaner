@@ -423,3 +423,8 @@ footer a:hover { color: var(--mint); }
 .server-room .button-row { flex-wrap: wrap; }
 .server-invite { margin-top: 8px; }
 .server-invite input, .server-settings details input[name="device"] { flex: 1 1 220px; min-width: 0; }
+
+/* GAME-11 S04: Installieren je Launcher */
+.mod-launchers .seg { margin: 4px 0 12px; flex-wrap: wrap; }
+.mod-checks { margin: 8px 0 0; padding-left: 20px; font-size: 12.5px; line-height: 1.7; color: var(--muted); }
+.mod-launchers code { overflow-wrap: anywhere; }
