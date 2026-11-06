@@ -52,13 +52,18 @@ function withCors(response, h) {
 
 /** Durable Object storage with the MemoryStore interface (core.js). */
 class SqlStore {
-  constructor(sql) {
-    this.sql = sql;
+  constructor(sql, storage) {
+    this.sql = sql; this.storage = storage;
     sql.exec(`CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS events (seq INTEGER PRIMARY KEY AUTOINCREMENT, id TEXT UNIQUE NOT NULL, json TEXT NOT NULL);
       CREATE TABLE IF NOT EXISTS batches (b TEXT PRIMARY KEY, answer TEXT NOT NULL, seq INTEGER NOT NULL);
-      CREATE TABLE IF NOT EXISTS plans (sha TEXT NOT NULL, idx INTEGER NOT NULL, data BLOB NOT NULL, PRIMARY KEY (sha, idx));`);
+      CREATE TABLE IF NOT EXISTS plans (sha TEXT NOT NULL, idx INTEGER NOT NULL, data BLOB NOT NULL, PRIMARY KEY (sha, idx));
+      CREATE TABLE IF NOT EXISTS subjects (s TEXT PRIMARY KEY, seq INTEGER NOT NULL, by TEXT NOT NULL);`);
   }
+  /** TEAM-02: a batch is stored all or nothing. */
+  transaction(fn) { return this.storage?.transactionSync ? this.storage.transactionSync(fn) : fn(); }
+  getSubject(s) { return this.one('SELECT seq, by FROM subjects WHERE s = ?', s); }
+  setSubject(s, seq, by) { this.sql.exec('INSERT INTO subjects (s, seq, by) VALUES (?, ?, ?) ON CONFLICT(s) DO UPDATE SET seq = excluded.seq, by = excluded.by', s, seq, by); }
   one(q, ...a) { const r = this.sql.exec(q, ...a).toArray(); return r[0]; }
   getMeta(k) { const r = this.one('SELECT v FROM meta WHERE k = ?', k); return r ? JSON.parse(r.v) : undefined; }
   setMeta(k, v) { this.sql.exec('INSERT INTO meta (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v', k, JSON.stringify(v)); }
@@ -81,7 +86,7 @@ class SqlStore {
 export class TeamRoom extends DurableObject {
   constructor(ctx, env) {
     super(ctx, env);
-    this.core = new RoomCore(new SqlStore(ctx.storage.sql));
+    this.core = new RoomCore(new SqlStore(ctx.storage.sql, ctx.storage));
     this.relay = new ControlRelay();
     // Mod and plugin send a ping every 30 s; answering it must not wake the room from hibernation.
     try { this.ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair(PING, PONG)); } catch { /* older runtime: webSocketMessage answers */ }
@@ -194,7 +199,7 @@ export class TeamRoom extends DurableObject {
       if (msg.type === 'append') {
         const answer = this.core.append(msg, att.role);
         const { added, ...out } = answer;
-        ws.send(JSON.stringify({ type: 'appended', ...out }));
+        ws.send(JSON.stringify({ type: 'appended', batch: msg.batch, ...out }));
         if (added?.length) this.broadcast({ type: 'events', events: added, cursor: answer.cursor });
         return;
       }

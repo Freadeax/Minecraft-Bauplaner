@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T20:34:36.445Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T20:43:01.586Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -12,10 +12,10 @@ Stand: 2026-11-06T20:34:36.445Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 
 | Status | Pakete |
 |---|---:|
-| ⏳ Offen | 6 |
+| ⏳ Offen | 5 |
 | 🚧 In Arbeit | 8 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 97 |
+| 🧩 Implementiert · Abnahme offen | 98 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -28,7 +28,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 28 | 1 | 28 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 0 | 10 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
-| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 14 | 0 | 14 | 0 |
+| [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 15 | 0 | 14 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 13 | 0 | 11 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 4 | 0 |
@@ -36,7 +36,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Performance und Stabilität](#bereich-perf) | 5 | 0 | 2 | 3 |
 | [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 14 | 0 | 7 | 8 |
 | [Testphase, Qualität und Betrieb](#bereich-qa) | 2 | 1 | 2 | 8 |
-| [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 6 | 0 | 0 | 0 |
+| [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 5 | 0 | 0 | 0 |
 
 <a id="bereich-planer"></a>
 
@@ -121,6 +121,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
+| [TEAM-02](#team-02) | Geordnete Operationen, Reconnect und Team-Undo im Team-Raum | 🧩 Implementiert · Abnahme offen 2/2 | P0 | „Team-Raum bei gleichzeitigen Änderungen absichern“ | — |
 | [COOP-01](#coop-01) | Teambau im Planer | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | Mit Mitspielern TEAMBAU-01…05.<br>Weg für den Live-Abgleich ohne Herunter- und Hochladen wählen (Rückfrage im Thread). |
 | [COOP-02](#coop-02) | Paper-Plugin als Teamknoten | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Gemeinsames Bauen mehrerer Spieler ermöglichen“ | Plugin auf deinem Paper-Server, TEAMBAU-06 mit Mitspielern. |
 | [COOP-03](#coop-03) | Teamabgleich live über die Mod (Merkmal team, Plugin-Kanal bauplaner:team), Abschnitte i… | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Teambau und Befehle in der Mod ausbauen“ | TEAMBAU-09: aktuelle Mod und aktuelles Plugin (ab 0.10.0) zusammen auf deinem Server. |
@@ -240,7 +241,6 @@ Abgeschlossen oder zurückgestellt: OPS-01 (geprüft), PLAN-01 (geprüft), DOC-0
 |---|---|---|---|---|---|
 | [AUTH-01](#auth-01) | Konten, Rechte und Übernahme lokaler Projekte | ⏳ Offen 0/2 | P0 | — | — |
 | [TEAM-01](#team-01) | Backendvertrag, Datenbank und Payloadspeicher | ⏳ Offen 0/2 | P0 | — | — |
-| [TEAM-02](#team-02) | Geordnete Operationen, Reconnect und Team-Undo | ⏳ Offen 0/2 | P0 | — | — |
 | [GAME-06](#game-06) | Sichere Serveranbindung (Webhooks) für Server-Plugins | ⏳ Offen 0/1 | P1 | — | — |
 | [OPS-04](#ops-04) | Teamdienst betreiben und Wiederherstellung prüfen | ⏳ Offen 0/2 | P1 | — | — |
 | [TEAM-03](#team-03) | Gemeinsame Aufgaben, Abschnitte und Sammelplanung | ⏳ Offen 0/2 | P1 | — | — |
@@ -614,7 +614,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [UX-01](#ux-01) | Bedienung des Planers vereinfachen (Struktur und Abläufe) | 🚧 In Arbeit | 6/6 | UI-02, GUIDE-01 | ausstehend | ausstehend |
 | [TEAM-01](#team-01) | Backendvertrag, Datenbank und Payloadspeicher | ⏳ Offen | 0/2 | ARCH-01, FORMAT-01, STORE-02, LICENSE-01 | ausstehend | ausstehend |
 | [AUTH-01](#auth-01) | Konten, Rechte und Übernahme lokaler Projekte | ⏳ Offen | 0/2 | TEAM-01 | ausstehend | ausstehend |
-| [TEAM-02](#team-02) | Geordnete Operationen, Reconnect und Team-Undo | ⏳ Offen | 0/2 | AUTH-01, UPDATE-01 | ausstehend | ausstehend |
+| [TEAM-02](#team-02) | Geordnete Operationen, Reconnect und Team-Undo im Team-Raum | 🧩 Implementiert · Abnahme offen | 2/2 | AUTH-01, UPDATE-01 | ausstehend | ausstehend |
 | [TEAM-03](#team-03) | Gemeinsame Aufgaben, Abschnitte und Sammelplanung | ⏳ Offen | 0/2 | TEAM-02, BUILD-01 | ausstehend | ausstehend |
 | [GAME-06](#game-06) | Sichere Serveranbindung (Webhooks) für Server-Plugins | ⏳ Offen | 0/1 | TEAM-02, GAME-04 | ausstehend | ausstehend |
 | [LAGER-01](#lager-01) | Optionale Truhen-/Lagerintegration | 🧩 Implementiert · Abnahme offen | 2/2 | GAME-04 | ausstehend | ausstehend |
@@ -2304,20 +2304,20 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TEAM-02
 
-**Geordnete Operationen, Reconnect und Team-Undo** · ⏳ Offen · Priorität P0 · Verantwortlich: nicht zugewiesen · Zuständiger Thread: — · Aktualisiert: 2026-11-05T10:34:38.680Z
+**Geordnete Operationen, Reconnect und Team-Undo im Team-Raum** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Team-Raum bei gleichzeitigen Änderungen absichern“) · Zuständiger Thread: „Team-Raum bei gleichzeitigen Änderungen absichern“ · Aktualisiert: 2026-11-06T20:43:01.586Z
 
-- [ ] TEAM-02-S01: Operation-ID, Revisionsprüfung und Wiederholung serverseitig umsetzen.
-- [ ] TEAM-02-S02: Konkurrierende Änderungen, Reconnect und geprüfte Gegenoperationen testen.
+- [x] TEAM-02-S01: Operation-ID (Ereignis-ID + Stapel-ID), Revisionsprüfung je Gegenstand (Abschnitt, Kiste, Notiz, Mitglied) mit Lesestand des Schritts, Stapel als Transaktion, Wiederholung ohne Doppelbuchung; alte Räume lernen ihre Gegenstände aus dem Protokoll.
+- [x] TEAM-02-S02: Planer: sauberes Wiederverbinden (Herzschlag, Zeitlimits, Wiederholung ohne Antwort, gestreute Pausen, Tab/Netz zurück), Hinweis „war schneller“, Team-Rückgängig über geprüfte Gegenschritte; Tests für konkurrierende Änderungen.
 
-**Abnahme:** Kein stiller Verlust und kein Überschreiben fremder Operationen.
+**Abnahme:** Kein stiller Verlust und kein Überschreiben fremder Operationen. Mod und Plugin schreiben ohne Prüfung weiter wie bisher (abwärtskompatibel). Ein schon gesendeter eigener Schritt lässt sich nur zurücknehmen, solange niemand anderes an derselben Stelle entschieden hat.
 
-**Nächste Aktion:** Operation-ID, Revisionsprüfung und Wiederholung serverseitig umsetzen. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option.
+**Nächste Aktion:** Abnahme TEAMBAU-29 mit Mitspielern im echten Raum (zwei Geräte übernehmen gleichzeitig denselben Abschnitt).
 
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
+**Prüfstand:** Automatisch geprüft (Raumkern + Planerkern in Node, Worker-Code unter wrangler dev); Abnahme mit Mitspielern offen.
 
-**Nachweise:** noch ausstehend
+**Nachweise:** [tests/unit/team/team-concurrency.test.mjs](../tests/unit/team/team-concurrency.test.mjs) — Gleichzeitige Übernahme, Mod ohne Prüfung, verlorene Antwort, halber Stapel, alte Räume, Wiederverbinden, Team-Rückgängig mit Wettlauf.; [docs/architecture/team/TEAM_LIVE.md](architecture/team/TEAM_LIVE.md) — §13 Regeln und Grenzen.
 
-**Dateiumfang:** `packages/application/`, `packages/domain/src/core/project.ts`. **Abhängigkeiten:** AUTH-01, UPDATE-01. **Alte IDs:** P4-02.
+**Dateiumfang:** `services/team-room/src/core.js`, `services/team-room/src/index.js`, `services/team-room/README.md`, `packages/domain/src/team/teamSync.ts`, `packages/domain/src/team/teamUndo.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/team/roomClient.ts`, `apps/web/src/views/project/team/TeamLiveBar.tsx`, `apps/web/src/views/project/team/TeamUndoList.tsx`, `apps/web/src/views/project/team/TeamTab.tsx`, `apps/web/src/styles/team.css`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `docs/architecture/team/TEAM_LIVE.md`, `tests/unit/team/team-concurrency.test.mjs`, `tests/unit/team/team-room.test.mjs`. **Abhängigkeiten:** AUTH-01, UPDATE-01. **Alte IDs:** P4-02.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

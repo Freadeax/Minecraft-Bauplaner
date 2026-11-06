@@ -1,8 +1,8 @@
 // Team-Raum client (COOP-07, docs/architecture/team/TEAM_LIVE.md): HTTP calls and the live connection.
 // The sync logic itself is pure (packages/domain/src/team/teamSync.ts); this file only moves bytes.
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { confirm, ingest, nextBatch, retryDelay, trackOutbox } from '../../../../../../packages/domain/src/index.js';
-import type { AppendAnswer, Batch, FeedAnswer, RoomTeam, TeamEvent, TeamLive } from '../../../../../../packages/domain/src/index.js';
+import { LINK_TIMING, confirm, ingest, linkDead, nextBatch, reconnectDelay, retryDelay, trackOutbox } from '../../../../../../packages/domain/src/index.js';
+import type { AppendAnswer, Batch, FeedAnswer, RoomTeam, StaleStep, TeamEvent, TeamLive } from '../../../../../../packages/domain/src/index.js';
 
 const URL_KEY = 'bauplaner.teamraum.adresse';
 /** Team-Raum of the project (Cloudflare worker bauplaner-team, services/team-room); own rooms can be entered instead. */
@@ -71,6 +71,9 @@ export interface RoomConnection {
   /** Own events the room refused (form, size, server-only), with the reason. */
   readonly rejected: readonly { readonly id: string; readonly reason: string }[];
   clearRejected(): void;
+  /** TEAM-02: own steps the room did not take because someone else decided about the same thing first. */
+  readonly stale: readonly (StaleStep & { readonly event: TeamEvent })[];
+  clearStale(): void;
   /** Recordings in the room, newest first (LINK-07). */
   readonly scans: readonly RoomScan[];
   /** Asks the connected games for a fresh recording; the answer (how many games got it) comes as `asked`. */
@@ -78,7 +81,7 @@ export interface RoomConnection {
   readonly asked?: { readonly games: number; readonly message?: string; readonly at: number };
   fetchScan(id: string): Promise<Uint8Array>;
 }
-export const NO_ROOM: RoomConnection = { connected: false, presence: [], error: '', planSha: '', news: [], dismiss: () => undefined, rejected: [], clearRejected: () => undefined,
+export const NO_ROOM: RoomConnection = { connected: false, presence: [], error: '', planSha: '', news: [], dismiss: () => undefined, rejected: [], clearRejected: () => undefined, stale: [], clearStale: () => undefined,
   scans: [], askScan: () => false, fetchScan: () => Promise.reject(new Error('Kein Team-Raum verbunden.')) };
 
 /**
@@ -100,6 +103,15 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
     if (others.length) setNews(n => [...n, ...others.map(e => ({ key: e.id, event: e }))].slice(-20));
   };
   const noteRejected = (r: AppendAnswer['rejected']) => { if (r.length) setRejected(x => [...x, ...r].slice(-50)); };
+  const [stale, setStale] = useState<RoomConnection['stale']>([]);
+  /** Result of an append (HTTP or WebSocket): outbox out, stale steps out of the log, hints for both. */
+  const takeAnswer = (a: AppendAnswer) => {
+    const cur = latest.current; if (!cur) return;
+    const c = confirm(cur, a);
+    noteRejected(c.rejected);
+    if (c.stale.length) setStale(x => [...x, ...c.stale].slice(-20));
+    apply(c.team);
+  };
   const [presence, setPresence] = useState<readonly Presence[]>([]);
   const [scans, setScans] = useState<readonly RoomScan[]>([]);
   const [asked, setAsked] = useState<RoomConnection['asked']>();
@@ -108,6 +120,8 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
   const saveRef = useRef(save); saveRef.current = save;
   const ws = useRef<WebSocket | null>(null);
   const sending = useRef<string | null>(null);
+  /** TEAM-02: an append over the WebSocket without answer is repeated (same batch id, the room books it once). */
+  const answerTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const [plan, setPlan] = useState<{ sha: string; number?: number; revision?: string }>({ sha: '' });
   /** For the poll loop, which lives across renders and must see the current plan, not the first one. */
   const planSha = useRef(''); planSha.current = plan.sha;
@@ -136,9 +150,15 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
     const t = latest.current; if (!t?.live) return;
     const batch = nextBatch(t); if (!batch || sending.current === batch.batch) return;
     const socket = ws.current;
-    if (socket?.readyState === WebSocket.OPEN) { sending.current = batch.batch; socket.send(JSON.stringify({ type: 'append', ...batch })); return; }
+    if (socket?.readyState === WebSocket.OPEN) {
+      sending.current = batch.batch;
+      clearTimeout(answerTimer.current);
+      answerTimer.current = setTimeout(() => { if (sending.current === batch.batch) { sending.current = null; flush(); } }, LINK_TIMING.answerMs);
+      try { socket.send(JSON.stringify({ type: 'append', ...batch })); } catch { sending.current = null; }
+      return;
+    }
     sending.current = batch.batch;
-    void postBatch(t.live, batch).then(a => { sending.current = null; const cur = latest.current; if (cur) { const c = confirm(cur, a); noteRejected(c.rejected); apply(c.team); flush(); } })
+    void postBatch(t.live, batch).then(a => { sending.current = null; takeAnswer(a); flush(); })
       .catch(e => { sending.current = null; setError(e instanceof Error ? e.message : String(e)); });
   };
 
@@ -168,17 +188,43 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
       finally { polling = false; }
       if (!stopped && ws.current?.readyState !== WebSocket.OPEN) schedulePoll(retryDelay(failures));
     };
+    // TEAM-02: clean reconnect. Every socket gets an open timeout and a heartbeat; a socket that went quiet (laptop lid,
+    // Wi-Fi gone without a close) is dropped by the planner itself. Reconnects come with a spread pause, and coming
+    // back to the tab or online tries at once. A dropped socket never fires twice: `drop` detaches it first.
+    let heartbeat: ReturnType<typeof setInterval> | undefined;
+    const drop = (socket: WebSocket, code?: number) => {
+      if (ws.current !== socket) return;
+      socket.onopen = socket.onmessage = socket.onclose = socket.onerror = null;
+      try { socket.close(); } catch { /* already closed */ }
+      ws.current = null; clearInterval(heartbeat); clearTimeout(answerTimer.current);
+      setConnected(false); setPresence([]); sending.current = null;
+      if (stopped) return;
+      if (code === 4401 || code === 4403) { setError('Der Team-Raum kennt diesen Schlüssel nicht mehr. Bitte die Bauleitung um einen neuen Einladungslink.'); return; }
+      failures++; void poll();
+      clearTimeout(openTimer); openTimer = setTimeout(open, reconnectDelay(failures - 1));
+    };
     const open = () => {
-      const t = latest.current; if (stopped || !t?.live) return;
+      const t = latest.current; if (stopped || !t?.live || ws.current) return;
       let socket: WebSocket;
       try { socket = new WebSocket(`${t.live.url.replace(/^http/, 'ws')}/v1/rooms/${t.live.room}/live`); } catch { void poll(); return; }
       ws.current = socket;
-      socket.onopen = () => socket.send(JSON.stringify({ type: 'hello', key: t.live!.key, member: me ?? '?', device: t.live!.device, where: 'planer', ...(sectionRef.current && { section: sectionRef.current }), after: latest.current?.live?.cursor ?? '' }));
+      let heard = Date.now();
+      const opening = setTimeout(() => { if (socket.readyState !== WebSocket.OPEN) drop(socket); }, LINK_TIMING.openMs);
+      socket.onopen = () => {
+        clearTimeout(opening); heard = Date.now();
+        socket.send(JSON.stringify({ type: 'hello', key: t.live!.key, member: me ?? '?', device: t.live!.device, where: 'planer', ...(sectionRef.current && { section: sectionRef.current }), after: latest.current?.live?.cursor ?? '' }));
+        clearInterval(heartbeat);
+        heartbeat = setInterval(() => {
+          if (linkDead(heard, Date.now())) { drop(socket); return; }
+          try { socket.send('{"type":"ping"}'); } catch { drop(socket); }
+        }, LINK_TIMING.pingMs);
+      };
       socket.onmessage = m => {
+        heard = Date.now();
         let d: { type: string } & Record<string, unknown>;
         try { d = JSON.parse(String(m.data)); } catch { return; }
         const cur = latest.current; if (!cur?.live) return;
-        if (d.type === 'welcome') { clearTimeout(pollTimer); setConnected(true); setError(''); failures = 0; caughtUp.current = false; flush(); if (d.header) readHeader(); void getScans(cur.live).then(setScans).catch(() => undefined); }
+        if (d.type === 'welcome') { clearTimeout(pollTimer); setConnected(true); setError(''); failures = 0; caughtUp.current = false; sending.current = null; flush(); if (d.header) readHeader(); void getScans(cur.live).then(setScans).catch(() => undefined); }
         else if (d.type === 'scan' && d.scan && typeof d.scan === 'object') { const sc = d.scan as RoomScan; setScans(l => [sc, ...l.filter(x => x.id !== sc.id)].slice(0, 12)); }
         else if (d.type === 'asked') setAsked({ games: Number(d.games) || 0, ...(typeof d.message === 'string' && { message: d.message }), at: Date.now() });
         else if (d.type === 'header' || d.type === 'plan') readHeader();
@@ -188,22 +234,27 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
           noteNews(r.added);
           if (!feed.more) caughtUp.current = true;
         }
-        else if (d.type === 'appended') { sending.current = null; const c = confirm(cur, d as unknown as AppendAnswer); noteRejected(c.rejected); apply(c.team); flush(); }
+        else if (d.type === 'appended') {
+          if (typeof d.batch !== 'string' || d.batch === sending.current) { sending.current = null; clearTimeout(answerTimer.current); }
+          takeAnswer(d as unknown as AppendAnswer); flush();
+        }
         else if (d.type === 'presence') setPresence((d.members as Presence[]) ?? []);
-        else if (d.type === 'error') { sending.current = null; setError(String(d.message ?? d.error)); }
+        else if (d.type === 'error') { sending.current = null; clearTimeout(answerTimer.current); setError(String(d.message ?? d.error)); }
       };
-      socket.onclose = ev => {
-        ws.current = null; setConnected(false); setPresence([]); sending.current = null;
-        if (stopped) return;
-        if (ev.code === 4401 || ev.code === 4403) { setError('Der Team-Raum kennt diesen Schlüssel nicht mehr. Bitte die Bauleitung um einen neuen Einladungslink.'); return; }
-        failures++; void poll();
-        clearTimeout(openTimer); openTimer = setTimeout(open, retryDelay(failures));
-      };
+      socket.onclose = ev => { clearTimeout(opening); drop(socket, ev.code); };
     };
     open();
-    const onOnline = () => { if (!ws.current) { failures = 0; clearTimeout(openTimer); open(); } };
-    window.addEventListener('online', onOnline);
-    return () => { stopped = true; clearTimeout(openTimer); clearTimeout(pollTimer); window.removeEventListener('online', onOnline); ws.current?.close(); ws.current = null; setConnected(false); };
+    const now = () => { if (stopped) return; if (!ws.current) { failures = 0; clearTimeout(openTimer); open(); } else void poll(); };
+    const onVisible = () => { if (document.visibilityState === 'visible') now(); };
+    window.addEventListener('online', now);
+    document.addEventListener('visibilitychange', onVisible);
+    return () => {
+      stopped = true; clearTimeout(openTimer); clearTimeout(pollTimer); clearInterval(heartbeat); clearTimeout(answerTimer.current);
+      window.removeEventListener('online', now); document.removeEventListener('visibilitychange', onVisible);
+      const socket = ws.current; ws.current = null;
+      if (socket) { socket.onopen = socket.onmessage = socket.onclose = socket.onerror = null; try { socket.close(); } catch { /* closed */ } }
+      setConnected(false);
+    };
   }, [roomKey, me]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Where I am: my section in progress goes to the others' "Gerade da" whenever it changes.
@@ -220,7 +271,7 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
   };
   const fetchScan = (id: string) => { const t = latest.current; return t?.live ? getScan(t.live, id) : Promise.reject(new Error('Kein Team-Raum verbunden.')); };
   return { connected, presence, error, planSha: plan.sha, ...(plan.number !== undefined && { planNumber: plan.number }), ...(plan.revision && { planRevision: plan.revision }),
-    news, dismiss, rejected, clearRejected: () => setRejected([]), scans, askScan, ...(asked && { asked }), fetchScan };
+    news, dismiss, rejected, clearRejected: () => setRejected([]), stale, clearStale: () => setStale([]), scans, askScan, ...(asked && { asked }), fetchScan };
 }
 
 /** The connection of the open project (mounted once in ProjectView, so live works in every tab). */

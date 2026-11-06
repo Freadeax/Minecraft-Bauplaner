@@ -47,3 +47,5 @@ Die Raumlogik (`src/core.js`) hat keine Cloudflare-Abhängigkeit und wird in `te
 ## Grenzen
 
 20 000 Ereignisse je Raum, 4 KB je Ereignis, 200 je Stapel, Planstand bis 25 MB (die neuesten drei bleiben).
+
+**Gleichzeitige Änderungen (TEAM-02):** Ein Stapel ist eine Transaktion; `guards` (Ereignis-ID → Lesestand) lässt entscheidende Schritte als `stale` zurückkommen, wenn jemand anderes denselben Abschnitt, dieselbe Kiste, Notiz oder Rolle danach geändert hat. Ohne `guards` (Mod, Plugin) bleibt alles wie bisher. Details: docs/architecture/team/TEAM_LIVE.md §13.

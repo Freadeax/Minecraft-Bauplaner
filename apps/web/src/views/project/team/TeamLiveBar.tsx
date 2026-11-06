@@ -37,7 +37,8 @@ export function TeamNews({ project }: { project: Project }) {
     return () => clearTimeout(t);
   }, [newest]); // eslint-disable-line react-hooks/exhaustive-deps
   const shown = room.news.slice(-3);
-  if (!team || (!shown.length && !room.rejected.length)) return null;
+  if (!team || (!shown.length && !room.rejected.length && !room.stale.length)) return null;
+  const lastStale = room.stale.at(-1);
   return <section className="team-news" aria-label="Neues im Team" aria-live="polite">
     {shown.map(n => <div key={n.key} className="team-news-item">
       <a href={href({ view: 'project', projectId: project.id, tab: 'team' })}>{describeEvent(n.event, ctx, names)}</a>
@@ -45,5 +46,8 @@ export function TeamNews({ project }: { project: Project }) {
     {room.rejected.length > 0 && <div className="team-news-item warning" role="alert">
       <span>{room.rejected.length === 1 ? 'Eine Meldung' : `${room.rejected.length} Meldungen`} hat der Team-Raum nicht angenommen: {room.rejected.at(-1)!.reason}</span>
       <button className="link-button" aria-label="Hinweis schließen" onClick={room.clearRejected}>×</button></div>}
+    {lastStale && <div className="team-news-item warning" role="alert" data-testid="team-stale">
+      <span>Nicht übernommen, weil {names.get(lastStale.by) ?? 'jemand anderes'} schneller war: {describeEvent(lastStale.event, ctx, names)}. Der Stand der anderen gilt{room.stale.length > 1 ? ` (${room.stale.length} Schritte)` : ''}.</span>
+      <button className="link-button" aria-label="Hinweis schließen" onClick={room.clearStale}>×</button></div>}
   </section>;
 }

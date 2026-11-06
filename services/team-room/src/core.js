@@ -15,7 +15,35 @@ export const LIMITS = Object.freeze({ events: 20_000, eventBytes: 4096, batch: 2
 export const DOC_NAMES = Object.freeze(['weltplan', 'karten']);
 
 const ID = /^[A-Za-z0-9_.:-]{1,64}$/;
+
+/**
+ * TEAM-02 (docs/architecture/team/TEAM_LIVE.md §13): kinds that decide about one subject – a section, a chest, a note
+ * or a member. The room remembers who changed each subject last (arrival number and author). A writer that sends a
+ * guard (the room cursor it had seen when the step was made) gets its event back as „stale“ instead of accepted,
+ * when someone else changed the same subject after that cursor: nobody overwrites a decision they never saw.
+ * Observations (section.seen, store.seen), measurements and notes added stay unguarded. Mirrors teamSync.ts.
+ */
+export const GUARDED_KINDS = Object.freeze(['section.claim', 'section.assign', 'section.release', 'section.done', 'section.verify',
+  'section.handover', 'section.accept', 'section.decline', 'note.resolve', 'member.role', 'member.away', 'store.config', 'store.chest', 'store.seal']);
+const GUARDED = new Set(GUARDED_KINDS);
+
+/** Subject keys of a guarded event (`section:<id>`, `chest:<id>`, `note:<id>`, `member:<id>`); [] for all other kinds. */
+export function subjectsOf(e) {
+  if (!e || !GUARDED.has(e.kind)) return [];
+  const out = [];
+  const add = (prefix, v) => { if (typeof v === 'string' && v) out.push(`${prefix}:${v.slice(0, 64)}`); };
+  if (e.kind.startsWith('member.')) add('member', e.member);
+  add('section', e.section); add('chest', e.chest); add('note', e.noteId);
+  return out;
+}
 const KIND = /^[a-z][a-z0-9.]{1,39}$/;
+
+/** A guard cursor as number; null (no check) when missing or not a cursor of this room (e.g. after a reset). */
+function baseOf(v, last) {
+  if (v === undefined || v === null || v === '') return null;
+  const n = Number(v);
+  return Number.isSafeInteger(n) && n >= 0 && n <= last ? n : null;
+}
 
 export class RoomError extends Error {
   constructor(status, code, message) { super(message); this.status = status; this.code = code; }
@@ -56,7 +84,18 @@ export function randomKey(bytes = 24) {
  * meta: small JSON values; events: arrival-ordered rows {seq, id, json}; batches: answers by batch id; plan chunks.
  */
 export class MemoryStore {
-  constructor() { this.meta = new Map(); this.rows = []; this.byId = new Map(); this.batches = new Map(); this.plans = new Map(); }
+  constructor() { this.meta = new Map(); this.rows = []; this.byId = new Map(); this.batches = new Map(); this.plans = new Map(); this.subjects = new Map(); }
+  /** All or nothing, like transactionSync of the Durable Object: a failure in the middle leaves no half batch. */
+  transaction(fn) {
+    const rows = this.rows.length, subjects = new Map(this.subjects), meta = new Map(this.meta);
+    try { return fn(); } catch (e) {
+      for (const r of this.rows.splice(rows)) this.byId.delete(r.id);
+      this.subjects = subjects; this.meta = meta;
+      throw e;
+    }
+  }
+  getSubject(s) { return this.subjects.get(s); }
+  setSubject(s, seq, by) { this.subjects.set(s, { seq, by }); }
   getMeta(k) { return this.meta.has(k) ? structuredClone(this.meta.get(k)) : undefined; }
   setMeta(k, v) { this.meta.set(k, structuredClone(v)); }
   count() { return this.rows.length; }
@@ -93,7 +132,7 @@ export class RoomCore {
     if (!r) throw new RoomError(404, 'raum-fehlt', 'Diesen Team-Raum gibt es nicht (mehr).');
     const docs = {};
     for (const n of DOC_NAMES) { const d = this.store.getMeta(`doc:${n}`); if (d) docs[n] = d.rev; }
-    return { protocol: PROTOCOL, version: VERSION, room: r.room, teamId: r.teamId, name: r.name, createdAt: r.createdAt, events: this.store.count(), cursor: String(this.store.lastSeq()), header: !!this.store.getMeta('header'), docs };
+    return { protocol: PROTOCOL, version: VERSION, room: r.room, teamId: r.teamId, name: r.name, createdAt: r.createdAt, events: this.store.count(), cursor: String(this.store.lastSeq()), header: !!this.store.getMeta('header'), docs, guards: true };
   }
 
   /**
@@ -111,33 +150,63 @@ export class RoomCore {
     throw new RoomError(h === r.member ? 403 : 401, h === r.member ? 'nur-bauleitung' : 'schluessel-falsch', h === r.member ? 'Das darf nur die Bauleitung.' : 'Der Schlüssel passt nicht (Einladung erneuert?).');
   }
 
-  /** Appends a batch. Repeating the same batch id returns the first answer unchanged. */
-  append({ batch, events }, role = 'member') {
+  /**
+   * Appends a batch. Repeating the same batch id returns the first answer unchanged (a lost answer is simply asked
+   * again). TEAM-02: `guards` maps event ids to the room cursor the writer had read when it made the step; such an
+   * event comes back in `stale` when another author changed one of its subjects after that cursor. The whole batch
+   * is one transaction: an error in the middle stores nothing, the writer repeats it.
+   */
+  append({ batch, events, guards }, role = 'member') {
     if (typeof batch !== 'string' || !ID.test(batch)) throw new RoomError(400, 'stapel-id', 'Stapel-ID ungültig.');
     const known = this.store.getBatch(batch);
-    if (known) return known;
+    if (known) return { ...known, repeated: true };
     if (!Array.isArray(events) || events.length > LIMITS.batch) throw new RoomError(400, 'stapel-groesse', `Höchstens ${LIMITS.batch} Ereignisse je Stapel.`);
-    const answer = { cursor: '', accepted: [], known: [], rejected: [] };
-    const added = [];
-    for (const e of events) {
-      const problem = checkEventShape(e);
-      const id = typeof e?.id === 'string' ? e.id.slice(0, 64) : '?';
-      if (problem) { answer.rejected.push({ id, reason: problem }); continue; }
-      if (e.origin === 'server' && role !== 'server') { answer.rejected.push({ id, reason: 'Nur der Server (Serverschlüssel) schreibt Ereignisse mit Herkunft „server“.' }); continue; }
-      const row = this.store.eventById(e.id);
-      if (row) {
-        if (canonical(JSON.parse(row.json)) === canonical(e)) answer.known.push(e.id);
-        else answer.rejected.push({ id: e.id, reason: 'Gleiche ID mit anderem Inhalt – das Ereignis im Raum bleibt.' });
-        continue;
+    if (guards !== undefined && (typeof guards !== 'object' || guards === null || Array.isArray(guards) || Object.keys(guards).length > LIMITS.batch))
+      throw new RoomError(400, 'stapel-pruefung', 'Revisionsprüfung ungültig (guards: Ereignis-ID → Cursor).');
+    const run = () => {
+      this.ensureSubjects();
+      const last = this.store.lastSeq();
+      const answer = { cursor: '', accepted: [], known: [], rejected: [], stale: [] };
+      const added = [];
+      for (const e of events) {
+        const problem = checkEventShape(e);
+        const id = typeof e?.id === 'string' ? e.id.slice(0, 64) : '?';
+        if (problem) { answer.rejected.push({ id, reason: problem }); continue; }
+        if (e.origin === 'server' && role !== 'server') { answer.rejected.push({ id, reason: 'Nur der Server (Serverschlüssel) schreibt Ereignisse mit Herkunft „server“.' }); continue; }
+        const row = this.store.eventById(e.id);
+        if (row) {
+          if (canonical(JSON.parse(row.json)) === canonical(e)) answer.known.push(e.id);
+          else answer.rejected.push({ id: e.id, reason: 'Gleiche ID mit anderem Inhalt – das Ereignis im Raum bleibt.' });
+          continue;
+        }
+        const subjects = subjectsOf(e);
+        const base = guards ? baseOf(guards[e.id], last) : null;
+        if (base !== null) {
+          const clash = subjects.map(s => ({ s, w: this.store.getSubject(s) })).find(({ w }) => w && w.seq > base && w.by !== e.by);
+          if (clash) { answer.stale.push({ id: e.id, subject: clash.s, by: clash.w.by, seq: String(clash.w.seq) }); continue; }
+        }
+        if (this.store.count() >= LIMITS.events) { answer.rejected.push({ id: e.id, reason: `Der Raum ist voll (${LIMITS.events} Ereignisse).` }); continue; }
+        const seq = this.store.appendEvent(e.id, JSON.stringify(e));
+        for (const s of subjects) this.store.setSubject(s, seq, e.by);
+        answer.accepted.push(e.id); added.push(e);
       }
-      if (this.store.count() >= LIMITS.events) { answer.rejected.push({ id: e.id, reason: `Der Raum ist voll (${LIMITS.events} Ereignisse).` }); continue; }
-      const json = JSON.stringify(e);
-      this.store.appendEvent(e.id, json);
-      answer.accepted.push(e.id); added.push(e);
-    }
-    answer.cursor = String(this.store.lastSeq());
-    this.store.setBatch(batch, answer);
-    return { ...answer, added };
+      answer.cursor = String(this.store.lastSeq());
+      if (!answer.stale.length) delete answer.stale;
+      this.store.setBatch(batch, answer);
+      return { ...answer, added };
+    };
+    return this.store.transaction ? this.store.transaction(run) : run();
+  }
+
+  /** Rooms from before TEAM-02 learn their subjects once from the stored events (at most 20 000 rows). */
+  ensureSubjects() {
+    if (this.store.getMeta('subjects') === 1) return;
+    let after = 0, rows;
+    do {
+      rows = this.store.since(after, LIMITS.page);
+      for (const r of rows) { const e = JSON.parse(r.json); for (const s of subjectsOf(e)) this.store.setSubject(s, r.seq, e.by); after = r.seq; }
+    } while (rows.length === LIMITS.page);
+    this.store.setMeta('subjects', 1);
   }
 
   /** Events after a cursor in arrival order; an unknown or future cursor answers with reset. */

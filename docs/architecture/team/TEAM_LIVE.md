@@ -117,3 +117,33 @@ Philipps Vorgabe: so viel wie möglich im Client, so wenig Server wie nötig. Vi
 - Prüfung: `tests/unit/team/team.test.mjs` („Client zuerst“), `tests/e2e/team-room.e2e.mjs` (Mod-Meldung mit Mitgliedsschlüssel erscheint in beiden Browsern).
 - **Wo steht wer:** Meldet ein Spiel seine Position (LINK-07, nur `where: 'spiel'`), zeigt „Gerade da“ neben „AnnaMC bei 12 64 -3“ auch „steht in „Fundament““, „8 Blöcke von „Dach““ oder „weit weg von der Baustelle“. Grundlage sind dieselben Weltboxen je Abschnitt wie in der Serverdatei (`teamServerFile`), Rechnung in `whereInPlan` (team.ts); bei überlappenden Boxen gewinnt die kleinere.
 - **Mein Spiel:** Unter „Team live“ steht, wie die eigene Mod gerade mit dem Raum spricht („Mein Spiel: live“, „über HTTP (Ausweichweg) · 2 Meldungen warten“, „Stand vor 5 min“), aus `GET /v1/room` der Mod (Felder aus FALLBACK-01, docs/architecture/team/FALLBACKS.md). Ist das Spiel mit einem anderen Raum verbunden, warnt die Zeile. Abgefragt beim Öffnen, nach „Mein Spiel verbinden“/„Spiel trennen“ und mit „Neu prüfen“.
+
+## 13. Gleichzeitige Änderungen, Wiederverbinden, Team-Rückgängig (06.11.2026, TEAM-02)
+
+Ziel: **kein stiller Verlust und kein Überschreiben fremder Schritte**, auch wenn zwei Leute im selben Moment dasselbe tun oder einer lange offline war.
+
+**Operation-ID und Wiederholung.** Jeder Schritt ist ein Ereignis mit eigener ID, jeder Versand ein Stapel mit einer Stapel-ID aus den Ereignis-IDs. Der Raum bucht einen Stapel als **eine Transaktion** (Durable Object `transactionSync`): Ein Fehler mittendrin speichert nichts und merkt sich auch keine Antwort, der Planer sendet denselben Stapel einfach noch einmal. Ein wiederholter Stapel bekommt die erste Antwort mit `repeated: true`; dieselben Ereignisse in einem anderen Stapel kommen als `known` zurück. Über den WebSocket trägt `appended` jetzt die Stapel-ID. Kommt 15 s keine Antwort, sendet der Planer denselben Stapel erneut.
+
+**Revisionsprüfung je Gegenstand.** Entscheidende Schritte (`GUARDED_KINDS`: Abschnitt übernehmen, zuweisen, abgeben, fertig melden, prüfen, übergeben, annehmen, ablehnen; Notiz erledigen; Rolle; Abwesenheit; Lagerkiste anlegen, einstellen, versiegeln) betreffen einen Gegenstand: `section:<id>`, `chest:<id>`, `note:<id>` oder `member:<id>`. Der Raum merkt sich je Gegenstand, wer ihn zuletzt geändert hat (Ankunftsnummer und Urheber).
+- Der Planer schickt für **eigene** entscheidende Schritte `guards: {Ereignis-ID: Cursor}` mit, also den Lesestand, als der Schritt gemacht wurde (bei Offline-Arbeit der Stand vor dem Offline-Gehen).
+- Hat danach **jemand anderes** denselben Gegenstand geändert, nimmt der Raum den Schritt nicht an und antwortet `stale: [{id, subject, by, seq}]`. Eigene Schritte blockieren sich nie gegenseitig.
+- Der Planer nimmt einen solchen Schritt aus dem eigenen Protokoll (er hat nie jemanden erreicht) und zeigt unten rechts „Nicht übernommen, weil Anna schneller war: …“. Danach gilt der Stand der anderen, der mit dem nächsten Abgleich ankommt.
+- Beobachtungen und Messungen (`section.seen`, `store.seen`, `build.tally` …) und neue Notizen bleiben ungeprüft. Mod und Plugin schicken keine `guards` und schreiben unverändert wie bisher; ihre Schritte zählen aber als letzte Änderung des Gegenstands. Ein Cursor, den der Raum nie hatte (nach `reset`), ist keine Prüfung.
+- Räume aus der Zeit vor TEAM-02 lesen beim ersten Stapel einmal ihr Protokoll und lernen daraus ihre Gegenstände.
+
+**Sauberes Wiederverbinden (Planer).** Ping alle 25 s (der Raum antwortet, ohne aufzuwachen); hört der Planer 70 s nichts, gilt die Leitung als tot (Laptop zugeklappt, WLAN weg ohne Abmeldung) und er baut sie selbst neu auf. Ein WebSocket, der nach 15 s nicht offen ist, wird verworfen. Die Pause bis zum nächsten Versuch beginnt bei etwa 1 s und wächst bis 60 s, mit ±25 % Streuung, damit nach einem Raum-Update nicht alle Browser in derselben Sekunde anklopfen. Zurück im Tab oder wieder online versucht er es sofort. Eine verworfene Verbindung löst nie zwei Wiederverbindungen aus.
+
+**Team-Rückgängig.** Strg+Z wirkt nur auf diesem Gerät. Was die anderen schon gesehen haben, nimmt man im Reiter „Team“ unter **„Meine letzten Schritte zurücknehmen“** mit einem **geprüften Gegenschritt** zurück (`teamUndo.ts`):
+
+| Schritt | Gegenschritt |
+|---|---|
+| Abschnitt übernommen | abgeben |
+| Abschnitt abgegeben | wieder übernehmen (bzw. an den vorherigen Inhaber zuweisen) |
+| Abschnitt zugewiesen | an den vorherigen Inhaber zurück oder freigeben |
+| Übergabe angeboten / zurückgezogen | Angebot zurückziehen / erneuern |
+| Notiz geschrieben | als „zurückgenommen“ erledigen |
+| Sammelauftrag, Rolle, Abwesenheit, Baunachweis an/aus | vorheriger Wert |
+
+Geprüft heißt: nur eigene Schritte; niemand anderes hat danach an derselben Stelle entschieden; der Gegenschritt besteht Rechte und Faltung ohne Ablehnung. Fertigmeldung, Prüfung, Freigabe, Lieferungen und Messungen haben keinen Gegenschritt (der Grund steht daneben). Der Gegenschritt geht wie jeder entscheidende Schritt mit Revisionsprüfung in den Raum; ein Wettlauf in der letzten Sekunde endet also als „war schneller“, nicht als Überschreiben.
+
+**Prüfung:** `tests/unit/team/team-concurrency.test.mjs` (gleichzeitige Übernahme mit drei Teilnehmern, Mod ohne Prüfung, verlorene Antwort, halb gescheiterter Stapel, alte Räume, Zeitwerte des Wiederverbindens, Team-Rückgängig mit Wettlauf), dazu `team-room.test.mjs`. Offen: Abnahme mit Mitspielern an zwei Geräten.

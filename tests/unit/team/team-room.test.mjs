@@ -92,7 +92,8 @@ test('live without files: Bauleitung goes live, helper joins by link, server wri
   assert.deepEqual(va.sections, vl.sections);
   assert.equal(va.notes.length, 1);
   assert.equal(vl.members.find(m => m.id === 'bld_anna').placed, 64, 'server measurement live in the planner');
-  assert.equal(vl.conflicts.length, 1, 'late claim is a visible hint, as offline');
+  assert.equal(vl.conflicts.length, 0, 'TEAM-02: the late claim was made without seeing Anna\'s – the room refused it as stale');
+  assert.ok(!lead.events.some(e => e.kind === 'section.claim' && e.by === 'bld_phil'), 'stale step left the local log');
   assert.equal(lead.events.length, anna.events.length);
 });
 

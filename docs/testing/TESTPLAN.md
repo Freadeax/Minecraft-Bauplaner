@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/checks/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 178 Fälle in 13 Bereichen, davon 78 Kernfälle.
+Umfang: 179 Fälle in 13 Bereichen, davon 78 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -188,6 +188,7 @@ Mehrere Spieler an einem Projekt: Reiter „Team“ im Planer und Teambefehle de
 | TEAMBAU-26 | Team live im Alltag: Meldungen, Anwesenheit, Einladung erneuern | vertieft | 1. Team live wie in TEAMBAU-25, zwei Rechner (oder Rechner und Handy).<br>2. Mitspieler übernimmt einen Abschnitt und meldet ihn; Bauleitung ist dabei in einem anderen Reiter (z. B. „Material“).<br>3. Mitspieler lädt die Seite neu (Nachholen).<br>4. Bauleitung: „Einladung erneuern“; ein dritter Browser versucht es mit dem alten Link. | Die Meldung erscheint bei der Bauleitung in jedem Reiter, mit Name und Abschnitt in der Anwesenheit; nach dem Neuladen kommen keine alten Meldungen erneut; mit dem alten Link kommt niemand mehr in den Raum, abgelehnte Meldungen sind sichtbar. (Abnahme COOP-09) |
 | TEAMBAU-27 | Baustand laut Spiel ohne Plugin | vertieft | 1. Team live mit Mod ab 0.15.0, Server ohne Bauplaner-Plugin.<br>2. Mitspieler baut im eigenen Abschnitt ein paar Minuten und öffnet und schließt eine markierte Teamkiste.<br>3. Bauleitung öffnet Reiter „Team“ → „Baunachweis & Lager“. | Beim Abschnitt steht „laut Spiel … % … ungeprüft“ mit fehlenden Blöcken, bei der Kiste der gesehene Inhalt; die geprüften Serverzahlen bleiben davon unberührt. (Abnahme COOP-10) |
 | TEAMBAU-28 | Verlauf verdichten und Ertragsbuch | vertieft | 1. Ein Team mit einigen Tagen Baunachweis, Lagerbuchungen und einer Ertragskiste (Plugin) öffnen, als Bauleitung.<br>2. Reiter „Team“ → „Baunachweis & Lager“: Ertragsbuch ansehen.<br>3. Ganz unten „Verlauf verdichten“ öffnen, „älter als 3 Tage“, „Vorschau“, „Jetzt verdichten“.<br>4. Teampaket an einen Mitspieler mit älterem Stand schicken oder Team live abwarten; Mitspieler liest ein. | Das Ertragsbuch zeigt je Ertragskiste Items je Stunde, Laufzeit und den Planwert der Farm; nach dem Verdichten sind Baunachweis, Lager und Ertragsbuch unverändert, die Zahl der Ereignisse ist deutlich kleiner; beim Mitspieler kommen keine alten Ereignisse doppelt zurück; „Rückgängig“ stellt den vollen Verlauf wieder her. (Abnahme COOP-11, COOP-08) |
+| TEAMBAU-29 | Gleichzeitig ändern und zurücknehmen | vertieft | 1. Team live mit zwei Geräten (zwei Browser oder Rechner und Handy), beide als Helfer im selben Raum.<br>2. Auf beiden denselben freien Abschnitt im selben Moment „Übernehmen“ klicken.<br>3. Auf dem Gerät, das den Abschnitt bekommen hat: Reiter „Team“ → „Meine letzten Schritte zurücknehmen“ → „Zurücknehmen“ bei der Übernahme.<br>4. Ein Gerät 2 Minuten offline (WLAN aus oder Laptop zu), dort einen Abschnitt abgeben, wieder online. | Nur einer hat den Abschnitt, beide zeigen denselben Inhaber; der andere sieht unten rechts „Nicht übernommen, weil … schneller war“; nach „Zurücknehmen“ ist der Abschnitt bei beiden wieder frei; nach dem Offline-Gehen verbindet sich der Planer ohne Neuladen wieder und holt alles nach, nichts kommt doppelt. (Abnahme TEAM-02) |
 
 ## LAGER · Server: geprüfte Lagerkisten (Server)
 
@@ -279,7 +280,7 @@ Planer, Mod und Paper-Plugin verbinden sich per Klick; der Server wird aus dem P
 
 Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan.ts), geordnet nach dem Ort, den die Abnahme braucht. Ein Paket gilt als abgenommen, wenn alle genannten Fälle ✓ sind; Ob ein Paket noch auf Abnahme wartet, steht in `docs/ROADMAP.md`.
 
-### Nur im Browser (45 Pakete)
+### Nur im Browser (46 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -320,6 +321,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | PROJ-04 | PROJ-21 |
 | SPLIT-01 | BIB-11 |
 | STRUCT-01 | START-03, SYS-03 |
+| TEAM-02 | TEAMBAU-29 |
 | TERRAIN-01 | KARTE-04, PROJ-06 |
 | TERRAIN-02 | PROJ-06 |
 | UI-03 | START-20, START-21 |

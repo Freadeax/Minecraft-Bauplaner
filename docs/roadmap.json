@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T20:34:36.445Z",
+  "updatedAt": "2026-11-06T20:43:01.586Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -6111,18 +6111,32 @@
     },
     {
       "id": "TEAM-02",
-      "title": "Geordnete Operationen, Reconnect und Team-Undo",
+      "title": "Geordnete Operationen, Reconnect und Team-Undo im Team-Raum",
       "phase": "P4",
       "priority": "P0",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "implemented",
+      "owner": "Claude (Thread „Team-Raum bei gleichzeitigen Änderungen absichern“)",
       "dependencies": [
         "AUTH-01",
         "UPDATE-01"
       ],
       "scope": [
-        "packages/application/",
-        "packages/domain/src/core/project.ts"
+        "services/team-room/src/core.js",
+        "services/team-room/src/index.js",
+        "services/team-room/README.md",
+        "packages/domain/src/team/teamSync.ts",
+        "packages/domain/src/team/teamUndo.ts",
+        "packages/domain/src/index.ts",
+        "apps/web/src/views/project/team/roomClient.ts",
+        "apps/web/src/views/project/team/TeamLiveBar.tsx",
+        "apps/web/src/views/project/team/TeamUndoList.tsx",
+        "apps/web/src/views/project/team/TeamTab.tsx",
+        "apps/web/src/styles/team.css",
+        "apps/web/src/testing/testplan.ts",
+        "docs/testing/TESTPLAN.md",
+        "docs/architecture/team/TEAM_LIVE.md",
+        "tests/unit/team/team-concurrency.test.mjs",
+        "tests/unit/team/team-room.test.mjs"
       ],
       "legacyIds": [
         "P4-02"
@@ -6130,32 +6144,43 @@
       "steps": [
         {
           "id": "TEAM-02-S01",
-          "title": "Operation-ID, Revisionsprüfung und Wiederholung serverseitig umsetzen.",
-          "done": false
+          "title": "Operation-ID (Ereignis-ID + Stapel-ID), Revisionsprüfung je Gegenstand (Abschnitt, Kiste, Notiz, Mitglied) mit Lesestand des Schritts, Stapel als Transaktion, Wiederholung ohne Doppelbuchung; alte Räume lernen ihre Gegenstände aus dem Protokoll.",
+          "done": true
         },
         {
           "id": "TEAM-02-S02",
-          "title": "Konkurrierende Änderungen, Reconnect und geprüfte Gegenoperationen testen.",
-          "done": false
+          "title": "Planer: sauberes Wiederverbinden (Herzschlag, Zeitlimits, Wiederholung ohne Antwort, gestreute Pausen, Tab/Netz zurück), Hinweis „war schneller“, Team-Rückgängig über geprüfte Gegenschritte; Tests für konkurrierende Änderungen.",
+          "done": true
         }
       ],
       "acceptance": [
-        "Kein stiller Verlust und kein Überschreiben fremder Operationen."
+        "Kein stiller Verlust und kein Überschreiben fremder Operationen.",
+        "Mod und Plugin schreiben ohne Prüfung weiter wie bisher (abwärtskompatibel).",
+        "Ein schon gesendeter eigener Schritt lässt sich nur zurücknehmen, solange niemand anderes an derselben Stelle entschieden hat."
       ],
-      "next": "Operation-ID, Revisionsprüfung und Wiederholung serverseitig umsetzen. Für den Spielbetrieb ohne Backend ersetzt durch COOP-01…04 (TEAMBAU.md); bleibt als spätere Option.",
+      "next": "Abnahme TEAMBAU-29 mit Mitspielern im echten Raum (zwei Geräte übernehmen gleichzeitig denselben Abschnitt).",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/unit/team/team-concurrency.test.mjs",
+          "note": "Gleichzeitige Übernahme, Mod ohne Prüfung, verlorene Antwort, halber Stapel, alte Räume, Wiederverbinden, Team-Rückgängig mit Wettlauf."
+        },
+        {
+          "path": "docs/architecture/team/TEAM_LIVE.md",
+          "note": "§13 Regeln und Grenzen."
+        }
+      ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "note": "Automatisch geprüft (Raumkern + Planerkern in Node, Worker-Code unter wrangler dev); Abnahme mit Mitspielern offen."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T10:34:38.680Z",
-      "area": "SPAETER",
-      "thread": null,
+      "updatedAt": "2026-11-06T20:43:01.586Z",
+      "area": "TEAM",
+      "thread": "Team-Raum bei gleichzeitigen Änderungen absichern",
       "philipp": [],
       "orphans": []
     },
@@ -24365,6 +24390,41 @@
           "done": 3,
           "total": 3,
           "next": "Abnahme: Safari/iPad und Firefox (Offline-Speicher); Verbindung Mod ↔ Planer einmal über https://bauplaner.pages.dev/Minecraft-Bauplaner/ im echten Spiel."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T20:43:01.586Z",
+      "kind": "progress",
+      "items": [
+        "TEAM-02"
+      ],
+      "summary": "TEAM-02: Revisionsprüfung je Gegenstand im Team-Raum (guards → stale), Stapel als Transaktion, Wiederholung ohne Doppelbuchung, sauberes Wiederverbinden im Planer, Team-Rückgängig über geprüfte Gegenschritte, Abnahmefall TEAMBAU-29; Node-Tests und wrangler-dev-Probe grün.",
+      "files": [
+        "apps/web/src/styles/team.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/project/team/TeamLiveBar.tsx",
+        "apps/web/src/views/project/team/TeamTab.tsx",
+        "apps/web/src/views/project/team/TeamUndoList.tsx",
+        "apps/web/src/views/project/team/roomClient.ts",
+        "docs/architecture/team/TEAM_LIVE.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/team/teamSync.ts",
+        "packages/domain/src/team/teamUndo.ts",
+        "services/team-room/README.md",
+        "services/team-room/src/core.js",
+        "services/team-room/src/index.js",
+        "tests/unit/team/team-concurrency.test.mjs",
+        "tests/unit/team/team-room.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "TEAM-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme TEAMBAU-29 mit Mitspielern im echten Raum (zwei Geräte übernehmen gleichzeitig denselben Abschnitt)."
         }
       ]
     }

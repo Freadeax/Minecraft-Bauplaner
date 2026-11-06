@@ -7920,3 +7920,32 @@ Mod auf Minecraft 26.4 vorbereitet: Adapter fabric-26.4 gegen 26.4-snapshot-7 ü
 - `scripts/mod/test_bridge_ingame.sh`
 - `tests/unit/mod/mod-versions.test.mjs`
 
+## 2026-11-06T20:43:01.586Z · progress
+
+**Aufgaben:** TEAM-02
+
+TEAM-02: Revisionsprüfung je Gegenstand im Team-Raum (guards → stale), Stapel als Transaktion, Wiederholung ohne Doppelbuchung, sauberes Wiederverbinden im Planer, Team-Rückgängig über geprüfte Gegenschritte, Abnahmefall TEAMBAU-29; Node-Tests und wrangler-dev-Probe grün.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| TEAM-02 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme TEAMBAU-29 mit Mitspielern im echten Raum (zwei Geräte übernehmen gleichzeitig denselben Abschnitt). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/styles/team.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/project/team/TeamLiveBar.tsx`
+- `apps/web/src/views/project/team/TeamTab.tsx`
+- `apps/web/src/views/project/team/TeamUndoList.tsx`
+- `apps/web/src/views/project/team/roomClient.ts`
+- `docs/architecture/team/TEAM_LIVE.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/team/teamSync.ts`
+- `packages/domain/src/team/teamUndo.ts`
+- `services/team-room/README.md`
+- `services/team-room/src/core.js`
+- `services/team-room/src/index.js`
+- `tests/unit/team/team-concurrency.test.mjs`
+- `tests/unit/team/team-room.test.mjs`
+
