@@ -7083,3 +7083,18 @@ Spieltest Fabric 26.3 um die Bauhilfen erweitert: Symmetrieachse, 4-fach gedreht
 - `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
 - `scripts/mod/bridge_gametest.mjs`
 
+## 2026-11-06T10:18:20.598Z · progress
+
+**Aufgaben:** GAME-09
+
+Modrinth-Galerie: Bild Bauhilfen Symmetrie/Kurven (0.18.0)
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
+
+**Geänderte Dateien:**
+
+- `mods/bauplaner-bridge/modrinth/gallery/09-build-guides.png`
+- `mods/bauplaner-bridge/modrinth/project.json`
+

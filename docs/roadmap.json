@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T10:12:51.224Z",
+  "updatedAt": "2026-11-06T10:18:20.598Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -8259,7 +8259,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T09:59:21.385Z",
+      "updatedAt": "2026-11-06T10:18:20.598Z",
       "area": "MODRINTH",
       "thread": "Mod auf Modrinth veröffentlichen",
       "philipp": [],
@@ -22455,6 +22455,27 @@
           "done": 7,
           "total": 8,
           "next": "Spielprüfung gespiegelter Zustände im Planer (S07) und der Bauhilfen in der Mod (MOD-18/19); Gelände-Werkzeuge auf dem Projektgelände bleiben offen."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T10:18:20.598Z",
+      "kind": "progress",
+      "items": [
+        "GAME-09"
+      ],
+      "summary": "Modrinth-Galerie: Bild Bauhilfen Symmetrie/Kurven (0.18.0)",
+      "files": [
+        "mods/bauplaner-bridge/modrinth/gallery/09-build-guides.png",
+        "mods/bauplaner-bridge/modrinth/project.json"
+      ],
+      "snapshot": [
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 4,
+          "total": 5,
+          "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind."
         }
       ]
     }

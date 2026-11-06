@@ -71,6 +71,11 @@
       "file": "gallery/08-allow-planner.png",
       "title": "Allow the planner",
       "description": "The Bauplaner website on this PC asks to connect; nothing is exchanged until you click Allow planner."
+    },
+    {
+      "file": "gallery/09-build-guides.png",
+      "title": "Build guides: symmetry and curves",
+      "description": "Mirror and rotate what you build, or lay out a smooth wall, path or pipe through a few points. Ghost blocks only, nothing is sent to the server."
     }
   ],
   "firstVersion": "0.10.0",
