@@ -6939,3 +6939,42 @@ GFX-03: Glas/Wasser im Betrachter je Bild sortiert (höchstens ~25 ms statt 400 
 - `tests/e2e/graphics2.e2e.mjs`
 - `tests/unit/web/graphics3.test.mjs`
 
+## 2026-11-06T09:18:45.680Z · progress
+
+**Aufgaben:** TERRAIN-03, BASE-01, GROSS-01, GEN-03
+
+Wegenetze als Landschaftsweg, Bauplätze einebnen mit Kaimauer, Küste im Lageplan, Großprojekte auf Gelände und aus Sammlungen, Kolosseum v2
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| TERRAIN-03 | 🧩 Implementiert · Abnahme offen | 7/8 | Abnahme PROJ-19, BIB-19 und BIB-20 im Spiel (Treppen, Brücken, Wegenetz der Basis auf echtem Gelände). |
+| BASE-01 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme durch Philipp (S06, BIB-10, BIB-19, BIB-20); Küstenlinie, Wegstufen und Brücken sind über TERRAIN-03-S06/S08 umgesetzt. |
+| GROSS-01 | 🧩 Implementiert · Abnahme offen | 7/8 | Abnahme durch Philipp (S06 BIB-13, BIB-21, BIB-22). |
+| GEN-03 | 🧩 Implementiert · Abnahme offen | 5/6 | Philipp baut das Kolosseum im Spiel nach (BIB-14, mit Statuen und Hypogäum-Treppen). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/library/BasePage.tsx`
+- `apps/web/src/views/library/GrossprojektePage.tsx`
+- `apps/web/src/views/library/anlagen.css`
+- `apps/web/src/views/library/grossprojekte.css`
+- `apps/web/src/views/library/planTerrain.tsx`
+- `docs/architecture/bibliothek/BASE_PLANNER.md`
+- `docs/architecture/bibliothek/GENERATORS.md`
+- `docs/architecture/bibliothek/GROSSPROJEKTE.md`
+- `docs/architecture/welt/LANDSCAPE.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/base/anlagenTerrain.ts`
+- `packages/domain/src/base/baseShore.ts`
+- `packages/domain/src/base/planLandscape.ts`
+- `packages/domain/src/catalog/generators/arena.ts`
+- `packages/domain/src/catalog/grossprojekte.ts`
+- `packages/domain/src/catalog/ownGrossprojekt.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/world/terrainDesign.ts`
+- `tests/e2e/plan-landscape.e2e.mjs`
+- `tests/unit/catalog/generators.test.mjs`
+- `tests/unit/catalog/plan-landscape.test.mjs`
+- `tests/unit/world/terrain-network.test.mjs`
+

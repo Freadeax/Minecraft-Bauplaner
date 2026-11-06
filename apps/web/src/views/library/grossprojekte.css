@@ -7,3 +7,4 @@
 .gp-slots{margin-top:6px;font-size:12px}.gp-slots summary{cursor:pointer;color:var(--mint);min-height:32px}
 .gp-select{display:grid;gap:6px;font-size:12px}.gp-select select{width:auto;max-width:320px;padding:6px;font-size:12px}
 @media (max-width:720px){.gp-phase-head{flex-direction:column}}
+.gp-own{margin:0 0 18px}.gp-own h3{margin-top:0}

@@ -41,7 +41,20 @@ Ist das Ziel ein Projekt mit Weltlage und Geländeaufnahme (oder Geländegestalt
 - **Oberfläche**: „Wasserseite übernehmen“ setzt die vorgeschlagene Seite, „Ans echte Ufer schieben“ addiert die Verschiebung zum Versatz neben den bestehenden Bauten (Vorschau, Geländeanpassung, Konfliktprüfung und Übernahme nutzen denselben Versatz), „Verschiebung zurücksetzen“ nimmt sie zurück. Ein anderes Zielprojekt setzt die Verschiebung zurück. Bei gedrehter Weltlage gibt es (wie bei der Höhenanpassung) keine Küstenprüfung.
 - Prüfung: `tests/unit/catalog/base-shore.test.mjs` (alle vier Seiten, Verschiebung, zu weit, Binnenland, Bach, Bucht, Halbinsel, Aufnahmerand), `tests/e2e/base-shore.e2e.mjs` (Sicherung mit Küsten-Aufnahme, Seite übernehmen, schieben, übernehmen; 1400/390 px); Abnahme BIB-19.
 
-Grenzen: Wege laufen nur orthogonal und auf einer Höhe (Stufen folgen aus der Geländeanpassung je Einheit, nicht als Blöcke); die geplante Uferlinie ist eine Gerade (eine krumme echte Küste meldet die Lageprüfung als Gebäude im Wasser bzw. Stege an Land); keine Brücken; das Wegenetz der Basis wird noch nicht als Landschaftsweg mit Treppen und Brücken übernommen (Rest von TERRAIN-03-S06).
+**Echte Küstenlinie im Lageplan:** `realShoreMap(survey, bereich, { origin, offset })` liefert alle Wasserspalten der Aufnahme unter dem Plan (Ausdehnung + 8) als Läufe je Reihe; der Lageplan zeichnet sie hellblau über die (dann halbtransparente) geplante Wasserseite, darunter steht die Zahl der Wasserfelder. Der Versatz (auch nach „Ans echte Ufer schieben“) verschiebt den Plan, nicht das Wasser.
+
+### Wegenetz als Landschaftsweg (TERRAIN-03-S08)
+
+Mit Zielprojekt und Geländeaufnahme erscheint unter „Übernehmen“ der Kasten **Gelände anpassen** (`apps/web/src/views/library/planTerrain.tsx`, gemeinsam mit den Großprojekten). Domäne: `packages/domain/src/base/planLandscape.ts`.
+
+- **Wegenetz:** „als eigenes Bauteil (eine Ebene)“ wie bisher oder „als Landschaftsweg“: Das Netz (`layout.paths`) wird mit `layPathCells` in die Geländegestaltung des Projekts gelegt (Treppen oder Halbstufen, über Wasser Brücke mit Geländer oder Damm, Belag nach Wegstil: Trampelpfad → Pfad, Kiesweg → Kiesweg, Pflaster → Steinweg). Das flache Wegenetz-Bauteil entfällt (`withoutNetwork`); die Laternen stehen einzeln auf dem geplanten Boden und werden ein kleines eigenes Bauteil „Laternen am Weg“ (`lampPostPart`, Pfosten einen Block über dem Boden, damit das Geländebauteil seinen Oberblock behält) unter dem Schlüssel `wegenetz`, also im Abschnitt „Wege & Platz“. Laternen im Wasser oder auf dem Weg fallen weg.
+- **Bauplätze einebnen:** Nach der Höhenanpassung (Terrassen/Ebene) bekommt jede Grundrissspalte Boden genau einen Block unter dem untersten Block des Gebäudes, drei Spalten Rand gleichen ins Gelände an (`gradeFootprints`); Bauplätze im Wasser werden aufgeschüttet, mit „Wasserkanten als Kaimauer“ bekommt das neue Ufer Steinziegel (`fortifyShore`).
+- **Vorschau:** Die Prüfung zeigt den Bericht (Wegfelder, Treppen, Brückenfelder, eingeebnete Spalten, Kaimauer, Laternen, Gebäude im Wasser), gerechnet auf einer Wegwerf-Gestaltung aus dem geplanten Gelände; die 3D-Vorschau zeigt die Gebäude ohne flaches Wegenetz.
+- **Übernahme:** lädt die vorhandene Gestaltung des Projekts (oder beginnt eine aus seiner Geländeaufnahme), schreibt Bauplätze und Netz hinein, speichert sie als Original und fügt Basis und `terrainDesign.set` als **eine** Batch-Operation ein (ein Rückgängig-Schritt). Danach im Reiter „Landschaft“ „Als Bauteil ins Projekt übernehmen“.
+- Der Basisplaner liest das Zielprojekt beim Wählen frisch aus dem Speicher (`useStoredProject`), damit Vorschau und Konfliktprüfung auch nach einer Übernahme in derselben Sitzung den echten Stand sehen.
+- Prüfung: `tests/unit/catalog/plan-landscape.test.mjs`, `tests/e2e/plan-landscape.e2e.mjs` (Hang mit Bach, Landschaftsweg, Einebnen, Übernahme; 1400/390 px); Abnahme BIB-20.
+
+Grenzen: Wege laufen orthogonal; die geplante Uferlinie bleibt eine Gerade (die echte Küste wird gezeigt und geprüft, das Layout folgt ihr nicht); Brücken liegen immer einen Block über dem Wasser, an hohen Ufern schneidet der Weg ein; Laternen im Landschaftsweg stehen auf dem geplanten Boden, nicht auf späteren Pinselstrichen.
 
 ## Gebäude herauslösen (`packages/domain/src/core/split.ts`)
 

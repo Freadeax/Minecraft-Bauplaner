@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T09:11:06.629Z",
+  "updatedAt": "2026-11-06T09:18:45.680Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -4361,7 +4361,7 @@
       "phase": "P3",
       "priority": "P1",
       "status": "implemented",
-      "owner": "Claude (Thread „Gelände und Wege ausbauen“)",
+      "owner": "Claude (Thread „Gelände, Wege und Küste ausbauen“)",
       "dependencies": [
         "TERRAIN-02",
         "TERRAIN-01",
@@ -4377,7 +4377,14 @@
         "docs/architecture/welt/LANDSCAPE.md",
         "docs/testing/TESTPLAN.md",
         "tests/unit/world/terrain-paths.test.mjs",
-        "tests/e2e/landscape-paths.e2e.mjs"
+        "tests/e2e/landscape-paths.e2e.mjs",
+        "packages/domain/src/base/planLandscape.ts",
+        "packages/domain/src/base/baseShore.ts",
+        "apps/web/src/views/library/planTerrain.tsx",
+        "apps/web/src/views/library/BasePage.tsx",
+        "tests/unit/world/terrain-network.test.mjs",
+        "tests/unit/catalog/plan-landscape.test.mjs",
+        "tests/e2e/plan-landscape.e2e.mjs"
       ],
       "legacyIds": [],
       "steps": [
@@ -4418,8 +4425,8 @@
         },
         {
           "id": "TERRAIN-03-S08",
-          "title": "Wegenetz der Basis als Landschaftsweg mit Treppen und Brücken (Rest von S06).",
-          "done": false
+          "title": "Wegenetz der Basis als Landschaftsweg: ganze Wegnetze (layPathCells) folgen dem Gelände mit höchstens einem Block zwischen allen Nachbarfeldern, Treppen/Halbstufen nur in Laufrichtung, Brücke mit Geländer oder Damm; Bauplätze eingeebnet, Kaimauern, Laternen auf dem Gelände; echte Küstenlinie im Lageplan; Abnahme BIB-20.",
+          "done": true
         }
       ],
       "acceptance": [
@@ -4428,7 +4435,7 @@
         "Aufschütten hebt nie an, was über der Zielhöhe liegt; Abtragen senkt nie, was darunter liegt; unbekannte Spalten bleiben unverändert.",
         "Dateien ohne Wegstufen bleiben byte-identisch und ältere Gestaltungen laden unverändert."
       ],
-      "next": "Abnahme PROJ-19 und BIB-19 im Spiel; danach Wegenetz der Basis als Landschaftsweg (S08).",
+      "next": "Abnahme PROJ-19, BIB-19 und BIB-20 im Spiel (Treppen, Brücken, Wegenetz der Basis auf echtem Gelände).",
       "blockers": [],
       "evidence": [
         {
@@ -4450,6 +4457,18 @@
         {
           "path": "tests/e2e/base-shore.e2e.mjs",
           "note": "Chromium 1400/390 px: Sicherung mit Küstenaufnahme, Wasserseite übernehmen, ans Ufer schieben, Übernahme an verschobener Stelle."
+        },
+        {
+          "path": "tests/unit/world/terrain-network.test.mjs",
+          "note": "4 Fälle: Netz am Hang mit Abzweig (≤ 1 Block, Treppen nur in Laufrichtung, gültige Zustände), Grat mit Abzweig (Halbstufen), Brücke/Damm, unbekannte Felder und Kaimauer."
+        },
+        {
+          "path": "tests/unit/catalog/plan-landscape.test.mjs",
+          "note": "Basis am Hang als Landschaftsweg mit Einebnen und Laternen-Bauteil ohne Konflikt; Großprojekt am Bach (Brücke, Aufschüttung, Kaimauer); echte Küstenlinie; eigenes Großprojekt aus Sammlung."
+        },
+        {
+          "path": "tests/e2e/plan-landscape.e2e.mjs",
+          "note": "Chromium 1400/390 px: Hang mit Bach aus Sicherung, Basis als Landschaftsweg einfügen, Großprojekt am flachsten Platz mit Landschaftsstraßen, eigenes Großprojekt aus Sammlung."
         }
       ],
       "verification": {
@@ -4460,13 +4479,17 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T09:18:45.680Z",
       "area": "PLANER",
-      "thread": "Gelände und Wege ausbauen",
+      "thread": "Gelände, Wege und Küste ausbauen",
       "philipp": [
         {
           "kind": "spiel",
           "text": "PROJ-19: Weg mit Treppen und Brücke als .litematic in deiner Welt ansehen."
+        },
+        {
+          "kind": "spiel",
+          "text": "BIB-20: Basis mit Wegenetz als Landschaftsweg auf einem echten Hang einfügen und im Spiel ansehen."
         }
       ],
       "orphans": []
@@ -6690,7 +6713,7 @@
         "Jede Zone zeigt ihre Spielanforderungen auf den echten Blöcken; offene Punkte stehen in den Bauabschnitten.",
         "Nichts wird ohne Knopfdruck gespeichert; Einfügen ist ein Rückgängig-Schritt."
       ],
-      "next": "Abnahme durch Philipp (S06); danach Küstenlinie aus der Geländeaufnahme und Wegstufen.",
+      "next": "Abnahme durch Philipp (S06, BIB-10, BIB-19, BIB-20); Küstenlinie, Wegstufen und Brücken sind über TERRAIN-03-S06/S08 umgesetzt.",
       "blockers": [],
       "evidence": [
         {
@@ -6714,7 +6737,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T09:18:45.680Z",
       "area": "BIBLIOTHEK",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -6723,9 +6746,7 @@
           "text": "Basisplaner mit einer echten Basis aus eurer Welt abnehmen (S06)."
         }
       ],
-      "orphans": [
-        "Küstenlinie aus der Geländeaufnahme, Wegstufen als Treppen, Brücken."
-      ]
+      "orphans": []
     },
     {
       "id": "SPLIT-01",
@@ -6834,7 +6855,7 @@
       "phase": "P3",
       "priority": "P1",
       "status": "implemented",
-      "owner": "Claude (Thread „Bibliothek um größere Projekte erweitern“)",
+      "owner": "Claude (Thread „Gelände, Wege und Küste ausbauen“)",
       "dependencies": [
         "BUILD-05",
         "BASE-01",
@@ -6851,7 +6872,12 @@
         "tests/e2e/grossprojekte.e2e.mjs",
         "docs/architecture/bibliothek/GROSSPROJEKTE.md",
         "packages/domain/src/catalog/build/sets/grossbauten.ts",
-        "packages/domain/src/catalog/build/sets/index.ts"
+        "packages/domain/src/catalog/build/sets/index.ts",
+        "packages/domain/src/catalog/ownGrossprojekt.ts",
+        "packages/domain/src/base/anlagenTerrain.ts",
+        "apps/web/src/views/library/planTerrain.tsx",
+        "tests/unit/catalog/plan-landscape.test.mjs",
+        "tests/e2e/plan-landscape.e2e.mjs"
       ],
       "legacyIds": [],
       "steps": [
@@ -6889,6 +6915,11 @@
           "id": "GROSS-01-S07",
           "title": "Bibliothek Runde 2: Großbauten Klosteranlage mit Kreuzgang und Universität mit Sternwarte; Großprojekte „Residenzstadt mit Schlosspark“ und „Klosterdorf im Tal“ (je 27 Gebäude, ohne Konflikt).",
           "done": true
+        },
+        {
+          "id": "GROSS-01-S08",
+          "title": "Großprojekte auf Gelände und aus Sammlungen: Terrassen/Ebene aus der Geländeaufnahme, flachster Platz neben bestehenden Bauten, Wasserkanten (Quartiere im Wasser, Aufschüttung mit Kaimauer), Straßennetz als Landschaftsweg mit Treppen und Brücken; eigene Großprojekte aus Sammlungen (Unterordner = Quartier und Bauphase); Abnahme BIB-21/BIB-22.",
+          "done": true
         }
       ],
       "acceptance": [
@@ -6896,7 +6927,7 @@
         "Übernahme liefert Abschnitte „Straßen & Plätze“ und „Phase N“ mit Zwecken; Einfügen ist ein Rückgängig-Schritt; nichts wird ohne Knopfdruck gespeichert.",
         "Eigene Großprojekte brauchen nur eine Datei und eine Registry-Zeile."
       ],
-      "next": "Abnahme durch Philipp (S06); Großbauten-Set (S05).",
+      "next": "Abnahme durch Philipp (S06 BIB-13, BIB-21, BIB-22).",
       "blockers": [],
       "evidence": [
         {
@@ -6910,6 +6941,14 @@
         {
           "path": "docs/architecture/bibliothek/GROSSPROJEKTE.md",
           "note": "Daten, Layout, Vorschau/Übernahme, eigene Projekte, Grenzen."
+        },
+        {
+          "path": "tests/unit/catalog/plan-landscape.test.mjs",
+          "note": "Straßen über Bach als Brücke, Aufschüttung mit Kaimauer, Wasserkanten gemeldet; eigenes Großprojekt aus Sammlung mit Unterordnern ohne Konflikt."
+        },
+        {
+          "path": "tests/e2e/plan-landscape.e2e.mjs",
+          "note": "Flachster Platz, Landschaftsstraßen, Übernahme mit Geländegestaltung, Sammlung als Großprojekt (1400/390 px)."
         }
       ],
       "verification": {
@@ -6920,18 +6959,20 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T09:18:45.680Z",
       "area": "BIBLIOTHEK",
-      "thread": "Bibliothek um größere Projekte erweitern",
+      "thread": "Gelände, Wege und Küste ausbauen",
       "philipp": [
         {
           "kind": "spiel",
           "text": "Großprojekte und die sechs Großbauten im Spiel ansehen (BIB-13)."
+        },
+        {
+          "kind": "datei",
+          "text": "BIB-21/BIB-22: Großprojekt auf einem echten Bauplatz am Wasser und eigenes Großprojekt aus einer Sammlung planen."
         }
       ],
-      "orphans": [
-        "Geländeanpassung und Wasserkanten für Großprojekte, eigene Großprojekte aus Sammlungen."
-      ]
+      "orphans": []
     },
     {
       "id": "MAP-05",
@@ -7389,12 +7430,17 @@
           "id": "GEN-03-S05",
           "title": "Abnahme im Spiel durch Philipp: Kolosseum exportieren und aufstellen (Testfall BIB-14).",
           "done": false
+        },
+        {
+          "id": "GEN-03-S06",
+          "title": "Feinschliff Kolosseum (Generator v2): Statuen auf Sockeln in jedem zweiten Attikafenster, zwei Treppen aus dem Hypogäum auf den Arenaboden; Spielprüfung, festgehaltener Hash neu.",
+          "done": true
         }
       ],
       "acceptance": [
         "Vorlage „Kolosseum“ hält die Maße des Bauplans, alle Bauten bestehen Spielprüfung, Material-/Rezeptprüfung und B7-Zustände; das Großprojekt hat keine Voxelkonflikte und ein zusammenhängendes Straßennetz."
       ],
-      "next": "Philipp baut das Kolosseum im Spiel nach (BIB-14); danach Feinschliff (Statuen in den Attika-Fenstern, Treppen im Hypogäum).",
+      "next": "Philipp baut das Kolosseum im Spiel nach (BIB-14, mit Statuen und Hypogäum-Treppen).",
       "blockers": [],
       "evidence": [
         {
@@ -7418,7 +7464,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T09:18:45.680Z",
       "area": "BIBLIOTHEK",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -7427,9 +7473,7 @@
           "text": "Kolosseum exportieren und im Spiel aufstellen (BIB-14)."
         }
       ],
-      "orphans": [
-        "Feinschliff Kolosseum: Statuen in den Attika-Fenstern, Treppen im Hypogäum."
-      ]
+      "orphans": []
     },
     {
       "id": "SIZE-01",
@@ -22130,6 +22174,72 @@
           "done": 6,
           "total": 7,
           "next": "Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06). Der GPU-Upload großer Szenen läuft seit GFX-02-S03 in Stücken, seit GFX-03 mit Sichtfeld zuerst."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T09:18:45.680Z",
+      "kind": "progress",
+      "items": [
+        "TERRAIN-03",
+        "BASE-01",
+        "GROSS-01",
+        "GEN-03"
+      ],
+      "summary": "Wegenetze als Landschaftsweg, Bauplätze einebnen mit Kaimauer, Küste im Lageplan, Großprojekte auf Gelände und aus Sammlungen, Kolosseum v2",
+      "files": [
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/library/BasePage.tsx",
+        "apps/web/src/views/library/GrossprojektePage.tsx",
+        "apps/web/src/views/library/anlagen.css",
+        "apps/web/src/views/library/grossprojekte.css",
+        "apps/web/src/views/library/planTerrain.tsx",
+        "docs/architecture/bibliothek/BASE_PLANNER.md",
+        "docs/architecture/bibliothek/GENERATORS.md",
+        "docs/architecture/bibliothek/GROSSPROJEKTE.md",
+        "docs/architecture/welt/LANDSCAPE.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/base/anlagenTerrain.ts",
+        "packages/domain/src/base/baseShore.ts",
+        "packages/domain/src/base/planLandscape.ts",
+        "packages/domain/src/catalog/generators/arena.ts",
+        "packages/domain/src/catalog/grossprojekte.ts",
+        "packages/domain/src/catalog/ownGrossprojekt.ts",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/world/terrainDesign.ts",
+        "tests/e2e/plan-landscape.e2e.mjs",
+        "tests/unit/catalog/generators.test.mjs",
+        "tests/unit/catalog/plan-landscape.test.mjs",
+        "tests/unit/world/terrain-network.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "TERRAIN-03",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "Abnahme PROJ-19, BIB-19 und BIB-20 im Spiel (Treppen, Brücken, Wegenetz der Basis auf echtem Gelände)."
+        },
+        {
+          "id": "BASE-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme durch Philipp (S06, BIB-10, BIB-19, BIB-20); Küstenlinie, Wegstufen und Brücken sind über TERRAIN-03-S06/S08 umgesetzt."
+        },
+        {
+          "id": "GROSS-01",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "Abnahme durch Philipp (S06 BIB-13, BIB-21, BIB-22)."
+        },
+        {
+          "id": "GEN-03",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Philipp baut das Kolosseum im Spiel nach (BIB-14, mit Statuen und Hypogäum-Treppen)."
         }
       ]
     }

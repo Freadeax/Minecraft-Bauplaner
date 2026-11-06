@@ -194,7 +194,7 @@ const score = (f: AnlageTerrainFit) => f.totals.fill + f.totals.cut + 20 * f.tot
  * search around the best one). Returns null when the Anlage does not fit
  * into the survey at all.
  */
-export function findTerrainSpot(plan: AnlagePlan, input: Omit<AnlageTerrainInput, 'offset'> & { readonly step?: number }): TerrainSpot | null {
+export function findTerrainSpot(plan: AnlagePlan, input: Omit<AnlageTerrainInput, 'offset'> & { readonly step?: number; readonly avoid?: readonly { x0: number; z0: number; x1: number; z1: number }[] }): TerrainSpot | null {
   const { survey, origin } = input;
   const e = plan.extent;
   if (!e) return null;
@@ -205,7 +205,10 @@ export function findTerrainSpot(plan: AnlagePlan, input: Omit<AnlageTerrainInput
   const step = Math.max(1, Math.trunc(input.step ?? Math.max(2, Math.ceil(Math.max(ox1 - ox0, oz1 - oz0) / 16))));
   const mode = input.mode ?? 'terrassen';
   const state: { best: { offset: [number, number]; score: number; fit: AnlageTerrainFit } | null; tried: number } = { best: null, tried: 0 };
+  // Areas already built on (project coordinates, max exclusive) are never chosen (GROSS-01-S08).
+  const free = (dx: number, dz: number) => !(input.avoid ?? []).some(a => e.x0 + dx < a.x1 && e.x1 + dx > a.x0 && e.z0 + dz < a.z1 && e.z1 + dz > a.z0);
   const consider = (dx: number, dz: number) => {
+    if (!free(dx, dz)) return;
     const fit = fitAnlageToTerrain(plan, { survey, origin, offset: [dx, dz], mode }); state.tried++;
     const sc = score(fit), b = state.best;
     if (!b || sc < b.score || (sc === b.score && Math.abs(dx) + Math.abs(dz) < Math.abs(b.offset[0]) + Math.abs(b.offset[1]))) state.best = { offset: [dx, dz], score: sc, fit };
@@ -216,7 +219,8 @@ export function findTerrainSpot(plan: AnlagePlan, input: Omit<AnlageTerrainInput
   for (let z = oz0; z <= oz1; z += step) zs.push(z);
   if (zs.at(-1) !== oz1) zs.push(oz1);
   for (const z of zs) for (const x of xs) consider(x, z);
-  const coarse = state.best!.offset;
+  if (!state.best) return null;
+  const coarse = state.best.offset;
   const r = Math.min(step - 1, 4);
   for (let dz = -r; dz <= r; dz++) for (let dx = -r; dx <= r; dx++) {
     const x = coarse[0] + dx, z = coarse[1] + dz;

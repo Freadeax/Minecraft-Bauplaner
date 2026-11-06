@@ -136,6 +136,7 @@ export const SURFACE_STYLES: readonly SurfaceStyle[] = [
   { id: 'kiesweg', label: 'Kiesweg', top: [['minecraft:gravel', 1]], fill: 'minecraft:dirt', path: true },
   { id: 'pflaster', label: 'Pflaster', top: [['minecraft:cobblestone', 0.6], ['minecraft:mossy_cobblestone', 0.2], ['minecraft:stone', 0.2]], fill: 'minecraft:stone', path: true },
   { id: 'steinweg', label: 'Steinweg', top: [['minecraft:stone_bricks', 0.7], ['minecraft:cracked_stone_bricks', 0.15], ['minecraft:mossy_stone_bricks', 0.15]], fill: 'minecraft:stone', path: true },
+  { id: 'asphalt', label: 'Asphalt', top: [['minecraft:gray_concrete', 0.85], ['minecraft:light_gray_concrete', 0.15]], fill: 'minecraft:stone', path: true },
 ];
 export const styleById = (id: string): SurfaceStyle => SURFACE_STYLES.find(s => s.id === id) ?? fail(`unbekannter Stil ${id}`);
 
@@ -546,7 +547,7 @@ export const PATH_MATERIALS: readonly PathMaterial[] = [
   { id: 'ziegel', label: 'Ziegel', stairs: 'minecraft:brick_stairs', slab: 'minecraft:brick_slab', deck: 'minecraft:bricks', rail: 'minecraft:brick_wall' },
 ];
 /** Material that fits a path style when the user picks „passend zum Belag“. */
-export const PATH_STYLE_MATERIAL: Readonly<Record<string, string>> = { pfad: 'fichte', kiesweg: 'bruchstein', pflaster: 'bruchstein', steinweg: 'steinziegel' };
+export const PATH_STYLE_MATERIAL: Readonly<Record<string, string>> = { pfad: 'fichte', kiesweg: 'bruchstein', pflaster: 'bruchstein', steinweg: 'steinziegel', asphalt: 'andesit' };
 export const pathMaterialById = (id: string): PathMaterial => PATH_MATERIALS.find(m => m.id === id) ?? fail(`unbekanntes Stufenmaterial ${id}`);
 
 /** Whether a design has any stair, slab or deck (the file then carries the step field). */
@@ -800,6 +801,183 @@ export function layPath(d: TerrainDesign, points: readonly (readonly [number, nu
   }
   d.updatedAt = new Date().toISOString();
   return { length: line.length, columns: owner.size, steps: rises, rise, causeway, cut, fill, unknown, stairs, slabs, bridge: decks.length, rails, open: rises - covered };
+}
+
+// ------------------------------------------------------------------ path networks (TERRAIN-03-S08)
+
+export interface NetworkOptions {
+  /** Path style id (SURFACE_STYLES with `path`). */
+  readonly style: string;
+  readonly steps?: PathSteps;
+  /** PATH_MATERIALS id; absent or 'auto' = fitting the path style. */
+  readonly material?: string;
+  readonly water?: PathWater;
+  /** Highest height change between two neighbouring path columns (1–4, default 1). */
+  readonly maxStep?: number;
+  /** Smoothing radius over the network in blocks (0–6, default 2). */
+  readonly smooth?: number;
+}
+
+/** Small binary heap of [key, value] pairs (min first). */
+function heapOf(): { push(k: number, v: number): void; pop(): [number, number]; readonly size: number } {
+  const a: [number, number][] = [];
+  return {
+    get size() { return a.length; },
+    push(k, v) { a.push([k, v]); let i = a.length - 1; while (i > 0) { const p = (i - 1) >> 1; if (a[p]![0] <= a[i]![0]) break; [a[p], a[i]] = [a[i]!, a[p]!]; i = p; } },
+    pop() {
+      const top = a[0]!, last = a.pop()!;
+      if (a.length) { a[0] = last; let i = 0; for (;;) { const l = 2 * i + 1, r = l + 1; let m = i; if (l < a.length && a[l]![0] < a[m]![0]) m = l; if (r < a.length && a[r]![0] < a[m]![0]) m = r; if (m === i) break; [a[m], a[i]] = [a[i]!, a[m]!]; i = m; } }
+      return top;
+    },
+  };
+}
+
+/**
+ * Lays a whole path network given as its columns (a routed base network,
+ * the street lanes of a Großprojekt): the walking surface follows the planned
+ * ground, smoothed over the network and limited to `maxStep` between any two
+ * neighbouring path columns – at junctions and across the width as well, so
+ * branches meet without a cliff. Over water the network becomes a causeway, or
+ * a bridge deck one block above the water with railings at its open sides. With
+ * `steps` every one-block rise along the walking direction gets a stair or a
+ * slab; a rise only across the path (its edge on a side slope) is left as it is
+ * instead of a stair facing sideways. Deterministic; unknown columns stay.
+ */
+export function layPathCells(d: TerrainDesign, cells: readonly (readonly [number, number])[], o: NetworkOptions): PathReport {
+  const style = styleById(o.style);
+  if (!style.path) fail(`„${style.label}“ ist kein Wegbelag`);
+  const maxStep = Math.max(1, Math.min(4, Math.round(o.maxStep ?? 1))), radius = Math.max(0, Math.min(6, Math.round(o.smooth ?? 2)));
+  const bridge = o.water === 'bridge', steps = o.steps ?? 'none';
+  const material = pathMaterialById(o.material && o.material !== 'auto' ? o.material : PATH_STYLE_MATERIAL[style.id] ?? 'fichte');
+  const lim = heightLimits(d.dimension);
+  const slot = new Map<number, number>(), list: number[] = [];
+  let unknown = 0;
+  for (const [x, z] of cells) {
+    const gx = x - d.minX, gz = z - d.minZ;
+    if (gx < 0 || gz < 0 || gx >= d.width || gz >= d.length) { unknown++; continue; }
+    const i = gx + gz * d.width;
+    if (slot.has(i)) continue;
+    if (d.height[i] === SURVEY_UNKNOWN) { unknown++; continue; }
+    slot.set(i, -1); list.push(i);
+  }
+  if (!list.length) return { ...EMPTY_REPORT, length: cells.length, unknown };
+  list.sort((a, b) => a - b);
+  list.forEach((i, k) => slot.set(i, k));
+  const n = list.length;
+  const nb = (k: number): number[] => {
+    const i = list[k]!, gx = i % d.width, gz = (i - gx) / d.width, out: number[] = [];
+    for (const [dx, dz] of PATH_DIRS) {
+      const nx = gx + dx, nz = gz + dz;
+      if (nx < 0 || nz < 0 || nx >= d.width || nz >= d.length) continue;
+      const j = slot.get(nx + nz * d.width);
+      if (j !== undefined) out.push(j);
+    }
+    return out;
+  };
+  const wet = (k: number) => d.water[list[k]!] !== NO_WATER;
+  // Walking surface: ground; over water the causeway floor (water surface) or the fixed deck (one above it).
+  const fixed = new Uint8Array(n), raw = new Float64Array(n), floor = new Float64Array(n).fill(-Infinity);
+  for (let k = 0; k < n; k++) {
+    const i = list[k]!, h = d.height[i]!;
+    if (wet(k) && bridge) { raw[k] = d.water[i]! + 1; fixed[k] = 1; }
+    else if (wet(k)) { floor[k] = d.water[i]!; raw[k] = Math.max(h, d.water[i]!); }
+    else raw[k] = h;
+  }
+  // Smoothing over the network (path columns within `radius`, decks count with their deck height).
+  const h = new Float64Array(n);
+  for (let k = 0; k < n; k++) {
+    if (fixed[k]) { h[k] = raw[k]!; continue; }
+    const i = list[k]!, gx = i % d.width, gz = (i - gx) / d.width;
+    let sum = 0, cnt = 0;
+    for (let dz = -radius; dz <= radius; dz++) for (let dx = -radius; dx <= radius; dx++) {
+      const nx = gx + dx, nz = gz + dz;
+      if (nx < 0 || nz < 0 || nx >= d.width || nz >= d.length) continue;
+      const j = slot.get(nx + nz * d.width);
+      if (j === undefined) continue;
+      sum += raw[j]!; cnt++;
+    }
+    h[k] = Math.round(sum / cnt);
+  }
+  const neighbours = Array.from({ length: n }, (_, k) => nb(k));
+  // Lower envelope: no column more than maxStep above a neighbour (cuts through crests).
+  const lower = heapOf();
+  for (let k = 0; k < n; k++) lower.push(h[k]!, k);
+  while (lower.size) {
+    const [v, k] = lower.pop();
+    if (v !== h[k]) continue;
+    for (const j of neighbours[k]!) if (!fixed[j] && h[j]! > v + maxStep) { h[j] = v + maxStep; lower.push(h[j]!, j); }
+  }
+  // Water floors (causeway at least at the water surface), then the upper envelope (fills hollows and banks).
+  for (let k = 0; k < n; k++) if (!fixed[k] && h[k]! < floor[k]!) h[k] = floor[k]!;
+  const upper = heapOf();
+  for (let k = 0; k < n; k++) upper.push(-h[k]!, k);
+  while (upper.size) {
+    const [nv, k] = upper.pop(), v = -nv;
+    if (v !== h[k]) continue;
+    for (const j of neighbours[k]!) if (!fixed[j] && h[j]! < v - maxStep) { h[j] = v - maxStep; upper.push(-h[j]!, j); }
+  }
+  // Write the columns.
+  let cut = 0, fill = 0, causeway = 0;
+  const decks: number[] = [];
+  for (let k = 0; k < n; k++) {
+    const i = list[k]!;
+    if (d.path[i]! >= PATH_STAIR) clearPiece(d, i);
+    if (fixed[k]) { d.path[i] = PATH_DECK; d.step[i] = idIndex(d, material.deck); decks.push(i); continue; }
+    const target = Math.max(lim[0], Math.min(lim[1], h[k]!)), before = d.height[i]!;
+    if (d.water[i] !== NO_WATER) { causeway++; d.water[i] = NO_WATER; }
+    if (target > before) fill += target - before; else cut += before - target;
+    d.height[i] = target;
+    paintColumn(d, i, style);
+  }
+  let rails = 0;
+  for (const i of decks) {
+    const gx = i % d.width, gz = (i - gx) / d.width;
+    const open = PATH_DIRS.some(([dx, dz]) => { const nx = gx + dx, nz = gz + dz; return nx < 0 || nz < 0 || nx >= d.width || nz >= d.length || !d.path[nx + nz * d.width]; });
+    if (open) { d.path[i] = PATH_DECK_RAIL; rails++; }
+  }
+  // Stairs or slabs: only where the walk goes through (the column on the downhill side is path as well).
+  let stairs = 0, slabs = 0;
+  const isPath = (gx: number, gz: number) => gx >= 0 && gz >= 0 && gx < d.width && gz < d.length && slot.has(gx + gz * d.width);
+  if (steps !== 'none') {
+    const stairIdx = idIndex(d, material.stairs), slabIdx = idIndex(d, material.slab);
+    for (let k = 0; k < n; k++) {
+      const i = list[k]!;
+      if (fixed[k]) continue;
+      const gx = i % d.width, gz = (i - gx) / d.width;
+      const through = risingDirs(d, gx, gz).filter(dir => { const [dx, dz] = PATH_DIRS[(dir + 2) % 4]!; return isPath(gx + dx, gz + dz); });
+      if (!through.length) continue;
+      if (steps === 'slabs') { d.path[i] = PATH_SLAB; d.step[i] = slabIdx; slabs++; continue; }
+      d.path[i] = PATH_STAIR + through[0]!; d.step[i] = stairIdx; stairs++;
+    }
+  }
+  // Report: height changes between neighbouring path columns, and those without a piece on the lower column.
+  let rises = 0, rise = 0, covered = 0;
+  const walk = (k: number) => fixed[k] ? d.water[list[k]!]! + 1 : d.height[list[k]!]!;
+  for (let k = 0; k < n; k++) for (const j of neighbours[k]!) {
+    if (j < k) continue;
+    const a = walk(k), b = walk(j);
+    if (a === b) continue;
+    rises++; rise += Math.abs(a - b);
+    const low = a < b ? list[k]! : list[j]!, code = d.path[low]!;
+    if (Math.abs(a - b) === 1 && code >= PATH_STAIR && code <= PATH_SLAB) covered++;
+  }
+  d.updatedAt = new Date().toISOString();
+  return { length: cells.length, columns: n, steps: rises, rise, causeway, cut, fill, unknown, stairs, slabs, bridge: decks.length, rails, open: rises - covered };
+}
+
+/** Quay walls: the given dry columns that border water get `block` as top and filler (a fortified water edge). Returns the count. */
+export function fortifyShore(d: TerrainDesign, columns: Iterable<number>, block = 'minecraft:stone_bricks'): number {
+  const t = idIndex(d, block);
+  let count = 0;
+  for (const i of columns) {
+    if (i < 0 || i >= d.height.length || d.height[i] === SURVEY_UNKNOWN || d.water[i] !== NO_WATER || d.path[i]) continue;
+    const gx = i % d.width, gz = (i - gx) / d.width;
+    const edge = PATH_DIRS.some(([dx, dz]) => { const nx = gx + dx, nz = gz + dz; return nx >= 0 && nz >= 0 && nx < d.width && nz < d.length && d.water[nx + nz * d.width] !== NO_WATER; });
+    if (!edge) continue;
+    if (d.top[i] !== t || d.fill[i] !== t) { d.top[i] = t; d.fill[i] = t; count++; }
+  }
+  if (count) d.updatedAt = new Date().toISOString();
+  return count;
 }
 
 // ------------------------------------------------------------------ ramp (TERRAIN-03)

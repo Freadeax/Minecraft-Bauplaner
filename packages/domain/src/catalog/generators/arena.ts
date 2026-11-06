@@ -1,4 +1,4 @@
-import { chest, ladder, lantern, Plot, slab, stairs, trapdoor } from '../build/plot.js';
+import { chest, head, ladder, lantern, Plot, slab, stairs, trapdoor } from '../build/plot.js';
 import type { H } from '../build/plot.js';
 import { wallBanner } from '../build/furnish.js';
 import { joint } from '../build/spec.js';
@@ -16,6 +16,11 @@ import { stableAtan2, stableCos, stableHypot, stableSin } from '../../../../voxe
  * plan: 81 × 61 blocks, four storeys of eight, arena 41 × 21, eight rows,
  * four gates, hypogeum nine blocks deep.
  *
+ * Version 2 (GEN-03-S06, Feinschliff): statues on pedestals in every second
+ * attic window (pedestal, body, head looking outwards) and two staircases in
+ * the main corridor of the hypogeum that rise to openings in the arena floor
+ * near its ends, besides the ladder lifts.
+ *
  * Geometry is organised by *depth*: the number of nested offset ellipses
  * (a−k, b−k) a column lies inside. Depth 0 is the façade shell, 1–3 the
  * ambulatory, 4 the inner wall, then the upper rows, the walkway, the lower
@@ -31,8 +36,8 @@ const PITCH = 7; // bay pitch along the perimeter
 const dom = (dx: number, dz: number): H => Math.abs(dx) >= Math.abs(dz) ? (dx >= 0 ? 'east' : 'west') : (dz >= 0 ? 'south' : 'north');
 
 export const ARENA_GENERATOR: Generator = {
-  id: 'arena', name: 'Arena', version: 1,
-  description: 'Ovales Amphitheater mit Rundbogenfassade über mehrere Etagen, Wandelgang mit Treppen, zwei Rängen auf Gewölben, Podiumsmauer, Sandarena und Toren; auf Wunsch Hypogäum unter der Arena und Sonnensegel. Vorlage „Kolosseum“ 81 × 61.',
+  id: 'arena', name: 'Arena', version: 2,
+  description: 'Ovales Amphitheater mit Rundbogenfassade über mehrere Etagen, Wandelgang mit Treppen, zwei Rängen auf Gewölben, Podiumsmauer, Sandarena und Toren; auf Wunsch Hypogäum mit Treppen und Aufzügen unter der Arena, Statuen in den Attikafenstern und Sonnensegel. Vorlage „Kolosseum“ 81 × 61.',
   params: [
     { key: 'laenge', label: 'Halbe Länge (Ost–West)', group: 'Maße', type: 'int', min: 14, max: 60, default: 40, unit: 'Blöcke', hint: 'Gesamtlänge = 2 × Wert + 1.' },
     { key: 'breite', label: 'Halbe Breite (Nord–Süd)', group: 'Maße', type: 'int', min: 16, max: 50, default: 30, unit: 'Blöcke', hint: 'Höchstens die halbe Länge; größere Werte werden getauscht.' },
@@ -43,6 +48,7 @@ export const ARENA_GENERATOR: Generator = {
     { key: 'tore', label: 'Tore', group: 'Arena', type: 'choice', default: 'vier', options: [{ value: 'zwei', label: 'Zwei (Ost und West)' }, { value: 'vier', label: 'Vier (alle Seiten)' }] },
     { key: 'hypogaeum', label: 'Hypogäum unter der Arena', group: 'Arena', type: 'bool', default: true, hint: 'Gänge, Kammern, Zellen und Aufzugsschächte, 9 Blöcke unter dem Boden; muss im Spiel ausgehoben werden.' },
     { key: 'segel', label: 'Sonnensegel (Velarium)', group: 'Details', type: 'bool', default: true },
+    { key: 'statuen', label: 'Statuen in den Attikafenstern', group: 'Details', type: 'bool', default: true, hint: 'In jedem zweiten Fenster der obersten Etage (ab drei Etagen).' },
     { key: 'banner', label: 'Banner und Laternen an den Toren', group: 'Details', type: 'bool', default: true },
     styleParam('antik'), ...WEATHER_PARAMS,
   ],
@@ -60,7 +66,7 @@ export const ARENA_GENERATOR: Generator = {
     if (B > A) { [A, B] = [B, A]; notes.push(`Halbe Breite war größer als die halbe Länge: Maße getauscht (${A} × ${B}).`); }
     const etagen = a.int('etagen'), fh = a.int('etagenhoehe');
     let rows = a.int('sitzreihen'), upper = a.int('oberrang');
-    const hypo = a.bool('hypogaeum') ? HYPO : 0, fourGates = a.str('tore') === 'vier', deko = a.bool('banner');
+    const hypo = a.bool('hypogaeum') ? HYPO : 0, fourGates = a.str('tore') === 'vier', deko = a.bool('banner'), statues = a.bool('statuen');
     const G = hypo, H = G + etagen * fh;
     // Depth budget: façade (1) + ambulatory (3) + wall (1) + walkway (2) + podium (1) + arena half-width ≥ 4 leaves B − 12 for the rows.
     const budget = B - 12;
@@ -109,6 +115,15 @@ export const ARENA_GENERATOR: Generator = {
     };
     const gateAngles = fourGates ? [0, Math.PI / 2, Math.PI, 1.5 * Math.PI] : [0, Math.PI];
     const gateBays = new Set(gateAngles.map(t => Math.floor(arcAt(t) / pitch + 0.5) % nB));
+    /** Statue in an attic window (row r of the window rows 1 … fh − 4): pedestal, body, head looking outwards. */
+    const ROT: Readonly<Record<H, number>> = { south: 0, west: 4, north: 8, east: 12 };
+    let statueCount = 0;
+    const statue = (x: number, y: number, z: number, r: number, inward: H) => {
+      const last = fh - 4, out: H = ({ north: 'south', south: 'north', east: 'west', west: 'east' } as const)[inward];
+      if (r === 1) { m.put(x, y, z, s.trim.full); statueCount++; }
+      else if (r < last) { if (s.trim.wall) p.set(x, y, z, s.trim.wall, { east: 'none', north: 'none', south: 'none', up: 'true', waterlogged: 'false', west: 'none' }); else m.put(x, y, z, s.trim.full); }
+      else p.set(x, y, z, 'skeleton_skull', head(ROT[out]));
+    };
 
     // ---- layout constants
     const DWALL = GAL + 1;                 // inner ring wall
@@ -151,9 +166,10 @@ export const ARENA_GENERATOR: Generator = {
           if (r === fh - 1) { m.put(x, y, z, k === etagen - 1 ? s.trim.full : s.wall); continue; }        // floor band / cornice course
           if (pillar) { m.corner(x, y, z); continue; }
           if (top) {
-            // Attic: pilasters, rectangular windows between a sill and a lintel.
+            // Attic: pilasters, rectangular windows between a sill and a lintel; a statue stands in every second window.
             if (edge) m.wall(x, y, z);
             else if (r === 0 || r >= fh - 3) m.wall(x, y, z);
+            else if (statues && i % 2 === 0 && !gateBays.has(i) && c >= pitch / 2 - 0.5 && c < pitch / 2 + 0.5) statue(x, y, z, r, inward);
             else p.air(x, y, z);
             continue;
           }
@@ -321,7 +337,23 @@ export const ARENA_GENERATOR: Generator = {
         for (let y = 1; y <= G; y++) { p.air(lx, y, lz); p.set(lx, y, lz, 'ladder', ladder(face)); }
         p.set(lx, G + 1, lz, `${s.wood}_trapdoor`, trapdoor(face, 'bottom'));
       }
-      notes.push(`Hypogäum: ${HYPO} Blöcke unter dem Boden (Ebene 0–${HYPO - 1} des Plans), im Spiel vorher ausheben; Aufzüge sind Leiterschächte mit Falltür im Arenaboden.`);
+      // Staircases: in the main corridor's side lanes, from the corridor floor up to openings in the arena floor near both ends.
+      let flights = 0;
+      const run = G + 1, topAx = ra - 2, bottomAx = topAx - (run - 1);
+      if (bottomAx >= 2) for (const [sx, sz] of [[-1, 1], [1, -1]] as const) {
+        const z = cz + sz, face: H = sx < 0 ? 'west' : 'east';
+        for (let k = 0; k < run; k++) {
+          const x = cx + sx * (bottomAx + k), y = 1 + k;
+          if (dep(x, z) <= DA) continue;
+          for (let yy = 1; yy < y; yy++) m.base(x, yy, z);
+          p.set(x, y, z, s.base.stairs, stairs(face));
+          // Headroom; where it opens the arena floor the sand above goes too (sand would fall into the opening).
+          for (let yy = y + 1; yy <= Math.min(y + 2, G + 1); yy++) p.air(x, yy, z);
+          if (y + 2 >= G && y < G + 1) p.air(x, G + 1, z);
+        }
+        flights++;
+      }
+      notes.push(`Hypogäum: ${HYPO} Blöcke unter dem Boden (Ebene 0–${HYPO - 1} des Plans), im Spiel vorher ausheben; ${flights ? `${flights} Treppen führen aus dem Hauptgang zu Öffnungen im Arenaboden, ` : ''}Aufzüge sind Leiterschächte mit Falltür im Arenaboden.`);
     }
 
     // Hanging lanterns need a block above: stair openings and tunnels may have removed it.
@@ -334,6 +366,7 @@ export const ARENA_GENERATOR: Generator = {
     const label = etagen >= 3 && A >= 30 ? 'Kolosseum' : 'Amphitheater';
     const arenaW = 2 * (A - DA) + 1, arenaD = 2 * (B - DA) + 1;
     notes.push(`Arena ${arenaW} × ${arenaD}, ${rows} Sitzreihen unten${upper ? ` und ${upper} oben` : ''}, ${nB} Bögen je Etage, ${gates.length} Tore mit Wegeanschluss (Profil weg_5).`);
+    if (statueCount) notes.push(`${statueCount} Statuen in den Attikafenstern.`);
     if (hypo) notes.push(`Bodenniveau liegt auf Ebene ${G}; darunter nur die Arena (Hypogäum).`);
     return {
       payload: m.payload(), connectors,

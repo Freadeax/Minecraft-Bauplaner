@@ -265,3 +265,35 @@ function towards(side: Side, d: number): string {
   const out = side === 'sued' || side === 'ost' ? d > 0 : d < 0;
   return out ? 'seewärts' : 'landeinwärts';
 }
+
+/** Real water of the survey in plan coordinates, as runs per row (for the site map). */
+export interface ShoreMap {
+  /** [x0, z, length] runs of water columns. */
+  readonly runs: readonly (readonly [number, number, number])[];
+  /** Water columns in the area. */
+  readonly water: number;
+  /** Known columns in the area. */
+  readonly known: number;
+}
+
+/**
+ * The real coastline under a plan area (TERRAIN-03-S06): every water column of
+ * the survey inside `area` (plan coordinates, max exclusive), as runs per row.
+ * Pure; the map draws it over the planned water side.
+ */
+export function realShoreMap(survey: TerrainSurvey, area: Footprint, input: { readonly origin: Vec3; readonly offset?: readonly [number, number] }): ShoreMap {
+  const ox = input.origin[0] + (input.offset?.[0] ?? 0), oz = input.origin[2] + (input.offset?.[1] ?? 0);
+  const runs: [number, number, number][] = [];
+  let water = 0, known = 0;
+  if ((area.x1 - area.x0) * (area.z1 - area.z0) > 1_000_000) fail('Kartenausschnitt zu groß');
+  for (let z = area.z0; z < area.z1; z++) {
+    let start: number | null = null;
+    for (let x = area.x0; x <= area.x1; x++) {
+      const w = x < area.x1 ? waterAt(survey, x + ox, z + oz) : null;
+      if (w !== null) known++;
+      if (w === 1) { water++; if (start === null) start = x; }
+      else if (start !== null) { runs.push([start, z, x - start]); start = null; }
+    }
+  }
+  return { runs, water, known };
+}

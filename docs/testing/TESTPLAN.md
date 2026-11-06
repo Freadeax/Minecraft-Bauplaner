@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/checks/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 148 Fälle in 13 Bereichen, davon 63 Kernfälle.
+Umfang: 151 Fälle in 13 Bereichen, davon 63 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -38,13 +38,16 @@ Katalog mit Gebäuden, Ensembles, Generatoren, Sammlungen, Vorlagen, Anlagen und
 | BIB-10 | Basisplaner ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek/basis)) | kern | 1. Bibliothek → Reiter „Basisplaner“.<br>2. Zonen an- und abwählen, zwei Zonen tauschen, Wasserseite und Bauplatz ändern.<br>3. Übernehmen. | Vorschau ohne Überschneidungen, Wege durch kein Gebäude; das Projekt hat Abschnitte „Wege & Platz“ und „Phase 1–4“, das Wegenetz liegt als Bauteil vor. (Abnahme BASE-01-S06) |
 | BIB-11 | Gebäude aus einer eigenen Basis herauslösen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek)) | vertieft | 1. Eine eigene große .litematic/.schem (ganze Basis) in die Bibliothek importieren.<br>2. Gebäudeblatt → „Verwalten“ → „Gebäude herauslösen“.<br>3. Teile ansehen, einige einzeln speichern, als Projekt aufteilen. | Gebäude, Felder, Gehege und Wege werden erkannt ; ein Keller gehört zum Haus darüber, ein Bunker oder Tunnel unter dem Gelände erscheint als „Unterirdischer Raum“, eine Brücke zwischen zwei Häusern als eigener Teil „Brücke“ mit „verbindet …“ und legt die Häuser nicht zusammen; das Projekt zeigt jeden Block am alten Platz ohne Konflikte. (Abnahme SPLIT-01-S05 mit echten Dateien) |
 | BIB-13 | Großprojekt planen und übernehmen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek/grossprojekte)) | kern | 1. Bibliothek → Reiter „Großprojekte“, ein Projekt (z. B. „Freie Marktstadt“) öffnen.<br>2. Ein Quartier abwählen, Straßenbreite und -stil ändern, einen Platz tauschen und drehen.<br>3. Als Projekt anlegen; Baustelle und Editor ansehen.<br>4. Im Katalog nach „großbau“ suchen und ein Großbauwerk (z. B. Schloss mit Innenhof, Klosteranlage oder Universität) öffnen. | Lageplan und 3D-Vorschau zeigen Quartiere und Straßen ohne Voxelkonflikte; das Projekt hat Abschnitte „Straßen & Plätze“ und „Phase 1–4“, das Straßennetz liegt als Bauteil vor; Türen zeigen zur Straße; die acht Großbauten sind begehbar und eingerichtet. (Abnahme GROSS-01-S06) |
-| BIB-14 | Kolosseum-Viertel und Arena-Generator ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek/grossprojekte/gp_kolosseum)) | kern | 1. Bibliothek → Reiter „Großprojekte“ → „Kolosseum-Viertel“ öffnen und als Projekt anlegen.<br>2. Im Editor das Kolosseum ansehen (Ebenen: Hypogäum unter dem Platz, Arena, Ränge, vier Etagen), Bauanleitung und Materialliste öffnen.<br>3. Bibliothek → Generatoren → „Arena“: Vorlage „Kolosseum“ und „Provinzarena“ ausprobieren.<br>4. Das Kolosseum als .schem/.litematic exportieren und im Spiel aufstellen. | Neun Quartiere mit 30 Gebäuden ohne Voxelkonflikte, Abschnitte „Straßen & Plätze“ und „Phase 1–4“; Kolosseum 81 × 61 mit begehbaren Rängen, Treppen im Wandelgang und Toren zur Straße; im Spiel schwebt nichts. (Abnahme GEN-03-S05) |
+| BIB-14 | Kolosseum-Viertel und Arena-Generator ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek/grossprojekte/gp_kolosseum)) | kern | 1. Bibliothek → Reiter „Großprojekte“ → „Kolosseum-Viertel“ öffnen und als Projekt anlegen.<br>2. Im Editor das Kolosseum ansehen (Ebenen: Hypogäum unter dem Platz, Arena, Ränge, vier Etagen), Bauanleitung und Materialliste öffnen.<br>3. Bibliothek → Generatoren → „Arena“: Vorlage „Kolosseum“ und „Provinzarena“ ausprobieren.<br>4. Das Kolosseum als .schem/.litematic exportieren und im Spiel aufstellen. | Neun Quartiere mit 30 Gebäuden ohne Voxelkonflikte, Abschnitte „Straßen & Plätze“ und „Phase 1–4“; Kolosseum 81 × 61 mit begehbaren Rängen, Treppen im Wandelgang und Toren zur Straße, 12 Statuen in den Attikafenstern, zwei Treppen aus dem Hypogäum in die Arena; im Spiel schwebt nichts. (Abnahme GEN-03-S05/S06) |
 | BIB-12 | Neue Gebäude im Spiel bauen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek)) | vertieft | 1. Zwei bis drei neue Bibliotheksgebäude (z. B. ein Meisterstück, eine Untergrundhalle, ein Interieur) als .schem exportieren und im Spiel (Litematica oder Mod-Hologramm) aufstellen. | Nichts schwebt, Türen/Treppen/Laternen stehen richtig, Innenräume sind begehbar und eingerichtet. (Abnahme LIB-05-S08) |
 | BIB-15 | Eigenes Bauwerk in die Bibliothek einreichen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek)) | kern | 1. Eine eigene .litematic oder .schem importieren und als Bauteil speichern (oder ein Werkstatt-/Generatorbauteil nehmen).<br>2. Gebäudeblatt → „⇪ In Bibliothek einreichen“ → „Beitrag vorbereiten …“.<br>3. Name, Kategorie, Autor ausfüllen, Rechte bestätigen, „↓ Beitragspaket erstellen“.<br>4. Den Link „Formular ‚Bibliotheksbeitrag‘ auf GitHub öffnen“ ansehen (nicht absenden, wenn nur getestet wird). | Eine Datei „beitrag_….bauplaner-beitrag.json“ wird heruntergeladen; das Formular ist mit Name, Kennung und Autor vorausgefüllt; ohne Rechtebestätigung entsteht keine Datei; auf dem Handy ragt nichts seitlich heraus. (Abnahme LIB-06-S06) |
 | BIB-16 | Eingereichtes Bauwerk ist fest in der Bibliothek ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek?q=beitrag)) | vertieft | 1. Nach der Übernahme eines Beitrags und dem Update der Seite: Bibliothek öffnen, nach „beitrag“ suchen.<br>2. Den Beitrag öffnen, in ein Projekt übernehmen und als .litematic exportieren.<br>3. In einem zweiten Browser (oder privaten Fenster) prüfen, dass er auch dort erscheint. | Der Beitrag steht mit „Bibliotheksbeitrag von …“, Bautipps und genau den eingereichten Blöcken in der Bibliothek, auch in einem frischen Browser; Export und Material funktionieren wie bei jedem Gebäude. (Abnahme LIB-06-S07) |
 | BIB-17 | Zwei Stände eines Bauwerks vergleichen | vertieft | 1. Ein eigenes Bauteil in der Werkstatt öffnen, alles markieren und um ein paar Blöcke verschieben, eine Truhe oder ein Schild ändern, als neue Version speichern.<br>2. In der Bibliothek beim Bauteil unter „Bauversionen & Varianten“ die ältere mit der neuen Version vergleichen. | Der Vergleich meldet „ist verschoben“ mit dem richtigen Versatz statt aller Blöcke als geändert; die geänderte Truhe bzw. das Schild steht als Inhaltsänderung da. (Abnahme DIFF-01) |
 | BIB-18 | Filter bleiben beim Seitenwechsel ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek)) | vertieft | 1. Bibliothek filtern (Kategorie, Größe, Suchwort), auf Seite 2 blättern.<br>2. Ein Gebäude öffnen und mit „Zurück“ des Browsers zurückgehen. | Filter, Suchwort und Seite sind wie vorher; Vorschaubilder erscheinen ohne langes Nachladen. (Abnahme PERF-03) |
 | BIB-19 | Basisplaner an der echten Küste ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek/basis)) | vertieft | 1. Einen Bauplatz an einer Küste aus der eigenen Welt anlegen (Weltimport #/welt → „Bauplatz anlegen“).<br>2. Bibliothek → „Basisplaner“, Vorlage „Küstenbasis“, Ziel = dieser Bauplatz.<br>3. Unter „Prüfung“ den Kasten zur Küste lesen; ggf. „Wasserseite übernehmen“ und „Ans echte Ufer schieben“ drücken.<br>4. In Projekt einfügen und die Basis auf der Weltkarte mit dem Gelände vergleichen. | Der Kasten nennt die Seite der Küste und den Abstand des echten Ufers zur geplanten Uferlinie; nach dem Schieben steht „Uferlinie liegt am echten Ufer“; Stege stehen im Wasser, Gebäude an Land. (Abnahme TERRAIN-03-S06) |
+| BIB-20 | Basis-Wegenetz als Landschaftsweg ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek/basis)) | vertieft | 1. Einen Bauplatz am Hang oder an einem Bach aus der eigenen Welt anlegen (Weltimport #/welt → „Bauplatz anlegen“).<br>2. Bibliothek → „Basisplaner“, Ziel = dieser Bauplatz; im Lageplan die echte Küstenlinie (helles Blau) ansehen.<br>3. Unter „Gelände anpassen“: Wegenetz „als Landschaftsweg“, „Bauplätze einebnen“ anhaken, Bericht unter „Prüfung“ lesen.<br>4. In Projekt einfügen, Reiter „Landschaft“ öffnen, „Als Bauteil ins Projekt übernehmen“ und als .litematic im Spiel ansehen. | Die Wege folgen dem Gelände, jeder Höhenwechsel hat eine Treppe in Laufrichtung, über Wasser liegt eine Brücke mit Geländer; jedes Gebäude steht auf eingeebnetem Grund; Laternen stehen auf dem Gelände; ein Rückgängig-Schritt entfernt Basis und Geländeänderung. (Abnahme TERRAIN-03-S08) |
+| BIB-21 | Großprojekt am Hang und am Wasser ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek/grossprojekte)) | vertieft | 1. Bibliothek → „Großprojekte“, z. B. „Freie Marktstadt“ öffnen, Ziel = ein Bauplatz mit Geländeaufnahme.<br>2. „Flachsten Platz in der Geländeaufnahme suchen“, Höhen „Terrassen“; „Wasserkanten“ unter „Prüfung“ lesen.<br>3. Straßennetz „als Landschaftsweg“, „Bauplätze einebnen“ und „Wasserkanten als Kaimauer“ anhaken, einfügen.<br>4. Reiter „Landschaft“ → als Bauteil übernehmen und im Spiel ansehen. | Die Prüfung nennt Quartiere, die im Wasser stehen; nach dem Einfügen stehen sie auf aufgeschüttetem Grund mit Kaimauer aus Steinziegeln; Straßen folgen dem Gelände mit Treppen, über Bäche als Brücke; keine Voxelkonflikte. (Abnahme GROSS-01-S08) |
+| BIB-22 | Eigenes Großprojekt aus einer Sammlung ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/bibliothek/grossprojekte)) | vertieft | 1. Unter „Sammlungen“ eine Sammlung mit eigenen Gebäuden und einem Unterordner anlegen.<br>2. Bibliothek → „Großprojekte“ → „Eigenes Großprojekt aus einer Sammlung“: Sammlung wählen, „Als Großprojekt planen“.<br>3. Quartiere, Straßen und Bauphasen ansehen, als Projekt anlegen. | Die Gebäude der Sammlung bilden das erste Quartier, jeder Unterordner ein weiteres mit eigener Bauphase; Vorlagen und fehlende Bauteile werden oben genannt; keine Voxelkonflikte, Baustelle mit „Straßen & Plätze“ und einer Phase je Quartier. (Abnahme GROSS-01-S08) |
 
 ## PROJ · Projekt: Editor, Material, Bauen, Export (Planer)
 
@@ -249,13 +252,12 @@ Planer, Mod und Paper-Plugin verbinden sich per Klick; der Server wird aus dem P
 
 Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan.ts), geordnet nach dem Ort, den die Abnahme braucht. Ein Paket gilt als abgenommen, wenn alle genannten Fälle ✓ sind; Ob ein Paket noch auf Abnahme wartet, steht in `docs/ROADMAP.md`.
 
-### Nur im Browser (45 Pakete)
+### Nur im Browser (43 Pakete)
 
 | Paket | Testfälle |
 |---|---|
 | ARCH-02 | SYS-03, START-03 |
 | BACKUP-02 | START-03, START-04 |
-| BASE-01 | BIB-10 |
 | BUILD-06 | PROJ-03, GERAET-06 |
 | COOP-06 | TEAMBAU-21, TEAMBAU-22, TEAMBAU-23, TEAMBAU-24 |
 | COOP-11 | TEAMBAU-28 |
@@ -269,7 +271,6 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | GFX-01 | DATEI-04, GERAET-05 |
 | GFX-02 | DATEI-09, GERAET-05 |
 | GFX-03 | DATEI-10 |
-| GROSS-01 | BIB-13, PROJ-11 |
 | LIB-02 | BIB-07 |
 | LIB-03 | BIB-08 |
 | LIB-06 | BIB-15, BIB-16 |
@@ -299,10 +300,11 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | VIEW-02 | START-06, DATEI-01 |
 | WORLD-IMPORT-01 | KARTE-04 |
 
-### Mit Minecraft (Mod oder Spiel) (38 Pakete)
+### Mit Minecraft (Mod oder Spiel) (40 Pakete)
 
 | Paket | Testfälle |
 |---|---|
+| BASE-01 | BIB-10, BIB-20 |
 | BLOCK-01 | WERK-06, PROJ-04 |
 | BLOCK-02 | BIB-12, WERK-06 |
 | COOP-01 | TEAMBAU-01, TEAMBAU-02, TEAMBAU-03, TEAMBAU-04, TEAMBAU-05 |
@@ -323,6 +325,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | GAME-10 | MOD-16 |
 | GEN-02 | BIB-06, BIB-12 |
 | GEN-03 | BIB-14 |
+| GROSS-01 | BIB-13, PROJ-11, BIB-21, BIB-22 |
 | LIB-04 | BIB-05, BIB-12 |
 | LIB-05 | BIB-12 |
 | LINK-02 | LINK-02 |
@@ -340,7 +343,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | PROJ-05 | PROJ-23 |
 | QA-04 | SYS-01, SYS-02, LIVE-06 |
 | SIZE-01 | DATEI-05, WERK-07, MOD-15, LIVE-09 |
-| TERRAIN-03 | PROJ-19, PROJ-06, BIB-19 |
+| TERRAIN-03 | PROJ-19, PROJ-06, BIB-19, BIB-20 |
 
 ### Mit Paper-Server und Plugin (10 Pakete)
 

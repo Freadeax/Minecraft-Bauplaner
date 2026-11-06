@@ -36,6 +36,25 @@ Wahlmöglichkeiten (`GrossprojektChoices`): Quartiere abwählen, Abstand 0–12,
 
 Mit Voxelkonflikten ist die Übernahme nur nach ausdrücklicher Bestätigung möglich. Instanz- und Verbindungs-IDs werden bei jeder Übernahme neu vergeben.
 
+## Gelände und Wasserkanten (S08)
+
+Mit einem Zielprojekt mit Weltlage und Geländeaufnahme (oder -gestaltung) passt der Planer das Großprojekt an:
+
+- **Höhen:** „Geländeaufnahme nutzen“ mit Terrassen (Standard) oder einer Ebene – `fitAnlageToTerrain` wie bei Anlagen, Erdarbeiten und Hinweise in der Prüfung; Vorschau und Übernahme nutzen die Höhen.
+- **Flachster Platz:** „Flachsten Platz in der Geländeaufnahme suchen“ setzt den eigenen Versatz auf die Lage mit den wenigsten Erdarbeiten (`findTerrainSpot`), nie auf die bestehenden Bauten des Ziels (`avoid`: deren Umriss plus Abstand).
+- **Wasserkanten:** Die Prüfung nennt Quartiere, deren Gebäude auf echtem Wasser stehen (Spalten je Quartier). „Bauplätze einebnen“ schüttet sie auf, „Wasserkanten als Kaimauer“ setzt am neuen Ufer Steinziegel.
+- **Straßennetz als Landschaftsweg:** wie beim Basisplaner ([BASE_PLANNER](BASE_PLANNER.md)): Straßenspuren mit Treppen, Brücken über Bäche, Laternen einzeln auf dem Boden (Schlüssel `strassen`, also im Abschnitt „Straßen & Plätze“; bei Asphalt mit Eisenstangen-Pfosten), Belag nach Straßenstil (Asphalt als eigener Wegbelag).
+- Übernahme in einem Rückgängig-Schritt mit der Geländegestaltung; danach Reiter „Landschaft“ → als Bauteil übernehmen. Abnahme BIB-21.
+
+## Eigene Großprojekte aus Sammlungen (S08)
+
+`grossprojektFromCollection(sammlung, { all, assets, versions })` (`packages/domain/src/catalog/ownGrossprojekt.ts`) macht aus einer eigenen Sammlung ein Großprojekt, ohne Datei:
+
+- Die Gebäude direkt in der Sammlung bilden das erste Quartier (ab 9 Plätzen in Quartiere zu je 8 geteilt), **jeder Unterordner** ein weiteres Quartier mit allem darin (auch tiefer verschachtelt), in Namensreihenfolge; je Quartier eine Bauphase. Höchstens 24 Quartiere, Raster fast quadratisch.
+- Bauteile werden Plätze mit ihrer angehefteten oder neuesten Version, mitgelieferte Ensembles bleiben Ensembles; eigene Vorlagen, fehlende, archivierte oder versionslose Einträge und leere Ordner stehen oben als „Nicht übernommen“.
+- Kiesstraßen 3 Blöcke breit mit Laternen, Abstand 3; alles Weitere (Wahl, Gelände, Übernahme) wie bei den mitgelieferten Großprojekten. `Grossprojekt.own` erlaubt Plätze mit eigenen Bauteilen (sonst nur `bld_…`).
+- Oberfläche: Kasten „Eigenes Großprojekt aus einer Sammlung“ in der Übersicht, Route `#/bibliothek/grossprojekte/sammlung-<id>`. Abnahme BIB-22.
+
 ## Eigenes Großprojekt hinzufügen
 
 Eine Datei `packages/domain/src/catalog/grossprojekte/<slug>.ts` mit einer `const` vom Typ `Grossprojekt` (Helfer `s`, `e`, `a`, `q`, `ph` aus `helpers.ts`) und eine Zeile in `grossprojekte/index.ts`. Die Tests prüfen automatisch: Struktur, vorhandene Bauteile, keine Voxelkonflikte und Abstände im Standardlayout, zusammenhängendes Straßennetz, jedes Quartier in einer Phase.
@@ -58,6 +77,8 @@ Das Set `packages/domain/src/catalog/build/sets/grossbauten.ts` liefert die Wahr
 Alle acht bestehen die Blocklogik-Prüfung (Halt, Verbindungen, Zustände, Drehen und Spiegeln). Die Hauptstadt nutzt sie in den Quartieren „Residenz“ und „Großer Markt“ (Phase 5). Die Großprojekte „Residenzstadt mit Schlosspark“ und „Klosterdorf im Tal“ bauen auf Schloss, Universität, Kloster, Marktplatz und Stadttor auf (S07).
 
 ## Prüfung
+
+- `tests/unit/catalog/plan-landscape.test.mjs`: Straßen über einen Bach als Brücke, Bauplätze im Wasser aufgeschüttet mit Kaimauer, Laternen-Bauteil ohne Konflikt, eigenes Großprojekt aus einer Sammlung mit Unterordnern; `tests/e2e/plan-landscape.e2e.mjs` (flachster Platz, Landschaftsstraßen, Übernahme, Sammlung).
 
 - `tests/unit/catalog/grossprojekte.test.mjs`: Kuratierung aller Projekte, Standardlayouts ohne Voxelkonflikte und Abstandsbefunde (exportierbar, Quartiere in ihren Rasterfeldern, nichts auf der Straße), Straßennetz zusammenhängend mit Laternen neben der Fahrbahn, Stilpaletten, Determinismus, Straßenbreite/aus/Laternen, eingebettete Ensembles (kuratierte Lage) und Anlagen (Wegmodule verbunden), Wahl (ab, Tausch, Drehung, Türen, Fehler), Datenprüfung, freie Bauplätze, Übernahme (Straßen zuerst, Phasen, frische IDs, Netz-Bauteil), Einfügen mit Rückgängig und Veraltungsprüfung, Größenklassen.
 - `tests/e2e/grossprojekte.e2e.mjs` (Port 4303): Reiter und Übersicht, Planer mit Lageplan, Quartier ab, Straßenbreite/-stil, Tausch und Drehung, Übernahme (Abschnitte, Straßennetz-Bauteil), Einfügen in bestehendes Projekt, Handy 390 px.

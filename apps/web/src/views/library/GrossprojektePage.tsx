@@ -1,8 +1,8 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react';
 import type { Cell } from '../../../../../packages/voxel/src/index.js';
-import { GROSSPROJEKTE, MAX_GP_SPACING, MAX_STREET_WIDTH, MIN_STREET_WIDTH, QUARTIER_KIND_LABEL, SCALE_LABEL, STREET_STYLE_LABEL, applyOperation, besideOffset, buildGrossprojektPlan,
-  createGrossprojektProject, grossprojektById, grossprojektIntoProject, planGrossprojekt, previewGrossprojekt, resolveProject, scaleOf, swapCandidates, themeOfGrossprojekt } from '../../../../../packages/domain/src/index.js';
-import type { AnlageLibrary, AnlagePreview, CatalogEntry, Grossprojekt, GrossprojektChoices, GrossprojektLayout, GrossprojektPlan, Project, SlotState, StreetStyle } from '../../../../../packages/domain/src/index.js';
+import { EARTHWORK_NOTE, GROSSPROJEKTE, MAX_GP_SPACING, MAX_STREET_WIDTH, MIN_STREET_WIDTH, NETWORK_SURFACE, QUARTIER_KIND_LABEL, SCALE_LABEL, STREET_STYLE_LABEL, TERRAIN_MODE_LABEL, applyOperation, besideOffset, buildGrossprojektPlan,
+  OWN_GP_ROUTE_PREFIX, createGrossprojektProject, findTerrainSpot, grossprojektFromCollection, ownGrossprojektRoute, fitAnlageToTerrain, grossprojektById, grossprojektIntoProject, isTurned, planGrossprojekt, previewGrossprojekt, resolveProject, scaleOf, swapCandidates, themeOfGrossprojekt, turnLabel, turnOf, withoutNetwork } from '../../../../../packages/domain/src/index.js';
+import type { AnlageLibrary, AnlagePreview, AnlageTerrainFit, CatalogEntry, Collection, Grossprojekt, GrossprojektChoices, GrossprojektLayout, GrossprojektPlan, PlanNetwork, Project, SlotState, StreetStyle, TerrainMode } from '../../../../../packages/domain/src/index.js';
 import { useApp } from '../../app/context';
 import { navigate } from '../../app/router';
 import type { LibraryPage } from '../../app/router';
@@ -10,6 +10,9 @@ import { errorText, formatNumber } from '../../app/ui';
 import { Viewer } from '../../Viewer';
 import { Thumb } from '../../thumbnail/Thumb';
 import { ModelExportPanel } from '../../export3d/ModelExportPanel';
+import { projectTerrainDimension, useProjectTerrain } from '../world/designs';
+import { DEFAULT_LANDSCAPE, LandscapeControls, adoptLandscape, landscapeSummary, previewLandscape, useStoredProject, writesLandscape } from './planTerrain';
+import type { LandscapeChoice, LandscapePreview } from './planTerrain';
 import './anlagen.css';
 import './grossprojekte.css';
 
@@ -20,10 +23,13 @@ type Target = { readonly kind: 'new' } | { readonly kind: 'project'; readonly pr
 function safeLayout(gp: Grossprojekt, lib: AnlageLibrary, choices: GrossprojektChoices): { layout: GrossprojektLayout | null; error: string } {
   try { return { layout: planGrossprojekt(gp, lib, choices), error: '' }; } catch (e) { return { layout: null, error: errorText(e) }; }
 }
-function safePreview(plan: GrossprojektPlan | null, base: Project | undefined, offset: readonly [number, number], versions: AnlageLibrary['versions']): { preview: AnlagePreview | null; error: string } {
+function safePreview(plan: GrossprojektPlan | null, base: Project | undefined, offset: readonly [number, number], versions: AnlageLibrary['versions'], heights?: ReadonlyMap<string, number>): { preview: AnlagePreview | null; error: string } {
   if (!plan) return { preview: null, error: '' };
-  try { return { preview: previewGrossprojekt(plan, { ...(base && { base }), offset, versions }), error: '' }; } catch (e) { return { preview: null, error: errorText(e) }; }
+  try { return { preview: previewGrossprojekt(plan, { ...(base && { base }), offset, versions, ...(heights && { heights }) }), error: '' }; } catch (e) { return { preview: null, error: errorText(e) }; }
 }
+/** Street network of a layout as landscape network input. */
+const streetNetwork = (layout: GrossprojektLayout | null | undefined): PlanNetwork | null =>
+  layout?.streets ? { cells: layout.streets.cells, lamps: layout.streets.lamps, style: NETWORK_SURFACE[layout.streets.style]! } : null;
 const size = (f: { x0: number; z0: number; x1: number; z1: number } | null) => f ? `${f.x1 - f.x0} × ${f.z1 - f.z0}` : '–';
 
 /**
@@ -39,21 +45,51 @@ export function GrossprojektePage({ id, entries, projects, libHref, onMessage }:
   libHref(page: LibraryPage, id?: string): string;
   onMessage(text: string, link?: { href: string; label: string }): void;
 }) {
-  const { library } = useApp();
+  const { library, repo } = useApp();
   const lib = useMemo<AnlageLibrary>(() => ({ assets: library.assets, versions: library.versions }), [library]);
+  // Own collections (GROSS-01-S08): loaded once per visit, an own Großprojekt is built from one of them.
+  const [collections, setCollections] = useState<readonly Collection[] | null>(null);
+  useEffect(() => { let live = true; repo.listCollections().then(c => { if (live) setCollections(c); }, () => { if (live) setCollections([]); }); return () => { live = false; }; }, [repo]);
+  const own = useMemo(() => {
+    if (!id?.startsWith(OWN_GP_ROUTE_PREFIX) || !collections) return null;
+    const c = collections.find(x => x.id === id.slice(OWN_GP_ROUTE_PREFIX.length));
+    if (!c) return { gp: null, skipped: [], error: 'Die Sammlung gibt es nicht mehr.' };
+    try { return { ...grossprojektFromCollection(c, { all: collections, assets: lib.assets, versions: lib.versions }), error: '' }; } catch (e) { return { gp: null, skipped: [], error: errorText(e) }; }
+  }, [id, collections, lib]);
+  if (id?.startsWith(OWN_GP_ROUTE_PREFIX)) {
+    if (!own) return <p className="muted" role="status">Sammlung wird geladen …</p>;
+    if (!own.gp) return <GrossprojekteOverview missingId={undefined} error={own.error} lib={lib} libHref={libHref} collections={collections ?? []} />;
+    return <>
+      {own.skipped.length > 0 && <div className="notice warning" role="status" data-testid="gp-own-skipped">Nicht übernommen: {own.skipped.slice(0, 6).join(' · ')}{own.skipped.length > 6 ? ' …' : ''}</div>}
+      <GrossprojektPlanner key={own.gp.id} gp={own.gp} lib={lib} entries={entries} projects={projects} libHref={libHref} onMessage={onMessage} />
+    </>;
+  }
   const gp = id ? grossprojektById(id) : undefined;
-  if (!gp) return <GrossprojekteOverview missingId={id} lib={lib} libHref={libHref} />;
+  if (!gp) return <GrossprojekteOverview missingId={id} lib={lib} libHref={libHref} collections={collections ?? []} />;
   return <GrossprojektPlanner key={gp.id} gp={gp} lib={lib} entries={entries} projects={projects} libHref={libHref} onMessage={onMessage} />;
 }
 
-function GrossprojekteOverview({ missingId, lib, libHref }: { missingId: string | undefined; lib: AnlageLibrary; libHref(page: LibraryPage, id?: string): string }) {
+function GrossprojekteOverview({ missingId, error, lib, libHref, collections }: { missingId: string | undefined; error?: string; lib: AnlageLibrary; libHref(page: LibraryPage, id?: string): string; collections: readonly Collection[] }) {
   const layouts = useMemo(() => GROSSPROJEKTE.map(gp => ({ gp, ...safeLayout(gp, lib, {}) })), [lib]);
+  const usable = collections.filter(c => !c.archived && (c.items.length > 0 || collections.some(x => x.parentId === c.id)));
+  const [pick, setPick] = useState('');
+  const chosen = usable.find(c => c.id === pick) ?? usable[0];
   return <section className="anlagen grossprojekte" aria-label="Großprojekte">
     {missingId && <div className="notice warning" role="alert">Großprojekt „{missingId}“ gibt es nicht.</div>}
+    {error && <div className="notice warning" role="alert">{error}</div>}
     <div className="anlagen-intro"><div><span className="panel-kicker">GRÖSSENKLASSE STADT</span>
       <h2>Ganze Städte, Festungen und Anlagen als Plan.</h2>
       <p>Ein Großprojekt ordnet Quartiere auf einem Straßenraster: Gebäude, Ensembles und ganze Bauwelt-Anlagen aus dem Katalog, verbunden durch ein eigenes Straßennetz, gegliedert in Bauphasen. Du wählst Quartiere, Straßenbreite und Varianten, siehst echte Voxelkonflikte und übernimmst erst auf Knopfdruck in ein Projekt mit Bauabschnitten je Phase.</p></div>
       <aside>Größenklassen: {Object.values(SCALE_LABEL).join(' · ')}. Jeder Platz hält eine feste Bauteilversion; neuere Versionen werden angezeigt, aber nie automatisch übernommen.</aside></div>
+    <div className="anlage-panel gp-own" data-testid="gp-own">
+      <h3>Eigenes Großprojekt aus einer Sammlung</h3>
+      {usable.length ? <div className="anlage-target">
+        <label>Sammlung<select value={chosen?.id ?? ''} onChange={e => setPick(e.target.value)} aria-label="Sammlung für ein eigenes Großprojekt">
+          {usable.map(c => <option key={c.id} value={c.id}>{c.name}{c.category ? ` · ${c.category}` : ''}</option>)}</select></label>
+        {chosen && <a className="primary button-link" href={libHref('grossprojekte', ownGrossprojektRoute(chosen.id))}>Als Großprojekt planen</a>}
+      </div> : <p className="small-note">Noch keine Sammlung mit Gebäuden. Lege unter <a href={libHref('collections')}>Sammlungen</a> eine an.</p>}
+      <p className="small-note">Die Gebäude der Sammlung bilden das erste Quartier, jeder Unterordner wird ein weiteres Quartier mit eigener Bauphase. Straßennetz, Gelände und Übernahme funktionieren wie bei den mitgelieferten Großprojekten.</p>
+    </div>
     <ul className="anlagen-grid">{layouts.map(({ gp, layout }) => {
       const theme = themeOfGrossprojekt(gp);
       const buildings = layout?.placements.filter(p => p.kind === 'building').length ?? 0;
@@ -107,10 +143,46 @@ function GrossprojektPlanner({ gp, lib, entries, projects, libHref, onMessage }:
     if (layout) void buildGrossprojektPlan(layout).then(p => { if (live) setPlan(p); }).catch(() => { if (live) setPlan(null); });
     return () => { live = false; };
   }, [layout]);
-  const base = target.kind === 'project' ? projects.find(p => p.id === target.projectId) : undefined;
+  const [adopted, setAdopted] = useState(0);
+  const base = useStoredProject(repo, target.kind === 'project' ? projects.find(p => p.id === target.projectId) : undefined, adopted);
   const baseResolution = useMemo(() => { if (!base) return null; try { return resolveProject(base, lib.versions); } catch { return null; } }, [base, lib]);
   const offset = useMemo<[number, number]>(() => !base ? [0, 0] : placement === 'beside' && plan ? besideOffset(plan, baseResolution) : manual, [base, placement, plan, baseResolution, manual]);
-  const { preview, error: previewError } = useMemo(() => safePreview(plan, base, offset, lib.versions), [plan, base, offset, lib]);
+  // Gelände (GROSS-01-S08): terrace fit, streets as landscape network, levelled sites and quay walls on the target's terrain.
+  const [useTerrain, setUseTerrain] = useState(true);
+  const [mode, setMode] = useState<TerrainMode>('terrassen');
+  const [landscape, setLandscape] = useState<LandscapeChoice>(DEFAULT_LANDSCAPE);
+  const terrainRef = base?.world && projectTerrainDimension(base, 'planned') === base.world.dimension && (base.terrain || base.terrainDesign) ? base : null;
+  const { survey, error: surveyError } = useProjectTerrain(repo, terrainRef, 'planned');
+  const network = useMemo(() => streetNetwork(layout), [layout]);
+  const shaped = !!survey && useTerrain && writesLandscape(landscape);
+  const fit = useMemo((): { fit: AnlageTerrainFit | null; land: LandscapePreview | null; error: string } => {
+    if (!plan || !survey || !useTerrain || !base?.world) return { fit: null, land: null, error: '' };
+    if (isTurned(base.world)) return { fit: null, land: null, error: `„${base.name}“ liegt auf der Weltkarte ${turnLabel(turnOf(base.world))}; ans Gelände angepasst wird nur bei ungedrehter Weltlage.` };
+    try {
+      if (writesLandscape(landscape)) { const land = previewLandscape(plan, survey, { origin: base.world.origin, offset, mode, choice: landscape, network }); return { fit: land.fit, land, error: '' }; }
+      return { fit: fitAnlageToTerrain(plan, { survey, origin: base.world.origin, offset, mode }), land: null, error: '' };
+    } catch (e) { return { fit: null, land: null, error: errorText(e) }; }
+  }, [plan, survey, useTerrain, base, offset, mode, landscape, network]);
+  const shownPlan = useMemo(() => plan && shaped && landscape.network === 'landschaft' ? { ...withoutNetwork(plan), network: null } : plan, [plan, shaped, landscape.network]);
+  const { preview, error: previewError } = useMemo(() => safePreview(shownPlan, base, offset, lib.versions, fit.fit?.heights), [shownPlan, base, offset, lib, fit]);
+  // Wasserkanten: buildings whose footprint stands on real water (by quarter).
+  const wetQuarters = useMemo(() => {
+    if (!fit.fit || !plan) return [];
+    const district = new Map(plan.placements.map(p => [p.key, p.districtId]));
+    const byQuarter = new Map<string, number>();
+    for (const u of fit.fit.units) if (u.kind !== 'path' && u.estimate.water) { const q = district.get(u.keys[0]!) ?? null; if (q) byQuarter.set(q, (byQuarter.get(q) ?? 0) + u.estimate.water); }
+    return [...byQuarter].map(([id, columns]) => ({ name: gp.quartiere.find(q => q.id === id)?.name ?? id, columns }));
+  }, [fit, plan, gp]);
+  const findSpot = () => {
+    if (!plan || !survey || !base?.world) return;
+    // Never onto the target's existing buildings (their bounding box plus the spacing).
+    const b = baseResolution?.world?.bounds, gap = Math.max(1, plan.choices.spacing) * 2;
+    const avoid = b && baseResolution!.world!.cells.length ? [{ x0: b.min[0] - gap, z0: b.min[2] - gap, x1: b.maxExclusive[0] + gap, z1: b.maxExclusive[2] + gap }] : [];
+    const spot = findTerrainSpot(shaped && landscape.network === 'landschaft' ? withoutNetwork(plan) : plan, { survey, origin: base.world.origin, mode, avoid });
+    if (!spot) { onMessage('Das Großprojekt passt nicht neben die bestehenden Bauten in die Geländeaufnahme; bitte eine größere Fläche aufnehmen.'); return; }
+    setAccept(false); setPlacement('manual'); setManual([spot.offset[0], spot.offset[1]]);
+    onMessage(`Flachster Platz: Versatz x ${spot.offset[0]}, z ${spot.offset[1]} (${spot.tried} Lagen verglichen, ${formatNumber(spot.fit.totals.fill)} Blöcke Unterbau, ${formatNumber(spot.fit.totals.cut)} Abtrag).`);
+  };
   const conflictCells = useMemo(() => new Set(preview?.conflicts.map(c => c.position.join(',')) ?? []), [preview]);
   const markFor = useCallback((cell: Cell) => conflictCells.has(cell.position.join(',')) ? CONFLICT_MARK : null, [conflictCells]);
   const noSelect = useMemo(() => () => {}, []);
@@ -145,13 +217,26 @@ function GrossprojektPlanner({ gp, lib, entries, projects, libHref, onMessage }:
       let world = null;
       try { world = resolveProject(project, versions); } catch { /* unresolved projects: place at the manual/zero offset */ }
       const at = placement === 'beside' ? besideOffset(stored, world) : manual;
-      const fresh = previewGrossprojekt(stored, { base: project, offset: at, versions });
+      const terrainOk = useTerrain && !!survey && !!project.world && !isTurned(project.world);
+      if (terrainOk && writesLandscape(landscape)) {
+        const land = await adoptLandscape(repo, project, stored, { offset: at, mode, choice: landscape, network: streetNetwork(stored.layout), name: project.name, networkKey: 'strassen', asphalt: stored.layout.streets?.style === 'asphalt' });
+        if (land.lamps) { await repo.applyBatch({ versions: [land.lamps.version], assets: [land.lamps.asset] }); await reloadLibrary(); versions.set(land.lamps.version.id, land.lamps.version); }
+        const fresh = previewGrossprojekt(land.plan, { base: project, offset: at, versions, heights: land.heights });
+        if (fresh.conflicts.length && !accept) throw new Error(`${fresh.conflicts.length} Voxelkonflikt(e) nach Neuberechnung; bitte prüfen und bestätigen`);
+        const op = grossprojektIntoProject(land.plan, fresh, project, { acceptConflicts: accept });
+        const saved = await repo.saveProject(applyOperation(project, { kind: 'batch', label: `„${gp.name}“ auf dem Gelände eingefügt`, operations: [op, land.operation] }).project, project.revision);
+        onMessage(`„${gp.name}“ in „${saved.name}“ eingefügt: ${fresh.draft.instances.length} Instanzen, ${gp.phasen.length} Bauphasen. Gelände angepasst: ${landscapeSummary(land.result)} Im Reiter „Landschaft“ als Bauteil übernehmen. Rückgängig im Editor möglich.`,
+          { href: `#/projekt/${encodeURIComponent(saved.id)}/landschaft`, label: 'Zur Landschaft' });
+        return;
+      }
+      const heights = terrainOk ? fitAnlageToTerrain(stored, { survey: survey!, origin: project.world!.origin, offset: at, mode }).heights : undefined;
+      const fresh = previewGrossprojekt(stored, { base: project, offset: at, versions, ...(heights && { heights }) });
       if (fresh.conflicts.length && !accept) throw new Error(`${fresh.conflicts.length} Voxelkonflikt(e) nach Neuberechnung; bitte prüfen und bestätigen`);
       const saved = await repo.saveProject(applyOperation(project, grossprojektIntoProject(stored, fresh, project, { acceptConflicts: accept })).project, project.revision);
       onMessage(`„${gp.name}“ in „${saved.name}“ eingefügt: ${fresh.draft.instances.length} Instanzen, ${gp.phasen.length} Bauphasen. Rückgängig im Editor möglich.`,
         { href: `#/projekt/${encodeURIComponent(saved.id)}/baustelle`, label: 'Zur Baustelle' });
     } catch (e) { onMessage(`Nicht übernommen: ${errorText(e)}`); }
-    finally { setBusy(false); }
+    finally { setBusy(false); setAdopted(n => n + 1); }
   };
 
   const spacing = choices.spacing ?? gp.spacing;
@@ -231,7 +316,14 @@ function GrossprojektPlanner({ gp, lib, entries, projects, libHref, onMessage }:
         {conflicts > 0 && preview && <details className="anlage-conflicts"><summary>Konfliktstellen anzeigen</summary><ol>
           {preview.conflicts.slice(0, 12).map(c => <li key={c.position.join(',')}>x {c.position[0]} · y {c.position[1]} · z {c.position[2]}: {c.instanceIds.map(i => preview.names.get(i) ?? i).join(' / ')}</li>)}
           {conflicts > 12 && <li>… und {conflicts - 12} weitere</li>}</ol></details>}
-        <p className="small-note">Gelände ungeprüft: Das Großprojekt kennt nur geplante Blöcke und liegt auf einer Höhe. Für Hanglagen das Projekt anlegen und im Reiter „Gelände“ prüfen oder Teile als Anlage mit Geländeanpassung planen.</p>
+        {fit.fit && <ul className="anlage-checks" data-testid="gp-terrain">
+          <li className={wetQuarters.length ? 'warn' : 'good'} data-testid="gp-water-edges"><strong>{wetQuarters.length ? `Wasserkanten: ${wetQuarters.length} Quartier${wetQuarters.length === 1 ? '' : 'e'} im Wasser` : 'Kein Gebäude im Wasser'}</strong>
+            <span>{wetQuarters.length ? `${wetQuarters.slice(0, 4).map(w => `${w.name} (${w.columns} Spalten)`).join(', ')}${wetQuarters.length > 4 ? ' …' : ''}. ${landscape.grade ? 'Die Bauplätze werden aufgeschüttet' + (landscape.quay ? ', das neue Ufer bekommt eine Kaimauer.' : '.') : '„Bauplätze einebnen“ schüttet sie auf.'}` : 'Grundrisse der Quartiere liegen an Land.'}</span></li>
+        </ul>}
+        {fit.land && <p className="base-landscape-note" data-testid="gp-landscape-report" role="status">Gelände anpassen: {landscapeSummary(fit.land.result)}</p>}
+        {fit.fit ? <p className="small-note">Gelände aus „{base!.name}“ ({TERRAIN_MODE_LABEL[fit.fit.mode]}): {formatNumber(fit.fit.totals.fill)} Blöcke Unterbau, {formatNumber(fit.fit.totals.cut)} Blöcke Abtrag. {fit.fit.notes.join(' ')} {EARTHWORK_NOTE}</p>
+          : <p className="small-note">Gelände ungeprüft: Für Hanglagen, Wasserkanten und Straßen als Landschaftsweg ein Projekt mit Geländeaufnahme als Ziel wählen.</p>}
+        {(surveyError || fit.error) && <p className="field-error" role="alert">{surveyError || fit.error}</p>}
       </section>
     </div>
 
@@ -283,8 +375,13 @@ function GrossprojektPlanner({ gp, lib, entries, projects, libHref, onMessage }:
             {placement === 'manual' && <span className="anlage-xz">
               <label>x<input type="number" value={manual[0]} onChange={e => { setAccept(false); setManual([Math.trunc(Number(e.target.value) || 0), manual[1]]); }} /></label>
               <label>z<input type="number" value={manual[1]} onChange={e => { setAccept(false); setManual([manual[0], Math.trunc(Number(e.target.value) || 0)]); }} /></label></span>}
-            <small>Versatz: x {offset[0]}, z {offset[1]}</small></fieldset>}
+            <small>Versatz: x {offset[0]}, z {offset[1]}</small>
+            {survey && useTerrain && <button type="button" className="text-button" onClick={findSpot}>Flachsten Platz in der Geländeaufnahme suchen</button>}</fieldset>}
+        {terrainRef && <label className="chip-check"><input type="checkbox" checked={useTerrain} onChange={e => { setAccept(false); setUseTerrain(e.target.checked); }} /> Geländeaufnahme nutzen</label>}
+        {terrainRef && useTerrain && <label>Höhen<select value={mode} onChange={e => { setAccept(false); setMode(e.target.value as TerrainMode); }} aria-label="Höhenanpassung">
+          {(Object.keys(TERRAIN_MODE_LABEL) as TerrainMode[]).map(m => <option key={m} value={m}>{TERRAIN_MODE_LABEL[m]}</option>)}</select></label>}
       </div>
+      {terrainRef && useTerrain && <LandscapeControls choice={landscape} onChange={c => { setAccept(false); setLandscape(c); }} label="Straßennetz" idPrefix="gp" />}
       {conflicts > 0 && <label className="chip-check anlage-accept"><input type="checkbox" checked={accept} onChange={e => setAccept(e.target.checked)} />
         Trotz {conflicts} Voxelkonflikt{conflicts === 1 ? '' : 'en'} übernehmen (sie bleiben im Editor sichtbar und sperren den Export, bis sie gelöst sind)</label>}
       <div className="button-row"><button className="primary" type="button" disabled={!canAdopt} onClick={() => void adopt()}>

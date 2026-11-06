@@ -101,6 +101,8 @@ export interface Grossprojekt {
   readonly quartiere: readonly Quartier[];
   /** Build order; every enabled quarter must appear in exactly one phase. */
   readonly phasen: readonly GrossprojektPhase[];
+  /** Own Großprojekt from a collection (GROSS-01-S08): slots may hold own parts, not only catalogue buildings. */
+  readonly own?: boolean;
 }
 
 export type ProjectScale = 'siedlung' | 'quartier' | 'stadtteil' | 'stadt';
@@ -188,7 +190,7 @@ export function validateGrossprojekt(gp: Grossprojekt): void {
     if (q.kind !== 'frei' && !q.units.length) fail(`${gp.id}/${q.id}: keine Einheiten`);
     for (const u of q.units) {
       if (keys.has(u.key)) fail(`${gp.id}: Schlüssel ${u.key} doppelt`); keys.add(u.key);
-      if (u.kind === 'slot' && !u.assetId.startsWith('bld_')) fail(`${gp.id}/${u.key}: Bauteil-Id muss bld_… sein`);
+      if (u.kind === 'slot' && !gp.own && !u.assetId.startsWith('bld_')) fail(`${gp.id}/${u.key}: Bauteil-Id muss bld_… sein`);
       if (u.kind === 'ensemble' && !ENSEMBLES.some(e => e.id === u.ensembleId)) fail(`${gp.id}/${u.key}: Ensemble ${u.ensembleId} gibt es nicht`);
       if (u.kind === 'anlage' && !ANLAGEN.some(a => a.id === u.anlageId)) fail(`${gp.id}/${u.key}: Anlage ${u.anlageId} gibt es nicht`);
     }

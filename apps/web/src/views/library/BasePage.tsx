@@ -2,11 +2,11 @@ import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'rea
 import type { Cell } from '../../../../../packages/voxel/src/index.js';
 import {
   BASE_FUNCTIONS, BASE_PHASES, BASE_SPACING, BASE_TEMPLATES, EARTHWORK_NOTE, PATH_STYLE_LABEL, PATH_WIDTH, RESERVE_ID, TERRAIN_MODE_LABEL, WATER_SIDE_LABEL,
-  applyOperation, baseIntoProject, baseTemplateById, besideOffset, buildBasePlan, createBaseProject, defaultZones, fitAnlageToTerrain, fitBaseShore, isTurned, turnLabel, turnOf, layoutBase,
-  mainCandidates, previewBase, resolveProject, zoneKeyFor,
+  NETWORK_SURFACE, applyOperation, baseIntoProject, baseTemplateById, besideOffset, buildBasePlan, createBaseProject, defaultZones, fitAnlageToTerrain, fitBaseShore, isTurned, turnLabel, turnOf, layoutBase,
+  mainCandidates, previewBase, realShoreMap, resolveProject, withoutNetwork, zoneKeyFor,
 } from '../../../../../packages/domain/src/index.js';
 import type {
-  AnlageLibrary, AnlagePreview, AnlageTerrainFit, BaseChoices, BaseFunctionId, BaseLayout, BasePhase, BasePlan, BaseZoneChoice, BaseZonePlan, PathStyle, Project, ShoreFit, TerrainMode, WaterSide,
+  AnlageLibrary, AnlagePreview, AnlageTerrainFit, BaseChoices, BaseFunctionId, BaseLayout, BasePhase, BasePlan, BaseZoneChoice, BaseZonePlan, PathStyle, PlanNetwork, Project, ShoreFit, ShoreMap, TerrainMode, WaterSide,
 } from '../../../../../packages/domain/src/index.js';
 import { useApp } from '../../app/context';
 import { navigate } from '../../app/router';
@@ -14,6 +14,8 @@ import type { LibraryPage } from '../../app/router';
 import { errorText, formatNumber } from '../../app/ui';
 import { Viewer } from '../../Viewer';
 import { projectTerrainDimension, useProjectTerrain } from '../world/designs';
+import { DEFAULT_LANDSCAPE, LandscapeControls, adoptLandscape, landscapeSummary, previewLandscape, useStoredProject, writesLandscape } from './planTerrain';
+import type { LandscapeChoice, LandscapePreview } from './planTerrain';
 import './anlagen.css';
 import './base.css';
 
@@ -48,6 +50,8 @@ export function BasePage({ projects, libHref, onMessage }: {
   const [busy, setBusy] = useState(false);
   const [useTerrain, setUseTerrain] = useState(true);
   const [mode, setMode] = useState<TerrainMode>('eben');
+  // Gelände anpassen (TERRAIN-03-S08): network as landscape path, building sites levelled, quay walls.
+  const [landscape, setLandscape] = useState<LandscapeChoice>(DEFAULT_LANDSCAPE);
   const [focus, setFocus] = useState<string | null>(null);
   // Shift onto the real shore (TERRAIN-03-S06), added to the offset beside the existing buildings.
   const [shift, setShift] = useState<readonly [number, number]>(NO_SHIFT);
@@ -67,25 +71,38 @@ export function BasePage({ projects, libHref, onMessage }: {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layout]);
 
-  const base = target.kind === 'project' ? projects.find(p => p.id === target.projectId) : undefined;
+  const [adopted, setAdopted] = useState(0);
+  const base = useStoredProject(repo, target.kind === 'project' ? projects.find(p => p.id === target.projectId) : undefined, adopted);
   const baseResolution = useMemo(() => { if (!base) return null; try { return resolveProject(base, lib.versions); } catch { return null; } }, [base, lib]);
   const offset = useMemo<[number, number]>(() => base && plan ? addShift(besideOffset(plan, baseResolution), shift) : [0, 0], [base, plan, baseResolution, shift]);
   const terrainRef = base?.world && projectTerrainDimension(base, 'planned') === base.world.dimension && (base.terrain || base.terrainDesign) ? base : null;
   const { survey, error: surveyError } = useProjectTerrain(repo, terrainRef, 'planned');
-  const fit = useMemo((): { fit: AnlageTerrainFit | null; error: string } => {
-    if (!plan || !survey || !useTerrain || !base?.world) return { fit: null, error: '' };
-    if (isTurned(base.world)) return { fit: null, error: `„${base.name}“ liegt auf der Weltkarte ${turnLabel(turnOf(base.world))}; ans Gelände angepasst wird nur bei ungedrehter Weltlage.` };
-    try { return { fit: fitAnlageToTerrain(plan, { survey, origin: base.world.origin, offset, mode }), error: '' }; } catch (e) { return { fit: null, error: errorText(e) }; }
-  }, [plan, survey, useTerrain, base, offset, mode]);
+  const network = useMemo((): PlanNetwork | null => layout ? { cells: layout.paths, lamps: layout.lamps, style: NETWORK_SURFACE[layout.choices.pathStyle]! } : null, [layout]);
+  const shaped = !!survey && useTerrain && writesLandscape(landscape);
+  const fit = useMemo((): { fit: AnlageTerrainFit | null; land: LandscapePreview | null; error: string } => {
+    if (!plan || !survey || !useTerrain || !base?.world) return { fit: null, land: null, error: '' };
+    if (isTurned(base.world)) return { fit: null, land: null, error: `„${base.name}“ liegt auf der Weltkarte ${turnLabel(turnOf(base.world))}; ans Gelände angepasst wird nur bei ungedrehter Weltlage.` };
+    try {
+      if (writesLandscape(landscape)) { const land = previewLandscape(plan, survey, { origin: base.world.origin, offset, mode, choice: landscape, network }); return { fit: land.fit, land, error: '' }; }
+      return { fit: fitAnlageToTerrain(plan, { survey, origin: base.world.origin, offset, mode }), land: null, error: '' };
+    } catch (e) { return { fit: null, land: null, error: errorText(e) }; }
+  }, [plan, survey, useTerrain, base, offset, mode, landscape, network]);
+  // The real coastline under the plan (drawn over the planned water side in the site map).
+  const coast = useMemo((): ShoreMap | null => {
+    const e = layout?.extent;
+    if (!e || !survey || !useTerrain || !base?.world || isTurned(base.world)) return null;
+    try { return realShoreMap(survey, { x0: e.x0 - 8, z0: e.z0 - 8, x1: e.x1 + 8, z1: e.z1 + 8 }, { origin: base.world.origin, offset }); } catch { return null; }
+  }, [layout, survey, useTerrain, base, offset]);
   const shore = useMemo((): ShoreFit | null => {
     if (!layout || !plan || !survey || !useTerrain || !base?.world || isTurned(base.world)) return null;
     try { return fitBaseShore(layout, { survey, origin: base.world.origin, offset }); } catch { return null; }
   }, [layout, plan, survey, useTerrain, base, offset]);
   const { preview, error: previewError } = useMemo((): { preview: AnlagePreview | null; error: string } => {
     if (!plan) return { preview: null, error: '' };
-    try { return { preview: previewBase(plan, { ...(base && { base }), offset, versions: lib.versions, ...(fit.fit && { heights: fit.fit.heights }) }), error: '' }; }
+    const shown = shaped && landscape.network === 'landschaft' ? { ...withoutNetwork(plan), network: null } : plan;
+    try { return { preview: previewBase(shown, { ...(base && { base }), offset, versions: lib.versions, ...(fit.fit && { heights: fit.fit.heights }) }), error: '' }; }
     catch (e) { return { preview: null, error: errorText(e) }; }
-  }, [plan, base, offset, lib, fit]);
+  }, [plan, base, offset, lib, fit, shaped, landscape.network]);
   const conflictCells = useMemo(() => new Set(preview?.conflicts.map(c => c.position.join(',')) ?? []), [preview]);
   const markFor = useCallback((cell: Cell) => conflictCells.has(cell.position.join(',')) ? CONFLICT_MARK : null, [conflictCells]);
   const noSelect = useMemo(() => () => {}, []);
@@ -117,14 +134,28 @@ export function BasePage({ projects, libHref, onMessage }: {
       let world = null;
       try { world = resolveProject(project, versions); } catch { /* unresolved: beside offset 0 */ }
       const at = addShift(besideOffset(stored, world), shift);
-      const heights = useTerrain && survey && project.world && !isTurned(project.world) ? fitAnlageToTerrain(stored, { survey, origin: project.world.origin, offset: at, mode }).heights : undefined;
+      const terrainOk = useTerrain && !!survey && !!project.world && !isTurned(project.world);
+      if (terrainOk && writesLandscape(landscape)) {
+        // Gelände anpassen: design first (original store), lamp part, then the project with plan and design in one undo step.
+        const net: PlanNetwork = { cells: stored.layout.paths, lamps: stored.layout.lamps, style: NETWORK_SURFACE[stored.layout.choices.pathStyle]! };
+        const land = await adoptLandscape(repo, project, stored, { offset: at, mode, choice: landscape, network: net, name: project.name, networkKey: 'wegenetz' });
+        if (land.lamps) { await repo.applyBatch({ versions: [land.lamps.version], assets: [land.lamps.asset] }); await reloadLibrary(); versions.set(land.lamps.version.id, land.lamps.version); }
+        const fresh = previewBase(land.plan, { base: project, offset: at, versions, heights: land.heights });
+        if (fresh.conflicts.length && !accept) throw new Error(`${fresh.conflicts.length} Voxelkonflikt(e) nach Neuberechnung; bitte prüfen und bestätigen`);
+        const op = baseIntoProject(land.plan, fresh, project, { acceptConflicts: accept });
+        const saved = await repo.saveProject(applyOperation(project, { kind: 'batch', label: `Basis „${stored.layout.choices.template.name}“ auf dem Gelände eingefügt`, operations: [op, land.operation] }).project, project.revision);
+        onMessage(`Basis in „${saved.name}“ eingefügt: ${fresh.draft.instances.length} Instanzen mit Bauphasen. Gelände angepasst: ${landscapeSummary(land.result)} Im Reiter „Landschaft“ als Bauteil übernehmen. Rückgängig im Editor möglich.`,
+          { href: `#/projekt/${encodeURIComponent(saved.id)}/landschaft`, label: 'Zur Landschaft' });
+        return;
+      }
+      const heights = terrainOk ? fitAnlageToTerrain(stored, { survey: survey!, origin: project.world!.origin, offset: at, mode }).heights : undefined;
       const fresh = previewBase(stored, { base: project, offset: at, versions, ...(heights && { heights }) });
       if (fresh.conflicts.length && !accept) throw new Error(`${fresh.conflicts.length} Voxelkonflikt(e) nach Neuberechnung; bitte prüfen und bestätigen`);
       const saved = await repo.saveProject(applyOperation(project, baseIntoProject(stored, fresh, project, { acceptConflicts: accept })).project, project.revision);
       onMessage(`Basis in „${saved.name}“ eingefügt: ${fresh.draft.instances.length} Instanzen mit Bauphasen. Rückgängig im Editor möglich.`,
         { href: `#/projekt/${encodeURIComponent(saved.id)}/baustelle`, label: 'Zur Baustelle' });
     } catch (e) { onMessage(`Nicht übernommen: ${errorText(e)}`); }
-    finally { setBusy(false); }
+    finally { setBusy(false); setAdopted(n => n + 1); }
   };
 
   const conflicts = preview?.conflicts.length ?? 0;
@@ -166,7 +197,8 @@ export function BasePage({ projects, libHref, onMessage }: {
     <div className="anlage-columns">
       <section className="anlage-panel" aria-labelledby="base-plan-title">
         <h3 id="base-plan-title">Lageplan</h3>
-        {layout ? <BaseMap layout={layout} focus={focus} onFocus={setFocus} /> : <p className="field-error" role="alert">{layoutError}</p>}
+        {layout ? <BaseMap layout={layout} focus={focus} onFocus={setFocus} coast={coast} /> : <p className="field-error" role="alert">{layoutError}</p>}
+        {coast && coast.known > 0 && <p className="plan-coast-note" data-testid="base-coast">Echte Küstenlinie aus der Geländeaufnahme hell im Plan: {formatNumber(coast.water)} Wasserfelder im Ausschnitt.</p>}
         <div className="anlage-controls base-controls">
           <label>Vorlage<select value={template.id} onChange={e => chooseTemplate(e.target.value)} aria-label="Vorlage">
             {BASE_TEMPLATES.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}</select></label>
@@ -194,6 +226,7 @@ export function BasePage({ projects, libHref, onMessage }: {
         </ul>
         {shore && <ShoreCheck shore={shore} water={choices.water ?? template.water} shift={shift}
           onWater={w => update(c => ({ ...c, water: w }))} onShift={s => { setAccept(false); setShift(addShift(shift, s)); }} onReset={() => { setAccept(false); setShift(NO_SHIFT); }} />}
+        {fit.land && <p className="base-landscape-note" data-testid="base-landscape-report" role="status">Gelände anpassen: {landscapeSummary(fit.land.result)}{fit.land.result.wet.length ? ` Im Wasser stehen: ${fit.land.result.wet.slice(0, 4).map(w => `${w.name} (${w.columns} Spalten)`).join(', ')}${fit.land.result.wet.length > 4 ? ' …' : ''}.` : ''}</p>}
         {fit.fit ? <p className="small-note">Gelände aus „{base!.name}“ ({TERRAIN_MODE_LABEL[fit.fit.mode]}): {formatNumber(fit.fit.totals.fill)} Blöcke Unterbau, {formatNumber(fit.fit.totals.cut)} Blöcke Abtrag. {EARTHWORK_NOTE}</p>
           : <p className="small-note">Gelände ungeprüft: Für Hanglagen und die echte Küstenlinie ein Projekt mit Geländeaufnahme als Ziel wählen.</p>}
         {(surveyError || fit.error) && <p className="field-error" role="alert">{surveyError || fit.error}</p>}
@@ -223,9 +256,10 @@ export function BasePage({ projects, libHref, onMessage }: {
         {terrainRef && useTerrain && <label>Höhen<select value={mode} onChange={e => setMode(e.target.value as TerrainMode)} aria-label="Höhenanpassung">
           {(Object.keys(TERRAIN_MODE_LABEL) as TerrainMode[]).map(m => <option key={m} value={m}>{TERRAIN_MODE_LABEL[m]}</option>)}</select></label>}
       </div>
+      {terrainRef && useTerrain && <LandscapeControls choice={landscape} onChange={c => { setAccept(false); setLandscape(c); }} label="Wegenetz" idPrefix="base" />}
       {conflicts > 0 && <label className="chip-check anlage-accept"><input type="checkbox" checked={accept} onChange={e => setAccept(e.target.checked)} /> Trotz {conflicts} Voxelkonflikten übernehmen</label>}
       <div className="button-row"><button className="primary" disabled={!canAdopt} onClick={() => void adopt()}>{busy ? 'Wird übernommen …' : target.kind === 'new' ? 'Als neues Projekt anlegen' : 'In Projekt einfügen'}</button></div>
-      <p className="small-note">Angelegt werden alle Gebäude, das Wegenetz als eigenes Bauteil und Bauabschnitte „Wege & Platz“ und Phase 1–4 mit den offenen Prüfpunkten als Notiz.</p>
+      <p className="small-note">Angelegt werden alle Gebäude, das Wegenetz als eigenes Bauteil (oder als Landschaftsweg in der Geländegestaltung des Projekts) und Bauabschnitte „Wege & Platz“ und Phase 1–4 mit den offenen Prüfpunkten als Notiz.</p>
     </section>
   </section>;
 }
@@ -287,7 +321,7 @@ function ZoneRow({ choice, plan, lib, focused, onFocus, onPatch, onRemove }: {
 }
 
 /** Top view of the base: water, paths, lanterns, zones with labels (like a drawn map). */
-function BaseMap({ layout, focus, onFocus }: { layout: BaseLayout; focus: string | null; onFocus(key: string): void }) {
+function BaseMap({ layout, focus, onFocus, coast }: { layout: BaseLayout; focus: string | null; onFocus(key: string): void; coast?: ShoreMap | null }) {
   const e = layout.extent;
   if (!e) return <p className="muted">Keine Zone.</p>;
   const pad = 8, x0 = e.x0 - pad, z0 = e.z0 - pad, w = e.x1 - e.x0 + 2 * pad, h = e.z1 - e.z0 + 2 * pad;
@@ -297,7 +331,8 @@ function BaseMap({ layout, focus, onFocus }: { layout: BaseLayout; focus: string
   const font = Math.max(3, Math.min(6, w / 40));
   return <svg className="anlage-plan base-map" viewBox={`${x0} ${z0} ${w} ${h}`} role="img" aria-label="Lageplan der Basis" data-testid="base-map">
     <rect x={x0} y={z0} width={w} height={h} fill="#4f7a3a" />
-    {waterRect && waterRect.w > 0 && waterRect.h > 0 && <rect x={waterRect.x} y={waterRect.y} width={waterRect.w} height={waterRect.h} fill="#2f6fb5" />}
+    {waterRect && waterRect.w > 0 && waterRect.h > 0 && <rect x={waterRect.x} y={waterRect.y} width={waterRect.w} height={waterRect.h} fill="#2f6fb5" fillOpacity={coast ? 0.45 : 1} />}
+    {coast && coast.runs.length > 0 && <path data-testid="base-coast-water" d={coast.runs.map(([x, z, n]) => `M${x} ${z}h${n}v1h-${n}z`).join('')} fill="#5fa8e8" fillOpacity={0.85} />}
     <path d={layout.paths.map(([x, z]) => `M${x} ${z}h1v1h-1z`).join('')} fill="#c9b48a" />
     {layout.placements.map(p => <rect key={p.key} x={p.footprint.x0} y={p.footprint.z0} width={p.footprint.x1 - p.footprint.x0} height={p.footprint.z1 - p.footprint.z0} fill="#7b5534" stroke="#2a1c10" strokeWidth={0.3} />)}
     {layout.zones.filter(z => z.rect).map(z => <g key={z.key} onClick={() => onFocus(z.key)} className="base-zone">

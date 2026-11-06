@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T09:11:06.629Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T09:18:45.680Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -26,7 +26,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | Bereich | Offen | Verwaist | Nur Philipp | Geprüft |
 |---|---:|---:|---:|---:|
 | [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 23 | 2 | 23 | 2 |
-| [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 3 | 10 | 4 |
+| [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 0 | 10 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 13 | 1 | 13 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
@@ -62,7 +62,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [MAP-07](#map-07) | Gedrehte und gespiegelte Projektlagen auf der Weltkarte | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Module und Systeme komplex ausarbeiten“ | Ein Projekt auf der Weltkarte drehen, ins Spiel senden und mit F3 prüfen; ein im Spiel gedrehtes Hologramm übernehmen (KARTE-07). |
 | [TERRAIN-01](#terrain-01) | Geländeaufnahmen für Weltkarte und Anlagen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Kopie deiner 26.3-Welt für die Geländeabnahme (S05). |
 | [TERRAIN-02](#terrain-02) | Landschaft gestalten | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Abnahme in deiner eigenen Welt und auf Touch-Geräten (S05). |
-| [TERRAIN-03](#terrain-03) | Gelände und Wege im Projekt | 🧩 Implementiert · Abnahme offen 6/8 | P1 | „Gelände und Wege ausbauen“ | PROJ-19: Weg mit Treppen und Brücke als .litematic in deiner Welt ansehen. |
+| [TERRAIN-03](#terrain-03) | Gelände und Wege im Projekt | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Gelände, Wege und Küste ausbauen“ | PROJ-19: Weg mit Treppen und Brücke als .litematic in deiner Welt ansehen.<br>BIB-20: Basis mit Wegenetz als Landschaftsweg auf einem echten Hang einfügen und im Spiel ansehen. |
 | [VIEW-01](#view-01) | Vorhandenen Viewer vollständig abnehmen | 🧩 Implementiert · Abnahme offen 1/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Ansicht auf echter GPU und mit Touch prüfen, negative Koordinaten, alle Schnittachsen (S02). |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Mojang-Download und Blockformen in Firefox/Safari und auf echten Geräten (S06). |
 | [WORLD-IMPORT-01](#world-import-01) | Bereichsweiser Weltimport und Terrainprüfung | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Ausschnitt aus einer Kopie deiner Modpack-Welt übernehmen. |
@@ -76,10 +76,10 @@ Abgeschlossen oder zurückgestellt: UI-01 (geprüft), UI-02 (geprüft).
 
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
-| [BASE-01](#base-01) | Basisplaner | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Basisplaner mit einer echten Basis aus eurer Welt abnehmen (S06). |
+| [BASE-01](#base-01) | Basisplaner | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Basisplaner mit einer echten Basis aus eurer Welt abnehmen (S06). |
 | [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | 🧩 Implementiert · Abnahme offen 5/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Treppenhaus, Torhaus-Wehrgang und Hafen im Spiel. |
-| [GEN-03](#gen-03) | Kolosseum aus Philipps Bauplan | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Kolosseum exportieren und im Spiel aufstellen (BIB-14). |
-| [GROSS-01](#gross-01) | Großprojekte in der Bibliothek | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Bibliothek um größere Projekte erweitern“ · 1 verwaist | Großprojekte und die sechs Großbauten im Spiel ansehen (BIB-13). |
+| [GEN-03](#gen-03) | Kolosseum aus Philipps Bauplan | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Kolosseum exportieren und im Spiel aufstellen (BIB-14). |
+| [GROSS-01](#gross-01) | Großprojekte in der Bibliothek | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Gelände, Wege und Küste ausbauen“ | Großprojekte und die sechs Großbauten im Spiel ansehen (BIB-13).<br>BIB-21/BIB-22: Großprojekt auf einem echten Bauplatz am Wasser und eigenes Großprojekt aus einer Sammlung planen. |
 | [LIB-02](#lib-02) | Eigene Sammlungen, Ordner und Kategorien | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Rückmeldung zur Bedienung der Sammlungen. |
 | [LIB-03](#lib-03) | Eigene Ensembles und Generatorvorlagen speichern | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Eigene Ensembles und Generatorvorlagen ausprobieren. |
 | [LIB-04](#lib-04) | Gebäudebibliothek v3 | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Redstone-Bauten im Spiel abnehmen. |
@@ -278,6 +278,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **EDIT-04** · Gespiegelte und gedrehte Zustände (Türen, Truhen, Schienen) im Spiel (S07).
 - **EDIT-05** · Gestapelte und gedrehte Bauteile mit Ausstattung im Spiel.
 - **TERRAIN-03** · PROJ-19: Weg mit Treppen und Brücke als .litematic in deiner Welt ansehen.
+- **TERRAIN-03** · BIB-20: Basis mit Wegenetz als Landschaftsweg auf einem echten Hang einfügen und im Spiel ansehen.
 - **GEN-02** · Treppenhaus, Torhaus-Wehrgang und Hafen im Spiel.
 - **MAP-02** · BlueMap-Marker (.conf) bzw. Dynmap-Befehle auf eurer Server-Karte einspielen und prüfen, ob Projekte, Wege und Punkte an der richtigen Stelle erscheinen (KARTE-08).
 - **GAME-05** · Forge-Testversion auf einem Rechner mit Bildschirm starten (S03).
@@ -322,6 +323,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **LIB-06** · Eigenes Bauwerk einreichen und das Paket im Thread hochladen (BIB-15/16).
 - **BASE-01** · Basisplaner mit einer echten Basis aus eurer Welt abnehmen (S06).
 - **SPLIT-01** · Echte Litematic-Basen zum Herauslösen bereitstellen (S05).
+- **GROSS-01** · BIB-21/BIB-22: Großprojekt auf einem echten Bauplatz am Wasser und eigenes Großprojekt aus einer Sammlung planen.
 
 ### Im Planer abnehmen
 
@@ -351,11 +353,8 @@ Arbeit, für die gerade kein laufender Thread zuständig ist. Zum Verteilen: Thr
 | ID | Bereich | Prio | Status | Offen ohne Bearbeiter |
 |---|---|---|---|---|
 | [QA-04](#qa-04) | Testphase, Qualität und Betrieb | P0 | 🧩 Implementiert · Abnahme offen | Der Thread „Große Testphase vorbereiten und betreuen“ ist beendet; die rund 30 Pakete, bei denen nur Philipps Abnahme fehlt, haben keinen aktiven Thread für Diagnose und Fehlerbehebung. |
-| [BASE-01](#base-01) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Küstenlinie aus der Geländeaufnahme, Wegstufen als Treppen, Brücken. |
 | [COOP-05](#coop-05) | Teambau live | P1 | 🧩 Implementiert · Abnahme offen | S04 Lagerstände über den Team-Raum an die Mod (passt zu LINK-07 „gesehene Kisteninhalte in den Raum“) – Plugin-Thread beendet. |
 | [EDIT-04](#edit-04) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Gelände-Werkzeuge auf dem Projektgelände (als eigener Thread angekündigt, nie gestartet).<br>Symmetrie und Kurven auch in der Mod. |
-| [GEN-03](#gen-03) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Feinschliff Kolosseum: Statuen in den Attika-Fenstern, Treppen im Hypogäum. |
-| [GROSS-01](#gross-01) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Geländeanpassung und Wasserkanten für Großprojekte, eigene Großprojekte aus Sammlungen. |
 | [MAP-04](#map-04) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Benannte Gruppen und Sperren mit Schemaerweiterung, abgestimmt mit der Mod (siehe GAME-07-S07). |
 
 ## Eingänge ohne eigenes Paket
@@ -387,7 +386,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **GAME-03 · Optionale lokale Verbindung und Anzeige im Spiel** — 🧩 Implementiert · Abnahme offen, 2/2 Teilschritte. Nächster Schritt: Abnahme mit MAP-03-S06; Forge/NeoForge/Paper haben die Verbindung noch nicht.
 - **GAME-05 · NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen.
 - **LIB-06 · Bibliotheksbeiträge: eigene Bauwerke (Importe, Werkstatt, Generator) als festen Katalogeintrag für alle einreichen – Beitragspaket mit Prüfsumme und Rechtebestätigung, GitHub-Formular, Übernahme-Skript, Auslieferung wie mitgelieferte Gebäude** — 🧩 Implementiert · Abnahme offen, 5/7 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06) und erster echter Beitrag (S07).
-- **GROSS-01 · Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt** — 🧩 Implementiert · Abnahme offen, 6/7 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06); Großbauten-Set (S05).
+- **GROSS-01 · Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt** — 🧩 Implementiert · Abnahme offen, 7/8 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S06 BIB-13, BIB-21, BIB-22).
 - **MAP-06 · Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players)** — 🧩 Implementiert · Abnahme offen, 7/8 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S08); Mod-Umsetzung GAME-08; denkbar für Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (Zeitstempel je Eintrag).
 - **SIZE-01 · Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05) mit einem großen Bau im Spiel.
 - **COOP-01 · Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp mit Mitspielern (TEAMBAU-01…05).
@@ -413,7 +412,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **COOP-09 · Team live im Alltag: Status und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme mit Mitspielern (TEAMBAU-25).
 - **PROJ-02 · Projektplanung vertieft: Zeitplan ab heute, Abschnitte warten auf Material aus der Produktion, Basisplan mit Verzug je Abschnitt/Meilenstein, Anteil der Bautage je Bauleute** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme durch Philipp (S05, PROJ-16…18).
 - **LINK-07 · Ohne Server-Datei: Mod spricht direkt mit dem Team-Raum (Teamstand, eigene Meldungen, Anwesenheit); Plugin nur noch freiwilliger Zusatz für Schutz und geprüfte Kisten** — 🚧 In Arbeit, 5/6 Teilschritte. Nächster Schritt: Team-Thread deployt den Raum (Aufnahmen, Positionen); Modrinth 0.15.0; Abnahme LINK-07/LINK-08 durch Philipp.
-- **TERRAIN-03 · Gelände und Wege im Projekt: Aufschütten, Abtragen, Rampe, Wegstufen als Treppen, Brücken mit Geländer, Weg aus der Weltkarte** — 🧩 Implementiert · Abnahme offen, 6/8 Teilschritte. Nächster Schritt: Abnahme PROJ-19 und BIB-19 im Spiel; danach Wegenetz der Basis als Landschaftsweg (S08).
+- **TERRAIN-03 · Gelände und Wege im Projekt: Aufschütten, Abtragen, Rampe, Wegstufen als Treppen, Brücken mit Geländer, Weg aus der Weltkarte** — 🧩 Implementiert · Abnahme offen, 7/8 Teilschritte. Nächster Schritt: Abnahme PROJ-19, BIB-19 und BIB-20 im Spiel (Treppen, Brücken, Wegenetz der Basis auf echtem Gelände).
 - **GFX-02 · Darstellung und Leistung, Runde 2: Biomfarben, leuchtende Blockentities (Leuchtfeuer-Strahl, Endportal, Magma), GPU-Upload großer Szenen in Stücken** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Abnahme auf echten GPUs, Firefox/Safari und Abgleich mit Spielbildern (S04, zusammen mit GFX-01-S06).
 - **EDIT-06 · Direkt im 3D-Bild bauen: Blöcke an Flächen setzen/abbauen, Formen und Gruppen im 3D aufziehen und ziehen, Truhen- und Schildinhalte bearbeiten** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: EDIT-06-S05: Philipp prüft das Bauen im 3D-Bild auf PC und iPad (WERK-08) und lädt eine Truhe/ein Schild mit Inhalt im Spiel (WERK-09).
 - **STRUCT-01 · Dateistruktur sauber neu ordnen: Fachordner im Kern und in der Oberfläche, Skripte, Tests und Doku nach Bereich, Ordnerkarte docs/STRUKTUR.md** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Durchsicht der Ordnerkarte durch Philipp; parallele Threads ziehen neue Dateien mit dem Codemod nach.
@@ -530,7 +529,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [BUILD-05](#build-05) | Bauwelt-Anlagen mit Konfliktvorschau | ✅ Im beschriebenen Umfang geprüft | 3/3 | LIB-03, CORE-03 | ausstehend | ausstehend |
 | [TERRAIN-01](#terrain-01) | Geländeaufnahmen für Weltkarte und Anlagen | 🧩 Implementiert · Abnahme offen | 4/5 | WORLD-IMPORT-01, BUILD-05, MAP-01 | ausstehend | ausstehend |
 | [TERRAIN-02](#terrain-02) | Landschaft gestalten: Gelände formen, bemalen, Wasser und Wege | 🧩 Implementiert · Abnahme offen | 6/7 | TERRAIN-01, BUILD-05, MAP-01 | ausstehend | ausstehend |
-| [TERRAIN-03](#terrain-03) | Gelände und Wege im Projekt: Aufschütten, Abtragen, Rampe, Wegstufen als Treppen, Brücken mit Geländer, Weg aus der Weltkarte | 🧩 Implementiert · Abnahme offen | 6/8 | TERRAIN-02, TERRAIN-01, MAP-04, BASE-01 | ausstehend | ausstehend |
+| [TERRAIN-03](#terrain-03) | Gelände und Wege im Projekt: Aufschütten, Abtragen, Rampe, Wegstufen als Treppen, Brücken mit Geländer, Weg aus der Weltkarte | 🧩 Implementiert · Abnahme offen | 7/8 | TERRAIN-02, TERRAIN-01, MAP-04, BASE-01 | ausstehend | ausstehend |
 | [BUILD-06](#build-06) | Bauführung im Spiel: Schichtführung, Tagesziele, Packlisten, Druck-/Handyansicht, Spielfortschritt | 🧩 Implementiert · Abnahme offen | 5/5 | BUILD-01, GAME-01, MAP-01 | ausstehend | ausstehend |
 | [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | 🧩 Implementiert · Abnahme offen | 5/5 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
 | [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen | 4/4 | CORE-03, STORE-02 | `84838f0` | `e232b26` |
@@ -550,12 +549,12 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [LIB-06](#lib-06) | Bibliotheksbeiträge: eigene Bauwerke (Importe, Werkstatt, Generator) als festen Katalogeintrag für alle einreichen – Beitragspaket mit Prüfsumme und Rechtebestätigung, GitHub-Formular, Übernahme-Skript, Auslieferung wie mitgelieferte Gebäude | 🧩 Implementiert · Abnahme offen | 5/7 | LIB-02, LIB-05, PERF-04, UPDATE-01 | ausstehend | ausstehend |
 | [BASE-01](#base-01) | Basisplaner: ganze Survival-Basis aus Funktionszonen (Platz, Lager, Schmiede, Verzauberung, XP-Farm, Küche, Halle, Felder, Tierfarm, Hafen, Händler), Wegenetz mit Laternen, Wasserseite, Spielprüfungen je Zone, Bauphasen | 🧩 Implementiert · Abnahme offen | 5/6 | BUILD-05, TERRAIN-01, BLOCK-02 | ausstehend | ausstehend |
 | [SPLIT-01](#split-01) | Gebäude aus großen Modellen herauslösen: Gebäude, Felder, Gehege und Wegenetz erkennen, einzeln oder zusammen als Bauteile speichern, als Projekt an alter Stelle aufteilen | 🧩 Implementiert · Abnahme offen | 5/6 | LIB-04, WORLD-IMPORT-01, PERF-04 | ausstehend | ausstehend |
-| [GROSS-01](#gross-01) | Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt | 🧩 Implementiert · Abnahme offen | 6/7 | BUILD-05, BASE-01, LIB-05 | ausstehend | ausstehend |
+| [GROSS-01](#gross-01) | Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt | 🧩 Implementiert · Abnahme offen | 7/8 | BUILD-05, BASE-01, LIB-05 | ausstehend | ausstehend |
 | [MAP-05](#map-05) | Planung auf der Live-Karte vertiefen: Baustand aus dem Spiel (Mod 0.7.1, GET /v1/scan), Ebenen und Abweichungen auf der Karte, bestätigte Schritte abhaken, Bauabschnitte wählen, Weltplan automatisch abgleichen, Hologramm und BlueMap aus dem Kontextmenü | 🧩 Implementiert · Abnahme offen | 4/5 | MAP-03, MAP-04, GAME-07, GAME-01 | ausstehend | ausstehend |
 | [MAP-06](#map-06) | Weltkarte in die Tiefe: Zonen, benannte Ebenen und Farben (Weltplan-Schema 2), Messen mit Fläche, Höhenprofil und Route übers Gelände, Marker und Mitspieler aus dem Spiel, Mod-Anbindung über Protokoll 2 (features marks2, players) | 🧩 Implementiert · Abnahme offen | 7/8 | MAP-04, MAP-05, GAME-07 | ausstehend | ausstehend |
 | [MAP-07](#map-07) | Gedrehte und gespiegelte Projektlagen auf der Weltkarte: dieselbe Regel wie das Hologramm der Mod, gedrehtes Hologramm übernehmen, Plan gedreht ins Spiel | 🧩 Implementiert · Abnahme offen | 3/4 | MAP-05, MAP-04, GAME-07 | ausstehend | ausstehend |
 | [QA-04](#qa-04) | Große Testphase: Checklisten je Bereich, Testprotokoll, Fehlerberichte mit Diagnose (Planer und Mod), Triage | 🧩 Implementiert · Abnahme offen | 4/6 | QA-01, STAB-01, GAME-07 | ausstehend | ausstehend |
-| [GEN-03](#gen-03) | Kolosseum aus Philipps Bauplan: Arena-Generator, Bauset Antike und Großprojekt Kolosseum-Viertel | 🧩 Implementiert · Abnahme offen | 4/5 | GEN-02, GROSS-01 | ausstehend | ausstehend |
+| [GEN-03](#gen-03) | Kolosseum aus Philipps Bauplan: Arena-Generator, Bauset Antike und Großprojekt Kolosseum-Viertel | 🧩 Implementiert · Abnahme offen | 5/6 | GEN-02, GROSS-01 | ausstehend | ausstehend |
 | [SIZE-01](#size-01) | Volumenlimit für große Builds: eine zentrale Größengrenze (4 Mio. Zellen, 16,7 Mio. Box) für Import, Werkstatt, Export, Aufnahmen und Mod-Übertragung; Hinweise statt Abbruch; Mod 0.9.0 lädt große Pläne ohne Hänger | 🧩 Implementiert · Abnahme offen | 4/5 | PERF-04, ARCH-02, GFX-01, GAME-08 | ausstehend | ausstehend |
 | [COOP-01](#coop-01) | Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“ | 🧩 Implementiert · Abnahme offen | 4/5 | BUILD-06, BACKUP-02 | ausstehend | ausstehend |
 | [COOP-02](#coop-02) | Paper-Plugin als Teamknoten: Teambefehle ohne Mod und Planer, Aktionsleiste, Schutz in fremden Abschnitten, Umriss, Ausfuhr ins Teamprotokoll | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-01, GAME-04 | ausstehend | ausstehend |
@@ -1835,7 +1834,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TERRAIN-03
 
-**Gelände und Wege im Projekt: Aufschütten, Abtragen, Rampe, Wegstufen als Treppen, Brücken mit Geländer, Weg aus der Weltkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gelände und Wege ausbauen“) · Zuständiger Thread: „Gelände und Wege ausbauen“ · Aktualisiert: 2026-11-05T11:03:24.121Z
+**Gelände und Wege im Projekt: Aufschütten, Abtragen, Rampe, Wegstufen als Treppen, Brücken mit Geländer, Weg aus der Weltkarte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gelände, Wege und Küste ausbauen“) · Zuständiger Thread: „Gelände, Wege und Küste ausbauen“ · Aktualisiert: 2026-11-06T09:18:45.680Z
 
 - [x] TERRAIN-03-S01: Geländewerkzeuge: Aufschütten (nur Mulden bis zur Zielhöhe), Abtragen (nur über der Zielhöhe), Rampe mit gleichmäßiger Steigung, Breite und weichem Übergang.
 - [x] TERRAIN-03-S02: Wegstufen: Treppen (bergauf, über die ganze Breite) oder Halbstufen an jedem Höhenwechsel um einen Block, neun Materialfamilien, keine Treppen ins Leere nach späteren Änderungen; Dateiformat BPTDES01 mit optionalem Stufenfeld.
@@ -1844,19 +1843,19 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 - [x] TERRAIN-03-S05: Unit- und Browserprüfung (1400/390 px), Doku LANDSCAPE.md, Testfall PROJ-19.
 - [x] TERRAIN-03-S06: Basisplaner auf Gelände: Küstenlinie aus der Geländeaufnahme (baseShore.ts: Wasserseite je Seite aus Reihen mit offenem Wasser, echtes Ufer gegen geplante Uferlinie, Gebäude im Wasser/Stege an Land), Kasten „Küste“ mit „Wasserseite übernehmen“ und „Ans echte Ufer schieben“; Abnahme BIB-19.
 - [ ] TERRAIN-03-S07: Abnahme im Spiel (PROJ-19): Treppen, Brücke und Geländer als .litematic in Philipps Welt.
-- [ ] TERRAIN-03-S08: Wegenetz der Basis als Landschaftsweg mit Treppen und Brücken (Rest von S06).
+- [x] TERRAIN-03-S08: Wegenetz der Basis als Landschaftsweg: ganze Wegnetze (layPathCells) folgen dem Gelände mit höchstens einem Block zwischen allen Nachbarfeldern, Treppen/Halbstufen nur in Laufrichtung, Brücke mit Geländer oder Damm; Bauplätze eingeebnet, Kaimauern, Laternen auf dem Gelände; echte Küstenlinie im Lageplan; Abnahme BIB-20.
 
 **Abnahme:** Treppen nur an Höhenwechseln um genau einen Block, immer bergauf gerichtet und mit gültigen Zuständen 26.3; nach späteren Pinselstrichen keine Treppen ins Leere. Brücken lassen Wasser und Grund unverändert, liegen einen Block über dem Wasser und haben verbundene Geländer an offenen Seiten. Aufschütten hebt nie an, was über der Zielhöhe liegt; Abtragen senkt nie, was darunter liegt; unbekannte Spalten bleiben unverändert. Dateien ohne Wegstufen bleiben byte-identisch und ältere Gestaltungen laden unverändert.
 
-**Nächste Aktion:** Abnahme PROJ-19 und BIB-19 im Spiel; danach Wegenetz der Basis als Landschaftsweg (S08).
+**Nächste Aktion:** Abnahme PROJ-19, BIB-19 und BIB-20 im Spiel (Treppen, Brücken, Wegenetz der Basis auf echtem Gelände).
 
-**Nur Philipp:** Im Spiel an deinem PC: PROJ-19: Weg mit Treppen und Brücke als .litematic in deiner Welt ansehen.
+**Nur Philipp:** Im Spiel an deinem PC: PROJ-19: Weg mit Treppen und Brücke als .litematic in deiner Welt ansehen. Im Spiel an deinem PC: BIB-20: Basis mit Wegenetz als Landschaftsweg auf einem echten Hang einfügen und im Spiel ansehen.
 
 **Prüfstand:** Kern- und Chromiumtests bestanden; Abnahme im Spiel offen.
 
-**Nachweise:** [tests/unit/world/terrain-paths.test.mjs](../tests/unit/world/terrain-paths.test.mjs) — 8 Fälle: Aufschütten/Abtragen, Rampe, Treppen beidseitig, Halbstufen, Stufen nach Änderungen, Brücke, Brücke mit hohem Ufer, Datei, Materialien.; [tests/e2e/landscape-paths.e2e.mjs](../tests/e2e/landscape-paths.e2e.mjs) — Chromium 1400/390 px: Aufschütten, Graben, Rampe, Weg mit Treppen, Wasser, Brücke, 3D, Speichern/Neuladen, Bauteil mit Treppen und Zäunen im Material.; [docs/architecture/welt/LANDSCAPE.md](architecture/welt/LANDSCAPE.md) — Abschnitt „Wegstufen und Brücken (TERRAIN-03)“, Werkzeuge, Dateiformat, Grenzen.; [tests/unit/catalog/base-shore.test.mjs](../tests/unit/catalog/base-shore.test.mjs) — Küste aus der Geländeaufnahme: alle vier Seiten, Verschiebung, Binnenland, Bach, Bucht, Halbinsel, Aufnahmerand.; [tests/e2e/base-shore.e2e.mjs](../tests/e2e/base-shore.e2e.mjs) — Chromium 1400/390 px: Sicherung mit Küstenaufnahme, Wasserseite übernehmen, ans Ufer schieben, Übernahme an verschobener Stelle.
+**Nachweise:** [tests/unit/world/terrain-paths.test.mjs](../tests/unit/world/terrain-paths.test.mjs) — 8 Fälle: Aufschütten/Abtragen, Rampe, Treppen beidseitig, Halbstufen, Stufen nach Änderungen, Brücke, Brücke mit hohem Ufer, Datei, Materialien.; [tests/e2e/landscape-paths.e2e.mjs](../tests/e2e/landscape-paths.e2e.mjs) — Chromium 1400/390 px: Aufschütten, Graben, Rampe, Weg mit Treppen, Wasser, Brücke, 3D, Speichern/Neuladen, Bauteil mit Treppen und Zäunen im Material.; [docs/architecture/welt/LANDSCAPE.md](architecture/welt/LANDSCAPE.md) — Abschnitt „Wegstufen und Brücken (TERRAIN-03)“, Werkzeuge, Dateiformat, Grenzen.; [tests/unit/catalog/base-shore.test.mjs](../tests/unit/catalog/base-shore.test.mjs) — Küste aus der Geländeaufnahme: alle vier Seiten, Verschiebung, Binnenland, Bach, Bucht, Halbinsel, Aufnahmerand.; [tests/e2e/base-shore.e2e.mjs](../tests/e2e/base-shore.e2e.mjs) — Chromium 1400/390 px: Sicherung mit Küstenaufnahme, Wasserseite übernehmen, ans Ufer schieben, Übernahme an verschobener Stelle.; [tests/unit/world/terrain-network.test.mjs](../tests/unit/world/terrain-network.test.mjs) — 4 Fälle: Netz am Hang mit Abzweig (≤ 1 Block, Treppen nur in Laufrichtung, gültige Zustände), Grat mit Abzweig (Halbstufen), Brücke/Damm, unbekannte Felder und Kaimauer.; [tests/unit/catalog/plan-landscape.test.mjs](../tests/unit/catalog/plan-landscape.test.mjs) — Basis am Hang als Landschaftsweg mit Einebnen und Laternen-Bauteil ohne Konflikt; Großprojekt am Bach (Brücke, Aufschüttung, Kaimauer); echte Küstenlinie; eigenes Großprojekt aus Sammlung.; [tests/e2e/plan-landscape.e2e.mjs](../tests/e2e/plan-landscape.e2e.mjs) — Chromium 1400/390 px: Hang mit Bach aus Sicherung, Basis als Landschaftsweg einfügen, Großprojekt am flachsten Platz mit Landschaftsstraßen, eigenes Großprojekt aus Sammlung.
 
-**Dateiumfang:** `packages/domain/src/world/terrainDesign.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/LandscapeTab.tsx`, `apps/web/src/views/project/landscape/DesignCanvas.tsx`, `apps/web/src/testing/testplan.ts`, `docs/architecture/welt/LANDSCAPE.md`, `docs/testing/TESTPLAN.md`, `tests/unit/world/terrain-paths.test.mjs`, `tests/e2e/landscape-paths.e2e.mjs`. **Abhängigkeiten:** TERRAIN-02, TERRAIN-01, MAP-04, BASE-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/world/terrainDesign.ts`, `packages/domain/src/index.ts`, `apps/web/src/views/project/LandscapeTab.tsx`, `apps/web/src/views/project/landscape/DesignCanvas.tsx`, `apps/web/src/testing/testplan.ts`, `docs/architecture/welt/LANDSCAPE.md`, `docs/testing/TESTPLAN.md`, `tests/unit/world/terrain-paths.test.mjs`, `tests/e2e/landscape-paths.e2e.mjs`, `packages/domain/src/base/planLandscape.ts`, `packages/domain/src/base/baseShore.ts`, `apps/web/src/views/library/planTerrain.tsx`, `apps/web/src/views/library/BasePage.tsx`, `tests/unit/world/terrain-network.test.mjs`, `tests/unit/catalog/plan-landscape.test.mjs`, `tests/e2e/plan-landscape.e2e.mjs`. **Abhängigkeiten:** TERRAIN-02, TERRAIN-01, MAP-04, BASE-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -2483,7 +2482,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### BASE-01
 
-**Basisplaner: ganze Survival-Basis aus Funktionszonen (Platz, Lager, Schmiede, Verzauberung, XP-Farm, Küche, Halle, Felder, Tierfarm, Hafen, Händler), Wegenetz mit Laternen, Wasserseite, Spielprüfungen je Zone, Bauphasen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Basisanlagen wie im Bild planen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T11:03:24.121Z
+**Basisplaner: ganze Survival-Basis aus Funktionszonen (Platz, Lager, Schmiede, Verzauberung, XP-Farm, Küche, Halle, Felder, Tierfarm, Hafen, Händler), Wegenetz mit Laternen, Wasserseite, Spielprüfungen je Zone, Bauphasen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Basisanlagen wie im Bild planen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-06T09:18:45.680Z
 
 - [x] BASE-01-S01: Funktionskatalog mit Lagewünschen, Affinitäten, Katalogbauteilen, Alternativen, freiem Bauplatz und Bauphasen.
 - [x] BASE-01-S02: Spielprüfungen auf echten Blöcken: Verzauberungsstufe (Vanilla-Regel), Bewässerung, Arbeitsblöcke/Betten, Lagerplatz, Schmiede, Kochstelle, Gehege, Stege im Wasser.
@@ -2494,11 +2493,9 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Alle Vorlagen planen ohne Voxelkonflikt, jede Zone hängt am Wegenetz, Stege liegen im Wasser, Wege nie im Wasser oder durch Gebäude. Jede Zone zeigt ihre Spielanforderungen auf den echten Blöcken; offene Punkte stehen in den Bauabschnitten. Nichts wird ohne Knopfdruck gespeichert; Einfügen ist ein Rückgängig-Schritt.
 
-**Nächste Aktion:** Abnahme durch Philipp (S06); danach Küstenlinie aus der Geländeaufnahme und Wegstufen.
+**Nächste Aktion:** Abnahme durch Philipp (S06, BIB-10, BIB-19, BIB-20); Küstenlinie, Wegstufen und Brücken sind über TERRAIN-03-S06/S08 umgesetzt.
 
 **Nur Philipp:** Dateien oder Welt liefern: Basisplaner mit einer echten Basis aus eurer Welt abnehmen (S06).
-
-**Verwaist (ohne Bearbeiter):** Küstenlinie aus der Geländeaufnahme, Wegstufen als Treppen, Brücken.
 
 **Prüfstand:** Einheits- und Browsertests grün; Abnahme durch Philipp offen (S06).
 
@@ -2535,7 +2532,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GROSS-01
 
-**Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Bibliothek um größere Projekte erweitern“) · Zuständiger Thread: „Bibliothek um größere Projekte erweitern“ · Aktualisiert: 2026-11-05T11:03:24.121Z
+**Großprojekte in der Bibliothek: Städte, Festungen und Anlagen als Plan mit Quartieren auf Straßenraster, eigenem Straßennetz, Bauphasen, Konfliktvorschau und Übernahme als Projekt** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gelände, Wege und Küste ausbauen“) · Zuständiger Thread: „Gelände, Wege und Küste ausbauen“ · Aktualisiert: 2026-11-06T09:18:45.680Z
 
 - [x] GROSS-01-S01: Lückenanalyse der Größenstufen (Gebäude ≤ 25 × 25, Ensembles, Anlagen, Basisplaner) und Datenmodell Großprojekt (Quartiere, Einheiten slot/ensemble/anlage, Phasen, Straßen), abgestimmt mit Projektmodul- und ChatGPT-Projekt-Thread.
 - [x] GROSS-01-S02: Engine: deterministisches Rasterlayout aus echten Grundflächen, Türen zur Straße, Straßennetz als eigenes Bauteil (vier Stile, Laternen, Ring, Aussparung in Quartieren über mehrere Zellen), AnlagePlan-kompatible Vorschau, Übernahme mit Abschnitten je Phase.
@@ -2544,20 +2541,19 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 - [x] GROSS-01-S05: Großbauten-Set: sechs große Einzelgebäude (Rathaus mit Turm, Schloss mit Innenhof, Kuppelbasilika, Arena, Großer Marktplatz, Stadttor) bis 45 × 41 Blöcke; Hauptstadt um Residenz und Großen Markt erweitert.
 - [ ] GROSS-01-S06: Abnahme durch Philipp in der Testphase (BIB-13); danach Geländeanpassung im Planer, Wasserkanten, eigene Großprojekte aus Sammlungen.
 - [x] GROSS-01-S07: Bibliothek Runde 2: Großbauten Klosteranlage mit Kreuzgang und Universität mit Sternwarte; Großprojekte „Residenzstadt mit Schlosspark“ und „Klosterdorf im Tal“ (je 27 Gebäude, ohne Konflikt).
+- [x] GROSS-01-S08: Großprojekte auf Gelände und aus Sammlungen: Terrassen/Ebene aus der Geländeaufnahme, flachster Platz neben bestehenden Bauten, Wasserkanten (Quartiere im Wasser, Aufschüttung mit Kaimauer), Straßennetz als Landschaftsweg mit Treppen und Brücken; eigene Großprojekte aus Sammlungen (Unterordner = Quartier und Bauphase); Abnahme BIB-21/BIB-22.
 
 **Abnahme:** Alle mitgelieferten Großprojekte planen ohne Voxelkonflikt und Abstandsbefund; das Straßennetz ist zusammenhängend, Laternen stehen neben der Fahrbahn. Übernahme liefert Abschnitte „Straßen & Plätze“ und „Phase N“ mit Zwecken; Einfügen ist ein Rückgängig-Schritt; nichts wird ohne Knopfdruck gespeichert. Eigene Großprojekte brauchen nur eine Datei und eine Registry-Zeile.
 
-**Nächste Aktion:** Abnahme durch Philipp (S06); Großbauten-Set (S05).
+**Nächste Aktion:** Abnahme durch Philipp (S06 BIB-13, BIB-21, BIB-22).
 
-**Nur Philipp:** Im Spiel an deinem PC: Großprojekte und die sechs Großbauten im Spiel ansehen (BIB-13).
-
-**Verwaist (ohne Bearbeiter):** Geländeanpassung und Wasserkanten für Großprojekte, eigene Großprojekte aus Sammlungen.
+**Nur Philipp:** Im Spiel an deinem PC: Großprojekte und die sechs Großbauten im Spiel ansehen (BIB-13). Dateien oder Welt liefern: BIB-21/BIB-22: Großprojekt auf einem echten Bauplatz am Wasser und eigenes Großprojekt aus einer Sammlung planen.
 
 **Prüfstand:** Einheits- und Browsertests grün; Abnahme durch Philipp offen (S06).
 
-**Nachweise:** [tests/unit/catalog/grossprojekte.test.mjs](../tests/unit/catalog/grossprojekte.test.mjs) — Kuratierung, Layouts ohne Konflikte, Straßennetz, Wahl, Datenprüfung, Übernahme, Einfügen mit Rückgängig.; [tests/e2e/grossprojekte.e2e.mjs](../tests/e2e/grossprojekte.e2e.mjs) — Chromium: Übersicht, Planer, Quartier ab, Straßen, Tausch/Drehung, Übernahme mit Netz-Bauteil, Einfügen, 390 px.; [docs/architecture/bibliothek/GROSSPROJEKTE.md](architecture/bibliothek/GROSSPROJEKTE.md) — Daten, Layout, Vorschau/Übernahme, eigene Projekte, Grenzen.
+**Nachweise:** [tests/unit/catalog/grossprojekte.test.mjs](../tests/unit/catalog/grossprojekte.test.mjs) — Kuratierung, Layouts ohne Konflikte, Straßennetz, Wahl, Datenprüfung, Übernahme, Einfügen mit Rückgängig.; [tests/e2e/grossprojekte.e2e.mjs](../tests/e2e/grossprojekte.e2e.mjs) — Chromium: Übersicht, Planer, Quartier ab, Straßen, Tausch/Drehung, Übernahme mit Netz-Bauteil, Einfügen, 390 px.; [docs/architecture/bibliothek/GROSSPROJEKTE.md](architecture/bibliothek/GROSSPROJEKTE.md) — Daten, Layout, Vorschau/Übernahme, eigene Projekte, Grenzen.; [tests/unit/catalog/plan-landscape.test.mjs](../tests/unit/catalog/plan-landscape.test.mjs) — Straßen über Bach als Brücke, Aufschüttung mit Kaimauer, Wasserkanten gemeldet; eigenes Großprojekt aus Sammlung mit Unterordnern ohne Konflikt.; [tests/e2e/plan-landscape.e2e.mjs](../tests/e2e/plan-landscape.e2e.mjs) — Flachster Platz, Landschaftsstraßen, Übernahme mit Geländegestaltung, Sammlung als Großprojekt (1400/390 px).
 
-**Dateiumfang:** `packages/domain/src/catalog/grossprojekte.ts`, `packages/domain/src/grossprojekte/`, `apps/web/src/views/library/GrossprojektePage.tsx`, `apps/web/src/views/library/grossprojekte.css`, `apps/web/src/views/LibraryView.tsx`, `apps/web/src/app/router.ts`, `tests/unit/catalog/grossprojekte.test.mjs`, `tests/e2e/grossprojekte.e2e.mjs`, `docs/architecture/bibliothek/GROSSPROJEKTE.md`, `packages/domain/src/catalog/build/sets/grossbauten.ts`, `packages/domain/src/catalog/build/sets/index.ts`. **Abhängigkeiten:** BUILD-05, BASE-01, LIB-05. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/catalog/grossprojekte.ts`, `packages/domain/src/grossprojekte/`, `apps/web/src/views/library/GrossprojektePage.tsx`, `apps/web/src/views/library/grossprojekte.css`, `apps/web/src/views/LibraryView.tsx`, `apps/web/src/app/router.ts`, `tests/unit/catalog/grossprojekte.test.mjs`, `tests/e2e/grossprojekte.e2e.mjs`, `docs/architecture/bibliothek/GROSSPROJEKTE.md`, `packages/domain/src/catalog/build/sets/grossbauten.ts`, `packages/domain/src/catalog/build/sets/index.ts`, `packages/domain/src/catalog/ownGrossprojekt.ts`, `packages/domain/src/base/anlagenTerrain.ts`, `apps/web/src/views/library/planTerrain.tsx`, `tests/unit/catalog/plan-landscape.test.mjs`, `tests/e2e/plan-landscape.e2e.mjs`. **Abhängigkeiten:** BUILD-05, BASE-01, LIB-05. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -2664,21 +2660,20 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GEN-03
 
-**Kolosseum aus Philipps Bauplan: Arena-Generator, Bauset Antike und Großprojekt Kolosseum-Viertel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projekt aus ChatGPT-Verlauf ausarbeiten“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T11:03:24.121Z
+**Kolosseum aus Philipps Bauplan: Arena-Generator, Bauset Antike und Großprojekt Kolosseum-Viertel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Projekt aus ChatGPT-Verlauf ausarbeiten“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-06T09:18:45.680Z
 
 - [x] GEN-03-S01: Bauplan aus Philipps ChatGPT-Verlauf übernehmen (81 × 61, vier Etagen à 8, Ellipsen-Ringe, Arena, 8 Sitzreihen, 4 Tore, Hypogäum Y 55–63, Materialien).
 - [x] GEN-03-S02: Generator „Arena“ (ovale Ringe nach Tiefe, Bögen nach Bogenlänge, Wandelgang mit Treppen, zwei Ränge auf Gewölben, Tore mit Wegeanschluss weg_5, Hypogäum, Velarium) mit sechs Vorlagen.
 - [x] GEN-03-S03: Bauset Antike: Kolosseum, Provinzarena, Kaiserlicher Ehrenbogen, Ehrensäule, Tabernae, Thermen, Gladiatorenschule; Ensemble Kolosseumsplatz.
 - [x] GEN-03-S04: Großprojekt „Kolosseum-Viertel“ (9 Quartiere, 30 Gebäude, 4 Phasen) auf dem Großprojekt-Typ GROSS-01.
 - [ ] GEN-03-S05: Abnahme im Spiel durch Philipp: Kolosseum exportieren und aufstellen (Testfall BIB-14).
+- [x] GEN-03-S06: Feinschliff Kolosseum (Generator v2): Statuen auf Sockeln in jedem zweiten Attikafenster, zwei Treppen aus dem Hypogäum auf den Arenaboden; Spielprüfung, festgehaltener Hash neu.
 
 **Abnahme:** Vorlage „Kolosseum“ hält die Maße des Bauplans, alle Bauten bestehen Spielprüfung, Material-/Rezeptprüfung und B7-Zustände; das Großprojekt hat keine Voxelkonflikte und ein zusammenhängendes Straßennetz.
 
-**Nächste Aktion:** Philipp baut das Kolosseum im Spiel nach (BIB-14); danach Feinschliff (Statuen in den Attika-Fenstern, Treppen im Hypogäum).
+**Nächste Aktion:** Philipp baut das Kolosseum im Spiel nach (BIB-14, mit Statuen und Hypogäum-Treppen).
 
 **Nur Philipp:** Im Spiel an deinem PC: Kolosseum exportieren und im Spiel aufstellen (BIB-14).
-
-**Verwaist (ohne Bearbeiter):** Feinschliff Kolosseum: Statuen in den Attika-Fenstern, Treppen im Hypogäum.
 
 **Prüfstand:** Node-Prüfung bestanden; Browser- und Spielabnahme siehe TESTING.md.
 

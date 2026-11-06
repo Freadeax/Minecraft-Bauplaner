@@ -83,9 +83,9 @@ export type { SurveyArea, TerrainSurvey, ProjectTerrainReference, SurveyColumnsI
 export { DESIGN_SCHEMA_VERSION, DESIGN_MEDIA_TYPE, NO_WATER, SURFACE_STYLES, BRUSH_LABEL, DEFAULT_AUTO_PAINT, DESIGN_MAX_CELLS, DESIGN_NOTE, styleById, fillerFor, columnHash, valueNoise,
   checkTerrainDesignReference, heightLimits, flatSurvey, designFromSurvey, cloneDesign, encodeDesign, decodeDesign, designFile, designMatchesBase, brushWeight, slopeAt, paintColumn,
   applyBrush, strokePoints, floodWater, pathLine, layPath, autoPaint, gradeFootprints, resetToBase, compareDesign, designPayload, designedSurvey,
-  PATH_PLAIN, PATH_STAIR, PATH_SLAB, PATH_DECK, PATH_DECK_RAIL, PATH_DIRS, PATH_MATERIALS, PATH_STYLE_MATERIAL, pathMaterialById, hasPieces, risingDirs, pathPieceCells, layRamp } from './world/terrainDesign.js';
+  PATH_PLAIN, PATH_STAIR, PATH_SLAB, PATH_DECK, PATH_DECK_RAIL, PATH_DIRS, PATH_MATERIALS, PATH_STYLE_MATERIAL, pathMaterialById, hasPieces, risingDirs, pathPieceCells, layRamp, layPathCells, fortifyShore } from './world/terrainDesign.js';
 export type { DesignBase, TerrainDesign, ProjectTerrainDesignReference, SurfaceStyle, BrushTool, Falloff, Brush, PaintFilter, FloodResult, PathOptions, PathReport, AutoPaintRules,
-  GradeResult, DesignStats, DesignBlocks, DesignCell, PathMaterial, PathSteps, PathWater, RampOptions, RampReport } from './world/terrainDesign.js';
+  GradeResult, DesignStats, DesignBlocks, DesignCell, PathMaterial, PathSteps, PathWater, RampOptions, RampReport, NetworkOptions } from './world/terrainDesign.js';
 export { MAX_SCATTER_LAYERS, MAX_SCATTER_ITEMS, EMPTY_SCATTER, checkScatterLayer, checkScatterPlan } from './world/terrainScatterPlan.js';
 export type { ScatterPartRef, ScatterLayer, ScatterItem, ScatterPlan } from './world/terrainScatterPlan.js';
 export { SCATTER_NEED_LABEL, SCATTER_GROUP_LABEL, SCATTER_MISS_LABEL, BUILTIN_SCATTER_PARTS, SCATTER_PRESETS, builtinScatterPart, stencilScatterPart, builtinResolver, newScatterLayer,
@@ -122,8 +122,10 @@ export type { BaseFunction, BaseFunctionId, BasePhase, BaseMember, Requirement, 
 export { BASE_TEMPLATES, baseTemplateById, defaultZones, zoneKeyFor, normalizeBaseChoices, layoutBase, buildBasePlan, previewBase, createBaseProject, baseIntoProject, pathNetworkPayload, mainCandidates, isWaterCell,
   WATER_SIDE_LABEL, PATH_STYLE_LABEL, PATH_WIDTH, BASE_SPACING, MAX_ZONES, RESERVE_ID } from './base/base.js';
 export type { BaseTemplate, BaseZoneChoice, BaseChoices, NormalizedBaseChoices, WaterSide, PathStyle, BaseMemberPlan, BaseZonePlan, BaseLayout, BasePlan } from './base/base.js';
-export { fitBaseShore, shoreSides, suggestWaterSide, SHORE_WIDE, SHORE_COAST_SHARE, SHORE_INLAND_SHARE, SHORE_SEARCH, SHORE_MAX_SHIFT } from './base/baseShore.js';
-export type { ShoreSide, ShoreFit, ShoreClash, ShoreInput } from './base/baseShore.js';
+export { fitBaseShore, shoreSides, suggestWaterSide, realShoreMap, SHORE_WIDE, SHORE_COAST_SHARE, SHORE_INLAND_SHARE, SHORE_SEARCH, SHORE_MAX_SHIFT } from './base/baseShore.js';
+export type { ShoreSide, ShoreFit, ShoreClash, ShoreInput, ShoreMap } from './base/baseShore.js';
+export { NETWORK_MODE_LABEL, NETWORK_SURFACE, isNetworkPlacement, withoutNetwork, wetPlacements, applyPlanLandscape, lampPostPart } from './base/planLandscape.js';
+export type { NetworkMode, PlanNetwork, PlanLandscapeInput, PlanLandscapeResult, WetPlacement } from './base/planLandscape.js';
 export { analyzeSplit, extractParts, extractRest, splitProject, blockClass, SPLIT_DEFAULTS, SPLIT_MAX_COLUMNS, NO_GROUND } from './core/split.js';
 export type { SplitOptions, SplitPart, SplitAnalysis, ExtractOptions, ExtractedPart, GroundMode, SplitProjectPart, BlockClass as SplitBlockClass } from './core/split.js';
 export { GROSSPROJEKT_SCHEMA_VERSION, MIN_STREET_WIDTH, MAX_STREET_WIDTH, MAX_GP_SPACING, DEFAULT_QUARTER_ROW, LAMP_STEP, QUARTIER_KIND_LABEL, STREET_STYLE_LABEL, SCALE_LABEL, scaleOf,
@@ -131,6 +133,8 @@ export { GROSSPROJEKT_SCHEMA_VERSION, MIN_STREET_WIDTH, MAX_STREET_WIDTH, MAX_GP
   summarizeGrossprojekt, themeOfGrossprojekt, grossprojektAssetIds } from './catalog/grossprojekte.js';
 export type { QuartierKind, StreetStyle, GrossprojektUnit, Quartier, GrossprojektPhase, GrossprojektStreets, Grossprojekt, ProjectScale, GrossprojektChoices, NormalizedGpChoices, QuartierLayout, StreetLayout, GrossprojektLayout, GrossprojektPlan, GrossprojektSummary } from './catalog/grossprojekte.js';
 export { GROSSPROJEKTE, grossprojektById, grossprojekteForTheme } from './catalog/grossprojekte/index.js';
+export { OWN_GP_ROUTE_PREFIX, QUARTER_SLOTS, MAX_OWN_QUARTERS, grossprojektFromCollection, ownGrossprojektRoute } from './catalog/ownGrossprojekt.js';
+export type { OwnGrossprojektInput, OwnGrossprojekt } from './catalog/ownGrossprojekt.js';
 export { TEAM_SCHEMA_VERSION, MAX_TEAM_EVENTS, TEAM_ROLES, TEAM_ROLE_LABEL, TEAM_ROLE_TEXT, NOTE_TAGS, NOTE_TAG_LABEL, PLAYER_NAME, isKnownEvent, checkTeamEvent, compareEvents, checkTeam,
   createTeam, teamEvent, appendEvents, mergeTeam, SECTION_TEAM_STATUS_LABEL, canTeam, teamView, eventLabel, describeEvent, authorize, laterThan, teamAssignments,
   REPORT_CODE_PREFIX, MAX_REPORT_CODE, encodeReportCode, decodeReportCode, TEAM_PACKAGE_FORMAT, TEAM_PACKAGE_VERSION, buildTeamPackage, teamPackageFileName, readTeamPackage,

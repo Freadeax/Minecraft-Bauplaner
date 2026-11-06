@@ -77,7 +77,9 @@ Aufbau: Jede Säule bekommt ihre **Tiefe**, die Zahl der verschachtelten Ellipse
 
 Mit Hypogäum liegt der Boden auf Ebene 9 des Plans. Als Katalogbauteil `bld_antike_kolosseum` (Set `antike.ts`) und im Ensemble „Kolosseumsplatz“ (Kolosseum um 9 abgesenkt, Ehrenbogen und Ehrensäulen auf Platzhöhe) ist das berücksichtigt; das Großprojekt „Kolosseum-Viertel“ ([GROSSPROJEKTE](GROSSPROJEKTE.md)) nutzt das Ensemble.
 
-Grenzen: Ränge haben keine Einzelsitze und keine Treppen quer durch die Sitzreihen (Zugang über Umgang und Tore); Statuen in der Attika fehlen; Bögen sind auf dem Oval angenähert (Stufenbögen statt runder Bögen); die Bauanleitung des Planers geht ebenenweise, nicht nach den sieben Schritten des Bauplans (die stehen als Phasennotiz im Großprojekt).
+**Feinschliff (GEN-03-S06, Generator Version 2):** In jedem zweiten Attikafenster (nicht über den Toren) steht eine Statue – Sockel aus dem Zierblock, Körper aus Zier-Mauer, Kopf (Skelettschädel) nach außen blickend; beim Kolosseum 12 Statuen, abschaltbar mit „Statuen in den Attikafenstern“. Das Hypogäum hat zusätzlich zu den Aufzügen zwei Treppen in den seitlichen Spuren des Hauptgangs, die vom Gangboden bis auf den Arenaboden führen (zehn Stufen, Öffnung im Sand nahe den Arenaenden, der Sand über der Öffnung wird mit entfernt, damit nichts nachrutscht). Höhere Version: gespeicherte Generator-Bauteile melden „mit v1 erzeugt“; die Katalog-Kolosseen erreichen gespeicherte Bibliotheken als neue Version.
+
+Grenzen: Ränge haben keine Einzelsitze und keine Treppen quer durch die Sitzreihen (Zugang über Umgang und Tore); Statuen sind Blockfiguren (keine Rüstungsständer); Bögen sind auf dem Oval angenähert (Stufenbögen statt runder Bögen); die Bauanleitung des Planers geht ebenenweise, nicht nach den sieben Schritten des Bauplans (die stehen als Phasennotiz im Großprojekt).
 
 ## LIB-05: Baustil der Generatoren (02.11.2026)
 

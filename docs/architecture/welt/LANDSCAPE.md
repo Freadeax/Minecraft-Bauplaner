@@ -52,6 +52,17 @@ Für die ganze Fläche: **Automatisch bemalen** (Fels ab Hangstufe, Schnee ab Y,
 - **Weg aus der Weltkarte:** Beim Werkzeug „Weg“ stehen alle Wege des Weltplans (MAP-04/MAP-06) derselben Dimension, die die Gestaltung kreuzen, zur Auswahl. „Übernehmen“ setzt ihre Eckpunkte und Breite (höchstens 9) als Wegpunkte, den Belag nach Wegart (Weg → Trampelpfad, Straße → Pflaster, Schiene → Kiesweg, Brücke → Steinweg und „Brücke mit Geländer“). Gelegt wird erst mit „Weg legen“.
 - **Übergabe:** Stufen, Belag und Geländer gehören zu `designPayload` (Bauteil, Material, Export, Mod) und zur 3D-Vorschau; im geplanten Gelände (`designedSurvey`) ist der Brückenbelag die Oberfläche, der Grund bleibt das Gewässerbett – Weltkarte und Routen sehen die Brücke.
 
+## Wegenetze auf dem Gelände (TERRAIN-03-S08)
+
+`layPathCells(design, cells, options)` legt ein ganzes Netz aus Wegfeldern (das geroutete Wegenetz einer Basis, die Straßenspuren eines Großprojekts) statt einer Linie:
+
+- **Höhe:** Laufhöhe = geplanter Boden, über Wasser die Wasseroberfläche (Damm) bzw. fest einen Block darüber (Brückenbelag). Geglättet wird über alle Wegfelder im Umkreis von 2 Blöcken, danach gilt zwischen **allen** benachbarten Wegfeldern höchstens `maxStep` (1): zuerst eine untere Hülle (Kuppen werden eingeschnitten, Dijkstra aufsteigend), dann die Wasserböden und eine obere Hülle (Mulden und Ufer werden aufgeschüttet). Damit treffen sich Abzweige, Kreuzungen und die Wegbreite ohne Kante.
+- **Treppen und Halbstufen** nur in Laufrichtung: Ein Feld bekommt eine Stufe, wenn ein Nachbar genau einen Block höher liegt **und** das Feld auf der Gegenseite ebenfalls Weg ist. Ein Höhenwechsel nur quer zum Weg (Rand am Seitenhang) bleibt ohne Treppe statt einer seitlich zeigenden Stufe; der Bericht zählt ihn unter „ohne Stufe“.
+- **Brücke oder Damm, Geländer, Material, Bericht** wie bei `layPath`. Neuer Wegbelag „Asphalt“ (graues/hellgraues Beton, Stufen aus poliertem Andesit) für Großprojekt-Straßen im Stil Asphalt.
+- `fortifyShore(design, spalten, block)` setzt an trockenen Spalten, die an Wasser grenzen, Ober- und Füllblock auf Steinziegel (Kaimauer).
+
+Basisplaner und Großprojekte schreiben damit ihr Netz in die Geländegestaltung des Zielprojekts ([BASE_PLANNER](../bibliothek/BASE_PLANNER.md), [GROSSPROJEKTE](../bibliothek/GROSSPROJEKTE.md)); die Gestaltung wird danach wie jede andere im Reiter „Landschaft“ als Bauteil übernommen. Prüfung: `tests/unit/world/terrain-network.test.mjs`.
+
 ## Bilanz und Blöcke
 
 `compareDesign` vergleicht mit der Grundlage: gestaltete, angehobene, abgesenkte, neu bemalte und trockengelegte Spalten, Abtrag und Aufschüttung in Blöcken, Wasserblöcke, Wegspalten, Höhenbereich und Materialliste.
