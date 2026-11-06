@@ -1,5 +1,7 @@
 package io.github.freadeax.bauplaner.bridge.hologram;
 
+import static io.github.freadeax.bauplaner.mod.Lang.t;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -209,18 +211,18 @@ final class GuideClient {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null || mc.gui.screen() != null || !guides.active() || !guides.in(McCompat.dimension(mc.level))) return;
         List<String> rows = new ArrayList<>();
-        if (guides.symmetry().active()) rows.add("Symmetrie: " + guides.symmetry().label());
+        if (guides.symmetry().active()) rows.add(t("Symmetrie: ", "Symmetry: ") + guides.symmetry().label());
         if (!guides.points().isEmpty()) {
             String err = guides.curveError();
-            rows.add("Kurve: " + guides.points().size() + " Punkte · " + guides.curve().profile().label + (err == null ? "" : " · " + err));
+            rows.add(t("Kurve: ", "Curve: ") + guides.points().size() + t(" Punkte · ", " points · ") + guides.curve().profile().text() + (err == null ? "" : " · " + err));
         }
-        if (progress.total() > 0) rows.add("Bauhilfe: " + progress.done() + " / " + progress.total() + " gesetzt" + (progress.wrong() > 0 ? " · " + progress.wrong() + " falsch" : "") + (breakCount > 0 ? " · " + breakCount + " abbauen" : ""));
+        if (progress.total() > 0) rows.add(t("Bauhilfe: ", "Build guide: ") + progress.done() + " / " + progress.total() + t(" gesetzt", " placed") + (progress.wrong() > 0 ? " · " + progress.wrong() + t(" falsch", " wrong") : "") + (breakCount > 0 ? " · " + breakCount + t(" abbauen", " to break") : ""));
         var font = mc.font;
         int line = font.lineHeight + 2, w = 0;
         for (String r : rows) w = Math.max(w, font.width(r));
         int x = g.guiWidth() / 2 - w / 2, y = g.guiHeight() - 84 - rows.size() * line;
-        g.fill(x - 3, y - 3, x + w + 3, y + rows.size() * line - 1, 0x90000000);
-        for (String r : rows) { g.text(font, r, x, y, r.startsWith("Bauhilfe") ? HologramHud.GREEN : 0xFF35D0E0, true); y += line; }
+        HudCard.back(g, x, y, w, rows.size() * line, 0xFF35D0E0);
+        for (int i = 0; i < rows.size(); i++) { g.text(font, rows.get(i), x, y, i == rows.size() - 1 && progress.total() > 0 ? HologramHud.GREEN : 0xFF35D0E0, true); y += line; }
     }
 
     // ------------------------------------------------------------------ actions (keys and commands)
@@ -239,13 +241,13 @@ final class GuideClient {
         guides.addPoint(p.getX(), p.getY(), p.getZ(), McCompat.dimension(mc.level));
         if (guides.block() == null) takeHeldBlock(mc);
         int n = guides.points().size();
-        return "Kurvenpunkt " + n + " bei " + p.getX() + " " + p.getY() + " " + p.getZ() + (n == 1 ? " – noch mindestens einen Punkt setzen." : curveSummary());
+        return t("Kurvenpunkt ", "Curve point ") + n + t(" bei ", " at ") + p.getX() + " " + p.getY() + " " + p.getZ() + (n == 1 ? t(" – noch mindestens einen Punkt setzen.", " – set at least one more point.") : curveSummary());
     }
 
     private String curveSummary() {
         String err = guides.curveError();
         if (err != null) return " · " + err;
-        return " · " + guides.curve().label() + " · " + Math.round(Curve.length(guides.points(), guides.curve())) + " m · " + guides.curveCells().length / 3 + " Blöcke " + McCompat.blockName(guides.block());
+        return " · " + guides.curve().label() + " · " + Math.round(Curve.length(guides.points(), guides.curve())) + " m · " + guides.curveCells().length / 3 + t(" Blöcke ", " blocks ") + McCompat.blockName(guides.block());
     }
 
     /** The block in the main hand becomes the curve block; false when the player holds none. */
@@ -261,7 +263,7 @@ final class GuideClient {
         Symmetry s = guides.symmetry();
         if (!s.active()) s = s.withMirrorX(true);
         guides.setSymmetry(s.withAxis(2 * p.getX() + (border ? 1 : 0), 2 * p.getZ() + (border ? 1 : 0)), McCompat.dimension(mc.level));
-        return "Symmetrie: " + guides.symmetry().label() + ". Gesetzte Blöcke werden ab jetzt gespiegelt (nur Anzeige, die Mod baut nie selbst).";
+        return t("Symmetrie: ", "Symmetry: ") + guides.symmetry().label() + t(". Gesetzte Blöcke werden ab jetzt gespiegelt (nur Anzeige, die Mod baut nie selbst).", ". Placed blocks are mirrored from now on (display only, the mod never builds by itself).");
     }
 
     private String setSymmetry(Minecraft mc, java.util.function.UnaryOperator<Symmetry> change) {
@@ -272,12 +274,12 @@ final class GuideClient {
             next = next.withAxis(2 * p.getX(), 2 * p.getZ());
         }
         guides.setSymmetry(next, McCompat.dimension(mc.level));
-        return next.active() ? "Symmetrie: " + next.label() + "." : "Symmetrie aus.";
+        return next.active() ? t("Symmetrie: ", "Symmetry: ") + next.label() + "." : t("Symmetrie aus.", "Symmetry off.");
     }
 
     /** Ghosts of the guides as a plan in the hologram (material list, placement helper, progress, recording). */
     String asPlan(Minecraft mc, String name) throws java.io.IOException {
-        if (guides.targets().isEmpty()) return "Keine Geisterblöcke – erst eine Kurve zeichnen oder mit Symmetrie bauen.";
+        if (guides.targets().isEmpty()) return t("Keine Geisterblöcke – erst eine Kurve zeichnen oder mit Symmetrie bauen.", "No ghost blocks – draw a curve or build with symmetry first.");
         String title = name == null || name.isBlank() ? (guides.points().size() >= 2 ? "Kurve " + guides.curve().profile().label.split(" ")[0] : "Symmetrie") : name.strip();
         GuidePlan.Result r = GuidePlan.write(title, guides.targets(), McCompat.dataVersion(), Instant.now());
         Files.createDirectories(hologram.plansDir());
@@ -286,7 +288,7 @@ final class GuideClient {
         // The guide plan is in world orientation: never turn it with an earlier placement.
         if (hologram.active() && (hologram.check().placement().turns() != 0 || hologram.check().placement().mirror()))
             hologram.setPlacement(Placement.at(McCompat.dimension(mc.level), r.anchor()[0], r.anchor()[1], r.anchor()[2]));
-        return msg + " Die Datei liegt in " + hologram.plansDir().resolve(r.fileName()) + "; auf der Website lässt sie sich als .schem importieren.";
+        return msg + t(" Die Datei liegt in ", " The file is in ") + hologram.plansDir().resolve(r.fileName()) + t("; auf der Website lässt sie sich als .schem importieren.", "; the website can import it as .schem.");
     }
 
     // ------------------------------------------------------------------ commands
@@ -301,17 +303,17 @@ final class GuideClient {
 
     private int act(Action a) {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null || mc.level == null) return fail("Erst eine Welt betreten.");
-        try { return say(a.run(mc)); } catch (IllegalArgumentException e) { return fail(e.getMessage()); } catch (Exception e) { return fail("Fehler: " + e.getMessage()); }
+        if (mc.player == null || mc.level == null) return fail(t("Erst eine Welt betreten.", "Enter a world first."));
+        try { return say(a.run(mc)); } catch (IllegalArgumentException e) { return fail(e.getMessage()); } catch (Exception e) { return fail(t("Fehler: ", "Error: ") + e.getMessage()); }
     }
 
     private String curveChange(java.util.function.UnaryOperator<Curve.Options> change) {
         guides.setCurve(change.apply(guides.curve()));
-        return guides.points().size() >= 2 ? "Kurve: " + curveSummary().substring(3) : "Kurve: " + guides.curve().label() + ".";
+        return guides.points().size() >= 2 ? t("Kurve: ", "Curve: ") + curveSummary().substring(3) : t("Kurve: ", "Curve: ") + guides.curve().label() + ".";
     }
 
     <S> List<LiteralArgumentBuilder<S>> commands() {
-        LiteralArgumentBuilder<S> sym = GuideClient.<S>literal("symmetrie").executes(c -> act(mc -> "Symmetrie: " + guides.symmetry().label() + (guides.symmetry().active() ? " · " + guides.sources() + " gespiegelte Blöcke" : ". Einschalten: /bauplaner symmetrie x | z | drehen 2|4 | hier")))
+        LiteralArgumentBuilder<S> sym = GuideClient.<S>literal("symmetrie").executes(c -> act(mc -> t("Symmetrie: ", "Symmetry: ") + guides.symmetry().label() + (guides.symmetry().active() ? " · " + guides.sources() + t(" gespiegelte Blöcke", " mirrored blocks") : t(". Einschalten: /bauplaner symmetrie x | z | drehen 2|4 | hier", ". Switch on: /buildplanner symmetry x | z | rotate 2|4 | here"))))
                 .then(GuideClient.<S>literal("hier").executes(c -> act(mc -> axisHere(mc, false))))
                 .then(GuideClient.<S>literal("kante").executes(c -> act(mc -> axisHere(mc, true))))
                 .then(GuideClient.<S>literal("x").executes(c -> act(mc -> setSymmetry(mc, s -> s.withMirrorX(!s.mirrorX())))))
@@ -319,18 +321,18 @@ final class GuideClient {
                 .then(GuideClient.<S>literal("drehen").then(GuideClient.<S, Integer>argument("fach", IntegerArgumentType.integer(1, 4))
                         .executes(c -> act(mc -> {
                             int f = IntegerArgumentType.getInteger(c, "fach");
-                            if (f == 3) throw new IllegalArgumentException("1, 2 oder 4 erwartet.");
+                            if (f == 3) throw new IllegalArgumentException(t("1, 2 oder 4 erwartet.", "1, 2 or 4 expected."));
                             return setSymmetry(mc, s -> f == 4 && Math.floorMod(s.cx2() - s.cz2(), 2) != 0 ? s.withAxis(s.cx2() - Math.floorMod(s.cx2(), 2), s.cz2() - Math.floorMod(s.cz2(), 2)).withRotate(4) : s.withRotate(f));
                         }))))
                 .then(GuideClient.<S>literal("aus").executes(c -> act(mc -> setSymmetry(mc, s -> Symmetry.OFF))));
         RequiredArgumentBuilder<S, String> name = GuideClient.<S, String>argument("name", StringArgumentType.greedyString()).executes(c -> act(mc -> asPlan(mc, StringArgumentType.getString(c, "name"))));
         LiteralArgumentBuilder<S> curve = GuideClient.<S>literal("kurve").executes(c -> act(mc -> guides.points().isEmpty()
-                        ? "Kurve: noch keine Punkte. /bauplaner kurve punkt setzt einen dort, wo ein Block hinkäme (oder Taste „Kurvenpunkt“)."
-                        : "Kurve: " + guides.points().size() + " Punkte" + curveSummary()))
+                        ? t("Kurve: noch keine Punkte. /bauplaner kurve punkt setzt einen dort, wo ein Block hinkäme (oder Taste „Kurvenpunkt“).", "Curve: no points yet. /buildplanner curve point sets one where a block would go (or key “Curve point”).")
+                        : t("Kurve: ", "Curve: ") + guides.points().size() + t(" Punkte", " points") + curveSummary()))
                 .then(GuideClient.<S>literal("punkt").executes(c -> act(this::addPoint)))
-                .then(GuideClient.<S>literal("zurueck").executes(c -> act(mc -> guides.undoPoint() ? "Letzten Kurvenpunkt entfernt (" + guides.points().size() + " übrig)." : "Keine Kurvenpunkte.")))
-                .then(GuideClient.<S>literal("loeschen").executes(c -> act(mc -> { guides.clearCurve(); return "Kurve gelöscht."; })))
-                .then(GuideClient.<S>literal("block").executes(c -> act(mc -> takeHeldBlock(mc) ? "Kurvenblock: " + McCompat.blockName(guides.block()) + "." : "Einen Block in die Hand nehmen.")))
+                .then(GuideClient.<S>literal("zurueck").executes(c -> act(mc -> guides.undoPoint() ? t("Letzten Kurvenpunkt entfernt (" + guides.points().size() + " übrig).", "Removed the last curve point (" + guides.points().size() + " left).") : t("Keine Kurvenpunkte.", "No curve points."))))
+                .then(GuideClient.<S>literal("loeschen").executes(c -> act(mc -> { guides.clearCurve(); return t("Kurve gelöscht.", "Curve deleted."); })))
+                .then(GuideClient.<S>literal("block").executes(c -> act(mc -> takeHeldBlock(mc) ? t("Kurvenblock: ", "Curve block: ") + McCompat.blockName(guides.block()) + "." : t("Einen Block in die Hand nehmen.", "Take a block in your hand."))))
                 .then(GuideClient.<S>literal("profil")
                         .then(GuideClient.<S>literal("rohr").executes(c -> act(mc -> curveChange(o -> o.withProfile(Curve.Profile.ROHR)))))
                         .then(GuideClient.<S>literal("weg").executes(c -> act(mc -> curveChange(o -> o.withProfile(Curve.Profile.WEG)))))
@@ -340,11 +342,11 @@ final class GuideClient {
                 .then(GuideClient.<S>literal("radius").then(GuideClient.<S, Integer>argument("bloecke", IntegerArgumentType.integer(0, 16)).executes(c -> act(mc -> curveChange(o -> o.withRadius(IntegerArgumentType.getInteger(c, "bloecke")))))))
                 .then(GuideClient.<S>literal("geschlossen").executes(c -> act(mc -> curveChange(o -> o.withClosed(!o.closed())))))
                 .then(GuideClient.<S>literal("glatt").then(GuideClient.<S, Integer>argument("prozent", IntegerArgumentType.integer(0, 100)).executes(c -> act(mc -> curveChange(o -> o.withTension(IntegerArgumentType.getInteger(c, "prozent") / 100.0))))))
-                .then(GuideClient.<S>literal("versetzen").then(GuideClient.<S, Integer>argument("dy", IntegerArgumentType.integer(-64, 64)).executes(c -> act(mc -> { guides.shiftCurve(IntegerArgumentType.getInteger(c, "dy")); return "Kurve versetzt" + curveSummary(); }))))
+                .then(GuideClient.<S>literal("versetzen").then(GuideClient.<S, Integer>argument("dy", IntegerArgumentType.integer(-64, 64)).executes(c -> act(mc -> { guides.shiftCurve(IntegerArgumentType.getInteger(c, "dy")); return t("Kurve versetzt", "Curve shifted") + curveSummary(); }))))
                 .then(GuideClient.<S>literal("alsplan").executes(c -> act(mc -> asPlan(mc, null))).then(name));
         LiteralArgumentBuilder<S> off = GuideClient.<S>literal("bauhilfe")
-                .executes(c -> act(mc -> guides.active() ? "Bauhilfe: " + progress.done() + " / " + progress.total() + " gesetzt. /bauplaner bauhilfe aus löscht Symmetrie und Kurve." : "Keine Bauhilfe aktiv. /bauplaner symmetrie x oder /bauplaner kurve punkt."))
-                .then(GuideClient.<S>literal("aus").executes(c -> act(mc -> { guides.clearAll(); return "Symmetrie und Kurve gelöscht."; })))
+                .executes(c -> act(mc -> guides.active() ? t("Bauhilfe: " + progress.done() + " / " + progress.total() + " gesetzt. /bauplaner bauhilfe aus löscht Symmetrie und Kurve.", "Build guide: " + progress.done() + " / " + progress.total() + " placed. /buildplanner guide off deletes symmetry and curve.") : t("Keine Bauhilfe aktiv. /bauplaner symmetrie x oder /bauplaner kurve punkt.", "No build guide active. /buildplanner symmetry x or /buildplanner curve point.")))
+                .then(GuideClient.<S>literal("aus").executes(c -> act(mc -> { guides.clearAll(); return t("Symmetrie und Kurve gelöscht.", "Symmetry and curve deleted."); })))
                 .then(GuideClient.<S>literal("alsplan").executes(c -> act(mc -> asPlan(mc, null))));
         return List.of(sym, curve, off);
     }

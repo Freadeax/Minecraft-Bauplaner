@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/checks/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 173 Fälle in 13 Bereichen, davon 74 Kernfälle.
+Umfang: 177 Fälle in 13 Bereichen, davon 78 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -233,6 +233,10 @@ Die Bauplaner-Mod im Spiel (Fabric oder NeoForge, Minecraft 26.3). Nur Client �
 | MOD-18 | Symmetrie beim Bauen im Spiel (EDIT-04) | kern | 1. Auf den Mittelpunkt des geplanten Baus schauen, J → „Befehle & Status“ → Reiter „Bauhilfen“ → „Spiegeln Ost/West“ (oder `/bauplaner symmetrie x`).<br>2. Eine Tür, eine Treppe, eine Truhe und ein paar Steine östlich der Achse setzen.<br>3. „Drehsymmetrie“ mit 4 wählen, einen Block setzen; danach einen gesetzten Block wieder abbauen.<br>4. Mit `/bauplaner bauhilfe alsplan` die Geister ins Hologramm übernehmen und Num 7 drücken. | Gegenüber erscheinen Geisterblöcke mit gespiegelter Richtung (Tür mit anderem Anschlag, Treppe und Truhe gedreht); wer auf einen Geist baut, erzeugt keinen neuen; 4-fach zeigt drei Bilder; nach dem Abbauen verschwinden die Geister, schon gesetzte Gegenstücke sind rot „abbauen“ markiert. Die Materialliste zeigt die offenen Bauhilfe-Blöcke. Am Server kommt nichts an (kein Paket, kein Befehl). |
 | MOD-19 | Kurven im Spiel (EDIT-04) | kern | 1. Kies in die Hand nehmen, auf den Boden schauen, Reiter „Bauhilfen“ → „Kurvenpunkt setzen“ (oder `/bauplaner kurve punkt`), weiterlaufen, noch zwei, drei Punkte setzen.<br>2. „Profil“ → mauer, „Breite“ 2, „Mauerhöhe“ 3; dann „Ring schließen“ und „Höher/tiefer“ -1.<br>3. Optional unter Optionen → Steuerung → Bauplaner die Taste „Bauhilfe: Kurvenpunkt setzen“ belegen. | Ein lückenloser Weg bzw. eine Mauer aus Geisterblöcken folgt den Punkten (gleiche Form wie die Kurve in der Werkstatt); die HUD-Zeile über der Schnellleiste zählt gesetzt / gesamt; Gras und Schnee unter der Kurve zählen als frei. |
 | MOD-21 | Gruppen und Sperren im Hologramm (Mod 0.19.0) ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/karte)) | kern | 1. Im Planer eine Gruppe mit gesperrtem Bauplatz anlegen (KARTE-09) und mit verbundener Mod Plan und Weltplan ins Spiel schicken.<br>2. Im Spiel `/bauplaner gruppe` und `/bauplaner gruppe Markt`, danach `/bauplaner gruppe aus Markt`, `/bauplaner gruppe an Markt`, `/bauplaner gruppe alle`; im Planmenü die Zeile „Gruppe“ durchschalten.<br>3. Im gesperrten Bereich einen Planblock setzen wollen und `/bauplaner packliste`; im Planer unter „Weltplan-Gruppen im Spiel“ eine Gruppe wählen. | Gesperrte Flächen erscheinen grau ohne Röntgenrahmen, die Platzierhilfe ruht dort und der Fehlersucher springt nicht hinein. Mit gewählter Gruppe zeigen Hologramm, Fortschritt und Packliste nur deren Fläche, ausgeblendete Gruppen fehlen auf der Karte im Spiel; „alle“ zeigt wieder den ganzen Plan. Der Planer nennt Gruppe und Zahl der gesperrten Blöcke. |
+| MOD-25 | Menü J als Seitenleiste (Mod 0.23.0) ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/mod)) | kern | 1. Im Spiel J drücken, auch einmal im kleinen Fenster (Fenster verkleinern oder GUI-Größe 4).<br>2. Die Reiter Plan, Position, Ansicht und Optionen durchklicken; unter „Plan“ einen Plan anklicken und „Hierher“, unter „Position“ verschieben und drehen.<br>3. `/bauplaner hilfe` und `/bauplaner menue` eintippen. | Das Menü gleitet rechts herein, die Welt und das Hologramm bleiben links sichtbar und unverschwommen; keine Schrift läuft über einen Knopf hinaus; die Hilfe zeigt fünf kurze Schritte; im Modpack mit REI überdeckt nichts das Menü. |
+| MOD-26 | Meldungen oben rechts statt Chat (Mod 0.23.0) ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/mod)) | kern | 1. Plan ins Spiel schicken und ein paar Befehle ausprobieren (`/bauplaner texturen`, `/bauplaner abschnitt 99`, zweimal hintereinander dasselbe).<br>2. Im Menü unter „Optionen“ „Meldungen“ auf „Chat (wie früher)“ und zurück auf „Einblendung“ stellen. | Meldungen erscheinen als kurze Karte oben rechts und verschwinden wieder, Fehler rot und kurz rüttelnd, dieselbe Meldung zählt „×2“ statt einer neuen Karte; der Chat bleibt leer, nur Listen (z. B. `/bauplaner team abschnitte`) stehen im Chat. |
+| MOD-27 | Baufenster und Anzeigen aufgeräumt (Mod 0.23.0) ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/mod)) | kern | 1. Plan mit Abschnitten und Team einblenden, im Team-Raum verbunden.<br>2. Im Menü unter „Optionen“ „Bauanzeige“ durchschalten: kompakt, ausführlich, aus. | Oben rechts ein schmales Fenster mit Name, Prozent, Balken, offenen Zahlen und Wegweiser; Team- und Weltplan-Anzeige unten rechts stehen übereinander statt sich zu überdecken; „aus“ blendet beides aus, „ausführlich“ zeigt auch Platzierhilfe und Leistung. |
+| MOD-28 | Befehle auf Deutsch und Englisch (Mod 0.23.0) ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/mod)) | kern | 1. Im Chat `/bauplaner ` tippen und Tab drücken, dann `/buildplanner ` und Tab.<br>2. `/bauplaner sprache englisch`, `/buildplanner progress`, Menü J öffnen; danach `/buildplanner language auto`.<br>3. Auf der Seite „Spiel“ (#/mod) unter „Befehle“ zwischen Deutsch und English wechseln und nach „Abschnitt“ suchen. | Tab zeigt nur Wörter der eingestellten Sprache, beide Befehle wirken gleich; Menü, Meldungen und Befehlsseite sind auf Englisch; „auto“ folgt der Spielsprache; die Seite listet jeden Befehl in beiden Sprachen und findet ihn über Wörter beider Sprachen. |
 
 ## LIVE · Mod: Verbindung mit dem Planer (Mod)
 
@@ -324,7 +328,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | VIEW-02 | START-06, DATEI-01 |
 | WORLD-IMPORT-01 | KARTE-04 |
 
-### Mit Minecraft (Mod oder Spiel) (41 Pakete)
+### Mit Minecraft (Mod oder Spiel) (42 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -348,6 +352,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | GAME-07 | MOD-02, MOD-06, MOD-07, MOD-08, MOD-12, MOD-21 |
 | GAME-08 | LIVE-08, KARTE-05 |
 | GAME-10 | MOD-16 |
+| GAME-12 | MOD-25, MOD-26, MOD-27, MOD-28 |
 | GEN-02 | BIB-06, BIB-12 |
 | GEN-03 | BIB-14 |
 | GROSS-01 | BIB-13, PROJ-11, BIB-21, BIB-22 |

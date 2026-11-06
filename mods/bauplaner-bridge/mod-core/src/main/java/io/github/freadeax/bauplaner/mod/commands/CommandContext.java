@@ -17,14 +17,14 @@ public record CommandContext(boolean plan, boolean team, String role, boolean pl
 
     /** Null if the button can be used, otherwise why not (German, for the tooltip and the greyed label). */
     public String blocked(Entry e) {
-        if (e.side() == Side.SERVER && !plugin) return Need.PLUGIN.reason;
+        if (e.side() == Side.SERVER && !plugin) return Need.PLUGIN.text();
         return switch (e.need()) {
             case NONE, PLUGIN -> null;
-            case PLAN -> plan ? null : Need.PLAN.reason;
-            case TEAM -> team ? null : Need.TEAM.reason;
+            case PLAN -> plan ? null : Need.PLAN.text();
+            case TEAM -> team ? null : Need.TEAM.text();
             // Unknown role (no team state in the mod): let the server decide, it answers with its own reason.
-            case LEAD -> role == null || role.equals("leitung") ? null : Need.LEAD.reason;
-            case CHEST -> container ? null : Need.CHEST.reason;
+            case LEAD -> role == null || role.equals("leitung") ? null : Need.LEAD.text();
+            case CHEST -> container ? null : Need.CHEST.text();
         };
     }
 }

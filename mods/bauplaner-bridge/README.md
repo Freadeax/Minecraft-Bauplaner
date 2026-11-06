@@ -63,6 +63,10 @@ Die passende Datei `bauplaner-bridge-<loader>-26.3-<Version>.jar` (nicht die `-s
 
 ## Benutzen
 
+**Kurz (ab 0.23.0):** `/bauplaner hilfe` zeigt die fünf Schritte. **J** öffnet rechts eine Seitenleiste mit den Reitern Plan, Position, Ansicht und Optionen. Meldungen erscheinen als kurze Karten oben rechts statt im Chat (`/bauplaner meldungen einblendung|chat|beides`), das Baufenster oben rechts ist kompakt (`/bauplaner anzeige kompakt|ausfuehrlich|aus`). Jeder Befehl geht auf Deutsch (`/bauplaner fortschritt`) und Englisch (`/buildplanner progress`); Texte und Tab-Vervollständigung folgen der Spielsprache, `/bauplaner sprache deutsch|englisch|auto` stellt sie fest ein. Alle Befehle in beiden Sprachen stehen auf der Planerseite #/mod.
+
+Notfallweg mit Dateien:
+
 1. Auf der Website im Tab „Export“ eine Revision als `.schem` exportieren (DataVersion für 26.3: 5023) und die Datei nach `<Instanzordner>/bauplaner/plans/` kopieren.
 2. Im Spiel: `/bauplaner plan <datei>` (Tab ergänzt den Namen).
 3. Auf den Block schauen, der der Projektkoordinate 0/0/0 entsprechen soll, und `/bauplaner anker hier` eingeben, alternativ `/bauplaner anker <x> <y> <z>`. Der Anker wird je Server/Welt gespeichert.

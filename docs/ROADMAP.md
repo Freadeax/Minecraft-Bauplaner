@@ -15,7 +15,7 @@ Stand: 2026-11-06T15:49:33.071Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 6 |
 | 🚧 In Arbeit | 8 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 95 |
+| 🧩 Implementiert · Abnahme offen | 96 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -30,7 +30,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 14 | 0 | 14 | 0 |
 | [Volumenlimit und Übertragung großer Pläne](#bereich-groesse) | 1 | 0 | 1 | 0 |
-| [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 12 | 0 | 10 | 0 |
+| [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 13 | 0 | 11 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 4 | 0 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
 | [Performance und Stabilität](#bereich-perf) | 5 | 0 | 2 | 3 |
@@ -154,6 +154,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Bauplaner-Mod von Grund auf neu entwickeln“ | Zusammen mit MAP-03-S06. |
 | [GAME-05](#game-05) | NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Teambau und Befehle in der Mod ausbauen“ | Forge-Testversion auf einem Rechner mit Bildschirm starten (S03). |
 | [GAME-07](#game-07) | Bauplaner-Mod 2.0 | 🧩 Implementiert · Abnahme offen 10/11 | P1 | „Gruppen und Sperren bis ins Hologramm bringen“ | Hologramm, Abschnitte und Röntgensicht auf server.lmnt-gaming.net (S05). |
+| [GAME-12](#game-12) | Mod einfacher bedienen (Mod 0.23.0) | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Mod einfacher bedienen, Menü und Befehle zweisprachig“ | Menü J, Meldungen oben rechts, Baufenster und Befehle auf Englisch im Modpack prüfen (MOD-25 bis MOD-28). |
 | [LINK-03](#link-03) | Mod | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Verbindung ohne Server-Datei neu bauen“ | Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“. |
 | [LINK-07](#link-07) | Ohne Server-Datei | 🚧 In Arbeit 5/6 | P1 | „Verbindung ohne Server-Datei neu bauen“ | — |
 | [LINK-10](#link-10) | Anbindung geprüft und gehärtet | 🧩 Implementiert · Abnahme offen 6/6 | P1 | „Anbindung von Mod, Team-Raum und Planer prüfen“ | Abnahme LINK-10: offline in mehreren Abschnitten bauen, wieder verbinden – alle Messungen genau einmal im Planer; mit Plugin bleibt die Raumverbindung stehen. |
@@ -300,6 +301,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **GEN-03** · Kolosseum exportieren und im Spiel aufstellen (BIB-14).
 - **SIZE-01** · Großen Bau (Olympus) ins Spiel senden und prüfen (DATEI-05, MOD-11, MOD-15, LIVE-09).
 - **COOP-05** · LAGER-11: Lagerstand im Materialfenster der Mod.
+- **GAME-12** · Menü J, Meldungen oben rechts, Baufenster und Befehle auf Englisch im Modpack prüfen (MOD-25 bis MOD-28).
 - **LINK-03** · Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“.
 - **EDIT-06** · Truhe und Schild mit Inhalt im Spiel laden (WERK-09).
 - **FALLBACK-01** · Abnahme LINK-09: mit Team live kurz das Internet trennen, Minecraft neu starten, Teamstand und „Baustand holen (bester Weg)“ prüfen.
@@ -622,6 +624,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [COOP-05](#coop-05) | Geprüfte Lagerkisten im Paper-Plugin: markieren und zuordnen, Sollstand und Prüfsumme, Schutzstufen, Buchungen je Spieler, Abgleich mit dem Materialbedarf | 🧩 Implementiert · Abnahme offen | 4/5 | COOP-04 | ausstehend | ausstehend |
 | [GAME-10](#game-10) | Befehlsseite im Plan-Menü (J) der Mod 0.11.0: alle Mod- und Plugin-Befehle (Hologramm, Team, Lager, Nachweis, Verbindung, Aufnahme) per Klick mit Eingabefeldern, Statusübersicht und Antworten | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-03, COOP-05, GAME-07 | ausstehend | ausstehend |
 | [GAME-11](#game-11) | Client-Mod für weitere Minecraft-Versionen und Launcher: Versionsmatrix, zweite Version über den versionsneutralen Kern, Spieltests, Download und Modrinth je Version, Anleitung für Modrinth App, Prism, CurseForge und den offiziellen Launcher | 🚧 In Arbeit | 1/4 | GAME-07, GAME-10 | ausstehend | ausstehend |
+| [GAME-12](#game-12) | Mod einfacher bedienen (Mod 0.23.0): animiertes Menü als Seitenleiste, Meldungskarten oben rechts statt Chat, kompaktes Baufenster, alle Befehle und Texte auf Deutsch und Englisch | 🧩 Implementiert · Abnahme offen | 5/6 | GAME-07, GAME-10, GAME-11 | ausstehend | ausstehend |
 | [COOP-07](#coop-07) | Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel | 🧩 Implementiert · Abnahme offen | 6/7 | COOP-01, COOP-04 | ausstehend | ausstehend |
 | [COOP-08](#coop-08) | Ertragskisten: Lagerkisten als Sammeltruhe einer Farm messen Ertrag und Laufzeit für das Ertragsbuch (Produktion) | 🧩 Implementiert · Abnahme offen | 3/4 | COOP-05, PROD-01 | ausstehend | ausstehend |
 | [PROD-05](#prod-05) | Erträge aus geprüften Lagerkisten: Sammeltruhe je Farm, echte Rate aus Ertragsmeldungen des Servers (store.yield) oder Trichterbuchungen, Vorschläge zum Verknüpfen, ohne Doppelbuchung | 🧩 Implementiert · Abnahme offen | 5/5 | PROD-02, COOP-05, COOP-08 | ausstehend | ausstehend |
@@ -3007,6 +3010,31 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/unit/mod/install-guide.test.mjs](../tests/unit/mod/install-guide.test.mjs) — Anleitung je Launcher und Loader, Fabric API nur bei Fabric.
 
 **Dateiumfang:** `mods/bauplaner-bridge/`, `scripts/`, `apps/web/src/views/mod/`, `downloads/mod/`, `docs/`, `apps/web/src/views/mod/installGuide.ts`. **Abhängigkeiten:** GAME-07, GAME-10. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### GAME-12
+
+**Mod einfacher bedienen (Mod 0.23.0): animiertes Menü als Seitenleiste, Meldungskarten oben rechts statt Chat, kompaktes Baufenster, alle Befehle und Texte auf Deutsch und Englisch** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Mod einfacher bedienen, Menü und Befehle zweisprachig“) · Zuständiger Thread: „Mod einfacher bedienen, Menü und Befehle zweisprachig“ · Aktualisiert: 2026-11-06T15:38:48.193Z
+
+- [x] GAME-12-S01: Befehle zweisprachig: /bauplaner (deutsche Wörter) und /buildplanner (englische Wörter), gemischte Zeilen gehen auch; Tab-Vervollständigung folgt der Spielsprache (CommandWords, CommandLang); JUnit prüft, dass jedes deutsche Befehlswort ein englisches hat.
+- [x] GAME-12-S02: Alle Texte der Mod Deutsch/Englisch (Lang.t), Sprache folgt dem Spiel oder /bauplaner sprache deutsch|englisch|auto; Befehlsseite und Katalog in beiden Sprachen.
+- [x] GAME-12-S03: Meldungen als animierte Karten oben rechts statt Chat (Fehler rot mit Rütteln, gleiche Meldung zählt hoch), /bauplaner meldungen einblendung|chat|beides; Listen bleiben im Chat.
+- [x] GAME-12-S04: Baufenster oben rechts kompakt neu (Name, Prozent, Balken, offene Zahlen, Wegweiser), /bauplaner anzeige kompakt|ausfuehrlich|aus; Anzeigen unten rechts stapeln sich statt sich zu überdecken; Farben und Stil wie das Planer-Design (UI-03).
+- [x] GAME-12-S05: Plan-Menü J als einfahrende Seitenleiste mit Reitern Plan, Position, Ansicht, Optionen; /bauplaner hilfe (5 Schritte) und /bauplaner menue; Befehlsliste Deutsch/Englisch mit Suche auf #/mod aus dem Mod-Katalog (modCommands.json).
+- [ ] GAME-12-S06: Abnahme im Spiel durch Philipp (MOD-25 bis MOD-28) im Modpack mit REI, auch im kleinen Fenster.
+
+**Abnahme:** Jeder Befehl geht auf Deutsch und Englisch; Tab zeigt nur Wörter der Spielsprache. Normale Meldungen füllen den Chat nicht mehr; Fehler fallen oben rechts auf. Baufenster und Anzeigen überdecken sich nicht und lassen das Spielfeld frei.
+
+**Nächste Aktion:** Abnahme MOD-25 bis MOD-28 im Spiel.
+
+**Nur Philipp:** Im Spiel an deinem PC: Menü J, Meldungen oben rechts, Baufenster und Befehle auf Englisch im Modpack prüfen (MOD-25 bis MOD-28).
+
+**Prüfstand:** Spieltests Fabric und NeoForge 26.3; Abnahme im Modpack durch Philipp offen.
+
+**Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandWordsTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandWordsTest.java) — Jedes literal(…) in den Mod-Quellen hat ein englisches Wort, englische Wörter eindeutig, Katalogtexte in beiden Sprachen.; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandExportTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandExportTest.java) — Befehlsliste auf #/mod entspricht dem Katalog der Mod.; [tests/unit/mod/mod-commands.test.mjs](../tests/unit/mod/mod-commands.test.mjs) — Befehlsliste: beide Sprachen, Wurzeln /bauplaner und /buildplanner, Suche und Gruppen.; [scripts/mod/bridge_gametest.mjs](../scripts/mod/bridge_gametest.mjs) — Echter Fabric-Client 26.3: Meldungskarten, deutsche und englische Vervollständigung, englisches Menü, Bilder meldungen.png, menue-einstellungen.png, menue-en.png.
+
+**Dateiumfang:** `mods/bauplaner-bridge/`, `scripts/mod/bridge_gametest.mjs`, `apps/web/src/views/mod/`, `apps/web/src/styles/catalog.css`, `apps/web/src/testing/testplan.ts`, `tests/unit/mod/`, `downloads/mod/`, `docs/`. **Abhängigkeiten:** GAME-07, GAME-10, GAME-11. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

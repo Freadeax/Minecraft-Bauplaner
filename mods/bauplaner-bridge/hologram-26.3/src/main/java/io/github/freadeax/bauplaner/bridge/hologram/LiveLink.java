@@ -1,5 +1,7 @@
 package io.github.freadeax.bauplaner.bridge.hologram;
 
+import static io.github.freadeax.bauplaner.mod.Lang.t;
+
 import io.github.freadeax.bauplaner.mod.BlockRules.Verdict;
 import io.github.freadeax.bauplaner.mod.LiveCheck;
 import io.github.freadeax.bauplaner.mod.Placement;
@@ -68,7 +70,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
         server = new LiveLinkServer(new LiveLinkServer.Info(version, loader, minecraft), this, tokens, this::saveTokens, System::currentTimeMillis);
         server.onAsk(a -> {
             Minecraft mc = Minecraft.getInstance();
-            mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] Der Planer („" + a.device + "“) möchte sich mit dem Spiel verbinden. J drücken → „Planer zulassen“.")));
+            mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] " + t("Der Planer („" + a.device + "“) möchte sich mit dem Spiel verbinden. J drücken → „Planer zulassen“.", "The planner (“" + a.device + "”) wants to connect to the game. Press J → “Allow planner”."))));
         });
     }
 
@@ -77,7 +79,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
 
     public String approve() {
         String device = server.approveAsk();
-        return device == null ? "Es wartet gerade kein Planer auf die Freigabe." : "Planer „" + device + "“ zugelassen. Er ist jetzt mit dem Spiel verbunden.";
+        return device == null ? t("Es wartet gerade kein Planer auf die Freigabe.", "No planner is waiting for approval.") : t("Planer „" + device + "“ zugelassen. Er ist jetzt mit dem Spiel verbunden.", "Planner “" + device + "” allowed. It is now connected to the game.");
     }
 
     public String deny() {
@@ -156,19 +158,19 @@ public final class LiveLink implements LiveLinkServer.Handler {
 
     /** Limits the hologram to one group (null = all). Returns a message for the player. */
     public String setGroup(String g) {
-        if (g == null) { group = null; refreshAreas(); return "Hologramm zeigt wieder alle Gruppen."; }
-        if (!marks.groups().containsKey(g)) return "Keine Weltplan-Gruppe „" + g + "“. Liste: /bauplaner gruppe";
+        if (g == null) { group = null; refreshAreas(); return t("Hologramm zeigt wieder alle Gruppen.", "Hologram shows all groups again."); }
+        if (!marks.groups().containsKey(g)) return t("Keine Weltplan-Gruppe „" + g + "“. Liste: /bauplaner gruppe", "No world plan group “" + g + "”. List: /buildplanner group");
         group = g;
         hiddenGroups.remove(g);
         refreshAreas();
-        String filtered = hologram.active() && hologram.check().placement().dimension().equals(marks.dimension()) ? "" : " (gilt, sobald ein Plan in " + marks.dimension() + " steht)";
-        return "Hologramm nur in Gruppe „" + g + "“" + filtered + ". Zurück: /bauplaner gruppe alle";
+        String filtered = hologram.active() && hologram.check().placement().dimension().equals(marks.dimension()) ? "" : t(" (gilt, sobald ein Plan in " + marks.dimension() + " steht)", " (applies once a plan stands in " + marks.dimension() + ")");
+        return t("Hologramm nur in Gruppe „" + g + "“", "Hologram only in group “" + g + "”") + filtered + t(". Zurück: /bauplaner gruppe alle", ". Back: /buildplanner group all");
     }
 
     /** Next group (cycling through "all"), for the J menu. */
     public String stepGroup() {
         List<String> names = new java.util.ArrayList<>(marks.groups().keySet());
-        if (names.isEmpty()) return "Im Weltplan gibt es keine Gruppen. Auf der Website im Weltbuilder Einträge auswählen und „Gruppe …“ wählen.";
+        if (names.isEmpty()) return t("Im Weltplan gibt es keine Gruppen. Auf der Website im Weltbuilder Einträge auswählen und „Gruppe …“ wählen.", "The world plan has no groups. On the website, select entries in the world builder and choose “Group …”.");
         int at = group == null ? -1 : names.indexOf(group);
         return setGroup(at + 1 >= names.size() ? null : names.get(at + 1));
     }
@@ -238,13 +240,13 @@ public final class LiveLink implements LiveLinkServer.Handler {
         try {
             server.start(port);
         } catch (IOException e) {
-            return "Port " + port + " ist belegt oder gesperrt (" + e.getMessage() + "). Anderen Port wählen: /bauplaner verbinden port <zahl>.";
+            return t("Port " + port + " ist belegt oder gesperrt (", "Port " + port + " is in use or blocked (") + e.getMessage() + t("). Anderen Port wählen: /bauplaner verbinden port <zahl>.", "). Choose another port: /buildplanner connect port <number>.");
         }
         enabled = true;
         save();
         String code = server.openPairing();
-        return "Website-Verbindung an (nur dieser PC, Port " + server.port() + "). Code: " + code
-                + " – auf der Website unter „Spiel“ oder in der Weltkarte eintragen. Gilt 5 Minuten.";
+        return t("Website-Verbindung an (nur dieser PC, Port ", "Website link on (this PC only, port ") + server.port() + "). Code: " + code
+                + t(" – auf der Website unter „Spiel“ oder in der Weltkarte eintragen. Gilt 5 Minuten.", " – enter it on the website under “Game” or in the world map. Valid for 5 minutes.");
     }
 
     public String disconnect() {
@@ -252,27 +254,27 @@ public final class LiveLink implements LiveLinkServer.Handler {
         server.revokeAll();
         enabled = false;
         save();
-        return "Website-Verbindung aus. Alle gekoppelten Browser müssen sich neu koppeln.";
+        return t("Website-Verbindung aus. Alle gekoppelten Browser müssen sich neu koppeln.", "Website link off. All paired browsers must pair again.");
     }
 
     public String setPort(int p) {
-        if (p < 1024 || p > 65535) return "Port muss zwischen 1024 und 65535 liegen.";
+        if (p < 1024 || p > 65535) return t("Port muss zwischen 1024 und 65535 liegen.", "The port must be between 1024 and 65535.");
         // Since 0.12 the service already runs from the start: the same port needs no restart (a quick
         // close and bind of the same port can fail while the old socket is still closing).
-        if (server.running() && server.port() == p && port == p) return "Port " + p + " ist schon eingestellt. " + connect();
+        if (server.running() && server.port() == p && port == p) return t("Port " + p + " ist schon eingestellt. ", "Port " + p + " is already set. ") + connect();
         server.close();
         port = p;
         save();
         // Setting the port means "connect on this port": start the service and show a code right away
         // (0.5.0 only saved it, so the website found nothing until /bauplaner verbinden was typed again).
         String connected = connect();
-        return "Port " + p + " gespeichert" + (p == LiveLinkServer.DEFAULT_PORT ? "" : " – auf der Website unter „Port“ denselben eintragen") + ". " + connected;
+        return t("Port " + p + " gespeichert", "Port " + p + " saved") + (p == LiveLinkServer.DEFAULT_PORT ? "" : t(" – auf der Website unter „Port“ denselben eintragen", " – enter the same one on the website under “Port”")) + ". " + connected;
     }
 
     public String statusText() {
-        if (!server.running()) return "Website-Verbindung aus. Einschalten: im Menü „Website koppeln“ (oder /bauplaner verbinden).";
-        return "Website-Verbindung an, Port " + server.port() + ", " + server.pairedClients() + " gekoppelte(r) Browser" + (websiteActive() ? ", Website fragt gerade ab" : "")
-                + (server.pairingOpen() ? ", Kopplung offen" : "") + ". Markierungen: " + marks.size() + ".";
+        if (!server.running()) return t("Website-Verbindung aus. Einschalten: im Menü „Website koppeln“ (oder /bauplaner verbinden).", "Website link off. Turn on: menu “Pair website” (or /buildplanner connect).");
+        return t("Website-Verbindung an, Port ", "Website link on, port ") + server.port() + ", " + server.pairedClients() + t(" gekoppelte(r) Browser", " paired browser(s)") + (websiteActive() ? t(", Website fragt gerade ab", ", website is polling") : "")
+                + (server.pairingOpen() ? t(", Kopplung offen", ", pairing open") : "") + t(". Markierungen: ", ". Marks: ") + marks.size() + ".";
     }
 
     public void close() { server.close(); }
@@ -497,7 +499,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
             Files.writeString(root.resolve("markierungen.json"), "{\"dimension\":" + Json.quote(next.dimension()) + ",\"items\":" + itemsText(body) + "}", StandardCharsets.UTF_8);
         } catch (IOException ignored) { }
         Minecraft mc = Minecraft.getInstance();
-        mc.execute(() -> McCompat.overlay(mc, Component.literal("Bauplaner: " + next.size() + " Markierungen von der Website")));
+        mc.execute(() -> McCompat.notice(mc, Toasts.Kind.INFO, next.size() + t(" Markierungen von der Website", " marks from the website")));
         return "{\"marks\":" + next.size() + "}";
     }
 
@@ -590,7 +592,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
         } catch (IOException ignored) { }
         if (announce) {
             Minecraft mc = Minecraft.getInstance();
-            McCompat.overlay(mc, Component.literal("Bauplaner: Weltplan des Teams – " + next.size() + " Markierungen" + (next.lockedCount() > 0 ? ", " + next.lockedCount() + " gesperrt" : "")));
+            McCompat.notice(mc, Toasts.Kind.INFO, t("Weltplan des Teams – ", "Team world plan – ") + next.size() + t(" Markierungen", " marks") + (next.lockedCount() > 0 ? ", " + next.lockedCount() + t(" gesperrt", " locked") : ""));
         }
     }
 
@@ -667,20 +669,20 @@ public final class LiveLink implements LiveLinkServer.Handler {
         var room = team == null ? null : team.sync().room();
         Minecraft mc = Minecraft.getInstance();
         java.util.function.Consumer<String> say = text -> mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] " + text)));
-        if (room == null || !room.live()) { say.accept("Aufnahme: kein Team-Raum verbunden."); return "kein Raum"; }
+        if (room == null || !room.live()) { say.accept(t("Aufnahme: kein Team-Raum verbunden.", "Scan: no team room connected.")); return "kein Raum"; }
         if (recording) return "läuft schon";
         recording = true;
         try {
             var plan = hologram.plan();
             LiveLinkServer.Binary b = scan();
             room.uploadScan(b.fileName(), b.bytes(), plan == null ? null : plan.identity().projectId(), plan == null ? null : plan.identity().revisionNumber());
-            say.accept("Baustand aufgenommen und in den Team-Raum gelegt" + (askedBy == null ? "" : " (angefordert von " + askedBy + ")") + ". Im Planer unter „Mit Spiel abgleichen“ holen.");
+            say.accept(t("Baustand aufgenommen und in den Team-Raum gelegt" + (askedBy == null ? "" : " (angefordert von " + askedBy + ")") + ". Im Planer unter „Mit Spiel abgleichen“ holen.", "Build scanned and put into the team room" + (askedBy == null ? "" : " (requested by " + askedBy + ")") + ". Get it in the planner under “Compare with game”."));
             return "ok";
         } catch (LiveLinkServer.HttpError e) {
-            say.accept("Aufnahme nicht möglich: " + e.getMessage());
+            say.accept(t("Aufnahme nicht möglich: ", "Scan not possible: ") + e.getMessage());
             return e.getMessage();
         } catch (Exception e) {
-            say.accept("Aufnahme fehlgeschlagen: " + e.getMessage());
+            say.accept(t("Aufnahme fehlgeschlagen: ", "Scan failed: ") + e.getMessage());
             return String.valueOf(e.getMessage());
         } finally {
             recording = false;
@@ -767,8 +769,9 @@ public final class LiveLink implements LiveLinkServer.Handler {
         catch (RuntimeException e) { throw new LiveLinkServer.HttpError(400, e.getMessage()); }
         room.use(c);
         Minecraft mc = Minecraft.getInstance();
-        mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] Der Planer hat dein Spiel mit dem Team-Raum" + (c.teamName() != null ? " „" + c.teamName() + "“" : "")
-                + " verbunden – Teambau ohne Server-Datei. Trennen: im Planer unter „Team live“ → „Spiel trennen“.")));
+        mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] " + t("Der Planer hat dein Spiel mit dem Team-Raum" + (c.teamName() != null ? " „" + c.teamName() + "“" : "")
+                + " verbunden – Teambau ohne Server-Datei. Trennen: im Planer unter „Team live“ → „Spiel trennen“.", "The planner connected your game to the team room" + (c.teamName() != null ? " “" + c.teamName() + "”" : "")
+                + " – team building without a server file. Disconnect: in the planner under “Team live” → “Disconnect game”."))));
         // LINK-11: with the Bauleitung's server key the server plugin (if any) joins the room right away.
         if (c.serverKey() != null) mc.execute(() -> t.sync().handOverRoom());
         return Json.write(Map.of("ok", true, "text", "Spiel mit dem Team-Raum verbunden."));

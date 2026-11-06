@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
+import io.github.freadeax.bauplaner.mod.Lang;
 
 /**
  * Every command of the Bauplaner mod and of the Bauplaner Paper plugin as a button for the command page of
@@ -25,11 +26,15 @@ public final class CommandCatalog {
 
     /** What a button needs to make sense; the screen greys it out with this reason otherwise. */
     public enum Need {
-        NONE(""), PLAN("Erst einen Plan platzieren (Plan-Menü)."), TEAM("Erst im Planer „Mit Spiel abgleichen“ oder auf einem Server mit Teambau spielen."),
-        PLUGIN("Der Server hat kein Bauplaner-Plugin (oder du darfst /bp nicht)."), LEAD("Nur für die Bauleitung des Teams."),
-        CHEST("Vorher auf die Kiste schauen.");
-        public final String reason;
-        Need(String reason) { this.reason = reason; }
+        NONE("", ""), PLAN("Erst einen Plan platzieren (Plan-Menü).", "Place a plan first (plan menu)."),
+        TEAM("Erst im Planer „Mit Spiel abgleichen“ oder auf einem Server mit Teambau spielen.", "First use “Compare with game” in the planner or play on a server with team building."),
+        PLUGIN("Der Server hat kein Bauplaner-Plugin (oder du darfst /bp nicht).", "The server has no Bauplaner plugin (or you may not use /bp)."),
+        LEAD("Nur für die Bauleitung des Teams.", "Only for the team lead."),
+        CHEST("Vorher auf die Kiste schauen.", "Look at the chest first.");
+        public final String reason, reasonEn;
+        Need(String reason, String reasonEn) { this.reason = reason; this.reasonEn = reasonEn; }
+        /** Reason in the mod's language. */
+        public String text() { return Lang.t(reason, reasonEn); }
     }
 
     public enum Kind { SECTION, NUMBER, WORD, TEXT, PLAYER, CHOICE, ITEM }
@@ -41,14 +46,18 @@ public final class CommandCatalog {
         static Arg opt(String name, Kind kind) { return new Arg(name, kind, List.of(), true); }
         static Arg choice(String name, String... choices) { return new Arg(name, Kind.CHOICE, List.of(choices), false); }
         static Arg optChoice(String name, String... choices) { return new Arg(name, Kind.CHOICE, List.of(choices), true); }
+        /** Name in the mod's language. */
+        public String label() { return Lang.en() ? CommandCatalogEn.ARGS.getOrDefault(name, name) : name; }
+        /** A choice as shown: client words in English when the mod speaks English (the command still sends the German word, which always works). */
+        public String shown(String choice, Side side) { return side == Side.CLIENT && Lang.en() ? CommandWords.en(choice) : choice; }
         /** Placeholder text in the input field. */
         public String hint() {
             return switch (kind) {
-                case SECTION -> name + " (Nr.)";
+                case SECTION -> label() + Lang.t(" (Nr.)", " (no.)");
                 case CHOICE -> String.join("|", choices);
-                case ITEM -> name + " (z. B. oak_planks)";
-                default -> name;
-            } + (optional ? " – leer lassen möglich" : "");
+                case ITEM -> label() + Lang.t(" (z. B. oak_planks)", " (e.g. oak_planks)");
+                default -> label();
+            } + (optional ? Lang.t(" – leer lassen möglich", " – may stay empty") : "");
         }
     }
 
@@ -58,10 +67,21 @@ public final class CommandCatalog {
         public String base() { return side.prefix + path; }
         public boolean hasArgs() { return !args.isEmpty(); }
         public boolean requiredArgs() { return args.stream().anyMatch(a -> !a.optional()); }
+        /** Label in the mod's language. */
+        public String title() { return Lang.en() ? labelEn() : label; }
+        /** Help in the mod's language. */
+        public String about() { return Lang.en() ? helpEn() : help; }
+        public String labelEn() { String[] t = CommandCatalogEn.TEXT.get(id); return t == null ? label : t[0]; }
+        public String helpEn() { String[] t = CommandCatalogEn.TEXT.get(id); return t == null ? help : t[1]; }
+        /** The command as the player would type it in the mod's language: "/buildplanner team take" or "/bp lager liste". */
+        public String typed() { return "/" + (side == Side.CLIENT && Lang.en() ? CommandWords.english(base()) : base()); }
     }
 
     public static final String STATUS = "Status", HOLOGRAM = "Hologramm", TEAM = "Team", SERVER_TEAM = "Server-Team", STORAGE = "Lager", PROOF = "Nachweis",
-            LINK = "Verbindung", RECORD = "Aufnahme", GUIDES = "Bauhilfen";
+            LINK = "Verbindung", RECORD = "Aufnahme", GUIDES = "Bauhilfen", SETTINGS = "Einstellungen";
+
+    /** A tab name in the mod's language. */
+    public static String groupLabel(String group) { return Lang.en() ? CommandCatalogEn.GROUPS.getOrDefault(group, group) : group; }
 
     private static final List<Entry> ALL = build();
 
@@ -95,25 +115,25 @@ public final class CommandCatalog {
             Arg a = e.args().get(i);
             String v = i < values.size() && values.get(i) != null ? values.get(i).trim() : "";
             if (v.isEmpty()) {
-                if (!a.optional()) throw new IllegalArgumentException("„" + a.name() + "“ fehlt.");
+                if (!a.optional()) throw new IllegalArgumentException(Lang.t("„" + a.label() + "“ fehlt.", "“" + a.label() + "” is missing."));
                 ended = true;
                 continue;
             }
-            if (ended) throw new IllegalArgumentException("„" + a.name() + "“ geht nur zusammen mit dem Feld davor.");
+            if (ended) throw new IllegalArgumentException(Lang.t("„" + a.label() + "“ geht nur zusammen mit dem Feld davor.", "“" + a.label() + "” only works together with the field before."));
             String checked = switch (a.kind()) {
-                case SECTION -> require(v, SECTION, a, "eine Abschnittsnummer");
-                case NUMBER -> require(v, NUMBER, a, "eine ganze Zahl");
-                case WORD -> require(v, WORD, a, "ein Wort ohne Leerzeichen");
-                case PLAYER -> require(v, PLAYER, a, "ein Minecraft-Name");
-                case ITEM -> require(v.toLowerCase(Locale.ROOT), ITEM, a, "eine Item-ID wie oak_planks");
+                case SECTION -> require(v, SECTION, a, Lang.t("eine Abschnittsnummer", "a section number"));
+                case NUMBER -> require(v, NUMBER, a, Lang.t("eine ganze Zahl", "a whole number"));
+                case WORD -> require(v, WORD, a, Lang.t("ein Wort ohne Leerzeichen", "one word without spaces"));
+                case PLAYER -> require(v, PLAYER, a, Lang.t("ein Minecraft-Name", "a Minecraft name"));
+                case ITEM -> require(v.toLowerCase(Locale.ROOT), ITEM, a, Lang.t("eine Item-ID wie oak_planks", "an item ID like oak_planks"));
                 case CHOICE -> {
                     String l = v.toLowerCase(Locale.ROOT);
-                    if (!a.choices().contains(l)) throw new IllegalArgumentException("„" + a.name() + "“: " + String.join(", ", a.choices()) + ".");
+                    if (!a.choices().contains(l)) throw new IllegalArgumentException("„" + a.label() + "“: " + String.join(", ", a.choices()) + ".");
                     yield l;
                 }
                 case TEXT -> {
                     if (i != e.args().size() - 1) throw new IllegalStateException("Text nur als letztes Argument: " + e.id());
-                    if (v.length() > 250 || v.contains("\n")) throw new IllegalArgumentException("„" + a.name() + "“: höchstens 250 Zeichen, eine Zeile.");
+                    if (v.length() > 250 || v.contains("\n")) throw new IllegalArgumentException(Lang.t("„" + a.label() + "“: höchstens 250 Zeichen, eine Zeile.", "“" + a.label() + "”: at most 250 characters, one line."));
                     yield v;
                 }
             };
@@ -123,7 +143,7 @@ public final class CommandCatalog {
     }
 
     private static String require(String v, Pattern p, Arg a, String what) {
-        if (!p.matcher(v).matches()) throw new IllegalArgumentException("„" + a.name() + "“ muss " + what + " sein.");
+        if (!p.matcher(v).matches()) throw new IllegalArgumentException(Lang.t("„" + a.label() + "“ muss " + what + " sein.", "“" + a.label() + "” must be " + what + "."));
         return v;
     }
 
@@ -273,6 +293,12 @@ public final class CommandCatalog {
         c(m, LINK, "gelaende.an", "Gelände merken an", "gelaende an", "Die Mod merkt sich das Gelände, das du siehst (nur auf diesem PC).", Need.NONE);
         c(m, LINK, "gelaende.aus", "Gelände merken aus", "gelaende aus", "Nichts Neues merken; Gemerktes bleibt.", Need.NONE);
         c(m, LINK, "gelaende.vergessen", "Gelände vergessen", "gelaende vergessen", "Gemerktes Gelände dieser Welt löschen.", Need.NONE);
+        // Help, menus and settings (GAME-12, 0.23.0)
+        c(m, SETTINGS, "hilfe", "Hilfe", "hilfe", "So geht's in 5 Schritten.", Need.NONE);
+        c(m, SETTINGS, "menue", "Plan-Menü", "menue", "Öffnet das Plan-Menü (Taste J).", Need.NONE);
+        c(m, SETTINGS, "sprache", "Sprache", "sprache", "Deutsch, Englisch oder wie das Spiel.", Need.NONE, Arg.choice("sprache", "deutsch", "englisch", "auto"));
+        c(m, SETTINGS, "meldungen", "Meldungen", "meldungen", "Einblendung oben rechts, Chat oder beides.", Need.NONE, Arg.choice("ort", "einblendung", "chat", "beides"));
+        c(m, SETTINGS, "anzeige", "Bauanzeige", "anzeige", "Kompakt, ausführlich oder aus.", Need.NONE, Arg.choice("stufe", "kompakt", "ausfuehrlich", "aus"));
         // Recording for the website (client, all loaders) and on the server
         c(m, RECORD, "plaene", "Pläne", "plaene", "Pläne im Ordner bauplaner/plans.", Need.NONE);
         c(m, RECORD, "plan", "Plan laden", "plan", "Plan für die Aufnahme laden.", Need.NONE, Arg.of("datei", Kind.TEXT));
@@ -286,6 +312,9 @@ public final class CommandCatalog {
         s(m, RECORD, "bp.anker", "Server: Anker hier", "anker hier", "Anker auf den angeschauten Block.", Need.PLUGIN);
         s(m, RECORD, "bp.scan", "Server: Aufnahme", "scan", "Aufnahme aus der Serverwelt („geladen“: nur geladene Chunks).", Need.PLUGIN, Arg.optChoice("umfang", "geladen"));
         s(m, RECORD, "bp.abbrechen", "Server: Abbrechen", "abbrechen", "Laufende Serveraufnahme stoppen.", Need.PLUGIN);
+        // WORLD-SHARE-01 (0.22.0): the team's world plan on the server; English twin on the plugin: /bp worldplan locks off|notice|lock.
+        s(m, SERVER_TEAM, "bp.weltplan", "Weltplan (Server)", "weltplan", "Weltplan aus dem Team-Raum: Stand, Marker auf BlueMap/Dynmap, Sperren.", Need.PLUGIN);
+        s(m, SERVER_TEAM, "bp.weltplan.sperren", "Weltplan-Sperren", "weltplan sperren", "Gesperrte Weltplan-Einträge schützen (nur Bauleitung): aus, hinweis oder sperren.", Need.PLUGIN, Arg.choice("modus", "aus", "hinweis", "sperren"));
         return List.copyOf(m.values());
     }
 

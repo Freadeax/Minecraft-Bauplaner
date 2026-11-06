@@ -91,6 +91,16 @@
       "file": "gallery/12-team-world-plan.png",
       "title": "The team's world plan from the team room",
       "description": "Building sites, paths and points of the planner reach every player over the internet; the locked market square stays grey. The optional server plugin draws the same markers on BlueMap or Dynmap."
+    },
+    {
+      "file": "gallery/13-menu-side-panel.png",
+      "title": "Menu as a side panel",
+      "description": "J slides in a side panel with four tabs – Plan, Move, View, Options. The world stays visible. Everything in English and German."
+    },
+    {
+      "file": "gallery/14-message-cards.png",
+      "title": "Messages at the top right",
+      "description": "Short animated message cards instead of a full chat, errors in red, and a compact build panel at the top right."
     }
   ],
   "firstVersion": "0.10.0",

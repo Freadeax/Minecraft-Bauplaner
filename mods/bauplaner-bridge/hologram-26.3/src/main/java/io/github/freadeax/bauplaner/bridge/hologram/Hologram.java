@@ -1,5 +1,7 @@
 package io.github.freadeax.bauplaner.bridge.hologram;
 
+import static io.github.freadeax.bauplaner.mod.Lang.t;
+
 import io.github.freadeax.bauplaner.mod.BlockRules.Verdict;
 import io.github.freadeax.bauplaner.mod.LiveCheck;
 import io.github.freadeax.bauplaner.mod.Placement;
@@ -76,6 +78,8 @@ public final class Hologram {
         public final String label;
         public final double factor;
         Budget(String label, double factor) { this.label = label; this.factor = factor; }
+        /** Label in the mod's language (GAME-12); {@link #label} stays the saved German key. */
+        public String text() { return switch (this) { case NIEDRIG -> io.github.freadeax.bauplaner.mod.Lang.t("niedrig", "low"); case NORMAL -> "normal"; case HOCH -> io.github.freadeax.bauplaner.mod.Lang.t("hoch", "high"); }; }
         public static Budget parse(String s, Budget fallback) {
             for (Budget b : values()) if (b.label.equals(s) || b.name().equals(s)) return b;
             return fallback;
@@ -216,16 +220,16 @@ public final class Hologram {
 
     /** Choose a build section (0 = all). Returns a message for the player. */
     public String setSection(int n) {
-        if (check == null) return "Kein Plan eingeblendet.";
+        if (check == null) return t("Kein Plan eingeblendet.", "No plan shown.");
         var names = sectionNames();
-        if (names.isEmpty()) return "Dieser Plan hat keine Bauabschnitte. Auf der Website im Tab „Baustelle“ Abschnitte anlegen und neu exportieren.";
-        if (n < 0 || n > names.size()) return "Abschnitt " + n + " gibt es nicht (1–" + names.size() + ").";
+        if (names.isEmpty()) return t("Dieser Plan hat keine Bauabschnitte. Auf der Website im Tab „Baustelle“ Abschnitte anlegen und neu exportieren.", "This plan has no build sections. Add sections in the website tab “Site” and export again.");
+        if (n < 0 || n > names.size()) return t("Abschnitt " + n + " gibt es nicht (1–" + names.size() + ").", "There is no section " + n + " (1–" + names.size() + ").");
         section = n;
         sectionSet = null;
         announced = 0;
         target = -1;
         if (layers != Layers.ALL) layerY = firstOpenLayer();
-        return n == 0 ? "Alle Bauabschnitte." : "Abschnitt " + n + "/" + names.size() + ": „" + names.get(n - 1) + "“ – " + sectionLine(n);
+        return n == 0 ? t("Alle Bauabschnitte.", "All build sections.") : t("Abschnitt ", "Section ") + n + "/" + names.size() + ": „" + names.get(n - 1) + "“ – " + sectionLine(n);
     }
 
     /** Next or previous section, cycling through "all". */
@@ -254,7 +258,7 @@ public final class Hologram {
         int total = 0;
         for (int v : c) total += v;
         int ok = c[Verdict.OK.ordinal()], open = c[Verdict.MISSING.ordinal()] + c[Verdict.WRONG.ordinal()] + c[Verdict.STATE.ordinal()];
-        return (total == 0 ? 100 : ok * 100 / total) + " % · " + open + " offen" + (c[Verdict.UNKNOWN.ordinal()] > 0 ? " · " + c[Verdict.UNKNOWN.ordinal()] + " nicht geladen" : "");
+        return (total == 0 ? 100 : ok * 100 / total) + " % · " + open + t(" offen", " open") + (c[Verdict.UNKNOWN.ordinal()] > 0 ? " · " + c[Verdict.UNKNOWN.ordinal()] + t(" nicht geladen", " not loaded") : "");
     }
 
     public boolean xray() { return xray; }
@@ -339,17 +343,17 @@ public final class Hologram {
             Path file = plansDir().resolve(e.planFile());
             visible = e.visible();
             if (Files.size(file) >= ASYNC_FILE_BYTES) {
-                loadInBackground(e.planFile(), e.placement(), "wieder eingeblendet");
-                return "Großer Plan „" + e.planFile() + "“ wird im Hintergrund geladen …";
+                loadInBackground(e.planFile(), e.placement(), t("wieder eingeblendet", "shown again"));
+                return t("Großer Plan „" + e.planFile() + "“ wird im Hintergrund geladen …", "Large plan “" + e.planFile() + "” is loading in the background …");
             }
             plan = PlanModel.read(file);
             planFile = e.planFile();
             check = new LiveCheck(plan, e.placement());
             wanted = check.placement();
-            return "Plan „" + plan.name() + "“ wieder eingeblendet (" + planFile + ").";
+            return t("Plan „" + plan.name() + "“ wieder eingeblendet (" + planFile + ").", "Plan “" + plan.name() + "” shown again (" + planFile + ").");
         } catch (IOException | RuntimeException ex) {
             clearState();
-            return "Gespeicherte Platzierung konnte nicht geladen werden: " + ex.getMessage();
+            return t("Gespeicherte Platzierung konnte nicht geladen werden: ", "Saved placement could not be loaded: ") + ex.getMessage();
         }
     }
 
@@ -364,7 +368,7 @@ public final class Hologram {
         loadingFile = file;
         LOADER.execute(() -> {
             try { pending = new Pending(gen, file, p, new LiveCheck(p, at), message, null); }
-            catch (RuntimeException | OutOfMemoryError ex) { pending = new Pending(gen, file, null, null, null, "Plan „" + file + "“ konnte nicht platziert werden: " + ex.getMessage()); }
+            catch (RuntimeException | OutOfMemoryError ex) { pending = new Pending(gen, file, null, null, null, t("Plan „" + file + "“ konnte nicht platziert werden: ", "Plan “" + file + "” could not be placed: ") + ex.getMessage()); }
         });
     }
 
@@ -378,9 +382,9 @@ public final class Hologram {
             try {
                 PlanModel p = PlanModel.read(path);
                 LiveCheck c = new LiveCheck(p, at);
-                pending = new Pending(gen, file, p, c, "„" + p.name() + "“ " + verb + " (" + p.blockCount() + " Blöcke).", null);
+                pending = new Pending(gen, file, p, c, "„" + p.name() + "“ " + verb + " (" + p.blockCount() + t(" Blöcke).", " blocks)."), null);
             } catch (IOException | RuntimeException | OutOfMemoryError ex) {
-                pending = new Pending(gen, file, null, null, null, "Plan „" + file + "“ konnte nicht geladen werden: " + ex.getMessage());
+                pending = new Pending(gen, file, null, null, null, t("Plan „" + file + "“ konnte nicht geladen werden: ", "Plan “" + file + "” could not be loaded: ") + ex.getMessage());
             }
         });
     }
@@ -402,7 +406,7 @@ public final class Hologram {
         target = -1;
         save();
         Placement at = c.placement();
-        return "„" + p.name() + "“ von der Website platziert bei " + at.x() + " " + at.y() + " " + at.z() + " (" + p.blockCount() + " Blöcke).";
+        return t("„" + p.name() + "“ von der Website platziert bei ", "“" + p.name() + "” placed from the website at ") + at.x() + " " + at.y() + " " + at.z() + " (" + p.blockCount() + t(" Blöcke).", " blocks).");
     }
 
     /** Load a plan and place its project origin on {@code anchor} (keeps turn and mirror of the current placement). */
@@ -413,14 +417,14 @@ public final class Hologram {
         if (Files.size(plansDir().resolve(file)) >= ASYNC_FILE_BYTES) {
             if (!file.equals(planFile)) { section = 0; sectionSet = null; announced = 0; }
             visible = true;
-            loadInBackground(file, at, "platziert bei " + anchor.getX() + " " + anchor.getY() + " " + anchor.getZ());
-            return "Großer Plan „" + file + "“ wird im Hintergrund geladen – das Hologramm erscheint gleich.";
+            loadInBackground(file, at, t("platziert bei ", "placed at ") + anchor.getX() + " " + anchor.getY() + " " + anchor.getZ());
+            return t("Großer Plan „" + file + "“ wird im Hintergrund geladen – das Hologramm erscheint gleich.", "Large plan “" + file + "” is loading in the background – the hologram appears shortly.");
         }
         PlanModel p = PlanModel.read(plansDir().resolve(file));
         if (!file.equals(planFile)) { section = 0; sectionSet = null; announced = 0; }
         visible = true;
-        String msg = "„" + p.name() + "“ platziert bei " + anchor.getX() + " " + anchor.getY() + " " + anchor.getZ() + " (" + p.blockCount() + " Blöcke).";
-        if (p.blockCount() >= ASYNC_BLOCKS) { checkInBackground(file, p, at, msg); return "Großer Plan (" + p.blockCount() + " Blöcke) wird vorbereitet – das Hologramm erscheint gleich."; }
+        String msg = t("„" + p.name() + "“ platziert bei ", "“" + p.name() + "” placed at ") + anchor.getX() + " " + anchor.getY() + " " + anchor.getZ() + " (" + p.blockCount() + t(" Blöcke).", " blocks).");
+        if (p.blockCount() >= ASYNC_BLOCKS) { checkInBackground(file, p, at, msg); return t("Großer Plan (" + p.blockCount() + " Blöcke) wird vorbereitet – das Hologramm erscheint gleich.", "Large plan (" + p.blockCount() + " blocks) is being prepared – the hologram appears shortly."); }
         plan = p;
         planFile = file;
         apply(at);
@@ -469,7 +473,7 @@ public final class Hologram {
         String file = planFile;
         LOADER.execute(() -> {
             try { pending = new Pending(gen, file, pm, new LiveCheck(pm, p), null, null); }
-            catch (RuntimeException | OutOfMemoryError ex) { pending = new Pending(gen, file, null, null, null, "Hologramm konnte nicht verschoben werden: " + ex.getMessage()); }
+            catch (RuntimeException | OutOfMemoryError ex) { pending = new Pending(gen, file, null, null, null, t("Hologramm konnte nicht verschoben werden: ", "Hologram could not be moved: ") + ex.getMessage()); }
         });
     }
 
@@ -516,8 +520,8 @@ public final class Hologram {
                 && check.count(new io.github.freadeax.bauplaner.mod.Filter(Integer.MIN_VALUE, Integer.MAX_VALUE, section))[Verdict.UNKNOWN.ordinal()] == 0) {
             announced = section;
             int next = firstOpenSection();
-            McCompat.chat(mc, net.minecraft.network.chat.Component.literal("[Bauplaner] Abschnitt „" + sectionName() + "“ fertig."
-                    + (next == 0 ? " Alle Abschnitte sind fertig." : " Weiter mit „" + sectionNames().get(next - 1) + "“: /bauplaner abschnitt " + next + " oder Num /.")));
+            McCompat.chat(mc, net.minecraft.network.chat.Component.literal("[Bauplaner] " + t("Abschnitt „" + sectionName() + "“ fertig.", "Section “" + sectionName() + "” done.")
+                    + (next == 0 ? t(" Alle Abschnitte sind fertig.", " All sections are done.") : t(" Weiter mit „" + sectionNames().get(next - 1) + "“: /bauplaner abschnitt " + next + " oder Num /.", " Next: “" + sectionNames().get(next - 1) + "”: /buildplanner section " + next + " or Num /."))));
         }
     }
 

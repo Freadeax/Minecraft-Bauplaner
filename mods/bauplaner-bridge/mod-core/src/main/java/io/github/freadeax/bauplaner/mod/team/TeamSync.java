@@ -1,5 +1,7 @@
 package io.github.freadeax.bauplaner.mod.team;
 
+import static io.github.freadeax.bauplaner.mod.Lang.t;
+
 import io.github.freadeax.bauplaner.mod.live.Json;
 import java.io.IOException;
 import java.io.Reader;
@@ -40,19 +42,23 @@ public final class TeamSync {
     /** What the player sees about the server connection. */
     public enum Link {
         /** Singleplayer, no server, or not connected. */
-        NONE("kein Server"),
+        NONE("kein Server", "no server"),
         /** The server has no Bauplaner plugin with the team channel. */
-        NO_PLUGIN("Server ohne Bauplaner-Plugin"),
+        NO_PLUGIN("Server ohne Bauplaner-Plugin", "server without Bauplaner plugin"),
         /** Plugin there, player has not allowed the channel for this server yet. */
-        ASK("Plugin da – J drücken → „Teambau erlauben“"),
+        ASK("Plugin da – J drücken → „Teambau erlauben“", "plugin found – press J → “Allow team building”"),
         /** Allowed, hello sent, waiting for the first state. */
-        WAITING("verbinde …"),
+        WAITING("verbinde …", "connecting …"),
         /** Live with the plugin. */
-        LIVE("live mit dem Server"),
+        LIVE("live mit dem Server", "live with the server"),
         /** Player switched it off for this server. */
-        OFF("für diesen Server aus");
+        OFF("für diesen Server aus", "off for this server");
+        /** German label (also sent to the website). */
         public final String label;
-        Link(String label) { this.label = label; }
+        private final String en;
+        Link(String label, String en) { this.label = label; this.en = en; }
+        /** Label in the player's language (GAME-12). */
+        public String text() { return io.github.freadeax.bauplaner.mod.Lang.t(label, en); }
     }
 
     private final Path dir;
@@ -108,7 +114,7 @@ public final class TeamSync {
         r.listen(ids -> { synchronized (this) { ids.forEach(roomFlight::remove); outbox.remove(ids); } },
                 (id, why) -> { synchronized (this) {
                     if (id != null) { roomFlight.remove(id); outbox.remove(List.of(id)); }
-                    if (why != null) { synchronized (rejections) { rejections.add(why); if (rejections.size() > 20) rejections.remove(0); } notify.accept("Nicht übernommen: " + why); }
+                    if (why != null) { synchronized (rejections) { rejections.add(why); if (rejections.size() > 20) rejections.remove(0); } notify.accept(t("Nicht übernommen: ", "Not accepted: ") + why); }
                 } },
                 () -> { });
         r.connect();
@@ -189,7 +195,7 @@ public final class TeamSync {
             String a = allowed.getProperty(serverKey);
             if ("ja".equals(a)) start();
             else if ("nein".equals(a)) link = Link.OFF;
-            else { link = Link.ASK; notify.accept("Auf diesem Server läuft das Bauplaner-Plugin. Teambau und Server-Kopplung einschalten: J drücken → „Teambau erlauben“ (einmal je Server). Bis dahin sendet die Mod nichts."); }
+            else { link = Link.ASK; notify.accept(t("Auf diesem Server läuft das Bauplaner-Plugin. Teambau und Server-Kopplung einschalten: J drücken → „Teambau erlauben“ (einmal je Server). Bis dahin sendet die Mod nichts.", "This server runs the Bauplaner plugin. Turn on team building and the server link: press J → “Allow team building” (once per server). Until then the mod sends nothing.")); }
         } else if (!has && !announced) link = Link.NO_PLUGIN;
     }
 
@@ -203,14 +209,14 @@ public final class TeamSync {
 
     /** {@code /bauplaner team erlauben|verbieten}: per server, saved. */
     public synchronized String allow(boolean yes) {
-        if (serverKey == null || transport == null) return "Das geht nur auf einem Server.";
+        if (serverKey == null || transport == null) return t("Das geht nur auf einem Server.", "This only works on a server.");
         allowed.setProperty(serverKey, yes ? "ja" : "nein");
         saveAllowed();
-        if (!yes) { link = announced ? Link.OFF : Link.NO_PLUGIN; fromServer = null; return "Teamkanal für diesen Server aus. Die Mod sendet hier nichts mehr; Teamstand nur noch aus dem Planer."; }
-        if (!transport.serverHasChannel()) return "Erlaubt. Dieser Server hat aber (noch) kein Bauplaner-Plugin mit Teambau – die Mod sendet erst, wenn es da ist.";
+        if (!yes) { link = announced ? Link.OFF : Link.NO_PLUGIN; fromServer = null; return t("Teamkanal für diesen Server aus. Die Mod sendet hier nichts mehr; Teamstand nur noch aus dem Planer.", "Team channel off for this server. The mod sends nothing here; team state only from the planner."); }
+        if (!transport.serverHasChannel()) return t("Erlaubt. Dieser Server hat aber (noch) kein Bauplaner-Plugin mit Teambau – die Mod sendet erst, wenn es da ist.", "Allowed. This server has no Bauplaner plugin with team building (yet) – the mod sends once it is there.");
         announced = true;
         start();
-        return "Teamkanal für diesen Server erlaubt. Die Mod holt den Teamstand vom Plugin.";
+        return t("Teamkanal für diesen Server erlaubt. Die Mod holt den Teamstand vom Plugin.", "Team channel allowed for this server. The mod gets the team state from the plugin.");
     }
 
     /** The server offers the plugin and the player has not decided yet (LINK-03: the J menu shows the question). */
@@ -257,7 +263,7 @@ public final class TeamSync {
                     if (ok || Boolean.TRUE.equals(m.get("final"))) outbox.remove(List.of(id));
                     if (!ok && reason != null) {
                         synchronized (rejections) { rejections.add(reason); if (rejections.size() > 20) rejections.remove(0); }
-                        notify.accept("Nicht übernommen: " + reason);
+                        notify.accept(t("Nicht übernommen: ", "Not accepted: ") + reason);
                     }
                 }
                 case "answer" -> {
@@ -310,17 +316,17 @@ public final class TeamSync {
      */
     public synchronized String act(String kind, Map<String, Object> body, String what) {
         TeamState s = state();
-        if (s == null) return "Kein Teamstand: im Planer unter „Team live“ „Mein Spiel verbinden“ klicken (ohne Server-Datei) oder im Reiter „Team“ „Mit Spiel abgleichen“.";
+        if (s == null) return t("Kein Teamstand: im Planer unter „Team live“ „Mein Spiel verbinden“ klicken (ohne Server-Datei) oder im Reiter „Team“ „Mit Spiel abgleichen“.", "No team state: in the planner click “Connect my game” under “Team live” (no server file) or “Compare with game” in the “Team” tab.");
         if (s.source() == TeamState.Source.PLANER && s.me() == null)
-            return "Im Planer ist „Ich bin“ nicht gesetzt – die Mod weiß nicht, in wessen Namen sie meldet.";
+            return t("Im Planer ist „Ich bin“ nicht gesetzt – die Mod weiß nicht, in wessen Namen sie meldet.", "“I am” is not set in the planner – the mod does not know in whose name it reports.");
         TeamOutbox.Action a;
         try { a = outbox.add(s.teamId(), kind, body); } catch (RuntimeException e) { return e.getMessage(); }
-        if (link == Link.LIVE) { sendAction(a); return what + " – an den Server geschickt."; }
-        if (s.source() == TeamState.Source.ROOM && roomLive()) { sendToRoom(a); return what + " – an den Team-Raum geschickt."; }
-        if (s.source() == TeamState.Source.ROOM) return what + " – wartet (" + outbox.pending().size() + "), bis der Team-Raum wieder erreichbar ist.";
-        String way = link == Link.ASK ? " Der Server hat das Plugin: J → „Teambau erlauben“ schickt es sofort."
-                : link == Link.OFF ? "" : link == Link.WAITING ? " Wird geschickt, sobald der Server antwortet." : "";
-        return what + " – wartet im Ausgangskorb (" + outbox.pending().size() + "), bis Planer oder Server es abholen." + way;
+        if (link == Link.LIVE) { sendAction(a); return what + t(" – an den Server geschickt.", " – sent to the server."); }
+        if (s.source() == TeamState.Source.ROOM && roomLive()) { sendToRoom(a); return what + t(" – an den Team-Raum geschickt.", " – sent to the team room."); }
+        if (s.source() == TeamState.Source.ROOM) return what + t(" – wartet (" + outbox.pending().size() + "), bis der Team-Raum wieder erreichbar ist.", " – waiting (" + outbox.pending().size() + ") until the team room is reachable again.");
+        String way = link == Link.ASK ? t(" Der Server hat das Plugin: J → „Teambau erlauben“ schickt es sofort.", " The server has the plugin: J → “Allow team building” sends it right away.")
+                : link == Link.OFF ? "" : link == Link.WAITING ? t(" Wird geschickt, sobald der Server antwortet.", " Sent as soon as the server answers.") : "";
+        return what + t(" – wartet im Ausgangskorb (" + outbox.pending().size() + "), bis Planer oder Server es abholen.", " – waiting in the outbox (" + outbox.pending().size() + ") until planner or server pick it up.") + way;
     }
 
     private void sendAction(TeamOutbox.Action a) {

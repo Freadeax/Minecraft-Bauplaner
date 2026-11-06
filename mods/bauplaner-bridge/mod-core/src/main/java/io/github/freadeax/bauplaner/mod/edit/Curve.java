@@ -1,5 +1,7 @@
 package io.github.freadeax.bauplaner.mod.edit;
 
+import static io.github.freadeax.bauplaner.mod.Lang.t;
+
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -21,9 +23,11 @@ public final class Curve {
     private Curve() {}
 
     public enum Profile {
-        ROHR("tube", "Rohr / Linie"), WEG("road", "Weg (flaches Band)"), MAUER("wall", "Mauer (Band mit Höhe)");
-        public final String id, label;
-        Profile(String id, String label) { this.id = id; this.label = label; }
+        ROHR("tube", "Rohr / Linie", "pipe / line"), WEG("road", "Weg (flaches Band)", "path (flat band)"), MAUER("wall", "Mauer (Band mit Höhe)", "wall (band with height)");
+        public final String id, label, labelEn;
+        Profile(String id, String label, String labelEn) { this.id = id; this.label = label; this.labelEn = labelEn; }
+        /** Label in the mod's language (GAME-12). */
+        public String text() { return t(label, labelEn); }
         public static Profile parse(String s) {
             for (Profile p : values()) if (p.id.equals(s) || p.name().equalsIgnoreCase(s)) return p;
             throw new IllegalArgumentException("Profil rohr, weg oder mauer erwartet.");
@@ -50,10 +54,10 @@ public final class Curve {
         public String label() {
             String size = switch (profile) {
                 case ROHR -> "Radius " + radius;
-                case WEG -> "Breite " + width;
-                case MAUER -> "Breite " + width + " · Höhe " + height;
+                case WEG -> t("Breite ", "width ") + width;
+                case MAUER -> t("Breite ", "width ") + width + t(" · Höhe ", " · height ") + height;
             };
-            return profile.label + " · " + size + " · " + (closed ? "geschlossen" : "offen") + (tension < 1 ? " · gerade Stücke " + Math.round((1 - tension) * 100) + " %" : "");
+            return profile.text() + " · " + size + " · " + (closed ? t("geschlossen", "closed") : t("offen", "open")) + (tension < 1 ? t(" · gerade Stücke ", " · straight parts ") + Math.round((1 - tension) * 100) + " %" : "");
         }
     }
 

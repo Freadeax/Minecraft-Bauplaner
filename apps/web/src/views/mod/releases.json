@@ -938,6 +938,53 @@
       "releasedAt": "2026-11-06",
       "sourceCommit": "8a15b479a5502fd6e6a88b3b37445826a269c8bf",
       "tested": "Echter Paper-Server 26.3 + BlueMap 5.29 und 1.21.4 + Dynmap 3.7: Marker aus dem Team-Raum, Sperrschutz (WORLD-SHARE-01)"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.23.0.jar",
+      "modVersion": "0.23.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 656502,
+      "sha256": "4983fe0a51f00847aa4cc219ffa940f3cb94dc11e69006b8603ec6aad2f25ddf",
+      "releasedAt": "2026-11-06",
+      "sourceCommit": "438add178d9be17b8c665d1b5c6f667e6e828deb",
+      "tested": "Spieltest fabric 26.3: Menü als Seitenleiste, Meldungskarten oben rechts, Befehle Deutsch/Englisch mit Vervollständigung (GAME-12)"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.23.0.jar",
+      "modVersion": "0.23.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 651707,
+      "sha256": "0fd3bc261889ab9a55b1c11c9463bdd1fb15587574be30ff0998f40a36516070",
+      "releasedAt": "2026-11-06",
+      "sourceCommit": "438add178d9be17b8c665d1b5c6f667e6e828deb",
+      "tested": "Spieltest neoforge 26.3: Hologramm, Website-Verbindung und Kopplungscode mit neuer Oberfläche (GAME-12)"
+    },
+    {
+      "file": "bauplaner-bridge-paper-0.23.0.jar",
+      "modVersion": "0.23.0",
+      "loader": "paper",
+      "minecraft": "26.3",
+      "loaderMin": "1.18",
+      "minecraftVersions": [
+        "1.18.2",
+        "1.20.6",
+        "1.21.4",
+        "1.21.11",
+        "26.3"
+      ],
+      "java": "17",
+      "bytes": 311922,
+      "sha256": "55b4cf30745bf1916b49b90be9f493ec62a103411a24df1c6f0c33594fdea559",
+      "releasedAt": "2026-11-06",
+      "sourceCommit": "438add178d9be17b8c665d1b5c6f667e6e828deb",
+      "tested": "Echter Paper-Server 26.3 + BlueMap 5.29: Weltplan aus dem Team-Raum; /bp weltplan auch als worldplan (GAME-12)"
     }
   ]
 }

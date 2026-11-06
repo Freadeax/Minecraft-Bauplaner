@@ -9,6 +9,8 @@ import io.github.freadeax.bauplaner.mod.commands.CommandCatalog.Kind;
 import io.github.freadeax.bauplaner.mod.commands.CommandCatalog.Side;
 import io.github.freadeax.bauplaner.mod.commands.CommandContext;
 import io.github.freadeax.bauplaner.mod.commands.ReplyLog;
+import static io.github.freadeax.bauplaner.mod.Lang.t;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,9 +51,12 @@ public final class CommandScreen extends Screen {
     private String contextKey = "";
     private List<String[]> statusCache = List.of();
     private int ticks;
+    private final long openedAt = System.currentTimeMillis();
+    private int[] activeTab;
+    private float[] underline;
 
     CommandScreen(HologramClient client) {
-        super(Component.literal("Bauplaner · Befehle & Status"));
+        super(Component.literal("Bauplaner"));
         this.client = client;
     }
 
@@ -74,11 +79,13 @@ public final class CommandScreen extends Screen {
         // Tabs, wrapped into rows.
         int x = left(), y = 20;
         for (String g : CommandCatalog.groups()) {
-            int w = font.width(g) + 12;
+            String name = CommandCatalog.groupLabel(g);
+            int w = font.width(name) + 12;
             if (x + w > width - 8) { x = left(); y += STEP; }
             String group = g;
-            Button b = Button.builder(Component.literal(g.equals(tab) ? "▸ " + g : g), btn -> { tab = group; selected = null; page = 0; message = ""; rebuildWidgets(); })
+            Button b = Button.builder(Component.literal(g.equals(tab) ? "▸ " + name : name), btn -> { tab = group; selected = null; page = 0; message = ""; rebuildWidgets(); })
                     .bounds(x, y, w + (g.equals(tab) ? font.width("▸ ") : 0), H).build();
+            if (g.equals(tab)) activeTab = new int[] { x, y + H, b.getWidth() };
             addRenderableWidget(b);
             x += b.getWidth() + 3;
         }
@@ -99,11 +106,11 @@ public final class CommandScreen extends Screen {
             if (k >= entries.size()) break;
             Entry e = entries.get(k);
             String blocked = ctx.blocked(e);
-            String label = (e.hasArgs() ? e.label() + " …" : e.label());
+            String label = (e.hasArgs() ? e.title() + " …" : e.title());
             if (e == selected) label = "▸ " + label;
             label = fit(label, colW - 8);
             Button b = Button.builder(Component.literal(label), btn -> click(e)).bounds(lx + (i % cols) * (colW + 4), top + (i / cols) * STEP, colW, H)
-                    .tooltip(Tooltip.create(Component.literal("/" + e.base() + (e.hasArgs() ? " " + hints(e) : "") + "\n" + e.help() + (blocked == null ? "" : "\n" + blocked))))
+                    .tooltip(Tooltip.create(Component.literal(e.typed() + (e.hasArgs() ? " " + hints(e) : "") + "\n" + e.about() + (blocked == null ? "" : "\n" + blocked))))
                     .build();
             b.active = blocked == null;
             addRenderableWidget(b);
@@ -117,8 +124,8 @@ public final class CommandScreen extends Screen {
             pageLabelAt = new int[] { left() + 46, footer + 6 };
         } else pageLabel = null;
         if (selected != null && selected.hasArgs()) argsWidgets(lx, listBottom + 6, lw, ctx);
-        addRenderableWidget(Button.builder(Component.literal("◀ Plan-Menü"), btn -> PlanScreen.open(minecraft, client.hologram())).bounds(width / 2 - 104, footer, 100, 20).build());
-        addRenderableWidget(Button.builder(Component.literal("Fertig"), btn -> onClose()).bounds(width / 2 + 4, footer, 100, 20).build());
+        addRenderableWidget(Button.builder(Component.literal(t("◀ Plan-Menü", "◀ Plan menu")), btn -> PlanScreen.open(minecraft, client.hologram())).bounds(width / 2 - 104, footer, 100, 20).build());
+        addRenderableWidget(Button.builder(Component.literal(t("Fertig", "Done")), btn -> onClose()).bounds(width / 2 + 4, footer, 100, 20).build());
     }
 
     private String pageLabel;
@@ -144,18 +151,18 @@ public final class CommandScreen extends Screen {
                 if (!options.contains(value)) value = options.get(0);
                 choiceValues.add(value);
                 int idx = i;
-                Button b = Button.builder(Component.literal(fit(a.name() + ": " + (value.isEmpty() ? "–" : value), fieldW - 8)), btn -> {
+                Button b = Button.builder(Component.literal(fit(a.label() + ": " + (value.isEmpty() ? "–" : a.shown(value, selected.side())), fieldW - 8)), btn -> {
                     String cur = choiceValues.get(idx);
                     String next = options.get((options.indexOf(cur) + 1) % options.size());
                     choiceValues.set(idx, next);
                     remember();
-                    btn.setMessage(Component.literal(fit(a.name() + ": " + (next.isEmpty() ? "–" : next), fieldW - 8)));
+                    btn.setMessage(Component.literal(fit(a.label() + ": " + (next.isEmpty() ? "–" : a.shown(next, selected.side())), fieldW - 8)));
                 }).bounds(fx, fy, fieldW, H).build();
                 addRenderableWidget(b);
                 boxes.add(null);
             } else {
                 choiceValues.add(null);
-                EditBox box = new EditBox(font, fx, fy, fieldW, H, Component.literal(a.name()));
+                EditBox box = new EditBox(font, fx, fy, fieldW, H, Component.literal(a.label()));
                 box.setMaxLength(a.kind() == Kind.TEXT ? 250 : 64);
                 box.setHint(Component.literal(a.hint()));
                 box.setValue(value.isEmpty() ? suggestion(a) : value);
@@ -165,7 +172,7 @@ public final class CommandScreen extends Screen {
         }
         int ry = oneRow ? y : y + (n - 1) * STEP;
         String blocked = ctx.blocked(selected);
-        Button run_ = Button.builder(Component.literal("Ausführen"), btn -> run(selected, values())).bounds(x + w - run, ry, run, H).build();
+        Button run_ = Button.builder(Component.literal(t("Ausführen", "Run")), btn -> run(selected, values())).bounds(x + w - run, ry, run, H).build();
         run_.active = blocked == null;
         addRenderableWidget(run_);
         EditBox first = boxes.stream().filter(b -> b != null).findFirst().orElse(null);
@@ -227,7 +234,7 @@ public final class CommandScreen extends Screen {
         REPLIES.sent(cmd, e.side() == Side.SERVER, System.currentTimeMillis());
         // Exactly what typing the command does: the loader runs client commands, everything else goes to the server.
         minecraft.player.connection.sendCommand(cmd);
-        message = "Ausgeführt: /" + cmd;
+        message = t("Ausgeführt: /", "Sent: /") + cmd;
         messageBad = false;
         statusCache = List.of();
         rebuildWidgets();
@@ -265,25 +272,25 @@ public final class CommandScreen extends Screen {
         Minecraft mc = Minecraft.getInstance();
         Hologram h = client.hologram();
         LiveCheck check = h.check();
-        if (check == null) out.add(row("Kein Plan platziert – Plan-Menü (J)", 0xFFB0B0B0));
+        if (check == null) out.add(row(t("Kein Plan platziert – Plan-Menü (J)", "No plan placed – plan menu (J)"), HudCard.MUTED));
         else {
             int ok = check.count(Verdict.OK);
-            out.add(row("Plan „" + h.plan().name() + "“: " + check.percent() + " % · " + ok + "/" + check.size() + (h.visible() ? "" : " · ausgeblendet"), 0xFF6BE07B));
-            out.add(row("fehlt " + check.count(Verdict.MISSING) + " · falsch " + check.count(Verdict.WRONG) + " · Zustand " + check.count(Verdict.STATE)
-                    + (check.count(Verdict.UNKNOWN) > 0 ? " · nicht geladen " + check.count(Verdict.UNKNOWN) : ""), 0xFFFFFFFF));
-            String filter = (h.layers() == Hologram.Layers.ALL ? "alle Ebenen" : (h.layers() == Hologram.Layers.ONE ? "nur Ebene " : "bis Ebene ") + h.layerY())
-                    + " · " + (h.sectionSetLabel() != null ? h.sectionSetLabel() : h.section() == 0 || h.sectionName() == null ? "alle Abschnitte" : "Abschnitt " + h.section() + " „" + h.sectionName() + "“");
-            out.add(row(filter + " · Platzierhilfe " + h.guard().label + (h.xray() ? " · Röntgen" : ""), 0xFF40E0FF));
+            out.add(row("Plan „" + h.plan().name() + "“: " + check.percent() + " % · " + ok + "/" + check.size() + (h.visible() ? "" : t(" · ausgeblendet", " · hidden")), HudCard.ACCENT));
+            out.add(row(t("fehlt ", "missing ") + check.count(Verdict.MISSING) + t(" · falsch ", " · wrong ") + check.count(Verdict.WRONG) + t(" · Zustand ", " · facing ") + check.count(Verdict.STATE)
+                    + (check.count(Verdict.UNKNOWN) > 0 ? t(" · nicht geladen ", " · not loaded ") + check.count(Verdict.UNKNOWN) : ""), HudCard.TEXT));
+            String filter = (h.layers() == Hologram.Layers.ALL ? t("alle Ebenen", "all layers") : (h.layers() == Hologram.Layers.ONE ? t("nur Ebene ", "only layer ") : t("bis Ebene ", "up to layer ")) + h.layerY())
+                    + " · " + (h.sectionSetLabel() != null ? h.sectionSetLabel() : h.section() == 0 || h.sectionName() == null ? t("alle Abschnitte", "all sections") : t("Abschnitt ", "section ") + h.section() + " „" + h.sectionName() + "“");
+            out.add(row(filter + t(" · Platzierhilfe ", " · placement helper ") + h.guard().text() + (h.xray() ? t(" · Röntgen", " · x-ray") : ""), HudCard.INFO));
         }
         out.addAll(client.team().statusRows());
         LinkPrompt.Question q = LinkPrompt.current(client);
-        if (q != null) out.add(row(q.text() + " → Knopf „" + q.yes() + "“", 0xFFFFD54A));
+        if (q != null) out.add(row(q.text() + t(" → Knopf „", " → button “") + q.yes() + t("“", "”"), HudCard.GOLD));
         boolean single = mc.isLocalServer();
         var con = mc.getConnection();
-        String server = single ? "Einzelspieler" : con != null && con.getServerData() != null ? con.getServerData().ip : "Server";
+        String server = single ? t("Einzelspieler", "Singleplayer") : con != null && con.getServerData() != null ? con.getServerData().ip : "Server";
         boolean plugin = con != null && con.getCommands().getRoot().getChild("bp") != null;
-        out.add(row(server + " · Bauplaner-Plugin: " + (plugin ? "ja (/bp)" : "nein"), plugin ? 0xFF6BE07B : 0xFFB0B0B0));
-        out.add(row(client.link().statusText(), 0xFFB0B0B0));
+        out.add(row(server + " · Bauplaner-Plugin: " + (plugin ? t("ja (/bp)", "yes (/bp)") : t("nein", "no")), plugin ? HudCard.ACCENT : HudCard.MUTED));
+        out.add(row(client.link().statusText(), HudCard.MUTED));
         statusCache = out;
         return out;
     }
@@ -313,19 +320,29 @@ public final class CommandScreen extends Screen {
 
     @Override
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
+        // Fade in when opened; the selected tab gets an underline that glides to it.
+        float fade = Math.min(1f, (System.currentTimeMillis() - openedAt) / 180f);
+        for (var c : children()) if (c instanceof net.minecraft.client.gui.components.AbstractWidget w) w.setAlpha(Math.max(0.05f, fade));
         super.extractRenderState(g, mouseX, mouseY, delta);
-        g.centeredText(font, title, width / 2, 6, 0xFFFFFFFF);
+        String head = t("Bauplaner · Befehle & Status", "Bauplaner · Commands & status");
+        g.centeredText(font, head, width / 2, 6, HudCard.TEXT);
+        if (activeTab != null) {
+            if (underline == null) underline = new float[] { activeTab[0], activeTab[2] };
+            underline[0] += (activeTab[0] - underline[0]) * 0.3f;
+            underline[1] += (activeTab[2] - underline[1]) * 0.3f;
+            g.fill(Math.round(underline[0]) + 2, activeTab[1], Math.round(underline[0] + underline[1]) - 2, activeTab[1] + 2, HudCard.ACCENT);
+        }
         int line = font.lineHeight + 1;
         // Status column (wide) or block (narrow).
         int sx = left(), sy = tabsBottom, sw = statusWidth();
         List<String[]> lines = wrapped(sw);
         int max = wide() ? (height - 30 - sy) / line - replyLines() - 1 : (statusHeight() - 6) / line;
         if (lines.size() > max) lines = lines.subList(0, Math.max(0, max));
-        if (!lines.isEmpty()) g.fill(sx - 3, sy - 2, sx + sw + 3, sy + lines.size() * line + 1, 0x90000000);
+        if (!lines.isEmpty()) HudCard.back(g, sx, sy, sw, lines.size() * line, HudCard.INFO);
         for (String[] r : lines) { g.text(font, r[0], sx, sy, (int) Long.parseLong(r[1], 16), true); sy += line; }
-        if (pageLabel != null) g.text(font, pageLabel, pageLabelAt[0], pageLabelAt[1], 0xFFB0B0B0, true);
+        if (pageLabel != null) g.text(font, pageLabel, pageLabelAt[0], pageLabelAt[1], HudCard.MUTED, true);
         if (selected != null && argsAt != null)
-            g.text(font, fit("/" + selected.base() + " " + hints(selected) + " – " + selected.help(), listWidth()), argsAt[0], argsAt[1], 0xFFB0B0B0, true);
+            g.text(font, fit(selected.typed() + " " + hints(selected) + " – " + selected.about(), listWidth()), argsAt[0], argsAt[1], HudCard.MUTED, true);
         // Answers.
         int footer = height - 26, n = replyLines();
         int ry = footer - 4 - n * line;
@@ -334,14 +351,14 @@ public final class CommandScreen extends Screen {
         if (!message.isEmpty()) answer.add(new String[] { message, messageBad ? "FFFF5A5A" : "FF6BE07B" });
         for (ReplyLog.Line l : REPLIES.last(n)) for (String w : wrap(l.text(), rw)) answer.add(new String[] { w, l.sent() ? "FF40E0FF" : "FFFFFFFF" });
         if (answer.size() > n) answer = answer.subList(answer.size() - n, answer.size());
-        g.fill(left() - 3, ry - 2, left() + rw + 3, ry + n * line + 1, 0x70000000);
-        if (answer.isEmpty()) g.text(font, "Antworten erscheinen hier. Tipp: über einem Knopf steht der Befehl zum Eintippen.", left(), ry, 0xFF808080, true);
+        HudCard.back(g, left(), ry, rw, n * line, HudCard.ACCENT);
+        if (answer.isEmpty()) g.text(font, fit(t("Antworten erscheinen hier. Tipp: über einem Knopf steht der Befehl zum Eintippen.", "Answers appear here. Tip: hover a button to see the command to type."), rw), left(), ry, HudCard.DIM, true);
         for (String[] a : answer) { g.text(font, a[0], left(), ry, (int) Long.parseLong(a[1], 16), true); ry += line; }
     }
 
     private static String hints(Entry e) {
         StringBuilder b = new StringBuilder();
-        for (Arg a : e.args()) b.append(b.length() == 0 ? "" : " ").append(a.optional() ? "[" : "<").append(a.kind() == Kind.CHOICE ? String.join("|", a.choices()) : a.name()).append(a.optional() ? "]" : ">");
+        for (Arg a : e.args()) b.append(b.length() == 0 ? "" : " ").append(a.optional() ? "[" : "<").append(a.kind() == Kind.CHOICE ? String.join("|", a.choices().stream().map(c -> a.shown(c, e.side())).toList()) : a.label()).append(a.optional() ? "]" : ">");
         return b.toString();
     }
 

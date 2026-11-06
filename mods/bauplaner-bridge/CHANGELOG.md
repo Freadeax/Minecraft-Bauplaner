@@ -2,6 +2,28 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.23.0 – 2026-11-06
+
+**Easier to use, in German and English / Einfacher zu bedienen, auf Deutsch und Englisch**
+
+- New menu (J): a side panel slides in from the right with four tabs – Plan, Move, View, Options. The world and the hologram stay visible next to it, nothing is blurred; it also fits small windows.
+- Messages no longer fill the chat: they appear as short animated cards at the top right and fade out. Errors are red and shake briefly, the same message counts up (“×3”) instead of stacking. Lists you ask for (sections, materials, notes) stay in the chat. `/bauplaner meldungen einblendung|chat|beides` or the Options tab switch it.
+- Build panel at the top right redone and compact: name, percent, an animated bar, what is still open and the way to the next error. `/bauplaner anzeige kompakt|ausfuehrlich|aus`. Team and world plan panels at the bottom right are stacked and never cover each other.
+- Every command in German and English: `/bauplaner …` with German words and `/buildplanner …` with English words (e.g. `/buildplanner progress`, `/buildplanner team take 2`). Tab completion shows the words of the game language. All texts of the mod follow the game language; `/bauplaner sprache deutsch|englisch|auto` sets it.
+- New `/bauplaner hilfe` (five short steps) and `/bauplaner menue`. The command page (J → “Commands & status”) speaks both languages and fades in.
+- Colours and style match the new planner design.
+- Server plugin: `/bauplaner weltplan` also works as `/bauplaner worldplan locks off|notice|lock` and answers in English for players with an English game language.
+- Settings are stored in `bauplaner/oberflaeche.properties`. Nothing changes for the planner or the team room.
+
+- Neues Menü (J): rechts gleitet eine Seitenleiste mit vier Reitern herein – Plan, Position, Ansicht, Optionen. Welt und Hologramm bleiben daneben sichtbar, nichts wird verschwommen; passt auch in kleine Fenster.
+- Meldungen füllen den Chat nicht mehr: Sie erscheinen als kurze animierte Karten oben rechts und blenden wieder aus. Fehler sind rot und rütteln kurz, dieselbe Meldung zählt hoch („×3“) statt sich zu stapeln. Listen, die du abfragst (Abschnitte, Material, Notizen), bleiben im Chat. Umstellen mit `/bauplaner meldungen einblendung|chat|beides` oder im Reiter Optionen.
+- Baufenster oben rechts neu und kompakt: Name, Prozent, animierter Balken, was noch offen ist, und der Weg zum nächsten Fehler. `/bauplaner anzeige kompakt|ausfuehrlich|aus`. Team- und Weltplan-Anzeige unten rechts stehen übereinander und überdecken sich nie.
+- Jeder Befehl auf Deutsch und Englisch: `/bauplaner …` mit deutschen und `/buildplanner …` mit englischen Wörtern (z. B. `/buildplanner progress`, `/buildplanner team take 2`). Die Tab-Vervollständigung zeigt die Wörter der Spielsprache. Alle Texte der Mod folgen der Spielsprache; `/bauplaner sprache deutsch|englisch|auto` stellt sie ein.
+- Neu `/bauplaner hilfe` (fünf kurze Schritte) und `/bauplaner menue`. Die Befehlsseite (J → „Befehle & Status“) spricht beide Sprachen und blendet weich ein.
+- Farben und Stil passen zum neuen Planer-Design.
+- Server-Plugin: `/bauplaner weltplan` geht auch als `/bauplaner worldplan locks off|notice|lock` und antwortet Spielern mit englischer Spielsprache auf Englisch.
+- Einstellungen liegen in `bauplaner/oberflaeche.properties`. Für Planer und Team-Raum ändert sich nichts.
+
 ## 0.22.0 – 2026-11-06
 
 **The team's world plan over the internet / Der Weltplan des Teams über das Internet**
@@ -17,6 +39,7 @@ Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publi
 - Freiwilliges Server-Plugin: Schutz gesperrter Einträge, `/bauplaner weltplan sperren aus|hinweis|sperren` (Standard aus). „hinweis“ schreibt eine Chatzeile, „sperren“ verhindert dort Setzen, Abbauen und Eimer; die Berechtigung `bauplaner.weltplan.umgehen` ist ausgenommen.
 - `/bauplaner weltplan` auf dem Server zeigt Stand, Urheber, Einträge, Marker, Sperren und die gefundenen Karten-Plugins.
 - Auch die Liste der gespeicherten Server-Webkarten teilt sich über den Team-Raum. Die alten Datei-Exporte bleiben im Planer nur noch als Notfall.
+
 ## 0.21.0 – 2026-11-06
 
 **The server gets the team over the internet / Der Server bekommt das Team über das Internet**

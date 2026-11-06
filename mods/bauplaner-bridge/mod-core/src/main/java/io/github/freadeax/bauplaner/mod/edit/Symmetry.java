@@ -1,5 +1,7 @@
 package io.github.freadeax.bauplaner.mod.edit;
 
+import static io.github.freadeax.bauplaner.mod.Lang.t;
+
 import io.github.freadeax.bauplaner.mod.BlockState;
 import io.github.freadeax.bauplaner.mod.Placement;
 import java.util.ArrayList;
@@ -68,11 +70,11 @@ public record Symmetry(boolean mirrorX, boolean mirrorZ, int rotate, int cx2, in
 
     /** "Spiegeln Ost/West + Nord/Süd · 4-fach drehen · Achse X 10,5 · Z -3". */
     public String label() {
-        if (!active()) return "aus";
+        if (!active()) return t("aus", "off");
         List<String> parts = new ArrayList<>();
-        if (mirrorX || mirrorZ) parts.add("Spiegeln " + (mirrorX && mirrorZ ? "Ost/West + Nord/Süd" : mirrorX ? "Ost/West" : "Nord/Süd"));
-        if (rotate > 1) parts.add(rotate + "-fach drehen");
-        return String.join(" · ", parts) + " · Achse X " + half(cx2) + " · Z " + half(cz2);
+        if (mirrorX || mirrorZ) parts.add(t("Spiegeln ", "mirror ") + (mirrorX && mirrorZ ? t("Ost/West + Nord/Süd", "east/west + north/south") : mirrorX ? t("Ost/West", "east/west") : t("Nord/Süd", "north/south")));
+        if (rotate > 1) parts.add(rotate + t("-fach drehen", "-fold rotation"));
+        return String.join(" · ", parts) + t(" · Achse X ", " · axis X ") + half(cx2) + " · Z " + half(cz2);
     }
 
     private static String half(int v2) { return (v2 < 0 ? "-" : "") + Math.abs(v2) / 2 + (Math.abs(v2) % 2 == 1 ? ",5" : ""); }

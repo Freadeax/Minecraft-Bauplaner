@@ -428,3 +428,11 @@ footer a:hover { color: var(--mint); }
 .mod-launchers .seg { margin: 4px 0 12px; flex-wrap: wrap; }
 .mod-checks { margin: 8px 0 0; padding-left: 20px; font-size: 12.5px; line-height: 1.7; color: var(--muted); }
 .mod-launchers code { overflow-wrap: anywhere; }
+/* GAME-12: command list on #/mod (Mod 0.23.0) */
+.mod-commands-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0; }
+.mod-commands-bar input[type=search] { flex: 1 1 220px; min-width: 0; }
+.mod-command-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.mod-command-list li { display: grid; gap: 3px; padding: 8px 10px; border-radius: 10px; background: var(--panel-2, rgba(255,255,255,.03)); border: 1px solid var(--line, rgba(255,255,255,.08)); }
+.mod-command-list li .badge { margin-left: 6px; font-size: 11px; }
+.mod-command-list code { font-size: 12px; overflow-wrap: anywhere; }
+.mod-command-list small { color: var(--muted); font-size: 12px; line-height: 1.5; }

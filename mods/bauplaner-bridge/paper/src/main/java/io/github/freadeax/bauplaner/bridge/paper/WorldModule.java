@@ -175,27 +175,49 @@ final class WorldModule implements Listener {
 
     // ------------------------------------------------------------------ /bauplaner weltplan
 
+    /** GAME-12: English words for {@code /bauplaner weltplan sperren aus|hinweis|sperren} (also {@code worldplan locks off|notice|lock}). */
+    static final Map<String, String> WORDS = Map.of("locks", "sperren", "off", "aus", "notice", "hinweis", "lock", "sperren");
+
+    /** Player with a non-German game language gets English answers (GAME-12); the console stays German. */
+    private static boolean english(CommandSender s) { return s instanceof Player p && !String.valueOf(p.getLocale()).toLowerCase(Locale.ROOT).startsWith("de"); }
+
+    private static String t(CommandSender s, String de, String en) { return english(s) ? en : de; }
+
+    private static String word(String w) { String l = w.toLowerCase(Locale.ROOT); return WORDS.getOrDefault(l, l); }
+
     boolean command(CommandSender s, String label, String[] rest) {
-        if (rest.length >= 1 && rest[0].equalsIgnoreCase("sperren")) {
-            if (!s.hasPermission("bauplaner.team.leitung")) { s.sendMessage(PREFIX + ChatColor.RED + "Das darf nur die Bauleitung (bauplaner.team.leitung)."); return true; }
-            String m = rest.length >= 2 ? rest[1].toLowerCase(Locale.ROOT) : "";
-            if (!List.of("aus", "hinweis", "sperren").contains(m)) { s.sendMessage(PREFIX + "/" + label + " weltplan sperren <aus|hinweis|sperren> – jetzt: " + mode()); return true; }
+        boolean en = english(s);
+        String cmd = en ? "worldplan" : "weltplan";
+        if (rest.length >= 1 && word(rest[0]).equals("sperren")) {
+            if (!s.hasPermission("bauplaner.team.leitung")) { s.sendMessage(PREFIX + ChatColor.RED + t(s, "Das darf nur die Bauleitung (bauplaner.team.leitung).", "Only the team lead may do this (bauplaner.team.leitung).")); return true; }
+            String m = rest.length >= 2 ? word(rest[1]) : "";
+            if (!List.of("aus", "hinweis", "sperren").contains(m)) {
+                s.sendMessage(PREFIX + "/" + label + (en ? " worldplan locks <off|notice|lock> – now: " : " weltplan sperren <aus|hinweis|sperren> – jetzt: ") + mode());
+                return true;
+            }
             plugin.getConfig().set("weltplan.sperren", m);
             plugin.saveConfig();
-            s.sendMessage(PREFIX + "Gesperrte Weltplan-Einträge: " + switch (m) { case "sperren" -> "geschützt (Bauen dort verhindert)"; case "hinweis" -> "Hinweis im Chat, Bauen erlaubt"; default -> "kein Schutz"; } + ".");
+            s.sendMessage(PREFIX + t(s, "Gesperrte Weltplan-Einträge: ", "Locked world plan entries: ") + switch (m) {
+                case "sperren" -> t(s, "geschützt (Bauen dort verhindert)", "protected (building there is prevented)");
+                case "hinweis" -> t(s, "Hinweis im Chat, Bauen erlaubt", "notice in the chat, building allowed");
+                default -> t(s, "kein Schutz", "no protection");
+            } + ".");
             return true;
         }
         if (teams.isEmpty()) {
-            s.sendMessage(PREFIX + "Noch kein Weltplan aus dem Team-Raum. Im Planer auf der Weltkarte „Weltplan im Team“ wählen; der Server muss mit dem Team-Raum verbunden sein (/" + label + " team).");
+            s.sendMessage(PREFIX + t(s, "Noch kein Weltplan aus dem Team-Raum. Im Planer auf der Weltkarte „Weltplan im Team“ wählen; der Server muss mit dem Team-Raum verbunden sein (/" + label + " team).",
+                    "No world plan from the team room yet. In the planner choose “World plan in the team” on the world map; the server must be connected to the team room (/" + label + " team)."));
             return true;
         }
         for (Map.Entry<String, WorldShare> t : teams.entrySet()) {
             WorldShare w = t.getValue();
-            s.sendMessage(PREFIX + "Weltplan " + t.getKey() + " · Stand " + revs.getOrDefault(t.getKey(), 0) + (w.by.isEmpty() ? "" : " von " + w.by) + ": " + w.items + " Einträge, "
-                    + w.shapeCount() + " Marker, " + w.lockCount() + " gesperrt.");
+            s.sendMessage(PREFIX + (en ? "World plan " + t.getKey() + " · revision " + revs.getOrDefault(t.getKey(), 0) + (w.by.isEmpty() ? "" : " by " + w.by) + ": " + w.items + " entries, "
+                    + w.shapeCount() + " markers, " + w.lockCount() + " locked."
+                    : "Weltplan " + t.getKey() + " · Stand " + revs.getOrDefault(t.getKey(), 0) + (w.by.isEmpty() ? "" : " von " + w.by) + ": " + w.items + " Einträge, "
+                    + w.shapeCount() + " Marker, " + w.lockCount() + " gesperrt."));
         }
-        s.sendMessage(PREFIX + "Webkarten: " + (maps.names().isEmpty() ? "keine (BlueMap oder Dynmap installieren, dann zeichnet das Plugin die Marker selbst)" : String.join(", ", maps.names()))
-                + " · Sperren: " + mode() + " (/" + label + " weltplan sperren aus|hinweis|sperren).");
+        s.sendMessage(PREFIX + t(s, "Webkarten: ", "Web maps: ") + (maps.names().isEmpty() ? t(s, "keine (BlueMap oder Dynmap installieren, dann zeichnet das Plugin die Marker selbst)", "none (install BlueMap or Dynmap, then the plugin draws the markers itself)") : String.join(", ", maps.names()))
+                + t(s, " · Sperren: ", " · locks: ") + mode() + (en ? " (/" + label + " worldplan locks off|notice|lock)." : " (/" + label + " " + cmd + " sperren aus|hinweis|sperren)."));
         return true;
     }
 }

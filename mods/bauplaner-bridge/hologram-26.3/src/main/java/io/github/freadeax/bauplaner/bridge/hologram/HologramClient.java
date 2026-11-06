@@ -3,6 +3,7 @@ package io.github.freadeax.bauplaner.bridge.hologram;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import java.nio.file.Path;
+import io.github.freadeax.bauplaner.mod.Lang;
 import java.util.List;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.KeyMapping;
@@ -40,6 +41,7 @@ public final class HologramClient {
 
     /** @param loader "fabric" or "neoforge" (reported to the website); @param version mod version */
     public HologramClient(Path root, String loader, String version) {
+        ClientSettings.load(root);
         hologram = new Hologram(root);
         HologramDiagnose.init(loader, version);
         HologramDiagnose.errors(this::errors);
@@ -94,8 +96,41 @@ public final class HologramClient {
         list.addAll(guides.<S>commands());
         list.add(terrainCommand());
         // GAME-10: command page; opened on the next tick because the chat screen closes right after the command.
-        list.add(LiteralArgumentBuilder.<S>literal("befehle").executes(c -> { openCommands = true; return 1; }));
+        list.add(LiteralArgumentBuilder.<S>literal("befehle").executes(c -> { openScreen = 2; return 1; }));
+        // GAME-12 (0.23.0): help, plan menu, language, where messages go, how much the build panel shows.
+        list.add(LiteralArgumentBuilder.<S>literal("hilfe").executes(c -> help()));
+        list.add(LiteralArgumentBuilder.<S>literal("menue").executes(c -> { openScreen = 1; return 1; }));
+        java.util.function.Function<String, Integer> say = t -> { McCompat.chat(Minecraft.getInstance(), Component.literal("[Bauplaner] " + t)); return 1; };
+        var lang = LiteralArgumentBuilder.<S>literal("sprache").executes(c -> say.apply(Lang.t("Sprache: ", "Language: ") + Lang.choice().label() + " · /bauplaner sprache deutsch|englisch|auto"));
+        for (Lang.Choice ch : Lang.Choice.values())
+            lang.then(LiteralArgumentBuilder.<S>literal(ch == Lang.Choice.EN ? "englisch" : ch.key).executes(c -> say.apply(ClientSettings.setLanguage(ch))));
+        list.add(lang);
+        var notices = LiteralArgumentBuilder.<S>literal("meldungen").executes(c -> say.apply(Lang.t("Meldungen: ", "Messages: ") + ClientSettings.notices().label() + " · /bauplaner meldungen einblendung|chat|beides"));
+        for (ClientSettings.Notices n : ClientSettings.Notices.values())
+            notices.then(LiteralArgumentBuilder.<S>literal(n.key).executes(c -> say.apply(ClientSettings.setNotices(n))));
+        list.add(notices);
+        var panel = LiteralArgumentBuilder.<S>literal("anzeige").executes(c -> say.apply(ClientSettings.setPanel(ClientSettings.panel().next())));
+        for (ClientSettings.Panel pa : ClientSettings.Panel.values())
+            panel.then(LiteralArgumentBuilder.<S>literal(pa.key).executes(c -> say.apply(ClientSettings.setPanel(pa))));
+        list.add(panel);
         return list;
+    }
+
+    /** {@code /bauplaner} and {@code /bauplaner hilfe}: the five steps and where to click, in the mod's language. */
+    public int help() {
+        Minecraft mc = Minecraft.getInstance();
+        String root = Lang.en() ? "/buildplanner" : "/bauplaner";
+        String[][] steps = {
+                { "So geht's – Bauplaner in 5 Schritten:", "How it works – Bauplaner in 5 steps:" },
+                { " 1. Im Planer „Spiel verbinden“ klicken und hier zulassen (J).", " 1. Click “Connect game” in the planner and allow it here (J)." },
+                { " 2. Plan im Planer ins Spiel senden oder im Menü (J) wählen.", " 2. Send the plan from the planner or pick it in the menu (J)." },
+                { " 3. Auf den Startblock schauen und „Hierher“ klicken.", " 3. Look at the start block and click “Here”." },
+                { " 4. Bauen: das Hologramm zeigt, was fehlt; Punkt-Taste = nächster Fehler.", " 4. Build: the hologram shows what is missing; period key = next error." },
+                { " 5. Fortschritt steht oben rechts und im Planer.", " 5. Progress is shown at the top right and in the planner." },
+                { "Alle Befehle per Klick: J → „Befehle“. Tippen: " + root + " <Tab>. Sprache: " + root + " sprache deutsch|englisch|auto",
+                  "Every command by click: J → “Commands”. Typing: " + root + " <Tab>. Language: " + root + " language german|english|auto" } };
+        for (String[] s : steps) McCompat.chatLine(mc, Component.literal("[Bauplaner] " + Lang.t(s[0], s[1])));
+        return 1;
     }
 
     /** {@code /bauplaner gelaende [an|aus|vergessen]}: Geländegedächtnis for the website (TERRAIN-04). */
@@ -108,7 +143,8 @@ public final class HologramClient {
                 .then(LiteralArgumentBuilder.<S>literal("vergessen").executes(c -> { say.accept(terrain.forget()); return 1; }));
     }
 
-    private volatile boolean openCommands;
+    /** 1 = plan menu, 2 = command page: opened on the next tick, after the chat screen closed. */
+    private volatile int openScreen;
 
     /** Commands and status by click (GAME-10), also reachable from the J menu. */
     public void openCommands(Minecraft mc) { CommandScreen.open(mc, this); }
@@ -117,7 +153,8 @@ public final class HologramClient {
     public void tick(Minecraft mc) {
         guarded("tick", () -> { keys.tick(mc); hologram.tick(mc); assist.tick(mc); marks.tick(mc); link.tickShared(mc); team.tick(mc); guides.tick(mc); });
         guarded("gelaende", () -> terrain.tick(mc));
-        if (openCommands && mc.gui.screen() == null) { openCommands = false; openCommands(mc); }
+        Lang.game(mc.options.languageCode);
+        if (openScreen != 0 && mc.gui.screen() == null) { int which = openScreen; openScreen = 0; if (which == 2) openCommands(mc); else PlanScreen.open(mc, hologram); }
     }
 
     /** Level render pass: ghost blocks, frames, finder beam. */
@@ -127,7 +164,15 @@ public final class HologramClient {
 
     /** HUD layer: progress panel and the crosshair line of the placement helper. */
     public void hud(GuiGraphicsExtractor g, DeltaTracker delta) {
-        guarded("hud", () -> { hud.extract(g, delta); marks.hud(g, delta); team.hud(g); guides.hud(g); LinkPrompt.hud(g, this); });
+        guarded("hud", () -> {
+            // The mod's own screens show the same things; the HUD would only shine through the panel.
+            var screen = Minecraft.getInstance().gui.screen();
+            if (screen instanceof PlanScreen || screen instanceof CommandScreen || screen instanceof MaterialScreen) return;
+            hud.extract(g, delta);
+            Toasts.extract(g, HudCard.ceiling() > 0 ? HudCard.ceiling() + 4 : 6);
+            HudCard.ceiling(Math.round(Toasts.bottom()));
+            marks.hud(g, delta); team.hud(g); guides.hud(g); LinkPrompt.hud(g, this);
+        });
     }
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger("bauplaner");
@@ -149,7 +194,8 @@ public final class HologramClient {
             if (reported.size() < 50 && reported.add(kind)) {
                 LOG.error("[Fehler] {} ({}): {}", where, errors, e.toString(), e);
                 if (reported.size() == 1) McCompat.chat(Minecraft.getInstance(), Component.literal(
-                        "[Bauplaner] Interner Fehler (" + e.getClass().getSimpleName() + "), das Spiel läuft weiter. Bitte /bauplaner diagnose ausführen und die Datei schicken.")
+                        "[Bauplaner] " + Lang.t("Interner Fehler (" + e.getClass().getSimpleName() + "), das Spiel läuft weiter. Bitte /bauplaner diagnose ausführen und die Datei schicken.",
+                        "Internal error (" + e.getClass().getSimpleName() + "), the game keeps running. Please run /buildplanner diagnose and send the file."))
                         .withStyle(net.minecraft.ChatFormatting.GOLD));
             }
         }

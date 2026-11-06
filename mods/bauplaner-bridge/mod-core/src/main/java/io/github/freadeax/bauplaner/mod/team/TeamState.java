@@ -29,6 +29,19 @@ public record TeamState(Source source, String teamId, String name, String dimens
     public static final Map<String, String> STATUS_LABEL = Map.of("frei", "frei", "vergeben", "in Arbeit", "gemeldet", "fertig gemeldet",
             "bestaetigt", "bestätigt", "nacharbeit", "Nacharbeit", "wartet", "wartet auf Abgleich");
     public static final Map<String, String> ROLE_LABEL = Map.of("leitung", "Bauleitung", "meister", "Baumeister", "helfer", "Helfer", "gast", "Gast");
+    private static final Map<String, String> STATUS_EN = Map.of("frei", "free", "vergeben", "in progress", "gemeldet", "reported done",
+            "bestaetigt", "confirmed", "nacharbeit", "rework", "wartet", "waiting for sync");
+    private static final Map<String, String> ROLE_EN = Map.of("leitung", "team lead", "meister", "master builder", "helfer", "helper", "gast", "guest");
+
+    /** Section status in the player's language (GAME-12); unknown keys come back unchanged. */
+    public static String statusText(String key) {
+        return io.github.freadeax.bauplaner.mod.Lang.en() ? STATUS_EN.getOrDefault(key, key) : STATUS_LABEL.getOrDefault(key, key);
+    }
+
+    /** Role in the player's language (GAME-12); unknown keys come back unchanged. */
+    public static String roleText(String key) {
+        return io.github.freadeax.bauplaner.mod.Lang.en() ? ROLE_EN.getOrDefault(key, key) : ROLE_LABEL.getOrDefault(key, key);
+    }
     private static final Set<String> NOTE_TAGS = Set.of("frage", "problem", "material", "info");
     private static final int XZ = 30_000_000;
 

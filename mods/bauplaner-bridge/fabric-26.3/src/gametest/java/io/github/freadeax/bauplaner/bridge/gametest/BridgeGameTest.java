@@ -1,7 +1,9 @@
 package io.github.freadeax.bauplaner.bridge.gametest;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import io.github.freadeax.bauplaner.bridge.hologram.CommandLang;
 import io.github.freadeax.bauplaner.bridge.hologram.CommandScreen;
+import io.github.freadeax.bauplaner.bridge.hologram.Toasts;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -55,6 +57,8 @@ public final class BridgeGameTest implements FabricClientGameTest {
                 context.getInput().lookAt(new BlockPos(anchor[0], anchor[1], anchor[2]));
                 context.waitTicks(5);
 
+                // GAME-12: the client runs in English (en_us); the German log lines below need German mod texts.
+                chat(context, "/bauplaner sprache deutsch");
                 chat(context, "/bauplaner plaene");
                 chat(context, "/bauplaner plan " + PLAN);
                 chat(context, "/bauplaner anker hier");
@@ -69,6 +73,7 @@ public final class BridgeGameTest implements FabricClientGameTest {
                     hologram(context, world, io, root, anchor);
                     liveLink(context, world, io, anchor);
                     guides(context, world, io, anchor);
+                    ui(context, world, io, anchor);
                 } catch (Throwable t) {
                     // Modpack runs can hang on shutdown before the failure is reported: log it right away.
                     t.printStackTrace();
@@ -304,6 +309,77 @@ public final class BridgeGameTest implements FabricClientGameTest {
         copy(context.takeScreenshot("bauplaner-bauhilfen"), io.resolve("bauhilfen.png"));
         context.runOnClient(mc -> { if (mc.gui.hud.isHidden()) mc.gui.hud.toggle(); });
         chat(context, "/bauplaner bauhilfe aus");
+    }
+
+    /**
+     * GAME-12 (0.23.0): message cards at the top right instead of chat lines, compact build panel, menu tabs,
+     * both command languages with tab completion in the game language. Results in ui.json (checked by
+     * scripts/mod/bridge_gametest.mjs verify), pictures meldungen.png, menue-einstellungen.png, menue-en.png.
+     */
+    private static void ui(ClientGameTestContext context, TestSingleplayerContext world, Path io, int[] anchor) throws IOException {
+        StringBuilder out = new StringBuilder("{");
+        var untranslated = context.computeOnClient(mc -> CommandLang.untranslated(
+                net.fabricmc.fabric.api.client.command.v2.ClientCommands.getActiveDispatcher().getRoot()));
+        out.append("\"untranslated\":").append(untranslated.size());
+        out.append(",\"suggestDe\":").append(json(suggest(context, "bauplaner zei")));
+        out.append(",\"suggestDeRoot\":").append(json(suggest(context, "bauplaner ")));
+        // Back at the plan, looking at it: messages appear as cards at the top right, the chat stays empty.
+        world.getServer().runCommand("tp @a " + (anchor[0] - 5.5) + " " + anchor[1] + " " + (anchor[2] - 8.5) + " 0 0");
+        world.getConnection().waitForChunksRender();
+        context.runOnClient(mc -> mc.gui.hud.getChat().clearMessages(false));
+        context.getInput().lookAt(new BlockPos(anchor[0] + 3, anchor[1] + 4, anchor[2] + 2));
+        chat(context, "/bauplaner abschnitt 99");
+        chat(context, "/bauplaner texturen");
+        context.waitTicks(8);
+        copy(context.takeScreenshot("bauplaner-meldungen"), io.resolve("meldungen.png"));
+        out.append(",\"toasts\":").append(json(context.computeOnClient(mc -> Toasts.texts())));
+        chat(context, "/bauplaner texturen");
+        // Menu J: the settings tab.
+        context.getInput().pressKey(InputConstants.KEY_J);
+        context.waitTicks(10);
+        clickStarting(context, "Optionen");
+        context.waitTicks(8);
+        copy(context.takeScreenshot("bauplaner-menue-einstellungen"), io.resolve("menue-einstellungen.png"));
+        context.setScreen(() -> null);
+        // English: same commands under /buildplanner, English texts and completion.
+        chat(context, "/bauplaner sprache englisch");
+        chat(context, "/buildplanner progress");
+        chat(context, "/buildplanner notices popup");
+        out.append(",\"suggestEn\":").append(json(suggest(context, "buildplanner sho")));
+        out.append(",\"suggestEnRoot\":").append(json(suggest(context, "buildplanner ")));
+        out.append(",\"suggestMixed\":").append(json(suggest(context, "bauplaner prog")));
+        chat(context, "/buildplanner menu");
+        context.waitTicks(10);
+        clickStarting(context, "Plan");
+        context.waitTicks(8);
+        copy(context.takeScreenshot("bauplaner-menue-en"), io.resolve("menue-en.png"));
+        out.append(",\"buttonsEn\":").append(json(context.computeOnClient(mc -> mc.gui.screen().children().stream()
+                .filter(c -> c instanceof net.minecraft.client.gui.components.Button).map(c -> ((net.minecraft.client.gui.components.Button) c).getMessage().getString()).toList())));
+        context.setScreen(() -> null);
+        chat(context, "/buildplanner language german");
+        out.append("}");
+        Files.writeString(io.resolve("ui.json"), out.toString());
+    }
+
+    /** Tab completion as the chat screen asks for it (the line without the slash). */
+    private static List<String> suggest(ClientGameTestContext context, String line) {
+        return context.computeOnClient(mc -> {
+            var d = mc.getConnection().getCommands();
+            var parse = d.parse(line, mc.getConnection().getSuggestionsProvider());
+            return d.getCompletionSuggestions(parse).join().getList().stream().map(s -> s.getText()).toList();
+        });
+    }
+
+    private static String json(List<String> list) {
+        return "[" + String.join(",", list.stream().map(r -> "\"" + r.replace("\\", "\\\\").replace("\"", "\\\"") + "\"").toList()) + "]";
+    }
+
+    private static void clickStarting(ClientGameTestContext context, String prefix) {
+        String label = context.computeOnClient(mc -> mc.gui.screen().children().stream()
+                .filter(c -> c instanceof net.minecraft.client.gui.components.Button b && b.getMessage().getString().startsWith(prefix))
+                .map(c -> ((net.minecraft.client.gui.components.Button) c).getMessage().getString()).findFirst()
+                .orElseThrow(() -> new AssertionError("Kein Knopf „" + prefix + "…“")));
+        pressAt(context, label);
     }
 
     /** Right click with hotbar slot {@code slot} on top of {@code below}, through the real client path. */

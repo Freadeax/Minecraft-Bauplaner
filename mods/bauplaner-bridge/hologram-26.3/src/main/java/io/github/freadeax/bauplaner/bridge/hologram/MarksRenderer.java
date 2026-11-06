@@ -74,7 +74,7 @@ final class MarksRenderer {
             if (far(px, pz, s.minX() + s.width() / 2.0, s.minZ() + s.length() / 2.0, Math.max(s.width(), s.length()))) continue;
             Integer y = s.y() != null ? s.y() : ground(level, s.minX() + s.width() / 2, s.minZ() + s.length() / 2);
             if (y == null) continue;
-            int c = tone(s.extras(), WorldMarks.color(s.extras(), 0xFFFFFFFF));
+            int c = tone(s.extras(), WorldMarks.color(s.extras(), HudCard.TEXT));
             float x0 = s.minX(), z0 = s.minZ(), x1 = s.minX() + s.width(), z1 = s.minZ() + s.length(), fy = y + 0.05f;
             add(out, col, x0, fy, z0, x1, fy, z0, c); add(out, col, x1, fy, z0, x1, fy, z1, c);
             add(out, col, x1, fy, z1, x0, fy, z1, c); add(out, col, x0, fy, z1, x0, fy, z0, c);
@@ -120,7 +120,7 @@ final class MarksRenderer {
     private static boolean far(double px, double pz, double x, double z, double size) { return Math.hypot(px - x, pz - z) > RADIUS + size; }
 
     /** Locked entries (schema 3, GAME-07-S11) are drawn grey, whatever their own colour. */
-    static final int LOCKED = 0xFF8C8C8C;
+    static final int LOCKED = HudCard.DIM;
 
     private static int tone(WorldMarks.Extras e, int color) { return e.locked() ? LOCKED : color; }
 
@@ -169,6 +169,8 @@ final class MarksRenderer {
     }
 
     /** HUD, bottom right above the hotbar area: nearest Weltplan point and the website link state. */
+    private static String website() { return io.github.freadeax.bauplaner.mod.Lang.t("✔ Planer verbunden", "✔ Planner connected"); }
+
     void hud(GuiGraphicsExtractor g, DeltaTracker delta) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null || mc.level == null || mc.gui.screen() != null) return;
@@ -176,20 +178,19 @@ final class MarksRenderer {
         WorldMarks m = link.marks();
         if (m.size() > 0 && m.dimension().equals(McCompat.dimension(mc.level))) {
             WorldMarks.Zone zone = m.zoneAt(mc.player.getX(), mc.player.getZ());
-            if (zone != null && link.shown(zone.extras())) rows.add(WorldMarks.categoryLabel(zone.category()) + " „" + zone.name() + "“" + (zone.extras().group().isEmpty() ? "" : " · " + zone.extras().group()) + (zone.extras().locked() ? " · gesperrt" : ""));
+            if (zone != null && link.shown(zone.extras())) rows.add(WorldMarks.categoryLabel(zone.category()) + " „" + zone.name() + "“" + (zone.extras().group().isEmpty() ? "" : " · " + zone.extras().group()) + (zone.extras().locked() ? io.github.freadeax.bauplaner.mod.Lang.t(" · gesperrt", " · locked") : ""));
             WorldMarks.Point p = m.nearestPoint(mc.player.getX(), mc.player.getZ());
             if (p != null) {
                 int d = (int) Math.round(Math.hypot(p.x() + 0.5 - mc.player.getX(), p.z() + 0.5 - mc.player.getZ()));
-                rows.add(WorldMarks.typeLabel(p.type()) + " „" + p.name() + "“: " + d + " m " + (d == 0 ? "hier" : HologramHud.compass(p.x() + 0.5 - mc.player.getX(), p.z() + 0.5 - mc.player.getZ())));
+                rows.add(WorldMarks.typeLabel(p.type()) + " „" + p.name() + "“: " + d + " m " + (d == 0 ? io.github.freadeax.bauplaner.mod.Lang.t("hier", "here") : HologramHud.compass(p.x() + 0.5 - mc.player.getX(), p.z() + 0.5 - mc.player.getZ())));
             }
         }
-        if (link.running() && link.websiteActive()) rows.add("Website verbunden");
+        // GAME-12: "website connected" only in the detailed panel – the build panel shows the link as a dot.
+        if (link.running() && link.websiteActive() && ClientSettings.panel() == ClientSettings.Panel.DETAILED) rows.add(website());
         if (rows.isEmpty()) return;
-        var font = mc.font;
-        int line = font.lineHeight + 2, w = 0;
-        for (String r : rows) w = Math.max(w, font.width(r));
-        int x = g.guiWidth() - w - 6, y = g.guiHeight() - 60 - rows.size() * line;
-        g.fill(x - 3, y - 3, x + w + 3, y + rows.size() * line - 1, 0x90000000);
-        for (String r : rows) { g.text(font, r, x, y, r.startsWith("Website") ? HologramHud.GREEN : HologramHud.CYAN, true); y += line; }
+        if (ClientSettings.panel() == ClientSettings.Panel.HIDDEN) return;
+        List<String[]> cells = new ArrayList<>();
+        for (String r : rows) cells.add(new String[] { r, Integer.toHexString(r.equals(website()) ? HologramHud.GREEN : HologramHud.CYAN) });
+        HudCard.bottomRight(g, mc.font, cells, HologramHud.CYAN);
     }
 }

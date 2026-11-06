@@ -2,18 +2,6 @@
 
 Aus [roadmap.json](roadmap.json) erzeugt. Ereignisse werden angehängt, nicht nachträglich umgeschrieben. Commitnachweise: Git-Historie der JSON-Datei; Veröffentlichung: deployment.json und Artefakt-Kindcommit.
 
-## 2026-11-01T06:15:35+01:00 · baseline
-
-**Aufgaben:** CORE-01, CORE-02, CORE-03, STORE-01, MAT-01, BUILD-01, LIB-01, GEN-01, OPS-01, PLAN-01, ARCH-01, DOC-01, STORE-02, QA-01, QA-02, UI-01, STAB-01, OPS-02, OPS-03, LICENSE-01, PROFILE-01, NBT-01, FORMAT-01, FORMAT-02, MAT-02, MAT-03, MAT-04, DIFF-01, PERF-01, PERF-02, PERF-03, VIEW-01, VIEW-02, EDIT-01, UPDATE-01, LIB-02, LIB-03, WORLD-02, BUILD-05, GEN-02, MAP-01, MAP-02, GAME-01, GAME-02, GAME-03, WORLD-IMPORT-01, BACKUP-02, TEAM-01, AUTH-01, TEAM-02, TEAM-03, GAME-04, LAGER-01, OPS-04, DEFER-01, DEFER-02
-
-Aktuellen Main-Snapshot 84838f0 und dokumentierten 342-Test-Stand übernommen; offene Browser-/Spiel-/Geräteabnahmen ausdrücklich nicht als erledigt gezählt. Historische Roadmap separat erhalten.
-
-## 2026-11-01T06:15:35+01:00 · started
-
-**Aufgaben:** PLAN-01, ARCH-01, DOC-01
-
-Nutzer beauftragt vollständige Roadmap mit Mergepflege. Anwendungsschicht begonnen; vollständige Prüfung und Main-/Pages-Integration noch ausstehend.
-
 ## 2026-11-01T05:19:41.200Z · progress
 
 **Aufgaben:** PLAN-01, ARCH-01, DOC-01
@@ -119,6 +107,18 @@ Roadmap mit 56 Paketen, Teilschritten und verbindlicher Mergepflege implementier
 - `tests/roadmap.test.mjs`
 - `tests/scan-persistence.test.mjs`
 - `tests/schem-export.test.mjs`
+
+## 2026-11-01T06:15:35+01:00 · baseline
+
+**Aufgaben:** CORE-01, CORE-02, CORE-03, STORE-01, MAT-01, BUILD-01, LIB-01, GEN-01, OPS-01, PLAN-01, ARCH-01, DOC-01, STORE-02, QA-01, QA-02, UI-01, STAB-01, OPS-02, OPS-03, LICENSE-01, PROFILE-01, NBT-01, FORMAT-01, FORMAT-02, MAT-02, MAT-03, MAT-04, DIFF-01, PERF-01, PERF-02, PERF-03, VIEW-01, VIEW-02, EDIT-01, UPDATE-01, LIB-02, LIB-03, WORLD-02, BUILD-05, GEN-02, MAP-01, MAP-02, GAME-01, GAME-02, GAME-03, WORLD-IMPORT-01, BACKUP-02, TEAM-01, AUTH-01, TEAM-02, TEAM-03, GAME-04, LAGER-01, OPS-04, DEFER-01, DEFER-02
+
+Aktuellen Main-Snapshot 84838f0 und dokumentierten 342-Test-Stand übernommen; offene Browser-/Spiel-/Geräteabnahmen ausdrücklich nicht als erledigt gezählt. Historische Roadmap separat erhalten.
+
+## 2026-11-01T06:15:35+01:00 · started
+
+**Aufgaben:** PLAN-01, ARCH-01, DOC-01
+
+Nutzer beauftragt vollständige Roadmap mit Mergepflege. Anwendungsschicht begonnen; vollständige Prüfung und Main-/Pages-Integration noch ausstehend.
 
 ## 2026-11-01T09:26:37.129Z · progress
 
@@ -816,6 +816,45 @@ Weltkarte #/karte umgesetzt: Weltlage je Projekt (world.set, Sicherung), buildWo
 - `tests/e2e/worldmap.e2e.mjs`
 - `tests/worldmap.test.mjs`
 
+## 2026-11-01T13:26:19.608Z · progress
+
+**Aufgaben:** LIB-04
+
+Gebäudebibliothek v3: 12 neue Sets, 159 neue Gebäude (336 gesamt), 20 Materialvarianten, 7 Ensembles, neue Facetten; alle Gebäude im B7-Schema drehbar und spiegelbar. Redstone-Bauten nicht im Spiel abgenommen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LIB-04 | 🧩 Implementiert · Abnahme offen | 4/4 | Weitere Ensembles und Tipps nach Spielrückmeldung; Redstone-Bauten im Spiel abnehmen. |
+
+**Geänderte Dateien:**
+
+- `README.md`
+- `apps/web/src/colors.ts`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/CATALOG.md`
+- `packages/domain/src/build/furnish.ts`
+- `packages/domain/src/build/sets/dimensionen.ts`
+- `packages/domain/src/build/sets/epochen.ts`
+- `packages/domain/src/build/sets/fahrzeuge.ts`
+- `packages/domain/src/build/sets/fantasy.ts`
+- `packages/domain/src/build/sets/garten.ts`
+- `packages/domain/src/build/sets/hof.ts`
+- `packages/domain/src/build/sets/index.ts`
+- `packages/domain/src/build/sets/interieur.ts`
+- `packages/domain/src/build/sets/kueste.ts`
+- `packages/domain/src/build/sets/natur.ts`
+- `packages/domain/src/build/sets/stadt.ts`
+- `packages/domain/src/build/sets/technik.ts`
+- `packages/domain/src/build/sets/untergrund.ts`
+- `packages/domain/src/build/sets/varianten.ts`
+- `packages/domain/src/catalog.ts`
+- `packages/domain/src/ensembles.ts`
+- `packages/domain/src/materials.ts`
+- `packages/domain/src/recipes.ts`
+- `tests/asset-seeding.test.mjs`
+
 ## 2026-11-01T13:30:13.842Z · progress
 
 **Aufgaben:** LIB-02, LIB-03
@@ -910,45 +949,6 @@ Fabric-Adapter 26.3 kompiliert (Klammerfehler, displayClientMessage→sendSystem
 - `scripts/bridge_gametest.mjs`
 - `scripts/test_bridge_ingame.sh`
 - `tests/roadmap.test.mjs`
-
-## 2026-11-01T13:26:19.608Z · progress
-
-**Aufgaben:** LIB-04
-
-Gebäudebibliothek v3: 12 neue Sets, 159 neue Gebäude (336 gesamt), 20 Materialvarianten, 7 Ensembles, neue Facetten; alle Gebäude im B7-Schema drehbar und spiegelbar. Redstone-Bauten nicht im Spiel abgenommen.
-
-| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
-|---|---|---:|---|
-| LIB-04 | 🧩 Implementiert · Abnahme offen | 4/4 | Weitere Ensembles und Tipps nach Spielrückmeldung; Redstone-Bauten im Spiel abnehmen. |
-
-**Geänderte Dateien:**
-
-- `README.md`
-- `apps/web/src/colors.ts`
-- `docs/COMMUNICATION.md`
-- `docs/STATUS.md`
-- `docs/TESTING.md`
-- `docs/architecture/CATALOG.md`
-- `packages/domain/src/build/furnish.ts`
-- `packages/domain/src/build/sets/dimensionen.ts`
-- `packages/domain/src/build/sets/epochen.ts`
-- `packages/domain/src/build/sets/fahrzeuge.ts`
-- `packages/domain/src/build/sets/fantasy.ts`
-- `packages/domain/src/build/sets/garten.ts`
-- `packages/domain/src/build/sets/hof.ts`
-- `packages/domain/src/build/sets/index.ts`
-- `packages/domain/src/build/sets/interieur.ts`
-- `packages/domain/src/build/sets/kueste.ts`
-- `packages/domain/src/build/sets/natur.ts`
-- `packages/domain/src/build/sets/stadt.ts`
-- `packages/domain/src/build/sets/technik.ts`
-- `packages/domain/src/build/sets/untergrund.ts`
-- `packages/domain/src/build/sets/varianten.ts`
-- `packages/domain/src/catalog.ts`
-- `packages/domain/src/ensembles.ts`
-- `packages/domain/src/materials.ts`
-- `packages/domain/src/recipes.ts`
-- `tests/asset-seeding.test.mjs`
 
 ## 2026-11-01T13:36:58.036Z · progress
 
@@ -2348,62 +2348,6 @@ Mod 0.6.0: NeoForge auf Fabric-Stand (gemeinsamer Client-Kern hologram-26.3 inkl
 - `scripts/test_bridge_ingame.sh`
 - `tests/e2e/mod-download.e2e.mjs`
 
-## 2026-11-02T12:25:42.264Z · progress
-
-**Aufgaben:** BLOCK-02, BLOCK-01
-
-Katalog und Generatoren spielgerecht: gemeinsame Bauregel gameReady (Laternen an iron_chain bis zur Decke, Verbindungen wie im Spiel), chain→iron_chain, alle 336 Gebäude und 466 Generator-Fälle ohne Halt-, Verbindungs- und ID-Fehler (vorher 208 bzw. 140 Blöcke ohne Halt, 1.239 Verbindungsabweichungen, 152 unbekannte Ketten); 178 Gebäude als neue Katalogversion, Generatoren Kirche/Hafen/Torhaus/Windmühle/Brücke/Treppenhaus/Brunnen v2; neuer Dauertest tests/catalog-game.test.mjs; npm run check und 108/108 Browsertests grün. Offen: Abnahme im Spiel.
-
-| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
-|---|---|---:|---|
-| BLOCK-02 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme im Spiel (S06): geänderte Gebäude (z. B. Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen. |
-| BLOCK-01 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme im Spiel; PROFILE-01 kann die Berichtsfakten übernehmen. Die Katalogfehler aus der Spielprüfung behebt BLOCK-02. |
-
-**Geänderte Dateien:**
-
-- `docs/COMMUNICATION.md`
-- `docs/TESTING.md`
-- `docs/architecture/BLOCK_LOGIC.md`
-- `packages/domain/src/build/furnish.ts`
-- `packages/domain/src/build/gameReady.ts`
-- `packages/domain/src/build/plot.ts`
-- `packages/domain/src/build/sets/befestigung.ts`
-- `packages/domain/src/build/sets/deko.ts`
-- `packages/domain/src/build/sets/dimensionen.ts`
-- `packages/domain/src/build/sets/dorf.ts`
-- `packages/domain/src/build/sets/epochen.ts`
-- `packages/domain/src/build/sets/fahrzeuge.ts`
-- `packages/domain/src/build/sets/fantasy.ts`
-- `packages/domain/src/build/sets/farmen.ts`
-- `packages/domain/src/build/sets/garten.ts`
-- `packages/domain/src/build/sets/hof.ts`
-- `packages/domain/src/build/sets/infrastruktur.ts`
-- `packages/domain/src/build/sets/interieur.ts`
-- `packages/domain/src/build/sets/kueste.ts`
-- `packages/domain/src/build/sets/landschaft.ts`
-- `packages/domain/src/build/sets/natur.ts`
-- `packages/domain/src/build/sets/redstone.ts`
-- `packages/domain/src/build/sets/stadt.ts`
-- `packages/domain/src/build/sets/untergrund.ts`
-- `packages/domain/src/build/sets/wohnen.ts`
-- `packages/domain/src/buildings.ts`
-- `packages/domain/src/generators/bridge.ts`
-- `packages/domain/src/generators/church.ts`
-- `packages/domain/src/generators/compound.ts`
-- `packages/domain/src/generators/gatehouse.ts`
-- `packages/domain/src/generators/harbor.ts`
-- `packages/domain/src/generators/stairwell.ts`
-- `packages/domain/src/generators/well.ts`
-- `packages/domain/src/generators/windmill.ts`
-- `packages/domain/src/guide.ts`
-- `packages/domain/src/index.ts`
-- `packages/domain/src/materials.ts`
-- `packages/domain/src/placement.ts`
-- `packages/voxel/src/blocklogic/support.ts`
-- `tests/catalog-game.test.mjs`
-- `tests/catalog.test.mjs`
-- `tests/generators.test.mjs`
-
 ## 2026-11-02T12:23:17.039Z · progress
 
 **Aufgaben:** ENTITY-01
@@ -2461,6 +2405,62 @@ Gemälde, Rahmen, Rüstungsständer und Blockinhalte: Import/Export, 3D/Bilder/E
 - `tests/entities.test.mjs`
 - `tests/litematic.test.mjs`
 - `tests/voxel.test.mjs`
+
+## 2026-11-02T12:25:42.264Z · progress
+
+**Aufgaben:** BLOCK-02, BLOCK-01
+
+Katalog und Generatoren spielgerecht: gemeinsame Bauregel gameReady (Laternen an iron_chain bis zur Decke, Verbindungen wie im Spiel), chain→iron_chain, alle 336 Gebäude und 466 Generator-Fälle ohne Halt-, Verbindungs- und ID-Fehler (vorher 208 bzw. 140 Blöcke ohne Halt, 1.239 Verbindungsabweichungen, 152 unbekannte Ketten); 178 Gebäude als neue Katalogversion, Generatoren Kirche/Hafen/Torhaus/Windmühle/Brücke/Treppenhaus/Brunnen v2; neuer Dauertest tests/catalog-game.test.mjs; npm run check und 108/108 Browsertests grün. Offen: Abnahme im Spiel.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| BLOCK-02 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme im Spiel (S06): geänderte Gebäude (z. B. Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen. |
+| BLOCK-01 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme im Spiel; PROFILE-01 kann die Berichtsfakten übernehmen. Die Katalogfehler aus der Spielprüfung behebt BLOCK-02. |
+
+**Geänderte Dateien:**
+
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/BLOCK_LOGIC.md`
+- `packages/domain/src/build/furnish.ts`
+- `packages/domain/src/build/gameReady.ts`
+- `packages/domain/src/build/plot.ts`
+- `packages/domain/src/build/sets/befestigung.ts`
+- `packages/domain/src/build/sets/deko.ts`
+- `packages/domain/src/build/sets/dimensionen.ts`
+- `packages/domain/src/build/sets/dorf.ts`
+- `packages/domain/src/build/sets/epochen.ts`
+- `packages/domain/src/build/sets/fahrzeuge.ts`
+- `packages/domain/src/build/sets/fantasy.ts`
+- `packages/domain/src/build/sets/farmen.ts`
+- `packages/domain/src/build/sets/garten.ts`
+- `packages/domain/src/build/sets/hof.ts`
+- `packages/domain/src/build/sets/infrastruktur.ts`
+- `packages/domain/src/build/sets/interieur.ts`
+- `packages/domain/src/build/sets/kueste.ts`
+- `packages/domain/src/build/sets/landschaft.ts`
+- `packages/domain/src/build/sets/natur.ts`
+- `packages/domain/src/build/sets/redstone.ts`
+- `packages/domain/src/build/sets/stadt.ts`
+- `packages/domain/src/build/sets/untergrund.ts`
+- `packages/domain/src/build/sets/wohnen.ts`
+- `packages/domain/src/buildings.ts`
+- `packages/domain/src/generators/bridge.ts`
+- `packages/domain/src/generators/church.ts`
+- `packages/domain/src/generators/compound.ts`
+- `packages/domain/src/generators/gatehouse.ts`
+- `packages/domain/src/generators/harbor.ts`
+- `packages/domain/src/generators/stairwell.ts`
+- `packages/domain/src/generators/well.ts`
+- `packages/domain/src/generators/windmill.ts`
+- `packages/domain/src/guide.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/materials.ts`
+- `packages/domain/src/placement.ts`
+- `packages/voxel/src/blocklogic/support.ts`
+- `tests/catalog-game.test.mjs`
+- `tests/catalog.test.mjs`
+- `tests/generators.test.mjs`
 
 ## 2026-11-02T13:29:25.610Z · progress
 
@@ -3270,128 +3270,6 @@ Großbauten-Set (S05): sechs Wahrzeichen bis 45 × 41 Blöcke (Rathaus mit Turm,
 - `packages/domain/src/build/sets/index.ts`
 - `packages/domain/src/grossprojekte/hauptstadt.ts`
 
-## 2026-11-03T16:37:18.371Z · progress
-
-**Aufgaben:** LIB-06
-
-Bibliotheksbeiträge: eigene Bauwerke über „In Bibliothek einreichen“ als geprüftes Paket, Übernahme mit npm run library:add in den festen Katalog, Auslieferung wie mitgelieferte Gebäude; Node 706/706, Browser LIB-06 3/3, Durchstich lokal; Abnahme durch Philipp offen
-
-| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
-|---|---|---:|---|
-| LIB-06 | 🧩 Implementiert · Abnahme offen | 5/7 | Abnahme durch Philipp (S06) und erster echter Beitrag (S07). |
-
-**Geänderte Dateien:**
-
-- `.github/ISSUE_TEMPLATE/bibliotheksbeitrag.yml`
-- `apps/web/src/app/repository.ts`
-- `apps/web/src/catalog.css`
-- `apps/web/src/jobs/libraryJob.ts`
-- `apps/web/src/testing/testplan.ts`
-- `apps/web/src/views/LibraryView.tsx`
-- `apps/web/src/views/library/BuildingCard.tsx`
-- `apps/web/src/views/library/BuildingDetail.tsx`
-- `apps/web/src/views/library/ContributePanel.tsx`
-- `docs/COMMUNICATION.md`
-- `docs/STATUS.md`
-- `docs/TESTING.md`
-- `docs/architecture/CATALOG.md`
-- `docs/architecture/CONTRIBUTIONS.md`
-- `docs/library/BEITRAEGE.md`
-- `docs/testing/TESTPLAN.md`
-- `package.json`
-- `packages/domain/src/buildings.ts`
-- `packages/domain/src/community/library.ts`
-- `packages/domain/src/community/registry.ts`
-- `packages/domain/src/community/types.ts`
-- `packages/domain/src/contribution.ts`
-- `packages/domain/src/index.ts`
-- `scripts/library_intake.mjs`
-- `tests/contribution.test.mjs`
-- `tests/e2e/contribution.e2e.mjs`
-
-## 2026-11-03T16:33:52.289Z · progress
-
-**Aufgaben:** SIZE-01
-
-Größengrenzen zentral (4 Mio. Zellen, 16,7 Mio. Box), Import ohne Kopie, Werkstatt linear, Mod 0.9.0 mit großen Plänen im Hintergrund, Render-Budget und Baustand in Scheiben
-
-| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
-|---|---|---:|---|
-| SIZE-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05) mit einem großen Bau im Spiel. |
-
-**Geänderte Dateien:**
-
-- `apps/web/src/app/SizeNotice.tsx`
-- `apps/web/src/app/importLimits.ts`
-- `apps/web/src/editor/BlockEditor.tsx`
-- `apps/web/src/jobs/importJob.ts`
-- `apps/web/src/testing/testplan.ts`
-- `apps/web/src/views/ViewerView.tsx`
-- `apps/web/src/views/map/WorldMapView.tsx`
-- `apps/web/src/views/map/liveClient.ts`
-- `apps/web/src/views/project/GameCheckPanel.tsx`
-- `docs/TESTING.md`
-- `docs/architecture/BLOCK_EDITOR.md`
-- `docs/architecture/CREATIVE_TOOLS.md`
-- `docs/architecture/LITEMATIC.md`
-- `docs/architecture/LIVE_LINK.md`
-- `docs/architecture/MOD_BRIDGE.md`
-- `docs/architecture/MOD_HOLOGRAM.md`
-- `docs/architecture/SCHEM_IMPORT.md`
-- `docs/architecture/SIZE_LIMITS.md`
-- `docs/architecture/WORLD_IMPORT.md`
-- `docs/testing/TESTPLAN.md`
-- `mods/bauplaner-bridge/VERSION`
-- `mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/Plan.java`
-- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Hologram.java`
-- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java`
-- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramDiagnose.java`
-- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramHud.java`
-- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramRenderer.java`
-- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
-- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/LiveCheck.java`
-- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlanModel.java`
-- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
-- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/PlanScan.java`
-- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/BigPlanTest.java`
-- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`
-- `packages/application/src/revisionExport.ts`
-- `packages/application/src/scanPersistence.ts`
-- `packages/domain/src/editor/draft.ts`
-- `packages/domain/src/editor/index.ts`
-- `packages/domain/src/index.ts`
-- `packages/domain/src/liveLink.ts`
-- `packages/formats/src/litematic.ts`
-- `packages/formats/src/litematicWrite.ts`
-- `packages/formats/src/scan.ts`
-- `packages/formats/src/schem.ts`
-- `packages/formats/src/schemWrite.ts`
-- `packages/formats/src/worldExcerpt.ts`
-- `packages/voxel/src/index.ts`
-- `packages/voxel/src/sizeLimits.ts`
-- `packages/voxel/src/validation.ts`
-- `scripts/bridge_gametest.mjs`
-- `tests/game-check.test.mjs`
-- `tests/schem.test.mjs`
-- `tests/size-limits.test.mjs`
-
-## 2026-11-03T16:46:52.767Z · progress
-
-**Aufgaben:** SIZE-01
-
-Mod 0.9.0 für Fabric und NeoForge auf #/mod freigegeben (Spieltests Fabric, NeoForge, Modpack mit Shader)
-
-| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
-|---|---|---:|---|
-| SIZE-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05) mit einem großen Bau im Spiel. |
-
-**Geänderte Dateien:**
-
-- `apps/web/src/views/mod/releases.json`
-- `docs/TESTING.md`
-- `downloads/mod/bauplaner-bridge-fabric-26.3-0.9.0.jar`
-- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.9.0.jar`
-
 ## 2026-11-03T16:19:48.921Z · progress
 
 **Aufgaben:** COOP-01, COOP-02
@@ -3465,6 +3343,128 @@ Dateizuordnung Teambau (Domäne, Reiter Team, Paper-Teammodul, Tests, Doku).
 - `scripts/test_bridge_paper_team.sh`
 - `tests/e2e/team.e2e.mjs`
 - `tests/team.test.mjs`
+
+## 2026-11-03T16:33:52.289Z · progress
+
+**Aufgaben:** SIZE-01
+
+Größengrenzen zentral (4 Mio. Zellen, 16,7 Mio. Box), Import ohne Kopie, Werkstatt linear, Mod 0.9.0 mit großen Plänen im Hintergrund, Render-Budget und Baustand in Scheiben
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| SIZE-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05) mit einem großen Bau im Spiel. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/SizeNotice.tsx`
+- `apps/web/src/app/importLimits.ts`
+- `apps/web/src/editor/BlockEditor.tsx`
+- `apps/web/src/jobs/importJob.ts`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/ViewerView.tsx`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/map/liveClient.ts`
+- `apps/web/src/views/project/GameCheckPanel.tsx`
+- `docs/TESTING.md`
+- `docs/architecture/BLOCK_EDITOR.md`
+- `docs/architecture/CREATIVE_TOOLS.md`
+- `docs/architecture/LITEMATIC.md`
+- `docs/architecture/LIVE_LINK.md`
+- `docs/architecture/MOD_BRIDGE.md`
+- `docs/architecture/MOD_HOLOGRAM.md`
+- `docs/architecture/SCHEM_IMPORT.md`
+- `docs/architecture/SIZE_LIMITS.md`
+- `docs/architecture/WORLD_IMPORT.md`
+- `docs/testing/TESTPLAN.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/Plan.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Hologram.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramDiagnose.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramHud.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramRenderer.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/LiveCheck.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlanModel.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/PlanScan.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/BigPlanTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/live/LiveLinkTest.java`
+- `packages/application/src/revisionExport.ts`
+- `packages/application/src/scanPersistence.ts`
+- `packages/domain/src/editor/draft.ts`
+- `packages/domain/src/editor/index.ts`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/liveLink.ts`
+- `packages/formats/src/litematic.ts`
+- `packages/formats/src/litematicWrite.ts`
+- `packages/formats/src/scan.ts`
+- `packages/formats/src/schem.ts`
+- `packages/formats/src/schemWrite.ts`
+- `packages/formats/src/worldExcerpt.ts`
+- `packages/voxel/src/index.ts`
+- `packages/voxel/src/sizeLimits.ts`
+- `packages/voxel/src/validation.ts`
+- `scripts/bridge_gametest.mjs`
+- `tests/game-check.test.mjs`
+- `tests/schem.test.mjs`
+- `tests/size-limits.test.mjs`
+
+## 2026-11-03T16:37:18.371Z · progress
+
+**Aufgaben:** LIB-06
+
+Bibliotheksbeiträge: eigene Bauwerke über „In Bibliothek einreichen“ als geprüftes Paket, Übernahme mit npm run library:add in den festen Katalog, Auslieferung wie mitgelieferte Gebäude; Node 706/706, Browser LIB-06 3/3, Durchstich lokal; Abnahme durch Philipp offen
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| LIB-06 | 🧩 Implementiert · Abnahme offen | 5/7 | Abnahme durch Philipp (S06) und erster echter Beitrag (S07). |
+
+**Geänderte Dateien:**
+
+- `.github/ISSUE_TEMPLATE/bibliotheksbeitrag.yml`
+- `apps/web/src/app/repository.ts`
+- `apps/web/src/catalog.css`
+- `apps/web/src/jobs/libraryJob.ts`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/LibraryView.tsx`
+- `apps/web/src/views/library/BuildingCard.tsx`
+- `apps/web/src/views/library/BuildingDetail.tsx`
+- `apps/web/src/views/library/ContributePanel.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/STATUS.md`
+- `docs/TESTING.md`
+- `docs/architecture/CATALOG.md`
+- `docs/architecture/CONTRIBUTIONS.md`
+- `docs/library/BEITRAEGE.md`
+- `docs/testing/TESTPLAN.md`
+- `package.json`
+- `packages/domain/src/buildings.ts`
+- `packages/domain/src/community/library.ts`
+- `packages/domain/src/community/registry.ts`
+- `packages/domain/src/community/types.ts`
+- `packages/domain/src/contribution.ts`
+- `packages/domain/src/index.ts`
+- `scripts/library_intake.mjs`
+- `tests/contribution.test.mjs`
+- `tests/e2e/contribution.e2e.mjs`
+
+## 2026-11-03T16:46:52.767Z · progress
+
+**Aufgaben:** SIZE-01
+
+Mod 0.9.0 für Fabric und NeoForge auf #/mod freigegeben (Spieltests Fabric, NeoForge, Modpack mit Shader)
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| SIZE-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05) mit einem großen Bau im Spiel. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `docs/TESTING.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.9.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.9.0.jar`
 
 ## 2026-11-03T17:39:42.853Z · progress
 
@@ -3636,21 +3636,6 @@ Teambau in der Mod 0.10.0: Teamstand vom Planer oder Paper-Plugin im Spiel (Absc
 - `tests/game-check.test.mjs`
 - `tests/team-link.test.mjs`
 
-## 2026-11-03T18:38:37.063Z · progress
-
-**Aufgaben:** SIZE-01
-
-Browsertest Weltkarte: aktuelle Mod im Simulator meldet große Pläne
-
-| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
-|---|---|---:|---|
-| SIZE-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05) mit einem großen Bau im Spiel. |
-
-**Geänderte Dateien:**
-
-- `node_modules`
-- `tests/e2e/map-depth.e2e.mjs`
-
 ## 2026-11-03T18:38:13.844Z · progress
 
 **Aufgaben:** COOP-03
@@ -3666,6 +3651,21 @@ Mod 0.10.0 (Fabric und NeoForge 26.3) auf #/mod freigegeben: Teambau im Spiel, T
 - `apps/web/src/views/mod/releases.json`
 - `downloads/mod/bauplaner-bridge-fabric-26.3-0.10.0.jar`
 - `downloads/mod/bauplaner-bridge-neoforge-26.3-0.10.0.jar`
+
+## 2026-11-03T18:38:37.063Z · progress
+
+**Aufgaben:** SIZE-01
+
+Browsertest Weltkarte: aktuelle Mod im Simulator meldet große Pläne
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| SIZE-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05) mit einem großen Bau im Spiel. |
+
+**Geänderte Dateien:**
+
+- `node_modules`
+- `tests/e2e/map-depth.e2e.mjs`
 
 ## 2026-11-03T18:41:55.872Z · progress
 
@@ -3690,6 +3690,56 @@ Rebase auf main 2e0c984 (COOP-03/04, Mod 0.10.0); Browsersuite 137/138, einziger
 | Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
 |---|---|---:|---|
 | PROJ-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel. |
+
+## 2026-11-03T18:49:57.179Z · progress
+
+**Aufgaben:** PERF-05
+
+Gesamtoptimierung Runde 1: mitgelieferter Katalog als Datei beim Bauen (Erststart 5,2 s → 1,4 s), Seiten bei Bedarf geladen und im Leerlauf vorgeladen (Einstieg 1,33 MB → 0,72 MB), canonicalJson schneller bei gleicher Ausgabe, plattformfeste Winkelfunktionen (Kolosseum Node/Chromium gleich), Befund PERFORMANCE_AUDIT.md. Geprüft: npm run check, Browser-Suite in Chromium 1243; echte Geräte, Firefox/Safari offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-05 | 🧩 Implementiert · Abnahme offen | 5/7 | O-1 Vorschaubildcache und O-2 Zellen bei Bedarf entpacken; Mod/Plugin-Analyse nach Merge der Teambau-Threads. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/context.tsx`
+- `apps/web/src/app/lazyPage.tsx`
+- `apps/web/src/app/repository.ts`
+- `apps/web/src/jobs/library.ts`
+- `apps/web/src/jobs/libraryJob.ts`
+- `apps/web/src/main.tsx`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/PERFORMANCE_AUDIT.md`
+- `package.json`
+- `packages/application/src/catalogSnapshot.ts`
+- `packages/application/src/index.ts`
+- `packages/domain/src/base.ts`
+- `packages/domain/src/build/sets/befestigung.ts`
+- `packages/domain/src/build/sets/deko.ts`
+- `packages/domain/src/build/sets/dorf.ts`
+- `packages/domain/src/build/sets/epochen.ts`
+- `packages/domain/src/build/sets/garten.ts`
+- `packages/domain/src/build/sets/grossbauten.ts`
+- `packages/domain/src/build/sets/klassiker.ts`
+- `packages/domain/src/build/sets/natur.ts`
+- `packages/domain/src/build/sets/sakral.ts`
+- `packages/domain/src/editor/forms.ts`
+- `packages/domain/src/generators/arena.ts`
+- `packages/domain/src/hash.ts`
+- `packages/domain/src/terrainDesign.ts`
+- `packages/voxel/src/index.ts`
+- `packages/voxel/src/stableMath.ts`
+- `scripts/build_catalog_snapshot.mjs`
+- `scripts/catalog_key.mjs`
+- `scripts/perf/measure_start.mjs`
+- `scripts/prepare_main_pages.mjs`
+- `tests/canonical-json.test.mjs`
+- `tests/e2e/catalog-snapshot.e2e.mjs`
+- `tests/e2e/library-start.e2e.mjs`
+- `tests/stable-math.test.mjs`
+- `vite.config.mjs`
 
 ## 2026-11-03T18:54:07.036Z · progress
 
@@ -3801,91 +3851,6 @@ Quellcommit der Paper-Jar 0.10.0 nach dem Rebase nachgetragen.
 
 - `apps/web/src/views/mod/releases.json`
 
-## 2026-11-03T18:49:57.179Z · progress
-
-**Aufgaben:** PERF-05
-
-Gesamtoptimierung Runde 1: mitgelieferter Katalog als Datei beim Bauen (Erststart 5,2 s → 1,4 s), Seiten bei Bedarf geladen und im Leerlauf vorgeladen (Einstieg 1,33 MB → 0,72 MB), canonicalJson schneller bei gleicher Ausgabe, plattformfeste Winkelfunktionen (Kolosseum Node/Chromium gleich), Befund PERFORMANCE_AUDIT.md. Geprüft: npm run check, Browser-Suite in Chromium 1243; echte Geräte, Firefox/Safari offen.
-
-| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
-|---|---|---:|---|
-| PERF-05 | 🧩 Implementiert · Abnahme offen | 5/7 | O-1 Vorschaubildcache und O-2 Zellen bei Bedarf entpacken; Mod/Plugin-Analyse nach Merge der Teambau-Threads. |
-
-**Geänderte Dateien:**
-
-- `apps/web/src/app/context.tsx`
-- `apps/web/src/app/lazyPage.tsx`
-- `apps/web/src/app/repository.ts`
-- `apps/web/src/jobs/library.ts`
-- `apps/web/src/jobs/libraryJob.ts`
-- `apps/web/src/main.tsx`
-- `docs/COMMUNICATION.md`
-- `docs/TESTING.md`
-- `docs/architecture/PERFORMANCE_AUDIT.md`
-- `package.json`
-- `packages/application/src/catalogSnapshot.ts`
-- `packages/application/src/index.ts`
-- `packages/domain/src/base.ts`
-- `packages/domain/src/build/sets/befestigung.ts`
-- `packages/domain/src/build/sets/deko.ts`
-- `packages/domain/src/build/sets/dorf.ts`
-- `packages/domain/src/build/sets/epochen.ts`
-- `packages/domain/src/build/sets/garten.ts`
-- `packages/domain/src/build/sets/grossbauten.ts`
-- `packages/domain/src/build/sets/klassiker.ts`
-- `packages/domain/src/build/sets/natur.ts`
-- `packages/domain/src/build/sets/sakral.ts`
-- `packages/domain/src/editor/forms.ts`
-- `packages/domain/src/generators/arena.ts`
-- `packages/domain/src/hash.ts`
-- `packages/domain/src/terrainDesign.ts`
-- `packages/voxel/src/index.ts`
-- `packages/voxel/src/stableMath.ts`
-- `scripts/build_catalog_snapshot.mjs`
-- `scripts/catalog_key.mjs`
-- `scripts/perf/measure_start.mjs`
-- `scripts/prepare_main_pages.mjs`
-- `tests/canonical-json.test.mjs`
-- `tests/e2e/catalog-snapshot.e2e.mjs`
-- `tests/e2e/library-start.e2e.mjs`
-- `tests/stable-math.test.mjs`
-- `vite.config.mjs`
-
-## 2026-11-03T19:23:40.842Z · progress
-
-**Aufgaben:** SIZE-01
-
-Olympus-Prüffall (953.000 Blöcke): Übergabe an den Hintergrundrechner als Spalten, Projektberechnung, Export und Werkstatt beschleunigt; Prüfsummen unverändert
-
-| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
-|---|---|---:|---|
-| SIZE-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05) mit einem großen Bau im Spiel. |
-
-**Geänderte Dateien:**
-
-- `apps/web/src/app/useProjectComputation.ts`
-- `apps/web/src/computation/client.ts`
-- `apps/web/src/computation/project.worker.ts`
-- `apps/web/src/computation/protocol.ts`
-- `apps/web/src/editor/BlockEditor.tsx`
-- `apps/web/src/editor/useDraft.ts`
-- `docs/TESTING.md`
-- `docs/architecture/SIZE_LIMITS.md`
-- `packages/application/src/computationTransport.ts`
-- `packages/application/src/index.ts`
-- `packages/application/src/projectComputation.ts`
-- `packages/application/src/revisionExport.ts`
-- `packages/domain/src/compose.ts`
-- `packages/domain/src/editor/draft.ts`
-- `packages/domain/src/guide.ts`
-- `packages/domain/src/hash.ts`
-- `packages/domain/src/library.ts`
-- `packages/domain/src/materials.ts`
-- `packages/domain/src/site.ts`
-- `packages/voxel/src/transforms.ts`
-- `tests/computation-transport.test.mjs`
-- `tests/large-edit.test.mjs`
-
 ## 2026-11-03T19:07:52.295Z · progress
 
 **Aufgaben:** COOP-01
@@ -3926,6 +3891,41 @@ Runde 2: dauerhafter Vorschaubildcache (Cache Storage je Render-Revision), Neust
 - `docs/architecture/PERFORMANCE_AUDIT.md`
 - `reload.cpuprofile`
 - `tests/e2e/thumb-store.e2e.mjs`
+
+## 2026-11-03T19:23:40.842Z · progress
+
+**Aufgaben:** SIZE-01
+
+Olympus-Prüffall (953.000 Blöcke): Übergabe an den Hintergrundrechner als Spalten, Projektberechnung, Export und Werkstatt beschleunigt; Prüfsummen unverändert
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| SIZE-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (S05) mit einem großen Bau im Spiel. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/useProjectComputation.ts`
+- `apps/web/src/computation/client.ts`
+- `apps/web/src/computation/project.worker.ts`
+- `apps/web/src/computation/protocol.ts`
+- `apps/web/src/editor/BlockEditor.tsx`
+- `apps/web/src/editor/useDraft.ts`
+- `docs/TESTING.md`
+- `docs/architecture/SIZE_LIMITS.md`
+- `packages/application/src/computationTransport.ts`
+- `packages/application/src/index.ts`
+- `packages/application/src/projectComputation.ts`
+- `packages/application/src/revisionExport.ts`
+- `packages/domain/src/compose.ts`
+- `packages/domain/src/editor/draft.ts`
+- `packages/domain/src/guide.ts`
+- `packages/domain/src/hash.ts`
+- `packages/domain/src/library.ts`
+- `packages/domain/src/materials.ts`
+- `packages/domain/src/site.ts`
+- `packages/voxel/src/transforms.ts`
+- `tests/computation-transport.test.mjs`
+- `tests/large-edit.test.mjs`
 
 ## 2026-11-03T19:49:18.315Z · progress
 
@@ -4030,21 +4030,6 @@ Projekt auf Modrinth angelegt (uL1mPEKJ), 0.10.0 Fabric/NeoForge/Paper hochgelad
 - `mods/bauplaner-bridge/modrinth/project.json`
 - `scripts/modrinth_publish.mjs`
 
-## 2026-11-03T20:21:00.399Z · progress
-
-**Aufgaben:** PERF-05
-
-Wettlauf im Kartenverlauf behoben: Strg+Z direkt nach dem Löschen (mit Projektlage) ging verloren, weil der Schritt erst nach dem Speichern der Projektlage im Verlauf stand; Änderung, Rückgängig und Wiederholen laufen jetzt nacheinander. Nachgestellt mit CPU-Drosselung: alt rot, neu grün.
-
-| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
-|---|---|---:|---|
-| PERF-05 | 🧩 Implementiert · Abnahme offen | 6/8 | O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8). |
-
-**Geänderte Dateien:**
-
-- `apps/web/src/views/map/useMapHistory.ts`
-- `docs/TESTING.md`
-
 ## 2026-11-03T20:20:27.809Z · progress
 
 **Aufgaben:** COOP-06
@@ -4063,6 +4048,21 @@ Plugin faltet die COOP-06-Arten (Übergabe mit Annahme, Abwesenheit, erledigte H
 - `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`
 - `mods/bauplaner-bridge/paper/src/main/resources/plugin.yml`
 - `scripts/bridge_paperteam.mjs`
+
+## 2026-11-03T20:21:00.399Z · progress
+
+**Aufgaben:** PERF-05
+
+Wettlauf im Kartenverlauf behoben: Strg+Z direkt nach dem Löschen (mit Projektlage) ging verloren, weil der Schritt erst nach dem Speichern der Projektlage im Verlauf stand; Änderung, Rückgängig und Wiederholen laufen jetzt nacheinander. Nachgestellt mit CPU-Drosselung: alt rot, neu grün.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-05 | 🧩 Implementiert · Abnahme offen | 6/8 | O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/map/useMapHistory.ts`
+- `docs/TESTING.md`
 
 ## 2026-11-03T20:27:03.185Z · progress
 
@@ -4118,6 +4118,21 @@ Katalog um die COOP-06-Serverbefehle (uebergeben, annehmen, ablehnen, abwesend, 
 - `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
 - `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java`
 
+## 2026-11-03T20:38:19.401Z · progress
+
+**Aufgaben:** COOP-05
+
+Vorbereitung Team-Raum (TEAM_LIVE.md): TeamUplink-Schnittstelle, jedes vom Server geschriebene Ereignis (Befehle, Teamkanal, Baunachweis, Lager) geht einmal an den Uplink; TeamModule.receive nimmt Raum-Ereignisse über TeamLog.add an, ohne Echo. Standard: kein Uplink.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-05 | 🧩 Implementiert · Abnahme offen | 3/5 | Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server. |
+
+**Geänderte Dateien:**
+
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamUplink.java`
+
 ## 2026-11-03T20:41:53.052Z · progress
 
 **Aufgaben:** GAME-10
@@ -4139,21 +4154,6 @@ Paper-Jar 0.11.0 (Übergabe, Abwesenheit aus COOP-06) mit freigegeben, Änderung
 - `mods/bauplaner-bridge/CHANGELOG.md`
 - `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
 - `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java`
-
-## 2026-11-03T20:38:19.401Z · progress
-
-**Aufgaben:** COOP-05
-
-Vorbereitung Team-Raum (TEAM_LIVE.md): TeamUplink-Schnittstelle, jedes vom Server geschriebene Ereignis (Befehle, Teamkanal, Baunachweis, Lager) geht einmal an den Uplink; TeamModule.receive nimmt Raum-Ereignisse über TeamLog.add an, ohne Echo. Standard: kein Uplink.
-
-| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
-|---|---|---:|---|
-| COOP-05 | 🧩 Implementiert · Abnahme offen | 3/5 | Mod-Thread veröffentlicht Paper-Jar 0.10.0 mit Teamkanal; danach Abnahme LAGER-01…09 auf Philipps Server. |
-
-**Geänderte Dateien:**
-
-- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`
-- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamUplink.java`
 
 ## 2026-11-03T20:52:59.449Z · progress
 
@@ -4306,6 +4306,46 @@ Senden ins Spiel repariert: leere Zellen als Luft statt Strukturleere (Mod nahm 
 - `scripts/test_bridge.sh`
 - `tests/states.test.mjs`
 
+## 2026-11-03T21:00:35.000Z · progress
+
+**Aufgaben:** COOP-07
+
+Team live ohne Dateien: Team-Raum-Dienst, Sync-Kern, Live-Abgleich im Planer, Einladungslink, Planstand live, Serverschlüssel für Messungen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-07 | 🧩 Implementiert · Abnahme offen | 4/6 | Plugin-Thread: RoomLink gegen team-room v1; Philipp: Cloudflare-Konto, wrangler deploy, Spieltest. |
+
+**Geänderte Dateien:**
+
+- `packages/domain/src/teamSync.ts`
+- `packages/domain/src/team.ts`
+- `services/team-room/src/core.js`
+- `services/team-room/src/index.js`
+- `services/team-room/wrangler.toml`
+- `services/team-room/README.md`
+- `apps/web/src/views/project/roomClient.ts`
+- `apps/web/src/views/project/TeamRoom.tsx`
+- `apps/web/src/views/project/TeamJoinView.tsx`
+- `apps/web/src/views/project/teamTransfer.ts`
+- `apps/web/src/views/project/TeamOpen.tsx`
+- `apps/web/src/views/project/TeamExchange.tsx`
+- `apps/web/src/views/project/ProjectView.tsx`
+- `apps/web/src/views/project/TeamTab.tsx`
+- `apps/web/src/app/router.ts`
+- `apps/web/src/main.tsx`
+- `apps/web/src/team.css`
+- `docs/architecture/TEAM_LIVE.md`
+- `tests/team-room.test.mjs`
+- `tests/e2e/team-room.e2e.mjs`
+- `scripts/team_room_smoke.mjs`
+- `apps/web/src/testing/testplan.ts`
+- `docs/architecture/TEAMBAU.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/index.ts`
+- `services/team-room/.gitignore`
+- `tests/router.test.mjs`
+
 ## 2026-11-03T21:12:09.080Z · progress
 
 **Aufgaben:** GAME-07
@@ -4417,46 +4457,6 @@ PROFILE-01: verbindliches Java-26.3-Profil aus der offiziellen server.jar (SHA-1
 - `tests/e2e/catalog.e2e.mjs`
 - `tests/profile.test.mjs`
 - `tests/states.test.mjs`
-
-## 2026-11-03T21:00:35.000Z · progress
-
-**Aufgaben:** COOP-07
-
-Team live ohne Dateien: Team-Raum-Dienst, Sync-Kern, Live-Abgleich im Planer, Einladungslink, Planstand live, Serverschlüssel für Messungen.
-
-| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
-|---|---|---:|---|
-| COOP-07 | 🧩 Implementiert · Abnahme offen | 4/6 | Plugin-Thread: RoomLink gegen team-room v1; Philipp: Cloudflare-Konto, wrangler deploy, Spieltest. |
-
-**Geänderte Dateien:**
-
-- `packages/domain/src/teamSync.ts`
-- `packages/domain/src/team.ts`
-- `services/team-room/src/core.js`
-- `services/team-room/src/index.js`
-- `services/team-room/wrangler.toml`
-- `services/team-room/README.md`
-- `apps/web/src/views/project/roomClient.ts`
-- `apps/web/src/views/project/TeamRoom.tsx`
-- `apps/web/src/views/project/TeamJoinView.tsx`
-- `apps/web/src/views/project/teamTransfer.ts`
-- `apps/web/src/views/project/TeamOpen.tsx`
-- `apps/web/src/views/project/TeamExchange.tsx`
-- `apps/web/src/views/project/ProjectView.tsx`
-- `apps/web/src/views/project/TeamTab.tsx`
-- `apps/web/src/app/router.ts`
-- `apps/web/src/main.tsx`
-- `apps/web/src/team.css`
-- `docs/architecture/TEAM_LIVE.md`
-- `tests/team-room.test.mjs`
-- `tests/e2e/team-room.e2e.mjs`
-- `scripts/team_room_smoke.mjs`
-- `apps/web/src/testing/testplan.ts`
-- `docs/architecture/TEAMBAU.md`
-- `docs/testing/TESTPLAN.md`
-- `packages/domain/src/index.ts`
-- `services/team-room/.gitignore`
-- `tests/router.test.mjs`
 
 ## 2026-11-03T21:58:17.986Z · progress
 
@@ -4807,6 +4807,26 @@ Roadmap-Abgleich 04.11.: Produktion an den Produktions-Thread, COOP-06 an den Pl
 | GAME-11 | ⏳ Offen | 0/4 | Versionsmatrix mit Philipp abstimmen (welche Versionen braucht er wirklich?). |
 | QA-04 | 🧩 Implementiert · Abnahme offen | 4/6 | Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist. |
 
+## 2026-11-04T08:48:05.000Z · progress
+
+**Aufgaben:** COOP-09
+
+Team live im Alltag: Chip und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar; gegen den echten Team-Raum geprüft.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-09 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme mit Mitspielern (TEAMBAU-25). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/project/TeamLiveBar.tsx`
+- `apps/web/src/views/project/roomClient.ts`
+- `apps/web/src/views/project/TeamRoom.tsx`
+- `apps/web/src/views/project/ProjectView.tsx`
+- `apps/web/src/team.css`
+- `tests/e2e/team-room.e2e.mjs`
+- `docs/architecture/TEAM_LIVE.md`
+
 ## 2026-11-04T08:50:13.176Z · progress
 
 **Aufgaben:** LINK-05, LINK-06
@@ -4830,16 +4850,6 @@ iPad-Weg gegen den echten Team-Raum geprüft (Browsertest mit TEAM_ROOM_URL); LI
 - `scripts/test_bridge_paper_link.sh`
 - `tests/e2e/modSimulator.mjs`
 - `tests/e2e/server-link.e2e.mjs`
-
-## 2026-11-04T09:00:40.731Z · progress
-
-**Aufgaben:** GAME-11
-
-Versionsentscheidung Philipp: Fabric 26.3 zuerst, dann die jeweils neueste Version; keine Matrix älterer Versionen.
-
-| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
-|---|---|---:|---|
-| GAME-11 | ⏳ Offen | 0/4 | Entschieden (Philipp 04.11.): Fabric 26.3 (sein Modpack mit REI) hat Vorrang, danach jeweils die neueste Minecraft-Version nachziehen; keine Matrix älterer Versionen. |
 
 ## 2026-11-04T08:57:48.489Z · progress
 
@@ -4875,6 +4885,38 @@ Ertragskisten: Zweck ertrag mit Farm, Plugin misst Einlagen von Trichtern und Sp
 - `packages/domain/src/team.ts`
 - `scripts/bridge_paperlager.mjs`
 - `tests/lager.test.mjs`
+
+## 2026-11-04T09:00:40.731Z · progress
+
+**Aufgaben:** GAME-11
+
+Versionsentscheidung Philipp: Fabric 26.3 zuerst, dann die jeweils neueste Version; keine Matrix älterer Versionen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-11 | ⏳ Offen | 0/4 | Entschieden (Philipp 04.11.): Fabric 26.3 (sein Modpack mit REI) hat Vorrang, danach jeweils die neueste Minecraft-Version nachziehen; keine Matrix älterer Versionen. |
+
+## 2026-11-04T09:09:15.288Z · progress
+
+**Aufgaben:** PERF-05
+
+S09 Startpaket (O-3): Reiternamen ohne Komponenten in tabNames.ts, Projektreiter einzeln per lazyPage mit eigenem Suspense, Gebäudesets im Seitenbau nebenwirkungsfrei. Start-JS 2,0 → 1,56 MB (587 → 458 kB gzip), Einstieg 847 → 276 kB, Projektseite 335 → 10 kB, Erststart 1,43 → 1,09 s. npm run check grün, Browser-Suite 153/154 (project-computation 1400px einmal Element abgelöst, danach 6/6 grün auch unter CPU-Last).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-05 | 🧩 Implementiert · Abnahme offen | 8/9 | O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/CommandPalette.tsx`
+- `apps/web/src/app/lazyPage.tsx`
+- `apps/web/src/views/project/ProjectView.tsx`
+- `apps/web/src/views/project/tabNames.ts`
+- `apps/web/src/views/project/tabs.ts`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/PERFORMANCE_AUDIT.md`
+- `vite.config.mjs`
 
 ## 2026-11-04T09:10:54.815Z · progress
 
@@ -4928,26 +4970,6 @@ Sammeltruhen aus dem Team-Lager: Farm mit Lagerkiste verknüpfen, echte Rate aus
 - `docs/COMMUNICATION.md`
 - `docs/TESTING.md`
 - `docs/architecture/PRODUCTION.md`
-
-## 2026-11-04T08:48:05.000Z · progress
-
-**Aufgaben:** COOP-09
-
-Team live im Alltag: Chip und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar; gegen den echten Team-Raum geprüft.
-
-| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
-|---|---|---:|---|
-| COOP-09 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme mit Mitspielern (TEAMBAU-25). |
-
-**Geänderte Dateien:**
-
-- `apps/web/src/views/project/TeamLiveBar.tsx`
-- `apps/web/src/views/project/roomClient.ts`
-- `apps/web/src/views/project/TeamRoom.tsx`
-- `apps/web/src/views/project/ProjectView.tsx`
-- `apps/web/src/team.css`
-- `tests/e2e/team-room.e2e.mjs`
-- `docs/architecture/TEAM_LIVE.md`
 
 ## 2026-11-04T09:25:01.963Z · progress
 
@@ -5071,28 +5093,6 @@ MAT-02-S03: Sorte je Rezept-Tag (z. B. Planken für Stöcke/Truhen) und Brennsto
 - `tests/e2e/recipes.e2e.mjs`
 - `tests/nbt-transforms.test.mjs`
 - `tests/recipe-prefs.test.mjs`
-
-## 2026-11-04T09:09:15.288Z · progress
-
-**Aufgaben:** PERF-05
-
-S09 Startpaket (O-3): Reiternamen ohne Komponenten in tabNames.ts, Projektreiter einzeln per lazyPage mit eigenem Suspense, Gebäudesets im Seitenbau nebenwirkungsfrei. Start-JS 2,0 → 1,56 MB (587 → 458 kB gzip), Einstieg 847 → 276 kB, Projektseite 335 → 10 kB, Erststart 1,43 → 1,09 s. npm run check grün, Browser-Suite 153/154 (project-computation 1400px einmal Element abgelöst, danach 6/6 grün auch unter CPU-Last).
-
-| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
-|---|---|---:|---|
-| PERF-05 | 🧩 Implementiert · Abnahme offen | 8/9 | O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8). |
-
-**Geänderte Dateien:**
-
-- `apps/web/src/app/CommandPalette.tsx`
-- `apps/web/src/app/lazyPage.tsx`
-- `apps/web/src/views/project/ProjectView.tsx`
-- `apps/web/src/views/project/tabNames.ts`
-- `apps/web/src/views/project/tabs.ts`
-- `docs/COMMUNICATION.md`
-- `docs/TESTING.md`
-- `docs/architecture/PERFORMANCE_AUDIT.md`
-- `vite.config.mjs`
 
 ## 2026-11-04T09:33:11.151Z · progress
 
@@ -5249,31 +5249,6 @@ Testplan auf Mod 0.14.0 (TEAMBAU-25/09 ohne Server-Datei, Team-Raum vorausgefül
 - `scripts/render_testplan.mjs`
 - `tests/testphase.test.mjs`
 
-## 2026-11-04T13:25:59.610Z · progress
-
-**Aufgaben:** TERRAIN-03, TERRAIN-02
-
-Gelände und Wege: Aufschütten/Abtragen/Rampe, Wegstufen als Treppen oder Halbstufen, Brücken mit Geländer, Weg aus der Weltkarte; Kern 8/8, Browser 2/2 (Landschaft-Tests zentrieren die Zeichenfläche jetzt, sonst deckt am Handy die untere Leiste sie ab); Abnahme im Spiel (PROJ-19) und Basisplaner auf Gelände offen.
-
-| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
-|---|---|---:|---|
-| TERRAIN-03 | 🧩 Implementiert · Abnahme offen | 5/7 | Abnahme PROJ-19 im Spiel; danach Basisplaner auf Gelände (S06). |
-| TERRAIN-02 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme mit eigener Welt (S05); Wegstufen und Brücken siehe TERRAIN-03. |
-
-**Geänderte Dateien:**
-
-- `apps/web/src/testing/testplan.ts`
-- `apps/web/src/views/project/LandscapeTab.tsx`
-- `apps/web/src/views/project/landscape/DesignCanvas.tsx`
-- `docs/architecture/LANDSCAPE.md`
-- `docs/testing/TESTPLAN.md`
-- `packages/domain/src/index.ts`
-- `packages/domain/src/terrainDesign.ts`
-- `tests/e2e/landscape-paths.e2e.mjs`
-- `tests/e2e/landscape-scatter.e2e.mjs`
-- `tests/e2e/landscape.e2e.mjs`
-- `tests/terrain-paths.test.mjs`
-
 ## 2026-11-04T13:24:32.693Z · progress
 
 **Aufgaben:** GFX-02, GFX-01, PERF-04, PERF-03
@@ -5307,6 +5282,31 @@ GFX-02 Runde 2: Biomfarben im Shader ohne Neuaufbau (17 Biome), Leuchtfeuer-Stra
 - `tests/e2e/graphics2.e2e.mjs`
 - `tests/e2e/library-filters.e2e.mjs`
 - `tests/graphics2.test.mjs`
+
+## 2026-11-04T13:25:59.610Z · progress
+
+**Aufgaben:** TERRAIN-03, TERRAIN-02
+
+Gelände und Wege: Aufschütten/Abtragen/Rampe, Wegstufen als Treppen oder Halbstufen, Brücken mit Geländer, Weg aus der Weltkarte; Kern 8/8, Browser 2/2 (Landschaft-Tests zentrieren die Zeichenfläche jetzt, sonst deckt am Handy die untere Leiste sie ab); Abnahme im Spiel (PROJ-19) und Basisplaner auf Gelände offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| TERRAIN-03 | 🧩 Implementiert · Abnahme offen | 5/7 | Abnahme PROJ-19 im Spiel; danach Basisplaner auf Gelände (S06). |
+| TERRAIN-02 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme mit eigener Welt (S05); Wegstufen und Brücken siehe TERRAIN-03. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/project/LandscapeTab.tsx`
+- `apps/web/src/views/project/landscape/DesignCanvas.tsx`
+- `docs/architecture/LANDSCAPE.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/terrainDesign.ts`
+- `tests/e2e/landscape-paths.e2e.mjs`
+- `tests/e2e/landscape-scatter.e2e.mjs`
+- `tests/e2e/landscape.e2e.mjs`
+- `tests/terrain-paths.test.mjs`
 
 ## 2026-11-04T13:31:43.280Z · progress
 
@@ -7278,20 +7278,6 @@ Gelände- und Landschaftsreiter holen das Gelände direkt aus der Mod (Geländeg
 |---|---|---:|---|
 | GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
 
-## 2026-11-06T13:09:28.727Z · progress
-
-**Aufgaben:** TERRAIN-04
-
-Browsertest map-depth erwartet die neuen fehlenden Mod-Merkmale (Geländegedächtnis, blockgenaue Prüfung) bei älteren Mods
-
-| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
-|---|---|---:|---|
-| TERRAIN-04 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp im Spiel (S05). |
-
-**Geänderte Dateien:**
-
-- `tests/e2e/map-depth.e2e.mjs`
-
 ## 2026-11-06T13:02:57.153Z · progress
 
 **Aufgaben:** LINK-11
@@ -7352,6 +7338,20 @@ LINK-11: Alles über das Internet – Mod 0.21.0 übergibt den Team-Raum der Bau
 - `tests/e2e/team.e2e.mjs`
 - `tests/unit/team/team-room.test.mjs`
 - `tests/unit/world/scan-routes.test.mjs`
+
+## 2026-11-06T13:09:28.727Z · progress
+
+**Aufgaben:** TERRAIN-04
+
+Browsertest map-depth erwartet die neuen fehlenden Mod-Merkmale (Geländegedächtnis, blockgenaue Prüfung) bei älteren Mods
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| TERRAIN-04 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp im Spiel (S05). |
+
+**Geänderte Dateien:**
+
+- `tests/e2e/map-depth.e2e.mjs`
 
 ## 2026-11-06T13:37:29.153Z · progress
 
@@ -7509,6 +7509,84 @@ Bedienung vereinfacht: Hauptnavigation auf Projekte, Bibliothek, Weltkarte, Spie
 - `tests/e2e/stability.e2e.mjs`
 - `tests/e2e/start.mjs`
 
+## 2026-11-06T14:56:41.483Z · progress
+
+**Aufgaben:** GAME-12
+
+Mod 0.23.0: Menü J als animierte Seitenleiste (Plan, Position, Ansicht, Optionen), Meldungskarten oben rechts statt Chat, kompaktes Baufenster, gestapelte Anzeigen, alle Texte und Befehle Deutsch/Englisch (/bauplaner und /buildplanner mit Vervollständigung in der Spielsprache), Befehlsliste DE/EN mit Suche auf #/mod (eingeklappt unter „Alle Befehle“), Plugin-Befehl weltplan auch englisch. Spieltests Fabric und NeoForge 26.3 und Paper 26.3 + BlueMap bestanden; Abnahme im Modpack (MOD-25 bis MOD-28) offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-12 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme MOD-25 bis MOD-28 im Spiel. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/styles/catalog.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/mod/ModCommands.tsx`
+- `apps/web/src/views/mod/ModView.tsx`
+- `apps/web/src/views/mod/modCommands.json`
+- `apps/web/src/views/mod/modCommands.ts`
+- `apps/web/src/views/mod/releases.json`
+- `docs/architecture/mod/MOD_HOLOGRAM.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.23.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.23.0.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.23.0.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/README.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/client-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/client/BridgeCommands.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/BridgeClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/ClientSettings.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/CommandLang.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/CommandScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/GuideClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Hologram.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramHud.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramKeys.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HudCard.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LinkPrompt.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/MarksRenderer.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/MaterialScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/McCompat.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlacementAssist.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TerrainRecorder.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Toasts.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Lang.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlacementAdvice.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalogEn.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandContext.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandExport.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandWords.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/edit/Curve.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/edit/Symmetry.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WorldMarks.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamState.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamSync.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandExportTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandWordsTest.java`
+- `mods/bauplaner-bridge/modrinth/DESCRIPTION.md`
+- `mods/bauplaner-bridge/modrinth/gallery/13-menu-side-panel.png`
+- `mods/bauplaner-bridge/modrinth/gallery/14-message-cards.png`
+- `mods/bauplaner-bridge/modrinth/project.json`
+- `mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java`
+- `mods/bauplaner-bridge/neoforge-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/neoforge/BridgeNeoForge.java`
+- `mods/bauplaner-bridge/paper/build.gradle`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/BridgePlugin.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/WorldModule.java`
+- `scripts/mod/bridge_gametest.mjs`
+- `tests/unit/mod/mod-commands.test.mjs`
+
 ## 2026-11-06T15:13:31.442Z · progress
 
 **Aufgaben:** UX-01
@@ -7549,6 +7627,85 @@ Offline-Browsertest stabilisiert: eigener Port, 60 s Wartezeit auf den neuen Ser
 - `docs/TESTING.md`
 - `tests/e2e/offline.e2e.mjs`
 
+## 2026-11-06T15:19:46.401Z · progress
+
+**Aufgaben:** GAME-12
+
+Offline-Speicher ausschalten löscht den Speicher auch dann ganz, wenn der alte Service Worker ihn gerade wieder geöffnet hat (zeigte sich im Browsertest offline.e2e nach dem Einbau der Befehlsliste).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-12 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme MOD-25 bis MOD-28 im Spiel. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/offline.ts`
+- `apps/web/src/styles/catalog.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/mod/ModCommands.tsx`
+- `apps/web/src/views/mod/ModView.tsx`
+- `apps/web/src/views/mod/modCommands.json`
+- `apps/web/src/views/mod/modCommands.ts`
+- `apps/web/src/views/mod/releases.json`
+- `docs/architecture/mod/MOD_HOLOGRAM.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.23.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.23.0.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.23.0.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/README.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/client-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/client/BridgeCommands.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/BridgeClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/ClientSettings.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/CommandLang.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/CommandScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/GuideClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Hologram.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramHud.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramKeys.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HudCard.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LinkPrompt.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/MarksRenderer.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/MaterialScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/McCompat.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlacementAssist.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TerrainRecorder.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Toasts.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Lang.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlacementAdvice.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalogEn.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandContext.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandExport.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandWords.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/edit/Curve.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/edit/Symmetry.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WorldMarks.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamState.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamSync.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandExportTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandWordsTest.java`
+- `mods/bauplaner-bridge/modrinth/DESCRIPTION.md`
+- `mods/bauplaner-bridge/modrinth/gallery/13-menu-side-panel.png`
+- `mods/bauplaner-bridge/modrinth/gallery/14-message-cards.png`
+- `mods/bauplaner-bridge/modrinth/project.json`
+- `mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java`
+- `mods/bauplaner-bridge/neoforge-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/neoforge/BridgeNeoForge.java`
+- `mods/bauplaner-bridge/paper/build.gradle`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/BridgePlugin.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/WorldModule.java`
+- `scripts/mod/bridge_gametest.mjs`
+- `tests/unit/mod/mod-commands.test.mjs`
+
 ## 2026-11-06T15:30:12.832Z · progress
 
 **Aufgaben:** UX-01
@@ -7563,6 +7720,86 @@ simple-ui.e2e stabilisiert: wartet auf den Kurzsatz des geöffneten Reiters stat
 
 - `docs/TESTING.md`
 - `tests/e2e/simple-ui.e2e.mjs`
+
+## 2026-11-06T15:38:48.193Z · progress
+
+**Aufgaben:** GAME-12
+
+Browsertest simple-ui wartet auf den Hinweis des Reiters Material statt ihn sofort zu lesen (scheiterte gelegentlich im Gesamtlauf); Gesamtlauf test:e2e sonst grün.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-12 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme MOD-25 bis MOD-28 im Spiel. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/offline.ts`
+- `apps/web/src/styles/catalog.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/mod/ModCommands.tsx`
+- `apps/web/src/views/mod/ModView.tsx`
+- `apps/web/src/views/mod/modCommands.json`
+- `apps/web/src/views/mod/modCommands.ts`
+- `apps/web/src/views/mod/releases.json`
+- `docs/architecture/mod/MOD_HOLOGRAM.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.23.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.23.0.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.23.0.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/README.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/client-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/client/BridgeCommands.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/BridgeClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/ClientSettings.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/CommandLang.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/CommandScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/GuideClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Hologram.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramHud.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramKeys.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HudCard.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LinkPrompt.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/MarksRenderer.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/MaterialScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/McCompat.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlacementAssist.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TerrainRecorder.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Toasts.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Lang.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlacementAdvice.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalogEn.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandContext.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandExport.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandWords.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/edit/Curve.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/edit/Symmetry.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WorldMarks.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamState.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamSync.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandExportTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandWordsTest.java`
+- `mods/bauplaner-bridge/modrinth/DESCRIPTION.md`
+- `mods/bauplaner-bridge/modrinth/gallery/13-menu-side-panel.png`
+- `mods/bauplaner-bridge/modrinth/gallery/14-message-cards.png`
+- `mods/bauplaner-bridge/modrinth/project.json`
+- `mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java`
+- `mods/bauplaner-bridge/neoforge-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/neoforge/BridgeNeoForge.java`
+- `mods/bauplaner-bridge/paper/build.gradle`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/BridgePlugin.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/WorldModule.java`
+- `scripts/mod/bridge_gametest.mjs`
+- `tests/e2e/simple-ui.e2e.mjs`
+- `tests/unit/mod/mod-commands.test.mjs`
 
 ## 2026-11-06T15:49:33.071Z · progress
 

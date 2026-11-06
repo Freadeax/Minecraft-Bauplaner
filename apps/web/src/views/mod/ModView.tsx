@@ -6,6 +6,7 @@ import type { ModRelease, Selection, Target } from './releases';
 import { formatNumber } from '../../app/ui';
 import { More } from '../../app/More';
 import { ServerPanel } from './ServerPanel';
+import { ModCommands } from './ModCommands';
 import { INSTALL_CHECKS, LAUNCHERS, LAUNCHER_LABEL, MODRINTH_PAGE, installGuide, stepParts } from './installGuide';
 import type { LauncherId } from './installGuide';
 
@@ -192,14 +193,18 @@ export function ModView({ search }: { search?: string | undefined }) {
       <ol className="mod-steps">
         <li>{selection ? <>Mod in dein Profil bringen: Schritte für deinen Launcher stehen unten unter „Installieren mit deinem Launcher“. Kurz: <code>.jar</code> in den Ordner <code>mods</code> des {LOADER_LABEL[selection.loader] ?? selection.loader}-Profils legen.</> : INSTALL_HINT.fabric}</li>
         <li>Planer und Mod verbinden (oben „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“), dann auf der Weltkarte „▶ Ins Spiel senden“ – ohne Datei kopieren. Im Team: „Team live“ → „Mein Spiel verbinden“.</li>
-        <li>Im Spiel auf die Stelle schauen, an der der Plan stehen soll, <b>J</b> drücken und den Plan anklicken. Dann mit Pfeiltasten und Bild↑/↓ schieben, Ende dreht, Einfg spiegelt.</li>
+        <li>Im Spiel auf die Stelle schauen, an der der Plan stehen soll, <b>J</b> drücken: rechts gleitet das Menü mit den Reitern Plan, Position, Ansicht und Optionen herein. Plan anklicken, „Hierher“, unter „Position“ schieben, drehen, spiegeln (oder Pfeiltasten, Bild↑/↓, Ende dreht, Einfg spiegelt).</li>
         <li>Bauen: fehlende Blöcke erscheinen als durchsichtige Geisterblöcke, falsche rot. <b>Num 7</b> Materialliste, <b>Num 6</b> Ebenen, <b>Num 8</b> Planblock in die Hand, <b>.</b> nächster Fehler. Die Platzierhilfe verhindert falsche Blöcke und falsche Ausrichtung und sagt, wie man richtig klickt.</li>
         <li>Für den Vergleich auf der Website: im Projekt unter „Bauen“ „⟳ Baustand holen (bester Weg)“ – die Mod liest den Bau und schickt ihn direkt an den Planer. Nur ohne Verbindung: <code>/bauplaner scan</code> und „Notfall: Aufnahme-Datei“.</li>
       </ol>
-      <p className="muted">Läuft nur auf deinem Rechner, auch auf fremden Servern ohne Plugin. Alle Tasten unter Optionen → Steuerung → „Bauplaner“.</p>
+      <p className="muted">Läuft nur auf deinem Rechner, auch auf fremden Servern ohne Plugin. Meldungen der Mod erscheinen ab 0.23.0 als kurze Karte oben rechts statt im Chat, das Baufenster oben rechts ist kompakt; beides stellst du im Menü unter „Optionen“ um (oder <code>/bauplaner meldungen chat</code>, <code>/bauplaner anzeige ausfuehrlich</code>). <code>/bauplaner hilfe</code> zeigt die fünf Schritte. Alle Tasten unter Optionen → Steuerung → „Bauplaner“.</p>
     </section></More>}
 
     {!server && selection && build && <LauncherGuide loader={selection.loader} minecraft={selection.minecraft} file={build.file} />}
+
+    <More title="Alle Befehle (Deutsch / English)" hint="Jeder Befehl als /bauplaner und /buildplanner, mit Suche">
+      <ModCommands />
+    </More>
 
     {!server && <More title="Mehr wissen" hint="Live-Karte im Detail und gemeinsames Bauen im Spiel">
       <section className="system-card system-wide" aria-labelledby="mod-live">

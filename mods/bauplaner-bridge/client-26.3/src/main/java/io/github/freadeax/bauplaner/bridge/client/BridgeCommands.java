@@ -16,6 +16,11 @@ public final class BridgeCommands {
     private BridgeCommands() {}
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher, BridgeSession session) {
+        dispatcher.register(builder(session));
+    }
+
+    /** The tree without registering it: NeoForge adds the client mod's commands and registers it in German and English (0.23.0). */
+    public static com.mojang.brigadier.builder.LiteralArgumentBuilder<CommandSourceStack> builder(BridgeSession session) {
         var plan = Commands.literal("plan").then(Commands.argument("datei", StringArgumentType.greedyString())
                 .suggests((c, b) -> { session.planNames().forEach(b::suggest); return b.buildFuture(); })
                 .executes(c -> session.loadPlan(StringArgumentType.getString(c, "datei"))));
@@ -27,13 +32,13 @@ public final class BridgeCommands {
         var anchor = Commands.literal("anker")
                 .then(Commands.literal("hier").executes(c -> session.setAnchorHere()))
                 .then(xyz);
-        dispatcher.register(Commands.literal("bauplaner")
+        return Commands.literal("bauplaner")
                 .executes(c -> session.help())
                 .then(Commands.literal("plaene").executes(c -> session.listPlans()))
                 .then(plan)
                 .then(anchor)
                 .then(Commands.literal("scan").executes(c -> session.startScan()))
                 .then(Commands.literal("abbrechen").executes(c -> session.cancel()))
-                .then(Commands.literal("status").executes(c -> session.status())));
+                .then(Commands.literal("status").executes(c -> session.status()));
     }
 }

@@ -67,12 +67,15 @@ public final class RoomClient {
 
     /** What the player sees. */
     public enum Status {
-        OFF("kein Team-Raum"), CONNECTING("verbinde mit dem Team-Raum …"), LIVE("live über den Team-Raum"),
+        OFF("kein Team-Raum", "no team room"), CONNECTING("verbinde mit dem Team-Raum …", "connecting to the team room …"), LIVE("live über den Team-Raum", "live via the team room"),
         /** FALLBACK-01: the WebSocket is blocked (proxy, firewall), plain HTTP works – poll and post. */
-        POLL("live über HTTP (WebSocket gesperrt) – Abgleich alle paar Sekunden"),
-        RETRY("Team-Raum nicht erreichbar – neuer Versuch"), REFUSED("Team-Raum lehnt den Schlüssel ab – im Planer neu verbinden");
+        POLL("live über HTTP (WebSocket gesperrt) – Abgleich alle paar Sekunden", "live via HTTP (WebSocket blocked) – sync every few seconds"),
+        RETRY("Team-Raum nicht erreichbar – neuer Versuch", "team room unreachable – retrying"), REFUSED("Team-Raum lehnt den Schlüssel ab – im Planer neu verbinden", "team room refuses the key – reconnect in the planner");
+        /** German label (also sent to the website). */
         public final String label;
-        Status(String label) { this.label = label; }
+        private final String en;
+        Status(String label, String en) { this.label = label; this.en = en; }
+        public String text() { return io.github.freadeax.bauplaner.mod.Lang.t(label, en); }
     }
 
     /** A member seen in the room right now (planner, game, server). */
@@ -484,13 +487,19 @@ public final class RoomClient {
     public boolean live() { return status == Status.LIVE || status == Status.POLL; }
 
     /** Status line for HUD and planner: with the age of the shown state while the room is away. */
-    public String statusText() {
-        String s = status.label;
+    /** Status in German, for the website. */
+    public String statusText() { return statusText(false); }
+
+    /** Status in the player's language, for the game (GAME-12). */
+    public String statusLine() { return statusText(io.github.freadeax.bauplaner.mod.Lang.en()); }
+
+    private String statusText(boolean en) {
+        String s = en ? status.en : status.label;
         long at = syncedAt;
         if (!live() && config != null && header != null && at > 0)
-            s += " · zeigt den Stand von " + java.time.format.DateTimeFormatter.ofPattern("dd.MM. HH:mm").format(java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(at), java.time.ZoneId.systemDefault()));
+            s += (en ? " · showing the state of " : " · zeigt den Stand von ") + java.time.format.DateTimeFormatter.ofPattern(en ? "MM/dd HH:mm" : "dd.MM. HH:mm").format(java.time.LocalDateTime.ofInstant(java.time.Instant.ofEpochMilli(at), java.time.ZoneId.systemDefault()));
         int n = pendingReports();
-        if (n > 0) s += " · " + n + (n == 1 ? " Meldung wartet" : " Meldungen warten");
+        if (n > 0) s += " · " + n + (en ? (n == 1 ? " report waiting" : " reports waiting") : (n == 1 ? " Meldung wartet" : " Meldungen warten"));
         return s;
     }
 

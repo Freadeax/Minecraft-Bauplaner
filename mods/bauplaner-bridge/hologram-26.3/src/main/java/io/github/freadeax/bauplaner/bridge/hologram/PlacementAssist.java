@@ -1,5 +1,7 @@
 package io.github.freadeax.bauplaner.bridge.hologram;
 
+import static io.github.freadeax.bauplaner.mod.Lang.t;
+
 import io.github.freadeax.bauplaner.mod.BlockRules.Verdict;
 import io.github.freadeax.bauplaner.mod.PlacementAdvice;
 import io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard;
@@ -101,20 +103,20 @@ public final class PlacementAssist {
             int slot = hotbarSlot(player, plannedItem(planned));
             if (guard == Guard.ON && slot >= 0) {
                 player.getInventory().setSelectedSlot(slot);
-                say(mc, "Richtigen Block genommen: " + name + " – nochmal klicken", GREEN);
+                say(mc, t("Richtigen Block genommen: " + name + " – nochmal klicken", "Took the right block: " + name + " – click again"), GREEN);
                 return InteractionResult.FAIL;
             }
-            say(mc, "Hier gehört " + name + " hin" + where(player, plannedItem(planned)), guard == Guard.ON ? RED : YELLOW);
+            say(mc, t("Hier gehört " + name + " hin", name + " belongs here") + where(player, plannedItem(planned)), guard == Guard.ON ? RED : YELLOW);
             return guard == Guard.ON ? InteractionResult.FAIL : InteractionResult.PASS;
         }
         List<Way> found = ways(mc, pos, planned, item, hand);
         if (found.isEmpty()) {
             // The plan wants a state that no click produces here (yet): never lock the player out.
-            say(mc, name + ": Ausrichtung so nicht direkt setzbar – " + String.join(", ", j.differences()), YELLOW);
+            say(mc, name + t(": Ausrichtung so nicht direkt setzbar – ", ": this facing cannot be placed directly – ") + String.join(", ", j.differences()), YELLOW);
             return InteractionResult.PASS;
         }
         String how = PlacementAdvice.advice(found, PlacementAdvice.yawOf(player.getYRot()), PlacementAdvice.pitchOf(player.getXRot()));
-        say(mc, (guard == Guard.ON ? "Nicht gesetzt – " : "Achtung – ") + how, guard == Guard.ON ? YELLOW : RED);
+        say(mc, (guard == Guard.ON ? t("Nicht gesetzt – ", "Not placed – ") : t("Achtung – ", "Careful – ")) + how, guard == Guard.ON ? YELLOW : RED);
         return guard == Guard.ON ? InteractionResult.FAIL : InteractionResult.PASS;
     }
 
@@ -126,7 +128,7 @@ public final class PlacementAssist {
         if (!level.isClientSide() || player != mc.player || !live(mc) || hologram.guard() != Guard.ON) return InteractionResult.PASS;
         int i = hologram.check().indexAt(pos.getX(), pos.getY(), pos.getZ());
         if (i < 0 || hologram.check().verdict(i) != Verdict.OK || hologram.lockedAt(pos.getX(), pos.getZ())) return InteractionResult.PASS;
-        say(mc, "Geschützt: richtig gesetzter Planblock (Platzierhilfe im Menü J auf „nur warnen“ stellen zum Abbauen)", GREY);
+        say(mc, t("Geschützt: richtig gesetzter Planblock (Platzierhilfe im Menü J auf „nur warnen“ stellen zum Abbauen)", "Protected: correctly placed plan block (set the placement helper in menu J to “warn only” to break it)"), GREY);
         return InteractionResult.FAIL;
     }
 
@@ -135,11 +137,11 @@ public final class PlacementAssist {
     void pick(Minecraft mc) {
         if (mc.player == null || !hologram.active()) return;
         Aim a = aim;
-        if (a == null) { say(mc, "Kein offener Planblock im Blick", GREY); return; }
+        if (a == null) { say(mc, t("Kein offener Planblock im Blick", "No open plan block in view"), GREY); return; }
         Item item = plannedItem(a.planned());
         String name = McCompat.blockName(a.planned());
         int slot = hotbarSlot(mc.player, item);
-        if (slot >= 0) { mc.player.getInventory().setSelectedSlot(slot); say(mc, name + " in der Hand", GREEN); }
+        if (slot >= 0) { mc.player.getInventory().setSelectedSlot(slot); say(mc, name + t(" in der Hand", " in hand"), GREEN); }
         else say(mc, name + where(mc.player, item), RED);
     }
 
@@ -170,10 +172,10 @@ public final class PlacementAssist {
         Verdict verdict = check.verdict(i);
         String name = McCompat.blockName(planned);
         Item want = plannedItem(planned);
-        if (hologram.lockedAt(pos.getX(), pos.getZ())) { aim = new Aim(pos, planned, verdict, Kind.NOT_PLANNED, name + " – gesperrter Bereich im Weltplan, Platzierhilfe ruht", GREY); return; }
-        if (verdict == Verdict.WRONG) { aim = new Aim(pos, planned, verdict, Kind.WRONG_BLOCK, name + " – falscher Block steht hier, erst abbauen", RED); return; }
+        if (hologram.lockedAt(pos.getX(), pos.getZ())) { aim = new Aim(pos, planned, verdict, Kind.NOT_PLANNED, name + t(" – gesperrter Bereich im Weltplan, Platzierhilfe ruht", " – locked area in the world plan, placement helper pauses"), GREY); return; }
+        if (verdict == Verdict.WRONG) { aim = new Aim(pos, planned, verdict, Kind.WRONG_BLOCK, name + t(" – falscher Block steht hier, erst abbauen", " – wrong block here, break it first"), RED); return; }
         if (!(stack.getItem() instanceof BlockItem item) || item != want) {
-            String held = hotbarSlot(player, want) >= 0 ? " (Num 8 nimmt ihn in die Hand)" : where(player, want);
+            String held = hotbarSlot(player, want) >= 0 ? t(" (Num 8 nimmt ihn in die Hand)", " (Num 8 puts it in your hand)") : where(player, want);
             aim = new Aim(pos, planned, verdict, Kind.WRONG_BLOCK, name + held, YELLOW);
             return;
         }
@@ -183,9 +185,9 @@ public final class PlacementAssist {
             BlockState predicted = predict(item, ctx);
             if (predicted != null) kind = PlacementAdvice.judge(planned, McCompat.modState(predicted), true).kind();
         }
-        if (kind == Kind.RIGHT) { aim = new Aim(pos, planned, verdict, kind, name + " ✓ so setzen", GREEN); return; }
+        if (kind == Kind.RIGHT) { aim = new Aim(pos, planned, verdict, kind, name + t(" ✓ so setzen", " ✓ place like this"), GREEN); return; }
         String how = PlacementAdvice.advice(found, PlacementAdvice.yawOf(player.getYRot()), PlacementAdvice.pitchOf(player.getXRot()));
-        aim = new Aim(pos, planned, verdict, kind, name + " – " + (how == null ? "frei setzen" : how), how == null ? GREY : YELLOW);
+        aim = new Aim(pos, planned, verdict, kind, name + " – " + (how == null ? t("frei setzen", "place freely") : how), how == null ? GREY : YELLOW);
     }
 
     /** First open plan position along the view ray within reach (the hologram itself is not solid). */
@@ -304,10 +306,10 @@ public final class PlacementAssist {
         var inv = player.getInventory();
         int n = 0;
         for (int s = 9; s < Math.min(36, inv.getContainerSize()); s++) if (inv.getItem(s).getItem() == item) n += inv.getItem(s).getCount();
-        if (n > 0) return " (nicht in der Schnellleiste, " + n + " im Inventar)";
+        if (n > 0) return t(" (nicht in der Schnellleiste, " + n + " im Inventar)", " (not in the hotbar, " + n + " in inventory)");
         // Shulker boxes and bundles count too: the player only has to take it out.
         int packed = McCompat.carried(player).getOrDefault(item, 0);
-        return packed > 0 ? " (" + packed + " in Shulkerkiste/Bündel)" : " (nicht im Inventar)";
+        return packed > 0 ? t(" (" + packed + " in Shulkerkiste/Bündel)", " (" + packed + " in shulker box/bundle)") : t(" (nicht im Inventar)", " (not in inventory)");
     }
 
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger("bauplaner");

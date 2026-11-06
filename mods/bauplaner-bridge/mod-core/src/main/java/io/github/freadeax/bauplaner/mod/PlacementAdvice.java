@@ -25,6 +25,9 @@ public final class PlacementAdvice {
 
         public Guard next() { return values()[(ordinal() + 1) % values().length]; }
 
+        /** Label in the mod's language (GAME-12); {@link #label} stays the saved German key. */
+        public String text() { return switch (this) { case OFF -> Lang.t("aus", "off"); case WARN -> Lang.t("nur warnen", "warn only"); case ON -> Lang.t("an", "on"); }; }
+
         public static Guard parse(String text, Guard fallback) {
             if (text == null) return fallback;
             for (Guard g : values()) if (g.name().equalsIgnoreCase(text.trim()) || g.label.equalsIgnoreCase(text.trim())) return g;

@@ -1,5 +1,7 @@
 package io.github.freadeax.bauplaner.bridge.hologram;
 
+import static io.github.freadeax.bauplaner.mod.Lang.t;
+
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -203,8 +205,8 @@ public final class TeamClient {
         // Keep the hologram focus in step with the team (someone takes over a free section, I get one assigned …).
         if (focus != null) {
             if (hologram.sectionSet() == null || tp == null) focus = null;
-            else if (focus.equals("mein")) hologram.setSectionSet(tp.numbersOf(t.me()), "Meine Abschnitte");
-            else hologram.setSectionSet(tp.freeNumbers(), "Freie Abschnitte");
+            else if (focus.equals("mein")) hologram.setSectionSet(tp.numbersOf(t.me()), t("Meine Abschnitte", "My sections"));
+            else hologram.setSectionSet(tp.freeNumbers(), t("Freie Abschnitte", "Free sections"));
         }
         if (tp == null || t.me() == null || !hologram.active()) return;
         // Own section complete in the live check: suggest the report once.
@@ -216,7 +218,7 @@ public final class TeamClient {
             int unknown = check.count(new io.github.freadeax.bauplaner.mod.Filter(Integer.MIN_VALUE, Integer.MAX_VALUE, k))[Verdict.UNKNOWN.ordinal()];
             String key = s.id() + "/" + s.status();
             if (p[1] > 0 && p[0] == p[1] && unknown == 0 && announcedDone.add(key))
-                McCompat.chat(mc, Component.literal("[Bauplaner] Dein Abschnitt " + s.nr() + " „" + s.name() + "“ steht laut Hologramm komplett. Fertig melden: /bauplaner team fertig " + s.nr())
+                McCompat.chat(mc, Component.literal("[Bauplaner] " + t("Dein Abschnitt " + s.nr() + " „" + s.name() + "“ steht laut Hologramm komplett. Fertig melden: /bauplaner team fertig " + s.nr(), "Your section " + s.nr() + " “" + s.name() + "” is complete according to the hologram. Report done: /buildplanner team done " + s.nr()))
                         .withStyle(net.minecraft.ChatFormatting.GREEN));
         }
         // Plan in the hologram older/newer than the released one: say it once per combination.
@@ -226,8 +228,9 @@ public final class TeamClient {
             String key = own + "/" + rel;
             if (own != rel && !key.equals(revisionWarned)) {
                 revisionWarned = key;
-                McCompat.chat(mc, Component.literal("[Bauplaner] Achtung: Das Hologramm zeigt Planstand " + own + ", für das Team freigegeben ist Planstand " + rel
-                        + ". Neuen Planstand im Planer exportieren oder über „Mit Spiel abgleichen“ schicken.").withStyle(net.minecraft.ChatFormatting.GOLD));
+                McCompat.chat(mc, Component.literal("[Bauplaner] " + t("Achtung: Das Hologramm zeigt Planstand " + own + ", für das Team freigegeben ist Planstand " + rel
+                        + ". Neuen Planstand im Planer exportieren oder über „Mit Spiel abgleichen“ schicken.", "Warning: the hologram shows plan revision " + own + ", the team released revision " + rel
+                        + ". Export the new revision in the planner or send it with “Compare with game”.")).withStyle(net.minecraft.ChatFormatting.GOLD));
             }
         }
     }
@@ -328,11 +331,11 @@ public final class TeamClient {
     }
 
     static int storeColor(String status) {
-        return switch (status) { case "geprueft" -> 0xFF6BE07B; case "abweichend" -> 0xFFFFD54A; case "fehlt" -> 0xFFFF5A5A; default -> 0xFFB0B0B0; };
+        return switch (status) { case "geprueft" -> HudCard.ACCENT; case "abweichend" -> HudCard.GOLD; case "fehlt" -> HudCard.ERROR; default -> HudCard.MUTED; };
     }
 
     static int noteColor(String tag) {
-        return switch (tag) { case "frage" -> 0xFF5AA9FF; case "problem" -> 0xFFFF5A5A; case "material" -> 0xFFFF9F1C; default -> 0xFFFFFFFF; };
+        return switch (tag) { case "frage" -> 0xFF5AA9FF; case "problem" -> HudCard.ERROR; case "material" -> 0xFFFF9F1C; default -> HudCard.TEXT; };
     }
 
     // ------------------------------------------------------------------ HUD
@@ -349,12 +352,9 @@ public final class TeamClient {
         LiveCheck check = hologram.check();
         String key = System.identityHashCode(t) + "/" + px + "/" + py + "/" + pz + "/" + (check == null ? 0 : check.revision() + "/" + System.identityHashCode(check)) + "/" + sync.link();
         if (!key.equals(hudKey)) { hudRows = rows(t, mc, px, py, pz); hudKey = key; }
-        var font = mc.font;
-        int line = font.lineHeight + 2, width = 0;
-        for (String[] r : hudRows) width = Math.max(width, font.width(r[0]));
-        int x = g.guiWidth() - width - 6, y = g.guiHeight() - 40 - hudRows.size() * line;
-        g.fill(x - 3, y - 3, x + width + 3, y + hudRows.size() * line - 1, 0x90000000);
-        for (String[] r : hudRows) { g.text(font, r[0], x, y, (int) Long.parseLong(r[1], 16), true); y += line; }
+        // GAME-12: compact panel shows the first three rows (team, here, my task); "ausführlich" shows all.
+        List<String[]> rows = ClientSettings.panel() == ClientSettings.Panel.DETAILED || hudRows.size() <= 3 ? hudRows : hudRows.subList(0, 3);
+        if (ClientSettings.panel() != ClientSettings.Panel.HIDDEN) HudCard.bottomRight(g, mc.font, rows, HudCard.ACCENT);
     }
 
     private List<String[]> rows(TeamState t, Minecraft mc, int px, int py, int pz) {
@@ -362,30 +362,30 @@ public final class TeamClient {
         TeamPlan tp = teamPlan(t);
         int waiting = sync.outbox().pending(t.teamId()).size();
         boolean live = t.source() == TeamState.Source.SERVER || t.source() == TeamState.Source.ROOM && sync.room().live();
-        String where = t.source() == TeamState.Source.SERVER ? "live" : t.source() == TeamState.Source.ROOM ? (sync.room().live() ? "live über den Team-Raum" : "Team-Raum getrennt")
-                : sync.link() == TeamSync.Link.ASK ? "Planer · Server-Plugin da" : "aus dem Planer";
-        out.add(row("Team „" + t.name() + "“ · " + where + (waiting > 0 ? " · " + waiting + " wartet" : ""), live ? 0xFF6BE07B : 0xFFFFFFFF));
+        String where = t.source() == TeamState.Source.SERVER ? "live" : t.source() == TeamState.Source.ROOM ? (sync.room().live() ? t("live über den Team-Raum", "live via the team room") : t("Team-Raum getrennt", "team room disconnected"))
+                : sync.link() == TeamSync.Link.ASK ? t("Planer · Server-Plugin da", "planner · server plugin found") : t("aus dem Planer", "from the planner");
+        out.add(row("Team „" + t.name() + "“ · " + where + (waiting > 0 ? " · " + waiting + t(" wartet", " waiting") : ""), live ? HudCard.ACCENT : HudCard.TEXT));
         TeamState.Section here = sectionAt(t, tp, McCompat.dimension(mc.level), px, py, pz);
         if (here != null) {
-            String owner = here.owner() == null ? "frei – /bauplaner team nehmen " + here.nr() : t.nameOf(here.owner());
-            out.add(row("Hier: " + here.nr() + " „" + here.name() + "“ · " + owner + " · " + TeamState.STATUS_LABEL.getOrDefault(here.pending() ? "wartet" : here.status(), here.status()),
+            String owner = here.owner() == null ? t("frei – /bauplaner team nehmen ", "free – /buildplanner team take ") + here.nr() : t.nameOf(here.owner());
+            out.add(row(t("Hier: ", "Here: ") + here.nr() + " „" + here.name() + "“ · " + owner + " · " + TeamState.statusText(here.pending() ? "wartet" : here.status()),
                     TeamColors.ofSection(t, here)));
         }
         List<TeamState.Section> mine = t.mine();
         if (mine.isEmpty()) {
-            if (t.me() == null) out.add(row(t.source() != TeamState.Source.PLANER ? "Du bist noch nicht im Team – /bauplaner team nehmen <nr>" : "Im Planer „Ich bin“ wählen", 0xFFB0B0B0));
-            else if (t.count("frei") > 0) out.add(row("Kein Auftrag · " + t.count("frei") + " frei – /bauplaner team frei", 0xFFB0B0B0));
+            if (t.me() == null) out.add(row(t.source() != TeamState.Source.PLANER ? t("Du bist noch nicht im Team – /bauplaner team nehmen <nr>", "You are not in the team yet – /buildplanner team take <no.>") : t("Im Planer „Ich bin“ wählen", "Choose “I am” in the planner"), HudCard.MUTED));
+            else if (t.count("frei") > 0) out.add(row(t("Kein Auftrag · ", "No task · ") + t.count("frei") + t(" frei – /bauplaner team frei", " free – /buildplanner team free"), HudCard.MUTED));
         } else {
             TeamState.Section s = mine.get(0);
             String progress = "";
             if (tp != null && tp.number(s.id()) > 0) {
                 int[] p = TeamPlan.progress(hologram.check(), tp.number(s.id()));
-                progress = " · " + TeamPlan.percent(p) + " % · " + p[2] + " offen";
-            } else if (hologram.active()) progress = " · nicht im Plan";
-            out.add(row("Mein Auftrag: " + s.nr() + " „" + s.name() + "“" + progress + (mine.size() > 1 ? " (+" + (mine.size() - 1) + ")" : ""), t.colorOf(t.me())));
-            if ("nacharbeit".equals(s.status())) out.add(row("Nacharbeit verlangt – /bauplaner team abschnitte", 0xFFFF5A5A));
+                progress = " · " + TeamPlan.percent(p) + " % · " + p[2] + t(" offen", " open");
+            } else if (hologram.active()) progress = t(" · nicht im Plan", " · not in the plan");
+            out.add(row(t("Mein Auftrag: ", "My task: ") + s.nr() + " „" + s.name() + "“" + progress + (mine.size() > 1 ? " (+" + (mine.size() - 1) + ")" : ""), t.colorOf(t.me())));
+            if ("nacharbeit".equals(s.status())) out.add(row(t("Nacharbeit verlangt – /bauplaner team abschnitte", "Rework requested – /buildplanner team sections"), HudCard.ERROR));
         }
-        if (tp != null && tp.mismatch() != null) out.add(row(tp.mismatch(), 0xFFFF5A5A));
+        if (tp != null && tp.mismatch() != null) out.add(row(tp.mismatch(), HudCard.ERROR));
         // Nearest open note within 12 blocks.
         TeamState.Note near = null;
         double best = 144;
@@ -396,7 +396,7 @@ public final class TeamClient {
         }
         if (near != null) {
             String text = near.text().length() > 48 ? near.text().substring(0, 47) + "…" : near.text();
-            out.add(row("Notiz (" + (int) Math.sqrt(best) + " m, " + t.nameOf(near.by()) + "): " + text, noteColor(near.tag())));
+            out.add(row(t("Notiz (", "Note (") + (int) Math.sqrt(best) + " m, " + t.nameOf(near.by()) + "): " + text, noteColor(near.tag())));
         }
         return out;
     }
@@ -412,29 +412,29 @@ public final class TeamClient {
         var room = sync.room();
         if (room != null && room.config() != null) {
             var c = room.config();
-            out.add(row("Team-Raum: " + room.statusText() + (c.teamName() != null ? " · " + c.teamName() : "") + (room.live() ? " · " + room.presence().size() + " da" : ""),
-                    room.live() ? 0xFF6BE07B : 0xFFFFB040));
-            if (!room.live() && room.lastError() != null) out.add(row("  " + room.lastError(), 0xFFB0B0B0));
-        } else out.add(row("Team-Raum: keiner – im Planer unter „Team live“ „Mein Spiel verbinden“ (keine Server-Datei nötig)", 0xFFB0B0B0));
-        out.add(row("Server-Plugin (freiwillig): " + sync.link().label + (sync.allowed() ? " · erlaubt" : ""), sync.link() == TeamSync.Link.LIVE ? 0xFF6BE07B : 0xFFB0B0B0));
+            out.add(row(t("Team-Raum: ", "Team room: ") + room.statusLine() + (c.teamName() != null ? " · " + c.teamName() : "") + (room.live() ? " · " + room.presence().size() + t(" da", " online") : ""),
+                    room.live() ? HudCard.ACCENT : HudCard.WARN));
+            if (!room.live() && room.lastError() != null) out.add(row("  " + room.lastError(), HudCard.MUTED));
+        } else out.add(row(t("Team-Raum: keiner – im Planer unter „Team live“ „Mein Spiel verbinden“ (keine Server-Datei nötig)", "Team room: none – in the planner under “Team live” choose “Connect my game” (no server file needed)"), HudCard.MUTED));
+        out.add(row(t("Server-Plugin (freiwillig): ", "Server plugin (optional): ") + sync.link().text() + (sync.allowed() ? t(" · erlaubt", " · allowed") : ""), sync.link() == TeamSync.Link.LIVE ? HudCard.ACCENT : HudCard.MUTED));
         if (t == null || mc.player == null || mc.level == null) {
-            out.add(row("Kein Teamstand – im Planer unter „Team live“ „Mein Spiel verbinden“", 0xFFB0B0B0));
+            out.add(row(t("Kein Teamstand – im Planer unter „Team live“ „Mein Spiel verbinden“", "No team state – in the planner under “Team live” choose “Connect my game”"), HudCard.MUTED));
         } else {
             out.addAll(rows(t, mc, mc.player.getBlockX(), mc.player.getBlockY(), mc.player.getBlockZ()));
             String role = t.me() == null ? null : t.roleOf(t.me());
-            if (role != null) out.add(row("Du: " + t.nameOf(t.me()) + " · " + TeamState.ROLE_LABEL.getOrDefault(role, role) + " · Abschnitte: " + t.count("frei") + " frei, "
-                    + t.count("vergeben") + " vergeben, " + t.count("gemeldet") + " gemeldet", 0xFFFFFFFF));
+            if (role != null) out.add(row(t("Du: ", "You: ") + t.nameOf(t.me()) + " · " + TeamState.roleText(role) + t(" · Abschnitte: ", " · sections: ") + t.count("frei") + t(" frei, ", " free, ")
+                    + t.count("vergeben") + t(" vergeben, ", " taken, ") + t.count("gemeldet") + t(" gemeldet", " reported"), HudCard.TEXT));
             if (!t.stores().isEmpty()) {
                 java.util.Map<String, Integer> by = new java.util.TreeMap<>();
                 for (TeamState.Store st : t.stores()) by.merge(st.status() == null ? "ungeprueft" : st.status(), 1, Integer::sum);
-                StringBuilder b = new StringBuilder("Lagerkisten: " + t.stores().size());
-                by.forEach((k, v) -> b.append(" · ").append(v).append(' ').append(k.replace("geprueft", "geprüft").replace("ungeprueft", "ungeprüft")));
-                out.add(row(b.toString(), by.containsKey("abweichend") || by.containsKey("fehlt") ? 0xFFFFB040 : 0xFFFFFFFF));
+                StringBuilder b = new StringBuilder(t("Lagerkisten: ", "Storage chests: ") + t.stores().size());
+                by.forEach((k, v) -> b.append(" · ").append(v).append(' ').append(storeStatus(k)));
+                out.add(row(b.toString(), by.containsKey("abweichend") || by.containsKey("fehlt") ? HudCard.WARN : HudCard.TEXT));
             }
         }
         List<String> rej = sync.rejections();
-        if (!rej.isEmpty()) out.add(row("Abgelehnt: " + rej.get(rej.size() - 1), 0xFFFF5A5A));
-        if (sync.lastError() != null) out.add(row("Fehler: " + sync.lastError(), 0xFFFF5A5A));
+        if (!rej.isEmpty()) out.add(row(t("Abgelehnt: ", "Rejected: ") + rej.get(rej.size() - 1), HudCard.ERROR));
+        if (sync.lastError() != null) out.add(row(t("Fehler: ", "Error: ") + sync.lastError(), HudCard.ERROR));
         return out;
     }
 
@@ -450,6 +450,17 @@ public final class TeamClient {
 
     private static void say(String text) { McCompat.chat(Minecraft.getInstance(), Component.literal("[Bauplaner] " + text)); }
     private static int said(String text) { say(text); return 1; }
+    private static String storeStatus(String k) {
+        return switch (k) {
+            case "geprueft" -> t("geprüft", "checked");
+            case "ungeprueft" -> t("ungeprüft", "unchecked");
+            case "abweichend" -> t("abweichend", "differs");
+            case "fehlt" -> t("fehlt", "missing");
+            default -> k;
+        };
+    }
+    /** A line of a list the player asked for: stays in the chat (GAME-12). */
+    private static void list(String text) { McCompat.chatLine(Minecraft.getInstance(), Component.literal("[Bauplaner] " + text)); }
 
     /** {@code /bauplaner team …} */
     public <S> LiteralArgumentBuilder<S> command() {
@@ -473,7 +484,7 @@ public final class TeamClient {
                 .then(TeamClient.<S>literal("zeigen").then(TeamClient.<S, String>argument("abschnitt", StringArgumentType.word()).suggests(numbers).executes(c -> show(StringArgumentType.getString(c, "abschnitt")))))
                 .then(TeamClient.<S>literal("mein").executes(c -> focus("mein")))
                 .then(TeamClient.<S>literal("frei").executes(c -> focus("frei")))
-                .then(TeamClient.<S>literal("alle").executes(c -> { focus = null; hologram.setSectionSet(null, null); return said("Hologramm zeigt wieder alle Abschnitte."); }))
+                .then(TeamClient.<S>literal("alle").executes(c -> { focus = null; hologram.setSectionSet(null, null); return said(t("Hologramm zeigt wieder alle Abschnitte.", "Hologram shows all sections again.")); }))
                 .then(TeamClient.<S>literal("material").executes(c -> material(null))
                         .then(TeamClient.<S, String>argument("spieler", StringArgumentType.word()).suggests(players).executes(c -> material(StringArgumentType.getString(c, "spieler")))))
                 .then(TeamClient.<S>literal("notiz").then(TeamClient.<S, String>argument("art", StringArgumentType.word()).suggests((c, b) -> { List.of("frage", "problem", "material", "info").forEach(b::suggest); return b.buildFuture(); })
@@ -491,8 +502,8 @@ public final class TeamClient {
                 .then(TeamClient.<S>literal("verbieten").executes(c -> said(sync.allow(false))))
                 .then(TeamClient.<S>literal("status").executes(c -> status()))
                 .then(TeamClient.<S>literal("korb").executes(c -> outbox(false)).then(TeamClient.<S>literal("leeren").executes(c -> outbox(true))))
-                .then(TeamClient.<S>literal("rahmen").executes(c -> { frames = !frames; return said(frames ? "Abschnittsrahmen an." : "Abschnittsrahmen aus."); }))
-                .then(TeamClient.<S>literal("anzeige").executes(c -> { panel = !panel; return said(panel ? "Teamanzeige an." : "Teamanzeige aus."); }));
+                .then(TeamClient.<S>literal("rahmen").executes(c -> { frames = !frames; return said(frames ? t("Abschnittsrahmen an.", "Section frames on.") : t("Abschnittsrahmen aus.", "Section frames off.")); }))
+                .then(TeamClient.<S>literal("anzeige").executes(c -> { panel = !panel; return said(panel ? t("Teamanzeige an.", "Team panel on.") : t("Teamanzeige aus.", "Team panel off.")); }));
     }
 
     /** Records the placed plan and puts it into the team room (set by LiveLink, LINK-07). */
@@ -502,17 +513,17 @@ public final class TeamClient {
 
     private int recordToRoom() {
         var room = sync.room();
-        if (room == null || !room.live()) return said("Kein Team-Raum verbunden. Im Planer (Reiter „Team“ → Team-Raum) „Mein Spiel verbinden“ wählen.");
-        if (!hologram.active() || recorder == null) return said("Erst einen Plan im Spiel platzieren, dann aufnehmen.");
-        say("Nehme den Baustand auf …");
+        if (room == null || !room.live()) return said(t("Kein Team-Raum verbunden. Im Planer (Reiter „Team“ → Team-Raum) „Mein Spiel verbinden“ wählen.", "No team room connected. In the planner (tab “Team” → team room) choose “Connect my game”."));
+        if (!hologram.active() || recorder == null) return said(t("Erst einen Plan im Spiel platzieren, dann aufnehmen.", "Place a plan in the game first, then scan."));
+        say(t("Nehme den Baustand auf …", "Scanning the build …"));
         java.util.concurrent.CompletableFuture.runAsync(() -> recorder.apply(null));
         return 1;
     }
 
     private TeamState need() {
         TeamState t = shown;
-        if (t == null) say("Kein Teamstand. Im Planer (Reiter „Team“) „Mit Spiel abgleichen“ wählen, oder auf einem Server mit Bauplaner-Plugin spielen ("
-                + sync.link().label + ").");
+        if (t == null) say(t("Kein Teamstand. Im Planer (Reiter „Team“) „Mit Spiel abgleichen“ wählen, oder auf einem Server mit Bauplaner-Plugin spielen (",
+                "No team state. Choose “Compare with game” in the planner (tab “Team”) or play on a server with the Bauplaner plugin (") + sync.link().text() + ").");
         return t;
     }
 
@@ -520,14 +531,14 @@ public final class TeamClient {
         TeamState t = need();
         if (t == null) return 0;
         say(t.summary() + ".");
-        say("Verbindung: " + sync.link().label + (t.me() != null ? " · du bist " + t.nameOf(t.me()) + " (" + TeamState.ROLE_LABEL.getOrDefault(t.roleOf(t.me()), "Helfer") + ")" : ""));
+        list(t("Verbindung: ", "Connection: ") + sync.link().text() + (t.me() != null ? t(" · du bist ", " · you are ") + t.nameOf(t.me()) + " (" + TeamState.roleText(t.roleOf(t.me())) + ")" : ""));
         List<TeamState.Section> mine = t.mine();
-        if (!mine.isEmpty()) say("Deine Abschnitte: " + String.join(", ", mine.stream().map(s -> s.nr() + " „" + s.name() + "“ (" + TeamState.STATUS_LABEL.get(s.status()) + ")").toList()));
+        if (!mine.isEmpty()) list(t("Deine Abschnitte: ", "Your sections: ") + String.join(", ", mine.stream().map(s -> s.nr() + " „" + s.name() + "“ (" + TeamState.statusText(s.status()) + ")").toList()));
         List<TeamState.Section> free = t.sections().stream().filter(TeamState.Section::free).limit(5).toList();
-        if (!free.isEmpty()) say("Frei: " + String.join(", ", free.stream().map(s -> s.nr() + " „" + s.name() + "“").toList()) + " – /bauplaner team nehmen <nr>");
+        if (!free.isEmpty()) list(t("Frei: ", "Free: ") + String.join(", ", free.stream().map(s -> s.nr() + " „" + s.name() + "“").toList()) + t(" – /bauplaner team nehmen <nr>", " – /buildplanner team take <no.>"));
         int waiting = sync.outbox().pending(t.teamId()).size();
-        if (waiting > 0) say(waiting + " eigene Meldung(en) warten auf Abgleich: /bauplaner team korb");
-        say("Befehle: abschnitte, nehmen, abgeben, fertig, mein, frei, material, notiz, geliefert, lager, status, erlauben");
+        if (waiting > 0) list(waiting + t(" eigene Meldung(en) warten auf Abgleich: /bauplaner team korb", " own message(s) waiting for sync: /buildplanner team outbox"));
+        list(t("Befehle: abschnitte, nehmen, abgeben, fertig, mein, frei, material, notiz, geliefert, lager, status, erlauben", "Commands: sections, take, release, done, mine, free, material, note, delivered, storage, status, allow"));
         return 1;
     }
 
@@ -535,12 +546,12 @@ public final class TeamClient {
         TeamState t = need();
         if (t == null) return 0;
         TeamPlan tp = teamPlan(t);
-        say("Abschnitte (" + t.sections().size() + "):");
+        list(t("Abschnitte (", "Sections (") + t.sections().size() + "):");
         for (TeamState.Section s : t.sections()) {
-            String owner = s.owner() == null ? "frei" : t.nameOf(s.owner());
+            String owner = s.owner() == null ? t("frei", "free") : t.nameOf(s.owner());
             String progress = "";
             if (tp != null && tp.number(s.id()) > 0) progress = " · " + TeamPlan.percent(TeamPlan.progress(hologram.check(), tp.number(s.id()))) + " %";
-            McCompat.chat(Minecraft.getInstance(), Component.literal("  " + s.nr() + ". " + s.name() + " – " + owner + " · " + TeamState.STATUS_LABEL.getOrDefault(s.pending() ? "wartet" : s.status(), s.status()) + progress)
+            McCompat.chatLine(Minecraft.getInstance(), Component.literal("  " + s.nr() + ". " + s.name() + " – " + owner + " · " + TeamState.statusText(s.pending() ? "wartet" : s.status()) + progress)
                     .withColor(TeamColors.ofSection(t, s) & 0xFFFFFF));
         }
         return t.sections().size();
@@ -549,7 +560,7 @@ public final class TeamClient {
     private Optional<TeamState.Section> section(TeamState t, String ref, boolean ownFirst) {
         if (ref != null) {
             Optional<TeamState.Section> s = t.findSection(ref);
-            if (s.isEmpty()) say("Abschnitt „" + ref + "“ gibt es nicht. /bauplaner team abschnitte listet alle.");
+            if (s.isEmpty()) say(t("Abschnitt „" + ref + "“ gibt es nicht. /bauplaner team abschnitte listet alle.", "There is no section “" + ref + "”. /buildplanner team sections lists all."));
             return s;
         }
         // Without a number: the section underfoot, else the only own one.
@@ -558,7 +569,7 @@ public final class TeamClient {
         if (here != null && (!ownFirst || t.me() != null && t.me().equals(here.owner()))) return Optional.of(here);
         List<TeamState.Section> mine = t.mine();
         if (ownFirst && mine.size() == 1) return Optional.of(mine.get(0));
-        say("Welcher Abschnitt? Nummer angeben (/bauplaner team abschnitte).");
+        say(t("Welcher Abschnitt? Nummer angeben (/bauplaner team abschnitte).", "Which section? Give its number (/buildplanner team sections)."));
         return Optional.empty();
     }
 
@@ -571,19 +582,19 @@ public final class TeamClient {
         String me = t.me();
         switch (kind) {
             case "section.claim" -> {
-                if (me != null && me.equals(sec.owner())) return said("Abschnitt " + sec.nr() + " gehört schon dir.");
-                if (!sec.free()) say("Hinweis: Abschnitt " + sec.nr() + " hat schon " + t.nameOf(sec.owner()) + " – Server oder Planer entscheiden, wer ihn bekommt.");
+                if (me != null && me.equals(sec.owner())) return said(t("Abschnitt " + sec.nr() + " gehört schon dir.", "Section " + sec.nr() + " is already yours."));
+                if (!sec.free()) say(t("Hinweis: Abschnitt " + sec.nr() + " hat schon " + t.nameOf(sec.owner()) + " – Server oder Planer entscheiden, wer ihn bekommt.", "Note: " + t.nameOf(sec.owner()) + " already has section " + sec.nr() + " – server or planner decide who gets it."));
             }
-            case "section.release" -> { if (me != null && !me.equals(sec.owner())) return said("Abschnitt " + sec.nr() + " gehört nicht dir."); }
+            case "section.release" -> { if (me != null && !me.equals(sec.owner())) return said(t("Abschnitt " + sec.nr() + " gehört nicht dir.", "Section " + sec.nr() + " is not yours.")); }
             default -> { }
         }
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("section", sec.id());
         if (note != null && !note.isBlank()) body.put("note", note.length() > 300 ? note.substring(0, 300) : note);
         String what = switch (kind) {
-            case "section.claim" -> "Abschnitt " + sec.nr() + " „" + sec.name() + "“ übernommen";
-            case "section.release" -> "Abschnitt " + sec.nr() + " „" + sec.name() + "“ zurückgegeben";
-            default -> "Abschnitt " + sec.nr() + " „" + sec.name() + "“ fertig gemeldet";
+            case "section.claim" -> t("Abschnitt " + sec.nr() + " „" + sec.name() + "“ übernommen", "Took section " + sec.nr() + " “" + sec.name() + "”");
+            case "section.release" -> t("Abschnitt " + sec.nr() + " „" + sec.name() + "“ zurückgegeben", "Released section " + sec.nr() + " “" + sec.name() + "”");
+            default -> t("Abschnitt " + sec.nr() + " „" + sec.name() + "“ fertig gemeldet", "Reported section " + sec.nr() + " “" + sec.name() + "” as done");
         };
         String r = sync.act(kind, body, what);
         refresh();
@@ -593,7 +604,7 @@ public final class TeamClient {
     private boolean atLeastMeister(TeamState t) {
         String role = t.roleOf(t.me());
         if (role.equals("meister") || role.equals("leitung")) return true;
-        say("Das dürfen nur Baumeister und Bauleitung.");
+        say(t("Das dürfen nur Baumeister und Bauleitung.", "Only master builders and the team lead may do this."));
         return false;
     }
 
@@ -606,7 +617,7 @@ public final class TeamClient {
         body.put("section", s.get().id());
         body.put("ok", ok);
         if (note != null && !note.isBlank()) body.put("note", note);
-        return said(sync.act("section.verify", body, "Abschnitt " + s.get().nr() + (ok ? " bestätigt" : " zur Nacharbeit")));
+        return said(sync.act("section.verify", body, t("Abschnitt " + s.get().nr() + (ok ? " bestätigt" : " zur Nacharbeit"), "Section " + s.get().nr() + (ok ? " confirmed" : " sent to rework"))));
     }
 
     private Optional<TeamState.Member> member(TeamState t, String name) {
@@ -619,8 +630,8 @@ public final class TeamClient {
         Optional<TeamState.Section> s = section(t, ref, false);
         Optional<TeamState.Member> m = member(t, player);
         if (s.isEmpty()) return 0;
-        if (m.isEmpty()) return said("„" + player + "“ ist nicht im Team.");
-        return said(sync.act("section.assign", Map.of("section", s.get().id(), "member", m.get().id()), "Abschnitt " + s.get().nr() + " an " + m.get().name() + " zugewiesen"));
+        if (m.isEmpty()) return said(t("„" + player + "“ ist nicht im Team.", "“" + player + "” is not in the team."));
+        return said(sync.act("section.assign", Map.of("section", s.get().id(), "member", m.get().id()), t("Abschnitt " + s.get().nr() + " an " + m.get().name() + " zugewiesen", "Assigned section " + s.get().nr() + " to " + m.get().name())));
     }
 
     private int show(String ref) {
@@ -633,31 +644,31 @@ public final class TeamClient {
         if (k > 0) { focus = null; return said(hologram.setSection(k)); }
         if (!s.get().boxes().isEmpty()) {
             int[] b = s.get().boxes().get(0);
-            return said("Abschnitt " + s.get().nr() + " „" + s.get().name() + "“ liegt bei " + b[0] + " " + b[1] + " " + b[2] + " bis " + b[3] + " " + b[4] + " " + b[5] + " (Rahmen in der Welt).");
+            return said(t("Abschnitt " + s.get().nr() + " „" + s.get().name() + "“ liegt bei ", "Section " + s.get().nr() + " “" + s.get().name() + "” is at ") + b[0] + " " + b[1] + " " + b[2] + t(" bis ", " to ") + b[3] + " " + b[4] + " " + b[5] + t(" (Rahmen in der Welt).", " (frame in the world)."));
         }
-        return said("Abschnitt " + s.get().nr() + " ist im eingeblendeten Plan nicht enthalten. Plan des Teams einblenden (J).");
+        return said(t("Abschnitt " + s.get().nr() + " ist im eingeblendeten Plan nicht enthalten. Plan des Teams einblenden (J).", "Section " + s.get().nr() + " is not in the shown plan. Show the team plan (J)."));
     }
 
     private int focus(String what) {
         TeamState t = need();
         if (t == null) return 0;
         TeamPlan tp = teamPlan(t);
-        if (tp == null) return said("Erst den Plan des Teams einblenden (J), dann zeigt das Hologramm nur die gewählten Abschnitte.");
+        if (tp == null) return said(t("Erst den Plan des Teams einblenden (J), dann zeigt das Hologramm nur die gewählten Abschnitte.", "Show the team plan first (J), then the hologram shows only the chosen sections."));
         Set<Integer> set = what.equals("mein") ? tp.numbersOf(t.me()) : tp.freeNumbers();
-        if (set.isEmpty()) return said(what.equals("mein") ? "Du hast keinen offenen Abschnitt. Freie zeigen: /bauplaner team frei" : "Kein Abschnitt ist frei.");
+        if (set.isEmpty()) return said(what.equals("mein") ? t("Du hast keinen offenen Abschnitt. Freie zeigen: /bauplaner team frei", "You have no open section. Show free ones: /buildplanner team free") : t("Kein Abschnitt ist frei.", "No section is free."));
         focus = what;
-        hologram.setSectionSet(set, what.equals("mein") ? "Meine Abschnitte" : "Freie Abschnitte");
-        return said("Hologramm zeigt nur " + (what.equals("mein") ? "deine" : "freie") + " Abschnitte (" + set.size() + "); Materialliste, Fehlersuche und Fortschritt ebenso. Zurück: /bauplaner team alle");
+        hologram.setSectionSet(set, what.equals("mein") ? t("Meine Abschnitte", "My sections") : t("Freie Abschnitte", "Free sections"));
+        return said(t("Hologramm zeigt nur " + (what.equals("mein") ? "deine" : "freie") + " Abschnitte (" + set.size() + "); Materialliste, Fehlersuche und Fortschritt ebenso. Zurück: /bauplaner team alle", "Hologram shows only " + (what.equals("mein") ? "your" : "free") + " sections (" + set.size() + "); material list, error finder and progress too. Back: /buildplanner team all"));
     }
 
     private int material(String player) {
         TeamState t = need();
         if (t == null) return 0;
         TeamPlan tp = teamPlan(t);
-        if (tp == null) return said("Erst den Plan des Teams einblenden (J).");
+        if (tp == null) return said(t("Erst den Plan des Teams einblenden (J).", "Show the team plan first (J)."));
         Minecraft mc = Minecraft.getInstance();
         String member = player == null ? t.me() : member(t, player).map(TeamState.Member::id).orElse(null);
-        if (member == null) return said(player == null ? "Du bist (noch) nicht im Team." : "„" + player + "“ ist nicht im Team.");
+        if (member == null) return said(player == null ? t("Du bist (noch) nicht im Team.", "You are not in the team (yet).") : t("„" + player + "“ ist nicht im Team.", "“" + player + "” is not in the team."));
         boolean self = member.equals(t.me());
         Map<String, Integer> carried = new HashMap<>();
         if (self && mc.player != null) {
@@ -668,20 +679,20 @@ public final class TeamClient {
             }
         }
         var needs = tp.needs(hologram.check(), member, carried, TeamPlan.ready(t));
-        if (needs.isEmpty()) return said(t.nameOf(member) + ": nichts mehr offen in den eigenen Abschnitten.");
+        if (needs.isEmpty()) return said(t.nameOf(member) + t(": nichts mehr offen in den eigenen Abschnitten.", ": nothing open in their own sections."));
         int open = needs.stream().mapToInt(TeamPlan.Need::open).sum(), fetch = needs.stream().mapToInt(TeamPlan.Need::fetch).sum();
-        say("Material für " + t.nameOf(member) + " (" + tp.numbersOf(member).size() + " Abschnitte): " + open + " Blöcke offen" + (self ? ", " + fetch + " noch holen" : "") + ":");
+        list(t("Material für ", "Material for ") + t.nameOf(member) + " (" + tp.numbersOf(member).size() + t(" Abschnitte): ", " sections): ") + open + t(" Blöcke offen", " blocks open") + (self ? ", " + fetch + t(" noch holen", " still to fetch") : "") + ":");
         int n = 0;
         for (TeamPlan.Need l : needs) {
-            if (n++ >= 12) { say("  … " + (needs.size() - 12) + " weitere – Menü (J) → Materialliste mit /bauplaner team mein"); break; }
+            if (n++ >= 12) { list("  … " + (needs.size() - 12) + t(" weitere – Menü (J) → Materialliste mit /bauplaner team mein", " more – menu (J) → material list with /buildplanner team mine")); break; }
             String name = McCompat.blockName(io.github.freadeax.bauplaner.mod.BlockState.parse(l.id()));
-            say("  " + name + ": " + l.open() + (self ? " (dabei " + l.carried() + ", holen " + l.fetch() + ")" : "") + (l.ready() > 0 ? " · im Lager " + l.ready() : ""));
+            list("  " + name + ": " + l.open() + (self ? t(" (dabei ", " (carried ") + l.carried() + t(", holen ", ", fetch ") + l.fetch() + ")" : "") + (l.ready() > 0 ? t(" · im Lager ", " · in storage ") + l.ready() : ""));
         }
         return 1;
     }
 
     private int note(String tag, String text) {
-        if (!List.of("frage", "problem", "material", "info").contains(tag)) return said("Art: frage, problem, material oder info.");
+        if (!List.of("frage", "problem", "material", "info").contains(tag)) return said(t("Art: frage, problem, material oder info.", "Kind: frage (question), problem, material or info."));
         TeamState t = need();
         Minecraft mc = Minecraft.getInstance();
         if (t == null || mc.player == null) return 0;
@@ -692,7 +703,7 @@ public final class TeamClient {
         body.put("pos", List.of(mc.player.getBlockX(), mc.player.getBlockY(), mc.player.getBlockZ()));
         TeamState.Section here = sectionAt(t, teamPlan(t), McCompat.dimension(mc.level), mc.player.getBlockX(), mc.player.getBlockY(), mc.player.getBlockZ());
         if (here != null) body.put("section", here.id());
-        return said(sync.act("note.add", body, "Notiz gesetzt"));
+        return said(sync.act("note.add", body, t("Notiz gesetzt", "Note added")));
     }
 
     private int notes() {
@@ -700,13 +711,13 @@ public final class TeamClient {
         Minecraft mc = Minecraft.getInstance();
         if (t == null || mc.player == null) return 0;
         List<TeamState.Note> list = new ArrayList<>(t.notes());
-        if (list.isEmpty()) return said("Keine offenen Notizen.");
+        if (list.isEmpty()) return said(t("Keine offenen Notizen.", "No open notes."));
         double x = mc.player.getX(), y = mc.player.getY(), z = mc.player.getZ();
         list.sort(java.util.Comparator.comparingDouble(n -> n.pos() == null ? Double.MAX_VALUE : Math.pow(n.pos()[0] - x, 2) + Math.pow(n.pos()[1] - y, 2) + Math.pow(n.pos()[2] - z, 2)));
-        say("Offene Notizen (" + list.size() + "), nächste zuerst. Erledigen: /bauplaner team erledigt <id>");
+        list(t("Offene Notizen (" + list.size() + "), nächste zuerst. Erledigen: /bauplaner team erledigt <id>", "Open notes (" + list.size() + "), nearest first. Resolve: /buildplanner team resolve <id>"));
         for (TeamState.Note n : list.subList(0, Math.min(10, list.size()))) {
             String where = n.pos() == null ? "" : " @ " + n.pos()[0] + " " + n.pos()[1] + " " + n.pos()[2] + " (" + (int) Math.sqrt(Math.pow(n.pos()[0] - x, 2) + Math.pow(n.pos()[2] - z, 2)) + " m " + HologramHud.compass(n.pos()[0] + 0.5 - x, n.pos()[2] + 0.5 - z) + ")";
-            McCompat.chat(mc, Component.literal("  [" + n.tag() + "] " + n.text() + " – " + t.nameOf(n.by()) + where + " · " + n.id()).withColor(noteColor(n.tag()) & 0xFFFFFF));
+            McCompat.chatLine(mc, Component.literal("  [" + n.tag() + "] " + n.text() + " – " + t.nameOf(n.by()) + where + " · " + n.id()).withColor(noteColor(n.tag()) & 0xFFFFFF));
         }
         return list.size();
     }
@@ -714,48 +725,48 @@ public final class TeamClient {
     private int resolve(String id) {
         TeamState t = need();
         if (t == null) return 0;
-        if (t.notes().stream().noneMatch(n -> n.id().equals(id))) return said("Keine offene Notiz mit der ID " + id + ".");
-        return said(sync.act("note.resolve", Map.of("noteId", id), "Notiz erledigt"));
+        if (t.notes().stream().noneMatch(n -> n.id().equals(id))) return said(t("Keine offene Notiz mit der ID ", "No open note with the ID ") + id + ".");
+        return said(sync.act("note.resolve", Map.of("noteId", id), t("Notiz erledigt", "Note resolved")));
     }
 
     private int deliveredHand() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return 0;
         var stack = mc.player.getMainHandItem();
-        if (stack.isEmpty()) return said("Nichts in der Hand.");
+        if (stack.isEmpty()) return said(t("Nichts in der Hand.", "Nothing in your hand."));
         return delivered(BuiltInRegistries.ITEM.getKey(stack.getItem()).toString(), stack.getCount());
     }
 
     private int delivered(String item, int count) {
         String id = item.contains(":") ? item.toLowerCase(Locale.ROOT) : "minecraft:" + item.toLowerCase(Locale.ROOT);
-        if (!id.matches("[a-z0-9_.-]+:[a-z0-9_./-]+")) return said("Item-ID ungültig: " + item);
+        if (!id.matches("[a-z0-9_.-]+:[a-z0-9_./-]+")) return said(t("Item-ID ungültig: ", "Invalid item ID: ") + item);
         TeamState t = need();
         if (t == null) return 0;
         Map<String, Object> line = Map.of("item", id, "count", count);
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("items", List.of(line));
         t.mine().stream().findFirst().ifPresent(s -> body.put("section", s.id()));
-        return said(sync.act("contribution", body, count + "× " + id + " als geliefert gemeldet"));
+        return said(sync.act("contribution", body, count + "× " + id + t(" als geliefert gemeldet", " reported as delivered")));
     }
 
     private int gather(String item, int count) {
         String id = item.contains(":") ? item.toLowerCase(Locale.ROOT) : "minecraft:" + item.toLowerCase(Locale.ROOT);
-        if (!id.matches("[a-z0-9_.-]+:[a-z0-9_./-]+")) return said("Item-ID ungültig: " + item);
+        if (!id.matches("[a-z0-9_.-]+:[a-z0-9_./-]+")) return said(t("Item-ID ungültig: ", "Invalid item ID: ") + item);
         if (need() == null) return 0;
-        return said(sync.act("gather.claim", Map.of("item", id, "count", count), "Sammelauftrag " + count + "× " + id + " übernommen"));
+        return said(sync.act("gather.claim", Map.of("item", id, "count", count), t("Sammelauftrag ", "Collect order ") + count + "× " + id + t(" übernommen", " taken")));
     }
 
     private int stores() {
         TeamState t = need();
         Minecraft mc = Minecraft.getInstance();
         if (t == null || mc.player == null) return 0;
-        if (t.stores().isEmpty()) return said(t.source() == TeamState.Source.SERVER ? "Keine markierten Lagerkisten auf dem Server." : "Noch keine markierten Lagerkisten im Team-Raum. Kisten markiert die Bauleitung mit dem Server-Plugin (/bp lager markieren).");
-        say("Lagerkisten (" + t.stores().size() + "):");
+        if (t.stores().isEmpty()) return said(t.source() == TeamState.Source.SERVER ? t("Keine markierten Lagerkisten auf dem Server.", "No marked storage chests on the server.") : t("Noch keine markierten Lagerkisten im Team-Raum. Kisten markiert die Bauleitung mit dem Server-Plugin (/bp lager markieren).", "No marked storage chests in the team room yet. The team lead marks chests with the server plugin (/bp lager markieren)."));
+        list(t("Lagerkisten (", "Storage chests (") + t.stores().size() + "):");
         for (TeamState.Store s : t.stores()) {
             int total = s.items().stream().mapToInt(TeamState.Item::count).sum();
             String top = String.join(", ", s.items().stream().sorted(java.util.Comparator.comparingInt(TeamState.Item::count).reversed()).limit(3)
                     .map(i -> i.count() + " " + McCompat.blockName(io.github.freadeax.bauplaner.mod.BlockState.parse(i.item()))).toList());
-            McCompat.chat(mc, Component.literal("  " + s.name() + " (" + s.purpose() + ") @ " + s.pos()[0] + " " + s.pos()[1] + " " + s.pos()[2] + " · " + s.status() + " · " + total + " Items" + (top.isEmpty() ? "" : ": " + top) + (s.more() ? " …" : "")
+            McCompat.chatLine(mc, Component.literal("  " + s.name() + " (" + s.purpose() + ") @ " + s.pos()[0] + " " + s.pos()[1] + " " + s.pos()[2] + " · " + s.status() + " · " + total + " Items" + (top.isEmpty() ? "" : ": " + top) + (s.more() ? " …" : "")
                     + " · " + io.github.freadeax.bauplaner.mod.team.StoreStock.source(s, java.time.Instant.now()))
                     .withColor(storeColor(s.status()) & 0xFFFFFF));
         }
@@ -764,21 +775,21 @@ public final class TeamClient {
 
     private int status() {
         TeamState p = sync.planerState(), s = sync.serverState();
-        say("Teamkanal: " + sync.link().label + (sync.allowed() ? " (erlaubt)" : ""));
-        say("Vom Planer: " + (p == null ? "nichts" : p.summary() + " · vor " + (System.currentTimeMillis() - sync.planerAt()) / 1000 + " s"));
-        say("Vom Server: " + (s == null ? "nichts" : s.summary() + " · vor " + (System.currentTimeMillis() - sync.serverAt()) / 1000 + " s"));
-        say("Ausgangskorb: " + sync.outbox().pending().size() + (sync.lastError() == null ? "" : " · letzter Fehler: " + sync.lastError()));
+        list(t("Teamkanal: ", "Team channel: ") + sync.link().text() + (sync.allowed() ? t(" (erlaubt)", " (allowed)") : ""));
+        list(t("Vom Planer: ", "From the planner: ") + (p == null ? t("nichts", "nothing") : p.summary() + t(" · vor ", " · ") + (System.currentTimeMillis() - sync.planerAt()) / 1000 + t(" s", " s ago")));
+        list(t("Vom Server: ", "From the server: ") + (s == null ? t("nichts", "nothing") : s.summary() + t(" · vor ", " · ") + (System.currentTimeMillis() - sync.serverAt()) / 1000 + t(" s", " s ago")));
+        list(t("Ausgangskorb: ", "Outbox: ") + sync.outbox().pending().size() + (sync.lastError() == null ? "" : t(" · letzter Fehler: ", " · last error: ") + sync.lastError()));
         List<String> rej = sync.rejections();
-        if (!rej.isEmpty()) say("Zuletzt abgelehnt: " + rej.get(rej.size() - 1));
+        if (!rej.isEmpty()) list(t("Zuletzt abgelehnt: ", "Last rejected: ") + rej.get(rej.size() - 1));
         return 1;
     }
 
     private int outbox(boolean clear) {
         var list = sync.outbox().pending();
-        if (clear) { sync.outbox().clear(); refresh(); return said(list.size() + " wartende Meldung(en) verworfen."); }
-        if (list.isEmpty()) return said("Der Ausgangskorb ist leer – alles abgeglichen.");
-        say(list.size() + " Meldung(en) warten (gehen an den Server, sobald der Teamkanal steht, oder an den Planer beim nächsten Abgleich):");
-        for (var a : list) say("  " + a.at().substring(0, Math.min(16, a.at().length())).replace('T', ' ') + " " + a.kind() + (a.str("section") != null ? " " + a.str("section") : ""));
+        if (clear) { sync.outbox().clear(); refresh(); return said(list.size() + t(" wartende Meldung(en) verworfen.", " waiting message(s) discarded.")); }
+        if (list.isEmpty()) return said(t("Der Ausgangskorb ist leer – alles abgeglichen.", "The outbox is empty – everything is synced."));
+        list(list.size() + t(" Meldung(en) warten (gehen an den Server, sobald der Teamkanal steht, oder an den Planer beim nächsten Abgleich):", " message(s) waiting (go to the server once the team channel is up, or to the planner at the next sync):"));
+        for (var a : list) list("  " + a.at().substring(0, Math.min(16, a.at().length())).replace('T', ' ') + " " + a.kind() + (a.str("section") != null ? " " + a.str("section") : ""));
         return list.size();
     }
 }

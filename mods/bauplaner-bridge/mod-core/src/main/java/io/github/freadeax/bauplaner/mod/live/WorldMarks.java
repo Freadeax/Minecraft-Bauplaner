@@ -1,5 +1,7 @@
 package io.github.freadeax.bauplaner.mod.live;
 
+import static io.github.freadeax.bauplaner.mod.Lang.t;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -227,16 +229,16 @@ public record WorldMarks(String dimension, List<Site> sites, List<Path> paths, L
 
     public static String typeLabel(String type) {
         return switch (type) {
-            case "anker" -> "Anker"; case "ziel" -> "Ziel"; case "lager" -> "Lager"; case "portal" -> "Portal"; case "farm" -> "Farm";
-            case "treffpunkt" -> "Treffpunkt"; case "notiz" -> "Notiz"; case "gefahr" -> "Gefahr"; case "rohstoff" -> "Rohstoff";
-            case "spawn" -> "Spawn/Bett"; default -> "Aussicht";
+            case "anker" -> t("Anker", "Anchor"); case "ziel" -> t("Ziel", "Goal"); case "lager" -> t("Lager", "Storage"); case "portal" -> "Portal"; case "farm" -> "Farm";
+            case "treffpunkt" -> t("Treffpunkt", "Meeting point"); case "notiz" -> t("Notiz", "Note"); case "gefahr" -> t("Gefahr", "Danger"); case "rohstoff" -> t("Rohstoff", "Resource");
+            case "spawn" -> t("Spawn/Bett", "Spawn/bed"); default -> t("Aussicht", "Viewpoint");
         };
     }
 
     public static String categoryLabel(String category) {
         return switch (category) {
-            case "wohnen" -> "Wohnen"; case "farm" -> "Farmen"; case "industrie" -> "Industrie"; case "lager" -> "Lager";
-            case "natur" -> "Natur"; case "gefahr" -> "Sperrgebiet"; case "verkehr" -> "Verkehr"; default -> "Zone";
+            case "wohnen" -> t("Wohnen", "Living"); case "farm" -> t("Farmen", "Farms"); case "industrie" -> t("Industrie", "Industry"); case "lager" -> t("Lager", "Storage");
+            case "natur" -> t("Natur", "Nature"); case "gefahr" -> t("Sperrgebiet", "Restricted area"); case "verkehr" -> t("Verkehr", "Traffic"); default -> "Zone";
         };
     }
 }

@@ -157,14 +157,61 @@ public final class McCompat {
         return xray;
     }
 
-    /** Message in the chat, only visible to this player. */
+    /**
+     * A message of the mod for this player (GAME-12, 0.23.0): by default an animated card at the top right
+     * ({@link Toasts}) instead of a chat line, so the chat stays free; {@code /bauplaner meldungen chat|beides}
+     * brings the chat back. Red text is an error card, gold a warning, green a success. Lists the player asked
+     * for (sections, groups, packing list …) use {@link #chatLine}. Every message is also written once to the
+     * game log and kept for the command page.
+     */
     public static void chat(Minecraft mc, Component text) {
-        // GAME-10: the command page shows the mod's own answers too.
+        String plain = text.getString();
+        CommandScreen.REPLIES.own(plain, System.currentTimeMillis());
+        ClientSettings.Notices where = ClientSettings.notices();
+        if (where != ClientSettings.Notices.CHAT) {
+            String shown = plain.startsWith("[Bauplaner] ") ? plain.substring(12) : plain;
+            Toasts.post(kind(text, shown), shown);
+        }
+        if (where == ClientSettings.Notices.POPUP || mc.player == null) LOG.info(plain);
+        else line(mc, text);
+    }
+
+    /** A line that belongs in the chat (lists and tables the player asked for); also in the log via the chat. */
+    public static void chatLine(Minecraft mc, Component text) {
         CommandScreen.REPLIES.own(text.getString(), System.currentTimeMillis());
-        if (mc.player == null) return;
+        if (mc.player == null) { LOG.info(text.getString()); return; }
+        line(mc, text);
+    }
+
+    private static void line(Minecraft mc, Component text) {
         ownLine = true;
         try { mc.player.sendSystemMessage(text); } finally { ownLine = false; }
     }
+
+    /** Words that make a plain message an error, a warning or a success card (both languages). */
+    private static final java.util.regex.Pattern ERROR_WORDS = java.util.regex.Pattern.compile(
+            "^(fehler|error)|fehlgeschlagen|failed|ungültig|invalid|gibt es nicht|does not exist|there is no|nicht lesbar|not readable|nicht möglich|not possible|nicht gefunden|not found|nicht übernommen|not accepted|unbekannt|unknown|belegt oder gesperrt|in use or blocked|darf(st)? das nicht|may not");
+    private static final java.util.regex.Pattern WARN_START = java.util.regex.Pattern.compile(
+            "(achtung|warning|hinweis|note|kein |keine |no |nothing|nichts|erst |first |zuerst|bitte|please|du bist (noch )?nicht|you are not|welche|which)");
+    private static final java.util.regex.Pattern OK_WORDS = java.util.regex.Pattern.compile(
+            "gespeichert|saved|zugelassen|allowed|erledigt|resolved|übernommen|taken|geschickt|sent|bestätigt|confirmed|fertig gemeldet|reported .*as done|verbunden|connected|platziert|placed");
+
+    private static Toasts.Kind kind(Component text, String plain) {
+        var color = text.getStyle().getColor();
+        if (color != null) {
+            int rgb = color.getValue();
+            if (rgb == 0xFF5555 || rgb == 0xAA0000) return Toasts.Kind.ERROR;
+            if (rgb == 0xFFAA00 || rgb == 0xFFFF55) return Toasts.Kind.WARN;
+            if (rgb == 0x55FF55 || rgb == 0x00AA00) return Toasts.Kind.OK;
+        }
+        String l = plain.toLowerCase(java.util.Locale.ROOT);
+        if (ERROR_WORDS.matcher(l).find()) return Toasts.Kind.ERROR;
+        if (WARN_START.matcher(l).lookingAt()) return Toasts.Kind.WARN;
+        if (OK_WORDS.matcher(l).find()) return Toasts.Kind.OK;
+        return Toasts.Kind.INFO;
+    }
+
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger("bauplaner");
 
     /** A system line from the server (loader chat event): kept for the command page if it answers a command sent from there. */
     public static void serverLine(Component text) { if (!ownLine) CommandScreen.REPLIES.offer(text.getString(), System.currentTimeMillis()); }
@@ -172,6 +219,13 @@ public final class McCompat {
     /** True while {@link #chat} writes: the loader event then reports the mod's own line, already in the log. */
     private static boolean ownLine;
 
-    /** Short status line above the hotbar. */
+    /** Short status line above the hotbar (key presses: immediate feedback where the player looks). */
     public static void overlay(Minecraft mc, Component text) { if (mc.player != null) mc.player.sendOverlayMessage(text); }
+
+    /** A background notice (website, team room, Weltplan) as a card at the top right, never in the chat. */
+    public static void notice(Minecraft mc, Toasts.Kind kind, String text) {
+        CommandScreen.REPLIES.own("[Bauplaner] " + text, System.currentTimeMillis());
+        LOG.info("[Bauplaner] " + text);
+        Toasts.post(kind, text);
+    }
 }

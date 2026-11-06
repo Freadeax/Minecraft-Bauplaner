@@ -141,6 +141,21 @@ function hologram(logFile, cells) {
   assert.match(log, /\[Platzierhilfe\] Richtigen Block genommen: .+ – nochmal klicken/);
   assert.match(log, /\[Platzierhilfe\] Nicht gesetzt – Auf den Block darunter klicken/);
   assert.match(log, /\[Platzierhilfe\] Geschützt: richtig gesetzter Planblock/);
+  // GAME-12 (0.23.0): message cards, both command languages, tab completion in the game language.
+  if (existsSync(join(dir, 'ui.json'))) {
+    const ui = JSON.parse(readFileSync(join(dir, 'ui.json'), 'utf8'));
+    assert.equal(ui.untranslated, 0, 'jedes deutsche Befehlswort hat ein englisches');
+    assert.ok(ui.suggestDe.includes('zeigen') && !ui.suggestDe.includes('show'), `deutsche Vervollständigung: ${ui.suggestDe}`);
+    assert.ok(ui.suggestDeRoot.includes('fortschritt') && !ui.suggestDeRoot.includes('progress'), 'deutsch: nur deutsche Wörter nach /bauplaner');
+    assert.ok(ui.suggestEn.includes('show') && !ui.suggestEn.includes('zeigen'), `englische Vervollständigung: ${ui.suggestEn}`);
+    assert.ok(ui.suggestEnRoot.includes('progress') && !ui.suggestEnRoot.includes('fortschritt'), 'englisch: nur englische Wörter nach /buildplanner');
+    assert.ok(ui.suggestMixed.includes('progress'), 'gemischt: deutsches Wurzelwort, englisches Unterwort');
+    assert.ok(ui.toasts.length >= 2, `Meldungskarten oben rechts: ${ui.toasts}`);
+    assert.ok(ui.buttonsEn.includes('Done') && ui.buttonsEn.includes('Options') && ui.buttonsEn.includes('Move'), `englisches Menü: ${ui.buttonsEn}`);
+    assert.match(log, /\[Bauplaner\] .*: \d+ % · correct \d+ · missing \d+/, 'englische Fortschrittsmeldung');
+    assert.match(log, /\[Bauplaner\] Sprache: Deutsch/, 'Sprache umgestellt');
+    console.log(`Oberfläche bestanden: Meldungskarten (${ui.toasts.length}), Befehle Deutsch/Englisch mit Vervollständigung, englisches Menü.`);
+  }
   console.log(`Hologramm bestanden: ${planned} Planblöcke, Fortschritt ${placed[0]} % → ${built[0]} % nach dem Setzen des fehlenden Blocks, Drehen, Speichern, Materialliste (${material[1][0]} offen nach Teilabriss), Ebenenmodus, Bauabschnitte (Turm ${towerOpen} offen, Mauer ${wallOpen} offen), Röntgensicht und Platzierhilfe (falscher Block, liegender Stamm, Abbauschutz) geprüft.`);
 }
 

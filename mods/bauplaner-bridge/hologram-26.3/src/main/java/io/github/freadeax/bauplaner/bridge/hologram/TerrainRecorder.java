@@ -1,5 +1,7 @@
 package io.github.freadeax.bauplaner.bridge.hologram;
 
+import static io.github.freadeax.bauplaner.mod.Lang.t;
+
 import io.github.freadeax.bauplaner.mod.live.SurfaceRuns;
 import io.github.freadeax.bauplaner.mod.live.TerrainMemory;
 import java.io.IOException;
@@ -117,14 +119,16 @@ final class TerrainRecorder {
     // ------------------------------------------------------------------ /bauplaner gelaende
 
     String status(Minecraft mc) {
-        if (mc.level == null) return "Keine Welt geladen.";
+        if (mc.level == null) return t("Keine Welt geladen.", "No world loaded.");
         String dim = McCompat.dimension(mc.level);
         int n = memory.size(dim);
         save();
         long size = 0;
         try { if (worldKey != null && Files.isRegularFile(file())) size = Files.size(file()); } catch (IOException ignored) { }
-        return "Geländegedächtnis " + (enabled ? "an" : "aus") + ": " + n + " Chunks in dieser Dimension (etwa " + (n * 256) + " Spalten), " + memory.total()
-                + " insgesamt, Datei " + Math.max(1, (size + 1023) / 1024) + " KB. Die Website übernimmt daraus Gelände für Bauplätze (Reiter „Gelände“).";
+        return t("Geländegedächtnis " + (enabled ? "an" : "aus") + ": " + n + " Chunks in dieser Dimension (etwa " + (n * 256) + " Spalten), " + memory.total()
+                + " insgesamt, Datei " + Math.max(1, (size + 1023) / 1024) + " KB. Die Website übernimmt daraus Gelände für Bauplätze (Reiter „Gelände“).",
+                "Terrain memory " + (enabled ? "on" : "off") + ": " + n + " chunks in this dimension (about " + (n * 256) + " columns), " + memory.total()
+                + " in total, file " + Math.max(1, (size + 1023) / 1024) + " KB. The website takes terrain for building sites from it (tab “Terrain”).");
     }
 
     String setEnabled(boolean on) {
@@ -135,13 +139,13 @@ final class TerrainRecorder {
             Files.createDirectories(dir);
             try (var out = Files.newOutputStream(dir.resolve("einstellung.properties"))) { p.store(out, "Bauplaner Geländegedächtnis"); }
         } catch (IOException ignored) { }
-        return on ? "Geländegedächtnis an: Die Mod merkt sich das Gelände, das du siehst (nur auf diesem PC)." : "Geländegedächtnis aus. Gemerktes bleibt, bis du „/bauplaner gelaende vergessen“ eingibst.";
+        return on ? t("Geländegedächtnis an: Die Mod merkt sich das Gelände, das du siehst (nur auf diesem PC).", "Terrain memory on: the mod remembers the terrain you see (only on this PC).") : t("Geländegedächtnis aus. Gemerktes bleibt, bis du „/bauplaner gelaende vergessen“ eingibst.", "Terrain memory off. What is remembered stays until you type “/buildplanner terrain forget”.");
     }
 
     String forget() {
         memory.clear();
         save();
-        return "Gemerktes Gelände dieser Welt gelöscht.";
+        return t("Gemerktes Gelände dieser Welt gelöscht.", "Remembered terrain of this world deleted.");
     }
 
     private Properties settings() {

@@ -1,5 +1,7 @@
 package io.github.freadeax.bauplaner.bridge.fabric;
 
+import static io.github.freadeax.bauplaner.mod.Lang.t;
+
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 
@@ -60,8 +62,9 @@ public final class BridgeClient implements ClientModInitializer {
                     .then(xyz);
             var cmd = literal("bauplaner");
             client.<FabricClientCommandSource>commands().forEach(cmd::then);
-            dispatcher.register(cmd
-                    .executes(c -> help(c.getSource()))
+            // GAME-12 (0.23.0): /bauplaner in German and /buildplanner in English, tab completion in the mod's language.
+            io.github.freadeax.bauplaner.bridge.hologram.CommandLang.register(dispatcher, cmd
+                    .executes(c -> client.help())
                     .then(literal("plaene").executes(c -> listPlans(c.getSource())))
                     .then(planCmd)
                     .then(anchorCmd)
@@ -118,14 +121,6 @@ public final class BridgeClient implements ClientModInitializer {
     private static void say(FabricClientCommandSource s, String text) { s.sendFeedback(Component.literal("[Bauplaner] " + text)); }
     private static int fail(FabricClientCommandSource s, String text) { s.sendError(Component.literal("[Bauplaner] " + text)); return 0; }
 
-    private int help(FabricClientCommandSource s) {
-        say(s, "1) Plan im Tab „Export“ der Website exportieren und nach " + root.resolve("plans") + " legen.");
-        say(s, "2) /bauplaner plan <datei>  3) /bauplaner anker hier (angeschauter Block = Projektursprung 0/0/0)  4) /bauplaner scan");
-        say(s, "Mit der Website verbinden (Spielerposition, Gelände, Plan direkt übergeben): /bauplaner verbinden – Code auf der Website unter „Spiel“ eintragen.");
-        say(s, "Die Aufnahme landet in " + root.resolve("scans") + " und wird im Tab „Bauen“ importiert. Die Welt wird nie verändert.");
-        return 1;
-    }
-
     private Stream<String> planFiles() {
         try (var files = Files.list(root.resolve("plans"))) {
             return files.map(p -> p.getFileName().toString()).filter(n -> n.endsWith(".schem")).sorted().toList().stream();
@@ -135,23 +130,23 @@ public final class BridgeClient implements ClientModInitializer {
     }
 
     private int listPlans(FabricClientCommandSource s) {
-        try { Files.createDirectories(root.resolve("plans")); } catch (IOException e) { return fail(s, "Ordner nicht anlegbar: " + e.getMessage()); }
+        try { Files.createDirectories(root.resolve("plans")); } catch (IOException e) { return fail(s, t("Ordner nicht anlegbar: ", "Cannot create folder: ") + e.getMessage()); }
         var names = planFiles().toList();
-        if (names.isEmpty()) return fail(s, "Keine Pläne in " + root.resolve("plans") + ".");
+        if (names.isEmpty()) return fail(s, t("Keine Pläne in ", "No plans in ") + root.resolve("plans") + ".");
         names.forEach(n -> say(s, n));
         return names.size();
     }
 
     private int loadPlan(FabricClientCommandSource s, String name) {
         Path file = root.resolve("plans").resolve(name).normalize();
-        if (!file.startsWith(root.resolve("plans"))) return fail(s, "Ungültiger Dateiname.");
+        if (!file.startsWith(root.resolve("plans"))) return fail(s, t("Ungültiger Dateiname.", "Invalid file name."));
         try {
             plan = Plan.read(file);
         } catch (IOException | BridgeException e) {
-            return fail(s, "Plan nicht lesbar: " + e.getMessage());
+            return fail(s, t("Plan nicht lesbar: ", "Plan not readable: ") + e.getMessage());
         }
-        say(s, "Plan geladen: " + plan.name() + " · " + plan.width() + "×" + plan.height() + "×" + plan.length() + " (" + plan.volume() + " Zellen).");
-        if (plan.dataVersion() != McCompat.dataVersion()) say(s, "Hinweis: Plan für DataVersion " + plan.dataVersion() + ", Spiel " + McCompat.dataVersion() + ".");
+        say(s, t("Plan geladen: ", "Plan loaded: ") + plan.name() + " · " + plan.width() + "×" + plan.height() + "×" + plan.length() + " (" + plan.volume() + t(" Zellen).", " cells)."));
+        if (plan.dataVersion() != McCompat.dataVersion()) say(s, t("Hinweis: Plan für DataVersion ", "Note: plan for DataVersion ") + plan.dataVersion() + t(", Spiel ", ", game ") + McCompat.dataVersion() + ".");
         restoreAnchor(s);
         return 1;
     }
@@ -160,53 +155,53 @@ public final class BridgeClient implements ClientModInitializer {
         try {
             new AnchorStore(root.resolve("state.properties")).get(McCompat.worldKey(s.getClient()))
                     .filter(e -> e.planFile().equals(plan.fileName()))
-                    .ifPresent(e -> { anchor = e.anchor(); anchorDimension = e.dimension(); say(s, "Gespeicherter Anker: " + anchor[0] + " " + anchor[1] + " " + anchor[2] + " (" + anchorDimension + ")."); });
+                    .ifPresent(e -> { anchor = e.anchor(); anchorDimension = e.dimension(); say(s, t("Gespeicherter Anker: ", "Saved anchor: ") + anchor[0] + " " + anchor[1] + " " + anchor[2] + " (" + anchorDimension + ")."); });
         } catch (IOException e) {
-            say(s, "Gespeicherter Anker nicht lesbar: " + e.getMessage());
+            say(s, t("Gespeicherter Anker nicht lesbar: ", "Saved anchor not readable: ") + e.getMessage());
         }
     }
 
     private int setAnchor(FabricClientCommandSource s, BlockPos pos) {
-        if (plan == null) return fail(s, "Zuerst /bauplaner plan <datei>.");
+        if (plan == null) return fail(s, t("Zuerst /bauplaner plan <datei>.", "First /buildplanner plan <file>."));
         anchor = new int[] { pos.getX(), pos.getY(), pos.getZ() };
         anchorDimension = McCompat.dimension(s.getClient().level);
         int[] m = plan.projectMin();
-        say(s, "Projektursprung 0/0/0 = " + pos.getX() + " " + pos.getY() + " " + pos.getZ() + ". Planbox von "
-                + (pos.getX() + m[0]) + " " + (pos.getY() + m[1]) + " " + (pos.getZ() + m[2]) + " bis "
+        say(s, t("Projektursprung 0/0/0 = ", "Project origin 0/0/0 = ") + pos.getX() + " " + pos.getY() + " " + pos.getZ() + t(". Planbox von ", ". Plan box from ")
+                + (pos.getX() + m[0]) + " " + (pos.getY() + m[1]) + " " + (pos.getZ() + m[2]) + t(" bis ", " to ")
                 + (pos.getX() + m[0] + plan.width() - 1) + " " + (pos.getY() + m[1] + plan.height() - 1) + " " + (pos.getZ() + m[2] + plan.length() - 1) + ".");
         try {
             new AnchorStore(root.resolve("state.properties")).put(McCompat.worldKey(s.getClient()), new AnchorStore.Entry(plan.fileName(), anchorDimension, anchor));
         } catch (IOException e) {
-            say(s, "Anker nicht gespeichert: " + e.getMessage());
+            say(s, t("Anker nicht gespeichert: ", "Anchor not saved: ") + e.getMessage());
         }
         return 1;
     }
 
     private int startScan(FabricClientCommandSource s) {
-        if (plan == null) return fail(s, "Zuerst /bauplaner plan <datei>.");
-        if (anchor == null) return fail(s, "Zuerst /bauplaner anker hier.");
-        if (job != null) return fail(s, "Es läuft bereits eine Aufnahme.");
+        if (plan == null) return fail(s, t("Zuerst /bauplaner plan <datei>.", "First /buildplanner plan <file>."));
+        if (anchor == null) return fail(s, t("Zuerst /bauplaner anker hier.", "First /buildplanner anchor here."));
+        if (job != null) return fail(s, t("Es läuft bereits eine Aufnahme.", "A scan is already running."));
         var level = s.getClient().level;
         String dim = McCompat.dimension(level);
-        if (!dim.equals(anchorDimension)) return fail(s, "Der Anker liegt in " + anchorDimension + ", du bist in " + dim + ".");
+        if (!dim.equals(anchorDimension)) return fail(s, t("Der Anker liegt in ", "The anchor is in ") + anchorDimension + t(", du bist in ", ", you are in ") + dim + ".");
         String version = FabricLoader.getInstance().getModContainer("bauplaner_bridge").map(c -> c.getMetadata().getVersion().getFriendlyString()).orElse("?");
         job = new ScanJob(plan, anchor, McCompat.clientBlocks(level), McCompat.dataVersion(), new ScanJob.Info(McCompat.gameVersion(), version, "fabric", dim, "client"));
         jobDimension = dim;
-        say(s, "Aufnahme gestartet: " + plan.volume() + " Zellen. Bitte in der Nähe bleiben; nur geladene Chunks werden gelesen.");
+        say(s, t("Aufnahme gestartet: " + plan.volume() + " Zellen. Bitte in der Nähe bleiben; nur geladene Chunks werden gelesen.", "Scan started: " + plan.volume() + " cells. Please stay nearby; only loaded chunks are read."));
         return 1;
     }
 
     private int cancel(FabricClientCommandSource s) {
-        if (job == null) return fail(s, "Keine Aufnahme aktiv.");
+        if (job == null) return fail(s, t("Keine Aufnahme aktiv.", "No scan running."));
         job = null;
-        say(s, "Aufnahme abgebrochen, keine Datei geschrieben.");
+        say(s, t("Aufnahme abgebrochen, keine Datei geschrieben.", "Scan cancelled, no file written."));
         return 1;
     }
 
     private int status(FabricClientCommandSource s) {
-        say(s, plan == null ? "Kein Plan geladen." : "Plan: " + plan.fileName() + " (Revision " + plan.revisionNumber() + ")");
-        say(s, anchor == null ? "Kein Anker." : "Anker: " + anchor[0] + " " + anchor[1] + " " + anchor[2] + " (" + anchorDimension + ")");
-        if (job != null) say(s, "Aufnahme: " + job.done() + " / " + job.total() + " Zellen");
+        say(s, plan == null ? t("Kein Plan geladen.", "No plan loaded.") : "Plan: " + plan.fileName() + " (Revision " + plan.revisionNumber() + ")");
+        say(s, anchor == null ? t("Kein Anker.", "No anchor.") : t("Anker: ", "Anchor: ") + anchor[0] + " " + anchor[1] + " " + anchor[2] + " (" + anchorDimension + ")");
+        if (job != null) say(s, t("Aufnahme: ", "Scan: ") + job.done() + " / " + job.total() + t(" Zellen", " cells"));
         return 1;
     }
 
@@ -214,12 +209,12 @@ public final class BridgeClient implements ClientModInitializer {
         if (job == null) return;
         if (mc.level == null || mc.player == null || !McCompat.dimension(mc.level).equals(jobDimension)) {
             job = null;
-            if (mc.player != null) McCompat.chat(mc, Component.literal("[Bauplaner] Aufnahme abgebrochen: Welt oder Dimension gewechselt."));
+            if (mc.player != null) McCompat.chat(mc, Component.literal("[Bauplaner] " + t("Aufnahme abgebrochen: Welt oder Dimension gewechselt.", "Scan cancelled: world or dimension changed.")));
             return;
         }
         try {
             boolean done = job.step(CELLS_PER_TICK);
-            McCompat.overlay(mc, Component.literal("Bauplaner-Aufnahme " + (job.done() * 100 / job.total()) + " %"));
+            McCompat.overlay(mc, Component.literal(t("Bauplaner-Aufnahme ", "Buildplanner scan ") + (job.done() * 100 / job.total()) + " %"));
             if (!done) return;
             Instant now = Instant.now();
             Path out = root.resolve("scans").resolve(ScanJob.fileName(plan, now));
@@ -227,12 +222,12 @@ public final class BridgeClient implements ClientModInitializer {
             Path tmp = out.resolveSibling(out.getFileName() + ".tmp");
             Files.write(tmp, job.toFile(now));
             Files.move(tmp, out, java.nio.file.StandardCopyOption.ATOMIC_MOVE);
-            String unloaded = job.unloaded() > 0 ? " " + job.unloaded() + " Zellen lagen in nicht geladenen Chunks (gelten als „nicht aufgenommen“)." : "";
-            McCompat.chat(mc, Component.literal("[Bauplaner] Aufnahme gespeichert: " + out + "." + unloaded + " Jetzt im Tab „Bauen“ importieren."));
+            String unloaded = job.unloaded() > 0 ? " " + job.unloaded() + t(" Zellen lagen in nicht geladenen Chunks (gelten als „nicht aufgenommen“).", " cells were in unloaded chunks (count as “not scanned”).") : "";
+            McCompat.chat(mc, Component.literal("[Bauplaner] " + t("Aufnahme gespeichert: ", "Scan saved: ") + out + "." + unloaded + t(" Jetzt im Tab „Bauen“ importieren.", " Now import it in the “Build” tab.")));
             job = null;
         } catch (IOException | RuntimeException e) {
             job = null;
-            McCompat.chat(mc, Component.literal("[Bauplaner] Aufnahme fehlgeschlagen: " + e.getMessage()));
+            McCompat.chat(mc, Component.literal("[Bauplaner] " + t("Aufnahme fehlgeschlagen: ", "Scan failed: ") + e.getMessage()));
         }
     }
 }

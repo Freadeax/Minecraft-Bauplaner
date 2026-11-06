@@ -1,5 +1,7 @@
 package io.github.freadeax.bauplaner.bridge.hologram;
 
+import static io.github.freadeax.bauplaner.mod.Lang.t;
+
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -63,11 +65,11 @@ public final class HologramKeys {
         if (mc.player == null) return;
         while (menu.consumeClick()) PlanScreen.open(mc, hologram);
         boolean active = hologram.active();
-        while (toggle.consumeClick()) if (active) { hologram.toggleVisible(); overlay(mc, hologram.visible() ? "Plan eingeblendet" : "Plan ausgeblendet"); }
+        while (toggle.consumeClick()) if (active) { hologram.toggleVisible(); overlay(mc, hologram.visible() ? t("Plan eingeblendet", "Plan shown") : t("Plan ausgeblendet", "Plan hidden")); }
         while (finder.consumeClick()) {
             if (!active) continue;
             int i = hologram.findNext(mc.player.getX(), mc.player.getY(), mc.player.getZ());
-            overlay(mc, i < 0 ? "Keine Fehler in geladenen Chunks – alles richtig!" : "Fehler markiert (violetter Rahmen)");
+            overlay(mc, i < 0 ? t("Keine Fehler in geladenen Chunks – alles richtig!", "No errors in loaded chunks – all correct!") : t("Fehler markiert (violetter Rahmen)", "Error marked (violet frame)"));
         }
         Direction facing = mc.player.getDirection();
         Direction side = facing.getClockWise();
@@ -77,28 +79,28 @@ public final class HologramKeys {
         while (left.consumeClick()) move(mc, -side.getStepX(), 0, -side.getStepZ());
         while (up.consumeClick()) move(mc, 0, 1, 0);
         while (down.consumeClick()) move(mc, 0, -1, 0);
-        while (turn.consumeClick()) if (active) { hologram.turn(1); overlay(mc, "Gedreht: " + hologram.check().placement().turns() * 90 + "°"); }
-        while (mirror.consumeClick()) if (active) { hologram.mirror(); overlay(mc, hologram.check().placement().mirror() ? "Gespiegelt" : "Nicht gespiegelt"); }
+        while (turn.consumeClick()) if (active) { hologram.turn(1); overlay(mc, t("Gedreht: ", "Turned: ") + hologram.check().placement().turns() * 90 + "°"); }
+        while (mirror.consumeClick()) if (active) { hologram.mirror(); overlay(mc, hologram.check().placement().mirror() ? t("Gespiegelt", "Mirrored") : t("Nicht gespiegelt", "Not mirrored")); }
         while (materials.consumeClick()) if (active) MaterialScreen.open(mc, hologram);
         while (layers.consumeClick()) if (active) { hologram.cycleLayers(); overlay(mc, layerText()); }
         while (layerUp.consumeClick()) if (active) { hologram.stepLayer(1); overlay(mc, layerText()); }
         while (layerDown.consumeClick()) if (active) { hologram.stepLayer(-1); overlay(mc, layerText()); }
         while (pick.consumeClick()) if (active) assist.pick(mc);
         while (section.consumeClick()) if (active) overlay(mc, hologram.stepSection(1));
-        while (xray.consumeClick()) { hologram.toggleXray(); overlay(mc, hologram.xray() ? "Röntgensicht an: offene Blöcke auch durch Wände" : "Röntgensicht aus"); }
-        while (guard.consumeClick()) { hologram.setGuard(hologram.guard().next()); overlay(mc, "Platzierhilfe: " + hologram.guard().label); }
+        while (xray.consumeClick()) { hologram.toggleXray(); overlay(mc, hologram.xray() ? t("Röntgensicht an: offene Blöcke auch durch Wände", "X-ray on: open blocks also through walls") : t("Röntgensicht aus", "X-ray off")); }
+        while (guard.consumeClick()) { hologram.setGuard(hologram.guard().next()); overlay(mc, t("Platzierhilfe: ", "Placement helper: ") + hologram.guard().text()); }
         while (curvePoint.consumeClick()) if (guides != null) {
             try { overlay(mc, guides.addPoint(mc)); } catch (IllegalArgumentException e) { overlay(mc, e.getMessage()); }
         }
         while (symmetryAxis.consumeClick()) if (guides != null) overlay(mc, guides.axisHere(mc, false));
-        while (here.consumeClick()) if (active) { hologram.moveTo(McCompat.targetBlock(mc)); overlay(mc, "Plan zum angeschauten Block verschoben"); }
+        while (here.consumeClick()) if (active) { hologram.moveTo(McCompat.targetBlock(mc)); overlay(mc, t("Plan zum angeschauten Block verschoben", "Plan moved to the block you look at")); }
     }
 
     private String layerText() {
         return switch (hologram.layers()) {
-            case ALL -> "Alle Ebenen";
-            case ONE -> "Nur Ebene " + hologram.layerY();
-            case BELOW -> "Bis Ebene " + hologram.layerY();
+            case ALL -> t("Alle Ebenen", "All layers");
+            case ONE -> t("Nur Ebene ", "Only layer ") + hologram.layerY();
+            case BELOW -> t("Bis Ebene ", "Up to layer ") + hologram.layerY();
         };
     }
 
@@ -106,7 +108,7 @@ public final class HologramKeys {
         if (!hologram.active()) return;
         hologram.move(dx, dy, dz);
         var p = hologram.check().placement();
-        overlay(mc, "Ursprung " + p.x() + " " + p.y() + " " + p.z());
+        overlay(mc, t("Ursprung ", "Origin ") + p.x() + " " + p.y() + " " + p.z());
     }
 
     private static void overlay(Minecraft mc, String text) { McCompat.overlay(mc, Component.literal(text)); }

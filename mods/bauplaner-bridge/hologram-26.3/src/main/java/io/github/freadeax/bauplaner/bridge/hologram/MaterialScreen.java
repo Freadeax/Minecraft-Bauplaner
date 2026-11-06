@@ -1,5 +1,7 @@
 package io.github.freadeax.bauplaner.bridge.hologram;
 
+import static io.github.freadeax.bauplaner.mod.Lang.t;
+
 import io.github.freadeax.bauplaner.mod.Materials;
 import java.util.List;
 import net.minecraft.client.Minecraft;
@@ -31,7 +33,7 @@ public final class MaterialScreen extends Screen {
     private int ticks;
 
     MaterialScreen(Hologram hologram, Screen parent) {
-        super(Component.literal("Bauplaner – Materialliste"));
+        super(Component.literal(t("Bauplaner – Materialliste", "Bauplaner – material list")));
         this.hologram = hologram;
         this.parent = parent;
     }
@@ -47,9 +49,9 @@ public final class MaterialScreen extends Screen {
         int y = height - 28;
         addRenderableWidget(Button.builder(Component.literal("◀"), b -> { page = (page + pages - 1) % pages; rebuildWidgets(); }).bounds(width / 2 - 160, y, 30, 20).build());
         addRenderableWidget(Button.builder(Component.literal("▶"), b -> { page = (page + 1) % pages; rebuildWidgets(); }).bounds(width / 2 - 126, y, 30, 20).build());
-        addRenderableWidget(Button.builder(Component.literal(onlyOpen ? "Alle zeigen" : "Nur offene"), b -> { onlyOpen = !onlyOpen; page = 0; rebuildWidgets(); })
+        addRenderableWidget(Button.builder(Component.literal(onlyOpen ? t("Alle zeigen", "Show all") : t("Nur offene", "Only open")), b -> { onlyOpen = !onlyOpen; page = 0; rebuildWidgets(); })
                 .bounds(width / 2 - 90, y, 90, 20).build());
-        addRenderableWidget(Button.builder(Component.literal("Zurück"), b -> onClose()).bounds(width / 2 + 6, y, 90, 20).build());
+        addRenderableWidget(Button.builder(Component.literal(t("Zurück", "Back")), b -> onClose()).bounds(width / 2 + 6, y, 90, 20).build());
     }
 
     @Override
@@ -74,25 +76,25 @@ public final class MaterialScreen extends Screen {
     @Override
     public void extractRenderState(GuiGraphicsExtractor g, int mouseX, int mouseY, float delta) {
         super.extractRenderState(g, mouseX, mouseY, delta);
-        g.centeredText(font, title, width / 2, 10, 0xFFFFFFFF);
-        if (!hologram.active()) { g.centeredText(font, "Kein Plan platziert.", width / 2, 40, 0xFFB0B0B0); return; }
+        g.centeredText(font, title, width / 2, 10, HudCard.TEXT);
+        if (!hologram.active()) { g.centeredText(font, t("Kein Plan platziert.", "No plan placed."), width / 2, 40, HudCard.MUTED); return; }
         String scope = switch (hologram.layers()) {
-            case ALL -> "ganzer Plan";
-            case ONE -> "nur Ebene " + hologram.layerY();
-            case BELOW -> "bis Ebene " + hologram.layerY();
+            case ALL -> t("ganzer Plan", "whole plan");
+            case ONE -> t("nur Ebene ", "only layer ") + hologram.layerY();
+            case BELOW -> t("bis Ebene ", "up to layer ") + hologram.layerY();
         };
-        if (hologram.sectionName() != null) scope = "Abschnitt „" + hologram.sectionName() + "“ · " + scope;
+        if (hologram.sectionName() != null) scope = t("Abschnitt „", "Section “") + hologram.sectionName() + t("“ · ", "” · ") + scope;
         if (hologram.sectionSetLabel() != null) scope = hologram.sectionSetLabel() + " · " + scope;
         int open = 0, fetch = 0;
         for (var l : lines) { open += l.open(); fetch += Math.max(0, l.open() - inInventory(l.id())); }
-        g.centeredText(font, hologram.plan().name() + " · " + scope + " · " + open + " Blöcke offen, " + fetch + " noch holen", width / 2, 22, 0xFFB0B0B0);
+        g.centeredText(font, hologram.plan().name() + " · " + scope + " · " + open + t(" Blöcke offen, ", " blocks open, ") + fetch + t(" noch holen", " still to fetch"), width / 2, 22, HudCard.MUTED);
         int left = width / 2 - 170, top = 40, row = 18;
-        g.text(font, "Block", left + 22, top, 0xFFB0B0B0, true);
-        g.text(font, "offen", left + 210, top, 0xFFB0B0B0, true);
-        g.text(font, "Inventar", left + 250, top, 0xFFB0B0B0, true);
-        g.text(font, "holen", left + 305, top, 0xFFB0B0B0, true);
-        if (!stock.isEmpty()) g.text(font, "Lager", left + 345, top, 0xFFB0B0B0, true);
-        if (lines.isEmpty()) g.text(font, onlyOpen ? "Alles gebaut – nichts mehr offen." : "Keine Blöcke.", left + 22, top + row, 0xFF6BE07B, true);
+        g.text(font, "Block", left + 22, top, HudCard.MUTED, true);
+        g.text(font, "offen", left + 210, top, HudCard.MUTED, true);
+        g.text(font, "Inventar", left + 250, top, HudCard.MUTED, true);
+        g.text(font, "holen", left + 305, top, HudCard.MUTED, true);
+        if (!stock.isEmpty()) g.text(font, "Lager", left + 345, top, HudCard.MUTED, true);
+        if (lines.isEmpty()) g.text(font, onlyOpen ? t("Alles gebaut – nichts mehr offen.", "All built – nothing open any more.") : t("Keine Blöcke.", "No blocks."), left + 22, top + row, HudCard.ACCENT, true);
         for (int k = 0; k < ROWS; k++) {
             int i = page * ROWS + k;
             if (i >= lines.size()) break;
@@ -103,19 +105,19 @@ public final class MaterialScreen extends Screen {
             String name = McCompat.blockName(io.github.freadeax.bauplaner.mod.BlockState.parse(l.id()));
             if (font.width(name) > 180) name = font.plainSubstrByWidth(name, 176) + "…";
             int have = inInventory(l.id()), need = Math.max(0, l.open() - have);
-            int done = l.open() == 0 ? 0xFF6BE07B : 0xFFFFFFFF;
+            int done = l.open() == 0 ? HudCard.ACCENT : HudCard.TEXT;
             g.text(font, name, left + 22, y, done, true);
             g.text(font, Integer.toString(l.open()), left + 210, y, done, true);
-            g.text(font, Integer.toString(have), left + 250, y, 0xFFB0B0B0, true);
-            g.text(font, need == 0 ? "✓" : Integer.toString(need), left + 305, y, need == 0 ? 0xFF6BE07B : 0xFFFFD54A, true);
+            g.text(font, Integer.toString(have), left + 250, y, HudCard.MUTED, true);
+            g.text(font, need == 0 ? "✓" : Integer.toString(need), left + 305, y, need == 0 ? HudCard.ACCENT : HudCard.GOLD, true);
             if (!stock.isEmpty()) {
                 var a = stock.getOrDefault(l.id(), io.github.freadeax.bauplaner.mod.team.StoreStock.Amount.NONE);
-                g.text(font, a.label(), left + 345, y, a.count() == 0 ? 0xFF808080 : a.count() >= need ? 0xFF6BE07B : 0xFFFFD54A, true);
+                g.text(font, a.label(), left + 345, y, a.count() == 0 ? HudCard.DIM : a.count() >= need ? HudCard.ACCENT : HudCard.GOLD, true);
             }
         }
         int pages = Math.max(1, (lines.size() + ROWS - 1) / ROWS);
         boolean seen = stock.values().stream().anyMatch(io.github.freadeax.bauplaner.mod.team.StoreStock.Amount::unverified);
-        g.text(font, "Seite " + (page + 1) + " / " + pages + "  ·  Inventar zählt Shulkerkisten und Bündel mit" + (stock.isEmpty() ? "" : "  ·  Lager = Team-Lagerkisten" + (seen ? ", * nur im Spiel gesehen" : "")), left, height - 44, 0xFF808080, true);
+        g.text(font, t("Seite ", "Page ") + (page + 1) + " / " + pages + t("  ·  Inventar zählt Shulkerkisten und Bündel mit", "  ·  inventory counts shulker boxes and bundles") + (stock.isEmpty() ? "" : t("  ·  Lager = Team-Lagerkisten", "  ·  storage = team storage chests") + (seen ? t(", * nur im Spiel gesehen", ", * only seen in game") : "")), left, height - 44, HudCard.DIM, true);
     }
 
     static Item item(String id) {

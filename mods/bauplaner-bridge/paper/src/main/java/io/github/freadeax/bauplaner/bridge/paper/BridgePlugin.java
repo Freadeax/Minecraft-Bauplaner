@@ -41,7 +41,7 @@ import org.bukkit.scheduler.BukkitTask;
  */
 public final class BridgePlugin extends JavaPlugin implements TabExecutor {
     private static final String PREFIX = ChatColor.GOLD + "[Bauplaner] " + ChatColor.RESET;
-    private static final List<String> SUBCOMMANDS = List.of("hilfe", "plaene", "plan", "anker", "scan", "abbrechen", "status", "weltplan");
+    private static final List<String> SUBCOMMANDS = List.of("hilfe", "plaene", "plan", "anker", "scan", "abbrechen", "status", "weltplan", "worldplan");
 
     private Path root;
     private final Map<String, Plan> selected = new HashMap<>();
@@ -128,7 +128,7 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
             case "scan": return startScan(s, rest.length > 0 && rest[0].equalsIgnoreCase("geladen"));
             case "abbrechen": return cancel(s);
             case "status": return status(s);
-            case "weltplan": return world.command(s, label, rest);
+            case "weltplan", "worldplan": return world.command(s, label, rest);
             default: return help(s, label);
         }
     }
@@ -142,6 +142,9 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
         if (sub.equals("scan") && args.length == 2) return startsWith(Stream.of("geladen"), args[1]);
         if (sub.equals("weltplan") && args.length == 2) return startsWith(Stream.of("sperren"), args[1]);
         if (sub.equals("weltplan") && args.length == 3) return startsWith(Stream.of("aus", "hinweis", "sperren"), args[2]);
+        // GAME-12: English twin of the world plan command.
+        if (sub.equals("worldplan") && args.length == 2) return startsWith(Stream.of("locks"), args[1]);
+        if (sub.equals("worldplan") && args.length == 3) return startsWith(Stream.of("off", "notice", "lock"), args[2]);
         if (sub.equals("anker")) {
             if (args.length == 2) return startsWith(Stream.of("hier", "~"), args[1]);
             if (args.length <= 4) return startsWith(Stream.of("~"), args[args.length - 1]);

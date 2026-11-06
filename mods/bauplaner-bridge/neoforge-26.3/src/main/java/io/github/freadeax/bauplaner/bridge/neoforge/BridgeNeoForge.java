@@ -63,10 +63,10 @@ public final class BridgeNeoForge {
 
         var bus = NeoForge.EVENT_BUS;
         bus.addListener((RegisterClientCommandsEvent e) -> {
-            BridgeCommands.register(e.getDispatcher(), session);
-            var root2 = net.minecraft.commands.Commands.literal("bauplaner");
+            // GAME-12 (0.23.0): one tree, registered as /bauplaner (German) and /buildplanner (English).
+            var root2 = BridgeCommands.builder(session).executes(c -> client.help());
             client.<CommandSourceStack>commands().forEach(root2::then);
-            e.getDispatcher().register(root2);
+            io.github.freadeax.bauplaner.bridge.hologram.CommandLang.register(e.getDispatcher(), root2);
         });
         bus.addListener((ClientTickEvent.Post e) -> {
             session.tick(BridgeSession.CELLS_PER_TICK);

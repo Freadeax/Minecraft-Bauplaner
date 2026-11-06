@@ -34,6 +34,8 @@ final class HologramScenario {
     static List<ClientScenario.Step> steps(ClientScenario s) {
         int[] a = s.anchor();
         List<ClientScenario.Step> out = new ArrayList<>();
+        // GAME-12: the test client runs en_us; the log lines checked by bridge_gametest.mjs are German.
+        step(out, 3, mc -> s.command("bauplaner sprache deutsch"));
         step(out, 40, mc -> s.command("bauplaner zeigen " + PLAN));
         step(out, 3, mc -> s.command("bauplaner fortschritt"));
         step(out, 3, mc -> s.command("bauplaner fehler"));
