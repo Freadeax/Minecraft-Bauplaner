@@ -7068,3 +7068,18 @@ Dateizuordnung zu Mod 0.18.0 nachgetragen (der vorige Eintrag entstand nach dem 
 
 - `mods/bauplaner-bridge/modrinth/DESCRIPTION.md`
 
+## 2026-11-06T10:12:51.224Z · progress
+
+**Aufgaben:** EDIT-04
+
+Spieltest Fabric 26.3 um die Bauhilfen erweitert: Symmetrieachse, 4-fach gedreht und gespiegelt, 15 Blöcke über den echten Klickweg gesetzt, Mauerkurve durch drei Punkte; Aufnahme bauhilfen.png für die Modrinth-Galerie. Geprüft: echter Spieltest Fabric 26.3 bestanden.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| EDIT-04 | 🧩 Implementiert · Abnahme offen | 7/8 | Spielprüfung gespiegelter Zustände im Planer (S07) und der Bauhilfen in der Mod (MOD-18/19); Gelände-Werkzeuge auf dem Projektgelände bleiben offen. |
+
+**Geänderte Dateien:**
+
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java`
+- `scripts/mod/bridge_gametest.mjs`
+

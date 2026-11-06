@@ -68,6 +68,7 @@ public final class BridgeGameTest implements FabricClientGameTest {
                 try {
                     hologram(context, world, io, root, anchor);
                     liveLink(context, io, anchor);
+                    guides(context, world, io, anchor);
                 } catch (Throwable t) {
                     // Modpack runs can hang on shutdown before the failure is reported: log it right away.
                     t.printStackTrace();
@@ -233,6 +234,85 @@ public final class BridgeGameTest implements FabricClientGameTest {
         server.runCommand("setblock " + target.getX() + " " + target.getY() + " " + target.getZ() + " minecraft:oak_log[axis=y]");
         server.runCommand("setblock " + side.getX() + " " + side.getY() + " " + side.getZ() + " minecraft:air");
         Files.writeString(io.resolve("platzierhilfe.txt"), r1 + " " + r2 + "\n");
+    }
+
+    /**
+     * EDIT-04 build guides (Mod 0.18.0), next to the plan on flat ground: symmetry axis where the player looks,
+     * mirrored and turned 4×, a few blocks placed through the real client path (door, stairs, chest, wall), then a
+     * wall curve through three points. The ghosts are drawn for every image; the overview is the screenshot
+     * bauhilfen.png (Modrinth gallery). Chat lines are checked in bridge_gametest.mjs.
+     */
+    private static void guides(ClientGameTestContext context, TestSingleplayerContext world, Path io, int[] anchor) throws IOException {
+        var server = world.getServer();
+        final int gx = anchor[0] + 40, gz = anchor[2];
+        server.runCommand("tp @a " + (gx + 0.5) + " 200 " + (gz - 2.5) + " 0 60");
+        world.getConnection().waitForChunksRender();
+        final int gy = server.computeOnServer(s -> s.overworld().getHeight(Heightmap.Types.MOTION_BLOCKING, gx, gz));
+        server.runCommand("fill " + (gx - 14) + " " + (gy - 2) + " " + (gz - 14) + " " + (gx + 14) + " " + (gy - 2) + " " + (gz + 14) + " minecraft:dirt");
+        server.runCommand("fill " + (gx - 14) + " " + (gy - 1) + " " + (gz - 14) + " " + (gx + 14) + " " + (gy - 1) + " " + (gz + 14) + " minecraft:grass_block");
+        server.runCommand("fill " + (gx - 14) + " " + gy + " " + (gz - 14) + " " + (gx + 14) + " " + (gy + 14) + " " + (gz + 14) + " minecraft:air");
+        server.runCommand("gamemode creative @a");
+        server.runCommand("clear @a");
+        server.runCommand("item replace entity @a hotbar.0 with minecraft:stone_bricks 64");
+        server.runCommand("item replace entity @a hotbar.1 with minecraft:oak_door 4");
+        server.runCommand("item replace entity @a hotbar.2 with minecraft:oak_stairs 8");
+        server.runCommand("item replace entity @a hotbar.3 with minecraft:chest 4");
+        server.runCommand("item replace entity @a hotbar.4 with minecraft:mossy_cobblestone 64");
+        server.runCommand("tp @a " + (gx + 0.5) + " " + gy + " " + (gz - 2.5) + " 0 30");
+        world.getConnection().waitForChunksRender();
+        context.getInput().lookAt(new BlockPos(gx, gy - 1, gz));
+        context.waitTicks(5);
+        chat(context, "/bauplaner symmetrie hier");
+        chat(context, "/bauplaner symmetrie drehen 4");
+        // Small corner east of the axis, placed like mouse clicks; the player stands within reach.
+        server.runCommand("tp @a " + (gx + 4.5) + " " + gy + " " + (gz - 1.5) + " 0 40");
+        context.waitTicks(5);
+        int[][] wall = { { 3, 2 }, { 4, 2 }, { 5, 2 }, { 6, 2 }, { 6, 3 }, { 6, 4 } };
+        for (int layer = 0; layer < 2; layer++)
+            for (int[] c : wall) place(context, 0, new BlockPos(gx + c[0], gy - 1 + layer, gz + c[1]));
+        place(context, 1, new BlockPos(gx + 4, gy - 1, gz + 4));
+        place(context, 2, new BlockPos(gx + 3, gy - 1, gz + 4));
+        place(context, 3, new BlockPos(gx + 5, gy - 1, gz + 5));
+        context.waitTicks(10);
+        chat(context, "/bauplaner symmetrie");
+        // Wall curve with mossy cobblestone through three points north of the corner; the symmetry repeats it.
+        context.runOnClient(mc -> mc.player.getInventory().setSelectedSlot(4));
+        chat(context, "/bauplaner kurve profil mauer");
+        chat(context, "/bauplaner kurve hoehe 2");
+        server.runCommand("tp @a " + (gx + 4.5) + " " + gy + " " + (gz + 0.5) + " 0 40");
+        context.waitTicks(5);
+        for (int[] c : new int[][] { { 2, 8 }, { 5, 7 }, { 8, 4 } }) {
+            context.getInput().lookAt(new BlockPos(gx + c[0], gy - 1, gz + c[1]));
+            context.waitTicks(3);
+            chat(context, "/bauplaner kurve punkt");
+        }
+        chat(context, "/bauplaner kurve");
+        // Overview from above the south-west: ghosts of all eight images, curve, axis lines and the progress line.
+        // Stand on an invisible barrier block high above the south-west corner for the overview.
+        server.runCommand("setblock " + (gx - 7) + " " + (gy + 6) + " " + (gz - 7) + " minecraft:barrier");
+        // Facing north-east and down onto the corner (yaw -41°, pitch 38°), set by the server so it holds after the teleport.
+        server.runCommand("tp @a " + (gx - 6.5) + " " + (gy + 7) + " " + (gz - 6.5) + " -41 38");
+        world.getConnection().waitForChunksRender();
+        context.setScreen(() -> null);
+        context.runOnClient(mc -> mc.gui.hud.getChat().clearMessages(false));
+        context.runOnClient(mc -> mc.player.getInventory().setSelectedSlot(0));
+        context.waitTicks(30);
+        copy(context.takeScreenshot("bauplaner-bauhilfen-hud"), io.resolve("bauhilfen-hud.png"));
+        // Gallery picture without the HUD of the plan and team tests: only the world with the ghosts.
+        context.runOnClient(mc -> { if (!mc.gui.hud.isHidden()) mc.gui.hud.toggle(); });
+        context.waitTicks(5);
+        copy(context.takeScreenshot("bauplaner-bauhilfen"), io.resolve("bauhilfen.png"));
+        context.runOnClient(mc -> { if (mc.gui.hud.isHidden()) mc.gui.hud.toggle(); });
+        chat(context, "/bauplaner bauhilfe aus");
+    }
+
+    /** Right click with hotbar slot {@code slot} on top of {@code below}, through the real client path. */
+    private static void place(ClientGameTestContext context, int slot, BlockPos below) {
+        context.runOnClient(mc -> mc.player.getInventory().setSelectedSlot(slot));
+        var top = new net.minecraft.world.phys.BlockHitResult(new net.minecraft.world.phys.Vec3(below.getX() + 0.5, below.getY() + 1.0, below.getZ() + 0.5),
+                net.minecraft.core.Direction.UP, below, false);
+        context.runOnClient(mc -> mc.gameMode.useItemOn(mc.player, net.minecraft.world.InteractionHand.MAIN_HAND, top));
+        context.waitTicks(4);
     }
 
     private static void expectBlock(ClientGameTestContext context, BlockPos pos, String expected, String message) {

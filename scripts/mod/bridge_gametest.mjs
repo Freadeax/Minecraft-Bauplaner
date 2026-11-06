@@ -5,7 +5,7 @@
 //                  origin, one block wrong and one missing; only the test harness places blocks)
 //   verify <dir>   reads the scan.schem the mod recorded in the running game and compares it like the
 //                  website's "Spielaufnahme importieren" does
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import assert from 'node:assert/strict';
 import { readWorldScan } from '../../dist/formats/src/index.js';
@@ -129,6 +129,12 @@ function hologram(logFile, cells) {
   const diagnose = readFileSync(join(dir, 'diagnose.txt'), 'utf8');
   for (const needle of ['Version', 'Loader', 'Minecraft', 'Konflikte gesamt', 'Plan eingeblendet: ja', 'Planblöcke', 'Fortschritt', 'Abgefangene Fehler seit Start: 0', 'Website-Verbindung']) {
     assert.ok(diagnose.includes(needle), `Diagnosebericht nennt „${needle}“`);
+  }
+  // EDIT-04 build guides (Fabric game test only, writes bauhilfen.png): 14 placed blocks, mirrored and turned 4×.
+  if (existsSync(join(dir, 'bauhilfen.png'))) {
+    const sym = log.match(/\[Bauplaner\] Symmetrie: [^\n]*· (\d+) gespiegelte Blöcke/);
+    assert.ok(sym && Number(sym[1]) >= 12, `Bauhilfe Symmetrie: gesetzte Blöcke gemerkt (${sym?.[1] ?? 'keine Zeile'})`);
+    assert.match(log, /\[Bauplaner\] Symmetrie und Kurve gelöscht\./);
   }
   // Stage 3: placement helper (the client test throws if a block was placed or broken against the rules).
   assert.equal(readFileSync(join(dir, 'platzierhilfe.txt'), 'utf8').trim(), 'Fail Fail', 'beide falschen Klicks abgewiesen');
