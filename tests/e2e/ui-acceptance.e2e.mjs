@@ -25,8 +25,8 @@ after(async () => { await browser?.close(); server?.kill(); });
 
 async function appearance(page, theme, mode) {
   await page.locator('.theme-control summary').click();
-  await page.getByLabel('Oberflächenthema').selectOption(theme);
-  await page.getByLabel('Erscheinungsbild').selectOption(mode);
+  await page.locator(`.theme-popover [data-theme-id="${theme}"]`).click();
+  await page.locator(`.theme-popover [data-mode="${mode}"]`).click();
   await page.waitForFunction(([theme, mode]) => document.documentElement.dataset.theme === theme && document.documentElement.dataset.appearance === mode, [theme, mode]);
   await page.locator('.theme-control summary').click();
 }

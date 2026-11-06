@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T15:30:12.832Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T15:49:33.071Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-06T15:30:12.832Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 6 |
 | 🚧 In Arbeit | 8 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 94 |
+| 🧩 Implementiert · Abnahme offen | 95 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -25,7 +25,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 
 | Bereich | Offen | Verwaist | Nur Philipp | Geprüft |
 |---|---:|---:|---:|---:|
-| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 26 | 2 | 26 | 2 |
+| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 27 | 2 | 27 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 0 | 10 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 14 | 0 | 14 | 0 |
@@ -65,6 +65,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [TERRAIN-02](#terrain-02) | Landschaft gestalten | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Abnahme in deiner eigenen Welt und auf Touch-Geräten (S05). |
 | [TERRAIN-03](#terrain-03) | Gelände und Wege im Projekt | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Gelände, Wege und Küste ausbauen“ | PROJ-19: Weg mit Treppen und Brücke als .litematic in deiner Welt ansehen.<br>BIB-20: Basis mit Wegenetz als Landschaftsweg auf einem echten Hang einfügen und im Spiel ansehen. |
 | [TERRAIN-04](#terrain-04) | Gelände direkt aus der Mod | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Gelände direkt aus der Mod übernehmen“ | Mod 0.20.0 installieren, einmal um den Bauplatz laufen, im Reiter „Gelände“ „Gelände aus dem Spiel übernehmen“ und „Gelände aus dem Spiel prüfen“ (S05). |
+| [UI-03](#ui-03) | Design-System | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Planer-Oberfläche schön neu gestalten“ | Am iPad die neue Oberfläche ansehen und START-20/21 in #/testphase abhaken (Thema „Werkbank“, Reiter wischen, „Bewegung reduzieren“). |
 | [UX-01](#ux-01) | Bedienung des Planers vereinfachen (Struktur und Abläufe) | 🚧 In Arbeit 6/6 | P1 | **verwaist** | Testphase START-10..13: vier Hauptbereiche, Projektschritte mit Kurzsatz, eingeklappte Experten- und Datei-Wege im Browser prüfen.<br>START-12 auf dem iPad: Projektreiter waagerecht wischen, eingeklappte Bereiche per Finger öffnen. |
 | [VIEW-01](#view-01) | Vorhandenen Viewer vollständig abnehmen | 🧩 Implementiert · Abnahme offen 1/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Ansicht auf echter GPU und mit Touch prüfen, negative Koordinaten, alle Schnittachsen (S02). |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Mojang-Download und Blockformen in Firefox/Safari und auf echten Geräten (S06). |
@@ -325,6 +326,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **LINK-05** · Am PC „Weiteres Gerät freigeben“, Link auf dem iPad öffnen, eine Einstellung ändern.
 - **EDIT-06** · Im 3D-Bild bauen auf PC und iPad (WERK-08).
 - **GUIDE-01** · Anleitung am iPad durchgehen (START-08/09), unklare Sätze melden.
+- **UI-03** · Am iPad die neue Oberfläche ansehen und START-20/21 in #/testphase abhaken (Thema „Werkbank“, Reiter wischen, „Bewegung reduzieren“).
 
 ### Dateien oder Welt liefern
 
@@ -431,6 +433,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **EDIT-06 · Direkt im 3D-Bild bauen: Blöcke an Flächen setzen/abbauen, Formen und Gruppen im 3D aufziehen und ziehen, Truhen- und Schildinhalte bearbeiten** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: EDIT-06-S05: Philipp prüft das Bauen im 3D-Bild auf PC und iPad (WERK-08) und lädt eine Truhe/ein Schild mit Inhalt im Spiel (WERK-09).
 - **STRUCT-01 · Dateistruktur sauber neu ordnen: Fachordner im Kern und in der Oberfläche, Skripte, Tests und Doku nach Bereich, Ordnerkarte docs/STRUKTUR.md** — 🧩 Implementiert · Abnahme offen, 4/4 Teilschritte. Nächster Schritt: Durchsicht der Ordnerkarte durch Philipp; parallele Threads ziehen neue Dateien mit dem Codemod nach.
 - **UX-01 · Bedienung des Planers vereinfachen (Struktur und Abläufe)** — 🚧 In Arbeit, 6/6 Teilschritte. Nächster Schritt: Philipps Abnahme START-10..13 im Browser und auf dem iPad. Optik übernimmt „Planer-Oberfläche schön neu gestalten“.
+- **UI-03 · Design-System: saubere, einheitliche und schön angepasste Planer-Oberfläche** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Abnahme START-20/21 durch Philipp am iPad; gruppierte Projektreiter aus „Bedienung vereinfachen“ und Anleitung optisch mitziehen; Werte an das Mod-Menü weitergeben.
 
 ## Verbindlicher Ablauf bei jedem Main-Merge oder Push
 
@@ -589,6 +592,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [STRUCT-01](#struct-01) | Dateistruktur sauber neu ordnen: Fachordner im Kern und in der Oberfläche, Skripte, Tests und Doku nach Bereich, Ordnerkarte docs/STRUKTUR.md | 🧩 Implementiert · Abnahme offen | 4/4 | — | ausstehend | ausstehend |
 | [CORE-04](#core-04) | Planer-Kernmodule prüfen und überarbeiten: Verbindungen zwischen Projekt, Planung, Werkstatt, Import/Export und Speicher sauber, gefundene Fehler behoben | 🧩 Implementiert · Abnahme offen | 4/5 | ARCH-02, PROJ-04, EDIT-06 | ausstehend | ausstehend |
 | [WORLD-SHARE-01](#world-share-01) | Weltplan und Server-Karte nur über den Team-Raum: Weltplan mit Bauplätzen, Gruppen und Sperren an alle Mods und das Paper-Plugin, Plugin schreibt BlueMap-/Dynmap-Marker selbst, Kartenliste geteilt, Dateiwege nur als Notfall | 🧩 Implementiert · Abnahme offen | 4/5 | MAP-02, MAP-04 | ausstehend | ausstehend |
+| [UI-03](#ui-03) | Design-System: saubere, einheitliche und schön angepasste Planer-Oberfläche | 🧩 Implementiert · Abnahme offen | 4/5 | UI-01, UI-02 | ausstehend | ausstehend |
 
 ## P4: Optionale Zusammenarbeit und Integrationen
 
@@ -3677,6 +3681,30 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/unit/web/guide.test.mjs](../tests/unit/web/guide.test.mjs) — Satzlänge, ein Satz, Symbole, gültige Routen und Reiter, Projektlinks, Adresse, Fortschritt.; [tests/e2e/anleitung.e2e.mjs](../tests/e2e/anleitung.e2e.mjs) — Chromium 1400/390 px: Einstieg, Bilder, Projektlinks, Wegsprung, Haken nach Neuladen, Schnellsuche.
 
 **Dateiumfang:** `apps/web/src/views/guide/guideSteps.ts`, `apps/web/src/views/guide/GuideView.tsx`, `apps/web/src/views/guide/GuideArt.tsx`, `apps/web/src/views/guide/guide.css`, `apps/web/src/app/nav.ts`, `apps/web/src/app/router.ts`, `apps/web/src/app/icons.tsx`, `apps/web/src/app/Shell.tsx`, `apps/web/src/styles/shell.css`, `apps/web/src/main.tsx`, `apps/web/src/views/ProjectsView.tsx`, `apps/web/src/views/mod/ModView.tsx`, `apps/web/src/testing/testplan.ts`, `tests/unit/web/guide.test.mjs`, `tests/e2e/anleitung.e2e.mjs`, `tests/e2e/shell.e2e.mjs`, `docs/architecture/planer/UI.md`. **Abhängigkeiten:** UI-02, GAME-11, TERRAIN-04, LINK-11. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### UI-03
+
+**Design-System: saubere, einheitliche und schön angepasste Planer-Oberfläche** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude Thread „Planer-Oberfläche schön neu gestalten“ · Zuständiger Thread: „Planer-Oberfläche schön neu gestalten“ · Aktualisiert: 2026-11-06T15:49:33.071Z
+
+- [x] UI-03-S01: Design-Tokens (Abstände, Radien, Schrift, Schatten, Bewegung, Zustandsfarben) und Standardthema „Werkbank“ (Grasgrün/Gold, hell und dunkel).
+- [x] UI-03-S02: Gemeinsame Bausteine angeglichen: Knöpfe mit Blockkante, Felder, Karten, Hinweise, Chips, Segmente, Tabellen; aktiver Reiter mit Akzentstrich, Schrittgruppen aus UX-01 mitgestaltet.
+- [x] UI-03-S03: Darstellungsmenü mit Farbfeldern und Hell/Dunkel-Schalter; Thema ohne Aufblitzen beim Laden.
+- [x] UI-03-S04: Dezente Animationen (Seitenwechsel, Karten, Menüs) mit „Bewegung reduzieren“; iPad-Ziele 44 px.
+- [ ] UI-03-S05: Kontrastprüfung aller Hauptseiten und Projektreiter hell/dunkel, iPad-Browsertest; Abnahme durch Philipp am iPad (START-20/21).
+
+**Abnahme:** Alle Hauptseiten und Projektreiter nutzen dieselben Knöpfe, Felder, Karten und Hinweise; jeder sichtbare Text erreicht WCAG AA hell und dunkel; am iPad sind Ziele ≥ 44 px, alle Reiter sichtbar, keine Querverschiebung; „Bewegung reduzieren“ schaltet Animationen ab.
+
+**Nächste Aktion:** Abnahme START-20/21 durch Philipp am iPad; gruppierte Projektreiter aus „Bedienung vereinfachen“ und Anleitung optisch mitziehen; Werte an das Mod-Menü weitergeben.
+
+**Nur Philipp:** Auf echten Geräten und Browsern: Am iPad die neue Oberfläche ansehen und START-20/21 in #/testphase abhaken (Thema „Werkbank“, Reiter wischen, „Bewegung reduzieren“).
+
+**Prüfstand:** Browserprüfung in Chromium bestanden; echte iPad-/Safari-Abnahme durch Philipp offen.
+
+**Nachweise:** [tests/e2e/design.e2e.mjs](../tests/e2e/design.e2e.mjs) — Standardthema beim ersten Bild, WCAG-Kontrast auf Hauptseiten und fünf Projektreitern hell/dunkel, iPad Pro 11 (44 px, Reiter in der Leiste, keine Querverschiebung), reduzierte Bewegung.; [docs/architecture/planer/UI.md](architecture/planer/UI.md) — Abschnitt „Design-System (UI-03)“ mit Farbwerten, Tokens, Bausteinen und Regeln.
+
+**Dateiumfang:** `apps/web/src/theme/`, `apps/web/src/main.tsx`, `apps/web/src/testing/testplan.ts`, `docs/architecture/planer/UI.md`, `docs/TESTING.md`, `docs/testing/TESTPLAN.md`, `tests/e2e/design.e2e.mjs`, `tests/e2e/theme.e2e.mjs`, `tests/e2e/ui-acceptance.e2e.mjs`, `tests/unit/web/`. **Abhängigkeiten:** UI-01, UI-02. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

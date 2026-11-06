@@ -73,3 +73,30 @@ Philipp: „Komplexität … also die Nutzerbedienung nicht das System dahinter 
 - Optik (Farben, Abstände, Animation) gehört dem Design-System; diese Klassen nutzen nur Theme-Tokens.
 
 Prüfung: `tests/e2e/simple-ui.e2e.mjs` (1400 und 390 px), `tests/e2e/shell.e2e.mjs`; Testphase START-10..13.
+Prüfung: `tests/e2e/simple-ui.e2e.mjs` (1400 und 390 px), `tests/e2e/shell.e2e.mjs`; Testphase START-10..12.
+## Design-System (UI-03)
+
+Stand 06.11.2026. Eine gemeinsame Gestaltungsschicht für alle Seiten des Planers: `apps/web/src/theme/design.css`, geladen als letzte Datei in `main.tsx`. Sie ändert nur die Optik, kein Markup und keine Abläufe (Struktur und Bedienwege liegen bei „Bedienung vereinfachen“, die Mod gleicht sich über die Werte unten an).
+
+**Thema „Werkbank“ (Standard).** Minecraft-nah, aber ruhig: Grasgrün auf Tiefenschiefer (dunkel) bzw. auf Birkenholz-Hell (hell), Gold als Zweitfarbe. Die fünf bisherigen Themen bleiben wählbar. Werte in `theme/themeTokens.mjs` (jede Palette hat jetzt `accent2`); der Kontrast Text/Akzent/Knopf ≥ 4,5 : 1 ist in `tests/unit/web/theme-tokens.test.mjs` für alle Themen hell und dunkel festgeschrieben. Das Thema wird schon beim Laden des Moduls gesetzt (kein Aufblitzen) und färbt die Browserleiste (`meta theme-color`).
+
+| Farbe | Dunkel | Hell | Verwendung |
+|---|---|---|---|
+| `accent` | `#7fd494` | `#2d6c3c` | Hauptknöpfe, aktive Reiter, Links, Fokus |
+| `accent2` | `#e9c46a` | `#8a5a00` | Gold: kleine Akzente, Grasnarbe unter der Kopfzeile |
+| `surface` | `#1a2220` | `#ffffff` | Karten, Flächen |
+| `canvas` | `#111715` | `#f1efe7` | Seitenhintergrund |
+| `text` | `#edf3ee` | `#1c2621` | Schrift |
+| Zustände | Erfolg `#7fd494`, Warnung `#f0b45a`, Fehler `#ff8a7a` | `#2d6c3c`, `#8a5200`, `#b3261e` | `--ds-success/-warning/-danger` |
+
+**Tokens** (`--ds-*`): Abstände 4/8/12/16/24/32/48 px (`--ds-space-1..7`), Radien 4/6/10/14/20 px (`--ds-r-xs..xl`), Schrift 12/13/14/16/20/26 px, Bedienhöhe `--ds-control-h` 40 px (44 px bei Fingerbedienung, `pointer: coarse`), Schatten `--ds-shadow-1..3`, Bewegung 120/180/240 ms mit `--ds-ease`. Neue Ansichts-CSS nutzt diese Tokens statt fester Werte.
+
+**Bausteine.** `.primary` (Akzentverlauf mit dunkler Unterkante wie ein Block), `.secondary`, `button.danger`, `.button-link`, `.file-button`: gleiche Höhe, Rundung, Schrift; heben sich beim Zeigen 1 px und drücken sich beim Klicken ein. Felder und Auswahllisten: gleiche Höhe, eigener Pfeil, Fokusring in Akzentfarbe; in Tabellen kompakt. Karten (`.card`, `.system-card`, `.team-block`, `.site-block`, `.workspace` …) mit Radius 14 px und weichem Schatten; Projekt- und Bibliothekskarten heben sich beim Zeigen. Hinweise (`.notice`, `.info-box`) mit farbiger linker Kante je Zustand (`.warning`, `.error`, `.ok`). Chips/Abzeichen als Pillen, `.seg` als Segmentschalter mit erhabenem gewähltem Feld. Der aktive Projektreiter trägt einen Akzentstrich; die vier Schrittgruppen aus UX-01 bekommen eine leuchtende Schrittnummer, ältere ungruppierte Reiterleisten stehen in einer wischbaren Zeile. Überzeilen (`.eyebrow`) tragen einen kleinen „Block“ davor.
+
+**Darstellungsmenü.** Farbfelder je Thema (`radiogroup` „Oberflächenthema“, Knöpfe `data-theme-id`) und Segmentschalter „Wie Gerät / Hell / Dunkel“ (`radiogroup` „Erscheinungsbild“, `data-mode`) ersetzen die beiden Auswahllisten.
+
+**Bewegung.** Seiten blenden 240 ms ein, Kopfbereiche und Kartenraster steigen leicht gestaffelt auf, Menüs und Dialoge öffnen mit kurzem Zoom, Aufklapper blenden ein. Animationen laufen nur „rückwärts gefüllt“, danach bleibt kein `transform` (fixe Leisten bleiben am Bildschirm). Bei „Bewegung reduzieren“ ist alles aus.
+
+**Regeln für neue Stile.** Selektoren der Schicht beginnen mit `:root[data-theme]`, damit sie gegen später geladene Ansichts-CSS gewinnen (ohne `!important`). 3D-Bühnen (`.viewport`, `.detail-stage`, Vorschaubilder) bleiben bewusst dunkel. Hover-Effekte nur unter `@media (hover: hover)`, damit das iPad keine hängenden Zustände zeigt.
+
+Prüfung: `tests/e2e/design.e2e.mjs` – Standardthema beim ersten Bild, WCAG-Kontrast aller sichtbaren Texte auf Projektzentrale, Anleitung, Bibliothek, Generatoren, Weltkarte, Spiel, Systemcheck und den Reitern Editor/Bauen/Material/Baustelle/Team (hell und dunkel), iPad Pro 11 (Ziele ≥ 44 px, alle Reiter in der Leiste, keine Querverschiebung), „Bewegung reduzieren“. Testphase: START-20, START-21.

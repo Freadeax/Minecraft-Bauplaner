@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/checks/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 171 Fälle in 13 Bereichen, davon 73 Kernfälle.
+Umfang: 173 Fälle in 13 Bereichen, davon 74 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -25,6 +25,8 @@ Erster Eindruck, Projekte anlegen und Daten sichern. Am besten in einem frischen
 | START-11 | Projekt in vier Schritten ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Beispielprojekt „Burgmauer“ öffnen.<br>2. Die Reiterleiste ansehen: 1 Gestalten, 2 Bauen, 3 Organisieren, 4 Teilen.<br>3. Jeden Reiter einmal anklicken und den kurzen Satz unter der Leiste lesen. | Alle zwölf Reiter sind in ihren Schritten da, der aktive Schritt ist hervorgehoben und unter der Leiste steht in einem Satz, wofür der Reiter da ist. Bibliothek: Unterseiten in „Finden“, „Nach Maß“, „Größer planen“. |
 | START-12 | Einfache Bedienung auf dem iPad ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/mod)) | vertieft | 1. Planer auf dem iPad öffnen, ein Projekt öffnen.<br>2. Die Reiterleiste waagerecht wischen.<br>3. Auf „Spiel“ die drei Schritte lesen und „Ausführliche Anleitung“ und „Mehr wissen“ aufklappen; auf der Weltkarte „Schritt für Schritt“ öffnen. | Die Leiste lässt sich wischen, der aktive Reiter bleibt sichtbar, alle aufklappbaren Bereiche öffnen sich mit dem Finger, keine Seite ist breiter als der Bildschirm. |
 | START-13 | Werkstatt, Baustelle und Produktion aufgeräumt ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/werkstatt/neu)) | kern | 1. Unter Bibliothek „✎ Neues Bauteil bauen“ öffnen: Setzen, Ebene, Auswahl, Ersetzen und Blockpalette sind sichtbar; „Kreativ-Werkzeuge“ aufklappen.<br>2. Im Beispielprojekt „Baustelle“: Abschnitte und Sammelplan oben, „Abschnittsstände“ und „Freiraum an Anschlüssen“ aufklappen.<br>3. Im Reiter „Produktion“: Farmen, Deckung, Bereitschaft oben, „Zeitbudget und Server“ und „Öfen, Lager, AFK-Platz und Produktionsblatt“ aufklappen. | Jede Seite zeigt zuerst das, was man meistens braucht. Alle eingeklappten Werkzeuge sind nach dem Aufklappen vollständig da und funktionieren wie vorher. Nach „Einfrieren“ eines Abschnitts klappen die Abschnittsstände von selbst auf. |
+| START-20 | Neue Oberfläche „Werkbank“ (UI-03) ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/)) | kern | 1. Seite in einem frischen Browserprofil öffnen.<br>2. Oben „Darstellung“ öffnen, nacheinander alle Themen-Farbfelder und „Hell“/„Dunkel“ antippen.<br>3. Projektzentrale, Bibliothek, Weltkarte, Spiel und im Beispielprojekt die Reiter Editor, Bauen, Material, Baustelle und Team ansehen. | Standard ist das grüne Thema „Werkbank“. Knöpfe, Eingabefelder, Karten, Hinweise und Reiter sehen auf allen Seiten gleich aus (gleiche Höhe, Rundung und Farben); jeder Text ist hell und dunkel gut lesbar, nichts flackert beim Seitenwechsel. |
+| START-21 | Oberfläche auf dem iPad (UI-03) | vertieft | 1. Seite auf dem iPad öffnen (quer und hoch).<br>2. Ein Projekt öffnen und durch die Projektreiter wischen.<br>3. In den Einstellungen des iPads „Bewegung reduzieren“ einschalten und die Seite neu laden. | Alle Knöpfe und Reiter lassen sich sicher mit dem Finger treffen, alle Reiter sind sichtbar, nichts ragt seitlich heraus. Mit „Bewegung reduzieren“ blendet nichts mehr ein. |
 
 ## BIB · Bibliothek (Planer)
 
@@ -272,7 +274,7 @@ Planer, Mod und Paper-Plugin verbinden sich per Klick; der Server wird aus dem P
 
 Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan.ts), geordnet nach dem Ort, den die Abnahme braucht. Ein Paket gilt als abgenommen, wenn alle genannten Fälle ✓ sind; Ob ein Paket noch auf Abnahme wartet, steht in `docs/ROADMAP.md`.
 
-### Nur im Browser (44 Pakete)
+### Nur im Browser (45 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -315,6 +317,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | STRUCT-01 | START-03, SYS-03 |
 | TERRAIN-01 | KARTE-04, PROJ-06 |
 | TERRAIN-02 | PROJ-06 |
+| UI-03 | START-20, START-21 |
 | UPDATE-01 | PROJ-07 |
 | UX-01 | START-10, START-11, START-12, START-13 |
 | VIEW-01 | DATEI-01, GERAET-04 |

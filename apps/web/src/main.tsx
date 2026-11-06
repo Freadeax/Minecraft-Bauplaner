@@ -19,6 +19,8 @@ import './styles/schem.css';
 import './theme/theme.css';
 import './blockmodels/blocks.css';
 import './styles/shell.css';
+// UI-03: Design-System zuletzt, damit es die gemeinsamen Bausteine aller Ansichten angleicht.
+import './theme/design.css';
 
 // PERF-05: pages load when opened; the start needs only the shell and the project centre.
 const LibraryView = lazyPage(() => import('./views/LibraryView').then(m => m.LibraryView));

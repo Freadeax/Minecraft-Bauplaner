@@ -68,7 +68,13 @@ export async function offlineState(): Promise<OfflineState> {
 export async function clearOffline(): Promise<void> {
   if (!('serviceWorker' in navigator)) return;
   for (const reg of await navigator.serviceWorker.getRegistrations().catch(() => [])) if (new URL(reg.scope).pathname === base) await reg.unregister().catch(() => false);
-  try { await caches.delete(CACHE); } catch { /* nothing stored */ }
+  // The old worker may still finish a fetch it started and write that file back into a fresh store:
+  // delete again until the store stays gone (a few rounds, usually one).
+  for (let i = 0; i < 10; i++) {
+    try { await caches.delete(CACHE); } catch { return; /* Cache Storage blocked: nothing stored */ }
+    await new Promise(r => setTimeout(r, 150));
+    try { if (!(await caches.has(CACHE))) return; } catch { return; }
+  }
 }
 
 /** Switches the offline copy on or off for this browser (remembered in localStorage). */

@@ -52,7 +52,7 @@ test('Live-Karte: Weltplan zeichnen, rückgängig, Spiel koppeln, Gelände, Holo
 
   const canvas = p.locator('.overview-canvas');
   // The selection bar (MAP-04) can push the map below the fold: bring it into view before pointing at it.
-  await canvas.evaluate(el => el.scrollIntoView({ block: 'center' }));
+  await canvas.evaluate(el => el.scrollIntoView({ block: 'end' }));
   // Zoom so blocks are big enough to hit reliably, around the origin.
   for (let i = 0; i < 3; i++) await p.getByRole('button', { name: 'Hineinzoomen' }).click();
 

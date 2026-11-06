@@ -4,7 +4,7 @@ import { createThemePreferences, parseThemePreference, THEME_STORAGE_KEY } from 
 
 test('damaged and hostile stored theme preferences fall back to safe defaults', () => {
   for (const raw of [null, 'null', 'invalid', '7', '[]', '{"theme":"__proto__","appearance":"pink"}']) {
-    assert.deepEqual(parseThemePreference(raw), { theme: 'modern', appearance: 'system' });
+    assert.deepEqual(parseThemePreference(raw), { theme: 'werkbank', appearance: 'system' });
   }
 });
 test('denied localStorage keeps appearance changes for subsequent component mounts', () => {
@@ -22,7 +22,7 @@ test('failed quota writes cannot revive an older persisted choice', () => {
   assert.deepEqual(prefs.read(), { theme: 'industrial', appearance: 'light' });
   value = null;
   prefs.invalidate(null);
-  assert.deepEqual(prefs.read(), { theme: 'modern', appearance: 'system' });
+  assert.deepEqual(prefs.read(), { theme: 'werkbank', appearance: 'system' });
 });
 test('valid preference survives reload without changing its source object', () => {
   const data = new Map();

@@ -7564,3 +7564,34 @@ simple-ui.e2e stabilisiert: wartet auf den Kurzsatz des geöffneten Reiters stat
 - `docs/TESTING.md`
 - `tests/e2e/simple-ui.e2e.mjs`
 
+## 2026-11-06T15:49:33.071Z · progress
+
+**Aufgaben:** UI-03
+
+Design-System: Thema „Werkbank“, einheitliche Knöpfe/Felder/Karten/Hinweise/Reiter, Farbfeld-Menü, dezente Animationen, iPad-Ziele 44 px, Kontrastprüfung hell/dunkel; Offline-Speicher ausschalten löscht zuverlässig
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| UI-03 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme START-20/21 durch Philipp am iPad; gruppierte Projektreiter aus „Bedienung vereinfachen“ und Anleitung optisch mitziehen; Werte an das Mod-Menü weitergeben. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/offline.ts`
+- `apps/web/src/main.tsx`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/theme/ThemeControl.tsx`
+- `apps/web/src/theme/design.css`
+- `apps/web/src/theme/themePreferences.ts`
+- `apps/web/src/theme/themeTokens.d.mts`
+- `apps/web/src/theme/themeTokens.mjs`
+- `docs/TESTING.md`
+- `docs/architecture/planer/UI.md`
+- `docs/testing/TESTPLAN.md`
+- `tests/e2e/design.e2e.mjs`
+- `tests/e2e/livelink.e2e.mjs`
+- `tests/e2e/theme.e2e.mjs`
+- `tests/e2e/ui-acceptance.e2e.mjs`
+- `tests/e2e/world-groups.e2e.mjs`
+- `tests/unit/web/theme-preferences.test.mjs`
+- `tests/unit/web/theme-tokens.test.mjs`
+

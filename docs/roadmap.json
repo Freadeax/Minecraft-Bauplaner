@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T15:30:12.832Z",
+  "updatedAt": "2026-11-06T15:49:33.071Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -46,7 +46,8 @@
     "GFX-02",
     "EDIT-06",
     "STRUCT-01",
-    "UX-01"
+    "UX-01",
+    "UI-03"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -11318,6 +11319,91 @@
           "text": "Anleitung am iPad durchgehen (START-08/09), unklare Sätze melden."
         }
       ]
+    },
+    {
+      "id": "UI-03",
+      "title": "Design-System: saubere, einheitliche und schön angepasste Planer-Oberfläche",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude Thread „Planer-Oberfläche schön neu gestalten“",
+      "dependencies": [
+        "UI-01",
+        "UI-02"
+      ],
+      "scope": [
+        "apps/web/src/theme/",
+        "apps/web/src/main.tsx",
+        "apps/web/src/testing/testplan.ts",
+        "docs/architecture/planer/UI.md",
+        "docs/TESTING.md",
+        "docs/testing/TESTPLAN.md",
+        "tests/e2e/design.e2e.mjs",
+        "tests/e2e/theme.e2e.mjs",
+        "tests/e2e/ui-acceptance.e2e.mjs",
+        "tests/unit/web/"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "UI-03-S01",
+          "title": "Design-Tokens (Abstände, Radien, Schrift, Schatten, Bewegung, Zustandsfarben) und Standardthema „Werkbank“ (Grasgrün/Gold, hell und dunkel).",
+          "done": true
+        },
+        {
+          "id": "UI-03-S02",
+          "title": "Gemeinsame Bausteine angeglichen: Knöpfe mit Blockkante, Felder, Karten, Hinweise, Chips, Segmente, Tabellen; aktiver Reiter mit Akzentstrich, Schrittgruppen aus UX-01 mitgestaltet.",
+          "done": true
+        },
+        {
+          "id": "UI-03-S03",
+          "title": "Darstellungsmenü mit Farbfeldern und Hell/Dunkel-Schalter; Thema ohne Aufblitzen beim Laden.",
+          "done": true
+        },
+        {
+          "id": "UI-03-S04",
+          "title": "Dezente Animationen (Seitenwechsel, Karten, Menüs) mit „Bewegung reduzieren“; iPad-Ziele 44 px.",
+          "done": true
+        },
+        {
+          "id": "UI-03-S05",
+          "title": "Kontrastprüfung aller Hauptseiten und Projektreiter hell/dunkel, iPad-Browsertest; Abnahme durch Philipp am iPad (START-20/21).",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Alle Hauptseiten und Projektreiter nutzen dieselben Knöpfe, Felder, Karten und Hinweise; jeder sichtbare Text erreicht WCAG AA hell und dunkel; am iPad sind Ziele ≥ 44 px, alle Reiter sichtbar, keine Querverschiebung; „Bewegung reduzieren“ schaltet Animationen ab."
+      ],
+      "next": "Abnahme START-20/21 durch Philipp am iPad; gruppierte Projektreiter aus „Bedienung vereinfachen“ und Anleitung optisch mitziehen; Werte an das Mod-Menü weitergeben.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/e2e/design.e2e.mjs",
+          "note": "Standardthema beim ersten Bild, WCAG-Kontrast auf Hauptseiten und fünf Projektreitern hell/dunkel, iPad Pro 11 (44 px, Reiter in der Leiste, keine Querverschiebung), reduzierte Bewegung."
+        },
+        {
+          "path": "docs/architecture/planer/UI.md",
+          "note": "Abschnitt „Design-System (UI-03)“ mit Farbwerten, Tokens, Bausteinen und Regeln."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Browserprüfung in Chromium bestanden; echte iPad-/Safari-Abnahme durch Philipp offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-06T15:49:33.071Z",
+      "area": "PLANER",
+      "thread": "Planer-Oberfläche schön neu gestalten",
+      "philipp": [
+        {
+          "kind": "geraet",
+          "text": "Am iPad die neue Oberfläche ansehen und START-20/21 in #/testphase abhaken (Thema „Werkbank“, Reiter wischen, „Bewegung reduzieren“)."
+        }
+      ],
+      "orphans": []
     }
   ],
   "events": [
@@ -23652,6 +23738,43 @@
           "done": 6,
           "total": 6,
           "next": "Philipps Abnahme START-10..13 im Browser und auf dem iPad. Optik übernimmt „Planer-Oberfläche schön neu gestalten“."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T15:49:33.071Z",
+      "kind": "progress",
+      "items": [
+        "UI-03"
+      ],
+      "summary": "Design-System: Thema „Werkbank“, einheitliche Knöpfe/Felder/Karten/Hinweise/Reiter, Farbfeld-Menü, dezente Animationen, iPad-Ziele 44 px, Kontrastprüfung hell/dunkel; Offline-Speicher ausschalten löscht zuverlässig",
+      "files": [
+        "apps/web/src/app/offline.ts",
+        "apps/web/src/main.tsx",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/theme/ThemeControl.tsx",
+        "apps/web/src/theme/design.css",
+        "apps/web/src/theme/themePreferences.ts",
+        "apps/web/src/theme/themeTokens.d.mts",
+        "apps/web/src/theme/themeTokens.mjs",
+        "docs/TESTING.md",
+        "docs/architecture/planer/UI.md",
+        "docs/testing/TESTPLAN.md",
+        "tests/e2e/design.e2e.mjs",
+        "tests/e2e/livelink.e2e.mjs",
+        "tests/e2e/theme.e2e.mjs",
+        "tests/e2e/ui-acceptance.e2e.mjs",
+        "tests/e2e/world-groups.e2e.mjs",
+        "tests/unit/web/theme-preferences.test.mjs",
+        "tests/unit/web/theme-tokens.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "UI-03",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme START-20/21 durch Philipp am iPad; gruppierte Projektreiter aus „Bedienung vereinfachen“ und Anleitung optisch mitziehen; Werte an das Mod-Menü weitergeben."
         }
       ]
     }

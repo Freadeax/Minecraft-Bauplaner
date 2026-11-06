@@ -51,7 +51,7 @@ test('Gruppen und Sperren im Weltbuilder und bis zur Mod', async () => {
   await p.getByRole('status').filter({ hasText: 'Auf die Weltkarte gesetzt' }).waitFor();
   await ready(p);
   const canvas = p.locator('.overview-canvas');
-  await canvas.evaluate(el => el.scrollIntoView({ block: 'center' }));
+  await canvas.evaluate(el => el.scrollIntoView({ block: 'end' }));
   const tools = p.getByRole('group', { name: 'Planungswerkzeug' });
   const [cx, cz] = (await canvas.getAttribute('data-center')).split(',').map(Number);
 
