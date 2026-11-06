@@ -4556,7 +4556,8 @@
         "docs/architecture/welt/TERRAIN.md",
         "docs/architecture/team/LIVE_LINK.md",
         "apps/web/src/testing/testplan.ts",
-        "docs/testing/TESTPLAN.md"
+        "docs/testing/TESTPLAN.md",
+        "tests/e2e/map-depth.e2e.mjs"
       ],
       "legacyIds": [],
       "steps": [
@@ -22821,7 +22822,8 @@
         "scripts/mod/bridge_gametest.mjs",
         "tests/e2e/modSimulator.mjs",
         "tests/e2e/terrain-game.e2e.mjs",
-        "tests/unit/world/live-terrain.test.mjs"
+        "tests/unit/world/live-terrain.test.mjs",
+        "tests/e2e/map-depth.e2e.mjs"
       ],
       "snapshot": [
         {

@@ -7266,6 +7266,7 @@ Gelände- und Landschaftsreiter holen das Gelände direkt aus der Mod (Geländeg
 - `tests/e2e/modSimulator.mjs`
 - `tests/e2e/terrain-game.e2e.mjs`
 - `tests/unit/world/live-terrain.test.mjs`
+- `tests/e2e/map-depth.e2e.mjs`
 
 ## 2026-11-06T12:58:19.470Z · progress
 
