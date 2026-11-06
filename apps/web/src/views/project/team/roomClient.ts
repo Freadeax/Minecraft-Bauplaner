@@ -276,11 +276,15 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
     open();
     const now = () => { if (stopped) return; if (!ws.current) { failures = 0; clearTimeout(openTimer); open(); } else void poll(); };
     const onVisible = () => { if (document.visibilityState === 'visible') now(); };
+    // Wi-Fi off: the browser knows at once, so the socket goes right away instead of after the 70 s heartbeat –
+    // the bar shows „offline · N warten“ and new steps wait in the outbox instead of going into a dead socket.
+    const gone = () => { if (ws.current) drop(ws.current); };
     window.addEventListener('online', now);
+    window.addEventListener('offline', gone);
     document.addEventListener('visibilitychange', onVisible);
     return () => {
       stopped = true; clearTimeout(openTimer); clearTimeout(pollTimer); clearInterval(heartbeat); clearTimeout(answerTimer.current);
-      window.removeEventListener('online', now); document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('online', now); window.removeEventListener('offline', gone); document.removeEventListener('visibilitychange', onVisible);
       const socket = ws.current; ws.current = null;
       if (socket) { socket.onopen = socket.onmessage = socket.onclose = socket.onerror = null; try { socket.close(); } catch { /* closed */ } }
       setConnected(false);

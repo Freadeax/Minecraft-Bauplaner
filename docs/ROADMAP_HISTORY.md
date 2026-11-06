@@ -8517,3 +8517,30 @@ Testplan-Ansicht nach Rebase neu erzeugt.
 
 - `docs/testing/TESTPLAN.md`
 
+## 2026-11-06T22:12:39.157Z · progress
+
+**Aufgaben:** COOP-01, COOP-06, COOP-07, COOP-09, COOP-10, COOP-11, TEAM-02
+
+Block 4c: automatische Abnahme Team live mit drei Geräten gegen den echten Team-Raum (wrangler dev) und Mod-Client, tests/e2e/team-acceptance.e2e.mjs deckt TEAMBAU-01/03/05/21/24/25/27/28/29 ab (AUTO_CHECKS); behoben: WLAN aus sofort offline statt nach 70 s, Pakete teilen im Live-Team verweist auf Freigabe statt Datei. Grenze: echte Spieler im Spiel, echtes Handy-WLAN.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| COOP-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp mit Mitspielern (TEAMBAU-01…05). |
+| COOP-06 | 🧩 Implementiert · Abnahme offen | 4/5 | Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern. |
+| COOP-07 | 🧩 Implementiert · Abnahme offen | 6/7 | Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl umgesetzt (LINK-05). |
+| COOP-09 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme mit Mitspielern (TEAMBAU-25). |
+| COOP-10 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme mit Mitspielern ohne Plugin (TEAMBAU-27, TEAMBAU-25). |
+| COOP-11 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme TEAMBAU-28 durch Philipp; danach optional team.digest im Plugin/Mod-TeamLog (Thread „Mod, Server und Client mit Fallbacks ausbauen“). |
+| TEAM-02 | 🧩 Implementiert · Abnahme offen | 2/2 | Abnahme TEAMBAU-29 mit Mitspielern im echten Raum (zwei Geräte übernehmen gleichzeitig denselben Abschnitt). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/views/project/team/TeamPlan.tsx`
+- `apps/web/src/views/project/team/roomClient.ts`
+- `docs/TESTING.md`
+- `docs/architecture/team/TEAM_LIVE.md`
+- `docs/testing/TESTPLAN.md`
+- `tests/e2e/team-acceptance.e2e.mjs`
+- `tests/e2e/teamRoomDev.mjs`
+

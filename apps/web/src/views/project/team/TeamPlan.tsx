@@ -106,7 +106,7 @@ function WorkPackages(p: TeamPlanProps & { work: readonly SectionWork[] }) {
     if (!preview || !('ok' in preview) || !preview.ok) return;
     const name = site.sections.find(s => s.id === chosen)?.name ?? 'Abschnitt';
     if (p.saveSite(preview.ok.site, `„${name}“ in ${preview.ok.parts.length} Arbeitspakete geteilt`))
-      p.setMessage(`„${name}“ ist jetzt ${preview.ok.parts.length} Arbeitspakete. ${view.release ? 'Danach den Plan neu freigeben und das Teampaket mit Plan schicken, damit alle dieselben Pakete sehen.' : ''}`);
+      p.setMessage(`„${name}“ ist jetzt ${preview.ok.parts.length} Arbeitspakete. ${!view.release ? '' : (p.team as { live?: unknown }).live ? 'Gib den Plan danach neu frei („Aktuellen Plan freigeben“): Erst mit dem neuen Planstand kennen die anderen die Pakete, er kommt über den Team-Raum zu ihnen.' : 'Danach den Plan neu freigeben und das Teampaket mit Plan schicken, damit alle dieselben Pakete sehen.'}`);
   };
   return <div role="region" className="team-block" aria-label="Arbeitspakete">
     <div className="team-block-head"><h3>Arbeitspakete <small>große Abschnitte so teilen, dass mehrere gleichzeitig bauen</small></h3></div>

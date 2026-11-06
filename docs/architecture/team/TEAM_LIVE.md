@@ -65,6 +65,7 @@ Ein Raum gehört zu genau einem Team (`teamId`). Alle Antworten sind JSON. Grenz
 - Der Planer arbeitet immer lokal weiter (IndexedDB). Nicht bestätigte Ereignisse liegen im **Postausgang**, `site.team.live.pending` mit ihren IDs. Sie gehen beim nächsten Kontakt als Stapel raus. Ein Stapel aus mehreren Ereignissen eines Schritts (z. B. `useActMany`) bleibt ein Stapel.
 - Wiederholen ist sicher, weil gleiche `batch`/IDs nicht doppelt gezählt werden. Ein Ereignis mit gleicher ID und anderem Inhalt wird abgelehnt und als Hinweis gezeigt wie heute `clashes`.
 - WebSocket weg → alle 5–60 s `GET …/events?after` (wachsender Abstand), Anzeige „○ offline seit 14:02 · 3 Aktionen warten“.
+- WLAN aus (der Browser meldet `offline`): der Planer gibt die Leitung sofort auf, nicht erst nach 70 s Herzschlag; neue Schritte warten im Postausgang („offline · 1 warten“) statt in einem toten WebSocket. Zurück online verbindet er sich sofort (06.11.2026, Abnahme `tests/e2e/team-acceptance.e2e.mjs`).
 - Teampaket, Meldecode und Serverdatei bleiben unter „Ohne Internet“ als Ausweg.
 
 ## 8. Aufteilung

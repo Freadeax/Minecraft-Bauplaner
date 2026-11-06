@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T22:11:34.211Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T22:12:39.157Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -2313,7 +2313,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TEAM-02
 
-**Geordnete Operationen, Reconnect und Team-Undo im Team-Raum** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Team-Raum bei gleichzeitigen Änderungen absichern“) · Zuständiger Thread: „Team-Raum bei gleichzeitigen Änderungen absichern“ · Aktualisiert: 2026-11-06T20:43:01.586Z
+**Geordnete Operationen, Reconnect und Team-Undo im Team-Raum** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Team-Raum bei gleichzeitigen Änderungen absichern“) · Zuständiger Thread: „Team-Raum bei gleichzeitigen Änderungen absichern“ · Aktualisiert: 2026-11-06T22:12:39.157Z
 
 - [x] TEAM-02-S01: Operation-ID (Ereignis-ID + Stapel-ID), Revisionsprüfung je Gegenstand (Abschnitt, Kiste, Notiz, Mitglied) mit Lesestand des Schritts, Stapel als Transaktion, Wiederholung ohne Doppelbuchung; alte Räume lernen ihre Gegenstände aus dem Protokoll.
 - [x] TEAM-02-S02: Planer: sauberes Wiederverbinden (Herzschlag, Zeitlimits, Wiederholung ohne Antwort, gestreute Pausen, Tab/Netz zurück), Hinweis „war schneller“, Team-Rückgängig über geprüfte Gegenschritte; Tests für konkurrierende Änderungen.
@@ -2839,7 +2839,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-01
 
-**Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Teambau im Planer: Teamprotokoll ohne Backend (Rollen, Abschnittsvergabe, Meldungen, Beiträge, Notizen, Planfreigabe), Teampaket, Meldecode, Reiter „Team“** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-06T22:12:39.157Z
 
 - [x] COOP-01-S01: Konzept TEAMBAU.md: Rollen, Ereignismodell, Konfliktregeln, Austauschwege, Plugin, Mod, Nachweis, Lager, Freigabe, Einstieg, was nur Philipp tun kann.
 - [x] COOP-01-S02: Domäne team.ts: Ereignisse, Prüfung, Faltung mit Rechten, Zusammenführen, Meldecode, Teampaket, Statustext, Serverdatei, Planübernahme; site.team in checkSite.
@@ -2953,7 +2953,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-06
 
-**Teamplanung im Planer: Arbeitspakete, Zuteilung, Zeitplan, Material je Spieler, Fortschritt mit Hinweisen, Konflikthilfe, Planstand-Vergleich, Übergabe und Abwesenheit** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen im Planer vertiefen“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Teamplanung im Planer: Arbeitspakete, Zuteilung, Zeitplan, Material je Spieler, Fortschritt mit Hinweisen, Konflikthilfe, Planstand-Vergleich, Übergabe und Abwesenheit** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen im Planer vertiefen“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-06T22:12:39.157Z
 
 - [x] COOP-06-S01: Domäne teamPlan.ts: Arbeitspakete teilen, Abhängigkeiten, Zuteilungsvorschlag, Zeitplan, Material je Spieler, Fortschritt/Achtung, Konflikthilfe, Planstand-Vergleich, Rechteübersicht.
 - [x] COOP-06-S02: Teamprotokoll: section.handover/accept/decline, member.away, issue.ack; Bedarf je Abschnitt in der Serverdatei.
@@ -3092,7 +3092,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-07
 
-**Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Team live ohne Dateien: Team-Raum (Worker + Durable Object), Einladungslink, Live-Abgleich in jedem Reiter, Planstand live, Servermessungen mit Serverschlüssel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-06T22:12:39.157Z
 
 - [x] COOP-07-S01: Konzept TEAM_LIVE.md: Varianten, Raumprotokoll team-room v1, Schlüssel und Rollen, Ablauf, Offline, Aufteilung.
 - [x] COOP-07-S02: Sync-Kern teamSync.ts: Postausgang, Stapel, Cursor, Einladungs- und Server-Link; Pakete ohne Schlüssel.
@@ -3386,7 +3386,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-09
 
-**Team live im Alltag: Status und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Team live im Alltag: Status und Meldungen in jedem Reiter, Anwesenheit mit Abschnitt, Einladung/Server-Link erneuern, abgelehnte Meldungen sichtbar** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-06T22:12:39.157Z
 
 - [x] COOP-09-S01: Chip im Projektkopf und Meldungen der anderen in jedem Reiter (ohne Flut beim Nachholen).
 - [x] COOP-09-S02: Anwesenheit mit eigenem Abschnitt in Arbeit.
@@ -3410,7 +3410,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-10
 
-**Client zuerst: Baustand und Kisteninhalt laut Spiel (section.seen, store.seen) im Teamstand, ungeprüft getrennt von Servermessungen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Client zuerst: Baustand und Kisteninhalt laut Spiel (section.seen, store.seen) im Teamstand, ungeprüft getrennt von Servermessungen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemeinsames Bauen mehrerer Spieler ermöglichen“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-06T22:12:39.157Z
 
 - [x] COOP-10-S01: Ereignisse section.seen und store.seen mit Prüfung und Recht Helfer (team.ts, TeamLog.java).
 - [x] COOP-10-S02: Faltung: neuester Stand je Abschnitt, gesehener Kisteninhalt, Bestand laut Spiel nur ohne Serverzählung.
@@ -3436,7 +3436,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### COOP-11
 
-**Verlauf verdichten: Bauleitung ersetzt Messungen bis zu einem Stichtag durch Summen (team.digest), gleicher Teamstand, Merge ohne Doppelzählung, Produktion und Team live lesen mit** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Verlauf verdichten: Bauleitung ersetzt Messungen bis zu einem Stichtag durch Summen (team.digest), gleicher Teamstand, Merge ohne Doppelzählung, Produktion und Team live lesen mit** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Mehrspieler und Server automatisch abnehmen“ · Aktualisiert: 2026-11-06T22:12:39.157Z
 
 - [x] COOP-11-S01: Ereignis team.digest (Teile unter 4 KB, Prüfung), Lauf in Kraft (vollständig, spätester Stichtag, Bauleitung zum Stichtag), Faltung überspringt Ersetztes.
 - [x] COOP-11-S02: compactTeam: Summen je Mitglied/Abschnitt/Kiste/Farm, neueste Zählung bleibt, erledigte Notizen und alte Ablehnungen entfallen; Gleichheitsprüfung vor dem Speichern.

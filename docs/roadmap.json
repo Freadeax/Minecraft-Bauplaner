@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T22:11:34.211Z",
+  "updatedAt": "2026-11-06T22:12:39.157Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -6248,7 +6248,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:43:01.586Z",
+      "updatedAt": "2026-11-06T22:12:39.157Z",
       "area": "TEAM",
       "thread": "Team-Raum bei gleichzeitigen Änderungen absichern",
       "philipp": [],
@@ -8247,7 +8247,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T22:12:39.157Z",
       "area": "TEAM",
       "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
@@ -8669,7 +8669,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T22:12:39.157Z",
       "area": "TEAM",
       "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
@@ -9222,7 +9222,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T22:12:39.157Z",
       "area": "TEAM",
       "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
@@ -10316,7 +10316,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T22:12:39.157Z",
       "area": "TEAM",
       "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
@@ -10414,7 +10414,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T22:12:39.157Z",
       "area": "TEAM",
       "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
@@ -10508,7 +10508,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T22:12:39.157Z",
       "area": "TEAM",
       "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
@@ -26141,6 +26141,81 @@
           "done": 3,
           "total": 4,
           "next": "Abnahme durch Philipp: Seite und Mod 0.24.0 im Spiel ansehen (Tastengruppe „Build Studio“, Menütitel)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T22:12:39.157Z",
+      "kind": "progress",
+      "items": [
+        "COOP-01",
+        "COOP-06",
+        "COOP-07",
+        "COOP-09",
+        "COOP-10",
+        "COOP-11",
+        "TEAM-02"
+      ],
+      "summary": "Block 4c: automatische Abnahme Team live mit drei Geräten gegen den echten Team-Raum (wrangler dev) und Mod-Client, tests/e2e/team-acceptance.e2e.mjs deckt TEAMBAU-01/03/05/21/24/25/27/28/29 ab (AUTO_CHECKS); behoben: WLAN aus sofort offline statt nach 70 s, Pakete teilen im Live-Team verweist auf Freigabe statt Datei. Grenze: echte Spieler im Spiel, echtes Handy-WLAN.",
+      "files": [
+        "apps/web/src/testing/autochecks.ts",
+        "apps/web/src/views/project/team/TeamPlan.tsx",
+        "apps/web/src/views/project/team/roomClient.ts",
+        "docs/TESTING.md",
+        "docs/architecture/team/TEAM_LIVE.md",
+        "docs/testing/TESTPLAN.md",
+        "tests/e2e/team-acceptance.e2e.mjs",
+        "tests/e2e/teamRoomDev.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "COOP-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp mit Mitspielern (TEAMBAU-01…05)."
+        },
+        {
+          "id": "COOP-06",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern."
+        },
+        {
+          "id": "COOP-07",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl umgesetzt (LINK-05)."
+        },
+        {
+          "id": "COOP-09",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme mit Mitspielern (TEAMBAU-25)."
+        },
+        {
+          "id": "COOP-10",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Abnahme mit Mitspielern ohne Plugin (TEAMBAU-27, TEAMBAU-25)."
+        },
+        {
+          "id": "COOP-11",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme TEAMBAU-28 durch Philipp; danach optional team.digest im Plugin/Mod-TeamLog (Thread „Mod, Server und Client mit Fallbacks ausbauen“)."
+        },
+        {
+          "id": "TEAM-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme TEAMBAU-29 mit Mitspielern im echten Raum (zwei Geräte übernehmen gleichzeitig denselben Abschnitt)."
         }
       ]
     }
