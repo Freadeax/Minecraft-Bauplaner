@@ -76,6 +76,11 @@
       "file": "gallery/09-build-guides.png",
       "title": "Build guides: symmetry and curves",
       "description": "Mirror and rotate what you build, or lay out a smooth wall, path or pipe through a few points. Ghost blocks only, nothing is sent to the server."
+    },
+    {
+      "file": "gallery/10-groups-locked.png",
+      "title": "Groups and locked areas",
+      "description": "Locked areas from the planner stay grey in the hologram, and the placement helper leaves them alone."
     }
   ],
   "firstVersion": "0.10.0",
