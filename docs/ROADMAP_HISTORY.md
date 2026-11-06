@@ -8291,3 +8291,27 @@ Block 6: 3D-Dateien unabhängig geprüft (glTF-Validator, STL/3MF-Prüfer, lib3m
 - `tests/unit/formats/model3d-external.test.mjs`
 - `tests/unit/formats/model3d-files.test.mjs`
 
+## 2026-11-06T22:02:05.657Z · progress
+
+**Aufgaben:** QA-02, EDIT-06, MAP-04
+
+Block 5: Werkstatt und Weltkarte auf iPad Pro 11/iPhone 15 (WebKit) und Firefox mit Touch, Zwei-Finger-Zoom und Langdruck geprüft (touch-devices.e2e.mjs); Fix: zweiter Finger setzt im 3D-Bild keine Blöcke mehr; Firefox-Testkorrektur Weltbuilder; Autochecks WERK-01/02/03/08, KARTE-01/02/05 teilweise. Grenze: kein echtes Gerät.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| QA-02 | 🚧 In Arbeit | 1/2 | Protokolle der Tester in docs/testing/GERAETEMATRIX.md eintragen und Befunde beheben. |
+| EDIT-06 | 🧩 Implementiert · Abnahme offen | 4/5 | EDIT-06-S05: Philipp prüft das Bauen im 3D-Bild auf PC und iPad (WERK-08) und lädt eine Truhe/ein Schild mit Inhalt im Spiel (WERK-09). |
+| MAP-04 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme durch Philipp (S06): Langdruck-Menü auf dem Touch-Gerät, Gruppen und Sperren auf dem iPad (Testfall KARTE-09). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/viewer/sceneController.ts`
+- `apps/web/src/views/map/OverviewMap.tsx`
+- `docs/TESTING.md`
+- `docs/testing/GERAETEMATRIX.md`
+- `docs/testing/TESTPLAN.md`
+- `tests/e2e/touch-devices.e2e.mjs`
+- `tests/e2e/world-groups.e2e.mjs`
+- `tests/e2e/worldbuilder.e2e.mjs`
+

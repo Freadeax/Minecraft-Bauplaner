@@ -27,6 +27,8 @@ after(async () => { await browser?.close(); server?.kill(); await mod?.close(); 
 
 const ready = p => p.locator('.map-page[data-map-state=ready]').waitFor({ timeout: 20_000 });
 async function at(canvas, x, z) {
+  // Picking a tool can scroll the page (Firefox scrolls the clicked button into view): bring the map back first.
+  await canvas.scrollIntoViewIfNeeded();
   const box = await canvas.boundingBox();
   const scale = Number(await canvas.getAttribute('data-scale'));
   const [cx, cz] = (await canvas.getAttribute('data-center')).split(',').map(Number);

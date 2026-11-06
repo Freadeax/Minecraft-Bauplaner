@@ -134,6 +134,8 @@ export class SceneController {
   private stateValue: ViewerState = { mode: 'orbit', projection: 'perspective', view: 'iso', speed: 8 };
   private readonly keys = new Set<string>();
   private readonly pointers = new Set<number>();
+  /** Fingers on the host, counted before OrbitControls or a build/grab gesture can swallow them. */
+  private readonly touches = new Set<number>();
   private focusTarget: Bounds | null = null;
   private yaw = 0;
   private pitch = 0;
@@ -170,10 +172,14 @@ export class SceneController {
       target.addEventListener(type, fn as EventListener, options); this.disposers.push(() => target.removeEventListener(type, fn as EventListener, options));
     };
     // Grabbing runs in the capture phase on the host, before OrbitControls and the canvas handlers see the pointer.
-    on(host, 'pointerdown', e => { this.autoFrame = false; this.grabStart(e); if (!this.grab) this.buildStart(e); }, { capture: true });
+    on(host, 'pointerdown', e => {
+      // The first finger of a touch is primary; a stale entry (finger lifted outside the view) never blocks building.
+      if (e.pointerType === 'touch') { if (e.isPrimary) this.touches.clear(); this.touches.add(e.pointerId); }
+      this.autoFrame = false; this.grabStart(e); if (!this.grab) this.buildStart(e);
+    }, { capture: true });
     on(host, 'pointermove', e => { this.grabMove(e); this.buildMove(e); }, { capture: true });
-    on(host, 'pointerup', e => { this.grabEnd(e, false); this.buildEnd(e, false); }, { capture: true });
-    on(host, 'pointercancel', e => { this.grabEnd(e, true); this.buildEnd(e, true); }, { capture: true });
+    on(host, 'pointerup', e => { this.touches.delete(e.pointerId); this.grabEnd(e, false); this.buildEnd(e, false); }, { capture: true });
+    on(host, 'pointercancel', e => { this.touches.delete(e.pointerId); this.grabEnd(e, true); this.buildEnd(e, true); }, { capture: true });
     on(canvas, 'pointerdown', e => this.pointerDown(e));
     on(canvas, 'pointermove', e => this.pointerMove(e));
     on(canvas, 'pointerup', e => this.pointerUp(e));
@@ -585,7 +591,8 @@ export class SceneController {
     if (this.building) { // a second finger cancels the gesture
       const h = this.buildHandler; this.building = null; delete this.host.dataset.building; h?.end(true); return;
     }
-    if (!this.buildHandler || this.stateValue.mode === 'flight' || e.button > 0) return;
+    // A finger landing while another one is down (it missed the model and went to zoom/orbit) is a pinch, not a build.
+    if (!this.buildHandler || this.stateValue.mode === 'flight' || e.button > 0 || this.touches.size > 1) return;
     const hit = this.pickHitAt(e);
     const mods = this.mods(e);
     if (!hit || !this.buildHandler.canStart(hit, mods)) return;
@@ -673,7 +680,7 @@ export class SceneController {
     if (this.grab) { // a second finger cancels the move and falls back to pinch/pan
       const h = this.dragHandler; this.grab = null; h?.end(null); return;
     }
-    if (!this.dragHandler || this.stateValue.mode === 'flight' || e.button > 0) return;
+    if (!this.dragHandler || this.stateValue.mode === 'flight' || e.button > 0 || this.touches.size > 1) return;
     const cell = this.pickAt(e);
     if (!cell || !this.dragHandler.canGrab(cell)) return;
     // Plane through the middle of the grabbed cell: dragging follows that layer under the pointer.

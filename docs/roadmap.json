@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T21:53:21.545Z",
+  "updatedAt": "2026-11-06T22:02:05.657Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -1068,7 +1068,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T21:15:30.975Z",
+      "updatedAt": "2026-11-06T22:02:05.657Z",
       "area": "QA",
       "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
@@ -5337,7 +5337,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T22:02:05.657Z",
       "area": "PLANER",
       "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
@@ -11056,7 +11056,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T22:02:05.657Z",
       "area": "PLANER",
       "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
@@ -25798,6 +25798,50 @@
           "done": 3,
           "total": 3,
           "next": "Folge erledigt (06.11.): kompakte Laufzeitform als begrenzte Menge entpackter Bibliothekszellen (ARCH-02-S07); PERF-05-S08 lädt Zellen erst bei Bedarf."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T22:02:05.657Z",
+      "kind": "progress",
+      "items": [
+        "QA-02",
+        "EDIT-06",
+        "MAP-04"
+      ],
+      "summary": "Block 5: Werkstatt und Weltkarte auf iPad Pro 11/iPhone 15 (WebKit) und Firefox mit Touch, Zwei-Finger-Zoom und Langdruck geprüft (touch-devices.e2e.mjs); Fix: zweiter Finger setzt im 3D-Bild keine Blöcke mehr; Firefox-Testkorrektur Weltbuilder; Autochecks WERK-01/02/03/08, KARTE-01/02/05 teilweise. Grenze: kein echtes Gerät.",
+      "files": [
+        "apps/web/src/testing/autochecks.ts",
+        "apps/web/src/viewer/sceneController.ts",
+        "apps/web/src/views/map/OverviewMap.tsx",
+        "docs/TESTING.md",
+        "docs/testing/GERAETEMATRIX.md",
+        "docs/testing/TESTPLAN.md",
+        "tests/e2e/touch-devices.e2e.mjs",
+        "tests/e2e/world-groups.e2e.mjs",
+        "tests/e2e/worldbuilder.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "QA-02",
+          "status": "in_progress",
+          "done": 1,
+          "total": 2,
+          "next": "Protokolle der Tester in docs/testing/GERAETEMATRIX.md eintragen und Befunde beheben."
+        },
+        {
+          "id": "EDIT-06",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "EDIT-06-S05: Philipp prüft das Bauen im 3D-Bild auf PC und iPad (WERK-08) und lädt eine Truhe/ein Schild mit Inhalt im Spiel (WERK-09)."
+        },
+        {
+          "id": "MAP-04",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Abnahme durch Philipp (S06): Langdruck-Menü auf dem Touch-Gerät, Gruppen und Sperren auf dem iPad (Testfall KARTE-09)."
         }
       ]
     }

@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T21:53:21.545Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T22:02:05.657Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -940,7 +940,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### QA-02
 
-**Echte GPU-, Safari- und iPhone-Abnahme** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-06T21:15:30.975Z
+**Echte GPU-, Safari- und iPhone-Abnahme** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-06T22:02:05.657Z
 
 - [x] QA-02-S01: Geräte-/Browsermatrix und reproduzierbare Aufgaben definieren.
 - [ ] QA-02-S02: Dateiimport, IndexedDB, Touch, Themes und Layer auf echten Geräten prüfen.
@@ -2065,7 +2065,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAP-04
 
-**Weltbuilder vertiefen: Löschen und Entfernen für alle Objekte der Weltkarte, Mehrfachauswahl, Kontextmenü, gemeinsames Rückgängig, Duplizieren/Drehen/Spiegeln, Wegecken, Ebenen, Objektliste** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Weltbuilder mit Löschen vertiefen“) · Zuständiger Thread: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Weltbuilder vertiefen: Löschen und Entfernen für alle Objekte der Weltkarte, Mehrfachauswahl, Kontextmenü, gemeinsames Rückgängig, Duplizieren/Drehen/Spiegeln, Wegecken, Ebenen, Objektliste** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Weltbuilder mit Löschen vertiefen“) · Zuständiger Thread: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-06T22:02:05.657Z
 
 - [x] MAP-04-S01: Löschen/Entfernen für alle Objekte: Entf-Taste, Auswahlleiste, Kontextmenü, Listenzeilen; Projekte nur von der Karte nehmen.
 - [x] MAP-04-S02: Mehrfachauswahl (Umschalt/Strg-Klick, Rahmen, Strg+A) und gemeinsames Rückgängig für Weltplan und Projektlagen.
@@ -3571,7 +3571,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### EDIT-06
 
-**Direkt im 3D-Bild bauen: Blöcke an Flächen setzen/abbauen, Formen und Gruppen im 3D aufziehen und ziehen, Truhen- und Schildinhalte bearbeiten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Direkt im 3D-Bild bauen“) · Zuständiger Thread: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Direkt im 3D-Bild bauen: Blöcke an Flächen setzen/abbauen, Formen und Gruppen im 3D aufziehen und ziehen, Truhen- und Schildinhalte bearbeiten** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Direkt im 3D-Bild bauen“) · Zuständiger Thread: „Browser und Geräte automatisch abnehmen“ · Aktualisiert: 2026-11-06T22:02:05.657Z
 
 - [x] EDIT-06-S01: Picking an 3D-Blockflächen (Zelle, Flächenrichtung, Zelle davor) und Bau-Geste im 3D-Bild mit Vorschau; Setzen/Abbauen per Klick und Ziehen.
 - [x] EDIT-06-S02: Formen und Auswahl im 3D aufziehen (Oberseite waagrecht, Seitenfläche als Wand), Gruppe mit dem Auswahl-Werkzeug im 3D-Bild verschieben.

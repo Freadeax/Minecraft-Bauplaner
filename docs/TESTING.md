@@ -1179,3 +1179,15 @@ Neuer Mehrspieler-Prüfstand `scripts/mod/lib/multiplayer.mjs` (echter Paper-Ser
 - ARCH-02-S07 Laufzeitform: `tests/unit/core/lazy-cells.test.mjs` 5/5 (Wiedereinpacken über der Grenze, bitgleiches Entpacken, Speichern ohne Neupacken, Schutzzeit); `tests/e2e/plan-model.e2e.mjs` prüft die neue Zeile im Systemcheck.
 - Voller Browserlauf: 200/200 (alle 86 Dateien), `npm run check` 990 Tests (988 bestanden, 2 übersprungen).
 - Grenzen: kein echter Druck, kein Cura/Bambu Studio, keine Stichprobe mit Philipps eigenen Browserdaten (GERAET-03).
+
+## QA-02 Block 5 · Werkstatt und Weltkarte auf iPad/iPhone-Profilen und in Firefox · 06.11.2026 · Claude
+
+- Neu `tests/e2e/touch-devices.e2e.mjs` (Port 4500) 4/4 in WebKit 2370, Firefox 1555 und Chromium: iPad Pro 11 und iPhone 15 (Playwright-Geräteprofile, Touch, isMobile außer Firefox) – Werkstatt: Tippen im Ebenenraster, Quader mit einem Finger ziehen, im 3D-Bild genau einen Block setzen, Zwei-Finger-Zoom baut nichts, Rückgängig; Weltkarte: Projekt platzieren, Bauplatz mit einem Finger aufziehen, Punkt tippen, Zwei-Finger-Zoom hin und zurück, Langdruck-Menü (Sperren, Entsperren, Löschen, „Punkt hier setzen“), Rückgängig, Neuladen; nirgends waagrechtes Scrollen.
+- Ziehen, Langdruck und zwei Finger löst der Test als Zeiger-Ereignisse vom Typ touch aus (Playwright kann nur tippen); setPointerCapture nimmt diese künstlichen Zeiger im Test still hin.
+- Befund und Fix: Lag der erste Finger einer Zwei-Finger-Geste neben dem Modell, begann der zweite Finger im 3D-Bild einen Pinselstrich und setzte Blöcke (iPhone 15: 2 Blöcke statt 0). `sceneController.ts` zählt jetzt die Finger am Bildrand vor OrbitControls; ein weiterer Finger startet weder Bauen noch Verschieben.
+- Befund im Test (kein App-Fehler): Firefox scrollt beim Klick auf einen Werkzeugknopf diesen ins Bild, die Karte lag dann außerhalb; `worldbuilder.e2e.mjs` und `world-groups.e2e.mjs` holen die Karte vor jeder Koordinate zurück ins Bild.
+- Bestehende Dateien `editor`, `workshop-build3d|creative|region|tools`, `worldmap`, `world-groups`, `world-turn`, `worldbuilder` in WebKit 18/18 und Firefox 18/18 grün.
+- Hinweis „Auswählen“ auf der Karte nennt jetzt „langes Drücken“ und „zwei Finger zoomen“.
+- Automatische Abnahmen (teilweise): WERK-01/02/03/08, KARTE-01/02/05 in `apps/web/src/testing/autochecks.ts`.
+- `npm run check` grün (988 Unit-Tests); voller Browserlauf in Chromium (drei Teile, 87 Dateien): 203/203 grün.
+- Nicht automatisch geprüft: echtes iPad/iPhone mit Safari (GPU, Systemgesten, Bediengefühl), Zone zeichnen im Browser, Pyramide/Kegel im Browser, Rückfrage beim Verlassen der Werkstatt.

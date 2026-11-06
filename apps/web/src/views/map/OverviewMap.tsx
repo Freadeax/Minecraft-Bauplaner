@@ -36,7 +36,7 @@ export interface OverviewProps {
 /** Planning tool of the top view. „select“ selects, drags selected things and pans. */
 export type MapTool = 'select' | 'box' | 'site' | 'path' | 'zone' | 'point' | 'measure';
 export const MAP_TOOLS: readonly { readonly id: MapTool; readonly label: string; readonly key: string; readonly hint: string }[] = [
-  { id: 'select', label: 'Auswählen', key: 'V', hint: 'Klick wählt, Umschalt/Strg-Klick wählt dazu, Ziehen verschiebt das Gewählte (sonst die Karte), Umschalt-Ziehen zieht einen Auswahlrahmen, Rechtsklick öffnet das Menü, Entf löscht' },
+  { id: 'select', label: 'Auswählen', key: 'V', hint: 'Klick wählt, Umschalt/Strg-Klick wählt dazu, Ziehen verschiebt das Gewählte (sonst die Karte), Umschalt-Ziehen zieht einen Auswahlrahmen, Rechtsklick oder langes Drücken öffnet das Menü, zwei Finger zoomen, Entf löscht' },
   { id: 'box', label: 'Rahmen', key: 'A', hint: 'Rahmen aufziehen wählt alles darin (Umschalt: dazu), Klick wählt einzeln' },
   { id: 'site', label: 'Bauplatz', key: 'B', hint: 'Rechteck aufziehen; Umschalt rastet an Chunks ein' },
   { id: 'path', label: 'Weg', key: 'W', hint: 'Klick setzt Ecken, Doppelklick oder Eingabe beendet, Rücktaste nimmt die letzte Ecke zurück' },

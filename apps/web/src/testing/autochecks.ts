@@ -98,6 +98,56 @@ export const AUTO_CHECKS: readonly AutoCheck[] = [
     remaining: 'Stichprobe mit deinen eigenen, lange gewachsenen Daten auf PC und iPad; „Dauerhaft speichern“ im echten Browser.',
     command: 'npm run build && node --test tests/e2e/aged-browserdata.e2e.mjs',
     evidence: '06.11.2026, Block 6, Chromium: 3/3' },
+  // Block 5 Werkstatt und Weltkarte (EDIT-01/02/03/05/06, MAP-01, MAP-04) auf iPad/iPhone-Profilen und Firefox.
+  {
+    caseId: 'WERK-01', scope: 'teil',
+    covers: 'Neues Bauteil: Blöcke setzen (Raster und 3D, auch per Finger), Quader und Treppenlinie, viele Schritte rückgängig/wiederholen, Tastenkürzel-Übersicht (?), Speichern als Bauteil und neue Version; iPad/iPhone ohne waagrechtes Scrollen.',
+    remaining: 'Rückfrage beim Verlassen ohne Speichern („Abbrechen“ behält den Entwurf) und Drehen einzelner Blöcke nur von Hand; Echtes iPad bzw. iPhone mit Safari (GPU, Systemgesten, Gefühl beim Bedienen); Container-WebKit ist nur die Engine.',
+    command: 'npm run test:e2e:webkit -- tests/e2e/editor.e2e.mjs tests/e2e/workshop-tools.e2e.mjs tests/e2e/touch-devices.e2e.mjs',
+    evidence: '06.11.2026, main 3bdb39e + Block 5 Werkstatt/Karte: grün in WebKit 2370 (iPad Pro 11, iPhone 15), Firefox 1555 und Chromium im Container',
+  },
+  {
+    caseId: 'WERK-02', scope: 'teil',
+    covers: 'Linie, Quader, Bogen, Ellipsoid, Torus, Wendel und Musterpinsel (Mischung, Verlauf) erzeugen die eingestellten Maße und Verteilungen; Schablone mit Vorschau.',
+    remaining: 'Pyramide und Kegel nur im Einheitstest (editor-patterns.test.mjs), nicht im Browser gezogen; Echtes iPad bzw. iPhone mit Safari (GPU, Systemgesten, Gefühl beim Bedienen); Container-WebKit ist nur die Engine.',
+    command: 'npm run test:e2e:webkit -- tests/e2e/workshop-tools.e2e.mjs tests/e2e/workshop-region.e2e.mjs',
+    evidence: '06.11.2026, main 3bdb39e + Block 5 Werkstatt/Karte: grün in WebKit 2370 (iPad Pro 11, iPhone 15), Firefox 1555 und Chromium im Container',
+  },
+  {
+    caseId: 'WERK-03', scope: 'teil',
+    covers: 'Zauberauswahl, Stapeln, Extrudieren, Auswahl verschieben/drehen, Symmetrie, Kurve, Naturwerkzeuge, Oberfläche, Farbverlauf und Bild → Blöcke wirken nur auf die Auswahl; am Handy ohne waagrechtes Scrollen.',
+    remaining: 'Ob die Ergebnisse optisch „wie in der Vorschau“ aussehen und Bild → Blöcke passende Farben trifft, beurteilt ein Mensch; Echtes iPad bzw. iPhone mit Safari (GPU, Systemgesten, Gefühl beim Bedienen); Container-WebKit ist nur die Engine.',
+    command: 'npm run test:e2e:webkit -- tests/e2e/workshop-region.e2e.mjs tests/e2e/workshop-creative.e2e.mjs tests/e2e/editor.e2e.mjs',
+    evidence: '06.11.2026, main 3bdb39e + Block 5 Werkstatt/Karte: grün in WebKit 2370 (iPad Pro 11, iPhone 15), Firefox 1555 und Chromium im Container',
+  },
+  {
+    caseId: 'WERK-08', scope: 'teil',
+    covers: 'Im 3D-Bild setzen und abbauen, Boden und senkrechte Wand mit dem Quader aufziehen, Gruppe per Shift-Ziehen wählen und verschieben, Rückgängig; auf iPad Pro 11 und iPhone 15 setzt ein Finger genau einen Block, zwei Finger zoomen ohne zu bauen.',
+    remaining: 'Rechte Maustaste dreht (Maus) und echte Zwei-Finger-Geste auf dem iPad; Test nutzt Zeiger-Ereignisse vom Typ touch. Echtes iPad bzw. iPhone mit Safari (GPU, Systemgesten, Gefühl beim Bedienen); Container-WebKit ist nur die Engine.',
+    command: 'npm run test:e2e:webkit -- tests/e2e/workshop-build3d.e2e.mjs tests/e2e/touch-devices.e2e.mjs',
+    evidence: '06.11.2026, main 3bdb39e + Block 5 Werkstatt/Karte: grün in WebKit 2370 (iPad Pro 11, iPhone 15), Firefox 1555 und Chromium im Container',
+  },
+  {
+    caseId: 'KARTE-01', scope: 'teil',
+    covers: 'Projekt platzieren (auch per Finger auf iPad/iPhone), über die Weltlage verschieben, drehen und spiegeln; Lage und Weltkoordinaten bleiben nach dem Neuladen.',
+    remaining: 'Echtes iPad bzw. iPhone mit Safari (GPU, Systemgesten, Gefühl beim Bedienen); Container-WebKit ist nur die Engine.',
+    command: 'npm run test:e2e:webkit -- tests/e2e/worldmap.e2e.mjs tests/e2e/world-turn.e2e.mjs tests/e2e/touch-devices.e2e.mjs',
+    evidence: '06.11.2026, main 3bdb39e + Block 5 Werkstatt/Karte: grün in WebKit 2370 (iPad Pro 11, iPhone 15), Firefox 1555 und Chromium im Container',
+  },
+  {
+    caseId: 'KARTE-02', scope: 'teil',
+    covers: 'Bauplatz, Weg und Punkt anlegen (Maus und Finger), duplizieren, drehen, Wegecken ziehen, Rahmen-Auswahl, Kontextmenü per Rechtsklick und per langem Drücken (iPad/iPhone), Löschen mit Entf/Menü/Liste, Strg+Z/Strg+Y; Objektliste stimmt mit der Karte.',
+    remaining: 'Langdruck im Test als touch-Zeiger ausgelöst; Echtes iPad bzw. iPhone mit Safari (GPU, Systemgesten, Gefühl beim Bedienen); Container-WebKit ist nur die Engine.',
+    command: 'npm run test:e2e:webkit -- tests/e2e/worldbuilder.e2e.mjs tests/e2e/touch-devices.e2e.mjs',
+    evidence: '06.11.2026, main 3bdb39e + Block 5 Werkstatt/Karte: grün in WebKit 2370 (iPad Pro 11, iPhone 15), Firefox 1555 und Chromium im Container',
+  },
+  {
+    caseId: 'KARTE-05', scope: 'teil',
+    covers: 'Ebenen und Gruppen zuweisen, ganze Gruppe/Einzeleintrag wählen, Sperren verhindert Verschieben und Löschen, Rückgängig nimmt Sperren und Zuweisen zurück, Neuladen behält alles; Sperren/Entsperren über das Langdruck-Menü am iPad.',
+    remaining: 'Zone mit drei Ecken und Fläche in Blöcken² nur am Desktop geprüft; Echtes iPad bzw. iPhone mit Safari (GPU, Systemgesten, Gefühl beim Bedienen); Container-WebKit ist nur die Engine.',
+    command: 'npm run test:e2e:webkit -- tests/e2e/world-groups.e2e.mjs tests/e2e/worldbuilder.e2e.mjs tests/e2e/touch-devices.e2e.mjs',
+    evidence: '06.11.2026, main 3bdb39e + Block 5 Werkstatt/Karte: grün in WebKit 2370 (iPad Pro 11, iPhone 15), Firefox 1555 und Chromium im Container',
+  },
 ];
 
 export function autoCheckOf(caseId: string): AutoCheck | undefined {
