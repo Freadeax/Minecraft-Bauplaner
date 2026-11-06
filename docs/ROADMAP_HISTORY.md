@@ -7267,3 +7267,13 @@ Gelände- und Landschaftsreiter holen das Gelände direkt aus der Mod (Geländeg
 - `tests/e2e/terrain-game.e2e.mjs`
 - `tests/unit/world/live-terrain.test.mjs`
 
+## 2026-11-06T12:58:19.470Z · progress
+
+**Aufgaben:** GAME-09
+
+0.20.0 auf Modrinth (Fabric, NeoForge) mit Galeriebild Geländegedächtnis und Offenlegung
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
+

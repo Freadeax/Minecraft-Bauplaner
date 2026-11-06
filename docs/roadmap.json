@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T12:37:11.138Z",
+  "updatedAt": "2026-11-06T12:58:19.470Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -8392,7 +8392,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T12:37:11.138Z",
+      "updatedAt": "2026-11-06T12:58:19.470Z",
       "area": "MODRINTH",
       "thread": "Mod auf Modrinth veröffentlichen",
       "philipp": [],
@@ -22831,6 +22831,24 @@
           "total": 5,
           "next": "Abnahme durch Philipp im Spiel (S05)."
         },
+        {
+          "id": "GAME-09",
+          "status": "in_progress",
+          "done": 4,
+          "total": 5,
+          "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T12:58:19.470Z",
+      "kind": "progress",
+      "items": [
+        "GAME-09"
+      ],
+      "summary": "0.20.0 auf Modrinth (Fabric, NeoForge) mit Galeriebild Geländegedächtnis und Offenlegung",
+      "files": [],
+      "snapshot": [
         {
           "id": "GAME-09",
           "status": "in_progress",
