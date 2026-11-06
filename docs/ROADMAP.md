@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T15:13:31.442Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T15:17:03.640Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -1391,7 +1391,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-06
 
-**Mehr Leistung ohne eigenen Server: Offline-Speicher (Service Worker) und kostenlose zweite Adresse auf Cloudflare Pages** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude-Thread „Einfachsten Weg zu mehr Leistung finden“ · Zuständiger Thread: „Einfachsten Weg zu mehr Leistung finden“ · Aktualisiert: 2026-11-05T11:59:28.525Z
+**Mehr Leistung ohne eigenen Server: Offline-Speicher (Service Worker) und kostenlose zweite Adresse auf Cloudflare Pages** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude-Thread „Einfachsten Weg zu mehr Leistung finden“ · Zuständiger Thread: „Einfachsten Weg zu mehr Leistung finden“ · Aktualisiert: 2026-11-06T15:17:03.640Z
 
 - [x] PERF-06-S01: Offline-Speicher: sw.js aus dem Build (Programmdateien mit Inhalts-Hash, Startseite erst Netz), Start ohne Internet, nach Updates nur geänderte Dateien, Karte im Systemcheck zum Ausschalten, Notbremse.
 - [x] PERF-06-S02: Zweite Adresse auf Cloudflare Pages (Gratis-Tarif) aus demselben Build, eigene Cache-Regeln; GitHub Pages bleibt. Live: https://bauplaner.pages.dev/Minecraft-Bauplaner/ (Brotli, assets ein Jahr unveränderlich); publish_pages.sh lädt mit hoch, wenn die Zugangsdaten da sind.

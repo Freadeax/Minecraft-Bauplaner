@@ -1081,3 +1081,9 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Voller Browserlauf vor dem Rebase in fünf Teilen: alles grün bis auf `offline.e2e.mjs` „alte Programmdateien fallen weg“ – schlägt auf unverändertem main (de68c45) genauso fehl, nicht von UX-01 verursacht.
 - Nicht automatisch geprüft: iPad/Safari und Verständlichkeit (Abnahme START-10..12 offen).
 - Nachtrag UX-01-S06 (Werkstatt, Baustelle, Produktion eingeklappt): voller Browserlauf in fünf Teilen 190/190 grün (auch `offline.e2e.mjs` diesmal grün); angepasst `site`, `production`, `workshop-creative`, `workshop-tools` (öffnen die eingeklappten Bereiche vor der Nutzung). Abnahme START-13 offen.
+
+
+## PERF-06 · Offline-Speicher-Browsertest stabilisiert · 06.11.2026 · Claude
+
+- Ursache: `offline.e2e.mjs` wartete höchstens 20 s, bis ein neuer Service Worker (`sw.js?neu=1`) aktiv ist; unter Last (voller Browserlauf, frischer Build) reichte das nicht. Außerdem teilte er Port 4317 mit `catalog-snapshot` und `teamplan`. Jetzt eigener Port 4387, bis 60 s Wartezeit, Fehlermeldung nennt aktive/wartende/installierende Worker. Keine Prüfung abgeschwächt.
+- `offline.e2e.mjs` 3/3, fünfmal hintereinander, davon dreimal unter künstlicher CPU-Last; voller Lauf `npm run test:e2e` 189/190, der eine Ausfall ist `simple-ui.e2e.mjs` (UX-01, wechselnd 1400 px/390 px, nicht Offline-Speicher).

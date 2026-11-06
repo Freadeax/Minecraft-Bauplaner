@@ -11,7 +11,7 @@ import { waitForStart } from './start.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
-const PORT = 4317, BASE = `http://127.0.0.1:${PORT}/Minecraft-Bauplaner/`;
+const PORT = 4387, BASE = `http://127.0.0.1:${PORT}/Minecraft-Bauplaner/`;
 let server, browser;
 
 before(async () => {
@@ -86,11 +86,11 @@ test('Offline-Speicher: alte Programmdateien fallen weg, Ausschalten entfernt ih
   await p.evaluate(async () => {
     // Another script URL counts as a new worker version: it installs and activates again.
     const next = await navigator.serviceWorker.register('sw.js?neu=1', { scope: './' });
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 600; i++) {
       if (next.active?.scriptURL.includes('neu=1') && next.active.state === 'activated') return;
       await new Promise(r => setTimeout(r, 100));
     }
-    throw new Error(`new worker not activated: ${next.active?.scriptURL} ${next.active?.state}`);
+    throw new Error(`new worker not activated: active=${next.active?.scriptURL} ${next.active?.state} waiting=${next.waiting?.scriptURL} installing=${next.installing?.scriptURL} ${next.installing?.state}`);
   });
   assert.ok(!(await cachedFiles(p)).includes('/Minecraft-Bauplaner/assets/alt-0000.js'), 'stale file removed on activate');
 

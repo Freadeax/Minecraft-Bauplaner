@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T15:13:31.442Z",
+  "updatedAt": "2026-11-06T15:17:03.640Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -2752,7 +2752,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:59:28.525Z",
+      "updatedAt": "2026-11-06T15:17:03.640Z",
       "area": "PERF",
       "thread": "Einfachsten Weg zu mehr Leistung finden",
       "philipp": [],
@@ -23610,6 +23610,27 @@
           "done": 6,
           "total": 6,
           "next": "Philipps Abnahme START-10..13 im Browser und auf dem iPad. Optik übernimmt „Planer-Oberfläche schön neu gestalten“."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T15:17:03.640Z",
+      "kind": "progress",
+      "items": [
+        "PERF-06"
+      ],
+      "summary": "Offline-Browsertest stabilisiert: eigener Port, 60 s Wartezeit auf den neuen Service Worker; 3/3 auch unter Last, voller Lauf 189/190 (Ausfall simple-ui, fremd).",
+      "files": [
+        "docs/TESTING.md",
+        "tests/e2e/offline.e2e.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "PERF-06",
+          "status": "in_progress",
+          "done": 2,
+          "total": 3,
+          "next": "PERF-06-S03: Team-Raum mit neuer Herkunft deployen (zusammen mit dem offenen LINK-10-Raum-Deploy) und Mod-Herkunft in der nächsten Mod-Version (Thread „Anbindung von Planer, Mod und Server neu denken“)."
         }
       ]
     }

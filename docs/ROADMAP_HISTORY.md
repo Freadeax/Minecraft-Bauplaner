@@ -7534,3 +7534,18 @@ Werkstatt, Baustelle und Produktion vereinfacht: Kreativ-Werkzeuge, Abschnittsst
 - `tests/e2e/workshop-creative.e2e.mjs`
 - `tests/e2e/workshop-tools.e2e.mjs`
 
+## 2026-11-06T15:17:03.640Z · progress
+
+**Aufgaben:** PERF-06
+
+Offline-Browsertest stabilisiert: eigener Port, 60 s Wartezeit auf den neuen Service Worker; 3/3 auch unter Last, voller Lauf 189/190 (Ausfall simple-ui, fremd).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| PERF-06 | 🚧 In Arbeit | 2/3 | PERF-06-S03: Team-Raum mit neuer Herkunft deployen (zusammen mit dem offenen LINK-10-Raum-Deploy) und Mod-Herkunft in der nächsten Mod-Version (Thread „Anbindung von Planer, Mod und Server neu denken“). |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+- `tests/e2e/offline.e2e.mjs`
+
