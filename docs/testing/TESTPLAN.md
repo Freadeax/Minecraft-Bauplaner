@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/checks/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 107 Fälle in 13 Bereichen, davon 46 Kernfälle.
+Umfang: 108 Fälle in 13 Bereichen, davon 46 Kernfälle.
 
 Aufbau: drei Teile – nur im Browser (Planer), mit Minecraft (Mod) und mit Paper-Server (Plugin). Am 06.11.2026 neu geordnet: doppelte Fälle zusammengelegt, Dateiwege nur noch als Notfall; welche früheren IDs in welchem Fall stecken, steht am Ende unter „Zusammengelegte Fälle“.
 
@@ -116,6 +116,7 @@ Mehrere Spieler an einem Projekt, live über den Team-Raum – ohne Dateien. Daf
 | TEAMBAU-03<br><small>früher TEAMBAU-04, TEAMBAU-23</small> | Abschnitt übernehmen, melden, bestätigen | kern | 1. Team live: Mitspieler übernimmt einen freien Abschnitt und meldet ihn unter „Meine Aufgaben“ „Fertig“.<br>2. Bauleitung: „Fortschritt“ und „Achtung“ ansehen, „✓ Bestätigen“ oder „Nacharbeit verlangen“.<br>3. Beide übernehmen gleichzeitig denselben freien Abschnitt.<br>4. Plan im Editor ändern, „Mit Planstand N vergleichen“. | Der Abschnitt steht „fertig gemeldet“ bzw. „bestätigt“ mit dem richtigen Namen; das Brett trennt je Mitglied abgehakt/gemeldet/bestätigt; beim gleichzeitigen Nehmen gehört er dem, der zuerst war, mit Hinweis „… war schon vergeben“; „Achtung“ zeigt Haken-Lücken und Planänderungen. Nichts geht verloren. (Abnahme COOP-01, COOP-06) |
 | TEAMBAU-29 | Gleichzeitig ändern und zurücknehmen | vertieft | 1. Team live mit zwei Geräten (zwei Browser oder Rechner und Handy), beide als Helfer im selben Raum.<br>2. Auf beiden denselben freien Abschnitt im selben Moment „Übernehmen“ klicken.<br>3. Auf dem Gerät, das den Abschnitt bekommen hat: Reiter „Team“ → „Meine letzten Schritte zurücknehmen“ → „Zurücknehmen“ bei der Übernahme.<br>4. Ein Gerät 2 Minuten offline (WLAN aus oder Laptop zu), dort einen Abschnitt abgeben, wieder online. | Nur einer hat den Abschnitt, beide zeigen denselben Inhaber; der andere sieht unten rechts „Nicht übernommen, weil … schneller war“; nach „Zurücknehmen“ ist der Abschnitt bei beiden wieder frei; nach dem Offline-Gehen verbindet sich der Planer ohne Neuladen wieder und holt alles nach, nichts kommt doppelt. (Abnahme TEAM-02) |
 | TEAMBAU-30 | Mehrere Spieler an einem Abschnitt, Sammelauftrag verteilen, Buchung korrigieren | vertieft | 1. Team live mit zwei Browsern (oder zwei Mitspielern): Bauleitung und ein Helfer.<br>2. Als Bauleitung bei einem Abschnitt „Mitbauer …“: zwei Spieler anhaken, speichern; im zweiten Browser fast gleichzeitig denselben Abschnitt einem Dritten zuweisen.<br>3. Unter „Beiträge & Sammeln“ → „Sammelauftrag auf mehrere verteilen“: ein Item an zwei Spieler verteilen.<br>4. Als Helfer eine Lieferung melden, unter „Meine Buchungen“ korrigieren und danach stornieren. | Der Abschnitt zeigt Verantwortliche + Mitbauer, beide haben ihn unter „Meine Aufgaben“; „Mitbauen“ und „Aussteigen“ gehen ohne Bauleitung. Die überholte Zuweisung wird nicht still übernommen, sondern steht oben als Hinweis „Überholt …“ mit „Trotzdem so übernehmen“. Jeder sieht seinen Anteil am Sammelauftrag. Die Buchung zeigt V2 „korrigiert“, danach „storniert“; Lieferungen und Konto rechnen neu. Im Zeitplan gehen Abschnitte mit Mitbauern schneller. (Abnahme TEAM-03) |
+| TEAMBAU-31 | Team-Raum sichern und wiederherstellen | vertieft | 1. Als Bauleitung im Team live: „Team“ → „Team live“ → „Sicherung und Zustand“ aufklappen und „Jetzt sichern“.<br>2. Ein Mitspieler schreibt danach eine Notiz. Bauleitung: bei der Sicherung „Wiederherstellen“ und bestätigen.<br>3. „Raum löschen“ → „Team-Raum löschen“; der Mitspieler sieht die Meldung. Dann bei „vor dem Löschen“ „Wiederherstellen“; der Mitspieler lädt neu.<br>4. Am nächsten Tag „Sicherung und Zustand“ öffnen. | Zustand zeigt Dienst „erreichbar“, Schritte, letzte Sicherung und Aufbewahrung; nach der Wiederherstellung ist die Notiz des Mitspielers nach Sekunden wieder bei allen (die Planer reichen sie selbst nach), in der Liste steht „vor einer Wiederherstellung“; nach dem Löschen sieht der Mitspieler „Der Team-Raum wurde gelöscht“, nach dem Zurückholen gilt sein alter Einladungslink wieder; am nächsten Tag stehen automatische Sicherungen in der Liste. Keine Datei wird heruntergeladen. (Abnahme OPS-04) |
 | TEAMBAU-21<br><small>früher TEAMBAU-22</small> | Arbeitspakete, Zeitplan und Zuteilung | vertieft | 1. „Team“ → „Planung“ → „Arbeitspakete“: den größten Abschnitt „Teilen in 3 Pakete“, Vorschau prüfen, teilen.<br>2. Unter „Zuteilung“ Mitspieler anhaken, „Zuweisungen übernehmen“.<br>3. „Zeitplan“: Bautage je Woche einstellen. | Drei Pakete „… · Teil 1/3“ ersetzen den Abschnitt (Strg+Z nimmt es zurück); der Vorschlag verteilt nach offener Arbeit, Abwesende bekommen nichts; Balken je Mitglied, Wartezeiten und die entscheidende Kette sind sichtbar, „Fertig in … Bautagen“ ist kleiner als „allein“. (Abnahme COOP-06) |
 | TEAMBAU-05 | Beiträge, Sammelaufträge, Notizen | vertieft | 1. Gebaute Blöcke und eine Lieferung melden, bei einem Item „Ich sammle“, eine Notiz mit @Name schreiben.<br>2. Bei einem Mitglied „Packliste kopieren“; „Statustext für Discord“ ansehen. | Mitgliederliste zählt Blöcke/Items; das Item steht unter „wird gesammelt“; die erwähnte Person sieht die Notiz unter „Meine Aufgaben“; die Packliste nennt Stacks und Shulkerkisten; der Statustext listet Abschnitte, Sammelaufträge und offene Notizen. |
 | TEAMBAU-24 | Übergabe, Abwesenheit, Bauleitung übergeben | vertieft | 1. „Rechte & Übergabe“: eigenen Abschnitt „übergeben an …“; der andere „Annehmen“.<br>2. Abwesenheit mit Datum eintragen.<br>3. Als Bauleitung „Bauleitung übergeben“. | Bis zur Annahme bleibt der Abschnitt beim alten Inhaber, danach wechselt er mit Notiz; Abwesende erscheinen unter „Achtung“ und im Zeitplan erst nach Rückkehr; es bleibt immer eine Bauleitung. (Abnahme COOP-06) |
@@ -210,7 +211,7 @@ Lagerkisten des Teams im freiwilligen Paper-Plugin (COOP-05): markieren, zählen
 
 Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan.ts), geordnet nach dem Ort, den die Abnahme braucht. Ein Paket gilt als abgenommen, wenn alle genannten Fälle ✓ sind; Ob ein Paket noch auf Abnahme wartet, steht in `docs/ROADMAP.md`.
 
-### Nur im Browser (45 Pakete)
+### Nur im Browser (46 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -236,6 +237,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | MAP-02 | KARTE-08 |
 | MAP-04 | KARTE-02, KARTE-05 |
 | MODEL-01 | PROJ-05 |
+| OPS-04 | TEAMBAU-31 |
 | PERF-02 | PROJ-08, DATEI-05 |
 | PERF-03 | BIB-01 |
 | PERF-04 | DATEI-05, PROJ-05, PROJ-08 |

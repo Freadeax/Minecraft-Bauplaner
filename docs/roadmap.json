@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T21:23:28.718Z",
+  "updatedAt": "2026-11-06T21:09:31.710Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -6579,48 +6579,103 @@
     },
     {
       "id": "OPS-04",
-      "title": "Teamdienst betreiben und Wiederherstellung prüfen",
+      "title": "Team-Raum betreiben: Sicherung, Wiederherstellung, Aufbewahrung, Zustand",
       "phase": "P4",
       "priority": "P1",
-      "status": "in_progress",
+      "status": "implemented",
       "owner": "Claude (Thread „Team-Raum sichern und wiederherstellen“)",
       "dependencies": [
         "TEAM-02"
       ],
       "scope": [
-        "docs/operations/"
+        "services/team-room/src/core.js",
+        "services/team-room/src/vault.js",
+        "services/team-room/src/index.js",
+        "services/team-room/wrangler.toml",
+        "services/team-room/README.md",
+        "packages/domain/src/team/teamSync.ts",
+        "packages/domain/src/index.ts",
+        "apps/web/src/views/project/team/roomClient.ts",
+        "apps/web/src/views/project/team/TeamBackup.tsx",
+        "apps/web/src/views/project/team/TeamRoom.tsx",
+        "apps/web/src/styles/team.css",
+        "apps/web/src/testing/testplan.ts",
+        "docs/testing/TESTPLAN.md",
+        "docs/architecture/team/TEAM_BACKUP.md",
+        "docs/architecture/team/TEAM_LIVE.md",
+        "scripts/team/team_room_backup_smoke.mjs",
+        "tests/unit/team/team-backup.test.mjs",
+        "tests/e2e/team-backup.e2e.mjs"
       ],
       "legacyIds": [],
       "steps": [
         {
           "id": "OPS-04-S01",
-          "title": "Monitoring, Datenmigration, Lösch-/Aufbewahrung und Wiederanlauf definieren.",
-          "done": false
+          "title": "Überwachung (öffentlicher und Raum-Zustand), Datenmigration (Format v1, alte Räume ohne Umbau), Aufbewahrung (48 h alle, 30 Tage täglich, ungenutzte Räume nach 365 Tagen löschen, Tresor 90 Tage) und Wiederanlauf (Proben, Rücksprung, Point-in-Time-Recovery als zweite Linie) festgelegt: docs/architecture/team/TEAM_BACKUP.md.",
+          "done": true
         },
         {
           "id": "OPS-04-S02",
-          "title": "Wiederherstellung mit getrenntem Metadaten-/Objektspeicher testen.",
+          "title": "Wiederherstellung mit getrenntem Speicher getestet: Tresor als eigenes Durable Object je Raum, Planstände/Dokumente einmal nach SHA-256, Sicherung per Alarm; Wiederherstellen ohne Verlust (Nummern laufen weiter, Planer reichen ihre Schritte über die neue Marke nach), gelöschter Raum mit alten Links zurück; Einheiten, echter Worker lokal und Browser.",
+          "done": true
+        },
+        {
+          "id": "OPS-04-S03",
+          "title": "Planer: „Sicherung und Zustand“ für die Bauleitung (Zustand, Jetzt sichern, Wiederherstellen, Raum löschen und zurückholen), online ohne Datei.",
+          "done": true
+        },
+        {
+          "id": "OPS-04-S04",
+          "title": "Auf den echten Team-Raum ausrollen (Migration v2 RoomVault) und beide Proben gegen den Dienst laufen lassen.",
           "done": false
         }
       ],
       "acceptance": [
-        "Kein produktiver Teamstart ohne Rechte- und Restoreprüfung."
+        "Kein produktiver Teamstart ohne Rechte- und Restoreprüfung.",
+        "Wiederherstellen verliert keinen Schritt, den ein Planer im Team hat.",
+        "Alles im kostenlosen Cloudflare-Tarif, ohne Datei-Download."
       ],
-      "next": "Neu zugeschnitten auf den Team-Raum (Cloudflare, kostenlos): Sicherung/Export eines Raums, Wiederherstellung, Aufbewahrung und Löschen alter Räume, Zustandsseite.",
+      "next": "Nach Philipps OK ausrollen (npx wrangler deploy) und team_room_smoke + team_room_backup_smoke gegen den Dienst; danach Abnahme TEAMBAU-31.",
       "blockers": [],
-      "evidence": [],
+      "evidence": [
+        {
+          "path": "tests/unit/team/team-backup.test.mjs",
+          "note": "Schnappschuss, Wiederherstellen ohne Verlust mit zwei Planern, gelöschter Raum, Prüfsummen, Aufbewahrung."
+        },
+        {
+          "path": "scripts/team/team_room_backup_smoke.mjs",
+          "note": "Gegen echten Worker (wrangler dev) grün, auch automatische Sicherung per Alarm."
+        },
+        {
+          "path": "tests/e2e/team-backup.e2e.mjs",
+          "note": "Planer-Oberfläche 1400/390 px."
+        },
+        {
+          "path": "docs/architecture/team/TEAM_BACKUP.md",
+          "note": "Betriebsregeln."
+        }
+      ],
       "verification": {
         "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "note": "Automatisch geprüft (Einheiten, echter Worker lokal mit Durable Objects und Alarmen, Browser); offen: Ausrollen auf den echten Dienst und Abnahme TEAMBAU-31."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T21:09:31.710Z",
       "area": "TEAM",
       "thread": "Team-Raum sichern und wiederherstellen",
-      "philipp": [],
+      "philipp": [
+        {
+          "kind": "entscheidung",
+          "text": "Ausrollen des Team-Raums mit Sicherung freigeben (S04)."
+        },
+        {
+          "kind": "geraet",
+          "text": "Testfall TEAMBAU-31 mit zwei Geräten: sichern, wiederherstellen, löschen und zurückholen."
+        }
+      ],
       "orphans": []
     },
     {
@@ -25327,6 +25382,44 @@
           "done": 2,
           "total": 3,
           "next": "Abnahme TEAMBAU-30 durch Philipp; Plugin-Faltung kommt mit der nächsten Plugin-Version."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T21:09:31.710Z",
+      "kind": "progress",
+      "items": [
+        "OPS-04"
+      ],
+      "summary": "Team-Raum sichert sich selbst in einen eigenen Tresor (Durable Object RoomVault, kostenlos): automatisch nach Änderungen höchstens stündlich, vor Wiederherstellung und Löschen; Aufbewahrung 48 h/30 Tage, ungenutzte Räume nach 365 Tagen gelöscht und 90 Tage zurückholbar; Wiederherstellen ohne Verlust (Nummern laufen weiter, Planer reichen ihre Schritte über die neue Marke epoch nach); Planer „Sicherung und Zustand“ für die Bauleitung. Geprüft: Einheiten 6/6, echter Worker lokal (wrangler dev, Alarme) mit team_room_backup_smoke, Browser 2/2. Offen: Ausrollen auf den echten Dienst, Abnahme TEAMBAU-31.",
+      "files": [
+        "apps/web/src/styles/team.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/project/team/TeamBackup.tsx",
+        "apps/web/src/views/project/team/TeamRoom.tsx",
+        "apps/web/src/views/project/team/roomClient.ts",
+        "docs/TESTING.md",
+        "docs/architecture/team/TEAM_BACKUP.md",
+        "docs/architecture/team/TEAM_LIVE.md",
+        "docs/testing/TESTPLAN.md",
+        "packages/domain/src/index.ts",
+        "packages/domain/src/team/teamSync.ts",
+        "scripts/team/team_room_backup_smoke.mjs",
+        "services/team-room/README.md",
+        "services/team-room/src/core.js",
+        "services/team-room/src/index.js",
+        "services/team-room/src/vault.js",
+        "services/team-room/wrangler.toml",
+        "tests/e2e/team-backup.e2e.mjs",
+        "tests/unit/team/team-backup.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "OPS-04",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Nach Philipps OK ausrollen (npx wrangler deploy) und team_room_smoke + team_room_backup_smoke gegen den Dienst; danach Abnahme TEAMBAU-31."
         }
       ]
     }

@@ -38,6 +38,11 @@ export interface TeamLive {
    * subject after that.
    */
   readonly bases?: Readonly<Record<string, string>>;
+  /**
+   * OPS-04: restore mark of the room this browser last saw (`epoch` of the room info). A different mark means the
+   * Bauleitung restored the room from a backup: this browser offers its own steps again (afterRestore).
+   */
+  readonly epoch?: string;
 }
 export type RoomTeam = TeamState & { readonly live?: TeamLive };
 
@@ -73,6 +78,7 @@ export function checkLive(raw: unknown): TeamLive {
   if (typeof r.cursor !== 'string' || r.cursor.length > 80) fail('Cursor ungültig');
   if (!Array.isArray(r.pending) || r.pending.length > 20_000 || r.pending.some(p => typeof p !== 'string')) fail('Postausgang ungültig');
   if (typeof r.device !== 'string' || !ROOM_ID.test(r.device)) fail('Geräte-ID ungültig');
+  if (r.epoch !== undefined && (typeof r.epoch !== 'string' || r.epoch.length > 40)) fail('Wiederherstellungsstand ungültig');
   if (r.bases !== undefined && (typeof r.bases !== 'object' || r.bases === null || Array.isArray(r.bases)
     || Object.values(r.bases as object).some(v => typeof v !== 'string' || v.length > 80))) fail('Revisionsstände ungültig');
   return raw as TeamLive;
@@ -93,6 +99,21 @@ export function goLive(team: TeamState, room: { url: string; room: string; key: 
 /** Joining by invitation: nothing of one's own is pending yet. */
 export function joinLive(team: TeamState, room: { url: string; room: string; key: string }, device: string): RoomTeam {
   return { ...team, live: checkLive({ url: room.url.replace(/\/+$/, ''), room: room.room, key: room.key, cursor: '', pending: [], device }) };
+}
+
+/**
+ * OPS-04 (docs/architecture/team/TEAM_BACKUP.md): the room says it was restored from a backup (`epoch` changed). The
+ * steps made after that backup are gone in the room but still here: every planner event of the local log goes into
+ * the outbox again. The room answers „known“ for what it has and takes the rest, so nothing is lost; the order of
+ * arrival never matters (union by id). Server measurements come again from the plugin. A browser that never read
+ * the room (cursor '') only remembers the mark.
+ */
+export function afterRestore(team: RoomTeam, epoch: string | undefined): RoomTeam {
+  if (!team.live || !epoch || team.live.epoch === epoch) return team;
+  const { bases: _b, ...live } = team.live;
+  if (!team.live.cursor) return { ...team, live: { ...team.live, epoch } };
+  const pending = [...new Set([...team.events.filter(e => e.origin === 'planer').map(e => e.id), ...team.live.pending])];
+  return { ...team, live: { ...live, epoch, pending } };
 }
 
 export function leaveLive(team: RoomTeam): TeamState { const { live: _l, ...rest } = team; return rest; }

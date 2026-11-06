@@ -2,7 +2,8 @@
 // One Durable Object per room (SQLite storage), WebSocket hibernation for live pushes and presence.
 // Deploy: see services/team-room/README.md (`npx wrangler deploy` with CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID).
 import { DurableObject } from 'cloudflare:workers';
-import { RoomCore, RoomError, ControlRelay, checkControl, cleanPresence, randomKey, LIMITS, PROTOCOL, VERSION, PING, PONG } from './core.js';
+import { RoomCore, RoomError, ControlRelay, checkControl, cleanPresence, randomKey, sha256, LIMITS, PROTOCOL, VERSION, PING, PONG } from './core.js';
+import { VaultCore, backupInto, RETENTION, REASONS, DAY_MS } from './vault.js';
 
 // bauplaner.pages.dev: zweite Adresse auf Cloudflare Pages (PERF-06, docs/architecture/betrieb/OFFLINE.md).
 const ALLOWED_ORIGINS = ['https://freadeax.github.io', 'https://bauplaner.pages.dev', 'http://127.0.0.1', 'http://localhost'];
@@ -11,7 +12,7 @@ function cors(request, env) {
   const origin = request.headers.get('Origin') ?? '';
   const extra = (env.ALLOWED_ORIGINS ?? '').split(',').map(s => s.trim()).filter(Boolean);
   const ok = [...ALLOWED_ORIGINS, ...extra].some(o => origin === o || origin.startsWith(`${o}:`));
-  return { 'Access-Control-Allow-Origin': ok ? origin : ALLOWED_ORIGINS[0], 'Access-Control-Allow-Methods': 'GET, POST, PUT, OPTIONS',
+  return { 'Access-Control-Allow-Origin': ok ? origin : ALLOWED_ORIGINS[0], 'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Authorization, Content-Type, If-Match', 'Access-Control-Max-Age': '86400', Vary: 'Origin' };
 }
 const json = (data, status, headers) => new Response(JSON.stringify(data), { status, headers: { 'Content-Type': 'application/json; charset=utf-8', ...headers } });
@@ -25,6 +26,9 @@ export default {
     const parts = url.pathname.split('/').filter(Boolean);
     try {
       if (parts[0] !== 'v1') return json({ protocol: PROTOCOL, version: VERSION, hint: 'Team-Raum des Minecraft-Bauplaners. Siehe docs/architecture/team/TEAM_LIVE.md.' }, 200, h);
+      // OPS-04: public state of the service (no room data; the planner's Zustand line and the smoke test read it).
+      if (parts.length === 2 && parts[1] === 'status') return json({ ok: true, protocol: PROTOCOL, version: VERSION, at: new Date().toISOString(),
+        features: ['guards', 'docs', 'scans', 'control', 'backups'], retention: RETENTION, deployment: env.CF_VERSION_METADATA?.id ?? null }, 200, { ...h, 'Cache-Control': 'no-store' });
       if (parts.length === 2 && parts[1] === 'rooms' && request.method === 'POST') {
         const room = `r_${randomKey(12)}`;
         const stub = env.ROOMS.get(env.ROOMS.idFromName(room));
@@ -34,7 +38,9 @@ export default {
         const stub = env.ROOMS.get(env.ROOMS.idFromName(parts[2]));
         const inner = new URL(`https://room/${parts.slice(3).join('/')}`);
         inner.search = url.search;
-        const response = await stub.fetch(new Request(inner, request));
+        const forwarded = new Request(inner, request);
+        forwarded.headers.set('X-Team-Room', parts[2]);
+        const response = await stub.fetch(forwarded);
         return response.webSocket ? response : withCors(response, h);
       }
       return json({ error: 'nicht-gefunden', message: 'Unbekannte Adresse.' }, 404, h);
@@ -69,7 +75,11 @@ class SqlStore {
   setMeta(k, v) { this.sql.exec('INSERT INTO meta (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v', k, JSON.stringify(v)); }
   count() { return this.one('SELECT COUNT(*) AS n FROM events').n; }
   eventById(id) { return this.one('SELECT seq, id, json FROM events WHERE id = ?', id); }
-  appendEvent(id, json) { this.sql.exec('INSERT INTO events (id, json) VALUES (?, ?)', id, json); return this.lastSeq(); }
+  appendEvent(id, json, seq) {
+    if (seq === undefined) this.sql.exec('INSERT INTO events (id, json) VALUES (?, ?)', id, json);
+    else this.sql.exec('INSERT INTO events (seq, id, json) VALUES (?, ?, ?)', seq, id, json);
+    return this.lastSeq();
+  }
   since(seq, limit) { return this.sql.exec('SELECT seq, id, json FROM events WHERE seq > ? ORDER BY seq LIMIT ?', seq, limit).toArray(); }
   lastSeq() { return this.one('SELECT COALESCE(MAX(seq), 0) AS s FROM events').s; }
   getBatch(b) { const r = this.one('SELECT answer FROM batches WHERE b = ?', b); return r ? JSON.parse(r.answer) : undefined; }
@@ -81,12 +91,22 @@ class SqlStore {
   putPlan(sha, chunks) { this.deletePlan(sha); chunks.forEach((c, i) => this.sql.exec('INSERT INTO plans (sha, idx, data) VALUES (?, ?, ?)', sha, i, c)); }
   getPlan(sha) { const rows = this.sql.exec('SELECT data FROM plans WHERE sha = ? ORDER BY idx', sha).toArray(); return rows.length ? rows.map(r => r.data) : undefined; }
   deletePlan(sha) { this.sql.exec('DELETE FROM plans WHERE sha = ?', sha); }
+  // OPS-04
+  deleteMeta(k) { this.sql.exec('DELETE FROM meta WHERE k = ?', k); }
+  metaKeys() { return this.sql.exec('SELECT k FROM meta').toArray().map(r => r.k); }
+  replaceEvents(rows) { this.sql.exec('DELETE FROM events'); for (const [seq, id, json] of rows) this.sql.exec('INSERT INTO events (seq, id, json) VALUES (?, ?, ?)', seq, id, json); }
+  clearSubjects() { this.sql.exec('DELETE FROM subjects'); }
+  clearBatches() { this.sql.exec('DELETE FROM batches'); }
+  /** Empties every table (room deleted); the tables stay, so the same object can be restored at once. */
+  wipe() { for (const t of ['meta', 'events', 'batches', 'plans', 'subjects']) this.sql.exec(`DELETE FROM ${t}`); }
+  size() { try { return this.storage?.sql?.databaseSize ?? this.sql.databaseSize; } catch { return undefined; } }
 }
 
 export class TeamRoom extends DurableObject {
   constructor(ctx, env) {
     super(ctx, env);
-    this.core = new RoomCore(new SqlStore(ctx.storage.sql, ctx.storage));
+    this.store = new SqlStore(ctx.storage.sql, ctx.storage);
+    this.core = new RoomCore(this.store);
     this.relay = new ControlRelay();
     // Mod and plugin send a ping every 30 s; answering it must not wake the room from hibernation.
     try { this.ctx.setWebSocketAutoResponse(new WebSocketRequestResponsePair(PING, PONG)); } catch { /* older runtime: webSocketMessage answers */ }
@@ -95,7 +115,11 @@ export class TeamRoom extends DurableObject {
   async fetch(request) {
     const url = new URL(request.url);
     const path = url.pathname.replace(/^\/+/, '');
+    this.roomName = request.headers.get('X-Team-Room') ?? this.roomName;
     try {
+      if (this.core.created) await this.activity();
+      const ops = await this.opsRoute(path, request, url);
+      if (ops) return ops;
       if (path === 'create' && request.method === 'POST') {
         const body = await request.json().catch(() => ({}));
         return json(await this.core.create({ room: url.searchParams.get('room'), teamId: body.teamId, name: body.name }), 201);
@@ -122,7 +146,7 @@ export class TeamRoom extends DurableObject {
         const role = await this.core.auth(bearer(request));
         const body = await request.json();
         const answer = this.core.append(body, role);
-        if (answer.added?.length) this.broadcast({ type: 'events', events: answer.added, cursor: answer.cursor });
+        if (answer.added?.length) { this.broadcast({ type: 'events', events: answer.added, cursor: answer.cursor }); await this.changed(); }
         const { added: _a, ...out } = answer;
         return json(out, 200);
       }
@@ -131,12 +155,12 @@ export class TeamRoom extends DurableObject {
         return json(this.core.since(url.searchParams.get('after') ?? '', url.searchParams.get('limit')), 200);
       }
       if (path === 'header') {
-        if (request.method === 'PUT') { await this.core.auth(bearer(request), 'admin'); this.core.setHeader(await request.json()); this.broadcast({ type: 'header' }); return json({ ok: true }, 200); }
+        if (request.method === 'PUT') { await this.core.auth(bearer(request), 'admin'); this.core.setHeader(await request.json()); this.broadcast({ type: 'header' }); await this.changed(); return json({ ok: true }, 200); }
         await this.core.auth(bearer(request)); return json(this.core.getHeader(), 200);
       }
       if (path.startsWith('plan/')) {
         const sha = path.slice(5);
-        if (request.method === 'PUT') { await this.core.auth(bearer(request), 'admin'); await this.core.putPlan(sha, new Uint8Array(await request.arrayBuffer())); this.broadcast({ type: 'plan', sha }); return json({ ok: true }, 200); }
+        if (request.method === 'PUT') { await this.core.auth(bearer(request), 'admin'); await this.core.putPlan(sha, new Uint8Array(await request.arrayBuffer())); this.broadcast({ type: 'plan', sha }); await this.changed(); return json({ ok: true }, 200); }
         await this.core.auth(bearer(request));
         return new Response(this.core.getPlan(sha), { status: 200, headers: { 'Content-Type': 'application/gzip' } });
       }
@@ -161,6 +185,7 @@ export class TeamRoom extends DurableObject {
           const role = await this.core.auth(bearer(request));
           const meta = await this.core.putDoc(name, await request.text(), { by: url.searchParams.get('by'), ifMatch: request.headers.get('If-Match')?.replace(/"/g, '') }, role);
           this.broadcast({ type: 'doc', name, rev: meta.rev, by: meta.by, at: meta.at });
+          await this.changed();
           return json(meta, 200);
         }
         await this.core.auth(bearer(request));
@@ -169,7 +194,7 @@ export class TeamRoom extends DurableObject {
       if (path === 'rotate' && request.method === 'POST') {
         await this.core.auth(bearer(request), 'admin');
         const who = url.searchParams.get('wer') === 'server' ? 'server' : 'member';
-        const r = await this.core.rotate(who); this.closeRole(who); return json(r, 200);
+        const r = await this.core.rotate(who); this.closeRole(who); await this.changed(); return json(r, 200);
       }
       return json({ error: 'nicht-gefunden', message: 'Unbekannte Adresse.' }, 404);
     } catch (e) {
@@ -177,6 +202,115 @@ export class TeamRoom extends DurableObject {
       if (e instanceof SyntaxError) return json({ error: 'json', message: 'Kein gültiges JSON.' }, 400);
       throw e;
     }
+  }
+
+  // ------------------------------------------------------------ OPS-04: Sicherung, Wiederherstellung, Aufbewahrung
+  // docs/architecture/team/TEAM_BACKUP.md. Backups go into the room's vault (Durable Object RoomVault, own storage).
+
+  vault(name = this.store.getMeta('room')?.room ?? this.roomName) {
+    if (!name) throw new RoomError(404, 'raum-fehlt', 'Diesen Team-Raum gibt es nicht (mehr).');
+    return this.env.VAULTS.get(this.env.VAULTS.idFromName(name));
+  }
+  ops() { return this.store.getMeta('ops') ?? {}; }
+  setOps(patch) { this.store.setMeta('ops', { ...this.ops(), ...patch }); }
+  idleUntil() { const o = this.ops(); return (Date.parse(o.lastActivity ?? this.store.getMeta('room')?.createdAt ?? '') || Date.now()) + RETENTION.idleDays * DAY_MS; }
+
+  /** Something worth a backup changed: an automatic backup follows after a quiet quarter hour, at most once an hour. */
+  async changed() {
+    // BACKUP_DELAY_MS / BACKUP_EVERY_MS only for local probes (`wrangler dev --var BACKUP_DELAY_MS:2000`); never set in production.
+    const delay = Number(this.env.BACKUP_DELAY_MS) || RETENTION.autoDelayMs, every = Number(this.env.BACKUP_EVERY_MS) || RETENTION.autoEveryMs;
+    const at = Math.max(Date.now() + delay, (Date.parse(this.ops().lastBackupAt ?? '') || 0) + every);
+    const cur = await this.ctx.storage.getAlarm();
+    if (cur === null || cur > at) await this.ctx.storage.setAlarm(at);
+  }
+  /** Someone used the room today (written once a day): pushes the deletion of unused rooms back. */
+  async activity() {
+    const now = new Date().toISOString();
+    if (this.ops().activeDay === now.slice(0, 10)) return;
+    this.setOps({ activeDay: now.slice(0, 10), lastActivity: now });
+    if (await this.ctx.storage.getAlarm() === null) await this.ctx.storage.setAlarm(this.idleUntil());
+  }
+  async backup(reason) {
+    const snap = await this.core.snapshot();
+    const meta = await backupInto(this.vault(), snap, reason);
+    this.setOps({ lastBackupAt: meta.at, backupKey: snap.head.stateKey, lastBackup: meta, error: null });
+    return meta;
+  }
+  async alarm() {
+    if (!this.core.created) return;
+    if (this.core.stateKey() !== this.ops().backupKey) {
+      try { await this.backup('auto'); } catch (e) {
+        this.setOps({ error: { at: new Date().toISOString(), message: String(e?.message ?? e).slice(0, 300) } });
+        await this.ctx.storage.setAlarm(Date.now() + (Number(this.env.BACKUP_EVERY_MS) || RETENTION.autoEveryMs));
+        return;
+      }
+    }
+    if (Date.now() >= this.idleUntil()) { await this.deleteRoom('inaktiv'); return; }
+    await this.ctx.storage.setAlarm(this.idleUntil());
+  }
+  /** Last backup, then the room is emptied; the vault keeps the backups RETENTION.deletedKeepDays for a restore. */
+  async deleteRoom(reason) {
+    const meta = await this.backup(reason);
+    const purgeAt = await this.vault().markDeleted();
+    for (const ws of this.ctx.getWebSockets()) { try { ws.close(4404, 'raum-geloescht'); } catch { /* closed */ } }
+    this.store.wipe();
+    this.core._floor = undefined;
+    await this.ctx.storage.deleteAlarm();
+    return { deleted: true, backup: meta.id, restorableUntil: new Date(purgeAt).toISOString() };
+  }
+  /** Admin of the room – or, when the room is gone, the admin key of its newest backup. */
+  async authAdmin(request) {
+    const key = bearer(request);
+    if (this.core.created) { await this.core.auth(key, 'admin'); return true; }
+    const hash = this.roomName ? await this.vault().adminHash() : undefined;
+    if (!hash) throw new RoomError(404, 'raum-fehlt', 'Diesen Team-Raum gibt es nicht (mehr), und es gibt keine Sicherung von ihm.');
+    if (!key || await sha256(key) !== hash) throw new RoomError(401, 'schluessel-falsch', 'Der Verwaltungsschlüssel passt nicht.');
+    return false;
+  }
+
+  /** Routes of OPS-04; null for every other path. */
+  async opsRoute(path, request, url) {
+    if (path === 'status' && request.method === 'GET') {
+      const exists = await this.authAdmin(request);
+      const backups = await this.vault().list();
+      if (!exists) { const deletedAt = await this.vault().deletedAt(); return json({ deleted: true, deletedAt, restorableUntil: deletedAt ? new Date(Date.parse(deletedAt) + RETENTION.deletedKeepDays * DAY_MS).toISOString() : null, backups: backups.length, lastBackup: backups[0] ?? null }, 200); }
+      const o = this.ops(), alarm = await this.ctx.storage.getAlarm();
+      return json({ ...this.core.info(), serverOnline: !!this.serverSocket(), connections: this.ctx.getWebSockets().filter(ws => ws.deserializeAttachment()?.authed).length,
+        lastActivity: o.lastActivity ?? null, lastBackup: o.lastBackup ?? backups[0] ?? null, backups: backups.length, unsaved: this.core.stateKey() !== o.backupKey,
+        nextAlarm: alarm ? new Date(alarm).toISOString() : null, deleteAfter: new Date(this.idleUntil()).toISOString(), error: o.error ?? null,
+        limits: { events: LIMITS.events }, bytes: this.store.size() ?? null, retention: RETENTION }, 200);
+    }
+    if (path === 'backups' && request.method === 'GET') { await this.authAdmin(request); return json({ backups: await this.vault().list(), reasons: REASONS }, 200); }
+    if (path === 'backups' && request.method === 'POST') {
+      await this.core.auth(bearer(request), 'admin');
+      const last = Date.parse(this.ops().lastBackupAt ?? '') || 0;
+      if (Date.now() - last < RETENTION.manualEveryMs) throw new RoomError(429, 'sicherung-zu-oft', 'Gerade eben gesichert – bitte eine Minute warten.');
+      return json(await this.backup('manuell'), 201);
+    }
+    if (path === 'restore' && request.method === 'POST') {
+      const exists = await this.authAdmin(request);
+      const body = await request.json();
+      if (typeof body?.backup !== 'string' || !/^bk_[A-Za-z0-9_-]{4,40}$/.test(body.backup)) throw new RoomError(400, 'sicherung-id', 'Welche Sicherung? (backup fehlt)');
+      const vault = this.vault();
+      const before = exists ? await this.backup('vor-wiederherstellung') : null;
+      const { head, events } = await vault.getData(body.backup);
+      const blobs = new Map();
+      for (const sha of [...head.plans, ...Object.values(head.docs ?? {}).map(d => d.sha256)]) blobs.set(sha, await vault.getBlob(sha));
+      // A room lost without its last backup may have handed out up to LIMITS.events more numbers than any backup knew.
+      const floorBefore = (await vault.floor()) + (exists || await vault.deletedAt() ? 0 : LIMITS.events);
+      const r = this.core.restore({ head, events, blobs }, { keepKeys: exists, floorBefore });
+      await vault.markRestored();
+      this.setOps({ backupKey: '', restoredAt: new Date().toISOString(), restoredFrom: body.backup });
+      await this.activity(); await this.changed();
+      for (const ws of this.ctx.getWebSockets()) { try { ws.close(4012, 'wiederhergestellt'); } catch { /* closed */ } }
+      return json({ ok: true, ...r, from: body.backup, keys: exists ? 'unveraendert' : 'aus-sicherung', ...(before && { before: before.id }) }, 200);
+    }
+    if (path === '' && request.method === 'DELETE') {
+      await this.core.auth(bearer(request), 'admin');
+      if (url.searchParams.get('bestaetigen') !== this.store.getMeta('room').room) throw new RoomError(400, 'bestaetigen', 'Zum Löschen die Raum-ID als ?bestaetigen= mitschicken.');
+      return json(await this.deleteRoom('loeschen'), 200);
+    }
+    return null;
   }
 
   async webSocketMessage(ws, raw) {
@@ -188,6 +322,7 @@ export class TeamRoom extends DurableObject {
         const role = await this.core.auth(msg.key);
         const presence = cleanPresence(msg, undefined, role);
         ws.serializeAttachment({ authed: true, role, presence });
+        await this.activity();
         ws.send(JSON.stringify({ type: 'welcome', ...this.core.info() }));
         let feed;
         let after = msg.after ?? '';
@@ -200,7 +335,7 @@ export class TeamRoom extends DurableObject {
         const answer = this.core.append(msg, att.role);
         const { added, ...out } = answer;
         ws.send(JSON.stringify({ type: 'appended', batch: msg.batch, ...out }));
-        if (added?.length) this.broadcast({ type: 'events', events: added, cursor: answer.cursor });
+        if (added?.length) { this.broadcast({ type: 'events', events: added, cursor: answer.cursor }); await this.changed(); }
         return;
       }
       if (msg.type === 'presence') { ws.serializeAttachment({ ...att, presence: cleanPresence({ ...att.presence, ...msg, member: att.presence.member, device: att.presence.device, since: att.presence.since }, undefined, att.role) }); this.sendPresence(); return; }
@@ -252,4 +387,24 @@ export class TeamRoom extends DurableObject {
   closeRole(role) {
     for (const ws of this.ctx.getWebSockets()) if (ws.deserializeAttachment()?.role === role) ws.close(4403, 'schluessel-erneuert');
   }
+}
+
+/**
+ * OPS-04: the vault of one room (docs/architecture/team/TEAM_BACKUP.md) – own Durable Object, own SQLite storage.
+ * Only the room's Durable Object talks to it (RPC); there is no public route into a vault.
+ */
+export class RoomVault extends DurableObject {
+  constructor(ctx, env) { super(ctx, env); this.core = new VaultCore(new SqlStore(ctx.storage.sql, ctx.storage)); }
+  list() { return this.core.list(); }
+  missing(shas) { return this.core.missing(shas); }
+  putBlob(sha, bytes) { return this.core.putBlob(sha, new Uint8Array(bytes)); }
+  put(args) { return this.core.put({ ...args, data: new Uint8Array(args.data) }); }
+  async getData(id) { const { head, events } = await this.core.get(id, { withBlobs: false }); return { head, events }; }
+  getBlob(sha) { return this.core.getBlob(sha); }
+  adminHash() { return this.core.adminHash(); }
+  floor() { return this.core.floor(); }
+  deletedAt() { return this.core.deletedAt() ?? null; }
+  async markDeleted() { const purgeAt = this.core.markDeleted(); await this.ctx.storage.setAlarm(purgeAt); return purgeAt; }
+  async markRestored() { this.core.markRestored(); await this.ctx.storage.deleteAlarm(); }
+  async alarm() { if (this.core.expired()) this.core.wipe(); }
 }

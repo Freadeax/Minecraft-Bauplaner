@@ -8,9 +8,22 @@ compatibility_date = "2025-09-01"
 name = "ROOMS"
 class_name = "TeamRoom"
 
+# OPS-04: Sicherungs-Tresor je Raum (eigener Speicher, docs/architecture/team/TEAM_BACKUP.md).
+[[durable_objects.bindings]]
+name = "VAULTS"
+class_name = "RoomVault"
+
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["TeamRoom"]
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["RoomVault"]
+
+# Kennung der ausgerollten Version für /v1/status (kostenlos).
+[version_metadata]
+binding = "CF_VERSION_METADATA"
 
 [vars]
 # Weitere erlaubte Herkünfte für den Planer, kommagetrennt (https://freadeax.github.io ist immer erlaubt).

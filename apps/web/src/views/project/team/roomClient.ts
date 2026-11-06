@@ -1,7 +1,7 @@
 // Team-Raum client (COOP-07, docs/architecture/team/TEAM_LIVE.md): HTTP calls and the live connection.
 // The sync logic itself is pure (packages/domain/src/team/teamSync.ts); this file only moves bytes.
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { LINK_TIMING, confirm, ingest, linkDead, nextBatch, reconnectDelay, retryDelay, trackOutbox } from '../../../../../../packages/domain/src/index.js';
+import { LINK_TIMING, afterRestore, confirm, ingest, linkDead, nextBatch, reconnectDelay, retryDelay, trackOutbox } from '../../../../../../packages/domain/src/index.js';
 import type { AppendAnswer, Batch, FeedAnswer, RoomTeam, StaleStep, TeamEvent, TeamLive } from '../../../../../../packages/domain/src/index.js';
 
 const URL_KEY = 'bauplaner.teamraum.adresse';
@@ -35,6 +35,24 @@ export const putHeader = (live: TeamLive, header: unknown) => call<{ ok: true }>
 /** New invitation key (who = member) or server key (who = server); only with the admin key. Old links stop working. */
 export const rotateKey = (live: TeamLive, who: 'member' | 'server') => call<{ memberKey?: string; serverKey?: string }>(live.url, `/v1/rooms/${live.room}/rotate?wer=${who}`, { method: 'POST', key: live.adminKey ?? live.key });
 export const getHeader = <T>(live: Pick<TeamLive, 'url' | 'room' | 'key'>) => call<T>(live.url, `/v1/rooms/${live.room}/header`, { key: live.key });
+
+// OPS-04: Sicherung und Wiederherstellung (docs/architecture/team/TEAM_BACKUP.md); everything with the admin key.
+export interface RoomBackup { readonly id: string; readonly at: string; readonly reason: string; readonly events: number; readonly cursor: string; readonly bytes: number; readonly name: string; readonly header: boolean; readonly plans: number; readonly docs: readonly string[] }
+export interface RoomState {
+  readonly deleted?: boolean; readonly deletedAt?: string; readonly restorableUntil?: string | null;
+  readonly events?: number; readonly cursor?: string; readonly epoch?: string; readonly connections?: number; readonly serverOnline?: boolean;
+  readonly lastActivity?: string | null; readonly lastBackup?: RoomBackup | null; readonly backups: number; readonly unsaved?: boolean;
+  readonly nextAlarm?: string | null; readonly deleteAfter?: string; readonly error?: { readonly at: string; readonly message: string } | null;
+  readonly limits?: { readonly events: number }; readonly bytes?: number | null;
+}
+type AdminRoom = Pick<TeamLive, 'url' | 'room'> & { readonly adminKey?: string };
+const adminOf = (live: AdminRoom) => { if (!live.adminKey) throw new RoomError(403, 'nur-bauleitung', 'Das darf nur die Bauleitung (Verwaltungsschlüssel fehlt in diesem Browser).'); return live.adminKey; };
+export const getRoomState = (live: AdminRoom) => call<RoomState>(live.url, `/v1/rooms/${live.room}/status`, { key: adminOf(live) });
+export const listBackups = (live: AdminRoom) => call<{ backups: RoomBackup[]; reasons: Record<string, string> }>(live.url, `/v1/rooms/${live.room}/backups`, { key: adminOf(live) });
+export const makeBackup = (live: AdminRoom) => call<RoomBackup>(live.url, `/v1/rooms/${live.room}/backups`, { method: 'POST', key: adminOf(live) });
+export const restoreBackup = (live: AdminRoom, backup: string) => call<{ ok: true; epoch: string; events: number; cursor: string; keys: 'unveraendert' | 'aus-sicherung'; before?: string }>(live.url, `/v1/rooms/${live.room}/restore`, { method: 'POST', body: JSON.stringify({ backup }), key: adminOf(live) });
+export const deleteRoom = (live: AdminRoom) => call<{ deleted: true; backup: string; restorableUntil: string }>(live.url, `/v1/rooms/${live.room}?bestaetigen=${encodeURIComponent(live.room)}`, { method: 'DELETE', key: adminOf(live) });
+export const serviceStatus = (url: string) => call<{ ok: boolean; version: number; features?: string[]; deployment?: { id?: string } | string | null }>(url, '/v1/status');
 
 export async function sha256Hex(bytes: Uint8Array): Promise<string> {
   const d = new Uint8Array(await crypto.subtle.digest('SHA-256', bytes as BufferSource));
@@ -200,6 +218,14 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
       setConnected(false); setPresence([]); sending.current = null;
       if (stopped) return;
       if (code === 4401 || code === 4403) { setError('Der Team-Raum kennt diesen Schlüssel nicht mehr. Bitte die Bauleitung um einen neuen Einladungslink.'); return; }
+      // OPS-04: room deleted by the Bauleitung (or after a long time unused); it can bring it back from a backup.
+      if (code === 4404) {
+        setError('Der Team-Raum wurde gelöscht. Die Bauleitung kann ihn unter „Sicherung und Zustand“ aus der letzten Sicherung zurückholen.');
+        clearTimeout(openTimer); openTimer = setTimeout(open, 60_000); // comes back by itself once it is restored
+        return;
+      }
+      // OPS-04: the room was restored from a backup – reconnect at once; the welcome tells the new mark.
+      if (code === 4012) failures = 0;
       failures++; void poll();
       clearTimeout(openTimer); openTimer = setTimeout(open, reconnectDelay(failures - 1));
     };
@@ -224,7 +250,11 @@ export function useTeamRoom(team: RoomTeam | undefined, me: string | undefined, 
         let d: { type: string } & Record<string, unknown>;
         try { d = JSON.parse(String(m.data)); } catch { return; }
         const cur = latest.current; if (!cur?.live) return;
-        if (d.type === 'welcome') { clearTimeout(pollTimer); setConnected(true); setError(''); failures = 0; caughtUp.current = false; sending.current = null; flush(); if (d.header) readHeader(); void getScans(cur.live).then(setScans).catch(() => undefined); }
+        if (d.type === 'welcome') {
+          // OPS-04: restored room → offer own steps again (the room answers „known“ for what it has).
+          const restored = afterRestore(cur, typeof d.epoch === 'string' ? d.epoch : undefined);
+          if (restored !== cur) apply(restored);
+          clearTimeout(pollTimer); setConnected(true); setError(''); failures = 0; caughtUp.current = false; sending.current = null; flush(); if (d.header) readHeader(); void getScans(cur.live).then(setScans).catch(() => undefined); }
         else if (d.type === 'scan' && d.scan && typeof d.scan === 'object') { const sc = d.scan as RoomScan; setScans(l => [sc, ...l.filter(x => x.id !== sc.id)].slice(0, 12)); }
         else if (d.type === 'asked') setAsked({ games: Number(d.games) || 0, ...(typeof d.message === 'string' && { message: d.message }), at: Date.now() });
         else if (d.type === 'header' || d.type === 'plan') readHeader();

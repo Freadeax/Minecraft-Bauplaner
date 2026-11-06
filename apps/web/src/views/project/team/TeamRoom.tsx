@@ -5,6 +5,7 @@ import { useApp } from '../../../app/context';
 import { errorText } from '../../../app/ui';
 import { createRoom, getPlan, putHeader, putPlan, readRoomUrl, rotateKey, saveRoomUrl, useRoomConnection } from './roomClient';
 import type { ProjectSession } from '../session';
+import { TeamBackup } from './TeamBackup';
 import { roomHeader, takePlan, teamPackageText } from './teamTransfer';
 import { control, currentPairedServer, gameLeaveRoom, gameRoomState, gameToRoom, reachableServer, rememberRoom } from '../../mod/serverClient';
 
@@ -209,6 +210,7 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
     {server && <details className="team-emergency"><summary>Notfall: Server ohne Mod verbinden</summary>
       <p className="muted">Nur wenn weder die Mod noch eine Kopplung gehen: Link für den Server anzeigen und auf dem Server <code>/bauplaner team verbinden &lt;Link&gt;</code> eingeben.</p>
       <button disabled={busy} className="secondary" onClick={() => setShown(shown === 'server' ? '' : 'server')}>Link für den Server</button></details>}
+    {live.adminKey && <TeamBackup live={live} onMessage={onMessage} onRestored={() => { uploading.current = ''; }} />}
   </div>;
 }
 

@@ -149,7 +149,7 @@ export { compactTeam, compactBefore, digestProjection, DIGEST_PART_CHARS } from 
 export type { CompactionPlan, CompactionOptions } from './team/teamDigest.js';
 export { LIVE_FEATURE_TEAM, teamLinkState, TEAM_LINK_WAY_TEXT, readLiveTeam, readLiveTeamPull, teamLinkProblem, teamLinkText } from './team/teamLink.js';
 export type { TeamLinkState, TeamLinkSection, TeamLinkMember, TeamLinkNote, TeamLinkWay, LiveTeam, LiveTeamPull } from './team/teamLink.js';
-export { ROOM_PROTOCOL, ROOM_PROTOCOL_VERSION, MAX_BATCH, checkLive, shareable, goLive, joinLive, leaveLive, appendLocal, trackOutbox, nextBatch, confirm, ingest, roomStatus, retryDelay, reconnectDelay, LINK_TIMING, linkDead, GUARDED_KINDS, subjectsOf, inviteLink, serverLink, readInvite } from './team/teamSync.js';
+export { ROOM_PROTOCOL, ROOM_PROTOCOL_VERSION, MAX_BATCH, checkLive, shareable, goLive, joinLive, leaveLive, afterRestore, appendLocal, trackOutbox, nextBatch, confirm, ingest, roomStatus, retryDelay, reconnectDelay, LINK_TIMING, linkDead, GUARDED_KINDS, subjectsOf, inviteLink, serverLink, readInvite } from './team/teamSync.js';
 export { teamUndo, undoableSteps } from './team/teamUndo.js';
 export type { TeamUndo } from './team/teamUndo.js';
 export type { TeamLive, RoomTeam, Batch, AppendAnswer, FeedAnswer, RoomStatus, Invite, StaleStep } from './team/teamSync.js';

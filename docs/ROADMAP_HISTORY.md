@@ -8135,3 +8135,35 @@ Mehrere Spieler je Abschnitt (Mitbauer) und je Sammelauftrag, versionierte Zust�
 - `tests/e2e/teamcrew.e2e.mjs`
 - `tests/unit/team/teamCrew.test.mjs`
 
+## 2026-11-06T21:09:31.710Z · progress
+
+**Aufgaben:** OPS-04
+
+Team-Raum sichert sich selbst in einen eigenen Tresor (Durable Object RoomVault, kostenlos): automatisch nach Änderungen höchstens stündlich, vor Wiederherstellung und Löschen; Aufbewahrung 48 h/30 Tage, ungenutzte Räume nach 365 Tagen gelöscht und 90 Tage zurückholbar; Wiederherstellen ohne Verlust (Nummern laufen weiter, Planer reichen ihre Schritte über die neue Marke epoch nach); Planer „Sicherung und Zustand“ für die Bauleitung. Geprüft: Einheiten 6/6, echter Worker lokal (wrangler dev, Alarme) mit team_room_backup_smoke, Browser 2/2. Offen: Ausrollen auf den echten Dienst, Abnahme TEAMBAU-31.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| OPS-04 | 🧩 Implementiert · Abnahme offen | 3/4 | Nach Philipps OK ausrollen (npx wrangler deploy) und team_room_smoke + team_room_backup_smoke gegen den Dienst; danach Abnahme TEAMBAU-31. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/styles/team.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/project/team/TeamBackup.tsx`
+- `apps/web/src/views/project/team/TeamRoom.tsx`
+- `apps/web/src/views/project/team/roomClient.ts`
+- `docs/TESTING.md`
+- `docs/architecture/team/TEAM_BACKUP.md`
+- `docs/architecture/team/TEAM_LIVE.md`
+- `docs/testing/TESTPLAN.md`
+- `packages/domain/src/index.ts`
+- `packages/domain/src/team/teamSync.ts`
+- `scripts/team/team_room_backup_smoke.mjs`
+- `services/team-room/README.md`
+- `services/team-room/src/core.js`
+- `services/team-room/src/index.js`
+- `services/team-room/src/vault.js`
+- `services/team-room/wrangler.toml`
+- `tests/e2e/team-backup.e2e.mjs`
+- `tests/unit/team/team-backup.test.mjs`
+

@@ -18,6 +18,19 @@ Protokolländerungen nur abwärtsverträglich (Planer und Paper-Plugin `RoomLink
 (06.11.2026) zusätzlich geteilte Dokumente `GET/PUT /v1/rooms/{room}/doc/{weltplan|karten}` (Weltplan mit Markern,
 Server-Webkarten; siehe `docs/architecture/welt/WORLD_SHARE.md`). Alte Clients ignorieren die neue Nachricht `{type:'doc'}`.
 
+## Sicherung und Wiederherstellung (OPS-04)
+
+Jeder Raum sichert sich selbst in einen eigenen Tresor (Durable Object `RoomVault`, kostenlos): automatisch nach
+Änderungen höchstens stündlich, vor jeder Wiederherstellung und vor dem Löschen. Die Bauleitung sieht Zustand und
+Sicherungen im Planer unter „Team live“ → „Sicherung und Zustand“ und stellt dort wieder her. Räume ohne Nutzung
+werden nach 365 Tagen gelöscht und bleiben 90 Tage zurückholbar. Routen: `GET /v1/status`,
+`GET /v1/rooms/{raum}/status`, `GET|POST /v1/rooms/{raum}/backups`, `POST /v1/rooms/{raum}/restore`,
+`DELETE /v1/rooms/{raum}?bestaetigen={raum}`. Details: `docs/architecture/team/TEAM_BACKUP.md`; Probe:
+
+```
+node scripts/team/team_room_backup_smoke.mjs https://bauplaner-team.team-room.workers.dev
+```
+
 ## Eigenen Raum einrichten (optional)
 
 1. Kostenloses Konto auf https://dash.cloudflare.com anlegen.

@@ -45,6 +45,11 @@ function baseOf(v, last) {
   return Number.isSafeInteger(n) && n >= 0 && n <= last ? n : null;
 }
 
+/** OPS-04: format name of a room backup (docs/architecture/team/TEAM_BACKUP.md). */
+export const BACKUP_FORMAT = 'bauplaner-team-room-backup';
+const joinChunks = chunks => { const total = chunks.reduce((n, c) => n + c.byteLength, 0), out = new Uint8Array(total); let o = 0; for (const c of chunks) { out.set(new Uint8Array(c), o); o += c.byteLength; } return out; };
+const chunked = bytes => { const out = []; for (let i = 0; i < bytes.byteLength; i += LIMITS.planChunk) out.push(bytes.slice(i, i + LIMITS.planChunk)); return out.length ? out : [new Uint8Array(0)]; };
+
 export class RoomError extends Error {
   constructor(status, code, message) { super(message); this.status = status; this.code = code; }
 }
@@ -100,7 +105,8 @@ export class MemoryStore {
   setMeta(k, v) { this.meta.set(k, structuredClone(v)); }
   count() { return this.rows.length; }
   eventById(id) { return this.byId.get(id); }
-  appendEvent(id, json) { const seq = this.rows.length + 1; const row = { seq, id, json }; this.rows.push(row); this.byId.set(id, row); return seq; }
+  /** @param seq explicit arrival number (OPS-04: after a restore numbers continue above every number handed out before) */
+  appendEvent(id, json, seq = this.lastSeq() + 1) { const row = { seq, id, json }; this.rows.push(row); this.byId.set(id, row); return seq; }
   since(seq, limit) { return this.rows.filter(r => r.seq > seq).slice(0, limit); }
   lastSeq() { return this.rows.length ? this.rows[this.rows.length - 1].seq : 0; }
   getBatch(b) { return this.batches.get(b); }
@@ -109,6 +115,13 @@ export class MemoryStore {
   getPlan(sha) { return this.plans.get(sha); }
   planShas() { return [...this.plans.keys()]; }
   deletePlan(sha) { this.plans.delete(sha); }
+  // OPS-04 (Sicherung/Wiederherstellung, docs/architecture/team/TEAM_BACKUP.md)
+  deleteMeta(k) { this.meta.delete(k); }
+  metaKeys() { return [...this.meta.keys()]; }
+  replaceEvents(rows) { this.rows = rows.map(([seq, id, json]) => ({ seq, id, json })); this.byId = new Map(this.rows.map(r => [r.id, r])); }
+  clearSubjects() { this.subjects = new Map(); }
+  clearBatches() { this.batches = new Map(); }
+  wipe() { this.meta = new Map(); this.rows = []; this.byId = new Map(); this.batches = new Map(); this.plans = new Map(); this.subjects = new Map(); }
 }
 
 export class RoomCore {
@@ -132,7 +145,18 @@ export class RoomCore {
     if (!r) throw new RoomError(404, 'raum-fehlt', 'Diesen Team-Raum gibt es nicht (mehr).');
     const docs = {};
     for (const n of DOC_NAMES) { const d = this.store.getMeta(`doc:${n}`); if (d) docs[n] = d.rev; }
-    return { protocol: PROTOCOL, version: VERSION, room: r.room, teamId: r.teamId, name: r.name, createdAt: r.createdAt, events: this.store.count(), cursor: String(this.store.lastSeq()), header: !!this.store.getMeta('header'), docs, guards: true };
+    const epoch = this.store.getMeta('epoch');
+    return { protocol: PROTOCOL, version: VERSION, room: r.room, teamId: r.teamId, name: r.name, createdAt: r.createdAt, events: this.store.count(), cursor: String(this.top()), header: !!this.store.getMeta('header'), docs, guards: true, backups: true, ...(epoch && { epoch }) };
+  }
+
+  /**
+   * OPS-04: the highest arrival number ever handed out. After a restore the room holds fewer events than before; new
+   * events continue above every number a client may still hold as cursor (`floor`), so nobody skips an event.
+   */
+  top() {
+    const last = this.store.lastSeq();
+    if (this._floor === undefined) this._floor = Number(this.store.getMeta('floor') ?? 0);
+    return Math.max(last, this._floor);
   }
 
   /**
@@ -165,7 +189,7 @@ export class RoomCore {
       throw new RoomError(400, 'stapel-pruefung', 'Revisionsprüfung ungültig (guards: Ereignis-ID → Cursor).');
     const run = () => {
       this.ensureSubjects();
-      const last = this.store.lastSeq();
+      const last = this.top();
       const answer = { cursor: '', accepted: [], known: [], rejected: [], stale: [] };
       const added = [];
       for (const e of events) {
@@ -186,11 +210,11 @@ export class RoomCore {
           if (clash) { answer.stale.push({ id: e.id, subject: clash.s, by: clash.w.by, seq: String(clash.w.seq) }); continue; }
         }
         if (this.store.count() >= LIMITS.events) { answer.rejected.push({ id: e.id, reason: `Der Raum ist voll (${LIMITS.events} Ereignisse).` }); continue; }
-        const seq = this.store.appendEvent(e.id, JSON.stringify(e));
+        const seq = this.store.appendEvent(e.id, JSON.stringify(e), this.top() + 1);
         for (const s of subjects) this.store.setSubject(s, seq, e.by);
         answer.accepted.push(e.id); added.push(e);
       }
-      answer.cursor = String(this.store.lastSeq());
+      answer.cursor = String(this.top());
       if (!answer.stale.length) delete answer.stale;
       this.store.setBatch(batch, answer);
       return { ...answer, added };
@@ -211,13 +235,13 @@ export class RoomCore {
 
   /** Events after a cursor in arrival order; an unknown or future cursor answers with reset. */
   since(cursor, limit = LIMITS.page) {
-    const last = this.store.lastSeq();
+    const last = this.top();
     const n = cursor === '' || cursor === undefined || cursor === null ? 0 : Number(cursor);
     const reset = !Number.isSafeInteger(n) || n < 0 || n > last;
     const from = reset ? 0 : n;
     const rows = this.store.since(from, Math.max(1, Math.min(LIMITS.page, Number(limit) || LIMITS.page)));
     const cursorOut = rows.length ? String(rows[rows.length - 1].seq) : String(from);
-    return { events: rows.map(r => JSON.parse(r.json)), cursor: cursorOut, more: rows.length ? rows[rows.length - 1].seq < last : false, ...(reset && { reset: true }) };
+    return { events: rows.map(r => JSON.parse(r.json)), cursor: cursorOut, more: rows.length ? rows[rows.length - 1].seq < this.store.lastSeq() : false, ...(reset && { reset: true }) };
   }
 
   setHeader(header) {
@@ -323,6 +347,72 @@ export class RoomCore {
     return `${JSON.stringify(meta).slice(0, -1)},"doc":${text}}`;
   }
   docs() { return DOC_NAMES.map(n => this.store.getMeta(`doc:${n}`)).filter(Boolean); }
+
+  // ------------------------------------------------------------ OPS-04: Sicherung und Wiederherstellung
+  // docs/architecture/team/TEAM_BACKUP.md. The room writes a copy of itself into a separate Durable Object (the
+  // vault, services/team-room/src/vault.js); scans (recordings) are left out – a game records them again in seconds.
+
+  /** A short key of everything a backup holds; equal keys = nothing changed since that backup. */
+  stateKey() {
+    const r = this.store.getMeta('room'), h = this.store.getMeta('header');
+    return [this.top(), this.store.count(), h?.updatedAt ?? '', (this.store.getMeta('plans') ?? []).join(','),
+      DOC_NAMES.map(n => this.store.getMeta(`doc:${n}`)?.rev ?? 0).join(','), r ? `${r.member}.${r.server}.${r.admin}`.slice(0, 200) : '', this.store.getMeta('epoch') ?? ''].join('|');
+  }
+
+  /**
+   * The whole room as backup: `head` (small JSON, also the listing), `events` ([seq, id, json] rows) and `blobs`
+   * (plan snapshots and shared documents by SHA-256). Key hashes go along so a deleted room comes back with its links.
+   */
+  async snapshot(now = new Date().toISOString()) {
+    const room = this.store.getMeta('room');
+    if (!room) throw new RoomError(404, 'raum-fehlt', 'Diesen Team-Raum gibt es nicht (mehr).');
+    const events = [];
+    let after = 0, rows;
+    do { rows = this.store.since(after, 5000); for (const r of rows) { events.push([r.seq, r.id, r.json]); after = r.seq; } } while (rows.length === 5000);
+    const blobs = new Map();
+    const plans = (this.store.getMeta('plans') ?? []).filter(sha => { const c = this.store.getPlan(sha); if (c) blobs.set(sha, joinChunks(c)); return !!c; });
+    const docs = {};
+    for (const n of DOC_NAMES) {
+      const meta = this.store.getMeta(`doc:${n}`), c = meta && this.store.getPlan(`doc:${n}`);
+      if (meta && c) { blobs.set(meta.sha256, joinChunks(c)); docs[n] = meta; }
+    }
+    const header = this.store.getMeta('header');
+    const head = { format: BACKUP_FORMAT, version: 1, at: now, room, floor: this.top(), cursor: String(this.top()), events: events.length,
+      ...(header && { header }), plans, docs, ...(this.store.getMeta('epoch') && { epoch: this.store.getMeta('epoch') }), stateKey: this.stateKey() };
+    return { head, events, blobs };
+  }
+
+  /**
+   * Replaces the room's content with a backup. `keepKeys` (the room still exists) keeps today's keys, so the current
+   * links keep working; otherwise the keys of the backup come back. Arrival numbers stay those of the backup and new
+   * events continue above everything handed out before (`floor`), so a client's cursor never skips an event. A new
+   * `epoch` tells every planner to offer its own events again (they hold the steps made after the backup).
+   */
+  restore({ head, events, blobs }, { keepKeys = false, epoch = randomKey(9), floorBefore = 0 } = {}) {
+    if (head?.format !== BACKUP_FORMAT || head.version !== 1) throw new RoomError(400, 'sicherung-format', 'Das ist keine Sicherung eines Team-Raums.');
+    if (!Array.isArray(events) || events.length !== head.events) throw new RoomError(400, 'sicherung-unvollstaendig', 'Die Sicherung ist unvollständig.');
+    for (const sha of [...head.plans, ...Object.values(head.docs ?? {}).map(d => d.sha256)])
+      if (!blobs.has(sha)) throw new RoomError(400, 'sicherung-unvollstaendig', 'Ein Planstand oder Dokument der Sicherung fehlt.');
+    const current = this.store.getMeta('room');
+    const run = () => {
+      const floor = Math.max(this.created ? this.top() : 0, Number(floorBefore) || 0, Number(head.floor) || 0);
+      for (const sha of this.store.getMeta('plans') ?? []) this.store.deletePlan(sha);
+      for (const n of DOC_NAMES) { this.store.deletePlan(`doc:${n}`); this.store.deleteMeta(`doc:${n}`); }
+      this.store.replaceEvents(events);
+      this.store.clearSubjects(); this.store.clearBatches(); this.store.deleteMeta('subjects');
+      this.store.setMeta('room', keepKeys && current ? { ...head.room, admin: current.admin, member: current.member, server: current.server } : head.room);
+      if (head.header) this.store.setMeta('header', head.header); else this.store.deleteMeta('header');
+      for (const sha of head.plans) this.store.putPlan(sha, chunked(blobs.get(sha)));
+      this.store.setMeta('plans', head.plans);
+      for (const [n, meta] of Object.entries(head.docs ?? {})) if (DOC_NAMES.includes(n)) { this.store.putPlan(`doc:${n}`, chunked(blobs.get(meta.sha256))); this.store.setMeta(`doc:${n}`, meta); }
+      this.store.setMeta('floor', floor); this._floor = floor;
+      this.store.setMeta('epoch', epoch);
+      this.ensureSubjects();
+    };
+    this._floor = undefined;
+    this.store.transaction ? this.store.transaction(run) : run();
+    return { epoch, events: events.length, cursor: String(this.top()) };
+  }
 
   /** New invitation key (who = 'member') or new server key (who = 'server'); old connections with it are closed by the caller. */
   async rotate(who = 'member') {

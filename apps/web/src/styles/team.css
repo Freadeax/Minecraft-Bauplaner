@@ -130,3 +130,14 @@ details.team-emergency:not(.team-block) { margin-top: .6rem; }
 .team-split .team-check{border:1px solid var(--line);border-radius:14px;padding:4px 10px;color:var(--text)}
 .team-share{width:64px;padding:2px 6px}
 .team-bookings .team-list li.done{opacity:.6}
+/* OPS-04 Sicherung und Zustand des Team-Raums (TeamBackup.tsx) */
+.team-backup { margin-top: .8rem; border-top: 1px solid var(--line); padding-top: .6rem; }
+.team-backup > summary { cursor: pointer; font-weight: 600; }
+.team-backup-state { display: grid; grid-template-columns: max-content 1fr; gap: 4px 12px; margin: .6rem 0; font-size: 12.5px; }
+.team-backup-state dt { color: var(--muted); }
+.team-backup-state dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.team-backup-state dd.warn { color: var(--warn, #c77b2a); }
+.team-backup-list { list-style: none; padding: 0; margin: .6rem 0 0; display: grid; gap: 6px; }
+.team-backup-list li { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; font-size: 12.5px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; }
+.team-backup-list li span { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 520px) { .team-backup-state { grid-template-columns: 1fr; } .team-backup-state dt { margin-top: 4px; } }

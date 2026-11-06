@@ -147,3 +147,12 @@ Ziel: **kein stiller Verlust und kein Überschreiben fremder Schritte**, auch we
 Geprüft heißt: nur eigene Schritte; niemand anderes hat danach an derselben Stelle entschieden; der Gegenschritt besteht Rechte und Faltung ohne Ablehnung. Fertigmeldung, Prüfung, Freigabe, Lieferungen und Messungen haben keinen Gegenschritt (der Grund steht daneben). Der Gegenschritt geht wie jeder entscheidende Schritt mit Revisionsprüfung in den Raum; ein Wettlauf in der letzten Sekunde endet also als „war schneller“, nicht als Überschreiben.
 
 **Prüfung:** `tests/unit/team/team-concurrency.test.mjs` (gleichzeitige Übernahme mit drei Teilnehmern, Mod ohne Prüfung, verlorene Antwort, halb gescheiterter Stapel, alte Räume, Zeitwerte des Wiederverbindens, Team-Rückgängig mit Wettlauf), dazu `team-room.test.mjs`. Offen: Abnahme mit Mitspielern an zwei Geräten.
+
+## 14. Sicherung und Wiederherstellung (06.11.2026, OPS-04)
+
+Der Raum sichert sich selbst in einen eigenen Tresor (Durable Object `RoomVault`); die Bauleitung stellt im Planer
+wieder her oder holt einen gelöschten Raum zurück. Für das Protokoll neu: `welcome`/Rauminfo tragen nach einer
+Wiederherstellung die Marke `epoch`; Ankunftsnummern laufen über alle je ausgegebenen hinaus weiter (kein `reset`
+nötig); Live-Verbindungen werden mit 4012 (wiederhergestellt) bzw. 4404 (gelöscht) getrennt. Der Planer legt bei
+neuer Marke seine Planer-Ereignisse noch einmal in den Postausgang (`afterRestore`). Mod und Plugin brauchen keine
+Änderung: sie verbinden sich nach der Trennung wie immer neu. Alles Weitere: `TEAM_BACKUP.md`.
