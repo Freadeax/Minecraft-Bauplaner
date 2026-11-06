@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "sourceCommit": "79e510de0b1c9e9d7d2deaf9085c1f46ff3fd0ba",
-  "builtAt": "2026-11-06T10:26:43.688Z",
+  "sourceCommit": "647e2e9ab4e93a0a93c0882950b90c4083650229",
+  "builtAt": "2026-11-06T10:44:24.354Z",
   "node": "v22.23.4",
   "files": [
     {
@@ -47,7 +47,7 @@
     {
       "path": "assets/catalog-dceea002d93806ab99121a1c9a080f62.json",
       "bytes": 3383043,
-      "sha256": "e1d714b9c6482f00f76edcb43cdc875b2614c7fcdcd4e45dc4a31c85ee3994b2"
+      "sha256": "f94b6ca0e6059ae04dba20a6dd4766d4dae40eaa4a3cf4ac758aa491230b2021"
     },
     {
       "path": "assets/catalogSnapshot-BPeY4hKB.js",
