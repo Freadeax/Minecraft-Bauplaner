@@ -77,3 +77,9 @@
 .tp-howto summary::before { content: '▸ '; color: var(--muted); }
 .tp-howto[open] summary::before { content: '▾ '; }
 .tp-howto[open] summary { margin-bottom: 10px; }
+/* Automatische Abnahme (autochecks.ts): Kennzeichen am Fall und Nachweis im Fall. */
+.tp-auto { color: var(--mint); font-weight: 600; }
+.tp-auto-teil { color: var(--muted); }
+.tp-auto-proof { border-left: 3px solid var(--mint); padding: 4px 10px; margin: 8px 0; font-size: 13px; }
+.tp-auto-proof p { margin: 4px 0; }
+.tp-auto-proof code { overflow-wrap: anywhere; }

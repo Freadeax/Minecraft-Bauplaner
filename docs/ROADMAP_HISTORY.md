@@ -8088,3 +8088,21 @@ Block 5 Grundlage: Browsertests per Schalter in Firefox und WebKit (engine-hook,
 - `scripts/checks/e2e_engine.mjs`
 - `tests/e2e/engine-hook.mjs`
 
+## 2026-11-06T21:17:39.366Z · progress
+
+**Aufgaben:** QA-04
+
+Gemeinsame Stelle für automatische Abnahmen aller Blöcke: autochecks.ts (AUTO_CHECKS: Fall, Umfang voll/teil, Nachweis, Befehl), Kennzeichen und Nachweis am Fall auf #/testphase, Tabelle „Automatische Abnahmen“ in TESTPLAN.md mit ID-Prüfung
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| QA-04 | 🧩 Implementiert · Abnahme offen | 4/6 | Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/TestphaseView.tsx`
+- `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/testing/testphase.css`
+- `docs/testing/TESTPLAN.md`
+- `scripts/checks/render_testplan.mjs`
+

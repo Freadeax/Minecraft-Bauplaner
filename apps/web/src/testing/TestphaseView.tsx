@@ -7,6 +7,7 @@ import type { BugInput, Environment } from '../app/diagnostics';
 import { loggedErrors, onErrorLogged } from '../app/errorLog';
 import { useDocumentTitle } from '../app/Shell';
 import { download, REPO_URL } from '../app/ui';
+import { AUTO_SCOPE_LABEL, autoCheckOf } from './autochecks';
 import { ALL_CASES, AREA_KIND_LABEL, areaOf, findCase, packagesOf, PLACE_LABEL, PLACE_ORDER, placeOf, TEST_AREAS } from './testplan';
 import type { TestArea, TestCase, TestPlace } from './testplan';
 import { loadProtocol, protocolMarkdown, saveProtocol, setResult, summarize } from './protocol';
@@ -93,10 +94,11 @@ function ReportForm({ initialCase, env, tester, onClose }: ReportProps) {
 
 function CaseRow({ c, protocol, onResult, onReport }: { c: TestCase; protocol: Protocol; onResult: (id: string, r: CaseResult | null, note?: string) => void; onReport: (id: string) => void }) {
   const entry = protocol.entries[c.id];
+  const auto = autoCheckOf(c.id);
   const [open, setOpen] = useState(false);
   return <li className={`tp-case${entry ? ` tp-${entry.result}` : ''}`} data-case={c.id} data-level={c.level}>
     <div className="tp-case-head">
-      <button type="button" className="tp-case-title" aria-expanded={open} onClick={() => setOpen(o => !o)}><code>{c.id}</code> {c.title}{c.level === 'vertieft' && <small> · vertieft</small>}</button>
+      <button type="button" className="tp-case-title" aria-expanded={open} onClick={() => setOpen(o => !o)}><code>{c.id}</code> {c.title}{c.level === 'vertieft' && <small> · vertieft</small>}{auto && <small className={`tp-auto tp-auto-${auto.scope}`} data-testid="tp-auto-badge"> · 🤖 {AUTO_SCOPE_LABEL[auto.scope]}</small>}</button>
       <div className="tp-results" role="group" aria-label={`Ergebnis ${c.id}`}>
         {RESULTS.map(r => <button key={r.id} type="button" className={entry?.result === r.id ? 'active' : ''} aria-pressed={entry?.result === r.id} title={r.title} aria-label={`${c.id} ${r.title}`} onClick={() => onResult(c.id, entry?.result === r.id ? null : r.id)}>{r.label}</button>)}
       </div>
@@ -105,6 +107,7 @@ function CaseRow({ c, protocol, onResult, onReport }: { c: TestCase; protocol: P
       <ol>{c.steps.map((s, i) => <li key={i}>{s}</li>)}</ol>
       <p><b>Erwartet:</b> {c.expect}{c.start && <> · <a href={c.start}>Hier starten</a></>}</p>
       {packagesOf(c.id).length > 0 && <p className="muted tp-packages" data-testid="tp-packages">Abnahme für: {packagesOf(c.id).join(', ')}</p>}
+      {auto && <div className="tp-auto-proof" data-testid="tp-auto-proof"><p><b>🤖 {AUTO_SCOPE_LABEL[auto.scope]}:</b> {auto.covers}</p>{auto.remaining && <p><b>Bleibt für dich:</b> {auto.remaining}</p>}<p className="muted">Nachweis: {auto.evidence} · Wiederholen: <code>{auto.command}</code></p></div>}
       {c.merged && <p className="muted tp-merged">Enthält die früheren Fälle {c.merged.join(', ')}.</p>}
       <label className="tp-note">Notiz<input value={entry?.note ?? ''} onChange={e => onResult(c.id, entry?.result ?? null, e.target.value)} placeholder="Was war anders? Gerät, Datei, Besonderheit" /></label>
       {entry?.result === 'fehler' && <button type="button" className="tp-report-link" onClick={() => onReport(c.id)}>Fehler zu {c.id} melden</button>}

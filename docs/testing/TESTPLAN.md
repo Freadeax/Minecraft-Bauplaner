@@ -326,6 +326,12 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | PROD-05 | LAGER-10, PROJ-12 |
 | WORLD-SHARE-01 | KARTE-10, KARTE-08, KARTE-12 |
 
+## Automatische Abnahmen
+
+Fälle, deren beobachtbares Ergebnis ein reproduzierbarer Test im Repository nachweist (Quelle `apps/web/src/testing/autochecks.ts`, Befehle in `docs/TESTING.md`). **automatisch geprüft** = der Test deckt den beschriebenen Umfang ab, der Fall braucht nur noch Stichproben; **teilweise** = der Rest bleibt für die Handprüfung.
+
+Noch keine Einträge.
+
 ## Zusammengelegte Fälle
 
 Frühere Fall-IDs bleiben gültig: Testprotokolle übernehmen ihre Haken (✕ in einem Teil → ✕, ✓ nur wenn alle Teile ✓, sonst ?), `#/testphase?melden=<frühere ID>` und die Suche auf der Seite führen zum neuen Fall.

@@ -2,6 +2,7 @@
 // Aufruf: node scripts/checks/render_testplan.mjs [--check]  (--check: nur prüfen, ob die Datei aktuell ist)
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { AUTO_CHECKS, AUTO_SCOPE_LABEL } from '../../apps/web/src/testing/autochecks.ts';
 import { ACCEPTANCE, ALL_CASES, AREA_KIND_LABEL, MERGED_INTO, PLACE_LABEL, packagePlace, TEST_AREAS } from '../../apps/web/src/testing/testplan.ts';
 
 const out = fileURLToPath(new URL('../../docs/testing/TESTPLAN.md', import.meta.url));
@@ -32,6 +33,13 @@ const roadmap = JSON.parse(readFileSync(fileURLToPath(new URL('../../docs/roadma
 const problems = [];
 for (const item of roadmap.items) if (item.status === 'implemented' && !ACCEPTANCE[item.id]?.length) problems.push(`${item.id} ist implementiert, hat aber keine Testfälle in ACCEPTANCE (apps/web/src/testing/testplan.ts)`);
 for (const [pkg, cases] of Object.entries(ACCEPTANCE)) for (const c of cases) if (!known.has(c)) problems.push(`ACCEPTANCE ${pkg}: unbekannter Testfall ${c}`);
+const autoSeen = new Set();
+for (const a of AUTO_CHECKS) {
+  if (!known.has(a.caseId)) problems.push(`AUTO_CHECKS: unbekannter Testfall ${a.caseId}`);
+  if (autoSeen.has(a.caseId)) problems.push(`AUTO_CHECKS: ${a.caseId} doppelt (ein Eintrag je Fall)`);
+  if (a.scope === 'teil' && !a.remaining) problems.push(`AUTO_CHECKS ${a.caseId}: scope 'teil' braucht remaining`);
+  autoSeen.add(a.caseId);
+}
 if (problems.length) { console.error(problems.join('\n')); process.exit(1); }
 lines.push('## Abnahme je Roadmap-Paket', '', 'Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan.ts), geordnet nach dem Ort, den die Abnahme braucht. Ein Paket gilt als abgenommen, wenn alle genannten Fälle ✓ sind; Ob ein Paket noch auf Abnahme wartet, steht in `docs/ROADMAP.md`.', '');
 for (const place of Object.keys(PLACE_LABEL)) {
@@ -40,6 +48,13 @@ for (const place of Object.keys(PLACE_LABEL)) {
   for (const pkg of pkgs) lines.push(`| ${pkg} | ${ACCEPTANCE[pkg].join(', ')} |`);
   lines.push('');
 }
+lines.push('## Automatische Abnahmen', '', 'Fälle, deren beobachtbares Ergebnis ein reproduzierbarer Test im Repository nachweist (Quelle `apps/web/src/testing/autochecks.ts`, Befehle in `docs/TESTING.md`). **automatisch geprüft** = der Test deckt den beschriebenen Umfang ab, der Fall braucht nur noch Stichproben; **teilweise** = der Rest bleibt für die Handprüfung.', '');
+if (AUTO_CHECKS.length) {
+  lines.push('| Fall | Umfang | Nachgewiesen | Bleibt von Hand | Befehl | Nachweis |', '|---|---|---|---|---|---|');
+  const esc = t => (t ?? '–').replaceAll('|', '\\|');
+  for (const a of [...AUTO_CHECKS].sort((x, y) => x.caseId.localeCompare(y.caseId, 'de', { numeric: true }))) lines.push(`| ${a.caseId} | ${AUTO_SCOPE_LABEL[a.scope]} | ${esc(a.covers)} | ${esc(a.remaining)} | \`${esc(a.command)}\` | ${esc(a.evidence)} |`);
+} else lines.push('Noch keine Einträge.');
+lines.push('');
 const merged = Object.entries(MERGED_INTO).sort(([a], [b]) => a.localeCompare(b, 'de', { numeric: true }));
 lines.push('## Zusammengelegte Fälle', '', 'Frühere Fall-IDs bleiben gültig: Testprotokolle übernehmen ihre Haken (✕ in einem Teil → ✕, ✓ nur wenn alle Teile ✓, sonst ?), `#/testphase?melden=<frühere ID>` und die Suche auf der Seite führen zum neuen Fall.', '', '| Früher | Jetzt |', '|---|---|');
 for (const [old, cur] of merged) lines.push(`| ${old} | ${cur} |`);
