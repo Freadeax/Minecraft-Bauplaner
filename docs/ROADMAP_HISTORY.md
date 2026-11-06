@@ -7881,3 +7881,17 @@ TERRAIN-05 Gelände-Werkzeuge auf dem Projektgelände: Verwittern (mengengleich,
 - `tests/e2e/landscape-sculpt.e2e.mjs`
 - `tests/unit/world/terrain-sculpt.test.mjs`
 
+## 2026-11-06T20:34:36.445Z · progress
+
+**Aufgaben:** TERRAIN-05
+
+Prüfprotokoll TERRAIN-05 ergänzt: voller Browserlauf 197/197 grün.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| TERRAIN-05 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme durch Philipp im Planer und im Spiel (PROJ-26). |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+

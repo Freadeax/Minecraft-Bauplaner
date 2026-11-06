@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T20:21:49.359Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T20:34:36.445Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -1938,7 +1938,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### TERRAIN-05
 
-**Gelände-Werkzeuge auf dem Projektgelände: Verwittern, Formstempel, Fluss und Maske für alle Werkzeuge mit geschützten Bauplätzen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Alle Bereiche in Blöcken weiterbauen“, Block 1) · Zuständiger Thread: „Alle Bereiche in Blöcken weiterbauen“ · Aktualisiert: 2026-11-06T20:21:49.359Z
+**Gelände-Werkzeuge auf dem Projektgelände: Verwittern, Formstempel, Fluss und Maske für alle Werkzeuge mit geschützten Bauplätzen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Alle Bereiche in Blöcken weiterbauen“, Block 1) · Zuständiger Thread: „Alle Bereiche in Blöcken weiterbauen“ · Aktualisiert: 2026-11-06T20:34:36.445Z
 
 - [x] TERRAIN-05-S01: Verwittern: thermische Erosion bis zur Hanggrenze und Regenrinnen, mengengleich, als Pinsel und für die ganze Fläche.
 - [x] TERRAIN-05-S02: Formstempel Hügel, Berg, Krater, Mulde und Plateau mit Größe und Höhe in einem Klick.

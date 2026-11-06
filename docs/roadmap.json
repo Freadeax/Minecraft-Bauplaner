@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T20:21:49.359Z",
+  "updatedAt": "2026-11-06T20:34:36.445Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -4826,7 +4826,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:21:49.359Z",
+      "updatedAt": "2026-11-06T20:34:36.445Z",
       "area": "PLANER",
       "thread": "Alle Bereiche in Blöcken weiterbauen",
       "philipp": [
@@ -24296,6 +24296,26 @@
           "done": 7,
           "total": 8,
           "next": "Spielprüfung gespiegelter Zustände im Planer (S07) und der Bauhilfen in der Mod (MOD-18/19); Gelände-Werkzeuge auf dem Projektgelände sind als TERRAIN-05 umgesetzt."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T20:34:36.445Z",
+      "kind": "progress",
+      "items": [
+        "TERRAIN-05"
+      ],
+      "summary": "Prüfprotokoll TERRAIN-05 ergänzt: voller Browserlauf 197/197 grün.",
+      "files": [
+        "docs/TESTING.md"
+      ],
+      "snapshot": [
+        {
+          "id": "TERRAIN-05",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme durch Philipp im Planer und im Spiel (PROJ-26)."
         }
       ]
     }
