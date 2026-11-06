@@ -57,10 +57,12 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     assert.equal(await bar.getByRole('group').count(), 4);
     assert.equal(await bar.getByRole('link').count(), 12);
     assert.match(await bar.getByRole('group', { name: 'Schritt 1: Gestalten' }).innerText(), /Editor[\s\S]*Blöcke[\s\S]*Gelände[\s\S]*Landschaft/);
-    assert.match(await p.locator('.tab-hint').innerText(), /Gebäude aus der Bibliothek einfügen/);
+    // Der Hash wechselt vor dem Neuzeichnen: auf den Kurzsatz des jeweiligen Reiters warten, nicht sofort lesen.
+    assert.match(await p.locator('.tab-hint[data-tab-hint=editor]').innerText(), /Gebäude aus der Bibliothek einfügen/);
     await bar.getByRole('link', { name: 'Material' }).click();
     await p.waitForURL(/\/material$/);
-    assert.match(await p.locator('.tab-hint').innerText(), /Welche Blöcke/);
+    assert.match(await p.locator('.tab-hint[data-tab-hint=material]').innerText(), /Welche Blöcke/);
+    await bar.locator('.tab-group[data-group=bauen][data-active]').waitFor();
     assert.equal(await bar.getByRole('group', { name: 'Schritt 2: Bauen' }).getAttribute('data-active'), '');
     assert.ok(await fits(p));
 

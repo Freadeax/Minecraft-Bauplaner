@@ -7549,3 +7549,18 @@ Offline-Browsertest stabilisiert: eigener Port, 60 s Wartezeit auf den neuen Ser
 - `docs/TESTING.md`
 - `tests/e2e/offline.e2e.mjs`
 
+## 2026-11-06T15:30:12.832Z · progress
+
+**Aufgaben:** UX-01
+
+simple-ui.e2e stabilisiert: wartet auf den Kurzsatz des geöffneten Reiters statt ihn sofort nach dem Hashwechsel zu lesen; 6/6 Läufe grün.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| UX-01 | 🚧 In Arbeit | 6/6 | Philipps Abnahme START-10..13 im Browser und auf dem iPad. Optik übernimmt „Planer-Oberfläche schön neu gestalten“. |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+- `tests/e2e/simple-ui.e2e.mjs`
+

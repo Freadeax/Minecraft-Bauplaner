@@ -1087,3 +1087,4 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 
 - Ursache: `offline.e2e.mjs` wartete höchstens 20 s, bis ein neuer Service Worker (`sw.js?neu=1`) aktiv ist; unter Last (voller Browserlauf, frischer Build) reichte das nicht. Außerdem teilte er Port 4317 mit `catalog-snapshot` und `teamplan`. Jetzt eigener Port 4387, bis 60 s Wartezeit, Fehlermeldung nennt aktive/wartende/installierende Worker. Keine Prüfung abgeschwächt.
 - `offline.e2e.mjs` 3/3, fünfmal hintereinander, davon dreimal unter künstlicher CPU-Last; voller Lauf `npm run test:e2e` 189/190, der eine Ausfall ist `simple-ui.e2e.mjs` (UX-01, wechselnd 1400 px/390 px, nicht Offline-Speicher).
+- Nachtrag: `simple-ui.e2e.mjs` wartet jetzt auf den Kurzsatz des jeweiligen Reiters (`.tab-hint[data-tab-hint=…]`) statt ihn direkt nach dem Hashwechsel zu lesen; 6 Läufe hintereinander, teils unter Parallellast, grün.

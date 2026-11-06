@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T15:17:03.640Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T15:30:12.832Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -1013,7 +1013,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### UX-01
 
-**Bedienung des Planers vereinfachen (Struktur und Abläufe)** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude Thread „Bedienung des Planers vereinfachen“ · Zuständiger Thread: **verwaist** · Aktualisiert: 2026-11-06T15:13:31.442Z
+**Bedienung des Planers vereinfachen (Struktur und Abläufe)** · 🚧 In Arbeit · Priorität P1 · Verantwortlich: Claude Thread „Bedienung des Planers vereinfachen“ · Zuständiger Thread: **verwaist** · Aktualisiert: 2026-11-06T15:30:12.832Z
 
 - [x] UX-01-S01: Hauptnavigation auf vier Bereiche (Projekte, Bibliothek, Weltkarte, Spiel); Datei-Wege Betrachter und Weltimport nur noch in Fußzeile und Schnellsuche.
 - [x] UX-01-S02: Zwölf Projektreiter in vier Schritten (Gestalten, Bauen, Organisieren, Teilen) mit einem Kurzsatz je Reiter; Ids, Beschriftungen und Routen unverändert.
