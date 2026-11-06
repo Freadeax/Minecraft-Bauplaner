@@ -33,7 +33,9 @@ test('Desktop: Hauptnavigation, Seitentitel und Schnellsuche (Strg+K) mit Tastat
   try {
     await p.goto(BASE);
     const nav = p.getByRole('navigation', { name: 'Hauptnavigation', exact: true });
-    assert.equal(await nav.getByRole('link').count(), 6);
+    assert.equal(await nav.getByRole('link').count(), 7);
+    // GUIDE-01: die Anleitung steht in der Hauptnavigation (bei knapper Breite als ?-Symbol).
+    assert.equal(await nav.getByRole('link', { name: 'Anleitung' }).getAttribute('href'), '#/anleitung');
     // MAP-03: the game connection (mod download, pairing) has its own main entry.
     assert.equal(await nav.getByRole('link', { name: 'Spiel' }).getAttribute('href'), '#/mod');
     assert.equal(await p.locator('.bottom-nav').isVisible(), false);

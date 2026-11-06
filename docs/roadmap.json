@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T14:07:27.429Z",
+  "updatedAt": "2026-11-06T14:18:29.478Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -11107,6 +11107,99 @@
         }
       ],
       "orphans": []
+    },
+    {
+      "id": "GUIDE-01",
+      "title": "Anleitung „Wie geh ich es an?“: eigener Reiter mit Wegen nach Ziel, jeder Schritt mit Grafik, kurzem Satz und Link an die passende Stelle",
+      "phase": "P4",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude (Thread „Tutorial-Reiter „Wie geh ich es an?“ bauen“)",
+      "dependencies": [
+        "UI-02",
+        "GAME-11",
+        "TERRAIN-04",
+        "LINK-11"
+      ],
+      "scope": [
+        "apps/web/src/views/guide/guideSteps.ts",
+        "apps/web/src/views/guide/GuideView.tsx",
+        "apps/web/src/views/guide/GuideArt.tsx",
+        "apps/web/src/views/guide/guide.css",
+        "apps/web/src/app/nav.ts",
+        "apps/web/src/app/router.ts",
+        "apps/web/src/app/icons.tsx",
+        "apps/web/src/app/Shell.tsx",
+        "apps/web/src/styles/shell.css",
+        "apps/web/src/main.tsx",
+        "apps/web/src/views/ProjectsView.tsx",
+        "apps/web/src/views/mod/ModView.tsx",
+        "apps/web/src/testing/testplan.ts",
+        "tests/unit/web/guide.test.mjs",
+        "tests/e2e/anleitung.e2e.mjs",
+        "tests/e2e/shell.e2e.mjs",
+        "docs/architecture/planer/UI.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "GUIDE-01-S01",
+          "title": "Sechs Wege nach Ziel (Erstes Projekt, Bibliothek, Mod, Hologramm, Gelände aus der Mod, Team) mit je 4–6 Schritten; jeder Schritt ein Satz (≤110 Zeichen), nur Online-/Mod-Wege.",
+          "done": true
+        },
+        {
+          "id": "GUIDE-01-S02",
+          "title": "Grafik je Schritt (Szene Planer/Spiel/Launcher, Symbol, Tastenkappe), animiert ohne reduced-motion, hell/dunkel über Theme-Tokens.",
+          "done": true
+        },
+        {
+          "id": "GUIDE-01-S03",
+          "title": "Knöpfe führen ins zuletzt geänderte oder gewählte Projekt; ohne Projekt zur Projektzentrale; Voraussetzungen springen in den anderen Weg; Haken und Fortschritt pro Browser; teilbare Adresse ?weg=&schritt=.",
+          "done": true
+        },
+        {
+          "id": "GUIDE-01-S04",
+          "title": "Einstiege: Hauptnavigation (bei knapper Breite ?-Symbol), Schnellsuche, Projektzentrale, Seite „Spiel“; Testfälle START-08/09.",
+          "done": true
+        },
+        {
+          "id": "GUIDE-01-S05",
+          "title": "Philipp prüft die Anleitung am iPad und im Spiel (START-08/09) und meldet unklare Sätze.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Jeder Schritt hat Bild und einen kurzen Satz; jeder Knopf führt an die genannte Stelle; Kopfzeile ohne Überbreite 1920–761 px; Handy 390 px ohne seitlichen Überhang."
+      ],
+      "next": "Abnahme durch Philipp (START-08/09); Begriffe mit „Bedienung des Planers vereinfachen“ (Reiter-Kurzsätze) und UI-03 abgleichen.",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/unit/web/guide.test.mjs",
+          "note": "Satzlänge, ein Satz, Symbole, gültige Routen und Reiter, Projektlinks, Adresse, Fortschritt."
+        },
+        {
+          "path": "tests/e2e/anleitung.e2e.mjs",
+          "note": "Chromium 1400/390 px: Einstieg, Bilder, Projektlinks, Wegsprung, Haken nach Neuladen, Schnellsuche."
+        }
+      ],
+      "verification": {
+        "state": "passed",
+        "note": "Einheits- und Browsertests grün; Abnahme am Gerät offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-06T14:18:29.478Z",
+      "area": "PLANER",
+      "thread": "Tutorial-Reiter „Wie geh ich es an?“ bauen",
+      "philipp": [
+        {
+          "kind": "geraet",
+          "text": "Anleitung am iPad durchgehen (START-08/09), unklare Sätze melden."
+        }
+      ]
     }
   ],
   "events": [
@@ -23265,6 +23358,44 @@
           "done": 4,
           "total": 5,
           "next": "Abnahme KARTE-10..12 im Spiel und auf der Server-Karte."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T14:18:29.478Z",
+      "kind": "progress",
+      "items": [
+        "GUIDE-01"
+      ],
+      "summary": "Anleitung „Wie geh ich es an?“ (#/anleitung): sechs Wege nach Ziel, jeder Schritt mit Grafik, einem kurzen Satz und Knopf an die passende Stelle im eigenen Projekt; Einstiege in Navigation, Schnellsuche, Projektzentrale und Seite „Spiel“; Testfälle START-08/09; npm run check grün, Browserlauf 187/188 (neuer Test danach 3/3). Abnahme am iPad offen.",
+      "files": [
+        "apps/web/src/app/Shell.tsx",
+        "apps/web/src/app/icons.tsx",
+        "apps/web/src/app/nav.ts",
+        "apps/web/src/app/router.ts",
+        "apps/web/src/main.tsx",
+        "apps/web/src/styles/shell.css",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/views/ProjectsView.tsx",
+        "apps/web/src/views/guide/GuideArt.tsx",
+        "apps/web/src/views/guide/GuideView.tsx",
+        "apps/web/src/views/guide/guide.css",
+        "apps/web/src/views/guide/guideSteps.ts",
+        "apps/web/src/views/mod/ModView.tsx",
+        "docs/TESTING.md",
+        "docs/architecture/planer/UI.md",
+        "docs/testing/TESTPLAN.md",
+        "tests/e2e/anleitung.e2e.mjs",
+        "tests/e2e/shell.e2e.mjs",
+        "tests/unit/web/guide.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GUIDE-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (START-08/09); Begriffe mit „Bedienung des Planers vereinfachen“ (Reiter-Kurzsätze) und UI-03 abgleichen."
         }
       ]
     }

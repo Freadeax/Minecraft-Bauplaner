@@ -108,7 +108,8 @@ export function ModView({ search }: { search?: string | undefined }) {
 
   return <div className="page system-page mod-page">
     <div className="page-head"><div><span className="eyebrow">MOD · BAUPLANER-BRÜCKE</span><h1 className="page-title">Mod herunterladen</h1>
-      <p className="muted">Die Bauplaner-Mod zeigt deinen Plan im Spiel als Hologramm, gleicht ihn live mit der Welt ab, hilft beim richtigen Setzen und schreibt Aufnahmen für den Soll/Ist-Vergleich. Sie baut nie selbst und sendet nichts ins Internet.</p></div></div>
+      <p className="muted">Die Bauplaner-Mod zeigt deinen Plan im Spiel als Hologramm, gleicht ihn live mit der Welt ab, hilft beim richtigen Setzen und schreibt Aufnahmen für den Soll/Ist-Vergleich. Sie baut nie selbst und sendet nichts ins Internet.</p>
+      <p><a href="#/anleitung?weg=mod" data-guide-link="">Neu hier? Schritt für Schritt mit Bildern: „Mod installieren und verbinden“ →</a></p></div></div>
 
     <div className="mod-targets" role="group" aria-label="Wofür brauchst du die Mod?">
       <button type="button" className="mod-target" aria-pressed={!server} onClick={() => switchTarget('client')}>

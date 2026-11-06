@@ -22,6 +22,7 @@ import { useEffect, useState } from 'react';
  *   #/welt                 Ausschnitt aus Regionsdateien der eigenen Welt übernehmen (WORLD-IMPORT-01)
  *   #/system               Systemcheck (Auslieferung, Speicher, Datencheck, Fehlerprotokoll)
  *   #/testphase[?melden[=<fall>]]  Testphase: Checklisten, Testprotokoll, Fehler melden mit Diagnose (QA-04)
+ *   #/anleitung[?weg=<id>&schritt=<n>]  Anleitung „Wie geh ich es an?“ mit Wegen und Schritten (GUIDE-01)
  */
 export type Route =
   | { readonly view: 'projects' }
@@ -29,6 +30,7 @@ export type Route =
   | { readonly view: 'viewer' }
   | { readonly view: 'system' }
   | { readonly view: 'testphase'; readonly search?: string }
+  | { readonly view: 'guide'; readonly search?: string }
   | { readonly view: 'map'; readonly search?: string }
   | { readonly view: 'mod'; readonly search?: string }
   | { readonly view: 'team-join'; readonly search?: string }
@@ -70,6 +72,7 @@ export function parseRoute(hash: string): Route {
   if (parts[0] === 'betrachter' && parts.length === 1) return { view: 'viewer' };
   if (parts[0] === 'system' && parts.length === 1) return { view: 'system' };
   if (parts[0] === 'testphase' && parts.length === 1) return { view: 'testphase', ...(search && { search }) };
+  if (parts[0] === 'anleitung' && parts.length === 1) return { view: 'guide', ...(search && { search }) };
   if (parts[0] === 'mod' && parts.length === 1) return { view: 'mod', ...(search && { search }) };
   if (parts[0] === 'team' && parts[1] === 'beitreten' && parts.length === 2) return { view: 'team-join', ...(search && { search }) };
   if (parts[0] === 'welt' && parts.length === 1) return { view: 'world' };
@@ -91,6 +94,7 @@ export function href(route: Route): string {
     case 'viewer': return '#/betrachter';
     case 'system': return '#/system';
     case 'testphase': return `#/testphase${route.search ? `?${route.search}` : ''}`;
+    case 'guide': return `#/anleitung${route.search ? `?${route.search}` : ''}`;
     case 'mod': return `#/mod${route.search ? `?${route.search}` : ''}`;
     case 'team-join': return `#/team/beitreten${route.search ? `?${route.search}` : ''}`;
     case 'world': return '#/welt';

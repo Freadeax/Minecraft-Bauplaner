@@ -1,0 +1,79 @@
+/* GUIDE-01 Anleitung „Wie geh ich es an?“ – nur Theme-Farben (UI-01), Bewegung nur ohne prefers-reduced-motion. */
+.guide-page{display:grid;gap:22px}
+.guide-paths{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+@media (max-width:1280px){.guide-paths{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.guide-path{position:relative;display:grid;gap:6px;align-content:start;text-align:left;padding:16px 16px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);color:var(--text);cursor:pointer;font:inherit;transition:border-color .15s,transform .15s,box-shadow .15s}
+.guide-path:hover{border-color:var(--mint);transform:translateY(-2px);box-shadow:0 8px 22px #0002}
+.guide-path:focus-visible{outline:2px solid var(--mint);outline-offset:3px}
+.guide-path[aria-pressed=true]{border-color:var(--mint);box-shadow:inset 0 0 0 1px var(--mint)}
+.guide-path b{font-size:15px}
+.guide-path-nr{position:absolute;top:12px;right:14px;font-size:12px;color:var(--muted)}
+.guide-path-icon{display:inline-grid;place-items:center;width:38px;height:38px;border-radius:10px;background:var(--panel-3);color:var(--mint)}
+.guide-path-goal{font-size:13px;line-height:1.45}
+.guide-path-meta{font-size:12px;color:var(--muted)}
+.guide-meter{display:block;height:5px;margin-top:4px;border-radius:3px;background:var(--panel-3);overflow:hidden}
+.guide-meter>span{display:block;height:100%;background:var(--mint);transition:width .3s}
+
+.guide-run{display:grid;gap:16px;padding:20px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
+.guide-run-head{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-between;align-items:flex-end}
+.guide-run-head h2{margin:0}.guide-run-head p{margin:4px 0 0}
+.guide-run-tools{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.guide-project{display:flex;align-items:center;gap:8px;font-size:13px}
+.guide-project select{max-width:220px;min-height:36px}
+.guide-count{font-size:13px;color:var(--muted)}
+
+.guide-steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px;counter-reset:none}
+.guide-step{display:grid;grid-template-rows:auto 1fr;border:1px solid var(--line);border-radius:12px;background:var(--panel-2);overflow:hidden;transition:border-color .2s,box-shadow .2s;animation:guide-in .35s ease-out both}
+.guide-step:nth-child(2){animation-delay:.05s}.guide-step:nth-child(3){animation-delay:.1s}.guide-step:nth-child(4){animation-delay:.15s}.guide-step:nth-child(5){animation-delay:.2s}.guide-step:nth-child(6){animation-delay:.25s}
+.guide-step[aria-current=step]{border-color:var(--mint);box-shadow:0 0 0 1px var(--mint)}
+.guide-step[data-done=true]{opacity:.78}
+.guide-step[data-done=true] h3::after{content:" ✓";color:var(--mint)}
+.guide-step-body{display:grid;gap:8px;align-content:start;padding:12px 14px 14px}
+.guide-step h3{margin:0;font-size:15px}
+.guide-step p{margin:0;line-height:1.5;font-size:14px}
+.guide-step-actions{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin-top:4px}
+.guide-step-actions .button-link{display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.guide-step-actions .secondary.button-link{background:var(--panel);color:var(--text)}
+.guide-ingame{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.guide-done{display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer}
+.guide-run-foot{display:grid;gap:10px;justify-items:start}
+.guide-run-foot button{display:inline-flex;align-items:center;gap:6px}
+.guide-finished{display:flex;align-items:center;gap:8px;margin:0;color:var(--mint);font-weight:600}
+
+/* Grafik je Schritt */
+.guide-art{display:block;width:100%;height:auto;aspect-ratio:16/10;background:var(--panel-3);color:var(--mint)}
+.guide-art .ga-window{fill:var(--panel);stroke:var(--line)}
+.guide-art .ga-bar{fill:var(--panel-2)}
+.guide-art .ga-dot{fill:var(--line)}
+.guide-art .ga-line{fill:var(--panel-3)}
+.guide-art .ga-card{fill:var(--panel-2);stroke:var(--line);stroke-dasharray:3 3}
+.guide-art .ga-play{fill:var(--mint)}
+.guide-art .ga-sky{fill:color-mix(in srgb,var(--panel) 70%,#5b9bd5)}
+.guide-art .ga-grass{fill:color-mix(in srgb,var(--panel) 30%,#5fa03a)}
+.guide-art .ga-dirt{fill:color-mix(in srgb,var(--panel) 35%,#7a5634)}
+.guide-art .ga-block{fill:color-mix(in srgb,var(--panel) 40%,#8f8f8f);stroke:color-mix(in srgb,var(--panel) 40%,#5c5c5c)}
+.guide-art .ga-ghost{fill:color-mix(in srgb,var(--mint) 22%,transparent);stroke:var(--mint);stroke-dasharray:3 2;animation:guide-ghost 2.4s ease-in-out infinite}
+.guide-art .ga-ghost:nth-of-type(2n){animation-delay:.6s}
+.guide-art .ga-icon{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.guide-art .ga-halo{fill:var(--panel);stroke:var(--mint);stroke-width:1;opacity:.95}
+.guide-art .ga-key rect{fill:var(--panel);stroke:var(--text);stroke-width:1.2}
+.guide-art .ga-key text{fill:var(--text);font:600 12px system-ui,sans-serif}
+.guide-art .ga-step circle{fill:var(--mint)}
+.guide-art .ga-step text{fill:var(--theme-on-accent,#15212b);font:700 11px system-ui,sans-serif}
+.guide-step[aria-current=step] .ga-halo{animation:guide-pulse 2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+
+.guide-terms{display:grid;gap:10px}
+.guide-terms h2{margin:0}
+.guide-terms dl{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin:0}
+.guide-terms dl>div{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.guide-terms dt{font-weight:600;color:var(--mint)}
+.guide-terms dd{margin:4px 0 0;font-size:13px;line-height:1.45}
+
+/* Hinweis auf die Anleitung in anderen Seiten */
+.guide-hint{display:inline-flex;align-items:center;gap:6px;font-size:13px}
+
+@keyframes guide-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes guide-ghost{0%,100%{opacity:.45}50%{opacity:1}}
+@keyframes guide-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@media (prefers-reduced-motion:reduce){.guide-step,.guide-art .ga-ghost,.guide-step[aria-current=step] .ga-halo{animation:none}.guide-path{transition:none}}
+@media (max-width:760px){.guide-run{padding:14px}.guide-steps{grid-template-columns:1fr}.guide-paths{grid-template-columns:1fr 1fr;gap:8px}.guide-path{padding:12px}.guide-path b{font-size:14px}.guide-path-goal,.guide-path-meta{display:none}.guide-path-icon{width:32px;height:32px}}

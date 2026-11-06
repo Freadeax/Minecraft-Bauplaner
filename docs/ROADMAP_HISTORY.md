@@ -7426,3 +7426,35 @@ Weltplan und Kartenliste über den Team-Raum: Mods im Team und Paper-Plugin (Blu
 - `tests/unit/team/team-room.test.mjs`
 - `tests/unit/world/world-share.test.mjs`
 
+## 2026-11-06T14:18:29.478Z · progress
+
+**Aufgaben:** GUIDE-01
+
+Anleitung „Wie geh ich es an?“ (#/anleitung): sechs Wege nach Ziel, jeder Schritt mit Grafik, einem kurzen Satz und Knopf an die passende Stelle im eigenen Projekt; Einstiege in Navigation, Schnellsuche, Projektzentrale und Seite „Spiel“; Testfälle START-08/09; npm run check grün, Browserlauf 187/188 (neuer Test danach 3/3). Abnahme am iPad offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GUIDE-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (START-08/09); Begriffe mit „Bedienung des Planers vereinfachen“ (Reiter-Kurzsätze) und UI-03 abgleichen. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/app/Shell.tsx`
+- `apps/web/src/app/icons.tsx`
+- `apps/web/src/app/nav.ts`
+- `apps/web/src/app/router.ts`
+- `apps/web/src/main.tsx`
+- `apps/web/src/styles/shell.css`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/ProjectsView.tsx`
+- `apps/web/src/views/guide/GuideArt.tsx`
+- `apps/web/src/views/guide/GuideView.tsx`
+- `apps/web/src/views/guide/guide.css`
+- `apps/web/src/views/guide/guideSteps.ts`
+- `apps/web/src/views/mod/ModView.tsx`
+- `docs/TESTING.md`
+- `docs/architecture/planer/UI.md`
+- `docs/testing/TESTPLAN.md`
+- `tests/e2e/anleitung.e2e.mjs`
+- `tests/e2e/shell.e2e.mjs`
+- `tests/unit/web/guide.test.mjs`
+

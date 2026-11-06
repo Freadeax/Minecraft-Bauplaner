@@ -30,7 +30,7 @@ export function Shell({ route, children }: { route: Route; children: ReactNode }
       <a className="brand" href="#/" aria-label={`${APP_NAME} – zur Projektzentrale`}><span className="brand-icon"><Cube /></span>
         <span className="brand-text">LMNT <strong>BUILD STUDIO</strong><small>DEIN MINECRAFT-BAUHELFER</small></span></a>
       <nav className="main-nav" aria-label="Hauptnavigation">
-        {mainNav.map(n => <a key={n.id} href={n.href} aria-current={current(n.views)}><Icon name={n.icon} />{n.label}</a>)}
+        {mainNav.map(n => <a key={n.id} href={n.href} aria-current={current(n.views)} data-nav={n.id} title={n.hint}><Icon name={n.icon} /><span className="nav-label">{n.label}</span></a>)}
       </nav>
       <button type="button" className="search-trigger" onClick={openPalette} aria-keyshortcuts="Control+K Meta+K" aria-label="Schnellsuche öffnen" title="Schnellsuche öffnen">
         <Icon name="search" /><span className="search-label">Suchen …</span><kbd>{isMac ? '⌘' : 'Strg'} K</kbd></button>

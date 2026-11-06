@@ -1068,3 +1068,9 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - Browser: `team-room.e2e.mjs` (zwei Browser, Raum-Weltplan mit Sperre kommt an, Punkte des einen erscheinen beim anderen und im Raum; nach „Einladung erneuern“ nimmt der Planer den gültigen Schlüssel), `livemap-export.e2e.mjs` (Datei-Wege nur unter „Notfall“).
 - Offen: Abnahme KARTE-10..12 durch Philipp.
 - Nach Rebase auf main mit Mod/Plugin 0.21.0 (LINK-11): `npm run check` grün (957 Tests: 956 bestanden, 1 übersprungen), Java core/mod-core/paper grün, voller Browserlauf vor dem Rebase 186/186, danach die betroffenen Browsertests 27/27 grün; Spieltest Fabric 26.3, Paper 26.3 + BlueMap und Paper-Team-Raum-Test erneut bestanden.
+
+## GUIDE-01 · Anleitung „Wie geh ich es an?“ · 06.11.2026 · Claude
+- `npm run check` grün (955 Tests: 954 bestanden, 1 übersprungen), neu `tests/unit/web/guide.test.mjs` 3/3 (ein Satz ≤ 110 Zeichen je Schritt, höchstens vier Wörter Titel, Symbole vorhanden, kein Dateiweg als Hauptweg, Routen und Projektreiter gültig, Projektlinks mit Sonderzeichen, Adresse `?weg=&schritt=`, Fortschritt, kaputte Speicherdaten).
+- Browser: neu `tests/e2e/anleitung.e2e.mjs` 2/2 (Einstieg aus der Projektzentrale, sechs Wege, Grafik je Schritt, ohne Projekt zur Projektzentrale, mit Beispielprojekt in dessen Reiter „Gelände“, Voraussetzung wechselt den Weg, Tastenkappe J, Haken nach Neuladen, Schnellsuche; Handy 390 px ohne Überhang). `shell.e2e.mjs` 5/5 mit siebtem Navigationseintrag: Kopfzeile 1920–761 px ohne Überbreite (Anleitung unter 1600 px als ?-Symbol).
+- Voller Browserlauf: 188 Tests, 187 grün; der Ausfall war der neue Test (Schnellsuche unter Last vor dem Öffnen getippt), wartet jetzt auf den Dialog, danach 3/3 grün.
+- Nicht automatisch geprüft: iPad/Safari, Verständlichkeit der Sätze (Abnahme START-08/09 offen).

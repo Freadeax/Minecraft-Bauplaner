@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T14:07:27.429Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T14:18:29.478Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-06T14:07:27.429Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 6 |
 | 🚧 In Arbeit | 7 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 93 |
+| 🧩 Implementiert · Abnahme offen | 94 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -25,7 +25,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 
 | Bereich | Offen | Verwaist | Nur Philipp | Geprüft |
 |---|---:|---:|---:|---:|
-| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 24 | 1 | 24 | 2 |
+| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 25 | 1 | 25 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 0 | 10 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 14 | 0 | 14 | 0 |
@@ -53,6 +53,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [EDIT-06](#edit-06) | Direkt im 3D-Bild bauen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Direkt im 3D-Bild bauen“ | Im 3D-Bild bauen auf PC und iPad (WERK-08).<br>Truhe und Schild mit Inhalt im Spiel laden (WERK-09). |
 | [GFX-01](#gfx-01) | Grafik vertiefen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Licht und Schatten auf echten GPUs, Firefox/Safari und Handy (S06). |
 | [GFX-02](#gfx-02) | Darstellung und Leistung, Runde 2 | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Darstellung und Leistung weiter verbessern“ | Biom, Leuchtfeuer-Strahl und flüssiges Laden großer Modelle auf dem eigenen Rechner ansehen (S04). |
+| [GUIDE-01](#guide-01) | Anleitung „Wie geh ich es an?“ | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Tutorial-Reiter „Wie geh ich es an?“ bauen“ | Anleitung am iPad durchgehen (START-08/09), unklare Sätze melden. |
 | [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Weltkarte auf echter GPU und mit Touch (QA-02). |
 | [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Module und Systeme komplex ausarbeiten“ | BlueMap-Marker (.conf) bzw. Dynmap-Befehle auf eurer Server-Karte einspielen und prüfen, ob Projekte, Wege und Punkte an der richtigen Stelle erscheinen (KARTE-08). |
 | [MAP-03](#map-03) | Live-Karte mit Spielanbindung | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Kopplung und Senden auf dem LMNT-Server mit Browserfreigabe „lokales Netzwerk“ (S06). |
@@ -321,6 +322,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **BACKUP-02** · Sicherungs-Download in Safari; Rückmeldung, ob 7 Tage für die Erinnerung passen.
 - **LINK-05** · Am PC „Weiteres Gerät freigeben“, Link auf dem iPad öffnen, eine Einstellung ändern.
 - **EDIT-06** · Im 3D-Bild bauen auf PC und iPad (WERK-08).
+- **GUIDE-01** · Anleitung am iPad durchgehen (START-08/09), unklare Sätze melden.
 
 ### Dateien oder Welt liefern
 
@@ -626,6 +628,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [FALLBACK-01](#fallback-01) | Ausweichwege über alle Verbindungen: Teamstand offline in der Mod, HTTP statt WebSocket, offline gemerkte Messungen, Baustand über den besten Weg (Spiel → Team-Raum → Server → Datei) | 🚧 In Arbeit | 4/5 | LINK-07, COOP-10 | ausstehend | ausstehend |
 | [LINK-10](#link-10) | Anbindung geprüft und gehärtet: Sendungen über den WebSocket nacheinander (Mod und Plugin), Messungen bis zur Bestätigung gemerkt, Team-Raum mit Ping ohne Aufwecken und sauberem Schließen, Planer ohne gestapelte Abfrage-Schleifen | 🧩 Implementiert · Abnahme offen | 6/6 | FALLBACK-01, LINK-07 | ausstehend | ausstehend |
 | [LINK-11](#link-11) | Alles über das Internet: Server-Plugin bekommt die Team-Infos von Mod und Planer selbst über den Team-Raum, Dateiwege nur noch als versteckter Notfall (Mod/Plugin 0.21.0) | 🧩 Implementiert · Abnahme offen | 5/6 | LINK-10, COOP-07 | ausstehend | ausstehend |
+| [GUIDE-01](#guide-01) | Anleitung „Wie geh ich es an?“: eigener Reiter mit Wegen nach Ziel, jeder Schritt mit Grafik, kurzem Satz und Link an die passende Stelle | 🧩 Implementiert · Abnahme offen | 4/5 | UI-02, GAME-11, TERRAIN-04, LINK-11 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
 
@@ -3619,6 +3622,30 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/unit/team/team-room.test.mjs](../tests/unit/team/team-room.test.mjs) — Geteilte Dokumente: Revision, 409, unchanged, Serverschlüssel 403, Ankündigung.; [tests/unit/world/world-share.test.mjs](../tests/unit/world/world-share.test.mjs) — Dreiwege-Abgleich, Marker je Dimension, Kartenliste.; [tests/e2e/team-room.e2e.mjs](../tests/e2e/team-room.e2e.mjs) — Zwei Browser: Raum-Weltplan mit Sperre kommt an, Punkte des einen erscheinen beim anderen und im Raum.; [scripts/mod/test_bridge_paper_world.sh](../scripts/mod/test_bridge_paper_world.sh) — Echter Paper-Server 26.3 + BlueMap 5.29 und 1.21.4 + Dynmap 3.7-beta-8: Marker aus dem Raum, Push, Neustart.; [mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java](../mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/BridgeGameTest.java) — Spieltest: Weltplan des Teams aus dem Raum im Hologramm (teamMarks 4, Bild team-weltplan.png).
 
 **Dateiumfang:** `services/team-room/src/core.js`, `services/team-room/src/index.js`, `packages/domain/src/world/worldShare.ts`, `apps/web/src/views/map/useWorldShare.ts`, `apps/web/src/views/map/WorldSharePanel.tsx`, `apps/web/src/views/map/LiveMapPanel.tsx`, `apps/web/src/views/map/WorldMapView.tsx`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`, `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/WorldMarks.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/WorldModule.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/WorldShare.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/MapMarkers.java`, `scripts/mod/bridge_paperworld.mjs`, `docs/architecture/welt/WORLD_SHARE.md`. **Abhängigkeiten:** MAP-02, MAP-04. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### GUIDE-01
+
+**Anleitung „Wie geh ich es an?“: eigener Reiter mit Wegen nach Ziel, jeder Schritt mit Grafik, kurzem Satz und Link an die passende Stelle** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Tutorial-Reiter „Wie geh ich es an?“ bauen“) · Zuständiger Thread: „Tutorial-Reiter „Wie geh ich es an?“ bauen“ · Aktualisiert: 2026-11-06T14:18:29.478Z
+
+- [x] GUIDE-01-S01: Sechs Wege nach Ziel (Erstes Projekt, Bibliothek, Mod, Hologramm, Gelände aus der Mod, Team) mit je 4–6 Schritten; jeder Schritt ein Satz (≤110 Zeichen), nur Online-/Mod-Wege.
+- [x] GUIDE-01-S02: Grafik je Schritt (Szene Planer/Spiel/Launcher, Symbol, Tastenkappe), animiert ohne reduced-motion, hell/dunkel über Theme-Tokens.
+- [x] GUIDE-01-S03: Knöpfe führen ins zuletzt geänderte oder gewählte Projekt; ohne Projekt zur Projektzentrale; Voraussetzungen springen in den anderen Weg; Haken und Fortschritt pro Browser; teilbare Adresse ?weg=&schritt=.
+- [x] GUIDE-01-S04: Einstiege: Hauptnavigation (bei knapper Breite ?-Symbol), Schnellsuche, Projektzentrale, Seite „Spiel“; Testfälle START-08/09.
+- [ ] GUIDE-01-S05: Philipp prüft die Anleitung am iPad und im Spiel (START-08/09) und meldet unklare Sätze.
+
+**Abnahme:** Jeder Schritt hat Bild und einen kurzen Satz; jeder Knopf führt an die genannte Stelle; Kopfzeile ohne Überbreite 1920–761 px; Handy 390 px ohne seitlichen Überhang.
+
+**Nächste Aktion:** Abnahme durch Philipp (START-08/09); Begriffe mit „Bedienung des Planers vereinfachen“ (Reiter-Kurzsätze) und UI-03 abgleichen.
+
+**Nur Philipp:** Auf echten Geräten und Browsern: Anleitung am iPad durchgehen (START-08/09), unklare Sätze melden.
+
+**Prüfstand:** Einheits- und Browsertests grün; Abnahme am Gerät offen.
+
+**Nachweise:** [tests/unit/web/guide.test.mjs](../tests/unit/web/guide.test.mjs) — Satzlänge, ein Satz, Symbole, gültige Routen und Reiter, Projektlinks, Adresse, Fortschritt.; [tests/e2e/anleitung.e2e.mjs](../tests/e2e/anleitung.e2e.mjs) — Chromium 1400/390 px: Einstieg, Bilder, Projektlinks, Wegsprung, Haken nach Neuladen, Schnellsuche.
+
+**Dateiumfang:** `apps/web/src/views/guide/guideSteps.ts`, `apps/web/src/views/guide/GuideView.tsx`, `apps/web/src/views/guide/GuideArt.tsx`, `apps/web/src/views/guide/guide.css`, `apps/web/src/app/nav.ts`, `apps/web/src/app/router.ts`, `apps/web/src/app/icons.tsx`, `apps/web/src/app/Shell.tsx`, `apps/web/src/styles/shell.css`, `apps/web/src/main.tsx`, `apps/web/src/views/ProjectsView.tsx`, `apps/web/src/views/mod/ModView.tsx`, `apps/web/src/testing/testplan.ts`, `tests/unit/web/guide.test.mjs`, `tests/e2e/anleitung.e2e.mjs`, `tests/e2e/shell.e2e.mjs`, `docs/architecture/planer/UI.md`. **Abhängigkeiten:** UI-02, GAME-11, TERRAIN-04, LINK-11. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

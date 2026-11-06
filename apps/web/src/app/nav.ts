@@ -23,6 +23,7 @@ export const mainNav: readonly NavItem[] = [
   { id: 'map', label: 'Weltkarte', href: '#/karte', icon: 'map', views: ['map'], hint: 'Alle Projekte auf der Weltkarte, Überflug und Live-Karte' },
   { id: 'world', label: 'Weltimport', href: '#/welt', icon: 'terrain', views: ['world'], hint: 'Bereich aus den Regionsdateien deiner Welt als Bauteil übernehmen' },
   { id: 'game', label: 'Spiel', href: '#/mod', icon: 'game', views: ['mod'], hint: 'Mod herunterladen (Bauplaner-Brücke, .jar), mit dem Spiel verbinden, Live-Status' },
+  { id: 'guide', label: 'Anleitung', href: '#/anleitung', icon: 'guide', views: ['guide'], hint: 'Wie geh ich es an? Jeder Schritt mit Bild und kurzem Satz' },
 ];
 
 /** Seitentitel im Browser-Tab je Route; Projekte setzen ihren Namen selbst. */
@@ -30,6 +31,7 @@ export function routeTitle(route: Route): string {
   const area = mainNav.find(n => n.views.includes(route.view));
   if (route.view === 'system') return 'Systemcheck';
   if (route.view === 'testphase') return 'Testphase';
+  if (route.view === 'guide') return 'Wie geh ich es an?';
   if (route.view === 'mod') return 'Mod herunterladen';
   if (route.view === 'not-found') return 'Seite nicht gefunden';
   return area?.label ?? 'LMNT Build Studio';

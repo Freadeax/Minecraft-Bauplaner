@@ -47,6 +47,9 @@ kbd { font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace; padding: 
 @media (max-width: 1399px) { .topbar .texture-chip span { display: none; } }
 @media (max-width: 1480px) { .brand-text small { display: none; } .main-nav a { padding: 8px 9px; gap: 6px; } .topbar { gap: 10px; } }
 @media (max-width: 1260px) { .brand-text strong, .main-nav a .icon { display: none; } .search-trigger kbd { display: none; } }
+/* GUIDE-01: die Anleitung wird bei knapper Breite zum ?-Symbol (Name bleibt für Screenreader und als Tooltip). */
+@media (max-width: 1600px) { .main-nav a[data-nav=guide] .nav-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } .main-nav a[data-nav=guide] .icon { display: inline-block; } }
+@media (max-width: 1320px) and (min-width: 1261px) { .main-nav a { padding: 8px 5px; gap: 5px; } .topbar { gap: 6px; } }
 @media (max-width: 1000px) { .topbar .main-nav { margin-left: 6px; gap: 0; } .main-nav a { padding: 8px 6px; font-size: 13px; } .topbar { gap: 6px; } }
 
 /* ---------- Inhalt und Seitenköpfe ---------- */

@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/checks/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 165 Fälle in 13 Bereichen, davon 69 Kernfälle.
+Umfang: 167 Fälle in 13 Bereichen, davon 70 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -19,6 +19,8 @@ Erster Eindruck, Projekte anlegen und Daten sichern. Am besten in einem frischen
 | START-05 | Schnellsuche | kern | 1. Strg+K (Mac: ⌘K) drücken.<br>2. Nach einem Gebäude und nach „Werkstatt“ suchen und öffnen. | Die Suche öffnet sofort, Treffer führen zur richtigen Seite. |
 | START-06 | Farbschema und Texturen | vertieft | 1. Oben das Farbschema wechseln (hell/dunkel/automatisch).<br>2. Über den Texturen-Knopf ein eigenes Ressourcenpaket (.zip) laden, falls vorhanden. | Alle Seiten bleiben lesbar; mit Ressourcenpaket zeigen Blöcke Texturen, ohne Paket einfache Farben. |
 | START-07 | Handy und Tablet | vertieft | 1. Seite auf dem Handy öffnen.<br>2. Untere Leiste benutzen, ein Projekt und die Bibliothek öffnen. | Nichts ragt seitlich aus dem Bild, Knöpfe sind mit dem Finger treffbar. |
+| START-08 | Anleitung „Wie geh ich es an?“ ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/anleitung)) | kern | 1. Oben „Anleitung“ (bei schmalem Fenster das ?-Symbol) oder in der Projektzentrale „? Wie geh ich es an?“ öffnen.<br>2. Alle sechs Wege anklicken und die Bilder und Sätze lesen.<br>3. Im Weg „Erstes Projekt planen“ die Knöpfe der Schritte ausprobieren. | Jeder Schritt hat ein Bild und einen kurzen, verständlichen Satz; jeder Knopf führt genau an die genannte Stelle (bei vorhandenem Projekt in dieses Projekt). |
+| START-09 | Anleitung: Haken und Weg teilen ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/anleitung?weg=mod)) | vertieft | 1. In einem Weg zwei Schritte als „erledigt“ abhaken.<br>2. Seite neu laden (F5).<br>3. Auf iPad oder Handy öffnen und durch die Wege blättern. | Die Haken und der Fortschrittsbalken bleiben nach dem Neuladen; auf dem Handy ragt nichts seitlich heraus, der erste offene Schritt ist hervorgehoben. |
 
 ## BIB · Bibliothek (Planer)
 
@@ -266,7 +268,7 @@ Planer, Mod und Paper-Plugin verbinden sich per Klick; der Server wird aus dem P
 
 Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan.ts), geordnet nach dem Ort, den die Abnahme braucht. Ein Paket gilt als abgenommen, wenn alle genannten Fälle ✓ sind; Ob ein Paket noch auf Abnahme wartet, steht in `docs/ROADMAP.md`.
 
-### Nur im Browser (42 Pakete)
+### Nur im Browser (43 Pakete)
 
 | Paket | Testfälle |
 |---|---|
@@ -284,6 +286,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | GFX-01 | DATEI-04, GERAET-05 |
 | GFX-02 | DATEI-09, GERAET-05 |
 | GFX-03 | DATEI-10 |
+| GUIDE-01 | START-08, START-09 |
 | LIB-02 | BIB-07 |
 | LIB-03 | BIB-08 |
 | LIB-06 | BIB-15, BIB-16 |

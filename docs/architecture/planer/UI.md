@@ -50,3 +50,13 @@ Stand 01.11.2026. Ergänzt B11 und die Themen aus UI-01; nutzt ausschließlich d
 - **Lesbarkeit**: keine Schrift unter 11 px mehr (ältere 7–10-px-Angaben in `style.css` mechanisch auf 11–12 px angehoben). Graue Literalfarben älterer Abschnitte werden in hellen Themen auf `--muted` umgelenkt; Bedienelemente und dunkle 3D-Bühnen bleiben ausgenommen.
 
 E2E-Selektoren: `navigation` „Hauptnavigation“ (Desktop) bzw. „Hauptnavigation mobil“ (Handy) sind nie gleichzeitig sichtbar; „Projektbereiche“, `.save-state`, `.theme-control` und alle Bereichsnamen sind unverändert. Prüfung: `tests/e2e/shell.e2e.mjs` (1400 px; 390 px dunkel und hell).
+
+## Anleitung „Wie geh ich es an?“ (GUIDE-01)
+
+Seite `#/anleitung[?weg=<id>&schritt=<n>]`, Hauptnavigation „Anleitung“ (unter 1600 px nur das ?-Symbol, Name bleibt als Tooltip und für Screenreader), Schnellsuche, Knopf „? Wie geh ich es an?“ in der Projektzentrale und Link oben auf `#/mod`.
+
+- **Daten:** `apps/web/src/views/guide/guideSteps.ts`, reine Daten ohne React. Ein Weg = ein Ziel des Spielers („Ich will …“), ein Schritt = Titel (≤ 4 Wörter), **ein** kurzer Satz (≤ 110 Zeichen), Szene (`planer`/`spiel`/`launcher`), Symbol, optional Tastenkappe, Ziel. Knopf- und Reiternamen stehen in „…“ genau wie im Planer. Dateiwege sind nie Hauptweg (Regel „nur Internet“); der Einheitstest prüft das.
+- **Ziele:** `route` (feste Seite), `project` (Reiter im zuletzt geänderten oder oben gewählten Projekt; ohne Projekt zur Projektzentrale mit Hinweis), `library`, `map`, `path` (Voraussetzung, wechselt den Weg ohne Seitenwechsel), `game` (nur im Spiel, kein Link).
+- **Grafik:** `GuideArt.tsx` zeichnet je Szene ein kleines SVG mit Theme-Tokens (Planer-Fenster, Spielwelt mit pulsierenden Geisterblöcken, Launcher mit Startknopf) plus Symbol aus `icons.tsx` (`iconPath`). Bewegung nur ohne `prefers-reduced-motion`.
+- **Fortschritt:** Haken „erledigt“ in `localStorage` (`bauplaner.anleitung.erledigt`), nur Komfort, nicht in Sicherungen. Der erste offene Schritt ist markiert (`aria-current=step`).
+- **Neuer Schritt:** Eintrag in `GUIDE_PATHS` anhängen; neuer Weg zusätzlich in `GUIDE_ORDER`. Tests: `tests/unit/web/guide.test.mjs`, `tests/e2e/anleitung.e2e.mjs`, Testfälle START-08/09.
