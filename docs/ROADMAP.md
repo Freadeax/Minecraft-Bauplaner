@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T15:49:33.071Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T16:29:23.694Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -3015,7 +3015,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-12
 
-**Mod einfacher bedienen (Mod 0.23.0): animiertes Menü als Seitenleiste, Meldungskarten oben rechts statt Chat, kompaktes Baufenster, alle Befehle und Texte auf Deutsch und Englisch** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Mod einfacher bedienen, Menü und Befehle zweisprachig“) · Zuständiger Thread: „Mod einfacher bedienen, Menü und Befehle zweisprachig“ · Aktualisiert: 2026-11-06T15:38:48.193Z
+**Mod einfacher bedienen (Mod 0.23.0): animiertes Menü als Seitenleiste, Meldungskarten oben rechts statt Chat, kompaktes Baufenster, alle Befehle und Texte auf Deutsch und Englisch** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Mod einfacher bedienen, Menü und Befehle zweisprachig“) · Zuständiger Thread: „Mod einfacher bedienen, Menü und Befehle zweisprachig“ · Aktualisiert: 2026-11-06T16:29:23.694Z
 
 - [x] GAME-12-S01: Befehle zweisprachig: /bauplaner (deutsche Wörter) und /buildplanner (englische Wörter), gemischte Zeilen gehen auch; Tab-Vervollständigung folgt der Spielsprache (CommandWords, CommandLang); JUnit prüft, dass jedes deutsche Befehlswort ein englisches hat.
 - [x] GAME-12-S02: Alle Texte der Mod Deutsch/Englisch (Lang.t), Sprache folgt dem Spiel oder /bauplaner sprache deutsch|englisch|auto; Befehlsseite und Katalog in beiden Sprachen.

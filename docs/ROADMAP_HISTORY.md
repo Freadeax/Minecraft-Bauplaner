@@ -7832,3 +7832,17 @@ Design-System: Thema „Werkbank“, einheitliche Knöpfe/Felder/Karten/Hinweise
 - `tests/unit/web/theme-preferences.test.mjs`
 - `tests/unit/web/theme-tokens.test.mjs`
 
+## 2026-11-06T16:29:23.694Z · progress
+
+**Aufgaben:** GAME-12
+
+Mod-Kartenstil verweist auf das Planer-Design-System UI-03 (docs/architecture/planer/UI.md) als Quelle der Farbwerte; Werte geprüft und gleich.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-12 | 🧩 Implementiert · Abnahme offen | 5/6 | Abnahme MOD-25 bis MOD-28 im Spiel. |
+
+**Geänderte Dateien:**
+
+- `docs/architecture/mod/MOD_HOLOGRAM.md`
+
