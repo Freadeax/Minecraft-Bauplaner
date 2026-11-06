@@ -87,6 +87,17 @@ export const AUTO_CHECKS: readonly AutoCheck[] = [
     command: 'npm run build && node --test --test-concurrency=1 tests/e2e/program-depth.e2e.mjs tests/e2e/program-absence.e2e.mjs', evidence: '06.11.2026, main 3bdb39e + Block 7 (Ofenstraße, Szenariotests), Chromium headless im Container, voller Browserlauf grün' },
   { caseId: 'PROJ-21', scope: 'voll', covers: '„Erst nach“ A, zu früher Start mit einem Klick korrigiert, Kreis abgewiesen, Pfeil auf der Weltkarte; A mit Bauplatz löschen: Rückfrage nennt Nachfolger und Bauplatz, danach wartet B auf nichts.',
     command: 'npm run build && node --test --test-concurrency=1 tests/e2e/project-order.e2e.mjs tests/e2e/scenario-project.e2e.mjs', evidence: '06.11.2026, main 3bdb39e + Block 7 (Ofenstraße, Szenariotests), Chromium headless im Container, voller Browserlauf grün' },
+  // Block 6 (MODEL-01, ARCH-02)
+  { caseId: 'PROJ-05', scope: 'teil',
+    covers: 'OBJ, GLB, STL und 3MF werden erzeugt; Khronos glTF-Validator ohne Fehler und Warnungen; eigener STL/3MF-Prüfer und lib3mf: dicht, mannigfaltig, Verweise gültig; Blender 5.2 öffnet GLB mit Textur, OBJ+MTL und STL; PrusaSlicer 2.7 meldet „manifold“ und schneidet STL/3MF zu G-Code (auch Kolosseum 120 mm).',
+    remaining: 'Echter Druck auf einem Drucker; Bambu Studio oder Cura; Export in Firefox/Safari am iPad.',
+    command: 'node --test tests/unit/formats/model3d-files.test.mjs tests/unit/formats/model3d-external.test.mjs tests/e2e/model3d.e2e.mjs (BLENDER_PYTHON, PRUSA_SLICER)',
+    evidence: '06.11.2026, Block 6, Chromium und Linux-Container: 6/6, 2/2, 2/2' },
+  { caseId: 'GERAET-03', scope: 'teil',
+    covers: 'Browserdaten, die echte alte Stände geschrieben haben (28.10. Datenbank v1, 02.11. v3, 04.11. v4: Katalog, eigenes Gebäude mit Versionen, Projekt mit Baustelle und Haken, Sammlung, Vorlage, Sicherung), öffnet die aktuelle App: alles ist noch da und unverändert, Datencheck ohne Fehler, altes Projekt öffnet, alte Sicherung lesbar.',
+    remaining: 'Stichprobe mit deinen eigenen, lange gewachsenen Daten auf PC und iPad; „Dauerhaft speichern“ im echten Browser.',
+    command: 'npm run build && node --test tests/e2e/aged-browserdata.e2e.mjs',
+    evidence: '06.11.2026, Block 6, Chromium: 3/3' },
 ];
 
 export function autoCheckOf(caseId: string): AutoCheck | undefined {

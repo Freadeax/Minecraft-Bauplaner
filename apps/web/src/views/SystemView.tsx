@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { buildPlanGraph, cellStorageEstimate, checkIntegrity, INTEGRITY_SEVERITY_LABEL, PLAN_KIND_LABEL, sha256Hex } from '../../../../packages/domain/src/index.js';
+import { buildPlanGraph, cellStorageEstimate, checkIntegrity, lazyCellsStatus, INTEGRITY_SEVERITY_LABEL, PLAN_KIND_LABEL, sha256Hex } from '../../../../packages/domain/src/index.js';
 import type { IntegrityReport, PlanNodeKind } from '../../../../packages/domain/src/index.js';
 import '../styles/datamodel.css';
 import { useApp } from '../app/context';
@@ -61,6 +61,8 @@ interface DataModelFacts {
   readonly references: number;
   readonly dangling: number;
   readonly cells: ReturnType<typeof cellStorageEstimate>;
+  /** Library versions whose cells are unpacked in memory right now (compact runtime form). */
+  readonly resident: ReturnType<typeof lazyCellsStatus>;
 }
 
 const KINDS: readonly PlanNodeKind[] = ['project', 'asset', 'version', 'original', 'collection', 'template'];
@@ -78,6 +80,7 @@ function DataModelCard({ model, storedAs }: { model: DataModelFacts | null; stor
         <div><dt>Blockdaten als Einzelobjekte</dt><dd>{mb(model.cells.plainBytes)}</dd></div>
         <div><dt>Blockdaten gepackt ({storedAs})</dt><dd data-packed-bytes={model.cells.packedBytes}>{mb(model.cells.packedBytes)}{model.cells.plainBytes ? ` · ${Math.max(1, Math.round(model.cells.plainBytes / Math.max(1, model.cells.packedBytes)))}× kleiner` : ''}</dd></div>
         {model.cells.unpackable > 0 && <div><dt>Ungepackt gespeichert</dt><dd>{formatNumber(model.cells.unpackable)} Version(en)</dd></div>}
+        <div><dt>Im Arbeitsspeicher entpackt</dt><dd data-resident-cells={model.resident.cells}>{formatNumber(model.resident.cells)} Zellen aus {formatNumber(model.resident.versions)} Version(en) · Grenze {formatNumber(model.resident.budget)}{model.resident.packedBack ? ` · ${formatNumber(model.resident.packedBack)}× wieder eingepackt` : ''}</dd></div>
       </dl>
     </> : <p className="muted">Noch nicht ermittelt.</p>}
   </section>;
@@ -114,7 +117,7 @@ export function SystemView() {
       const [collections, templates] = await Promise.all([repo.listCollections(), repo.listTemplates()]);
       setReport(await checkIntegrity({ projects, assets, versions, originalHashes, collections, templates, ...(deep && { getOriginal: (sha: string) => repo.getOriginal(sha) }) }));
       const graph = buildPlanGraph({ projects, assets, versions, collections, templates, originalHashes });
-      setModel({ counts: graph.counts, references: graph.edges.length, dangling: graph.dangling.length, cells: cellStorageEstimate(versions) });
+      setModel({ counts: graph.counts, references: graph.edges.length, dangling: graph.dangling.length, cells: cellStorageEstimate(versions), resident: lazyCellsStatus() });
     } catch (e) { setMessage(`Datencheck nicht möglich: ${errorText(e)}`); }
     finally { setBusy(''); }
   }, [repo, deep]);

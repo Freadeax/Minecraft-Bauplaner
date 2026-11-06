@@ -1168,3 +1168,14 @@ Neuer Mehrspieler-Prüfstand `scripts/mod/lib/multiplayer.mjs` (echter Paper-Ser
 - `apps/web/src/testing/autochecks.ts`: PROJ-07/09/12/13/16/21 voll, PROJ-03/10 teil (offen: echter Drucker/Telefon, echter Mitspieler).
 - `npm test` 992/992; voller Browserlauf 200 Tests, 199 grün, `game-progress.e2e.mjs` einmal mit belegtem Port 47696 (EADDRINUSE) gescheitert und einzeln 2/2 grün; nach Rebase auf 3bdb39e die betroffenen 12 Browserdateien erneut grün.
 - Grenzen: Trichterwege der Ofenbauten nicht im Spiel geprüft (Katalogbauten tragen „ungetestet“); MAP-02/MAP-07 im echten Server übernimmt ein eigener Thread.
+
+## Block 6 · MODEL-01, ARCH-02, PERF-02 · Export und Datenmodell fertigstellen · 06.11.2026 · Claude
+
+- MODEL-01 Dateiprüfung: `tests/unit/formats/model3d-files.test.mjs` 6/6 – Khronos glTF-Validator (npm `gltf-validator` 2.0.0-dev.3.10) meldet für farbige und texturierte GLB 0 Fehler/0 Warnungen; `scripts/checks/verify_model3d.py` (nur Standardbibliothek) prüft STL, 3MF (Core 1.3), GLB-Behälter und OBJ-ZIP: dicht, einheitlich orientiert, kanten- und punktmannigfaltig, positives Volumen, Verweise; Gegenproben (offen, gekippt, umgestülpt, Ecke an Ecke, falsche Punkt-/Materialnummer, falsche Einheit, fehlende `.rels`) werden gemeldet. lib3mf 2.5.0 (strikt) ohne Befund, wenn installiert.
+- Gefunden und behoben: 3MF schrieb bei „Farben: 4“ auch unbenutzte Grundmaterialien; jetzt nur benutzte, `p1` neu nummeriert.
+- MODEL-01-S05 maschinell: `tests/unit/formats/model3d-external.test.mjs` 2/2 mit Blender 5.2.3 (`pip install bpy`, `BLENDER_PYTHON`) und PrusaSlicer 2.7.2 (`apt install prusa-slicer`): GLB mit Textur, OBJ+MTL, STL in Blender ohne Fehler, gleiche Dreiecke, STL mannigfaltig mit gleichem Volumen; PrusaSlicer STL/3MF `manifold = yes`, G-Code; Kolosseum 120 mm: 78 390 Dreiecke, 212 Schichten. Ohne die Programme übersprungen.
+- `tests/e2e/model3d.e2e.mjs` 2/2: heruntergeladene GLB/STL/3MF/OBJ-Dateien zusätzlich mit glTF-Validator und `verify_model3d.py`.
+- ARCH-02-S05/S06: `scripts/dev/make_aged_browserdata.mjs` erzeugt Datenbanken mit der echten alten App (48aa1f3a v1, 553f35a8 v3, b7f73a9e v4); `tests/e2e/aged-browserdata.e2e.mjs` 3/3: aktuelle App migriert verlustfrei (alle 181/343/365 Versionen gleiche ID, Hash und Zellen), Datencheck ohne Fehler, altes Projekt öffnet, alte Sicherung lesbar; Start mit Migration 1,0–2,6 s.
+- ARCH-02-S07 Laufzeitform: `tests/unit/core/lazy-cells.test.mjs` 5/5 (Wiedereinpacken über der Grenze, bitgleiches Entpacken, Speichern ohne Neupacken, Schutzzeit); `tests/e2e/plan-model.e2e.mjs` prüft die neue Zeile im Systemcheck.
+- Voller Browserlauf: 200/200 (alle 86 Dateien), `npm run check` 990 Tests (988 bestanden, 2 übersprungen).
+- Grenzen: kein echter Druck, kein Cura/Bambu Studio, keine Stichprobe mit Philipps eigenen Browserdaten (GERAET-03).

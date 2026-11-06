@@ -7,6 +7,8 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { checkClosed, readStl } from '../../dist/formats/src/index.js';
 import { readZip } from '../../apps/web/src/blockmodels/zip.ts';
+import { spawnSync } from 'node:child_process';
+import { python } from '../../scripts/dev/python.mjs';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright');
@@ -31,6 +33,21 @@ async function page(viewport = { width: 1400, height: 1000 }) {
   return { p, errors };
 }
 const bytesOf = async download => new Uint8Array(await readFile(await download.path()));
+/** Independent checks of the downloaded file (scripts/checks/verify_model3d.py, Khronos glTF-Validator). */
+async function verifyDownload(download) {
+  const { mkdtemp, copyFile } = await import('node:fs/promises');
+  const { tmpdir } = await import('node:os');
+  const file = `${await mkdtemp(`${tmpdir()}/model3d-e2e-`)}/${download.suggestedFilename()}`;
+  await copyFile(await download.path(), file);
+  const r = spawnSync(python, ['-I', '-X', 'utf8', 'scripts/checks/verify_model3d.py', file], { encoding: 'utf8' });
+  const report = JSON.parse(r.stdout);
+  assert.deepEqual(report.errors, [], JSON.stringify(report));
+  if (file.endsWith('.glb')) {
+    const v = await require('gltf-validator').validateBytes(new Uint8Array(await readFile(file)));
+    assert.equal(v.issues.numErrors + v.issues.numWarnings, 0, JSON.stringify(v.issues.messages));
+  }
+  return report;
+}
 /** STL triangle soup → mesh for the closed check. */
 function stlMesh(stl) {
   const { positions, triangles } = readStl(stl);
@@ -55,6 +72,7 @@ test('Bauteil: Reiter Modelldatei exportiert GLB, wasserdichtes STL und 3MF mit 
   assert.equal(dv.getUint32(8, true), g.length);
   const json = JSON.parse(new TextDecoder().decode(g.subarray(20, 20 + dv.getUint32(12, true))));
   assert.ok(json.meshes[0].primitives.length > 0);
+  await verifyDownload(glb);
   await p.getByRole('region', { name: '3D-Exportbericht' }).waitFor();
 
   // STL: print shell, watertight.
@@ -64,6 +82,7 @@ test('Bauteil: Reiter Modelldatei exportiert GLB, wasserdichtes STL und 3MF mit 
   const [stl] = await Promise.all([p.waitForEvent('download'), panel.getByRole('button', { name: /STL exportieren/ }).click()]);
   assert.match(stl.suggestedFilename(), /\.stl$/);
   const s = await bytesOf(stl);
+  assert.equal((await verifyDownload(stl)).mesh.openEdges, 0);
   const report = p.getByRole('region', { name: '3D-Exportbericht' });
   await report.getByText('✓ wasserdicht und mannigfaltig').waitFor();
   assert.equal(await report.getAttribute('data-closed'), 'true');
@@ -81,6 +100,7 @@ test('Bauteil: Reiter Modelldatei exportiert GLB, wasserdichtes STL und 3MF mit 
   await panel.getByRole('checkbox', { name: /Aushöhlen/ }).check();
   const [mf] = await Promise.all([p.waitForEvent('download'), panel.getByRole('button', { name: /3MF exportieren/ }).click()]);
   const files = await readZip(await bytesOf(mf), () => true);
+  assert.ok((await verifyDownload(mf)).materials <= 4);
   const model = new TextDecoder().decode(files.get('3D/3dmodel.model'));
   assert.match(model, /unit="millimeter"/);
   const bases = (model.match(/<base /g) ?? []).length;
@@ -100,6 +120,7 @@ test('Betrachter und Anlage bieten den 3D-Export; OBJ kommt als ZIP mit MTL', as
   const [obj] = await Promise.all([p.waitForEvent('download'), panel.getByRole('button', { name: /OBJ \+ MTL exportieren/ }).click()]);
   assert.match(obj.suggestedFilename(), /_obj\.zip$/);
   const files = await readZip(await bytesOf(obj), () => true);
+  await verifyDownload(obj);
   const names = [...files.keys()];
   const objName = names.find(n => n.endsWith('.obj')), mtlName = names.find(n => n.endsWith('.mtl'));
   assert.ok(objName && mtlName, names.join(', '));

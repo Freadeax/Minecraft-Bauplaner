@@ -64,7 +64,7 @@ Verbraucher:
 - Ergebnis Katalog (336 Gebäudeversionen, 199 879 Zellen): 10,6 MB → 0,26 MB (41×), Hin- und Rückweg aller Versionen ≈ 0,9 s in Node.
 - **IndexedDB:** `DB_VERSION` 4, Migration 4 packt vorhandene Versionen in der Upgrade-Transaktion (`packedCells.bytes` als `Uint8Array`). Lesen über `unpackVersion`; ein beschädigter Datensatz wirft `DomainError('STORAGE')`, nie eine stille Teilversion.
 - **Sicherungen:** Format 3 ist ein Behälter um Format 1 oder 2 (`baseFormatVersion`), Zellen als Base64. `contentSha256` wird wie bisher über den **entpackten** Inhalt gebildet; Belege und Prüfsummen bleiben gleich. `readBackup` liest 1, 2 und 3; Format 1/2-Dateien bleiben gültig.
-- Im Arbeitsspeicher und in Workern bleibt die Zellliste unverändert. Eine kompakte Laufzeitform (Chunks, typisierte Felder) ist eigene Folgeaufgabe von PERF-02 und muss dieselbe Rückwegprüfung erfüllen.
+- **Laufzeitform (06.11.2026, Folge von PERF-02):** Gemessen belegt eine entpackte Zelle in V8 rund 128 Byte (Objekt plus Positionsfeld), gepackt wenige Byte; 1 Mio. Zellen entpacken dauert in Node etwa 60 ms. Statt `VoxelPayload.cells` in rund 280 Verwendungen durch eine neue Form zu ersetzen, ist die gepackte Form selbst die Ruheform: Bibliotheksversionen werden beim Start nur mit Kopf geladen (PERF-05-S08) und entpacken ihre Zellen beim ersten Lesen; danach hält `versionStorage.ts` höchstens **2 Mio. entpackte Zellen** (≈ 250 MB). Wird es mehr, gehen die am längsten nicht gelesenen Versionen auf ihre gepackten Bytes zurück und entpacken beim nächsten Lesen erneut – dieselben Bytes, also dieselbe Liste, derselbe Hash, dieselbe ID. Was in den letzten 3 s gelesen wurde, bleibt immer entpackt (kein Hin und Her innerhalb eines Vorgangs). Wer eine Liste schon hält, behält sie; nur die Version vergisst sie. Der Systemcheck zeigt unter „Datenmodell“ „Im Arbeitsspeicher entpackt“ (Zellen, Versionen, Grenze, wie oft wieder eingepackt). Grenze: Zwischenspeicher, die eine Zellliste selbst festhalten (z. B. Blockkarten der Materialrechnung je Welt), halten deren Speicher weiter; zusammengesetzte Projektwelten und Worker-Übertragung (Spalten, PERF-04) sind davon getrennt.
 
 ## Migrationsregeln
 
@@ -73,6 +73,18 @@ Verbraucher:
 3. Sicherungsformat ändern ⇒ neue `formatVersion`; ältere bleiben lesbar; Prüfsumme über den logischen Inhalt.
 4. Inhaltsadressen (`av_…`, `payloadHash`) ändern sich durch Speicherformen nie.
 5. Teilschemata (Baustelle, Welt, Updates, Gelände, Sammlungen) behalten eigene `schemaVersion` und eigene Prüffunktion; `checkProjectRecord` ruft sie auf.
+
+## Gealterte Browserdaten (ARCH-02-S05, automatisch)
+
+Echte Daten, die über Wochen mit älteren Ständen gewachsen sind, erzeugt `scripts/dev/make_aged_browserdata.mjs <commit> <datei>`: Es holt den alten Stand als Git-Arbeitsbaum, startet dessen Entwicklungsserver und öffnet die **alte App** in Chromium. Die alte App legt die Datenbank mit ihren eigenen Migrationen an und füllt ihren damaligen Katalog; danach schreibt ein Ablauf mit den Modulen dieses alten Standes eigene Daten (eigenes Gebäude mit drei Versionen, die größte 56×40×56 mit Luft-, Lösch- und Truhenzellen; Generatorgebäude; Originaldatei; Projekt mit Katalog-, eigenen und Generatorbauten, Baustelle mit Abschnitten und Lager, abgehakten Schritten und eingefrorenem Stand; je nach Stand Sammlung, Vorlage, Sicherung mit Beleg). Die rohe Datenbank (Stores, Schlüssel, Indizes, Datensätze, Blobs) landet gzip-komprimiert in `fixtures/aged-browserdata/`:
+
+| Datei | Stand | DB | Inhalt |
+|---|---|---|---|
+| `2026-10-28-db1.json.gz` | 48aa1f3a (28.10.) | 1 | 179 Bauteile, 181 Versionen ungepackt, ohne Revisionen, ohne Sammlungs-Stores |
+| `2026-11-02-db3.json.gz` | 553f35a8 (02.11.) | 3 | 341 Bauteile, 343 Versionen ungepackt, Sammlung, Vorlage, Sicherungsbeleg |
+| `2026-11-04-db4.json.gz` | b7f73a9e (04.11.) | 4 | 363 Bauteile, 365 Versionen gepackt, neuere Teilschemata ohne DB-Schritt |
+
+`tests/e2e/aged-browserdata.e2e.mjs` stellt jede Datenbank roh in ihrer alten Version wieder her und startet darauf die **aktuelle** App: Migration läuft durch (Start mit Migration 1–3 s), jede Version behält ID, Hash und genau dieselben Zellen (kanonischer Vergleich aller Versionen, Inhaltsadressen eigener und einiger Katalogversionen neu berechnet), eigene Bauteile sind bis auf die neue Revision unverändert, Projekte, Originale, Sammlungen und Vorlagen unverändert; die Sicherungsdatei des alten Standes liest `readBackup` weiter; Datencheck ohne Fehler; das alte Projekt öffnet. Neue Stände: nach einem neuen `DB_VERSION` oder einer Änderung an gespeicherten Teilschemata eine weitere Datei mit dem letzten Stand davor erzeugen. Offen bleibt nur die Stichprobe auf Philipps eigenen Geräten (Testfall GERAET-03).
 
 ## Grenzen
 

@@ -412,14 +412,19 @@ export async function write3mf(mesh: Mesh3d, options: ThreeMfOptions = {}): Prom
   s.add(` <metadata name="Title">${xml(options.title ?? mesh.name)}</metadata>\n <metadata name="Application">Minecraft-Bauplaner</metadata>\n`);
   if (options.designer) s.add(` <metadata name="Designer">${xml(options.designer)}</metadata>\n`);
   if (options.description) s.add(` <metadata name="Description">${xml(options.description)}</metadata>\n`);
+  // Only materials a triangle uses: with „Farben: 4“ a slicer then offers exactly the kept colours as filaments.
+  const slot = new Int32Array(Math.max(mesh.materials.length, 1)).fill(-1), used: number[] = [];
+  for (let t = 0; t < w.materials.length; t++) { const m = w.materials[t]!; if (slot[m] === -1) { slot[m] = -2; used.push(m); } }
+  used.sort((a, b) => a - b).forEach((m, i) => { slot[m] = i; });
+  if (!used.length) used.push(0), slot[0] = 0;
   s.add(' <resources>\n  <basematerials id="1">\n');
-  for (const m of mesh.materials) s.add(`   <base name="${xml(m.name)}" displaycolor="#${hex(m.color)}" />\n`);
+  for (const k of used) { const m = mesh.materials[k]; s.add(`   <base name="${xml(m?.name ?? 'Material')}" displaycolor="#${hex(m?.color ?? [0.5, 0.5, 0.5])}" />\n`); }
   s.add('  </basematerials>\n  <object id="2" type="model" pid="1" pindex="0">\n   <mesh>\n    <vertices>\n');
   const p = w.positions;
   for (let i = 0; i < p.length; i += 3) s.add(`     <vertex x="${num(p[i]!, 4)}" y="${num(p[i + 1]!, 4)}" z="${num(p[i + 2]!, 4)}" />\n`);
   s.add('    </vertices>\n    <triangles>\n');
   for (let t = 0; t < w.materials.length; t++) {
-    s.add(`     <triangle v1="${w.triangles[t * 3]}" v2="${w.triangles[t * 3 + 1]}" v3="${w.triangles[t * 3 + 2]}" pid="1" p1="${w.materials[t]}" />\n`);
+    s.add(`     <triangle v1="${w.triangles[t * 3]}" v2="${w.triangles[t * 3 + 1]}" v3="${w.triangles[t * 3 + 2]}" pid="1" p1="${slot[w.materials[t]!]}" />\n`);
   }
   s.add('    </triangles>\n   </mesh>\n  </object>\n </resources>\n <build>\n  <item objectid="2" />\n </build>\n</model>\n');
   const types = '<?xml version="1.0" encoding="UTF-8"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">\n'

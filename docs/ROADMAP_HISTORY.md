@@ -8253,3 +8253,41 @@ Block 7: Ofenstraße aus dem Katalog in Baustelle und Planung (PROD-03-S04); Sze
 - `tests/e2e/scenario-project.e2e.mjs`
 - `tests/unit/materials/furnace-line.test.mjs`
 
+## 2026-11-06T21:53:21.545Z · progress
+
+**Aufgaben:** MODEL-01, ARCH-02, PERF-02
+
+Block 6: 3D-Dateien unabhängig geprüft (glTF-Validator, STL/3MF-Prüfer, lib3mf, Blender 5.2, PrusaSlicer 2.7 mit G-Code), 3MF nur benutzte Farben; Migration mit Datenbanken echter alter Stände (v1/v3/v4) verlustfrei; kompakte Laufzeitform: höchstens 2 Mio. entpackte Bibliothekszellen; Testfälle PROJ-05 und GERAET-03 teilweise automatisch. Offen: echter Druck, Stichprobe Philipps Browserdaten.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MODEL-01 | 🧩 Implementiert · Abnahme offen | 7/8 | Echter Testdruck und Bambu Studio/Cura bei Philipp (S05-Rest); sonst abgeschlossen. |
+| ARCH-02 | 🧩 Implementiert · Abnahme offen | 6/7 | Stichprobe mit Philipps eigenen Browserdaten (Testfall GERAET-03); bei neuer DB_VERSION eine weitere gealterte Datenbank erzeugen. |
+| PERF-02 | 🧩 Implementiert · Abnahme offen | 3/3 | Folge erledigt (06.11.): kompakte Laufzeitform als begrenzte Menge entpackter Bibliothekszellen (ARCH-02-S07); PERF-05-S08 lädt Zellen erst bei Bedarf. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/views/SystemView.tsx`
+- `docs/TESTING.md`
+- `docs/architecture/formate/MODEL_EXPORT.md`
+- `docs/architecture/kern/PLAN_MODEL.md`
+- `docs/testing/TESTPLAN.md`
+- `fixtures/aged-browserdata/2026-10-28-db1.json.gz`
+- `fixtures/aged-browserdata/2026-11-02-db3.json.gz`
+- `fixtures/aged-browserdata/2026-11-04-db4.json.gz`
+- `package-lock.json`
+- `package.json`
+- `packages/domain/src/data/versionStorage.ts`
+- `packages/domain/src/index.ts`
+- `packages/formats/src/model3d.ts`
+- `scripts/checks/blender_model3d.py`
+- `scripts/checks/verify_model3d.py`
+- `scripts/dev/make_aged_browserdata.mjs`
+- `tests/e2e/aged-browserdata.e2e.mjs`
+- `tests/e2e/model3d.e2e.mjs`
+- `tests/e2e/plan-model.e2e.mjs`
+- `tests/unit/core/lazy-cells.test.mjs`
+- `tests/unit/formats/model3d-external.test.mjs`
+- `tests/unit/formats/model3d-files.test.mjs`
+

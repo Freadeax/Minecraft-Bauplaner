@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T21:50:29.150Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T21:53:21.545Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -71,7 +71,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [VIEW-01](#view-01) | Vorhandenen Viewer vollständig abnehmen | 🧩 Implementiert · Abnahme offen 1/2 | P1 | „Browser und Geräte automatisch abnehmen“ | Ansicht auf echter GPU und mit Touch prüfen, negative Koordinaten, alle Schnittachsen (S02). |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Browser und Geräte automatisch abnehmen“ | Mojang-Download und Blockformen in Firefox/Safari und auf echten Geräten (S06). |
 | [WORLD-IMPORT-01](#world-import-01) | Bereichsweiser Weltimport und Terrainprüfung | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Große Testphase vorbereiten und betreuen“ | Ausschnitt aus einer Kopie deiner Modpack-Welt übernehmen. |
-| [MODEL-01](#model-01) | 3D-Export | 🧩 Implementiert · Abnahme offen 5/6 | P2 | „Export und Datenmodell fertigstellen“ | Export in Blender und einem Slicer öffnen, ein Testdruck (S05). |
+| [MODEL-01](#model-01) | 3D-Export | 🧩 Implementiert · Abnahme offen 7/8 | P2 | „Export und Datenmodell fertigstellen“ | Eine 3MF in Bambu Studio oder Cura öffnen und einmal drucken (S05-Rest); Blender und PrusaSlicer sind automatisch geprüft. |
 
 Abgeschlossen oder zurückgestellt: UI-01 (geprüft), UI-02 (geprüft).
 
@@ -209,7 +209,7 @@ Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft), PERF
 
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
-| [ARCH-02](#arch-02) | Planmodell | 🧩 Implementiert · Abnahme offen 4/5 | P0 | „Export und Datenmodell fertigstellen“ | Datencheck unter #/system mit deinen über Monate gewachsenen Browserdaten (S05). |
+| [ARCH-02](#arch-02) | Planmodell | 🧩 Implementiert · Abnahme offen 6/7 | P0 | „Export und Datenmodell fertigstellen“ | Datencheck unter #/system mit deinen eigenen, lange gewachsenen Browserdaten (Stichprobe zu S05; automatisch mit drei alten Ständen geprüft). |
 | [FORMAT-01](#format-01) | Schem v3 an echten Referenzwerkzeugen abnehmen | 🧩 Implementiert · Abnahme offen 1/2 | P0 | „Exporte im echten Spiel automatisch prüfen“ | Auf deinem Paper-Server mit WorldEdit ein kleines Gebäude mit Kiste/Schild auswählen, //copy, //schem save bauplaner-test und die Datei aus plugins/WorldEdit/schematics hier hochladen (FORMAT-01-S02). |
 | [FORMAT-02](#format-02) | Litematic an echten Referenzdateien abnehmen | 🧩 Implementiert · Abnahme offen 3/4 | P0 | „Exporte im echten Spiel automatisch prüfen“ | Litematic-Export im Spiel mit Litematica laden (S02). |
 | [NBT-01](#nbt-01) | Semantische BlockEntity-Transformationen | 🧩 Implementiert · Abnahme offen 3/3 | P0 | „Exporte im echten Spiel automatisch prüfen“ | — |
@@ -312,7 +312,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 
 ### Auf echten Geräten und Browsern
 
-- **ARCH-02** · Datencheck unter #/system mit deinen über Monate gewachsenen Browserdaten (S05).
+- **ARCH-02** · Datencheck unter #/system mit deinen eigenen, lange gewachsenen Browserdaten (Stichprobe zu S05; automatisch mit drei alten Ständen geprüft).
 - **QA-02** · Bereich „Geräte und Browser“ (GERAET-01 … 06) auf #/testphase auf deinem PC (Chrome/Edge und Firefox) und deinem Handy durchgehen und das Protokoll schicken (QA-02-S02).
 - **UX-01** · START-12 auf dem iPad: Projektreiter waagerecht wischen, eingeklappte Bereiche per Finger öffnen.
 - **PERF-04** · Olympus auf deinem Rechner, dazu Firefox/Safari (S06).
@@ -335,7 +335,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 ### Dateien oder Welt liefern
 
 - **FORMAT-01** · Auf deinem Paper-Server mit WorldEdit ein kleines Gebäude mit Kiste/Schild auswählen, //copy, //schem save bauplaner-test und die Datei aus plugins/WorldEdit/schematics hier hochladen (FORMAT-01-S02).
-- **MODEL-01** · Export in Blender und einem Slicer öffnen, ein Testdruck (S05).
+- **MODEL-01** · Eine 3MF in Bambu Studio oder Cura öffnen und einmal drucken (S05-Rest); Blender und PrusaSlicer sind automatisch geprüft.
 - **TERRAIN-01** · Kopie deiner 26.3-Welt für die Geländeabnahme (S05).
 - **TERRAIN-02** · Abnahme in deiner eigenen Welt und auf Touch-Geräten (S05).
 - **WORLD-IMPORT-01** · Ausschnitt aus einer Kopie deiner Modpack-Welt übernehmen.
@@ -475,7 +475,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [OPS-01](#ops-01) | Main/root-Pages mit manifestgeprüften Artefakten | ✅ Im beschriebenen Umfang geprüft | 1/1 | — | `84838f0` | `e232b26` |
 | [PLAN-01](#plan-01) | Verbindlicher Aufgabenbestand und Merge-Fortschritt | ✅ Im beschriebenen Umfang geprüft | 4/4 | — | `b5eb5b9` | `b5eb5b9` |
 | [ARCH-01](#arch-01) | Anwendungsschicht und überprüfte Modulgrenzen | ✅ Im beschriebenen Umfang geprüft | 4/4 | CORE-01, CORE-02 | `ccf4fa7` | `ccf4fa7` |
-| [ARCH-02](#arch-02) | Planmodell: Verweisgraph, kompakter Blockdatenspeicher und Migrationsregeln | 🧩 Implementiert · Abnahme offen | 4/5 | ARCH-01, STORE-01, STORE-02 | ausstehend | ausstehend |
+| [ARCH-02](#arch-02) | Planmodell: Verweisgraph, kompakter Blockdatenspeicher und Migrationsregeln | 🧩 Implementiert · Abnahme offen | 6/7 | ARCH-01, STORE-01, STORE-02 | ausstehend | ausstehend |
 | [DOC-01](#doc-01) | Widerspruchsfreie aktuelle Statusdokumentation | ✅ Im beschriebenen Umfang geprüft | 3/3 | PLAN-01 | `b5eb5b9` | `b5eb5b9` |
 | [STORE-02](#store-02) | Revisionsschutz bei konkurrierenden Assetänderungen | ✅ Im beschriebenen Umfang geprüft | 3/3 | ARCH-01 | `b5eb5b9` | `b5eb5b9` |
 | [QA-01](#qa-01) | Aktuelle Browserregression für alle Hauptabläufe | ✅ Im beschriebenen Umfang geprüft | 2/2 | ARCH-01 | `b5eb5b9` | `b5eb5b9` |
@@ -538,7 +538,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [GFX-01](#gfx-01) | Grafik vertiefen: Minecraft-Licht, Eckschatten, Sonne mit Schatten, Nacht, Spawnprüfung, sortiertes Glas und 32³-Abschnitte für große Modelle | 🧩 Implementiert · Abnahme offen | 5/6 | VIEW-02 | ausstehend | ausstehend |
 | [GFX-02](#gfx-02) | Darstellung und Leistung, Runde 2: Biomfarben, leuchtende Blockentities (Leuchtfeuer-Strahl, Endportal, Magma), GPU-Upload großer Szenen in Stücken | 🧩 Implementiert · Abnahme offen | 3/4 | GFX-01, VIEW-02, PERF-04 | ausstehend | ausstehend |
 | [GFX-03](#gfx-03) | Große Szenen flüssig bedienen: Glas und Wasser je Bild sortiert, schnelles und richtiges Anklicken, Sichtfeld zuerst hochladen | 🧩 Implementiert · Abnahme offen | 3/4 | GFX-02, PERF-04 | ausstehend | ausstehend |
-| [MODEL-01](#model-01) | 3D-Export: Bauteile, Projekte und Anlagen als OBJ/MTL, glTF/GLB, STL und 3MF (Ansichtsmodell mit Blockformen/Texturen, wasserdichte Druckhülle mit Maßstab, Füllen, Aushöhlen, Farben) | 🧩 Implementiert · Abnahme offen | 5/6 | VIEW-02, GFX-01 | ausstehend | ausstehend |
+| [MODEL-01](#model-01) | 3D-Export: Bauteile, Projekte und Anlagen als OBJ/MTL, glTF/GLB, STL und 3MF (Ansichtsmodell mit Blockformen/Texturen, wasserdichte Druckhülle mit Maßstab, Füllen, Aushöhlen, Farben) | 🧩 Implementiert · Abnahme offen | 7/8 | VIEW-02, GFX-01 | ausstehend | ausstehend |
 | [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-02, VIEW-01 | ausstehend | ausstehend |
 | [EDIT-02](#edit-02) | Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen | 🧩 Implementiert · Abnahme offen | 5/5 | VIEW-01, STORE-02 | ausstehend | ausstehend |
 | [EDIT-03](#edit-03) | Werkstatt vertiefen: Muster-Pinsel, Bogen/Pyramide/Kegel/Mauerzug, Schablonen, Ebenenübersicht und Tastenkürzel | 🧩 Implementiert · Abnahme offen | 5/5 | EDIT-02 | ausstehend | ausstehend |
@@ -855,25 +855,27 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### ARCH-02
 
-**Planmodell: Verweisgraph, kompakter Blockdatenspeicher und Migrationsregeln** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Grundstruktur des Planers erweitern“) · Zuständiger Thread: „Export und Datenmodell fertigstellen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Planmodell: Verweisgraph, kompakter Blockdatenspeicher und Migrationsregeln** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Grundstruktur des Planers erweitern“) · Zuständiger Thread: „Export und Datenmodell fertigstellen“ · Aktualisiert: 2026-11-06T21:53:21.545Z
 
 - [x] ARCH-02-S01: Bestand aller gespeicherten Datensätze, Teilschemata und Verweise dokumentieren (PLAN_MODEL).
 - [x] ARCH-02-S02: Blockzellen gepackt speichern (bp-cells-1, bitgenau, IndexedDB-Migration 4, Sicherungsformat 3).
 - [x] ARCH-02-S03: Gemeinsamer Verweisgraph für Sicherung, Datencheck und „Verwendet in“; Abschnittsstände in Projektsicherungen.
 - [x] ARCH-02-S04: Datencheck um Sammlungen, Vorlagen und Verlaufsverweise erweitern; Datenmodell-Karte im Systemcheck.
-- [ ] ARCH-02-S05: Migration mit echten, über Monate gewachsenen Browserdaten auf Philipps Geräten abnehmen.
+- [ ] ARCH-02-S05: Migration mit über Monate gewachsenen Browserdaten: automatisch mit Datenbanken echter alter Stände (28.10. v1, 02.11. v3, 04.11. v4); Stichprobe auf Philipps Geräten offen.
+- [x] ARCH-02-S06: Gealterte Browserdaten: Erzeuger mit echten alten Programmständen (scripts/dev/make_aged_browserdata.mjs), drei Datenbanken in fixtures/aged-browserdata, Browsertest verlustfrei.
+- [x] ARCH-02-S07: Kompakte Laufzeitform: Bibliotheksversionen halten höchstens 2 Mio. entpackte Zellen, ältere gehen auf ihre gepackten Bytes zurück (bitgleich); Anzeige im Systemcheck.
 
 **Abnahme:** Inhaltsadressen und Prüfsummen bleiben durch die Speicherform unverändert; ältere Sicherungen bleiben lesbar und werden nicht strenger geprüft; neue Verweise werden nur in planGraph.ts ergänzt.
 
-**Nächste Aktion:** Abnahme der Migration mit echten Browserdaten (S05); danach kompakte Laufzeitform der Zellen als Folge von PERF-02.
+**Nächste Aktion:** Stichprobe mit Philipps eigenen Browserdaten (Testfall GERAET-03); bei neuer DB_VERSION eine weitere gealterte Datenbank erzeugen.
 
-**Nur Philipp:** Auf echten Geräten und Browsern: Datencheck unter #/system mit deinen über Monate gewachsenen Browserdaten (S05).
+**Nur Philipp:** Auf echten Geräten und Browsern: Datencheck unter #/system mit deinen eigenen, lange gewachsenen Browserdaten (Stichprobe zu S05; automatisch mit drei alten Ständen geprüft).
 
-**Prüfstand:** Kern- und Chromiumtests bestanden; Abnahme mit echten Bestandsdaten auf Philipps Geräten offen.
+**Prüfstand:** Kern-, Chromium- und Alterungstests (drei echte alte Stände) bestanden (GERAET-03 teilweise automatisch); Stichprobe auf Philipps Geräten offen.
 
-**Nachweise:** [tests/unit/data/plan-model.test.mjs](../tests/unit/data/plan-model.test.mjs) — 13 Fälle: handgerechnete Bytes, Reihenfolge/negative Grenzen/>32 Bit, Ablehnung nicht exakter Zellen, beschädigte Daten, ganzer Katalog bitgenau (41× kleiner), Sicherungsformat 3, Abschnittsstand in Projektsicherung, whereUsed, Datencheck-Schweregrade.; [tests/e2e/plan-model.e2e.mjs](../tests/e2e/plan-model.e2e.mjs) — Chromium: echte Datenbank Version 3 → Migration 4 packt in place, Datencheck ohne Befund, Datenmodell-Karte; „Verwendet in“ nach Projektanlage.; [docs/architecture/kern/PLAN_MODEL.md](architecture/kern/PLAN_MODEL.md) — Datensätze, Verweisrollen mit Pflichtgrad, Speicherform, Migrationsregeln, Grenzen.
+**Nachweise:** [tests/unit/data/plan-model.test.mjs](../tests/unit/data/plan-model.test.mjs) — 13 Fälle: handgerechnete Bytes, Reihenfolge/negative Grenzen/>32 Bit, Ablehnung nicht exakter Zellen, beschädigte Daten, ganzer Katalog bitgenau (41× kleiner), Sicherungsformat 3, Abschnittsstand in Projektsicherung, whereUsed, Datencheck-Schweregrade.; [tests/e2e/plan-model.e2e.mjs](../tests/e2e/plan-model.e2e.mjs) — Chromium: echte Datenbank Version 3 → Migration 4 packt in place, Datencheck ohne Befund, Datenmodell-Karte; „Verwendet in“ nach Projektanlage.; [docs/architecture/kern/PLAN_MODEL.md](architecture/kern/PLAN_MODEL.md) — Datensätze, Verweisrollen mit Pflichtgrad, Speicherform, Migrationsregeln, Grenzen.; [tests/e2e/aged-browserdata.e2e.mjs](../tests/e2e/aged-browserdata.e2e.mjs) — Drei Datenbanken echter alter Stände (v1/v3/v4) roh wiederhergestellt, aktuelle App migriert: alle Versionen mit gleicher ID, gleichem Hash und gleichen Zellen, Bauteile/Projekte/Originale/Sammlungen/Vorlagen unverändert, alte Sicherung lesbar, Datencheck ohne Fehler, altes Projekt öffnet; Start mit Migration 1–3 s.; [tests/unit/core/lazy-cells.test.mjs](../tests/unit/core/lazy-cells.test.mjs) — Laufzeitform: über der Grenze gehen die ältesten Listen zurück, entpacken bitgleich, Speichern nutzt die Bytes, Schutzzeit verhindert Hin und Her.
 
-**Dateiumfang:** `packages/domain/src/data/planGraph.ts`, `packages/domain/src/data/versionStorage.ts`, `packages/voxel/src/packedCells.ts`, `packages/domain/src/data/backup.ts`, `packages/domain/src/data/integrity.ts`, `apps/web/src/app/idbRepository.ts`, `apps/web/src/views/SystemView.tsx`, `apps/web/src/views/library/UsageSection.tsx`, `docs/architecture/kern/PLAN_MODEL.md`, `tests/unit/data/plan-model.test.mjs`, `tests/e2e/plan-model.e2e.mjs`. **Abhängigkeiten:** ARCH-01, STORE-01, STORE-02. **Alte IDs:** STORE-03.
+**Dateiumfang:** `packages/domain/src/data/planGraph.ts`, `packages/domain/src/data/versionStorage.ts`, `packages/voxel/src/packedCells.ts`, `packages/domain/src/data/backup.ts`, `packages/domain/src/data/integrity.ts`, `apps/web/src/app/idbRepository.ts`, `apps/web/src/views/SystemView.tsx`, `apps/web/src/views/library/UsageSection.tsx`, `docs/architecture/kern/PLAN_MODEL.md`, `tests/unit/data/plan-model.test.mjs`, `tests/e2e/plan-model.e2e.mjs`, `scripts/dev/make_aged_browserdata.mjs`, `fixtures/aged-browserdata/`, `tests/e2e/aged-browserdata.e2e.mjs`, `tests/unit/core/lazy-cells.test.mjs`. **Abhängigkeiten:** ARCH-01, STORE-01, STORE-02. **Alte IDs:** STORE-03.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -1310,7 +1312,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-02
 
-**Zellindizes, Chunkdaten und selektive Neuberechnung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gesamtsystem auf Performance und Stabilität optimieren“) · Zuständiger Thread: „Export und Datenmodell fertigstellen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Zellindizes, Chunkdaten und selektive Neuberechnung** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gesamtsystem auf Performance und Stabilität optimieren“) · Zuständiger Thread: „Export und Datenmodell fertigstellen“ · Aktualisiert: 2026-11-06T21:53:21.545Z
 
 - [x] PERF-02-S01: Kosten von owners/Strings/Übertragungen messen.
 - [x] PERF-02-S02: Index-/Chunkstrategie nur mit identischem semantischem Ergebnis einführen.
@@ -1318,11 +1320,11 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Unabhängige Mengen-/Geometrieregressionen; Importlimits bleiben wirksam.
 
-**Nächste Aktion:** PERF-02-S03 zusammen mit PERF-05-S08 (Zellen erst bei Bedarf entpacken) im Performance-Thread umsetzen; beide ändern compose/Entpacken. Übergabe abgestimmt am 03.11.2026.
+**Nächste Aktion:** Folge erledigt (06.11.): kompakte Laufzeitform als begrenzte Menge entpackter Bibliothekszellen (ARCH-02-S07); PERF-05-S08 lädt Zellen erst bei Bedarf.
 
 **Prüfstand:** Interner Indexteil mit 15 passenden bestehenden/neuen Regressionen und sechs hashgleichen Vergleichsausgaben geprüft. Kein Browser-, Chunk- oder selektiver Cache-Nachweis. Gemeinsame vollständige Prüfung mit 377 Node-Tests bestanden.
 
-**Nachweise:** [tests/unit/core/composition-index.test.mjs](../tests/unit/core/composition-index.test.mjs) — Vier handberechnete Regressionsgruppen: Koordinaten, Konflikte, NBT, Grenzen.; [scripts/bench/benchmark_composition.mjs](../scripts/bench/benchmark_composition.mjs) — Vorher-/Nachher-Vergleich mit vollständigem Resolutionhash; Node-Szenario.; [docs/architecture/kern/COMPOSITION_PERFORMANCE.md](architecture/kern/COMPOSITION_PERFORMANCE.md) — Abschließender Median 5,2 % niedriger; Streuung und offene Chunk-/Browserabnahme ausdrücklich getrennt.
+**Nachweise:** [tests/unit/core/composition-index.test.mjs](../tests/unit/core/composition-index.test.mjs) — Vier handberechnete Regressionsgruppen: Koordinaten, Konflikte, NBT, Grenzen.; [scripts/bench/benchmark_composition.mjs](../scripts/bench/benchmark_composition.mjs) — Vorher-/Nachher-Vergleich mit vollständigem Resolutionhash; Node-Szenario.; [docs/architecture/kern/COMPOSITION_PERFORMANCE.md](architecture/kern/COMPOSITION_PERFORMANCE.md) — Abschließender Median 5,2 % niedriger; Streuung und offene Chunk-/Browserabnahme ausdrücklich getrennt.; [docs/architecture/kern/PLAN_MODEL.md](architecture/kern/PLAN_MODEL.md) — Laufzeitform: Messung 128 Byte je entpackter Zelle, Grenze 2 Mio. Zellen, Rückweg über die gepackten Bytes.
 
 **Dateiumfang:** `packages/domain/src/core/compose.ts`, `packages/voxel/`. **Abhängigkeiten:** PERF-01. **Alte IDs:** —.
 
@@ -1590,26 +1592,28 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MODEL-01
 
-**3D-Export: Bauteile, Projekte und Anlagen als OBJ/MTL, glTF/GLB, STL und 3MF (Ansichtsmodell mit Blockformen/Texturen, wasserdichte Druckhülle mit Maßstab, Füllen, Aushöhlen, Farben)** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude-Thread „Bauten als 3D-Modell exportieren“ · Zuständiger Thread: „Export und Datenmodell fertigstellen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**3D-Export: Bauteile, Projekte und Anlagen als OBJ/MTL, glTF/GLB, STL und 3MF (Ansichtsmodell mit Blockformen/Texturen, wasserdichte Druckhülle mit Maßstab, Füllen, Aushöhlen, Farben)** · 🧩 Implementiert · Abnahme offen · Priorität P2 · Verantwortlich: Claude-Thread „Bauten als 3D-Modell exportieren“ · Zuständiger Thread: „Export und Datenmodell fertigstellen“ · Aktualisiert: 2026-11-06T21:53:21.545Z
 
 - [x] MODEL-01-S01: Neutrales Dreiecksnetz und Schreiber OBJ/MTL, GLB (Textur eingebettet), STL, 3MF mit Farben; ZIP-Schreiber.
 - [x] MODEL-01-S02: Ansichtsmodell aus buildBlockMesh: Blockformen, Glas getrennt, Texturen oder Farben, eingebackene Helligkeit, Lage.
 - [x] MODEL-01-S03: Druckhülle aus dem Voxelgitter: Feinheit 1/2/4 mit eigenen Blockformen, Innenräume füllen, Aushöhlen, lose Teile, Kanten-/Eckreparatur, Wasserdichtprüfung.
 - [x] MODEL-01-S04: Oberfläche „Modelldatei“ bei Bauteilen und im Betrachter, im Projekt-Export und bei Anlagen; Maßstab in mm/m, Warnungen.
-- [ ] MODEL-01-S05: Dateien in Blender, Cura/PrusaSlicer/Bambu Studio öffnen und ein Modell drucken; Firefox/Safari.
+- [ ] MODEL-01-S05: Dateien in Blender und Slicer öffnen (automatisch: Blender 5.2, PrusaSlicer 2.7 mit G-Code); echter Druck, Cura/Bambu Studio und Firefox/Safari bei Philipp.
 - [x] MODEL-01-S06: Flächen der Druckhülle ohne T-Stöße zusammenfassen: gierige Rechtecke je Richtung/Ebene/Farbe, Randpunkte der Nachbarn, Fächer um die Mitte; wasserdicht geprüft.
+- [x] MODEL-01-S07: Unabhängige Dateiprüfung: Khronos glTF-Validator, STL/3MF-Prüfer nach Spezifikation (dicht, orientiert, punktmannigfaltig, Verweise), lib3mf streng; 3MF nur mit benutzten Farben.
+- [x] MODEL-01-S08: Blender (GLB mit Textur, OBJ+MTL, STL) und PrusaSlicer (STL/3MF manifold, Volumen, G-Code, Kolosseum 120 mm) automatisch.
 
 **Abnahme:** Druckhülle ist bei jeder Feinheit geschlossen und mannigfaltig (unabhängige Prüfung der heruntergeladenen Datei). Ansichtsmodell nutzt dieselbe Geometrie wie der Betrachter. Keine Texturen im Repository; Texturen nur aus der geladenen Nutzerquelle.
 
-**Nächste Aktion:** Dateien in Blender und Slicern prüfen und ein Testdruck; danach Flächenzusammenfassung (S06). Export läuft seit PERF-04 im Worker.
+**Nächste Aktion:** Echter Testdruck und Bambu Studio/Cura bei Philipp (S05-Rest); sonst abgeschlossen.
 
-**Nur Philipp:** Dateien oder Welt liefern: Export in Blender und einem Slicer öffnen, ein Testdruck (S05).
+**Nur Philipp:** Dateien oder Welt liefern: Eine 3MF in Bambu Studio oder Cura öffnen und einmal drucken (S05-Rest); Blender und PrusaSlicer sind automatisch geprüft.
 
-**Prüfstand:** Node- und Chromium-Prüfung bestanden; Öffnen in Fremdprogrammen und echter Druck offen.
+**Prüfstand:** Node-, Chromium-, glTF-Validator-, lib3mf-, Blender- und PrusaSlicer-Prüfung bestanden (PROJ-05 teilweise automatisch); offen nur echter Druck, Cura/Bambu Studio und Firefox/Safari.
 
-**Nachweise:** [tests/unit/formats/model3d.test.mjs](../tests/unit/formats/model3d.test.mjs) — Wasserdichtheit/Volumen, Reparatur, Füllen/Aushöhlen, Formen je Zustand, OBJ/GLB/STL/3MF/ZIP-Aufbau und Rundreisen.; [tests/e2e/model3d.e2e.mjs](../tests/e2e/model3d.e2e.mjs) — Chromium: GLB, STL (wasserdicht, 100 mm), 3MF mit 4 Farben, OBJ-ZIP auf Handybreite, Anlage.; [docs/architecture/formate/MODEL_EXPORT.md](architecture/formate/MODEL_EXPORT.md) — Verfahren, Formate, Achsen, Messwerte, Grenzen.; [tests/unit/formats/model3d.test.mjs](../tests/unit/formats/model3d.test.mjs) — MODEL-01-S06: Stufenpyramide mit Loch und zwei Farben sowie 12 zufällige Formen – zusammengefasst wasserdicht, gleiches Volumen, weniger Dreiecke.
+**Nachweise:** [tests/unit/formats/model3d.test.mjs](../tests/unit/formats/model3d.test.mjs) — Wasserdichtheit/Volumen, Reparatur, Füllen/Aushöhlen, Formen je Zustand, OBJ/GLB/STL/3MF/ZIP-Aufbau und Rundreisen.; [tests/e2e/model3d.e2e.mjs](../tests/e2e/model3d.e2e.mjs) — Chromium: GLB, STL (wasserdicht, 100 mm), 3MF mit 4 Farben, OBJ-ZIP auf Handybreite, Anlage.; [docs/architecture/formate/MODEL_EXPORT.md](architecture/formate/MODEL_EXPORT.md) — Verfahren, Formate, Achsen, Messwerte, Grenzen.; [tests/unit/formats/model3d.test.mjs](../tests/unit/formats/model3d.test.mjs) — MODEL-01-S06: Stufenpyramide mit Loch und zwei Farben sowie 12 zufällige Formen – zusammengefasst wasserdicht, gleiches Volumen, weniger Dreiecke.; [tests/unit/formats/model3d-files.test.mjs](../tests/unit/formats/model3d-files.test.mjs) — Khronos glTF-Validator 0 Fehler/0 Warnungen (farbig, texturiert); verify_model3d.py für STL/3MF/GLB/OBJ bei Feinheit 1/2/4, gefüllt, hohl, 2/4 Farben, 12 Zufallsformen; Gegenproben offen/gekippt/umgestülpt/Ecke/Verweise; lib3mf 2.5.0 streng.; [tests/unit/formats/model3d-external.test.mjs](../tests/unit/formats/model3d-external.test.mjs) — Blender 5.2: GLB mit Textur, OBJ+MTL, STL (mannigfaltig, Volumen). PrusaSlicer 2.7: STL und 3MF manifold, gleiches Volumen, G-Code; Kolosseum 120 mm 78 390 Dreiecke, 212 Schichten.; [tests/e2e/model3d.e2e.mjs](../tests/e2e/model3d.e2e.mjs) — Heruntergeladene GLB/STL/3MF/OBJ-Dateien aus Chromium mit glTF-Validator und verify_model3d.py geprüft.
 
-**Dateiumfang:** `packages/formats/src/model3d.ts`, `packages/formats/src/printGrid.ts`, `packages/formats/src/zipWrite.ts`, `apps/web/src/export3d/`, `apps/web/src/blockmodels/shapes.ts`, `apps/web/src/schem/SchemView.tsx`, `tests/unit/formats/model3d.test.mjs`, `tests/e2e/model3d.e2e.mjs`, `docs/architecture/formate/MODEL_EXPORT.md`, `docs/TESTING.md`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`. **Abhängigkeiten:** VIEW-02, GFX-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/formats/src/model3d.ts`, `packages/formats/src/printGrid.ts`, `packages/formats/src/zipWrite.ts`, `apps/web/src/export3d/`, `apps/web/src/blockmodels/shapes.ts`, `apps/web/src/schem/SchemView.tsx`, `tests/unit/formats/model3d.test.mjs`, `tests/e2e/model3d.e2e.mjs`, `docs/architecture/formate/MODEL_EXPORT.md`, `docs/TESTING.md`, `apps/web/src/testing/testplan.ts`, `docs/testing/TESTPLAN.md`, `scripts/checks/verify_model3d.py`, `scripts/checks/blender_model3d.py`, `tests/unit/formats/model3d-files.test.mjs`, `tests/unit/formats/model3d-external.test.mjs`, `package.json`, `package-lock.json`, `apps/web/src/testing/autochecks.ts`. **Abhängigkeiten:** VIEW-02, GFX-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

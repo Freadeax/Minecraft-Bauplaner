@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T21:50:29.150Z",
+  "updatedAt": "2026-11-06T21:53:21.545Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -727,7 +727,11 @@
         "apps/web/src/views/library/UsageSection.tsx",
         "docs/architecture/kern/PLAN_MODEL.md",
         "tests/unit/data/plan-model.test.mjs",
-        "tests/e2e/plan-model.e2e.mjs"
+        "tests/e2e/plan-model.e2e.mjs",
+        "scripts/dev/make_aged_browserdata.mjs",
+        "fixtures/aged-browserdata/",
+        "tests/e2e/aged-browserdata.e2e.mjs",
+        "tests/unit/core/lazy-cells.test.mjs"
       ],
       "legacyIds": [
         "STORE-03"
@@ -755,14 +759,24 @@
         },
         {
           "id": "ARCH-02-S05",
-          "title": "Migration mit echten, über Monate gewachsenen Browserdaten auf Philipps Geräten abnehmen.",
+          "title": "Migration mit über Monate gewachsenen Browserdaten: automatisch mit Datenbanken echter alter Stände (28.10. v1, 02.11. v3, 04.11. v4); Stichprobe auf Philipps Geräten offen.",
           "done": false
+        },
+        {
+          "id": "ARCH-02-S06",
+          "title": "Gealterte Browserdaten: Erzeuger mit echten alten Programmständen (scripts/dev/make_aged_browserdata.mjs), drei Datenbanken in fixtures/aged-browserdata, Browsertest verlustfrei.",
+          "done": true
+        },
+        {
+          "id": "ARCH-02-S07",
+          "title": "Kompakte Laufzeitform: Bibliotheksversionen halten höchstens 2 Mio. entpackte Zellen, ältere gehen auf ihre gepackten Bytes zurück (bitgleich); Anzeige im Systemcheck.",
+          "done": true
         }
       ],
       "acceptance": [
         "Inhaltsadressen und Prüfsummen bleiben durch die Speicherform unverändert; ältere Sicherungen bleiben lesbar und werden nicht strenger geprüft; neue Verweise werden nur in planGraph.ts ergänzt."
       ],
-      "next": "Abnahme der Migration mit echten Browserdaten (S05); danach kompakte Laufzeitform der Zellen als Folge von PERF-02.",
+      "next": "Stichprobe mit Philipps eigenen Browserdaten (Testfall GERAET-03); bei neuer DB_VERSION eine weitere gealterte Datenbank erzeugen.",
       "blockers": [],
       "evidence": [
         {
@@ -776,23 +790,31 @@
         {
           "path": "docs/architecture/kern/PLAN_MODEL.md",
           "note": "Datensätze, Verweisrollen mit Pflichtgrad, Speicherform, Migrationsregeln, Grenzen."
+        },
+        {
+          "path": "tests/e2e/aged-browserdata.e2e.mjs",
+          "note": "Drei Datenbanken echter alter Stände (v1/v3/v4) roh wiederhergestellt, aktuelle App migriert: alle Versionen mit gleicher ID, gleichem Hash und gleichen Zellen, Bauteile/Projekte/Originale/Sammlungen/Vorlagen unverändert, alte Sicherung lesbar, Datencheck ohne Fehler, altes Projekt öffnet; Start mit Migration 1–3 s."
+        },
+        {
+          "path": "tests/unit/core/lazy-cells.test.mjs",
+          "note": "Laufzeitform: über der Grenze gehen die ältesten Listen zurück, entpacken bitgleich, Speichern nutzt die Bytes, Schutzzeit verhindert Hin und Her."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "Kern- und Chromiumtests bestanden; Abnahme mit echten Bestandsdaten auf Philipps Geräten offen."
+        "note": "Kern-, Chromium- und Alterungstests (drei echte alte Stände) bestanden (GERAET-03 teilweise automatisch); Stichprobe auf Philipps Geräten offen."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T21:53:21.545Z",
       "area": "KERN",
       "thread": "Export und Datenmodell fertigstellen",
       "philipp": [
         {
           "kind": "geraet",
-          "text": "Datencheck unter #/system mit deinen über Monate gewachsenen Browserdaten (S05)."
+          "text": "Datencheck unter #/system mit deinen eigenen, lange gewachsenen Browserdaten (Stichprobe zu S05; automatisch mit drei alten Ständen geprüft)."
         }
       ],
       "orphans": []
@@ -2325,7 +2347,7 @@
       "acceptance": [
         "Unabhängige Mengen-/Geometrieregressionen; Importlimits bleiben wirksam."
       ],
-      "next": "PERF-02-S03 zusammen mit PERF-05-S08 (Zellen erst bei Bedarf entpacken) im Performance-Thread umsetzen; beide ändern compose/Entpacken. Übergabe abgestimmt am 03.11.2026.",
+      "next": "Folge erledigt (06.11.): kompakte Laufzeitform als begrenzte Menge entpackter Bibliothekszellen (ARCH-02-S07); PERF-05-S08 lädt Zellen erst bei Bedarf.",
       "blockers": [],
       "evidence": [
         {
@@ -2339,6 +2361,10 @@
         {
           "path": "docs/architecture/kern/COMPOSITION_PERFORMANCE.md",
           "note": "Abschließender Median 5,2 % niedriger; Streuung und offene Chunk-/Browserabnahme ausdrücklich getrennt."
+        },
+        {
+          "path": "docs/architecture/kern/PLAN_MODEL.md",
+          "note": "Laufzeitform: Messung 128 Byte je entpackter Zelle, Grenze 2 Mio. Zellen, Rückweg über die gepackten Bytes."
         }
       ],
       "verification": {
@@ -2349,7 +2375,7 @@
         "main": "7dffd922f46876c70700afc0429afb969e5478aa",
         "pagesSource": "7dffd922f46876c70700afc0429afb969e5478aa"
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T21:53:21.545Z",
       "area": "PERF",
       "thread": "Export und Datenmodell fertigstellen",
       "philipp": [],
@@ -3400,7 +3426,14 @@
         "docs/architecture/formate/MODEL_EXPORT.md",
         "docs/TESTING.md",
         "apps/web/src/testing/testplan.ts",
-        "docs/testing/TESTPLAN.md"
+        "docs/testing/TESTPLAN.md",
+        "scripts/checks/verify_model3d.py",
+        "scripts/checks/blender_model3d.py",
+        "tests/unit/formats/model3d-files.test.mjs",
+        "tests/unit/formats/model3d-external.test.mjs",
+        "package.json",
+        "package-lock.json",
+        "apps/web/src/testing/autochecks.ts"
       ],
       "legacyIds": [],
       "steps": [
@@ -3426,12 +3459,22 @@
         },
         {
           "id": "MODEL-01-S05",
-          "title": "Dateien in Blender, Cura/PrusaSlicer/Bambu Studio öffnen und ein Modell drucken; Firefox/Safari.",
+          "title": "Dateien in Blender und Slicer öffnen (automatisch: Blender 5.2, PrusaSlicer 2.7 mit G-Code); echter Druck, Cura/Bambu Studio und Firefox/Safari bei Philipp.",
           "done": false
         },
         {
           "id": "MODEL-01-S06",
           "title": "Flächen der Druckhülle ohne T-Stöße zusammenfassen: gierige Rechtecke je Richtung/Ebene/Farbe, Randpunkte der Nachbarn, Fächer um die Mitte; wasserdicht geprüft.",
+          "done": true
+        },
+        {
+          "id": "MODEL-01-S07",
+          "title": "Unabhängige Dateiprüfung: Khronos glTF-Validator, STL/3MF-Prüfer nach Spezifikation (dicht, orientiert, punktmannigfaltig, Verweise), lib3mf streng; 3MF nur mit benutzten Farben.",
+          "done": true
+        },
+        {
+          "id": "MODEL-01-S08",
+          "title": "Blender (GLB mit Textur, OBJ+MTL, STL) und PrusaSlicer (STL/3MF manifold, Volumen, G-Code, Kolosseum 120 mm) automatisch.",
           "done": true
         }
       ],
@@ -3440,7 +3483,7 @@
         "Ansichtsmodell nutzt dieselbe Geometrie wie der Betrachter.",
         "Keine Texturen im Repository; Texturen nur aus der geladenen Nutzerquelle."
       ],
-      "next": "Dateien in Blender und Slicern prüfen und ein Testdruck; danach Flächenzusammenfassung (S06). Export läuft seit PERF-04 im Worker.",
+      "next": "Echter Testdruck und Bambu Studio/Cura bei Philipp (S05-Rest); sonst abgeschlossen.",
       "blockers": [],
       "evidence": [
         {
@@ -3458,23 +3501,35 @@
         {
           "path": "tests/unit/formats/model3d.test.mjs",
           "note": "MODEL-01-S06: Stufenpyramide mit Loch und zwei Farben sowie 12 zufällige Formen – zusammengefasst wasserdicht, gleiches Volumen, weniger Dreiecke."
+        },
+        {
+          "path": "tests/unit/formats/model3d-files.test.mjs",
+          "note": "Khronos glTF-Validator 0 Fehler/0 Warnungen (farbig, texturiert); verify_model3d.py für STL/3MF/GLB/OBJ bei Feinheit 1/2/4, gefüllt, hohl, 2/4 Farben, 12 Zufallsformen; Gegenproben offen/gekippt/umgestülpt/Ecke/Verweise; lib3mf 2.5.0 streng."
+        },
+        {
+          "path": "tests/unit/formats/model3d-external.test.mjs",
+          "note": "Blender 5.2: GLB mit Textur, OBJ+MTL, STL (mannigfaltig, Volumen). PrusaSlicer 2.7: STL und 3MF manifold, gleiches Volumen, G-Code; Kolosseum 120 mm 78 390 Dreiecke, 212 Schichten."
+        },
+        {
+          "path": "tests/e2e/model3d.e2e.mjs",
+          "note": "Heruntergeladene GLB/STL/3MF/OBJ-Dateien aus Chromium mit glTF-Validator und verify_model3d.py geprüft."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "Node- und Chromium-Prüfung bestanden; Öffnen in Fremdprogrammen und echter Druck offen."
+        "note": "Node-, Chromium-, glTF-Validator-, lib3mf-, Blender- und PrusaSlicer-Prüfung bestanden (PROJ-05 teilweise automatisch); offen nur echter Druck, Cura/Bambu Studio und Firefox/Safari."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T21:53:21.545Z",
       "area": "PLANER",
       "thread": "Export und Datenmodell fertigstellen",
       "philipp": [
         {
           "kind": "datei",
-          "text": "Export in Blender und einem Slicer öffnen, ein Testdruck (S05)."
+          "text": "Eine 3MF in Bambu Studio oder Cura öffnen und einmal drucken (S05-Rest); Blender und PrusaSlicer sind automatisch geprüft."
         }
       ],
       "orphans": []
@@ -25685,6 +25740,64 @@
           "done": 4,
           "total": 6,
           "next": "Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T21:53:21.545Z",
+      "kind": "progress",
+      "items": [
+        "MODEL-01",
+        "ARCH-02",
+        "PERF-02"
+      ],
+      "summary": "Block 6: 3D-Dateien unabhängig geprüft (glTF-Validator, STL/3MF-Prüfer, lib3mf, Blender 5.2, PrusaSlicer 2.7 mit G-Code), 3MF nur benutzte Farben; Migration mit Datenbanken echter alter Stände (v1/v3/v4) verlustfrei; kompakte Laufzeitform: höchstens 2 Mio. entpackte Bibliothekszellen; Testfälle PROJ-05 und GERAET-03 teilweise automatisch. Offen: echter Druck, Stichprobe Philipps Browserdaten.",
+      "files": [
+        "apps/web/src/testing/autochecks.ts",
+        "apps/web/src/views/SystemView.tsx",
+        "docs/TESTING.md",
+        "docs/architecture/formate/MODEL_EXPORT.md",
+        "docs/architecture/kern/PLAN_MODEL.md",
+        "docs/testing/TESTPLAN.md",
+        "fixtures/aged-browserdata/2026-10-28-db1.json.gz",
+        "fixtures/aged-browserdata/2026-11-02-db3.json.gz",
+        "fixtures/aged-browserdata/2026-11-04-db4.json.gz",
+        "package-lock.json",
+        "package.json",
+        "packages/domain/src/data/versionStorage.ts",
+        "packages/domain/src/index.ts",
+        "packages/formats/src/model3d.ts",
+        "scripts/checks/blender_model3d.py",
+        "scripts/checks/verify_model3d.py",
+        "scripts/dev/make_aged_browserdata.mjs",
+        "tests/e2e/aged-browserdata.e2e.mjs",
+        "tests/e2e/model3d.e2e.mjs",
+        "tests/e2e/plan-model.e2e.mjs",
+        "tests/unit/core/lazy-cells.test.mjs",
+        "tests/unit/formats/model3d-external.test.mjs",
+        "tests/unit/formats/model3d-files.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "MODEL-01",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "Echter Testdruck und Bambu Studio/Cura bei Philipp (S05-Rest); sonst abgeschlossen."
+        },
+        {
+          "id": "ARCH-02",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Stichprobe mit Philipps eigenen Browserdaten (Testfall GERAET-03); bei neuer DB_VERSION eine weitere gealterte Datenbank erzeugen."
+        },
+        {
+          "id": "PERF-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 3,
+          "next": "Folge erledigt (06.11.): kompakte Laufzeitform als begrenzte Menge entpackter Bibliothekszellen (ARCH-02-S07); PERF-05-S08 lädt Zellen erst bei Bedarf."
         }
       ]
     }

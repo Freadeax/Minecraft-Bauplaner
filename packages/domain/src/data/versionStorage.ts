@@ -92,22 +92,78 @@ export function unpackVersionLazily(raw: unknown): AssetVersion {
   if (packedCells.encoding !== PACKED_CELLS_ENCODING || !Number.isSafeInteger(packedCells.count) || !(packedCells.bytes instanceof Uint8Array)) return unpackVersionOrDamaged(raw);
   const payload = { ...rest.payload } as VoxelPayload;
   let cells: Cell[] | null = null;
+  const entry: ResidentEntry = {
+    count: packedCells.count, touched: 0,
+    // Back to the packed bytes: the next read unpacks again, bit for bit the same list (new array).
+    drop: () => { cells = null; notYetUnpacked.set(payload, packedCells); },
+  };
   Object.defineProperty(payload, 'cells', {
     enumerable: true, configurable: false,
     get(): Cell[] {
-      if (cells) return cells;
+      if (cells) { if (lastTouched !== entry) touch(entry); return cells; }
       notYetUnpacked.delete(payload);
       try { cells = unpackCells(payload.bounds, packedCells); }
       catch (e) {
         if (!(e instanceof PackedCellsError)) throw e;
         console.warn(`Version ${String(rest.id)}: gepackte Blockdaten beschädigt (${e.message})`);
         cells = [];
+        return cells;
       }
-      return cells;
+      const list = cells;
+      touch(entry);
+      return list;
     },
   });
   notYetUnpacked.set(payload, packedCells);
   return { ...rest, payload } as unknown as AssetVersion;
+}
+
+/**
+ * Compact runtime form (ARCH-02/PERF-02 follow-up). An unpacked cell costs about 128 bytes of memory
+ * (object plus position array, measured in V8), its packed form a few bytes. Lazily loaded versions
+ * therefore keep only a bounded set of cell lists unpacked: when more than {@link lazyCellBudget}
+ * cells are unpacked, the versions read longest ago go back to their packed bytes and unpack again on
+ * their next read. Versions read during the last three seconds are never packed back, so one
+ * operation that alternates between versions cannot thrash. Callers keep whatever list they already
+ * hold; only the payload forgets it. Content, order, hash and ids are unchanged (same bytes).
+ */
+interface ResidentEntry { readonly count: number; touched: number; readonly drop: () => void }
+const resident = new Set<ResidentEntry>();
+let lastTouched: ResidentEntry | null = null;
+let residentCells = 0, packedBack = 0;
+let lazyCellBudget = 2_000_000;
+let keepMs = 3_000;
+const clock = (): number => (typeof performance !== 'undefined' ? performance.now() : Date.now());
+
+function touch(entry: ResidentEntry): void {
+  const now = clock();
+  entry.touched = now;
+  lastTouched = entry;
+  if (resident.has(entry)) { resident.delete(entry); resident.add(entry); return; }
+  resident.add(entry);
+  residentCells += entry.count;
+  if (residentCells <= lazyCellBudget) return;
+  // Oldest first (Set keeps insertion order; a touch moves an entry to the end).
+  for (const old of resident) {
+    if (residentCells <= lazyCellBudget || old === entry || now - old.touched < keepMs) break;
+    resident.delete(old);
+    residentCells -= old.count;
+    packedBack++;
+    old.drop();
+  }
+}
+
+/** For the system page and tests: unpacked cells of lazily loaded versions and how often lists were packed back. */
+export function lazyCellsStatus(): { readonly versions: number; readonly cells: number; readonly budget: number; readonly packedBack: number } {
+  return { versions: resident.size, cells: residentCells, budget: lazyCellBudget, packedBack };
+}
+
+/** Sets the budget of unpacked cells and the protection time (tests, diagnosis); returns the previous values. Takes effect on the next read. */
+export function setLazyCellBudget(cells: number, keepMilliseconds = keepMs): { readonly cells: number; readonly keepMs: number } {
+  const before = { cells: lazyCellBudget, keepMs };
+  lazyCellBudget = Math.max(0, Math.floor(cells));
+  keepMs = Math.max(0, keepMilliseconds);
+  return before;
 }
 
 /** Cell count of a version without unpacking a lazily loaded one. */

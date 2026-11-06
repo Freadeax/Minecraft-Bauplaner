@@ -87,6 +87,7 @@ test('migration 3 → 4: a stored plain version is packed in place and still ope
   const model = p.locator('section.datamodel');
   await model.getByText('Verweise zwischen Datensätzen').waitFor();
   assert.match(await model.innerText(), /× kleiner/);
+  assert.match(await model.innerText(), /Im Arbeitsspeicher entpackt[\s\S]*Grenze 2[.,]000[.,]000/, 'compact runtime form: budget shown');
   assert.ok(Number(await model.locator('[data-packed-bytes]').getAttribute('data-packed-bytes')) > 0);
   assert.match(await model.locator('[data-kind="version"]').innerText(), /Bauteilversion/);
   assert.deepEqual(errors, []);
