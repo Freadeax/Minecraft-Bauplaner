@@ -62,9 +62,13 @@ test('BlueMap: marker-sets mit extrude, shape, line und poi im Wiki-Format', () 
   const conf = blueMapMarkerConfig(mapShapes(map, items, ow));
   assert.match(conf, /^marker-sets: \{$/m);
   assert.match(conf, /"bauplaner-projekte": \{\n {4}label: "Bauplaner: Projekte"\n {4}toggleable: true\n {4}default-hidden: false\n {4}sorting: 0\n {4}markers: \{/);
-  assert.match(conf, /type: "extrude"[\s\S]*shape: \[ \{ x: 100, z: 200 \} \{ x: 130, z: 200 \} \{ x: 130, z: 220 \} \{ x: 100, z: 220 \} \][\s\S]*shape-min-y: 60\n\s*shape-max-y: 90/);
+  assert.match(conf, /type: "extrude"[\s\S]*shape: \[ \{ x: 100, z: 200 \}, \{ x: 130, z: 200 \}, \{ x: 130, z: 220 \}, \{ x: 100, z: 220 \} \][\s\S]*shape-min-y: 60\n\s*shape-max-y: 90/);
   assert.match(conf, /type: "shape"[\s\S]*shape-y: 70/);
-  assert.match(conf, /type: "line"[\s\S]*line: \[ \{ x: 0\.5, y: 64, z: 0\.5 \}/);
+  assert.match(conf, /type: "line"[\s\S]*line: \[ \{ x: 0\.5, y: 64, z: 0\.5 \}, \{/);
+  // HOCON merges `{…} {…}` on one line into one object; BlueMap then rejects the map (real server, KARTE-08).
+  assert.doesNotMatch(conf, /\}\s+\{/);
+  // Every Bauplaner set is reset first, so a later block below an older one replaces it (HOCON merge, BlueMap 5.29).
+  assert.match(conf, /marker-sets: \{\n  "bauplaner-projekte": null\n  "bauplaner-bauplaetze": null\n  "bauplaner-wege": null\n  "bauplaner-zonen": null\n  "bauplaner-punkte": null\n/);
   assert.match(conf, /type: "poi"\n\s*position: \{ x: 5, y: 64, z: -3 \}/);
   assert.match(conf, /line-color: \{ r: \d+, g: \d+, b: \d+, a: 1 \}/);
   assert.match(conf, /label: "Hauptweg \\"Nord\\""/, 'Anführungszeichen JSON-maskiert');
@@ -76,8 +80,12 @@ test('BlueMap: marker-sets mit extrude, shape, line und poi im Wiki-Format', () 
 
 test('Dynmap: Befehle je Set, Ecken, Bereiche, Linien und Punkte für die Konsole', () => {
   const cmds = dynmapMarkerCommands(mapShapes(map, items, ow), 'world').split('\n').filter(l => l && !l.startsWith('#'));
-  assert.equal(cmds[0], 'dmarker deleteset id:bauplaner-projekte');
-  assert.equal(cmds[1], 'dmarker addset id:bauplaner-projekte "Bauplaner: Projekte" hide:false');
+  // All five sets are deleted first, also empty ones, so a removed last point disappears (real server, KARTE-08).
+  assert.deepEqual(cmds.slice(0, 5), ['projekte', 'bauplaetze', 'wege', 'zonen', 'punkte'].map(g => `dmarker deleteset id:bauplaner-${g}`));
+  assert.equal(cmds[5], 'dmarker addset id:bauplaner-projekte "Bauplaner: Projekte" hide:false');
+  const none = dynmapMarkerCommands(mapShapes(map, items.filter(i => i.kind !== 'point'), ow), 'world');
+  assert.match(none, /dmarker deleteset id:bauplaner-punkte/);
+  assert.doesNotMatch(none, /addset id:bauplaner-punkte/);
   assert.ok(cmds.includes('dmarker addcorner 100 60 200 world'));
   assert.ok(cmds.some(c => /^dmarker addarea id:projekt_p1 "Burg" set:bauplaner-projekte color:F2B84B fillcolor:F2B84B fillopacity:0\.25 weight:2 ybottom:60 ytop:90$/.test(c)));
   assert.ok(cmds.some(c => /^dmarker addline id:path_a "Hauptweg 'Nord'" set:bauplaner-wege color:[0-9A-F]{6} weight:3$/.test(c)));

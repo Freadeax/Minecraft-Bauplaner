@@ -98,7 +98,7 @@ export function LiveMapPanel({ settings, onChange, map, dimension, items = [], o
   const fileBase = `bauplaner-${dimensionLabel(dimension).toLowerCase()}`;
   const exportBlueMap = () => {
     download(`${fileBase}-bluemap-marker.conf`, blueMapMarkerConfig(shapes), 'text/plain');
-    setMessage(`BlueMap-Marker für ${dimensionLabel(dimension)} heruntergeladen (${shapes.length} Marker): den Block ans Ende der Kartenkonfiguration dieser Welt setzen und BlueMap neu laden.`);
+    setMessage(`BlueMap-Marker für ${dimensionLabel(dimension)} heruntergeladen (${shapes.length} Marker): den Block ans Ende der Kartenkonfiguration dieser Welt setzen (z. B. maps/world.conf) und „bluemap reload“ eingeben. Ein späterer Block darf einfach darunter und ersetzt die alten Bauplaner-Marker.`);
   };
   const exportDynmap = () => {
     try {

@@ -109,11 +109,16 @@ const center = (points: readonly (readonly [number, number])[]): [number, number
  * BlueMap wiki „Markers“: sets with label/toggleable/default-hidden/sorting,
  * markers of type poi, line, shape (shape-y) and extrude (shape-min-y/-max-y),
  * colours as {r, g, b, a}). Strings are written JSON-quoted, which HOCON reads as is.
+ * Array elements need commas: in HOCON `{…} {…}` on one line is ONE merged object, and BlueMap 5.29 then refuses
+ * the whole map („A shape has to have at least 3 points!“, found on a real server, KARTE-08).
  * Projects with a height become extrude markers, flat areas shape markers.
  */
 export function blueMapMarkerConfig(shapes: readonly MapShape[]): string {
   const color = (hex: string, a: number) => { const [r, g, b] = rgb(hex); return `{ r: ${r}, g: ${g}, b: ${b}, a: ${a} }`; };
-  const lines = ['# Bauplaner → BlueMap: ans Ende der Kartenkonfiguration (z. B. maps/world.conf) setzen', '# und BlueMap neu laden. Ein vorhandenes marker-sets: { … } durch diesen Block ersetzen.', 'marker-sets: {'];
+  const lines = ['# Bauplaner → BlueMap: ans Ende der Kartenkonfiguration (z. B. maps/world.conf) setzen', '# und „bluemap reload“. Ein neuerer Block darf einfach darunter: er ersetzt die Bauplaner-Sets des alten.', 'marker-sets: {'];
+  // HOCON merges a later marker-sets block into an earlier one, so markers removed in the planner would stay.
+  // Setting every Bauplaner set to null first drops what an earlier block defined (checked on BlueMap 5.29, KARTE-08).
+  for (const group of MAP_SHAPE_GROUPS) lines.push(`  ${q(`bauplaner-${group}`)}: null`);
   MAP_SHAPE_GROUPS.forEach((group, sorting) => {
     const list = shapes.filter(s => s.group === group);
     if (!list.length) return;
@@ -124,12 +129,12 @@ export function blueMapMarkerConfig(shapes: readonly MapShape[]): string {
       else if (s.kind === 'line') {
         const [cx, cz] = center(s.points);
         out.push('type: "line"', `position: { x: ${num(cx)}, y: ${s.y}, z: ${num(cz)} }`,
-          `line: [ ${s.points.map(([x, z]) => `{ x: ${num(x)}, y: ${s.y}, z: ${num(z)} }`).join(' ')} ]`,
+          `line: [ ${s.points.map(([x, z]) => `{ x: ${num(x)}, y: ${s.y}, z: ${num(z)} }`).join(', ')} ]`,
           `line-width: ${Math.min(8, Math.max(2, s.width))}`, `line-color: ${color(s.color, 1.0)}`, 'depth-test: false');
       } else {
         const [cx, cz] = center(s.points), y = s.minY ?? DEFAULT_SHAPE_Y;
         out.push(s.maxY !== null ? 'type: "extrude"' : 'type: "shape"', `position: { x: ${num(cx)}, y: ${s.maxY ?? y}, z: ${num(cz)} }`,
-          `shape: [ ${s.points.map(([x, z]) => `{ x: ${num(x)}, z: ${num(z)} }`).join(' ')} ]`,
+          `shape: [ ${s.points.map(([x, z]) => `{ x: ${num(x)}, z: ${num(z)} }`).join(', ')} ]`,
           ...(s.maxY !== null ? [`shape-min-y: ${y}`, `shape-max-y: ${s.maxY}`] : [`shape-y: ${y}`]),
           'line-width: 2', `line-color: ${color(s.color, 1.0)}`, `fill-color: ${color(s.color, 0.25)}`, `depth-test: ${s.maxY !== null ? 'true' : 'false'}`);
       }
@@ -151,16 +156,19 @@ const dynId = (s: string) => s.replace(/[^A-Za-z0-9_-]/g, '_').slice(0, 64);
  * „Commands“: dmarker addset/add/addcorner/addarea/addline with set:, x:/y:/z:/world:,
  * color:/fillcolor:RRGGBB, fillopacity, weight, ytop/ybottom). Dynmap has no
  * marker file import; the operator pastes the lines into the server console.
- * Each set is deleted first, so running the list again replaces the old markers.
+ * All Bauplaner sets are deleted first (also empty ones), so running the list again replaces the old markers.
  */
 export function dynmapMarkerCommands(shapes: readonly MapShape[], world: string): string {
   if (!world.trim() || /[\s"]/.test(world)) fail('Dynmap braucht den Weltnamen ohne Leerzeichen (z. B. world)');
   const lines = ['# Bauplaner → Dynmap: Zeilen ohne # nacheinander in die Serverkonsole eingeben', `# (Welt ${world}). Vorhandene Bauplaner-Sets werden zuerst gelöscht.`];
+  // Every Bauplaner set is deleted first, also those that are empty now: otherwise markers removed in the planner
+  // (e.g. the last point) stayed on the map after pasting the new list (real server, KARTE-08).
+  for (const group of MAP_SHAPE_GROUPS) lines.push(`dmarker deleteset id:bauplaner-${group}`);
   for (const group of MAP_SHAPE_GROUPS) {
     const list = shapes.filter(s => s.group === group);
     if (!list.length) continue;
     const set = `bauplaner-${group}`;
-    lines.push(`dmarker deleteset id:${set}`, `dmarker addset id:${set} ${dq(MAP_SHAPE_GROUP_LABEL[group])} hide:${group === 'bauplaetze' || group === 'zonen'}`);
+    lines.push(`dmarker addset id:${set} ${dq(MAP_SHAPE_GROUP_LABEL[group])} hide:${group === 'bauplaetze' || group === 'zonen'}`);
     for (const s of list) {
       const hex = rgb(s.color).map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
       if (s.kind === 'poi') { lines.push(`dmarker add id:${dynId(s.id)} ${dq(s.label)} icon:default set:${set} x:${s.x} y:${s.y} z:${s.z} world:${world}`); continue; }

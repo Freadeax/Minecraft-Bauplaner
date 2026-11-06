@@ -8167,3 +8167,31 @@ Team-Raum sichert sich selbst in einen eigenen Tresor (Durable Object RoomVault,
 - `tests/e2e/team-backup.e2e.mjs`
 - `tests/unit/team/team-backup.test.mjs`
 
+## 2026-11-06T21:41:13.586Z · progress
+
+**Aufgaben:** MAP-07, MAP-02
+
+Echtserver-Prüfung KARTE-07/08: Placement.java und Planer gleich dem Spiel (/place template, 8 Lagen, 1512 Zellen), Plugin-Abschnitte gedreht richtig; BlueMap-/Dynmap-Notfallweg auf echten Servern geprüft und drei Exportfehler behoben (HOCON-Kommas, angehängter Block ersetzt, leere Dynmap-Sets gelöscht). Offen: Bedienung im eigenen Spiel und auf Philipps Server-Karte.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MAP-07 | 🧩 Implementiert · Abnahme offen | 3/4 | Rest von KARTE-07 im eigenen Spiel (drehen, senden, übernehmen, F3). Server-Plugin könnte Pläne gedreht ablegen. |
+| MAP-02 | 🧩 Implementiert · Abnahme offen | 3/3 | Rest von KARTE-08 auf Philipps Server-Karte (Link speichern, Sets ansehen, Markerdatei laden). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/views/map/LiveMapPanel.tsx`
+- `docs/TESTING.md`
+- `docs/architecture/welt/LIVEMAP.md`
+- `docs/architecture/welt/WORLDMAP.md`
+- `docs/testing/TESTPLAN.md`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`
+- `packages/domain/src/world/liveMapExport.ts`
+- `scripts/mod/PlacementProbe.java`
+- `scripts/mod/bridge_papermapfallback.mjs`
+- `scripts/mod/bridge_paperplacement.mjs`
+- `scripts/mod/test_bridge_paper_mapfallback.sh`
+- `scripts/mod/test_bridge_paper_placement.sh`
+- `tests/unit/world/livemap-export.test.mjs`
+

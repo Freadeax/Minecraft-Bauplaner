@@ -537,10 +537,18 @@ final class TeamModule implements Listener {
             ChatColor c = switch (st.status) { case "frei" -> ChatColor.GREEN; case "vergeben" -> ChatColor.YELLOW; case "gemeldet" -> ChatColor.AQUA; case "bestaetigt" -> ChatColor.GRAY; default -> ChatColor.RED; };
             say(s, c + "" + sec.number() + ". " + sec.name() + ChatColor.RESET + " – " + TeamLog.STATUS_LABEL.get(st.status) + (st.owner != null ? " · " + v.name(st.owner) : "")
                     + (st.crew.isEmpty() ? "" : " + " + st.crew.stream().map(v::name).collect(Collectors.joining(", ")))
-                    + (st.owner != null && v.away.containsKey(st.owner) ? " (abwesend)" : "") + (st.offer != null ? ChatColor.AQUA + " → Übergabe an " + v.name(st.offer.to()) + " offen" : ""));
+                    + (st.owner != null && v.away.containsKey(st.owner) ? " (abwesend)" : "") + (st.offer != null ? ChatColor.AQUA + " → Übergabe an " + v.name(st.offer.to()) + " offen" : "")
+                    + (s instanceof Player ? "" : boxText(sec)));
         }
         if (team.sections.isEmpty()) say(s, "Das Projekt hat keine Bauabschnitte.");
         return true;
+    }
+
+    /** Console (admins, MAP-07 check): where the section lies in the world; players see it with /bp zeigen. */
+    private static String boxText(TeamLog.Section sec) {
+        if (sec.boxes().isEmpty()) return " · ohne Box";
+        return sec.boxes().stream().map(b -> b.minX() + " " + b.minY() + " " + b.minZ() + " bis " + b.maxX() + " " + b.maxY() + " " + b.maxZ())
+                .collect(Collectors.joining(", ", " · Box ", ""));
     }
 
     private boolean show(CommandSender s, TeamLog.Section sec) {

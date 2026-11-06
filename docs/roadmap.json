@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T21:09:31.710Z",
+  "updatedAt": "2026-11-06T21:41:13.586Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -5311,7 +5311,13 @@
         "apps/web/src/views/map/WorldMapView.tsx",
         "tests/unit/world/livemap-export.test.mjs",
         "tests/e2e/livemap-export.e2e.mjs",
-        "docs/architecture/welt/LIVEMAP.md"
+        "docs/architecture/welt/LIVEMAP.md",
+        "scripts/mod/bridge_papermapfallback.mjs",
+        "scripts/mod/test_bridge_paper_mapfallback.sh",
+        "apps/web/src/testing/autochecks.ts",
+        "docs/testing/TESTPLAN.md",
+        "docs/TESTING.md",
+        "docs/architecture/welt/WORLDMAP.md"
       ],
       "legacyIds": [],
       "steps": [
@@ -5327,14 +5333,14 @@
         },
         {
           "id": "MAP-02-S03",
-          "title": "Abnahme KARTE-08 auf einem echten BlueMap-/Dynmap-Server.",
-          "done": false
+          "title": "Abnahme KARTE-08 auf einem echten BlueMap-/Dynmap-Server (automatisch: Paper 26.3 + BlueMap 5.29, Paper 1.21.4 + Dynmap 3.7-beta-8; Plugin- und Notfallweg).",
+          "done": true
         }
       ],
       "acceptance": [
         "Keine behauptete BlueMap-/Dynmap-/squaremap-/Pl3xMap-Kompatibilität ohne Formatnachweis."
       ],
-      "next": "Abnahme KARTE-08 auf Philipps Server-Karte.",
+      "next": "Rest von KARTE-08 auf Philipps Server-Karte (Link speichern, Sets ansehen, Markerdatei laden).",
       "blockers": [],
       "evidence": [
         {
@@ -5344,17 +5350,21 @@
         {
           "path": "tests/e2e/livemap-export.e2e.mjs",
           "note": "Chromium 1400/390 px: zwei Karten speichern/wechseln, Kartenliste, Dynmap- und BlueMap-Download, Markerdatei laden, doppelt, Rückgängig, Neuladen."
+        },
+        {
+          "path": "scripts/mod/test_bridge_paper_mapfallback.sh",
+          "note": "Echter Server ohne Plugin: BlueMap-Block in maps/world.conf + bluemap reload, Dynmap-Befehle in der Konsole; Sets, Stelle, Höhe, zweiter Export ersetzt den ersten. Fand drei Fehler (HOCON-Listen ohne Komma ließen BlueMap scheitern; entfernte Marker blieben auf BlueMap und Dynmap stehen)."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "Einheits- und Browsertests grün; Abnahme auf echtem Kartenserver offen (S03)."
+        "note": "Echter BlueMap-/Dynmap-Server automatisch grün (Plugin- und Notfallweg, KARTE-08 teilweise automatisch); offen nur Philipps eigene Server-Karte."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T21:41:13.586Z",
       "area": "PLANER",
       "thread": "Projekt, Produktion und Weltkarte vertiefen",
       "philipp": [
@@ -7727,7 +7737,12 @@
         "tests/unit/world/world-turn.test.mjs",
         "tests/e2e/world-turn.e2e.mjs",
         "docs/architecture/welt/WORLDMAP.md",
-        "docs/TESTING.md"
+        "docs/TESTING.md",
+        "scripts/mod/bridge_paperplacement.mjs",
+        "scripts/mod/test_bridge_paper_placement.sh",
+        "scripts/mod/PlacementProbe.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java",
+        "apps/web/src/testing/autochecks.ts"
       ],
       "legacyIds": [],
       "steps": [
@@ -7757,7 +7772,7 @@
         "Eine Weltposition ist für Karte, Mod-Hologramm, Bauführung und Teamdatei dieselbe.",
         "Wo eine Funktion nur ungedreht rechnen kann (Server-Plugin-Plan, Geländebauteil, Anlagen ans Gelände), sagt der Planer das statt falsch zu rechnen."
       ],
-      "next": "Abnahme KARTE-07; Server-Plugin könnte Pläne gedreht ablegen (Thread „Mod, Server und Client mit Fallbacks ausbauen“).",
+      "next": "Rest von KARTE-07 im eigenen Spiel (drehen, senden, übernehmen, F3). Server-Plugin könnte Pläne gedreht ablegen.",
       "blockers": [],
       "evidence": [
         {
@@ -7767,17 +7782,21 @@
         {
           "path": "tests/e2e/world-turn.e2e.mjs",
           "note": "Chromium: Drehung im Formular, R an Ort und Stelle, Rückgängig, zurück auf ungedreht."
+        },
+        {
+          "path": "scripts/mod/test_bridge_paper_placement.sh",
+          "note": "Echter Paper-26.3-Server: /place template in allen 8 Lagen, 1512 Zellen Block für Block = Placement.java = Planer (Doppelkiste beim Spiegeln: Regel hält sie zusammen, vom Spiel bestätigt); Plugin-Abschnitte einer gedrehten/gespiegelten Lage über den gesetzten Blöcken."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "Einheits- und Browsertests grün; Abnahme im Spiel offen (S04)."
+        "note": "Regel gegen das Spiel selbst automatisch geprüft (KARTE-07 teilweise automatisch); offen nur das Bedienen im eigenen Spiel (S04)."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T21:41:13.586Z",
       "area": "PLANER",
       "thread": "Projekt, Produktion und Weltkarte vertiefen",
       "philipp": [
@@ -25420,6 +25439,47 @@
           "done": 3,
           "total": 4,
           "next": "Nach Philipps OK ausrollen (npx wrangler deploy) und team_room_smoke + team_room_backup_smoke gegen den Dienst; danach Abnahme TEAMBAU-31."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T21:41:13.586Z",
+      "kind": "progress",
+      "items": [
+        "MAP-07",
+        "MAP-02"
+      ],
+      "summary": "Echtserver-Prüfung KARTE-07/08: Placement.java und Planer gleich dem Spiel (/place template, 8 Lagen, 1512 Zellen), Plugin-Abschnitte gedreht richtig; BlueMap-/Dynmap-Notfallweg auf echten Servern geprüft und drei Exportfehler behoben (HOCON-Kommas, angehängter Block ersetzt, leere Dynmap-Sets gelöscht). Offen: Bedienung im eigenen Spiel und auf Philipps Server-Karte.",
+      "files": [
+        "apps/web/src/testing/autochecks.ts",
+        "apps/web/src/views/map/LiveMapPanel.tsx",
+        "docs/TESTING.md",
+        "docs/architecture/welt/LIVEMAP.md",
+        "docs/architecture/welt/WORLDMAP.md",
+        "docs/testing/TESTPLAN.md",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java",
+        "packages/domain/src/world/liveMapExport.ts",
+        "scripts/mod/PlacementProbe.java",
+        "scripts/mod/bridge_papermapfallback.mjs",
+        "scripts/mod/bridge_paperplacement.mjs",
+        "scripts/mod/test_bridge_paper_mapfallback.sh",
+        "scripts/mod/test_bridge_paper_placement.sh",
+        "tests/unit/world/livemap-export.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "MAP-07",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Rest von KARTE-07 im eigenen Spiel (drehen, senden, übernehmen, F3). Server-Plugin könnte Pläne gedreht ablegen."
+        },
+        {
+          "id": "MAP-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 3,
+          "next": "Rest von KARTE-08 auf Philipps Server-Karte (Link speichern, Sets ansehen, Markerdatei laden)."
         }
       ]
     }

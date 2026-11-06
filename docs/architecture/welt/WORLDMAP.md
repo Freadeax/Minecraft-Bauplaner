@@ -68,6 +68,8 @@ Die LMNT-Website (`lmnt-gaming.net`, Seiten Start, Gameserver, Tools) zeigt am 2
 
 Prüfung: `tests/unit/world/world-turn.test.mjs` (Regel gegen die Mod-Formel für alle acht Lagen), `tests/e2e/world-turn.e2e.mjs`, Testphase KARTE-07.
 
+Gegen das Spiel selbst (06.11.2026): `scripts/mod/test_bridge_paper_placement.sh` setzt auf einem echten Paper-26.3-Server einen Probebau mit allen richtungsabhängigen Blockfamilien per `/place template <Drehung> <Spiegel>` in allen acht Lagen und vergleicht jede Zelle (`execute if block`) mit Placement.java (über `scripts/mod/PlacementProbe.java`) und mit `placeToWorld`/`turnState`: 1512 Zellen gleich. Einzige Abweichung des Spiels: beim Spiegeln dreht es nur die Blickrichtung einer Doppelkiste und teilt sie dann in zwei Einzelkisten; die Regel tauscht `type` left/right und hält sie zusammen (gesetzt und vom Spiel als Doppelkiste bestätigt). Das Plugin bekommt eine gedrehte + gespiegelte und eine gedrehte Lage als Team-Kopf über den Raum; `/bp abschnitte` nennt in der Konsole die Boxen, und sie liegen genau über den gesetzten Blöcken.
+
 ## Prüfung
 
 - `tests/unit/world/worldmap.test.mjs`: Validierung, Rückgängig, Sicherung; Zelle für Zelle Welt = Projekt + Ursprung; Dimensionen, nicht platzierte, leere und ausgeblendete Projekte; Überschneidungen gegen Handzählung; Fortschritt je Zelle inkl. „prüfen“ nach Drehung; Budget; Platzierungsvorschlag; Draufsicht; Determinismus; Marker und Link-Übernahme für alle drei Formen.
@@ -77,4 +79,4 @@ Prüfung: `tests/unit/world/world-turn.test.mjs` (Regel gegen die Mod-Formel fü
 
 - Gelände nur, wo eine Geländeaufnahme gespeichert ist, und nur als Höhenkarte (keine Höhlen/Überhänge); sonst bleiben Fundament, Höhe und Umgebung ungeprüft.
 - Fortschritt stammt aus den Haken der Bauanleitung, nicht aus einer Messung im Spiel (die Spielbrücke ergänzt das je Projekt).
-- Livekarten-Vorlagen sind aus Quelltext abgeleitet, aber nicht gegen einen laufenden Kartenserver geprüft. GPU- und Touch-Prüfung auf echten Geräten offen (QA-02).
+- Marker für BlueMap/Dynmap sind gegen echte Kartenserver geprüft (`test_bridge_paper_world.sh`, `test_bridge_paper_mapfallback.sh`); die Link-Vorlagen der Live-Karte noch nicht. GPU- und Touch-Prüfung auf echten Geräten offen (QA-02).

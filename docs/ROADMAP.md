@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T21:09:31.710Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T21:41:13.586Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -55,7 +55,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [GFX-02](#gfx-02) | Darstellung und Leistung, Runde 2 | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Browser und Geräte automatisch abnehmen“ | Biom, Leuchtfeuer-Strahl und flüssiges Laden großer Modelle auf dem eigenen Rechner ansehen (S04). |
 | [GUIDE-01](#guide-01) | Anleitung „Wie geh ich es an?“ | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Browser und Geräte automatisch abnehmen“ | Anleitung am iPad durchgehen (START-08/09), unklare Sätze melden. |
 | [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Browser und Geräte automatisch abnehmen“ | Weltkarte auf echter GPU und mit Touch (QA-02). |
-| [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Projekt, Produktion und Weltkarte vertiefen“ | BlueMap-Marker (.conf) bzw. Dynmap-Befehle auf eurer Server-Karte einspielen und prüfen, ob Projekte, Wege und Punkte an der richtigen Stelle erscheinen (KARTE-08). |
+| [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Projekt, Produktion und Weltkarte vertiefen“ | BlueMap-Marker (.conf) bzw. Dynmap-Befehle auf eurer Server-Karte einspielen und prüfen, ob Projekte, Wege und Punkte an der richtigen Stelle erscheinen (KARTE-08). |
 | [MAP-03](#map-03) | Live-Karte mit Spielanbindung | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Kopplung und Senden auf dem LMNT-Server mit Browserfreigabe „lokales Netzwerk“ (S06). |
 | [MAP-04](#map-04) | Weltbuilder vertiefen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Browser und Geräte automatisch abnehmen“ | Langdruck-Menü auf echtem Touch-Gerät (S06). |
 | [MAP-05](#map-05) | Planung auf der Live-Karte vertiefen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Mod-Oberfläche und Hologramm automatisch abnehmen“ | „Baustand holen“ mit der Mod auf server.lmnt-gaming.net (S05). |
@@ -559,7 +559,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen | 4/4 | CORE-03, STORE-02 | `84838f0` | `e232b26` |
 | [MAP-03](#map-03) | Live-Karte mit Spielanbindung: Weltplan auf der Karte, Live-Position/Gelände/Fortschritt aus der Mod, Übergabe an die Mod | 🧩 Implementiert · Abnahme offen | 5/6 | MAP-01 | ausstehend | ausstehend |
 | [MAP-04](#map-04) | Weltbuilder vertiefen: Löschen und Entfernen für alle Objekte der Weltkarte, Mehrfachauswahl, Kontextmenü, gemeinsames Rückgängig, Duplizieren/Drehen/Spiegeln, Wegecken, Ebenen, Objektliste | 🧩 Implementiert · Abnahme offen | 6/7 | MAP-03 | ausstehend | ausstehend |
-| [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter: mehrere Server-Karten speichern und teilen, echte Marker für BlueMap (marker-sets) und Dynmap (dmarker-Befehle), Markerdatei als Weltplan-Punkte | 🧩 Implementiert · Abnahme offen | 2/3 | MAP-01 | ausstehend | ausstehend |
+| [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter: mehrere Server-Karten speichern und teilen, echte Marker für BlueMap (marker-sets) und Dynmap (dmarker-Befehle), Markerdatei als Weltplan-Punkte | 🧩 Implementiert · Abnahme offen | 3/3 | MAP-01 | ausstehend | ausstehend |
 | [GAME-02](#game-02) | Fabric-Brücke kompilieren und im Spiel abnehmen | 🧩 Implementiert · Abnahme offen | 4/5 | FORMAT-01, GAME-01 | `84838f0` | `e232b26` |
 | [GAME-07](#game-07) | Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server) | 🧩 Implementiert · Abnahme offen | 10/11 | GAME-02 | ausstehend | ausstehend |
 | [GAME-08](#game-08) | Bauplaner-Mod Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten im Spiel (marks2), Mitspieler für die Karte (GET /v1/players), hello.protocol 2 | 🧩 Implementiert · Abnahme offen | 5/5 | GAME-07, MAP-06 | ausstehend | ausstehend |
@@ -2087,23 +2087,23 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAP-02
 
-**Gespeicherte Kartenziele und konkrete Provideradapter: mehrere Server-Karten speichern und teilen, echte Marker für BlueMap (marker-sets) und Dynmap (dmarker-Befehle), Markerdatei als Weltplan-Punkte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Gespeicherte Kartenziele und konkrete Provideradapter: mehrere Server-Karten speichern und teilen, echte Marker für BlueMap (marker-sets) und Dynmap (dmarker-Befehle), Markerdatei als Weltplan-Punkte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-06T21:41:13.586Z
 
 - [x] MAP-02-S01: URL-/Markerformate anhand Primärquellen pro Provider verifizieren (BlueMap-Wiki Markers, Dynmap-Wiki Using markers/Commands, squaremap/Pl3xMap README: nur API).
 - [x] MAP-02-S02: Gespeicherte Ziele (bis 20, Kartenliste als Datei), UI-Dateiadapter und eigene Markerdateien (Import als Weltplan-Punkte, Export mit Punkten), BlueMap-marker-sets und Dynmap-Befehle aus Projekten, Bauplätzen, Wegen, Zonen und Punkten.
-- [ ] MAP-02-S03: Abnahme KARTE-08 auf einem echten BlueMap-/Dynmap-Server.
+- [x] MAP-02-S03: Abnahme KARTE-08 auf einem echten BlueMap-/Dynmap-Server (automatisch: Paper 26.3 + BlueMap 5.29, Paper 1.21.4 + Dynmap 3.7-beta-8; Plugin- und Notfallweg).
 
 **Abnahme:** Keine behauptete BlueMap-/Dynmap-/squaremap-/Pl3xMap-Kompatibilität ohne Formatnachweis.
 
-**Nächste Aktion:** Abnahme KARTE-08 auf Philipps Server-Karte.
+**Nächste Aktion:** Rest von KARTE-08 auf Philipps Server-Karte (Link speichern, Sets ansehen, Markerdatei laden).
 
 **Nur Philipp:** Im Spiel an deinem PC: BlueMap-Marker (.conf) bzw. Dynmap-Befehle auf eurer Server-Karte einspielen und prüfen, ob Projekte, Wege und Punkte an der richtigen Stelle erscheinen (KARTE-08).
 
-**Prüfstand:** Einheits- und Browsertests grün; Abnahme auf echtem Kartenserver offen (S03).
+**Prüfstand:** Echter BlueMap-/Dynmap-Server automatisch grün (Plugin- und Notfallweg, KARTE-08 teilweise automatisch); offen nur Philipps eigene Server-Karte.
 
-**Nachweise:** [tests/unit/world/livemap-export.test.mjs](../tests/unit/world/livemap-export.test.mjs) — 5 Fälle: gespeicherte Karten/Datei/Zusammenführen, Markerdatei → Punkte ohne Doppelte, Formen je Dimension, BlueMap-Format (extrude/shape/line/poi, Maskierung, Klammern), Dynmap-Befehle.; [tests/e2e/livemap-export.e2e.mjs](../tests/e2e/livemap-export.e2e.mjs) — Chromium 1400/390 px: zwei Karten speichern/wechseln, Kartenliste, Dynmap- und BlueMap-Download, Markerdatei laden, doppelt, Rückgängig, Neuladen.
+**Nachweise:** [tests/unit/world/livemap-export.test.mjs](../tests/unit/world/livemap-export.test.mjs) — 5 Fälle: gespeicherte Karten/Datei/Zusammenführen, Markerdatei → Punkte ohne Doppelte, Formen je Dimension, BlueMap-Format (extrude/shape/line/poi, Maskierung, Klammern), Dynmap-Befehle.; [tests/e2e/livemap-export.e2e.mjs](../tests/e2e/livemap-export.e2e.mjs) — Chromium 1400/390 px: zwei Karten speichern/wechseln, Kartenliste, Dynmap- und BlueMap-Download, Markerdatei laden, doppelt, Rückgängig, Neuladen.; [scripts/mod/test_bridge_paper_mapfallback.sh](../scripts/mod/test_bridge_paper_mapfallback.sh) — Echter Server ohne Plugin: BlueMap-Block in maps/world.conf + bluemap reload, Dynmap-Befehle in der Konsole; Sets, Stelle, Höhe, zweiter Export ersetzt den ersten. Fand drei Fehler (HOCON-Listen ohne Komma ließen BlueMap scheitern; entfernte Marker blieben auf BlueMap und Dynmap stehen).
 
-**Dateiumfang:** `packages/domain/src/world/livemap.ts`, `packages/domain/src/world/liveMapExport.ts`, `apps/web/src/views/map/LiveMapPanel.tsx`, `apps/web/src/views/map/liveMapConfig.ts`, `apps/web/src/views/map/WorldMapView.tsx`, `tests/unit/world/livemap-export.test.mjs`, `tests/e2e/livemap-export.e2e.mjs`, `docs/architecture/welt/LIVEMAP.md`. **Abhängigkeiten:** MAP-01. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/world/livemap.ts`, `packages/domain/src/world/liveMapExport.ts`, `apps/web/src/views/map/LiveMapPanel.tsx`, `apps/web/src/views/map/liveMapConfig.ts`, `apps/web/src/views/map/WorldMapView.tsx`, `tests/unit/world/livemap-export.test.mjs`, `tests/e2e/livemap-export.e2e.mjs`, `docs/architecture/welt/LIVEMAP.md`, `scripts/mod/bridge_papermapfallback.mjs`, `scripts/mod/test_bridge_paper_mapfallback.sh`, `apps/web/src/testing/autochecks.ts`, `docs/testing/TESTPLAN.md`, `docs/TESTING.md`, `docs/architecture/welt/WORLDMAP.md`. **Abhängigkeiten:** MAP-01. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -2733,7 +2733,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAP-07
 
-**Gedrehte und gespiegelte Projektlagen auf der Weltkarte: dieselbe Regel wie das Hologramm der Mod, gedrehtes Hologramm übernehmen, Plan gedreht ins Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Gedrehte und gespiegelte Projektlagen auf der Weltkarte: dieselbe Regel wie das Hologramm der Mod, gedrehtes Hologramm übernehmen, Plan gedreht ins Spiel** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Module und Systeme komplex ausarbeiten“) · Zuständiger Thread: „Projekt, Produktion und Weltkarte vertiefen“ · Aktualisiert: 2026-11-06T21:41:13.586Z
 
 - [x] MAP-07-S01: Weltlage mit optionaler Drehung/Spiegelung (turns 1–3, mirror), Regel wie Placement.java (Spiegeln X, dann (x,z)→(−z,x) auf Blockpositionen), Blockzustände über den Voxelkern.
 - [x] MAP-07-S02: Weltkarte zeichnet gedreht (Zellen, Zustände, Grenzen, Überschneidungen, placementsJson); R/Kontextmenü/Spiegeln drehen Projekte um ihre Nordwestecke; Weltlage-Formular mit Drehung.
@@ -2742,15 +2742,15 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Ungedrehte Lagen bleiben Feld für Feld gleich (keine neuen Felder). Eine Weltposition ist für Karte, Mod-Hologramm, Bauführung und Teamdatei dieselbe. Wo eine Funktion nur ungedreht rechnen kann (Server-Plugin-Plan, Geländebauteil, Anlagen ans Gelände), sagt der Planer das statt falsch zu rechnen.
 
-**Nächste Aktion:** Abnahme KARTE-07; Server-Plugin könnte Pläne gedreht ablegen (Thread „Mod, Server und Client mit Fallbacks ausbauen“).
+**Nächste Aktion:** Rest von KARTE-07 im eigenen Spiel (drehen, senden, übernehmen, F3). Server-Plugin könnte Pläne gedreht ablegen.
 
 **Nur Philipp:** Im Spiel an deinem PC: Ein Projekt auf der Weltkarte drehen, ins Spiel senden und mit F3 prüfen; ein im Spiel gedrehtes Hologramm übernehmen (KARTE-07).
 
-**Prüfstand:** Einheits- und Browsertests grün; Abnahme im Spiel offen (S04).
+**Prüfstand:** Regel gegen das Spiel selbst automatisch geprüft (KARTE-07 teilweise automatisch); offen nur das Bedienen im eigenen Spiel (S04).
 
-**Nachweise:** [tests/unit/world/world-turn.test.mjs](../tests/unit/world/world-turn.test.mjs) — 5 Fälle: Regel gegen die Mod-Formel für alle 8 Lagen, Prüfung/Drehen an Ort, Weltkarte mit Zuständen und Überschneidungen, Hologramm/Plan/Teamdatei, Baustand/Bauführung/Geländebox.; [tests/e2e/world-turn.e2e.mjs](../tests/e2e/world-turn.e2e.mjs) — Chromium: Drehung im Formular, R an Ort und Stelle, Rückgängig, zurück auf ungedreht.
+**Nachweise:** [tests/unit/world/world-turn.test.mjs](../tests/unit/world/world-turn.test.mjs) — 5 Fälle: Regel gegen die Mod-Formel für alle 8 Lagen, Prüfung/Drehen an Ort, Weltkarte mit Zuständen und Überschneidungen, Hologramm/Plan/Teamdatei, Baustand/Bauführung/Geländebox.; [tests/e2e/world-turn.e2e.mjs](../tests/e2e/world-turn.e2e.mjs) — Chromium: Drehung im Formular, R an Ort und Stelle, Rückgängig, zurück auf ungedreht.; [scripts/mod/test_bridge_paper_placement.sh](../scripts/mod/test_bridge_paper_placement.sh) — Echter Paper-26.3-Server: /place template in allen 8 Lagen, 1512 Zellen Block für Block = Placement.java = Planer (Doppelkiste beim Spiegeln: Regel hält sie zusammen, vom Spiel bestätigt); Plugin-Abschnitte einer gedrehten/gespiegelten Lage über den gesetzten Blöcken.
 
-**Dateiumfang:** `packages/domain/src/world/worldmap.ts`, `packages/domain/src/world/terrain.ts`, `packages/domain/src/team/liveLink.ts`, `packages/domain/src/building/gameCheck.ts`, `packages/domain/src/building/buildRun.ts`, `packages/domain/src/team/team.ts`, `apps/web/src/views/map/WorldMapView.tsx`, `apps/web/src/views/map/PlacementForm.tsx`, `apps/web/src/views/map/GameProgress.tsx`, `apps/web/src/views/project/TerrainTab.tsx`, `apps/web/src/views/project/LandscapeTab.tsx`, `apps/web/src/views/project/buildrun/AnchorBar.tsx`, `apps/web/src/views/library/AnlagenPage.tsx`, `apps/web/src/views/library/BasePage.tsx`, `tests/unit/world/world-turn.test.mjs`, `tests/e2e/world-turn.e2e.mjs`, `docs/architecture/welt/WORLDMAP.md`, `docs/TESTING.md`. **Abhängigkeiten:** MAP-05, MAP-04, GAME-07. **Alte IDs:** —.
+**Dateiumfang:** `packages/domain/src/world/worldmap.ts`, `packages/domain/src/world/terrain.ts`, `packages/domain/src/team/liveLink.ts`, `packages/domain/src/building/gameCheck.ts`, `packages/domain/src/building/buildRun.ts`, `packages/domain/src/team/team.ts`, `apps/web/src/views/map/WorldMapView.tsx`, `apps/web/src/views/map/PlacementForm.tsx`, `apps/web/src/views/map/GameProgress.tsx`, `apps/web/src/views/project/TerrainTab.tsx`, `apps/web/src/views/project/LandscapeTab.tsx`, `apps/web/src/views/project/buildrun/AnchorBar.tsx`, `apps/web/src/views/library/AnlagenPage.tsx`, `apps/web/src/views/library/BasePage.tsx`, `tests/unit/world/world-turn.test.mjs`, `tests/e2e/world-turn.e2e.mjs`, `docs/architecture/welt/WORLDMAP.md`, `docs/TESTING.md`, `scripts/mod/bridge_paperplacement.mjs`, `scripts/mod/test_bridge_paper_placement.sh`, `scripts/mod/PlacementProbe.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`, `apps/web/src/testing/autochecks.ts`. **Abhängigkeiten:** MAP-05, MAP-04, GAME-07. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
