@@ -8544,3 +8544,13 @@ Block 4c: automatische Abnahme Team live mit drei Geräten gegen den echten Team
 - `tests/e2e/team-acceptance.e2e.mjs`
 - `tests/e2e/teamRoomDev.mjs`
 
+## 2026-11-06T22:20:27.341Z · progress
+
+**Aufgaben:** GAME-09
+
+0.24.0 auf Modrinth (Fabric, NeoForge, Paper); Projekt umbenannt in LMNT — Build Studio Bridge, neues Titelbild
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GAME-09 | 🚧 In Arbeit | 4/5 | Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind. |
+
