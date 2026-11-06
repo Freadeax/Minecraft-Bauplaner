@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T20:51:49.893Z",
+  "updatedAt": "2026-11-06T20:59:52.182Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -47,7 +47,8 @@
     "EDIT-06",
     "STRUCT-01",
     "UX-01",
-    "UI-03"
+    "UI-03",
+    "OPS-04"
   ],
   "policy": {
     "scope": "Gesamter bekannter Produktumfang; Änderungen nur mit expliziter Aufgabe/Abnahme. Keine erfundenen Termine oder Fertigstellungsprozente.",
@@ -785,9 +786,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "KERN",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Export und Datenmodell fertigstellen",
       "philipp": [
         {
           "kind": "geraet",
@@ -1045,9 +1046,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T22:26:51.801Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "QA",
-      "thread": "Liegengebliebene Datenpakete abarbeiten",
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
         {
           "kind": "geraet",
@@ -1398,9 +1399,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T15:30:12.832Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": null,
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
         {
           "kind": "planer",
@@ -1707,9 +1708,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "KERN",
-      "thread": "Liegengebliebene Datenpakete abarbeiten",
+      "thread": "Exporte im echten Spiel automatisch prüfen",
       "philipp": [],
       "orphans": []
     },
@@ -1772,9 +1773,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "KERN",
-      "thread": "Liegengebliebene Datenpakete abarbeiten",
+      "thread": "Exporte im echten Spiel automatisch prüfen",
       "philipp": [],
       "orphans": []
     },
@@ -1844,9 +1845,9 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "KERN",
-      "thread": "Liegengebliebene Datenpakete abarbeiten",
+      "thread": "Exporte im echten Spiel automatisch prüfen",
       "philipp": [
         {
           "kind": "datei",
@@ -1933,9 +1934,9 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "KERN",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Exporte im echten Spiel automatisch prüfen",
       "philipp": [
         {
           "kind": "spiel",
@@ -2134,9 +2135,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "KERN",
-      "thread": "Liegengebliebene Datenpakete abarbeiten",
+      "thread": "Exporte im echten Spiel automatisch prüfen",
       "philipp": [],
       "orphans": []
     },
@@ -2204,9 +2205,9 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "KERN",
-      "thread": "Liegengebliebene Datenpakete abarbeiten",
+      "thread": "Exporte im echten Spiel automatisch prüfen",
       "philipp": [],
       "orphans": []
     },
@@ -2348,9 +2349,9 @@
         "main": "7dffd922f46876c70700afc0429afb969e5478aa",
         "pagesSource": "7dffd922f46876c70700afc0429afb969e5478aa"
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PERF",
-      "thread": "Gesamtsystem auf Performance und Stabilität optimieren",
+      "thread": "Export und Datenmodell fertigstellen",
       "philipp": [],
       "orphans": []
     },
@@ -2542,9 +2543,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T09:11:06.629Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PERF",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
         {
           "kind": "geraet",
@@ -2754,9 +2755,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:15:17.119Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PERF",
-      "thread": "Einfachsten Weg zu mehr Leistung finden",
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [],
       "orphans": []
     },
@@ -2808,9 +2809,9 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
         {
           "kind": "geraet",
@@ -2902,9 +2903,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
         {
           "kind": "geraet",
@@ -3004,9 +3005,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "KERN",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
         {
           "kind": "spiel",
@@ -3093,9 +3094,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "KERN",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
         {
           "kind": "spiel",
@@ -3188,9 +3189,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
         {
           "kind": "geraet",
@@ -3283,9 +3284,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Darstellung und Leistung weiter verbessern",
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
         {
           "kind": "geraet",
@@ -3365,9 +3366,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T09:11:06.629Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PERF",
-      "thread": "Leistung bei großen Szenen steigern",
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
         {
           "kind": "geraet",
@@ -3467,9 +3468,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Module und Systeme komplex ausarbeiten",
+      "thread": "Export und Datenmodell fertigstellen",
       "philipp": [
         {
           "kind": "datei",
@@ -3534,9 +3535,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
         {
           "kind": "geraet",
@@ -3621,9 +3622,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
         {
           "kind": "spiel",
@@ -3708,9 +3709,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
         {
           "kind": "spiel",
@@ -3822,9 +3823,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:21:49.359Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Mod-Werkzeuge und Planer-Anbindung erweitern",
+      "thread": "Mod-Oberfläche und Hologramm automatisch abnehmen",
       "philipp": [
         {
           "kind": "spiel",
@@ -3931,9 +3932,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
         {
           "kind": "planer",
@@ -4003,9 +4004,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PROJEKT",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Projekt, Produktion und Weltkarte vertiefen",
       "philipp": [
         {
           "kind": "geraet",
@@ -4072,9 +4073,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "BIBLIOTHEK",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
         {
           "kind": "planer",
@@ -4138,9 +4139,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "BIBLIOTHEK",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
         {
           "kind": "planer",
@@ -4614,9 +4615,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T09:18:45.680Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Gelände, Wege und Küste ausbauen",
+      "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
         {
           "kind": "spiel",
@@ -4734,9 +4735,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T13:09:28.727Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Gelände direkt aus der Mod übernehmen",
+      "thread": "Mod-Oberfläche und Hologramm automatisch abnehmen",
       "philipp": [
         {
           "kind": "spiel",
@@ -4827,9 +4828,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:34:36.445Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Alle Bereiche in Blöcken weiterbauen",
+      "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
         {
           "kind": "spiel",
@@ -4911,9 +4912,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PROJEKT",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Projekt, Produktion und Weltkarte vertiefen",
       "philipp": [
         {
           "kind": "server",
@@ -4995,9 +4996,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "BIBLIOTHEK",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
         {
           "kind": "spiel",
@@ -5078,9 +5079,9 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
         {
           "kind": "geraet",
@@ -5281,9 +5282,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T10:23:30.536Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Gruppen und Sperren bis ins Hologramm bringen",
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
         {
           "kind": "geraet",
@@ -5353,9 +5354,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Module und Systeme komplex ausarbeiten",
+      "thread": "Projekt, Produktion und Weltkarte vertiefen",
       "philipp": [
         {
           "kind": "spiel",
@@ -5516,9 +5517,9 @@
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "MOD",
-      "thread": "Bauplaner-Mod von Grund auf neu entwickeln",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
         {
           "kind": "server",
@@ -5678,9 +5679,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T10:43:17.217Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "MOD",
-      "thread": "Gruppen und Sperren bis ins Hologramm bringen",
+      "thread": "Mod-Oberfläche und Hologramm automatisch abnehmen",
       "philipp": [
         {
           "kind": "server",
@@ -5775,9 +5776,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "MOD",
-      "thread": "Teambau und Befehle in der Mod ausbauen",
+      "thread": "Mod-Oberfläche und Hologramm automatisch abnehmen",
       "philipp": [
         {
           "kind": "server",
@@ -5839,9 +5840,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "MOD",
-      "thread": "Bauplaner-Mod von Grund auf neu entwickeln",
+      "thread": "Mod-Oberfläche und Hologramm automatisch abnehmen",
       "philipp": [
         {
           "kind": "server",
@@ -5999,9 +6000,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
         {
           "kind": "geraet",
@@ -6300,9 +6301,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLUGIN",
-      "thread": "Server-Plugin mit geprüften Lagerkisten",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
         {
           "kind": "server",
@@ -6347,11 +6348,6 @@
           "done": true
         },
         {
-          "id": "GAME-05-S03",
-          "title": "Forge-Adapter 26.3 bauen und im echten Client prüfen.",
-          "done": false
-        },
-        {
           "id": "GAME-05-S04",
           "title": "NeoForge-Jar auf der Download-Seite #/mod anbieten (Forge erst nach bestandener Spielprüfung).",
           "done": true
@@ -6360,7 +6356,7 @@
       "acceptance": [
         "Nur lesend, keine Serverinstallation nötig; dieselbe Aufnahmedatei wie Fabric, vom Website-Vergleich geprüft."
       ],
-      "next": "Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen.",
+      "next": "Abnahme NeoForge über einen echten Launcher (Testphase). Forge 26.3 ist nach Philipps Versionsentscheidung (04.11.: neueste Version und Fabric 26.3, NeoForge mit) als GAME-13 zurückgestellt.",
       "blockers": [],
       "evidence": [
         {
@@ -6382,21 +6378,65 @@
       ],
       "verification": {
         "state": "pending",
-        "note": "NeoForge im echten Client bestanden; Forge-Spielprüfung, Start über echten Launcher und Mehrspieler offen."
+        "note": "NeoForge im echten Client bestanden; Start über echten Launcher offen. Forge ausgelagert nach GAME-13 (zurückgestellt)."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "MOD",
       "thread": "Teambau und Befehle in der Mod ausbauen",
-      "philipp": [
+      "philipp": [],
+      "orphans": []
+    },
+    {
+      "id": "GAME-13",
+      "title": "Forge-Adapter 26.3 der Bauplaner-Brücke",
+      "phase": "P3",
+      "priority": "P3",
+      "status": "deferred",
+      "owner": "Zurückgestellt (Entscheidung Philipp 04.11.2026)",
+      "dependencies": [
+        "GAME-05"
+      ],
+      "scope": [
+        "mods/bauplaner-bridge/forge-26.3/",
+        "scripts/mod/test_bridge_ingame_forge.sh"
+      ],
+      "legacyIds": [
+        "GAME-05-S03"
+      ],
+      "steps": [
         {
-          "kind": "spiel",
-          "text": "Forge-Testversion auf einem Rechner mit Bildschirm starten (S03)."
+          "id": "GAME-13-S01",
+          "title": "Forge-Adapter 26.3 im echten Client prüfen (kopfloser Lauf hängt im Ladebildschirm) und erst dann auf #/mod anbieten.",
+          "done": false
         }
       ],
+      "acceptance": [
+        "Forge-Client lädt die Brücke, nimmt einen Plan auf und der Website-Vergleich findet genau die eingebauten Abweichungen."
+      ],
+      "next": "Nur neu bewerten, wenn Philipp Forge ausdrücklich wieder möchte; Grundlage: Versionsentscheidung 04.11.2026 (IN-04: neueste Version, Fabric 26.3, NeoForge mit).",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "scripts/mod/test_bridge_ingame_forge.sh",
+          "note": "Vorhandener Forge-Durchlauf: lädt, bleibt kopflos im Ladebildschirm hängen (Stand 01.11.2026)."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Nicht geprüft; zurückgestellt."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "area": "SPAETER",
+      "thread": null,
+      "philipp": [],
       "orphans": []
     },
     {
@@ -6498,9 +6538,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLUGIN",
-      "thread": "Server-Plugin mit geprüften Lagerkisten",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
         {
           "kind": "server",
@@ -6514,8 +6554,8 @@
       "title": "Teamdienst betreiben und Wiederherstellung prüfen",
       "phase": "P4",
       "priority": "P1",
-      "status": "planned",
-      "owner": "nicht zugewiesen",
+      "status": "in_progress",
+      "owner": "Claude (Thread „Team-Raum sichern und wiederherstellen“)",
       "dependencies": [
         "TEAM-02"
       ],
@@ -6538,7 +6578,7 @@
       "acceptance": [
         "Kein produktiver Teamstart ohne Rechte- und Restoreprüfung."
       ],
-      "next": "Monitoring, Datenmigration, Lösch-/Aufbewahrung und Wiederanlauf definieren.",
+      "next": "Neu zugeschnitten auf den Team-Raum (Cloudflare, kostenlos): Sicherung/Export eines Raums, Wiederherstellung, Aufbewahrung und Löschen alter Räume, Zustandsseite.",
       "blockers": [],
       "evidence": [],
       "verification": {
@@ -6549,9 +6589,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-03T20:52:59.449Z",
-      "area": "SPAETER",
-      "thread": null,
+      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "area": "TEAM",
+      "thread": "Team-Raum sichern und wiederherstellen",
       "philipp": [],
       "orphans": []
     },
@@ -6706,9 +6746,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "BIBLIOTHEK",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
         {
           "kind": "spiel",
@@ -6807,9 +6847,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "KERN",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Exporte im echten Spiel automatisch prüfen",
       "philipp": [
         {
           "kind": "spiel",
@@ -6909,7 +6949,7 @@
           "note": "Sieben neue Meisterstücke mit Einrichtung."
         }
       ],
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "verification": {
         "state": "pending",
         "note": "Node-Prüfungen bestanden (baustil 9/9, catalog-game, catalog, generators); Sichtprüfung über isometrische Ansichten; Abnahme im echten Spiel steht aus."
@@ -6919,7 +6959,7 @@
         "pagesSource": null
       },
       "area": "BIBLIOTHEK",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
         {
           "kind": "spiel",
@@ -7124,9 +7164,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T09:18:45.680Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "BIBLIOTHEK",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
         {
           "kind": "datei",
@@ -7225,9 +7265,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "BIBLIOTHEK",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
         {
           "kind": "datei",
@@ -7346,9 +7386,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T09:18:45.680Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "BIBLIOTHEK",
-      "thread": "Gelände, Wege und Küste ausbauen",
+      "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
         {
           "kind": "spiel",
@@ -7447,9 +7487,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Mod-Oberfläche und Hologramm automatisch abnehmen",
       "philipp": [
         {
           "kind": "server",
@@ -7563,9 +7603,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Weltkarte in die Tiefe ausbauen",
+      "thread": "Mod-Oberfläche und Hologramm automatisch abnehmen",
       "philipp": [
         {
           "kind": "spiel",
@@ -7654,9 +7694,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Module und Systeme komplex ausarbeiten",
+      "thread": "Projekt, Produktion und Weltkarte vertiefen",
       "philipp": [
         {
           "kind": "spiel",
@@ -7851,9 +7891,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T09:18:45.680Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "BIBLIOTHEK",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
         {
           "kind": "spiel",
@@ -7956,9 +7996,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "GROESSE",
-      "thread": "Volumenlimit für große Builds aufheben",
+      "thread": "Bibliothek und Gelände spielgerecht prüfen",
       "philipp": [
         {
           "kind": "spiel",
@@ -8046,9 +8086,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "TEAM",
-      "thread": "Gemeinsames Bauen mehrerer Spieler ermöglichen",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
         {
           "kind": "server",
@@ -8120,9 +8160,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "TEAM",
-      "thread": "Gemeinsames Bauen mehrerer Spieler ermöglichen",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
         {
           "kind": "server",
@@ -8206,9 +8246,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "TEAM",
-      "thread": "Teambau und Befehle in der Mod ausbauen",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
         {
           "kind": "server",
@@ -8279,9 +8319,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "TEAM",
-      "thread": "Gemeinsames Bauen mehrerer Spieler ermöglichen",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
         {
           "kind": "server",
@@ -8369,9 +8409,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T09:35:19.769Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "TEAM",
-      "thread": "Mod-Werkzeuge und Planer-Anbindung erweitern",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
         {
           "kind": "server",
@@ -8457,9 +8497,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "TEAM",
-      "thread": "Server-Plugin mit geprüften Lagerkisten",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
         {
           "kind": "server",
@@ -8547,9 +8587,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T09:06:53.011Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PROJEKT",
-      "thread": "Projektmodul vertiefen",
+      "thread": "Projekt, Produktion und Weltkarte vertiefen",
       "philipp": [
         {
           "kind": "planer",
@@ -8703,9 +8743,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "MOD",
-      "thread": "Teambau und Befehle in der Mod ausbauen",
+      "thread": "Mod-Oberfläche und Hologramm automatisch abnehmen",
       "philipp": [
         {
           "kind": "server",
@@ -8880,9 +8920,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T16:29:23.694Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "MOD",
-      "thread": "Mod einfacher bedienen, Menü und Befehle zweisprachig",
+      "thread": "Mod-Oberfläche und Hologramm automatisch abnehmen",
       "philipp": [
         {
           "kind": "spiel",
@@ -9010,9 +9050,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "TEAM",
-      "thread": "Gemeinsames Bauen mehrerer Spieler ermöglichen",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
         {
           "kind": "server",
@@ -9104,9 +9144,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "TEAM",
-      "thread": "Module und Systeme komplex ausarbeiten",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
         {
           "kind": "server",
@@ -9130,9 +9170,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PROJEKT",
-      "thread": "Produktion und Anbindung im Planer ausbauen",
+      "thread": "Projekt, Produktion und Weltkarte vertiefen",
       "philipp": [
         {
           "kind": "planer",
@@ -9208,9 +9248,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PROJEKT",
-      "thread": "Produktion und Anbindung im Planer ausbauen",
+      "thread": "Projekt, Produktion und Weltkarte vertiefen",
       "philipp": [
         {
           "kind": "planer",
@@ -9287,9 +9327,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PROJEKT",
-      "thread": "Produktion und Anbindung im Planer ausbauen",
+      "thread": "Projekt, Produktion und Weltkarte vertiefen",
       "philipp": [],
       "orphans": [],
       "id": "PROD-03",
@@ -9354,9 +9394,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PROJEKT",
-      "thread": "Produktion und Anbindung im Planer ausbauen",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [],
       "orphans": [],
       "id": "PROD-04",
@@ -9440,7 +9480,7 @@
         "pagesSource": null
       },
       "area": "PROJEKT",
-      "thread": "Produktion und Anbindung im Planer ausbauen",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [],
       "orphans": [],
       "dependencies": [
@@ -9502,7 +9542,7 @@
           "note": "Abschnitt Sammeltruhen aus dem Team-Lager."
         }
       ],
-      "updatedAt": "2026-11-05T11:03:24.121Z"
+      "updatedAt": "2026-11-06T20:59:52.182Z"
     },
     {
       "phase": "P4",
@@ -9514,9 +9554,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLUGIN",
-      "thread": "Verbindung ohne Server-Datei neu bauen",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "orphans": [],
       "id": "LINK-01",
       "title": "Plugin richtet sich selbst ein und lässt sich per Klick koppeln (link.json, Server-ID, Kopplung nur OP/Bauleitung über den Teamkanal)",
@@ -9591,9 +9631,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T09:35:19.769Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLUGIN",
-      "thread": "Mod-Werkzeuge und Planer-Anbindung erweitern",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "orphans": [],
       "id": "LINK-02",
       "title": "Signierte Steuernachrichten statt Serverbefehlen (HMAC, steigende Nummer, feste Einstellungsliste, Team, Raum, Plan, Umbenennen, Geräte)",
@@ -9674,9 +9714,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "MOD",
-      "thread": "Verbindung ohne Server-Datei neu bauen",
+      "thread": "Mod-Oberfläche und Hologramm automatisch abnehmen",
       "orphans": [],
       "id": "LINK-03",
       "title": "Mod: Live-Dienst startet selbst, Planer per Klick im Spiel zulassen, Teamfreigabe als Knopf, Server-Wege weiterreichen (Mod 0.12.0)",
@@ -9764,9 +9804,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T10:34:38.680Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "TEAM",
-      "thread": "Verbindung ohne Server-Datei neu bauen",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "orphans": [],
       "id": "LINK-04",
       "title": "Planer: Bereich „Spiel und Server verbinden – ohne Befehle“ (#/mod), Server koppeln und einstellen, Team und Raum per Knopf",
@@ -9843,9 +9883,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "TEAM",
-      "thread": "Verbindung ohne Server-Datei neu bauen",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "orphans": [],
       "id": "LINK-05",
       "title": "Zweiter Weg über den Team-Raum: Steuernachrichten ohne Mod (iPad), weiteres Gerät per Link freigeben",
@@ -9934,9 +9974,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLUGIN",
-      "thread": "Verbindung ohne Server-Datei neu bauen",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "orphans": [],
       "id": "LINK-06",
       "title": "Weitere Steuerung ohne Befehle: Plan mit Anker von der Weltkarte auf den Server und Serveraufnahme per Klick zurück in den Planer",
@@ -10076,9 +10116,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "TEAM",
-      "thread": "Gemeinsames Bauen mehrerer Spieler ermöglichen",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
         {
           "kind": "server",
@@ -10174,9 +10214,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "TEAM",
-      "thread": "Gemeinsames Bauen mehrerer Spieler ermöglichen",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
         {
           "kind": "server",
@@ -10268,9 +10308,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "TEAM",
-      "thread": "Module und Systeme komplex ausarbeiten",
+      "thread": "Mehrspieler und Server automatisch abnehmen",
       "philipp": [
         {
           "kind": "planer",
@@ -10357,9 +10397,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T09:06:53.011Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PROJEKT",
-      "thread": "Projektmodul vertiefen",
+      "thread": "Projekt, Produktion und Weltkarte vertiefen",
       "philipp": [
         {
           "kind": "planer",
@@ -10441,9 +10481,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PROJEKT",
-      "thread": "Module und Systeme komplex ausarbeiten",
+      "thread": "Projekt, Produktion und Weltkarte vertiefen",
       "philipp": [
         {
           "kind": "planer",
@@ -10517,9 +10557,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PROJEKT",
-      "thread": "Module und Systeme komplex ausarbeiten",
+      "thread": "Projekt, Produktion und Weltkarte vertiefen",
       "philipp": [
         {
           "kind": "planer",
@@ -10591,9 +10631,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T09:06:53.011Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PROJEKT",
-      "thread": "Projekte untereinander verknüpfen",
+      "thread": "Projekt, Produktion und Weltkarte vertiefen",
       "philipp": [
         {
           "kind": "planer",
@@ -10816,9 +10856,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Direkt im 3D-Bild bauen",
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
         {
           "kind": "geraet",
@@ -11536,9 +11576,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T14:18:29.478Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Tutorial-Reiter „Wie geh ich es an?“ bauen",
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
         {
           "kind": "geraet",
@@ -11620,9 +11660,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T15:49:33.071Z",
+      "updatedAt": "2026-11-06T20:59:52.182Z",
       "area": "PLANER",
-      "thread": "Planer-Oberfläche schön neu gestalten",
+      "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
         {
           "kind": "geraet",
@@ -24454,6 +24494,728 @@
           "done": 4,
           "total": 6,
           "next": "Testphase starten, sobald die laufenden Threads gemerged sind und die Mod mit diagnose veröffentlicht ist."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T20:59:52.182Z",
+      "kind": "progress",
+      "items": [
+        "ARCH-02",
+        "QA-02",
+        "UX-01",
+        "PROFILE-01",
+        "NBT-01",
+        "FORMAT-01",
+        "FORMAT-02",
+        "MAT-04",
+        "DIFF-01",
+        "PERF-02",
+        "PERF-04",
+        "PERF-06",
+        "VIEW-01",
+        "VIEW-02",
+        "BLOCK-01",
+        "BLOCK-02",
+        "GFX-01",
+        "GFX-02",
+        "GFX-03",
+        "MODEL-01",
+        "EDIT-01",
+        "EDIT-02",
+        "EDIT-03",
+        "EDIT-04",
+        "EDIT-05",
+        "UPDATE-01",
+        "LIB-02",
+        "LIB-03",
+        "TERRAIN-03",
+        "TERRAIN-04",
+        "TERRAIN-05",
+        "BUILD-06",
+        "GEN-02",
+        "MAP-01",
+        "MAP-04",
+        "MAP-02",
+        "GAME-02",
+        "GAME-07",
+        "GAME-08",
+        "GAME-03",
+        "BACKUP-02",
+        "GAME-04",
+        "GAME-05",
+        "GAME-13",
+        "LAGER-01",
+        "OPS-04",
+        "LIB-04",
+        "ENTITY-01",
+        "LIB-05",
+        "BASE-01",
+        "SPLIT-01",
+        "GROSS-01",
+        "MAP-05",
+        "MAP-06",
+        "MAP-07",
+        "GEN-03",
+        "SIZE-01",
+        "COOP-01",
+        "COOP-02",
+        "COOP-03",
+        "COOP-04",
+        "COOP-05",
+        "COOP-06",
+        "PROJ-01",
+        "GAME-10",
+        "GAME-12",
+        "COOP-07",
+        "COOP-08",
+        "PROD-01",
+        "PROD-02",
+        "PROD-03",
+        "PROD-04",
+        "PROD-05",
+        "LINK-01",
+        "LINK-02",
+        "LINK-03",
+        "LINK-04",
+        "LINK-05",
+        "LINK-06",
+        "COOP-09",
+        "COOP-10",
+        "COOP-11",
+        "PROJ-02",
+        "PROJ-03",
+        "PROJ-04",
+        "PROJ-05",
+        "EDIT-06",
+        "GUIDE-01",
+        "UI-03"
+      ],
+      "summary": "Roadmap-Runde 06.11.: 8 Block-Threads als zuständige Threads je Punkt eingetragen, Forge-Adapter aus GAME-05 als GAME-13 zurückgestellt (Versionsentscheidung 04.11.), OPS-04 auf Team-Raum-Betrieb zugeschnitten.",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "ARCH-02",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme der Migration mit echten Browserdaten (S05); danach kompakte Laufzeitform der Zellen als Folge von PERF-02."
+        },
+        {
+          "id": "QA-02",
+          "status": "in_progress",
+          "done": 1,
+          "total": 2,
+          "next": "Protokolle der Tester in docs/testing/GERAETEMATRIX.md eintragen und Befunde beheben."
+        },
+        {
+          "id": "UX-01",
+          "status": "in_progress",
+          "done": 6,
+          "total": 6,
+          "next": "Philipps Abnahme START-10..13 im Browser und auf dem iPad. Optik übernimmt „Planer-Oberfläche schön neu gestalten“."
+        },
+        {
+          "id": "PROFILE-01",
+          "status": "implemented",
+          "done": 3,
+          "total": 3,
+          "next": "Abnahme: Profilprüfung im Gebäudeblatt an einer echten älteren Schem-/Litematic-Datei ansehen (Testphase)."
+        },
+        {
+          "id": "NBT-01",
+          "status": "implemented",
+          "done": 3,
+          "total": 3,
+          "next": "Abnahme im Spiel: gedrehtes Bauteil mit Truhen, Schildern und einem Strukturblock exportieren und in 26.3 laden (Testphase)."
+        },
+        {
+          "id": "FORMAT-01",
+          "status": "implemented",
+          "done": 1,
+          "total": 2,
+          "next": "Hochgeladene WorldEdit-Datei mit npm run format:check-schem prüfen; Befunde beheben."
+        },
+        {
+          "id": "FORMAT-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Export im Spiel mit Litematica laden (Philipps PC, Fabric 26.3) – FORMAT-02-S02."
+        },
+        {
+          "id": "MAT-04",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme: Kupfervariante eines Bauwerks im Planer erzeugen und im Spiel ansehen (Testphase)."
+        },
+        {
+          "id": "DIFF-01",
+          "status": "implemented",
+          "done": 3,
+          "total": 3,
+          "next": "Abnahme in der Testphase: zwei Stände eines verschobenen Bauwerks vergleichen."
+        },
+        {
+          "id": "PERF-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 3,
+          "next": "PERF-02-S03 zusammen mit PERF-05-S08 (Zellen erst bei Bedarf entpacken) im Performance-Thread umsetzen; beide ändern compose/Entpacken. Übergabe abgestimmt am 03.11.2026."
+        },
+        {
+          "id": "PERF-04",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06). Der GPU-Upload großer Szenen läuft seit GFX-02-S03 in Stücken, seit GFX-03 mit Sichtfeld zuerst."
+        },
+        {
+          "id": "PERF-06",
+          "status": "in_progress",
+          "done": 3,
+          "total": 3,
+          "next": "Abnahme: Safari/iPad und Firefox (Offline-Speicher); Verbindung Mod ↔ Planer einmal über https://bauplaner.pages.dev/Minecraft-Bauplaner/ im echten Spiel."
+        },
+        {
+          "id": "VIEW-01",
+          "status": "implemented",
+          "done": 1,
+          "total": 2,
+          "next": "Aktuelle GPU-/Touch-Prüfung mit negativen Koordinaten und allen Schnittachsen."
+        },
+        {
+          "id": "VIEW-02",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Mojang-Download im echten Browser und weitere Browser prüfen (Testphase); Register ist seit PROFILE-01 an den Serverbericht gebunden."
+        },
+        {
+          "id": "BLOCK-01",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Abnahme im Spiel; PROFILE-01 kann die Berichtsfakten übernehmen. Die Katalogfehler aus der Spielprüfung behebt BLOCK-02."
+        },
+        {
+          "id": "BLOCK-02",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme im Spiel (S06): geänderte Gebäude (z. B. Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen."
+        },
+        {
+          "id": "GFX-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Prüfung auf echten Geräten und Browsern (S06); Biomfarben und leuchtende Blockentities als GFX-02."
+        },
+        {
+          "id": "GFX-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme auf echten GPUs, Firefox/Safari und Abgleich mit Spielbildern (S04, zusammen mit GFX-01-S06)."
+        },
+        {
+          "id": "GFX-03",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme auf Philipps Rechner: großes Modell mit Wasser drehen und Blöcke anklicken, dazu Firefox/Safari (S04)."
+        },
+        {
+          "id": "MODEL-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Dateien in Blender und Slicern prüfen und ein Testdruck; danach Flächenzusammenfassung (S06). Export läuft seit PERF-04 im Worker."
+        },
+        {
+          "id": "EDIT-01",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Geräteprüfung (QA-02). Gruppenziehen im 3D-Bild ist mit EDIT-06 erledigt."
+        },
+        {
+          "id": "EDIT-02",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Spielprüfung. Picking an 3D-Blockflächen ist mit EDIT-06 erledigt."
+        },
+        {
+          "id": "EDIT-03",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Spielprüfung der Schablonen-Zustände (Tür, Treppe, Laterne). Picking an 3D-Blockflächen ist mit EDIT-06 erledigt."
+        },
+        {
+          "id": "EDIT-04",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "Spielprüfung gespiegelter Zustände im Planer (S07) und der Bauhilfen in der Mod (MOD-18/19); Gelände-Werkzeuge auf dem Projektgelände sind als TERRAIN-05 umgesetzt."
+        },
+        {
+          "id": "EDIT-05",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "EDIT-05-S07: Abnahme durch Philipp in der Werkstatt (Zauberstab, Stapeln, Extrudieren, Wendel) und Spielprüfung gestapelter/gedrehter Bauteile mit Ausstattung."
+        },
+        {
+          "id": "UPDATE-01",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Echtgeräteabnahme (QA-02); Teamreihenfolge der Updateoperationen in TEAM-02."
+        },
+        {
+          "id": "LIB-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme auf echten Geräten (QA-02); Rückmeldung zur Bedienung der Sammlungen einholen."
+        },
+        {
+          "id": "LIB-03",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme auf echten Geräten (QA-02); Vorlagen für Anlagen (Compounds) und BUILD-05 prüfen."
+        },
+        {
+          "id": "TERRAIN-03",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "Abnahme PROJ-19, BIB-19 und BIB-20 im Spiel (Treppen, Brücken, Wegenetz der Basis auf echtem Gelände)."
+        },
+        {
+          "id": "TERRAIN-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp im Spiel (S05)."
+        },
+        {
+          "id": "TERRAIN-05",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme durch Philipp im Planer und im Spiel (PROJ-26)."
+        },
+        {
+          "id": "BUILD-06",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Echtgeräte- und Druckerabnahme mit QA-02; Philipps Spieltest mit Mod-Aufnahme (WorldAnchor) auf seinem Server."
+        },
+        {
+          "id": "GEN-02",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Generierte Bauten (v. a. Treppenhaus, Torhaus-Wehrgang, Hafen) im Spiel abnehmen; Treppenhaus-Anbau an Haus als Anlage erwägen."
+        },
+        {
+          "id": "MAP-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 4,
+          "next": "Geräteprüfung (GPU/Touch, QA-02) und Abgleich mit einer echten Live-Karte; danach MAP-02."
+        },
+        {
+          "id": "MAP-04",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Abnahme durch Philipp (S06): Langdruck-Menü auf dem Touch-Gerät, Gruppen und Sperren auf dem iPad (Testfall KARTE-09)."
+        },
+        {
+          "id": "MAP-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Abnahme KARTE-08 auf Philipps Server-Karte."
+        },
+        {
+          "id": "GAME-02",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Philipp testet die .jar aus /mnt/project-files/mod/ auf server.lmnt-gaming.net und meldet Ergebnis/Fehler (Anleitung ANLEITUNG_SPIELTEST.md)."
+        },
+        {
+          "id": "GAME-07",
+          "status": "implemented",
+          "done": 10,
+          "total": 11,
+          "next": "Philipp prüft 0.19.0 im echten Spiel: gesperrter Bauplatz grau, Hologramm nur in einer Gruppe (Testfall MOD-21); danach Stufe 7."
+        },
+        {
+          "id": "GAME-08",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Philipp prüft Protokoll 3 im echten Spiel (TESTPLAN MOD-17); Forge und Paper ohne Live-Verbindung."
+        },
+        {
+          "id": "GAME-03",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme mit MAP-03-S06; Forge/NeoForge/Paper haben die Verbindung noch nicht."
+        },
+        {
+          "id": "BACKUP-02",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme auf echten Geräten (QA-02), besonders Safari-Downloads; Rückmeldung zur Erinnerungsschwelle (7 Tage) einholen."
+        },
+        {
+          "id": "GAME-04",
+          "status": "in_progress",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme auf Philipps eigenem Paper-Server (GAME-04-S04)."
+        },
+        {
+          "id": "GAME-05",
+          "status": "implemented",
+          "done": 3,
+          "total": 3,
+          "next": "Abnahme NeoForge über einen echten Launcher (Testphase). Forge 26.3 ist nach Philipps Versionsentscheidung (04.11.: neueste Version und Fabric 26.3, NeoForge mit) als GAME-13 zurückgestellt."
+        },
+        {
+          "id": "GAME-13",
+          "status": "deferred",
+          "done": 0,
+          "total": 1,
+          "next": "Nur neu bewerten, wenn Philipp Forge ausdrücklich wieder möchte; Grundlage: Versionsentscheidung 04.11.2026 (IN-04: neueste Version, Fabric 26.3, NeoForge mit)."
+        },
+        {
+          "id": "LAGER-01",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme auf dem Paper-Server (Thread „Server-Plugin mit geprüften Lagerkisten“)."
+        },
+        {
+          "id": "OPS-04",
+          "status": "in_progress",
+          "done": 0,
+          "total": 2,
+          "next": "Neu zugeschnitten auf den Team-Raum (Cloudflare, kostenlos): Sicherung/Export eines Raums, Wiederherstellung, Aufbewahrung und Löschen alter Räume, Zustandsseite."
+        },
+        {
+          "id": "LIB-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 4,
+          "next": "Weitere Ensembles und Tipps nach Spielrückmeldung; Redstone-Bauten im Spiel abnehmen."
+        },
+        {
+          "id": "ENTITY-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Export mit Entities im Spiel prüfen (S06). Truhen-/Schildinhalte bearbeiten ist mit EDIT-06 erledigt."
+        },
+        {
+          "id": "LIB-05",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "LIB-05-S08: Abnahme neuer Gebäude im Spiel durch Philipp."
+        },
+        {
+          "id": "BASE-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme durch Philipp (S06, BIB-10, BIB-19, BIB-20); Küstenlinie, Wegstufen und Brücken sind über TERRAIN-03-S06/S08 umgesetzt."
+        },
+        {
+          "id": "SPLIT-01",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme mit echten Dateien (S05)."
+        },
+        {
+          "id": "GROSS-01",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "Abnahme durch Philipp (S06 BIB-13, BIB-21, BIB-22)."
+        },
+        {
+          "id": "MAP-05",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05); denkbar: gedrehte Projektlagen auf der Weltkarte, damit gedrehte Hologramme übernommen werden können."
+        },
+        {
+          "id": "MAP-06",
+          "status": "implemented",
+          "done": 7,
+          "total": 8,
+          "next": "Abnahme durch Philipp (S08); Mod-Umsetzung GAME-08; denkbar für Protokoll 3: Markierungen aus dem Spiel zurück in den Weltplan (Zeitstempel je Eintrag)."
+        },
+        {
+          "id": "MAP-07",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme KARTE-07; Server-Plugin könnte Pläne gedreht ablegen (Thread „Mod, Server und Client mit Fallbacks ausbauen“)."
+        },
+        {
+          "id": "GEN-03",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Philipp baut das Kolosseum im Spiel nach (BIB-14, mit Statuen und Hypogäum-Treppen)."
+        },
+        {
+          "id": "SIZE-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05) mit einem großen Bau im Spiel."
+        },
+        {
+          "id": "COOP-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp mit Mitspielern (TEAMBAU-01…05)."
+        },
+        {
+          "id": "COOP-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme auf Philipps Server."
+        },
+        {
+          "id": "COOP-03",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Abnahme TEAMBAU-09 auf Philipps Server mit Mod 0.10.0 und Paper-Plugin mit Teamkanal; Lagerkisten (COOP-04) über TeamChannel.decorate/broadcastStore."
+        },
+        {
+          "id": "COOP-04",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme TEAMBAU-07/08 auf Philipps Server; Vertiefung in COOP-05 (geprüfte Lagerkisten, docs/architecture/LAGERKISTEN.md)."
+        },
+        {
+          "id": "COOP-05",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme LAGER-01…09 und LAGER-11 auf Philipps Server."
+        },
+        {
+          "id": "COOP-06",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Plugin-Faltung der neuen Arten (Plugin-Thread); Abnahme durch Philipp mit Mitspielern."
+        },
+        {
+          "id": "PROJ-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05); danach Lagerbuchungen je Bauleute und Mitspieler aus dem Spiel."
+        },
+        {
+          "id": "GAME-10",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme MOD-16 auf Philipps Server mit Paper-Plugin."
+        },
+        {
+          "id": "GAME-12",
+          "status": "implemented",
+          "done": 5,
+          "total": 6,
+          "next": "Abnahme MOD-25 bis MOD-28 im Spiel."
+        },
+        {
+          "id": "COOP-07",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Spieltest TEAMBAU-25 mit Mitspielern (Philipp); Steuerkanal und Kopplung ohne Befehl umgesetzt (LINK-05)."
+        },
+        {
+          "id": "COOP-08",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme LAGER-10 mit einer echten Farm; Ertragsbuch in TEAMBAU-28."
+        },
+        {
+          "id": "PROD-01",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme PROJ-12; später Erträge aus geprüften Lagerkisten (COOP-05) ins Ertragsbuch."
+        },
+        {
+          "id": "PROD-02",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme PROJ-13."
+        },
+        {
+          "id": "PROD-03",
+          "status": "implemented",
+          "done": 3,
+          "total": 3,
+          "next": "Später: Ofenstraße aus dem Katalog direkt vorschlagen und in die Planung legen."
+        },
+        {
+          "id": "PROD-04",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme PROJ-13; danach Farmerträge aus Mod/Plugin."
+        },
+        {
+          "id": "PROD-05",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Test im Spiel: Ertragskiste mit Farm verknüpfen, Rate im Reiter Produktion prüfen."
+        },
+        {
+          "id": "LINK-01",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme LINK-01 auf Philipps Server."
+        },
+        {
+          "id": "LINK-02",
+          "status": "implemented",
+          "done": 4,
+          "total": 4,
+          "next": "Abnahme LINK-02 und LINK-11."
+        },
+        {
+          "id": "LINK-03",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme LIVE-01 in Philipps Modpack."
+        },
+        {
+          "id": "LINK-04",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme durch Philipp."
+        },
+        {
+          "id": "LINK-05",
+          "status": "implemented",
+          "done": 5,
+          "total": 5,
+          "next": "Abnahme vom iPad (Testplan LINK-04)."
+        },
+        {
+          "id": "LINK-06",
+          "status": "implemented",
+          "done": 2,
+          "total": 2,
+          "next": "Abnahme durch Philipp (Testplan LINK-05, LINK-06; Paper-Plugin 0.13.0 auf dem Server)."
+        },
+        {
+          "id": "COOP-09",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme mit Mitspielern (TEAMBAU-25)."
+        },
+        {
+          "id": "COOP-10",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Abnahme mit Mitspielern ohne Plugin (TEAMBAU-27, TEAMBAU-25)."
+        },
+        {
+          "id": "COOP-11",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme TEAMBAU-28 durch Philipp; danach optional team.digest im Plugin/Mod-TeamLog (Thread „Mod, Server und Client mit Fallbacks ausbauen“)."
+        },
+        {
+          "id": "PROJ-02",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (S05, PROJ-16…18)."
+        },
+        {
+          "id": "PROJ-03",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme PROJ-20 durch Philipp."
+        },
+        {
+          "id": "PROJ-04",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Abnahme PROJ-21 durch Philipp."
+        },
+        {
+          "id": "PROJ-05",
+          "status": "implemented",
+          "done": 2,
+          "total": 3,
+          "next": "Abnahme PROJ-23 durch Philipp."
+        },
+        {
+          "id": "EDIT-06",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "EDIT-06-S05: Philipp prüft das Bauen im 3D-Bild auf PC und iPad (WERK-08) und lädt eine Truhe/ein Schild mit Inhalt im Spiel (WERK-09)."
+        },
+        {
+          "id": "GUIDE-01",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme durch Philipp (START-08/09); Begriffe mit „Bedienung des Planers vereinfachen“ (Reiter-Kurzsätze) und UI-03 abgleichen."
+        },
+        {
+          "id": "UI-03",
+          "status": "implemented",
+          "done": 4,
+          "total": 5,
+          "next": "Abnahme START-20/21 durch Philipp am iPad; gruppierte Projektreiter aus „Bedienung vereinfachen“ und Anleitung optisch mitziehen; Werte an das Mod-Menü weitergeben."
         }
       ]
     }
