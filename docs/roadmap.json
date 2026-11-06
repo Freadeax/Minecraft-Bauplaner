@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-07T01:04:09.413Z",
+  "updatedAt": "2026-11-07T01:12:24.706Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -1675,7 +1675,7 @@
       "title": "Ein verbindliches Java-Versionsprofil",
       "phase": "P2",
       "priority": "P0",
-      "status": "implemented",
+      "status": "verified",
       "owner": "Claude (Thread „Liegengebliebene Datenpakete abarbeiten“)",
       "dependencies": [
         "ARCH-01"
@@ -1710,7 +1710,7 @@
       "acceptance": [
         "DataVersion allein behauptet keine Kompatibilität."
       ],
-      "next": "Abnahme: Profilprüfung im Gebäudeblatt an einer echten älteren Schem-/Litematic-Datei ansehen (Testphase).",
+      "next": "Erledigt; ältere Datei in der Oberfläche in DATEI-02.",
       "blockers": [],
       "evidence": [
         {
@@ -1720,17 +1720,21 @@
         {
           "path": "docs/architecture/formate/VERSION_PROFILE.md",
           "note": "Herkunft, Hashes, Neuerzeugung, Regeln."
+        },
+        {
+          "path": "scripts/mod/test_exports_ingame.sh",
+          "note": "Block 1 (06.11.2026): echter Minecraft-26.3-Client mit Litematica 0.29.1 und WorldEdit 7.4.6, Vergleich in scripts/mod/export_check.mjs, 22/22 Prüfungen; Nachweis docs/TESTING.md."
         }
       ],
       "verification": {
         "state": "passed",
-        "note": "Offizielle server.jar 26.3 (SHA-1 geprüft) mit JDK 25 ausgewertet; blocks.json-Hash identisch mit BLOCK-01. tests/profile.test.mjs und die Block-/Zustandstests grün. Browserdarstellung der Profilprüfung nur im Build geprüft."
+        "note": "Spielprüfung: Profil = Register des laufenden Spiels (1286 Blöcke mit Zuständen und Grundzuständen, 1658 Items, 49 BlockEntity-Typen, DataVersion 5023)."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:12:24.706Z",
       "area": "KERN",
       "thread": "Exporte im echten Spiel automatisch prüfen",
       "philipp": [],
@@ -1741,7 +1745,7 @@
       "title": "Semantische BlockEntity-Transformationen",
       "phase": "P2",
       "priority": "P0",
-      "status": "implemented",
+      "status": "verified",
       "owner": "Claude (Thread „Liegengebliebene Datenpakete abarbeiten“)",
       "dependencies": [
         "PROFILE-01"
@@ -1771,7 +1775,7 @@
       "acceptance": [
         "Ungeklärte Transformation sperrt verlässlichen Export; keine stillen NBT-Verluste."
       ],
-      "next": "Abnahme im Spiel: gedrehtes Bauteil mit Truhen, Schildern und einem Strukturblock exportieren und in 26.3 laden (Testphase).",
+      "next": "Erledigt; Stichprobe in DATEI-08.",
       "blockers": [],
       "evidence": [
         {
@@ -1785,17 +1789,21 @@
         {
           "path": "tests/unit/formats/nbt-transforms.test.mjs",
           "note": "NBT-01-S03: handgerechnete SAVE-Bereiche, LOAD-Anker und Drehungsfolge, vier Drehungen = Ausgangszustand."
+        },
+        {
+          "path": "scripts/mod/test_exports_ingame.sh",
+          "note": "Block 1 (06.11.2026): echter Minecraft-26.3-Client mit Litematica 0.29.1 und WorldEdit 7.4.6, Vergleich in scripts/mod/export_check.mjs, 22/22 Prüfungen; Nachweis docs/TESTING.md."
         }
       ],
       "verification": {
         "state": "passed",
-        "note": "Node-Tests mit konkreten Richtungen; Spielabnahme offen."
+        "note": "Spielprüfung: gedrehte/gespiegelte Exporte mit Truhen, Doppeltruhe, Fass, Schildern, Strukturblock in Litematica und WorldEdit = Plan und = eigene Drehung des Spiels (StructureTemplate); gedrehter Strukturblock speichert denselben Bereich; Spiegeln mit Strukturblock gesperrt."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:12:24.706Z",
       "area": "KERN",
       "thread": "Exporte im echten Spiel automatisch prüfen",
       "philipp": [],
@@ -1806,7 +1814,7 @@
       "title": "Schem v3 an echten Referenzwerkzeugen abnehmen",
       "phase": "P2",
       "priority": "P0",
-      "status": "implemented",
+      "status": "verified",
       "owner": "Claude (Thread „Liegengebliebene Datenpakete abarbeiten“)",
       "dependencies": [
         "PROFILE-01",
@@ -1830,17 +1838,15 @@
         },
         {
           "id": "FORMAT-01-S02",
-          "title": "Echte WorldEdit-Dateien importieren, exportieren und vergleichen: Prüfwerkzeug `npm run format:check-schem` (Zellen, Zustände, Offset, WEOffset, BlockEntities, Entities, unabhängiger Verifier) steht; offen ist der Lauf mit einer echten, in WorldEdit gespeicherten Datei.",
-          "done": false
+          "title": "Echte WorldEdit-Dateien: im Spiel mit //copy -e und //schem save gespeichert, im Planer gelesen (Zellen, Zustände, Offset, BlockEntities, Entities, Profil „passt“, format:check-schem grün), als Bauteil wieder exportiert und mit //schem load + //paste an derselben Stelle eingefügt (automatische Spielprüfung).",
+          "done": true
         }
       ],
       "acceptance": [
         "Zellen, Zustände, Ursprung und BlockEntities semantisch erhalten."
       ],
-      "next": "Hochgeladene WorldEdit-Datei mit npm run format:check-schem prüfen; Befunde beheben.",
-      "blockers": [
-        "Echte WorldEdit-Datei fehlt: WorldEdit/Paper dürfen in der Cloud-Umgebung nicht als Fremdcode laufen."
-      ],
+      "next": "Erledigt; Stichprobe mit Philipps Modpack in DATEI-08.",
+      "blockers": [],
       "evidence": [
         {
           "path": "tests/unit/formats/schem.test.mjs",
@@ -1857,25 +1863,24 @@
         {
           "path": "docs/architecture/formate/SCHEM_EXPORT.md",
           "note": "Abschnitt Rundlauf mit echten WorldEdit-Dateien."
+        },
+        {
+          "path": "scripts/mod/test_exports_ingame.sh",
+          "note": "Block 1 (06.11.2026): echter Minecraft-26.3-Client mit Litematica 0.29.1 und WorldEdit 7.4.6, Vergleich in scripts/mod/export_check.mjs, 22/22 Prüfungen; Nachweis docs/TESTING.md."
         }
       ],
       "verification": {
-        "state": "pending",
-        "note": "Abnahme noch nicht vollständig erbracht."
+        "state": "passed",
+        "note": "Spielprüfung 22/22: Planer-.schem laden in WorldEdit 7.4.6 (vorher Abbruch wegen fehlender Entity-Rotation, behoben), echte WorldEdit-Datei Rundlauf Block für Block gleich."
       },
       "delivery": {
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:12:24.706Z",
       "area": "KERN",
       "thread": "Exporte im echten Spiel automatisch prüfen",
-      "philipp": [
-        {
-          "kind": "datei",
-          "text": "Auf deinem Paper-Server mit WorldEdit ein kleines Gebäude mit Kiste/Schild auswählen, //copy, //schem save bauplaner-test und die Datei aus plugins/WorldEdit/schematics hier hochladen (FORMAT-01-S02)."
-        }
-      ],
+      "philipp": [],
       "orphans": []
     },
     {
@@ -1883,7 +1888,7 @@
       "title": "Litematic an echten Referenzdateien abnehmen",
       "phase": "P2",
       "priority": "P0",
-      "status": "implemented",
+      "status": "verified",
       "owner": "Claude (Thread „Litematic-Dateien wie Vorlagen aufschlüsseln“)",
       "dependencies": [
         "PROFILE-01",
@@ -1910,8 +1915,8 @@
         },
         {
           "id": "FORMAT-02-S02",
-          "title": "Echte Litematica-Dateien lesen (erledigt 02.11.: 2 Litematica- und 3 Konverterdateien) und Export im Spiel prüfen (offen).",
-          "done": false
+          "title": "Echte Litematica-Dateien lesen (02.11.) und Export im Spiel prüfen: Litematica 0.29.1 fügt ungedrehte, gedrehte, gespiegelte und Kupfer-Exporte Block für Block wie geplant ein; im Spiel gespeicherte .litematic öffnet mit Offset des Originals und sitzt nach Wiederexport an derselben Stelle.",
+          "done": true
         },
         {
           "id": "FORMAT-02-S03",
@@ -1928,7 +1933,7 @@
         "Format- und DataVersion-Grenzen werden explizit gemeldet.",
         "Echte Dateien aus dem Netz (unkomprimiert, ferne Ecke mit negativer Größe, große Modelle) lesen sich mit stimmigen Blockzahlen; Export hat dieselbe Gliederung wie Litematica."
       ],
-      "next": "Export im Spiel mit Litematica laden (Philipps PC, Fabric 26.3) – FORMAT-02-S02.",
+      "next": "Erledigt; Stichprobe mit Philipps Modpack in DATEI-08.",
       "blockers": [],
       "evidence": [
         {
@@ -1946,25 +1951,24 @@
         {
           "path": "docs/architecture/formate/LITEMATIC.md",
           "note": "Tabelle der fünf echten Dateien vorher/nachher"
+        },
+        {
+          "path": "scripts/mod/test_exports_ingame.sh",
+          "note": "Block 1 (06.11.2026): echter Minecraft-26.3-Client mit Litematica 0.29.1 und WorldEdit 7.4.6, Vergleich in scripts/mod/export_check.mjs, 22/22 Prüfungen; Nachweis docs/TESTING.md."
         }
       ],
       "verification": {
-        "state": "pending",
-        "note": "Leser an fünf echten Dateien geprüft (lokal, nicht im Repo); Export im Spiel weiter offen."
+        "state": "passed",
+        "note": "Spielprüfung 22/22 (Litematica 0.29.1 im Fabric-Clientspieltest)."
       },
       "delivery": {
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:12:24.706Z",
       "area": "KERN",
       "thread": "Exporte im echten Spiel automatisch prüfen",
-      "philipp": [
-        {
-          "kind": "spiel",
-          "text": "Litematic-Export im Spiel mit Litematica laden (S02)."
-        }
-      ],
+      "philipp": [],
       "orphans": []
     },
     {
@@ -2112,7 +2116,7 @@
       "title": "Kupfer mit Oxidation und Wachsstatus",
       "phase": "P2",
       "priority": "P1",
-      "status": "implemented",
+      "status": "verified",
       "owner": "Claude (Thread „Liegengebliebene Datenpakete abarbeiten“)",
       "dependencies": [
         "PROFILE-01",
@@ -2141,23 +2145,27 @@
       "acceptance": [
         "Keine unvollständige Kupferzuordnung als kompatibel anbieten."
       ],
-      "next": "Abnahme: Kupfervariante eines Bauwerks im Planer erzeugen und im Spiel ansehen (Testphase).",
+      "next": "Erledigt; Glas/Beton/Terrakotta und Oberfläche in PROJ-14.",
       "blockers": [],
       "evidence": [
         {
           "path": "tests/unit/materials/copper.test.mjs",
           "note": "15 vollständige Familien aus Weathering-Klassen, Tausch mit Properties und Truhen-NBT, Rezepte aller Stufen."
+        },
+        {
+          "path": "scripts/mod/test_exports_ingame.sh",
+          "note": "Block 1 (06.11.2026): echter Minecraft-26.3-Client mit Litematica 0.29.1 und WorldEdit 7.4.6, Vergleich in scripts/mod/export_check.mjs, 22/22 Prüfungen; Nachweis docs/TESTING.md."
         }
       ],
       "verification": {
         "state": "passed",
-        "note": "Node-Tests; Browser nur über bestehende Variantenansicht."
+        "note": "Spielprüfung: Kupfermatrix (15 Familien) = WeatheringCopper/HoneycombItem des laufenden Spiels; gewachste Variante bleibt unter random_tick_speed 1000 unverändert, ungewachste altert (14/16)."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:12:24.706Z",
       "area": "KERN",
       "thread": "Exporte im echten Spiel automatisch prüfen",
       "philipp": [],
@@ -2168,7 +2176,7 @@
       "title": "Verschiebungserkennung und BlockEntity-Diff",
       "phase": "P2",
       "priority": "P1",
-      "status": "implemented",
+      "status": "verified",
       "owner": "Claude (Thread „Liegengebliebene Datenpakete abarbeiten“)",
       "dependencies": [
         "CORE-02",
@@ -2203,7 +2211,7 @@
       "acceptance": [
         "Diff ist deterministisch und verändert keine Version."
       ],
-      "next": "Abnahme in der Testphase: zwei Stände eines verschobenen Bauwerks vergleichen.",
+      "next": "Erledigt; Oberfläche in BIB-02.",
       "blockers": [],
       "evidence": [
         {
@@ -2217,17 +2225,21 @@
         {
           "path": "docs/architecture/planer/SCHEM_VIEWS.md",
           "note": "Abschnitte Verschiebung erkennen / Inhalte und Folgen."
+        },
+        {
+          "path": "scripts/mod/test_exports_ingame.sh",
+          "note": "Block 1 (06.11.2026): echter Minecraft-26.3-Client mit Litematica 0.29.1 und WorldEdit 7.4.6, Vergleich in scripts/mod/export_check.mjs, 22/22 Prüfungen; Nachweis docs/TESTING.md."
         }
       ],
       "verification": {
         "state": "passed",
-        "note": "Node-Tests; Browsertests Bauversionen, Update-Vorschau, Hintergrundvergleich."
+        "note": "Spielprüfung: im Spiel geänderte Truhe und Schild, mit WorldEdit zwei Blöcke weiter gespeichert → Verschiebung −2/0/0 erkannt, genau 2 Inhaltsänderungen; behoben: leere components:{} des Spiels zählten als Datenänderung."
       },
       "delivery": {
         "main": "84838f0200be5fc4c8faef30a185a764ee474bd2",
         "pagesSource": "e232b26fbc457c20182e4e35581244234218664e"
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:12:24.706Z",
       "area": "KERN",
       "thread": "Exporte im echten Spiel automatisch prüfen",
       "philipp": [],
@@ -6928,7 +6940,7 @@
       "title": "Gemälde, Rahmen, Rüstungsständer und Blockinhalte",
       "phase": "P2",
       "priority": "P1",
-      "status": "implemented",
+      "status": "verified",
       "owner": "Claude (Thread „Gemälde, Rahmen und Rüstungsständer darstellen“)",
       "dependencies": [
         "FORMAT-02"
@@ -6982,14 +6994,14 @@
         },
         {
           "id": "ENTITY-01-S06",
-          "title": "Export mit Entities im Spiel laden (Litematica/WorldEdit, Philipps PC).",
-          "done": false
+          "title": "Export mit Gemälden, Rahmen und Rüstungsständern im Spiel geladen (Litematica/WorldEdit, automatische Spielprüfung); behoben: gerade breite Gemälde rückten um einen Block, WorldEdit-Gemälde (Pos = Blockposition) und Data-Positionen in .schem.",
+          "done": true
         }
       ],
       "acceptance": [
         "Echte Litematica-Dateien behalten Gemälde/Rahmen/Rüstungsständer an der richtigen Stelle; Roundtrip Litematic und Schem verlustfrei; alte Nutzlasten unverändert; keine Mojang-Texturen."
       ],
-      "next": "Export mit Entities im Spiel prüfen (S06). Truhen-/Schildinhalte bearbeiten ist mit EDIT-06 erledigt.",
+      "next": "Erledigt; Stichprobe in DATEI-08.",
       "blockers": [],
       "evidence": [
         {
@@ -7003,25 +7015,24 @@
         {
           "path": "docs/architecture/formate/ENTITIES.md",
           "note": "Vertrag und Grenzen."
+        },
+        {
+          "path": "scripts/mod/test_exports_ingame.sh",
+          "note": "Block 1 (06.11.2026): echter Minecraft-26.3-Client mit Litematica 0.29.1 und WorldEdit 7.4.6, Vergleich in scripts/mod/export_check.mjs, 22/22 Prüfungen; Nachweis docs/TESTING.md."
         }
       ],
       "verification": {
-        "state": "pending",
-        "note": "Unit- und Browsertests grün; Laden im Spiel offen."
+        "state": "passed",
+        "note": "Spielprüfung 22/22: Gemälde, Rahmen, Rüstungsständer an der geplanten Stelle, gedreht und gespiegelt, auch nach Rundlauf über echte WorldEdit-/Litematica-Dateien."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-07T01:12:24.706Z",
       "area": "KERN",
       "thread": "Exporte im echten Spiel automatisch prüfen",
-      "philipp": [
-        {
-          "kind": "spiel",
-          "text": "Export mit Gemälden, Rahmen und Rüstungsständern im Spiel laden (S06)."
-        }
-      ],
+      "philipp": [],
       "orphans": []
     },
     {
@@ -26398,6 +26409,90 @@
           "done": 5,
           "total": 6,
           "next": "Philipp baut das Kolosseum im Spiel nach (BIB-14, mit Statuen und Hypogäum-Treppen)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-07T01:12:24.706Z",
+      "kind": "progress",
+      "items": [
+        "FORMAT-01",
+        "FORMAT-02",
+        "NBT-01",
+        "ENTITY-01",
+        "DIFF-01",
+        "MAT-04",
+        "PROFILE-01"
+      ],
+      "summary": "Block 1: Exporte im echten Spiel automatisch geprüft (Litematica 0.29.1, WorldEdit 7.4.6, Vanilla, Minecraft 26.3): 22/22, 5 Formatfehler behoben",
+      "files": [
+        "apps/web/src/testing/autochecks.ts",
+        "docs/TESTING.md",
+        "docs/architecture/formate/ENTITIES.md",
+        "docs/architecture/formate/SCHEM_EXPORT.md",
+        "docs/testing/TESTPLAN.md",
+        "mods/bauplaner-bridge/export-check-26.3/build.gradle",
+        "mods/bauplaner-bridge/export-check-26.3/gradle.properties",
+        "mods/bauplaner-bridge/export-check-26.3/src/gametest/java/io/github/freadeax/bauplaner/exportcheck/ExportCheckGameTest.java",
+        "mods/bauplaner-bridge/export-check-26.3/src/gametest/resources/fabric.mod.json",
+        "mods/bauplaner-bridge/settings.gradle",
+        "packages/formats/src/schemWrite.ts",
+        "packages/voxel/src/diff.ts",
+        "packages/voxel/src/entities.ts",
+        "scripts/mod/export_check.mjs",
+        "scripts/mod/test_exports_ingame.sh",
+        "tests/unit/core/diff-shift.test.mjs",
+        "tests/unit/formats/entities.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "FORMAT-01",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Erledigt; Stichprobe mit Philipps Modpack in DATEI-08."
+        },
+        {
+          "id": "FORMAT-02",
+          "status": "verified",
+          "done": 4,
+          "total": 4,
+          "next": "Erledigt; Stichprobe mit Philipps Modpack in DATEI-08."
+        },
+        {
+          "id": "NBT-01",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Erledigt; Stichprobe in DATEI-08."
+        },
+        {
+          "id": "ENTITY-01",
+          "status": "verified",
+          "done": 6,
+          "total": 6,
+          "next": "Erledigt; Stichprobe in DATEI-08."
+        },
+        {
+          "id": "DIFF-01",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Erledigt; Oberfläche in BIB-02."
+        },
+        {
+          "id": "MAT-04",
+          "status": "verified",
+          "done": 2,
+          "total": 2,
+          "next": "Erledigt; Glas/Beton/Terrakotta und Oberfläche in PROJ-14."
+        },
+        {
+          "id": "PROFILE-01",
+          "status": "verified",
+          "done": 3,
+          "total": 3,
+          "next": "Erledigt; ältere Datei in der Oberfläche in DATEI-02."
         }
       ]
     }

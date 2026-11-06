@@ -197,7 +197,10 @@ function tileKey(data: NbtTag | undefined): string {
   if (!data) return '';
   const tile = blockEntityTile(data);
   const kept: Record<string, NbtTag> = {};
-  for (const k of Object.keys(tile)) if (!OWN_POSITION.has(k)) kept[k] = tile[k]!;
+  // Empty compounds/lists are the game's defaults (26.3 saves `components: {}` with every block entity, see the export
+  // check in the real game): absent and empty mean the same.
+  const empty = (t: NbtTag) => (t.type === 'compound' && Object.keys(t.value).length === 0) || (t.type === 'list' && t.value.length === 0);
+  for (const k of Object.keys(tile)) if (!OWN_POSITION.has(k) && !empty(tile[k]!)) kept[k] = tile[k]!;
   return Object.keys(kept).length === 0 || (Object.keys(kept).length === 1 && kept.id) ? '' : canonical({ type: 'compound', value: kept });
 }
 function contentChanges(x: NbtTag | undefined, y: NbtTag | undefined): string[] {

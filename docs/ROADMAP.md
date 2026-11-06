@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-07T01:04:09.413Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-07T01:12:24.706Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,8 +15,8 @@ Stand: 2026-11-07T01:04:09.413Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 3 |
 | 🚧 In Arbeit | 8 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 99 |
-| ✅ Im beschriebenen Umfang geprüft | 28 |
+| 🧩 Implementiert · Abnahme offen | 92 |
+| ✅ Im beschriebenen Umfang geprüft | 35 |
 | ⏸ Zurückgestellt | 3 |
 
 ## Überblick nach Bereichen
@@ -34,7 +34,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Paper-Plugin (Server)](#bereich-plugin) | 4 | 0 | 3 | 1 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
 | [Performance und Stabilität](#bereich-perf) | 5 | 0 | 2 | 3 |
-| [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 14 | 0 | 7 | 8 |
+| [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 7 | 0 | 4 | 15 |
 | [Testphase, Qualität und Betrieb](#bereich-qa) | 2 | 1 | 2 | 8 |
 | [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 3 | 0 | 0 | 0 |
 
@@ -211,21 +211,14 @@ Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft), PERF
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
 | [ARCH-02](#arch-02) | Planmodell | 🧩 Implementiert · Abnahme offen 6/7 | P0 | „Export und Datenmodell fertigstellen“ | Datencheck unter #/system mit deinen eigenen, lange gewachsenen Browserdaten (Stichprobe zu S05; automatisch mit drei alten Ständen geprüft). |
-| [FORMAT-01](#format-01) | Schem v3 an echten Referenzwerkzeugen abnehmen | 🧩 Implementiert · Abnahme offen 1/2 | P0 | „Exporte im echten Spiel automatisch prüfen“ | Auf deinem Paper-Server mit WorldEdit ein kleines Gebäude mit Kiste/Schild auswählen, //copy, //schem save bauplaner-test und die Datei aus plugins/WorldEdit/schematics hier hochladen (FORMAT-01-S02). |
-| [FORMAT-02](#format-02) | Litematic an echten Referenzdateien abnehmen | 🧩 Implementiert · Abnahme offen 3/4 | P0 | „Exporte im echten Spiel automatisch prüfen“ | Litematic-Export im Spiel mit Litematica laden (S02). |
-| [NBT-01](#nbt-01) | Semantische BlockEntity-Transformationen | 🧩 Implementiert · Abnahme offen 3/3 | P0 | „Exporte im echten Spiel automatisch prüfen“ | — |
-| [PROFILE-01](#profile-01) | Ein verbindliches Java-Versionsprofil | 🧩 Implementiert · Abnahme offen 3/3 | P0 | „Exporte im echten Spiel automatisch prüfen“ | — |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3 | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Einen Bau mit Spielprüfung ohne Hinweise nachbauen und Verbindungen vergleichen (S07). |
 | [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | Geänderte Gebäude (Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen (S06). |
 | [CORE-04](#core-04) | Planer-Kernmodule prüfen und überarbeiten | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Planer-Kernmodule prüfen und überarbeiten“ | Projekt mit Nachfolger und Bauplatz löschen; Blockeditor mit Änderungen verlassen; Truhe mit verzaubertem Schwert umsortieren (CORE-04-S05). |
-| [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Exporte im echten Spiel automatisch prüfen“ | — |
-| [ENTITY-01](#entity-01) | Gemälde, Rahmen, Rüstungsständer und Blockinhalte | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Exporte im echten Spiel automatisch prüfen“ | Export mit Gemälden, Rahmen und Rüstungsständern im Spiel laden (S06). |
 | [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Liegengebliebene Datenpakete abarbeiten“ | — |
 | [MAT-03](#mat-03) | Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Module und Systeme komplex ausarbeiten“ | — |
-| [MAT-04](#mat-04) | Kupfer mit Oxidation und Wachsstatus | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Exporte im echten Spiel automatisch prüfen“ | — |
 | [STRUCT-01](#struct-01) | Dateistruktur sauber neu ordnen | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Dateistruktur sauber neu ordnen“ | — |
 
-Abgeschlossen oder zurückgestellt: CORE-01 (geprüft), CORE-02 (geprüft), CORE-03 (geprüft), STORE-01 (geprüft), MAT-01 (geprüft), ARCH-01 (geprüft), STORE-02 (geprüft), GAME-01 (geprüft).
+Abgeschlossen oder zurückgestellt: CORE-01 (geprüft), CORE-02 (geprüft), CORE-03 (geprüft), STORE-01 (geprüft), MAT-01 (geprüft), ARCH-01 (geprüft), STORE-02 (geprüft), PROFILE-01 (geprüft), NBT-01 (geprüft), FORMAT-01 (geprüft), FORMAT-02 (geprüft), MAT-04 (geprüft), DIFF-01 (geprüft), GAME-01 (geprüft), ENTITY-01 (geprüft).
 
 <a id="bereich-qa"></a>
 
@@ -280,7 +273,6 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 
 ### Im Spiel an deinem PC
 
-- **FORMAT-02** · Litematic-Export im Spiel mit Litematica laden (S02).
 - **BLOCK-01** · Einen Bau mit Spielprüfung ohne Hinweise nachbauen und Verbindungen vergleichen (S07).
 - **BLOCK-02** · Geänderte Gebäude (Werkstatt, Windmühle, Torhaus, Stadthaus) per Litematic setzen (S06).
 - **EDIT-02** · Gesetzte und gedrehte Zustände im Spiel prüfen.
@@ -295,7 +287,6 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **GEN-02** · Treppenhaus, Torhaus-Wehrgang und Hafen im Spiel.
 - **MAP-02** · BlueMap-Marker (.conf) bzw. Dynmap-Befehle auf eurer Server-Karte einspielen und prüfen, ob Projekte, Wege und Punkte an der richtigen Stelle erscheinen (KARTE-08).
 - **LIB-04** · Redstone-Bauten im Spiel abnehmen.
-- **ENTITY-01** · Export mit Gemälden, Rahmen und Rüstungsständern im Spiel laden (S06).
 - **LIB-05** · Einige neu gezeichnete Gebäude im Spiel ansehen (S08).
 - **GROSS-01** · Großprojekte und die sechs Großbauten im Spiel ansehen (BIB-13).
 - **MAP-06** · Weltkarte mit Mod 0.8.0 oder neuer im Spiel abnehmen (S08, KARTE-05/06, LIVE-08).
@@ -336,7 +327,6 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 
 ### Dateien oder Welt liefern
 
-- **FORMAT-01** · Auf deinem Paper-Server mit WorldEdit ein kleines Gebäude mit Kiste/Schild auswählen, //copy, //schem save bauplaner-test und die Datei aus plugins/WorldEdit/schematics hier hochladen (FORMAT-01-S02).
 - **MODEL-01** · Eine 3MF in Bambu Studio oder Cura öffnen und einmal drucken (S05-Rest); Blender und PrusaSlicer sind automatisch geprüft.
 - **TERRAIN-01** · Kopie deiner 26.3-Welt für die Geländeabnahme (S05).
 - **TERRAIN-02** · Abnahme in deiner eigenen Welt und auf Touch-Geräten (S05).
@@ -395,12 +385,12 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 ## Aktiver Arbeitsblock
 
 - **QA-02 · Echte GPU-, Safari- und iPhone-Abnahme** — 🚧 In Arbeit, 1/2 Teilschritte. Nächster Schritt: Protokolle der Tester in docs/testing/GERAETEMATRIX.md eintragen und Befunde beheben.
-- **PROFILE-01 · Ein verbindliches Java-Versionsprofil** — 🧩 Implementiert · Abnahme offen, 3/3 Teilschritte. Nächster Schritt: Abnahme: Profilprüfung im Gebäudeblatt an einer echten älteren Schem-/Litematic-Datei ansehen (Testphase).
-- **NBT-01 · Semantische BlockEntity-Transformationen** — 🧩 Implementiert · Abnahme offen, 3/3 Teilschritte. Nächster Schritt: Abnahme im Spiel: gedrehtes Bauteil mit Truhen, Schildern und einem Strukturblock exportieren und in 26.3 laden (Testphase).
-- **FORMAT-01 · Schem v3 an echten Referenzwerkzeugen abnehmen** — 🧩 Implementiert · Abnahme offen, 1/2 Teilschritte. Nächster Schritt: Hochgeladene WorldEdit-Datei mit npm run format:check-schem prüfen; Befunde beheben.
+- **PROFILE-01 · Ein verbindliches Java-Versionsprofil** — ✅ Im beschriebenen Umfang geprüft, 3/3 Teilschritte. Nächster Schritt: Erledigt; ältere Datei in der Oberfläche in DATEI-02.
+- **NBT-01 · Semantische BlockEntity-Transformationen** — ✅ Im beschriebenen Umfang geprüft, 3/3 Teilschritte. Nächster Schritt: Erledigt; Stichprobe in DATEI-08.
+- **FORMAT-01 · Schem v3 an echten Referenzwerkzeugen abnehmen** — ✅ Im beschriebenen Umfang geprüft, 2/2 Teilschritte. Nächster Schritt: Erledigt; Stichprobe mit Philipps Modpack in DATEI-08.
 - **MAT-02 · Versionierte Item-/Rezeptauflösung vervollständigen** — 🧩 Implementiert · Abnahme offen, 3/3 Teilschritte. Nächster Schritt: Abnahme in der Testphase: Rohstoffliste eines großen Bauwerks mit gewählter Holzart und Brennstoff mit dem Spiel vergleichen.
-- **MAT-04 · Kupfer mit Oxidation und Wachsstatus** — 🧩 Implementiert · Abnahme offen, 2/2 Teilschritte. Nächster Schritt: Abnahme: Kupfervariante eines Bauwerks im Planer erzeugen und im Spiel ansehen (Testphase).
-- **DIFF-01 · Verschiebungserkennung und BlockEntity-Diff** — 🧩 Implementiert · Abnahme offen, 3/3 Teilschritte. Nächster Schritt: Abnahme in der Testphase: zwei Stände eines verschobenen Bauwerks vergleichen.
+- **MAT-04 · Kupfer mit Oxidation und Wachsstatus** — ✅ Im beschriebenen Umfang geprüft, 2/2 Teilschritte. Nächster Schritt: Erledigt; Glas/Beton/Terrakotta und Oberfläche in PROJ-14.
+- **DIFF-01 · Verschiebungserkennung und BlockEntity-Diff** — ✅ Im beschriebenen Umfang geprüft, 3/3 Teilschritte. Nächster Schritt: Erledigt; Oberfläche in BIB-02.
 - **GAME-02 · Fabric-Brücke kompilieren und im Spiel abnehmen** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Philipp testet die .jar aus /mnt/project-files/mod/ auf server.lmnt-gaming.net und meldet Ergebnis/Fehler (Anleitung ANLEITUNG_SPIELTEST.md).
 - **GAME-07 · Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server)** — 🧩 Implementiert · Abnahme offen, 10/11 Teilschritte. Nächster Schritt: Philipp prüft 0.19.0 im echten Spiel: gesperrter Bauplatz grau, Hologramm nur in einer Gruppe (Testfall MOD-21); danach Stufe 7.
 - **GAME-08 · Bauplaner-Mod Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten im Spiel (marks2), Mitspieler für die Karte (GET /v1/players), hello.protocol 2** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Philipp prüft Protokoll 3 im echten Spiel (TESTPLAN MOD-17); Forge und Paper ohne Live-Verbindung.
@@ -502,19 +492,19 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 | ID | Arbeitspaket | Status | Schritte | Abhängigkeiten | Main | Pages-Quelle |
 |---|---|---|---:|---|---|---|
-| [PROFILE-01](#profile-01) | Ein verbindliches Java-Versionsprofil | 🧩 Implementiert · Abnahme offen | 3/3 | ARCH-01 | ausstehend | ausstehend |
-| [NBT-01](#nbt-01) | Semantische BlockEntity-Transformationen | 🧩 Implementiert · Abnahme offen | 3/3 | PROFILE-01 | ausstehend | ausstehend |
-| [FORMAT-01](#format-01) | Schem v3 an echten Referenzwerkzeugen abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | PROFILE-01, NBT-01 | `84838f0` | `e232b26` |
-| [FORMAT-02](#format-02) | Litematic an echten Referenzdateien abnehmen | 🧩 Implementiert · Abnahme offen | 3/4 | PROFILE-01, NBT-01 | `84838f0` | `e232b26` |
+| [PROFILE-01](#profile-01) | Ein verbindliches Java-Versionsprofil | ✅ Im beschriebenen Umfang geprüft | 3/3 | ARCH-01 | ausstehend | ausstehend |
+| [NBT-01](#nbt-01) | Semantische BlockEntity-Transformationen | ✅ Im beschriebenen Umfang geprüft | 3/3 | PROFILE-01 | ausstehend | ausstehend |
+| [FORMAT-01](#format-01) | Schem v3 an echten Referenzwerkzeugen abnehmen | ✅ Im beschriebenen Umfang geprüft | 2/2 | PROFILE-01, NBT-01 | `84838f0` | `e232b26` |
+| [FORMAT-02](#format-02) | Litematic an echten Referenzdateien abnehmen | ✅ Im beschriebenen Umfang geprüft | 4/4 | PROFILE-01, NBT-01 | `84838f0` | `e232b26` |
 | [MAT-02](#mat-02) | Versionierte Item-/Rezeptauflösung vervollständigen | 🧩 Implementiert · Abnahme offen | 3/3 | PROFILE-01, MAT-01 | ausstehend | ausstehend |
 | [MAT-03](#mat-03) | Vorhandene Glas-/Beton-/Terrakottavarianten abnehmen | 🧩 Implementiert · Abnahme offen | 3/3 | PROFILE-01, QA-01 | `84838f0` | `e232b26` |
-| [MAT-04](#mat-04) | Kupfer mit Oxidation und Wachsstatus | 🧩 Implementiert · Abnahme offen | 2/2 | PROFILE-01, MAT-03 | ausstehend | ausstehend |
-| [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | 🧩 Implementiert · Abnahme offen | 3/3 | CORE-02, NBT-01 | `84838f0` | `e232b26` |
+| [MAT-04](#mat-04) | Kupfer mit Oxidation und Wachsstatus | ✅ Im beschriebenen Umfang geprüft | 2/2 | PROFILE-01, MAT-03 | ausstehend | ausstehend |
+| [DIFF-01](#diff-01) | Verschiebungserkennung und BlockEntity-Diff | ✅ Im beschriebenen Umfang geprüft | 3/3 | CORE-02, NBT-01 | `84838f0` | `e232b26` |
 | [PERF-01](#perf-01) | Große Berechnungen als abbrechbare Worker-Aufträge | ✅ Im beschriebenen Umfang geprüft | 3/3 | ARCH-01 | `7dffd92` | `7dffd92` |
 | [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen | 3/3 | PERF-01 | `7dffd92` | `7dffd92` |
 | [PERF-03](#perf-03) | Bundle, große Views und Vorschaucache | ✅ Im beschriebenen Umfang geprüft | 3/3 | ARCH-01, QA-01 | ausstehend | ausstehend |
 | [VIEW-01](#view-01) | Vorhandenen Viewer vollständig abnehmen | 🧩 Implementiert · Abnahme offen | 1/2 | QA-01 | `84838f0` | `e232b26` |
-| [ENTITY-01](#entity-01) | Gemälde, Rahmen, Rüstungsständer und Blockinhalte | 🧩 Implementiert · Abnahme offen | 5/6 | FORMAT-02 | ausstehend | ausstehend |
+| [ENTITY-01](#entity-01) | Gemälde, Rahmen, Rüstungsständer und Blockinhalte | ✅ Im beschriebenen Umfang geprüft | 6/6 | FORMAT-02 | ausstehend | ausstehend |
 
 ## P3: Architekturwerkbank und Bauablauf ausbauen
 
@@ -1130,7 +1120,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PROFILE-01
 
-**Ein verbindliches Java-Versionsprofil** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Exporte im echten Spiel automatisch prüfen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Ein verbindliches Java-Versionsprofil** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Exporte im echten Spiel automatisch prüfen“ · Aktualisiert: 2026-11-07T01:12:24.706Z
 
 - [x] PROFILE-01-S01: Registryreport und Zielversion mit Herkunft/Hash dokumentieren.
 - [x] PROFILE-01-S02: Block-/Property-/Item-/Rezeptdaten an das Profil binden.
@@ -1138,11 +1128,11 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** DataVersion allein behauptet keine Kompatibilität.
 
-**Nächste Aktion:** Abnahme: Profilprüfung im Gebäudeblatt an einer echten älteren Schem-/Litematic-Datei ansehen (Testphase).
+**Nächste Aktion:** Erledigt; ältere Datei in der Oberfläche in DATEI-02.
 
-**Prüfstand:** Offizielle server.jar 26.3 (SHA-1 geprüft) mit JDK 25 ausgewertet; blocks.json-Hash identisch mit BLOCK-01. tests/profile.test.mjs und die Block-/Zustandstests grün. Browserdarstellung der Profilprüfung nur im Build geprüft.
+**Prüfstand:** Spielprüfung: Profil = Register des laufenden Spiels (1286 Blöcke mit Zuständen und Grundzuständen, 1658 Items, 49 BlockEntity-Typen, DataVersion 5023).
 
-**Nachweise:** [tests/unit/formats/profile.test.mjs](../tests/unit/formats/profile.test.mjs) — Hashes/gleiche Jar wie BLOCK-01, Register = Serverbericht, Items, Brennstoffe, DataVersion-Regel.; [docs/architecture/formate/VERSION_PROFILE.md](architecture/formate/VERSION_PROFILE.md) — Herkunft, Hashes, Neuerzeugung, Regeln.
+**Nachweise:** [tests/unit/formats/profile.test.mjs](../tests/unit/formats/profile.test.mjs) — Hashes/gleiche Jar wie BLOCK-01, Register = Serverbericht, Items, Brennstoffe, DataVersion-Regel.; [docs/architecture/formate/VERSION_PROFILE.md](architecture/formate/VERSION_PROFILE.md) — Herkunft, Hashes, Neuerzeugung, Regeln.; [scripts/mod/test_exports_ingame.sh](../scripts/mod/test_exports_ingame.sh) — Block 1 (06.11.2026): echter Minecraft-26.3-Client mit Litematica 0.29.1 und WorldEdit 7.4.6, Vergleich in scripts/mod/export_check.mjs, 22/22 Prüfungen; Nachweis docs/TESTING.md.
 
 **Dateiumfang:** `packages/voxel/src/profile.ts`, `packages/voxel/src/profileData.ts`, `packages/domain/src/materials/profileRecipes.ts`, `packages/voxel/src/blockRegistry.ts`, `scripts/gen/gen_profile.mjs`. **Abhängigkeiten:** ARCH-01. **Alte IDs:** P1-02a.
 
@@ -1150,7 +1140,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### NBT-01
 
-**Semantische BlockEntity-Transformationen** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Exporte im echten Spiel automatisch prüfen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Semantische BlockEntity-Transformationen** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Exporte im echten Spiel automatisch prüfen“ · Aktualisiert: 2026-11-07T01:12:24.706Z
 
 - [x] NBT-01-S01: Zu unterstützende NBT-Familien und Positions-/Ausrichtungsregeln festlegen.
 - [x] NBT-01-S02: Adapter mit konkreten Richtungen und unbekannten Restdaten prüfen.
@@ -1158,11 +1148,11 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Ungeklärte Transformation sperrt verlässlichen Export; keine stillen NBT-Verluste.
 
-**Nächste Aktion:** Abnahme im Spiel: gedrehtes Bauteil mit Truhen, Schildern und einem Strukturblock exportieren und in 26.3 laden (Testphase).
+**Nächste Aktion:** Erledigt; Stichprobe in DATEI-08.
 
-**Prüfstand:** Node-Tests mit konkreten Richtungen; Spielabnahme offen.
+**Prüfstand:** Spielprüfung: gedrehte/gespiegelte Exporte mit Truhen, Doppeltruhe, Fass, Schildern, Strukturblock in Litematica und WorldEdit = Plan und = eigene Drehung des Spiels (StructureTemplate); gedrehter Strukturblock speichert denselben Bereich; Spiegeln mit Strukturblock gesperrt.
 
-**Nachweise:** [tests/unit/formats/nbt-transforms.test.mjs](../tests/unit/formats/nbt-transforms.test.mjs) — 49 Profiltypen mit Familie, Drehungen/Spiegelungen, Weltpositionen, Befehle, Strukturblock, Mod-Typ, Positionsfelder.; [docs/architecture/formate/NBT_TRANSFORMS.md](architecture/formate/NBT_TRANSFORMS.md) — Familien und Regeln.; [tests/unit/formats/nbt-transforms.test.mjs](../tests/unit/formats/nbt-transforms.test.mjs) — NBT-01-S03: handgerechnete SAVE-Bereiche, LOAD-Anker und Drehungsfolge, vier Drehungen = Ausgangszustand.
+**Nachweise:** [tests/unit/formats/nbt-transforms.test.mjs](../tests/unit/formats/nbt-transforms.test.mjs) — 49 Profiltypen mit Familie, Drehungen/Spiegelungen, Weltpositionen, Befehle, Strukturblock, Mod-Typ, Positionsfelder.; [docs/architecture/formate/NBT_TRANSFORMS.md](architecture/formate/NBT_TRANSFORMS.md) — Familien und Regeln.; [tests/unit/formats/nbt-transforms.test.mjs](../tests/unit/formats/nbt-transforms.test.mjs) — NBT-01-S03: handgerechnete SAVE-Bereiche, LOAD-Anker und Drehungsfolge, vier Drehungen = Ausgangszustand.; [scripts/mod/test_exports_ingame.sh](../scripts/mod/test_exports_ingame.sh) — Block 1 (06.11.2026): echter Minecraft-26.3-Client mit Litematica 0.29.1 und WorldEdit 7.4.6, Vergleich in scripts/mod/export_check.mjs, 22/22 Prüfungen; Nachweis docs/TESTING.md.
 
 **Dateiumfang:** `packages/voxel/src/nbtTransforms.ts`, `packages/voxel/src/transforms.ts`. **Abhängigkeiten:** PROFILE-01. **Alte IDs:** —.
 
@@ -1170,22 +1160,18 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### FORMAT-01
 
-**Schem v3 an echten Referenzwerkzeugen abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Exporte im echten Spiel automatisch prüfen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Schem v3 an echten Referenzwerkzeugen abnehmen** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Exporte im echten Spiel automatisch prüfen“ · Aktualisiert: 2026-11-07T01:12:24.706Z
 
 - [x] FORMAT-01-S01: Import/Export, Worker, Limits, unabhängige Binärfixture und Python-Verifier vorhanden.
-- [ ] FORMAT-01-S02: Echte WorldEdit-Dateien importieren, exportieren und vergleichen: Prüfwerkzeug `npm run format:check-schem` (Zellen, Zustände, Offset, WEOffset, BlockEntities, Entities, unabhängiger Verifier) steht; offen ist der Lauf mit einer echten, in WorldEdit gespeicherten Datei.
+- [x] FORMAT-01-S02: Echte WorldEdit-Dateien: im Spiel mit //copy -e und //schem save gespeichert, im Planer gelesen (Zellen, Zustände, Offset, BlockEntities, Entities, Profil „passt“, format:check-schem grün), als Bauteil wieder exportiert und mit //schem load + //paste an derselben Stelle eingefügt (automatische Spielprüfung).
 
 **Abnahme:** Zellen, Zustände, Ursprung und BlockEntities semantisch erhalten.
 
-**Nächste Aktion:** Hochgeladene WorldEdit-Datei mit npm run format:check-schem prüfen; Befunde beheben.
+**Nächste Aktion:** Erledigt; Stichprobe mit Philipps Modpack in DATEI-08.
 
-**Blocker:** Echte WorldEdit-Datei fehlt: WorldEdit/Paper dürfen in der Cloud-Umgebung nicht als Fremdcode laufen.
+**Prüfstand:** Spielprüfung 22/22: Planer-.schem laden in WorldEdit 7.4.6 (vorher Abbruch wegen fehlender Entity-Rotation, behoben), echte WorldEdit-Datei Rundlauf Block für Block gleich.
 
-**Nur Philipp:** Dateien oder Welt liefern: Auf deinem Paper-Server mit WorldEdit ein kleines Gebäude mit Kiste/Schild auswählen, //copy, //schem save bauplaner-test und die Datei aus plugins/WorldEdit/schematics hier hochladen (FORMAT-01-S02).
-
-**Prüfstand:** Abnahme noch nicht vollständig erbracht.
-
-**Nachweise:** [tests/unit/formats/schem.test.mjs](../tests/unit/formats/schem.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/unit/formats/schem-export.test.mjs](../tests/unit/formats/schem-export.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/unit/formats/schem-roundtrip.test.mjs](../tests/unit/formats/schem-roundtrip.test.mjs) — Datei im WorldEdit-Aufbau (absoluter Offset, WEOffset, ungeordnete Properties, BlockEntity mit Data, Entity): Import → Export → Import semantisch gleich, WEOffset-Verschiebung als Hinweis gemeldet; kaputte Datei = Lesefehler.; [docs/architecture/formate/SCHEM_EXPORT.md](architecture/formate/SCHEM_EXPORT.md) — Abschnitt Rundlauf mit echten WorldEdit-Dateien.
+**Nachweise:** [tests/unit/formats/schem.test.mjs](../tests/unit/formats/schem.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/unit/formats/schem-export.test.mjs](../tests/unit/formats/schem-export.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/unit/formats/schem-roundtrip.test.mjs](../tests/unit/formats/schem-roundtrip.test.mjs) — Datei im WorldEdit-Aufbau (absoluter Offset, WEOffset, ungeordnete Properties, BlockEntity mit Data, Entity): Import → Export → Import semantisch gleich, WEOffset-Verschiebung als Hinweis gemeldet; kaputte Datei = Lesefehler.; [docs/architecture/formate/SCHEM_EXPORT.md](architecture/formate/SCHEM_EXPORT.md) — Abschnitt Rundlauf mit echten WorldEdit-Dateien.; [scripts/mod/test_exports_ingame.sh](../scripts/mod/test_exports_ingame.sh) — Block 1 (06.11.2026): echter Minecraft-26.3-Client mit Litematica 0.29.1 und WorldEdit 7.4.6, Vergleich in scripts/mod/export_check.mjs, 22/22 Prüfungen; Nachweis docs/TESTING.md.
 
 **Dateiumfang:** `packages/formats/src/schem.ts`, `packages/formats/src/schemWrite.ts`, `scripts/checks/check_schem_roundtrip.mjs`. **Abhängigkeiten:** PROFILE-01, NBT-01. **Alte IDs:** B2, P1-01, P3-01.
 
@@ -1193,22 +1179,20 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### FORMAT-02
 
-**Litematic an echten Referenzdateien abnehmen** · 🧩 Implementiert · Abnahme offen · Priorität P0 · Verantwortlich: Claude (Thread „Litematic-Dateien wie Vorlagen aufschlüsseln“) · Zuständiger Thread: „Exporte im echten Spiel automatisch prüfen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Litematic an echten Referenzdateien abnehmen** · ✅ Im beschriebenen Umfang geprüft · Priorität P0 · Verantwortlich: Claude (Thread „Litematic-Dateien wie Vorlagen aufschlüsseln“) · Zuständiger Thread: „Exporte im echten Spiel automatisch prüfen“ · Aktualisiert: 2026-11-07T01:12:24.706Z
 
 - [x] FORMAT-02-S01: Mehrregionen, negative Größen, Regionswahl und Writer mit unabhängigen Fixtures vorhanden.
-- [ ] FORMAT-02-S02: Echte Litematica-Dateien lesen (erledigt 02.11.: 2 Litematica- und 3 Konverterdateien) und Export im Spiel prüfen (offen).
+- [x] FORMAT-02-S02: Echte Litematica-Dateien lesen (02.11.) und Export im Spiel prüfen: Litematica 0.29.1 fügt ungedrehte, gedrehte, gespiegelte und Kupfer-Exporte Block für Block wie geplant ein; im Spiel gespeicherte .litematic öffnet mit Offset des Originals und sitzt nach Wiederexport an derselben Stelle.
 - [x] FORMAT-02-S03: Grenzen für Entities/Ticks und ältere Formate im Bericht bestätigen.
 - [x] FORMAT-02-S04: Unkomprimierte/zlib-Dateien, große Modelle bis 1 Mio. Blöcke, Aufschlüsselung (Metadata, Regionen, TileEntities/Entities nach Art) und alte IDs chain/grass in der Ansicht.
 
 **Abnahme:** Format- und DataVersion-Grenzen werden explizit gemeldet. Echte Dateien aus dem Netz (unkomprimiert, ferne Ecke mit negativer Größe, große Modelle) lesen sich mit stimmigen Blockzahlen; Export hat dieselbe Gliederung wie Litematica.
 
-**Nächste Aktion:** Export im Spiel mit Litematica laden (Philipps PC, Fabric 26.3) – FORMAT-02-S02.
+**Nächste Aktion:** Erledigt; Stichprobe mit Philipps Modpack in DATEI-08.
 
-**Nur Philipp:** Im Spiel an deinem PC: Litematic-Export im Spiel mit Litematica laden (S02).
+**Prüfstand:** Spielprüfung 22/22 (Litematica 0.29.1 im Fabric-Clientspieltest).
 
-**Prüfstand:** Leser an fünf echten Dateien geprüft (lokal, nicht im Repo); Export im Spiel weiter offen.
-
-**Nachweise:** [tests/unit/formats/litematic.test.mjs](../tests/unit/formats/litematic.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/unit/formats/litematic.test.mjs](../tests/unit/formats/litematic.test.mjs) — realworld-Fixture, Kompression, große Modelle, Metadata-Abgleich; [tests/e2e/litematic.e2e.mjs](../tests/e2e/litematic.e2e.mjs) — unkomprimierte Datei mit Aufschlüsselung in der Bibliothek; [docs/architecture/formate/LITEMATIC.md](architecture/formate/LITEMATIC.md) — Tabelle der fünf echten Dateien vorher/nachher
+**Nachweise:** [tests/unit/formats/litematic.test.mjs](../tests/unit/formats/litematic.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/unit/formats/litematic.test.mjs](../tests/unit/formats/litematic.test.mjs) — realworld-Fixture, Kompression, große Modelle, Metadata-Abgleich; [tests/e2e/litematic.e2e.mjs](../tests/e2e/litematic.e2e.mjs) — unkomprimierte Datei mit Aufschlüsselung in der Bibliothek; [docs/architecture/formate/LITEMATIC.md](architecture/formate/LITEMATIC.md) — Tabelle der fünf echten Dateien vorher/nachher; [scripts/mod/test_exports_ingame.sh](../scripts/mod/test_exports_ingame.sh) — Block 1 (06.11.2026): echter Minecraft-26.3-Client mit Litematica 0.29.1 und WorldEdit 7.4.6, Vergleich in scripts/mod/export_check.mjs, 22/22 Prüfungen; Nachweis docs/TESTING.md.
 
 **Dateiumfang:** `apps/web/src/app/importLimits.ts`, `apps/web/src/import.worker.ts`, `apps/web/src/views/library/LitematicRegions.tsx`, `fixtures/litematic/realworld.nbt.hex`, `packages/formats/src/litematic.ts`, `packages/formats/src/litematicWrite.ts`, `packages/formats/src/structure.ts`. **Abhängigkeiten:** PROFILE-01, NBT-01. **Alte IDs:** B10, P5-01.
 
@@ -1256,18 +1240,18 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAT-04
 
-**Kupfer mit Oxidation und Wachsstatus** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Exporte im echten Spiel automatisch prüfen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Kupfer mit Oxidation und Wachsstatus** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Exporte im echten Spiel automatisch prüfen“ · Aktualisiert: 2026-11-07T01:12:24.706Z
 
 - [x] MAT-04-S01: Zustandsmatrix und Formfamilien mit Profilbeleg definieren.
 - [x] MAT-04-S02: Tausch mit Properties, Wachs und Oxidation testen.
 
 **Abnahme:** Keine unvollständige Kupferzuordnung als kompatibel anbieten.
 
-**Nächste Aktion:** Abnahme: Kupfervariante eines Bauwerks im Planer erzeugen und im Spiel ansehen (Testphase).
+**Nächste Aktion:** Erledigt; Glas/Beton/Terrakotta und Oberfläche in PROJ-14.
 
-**Prüfstand:** Node-Tests; Browser nur über bestehende Variantenansicht.
+**Prüfstand:** Spielprüfung: Kupfermatrix (15 Familien) = WeatheringCopper/HoneycombItem des laufenden Spiels; gewachste Variante bleibt unter random_tick_speed 1000 unverändert, ungewachste altert (14/16).
 
-**Nachweise:** [tests/unit/materials/copper.test.mjs](../tests/unit/materials/copper.test.mjs) — 15 vollständige Familien aus Weathering-Klassen, Tausch mit Properties und Truhen-NBT, Rezepte aller Stufen.
+**Nachweise:** [tests/unit/materials/copper.test.mjs](../tests/unit/materials/copper.test.mjs) — 15 vollständige Familien aus Weathering-Klassen, Tausch mit Properties und Truhen-NBT, Rezepte aller Stufen.; [scripts/mod/test_exports_ingame.sh](../scripts/mod/test_exports_ingame.sh) — Block 1 (06.11.2026): echter Minecraft-26.3-Client mit Litematica 0.29.1 und WorldEdit 7.4.6, Vergleich in scripts/mod/export_check.mjs, 22/22 Prüfungen; Nachweis docs/TESTING.md.
 
 **Dateiumfang:** `packages/domain/src/materials/copper.ts`, `packages/domain/src/materials/variants.ts`, `packages/domain/src/materials/recipes.ts`. **Abhängigkeiten:** PROFILE-01, MAT-03. **Alte IDs:** MAT-04.
 
@@ -1275,7 +1259,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### DIFF-01
 
-**Verschiebungserkennung und BlockEntity-Diff** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Exporte im echten Spiel automatisch prüfen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Verschiebungserkennung und BlockEntity-Diff** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Claude (Thread „Liegengebliebene Datenpakete abarbeiten“) · Zuständiger Thread: „Exporte im echten Spiel automatisch prüfen“ · Aktualisiert: 2026-11-07T01:12:24.706Z
 
 - [x] DIFF-01-S01: Basisvergleich A/B für Geometrie und Materialien vorhanden.
 - [x] DIFF-01-S02: Verschiebung von echten Geometrieänderungen unterscheiden.
@@ -1283,11 +1267,11 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Diff ist deterministisch und verändert keine Version.
 
-**Nächste Aktion:** Abnahme in der Testphase: zwei Stände eines verschobenen Bauwerks vergleichen.
+**Nächste Aktion:** Erledigt; Oberfläche in BIB-02.
 
-**Prüfstand:** Node-Tests; Browsertests Bauversionen, Update-Vorschau, Hintergrundvergleich.
+**Prüfstand:** Spielprüfung: im Spiel geänderte Truhe und Schild, mit WorldEdit zwei Blöcke weiter gespeichert → Verschiebung −2/0/0 erkannt, genau 2 Inhaltsänderungen; behoben: leere components:{} des Spiels zählten als Datenänderung.
 
-**Nachweise:** [tests/unit/core/variants.test.mjs](../tests/unit/core/variants.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/unit/core/diff-shift.test.mjs](../tests/unit/core/diff-shift.test.mjs) — Reine Verschiebung = 0 Änderungen, Verschiebung plus Anbau, Materialtausch und Anbau nicht als Verschiebung, Kisteninhalt als Inhaltsänderung, Zaunverbindung abgeleitet vs. gedrehte Treppe, deterministisch und ohne Veränderung der Eingaben.; [docs/architecture/planer/SCHEM_VIEWS.md](architecture/planer/SCHEM_VIEWS.md) — Abschnitte Verschiebung erkennen / Inhalte und Folgen.
+**Nachweise:** [tests/unit/core/variants.test.mjs](../tests/unit/core/variants.test.mjs) — Bestandsnachweis; konkrete Befehle und Grenzen in TESTING.md.; [tests/unit/core/diff-shift.test.mjs](../tests/unit/core/diff-shift.test.mjs) — Reine Verschiebung = 0 Änderungen, Verschiebung plus Anbau, Materialtausch und Anbau nicht als Verschiebung, Kisteninhalt als Inhaltsänderung, Zaunverbindung abgeleitet vs. gedrehte Treppe, deterministisch und ohne Veränderung der Eingaben.; [docs/architecture/planer/SCHEM_VIEWS.md](architecture/planer/SCHEM_VIEWS.md) — Abschnitte Verschiebung erkennen / Inhalte und Folgen.; [scripts/mod/test_exports_ingame.sh](../scripts/mod/test_exports_ingame.sh) — Block 1 (06.11.2026): echter Minecraft-26.3-Client mit Litematica 0.29.1 und WorldEdit 7.4.6, Vergleich in scripts/mod/export_check.mjs, 22/22 Prüfungen; Nachweis docs/TESTING.md.
 
 **Dateiumfang:** `packages/voxel/src/diff.ts`, `apps/web/src/schem/DiffView.tsx`, `apps/web/src/jobs/diffJob.ts`, `packages/domain/src/versions/updates.ts`. **Abhängigkeiten:** CORE-02, NBT-01. **Alte IDs:** P5-03.
 
@@ -2535,24 +2519,22 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### ENTITY-01
 
-**Gemälde, Rahmen, Rüstungsständer und Blockinhalte** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Gemälde, Rahmen und Rüstungsständer darstellen“) · Zuständiger Thread: „Exporte im echten Spiel automatisch prüfen“ · Aktualisiert: 2026-11-06T20:59:52.182Z
+**Gemälde, Rahmen, Rüstungsständer und Blockinhalte** · ✅ Im beschriebenen Umfang geprüft · Priorität P1 · Verantwortlich: Claude (Thread „Gemälde, Rahmen und Rüstungsständer darstellen“) · Zuständiger Thread: „Exporte im echten Spiel automatisch prüfen“ · Aktualisiert: 2026-11-07T01:12:24.706Z
 
 - [x] ENTITY-01-S01: Datenmodell freie Entities (optional in der Nutzlast), Geometrie hängender Entities, Drehen/Spiegeln, Validierung.
 - [x] ENTITY-01-S02: Litematic- und Schem-Import/-Export der Entities mit Bericht.
 - [x] ENTITY-01-S03: Anzeige in 3D, Vorschaubildern und Ebenen; Karten für Entities und Blockinhalte (Schilder, Behälter, Banner).
 - [x] ENTITY-01-S04: Materialliste (Ausstattung und Inhalte) und Bauanleitungsschritt „Ausstattung“.
 - [x] ENTITY-01-S05: Werkstatt: Gemälde, Rahmen, Rüstungsständer platzieren und entfernen, rückgängig machbar.
-- [ ] ENTITY-01-S06: Export mit Entities im Spiel laden (Litematica/WorldEdit, Philipps PC).
+- [x] ENTITY-01-S06: Export mit Gemälden, Rahmen und Rüstungsständern im Spiel geladen (Litematica/WorldEdit, automatische Spielprüfung); behoben: gerade breite Gemälde rückten um einen Block, WorldEdit-Gemälde (Pos = Blockposition) und Data-Positionen in .schem.
 
 **Abnahme:** Echte Litematica-Dateien behalten Gemälde/Rahmen/Rüstungsständer an der richtigen Stelle; Roundtrip Litematic und Schem verlustfrei; alte Nutzlasten unverändert; keine Mojang-Texturen.
 
-**Nächste Aktion:** Export mit Entities im Spiel prüfen (S06). Truhen-/Schildinhalte bearbeiten ist mit EDIT-06 erledigt.
+**Nächste Aktion:** Erledigt; Stichprobe in DATEI-08.
 
-**Nur Philipp:** Im Spiel an deinem PC: Export mit Gemälden, Rahmen und Rüstungsständern im Spiel laden (S06).
+**Prüfstand:** Spielprüfung 22/22: Gemälde, Rahmen, Rüstungsständer an der geplanten Stelle, gedreht und gespiegelt, auch nach Rundlauf über echte WorldEdit-/Litematica-Dateien.
 
-**Prüfstand:** Unit- und Browsertests grün; Laden im Spiel offen.
-
-**Nachweise:** [tests/unit/formats/entities.test.mjs](../tests/unit/formats/entities.test.mjs) — Geometrie, Drehung/Spiegelung, Litematic-/Schem-Roundtrip, Inhalte, Materialliste, Bauanleitung, Draft.; [tests/e2e/entities.e2e.mjs](../tests/e2e/entities.e2e.mjs) — Werkstatt: platzieren, Rückgängig, 3D-Zählung, Steckbrief, Ebenenlegende.; [docs/architecture/formate/ENTITIES.md](architecture/formate/ENTITIES.md) — Vertrag und Grenzen.
+**Nachweise:** [tests/unit/formats/entities.test.mjs](../tests/unit/formats/entities.test.mjs) — Geometrie, Drehung/Spiegelung, Litematic-/Schem-Roundtrip, Inhalte, Materialliste, Bauanleitung, Draft.; [tests/e2e/entities.e2e.mjs](../tests/e2e/entities.e2e.mjs) — Werkstatt: platzieren, Rückgängig, 3D-Zählung, Steckbrief, Ebenenlegende.; [docs/architecture/formate/ENTITIES.md](architecture/formate/ENTITIES.md) — Vertrag und Grenzen.; [scripts/mod/test_exports_ingame.sh](../scripts/mod/test_exports_ingame.sh) — Block 1 (06.11.2026): echter Minecraft-26.3-Client mit Litematica 0.29.1 und WorldEdit 7.4.6, Vergleich in scripts/mod/export_check.mjs, 22/22 Prüfungen; Nachweis docs/TESTING.md.
 
 **Dateiumfang:** `packages/voxel/src/entities.ts`, `packages/voxel/src/types.ts`, `packages/voxel/src/validation.ts`, `packages/voxel/src/transforms.ts`, `packages/formats/src/entityIo.ts`, `packages/formats/src/litematic.ts`, `packages/formats/src/litematicWrite.ts`, `packages/formats/src/schem.ts`, `packages/formats/src/schemWrite.ts`, `packages/domain/src/core/compose.ts`, `packages/domain/src/materials/materials.ts`, `packages/domain/src/building/guide.ts`, `packages/domain/src/editor/draft.ts`, `apps/web/src/blockmodels/entityShapes.ts`, `apps/web/src/blockmodels/entityScene.ts`, `apps/web/src/viewer/ContentInfo.tsx`, `apps/web/src/editor/EntityPanel.tsx`, `docs/architecture/formate/ENTITIES.md`. **Abhängigkeiten:** FORMAT-02. **Alte IDs:** —.
 

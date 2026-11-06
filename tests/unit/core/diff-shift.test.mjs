@@ -99,3 +99,14 @@ test('DIFF-01: connection-only state changes are marked as derived', () => {
   assert.deepEqual([s.changedProperties, s.derived], [['facing'], false]);
   assert.deepEqual(d.followUps.layers, [0], 'only the turned stair needs a look in the build steps');
 });
+
+test('DIFF-01: block entities saved by the game (empty components, other field order) are not changed content', () => {
+  // Minecraft 26.3 writes `components: {}` into every block entity; a file saved in the game must not count as changed.
+  const a = house();
+  const be = a.blockEntities[0];
+  const game = comp({ components: comp({}), Items: be.data.value.Items, id: be.data.value.id, x: int(9), y: int(9), z: int(9) });
+  const b = createPayload({ ...a, blockEntities: [{ position: be.position, data: game }] });
+  const d = diffPayloads(a, b);
+  assert.equal(d.counts.content, 0);
+  assert.equal(changedCells(d), 0);
+});

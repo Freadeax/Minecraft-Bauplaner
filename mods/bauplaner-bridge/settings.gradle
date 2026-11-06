@@ -31,6 +31,10 @@ if (providers.gradleProperty('withNeoForge').isPresent()) {
 if (providers.gradleProperty('withForge').isPresent()) {
     include 'forge-26.3'
 }
+// Spielprüfung der Planer-Exporte mit Litematica und WorldEdit (scripts/mod/test_exports_ingame.sh).
+if (providers.gradleProperty('withExportCheck').isPresent()) {
+    include 'export-check-26.3'
+}
 // Paper-Plugin: eine .jar für alle unterstützten Minecraft-Versionen (Bukkit-API), braucht repo.papermc.io.
 if (providers.gradleProperty('withPaper').isPresent()) {
     include 'paper'

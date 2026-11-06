@@ -8629,3 +8629,39 @@ Spielprüfstand im echten Paper 26.3: 559 Katalog-/Generatorpläne ohne Abweichu
 - `tests/unit/catalog/generators.test.mjs`
 - `tests/unit/core/states.test.mjs`
 
+## 2026-11-07T01:12:24.706Z · progress
+
+**Aufgaben:** FORMAT-01, FORMAT-02, NBT-01, ENTITY-01, DIFF-01, MAT-04, PROFILE-01
+
+Block 1: Exporte im echten Spiel automatisch geprüft (Litematica 0.29.1, WorldEdit 7.4.6, Vanilla, Minecraft 26.3): 22/22, 5 Formatfehler behoben
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| FORMAT-01 | ✅ Im beschriebenen Umfang geprüft | 2/2 | Erledigt; Stichprobe mit Philipps Modpack in DATEI-08. |
+| FORMAT-02 | ✅ Im beschriebenen Umfang geprüft | 4/4 | Erledigt; Stichprobe mit Philipps Modpack in DATEI-08. |
+| NBT-01 | ✅ Im beschriebenen Umfang geprüft | 3/3 | Erledigt; Stichprobe in DATEI-08. |
+| ENTITY-01 | ✅ Im beschriebenen Umfang geprüft | 6/6 | Erledigt; Stichprobe in DATEI-08. |
+| DIFF-01 | ✅ Im beschriebenen Umfang geprüft | 3/3 | Erledigt; Oberfläche in BIB-02. |
+| MAT-04 | ✅ Im beschriebenen Umfang geprüft | 2/2 | Erledigt; Glas/Beton/Terrakotta und Oberfläche in PROJ-14. |
+| PROFILE-01 | ✅ Im beschriebenen Umfang geprüft | 3/3 | Erledigt; ältere Datei in der Oberfläche in DATEI-02. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/testing/autochecks.ts`
+- `docs/TESTING.md`
+- `docs/architecture/formate/ENTITIES.md`
+- `docs/architecture/formate/SCHEM_EXPORT.md`
+- `docs/testing/TESTPLAN.md`
+- `mods/bauplaner-bridge/export-check-26.3/build.gradle`
+- `mods/bauplaner-bridge/export-check-26.3/gradle.properties`
+- `mods/bauplaner-bridge/export-check-26.3/src/gametest/java/io/github/freadeax/bauplaner/exportcheck/ExportCheckGameTest.java`
+- `mods/bauplaner-bridge/export-check-26.3/src/gametest/resources/fabric.mod.json`
+- `mods/bauplaner-bridge/settings.gradle`
+- `packages/formats/src/schemWrite.ts`
+- `packages/voxel/src/diff.ts`
+- `packages/voxel/src/entities.ts`
+- `scripts/mod/export_check.mjs`
+- `scripts/mod/test_exports_ingame.sh`
+- `tests/unit/core/diff-shift.test.mjs`
+- `tests/unit/formats/entities.test.mjs`
+

@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "id": "bauplaner_export_check",
+  "version": "0.0.0",
+  "name": "Bauplaner Exportprüfung",
+  "environment": "client",
+  "entrypoints": { "fabric-client-gametest": ["io.github.freadeax.bauplaner.exportcheck.ExportCheckGameTest"] },
+  "depends": { "litematica": "*", "worldedit": "*", "fabric-client-gametest-api-v1": "*" }
+}

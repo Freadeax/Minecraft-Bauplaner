@@ -208,6 +208,42 @@ export const AUTO_CHECKS: readonly AutoCheck[] = [
     command: 'npm run build && npm run test:e2e:webkit -- tests/e2e/textures.e2e.mjs && npm run test:e2e:firefox -- tests/e2e/textures.e2e.mjs',
     evidence: '06.11.2026, main ff748e7 + Block 5 Grafik: grün in WebKit 2370, Firefox 1555 (xvfb, llvmpipe-WebGL) und Chromium im Container',
   },
+  // Block 1 (Exportprüfung im echten Spiel)
+  {
+    caseId: 'DATEI-08', scope: 'teil',
+    covers: 'Prüfbau mit Truhe, Doppeltruhe, Fass, zwei Schildern (Vorder-/Rückseite, Farbe, Leuchten, Wachs), Strukturblock, Treppe, Stamm, Tür, Verstärker, Schiene, Hebel, Fackel, Gemälde, Rahmen und Rüstungsständer: ungedreht, um 90° gedreht und gespiegelt als .litematic (Litematica fügt ein) und .schem (//schem load, //paste) – im Spiel Block für Block, jede BlockEntity und jede Entity wie im Plan, gedreht und gespiegelt zusätzlich wie die eigene Drehung des Spiels (StructureTemplate). Im Spiel mit WorldEdit (//copy, //schem save) und Litematica gespeicherte Dateien öffnen im Planer mit allen Blöcken, Inhalten und dem Offset des Originals, als Bauteil übernommen und wieder exportiert sitzen sie im Spiel an derselben Stelle.',
+    remaining: 'Bedienung über die Knöpfe im Browser (Import, Export-Reiter) und Einfügen in deinem Modpack (Fabric 26.3 mit REI); Litematica wurde im Test über seine Schnittstelle statt über das Menü bedient.',
+    command: 'scripts/mod/test_exports_ingame.sh',
+    evidence: '06.11.2026, main b786572 + Block 1 (Exportprüfung), Minecraft 26.3 Fabric-Clientspieltest mit Litematica 0.29.1 und WorldEdit 7.4.6, headless (weston/Mesa): 22/22 Prüfungen bestanden',
+  },
+  {
+    caseId: 'PROJ-04', scope: 'teil',
+    covers: 'Exporte als .schem und .litematic laden im echten Spiel mit WorldEdit und Litematica; Ausrichtung von Treppen, Türen, Stämmen, Verstärkern und Schienen stimmt Block für Block, auch gedreht und gespiegelt.',
+    remaining: 'Download im Browser und der Blick, ob das Spiel wie die Vorschau aussieht.',
+    command: 'scripts/mod/test_exports_ingame.sh',
+    evidence: '06.11.2026, main b786572 + Block 1 (Exportprüfung), Minecraft 26.3 Fabric-Clientspieltest mit Litematica 0.29.1 und WorldEdit 7.4.6, headless (weston/Mesa): 22/22 Prüfungen bestanden',
+  },
+  {
+    caseId: 'PROJ-14', scope: 'teil',
+    covers: 'Kupfervariante (verwittert + gewachst und angelaufen) aller 15 Kupferfamilien des Profils: Form und Zustände bleiben, im Spiel stehen genau die gewählten Stufen; unter schnellen Zufallsticks bleibt gewachstes Kupfer unverändert, ungewachstes altert; die Kupfermatrix des Planers ist gleich der Alterungs- und Wachsliste des laufenden Spiels.',
+    remaining: 'Glas-, Beton- und Terrakottavarianten im Spiel, die Materialliste und die Bedienung im Browser.',
+    command: 'scripts/mod/test_exports_ingame.sh',
+    evidence: '06.11.2026, main b786572 + Block 1 (Exportprüfung), Minecraft 26.3 Fabric-Clientspieltest mit Litematica 0.29.1 und WorldEdit 7.4.6, headless (weston/Mesa): 22/22 Prüfungen bestanden',
+  },
+  {
+    caseId: 'BIB-02', scope: 'teil',
+    covers: 'Versionsvergleich mit einer im Spiel geänderten Truhe und einem geänderten Schild, mit WorldEdit zwei Blöcke weiter gespeichert: der Vergleich meldet die Verschiebung um 2 Blöcke und genau zwei Inhaltsänderungen (Inhalt, Schild), keine weiteren Abweichungen.',
+    remaining: 'Detailseite, 3D, Ebenen, Gebäudevergleich und der Versionsvergleich in der Werkstatt-Oberfläche.',
+    command: 'scripts/mod/test_exports_ingame.sh',
+    evidence: '06.11.2026, main b786572 + Block 1 (Exportprüfung), Minecraft 26.3 Fabric-Clientspieltest mit Litematica 0.29.1 und WorldEdit 7.4.6, headless (weston/Mesa): 22/22 Prüfungen bestanden',
+  },
+  {
+    caseId: 'DATEI-02', scope: 'teil',
+    covers: 'Das Java-26.3-Profil des Planers ist gleich den Registern des laufenden Spiels (1286 Blöcke mit allen Zuständen und Grundzuständen, 1658 Items, 49 BlockEntity-Typen, DataVersion 5023); im Spiel gespeicherte WorldEdit- und Litematica-Dateien bekommen die Profilprüfung „passt“.',
+    remaining: 'Eine ältere Datei (1.20/1.21) importieren und die Profilprüfung auf der Detailseite ansehen; Importbericht im Browser.',
+    command: 'scripts/mod/test_exports_ingame.sh',
+    evidence: '06.11.2026, main b786572 + Block 1 (Exportprüfung), Minecraft 26.3 Fabric-Clientspieltest mit Litematica 0.29.1 und WorldEdit 7.4.6, headless (weston/Mesa): 22/22 Prüfungen bestanden',
+  },
 ];
 
 export function autoCheckOf(caseId: string): AutoCheck | undefined {

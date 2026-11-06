@@ -180,12 +180,42 @@ export function transformEntity(e: FreeEntity, pivot: Vec3, t: Transform): Entit
 }
 
 // ------------------------------------------------------------------ import / export
-/** Entity from a file entry: position in the payload frame, position fields removed from the data. */
+/**
+ * Entity from a file entry: position in the payload frame, position fields removed from the data.
+ * Hanging entities get their exact Minecraft position from their anchor cell. WorldEdit stores a painting's
+ * `Pos` as its block position (whole numbers, never a real hanging position, whose wall axis is always
+ * 1/32 off a block face), so an all-integer position of a hanging entity is read as that anchor (export check 06.11.2026).
+ * Their `Rotation` is dropped as well: it follows from the facing and is written anew on export.
+ */
 export function importEntity(data: NbtTag, position: readonly [number, number, number]): FreeEntity {
   const d = comp(data) ?? {};
   const rest: Record<string, NbtTag> = {};
   for (const [k, v] of Object.entries(d)) if (!ENTITY_POSITION_FIELDS.includes(k)) rest[k] = v;
-  return { position, data: { type: 'compound', value: rest } };
+  const entity: FreeEntity = { position, data: { type: 'compound', value: rest } };
+  const kind = entityKind(entity), facing = entityFacing(entity);
+  if (!facing || !isHanging(kind) || !position.every(Number.isFinite)) return entity;
+  // Yaw/pitch of a hanging entity follow from its facing; the export writes them anew.
+  delete rest.Rotation;
+  const anchor: Vec3 = position.every(Number.isInteger) ? [position[0], position[1], position[2]] : entityAnchor(entity);
+  return { ...entity, position: hangingPosition(kind, anchor, facing, sizeOf(entity)) };
+}
+/** Yaw and pitch Minecraft gives a hanging entity of that facing (HangingEntity.setDirection). */
+function hangingRotation(facing: Facing): [number, number] {
+  if (facing === 'up') return [0, -90];
+  if (facing === 'down') return [0, 90];
+  return [FACING_2D.indexOf(facing) * 90, 0];
+}
+/**
+ * Hanging entities whose exact position lies on a block face (even painting widths/heights, e.g. a 2×1 painting
+ * facing south sits at x = anchor + 1.0) are written a 1/1024 block inside their anchor cell. Litematica (0.29) and
+ * WorldEdit (7.4) place a hanging entity at the block containing `Pos` instead of `block_pos`, so the exact value moved
+ * such paintings one block on every paste; the game itself recomputes the exact position from `block_pos` on load.
+ */
+function exportPos(e: FreeEntity, origin: Vec3): number[] {
+  const p = [0, 1, 2].map(i => e.position[i]! - origin[i]!);
+  if (!isHanging(entityKind(e)) || !entityFacing(e)) return p;
+  const a = entityAnchor(e).map((v, i) => v - origin[i]!);
+  return p.map((v, i) => Math.floor(v) === a[i] ? v : v > a[i]! ? a[i]! + 1 - 1 / 1024 : a[i]!);
 }
 /** Minecraft `Pos` of an NBT entry, or null. */
 export function nbtPos(data: NbtTag | undefined): [number, number, number] | null {
@@ -203,7 +233,13 @@ export function entityExportData(e: FreeEntity, origin: Vec3): Compound {
   const out: Record<string, NbtTag> = { ...d };
   out.id = str(entityId(e) || 'minecraft:unknown');
   delete out.Id;
-  out.Pos = { type: 'list', elementType: 'double', value: [0, 1, 2].map(i => double(e.position[i]! - origin[i]!)) };
+  out.Pos = { type: 'list', elementType: 'double', value: exportPos(e, origin).map(double) };
+  // WorldEdit 7.4 refuses a whole file when one entity has no Rotation ("No tag under the name 'Rotation'").
+  const facing = entityFacing(e);
+  if (out.Rotation?.type !== 'list' || out.Rotation.value.length < 2) {
+    const [yaw, pitch] = facing && isHanging(entityKind(e)) ? hangingRotation(facing) : [0, 0];
+    out.Rotation = { type: 'list', elementType: 'float', value: [float(yaw), float(pitch)] };
+  }
   if (isHanging(entityKind(e))) {
     const a = entityAnchor(e), rel = [a[0] - origin[0], a[1] - origin[1], a[2] - origin[2]];
     out.TileX = int(rel[0]!); out.TileY = int(rel[1]!); out.TileZ = int(rel[2]!);

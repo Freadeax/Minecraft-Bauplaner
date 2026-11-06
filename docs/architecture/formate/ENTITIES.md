@@ -46,3 +46,7 @@ Bereich „Ausstattung“ im Blockeditor: Block wählen (Prüfen oder Klick in 3
 ## Tests
 
 `tests/unit/formats/entities.test.mjs` (Geometrie gegen Minecraft-Werte, Drehung/Spiegelung, Litematica- und Sponge-Roundtrip, Inhalte, Materialliste, Bauanleitung, Draft), `tests/unit/formats/litematic.test.mjs` (echte Datei-Form mit negativer `Pos`), `tests/e2e/entities.e2e.mjs` (Werkstatt platzieren, Rückgängig, 3D-Zählung, Steckbrief, Ebenenlegende).
+
+## Spielprüfung (06.11.2026, ENTITY-01-S06)
+
+`scripts/mod/test_exports_ingame.sh` lädt Exporte mit Gemälde, Rahmen und Rüstungsständer (ungedreht, gedreht, gespiegelt) im echten Minecraft 26.3 mit Litematica 0.29.1 und WorldEdit 7.4.6 und vergleicht jede Entity mit dem Plan. Befunde und Regeln dazu (Rotation, `Pos` in der Ankerzelle, WorldEdit-Gemälde, Data-Rahmen in .schem) stehen in SCHEM_EXPORT.md unter „Entities in .schem für WorldEdit“; sie gelten für .litematic genauso (Litematica verschob gerade breite Gemälde bei jedem Einfügen um einen Block). Die eigene Strukturdrehung des Spiels (`StructureTemplate`) rundet gerade breite Gemälde ebenfalls auf den Block ihres gedrehten `Pos`; sie taugt dafür nicht als Vergleich.

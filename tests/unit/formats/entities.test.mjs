@@ -172,7 +172,11 @@ test('exports: Litematic and Schem v3 write the entities with relative Pos/TileX
   const region = Object.values(lit.nbt.tag.value.Regions.value)[0].value;
   assert.equal(region.Entities.value.length, 3); assert.equal(lit.report.freeEntities, 3);
   const painting = region.Entities.value[0].value;
-  assert.deepEqual(painting.Pos.value.map(x => x.value), world.entities[0].position);
+  // The 2×1 painting facing south sits exactly on the block face x = 2; the file gets it 1/1024 inside its anchor
+  // cell (x = 1), because Litematica and WorldEdit place hanging entities in the block that contains Pos.
+  assert.deepEqual(world.entities[0].position, [2, 2.5, 1.03125]);
+  assert.deepEqual(painting.Pos.value.map(x => x.value), [2 - 1 / 1024, 2.5, 1.03125]);
+  assert.deepEqual(painting.Rotation.value.map(x => x.value), [0, 0]);
   assert.deepEqual([painting.TileX.value, painting.TileY.value, painting.TileZ.value], [1, 2, 1]);
   assert.deepEqual(painting.block_pos.value, [1, 2, 1]);
   const back = normalizeLitematic(lit.nbt);
@@ -223,4 +227,22 @@ test('import keeps unknown entity data and strips only position fields', () => {
   const data = compound({ id: s('minecraft:armor_stand'), Pos: list('double', [{ type: 'double', value: 1 }, { type: 'double', value: 2 }, { type: 'double', value: 3 }]), CustomName: s('"Wache"'), Rotation: list('float', [f(45), f(0)]), UUID: { type: 'intArray', value: [1, 2, 3, 4] } });
   const e = importEntity(data, [1, 2, 3]);
   assert.deepEqual(Object.keys(e.data.value).sort(), ['CustomName', 'Rotation', 'UUID', 'id']);
+});
+
+test('WorldEdit 7.4 files: a painting stored with its block position as Pos lands at its exact hanging position', () => {
+  // As `//schem save` writes it (export check in the real game, 06.11.2026): outer Pos = block position of the
+  // painting relative to the minimum, Data with world coordinates; the item frame keeps its real position.
+  const world = room(furnished());
+  const sch = buildSchemV3(world, { dataVersion: 5023, anchor: 'min-corner', unselected: 'air' });
+  const root = sch.nbt.tag.value.Schematic.value;
+  const [painting, frame] = root.Entities.value;
+  const wePainting = compound({ ...painting.value, Pos: list('double', [1, 2, 1].map(v => ({ type: 'double', value: v }))) });
+  const file = { ...sch.nbt, tag: compound({ Schematic: compound({ ...root, Entities: list('compound', [wePainting, frame, root.Entities.value[2]]) }) }) };
+  const back = normalizeSchem(file).payload.entities;
+  assert.deepEqual(back[0].position, [2, 2.5, 1.03125]);
+  assert.deepEqual(entityAnchor(back[0]), [1, 2, 1]);
+  assert.deepEqual(back[1].position, world.entities[1].position);
+  // Hanging entities carry no Rotation after import; WorldEdit needs one in every entity, so the export writes it.
+  assert.equal('Rotation' in back[0].data.value, false);
+  for (const e of root.Entities.value) assert.equal(e.value.Data.value.Rotation.type, 'list', e.value.Id.value);
 });

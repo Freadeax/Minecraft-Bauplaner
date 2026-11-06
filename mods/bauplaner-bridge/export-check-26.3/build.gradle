@@ -1,0 +1,42 @@
+// Spielprüfung der Planer-Exporte: startet Minecraft 26.3 (Fabric Client Game Test) mit Litematica und
+// WorldEdit, lässt beide die Exporte des Planers einfügen, vergleicht mit dem Spiel und speichert echte
+// Litematica-/WorldEdit-Dateien für den Rückweg. Nur über scripts/mod/test_exports_ingame.sh (-PwithExportCheck);
+// die Bauplaner-Mod selbst ist nicht beteiligt, es wird nichts ausgeliefert.
+plugins {
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
+}
+
+base { archivesName = 'bauplaner-export-check' }
+version = '0.0.0'
+
+repositories {
+    exclusiveContent {
+        forRepository { maven { name = 'Modrinth'; url = 'https://api.modrinth.com/maven' } }
+        filter { includeGroup 'maven.modrinth' }
+    }
+}
+
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = 'bauplaner_export_check'
+        enableGameTests = false
+        enableClientGameTests = true
+        eula = true
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${fabric_api_version}"
+    gametestImplementation "maven.modrinth:litematica:${litematica_version}"
+    gametestImplementation "maven.modrinth:malilib:${malilib_version}"
+    gametestRuntimeOnly "maven.modrinth:worldedit:${worldedit_version}"
+}
+
+tasks.withType(JavaCompile).configureEach { it.options.release = 25; it.options.encoding = 'UTF-8' }
+java {
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}

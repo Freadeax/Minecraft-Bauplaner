@@ -166,14 +166,18 @@ export function buildSchemV3(world: VoxelPayload, options: SchemWriteOptions, li
     const r = blockEntityEntry(e, local); entities.push(r.tag); if (r.converted) converted++;
   }
 
-  // Free entities: Sponge v3 {Id, Pos, Data}, Pos relative to the minimum corner (ENTITY-01).
+  const offset: Vec3 = options.anchor === 'project-origin' ? [min[0], min[1], min[2]] : [0, 0, 0];
+  // Free entities: Sponge v3 {Id, Pos, Data}, Pos relative to the minimum corner (ENTITY-01). The position fields
+  // inside Data (Pos, block_pos, TileX/Y/Z) are in the file's origin frame (minimum = Offset), as WorldEdit writes
+  // them in world coordinates around its origin: WorldEdit 7.4 moves a painting by block_pos − origin on paste,
+  // so Data relative to the minimum put paintings Offset blocks off (export check in the real game, 06.11.2026).
   const freeEntities: NbtTag[] = [];
+  const frame: Vec3 = [min[0] - offset[0], min[1] - offset[1], min[2] - offset[2]];
   for (const e of world.entities ?? []) {
-    const data = entityExportData(e, min);
-    freeEntities.push({ type: 'compound', value: { Id: data.id!, Pos: data.Pos!, Data: { type: 'compound', value: data } } });
+    const local = entityExportData(e, min), data = entityExportData(e, frame);
+    freeEntities.push({ type: 'compound', value: { Id: data.id!, Pos: local.Pos!, Data: { type: 'compound', value: data } } });
   }
 
-  const offset: Vec3 = options.anchor === 'project-origin' ? [min[0], min[1], min[2]] : [0, 0, 0];
   const requiredMods = [...new Set(world.palette.map(s => s.id.split(':')[0]!).filter(ns => ns !== 'minecraft'))].sort();
   const meta: Record<string, NbtTag> = {};
   if (options.metadata?.name) meta.Name = str(options.metadata.name);
