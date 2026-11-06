@@ -31,6 +31,8 @@ public final class HologramRenderer {
     /** Extra tint and edges for textured ghosts while a shader pack is on. */
     static final int SHADER_TINT = 0x405AA9FF, SHADER_EDGE = 0xFF7FC4FF;
     static final int MISSING = 0x555AA9FF, WRONG = 0x70FF4040, STATE = 0x70FFD54A;
+    /** Open blocks inside a locked Weltplan area (GAME-07-S11): grey, without textures, no x-ray frame. */
+    static final int LOCKED = 0x48A0A0A0;
     /** Missing blocks this close to the camera are drawn as see-through block models. */
     static final int TEXTURED_RADIUS = 40;
     static final int MAX_TEXTURED = 6_000;
@@ -48,8 +50,9 @@ public final class HologramRenderer {
     private String drawnSettings = "";
 
     private final Hologram hologram;
-    /** Cached selection: indices of the blocks to draw. */
+    /** Cached selection: indices of the blocks to draw, and whether each lies in a locked area. */
     private int[] drawn = new int[0];
+    private boolean[] drawnLocked = new boolean[0];
     private int drawnCount;
     private LiveCheck drawnFor;
     private long drawnRevision = -1;
@@ -104,6 +107,7 @@ public final class HologramRenderer {
         }
         if (drawnCount > 0) {
             final int[] list = drawn;
+            final boolean[] grey = drawnLocked;
             final int n = drawnCount;
             out.submitCustomGeometry(pose, RenderTypes.debugQuads(), (p, vc) -> {
                 for (int k = 0; k < n; k++) {
@@ -111,6 +115,7 @@ public final class HologramRenderer {
                     Verdict v = check.verdict(i);
                     int color = v == Verdict.MISSING ? MISSING : v == Verdict.WRONG ? WRONG : v == Verdict.STATE ? STATE : 0;
                     if (color == 0) continue;
+                    if (grey[k]) color = LOCKED;
                     float g = v == Verdict.MISSING ? -0.02f : 0.006f;
                     box(p, vc, check.worldX(i) - ox - g, check.worldY(i) - oy - g, check.worldZ(i) - oz - g,
                             check.worldX(i) - ox + 1 + g, check.worldY(i) - oy + 1 + g, check.worldZ(i) - oz + 1 + g, color);
@@ -120,11 +125,13 @@ public final class HologramRenderer {
         if (hologram.xray() && drawnCount + ghostCount > 0) {
             // X-ray: frames of open blocks drawn without depth test, so hidden errors behind walls show up.
             final int[] a = drawn, g = ghosts;
+            final boolean[] grey = drawnLocked;
             final int na = drawnCount, ng = ghostCount;
             out.submitCustomGeometry(pose, McCompat.xrayLines(), (p, vc) -> {
                 int done = 0;
                 final int limit = xrayLimit;
                 for (int k = 0; k < ng + na && done < limit; k++) {
+                    if (k >= ng && grey[k - ng]) continue;
                     int i = k < ng ? g[k] : a[k - ng];
                     Verdict v = check.verdict(i);
                     int color = v == Verdict.MISSING ? 0xC05AA9FF : v == Verdict.WRONG ? 0xE0FF4040 : v == Verdict.STATE ? 0xE0FFD54A : 0;
@@ -157,7 +164,7 @@ public final class HologramRenderer {
     private void select(LiveCheck check, Vec3 cam) {
         int cx = (int) Math.floor(cam.x) >> 4, cz = (int) Math.floor(cam.z) >> 4;
         String settings = hologram.layers() + "/" + hologram.layerY() + "/" + hologram.section() + "/" + hologram.sectionSet() + "/" + hologram.textured() + "/" + ((int) Math.floor(cam.y) >> 3);
-        String settings2 = settings + "/" + hologram.budget();
+        String settings2 = settings + "/" + hologram.budget() + "/" + hologram.areasVersion();
         boolean sameView = check == drawnFor && cx == drawnChunkX && cz == drawnChunkZ && settings2.equals(drawnSettings);
         if (sameView && check.revision() == drawnRevision) return;
         long now = System.nanoTime();
@@ -171,6 +178,7 @@ public final class HologramRenderer {
         drawnChunkZ = cz;
         drawnCount = 0;
         ghostCount = 0;
+        boolean anyLocked = hologram.hasLocked();
         io.github.freadeax.bauplaner.mod.Filter filter = hologram.filter();
         boolean textured = hologram.textured();
         double tr2 = (double) TEXTURED_RADIUS * TEXTURED_RADIUS;
@@ -189,13 +197,15 @@ public final class HologramRenderer {
                     int wy = check.worldY(i);
                     if (!filter.test(check, i)) continue;
                     if (Math.abs(wy - cam.y) > RADIUS) continue;
-                    if (textured && v == Verdict.MISSING && ghostCount < maxTextured) {
+                    boolean locked = anyLocked && hologram.lockedAt(check.worldX(i), check.worldZ(i));
+                    if (!locked && textured && v == Verdict.MISSING && ghostCount < maxTextured) {
                         double gx = check.worldX(i) + 0.5 - cam.x, gy = wy + 0.5 - cam.y, gz = check.worldZ(i) + 0.5 - cam.z;
                         GhostModels.Model m = gx * gx + gy * gy + gz * gz < tr2 ? models.model(check.expected(i)) : null;
                         if (m != null) { addGhost(check, i, m, filter); continue; }
                     }
                     if (drawnCount == maxBlocks) { cut = true; break; }
-                    if (drawnCount == drawn.length) drawn = Arrays.copyOf(drawn, Math.max(1024, drawn.length * 2));
+                    if (drawnCount == drawn.length) { drawn = Arrays.copyOf(drawn, Math.max(1024, drawn.length * 2)); drawnLocked = Arrays.copyOf(drawnLocked, drawn.length); }
+                    drawnLocked[drawnCount] = locked;
                     drawn[drawnCount++] = i;
                 }
             }

@@ -577,7 +577,10 @@ function drawPlan(ctx: CanvasRenderingContext2D, plan: PlanLayer, d: Draw, st: {
     ctx.fillStyle = color; ctx.fillText(txt, x + 4, y - 2);
   };
   // While dragging, everything selected moves together.
-  const off = (id: string) => st.moveBy && plan.selection.has(id) ? st.moveBy : null;
+  // Locked entries (GAME-07-S11) stay put, so their outline does not follow the drag.
+  const lockedIds = new Set(plan.items.filter(i => i.locked).map(i => i.id));
+  const off = (id: string) => st.moveBy && plan.selection.has(id) && !lockedIds.has(id) ? st.moveBy : null;
+  const lockMark = (item: WorldItem) => item.locked ? '🔒 ' : '';
   /** Corners of a path or zone on screen, with a dragged corner applied. */
   const corners = (item: Polyline, o: { dx: number; dz: number } | null) => {
     const vd = st.vertexDrag?.pathId === item.id ? st.vertexDrag : null;
@@ -608,7 +611,7 @@ function drawPlan(ctx: CanvasRenderingContext2D, plan: PlanLayer, d: Draw, st: {
     ctx.strokeStyle = on ? d.accent : color; ctx.lineWidth = on ? 2.5 : 1.5; ctx.setLineDash([3, 3]); ctx.stroke(); ctx.setLineDash([]);
     if (on && solo) handles(src, pts, true);
     const b = pts.reduce<[number, number, number, number]>((acc, p) => [Math.min(acc[0], p[0]), Math.min(acc[1], p[1]), Math.max(acc[2], p[0]), Math.max(acc[3], p[1])], [Infinity, Infinity, -Infinity, -Infinity]);
-    if (on || b[2] - b[0] > 60) label(`${item.name} · ${zoneCategoryOf(item.category).label} · ≈${fmt(zoneArea(item))} Blöcke²`, b[0] + 4, b[1] + 18, on ? d.accent : color);
+    if (on || b[2] - b[0] > 60) label(`${lockMark(item)}${item.name} · ${zoneCategoryOf(item.category).label} · ≈${fmt(zoneArea(item))} Blöcke²`, b[0] + 4, b[1] + 18, on ? d.accent : color);
   }
   for (const item of plan.items) {
     if (item.kind !== 'site') continue;
@@ -617,7 +620,7 @@ function drawPlan(ctx: CanvasRenderingContext2D, plan: PlanLayer, d: Draw, st: {
     ctx.fillRect(sx(x), sz(z), item.width * scale, item.length * scale); ctx.globalAlpha = 1;
     ctx.strokeStyle = on ? d.accent : color; ctx.lineWidth = on ? 2.5 : 1.5; ctx.setLineDash(item.projectId ? [] : [7, 4]);
     ctx.strokeRect(sx(x), sz(z), item.width * scale, item.length * scale); ctx.setLineDash([]);
-    if (on || item.width * scale > 50) label(`${item.name} · ${item.width}×${item.length}`, sx(x), sz(z + item.length) + 16, on ? d.accent : color);
+    if (on || item.width * scale > 50) label(`${lockMark(item)}${item.name} · ${item.width}×${item.length}`, sx(x), sz(z + item.length) + 16, on ? d.accent : color);
   }
   for (const item of plan.items) {
     if (item.kind !== 'path') continue;
@@ -628,7 +631,7 @@ function drawPlan(ctx: CanvasRenderingContext2D, plan: PlanLayer, d: Draw, st: {
     ctx.strokeStyle = color; ctx.lineWidth = Math.max(2, item.width * scale); polyline(ctx, pts);
     if (on && solo) handles(src, pts, false);
     else if (scale >= 4) for (const p of pts) { ctx.fillStyle = on ? d.accent : color; ctx.fillRect(p[0] - 2, p[1] - 2, 4, 4); }
-    if (on && pts.length) label(item.name, pts[0]![0] + 6, pts[0]![1] - 4, d.accent);
+    if (on && pts.length) label(`${lockMark(item)}${item.name}`, pts[0]![0] + 6, pts[0]![1] - 4, d.accent);
   }
   for (const item of plan.items) {
     if (item.kind !== 'point') continue;
@@ -636,7 +639,7 @@ function drawPlan(ctx: CanvasRenderingContext2D, plan: PlanLayer, d: Draw, st: {
     const x = sx(item.x + 0.5 + (o?.dx ?? 0)), z = sz(item.z + 0.5 + (o?.dz ?? 0)), r = on ? 8 : 6;
     ctx.fillStyle = color; ctx.strokeStyle = on ? d.accent : 'rgba(0,0,0,0.7)'; ctx.lineWidth = on ? 3 : 1.5;
     ctx.beginPath(); ctx.moveTo(x, z - r - 6); ctx.lineTo(x + r, z - 6); ctx.lineTo(x, z + 2); ctx.lineTo(x - r, z - 6); ctx.closePath(); ctx.fill(); ctx.stroke();
-    if (on || scale >= 1) label(item.name, x + 9, z - 4, on ? d.accent : d.text);
+    if (on || scale >= 1) label(`${lockMark(item)}${item.name}`, x + 9, z - 4, on ? d.accent : d.text);
     // Notes (MAP-06) read on the map once zoomed in, or on the selected point.
     if (item.note && (on || scale >= 6)) label(item.note.length > 48 ? `${item.note.slice(0, 47)}…` : item.note, x + 9, z + 12, d.text);
   }

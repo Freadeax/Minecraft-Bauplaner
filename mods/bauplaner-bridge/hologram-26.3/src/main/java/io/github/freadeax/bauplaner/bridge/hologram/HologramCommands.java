@@ -15,7 +15,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 
 /**
- * {@code /bauplaner zeigen|hierher|verschieben|drehen|spiegeln|umschalten|fehler|packliste|geruest|entfernen|fortschritt|ebene|material|texturen|platzierhilfe|abschnitt|roentgen|leistung|verbinden|ebenen|diagnose}: the same actions as menu and keys, as client commands (no server needed;
+ * {@code /bauplaner zeigen|hierher|verschieben|drehen|spiegeln|umschalten|fehler|packliste|geruest|entfernen|fortschritt|ebene|material|texturen|platzierhilfe|abschnitt|roentgen|leistung|verbinden|ebenen|gruppe|diagnose}: the same actions as menu and keys, as client commands (no server needed;
  * also used by the game test). Generic over the command source, so every loader registers the same tree
  * with its own client command source; answers go straight to the local chat.
  */
@@ -99,6 +99,18 @@ public final class HologramCommands {
                                     if (!link.marks().layers().containsKey(name)) return fail(null, "Keine Weltplan-Ebene „" + name + "“. Liste: /bauplaner ebenen");
                                     return said("Ebene „" + name + "“ " + (link.toggleLayer(name) ? "sichtbar." : "ausgeblendet."));
                                 })),
+                // Weltplan groups and locks (GAME-07-S11, 0.19.0): list, limit the hologram to one group, hide/show one.
+                HologramCommands.<S>literal("gruppe").executes(c -> groups(h, link))
+                        .then(HologramCommands.<S>literal("alle").executes(c -> { link.showAllGroups(); return said(link.setGroup(null)); }))
+                        .then(HologramCommands.<S>literal("aus").then(HologramCommands.<S, String>argument("name", StringArgumentType.greedyString())
+                                .suggests((c, b) -> { link.marks().groups().keySet().forEach(b::suggest); return b.buildFuture(); })
+                                .executes(c -> groupShow(link, StringArgumentType.getString(c, "name"), false))))
+                        .then(HologramCommands.<S>literal("an").then(HologramCommands.<S, String>argument("name", StringArgumentType.greedyString())
+                                .suggests((c, b) -> { link.marks().groups().keySet().forEach(b::suggest); return b.buildFuture(); })
+                                .executes(c -> groupShow(link, StringArgumentType.getString(c, "name"), true))))
+                        .then(HologramCommands.<S, String>argument("name", StringArgumentType.greedyString())
+                                .suggests((c, b) -> { link.marks().groups().keySet().forEach(b::suggest); return b.buildFuture(); })
+                                .executes(c -> said(link.setGroup(StringArgumentType.getString(c, "name").trim())))),
                 // Testphase (QA-04): diagnosis report into bauplaner/diagnose/ and the clipboard.
                 HologramCommands.<S>literal("diagnose").executes(c -> HologramDiagnose.run(h, link)));
     }
@@ -122,6 +134,26 @@ public final class HologramCommands {
         say(null, "Weltplan-Ebenen (" + layers.size() + "). Umschalten: /bauplaner ebenen <name>, alle: /bauplaner ebenen alle");
         layers.forEach((name, n) -> say(null, (link.layerShown(name) ? "  ● " : "  ○ ") + name + ": " + n + (link.layerShown(name) ? "" : " (ausgeblendet)")));
         return 1;
+    }
+
+    /** Weltplan groups with their entry counts, which one the hologram shows and how many blocks are locked. */
+    private static int groups(Hologram h, LiveLink link) {
+        var groups = link.marks().groups();
+        int locked = link.marks().lockedCount();
+        if (link.marks().size() == 0) return said("Keine Markierungen von der Website – Gruppen und Sperren kommen mit dem Weltplan (Weltkarte → „Ins Spiel senden“).");
+        if (groups.isEmpty()) return said("Im Weltplan gibt es keine Gruppen" + (locked > 0 ? ", aber " + locked + " gesperrte Einträge (grau im Hologramm)." : "."));
+        say(null, "Weltplan-Gruppen (" + groups.size() + "), Hologramm: " + (link.group() == null ? "alle" : "„" + link.group() + "“")
+                + (h.lockedBlocks() > 0 ? ", " + h.lockedBlocks() + " Planblöcke gesperrt" : "") + ". Wählen: /bauplaner gruppe <name>|alle, ausblenden: /bauplaner gruppe aus <name>");
+        groups.forEach((name, n) -> say(null, (name.equals(link.group()) ? "▶ " : link.groupShown(name) ? "  ● " : "  ○ ") + name + ": " + n + (link.groupShown(name) ? "" : " (ausgeblendet)")));
+        return groups.size();
+    }
+
+    private static int groupShow(LiveLink link, String raw, boolean show) {
+        String name = raw.trim();
+        if (!link.marks().groups().containsKey(name)) return fail(null, "Keine Weltplan-Gruppe „" + name + "“. Liste: /bauplaner gruppe");
+        if (link.groupShown(name) != show) link.toggleGroup(name);
+        if (!show && name.equals(link.group())) link.setGroup(null);
+        return said("Gruppe „" + name + "“ " + (show ? "sichtbar." : "ausgeblendet (Markierungen und Hologramm darin)."));
     }
 
     /** All sections with their progress; the active one marked. */
@@ -227,9 +259,9 @@ public final class HologramCommands {
             var item = MaterialScreen.item(id);
             return item == net.minecraft.world.item.Items.AIR ? 64 : item.getDefaultMaxStackSize();
         }, stores, new double[] { mc.player.getX(), mc.player.getY(), mc.player.getZ() }, free);
-        if (r.lines().isEmpty()) { say(s, "Packliste: nichts offen" + (h.filter().allSections() ? "." : " im gezeigten Teil.")); return 0; }
+        if (r.lines().isEmpty()) { say(s, "Packliste: nichts offen" + (h.filter().allSections() && h.filter().area() == null ? "." : " im gezeigten Teil.")); return 0; }
         int fetch = r.lines().stream().mapToInt(io.github.freadeax.bauplaner.mod.PackList.Line::fetch).sum();
-        say(s, "Packliste" + (h.filter().allSections() ? "" : " (gezeigter Teil)") + ": " + fetch + " Blöcke holen = " + r.stacks() + " Stapel"
+        say(s, "Packliste" + (h.filter().allSections() && h.filter().area() == null ? "" : " (gezeigter Teil)") + ": " + fetch + " Blöcke holen = " + r.stacks() + " Stapel"
                 + (r.boxes() > 1 ? " ≈ " + r.boxes() + " Shulkerkisten" : "") + " · frei im Inventar " + r.freeSlots() + " Plätze" + (r.fits() ? "" : " – passt nicht auf einmal")
                 + (r.missing() > 0 && !stores.isEmpty() ? " · " + r.missing() + " in keinem Lager" : ""));
         int n = 0;

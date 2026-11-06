@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
+import { groupBody,
   LIVE_DEFAULT_PORT, LIVE_FEATURE_PLAYERS, LIVE_TOKEN_HEADER, chunkColumns, chunkQuery, liveBaseUrl, liveCan, marksBody, originAllowed, planUploadQuery,
   readLiveChunks, readLiveHello, readLivePairing, readLiveGameMarks, readLivePlayers, readLiveStatus, readLiveTeam, readLiveTeamPull, readServerClaim, readServerInfo, wantedChunks,
 } from '../../../../../packages/domain/src/index.js';
@@ -131,6 +131,8 @@ export const liveApi = {
   },
   /** Build section shown in the game (1-based, 0 = all); mod 0.7.0+. */
   section: async (port: number, token: string, section: number): Promise<void> => { await call(port, '/v1/section', { method: 'POST', token, body: JSON.stringify({ section }), headers: { 'Content-Type': 'application/json' } }); },
+  /** GAME-07-S11 (feature `groups`): limit the hologram to one Weltplan group, null = all. */
+  group: async (port: number, token: string, group: string | null): Promise<void> => { await call(port, '/v1/group', { method: 'POST', token, body: JSON.stringify(groupBody(group)), headers: { 'Content-Type': 'application/json' } }); },
   unpair: async (port: number, token: string): Promise<void> => { await call(port, '/v1/unpair', { method: 'POST', token, body: '{}', headers: { 'Content-Type': 'application/json' } }); },
   /** Other players the client sees (feature `players`, protocol 2). */
   players: async (port: number, token: string): Promise<LivePlayers> => readLivePlayers(await call(port, '/v1/players', { token, timeoutMs: 4000 })),

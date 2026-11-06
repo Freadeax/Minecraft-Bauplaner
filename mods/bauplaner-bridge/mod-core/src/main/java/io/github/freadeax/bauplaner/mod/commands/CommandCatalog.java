@@ -262,6 +262,12 @@ public final class CommandCatalog {
         c(m, LINK, "markierungen.loeschen", "Markierung löschen", "markierungen loeschen", "Wartende Markierung löschen (Nummer aus der Liste).", Need.NONE, Arg.of("nr", Kind.NUMBER));
 
         c(m, LINK, "ebenen.alle", "Alle Ebenen zeigen", "ebenen alle", "Alle Weltplan-Ebenen sichtbar.", Need.NONE);
+        // Weltplan groups and locks (GAME-07-S11, 0.19.0)
+        c(m, LINK, "gruppe", "Weltplan-Gruppen", "gruppe", "Gruppen aus dem Weltbuilder; gesperrte Bereiche sind im Hologramm grau.", Need.NONE);
+        c(m, LINK, "gruppe.waehlen", "Nur diese Gruppe", "gruppe", "Hologramm, Fortschritt und Material nur innerhalb dieser Gruppe.", Need.NONE, Arg.of("name", Kind.TEXT));
+        c(m, LINK, "gruppe.alle", "Alle Gruppen", "gruppe alle", "Wieder alles zeigen, ausgeblendete Gruppen sichtbar.", Need.NONE);
+        c(m, LINK, "gruppe.aus", "Gruppe ausblenden", "gruppe aus", "Markierungen und Hologramm dieser Gruppe ausblenden.", Need.NONE, Arg.of("name", Kind.TEXT));
+        c(m, LINK, "gruppe.an", "Gruppe einblenden", "gruppe an", "Ausgeblendete Gruppe wieder zeigen.", Need.NONE, Arg.of("name", Kind.TEXT));
         // Recording for the website (client, all loaders) and on the server
         c(m, RECORD, "plaene", "Pläne", "plaene", "Pläne im Ordner bauplaner/plans.", Need.NONE);
         c(m, RECORD, "plan", "Plan laden", "plan", "Plan für die Aufnahme laden.", Need.NONE, Arg.of("datei", Kind.TEXT));

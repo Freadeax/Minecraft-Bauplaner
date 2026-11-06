@@ -7098,3 +7098,14 @@ Modrinth-Galerie: Bild Bauhilfen Symmetrie/Kurven (0.18.0)
 - `mods/bauplaner-bridge/modrinth/gallery/09-build-guides.png`
 - `mods/bauplaner-bridge/modrinth/project.json`
 
+## 2026-11-06T10:23:30.536Z · progress
+
+**Aufgaben:** MAP-04, GAME-07
+
+Gruppen und Sperren: Weltplan-Schema 3 (group, locked), Weltbuilder (zuweisen, ein-/ausblenden, sperren, Gruppe wählen), Mod 0.19.0 zeigt gesperrte Flächen grau und beschränkt das Hologramm auf eine Gruppe (/bauplaner gruppe, POST /v1/group); echte Spieltests Fabric und NeoForge 26.3 grün, Abnahme KARTE-09/MOD-21 offen
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| MAP-04 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme durch Philipp (S06): Langdruck-Menü auf dem Touch-Gerät, Gruppen und Sperren auf dem iPad (Testfall KARTE-09). |
+| GAME-07 | 🧩 Implementiert · Abnahme offen | 10/11 | Philipp prüft 0.19.0 im echten Spiel: gesperrter Bauplatz grau, Hologramm nur in einer Gruppe (Testfall MOD-21); danach Stufe 7. |
+

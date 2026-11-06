@@ -18,6 +18,7 @@ export const LAYERS: readonly { readonly id: LayerId; readonly label: string }[]
 export const ALL_LAYERS: Layers = { projects: true, site: true, path: true, point: true, zone: true };
 const LAYER_KEY = 'bauplaner.weltkarte.ebenen';
 const NAMED_KEY = 'bauplaner.weltkarte.ebenen.aus';
+const GROUPS_KEY = 'bauplaner.weltkarte.gruppen.aus';
 
 /** Visible layers, remembered per browser (convenience only). */
 export function useLayers(): [Layers, (next: Layers) => void] {
@@ -32,14 +33,36 @@ export function useLayers(): [Layers, (next: Layers) => void] {
   return [layers, set];
 }
 
-/** Hidden named layers (MAP-06), remembered per browser. */
-export function useHiddenLayers(): [ReadonlySet<string>, (next: ReadonlySet<string>) => void] {
+function useHiddenNames(key: string): [ReadonlySet<string>, (next: ReadonlySet<string>) => void] {
   const [hidden, setHidden] = useState<ReadonlySet<string>>(() => {
-    try { const raw = JSON.parse(localStorage.getItem(NAMED_KEY) ?? '[]') as unknown; return new Set(Array.isArray(raw) ? raw.filter((x): x is string => typeof x === 'string') : []); }
+    try { const raw = JSON.parse(localStorage.getItem(key) ?? '[]') as unknown; return new Set(Array.isArray(raw) ? raw.filter((x): x is string => typeof x === 'string') : []); }
     catch { return new Set(); }
   });
-  const set = (next: ReadonlySet<string>) => { setHidden(next); try { localStorage.setItem(NAMED_KEY, JSON.stringify([...next])); } catch { /* storage blocked */ } };
+  const set = (next: ReadonlySet<string>) => { setHidden(next); try { localStorage.setItem(key, JSON.stringify([...next])); } catch { /* storage blocked */ } };
   return [hidden, set];
+}
+
+/** Hidden named layers (MAP-06), remembered per browser. */
+export function useHiddenLayers(): [ReadonlySet<string>, (next: ReadonlySet<string>) => void] { return useHiddenNames(NAMED_KEY); }
+
+/** Hidden named groups (GAME-07-S11), remembered per browser; the game has its own switch (/bauplaner gruppe aus). */
+export function useHiddenGroups(): [ReadonlySet<string>, (next: ReadonlySet<string>) => void] { return useHiddenNames(GROUPS_KEY); }
+
+/** Named groups (schema 3) with show/hide, entry counts and a lock mark when all entries of a group are locked. */
+export function GroupToggles({ groups, hidden, onHidden, onSelect }: {
+  groups: readonly { readonly name: string; readonly count: number; readonly locked: number }[];
+  hidden: ReadonlySet<string>; onHidden: (next: ReadonlySet<string>) => void; onSelect: (name: string) => void;
+}) {
+  if (!groups.length) return null;
+  const toggle = (name: string, on: boolean) => { const next = new Set(hidden); if (on) next.delete(name); else next.add(name); onHidden(next); };
+  return <div className="builder-layers builder-groups" role="group" aria-label="Gruppen">
+    <span className="muted small">Gruppen:</span>
+    {groups.map(g => <span key={g.name} className="chip-check named group">
+      <input type="checkbox" checked={!hidden.has(g.name)} aria-label={`Gruppe „${g.name}“ zeigen`} onChange={e => toggle(g.name, e.target.checked)} />
+      <button type="button" className="text-button" onClick={() => onSelect(g.name)} title="Ganze Gruppe auswählen">{g.locked === g.count ? '🔒 ' : g.locked ? '◐ ' : ''}{g.name}</button> <small>{g.count}</small>
+    </span>)}
+    {hidden.size > 0 && <button type="button" className="text-button" onClick={() => onHidden(new Set())}>alle zeigen</button>}
+  </div>;
 }
 
 export function LayerToggles({ layers, onChange, counts, names = [], hidden, onHidden, nameCounts }: {
@@ -63,20 +86,28 @@ export function LayerToggles({ layers, onChange, counts, names = [], hidden, onH
   </div>;
 }
 
-/** Assigns a named layer to the selection: existing names or a new one (MAP-06). */
-export function LayerPicker({ names, current, onPick }: { names: readonly string[]; current: string | null; onPick: (name: string) => void }) {
+const PICKER_TEXT = {
+  layer: { what: 'Ebene', none: 'keine Ebene', fresh: 'Neue Ebene …', assign: 'Ebene zuweisen', title: 'Die gewählten Einträge in eine benannte Ebene legen (ein-/ausblendbar, in der Liste filterbar)' },
+  group: { what: 'Gruppe', none: 'keine Gruppe', fresh: 'Neue Gruppe …', assign: 'Gruppe zuweisen', title: 'Die gewählten Einträge zu einer benannten Gruppe zusammenfassen: ein Klick wählt dann die ganze Gruppe, ein zweiter nur den Eintrag. Die Mod zeigt Gruppen im Hologramm (/bauplaner gruppe).' },
+} as const;
+
+/** Assigns a named layer (MAP-06) or group (schema 3) to the selection: existing names or a new one. */
+export function NamePicker({ kind, names, current, onPick }: { kind: keyof typeof PICKER_TEXT; names: readonly string[]; current: string | null; onPick: (name: string) => void }) {
+  const t = PICKER_TEXT[kind];
   const [fresh, setFresh] = useState<string | null>(null);
   if (fresh !== null) return <form className="builder-layer-new" onSubmit={e => { e.preventDefault(); if (fresh.trim()) onPick(fresh.trim()); setFresh(null); }}>
-    <input value={fresh} maxLength={40} autoFocus placeholder="Name der Ebene" aria-label="Neue Ebene" onChange={e => setFresh(e.target.value)} onKeyDown={e => { if (e.key === 'Escape') { e.preventDefault(); setFresh(null); } }} />
+    <input value={fresh} maxLength={40} autoFocus placeholder={`Name der ${t.what}`} aria-label={`Neue ${t.what}`} onChange={e => setFresh(e.target.value)} onKeyDown={e => { if (e.key === 'Escape') { e.preventDefault(); setFresh(null); } }} />
     <button className="secondary" disabled={!fresh.trim()}>OK</button>
   </form>;
-  return <select className="builder-layer-pick" aria-label="Ebene zuweisen" value={current ?? ''} title="Die gewählten Einträge in eine benannte Ebene legen (ein-/ausblendbar, in der Liste filterbar)"
+  return <select className="builder-layer-pick" aria-label={t.assign} value={current ?? ''} title={t.title}
     onChange={e => { const v = e.target.value; if (v === '\u0000neu') setFresh(''); else onPick(v); }}>
-    <option value="">{current === null ? 'Ebene …' : 'keine Ebene'}</option>
+    <option value="">{current === null ? `${t.what} …` : t.none}</option>
     {names.map(n => <option key={n} value={n}>{n}</option>)}
-    <option value={'\u0000neu'}>Neue Ebene …</option>
+    <option value={'\u0000neu'}>{t.fresh}</option>
   </select>;
 }
+
+export function LayerPicker(props: { names: readonly string[]; current: string | null; onPick: (name: string) => void }) { return <NamePicker kind="layer" {...props} />; }
 
 export interface SelectionActions {
   readonly onDelete: () => void;
@@ -88,6 +119,10 @@ export interface SelectionActions {
   readonly onClear: () => void;
   /** Named layers (MAP-06): names in use, the layer of the selection (null = mixed) and the setter; null for projects only. */
   readonly layers?: { readonly names: readonly string[]; readonly current: string | null; readonly onPick: (name: string) => void } | null;
+  /** Named groups (schema 3), same shape as layers. */
+  readonly groups?: { readonly names: readonly string[]; readonly current: string | null; readonly onPick: (name: string) => void } | null;
+  /** Lock (schema 3): how many of the selected entries are locked, and the switch; null for projects only. */
+  readonly lock?: { readonly locked: number; readonly total: number; readonly onLock: (locked: boolean) => void } | null;
   /** Distance from the player in the game to the selection, when known. */
   readonly playerDistance?: string | null;
 }
@@ -105,6 +140,10 @@ export function SelectionBar({ items, projects, actions }: { items: number; proj
     {actions.onMirror && <button className="secondary" onClick={() => actions.onMirror!('z')} title="Nord und Süd tauschen" aria-label="Nord-Süd spiegeln">⇅ Spiegeln</button>}
     {actions.onAlign && <button className="secondary" onClick={actions.onAlign} title="Höhe von Bauplätzen und Punkten aus dem bekannten Gelände setzen (Geländeaufnahme oder Spiel)">⛰ Ans Gelände</button>}
     {actions.layers && <LayerPicker names={actions.layers.names} current={actions.layers.current} onPick={actions.layers.onPick} />}
+    {actions.groups && <NamePicker kind="group" names={actions.groups.names} current={actions.groups.current} onPick={actions.groups.onPick} />}
+    {actions.lock && <button className="secondary" aria-pressed={actions.lock.locked === actions.lock.total} onClick={() => actions.lock!.onLock(actions.lock!.locked < actions.lock!.total)}
+      title="Gesperrte Einträge bleiben, wo sie sind: nicht verschieben, umformen oder löschen, bis sie entsperrt sind. Im Hologramm der Mod ist der Plan in gesperrten Flächen grau.">
+      {actions.lock.locked === actions.lock.total ? '🔓 Entsperren' : actions.lock.locked ? `🔒 Alle sperren (${actions.lock.locked}/${actions.lock.total})` : '🔒 Sperren'}</button>}
     <button className="secondary" onClick={actions.onFrame}>Zeigen</button>
     {actions.playerDistance && <span className="muted small builder-distance">{actions.playerDistance}</span>}
     <button className="text-button" onClick={actions.onClear} aria-label="Auswahl aufheben">✕</button>
@@ -153,19 +192,21 @@ function itemInfo(i: WorldItem): string {
 }
 
 /** Object list of the Weltplan: search, filter by kind and named layer, multi-select, delete and show per row. */
-export function ObjectList({ items, selection, onSelect, onDelete, onFrame, onSelectAll, layerNames: names = [] }: {
+export function ObjectList({ items, selection, onSelect, onDelete, onFrame, onSelectAll, layerNames: names = [], groupNames: groups = [] }: {
   items: readonly WorldItem[]; selection: ReadonlySet<string>;
   onSelect: (hit: MapHit, add: boolean) => void; onDelete: (id: string) => void; onFrame: (id: string) => void; onSelectAll: (ids: readonly string[]) => void;
-  layerNames?: readonly string[];
+  layerNames?: readonly string[]; groupNames?: readonly string[];
 }) {
   const [query, setQuery] = useState('');
   const [kind, setKind] = useState<WorldItem['kind'] | 'all'>('all');
   const [layer, setLayer] = useState<string>('all');
+  const [group, setGroup] = useState<string>('all');
   const shown = useMemo(() => {
     const q = query.trim().toLocaleLowerCase('de');
     return items.filter(i => (kind === 'all' || i.kind === kind) && (layer === 'all' || (layer === '' ? !i.layer : i.layer === layer))
-      && (!q || `${i.name} ${i.note} ${i.layer ?? ''} ${itemInfo(i)}`.toLocaleLowerCase('de').includes(q)));
-  }, [items, query, kind, layer]);
+      && (group === 'all' || (group === '' ? !i.group : i.group === group))
+      && (!q || `${i.name} ${i.note} ${i.layer ?? ''} ${i.group ?? ''} ${i.locked ? 'gesperrt' : ''} ${itemInfo(i)}`.toLocaleLowerCase('de').includes(q)));
+  }, [items, query, kind, layer, group]);
   if (!items.length) return <p className="muted small">Noch kein Weltplan in dieser Dimension. Zeichne mit „Bauplatz“, „Weg“, „Zone“ oder „Punkt“ direkt auf der Draufsicht.</p>;
   const sum = worldPlanSummary(items);
   return <div className="builder-objects">
@@ -178,6 +219,9 @@ export function ObjectList({ items, selection, onSelect, onDelete, onFrame, onSe
       {names.length > 0 && <select value={layer} onChange={e => setLayer(e.target.value)} aria-label="Ebene">
         <option value="all">Alle Ebenen</option>{names.map(n => <option key={n} value={n}>{n}</option>)}<option value="">ohne Ebene</option>
       </select>}
+      {groups.length > 0 && <select value={group} onChange={e => setGroup(e.target.value)} aria-label="Gruppe">
+        <option value="all">Alle Gruppen</option>{groups.map(n => <option key={n} value={n}>{n}</option>)}<option value="">ohne Gruppe</option>
+      </select>}
       <button className="text-button" disabled={!shown.length} onClick={() => onSelectAll(shown.map(i => i.id))} title="Alle angezeigten Einträge auswählen">Alle wählen</button>
     </div>
     {!shown.length && <p className="muted small">Kein Eintrag passt zur Suche.</p>}
@@ -185,11 +229,11 @@ export function ObjectList({ items, selection, onSelect, onDelete, onFrame, onSe
       <button className="plan-row" aria-pressed={selection.has(i.id)} onClick={e => onSelect({ kind: 'item', id: i.id }, e.shiftKey || e.ctrlKey || e.metaKey)}
         onDoubleClick={() => onFrame(i.id)} title="Klick wählt, Umschalt/Strg-Klick wählt dazu, Doppelklick zeigt auf der Karte">
         <i className={`plan-kind ${i.kind}`} aria-hidden="true" style={i.color || i.kind === 'point' || i.kind === 'zone' ? { background: itemColor(i) } : undefined} />
-        <b>{i.name}{i.layer && <em className="plan-layer-chip">{i.layer}</em>}</b>
+        <b>{i.locked && <span className="plan-lock" title="Gesperrt" aria-label="gesperrt">🔒</span>}{i.name}{i.layer && <em className="plan-layer-chip">{i.layer}</em>}{i.group && <em className="plan-layer-chip group">{i.group}</em>}</b>
         <small>{itemInfo(i)}</small>
       </button>
       <button className="plan-row-act" onClick={() => onFrame(i.id)} aria-label={`„${i.name}“ auf der Karte zeigen`} title="Auf der Karte zeigen">⌖</button>
-      <button className="plan-row-act danger-item" onClick={() => onDelete(i.id)} aria-label={`${KIND_LABEL[i.kind]} „${i.name}“ löschen`} title="Löschen (Rückgängig mit Strg+Z)">🗑</button>
+      <button className="plan-row-act danger-item" onClick={() => onDelete(i.id)} disabled={i.locked} aria-label={`${KIND_LABEL[i.kind]} „${i.name}“ löschen`} title={i.locked ? 'Gesperrt – erst entsperren' : 'Löschen (Rückgängig mit Strg+Z)'}>🗑</button>
     </li>)}</ul>
   </div>;
 }

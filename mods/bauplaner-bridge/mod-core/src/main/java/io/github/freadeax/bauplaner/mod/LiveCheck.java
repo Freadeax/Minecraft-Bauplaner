@@ -212,7 +212,8 @@ public final class LiveCheck {
      * height limit the kept totals answer at once (whole plan or one section); with one it counts.
      */
     public int[] count(Filter filter) {
-        boolean allHeights = filter.minY() == Integer.MIN_VALUE && filter.maxY() == Integer.MAX_VALUE;
+        // An area (Weltplan group, GAME-07-S11) needs the per-block count, like a height limit.
+        boolean allHeights = filter.minY() == Integer.MIN_VALUE && filter.maxY() == Integer.MAX_VALUE && filter.area() == null;
         if (allHeights && filter.allSections()) return counts.clone();
         if (allHeights) {
             int[] out = new int[V];

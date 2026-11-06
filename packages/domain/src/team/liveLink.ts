@@ -31,6 +31,9 @@ import type { WorldPlacement } from '../world/worldmap.js';
  * `hello.features` lists what the mod can do (`scan`, `marks2`, `players`).
  * - POST /v1/marks (feature `marks2`) also takes zones, layer/colour and the new point types
  * - GET  /v1/players (feature `players`) → other players the client can see
+ * Feature `groups` (GAME-07-S11, mod 0.19.0): marks carry `group` and `locked` (Weltplan schema 3); the
+ * hologram greys out blocks inside locked sites/zones/paths and can be limited to one group:
+ * - POST /v1/group  {group}  ← group name, or null for all; status `hologram.group`, `groups`
  * The website speaks protocol 1 and 2 and enables buttons by features, never by version numbers.
  * Every request after pairing carries the header X-Bauplaner-Token. The mod
  * answers only for allowed origins and never changes the world.
@@ -96,6 +99,8 @@ export const LIVE_FEATURE_PLAYERS = 'players';
 export const LIVE_FEATURE_BIGPLANS = 'bigplans';
 /** Protocol 3 (GAME-08, mod 0.13.0): points set in the game with /bauplaner markieren wait at `GET /v1/marks/game`. */
 export const LIVE_FEATURE_MARKS3 = 'marks3';
+/** Groups and locks of Weltplan schema 3 in the hologram (GAME-07-S11, mod 0.19.0): POST /v1/group, locked areas greyed out. */
+export const LIVE_FEATURE_GROUPS = 'groups';
 /** Layer the game points land on in the Weltplan. */
 export const GAME_MARKS_LAYER = 'Aus dem Spiel';
 export const liveCan = (hello: LiveHello | null, feature: string): boolean => !!hello?.features.includes(feature);
@@ -131,6 +136,7 @@ export const LIVE_FEATURE_LABELS: readonly { readonly id: string; readonly label
   { id: LIVE_FEATURE_BIGPLANS, label: 'große Pläne bis 16,7 Mio. Zellen' },
   { id: 'team', label: 'Teambau im Spiel (Abschnitte, Meldungen, Server-Plugin)' },
   { id: LIVE_FEATURE_MARKS3, label: 'Markierungen aus dem Spiel übernehmen' },
+  { id: LIVE_FEATURE_GROUPS, label: 'Gruppen und Sperren im Hologramm' },
 ];
 /** Other players (feature `players`): name and position in the client's dimension. */
 export interface LiveOtherPlayer { readonly name: string; readonly x: number; readonly y: number; readonly z: number; readonly yaw: number }
@@ -154,6 +160,10 @@ export interface LiveHologram {
   readonly section: number;
   /** Build sections of the plan file in build order with progress; empty for older mods or plans without sections. */
   readonly sections: readonly LiveSection[];
+  /** Weltplan group the hologram is limited to (feature `groups`); null = all. */
+  readonly group: string | null;
+  /** Planned blocks inside locked Weltplan areas, drawn grey in the game (feature `groups`); 0 for older mods. */
+  readonly locked: number;
 }
 export interface LiveSection { readonly name: string; readonly ok: number; readonly total: number }
 export interface LiveStatus {
@@ -219,6 +229,7 @@ export function readLiveStatus(raw: unknown): LiveStatus {
         const o = isObj(x) ? x : fail(`Abschnitt ${i + 1} ungültig`);
         return { name: str(o.name, `Abschnittsname ${i + 1}`), ok: int(o.ok, `Abschnitt ${i + 1} richtig`, 0, 1e9), total: int(o.total, `Abschnitt ${i + 1} gesamt`, 0, 1e9) };
       }),
+      group: optStr(h.group, 'Gruppe', 40), locked: h.locked == null ? 0 : int(h.locked, 'Gesperrte Blöcke', 0, 1e9),
     };
   }
   return { time, player, world, hologram, marks: raw.marks == null ? 0 : int(raw.marks, 'Markierungen', 0, 1e6) };
@@ -429,10 +440,16 @@ export function marksForMod(items: readonly WorldItem[], hello: LiveHello | null
   for (const i of items) {
     if (i.kind === 'zone') { kinds.add('Zonen'); continue; }
     if (i.kind === 'point' && !v1.has(i.type)) { kinds.add(`Punkte „${WORLD_POINT_TYPES.find(t => t.id === i.type)?.label ?? i.type}“`); continue; }
-    const { layer: _l, color: _c, ...plain } = i;
+    const { layer: _l, color: _c, group: _g, locked: _k, ...plain } = i;
     kept.push(plain as WorldItem);
   }
   return { items: kept, skipped: items.length - kept.length, skippedKinds: [...kinds] };
+}
+
+/** Body of POST /v1/group (feature `groups`): limit the hologram to one Weltplan group, null = all. */
+export function groupBody(group: string | null): { group: string | null } {
+  if (group !== null && (typeof group !== 'string' || !group.trim() || group.length > 40)) fail('Gruppe ungültig');
+  return { group: group === null ? null : group.trim() };
 }
 
 /** Base URL of the mod on this computer. */

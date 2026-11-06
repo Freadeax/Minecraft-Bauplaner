@@ -394,6 +394,20 @@ public final class BridgeGameTest implements FabricClientGameTest {
         context.waitTicks(40);
         out.append(",\"section\":").append(request(context, http, base + "/v1/section", "POST", "{\"section\":2}", token, "https://freadeax.github.io"));
         out.append(",\"after\":").append(request(context, http, base + "/v1/status", "GET", null, token, "https://freadeax.github.io"));
+        // GAME-07-S11 (0.19.0): a locked site of group „Markt“ over the whole plan – the hologram turns grey there and
+        // the website limits it to the group; afterwards the original marks come back for the later steps.
+        String grouped = "{\"dimension\":\"minecraft:overworld\",\"items\":[{\"kind\":\"site\",\"id\":\"site_markt\",\"name\":\"Marktplatz\",\"note\":\"\",\"dimension\":\"minecraft:overworld\",\"minX\":"
+                + (anchor[0] - 80) + ",\"minZ\":" + (anchor[2] - 100) + ",\"width\":200,\"length\":200,\"y\":null,\"projectId\":null,\"group\":\"Markt\",\"locked\":true}]}";
+        out.append(",\"groupMarks\":").append(request(context, http, base + "/v1/marks", "POST", grouped, token, "https://freadeax.github.io"));
+        out.append(",\"group\":").append(request(context, http, base + "/v1/group", "POST", "{\"group\":\"Markt\"}", token, "https://freadeax.github.io"));
+        out.append(",\"groupUnknown\":").append(request(context, http, base + "/v1/group", "POST", "{\"group\":\"Gibt es nicht\"}", token, "https://freadeax.github.io"));
+        context.waitTicks(25);
+        chat(context, "/bauplaner gruppe");
+        context.waitTicks(30);
+        copy(context.takeScreenshot("bauplaner-gruppe"), io.resolve("gruppe.png"));
+        out.append(",\"groupStatus\":").append(request(context, http, base + "/v1/status", "GET", null, token, "https://freadeax.github.io"));
+        out.append(",\"groupAll\":").append(request(context, http, base + "/v1/group", "POST", "{\"group\":null}", token, "https://freadeax.github.io"));
+        out.append(",\"marksBack\":").append(request(context, http, base + "/v1/marks", "POST", marks, token, "https://freadeax.github.io"));
         // COOP-03 Teambau: team view from the planner (written by bridge_gametest.mjs), take section 2 in the game,
         // only my sections in the hologram, the planner fetches the claim from the outbox and acknowledges it.
         out.append(",\"teamPost\":").append(request(context, http, base + "/v1/team", "POST", Files.readString(io.resolve("team.json")), token, "https://freadeax.github.io"));

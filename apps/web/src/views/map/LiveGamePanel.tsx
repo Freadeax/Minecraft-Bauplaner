@@ -25,6 +25,8 @@ export interface LiveActions {
   readonly progress?: ReactNode;
   /** Choose the build section shown in the game (mod 0.7.0+); null while not possible. */
   readonly onSection?: ((section: number) => void) | null;
+  /** GAME-07-S11 (mod 0.19.0, feature `groups`): Weltplan groups and the switch that limits the hologram to one; null without the feature. */
+  readonly groups?: { readonly names: readonly string[]; readonly onGroup: ((group: string | null) => void) | null } | null;
   /** Weltplan follows into the game by itself (MAP-05). */
   readonly autoMarks?: boolean;
   readonly onAutoMarks?: (on: boolean) => void;
@@ -135,6 +137,12 @@ export function LiveGamePanel({ game, actions }: { game: LiveGame; actions: Live
             <span className="map-progress"><span style={{ width: `${sec.total ? Math.round(sec.ok / sec.total * 100) : 0}%` }} /></span>
             <span className="small">{formatNumber(sec.ok)}/{formatNumber(sec.total)}{sec.total && sec.ok === sec.total ? ' ✓' : ''}</span>
           </button>)}
+        </div>}
+        {actions.groups && (actions.groups.names.length > 0 || h.locked > 0) && <div className="live-sections" role="group" aria-label="Weltplan-Gruppen im Spiel">
+          <p className="muted small">Weltplan-Gruppen – im Spiel wird {h.group ? `nur „${h.group}“` : 'alles'} gezeigt{h.locked ? ` · ${formatNumber(h.locked)} Planblöcke in gesperrten Flächen (grau)` : ''}:</p>
+          <button className="live-section" aria-pressed={h.group === null} disabled={!actions.groups.onGroup} onClick={() => actions.groups!.onGroup?.(null)}><span>Alle</span></button>
+          {actions.groups.names.map(g => <button key={g} className="live-section" aria-pressed={h.group === g} disabled={!actions.groups!.onGroup} onClick={() => actions.groups!.onGroup?.(g)}
+            title={`Im Spiel nur den Teil des Plans in Gruppe „${g}“ zeigen (Hologramm, Fortschritt, Material, Fehlerfinder)`}><span>{g}</span></button>)}
         </div>}
         {actions.progress}
       </section>}

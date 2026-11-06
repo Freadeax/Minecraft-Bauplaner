@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T10:18:20.598Z",
+  "updatedAt": "2026-11-06T10:23:30.536Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -4876,7 +4876,8 @@
         "apps/web/src/styles/map.css",
         "packages/domain/src/",
         "tests/",
-        "docs/"
+        "docs/",
+        "docs/architecture/welt/WORLD_BUILDER.md"
       ],
       "legacyIds": [],
       "steps": [
@@ -4906,6 +4907,11 @@
           "done": true
         },
         {
+          "id": "MAP-04-S07",
+          "title": "Benannte Gruppen und Sperren (Weltplan-Schema 3): Gruppe bilden, Gruppenklick, ein-/ausblenden, Sperren gegen Verschieben/Umformen/Löschen, Mod-Vertrag (groups, POST /v1/group).",
+          "done": true
+        },
+        {
           "id": "MAP-04-S06",
           "title": "Abnahme durch Philipp, Langdruck-Menü auf echtem Touch-Gerät.",
           "done": false
@@ -4914,9 +4920,9 @@
       "acceptance": [
         "Jedes Objekt der Weltkarte lässt sich ohne Umweg löschen bzw. von der Karte nehmen und mit einem Schritt wiederherstellen.",
         "Aktionen auf mehreren Objekten sind ein Rückgängig-Schritt; Projekte selbst werden auf der Karte nie gelöscht.",
-        "Weltplan-Schema und Mod-Vertrag bleiben unverändert."
+        "Weltplan-Schema 3 ergänzt nur freiwillige Felder (Gruppe, Sperre); Pläne der Schemata 1 und 2 laden unverändert, ältere Mods bekommen nur, was sie verstehen."
       ],
-      "next": "Abnahme durch Philipp (S06); denkbare Folge: benannte Gruppen/Sperren mit Schemaerweiterung, abgestimmt mit der Mod.",
+      "next": "Abnahme durch Philipp (S06): Langdruck-Menü auf dem Touch-Gerät, Gruppen und Sperren auf dem iPad (Testfall KARTE-09).",
       "blockers": [],
       "evidence": [
         {
@@ -4930,28 +4936,34 @@
         {
           "path": "docs/architecture/welt/WORLD_BUILDER.md",
           "note": "Bedienung, Technik, Grenzen."
+        },
+        {
+          "path": "tests/unit/world/worldgroups.test.mjs",
+          "note": "Schema 3, Gruppen bilden/umbenennen/auflösen, Gruppenklick, Sperrregel mit exakter Umkehrung, Mod-Vertrag."
+        },
+        {
+          "path": "tests/e2e/world-groups.e2e.mjs",
+          "note": "Gruppe bilden, Gruppenklick, Sperren gegen Entf/Pfeile, Rückgängig, Ausblenden, Neuladen, Simulator mit groups."
         }
       ],
       "verification": {
         "state": "pending",
-        "note": "Einheits- und Browsertests grün; Abnahme durch Philipp offen (S06)."
+        "note": "Einheits- und Browsertests grün (auch Gruppen/Sperren); Abnahme durch Philipp offen (S06)."
       },
       "delivery": {
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T10:23:30.536Z",
       "area": "PLANER",
-      "thread": "Große Testphase vorbereiten und betreuen",
+      "thread": "Gruppen und Sperren bis ins Hologramm bringen",
       "philipp": [
         {
           "kind": "geraet",
           "text": "Langdruck-Menü auf echtem Touch-Gerät (S06)."
         }
       ],
-      "orphans": [
-        "Benannte Gruppen und Sperren mit Schemaerweiterung, abgestimmt mit der Mod (siehe GAME-07-S07)."
-      ]
+      "orphans": []
     },
     {
       "id": "MAP-02",
@@ -5222,7 +5234,9 @@
         "packages/application/src/revisionExport.ts",
         "packages/domain/src/team/liveLink.ts",
         "tests/unit/building/game-check.test.mjs",
-        "tests/unit/team/livelink.test.mjs"
+        "tests/unit/team/livelink.test.mjs",
+        "tests/e2e/modSimulator.mjs",
+        "mods/bauplaner-bridge/CHANGELOG.md"
       ],
       "legacyIds": [],
       "steps": [
@@ -5278,14 +5292,14 @@
         },
         {
           "id": "GAME-07-S11",
-          "title": "Stufe 6b: Gruppen/Sperren aus dem Weltbuilder im Hologramm (gesperrte Teile ausgrauen, Gruppe als Filter).",
-          "done": false
+          "title": "Stufe 6b: Gruppen/Sperren aus dem Weltbuilder im Hologramm: gesperrte Flächen grau ohne Platzierhilfe und Fehlerfinder, Gruppe als Filter (/bauplaner gruppe, Planmenü, Website über POST /v1/group), Gruppe ausblenden (0.19.0).",
+          "done": true
         }
       ],
       "acceptance": [
         "Reiner Client: keine Pakete an den Server, keine Weltänderung, kein automatisches Bauen, keine Abhängigkeit von WorldEdit oder Litematica; Ergebnis des Live-Abgleichs gleicht dem Website-Vergleich."
       ],
-      "next": "Philipp prüft Packliste und Gerüst (0.13.0, TESTPLAN MOD-17) im echten Spiel; danach Stufe 6b (Gruppen/Sperren aus dem Weltbuilder).",
+      "next": "Philipp prüft 0.19.0 im echten Spiel: gesperrter Bauplatz grau, Hologramm nur in einer Gruppe (Testfall MOD-21); danach Stufe 7.",
       "blockers": [],
       "evidence": [
         {
@@ -5323,6 +5337,10 @@
         {
           "path": "mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Filter.java",
           "note": "0.7.0: ein Filter (Ebenen + Bauabschnitt) für Hologramm, HUD, Material und Fehlerfinder; JUnit buildSectionsFilterEverything, Website-Test für SectionNames/SectionCells im Export und Abschnitte im Live-Status; Spieltests Fabric (auch Modpack + Complementary) und NeoForge prüfen Abschnittsliste, Röntgensicht und Abschnittswahl über die Website (02.11.2026)."
+        },
+        {
+          "path": "mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/MarkAreasTest.java",
+          "note": "Schema 3 lesen, Flächen aus Bauplatz/Zone/Weg, Filter mit Fläche, Fehlerfinder ohne gesperrte Flächen."
         }
       ],
       "verification": {
@@ -5333,9 +5351,9 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T10:23:30.536Z",
       "area": "MOD",
-      "thread": "Teambau und Befehle in der Mod ausbauen",
+      "thread": "Gruppen und Sperren bis ins Hologramm bringen",
       "philipp": [
         {
           "kind": "server",
@@ -22476,6 +22494,32 @@
           "done": 4,
           "total": 5,
           "next": "Modrinth-Freigabe abwarten (Status processing seit 03.11.2026 20:19); neue Versionen hochladen, sobald sie auf main sind."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T10:23:30.536Z",
+      "kind": "progress",
+      "items": [
+        "MAP-04",
+        "GAME-07"
+      ],
+      "summary": "Gruppen und Sperren: Weltplan-Schema 3 (group, locked), Weltbuilder (zuweisen, ein-/ausblenden, sperren, Gruppe wählen), Mod 0.19.0 zeigt gesperrte Flächen grau und beschränkt das Hologramm auf eine Gruppe (/bauplaner gruppe, POST /v1/group); echte Spieltests Fabric und NeoForge 26.3 grün, Abnahme KARTE-09/MOD-21 offen",
+      "files": [],
+      "snapshot": [
+        {
+          "id": "MAP-04",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Abnahme durch Philipp (S06): Langdruck-Menü auf dem Touch-Gerät, Gruppen und Sperren auf dem iPad (Testfall KARTE-09)."
+        },
+        {
+          "id": "GAME-07",
+          "status": "implemented",
+          "done": 10,
+          "total": 11,
+          "next": "Philipp prüft 0.19.0 im echten Spiel: gesperrter Bauplatz grau, Hologramm nur in einer Gruppe (Testfall MOD-21); danach Stufe 7."
         }
       ]
     }

@@ -41,6 +41,15 @@ Abgestimmt am 02.11.2026 zwischen MAP-06 (Website) und dem Mod-Thread; Website u
 
 `POST /v1/zones` entfällt (Zonen reisen in `marks`).
 
+## Gruppen und Sperren (GAME-07-S11, Mod 0.19.0)
+
+Merkmal `groups` in `hello.features`. Markierungen tragen Weltplan-Schema 3: an jedem Eintrag optional `group` (Text bis 40) und `locked` (true). Die Website schickt beide nur an Mods mit `marks2` mit (ältere Mods ignorieren unbekannte Felder; ohne `marks2` werden sie wie `layer`/`color` entfernt).
+
+| Route | Bedeutung |
+|---|---|
+| `POST /v1/group {group}` | Hologramm auf eine Weltplan-Gruppe beschränken, `null` = alles. 400 bei unbekannter Gruppe, 409 ohne Plan. Antwort `{group}`; der Spieler bekommt „[Bauplaner] Website: …“. |
+| `GET /v1/status` | `hologram.group` (Name oder `null`) und `hologram.locked` (Planblöcke des gezeigten Teils in gesperrten Flächen, grau gezeichnet). `readLiveStatus` setzt für ältere Mods `null` und 0. |
+
 ## Protokoll 3 (GAME-08, Mod 0.13.0)
 
 Rückrichtung: Punkte, die im Spiel gesetzt werden, landen im Weltplan. Merkmal `marks3` in `hello.features`; `hello.protocol` bleibt 2, eine Website ohne Protokoll 3 merkt nichts.

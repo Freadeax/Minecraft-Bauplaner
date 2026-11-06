@@ -89,7 +89,7 @@ Vorbild ist Litematicas „Easy Place“, aber serverkonform: Easy Place veränd
 
 ## Nächste Stufen
 
-Gruppen/Sperren aus dem Weltbuilder (MAP-04) in der Mod, Bauabschnitt als Packliste mit Kistenstandorten, Gerüst-Hinweise für hängende Blöcke.
+Packliste und Gerüst-Hinweise kamen mit 0.13.0, Gruppen und Sperren mit 0.19.0 (Abschnitte unten).
 
 ## Testphase: Diagnose und Absturzschutz (0.7.2)
 
@@ -146,7 +146,7 @@ Im Plan-Menü (J) führt „Befehle & Status“ zu einer Seite, auf der alle Bef
 - **Gerüst.** `/bauplaner geruest` findet offene Blöcke, die man gerade nicht setzen kann: Teile des Plans, die nirgends an etwas Stehendes stoßen (Ausbreitung über benachbarte offene Planblöcke ab jedem Block mit festem Nachbarn; nicht erreichte hängen), und fallende Blöcke (Sand, Kies, Trockenbeton, Ambosse …) ohne Halt darunter. Der Zeiger springt auf den nächsten (`mod-core/Scaffold`). Ungeladene Chunks zählen als möglicher Halt.
 - **Markieren für die Weltkarte.** `/bauplaner markieren <art> [name]`, `/bauplaner markierungen [loeschen <nr>]`; Ablauf und Routen in [LIVE_LINK.md](../team/LIVE_LINK.md), Abschnitt Protokoll 3.
 - **Prüfung.** JUnit `StageSixTest`, `GameMarksTest`, `LiveLinkTest`; Spieltest Fabric und NeoForge führen alle vier Befehle aus und prüfen die Antworten (`scripts/mod/bridge_gametest.mjs`); Browser `tests/e2e/map-depth.e2e.mjs` übernimmt Punkte aus dem Simulator, ohne Doppelte, und macht die Übernahme rückgängig.
-- **Offen.** Gruppen/Sperren aus dem Weltbuilder im Hologramm (GAME-07-S11).
+- **Erledigt mit 0.19.0.** Gruppen/Sperren aus dem Weltbuilder im Hologramm (GAME-07-S11, Abschnitt „Stufe 6b“).
 
 ## Bauhilfen: Symmetrie und Kurven (EDIT-04)
 
@@ -157,4 +157,15 @@ Im Plan-Menü (J) führt „Befehle & Status“ zu einer Seite, auf der alle Bef
 - **Anzeige.** Geister mit Texturen (wie Planblöcke), andere Blöcke rot, falsche Ausrichtung gelb; Gras, Schnee und Wasser zählen als frei. HUD über der Schnellleiste: Modus, Kurve und „gesetzt / gesamt“. Zwei Tasten, ab Werk unbelegt: „Bauhilfe: Kurvenpunkt setzen“ und „Bauhilfe: Symmetrieachse hier“. Befehlsseite (J → „Befehle & Status“) Reiter „Bauhilfen“.
 - **Grenzen.** Die Bauhilfen gelten in einer Dimension und gehen beim Neustart verloren (nur im Speicher); „als Plan“ hält sie fest. Blöcke, die andere Spieler setzen, werden nicht gespiegelt.
 - **Prüfung.** JUnit `EditGuidesTest` (gleiche Zellen, Gruppen, Bilder und Zustände wie der Planer über `fixtures/edit/mod-edit-vectors.json`; Quellen, Folgen, Abbauen, 4-fach mit Kurve, Plan lesbar über `PlanModel`), Befehlsseite `CommandCatalogTest`.
+
+## Stufe 6b: Gruppen und Sperren aus dem Weltbuilder (0.19.0, GAME-07-S11)
+
+Auslöser: Roadmap Block 2 (06.11.2026, MAP-04 „benannte Gruppen und Sperren mit Schemaerweiterung, abgestimmt mit der Mod“). Der Weltplan hat dafür Schema 3 (`group`, `locked` an jedem Eintrag, [WORLD_BUILDER.md](../welt/WORLD_BUILDER.md)); die Mod liest beides mit `POST /v1/marks` und merkt es in `markierungen.json`, also auch ohne offene Website.
+
+- **Flächen.** `mod-core/live/MarkAreas` macht aus Bauplätzen (Rechteck), Zonen (Polygon, Mittelpunktregel wie `insideZone`) und Wegen (Mittellinie mit halber Breite, quadratischer Pinsel wie `pathColumns`) eine Spaltenprüfung `contains(x, z)` mit Begrenzungsrahmen vorab. Punkte haben keine Fläche.
+- **Gesperrt = grau.** Offene Planblöcke in gesperrten Flächen zeichnet `HologramRenderer` als graue Kästen (keine Texturgeister, keine Röntgenrahmen); `PlacementAssist` greift dort nicht ein (kein Blockwechsel, kein Abbauschutz, Zielzeile „gesperrter Bereich im Weltplan, Platzierhilfe ruht“), der Fehlerfinder (`Hologram.finderFilter`) überspringt sie. Fortschritt und Material zählen sie weiter mit; das HUD nennt „N gesperrt (grau)“.
+- **Gruppe als Filter.** `Filter` hat eine Komponente `area` (null = keine Grenze, `within(...)` verknüpft). `Hologram.filter()` = Ebene ∧ Abschnitt ∧ gewählte Gruppe ∧ ¬ausgeblendete Gruppen, nur wenn die Markierungen aus der Dimension des Plans stammen. Damit folgen Hologramm, HUD, Materialliste, Packliste, Gerüst und Fehlerfinder automatisch. `LiveCheck.count` nimmt den schnellen Weg über Abschnittssummen nur ohne Fläche.
+- **Bedienung.** `/bauplaner gruppe` (Liste mit Anzahl, gewählter Gruppe, gesperrten Planblöcken), `/bauplaner gruppe <name>`, `… alle`, `… aus <name>`, `… an <name>` (ausgeblendet = Markierungen und Hologramm darin weg; nicht gespeichert, wie Ebenen). Planmenü (J): Zeile „Gruppe: …“ (weiterschalten) und „Alle“. Befehlsseite: fünf Knöpfe in „Verbindung“. Markierungen gesperrter Einträge sind grau, die Zonenzeile im HUD nennt Gruppe und „gesperrt“.
+- **Website.** Merkmal `groups`; `POST /v1/group {group: name|null}` (400 bei unbekannter Gruppe), Status `hologram.group` und `hologram.locked` (Planblöcke des gezeigten Teils in gesperrten Flächen). Die Spielverbindung zeigt „Weltplan-Gruppen im Spiel“ mit Knöpfen je Gruppe ([LIVE_LINK.md](../team/LIVE_LINK.md)).
+- **Prüfung.** JUnit `MarkAreasTest` (Schema 3 lesen, Flächen, Filter mit Fläche, Fehlerfinder ohne Sperre), `LiveLinkTest` (Merkmal, Route braucht Schlüssel), `CommandCatalogTest`; Spieltest Fabric: gesperrter Bauplatz „Markt“ über dem ganzen Plan, Website wählt die Gruppe, `locked` = alle Blöcke des gezeigten Abschnitts, unbekannte Gruppe 400, `/bauplaner gruppe` im Chat, Bildschirmfoto `gruppe.png` (`scripts/mod/bridge_gametest.mjs`); Browser `tests/e2e/world-groups.e2e.mjs` gegen den Simulator.
 

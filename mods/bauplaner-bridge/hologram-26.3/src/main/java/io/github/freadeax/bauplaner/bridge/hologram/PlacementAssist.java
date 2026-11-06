@@ -88,7 +88,8 @@ public final class PlacementAssist {
         if (ctx == null || !ctx.canPlace()) return InteractionResult.PASS;
         BlockPos pos = ctx.getClickedPos();
         int i = hologram.check().indexAt(pos.getX(), pos.getY(), pos.getZ());
-        if (i < 0) return InteractionResult.PASS;
+        // GAME-07-S11: a locked Weltplan area is left alone – no help, no guard.
+        if (i < 0 || hologram.lockedAt(pos.getX(), pos.getZ())) return InteractionResult.PASS;
         var planned = hologram.check().expected(i);
         BlockState predicted = predict(item, ctx);
         if (predicted == null) return InteractionResult.PASS;
@@ -124,7 +125,7 @@ public final class PlacementAssist {
         Minecraft mc = Minecraft.getInstance();
         if (!level.isClientSide() || player != mc.player || !live(mc) || hologram.guard() != Guard.ON) return InteractionResult.PASS;
         int i = hologram.check().indexAt(pos.getX(), pos.getY(), pos.getZ());
-        if (i < 0 || hologram.check().verdict(i) != Verdict.OK) return InteractionResult.PASS;
+        if (i < 0 || hologram.check().verdict(i) != Verdict.OK || hologram.lockedAt(pos.getX(), pos.getZ())) return InteractionResult.PASS;
         say(mc, "Geschützt: richtig gesetzter Planblock (Platzierhilfe im Menü J auf „nur warnen“ stellen zum Abbauen)", GREY);
         return InteractionResult.FAIL;
     }
@@ -169,6 +170,7 @@ public final class PlacementAssist {
         Verdict verdict = check.verdict(i);
         String name = McCompat.blockName(planned);
         Item want = plannedItem(planned);
+        if (hologram.lockedAt(pos.getX(), pos.getZ())) { aim = new Aim(pos, planned, verdict, Kind.NOT_PLANNED, name + " – gesperrter Bereich im Weltplan, Platzierhilfe ruht", GREY); return; }
         if (verdict == Verdict.WRONG) { aim = new Aim(pos, planned, verdict, Kind.WRONG_BLOCK, name + " – falscher Block steht hier, erst abbauen", RED); return; }
         if (!(stack.getItem() instanceof BlockItem item) || item != want) {
             String held = hotbarSlot(player, want) >= 0 ? " (Num 8 nimmt ihn in die Hand)" : where(player, want);

@@ -21,12 +21,20 @@ import { DomainError } from '../core/types.js';
  * unchanged. The mod reads the same entries over /v1/marks; what a mod
  * cannot show is filtered by `marksForMod` (liveLink.ts) by its features.
  */
-export const WORLD_PLAN_SCHEMA_VERSION = 2;
-export const WORLD_PLAN_SCHEMA_VERSIONS: readonly number[] = [1, 2];
+/**
+ * Schema 3 (MAP-04 / GAME-07-S11): named groups (`group`, entries that belong
+ * together and are selected, moved and hidden together) and locks (`locked`:
+ * the entry keeps its place and shape and cannot be deleted until it is
+ * unlocked; the mod greys out the hologram inside locked areas). Both fields
+ * are optional and omitted when unset, so schema-1/2 entries stay unchanged.
+ */
+export const WORLD_PLAN_SCHEMA_VERSION = 3;
+export const WORLD_PLAN_SCHEMA_VERSIONS: readonly number[] = [1, 2, 3];
 export const WORLD_PLAN_MAX_ITEMS = 2000;
 export const WORLD_PATH_MAX_POINTS = 256;
 export const WORLD_ZONE_MAX_POINTS = 256;
 export const WORLD_LAYER_MAX = 40;
+export const WORLD_GROUP_MAX = 40;
 export const WORLD_SITE_MAX_SIDE = 4096;
 const XZ = 29_999_984, Y_MIN = -2032, Y_MAX = 2031;
 const DIMENSION_ID = /^[a-z0-9_.-]{1,64}:[a-z0-9_./-]{1,128}$/;
@@ -75,6 +83,10 @@ interface ItemBase {
   readonly layer?: string;
   /** Own colour `#rrggbb` instead of the colour of the kind/type. */
   readonly color?: string;
+  /** Named group (schema 3), e.g. „Marktplatz“; absent = in no group. */
+  readonly group?: string;
+  /** Locked (schema 3): place and shape fixed, not deletable; absent = unlocked. */
+  readonly locked?: true;
 }
 export interface WorldSite extends ItemBase {
   readonly kind: 'site';
@@ -108,7 +120,7 @@ export type WorldItem = WorldSite | WorldPath | WorldPoint | WorldZone;
 export type WorldItemKind = WorldItem['kind'];
 
 export interface WorldPlan {
-  readonly schemaVersion: 1 | 2;
+  readonly schemaVersion: 1 | 2 | 3;
   /** Increases with every saved change (optimistic concurrency like projects). */
   readonly revision: number;
   readonly updatedAt: string;
@@ -134,16 +146,18 @@ const text = (v: unknown, max: number, what: string, required = false): string =
   if (required && !(v as string).trim()) fail(`${what} fehlt`);
   return v as string;
 };
-const BASE_KEYS = ['kind', 'id', 'name', 'note', 'dimension', 'layer', 'color'];
+const BASE_KEYS = ['kind', 'id', 'name', 'note', 'dimension', 'layer', 'color', 'group', 'locked'];
 function fields(raw: Record<string, unknown>, keys: readonly string[], what: string): void {
   const extra = Object.keys(raw).filter(k => !keys.includes(k) && !BASE_KEYS.includes(k));
   if (extra.length) fail(`${what}: unbekannte Felder ${extra.join(', ')}`);
 }
 const COLOR = /^#[0-9a-f]{6}$/;
-/** Optional layer/colour of schema 2; omitted when empty so schema-1 entries stay byte-identical. */
-function extras(raw: Record<string, unknown>): { layer?: string; color?: string } {
-  const out: { layer?: string; color?: string } = {};
+/** Optional layer/colour (schema 2) and group/lock (schema 3); omitted when empty so older entries stay byte-identical. */
+function extras(raw: Record<string, unknown>): { layer?: string; color?: string; group?: string; locked?: true } {
+  const out: { layer?: string; color?: string; group?: string; locked?: true } = {};
   if (raw.layer !== undefined && raw.layer !== null && raw.layer !== '') { const l = text(raw.layer, WORLD_LAYER_MAX, 'Ebene').trim(); if (l) out.layer = l; }
+  if (raw.group !== undefined && raw.group !== null && raw.group !== '') { const g = text(raw.group, WORLD_GROUP_MAX, 'Gruppe').trim(); if (g) out.group = g; }
+  if (raw.locked !== undefined && raw.locked !== null && raw.locked !== false) { if (raw.locked !== true) fail('Sperre muss true oder false sein'); out.locked = true; }
   if (raw.color !== undefined && raw.color !== null && raw.color !== '') {
     const c = typeof raw.color === 'string' ? raw.color.toLowerCase() : fail('Farbe muss #rrggbb sein');
     if (!COLOR.test(c)) fail('Farbe muss #rrggbb sein');
@@ -236,7 +250,9 @@ export function applyWorldPlanOp(plan: WorldPlan, op: WorldPlanOp): { plan: Worl
     case 'update': {
       const item = checkWorldItem(op.item), at = plan.items.findIndex(i => i.id === item.id);
       if (at < 0) fail(`Eintrag ${item.id} fehlt`);
-      const items = [...plan.items]; const old = items[at]!; items[at] = item;
+      const items = [...plan.items]; const old = items[at]!;
+      if (old.locked && item.locked && !sameShape(old, item)) fail(`„${old.name}“ ist gesperrt – erst entsperren, dann verschieben oder umformen`);
+      items[at] = item;
       return { plan: { ...plan, items }, inverse: { kind: 'update', item: old } };
     }
     case 'insert': {
@@ -250,6 +266,7 @@ export function applyWorldPlanOp(plan: WorldPlan, op: WorldPlanOp): { plan: Worl
     case 'remove': {
       const at = plan.items.findIndex(i => i.id === op.id);
       if (at < 0) fail(`Eintrag ${op.id} fehlt`);
+      if (plan.items[at]!.locked) fail(`„${plan.items[at]!.name}“ ist gesperrt – erst entsperren, dann löschen`);
       // The inverse puts the entry back at its old place, so undo keeps list order.
       return { plan: { ...plan, items: plan.items.filter(i => i.id !== op.id) }, inverse: { kind: 'insert', item: plan.items[at]!, at } };
     }
@@ -260,6 +277,13 @@ export function applyWorldPlanOp(plan: WorldPlan, op: WorldPlanOp): { plan: Worl
       return { plan: next, inverse: { kind: 'batch', label: `Rückgängig: ${op.label}`, ops: inverses } };
     }
   }
+}
+
+/** Fields that make up place and shape; a locked entry keeps them (everything else, like name or project link, stays editable). */
+const SHAPE_KEYS = ['kind', 'dimension', 'minX', 'minZ', 'width', 'length', 'y', 'x', 'z', 'points'] as const;
+function sameShape(a: WorldItem, b: WorldItem): boolean {
+  const r = a as unknown as Record<string, unknown>, s = b as unknown as Record<string, unknown>;
+  return SHAPE_KEYS.every(k => JSON.stringify(r[k]) === JSON.stringify(s[k]));
 }
 
 // ------------------------------------------------------------------ helpers
@@ -281,6 +305,11 @@ export function itemColor(i: WorldItem, siteColor = '#f2b84b'): string {
 /** Named layers in use, sorted (German collation), without the empty layer. */
 export function layerNames(items: readonly WorldItem[]): string[] {
   return [...new Set(items.flatMap(i => i.layer ? [i.layer] : []))].sort((a, b) => a.localeCompare(b, 'de'));
+}
+
+/** Named groups in use, sorted (German collation). */
+export function groupNames(items: readonly WorldItem[]): string[] {
+  return [...new Set(items.flatMap(i => i.group ? [i.group] : []))].sort((a, b) => a.localeCompare(b, 'de'));
 }
 
 let counter = 0;

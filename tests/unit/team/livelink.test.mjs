@@ -26,7 +26,7 @@ test('Begrüßung, Kopplung und Status werden streng gelesen', () => {
   assert.equal(readLivePairing({ token: 'a'.repeat(32) }), 'a'.repeat(32));
   assert.throws(() => readLivePairing({ token: 'kurz' }), /Schlüssel/);
   const s = readLiveStatus(status);
-  assert.deepEqual(s.hologram, { ...hologram, section: 0, sections: [] }, 'ältere Mods ohne Abschnitte');
+  assert.deepEqual(s.hologram, { ...hologram, section: 0, sections: [], group: null, locked: 0 }, 'ältere Mods ohne Abschnitte');
   // Mod 0.7.0: build sections with progress and the active one.
   const sections = [{ name: 'Fundament', ok: 40, total: 40 }, { name: 'Erdgeschoss', ok: 20, total: 60 }];
   assert.deepEqual(readLiveStatus({ ...status, hologram: { ...hologram, section: 2, sections } }).hologram.sections, sections);

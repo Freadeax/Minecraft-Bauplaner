@@ -4,7 +4,7 @@ import {
   moveItem, newWorldItemId, originFromPlayer, siteFromCorners, snapSiteToChunks, surveyCovers, surveyDisplayCells, suggestDataVersion,
   alignToGround, duplicateItems, insertPathVertex, itemsInRect, joinPaths, mirrorItem, movePathVertex, removeItemsOp, removePathVertex, reversePath,
   rotateItem, selectionBounds, selectionPivot, splitPath, updateItemsOp,
-  layerNames, marksForMod, routePath, setLayerOp, trailToPath, pointTypeLabel, checkPlanForMod, LIVE_PLAN_EXPORT,
+  layerNames, marksForMod, routePath, setLayerOp, setGroupOp, setLockedOp, withGroupMates, splitLocked, groupSummary, groupNames, LIVE_FEATURE_GROUPS, trailToPath, pointTypeLabel, checkPlanForMod, LIVE_PLAN_EXPORT,
   gameMarksToItems, liveCan, LIVE_FEATURE_MARKS3, GAME_MARKS_LAYER,
   isTurned, livePlacementOf, placedBounds, sameTurn, turnInPlace, turnLabel, turnOf, withTurn,
 } from '../../../../../packages/domain/src/index.js';
@@ -33,7 +33,7 @@ import { PlanItemEditor, PlanToolbar } from './PlanPanel';
 import { useWorldPlan } from './useWorldPlan';
 import { useMapHistory } from './useMapHistory';
 import type { MapChange, MapStep } from './useMapHistory';
-import { LayerToggles, MapContextMenu, ObjectList, SelectionBar, useHiddenLayers, useLayers } from './Builder';
+import { GroupToggles, LayerToggles, MapContextMenu, ObjectList, SelectionBar, useHiddenGroups, useHiddenLayers, useLayers } from './Builder';
 import type { MenuEntry } from './Builder';
 import { chunkImage } from './terrainLayer';
 import { areaAround, storeSurvey } from '../world/surveys';
@@ -103,6 +103,8 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   const [layers, setLayers] = useLayers();
   // MAP-06: named layers (hidden ones are remembered per browser).
   const [hiddenNames, setHiddenNames] = useHiddenLayers();
+  // GAME-07-S11: named groups (hidden ones are remembered per browser).
+  const [hiddenGroups, setHiddenGroups] = useHiddenGroups();
   const [menu, setMenu] = useState<{ at: { x: number; y: number }; hit: MapHit | null; vertex: MapVertex | null; column: readonly [number, number] } | null>(null);
   const [follow, setFollow] = useState(false);
   const [terrainBusy, setTerrainBusy] = useState(false);
@@ -288,7 +290,9 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
 
   // ------------------------------------------------------------ MAP-04: Weltbuilder (selection and editing)
   const names = useMemo(() => layerNames(items), [items]);
-  const visibleItems = useMemo(() => items.filter(i => layers[i.kind] && !(i.layer && hiddenNames.has(i.layer))), [items, layers, hiddenNames]);
+  const groups = useMemo(() => groupNames(items), [items]);
+  const groupInfo = useMemo(() => groupSummary(items), [items]);
+  const visibleItems = useMemo(() => items.filter(i => layers[i.kind] && !(i.layer && hiddenNames.has(i.layer)) && !(i.group && hiddenGroups.has(i.group))), [items, layers, hiddenNames, hiddenGroups]);
   const selItemIds = useMemo(() => new Set(selection.filter(h => h.kind === 'item').map(h => h.id)), [selection]);
   const selItems = useMemo(() => visibleItems.filter(i => selItemIds.has(i.id)), [visibleItems, selItemIds]);
   const selProjectIds = useMemo(() => new Set(selection.filter(h => h.kind === 'project').map(h => h.id)), [selection]);
@@ -299,11 +303,24 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   const visibleProjects = useMemo(() => new Set(selProjects.map(p => p.id)), [selProjects]);
 
   const pick = useCallback((hit: MapHit | null, add = false) => {
-    if (!add) { setSelection(hit ? [hit] : []); return; }
+    if (!add) {
+      // GAME-07-S11: a click on a grouped entry selects the whole group; a second click on it (group already selected) only the entry.
+      if (hit?.kind === 'item') {
+        const mates = withGroupMates(visibleItems, hit.id);
+        if (mates.length > 1) {
+          setSelection(cur => {
+            const same = cur.length === mates.length && mates.every(id => cur.some(h => h.kind === 'item' && h.id === id));
+            return same ? [hit] : mates.map(id => ({ kind: 'item' as const, id }));
+          });
+          return;
+        }
+      }
+      setSelection(hit ? [hit] : []); return;
+    }
     if (!hit) return;
     // Toggle: a selected hit leaves the selection, a new one becomes the primary.
     setSelection(cur => cur.some(h => h.kind === hit.kind && h.id === hit.id) ? cur.filter(h => !(h.kind === hit.kind && h.id === hit.id)) : [...cur, hit]);
-  }, []);
+  }, [visibleItems]);
   const selectAll = useCallback(() => {
     const hits: MapHit[] = [...(layers.projects ? (map?.entries ?? []).filter(e => !e.skipped).map(e => ({ kind: 'project' as const, id: e.projectId })) : []), ...visibleItems.map(i => ({ kind: 'item' as const, id: i.id }))];
     setSelection(hits);
@@ -326,28 +343,37 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   }, [map]);
 
   const planStep = (op: WorldPlanOp | null): MapStep[] => op ? [{ kind: 'plan', op }] : [];
+  /** GAME-07-S11: locked entries keep their place and shape; say so once instead of failing the whole step. */
+  const lockedNote = (locked: readonly WorldItem[], what: string): string => locked.length
+    ? ` ${locked.length === 1 ? `„${locked[0]!.name}“ ist gesperrt und bleibt` : `${locked.length} gesperrte Einträge bleiben`} ${what} (entsperren mit 🔓 in der Auswahlleiste).` : '';
+  const openSel = useMemo(() => splitLocked(selItems), [selItems]);
   /** Moves everything selected (entries and placed projects) by whole blocks, as one step. */
   const moveSelection = useCallback((dx: number, dz: number) => {
     if (!dx && !dz) return;
+    const { open, locked } = openSel;
+    if (!open.length && !selProjects.length) { setNotice(lockedNote(locked, 'stehen').trim()); setNoticeUndo(false); return; }
     const steps: MapStep[] = [
-      ...planStep(updateItemsOp(selItems, selItems.map(i => moveItem(i, dx, dz)), 'Verschoben')),
+      ...planStep(updateItemsOp(open, open.map(i => moveItem(i, dx, dz)), 'Verschoben')),
       ...selProjects.map(p => ({ kind: 'project' as const, projectId: p.id, op: worldOperation({ ...p.world!, origin: [p.world!.origin[0] + dx, p.world!.origin[1], p.world!.origin[2] + dz] }, 'Auf der Karte verschoben') })),
     ];
     const what = selectionCount === 1 ? `„${selItems[0]?.name ?? selProjects[0]?.name}“` : `${selectionCount} Objekte`;
-    void change({ label: `${what} um ${dx} / ${dz} verschoben`, steps });
-  }, [selItems, selProjects, selectionCount, change]);
-  const deleteHits = useCallback((itemIds: readonly string[], placed: readonly Project[]) => {
+    void change({ label: `${what} um ${dx} / ${dz} verschoben`, steps }, locked.length ? `${what} verschoben.${lockedNote(locked, 'stehen')}` : undefined);
+  }, [selItems, openSel, selProjects, selectionCount, change]); // eslint-disable-line react-hooks/exhaustive-deps
+  const deleteHits = useCallback((wantIds: readonly string[], placed: readonly Project[]) => {
+    const { open, locked } = splitLocked(wp.plan.items.filter(i => wantIds.includes(i.id)));
+    const itemIds = open.map(i => i.id);
+    if (!itemIds.length && !placed.length) { if (locked.length) { setNotice(lockedNote(locked, 'erhalten').trim()); setNoticeUndo(false); } return; }
     const op = removeItemsOp(wp.plan, itemIds);
-    const removed = wp.plan.items.filter(i => itemIds.includes(i.id));
+    const removed = open;
     const steps: MapStep[] = [...planStep(op), ...placed.filter(p => p.world).map(p => ({ kind: 'project' as const, projectId: p.id, op: worldOperation(null, 'Von der Karte genommen') }))];
     if (!steps.length) return;
     const parts = [removed.length === 1 ? `„${removed[0]!.name}“ gelöscht` : removed.length ? `${removed.length} Einträge gelöscht` : '',
       placed.length === 1 ? `„${placed[0]!.name}“ von der Karte genommen` : placed.length ? `${placed.length} Projekte von der Karte genommen` : ''].filter(Boolean);
     const label = parts.join(', ');
-    void change({ label, steps }, `${label}.${placed.length ? ' Die Projekte selbst bleiben erhalten (unter „Noch nicht platziert“).' : ''} Rückgängig mit Strg+Z.`).then(ok => {
+    void change({ label, steps }, `${label}.${placed.length ? ' Die Projekte selbst bleiben erhalten (unter „Noch nicht platziert“).' : ''} Rückgängig mit Strg+Z.${lockedNote(locked, 'erhalten')}`).then(ok => {
       if (ok) setSelection(cur => cur.filter(h => h.kind === 'item' ? !itemIds.includes(h.id) : !placed.some(p => p.id === h.id)));
     });
-  }, [wp.plan, change]);
+  }, [wp.plan, change]); // eslint-disable-line react-hooks/exhaustive-deps
   const deleteSelection = useCallback(() => deleteHits(selItems.map(i => i.id), selProjects), [deleteHits, selItems, selProjects]);
   const duplicateSelection = useCallback(() => {
     if (!selItems.length) { setNotice('Projekte lassen sich hier nicht duplizieren – ein Projekt hat genau eine Lage. Lege in der Projektzentrale eine Kopie an.'); setNoticeUndo(false); return; }
@@ -363,12 +389,14 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
     const label = 'turns' in how ? `Gedreht (${how.turns > 0 ? '90° im Uhrzeigersinn' : '90° gegen den Uhrzeigersinn'})` : how.axis === 'x' ? 'Ost-West gespiegelt' : 'Nord-Süd gespiegelt';
     try {
       const steps: MapChange['steps'][number][] = [];
-      if (selItems.length) {
-        const pivot = selectionPivot(selItems);
-        const next = selItems.map(i => 'turns' in how ? rotateItem(i, pivot, how.turns) : mirrorItem(i, pivot, how.axis));
-        const op = updateItemsOp(selItems, next, label);
+      const { open, locked } = openSel;
+      if (open.length) {
+        const pivot = selectionPivot(open);
+        const next = open.map(i => 'turns' in how ? rotateItem(i, pivot, how.turns) : mirrorItem(i, pivot, how.axis));
+        const op = updateItemsOp(open, next, label);
         if (op) steps.push({ kind: 'plan', op });
       }
+      if (!steps.length && locked.length && !selProjects.length) { setNotice(lockedNote(locked, 'wie sie sind').trim()); setNoticeUndo(false); return; }
       // MAP-07: projects turn in place (north-west corner of the footprint stays); Nord-Süd = Ost-West + 180°.
       for (const p of selProjects) {
         const local = map?.entries.find(e => e.projectId === p.id)?.localBounds ?? null;
@@ -376,9 +404,9 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
           : how.axis === 'x' ? turnInPlace(p.world!, local, { mirror: true }) : turnInPlace(turnInPlace(p.world!, local, { mirror: true }), local, { turns: 2 });
         steps.push({ kind: 'project', projectId: p.id, op: worldOperation(w, label) });
       }
-      if (steps.length) void change({ label, steps }, `${label}${selProjects.length ? ' – Projekte drehen sich auf der Weltkarte um ihre Nordwestecke; „Ins Spiel senden“ setzt das Hologramm genauso gedreht' : ''}.`);
+      if (steps.length) void change({ label, steps }, `${label}${selProjects.length ? ' – Projekte drehen sich auf der Weltkarte um ihre Nordwestecke; „Ins Spiel senden“ setzt das Hologramm genauso gedreht' : ''}.${lockedNote(locked, 'wie sie sind')}`);
     } catch (e) { setNotice(errorText(e)); setNoticeUndo(false); }
-  }, [selItems, selProjects, map, change]);
+  }, [selItems, openSel, selProjects, map, change]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const editPath = useCallback((path: Polyline, next: Polyline | readonly [WorldPath, WorldPath], label: string) => {
     try {
@@ -393,6 +421,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   };
   const onVertex = useCallback((pathId: string, index: number, to: readonly [number, number], insert: boolean) => {
     const path = items.find((i): i is Polyline => i.id === pathId && (i.kind === 'path' || i.kind === 'zone')); if (!path) return;
+    if (path.locked) { setNotice(`„${path.name}“ ist gesperrt – erst entsperren, dann Ecken ändern.`); setNoticeUndo(false); return; }
     const next = pathOp(() => insert ? insertPathVertex(path, index, to) : movePathVertex(path, index, to));
     if (next) editPath(path, next, `${path.kind === 'zone' ? 'Zonenecke' : 'Wegecke'} ${insert ? 'eingefügt' : 'verschoben'}`);
   }, [items, editPath]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -404,11 +433,11 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
       .then(ok => ok && setSelection([{ kind: 'item', id: joinable.id }]));
   };
   const alignSelection = useCallback(() => {
-    const r = alignToGround(selItems, groundAt);
-    const op = updateItemsOp(selItems, r.items, 'Ans Gelände ausgerichtet');
+    const r = alignToGround(openSel.open, groundAt);
+    const op = updateItemsOp(openSel.open, r.items, 'Ans Gelände ausgerichtet');
     if (!op) { setNotice(r.unknown ? 'Unter der Auswahl ist kein Gelände bekannt. Lade Gelände aus dem Spiel oder lege eine Geländeaufnahme an.' : 'Die Höhen passen schon zum Gelände.'); setNoticeUndo(false); return; }
     void change({ label: 'Ans Gelände ausgerichtet', steps: [{ kind: 'plan', op }] }, `${r.aligned} ${r.aligned === 1 ? 'Eintrag' : 'Einträge'} auf die Geländehöhe gesetzt${r.unknown ? `, bei ${r.unknown} ist kein Gelände bekannt` : ''}.${selProjects.length ? ' Projekte passt du im Detailfeld mit „Höhe ans Gelände anpassen“ an.' : ''}`);
-  }, [selItems, selProjects.length, groundAt, change]);
+  }, [openSel, selProjects.length, groundAt, change]);
   const canAlign = selItems.some(i => i.kind !== 'path' && i.kind !== 'zone');
   /** MAP-06: put the selected entries into a named layer (or take them out). */
   const assignLayer = useCallback((name: string) => {
@@ -417,6 +446,28 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
     void change({ label: op.kind === 'batch' ? op.label : 'Ebene geändert', steps: [{ kind: 'plan', op }] }, name ? `${selItems.length} ${selItems.length === 1 ? 'Eintrag' : 'Einträge'} in Ebene „${name}“ gelegt.` : `${selItems.length} ${selItems.length === 1 ? 'Eintrag' : 'Einträge'} aus der Ebene genommen.`)
       .then(ok => { if (ok && name && hiddenNames.has(name)) { const h = new Set(hiddenNames); h.delete(name); setHiddenNames(h); } });
   }, [selItems, change, hiddenNames, setHiddenNames]);
+  /** GAME-07-S11: put the selected entries into a named group (or take them out). */
+  const assignGroup = useCallback((name: string) => {
+    let op: WorldPlanOp | null;
+    try { op = setGroupOp(selItems, name); } catch (e) { setNotice(errorText(e)); setNoticeUndo(false); return; }
+    if (!op) return;
+    const n = `${selItems.length} ${selItems.length === 1 ? 'Eintrag' : 'Einträge'}`;
+    void change({ label: op.kind === 'batch' ? op.label : 'Gruppe geändert', steps: [{ kind: 'plan', op }] }, name ? `${n} in Gruppe „${name}“. Ein Klick wählt jetzt die ganze Gruppe, ein zweiter nur den Eintrag.` : `${n} aus der Gruppe genommen.`)
+      .then(ok => { if (ok && name && hiddenGroups.has(name)) { const h = new Set(hiddenGroups); h.delete(name); setHiddenGroups(h); } });
+  }, [selItems, change, hiddenGroups, setHiddenGroups]);
+  const selectionGroup = selItems.length ? (selItems.every(i => (i.group ?? '') === (selItems[0]!.group ?? '')) ? selItems[0]!.group ?? '' : null) : null;
+  /** GAME-07-S11: lock or unlock the selected entries (one step). */
+  const lockSelection = useCallback((locked: boolean) => {
+    const op = setLockedOp(selItems, locked);
+    if (!op) return;
+    void change({ label: op.kind === 'batch' ? op.label : 'Sperre geändert', steps: [{ kind: 'plan', op }] },
+      locked ? `${op.kind === 'batch' ? op.label : 'Gesperrt'}. Gesperrte Einträge lassen sich nicht verschieben, umformen oder löschen; im Hologramm der Mod ist der Plan dort grau.` : `${op.kind === 'batch' ? op.label : 'Entsperrt'}.`);
+  }, [selItems, change]);
+  const selectGroup = useCallback((name: string) => {
+    const ids = visibleItems.filter(i => i.group === name).map(i => ({ kind: 'item' as const, id: i.id }));
+    setSelection(ids);
+    if (!ids.length) { setNotice(`Gruppe „${name}“ ist ausgeblendet.`); setNoticeUndo(false); }
+  }, [visibleItems]);
   const selectionLayer = selItems.length ? (selItems.every(i => (i.layer ?? '') === (selItems[0]!.layer ?? '')) ? selItems[0]!.layer ?? '' : null) : null;
   /** MAP-06: re-route a path over the known terrain between its corners. */
   const routeSelected = useCallback((path: WorldPath) => {
@@ -704,6 +755,10 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
       ...(connected && selProjects[0]!.world ? [{ label: '▶ Ins Spiel senden', onClick: () => void sendToGame(selProjects[0]!) }] : []),
     ] : []),
     ...(selItems.length ? [{ label: '⧉ Duplizieren (Strg+D)', onClick: duplicateSelection }] : []),
+    ...(selItems.length ? [openSel.locked.length === selItems.length
+      ? { label: '🔓 Entsperren', onClick: () => lockSelection(false) }
+      : { label: '🔒 Sperren', onClick: () => lockSelection(true), hint: 'Nicht verschieben, umformen oder löschen; im Hologramm grau.' }] : []),
+    ...(selItems.length === 1 && selItems[0]!.group ? [{ label: `Ganze Gruppe „${selItems[0]!.group}“ wählen`, onClick: () => selectGroup(selItems[0]!.group!) }] : []),
     ...(selItems.length || selProjects.length ? [
       { label: '↻ Drehen 90° (R)', onClick: () => transformSelection({ turns: 1 }) },
       { label: '↺ Drehen −90° (Umschalt+R)', onClick: () => transformSelection({ turns: -1 }) },
@@ -781,7 +836,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
           </li>)}</ul></>}
         {projects && !projects.length && <p className="muted">Noch keine Projekte. <a href="#/">Projekt anlegen</a></p>}
         <h2>Weltplan <small>{items.length}</small></h2>
-        <ObjectList items={visibleItems} selection={visibleSelection} onSelect={pick} layerNames={names}
+        <ObjectList items={visibleItems} selection={visibleSelection} onSelect={pick} layerNames={names} groupNames={groups}
           onDelete={id => deleteHits([id], [])} onFrame={id => { const it = items.find(i => i.id === id); if (it) { setSelection([{ kind: 'item', id }]); frameItems([it]); } }}
           onSelectAll={ids => setSelection(ids.map(id => ({ kind: 'item' as const, id })))} />
         {visibleItems.length < items.length && <p className="muted small">{items.length - visibleItems.length} Einträge in ausgeblendeten Ebenen.{hiddenNames.size ? <> <button className="text-button" onClick={() => setHiddenNames(new Set())}>Benannte Ebenen zeigen</button></> : null}</p>}
@@ -799,6 +854,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
           gameMarks: marks3 ? { count: gameMarks.length, names: gameMarks.slice(0, 4).map(m => m.name).join(', ') + (gameMarks.length > 4 ? ' …' : ''), onAdopt: adopting ? null : () => void adoptGameMarks() } : null,
           onPointAtPlayer: connected && player ? pointAtPlayer : null, onTrailToPath: connected && player && game.trail.length > 1 ? trailAsPath : null,
           onSection: connected ? n => { const t = game.token(); if (t) void liveApi.section(game.settings.port, t, n).then(() => setNotice(n ? `Im Spiel wird nur Abschnitt „${holo?.sections[n - 1]?.name ?? n}“ gezeigt.` : 'Im Spiel wird wieder der ganze Plan gezeigt.'), e => setNotice(errorText(e))); } : null,
+          groups: liveCan(game.hello, LIVE_FEATURE_GROUPS) ? { names: groups, onGroup: connected ? g => { const t = game.token(); if (t) void liveApi.group(game.settings.port, t, g).then(() => setNotice(g ? `Im Spiel zeigt das Hologramm nur noch Gruppe „${g}“. Erst „Weltplan ins Spiel senden“, wenn die Gruppe neu ist.` : 'Im Spiel wird wieder der ganze Plan gezeigt.'), e => setNotice(errorText(e))); } : null } : null,
           progress: holoProject ? <GameProgressPanel progress={progress} modVersion={game.hello?.mod.version ?? null}
             onTick={op => void save(holoProject, op)} /> : null,
         }} />
@@ -807,11 +863,15 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
           counts={{ projects: map?.entries.length ?? 0, site: items.filter(i => i.kind === 'site').length, path: items.filter(i => i.kind === 'path').length, point: items.filter(i => i.kind === 'point').length, zone: items.filter(i => i.kind === 'zone').length }}
           names={names} hidden={hiddenNames} nameCounts={new Map(names.map(n => [n, items.filter(i => i.layer === n).length]))}
           onHidden={h => { setHiddenNames(h); setSelection(cur => cur.filter(x => { if (x.kind !== 'item') return true; const it = items.find(i => i.id === x.id); return !it?.layer || !h.has(it.layer); })); }} />
+        <GroupToggles groups={groupInfo} hidden={hiddenGroups} onSelect={selectGroup}
+          onHidden={h => { setHiddenGroups(h); setSelection(cur => cur.filter(x => { if (x.kind !== 'item') return true; const it = items.find(i => i.id === x.id); return !it?.group || !h.has(it.group); })); }} />
         {selectionCount > 0 && <SelectionBar items={selItems.length} projects={selProjects.length} actions={{
           onDelete: deleteSelection, onDuplicate: selItems.length ? duplicateSelection : null,
           onRotate: selItems.length || selProjects.length ? turns => transformSelection({ turns }) : null, onMirror: selItems.length || selProjects.length ? axis => transformSelection({ axis }) : null,
           onAlign: canAlign ? alignSelection : null, onFrame: () => frameItems(selItems, selProjects), onClear: () => setSelection([]),
           layers: selItems.length ? { names, current: selectionLayer, onPick: assignLayer } : null, playerDistance,
+          groups: selItems.length ? { names: groups, current: selectionGroup, onPick: assignGroup } : null,
+          lock: selItems.length ? { locked: openSel.locked.length, total: selItems.length, onLock: lockSelection } : null,
         }} />}
         {wp.error && <div className="notice warning" role="alert">{wp.error}</div>}
         <div className={`map-panels${payload ? '' : ' no-3d'}`}>

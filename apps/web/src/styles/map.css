@@ -156,8 +156,12 @@
 /* MAP-06 Weltkarte vertieft: Zonen, benannte Ebenen, Höhenprofil, Farben. */
 .plan-kind.zone{border-radius:2px;transform:rotate(45deg) scale(.85);background:var(--map-accent)}
 .plan-layer-chip{display:inline-block;margin-left:6px;padding:0 6px;border:1px solid var(--line);border-radius:10px;font-size:10px;font-style:normal;font-weight:400;color:var(--muted);vertical-align:1px}
+.plan-layer-chip.group{border-style:dashed;color:var(--accent,#c8a0ff)}
+.plan-lock{margin-right:4px;font-size:11px}
+.builder-groups .group .text-button{padding:0 2px;font:inherit;color:inherit}
 .builder-named{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding-left:10px;border-left:1px solid var(--line)}
 .builder-layer-pick{min-height:36px;font-size:12px;padding:4px 8px;border:1px solid var(--line);border-radius:6px;background:var(--panel-2,#162732);color:inherit}
+.builder-selection .builder-layer-pick{width:auto;flex:0 1 auto;max-width:190px;margin:0}
 .builder-layer-new{display:inline-flex;gap:4px;align-items:center}.builder-layer-new input{min-height:36px;width:150px;font-size:12px}
 .builder-distance{margin-left:4px}
 .plan-color span{display:flex;align-items:center;gap:8px;min-height:36px}.plan-color input[type=color]{width:44px;height:32px;padding:2px;border:1px solid var(--line);border-radius:6px;background:var(--panel-2,#162732)}

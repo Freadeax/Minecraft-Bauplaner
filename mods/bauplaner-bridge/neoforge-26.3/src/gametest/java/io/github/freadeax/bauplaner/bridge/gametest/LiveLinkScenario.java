@@ -80,6 +80,18 @@ final class LiveLinkScenario {
         steps.add(new ClientScenario.Step(40, mc -> {}));
         request(steps, out, "section", () -> post(http, "/v1/section", "{\"section\":2}", token[0]));
         request(steps, out, "after", () -> get(http, "/v1/status", token[0], SITE));
+        // GAME-07-S11 (0.19.0), as in the Fabric test: a locked site of group „Markt“ over the whole plan, the
+        // hologram limited to that group, then the original marks come back for the later steps.
+        String grouped = "{\"dimension\":\"minecraft:overworld\",\"items\":[{\"kind\":\"site\",\"id\":\"site_markt\",\"name\":\"Marktplatz\",\"note\":\"\",\"dimension\":\"minecraft:overworld\",\"minX\":"
+                + (a[0] - 80) + ",\"minZ\":" + (a[2] - 100) + ",\"width\":200,\"length\":200,\"y\":null,\"projectId\":null,\"group\":\"Markt\",\"locked\":true}]}";
+        request(steps, out, "groupMarks", () -> post(http, "/v1/marks", grouped, token[0]));
+        request(steps, out, "group", () -> post(http, "/v1/group", "{\"group\":\"Markt\"}", token[0]));
+        request(steps, out, "groupUnknown", () -> post(http, "/v1/group", "{\"group\":\"Gibt es nicht\"}", token[0]));
+        steps.add(new ClientScenario.Step(25, mc -> s.command("bauplaner gruppe")));
+        steps.add(new ClientScenario.Step(30, mc -> {}));
+        request(steps, out, "groupStatus", () -> get(http, "/v1/status", token[0], SITE));
+        request(steps, out, "groupAll", () -> post(http, "/v1/group", "{\"group\":null}", token[0]));
+        request(steps, out, "marksBack", () -> post(http, "/v1/marks", marks, token[0]));
         // MAP-05 Baustand, as in the Fabric test: back onto the built plan, then turned once on empty ground.
         request(steps, out, "back", () -> post(http, "/v1/placement", "{\"dimension\":\"minecraft:overworld\",\"x\":" + a[0] + ",\"y\":" + a[1] + ",\"z\":" + a[2] + ",\"turns\":0,\"mirror\":false}", token[0]));
         steps.add(new ClientScenario.Step(10, mc -> {}));

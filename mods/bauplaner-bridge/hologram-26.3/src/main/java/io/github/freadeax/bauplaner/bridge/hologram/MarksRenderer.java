@@ -18,7 +18,7 @@ import net.minecraft.world.phys.Vec3;
  * frames on the ground, paths as lines along the surface, points as a short pillar with a beam, zones
  * as a translucent carpet of ground cells with a border. Heights come from the client's own height map
  * of loaded chunks; nothing is placed. Entries use their own colour when the website gave one; hidden
- * layers are skipped. A HUD line points to the nearest point and names the zone the player stands in.
+ * layers and groups are skipped, locked entries drawn grey (GAME-07-S11). A HUD line points to the nearest point and names the zone the player stands in.
  */
 final class MarksRenderer {
     static final int RADIUS = 256;
@@ -49,10 +49,10 @@ final class MarksRenderer {
         ClientLevel level = mc.level;
         double px = mc.player.getX(), pz = mc.player.getZ();
         for (WorldMarks.Zone zone : m.zones()) {
-            if (!link.layerShown(zone.extras().layer())) continue;
+            if (!link.shown(zone.extras())) continue;
             int[] b = zone.bounds();
             if (far(px, pz, (b[0] + b[2]) / 2.0, (b[1] + b[3]) / 2.0, Math.max(b[2] - b[0], b[3] - b[1]))) continue;
-            int color = WorldMarks.color(zone.extras(), WorldMarks.zoneColor(zone.category()));
+            int color = tone(zone.extras(), WorldMarks.color(zone.extras(), WorldMarks.zoneColor(zone.category())));
             // Carpet: one cell per ground column inside the polygon, coarser for big zones so the count stays bounded.
             long area = (long) (b[2] - b[0] + 1) * (b[3] - b[1] + 1);
             int step = area <= 4_096 ? 1 : area <= 16_384 ? 2 : area <= 65_536 ? 4 : 8;
@@ -70,25 +70,25 @@ final class MarksRenderer {
             for (int i = 0; i < pts.length; i++) surfaceLine(level, out, col, pts[i], pts[(i + 1) % pts.length], px, pz, color);
         }
         for (WorldMarks.Site s : m.sites()) {
-            if (!link.layerShown(s.extras().layer())) continue;
+            if (!link.shown(s.extras())) continue;
             if (far(px, pz, s.minX() + s.width() / 2.0, s.minZ() + s.length() / 2.0, Math.max(s.width(), s.length()))) continue;
             Integer y = s.y() != null ? s.y() : ground(level, s.minX() + s.width() / 2, s.minZ() + s.length() / 2);
             if (y == null) continue;
-            int c = WorldMarks.color(s.extras(), 0xFFFFFFFF);
+            int c = tone(s.extras(), WorldMarks.color(s.extras(), 0xFFFFFFFF));
             float x0 = s.minX(), z0 = s.minZ(), x1 = s.minX() + s.width(), z1 = s.minZ() + s.length(), fy = y + 0.05f;
             add(out, col, x0, fy, z0, x1, fy, z0, c); add(out, col, x1, fy, z0, x1, fy, z1, c);
             add(out, col, x1, fy, z1, x0, fy, z1, c); add(out, col, x0, fy, z1, x0, fy, z0, c);
             for (float[] k : new float[][] { { x0, z0 }, { x1, z0 }, { x1, z1 }, { x0, z1 } }) add(out, col, k[0], fy, k[1], k[0], fy + 3, k[1], c);
         }
         for (WorldMarks.Path p : m.paths()) {
-            if (!link.layerShown(p.extras().layer())) continue;
-            int color = WorldMarks.color(p.extras(), WorldMarks.pathColor(p.style()));
+            if (!link.shown(p.extras())) continue;
+            int color = tone(p.extras(), WorldMarks.color(p.extras(), WorldMarks.pathColor(p.style())));
             for (int i = 0; i + 1 < p.points().length; i++) surfaceLine(level, out, col, p.points()[i], p.points()[i + 1], px, pz, color);
         }
         for (WorldMarks.Point p : m.points()) {
-            if (!link.layerShown(p.extras().layer())) continue;
+            if (!link.shown(p.extras())) continue;
             if (far(px, pz, p.x(), p.z(), 0)) continue;
-            int c = WorldMarks.color(p.extras(), WorldMarks.pointColor(p.type()));
+            int c = tone(p.extras(), WorldMarks.color(p.extras(), WorldMarks.pointColor(p.type())));
             float x = p.x(), y = p.y(), z = p.z();
             add(out, col, x + 0.5f, y, z + 0.5f, x + 0.5f, y + 40, z + 0.5f, c);
             add(out, col, x, y, z, x + 1, y, z, c); add(out, col, x + 1, y, z, x + 1, y, z + 1, c);
@@ -118,6 +118,11 @@ final class MarksRenderer {
     }
 
     private static boolean far(double px, double pz, double x, double z, double size) { return Math.hypot(px - x, pz - z) > RADIUS + size; }
+
+    /** Locked entries (schema 3, GAME-07-S11) are drawn grey, whatever their own colour. */
+    static final int LOCKED = 0xFF8C8C8C;
+
+    private static int tone(WorldMarks.Extras e, int color) { return e.locked() ? LOCKED : color; }
 
     /** Top of the ground (motion blocking, without leaves) in a loaded chunk; null when not loaded. */
     private static Integer ground(ClientLevel level, int x, int z) {
@@ -171,7 +176,7 @@ final class MarksRenderer {
         WorldMarks m = link.marks();
         if (m.size() > 0 && m.dimension().equals(McCompat.dimension(mc.level))) {
             WorldMarks.Zone zone = m.zoneAt(mc.player.getX(), mc.player.getZ());
-            if (zone != null && link.layerShown(zone.extras().layer())) rows.add(WorldMarks.categoryLabel(zone.category()) + " „" + zone.name() + "“");
+            if (zone != null && link.shown(zone.extras())) rows.add(WorldMarks.categoryLabel(zone.category()) + " „" + zone.name() + "“" + (zone.extras().group().isEmpty() ? "" : " · " + zone.extras().group()) + (zone.extras().locked() ? " · gesperrt" : ""));
             WorldMarks.Point p = m.nearestPoint(mc.player.getX(), mc.player.getZ());
             if (p != null) {
                 int d = (int) Math.round(Math.hypot(p.x() + 0.5 - mc.player.getX(), p.z() + 0.5 - mc.player.getZ()));

@@ -186,7 +186,8 @@ export function startModSimulator(port, options = {}) {
         return send(200, { token });
       }
       if (!state.tokens.has(req.headers['x-bauplaner-token'])) return send(401, { error: 'Nicht gekoppelt.' });
-      if (route === 'GET /v1/status') return send(200, { time: new Date().toISOString(), player: state.player, world: { key: 'sim', server: 'server.lmnt-gaming.net', singleplayer: false }, hologram: state.hologram, marks: state.marks.length });
+      if (route === 'GET /v1/status') return send(200, { time: new Date().toISOString(), player: state.player, world: { key: 'sim', server: 'server.lmnt-gaming.net', singleplayer: false }, hologram: state.hologram && state.features.includes('groups')
+        ? { group: null, ...state.hologram, locked: state.marks.filter(m => m.locked && m.kind !== 'point').length * 10 } : state.hologram, marks: state.marks.length });
       if (route === 'GET /v1/chunks') {
         const list = (url.searchParams.get('c') ?? '').split(';').filter(Boolean).map(s => s.split(',').map(Number));
         const ids = ['minecraft:grass_block', 'minecraft:water', 'minecraft:sand', 'minecraft:dirt'];
@@ -236,6 +237,15 @@ export function startModSimulator(port, options = {}) {
         const n = JSON.parse(body.toString()).section;
         state.hologram = { ...state.hologram, section: n };
         return send(200, { section: n });
+      }
+      // GAME-07-S11 (feature `groups`, mod 0.19.0): hologram limited to one Weltplan group; locked count from the locked marks with an area.
+      if (route === 'POST /v1/group') {
+        if (!state.features.includes('groups')) return send(404, { error: 'Diese Mod kennt keine Weltplan-Gruppen.' });
+        if (!state.hologram) return send(409, { error: 'Im Spiel ist kein Plan platziert.' });
+        const g = JSON.parse(body.toString()).group ?? null;
+        if (g !== null && !state.marks.some(m => m.group === g)) return send(400, { error: `Keine Weltplan-Gruppe „${g}“.` });
+        state.hologram = { ...state.hologram, group: g };
+        return send(200, { group: g });
       }
       if (route === 'GET /v1/scan') {
         if (!state.features.includes('scan')) return send(404, { error: 'Unbekannte Adresse.' });

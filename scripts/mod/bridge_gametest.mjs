@@ -264,6 +264,20 @@ async function live(file, loader, plan, logFile) {
   assert.equal(status.hologram.sections.reduce((n, s) => n + s.total, 0), status.hologram.total, 'jeder Block gehört zu einem Abschnitt');
   assert.equal(raw.section.status, 200, JSON.stringify(raw.section.body));
   assert.equal(after.hologram.section, 2, 'Website hat Abschnitt 2 gewählt');
+  // GAME-07-S11 (0.19.0): groups and locks of Weltplan schema 3 reach the hologram.
+  if (hello.features.includes('groups')) {
+    assert.equal(raw.groupMarks.status, 200, JSON.stringify(raw.groupMarks.body));
+    assert.equal(raw.group.status, 200, JSON.stringify(raw.group.body));
+    assert.equal(raw.groupUnknown.status, 400, 'unbekannte Gruppe abgelehnt');
+    const grouped = readLiveStatus(raw.groupStatus.body);
+    assert.equal(grouped.hologram.group, 'Markt', 'Hologramm auf die Gruppe beschränkt');
+    const mauer = after.hologram.sections[1];
+    assert.equal(grouped.hologram.locked, mauer.total, 'gesperrter Bauplatz über dem ganzen Plan: alle Blöcke des gezeigten Abschnitts grau');
+    assert.match(log, /\[Bauplaner\] Weltplan-Gruppen \(1\), Hologramm: „Markt“, \d+ Planblöcke gesperrt/, 'Gruppenliste im Chat');
+    assert.equal(raw.groupAll.status, 200);
+    assert.equal(raw.marksBack.status, 200);
+    console.log(`Gruppen und Sperren: Hologramm auf „Markt“ beschränkt, ${grouped.hologram.locked} Blöcke gesperrt (grau).`);
+  }
   // MAP-05 Baustand over the link: compared exactly like the recording made with /bauplaner scan.
   let baustand = '';
   if (raw.scan) {

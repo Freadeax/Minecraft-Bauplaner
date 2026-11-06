@@ -790,6 +790,33 @@
       "releasedAt": "2026-11-06",
       "sourceCommit": "2d8aa4235a13c38ce2d1347977d5c9c7cd8e0b81",
       "tested": "Plugin-Unit-Tests bestanden; Lagerfaltung mit store.seen; Teamstand-Zwischenspeicher (GFX-03)"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.19.0.jar",
+      "modVersion": "0.19.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 556906,
+      "sha256": "872493dc432e31c333b8e8526b66fd24cdc26bf0a95a151a8009f01059ab39af",
+      "releasedAt": "2026-11-06",
+      "sourceCommit": "17a79f0beafd5a3c9ccf26324db89acba3f8683e",
+      "tested": "Minecraft 26.3 fabric: echter Spieltest bestanden 06.11.2026 (0.19.0: Weltplan-Gruppe „Markt“, 54 Planblöcke gesperrt grau, Hologramm auf Gruppe beschränkt)"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.19.0.jar",
+      "modVersion": "0.19.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 552829,
+      "sha256": "ae78e0a807f49d40faede0ff92d5be96266f6ec074bbcab563224d877f4b5cff",
+      "releasedAt": "2026-11-06",
+      "sourceCommit": "17a79f0beafd5a3c9ccf26324db89acba3f8683e",
+      "tested": "Minecraft 26.3 neoforge: echter Spieltest bestanden 06.11.2026 (0.19.0: Weltplan-Gruppe „Markt“, 54 Planblöcke gesperrt grau, Hologramm auf Gruppe beschränkt)"
     }
   ]
 }

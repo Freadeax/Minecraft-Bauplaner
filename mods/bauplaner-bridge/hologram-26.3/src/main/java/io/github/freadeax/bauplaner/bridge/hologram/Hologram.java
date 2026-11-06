@@ -121,10 +121,72 @@ public final class Hologram {
     public int minY() { return layers == Layers.ONE ? layerY : Integer.MIN_VALUE; }
     public int maxY() { return layers == Layers.ALL ? Integer.MAX_VALUE : layerY; }
 
-    /** Layer mode and build section together: what hologram, HUD, material list and finder look at. */
+    /** Layer mode, build section and Weltplan group together: what hologram, HUD, material list and finder look at. */
     public io.github.freadeax.bauplaner.mod.Filter filter() {
-        if (sectionSet != null) return io.github.freadeax.bauplaner.mod.Filter.sections(minY(), maxY(), sectionSet);
-        return new io.github.freadeax.bauplaner.mod.Filter(minY(), maxY(), section);
+        var f = sectionSet != null ? io.github.freadeax.bauplaner.mod.Filter.sections(minY(), maxY(), sectionSet)
+                : new io.github.freadeax.bauplaner.mod.Filter(minY(), maxY(), section);
+        return areasApply() ? f.within(showArea) : f;
+    }
+
+    // ------------------------------------------------------------ Weltplan groups and locks (GAME-07-S11, 0.19.0)
+
+    /** Dimension of the marks the areas come from; they only apply to a plan placed there. */
+    private volatile String areasDimension = "";
+    /** Locked Weltplan areas (greyed out, no placement help, skipped by the finder); null = none. */
+    private volatile io.github.freadeax.bauplaner.mod.live.MarkAreas.Area lockedArea;
+    /** Shown part: the chosen group without hidden groups; null = everything. */
+    private volatile io.github.freadeax.bauplaner.mod.live.MarkAreas.Area showArea;
+    /** Chosen group, null = all. */
+    private volatile String group;
+    private volatile long areasVersion;
+    private LiveCheck lockedFor;
+    private long lockedForVersion = -1;
+    private int lockedBlocks;
+
+    /** Set by the website link whenever marks, the chosen group or hidden groups change. */
+    void setAreas(String dimension, io.github.freadeax.bauplaner.mod.live.MarkAreas.Area locked, io.github.freadeax.bauplaner.mod.live.MarkAreas.Area show, String chosenGroup) {
+        areasDimension = dimension == null ? "" : dimension;
+        lockedArea = locked;
+        showArea = show;
+        group = chosenGroup;
+        areasVersion++;
+        target = -1;
+    }
+
+    private boolean areasApply() { return check != null && areasDimension.equals(check.placement().dimension()); }
+
+    /** Chosen Weltplan group (null = all). */
+    public String group() { return group; }
+
+    /** Changes whenever the areas change (render cache key). */
+    public long areasVersion() { return areasVersion; }
+
+    /** Whether a column lies in a locked Weltplan area of the plan's dimension. */
+    public boolean lockedAt(int x, int z) { return lockedArea != null && areasApply() && lockedArea.contains(x, z); }
+
+    /** Whether any locked area applies to this plan. */
+    public boolean hasLocked() { return lockedArea != null && areasApply(); }
+
+    /** Planned blocks of the shown part inside locked areas (cached per check and areas). */
+    public int lockedBlocks() {
+        if (!hasLocked()) return 0;
+        if (lockedFor != check || lockedForVersion != areasVersion) {
+            var f = filter();
+            int n = 0;
+            for (int i = 0; i < check.size(); i++) if (f.test(check, i) && lockedArea.contains(check.worldX(i), check.worldZ(i))) n++;
+            lockedBlocks = n;
+            lockedFor = check;
+            lockedForVersion = areasVersion;
+        }
+        return lockedBlocks;
+    }
+
+    /** What the error finder looks at: the shown part without locked areas. */
+    public io.github.freadeax.bauplaner.mod.Filter finderFilter() {
+        var f = filter();
+        if (!hasLocked()) return f;
+        var locked = lockedArea;
+        return f.within((x, z) -> !locked.contains(x, z));
     }
 
     /**
@@ -229,7 +291,7 @@ public final class Hologram {
         var f = filter();
         for (int i = 0; i < check.size(); i++) {
             var v = check.verdict(i);
-            if (!f.keeps(check.plan().section(i))) continue;
+            if (!f.keeps(check.plan().section(i)) || f.area() != null && !f.area().contains(check.worldX(i), check.worldZ(i))) continue;
             if (v != Verdict.OK && v != Verdict.UNKNOWN) best = Math.min(best, check.worldY(i));
         }
         return best == Integer.MAX_VALUE ? check.worldBox()[1] : best;
@@ -464,7 +526,7 @@ public final class Hologram {
     /** Error finder: highlight the nearest wrong/missing block. Returns the index or -1. */
     public int findNext(double x, double y, double z) {
         if (check == null) return -1;
-        target = check.nearestProblem(x, y, z, filter());
+        target = check.nearestProblem(x, y, z, finderFilter());
         return target;
     }
 

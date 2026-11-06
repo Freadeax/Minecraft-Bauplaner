@@ -66,7 +66,10 @@ public final class PlanScreen extends Screen {
             addRenderableWidget(Button.builder(Component.literal("▶"), b -> { page = (page + 1) % pages; rebuildWidgets(); }).bounds(left + 160, top + PER_PAGE * STEP, 40, H).build());
         }
         int rx = width / 2 + 10;
-        int rows = 10 + (hologram.sectionNames().isEmpty() ? 0 : 1);
+        // GAME-07-S11: Weltplan groups from the website marks get their own row.
+        LiveLink link = HologramClient.current() == null ? null : HologramClient.current().link();
+        boolean groups = link != null && !link.marks().groups().isEmpty();
+        int rows = 10 + (hologram.sectionNames().isEmpty() ? 0 : 1) + (groups ? 1 : 0);
         compact = hologram.active() && TOP + rows * STEP > height - 32;
         rStep = compact ? Math.max(14, Math.min(STEP, (height - 4 - TOP) / rows)) : STEP;
         rH = rStep - 2;
@@ -106,6 +109,15 @@ public final class PlanScreen extends Screen {
                 addRenderableWidget(Button.builder(Component.literal(label), b -> act(() -> hologram.stepSection(1), "")).bounds(rx, y, 132, rH).build());
                 addRenderableWidget(Button.builder(Component.literal("◀"), b -> act(() -> hologram.stepSection(-1), "")).bounds(rx + 136, y, 30, rH).build());
                 addRenderableWidget(Button.builder(Component.literal("▶"), b -> act(() -> hologram.stepSection(1), "")).bounds(rx + 170, y, 30, rH).build());
+                y += rStep;
+            }
+            if (groups) {
+                String g = link.group();
+                String label = g == null ? "Gruppe: alle" : "Gruppe: " + g;
+                if (font.width(label) > 128) label = font.plainSubstrByWidth(label, 122) + "…";
+                addRenderableWidget(Button.builder(Component.literal(label), b -> { message = link.stepGroup(); rebuildWidgets(); }).bounds(rx, y, 132, rH).build());
+                // Back to everything: no group filter, hidden groups visible again (hiding one: /bauplaner gruppe aus <name>).
+                addRenderableWidget(Button.builder(Component.literal("Alle"), b -> { link.showAllGroups(); message = link.setGroup(null); rebuildWidgets(); }).bounds(rx + 136, y, 64, rH).build());
                 y += rStep;
             }
             addRenderableWidget(Button.builder(Component.literal(hologram.xray() ? "Röntgensicht: an" : "Röntgensicht: aus"), b -> act(hologram::toggleXray, "")).bounds(rx, y, 200, rH).build());

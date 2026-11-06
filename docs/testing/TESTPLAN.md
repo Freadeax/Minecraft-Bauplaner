@@ -2,7 +2,7 @@
 
 Erzeugt aus `apps/web/src/testing/testplan.ts` mit `node scripts/checks/render_testplan.mjs`; nicht von Hand ändern. Dieselben Fälle stehen im Planer unter **Testphase** (`#/testphase`) mit Haken, Notizen und „Fehler melden“.
 
-Umfang: 156 Fälle in 13 Bereichen, davon 66 Kernfälle.
+Umfang: 158 Fälle in 13 Bereichen, davon 67 Kernfälle.
 
 **Kern** = in jeder Testrunde einmal; **vertieft** = wenn Zeit ist oder der Bereich geändert wurde. Fehler bitte über den Planer (Testphase → Fehler melden) oder die GitHub-Vorlagen „Testphase: Planer“ / „Testphase: Mod“ melden; im Spiel vorher `/bauplaner diagnose`.
 
@@ -126,6 +126,7 @@ Projekte in der Welt platzieren, Wege und Bauplätze planen, Gelände aus der ei
 | KARTE-06 | Messen, Höhenprofil, Route übers Gelände ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/karte)) | vertieft | 1. Messen (M): drei Punkte klicken, Eingabe beendet, Escape löscht.<br>2. Gelände laden („Gelände um mich lesen“ mit Mod oder eine Geländeaufnahme), einen Weg über einen Hang zeichnen.<br>3. Im Bearbeitungsfeld des Wegs „⤳ Route übers Gelände“. | Messung nennt Luftlinie, Weg zu Fuß, Punkte, Nether-Entfernung und bei drei oder mehr Punkten die Fläche. Das Höhenprofil zeigt Y-Bereich, Auf-/Abstieg und Stufen; die Route weicht Wasser und Steilstufen aus (oder meldet, dass es keinen Weg gibt). |
 | KARTE-07 | Projekt auf der Weltkarte drehen, gedrehtes Hologramm übernehmen | vertieft | 1. Weltkarte: ein Projekt wählen, mit R (oder Kontextmenü „Drehen 90°“) drehen, dann „Ins Spiel senden“.<br>2. Im Spiel das Hologramm mit der Mod weiter drehen oder spiegeln und auf der Weltkarte „Lage aus dem Spiel übernehmen“ wählen.<br>3. Bauanleitung öffnen und eine Koordinate im Spiel nachprüfen. | Die Nordwestecke bleibt beim Drehen stehen, Treppen und Türen zeigen gedreht in die richtige Richtung; das Hologramm steht genau auf dem Grundriss der Karte; nach dem Übernehmen zeigt die Karte „Im Spiel“ keine Abweichung mehr und die Weltlage nennt dieselbe Drehung; Weltkoordinaten der Bauanleitung stimmen mit dem Spiel (F3). (Abnahme MAP-07) |
 | KARTE-08 | Eigene Server-Karte: Marker exportieren und Karten speichern | vertieft | 1. Weltkarte → „Server-Webkarte verknüpfen“: Link aus BlueMap (oder Dynmap) einfügen und „Aktuelle Karte speichern“.<br>2. BlueMap: „BlueMap-Marker (.conf)“ herunterladen, den Block ans Ende der Kartenkonfiguration der Welt setzen und BlueMap neu laden. Dynmap: „Dynmap-Befehle (.txt)“ in die Serverkonsole eingeben.<br>3. Eine Markerdatei (JSON) über „Markerdatei als Punkte laden“ übernehmen; die Kartenliste herunterladen und in einem zweiten Browser laden. | Auf der Server-Karte erscheinen die Sets „Bauplaner: Projekte/Bauplätze/Wege/Zonen/Punkte“, Projekte als Körper an der richtigen Stelle und Höhe, Wege als Linien, Punkte als Marker; ein zweiter Export ersetzt die alten Marker statt sie zu verdoppeln; Marker landen als Punkte im Weltplan (ein Rückgängig nimmt sie zurück); gespeicherte Karten bleiben nach Neuladen und kommen im zweiten Browser an. (Abnahme MAP-02) |
+| KARTE-09 | Weltbuilder: Gruppen und Sperren ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/karte)) | vertieft | 1. Weltkarte: zwei Bauplätze und einen Weg wählen, in der Auswahlleiste „Gruppe zuweisen“ → „Neue Gruppe …“ (z. B. „Markt“).<br>2. Einen Eintrag der Gruppe anklicken (ganze Gruppe wird gewählt), noch einmal klicken (nur dieser Eintrag). „🔒 Sperren“ wählen, dann verschieben, löschen und Ecken ziehen versuchen.<br>3. Unter „Gruppen“ die Gruppe ausblenden und wieder einblenden, in der Objektliste nach der Gruppe filtern; Strg+Z bis vor das Sperren, Seite neu laden. Auch auf dem iPad prüfen. | Die Gruppe erscheint mit Namen in Liste und Auswahlleiste; gesperrte Einträge tragen 🔒, lassen sich nicht verschieben, löschen oder umformen (Hinweis erscheint), aber umbenennen und entsperren; ausgeblendete Gruppen verschwinden samt Auswahl; Rückgängig nimmt Sperren und Zuweisen der Reihe nach zurück; nach dem Neuladen sind Gruppe und Sperre noch da. (Abnahme MAP-04 S07) |
 
 ## SYS · Systemcheck und Stabilität (Planer)
 
@@ -218,6 +219,7 @@ Die Bauplaner-Mod im Spiel (Fabric oder NeoForge, Minecraft 26.3). Nur Client �
 | MOD-17 | Packliste, Gerüst und Markieren (Mod 0.13.0) ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/karte)) | kern | 1. Plan mit Teilbau ins Spiel schicken, etwas Material ins Inventar legen, `/bauplaner packliste`.<br>2. Auf einem Teamserver mit Lagerkisten: Packliste erneut.<br>3. Einen Plan mit Dach ohne Stützen oder Sand über Luft zeigen, `/bauplaner geruest`.<br>4. `/bauplaner markieren lager Erzlager`, dann im Planer #/karte mit verbundener Mod „In den Weltplan übernehmen“; danach im Spiel `/bauplaner markierungen`. | Die Packliste zieht getragenes Material ab, rechnet Stapel und Shulkerkisten und nennt die nächste Lagerkiste. Gerüst nennt nur wirklich hängende oder fallende Blöcke, der Zeiger zeigt auf den nächsten. Der Punkt erscheint auf der Weltkarte in der Ebene „Aus dem Spiel“, ein Rückgängig nimmt ihn wieder heraus, im Spiel wartet danach nichts mehr. |
 | MOD-18 | Symmetrie beim Bauen im Spiel (EDIT-04) | kern | 1. Auf den Mittelpunkt des geplanten Baus schauen, J → „Befehle & Status“ → Reiter „Bauhilfen“ → „Spiegeln Ost/West“ (oder `/bauplaner symmetrie x`).<br>2. Eine Tür, eine Treppe, eine Truhe und ein paar Steine östlich der Achse setzen.<br>3. „Drehsymmetrie“ mit 4 wählen, einen Block setzen; danach einen gesetzten Block wieder abbauen.<br>4. Mit `/bauplaner bauhilfe alsplan` die Geister ins Hologramm übernehmen und Num 7 drücken. | Gegenüber erscheinen Geisterblöcke mit gespiegelter Richtung (Tür mit anderem Anschlag, Treppe und Truhe gedreht); wer auf einen Geist baut, erzeugt keinen neuen; 4-fach zeigt drei Bilder; nach dem Abbauen verschwinden die Geister, schon gesetzte Gegenstücke sind rot „abbauen“ markiert. Die Materialliste zeigt die offenen Bauhilfe-Blöcke. Am Server kommt nichts an (kein Paket, kein Befehl). |
 | MOD-19 | Kurven im Spiel (EDIT-04) | kern | 1. Kies in die Hand nehmen, auf den Boden schauen, Reiter „Bauhilfen“ → „Kurvenpunkt setzen“ (oder `/bauplaner kurve punkt`), weiterlaufen, noch zwei, drei Punkte setzen.<br>2. „Profil“ → mauer, „Breite“ 2, „Mauerhöhe“ 3; dann „Ring schließen“ und „Höher/tiefer“ -1.<br>3. Optional unter Optionen → Steuerung → Bauplaner die Taste „Bauhilfe: Kurvenpunkt setzen“ belegen. | Ein lückenloser Weg bzw. eine Mauer aus Geisterblöcken folgt den Punkten (gleiche Form wie die Kurve in der Werkstatt); die HUD-Zeile über der Schnellleiste zählt gesetzt / gesamt; Gras und Schnee unter der Kurve zählen als frei. |
+| MOD-21 | Gruppen und Sperren im Hologramm (Mod 0.19.0) ([Start](https://freadeax.github.io/Minecraft-Bauplaner/#/karte)) | kern | 1. Im Planer eine Gruppe mit gesperrtem Bauplatz anlegen (KARTE-09) und mit verbundener Mod Plan und Weltplan ins Spiel schicken.<br>2. Im Spiel `/bauplaner gruppe` und `/bauplaner gruppe Markt`, danach `/bauplaner gruppe aus Markt`, `/bauplaner gruppe an Markt`, `/bauplaner gruppe alle`; im Planmenü die Zeile „Gruppe“ durchschalten.<br>3. Im gesperrten Bereich einen Planblock setzen wollen und `/bauplaner packliste`; im Planer unter „Weltplan-Gruppen im Spiel“ eine Gruppe wählen. | Gesperrte Flächen erscheinen grau ohne Röntgenrahmen, die Platzierhilfe ruht dort und der Fehlersucher springt nicht hinein. Mit gewählter Gruppe zeigen Hologramm, Fortschritt und Packliste nur deren Fläche, ausgeblendete Gruppen fehlen auf der Karte im Spiel; „alle“ zeigt wieder den ganzen Plan. Der Planer nennt Gruppe und Zahl der gesperrten Blöcke. |
 
 ## LIVE · Mod: Verbindung mit dem Planer (Mod)
 
@@ -280,7 +282,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | LIB-06 | BIB-15, BIB-16 |
 | MAP-01 | KARTE-01 |
 | MAP-02 | KARTE-08 |
-| MAP-04 | KARTE-02, KARTE-03 |
+| MAP-04 | KARTE-02, KARTE-03, KARTE-09 |
 | MODEL-01 | PROJ-05 |
 | PERF-02 | PROJ-08, DATEI-05 |
 | PERF-03 | BIB-18, BIB-01 |
@@ -325,7 +327,7 @@ Welche Fälle die Abnahme eines Pakets abdecken (Quelle `ACCEPTANCE` in testplan
 | GAME-02 | MOD-01, MOD-02 |
 | GAME-03 | LIVE-01, LIVE-02 |
 | GAME-05 | MOD-01 |
-| GAME-07 | MOD-02, MOD-06, MOD-07, MOD-08, MOD-12 |
+| GAME-07 | MOD-02, MOD-06, MOD-07, MOD-08, MOD-12, MOD-21 |
 | GAME-08 | LIVE-08, KARTE-05 |
 | GAME-10 | MOD-16 |
 | GEN-02 | BIB-06, BIB-12 |

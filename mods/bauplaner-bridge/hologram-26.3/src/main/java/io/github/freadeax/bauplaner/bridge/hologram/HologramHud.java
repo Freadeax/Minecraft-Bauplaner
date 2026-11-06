@@ -41,6 +41,7 @@ public final class HologramHud {
                 sectionRow(check),
                 // SIZE-01: a plan or placement being prepared in the background, or a render budget that cut far blocks.
                 hologram.loading() ? "Plan wird vorbereitet …" : hologram.capped() ? "Zeigt die nächsten " + String.format(java.util.Locale.GERMANY, "%,d", hologram.shown()) + " (Leistung " + hologram.budget().label + ")" : null,
+                groupRow(check),
         };
         int width = 0;
         for (String r : rows) if (r != null) width = Math.max(width, font.width(r));
@@ -63,6 +64,7 @@ public final class HologramHud {
         if (rows[8] != null) { g.text(font, rows[8], x, y, 0xFFFFB040, true); y += line; }
         if (rows[6] != null) { g.text(font, rows[6], x, y, CYAN, true); y += line; }
         if (rows[9] != null) { g.text(font, rows[9], x, y, GREY, true); y += line; }
+        if (rows[10] != null) { g.text(font, rows[10], x, y, 0xFFC8A0FF, true); y += line; }
         g.text(font, rows[7], x, y, hologram.guard() == io.github.freadeax.bauplaner.mod.PlacementAdvice.Guard.OFF ? GREY : CYAN, true); y += line;
         if (finder != null) g.text(font, finder, x, y, 0xFFFFFFFF, true);
         aimLine(g, mc);
@@ -86,7 +88,7 @@ public final class HologramHud {
     /** "Abschnitt 2/5 „Erdgeschoss“: 73 % · 12 offen", null without sections or with all sections. */
     private String sectionRow(LiveCheck check) {
         if (hologram.sectionSetLabel() != null) {
-            String key = check.revision() + "/" + hologram.sectionSet() + "/" + System.identityHashCode(check);
+            String key = check.revision() + "/" + hologram.sectionSet() + "/" + hologram.areasVersion() + "/" + System.identityHashCode(check);
             if (!key.equals(sectionKey)) {
                 int[] c = check.count(hologram.filter());
                 int total = 0;
@@ -106,10 +108,32 @@ public final class HologramHud {
         return sectionText;
     }
 
+    private String groupKey = "", groupText;
+
+    /** GAME-07-S11: "Gruppe „Markt“: 73 % · 12 offen · 40 gesperrt", or only the locked count; null when neither applies. */
+    private String groupRow(LiveCheck check) {
+        if (hologram.group() == null && !hologram.hasLocked()) return null;
+        String key = check.revision() + "/" + hologram.areasVersion() + "/" + hologram.section() + "/" + hologram.sectionSet() + "/" + System.identityHashCode(check);
+        if (!key.equals(groupKey)) {
+            int locked = hologram.lockedBlocks();
+            String lockedText = locked > 0 ? locked + " gesperrt (grau)" : null;
+            if (hologram.group() != null) {
+                int[] c = check.count(hologram.filter());
+                int total = 0;
+                for (int v : c) total += v;
+                int ok = c[Verdict.OK.ordinal()], open = c[Verdict.MISSING.ordinal()] + c[Verdict.WRONG.ordinal()] + c[Verdict.STATE.ordinal()];
+                groupText = "Gruppe „" + hologram.group() + "“: " + (total == 0 ? "nichts vom Plan darin" : (int) ((long) ok * 100 / total) + " % · " + open + " offen")
+                        + (lockedText != null ? " · " + lockedText : "");
+            } else groupText = lockedText;
+            groupKey = key;
+        }
+        return groupText;
+    }
+
     /** "Ebene 70 (nur diese): 12 / 40 richtig, 28 offen". */
     private String layerLine(LiveCheck check) {
         if (hologram.layers() == Hologram.Layers.ALL) return null;
-        String key = check.revision() + "/" + hologram.layers() + "/" + hologram.layerY() + "/" + hologram.section() + "/" + hologram.sectionSet() + "/" + System.identityHashCode(check);
+        String key = check.revision() + "/" + hologram.layers() + "/" + hologram.layerY() + "/" + hologram.section() + "/" + hologram.sectionSet() + "/" + hologram.areasVersion() + "/" + System.identityHashCode(check);
         if (!key.equals(layerKey)) { layerCounts = check.count(hologram.filter()); layerKey = key; }
         int total = 0;
         for (int c : layerCounts) total += c;

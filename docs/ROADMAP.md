@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T10:18:20.598Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T10:23:30.536Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -25,7 +25,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 
 | Bereich | Offen | Verwaist | Nur Philipp | Geprüft |
 |---|---:|---:|---:|---:|
-| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 23 | 2 | 23 | 2 |
+| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 23 | 1 | 23 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 0 | 10 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 13 | 0 | 13 | 0 |
@@ -56,7 +56,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen 4/4 | P1 | „Große Testphase vorbereiten und betreuen“ | Weltkarte auf echter GPU und mit Touch (QA-02). |
 | [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter | 🧩 Implementiert · Abnahme offen 2/3 | P1 | „Module und Systeme komplex ausarbeiten“ | BlueMap-Marker (.conf) bzw. Dynmap-Befehle auf eurer Server-Karte einspielen und prüfen, ob Projekte, Wege und Punkte an der richtigen Stelle erscheinen (KARTE-08). |
 | [MAP-03](#map-03) | Live-Karte mit Spielanbindung | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ | Kopplung und Senden auf dem LMNT-Server mit Browserfreigabe „lokales Netzwerk“ (S06). |
-| [MAP-04](#map-04) | Weltbuilder vertiefen | 🧩 Implementiert · Abnahme offen 5/6 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Langdruck-Menü auf echtem Touch-Gerät (S06). |
+| [MAP-04](#map-04) | Weltbuilder vertiefen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Gruppen und Sperren bis ins Hologramm bringen“ | Langdruck-Menü auf echtem Touch-Gerät (S06). |
 | [MAP-05](#map-05) | Planung auf der Live-Karte vertiefen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | „Baustand holen“ mit der Mod auf server.lmnt-gaming.net (S05). |
 | [MAP-06](#map-06) | Weltkarte in die Tiefe | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Weltkarte in die Tiefe ausbauen“ | Weltkarte mit Mod 0.8.0 oder neuer im Spiel abnehmen (S08, KARTE-05/06, LIVE-08). |
 | [MAP-07](#map-07) | Gedrehte und gespiegelte Projektlagen auf der Weltkarte | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Module und Systeme komplex ausarbeiten“ | Ein Projekt auf der Weltkarte drehen, ins Spiel senden und mit F3 prüfen; ein im Spiel gedrehtes Hologramm übernehmen (KARTE-07). |
@@ -148,7 +148,7 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 | [GAME-02](#game-02) | Fabric-Brücke kompilieren und im Spiel abnehmen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Bauplaner-Mod von Grund auf neu entwickeln“ | Mehrspieler-Abnahme auf server.lmnt-gaming.net (S04). |
 | [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | 🧩 Implementiert · Abnahme offen 2/2 | P1 | „Bauplaner-Mod von Grund auf neu entwickeln“ | Zusammen mit MAP-03-S06. |
 | [GAME-05](#game-05) | NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Teambau und Befehle in der Mod ausbauen“ | Forge-Testversion auf einem Rechner mit Bildschirm starten (S03). |
-| [GAME-07](#game-07) | Bauplaner-Mod 2.0 | 🧩 Implementiert · Abnahme offen 9/11 | P1 | „Teambau und Befehle in der Mod ausbauen“ | Hologramm, Abschnitte und Röntgensicht auf server.lmnt-gaming.net (S05). |
+| [GAME-07](#game-07) | Bauplaner-Mod 2.0 | 🧩 Implementiert · Abnahme offen 10/11 | P1 | „Gruppen und Sperren bis ins Hologramm bringen“ | Hologramm, Abschnitte und Röntgensicht auf server.lmnt-gaming.net (S05). |
 | [LINK-03](#link-03) | Mod | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Verbindung ohne Server-Datei neu bauen“ | Mod 0.12.0: Planer #/mod „Mit dem Spiel verbinden“, im Spiel J → „Planer zulassen“. |
 | [LINK-07](#link-07) | Ohne Server-Datei | 🚧 In Arbeit 5/6 | P1 | „Verbindung ohne Server-Datei neu bauen“ | — |
 | [LINK-10](#link-10) | Anbindung geprüft und gehärtet | 🧩 Implementiert · Abnahme offen 6/6 | P1 | „Anbindung von Mod, Team-Raum und Planer prüfen“ | Abnahme LINK-10: offline in mehreren Abschnitten bauen, wieder verbinden – alle Messungen genau einmal im Planer; mit Plugin bleibt die Raumverbindung stehen. |
@@ -357,7 +357,6 @@ Arbeit, für die gerade kein laufender Thread zuständig ist. Zum Verteilen: Thr
 |---|---|---|---|---|
 | [QA-04](#qa-04) | Testphase, Qualität und Betrieb | P0 | 🧩 Implementiert · Abnahme offen | Der Thread „Große Testphase vorbereiten und betreuen“ ist beendet; die rund 30 Pakete, bei denen nur Philipps Abnahme fehlt, haben keinen aktiven Thread für Diagnose und Fehlerbehebung. |
 | [EDIT-04](#edit-04) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Gelände-Werkzeuge auf dem Projektgelände (als eigener Thread angekündigt, nie gestartet). |
-| [MAP-04](#map-04) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Benannte Gruppen und Sperren mit Schemaerweiterung, abgestimmt mit der Mod (siehe GAME-07-S07). |
 
 ## Eingänge ohne eigenes Paket
 
@@ -383,7 +382,7 @@ Neue Wünsche und Folgeideen ohne eigenes Paket kommen hier hinein (IN-xx, nur a
 - **MAT-04 · Kupfer mit Oxidation und Wachsstatus** — 🧩 Implementiert · Abnahme offen, 2/2 Teilschritte. Nächster Schritt: Abnahme: Kupfervariante eines Bauwerks im Planer erzeugen und im Spiel ansehen (Testphase).
 - **DIFF-01 · Verschiebungserkennung und BlockEntity-Diff** — 🧩 Implementiert · Abnahme offen, 3/3 Teilschritte. Nächster Schritt: Abnahme in der Testphase: zwei Stände eines verschobenen Bauwerks vergleichen.
 - **GAME-02 · Fabric-Brücke kompilieren und im Spiel abnehmen** — 🧩 Implementiert · Abnahme offen, 4/5 Teilschritte. Nächster Schritt: Philipp testet die .jar aus /mnt/project-files/mod/ auf server.lmnt-gaming.net und meldet Ergebnis/Fehler (Anleitung ANLEITUNG_SPIELTEST.md).
-- **GAME-07 · Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server)** — 🧩 Implementiert · Abnahme offen, 9/11 Teilschritte. Nächster Schritt: Philipp prüft Packliste und Gerüst (0.13.0, TESTPLAN MOD-17) im echten Spiel; danach Stufe 6b (Gruppen/Sperren aus dem Weltbuilder).
+- **GAME-07 · Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server)** — 🧩 Implementiert · Abnahme offen, 10/11 Teilschritte. Nächster Schritt: Philipp prüft 0.19.0 im echten Spiel: gesperrter Bauplatz grau, Hologramm nur in einer Gruppe (Testfall MOD-21); danach Stufe 7.
 - **GAME-08 · Bauplaner-Mod Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten im Spiel (marks2), Mitspieler für die Karte (GET /v1/players), hello.protocol 2** — 🧩 Implementiert · Abnahme offen, 5/5 Teilschritte. Nächster Schritt: Philipp prüft Protokoll 3 im echten Spiel (TESTPLAN MOD-17); Forge und Paper ohne Live-Verbindung.
 - **GAME-03 · Optionale lokale Verbindung und Anzeige im Spiel** — 🧩 Implementiert · Abnahme offen, 2/2 Teilschritte. Nächster Schritt: Abnahme mit MAP-03-S06; Forge/NeoForge/Paper haben die Verbindung noch nicht.
 - **GAME-05 · NeoForge- und Forge-Brücke mit gemeinsamer Befehlslogik** — 🧩 Implementiert · Abnahme offen, 3/4 Teilschritte. Nächster Schritt: Forge-Spieltest: kopfloser Client bleibt im Ladebildschirm stehen; auf einem Rechner mit Bildschirm (scripts/test_bridge_ingame_forge.sh forge) oder durch Philipp prüfen, dann Forge-Jar bereitstellen.
@@ -536,10 +535,10 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [GEN-02](#gen-02) | Weitere Generatoren und Dachdetails | 🧩 Implementiert · Abnahme offen | 5/5 | GEN-01, PROFILE-01 | ausstehend | ausstehend |
 | [MAP-01](#map-01) | Weltlage und begehbare Projektkarte | 🧩 Implementiert · Abnahme offen | 4/4 | CORE-03, STORE-02 | `84838f0` | `e232b26` |
 | [MAP-03](#map-03) | Live-Karte mit Spielanbindung: Weltplan auf der Karte, Live-Position/Gelände/Fortschritt aus der Mod, Übergabe an die Mod | 🧩 Implementiert · Abnahme offen | 5/6 | MAP-01 | ausstehend | ausstehend |
-| [MAP-04](#map-04) | Weltbuilder vertiefen: Löschen und Entfernen für alle Objekte der Weltkarte, Mehrfachauswahl, Kontextmenü, gemeinsames Rückgängig, Duplizieren/Drehen/Spiegeln, Wegecken, Ebenen, Objektliste | 🧩 Implementiert · Abnahme offen | 5/6 | MAP-03 | ausstehend | ausstehend |
+| [MAP-04](#map-04) | Weltbuilder vertiefen: Löschen und Entfernen für alle Objekte der Weltkarte, Mehrfachauswahl, Kontextmenü, gemeinsames Rückgängig, Duplizieren/Drehen/Spiegeln, Wegecken, Ebenen, Objektliste | 🧩 Implementiert · Abnahme offen | 6/7 | MAP-03 | ausstehend | ausstehend |
 | [MAP-02](#map-02) | Gespeicherte Kartenziele und konkrete Provideradapter: mehrere Server-Karten speichern und teilen, echte Marker für BlueMap (marker-sets) und Dynmap (dmarker-Befehle), Markerdatei als Weltplan-Punkte | 🧩 Implementiert · Abnahme offen | 2/3 | MAP-01 | ausstehend | ausstehend |
 | [GAME-02](#game-02) | Fabric-Brücke kompilieren und im Spiel abnehmen | 🧩 Implementiert · Abnahme offen | 4/5 | FORMAT-01, GAME-01 | `84838f0` | `e232b26` |
-| [GAME-07](#game-07) | Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server) | 🧩 Implementiert · Abnahme offen | 9/11 | GAME-02 | ausstehend | ausstehend |
+| [GAME-07](#game-07) | Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server) | 🧩 Implementiert · Abnahme offen | 10/11 | GAME-02 | ausstehend | ausstehend |
 | [GAME-08](#game-08) | Bauplaner-Mod Protokoll 2: Zonen, Ebenen, Farben und neue Punktarten im Spiel (marks2), Mitspieler für die Karte (GET /v1/players), hello.protocol 2 | 🧩 Implementiert · Abnahme offen | 5/5 | GAME-07, MAP-06 | ausstehend | ausstehend |
 | [GAME-03](#game-03) | Optionale lokale Verbindung und Anzeige im Spiel | 🧩 Implementiert · Abnahme offen | 2/2 | GAME-02 | ausstehend | ausstehend |
 | [WORLD-IMPORT-01](#world-import-01) | Bereichsweiser Weltimport und Terrainprüfung | 🧩 Implementiert · Abnahme offen | 2/2 | PROFILE-01, PERF-02, FORMAT-01 | ausstehend | ausstehend |
@@ -1960,28 +1959,27 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### MAP-04
 
-**Weltbuilder vertiefen: Löschen und Entfernen für alle Objekte der Weltkarte, Mehrfachauswahl, Kontextmenü, gemeinsames Rückgängig, Duplizieren/Drehen/Spiegeln, Wegecken, Ebenen, Objektliste** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Weltbuilder mit Löschen vertiefen“) · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T11:03:24.121Z
+**Weltbuilder vertiefen: Löschen und Entfernen für alle Objekte der Weltkarte, Mehrfachauswahl, Kontextmenü, gemeinsames Rückgängig, Duplizieren/Drehen/Spiegeln, Wegecken, Ebenen, Objektliste** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Weltbuilder mit Löschen vertiefen“) · Zuständiger Thread: „Gruppen und Sperren bis ins Hologramm bringen“ · Aktualisiert: 2026-11-06T10:23:30.536Z
 
 - [x] MAP-04-S01: Löschen/Entfernen für alle Objekte: Entf-Taste, Auswahlleiste, Kontextmenü, Listenzeilen; Projekte nur von der Karte nehmen.
 - [x] MAP-04-S02: Mehrfachauswahl (Umschalt/Strg-Klick, Rahmen, Strg+A) und gemeinsames Rückgängig für Weltplan und Projektlagen.
 - [x] MAP-04-S03: Verschieben (Ziehen, Pfeiltasten), Duplizieren, Drehen, Spiegeln, ans Gelände ausrichten.
 - [x] MAP-04-S04: Wege bearbeiten: Ecken ziehen, einfügen, löschen, Weg teilen, umkehren, verbinden.
 - [x] MAP-04-S05: Ebenen (Projekte/Bauplätze/Wege/Punkte) und durchsuchbare Objektliste mit Zeigen und Löschen je Zeile.
+- [x] MAP-04-S07: Benannte Gruppen und Sperren (Weltplan-Schema 3): Gruppe bilden, Gruppenklick, ein-/ausblenden, Sperren gegen Verschieben/Umformen/Löschen, Mod-Vertrag (groups, POST /v1/group).
 - [ ] MAP-04-S06: Abnahme durch Philipp, Langdruck-Menü auf echtem Touch-Gerät.
 
-**Abnahme:** Jedes Objekt der Weltkarte lässt sich ohne Umweg löschen bzw. von der Karte nehmen und mit einem Schritt wiederherstellen. Aktionen auf mehreren Objekten sind ein Rückgängig-Schritt; Projekte selbst werden auf der Karte nie gelöscht. Weltplan-Schema und Mod-Vertrag bleiben unverändert.
+**Abnahme:** Jedes Objekt der Weltkarte lässt sich ohne Umweg löschen bzw. von der Karte nehmen und mit einem Schritt wiederherstellen. Aktionen auf mehreren Objekten sind ein Rückgängig-Schritt; Projekte selbst werden auf der Karte nie gelöscht. Weltplan-Schema 3 ergänzt nur freiwillige Felder (Gruppe, Sperre); Pläne der Schemata 1 und 2 laden unverändert, ältere Mods bekommen nur, was sie verstehen.
 
-**Nächste Aktion:** Abnahme durch Philipp (S06); denkbare Folge: benannte Gruppen/Sperren mit Schemaerweiterung, abgestimmt mit der Mod.
+**Nächste Aktion:** Abnahme durch Philipp (S06): Langdruck-Menü auf dem Touch-Gerät, Gruppen und Sperren auf dem iPad (Testfall KARTE-09).
 
 **Nur Philipp:** Auf echten Geräten und Browsern: Langdruck-Menü auf echtem Touch-Gerät (S06).
 
-**Verwaist (ohne Bearbeiter):** Benannte Gruppen und Sperren mit Schemaerweiterung, abgestimmt mit der Mod (siehe GAME-07-S07).
+**Prüfstand:** Einheits- und Browsertests grün (auch Gruppen/Sperren); Abnahme durch Philipp offen (S06).
 
-**Prüfstand:** Einheits- und Browsertests grün; Abnahme durch Philipp offen (S06).
+**Nachweise:** [tests/unit/world/worldbuilder.test.mjs](../tests/unit/world/worldbuilder.test.mjs) — Löschen mit linearer Umkehrung, Einfügen, Auswahl, Drehen/Spiegeln im Raster, Duplizieren, Wegecken, Geländehöhe.; [tests/e2e/worldbuilder.e2e.mjs](../tests/e2e/worldbuilder.e2e.mjs) — Entf, Kontextmenü, Listenlöschen, Rahmen, Verschieben mit Pfeilen, Löschen samt Projekt und Rückgängig, Duplizieren, Drehen, Wegecken, Ebenen, Strg+A, Neuladen; Handy 390 px.; [docs/architecture/welt/WORLD_BUILDER.md](architecture/welt/WORLD_BUILDER.md) — Bedienung, Technik, Grenzen.; [tests/unit/world/worldgroups.test.mjs](../tests/unit/world/worldgroups.test.mjs) — Schema 3, Gruppen bilden/umbenennen/auflösen, Gruppenklick, Sperrregel mit exakter Umkehrung, Mod-Vertrag.; [tests/e2e/world-groups.e2e.mjs](../tests/e2e/world-groups.e2e.mjs) — Gruppe bilden, Gruppenklick, Sperren gegen Entf/Pfeile, Rückgängig, Ausblenden, Neuladen, Simulator mit groups.
 
-**Nachweise:** [tests/unit/world/worldbuilder.test.mjs](../tests/unit/world/worldbuilder.test.mjs) — Löschen mit linearer Umkehrung, Einfügen, Auswahl, Drehen/Spiegeln im Raster, Duplizieren, Wegecken, Geländehöhe.; [tests/e2e/worldbuilder.e2e.mjs](../tests/e2e/worldbuilder.e2e.mjs) — Entf, Kontextmenü, Listenlöschen, Rahmen, Verschieben mit Pfeilen, Löschen samt Projekt und Rückgängig, Duplizieren, Drehen, Wegecken, Ebenen, Strg+A, Neuladen; Handy 390 px.; [docs/architecture/welt/WORLD_BUILDER.md](architecture/welt/WORLD_BUILDER.md) — Bedienung, Technik, Grenzen.
-
-**Dateiumfang:** `apps/web/src/views/map/`, `apps/web/src/styles/map.css`, `packages/domain/src/`, `tests/`, `docs/`. **Abhängigkeiten:** MAP-03. **Alte IDs:** —.
+**Dateiumfang:** `apps/web/src/views/map/`, `apps/web/src/styles/map.css`, `packages/domain/src/`, `tests/`, `docs/`, `docs/architecture/welt/WORLD_BUILDER.md`. **Abhängigkeiten:** MAP-03. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -2051,7 +2049,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### GAME-07
 
-**Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Teambau und Befehle in der Mod ausbauen“) · Zuständiger Thread: „Teambau und Befehle in der Mod ausbauen“ · Aktualisiert: 2026-11-05T11:03:24.121Z
+**Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (nur Client, ohne Server)** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude (Thread „Teambau und Befehle in der Mod ausbauen“) · Zuständiger Thread: „Gruppen und Sperren bis ins Hologramm bringen“ · Aktualisiert: 2026-11-06T10:23:30.536Z
 
 - [x] GAME-07-S01: Versionsneutraler Mod-Kern: Blockzustände, Vergleichsregeln wie gameCheck.ts, Platzierung mit Drehen/Spiegeln, Planmodell, Live-Abgleich, Platzierungsspeicher; JUnit-Tests.
 - [x] GAME-07-S02: Fabric 26.3: Planmenü, Tasten, Platzieren/Verschieben/Drehen/Spiegeln, Rahmen, Speicherung je Server/Welt.
@@ -2063,19 +2061,19 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 - [x] GAME-07-S09: Stufe 4: NeoForge auf Fabric-Stand über gemeinsamen Client-Kern hologram-26.3 (Hologramm, Platzierhilfe, Website-Verbindung), Geister unter Iris-Shadern getönt und umrandet, Platzierhilfe vor Tool Switcher, Ebene tiefer auf Num * (0.6.0).
 - [x] GAME-07-S10: Stufe 5: Bauabschnitte aus der Website als Filter für Hologramm, Fortschritt, Material und Fehlerfinder (Num /, Menü, Befehl, Website über /v1/section), Röntgensicht (Num -), Shulkerkisten und Bündel im Inventar mitgezählt (0.7.0).
 - [x] GAME-07-S07: Stufe 6: Abschnitt als Packliste mit Kistenstandorten (/bauplaner packliste), Gerüst-Hinweise für hängende und fallende Blöcke (/bauplaner geruest) (0.13.0).
-- [ ] GAME-07-S11: Stufe 6b: Gruppen/Sperren aus dem Weltbuilder im Hologramm (gesperrte Teile ausgrauen, Gruppe als Filter).
+- [x] GAME-07-S11: Stufe 6b: Gruppen/Sperren aus dem Weltbuilder im Hologramm: gesperrte Flächen grau ohne Platzierhilfe und Fehlerfinder, Gruppe als Filter (/bauplaner gruppe, Planmenü, Website über POST /v1/group), Gruppe ausblenden (0.19.0).
 
 **Abnahme:** Reiner Client: keine Pakete an den Server, keine Weltänderung, kein automatisches Bauen, keine Abhängigkeit von WorldEdit oder Litematica; Ergebnis des Live-Abgleichs gleicht dem Website-Vergleich.
 
-**Nächste Aktion:** Philipp prüft Packliste und Gerüst (0.13.0, TESTPLAN MOD-17) im echten Spiel; danach Stufe 6b (Gruppen/Sperren aus dem Weltbuilder).
+**Nächste Aktion:** Philipp prüft 0.19.0 im echten Spiel: gesperrter Bauplatz grau, Hologramm nur in einer Gruppe (Testfall MOD-21); danach Stufe 7.
 
 **Nur Philipp:** Auf deinem Server mit Mitspielern: Hologramm, Abschnitte und Röntgensicht auf server.lmnt-gaming.net (S05).
 
 **Prüfstand:** Automatisch im echten Client und mit Modpack geprüft; Mehrspieler-Abnahme durch Philipp offen.
 
-**Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java) — 7 JUnit-Fälle: Zustände, Regeln wie gameCheck.ts, Drehen/Spiegeln mit Rückweg, Planlesen, Live-Abgleich, Speicher.; [scripts/mod/test_bridge_ingame.sh](../scripts/mod/test_bridge_ingame.sh) — Echter 26.3-Client und Produktionsstart mit Philipps Modpack (Sodium, Iris, Xaero …): Hologramm fehlt 1/falsch 1, gesetzter Block ohne Befehl erkannt, Drehen, Speichern, Taste J öffnet das Menü (02.11.2026).; [docs/architecture/mod/MOD_HOLOGRAM.md](architecture/mod/MOD_HOLOGRAM.md) — Grundsätze, Aufbau, Tasten, Darstellung, Live-Abgleich, Prüfung.; [tests/e2e/mod-download.e2e.mjs](../tests/e2e/mod-download.e2e.mjs) — Download-Seite wählt 0.2.0 vor, 0.1.0 bleibt wählbar.; [tests/unit/mod/mod-releases.test.mjs](../tests/unit/mod/mod-releases.test.mjs) — Jede .jar wie ein Launcher geprüft (EOCD, Verzeichnis, Loader-Metadaten); abgeschnittene/HTML/beschädigte Dateien erkannt. Download-Seite speichert nur geprüfte Bytes (02.11.2026).; [scripts/mod/bridge_gametest.mjs](../scripts/mod/bridge_gametest.mjs) — 0.3.0: Materialliste, Ebenenmodus, texturierte Geisterblöcke im echten Client und mit Philipps Modpack (Sodium/Iris) geprüft (02.11.2026).; [mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlacementAdvice.java](../mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlacementAdvice.java) — 0.4.0 Platzierhilfe: Urteil, Wegsuche und Hinweise; im echten Client und mit Philipps Modpack über den echten Klickweg geprüft (02.11.2026).; [mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java](../mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java) — 0.6.0: echter NeoForge-26.3-Client spielt Hologramm, Materialliste, Ebenen, J/Num 7, Platzierhilfe über Minecraft.startUseItem/startAttack und die Website-Verbindung durch; Fabric zusätzlich mit Philipps 25 Mods und Complementary Unbound (BAUPLANER_SHADERPACK) bestanden (02.11.2026).; [mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Filter.java](../mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Filter.java) — 0.7.0: ein Filter (Ebenen + Bauabschnitt) für Hologramm, HUD, Material und Fehlerfinder; JUnit buildSectionsFilterEverything, Website-Test für SectionNames/SectionCells im Export und Abschnitte im Live-Status; Spieltests Fabric (auch Modpack + Complementary) und NeoForge prüfen Abschnittsliste, Röntgensicht und Abschnittswahl über die Website (02.11.2026).
+**Nachweise:** [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java) — 7 JUnit-Fälle: Zustände, Regeln wie gameCheck.ts, Drehen/Spiegeln mit Rückweg, Planlesen, Live-Abgleich, Speicher.; [scripts/mod/test_bridge_ingame.sh](../scripts/mod/test_bridge_ingame.sh) — Echter 26.3-Client und Produktionsstart mit Philipps Modpack (Sodium, Iris, Xaero …): Hologramm fehlt 1/falsch 1, gesetzter Block ohne Befehl erkannt, Drehen, Speichern, Taste J öffnet das Menü (02.11.2026).; [docs/architecture/mod/MOD_HOLOGRAM.md](architecture/mod/MOD_HOLOGRAM.md) — Grundsätze, Aufbau, Tasten, Darstellung, Live-Abgleich, Prüfung.; [tests/e2e/mod-download.e2e.mjs](../tests/e2e/mod-download.e2e.mjs) — Download-Seite wählt 0.2.0 vor, 0.1.0 bleibt wählbar.; [tests/unit/mod/mod-releases.test.mjs](../tests/unit/mod/mod-releases.test.mjs) — Jede .jar wie ein Launcher geprüft (EOCD, Verzeichnis, Loader-Metadaten); abgeschnittene/HTML/beschädigte Dateien erkannt. Download-Seite speichert nur geprüfte Bytes (02.11.2026).; [scripts/mod/bridge_gametest.mjs](../scripts/mod/bridge_gametest.mjs) — 0.3.0: Materialliste, Ebenenmodus, texturierte Geisterblöcke im echten Client und mit Philipps Modpack (Sodium/Iris) geprüft (02.11.2026).; [mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlacementAdvice.java](../mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlacementAdvice.java) — 0.4.0 Platzierhilfe: Urteil, Wegsuche und Hinweise; im echten Client und mit Philipps Modpack über den echten Klickweg geprüft (02.11.2026).; [mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java](../mods/bauplaner-bridge/neoforge-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/HologramScenario.java) — 0.6.0: echter NeoForge-26.3-Client spielt Hologramm, Materialliste, Ebenen, J/Num 7, Platzierhilfe über Minecraft.startUseItem/startAttack und die Website-Verbindung durch; Fabric zusätzlich mit Philipps 25 Mods und Complementary Unbound (BAUPLANER_SHADERPACK) bestanden (02.11.2026).; [mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Filter.java](../mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Filter.java) — 0.7.0: ein Filter (Ebenen + Bauabschnitt) für Hologramm, HUD, Material und Fehlerfinder; JUnit buildSectionsFilterEverything, Website-Test für SectionNames/SectionCells im Export und Abschnitte im Live-Status; Spieltests Fabric (auch Modpack + Complementary) und NeoForge prüfen Abschnittsliste, Röntgensicht und Abschnittswahl über die Website (02.11.2026).; [mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/MarkAreasTest.java](../mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/MarkAreasTest.java) — Schema 3 lesen, Flächen aus Bauplatz/Zone/Weg, Filter mit Fläche, Fehlerfinder ohne gesperrte Flächen.
 
-**Dateiumfang:** `mods/bauplaner-bridge/mod-core/`, `mods/bauplaner-bridge/fabric-26.3/`, `mods/bauplaner-bridge/settings.gradle`, `mods/bauplaner-bridge/VERSION`, `scripts/mod/bridge_gametest.mjs`, `scripts/mod/test_bridge_ingame.sh`, `docs/architecture/mod/MOD_HOLOGRAM.md`, `downloads/mod/`, `apps/web/src/views/mod/releases.json`, `tests/e2e/mod-download.e2e.mjs`, `apps/web/src/views/mod/`, `apps/web/src/styles/catalog.css`, `tests/unit/mod/mod-releases.test.mjs`, `scripts/mod/release_mod.mjs`, `mods/bauplaner-bridge/hologram-26.3/`, `mods/bauplaner-bridge/neoforge-26.3/`, `mods/bauplaner-bridge/client-26.3/`, `scripts/mod/test_bridge_ingame_forge.sh`, `mods/bauplaner-bridge/README.md`, `docs/architecture/team/LIVE_LINK.md`, `packages/application/src/revisionExport.ts`, `packages/domain/src/team/liveLink.ts`, `tests/unit/building/game-check.test.mjs`, `tests/unit/team/livelink.test.mjs`. **Abhängigkeiten:** GAME-02. **Alte IDs:** —.
+**Dateiumfang:** `mods/bauplaner-bridge/mod-core/`, `mods/bauplaner-bridge/fabric-26.3/`, `mods/bauplaner-bridge/settings.gradle`, `mods/bauplaner-bridge/VERSION`, `scripts/mod/bridge_gametest.mjs`, `scripts/mod/test_bridge_ingame.sh`, `docs/architecture/mod/MOD_HOLOGRAM.md`, `downloads/mod/`, `apps/web/src/views/mod/releases.json`, `tests/e2e/mod-download.e2e.mjs`, `apps/web/src/views/mod/`, `apps/web/src/styles/catalog.css`, `tests/unit/mod/mod-releases.test.mjs`, `scripts/mod/release_mod.mjs`, `mods/bauplaner-bridge/hologram-26.3/`, `mods/bauplaner-bridge/neoforge-26.3/`, `mods/bauplaner-bridge/client-26.3/`, `scripts/mod/test_bridge_ingame_forge.sh`, `mods/bauplaner-bridge/README.md`, `docs/architecture/team/LIVE_LINK.md`, `packages/application/src/revisionExport.ts`, `packages/domain/src/team/liveLink.ts`, `tests/unit/building/game-check.test.mjs`, `tests/unit/team/livelink.test.mjs`, `tests/e2e/modSimulator.mjs`, `mods/bauplaner-bridge/CHANGELOG.md`. **Abhängigkeiten:** GAME-02. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

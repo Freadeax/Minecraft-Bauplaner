@@ -11,18 +11,26 @@ import java.util.Set;
  * sites, paths, points and zones, each optionally on a named layer and with its own colour. The mod only
  * draws them (client side) and points the way on the HUD; nothing is built. Same field names and limits
  * as the website (packages/domain/src/world/worldPlan.ts); unknown fields are ignored, unknown kinds rejected.
+ * Schema 3 (GAME-07-S11, mod 0.19.0): every entry may carry a named group and a lock; {@link MarkAreas}
+ * turns them into areas for the hologram (locked = greyed out, group = filter).
  */
 public record WorldMarks(String dimension, List<Site> sites, List<Path> paths, List<Point> points, List<Zone> zones) {
     public static final int MAX_ITEMS = 500;
     public static final int LAYER_MAX = 40;
+    public static final int GROUP_MAX = 40;
     private static final Set<String> POINT_TYPES = Set.of("anker", "ziel", "lager", "portal", "farm", "treffpunkt", "notiz", "gefahr", "rohstoff", "spawn", "aussicht");
     private static final Set<String> PATH_STYLES = Set.of("weg", "strasse", "bahn", "bruecke");
     private static final Set<String> ZONE_CATEGORIES = Set.of("wohnen", "farm", "industrie", "lager", "natur", "gefahr", "verkehr", "sonstiges");
     private static final int XZ = 29_999_984;
 
-    /** Layer name ("" = none) and colour (ARGB, or null = colour of the kind), shared by every entry. */
-    public record Extras(String layer, Integer color) {
-        public static final Extras NONE = new Extras("", null);
+    /**
+     * Layer name ("" = none) and colour (ARGB, or null = colour of the kind), shared by every entry; since
+     * schema 3 also the named group ("" = none) and whether the entry is locked.
+     */
+    public record Extras(String layer, Integer color, String group, boolean locked) {
+        public static final Extras NONE = new Extras("", null, "", false);
+
+        public Extras(String layer, Integer color) { this(layer, color, "", false); }
     }
 
     public record Site(String name, int minX, int minZ, int width, int length, Integer y, Extras extras) {}
@@ -63,6 +71,29 @@ public record WorldMarks(String dimension, List<Site> sites, List<Path> paths, L
     }
 
     private static void count(Map<String, Integer> out, Extras e) { if (!e.layer().isEmpty()) out.merge(e.layer(), 1, Integer::sum); }
+
+    /** Group names in order of first use, with the number of entries in each (schema 3). */
+    public Map<String, Integer> groups() {
+        Map<String, Integer> out = new LinkedHashMap<>();
+        for (Extras e : allExtras()) if (!e.group().isEmpty()) out.merge(e.group(), 1, Integer::sum);
+        return out;
+    }
+
+    /** Number of locked entries (schema 3). */
+    public int lockedCount() {
+        int n = 0;
+        for (Extras e : allExtras()) if (e.locked()) n++;
+        return n;
+    }
+
+    private List<Extras> allExtras() {
+        List<Extras> out = new ArrayList<>(size());
+        for (Site s : sites) out.add(s.extras());
+        for (Path p : paths) out.add(p.extras());
+        for (Point p : points) out.add(p.extras());
+        for (Zone z : zones) out.add(z.extras());
+        return out;
+    }
 
     public static WorldMarks parse(Map<String, Object> body) {
         String dimension = Json.str(body.get("dimension"), "Dimension", 200);
@@ -125,7 +156,10 @@ public record WorldMarks(String dimension, List<Site> sites, List<Path> paths, L
             if (!s.matches("#[0-9a-fA-F]{6}")) throw new Json.JsonException("Farbe muss #rrggbb sein");
             color = 0xFF000000 | Integer.parseInt(s.substring(1), 16);
         }
-        return layer.isEmpty() && color == null ? Extras.NONE : new Extras(layer, color);
+        Object g = m.get("group");
+        String group = g == null ? "" : Json.str(g, "Gruppe", GROUP_MAX).trim();
+        boolean locked = Boolean.TRUE.equals(m.get("locked"));
+        return layer.isEmpty() && color == null && group.isEmpty() && !locked ? Extras.NONE : new Extras(layer, color, group, locked);
     }
 
     /** Nearest point to a position (horizontal distance), or null. */

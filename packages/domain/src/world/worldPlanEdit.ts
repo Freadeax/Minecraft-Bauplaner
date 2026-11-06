@@ -1,5 +1,5 @@
 import { DomainError } from '../core/types.js';
-import { WORLD_PATH_MAX_POINTS, WORLD_PLAN_MAX_ITEMS, WORLD_ZONE_MAX_POINTS, itemBounds, newWorldItemId } from './worldPlan.js';
+import { WORLD_GROUP_MAX, WORLD_PATH_MAX_POINTS, WORLD_PLAN_MAX_ITEMS, WORLD_ZONE_MAX_POINTS, itemBounds, newWorldItemId } from './worldPlan.js';
 import type { WorldItem, WorldPath, WorldPlan, WorldPlanOp, WorldSite, WorldZone } from './worldPlan.js';
 
 /**
@@ -62,10 +62,14 @@ function mapColumns<T extends WorldItem>(item: T, f: (c: XZ) => [number, number]
 export function rotateItem<T extends WorldItem>(item: T, pivot: XZ, turns = 1): T { return mapColumns(item, c => rotateColumn(c, pivot, turns)); }
 export function mirrorItem<T extends WorldItem>(item: T, pivot: XZ, axis: 'x' | 'z'): T { return mapColumns(item, c => mirrorColumn(c, pivot, axis)); }
 
+const canonical = (v: unknown): string => JSON.stringify(v, (_k, x: unknown) =>
+  x && typeof x === 'object' && !Array.isArray(x) ? Object.fromEntries(Object.entries(x as Record<string, unknown>).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0)) : x);
+
 /** Batch that replaces entries by changed copies (one undo step); null when nothing changed. */
 export function updateItemsOp(before: readonly WorldItem[], after: readonly WorldItem[], label: string): WorldPlanOp | null {
   const ops: WorldPlanOp[] = [];
-  after.forEach((a, k) => { if (JSON.stringify(a) !== JSON.stringify(before[k])) ops.push({ kind: 'update', item: a }); });
+  // Key order does not count (removing and re-adding a field like `group` moves it to the end).
+  after.forEach((a, k) => { if (canonical(a) !== canonical(before[k])) ops.push({ kind: 'update', item: a }); });
   return ops.length ? { kind: 'batch', label, ops } : null;
 }
 
@@ -83,7 +87,9 @@ export function duplicateItems(items: readonly WorldItem[], opts: { dx?: number;
   return items.map((i, k) => {
     const name = `${i.name} (Kopie)`.slice(0, 120);
     const id = newWorldItemId(i.kind, opts.seed ? `${opts.seed}${k}` : undefined);
-    const moved = mapColumns(i, c => [c[0] + dx, c[1] + dz]);
+    // Copies start unlocked: a lock protects the original, and undoing the copy must be able to remove it.
+    const { locked: _locked, ...open } = mapColumns(i, c => [c[0] + dx, c[1] + dz]);
+    const moved = open as WorldItem;
     return i.kind === 'site' ? { ...(moved as WorldSite), id, name, projectId: opts.keepProject ? i.projectId : null } : { ...moved, id, name };
   });
 }
@@ -185,4 +191,53 @@ export function alignToGround(items: readonly WorldItem[], groundAt: GroundAt): 
     return i.kind === 'point' ? { ...i, y: g.y } : { ...i, y: g.y };
   });
   return { items: out, aligned, unknown };
+}
+
+// ------------------------------------------------------------------ groups and locks (schema 3)
+
+/** Puts entries into a named group (empty = out of their group); one batch, null when nothing changes. */
+export function setGroupOp(items: readonly WorldItem[], group: string): WorldPlanOp | null {
+  const name = group.trim();
+  if (name.length > WORLD_GROUP_MAX) fail(`Gruppenname bis ${WORLD_GROUP_MAX} Zeichen`);
+  const next = items.map(i => { const { group: _old, ...rest } = i; return name ? { ...rest, group: name } as WorldItem : rest as WorldItem; });
+  return updateItemsOp(items, next, name ? `Gruppe „${name}“ gebildet` : 'Aus der Gruppe genommen');
+}
+
+/** Locks or unlocks entries; one batch, null when nothing changes. */
+export function setLockedOp(items: readonly WorldItem[], locked: boolean): WorldPlanOp | null {
+  const next = items.map(i => { const { locked: _old, ...rest } = i; return locked ? { ...rest, locked: true } as WorldItem : rest as WorldItem; });
+  const what = items.length === 1 ? `„${items[0]!.name}“` : `${items.length} Einträge`;
+  return updateItemsOp(items, next, `${what} ${locked ? 'gesperrt' : 'entsperrt'}`);
+}
+
+/** Renames a group on all its entries (merging into an existing group of that name); null when nothing changes. */
+export function renameGroupOp(items: readonly WorldItem[], from: string, to: string): WorldPlanOp | null {
+  const members = items.filter(i => i.group === from);
+  const op = setGroupOp(members, to);
+  return op && op.kind === 'batch' ? { ...op, label: to.trim() ? `Gruppe „${from}“ in „${to.trim()}“ umbenannt` : `Gruppe „${from}“ aufgelöst` } : op;
+}
+
+/**
+ * Ids to select for a click on an entry: the entry and, when it is in a
+ * group, every other entry of that group among `items` (the visible ones).
+ * The clicked entry comes last, so it stays the primary of the selection.
+ */
+export function withGroupMates(items: readonly WorldItem[], id: string): string[] {
+  const hit = items.find(i => i.id === id);
+  if (!hit?.group) return [id];
+  return [...items.filter(i => i.group === hit.group && i.id !== id).map(i => i.id), id];
+}
+
+/** Splits entries into those that may be moved or deleted and the locked ones. */
+export function splitLocked<T extends WorldItem>(items: readonly T[]): { open: T[]; locked: T[] } {
+  const open: T[] = [], locked: T[] = [];
+  for (const i of items) (i.locked ? locked : open).push(i);
+  return { open, locked };
+}
+
+/** Per group: number of entries and how many of them are locked (sorted by name). */
+export function groupSummary(items: readonly WorldItem[]): { name: string; count: number; locked: number }[] {
+  const m = new Map<string, { count: number; locked: number }>();
+  for (const i of items) if (i.group) { const e = m.get(i.group) ?? { count: 0, locked: 0 }; e.count++; if (i.locked) e.locked++; m.set(i.group, e); }
+  return [...m].map(([name, e]) => ({ name, ...e })).sort((a, b) => a.name.localeCompare(b.name, 'de'));
 }

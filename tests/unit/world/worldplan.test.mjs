@@ -27,8 +27,8 @@ test('Einträge werden streng geprüft', () => {
   assert.throws(() => checkWorldItem({ ...point('x', 0, 64, 0), type: 'schatz' }), /Punktart/);
   assert.throws(() => checkWorldItem({ kind: 'kreis', id: 'k', name: 'K', note: '', dimension: OW }), /unbekannte Art/);
   assert.throws(() => checkWorldPlan({ ...emptyWorldPlan(), items: [point('a', 0, 0, 0), point('a', 1, 1, 1)] }), /doppelt/);
-  assert.throws(() => checkWorldPlan({ ...emptyWorldPlan(), schemaVersion: 3 }), /Schemaversion/);
-  assert.equal(checkWorldPlan({ ...emptyWorldPlan(), schemaVersion: 1 }).schemaVersion, 2);
+  assert.throws(() => checkWorldPlan({ ...emptyWorldPlan(), schemaVersion: 4 }), /Schemaversion/);
+  assert.equal(checkWorldPlan({ ...emptyWorldPlan(), schemaVersion: 1 }).schemaVersion, 3);
 });
 
 test('Operationen mit exakter Umkehrung, auch Entfernen in der Mitte', () => {
@@ -173,9 +173,9 @@ test('Schema 2: Zonen, Ebene und Farbe werden geprüft, alte Einträge bleiben u
   assert.deepEqual(layerNames([{ ...zone, layer: 'Süd' }, { ...point('p', 0, 0, 0), layer: 'Nord' }, s]), ['Nord', 'Süd']);
   const sum = worldPlanSummary([zone, s]);
   assert.equal(sum.zones, 1); assert.equal(sum.zoneArea, 81);
-  // Operations and the plan: schema version 2 on save, schema 1 still loads.
+  // Operations and the plan: schema version 3 on save, schema 1 still loads.
   const plan = applyWorldPlanOp(emptyWorldPlan(), { kind: 'add', item: zone }).plan;
-  assert.equal(plan.schemaVersion, 2);
+  assert.equal(plan.schemaVersion, 3);
   assert.equal(describeWorldPlanOp({ kind: 'add', item: zone }), 'Zone „Farmland“ angelegt');
   assert.deepEqual(checkWorldPlan({ ...plan, schemaVersion: 1, items: [point('p', 1, 64, 1)] }).items, [point('p', 1, 64, 1)]);
 });

@@ -103,19 +103,20 @@ export { packVersion, unpackVersion, unpackVersionOrDamaged, unpackVersionLazily
 export type { StoredPayload, PackedVersionRecord, PackedVersionFileRecord, StoredVersionRecord } from './data/versionStorage.js';
 export { buildPlanGraph, whereUsed, projectEdges, assetEdges, versionEdges, collectionEdges, templateEdges, projectVersionIds, PLAN_ROLE_LABEL, PLAN_KIND_LABEL } from './data/planGraph.js';
 export type { PlanGraph, PlanEdge, PlanNodeKind, PlanNodeRef, PlanRole, PlanSource, UsageGroup } from './data/planGraph.js';
-export { WORLD_PLAN_SCHEMA_VERSION, WORLD_PLAN_SCHEMA_VERSIONS, WORLD_PLAN_MAX_ITEMS, WORLD_PATH_MAX_POINTS, WORLD_ZONE_MAX_POINTS, WORLD_LAYER_MAX, WORLD_SITE_MAX_SIDE, WORLD_POINT_TYPES, WORLD_PATH_STYLES,
+export { WORLD_PLAN_SCHEMA_VERSION, WORLD_PLAN_SCHEMA_VERSIONS, WORLD_PLAN_MAX_ITEMS, WORLD_PATH_MAX_POINTS, WORLD_ZONE_MAX_POINTS, WORLD_LAYER_MAX, WORLD_GROUP_MAX, WORLD_SITE_MAX_SIDE, WORLD_POINT_TYPES, WORLD_PATH_STYLES,
   WORLD_ZONE_CATEGORIES, WORLD_KIND_LABEL, emptyWorldPlan, checkWorldItem, checkWorldPlan,
-  describeWorldPlanOp, applyWorldPlanOp, pointTypeLabel, pathStyleOf, zoneCategoryOf, itemKindLabel, itemColor, layerNames, newWorldItemId, itemsOf, siteFromCorners, snapSiteToChunks, pathColumns, pathLength, itemBounds, itemAt, moveItem,
+  describeWorldPlanOp, applyWorldPlanOp, pointTypeLabel, pathStyleOf, zoneCategoryOf, itemKindLabel, itemColor, layerNames, groupNames, newWorldItemId, itemsOf, siteFromCorners, snapSiteToChunks, pathColumns, pathLength, itemBounds, itemAt, moveItem,
   sitesTouching, worldPlanSummary, insideZone, zoneArea, zonesAt } from './world/worldPlan.js';
 export type { WorldPlan, WorldItem, WorldItemKind, WorldSite, WorldPath, WorldPoint, WorldZone, WorldPointType, WorldPathStyle, WorldZoneCategory, WorldPlanOp } from './world/worldPlan.js';
 export { measureSummary, measureText, lineColumns, pathProfile, routeOverTerrain, routePath, simplifyLine, trailToPath } from './world/worldRoute.js';
 export type { MeasureSummary, PathProfile, RouteOptions, RouteResult } from './world/worldRoute.js';
 export { LIVE_PROTOCOL, LIVE_DEFAULT_PORT, LIVE_TOKEN_HEADER, LIVE_MAX_CHUNKS_PER_REQUEST, LIVE_MAX_RUNS, LIVE_MAX_MARKS, LIVE_MAX_PLAN_BYTES, LIVE_ALLOWED_ORIGINS, LIVE_PLAN_EXPORT, readLiveHello, readLivePairing,
   readLiveStatus, readLiveChunks, classifyRuns, chunkColumns, wantedChunks, chunkQuery, liveSurvey, HOLOGRAM_MATCH_LABEL, hologramProject, compareHologram, liveShare, playerBlock,
-  originFromPlayer, livePlacementOf, planUploadQuery, marksBody, marksForMod, readLivePlayers, liveBaseUrl, originAllowed, liveCan, LIVE_FEATURE_SCAN, LIVE_FEATURE_MARKS2, LIVE_FEATURE_PLAYERS, LIVE_FEATURE_LABELS, LIVE_PROTOCOLS, LIVE_FEATURE_BIGPLANS, LIVE_LEGACY_PLAN_BYTES, checkPlanForMod, LIVE_FEATURE_MARKS3, GAME_MARKS_LAYER, readLiveGameMarks, gameMarksToItems } from './team/liveLink.js';
+  originFromPlayer, livePlacementOf, planUploadQuery, marksBody, marksForMod, readLivePlayers, liveBaseUrl, originAllowed, liveCan, LIVE_FEATURE_SCAN, LIVE_FEATURE_MARKS2, LIVE_FEATURE_PLAYERS, LIVE_FEATURE_LABELS, LIVE_PROTOCOLS, LIVE_FEATURE_BIGPLANS, LIVE_LEGACY_PLAN_BYTES, checkPlanForMod, LIVE_FEATURE_MARKS3, LIVE_FEATURE_GROUPS, groupBody, GAME_MARKS_LAYER, readLiveGameMarks, gameMarksToItems } from './team/liveLink.js';
 export type { LiveHello, LivePlayer, LiveWorld, LiveCounts, LivePlacement, LiveHologram, LiveStatus, LiveChunk, LiveChunks, LiveColumn, LiveChunkColumns, HologramMatch, LiveOtherPlayer, LivePlayers, PlanSendCheck, LiveGameMark } from './team/liveLink.js';
 export { removeItemsOp, selectionBounds, selectionPivot, itemsInRect, rotateColumn, mirrorColumn, rotateItem, mirrorItem, updateItemsOp, duplicateItems,
-  pathVertexAt, movePathVertex, insertPathVertex, removePathVertex, reversePath, splitPath, joinPaths, groundHeight, alignToGround, setLayerOp } from './world/worldPlanEdit.js';
+  pathVertexAt, movePathVertex, insertPathVertex, removePathVertex, reversePath, splitPath, joinPaths, groundHeight, alignToGround, setLayerOp,
+  setGroupOp, setLockedOp, renameGroupOp, withGroupMates, splitLocked, groupSummary } from './world/worldPlanEdit.js';
 export type { GroundAt, Polyline } from './world/worldPlanEdit.js';
 export { BASE_FUNCTIONS, BASE_PHASES, baseFunctionById, affinity, checkRequirements, detectFunction, blockCounts, entityCounts, enchantingPower, farmlandHydration } from './base/baseFunctions.js';
 export type { BaseFunction, BaseFunctionId, BasePhase, BaseMember, Requirement, RequirementStatus, RequirementInput, FunctionGuess } from './base/baseFunctions.js';

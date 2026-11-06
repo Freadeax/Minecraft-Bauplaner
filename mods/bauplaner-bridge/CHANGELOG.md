@@ -2,6 +2,22 @@
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
 
+## 0.19.0 – 2026-11-06
+
+**Groups and locks from the planner in the hologram / Gruppen und Sperren aus dem Planer im Hologramm**
+
+- New: building sites, zones and paths of the world plan can carry a named group and a lock (planner: world builder, “Group …” and “🔒 Lock”). The mod reads both with the world plan.
+- Locked areas: the hologram shows the plan there in grey, without textures and x-ray frames; the placement helper and the error finder leave these blocks alone, the HUD counts them (“40 locked (grey)”).
+- One group only: `/bauplaner gruppe <name>` limits hologram, progress, material list, packing list and error finder to the area of that group; `/bauplaner gruppe alle` shows everything again. The planner can choose the group as well (live panel “World plan groups in game”), and the plan menu (J) has a row “Group”.
+- Hide a group: `/bauplaner gruppe aus <name>` hides its marks and the hologram inside it, `/bauplaner gruppe an <name>` shows it again.
+- New feature `groups` for the planner (POST /v1/group, status `hologram.group` and `hologram.locked`). Older planners keep working unchanged.
+
+- Neu: Bauplätze, Zonen und Wege des Weltplans können eine benannte Gruppe und eine Sperre tragen (Planer: Weltbuilder, „Gruppe …“ und „🔒 Sperren“). Die Mod liest beides mit dem Weltplan.
+- Gesperrte Flächen: Das Hologramm zeigt den Plan dort grau, ohne Texturen und ohne Röntgenrahmen; Platzierhilfe und Fehlerfinder lassen diese Blöcke in Ruhe, das HUD zählt sie („40 gesperrt (grau)“).
+- Nur eine Gruppe: `/bauplaner gruppe <name>` beschränkt Hologramm, Fortschritt, Materialliste, Packliste und Fehlerfinder auf die Fläche dieser Gruppe; `/bauplaner gruppe alle` zeigt wieder alles. Auch der Planer kann die Gruppe wählen (Spielverbindung „Weltplan-Gruppen im Spiel“), und das Planmenü (J) hat eine Zeile „Gruppe“.
+- Gruppe ausblenden: `/bauplaner gruppe aus <name>` blendet ihre Markierungen und das Hologramm darin aus, `/bauplaner gruppe an <name>` zeigt sie wieder.
+- Neue Fähigkeit `groups` für den Planer (POST /v1/group, Status `hologram.group` und `hologram.locked`). Ältere Planer arbeiten unverändert weiter.
+
 ## 0.18.0 – 2026-11-06
 
 **Build guides: symmetry and curves / Bauhilfen: Symmetrie und Kurven**

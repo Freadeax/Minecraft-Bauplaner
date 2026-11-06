@@ -130,6 +130,78 @@ public final class LiveLink implements LiveLinkServer.Handler {
 
     public void showAllLayers() { hiddenLayers.clear(); }
 
+    // ------------------------------------------------------------ Weltplan groups and locks (GAME-07-S11, 0.19.0)
+
+    /** Groups hidden in the game (marks and the hologram part inside them); not persisted, kept to known groups. */
+    private final java.util.Set<String> hiddenGroups = java.util.concurrent.ConcurrentHashMap.newKeySet();
+    /** Group the hologram is limited to, null = all. */
+    private volatile String group;
+
+    /** Whether marks of this group are drawn ("" = in no group, always). */
+    public boolean groupShown(String g) { return g.isEmpty() || !hiddenGroups.contains(g); }
+
+    /** Whether an entry is drawn: its layer and its group are shown. */
+    public boolean shown(WorldMarks.Extras e) { return layerShown(e.layer()) && groupShown(e.group()); }
+
+    public String group() { return group; }
+
+    /** Shows or hides a group; returns the new state. */
+    public boolean toggleGroup(String g) {
+        if (!hiddenGroups.remove(g)) hiddenGroups.add(g);
+        refreshAreas();
+        return groupShown(g);
+    }
+
+    public void showAllGroups() { hiddenGroups.clear(); refreshAreas(); }
+
+    /** Limits the hologram to one group (null = all). Returns a message for the player. */
+    public String setGroup(String g) {
+        if (g == null) { group = null; refreshAreas(); return "Hologramm zeigt wieder alle Gruppen."; }
+        if (!marks.groups().containsKey(g)) return "Keine Weltplan-Gruppe „" + g + "“. Liste: /bauplaner gruppe";
+        group = g;
+        hiddenGroups.remove(g);
+        refreshAreas();
+        String filtered = hologram.active() && hologram.check().placement().dimension().equals(marks.dimension()) ? "" : " (gilt, sobald ein Plan in " + marks.dimension() + " steht)";
+        return "Hologramm nur in Gruppe „" + g + "“" + filtered + ". Zurück: /bauplaner gruppe alle";
+    }
+
+    /** Next group (cycling through "all"), for the J menu. */
+    public String stepGroup() {
+        List<String> names = new java.util.ArrayList<>(marks.groups().keySet());
+        if (names.isEmpty()) return "Im Weltplan gibt es keine Gruppen. Auf der Website im Weltbuilder Einträge auswählen und „Gruppe …“ wählen.";
+        int at = group == null ? -1 : names.indexOf(group);
+        return setGroup(at + 1 >= names.size() ? null : names.get(at + 1));
+    }
+
+    /** Hands locked areas and the shown part to the hologram (after marks, group or hidden groups changed). */
+    void refreshAreas() {
+        WorldMarks m = marks;
+        if (group != null && !m.groups().containsKey(group)) group = null;
+        hiddenGroups.retainAll(m.groups().keySet());
+        var locked = io.github.freadeax.bauplaner.mod.live.MarkAreas.locked(m).area();
+        var show = group == null ? null : io.github.freadeax.bauplaner.mod.live.MarkAreas.group(m, group).area();
+        var hidden = io.github.freadeax.bauplaner.mod.live.MarkAreas.groups(m, java.util.Set.copyOf(hiddenGroups)).area();
+        if (hidden != null) show = (show == null ? io.github.freadeax.bauplaner.mod.live.MarkAreas.Area.EVERYWHERE : show).andNot(hidden);
+        final var l = locked;
+        final var sh = show;
+        final String g = group;
+        // Plain field writes (volatile in Hologram), also fine before the game window exists (loadMarks at start).
+        hologram.setAreas(m.dimension(), l, sh, g);
+    }
+
+    @Override
+    public String group(Map<String, Object> body) throws Exception {
+        lastRequest = System.currentTimeMillis();
+        Object raw = body.get("group");
+        String g = raw == null ? null : Json.str(raw, "Gruppe", WorldMarks.GROUP_MAX).trim();
+        if (g != null && g.isEmpty()) throw new LiveLinkServer.HttpError(400, "Gruppe fehlt.");
+        String text = onGame(() -> setGroup(g));
+        if (!java.util.Objects.equals(group, g)) throw new LiveLinkServer.HttpError(400, text);
+        Minecraft mc = Minecraft.getInstance();
+        mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] Website: " + text)));
+        return "{\"group\":" + (g == null ? "null" : Json.quote(g)) + "}";
+    }
+
     /** GET /v1/players (GAME-08): the other players the client currently sees, without the own one. */
     @Override
     public String players() throws Exception {
@@ -259,7 +331,8 @@ public final class LiveLink implements LiveLinkServer.Handler {
                     if (k > 1) b.append(',');
                     b.append("{\"name\":").append(Json.quote(names.get(k - 1))).append(",\"ok\":").append(c[Verdict.OK.ordinal()]).append(",\"total\":").append(total).append('}');
                 }
-                b.append("]}");
+                // GAME-07-S11 (0.19.0): chosen Weltplan group and planned blocks inside locked areas.
+                b.append("],\"group\":").append(hologram.group() == null ? "null" : Json.quote(hologram.group())).append(",\"locked\":").append(hologram.lockedBlocks()).append('}');
             } else b.append(",\"hologram\":null");
             return b.append(",\"marks\":").append(marks.size()).append('}').toString();
         });
@@ -365,6 +438,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
         WorldMarks next = WorldMarks.parse(body);
         marks = next;
         hiddenLayers.retainAll(next.layers().keySet());
+        refreshAreas();
         try {
             Files.createDirectories(root);
             Files.writeString(root.resolve("markierungen.json"), "{\"dimension\":" + Json.quote(next.dimension()) + ",\"items\":" + itemsText(body) + "}", StandardCharsets.UTF_8);
@@ -418,6 +492,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
         try {
             String text = Files.readString(root.resolve("markierungen.json"), StandardCharsets.UTF_8);
             marks = WorldMarks.parse(Json.obj(Json.parse(text), "Markierungen"));
+            refreshAreas();
         } catch (IOException | RuntimeException ignored) { }
     }
 

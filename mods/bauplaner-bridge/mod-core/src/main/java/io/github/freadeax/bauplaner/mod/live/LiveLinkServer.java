@@ -72,6 +72,8 @@ public final class LiveLinkServer implements AutoCloseable {
         String marks(Map<String, Object> body) throws Exception;
         /** POST /v1/section {"section":n}: choose the build section shown in the game (0 = all). Since mod 0.7.0. */
         default String section(Map<String, Object> body) throws Exception { throw new HttpError(404, "Diese Mod kennt keine Bauabschnitte."); }
+        /** POST /v1/group {"group":name|null}: limit the hologram to one Weltplan group (GAME-07-S11, since 0.19.0). */
+        default String group(Map<String, Object> body) throws Exception { throw new HttpError(404, "Diese Mod kennt keine Weltplan-Gruppen."); }
         /** Baustand of the placed plan as {@code bauplaner-scan} file (MAP-05, since 0.7.1). */
         default Binary scan() throws Exception { throw new HttpError(404, "Diese Mod kann keinen Baustand liefern."); }
         /** GET /v1/players: other players the client sees, {@code {dimension, players:[{name,x,y,z,yaw}]}} (GAME-08, since 0.8.0). */
@@ -113,7 +115,7 @@ public final class LiveLinkServer implements AutoCloseable {
     public record Binary(String fileName, byte[] bytes) {}
 
     /** What this mod can do beyond protocol 1; the website enables buttons by it. */
-    public static final List<String> FEATURES = List.of("scan", "marks2", "players", "bigplans", "team", "pairask", "server", "marks3", "room", "roomfallback");
+    public static final List<String> FEATURES = List.of("scan", "marks2", "players", "bigplans", "team", "pairask", "server", "marks3", "room", "roomfallback", "groups");
 
     public record Info(String version, String loader, String minecraft) {}
 
@@ -392,6 +394,7 @@ public final class LiveLinkServer implements AutoCloseable {
                 case "GET /v1/marks/game": return ok(h, handler.gameMarks());
                 case "POST /v1/marks/game/ack": return ok(h, handler.gameMarksAck(Json.obj(Json.parse(text(r, 65_536)), "Quittung")));
                 case "POST /v1/section": return ok(h, handler.section(Json.obj(Json.parse(text(r, 4_096)), "Abschnitt")));
+                case "POST /v1/group": return ok(h, handler.group(Json.obj(Json.parse(text(r, 4_096)), "Gruppe")));
                 case "GET /v1/players": return ok(h, handler.players());
                 case "GET /v1/team": return ok(h, handler.teamGet());
                 case "POST /v1/team": return ok(h, handler.teamPost(Json.obj(Json.parse(text(r, MAX_JSON_BYTES)), "Teamstand")));
