@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T09:06:53.011Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T09:11:06.629Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-06T09:06:53.011Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 7 |
 | 🚧 In Arbeit | 6 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 89 |
+| 🧩 Implementiert · Abnahme offen | 90 |
 | ✅ Im beschriebenen Umfang geprüft | 26 |
 | ⏸ Zurückgestellt | 2 |
 
@@ -33,7 +33,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [Client-Mod (Fabric, NeoForge, Forge)](#bereich-mod) | 11 | 0 | 9 | 0 |
 | [Paper-Plugin (Server)](#bereich-plugin) | 5 | 0 | 3 | 0 |
 | [Modrinth-Veröffentlichung](#bereich-modrinth) | 1 | 0 | 0 | 0 |
-| [Performance und Stabilität](#bereich-perf) | 4 | 2 | 1 | 3 |
+| [Performance und Stabilität](#bereich-perf) | 5 | 0 | 2 | 3 |
 | [Kern, Minecraft-Daten und Dateiformate](#bereich-kern) | 14 | 0 | 7 | 8 |
 | [Testphase, Qualität und Betrieb](#bereich-qa) | 2 | 1 | 2 | 8 |
 | [Zurückgestellt (Backend-Option, ohne Auftrag)](#bereich-spaeter) | 6 | 0 | 0 | 0 |
@@ -182,9 +182,10 @@ Abgeschlossen oder zurückgestellt: BUILD-01 (geprüft).
 
 | ID | Paket | Status | Prio | Zuständiger Thread | Nur Philipp |
 |---|---|---|---|---|---|
+| [GFX-03](#gfx-03) | Große Szenen flüssig bedienen | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Leistung bei großen Szenen steigern“ | Ein großes Modell mit Wasser oder Glas im Betrachter drehen und Blöcke anklicken: flüssig und der richtige Block (S04). |
 | [PERF-02](#perf-02) | Zellindizes, Chunkdaten und selektive Neuberechnung | 🧩 Implementiert · Abnahme offen 3/3 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ | — |
-| [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ · 1 verwaist | Olympus auf deinem Rechner, dazu Firefox/Safari (S06). |
-| [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert | 🧩 Implementiert · Abnahme offen 8/9 | P1 | „Gesamtsystem auf Performance und Stabilität optimieren“ · 1 verwaist | — |
+| [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Olympus auf deinem Rechner, dazu Firefox/Safari (S06). |
+| [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert | 🧩 Implementiert · Abnahme offen 9/9 | P1 | „Leistung bei großen Szenen steigern“ | — |
 | [PERF-06](#perf-06) | Mehr Leistung ohne eigenen Server | 🚧 In Arbeit 2/3 | P1 | „Einfachsten Weg zu mehr Leistung finden“ | — |
 
 Abgeschlossen oder zurückgestellt: STAB-01 (geprüft), PERF-01 (geprüft), PERF-03 (geprüft).
@@ -302,6 +303,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **VIEW-02** · Mojang-Download und Blockformen in Firefox/Safari und auf echten Geräten (S06).
 - **GFX-01** · Licht und Schatten auf echten GPUs, Firefox/Safari und Handy (S06).
 - **GFX-02** · Biom, Leuchtfeuer-Strahl und flüssiges Laden großer Modelle auf dem eigenen Rechner ansehen (S04).
+- **GFX-03** · Ein großes Modell mit Wasser oder Glas im Betrachter drehen und Blöcke anklicken: flüssig und der richtige Block (S04).
 - **EDIT-01** · Mehrfachauswahl auf echten Geräten (QA-02).
 - **UPDATE-01** · Versionsupdates auf echten Geräten (QA-02).
 - **MAP-01** · Weltkarte auf echter GPU und mit Touch (QA-02).
@@ -355,8 +357,6 @@ Arbeit, für die gerade kein laufender Thread zuständig ist. Zum Verteilen: Thr
 | [GEN-03](#gen-03) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Feinschliff Kolosseum: Statuen in den Attika-Fenstern, Treppen im Hypogäum. |
 | [GROSS-01](#gross-01) | Bibliothek, Generatoren und Großprojekte | P1 | 🧩 Implementiert · Abnahme offen | Geländeanpassung und Wasserkanten für Großprojekte, eigene Großprojekte aus Sammlungen. |
 | [MAP-04](#map-04) | Planer | P1 | 🧩 Implementiert · Abnahme offen | Benannte Gruppen und Sperren mit Schemaerweiterung, abgestimmt mit der Mod (siehe GAME-07-S07). |
-| [PERF-04](#perf-04) | Performance und Stabilität | P1 | 🧩 Implementiert · Abnahme offen | GPU-Upload großer Szenen in Stücken. |
-| [PERF-05](#perf-05) | Performance und Stabilität | P1 | 🧩 Implementiert · Abnahme offen | S07 Analyse von Mod und Paper-Plugin (O-8), große Dateien aufteilen – Thread „Gesamtsystem auf Performance und Stabilität optimieren“ ist beendet. |
 
 ## Eingänge ohne eigenes Paket
 
@@ -509,13 +509,14 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [QA-02](#qa-02) | Echte GPU-, Safari- und iPhone-Abnahme | 🚧 In Arbeit | 1/2 | QA-01, VIEW-02 | ausstehend | ausstehend |
 | [UI-02](#ui-02) | App-Hülle, Navigation und Handyoberfläche überarbeiten | ✅ Im beschriebenen Umfang geprüft | 4/4 | UI-01, QA-01 | ausstehend | ausstehend |
 | [PERF-04](#perf-04) | Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart | 🧩 Implementiert · Abnahme offen | 6/7 | PERF-01, MODEL-01, ARCH-02 | ausstehend | ausstehend |
-| [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund | 🧩 Implementiert · Abnahme offen | 8/9 | PERF-04 | ausstehend | ausstehend |
+| [PERF-05](#perf-05) | Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund | 🧩 Implementiert · Abnahme offen | 9/9 | PERF-04 | ausstehend | ausstehend |
 | [PERF-06](#perf-06) | Mehr Leistung ohne eigenen Server: Offline-Speicher (Service Worker) und kostenlose zweite Adresse auf Cloudflare Pages | 🚧 In Arbeit | 2/3 | PERF-05 | ausstehend | ausstehend |
 | [VIEW-02](#view-02) | Minecraft-nahe zustandsabhängige Blockformen | 🧩 Implementiert · Abnahme offen | 5/6 | PROFILE-01, VIEW-01 | ausstehend | ausstehend |
 | [BLOCK-01](#block-01) | Echte Minecraft-Blocklogik 26.3: Zustände, Verbindungen, Halt, Bauschritte, Material | 🧩 Implementiert · Abnahme offen | 6/7 | VIEW-02, BUILD-01, MAT-01 | ausstehend | ausstehend |
 | [BLOCK-02](#block-02) | Katalog und Generatoren spielgerecht: keine schwebenden Blöcke, Verbindungen wie im Spiel | 🧩 Implementiert · Abnahme offen | 5/6 | BLOCK-01, LIB-04, UPDATE-01 | ausstehend | ausstehend |
 | [GFX-01](#gfx-01) | Grafik vertiefen: Minecraft-Licht, Eckschatten, Sonne mit Schatten, Nacht, Spawnprüfung, sortiertes Glas und 32³-Abschnitte für große Modelle | 🧩 Implementiert · Abnahme offen | 5/6 | VIEW-02 | ausstehend | ausstehend |
 | [GFX-02](#gfx-02) | Darstellung und Leistung, Runde 2: Biomfarben, leuchtende Blockentities (Leuchtfeuer-Strahl, Endportal, Magma), GPU-Upload großer Szenen in Stücken | 🧩 Implementiert · Abnahme offen | 3/4 | GFX-01, VIEW-02, PERF-04 | ausstehend | ausstehend |
+| [GFX-03](#gfx-03) | Große Szenen flüssig bedienen: Glas und Wasser je Bild sortiert, schnelles und richtiges Anklicken, Sichtfeld zuerst hochladen | 🧩 Implementiert · Abnahme offen | 3/4 | GFX-02, PERF-04 | ausstehend | ausstehend |
 | [MODEL-01](#model-01) | 3D-Export: Bauteile, Projekte und Anlagen als OBJ/MTL, glTF/GLB, STL und 3MF (Ansichtsmodell mit Blockformen/Texturen, wasserdichte Druckhülle mit Maßstab, Füllen, Aushöhlen, Farben) | 🧩 Implementiert · Abnahme offen | 5/6 | VIEW-02, GFX-01 | ausstehend | ausstehend |
 | [EDIT-01](#edit-01) | Mehrfachauswahl und sichtbare Freiraumhüllen | 🧩 Implementiert · Abnahme offen | 2/2 | STORE-02, VIEW-01 | ausstehend | ausstehend |
 | [EDIT-02](#edit-02) | Blockeditor: Blöcke setzen, entfernen, ersetzen und drehen | 🧩 Implementiert · Abnahme offen | 5/5 | VIEW-01, STORE-02 | ausstehend | ausstehend |
@@ -1294,7 +1295,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-04
 
-**Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Große Modelle flüssig berechnen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-05T11:03:24.121Z
+**Schwere Berechnungen im Hintergrund-Worker mit Fortschritt und Abbrechen: großer Import und Speichern, 3D-Ansicht mit Licht, 3D-Export, Versionsvergleich, Update-Vorschau, Bibliotheksstart** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Große Modelle flüssig berechnen“ · Zuständiger Thread: „Große Testphase vorbereiten und betreuen“ · Aktualisiert: 2026-11-06T09:11:06.629Z
 
 - [x] PERF-04-S01: Gemeinsame Auftragsschicht: ein Worker je Auftrag, Fortschritt, Abbrechen per terminate, Zeitlimit, Rückfall ohne Worker; Zellen als übertragbare Spalten.
 - [x] PERF-04-S02: Litematic-Import und Speichern großer Versionen (Prüfsumme, ID, Packen, Kennwerte) im Worker; versiegelte Payloads ohne erneute Kopie.
@@ -1306,11 +1307,9 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 **Abnahme:** Ergebnisse (Prüfsumme, Version-ID, gepackte Zellen, 3D-Netz, Exportdatei) sind gleich wie auf dem direkten Weg. Abbrechen beendet die Berechnung sofort; nichts wird gespeichert oder heruntergeladen. Ein 927 000-Block-Litematic blockiert die Seite beim Speichern nicht mehr in langen Stücken (vorher bis 17 s). Der Start blockiert die Seite nicht mehr in langen Stücken (vorher bei jedem Start 3–4 s am Stück); die Bibliothek ist danach dieselbe wie auf dem direkten Weg.
 
-**Nächste Aktion:** Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); der GPU-Upload großer Szenen läuft seit GFX-02-S03 in Stücken.
+**Nächste Aktion:** Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06). Der GPU-Upload großer Szenen läuft seit GFX-02-S03 in Stücken, seit GFX-03 mit Sichtfeld zuerst.
 
 **Nur Philipp:** Auf echten Geräten und Browsern: Olympus auf deinem Rechner, dazu Firefox/Safari (S06).
-
-**Verwaist (ohne Bearbeiter):** GPU-Upload großer Szenen in Stücken.
 
 **Prüfstand:** Node- und Chromium-Prüfung bestanden; echte Geräte und andere Browser offen.
 
@@ -1322,7 +1321,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 
 ### PERF-05
 
-**Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Gesamtsystem auf Performance und Stabilität optimieren“ · Zuständiger Thread: „Gesamtsystem auf Performance und Stabilität optimieren“ · Aktualisiert: 2026-11-05T11:03:24.121Z
+**Gesamtsystem auf Ladezeit und Stabilität optimiert: Katalog beim Bauen vorberechnet, Seiten bei Bedarf geladen, schnelleres Hashing, plattformfeste Mathematik, priorisierter Befund** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Gesamtsystem auf Performance und Stabilität optimieren“ · Zuständiger Thread: „Leistung bei großen Szenen steigern“ · Aktualisiert: 2026-11-06T09:11:06.629Z
 
 - [x] PERF-05-S01: Messbasis und priorisierter Befund (Ladezeiten, Pakete, CPU-Brennpunkte, Fehlerbehandlung) in PERFORMANCE_AUDIT.md; Messskript scripts/perf/measure_start.mjs.
 - [x] PERF-05-S02: Mitgelieferter Katalog als Datei beim Bauen (assets/catalog-<key>.json), Worker lädt sie bei fehlendem Katalogspeicher, Rückfall auf Erzeugen; Erststart 5,2 s → 1,4 s.
@@ -1330,21 +1329,19 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 - [x] PERF-05-S04: canonicalJson ohne Zwischenarrays (Byte für Byte gleiche Ausgabe).
 - [x] PERF-05-S05: Plattformfeste Winkelfunktionen für gespeicherte Geometrie (Kolosseum war in Node und Chromium verschieden).
 - [x] PERF-05-S06: Dauerhafter Vorschaubildcache (O-1): Cache Storage je Render-Revision, Neustart ohne erneutes Rendern.
-- [ ] PERF-05-S07: Analyse Mod und Paper-Plugin nach Merge der Teambau-Threads (O-8); Aufteilen großer Dateien nach Merge des jeweiligen Threads (O-6).
+- [x] PERF-05-S07: Analyse Mod und Paper-Plugin (O-8): Teamstand-Zwischenspeicher je Team im Plugin (Trichter und Abbauen mit mehreren Teams), Lagerbefehle aus StorageModule in StorageCommands (O-6); Befund in PERFORMANCE_AUDIT Runde 5.
 - [x] PERF-05-S08: Zellen erst bei Bedarf entpacken statt alle Versionen beim Start (O-2).
 - [x] PERF-05-S09: Startpaket verkleinern (O-3): Projektreiter und Gebäudesets aus dem Start, Reiter einzeln nachladen.
 
 **Abnahme:** Katalog aus der Datei ist Asset für Asset und Version für Version gleich dem im Browser erzeugten. Fehlende, beschädigte oder fremde Katalogdatei führt zum Erzeugen wie bisher, ohne Fehler. Hash- und ID-Ausgabe unverändert; kein mitgeliefertes Gebäude bekommt eine neue Version-ID gegenüber Node. Alle Kern- und Browsertests grün.
 
-**Nächste Aktion:** O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8).
-
-**Verwaist (ohne Bearbeiter):** S07 Analyse von Mod und Paper-Plugin (O-8), große Dateien aufteilen – Thread „Gesamtsystem auf Performance und Stabilität optimieren“ ist beendet.
+**Nächste Aktion:** Weitere große Dateien (TeamClient, LiveLink, RoomClient, TeamModule) nach Merge der Mod-Threads teilen; inkrementelle Faltung des Teamprotokolls im Plugin beobachten.
 
 **Prüfstand:** Node- und Chromium-Prüfung im Cloud-Container; echte Geräte, Firefox/Safari offen.
 
 **Nachweise:** [docs/architecture/kern/PERFORMANCE_AUDIT.md](architecture/kern/PERFORMANCE_AUDIT.md) — Messungen vorher/nachher, umgesetzte und offene Befunde mit Priorität.; [tests/e2e/catalog-snapshot.e2e.mjs](../tests/e2e/catalog-snapshot.e2e.mjs) — Chromium: Erststart aus Datei, Neustart aus Speicher, gleicher Katalog wie selbst erzeugt, Rückfall bei fehlender/beschädigter/fremder Datei.; [tests/unit/core/stable-math.test.mjs](../tests/unit/core/stable-math.test.mjs) — Genauigkeit gegen Math, Sonderwerte, feste Referenzbits.; [tests/unit/core/canonical-json.test.mjs](../tests/unit/core/canonical-json.test.mjs) — 2000 Zufallswerte und Sonderfälle gleich der alten Implementierung.; [tests/e2e/thumb-store.e2e.mjs](../tests/e2e/thumb-store.e2e.mjs) — Chromium: Vorschaubilder nach Neustart aus dem Speicher (blob), alter Speicher entfernt, ohne Cache Storage normal gerendert.
 
-**Dateiumfang:** `docs/architecture/kern/PERFORMANCE_AUDIT.md`, `packages/application/src/catalogSnapshot.ts`, `packages/voxel/src/stableMath.ts`, `packages/domain/src/core/hash.ts`, `scripts/pages/build_catalog_snapshot.mjs`, `scripts/pages/catalog_key.mjs`, `scripts/bench/perf/measure_start.mjs`, `apps/web/src/app/lazyPage.tsx`, `apps/web/src/main.tsx`, `apps/web/src/jobs/libraryJob.ts`, `apps/web/src/jobs/library.ts`, `tests/e2e/catalog-snapshot.e2e.mjs`, `tests/unit/core/stable-math.test.mjs`, `tests/unit/core/canonical-json.test.mjs`, `apps/web/src/thumbnail/thumbStore.ts`, `apps/web/src/thumbnail/Thumb.tsx`, `tests/e2e/thumb-store.e2e.mjs`, `apps/web/src/views/map/useMapHistory.ts`. **Abhängigkeiten:** PERF-04. **Alte IDs:** —.
+**Dateiumfang:** `docs/architecture/kern/PERFORMANCE_AUDIT.md`, `packages/application/src/catalogSnapshot.ts`, `packages/voxel/src/stableMath.ts`, `packages/domain/src/core/hash.ts`, `scripts/pages/build_catalog_snapshot.mjs`, `scripts/pages/catalog_key.mjs`, `scripts/bench/perf/measure_start.mjs`, `apps/web/src/app/lazyPage.tsx`, `apps/web/src/main.tsx`, `apps/web/src/jobs/libraryJob.ts`, `apps/web/src/jobs/library.ts`, `tests/e2e/catalog-snapshot.e2e.mjs`, `tests/unit/core/stable-math.test.mjs`, `tests/unit/core/canonical-json.test.mjs`, `apps/web/src/thumbnail/thumbStore.ts`, `apps/web/src/thumbnail/Thumb.tsx`, `tests/e2e/thumb-store.e2e.mjs`, `apps/web/src/views/map/useMapHistory.ts`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageModule.java`, `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageCommands.java`. **Abhängigkeiten:** PERF-04. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 
@@ -1510,6 +1507,29 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/unit/web/graphics2.test.mjs](../tests/unit/web/graphics2.test.mjs) — Biomfaktoren, Farbklassen je Fläche, Leuchten, Leuchtfeuer (Pyramide, Glas, Sperre, Grundgestein), Abschnitt neu bei Dach weit oben, inkrementell = neu, Upload-Reihenfolge und Budget.; [tests/e2e/graphics2.e2e.mjs](../tests/e2e/graphics2.e2e.mjs) — Chromium: Biomwechsel ohne Neuaufbau mit Farbvergleich, Leuchtfeuer 1 von 2, 150 000 Blöcke in mehreren Bildern hochgeladen, Auswahl danach.; [docs/architecture/planer/GRAPHICS.md](architecture/planer/GRAPHICS.md) — Abschnitt Runde 2 (GFX-02): Regeln, Prüfattribute, Grenzen.
 
 **Dateiumfang:** `apps/web/src/blockmodels/beacon.ts`, `apps/web/src/blockmodels/biomes.ts`, `apps/web/src/blockmodels/graphics.ts`, `apps/web/src/blockmodels/light.ts`, `apps/web/src/blockmodels/mesh.ts`, `apps/web/src/blockmodels/snapshot.ts`, `apps/web/src/blockmodels/threeMesh.ts`, `apps/web/src/blockmodels/tint.ts`, `apps/web/src/jobs/meshJob.ts`, `apps/web/src/testing/testplan.ts`, `apps/web/src/viewer/`, `apps/web/src/viewer/backgroundMesh.ts`, `docs/architecture/planer/GRAPHICS.md`, `docs/testing/TESTPLAN.md`, `tests/e2e/graphics.e2e.mjs`, `tests/e2e/graphics2.e2e.mjs`, `tests/unit/web/graphics.test.mjs`, `tests/unit/web/graphics2.test.mjs`. **Abhängigkeiten:** GFX-01, VIEW-02, PERF-04. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### GFX-03
+
+**Große Szenen flüssig bedienen: Glas und Wasser je Bild sortiert, schnelles und richtiges Anklicken, Sichtfeld zuerst hochladen** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude-Thread „Leistung bei großen Szenen steigern“ · Zuständiger Thread: „Leistung bei großen Szenen steigern“ · Aktualisiert: 2026-11-06T09:11:06.629Z
+
+- [x] GFX-03-S01: Durchscheinende Flächen im Betrachter je Bild sortiert (höchstens 250 000 Flächen, Sichtfeld und Nähe zuerst, erneut erst nach Bewegung um ¼ Block oder 2 % des Abstands); schnellere Sortierung ohne Vergleichsfunktion.
+- [x] GFX-03-S02: Anklicken prüft Abschnitte in Strahlreihenfolge und hört nach dem nächsten Treffer auf (gleiches Ergebnis); Fehler behoben: auf sortiertem Glas/Wasser wurde oft ein falscher Block gewählt.
+- [x] GFX-03-S03: GPU-Upload: Abschnitte im Sichtfeld vor näheren außerhalb des Bildes.
+- [ ] GFX-03-S04: Abnahme auf echter GPU mit einem großen Modell mit Wasser (Philipps Rechner), Firefox/Safari.
+
+**Abnahme:** Standbilder und 3D-Export unverändert; die Sortierung ergibt dieselbe Reihenfolge wie eine einfache Abstandssortierung (auf 1/64 Block). Anklicken findet denselben nächsten Treffer wie das Prüfen aller Abschnitte; die Zelle enthält den Trefferpunkt, auch auf Glas und Wasser. Kein Bild sortiert mehr als das Budget; bei ruhender Kamera wird nichts sortiert.
+
+**Nächste Aktion:** Abnahme auf Philipps Rechner: großes Modell mit Wasser drehen und Blöcke anklicken, dazu Firefox/Safari (S04).
+
+**Nur Philipp:** Auf echten Geräten und Browsern: Ein großes Modell mit Wasser oder Glas im Betrachter drehen und Blöcke anklicken: flüssig und der richtige Block (S04).
+
+**Prüfstand:** Node- und Chromium-Prüfung (Software-WebGL) bestanden; echte GPUs und Firefox/Safari offen.
+
+**Nachweise:** [tests/unit/web/graphics3.test.mjs](../tests/unit/web/graphics3.test.mjs) — Sortierreihenfolge, 200 Zufallsstrahlen gleich allen Meshes und Zelle mit Trefferpunkt auf sortiertem Glas, Budget/Sichtfeld/Ruhe beim Sortieren, Sichtfeld beim Hochladen.; [tests/e2e/graphics2.e2e.mjs](../tests/e2e/graphics2.e2e.mjs) — Chromium: Feld mit Glas, Sortierung kommt zur Ruhe (data-sorting), danach Auswahl.; [docs/architecture/planer/GRAPHICS.md](architecture/planer/GRAPHICS.md) — Runde 3 (GFX-03): Messung 1,56 Mio. Blöcke, Regeln, Prüfattribut.
+
+**Dateiumfang:** `apps/web/src/blockmodels/threeMesh.ts`, `apps/web/src/viewer/sceneController.ts`, `tests/unit/web/graphics3.test.mjs`, `tests/e2e/graphics2.e2e.mjs`, `docs/architecture/planer/GRAPHICS.md`, `docs/architecture/kern/PERFORMANCE_AUDIT.md`. **Abhängigkeiten:** GFX-02, PERF-04. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

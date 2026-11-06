@@ -72,10 +72,10 @@ final class StorageModule implements Listener {
 
     static final List<String> SUBCOMMANDS = List.of("markieren", "entmarkieren", "info", "liste", "pruefen", "siegeln", "name", "abschnitt", "zweck", "schutz",
             "verlauf", "wer", "bedarf", "zeigen", "hilfe", "farm", "setzen", "entfernen", "zaehlen");
-    private static final String PREFIX = ChatColor.GOLD + "[Bauplaner] " + ChatColor.RESET;
+    static final String PREFIX = ChatColor.GOLD + "[Bauplaner] " + ChatColor.RESET;
 
-    private final JavaPlugin plugin;
-    private final TeamAccess teams;
+    final JavaPlugin plugin;
+    final TeamAccess teams;
 
     /** An open store window of one player: what was there at the last click and what the player moved. */
     private static final class Session {
@@ -96,14 +96,16 @@ final class StorageModule implements Listener {
     /** Last hopper booking per store: hopper moves are bundled to one store.move per store and minute (lager.trichter-buendeln-sekunden). */
     private final Map<String, Long> hopperBooked = new HashMap<>();
     /** COOP-08: what went into yield stores (purpose ertrag) since the last store.yield, and loaded minutes. */
-    private static final class Yield {
+    static final class Yield {
         final String teamId, from = java.time.Instant.now().toString();
         final TreeMap<String, Long> items = new TreeMap<>();
         long minutes;
         Yield(String teamId) { this.teamId = teamId; }
     }
-    private final Map<String, Yield> yields = new LinkedHashMap<>();
+    final Map<String, Yield> yields = new LinkedHashMap<>();
     private long yieldTicks;
+
+    private final StorageCommands commands = new StorageCommands(this);
 
     StorageModule(JavaPlugin plugin, TeamAccess teams) {
         this.plugin = plugin;
@@ -172,8 +174,8 @@ final class StorageModule implements Listener {
         if (yieldTask != null) yieldTask.cancel();
     }
 
-    private static void say(CommandSender s, String text) { s.sendMessage(PREFIX + text); }
-    private static boolean fail(CommandSender s, String text) { s.sendMessage(PREFIX + ChatColor.RED + text); return true; }
+    static void say(CommandSender s, String text) { s.sendMessage(PREFIX + text); }
+    static boolean fail(CommandSender s, String text) { s.sendMessage(PREFIX + ChatColor.RED + text); return true; }
 
     // ------------------------------------------------------------------ config
 
@@ -182,14 +184,14 @@ final class StorageModule implements Listener {
         return v != null && allowed.contains(v.toLowerCase(Locale.ROOT)) ? v.toLowerCase(Locale.ROOT) : fallback;
     }
     private boolean blocking() { return cfg("modus", "sperren", List.of("sperren", "hinweis")).equals("sperren"); }
-    private String defaultProtection() { return cfg("schutz-standard", "team", StoreLedger.PROTECTIONS); }
+    String defaultProtection() { return cfg("schutz-standard", "team", StoreLedger.PROTECTIONS); }
     private String hopperMode() { return cfg("trichter", "einlegen", StoreLedger.HOPPER_MODES); }
 
     // ------------------------------------------------------------------ lookup
 
-    private record Found(TeamLog team, StoreIndex.Store store) {}
+    record Found(TeamLog team, StoreIndex.Store store) {}
 
-    private Found find(String dim, int x, int y, int z) {
+    Found find(String dim, int x, int y, int z) {
         for (TeamLog team : teams.teams()) {
             StoreIndex.Store s = teams.view(team).stores.at(dim, x, y, z);
             if (s != null) return new Found(team, s);
@@ -197,7 +199,7 @@ final class StorageModule implements Listener {
         return null;
     }
 
-    private Found find(Inventory inv) {
+    Found find(Inventory inv) {
         for (StoreWorld.Pos p : StoreWorld.positions(inv)) {
             Found f = find(p.dimension(), p.x(), p.y(), p.z());
             if (f != null) return f;
@@ -205,7 +207,7 @@ final class StorageModule implements Listener {
         return null;
     }
 
-    private Found find(Block b) { return find(PaperCompat.dimension(b.getWorld()), b.getX(), b.getY(), b.getZ()); }
+    Found find(Block b) { return find(PaperCompat.dimension(b.getWorld()), b.getX(), b.getY(), b.getZ()); }
 
     private static Block block(StoreIndex.Store s) {
         World w = PaperCompat.findWorld(s.dimension);
@@ -228,12 +230,12 @@ final class StorageModule implements Listener {
         return StoreLedger.allowed(s.protectionOr(defaultProtection()), a, r.rank, r.owner, r.admin);
     }
 
-    private String sectionLabel(TeamLog team, String sectionId) {
+    String sectionLabel(TeamLog team, String sectionId) {
         if (sectionId == null) return "ganzes Projekt";
         return team.sections.stream().filter(x -> x.id().equals(sectionId)).map(x -> "Abschnitt " + x.number() + " " + x.name()).findFirst().orElse("entfernter Abschnitt");
     }
 
-    private static String statusLabel(StoreIndex.Store s) {
+    static String statusLabel(StoreIndex.Store s) {
         return switch (s.status) {
             case "geprueft" -> ChatColor.GREEN + "geprüft" + ChatColor.RESET;
             case "abweichend" -> ChatColor.RED + "abweichend" + ChatColor.RESET;
@@ -245,10 +247,10 @@ final class StorageModule implements Listener {
     // ------------------------------------------------------------------ counting and checking
 
     /** Counts the store if its chunk is loaded and writes what changed: count, check result, double chest half. */
-    private void check(TeamLog team, StoreIndex.Store s, boolean report, CommandSender to) { check(team, s, report, to, team.founder); }
+    void check(TeamLog team, StoreIndex.Store s, boolean report, CommandSender to) { check(team, s, report, to, team.founder); }
 
     /** As above; {@code by} is the member a count is booked to (stored/taken of COOP-04 come from count differences). */
-    private void check(TeamLog team, StoreIndex.Store s, boolean report, CommandSender to, String by) {
+    void check(TeamLog team, StoreIndex.Store s, boolean report, CommandSender to, String by) {
         // Hopper moves not yet booked (bundled) must be booked first, or they would look like a deviation.
         if (s != null && hopperDirty.containsKey(s.id)) { flushHopper(s.id, hopperDirty.remove(s.id), false); s = teams.view(team).stores.get(s.id); }
         if (s == null) return;
@@ -342,7 +344,7 @@ final class StorageModule implements Listener {
     }
 
     /** All stores of one team in loaded chunks, counts booked to {@code by}. */
-    private void checkTeam(TeamLog team, CommandSender to, String by) {
+    void checkTeam(TeamLog team, CommandSender to, String by) {
         int checked = 0;
         for (StoreIndex.Store s : new ArrayList<>(teams.view(team).stores.stores.values())) {
             if (s.removed) continue;
@@ -352,7 +354,7 @@ final class StorageModule implements Listener {
         if (checked == 0) say(to, "Das Team hat noch kein Lager. Baumeister: auf eine Kiste schauen und /bauplaner lager markieren <name>.");
     }
 
-    private static JsonArray xyz(int[] p) { JsonArray a = new JsonArray(); for (int v : p) a.add(v); return a; }
+    static JsonArray xyz(int[] p) { JsonArray a = new JsonArray(); for (int v : p) a.add(v); return a; }
 
     // ------------------------------------------------------------------ moves
 
@@ -493,7 +495,7 @@ final class StorageModule implements Listener {
         return out;
     }
 
-    private static String farmName(TeamLog team, String id) {
+    static String farmName(TeamLog team, String id) {
         return farms(team).stream().filter(f -> f[0].equals(id)).map(f -> f[1]).findFirst().orElse(id);
     }
 
@@ -709,7 +711,7 @@ final class StorageModule implements Listener {
         return out;
     }
 
-    private Optional<String> needLine(TeamLog team, StoreIndex.Store s) {
+    Optional<String> needLine(TeamLog team, StoreIndex.Store s) {
         TreeMap<String, Long> need = need(team, s.section);
         if (need.isEmpty()) return Optional.empty();
         TreeMap<String, Long> have = stock(teams.view(team), s.section);
@@ -722,295 +724,10 @@ final class StorageModule implements Listener {
                 + (top != null ? " · am meisten fehlt " + StoreLedger.amount(missingTop) + " " + StoreLedger.shortItem(top) : " · alles da"));
     }
 
-    // ------------------------------------------------------------------ commands
+    // ------------------------------------------------------------------ commands: StorageCommands
 
-    /** {@code /bauplaner lager …}; {@code player}/{@code uuid} are the acting player (also for the console's „team als“). */
-    boolean command(CommandSender s, String player, UUID uuid, boolean console, String label, String[] args) {
-        // Acting for a player from the console ("team als") uses the player's team role only.
-        boolean admin = console || s instanceof Player && s.hasPermission("bauplaner.lager.verwalten");
-        if (!s.hasPermission("bauplaner.lager.use")) return fail(s, "Dir fehlt das Recht bauplaner.lager.use.");
-        String sub = args.length == 0 ? "liste" : args[0].toLowerCase(Locale.ROOT);
-        List<String> rest = new ArrayList<>(List.of(args).subList(Math.min(1, args.length), args.length));
-        if (sub.equals("hilfe") || !SUBCOMMANDS.contains(sub)) return help(s, label);
-        if (teams.teams().isEmpty()) return fail(s, "Auf diesem Server ist noch kein Team angelegt (/" + label + " team hilfe).");
-        TeamLog team = teams.teamFor(s, player, uuid);
-        TeamLog.View v = teams.view(team);
-        // "bei <x> <y> <z> [welt]" names a container without looking at it (console, server test).
-        Block target = null;
-        int bei = rest.indexOf("bei");
-        if (bei >= 0 && rest.size() >= bei + 4) {
-            Integer x = BridgePlugin.coordinate(rest.get(bei + 1), null), y = BridgePlugin.coordinate(rest.get(bei + 2), null), z = BridgePlugin.coordinate(rest.get(bei + 3), null);
-            if (x == null || y == null || z == null) return fail(s, "bei <x> <y> <z> [welt] erwartet ganze Zahlen.");
-            World w = null;
-            int used = 4;
-            if (rest.size() > bei + 4 && PaperCompat.findWorld(rest.get(bei + 4)) != null) { w = PaperCompat.findWorld(rest.get(bei + 4)); used = 5; }
-            if (w == null) w = s instanceof Player p ? p.getWorld() : Bukkit.getWorlds().get(0);
-            target = w.getBlockAt(x, y, z);
-            for (int i = 0; i < used; i++) rest.remove(bei);
-        } else if (s instanceof Player p) {
-            Block hit = p.getTargetBlockExact(6);
-            if (hit != null && StoreWorld.isStoreBlock(hit)) target = hit;
-        } else if (rest.size() >= 3 && rest.subList(rest.size() - 3, rest.size()).stream().allMatch(x -> x.matches("-?\\d+"))) {
-            // COOP-04 console form: lager setzen <name> <x> <y> <z> (world of the team file).
-            int n = rest.size();
-            World w = PaperCompat.findWorld(Optional.ofNullable(TeamLog.str(team.header, "dimension")).orElse("minecraft:overworld"));
-            if (w == null) w = Bukkit.getWorlds().get(0);
-            target = w.getBlockAt(Integer.parseInt(rest.get(n - 3)), Integer.parseInt(rest.get(n - 2)), Integer.parseInt(rest.get(n - 1)));
-            rest = new ArrayList<>(rest.subList(0, n - 3));
-        }
-        Found here = target != null ? find(target) : null;
-        String text = String.join(" ", rest).trim();
-        Optional<String> me = teams.member(team, player, uuid);
-        String by = me.orElse(admin ? team.founder : "");
-        // Counts are booked to the member who triggers them (COOP-04: stored/taken from count differences).
-        switch (sub) {
-            case "markieren", "setzen" -> {
-                if (target == null) return fail(s, "Schau auf eine Kiste, ein Fass oder eine Shulkerkiste (höchstens 6 Blöcke) – oder /" + label + " lager markieren bei <x> <y> <z> [name].");
-                if (!StoreWorld.isStoreBlock(target)) return fail(s, "Dort steht keine Kiste, kein Fass und keine Shulkerkiste.");
-                if (here != null) return fail(s, "Das ist schon das Lager „" + here.store.name + "“ (" + here.team.name + ").");
-                if (by.isEmpty()) return fail(s, "Du bist nicht im Team.");
-                if (!admin && StoreLedger.rank(v.role(by)) < 2) return fail(s, "Lager markieren dürfen Baumeister und die Bauleitung.");
-                String id = TeamLog.newId("chest");
-                String name = text.isEmpty() ? "Lager " + (v.stores.stores.size() + 1) : clip(text, 60);
-                JsonObject e = team.event(by, "store.chest");
-                e.addProperty("chest", id); e.addProperty("name", name);
-                e.add("pos", xyz(new int[] { target.getX(), target.getY(), target.getZ() })); e.addProperty("dimension", PaperCompat.dimension(target.getWorld()));
-                if (!teams.submit(team, e, s, "Lager „" + name + "“ markiert bei " + target.getX() + " " + target.getY() + " " + target.getZ() + ".")) return true;
-                // Section from the position, protection from the server default.
-                String dim = PaperCompat.dimension(target.getWorld());
-                Block t = target;
-                String section = team.sections.stream().filter(sec -> sec.boxes().stream().anyMatch(b -> b.contains(dim, t.getX(), t.getY(), t.getZ()))).map(TeamLog.Section::id).findFirst().orElse(null);
-                JsonObject c = team.event(by, "store.config");
-                c.addProperty("chest", id);
-                if (section != null) c.addProperty("section", section);
-                c.addProperty("protection", defaultProtection());
-                teams.append(team, c, s);
-                say(s, "Zugeordnet: " + sectionLabel(team, section) + " · Schutz „" + defaultProtection() + "“ (" + StoreLedger.describe(defaultProtection()) + "). Ändern mit /" + label + " lager abschnitt|zweck|schutz.");
-                check(team, teams.view(team).stores.get(id), true, s, by);
-                return true;
-            }
-            case "liste" -> {
-                List<StoreIndex.Store> list = v.stores.stores.values().stream().filter(x -> !x.removed).collect(Collectors.toList());
-                if (list.isEmpty()) return fail(s, "Noch kein Lager markiert. /" + label + " lager markieren");
-                for (StoreIndex.Store x : list)
-                    say(s, x.name + " · " + statusLabel(x) + " · " + sectionLabel(team, x.section) + " · " + x.purpose + " · " + x.pos[0] + " " + x.pos[1] + " " + x.pos[2]
-                            + (x.items != null ? " · " + StoreLedger.total(x.items) + " Items" : "") + (!x.deviation.isEmpty() ? ChatColor.RED + " · " + StoreLedger.diffText(x.deviation, 3) : ""));
-                TreeMap<String, Long> stock = stock(v, null);
-                if (!stock.isEmpty()) say(s, "Bestand: " + stock.entrySet().stream().sorted(Map.Entry.<String, Long>comparingByValue().reversed()).limit(10)
-                        .map(x -> x.getValue() + " " + StoreLedger.shortItem(x.getKey())).collect(Collectors.joining(", ")));
-                return true;
-            }
-            case "bedarf" -> { return needReport(s, team, v, text, label); }
-            case "pruefen", "zaehlen" -> {
-                if (!text.equals("alle") && target != null && here == null) return fail(s, "Diese Kiste ist kein Lager.");
-                TeamLog countTeam = here != null ? here.team : team;
-                Optional<String> m = teams.member(countTeam, player, uuid);
-                if (m.isEmpty() && uuid != null) m = teams.join(countTeam, s, player, uuid);
-                String countBy = m.orElse(countTeam.founder);
-                if (here != null) { check(here.team, here.store, true, s, countBy); return true; }
-                checkTeam(team, s, countBy);
-                return true;
-            }
-            case "zeigen" -> { return show(s, team, v); }
-            default -> { }
-        }
-        // Everything below works on one store.
-        if (here == null) return fail(s, target == null ? "Schau auf ein Lager (höchstens 6 Blöcke) oder nenne es mit bei <x> <y> <z>." : "Diese Kiste ist kein Lager. /" + label + " lager markieren");
-        StoreIndex.Store st = here.store;
-        team = here.team; v = teams.view(team);
-        me = teams.member(team, player, uuid);
-        by = me.orElse(admin ? team.founder : "");
-        boolean manager = admin || me.isPresent() && StoreLedger.rank(v.role(me.get())) >= 2;
-        switch (sub) {
-            case "info" -> {
-                say(s, ChatColor.BOLD + st.name + ChatColor.RESET + " · " + statusLabel(st) + " · " + sectionLabel(team, st.section) + " · Zweck " + st.purpose + " · Schutz " + st.protectionOr(defaultProtection())
-                        + " (" + StoreLedger.describe(st.protectionOr(defaultProtection())) + ")");
-                if (st.items != null) say(s, StoreLedger.total(st.items) + " Items: " + StoreLedger.diffText(st.items, 8).replace("+", "") + (st.partial ? " (gekürzt)" : ""));
-                if (!st.deviation.isEmpty()) say(s, ChatColor.RED + "Offene Abweichung: " + StoreLedger.diffText(st.deviation, 8));
-                if ("ertrag".equals(st.purpose)) {
-                    Yield y = yields.get(st.id);
-                    long minutes = st.yieldMinutes + (y == null ? 0 : y.minutes), total = StoreLedger.total(st.yieldIn) + (y == null ? 0 : StoreLedger.total(y.items));
-                    say(s, "Ertragskiste" + (st.farm != null ? " der Farm „" + farmName(team, st.farm) + "“" : "") + ": " + total + " Items in " + minutes + " min geladen"
-                            + (minutes >= 10 ? " · " + Math.round(total * 60.0 / minutes) + " je Stunde" : ""));
-                }
-                if (st.sealedBy != null) say(s, "Zuletzt gesiegelt von " + v.name(st.sealedBy) + " (" + st.sealedAt + ").");
-                needLine(team, st).ifPresent(line -> say(s, line));
-                return true;
-            }
-            case "siegeln" -> {
-                if (!manager) return fail(s, "Siegeln dürfen Baumeister und die Bauleitung.");
-                check(team, st, false, null);
-                st = teams.view(team).stores.get(st.id);
-                JsonObject e = team.event(by, "store.seal");
-                e.addProperty("chest", st.id); e.addProperty("sha256", st.items == null ? StoreLedger.sha256(new TreeMap<>()) : StoreLedger.sha256(st.items));
-                if (!text.isEmpty()) e.addProperty("note", clip(text, 300));
-                return teams.submit(team, e, s, "Lager „" + st.name + "“ gesiegelt: der jetzige Inhalt gilt als richtig" + (!st.deviation.isEmpty() ? " (Abweichung " + StoreLedger.diffText(st.deviation, 4) + " angenommen)." : "."));
-            }
-            case "entmarkieren", "entfernen" -> {
-                if (!manager) return fail(s, "Lager aufheben dürfen Baumeister und die Bauleitung.");
-                JsonObject e = team.event(by, "store.chest");
-                e.addProperty("chest", st.id); e.addProperty("name", st.name); e.add("pos", xyz(st.pos)); e.addProperty("dimension", st.dimension); e.addProperty("remove", true);
-                return teams.submit(team, e, s, "Markierung von „" + st.name + "“ aufgehoben; die Kiste ist wieder eine normale Kiste. Der Verlauf bleibt im Teamprotokoll.");
-            }
-            case "name", "abschnitt", "zweck", "schutz", "farm" -> {
-                if (!manager) return fail(s, "Das dürfen Baumeister und die Bauleitung.");
-                if (text.isEmpty()) return fail(s, "/" + label + " lager " + sub + " <wert>");
-                JsonObject e = team.event(by, "store.config");
-                e.addProperty("chest", st.id);
-                String ok;
-                switch (sub) {
-                    case "name" -> { e.addProperty("name", clip(text, 60)); ok = "Neuer Name: „" + clip(text, 60) + "“."; }
-                    case "abschnitt" -> {
-                        if (text.equalsIgnoreCase("projekt") || text.equalsIgnoreCase("alle")) { e.addProperty("section", ""); ok = "Lager gilt für das ganze Projekt."; }
-                        else {
-                            Optional<TeamLog.Section> sec = team.section(text);
-                            if (sec.isEmpty()) return fail(s, "Abschnitt „" + text + "“ gibt es nicht.");
-                            e.addProperty("section", sec.get().id()); ok = "Lager gehört jetzt zu Abschnitt " + sec.get().number() + " " + sec.get().name() + ".";
-                        }
-                    }
-                    case "farm" -> {
-                        if (text.equalsIgnoreCase("keine") || text.equals("-")) { e.addProperty("farm", ""); ok = "Keine Farm mehr verknüpft."; }
-                        else {
-                            String want = text.replace('_', ' ');
-                            Optional<String[]> f = farms(team).stream().filter(x -> x[0].equals(text) || x[1].equalsIgnoreCase(want)).findFirst();
-                            if (f.isEmpty()) return fail(s, "Farm „" + text + "“ steht nicht in der Teamdatei (Planer: Reiter „Produktion“, dann Planstand neu an den Server).");
-                            e.addProperty("farm", f.get()[0]);
-                            if (!"ertrag".equals(st.purpose)) e.addProperty("purpose", "ertrag");
-                            ok = "Ertragskiste der Farm „" + f.get()[1] + "“: alles, was hineinkommt, zählt als Ertrag.";
-                        }
-                    }
-                    case "zweck" -> {
-                        Optional<String> p = StoreLedger.purpose(text);
-                        if (p.isEmpty()) return fail(s, "Zweck vorrat, eingang, ausgabe, rest oder ertrag.");
-                        e.addProperty("purpose", p.get()); ok = "Zweck: " + p.get() + ".";
-                        if (p.get().equals("eingang") && st.protection == null) e.addProperty("protection", "eingang");
-                    }
-                    default -> {
-                        Optional<String> p = StoreLedger.protection(text);
-                        if (p.isEmpty()) return fail(s, "Schutz offen, team, abschnitt, eingang oder gesperrt.");
-                        e.addProperty("protection", p.get()); ok = "Schutz „" + p.get() + "“: " + StoreLedger.describe(p.get()) + ".";
-                    }
-                }
-                return teams.submit(team, e, s, ok);
-            }
-            case "verlauf" -> {
-                int n = 8;
-                try { if (!text.isEmpty()) n = Math.max(1, Math.min(StoreIndex.RECENT, Integer.parseInt(text))); } catch (NumberFormatException ex) { return fail(s, "/" + label + " lager verlauf [anzahl]"); }
-                if (st.recent.isEmpty()) { say(s, "Noch keine Buchungen in „" + st.name + "“."); return true; }
-                int i = 0;
-                for (StoreIndex.Move m : st.recent) {
-                    if (i++ == n) break;
-                    TreeMap<String, Long> net = StoreLedger.plus(m.in(), m.out(), -1);
-                    say(s, ChatColor.GRAY + m.at().replace('T', ' ').substring(0, Math.min(16, m.at().length())) + ChatColor.RESET + " "
-                            + (m.via().equals("trichter") ? "Trichter" : v.name(m.by())) + ": " + StoreLedger.diffText(net, 5));
-                }
-                return true;
-            }
-            case "wer" -> {
-                if (text.isEmpty()) return fail(s, "/" + label + " lager wer <item>");
-                String item = text.toLowerCase(Locale.ROOT).contains(":") ? text.toLowerCase(Locale.ROOT) : "minecraft:" + text.toLowerCase(Locale.ROOT);
-                Set<String> who = new HashSet<>(st.in.keySet()); who.addAll(st.out.keySet());
-                List<String> lines = new ArrayList<>();
-                for (String w : who) {
-                    long in = st.in.getOrDefault(w, new TreeMap<>()).getOrDefault(item, 0L), out = st.out.getOrDefault(w, new TreeMap<>()).getOrDefault(item, 0L);
-                    if (in != 0 || out != 0) lines.add((w.equals("trichter") ? "Trichter" : v.name(w)) + ": +" + StoreLedger.amount(in) + " / −" + StoreLedger.amount(out));
-                }
-                if (lines.isEmpty()) { say(s, "Niemand hat " + StoreLedger.shortItem(item) + " in „" + st.name + "“ bewegt."); return true; }
-                lines.forEach(l -> say(s, l));
-                return true;
-            }
-            default -> { return help(s, label); }
-        }
-    }
+    /** {@code /bauplaner lager …}, see {@link StorageCommands}. */
+    boolean command(CommandSender s, String player, UUID uuid, boolean console, String label, String[] args) { return commands.command(s, player, uuid, console, label, args); }
 
-    private boolean needReport(CommandSender s, TeamLog team, TeamLog.View v, String text, String label) {
-        String section = null;
-        if (!text.isEmpty() && !text.equalsIgnoreCase("projekt")) {
-            Optional<TeamLog.Section> sec = team.section(text);
-            if (sec.isEmpty()) return fail(s, "Abschnitt „" + text + "“ gibt es nicht.");
-            section = sec.get().id();
-        }
-        TreeMap<String, Long> need = need(team, section);
-        if (need.isEmpty()) return fail(s, "Die Serverdatei enthält keinen Materialbedarf für " + sectionLabel(team, section) + " (im Planer neu als Serverdatei ausgeben).");
-        TreeMap<String, Long> have = stock(v, section);
-        List<String[]> rows = new ArrayList<>();
-        int full = 0;
-        for (var e : need.entrySet()) {
-            long h = have.getOrDefault(e.getKey(), 0L), miss = e.getValue() - h;
-            if (miss <= 0) full++;
-            rows.add(new String[] { e.getKey(), String.valueOf(e.getValue()), String.valueOf(h), String.valueOf(Math.max(0, miss)) });
-        }
-        rows.sort((a, b) -> Long.compare(Long.parseLong(b[3]), Long.parseLong(a[3])));
-        say(s, ChatColor.BOLD + "Bedarf " + sectionLabel(team, section) + ChatColor.RESET + ": " + full + " von " + need.size() + " Materialien liegen bereit (gezählte Lager).");
-        int shown = 0;
-        for (String[] r : rows) {
-            if (shown++ == 12) { say(s, "… " + (rows.size() - 12) + " weitere."); break; }
-            long miss = Long.parseLong(r[3]);
-            say(s, (miss > 0 ? ChatColor.RED : ChatColor.GREEN) + StoreLedger.shortItem(r[0]) + ChatColor.RESET + ": Bedarf " + StoreLedger.amount(Long.parseLong(r[1]))
-                    + " · im Lager " + StoreLedger.amount(Long.parseLong(r[2])) + (miss > 0 ? " · fehlt " + StoreLedger.amount(miss) : " · ✓"));
-        }
-        return true;
-    }
-
-    private boolean show(CommandSender s, TeamLog team, TeamLog.View v) {
-        if (!(s instanceof Player p)) return fail(s, "Die Markierung ist nur im Spiel sichtbar.");
-        String dim = PaperCompat.dimension(p.getWorld());
-        Location l = p.getLocation();
-        List<StoreIndex.Store> near = v.stores.stores.values().stream().filter(x -> !x.removed && x.dimension.equals(dim)
-                && Math.abs(x.pos[0] - l.getBlockX()) <= 48 && Math.abs(x.pos[2] - l.getBlockZ()) <= 48).collect(Collectors.toList());
-        if (near.isEmpty()) return fail(s, "Kein Lager in 48 Blöcken Umkreis.");
-        say(s, near.size() + " Lager in der Nähe leuchten 20 s: " + near.stream().map(x -> x.name + " (" + ChatColor.stripColor(statusLabel(x)) + ")").collect(Collectors.joining(", ")));
-        int[] runs = { 0 };
-        BukkitTask[] task = new BukkitTask[1];
-        task[0] = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
-            if (++runs[0] > 20 || !p.isOnline()) { task[0].cancel(); return; }
-            for (StoreIndex.Store x : near) {
-                Particle particle = x.deviating() || "fehlt".equals(x.status) ? Particle.FLAME : GOOD;
-                try {
-                    p.spawnParticle(particle, x.pos[0] + 0.5, x.pos[1] + 1.2, x.pos[2] + 0.5, 6, 0.3, 0.2, 0.3, 0);
-                    if (x.pos2 != null) p.spawnParticle(particle, x.pos2[0] + 0.5, x.pos2[1] + 1.2, x.pos2[2] + 0.5, 6, 0.3, 0.2, 0.3, 0);
-                } catch (Throwable ex) { task[0].cancel(); }
-            }
-        }, 0L, 20L);
-        return true;
-    }
-
-    /** Green sparkle: {@code HAPPY_VILLAGER} since 1.20.5, {@code VILLAGER_HAPPY} before. */
-    private static final Particle GOOD = particle("HAPPY_VILLAGER", "VILLAGER_HAPPY", "END_ROD");
-    private static Particle particle(String... names) {
-        for (String n : names) try { return Particle.valueOf(n); } catch (IllegalArgumentException e) { /* next */ }
-        return Particle.FLAME;
-    }
-
-    private boolean help(CommandSender s, String label) {
-        say(s, "Lager: /" + label + " lager markieren [name] · info · liste · pruefen [alle] · bedarf [nr|projekt] · verlauf [n] · wer <item> · zeigen");
-        say(s, "Baumeister: siegeln [notiz] · name <name> · abschnitt <nr|projekt> · zweck <vorrat|eingang|ausgabe|rest|ertrag> · farm <name|keine> · schutz <offen|team|abschnitt|eingang|gesperrt> · entmarkieren");
-        say(s, "Das Plugin zählt beim Schließen, bucht Ein- und Ausgaben je Spieler und meldet Abweichungen. Es verändert nie Kisteninhalte.");
-        return true;
-    }
-
-    List<String> complete(String[] args) {
-        // args[0] = "lager"
-        if (args.length == 2) return SUBCOMMANDS.subList(0, 16);
-        String sub = args[1].toLowerCase(Locale.ROOT);
-        if (args.length == 3) return switch (sub) {
-            case "zweck" -> StoreLedger.PURPOSES;
-            case "schutz" -> StoreLedger.PROTECTIONS;
-            case "pruefen" -> List.of("alle");
-            case "farm" -> {
-                List<String> out = new ArrayList<>(List.of("keine"));
-                if (!teams.teams().isEmpty()) farms(teams.teams().iterator().next()).forEach(x -> out.add(x[1].replace(' ', '_')));
-                yield out;
-            }
-            case "abschnitt", "bedarf" -> {
-                List<String> out = new ArrayList<>(List.of("projekt"));
-                if (!teams.teams().isEmpty()) teams.teams().iterator().next().ordered().forEach(sec -> out.add(String.valueOf(sec.number())));
-                yield out;
-            }
-            default -> List.of();
-        };
-        return List.of();
-    }
-
-    private static String clip(String t, int max) { return t.length() <= max ? t : t.substring(0, max); }
+    List<String> complete(String[] args) { return commands.complete(args); }
 }

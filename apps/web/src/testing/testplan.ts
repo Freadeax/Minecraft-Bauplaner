@@ -129,6 +129,7 @@ export const TEST_AREAS: readonly TestArea[] = [
       v('DATEI-07', 'Gedrehtes Bauteil mit Truhen, Schildern, Gemälden', ['Ein Bauteil mit gefüllter Truhe, beschriftetem Schild und Gemälde/Rahmen in ein Projekt legen und um 90° drehen (oder spiegeln).', 'Als .schem und .litematic exportieren und im Spiel mit WorldEdit bzw. Litematica einfügen.'], 'Truhe behält ihren Inhalt, Schildtext steht auf der richtigen Seite, Doppeltruhen und Gemälde zeigen in die gedrehte Richtung. (Abnahme NBT-01, ENTITY-01)'),
       v('DATEI-08', 'Datei aus WorldEdit und Litematica', ['Im Spiel mit WorldEdit (//copy, //schem save) und mit Litematica je ein Bauwerk speichern.', 'Beide Dateien im Planer öffnen, als Bauteil übernehmen und wieder exportieren; die Exporte im Spiel laden.', 'Die Originaldatei gern an Philipp schicken (ohne private Welt), damit sie mit dem Prüfwerkzeug verglichen wird.'], 'Beide Dateien öffnen mit allen Blöcken, Zuständen und Inhalten; die Exporte sitzen im Spiel an derselben Stelle (Offset) wie das Original. (Abnahme FORMAT-01, FORMAT-02)'),
       v('DATEI-09', 'Biom, Leuchtfeuer, große Szene (GFX-02)', ['Im 3D-Betrachter unter „☀ Tag“ das Biom wechseln (z. B. Sumpf, Kirschblütenhain).', 'Ein Leuchtfeuer auf eine 3×3-Pyramide aus Eisenblöcken setzen, gefärbtes Glas darüber, einmal einen Stein darüber.', 'Eine große Datei (über 500 000 Blöcke) öffnen und beim Laden schon drehen.'], 'Gras, Laub und Wasser färben sich sofort ohne Neuberechnung; der Strahl leuchtet in der Glasfarbe und verschwindet unter dem Stein; nahe Teile erscheinen zuerst, die Ansicht bleibt bedienbar.'),
+      v('DATEI-10', 'Große Szene mit Wasser und Glas (GFX-03)', ['Ein großes Modell mit viel Wasser oder Glas öffnen (gern über 500 000 Blöcke).', 'Im 3D-Betrachter drehen, heranfliegen und mit der Maus über Wasser- und Glasblöcke fahren, einen anklicken.'], 'Die Ansicht ruckelt beim Drehen nicht (auch nicht beim Anhalten); Wasser und Glas sehen von jeder Seite richtig aus; die Anzeige unten nennt genau den Block unter dem Mauszeiger.'),
     ],
   },
   {
@@ -272,7 +273,7 @@ export const ACCEPTANCE: Readonly<Record<string, readonly string[]>> = {
   'MAT-02': ['PROJ-15', 'PROJ-02'], 'MAT-03': ['PROJ-14'], 'MAT-04': ['PROJ-14'], 'DIFF-01': ['BIB-17', 'PROJ-07'],
   'PERF-02': ['PROJ-08', 'DATEI-05'], 'PERF-03': ['BIB-18', 'BIB-01'], 'PERF-04': ['DATEI-03', 'PROJ-05', 'PROJ-08'], 'PERF-05': ['START-01', 'PROJ-08', 'WERK-07'],
   'VIEW-01': ['DATEI-01', 'GERAET-04'], 'VIEW-02': ['START-06', 'DATEI-01'], 'BLOCK-01': ['WERK-06', 'PROJ-04'], 'BLOCK-02': ['BIB-12', 'WERK-06'],
-  'GFX-01': ['DATEI-04', 'GERAET-05'], 'GFX-02': ['DATEI-09', 'GERAET-05'], 'MODEL-01': ['PROJ-05'],
+  'GFX-01': ['DATEI-04', 'GERAET-05'], 'GFX-02': ['DATEI-09', 'GERAET-05'], 'GFX-03': ['DATEI-10'], 'MODEL-01': ['PROJ-05'],
   'EDIT-01': ['WERK-03'], 'EDIT-02': ['WERK-01'], 'EDIT-03': ['WERK-02', 'WERK-05'], 'EDIT-04': ['WERK-04'], 'EDIT-05': ['WERK-03'], 'EDIT-06': ['WERK-08', 'WERK-09'],
   'UPDATE-01': ['PROJ-07'], 'LIB-02': ['BIB-07'], 'LIB-03': ['BIB-08'], 'TERRAIN-01': ['KARTE-04', 'PROJ-06'], 'TERRAIN-02': ['PROJ-06'], 'TERRAIN-03': ['PROJ-19', 'PROJ-06', 'BIB-19'],
   'BUILD-06': ['PROJ-03', 'GERAET-06'], 'GEN-02': ['BIB-06', 'BIB-12'], 'MAP-01': ['KARTE-01'], 'MAP-03': ['LIVE-01', 'LIVE-03', 'LIVE-04'], 'MAP-04': ['KARTE-02', 'KARTE-03'],

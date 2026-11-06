@@ -64,9 +64,12 @@ final class TeamModule implements Listener {
     private final Map<String, String> chosen = new HashMap<>();
     private final Map<UUID, String> lastBar = new HashMap<>();
     private final Map<UUID, Long> lastHint = new HashMap<>();
-    private TeamLog.View cachedView;
-    private TeamLog cachedFor;
-    private int cachedSize = -1;
+    /**
+     * Folded view per team, rebuilt only when that team's log grew (PERF-05 O-8). One shared slot made
+     * every hopper or block event on a server with two teams replay both team logs, alternately.
+     */
+    private final Map<TeamLog, CachedView> views = new java.util.IdentityHashMap<>();
+    private record CachedView(int size, TeamLog.View view) {}
     private BukkitTask barTask, tallyTask;
     private final StorageModule storage;
     private RoomLink room;
@@ -144,7 +147,7 @@ final class TeamModule implements Listener {
     /** (Re)reads every team file; returns a summary for the sender. */
     private String load(CommandSender s) {
         flushTallies();
-        teams.clear(); headerFiles.clear(); cachedFor = null;
+        teams.clear(); headerFiles.clear(); views.clear();
         List<String> problems = new ArrayList<>();
         try (Stream<Path> files = Files.list(dir)) {
             for (Path f : files.filter(p -> p.getFileName().toString().endsWith(".team.json")).sorted().collect(Collectors.toList())) {
@@ -198,8 +201,9 @@ final class TeamModule implements Listener {
     }
 
     private TeamLog.View view(TeamLog team) {
-        if (cachedFor != team || cachedSize != team.size()) { cachedView = team.view(); cachedFor = team; cachedSize = team.size(); }
-        return cachedView;
+        CachedView c = views.get(team);
+        if (c == null || c.size() != team.size()) views.put(team, c = new CachedView(team.size(), team.view()));
+        return c.view();
     }
 
     // ------------------------------------------------------------------ identity

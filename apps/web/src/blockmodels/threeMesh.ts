@@ -173,20 +173,31 @@ function geometry(layer: MeshLayer): THREE.BufferGeometry {
   return g;
 }
 
-/** Back-to-front order of a translucent layer's quads as seen from `eye` (local coordinates). */
+/** Steps per block of the distance key in `sortQuads`: quads closer than 1/64 block in distance keep their mesh order. */
+const SORT_STEPS = 64;
+const SORT_INDEX = 2 ** 22, SORT_FAR = 2 ** 30 - 1;
+let sortKeys = new Float64Array(0);
+
+/**
+ * Back-to-front order of a translucent layer's quads as seen from `eye` (local coordinates).
+ * Each quad gets one number: its distance (in 1/64 blocks, far first) above its index, so the
+ * engine's numeric sort orders a typed array without a comparator call per pair (GFX-03).
+ * Equal distances keep the mesh order, as the stable comparator sort did.
+ */
 export function sortQuads(positions: Float32Array, quads: number, eye: readonly [number, number, number], out: Uint32Array): void {
-  const keys = new Float64Array(quads);
-  for (let q = 0; q < quads; q++) {
-    let cx = 0, cy = 0, cz = 0;
-    for (let k = 0; k < 4; k++) { const i = (q * 4 + k) * 3; cx += positions[i]!; cy += positions[i + 1]!; cz += positions[i + 2]!; }
-    const dx = cx / 4 - eye[0], dy = cy / 4 - eye[1], dz = cz / 4 - eye[2];
-    keys[q] = dx * dx + dy * dy + dz * dz;
+  if (sortKeys.length < quads) sortKeys = new Float64Array(Math.max(quads, sortKeys.length * 2));
+  const keys = sortKeys.subarray(0, quads);
+  const [ex, ey, ez] = eye;
+  for (let q = 0, i = 0; q < quads; q++, i += 12) {
+    const dx = (positions[i]! + positions[i + 3]! + positions[i + 6]! + positions[i + 9]!) / 4 - ex;
+    const dy = (positions[i + 1]! + positions[i + 4]! + positions[i + 7]! + positions[i + 10]!) / 4 - ey;
+    const dz = (positions[i + 2]! + positions[i + 5]! + positions[i + 8]! + positions[i + 11]!) / 4 - ez;
+    const d = Math.min(SORT_FAR, Math.floor(Math.sqrt(dx * dx + dy * dy + dz * dz) * SORT_STEPS));
+    keys[q] = (SORT_FAR - d) * SORT_INDEX + q;
   }
-  const order = new Uint32Array(quads);
-  for (let q = 0; q < quads; q++) order[q] = q;
-  order.sort((a, b) => keys[b]! - keys[a]!);
+  keys.sort();
   for (let i = 0; i < quads; i++) {
-    const q = order[i]!, o = i * 6, b = q * 4;
+    const q = keys[i]! % SORT_INDEX, o = i * 6, b = q * 4;
     out[o] = b; out[o + 1] = b + 1; out[o + 2] = b + 2; out[o + 3] = b; out[o + 4] = b + 2; out[o + 5] = b + 3;
   }
 }
@@ -202,6 +213,19 @@ export const sectionBytes = (s: MeshSection): number => layerBytes(s.solid) + la
 
 /** GPU upload per frame (GFX-02): start, bounds, and the frame times that make it grow or shrink. */
 export const UPLOAD = { start: 16 << 20, min: 2 << 20, max: 256 << 20, fastMs: 14, slowMs: 40 } as const;
+
+/**
+ * Translucent sorting per frame (GFX-03): quads sorted at most per frame, and how far the eye
+ * may move before a section is sorted again – a quarter block, or 2 % of its distance for far
+ * sections, whose back-to-front order barely changes.
+ */
+export const SORT = { quadsPerFrame: 250_000, near: 0.25, relative: 0.02 } as const;
+
+/** Is a sphere (centre, radius in the coordinates the caller uses) on screen? */
+export type InView = (center: readonly [number, number, number], radius: number) => boolean;
+
+/** Centre and radius of a 32³ section around its corner `min`. */
+const SECTION_HALF = 16, SECTION_RADIUS = 16 * Math.sqrt(3);
 
 /**
  * All sections of a block mesh as one object. `update` swaps in a new section
@@ -222,6 +246,8 @@ export class BlockObject {
   private materials: BlockMaterials;
   private sortedAt: string | null = null;
   private queue: MeshSection[] = [];
+  /** Eye (local coordinates) each translucent section was last sorted for; missing = unsorted. */
+  private sortedFor = new Map<string, [number, number, number]>();
   private budget: number = UPLOAD.start;
   private readonly progressive: boolean;
   /** Frames the last update needed to reach the GPU completely (1 = at once). */
@@ -239,7 +265,7 @@ export class BlockObject {
   /** Replaces the sections; returns how many GPU buffers were kept. */
   update(sections: readonly MeshSection[]): number {
     const wanted = new Set(sections.map(s => s.key));
-    for (const [key, p] of this.parts) if (!wanted.has(key)) { this.disposePart(p); this.parts.delete(key); }
+    for (const [key, p] of this.parts) if (!wanted.has(key)) { this.disposePart(p); this.parts.delete(key); this.sortedFor.delete(key); }
     this.queue = [];
     let kept = 0, bytes = 0;
     for (const s of sections) {
@@ -256,13 +282,16 @@ export class BlockObject {
    * Installs queued sections nearest to `eye` (world coordinates) within the
    * byte budget of one frame, at least one. Returns how many are still waiting.
    */
-  uploadStep(eye: readonly [number, number, number]): number {
+  uploadStep(eye: readonly [number, number, number], inView?: InView): number {
     if (!this.queue.length) return 0;
-    const d = (s: MeshSection) => {
-      const h = 16, dx = s.min[0] + h - eye[0], dy = s.min[1] + h - eye[1], dz = s.min[2] + h - eye[2];
-      return dx * dx + dy * dy + dz * dz;
-    };
-    this.queue.sort((a, b) => d(a) - d(b));
+    // Sections on screen first (GFX-03), each group nearest first.
+    const key = new Map<MeshSection, number>();
+    for (const s of this.queue) {
+      const c: [number, number, number] = [s.min[0] + SECTION_HALF, s.min[1] + SECTION_HALF, s.min[2] + SECTION_HALF];
+      const dx = c[0] - eye[0], dy = c[1] - eye[1], dz = c[2] - eye[2];
+      key.set(s, dx * dx + dy * dy + dz * dz + (inView && !inView(c, SECTION_RADIUS) ? 1e15 : 0));
+    }
+    this.queue.sort((a, b) => key.get(a)! - key.get(b)!);
     let n = 0, bytes = 0;
     while (n < this.queue.length && (n === 0 || bytes + sectionBytes(this.queue[n]!) <= this.budget)) bytes += sectionBytes(this.queue[n++]!);
     this.install(n);
@@ -285,6 +314,7 @@ export class BlockObject {
     for (const s of batch) {
       const before = this.parts.get(s.key);
       if (before) this.disposePart(before);
+      this.sortedFor.delete(s.key);
       const solid = s.solid.quads ? new THREE.Mesh(geometry(s.solid), this.materials.solid) : null;
       const translucent = s.translucent.quads ? new THREE.Mesh(geometry(s.translucent), this.materials.translucent) : null;
       if (solid) { solid.layers.enable(SHADOW_LAYER); solid.userData.section = s; this.group.add(solid); }
@@ -302,24 +332,60 @@ export class BlockObject {
 
   /**
    * Sorts translucent quads back to front for `eye` (local coordinates), and
-   * the translucent section meshes among each other. Skips work when the eye
-   * did not move by a quarter block.
+   * the translucent section meshes among each other, all at once (still images).
+   * Skips work when the eye did not move by a quarter block.
    */
   sortTranslucent(eye: THREE.Vector3): boolean {
     const key = `${Math.round(eye.x * 4)},${Math.round(eye.y * 4)},${Math.round(eye.z * 4)}`;
     if (key === this.sortedAt) return false;
     this.sortedAt = key;
-    const list: { mesh: THREE.Mesh; d: number }[] = [];
-    for (const p of this.parts.values()) {
-      if (!p.translucent) continue;
-      const g = p.translucent.geometry, layer = p.section.translucent;
-      const index = g.getIndex()!;
-      sortQuads(layer.positions, layer.quads, [eye.x, eye.y, eye.z], index.array as Uint32Array);
-      index.needsUpdate = true;
-      list.push({ mesh: p.translucent, d: g.boundingSphere!.center.distanceToSquared(eye) });
-    }
-    list.sort((a, b) => b.d - a.d).forEach((e, i) => { e.mesh.renderOrder = 1 + i / Math.max(1, list.length); });
+    for (const p of this.parts.values()) if (p.translucent) this.sortPart(p, eye);
+    this.orderTranslucent(eye);
     return true;
+  }
+
+  /**
+   * One frame of translucent sorting for the 3D viewer (GFX-03): only sections the eye moved
+   * relative to (see `SORT`), those on screen first and nearest first, until `budget` quads
+   * are sorted (at least one section). The order between sections is always current.
+   * Returns true while sections still wait, so the caller asks for another frame.
+   */
+  sortStep(eye: THREE.Vector3, inView?: InView, budget: number = SORT.quadsPerFrame): boolean {
+    const due: { p: SectionObject; d: number }[] = [];
+    for (const [key, p] of this.parts) {
+      if (!p.translucent) continue;
+      const c = p.translucent.geometry.boundingSphere!.center, d = c.distanceTo(eye);
+      const at = this.sortedFor.get(key);
+      if (at) {
+        const moved = Math.hypot(eye.x - at[0], eye.y - at[1], eye.z - at[2]);
+        if (moved < Math.max(SORT.near, d * SORT.relative)) continue;
+      }
+      const r = p.translucent.geometry.boundingSphere!.radius;
+      due.push({ p, d: d + (inView && !inView([c.x, c.y, c.z], r) ? 1e9 : 0) });
+    }
+    if (due.length) this.orderTranslucent(eye);
+    due.sort((a, b) => a.d - b.d);
+    let quads = 0, n = 0;
+    while (n < due.length && (n === 0 || quads + due[n]!.p.section.translucent.quads <= budget)) {
+      const p = due[n++]!.p;
+      this.sortPart(p, eye); quads += p.section.translucent.quads;
+    }
+    this.sortedAt = null;
+    return n < due.length;
+  }
+
+  private sortPart(p: SectionObject, eye: THREE.Vector3): void {
+    const g = p.translucent!.geometry, layer = p.section.translucent, index = g.getIndex()!;
+    sortQuads(layer.positions, layer.quads, [eye.x, eye.y, eye.z], index.array as Uint32Array);
+    index.needsUpdate = true;
+    this.sortedFor.set(p.section.key, [eye.x, eye.y, eye.z]);
+  }
+
+  /** Far translucent sections are drawn before near ones. */
+  private orderTranslucent(eye: THREE.Vector3): void {
+    const list: { mesh: THREE.Mesh; d: number }[] = [];
+    for (const p of this.parts.values()) if (p.translucent) list.push({ mesh: p.translucent, d: p.translucent.geometry.boundingSphere!.center.distanceToSquared(eye) });
+    list.sort((a, b) => b.d - a.d).forEach((e, i) => { e.mesh.renderOrder = 1 + i / Math.max(1, list.length); });
   }
 
   /** Sphere around all geometry (local coordinates). */
@@ -337,13 +403,13 @@ export class BlockObject {
    * points back towards the viewer.
    */
   pickFace(raycaster: THREE.Raycaster): { cell: Cell; normal: [number, number, number] } | null {
-    const meshes: THREE.Object3D[] = [];
-    for (const p of this.parts.values()) { if (p.solid) meshes.push(p.solid); if (p.translucent) meshes.push(p.translucent); }
-    const hit = raycaster.intersectObjects(meshes, false)[0];
+    const hit = this.raycast(raycaster);
     if (!hit || hit.faceIndex == null) return null;
     const section = hit.object.userData.section as MeshSection;
     const layer = hit.object === this.parts.get(section.key)?.solid ? section.solid : section.translucent;
-    const cell = section.cells[layer.quadCells[hit.faceIndex >> 1]!];
+    // The vertex of the hit triangle names the quad: sorted translucent indices no longer follow the quad order.
+    const quad = hit.face ? hit.face.a >> 2 : hit.faceIndex >> 1;
+    const cell = section.cells[layer.quadCells[quad]!];
     if (!cell) return null;
     const n = hit.face?.normal.clone() ?? new THREE.Vector3(0, 1, 0);
     if (n.dot(raycaster.ray.direction) > 0) n.negate();
@@ -353,11 +419,37 @@ export class BlockObject {
     return { cell, normal };
   }
 
+  /**
+   * Nearest hit of the ray (GFX-03): section meshes are tested in the order the ray enters
+   * their boxes, and testing stops once a hit lies before the next box. Same result as
+   * testing every mesh, without walking the triangles of everything behind the hit.
+   */
+  private raycast(raycaster: THREE.Raycaster): THREE.Intersection | null {
+    const ray = raycaster.ray, at = new THREE.Vector3();
+    const candidates: { mesh: THREE.Mesh; enter: number }[] = [];
+    for (const p of this.parts.values()) for (const m of [p.solid, p.translucent]) {
+      if (!m) continue;
+      const box = m.geometry.boundingBox!;
+      const enter = box.containsPoint(ray.origin) ? 0 : ray.intersectBox(box, at) ? at.distanceTo(ray.origin) : -1;
+      if (enter >= 0 && enter <= raycaster.far) candidates.push({ mesh: m, enter });
+    }
+    candidates.sort((a, b) => a.enter - b.enter);
+    let best: THREE.Intersection | null = null;
+    const hits: THREE.Intersection[] = [];
+    for (const c of candidates) {
+      if (best && best.distance <= c.enter) break;
+      hits.length = 0;
+      c.mesh.raycast(raycaster, hits);
+      for (const h of hits) if (!best || h.distance < best.distance) best = h;
+    }
+    return best;
+  }
+
   private disposePart(p: SectionObject): void {
     for (const m of [p.solid, p.translucent]) if (m) { this.group.remove(m); m.geometry.dispose(); }
   }
 
-  dispose(): void { for (const p of this.parts.values()) this.disposePart(p); this.parts.clear(); this.queue = []; }
+  dispose(): void { for (const p of this.parts.values()) this.disposePart(p); this.parts.clear(); this.queue = []; this.sortedFor.clear(); }
 }
 
 /**

@@ -131,6 +131,8 @@ test('Große Szene: Abschnitte gehen in mehreren Bildern auf die Grafikkarte, Au
   const d = await data(p);
   assert.ok(Number(d.sections) >= 9, `Abschnitte ${d.sections}`);
   assert.ok(Number(d.uploadFrames) > 1, `in Stücken hochgeladen (${d.uploadFrames} Bilder, ${d.uploadMs} ms)`);
+  // GFX-03: glass is sorted over frames and then rests.
+  await p.waitForFunction(() => document.querySelector('.canvas-host')?.dataset.sorting === 'false');
   await meanColour(p, 'feld-hochgeladen');
   const box = await host(p).boundingBox();
   await p.mouse.move(box.x + box.width / 2, box.y + box.height / 2);

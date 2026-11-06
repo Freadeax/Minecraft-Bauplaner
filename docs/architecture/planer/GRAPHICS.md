@@ -38,7 +38,7 @@ Die Lichtkurve ist Minecrafts `l / (4 − 3l)` mit halber „Hell“-Gammaanhebu
 
 ## Durchsichtige Blöcke
 
-Glas, Wasser und andere durchscheinende Flächen liegen in eigenen Meshes und werden vor jedem Bild von hinten nach vorn sortiert (je Abschnitt nach Viereckmitte, Abschnitte untereinander nach Abstand), sobald sich die Kamera um mehr als eine Viertel-Blocklänge bewegt. Über 300.000 durchscheinende Flächen wird erst sortiert, wenn die Kamera ruht. Standbilder sortieren einmal aus Blickrichtung.
+Glas, Wasser und andere durchscheinende Flächen liegen in eigenen Meshes und werden von hinten nach vorn sortiert (je Abschnitt nach Viereckmitte, Abschnitte untereinander nach Abstand). Im Betrachter verteilt sich das Sortieren seit GFX-03 auf mehrere Bilder (siehe Runde 3). Standbilder sortieren einmal aus Blickrichtung, alles auf einmal.
 
 ## Große Modelle: Abschnitte
 
@@ -65,6 +65,24 @@ Messung (Node, Container): synthetische 1,11 Mio. Blöcke / 4,8 Mio. Flächen �
 **GPU-Upload in Stücken.** `BlockObject` mit `progressive: true` (3D-Betrachter) installiert neue Abschnitte nicht mehr alle in einem Bild, sobald sie mehr Daten haben als das Budget eines Bildes (Start 16 MB). Die Warteschlange wird je Bild nach Abstand zur Kamera sortiert, die nächsten Abschnitte zuerst. Das Budget wächst um die Hälfte nach Bildern unter 14 ms und halbiert sich über 40 ms (2 MB bis 256 MB). Der alte Stand eines Abschnitts bleibt sichtbar, bis sein Ersatz da ist; Abschnitte, die es nicht mehr gibt, verschwinden sofort. Schatten werden nach dem letzten Stück neu gerechnet. Kleine Modelle gehen weiter in einem Bild hoch, Standbilder immer. Prüfattribute: `data-upload` (wartende Abschnitte), `data-upload-frames`, `data-upload-ms`.
 
 Prüfungen: Node `tests/unit/web/graphics2.test.mjs` (Faktoren, Klassen je Fläche, Leuchten, Strahl mit Pyramide/Glas/Sperre/Grundgestein, Abschnitt neu bei Dach weit oben, inkrementell = neu, Schnappschuss mit Farbkachel, Upload-Reihenfolge, kein Loch während des Hochladens, Budgetregel); Browser `tests/e2e/graphics2.e2e.mjs` (Biom Sumpf/Kirschblütenhain ohne Neuaufbau mit Farbvergleich, Leuchtfeuer 1 von 2, Feld mit 150 000 Blöcken in mehreren Bildern, danach Auswahl). Nicht geprüft: echte GPUs (Budgetregel), Firefox/Safari, Abgleich mit Spielbildern.
+
+## Runde 3 (GFX-03): große Szenen flüssig bedienen
+
+Gemessen mit einem Gelände aus 1,56 Mio. Blöcken (384 × 384, Wasser bis Höhe 8, Glassäulen alle 16 Blöcke, 144 Abschnitte, 1,8 Mio. durchscheinende Flächen; Node, Container):
+
+| | vorher | nachher |
+|---|---|---|
+| Alles sortieren (Standbild, ruhende Kamera) | 400–460 ms am Stück | ~200 ms |
+| Sortieren im Betrachter | ab 300 000 Flächen erst bei ruhender Kamera, dann 400 ms am Stück | höchstens ~25 ms je Bild, 8 Bilder bis fertig; eine Bewegung um 3 Blöcke: 1 Bild, 11 ms |
+| Block unter dem Mauszeiger finden | 11–19 ms je Mausbewegung | 3–4 ms |
+
+- **Sortierung je Bild** (`BlockObject.sortStep`): Je Abschnitt merkt sich der Betrachter den Augpunkt der letzten Sortierung. Neu sortiert wird ein Abschnitt erst, wenn sich das Auge um mehr als eine Viertel-Blocklänge oder 2 % seines Abstands bewegt hat (ferne Abschnitte ändern ihre Reihenfolge kaum). Je Bild höchstens 250 000 Flächen (`SORT.quadsPerFrame`), Abschnitte im Sichtfeld zuerst, dann die nächsten; die Reihenfolge der Abschnitte untereinander ist immer aktuell. Solange etwas wartet, fordert der Betrachter ein weiteres Bild an. Prüfattribut `data-sorting` (`true` solange sortiert wird).
+- **Schnellere Sortierung** (`sortQuads`): Abstand in 1/64 Block und Flächennummer stecken in einer Zahl, die die Engine ohne Vergleichsfunktion sortiert. Gleich weite Flächen behalten ihre Reihenfolge wie bisher.
+- **Anklicken** (`BlockObject.raycast`): Die Abschnitte werden in der Reihenfolge geprüft, in der der Strahl ihre Box betritt; liegt ein Treffer vor der nächsten Box, ist Schluss. Das Ergebnis ist dasselbe wie beim Prüfen aller Abschnitte.
+- **Fehler behoben:** Auf sortiertem Glas oder Wasser zeigte das Anklicken oft einen falschen Block, weil die Dreiecksnummer nach dem Sortieren nicht mehr zur Fläche passte. Die Fläche ergibt sich jetzt aus dem Eckpunkt des getroffenen Dreiecks.
+- **Hochladen**: Abschnitte im Sichtfeld kommen vor näheren Abschnitten außerhalb des Bildes auf die Grafikkarte, innerhalb jeder Gruppe die nächsten zuerst.
+
+Prüfungen: Node `tests/unit/web/graphics3.test.mjs` (Reihenfolge gleich einer einfachen Abstandssortierung, 200 Zufallsstrahlen gleich dem Prüfen aller Meshes und Zelle enthält den Trefferpunkt, Budget und Sichtfeld beim Sortieren, Ruhe ohne Arbeit, Sichtfeld beim Hochladen); Browser `tests/e2e/graphics2.e2e.mjs` (Feld mit Glas: Sortierung kommt zur Ruhe, danach Auswahl). Nicht geprüft: echte GPUs, Firefox/Safari.
 
 ## Einstellungen
 

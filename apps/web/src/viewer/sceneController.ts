@@ -115,7 +115,8 @@ export class SceneController {
   private spawnMesh: THREE.Mesh | null = null;
   private cells: readonly Cell[] = [];
   private cellIndex: Map<string, Cell> | null = null;
-  private moving = false;
+  private readonly frustum = new THREE.Frustum();
+  private readonly frustumMatrix = new THREE.Matrix4();
   private grid: THREE.GridHelper | null = null;
   private readonly marker: THREE.LineSegments;
   /** Integer world offset subtracted from every vertex (keeps float32 precise for far coordinates). */
@@ -531,20 +532,23 @@ export class SceneController {
       again = this.keys.size > 0;
     } else again = this.controls.update();
     let uploading = false;
+    const inView = this.updateFrustum();
     if (this.mesh?.pending && this.origin) {
-      // Large scenes reach the GPU in pieces, nearest sections first (GFX-02).
-      const c = this.camera.position;
-      this.mesh.uploadStep([c.x + this.origin[0], c.y + this.origin[1], c.z + this.origin[2]]);
+      // Large scenes reach the GPU in pieces, sections on screen and nearest first (GFX-02/03).
+      const c = this.camera.position, o = this.origin;
+      this.mesh.uploadStep([c.x + o[0], c.y + o[1], c.z + o[2]], (w, r) => inView([w[0] - o[0], w[1] - o[1], w[2] - o[2]], r));
       uploading = true;
       if (!this.mesh.pending) this.shadowDirty = true;
       this.markUpload();
     }
     if (this.mesh && this.materials) {
       if (this.shadowDirty && this.look.shadowOn.value > 0.5) { this.shadow.render(this.renderer, this.scene, this.mesh, this.materials); this.shadowDirty = false; }
-      // Glass and water back to front; very large translucent sets only once the camera rests.
-      if (this.mesh.translucentQuads && (!again || this.mesh.translucentQuads < 300_000)) this.mesh.sortTranslucent(this.camera.position);
-      else if (this.mesh.translucentQuads) this.moving = true;
-      if (!again && this.moving) { this.moving = false; this.mesh.sortTranslucent(this.camera.position); }
+      // Glass and water back to front, spread over frames: sections on screen and near first (GFX-03).
+      if (this.mesh.translucentQuads) {
+        const more = this.mesh.sortStep(this.camera.position, inView);
+        this.host.dataset.sorting = more ? 'true' : 'false';
+        if (more) again = true;
+      }
     }
     const renderStart = performance.now();
     this.renderer.render(this.scene, this.camera);
@@ -617,6 +621,15 @@ export class SceneController {
     this.building = null; delete this.host.dataset.building;
     if (this.host.hasPointerCapture(e.pointerId)) this.host.releasePointerCapture(e.pointerId);
     this.buildHandler?.end(cancelled);
+  }
+
+  /** Frustum of the current camera as a sphere test in local coordinates. */
+  private updateFrustum(): (center: readonly [number, number, number], radius: number) => boolean {
+    const cam = this.camera;
+    cam.updateMatrixWorld();
+    this.frustum.setFromProjectionMatrix(this.frustumMatrix.multiplyMatrices(cam.projectionMatrix, cam.matrixWorldInverse));
+    const sphere = new THREE.Sphere();
+    return (c, r) => this.frustum.intersectsSphere(sphere.set(sphere.center.set(c[0], c[1], c[2]), r));
   }
 
   /** Upload state for the toolbar and tests: sections waiting, frames used, time until complete. */

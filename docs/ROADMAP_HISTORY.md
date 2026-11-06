@@ -6910,3 +6910,32 @@ PROJ-05: Bauleute-Konto (Sammelzusagen, eingebracht, entnommen, Saldo, ohne Zusa
 - `tests/e2e/builder-account.e2e.mjs`
 - `tests/unit/planning/builder-account.test.mjs`
 
+## 2026-11-06T09:11:06.629Z · progress
+
+**Aufgaben:** GFX-03, PERF-05, PERF-04
+
+GFX-03: Glas/Wasser im Betrachter je Bild sortiert (höchstens ~25 ms statt 400 ms am Stück bei 1,56 Mio. Blöcken), Anklicken 3–4 statt 11–19 ms und richtiger Block auf sortiertem Glas/Wasser, Sichtfeld zuerst hochladen; Testfall DATEI-10. PERF-05-S07 (O-8): Plugin-Teamstand je Team zwischengespeichert, StorageCommands aus StorageModule herausgelöst (Paper 1.21.11 Lager-/Teamtest grün, noch ohne Release). Geprüft: npm run check, test:e2e 179/179; echte GPU offen.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| GFX-03 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme auf Philipps Rechner: großes Modell mit Wasser drehen und Blöcke anklicken, dazu Firefox/Safari (S04). |
+| PERF-05 | 🧩 Implementiert · Abnahme offen | 9/9 | Weitere große Dateien (TeamClient, LiveLink, RoomClient, TeamModule) nach Merge der Mod-Threads teilen; inkrementelle Faltung des Teamprotokolls im Plugin beobachten. |
+| PERF-04 | 🧩 Implementiert · Abnahme offen | 6/7 | Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06). Der GPU-Upload großer Szenen läuft seit GFX-02-S03 in Stücken, seit GFX-03 mit Sichtfeld zuerst. |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/blockmodels/threeMesh.ts`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/viewer/sceneController.ts`
+- `docs/COMMUNICATION.md`
+- `docs/TESTING.md`
+- `docs/architecture/kern/PERFORMANCE_AUDIT.md`
+- `docs/architecture/planer/GRAPHICS.md`
+- `docs/architecture/team/LAGERKISTEN.md`
+- `docs/testing/TESTPLAN.md`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageCommands.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageModule.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`
+- `tests/e2e/graphics2.e2e.mjs`
+- `tests/unit/web/graphics3.test.mjs`
+

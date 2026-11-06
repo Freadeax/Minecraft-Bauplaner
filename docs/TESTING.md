@@ -1040,3 +1040,11 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `npm run check` grün (924 Tests: 923 bestanden, 1 übersprungen), neu `tests/unit/planning/builder-account.test.mjs` 3/3 (ohne Team nur Bedarf; eigene und fremde Sammelzusagen, Lieferung, Saldo, Live-Anwesenheit mit Spiel vor Planer und ohne Serverschlüssel, Kandidat und fremder Spieler, Übernahme und Bauzettel; „ohne Zusage“ einmal je Item).
 - Browser (Chromium 1243 als 1248 verlinkt): voller Lauf 78 Dateien, 181/181 grün, darin neu `tests/e2e/builder-account.e2e.mjs` 2/2 (1400/390 px, Port 4371: Team gründen, Lieferung 32 oak_log, Sammelzusage 10 cobblestone, Kandidat in der Planung, „Team übernehmen“, Rückgängig, Konto mit „zugesagt 10“, „eingebracht 32“, „Saldo +32“, kein Querscrollen).
 - Nicht automatisch geprüft: echte Live-Anwesenheit eines Mitspielers mit Mod im Team-Raum (im Einheitstest mit Anwesenheitsdaten belegt); Abnahme PROJ-23 offen.
+
+## GFX-03 + PERF-05-S07 · Große Szenen flüssig, Mod/Plugin-Analyse · 06.11.2026 · Claude
+
+- `npm run check` grün (925 Tests, 924 bestanden, 1 übersprungen), darin neu `tests/unit/web/graphics3.test.mjs` 4/4 (Sortierreihenfolge gleich Abstandssortierung auf 1/64 Block, 200 Zufallsstrahlen gleich allen Meshes und Zelle enthält Trefferpunkt auf sortiertem Glas, Sortierbudget/Sichtfeld/Ruhe, Sichtfeld beim Hochladen). Der Glas-Treffertest schlägt mit dem alten Stand fehl.
+- Browser: voller Lauf `npm run test:e2e` 179/179 (Chromium 1243 als 1248 verlinkt), `graphics2.e2e.mjs` prüft zusätzlich `data-sorting` = false nach dem Feld mit Glas.
+- Messung Node (1,56 Mio. Blöcke, 1,8 Mio. durchscheinende Flächen): alles sortieren 400–460 → ~200 ms, im Betrachter höchstens ~25 ms je Bild; Anklicken 11–19 → 3–4 ms.
+- Paper-Plugin: `./gradlew -PwithPaper :paper:build` (Unit-Tests) grün; echte Server `scripts/mod/test_bridge_paper_lager.sh 1.21.11` (45 Lagerereignisse, Planer-Faltung = Serverzustand) und `test_bridge_paper_team.sh 1.21.11` (30 Ereignisse) grün. 1.18.2 und 26.3 nicht gelaufen (kein JDK 25; Skript bricht ohne `BAUPLANER_JAVA25` wegen `pipefail` ab, Umgehung `BAUPLANER_JAVA25=none`).
+- Offen: echte GPU, Firefox/Safari (GFX-03-S04, Testfall DATEI-10).

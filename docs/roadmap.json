@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T09:06:53.011Z",
+  "updatedAt": "2026-11-06T09:11:06.629Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -2391,7 +2391,7 @@
         "Ein 927 000-Block-Litematic blockiert die Seite beim Speichern nicht mehr in langen Stücken (vorher bis 17 s).",
         "Der Start blockiert die Seite nicht mehr in langen Stücken (vorher bei jedem Start 3–4 s am Stück); die Bibliothek ist danach dieselbe wie auf dem direkten Weg."
       ],
-      "next": "Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06); der GPU-Upload großer Szenen läuft seit GFX-02-S03 in Stücken.",
+      "next": "Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06). Der GPU-Upload großer Szenen läuft seit GFX-02-S03 in Stücken, seit GFX-03 mit Sichtfeld zuerst.",
       "blockers": [],
       "evidence": [
         {
@@ -2423,7 +2423,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T09:11:06.629Z",
       "area": "PERF",
       "thread": "Große Testphase vorbereiten und betreuen",
       "philipp": [
@@ -2432,9 +2432,7 @@
           "text": "Olympus auf deinem Rechner, dazu Firefox/Safari (S06)."
         }
       ],
-      "orphans": [
-        "GPU-Upload großer Szenen in Stücken."
-      ]
+      "orphans": []
     },
     {
       "id": "PERF-05",
@@ -2464,7 +2462,10 @@
         "apps/web/src/thumbnail/thumbStore.ts",
         "apps/web/src/thumbnail/Thumb.tsx",
         "tests/e2e/thumb-store.e2e.mjs",
-        "apps/web/src/views/map/useMapHistory.ts"
+        "apps/web/src/views/map/useMapHistory.ts",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageModule.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageCommands.java"
       ],
       "legacyIds": [],
       "steps": [
@@ -2500,8 +2501,8 @@
         },
         {
           "id": "PERF-05-S07",
-          "title": "Analyse Mod und Paper-Plugin nach Merge der Teambau-Threads (O-8); Aufteilen großer Dateien nach Merge des jeweiligen Threads (O-6).",
-          "done": false
+          "title": "Analyse Mod und Paper-Plugin (O-8): Teamstand-Zwischenspeicher je Team im Plugin (Trichter und Abbauen mit mehreren Teams), Lagerbefehle aus StorageModule in StorageCommands (O-6); Befund in PERFORMANCE_AUDIT Runde 5.",
+          "done": true
         },
         {
           "id": "PERF-05-S08",
@@ -2520,7 +2521,7 @@
         "Hash- und ID-Ausgabe unverändert; kein mitgeliefertes Gebäude bekommt eine neue Version-ID gegenüber Node.",
         "Alle Kern- und Browsertests grün."
       ],
-      "next": "O-2 Zellen bei Bedarf entpacken (nach Merge der Teambau-Threads); Mod/Plugin-Analyse (O-8).",
+      "next": "Weitere große Dateien (TeamClient, LiveLink, RoomClient, TeamModule) nach Merge der Mod-Threads teilen; inkrementelle Faltung des Teamprotokolls im Plugin beobachten.",
       "blockers": [],
       "evidence": [
         {
@@ -2552,13 +2553,11 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-05T11:03:24.121Z",
+      "updatedAt": "2026-11-06T09:11:06.629Z",
       "area": "PERF",
-      "thread": "Gesamtsystem auf Performance und Stabilität optimieren",
+      "thread": "Leistung bei großen Szenen steigern",
       "philipp": [],
-      "orphans": [
-        "S07 Analyse von Mod und Paper-Plugin (O-8), große Dateien aufteilen – Thread „Gesamtsystem auf Performance und Stabilität optimieren“ ist beendet."
-      ]
+      "orphans": []
     },
     {
       "id": "PERF-06",
@@ -3171,6 +3170,88 @@
         {
           "kind": "geraet",
           "text": "Biom, Leuchtfeuer-Strahl und flüssiges Laden großer Modelle auf dem eigenen Rechner ansehen (S04)."
+        }
+      ],
+      "orphans": []
+    },
+    {
+      "id": "GFX-03",
+      "title": "Große Szenen flüssig bedienen: Glas und Wasser je Bild sortiert, schnelles und richtiges Anklicken, Sichtfeld zuerst hochladen",
+      "phase": "P3",
+      "priority": "P1",
+      "status": "implemented",
+      "owner": "Claude-Thread „Leistung bei großen Szenen steigern“",
+      "dependencies": [
+        "GFX-02",
+        "PERF-04"
+      ],
+      "scope": [
+        "apps/web/src/blockmodels/threeMesh.ts",
+        "apps/web/src/viewer/sceneController.ts",
+        "tests/unit/web/graphics3.test.mjs",
+        "tests/e2e/graphics2.e2e.mjs",
+        "docs/architecture/planer/GRAPHICS.md",
+        "docs/architecture/kern/PERFORMANCE_AUDIT.md"
+      ],
+      "legacyIds": [],
+      "steps": [
+        {
+          "id": "GFX-03-S01",
+          "title": "Durchscheinende Flächen im Betrachter je Bild sortiert (höchstens 250 000 Flächen, Sichtfeld und Nähe zuerst, erneut erst nach Bewegung um ¼ Block oder 2 % des Abstands); schnellere Sortierung ohne Vergleichsfunktion.",
+          "done": true
+        },
+        {
+          "id": "GFX-03-S02",
+          "title": "Anklicken prüft Abschnitte in Strahlreihenfolge und hört nach dem nächsten Treffer auf (gleiches Ergebnis); Fehler behoben: auf sortiertem Glas/Wasser wurde oft ein falscher Block gewählt.",
+          "done": true
+        },
+        {
+          "id": "GFX-03-S03",
+          "title": "GPU-Upload: Abschnitte im Sichtfeld vor näheren außerhalb des Bildes.",
+          "done": true
+        },
+        {
+          "id": "GFX-03-S04",
+          "title": "Abnahme auf echter GPU mit einem großen Modell mit Wasser (Philipps Rechner), Firefox/Safari.",
+          "done": false
+        }
+      ],
+      "acceptance": [
+        "Standbilder und 3D-Export unverändert; die Sortierung ergibt dieselbe Reihenfolge wie eine einfache Abstandssortierung (auf 1/64 Block).",
+        "Anklicken findet denselben nächsten Treffer wie das Prüfen aller Abschnitte; die Zelle enthält den Trefferpunkt, auch auf Glas und Wasser.",
+        "Kein Bild sortiert mehr als das Budget; bei ruhender Kamera wird nichts sortiert."
+      ],
+      "next": "Abnahme auf Philipps Rechner: großes Modell mit Wasser drehen und Blöcke anklicken, dazu Firefox/Safari (S04).",
+      "blockers": [],
+      "evidence": [
+        {
+          "path": "tests/unit/web/graphics3.test.mjs",
+          "note": "Sortierreihenfolge, 200 Zufallsstrahlen gleich allen Meshes und Zelle mit Trefferpunkt auf sortiertem Glas, Budget/Sichtfeld/Ruhe beim Sortieren, Sichtfeld beim Hochladen."
+        },
+        {
+          "path": "tests/e2e/graphics2.e2e.mjs",
+          "note": "Chromium: Feld mit Glas, Sortierung kommt zur Ruhe (data-sorting), danach Auswahl."
+        },
+        {
+          "path": "docs/architecture/planer/GRAPHICS.md",
+          "note": "Runde 3 (GFX-03): Messung 1,56 Mio. Blöcke, Regeln, Prüfattribut."
+        }
+      ],
+      "verification": {
+        "state": "pending",
+        "note": "Node- und Chromium-Prüfung (Software-WebGL) bestanden; echte GPUs und Firefox/Safari offen."
+      },
+      "delivery": {
+        "main": null,
+        "pagesSource": null
+      },
+      "updatedAt": "2026-11-06T09:11:06.629Z",
+      "area": "PERF",
+      "thread": "Leistung bei großen Szenen steigern",
+      "philipp": [
+        {
+          "kind": "geraet",
+          "text": "Ein großes Modell mit Wasser oder Glas im Betrachter drehen und Blöcke anklicken: flüssig und der richtige Block (S04)."
         }
       ],
       "orphans": []
@@ -22000,6 +22081,55 @@
           "done": 4,
           "total": 5,
           "next": "Abnahme durch Philipp (S05, PROJ-16…18)."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T09:11:06.629Z",
+      "kind": "progress",
+      "items": [
+        "GFX-03",
+        "PERF-05",
+        "PERF-04"
+      ],
+      "summary": "GFX-03: Glas/Wasser im Betrachter je Bild sortiert (höchstens ~25 ms statt 400 ms am Stück bei 1,56 Mio. Blöcken), Anklicken 3–4 statt 11–19 ms und richtiger Block auf sortiertem Glas/Wasser, Sichtfeld zuerst hochladen; Testfall DATEI-10. PERF-05-S07 (O-8): Plugin-Teamstand je Team zwischengespeichert, StorageCommands aus StorageModule herausgelöst (Paper 1.21.11 Lager-/Teamtest grün, noch ohne Release). Geprüft: npm run check, test:e2e 179/179; echte GPU offen.",
+      "files": [
+        "apps/web/src/blockmodels/threeMesh.ts",
+        "apps/web/src/testing/testplan.ts",
+        "apps/web/src/viewer/sceneController.ts",
+        "docs/COMMUNICATION.md",
+        "docs/TESTING.md",
+        "docs/architecture/kern/PERFORMANCE_AUDIT.md",
+        "docs/architecture/planer/GRAPHICS.md",
+        "docs/architecture/team/LAGERKISTEN.md",
+        "docs/testing/TESTPLAN.md",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageCommands.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageModule.java",
+        "mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java",
+        "tests/e2e/graphics2.e2e.mjs",
+        "tests/unit/web/graphics3.test.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "GFX-03",
+          "status": "implemented",
+          "done": 3,
+          "total": 4,
+          "next": "Abnahme auf Philipps Rechner: großes Modell mit Wasser drehen und Blöcke anklicken, dazu Firefox/Safari (S04)."
+        },
+        {
+          "id": "PERF-05",
+          "status": "implemented",
+          "done": 9,
+          "total": 9,
+          "next": "Weitere große Dateien (TeamClient, LiveLink, RoomClient, TeamModule) nach Merge der Mod-Threads teilen; inkrementelle Faltung des Teamprotokolls im Plugin beobachten."
+        },
+        {
+          "id": "PERF-04",
+          "status": "implemented",
+          "done": 6,
+          "total": 7,
+          "next": "Abnahme auf Philipps Rechner mit Olympus und in Firefox/Safari (S06). Der GPU-Upload großer Szenen läuft seit GFX-02-S03 in Stücken, seit GFX-03 mit Sichtfeld zuerst."
         }
       ]
     }
