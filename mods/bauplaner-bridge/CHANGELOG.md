@@ -1,6 +1,16 @@
-# Änderungen der Bauplaner-Brücke
+# Änderungen der LMNT — Build Studio Bridge
 
 Je Version ein Abschnitt `## <Version> – <Datum>`. `scripts/mod/modrinth_publish.mjs release` übernimmt den Abschnitt der Version unverändert als Änderungsliste auf Modrinth und bricht ab, wenn er fehlt. Englisch zuerst, Deutsch danach.
+
+## 0.24.0 – 2026-11-06
+
+**New name: LMNT — Build Studio / Neuer Name: LMNT — Build Studio**
+
+- The planner is now called **LMNT — Build Studio**, the mod **LMNT — Build Studio Bridge**. Menu titles, the key group under Options → Controls, the chat prefix `[Build Studio]` and the server plugin's messages use the new name.
+- Nothing else changes: the commands stay `/bauplaner …` and `/buildplanner …`, folders, saved settings, plan files and the team room keep working as before. Search for “Build Studio” in the Modrinth App.
+
+- Der Planer heißt jetzt **LMNT — Build Studio**, die Mod **LMNT — Build Studio Bridge**. Menütitel, die Tastengruppe unter Optionen → Steuerung, der Chat-Vorsatz `[Build Studio]` und die Meldungen des Server-Plugins tragen den neuen Namen.
+- Sonst ändert sich nichts: Die Befehle bleiben `/bauplaner …` und `/buildplanner …`, Ordner, gespeicherte Einstellungen, Plandateien und der Team-Raum funktionieren wie bisher. In der Modrinth App nach „Build Studio“ suchen.
 
 ## 0.23.0 – 2026-11-06
 

@@ -1,4 +1,4 @@
-# Bauplaner-Brücke (Minecraft-Mod)
+# Build-Studio-Brücke (Minecraft-Mod)
 
 Liest den Bereich eines Bauplans aus der Welt und schreibt eine **Aufnahme**, die die Website im Tab „Bauen“ importiert. Daraus entsteht der Fortschritt je Bauschritt („im Spiel bestätigt / teilweise / abweichend“). Konzept und Format: [MOD_BRIDGE](../../docs/architecture/mod/MOD_BRIDGE.md).
 
@@ -81,7 +81,7 @@ Bei Problemen `/bauplaner diagnose` (Fabric, NeoForge): schreibt einen Diagnoseb
 
 1. Plan wie oben nach `bauplaner/plans/` legen.
 2. Auf den Block schauen, an dem Projektkoordinate 0/0/0 stehen soll, **J** drücken und den Plan anklicken.
-3. Mit Pfeiltasten/Bild↑↓ verschieben, **Ende** dreht, **Einfg** spiegelt. **,** (Komma) blendet aus, **.** (Punkt) zeigt den nächsten Fehler. Alle Tasten sind unter Optionen → Steuerung → „Bauplaner“ änderbar.
+3. Mit Pfeiltasten/Bild↑↓ verschieben, **Ende** dreht, **Einfg** spiegelt. **,** (Komma) blendet aus, **.** (Punkt) zeigt den nächsten Fehler. Alle Tasten sind unter Optionen → Steuerung → „Build Studio“ änderbar.
 4. Bauen: Fehlende Blöcke erscheinen als durchscheinende, bläuliche Blöcke mit echter Textur (weiter weg als blaue Kästen), falsche rot, falsch ausgerichtete gelb; richtige verschwinden. Am rechten Rand steht der Fortschritt. Die Platzierung bleibt je Server/Welt gespeichert.
 5. **Num 7** Materialliste (offen / im Inventar / noch holen), **Num 6** Ebenenmodus (alle → nur eine → bis zu einer Ebene), **Num 9/Num \*** Ebene höher/tiefer (bis 0.4.0 Num 3; kollidierte mit Jade). Alles auch im Menü (J).
 6. **Platzierhilfe** (Menü J oder `/bauplaner platzierhilfe an|warnen|aus`, Standard „an“): Ein falscher Block oder eine falsche Ausrichtung wird gar nicht erst gesetzt; liegt der richtige Block in der Schnellleiste, nimmt die Mod ihn in die Hand. Unter dem Fadenkreuz steht, was hingehört und wie man klickt („Blick nach Osten, auf den Block darunter klicken“). Richtig gesetzte Planblöcke sind vor versehentlichem Abbauen geschützt. **Num 8** nimmt den angezielten Planblock in die Hand. Serverkonform: Klicks werden nie verfälscht, nur durchgelassen oder verworfen.

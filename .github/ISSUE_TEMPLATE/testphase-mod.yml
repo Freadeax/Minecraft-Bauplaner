@@ -1,5 +1,5 @@
 name: "Testphase: Mod (im Spiel)"
-description: Fehler mit der Bauplaner-Mod. Vorher im Spiel `/bauplaner diagnose` eingeben, der Bericht liegt dann in der Zwischenablage.
+description: Fehler mit der Build-Studio-Mod. Vorher im Spiel `/bauplaner diagnose` eingeben, der Bericht liegt dann in der Zwischenablage.
 title: "[Mod] "
 labels: ["testphase", "mod"]
 body:

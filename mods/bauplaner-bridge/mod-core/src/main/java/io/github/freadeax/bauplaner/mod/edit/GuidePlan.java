@@ -9,7 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * Turns the ghosts of the build guides into a plan file (Sponge schematic v3 with Bauplaner metadata, like a
+ * Turns the ghosts of the build guides into a plan file (Sponge schematic v3 with Build Studio metadata, like a
  * website export) so the hologram can take over: material list, placement helper, progress and recording. Project
  * coordinate 0/0/0 is the lowest corner of the box; the returned anchor is where it stands in the world.
  */

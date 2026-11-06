@@ -1,4 +1,4 @@
-# Verbindliche Arbeitsregeln für Minecraft-Bauplaner
+# Verbindliche Arbeitsregeln für LMNT — Build Studio
 
 Geltung: gesamtes Repository. Explizite aktuelle Nutzeraufträge und übergeordnete Systemregeln haben Vorrang. Spezifischere Unterverzeichnisregeln gelten zusätzlich, soweit sie nicht widersprechen.
 

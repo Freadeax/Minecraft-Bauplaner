@@ -75,7 +75,7 @@ export function ContributePanel({ asset, version, entry }: { asset: Asset; versi
 
   return <section className="contribute" aria-label="In Bibliothek einreichen" id="sec-einreichen">
     <span className="panel-kicker">IN BIBLIOTHEK EINREICHEN</span>
-    <p className="contribute-note">Macht dieses Bauteil zu einem <b>festen Eintrag der Bibliothek</b>, den alle sehen, die den Bauplaner öffnen. Hier entsteht ein
+    <p className="contribute-note">Macht dieses Bauteil zu einem <b>festen Eintrag der Bibliothek</b>, den alle sehen, die das Build Studio öffnen. Hier entsteht ein
       Beitragspaket (Blockdaten, Angaben, Vorschaubild); nichts wird automatisch hochgeladen. Nach Prüfung wird es in den Katalog übernommen und erscheint
       mit dem nächsten Update für alle.</p>
     {!open ? <button type="button" onClick={() => setOpen(true)}>⇪ Beitrag vorbereiten …</button> :
@@ -93,7 +93,7 @@ export function ContributePanel({ asset, version, entry }: { asset: Asset; versi
         <label>Nutzungsrechte<select name="license" defaultValue="frei-projekt">
           {Object.entries(CONTRIBUTION_LICENSES).map(([k, label]) => <option key={k} value={k}>{label}</option>)}</select></label>
         <label className="check"><input type="checkbox" name="rights" required /> Ich habe das Bauwerk selbst gebaut oder habe die Erlaubnis des Erbauers. Es ist keine
-          fremde Schematic ohne Zustimmung, und es darf unter den gewählten Nutzungsrechten im Bauplaner veröffentlicht werden.</label>
+          fremde Schematic ohne Zustimmung, und es darf unter den gewählten Nutzungsrechten im Build Studio veröffentlicht werden.</label>
         <div className="button-row"><button className="primary" type="submit" disabled={busy}>{busy ? 'Paket wird erstellt …' : '↓ Beitragspaket erstellen'}</button>
           <button type="button" disabled={busy} onClick={() => { setOpen(false); setResult(null); setError(''); }}>Schließen</button></div>
       </form>}
@@ -103,7 +103,7 @@ export function ContributePanel({ asset, version, entry }: { asset: Asset; versi
       {result.warnings.length > 0 && <ul className="contribute-note">{result.warnings.map(w => <li key={w}>{w}</li>)}</ul>}
       <ol className="contribute-note">
         <li><a href={contributionIssueUrl(result.file, result.fileName)} target="_blank" rel="noreferrer">Formular „Bibliotheksbeitrag“ auf GitHub öffnen ↗</a> (vorausgefüllt) und die Datei in das Feld „Beitragsdatei“ ziehen.</li>
-        <li>Ohne GitHub-Konto: die Datei an den Betreuer des Bauplaners geben.</li>
+        <li>Ohne GitHub-Konto: die Datei an den Betreuer des Build Studios geben.</li>
         <li>Nach der Übernahme (<code>npm run library:add</code>) und dem nächsten Update steht das Gebäude für alle in der Bibliothek, gekennzeichnet als Bibliotheksbeitrag.</li>
       </ol>
       <button type="button" onClick={() => download(result.fileName, JSON.stringify(result.file), 'application/json')}>↓ Paket erneut herunterladen</button>

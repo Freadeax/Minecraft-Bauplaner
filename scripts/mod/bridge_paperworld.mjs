@@ -124,7 +124,7 @@ try {
   if (mapKind === 'bluemap') {
     let sets;
     await until('BlueMap-Marker', async () => { sets = await blueMarkers(); return sets && sets['bauplaner-bauplaetze'] && sets['bauplaner-wege'] && sets['bauplaner-zonen'] && sets['bauplaner-punkte']; }, 600);
-    assert.equal(sets['bauplaner-bauplaetze'].label, 'Bauplaner: Bauplätze');
+    assert.equal(sets['bauplaner-bauplaetze'].label, 'Build Studio: Bauplätze');
     const markt = sets['bauplaner-bauplaetze'].markers.site_markt;
     assert.equal(markt.type, 'shape'); assert.equal(markt.label, 'Marktplatz'); assert.match(markt.detail, /<b>Marktplatz<\/b>/);
     assert.equal(sets['bauplaner-wege'].markers.path_haupt.type, 'line');
@@ -132,7 +132,7 @@ try {
   } else {
     let m;
     await until('Dynmap-Marker', async () => { m = dynMarkers(); return m.sets?.['bauplaner-bauplaetze']?.areas?.site_markt; }, 600);
-    assert.equal(m.sets['bauplaner-bauplaetze'].label, 'Bauplaner: Bauplätze');
+    assert.equal(m.sets['bauplaner-bauplaetze'].label, 'Build Studio: Bauplätze');
     assert.ok(m.sets['bauplaner-wege'].lines.path_haupt, 'Weg als Linie');
     assert.ok(m.sets['bauplaner-punkte'].markers.pt_portal, 'Punkt als Marker');
   }

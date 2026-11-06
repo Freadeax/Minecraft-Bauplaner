@@ -33,7 +33,7 @@ export const GENERATORS: readonly Generator[] = [HOUSE_GENERATOR, TOWER_GENERATO
 /** Plain tag on generated assets; the generator id follows as `generator:<id>`. */
 export const GENERATOR_TAG = 'generiert';
 export const GENERATOR_TAG_PREFIX = 'generator:';
-export const GENERATOR_PROVENANCE = { author: 'Minecraft-Bauplaner', source: 'Parametrischer Generator (eigener Entwurf)', license: 'frei für dieses Projekt' } as const;
+export const GENERATOR_PROVENANCE = { author: 'LMNT — Build Studio', source: 'Parametrischer Generator (eigener Entwurf)', license: 'frei für dieses Projekt' } as const;
 
 export function generatorById(id: string): Generator | undefined { return GENERATORS.find(g => g.id === id); }
 function need(id: string): Generator {

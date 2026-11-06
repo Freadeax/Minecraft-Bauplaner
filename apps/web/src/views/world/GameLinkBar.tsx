@@ -28,8 +28,8 @@ export function GameLinkBar({ game, purpose }: { game: LiveGame; purpose: string
         <button className="primary" disabled={!/^\d{6}$/.test(code.replace(/\s/g, ''))}>Koppeln</button>
       </form>
       : <p>
-        {game.phase === 'searching' ? <span role="status">Suche die Mod auf diesem PC … läuft Minecraft mit der Bauplaner-Mod?</span>
-          : <span className="muted">{purpose} Minecraft mit der Bauplaner-Mod starten (<a href="#/mod">Mod</a>), dann:</span>}{' '}
+        {game.phase === 'searching' ? <span role="status">Suche die Mod auf diesem PC … läuft Minecraft mit der Build-Studio-Mod?</span>
+          : <span className="muted">{purpose} Minecraft mit der Build-Studio-Mod starten (<a href="#/mod">Mod</a>), dann:</span>}{' '}
         {game.phase === 'searching' ? <button type="button" className="secondary" onClick={() => void game.disconnect()}>Abbrechen</button>
           : <button type="button" className="primary" disabled={!!game.originProblem} onClick={() => void game.connect()}>Mit dem Spiel verbinden</button>}
       </p>}

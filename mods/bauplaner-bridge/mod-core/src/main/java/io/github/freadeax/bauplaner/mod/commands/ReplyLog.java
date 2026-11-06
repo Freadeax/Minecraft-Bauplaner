@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Last answers for the command page (GAME-10): the mod's own "[Bauplaner] …" lines and, for a few seconds
+ * Last answers for the command page (GAME-10): the mod's own "[Build Studio] …" lines and, for a few seconds
  * after the page sent a server command, every system line from the server (the plugin answers in chat,
  * sometimes without prefix). Thread safe; the chat events of the loaders may come from the network thread.
  */
@@ -28,7 +28,7 @@ public final class ReplyLog {
 
     /**
      * A system line that reached the chat (loader event). Kept only if it answers a server command just sent
-     * from the page; the mod's own "[Bauplaner]" lines come through {@link #own} and are skipped here.
+     * from the page; the mod's own "[Build Studio]" lines come through {@link #own} and are skipped here.
      */
     public synchronized boolean offer(String text, long now) {
         if (text == null) return false;
@@ -48,7 +48,7 @@ public final class ReplyLog {
         return true;
     }
 
-    private static final String PREFIX = "[Bauplaner]";
+    private static final String PREFIX = "[Build Studio]";
 
     private static String clip(String t) { return t.length() > 300 ? t.substring(0, 299) + "…" : t; }
 

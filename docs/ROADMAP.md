@@ -1,6 +1,6 @@
 # Verbindliche Roadmap und Fortschritt
 
-Stand: 2026-11-06T22:02:05.657Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
+Stand: 2026-11-06T22:11:34.211Z. Automatisch erzeugt aus [roadmap.json](roadmap.json); nicht direkt bearbeiten. Baseline: [84838f0](https://github.com/Freadeax/Minecraft-Bauplaner/commit/84838f0200be5fc4c8faef30a185a764ee474bd2).
 
 ## So liest du den Stand
 
@@ -15,7 +15,7 @@ Stand: 2026-11-06T22:02:05.657Z. Automatisch erzeugt aus [roadmap.json](roadmap.
 | ⏳ Offen | 3 |
 | 🚧 In Arbeit | 8 |
 | ⛔ Blockiert | 0 |
-| 🧩 Implementiert · Abnahme offen | 98 |
+| 🧩 Implementiert · Abnahme offen | 99 |
 | ✅ Im beschriebenen Umfang geprüft | 28 |
 | ⏸ Zurückgestellt | 3 |
 
@@ -25,7 +25,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 
 | Bereich | Offen | Verwaist | Nur Philipp | Geprüft |
 |---|---:|---:|---:|---:|
-| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 28 | 0 | 28 | 2 |
+| [Planer: Werkstatt, Ansicht, Weltkarte, Gelände](#bereich-planer) | 29 | 0 | 29 | 2 |
 | [Bibliothek, Generatoren und Großprojekte](#bereich-bibliothek) | 10 | 0 | 10 | 4 |
 | [Projektmodul: Baustelle, Bauanleitung, Planung](#bereich-projekt) | 12 | 0 | 9 | 1 |
 | [Teambau live (Planer, Mod, Plugin zusammen)](#bereich-team) | 16 | 0 | 14 | 1 |
@@ -61,6 +61,7 @@ Je Bereich die offenen Pakete mit Status, Priorität, zuständigem Thread und de
 | [MAP-05](#map-05) | Planung auf der Live-Karte vertiefen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Mod-Oberfläche und Hologramm automatisch abnehmen“ | „Baustand holen“ mit der Mod auf server.lmnt-gaming.net (S05). |
 | [MAP-06](#map-06) | Weltkarte in die Tiefe | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Mod-Oberfläche und Hologramm automatisch abnehmen“ | Weltkarte mit Mod 0.8.0 oder neuer im Spiel abnehmen (S08, KARTE-05/06, LIVE-08). |
 | [MAP-07](#map-07) | Gedrehte und gespiegelte Projektlagen auf der Weltkarte | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „Projekt, Produktion und Weltkarte vertiefen“ | Ein Projekt auf der Weltkarte drehen, ins Spiel senden und mit F3 prüfen; ein im Spiel gedrehtes Hologramm übernehmen (KARTE-07). |
+| [NAME-01](#name-01) | Neuer Produktname „LMNT — Build Studio“ auf Seite, Mod, Plugin und Modrinth | 🧩 Implementiert · Abnahme offen 3/4 | P1 | „In „LMNT — Build Studio“ umbenennen“ | Mod 0.24.0 laden: Optionen → Steuerung zeigt die Gruppe „Build Studio“, J-Menü heißt „Build Studio“. |
 | [TERRAIN-01](#terrain-01) | Geländeaufnahmen für Weltkarte und Anlagen | 🧩 Implementiert · Abnahme offen 4/5 | P1 | „Große Testphase vorbereiten und betreuen“ | Kopie deiner 26.3-Welt für die Geländeabnahme (S05). |
 | [TERRAIN-02](#terrain-02) | Landschaft gestalten | 🧩 Implementiert · Abnahme offen 6/7 | P1 | „Große Testphase vorbereiten und betreuen“ | Abnahme in deiner eigenen Welt und auf Touch-Geräten (S05). |
 | [TERRAIN-03](#terrain-03) | Gelände und Wege im Projekt | 🧩 Implementiert · Abnahme offen 7/8 | P1 | „Bibliothek und Gelände spielgerecht prüfen“ | PROJ-19: Weg mit Treppen und Brücke als .litematic in deiner Welt ansehen.<br>BIB-20: Basis mit Wegenetz als Landschaftsweg auf einem echten Hang einfügen und im Spiel ansehen. |
@@ -309,6 +310,7 @@ Gesammelt aus allen Paketen, nach Art. Die Testfälle stehen auf [#/testphase](h
 - **LINK-10** · Abnahme LINK-10: offline in mehreren Abschnitten bauen, wieder verbinden – alle Messungen genau einmal im Planer; mit Plugin bleibt die Raumverbindung stehen.
 - **LINK-11** · Abnahme LINK-12: als Bauleitung „Mein Spiel verbinden“, mit der Mod auf den Server – der Server verbindet sich selbst mit dem Team-Raum, Abschnittsschutz greift.
 - **WORLD-SHARE-01** · Mit dem Paper-Plugin und BlueMap oder Dynmap prüfen, ob die Marker des Weltplans ohne Datei auf der Server-Karte erscheinen und gesperrte Bauplätze geschützt sind (KARTE-10..12).
+- **NAME-01** · Mod 0.24.0 laden: Optionen → Steuerung zeigt die Gruppe „Build Studio“, J-Menü heißt „Build Studio“.
 
 ### Auf echten Geräten und Browsern
 
@@ -646,6 +648,7 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 | [LINK-10](#link-10) | Anbindung geprüft und gehärtet: Sendungen über den WebSocket nacheinander (Mod und Plugin), Messungen bis zur Bestätigung gemerkt, Team-Raum mit Ping ohne Aufwecken und sauberem Schließen, Planer ohne gestapelte Abfrage-Schleifen | 🧩 Implementiert · Abnahme offen | 6/6 | FALLBACK-01, LINK-07 | ausstehend | ausstehend |
 | [LINK-11](#link-11) | Alles über das Internet: Server-Plugin bekommt die Team-Infos von Mod und Planer selbst über den Team-Raum, Dateiwege nur noch als versteckter Notfall (Mod/Plugin 0.21.0) | 🧩 Implementiert · Abnahme offen | 5/6 | LINK-10, COOP-07 | ausstehend | ausstehend |
 | [GUIDE-01](#guide-01) | Anleitung „Wie geh ich es an?“: eigener Reiter mit Wegen nach Ziel, jeder Schritt mit Grafik, kurzem Satz und Link an die passende Stelle | 🧩 Implementiert · Abnahme offen | 4/5 | UI-02, GAME-11, TERRAIN-04, LINK-11 | ausstehend | ausstehend |
+| [NAME-01](#name-01) | Neuer Produktname „LMNT — Build Studio“ auf Seite, Mod, Plugin und Modrinth | 🧩 Implementiert · Abnahme offen | 3/4 | UI-03, GAME-12 | ausstehend | ausstehend |
 
 ## Details aller Arbeitspakete
 
@@ -3781,6 +3784,29 @@ Lokaler Pre-Push-Hook: `npm run setup:hooks`. Ohne eigene Actions erzwingt GitHu
 **Nachweise:** [tests/e2e/design.e2e.mjs](../tests/e2e/design.e2e.mjs) — Standardthema beim ersten Bild, WCAG-Kontrast auf Hauptseiten und fünf Projektreitern hell/dunkel, iPad Pro 11 (44 px, Reiter in der Leiste, keine Querverschiebung), reduzierte Bewegung.; [docs/architecture/planer/UI.md](architecture/planer/UI.md) — Abschnitt „Design-System (UI-03)“ mit Farbwerten, Tokens, Bausteinen und Regeln.
 
 **Dateiumfang:** `apps/web/src/theme/`, `apps/web/src/main.tsx`, `apps/web/src/testing/testplan.ts`, `docs/architecture/planer/UI.md`, `docs/TESTING.md`, `docs/testing/TESTPLAN.md`, `tests/e2e/design.e2e.mjs`, `tests/e2e/theme.e2e.mjs`, `tests/e2e/ui-acceptance.e2e.mjs`, `tests/unit/web/`. **Abhängigkeiten:** UI-01, UI-02. **Alte IDs:** —.
+
+**Integration:** Main ausstehend; Pages-Quelle ausstehend.
+
+### NAME-01
+
+**Neuer Produktname „LMNT — Build Studio“ auf Seite, Mod, Plugin und Modrinth** · 🧩 Implementiert · Abnahme offen · Priorität P1 · Verantwortlich: Claude Thread „In „LMNT — Build Studio“ umbenennen“ · Zuständiger Thread: „In „LMNT — Build Studio“ umbenennen“ · Aktualisiert: 2026-11-06T22:11:34.211Z
+
+- [x] NAME-01-S01: Seite: Titel, Kopf, Fußzeile, Fehlermeldungen, Hilfetexte, Exporte und Anleitung heißen „LMNT — Build Studio“ bzw. „Build Studio“.
+- [x] NAME-01-S02: Mod 0.24.0 und Paper-Plugin: Anzeigename „LMNT — Build Studio Bridge“, Menütitel, Tastengruppe, Chat-Vorsatz [Build Studio], Server-Kartensets „Build Studio: …“.
+- [ ] NAME-01-S03: Modrinth: Titel, Kurzbeschreibung, Beschreibung und Galerie mit neuem Namen, Version 0.24.0 hochgeladen.
+- [x] NAME-01-S04: Technische Kennungen bleiben (Repo/URL, Slug bauplaner-bridge, Mod-ID, /bauplaner, plugins/BauplanerBridge, Metadata.Bauplaner, X-Bauplaner-*), damit Welten, Pläne, Einstellungen und Links weiterlaufen.
+
+**Abnahme:** Kein sichtbarer Text auf Seite, in Mod, Plugin und Modrinth nennt noch „Bauplaner“ als Produktnamen; Befehle, Dateien, Pläne und Team-Raum funktionieren unverändert.
+
+**Nächste Aktion:** Abnahme durch Philipp: Seite und Mod 0.24.0 im Spiel ansehen (Tastengruppe „Build Studio“, Menütitel).
+
+**Nur Philipp:** Im Spiel an deinem PC: Mod 0.24.0 laden: Optionen → Steuerung zeigt die Gruppe „Build Studio“, J-Menü heißt „Build Studio“.
+
+**Prüfstand:** npm run check, Browsertests und Mod-Tests im Container; Sichtprüfung im Spiel durch Philipp offen.
+
+**Nachweise:** [docs/architecture/planer/UI.md](architecture/planer/UI.md) — Name und Schreibweise im Design-System.
+
+**Dateiumfang:** `apps/web/`, `packages/`, `services/team-room/`, `mods/bauplaner-bridge/`, `tests/`, `scripts/mod/`, `docs/architecture/`, `docs/testing/TESTPLAN.md`, `README.md`, `AGENTS.md`, `CONTRIBUTING.md`, `.github/`, `downloads/mod/`. **Abhängigkeiten:** UI-03, GAME-12. **Alte IDs:** —.
 
 **Integration:** Main ausstehend; Pages-Quelle ausstehend.
 

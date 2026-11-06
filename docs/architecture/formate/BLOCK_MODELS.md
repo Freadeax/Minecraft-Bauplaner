@@ -4,8 +4,8 @@ Stand 01.11.2026. Betrachter, Katalogbilder, Bildergalerie, Ebenenpläne und Ver
 
 ## Lizenzentscheidung (ADR-020)
 
-- Der Bauplaner veröffentlicht **keine** Minecraft-Texturen, -Modelle oder -Blockstate-Dateien, weder im Repository noch auf Pages (AGENTS: „Keine Minecraft-Texturen ohne entsprechende Rechte beilegen.“).
-- **Ohne Texturquelle** zeichnet der Bauplaner eigene Formen (`shapes.ts`) in Durchschnittsfarben. Im Repository liegen nur abgeleitete Fakten: Block-IDs, Property-Werte, je Block drei Durchschnittsfarben und eine grobe Silhouette (`colors26.ts`, `blockRegistry.ts`). Das sind keine Texturen.
+- Das Build Studio veröffentlicht **keine** Minecraft-Texturen, -Modelle oder -Blockstate-Dateien, weder im Repository noch auf Pages (AGENTS: „Keine Minecraft-Texturen ohne entsprechende Rechte beilegen.“).
+- **Ohne Texturquelle** zeichnet das Build Studio eigene Formen (`shapes.ts`) in Durchschnittsfarben. Im Repository liegen nur abgeleitete Fakten: Block-IDs, Property-Werte, je Block drei Durchschnittsfarben und eine grobe Silhouette (`colors26.ts`, `blockRegistry.ts`). Das sind keine Texturen.
 - **Mit Texturquelle** lädt der Browser des Nutzers die Dateien selbst, auf eine von zwei Arten:
   - „Von Mojang laden“: die offizielle Client-Jar direkt von `piston-data.mojang.com`, wie ein Launcher; SHA-1 aus Mojangs Versionsmanifest wird geprüft. Mojangs Server erlauben CORS (`access-control-allow-origin: *`, geprüft am 28.10.2026).
   - „Eigene Dateien“: Client-Jar der eigenen Installation, Ressourcenpakete, Mod-Jars.

@@ -44,14 +44,14 @@ if [ -z "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ]; then
   for _ in $(seq 50); do [ -S "$XDG_RUNTIME_DIR/$WAYLAND_DISPLAY" ] && break; sleep 0.2; done
 fi
 (cd mods/bauplaner-bridge && BAUPLANER_GAMETEST_DIR="$work" BAUPLANER_PAPER="$(tr -d '\n' <"$work/mp-paper.txt")" exec ./gradlew -q -PwithFabric :fabric-26.3:runClientGameTest --console=plain) >"$work/game.log" 2>&1 || {
-  grep -E "Bauplaner|ERROR|Exception|Caused by" "$work/game.log" | tail -40 >&2; [ -s "$work/mp-fehler.txt" ] && cat "$work/mp-fehler.txt" >&2; exit 1; }
+  grep -E "Build Studio|ERROR|Exception|Caused by" "$work/game.log" | tail -40 >&2; [ -s "$work/mp-fehler.txt" ] && cat "$work/mp-fehler.txt" >&2; exit 1; }
 wait "$driver"
-grep -E '\[CHAT\]|\(bauplaner\) \[Bauplaner\]' "$work/game.log" | sed -E 's/.*(\[CHAT\]|\(bauplaner\)) /  Spiel: /'
+grep -E '\[CHAT\]|\(bauplaner\) \[Build Studio\]' "$work/game.log" | sed -E 's/.*(\[CHAT\]|\(bauplaner\)) /  Spiel: /'
 node --input-type=module -e '
 import { readFileSync } from "node:fs";
 const log = readFileSync(process.argv[1], "utf8");
-// Chat lines and the messages of the mod (toasts/notifications are logged as „(bauplaner) [Bauplaner] …“).
-const chat = log.split("\n").filter(l => l.includes("[CHAT]") || l.includes("(bauplaner) [Bauplaner]")).join("\n");
+// Chat lines and the messages of the mod (toasts/notifications are logged as „(bauplaner) [Build Studio] …“).
+const chat = log.split("\n").filter(l => l.includes("[CHAT]") || l.includes("(bauplaner) [Build Studio]")).join("\n");
 const need = [
   [/Teamkanal für diesen Server erlaubt/, "Teamkanal erlaubt"],
   [/Server-Plugin: Mit dem Team-Raum von „Burg am See“ verbunden/, "Mod übergibt den Raum ans Plugin (LINK-12)"],

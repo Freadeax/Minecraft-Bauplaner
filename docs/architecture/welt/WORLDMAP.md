@@ -35,7 +35,7 @@ Die zusammengeführten Zellen sind **Anzeigedaten, kein Bauplan**, und werden ni
 
 ## Live-Karte mit Spielanbindung und Weltplan (MAP-03)
 
-Seit MAP-03 plant man direkt auf der Draufsicht (Bauplätze, Wege, Punkte, Messen, Projekte ziehen, Rückgängig) und verbindet die Karte über die Bauplaner-Mod live mit dem eigenen Spiel (Position, Gelände der geladenen Chunks, Hologramm-Fortschritt, Plan und Markierungen ins Spiel). Vertrag, Sicherheit und Protokoll: [LIVE_LINK](../team/LIVE_LINK.md).
+Seit MAP-03 plant man direkt auf der Draufsicht (Bauplätze, Wege, Punkte, Messen, Projekte ziehen, Rückgängig) und verbindet die Karte über die Build-Studio-Mod live mit dem eigenen Spiel (Position, Gelände der geladenen Chunks, Hologramm-Fortschritt, Plan und Markierungen ins Spiel). Vertrag, Sicherheit und Protokoll: [LIVE_LINK](../team/LIVE_LINK.md).
 
 Seit MAP-04 (Weltbuilder) lässt sich alles auf der Karte mehrfach auswählen, löschen (Entf, Rechtsklick, Listen), verschieben, duplizieren, drehen, spiegeln und ans Gelände ausrichten; Wegecken sind direkt bearbeitbar, Ebenen blenden Arten aus, ein Verlauf deckt Weltplan und Projektlagen ab: [WORLD_BUILDER](WORLD_BUILDER.md).
 
@@ -53,7 +53,7 @@ Die LMNT-Website (`lmnt-gaming.net`, Seiten Start, Gameserver, Tools) zeigt am 2
 - **Vorlagen** für BlueMap, Dynmap und Pl3xMap mit Platzhalter-Server; die Kameraparameter sind die üblichen Startwerte.
 - Je Projekt der Link „Auf <Karte> zeigen“ zur Mitte der Grundfläche, Höhe = Oberkante des Plans.
 - Optionales Einbetten per `iframe` (Sandbox, kein Referrer). Viele Kartenserver verbieten das Einbetten; dann bleibt nur der Link.
-- Downloads: Marker im Bauplaner-Austauschformat (`createLiveMapMarkerFile`, kein natives Plugin-Format) und Weltlagen als JSON.
+- Downloads: Marker im Build-Studio-Austauschformat (`createLiveMapMarkerFile`, kein natives Plugin-Format) und Weltlagen als JSON.
 - Die Einstellung liegt nur im Browser (localStorage). Gespeicherte, geteilte Kartenziele und native Markerdateien gehören zu MAP-02.
 
 ## Gedrehte Lagen (MAP-07, 05.11.2026)

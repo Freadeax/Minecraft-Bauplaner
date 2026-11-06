@@ -5,5 +5,5 @@ license="MIT"
 [[mods]]
 modId="bauplaner_bridge_gametest"
 version="0.0.0"
-displayName="Bauplaner-Brücke Spieltest"
+displayName="LMNT — Build Studio Bridge Spieltest"
 description='''Nur für den automatischen Spieltest, nicht ausgeliefert.'''

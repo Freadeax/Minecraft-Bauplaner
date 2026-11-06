@@ -238,7 +238,7 @@ test('design file: exact round trip, stable address; terrainDesign.set undoable,
   assert.equal(a.reference.changed, 15);
   assert.equal(a.original.mediaType, 'application/x-bauplaner-terrain-design');
   const bytes = encodeDesign(d); bytes[0] = 0;
-  assert.throws(() => decodeDesign(bytes), /keine Bauplaner-Geländegestaltung/);
+  assert.throws(() => decodeDesign(bytes), /keine Build-Studio-Geländegestaltung/);
   assert.throws(() => decodeDesign(encodeDesign(d).slice(0, -1)), /Datengröße/);
 
   let project = createProject({ name: 'Bauplatz' });

@@ -1191,3 +1191,10 @@ Neuer Mehrspieler-Prüfstand `scripts/mod/lib/multiplayer.mjs` (echter Paper-Ser
 - Automatische Abnahmen (teilweise): WERK-01/02/03/08, KARTE-01/02/05 in `apps/web/src/testing/autochecks.ts`.
 - `npm run check` grün (988 Unit-Tests); voller Browserlauf in Chromium (drei Teile, 87 Dateien): 203/203 grün.
 - Nicht automatisch geprüft: echtes iPad/iPhone mit Safari (GPU, Systemgesten, Bediengefühl), Zone zeichnen im Browser, Pyramide/Kegel im Browser, Rückfrage beim Verlassen der Werkstatt.
+
+### 06.11.2026 – Neuer Name „LMNT — Build Studio“ (NAME-01, Mod 0.24.0)
+
+- Sichtbare Texte auf Seite, in Mod, Paper-Plugin, Modrinth-Text und Architektur-Dokumenten umbenannt; technische Kennungen (Repo/URL, Slug, Mod-ID, Befehle, `plugins/BauplanerBridge`, `Metadata.Bauplaner`, `X-Bauplaner-*`, Formatkennungen) bewusst unverändert. Testerwartungen in Unit-, Browser-, Paper- und Spieltests mitgezogen.
+- `npm run check` grün (961 Tests bestanden), `npm run test:e2e` 193/193 grün (server-link einzeln nachgeholt, nachdem ein Gradle-Daemon zufällig ROOM_PORT 47734 belegt hatte). Nach Rebase auf QA-04/TEAM-02/GAME-11: `npm run check` 979 grün, `npm run test:e2e` 197/197 grün; nach Rebase auf OPS-04/TEAM-03: `npm run check` 994 grün, `npm run test:e2e` 201/202 (game-progress nur wegen belegtem Port 47696 rot, einzeln 2/2 grün). Modrinth-Titelbild (gallery/00-title.png) mit neuem Namen neu gerendert.
+- Mod: `./gradlew -PwithFabric -PwithNeoForge -PwithPaper :mod-core:test :paper:test :fabric-26.3:build :neoforge-26.3:build :paper:build` grün (JDK 25), Fabric-Spieltest `scripts/mod/test_bridge_ingame.sh` bestanden (Minecraft 26.3, Chatzeilen mit `[Build Studio]`, Oberfläche, Hologramm, Gruppen, Website-Verbindung). Paper-Realtest `scripts/mod/test_bridge_paper_link.sh` (1.21.11, Logzeile „Build Studio eingerichtet“) bestanden.
+- Nicht automatisch geprüft: Ansicht im echten Spiel bei Philipp (Tastengruppe „Build Studio“, Menütitel).

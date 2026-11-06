@@ -321,7 +321,7 @@ export function buildingInfo(assetId: string): BuildingInfo | undefined {
 
 export interface BuildingLibrary { readonly assets: readonly Asset[]; readonly versions: readonly AssetVersion[] }
 
-const PROVENANCE = { author: 'Minecraft-Bauplaner', source: 'eigener synthetischer Entwurf (Gebäudegenerator)', license: 'frei für dieses Projekt' };
+const PROVENANCE = { author: 'LMNT — Build Studio', source: 'eigener synthetischer Entwurf (Gebäudegenerator)', license: 'frei für dieses Projekt' };
 
 /** Builds every shipped building as demo asset with one immutable version 1.0. `onProgress` gets (done, total) after each building. */
 export async function createBuildingLibrary(onProgress?: (done: number, total: number) => void): Promise<BuildingLibrary> {

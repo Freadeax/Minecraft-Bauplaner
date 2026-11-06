@@ -85,7 +85,7 @@ export const GUIDE_PATHS: readonly GuidePath[] = [
       { id: 'profil', title: 'Profil öffnen', scene: 'launcher', icon: 'game', target: { kind: 'route', href: '#/mod' }, action: 'Anleitung je Launcher',
         text: 'Öffne in deinem Launcher ein Profil mit Fabric oder NeoForge für Minecraft 26.3.' },
       { id: 'installieren', title: 'Mod installieren', scene: 'launcher', icon: 'export', target: { kind: 'route', href: '#/mod' }, action: 'Zur Seite „Spiel“',
-        text: 'Such im Profil nach „Bauplaner Bridge“ und klick „Installieren“.' },
+        text: 'Such im Profil nach „LMNT — Build Studio Bridge“ und klick „Installieren“.' },
       { id: 'starten', title: 'Spiel starten', scene: 'spiel', icon: 'terrain', target: { kind: 'game' },
         text: 'Starte das Profil und betritt eine Welt oder deinen Server.' },
       { id: 'verbinden', title: 'Planer verbinden', scene: 'planer', icon: 'link', target: { kind: 'route', href: '#/mod' }, action: 'Verbinden',
@@ -164,7 +164,7 @@ export const GUIDE_PATHS: readonly GuidePath[] = [
 export const GUIDE_TERMS: readonly { readonly term: string; readonly text: string }[] = [
   { term: 'Projekt', text: 'Dein Bau mit allen Gebäuden, Material und Plan.' },
   { term: 'Bibliothek', text: 'Fertige Gebäude, Generatoren und deine Sammlungen.' },
-  { term: 'Mod', text: 'Die „Bauplaner Bridge“ in deinem Minecraft, sie zeigt den Plan im Spiel.' },
+  { term: 'Mod', text: 'Die „LMNT — Build Studio Bridge“ in deinem Minecraft, sie zeigt den Plan im Spiel.' },
   { term: 'Hologramm', text: 'Der durchsichtige Plan im Spiel, an dem du entlangbaust.' },
   { term: 'Geisterblock', text: 'Ein Block, der laut Plan noch fehlt.' },
   { term: 'Baustand', text: 'Was in der Welt schon steht, verglichen mit dem Plan.' },

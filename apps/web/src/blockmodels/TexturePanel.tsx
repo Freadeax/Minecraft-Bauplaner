@@ -56,7 +56,7 @@ export function TextureDialog() {
     </p>
     <section>
       <h3>Von Mojang laden</h3>
-      <p>Dein Browser lädt die offizielle Client-Datei direkt von Mojangs Servern (piston-data.mojang.com), wie es ein Launcher tut, prüft die Prüfsumme und behält nur Blockmodelle und -texturen. Der Bauplaner selbst veröffentlicht keine Minecraft-Texturen. Voraussetzung ist eine eigene Minecraft-Lizenz; es gelten die Minecraft-EULA und Mojangs Nutzungsrichtlinien.</p>
+      <p>Dein Browser lädt die offizielle Client-Datei direkt von Mojangs Servern (piston-data.mojang.com), wie es ein Launcher tut, prüft die Prüfsumme und behält nur Blockmodelle und -texturen. Das Build Studio selbst veröffentlicht keine Minecraft-Texturen. Voraussetzung ist eine eigene Minecraft-Lizenz; es gelten die Minecraft-EULA und Mojangs Nutzungsrichtlinien.</p>
       <div className="texture-row">
         <label>Version <select value={version} onFocus={listVersions} onChange={e => setVersion(e.target.value)} disabled={busy}>{versions.map(v => <option key={v}>{v}</option>)}</select></label>
         <button type="button" className="primary" disabled={busy} onClick={() => void installFromMojang(version)}>Texturen laden (ca. 40 MB)</button>

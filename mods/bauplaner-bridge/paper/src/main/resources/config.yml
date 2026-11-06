@@ -1,4 +1,4 @@
-# Bauplaner-Brücke (Paper). Pläne:   plugins/BauplanerBridge/plans/*.schem  (von der Website, Tab „Export“)
+# Build-Studio-Brücke (Paper). Pläne:   plugins/BauplanerBridge/plans/*.schem  (von der Website, Tab „Export“)
 #                            Aufnahmen: plugins/BauplanerBridge/scans/*.schem  (auf der Website im Tab „Bauen“ importieren)
 # Das Plugin setzt und entfernt nie Blöcke und erzeugt nie neues Gelände.
 
@@ -24,7 +24,7 @@ team:
   nachweis: true
   # Wie oft der Baunachweis ins Teamprotokoll geschrieben wird (Minuten; zusätzlich bei Ausfuhr, Neuladen und Serverstopp).
   nachweis-minuten: 5
-  # Teamkanal für Spieler mit Bauplaner-Mod (ab 0.10.0): Abschnitte in Inhaberfarbe, Meldungen ohne Befehle, Abgleich mit dem Planer.
+  # Teamkanal für Spieler mit Build-Studio-Mod (ab 0.10.0): Abschnitte in Inhaberfarbe, Meldungen ohne Befehle, Abgleich mit dem Planer.
   # Die Mod nutzt ihn nur, wenn der Spieler ihn einmal je Server erlaubt (/bauplaner team erlauben). Spieler ohne Mod merken nichts.
   kanal: true
 

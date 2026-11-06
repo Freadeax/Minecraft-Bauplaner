@@ -43,8 +43,8 @@ public final class TeamSync {
     public enum Link {
         /** Singleplayer, no server, or not connected. */
         NONE("kein Server", "no server"),
-        /** The server has no Bauplaner plugin with the team channel. */
-        NO_PLUGIN("Server ohne Bauplaner-Plugin", "server without Bauplaner plugin"),
+        /** The server has no Build Studio plugin with the team channel. */
+        NO_PLUGIN("Server ohne Build-Studio-Plugin", "server without Build Studio plugin"),
         /** Plugin there, player has not allowed the channel for this server yet. */
         ASK("Plugin da – J drücken → „Teambau erlauben“", "plugin found – press J → “Allow team building”"),
         /** Allowed, hello sent, waiting for the first state. */
@@ -195,7 +195,7 @@ public final class TeamSync {
             String a = allowed.getProperty(serverKey);
             if ("ja".equals(a)) start();
             else if ("nein".equals(a)) link = Link.OFF;
-            else { link = Link.ASK; notify.accept(t("Auf diesem Server läuft das Bauplaner-Plugin. Teambau und Server-Kopplung einschalten: J drücken → „Teambau erlauben“ (einmal je Server). Bis dahin sendet die Mod nichts.", "This server runs the Bauplaner plugin. Turn on team building and the server link: press J → “Allow team building” (once per server). Until then the mod sends nothing.")); }
+            else { link = Link.ASK; notify.accept(t("Auf diesem Server läuft das Build-Studio-Plugin. Teambau und Server-Kopplung einschalten: J drücken → „Teambau erlauben“ (einmal je Server). Bis dahin sendet die Mod nichts.", "This server runs the Build Studio plugin. Turn on team building and the server link: press J → “Allow team building” (once per server). Until then the mod sends nothing.")); }
         } else if (!has && !announced) link = Link.NO_PLUGIN;
     }
 
@@ -213,7 +213,7 @@ public final class TeamSync {
         allowed.setProperty(serverKey, yes ? "ja" : "nein");
         saveAllowed();
         if (!yes) { link = announced ? Link.OFF : Link.NO_PLUGIN; fromServer = null; return t("Teamkanal für diesen Server aus. Die Mod sendet hier nichts mehr; Teamstand nur noch aus dem Planer.", "Team channel off for this server. The mod sends nothing here; team state only from the planner."); }
-        if (!transport.serverHasChannel()) return t("Erlaubt. Dieser Server hat aber (noch) kein Bauplaner-Plugin mit Teambau – die Mod sendet erst, wenn es da ist.", "Allowed. This server has no Bauplaner plugin with team building (yet) – the mod sends once it is there.");
+        if (!transport.serverHasChannel()) return t("Erlaubt. Dieser Server hat aber (noch) kein Build-Studio-Plugin mit Teambau – die Mod sendet erst, wenn es da ist.", "Allowed. This server has no Build Studio plugin with team building (yet) – the mod sends once it is there.");
         announced = true;
         start();
         return t("Teamkanal für diesen Server erlaubt. Die Mod holt den Teamstand vom Plugin.", "Team channel allowed for this server. The mod gets the team state from the plugin.");
@@ -391,7 +391,7 @@ public final class TeamSync {
         synchronized (this) {
             if (link != Link.LIVE) return CompletableFuture.failedFuture(new IllegalStateException(switch (link) {
                 case NONE -> "Die Mod ist mit keinem Server verbunden.";
-                case NO_PLUGIN -> "team-plugin-fehlt: Auf diesem Server läuft kein Bauplaner-Plugin mit Teambau.";
+                case NO_PLUGIN -> "team-plugin-fehlt: Auf diesem Server läuft kein Build-Studio-Plugin mit Teambau.";
                 case ASK -> "team-nicht-erlaubt: Im Spiel J drücken und „Teambau erlauben“ klicken.";
                 case OFF -> "team-nicht-erlaubt: Der Teamkanal ist für diesen Server ausgeschaltet.";
                 default -> "Die Mod wartet noch auf die erste Antwort des Plugins.";
@@ -423,7 +423,7 @@ public final class TeamSync {
         try {
             Files.createDirectories(dir);
             try (Writer w = Files.newBufferedWriter(dir.resolve("erlaubt.properties"), StandardCharsets.UTF_8)) {
-                allowed.store(w, "Bauplaner-Mod: Teamkanal je Server erlaubt (ja) oder aus (nein). Löschen = wieder fragen.");
+                allowed.store(w, "Build-Studio-Mod: Teamkanal je Server erlaubt (ja) oder aus (nein). Löschen = wieder fragen.");
             }
         } catch (IOException ignored) { }
     }

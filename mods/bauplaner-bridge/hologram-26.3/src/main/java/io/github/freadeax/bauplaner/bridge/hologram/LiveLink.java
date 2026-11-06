@@ -70,7 +70,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
         server = new LiveLinkServer(new LiveLinkServer.Info(version, loader, minecraft), this, tokens, this::saveTokens, System::currentTimeMillis);
         server.onAsk(a -> {
             Minecraft mc = Minecraft.getInstance();
-            mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] " + t("Der Planer („" + a.device + "“) möchte sich mit dem Spiel verbinden. J drücken → „Planer zulassen“.", "The planner (“" + a.device + "”) wants to connect to the game. Press J → “Allow planner”."))));
+            mc.execute(() -> McCompat.chat(mc, Component.literal("[Build Studio] " + t("Der Planer („" + a.device + "“) möchte sich mit dem Spiel verbinden. J drücken → „Planer zulassen“.", "The planner (“" + a.device + "”) wants to connect to the game. Press J → “Allow planner”."))));
         });
     }
 
@@ -119,7 +119,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
         int n = gameMarks.ack(ids);
         if (n > 0) {
             Minecraft mc = Minecraft.getInstance();
-            mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] " + n + " Markierung" + (n == 1 ? "" : "en") + " aus dem Spiel ist jetzt im Weltplan der Website.")));
+            mc.execute(() -> McCompat.chat(mc, Component.literal("[Build Studio] " + n + " Markierung" + (n == 1 ? "" : "en") + " aus dem Spiel ist jetzt im Weltplan der Website.")));
         }
         return "{\"acked\":" + n + ",\"waiting\":" + gameMarks.size() + "}";
     }
@@ -200,7 +200,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
         String text = onGame(() -> setGroup(g));
         if (!java.util.Objects.equals(group, g)) throw new LiveLinkServer.HttpError(400, text);
         Minecraft mc = Minecraft.getInstance();
-        mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] Website: " + text)));
+        mc.execute(() -> McCompat.chat(mc, Component.literal("[Build Studio] Website: " + text)));
         return "{\"group\":" + (g == null ? "null" : Json.quote(g)) + "}";
     }
 
@@ -231,7 +231,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
     /** Game start: resume the service when the player switched it on before. */
     public void resume(Minecraft mc) {
         if (!enabled) return;
-        try { server.start(port); } catch (IOException e) { mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] Verbindung zur Website nicht gestartet: " + e.getMessage()))); }
+        try { server.start(port); } catch (IOException e) { mc.execute(() -> McCompat.chat(mc, Component.literal("[Build Studio] Verbindung zur Website nicht gestartet: " + e.getMessage()))); }
     }
 
     // ------------------------------------------------------------------ commands
@@ -455,7 +455,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
         final LiveCheck c = prepared;
         String msg = onGame(() -> hologram.install(name, m, c));
         Minecraft mc = Minecraft.getInstance();
-        mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] " + msg)));
+        mc.execute(() -> McCompat.chat(mc, Component.literal("[Build Studio] " + msg)));
         return "{\"placed\":true,\"planFile\":" + Json.quote(name) + ",\"message\":" + Json.quote(msg) + "}";
     }
 
@@ -479,7 +479,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
             if (!hologram.active()) return null;
             String text = hologram.setSection(n);
             Minecraft mc = Minecraft.getInstance();
-            McCompat.chat(mc, Component.literal("[Bauplaner] Website: " + text));
+            McCompat.chat(mc, Component.literal("[Build Studio] Website: " + text));
             return text;
         });
         if (msg == null) throw new LiveLinkServer.HttpError(409, "Im Spiel ist kein Plan platziert.");
@@ -668,7 +668,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
     String recordToRoom(String askedBy) {
         var room = team == null ? null : team.sync().room();
         Minecraft mc = Minecraft.getInstance();
-        java.util.function.Consumer<String> say = text -> mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] " + text)));
+        java.util.function.Consumer<String> say = text -> mc.execute(() -> McCompat.chat(mc, Component.literal("[Build Studio] " + text)));
         if (room == null || !room.live()) { say.accept(t("Aufnahme: kein Team-Raum verbunden.", "Scan: no team room connected.")); return "kein Raum"; }
         if (recording) return "läuft schon";
         recording = true;
@@ -769,7 +769,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
         catch (RuntimeException e) { throw new LiveLinkServer.HttpError(400, e.getMessage()); }
         room.use(c);
         Minecraft mc = Minecraft.getInstance();
-        mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] " + t("Der Planer hat dein Spiel mit dem Team-Raum" + (c.teamName() != null ? " „" + c.teamName() + "“" : "")
+        mc.execute(() -> McCompat.chat(mc, Component.literal("[Build Studio] " + t("Der Planer hat dein Spiel mit dem Team-Raum" + (c.teamName() != null ? " „" + c.teamName() + "“" : "")
                 + " verbunden – Teambau ohne Server-Datei. Trennen: im Planer unter „Team live“ → „Spiel trennen“.", "The planner connected your game to the team room" + (c.teamName() != null ? " “" + c.teamName() + "”" : "")
                 + " – team building without a server file. Disconnect: in the planner under “Team live” → “Disconnect game”."))));
         // LINK-11: with the Bauleitung's server key the server plugin (if any) joins the room right away.
@@ -909,7 +909,7 @@ public final class LiveLink implements LiveLinkServer.Handler {
     private void store(Properties p) {
         try {
             Files.createDirectories(root);
-            try (var w = Files.newBufferedWriter(file())) { p.store(w, "Bauplaner-Mod: Verbindung zur Website (nur 127.0.0.1). Schlüssel nicht weitergeben."); }
+            try (var w = Files.newBufferedWriter(file())) { p.store(w, "Build-Studio-Mod: Verbindung zur Website (nur 127.0.0.1). Schlüssel nicht weitergeben."); }
         } catch (IOException ignored) { }
     }
 }

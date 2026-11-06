@@ -1,10 +1,10 @@
-# Bauplaner-Mod 2.0: Hologramm und Live-Abgleich (GAME-07)
+# Build-Studio-Mod 2.0: Hologramm und Live-Abgleich (GAME-07)
 
 Stand 02.11.2026 · Stufe 1 „Fundament + Hologramm“ (0.2.0, Wahl Philipp) Stufe 2 „Texturen, Material, Ebenen“ (0.3.0) und Stufe 3 „Platzierhilfe“ (0.4.0) Stufe 4 „NeoForge, Shader, andere Mods“ (0.6.0) und Stufe 5 „Bauabschnitte, Röntgensicht, Shulker“ (0.7.0); 0.7.1 Baustand für die Live-Karte (`GET /v1/scan`, [LIVE_LINK](../team/LIVE_LINK.md)), 0.7.2 Testphase (`/bauplaner diagnose`, Absturzschutz), 0.8.0 Live-Protokoll 2 (Zonen, Ebenen, Farben, neue Punktarten, Mitspieler; GAME-08), 0.9.0 große Pläne (SIZE-01), 0.10.0 Teambau (COOP-03). Fabric 26.3 und NeoForge 26.3 mit demselben Client-Kern; die bisherige Aufnahme (`/bauplaner scan`, [MOD_BRIDGE](MOD_BRIDGE.md)) bleibt unverändert erhalten.
 
 ## Grundsätze
 
-- **Reiner Client.** Kein zusätzliches oder verändertes Paket an den Server (die Platzierhilfe lässt einen normalen Klick durch oder verwirft ihn vorher, und wählt höchstens einen Schnellleistenplatz wie eine Zifferntaste), keine Weltänderung, kein automatisches Bauen („Printer“), kein Teleport. Funktioniert damit auf jedem Server, auch ohne Plugin und ohne Rechte. Einzige Ausnahme seit 0.10.0: der Teamkanal `bauplaner:team` – nur wenn der Server ihn selbst anbietet (Bauplaner-Plugin) **und** der Spieler ihn mit `/bauplaner team erlauben` für diesen Server eingeschaltet hat (Entscheidung Philipp 03.11.2026, [TEAMBAU §7](../team/TEAMBAU.md)).
+- **Reiner Client.** Kein zusätzliches oder verändertes Paket an den Server (die Platzierhilfe lässt einen normalen Klick durch oder verwirft ihn vorher, und wählt höchstens einen Schnellleistenplatz wie eine Zifferntaste), keine Weltänderung, kein automatisches Bauen („Printer“), kein Teleport. Funktioniert damit auf jedem Server, auch ohne Plugin und ohne Rechte. Einzige Ausnahme seit 0.10.0: der Teamkanal `bauplaner:team` – nur wenn der Server ihn selbst anbietet (Build-Studio-Plugin) **und** der Spieler ihn mit `/bauplaner team erlauben` für diesen Server eingeschaltet hat (Entscheidung Philipp 03.11.2026, [TEAMBAU §7](../team/TEAMBAU.md)).
 - **Keine Abhängigkeiten** außer Fabric API bzw. NeoForge: kein WorldEdit, kein Litematica, keine eigenen Shader. Gezeichnet wird mit Vanilla-Rendertypen (`debugQuads`, `lines`) über `LevelRenderEvents.COLLECT_SUBMITS` (Fabric) bzw. `SubmitCustomGeometryEvent` (NeoForge), damit Sodium und Iris nichts ersetzen müssen.
 - **Eine Wahrheit für den Vergleich.** `BlockRules.compare` ist eine Portierung von `compareBlock`/`ignoredProperties` aus `packages/domain/src/building/gameCheck.ts`: Ergebnis im Spiel = Ergebnis der Website.
 
@@ -19,7 +19,7 @@ Stand 02.11.2026 · Stufe 1 „Fundament + Hologramm“ (0.2.0, Wahl Philipp) St
 
 ## Bedienung
 
-| Taste (änderbar unter Steuerung → „Bauplaner“; Standard so gewählt, dass Xaero, Simple Voice Chat, Iris und Jade aus Philipps Modpack nicht kollidieren) | Wirkung |
+| Taste (änderbar unter Steuerung → „Build Studio“; Standard so gewählt, dass Xaero, Simple Voice Chat, Iris und Jade aus Philipps Modpack nicht kollidieren) | Wirkung |
 |---|---|
 | J | Planmenü: Pläne aus `bauplaner/plans/`; Klick platziert am angeschauten Block. Rechts: hierher, X/Y/Z ±1/±10, drehen, spiegeln, aus-/einblenden, entfernen |
 | Pfeiltasten, Bild↑/Bild↓ | Plan relativ zur Blickrichtung verschieben (↑ = von mir weg) |
@@ -61,7 +61,7 @@ Jeder Tick prüft 8 000 Planblöcke reihum (`LiveCheck.sweep`, ca. 160 000/s), n
 
 ## Platzierhilfe (0.4.0)
 
-Vorbild ist Litematicas „Easy Place“, aber serverkonform: Easy Place verändert Blickrichtung und Klickposition im Paket an den Server, damit der Block richtig herum landet. Das kann Anti-Cheat auslösen und gilt auf manchen Servern als unerlaubt. Der Bauplaner macht das nicht.
+Vorbild ist Litematicas „Easy Place“, aber serverkonform: Easy Place verändert Blickrichtung und Klickposition im Paket an den Server, damit der Block richtig herum landet. Das kann Anti-Cheat auslösen und gilt auf manchen Servern als unerlaubt. Das Build Studio macht das nicht.
 
 - **Vorhersage:** Vor jedem Rechtsklick in den Plan (Fabric `UseBlockCallback`, läuft im Client vor dem Senden) berechnet die Mod mit der Platzierlogik des Spiels selbst (`BlockItem.getPlacementState` über `updatePlacementContext`), welcher Zustand entstehen würde. Damit sind Wandfackeln, Schilder, Stufen zur Doppelstufe, Türen und Stämme abgedeckt, ohne eigene Regeln je Block.
 - **Urteil** (`mod-core/PlacementAdvice.judge`, gleiche Regeln wie der Live-Abgleich): richtig → Klick geht normal durch; anderer Block → nicht gesetzt, liegt der richtige in der Schnellleiste, wird er gewählt („nochmal klicken“, bei gehaltener Taste setzt der nächste Wiederholklick); falsche Ausrichtung → nicht gesetzt, Hinweis wie es geht.
@@ -93,7 +93,7 @@ Packliste und Gerüst-Hinweise kamen mit 0.13.0, Gruppen und Sperren mit 0.19.0 
 
 ## Testphase: Diagnose und Absturzschutz (0.7.2)
 
-`/bauplaner diagnose` (QA-04, `HologramDiagnose` + `mod-core/Diagnostics`) schreibt einen Bericht nach `bauplaner/diagnose/diagnose-<zeit>.txt` und in die Zwischenablage: Mod, Loader, Minecraft, Java, System, Launcher, Modliste, Shader, jede Bauplaner-Taste mit Konflikten (`KeyMapping.same`), Welt, Hologramm (Plan, Platzierung, Fortschritt, Ebenen, Abschnitt, Texturen, Röntgen, Platzierhilfe), Website-Verbindung, abgefangene Fehler und ein geschwärzter Auszug aus `logs/latest.log`. Der Spieltest führt den Befehl aus und prüft den Bericht.
+`/bauplaner diagnose` (QA-04, `HologramDiagnose` + `mod-core/Diagnostics`) schreibt einen Bericht nach `bauplaner/diagnose/diagnose-<zeit>.txt` und in die Zwischenablage: Mod, Loader, Minecraft, Java, System, Launcher, Modliste, Shader, jede Build-Studio-Taste mit Konflikten (`KeyMapping.same`), Welt, Hologramm (Plan, Platzierung, Fortschritt, Ebenen, Abschnitt, Texturen, Röntgen, Platzierhilfe), Website-Verbindung, abgefangene Fehler und ein geschwärzter Auszug aus `logs/latest.log`. Der Spieltest führt den Befehl aus und prüft den Bericht.
 
 `HologramClient` führt Tick, Weltzeichnen, HUD und die Klick-Haken der Platzierhilfe geschützt aus: Ein Fehler der Mod beendet das Spiel nicht mehr. Er landet einmal je Art mit Stack im Log (Logger `bauplaner`, Präfix `[Fehler]`), gleiche Fehler in jedem Bild werden nur gezählt (`errors()`), und der erste zeigt einen Chat-Hinweis auf `/bauplaner diagnose`. Klicks laufen bei einem Fehler normal durch (PASS).
 
@@ -103,7 +103,7 @@ Weltplan-Schema 2 von der Website im Spiel ([LIVE_LINK](../team/LIVE_LINK.md#pro
 
 ## Große Pläne (0.9.0, SIZE-01)
 
-Planbox bis 16,7 Mio. Zellen und 4 Mio. Blöcke, Übertragung von der Website bis 64 MB (Fähigkeit `bigplans`). Der Plan wird einmal entpackt, `LiveCheck` braucht rund 30 Byte je Block (keine HashMap je Block), große Pläne und das Verschieben großer Hologramme werden im Thread „Bauplaner-Planlader“ vorbereitet, der Baustand liest in Scheiben. Bauabschnitte kommen als Läufe (`SectionRuns`), alte Dateien mit `SectionCells` gehen weiter. Render-Budget mit `/bauplaner leistung niedrig|normal|hoch` (15 000 / 30 000 / 60 000 offene Blöcke im Umkreis von 72); greift es, zeigt die Anzeige „Zeigt die nächsten …“. Die Diagnose nennt Planbox, Chunks, Leistung und Java-Speicher. Einzelheiten und Messwerte: [SIZE_LIMITS](../kern/SIZE_LIMITS.md).
+Planbox bis 16,7 Mio. Zellen und 4 Mio. Blöcke, Übertragung von der Website bis 64 MB (Fähigkeit `bigplans`). Der Plan wird einmal entpackt, `LiveCheck` braucht rund 30 Byte je Block (keine HashMap je Block), große Pläne und das Verschieben großer Hologramme werden im Thread „Build-Studio-Planlader“ vorbereitet, der Baustand liest in Scheiben. Bauabschnitte kommen als Läufe (`SectionRuns`), alte Dateien mit `SectionCells` gehen weiter. Render-Budget mit `/bauplaner leistung niedrig|normal|hoch` (15 000 / 30 000 / 60 000 offene Blöcke im Umkreis von 72); greift es, zeigt die Anzeige „Zeigt die nächsten …“. Die Diagnose nennt Planbox, Chunks, Leistung und Java-Speicher. Einzelheiten und Messwerte: [SIZE_LIMITS](../kern/SIZE_LIMITS.md).
 
 ## Teambau (0.10.0, COOP-03)
 
@@ -135,7 +135,7 @@ Im Plan-Menü (J) führt „Befehle & Status“ zu einer Seite, auf der alle Bef
 - **Mod oder Server.** Mod-Befehle laufen als `/bauplaner …`. Plugin-Befehle laufen über den Alias `/bp …`, weil die Mod `/bauplaner` selbst belegt. Ein Klick sendet über `connection.sendCommand` dasselbe Befehlspaket wie das Eintippen; es gibt kein zusätzliches Paket an den Server.
 - **Ausgegraut.** Ob der Server das Plugin hat, liest die Seite aus dem Befehlsbaum (`bp` vorhanden). Unterbefehle sieht der Client bei Paper nicht, Rechte prüft der Server und antwortet selbst. Bauleitungs-Knöpfe richten sich nach der Rolle im Teamstand, Kisten-Knöpfe werden erst aktiv, wenn man auf einen Behälter in Reichweite schaut. Der Grund steht im Tooltip.
 - **Status.** Plan, Fortschritt, Filter, Platzierhilfe, Teamkanal, Team, eigener Auftrag, Lager, Server mit oder ohne Plugin und Website-Verbindung. Die Seite aktualisiert sich alle halbe Sekunde.
-- **Antworten.** `ReplyLog` sammelt die eigenen „[Bauplaner]“-Zeilen und für 4 s nach einem Serverbefehl von der Seite alle Systemzeilen des Servers (Fabric `ClientReceiveMessageEvents.GAME`, NeoForge `ClientChatReceivedEvent.System`).
+- **Antworten.** `ReplyLog` sammelt die eigenen „[Build Studio]“-Zeilen und für 4 s nach einem Serverbefehl von der Seite alle Systemzeilen des Servers (Fabric `ClientReceiveMessageEvents.GAME`, NeoForge `ClientChatReceivedEvent.System`).
 - **Kleine Fenster.** Ab 520 GUI-Pixeln Breite steht der Status links neben den Knöpfen, darunter nur im Reiter „Status“ über den Knöpfen. Mehr Knöpfe als Platz werden geblättert (◀ ▶ unten links).
 - **Prüfung.** JUnit `CommandCatalogTest`; Spieltest Fabric mit echten Mausklicks (Reiter Team, „Übersicht“, „Abschnitt zeigen 2“, Antworten auf der Seite, Serverknöpfe im Einzelspieler ausgegraut); NeoForge-Szenario öffnet die Seite und führt einen Befehl aus.
 
@@ -153,7 +153,7 @@ Im Plan-Menü (J) führt „Befehle & Status“ zu einer Seite, auf der alle Bef
 - **Was.** Beim Bauen von Hand zeigt die Mod Geisterblöcke für Spiegelbilder und Kurven, wie die Werkstatt des Planers ([CREATIVE_TOOLS.md](../planer/CREATIVE_TOOLS.md)). Nur Client: Die Mod setzt nie einen Block, sendet nichts an den Server und braucht kein Plugin.
 - **Symmetrie.** `/bauplaner symmetrie x|z` (Spiegeln Ost/West, Nord/Süd, je an/aus), `symmetrie drehen 1|2|4`, `symmetrie hier` (Achse durch die Mitte des angeschauten Blocks), `symmetrie kante` (Achse auf die Ecke: gerade Breiten), `symmetrie aus`. Beim ersten Einschalten liegt die Achse am angeschauten Block. Jeder Block, den der Spieler danach setzt (Rechtsklick mit einem Block, zwei Ticks später in der Welt gesehen), wird Quelle; seine Bilder erscheinen mit gedrehtem Zustand. Wer auf einen Geist baut, folgt der Hilfe und erzeugt keine neue Quelle. Abbauen einer Quelle nimmt ihre Geister weg; schon gesetzte Gegenstücke bekommen einen roten „abbauen“-Rahmen, bis sie weg sind. Höchstens 4096 Quellen im Umkreis von 256 Blöcken um die Achse.
 - **Kurven.** `/bauplaner kurve punkt` setzt einen Punkt dort, wo ein Block hinkäme (Fadenkreuz; ersetzbare Pflanzen werden übersprungen); der Block in der Hand wird Kurvenblock (`kurve block`). `kurve profil rohr|weg|mauer`, `breite`, `hoehe`, `radius`, `geschlossen`, `glatt <0–100>`, `versetzen <dy>`, `zurueck`, `loeschen`. Die Punkte erscheinen als türkise Würfel, die Kurve als Linie, die Zellen als Geister; bei aktiver Symmetrie auch gespiegelt. Höchstens 64 Punkte und 60 000 Zellen.
-- **Als Plan.** `/bauplaner bauhilfe alsplan [name]` (auch `kurve alsplan`) schreibt die Geister als Plan (`mod/edit/GuidePlan`, Sponge v3 mit Bauplaner-Metadaten, Projektursprung = untere Ecke) nach `bauplaner/plans/` und blendet ihn ein: Materialliste, Platzierhilfe, Fortschritt und Aufnahme wie bei einem Website-Plan. Die Datei lässt sich auf der Website als `.schem` importieren.
+- **Als Plan.** `/bauplaner bauhilfe alsplan [name]` (auch `kurve alsplan`) schreibt die Geister als Plan (`mod/edit/GuidePlan`, Sponge v3 mit Build-Studio-Metadaten, Projektursprung = untere Ecke) nach `bauplaner/plans/` und blendet ihn ein: Materialliste, Platzierhilfe, Fortschritt und Aufnahme wie bei einem Website-Plan. Die Datei lässt sich auf der Website als `.schem` importieren.
 - **Anzeige.** Geister mit Texturen (wie Planblöcke), andere Blöcke rot, falsche Ausrichtung gelb; Gras, Schnee und Wasser zählen als frei. HUD über der Schnellleiste: Modus, Kurve und „gesetzt / gesamt“. Zwei Tasten, ab Werk unbelegt: „Bauhilfe: Kurvenpunkt setzen“ und „Bauhilfe: Symmetrieachse hier“. Befehlsseite (J → „Befehle & Status“) Reiter „Bauhilfen“.
 - **Grenzen.** Die Bauhilfen gelten in einer Dimension und gehen beim Neustart verloren (nur im Speicher); „als Plan“ hält sie fest. Blöcke, die andere Spieler setzen, werden nicht gespiegelt.
 - **Prüfung.** JUnit `EditGuidesTest` (gleiche Zellen, Gruppen, Bilder und Zustände wie der Planer über `fixtures/edit/mod-edit-vectors.json`; Quellen, Folgen, Abbauen, 4-fach mit Kurve, Plan lesbar über `PlanModel`), Befehlsseite `CommandCatalogTest`.

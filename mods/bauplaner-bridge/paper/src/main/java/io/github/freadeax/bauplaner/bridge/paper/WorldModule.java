@@ -48,7 +48,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * right after a restart even before the room answers.
  */
 final class WorldModule implements Listener {
-    private static final String PREFIX = ChatColor.GOLD + "[Bauplaner] " + ChatColor.RESET;
+    private static final String PREFIX = ChatColor.GOLD + "[Build Studio] " + ChatColor.RESET;
     static final int MAX_DOC = 4 * 1024 * 1024;
 
     private final JavaPlugin plugin;

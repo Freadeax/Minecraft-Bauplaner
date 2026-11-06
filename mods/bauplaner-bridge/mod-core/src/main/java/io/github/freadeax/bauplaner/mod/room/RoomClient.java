@@ -102,7 +102,7 @@ public final class RoomClient {
     /** {@code raum-stand.json} next to {@code raum.json}: header, events and cursor of the last contact. */
     private final Path cacheFile;
     private final Consumer<String> notify;
-    private final ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor(r -> { Thread t = new Thread(r, "Bauplaner-Team-Raum"); t.setDaemon(true); return t; });
+    private final ScheduledExecutorService timer = Executors.newSingleThreadScheduledExecutor(r -> { Thread t = new Thread(r, "Build-Studio-Team-Raum"); t.setDaemon(true); return t; });
     private final HttpClient http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
     private Config config;
     private volatile Status status = Status.OFF;

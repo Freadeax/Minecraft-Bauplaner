@@ -218,7 +218,7 @@ async function needServer() {
     try { return await target.send(op, fields); }
     catch (e) {
       // Plugin 0.12.0 knows no recording by click yet.
-      if (e instanceof LiveError && /^Unbekannte Steueraktion/.test(e.message)) throw new LiveError(`Das Bauplaner-Plugin auf „${target.pairing.name}“ ist zu alt für Aufnahmen per Klick – Plugin 0.13.0 oder neuer installieren.`, 426);
+      if (e instanceof LiveError && /^Unbekannte Steueraktion/.test(e.message)) throw new LiveError(`Das Build-Studio-Plugin auf „${target.pairing.name}“ ist zu alt für Aufnahmen per Klick – Plugin 0.13.0 oder neuer installieren.`, 426);
       throw e;
     }
   };
@@ -304,7 +304,7 @@ export async function gameToRoom(room: ServerRoom, member: { id: string; name?: 
   // over by itself (link.room, only OP/bauplaner.team.leitung). Older mods ignore the field.
   const handOver = !!serverKey && liveCan(link.hello, 'roomserver');
   const text = await liveApi.roomSet(link.port, link.token, { url: room.url, room: room.room, key: room.key, member: member.id, ...(member.name && { memberName: member.name }), teamName, device: 'Minecraft', ...(handOver && { serverKey }) });
-  return handOver ? `${text} Bist du als Bauleitung (OP) mit diesem Spiel auf dem Server mit Bauplaner-Plugin, verbindet die Mod den Server von selbst mit dem Team-Raum.` : text;
+  return handOver ? `${text} Bist du als Bauleitung (OP) mit diesem Spiel auf dem Server mit Build-Studio-Plugin, verbindet die Mod den Server von selbst mit dem Team-Raum.` : text;
 }
 
 /** What the game says about its team room (null when no game or no such mod). */

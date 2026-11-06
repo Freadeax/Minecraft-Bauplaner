@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 
 /**
  * Live-Verbindung Website ↔ Mod (GAME-03/MAP-03): a very small HTTP/1.1 service for the
- * Bauplaner website on the same computer. Only java.base, no game classes, so it is the same for
+ * Build Studio website on the same computer. Only java.base, no game classes, so it is the same for
  * every loader and Minecraft version.
  *
  * <p>Security contract (docs/architecture/team/LIVE_LINK.md):
@@ -168,8 +168,8 @@ public final class LiveLinkServer implements AutoCloseable {
         ServerSocket s = new ServerSocket(port, 16, InetAddress.getLoopbackAddress());
         socket = s;
         this.port = s.getLocalPort();
-        pool = Executors.newFixedThreadPool(2, r -> { Thread t = new Thread(r, "Bauplaner-Verbindung"); t.setDaemon(true); return t; });
-        Thread acceptor = new Thread(() -> acceptLoop(s), "Bauplaner-Verbindung-Annahme");
+        pool = Executors.newFixedThreadPool(2, r -> { Thread t = new Thread(r, "Build-Studio-Verbindung"); t.setDaemon(true); return t; });
+        Thread acceptor = new Thread(() -> acceptLoop(s), "Build-Studio-Verbindung-Annahme");
         acceptor.setDaemon(true);
         acceptor.start();
     }
@@ -355,7 +355,7 @@ public final class LiveLinkServer implements AutoCloseable {
             return error(h, 403, "Nur über 127.0.0.1 erreichbar.");
         String origin = r.headers().get("origin");
         if (origin != null) {
-            if (!originAllowed(origin)) return error(h, 403, "Diese Website darf die Bauplaner-Mod nicht abfragen.");
+            if (!originAllowed(origin)) return error(h, 403, "Diese Website darf die Build-Studio-Mod nicht abfragen.");
             h.put("Access-Control-Allow-Origin", origin);
             h.put("Vary", "Origin");
         }

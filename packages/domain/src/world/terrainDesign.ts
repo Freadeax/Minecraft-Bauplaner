@@ -237,7 +237,7 @@ export function encodeDesign(d: TerrainDesign): Uint8Array {
 }
 
 export function decodeDesign(bytes: Uint8Array): TerrainDesign {
-  if (bytes.length < 12 || new TextDecoder().decode(bytes.subarray(0, 8)) !== MAGIC) fail('keine Bauplaner-Geländegestaltung');
+  if (bytes.length < 12 || new TextDecoder().decode(bytes.subarray(0, 8)) !== MAGIC) fail('keine Build-Studio-Geländegestaltung');
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   const len = view.getUint32(8, true);
   if (12 + len > bytes.length) fail('Kopf abgeschnitten');

@@ -43,7 +43,7 @@ public final class HologramDiagnose {
             text = report(mc, h, link, game).text(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
         } catch (RuntimeException | LinkageError e) {
             // Der Bericht soll auch dann entstehen, wenn ein Teil des Spiels nicht lesbar ist.
-            text = "## Bauplaner-Mod Diagnose\nBericht unvollständig: " + e + "\nMod " + version + " · " + loader + " · Minecraft " + McCompat.gameVersion() + "\n";
+            text = "## Build-Studio-Mod Diagnose\nBericht unvollständig: " + e + "\nMod " + version + " · " + loader + " · Minecraft " + McCompat.gameVersion() + "\n";
         }
         String where;
         try {
@@ -57,7 +57,7 @@ public final class HologramDiagnose {
         }
         boolean copied;
         try { mc.keyboardHandler.setClipboard(text); copied = true; } catch (RuntimeException e) { copied = false; }
-        McCompat.chat(mc, Component.literal("[Bauplaner] Diagnose " + (where == null ? "nicht speicherbar" : "gespeichert: " + where)
+        McCompat.chat(mc, Component.literal("[Build Studio] Diagnose " + (where == null ? "nicht speicherbar" : "gespeichert: " + where)
                 + (copied ? " und in die Zwischenablage kopiert." : ".") + " Im Fehlerbericht (Website → Testphase → Fehler melden) einfügen oder die Datei anhängen."));
         return 1;
     }
@@ -78,7 +78,7 @@ public final class HologramDiagnose {
         d.put("Modpack", "Mods im Ordner mods", mods.size()).put("Modpack", "Dateien", mods.isEmpty() ? "–" : String.join(", ", mods))
                 .put("Modpack", "Shaderpaket aktiv", McCompat.shadersActive() ? "ja (Iris)" : "nein");
 
-        // Tastenkonflikte: jede Bauplaner-Taste gegen alle anderen Tasten des Spiels.
+        // Tastenkonflikte: jede Build-Studio-Taste gegen alle anderen Tasten des Spiels.
         List<String> clashes = new ArrayList<>();
         for (KeyMapping k : mc.options.keyMappings) {
             if (k.getCategory() != HologramKeys.CATEGORY) continue;

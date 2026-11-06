@@ -70,7 +70,7 @@ interface StoredOriginal { readonly sha256: string; readonly fileName: string; r
 
 export class StorageNewerError extends Error {
   constructor() {
-    super('Die lokalen Daten wurden von einer neueren Version des Bauplaners gespeichert. Bitte die Seite neu laden, damit die aktuelle Version startet; ältere Versionen ändern diese Daten nicht.');
+    super('Die lokalen Daten wurden von einer neueren Version des Build Studios gespeichert. Bitte die Seite neu laden, damit die aktuelle Version startet; ältere Versionen ändern diese Daten nicht.');
     this.name = 'StorageNewerError';
   }
 }
@@ -108,7 +108,7 @@ export function openIdbRepository(factory: IDBFactory | undefined = globalThis.i
         tx.objectStore('meta').put({ key: 'schema', dbVersion: DB_VERSION, domainSchemaVersion: DOMAIN_SCHEMA_VERSION, migratedAt: new Date().toISOString() });
       } catch (error) { fail(error); }
     };
-    request.onblocked = () => { blocked = true; reject(new Error('Ein anderer Tab hält eine ältere Datenbankversion offen. Bitte andere Bauplaner-Tabs schließen und neu laden.')); };
+    request.onblocked = () => { blocked = true; reject(new Error('Ein anderer Tab hält eine ältere Datenbankversion offen. Bitte andere Build-Studio-Tabs schließen und neu laden.')); };
     request.onerror = () => {
       if (upgradeFailure) { reject(upgradeFailure); return; }
       const err = request.error;
@@ -127,7 +127,7 @@ export class IdbRepository implements Repository {
 
   constructor(private readonly db: IDBDatabase) {
     // A newer tab wants to upgrade: release the database and tell the user.
-    db.onversionchange = () => { db.close(); this.closedReason = 'Eine neuere Version des Bauplaners wurde in einem anderen Tab geöffnet. Bitte diese Seite neu laden.'; this.emit({ kind: 'projects' }); this.emit({ kind: 'library' }); this.emit({ kind: 'userLibrary' }); };
+    db.onversionchange = () => { db.close(); this.closedReason = 'Eine neuere Version des Build Studios wurde in einem anderen Tab geöffnet. Bitte diese Seite neu laden.'; this.emit({ kind: 'projects' }); this.emit({ kind: 'library' }); this.emit({ kind: 'userLibrary' }); };
     this.channel = typeof BroadcastChannel === 'function' ? new BroadcastChannel(DB_NAME) : null;
     if (this.channel) this.channel.onmessage = (e: MessageEvent<StorageChange>) => this.emit(e.data);
   }

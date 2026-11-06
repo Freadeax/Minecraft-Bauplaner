@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "comment": "Modrinth-Projekt der Bauplaner-Brücke. Gelesen von scripts/mod/modrinth_publish.mjs (check | plan | create | sync | release). Text: DESCRIPTION.md, Änderungen: ../CHANGELOG.md.",
+  "comment": "Modrinth-Projekt der Build-Studio-Brücke. Gelesen von scripts/mod/modrinth_publish.mjs (check | plan | create | sync | release). Text: DESCRIPTION.md, Änderungen: ../CHANGELOG.md.",
   "slug": "bauplaner-bridge",
-  "title": "Bauplaner Bridge",
-  "summary": "Shows your Minecraft-Bauplaner build plans as a hologram in the world: live progress, material list, placement helper and team building. Client-side, never builds for you.",
+  "title": "LMNT — Build Studio Bridge",
+  "summary": "Shows your LMNT — Build Studio build plans as a hologram in the world: live progress, material list, placement helper and team building. Client-side, never builds for you.",
   "visibility": "approved",
   "projectType": "mod",
   "clientSide": "required",
@@ -28,7 +28,7 @@
   "gallery": [
     {
       "file": "gallery/00-title.png",
-      "title": "Bauplaner Bridge",
+      "title": "LMNT — Build Studio Bridge",
       "description": "Your build plan as a hologram, checked block by block. For Fabric, NeoForge and Paper servers.",
       "featured": true
     },
@@ -70,7 +70,7 @@
     {
       "file": "gallery/08-allow-planner.png",
       "title": "Allow the planner",
-      "description": "The Bauplaner website on this PC asks to connect; nothing is exchanged until you click Allow planner."
+      "description": "The Build Studio website on this PC asks to connect; nothing is exchanged until you click Allow planner."
     },
     {
       "file": "gallery/09-build-guides.png",
@@ -162,9 +162,9 @@
       "type": "system_interactions",
       "note": "Everything is local to this PC or goes to the team room you chose; the mod never contacts the Minecraft server unless you allow team building there.",
       "interactions": [
-        "While the game runs, a small service answers on 127.0.0.1 (port 47615 by default, reachable only from this PC) so the Bauplaner website in your browser can find the game. It answers only the website itself (freadeax.github.io or its mirror bauplaner.pages.dev) and local development pages. Plans, map markers and build state are exchanged only after you click “Allow planner” in the game (J menu).",
+        "While the game runs, a small service answers on 127.0.0.1 (port 47615 by default, reachable only from this PC) so the Build Studio website in your browser can find the game. It answers only the website itself (freadeax.github.io or its mirror bauplaner.pages.dev) and local development pages. Plans, map markers and build state are exchanged only after you click “Allow planner” in the game (J menu).",
         "With a team room connected in the planner: an outgoing WebSocket or HTTPS connection to that room.",
-        "Team lead only, on a server with the optional Bauplaner plugin and team building allowed there: the mod sends the team room address and the room's server key once over the plugin channel bauplaner:team, so the plugin connects itself to the room. Helpers never get this key.",
+        "Team lead only, on a server with the optional Build Studio plugin and team building allowed there: the mod sends the team room address and the room's server key once over the plugin channel bauplaner:team, so the plugin connects itself to the room. Helpers never get this key.",
         "The team's world plan (building sites, paths, zones, points, groups, locks) is read from that team room and kept in bauplaner/markierungen.json. The optional Paper plugin reads it with its server key, writes the markers into BlueMap or Dynmap on that server and keeps the last version in plugins/BauplanerBridge/team/.",
         "/bauplaner diagnose copies a diagnosis report to the clipboard.",
         "Plans, settings, the team room address and reports are stored in the game folder under bauplaner/.",

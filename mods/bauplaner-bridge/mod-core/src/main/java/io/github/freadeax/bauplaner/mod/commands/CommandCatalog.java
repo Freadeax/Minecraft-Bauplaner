@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import io.github.freadeax.bauplaner.mod.Lang;
 
 /**
- * Every command of the Bauplaner mod and of the Bauplaner Paper plugin as a button for the command page of
+ * Every command of the Build Studio mod and of the Build Studio Paper plugin as a button for the command page of
  * the J menu (GAME-10). Client commands run under {@code /bauplaner}, server commands always under the
  * plugin alias {@code /bp}: the client mod has its own {@code /bauplaner zeigen|plan|anker|scan|status|…}
  * and would catch them otherwise. A click sends exactly the command the player could type, nothing more.
@@ -28,7 +28,7 @@ public final class CommandCatalog {
     public enum Need {
         NONE("", ""), PLAN("Erst einen Plan platzieren (Plan-Menü).", "Place a plan first (plan menu)."),
         TEAM("Erst im Planer „Mit Spiel abgleichen“ oder auf einem Server mit Teambau spielen.", "First use “Compare with game” in the planner or play on a server with team building."),
-        PLUGIN("Der Server hat kein Bauplaner-Plugin (oder du darfst /bp nicht).", "The server has no Bauplaner plugin (or you may not use /bp)."),
+        PLUGIN("Der Server hat kein Build-Studio-Plugin (oder du darfst /bp nicht).", "The server has no Build Studio plugin (or you may not use /bp)."),
         LEAD("Nur für die Bauleitung des Teams.", "Only for the team lead."),
         CHEST("Vorher auf die Kiste schauen.", "Look at the chest first.");
         public final String reason, reasonEn;

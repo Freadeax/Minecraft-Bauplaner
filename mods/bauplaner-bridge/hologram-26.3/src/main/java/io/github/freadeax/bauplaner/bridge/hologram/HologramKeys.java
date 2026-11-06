@@ -10,7 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
 /**
- * Keys of the mod, changeable under Options → Controls → "Bauplaner". Arrow keys move the plan
+ * Keys of the mod, changeable under Options → Controls → "Build Studio". Arrow keys move the plan
  * relative to the view direction, so "up" always means "away from me". Key codes are InputConstants
  * constants (SDL scancodes since 26.x, not GLFW codes).
  */

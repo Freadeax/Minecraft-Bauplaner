@@ -56,7 +56,7 @@ public final class CommandScreen extends Screen {
     private float[] underline;
 
     CommandScreen(HologramClient client) {
-        super(Component.literal("Bauplaner"));
+        super(Component.literal("Build Studio"));
         this.client = client;
     }
 
@@ -289,7 +289,7 @@ public final class CommandScreen extends Screen {
         var con = mc.getConnection();
         String server = single ? t("Einzelspieler", "Singleplayer") : con != null && con.getServerData() != null ? con.getServerData().ip : "Server";
         boolean plugin = con != null && con.getCommands().getRoot().getChild("bp") != null;
-        out.add(row(server + " · Bauplaner-Plugin: " + (plugin ? t("ja (/bp)", "yes (/bp)") : t("nein", "no")), plugin ? HudCard.ACCENT : HudCard.MUTED));
+        out.add(row(server + " · Build-Studio-Plugin: " + (plugin ? t("ja (/bp)", "yes (/bp)") : t("nein", "no")), plugin ? HudCard.ACCENT : HudCard.MUTED));
         out.add(row(client.link().statusText(), HudCard.MUTED));
         statusCache = out;
         return out;
@@ -324,7 +324,7 @@ public final class CommandScreen extends Screen {
         float fade = Math.min(1f, (System.currentTimeMillis() - openedAt) / 180f);
         for (var c : children()) if (c instanceof net.minecraft.client.gui.components.AbstractWidget w) w.setAlpha(Math.max(0.05f, fade));
         super.extractRenderState(g, mouseX, mouseY, delta);
-        String head = t("Bauplaner · Befehle & Status", "Bauplaner · Commands & status");
+        String head = t("Build Studio · Befehle & Status", "Build Studio · Commands & status");
         g.centeredText(font, head, width / 2, 6, HudCard.TEXT);
         if (activeTab != null) {
             if (underline == null) underline = new float[] { activeTab[0], activeTab[2] };

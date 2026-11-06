@@ -8,12 +8,12 @@ clientSideOnly=true
 [[mods]]
 modId="bauplaner_bridge"
 version="${version}"
-displayName="Bauplaner-Brücke"
+displayName="LMNT — Build Studio Bridge"
 displayURL="https://freadeax.github.io/Minecraft-Bauplaner/#/mod"
 authors="Freadeax"
 displayTest="IGNORE_ALL_VERSION"
 description='''
-Liest den Bereich eines Bauplans aus der Welt und schreibt eine Aufnahme, die der Minecraft-Bauplaner im Tab „Bauen“ vergleicht. Nur lesend, reine Client-Mod: setzt keine Blöcke, sendet nichts ins Internet, braucht nichts auf dem Server.
+Liest den Bereich eines Bauplans aus der Welt und schreibt eine Aufnahme, die LMNT — Build Studio im Tab „Bauen“ vergleicht. Nur lesend, reine Client-Mod: setzt keine Blöcke, sendet nichts ins Internet, braucht nichts auf dem Server.
 '''
 
 [[dependencies.bauplaner_bridge]]

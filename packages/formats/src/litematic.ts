@@ -226,7 +226,7 @@ export function normalizeLitematic(sourceNbt: { name: string; tag: NbtTag }, opt
   const root = compound(sourceNbt.tag, 'Root');
   if (root.Schematic !== undefined) fail('Das ist eine Sponge-Schematic, keine Litematic-Datei.');
   const version = int(root.Version, 'Version');
-  if (version > LITEMATIC_MAX_VERSION) fail(`Litematic-Format ${version} ist neuer als die bekannte Version ${LITEMATIC_MAX_VERSION}; bitte die Datei mit einer älteren Litematica-Version speichern oder den Bauplaner aktualisieren.`);
+  if (version > LITEMATIC_MAX_VERSION) fail(`Litematic-Format ${version} ist neuer als die bekannte Version ${LITEMATIC_MAX_VERSION}; bitte die Datei mit einer älteren Litematica-Version speichern oder das Build Studio aktualisieren.`);
   if (version < LITEMATIC_MIN_VERSION) fail(`Litematic-Format ${version} (frühe Litematica-Versionen) wird nicht unterstützt; bitte die Datei in Litematica öffnen und neu speichern.`);
   const subVersion = root.SubVersion === undefined ? null : int(root.SubVersion, 'SubVersion');
   const dataVersion = root.MinecraftDataVersion === undefined ? 0 : int(root.MinecraftDataVersion, 'MinecraftDataVersion');

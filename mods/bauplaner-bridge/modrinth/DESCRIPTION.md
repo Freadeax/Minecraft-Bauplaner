@@ -1,10 +1,10 @@
-**Bauplaner Bridge** brings the plans you make in the [Minecraft-Bauplaner](https://freadeax.github.io/Minecraft-Bauplaner/) into your world. The plan appears as a hologram exactly where you want to build, and the mod checks block by block what is already right, what is missing and what is wrong. It never places or removes a block for you.
+**LMNT — Build Studio Bridge** brings the plans you make in the [LMNT — Build Studio](https://freadeax.github.io/Minecraft-Bauplaner/) into your world. The plan appears as a hologram exactly where you want to build, and the mod checks block by block what is already right, what is missing and what is wrong. It never places or removes a block for you.
 
 *Deutsche Beschreibung weiter unten.*
 
 ## What it does
 
-- **Hologram of your plan.** Load a `.schem` exported from the Bauplaner, put it where you are looking, then move, rotate and mirror it. The position is remembered per world and server.
+- **Hologram of your plan.** Load a `.schem` exported from the Build Studio, put it where you are looking, then move, rotate and mirror it. The position is remembered per world and server.
 - **Live progress.** The HUD shows how much is done and how many blocks are missing, wrong or in the wrong state (stairs facing the wrong way, for example), and points you to the next mistake.
 - **Layers, sections and x-ray.** Show all layers, one layer or everything up to a layer. Build the plan section by section as planned on the website, and see open blocks through walls.
 - **Material and packing list.** What is still open, what you carry (shulker boxes and bundles count) and what you still need to fetch, in stacks and shulker boxes. With a team, a *storage* column shows the stock of your team's storage chests and the packing list names the nearest chest that holds it.
@@ -24,7 +24,7 @@
 - **Client-side.** The mod works in singleplayer and on any multiplayer server. The server does not need it.
 - **What goes over the network.** Without a team room, nothing leaves your PC: the planner link only listens on `127.0.0.1`. With a team room (your choice in the planner), the mod sends your player name, your position and build section while you play, and your team actions and measurements to that room. See *Content disclosures* on this page.
 - **Language.** Everything is in English and German and follows your game language (or `/buildplanner language english|german|auto`). Every command works in both languages: `/buildplanner …` with English words, `/bauplaner …` with German words, with tab completion in your language.
-- **Keys.** `J` opens the plan menu. All keys can be changed under *Options → Controls → Bauplaner*. `/buildplanner help` shows how to start; all commands are listed on the [planner page](https://freadeax.github.io/Minecraft-Bauplaner/#/mod).
+- **Keys.** `J` opens the plan menu. All keys can be changed under *Options → Controls → Build Studio*. `/buildplanner help` shows how to start; all commands are listed on the [planner page](https://freadeax.github.io/Minecraft-Bauplaner/#/mod).
 - **Works with** Iris with shader packs, Xaero's Minimap, Jade and REI (tested in a real Fabric modpack).
 
 ## Downloads in this project
@@ -48,7 +48,7 @@ The Paper plugin is optional. It sets itself up, an operator pairs it from the p
 
 ## Deutsch
 
-**Bauplaner-Brücke** holt die Pläne aus dem [Minecraft-Bauplaner](https://freadeax.github.io/Minecraft-Bauplaner/) als Hologramm in deine Welt. Die Mod prüft Block für Block, was schon stimmt, was fehlt und was falsch ist, und baut nie selbst.
+**Build-Studio-Brücke** holt die Pläne aus [LMNT — Build Studio](https://freadeax.github.io/Minecraft-Bauplaner/) als Hologramm in deine Welt. Die Mod prüft Block für Block, was schon stimmt, was fehlt und was falsch ist, und baut nie selbst.
 
 - **Hologramm** an der gewünschten Stelle, verschieben, drehen, spiegeln; die Lage wird je Welt und Server gemerkt.
 - **Baustand live** im HUD mit Hinweis auf den nächsten Fehler.
@@ -65,4 +65,4 @@ The Paper plugin is optional. It sets itself up, an operator pairs it from the p
 - **Weltplan des Teams:** Bauplätze, Wege, Zonen, Punkte, Gruppen und Sperren aus dem Planer kommen über den Team-Raum zu allen im Team, auch wenn deren Planer nicht offen ist. Das freiwillige Paper-Plugin zeichnet sie selbst auf BlueMap oder Dynmap.
 - **Teambau** (freiwillig): Spiel im Planer mit einem Klick mit dem Team-Raum verbinden. Abschnitte, Meldungen, Notizen und Kisten kommen live ins Spiel. Der Minecraft-Server braucht dafür nichts. Mit dem freiwilligen Paper-Plugin verbindet das Spiel der Bauleitung den Server selbst mit dem Team-Raum – ohne Datei herunterladen oder hochladen.
 
-Reine Client-Mod. Ohne Team-Raum verlässt nichts deinen PC; mit Team-Raum gehen Spielername, Position, Abschnitt, Teamaktionen und Messungen an diesen Raum. `J` öffnet das Planmenü, alle Tasten unter *Optionen → Steuerung → Bauplaner*. Das Paper-Plugin ist freiwillig und gehört nur auf den Server in den Ordner `plugins`.
+Reine Client-Mod. Ohne Team-Raum verlässt nichts deinen PC; mit Team-Raum gehen Spielername, Position, Abschnitt, Teamaktionen und Messungen an diesen Raum. `J` öffnet das Planmenü, alle Tasten unter *Optionen → Steuerung → Build Studio*. Das Paper-Plugin ist freiwillig und gehört nur auf den Server in den Ordner `plugins`.

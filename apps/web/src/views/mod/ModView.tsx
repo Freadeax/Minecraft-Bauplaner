@@ -29,7 +29,7 @@ function LauncherGuide({ loader, minecraft, file }: { loader: string; minecraft:
     <ol className="mod-steps" aria-label={`Schritte für ${LAUNCHER_LABEL[launcher]}`}>
       {guide.steps.map((step, i) => <li key={i}><Rich text={step} /></li>)}
     </ol>
-    <p className="muted"><b>Ordner <code>mods</code>:</b> <Rich text={guide.folder} />{guide.needs.length > 0 && <> · Außerdem nötig: {guide.needs.join(', ')}.</>} Modrinth-Seite: <a href={MODRINTH_PAGE} target="_blank" rel="noopener noreferrer">Bauplaner Bridge</a> (erscheint, sobald Modrinth sie freigegeben hat).</p>
+    <p className="muted"><b>Ordner <code>mods</code>:</b> <Rich text={guide.folder} />{guide.needs.length > 0 && <> · Außerdem nötig: {guide.needs.join(', ')}.</>} Modrinth-Seite: <a href={MODRINTH_PAGE} target="_blank" rel="noopener noreferrer">LMNT — Build Studio Bridge</a> (erscheint, sobald Modrinth sie freigegeben hat).</p>
     <ul className="mod-checks">{INSTALL_CHECKS.map((c, i) => <li key={i}><Rich text={c} /></li>)}</ul>
   </section>;
 }
@@ -110,7 +110,7 @@ export function ModView({ search }: { search?: string | undefined }) {
 
   return <div className="page system-page mod-page">
     <div className="page-head"><div><span className="eyebrow">MOD · BAUPLANER-BRÜCKE</span><h1 className="page-title">Mod herunterladen</h1>
-      <p className="muted">Die Bauplaner-Mod zeigt deinen Plan im Spiel als Hologramm, gleicht ihn live mit der Welt ab, hilft beim richtigen Setzen und schreibt Aufnahmen für den Soll/Ist-Vergleich. Sie baut nie selbst und sendet nichts ins Internet.</p>
+      <p className="muted">Die Build-Studio-Mod zeigt deinen Plan im Spiel als Hologramm, gleicht ihn live mit der Welt ab, hilft beim richtigen Setzen und schreibt Aufnahmen für den Soll/Ist-Vergleich. Sie baut nie selbst und sendet nichts ins Internet.</p>
       <p><a href="#/anleitung?weg=mod" data-guide-link="">Neu hier? Schritt für Schritt mit Bildern: „Mod installieren und verbinden“ →</a></p></div></div>
 
     <div className="mod-targets" role="group" aria-label="Wofür brauchst du die Mod?">
@@ -127,7 +127,7 @@ export function ModView({ search }: { search?: string | undefined }) {
     {!server && <section className="system-card system-wide mod-quick" aria-labelledby="mod-quick">
       <h2 id="mod-quick">So geht's in drei Schritten</h2>
       <ol className="mod-steps mod-quick-steps">
-        <li><b>Mod holen:</b> in der Modrinth App „Bauplaner Bridge“ suchen und installieren – oder unten die passende Datei laden.</li>
+        <li><b>Mod holen:</b> in der Modrinth App „LMNT — Build Studio Bridge“ suchen und installieren – oder unten die passende Datei laden.</li>
         <li><b>Verbinden:</b> Minecraft starten, <b>J</b> drücken und „Planer zulassen“ klicken.</li>
         <li><b>Plan ins Spiel:</b> auf der <a href="#/karte">Weltkarte</a> „▶ Ins Spiel senden“ – der Plan erscheint als Hologramm.</li>
       </ol>
@@ -181,7 +181,7 @@ export function ModView({ search }: { search?: string | undefined }) {
       <h2 id="mod-install">Auf dem Server installieren und benutzen</h2>
       <ol className="mod-steps">
         <li>Die .jar in den Ordner <code>plugins</code> des Paper-Servers legen und den Server neu starten (Dateimenü deines Hosters). Folia wird nicht unterstützt. Das Plugin richtet sich beim ersten Start selbst ein.</li>
-        <li>Als Operator mit der Bauplaner-Mod (ab 0.12) beitreten, im Spiel <b>J</b> → „Teambau erlauben“, dann oben auf dieser Seite unter „Spiel und Server verbinden“ auf „Server koppeln“. Ab dann stellst du alles hier ein: Einstellungen, Team, Team-Raum. Befehle sind nicht nötig.</li>
+        <li>Als Operator mit der Build-Studio-Mod (ab 0.12) beitreten, im Spiel <b>J</b> → „Teambau erlauben“, dann oben auf dieser Seite unter „Spiel und Server verbinden“ auf „Server koppeln“. Ab dann stellst du alles hier ein: Einstellungen, Team, Team-Raum. Befehle sind nicht nötig.</li>
         <li>Team-Infos (Abschnitte, Lagerkisten, Abschnittsschutz) holt sich das Plugin über das Internet aus dem Team-Raum: Im Projekt unter „Team“ → „Team live“ als Bauleitung „Mein Spiel verbinden“ klicken und mit der Mod auf den Server gehen – die Mod verbindet den Server dann selbst (Mod und Plugin ab 0.21.0). Pläne legst du mit „⇪ Plan auf den Server legen“ im Reiter „Bauen“ ab. Nichts herunterladen, nichts hochladen.</li>
         <li>Im Spiel <code>/bauplaner plan &lt;datei&gt;</code>, dann auf den Block mit Projektkoordinate 0/0/0 schauen und <code>/bauplaner anker hier</code> eingeben. Der Anker gilt für alle, die diesen Plan laden. In der Konsole: <code>bauplaner anker &lt;x&gt; &lt;y&gt; &lt;z&gt; [welt]</code>.</li>
         <li>Am einfachsten ohne Befehl: Server unten koppeln, auf der Weltkarte „⇪ Auf den Server legen“, dann im Projekt unter „Bauen“ „⇩ Auf dem Server aufnehmen“ (Plugin 0.13.0).</li>
@@ -197,7 +197,7 @@ export function ModView({ search }: { search?: string | undefined }) {
         <li>Bauen: fehlende Blöcke erscheinen als durchsichtige Geisterblöcke, falsche rot. <b>Num 7</b> Materialliste, <b>Num 6</b> Ebenen, <b>Num 8</b> Planblock in die Hand, <b>.</b> nächster Fehler. Die Platzierhilfe verhindert falsche Blöcke und falsche Ausrichtung und sagt, wie man richtig klickt.</li>
         <li>Für den Vergleich auf der Website: im Projekt unter „Bauen“ „⟳ Baustand holen (bester Weg)“ – die Mod liest den Bau und schickt ihn direkt an den Planer. Nur ohne Verbindung: <code>/bauplaner scan</code> und „Notfall: Aufnahme-Datei“.</li>
       </ol>
-      <p className="muted">Läuft nur auf deinem Rechner, auch auf fremden Servern ohne Plugin. Meldungen der Mod erscheinen ab 0.23.0 als kurze Karte oben rechts statt im Chat, das Baufenster oben rechts ist kompakt; beides stellst du im Menü unter „Optionen“ um (oder <code>/bauplaner meldungen chat</code>, <code>/bauplaner anzeige ausfuehrlich</code>). <code>/bauplaner hilfe</code> zeigt die fünf Schritte. Alle Tasten unter Optionen → Steuerung → „Bauplaner“.</p>
+      <p className="muted">Läuft nur auf deinem Rechner, auch auf fremden Servern ohne Plugin. Meldungen der Mod erscheinen ab 0.23.0 als kurze Karte oben rechts statt im Chat, das Baufenster oben rechts ist kompakt; beides stellst du im Menü unter „Optionen“ um (oder <code>/bauplaner meldungen chat</code>, <code>/bauplaner anzeige ausfuehrlich</code>). <code>/bauplaner hilfe</code> zeigt die fünf Schritte. Alle Tasten unter Optionen → Steuerung → „Build Studio“.</p>
     </section></More>}
 
     {!server && selection && build && <LauncherGuide loader={selection.loader} minecraft={selection.minecraft} file={build.file} />}
@@ -224,7 +224,7 @@ export function ModView({ search }: { search?: string | undefined }) {
       <ol className="mod-steps">
         <li>Im Planer im Reiter „Team“ „Ich bin“ wählen, mit dem Spiel verbinden (siehe oben) und unter „Mit Spiel abgleichen“ „Jetzt abgleichen“ drücken.</li>
         <li>Im Spiel <code>/bauplaner team abschnitte</code>, <code>/bauplaner team nehmen &lt;nr&gt;</code>, <code>/bauplaner team mein</code> (nur deine Abschnitte einblenden), <code>/bauplaner team material</code>, <code>/bauplaner team fertig</code>.</li>
-        <li>Läuft auf dem Server das Bauplaner-Plugin, fragt das Spiel einmal: <b>J</b> → „Teambau erlauben“. Dann kommen die Meldungen aller Mitspieler live an und die Bauleitung kann den Planstand vom Planer aus auf den Server legen.</li>
+        <li>Läuft auf dem Server das Build-Studio-Plugin, fragt das Spiel einmal: <b>J</b> → „Teambau erlauben“. Dann kommen die Meldungen aller Mitspieler live an und die Bauleitung kann den Planstand vom Planer aus auf den Server legen.</li>
       </ol>
       <p className="muted">Ohne „Teambau erlauben“ sendet die Mod nichts an den Server, auch wenn er das Plugin hat. Deine Meldungen warten dann im Ausgangskorb, bis der Planer sie beim nächsten Abgleich abholt (<code>/bauplaner team korb</code>). <code>/bauplaner team verbieten</code> schaltet den Kanal für diesen Server wieder ab. Ab Mod 0.11.0 gehen alle diese Befehle, auch die des Server-Plugins für Lager und Nachweis, per Klick: im Plan-Menü (J) unten links „Befehle &amp; Status“. Mit NeoForge nennt der Client beim Verbinden die Namen aller optionalen Kanäle seiner Mods, auch <code>bauplaner:team</code>. Das ist Teil der Verbindungsaushandlung von NeoForge, dabei wird kein Teampaket gesendet.</p>
       </section>

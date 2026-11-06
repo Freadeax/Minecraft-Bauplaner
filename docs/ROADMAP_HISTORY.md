@@ -8315,3 +8315,205 @@ Block 5: Werkstatt und Weltkarte auf iPad Pro 11/iPhone 15 (WebKit) und Firefox 
 - `tests/e2e/world-groups.e2e.mjs`
 - `tests/e2e/worldbuilder.e2e.mjs`
 
+## 2026-11-06T22:07:50.122Z · progress
+
+**Aufgaben:** NAME-01
+
+Nach Rebase auf Block 4/6, MAP-07, QA-02: neue Texte (Kartensets, Abnahmen, Mehrspieler-Tests) umbenannt; Mod-Dateien 0.24.0 mit dem aktuellen Plugin-Stand neu gebaut.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| NAME-01 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme durch Philipp: Seite und Mod 0.24.0 im Spiel ansehen (Tastengruppe „Build Studio“, Menütitel). |
+
+**Geänderte Dateien:**
+
+- `.github/ISSUE_TEMPLATE/testphase-mod.yml`
+- `AGENTS.md`
+- `README.md`
+- `apps/web/index.html`
+- `apps/web/src/app/Shell.tsx`
+- `apps/web/src/app/errorLog.ts`
+- `apps/web/src/app/idbRepository.ts`
+- `apps/web/src/app/nav.ts`
+- `apps/web/src/blockmodels/TexturePanel.tsx`
+- `apps/web/src/export3d/build.ts`
+- `apps/web/src/testing/autochecks.ts`
+- `apps/web/src/testing/protocol.ts`
+- `apps/web/src/testing/testplan.ts`
+- `apps/web/src/views/guide/guideSteps.ts`
+- `apps/web/src/views/library/ContributePanel.tsx`
+- `apps/web/src/views/library/VersionsSection.tsx`
+- `apps/web/src/views/map/LiveGamePanel.tsx`
+- `apps/web/src/views/map/LiveMapPanel.tsx`
+- `apps/web/src/views/map/WorldMapView.tsx`
+- `apps/web/src/views/map/liveClient.ts`
+- `apps/web/src/views/mod/ModView.tsx`
+- `apps/web/src/views/mod/ServerPanel.tsx`
+- `apps/web/src/views/mod/installGuide.ts`
+- `apps/web/src/views/mod/releases.json`
+- `apps/web/src/views/mod/releases.ts`
+- `apps/web/src/views/mod/serverClient.ts`
+- `apps/web/src/views/project/LandscapeTab.tsx`
+- `apps/web/src/views/project/ProjectView.tsx`
+- `apps/web/src/views/project/TerrainTab.tsx`
+- `apps/web/src/views/project/team/TeamLive.tsx`
+- `apps/web/src/views/project/team/TeamRoom.tsx`
+- `apps/web/src/views/project/team/TeamTab.tsx`
+- `apps/web/src/views/world/GameLinkBar.tsx`
+- `docs/TESTING.md`
+- `docs/architecture/betrieb/TESTPHASE.md`
+- `docs/architecture/formate/BLOCK_MODELS.md`
+- `docs/architecture/kern/BACKUPS.md`
+- `docs/architecture/kern/SIZE_LIMITS.md`
+- `docs/architecture/kern/SPECIFICATION.md`
+- `docs/architecture/mod/MOD_BRIDGE.md`
+- `docs/architecture/mod/MOD_HOLOGRAM.md`
+- `docs/architecture/planer/UI.md`
+- `docs/architecture/team/AUTO_LINK.md`
+- `docs/architecture/team/LIVE_LINK.md`
+- `docs/architecture/welt/LIVEMAP.md`
+- `docs/architecture/welt/WORLDMAP.md`
+- `docs/testing/TESTPLAN.md`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.24.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.24.0.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.24.0.jar`
+- `mods/bauplaner-bridge/CHANGELOG.md`
+- `mods/bauplaner-bridge/README.md`
+- `mods/bauplaner-bridge/VERSION`
+- `mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/AnchorStore.java`
+- `mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/Plan.java`
+- `mods/bauplaner-bridge/core/src/main/java/io/github/freadeax/bauplaner/bridge/session/BridgeSession.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/java/io/github/freadeax/bauplaner/bridge/gametest/PaperMultiplayerTest.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/gametest/resources/fabric.mod.json`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/fabric/BridgeClient.java`
+- `mods/bauplaner-bridge/fabric-26.3/src/main/resources/fabric.mod.json`
+- `mods/bauplaner-bridge/forge-26.3/src/gametest/resources/META-INF/mods.toml`
+- `mods/bauplaner-bridge/forge-26.3/src/main/templates/META-INF/mods.toml`
+- `mods/bauplaner-bridge/forge-26.3/src/main/templates/pack.mcmeta`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/ClientSettings.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/CommandScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/GuideClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/Hologram.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramCommands.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramDiagnose.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/HologramKeys.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LinkPrompt.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/LiveLink.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/MaterialScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/McCompat.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/PlanScreen.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TeamClient.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/java/io/github/freadeax/bauplaner/bridge/hologram/TerrainRecorder.java`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/resources/assets/bauplaner_bridge/lang/de_de.json`
+- `mods/bauplaner-bridge/hologram-26.3/src/main/resources/assets/bauplaner_bridge/lang/en_us.json`
+- `mods/bauplaner-bridge/mod-core/build.gradle`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/Diagnostics.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/PlacementStore.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/CommandCatalog.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/commands/ReplyLog.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/edit/GuidePlan.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/live/LiveLinkServer.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/room/RoomClient.java`
+- `mods/bauplaner-bridge/mod-core/src/main/java/io/github/freadeax/bauplaner/mod/team/TeamSync.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/CommandCatalogTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/DiagnosticsTest.java`
+- `mods/bauplaner-bridge/mod-core/src/test/java/io/github/freadeax/bauplaner/mod/ModCoreTest.java`
+- `mods/bauplaner-bridge/modrinth/DESCRIPTION.md`
+- `mods/bauplaner-bridge/modrinth/gallery/00-title.png`
+- `mods/bauplaner-bridge/modrinth/project.json`
+- `mods/bauplaner-bridge/neoforge-26.3/src/gametest/resources/META-INF/neoforge.mods.toml`
+- `mods/bauplaner-bridge/neoforge-26.3/src/main/templates/META-INF/neoforge.mods.toml`
+- `mods/bauplaner-bridge/paper/build.gradle`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/BridgePlugin.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/MapMarkers.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/ServerLink.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/StorageModule.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamChannel.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamLog.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/TeamModule.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/WorldModule.java`
+- `mods/bauplaner-bridge/paper/src/main/java/io/github/freadeax/bauplaner/bridge/paper/WorldShare.java`
+- `mods/bauplaner-bridge/paper/src/main/resources/config.yml`
+- `mods/bauplaner-bridge/paper/src/main/resources/plugin.yml`
+- `mods/bauplaner-bridge/settings.gradle`
+- `packages/domain/src/base/base.ts`
+- `packages/domain/src/base/planLandscape.ts`
+- `packages/domain/src/catalog/buildings.ts`
+- `packages/domain/src/catalog/contribution.ts`
+- `packages/domain/src/catalog/generators/index.ts`
+- `packages/domain/src/catalog/grossprojekte.ts`
+- `packages/domain/src/core/samples.ts`
+- `packages/domain/src/data/backup.ts`
+- `packages/domain/src/data/backupStatus.ts`
+- `packages/domain/src/team/liveLink.ts`
+- `packages/domain/src/team/serverControl.ts`
+- `packages/domain/src/team/team.ts`
+- `packages/domain/src/team/teamLink.ts`
+- `packages/domain/src/world/liveMapExport.ts`
+- `packages/domain/src/world/livemap.ts`
+- `packages/domain/src/world/terrainDesign.ts`
+- `packages/domain/src/world/terrainSurvey.ts`
+- `packages/formats/src/litematic.ts`
+- `packages/formats/src/model3d.ts`
+- `packages/formats/src/scan.ts`
+- `scripts/mod/bridge_gametest.mjs`
+- `scripts/mod/bridge_paperlink.mjs`
+- `scripts/mod/bridge_papermapfallback.mjs`
+- `scripts/mod/bridge_papertest.mjs`
+- `scripts/mod/bridge_paperworld.mjs`
+- `scripts/mod/lib/multiplayer.mjs`
+- `scripts/mod/modrinth_publish.mjs`
+- `scripts/mod/test_bridge_ingame.sh`
+- `scripts/mod/test_bridge_ingame_forge.sh`
+- `scripts/mod/test_bridge_paper_mapfallback.sh`
+- `scripts/mod/test_multiplayer_client.sh`
+- `services/team-room/src/index.js`
+- `services/team-room/wrangler.toml`
+- `tests/e2e/anleitung.e2e.mjs`
+- `tests/e2e/livemap-export.e2e.mjs`
+- `tests/e2e/mod-download.e2e.mjs`
+- `tests/e2e/modSimulator.mjs`
+- `tests/e2e/server-link.e2e.mjs`
+- `tests/e2e/stability.e2e.mjs`
+- `tests/e2e/worldmap.e2e.mjs`
+- `tests/unit/data/backup.test.mjs`
+- `tests/unit/team/livelink.test.mjs`
+- `tests/unit/team/team-link.test.mjs`
+- `tests/unit/web/testphase.test.mjs`
+- `tests/unit/world/livemap-export.test.mjs`
+- `tests/unit/world/livemap.test.mjs`
+- `tests/unit/world/terrain-design.test.mjs`
+- `tests/unit/world/terrain-survey.test.mjs`
+
+## 2026-11-06T22:08:21.993Z · progress
+
+**Aufgaben:** NAME-01
+
+Mod-Dateien 0.24.0 nach Rebase neu gebaut (mod-core/paper-Tests grün).
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| NAME-01 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme durch Philipp: Seite und Mod 0.24.0 im Spiel ansehen (Tastengruppe „Build Studio“, Menütitel). |
+
+**Geänderte Dateien:**
+
+- `apps/web/src/views/mod/releases.json`
+- `downloads/mod/bauplaner-bridge-fabric-26.3-0.24.0.jar`
+- `downloads/mod/bauplaner-bridge-neoforge-26.3-0.24.0.jar`
+- `downloads/mod/bauplaner-bridge-paper-0.24.0.jar`
+
+## 2026-11-06T22:11:34.211Z · progress
+
+**Aufgaben:** NAME-01
+
+Testplan-Ansicht nach Rebase neu erzeugt.
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| NAME-01 | 🧩 Implementiert · Abnahme offen | 3/4 | Abnahme durch Philipp: Seite und Mod 0.24.0 im Spiel ansehen (Tastengruppe „Build Studio“, Menütitel). |
+
+**Geänderte Dateien:**
+
+- `docs/testing/TESTPLAN.md`
+

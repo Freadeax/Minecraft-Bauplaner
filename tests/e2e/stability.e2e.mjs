@@ -123,7 +123,7 @@ test('Fehlerprotokoll sammelt unbehandelte Fehler und erstellt einen Bericht ohn
   await p.getByRole('button', { name: 'Fehlerbericht kopieren' }).click();
   await p.getByText(/Fehlerbericht kopiert/).waitFor();
   const report = await p.evaluate(() => navigator.clipboard.readText());
-  assert.match(report, /^Minecraft-Bauplaner Fehlerbericht/); assert.match(report, /Build: [0-9a-f]{7}/); assert.match(report, /Testfehler S-01/);
+  assert.match(report, /^LMNT — Build Studio Fehlerbericht/); assert.match(report, /Build: [0-9a-f]{7}/); assert.match(report, /Testfehler S-01/);
   await p.getByRole('button', { name: 'Protokoll leeren' }).click();
   await p.getByText('Keine Fehler aufgetreten.').waitFor();
   await context.close();

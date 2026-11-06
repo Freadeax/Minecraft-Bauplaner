@@ -31,7 +31,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 /**
- * Paper/Spigot plugin of the Bauplaner-Brücke. Reads the box of a website plan from the server world
+ * Paper/Spigot plugin of the Build-Studio-Brücke. Reads the box of a website plan from the server world
  * and writes the recording ({@code bauplaner-scan} v1, docs/architecture/mod/MOD_BRIDGE.md) that the
  * website imports. Never sets or removes blocks and never generates terrain.
  * <p>
@@ -40,7 +40,7 @@ import org.bukkit.scheduler.BukkitTask;
  * Each player (and the console) has an own selected plan; the anchor belongs to the plan.
  */
 public final class BridgePlugin extends JavaPlugin implements TabExecutor {
-    private static final String PREFIX = ChatColor.GOLD + "[Bauplaner] " + ChatColor.RESET;
+    private static final String PREFIX = ChatColor.GOLD + "[Build Studio] " + ChatColor.RESET;
     private static final List<String> SUBCOMMANDS = List.of("hilfe", "plaene", "plan", "anker", "scan", "abbrechen", "status", "weltplan", "worldplan");
 
     private Path root;
@@ -68,7 +68,7 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
         world.enable();
         team = new TeamModule(this, root);
         team.enable();
-        // Teamkanal für die Bauplaner-Mod (COOP-03): Spieler mit Mod sehen Abschnitte, Inhaber und Meldungen live.
+        // Teamkanal für die Build-Studio-Mod (COOP-03): Spieler mit Mod sehen Abschnitte, Inhaber und Meldungen live.
         if (getConfig().getBoolean("team.kanal", true)) { channel = new TeamChannel(this, team); channel.enable(); }
         // Anbindung ohne Befehle (LINK-02): Selbsteinrichtung, Kopplung durch einen OP, Steuerung aus dem Planer.
         link = new ServerLink(this, root);
@@ -80,7 +80,7 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
                 + ". Pläne in " + root.resolve("plans") + ", Aufnahmen in " + root.resolve("scans") + ".");
     }
 
-    /** Team channel to the Bauplaner mod, null when switched off in the config (for the storage module: broadcastStore). */
+    /** Team channel to the Build Studio mod, null when switched off in the config (for the storage module: broadcastStore). */
     TeamChannel teamChannel() { return channel; }
 
     /** Weltplan from the Team-Raum (WORLD-SHARE-01). */
@@ -362,7 +362,7 @@ public final class BridgePlugin extends JavaPlugin implements TabExecutor {
         try {
             if (Bukkit.getWorld(current.world.getUID()) == null) throw new BridgeException("Die Welt wurde entladen.");
             boolean done = current.tick(budget);
-            if (owner instanceof Player p) PaperCompat.actionBar(p, "Bauplaner-Aufnahme " + current.percent() + " %");
+            if (owner instanceof Player p) PaperCompat.actionBar(p, "Build-Studio-Aufnahme " + current.percent() + " %");
             if (!done) return;
         } catch (RuntimeException e) {
             stopScan();

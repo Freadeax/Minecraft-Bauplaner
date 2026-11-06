@@ -38,7 +38,7 @@ export function installGuide(launcher: LauncherId, loader: string, minecraft: st
       launcher, needs, folder: 'Windows: `%APPDATA%\\ModrinthApp\\profiles\\<Profilname>\\mods`',
       steps: [
         `Profil mit ${L} und Minecraft ${minecraft} öffnen oder neu anlegen („+“ links → „Profil erstellen“ → Loader ${L}, Version ${minecraft}).`,
-        `Am einfachsten über die Suche: im Profil „Inhalte hinzufügen“ → „Bauplaner Bridge“ suchen → „Installieren“. Die App holt passende Abhängigkeiten${fabric ? ' wie Fabric API' : ''} selbst und meldet neue Versionen. Solange Modrinth das Projekt noch prüft, findet die Suche es nicht – dann der nächste Schritt.`,
+        `Am einfachsten über die Suche: im Profil „Inhalte hinzufügen“ → „LMNT — Build Studio Bridge“ suchen → „Installieren“. Die App holt passende Abhängigkeiten${fabric ? ' wie Fabric API' : ''} selbst und meldet neue Versionen. Solange Modrinth das Projekt noch prüft, findet die Suche es nicht – dann der nächste Schritt.`,
         `Mit der Datei von dieser Seite: im Profil oben rechts „⋯“ → „Ordner öffnen“ → Ordner \`mods\` öffnen und \`${file}\` hineinlegen.${api}`,
         old,
         'Profil starten, eine Welt oder einen Server betreten und **J** drücken: das Planmenü öffnet sich.',
@@ -48,7 +48,7 @@ export function installGuide(launcher: LauncherId, loader: string, minecraft: st
       launcher, needs, folder: 'Instanz rechtsklicken → „Ordner“ → `minecraft/mods` (bzw. `.minecraft/mods`)',
       steps: [
         `„Instanz hinzufügen“ → Minecraft ${minecraft} wählen → unten bei „Mod-Loader“ ${L} wählen → „OK“. Eine vorhandene Instanz geht genauso, wenn Version und Loader passen.`,
-        `Instanz markieren → „Bearbeiten“ → „Mods“ → „Mods herunterladen“ → Reiter „Modrinth“ → „Bauplaner Bridge“ suchen, auswählen, „OK“.${fabric ? ' Prism bietet Fabric API als Abhängigkeit gleich mit an.' : ''} Solange Modrinth das Projekt noch prüft, findet die Suche es nicht – dann der nächste Schritt.`,
+        `Instanz markieren → „Bearbeiten“ → „Mods“ → „Mods herunterladen“ → Reiter „Modrinth“ → „LMNT — Build Studio Bridge“ suchen, auswählen, „OK“.${fabric ? ' Prism bietet Fabric API als Abhängigkeit gleich mit an.' : ''} Solange Modrinth das Projekt noch prüft, findet die Suche es nicht – dann der nächste Schritt.`,
         `Mit der Datei von dieser Seite: in „Bearbeiten“ → „Mods“ auf „Datei hinzufügen“ klicken (oder \`${file}\` in die Liste ziehen).${api}`,
         old,
         'Instanz starten, eine Welt oder einen Server betreten und **J** drücken: das Planmenü öffnet sich.',
@@ -58,7 +58,7 @@ export function installGuide(launcher: LauncherId, loader: string, minecraft: st
       launcher, needs, folder: 'Profil → „⋯“ → „Open Folder“ → `mods` (Windows meist `%USERPROFILE%\\curseforge\\minecraft\\Instances\\<Profil>\\mods`)',
       steps: [
         `„Minecraft“ → „Create Custom Profile“ → Version ${minecraft} → Loader ${L} → „Create“. Ein Modpack-Profil mit ${L} ${minecraft} geht genauso.`,
-        `Die Bauplaner-Mod steht nicht auf CurseForge, darum mit der Datei von dieser Seite: im Profil „⋯“ → „Open Folder“ → Ordner \`mods\` öffnen und \`${file}\` hineinlegen.`,
+        `Die Build-Studio-Mod steht nicht auf CurseForge, darum mit der Datei von dieser Seite: im Profil „⋯“ → „Open Folder“ → Ordner \`mods\` öffnen und \`${file}\` hineinlegen.`,
         ...(fabric ? ['Fehlt Fabric API: im Profil „Add More Content“ → „Fabric API“ suchen und installieren.'] : []),
         old,
         'Profil mit „Play“ starten, eine Welt oder einen Server betreten und **J** drücken: das Planmenü öffnet sich.',
@@ -81,7 +81,7 @@ export function installGuide(launcher: LauncherId, loader: string, minecraft: st
 
 /** Checks for every launcher: what tells the player the install worked or what went wrong. */
 export const INSTALL_CHECKS: readonly string[] = [
-  'Im Spiel öffnet **J** das Planmenü. Unter Optionen → Steuerung stehen alle Tasten in der Gruppe „Bauplaner“.',
+  'Im Spiel öffnet **J** das Planmenü. Unter Optionen → Steuerung stehen alle Tasten in der Gruppe „Build Studio“.',
   'Startet das Spiel nicht: Loader und Minecraft-Version des Profils mit der Datei vergleichen (oben unter „Datei“). Mit Fabric fehlt meist Fabric API.',
   'Nie das Server-Plugin (`bauplaner-bridge-paper-…jar`) in `mods` legen – es gehört nur auf einen Paper-Server und ist freiwillig.',
   'Probleme melden: im Spiel `/bauplaner diagnose` und die Datei aus `bauplaner/diagnose/` schicken.',

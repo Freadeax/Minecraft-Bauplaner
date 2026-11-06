@@ -1,5 +1,5 @@
 // Real-server test of the planner's emergency way to the server web map (MAP-02, KARTE-08 „Notfall ohne Team-Raum oder
-// Plugin“, packages/domain/src/world/liveMapExport.ts): no Bauplaner plugin on the server. BlueMap 5.29 on Paper 26.3
+// Plugin“, packages/domain/src/world/liveMapExport.ts): no Build Studio plugin on the server. BlueMap 5.29 on Paper 26.3
 // gets the exported `marker-sets` block at the end of maps/world.conf and `bluemap reload`; Dynmap 3.7 on Paper 1.21.4
 // gets the exported `dmarker` lines in the server console. Checked in the files the web maps really serve: sets,
 // marker types, place and height; a second, smaller export replaces the old markers instead of doubling them.
@@ -101,7 +101,7 @@ try {
     await reload();
     let sets;
     await until('Marker aus der .conf', async () => { sets = await markers(); return sets?.['bauplaner-punkte']; }, 300);
-    assert.equal(sets['bauplaner-bauplaetze'].label, 'Bauplaner: Bauplätze');
+    assert.equal(sets['bauplaner-bauplaetze'].label, 'Build Studio: Bauplätze');
     const markt = sets['bauplaner-bauplaetze'].markers.site_markt;
     assert.equal(markt.type, 'shape');
     assert.deepEqual(markt.shape.map(p => [p.x, p.z]), shape('site_markt').points.map(([x, z]) => [x, z]), 'Bauplatz an der richtigen Stelle');
@@ -138,7 +138,7 @@ try {
     assert.deepEqual(line.x, shape('path_haupt').points.map(p => p[0])); assert.deepEqual(line.z, shape('path_haupt').points.map(p => p[1]));
     const pt = mk.sets['bauplaner-punkte'].markers.pt_portal;
     assert.deepEqual([pt.x, pt.y, pt.z], [5, -60, 30], 'Punkt an Stelle und Höhe');
-    assert.equal(mk.sets['bauplaner-zonen'].label, 'Bauplaner: Zonen');
+    assert.equal(mk.sets['bauplaner-zonen'].label, 'Build Studio: Zonen');
     const count = j => Object.values(j.sets).reduce((n, s) => n + Object.keys(s.markers ?? {}).length + Object.keys(s.areas ?? {}).length + Object.keys(s.lines ?? {}).length, 0);
     const before = count(mk);
     console.log(`    Dynmap: ${before} Marker aus den Befehlen, Stelle und Höhe stimmen`);

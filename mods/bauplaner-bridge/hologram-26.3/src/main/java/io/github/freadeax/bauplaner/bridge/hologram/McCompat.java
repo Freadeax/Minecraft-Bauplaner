@@ -169,7 +169,7 @@ public final class McCompat {
         CommandScreen.REPLIES.own(plain, System.currentTimeMillis());
         ClientSettings.Notices where = ClientSettings.notices();
         if (where != ClientSettings.Notices.CHAT) {
-            String shown = plain.startsWith("[Bauplaner] ") ? plain.substring(12) : plain;
+            String shown = plain.startsWith("[Build Studio] ") ? plain.substring("[Build Studio] ".length()) : plain;
             Toasts.post(kind(text, shown), shown);
         }
         if (where == ClientSettings.Notices.POPUP || mc.player == null) LOG.info(plain);
@@ -224,8 +224,8 @@ public final class McCompat {
 
     /** A background notice (website, team room, Weltplan) as a card at the top right, never in the chat. */
     public static void notice(Minecraft mc, Toasts.Kind kind, String text) {
-        CommandScreen.REPLIES.own("[Bauplaner] " + text, System.currentTimeMillis());
-        LOG.info("[Bauplaner] " + text);
+        CommandScreen.REPLIES.own("[Build Studio] " + text, System.currentTimeMillis());
+        LOG.info("[Build Studio] " + text);
         Toasts.post(kind, text);
     }
 }

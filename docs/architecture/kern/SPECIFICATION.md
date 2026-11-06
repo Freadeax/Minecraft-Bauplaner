@@ -2,7 +2,7 @@
 
 Version 1.0 · 27.10.2026 · Sprache: Deutsch
 
-Status: Zielbild und technische Spezifikation. Erster interner Voxelkern implementiert und lokal geprüft; noch keine Browseranwendung. Verbindlicher Hostingzusatz vom 27.10.2026: GitHub Pages, siehe [Hostingvertrag](../betrieb/HOSTING.md). Die genannten Leistungswerte sind Abnahmeziele, keine Messergebnisse. Arbeitsname: LMNT Build Studio.
+Status: Zielbild und technische Spezifikation. Erster interner Voxelkern implementiert und lokal geprüft; noch keine Browseranwendung. Verbindlicher Hostingzusatz vom 27.10.2026: GitHub Pages, siehe [Hostingvertrag](../betrieb/HOSTING.md). Die genannten Leistungswerte sind Abnahmeziele, keine Messergebnisse. Arbeitsname: LMNT — Build Studio.
 
 ## 1. Produkt und durchgängiger Ablauf
 

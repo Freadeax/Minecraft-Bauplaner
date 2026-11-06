@@ -329,7 +329,7 @@ export function writeGlb(mesh: Mesh3d, options: GlbOptions = {}): Uint8Array {
     return { attributes, indices: accessor(g.indices, 'SCALAR', false, 34963), material: g.material, mode: 4 };
   });
   const gltf: Record<string, unknown> = {
-    asset: { version: '2.0', generator: options.generator ?? 'Minecraft-Bauplaner', ...(options.extras && { extras: options.extras }) },
+    asset: { version: '2.0', generator: options.generator ?? 'LMNT — Build Studio', ...(options.extras && { extras: options.extras }) },
     scene: 0, scenes: [{ nodes: [0] }], nodes: [{ name: mesh.name, mesh: 0 }],
     meshes: [{ name: mesh.name, primitives }],
     materials, accessors, bufferViews,
@@ -356,7 +356,7 @@ export function writeGlb(mesh: Mesh3d, options: GlbOptions = {}): Uint8Array {
 
 // ------------------------------------------------------------------ STL
 /** Binäres STL: Dreiecke mit Flächennormale, ohne Farben. */
-export function writeStl(mesh: Mesh3d, header = 'Minecraft-Bauplaner'): Uint8Array {
+export function writeStl(mesh: Mesh3d, header = 'LMNT — Build Studio'): Uint8Array {
   let count = 0;
   for (const g of mesh.groups) count += g.indices.length / 3;
   const out = new Uint8Array(84 + count * 50), dv = new DataView(out.buffer);
@@ -409,7 +409,7 @@ export async function write3mf(mesh: Mesh3d, options: ThreeMfOptions = {}): Prom
   const s = new TextSink();
   s.add('<?xml version="1.0" encoding="UTF-8"?>\n');
   s.add(`<model unit="${mesh.unit === 'meter' ? 'meter' : 'millimeter'}" xml:lang="de-DE" xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">\n`);
-  s.add(` <metadata name="Title">${xml(options.title ?? mesh.name)}</metadata>\n <metadata name="Application">Minecraft-Bauplaner</metadata>\n`);
+  s.add(` <metadata name="Title">${xml(options.title ?? mesh.name)}</metadata>\n <metadata name="Application">LMNT — Build Studio</metadata>\n`);
   if (options.designer) s.add(` <metadata name="Designer">${xml(options.designer)}</metadata>\n`);
   if (options.description) s.add(` <metadata name="Description">${xml(options.description)}</metadata>\n`);
   // Only materials a triangle uses: with „Farben: 4“ a slicer then offers exactly the kept colours as filaments.

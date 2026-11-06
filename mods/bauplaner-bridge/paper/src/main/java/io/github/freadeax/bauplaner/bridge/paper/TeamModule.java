@@ -55,7 +55,7 @@ import org.bukkit.scheduler.BukkitTask;
 final class TeamModule implements Listener {
     static final List<String> COMMANDS = List.of("team", "abschnitte", "nehmen", "abgeben", "fertig", "zeigen", "notiz", "notizen", "geliefert", "sammle",
             "zuweisen", "pruefen", "rolle", "lager", "nachweis", "beitrag", "uebergeben", "annehmen", "ablehnen", "abwesend", "zurueck");
-    private static final String PREFIX = ChatColor.GOLD + "[Bauplaner] " + ChatColor.RESET;
+    private static final String PREFIX = ChatColor.GOLD + "[Build Studio] " + ChatColor.RESET;
 
     private final JavaPlugin plugin;
     private final Path dir;

@@ -10,7 +10,7 @@ import { MODEL_MAX_FILE_BYTES } from '../../../../../packages/voxel/src/sizeLimi
 
 /**
  * Website side of the live link (MAP-03, docs/architecture/team/LIVE_LINK.md): talks
- * to the Bauplaner mod on this computer (http://127.0.0.1:<port>), never to a
+ * to the Build Studio mod on this computer (http://127.0.0.1:<port>), never to a
  * server. The pairing key stays in this browser only (localStorage); the mod
  * accepts it only from this website's origin.
  */
@@ -60,7 +60,7 @@ async function request(port: number, path: string, init: RequestInit & { token?:
       ...({ targetAddressSpace: 'loopback' } as object) });
   } catch (e) {
     throw new LiveError(ctrl.signal.aborted ? 'Die Mod antwortet nicht (Zeitüberschreitung).'
-      : 'Keine Verbindung zur Mod. Läuft Minecraft mit der Bauplaner-Mod 0.5 oder neuer, und hat der Browser den Zugriff auf Geräte im lokalen Netzwerk erlaubt?', 0);
+      : 'Keine Verbindung zur Mod. Läuft Minecraft mit der Build-Studio-Mod 0.5 oder neuer, und hat der Browser den Zugriff auf Geräte im lokalen Netzwerk erlaubt?', 0);
   } finally { clearTimeout(timer); }
   if (!res.ok) {
     let body: unknown = null;
@@ -210,7 +210,7 @@ async function localAccessState(): Promise<PermissionState | null> {
   }
   return null;
 }
-export const LIVE_NOT_FOUND = 'Die Mod meldet sich nicht. Läuft Minecraft mit der Bauplaner-Mod? Ab Mod 0.12 ist die Verbindung von selbst an; bei älteren Mods im Spiel /bauplaner verbinden eingeben. Dann hier erneut „Verbinden“.';
+export const LIVE_NOT_FOUND = 'Die Mod meldet sich nicht. Läuft Minecraft mit der Build-Studio-Mod? Ab Mod 0.12 ist die Verbindung von selbst an; bei älteren Mods im Spiel /bauplaner verbinden eingeben. Dann hier erneut „Verbinden“.';
 /** Name of this browser for the question in the game („Der Planer (…) möchte sich verbinden“). */
 export function deviceName(): string {
   const ua = typeof navigator === 'undefined' ? '' : navigator.userAgent;

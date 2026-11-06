@@ -42,7 +42,7 @@ test('rejects fractional, unsafe or nonfinite coordinates and malformed world id
   assert.doesNotThrow(() => buildLiveMapUrl(t, { ...pos, x: Number.MIN_SAFE_INTEGER, z: Number.MAX_SAFE_INTEGER }));
 });
 
-test('marker export is explicit Bauplaner JSON, snapshots input and detects duplicate identities', () => {
+test('marker export is explicit Build Studio JSON, snapshots input and detects duplicate identities', () => {
   const input = [{ id: 'p1', label: 'Hafen', position: { ...pos } }];
   const file = createLiveMapMarkerFile(input);
   assert.deepEqual(JSON.parse(JSON.stringify(file)), {

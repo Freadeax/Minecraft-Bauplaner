@@ -1,7 +1,7 @@
 // Shared test bench for multiplayer acceptance tests (Roadmap block 4, „Mehrspieler und Server automatisch abnehmen“):
-// a real Paper server with the Bauplaner plugin, real players as bots (mineflayer: they move, place and break blocks,
+// a real Paper server with the Build Studio plugin, real players as bots (mineflayer: they move, place and break blocks,
 // open chests, read chat and the action bar) and the team room (services/team-room, e.g. `npx wrangler dev`).
-// Players can additionally speak the team channel `bauplaner:team` like the Bauplaner mod does.
+// Players can additionally speak the team channel `bauplaner:team` like the Build Studio mod does.
 //
 //   import { paperServer, players, room, roomFold } from './lib/multiplayer.mjs';
 //
@@ -123,7 +123,7 @@ function plain(c) {
 
 /**
  * Real players as bots. `mineflayerDir` is a folder with `mineflayer` installed. Each player can chat commands and wait
- * for the answer, read action bars, place and break blocks, open containers and – like the Bauplaner mod – ask on the
+ * for the answer, read action bars, place and break blocks, open containers and – like the Build Studio mod – ask on the
  * team channel (`withMod: true`).
  */
 export function players(server, mineflayerDir, clientVersion = server.version) {

@@ -127,7 +127,7 @@ export interface CurrentData {
   readonly templates: readonly LibraryTemplate[];
 }
 
-export const BACKUP_DISCLAIMER = 'Der Bauplaner weiß nur, dass dieser Browser eine Sicherungsdatei erzeugt oder wieder eingelesen hat. Ob sie in deinem Download-Ordner, auf einem zweiten Gerät oder in einer Cloud liegt, kann er nicht prüfen – eine Kopie außerhalb dieses Browsers gibt es nur, wenn du die Datei selbst dorthin legst.';
+export const BACKUP_DISCLAIMER = 'Das Build Studio weiß nur, dass dieser Browser eine Sicherungsdatei erzeugt oder wieder eingelesen hat. Ob sie in deinem Download-Ordner, auf einem zweiten Gerät oder in einer Cloud liegt, kann er nicht prüfen – eine Kopie außerhalb dieses Browsers gibt es nur, wenn du die Datei selbst dorthin legst.';
 
 const fmt = (iso: string) => new Date(iso).toLocaleString('de-DE', { dateStyle: 'medium', timeStyle: 'short' });
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;

@@ -10,7 +10,7 @@ import { sameTurn, turnOf } from '../world/worldmap.js';
 import type { WorldPlacement } from '../world/worldmap.js';
 
 /**
- * Live-Verbindung Website ↔ Mod (GAME-03/MAP-03). The Bauplaner mod opens a
+ * Live-Verbindung Website ↔ Mod (GAME-03/MAP-03). The Build Studio mod opens a
  * small HTTP service on 127.0.0.1 only, switched off by default; the website
  * (same computer) pairs once with a code the mod shows in the chat and then
  * polls. This module is the shared contract: limits, strict readers for
@@ -191,7 +191,7 @@ export interface LiveChunks {
 }
 
 export function readLiveHello(raw: unknown): LiveHello {
-  if (!isObj(raw) || raw.app !== 'bauplaner-mod') return fail('Unter dieser Adresse antwortet keine Bauplaner-Mod');
+  if (!isObj(raw) || raw.app !== 'bauplaner-mod') return fail('Unter dieser Adresse antwortet keine Build-Studio-Mod');
   const protocol = int(raw.protocol, 'Protokoll', 1, 1000);
   if (!LIVE_PROTOCOLS.includes(protocol)) fail(`Protokoll ${protocol} wird nicht unterstützt (diese Website spricht ${LIVE_PROTOCOLS.join(' und ')}). Bitte Mod und Website aktualisieren.`);
   const mod = isObj(raw.mod) ? raw.mod : fail('Modangaben fehlen');

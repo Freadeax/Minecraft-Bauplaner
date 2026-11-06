@@ -65,7 +65,7 @@ public final class TeamClient {
 
     public TeamClient(Path root, Hologram hologram, String version) {
         this.hologram = hologram;
-        java.util.function.Consumer<String> say = text -> { Minecraft mc = Minecraft.getInstance(); mc.execute(() -> McCompat.chat(mc, Component.literal("[Bauplaner] " + text))); };
+        java.util.function.Consumer<String> say = text -> { Minecraft mc = Minecraft.getInstance(); mc.execute(() -> McCompat.chat(mc, Component.literal("[Build Studio] " + text))); };
         this.sync = new TeamSync(root.resolve("team"), version, System::currentTimeMillis, say);
         // LINK-07: team room without a server file – the room comes from the planner („Mein Spiel verbinden“).
         this.sync.room(new io.github.freadeax.bauplaner.mod.room.RoomClient(root.resolve("team").resolve("raum.json"), say));
@@ -218,7 +218,7 @@ public final class TeamClient {
             int unknown = check.count(new io.github.freadeax.bauplaner.mod.Filter(Integer.MIN_VALUE, Integer.MAX_VALUE, k))[Verdict.UNKNOWN.ordinal()];
             String key = s.id() + "/" + s.status();
             if (p[1] > 0 && p[0] == p[1] && unknown == 0 && announcedDone.add(key))
-                McCompat.chat(mc, Component.literal("[Bauplaner] " + t("Dein Abschnitt " + s.nr() + " „" + s.name() + "“ steht laut Hologramm komplett. Fertig melden: /bauplaner team fertig " + s.nr(), "Your section " + s.nr() + " “" + s.name() + "” is complete according to the hologram. Report done: /buildplanner team done " + s.nr()))
+                McCompat.chat(mc, Component.literal("[Build Studio] " + t("Dein Abschnitt " + s.nr() + " „" + s.name() + "“ steht laut Hologramm komplett. Fertig melden: /bauplaner team fertig " + s.nr(), "Your section " + s.nr() + " “" + s.name() + "” is complete according to the hologram. Report done: /buildplanner team done " + s.nr()))
                         .withStyle(net.minecraft.ChatFormatting.GREEN));
         }
         // Plan in the hologram older/newer than the released one: say it once per combination.
@@ -228,7 +228,7 @@ public final class TeamClient {
             String key = own + "/" + rel;
             if (own != rel && !key.equals(revisionWarned)) {
                 revisionWarned = key;
-                McCompat.chat(mc, Component.literal("[Bauplaner] " + t("Achtung: Das Hologramm zeigt Planstand " + own + ", für das Team freigegeben ist Planstand " + rel
+                McCompat.chat(mc, Component.literal("[Build Studio] " + t("Achtung: Das Hologramm zeigt Planstand " + own + ", für das Team freigegeben ist Planstand " + rel
                         + ". Neuen Planstand im Planer exportieren oder über „Mit Spiel abgleichen“ schicken.", "Warning: the hologram shows plan revision " + own + ", the team released revision " + rel
                         + ". Export the new revision in the planner or send it with “Compare with game”.")).withStyle(net.minecraft.ChatFormatting.GOLD));
             }
@@ -448,7 +448,7 @@ public final class TeamClient {
     private static <S> LiteralArgumentBuilder<S> literal(String name) { return LiteralArgumentBuilder.literal(name); }
     private static <S, T> RequiredArgumentBuilder<S, T> argument(String name, com.mojang.brigadier.arguments.ArgumentType<T> type) { return RequiredArgumentBuilder.argument(name, type); }
 
-    private static void say(String text) { McCompat.chat(Minecraft.getInstance(), Component.literal("[Bauplaner] " + text)); }
+    private static void say(String text) { McCompat.chat(Minecraft.getInstance(), Component.literal("[Build Studio] " + text)); }
     private static int said(String text) { say(text); return 1; }
     private static String storeStatus(String k) {
         return switch (k) {
@@ -460,7 +460,7 @@ public final class TeamClient {
         };
     }
     /** A line of a list the player asked for: stays in the chat (GAME-12). */
-    private static void list(String text) { McCompat.chatLine(Minecraft.getInstance(), Component.literal("[Bauplaner] " + text)); }
+    private static void list(String text) { McCompat.chatLine(Minecraft.getInstance(), Component.literal("[Build Studio] " + text)); }
 
     /** {@code /bauplaner team …} */
     public <S> LiteralArgumentBuilder<S> command() {
@@ -522,8 +522,8 @@ public final class TeamClient {
 
     private TeamState need() {
         TeamState t = shown;
-        if (t == null) say(t("Kein Teamstand. Im Planer (Reiter „Team“) „Mit Spiel abgleichen“ wählen, oder auf einem Server mit Bauplaner-Plugin spielen (",
-                "No team state. Choose “Compare with game” in the planner (tab “Team”) or play on a server with the Bauplaner plugin (") + sync.link().text() + ").");
+        if (t == null) say(t("Kein Teamstand. Im Planer (Reiter „Team“) „Mit Spiel abgleichen“ wählen, oder auf einem Server mit Build-Studio-Plugin spielen (",
+                "No team state. Choose “Compare with game” in the planner (tab “Team”) or play on a server with the Build Studio plugin (") + sync.link().text() + ").");
         return t;
     }
 

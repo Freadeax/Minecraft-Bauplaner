@@ -60,7 +60,7 @@ if [ -s "$work/state.properties" ]; then
   done
   wait "$gradle_pid" 2>/dev/null || true
 elif ! wait "$gradle_pid"; then
-  grep -E "Bauplaner|ERROR|Exception|Caused by" "$work/game.log" | tail -40 >&2; exit 1
+  grep -E "Build Studio|ERROR|Exception|Caused by" "$work/game.log" | tail -40 >&2; exit 1
 fi
-grep -F '[CHAT] [Bauplaner]' "$work/game.log" | sed 's/.*\[CHAT\] /  Spiel: /'
+grep -F '[CHAT] [Build Studio]' "$work/game.log" | sed 's/.*\[CHAT\] /  Spiel: /'
 node scripts/mod/bridge_gametest.mjs verify "$work"

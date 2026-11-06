@@ -1,6 +1,6 @@
 # Oberfläche: Bibliothek als Katalog (B11)
 
-Stand 28.10.2026. Ziel: Bauplaner und Bibliothek so bedienbar und ansehnlich wie gängige Schematic-Sammlungen (z. B. shulkr.com, Planet Minecraft, Litematica-Sammlungen). Von dort übernommen ist nur das **Muster** – Kartenraster mit Vorschaubild, Kategorieleiste, Filterspalte mit aktiven Filterchips, Detailseite mit großem Bild, Kennzahlen und ähnlichen Einträgen. Keine fremden Inhalte, Bilder oder Schematics.
+Stand 28.10.2026. Ziel: Build Studio und Bibliothek so bedienbar und ansehnlich wie gängige Schematic-Sammlungen (z. B. shulkr.com, Planet Minecraft, Litematica-Sammlungen). Von dort übernommen ist nur das **Muster** – Kartenraster mit Vorschaubild, Kategorieleiste, Filterspalte mit aktiven Filterchips, Detailseite mit großem Bild, Kennzahlen und ähnlichen Einträgen. Keine fremden Inhalte, Bilder oder Schematics.
 
 Seit B12: Schem-Ansicht, Bauversionen, teilbare Suche und Stöbern – siehe [SCHEM_VIEWS](SCHEM_VIEWS.md).
 
@@ -41,7 +41,7 @@ Merkliste, Vergleich und Blickrichtung behalten fehlgeschlagene Schreibvorgänge
 Stand 01.11.2026. Ergänzt B11 und die Themen aus UI-01; nutzt ausschließlich deren semantische Tokens (`--text`, `--muted`, `--mint`, `--panel*`, `--line`), daher gelten alle fünf Themen hell und dunkel.
 
 - **Navigationsliste** `apps/web/src/app/nav.ts`: Kopfzeile, untere Handyleiste und Schnellsuche lesen dieselben Einträge. Ein neuer Hauptbereich hängt genau einen Eintrag an (Label, Ziel, Symbol, zugehörige Routen, Kurzbeschreibung).
-- **Hülle** `app/Shell.tsx`: klebende, kompakte Kopfzeile (Marke, Navigation mit Symbolen, Suchfeld, GitHub, Darstellung, Versionshinweis), Fußzeile mit Systemcheck; Titel des Browser-Tabs je Seite (`Seite · LMNT Build Studio`, Projekte mit Name und Bereich). Symbole in `app/icons.tsx` (eigene Linien-SVGs, `currentColor`, immer `aria-hidden`).
+- **Hülle** `app/Shell.tsx`: klebende, kompakte Kopfzeile (Marke, Navigation mit Symbolen, Suchfeld, GitHub, Darstellung, Versionshinweis), Fußzeile mit Systemcheck; Titel des Browser-Tabs je Seite (`Seite · LMNT — Build Studio`, Projekte mit Name und Bereich). Symbole in `app/icons.tsx` (eigene Linien-SVGs, `currentColor`, immer `aria-hidden`).
 - **Schnellsuche** `app/CommandPalette.tsx`: Strg+K / ⌘K oder Suchfeld. Springt zu Seiten, Bereichen des offenen Projekts, Projekten (zuletzt geändert zuerst) und Bibliotheksgebäuden; Suche ohne Groß-/Kleinschreibung, Akzente und ß. Rein lokal, verändert nichts. Rollen: `dialog` „Schnellsuche“, `combobox`, `listbox`/`option`.
 - **Projektkopf** (`ProjectView.tsx`): Pfad „Projekte › Name“, Speicherstatus als Punktmarke, Bereichsleiste mit Symbolen; am Handy waagerecht scrollbar, der aktive Bereich wird in die Mitte gerückt.
 - **Handy (≤ 760 px)**: Hauptnavigation als feste untere Leiste (Projekte, Bibliothek, Betrachter, Weltkarte, Suchen; Safe-Area beachtet), Kopfzeile nur mit Marke, Suche und Darstellung. Im Editor steht die 3D-Ansicht vor den Listen; Vergleichsleiste der Bibliothek und Abhakleiste beim Bauen sitzen über der unteren Leiste. Baustellenkacheln und -spalten schrumpfen statt die Seite zu verbreitern.
@@ -74,6 +74,10 @@ Philipp: „Komplexität … also die Nutzerbedienung nicht das System dahinter 
 
 Prüfung: `tests/e2e/simple-ui.e2e.mjs` (1400 und 390 px), `tests/e2e/shell.e2e.mjs`; Testphase START-10..13.
 Prüfung: `tests/e2e/simple-ui.e2e.mjs` (1400 und 390 px), `tests/e2e/shell.e2e.mjs`; Testphase START-10..12.
+## Name (NAME-01)
+
+Stand 06.11.2026. Das Produkt heißt **LMNT — Build Studio** (mit Geviertstrich), die Mod **LMNT — Build Studio Bridge**. Im Fließtext genügt „Build Studio“ („das Build Studio“, „des Build Studios“), zusammengesetzt „Build-Studio-Mod“ und „Build-Studio-Plugin“; Chat-Vorsatz der Mod und des Plugins ist `[Build Studio]`. Technische Kennungen bleiben bewusst beim alten Wort, damit Welten, Pläne, Einstellungen und Links weiterlaufen: Repo und Pages-Pfad `LMNT — Build Studio`, Modrinth-Slug `bauplaner-bridge`, Mod-ID `bauplaner_bridge`, Befehle `/bauplaner` und `/buildplanner`, Ordner `plugins/BauplanerBridge` und `<Instanz>/bauplaner/`, NBT-Feld `Metadata.Bauplaner`, Header `X-Bauplaner-*` und Formatkennungen `bauplaner-*`.
+
 ## Design-System (UI-03)
 
 Stand 06.11.2026. Eine gemeinsame Gestaltungsschicht für alle Seiten des Planers: `apps/web/src/theme/design.css`, geladen als letzte Datei in `main.tsx`. Sie ändert nur die Optik, kein Markup und keine Abläufe (Struktur und Bedienwege liegen bei „Bedienung vereinfachen“, die Mod gleicht sich über die Werte unten an).

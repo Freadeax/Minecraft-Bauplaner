@@ -1,6 +1,6 @@
 // Real-server test of „Server ohne Befehle“ on the Paper plugin side (LINK-01/02, docs/architecture/team/AUTO_LINK.md,
 // ServerLink.java): a real Paper server sets itself up (link.json), a protocol client speaks the team channel
-// `bauplaner:team` like the Bauplaner mod does and pairs the server as operator, then sends signed control
+// `bauplaner:team` like the Build Studio mod does and pairs the server as operator, then sends signed control
 // messages (status, settings, team file, rename, forget). Replays, wrong signatures, non-operators and settings
 // outside the list are refused. Nobody types a server command; the console is only read.
 // Needs `minecraft-protocol` (scripts/mod/test_bridge_paper_link.sh installs it into the work folder).
@@ -78,7 +78,7 @@ async function start() {
 // `stop` on the console only ends the test server; it is not part of the tested flow.
 const stop = async () => { server.stdin.write('stop\n'); await exited; };
 
-// ------------------------------------------------------------------ a player with the Bauplaner mod (team channel only)
+// ------------------------------------------------------------------ a player with the Build Studio mod (team channel only)
 const CHANNEL = 'bauplaner:team';
 async function player(name) {
   const client = mc.createClient({ host: '127.0.0.1', port, username: name, version, auth: 'offline', hideErrors: true });
@@ -128,7 +128,7 @@ const teamFile = teamServerFile({ team, view: teamView(team, ctx), projectName: 
 try {
   // 1. First start: the plugin sets itself up.
   await start();
-  assert.match(log, /Bauplaner eingerichtet \(Server-ID srv_[A-Za-z0-9_-]+\)/, 'Einrichtung im Log');
+  assert.match(log, /Build Studio eingerichtet \(Server-ID srv_[A-Za-z0-9_-]+\)/, 'Einrichtung im Log');
   const first = linkFile();
   assert.match(first.serverId, /^srv_/); assert.deepEqual(first.owners, []);
 
@@ -278,7 +278,7 @@ try {
 
   // 7. Restart: pairing, name and the last sequence number stay; a recorded message still does not work.
   await start();
-  assert.match(log, /Bauplaner-Kopplung: 1 Planer gekoppelt/);
+  assert.match(log, /Build-Studio-Kopplung: 1 Planer gekoppelt/);
   const again = await player('Bauleiterin');
   assert.match((await again.ask('link.ctl', once)).error, /schon verarbeitet/);
   const st2 = await again.ask('link.ctl', signed(pair, 'status'));

@@ -38,7 +38,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
  * Never touches the world; settings go to the plugin's own config.yml.
  */
 final class ServerLink implements Listener {
-    private static final String PREFIX = ChatColor.GOLD + "[Bauplaner] " + ChatColor.RESET;
+    private static final String PREFIX = ChatColor.GOLD + "[Build Studio] " + ChatColor.RESET;
     static final int MAX_PLAN_BYTES = 4 * 1024 * 1024;
 
     private final BridgePlugin plugin;
@@ -60,9 +60,9 @@ final class ServerLink implements Listener {
         if (state == null) {
             state = LinkCore.State.fresh(serverName());
             save();
-            plugin.getLogger().info("Bauplaner eingerichtet (Server-ID " + state.serverId + "). Koppeln: als OP mit der Bauplaner-Mod beitreten und im Planer auf der Seite „Spiel“ „Server koppeln“ klicken – auf dem Server muss niemand etwas eingeben.");
+            plugin.getLogger().info("Build Studio eingerichtet (Server-ID " + state.serverId + "). Koppeln: als OP mit der Build-Studio-Mod beitreten und im Planer auf der Seite „Spiel“ „Server koppeln“ klicken – auf dem Server muss niemand etwas eingeben.");
         } else {
-            plugin.getLogger().info("Bauplaner-Kopplung: " + (state.paired() ? state.owners.size() + " Planer gekoppelt." : "noch nicht gekoppelt."));
+            plugin.getLogger().info("Build-Studio-Kopplung: " + (state.paired() ? state.owners.size() + " Planer gekoppelt." : "noch nicht gekoppelt."));
         }
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
@@ -139,7 +139,7 @@ final class ServerLink implements Listener {
             a.addProperty("ok", true); a.addProperty("same", true); a.addProperty("text", "Der Server ist schon mit diesem Team-Raum verbunden.");
             return CompletableFuture.completedFuture(a);
         }
-        plugin.getLogger().info(p.getName() + " übergibt dem Server einen Team-Raum (über die Bauplaner-Mod).");
+        plugin.getLogger().info(p.getName() + " übergibt dem Server einen Team-Raum (über die Build-Studio-Mod).");
         JsonObject b = new JsonObject();
         b.addProperty("link", link);
         return room(b);

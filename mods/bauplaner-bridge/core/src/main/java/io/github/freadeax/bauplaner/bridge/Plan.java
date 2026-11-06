@@ -43,7 +43,7 @@ public record Plan(String fileName, String sha256, int dataVersion, String name,
         if (w < 1 || h < 1 || l < 1) throw new BridgeException("Leere Planbox.");
         var meta = s.get("Metadata");
         var b = meta == null ? null : meta.compound("Metadata").get("Bauplaner");
-        if (b == null) throw new BridgeException(fileName + " ist keine Plan-Datei aus dem Bauplaner (Metadata.Bauplaner fehlt). Bitte im Tab „Export“ eine Revision exportieren.");
+        if (b == null) throw new BridgeException(fileName + " ist keine Plan-Datei aus dem Build Studio (Metadata.Bauplaner fehlt). Bitte im Tab „Export“ eine Revision exportieren.");
         var bp = b.compound("Bauplaner");
         if (bp.containsKey("Kind")) throw new BridgeException(fileName + " ist eine Spielaufnahme, keine Plan-Datei.");
         if (!bp.containsKey("ProjectMin")) throw new BridgeException(fileName + " stammt aus einer älteren Website-Version ohne ProjectMin. Bitte die Revision neu exportieren.");

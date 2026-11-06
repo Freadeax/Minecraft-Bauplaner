@@ -100,7 +100,7 @@ export function normalizeScan(sourceNbt: { name: string; tag: NbtTag }, options:
   const blockEntities = blocks.BlockEntities?.type === 'list' ? blocks.BlockEntities.value.length : 0;
   const meta = readMeta(s);
   const warnings: string[] = [];
-  if (!meta) warnings.push('Fremde Aufnahme ohne Bauplaner-Metadaten (z. B. WorldEdit): Revision und Ausrichtung müssen manuell gewählt werden.');
+  if (!meta) warnings.push('Fremde Aufnahme ohne Build-Studio-Metadaten (z. B. WorldEdit): Revision und Ausrichtung müssen manuell gewählt werden.');
   if (blockEntities) warnings.push(`${blockEntities} BlockEntities (Kisteninhalte, Schildtexte) werden nicht verglichen, nur der Block selbst.`);
   return { dataVersion, size, offset, palette, data, blockEntities, meta, warnings };
 }

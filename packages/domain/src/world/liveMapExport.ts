@@ -21,7 +21,7 @@ export type MapShape =
       readonly x: number; readonly y: number; readonly z: number };
 export type MapShapeGroup = 'projekte' | 'bauplaetze' | 'wege' | 'zonen' | 'punkte';
 export const MAP_SHAPE_GROUP_LABEL: Readonly<Record<MapShapeGroup, string>> = {
-  projekte: 'Bauplaner: Projekte', bauplaetze: 'Bauplaner: Bauplätze', wege: 'Bauplaner: Wege', zonen: 'Bauplaner: Zonen', punkte: 'Bauplaner: Punkte',
+  projekte: 'Build Studio: Projekte', bauplaetze: 'Build Studio: Bauplätze', wege: 'Build Studio: Wege', zonen: 'Build Studio: Zonen', punkte: 'Build Studio: Punkte',
 };
 export const MAP_SHAPE_GROUPS = Object.keys(MAP_SHAPE_GROUP_LABEL) as MapShapeGroup[];
 
@@ -115,9 +115,9 @@ const center = (points: readonly (readonly [number, number])[]): [number, number
  */
 export function blueMapMarkerConfig(shapes: readonly MapShape[]): string {
   const color = (hex: string, a: number) => { const [r, g, b] = rgb(hex); return `{ r: ${r}, g: ${g}, b: ${b}, a: ${a} }`; };
-  const lines = ['# Bauplaner → BlueMap: ans Ende der Kartenkonfiguration (z. B. maps/world.conf) setzen', '# und „bluemap reload“. Ein neuerer Block darf einfach darunter: er ersetzt die Bauplaner-Sets des alten.', 'marker-sets: {'];
+  const lines = ['# Build Studio → BlueMap: ans Ende der Kartenkonfiguration (z. B. maps/world.conf) setzen', '# und „bluemap reload“. Ein neuerer Block darf einfach darunter: er ersetzt die Build-Studio-Sets des alten.', 'marker-sets: {'];
   // HOCON merges a later marker-sets block into an earlier one, so markers removed in the planner would stay.
-  // Setting every Bauplaner set to null first drops what an earlier block defined (checked on BlueMap 5.29, KARTE-08).
+  // Setting every Build Studio set to null first drops what an earlier block defined (checked on BlueMap 5.29, KARTE-08).
   for (const group of MAP_SHAPE_GROUPS) lines.push(`  ${q(`bauplaner-${group}`)}: null`);
   MAP_SHAPE_GROUPS.forEach((group, sorting) => {
     const list = shapes.filter(s => s.group === group);
@@ -156,12 +156,12 @@ const dynId = (s: string) => s.replace(/[^A-Za-z0-9_-]/g, '_').slice(0, 64);
  * „Commands“: dmarker addset/add/addcorner/addarea/addline with set:, x:/y:/z:/world:,
  * color:/fillcolor:RRGGBB, fillopacity, weight, ytop/ybottom). Dynmap has no
  * marker file import; the operator pastes the lines into the server console.
- * All Bauplaner sets are deleted first (also empty ones), so running the list again replaces the old markers.
+ * All Build Studio sets are deleted first (also empty ones), so running the list again replaces the old markers.
  */
 export function dynmapMarkerCommands(shapes: readonly MapShape[], world: string): string {
   if (!world.trim() || /[\s"]/.test(world)) fail('Dynmap braucht den Weltnamen ohne Leerzeichen (z. B. world)');
-  const lines = ['# Bauplaner → Dynmap: Zeilen ohne # nacheinander in die Serverkonsole eingeben', `# (Welt ${world}). Vorhandene Bauplaner-Sets werden zuerst gelöscht.`];
-  // Every Bauplaner set is deleted first, also those that are empty now: otherwise markers removed in the planner
+  const lines = ['# Build Studio → Dynmap: Zeilen ohne # nacheinander in die Serverkonsole eingeben', `# (Welt ${world}). Vorhandene Build-Studio-Sets werden zuerst gelöscht.`];
+  // Every Build Studio set is deleted first, also those that are empty now: otherwise markers removed in the planner
   // (e.g. the last point) stayed on the map after pasting the new list (real server, KARTE-08).
   for (const group of MAP_SHAPE_GROUPS) lines.push(`dmarker deleteset id:bauplaner-${group}`);
   for (const group of MAP_SHAPE_GROUPS) {

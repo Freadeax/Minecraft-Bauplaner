@@ -86,7 +86,7 @@ public final class HologramClient {
     /** Geländegedächtnis (TERRAIN-04). */
     TerrainRecorder terrain() { return terrain; }
 
-    /** Keys to register with the loader (all in the "Bauplaner" category, {@link HologramKeys#CATEGORY}). */
+    /** Keys to register with the loader (all in the "Build Studio" category, {@link HologramKeys#CATEGORY}). */
     public List<KeyMapping> keys() { return keys.all(); }
 
     /** {@code zeigen}, {@code fortschritt}, … to hang below the loader's {@code /bauplaner} node. */
@@ -100,7 +100,7 @@ public final class HologramClient {
         // GAME-12 (0.23.0): help, plan menu, language, where messages go, how much the build panel shows.
         list.add(LiteralArgumentBuilder.<S>literal("hilfe").executes(c -> help()));
         list.add(LiteralArgumentBuilder.<S>literal("menue").executes(c -> { openScreen = 1; return 1; }));
-        java.util.function.Function<String, Integer> say = t -> { McCompat.chat(Minecraft.getInstance(), Component.literal("[Bauplaner] " + t)); return 1; };
+        java.util.function.Function<String, Integer> say = t -> { McCompat.chat(Minecraft.getInstance(), Component.literal("[Build Studio] " + t)); return 1; };
         var lang = LiteralArgumentBuilder.<S>literal("sprache").executes(c -> say.apply(Lang.t("Sprache: ", "Language: ") + Lang.choice().label() + " · /bauplaner sprache deutsch|englisch|auto"));
         for (Lang.Choice ch : Lang.Choice.values())
             lang.then(LiteralArgumentBuilder.<S>literal(ch == Lang.Choice.EN ? "englisch" : ch.key).executes(c -> say.apply(ClientSettings.setLanguage(ch))));
@@ -121,7 +121,7 @@ public final class HologramClient {
         Minecraft mc = Minecraft.getInstance();
         String root = Lang.en() ? "/buildplanner" : "/bauplaner";
         String[][] steps = {
-                { "So geht's – Bauplaner in 5 Schritten:", "How it works – Bauplaner in 5 steps:" },
+                { "So geht's – Build Studio in 5 Schritten:", "How it works – Build Studio in 5 steps:" },
                 { " 1. Im Planer „Spiel verbinden“ klicken und hier zulassen (J).", " 1. Click “Connect game” in the planner and allow it here (J)." },
                 { " 2. Plan im Planer ins Spiel senden oder im Menü (J) wählen.", " 2. Send the plan from the planner or pick it in the menu (J)." },
                 { " 3. Auf den Startblock schauen und „Hierher“ klicken.", " 3. Look at the start block and click “Here”." },
@@ -129,13 +129,13 @@ public final class HologramClient {
                 { " 5. Fortschritt steht oben rechts und im Planer.", " 5. Progress is shown at the top right and in the planner." },
                 { "Alle Befehle per Klick: J → „Befehle“. Tippen: " + root + " <Tab>. Sprache: " + root + " sprache deutsch|englisch|auto",
                   "Every command by click: J → “Commands”. Typing: " + root + " <Tab>. Language: " + root + " language german|english|auto" } };
-        for (String[] s : steps) McCompat.chatLine(mc, Component.literal("[Bauplaner] " + Lang.t(s[0], s[1])));
+        for (String[] s : steps) McCompat.chatLine(mc, Component.literal("[Build Studio] " + Lang.t(s[0], s[1])));
         return 1;
     }
 
     /** {@code /bauplaner gelaende [an|aus|vergessen]}: Geländegedächtnis for the website (TERRAIN-04). */
     private <S> LiteralArgumentBuilder<S> terrainCommand() {
-        java.util.function.Consumer<String> say = t -> McCompat.chat(Minecraft.getInstance(), Component.literal("[Bauplaner] " + t));
+        java.util.function.Consumer<String> say = t -> McCompat.chat(Minecraft.getInstance(), Component.literal("[Build Studio] " + t));
         return LiteralArgumentBuilder.<S>literal("gelaende")
                 .executes(c -> { say.accept(terrain.status(Minecraft.getInstance())); return 1; })
                 .then(LiteralArgumentBuilder.<S>literal("an").executes(c -> { say.accept(terrain.setEnabled(true)); return 1; }))
@@ -194,7 +194,7 @@ public final class HologramClient {
             if (reported.size() < 50 && reported.add(kind)) {
                 LOG.error("[Fehler] {} ({}): {}", where, errors, e.toString(), e);
                 if (reported.size() == 1) McCompat.chat(Minecraft.getInstance(), Component.literal(
-                        "[Bauplaner] " + Lang.t("Interner Fehler (" + e.getClass().getSimpleName() + "), das Spiel läuft weiter. Bitte /bauplaner diagnose ausführen und die Datei schicken.",
+                        "[Build Studio] " + Lang.t("Interner Fehler (" + e.getClass().getSimpleName() + "), das Spiel läuft weiter. Bitte /bauplaner diagnose ausführen und die Datei schicken.",
                         "Internal error (" + e.getClass().getSimpleName() + "), the game keeps running. Please run /buildplanner diagnose and send the file."))
                         .withStyle(net.minecraft.ChatFormatting.GOLD));
             }
@@ -213,7 +213,7 @@ public final class HologramClient {
      */
     public void join(Minecraft mc, io.github.freadeax.bauplaner.mod.team.TeamSync.Transport teamChannel) {
         String msg = hologram.join(mc);
-        if (msg != null) McCompat.chat(mc, Component.literal("[Bauplaner] " + msg));
+        if (msg != null) McCompat.chat(mc, Component.literal("[Build Studio] " + msg));
         guarded("team", () -> team.join(mc, mc.isLocalServer() ? null : teamChannel));
     }
 

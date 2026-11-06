@@ -36,7 +36,7 @@ test('Testprotokoll: Ergebnisse setzen, aufheben, zusammenfassen und als Markdow
   p = setResult(p, 'START-03', null, 'nur Notiz');
   assert.equal(p.entries['START-03'].result, 'offen', 'Notiz ohne Ergebnis gilt als offen');
   const md = protocolMarkdown({ ...p, tester: 'Anna' }, [['Build', 'abc1234'], ['Browser', 'Chrome'], ['Grafik', 'egal']], new Date('2026-11-02T12:00:00Z'));
-  assert.match(md, /^## Testprotokoll Minecraft-Bauplaner\n- Tester: Anna\n- Stand: 2026-11-02T12:00:00.000Z\n- Build: abc1234\n- Browser: Chrome\n/);
+  assert.match(md, /^## Testprotokoll LMNT — Build Studio\n- Tester: Anna\n- Stand: 2026-11-02T12:00:00.000Z\n- Build: abc1234\n- Browser: Chrome\n/);
   assert.ok(!md.includes('Grafik'));
   assert.match(md, /### Start, Bedienung und Sicherung · 0 ok, 1 Fehler, 1 offen/);
   assert.match(md, /- START-02 Projekt anlegen, umbenennen, löschen: ✕ Fehler – Name weg\n/);

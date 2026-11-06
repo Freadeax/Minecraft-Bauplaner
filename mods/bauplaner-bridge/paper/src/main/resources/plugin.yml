@@ -2,7 +2,7 @@ name: BauplanerBridge
 version: '${version}'
 main: io.github.freadeax.bauplaner.bridge.paper.BridgePlugin
 api-version: '${apiVersion}'
-description: Liest den Bereich eines Bauplans aus der Serverwelt und schreibt eine Aufnahme für den Minecraft-Bauplaner. Verändert die Welt nie.
+description: Liest den Bereich eines Bauplans aus der Serverwelt und schreibt eine Aufnahme für LMNT — Build Studio. Verändert die Welt nie.
 author: Freadeax
 # WORLD-SHARE-01: write markers into these web maps when present (never required).
 softdepend: [BlueMap, dynmap]

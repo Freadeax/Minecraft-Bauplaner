@@ -8,7 +8,7 @@ import { openPalette } from './CommandPalette';
 import { ThemeControl } from '../theme/ThemeControl';
 import { TextureChip } from '../blockmodels/TexturePanel';
 
-const APP_NAME = 'LMNT Build Studio';
+const APP_NAME = 'LMNT — Build Studio';
 const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
 
 /** Setzt den Titel des Browser-Tabs; Seiten mit eigenem Namen (Projekte) überschreiben ihn. */
@@ -28,7 +28,7 @@ export function Shell({ route, children }: { route: Route; children: ReactNode }
     <a className="skip" href="#inhalt" onClick={e => { e.preventDefault(); document.getElementById('inhalt')?.focus(); }}>Zum Inhalt</a>
     <header className="topbar">
       <a className="brand" href="#/" aria-label={`${APP_NAME} – zur Projektzentrale`}><span className="brand-icon"><Cube /></span>
-        <span className="brand-text">LMNT <strong>BUILD STUDIO</strong><small>DEIN MINECRAFT-BAUHELFER</small></span></a>
+        <span className="brand-text">LMNT <strong>— BUILD STUDIO</strong><small>DEIN MINECRAFT-BAUHELFER</small></span></a>
       <nav className="main-nav" aria-label="Hauptnavigation">
         {mainNav.map(n => <a key={n.id} href={n.href} aria-current={current(n.views)} data-nav={n.id} title={n.hint}><Icon name={n.icon} /><span className="nav-label">{n.label}</span></a>)}
       </nav>
@@ -41,7 +41,7 @@ export function Shell({ route, children }: { route: Route; children: ReactNode }
     </header>
     <div id="inhalt" tabIndex={-1} className="content">{children}</div>
     <footer className="site-footer">
-      <span><strong>LMNT BUILD STUDIO</strong> · Mit Plan gebaut. Alles bleibt lokal in deinem Browser.</span>
+      <span><strong>LMNT — BUILD STUDIO</strong> · Mit Plan gebaut. Alles bleibt lokal in deinem Browser.</span>
       <nav aria-label="Weitere Links"><a href="#/mod">Minecraft-Mod</a>{fileTools.map(n => <a key={n.id} href={n.href} title={n.hint}>{n.label}</a>)}<a href="#/system">Systemcheck</a><a href="#/testphase">Testphase</a><a href={REPO_URL} target="_blank" rel="noreferrer">GitHub ↗</a></nav>
       <span className="footer-legal">Unabhängiges Projekt · kein offizielles Minecraft-Produkt</span>
     </footer>

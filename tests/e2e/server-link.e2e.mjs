@@ -108,7 +108,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     mod.state.teamLink = 'ask';
     await panel.getByText('Im Spiel J drücken und „Teambau erlauben“ klicken.').waitFor({ timeout: 12_000 });
     mod.state.teamLink = 'live';
-    await panel.getByText('„LMNT Testserver“ · Bauplaner-Plugin 0.12.0-sim').waitFor({ timeout: 12_000 });
+    await panel.getByText('„LMNT Testserver“ · Build-Studio-Plugin 0.12.0-sim').waitFor({ timeout: 12_000 });
 
     // 3. Pair the server with one click.
     await panel.getByRole('button', { name: 'Server koppeln' }).click();

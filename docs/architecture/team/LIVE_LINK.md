@@ -1,6 +1,6 @@
 # Live-Verbindung Website ↔ Mod und Weltplan (MAP-03)
 
-Die Weltkarte (`#/karte`) wird zur Live-Karte: Die Bauplaner-Mod (Fabric 26.3, ab 0.5.0) öffnet auf dem Computer des Spielers einen kleinen HTTP-Dienst, die Website fragt ihn ab. Es gibt keinen Server dazwischen, die Welt wird nie verändert, der Spielserver merkt nichts davon.
+Die Weltkarte (`#/karte`) wird zur Live-Karte: Die Build-Studio-Mod (Fabric 26.3, ab 0.5.0) öffnet auf dem Computer des Spielers einen kleinen HTTP-Dienst, die Website fragt ihn ab. Es gibt keinen Server dazwischen, die Welt wird nie verändert, der Spielserver merkt nichts davon.
 
 ## Sicherheit
 
@@ -47,7 +47,7 @@ Merkmal `groups` in `hello.features`. Markierungen tragen Weltplan-Schema 3: an 
 
 | Route | Bedeutung |
 |---|---|
-| `POST /v1/group {group}` | Hologramm auf eine Weltplan-Gruppe beschränken, `null` = alles. 400 bei unbekannter Gruppe, 409 ohne Plan. Antwort `{group}`; der Spieler bekommt „[Bauplaner] Website: …“. |
+| `POST /v1/group {group}` | Hologramm auf eine Weltplan-Gruppe beschränken, `null` = alles. 400 bei unbekannter Gruppe, 409 ohne Plan. Antwort `{group}`; der Spieler bekommt „[Build Studio] Website: …“. |
 | `GET /v1/status` | `hologram.group` (Name oder `null`) und `hologram.locked` (Planblöcke des gezeigten Teils in gesperrten Flächen, grau gezeichnet). `readLiveStatus` setzt für ältere Mods `null` und 0. |
 
 ## Gelände (TERRAIN-04, Mod 0.20.0)

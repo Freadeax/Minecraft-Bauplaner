@@ -95,7 +95,7 @@ function MaterialVariantPanel({ asset: currentAsset, latest: currentLatest, fami
         const keep = asset.tags.filter(t => !t.startsWith(BASIS_PREFIX) && !t.startsWith(FAMILY_PREFIX));
         const created = createAsset({ name: shownName.slice(0, 120), tags: [...keep, `${BASIS_PREFIX}${asset.id}`, ...(family ? [`${FAMILY_PREFIX}${family}`] : [])],
           description: `Materialvariante von „${asset.name}“ (v${latest.label}): ${swaps.map(s => `${used.find(u => u.set.id === s.from)?.set.label} → ${materialTargets(used.find(u => u.set.id === s.from)!.set).find(m => m.id === s.to)?.label} (Formen: ${s.forms?.join(', ') ?? 'alle'})`).join(', ')}. Form und Ausrichtung jedes Blocks unverändert.`,
-          provenance: { ...asset.provenance, source: `abgeleitet von „${asset.name}“ (Materialtausch im Bauplaner)` } });
+          provenance: { ...asset.provenance, source: `abgeleitet von „${asset.name}“ (Materialtausch im Build Studio)` } });
         const r = await addAssetVersion(created, { payload: result.payload, label: '1.0', connectors: latest.connectors, source });
         await repo.applyBatch({ versions: [r.version], assets: [r.asset] }); await reloadLibrary();
         onMessage(`Materialvariante „${r.asset.name}“ gespeichert.`);

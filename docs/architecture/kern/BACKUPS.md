@@ -18,7 +18,7 @@ Stand: 01.11.2026. Baut auf [PERSISTENCE](PERSISTENCE.md) (Sicherungsformat, Wie
 
 **Erinnerung:** `ok` ohne offene Änderungen; `hint`, wenn Änderungen jünger als 7 Tage sind; `due`, wenn noch nie gesichert wurde, die älteste offene Änderung 7 Tage oder älter ist oder ein Projekt in gar keiner Sicherung steckt. Bei `due` zeigt die Projektzentrale ein Banner („Gesamtsicherung herunterladen“, „Morgen erinnern“ – nur eine Ansichtseinstellung in `localStorage`). Der Projektkopf zeigt den Stand des offenen Projekts.
 
-**Ehrlichkeit (Abnahme „keine Cloudkopie behaupten“):** Ein Beleg beweist nur, dass dieser Browser eine Datei mit diesem Inhalt erzeugt oder gelesen hat. Jede Anzeige führt den festen Hinweis `BACKUP_DISCLAIMER`: Ob die Datei im Download-Ordner, auf einem anderen Gerät oder in einer Cloud liegt, kann der Bauplaner nicht prüfen. Die Erfolgsmeldung nach dem Sichern sagt „zum Herunterladen übergeben“ und bittet, die Datei außerhalb des Browsers abzulegen.
+**Ehrlichkeit (Abnahme „keine Cloudkopie behaupten“):** Ein Beleg beweist nur, dass dieser Browser eine Datei mit diesem Inhalt erzeugt oder gelesen hat. Jede Anzeige führt den festen Hinweis `BACKUP_DISCLAIMER`: Ob die Datei im Download-Ordner, auf einem anderen Gerät oder in einer Cloud liegt, kann das Build Studio nicht prüfen. Die Erfolgsmeldung nach dem Sichern sagt „zum Herunterladen übergeben“ und bittet, die Datei außerhalb des Browsers abzulegen.
 
 **Sicherung prüfen:** Öffnet eine Datei, prüft sie vollständig mit `readBackup` (Format, Prüfsumme, Versionen, Originale), schreibt nichts außer dem Beleg `verified`. Auch das Öffnen zur Wiederherstellung legt diesen Beleg an. Eine manipulierte Datei wird abgelehnt und erzeugt keinen Beleg.
 

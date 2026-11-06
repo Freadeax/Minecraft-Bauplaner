@@ -558,7 +558,7 @@ export async function buildGrossprojektPlan(layout: GrossprojektLayout, input: {
   if (net && layout.streets) {
     const asset = createAsset({ name: `Straßennetz: ${input.name?.trim() || layout.gp.name}`.slice(0, 120), tags: ['strassennetz', 'grossprojekt', 'infrastruktur'],
       description: `Straßen (${STREET_STYLE_LABEL[layout.streets.style]}, ${layout.streets.width} Blöcke breit) und ${layout.streets.lamps.length} Laternen zwischen den Quartieren von „${layout.gp.name}“.`,
-      provenance: { author: 'Minecraft-Bauplaner', source: 'Großprojekt (eigener Entwurf)', license: 'frei für dieses Projekt' } });
+      provenance: { author: 'LMNT — Build Studio', source: 'Großprojekt (eigener Entwurf)', license: 'frei für dieses Projekt' } });
     network = await addAssetVersion(asset, { payload: net.payload, label: '1.0', source: { format: 'base-plan' } });
     const t = { position: [net.origin[0], 0, net.origin[1]] as Vec3, quarterTurns: 0 as const, mirrorX: false };
     placements.push({ key: 'strassen', districtId: null, kind: 'path', name: 'Straßennetz', version: network.version, transform: t, area: true,

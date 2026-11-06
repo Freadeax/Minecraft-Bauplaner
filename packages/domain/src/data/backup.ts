@@ -313,9 +313,9 @@ export async function readBackup(text: string): Promise<Backup> {
   if (text.length > MAX_BACKUP_BYTES) throw new DomainError('BACKUP', 'Sicherungsdatei ist zu groß');
   let raw: unknown;
   try { raw = JSON.parse(text); } catch { throw new DomainError('BACKUP', 'Keine gültige Sicherungsdatei (kein JSON)'); }
-  if (!isObj(raw) || raw.format !== BACKUP_FORMAT) throw new DomainError('BACKUP', 'Keine Minecraft-Bauplaner-Sicherung');
+  if (!isObj(raw) || raw.format !== BACKUP_FORMAT) throw new DomainError('BACKUP', 'Keine Sicherung von LMNT — Build Studio');
   raw = unpackBackupContainer(raw);
-  if (!isObj(raw)) throw new DomainError('BACKUP', 'Keine Minecraft-Bauplaner-Sicherung');
+  if (!isObj(raw)) throw new DomainError('BACKUP', 'Keine Sicherung von LMNT — Build Studio');
   if (raw.formatVersion !== BACKUP_FORMAT_VERSION && raw.formatVersion !== BACKUP_FORMAT_VERSION_LIBRARY) {
     throw new DomainError(typeof raw.formatVersion === 'number' && raw.formatVersion > BACKUP_FORMAT_VERSION_PACKED ? 'SCHEMA_NEWER' : 'BACKUP',
       `Sicherungsformat ${String(raw.formatVersion)} wird nicht unterstützt (erwartet ${BACKUP_FORMAT_VERSION} bis ${BACKUP_FORMAT_VERSION_PACKED})`);

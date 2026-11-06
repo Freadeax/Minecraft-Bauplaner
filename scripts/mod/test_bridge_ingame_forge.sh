@@ -38,9 +38,9 @@ status=0
 (cd mods/bauplaner-bridge && BAUPLANER_GAMETEST_DIR="$work" timeout --kill-after=20 "${BAUPLANER_TIMEOUT:-1200}" ./gradlew -q "${gradle_args[@]}" --console=plain) >"$work/game.log" 2>&1 || status=$?
 if [ "$(cat "$work/done.txt" 2>/dev/null)" != "ok" ]; then
   cat "$work/error.txt" 2>/dev/null >&2 || true
-  grep -E "Bauplaner|ERROR|Exception|Caused by|went wrong" -A2 "$work/game.log" | tail -40 >&2 || true
+  grep -E "Build Studio|ERROR|Exception|Caused by|went wrong" -A2 "$work/game.log" | tail -40 >&2 || true
   echo "Spieltest $loader fehlgeschlagen (Gradle-Status $status, Protokoll $work/game.log)." >&2
   BAUPLANER_KEEP=1; exit 1
 fi
-grep -F '[CHAT] [Bauplaner]' "$work/game.log" | sed 's/.*\[CHAT\] /  Spiel: /' || true
+grep -F '[CHAT] [Build Studio]' "$work/game.log" | sed 's/.*\[CHAT\] /  Spiel: /' || true
 node scripts/mod/bridge_gametest.mjs verify "$work"

@@ -59,7 +59,7 @@ public final class PlanScreen extends Screen {
     private final List<String[]> notes = new ArrayList<>();
 
     PlanScreen(Hologram hologram, BlockPos lookedAt) {
-        super(Component.literal("Bauplaner"));
+        super(Component.literal("Build Studio"));
         this.hologram = hologram;
         this.lookedAt = lookedAt;
     }
@@ -320,9 +320,9 @@ public final class PlanScreen extends Screen {
         int x = left() + off, w = inner();
         // Header: title and the plan's state with a small bar.
         g.fill(x, 8, x + 5, 13, HudCard.ACCENT); // UI-03 overline square
-        g.text(font, "Bauplaner", x + 8, 7, HudCard.TEXT, true);
+        g.text(font, "Build Studio", x + 8, 7, HudCard.TEXT, true);
         var check = hologram.check();
-        String state = check == null ? t("kein Plan platziert", "no plan placed") : HudCard.fit(font, hologram.plan().name(), w - font.width("Bauplaner") - font.width(" · 100 %") - 20) + " · " + check.percent() + " %";
+        String state = check == null ? t("kein Plan platziert", "no plan placed") : HudCard.fit(font, hologram.plan().name(), w - font.width("Build Studio") - font.width(" · 100 %") - 20) + " · " + check.percent() + " %";
         g.text(font, state, x + w - font.width(state), 7, check == null ? HologramHud.GREY : HologramHud.GREEN, true);
         if (check != null) {
             g.fill(x, 19, x + w, 21, 0x40FFFFFF);

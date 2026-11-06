@@ -22,7 +22,7 @@ class DiagnosticsTest {
         log.add("\tat com.example.Other.run(Other.java:1)");
         List<String> picked = Diagnostics.selectLog(log, 80);
         assertEquals(List.of(log.get(1), log.get(2), log.get(3), log.get(4), log.get(5), log.get(6), log.get(8)), picked,
-                "Bauplaner-Zeilen mit ihrem Stack, dazu Ausnahme- und ERROR-Zeilen; keine Infozeilen und kein fremder Stack");
+                "Build-Studio-Zeilen mit ihrem Stack, dazu Ausnahme- und ERROR-Zeilen; keine Infozeilen und kein fremder Stack");
         assertFalse(picked.contains(log.get(9)));
         assertEquals(3, Diagnostics.selectLog(log, 3).size(), "nur die letzten max Zeilen");
         assertEquals(log.get(8), Diagnostics.selectLog(log, 3).get(2));
@@ -44,7 +44,7 @@ class DiagnosticsTest {
         d.put("Mod", "Version", "0.7.0").put("Mod", "Loader", "fabric").put("Hologramm", "Plan", null);
         d.log(List.of("[x] (bauplaner) gestartet in /home/philipp/.minecraft"));
         String text = d.text("2026-11-02T20:00");
-        assertTrue(text.startsWith("## Bauplaner-Mod Diagnose\n"));
+        assertTrue(text.startsWith("## Build-Studio-Mod Diagnose\n"));
         assertTrue(text.contains("### Mod\n- Version: 0.7.0\n- Loader: fabric\n"));
         assertTrue(text.contains("- Plan: –\n"));
         assertTrue(text.contains("gestartet in ~/.minecraft"));

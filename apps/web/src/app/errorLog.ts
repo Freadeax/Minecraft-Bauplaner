@@ -43,7 +43,7 @@ export function installErrorCapture(): void {
 /** Plain-text report for bug reports; contains no project data. */
 export function errorReport(list: readonly LoggedError[], build?: { sourceCommit?: string; builtAt?: string }): string {
   const head = [
-    'Minecraft-Bauplaner Fehlerbericht',
+    'LMNT — Build Studio Fehlerbericht',
     `Zeit: ${new Date().toISOString()}`,
     `Build: ${build?.sourceCommit?.slice(0, 7) ?? 'unbekannt'}${build?.builtAt ? ` (${build.builtAt})` : ''}`,
     `Browser: ${navigator.userAgent}`,

@@ -19,7 +19,7 @@ import net.minecraft.world.phys.Vec3;
 
 /**
  * Multiplayer acceptance with the real game (Roadmap block 4, GAME-02 Mehrspieler, TEAMBAU-06 with the mod, LINK-12):
- * the Minecraft 26.3 client with the mod joins a real Paper 26.3 server with the Bauplaner plugin
+ * the Minecraft 26.3 client with the mod joins a real Paper 26.3 server with the Build Studio plugin
  * (scripts/mod/bridge_multiplayer_client.mjs starts both the server and the team room). The planner has handed the
  * team room to this game before (raum.json with the server key, like „Mein Spiel verbinden“ as Bauleitung).
  * The player allows the team channel once, the mod hands the room to the plugin by itself, then takes a section,

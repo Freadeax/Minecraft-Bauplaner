@@ -98,12 +98,12 @@ export function LiveMapPanel({ settings, onChange, map, dimension, items = [], o
   const fileBase = `bauplaner-${dimensionLabel(dimension).toLowerCase()}`;
   const exportBlueMap = () => {
     download(`${fileBase}-bluemap-marker.conf`, blueMapMarkerConfig(shapes), 'text/plain');
-    setMessage(`BlueMap-Marker für ${dimensionLabel(dimension)} heruntergeladen (${shapes.length} Marker): den Block ans Ende der Kartenkonfiguration dieser Welt setzen (z. B. maps/world.conf) und „bluemap reload“ eingeben. Ein späterer Block darf einfach darunter und ersetzt die alten Bauplaner-Marker.`);
+    setMessage(`BlueMap-Marker für ${dimensionLabel(dimension)} heruntergeladen (${shapes.length} Marker): den Block ans Ende der Kartenkonfiguration dieser Welt setzen (z. B. maps/world.conf) und „bluemap reload“ eingeben. Ein späterer Block darf einfach darunter und ersetzt die alten Build-Studio-Marker.`);
   };
   const exportDynmap = () => {
     try {
       download(`${fileBase}-dynmap-befehle.txt`, dynmapMarkerCommands(shapes, world || 'world'), 'text/plain');
-      setMessage(`Dynmap-Befehle für Welt „${world || 'world'}“ heruntergeladen (${shapes.length} Marker): die Zeilen ohne # in die Serverkonsole eingeben. Ein zweiter Lauf ersetzt die alten Bauplaner-Marker.`);
+      setMessage(`Dynmap-Befehle für Welt „${world || 'world'}“ heruntergeladen (${shapes.length} Marker): die Zeilen ohne # in die Serverkonsole eingeben. Ein zweiter Lauf ersetzt die alten Build-Studio-Marker.`);
     } catch (e) { setMessage(errorText(e)); }
   };
   const importMarkers = async (file: File | undefined) => {
@@ -202,12 +202,12 @@ export function LiveMapPanel({ settings, onChange, map, dimension, items = [], o
       </div>
       <p className="muted small">Die Vorlagen für BlueMap, Dynmap und Pl3xMap sind aus deren Quelltext abgeleitet.</p>
       <details className="live-fallback"><summary>Notfall ohne Team-Raum oder Plugin: Dateien</summary>
-        <p className="muted small">Nur wenn der Server kein Bauplaner-Plugin hat oder kein Team-Raum erreichbar ist. Der normale Weg läuft über das Internet (oben „Weltplan im Team“).</p>
+        <p className="muted small">Nur wenn der Server kein Build-Studio-Plugin hat oder kein Team-Raum erreichbar ist. Der normale Weg läuft über das Internet (oben „Weltplan im Team“).</p>
         <div className="button-row">
           <button className="secondary" disabled={!shapes.length} onClick={exportBlueMap}>BlueMap-Marker (.conf)</button>
           <button className="secondary" disabled={!shapes.length} onClick={exportDynmap}>Dynmap-Befehle (.txt)</button>
           {onImportPoints && <label className="file-button">Markerdatei als Punkte laden<input type="file" accept=".json,application/json" aria-label="Markerdatei als Punkte laden" onChange={e => { void importMarkers(e.target.files?.[0]); e.target.value = ''; }} /></label>}
-          <button className="secondary" disabled={!map?.entries.length} onClick={exportMarkers}>Marker (JSON, Bauplaner-Format) herunterladen</button>
+          <button className="secondary" disabled={!map?.entries.length} onClick={exportMarkers}>Marker (JSON, Build-Studio-Format) herunterladen</button>
           <button className="secondary" disabled={!map?.entries.length} onClick={() => map && download(`bauplaner-weltlage-${dimensionLabel(dimension).toLowerCase()}.json`, placementsJson(map), 'application/json')}>Lagen (JSON)</button>
           <button className="secondary" disabled={!saved.length} onClick={() => download('bauplaner-karten.json', JSON.stringify(createLiveMapTargetsFile(saved), null, 2), 'application/json')}>Kartenliste herunterladen</button>
           <label className="file-button">Kartenliste laden<input type="file" accept=".json,application/json" aria-label="Kartenliste laden" onChange={e => { void importTargets(e.target.files?.[0]); e.target.value = ''; }} /></label>

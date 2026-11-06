@@ -1,4 +1,4 @@
-// Modrinth-Projekt der Bauplaner-Brücke pflegen (Projekt anlegen, Texte/Bilder abgleichen, neue Versionen hochladen).
+// Modrinth-Projekt der Build-Studio-Brücke pflegen (Projekt anlegen, Texte/Bilder abgleichen, neue Versionen hochladen).
 //
 //   node scripts/mod/modrinth_publish.mjs check     Offline: project.json, Beschreibung, Bilder, Änderungsliste und
 //                                               die hochzuladenden Dateien prüfen (läuft in npm test, braucht nichts).

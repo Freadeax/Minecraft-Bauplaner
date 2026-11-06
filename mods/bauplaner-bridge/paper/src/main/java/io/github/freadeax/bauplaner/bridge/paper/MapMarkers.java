@@ -29,7 +29,7 @@ final class MapMarkers {
     /** One web map plugin. */
     interface Sink {
         String name();
-        /** Replaces all Bauplaner marker sets of this web map with these shapes (dimension id → shapes). */
+        /** Replaces all Build Studio marker sets of this web map with these shapes (dimension id → shapes). */
         void replace(Map<String, List<WorldShare.Shape>> shapes) throws Exception;
     }
 

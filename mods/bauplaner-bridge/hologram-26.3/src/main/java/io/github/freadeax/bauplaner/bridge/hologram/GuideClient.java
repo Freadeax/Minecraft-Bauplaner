@@ -296,8 +296,8 @@ final class GuideClient {
     private static <S> LiteralArgumentBuilder<S> literal(String name) { return LiteralArgumentBuilder.literal(name); }
     private static <S, T> RequiredArgumentBuilder<S, T> argument(String name, com.mojang.brigadier.arguments.ArgumentType<T> type) { return RequiredArgumentBuilder.argument(name, type); }
 
-    private static int say(String text) { McCompat.chat(Minecraft.getInstance(), Component.literal("[Bauplaner] " + text)); return 1; }
-    private static int fail(String text) { McCompat.chat(Minecraft.getInstance(), Component.literal("[Bauplaner] " + text).withStyle(ChatFormatting.RED)); return 0; }
+    private static int say(String text) { McCompat.chat(Minecraft.getInstance(), Component.literal("[Build Studio] " + text)); return 1; }
+    private static int fail(String text) { McCompat.chat(Minecraft.getInstance(), Component.literal("[Build Studio] " + text).withStyle(ChatFormatting.RED)); return 0; }
 
     private interface Action { String run(Minecraft mc) throws Exception; }
 

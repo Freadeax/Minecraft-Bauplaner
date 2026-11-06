@@ -4,11 +4,11 @@ issueTrackerURL="https://github.com/Freadeax/Minecraft-Bauplaner/issues"
 [[mods]]
 modId="bauplaner_bridge"
 version="${version}"
-displayName="Bauplaner-Brücke"
+displayName="LMNT — Build Studio Bridge"
 displayURL="https://freadeax.github.io/Minecraft-Bauplaner/#/mod"
 authors="Freadeax"
 description='''
-Bauplaner-Pläne als Hologramm mit Live-Abgleich, Materialliste, Ebenen und Platzierhilfe, dazu die Aufnahme für den Soll/Ist-Vergleich des Minecraft-Bauplaners. Reine Client-Mod: baut nie selbst, sendet nichts ins Internet, braucht nichts auf dem Server.
+Build-Studio-Pläne als Hologramm mit Live-Abgleich, Materialliste, Ebenen und Platzierhilfe, dazu die Aufnahme für den Soll/Ist-Vergleich von LMNT — Build Studio. Reine Client-Mod: baut nie selbst, sendet nichts ins Internet, braucht nichts auf dem Server.
 '''
 
 [[dependencies.bauplaner_bridge]]

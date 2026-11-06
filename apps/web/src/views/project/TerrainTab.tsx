@@ -114,7 +114,7 @@ export function TerrainTab({ session }: { session: ProjectSession }) {
       <div><span className="panel-kicker">GELÄNDE AN DER WELTLAGE</span>
         {empty ? <h2>{dimensionLabel(placement.dimension)} · Ursprung X {o[0]} · Y {o[1]} · Z {o[2]}</h2>
           : <h2>{dimensionLabel(placement.dimension)} · X {b.min[0] + o[0]} … {b.maxExclusive[0] + o[0] - 1} · Y {b.min[1] + o[1]} … {b.maxExclusive[1] + o[1] - 1} · Z {b.min[2] + o[2]} … {b.maxExclusive[2] + o[2] - 1}</h2>}
-        <p className="muted">Das Gelände kommt direkt aus dem Spiel: Die Bauplaner-Mod liefert die Oberfläche rund um den Bauplatz und die Blöcke unter dem Projekt ({depth} Blöcke tief), ohne dass du Dateien hochlädst. Alles läuft über die Verbindung zur Mod; Regionsdateien bleiben nur ein Notfallweg.</p></div>
+        <p className="muted">Das Gelände kommt direkt aus dem Spiel: Die Build-Studio-Mod liefert die Oberfläche rund um den Bauplatz und die Blöcke unter dem Projekt ({depth} Blöcke tief), ohne dass du Dateien hochlädst. Alles läuft über die Verbindung zur Mod; Regionsdateien bleiben nur ein Notfallweg.</p></div>
     </header>
     {busy && <div className="notice world-busy" role="status">{busy}{progress && ` … ${progress[0]} / ${progress[1]} Chunks`}<button onClick={() => client.current?.abort()}>Abbrechen</button></div>}
     {survey}

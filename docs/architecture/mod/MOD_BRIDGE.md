@@ -11,7 +11,7 @@ Begründung:
 - Eine einzige Vergleichs- und Schrittlogik. Die Schritte (`<instanzId>~L<schicht>~<phase>`) entstehen in `buildGuide` aus `resolution.world`; eine zweite Schrittlogik in Java würde den Grundsatz „keine zweite Koordinaten-/Zähllogik“ verletzen und bei jeder Anleitungsänderung auseinanderlaufen.
 - Die Mod bleibt klein und je Minecraft-Version billig zu pflegen: Bereich lesen, Blockzustände als Text, Datei schreiben.
 - Der vorhandene Schem-Reader, der Python-Prüfer und die Node-Tests decken das Format bereits ab. Der Vergleich ist mit synthetischen Ist-Dateien vollständig ohne Minecraft testbar.
-- Fremde Schem-Dateien ohne Bauplaner-Metadaten liest die Website ebenfalls, dann mit manueller Ausrichtung. Das ist nur ein technischer Rückfall; WorldEdit oder andere Werkzeuge werden nicht vorausgesetzt.
+- Fremde Schem-Dateien ohne Build-Studio-Metadaten liest die Website ebenfalls, dann mit manueller Ausrichtung. Das ist nur ein technischer Rückfall; WorldEdit oder andere Werkzeuge werden nicht vorausgesetzt.
 
 Die Mod verändert die Welt nie (AGENTS: keine automatische Weltveränderung). Sie setzt keine Blöcke, platziert keine Geisterblöcke als echte Blöcke und sendet nichts an Dritte.
 

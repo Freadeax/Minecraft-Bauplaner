@@ -72,7 +72,7 @@ final class StorageModule implements Listener {
 
     static final List<String> SUBCOMMANDS = List.of("markieren", "entmarkieren", "info", "liste", "pruefen", "siegeln", "name", "abschnitt", "zweck", "schutz",
             "verlauf", "wer", "bedarf", "zeigen", "hilfe", "farm", "setzen", "entfernen", "zaehlen");
-    static final String PREFIX = ChatColor.GOLD + "[Bauplaner] " + ChatColor.RESET;
+    static final String PREFIX = ChatColor.GOLD + "[Build Studio] " + ChatColor.RESET;
 
     final JavaPlugin plugin;
     final TeamAccess teams;

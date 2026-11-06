@@ -182,7 +182,7 @@ export async function lampPostPart(lamps: readonly (readonly [number, number, nu
     pivot: [0, 0, 0], sourceOrigin: [0, 0, 0], palette, cells, blockEntities: [] });
   const asset = createAsset({ name: `Laternen: ${input.name}`.slice(0, 120), tags: ['laternen', 'wegenetz', 'infrastruktur'],
     description: `${lamps.length} Laternen am Landschaftsweg von „${input.name}“, jede auf dem geplanten Gelände.`,
-    provenance: { author: 'Minecraft-Bauplaner', source: 'Weg auf geplantem Gelände (eigener Entwurf)', license: 'frei für dieses Projekt' } });
+    provenance: { author: 'LMNT — Build Studio', source: 'Weg auf geplantem Gelände (eigener Entwurf)', license: 'frei für dieses Projekt' } });
   const r = await addAssetVersion(asset, { payload, label: '1.0', source: { format: 'base-plan' } });
   const px = x0 - input.origin[0] - input.offset[0], pz = z0 - input.origin[2] - input.offset[1];
   const placement: AnlagePlacement = { key: input.key, districtId: null, kind: 'path', name: 'Laternen am Weg', version: r.version, area: true,

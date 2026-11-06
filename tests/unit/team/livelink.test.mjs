@@ -21,7 +21,7 @@ test('Begrüßung, Kopplung und Status werden streng gelesen', () => {
   assert.deepEqual(withScan.features, ['scan']);
   assert.equal(liveCan(withScan, 'scan'), true);
   assert.equal(liveCan(readLiveHello(hello), 'scan'), false);
-  assert.throws(() => readLiveHello({ ...hello, app: 'etwas' }), /keine Bauplaner-Mod/);
+  assert.throws(() => readLiveHello({ ...hello, app: 'etwas' }), /keine Build-Studio-Mod/);
   assert.throws(() => readLiveHello({ ...hello, protocol: 3 }), /Protokoll 3/);
   assert.equal(readLivePairing({ token: 'a'.repeat(32) }), 'a'.repeat(32));
   assert.throws(() => readLivePairing({ token: 'kurz' }), /Schlüssel/);

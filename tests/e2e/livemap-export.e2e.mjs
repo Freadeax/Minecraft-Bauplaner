@@ -74,7 +74,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     dl = p.waitForEvent('download');
     await fb.getByRole('button', { name: 'Dynmap-Befehle (.txt)' }).click();
     const cmds = await text(await dl);
-    assert.match(cmds, /^dmarker addset id:bauplaner-projekte "Bauplaner: Projekte" hide:false$/m);
+    assert.match(cmds, /^dmarker addset id:bauplaner-projekte "Build Studio: Projekte" hide:false$/m);
     assert.match(cmds, /^dmarker addarea id:projekt_\S+ ".+" set:bauplaner-projekte .* ybottom:-?\d+ ytop:-?\d+$/m);
     assert.match(cmds, /^dmarker addcorner -?\d+ -?\d+ -?\d+ survival$/m);
 

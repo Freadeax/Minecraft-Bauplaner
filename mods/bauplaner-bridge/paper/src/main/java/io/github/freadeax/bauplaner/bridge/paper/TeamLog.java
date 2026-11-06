@@ -73,7 +73,7 @@ final class TeamLog {
 
     TeamLog(JsonObject header) {
         this.header = header;
-        if (!FORMAT.equals(str(header, "format"))) throw new IllegalArgumentException("Keine Server-Teamdatei des Bauplaners (format " + FORMAT + " erwartet).");
+        if (!FORMAT.equals(str(header, "format"))) throw new IllegalArgumentException("Keine Server-Teamdatei des Build Studios (format " + FORMAT + " erwartet).");
         if (!header.has("formatVersion") || header.get("formatVersion").getAsInt() != 1) throw new IllegalArgumentException("Unbekannte Version der Teamdatei – bitte das Plugin aktualisieren.");
         teamId = req(header, "teamId"); name = req(header, "name"); founder = req(header, "founder");
         projectName = Optional.ofNullable(str(header, "projectName")).orElse(name);

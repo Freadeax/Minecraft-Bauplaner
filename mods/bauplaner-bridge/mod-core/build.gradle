@@ -1,4 +1,4 @@
-// Kern der Bauplaner-Mod 2.0 (reines Java, ohne Minecraft): Plan, Platzierung, Blockregeln, Live-Abgleich.
+// Kern der Build-Studio-Mod 2.0 (reines Java, ohne Minecraft): Plan, Platzierung, Blockregeln, Live-Abgleich.
 // Nutzt NBT aus dem Brückenkern; die Spiel-Schichten binden beide als Quelltext ein.
 plugins {
     id 'java-library'

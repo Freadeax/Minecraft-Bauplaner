@@ -277,7 +277,7 @@ export async function exportModel(f: FormatsApi, req: ExportRequest): Promise<Ex
   const unit = printFormat ? 'millimeter' : 'meter';
   const up = printFormat ? 'z' : 'y';
   const base = f.safeName(req.name);
-  const comment = ['Minecraft-Bauplaner – 3D-Export', `Modell: ${req.name}`, ...(req.source ? [req.source] : []),
+  const comment = ['LMNT — Build Studio – 3D-Export', `Modell: ${req.name}`, ...(req.source ? [req.source] : []),
     `1 Block = ${req.blockSize} ${unit === 'meter' ? 'm' : 'mm'}`, kind === 'print' ? `Druckmodell, Feinheit ${req.print.detail} je Block` : 'Ansichtsmodell mit Blockformen'];
   let mesh: Mesh3d, print: PrintReport | null = null, blocks: number, welded: WeldedMesh | undefined;
   let textured = false;
@@ -297,7 +297,7 @@ export async function exportModel(f: FormatsApi, req: ExportRequest): Promise<Ex
   let file: ModelFile;
   switch (req.format) {
     case 'glb':
-      file = { name: `${base}.glb`, type: 'model/gltf-binary', bytes: f.writeGlb(mesh, { ...(png && { texturePng: png }), extras: { quelle: 'Minecraft-Bauplaner', modell: req.name, blockgroesse: req.blockSize, art: kind } }) };
+      file = { name: `${base}.glb`, type: 'model/gltf-binary', bytes: f.writeGlb(mesh, { ...(png && { texturePng: png }), extras: { quelle: 'LMNT — Build Studio', modell: req.name, blockgroesse: req.blockSize, art: kind } }) };
       break;
     case 'obj': {
       const textureFile = png ? `${base}_bloecke.png` : undefined;
@@ -310,7 +310,7 @@ export async function exportModel(f: FormatsApi, req: ExportRequest): Promise<Ex
       break;
     }
     case 'stl':
-      file = { name: `${base}.stl`, type: 'model/stl', bytes: f.writeStl(mesh, `Minecraft-Bauplaner ${base} mm`) };
+      file = { name: `${base}.stl`, type: 'model/stl', bytes: f.writeStl(mesh, `LMNT — Build Studio ${base} mm`) };
       break;
     case '3mf':
       file = { name: `${base}.3mf`, type: 'model/3mf', bytes: await f.write3mf(mesh, { title: req.name, description: comment.join(' · '), deflate: f.deflateRaw, date: new Date(), ...(welded && { welded }) }) };

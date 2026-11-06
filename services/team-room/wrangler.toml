@@ -1,4 +1,4 @@
-# Team-Raum des Minecraft-Bauplaners (COOP-07, docs/architecture/team/TEAM_LIVE.md).
+# Team-Raum von LMNT — Build Studio (COOP-07, docs/architecture/team/TEAM_LIVE.md).
 # Einrichten: services/team-room/README.md. Läuft im kostenlosen Workers-Tarif (Durable Objects mit SQLite).
 name = "bauplaner-team"
 main = "src/index.js"

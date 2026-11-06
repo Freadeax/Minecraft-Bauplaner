@@ -137,7 +137,7 @@ final class TerrainRecorder {
         p.setProperty("aktiv", Boolean.toString(on));
         try {
             Files.createDirectories(dir);
-            try (var out = Files.newOutputStream(dir.resolve("einstellung.properties"))) { p.store(out, "Bauplaner Geländegedächtnis"); }
+            try (var out = Files.newOutputStream(dir.resolve("einstellung.properties"))) { p.store(out, "Build Studio Geländegedächtnis"); }
         } catch (IOException ignored) { }
         return on ? t("Geländegedächtnis an: Die Mod merkt sich das Gelände, das du siehst (nur auf diesem PC).", "Terrain memory on: the mod remembers the terrain you see (only on this PC).") : t("Geländegedächtnis aus. Gemerktes bleibt, bis du „/bauplaner gelaende vergessen“ eingibst.", "Terrain memory off. What is remembered stays until you type “/buildplanner terrain forget”.");
     }

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Real-server test of the planner's emergency way to the web map (MAP-02, KARTE-08, no Bauplaner plugin): the exported
+# Real-server test of the planner's emergency way to the web map (MAP-02, KARTE-08, no Build Studio plugin): the exported
 # BlueMap `marker-sets` block in maps/world.conf of BlueMap 5.29 on Paper 26.3 and the exported `dmarker` lines in the
 # console of Dynmap 3.7-beta-8 on Paper 1.21.4. Needs `npm run build:core`, JDK 21 and 25, network to fill.papermc.io,
 # the Modrinth CDN and the Mojang servers. Not part of `npm run check`.

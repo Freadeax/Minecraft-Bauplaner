@@ -40,7 +40,7 @@ export interface LiveActions {
 }
 
 /**
- * „Mit dem Spiel verbunden“ (MAP-03): connection to the Bauplaner mod on this
+ * „Mit dem Spiel verbunden“ (MAP-03): connection to the Build Studio mod on this
  * computer, pairing with the code from the chat, and what the game reports.
  */
 export function LiveGamePanel({ game, actions }: { game: LiveGame; actions: LiveActions }) {
@@ -60,7 +60,7 @@ export function LiveGamePanel({ game, actions }: { game: LiveGame; actions: Live
     {game.originProblem && <p className="notice warning" role="alert">{game.originProblem}</p>}
 
     {(game.phase === 'off' || game.phase === 'searching') && <div className="live-connect">
-      <p className="muted">Minecraft mit der <a href="#/mod">Bauplaner-Mod</a> starten, hier „Verbinden“ drücken und im Spiel <b>J</b> → „Planer zulassen“. Dann siehst du dich und das Gelände live und schickst Pläne direkt ins Spiel.</p>
+      <p className="muted">Minecraft mit der <a href="#/mod">Build-Studio-Mod</a> starten, hier „Verbinden“ drücken und im Spiel <b>J</b> → „Planer zulassen“. Dann siehst du dich und das Gelände live und schickst Pläne direkt ins Spiel.</p>
       {/* UX-01: die ausführlichen Schritte stehen eingeklappt, die Hauptaktion bleibt oben sichtbar. */}
       <details className="live-help-steps"><summary>Schritt für Schritt</summary>
       <ol className="live-steps">
@@ -71,7 +71,7 @@ export function LiveGamePanel({ game, actions }: { game: LiveGame; actions: Live
       </ol></details>
       <div className="button-row">
         {game.phase === 'searching'
-          ? <><span className="live-wait" role="status">Suche die Mod auf diesem PC … läuft Minecraft mit der Bauplaner-Mod?</span>
+          ? <><span className="live-wait" role="status">Suche die Mod auf diesem PC … läuft Minecraft mit der Build-Studio-Mod?</span>
             <button className="secondary" onClick={() => void game.disconnect()}>Abbrechen</button></>
           : <button className="primary" disabled={!!game.originProblem} onClick={() => { if (portValid) game.setPort(Number(port)); void game.connect(); }}>Verbinden</button>}
         <details className="live-port"><summary>Port</summary>

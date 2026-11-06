@@ -84,7 +84,7 @@ const chipText = { never: 'noch nie gesichert', changed: 'seit Sicherung geände
 function BackupChip({ repo, project }: { repo: Repository; project: Project }) {
   const line = useProjectBackupState(repo, project);
   if (!line) return null;
-  const title = line.receipt ? `Zuletzt in „${line.receipt.fileName}“ (${new Date(line.receipt.at).toLocaleString('de-DE')}). Ob die Datei außerhalb dieses Browsers liegt, kann der Bauplaner nicht prüfen.` : 'In keiner Sicherungsdatei dieses Browsers enthalten.';
+  const title = line.receipt ? `Zuletzt in „${line.receipt.fileName}“ (${new Date(line.receipt.at).toLocaleString('de-DE')}). Ob die Datei außerhalb dieses Browsers liegt, kann das Build Studio nicht prüfen.` : 'In keiner Sicherungsdatei dieses Browsers enthalten.';
   return <a className={`backup-chip ${line.state}`} href="#/" data-backup-state={line.state} title={title}>{chipText[line.state]}</a>;
 }
 

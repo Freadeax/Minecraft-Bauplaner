@@ -106,7 +106,7 @@ class CommandCatalogTest {
         var none = new CommandContext(false, false, null, false, false);
         assertTrue(none.blocked(CommandCatalog.byId("fehler")).contains("Plan"));
         assertTrue(none.blocked(CommandCatalog.byId("team.nehmen")).contains("Mit Spiel abgleichen"));
-        assertTrue(none.blocked(CommandCatalog.byId("bp.beitrag")).contains("kein Bauplaner-Plugin"));
+        assertTrue(none.blocked(CommandCatalog.byId("bp.beitrag")).contains("kein Build-Studio-Plugin"));
         assertNull(none.blocked(CommandCatalog.byId("diagnose")));
         assertNull(none.blocked(CommandCatalog.byId("team.erlauben")));
         var helper = new CommandContext(true, true, "helfer", true, false);
@@ -125,8 +125,8 @@ class CommandCatalogTest {
     void answersKeepOwnLinesAndTheServersReplyToACommandSentFromThePage() {
         ReplyLog log = new ReplyLog();
         assertFalse(log.offer("<Anna> hallo", 1000), "fremder Chat bleibt draußen");
-        assertTrue(log.own("[Bauplaner] Abschnitt 2 genommen.", 1000));
-        assertFalse(log.offer("[Bauplaner] Abschnitt 2 genommen.", 1000), "eigene Zeile nicht doppelt über das Chat-Ereignis");
+        assertTrue(log.own("[Build Studio] Abschnitt 2 genommen.", 1000));
+        assertFalse(log.offer("[Build Studio] Abschnitt 2 genommen.", 1000), "eigene Zeile nicht doppelt über das Chat-Ereignis");
         log.sent("bp lager liste", true, 2000);
         assertTrue(log.offer("Lagerkisten: 3", 2500), "Antwort des Servers ohne Präfix");
         assertFalse(log.offer("Server neu gestartet in 5 min", 2000 + ReplyLog.SERVER_WINDOW + 1));
@@ -134,7 +134,7 @@ class CommandCatalogTest {
         assertFalse(log.offer("<Ben> Hallo", 9100), "nach Client-Befehlen kein Fenster für fremde Zeilen");
         var last = log.last(10);
         assertEquals(List.of("Abschnitt 2 genommen.", "› /bp lager liste", "Lagerkisten: 3", "› /bauplaner fortschritt"), last.stream().map(ReplyLog.Line::text).toList());
-        for (int i = 0; i < 100; i++) log.own("[Bauplaner] " + i, 10_000 + i);
+        for (int i = 0; i < 100; i++) log.own("[Build Studio] " + i, 10_000 + i);
         assertEquals(ReplyLog.MAX, log.last(1000).size());
         assertEquals("99", log.last(1).get(0).text());
     }

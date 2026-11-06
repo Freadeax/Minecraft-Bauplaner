@@ -23,7 +23,7 @@ iPad ohne Mod ─── POST /v1/rooms/<raum>/control ──▶ Team-Raum ──
 
 ## 2. Plugin richtet sich selbst ein (LINK-01)
 
-- Erster Start: `plugins/BauplanerBridge/link.json` mit `serverId` (`srv_…`), Name (MOTD) und leerer Geräteliste. Log: „Bauplaner eingerichtet … Koppeln: als OP mit der Bauplaner-Mod beitreten und im Planer auf der Seite „Spiel“ „Server koppeln“ klicken“.
+- Erster Start: `plugins/BauplanerBridge/link.json` mit `serverId` (`srv_…`), Name (MOTD) und leerer Geräteliste. Log: „Build Studio eingerichtet … Koppeln: als OP mit der Build-Studio-Mod beitreten und im Planer auf der Seite „Spiel“ „Server koppeln“ klicken“.
 - Ungekoppelt: ein OP bekommt beim Beitreten einmal einen Chat-Hinweis (nichts eintippen).
 - **Koppeln** (`link.claim` über den Teamkanal): nur OP oder Recht `bauplaner.team.leitung`. Das Plugin legt ein Gerät an (`own_…`, 32-Byte-Schlüssel, höchstens 8) und gibt den Schlüssel genau einmal zurück. Der Schlüssel steht nie im Log.
 - `LinkCore.java` (reine Regeln, Tests in `LinkCoreTest`), `ServerLink.java` (Ereignisse, Datei, Operationen).

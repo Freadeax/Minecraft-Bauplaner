@@ -1,4 +1,4 @@
-# Minecraft-Bauplaner
+# LMNT — Build Studio
 
 Browserbasierter Minecraft-Bauhelfer: Bauwerke betrachten, wiederverwendbare Module verwalten, neue Pläne zusammensetzen und gemeinsam Schritt für Schritt bauen.
 

@@ -87,7 +87,7 @@ test('survey file: exact round trip, stable content address, damaged files are r
   assert.equal(a.original.mediaType, 'application/x-bauplaner-terrain');
   assert.equal(a.reference.known, 44);
   assert.throws(() => decodeSurvey(bytes.subarray(0, bytes.length - 2)), /Datengröße/);
-  const bad = bytes.slice(); bad[0] = 0; assert.throws(() => decodeSurvey(bad), /keine Bauplaner-Geländedatei/);
+  const bad = bytes.slice(); bad[0] = 0; assert.throws(() => decodeSurvey(bad), /keine Build-Studio-Geländedatei/);
   assert.throws(() => createSurvey({ minX: 0, minZ: 0, width: 600, length: 1, ground: new Int16Array(600), surface: new Int16Array(600), groundBlock: new Uint16Array(600), surfaceBlock: new Uint16Array(600), ids: ['?'] }, { dimension: 'minecraft:overworld' }), /Breite und Länge/);
   assert.throws(() => checkTerrainReference({ ...a.reference, sha256: 'x' }), /Hash/);
   assert.throws(() => checkTerrainReference({ ...a.reference, groundRange: [5, 1] }), /Höhenbereich/);

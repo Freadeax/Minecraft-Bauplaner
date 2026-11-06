@@ -803,7 +803,7 @@ export function WorldMapView({ search }: { search?: string | undefined }) {
   return <div className="page map-page" data-map-state={busy ? 'busy' : map ? 'ready' : 'empty'} data-map-cells={map?.cells.length ?? ''} data-terrain-cells={ground?.count ?? 0}>
     <header className="map-head">
       <div><h1 className="page-title">Weltkarte</h1>
-        <p className="map-lead">Plane hier deine Welt: Projekte setzen und ziehen, Bauplätze, Wege, Zonen und Punkte zeichnen, in Ebenen ordnen, messen. Mit der Bauplaner-Mod siehst du dich selbst und das echte Gelände live auf der Karte, führst Wege übers Gelände und schickst Pläne direkt ins Spiel.</p></div>
+        <p className="map-lead">Plane hier deine Welt: Projekte setzen und ziehen, Bauplätze, Wege, Zonen und Punkte zeichnen, in Ebenen ordnen, messen. Mit der Build-Studio-Mod siehst du dich selbst und das echte Gelände live auf der Karte, führst Wege übers Gelände und schickst Pläne direkt ins Spiel.</p></div>
       <div className="map-controls">
         <div className="seg" role="group" aria-label="Dimension">
           {dims.map(d => <button key={d} aria-pressed={dimension === d} onClick={() => { setDimension(d); setSelected(null); }}>

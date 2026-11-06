@@ -985,6 +985,53 @@
       "releasedAt": "2026-11-06",
       "sourceCommit": "438add178d9be17b8c665d1b5c6f667e6e828deb",
       "tested": "Echter Paper-Server 26.3 + BlueMap 5.29: Weltplan aus dem Team-Raum; /bp weltplan auch als worldplan (GAME-12)"
+    },
+    {
+      "file": "bauplaner-bridge-fabric-26.3-0.24.0.jar",
+      "modVersion": "0.24.0",
+      "loader": "fabric",
+      "minecraft": "26.3",
+      "loaderMin": "0.19.5",
+      "fabricApi": "0.164.0+26.3",
+      "java": "25",
+      "bytes": 658804,
+      "sha256": "41a5fc0de3bdde466dff5c77f8f71a58b2fdf12f089833b90166a9e361643551",
+      "releasedAt": "2026-11-06",
+      "sourceCommit": "41e9f47030628bfef889bc5772e13de4e13202d4",
+      "tested": "Umbenennung LMNT — Build Studio: Unit-Tests mod-core/paper, Fabric-Spieltest 26.3 bestanden"
+    },
+    {
+      "file": "bauplaner-bridge-neoforge-26.3-0.24.0.jar",
+      "modVersion": "0.24.0",
+      "loader": "neoforge",
+      "minecraft": "26.3",
+      "loaderMin": "26.3.0.100",
+      "java": "25",
+      "bytes": 654004,
+      "sha256": "3b506cac584e6e6a32dfac30fb3489964dd190add886f8eee0bad007192cf89b",
+      "releasedAt": "2026-11-06",
+      "sourceCommit": "41e9f47030628bfef889bc5772e13de4e13202d4",
+      "tested": "Umbenennung LMNT — Build Studio: Build und Unit-Tests"
+    },
+    {
+      "file": "bauplaner-bridge-paper-0.24.0.jar",
+      "modVersion": "0.24.0",
+      "loader": "paper",
+      "minecraft": "26.3",
+      "loaderMin": "1.18",
+      "minecraftVersions": [
+        "1.18.2",
+        "1.20.6",
+        "1.21.4",
+        "1.21.11",
+        "26.3"
+      ],
+      "java": "17",
+      "bytes": 314469,
+      "sha256": "30f0ce63b036db3acfb8f5def302811963cc0afdbb615e0432ba8e37c5a153fe",
+      "releasedAt": "2026-11-06",
+      "sourceCommit": "41e9f47030628bfef889bc5772e13de4e13202d4",
+      "tested": "Umbenennung LMNT — Build Studio: Unit-Tests, Realtest Paper 1.21.11 (Kopplung)"
     }
   ]
 }

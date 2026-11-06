@@ -157,7 +157,7 @@ export function encodeSurvey(s: TerrainSurvey): Uint8Array {
 }
 
 export function decodeSurvey(bytes: Uint8Array): TerrainSurvey {
-  if (bytes.length < 12 || new TextDecoder().decode(bytes.subarray(0, 8)) !== MAGIC) fail('keine Bauplaner-Geländedatei');
+  if (bytes.length < 12 || new TextDecoder().decode(bytes.subarray(0, 8)) !== MAGIC) fail('keine Build-Studio-Geländedatei');
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   const len = view.getUint32(8, true);
   if (12 + len > bytes.length) fail('Kopf abgeschnitten');

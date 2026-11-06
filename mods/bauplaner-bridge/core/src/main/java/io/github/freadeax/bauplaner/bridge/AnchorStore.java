@@ -47,7 +47,7 @@ public final class AnchorStore {
         props.setProperty(k + ".anchor", e.anchor()[0] + " " + e.anchor()[1] + " " + e.anchor()[2]);
         Files.createDirectories(file.getParent());
         Path tmp = file.resolveSibling(file.getFileName() + ".tmp");
-        try (Writer w = Files.newBufferedWriter(tmp, StandardCharsets.UTF_8)) { props.store(w, "Bauplaner-Brücke: Plan und Anker je Welt/Server"); }
+        try (Writer w = Files.newBufferedWriter(tmp, StandardCharsets.UTF_8)) { props.store(w, "Build-Studio-Brücke: Plan und Anker je Welt/Server"); }
         Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
     }
 }

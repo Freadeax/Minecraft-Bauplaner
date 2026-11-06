@@ -279,7 +279,7 @@ class ModCoreTest {
         return schem(w, h, l, projectMin, palette, data, sectionNames, sectionCells, Map.of());
     }
 
-    /** Same with extra Bauplaner tags (e.g. SectionIds and TeamId, COOP-03). */
+    /** Same with extra Build Studio tags (e.g. SectionIds and TeamId, COOP-03). */
     static byte[] schem(int w, int h, int l, int[] projectMin, String[] palette, int[] data, List<String> sectionNames, byte[] sectionCells, Map<String, Nbt.Tag> extra) {
         Map<String, Nbt.Tag> pal = new LinkedHashMap<>();
         for (int i = 0; i < palette.length; i++) pal.put(palette[i], Nbt.Tag.ofInt(i));

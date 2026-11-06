@@ -26,11 +26,11 @@ final class WorldShare {
     /** Marker groups in the order of the planner (MAP_SHAPE_GROUPS) with their set labels. */
     static final Map<String, String> GROUPS = new LinkedHashMap<>();
     static {
-        GROUPS.put("projekte", "Bauplaner: Projekte");
-        GROUPS.put("bauplaetze", "Bauplaner: Bauplätze");
-        GROUPS.put("wege", "Bauplaner: Wege");
-        GROUPS.put("zonen", "Bauplaner: Zonen");
-        GROUPS.put("punkte", "Bauplaner: Punkte");
+        GROUPS.put("projekte", "Build Studio: Projekte");
+        GROUPS.put("bauplaetze", "Build Studio: Bauplätze");
+        GROUPS.put("wege", "Build Studio: Wege");
+        GROUPS.put("zonen", "Build Studio: Zonen");
+        GROUPS.put("punkte", "Build Studio: Punkte");
     }
 
     /** One map marker: area (outline, optional height), line (path) or poi (point). */

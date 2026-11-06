@@ -191,7 +191,7 @@ export function ServerPanel({ search }: { search?: string | undefined } = {}) {
       <li data-done={view.kind === 'game'}>
         <b>Spiel</b>{' '}
         {view.kind === 'loading' && <span className="muted">suche die Mod …</span>}
-        {view.kind === 'no-mod' && <span className="muted">Minecraft mit der Bauplaner-Mod läuft gerade nicht auf diesem PC (oder der Browser blockiert den Zugriff auf Geräte im lokalen Netzwerk). Die Mod gibt es oben auf dieser Seite.</span>}
+        {view.kind === 'no-mod' && <span className="muted">Minecraft mit der Build-Studio-Mod läuft gerade nicht auf diesem PC (oder der Browser blockiert den Zugriff auf Geräte im lokalen Netzwerk). Die Mod gibt es oben auf dieser Seite.</span>}
         {view.kind === 'old-mod' && <span className="warn-text">{view.text}</span>}
         {view.kind === 'unpaired' && <><span>Mod gefunden. </span><button className="primary" disabled={busy} onClick={() => void connectGame()}>Mit dem Spiel verbinden</button></>}
         {view.kind === 'asking' && <b className="warn-text" role="status">Jetzt im Spiel J drücken und „Planer zulassen“ klicken.</b>}
@@ -200,7 +200,7 @@ export function ServerPanel({ search }: { search?: string | undefined } = {}) {
       <li data-done={!!live}>
         <b>Server</b>{' '}
         {!game ? <span className="muted">kommt nach dem Spiel</span>
-          : live ? <span className="ok-text">„{live.name}“ · Bauplaner-Plugin {live.plugin} · Minecraft {live.minecraft}</span>
+          : live ? <span className="ok-text">„{live.name}“ · Build-Studio-Plugin {live.plugin} · Minecraft {live.minecraft}</span>
           : <span className={game.info.way === 'ask' ? 'warn-text' : 'muted'}>{SERVER_WAY_TEXT[game.info.way]}{game.info.way === 'no_plugin' && <> Das Plugin gibt es auf dieser Seite unter „Für einen Server“; es kommt einmal in den Ordner <code>plugins</code>.</>}</span>}
         {game?.info.error && <span className="field-error"> {game.info.error}</span>}
       </li>

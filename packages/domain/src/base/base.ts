@@ -696,7 +696,7 @@ export async function buildBasePlan(layout: BaseLayout, input: { name?: string }
   if (net) {
     const asset = createAsset({ name: `Wegenetz: ${input.name?.trim() || layout.choices.template.name}`.slice(0, 120), tags: ['wegenetz', 'basisplaner', 'infrastruktur'],
       description: `Wege (${PATH_STYLE_LABEL[layout.choices.pathStyle]}, ${layout.choices.pathWidth} Blöcke breit) und ${layout.lamps.length} Laternen, vom Basisplaner zwischen allen Zonen und dem Platz verlegt.`,
-      provenance: { author: 'Minecraft-Bauplaner', source: 'Basisplaner (eigener Entwurf)', license: 'frei für dieses Projekt' } });
+      provenance: { author: 'LMNT — Build Studio', source: 'Basisplaner (eigener Entwurf)', license: 'frei für dieses Projekt' } });
     network = await addAssetVersion(asset, { payload: net.payload, label: '1.0', source: { format: 'base-plan' } });
     const t = { position: [net.origin[0], 0, net.origin[1]] as Vec3, quarterTurns: 0 as Turns, mirrorX: false };
     placements.push({ key: 'wegenetz', districtId: null, kind: 'path', name: 'Wegenetz', version: network.version, transform: t, area: true,

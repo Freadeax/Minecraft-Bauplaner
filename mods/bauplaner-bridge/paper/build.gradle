@@ -1,4 +1,4 @@
-// Paper-Plugin der Bauplaner-Brücke (serverseitig). Eine .jar für viele Minecraft-Versionen: kompiliert
+// Paper-Plugin der Build-Studio-Brücke (serverseitig). Eine .jar für viele Minecraft-Versionen: kompiliert
 // gegen die älteste unterstützte Paper-API (1.18.2) mit Java-17-Bytecode und nutzt nur Bukkit-/Paper-
 // Schnittstellen, die bis 26.x unverändert bestehen. Versionsabhängige Aufrufe stehen in PaperCompat.
 // Der versionsneutrale Kern wird wie beim Fabric-Adapter als Quelltext eingebunden.

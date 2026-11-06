@@ -20,7 +20,7 @@ export interface LiveMapMarker {
   readonly position: LiveMapPosition;
 }
 
-/** Portable Bauplaner interchange, not a native BlueMap/Dynmap/squaremap/Pl3xMap marker file. */
+/** Portable Build Studio interchange, not a native BlueMap/Dynmap/squaremap/Pl3xMap marker file. */
 export interface LiveMapMarkerFile {
   readonly schemaVersion: 1;
   readonly format: 'bauplaner-world-markers';
@@ -183,7 +183,7 @@ export function createLiveMapTargetsFile(maps: readonly SavedLiveMap[]): LiveMap
 export function readLiveMapTargetsFile(input: unknown): LiveMapTargetsFile {
   if (!input || typeof input !== 'object' || Array.isArray(input)) return fail('Kartendatei: Objekt erforderlich');
   const r = input as Record<string, unknown>;
-  if (r.format !== 'bauplaner-live-maps') return fail('Das ist keine Bauplaner-Kartendatei');
+  if (r.format !== 'bauplaner-live-maps') return fail('Das ist keine Build-Studio-Kartendatei');
   if (r.schemaVersion !== 1) return fail(`Kartendatei: unbekannte Schemaversion ${String(r.schemaVersion)}`);
   if (Object.keys(r).some(k => !['schemaVersion', 'format', 'maps'].includes(k))) fail('Kartendatei: unbekannte Felder');
   return { schemaVersion: 1, format: 'bauplaner-live-maps', maps: checkSavedLiveMaps(r.maps) };

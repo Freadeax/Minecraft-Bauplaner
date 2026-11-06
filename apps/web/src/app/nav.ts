@@ -43,5 +43,5 @@ export function routeTitle(route: Route): string {
   if (route.view === 'viewer') return 'Betrachter';
   if (route.view === 'world') return 'Weltimport';
   if (route.view === 'not-found') return 'Seite nicht gefunden';
-  return area?.label ?? 'LMNT Build Studio';
+  return area?.label ?? 'LMNT — Build Studio';
 }

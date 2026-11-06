@@ -118,7 +118,7 @@ try {
   const scanBytes = readFileSync(join(dir, 'scan.schem'));
   const scan = await readWorldScan(scanBytes.buffer.slice(scanBytes.byteOffset, scanBytes.byteOffset + scanBytes.byteLength));
   console.log(`  Paper ${version} (Build ${build.id}, ${scan.meta.loader}, DataVersion ${scan.dataVersion}): Aufnahme ${scanName}, ${reloaded} Chunks nachgeladen; fernes Gelände ${far.meta.unloaded} Zellen „nicht aufgenommen“, nichts erzeugt.`);
-  for (const l of log.split('\n').filter(l => /\[Bauplaner\]|BauplanerBridge\]/.test(l) && !/Loading|Enabling|Disabling/.test(l)).slice(0, 4)) console.log('    ' + l.trim());
+  for (const l of log.split('\n').filter(l => /\[Build Studio\]|BauplanerBridge\]/.test(l) && !/Loading|Enabling|Disabling/.test(l)).slice(0, 4)) console.log('    ' + l.trim());
   assert.ok(+reloaded > 0, 'Plugin hat die nicht geladenen Chunks selbst nachgeladen');
   const problems = log.split('\n').filter(l => /bauplaner/i.test(l) && /(WARN|ERROR|Exception|deprecat)/i.test(l));
   assert.deepEqual(problems, [], 'keine Warnungen oder Fehler des Plugins im Serverprotokoll');

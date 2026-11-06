@@ -396,7 +396,7 @@ export function LandscapeTab({ session }: { session: ProjectSession }) {
       if (!blocks) { setNote('Noch nichts gestaltet: die Gestaltung entspricht dem Gelände.'); return; }
       const asset = createAsset({ name: `Gelände ${project.name}`.slice(0, 120), tags: ['gelaende', 'landschaft'],
         description: `Geländegestaltung für „${project.name}“: ${areaLabel(work.design)}, ${formatNumber(blocks.blocks)} Blöcke setzen, ${formatNumber(blocks.air)} Blöcke abtragen (Luft)${scatter?.placed ? `, davon ${formatNumber(scatter.placed)} gestreute Natur-Bauteile` : ''}.`,
-        provenance: { author: '', source: 'Eigene Geländegestaltung im Bauplaner', license: 'eigene Planung' } });
+        provenance: { author: '', source: 'Eigene Geländegestaltung im Build Studio', license: 'eigene Planung' } });
       const o = blocks.origin, size = blocks.payload.bounds.maxExclusive;
       const source: AssetVersionSource = { format: 'terrain-design', localTo: project.id,
         world: { box: { min: [o[0], o[1], o[2]], maxExclusive: [o[0] + size[0], o[1] + size[1], o[2] + size[2]] }, dimension: work.design.dimension } };

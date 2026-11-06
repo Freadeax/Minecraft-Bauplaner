@@ -1,4 +1,4 @@
-// Stand-in for the Bauplaner mod's live link (protocol 1, docs/architecture/team/LIVE_LINK.md) for browser tests:
+// Stand-in for the Build Studio mod's live link (protocol 1, docs/architecture/team/LIVE_LINK.md) for browser tests:
 // the same routes, pairing, token and origin rules as mod-core LiveLinkServer, with a small synthetic world.
 import http from 'node:http';
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
@@ -155,7 +155,7 @@ export function startModSimulator(port, options = {}) {
       if (req.headers.host !== `127.0.0.1:${port}` && req.headers.host !== `localhost:${port}`) return send(403, { error: 'Nur über 127.0.0.1 erreichbar.' });
       const origin = req.headers.origin;
       if (origin) {
-        if (!allowed(origin)) return send(403, { error: 'Diese Website darf die Bauplaner-Mod nicht abfragen.' });
+        if (!allowed(origin)) return send(403, { error: 'Diese Website darf die Build-Studio-Mod nicht abfragen.' });
         h['Access-Control-Allow-Origin'] = origin; h.Vary = 'Origin';
       }
       if (req.method === 'OPTIONS') {
@@ -303,7 +303,7 @@ export function startModSimulator(port, options = {}) {
         ...(state.teamPushed && { shown: { teamId: state.teamPushed.teamId, name: state.teamPushed.name, source: 'planer', me: state.teamPushed.me, sections: state.teamPushed.sections.length } }) });
       if (route === 'POST /v1/team/ack') { const ids = JSON.parse(body.toString()).ids; state.teamAcked.push(...ids); state.teamOutbox = state.teamOutbox.filter(e => !ids.includes(e.id)); return send(200, { removed: ids.length }); }
       if (route === 'GET /v1/team/pull') {
-        if (state.teamLink !== 'live') return send(409, { error: 'team-plugin-fehlt: Auf diesem Server läuft kein Bauplaner-Plugin mit Teambau.' });
+        if (state.teamLink !== 'live') return send(409, { error: 'team-plugin-fehlt: Auf diesem Server läuft kein Build-Studio-Plugin mit Teambau.' });
         const since = url.searchParams.get('since'), i = since ? state.teamServerEvents.findIndex(e => e.id === since) + 1 : 0;
         return send(200, { teamId: url.searchParams.get('teamId'), name: 'Server', events: state.teamServerEvents.slice(i), more: false, total: state.teamServerEvents.length });
       }

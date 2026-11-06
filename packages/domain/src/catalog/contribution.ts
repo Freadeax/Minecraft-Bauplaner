@@ -49,7 +49,7 @@ export const MAX_CONTRIBUTION_BYTES = 8_000_000;
 export const MAX_PREVIEW_BYTES = 600_000;
 
 export const CONTRIBUTION_LICENSES = {
-  'frei-projekt': 'frei für dieses Projekt (Nutzung im Bauplaner und im Spiel)',
+  'frei-projekt': 'frei für dieses Projekt (Nutzung im Build Studio und im Spiel)',
   'cc-by-4.0': 'CC BY 4.0 (Namensnennung)',
   'cc0': 'CC0 (gemeinfrei)',
 } as const;
@@ -215,7 +215,7 @@ function dataSize(fileVersion: unknown): number {
  */
 export async function readContribution(raw: unknown): Promise<CheckedContribution> {
   if (!isObj(raw)) return fail('Keine Beitragsdatei (JSON-Objekt erwartet)');
-  if (raw.format !== CONTRIBUTION_FORMAT) fail('Keine Beitragsdatei des Bauplaners (Formatkennung fehlt)');
+  if (raw.format !== CONTRIBUTION_FORMAT) fail('Keine Beitragsdatei des Build Studios (Formatkennung fehlt)');
   if (raw.formatVersion !== CONTRIBUTION_FORMAT_VERSION) fail(`Beitragsformat ${String(raw.formatVersion)} wird nicht unterstützt (erwartet ${CONTRIBUTION_FORMAT_VERSION})`);
   if (typeof raw.checksum !== 'string' || await sha256Hex(canonicalJson(withoutChecksum(raw))) !== raw.checksum) fail('Prüfsumme stimmt nicht: Datei beschädigt oder nachträglich verändert');
   const meta = checkContributionMeta(raw.meta);

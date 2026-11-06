@@ -4,7 +4,7 @@ import type { LiveHologram } from './liveLink.js';
 
 /**
  * Server link without commands (LINK-01/04, docs/architecture/team/AUTO_LINK.md): the planner pairs once with the
- * Bauplaner plugin on a Paper server and from then on sends signed control messages instead of commands
+ * Build Studio plugin on a Paper server and from then on sends signed control messages instead of commands
  * (settings, team, team room, plans). The mod on this computer and later the team room only pass them on.
  *
  * Signature: base64url(HMAC-SHA-256(key, owner + "\n" + seq + "\n" + body)), the same as `LinkCore.sign` in
@@ -139,10 +139,10 @@ export function settingsProblem(schema: readonly ServerSetting[], set: Readonly<
 /** Plain-language state of the way to the server, for the page. */
 export const SERVER_WAY_TEXT: Readonly<Record<ServerWay, string>> = {
   none: 'Das Spiel ist mit keinem Server verbunden (Einzelspieler oder Hauptmenü).',
-  no_plugin: 'Auf diesem Server läuft kein Bauplaner-Plugin.',
-  ask: 'Der Server hat das Bauplaner-Plugin. Im Spiel J drücken und „Teambau erlauben“ klicken.',
+  no_plugin: 'Auf diesem Server läuft kein Build-Studio-Plugin.',
+  ask: 'Der Server hat das Build-Studio-Plugin. Im Spiel J drücken und „Teambau erlauben“ klicken.',
   waiting: 'Verbinde mit dem Plugin …',
-  live: 'Verbunden mit dem Bauplaner-Plugin.',
+  live: 'Verbunden mit dem Build-Studio-Plugin.',
   off: 'Der Teamkanal ist für diesen Server im Spiel ausgeschaltet (J → Befehle & Status → „Teambau erlauben“).',
 };
 

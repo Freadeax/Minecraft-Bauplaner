@@ -104,7 +104,7 @@ test('readBackup rejects tampering, truncation, foreign files and newer formats'
   const file = await createBackup(f.source, 'all');
   const text = JSON.stringify(file);
   await assert.rejects(readBackup(text.slice(0, -20)), /kein JSON/);
-  await assert.rejects(readBackup('{"hello":1}'), /Keine Minecraft-Bauplaner-Sicherung/);
+  await assert.rejects(readBackup('{"hello":1}'), /Keine Sicherung von LMNT — Build Studio/);
   await assert.rejects(readBackup(JSON.stringify({ ...file, formatVersion: 99 })), e => e.code === 'SCHEMA_NEWER');
   const renamed = structuredClone(file); renamed.projects[0].name = 'Heimlich geändert';
   await assert.rejects(readBackup(JSON.stringify(renamed)), /Prüfsumme/);

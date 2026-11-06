@@ -34,7 +34,7 @@ for (const viewport of [{ width: 1400, height: 900 }, { width: 390, height: 844 
     await p.goto(`${BASE}#/`);
     await p.getByRole('link', { name: 'Minecraft-Mod' }).click();
     await p.getByRole('heading', { name: 'Mod herunterladen' }).waitFor();
-    assert.equal(await p.title(), 'Mod herunterladen · LMNT Build Studio');
+    assert.equal(await p.title(), 'Mod herunterladen · LMNT — Build Studio');
     const byVersion = (a, b) => b.minecraft.localeCompare(a.minecraft, 'de', { numeric: true }) || b.modVersion.localeCompare(a.modVersion, 'de', { numeric: true });
     // Vorauswahl: neueste Minecraft-Version, Fabric, neueste Mod-Version.
     const newest = releases.filter(r => r.loader === 'fabric').toSorted(byVersion)[0];

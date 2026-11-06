@@ -343,10 +343,10 @@ public final class HologramCommands {
         return link.outbox().remove(nr) ? said(t("Markierung " + nr + " gelöscht.", "Mark " + nr + " deleted.")) : fail(null, t("Keine wartende Markierung " + nr + ". Liste: /bauplaner markierungen", "No waiting mark " + nr + ". List: /buildplanner marks"));
     }
 
-    private static void say(Object s, String text) { McCompat.chat(Minecraft.getInstance(), Component.literal("[Bauplaner] " + text)); }
+    private static void say(Object s, String text) { McCompat.chat(Minecraft.getInstance(), Component.literal("[Build Studio] " + text)); }
     /** A line of a list the player asked for: stays in the chat (GAME-12). */
-    private static void list(String text) { McCompat.chatLine(Minecraft.getInstance(), Component.literal("[Bauplaner] " + text)); }
+    private static void list(String text) { McCompat.chatLine(Minecraft.getInstance(), Component.literal("[Build Studio] " + text)); }
     private static String noPlan() { return t("Kein Plan platziert.", "No plan placed."); }
     private static String noPlanHint() { return t("Kein Plan platziert. /bauplaner zeigen <datei> oder Taste J.", "No plan placed. /buildplanner show <file> or key J."); }
-    private static int fail(Object s, String text) { McCompat.chat(Minecraft.getInstance(), Component.literal("[Bauplaner] " + text).withStyle(ChatFormatting.RED)); return 0; }
+    private static int fail(Object s, String text) { McCompat.chat(Minecraft.getInstance(), Component.literal("[Build Studio] " + text).withStyle(ChatFormatting.RED)); return 0; }
 }

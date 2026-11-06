@@ -32,7 +32,7 @@ test('Anleitung: Wege wählen, Schritte mit Bild und Satz, Links ins Projekt, Ha
   // Einstieg aus der Projektzentrale; ohne Projekt führen Projektlinks zur Projektzentrale.
   await p.locator('[data-guide-link]').click();
   await p.getByRole('heading', { name: 'Wie geh ich es an?' }).waitFor();
-  assert.equal(await p.title(), 'Wie geh ich es an? · LMNT Build Studio');
+  assert.equal(await p.title(), 'Wie geh ich es an? · LMNT — Build Studio');
   assert.equal(await p.locator('.guide-path').count(), 6, 'sechs Wege');
   assert.equal(await p.locator('.guide-path[aria-pressed=true]').getAttribute('data-path'), 'erstes-projekt');
   const steps = p.locator('.guide-step');

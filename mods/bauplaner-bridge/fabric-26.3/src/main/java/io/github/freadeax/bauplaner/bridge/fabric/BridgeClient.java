@@ -118,8 +118,8 @@ public final class BridgeClient implements ClientModInitializer {
         }
     };
 
-    private static void say(FabricClientCommandSource s, String text) { s.sendFeedback(Component.literal("[Bauplaner] " + text)); }
-    private static int fail(FabricClientCommandSource s, String text) { s.sendError(Component.literal("[Bauplaner] " + text)); return 0; }
+    private static void say(FabricClientCommandSource s, String text) { s.sendFeedback(Component.literal("[Build Studio] " + text)); }
+    private static int fail(FabricClientCommandSource s, String text) { s.sendError(Component.literal("[Build Studio] " + text)); return 0; }
 
     private Stream<String> planFiles() {
         try (var files = Files.list(root.resolve("plans"))) {
@@ -209,12 +209,12 @@ public final class BridgeClient implements ClientModInitializer {
         if (job == null) return;
         if (mc.level == null || mc.player == null || !McCompat.dimension(mc.level).equals(jobDimension)) {
             job = null;
-            if (mc.player != null) McCompat.chat(mc, Component.literal("[Bauplaner] " + t("Aufnahme abgebrochen: Welt oder Dimension gewechselt.", "Scan cancelled: world or dimension changed.")));
+            if (mc.player != null) McCompat.chat(mc, Component.literal("[Build Studio] " + t("Aufnahme abgebrochen: Welt oder Dimension gewechselt.", "Scan cancelled: world or dimension changed.")));
             return;
         }
         try {
             boolean done = job.step(CELLS_PER_TICK);
-            McCompat.overlay(mc, Component.literal(t("Bauplaner-Aufnahme ", "Buildplanner scan ") + (job.done() * 100 / job.total()) + " %"));
+            McCompat.overlay(mc, Component.literal(t("Build-Studio-Aufnahme ", "Build Studio scan ") + (job.done() * 100 / job.total()) + " %"));
             if (!done) return;
             Instant now = Instant.now();
             Path out = root.resolve("scans").resolve(ScanJob.fileName(plan, now));
@@ -223,11 +223,11 @@ public final class BridgeClient implements ClientModInitializer {
             Files.write(tmp, job.toFile(now));
             Files.move(tmp, out, java.nio.file.StandardCopyOption.ATOMIC_MOVE);
             String unloaded = job.unloaded() > 0 ? " " + job.unloaded() + t(" Zellen lagen in nicht geladenen Chunks (gelten als „nicht aufgenommen“).", " cells were in unloaded chunks (count as “not scanned”).") : "";
-            McCompat.chat(mc, Component.literal("[Bauplaner] " + t("Aufnahme gespeichert: ", "Scan saved: ") + out + "." + unloaded + t(" Jetzt im Tab „Bauen“ importieren.", " Now import it in the “Build” tab.")));
+            McCompat.chat(mc, Component.literal("[Build Studio] " + t("Aufnahme gespeichert: ", "Scan saved: ") + out + "." + unloaded + t(" Jetzt im Tab „Bauen“ importieren.", " Now import it in the “Build” tab.")));
             job = null;
         } catch (IOException | RuntimeException e) {
             job = null;
-            McCompat.chat(mc, Component.literal("[Bauplaner] " + t("Aufnahme fehlgeschlagen: ", "Scan failed: ") + e.getMessage()));
+            McCompat.chat(mc, Component.literal("[Build Studio] " + t("Aufnahme fehlgeschlagen: ", "Scan failed: ") + e.getMessage()));
         }
     }
 }

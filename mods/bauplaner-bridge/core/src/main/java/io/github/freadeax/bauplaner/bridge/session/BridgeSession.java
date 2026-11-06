@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 public final class BridgeSession {
     /** Cells per tick; keeps the frame time low (about 0.4 s for 100 000 cells at 20 ticks/s). */
     public static final int CELLS_PER_TICK = 12_000;
-    private static final String PREFIX = "[Bauplaner] ";
+    private static final String PREFIX = "[Build Studio] ";
 
     private final Path root;
     private final BridgeHost host;
@@ -184,13 +184,13 @@ public final class BridgeSession {
             if (!prepared) {
                 int[] min = job.worldMin();
                 if (!host.prepareScan(jobDimension, min, new int[] { plan.width(), plan.height(), plan.length() })) {
-                    host.status("Bauplaner-Aufnahme: Bereich wird vorbereitet …");
+                    host.status("Build-Studio-Aufnahme: Bereich wird vorbereitet …");
                     return null;
                 }
                 prepared = true;
             }
             boolean done = job.step(budget);
-            host.status("Bauplaner-Aufnahme " + (job.done() * 100 / job.total()) + " %");
+            host.status("Build-Studio-Aufnahme " + (job.done() * 100 / job.total()) + " %");
             if (!done) return null;
             Instant now = Instant.now();
             Path out = root.resolve("scans").resolve(ScanJob.fileName(plan, now));

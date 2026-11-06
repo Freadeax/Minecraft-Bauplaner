@@ -1,5 +1,5 @@
 /**
- * Teambau über die Mod (COOP-03, docs/architecture/team/TEAMBAU.md §7): what the planner sends to the Bauplaner
+ * Teambau über die Mod (COOP-03, docs/architecture/team/TEAMBAU.md §7): what the planner sends to the Build Studio
  * mod on this computer (`POST /v1/team`, format "team-link" 1 – the Paper plugin sends the same shape on the
  * team channel) and how it reads the mod's answers (`GET /v1/team`, `GET /v1/team/pull`). Pure functions;
  * the page does the requests.
@@ -67,7 +67,7 @@ export function teamLinkState(team: TeamState, view: TeamView, ctx: TeamContext,
 export type TeamLinkWay = 'none' | 'no_plugin' | 'ask' | 'waiting' | 'live' | 'off';
 export const TEAM_LINK_WAY_TEXT: Readonly<Record<TeamLinkWay, string>> = {
   none: 'Minecraft ist mit keinem Server verbunden (Einzelspieler oder Hauptmenü).',
-  no_plugin: 'Der Server hat kein Bauplaner-Plugin mit Teambau – Abgleich nur zwischen Planer und Spiel.',
+  no_plugin: 'Der Server hat kein Build-Studio-Plugin mit Teambau – Abgleich nur zwischen Planer und Spiel.',
   ask: 'Auf dem Server läuft das Plugin. Im Spiel einmal /bauplaner team erlauben eingeben, dann geht der Abgleich live über den Server.',
   waiting: 'Die Mod wartet auf die erste Antwort des Server-Plugins.',
   live: 'Live mit dem Server-Plugin: Meldungen aller Spieler kommen sofort an.',

@@ -60,7 +60,7 @@ public final class Diagnostics {
     }
 
     /**
-     * Wählt die für Bauplaner-Fehler nützlichen Logzeilen: jede Zeile, die „bauplaner“ enthält, und die
+     * Wählt die für Build-Studio-Fehler nützlichen Logzeilen: jede Zeile, die „bauplaner“ enthält, und die
      * Stack-Zeilen ({@code at …}, {@code Caused by}) direkt danach; dazu Fehlerzeilen ({@code /ERROR]},
      * {@code Exception}) anderer Mods aus dem letzten Teil, weil Abstürze oft dort beginnen. Von allem
      * die letzten {@code max} Zeilen, Reihenfolge wie im Log.
@@ -87,13 +87,13 @@ public final class Diagnostics {
         return "diagnose-" + at.format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss")) + ".txt";
     }
 
-    /** Ordner für Diagnoseberichte unterhalb des Bauplaner-Ordners der Instanz. */
+    /** Ordner für Diagnoseberichte unterhalb des Build-Studio-Ordners der Instanz. */
     public static Path dir(Path bauplanerRoot) { return bauplanerRoot.resolve("diagnose"); }
 
     /** Klartext, wie er in die Datei und in die Zwischenablage kommt (Markdown-tauglich für GitHub). */
     public String text(String generatedAt) {
         StringBuilder b = new StringBuilder();
-        b.append("## Bauplaner-Mod Diagnose\n");
+        b.append("## Build-Studio-Mod Diagnose\n");
         b.append("Erstellt: ").append(generatedAt).append('\n');
         b.append("Benutzerordner, Server-Adressen und Codes sind geschwärzt. Bitte vor dem Teilen kurz durchlesen.\n");
         for (var s : sections.entrySet()) {

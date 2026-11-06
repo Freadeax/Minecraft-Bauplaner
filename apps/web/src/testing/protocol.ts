@@ -89,7 +89,7 @@ const LABEL: Record<CaseResult, string> = { ok: '✓ in Ordnung', fehler: '✕ F
 
 /** Protokoll als Markdown für Nachricht oder Issue; nur geprüfte Fälle, mit Notizen. */
 export function protocolMarkdown(p: Protocol, env: ReadonlyArray<readonly [string, string]>, at = new Date()): string {
-  const lines = [`## Testprotokoll Minecraft-Bauplaner`, `- Tester: ${p.tester.trim() || '–'}`, `- Stand: ${at.toISOString()}`, ...env.filter(([k]) => k === 'Build' || k === 'Browser' || k === 'System').map(([k, v]) => `- ${k}: ${v}`), ''];
+  const lines = [`## Testprotokoll LMNT — Build Studio`, `- Tester: ${p.tester.trim() || '–'}`, `- Stand: ${at.toISOString()}`, ...env.filter(([k]) => k === 'Build' || k === 'Browser' || k === 'System').map(([k, v]) => `- ${k}: ${v}`), ''];
   let any = false;
   for (const area of TEST_AREAS) {
     const s = summarize(p, area);

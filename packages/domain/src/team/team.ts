@@ -1507,7 +1507,7 @@ export const teamPackageFileName = (team: Pick<TeamState, 'name'>, date = new Da
 export async function readTeamPackage(textValue: string): Promise<TeamPackage> {
   let raw: unknown;
   try { raw = JSON.parse(textValue); } catch { throw new DomainError('TEAM_PACKAGE', 'Die Datei ist kein gültiges JSON (abgeschnitten?).'); }
-  if (!isObj(raw) || raw.format !== TEAM_PACKAGE_FORMAT) throw new DomainError('TEAM_PACKAGE', 'Das ist kein Teampaket des Bauplaners.');
+  if (!isObj(raw) || raw.format !== TEAM_PACKAGE_FORMAT) throw new DomainError('TEAM_PACKAGE', 'Das ist kein Teampaket des Build Studios.');
   if (typeof raw.formatVersion !== 'number' || raw.formatVersion > TEAM_PACKAGE_VERSION) throw new DomainError('TEAM_PACKAGE', 'Das Teampaket stammt aus einer neueren Planer-Version. Bitte die Seite neu laden.');
   if (raw.formatVersion !== 1) throw new DomainError('TEAM_PACKAGE', 'Unbekannte Teampaket-Version.');
   const team = checkTeam({ ...(isObj(raw.team) ? raw.team : {}) });

@@ -73,7 +73,7 @@ function Found({ site, projectName, projectId, onFound }: { site: SitePlan; proj
     </ol>
     <More className="more-inline" title="Mehr zu Mod und Server" hint="Hologramm, Paper-Plugin, Notfall">
       <ul className="muted">
-        <li>Im Spiel: Mit der Bauplaner-Mod sieht jeder seine Abschnitte im Hologramm und meldet Baustand und Kisten aus dem Spiel.</li>
+        <li>Im Spiel: Mit der Build-Studio-Mod sieht jeder seine Abschnitte im Hologramm und meldet Baustand und Kisten aus dem Spiel.</li>
         <li>Server-Plugin (freiwillig, Abschnittsschutz und geprüfte Lagerkisten): verbindet sich über das Internet selbst mit dem Team-Raum, sobald du als Bauleitung mit der Mod auf dem Server bist. Nichts herunterladen, nichts auf den Server kopieren.</li>
         <li>Nur im Notfall ohne Internet gibt es unten Dateien und Meldecodes.</li>
       </ul>

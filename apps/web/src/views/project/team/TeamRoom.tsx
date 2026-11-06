@@ -148,7 +148,7 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
     {leads ? <>
       <div className="team-inline"><label className="grow">Adresse des Team-Raums<input value={url} placeholder="https://bauplaner-team.….workers.dev" onChange={e => setUrl(e.target.value)} aria-label="Adresse des Team-Raums" /></label>
         <button className="primary" disabled={busy || !url.trim()} onClick={() => void goOnline()}>Live schalten</button></div>
-      <small className="muted">Voreingestellt ist der Team-Raum des Bauplaners. Einen eigenen kannst du einrichten (services/team-room/README.md) und hier eintragen; die Adresse merkt sich dieser Browser.</small>
+      <small className="muted">Voreingestellt ist der Team-Raum des Build Studios. Einen eigenen kannst du einrichten (services/team-room/README.md) und hier eintragen; die Adresse merkt sich dieser Browser.</small>
     </> : <p className="muted">Die Bauleitung schaltet das Team live und schickt dir einen Einladungslink. Bis dahin geht der Austausch über Teampaket und Meldecode unten.</p>}
   </div>;
 
@@ -181,10 +181,10 @@ export function TeamRoom({ session, team, view, onMessage }: { session: ProjectS
     {game && <p className={`team-game-room ${gameLine(game, live.room).warn ? 'warn' : ''}`} data-testid="game-room" role="status">{gameLine(game, live.room).text} <button className="link-button" onClick={askGame}>Neu prüfen</button></p>}
     <p className={`team-server-room ${serverHere ? 'on' : ''}`} data-testid="server-room" role="status">{serverHere
       ? 'Server-Plugin: ● im Team-Raum – bekommt Abschnitte, Lagerkisten und Abschnittsschutz live aus Planer und Mods.'
-      : leads ? 'Server-Plugin (freiwillig): noch nicht im Raum. Es verbindet sich von selbst, sobald du nach „Mein Spiel verbinden“ als Bauleitung (OP) auf dem Server mit Bauplaner-Plugin bist – oder sofort, wenn der Server gekoppelt ist. Nichts herunterladen, nichts einfügen.'
+      : leads ? 'Server-Plugin (freiwillig): noch nicht im Raum. Es verbindet sich von selbst, sobald du nach „Mein Spiel verbinden“ als Bauleitung (OP) auf dem Server mit Build-Studio-Plugin bist – oder sofort, wenn der Server gekoppelt ist. Nichts herunterladen, nichts einfügen.'
       : 'Server-Plugin (freiwillig): nicht im Raum. Die Bauleitung verbindet es mit ihrem Spiel.'}</p>
     <div className="team-buttons">
-      <button className="primary" disabled={busy || !me} title={me ? 'Die Bauplaner-Mod in deinem Minecraft spricht dann selbst mit diesem Raum: Abschnitte, Meldungen und Notizen live im Spiel – ohne Plugin und ohne Datei auf dem Server.' : 'Zuerst oben „Ich bin“ wählen.'}
+      <button className="primary" disabled={busy || !me} title={me ? 'Die Build-Studio-Mod in deinem Minecraft spricht dann selbst mit diesem Raum: Abschnitte, Meldungen und Notizen live im Spiel – ohne Plugin und ohne Datei auf dem Server.' : 'Zuerst oben „Ich bin“ wählen.'}
         onClick={() => void run(async () => { onMessage(await gameToRoom({ url: live.url, room: live.room, key: live.key }, { id: me!.id, name: me!.name }, team.name, leads && live.adminKey ? live.serverKey : undefined)); askGame(); })}>Mein Spiel verbinden</button>
       <button disabled={busy} className="secondary" title="Die Mod in deinem Minecraft trennt sich vom Team-Raum." onClick={() => void run(async () => { onMessage(await gameLeaveRoom()); askGame(); })}>Spiel trennen</button>
       <button disabled={busy} onClick={() => setShown(shown === 'invite' ? '' : 'invite')}>Einladungslink</button>

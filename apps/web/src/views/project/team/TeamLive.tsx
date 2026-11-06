@@ -14,7 +14,7 @@ const AUTO_MS = 15_000;
 interface Pending { readonly source: 'Spiel' | 'Server'; readonly merge: TeamMerge; readonly issues: readonly string[]; readonly ack: readonly string[] }
 
 /**
- * „Mit Spiel abgleichen“ (COOP-03, docs/architecture/team/TEAMBAU.md §7): the team view goes to the Bauplaner mod
+ * „Mit Spiel abgleichen“ (COOP-03, docs/architecture/team/TEAMBAU.md §7): the team view goes to the Build Studio mod
  * on this computer (POST /v1/team), so the game shows sections, owners and the own task. What the player
  * reported in the game comes back as events of „Ich bin“ and is merged like a team package (preview, one
  * undoable step, then acknowledged). With the Paper plugin and the team channel allowed in the game, the
@@ -40,7 +40,7 @@ export function TeamLive({ session, team, view, onMessage }: { session: ProjectS
   const connection = async (): Promise<{ port: number; token: string; hello: LiveHello } | null> => {
     const s = readLiveSettings();
     let h: LiveHello;
-    try { h = await liveApi.hello(s.port); } catch (e) { setHello(null); setProblem(`${errorText(e)} Minecraft mit der Bauplaner-Mod starten und im Menü „Spiel“ auf „Verbinden“ drücken.`); return null; }
+    try { h = await liveApi.hello(s.port); } catch (e) { setHello(null); setProblem(`${errorText(e)} Minecraft mit der Build-Studio-Mod starten und im Menü „Spiel“ auf „Verbinden“ drücken.`); return null; }
     setHello(h);
     if (!s.token) { setProblem('Die Website ist noch nicht mit dem Spiel verbunden: im Menü „Spiel“ auf „Mit dem Spiel verbinden“ drücken und im Spiel „Planer zulassen“ klicken.'); return null; }
     if (!liveCan(h, LIVE_FEATURE_TEAM)) { setProblem(`Die Mod ${h.mod.version} kennt den Teambau noch nicht – Mod 0.10.0 oder neuer von der Seite „Mod“ installieren.`); return null; }
@@ -151,7 +151,7 @@ export function TeamLive({ session, team, view, onMessage }: { session: ProjectS
   const names = new Map((pending ? teamView(pending.merge.team, ctx) : view).members.map(m => [m.id, m.name]));
 
   return <div role="region" className="team-block team-live" aria-label="Mit Spiel abgleichen">
-    <div className="team-block-head"><h3>Mit Spiel abgleichen <small>Bauplaner-Mod auf diesem PC{hello ? ` · Mod ${hello.mod.version}` : ''}</small></h3>
+    <div className="team-block-head"><h3>Mit Spiel abgleichen <small>Build-Studio-Mod auf diesem PC{hello ? ` · Mod ${hello.mod.version}` : ''}</small></h3>
       <label className="team-check"><input type="checkbox" checked={auto} onChange={e => setAuto(e.target.checked)} /> automatisch alle 15 s</label></div>
     <p className="muted">Das Spiel zeigt dann Abschnitte in der Farbe ihres Inhabers, deinen Auftrag mit Fortschritt und Notizen am Bau. Was du im Spiel mit <code>/bauplaner team nehmen</code>, <code>fertig</code>, <code>notiz</code> oder <code>geliefert</code> meldest, kommt hierher zurück.{!me && ' Wähle oben, wer du bist – in deinem Namen meldet die Mod.'}</p>
     <div className="team-buttons">

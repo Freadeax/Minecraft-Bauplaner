@@ -134,7 +134,7 @@ for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844
     // WORLD-SHARE-01: file exports only under „Erweitert“ → „Notfall …“.
     await p.locator('.live-panel details.live-advanced, .live-panel details.live-fallback').evaluateAll(ds => ds.forEach(d => { d.open = true; }));
     const download = p.waitForEvent('download');
-    await p.getByRole('button', { name: 'Marker (JSON, Bauplaner-Format) herunterladen' }).click();
+    await p.getByRole('button', { name: 'Marker (JSON, Build-Studio-Format) herunterladen' }).click();
     const file = await download;
     const markers = JSON.parse(await (await file.createReadStream()).toArray().then(b => Buffer.concat(b).toString('utf8')));
     assert.equal(markers.format, 'bauplaner-world-markers');

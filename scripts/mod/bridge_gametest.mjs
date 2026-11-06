@@ -85,7 +85,7 @@ if (mode === 'prepare') {
 function hologram(logFile, cells) {
   let log;
   try { log = readFileSync(logFile, 'utf8'); } catch { return; }
-  const progress = [...log.matchAll(/\[Bauplaner\] .*?: (\d+) % · richtig (\d+) · fehlt (\d+) · falsch (\d+) · Zustand (\d+) · nicht geladen (\d+)/g)]
+  const progress = [...log.matchAll(/\[Build Studio\] .*?: (\d+) % · richtig (\d+) · fehlt (\d+) · falsch (\d+) · Zustand (\d+) · nicht geladen (\d+)/g)]
     .map(m => m.slice(1).map(Number));
   if (progress.length === 0) return;
   assert.equal(progress.length, 4, 'vier Fortschrittszeilen');
@@ -97,44 +97,44 @@ function hologram(logFile, cells) {
   assert.ok(turned[1] < built[1], 'gedreht passt der Plan nicht mehr');
   assert.deepEqual(back.slice(1), built.slice(1), 'zurückgedreht wieder wie vorher');
   assert.ok(planned > 0 && planned <= cells);
-  assert.match(log, /\[Bauplaner\] Nächster Fehler bei -?\d+ -?\d+ -?\d+: erwartet /);
+  assert.match(log, /\[Build Studio\] Nächster Fehler bei -?\d+ -?\d+ -?\d+: erwartet /);
   // GAME-07 stage 6 (Mod 0.13.0): packing list and scaffold hints answer in the chat.
-  assert.match(log, /\[Bauplaner\] Packliste[^:]*: (\d+ Blöcke holen = \d+ Stapel|nichts offen)/, 'Packliste');
-  assert.match(log, /\[Bauplaner\] Gerüst(: kein offener Block| nötig: \d+ Blöcke ohne Nachbarn)/, 'Gerüst-Hinweise');
-  assert.match(log, /\[Bauplaner\] Markiert: Lager „Testlager“ bei -?\d+ -?\d+ -?\d+\. Die Weltkarte/, 'Markieren für die Weltkarte (Protokoll 3)');
-  assert.match(log, /\[Bauplaner\] Markierung 1 gelöscht\./, 'wartende Markierung löschen');
+  assert.match(log, /\[Build Studio\] Packliste[^:]*: (\d+ Blöcke holen = \d+ Stapel|nichts offen)/, 'Packliste');
+  assert.match(log, /\[Build Studio\] Gerüst(: kein offener Block| nötig: \d+ Blöcke ohne Nachbarn)/, 'Gerüst-Hinweise');
+  assert.match(log, /\[Build Studio\] Markiert: Lager „Testlager“ bei -?\d+ -?\d+ -?\d+\. Die Weltkarte/, 'Markieren für die Weltkarte (Protokoll 3)');
+  assert.match(log, /\[Build Studio\] Markierung 1 gelöscht\./, 'wartende Markierung löschen');
   assert.match(readFileSync(join(dir, 'platzierung.properties'), 'utf8'), /\.plan=spieltest\.schem/);
   // Stage 2: material list (only the diamond block is still wrong → one cobblestone open), layer mode.
-  const material = [...log.matchAll(/\[Bauplaner\] Material offen: (\d+) Blöcke in (\d+) Sorten\./g)].map(m => [Number(m[1]), Number(m[2])]);
+  const material = [...log.matchAll(/\[Build Studio\] Material offen: (\d+) Blöcke in (\d+) Sorten\./g)].map(m => [Number(m[1]), Number(m[2])]);
   assert.equal(material.length, 2, 'zwei Materiallisten');
   assert.deepEqual(material[0], [1, 1], 'nur der falsche Block ist offen');
-  assert.match(log, /\[Bauplaner\] +1 × minecraft:cobblestone \(von \d+\)/);
+  assert.match(log, /\[Build Studio\] +1 × minecraft:cobblestone \(von \d+\)/);
   assert.ok(material[1][0] > 1, 'abgerissene Mauer erscheint in der Materialliste');
-  const finder = [...log.matchAll(/\[Bauplaner\] (Nächster Fehler bei -?\d+ (-?\d+) -?\d+|Keine Fehler in geladenen Chunks)/g)].map(m => m[2] ?? 'keiner');
+  const finder = [...log.matchAll(/\[Build Studio\] (Nächster Fehler bei -?\d+ (-?\d+) -?\d+|Keine Fehler in geladenen Chunks)/g)].map(m => m[2] ?? 'keiner');
   const anchorY = Number(readFileSync(join(dir, 'anchor.txt'), 'utf8').trim().split(' ')[1]);
   assert.deepEqual(finder.slice(-2), [String(anchorY), 'keiner'], 'Fehlerfinder bleibt in der gewählten Ebene');
   // Stage 5 (0.7.0): build sections from the plan file, chosen in the game; X-ray switch.
-  const sectionList = log.match(/\[Bauplaner\] Bauabschnitte \((\d+)\), aktiv: (\d+)\./);
+  const sectionList = log.match(/\[Build Studio\] Bauabschnitte \((\d+)\), aktiv: (\d+)\./);
   assert.ok(sectionList, 'Abschnittsliste im Chat');
   assert.deepEqual([Number(sectionList[1]), Number(sectionList[2])], [2, 2], 'zwei Abschnitte, Mauer gewählt');
-  const towerOpen = Number(log.match(/\[Bauplaner\] +1\. Turm: \d+ % · (\d+) offen/)?.[1] ?? -1);
-  const wallOpen = Number(log.match(/\[Bauplaner\] ▶ 2\. Mauer: \d+ % · (\d+) offen/)?.[1] ?? -1);
+  const towerOpen = Number(log.match(/\[Build Studio\] +1\. Turm: \d+ % · (\d+) offen/)?.[1] ?? -1);
+  const wallOpen = Number(log.match(/\[Build Studio\] ▶ 2\. Mauer: \d+ % · (\d+) offen/)?.[1] ?? -1);
   assert.ok(towerOpen >= 1, 'Turm: der falsche Block ist offen');
   assert.ok(wallOpen > 1, 'Mauer: die abgerissenen Blöcke sind offen');
-  assert.match(log, /\[Bauplaner\] Abschnitt 2\/2: „Mauer“ – \d+ % · \d+ offen/);
-  assert.match(log, /\[Bauplaner\] Röntgensicht an/);
-  assert.match(log, /\[Bauplaner\] Alle Bauabschnitte\./);
+  assert.match(log, /\[Build Studio\] Abschnitt 2\/2: „Mauer“ – \d+ % · \d+ offen/);
+  assert.match(log, /\[Build Studio\] Röntgensicht an/);
+  assert.match(log, /\[Build Studio\] Alle Bauabschnitte\./);
   // Test phase (QA-04): /bauplaner diagnose writes a readable report with the facts testers need.
-  assert.match(log, /\[Bauplaner\] Diagnose gespeichert: bauplaner\/diagnose\/diagnose-[^ ]+\.txt/);
+  assert.match(log, /\[Build Studio\] Diagnose gespeichert: bauplaner\/diagnose\/diagnose-[^ ]+\.txt/);
   const diagnose = readFileSync(join(dir, 'diagnose.txt'), 'utf8');
   for (const needle of ['Version', 'Loader', 'Minecraft', 'Konflikte gesamt', 'Plan eingeblendet: ja', 'Planblöcke', 'Fortschritt', 'Abgefangene Fehler seit Start: 0', 'Website-Verbindung']) {
     assert.ok(diagnose.includes(needle), `Diagnosebericht nennt „${needle}“`);
   }
   // EDIT-04 build guides (Fabric game test only, writes bauhilfen.png): 14 placed blocks, mirrored and turned 4×.
   if (existsSync(join(dir, 'bauhilfen.png'))) {
-    const sym = log.match(/\[Bauplaner\] Symmetrie: [^\n]*· (\d+) gespiegelte Blöcke/);
+    const sym = log.match(/\[Build Studio\] Symmetrie: [^\n]*· (\d+) gespiegelte Blöcke/);
     assert.ok(sym && Number(sym[1]) >= 12, `Bauhilfe Symmetrie: gesetzte Blöcke gemerkt (${sym?.[1] ?? 'keine Zeile'})`);
-    assert.match(log, /\[Bauplaner\] Symmetrie und Kurve gelöscht\./);
+    assert.match(log, /\[Build Studio\] Symmetrie und Kurve gelöscht\./);
   }
   // Stage 3: placement helper (the client test throws if a block was placed or broken against the rules).
   assert.equal(readFileSync(join(dir, 'platzierhilfe.txt'), 'utf8').trim(), 'Fail Fail', 'beide falschen Klicks abgewiesen');
@@ -152,8 +152,8 @@ function hologram(logFile, cells) {
     assert.ok(ui.suggestMixed.includes('progress'), 'gemischt: deutsches Wurzelwort, englisches Unterwort');
     assert.ok(ui.toasts.length >= 2, `Meldungskarten oben rechts: ${ui.toasts}`);
     assert.ok(ui.buttonsEn.includes('Done') && ui.buttonsEn.includes('Options') && ui.buttonsEn.includes('Move'), `englisches Menü: ${ui.buttonsEn}`);
-    assert.match(log, /\[Bauplaner\] .*: \d+ % · correct \d+ · missing \d+/, 'englische Fortschrittsmeldung');
-    assert.match(log, /\[Bauplaner\] Sprache: Deutsch/, 'Sprache umgestellt');
+    assert.match(log, /\[Build Studio\] .*: \d+ % · correct \d+ · missing \d+/, 'englische Fortschrittsmeldung');
+    assert.match(log, /\[Build Studio\] Sprache: Deutsch/, 'Sprache umgestellt');
     console.log(`Oberfläche bestanden: Meldungskarten (${ui.toasts.length}), Befehle Deutsch/Englisch mit Vervollständigung, englisches Menü.`);
   }
   console.log(`Hologramm bestanden: ${planned} Planblöcke, Fortschritt ${placed[0]} % → ${built[0]} % nach dem Setzen des fehlenden Blocks, Drehen, Speichern, Materialliste (${material[1][0]} offen nach Teilabriss), Ebenenmodus, Bauabschnitte (Turm ${towerOpen} offen, Mauer ${wallOpen} offen), Röntgensicht und Platzierhilfe (falscher Block, liegender Stamm, Abbauschutz) geprüft.`);
@@ -254,8 +254,8 @@ async function live(file, loader, plan, logFile) {
   assert.equal(players.dimension, 'minecraft:overworld');
   assert.deepEqual(players.players, [], 'im Einzelspieler ohne Mitspieler, eigener Spieler fehlt');
   const log = readFileSync(logFile, 'utf8');
-  assert.match(log, /\[Bauplaner\] Weltplan-Ebenen \(1\)\./);
-  assert.match(log, /\[Bauplaner\] +● Phase 2: 2/);
+  assert.match(log, /\[Build Studio\] Weltplan-Ebenen \(1\)\./);
+  assert.match(log, /\[Build Studio\] +● Phase 2: 2/);
   assert.equal(raw.plan.status, 200, JSON.stringify(raw.plan.body));
   const after = readLiveStatus(raw.after.body);
   // COOP-03 Teambau: team view in, claim in the game, claim back to the planner as an event of "Ich bin".
@@ -277,7 +277,7 @@ async function live(file, loader, plan, logFile) {
     assert.equal(raw.teamPull.status, 409, 'ohne Server-Plugin kein Abholen');
     assert.match(String(raw.teamPull.body.error ?? raw.teamPull.body), /keinem Server/, 'Einzelspieler: kein Server zum Abholen');
     const log = readFileSync(logFile, 'utf8');
-    assert.match(log, /\[Bauplaner\] Hologramm zeigt nur deine Abschnitte \(2\)/, 'eigene Abschnitte eingeblendet');
+    assert.match(log, /\[Build Studio\] Hologramm zeigt nur deine Abschnitte \(2\)/, 'eigene Abschnitte eingeblendet');
   }
   // GAME-10 command page (J menu): real clicks, the typed command and its answer, greyed-out server buttons without plugin.
   let page;
@@ -313,7 +313,7 @@ async function live(file, loader, plan, logFile) {
     assert.equal(grouped.hologram.group, 'Markt', 'Hologramm auf die Gruppe beschränkt');
     const mauer = after.hologram.sections[1];
     assert.equal(grouped.hologram.locked, mauer.total, 'gesperrter Bauplatz über dem ganzen Plan: alle Blöcke des gezeigten Abschnitts grau');
-    assert.match(log, /\[Bauplaner\] Weltplan-Gruppen \(1\), Hologramm: „Markt“, \d+ Planblöcke gesperrt/, 'Gruppenliste im Chat');
+    assert.match(log, /\[Build Studio\] Weltplan-Gruppen \(1\), Hologramm: „Markt“, \d+ Planblöcke gesperrt/, 'Gruppenliste im Chat');
     assert.equal(raw.groupAll.status, 200);
     assert.equal(raw.marksBack.status, 200);
     console.log(`Gruppen und Sperren: Hologramm auf „Markt“ beschränkt, ${grouped.hologram.locked} Blöcke gesperrt (grau).`);

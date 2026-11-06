@@ -7,7 +7,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 /**
  * Questions instead of commands (LINK-03, docs/architecture/team/AUTO_LINK.md): a planner waits for "Zulassen", or the
- * server offers the Bauplaner plugin and the player has not allowed the team channel yet. A banner at the top of
+ * server offers the Build Studio plugin and the player has not allowed the team channel yet. A banner at the top of
  * the screen says "J drücken"; the J menu shows the two buttons. Nothing is sent before the click.
  */
 final class LinkPrompt {
@@ -22,7 +22,7 @@ final class LinkPrompt {
         String device = c.link().pendingAsk();
         if (device != null) return new Question(Kind.PLANER, t("Der Planer („" + device + "“) möchte sich mit dem Spiel verbinden.", "The planner (“" + device + "”) wants to connect to the game."),
                 t("Planer zulassen", "Allow planner"), t("Ablehnen", "Deny"));
-        if (c.team().sync().asking()) return new Question(Kind.TEAM, t("Dieser Server hat das Bauplaner-Plugin. Teambau und Server-Kopplung erlauben?", "This server has the Bauplaner plugin. Allow team building and the server link?"),
+        if (c.team().sync().asking()) return new Question(Kind.TEAM, t("Dieser Server hat das Build-Studio-Plugin. Teambau und Server-Kopplung erlauben?", "This server has the Build Studio plugin. Allow team building and the server link?"),
                 t("Teambau erlauben", "Allow team building"), t("Nein", "No"));
         return null;
     }
@@ -46,7 +46,7 @@ final class LinkPrompt {
         if (now - cachedAt > 500) { cached = current(c); cachedAt = now; }
         Question q = cached;
         if (q == null) return;
-        String text = "Bauplaner: " + (q.kind() == Kind.PLANER ? t("Planer möchte sich verbinden", "planner wants to connect") : t("Server-Plugin gefunden", "server plugin found")) + t(" – J drücken", " – press J");
+        String text = "Build Studio: " + (q.kind() == Kind.PLANER ? t("Planer möchte sich verbinden", "planner wants to connect") : t("Server-Plugin gefunden", "server plugin found")) + t(" – J drücken", " – press J");
         int w = mc.font.width(text), x = (g.guiWidth() - w) / 2, y = 6;
         g.fill(x - 4, y - 3, x + w + 4, y + mc.font.lineHeight + 2, 0xB0000000);
         g.text(mc.font, text, x, y, HudCard.GOLD, true);

@@ -33,7 +33,7 @@ public final class MaterialScreen extends Screen {
     private int ticks;
 
     MaterialScreen(Hologram hologram, Screen parent) {
-        super(Component.literal(t("Bauplaner – Materialliste", "Bauplaner – material list")));
+        super(Component.literal(t("Build Studio – Materialliste", "Build Studio – material list")));
         this.hologram = hologram;
         this.parent = parent;
     }

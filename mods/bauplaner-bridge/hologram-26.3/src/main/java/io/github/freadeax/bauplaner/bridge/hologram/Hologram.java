@@ -31,7 +31,7 @@ public final class Hologram {
     public static final int ASYNC_BLOCKS = 250_000;
     public static final long ASYNC_FILE_BYTES = 512 * 1024;
     private static final java.util.concurrent.ExecutorService LOADER = java.util.concurrent.Executors.newSingleThreadExecutor(r -> {
-        Thread t = new Thread(r, "Bauplaner-Planlader");
+        Thread t = new Thread(r, "Build-Studio-Planlader");
         t.setDaemon(true);
         t.setPriority(Thread.MIN_PRIORITY);
         return t;
@@ -320,7 +320,7 @@ public final class Hologram {
         props.setProperty("leistung", budget.label);
         try {
             Files.createDirectories(root);
-            try (var w = Files.newBufferedWriter(settingsFile())) { props.store(w, "Bauplaner-Mod: Einstellungen"); }
+            try (var w = Files.newBufferedWriter(settingsFile())) { props.store(w, "Build-Studio-Mod: Einstellungen"); }
         } catch (IOException ignored) { }
     }
 
@@ -487,7 +487,7 @@ public final class Hologram {
         if (p.error() != null) {
             if (check == null) wanted = null;
             else wanted = check.placement();
-            McCompat.chat(mc, net.minecraft.network.chat.Component.literal("[Bauplaner] " + p.error()));
+            McCompat.chat(mc, net.minecraft.network.chat.Component.literal("[Build Studio] " + p.error()));
             return;
         }
         plan = p.plan();
@@ -496,7 +496,7 @@ public final class Hologram {
         wanted = check.placement();
         target = -1;
         save();
-        if (p.message() != null) McCompat.chat(mc, net.minecraft.network.chat.Component.literal("[Bauplaner] " + p.message()));
+        if (p.message() != null) McCompat.chat(mc, net.minecraft.network.chat.Component.literal("[Build Studio] " + p.message()));
     }
 
     private void save() {
@@ -520,7 +520,7 @@ public final class Hologram {
                 && check.count(new io.github.freadeax.bauplaner.mod.Filter(Integer.MIN_VALUE, Integer.MAX_VALUE, section))[Verdict.UNKNOWN.ordinal()] == 0) {
             announced = section;
             int next = firstOpenSection();
-            McCompat.chat(mc, net.minecraft.network.chat.Component.literal("[Bauplaner] " + t("Abschnitt „" + sectionName() + "“ fertig.", "Section “" + sectionName() + "” done.")
+            McCompat.chat(mc, net.minecraft.network.chat.Component.literal("[Build Studio] " + t("Abschnitt „" + sectionName() + "“ fertig.", "Section “" + sectionName() + "” done.")
                     + (next == 0 ? t(" Alle Abschnitte sind fertig.", " All sections are done.") : t(" Weiter mit „" + sectionNames().get(next - 1) + "“: /bauplaner abschnitt " + next + " oder Num /.", " Next: “" + sectionNames().get(next - 1) + "”: /buildplanner section " + next + " or Num /."))));
         }
     }

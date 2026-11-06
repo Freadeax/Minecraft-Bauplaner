@@ -72,7 +72,7 @@ public final class ClientSettings {
         p.setProperty("anzeige", panel.key);
         try {
             Files.createDirectories(file.getParent());
-            try (Writer w = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) { p.store(w, "Bauplaner: Sprache (auto|deutsch|english), Meldungen (einblendung|chat|beides), Anzeige (kompakt|ausfuehrlich|aus)"); }
+            try (Writer w = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) { p.store(w, "Build Studio: Sprache (auto|deutsch|english), Meldungen (einblendung|chat|beides), Anzeige (kompakt|ausfuehrlich|aus)"); }
         } catch (IOException ignored) {
             // Settings are a convenience: without a writable folder they last until the game closes.
         }

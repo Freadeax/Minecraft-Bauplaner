@@ -4,7 +4,7 @@ import {
   createTeam, teamEvent, appendEvents, mergeTeam, teamView, teamLinkState, readLiveTeam, readLiveTeamPull, teamLinkProblem, teamLinkText, TEAM_LINK_WAY_TEXT, LIVE_FEATURE_TEAM,
 } from '../../../dist/domain/src/index.js';
 
-// COOP-03: planner ↔ Bauplaner mod (docs/architecture/team/TEAMBAU.md §7).
+// COOP-03: planner ↔ Build Studio mod (docs/architecture/team/TEAMBAU.md §7).
 const ctx = {
   sections: [{ id: 'sec_a', name: 'Fundament' }, { id: 'sec_b', name: 'Rohbau' }, { id: 'sec_c', name: 'Dach' }],
   builders: [{ id: 'bld_phil', name: 'Philipp' }, { id: 'bld_anna', name: 'Anna' }],

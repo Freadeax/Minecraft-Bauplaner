@@ -77,7 +77,7 @@ export const SAMPLE_FACETS: Readonly<Record<string, BuildingFacets>> = {
 export interface SampleLibrary { readonly assets: readonly Asset[]; readonly versions: readonly AssetVersion[] }
 
 export async function createSampleLibrary(): Promise<SampleLibrary> {
-  const provenance = { author: 'Minecraft-Bauplaner', source: 'eigener synthetischer Entwurf', license: 'frei für dieses Projekt' };
+  const provenance = { author: 'LMNT — Build Studio', source: 'eigener synthetischer Entwurf', license: 'frei für dieses Projekt' };
   const wallJoints = [joint('west', [0, 0, 1], [-1, 0, 0]), joint('east', [6, 0, 1], [1, 0, 0])];
   const specs = [
     { id: 'sample_tower', name: 'Eckturm', tags: ['befestigung', 'turm'], description: 'Vierseitiger Turm mit Anschlüssen für Mauern auf allen Seiten.', payload: sampleTowerPayload(),

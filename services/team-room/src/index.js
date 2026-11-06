@@ -25,7 +25,7 @@ export default {
     const url = new URL(request.url);
     const parts = url.pathname.split('/').filter(Boolean);
     try {
-      if (parts[0] !== 'v1') return json({ protocol: PROTOCOL, version: VERSION, hint: 'Team-Raum des Minecraft-Bauplaners. Siehe docs/architecture/team/TEAM_LIVE.md.' }, 200, h);
+      if (parts[0] !== 'v1') return json({ protocol: PROTOCOL, version: VERSION, hint: 'Team-Raum von LMNT — Build Studio. Siehe docs/architecture/team/TEAM_LIVE.md.' }, 200, h);
       // OPS-04: public state of the service (no room data; the planner's Zustand line and the smoke test read it).
       if (parts.length === 2 && parts[1] === 'status') return json({ ok: true, protocol: PROTOCOL, version: VERSION, at: new Date().toISOString(),
         features: ['guards', 'docs', 'scans', 'control', 'backups'], retention: RETENTION, deployment: env.CF_VERSION_METADATA?.id ?? null }, 200, { ...h, 'Cache-Control': 'no-store' });

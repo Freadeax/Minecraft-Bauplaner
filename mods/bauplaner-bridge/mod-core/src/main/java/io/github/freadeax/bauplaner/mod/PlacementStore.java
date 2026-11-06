@@ -63,7 +63,7 @@ public final class PlacementStore {
     private void save(Properties props) throws IOException {
         Files.createDirectories(file.getParent());
         Path tmp = file.resolveSibling(file.getFileName() + ".tmp");
-        try (Writer w = Files.newBufferedWriter(tmp, StandardCharsets.UTF_8)) { props.store(w, "Bauplaner-Mod: platzierte Pläne je Welt/Server"); }
+        try (Writer w = Files.newBufferedWriter(tmp, StandardCharsets.UTF_8)) { props.store(w, "Build-Studio-Mod: platzierte Pläne je Welt/Server"); }
         Files.move(tmp, file, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
     }
 }
