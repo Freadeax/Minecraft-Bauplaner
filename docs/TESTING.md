@@ -1102,3 +1102,4 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `npm run check` grün (966 Tests bestanden); neu `tests/unit/world/terrain-sculpt.test.mjs` 5/5: Verwittern (Hanggrenze, gleiche Erdmenge, Schutzmaske, Pinselkreis, Wege/Wasser bleiben, Regenrinnen), alle fünf Formstempel, Fluss (Spiegel flussab nie steigend, Bett, Ufer halten das Wasser, Wegstufen entfernt), Maske für Anheben/Formstempel und Höhenfilter beim Absenken.
 - Neu `tests/e2e/landscape-sculpt.e2e.mjs` 2/2 (Chromium 1400/390 px, Touch); zusammen mit landscape, landscape-paths, landscape-scatter, plan-landscape und terrain-game 12/12.
 - Nicht automatisch geprüft: Abnahme im Spiel und auf dem iPad (Testfall PROJ-26).
+- Voller Browserlauf: 197/197 grün.
