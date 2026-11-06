@@ -8070,3 +8070,21 @@ Roadmap-Runde 06.11.: 8 Block-Threads als zuständige Threads je Punkt eingetrag
 | GUIDE-01 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme durch Philipp (START-08/09); Begriffe mit „Bedienung des Planers vereinfachen“ (Reiter-Kurzsätze) und UI-03 abgleichen. |
 | UI-03 | 🧩 Implementiert · Abnahme offen | 4/5 | Abnahme START-20/21 durch Philipp am iPad; gruppierte Projektreiter aus „Bedienung vereinfachen“ und Anleitung optisch mitziehen; Werte an das Mod-Menü weitergeben. |
 
+## 2026-11-06T21:15:30.975Z · progress
+
+**Aufgaben:** QA-02
+
+Block 5 Grundlage: Browsertests per Schalter in Firefox und WebKit (engine-hook, e2e_engine.mjs); echte Geräte weiter offen
+
+| Aufgabe | Status im Arbeitsblock | Teilschritte | Nächste Aktion |
+|---|---|---:|---|
+| QA-02 | 🚧 In Arbeit | 1/2 | Protokolle der Tester in docs/testing/GERAETEMATRIX.md eintragen und Befunde beheben. |
+
+**Geänderte Dateien:**
+
+- `docs/TESTING.md`
+- `docs/testing/GERAETEMATRIX.md`
+- `package.json`
+- `scripts/checks/e2e_engine.mjs`
+- `tests/e2e/engine-hook.mjs`
+

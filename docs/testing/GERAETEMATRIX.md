@@ -36,6 +36,15 @@ Stand: 03.11.2026. Diese Matrix legt fest, **auf welchen echten Geräten** der P
 
 Die Browsertests (`npm run test:e2e`) laufen in Headless-Chromium mit Software-WebGL, auch mit Handybreite (390 × 844) und Touch-Emulation. Sie sichern Abläufe und Layout ab (kein seitliches Scrollen, Knöpfe erreichbar), sagen aber nichts über Safari/WebKit, Firefox, echte GPUs, Dateiauswahl des Systems, Speicherlöschung des Browsers oder Fingerbedienung. Diese Zellen bleiben deshalb „offen“, bis jemand auf dem Gerät testet.
 
+## Firefox und WebKit im Container (Block 5, 06.11.2026)
+
+Neben Chromium laufen die Browsertests auch in **Firefox** und **WebKit** (die Engine von Safari auf Mac, iPad und iPhone). Das ist näher an Safari als die Chromium-Emulation, ersetzt aber weiterhin kein echtes Gerät (keine echte GPU, kein iOS-Speicherverhalten, keine Systemdateiauswahl).
+
+- Einmalig: `npx playwright install firefox webkit` und `npx playwright install-deps firefox webkit`.
+- `npm run test:e2e:webkit -- tests/e2e/shell.e2e.mjs` bzw. `npm run test:e2e:firefox -- --part 1/6` (Teilläufe, weil WebKit deutlich langsamer ist).
+- Die Tests bleiben unverändert: `tests/e2e/engine-hook.mjs` leitet `chromium.launch()` auf die gewählte Engine um (`BAUPLANER_ENGINE`). Firefox hat ohne Anzeige kein WebGL und läuft deshalb automatisch unter `xvfb-run` (llvmpipe).
+- Tests, die Chromium-eigene Schnittstellen (CDP) brauchen, gelten in Firefox/WebKit nicht als Befund.
+
 ## Ablauf für Tester
 
 1. `#/testphase` auf dem Gerät öffnen, beim Namen das Gerät dazuschreiben.

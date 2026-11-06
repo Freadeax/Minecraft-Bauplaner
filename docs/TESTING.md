@@ -1119,3 +1119,8 @@ Reine Dokumentationsänderung (MSG-CLAUDE-SYNC-00, `docs/project/CODEX_PROMPT.md
 - `npm run check`: bestanden (962 Unit-Tests vor dem Rebase, darunter neu „Neuordnung: frühere Fälle …“ mit Übertragung alter Haken, `check:testplan` aktuell).
 - `npm run test:e2e` in drei Läufen (je ≤ 10 min, alle 84 Dateien): 91 + 56 + 48 Browsertests bestanden; nach dem Rebase auf 5b20f53 erneut `npm run check` und `testphase.e2e.mjs`; `testphase.e2e.mjs` prüft neu drei Teile, zugeklappte Bereiche, Sprungleiste, Filter Ort/Kern/Erledigte, Suche nach früherer ID und `?melden=<frühere ID>`.
 - Grenzen: Inhalt der Fälle nicht im Spiel nachgespielt; die Schritte sind aus den bisherigen Fällen zusammengeführt.
+
+## QA-02 · Block 5 Grundlage: Browsertests in Firefox und WebKit · 06.11.2026 · Claude
+- Neu `tests/e2e/engine-hook.mjs` + `scripts/checks/e2e_engine.mjs` (`npm run test:e2e:firefox|webkit`): dieselben Browsertests ohne Änderung in Firefox 1555 und WebKit 2370 (Playwright 1.64.1); Firefox unter `xvfb-run` mit llvmpipe-WebGL (headless sonst kein WebGL).
+- Stichprobe: `viewer.e2e.mjs` in Firefox 4/5 (der fünfte braucht Chromium-CDP), `shell.e2e.mjs`+`viewer.e2e.mjs` in WebKit 5/10; Befunde werden in Block 5 abgearbeitet.
+- `npm run check:architecture`, `npm run check:docs` grün. Grenze: weiterhin keine echten Geräte/GPUs.

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "updatedAt": "2026-11-06T20:59:52.182Z",
+  "updatedAt": "2026-11-06T21:15:30.975Z",
   "baselineCommit": "84838f0200be5fc4c8faef30a185a764ee474bd2",
   "active": [
     "QA-02",
@@ -1046,7 +1046,7 @@
         "main": null,
         "pagesSource": null
       },
-      "updatedAt": "2026-11-06T20:59:52.182Z",
+      "updatedAt": "2026-11-06T21:15:30.975Z",
       "area": "QA",
       "thread": "Browser und Geräte automatisch abnehmen",
       "philipp": [
@@ -25216,6 +25216,30 @@
           "done": 4,
           "total": 5,
           "next": "Abnahme START-20/21 durch Philipp am iPad; gruppierte Projektreiter aus „Bedienung vereinfachen“ und Anleitung optisch mitziehen; Werte an das Mod-Menü weitergeben."
+        }
+      ]
+    },
+    {
+      "at": "2026-11-06T21:15:30.975Z",
+      "kind": "progress",
+      "items": [
+        "QA-02"
+      ],
+      "summary": "Block 5 Grundlage: Browsertests per Schalter in Firefox und WebKit (engine-hook, e2e_engine.mjs); echte Geräte weiter offen",
+      "files": [
+        "docs/TESTING.md",
+        "docs/testing/GERAETEMATRIX.md",
+        "package.json",
+        "scripts/checks/e2e_engine.mjs",
+        "tests/e2e/engine-hook.mjs"
+      ],
+      "snapshot": [
+        {
+          "id": "QA-02",
+          "status": "in_progress",
+          "done": 1,
+          "total": 2,
+          "next": "Protokolle der Tester in docs/testing/GERAETEMATRIX.md eintragen und Befunde beheben."
         }
       ]
     }
